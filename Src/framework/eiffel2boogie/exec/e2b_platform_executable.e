@@ -172,8 +172,9 @@ feature {NONE} -- Implementation
 		do
 				-- Prepare command line arguments
 			create l_arguments.make
+-- TODO: add again when parsing can cope with traces
 			l_arguments.extend ("/trace")
-			l_arguments.extend ("/printModel:4")
+--			l_arguments.extend ("/printModel:4")
 			l_arguments.extend (boogie_file_name)
 
 				-- Launch Boogie
@@ -218,11 +219,13 @@ feature {NONE} -- Implementation
 			writable: a_file.is_open_write
 		local
 			l_input_file: KL_TEXT_INPUT_FILE
+			l_count: INTEGER
 		do
 			create l_input_file.make (a_file_name)
+			l_count := l_input_file.count
 			l_input_file.open_read
 			if l_input_file.is_open_read then
-				l_input_file.read_string (l_input_file.count)
+				l_input_file.read_string (l_count)
 				a_file.put_string ("// File: ")
 				a_file.put_string (a_file_name)
 				a_file.put_new_line

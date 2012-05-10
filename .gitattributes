@@ -1823,6 +1823,9 @@ Src/Delivery/studio/templates/licenses/eweasel.lic -text
 Src/Delivery/studio/templates/licenses/forum2.lic -text
 Src/Delivery/studio/templates/licenses/gpl2.lic -text
 Src/Delivery/studio/templates/licenses/mssdk.lic -text
+Src/Delivery/studio/tools/autoproof/agents.bpl -text
+Src/Delivery/studio/tools/autoproof/arrays.bpl -text
+Src/Delivery/studio/tools/autoproof/base_theory.bpl -text
 Src/Delivery/studio/tools/testing/auto_test/image/class_bad_response.gif -text
 Src/Delivery/studio/tools/testing/auto_test/image/class_bad_response.svg -text
 Src/Delivery/studio/tools/testing/auto_test/image/class_fail.gif -text

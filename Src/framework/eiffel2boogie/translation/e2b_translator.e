@@ -1,83 +1,126 @@
 note
-	description: "Translates Eiffel to Boogie code."
+	description: "Translates Eiffel to IV AST nodes."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
 	E2B_TRANSLATOR
 
+inherit
+
+	SHARED_WORKBENCH
+
+	E2B_SHARED_CONTEXT
+
+	E2B_SHARED_BOOGIE_UNIVERSE
+
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make
+	make (a_boogie_universe: IV_UNIVERSE)
 			-- Initialize translator.
 		do
-			create eve_proofs.make
-			eve_proofs.reset
-			eve_proofs.set_up_environment
+			boogie_universe_cell.put (a_boogie_universe)
 
-			create last_translation.make_empty
+			translation_pool.reset
+			translation_pool.add_type (system.any_type)
+			translation_pool.mark_translated (translation_pool.next_untranslated_element)
+			translation_pool.add_type (system.boolean_class.compiled_class.actual_type)
+			translation_pool.mark_translated (translation_pool.next_untranslated_element)
 		end
 
-feature -- Access
+feature -- Status report
 
-	last_translation: attached STRING
-			-- Boogie code of last translation.
-
-	background_theory_file_name: attached STRING
-			-- File name of background theory file.
+	has_next_step: BOOLEAN
+			-- Is there another step in the translation?
 		do
-			Result := eve_proofs.background_theory_file_name
+			Result := translation_pool.has_untranslated_elements
+		end
+
+feature -- Element change
+
+	add_input (a_input: E2B_TRANSLATOR_INPUT)
+			-- Add all classes and featurse from `a_input' to be translated.
+		do
+			across a_input.class_list as i loop
+				add_class (i.item)
+			end
+			across a_input.feature_list as i loop
+				add_feature (i.item)
+			end
+		end
+
+	add_class (a_class: CLASS_C)
+			-- Add `a_class' to be translated.
+		local
+			l_feature: FEATURE_I
+		do
+			if a_class.has_feature_table then
+				from
+					a_class.feature_table.start
+				until
+					a_class.feature_table.after
+				loop
+					l_feature := a_class.feature_table.item_for_iteration
+					if l_feature.written_in = a_class.class_id and then l_feature.is_routine then
+						add_feature_of_type (l_feature, a_class.actual_type)
+					end
+					a_class.feature_table.forth
+				end
+			end
+		end
+
+	add_feature (a_feature: FEATURE_I)
+			-- Add `a_feature' to be translated.
+		require
+			a_feature_attached: attached a_feature
+		local
+			l_class: CLASS_C
+			l_context_type: TYPE_A
+		do
+			l_class := system.class_of_id (a_feature.written_in)
+			l_context_type := l_class.actual_type
+
+			add_feature_of_type (a_feature, l_context_type)
+		end
+
+	add_feature_of_type (a_feature: FEATURE_I; a_context_type: TYPE_A)
+			-- Add `a_feature' in context of type `a_context_type' to be translated.
+		require
+			a_feature_attached: attached a_feature
+			a_context_type_attached: attached a_context_type
+		local
+			l_tuple: TUPLE [FEATURE_I, TYPE_A]
+		do
+			l_tuple := [a_feature, a_context_type]
+			l_tuple.compare_objects
+
+			translation_pool.add_feature (a_feature, a_context_type)
+		end
+
+	add_assertion_tag_filter (a_filter: ANY)
+			-- Add `a_filter' to assertion tag filters.
+		do
+			check False end
 		end
 
 feature -- Basic operations
 
-	translate_class (a_class: CLASS_C)
-			-- Translate class `a_class' to Boogie code.
+	step
+			-- Do one step of the translation.
+		require
+			has_next_step: has_next_step
+		local
+			l_unit: E2B_TRANSLATION_UNIT
 		do
-			eve_proofs.generate_boogie_code (a_class)
+			check translation_pool.has_untranslated_elements end
 
-			create last_translation.make_empty
-		ensure
-			last_translation_set: attached last_translation and last_translation /= old last_translation
+			l_unit := translation_pool.next_untranslated_element
+			print ("translation unit: " + l_unit.id + "%N")
+			l_unit.translate
+			translation_pool.mark_translated (l_unit)
 		end
-
-	translate_feature (a_feature: FEATURE_I)
-			-- Translate feature `a_feature' to Boogie code.
-		do
-			eve_proofs.boogie_generator.process_feature (a_feature)
-
-			create last_translation.make_empty
-		ensure
-			last_translation_set: attached last_translation and last_translation /= old last_translation
-		end
-
-	translate_references
-			-- Translate all referenced classes and features.
-		do
-			eve_proofs.generate_code_for_referenced_features
-			eve_proofs.generate_code_for_referenced_types
-
-			from
-				create last_translation.make (1024)
-				eve_proofs.verifier.verification_content.start
-			until
-				eve_proofs.verifier.verification_content.after
-			loop
-				last_translation.append ("%N//" + eve_proofs.verifier.verification_content.item.name + "%N")
-				last_translation.append (eve_proofs.verifier.verification_content.item.content)
-				last_translation.append ("%N%N")
-				eve_proofs.verifier.verification_content.forth
-			end
-		ensure
-			last_translation_set: attached last_translation and last_translation /= old last_translation
-		end
-
-feature {NONE} -- Implementation
-
-	eve_proofs: EVE_PROOFS
-			-- Instance of eve proofs used to translate the code.
 
 end

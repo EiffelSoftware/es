@@ -1352,7 +1352,10 @@ feature -- Update
 				current_option := argument_count + 1
 				create {EWB_DYNAMIC_PROGRAM_ANALYSIS} command.make_with_arguments (l_at_args)
 			elseif option.is_equal ("-boogie") then
-				create {EWB_BOOGIE_VERIFICATION} command
+				create l_at_args.make
+				l_at_args := arguments_in_range (current_option + 1, argument_count)
+				current_option := argument_count + 1
+				create {EWB_BOOGIE_VERIFICATION} command.make_with_arguments (l_at_args)
 			elseif option.is_equal ("-js_compile") then
 				create {EWB_JAVASCRIPT_COMPILATION} command
 			elseif option.is_equal ("-dead_plan") then
@@ -1490,8 +1493,8 @@ feature{NONE} -- Implementation
 	arguments_in_range (a_lower, a_upper: INTEGER): LINKED_LIST [STRING]
 			-- Arguments from position `a_lower' to `a_upper'
 		require
-			a_lower_valid: a_lower > 0 and a_lower <= argument_count
-			a_upper_valid: a_upper > 0 and a_upper <= argument_count and a_lower <= a_upper
+			a_lower_valid: a_lower > 0 and a_lower <= argument_count + 1
+			a_upper_valid: a_upper > 0 and a_upper <= argument_count and a_lower <= a_upper + 1
 		local
 			i: INTEGER
 		do
@@ -1507,7 +1510,7 @@ feature{NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

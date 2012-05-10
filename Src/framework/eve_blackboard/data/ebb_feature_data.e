@@ -151,7 +151,7 @@ feature -- Status report
 	has_manual_score: BOOLEAN
 			-- Is a manual score set?
 		do
-			if associated_feature.body /= Void then
+			if is_compiled and then associated_feature.body /= Void then
 				Result := correctness_override (associated_feature.body.indexes).is_set
 			end
 		end

@@ -6,6 +6,7 @@ note
 
 class
 	E2B_UPDATE_BLACKBOARD_TASK
+
 inherit
 
 	ROTA_TASK_I
@@ -70,8 +71,7 @@ feature {NONE} -- Implementation
 			l_feature: FEATURE_I
 			l_feature_result: E2B_SUCCESSFUL_VERIFICATION_RESULT
 		do
-			procedure_name_regexp.match (a_procedure_result.procedure_name)
-			l_feature := feature_with_name (procedure_name_regexp.captured_substring (2), procedure_name_regexp.captured_substring (3))
+			l_feature := a_procedure_result.eiffel_feature
 
 			create l_feature_result.make (l_feature, tool_instance.configuration, {E2B_BLACKBOARD_SCORES}.successful)
 			blackboard.add_verification_result (l_feature_result)
@@ -82,34 +82,11 @@ feature {NONE} -- Implementation
 			l_feature: FEATURE_I
 			l_feature_result: E2B_FAILED_VERIFICATION_RESULT
 		do
-			procedure_name_regexp.match (a_verification_error.procedure_name)
-			l_feature := feature_with_name (procedure_name_regexp.captured_substring (2), procedure_name_regexp.captured_substring (3))
+			l_feature := a_verification_error.eiffel_feature
 
 			create l_feature_result.make (l_feature, tool_instance.configuration, {E2B_BLACKBOARD_SCORES}.failed)
 			l_feature_result.set_error (a_verification_error)
 			blackboard.add_verification_result (l_feature_result)
 		end
-
-	procedure_name_regexp: RX_PCRE_REGULAR_EXPRESSION
-			-- Regular expression assertion for instruction location in Boogie source.
-		once
-			create Result.make
-			Result.compile ("^(\w*)\.(\w*)\.(\w*)$")
-		end
-
-	feature_with_name (a_class_name, a_feature_name: STRING): FEATURE_I
-			-- Feature with name `a_feature_name' in class `a_class_name'
-		require
-			a_class_name_not_void: a_class_name /= Void
-			a_feature_name_not_void: a_feature_name /= Void
-		local
-			l_class: CLASS_C
-		do
-			l_class := system.universe.classes_with_name (a_class_name).first.compiled_class
-			check l_class /= Void end
-			Result := l_class.feature_named_32 (a_feature_name.to_string_32)
-			check Result /= Void end
-		end
-
 
 end

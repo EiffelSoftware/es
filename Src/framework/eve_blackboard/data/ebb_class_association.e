@@ -32,7 +32,9 @@ feature {NONE} -- Initialization
 			system.names.put (a_class.name)
 			class_name_id := system.names.id_of (a_class.name)
 		ensure
-			class_id_set: associated_class = a_class
+-- might not be the same object
+--			class_id_set: associated_class = a_class
+			class_set: a_class.name.is_equal (associated_class.name)
 		end
 
 feature -- Access

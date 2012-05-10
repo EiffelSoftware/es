@@ -50,6 +50,7 @@ feature {NONE} -- Implementation
 			until
 				lines.after
 			loop
+
 				l_line := lines.item
 				l_line.right_adjust
 
@@ -94,10 +95,6 @@ feature {NONE} -- Implementation
 							l_current_errors.do_all (agent {E2B_VERIFICATION_ERROR}.set_time (verified_regexp.captured_substring (1).to_real))
 							l_current_errors.do_all (agent {E2B_VERIFICATION_ERROR}.process)
 							last_result.verification_errors.append (l_current_errors)
---							l_current_error.set_procedure_name (l_current_procedure)
---							l_current_error.set_time (verified_regexp.captured_substring (1).to_real)
---							l_current_error.process
---							last_result.verification_errors.extend (l_current_error)
 						end
 						l_total_time := l_total_time + verified_regexp.captured_substring (1).to_real
 						l_current_errors.wipe_out
@@ -144,7 +141,7 @@ feature {NONE} -- Implementation
 						-- line: semantic_error_regexp.captured_substring (2).to_integer
 						-- column: semantic_error_regexp.captured_substring (3).to_integer
 						-- message: semantic_error_regexp.captured_substring (4)
-						check False end
+--						check False end
 							-- TODO: what kind of errors are these?
 
 					elseif execution_trace_regexp.matches (l_line) then
@@ -223,7 +220,7 @@ feature {NONE} -- Implementation: regular expressions
 			-- Regular expression for verifying section.
 		once
 			create Result.make
-			Result.compile ("^Verifying\s*([\w.$]+)\s*.*$")
+			Result.compile ("^Verifying\s*([\w.$#\^]+)\s*.*$")
 		end
 
 	verified_regexp: RX_PCRE_REGULAR_EXPRESSION

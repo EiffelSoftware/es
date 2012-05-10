@@ -31,11 +31,20 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	input: attached E2B_VERIFIER_INPUT
-			-- Input for Boogie verifier.
+	input: E2B_VERIFIER_INPUT
+			-- Input for verifier.
 
 	last_result: detachable E2B_RESULT
 			-- Result of last run of Boogie.
+		do
+			if not attached internal_last_result and then attached last_output then
+					-- TODO: remove
+				io.put_string (last_output)
+
+				parse_verification_output
+			end
+			Result := internal_last_result
+		end
 
 	last_output: detachable STRING
 			-- Output of last run of Boogie.
@@ -55,6 +64,8 @@ feature -- Element change
 
 	set_input (a_input: like input)
 			-- Set `input' to `a_input'.
+		require
+			a_input_attached: attached a_input
 		do
 			input := a_input
 		ensure
@@ -65,38 +76,24 @@ feature -- Basic operations
 
 	verify
 			-- Launch Boogie verifier on input.
-		require
-			not_running: not is_running
 		do
-			last_result := Void
+			internal_last_result := Void
 			executable.set_input (input)
 			executable.run
-		ensure
-			not_running: not is_running
-			last_output_set: last_output.is_equal (executable.last_output)
-			last_result_not_set: last_result = Void
 		end
 
 	verify_asynchronous
 			-- Launch Boogie verifier on input, without waiting for Boogie to finish.
-		require
-			not_running: not is_running
 		do
-			last_result := Void
+			internal_last_result := Void
 			executable.set_input (input)
 			executable.run_asynchronous
-		ensure
-			maybe_running: is_running or not is_running
-			last_output_not_set: is_running implies last_output = Void
-			last_result_not_set: last_result = Void
 		end
 
 	cancel
 			-- Cancel execution of Boogie.
 		do
 			executable.cancel
-		ensure
-			not_running: not is_running
 		end
 
 	parse_verification_output
@@ -105,7 +102,7 @@ feature -- Basic operations
 			last_output_set: attached last_output
 		do
 			output_parser.process (last_output)
-			last_result := output_parser.last_result
+			internal_last_result := output_parser.last_result
 		ensure
 			last_result_set: attached last_result
 		end
@@ -117,5 +114,8 @@ feature {NONE} -- Implementation
 
 	output_parser: attached E2B_OUTPUT_PARSER
 			-- Output parser.
+
+	internal_last_result: detachable E2B_RESULT
+			-- Cached last result.
 
 end

@@ -372,8 +372,6 @@ feature {NONE} -- Visitors
 			l_attached_feature: !FEATURE_I
 			l_last_target_type: TYPE_A
 		do
-			l_last_target_type := current_type
-			current_type := a_node.target.type
 				-- TODO: make check more generic, see also EP_EXPRESSION_WRITER.process_nested
 			if
 				{l_access_exp: ACCESS_EXPR_B} a_node.target and then
@@ -390,11 +388,14 @@ feature {NONE} -- Visitors
 				a_node.target.process (Current)
 				in_target := False
 
+				l_last_target_type := current_type
+				current_type := a_node.target.type
+
 				a_node.message.process (Current)
 
+				current_type := l_last_target_type
 				target := l_last_target
 			end
-			current_type := l_last_target_type
 		end
 
 	process_result_b (a_node: RESULT_B)

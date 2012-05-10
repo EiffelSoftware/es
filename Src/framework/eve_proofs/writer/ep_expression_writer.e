@@ -602,13 +602,15 @@ feature {BYTE_NODE} -- Visitors
 			then
 				process_special_postcondition_predicate (l_agent_creation, l_feature_call)
 			else
-				last_target_type := a_node.target.type
 
 					-- Store expression
 				l_temp_expression := expression.string
 					-- Evaluate target with fresh expression
 				expression.reset
 				safe_process (a_node.target)
+
+				last_target_type := a_node.target.type
+
 					-- Use target as new `Current' reference
 				l_target_name := name_mapper.target_name
 				name_mapper.set_target_name (expression.string)

@@ -92,25 +92,27 @@ feature {NONE} -- Implementation
 			l_time: TIME
 			l_filename: STRING
 		do
-			create l_time.make_now
-			l_filename := "boogie-"
-			if l_time.minute < 10 then
-				l_filename.append ("0")
-			end
-			l_filename.append (l_time.minute.out)
-			if l_time.second < 10 then
-				l_filename.append ("0")
-			end
-			l_filename.append (l_time.second.out)
-			if (l_time.fractional_second * 100.0) < 10 then
-				l_filename.append ("0")
-			end
-			l_filename.append ((l_time.fractional_second * 100.0).truncated_to_integer.out)
-			l_filename.append (".bpl")
+			create Result.make_from_string ("C:\temp\output.bpl")
 
-			create Result.make_from_string (system.eiffel_project.project_directory.target_path)
-			Result.extend ("Proofs")
-			Result.extend (l_filename)
+--			create l_time.make_now
+--			l_filename := "boogie-"
+--			if l_time.minute < 10 then
+--				l_filename.append ("0")
+--			end
+--			l_filename.append (l_time.minute.out)
+--			if l_time.second < 10 then
+--				l_filename.append ("0")
+--			end
+--			l_filename.append (l_time.second.out)
+--			if (l_time.fractional_second * 100.0) < 10 then
+--				l_filename.append ("0")
+--			end
+--			l_filename.append ((l_time.fractional_second * 100.0).truncated_to_integer.out)
+--			l_filename.append (".bpl")
+
+--			create Result.make_from_string (system.eiffel_project.project_directory.target_path)
+--			Result.extend ("Proofs")
+--			Result.extend (l_filename)
 		end
 
 end

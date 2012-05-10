@@ -7,6 +7,7 @@
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="compiler" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf"/>
 		<library name="ecosystem" location="$EIFFEL_SRC\Eiffel\ecosystem\ecosystem.ecf"/>
+		<library name="eiffel_transform" location="$ISE_LIBRARY\framework\eiffel_transform\eiffel_transform.ecf"/>
 		<library name="environment" location="$EIFFEL_SRC\framework\environment\environment.ecf"/>
 		<library name="eve_blackboard" location="$EIFFEL_SRC\framework\eve_blackboard\eve_blackboard.ecf"/>
 		<library name="eve_proofs" location="$EIFFEL_SRC\framework\eve_proofs\eve_proofs.ecf"/>
@@ -15,6 +16,7 @@
 		<library name="net" location="$ISE_LIBRARY\library\net\net.ecf"/>
 		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
 		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
+		<library name="program_analysis" location="$ISE_LIBRARY\framework\program_analysis\program_analysis.ecf"/>
 		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf"/>
 		<library name="framework_patterns" location="$EIFFEL_SRC\framework\patterns\patterns.ecf"/>
 		<library name="uuid" location="$EIFFEL_SRC\library\uuid\uuid.ecf"/>

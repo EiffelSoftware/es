@@ -33,7 +33,9 @@ feature {NONE} -- Initialization
 			work_state := {EBB_STATE}.compilation
 			result_state := {EBB_STATE}.unknown
 		ensure
-			consistent: associated_class = a_class
+-- might not be same object
+--			consistent: associated_class = a_class
+			a_class.name.is_equal (associated_class.name)
 		end
 
 feature -- Access

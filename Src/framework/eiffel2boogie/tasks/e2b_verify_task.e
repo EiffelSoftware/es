@@ -26,11 +26,15 @@ feature {NONE} -- Implementation
 	make (a_translator_input: E2B_TRANSLATOR_INPUT)
 			-- Initialize task.
 		do
+			create boogie_universe.make
 			create verifier.make
+
 			create remaining_tasks.make
-			remaining_tasks.extend (create {E2B_TRANSLATE_CHUNK_TASK}.make (a_translator_input, verifier.input))
+			remaining_tasks.extend (create {E2B_TRANSLATE_CHUNK_TASK}.make (a_translator_input, boogie_universe))
+			remaining_tasks.extend (create {E2B_GENERATE_BOOGIE_TASK}.make (boogie_universe, verifier))
 			remaining_tasks.extend (create {E2B_EXECUTE_BOOGIE_TASK}.make (verifier))
 			remaining_tasks.extend (create {E2B_EVALUATE_BOOGIE_OUTPUT_TASK}.make (verifier))
+			remaining_tasks.extend (create {E2B_VERIFY_WITH_INLINING_TASK}.make (verifier, remaining_tasks))
 		end
 
 feature -- Access
@@ -83,5 +87,8 @@ feature {NONE} -- Implementation
 
 	verifier: E2B_VERIFIER
 			-- Boogie verifier.
+
+	boogie_universe: IV_UNIVERSE
+			-- Boogie universe.
 
 end

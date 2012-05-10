@@ -455,7 +455,15 @@ feature {NONE} -- Implementation
 					-- TODO: remove "free" when predicate testing is done
 --					output.put ("free requires ")
 -- MML TEST
-					output.put ("requires ")
+--					output.put ("requires ")
+						-- Quickfix for precondition "require false"
+					if l_item.expression.is_equal ("false") then
+						output.put ("free requires ")
+					else
+						output.put ("requires ")
+					end
+--					output.put ("requires ")
+
 					output.put (l_item.expression)
 					output.put ("; // ")
 					output.put (assert_location ("pre", l_item))
