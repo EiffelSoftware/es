@@ -1,49 +1,57 @@
 note
-	description: "An comment in an assertion clause in a formal BON specification."
-	author: ""
+	description: "A renaming clause of a feature in a class in textual BON."
+	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	TBON_ASSERTION_COMMENT
+	TBON_RENAMING_CLAUSE
 
 inherit
-	TBON_ASSERTION
+	TEXTUAL_BON_ELEMENT
+		rename
+			process_to_informal_textual_bon as process_to_textual_bon,
+			process_to_formal_textual_bon as process_to_textual_bon
 		redefine
-			process_to_informal_textual_bon,
-			process_to_formal_textual_bon
+			process_to_textual_bon
 		end
 
 create
 	make_element
 
 feature -- Initialization
-	make_element (a_text_formatter_decorator: like text_formatter_decorator; a_comment: like comment)
-			-- Create an expression element
-		require
-			not_void: a_comment /= Void
+	make_element (a_text_formatter_decorator: like text_formatter_decorator ancestor: attached TBON_CLASS_TYPE; final_name_string: attached STRING)
+			-- Create a renaming clause element.
 		do
-			comment := a_comment
+			ancestor_class := ancestor
+			final_name := final_name_string
 			text_formatter_decorator := a_text_formatter_decorator
 		end
 
 feature -- Access
-	comment: STRING
-			-- What is the string representation of this comment?
+	ancestor_class: attached TBON_CLASS_TYPE
+			-- From which ancestor class is this feature being renamed?
+
+	final_name: attached STRING
+			-- What is the final name of the feature?
 
 feature -- Processing
-	process_to_formal_textual_bon
-			-- Process this comment to textual bon.
+	process_to_textual_bon
+			-- Process this element into textual BON.
+		local
+			l_text_formatter_decorator: like text_formatter_decorator
 		do
-			text_formatter_decorator.put_space
-			process_textual_bon_comment (comment)
-		end
+			l_text_formatter_decorator := text_formatter_decorator
+			l_text_formatter_decorator.process_symbol_text (ti_l_curly)
+			l_text_formatter_decorator.put_space
+			-- ^class_name.final_name
+			l_text_formatter_decorator.process_symbol_text (bti_power_operator)
+			ancestor_class.process_to_textual_bon
+			l_text_formatter_decorator.process_symbol_text (ti_dot)
+			l_text_formatter_decorator.process_string_text (final_name, Void)
 
-	process_to_informal_textual_bon
-		do
-			text_formatter_decorator.process_symbol_text (ti_double_quote)
-			text_formatter_decorator.process_string_text (comment, Void)
-			text_formatter_decorator.process_symbol_text (ti_double_quote)
+			l_text_formatter_decorator.put_space
+			l_text_formatter_decorator.process_symbol_text (ti_r_curly)
 		end
 
 note

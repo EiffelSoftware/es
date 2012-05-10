@@ -24,27 +24,40 @@ feature -- Processing
 			textual_bon_static_diagram: TBON_STATIC_DIAGRAM
 			textual_bon_extended_id: TBON_IDENTIFIER
 			textual_bon_class_component: TBON_CLASS_COMPONENT
+			textual_bon_cluster_component: TBON_CLUSTER_COMPONENT
 			static_component_list: LIST[TBON_STATIC_COMPONENT]
 			comment_list: LIST[STRING]
 			l_text_formatter_decorator: like text_formatter_decorator
+			l_cluster_name: STRING
+			l_system_name: STRING
 		do
 			l_text_formatter_decorator := text_formatter_decorator
-			--l_text_formatter_decorator.put_classi (current_class.lace_class)
 			create textual_bon_class.make (l_as, l_text_formatter_decorator, Current)
 
-			create textual_bon_class_component.make_element (text_formatter_decorator, textual_bon_class)
+			l_cluster_name := "CLUSTER_OF_"
+			l_cluster_name.append (l_as.class_name.string_value_32)
+			create textual_bon_cluster_component.make_element (text_formatter_decorator, l_cluster_name, Void)
+
+			create textual_bon_class_component.make_element (text_formatter_decorator, textual_bon_class, textual_bon_cluster_component, Current)
 			textual_bon_class_component.set_text_formatter (text_formatter_decorator)
 
-			create {LINKED_LIST[TBON_STATIC_COMPONENT]} static_component_list.make
-			static_component_list.extend (textual_bon_class_component)
+			textual_bon_cluster_component.add_class (textual_bon_class_component)
 
-			create textual_bon_extended_id.make_element (text_formatter_decorator, "dummy ID")
+			create {LINKED_LIST[TBON_STATIC_COMPONENT]} static_component_list.make
+			static_component_list.extend (textual_bon_cluster_component)
+
+			l_system_name := "SYSTEM_OF_"
+			l_system_name.append (l_as.class_name.string_value_32)
+			create textual_bon_extended_id.make_element (text_formatter_decorator, l_system_name)
 
 			create {LINKED_LIST[STRING]} comment_list.make
 			comment_list.extend ("This is a comment.")
 
 			create textual_bon_static_diagram.make_element (textual_bon_extended_id, comment_list, static_component_list)
 			textual_bon_static_diagram.set_text_formatter (text_formatter_decorator)
+
+			textual_bon_class_component.set_current_class (current_class)
+			textual_bon_class_component.find_descendants
 
 			textual_bon_static_diagram.process_to_textual_bon
 

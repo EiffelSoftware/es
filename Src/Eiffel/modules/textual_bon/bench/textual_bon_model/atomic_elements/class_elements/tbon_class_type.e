@@ -1,14 +1,14 @@
 note
-	description: "A renaming clause of a feature in a class in textual BON."
+	description: "A specific type of class."
 	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	TBON_RENAMING_CLAUSE
+	TBON_CLASS_TYPE
 
 inherit
-	TEXTUAL_BON_ELEMENT
+	TBON_TYPE
 		rename
 			process_to_informal_textual_bon as process_to_textual_bon,
 			process_to_formal_textual_bon as process_to_textual_bon
@@ -19,38 +19,53 @@ inherit
 create
 	make_element
 
-feature -- Initialization
-	make_element (ancestor: attached TBON_CLASS_TYPE; final_name_string: attached STRING)
-			-- Create a renaming clause element.
+feature -- Access
+	actual_generics: LIST[TBON_TYPE]
+			-- What are the actual generics of this class type?
+
+	name: attached STRING
+			-- What is the name of this class?
+
+	original_class: CLASS_I
+			-- What is the original class of this type?
+			-- This is only used for the editor.
+
+feature -- Element change
+	set_original_class (a_class: CLASS_I)
 		do
-			ancestor_class := ancestor
-			final_name := final_name_string
+			original_class := a_class
 		end
 
-feature -- Access
-	ancestor_class: attached TBON_CLASS_TYPE
-			-- From which ancestor class is this feature being renamed?
+feature -- Initialization
+	make_element (a_text_formatter: like text_formatter_decorator; a_name: like name)
+			-- Create a class type.
+		do
+			make (a_text_formatter)
+			name := a_name
+		end
 
-	final_name: attached STRING
-			-- What is the final name of the feature?
-
-feature -- Processing
+feature -- Process
 	process_to_textual_bon
-			-- Process this element into textual BON.
+			-- Process this class type to formal textual BON.
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
 		do
 			l_text_formatter_decorator := text_formatter_decorator
-			l_text_formatter_decorator.process_symbol_text (ti_l_curly)
-			l_text_formatter_decorator.put_space
-			-- ^class_name.final_name
-			l_text_formatter_decorator.process_symbol_text (bti_power_operator)
-			ancestor_class.process_to_textual_bon
-			l_text_formatter_decorator.process_symbol_text (ti_dot)
-			l_text_formatter_decorator.process_string_text (final_name, Void)
+			l_text_formatter_decorator.process_class_name_text (name, original_class, False)
 
-			l_text_formatter_decorator.put_space
-			l_text_formatter_decorator.process_symbol_text (ti_r_curly)
+			if has_actual_generics then
+				l_text_formatter_decorator.put_space
+				l_text_formatter_decorator.process_symbol_text (ti_l_bracket)
+				process_formal_textual_bon_list(actual_generics, ", ", False)
+				l_text_formatter_decorator.process_symbol_text (ti_r_bracket)
+			end
+		end
+
+feature -- Status report
+	has_actual_generics: BOOLEAN
+			-- Does this class type have any actual generics?
+		do
+			Result := actual_generics /= Void and then not actual_generics.is_empty
 		end
 
 note

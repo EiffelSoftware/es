@@ -75,28 +75,33 @@ feature -- Processing
 
 			l_is_first_item_in_list: BOOLEAN
 			i: INTEGER
+
 		do
 			l_text_formatter_decorator := text_formatter_decorator
 
 			l_text_formatter_decorator.process_string_text (ti_double_quote, Void)
-			from
-				comments.start
-				l_is_first_item_in_list := True
-			until
-				comments.exhausted
-			loop
-				-- If there are multiple comments, put them on separate lines.
-				if not l_is_first_item_in_list then
-					l_text_formatter_decorator.process_string_text (bti_backslash, Void)
-					l_text_formatter_decorator.put_new_line
-					l_text_formatter_decorator.process_string_text (bti_backslash, Void)
-					l_text_formatter_decorator.put_space
+			if comments.count > 0 then
+				from
+					comments.start
+					l_is_first_item_in_list := True
+				until
+					comments.exhausted
+				loop
+					-- If there are multiple comments, put them on separate lines.
+					if not l_is_first_item_in_list then
+						l_text_formatter_decorator.process_string_text (bti_backslash, Void)
+						l_text_formatter_decorator.put_new_line
+						l_text_formatter_decorator.process_string_text (bti_backslash, Void)
+						l_text_formatter_decorator.put_space
+					end
+					l_is_first_item_in_list := False
+
+					l_text_formatter_decorator.process_string_text (comments.item, Void)
+
+					comments.forth
 				end
-				l_is_first_item_in_list := False
-
-				l_text_formatter_decorator.process_comment_text (comments.item, Void)
-
-				comments.forth
+			else
+				name.process_to_textual_bon
 			end
 			l_text_formatter_decorator.process_string_text (ti_double_quote, Void)
 		end

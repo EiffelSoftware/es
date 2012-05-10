@@ -17,6 +17,12 @@ feature -- Access: BON keywords
 	bti_class_chart_keyword: STRING = "class_chart"
 			-- Informal textual BON keyword for declaring class charts.
 
+	bti_cluster_keyword: STRING = "cluster"
+			-- Informal textual BON keyword for declaring a cluster in a system chart.
+
+	bti_cluster_chart_keyword: STRING = "cluster_chart"
+			-- Informal textual BON keyword for declaring a cluster chart.
+
 	bti_command_keyword: STRING = "command"
 			-- Informal textual BON keyword for the command clause.
 
@@ -106,6 +112,9 @@ feature -- Access: BON keywords
 
 	bti_static_diagram_keyword: STRING = "static_diagram"
 			-- Formal textual BON keyword for declaring a static diagram.
+
+	bti_system_chart_keyword: STRING = "system_chart"
+			-- Informal textual BON keyword for declaring a system chart.
 
 	bti_xor_keyword: STRING = "xor"
 			-- Textual BON keyword for exclusive-OR.

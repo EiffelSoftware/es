@@ -32,8 +32,18 @@ feature -- Initialization
 feature -- Process
 	process_to_informal_textual_bon
 			-- Process Current to informal textual bon
-		do
 
+		local
+			l_text_formatter_decorator: like text_formatter_decorator
+		do
+			l_text_formatter_decorator := text_formatter_decorator
+			l_text_formatter_decorator.process_symbol_text (ti_l_parenthesis)
+			process_informal_textual_bon_list (expressions, ", ", False)
+			l_text_formatter_decorator.process_symbol_text (ti_r_parenthesis)
+
+			if comment /= Void then
+				comment.process_to_informal_textual_bon
+			end
 		end
 
 	process_to_formal_textual_bon
@@ -45,6 +55,10 @@ feature -- Process
 			l_text_formatter_decorator.process_symbol_text (ti_l_parenthesis)
 			process_formal_textual_bon_list (expressions, ", ", False)
 			l_text_formatter_decorator.process_symbol_text (ti_r_parenthesis)
+
+			if comment /= Void then
+				comment.process_to_formal_textual_bon
+			end
 		end
 
 note

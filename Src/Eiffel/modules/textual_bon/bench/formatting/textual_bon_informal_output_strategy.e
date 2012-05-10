@@ -1,62 +1,58 @@
 note
-	description: "A specific type of class."
-	author: "Sune Alkaersig <sual@itu.dk> and Thomas Didriksen <thdi@itu.dk>"
+	description: "Summary description for {TEXTUAL_BON_INFORMAL_OUTPUT_STRATEGY}."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	TBON_CLASS_TYPE
+	TEXTUAL_BON_INFORMAL_OUTPUT_STRATEGY
 
 inherit
-	TBON_TYPE
-		rename
-			process_to_informal_textual_bon as process_to_textual_bon,
-			process_to_formal_textual_bon as process_to_textual_bon
+	TEXTUAL_BON_OUTPUT_STRATEGY
 		redefine
-			process_to_textual_bon
+			process_class_as
 		end
 
 create
-	make_element
+	make
 
-feature -- Access
-	actual_generics: LIST[TBON_TYPE]
-			-- What are the actual generics of this class type?
-
-	name: attached STRING
-			-- What is the name of this class?
-
-feature -- Initialization
-	make_element (a_text_formatter: like text_formatter_decorator; a_name: like name)
-			-- Create a class type.
-		do
-			make (a_text_formatter)
-			name := a_name
-		end
-
-feature -- Process
-	process_to_textual_bon
-			-- Process this class type to formal textual BON.
+feature -- Processing
+	process_class_as (l_as: CLASS_AS)
+			-- Process the abstract syntax (represented by 'CLASS_AS') for an Eiffel class into informal textual BON.
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
+			system_chart: TBON_SYSTEM_CHART
+			cluster_chart: TBON_CLUSTER_CHART
+			textual_bon_spec: TBON_CLASS
+			textual_bon_class_chart: TBON_CLASS_CHART
+			cluster_list: LIST[TBON_CLUSTER_CHART]
+			l_cluster_name: STRING
+			l_system_name: STRING
 		do
 			l_text_formatter_decorator := text_formatter_decorator
-			l_text_formatter_decorator.process_class_name_text (name, Void, False)
 
-			if has_actual_generics then
-				l_text_formatter_decorator.put_space
-				l_text_formatter_decorator.process_symbol_text (ti_l_bracket)
-				process_formal_textual_bon_list(actual_generics, ", ", False)
-				l_text_formatter_decorator.process_symbol_text (ti_r_bracket)
-			end
+			create textual_bon_spec.make (l_as, l_text_formatter_decorator, Current)
+
+			l_cluster_name := "CLUSTER_OF_"
+			l_cluster_name.append (l_as.class_name.string_value_32)
+			create cluster_chart.make_element (l_text_formatter_decorator, l_cluster_name, Void, Void, Void)
+
+			create {LINKED_LIST[TBON_CLUSTER_CHART]} cluster_list.make
+
+			cluster_list.extend (cluster_chart)
+
+			l_system_name := "SYSTEM_OF_"
+			l_system_name.append (l_as.class_name.string_value_32)
+			create system_chart.make_element (l_text_formatter_decorator, l_system_name, cluster_list, Void, Void)
+
+			create textual_bon_class_chart.make_element (textual_bon_spec, l_text_formatter_decorator, cluster_chart, Current)
+			textual_bon_class_chart.set_current_class (current_class)
+
+			cluster_chart.add_class (textual_bon_class_chart)
+			textual_bon_class_chart.find_descendants
+			system_chart.process_to_textual_bon
 		end
 
-feature -- Status report
-	has_actual_generics: BOOLEAN
-			-- Does this class type have any actual generics?
-		do
-			Result := actual_generics /= Void and then not actual_generics.is_empty
-		end
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"

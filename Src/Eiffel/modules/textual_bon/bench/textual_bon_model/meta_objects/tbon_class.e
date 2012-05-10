@@ -159,30 +159,30 @@ feature -- Status setting
 feature {NONE} -- Implementation
 	associated_class: CLASS_C
 			-- What is the associated Eiffe class of this BON class?
-		once
+		do
 			Result := associated_text_formatter_decorator.current_class
 		end
 
 	associated_class_ast: CLASS_AS
 			-- What is the associated Eiffel class AST of this BON class?
 
-	associated_class_invariant_assertion_list: LIST[TBON_ASSERTION]
+	associated_class_invariant_assertion_list: LIST[TBON_EXPRESSION]
 			-- Extract the class invariants of the assocated class.	
 		require
 			class_has_invariant: associated_class_ast.invariant_part /= Void
 		local
-			l_assertion: TBON_ASSERTION
+			l_assertion: TBON_EXPRESSION
 			l_assertions: like associated_class_ast.invariant_part.assertion_list
 		do
 			l_assertions := associated_class_ast.invariant_part.assertion_list
+			create {LINKED_LIST[TBON_EXPRESSION]} Result.make
 			from
 				l_assertions.start
 			until
 				l_assertions.exhausted
 			loop
-				-- Get assertion details from l_assertions.i_th
-				-- create l_assertion.make_element
-				-- Result.extend (l_assertion)
+				l_assertion := make_tbon_expression_from_tagged_as (l_assertions.item_for_iteration)
+				Result.extend (l_assertion)
 				l_assertions.forth
 			end
 		end
@@ -215,7 +215,7 @@ feature {NONE} -- Implementation
 
 	associated_class_name: STRING
 			-- Extract class name from the abstract class syntax.
-		once
+		do
 			Result := associated_class_ast.class_name.string_value_32
 		end
 
@@ -289,20 +289,22 @@ feature {NONE} -- Implementation
 	extract_associated_class_feature_clauses
 			-- Extract the feature clauses and features of the associated class
 		do
-			associated_class_ast.features.do_all (
-				agent (feature_clause: FEATURE_CLAUSE_AS; feature_clause_list: LIST[TBON_FEATURE_CLAUSE])
-					require
-						feature_clause_not_void: feature_clause /= Void
-						feature_clause_list_not_void: feature_clause_list /= Void
-					local
-						l_feature_clause: TBON_FEATURE_CLAUSE
-					do
-						l_feature_clause := new_feature_clause_with_features (feature_clause)
-						feature_clause_list.extend (l_feature_clause)
-					ensure
-						feature_clause_list.count = old feature_clause_list.count + 1
-					end (?, feature_clauses)
-				)
+			if associated_class_ast.features /= Void then
+				associated_class_ast.features.do_all (
+					agent (feature_clause: FEATURE_CLAUSE_AS; feature_clause_list: LIST[TBON_FEATURE_CLAUSE])
+						require
+							feature_clause_not_void: feature_clause /= Void
+							feature_clause_list_not_void: feature_clause_list /= Void
+						local
+							l_feature_clause: TBON_FEATURE_CLAUSE
+						do
+							l_feature_clause := new_feature_clause_with_features (feature_clause)
+							feature_clause_list.extend (l_feature_clause)
+						ensure
+							feature_clause_list.count = old feature_clause_list.count + 1
+						end (?, feature_clauses)
+					)
+			end
 
 		end
 
@@ -325,6 +327,7 @@ feature {NONE} -- Implementation
 
 						if generic.has_constraint then
 							create l_constraining_type.make_element (associated_text_formatter_decorator, generic.constraints.first.type.dump)
+
 						else
 							l_constraining_type := Void
 						end
@@ -358,6 +361,8 @@ feature {NONE} -- Implementation
 
 			l_pre_assertion_list: LIST[TBON_ASSERTION]
 			l_post_assertion_list: LIST[TBON_ASSERTION]
+
+			fake_comment: STRING
 		do
 			l_feature_as := a_feature_as
 
@@ -381,16 +386,16 @@ feature {NONE} -- Implementation
 				-- Set as association if not a constant, due to difficulty of finding out whether the type is expanded
 			if l_feature_as.body.is_constant or else (l_feature_as.body.as_routine /= Void and then l_feature_as.body.as_routine.is_once) then
 				l_feature_type_mark.set_as_shared_association (1)
---			elseif associated_text_formatter_decorator.feature_by_name_32 (l_feature_as.feature_name.string_value_32).type.is_expanded then
---				l_feature_type_mark.set_as_aggregation
 			else
 				l_feature_type_mark.set_as_association
 			end
 
-
 			-- Comments
 			create {LINKED_LIST[STRING]} l_feature_comments.make
-			if l_feature_as.comment (associated_text_formatter_decorator.match_list) /= Void then
+			if l_feature_as.first_token (associated_text_formatter_decorator.match_list).index > 0 and then
+				l_feature_as.last_token (associated_text_formatter_decorator.match_list).index > l_feature_as.first_token (associated_text_formatter_decorator.match_list).index and then
+				l_feature_as.comment (associated_text_formatter_decorator.match_list) /= Void then
+
 				l_feature_as.comment (associated_text_formatter_decorator.match_list).do_all (
 					agent (l_comment: EIFFEL_COMMENT_LINE; l_comment_list: LIST[STRING])
 						do
@@ -402,41 +407,46 @@ feature {NONE} -- Implementation
 			end
 
 			-- Renaming clause
-			from
-				associated_class_ast.parents.start
-			until
-				associated_class_ast.parents.exhausted
-			loop
-				if associated_class_ast.parents.item.renaming /= Void then
-					from
-						associated_class_ast.parents.item.renaming.start
-					until
-						associated_class_ast.parents.item.renaming.exhausted
-					loop
-						l_renaming_old_name := associated_class_ast.parents.item.renaming.item.old_name.visual_name_32
-						l_renaming_final_name := associated_class_ast.parents.item.renaming.item.new_name.visual_name_32
+			if associated_class_ast.parents /= Void then
 
-						if l_renaming_old_name.is_equal (l_feature_name.string_value) then
-							check l_renaming_old_name /= Void and l_renaming_final_name /= Void end
+				from
+					associated_class_ast.parents.start
+				until
+					associated_class_ast.parents.exhausted
+				loop
+					if associated_class_ast.parents.item.renaming /= Void then
+						from
+							associated_class_ast.parents.item.renaming.start
+						until
+							associated_class_ast.parents.item.renaming = Void or else
+							associated_class_ast.parents.item.renaming.exhausted
+						loop
+							l_renaming_old_name := associated_class_ast.parents.item.renaming.item.old_name.visual_name_32
+							l_renaming_final_name := associated_class_ast.parents.item.renaming.item.new_name.visual_name_32
 
-							create l_renaming_parent.make_element (associated_text_formatter_decorator, associated_class_ast.parents.item.type.class_name.string_value_32)
-							create l_feature_renaming_clause.make_element (l_renaming_parent, l_renaming_final_name)
+							if l_renaming_old_name.is_equal (l_feature_name.string_value) then
+								check l_renaming_old_name /= Void and l_renaming_final_name /= Void end
 
-							-- End both loops
-							associated_class_ast.parents.item.renaming.finish
-							associated_class_ast.parents.finish
+								create l_renaming_parent.make_element (associated_text_formatter_decorator, associated_class_ast.parents.item.type.class_name.string_value_32)
+								create l_feature_renaming_clause.make_element (associated_text_formatter_decorator, l_renaming_parent, l_renaming_final_name)
+
+								-- End both loops
+								associated_class_ast.parents.item.renaming.finish
+								associated_class_ast.parents.finish
+							else
+								associated_class_ast.parents.item.renaming.forth
+							end
 						end
-
-						associated_class_ast.parents.item.renaming.forth
+					end
+					if not associated_class_ast.parents.exhausted then
+						associated_class_ast.parents.forth
 					end
 				end
-
-				associated_class_ast.parents.forth
 			end
 
 			-- Precondition
 			if l_feature_as.body.as_routine /= Void and then l_feature_as.body.as_routine.has_precondition then
-				create {LINKED_LIST[TBON_ASSERTION]} l_pre_assertion_list.make -- ITU_FIXME_42
+				create {LINKED_LIST[TBON_ASSERTION]} l_pre_assertion_list.make
 
 				l_feature_as.body.as_routine.precondition.assertions.do_all (
 					agent (l_precondition: TAGGED_AS; assertion_list: LIST[TBON_ASSERTION])
@@ -447,7 +457,6 @@ feature {NONE} -- Implementation
 							l_bon_assertion: TBON_EXPRESSION
 						do
 							l_bon_assertion := make_tbon_expression_from_tagged_as (l_precondition)
-
 							assertion_list.extend (l_bon_assertion)
 						ensure
 							assertion_list.count = old assertion_list.count + 1
@@ -465,7 +474,7 @@ feature {NONE} -- Implementation
 
 			-- Postcondition
 			if l_feature_as.body.as_routine /= Void and then l_feature_as.body.as_routine.has_postcondition then
-				create {LINKED_LIST[TBON_ASSERTION]} l_post_assertion_list.make -- ITU_FIXME_42
+				create {LINKED_LIST[TBON_ASSERTION]} l_post_assertion_list.make
 
 				l_feature_as.body.as_routine.postcondition.assertions.do_all (
 					agent (l_postcondition: TAGGED_AS; assertion_list: LIST[TBON_ASSERTION])
@@ -476,7 +485,6 @@ feature {NONE} -- Implementation
 							l_bon_assertion: TBON_EXPRESSION
 						do
 							l_bon_assertion := make_tbon_expression_from_tagged_as (l_postcondition)
-
 							assertion_list.extend (l_bon_assertion)
 						ensure
 							assertion_list.count = old assertion_list.count + 1
@@ -523,14 +531,16 @@ feature {NONE} -- Implementation
 			-- Get comments
 			create {LINKED_LIST[STRING]} l_comment_list.make
 
-			feature_clause.comment (associated_text_formatter_decorator.match_list).do_all (
-				agent (line: EIFFEL_COMMENT_LINE; l_l_comment_list: LIST[STRING])
-					do
-						l_l_comment_list.extend (line.content_32)
-					ensure
-						l_l_comment_list.count = old l_l_comment_list.count + 1
-					end (?, l_comment_list)
-				)
+			if associated_text_formatter_decorator.match_list.item_by_end_position (feature_clause.feature_clause_end_position) /= Void then
+				feature_clause.comment (associated_text_formatter_decorator.match_list).do_all (
+					agent (line: EIFFEL_COMMENT_LINE; l_l_comment_list: LIST[STRING])
+						do
+							l_l_comment_list.extend (line.content_32)
+						ensure
+							l_l_comment_list.count = old l_l_comment_list.count + 1
+						end (?, l_comment_list)
+					)
+			end
 
 			-- Create features
 			create {LINKED_LIST[TBON_FEATURE]} l_feature_list.make
@@ -613,22 +623,24 @@ feature {NONE} -- Implementation
 
 			-- Get redefined features from AST
 			create {ARRAYED_LIST[STRING]} l_redefined_features.make (10)
-			associated_class_ast.parents.do_if (
-				agent (parent: PARENT_AS; feature_name_list: LIST[STRING])
-					require
-						parent_not_void: parent /= Void
-						feature_name_list_not_void: feature_name_list /= Void
-					do
-						from
-							parent.redefining.start
-						until
-							parent.redefining.exhausted
-						loop
-							feature_name_list.extend (parent.redefining.item.visual_name_32)
-							parent.redefining.forth
-						end
-					end (?, l_redefined_features)
-			, agent (parent: PARENT_AS): BOOLEAN do Result := parent.is_effecting end)
+			if associated_class_ast.parents /= Void then
+				associated_class_ast.parents.do_if (
+					agent (parent: PARENT_AS; feature_name_list: LIST[STRING])
+						require
+							parent_not_void: parent /= Void
+							feature_name_list_not_void: feature_name_list /= Void
+						do
+							from
+								parent.redefining.start
+							until
+								parent.redefining.exhausted
+							loop
+								feature_name_list.extend (parent.redefining.item.visual_name_32)
+								parent.redefining.forth
+							end
+						end (?, l_redefined_features)
+				, agent (parent: PARENT_AS): BOOLEAN do Result := parent.is_effecting end)
+			end
 
 			-- Set redefined BON features as redefined
 			l_redefined_features.do_all (
@@ -669,7 +681,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	feature {TBON_CLASS} -- Expression handling
+feature {TBON_CLASS} -- Expression handling
 
 	make_tbon_expression_from_access_as (l_access_as: ACCESS_AS): TBON_EXPRESSION
 			-- Makes a TBON_EXPRESSION from a ACCESS_AS
@@ -696,17 +708,14 @@ feature {NONE} -- Implementation
 			l_call: TBON_CALL
 			l_called_feature: STRING
 			l_classes: like associated_output_strategy.get_universe.all_classes
-			l_feature: E_FEATURE
+			l_feature: FEATURE_I
+			l_feature_table: FEATURE_TABLE
 		do
 			l_called_feature := ""
-			create l_classes.make (1500)
-			l_classes.copy (associated_output_strategy.get_universe.all_classes)
-			from l_classes.start until l_classes.is_empty loop
-				if l_classes.item_for_iteration.compiled_class.class_id = l_access_feat_as.class_id then
-					l_called_feature.append ("<Fix me>")
-				end
-				l_classes.remove (l_classes.item_for_iteration)
-				l_classes.forth
+
+			if attached {STATIC_ACCESS_AS} l_access_feat_as as l_static then
+				l_called_feature := l_static.string_value_32
+				l_called_feature.append (" -- static")
 			end
 			create l_call.make_element (l_access_feat_as.access_name_32, l_called_feature, associated_text_formatter_decorator)
 			Result := l_call
@@ -857,7 +866,7 @@ feature {NONE} -- Implementation
 					l_operator.set_as_equals
 				end
 			elseif l_free /= Void then
-				l_operator.set_as_logical_equivalence -- ITU_FIXME_42
+				l_operator.set_as_power -- ITU_FIXME_42
 			elseif l_implies /= Void then
 				l_operator.set_as_implication
 			elseif l_or /= Void then
@@ -1022,9 +1031,36 @@ feature {NONE} -- Implementation
 
 	make_tbon_expression_from_tagged_as (l_tagged_as: TAGGED_AS): TBON_EXPRESSION
 			-- Makes a TBON_EXPRESSION from the a TAGGED_AS
+		local
+			l_comment: TBON_ASSERTION_COMMENT
 		do
-			-- ITUFIXME42: Could be a handling for the tag.
 			Result := make_tbon_expression_from_expr_as(l_tagged_as.expr)
+			if l_tagged_as.tag /= Void then
+				create l_comment.make_element(associated_text_formatter_decorator, l_tagged_as.tag.string_value_32)
+				Result.set_comment (l_comment)
+			else
+				if	associated_text_formatter_decorator.match_list /= Void and then
+					l_tagged_as.expr.first_token (associated_text_formatter_decorator.match_list) /= Void and then
+					l_tagged_as.expr.last_token (associated_text_formatter_decorator.match_list) /= Void and then
+					associated_text_formatter_decorator.match_list.valid_region (l_tagged_as.expr.token_region (associated_text_formatter_decorator.match_list)) and then
+					l_tagged_as.expr.is_text_available (associated_text_formatter_decorator.match_list)
+				then
+					create l_comment.make_element(associated_text_formatter_decorator, l_tagged_as.expr.text_32 (associated_text_formatter_decorator.match_list))
+					Result.set_comment (l_comment)
+				elseif	associated_text_formatter_decorator.match_list /= Void and then
+					l_tagged_as.first_token (associated_text_formatter_decorator.match_list) /= Void and then
+					l_tagged_as.last_token (associated_text_formatter_decorator.match_list) /= Void and then
+					associated_text_formatter_decorator.match_list.valid_region (l_tagged_as.token_region (associated_text_formatter_decorator.match_list)) and then
+					l_tagged_as.is_text_available (associated_text_formatter_decorator.match_list)
+				then
+					create l_comment.make_element (associated_text_formatter_decorator, l_tagged_as.text_32 (associated_text_formatter_decorator.match_list))
+					Result.set_comment (l_comment)
+				else
+					create l_comment.make_element (associated_text_formatter_decorator, "Unknown expression")
+					Result.set_comment (l_comment)
+				end
+
+			end
 		end
 
 	make_tbon_expression_from_tuple_as (l_tuple_as: TUPLE_AS): TBON_EXPRESSION
@@ -1091,11 +1127,6 @@ feature {NONE} -- Implementation
 			create l_constant.make_element(associated_text_formatter_decorator, "Void")
 			Result := l_constant
 		end
-
-feature {NONE} -- Implementation
-	last_feature: STRING
-		-- Last feature seen
-
 
 invariant
 	must_have_name: name /= Void

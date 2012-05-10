@@ -9,11 +9,8 @@ class
 
 inherit
 	TBON_EXPRESSION
-		rename
-			process_to_informal_textual_bon as process_to_textual_bon,
-			process_to_formal_textual_bon as process_to_textual_bon
 		redefine
-			process_to_textual_bon
+			process_to_formal_textual_bon
 		end
 
 create
@@ -27,13 +24,17 @@ feature -- Initialize
 		end
 
 feature -- Process
-	process_to_textual_bon
+	process_to_formal_textual_bon
 			-- Process
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
 		do
 			l_text_formatter_decorator := text_formatter_decorator
 			l_text_formatter_decorator.process_keyword_text (ti_result, Void)
+
+			if comment /= Void then
+				comment.process_to_formal_textual_bon
+			end
 		end
 
 note

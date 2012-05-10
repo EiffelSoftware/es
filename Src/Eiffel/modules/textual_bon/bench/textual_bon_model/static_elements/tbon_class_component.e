@@ -20,15 +20,22 @@ create
 	make_element
 
 feature -- Initialization
-	make_element (a_text_formatter: like text_formatter_decorator; a_class: TBON_CLASS)
+	make_element (a_text_formatter: like text_formatter_decorator; a_class: TBON_CLASS; a_cluster: TBON_CLUSTER_COMPONENT; an_output_strategy: like associated_output_strategy)
 			-- Create a class component
 		do
+			parent_cluster := a_cluster
 			associated_class := a_class
+			associated_output_strategy := an_output_strategy
+			text_formatter_decorator := a_text_formatter
 		end
 
 feature -- Access
 	associated_class: attached TBON_CLASS
 			-- Which class does this component describe?
+
+	associated_output_strategy: TEXTUAL_BON_FORMAL_OUTPUT_STRATEGY
+
+	parent_cluster: TBON_CLUSTER_COMPONENT
 
 feature -- Processing
 	process_to_textual_bon
@@ -51,7 +58,7 @@ feature -- Processing
 			l_text_formatter_decorator.put_space
 
 			-- Class name
-			l_text_formatter_decorator.process_class_name_text (associated_class.name.string_value, Void, False)
+			l_text_formatter_decorator.process_class_name_text (associated_class.name.string_value, current_class.original_class, False)
 			l_text_formatter_decorator.put_space
 
 			-- Formal generics
@@ -101,11 +108,36 @@ feature -- Processing
 
 			-- Invariant
 			if associated_class.has_invariant then
-				associated_class.class_invariant.process_to_textual_bon
+				associated_class.class_invariant.process_to_formal_textual_bon
 				l_text_formatter_decorator.put_new_line
 			end
 
 			l_text_formatter_decorator.process_keyword_text (bti_end_keyword, Void)
+		end
+
+feature -- Status
+	has_parent_cluster: BOOLEAN
+		do
+			Result := parent_cluster /= Void
+		end
+
+feature -- Implementation
+	find_descendants
+		require
+			has_parent_cluster
+		do
+			current_class.direct_descendants.do_all (agent (descendant: CLASS_C)
+										local
+											l_descendant_spec: TBON_CLASS
+											l_descendant_component:TBON_CLASS_COMPONENT
+										do
+											create l_descendant_spec.make (descendant.ast, text_formatter_decorator, associated_output_strategy)
+											create l_descendant_component.make_element (text_formatter_decorator, l_descendant_spec, parent_cluster, associated_output_strategy)
+											l_descendant_component.set_current_class (descendant)
+											parent_cluster.add_class (l_descendant_component)
+											l_descendant_component.find_descendants
+										end
+									)
 		end
 
 invariant

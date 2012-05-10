@@ -9,6 +9,19 @@ deferred class
 
 inherit
 	TBON_ASSERTION
+		redefine
+			process_to_informal_textual_bon
+		end
+
+feature -- Process
+	process_to_informal_textual_bon
+		local
+			l_text_formatter_decorator: like text_formatter_decorator
+		do
+			if comment /= Void then
+				comment.process_to_informal_textual_bon
+			end
+		end
 
 feature -- Status
 	is_parenthezised: BOOLEAN
@@ -20,6 +33,16 @@ feature -- Status Setting
 		do
 			is_parenthezised := True
 		end
+
+feature -- Access
+	comment: TBON_ASSERTION_COMMENT
+
+feature -- Element change
+	set_comment (a_comment: TBON_ASSERTION_COMMENT)
+		do
+			comment := a_comment
+		end
+
 
 ;note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
