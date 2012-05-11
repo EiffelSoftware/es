@@ -96,6 +96,7 @@ feature {NONE} -- Initialization
 			create id_manager.make
 			create disassembler.make (id_manager)
 			create planner.make
+			create memory_db.make
 		ensure
 			strategy_set: strategy = a_strategy
 		end
@@ -112,6 +113,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing
 
 	disassembler:PS_OBJECT_DISASSEMBLER
 	planner:PS_WRITE_PLANNER
+	memory_db: PS_IN_MEMORY_DATABASE
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status
 

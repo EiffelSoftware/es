@@ -13,7 +13,7 @@ inherit
 create
 	make
 
-feature {NONE} -- Initialization
+feature -- Initialization
 
 	value:STRING
 		-- The value of the basic attribute as a string
@@ -31,6 +31,7 @@ feature {NONE} -- Initialization
 		end
 
 	is_basic_attribute:BOOLEAN = True
+
 
 
 end

@@ -1,5 +1,5 @@
 note
-	description: "A cursor for an object graph data structure. Can call an agent in case of cycle detection"
+	description: "A cursor for an object graph data structure. Can call an agent in case of cycle detection. Items might be iterated over twice."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
