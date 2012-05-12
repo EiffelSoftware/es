@@ -45,7 +45,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 		do
 			object_has_id:= id_manager.is_identified (an_object)
 
-			if depth=0 and current_global_depth(mode) /= Infinite then
+			if depth=0 and current_global_depth(mode) /= settings.object_graph_depth_infinite then
 				if object_has_id then
 					-- see if we deal with a collection - those still have to be updated
 					if collection_handlers.there_exists (agent {PS_COLLECTION_HANDLER[ITERABLE[ANY]]}.can_handle (an_object)) then
@@ -53,9 +53,9 @@ feature {PS_EIFFELSTORE_EXPORT}
 					else -- just return the correct poid
 						create {PS_SINGLE_OBJECT_PART} Result.make_with_mode ( id_manager.get_identifier_wrapper(an_object), mode.No_operation)
 					end
-				elseif is_insert_during_update_enabled then
+				elseif settings.is_insert_during_update_enabled then
 					-- call again disassemble on the same object with different parameters
-					Result:=disassemble (an_object, custom_insert_depth_during_update, mode.Insert, reference_owner, ref_attribute_name)
+					Result:=disassemble (an_object, settings.custom_insert_depth_during_update, mode.Insert, reference_owner, ref_attribute_name)
 				else
 					create {PS_IGNORE_PART} Result.make
 				end
@@ -65,8 +65,8 @@ feature {PS_EIFFELSTORE_EXPORT}
 				if mode = mode.Insert then
 					if object_has_id then
 						-- known object found - decide if we need to update or just set the correct poid.
-						if is_update_during_insert_enabled then
-							Result:= disassemble (an_object, custom_update_depth_during_insert, mode.Update, reference_owner, ref_attribute_name)
+						if settings.is_update_during_insert_enabled then
+							Result:= disassemble (an_object, settings.custom_update_depth_during_insert, mode.Update, reference_owner, ref_attribute_name)
 						else
 							create {PS_SINGLE_OBJECT_PART} Result.make_with_mode ( id_manager.get_identifier_wrapper(an_object), mode.No_operation)
 						end
@@ -79,11 +79,11 @@ feature {PS_EIFFELSTORE_EXPORT}
 						Result:= perform_disassemble (an_object, depth, mode, reference_owner, ref_attribute_name)
 					else
 						-- unknown object found - decide if we insert it or not
-						if is_insert_during_update_enabled then
-							Result:= disassemble (an_object, custom_insert_depth_during_update, mode.Insert, reference_owner, ref_attribute_name)
+						if settings.is_insert_during_update_enabled then
+							Result:= disassemble (an_object, settings.custom_insert_depth_during_update, mode.Insert, reference_owner, ref_attribute_name)
 						else
 					--		fixme ("decide on behaviour if no inserts should happen during update - throw exception or set reference to 0")
-							if is_report_error_for_new_objects_during_insert_enabled then
+							if settings.throw_error_for_unknown_objects then
 								create {PS_IGNORE_PART} Result.make
 								has_error:=True
 							else
@@ -175,7 +175,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 
 						else
 							-- if (depth > 1 or infinite) or (mode = Update and followRefs) then handle reference types:
-							if depth > 1 or current_global_depth(mode) = Infinite or (depth=1 and update_references_at_depth_1 and mode=mode.Update) then
+							if depth > 1 or current_global_depth(mode) = settings.object_graph_depth_infinite or (depth=1 and settings.update_last_references and mode=mode.Update) then
 								ref_value:= disassemble (attr_value, depth-1, mode, Result, attr_name)
 								Result.add_attribute (attr_name, ref_value)
 --								if not attached{PS_IGNORE_PART} ref_value then
@@ -200,37 +200,19 @@ feature {PS_EIFFELSTORE_EXPORT}
 				internal_operation_store.extend (an_operation, a_poid)
 			end
 
-		global_insert_depth:INTEGER
-		global_update_depth:INTEGER
-		global_delete_depth:INTEGER
-
-		custom_insert_depth_during_update:INTEGER
-			do
-				Result:=global_insert_depth
-			end
-
-		custom_update_depth_during_insert:INTEGER
-			do
-				Result:=global_update_depth
-			end
-
 		current_global_depth (mode:PS_WRITE_OPERATION):INTEGER
 			do
 				if mode = mode.Insert then
-					Result:=global_insert_depth
+					Result:=settings.insert_depth
 				elseif mode = mode.update then
-					Result := global_update_depth
+					Result := settings.update_depth
 				elseif mode = mode.delete then
-					Result:= global_delete_depth
+					Result:= settings.deletion_depth
 				else
 					Result := 1
 				end
 			end
 
-		is_insert_during_update_enabled:BOOLEAN
-		is_update_during_insert_enabled:BOOLEAN
-		update_references_at_depth_1:BOOLEAN
-		is_report_error_for_new_objects_during_insert_enabled:BOOLEAN = False
 
 
 		internal_operation_store: HASH_TABLE[PS_OBJECT_GRAPH_PART, INTEGER]
@@ -240,21 +222,19 @@ feature {PS_EIFFELSTORE_EXPORT}
 		id_manager: PS_OBJECT_IDENTIFICATION_MANAGER
 
 		collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER[ITERABLE[ANY]]]
+		settings: PS_OBJECT_GRAPH_DEPTH
 
+feature{NONE} -- Initialization
 
-		Infinite:INTEGER = 0 -- Infinite follow of references
-
-		make (an_id_manager: PS_OBJECT_IDENTIFICATION_MANAGER)
+		make (an_id_manager: PS_OBJECT_IDENTIFICATION_MANAGER; graph_settings: PS_OBJECT_GRAPH_DEPTH)
 			do
 				create internal_operation_store.make (100)
 				create {PS_IGNORE_PART} disassembled_object.make
 				id_manager:= an_id_manager
 				create collection_handlers.make
+				settings:= graph_settings
 			end
 
 
-
-		-- TODO: The write planner has to detect ABSTRACT_COLLECTION_OPERATIONs in relational mode and remove their attribute from the reference holders attribute table.
-		-- The reason why we can't do this here is that - as this is a graph dependency graph with one root node - we will lose the collection operation and maybe even some of its references.
 
 end

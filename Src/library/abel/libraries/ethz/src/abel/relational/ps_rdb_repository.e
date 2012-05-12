@@ -94,9 +94,7 @@ feature {NONE} -- Initialization
 			create transaction_isolation_level
 			create default_object_graph.make_default
 			create id_manager.make
-			create disassembler.make (id_manager)
-			create planner.make
-			create memory_db.make
+
 		ensure
 			strategy_set: strategy = a_strategy
 		end
@@ -111,9 +109,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing
 			print (database.last_error_message)
 		end
 
-	disassembler:PS_OBJECT_DISASSEMBLER
-	planner:PS_WRITE_PLANNER
-	memory_db: PS_IN_MEMORY_DATABASE
+
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status
 

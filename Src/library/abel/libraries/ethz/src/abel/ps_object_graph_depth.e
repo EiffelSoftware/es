@@ -23,7 +23,7 @@ note
 			PS_REPOSITORY or separately in each CLASS_MANAGER object.
 			
 			Note: On some repositories the actual object graph depth will be ignored, and it will always use Object_graph_depth_infinite
-			instead. The reason is that some backends are faster with this option.	
+			instead. The reason is that some backends are faster with this option.
 	]"
 
 class
@@ -32,19 +32,62 @@ class
 create
 	make_rely_on_repository, make_default
 
-feature -- Access
+feature -- Query settings
 
 	query_depth: INTEGER
 			-- object graph depth for queries, or reading objects in general
 
+feature -- Insert settings
+
 	insert_depth: INTEGER
 			-- object graph depth for inserts
+
+
+	is_update_during_insert_enabled:BOOLEAN = False
+			-- Should an object be updated, if it is already in the database and it is referenced by a new object?
+
+
+	custom_update_depth_during_insert:INTEGER
+			-- The object graph depth that should be applied for an update to an object, which is found during insert and is already in the database.
+		do
+			Result:=update_depth
+		end
+
+
+feature -- Update settings
 
 	update_depth: INTEGER
 			-- object graph depth for updates
 			-- Updates are somewhat special: For depth 1, the system will look at references and update them if they point to another object than before, but it will not
 			-- call update on the referenced object. In addition, if an update operation finds a new (= not previously loaded) object,
 			-- it will insert it with the insertion depth defined globally in the repository (usually Object_graph_depth_infinite)
+
+	update_last_references:BOOLEAN = True
+			-- Should the last (Depth = 1) references be updated?
+			-- Note: This only covers the references (-> foreign keys) to objects, not the referenced object itself.
+
+
+	is_insert_during_update_enabled:BOOLEAN = True
+			-- Should the system automatically insert objects which are not present in the database and found during an update?
+
+
+	custom_insert_depth_during_update:INTEGER
+			-- The object graph depth that should be applied for an insert to an object, which is found during update but isn't yet in the database.	
+		do
+			Result:=insert_depth
+		end
+
+	throw_error_for_unknown_objects:BOOLEAN
+			-- If a new object is found an (is_insert_during_update_enabled = False), should an error be thrown for a new object?
+			-- Otherwise the reference is set to 0
+		require
+			no_automatic_insert: not is_insert_during_update_enabled
+		do
+			Result:= false
+		end
+
+
+feature -- Deletion settings
 
 	deletion_depth: INTEGER
 			-- Object graph depth for deletion
