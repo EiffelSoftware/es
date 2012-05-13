@@ -31,6 +31,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 	insert (object: ANY; transaction: PS_TRANSACTION)
 			-- Insert `object' within `transaction' into `Current'
 		do
+			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).insert)
+			executor.perform_operations (planner.generate_plan (disassembler.disassembled_object), transaction)
 		end
 
 	update (object: ANY; transaction: PS_TRANSACTION)
@@ -64,6 +66,8 @@ feature{NONE} -- Initialization
 			create memory_db.make
 			create executor.make (memory_db)
 		end
+
+feature {PS_EIFFELSTORE_EXPORT}
 
 	disassembler:PS_OBJECT_DISASSEMBLER
 	planner:PS_WRITE_PLANNER

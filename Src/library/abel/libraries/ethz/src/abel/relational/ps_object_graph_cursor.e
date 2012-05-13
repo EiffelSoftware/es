@@ -34,7 +34,11 @@ feature -- Cursor status and movement
 				end
 			else
 				-- we have reached the end of the dependency list - time to retreat
-				retreat
+				if not is_at_root_object then
+					retreat
+				else
+					after:= True
+				end
 			end
 		end
 
@@ -70,7 +74,7 @@ feature -- Visited item handler function
 		end
 
 
-feature {NONE} -- Implementation of DFS
+feature {NONE} -- Implementation
 
 	retreat
 		-- Retreat from current item - we either reached an end or the object was already visited

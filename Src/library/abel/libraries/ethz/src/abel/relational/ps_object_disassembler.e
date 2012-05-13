@@ -20,9 +20,9 @@ feature {PS_EIFFELSTORE_EXPORT}
 -- Todo: The algorithm is currently broken: an object that has already been inserted with depth X won't change its depth if the disassembler finds it again at a later stage with depth >X
 
 
-	execute_disassembly (an_object:ANY; a_depth: INTEGER; a_mode: INTEGER)
+	execute_disassembly (an_object:ANY; a_mode:PS_WRITE_OPERATION)
 	do
-	--	disassembled_object:= disassemble (an_object, a_depth, a_mode)
+		disassembled_object:= disassemble (an_object, current_global_depth (a_mode), a_mode, create {PS_IGNORE_PART}.make, "root")
 	end
 
 	disassembled_object: PS_OBJECT_GRAPH_PART
@@ -158,16 +158,18 @@ feature {PS_EIFFELSTORE_EXPORT}
 				ref_value:PS_OBJECT_GRAPH_PART
 				basic_attr:PS_BASIC_ATTRIBUTE_PART
 			do
+				--print ("plain object")
 				create Result.make_with_mode (id, mode)
 				create reflection
 
 				from i:=1
-				until i< reflection.field_count (id.item)
+				until i> reflection.field_count (id.item)
 				loop
 					fixme ("Should this be an IF attached?")
 					check attached reflection.field (i, id.item) as attr_value then
 						attr_name:= reflection.field_name (i, id.item)
 						if is_basic_type (attr_value) then
+--							print ("basic attribute found: " + attr_name)
 							create basic_attr.make (attr_value)
 							Result.add_attribute (attr_name, basic_attr)
 --							Result.basic_attributes.extend (attr_name)
@@ -175,6 +177,8 @@ feature {PS_EIFFELSTORE_EXPORT}
 
 						else
 							-- if (depth > 1 or infinite) or (mode = Update and followRefs) then handle reference types:
+--							print ("complex attribute found")
+
 							if depth > 1 or current_global_depth(mode) = settings.object_graph_depth_infinite or (depth=1 and settings.update_last_references and mode=mode.Update) then
 								ref_value:= disassemble (attr_value, depth-1, mode, Result, attr_name)
 								Result.add_attribute (attr_name, ref_value)
@@ -185,6 +189,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 							end
 						end
 					end
+					i:= i+1
 				end
 			end
 

@@ -17,6 +17,8 @@ feature
 		local
 			dependencies_to_remove:LIST[ANY]
 		do
+			roots.wipe_out
+			sorted_operations.wipe_out
 			roots.extend(dependency_graph)
 
 			-- first find all relational collections and break their parents dependency / add them to roots
@@ -42,6 +44,7 @@ feature
 			remove_noops (sorted_operations)
 
 			Result:= sorted_operations
+			--print (sorted_operations.count.out)
 
 		end
 
