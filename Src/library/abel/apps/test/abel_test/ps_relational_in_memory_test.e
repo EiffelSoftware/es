@@ -40,10 +40,17 @@ feature
 --		end
 
 	test_initial_insert
-
+		local
+			ref_executor: PS_CRUD_EXECUTOR[REFERENCE_CLASS_1]
 		do
+--			flat_executor.insert (test_data.flat_class)
+			create ref_executor.make_with_repository (repository)
+			ref_executor.insert (test_data.reference_1)
+--			structures_executor.insert (test_data.data_structures_1)
+
 			print (int_repo.memory_db.string_representation)
 			assert ("", false)
+
 		end
 
 

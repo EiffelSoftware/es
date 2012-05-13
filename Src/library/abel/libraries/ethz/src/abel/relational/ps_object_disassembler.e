@@ -34,7 +34,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 
 	has_error: BOOLEAN
 
-
+	--counter: INTEGER
 
 	disassemble (an_object:ANY; depth: INTEGER; mode:PS_WRITE_OPERATION; reference_owner:PS_OBJECT_GRAPH_PART; ref_attribute_name:STRING): PS_OBJECT_GRAPH_PART
 		-- Disassembles the object, returning a graph of database operations.
@@ -68,7 +68,17 @@ feature {PS_EIFFELSTORE_EXPORT}
 						if settings.is_update_during_insert_enabled then
 							Result:= disassemble (an_object, settings.custom_update_depth_during_insert, mode.Update, reference_owner, ref_attribute_name)
 						else
-							create {PS_SINGLE_OBJECT_PART} Result.make_with_mode ( id_manager.get_identifier_wrapper(an_object), mode.No_operation)
+		--					object_id:= id_manager.get_identifier_wrapper (an_object)
+		--					if internal_operation_store.has (object_id.object_identifier) then
+								--counter:= counter + 1
+								--check counter<2 end
+		--						Result:= attach (internal_operation_store[object_id.object_identifier])
+								--print ("already known object found")
+		--					else
+								--check false end
+								create {PS_SINGLE_OBJECT_PART} Result.make_with_mode ( id_manager.get_identifier_wrapper(an_object), mode.No_operation)
+		--					end
+
 						end
 					else
 						id_manager.identify (an_object)
@@ -91,6 +101,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 							end
 						end
 					end
+					--check false end
 				elseif mode = mode.Delete then
 					if object_has_id then
 						Result:= perform_disassemble (an_object, depth, mode, reference_owner, ref_attribute_name)
@@ -161,15 +172,17 @@ feature {PS_EIFFELSTORE_EXPORT}
 				--print ("plain object")
 				create Result.make_with_mode (id, mode)
 				create reflection
+				register_operation (Result, Result.object_id.object_identifier)
 
 				from i:=1
-				until i> reflection.field_count (id.item)
+				until i> reflection.field_count (id.item) or mode = mode.no_operation
 				loop
 					fixme ("Should this be an IF attached?")
-					check attached reflection.field (i, id.item) as attr_value then
+					attr_name:= reflection.field_name (i, id.item)
+					if attached reflection.field (i, id.item) as attr_value then
 						attr_name:= reflection.field_name (i, id.item)
 						if is_basic_type (attr_value) then
---							print ("basic attribute found: " + attr_name)
+--							print ("basic attribute found: " + attr_name + "%N")
 							create basic_attr.make (attr_value)
 							Result.add_attribute (attr_name, basic_attr)
 --							Result.basic_attributes.extend (attr_name)
@@ -177,7 +190,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 
 						else
 							-- if (depth > 1 or infinite) or (mode = Update and followRefs) then handle reference types:
---							print ("complex attribute found")
+--							print ("complex attribute found: "+attr_name +"%N")
 
 							if depth > 1 or current_global_depth(mode) = settings.object_graph_depth_infinite or (depth=1 and settings.update_last_references and mode=mode.Update) then
 								ref_value:= disassemble (attr_value, depth-1, mode, Result, attr_name)
@@ -188,6 +201,9 @@ feature {PS_EIFFELSTORE_EXPORT}
 --								end
 							end
 						end
+					else
+--						print ("void field found")
+						--check false end
 					end
 					i:= i+1
 				end
@@ -196,7 +212,8 @@ feature {PS_EIFFELSTORE_EXPORT}
 		is_basic_type (obj:ANY):BOOLEAN
 		do
 				fixme ("TODO")
-			Result:=True
+			Result:=attached{NUMERIC} obj or attached{BOOLEAN} obj or attached{CHARACTER_8} obj or attached{CHARACTER_32} obj or attached{READABLE_STRING_GENERAL} obj
+	--			or attached{SPECIAL[ANY]} obj
 		end
 
 

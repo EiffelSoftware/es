@@ -7,6 +7,9 @@ note
 class
 	PS_WRITE_PLANNER
 
+inherit{NONE}
+	REFACTORING_HELPER
+
 create make
 
 feature
@@ -32,12 +35,15 @@ feature
 
 
 			-- now break all cycles
-			from roots.start
-			until roots.after
-			loop
+			fixme ("Is this loop required? At the moment disabled because it will loop infinitely if it's there")
+--			from
+				roots.start
+--			until roots.after
+--			loop
 				break_cycles (roots.item)
-				roots.forth
-			end
+--				roots.forth
+--			end
+--			check dependency_graph.dependencies.count < 1 end
 
 			-- Do a topological sort and remove no-ops from the list
 			topological_sort

@@ -33,7 +33,7 @@ feature
 					if attached{PS_BASIC_ATTRIBUTE_PART} ref as basic then
 						values.extend (basic.value.out, attr_name.item)
 					elseif attached {PS_COMPLEX_ATTRIBUTE_PART} ref as complex then
-						values.extend (complex.object_id.out, attr_name.item)
+						values.extend (complex.object_id.object_identifier.out, attr_name.item)
 					end
 
 				end
@@ -63,7 +63,7 @@ feature
 				if attached{PS_BASIC_ATTRIBUTE_PART} an_object.attribute_values.at (attr_name.item) as basic then
 					existing_values.replace (basic.value.out, attr_name.item)
 				elseif attached {PS_COMPLEX_ATTRIBUTE_PART} an_object.attribute_values.at (attr_name.item) as complex then
-					existing_values.replace (complex.object_id.out, attr_name.item)
+					existing_values.replace (complex.object_id.object_identifier.out, attr_name.item)
 				end
 
 			end
