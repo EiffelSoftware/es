@@ -23,4 +23,6 @@ inherit
 
 	IV_SHARED_TYPES
 
+	IV_SHARED_FACTORY
+
 end

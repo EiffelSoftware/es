@@ -29,6 +29,9 @@ feature -- Access
 	information: detachable IV_ASSERTION_INFORMATION
 			-- Assertion type information.
 
+	attribute_string: detachable STRING
+			-- Attribute string.
+
 feature -- Element change
 
 	set_information (a_information: IV_ASSERTION_INFORMATION)
@@ -37,6 +40,14 @@ feature -- Element change
 			information := a_information
 		ensure
 			information_set: information = a_information
+		end
+
+	set_attribute_string (a_string: STRING)
+			-- Set `attribute_string' to `a_string'.
+		do
+			attribute_string := a_string
+		ensure
+			attribute_string_set: attribute_string = a_string
 		end
 
 invariant

@@ -43,7 +43,7 @@ feature -- Basic operations
 				l_call.add_argument (create {IV_ENTITY}.make ("heap", types.heap_type))
 				l_call.add_argument (create {IV_ENTITY}.make ("o", types.ref))
 				l_call.add_argument (create {IV_ENTITY}.make (l_boogie_name, l_constant.type))
-				l_call.add_argument (create {IV_ENTITY}.make (name_translator.boogie_name_for_type (a_feature.type), types.type))
+				l_call.add_argument (factory.type_value (a_feature.type))
 
 				create l_forall.make (l_call)
 				l_forall.add_bound_variable ("heap", types.heap_type)

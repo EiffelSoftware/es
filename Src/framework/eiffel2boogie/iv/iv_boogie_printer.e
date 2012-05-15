@@ -273,6 +273,9 @@ feature -- Statement Visitor
 		do
 			output.put_indentation
 			output.put ("assume ")
+			if attached a_assume.attribute_string then
+				output.put ("{" + a_assume.attribute_string + "} ")
+			end
 			a_assume.expression.process (Current)
 			output.put (";")
 			output.put_new_line

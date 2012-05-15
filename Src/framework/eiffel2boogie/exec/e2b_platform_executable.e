@@ -117,6 +117,11 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
+	model_file_name: attached STRING
+			-- File name used to generate Model file.
+		deferred
+		end
+
 	boogie_executable: attached STRING
 			-- Executable name to launch Boogie (including path if necessary).
 		deferred
@@ -172,10 +177,9 @@ feature {NONE} -- Implementation
 		do
 				-- Prepare command line arguments
 			create l_arguments.make
--- TODO: add again when parsing can cope with traces
 			l_arguments.extend ("/trace")
---			l_arguments.extend ("/printModel:4")
-			l_arguments.extend (boogie_file_name)
+			l_arguments.extend ("/mv:" + safe_file_name (model_file_name))
+			l_arguments.extend (safe_file_name (boogie_file_name))
 
 				-- Launch Boogie
 			create l_ee
@@ -237,6 +241,16 @@ feature {NONE} -- Implementation
 				a_file.put_string (a_file_name)
 				a_file.put_new_line
 				a_file.put_new_line
+			end
+		end
+
+	safe_file_name (a_file_name: STRING): STRING
+			-- Safe version of `a_file_name' in case of special characters.
+		do
+			if a_file_name.has (' ') then
+				Result := "%"" + a_file_name + "%""
+			else
+				Result := a_file_name
 			end
 		end
 

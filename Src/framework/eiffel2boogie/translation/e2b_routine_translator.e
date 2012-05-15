@@ -155,6 +155,9 @@ feature -- Basic operations
 			create l_implementation.make (l_procedure)
 			boogie_universe.add_declaration (l_implementation)
 
+				-- Add initial tracing information
+			l_implementation.body.add_statement (factory.trace (name_translator.boogie_name_for_feature (current_feature, current_type)))
+
 				-- Process statements (byte node tree)
 			create l_translator.make
 			l_translator.set_context (l_implementation, current_feature, current_type)
@@ -513,7 +516,7 @@ feature {NONE} -- Implementation
 		local
 			l_postcondition: IV_POSTCONDITION
 			l_forall: IV_FORALL
-			l_equals, l_nequals1, l_nequals2, l_or, l_implies: IV_BINARY_OPERATION
+			l_or: IV_BINARY_OPERATION
 			l_expr: IV_EXPRESSION
 			l_fcall: IV_FUNCTION_CALL
 			l_access, l_old_access: IV_HEAP_ACCESS
@@ -523,23 +526,19 @@ feature {NONE} -- Implementation
 			create o.make ("o", types.ref)
 			create f.make ("f", types.field (types.generic_type))
 			across a_fields as i loop
-				create l_nequals1.make (o, "!=", i.item.o, types.bool)
-				create l_nequals2.make (f, "!=", i.item.f, types.bool)
-				create l_or.make (l_nequals1, "||", l_nequals2, types.bool)
+				l_or := factory.or_ (factory.not_equal (o, i.item.o), factory.not_equal (f, i.item.f))
 				if l_expr = Void then
 					l_expr := l_or
 				else
-					l_expr := create {IV_BINARY_OPERATION}.make (l_expr, "&&", l_or, types.bool)
+					l_expr := factory.and_ (l_expr, l_or)
 				end
 			end
 			if l_expr = Void then
-				create {IV_VALUE} l_expr.make ("true", types.bool)
+				l_expr := factory.true_
 			end
 			create l_access.make ("Heap", o, f)
 			create l_old_access.make ("old(Heap)", o, f)
-			create l_equals.make (l_access, "==", l_old_access, types.bool)
-			create l_implies.make (l_expr, "==>", l_equals, types.bool)
-			create l_forall.make (l_implies)
+			create l_forall.make (factory.implies_ (l_expr, factory.equal (l_access, l_old_access)))
 			l_forall.add_bound_variable ("o", types.ref)
 			l_forall.add_bound_variable ("f", types.field (types.generic_type))
 			create l_postcondition.make (l_forall)

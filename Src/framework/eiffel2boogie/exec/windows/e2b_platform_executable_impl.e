@@ -26,16 +26,20 @@ feature {NONE} -- Implementation
 			-- Initialize Windows executable.
 		do
 			boogie_file_name := default_boogie_code_file_name
+			model_file_name := default_model_file_name
 			create input.make
 		end
 
 feature {NONE} -- Implementation
 
 	boogie_file_name: attached STRING
-			-- File name used to generate Boogie file.
+			-- <Precursor>
+
+	model_file_name: attached STRING
+			-- <Precursor>
 
 	boogie_executable: attached STRING
-			-- Executable name to launch Boogie (including path if necessary).
+			-- <Precursor>
 		local
 			l_ee: EXECUTION_ENVIRONMENT
 --			l_registry: WEL_REGISTRY
@@ -115,4 +119,12 @@ feature {NONE} -- Implementation
 --			Result.extend (l_filename)
 		end
 
+	default_model_file_name: FILE_NAME
+			-- File name for Boogie code file
+		local
+			l_time: TIME
+			l_filename: STRING
+		do
+			create Result.make_from_string ("C:\temp\output.model")
+		end
 end

@@ -134,4 +134,16 @@ feature -- Functions
 			Result.add_argument (a_arg)
 		end
 
+feature -- Miscellaneous
+
+	trace (a_text: STRING): IV_STATEMENT
+			-- Tracing statement.
+		local
+			l_assume: IV_ASSUME
+		do
+			create l_assume.make (true_)
+			l_assume.set_attribute_string (":captureState %"" + a_text + "%"")
+			Result := l_assume
+		end
+
 end

@@ -187,6 +187,7 @@ feature -- Processing
 				-- Create assignment node
 			create l_assignment.make (l_target, l_source)
 			add_statement (l_assignment)
+			add_trace_statement (a_node)
 		end
 
 	process_check_b (a_node: CHECK_B)
@@ -430,6 +431,7 @@ feature -- Processing
 				-- Instruction call is in the side effect of the expression,
 				-- so the generated expression itself is ignored.
 			process_expression (a_node.call)
+			add_trace_statement (a_node)
 		end
 
 	process_loop_b (a_node: LOOP_B)
@@ -746,6 +748,12 @@ feature {NONE} -- Implementation
 				current_origin_information := Void
 			end
 			current_block.add_statement (a_statement)
+		end
+
+	add_trace_statement (a_node: BYTE_NODE)
+			-- Add statement and possibly add origin information.
+		do
+			current_block.add_statement (factory.trace (name_translator.boogie_name_for_feature (current_feature, current_type) + ":" + a_node.line_number.out))
 		end
 
 	process_expression (a_expr: BYTE_NODE)
