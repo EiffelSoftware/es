@@ -15,6 +15,24 @@ create make
 
 feature
 
+	retrieve (class_name:STRING; criteria:PS_CRITERION; attributes:LIST[STRING]; transaction:PS_TRANSACTION) : ITERATION_CURSOR[HASH_TABLE[STRING, STRING]]
+		-- Retrieves all objects of class `class_name' that match the criteria in `criteria' within transaction `transaction'.
+		-- If `atributes' is not empty, it will only retrieve the attributes listed there.
+		local
+			result_list: LINKED_LIST[HASH_TABLE[STRING, STRING]]
+		do
+			create result_list.make
+
+			across attach (class_to_object_keys[class_name]) as obj_cursor
+			loop
+				result_list.extend (attach (internal_db[obj_cursor.item]))
+			end
+
+			Result:= result_list.new_cursor
+		end
+
+
+
 	insert (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
 		-- Inserts the object into the database
 		local

@@ -17,12 +17,18 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 	execute_query (query: PS_QUERY [ANY]; transaction: PS_TRANSACTION)
 			-- Execute `query'.
 		do
+			if attached {PS_OBJECT_QUERY[ANY]} query as obj_query then
+				retriever.setup_query (obj_query, transaction)
+			end
 		end
 
 	next_entry (query: PS_QUERY [ANY])
 			-- retrieves the next object. stores item directly into result_set
 			-- in case of an error it is written into the transaction connected to the query
 		do
+			if attached {PS_OBJECT_QUERY[ANY]} query as obj_query then
+				retriever.next_entry (obj_query)
+			end
 		end
 
 
@@ -65,6 +71,7 @@ feature{NONE} -- Initialization
 			create planner.make
 			create memory_db.make
 			create executor.make (memory_db)
+			create retriever.make (memory_db)
 		end
 
 feature {PS_EIFFELSTORE_EXPORT}
@@ -73,6 +80,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 	planner:PS_WRITE_PLANNER
 	executor: PS_WRITE_EXECUTOR
 	memory_db: PS_IN_MEMORY_DATABASE
+	retriever:PS_RETRIEVAL_MANAGER
 
 
 end

@@ -12,6 +12,20 @@ inherit
 
 feature
 
+
+	retrieve (class_name:STRING; criteria:PS_CRITERION; attributes:LIST[STRING]; transaction:PS_TRANSACTION) : ITERATION_CURSOR[HASH_TABLE[STRING, STRING]]
+		-- Retrieves all objects of class `class_name' that match the criteria in `criteria' within transaction `transaction'.
+		-- If `atributes' is not empty, it will only retrieve the attributes listed there.
+		deferred
+			-- TODO: to have lazy loading support, we need to have a special ITERATION_CURSOR and a function next in this class to load the next item of this customized cursor
+
+			-- TODO: Add a criteria that supports filtering by a list of primary keys
+			-- That way we can later reduce the number or round trip times by collecting all the foreign keys of the same type
+		end
+
+
+
+
 	insert (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
 		-- Inserts the object into the database
 		require
@@ -32,6 +46,8 @@ feature
 			mode_is_delete: an_object.write_mode = an_object.write_mode.delete
 		deferred
 		end
+
+
 
 	insert_collection (a_collection: PS_COLLECTION_PART[ITERABLE[ANY]]; a_transaction:PS_TRANSACTION)
 		-- Add all entries in a_collection to the database

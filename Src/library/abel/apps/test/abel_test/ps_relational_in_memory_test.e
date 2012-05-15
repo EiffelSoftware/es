@@ -27,6 +27,14 @@ feature{NONE}
 
 feature
 
+	test_criteria_in_relational_memory
+	do
+		test_criteria_agents
+		test_criteria_predefined
+		test_criteria_agents_and_predefined
+	end
+
+
 --	test_crud_flat_in_memory
 --		do
 --			test_flat_class_store
@@ -39,17 +47,21 @@ feature
 --			test_update_on_reference
 --		end
 
+
+
+
 	test_initial_insert
 		local
 			ref_executor: PS_CRUD_EXECUTOR[REFERENCE_CLASS_1]
 		do
+			repository.clean_db_for_testing
 --			flat_executor.insert (test_data.flat_class)
 			create ref_executor.make_with_repository (repository)
 			ref_executor.insert (test_data.reference_1)
 --			structures_executor.insert (test_data.data_structures_1)
 
 			print (int_repo.memory_db.string_representation)
-			assert ("", false)
+			assert ("", true)
 
 		end
 
