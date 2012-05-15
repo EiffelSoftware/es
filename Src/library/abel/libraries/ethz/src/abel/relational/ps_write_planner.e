@@ -20,6 +20,7 @@ feature
 		local
 			dependencies_to_remove:LIST[ANY]
 		do
+
 			roots.wipe_out
 			sorted_operations.wipe_out
 			roots.extend(dependency_graph)
@@ -51,7 +52,6 @@ feature
 
 			Result:= sorted_operations
 			--print (sorted_operations.count.out)
-
 		end
 
 

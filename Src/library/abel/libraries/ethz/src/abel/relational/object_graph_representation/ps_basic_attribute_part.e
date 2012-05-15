@@ -24,7 +24,13 @@ feature -- Initialization
 	make (a_value:ANY)
 			-- Initialization for `Current'.
 		do
-			value:= a_value.out
+			if attached{CHARACTER_8} a_value as char then
+				value:= char.natural_32_code.out
+			elseif attached{CHARACTER_32} a_value as char then
+				value:= char.natural_32_code.out
+			else
+				value:= a_value.out
+			end
 			create dependencies.make
 			create write_mode
 			write_mode:=write_mode.No_operation

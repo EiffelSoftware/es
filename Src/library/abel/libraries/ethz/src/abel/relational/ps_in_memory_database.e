@@ -73,17 +73,23 @@ feature
 		-- Updates an_object
 		local
 			existing_values:HASH_TABLE[STRING, STRING]
+			i:INTEGER
 		do
 			existing_values := attach ( internal_db[an_object.object_id.object_identifier] )
 
-			across an_object.attributes as attr_name loop
-
+			across an_object.attributes as attr_name
+			from
+				i:=an_object.attributes.count
+			loop
+				--print (i.out + "%N " + attr_name.item + "%N")
 				if attached{PS_BASIC_ATTRIBUTE_PART} an_object.attribute_values.at (attr_name.item) as basic then
 					existing_values.replace (basic.value.out, attr_name.item)
 				elseif attached {PS_COMPLEX_ATTRIBUTE_PART} an_object.attribute_values.at (attr_name.item) as complex then
 					existing_values.replace (complex.object_id.object_identifier.out, attr_name.item)
 				end
-
+				i:=i-1
+			variant
+				i
 			end
 		end
 
@@ -91,6 +97,7 @@ feature
 		-- Deletes an_object from the database
 		do
 			internal_db.remove (an_object.object_id.object_identifier)
+			attach (class_to_object_keys[an_object.object_id.class_name]).prune (an_object.object_id.object_identifier)
 		end
 
 	insert_collection (a_collection: PS_COLLECTION_PART[ITERABLE[ANY]]; a_transaction:PS_TRANSACTION)

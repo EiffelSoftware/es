@@ -44,11 +44,17 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 	update (object: ANY; transaction: PS_TRANSACTION)
 			-- Update `object' within `transaction'
 		do
+			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).update)
+			executor.perform_operations (planner.generate_plan (disassembler.disassembled_object), transaction)
+			--check false end
 		end
 
 	delete (object: ANY; transaction: PS_TRANSACTION)
 			-- Delete `object' within `transaction' from `Current'
 		do
+			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).delete)
+			executor.perform_operations (planner.generate_plan (disassembler.disassembled_object), transaction)
+
 		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Testing

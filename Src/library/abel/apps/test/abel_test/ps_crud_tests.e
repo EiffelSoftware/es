@@ -24,7 +24,13 @@ feature {NONE}
 			flat_executor.insert (test_data.flat_class)
 			flat_executor.execute_query (query)
 			assert ("The query doesn't return a result", not query.result_cursor.after)
-			assert ("The results are not equal", query.result_cursor.item.is_deep_equal (test_data.flat_class))
+--			print (query.result_cursor.item.a_string_32)
+--			print (test_data.flat_class.a_string_32)
+--			print ( (query.result_cursor.item.a_string_32.is_deep_equal (test_data.flat_class.a_string_32)).out + "%N")
+--			print ( (query.result_cursor.item.real_32_max = test_data.flat_class.real_32_max).out + "%N")
+--			print (query.result_cursor.item.out + test_data.flat_class.out)
+--			print ((query.result_cursor.item.almost_equals (test_data.flat_class)).out)
+			assert ("The results are not equal", query.result_cursor.item.is_almost_equal (test_data.flat_class, 0.00001))
 		end
 
 
@@ -39,18 +45,19 @@ feature {NONE}
 			flat_executor.insert (test_data.flat_class)
 			flat_executor.execute_query (query)
 			assert ("The query doesn't return a result", not query.result_cursor.after)
-			assert ("The results are not equal", query.result_cursor.item.is_deep_equal (test_data.flat_class))
+			assert ("The results are not equal after insert", query.result_cursor.item.is_almost_equal (test_data.flat_class, 0.00001))
 
 			test_data.flat_class.update
 			flat_executor.update (test_data.flat_class)
 			create query.make
 			flat_executor.execute_query (query)
 			assert ("The query doesn't return a result", not query.result_cursor.after)
-			assert ("The results are not equal", query.result_cursor.item.is_deep_equal (test_data.flat_class))
+--			print (test_data.flat_class.out + query.result_cursor.item.out)
+			assert ("The results are not equal after update", query.result_cursor.item.is_almost_equal (test_data.flat_class, 0.00001))
 
 			flat_executor.delete (test_data.flat_class)
 			create query.make
-			flat_executor.execute_deletion_query (query)
+			flat_executor.execute_query (query)
 			assert ("The query returns a result, but it should be empty", query.result_cursor.after)
 
 

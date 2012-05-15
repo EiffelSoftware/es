@@ -35,11 +35,11 @@ feature
 	end
 
 
---	test_crud_flat_in_memory
---		do
---			test_flat_class_store
---			test_flat_class_all_crud
---		end
+	test_crud_flat_in_memory
+		do
+			test_flat_class_store
+			test_flat_class_all_crud
+		end
 
 --	test_crud_structures_in_memory
 --		do

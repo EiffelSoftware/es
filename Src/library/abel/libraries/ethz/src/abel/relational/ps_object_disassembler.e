@@ -22,6 +22,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 
 	execute_disassembly (an_object:ANY; a_mode:PS_WRITE_OPERATION)
 	do
+		internal_operation_store.wipe_out
 		disassembled_object:= disassemble (an_object, current_global_depth (a_mode), a_mode, create {PS_IGNORE_PART}.make, "root")
 	end
 
@@ -87,6 +88,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 				elseif mode = mode.Update then
 					if object_has_id then
 						Result:= perform_disassemble (an_object, depth, mode, reference_owner, ref_attribute_name)
+						--print ("blub")
 					else
 						-- unknown object found - decide if we insert it or not
 						if settings.is_insert_during_update_enabled then
@@ -137,7 +139,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 					check attached internal_operation_store.item (object_id.object_identifier) as res then
 						Result:= res
 					end
-
+					--print ("blab")
 				else
 					-- ask all collection handlers if they can cope with the data structure
 					collection_found:=False
@@ -185,10 +187,14 @@ feature {PS_EIFFELSTORE_EXPORT}
 --							print ("basic attribute found: " + attr_name + "%N")
 							create basic_attr.make (attr_value)
 							Result.add_attribute (attr_name, basic_attr)
+							--if attr_name.is_case_insensitive_equal ("char_32_max") then
+							--	print (attr_value.out)
+							--end
 --							Result.basic_attributes.extend (attr_name)
 --							Result.basic_attribute_values.extend (attr_value, attr_name)
 
 						else
+							--check false end
 							-- if (depth > 1 or infinite) or (mode = Update and followRefs) then handle reference types:
 --							print ("complex attribute found: "+attr_name +"%N")
 

@@ -114,7 +114,7 @@ feature -- Status
 			-- Has `an_object' been previously loaded from (or inserted to) the database?
 		do
 			fixme ("TODO")
-			Result := false
+			Result := repository.is_identified (an_object)
 		end
 
 feature -- Transaction-based data retrieval and querying

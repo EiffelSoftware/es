@@ -93,10 +93,10 @@ feature -- Status Report
 			-- Convenient STRING representation of Current.
 		do
 			Result := "Object of class " + Current.generating_type + " string representation:%N"
-			Result.append ("int_8_max = " + nat_8_max.out + " nat_8_min = " + nat_8_min.out + "%N")
-			Result.append ("int_16_max = " + nat_16_max.out + " nat_16_min = " + nat_16_min.out + "%N")
-			Result.append ("int_32_max = " + nat_32_max.out + " nat_32_min = " + nat_32_min.out + "%N")
-			Result.append ("int_64_max = " + nat_64_max.out + " nat_64_min = " + nat_64_min.out + "%N")
+			Result.append ("int_8_max = " + nat_8_max.out + " int_8_min = " + int_8_min.out + "%N")
+			Result.append ("int_16_max = " + nat_16_max.out + " int_16_min = " + int_16_min.out + "%N")
+			Result.append ("int_32_max = " + nat_32_max.out + " int_32_min = " + int_32_min.out + "%N")
+			Result.append ("int_64_max = " + nat_64_max.out + " int_64_min = " + int_64_min.out + "%N")
 			Result.append ("nat_8_max = " + nat_8_max.out + " nat_8_min = " + nat_8_min.out + "%N")
 			Result.append ("nat_16_max = " + nat_16_max.out + " nat_16_min = " + nat_16_min.out + "%N")
 			Result.append ("nat_32_max = " + nat_32_max.out + " nat_32_min = " + nat_32_min.out + "%N")
@@ -106,6 +106,39 @@ feature -- Status Report
 			Result.append ("real_32_max = " + real_32_max.out + " real_32_min = " + real_32_min.out + "%N")
 			Result.append ("real_64_max = " + real_64_max.out + " real_64_min = " + real_64_min.out + "%N")
 			Result.append ("a_boolean = " + a_boolean.out + " a_string_8 = " + a_string_8 + " a_string_32 = " + a_string_32 + "%N")
+		end
+
+	is_almost_equal (other:FLAT_CLASS_1; epsilon:REAL):BOOLEAN
+		-- Is `Current' equal to `other' except for a small rounding error in the reals?
+
+		do
+			Result:= int_8_max = other.int_8_max and int_8_min = other.int_8_min
+			Result:= Result and int_16_max = other.int_16_max and int_16_min = other.int_16_min
+			Result:= Result and int_32_max = other.int_32_max and int_32_min = other.int_32_min
+			Result:= Result and int_64_max = other.int_64_max and int_64_min = other.int_64_min
+
+			Result:= Result and nat_8_max = other.nat_8_max and nat_8_min = other.nat_8_min
+			Result:= Result and nat_16_max = other.nat_16_max and nat_16_min = other.nat_16_min
+			Result:= Result and nat_32_max = other.nat_32_max and nat_32_min = other.nat_32_min
+			Result:= Result and nat_64_max = other.nat_64_max and nat_64_min = other.nat_64_min
+
+			Result:= Result and char_8_max = other.char_8_max and char_8_min = other.char_8_min
+			Result:= Result and char_32_max = other.char_32_max and char_32_min = other.char_32_min
+
+			Result:= Result and a_boolean = other.a_boolean
+
+
+			Result:= Result and a_string_8.is_equal (other.a_string_8)
+			Result:= Result and a_string_32.is_equal (other.a_string_32)
+
+
+			Result:= Result and (real_32_min / other.real_32_min -1 ).abs  < epsilon
+			Result:= Result and (real_32_max / other.real_32_max -1 ).abs  < epsilon
+			Result:= Result and (real_64_min / other.real_64_min -1 ).abs < epsilon
+			Result:= Result and (real_64_max / other.real_64_max -1 ).abs < epsilon
+		--	print ((real_32_max / other.real_32_max -1 ).out)
+			--check result end
+
 		end
 
 

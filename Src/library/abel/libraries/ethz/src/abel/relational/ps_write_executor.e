@@ -20,7 +20,6 @@ feature
 
 					if obj.write_mode = obj.write_mode.insert then
 						backend.insert (obj, transaction)
-						--print ("inserting one object%N")
 					elseif obj.write_mode = obj.write_mode.update then
 						backend.update (obj, transaction)
 					elseif obj.write_mode = obj.write_mode.delete then

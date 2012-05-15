@@ -9,6 +9,9 @@ class
 inherit
 	PS_EIFFELSTORE_EXPORT
 
+inherit{NONE}
+	REFACTORING_HELPER
+
 create make
 
 feature {NONE}
@@ -70,6 +73,7 @@ feature
 			i, no_fields:INTEGER
 			found:BOOLEAN
 			field_name, field_type_name, field_val: STRING
+			type:INTEGER
 		do
 			create reflection
 			results:= attach (query_to_cursor_map[query.backend_identifier])
@@ -92,15 +96,12 @@ feature
 				loop
 					field_name := reflection.field_name (i, new_object)
 					field_val := attach (results.item.at(field_name))
-					field_type_name := reflection.class_name_of_type (reflection.field_static_type_of_type (i, reflection.dynamic_type (new_object)))
+					--field_type_name := reflection.class_name_of_type (reflection.field_static_type_of_type (i, reflection.dynamic_type (new_object)))
+					--type:= reflection.field_type (i, new_object)
 
 					--print (field_name + ": " + field_type_name + " = " + field_val + "%N")
 
-					if field_type_name.has_substring ("STRING") then
-						reflection.set_reference_field (i, new_object, field_val)
-					elseif field_type_name.has_substring ("INTEGER") then
-						reflection.set_integer_32_field (i, new_object, field_val.to_integer_32)
-					end
+					check try_basic_attribute (new_object, field_val, i) end
 
 					i := i + 1
 				end
@@ -117,6 +118,101 @@ feature
 				query.result_cursor.set_entry (Void)
 			end
 
+		end
+
+
+
+	try_basic_attribute (obj:ANY; value:STRING; index:INTEGER):BOOLEAN
+		-- See if field at `index' is of basic type, and set it if true
+		local
+			type:INTEGER
+			reflection:INTERNAL
+			type_name:STRING
+		do
+			create reflection
+			type:= reflection.field_type (index, obj)
+
+			if type /= reflection.reference_type and  type /= reflection.pointer_type then -- check if it is a basic type (except strings)
+				set_expanded_attribute (obj, value, index)
+				Result:= True
+			else
+				-- check if it's a string
+				type_name := reflection.class_name_of_type (reflection.field_static_type_of_type (index, reflection.dynamic_type (obj)))
+
+				if type_name.is_case_insensitive_equal ("STRING_32") then
+					reflection.set_reference_field (index, obj, value.to_string_32)
+					Result:= True
+				elseif type_name.is_case_insensitive_equal ("STRING_8") then
+					reflection.set_reference_field (index, obj, value.to_string_8)
+					Result:= True
+				else
+					-- Not of a basic type - return false
+					Result:= False
+				end
+
+			end
+
+		end
+
+
+
+	set_expanded_attribute (obj: ANY; value:STRING; index: INTEGER)
+		-- Set the attribute `index' of type `type' of object obj to value `generic_value'
+		local
+			type:INTEGER
+			reflection:INTERNAL
+		do
+			create reflection
+			type:= reflection.field_type (index, obj)
+
+			-- Integers
+			if type = reflection.integer_8_type and value.is_integer_8 then
+				reflection.set_integer_8_field (index, obj, value.to_integer_8)
+
+			elseif type = reflection.integer_16_type and value.is_integer_16 then
+				reflection.set_integer_16_field (index, obj, value.to_integer_16)
+
+			elseif type = reflection.integer_32_type and value.is_integer_32 then
+				reflection.set_integer_32_field (index, obj, value.to_integer_32)
+
+			elseif type = reflection.integer_64_type and value.is_integer_64 then
+				reflection.set_integer_64_field (index, obj, value.to_integer_64)
+
+			-- Naturals
+			elseif type = reflection.natural_8_type and value.is_natural_8 then
+				reflection.set_natural_8_field (index, obj, value.to_natural_8)
+
+			elseif type = reflection.natural_16_type and value.is_natural_16 then
+				reflection.set_natural_16_field (index, obj, value.to_natural_16)
+
+			elseif type = reflection.natural_32_type and value.is_natural_32 then
+				reflection.set_natural_32_field (index, obj, value.to_natural_32)
+
+			elseif type = reflection.natural_64_type and value.is_natural_64 then
+				reflection.set_natural_64_field (index, obj, value.to_natural_64)
+
+			-- Reals	
+			elseif type = reflection.real_32_type and value.is_real then
+				reflection.set_real_32_field (index, obj, value.to_real)
+
+			elseif type = reflection.double_type and value.is_double then
+				reflection.set_double_field (index, obj, value.to_double)
+
+			-- Characters
+			elseif type = reflection.character_8_type and value.is_natural_8 then
+				reflection.set_character_8_field (index, obj, value.to_natural_8.to_character_8)
+
+			elseif type = reflection.character_32_type and value.is_natural_32 then
+				reflection.set_character_32_field (index, obj, value.to_natural_32.to_character_32)
+
+			-- Boolean
+			elseif type = reflection.boolean_type and value.is_boolean then
+				reflection.set_boolean_field (index, obj, value.to_boolean)
+
+
+			else
+				fixme ("TODO: throw error")
+			end
 		end
 
 
