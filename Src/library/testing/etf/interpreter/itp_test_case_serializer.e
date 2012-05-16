@@ -304,7 +304,7 @@ feature -- Basic operations
 			end
 		end
 
-	object_serialization (a_pre_state: BOOLEAN): TUPLE [serialization: detachable STRING; description: detachable HASH_TABLE [detachable ANY, INTEGER]]
+	object_serialization (a_pre_state: BOOLEAN): TUPLE [serialization: detachable STRING; description: detachable HASH_TABLE [TUPLE [object: detachable ANY; type: STRING], INTEGER]]
 			-- Object serialization for `operands'. `a_pre_state' indicates if the objects are in pre-execution or post-execution state.
 		local
 			l_lower: INTEGER
@@ -360,7 +360,7 @@ feature{NONE} -- Implementation
 			-- String representing the serialized data for objects specified by
 			-- `operands' in pre-execution state.
 
-	pre_state_objects: detachable HASH_TABLE [detachable ANY, INTEGER]
+	pre_state_objects: detachable HASH_TABLE [TUPLE [object: detachable ANY; type: STRING], INTEGER]
 			-- List of variables in `pre_state_serialization' along with their object index.
 			-- Key is variable index, value is the variable object itself in pre-execution state.
 
@@ -502,7 +502,7 @@ feature{NONE} -- Implementation
 					l_obj_list.after
 				loop
 					l_index := l_obj_list.key_for_iteration
-					l_object := l_obj_list.item_for_iteration
+					l_object := l_obj_list.item_for_iteration.object
 					l_objects.put (l_index, i)
 					l_objects.put (l_object, i + 1)
 --					interpreter.log_message (l_index.out + ", ")
@@ -525,7 +525,7 @@ feature{NONE} -- Implementation
 			Result := [serialized_object (l_objects), l_obj_list]
 		end
 
-	recursively_referenced_objects (a_roots: SPECIAL [INTEGER]): HASH_TABLE [detachable ANY, INTEGER]
+	recursively_referenced_objects (a_roots: SPECIAL [INTEGER]): HASH_TABLE [TUPLE [object: detachable ANY; type: STRING], INTEGER]
 			-- Objects in `interpreter''s object pool that are recursively referenced by varibles whose IDs are
 			-- specified by `a_roots'. Result is a list of such referenced object pairs. In each pair, `index' is the
 			-- variable index in the object pool, `object' is the variable itself.
@@ -534,7 +534,7 @@ feature{NONE} -- Implementation
 		require
 			a_roots_not_empty: a_roots.count > 0
 		local
-			l_tbl: HASH_TABLE [detachable ANY, INTEGER]
+			l_tbl: HASH_TABLE [TUPLE[object: detachable ANY; type: STRING], INTEGER]
 			i: INTEGER
 			c: INTEGER
 			l_store: ITP_STORE
@@ -560,7 +560,11 @@ feature{NONE} -- Implementation
 				l_object := l_store.variable_value (l_index)
 				if l_object /= Void then
 						-- For each root object, recursively traverse the whole object graph.
-					l_tbl.put (l_object, l_index)
+					if l_object = Void then
+						l_tbl.put ([l_object, l_object.generating_type.name.out], l_index)
+					else
+						l_tbl.put ([l_object, "NONE"], l_index)
+					end
 					l_traversor.wipe_out
 					l_traversor.set_object_action (agent on_object_visited (?, l_tbl))
 					l_traversor.set_root_object (l_object)
@@ -688,12 +692,13 @@ feature{NONE} -- Implementation/Test case synthesis
 			a_buffer.append_character ('%N')
 		end
 
-	append_all_variables (a_objects: HASH_TABLE [detachable ANY, INTEGER_32]; a_buffer: STRING)
+	append_all_variables (a_objects: HASH_TABLE [TUPLE[object: detachable ANY; type: STRING], INTEGER_32]; a_buffer: STRING)
 			-- Append variable descriptions in `a_objects' into `a_buffer'.
 			-- `a_objects' is a hash table, key is variable index in object pool, value is the object itself.
 		local
 			l_index: INTEGER
 			l_object: detachable ANY
+			l_type_name: STRING
 		do
 			a_buffer.append (all_variables_tag_start)
 			a_buffer.append_character ('%N')
@@ -704,11 +709,12 @@ feature{NONE} -- Implementation/Test case synthesis
 					a_objects.after
 				loop
 					l_index := a_objects.key_for_iteration
-					l_object := a_objects.item_for_iteration
+					l_object := a_objects.item_for_iteration.object
+					l_type_name := a_objects.item_for_iteration.type;
 					if l_object = Void then
 						append_variable_with_type (l_index, once "NONE", a_buffer, True)
 					else
-						append_variable_with_type (l_index, l_object.generating_type, a_buffer, True)
+						append_variable_with_type (l_index, l_type_name, a_buffer, True)
 					end
 					a_objects.forth
 				end
