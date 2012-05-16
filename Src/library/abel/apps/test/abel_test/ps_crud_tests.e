@@ -30,6 +30,8 @@ feature {NONE}
 --			print ( (query.result_cursor.item.real_32_max = test_data.flat_class.real_32_max).out + "%N")
 --			print (query.result_cursor.item.out + test_data.flat_class.out)
 --			print ((query.result_cursor.item.almost_equals (test_data.flat_class)).out)
+--			print (test_data.flat_class.tagged_out)
+--			print (query.result_cursor.item.tagged_out)
 			assert ("The results are not equal", query.result_cursor.item.is_almost_equal (test_data.flat_class, 0.00001))
 		end
 

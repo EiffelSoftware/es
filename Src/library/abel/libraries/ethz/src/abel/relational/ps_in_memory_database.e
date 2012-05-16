@@ -15,17 +15,19 @@ create make
 
 feature
 
-	retrieve (class_name:STRING; criteria:PS_CRITERION; attributes:LIST[STRING]; transaction:PS_TRANSACTION) : ITERATION_CURSOR[HASH_TABLE[STRING, STRING]]
+	retrieve (class_name:STRING; criteria:PS_CRITERION; attributes:LIST[STRING]; transaction:PS_TRANSACTION) : ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
 		-- Retrieves all objects of class `class_name' that match the criteria in `criteria' within transaction `transaction'.
 		-- If `atributes' is not empty, it will only retrieve the attributes listed there.
 		local
-			result_list: LINKED_LIST[HASH_TABLE[STRING, STRING]]
+			result_list: LINKED_LIST[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
+			pair:PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]
 		do
 			create result_list.make
 
 			across attach (class_to_object_keys[class_name]) as obj_cursor
 			loop
-				result_list.extend (attach (internal_db[obj_cursor.item]))
+				create pair.make (obj_cursor.item, attach (internal_db[obj_cursor.item]))
+				result_list.extend (pair)
 			end
 
 			Result:= result_list.new_cursor

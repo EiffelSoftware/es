@@ -14,7 +14,7 @@ inherit
 		end
 
 create
-	{PS_QUERY} default_create
+	{PS_QUERY, PS_EIFFELSTORE_EXPORT} default_create
 
 feature -- Check
 

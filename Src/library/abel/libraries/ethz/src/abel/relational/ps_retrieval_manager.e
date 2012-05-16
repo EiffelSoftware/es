@@ -21,13 +21,16 @@ feature {NONE}
 		do
 			backend:= a_backend
 			create query_to_cursor_map.make (100)
+			create bookkeeping_manager.make (100)
 		end
 
 	backend:PS_BACKEND_STRATEGY
 		-- The storage backend
 
-	query_to_cursor_map: HASH_TABLE[ITERATION_CURSOR[HASH_TABLE[STRING, STRING]], INTEGER]
+	query_to_cursor_map: HASH_TABLE[ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]], INTEGER]
 
+	bookkeeping_manager: HASH_TABLE[HASH_TABLE[ANY, INTEGER], INTEGER]
+		-- keeps track of already loaded object for each query
 
 	new_identifier: INTEGER
 			-- Get a new identifier for a query
@@ -42,7 +45,8 @@ feature
 
 	setup_query (query:PS_OBJECT_QUERY[ANY]; transaction:PS_TRANSACTION)
 		local
-			results: ITERATION_CURSOR[HASH_TABLE[STRING, STRING]]
+			results: ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
+			bookkeeping_table:HASH_TABLE[ANY, INTEGER]
 		do
 			query.set_identifier (new_identifier)
 			query.register_as_executed (transaction)
@@ -50,30 +54,36 @@ feature
 			results:=backend.retrieve (query.class_name, query.criteria, create{LINKED_LIST[STRING]}.make, transaction)
 			query_to_cursor_map.extend (results, query.backend_identifier)
 
-			retrieve_one (query, transaction)
+			create bookkeeping_table.make (100)
+			bookkeeping_manager.extend (bookkeeping_table, query.backend_identifier)
+
+			retrieve_until_criteria_match (query, transaction, bookkeeping_table)
 
 		end
 
 
 	next_entry (query:PS_OBJECT_QUERY[ANY])
+		local
+			bookkeeping_table:HASH_TABLE[ANY, INTEGER]
 		do
 			attach (query_to_cursor_map[query.backend_identifier]).forth
-			retrieve_one (query, query.transaction)
+			bookkeeping_table:= attach (bookkeeping_manager[query.backend_identifier])
+			retrieve_until_criteria_match (query, query.transaction, bookkeeping_table)
 		end
 
 
 
-	retrieve_one (query: PS_OBJECT_QUERY[ANY]; transaction:PS_TRANSACTION)
-		-- Retrieve the results of `query'
+feature {NONE} -- Implementation
+
+
+	retrieve_until_criteria_match (query:PS_OBJECT_QUERY[ANY]; transaction:PS_TRANSACTION; bookkeeping:HASH_TABLE[ANY, INTEGER])
+		-- Retrieve objects until the criteria in `query.criteria' are satisfied
 		local
-			results: ITERATION_CURSOR[HASH_TABLE[STRING, STRING]]
-			current_object:HASH_TABLE[STRING, STRING]
-			reflection:INTERNAL
+			results: ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
+			current_object:PS_PAIR[INTEGER, HASH_TABLE[STRING, STRING]]
 			new_object:ANY
-			i, no_fields:INTEGER
 			found:BOOLEAN
-			field_name, field_type_name, field_val: STRING
-			type:INTEGER
+			reflection:INTERNAL
 		do
 			create reflection
 			results:= attach (query_to_cursor_map[query.backend_identifier])
@@ -85,26 +95,9 @@ feature
 				found or results.after
 			loop
 
+				current_object := attach (results.item)
+				new_object:= build (reflection.generic_dynamic_type (query, 1), current_object, transaction, bookkeeping)
 
-
-				new_object:= reflection.new_instance_of (reflection.dynamic_type_from_string (query.class_name))
-
-				no_fields:= reflection.field_count (new_object)
-
-				from i:=1
-				until i> no_fields
-				loop
-					field_name := reflection.field_name (i, new_object)
-					field_val := attach (results.item.at(field_name))
-					--field_type_name := reflection.class_name_of_type (reflection.field_static_type_of_type (i, reflection.dynamic_type (new_object)))
-					--type:= reflection.field_type (i, new_object)
-
-					--print (field_name + ": " + field_type_name + " = " + field_val + "%N")
-
-					check try_basic_attribute (new_object, field_val, i) end
-
-					i := i + 1
-				end
 
 				if query.criteria.is_satisfied_by (new_object) then
 					query.result_cursor.set_entry (new_object)
@@ -113,12 +106,75 @@ feature
 					results.forth
 				end
 			end
-
 			if results.after then
 				query.result_cursor.set_entry (Void)
 			end
+		end
+
+
+
+	build (--query: PS_OBJECT_QUERY[ANY];
+		dynamic_type:INTEGER
+		 obj:PS_PAIR[INTEGER, HASH_TABLE[STRING, STRING]]; transaction:PS_TRANSACTION; bookkeeping:HASH_TABLE[ANY, INTEGER]):ANY
+		-- Retrieve the results of `query'
+		local
+			reflection:INTERNAL
+			i, no_fields:INTEGER
+			field_name, field_val: STRING
+			field_type_name:STRING
+			field_type:INTEGER
+			test:ANY
+
+			cursor:ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
+		do
+			if bookkeeping.has (obj.first) then
+				Result:= attach (bookkeeping[obj.first])
+			else
+
+
+				create reflection
+				Result:= reflection.new_instance_of (dynamic_type)
+
+				bookkeeping.extend (Result, obj.first)
+
+				no_fields:= reflection.field_count (Result)
+
+				from i:=1
+				until i> no_fields
+				loop
+					field_name := reflection.field_name (i, Result)
+					if obj.second.has (field_name) then
+						field_val := attach (obj.second[field_name])
+
+						--field_type_name := reflection.class_name_of_type (reflection.field_static_type_of_type (i, reflection.dynamic_type (Result)))
+						field_type:= reflection.field_static_type_of_type (i, reflection.dynamic_type (Result))
+						--print (field_name + ": " + field_type_name + " = " + field_val + "%N")
+
+						if not try_basic_attribute (Result, field_val, i) then
+							--print (reflection.class_name_of_type (field_type))
+							from
+								cursor:= backend.retrieve (reflection.class_name_of_type (field_type), create{PS_EMPTY_CRITERION}, create{LINKED_LIST[STRING]}.make, transaction)
+							until
+								cursor.after
+							loop
+								if cursor.item.first = field_val.to_integer_32 then
+
+									reflection.set_reference_field (i, Result, build (field_type, cursor.item, transaction, bookkeeping))
+								end
+								cursor.forth
+							end
+
+						end
+					end
+					i := i + 1
+				variant
+					no_fields+1 - i
+				end
+			end
 
 		end
+
+
 
 
 

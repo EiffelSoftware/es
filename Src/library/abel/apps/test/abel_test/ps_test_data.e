@@ -43,10 +43,10 @@ feature {NONE} -- Initialization
 			ref2.add_ref (ref3)
 			ref3.add_ref (reference_1)
 
-			reference_1.references.extend (ref2)
-			ref2.references.extend (ref3)
-			ref3.references.extend (reference_1)
-			ref3.references.extend (ref2)
+--			reference_1.references.extend (ref2)
+--			ref2.references.extend (ref3)
+--			ref3.references.extend (reference_1)
+--			ref3.references.extend (ref2)
 
 		end
 

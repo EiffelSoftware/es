@@ -13,7 +13,7 @@ inherit
 feature
 
 
-	retrieve (class_name:STRING; criteria:PS_CRITERION; attributes:LIST[STRING]; transaction:PS_TRANSACTION) : ITERATION_CURSOR[HASH_TABLE[STRING, STRING]]
+	retrieve (class_name:STRING; criteria:PS_CRITERION; attributes:LIST[STRING]; transaction:PS_TRANSACTION) : ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
 		-- Retrieves all objects of class `class_name' that match the criteria in `criteria' within transaction `transaction'.
 		-- If `atributes' is not empty, it will only retrieve the attributes listed there.
 		deferred
