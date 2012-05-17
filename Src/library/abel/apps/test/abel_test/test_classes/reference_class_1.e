@@ -22,23 +22,24 @@ feature
 
 	ref_class_id:INTEGER
 --	references:LINKED_LIST[REFERENCE_CLASS_1]
-	refer: detachable REFERENCE_CLASS_1
+--	refer: detachable REFERENCE_CLASS_1
 
 	add_ref (ref: REFERENCE_CLASS_1)
 		do
-			refer:= ref
+--			refer:= ref
 		end
 
 
 	out:STRING
 	do
-		Result:= "id = " + ref_class_id.out + "%N %T references: %N%T%T"
+		Result:= tagged_out
+--		Result:= "id = " + ref_class_id.out + "%N %T references: %N%T%T"
 --		across references as cursor
 --		loop
 --			Result := result + cursor.item.ref_class_id.out + "%N%T%T"
 --		end
 
-		Result:= Result + "%N"
+--		Result:= Result + "%N"
 	end
 
 end

@@ -6,6 +6,9 @@ note
 
 class
 	PS_TEST_DATA
+inherit
+	PS_EIFFELSTORE_EXPORT
+
 
 create
 	make
@@ -21,6 +24,8 @@ feature
 	reference_1: REFERENCE_CLASS_1
 		-- 1 references 2, 2 references 3, 3 references 1 and 2
 
+	reference_2: REFERENCE_CLASS_1
+		-- 1 references 2, 2 references 3, 3 references 1 and 2
 
 
 feature {NONE} -- Initialization
@@ -39,9 +44,25 @@ feature {NONE} -- Initialization
 			create ref2.make (2)
 			create ref3.make (3)
 
-			reference_1.add_ref (ref2)
+--			reference_1.add_ref (ref2)
+--			ref2.add_ref (ref3)
+--			ref3.add_ref (reference_1)
+
+
+			create reference_2.make (1)
+			create ref2.make (2)
+			create ref3.make (3)
+
+			reference_2.add_ref (ref2)
 			ref2.add_ref (ref3)
-			ref3.add_ref (reference_1)
+			ref3.add_ref (reference_2)
+
+
+--			print ( reference_1.tagged_out+ attach (reference_1.refer).tagged_out + attach (attach (reference_1.refer).refer).tagged_out + "%N")
+--			print ( reference_2.tagged_out+ attach (reference_2.refer).tagged_out + attach (attach (reference_2.refer).refer).tagged_out + "%N")
+
+--			print (reference_2.is_deep_equal (reference_1))
+--			check reference_2.is_deep_equal (reference_1) end
 
 --			reference_1.references.extend (ref2)
 --			ref2.references.extend (ref3)

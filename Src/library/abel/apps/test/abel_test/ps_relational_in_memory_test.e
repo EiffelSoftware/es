@@ -75,9 +75,9 @@ feature
 
 			-- here we have the problem that the result is not sorted...
 			one:= query.result_cursor.item
-			query.result_cursor.forth
+--			query.result_cursor.forth
 			two:= query.result_cursor.item
-			query.result_cursor.forth
+--			query.result_cursor.forth
 			three:= query.result_cursor.item
 
 
@@ -87,19 +87,51 @@ feature
 
 --			print (one.out + two.out + three.out + orig.out + orig.references[1].out + orig.references[1].references[1].out)
 
-			print (three.tagged_out +two.tagged_out +one.tagged_out +"%N")
+--			print (three.tagged_out +two.tagged_out +one.tagged_out +"%N")
 
-			print ( orig.tagged_out+ attach (orig.refer).tagged_out + attach (attach (orig.refer).refer).tagged_out)
+--			print ( three.tagged_out+ attach (three.refer).tagged_out + attach (attach (three.refer).refer).tagged_out + "%N")
+
+
+--			print ( orig.tagged_out+ attach (orig.refer).tagged_out + attach (attach (orig.refer).refer).tagged_out)
 --			print (three.references.tagged_out + orig.references.tagged_out)
 --			print (three.references[1].tagged_out + orig.references[1].tagged_out)
 --			print (one.tagged_out + orig.references[1].references[1].tagged_out)
 
+			print (one.tagged_out + orig.tagged_out)
 
 			eq:= orig.is_deep_equal (one) or orig.is_deep_equal (two) or orig.is_deep_equal (three)
-			print (eq)
+			print (eq.out + deep_equal (orig, one).out)
+
+--			print ( three.tagged_out+ attach (three.refer).tagged_out + attach (attach (three.refer).refer).tagged_out + "%N")
+--			print ( orig.tagged_out+ attach (orig.refer).tagged_out + attach (attach (orig.refer).refer).tagged_out)
+
 
 			assert ("The results are not the same", eq)
 
+
+
+		end
+
+
+	test_very_simple
+		local
+			ref1, ref2:REFERENCE_CLASS_1
+			query:PS_OBJECT_QUERY[REFERENCE_CLASS_1]
+			ref_executor: PS_CRUD_EXECUTOR[REFERENCE_CLASS_1]
+		do
+			create ref_executor.make_with_repository (repository)
+			create ref1.make (1)
+			create ref2.make (1)
+			create query.make
+			repository.clean_db_for_testing
+
+			ref_executor.insert (ref1)
+			ref_executor.execute_query (query)
+
+			print (ref1.tagged_out + ref2.tagged_out + query.result_cursor.item.tagged_out)
+	--		print (ref1.deep_twin.tagged_out + ref1.deep_twin.is_deep_equal (ref1).out)
+			print (ref1.is_deep_equal (ref2))
+			assert ("equality", ref1.is_deep_equal (query.result_cursor.item))
 
 
 		end
