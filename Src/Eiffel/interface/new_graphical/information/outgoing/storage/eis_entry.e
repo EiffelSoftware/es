@@ -18,7 +18,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_name: like name; a_protocol: like protocol; a_source: like source; a_tags: like tags a_id: like id; a_others: like others)
+	make (a_name: like name; a_protocol: like protocol; a_source: like source; a_tags: like tags a_id: like id; a_parameters: like parameters)
 			-- Initialization
 		require
 			a_id_not_void: a_id /= Void
@@ -28,14 +28,14 @@ feature {NONE} -- Initialization
 			source := a_source
 			tags := a_tags
 			id := a_id
-			others := a_others
+			parameters := a_parameters
 		ensure
 			name_set: name = a_name
 			protocol_set: protocol = a_protocol
 			source_set: source = a_source
 			tags_set: tags = a_tags
 			id_set: id = a_id
-			others_set: others = a_others
+			parameters_set: parameters = a_parameters
 		end
 
 feature {ES_EIS_COMPONENT_VIEW} -- Element change
@@ -83,12 +83,12 @@ feature {ES_EIS_COMPONENT_VIEW} -- Element change
 			id_set: id = a_id
 		end
 
-	set_others (a_others: like others)
-			-- Set `others' with `a_others'
+	set_parameters (a_parameters: like parameters)
+			-- Set `parameters' with `a_parameters'
 		do
-			others := a_others
+			parameters := a_parameters
 		ensure
-			others_set: others = a_others
+			parameters_set: parameters = a_parameters
 		end
 
 feature {ES_EIS_NOTE_PICKER} -- Element change
@@ -118,8 +118,8 @@ feature -- Access
 	id: STRING
 			-- Id of the entry (from EB_SHARED_ID_SOLUTION)
 
-	others: detachable HASH_TABLE [STRING_32, STRING_32]
-			-- Other attributes of the entry
+	parameters: detachable HASH_TABLE [STRING_32, STRING_32]
+			-- Parameters of the entry
 
 	override: BOOLEAN
 			-- Overriding entry over auto entry?
@@ -150,25 +150,25 @@ feature -- Access
 					tags /= Void implies Result /= Void
 		end
 
-	others_as_string: detachable STRING_32
-			-- Others as string
+	parameters_as_string: detachable STRING_32
+			-- Parameters as string
 			-- Simple combination, not for display popose
 		do
-			if attached others as lt_others then
+			if attached parameters as lt_parameters then
 				create Result.make (10)
 				from
-					lt_others.start
+					lt_parameters.start
 				until
-					lt_others.after
+					lt_parameters.after
 				loop
-					Result.append (lt_others.key_for_iteration)
-					Result.append (lt_others.item_for_iteration)
-					lt_others.forth
+					Result.append (lt_parameters.key_for_iteration)
+					Result.append (lt_parameters.item_for_iteration)
+					lt_parameters.forth
 				end
 			end
 		ensure
-			others_not_void_implies_not_void:
-					others /= Void implies Result /= Void
+			parameters_not_void_implies_not_void:
+					parameters /= Void implies Result /= Void
 		end
 
 feature -- Comparison
@@ -177,49 +177,12 @@ feature -- Comparison
 			-- <precursor>
 			-- Do not compare ids.
 		do
-				-- Compare name
-			Result := not ((name = Void) xor (other.name = Void))
-			if Result then
-				if name /= Void then
-					Result := string_32_is_caseless_equal (name, other.name)
-				end
-				if Result then
-						-- Compare source
-					Result := not ((source = Void) xor (other.source = Void))
-					if Result then
-						if source /= Void then
-							Result := string_32_is_caseless_equal (source, other.source)
-						end
-						if Result then
-								-- Compare protocol
-							Result := not ((protocol = Void) xor (other.protocol = Void))
-							if Result then
-								if protocol /= Void then
-									Result := string_32_is_caseless_equal (protocol, other.protocol)
-								end
-								if Result then
-										-- Compare tags
-									Result := not ((tags = Void) xor (other.tags = Void))
-									if Result then
-										if tags /= Void then
-											Result := string_32_is_caseless_equal (tags_as_string, other.tags_as_string)
-										end
-										if Result then
-												-- Compare others
-											Result := not ((others = Void) xor (other.others = Void))
-											if Result then
-												if others /= Void then
-													Result := string_32_is_caseless_equal (others_as_string, other.others_as_string)
-												end
-											end
-										end
-									end
-								end
-							end
-						end
-					end
-				end
-			end
+			Result :=
+				same_string_attribute (name, other.name) and then
+				same_string_attribute (source, other.source) and then
+				same_string_attribute (protocol, other.protocol) and then
+				same_string_attribute (tags_as_string, other.tags_as_string) and then
+				same_string_attribute (parameters_as_string, other.parameters_as_string)
 		end
 
 feature -- Hashable
@@ -244,11 +207,25 @@ feature -- Hashable
 				if attached tags_as_string as lt_tags then
 					l_string.append (lt_tags)
 				end
-				if attached others_as_string as lt_others then
-					l_string.append (lt_others)
+				if attached parameters_as_string as lt_parameters then
+					l_string.append (lt_parameters)
 				end
 				Result := l_string.hash_code
 			end
+		end
+
+feature {NONE} -- Implementation
+
+	same_string_attribute (a_str, a_other: detachable READABLE_STRING_GENERAL): BOOLEAN
+			-- Same string attribute of the entry?
+			-- The same as `string_general_is_caseless_equal', except that
+			-- we treat Void the same as an empty string.
+		do
+			Result :=
+				(a_str = Void and a_other = Void) or else
+				(attached a_str as l_str and then l_str.is_empty and then a_other = Void) or else
+				(attached a_other as l_other and then l_other.is_empty and then a_str = Void) or else
+				(attached a_str as l_str and then attached a_other as l_other and then string_general_is_caseless_equal (l_str, l_other))
 		end
 
 feature {NONE} -- Hash code
@@ -260,7 +237,7 @@ invariant
 	a_id_not_void: id /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -24,28 +24,30 @@ feature -- Operation
 		local
 			l_output: STRING_32
 			l_comma_needed: BOOLEAN
+			l_count: INTEGER
 		do
 			if not is_for_conf then
 				create l_output.make_from_string ({ES_EIS_TOKENS}.eis_string)
-				l_output.append (": ")
-				if a_entry.name /= Void then
-					l_output.append (quoted_string ({ES_EIS_TOKENS}.name_string.as_string_32 + {ES_EIS_TOKENS}.value_assignment + a_entry.name))
+				l_output.append ({ES_EIS_TOKENS}.colon)
+				l_count := l_output.count
+				if attached a_entry.name as l_name and then not l_name.is_empty then
+					l_output.append (quoted_string ({ES_EIS_TOKENS}.name_string.as_string_32 + {ES_EIS_TOKENS}.value_assignment + l_name))
 					l_comma_needed := True
 				end
-				if a_entry.protocol /= Void then
+				if attached a_entry.protocol as l_protocol and then not l_protocol.is_empty then
 					if l_comma_needed then
 						l_output.append_character ({ES_EIS_TOKENS}.attribute_seperator)
 						l_output.append_character ({ES_EIS_TOKENS}.space)
 					end
-					l_output.append (quoted_string ({ES_EIS_TOKENS}.protocol_string.as_string_32 + {ES_EIS_TOKENS}.value_assignment + a_entry.protocol))
+					l_output.append (quoted_string ({ES_EIS_TOKENS}.protocol_string.as_string_32 + {ES_EIS_TOKENS}.value_assignment + l_protocol))
 					l_comma_needed := True
 				end
-				if a_entry.source /= Void then
+				if attached a_entry.source as l_source and then not l_source.is_empty then
 					if l_comma_needed then
 						l_output.append_character ({ES_EIS_TOKENS}.attribute_seperator)
 						l_output.append_character ({ES_EIS_TOKENS}.space)
 					end
-					l_output.append (quoted_string ({ES_EIS_TOKENS}.source_string.as_string_32 + {ES_EIS_TOKENS}.value_assignment + a_entry.source))
+					l_output.append (quoted_string ({ES_EIS_TOKENS}.source_string.as_string_32 + {ES_EIS_TOKENS}.value_assignment + l_source))
 					l_comma_needed := True
 				end
 				if a_entry.tags /= Void and then not a_entry.tags.is_empty then
@@ -66,37 +68,42 @@ feature -- Operation
 					l_comma_needed := True
 				end
 
-				if a_entry.others /= Void and then not a_entry.others.is_empty then
+				if a_entry.parameters /= Void and then not a_entry.parameters.is_empty then
 					if l_comma_needed then
 						l_output.append_character ({ES_EIS_TOKENS}.attribute_seperator)
 						l_output.append_character ({ES_EIS_TOKENS}.space)
 					end
-					l_output.append (others_as_code (a_entry))
+					l_output.append (parameters_as_code (a_entry))
+				end
+
+					-- Nothing has been added, we need to complete the syntax
+				if l_output.count = l_count then
+					l_output.append ({ES_EIS_TOKENS}.empty_string)
 				end
 			else
 				create last_output_conf.make ({ES_EIS_TOKENS}.eis_string.as_lower)
-				if a_entry.name /= Void then
-					last_output_conf.add_attribute ({ES_EIS_TOKENS}.name_string, a_entry.name)
+				if attached a_entry.name as l_name and then not l_name.is_empty then
+					last_output_conf.add_attribute ({ES_EIS_TOKENS}.name_string, l_name)
 				end
-				if a_entry.protocol /= Void then
-					last_output_conf.add_attribute ({ES_EIS_TOKENS}.protocol_string, a_entry.protocol)
+				if attached a_entry.protocol as l_protocol and then not l_protocol.is_empty then
+					last_output_conf.add_attribute ({ES_EIS_TOKENS}.protocol_string, l_protocol)
 				end
-				if a_entry.source /= Void then
-					last_output_conf.add_attribute ({ES_EIS_TOKENS}.source_string, a_entry.source)
+				if attached a_entry.source as l_source and then not l_source.is_empty then
+					last_output_conf.add_attribute ({ES_EIS_TOKENS}.source_string, l_source)
 				end
 				if a_entry.tags /= Void and then not a_entry.tags.is_empty then
 					last_output_conf.add_attribute ({ES_EIS_TOKENS}.tag_string, tags_as_code (a_entry))
 				end
-				if attached {HASH_TABLE [STRING_32, STRING_32]} a_entry.others as lt_others and then not a_entry.others.is_empty then
+				if attached {HASH_TABLE [STRING_32, STRING_32]} a_entry.parameters as lt_parameters and then not a_entry.parameters.is_empty then
 					from
-						lt_others.start
+						lt_parameters.start
 					until
-						lt_others.after
+						lt_parameters.after
 					loop
-						if not lt_others.key_for_iteration.is_empty then
-							last_output_conf.add_attribute (encoding_converter.utf32_to_utf8 (lt_others.key_for_iteration), encoding_converter.utf32_to_utf8 (lt_others.item_for_iteration))
+						if not lt_parameters.key_for_iteration.is_empty then
+							last_output_conf.add_attribute (encoding_converter.utf32_to_utf8 (lt_parameters.key_for_iteration), encoding_converter.utf32_to_utf8 (lt_parameters.item_for_iteration))
 						end
-						lt_others.forth
+						lt_parameters.forth
 					end
 				end
 			end
@@ -162,8 +169,8 @@ feature -- Access
 			Result_not_void: Result /= Void
 		end
 
-	others_as_code (a_entry: EIS_ENTRY): STRING_32
-			-- Others as string of code.
+	parameters_as_code (a_entry: EIS_ENTRY): STRING_32
+			-- parameters as string of code.
 			-- Quoted
 		require
 			a_entry_not_void: a_entry /= Void
@@ -173,17 +180,17 @@ feature -- Access
 			l_value: STRING_32
 			l_found: BOOLEAN
 		do
-			if attached {HASH_TABLE [STRING_32, STRING_32]} a_entry.others as lt_others then
+			if attached {HASH_TABLE [STRING_32, STRING_32]} a_entry.parameters as lt_parameters then
 				create Result.make (10)
 				from
-					lt_others.start
-					l_count := lt_others.count
+					lt_parameters.start
+					l_count := lt_parameters.count
 				until
-					lt_others.after
+					lt_parameters.after
 				loop
 					i := i + 1
-					create l_attr.make_from_string (lt_others.key_for_iteration)
-					l_value := lt_others.item_for_iteration
+					create l_attr.make_from_string (lt_parameters.key_for_iteration)
+					l_value := lt_parameters.item_for_iteration
 					if not l_value.is_equal ({ES_EIS_TOKENS}.void_string) then
 						l_attr.append ({ES_EIS_TOKENS}.value_assignment)
 						l_attr.append (l_value)
@@ -194,7 +201,7 @@ feature -- Access
 						Result.append_character ({ES_EIS_TOKENS}.attribute_seperator)
 						Result.append_character ({ES_EIS_TOKENS}.space)
 					end
-					lt_others.forth
+					lt_parameters.forth
 				end
 			end
 			if not l_found then
@@ -220,7 +227,7 @@ feature {NONE} -- Implementation
 
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -22,7 +22,7 @@ inherit
 			on_protocol_changed,
 			on_source_changed,
 			on_tags_changed,
-			on_others_changed
+			on_parameters_changed
 		end
 
 	SHARED_WORKBENCH
@@ -84,7 +84,7 @@ feature -- Operation
 				if attached {CONF_TARGET} conf_notable as lt_target then
 					l_system := lt_target.system
 					l_date := l_system.file_date
-					create l_entry.make ("Unnamed", Void, Void, Void, component_id, Void)
+					l_entry := entry_factory.create_default_entry (component_id)
 					write_entry (l_entry, lt_target, l_system)
 					l_added := last_entry_modified
 					if not l_added then
@@ -109,6 +109,7 @@ feature -- Operation
 					end
 					extracted_entries.force_last (l_entry)
 					refresh_grid_without_sorting
+					update_tree_item
 				end
 			else
 				prompts.show_error_prompt (interface_names.l_item_selected_is_not_writable, Void, Void)
@@ -153,6 +154,7 @@ feature -- Operation
 					end
 					if l_removed then
 						refresh_grid_without_sorting
+						update_tree_item
 					end
 				end
 			else
@@ -332,28 +334,31 @@ feature {NONE} -- Callbacks
 			end
 		end
 
-	on_protocol_changed (a_item: EV_GRID_EDITABLE_ITEM)
+	on_protocol_changed (a_choice_item: EB_GRID_LISTABLE_CHOICE_ITEM_ITEM; a_item: EB_GRID_LISTABLE_CHOICE_ITEM): BOOLEAN
 			-- On protocol changed
 			-- We modify neither the referenced EIS entry when the modification is done.
 		local
 			l_new_entry: EIS_ENTRY
+			l_protocol: like {EIS_ENTRY}.protocol
 		do
-			if attached {EIS_ENTRY} a_item.row.data as lt_entry and then attached a_item.text as lt_protocol then
-				if lt_entry.protocol /= Void and then lt_protocol.is_equal (lt_entry.protocol) then
+			if attached {EIS_ENTRY} a_item.row.data as lt_entry and then attached {READABLE_STRING_GENERAL} a_choice_item.data as lt_protocol then
+				if lt_entry.protocol /= Void and then string_general_is_caseless_equal (lt_entry.protocol, lt_protocol) then
 						-- Do nothing when the protocol is not actually changed
 				else
+					l_protocol := lt_protocol.as_string_32
 					if entry_editable (lt_entry, False) then
 						if attached system_of_conf_notable (conf_notable) as lt_system then
 							if attached lt_entry.twin as lt_new_entry then
 								l_new_entry := lt_new_entry
 							end
-							l_new_entry.set_protocol (lt_protocol)
+							l_new_entry.set_protocol (l_protocol)
 							modify_entry_in_conf (lt_entry, l_new_entry, conf_notable, lt_system)
 								-- Modify the protocol in the entry when the modification is done
 							if last_entry_modified then
 								storage.deregister_entry (lt_entry, component_id)
-								lt_entry.set_protocol (lt_protocol)
+								lt_entry.set_protocol (l_protocol)
 								storage.register_entry (lt_entry, component_id, lt_system.file_date)
+								Result := True
 							end
 						end
 					end
@@ -361,13 +366,13 @@ feature {NONE} -- Callbacks
 			end
 		end
 
-	on_source_changed (a_item: EV_GRID_EDITABLE_ITEM)
+	on_source_changed (a_value: STRING_32; a_item: EV_GRID_ITEM)
 			-- On source changed
 			-- We modify neither the referenced EIS entry when the modification is done.
 		local
 			l_new_entry: EIS_ENTRY
 		do
-			if attached {EIS_ENTRY} a_item.row.data as lt_entry and then attached a_item.text as lt_source then
+			if attached {EIS_ENTRY} a_item.row.data as lt_entry and then attached a_value as lt_source then
 				if lt_entry.source /= Void and then lt_source.is_equal (lt_entry.source) then
 						-- Do nothing when the source is not actually changed
 				else
@@ -428,33 +433,33 @@ feature {NONE} -- Callbacks
 			end
 		end
 
-	on_others_changed (a_item: EV_GRID_EDITABLE_ITEM)
-			-- On others changed
+	on_parameters_changed (a_item: EV_GRID_EDITABLE_ITEM)
+			-- On parameters changed
 			-- We modify neither the referenced EIS entry when the modification is done.
 		local
 			l_new_entry: attached EIS_ENTRY
-			l_others: attached HASH_TABLE [STRING_32, STRING_32]
+			l_parameters: attached HASH_TABLE [STRING_32, STRING_32]
 		do
-			if attached {EIS_ENTRY} a_item.row.data as lt_entry and then attached a_item.text as lt_others then
-				l_others := parse_others (lt_others)
-				l_others.compare_objects
-				if lt_entry.others /= Void and then lt_entry.others.is_equal (l_others) then
-						-- Do nothing when the others is not actually changed
+			if attached {EIS_ENTRY} a_item.row.data as lt_entry and then attached a_item.text as lt_parameters then
+				l_parameters := parse_parameters (lt_parameters)
+				l_parameters.compare_objects
+				if lt_entry.parameters /= Void and then lt_entry.parameters.is_equal (l_parameters) then
+						-- Do nothing when the parameters is not actually changed
 				else
 					if entry_editable (lt_entry, False) then
 						if attached system_of_conf_notable (conf_notable) as lt_system then
 							if attached lt_entry.twin as lt_new_entry then
 								l_new_entry := lt_new_entry
 							end
-							l_new_entry.set_others (l_others)
+							l_new_entry.set_parameters (l_parameters)
 							modify_entry_in_conf (lt_entry, l_new_entry, conf_notable, lt_system)
-								-- Modify the others in the entry when the modification is done
+								-- Modify the parameters in the entry when the modification is done
 							if last_entry_modified then
 								storage.deregister_entry (lt_entry, component_id)
-								if not l_others.is_empty then
-									lt_entry.set_others (l_others)
+								if not l_parameters.is_empty then
+									lt_entry.set_parameters (l_parameters)
 								else
-									lt_entry.set_others (Void)
+									lt_entry.set_parameters (Void)
 								end
 								storage.register_entry (lt_entry, component_id, lt_system.file_date)
 							end
@@ -534,7 +539,7 @@ invariant
 	conf_notable_is_valid: valid_notable (conf_notable)
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
