@@ -54,7 +54,7 @@ feature
 		local
 			ref_executor: PS_CRUD_EXECUTOR[REFERENCE_CLASS_1]
 			query:PS_OBJECT_QUERY[REFERENCE_CLASS_1]
-			orig, one, two, three:REFERENCE_CLASS_1
+			original, one, two, three:REFERENCE_CLASS_1
 			eq: BOOLEAN
 		do
 			repository.clean_db_for_testing
@@ -67,58 +67,33 @@ feature
 			create query.make
 			ref_executor.execute_query (query)
 
-
 			assert ("The result is empty", not query.result_cursor.after)
-
---			print (test_data.reference_1.references.out)
---			print (query.result_cursor.item.references.out)
 
 			-- here we have the problem that the result is not sorted...
 			one:= query.result_cursor.item
---			query.result_cursor.forth
+			query.result_cursor.forth
 			two:= query.result_cursor.item
---			query.result_cursor.forth
+			query.result_cursor.forth
 			three:= query.result_cursor.item
 
+			original:= test_data.reference_1
 
-
-			orig:= test_data.reference_1
-
-
---			print (one.out + two.out + three.out + orig.out + orig.references[1].out + orig.references[1].references[1].out)
-
---			print (three.tagged_out +two.tagged_out +one.tagged_out +"%N")
-
+			eq:= original.is_deep_equal (one) or original.is_deep_equal (two) or original.is_deep_equal (three)
 --			print ( three.tagged_out+ attach (three.refer).tagged_out + attach (attach (three.refer).refer).tagged_out + "%N")
-
-
---			print ( orig.tagged_out+ attach (orig.refer).tagged_out + attach (attach (orig.refer).refer).tagged_out)
---			print (three.references.tagged_out + orig.references.tagged_out)
---			print (three.references[1].tagged_out + orig.references[1].tagged_out)
---			print (one.tagged_out + orig.references[1].references[1].tagged_out)
-
-			print (one.tagged_out + orig.tagged_out)
-
-			eq:= orig.is_deep_equal (one) or orig.is_deep_equal (two) or orig.is_deep_equal (three)
-			print (eq.out + deep_equal (orig, one).out)
-
---			print ( three.tagged_out+ attach (three.refer).tagged_out + attach (attach (three.refer).refer).tagged_out + "%N")
---			print ( orig.tagged_out+ attach (orig.refer).tagged_out + attach (attach (orig.refer).refer).tagged_out)
-
+--			print ( original.tagged_out+ attach (original.refer).tagged_out + attach (attach (original.refer).refer).tagged_out)
 
 			assert ("The results are not the same", eq)
-
-
-
 		end
 
 
 	test_very_simple
 		local
-			ref1, ref2:REFERENCE_CLASS_1
+			ref1, ref2, ref4:REFERENCE_CLASS_1
 			query:PS_OBJECT_QUERY[REFERENCE_CLASS_1]
 			ref_executor: PS_CRUD_EXECUTOR[REFERENCE_CLASS_1]
+			reflection:INTERNAL
 		do
+			create reflection
 			create ref_executor.make_with_repository (repository)
 			create ref1.make (1)
 			create ref2.make (1)
@@ -128,15 +103,64 @@ feature
 			ref_executor.insert (ref1)
 			ref_executor.execute_query (query)
 
-			print (ref1.tagged_out + ref2.tagged_out + query.result_cursor.item.tagged_out)
-	--		print (ref1.deep_twin.tagged_out + ref1.deep_twin.is_deep_equal (ref1).out)
-			print (ref1.is_deep_equal (ref2))
-			assert ("equality", ref1.is_deep_equal (query.result_cursor.item))
+			check attached{REFERENCE_CLASS_1} query.result_cursor.item as ref3 then
 
+--				print (ref1.tagged_out + ref2.tagged_out + query.result_cursor.item.tagged_out)
+--				print (ref1.deep_twin.tagged_out + ref1.deep_twin.is_deep_equal (ref1).out)
+--				print (ref1.is_deep_equal (ref3))
+				ref4:= query.result_cursor.item
+--				print (reflection.dynamic_type (ref3).out + "%N")
+--				print (reflection.dynamic_type (ref2).out + "%N")
+--				print (reflection.dynamic_type (ref4).out + "%N")
+--				print (reflection.dynamic_type (ref1).out)
+
+--				print (reflection.is_attached_type (reflection.dynamic_type (ref3)))
+--				print (reflection.class_name (ref2))
+--				print (reflection.class_name (ref3))
+				assert ("equality", ref3.is_deep_equal (attach (ref1)))
+			end
 
 		end
 
+	internal_test
+		local
+			reflection:INTERNAL
+			ref1:REFERENCE_CLASS_1
+			list:LINKED_LIST[REFERENCE_CLASS_1]
+			i:INTEGER
+		do
+			create reflection
+			create ref1.make (1)
 
+			check
+				attached {REFERENCE_CLASS_1}
+					reflection.new_instance_of (reflection.detachable_type (reflection.dynamic_type (ref1))) as ref2
+				and attached {REFERENCE_CLASS_1}
+					reflection.new_instance_of (reflection.attached_type (reflection.dynamic_type (ref1))) as ref3
+				then
+
+				from i:=1
+				until i> reflection.field_count (ref2)
+				loop
+					if reflection.field_name (i, ref2).is_case_insensitive_equal ("ref_class_id") then
+						reflection.set_integer_32_field (i, ref2, 1)
+						reflection.set_integer_32_field (i, ref3, 1)
+					elseif reflection.field_name (i, ref2).is_case_insensitive_equal ("references")  then
+						create list.make
+						reflection.set_reference_field (i, ref2, list)
+						create list.make
+						reflection.set_reference_field (i, ref3, list)
+					end
+
+					i:=i+1
+				end
+
+--				print (ref2.tagged_out + ref3.tagged_out)
+
+				assert ("both_types_detachable", ref1.is_deep_equal (ref2))
+				assert ("attached_and_detachable_wont_work", not ref1.is_deep_equal (ref3))
+			end
+		end
 
 
 end

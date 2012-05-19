@@ -84,6 +84,7 @@ feature {NONE} -- Implementation
 			new_object:ANY
 			found:BOOLEAN
 			reflection:INTERNAL
+			new_type:INTEGER
 		do
 			create reflection
 			results:= attach (query_to_cursor_map[query.backend_identifier])
@@ -96,7 +97,11 @@ feature {NONE} -- Implementation
 			loop
 
 				current_object := attach (results.item)
-				new_object:= build (reflection.generic_dynamic_type (query, 1), current_object, transaction, bookkeeping)
+
+				-- This has to be the detachable type, otherwise the is_deep_equal feature won't work any more
+				new_type:= reflection.detachable_type (reflection.generic_dynamic_type (query, 1))
+				--print (new_type.out + "%N")
+				new_object:= build (new_type, current_object, transaction, bookkeeping)
 
 
 				if query.criteria.is_satisfied_by (new_object) then
@@ -147,8 +152,9 @@ feature {NONE} -- Implementation
 						field_val := attach (obj.second[field_name])
 
 						--field_type_name := reflection.class_name_of_type (reflection.field_static_type_of_type (i, reflection.dynamic_type (Result)))
-						field_type:= reflection.field_static_type_of_type (i, reflection.dynamic_type (Result))
-						--print (field_name + ": " + field_type_name + " = " + field_val + "%N")
+						field_type:= reflection.detachable_type (reflection.field_static_type_of_type (i, reflection.dynamic_type (Result)))
+						--print (field_type.out + "%N")
+						--print (field_name + ": " + field_type_name + " = " + field_val + " type: " + field_type.out+ "%N")
 
 						if not try_basic_attribute (Result, field_val, i) then
 							--print (reflection.class_name_of_type (field_type))

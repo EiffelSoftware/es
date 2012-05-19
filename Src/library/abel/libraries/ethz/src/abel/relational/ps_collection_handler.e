@@ -18,7 +18,7 @@ feature
 			Result:= attached {COLLECTION_TYPE} a_collection
 		end
 
-	is_collection_of_basic_type (a_collection:PS_OBJECT_IDENTIFIER_WRAPPER): BOOLEAN
+	is_of_basic_type (an_obj:ANY): BOOLEAN
 		deferred
 			-- TODO!
 		end
@@ -57,8 +57,11 @@ feature
 				from
 				until cursor.after
 				loop
-					fixme ("TODO")
-					--collection.extend (disassemble_function.item ([cursor.item]))
+					if is_of_basic_type (cursor.item) then
+						collection.values.extend (create {PS_BASIC_ATTRIBUTE_PART}.make (cursor.item))
+					else
+						collection.values.extend (disassemble_function.item ([cursor.item]))
+					end
 					cursor.forth
 				end
 --				the following line produces a reproducible bug in EiffelStudio, even when doing a clean compile...

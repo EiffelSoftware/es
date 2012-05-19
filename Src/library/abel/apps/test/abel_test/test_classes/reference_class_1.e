@@ -17,16 +17,16 @@ feature
 	make (i:INTEGER)
 		do
 			ref_class_id:= i
---			create references.make
+			create references.make
 		end
 
 	ref_class_id:INTEGER
---	references:LINKED_LIST[REFERENCE_CLASS_1]
---	refer: detachable REFERENCE_CLASS_1
+	references:LINKED_LIST[REFERENCE_CLASS_1]
+	refer: detachable REFERENCE_CLASS_1
 
 	add_ref (ref: REFERENCE_CLASS_1)
 		do
---			refer:= ref
+			refer:= ref
 		end
 
 
