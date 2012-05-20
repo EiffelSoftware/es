@@ -35,14 +35,19 @@ feature -- Processing
 	process_to_formal_textual_bon
 			-- Process this comment to textual bon.
 		do
+			comment.replace_substring_all ("%N", " ")
+			comment.replace_substring_all ("%T", "")
 			text_formatter_decorator.put_space
-			process_textual_bon_comment (comment)
+			text_formatter_decorator.process_comment_text (ti_dashdash, Void)
+			text_formatter_decorator.put_space
+			text_formatter_decorator.process_comment_text (comment, Void)
 		end
 
 	process_to_informal_textual_bon
 		do
+			comment.replace_substring_all ("%N", " ")
 			text_formatter_decorator.process_symbol_text (ti_double_quote)
-			text_formatter_decorator.process_string_text (comment, Void)
+			text_formatter_decorator.process_basic_text (comment)
 			text_formatter_decorator.process_symbol_text (ti_double_quote)
 		end
 

@@ -66,7 +66,7 @@ feature -- Initialization
 			until
 				indexing_clause.indexing_tags.exhausted
 			loop
-				if is_explanation_strings (indexing_clause.indexing_tags.item.identifier.string_value) then
+				if is_explanation_string (indexing_clause.indexing_tags.item.identifier.string_value) then
 					from  indexing_clause.indexing_tags.item.terms.start
 					until indexing_clause.indexing_tags.item.terms.exhausted
 					loop
@@ -242,20 +242,22 @@ feature -- Implementation
 feature {NONE} -- Implementation
 	associated_output_strategy: TEXTUAL_BON_OUTPUT_STRATEGY
 
-	is_explanation_strings (s: STRING): BOOLEAN
+	is_explanation_string (s: STRING): BOOLEAN
 		local
 			strings: LIST[STRING]
 		do
-			create {LINKED_LIST[STRING]} strings.make
-			strings.extend ("description")
-			strings.extend ("Description")
-			strings.extend ("explanation")
-			strings.extend ("Explanation")
+			strings := explanation_strings
 			strings.compare_objects
 
-			Result := strings.has (s)
+			Result := strings.has (s.as_lower)
 		end
 
+	explanation_strings: LIST[STRING]
+		once
+			create {LINKED_LIST[STRING]} Result.make
+			Result.extend ("description")
+			Result.extend ("explanation")
+		end
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"

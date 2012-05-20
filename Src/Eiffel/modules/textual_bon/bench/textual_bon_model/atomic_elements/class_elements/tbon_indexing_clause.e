@@ -28,13 +28,17 @@ feature -- Initialization
 			-- Make an indexing clause for a class.
 		do
 			make (a_text_formatter)
-			indexing_tags := an_indexing_tag_list
+			if an_indexing_tag_list /= Void then
+				indexing_tags := an_indexing_tag_list
+			else
+				create {LINKED_LIST[TBON_INDEX]} indexing_tags.make
+			end
 		end
 
 feature -- Element change
 	add_index (an_index: like indexing_tags.first)
 		do
-			indexing_tags.put (an_index)
+			indexing_tags.extend (an_index)
 		end
 
 feature -- Process

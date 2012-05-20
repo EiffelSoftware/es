@@ -710,14 +710,25 @@ feature {TBON_CLASS} -- Expression handling
 			l_classes: like associated_output_strategy.get_universe.all_classes
 			l_feature: FEATURE_I
 			l_feature_table: FEATURE_TABLE
+			l_expressions: LIST[TBON_EXPRESSION]
+			l_tbon_exprs: TBON_EXPRESSION_LIST
 		do
 			l_called_feature := ""
-
+			create {LINKED_LIST[TBON_EXPRESSION]} l_expressions.make
+			if l_access_feat_as.parameters /= Void then
+				l_access_feat_as.parameters.do_all (agent (expressions: LIST[TBON_EXPRESSION]; parameter: EXPR_AS)
+														do
+															expressions.extend (make_tbon_expression_from_expr_as (parameter))
+														end (l_expressions, ?)
+												)
+				create l_tbon_exprs.make_element (l_expressions, associated_text_formatter_decorator)
+			end
 			if attached {STATIC_ACCESS_AS} l_access_feat_as as l_static then
 				l_called_feature := l_static.string_value_32
 				l_called_feature.append (" -- static")
 			end
 			create l_call.make_element (l_access_feat_as.access_name_32, l_called_feature, associated_text_formatter_decorator)
+			l_call.set_arguments (l_tbon_exprs)
 			Result := l_call
 		end
 

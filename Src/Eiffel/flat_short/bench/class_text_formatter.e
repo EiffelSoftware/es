@@ -20,7 +20,11 @@ inherit
 		rename
 			is_short as format_is_short,
 			set_is_short as format_set_is_short,
-			set_order_same_as_text as format_set_order_same_as_text
+			set_order_same_as_text as format_set_order_same_as_text,
+			is_informal_bon as format_is_informal_bon,
+			set_is_informal_bon as format_set_is_informal_bon,
+			is_formal_bon as format_is_formal_bon,
+			set_is_formal_bon as format_set_is_formal_bon
 		end
 
 feature -- Properties
@@ -47,6 +51,12 @@ feature -- Properties
 		ensure
 			not_short: Result = not is_short
 		end;
+
+	is_informal_bon: BOOLEAN
+			-- Is the formatter formatting to informal BON?
+
+	is_formal_bon: BOOLEAN
+			-- Is the formatter formatting to formal BON?
 
 feature -- Setting
 
@@ -91,6 +101,26 @@ feature -- Setting
 			set: feature_clause_order = fco
 		end;
 
+	set_is_informal_bon
+			-- Set `is_informal_bon' to True.
+		do
+			is_informal_bon := True
+			is_formal_bon := False
+		ensure
+			is_informal_bon: is_informal_bon
+			not_formal_bon: not is_formal_bon
+		end
+
+	set_is_formal_bon
+			-- Set `is_formal_bon' to True.
+		do
+			is_formal_bon := True
+			is_informal_bon := False
+		ensure
+			is_formal_bon: is_formal_bon
+			not_informal_bon: not is_informal_bon
+		end
+
 feature -- Output
 
 	format (e_class: CLASS_C; a_formatter: TEXT_FORMATTER)
@@ -121,6 +151,12 @@ feature -- Output
 			end;
 			if is_for_documentation then
 				f.set_for_documentation (documentation)
+			end
+			if is_informal_bon then
+				f.set_for_informal_bon
+			end
+			if is_formal_bon then
+				f.set_for_formal_bon
 			end
 			f.execute;
 			error := f.execution_error
@@ -156,7 +192,7 @@ feature {NONE} -- Implementation
 	documentation: DOCUMENTATION_ROUTINES;
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

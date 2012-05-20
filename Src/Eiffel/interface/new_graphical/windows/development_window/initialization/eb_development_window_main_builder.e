@@ -609,6 +609,14 @@ feature -- Command
 			create {EB_FLAT_SHORT_FORMATTER} l_form.make (develop_window)
 			setup_main_formatter (l_form, "interface_view")
 			l_managed_main_formatters.extend (l_form)
+
+			create {TEXTUAL_BON_INFORMAL_FORMATTER} l_form.make (develop_window)
+			setup_main_formatter (l_form, "informal_bon_view")
+			l_managed_main_formatters.extend (l_form)
+
+			create {TEXTUAL_BON_FORMAL_FORMATTER} l_form.make (develop_window)
+			setup_main_formatter (l_form, "formal_bon_view")
+			l_managed_main_formatters.extend (l_form)
 		end
 
 	end_build_formatters

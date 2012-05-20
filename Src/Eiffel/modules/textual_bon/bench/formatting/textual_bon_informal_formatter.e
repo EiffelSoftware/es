@@ -15,8 +15,6 @@ inherit
 			generate_text
 		end
 
-	TEXTUAL_BON_FORMAT_TABLES
-
 create
 	make
 

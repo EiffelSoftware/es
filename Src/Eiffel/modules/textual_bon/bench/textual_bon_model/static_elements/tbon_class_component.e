@@ -42,6 +42,11 @@ feature -- Processing
 			-- Process this element into textual BON.
 		local
 			l_text_formatter_decorator: like text_formatter_decorator
+			l_belongs_to_index: TBON_INDEX
+			l_term_list: LIST[STRING]
+			l_index_id: TBON_IDENTIFIER
+			l_parent_cluster_string: STRING
+			l_indexing_clause: TBON_INDEXING_CLAUSE
 		do
 			l_text_formatter_decorator := text_formatter_decorator
 
@@ -83,11 +88,21 @@ feature -- Processing
 			l_text_formatter_decorator.put_new_line
 
 			-- Indexing clause
+			create {LINKED_LIST[STRING]} l_term_list.make
+			l_parent_cluster_string := parent_cluster.name.string
+			l_parent_cluster_string.prepend (ti_double_quote)
+			l_parent_cluster_string.append (ti_double_quote)
+			l_term_list.extend (l_parent_cluster_string)
+			create l_index_id.make_element (text_formatter_decorator, "belongs_to")
+			create l_belongs_to_index.make_element (text_formatter_decorator, l_index_id, l_term_list)
 			if associated_class.has_indexing_clause then
+				associated_class.indexing_clause.add_index (l_belongs_to_index)
 				associated_class.indexing_clause.process_to_textual_bon
-				l_text_formatter_decorator.put_new_line
-				l_text_formatter_decorator.put_new_line
+			else
+				create l_indexing_clause.make_element (l_text_formatter_decorator, Void)
+				l_indexing_clause.add_index (l_belongs_to_index)
 			end
+			l_text_formatter_decorator.put_new_line
 
 			-- Inherit clause
 			if associated_class.has_ancestors then

@@ -401,6 +401,20 @@ feature -- Setting
 			setup_output_strategy
 		end
 
+	set_for_informal_bon
+			-- Prepare formatter decorator for informal BON.
+		do
+			create {TEXTUAL_BON_INFORMAL_OUTPUT_STRATEGY} ast_output_strategy.make (Current)
+			setup_output_strategy
+		end
+
+	set_for_formal_bon
+			-- Prepare formatter decorator for formal BON.
+		do
+			create {TEXTUAL_BON_FORMAL_OUTPUT_STRATEGY} ast_output_strategy.make (Current)
+			setup_output_strategy
+		end
+
 	set_context_group (a_group: like context_group)
 			-- Set `context_group' with `a_group'.
 		do
@@ -1150,7 +1164,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

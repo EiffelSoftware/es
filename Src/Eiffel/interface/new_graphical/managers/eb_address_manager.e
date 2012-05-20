@@ -406,7 +406,7 @@ feature -- Element change
 			from
 				l_cnt := 1
 			until
-				l_cnt > 5
+				l_cnt > 7
 			loop
 				l_but := known_formatters.i_th (l_cnt).new_sd_button
 				tool_bar_items.extend (l_but)

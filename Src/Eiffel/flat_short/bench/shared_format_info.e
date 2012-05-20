@@ -39,6 +39,18 @@ feature -- Properties
 			Result := is_with_breakable_bool.item
 		end
 
+	is_informal_bon: BOOLEAN
+			-- Are we in informal BON view?
+		do
+			Result := is_informal_bon_bool.item
+		end
+
+	is_formal_bon: BOOLEAN
+			-- Are we in formal BON view?
+		do
+			Result := is_formal_bon_bool.item
+		end
+
 feature -- Setting
 
 	set_in_bench_mode
@@ -97,6 +109,22 @@ feature -- Setting
 			is_without_breakable: not is_with_breakable
 		end
 
+	set_is_informal_bon
+			-- Set is_informal_bon to True
+		do
+			is_informal_bon_bool.put (True)
+		ensure
+			is_informal_bon: not is_informal_bon
+		end
+
+	set_is_formal_bon
+			-- Set is_formal_bon to True
+		do
+			is_formal_bon_bool.put (True)
+		ensure
+			is_formal_bon: not is_formal_bon
+		end
+
 	reset_format_booleans
 			-- Reset all booleans to false.
 		do
@@ -104,11 +132,15 @@ feature -- Setting
 			in_bench_mode_bool.put (False)
 			in_assertion_bool.put (False)
 			order_same_as_text_bool.put (False)
+			is_informal_bon_bool.put(False)
+			is_formal_bon_bool.put(False)
 		ensure
 			not is_short
 			not in_bench_mode
 			not in_assertion
 			not order_same_as_text
+			not is_informal_bon
+			not is_formal_bon
 		end
 
 feature {NONE}
@@ -153,8 +185,24 @@ feature {NONE}
 			is_with_breakable_bool_not_void: Result /= Void
 		end
 
+	is_informal_bon_bool: CELL [BOOLEAN]
+			-- Cell to store `is_informal_bon' flag
+		once
+			create Result.put (False)
+		ensure
+			is_informal_bon_bool_not_void: Result /= Void
+		end
+
+	is_formal_bon_bool: CELL [BOOLEAN]
+			-- Cell to store `is_formal_bon' flag
+		once
+			create Result.put (False)
+		ensure
+			is_formal_bon_bool_not_void: Result /= Void
+		end
+
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -167,22 +215,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class SHARED_FORMAT_INFO

@@ -12,7 +12,8 @@ inherit
 		redefine
 			class_cmd,
 			create_class_cmd,
-			generate_text
+			generate_text,
+			is_editable
 		end
 
 create
@@ -21,6 +22,11 @@ create
 feature -- creation
 
 feature -- Access
+
+	is_editable: BOOLEAN
+		do
+			Result := True
+		end
 
 	mode: NATURAL_8
 			-- Formatter mode, see {ES_CLASS_TOOL_VIEW_MODES} for applicable values.

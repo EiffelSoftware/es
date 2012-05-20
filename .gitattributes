@@ -1974,6 +1974,7 @@ Src/Eiffel/doc/runtime/typing/TYPE_A_encodings.png -text
 Src/Eiffel/ecosystem/services/history_manager/INCOMPLETE.txt -text
 Src/Eiffel/eiffel/com_il_generation/Core/run-time/rt_exception_manager.cs -text
 Src/Eiffel/interface/shared/buffer/command_scanner.l -text
+Src/Eiffel/modules/textual_bon/editor_scanner/editor_textual_bon_scanner.l -text
 Src/README.txt -text
 Src/build/build.ico -text
 Src/compatible/library/Eiffel2Java/Eiffel2Java.lic -text

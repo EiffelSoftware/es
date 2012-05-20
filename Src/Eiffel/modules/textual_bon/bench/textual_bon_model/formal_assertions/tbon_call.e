@@ -22,8 +22,14 @@ feature -- Access
 	called: attached STRING
 		-- Name of the called feature
 
-	arguments: LIST[STRING]
+	arguments: TBON_EXPRESSION_LIST
 		-- Arguments
+
+feature -- Element change
+	set_arguments (some_arguments: TBON_EXPRESSION_LIST)
+		do
+			arguments := some_arguments
+		end
 
 feature -- Initialization
 	make_element (a_target: like target; a_called: like called; a_text_formatter_decorator: TEXT_FORMATTER_DECORATOR)
@@ -42,17 +48,18 @@ feature -- Process
 			l_text_formatter_decorator := text_formatter_decorator
 			l_text_formatter_decorator.process_basic_text (target)
 			l_text_formatter_decorator.process_symbol_text (ti_dot)
+
 			l_text_formatter_decorator.process_basic_text (called)
+
+			if arguments /= Void then
+				l_text_formatter_decorator.process_basic_text (ti_l_parenthesis)
+				arguments.process_to_formal_textual_bon
+				l_text_formatter_decorator.process_basic_text (ti_r_parenthesis)
+			end
 
 			if comment /= Void then
 				comment.process_to_formal_textual_bon
 			end
-		end
-
-feature -- Status
-	has_arguments: BOOLEAN
-		do
-			Result := not arguments.is_empty
 		end
 
 note
