@@ -34,9 +34,6 @@ feature -- Processing
 			l_text_formatter_decorator := text_formatter_decorator
 			create textual_bon_class.make (l_as, l_text_formatter_decorator, Current)
 
-			l_text_formatter_decorator.process_string_text ("Hej Søren", Void)
-			l_text_formatter_decorator.put_new_line
-
 			l_cluster_name := "CLUSTER_OF_"
 			l_cluster_name.append (l_as.class_name.string_value_32)
 			create textual_bon_cluster_component.make_element (text_formatter_decorator, l_cluster_name, Void)
