@@ -99,10 +99,6 @@ feature -- Program variables
 			-- Variable "z".
 		once create {VARIABLE} Result.make ("z") end
 
---	z: VARIABLE
---			-- Variable "z".
---		once create {VARIABLE} Result.make ("z") end
-
 feature -- Negated variables
 
 	xprime: VARIABLE
@@ -136,6 +132,10 @@ feature -- Multidot expressions
 	xprime_f: MULTIDOT
 			-- Multidot "x'.f".
 		once create {MULTIDOT} Result.make_from_two_variables (xprime, ff) end
+
+	xprime_z: MULTIDOT
+			-- Multidot "x'.z".
+		once create {MULTIDOT} Result.make_from_two_variables (xprime, z) end
 
 	q_client_prime_f: MULTIDOT
 			-- Multidot "x'.f".
