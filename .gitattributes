@@ -78,7 +78,6 @@ Documentation/tools/web/trunk/misc/patches/trash.module -text
 Documentation/tools/xmldoc2wiki/README.txt -text
 Src/C/eif_config_h.SH eol=lf
 Src/C/run-time/eif_size_h.SH eol=lf
-Src/C/run-time/include/gc_pthread_redirects.h -text
 Src/C/shell/bin/cat.exe -text
 Src/C/shell/bin/chmod.exe -text
 Src/C/shell/bin/mkdir.exe -text
