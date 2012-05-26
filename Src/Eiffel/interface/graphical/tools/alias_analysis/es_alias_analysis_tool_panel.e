@@ -30,15 +30,21 @@ feature
 
 	create_tool_bar_items: detachable DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 		do
-			create Result.make (1)
+			create Result.make (2)
 			create analyze_button.make
 			analyze_button.set_text ("Analyze")
+			analyze_button.set_tooltip ("Analyze selected item.")
+			analyze_button.set_pixmap (stock_pixmaps.debug_run_icon)
+			analyze_button.set_pixel_buffer (stock_pixmaps.debug_run_icon_buffer)
 			analyze_button.select_actions.extend (agent run_analyzer)
 			analyze_button.select_actions.extend (agent user_widget.append_text ("%N"))
 			analyze_button.select_actions.extend (agent user_widget.append_text (guide_drop_message))
-			-- analyze_button.drop_actions.extend (agent propagate_drop_actions (Void) (?))
 			analyze_button.disable_sensitive
-			Result.put (analyze_button, 1)
+			Result.force_last (analyze_button)
+			create inherited_assertions_toggle.make
+			inherited_assertions_toggle.set_text ("Inherited asserions")
+			inherited_assertions_toggle.set_tooltip ("Process inherited assertions.")
+			Result.force_last (inherited_assertions_toggle)
 		end
 
 feature {NONE}
@@ -90,6 +96,9 @@ feature {NONE} -- Toolbar
 	analyze_button: SD_TOOL_BAR_BUTTON
 			-- Button to trigger analyzer.
 
+	inherited_assertions_toggle: SD_TOOL_BAR_TOGGLE_BUTTON
+			-- Toggle to enable/disable inherited assertion processing.
+
 feature {NONE} -- Message
 
 	guide_drop_message: STRING_32 = "Drop a class or a feature to perform alias analysis for it."
@@ -128,6 +137,7 @@ feature {NONE} -- Analyzer
 			-- Run the analysis with associated reports if possible.
 		do
 			if attached current_class as c then
+				analyzer.set_is_inherited_assertion_included (inherited_assertions_toggle.is_selected)
 				if attached current_feature as f then
 					user_widget.set_text ({STRING_32} "Processing {" + c.name + "}." + f.feature_name_32 + "...")
 					analyzer.process_feature (f, c)

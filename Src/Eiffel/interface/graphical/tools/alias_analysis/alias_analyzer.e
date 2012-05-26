@@ -73,6 +73,21 @@ feature -- Basic operations
 			report_result
 		end
 
+feature -- Status report
+
+	is_inherited_assertion_included: BOOLEAN
+			-- Does the analysis include inherited assertions?
+
+feature -- Status setting
+
+	set_is_inherited_assertion_included (v: BOOLEAN)
+			-- Set `is_inherited_assertion_included' to `v'.
+		do
+			is_inherited_assertion_included := v
+		ensure
+			is_inherited_assertion_included_set: is_inherited_assertion_included = v
+		end
+
 feature {NONE} -- Analysis
 
 	prepare_analysis (c: CLASS_C)
@@ -94,7 +109,8 @@ feature {NONE} -- Analysis
 			context.set_current_feature (f)
 			context.set_written_class (f.written_class)
 			create keeper.make (0)
-			type_check_only (f, True, f.written_in /= c.class_id, f.is_replicated)
+			-- context.add_keeper (keeper)
+			type_check_only (f, is_inherited_assertion_included, f.written_in /= c.class_id, f.is_replicated)
 		end
 
 	report_result
