@@ -13,7 +13,12 @@ inherit
 		rename
 			scope as relation
 		export {ALIAS_ANALYZER}
-			relation
+			enter_realm,
+			leave_optional_realm,
+			leave_realm,
+			relation,
+			save_sibling,
+			update_realm
 		end
 
 create
