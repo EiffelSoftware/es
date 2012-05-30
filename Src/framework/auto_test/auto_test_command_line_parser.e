@@ -270,7 +270,7 @@ feature{NONE} -- Initialization
 			parser.options.force_last (l_smt_use_predefined_value_rate_option)
 
 			create l_integer_bound_option.make_with_long_form ("integer-bounds")
-			l_integer_bound_option.set_description ("Lower and upper bounds for integer arguments that are to be solved by a linear constraint solver. In form of %"lower,upper%"")
+			l_integer_bound_option.set_description ("Lower and upper bounds for integer arguments that are to be solved by a linear constraint solver. In form of %"lower,upper%". If not specified, the bounds are [MIN_VALUE, MAX_VALUE].")
 			parser.options.force_last (l_integer_bound_option)
 
 			create l_use_random_cursor_option.make_with_long_form ("use-random-cursor")
