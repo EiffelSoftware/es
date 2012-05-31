@@ -4335,8 +4335,6 @@ eweasel/tests/term209/test -text svneol=unset#application/octet-stream
 eweasel/tests/thread002/Ace -text
 eweasel/tests/thread010/Ace -text
 eweasel/tests/time004/Ace -text
-eweasel/tests/unicode006/Ace -text
-eweasel/tests/unicode006/tcf -text
 eweasel/tests/valid001/notes -text
 eweasel/tests/valid002/notes -text
 eweasel/tests/valid003/notes -text
