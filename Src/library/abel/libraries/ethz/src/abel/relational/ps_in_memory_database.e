@@ -107,10 +107,10 @@ feature
 		do
 		end
 
-	update_collection (a_collection: PS_COLLECTION_PART[ITERABLE[ANY]]; a_transaction:PS_TRANSACTION)
+--	update_collection (a_collection: PS_COLLECTION_PART[ITERABLE[ANY]]; a_transaction:PS_TRANSACTION)
 		-- Update a_collection (replace with any pre-existing collection)
-		do
-		end
+--		do
+--		end
 
 	delete_collection (a_collection: PS_COLLECTION_PART[ITERABLE[ANY]]; a_transaction:PS_TRANSACTION)
 		-- Delete a_collection from the database

@@ -64,6 +64,21 @@ feature -- Basic operations
 			criteria_set: criteria = a_criterion
 		end
 
+	reset
+		-- Reset the query result, do not change criteron or projection.
+		do
+			transaction_impl:= Void
+			create_result_cursor
+			result_cursor.set_query (Current)
+			is_executed:= False
+			backend_identifier:= 0
+		ensure
+			not_executed: not is_executed
+			not_bound_to_transaction: transaction_impl = Void
+			unrecognizable_to_backend: backend_identifier = 0
+			criteria_unchanged: criteria = old criteria
+		end
+
 
 feature -- Miscellaneous
 
@@ -137,21 +152,8 @@ feature {NONE} -- Initialization
 			reset
 		end
 
-	reset
-		do
-			transaction_impl:= Void
-			create_result_cursor
-			result_cursor.set_query (Current)
-			is_executed:= False
-			backend_identifier:= 0
-		ensure
-			not_executed: not is_executed
-			not_bound_to_transaction: transaction_impl = Void
-			unrecognizable_to_backend: backend_identifier = 0
-			criteria_unchanged: criteria = old criteria
-		end
-
 	create_result_cursor
+		-- Create a new result set
 		deferred
 		end
 
@@ -159,5 +161,4 @@ invariant
 	query_result_correctly_initialized: result_cursor.query = Current
 	transaction_set_if_executed: is_executed implies transaction_impl /= Void
 	not_executed_implies_after: not is_executed implies result_cursor.after
-
 end

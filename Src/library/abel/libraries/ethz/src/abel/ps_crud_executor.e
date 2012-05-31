@@ -22,7 +22,7 @@ feature --Access
 	repository: PS_REPOSITORY
 			-- The data repository on which 'Current' operates
 
-	object_graph: PS_OBJECT_GRAPH_DEPTH
+--	object_graph: PS_OBJECT_GRAPH_DEPTH -- Deleted because it is irrelevant now that the executor isn't generic any more
 			-- The object graph depth strategies for the different storage operations. Default is to take whatever is defined in repository.
 
 feature -- Data retrieval
@@ -183,7 +183,7 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		do
 			repository := a_repository
-			create object_graph.make_rely_on_repository
+--			create object_graph.make_rely_on_repository
 			create {PS_NO_ERROR} last_error
 		end
 

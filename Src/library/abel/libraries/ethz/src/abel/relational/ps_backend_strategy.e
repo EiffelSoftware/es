@@ -60,7 +60,10 @@ feature
 		-- Update a_collection (replace with any pre-existing collection)
 		require
 			mode_is_update: a_collection.write_mode = a_collection.write_mode.update
-		deferred
+		do
+			-- Delete this - Updates are handled earlier by creating a delete and then an insert statement
+			check false end
+
 		end
 
 	delete_collection (a_collection: PS_COLLECTION_PART[ITERABLE[ANY]]; a_transaction:PS_TRANSACTION)

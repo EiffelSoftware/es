@@ -54,7 +54,7 @@ feature
 		local
 			ref_executor: PS_CRUD_EXECUTOR--[REFERENCE_CLASS_1]
 			query:PS_OBJECT_QUERY[REFERENCE_CLASS_1]
---			original, one, two, three:REFERENCE_CLASS_1
+			original, one, two, three:REFERENCE_CLASS_1
 			ref_list: LINKED_LIST[REFERENCE_CLASS_1]
 			eq: BOOLEAN
 		do
@@ -83,7 +83,7 @@ feature
 --			query.result_cursor.forth
 --			three:= query.result_cursor.item
 
---			original:= test_data.reference_1
+			original:= test_data.reference_1
 
 			eq:= original.is_deep_equal (ref_list[1]) or original.is_deep_equal (ref_list[2]) or original.is_deep_equal (ref_list[3])
 

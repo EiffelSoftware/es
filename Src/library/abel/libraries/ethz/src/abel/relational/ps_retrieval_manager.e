@@ -100,7 +100,8 @@ feature {NONE} -- Implementation
 
 				-- This has to be the detachable type, otherwise the is_deep_equal feature won't work any more
 				new_type:= reflection.detachable_type (reflection.generic_dynamic_type (query, 1))
-				--print (new_type.out + "%N")
+--				print (new_type.out + " " + reflection.detachable_type (query.generating_type.generic_parameter_type (1).type_id).out + "%N")
+--				check new_type = query.generating_type.generic_parameter_type (1).type_id end
 				new_object:= build (new_type, current_object, transaction, bookkeeping)
 
 
