@@ -3002,7 +3002,6 @@ Src/library/abel/apps/test/abel_test/eweasel/output/evol001/output/e_compile2 -t
 Src/library/abel/apps/test/abel_test/eweasel/output/evol001/output/serialize_output -text
 Src/library/abel/apps/test/abel_test/eweasel/tests/evol001/Ace -text
 Src/library/abel/apps/test/abel_test/eweasel/tests/list001/Ace -text
-Src/library/abel/apps/test/abel_test/test.txt -text
 Src/library/abel/apps/test/dadl_test/app/dadl_test.rc -text
 Src/library/abel/apps/test/dadl_test/app/error_db/dadl_error_db.txt -text
 Src/library/abel/apps/test/dadl_test/app/error_db/general_error_db.txt -text

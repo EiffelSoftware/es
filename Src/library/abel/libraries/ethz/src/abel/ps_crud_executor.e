@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	PS_CRUD_EXECUTOR [G -> ANY]
+	PS_CRUD_EXECUTOR --[G -> ANY]
 	-- Executes any CRUD operation (in a very crude and violent way:)
 
 inherit
@@ -27,7 +27,7 @@ feature --Access
 
 feature -- Data retrieval
 
-	execute_query (a_query: PS_QUERY [G])
+	execute_query (a_query: PS_QUERY [ANY])
 			-- Run `a_query' against the repository.
 		require
 			query_not_executed: not a_query.is_executed
@@ -41,26 +41,15 @@ feature -- Data retrieval
 		end
 
 
-	--retrieve_all
-			-- Retrieve all objects that are instances of class G.
-		--do
-			-- Same effect can be achieved by running an empty query against the CRUD_EXECUTOR
-		--end
 
-	--load_attribute (object: G; object_attribute: STRING)
-			-- Load an object attribute which has not been previously loaded because of reference depth
-		--do
-			-- Function might be deleted, because it doesn't make much sense to load single attributes without projections.
-		--end
-
-	load_to_depth (object: G; depth: INTEGER)
+	load_to_depth (object: ANY; depth: INTEGER)
 			-- Load  `object' (assumed to be partially loaded) further to object graph depth `depth'.
 		do
 		end
 
 feature -- Data manipulation
 
-	insert (an_object: G)
+	insert (an_object: ANY)
 			-- Insert `an_object' into the repository.
 		require
 			object_not_previously_loaded: not is_already_loaded (an_object)
@@ -72,7 +61,7 @@ feature -- Data manipulation
 			transaction.commit
 		end
 
-	update (an_object: G)
+	update (an_object: ANY)
 			-- Write back changes of `an_object' into the repository.
 		require
 			object_previously_loaded: is_already_loaded (an_object)
@@ -84,7 +73,7 @@ feature -- Data manipulation
 			transaction.commit
 		end
 
-	delete (an_object: G)
+	delete (an_object: ANY)
 			-- Delete `an_object' from the repository
 		require
 			object_previously_loaded: is_already_loaded (an_object)
@@ -96,7 +85,7 @@ feature -- Data manipulation
 			transaction.commit
 		end
 
-	execute_deletion_query (a_query: PS_QUERY [G])
+	execute_deletion_query (a_query: PS_QUERY [ANY])
 			-- Delete all objects that match the criteria defined in `a_query'
 		require
 			query_not_executed: not a_query.is_executed
@@ -110,7 +99,7 @@ feature -- Data manipulation
 
 feature -- Status
 
-	is_already_loaded (an_object: G): BOOLEAN
+	is_already_loaded (an_object: ANY): BOOLEAN
 			-- Has `an_object' been previously loaded from (or inserted to) the database?
 		do
 			fixme ("TODO")
@@ -119,7 +108,7 @@ feature -- Status
 
 feature -- Transaction-based data retrieval and querying
 
-	execute_query_within_transaction (a_query: PS_QUERY [G]; a_transaction: PS_TRANSACTION)
+	execute_query_within_transaction (a_query: PS_QUERY [ANY]; a_transaction: PS_TRANSACTION)
 			-- Execute `a_query' within the transaction `a_transaction'.
 		require
 			query_not_executed: not a_query.is_executed
@@ -131,7 +120,7 @@ feature -- Transaction-based data retrieval and querying
 			transaction_set: a_query.transaction = a_transaction
 		end
 
-	insert_within_transaction (an_object: G; a_transaction: PS_TRANSACTION)
+	insert_within_transaction (an_object: ANY; a_transaction: PS_TRANSACTION)
 			-- Insert `an_object' within the transaction `a_transaction' into the repository.
 		require
 			same_repository: a_transaction.repository = Current.repository
@@ -142,7 +131,7 @@ feature -- Transaction-based data retrieval and querying
 			-- object_known: is_already_loaded (an_object) -- Disabled because is_already_loaded not implemented yet
 		end
 
-	update_within_transaction (an_object: G; a_transaction: PS_TRANSACTION)
+	update_within_transaction (an_object: ANY; a_transaction: PS_TRANSACTION)
 			-- Write back changes of `an_object' into the repository, within the transaction `a_transaction'.
 		require
 			same_repository: a_transaction.repository = Current.repository
@@ -151,7 +140,7 @@ feature -- Transaction-based data retrieval and querying
 			repository.update (an_object, a_transaction)
 		end
 
-	delete_within_transaction (an_object: G; a_transaction: PS_TRANSACTION)
+	delete_within_transaction (an_object: ANY; a_transaction: PS_TRANSACTION)
 				-- Delete `an_object' within the transaction `a_transaction' from the repository.
 		require
 			same_repository: a_transaction.repository = Current.repository
@@ -160,7 +149,7 @@ feature -- Transaction-based data retrieval and querying
 			repository.delete (an_object, a_transaction)
 		end
 
-	execute_deletion_query_within_transaction (a_query: PS_QUERY [G]; a_transaction: PS_TRANSACTION)
+	execute_deletion_query_within_transaction (a_query: PS_QUERY [ANY]; a_transaction: PS_TRANSACTION)
 				-- Delete, within the transaction `a_transaction', all objects that match the criteria defined in `a_query'
 		require
 			query_not_executed: not a_query.is_executed

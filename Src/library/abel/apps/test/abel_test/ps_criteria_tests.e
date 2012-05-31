@@ -375,7 +375,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	person_executor: PS_CRUD_EXECUTOR [PERSON]
+	person_executor: PS_CRUD_EXECUTOR --[PERSON]
 	p_dao: PERSON_DAO
 
 end

@@ -52,7 +52,7 @@ feature
 
 	test_initial_insert
 		local
-			ref_executor: PS_CRUD_EXECUTOR[REFERENCE_CLASS_1]
+			ref_executor: PS_CRUD_EXECUTOR--[REFERENCE_CLASS_1]
 			query:PS_OBJECT_QUERY[REFERENCE_CLASS_1]
 			original, one, two, three:REFERENCE_CLASS_1
 			eq: BOOLEAN
@@ -90,7 +90,7 @@ feature
 		local
 			ref1, ref2, ref4:REFERENCE_CLASS_1
 			query:PS_OBJECT_QUERY[REFERENCE_CLASS_1]
-			ref_executor: PS_CRUD_EXECUTOR[REFERENCE_CLASS_1]
+			ref_executor: PS_CRUD_EXECUTOR--[REFERENCE_CLASS_1]
 			reflection:INTERNAL
 		do
 			create reflection

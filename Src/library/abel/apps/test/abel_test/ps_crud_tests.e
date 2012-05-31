@@ -128,7 +128,7 @@ feature {NONE}
 
 
 
-	flat_executor: PS_CRUD_EXECUTOR [FLAT_CLASS_1]
-	structures_executor: PS_CRUD_EXECUTOR [DATA_STRUCTURES_CLASS_1]
+	flat_executor: PS_CRUD_EXECUTOR --[FLAT_CLASS_1]
+	structures_executor: PS_CRUD_EXECUTOR --[DATA_STRUCTURES_CLASS_1]
 
 end
