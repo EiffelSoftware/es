@@ -24,15 +24,16 @@ feature {NONE} -- Creation
 	make
 			-- Create an new query on objects of type `G'.
 		do
-			create {PS_EMPTY_CRITERION} criteria.default_create
-			create result_cursor.make
 			create projection.make_empty -- some stupid void safety rule...
+			initialize
 			create projection.make_from_array (default_projection)
-			result_cursor.set_query (Current)
-			is_executed := False
-		ensure
-			not_executed: not is_executed
-			query_result_initialized: result_cursor.query = Current
+		ensure then
+			projection_correctly_initialized: projection = default_projection
+		end
+
+	create_result_cursor
+		do
+			create result_cursor.make
 		end
 
 feature

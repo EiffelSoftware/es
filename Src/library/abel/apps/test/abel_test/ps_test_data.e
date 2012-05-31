@@ -24,6 +24,8 @@ feature
 	reference_1: REFERENCE_CLASS_1
 		-- 1 references 2, 2 references 3, 3 references 1 and 2
 
+	tuple_query: detachable PS_TUPLE_QUERY[ANY]
+
 
 feature {NONE} -- Initialization
 

@@ -17,8 +17,6 @@ feature -- Access
 
 	result_cursor: PS_RESULT_SET [ANY]
 			-- Iteration cursor containing the result of the query.
-		require
-			already_executed: is_executed
 		deferred
 		end
 
@@ -75,7 +73,7 @@ feature -- Miscellaneous
 			reflection:INTERNAL
 		do
 			create reflection
-			Result:= a_criterion.can_handle_object ( reflection.new_instance_of (reflection.dynamic_type_from_string (class_name)))
+			Result:= a_criterion.can_handle_object ( reflection.new_instance_of (reflection.generic_dynamic_type (Current, 1)))
 		end
 
 
@@ -120,8 +118,46 @@ feature {NONE} -- Implementation
 	transaction_impl: detachable PS_TRANSACTION
 
 
+feature {NONE} -- Initialization
+
+	make
+		-- Initialize Current
+		deferred
+		ensure
+			not_executed: not is_executed
+			query_result_after: result_cursor.after
+			query_result_initialized: result_cursor.query = Current
+			default_criterion: attached{PS_EMPTY_CRITERION} criteria
+		end
+
+
+	initialize
+		do
+			create {PS_EMPTY_CRITERION} criteria
+			reset
+		end
+
+	reset
+		do
+			transaction_impl:= Void
+			create_result_cursor
+			result_cursor.set_query (Current)
+			is_executed:= False
+			backend_identifier:= 0
+		ensure
+			not_executed: not is_executed
+			not_bound_to_transaction: transaction_impl = Void
+			unrecognizable_to_backend: backend_identifier = 0
+			criteria_unchanged: criteria = old criteria
+		end
+
+	create_result_cursor
+		deferred
+		end
+
 invariant
 	query_result_correctly_initialized: result_cursor.query = Current
 	transaction_set_if_executed: is_executed implies transaction_impl /= Void
+	not_executed_implies_after: not is_executed implies result_cursor.after
 
 end

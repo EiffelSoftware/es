@@ -54,7 +54,8 @@ feature
 		local
 			ref_executor: PS_CRUD_EXECUTOR--[REFERENCE_CLASS_1]
 			query:PS_OBJECT_QUERY[REFERENCE_CLASS_1]
-			original, one, two, three:REFERENCE_CLASS_1
+--			original, one, two, three:REFERENCE_CLASS_1
+			ref_list: LINKED_LIST[REFERENCE_CLASS_1]
 			eq: BOOLEAN
 		do
 			repository.clean_db_for_testing
@@ -69,16 +70,24 @@ feature
 
 			assert ("The result is empty", not query.result_cursor.after)
 
+			create ref_list.make
+
+			across query as cursor loop
+				ref_list.extend (cursor.item)
+			end
+
 			-- here we have the problem that the result is not sorted...
-			one:= query.result_cursor.item
-			query.result_cursor.forth
-			two:= query.result_cursor.item
-			query.result_cursor.forth
-			three:= query.result_cursor.item
+--			one:= query.result_cursor.item
+--			query.result_cursor.forth
+--			two:= query.result_cursor.item
+--			query.result_cursor.forth
+--			three:= query.result_cursor.item
 
-			original:= test_data.reference_1
+--			original:= test_data.reference_1
 
-			eq:= original.is_deep_equal (one) or original.is_deep_equal (two) or original.is_deep_equal (three)
+			eq:= original.is_deep_equal (ref_list[1]) or original.is_deep_equal (ref_list[2]) or original.is_deep_equal (ref_list[3])
+
+--			eq:= original.is_deep_equal (one) or original.is_deep_equal (two) or original.is_deep_equal (three)
 --			print ( three.tagged_out+ attach (three.refer).tagged_out + attach (attach (three.refer).refer).tagged_out + "%N")
 --			print ( original.tagged_out+ attach (original.refer).tagged_out + attach (attach (original.refer).refer).tagged_out)
 

@@ -6,25 +6,33 @@ note
 
 class
 	PS_OBJECT_QUERY [G -> ANY]
+
 inherit
 	PS_QUERY [G]
-		redefine set_criterion end
+		redefine
+			set_criterion
+		end
+
+	ITERABLE[G]
+--		rename new_cursor
+--			as result_cursor
+--		end
+-- renames don't seem to work with the across syntax...
 
 create make
 
 
-feature {NONE} -- Creation
+feature {NONE} -- Initialization
 
 	make
 			-- Create an new query on objects of type `G'.
 		do
-			create {PS_EMPTY_CRITERION} criteria.default_create
+			initialize
+		end
+
+	create_result_cursor
+		do
 			create result_cursor.make
-			result_cursor.set_query (Current)
-			is_executed := False
-		ensure
-			not_executed: not is_executed
-			query_result_initialized: result_cursor.query = Current
 		end
 
 feature
@@ -40,6 +48,12 @@ feature
 
 
 	result_cursor: PS_RESULT_SET[G]
+
+	new_cursor: PS_RESULT_SET[G]
+		-- Just return the result_cursor.
+		do
+			Result:= result_cursor
+		end
 
 	is_object_query:BOOLEAN = True
 			-- Is `Current' an instance of PS_OBJECT_QUERY?
