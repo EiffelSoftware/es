@@ -143,7 +143,8 @@ feature {NONE} -- Implementation
 
 			collection_handler: detachable PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]]
 			collection_result: PS_PAIR [LIST[INTEGER], TUPLE ]
-			collection_as_list: LINKED_LIST[ANY]
+			collection_as_list: LINKED_LIST[detachable ANY]
+			collection_item: detachable ANY
 		do
 			if bookkeeping.has (obj.first) then
 				Result:= attach (bookkeeping[obj.first])
@@ -183,22 +184,24 @@ feature {NONE} -- Implementation
 								collection_result:= backend.retrieve_collection (field_val.to_integer, dynamic_type, field_type, field_name)
 								create collection_as_list.make
 								across collection_result.first as foreignkey_cursor loop
-									-- retrieve single object
-									from
-										cursor:= backend.retrieve (reflection.class_name_of_type (reflection.generic_dynamic_type_of_type (field_type, 1)), create{PS_EMPTY_CRITERION}, create{LINKED_LIST[STRING]}.make, transaction)
-									until
-										cursor.after
-									loop
-										if cursor.item.first = foreignkey_cursor.item then
-											collection_as_list.extend (build (reflection.generic_dynamic_type_of_type (field_type, 1), cursor.item, transaction, bookkeeping))
+
+									if foreignkey_cursor.item = 0 then
+										collection_as_list.extend (Void)
+									else
+										-- retrieve single object
+										from
+											cursor:= backend.retrieve (reflection.class_name_of_type (reflection.generic_dynamic_type_of_type (field_type, 1)), create{PS_EMPTY_CRITERION}, create{LINKED_LIST[STRING]}.make, transaction)
+										until
+											cursor.after
+										loop
+											if cursor.item.first = foreignkey_cursor.item then
+												collection_as_list.extend (build (reflection.generic_dynamic_type_of_type (field_type, 1), cursor.item, transaction, bookkeeping))
+											end
+											cursor.forth
 										end
-										cursor.forth
 									end
 								end
-
 								reflection.set_reference_field (i, Result, collection_handler.build_collection (field_type, collection_as_list, collection_result.second))
-
-
 
 							else -- reference type
 

@@ -58,8 +58,11 @@ feature -- Low-level operations
 			-- fill the "foreign key table"
 			across a_collection.values as object_cursor loop
 				fixme ("handle basic types")
-				check attached{PS_COMPLEX_ATTRIBUTE_PART} object_cursor.item as obj then
+				if attached{PS_COMPLEX_ATTRIBUTE_PART} object_cursor.item as obj then
 					current_collection.extend (obj.object_id.object_identifier)
+				elseif attached{PS_NULL_REFERENCE_PART} object_cursor.item as null_ref then
+					current_collection.extend (0)
+
 				end
 			end
 
@@ -97,7 +100,7 @@ feature -- Low-level operations
 
 feature -- Object assembly
 
-	build_collection (type_id: INTEGER; objects: LIST[ANY]; additional_information: TUPLE):SPECIAL[detachable ANY]
+	build_collection (type_id: INTEGER; objects: LIST[detachable ANY]; additional_information: TUPLE):SPECIAL[detachable ANY]
 		-- Dynamic type id of the collection
 		local
 			reflection: INTERNAL

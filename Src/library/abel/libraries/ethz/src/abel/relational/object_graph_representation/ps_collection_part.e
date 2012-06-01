@@ -125,7 +125,7 @@ feature -- Dependency handling
 	split (a_dependency:PS_OBJECT_GRAPH_PART): like Current
 		-- Create a copy of `Current', whose only dependency is `a_dependency', and with mode `Insert'
 		do
-			fixme ("TODO: if Current is an update operation, make sure that the deletion happens before any of the two inserts after a split.")
+			--fixme ("TODO: if Current is an update operation, make sure that the deletion happens before any of the two inserts after a split.")
 			Result:= clone_except_values
 			Result.values.extend (a_dependency)
 		end

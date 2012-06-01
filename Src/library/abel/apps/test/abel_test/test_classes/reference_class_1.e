@@ -18,7 +18,7 @@ feature
 		do
 			ref_class_id:= i
 			create references.make
-			create ref_arrays.make_empty
+			create ref_arrays.make_filled (Void, 1, 10)
 		end
 
 	ref_class_id:INTEGER

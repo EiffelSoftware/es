@@ -38,6 +38,10 @@ feature
 					Result:= handler_cursor.item.retrieve (parent_key, parent_type, child_type, parent_attr_name)
 				end
 			end
+			-- TODO: It should be possible to do this in a generic way - i.e. without using the handler.
+			-- In relational mode, the two class names (or types) and the feature name of the parent is sufficient to build a structure anyway - anything else can't be stored anyway.
+			-- In object mode, the backend basically has to store the list and some additional information, which can be modelled separately using a HASH_TABLE
+			-- The only thing the backend needs to know is if the collection in question is stored in object or relational mode!
 		end
 
 

@@ -74,6 +74,9 @@ feature {PS_EIFFELSTORE_EXPORT}-- Disassemble functions
 						else
 							collection.add_value (disassemble_function.item ([attached_item]))
 						end
+					else
+						-- create a null reference part to indicate that the reference at `cursor.item' is Void
+						collection.add_value (create {PS_NULL_REFERENCE_PART}.make)
 					end
 					cursor.forth
 				end
@@ -133,7 +136,7 @@ feature -- Low-level operations
 
 feature -- Object assembly
 
-	build_collection (type_id: INTEGER; objects: LIST[ANY]; additional_information: TUPLE): COLLECTION_TYPE
+	build_collection (type_id: INTEGER; objects: LIST[detachable ANY]; additional_information: TUPLE): COLLECTION_TYPE
 		-- Dynamic type id of the collection
 		deferred
 		end
