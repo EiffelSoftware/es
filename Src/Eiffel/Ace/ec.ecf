@@ -55,45 +55,6 @@
 		<setting name="executable_name" value="ecb"/>
 		<setting name="inlining_size" value="8"/>
 		<setting name="concurrency" value="none"/>
-		<variable name="batch_preferences" value="true"/>
-		<variable name="batch_framework" value="true"/>
-		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf" readonly="false" use_application_options="true"/>
-		<library name="dotnet_assembly_information" location="$EIFFEL_SRC\dotnet\assembly_info\dotnet_assembly_information.ecf" readonly="false"/>
-		<library name="eiffel2boogie" location="$ISE_LIBRARY\framework\eiffel2boogie\eiffel2boogie.ecf" readonly="false"/>
-		<library name="eve_blackboard" location="$ISE_LIBRARY\framework\eve_blackboard\eve_blackboard.ecf" readonly="false"/>
-		<library name="eve_proofs" location="$ISE_LIBRARY\framework\eve_proofs\eve_proofs.ecf" readonly="false"/>
-		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
-		<library name="gobo_xml" location="$ISE_LIBRARY\library\gobo\gobo_xml.ecf"/>
-		<library name="javascript_compiler" location="$EIFFEL_SRC\framework\javascript_compiler\javascript_compiler.ecf" readonly="false"/>
-		<library name="preferences_reg" location="$ISE_LIBRARY\library\preferences\preferences_reg.ecf" readonly="false">
-			<condition>
-				<platform value="windows"/>
-			</condition>
-		</library>
-		<library name="preferences_xml" location="$ISE_LIBRARY\library\preferences\preferences_xml.ecf" readonly="false">
-			<condition>
-				<platform excluded_value="windows"/>
-			</condition>
-		</library>
-		<library name="program_analysis" location="$ISE_LIBRARY\framework\program_analysis\program_analysis.ecf"/>
-		<cluster name="compiler_api_profiler" location="$EIFFEL_SRC\Eiffel\API\profiler\" recursive="true"/>
-		<cluster name="compiler_api_ql" location="$EIFFEL_SRC\Eiffel\API\query_language\" recursive="true"/>
-		<cluster name="compiler_api_queries" location="$EIFFEL_SRC\Eiffel\API\queries\" recursive="true"/>
-		<cluster name="debugger_none" location="$EIFFEL_SRC\Eiffel\debugger_interface\none\" recursive="true"/>
-		<cluster name="documentation" location="$EIFFEL_SRC\Eiffel\case\documentation\" recursive="true"/>
-		<cluster name="modules" location="$EIFFEL_SRC\Eiffel\modules\" recursive="true"/>
-		<cluster name="flat_short_ast" location="$EIFFEL_SRC\Eiffel\flat_short\AST\"/>
-		<cluster name="flat_short_b" location="$EIFFEL_SRC\Eiffel\flat_short\bench\"/>
-		<cluster name="interface" location="$EIFFEL_SRC\Eiffel\interface\">
-			<cluster name="interface_shared" location="$|shared\" recursive="true">
-				<file_rule>
-					<exclude>/buffer$</exclude>
-				</file_rule>
-			</cluster>
-			<cluster name="tty" location="$|tty\" recursive="true"/>
-			<cluster name="none" location="$|none\" recursive="true"/>
-		</cluster>
-
 		<external_object location="$(EIFFEL_SRC)/C/ipc/ewb/libmtwewb.a">
 			<condition>
 				<platform excluded_value="windows"/>
@@ -130,7 +91,43 @@
 				<build value="finalize"/>
 			</condition>
 		</external_object>
-
+		<variable name="batch_preferences" value="true"/>
+		<variable name="batch_framework" value="true"/>
+		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf" readonly="false" use_application_options="true"/>
+		<library name="dotnet_assembly_information" location="$EIFFEL_SRC\dotnet\assembly_info\dotnet_assembly_information.ecf" readonly="false"/>
+		<library name="eiffel2boogie" location="$ISE_LIBRARY\framework\eiffel2boogie\eiffel2boogie.ecf" readonly="false"/>
+		<library name="eve_blackboard" location="$ISE_LIBRARY\framework\eve_blackboard\eve_blackboard.ecf" readonly="false"/>
+		<library name="eve_proofs" location="$ISE_LIBRARY\framework\eve_proofs\eve_proofs.ecf" readonly="false"/>
+		<library name="gobo_kernel" location="$ISE_LIBRARY\library\gobo\gobo_kernel.ecf"/>
+		<library name="gobo_xml" location="$ISE_LIBRARY\library\gobo\gobo_xml.ecf"/>
+		<library name="javascript_compiler" location="$EIFFEL_SRC\framework\javascript_compiler\javascript_compiler.ecf" readonly="false"/>
+		<library name="preferences_reg" location="$ISE_LIBRARY\library\preferences\preferences_reg.ecf" readonly="false">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</library>
+		<library name="preferences_xml" location="$ISE_LIBRARY\library\preferences\preferences_xml.ecf" readonly="false">
+			<condition>
+				<platform excluded_value="windows"/>
+			</condition>
+		</library>
+		<library name="program_analysis" location="$ISE_LIBRARY\framework\program_analysis\program_analysis.ecf"/>
+		<cluster name="compiler_api_profiler" location="$EIFFEL_SRC\Eiffel\API\profiler\" recursive="true"/>
+		<cluster name="compiler_api_ql" location="$EIFFEL_SRC\Eiffel\API\query_language\" recursive="true"/>
+		<cluster name="compiler_api_queries" location="$EIFFEL_SRC\Eiffel\API\queries\" recursive="true"/>
+		<cluster name="debugger_none" location="$EIFFEL_SRC\Eiffel\debugger_interface\none\" recursive="true"/>
+		<cluster name="documentation" location="$EIFFEL_SRC\Eiffel\case\documentation\" recursive="true"/>
+		<cluster name="flat_short_ast" location="$EIFFEL_SRC\Eiffel\flat_short\AST\"/>
+		<cluster name="flat_short_b" location="$EIFFEL_SRC\Eiffel\flat_short\bench\"/>
+		<cluster name="interface" location="$EIFFEL_SRC\Eiffel\interface\">
+			<cluster name="interface_shared" location="$|shared\" recursive="true">
+				<file_rule>
+					<exclude>/buffer$</exclude>
+				</file_rule>
+			</cluster>
+			<cluster name="tty" location="$|tty\" recursive="true"/>
+			<cluster name="none" location="$|none\" recursive="true"/>
+		</cluster>
 	</target>
 	<target name="batch_unix" extends="batch">
 		<description>Compiling UNIX batch compiler on other platforms than Windows</description>
@@ -196,6 +193,7 @@
 			</condition>
 		</external_object>
 		<variable name="batch_framework" value="false"/>
+		<library name="annotation" location="$EIFFEL_SRC\framework\annotation\annotation.ecf" readonly="false"/>
 		<library name="auto_fix" location="$EIFFEL_SRC\framework\auto_fix\auto_fix.ecf" readonly="false"/>
 		<library name="auto_test" location="$EIFFEL_SRC\framework\auto_test\auto_test.ecf" readonly="false"/>
 		<library name="com_light" location="$EIFFEL_SRC\framework\com_light\com_light.ecf" readonly="false"/>
@@ -208,6 +206,7 @@
 			</option>
 		</library>
 		<library name="curl" location="$ISE_LIBRARY\library\cURL\cURL.ecf" readonly="false"/>
+		<library name="dadle" location="$EIFFEL_SRC\library\dadle\dadle_library.ecf"/>
 		<library name="daikon" location="$EIFFEL_SRC\framework\daikon\daikon.ecf" readonly="false"/>
 		<library name="debugger" location="$EIFFEL_SRC\Eiffel\debugger\debugger.ecf" readonly="false" use_application_options="true"/>
 		<library name="diff" location="$ISE_LIBRARY\library\diff\diff.ecf" readonly="false"/>
@@ -255,9 +254,7 @@
 		<library name="rapid_miner" location="$EIFFEL_SRC\framework\rapid_miner\rapid_miner.ecf" readonly="false"/>
 		<library name="scoopli" location="$EIFFEL_SRC\library\scoopli\scoopli.ecf" readonly="false"/>
 		<library name="semantic_search" location="$EIFFEL_SRC\framework\semantic_search\semantic_search.ecf" readonly="false"/>
-		<library name="annotation" location="$EIFFEL_SRC\framework\annotation\annotation.ecf" readonly="false"/>
 		<library name="serializer" location="$EIFFEL_SRC\library\schema_evolution\serializer_lib\serializer.ecf"/>
-		<library name="dadle" location="$EIFFEL_SRC\library\dadle\dadle_library.ecf"/>
 		<library name="snippet_extraction" location="$EIFFEL_SRC\framework\snippet_extraction\snippet_extraction.ecf" readonly="false"/>
 		<library name="tagging" location="$EIFFEL_SRC\framework\tagging\tagging.ecf" readonly="false"/>
 		<library name="tagging-ev" location="$EIFFEL_SRC\framework\tagging\ev\tagging-ev.ecf" readonly="false"/>
@@ -325,21 +322,22 @@
 				</condition>
 			</file_rule>
 		</cluster>
+		<cluster name="modules" location="$EIFFEL_SRC\Eiffel\modules\" recursive="true"/>
 		<cluster name="process_gui" location="$ISE_LIBRARY\library\process\gui\" recursive="true"/>
 		<cluster name="tty" location="$EIFFEL_SRC\Eiffel\interface\tty\" recursive="true">
 			<file_rule>
-				<exclude>/eb_diagram_html_generator\.e$</exclude>
-				<exclude>/eb_gui_preferences\.e$</exclude>
-				<exclude>/dbg_preferences\.e$</exclude>
-				<exclude>/ewb_auto_fix\.e$</exclude>
-				<exclude>/ewb_semantic_search\.e$</exclude>
-				<exclude>/ewb_contract_inference\.e$</exclude>
-				<exclude>/ewb_auto_test\.e$</exclude>
-				<exclude>/ewb_testing\.e$</exclude>
 				<exclude>/ewb_dynamic_program_analysis\.e$</exclude>
-				<exclude>/ewb_annotation\.e$</exclude>
+				<exclude>/eb_diagram_html_generator\.e$</exclude>
 				<exclude>/ewb_snippet_extraction\.e$</exclude>
-				<exclude>/ewb_xml_transformation\.e$</exclude>				
+				<exclude>/ewb_semantic_search\.e$</exclude>
+				<exclude>/ewb_xml_transformation\.e$</exclude>
+				<exclude>/ewb_auto_fix\.e$</exclude>
+				<exclude>/ewb_contract_inference\.e$</exclude>
+				<exclude>/dbg_preferences\.e$</exclude>
+				<exclude>/ewb_testing\.e$</exclude>
+				<exclude>/eb_gui_preferences\.e$</exclude>
+				<exclude>/ewb_annotation\.e$</exclude>
+				<exclude>/ewb_auto_test\.e$</exclude>
 			</file_rule>
 		</cluster>
 		<override name="eiffel_override" location="$EIFFEL_SRC\Eiffel\override\" recursive="true"/>
