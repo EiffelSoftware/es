@@ -18,6 +18,7 @@ feature
 		do
 			ref_class_id:= i
 			create references.make
+			create ref_arrays.make_empty
 		end
 
 	ref_class_id:INTEGER
@@ -28,6 +29,8 @@ feature
 		do
 			refer:= ref
 		end
+
+	ref_arrays: ARRAY[detachable REFERENCE_CLASS_1]
 
 
 	out:STRING

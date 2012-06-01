@@ -26,7 +26,7 @@ feature
 						backend.delete (obj, transaction)
 					end
 
-				elseif attached{PS_COLLECTION_PART[ITERABLE[ANY]]} op_cursor.item as coll then
+				elseif attached{PS_COLLECTION_PART[ITERABLE[detachable ANY]]} op_cursor.item as coll then
 
 					if coll.write_mode = coll.write_mode.insert then
 						backend.insert_collection (coll, transaction)

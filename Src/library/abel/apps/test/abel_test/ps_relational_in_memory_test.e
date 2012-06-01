@@ -64,7 +64,7 @@ feature
 			ref_executor.insert (test_data.reference_1)
 --			structures_executor.insert (test_data.data_structures_1)
 
-			--print (int_repo.memory_db.string_representation)
+--			print (int_repo.memory_db.string_representation)
 			create query.make
 			ref_executor.execute_query (query)
 
@@ -90,6 +90,9 @@ feature
 --			eq:= original.is_deep_equal (one) or original.is_deep_equal (two) or original.is_deep_equal (three)
 --			print ( three.tagged_out+ attach (three.refer).tagged_out + attach (attach (three.refer).refer).tagged_out + "%N")
 --			print ( original.tagged_out+ attach (original.refer).tagged_out + attach (attach (original.refer).refer).tagged_out)
+
+			print (original.ref_arrays.out + ref_list[3].ref_arrays.out)
+			print (original.ref_arrays.area.count.out + " " + ref_list[3].ref_arrays.area.count.out)
 
 			assert ("The results are not the same", eq)
 		end
@@ -171,5 +174,36 @@ feature
 			end
 		end
 
+
+	internal_special_experiment
+		local
+			person_special: SPECIAL[PERSON]
+			ref_special: SPECIAL[REFERENCE_CLASS_1]
+			detached_ref_special: SPECIAL[detachable REFERENCE_CLASS_1]
+			generated_special: ANY
+			reflection:INTERNAL
+		do
+			create reflection
+
+			create person_special.make_empty (10)
+			create ref_special.make_empty (10)
+
+			print (reflection.dynamic_type (person_special).out + "%N" )
+			print (reflection.dynamic_type (ref_special).out + "%N")
+			print (reflection.generic_dynamic_type (person_special, 1).out + "%N" )
+			print (reflection.generic_dynamic_type (ref_special, 1).out + "%N")
+
+			--generated_special:= reflection.new_special_any_instance (reflection.generic_dynamic_type (person_special, 1), 10)
+			generated_special:= reflection.new_special_any_instance (reflection.dynamic_type (person_special), 10)
+
+			print (reflection.dynamic_type (generated_special).out + "%N" )
+			print (generated_special.is_deep_equal (person_special))
+
+			print (person_special.out)
+			print (ref_special.out)
+			create detached_ref_special.make_filled (Void, 10)
+			print (detached_ref_special.out)
+
+		end
 
 end

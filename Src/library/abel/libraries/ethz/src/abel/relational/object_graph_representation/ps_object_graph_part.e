@@ -9,7 +9,7 @@ deferred class
 
 inherit
 	ITERABLE[PS_OBJECT_GRAPH_PART]
-
+	PS_EIFFELSTORE_EXPORT
 feature
 
 --	object_id: PS_OBJECT_IDENTIFIER_WRAPPER

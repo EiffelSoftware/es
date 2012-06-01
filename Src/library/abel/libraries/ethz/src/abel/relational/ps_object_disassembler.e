@@ -249,8 +249,15 @@ feature {PS_EIFFELSTORE_EXPORT}
 
 		id_manager: PS_OBJECT_IDENTIFICATION_MANAGER
 
-		collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER[ITERABLE[ANY]]]
+--			collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER[ITERABLE[ANY]]]
 		settings: PS_OBJECT_GRAPH_DEPTH
+
+		collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]]]
+
+		add_handler (a_handler: PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]])
+			do
+				collection_handlers.extend (a_handler)
+			end
 
 feature{NONE} -- Initialization
 

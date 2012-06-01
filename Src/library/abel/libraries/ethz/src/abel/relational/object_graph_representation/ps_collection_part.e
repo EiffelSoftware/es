@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	PS_COLLECTION_PART [COLLECTION_TYPE -> ITERABLE[ANY]]
+	PS_COLLECTION_PART [COLLECTION_TYPE -> ITERABLE[detachable ANY]]
 inherit
 	PS_COMPLEX_ATTRIBUTE_PART
 
@@ -110,8 +110,9 @@ feature -- Dependency handling
 			else	-- Object mode
 				Result.append(values)
 			end
-
-			Result.extend (deletion_dependency_for_updates) -- might be a no_operation
+			if attached deletion_dependency_for_updates as dep then
+				Result.extend (dep)
+			end
 		end
 
 	remove_dependency (obj:PS_OBJECT_GRAPH_PART)
@@ -140,17 +141,14 @@ feature -- Dependency handling
 
 feature {PS_COLLECTION_PART} -- Deletion dependency
 
-	set_deletion_dependency (a_dep: like Current)
+	set_deletion_dependency (a_dep: detachable like Current)
 		do
 			deletion_dependency_for_updates:= a_dep
 		end
 
-	deletion_dependency_for_updates: like Current
+	deletion_dependency_for_updates: detachable like Current
 		-- If `Current' is an update, the collection needs to be deleted and inserted again. This is the statement to delete it.
-		attribute
-		ensure
-			empty_dependency_for_deletion: deletion_dependency_for_updates.dependencies.is_empty
-		end
+
 
 feature {NONE} -- Initialization
 
@@ -167,7 +165,7 @@ feature {NONE} -- Initialization
 				deletion_dependency_for_updates:= handler.create_object_graph_part (obj, owner, attr_name, a_mode.delete)
 				write_mode:= a_mode.insert
 			else
-				deletion_dependency_for_updates:= handler.create_object_graph_part (obj, owner, attr_name, a_mode.no_operation)
+--				deletion_dependency_for_updates:= handler.create_object_graph_part (obj, owner, attr_name, a_mode.no_operation)
 				write_mode:= a_mode
 			end
 		ensure

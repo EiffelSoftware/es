@@ -78,6 +78,11 @@ feature{NONE} -- Initialization
 			create memory_db.make
 			create executor.make (memory_db)
 			create retriever.make (memory_db)
+
+			create special_handler.make
+			memory_db.add_handler (special_handler)
+			retriever.add_handler (special_handler)
+			disassembler.add_handler (special_handler)
 		end
 
 feature {PS_EIFFELSTORE_EXPORT}
@@ -88,5 +93,6 @@ feature {PS_EIFFELSTORE_EXPORT}
 	memory_db: PS_IN_MEMORY_DATABASE
 	retriever:PS_RETRIEVAL_MANAGER
 
+	special_handler: PS_SPECIAL_COLLECTION_HANDLER
 
 end

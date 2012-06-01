@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	PS_COLLECTION_HANDLER [COLLECTION_TYPE -> ITERABLE[ANY]]
+	PS_COLLECTION_HANDLER [COLLECTION_TYPE -> ITERABLE[detachable ANY]]
 
 inherit PS_EIFFELSTORE_EXPORT
 inherit{NONE} REFACTORING_HELPER
@@ -19,7 +19,7 @@ feature -- Status report
 		end
 
 
-	can_handle_type (a_type: TYPE[ANY]):BOOLEAN
+	can_handle_type (a_type: TYPE[detachable ANY]):BOOLEAN
 		-- Can `Current' handle the collection type `a_type'?
 		local
 			reflection: INTERNAL
@@ -29,7 +29,7 @@ feature -- Status report
 			fixme ("TODO: check this attached/detachable type problem here..")
 		end
 
-feature -- Disassemble functions
+feature {PS_EIFFELSTORE_EXPORT}-- Disassemble functions
 
 	create_object_graph_part (obj: PS_OBJECT_IDENTIFIER_WRAPPER ref_owner:PS_OBJECT_GRAPH_PART; attr_name: STRING ; mode:PS_WRITE_OPERATION) : PS_COLLECTION_PART [COLLECTION_TYPE]
 		require
@@ -37,14 +37,17 @@ feature -- Disassemble functions
 		do
 			create Result.make (obj, ref_owner, attr_name, mode, Current)
 			--Result.set_capacity (evaluate_capacity (obj))
+		ensure
+			values_not_set_yet: Result.values.is_empty
 		end
 
 
 	disassemble_collection (collection: PS_OBJECT_IDENTIFIER_WRAPPER; depth: INTEGER; mode:PS_WRITE_OPERATION; a_disassembler:PS_OBJECT_DISASSEMBLER; reference_owner:PS_OBJECT_GRAPH_PART; ref_attribute_name:STRING):	PS_COLLECTION_PART [COLLECTION_TYPE]
 		-- disassemble the collection
 		require
-			can_handle_collection: can_handle (collection)
+			can_handle_collection: can_handle (collection.item)
 		do
+	--		print (collection)
 
 			Result := create_object_graph_part (collection, reference_owner, ref_attribute_name, mode)
 			a_disassembler.register_operation (Result, collection.object_identifier)
@@ -56,7 +59,8 @@ feature -- Disassemble functions
 
 	do_disassemble (collection:PS_COLLECTION_PART [COLLECTION_TYPE]; disassemble_function:FUNCTION[ANY, TUPLE[ANY], PS_OBJECT_GRAPH_PART])
 		local
-			cursor:ITERATION_CURSOR[ANY]
+			cursor:ITERATION_CURSOR[detachable ANY]
+	--		attached_item: ANY
 		do
 			check attached{COLLECTION_TYPE} collection.object_id.item as actual_collection then
 
@@ -64,10 +68,12 @@ feature -- Disassemble functions
 				from
 				until cursor.after
 				loop
-					if is_of_basic_type (cursor.item) then
-						collection.add_value (create {PS_BASIC_ATTRIBUTE_PART}.make (cursor.item))
-					else
-						collection.add_value (disassemble_function.item ([cursor.item]))
+					if attached cursor.item as attached_item then
+						if is_of_basic_type (attached_item) then
+							collection.add_value (create {PS_BASIC_ATTRIBUTE_PART}.make (attached_item))
+						else
+							collection.add_value (disassemble_function.item ([attached_item]))
+						end
 					end
 					cursor.forth
 				end
@@ -81,12 +87,12 @@ feature -- Disassemble functions
 feature -- Layout information
 
 
-	is_in_relational_storage_mode (a_collection: PS_COLLECTION_PART[ITERABLE[ANY]]):BOOLEAN
+	is_in_relational_storage_mode (a_collection: PS_COLLECTION_PART[COLLECTION_TYPE]):BOOLEAN
 		-- Is `a_collection' stored in relational mode?
 		deferred
 		end
 
-	is_1_to_n_mapped (a_collection:PS_COLLECTION_PART[ITERABLE[ANY]]): BOOLEAN
+	is_1_to_n_mapped (a_collection:PS_COLLECTION_PART[COLLECTION_TYPE]): BOOLEAN
 		-- Is `a_collection' stored relationally in a 1:N mapping, meaning that the primary key of the parent is stored as a foreign key in the child's table?
 		deferred
 		ensure
@@ -102,6 +108,34 @@ feature -- Utilities
 		do
 			Result:=attached{NUMERIC} obj or attached{BOOLEAN} obj or attached{CHARACTER_8} obj or attached{CHARACTER_32} obj or attached{READABLE_STRING_GENERAL} obj
 			fixme ("Some common ancestor for all these types of functions would be nice")
+		end
+
+
+feature -- Low-level operations
+
+	insert (a_collection: PS_COLLECTION_PART[COLLECTION_TYPE])
+		deferred
+		end
+
+
+	delete (a_collection: PS_COLLECTION_PART[COLLECTION_TYPE])
+		deferred
+		end
+
+
+	retrieve (parent_key, parent_type, child_type: INTEGER; parent_attr_name: STRING):
+			PS_PAIR [
+					LIST[INTEGER], -- The foreign keys in correct order
+					TUPLE ] -- Any additional information required to create the actual collection
+		deferred
+		end
+
+
+feature -- Object assembly
+
+	build_collection (type_id: INTEGER; objects: LIST[ANY]; additional_information: TUPLE): COLLECTION_TYPE
+		-- Dynamic type id of the collection
+		deferred
 		end
 
 end

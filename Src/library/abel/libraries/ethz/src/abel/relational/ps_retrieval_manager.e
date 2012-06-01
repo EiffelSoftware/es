@@ -22,6 +22,7 @@ feature {NONE}
 			backend:= a_backend
 			create query_to_cursor_map.make (100)
 			create bookkeeping_manager.make (100)
+			create collection_handlers.make
 		end
 
 	backend:PS_BACKEND_STRATEGY
@@ -42,6 +43,13 @@ feature {NONE}
 	identifier_number: INTEGER
 
 feature
+
+	collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]]]
+
+	add_handler (a_handler: PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]])
+		do
+			collection_handlers.extend (a_handler)
+		end
 
 	setup_query (query:PS_OBJECT_QUERY[ANY]; transaction:PS_TRANSACTION)
 		local
@@ -132,6 +140,10 @@ feature {NONE} -- Implementation
 			test:ANY
 
 			cursor:ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
+
+			collection_handler: detachable PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]]
+			collection_result: PS_PAIR [LIST[INTEGER], TUPLE ]
+			collection_as_list: LINKED_LIST[ANY]
 		do
 			if bookkeeping.has (obj.first) then
 				Result:= attach (bookkeeping[obj.first])
@@ -159,18 +171,49 @@ feature {NONE} -- Implementation
 
 						if not try_basic_attribute (Result, field_val, i) then
 							--print (reflection.class_name_of_type (field_type))
-							from
-								cursor:= backend.retrieve (reflection.class_name_of_type (field_type), create{PS_EMPTY_CRITERION}, create{LINKED_LIST[STRING]}.make, transaction)
-							until
-								cursor.after
-							loop
-								if cursor.item.first = field_val.to_integer_32 then
 
-									reflection.set_reference_field (i, Result, build (field_type, cursor.item, transaction, bookkeeping))
+							-- either a reference type or a collection
+							across collection_handlers as coll_cursor loop
+								if coll_cursor.item.can_handle_type (reflection.type_of_type (field_type)) then
+									collection_handler:= coll_cursor.item
 								end
-								cursor.forth
 							end
 
+							if attached collection_handler then -- collection
+								collection_result:= backend.retrieve_collection (field_val.to_integer, dynamic_type, field_type, field_name)
+								create collection_as_list.make
+								across collection_result.first as foreignkey_cursor loop
+									-- retrieve single object
+									from
+										cursor:= backend.retrieve (reflection.class_name_of_type (reflection.generic_dynamic_type_of_type (field_type, 1)), create{PS_EMPTY_CRITERION}, create{LINKED_LIST[STRING]}.make, transaction)
+									until
+										cursor.after
+									loop
+										if cursor.item.first = foreignkey_cursor.item then
+											collection_as_list.extend (build (reflection.generic_dynamic_type_of_type (field_type, 1), cursor.item, transaction, bookkeeping))
+										end
+										cursor.forth
+									end
+								end
+
+								reflection.set_reference_field (i, Result, collection_handler.build_collection (field_type, collection_as_list, collection_result.second))
+
+
+
+							else -- reference type
+
+								from
+									cursor:= backend.retrieve (reflection.class_name_of_type (field_type), create{PS_EMPTY_CRITERION}, create{LINKED_LIST[STRING]}.make, transaction)
+								until
+									cursor.after
+								loop
+									if cursor.item.first = field_val.to_integer_32 then
+
+										reflection.set_reference_field (i, Result, build (field_type, cursor.item, transaction, bookkeeping))
+									end
+									cursor.forth
+								end
+							end
 						end
 					end
 					i := i + 1

@@ -102,20 +102,20 @@ feature
 			attach (class_to_object_keys[an_object.object_id.class_name]).prune (an_object.object_id.object_identifier)
 		end
 
-	insert_collection (a_collection: PS_COLLECTION_PART[ITERABLE[ANY]]; a_transaction:PS_TRANSACTION)
+	--insert_collection (a_collection: PS_COLLECTION_PART[ITERABLE[ANY]]; a_transaction:PS_TRANSACTION)
 		-- Add all entries in a_collection to the database
-		do
-		end
+	--	do
+	--	end
 
 --	update_collection (a_collection: PS_COLLECTION_PART[ITERABLE[ANY]]; a_transaction:PS_TRANSACTION)
 		-- Update a_collection (replace with any pre-existing collection)
 --		do
 --		end
 
-	delete_collection (a_collection: PS_COLLECTION_PART[ITERABLE[ANY]]; a_transaction:PS_TRANSACTION)
+	--delete_collection (a_collection: PS_COLLECTION_PART[ITERABLE[ANY]]; a_transaction:PS_TRANSACTION)
 		-- Delete a_collection from the database
-		do
-		end
+	--	do
+	--	end
 
 
 	-- How to access the data?
@@ -171,6 +171,7 @@ feature{NONE} -- Initialization
 		do
 			create internal_db.make (db_size)
 			create class_to_object_keys.make (db_size)
+			create collection_handlers.make
 		end
 
 	db_size:INTEGER = 100
