@@ -1,8 +1,8 @@
 note
 	description:
 		"[
-		This class generates unique object identifiers and attaches these to objects. It maintains a weak reference to every identified object.
-		Additionaly, it observes the state of weak references provides kind of a publish-subscribe mechanism if it finds a deleted object
+		This class generates unique object identifiers, attaches them to objects, and maintains a weak reference to every identified object.
+		It also observes the state of weak references providing a sort of publish-subscribe mechanism if it finds a deleted object.
 		]"
 	author: "Roman Schmocker"
 	date: "$Date$"
