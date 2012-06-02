@@ -40,7 +40,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 	insert (object: ANY; transaction: PS_TRANSACTION)
 			-- Insert `object' within `transaction' into `Current'
 		local
-			obj_metadata: PS_METADATA
+			obj_metadata: PS_TYPE_METADATA
 			attributes: HASH_TABLE [STRING, STRING]
 			i: INTEGER
 			reflection: INTERNAL
@@ -49,7 +49,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 		do
 			create reflection
 			create attributes.make (reflection.field_count (object))
-			obj_metadata := metadata.get_metadata (object)
+			obj_metadata := metadata.create_metadata_from_object (object)
 			from
 				i := 1
 			until
@@ -61,7 +61,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 				end
 				i := i + 1
 			end
-			primary_key := strategy.insert (attributes, obj_metadata, transaction)
+			primary_key := strategy.insert (attributes, obj_metadata.class_of_type, transaction)
 		end
 
 	update (object: ANY; transaction: PS_TRANSACTION)
@@ -126,7 +126,7 @@ feature {NONE} -- Implementation
 		local
 			reflection: INTERNAL
 			obj: ANY
-			obj_metadata: PS_METADATA
+			obj_metadata: PS_TYPE_METADATA
 			values: detachable HASH_TABLE [STRING, STRING]
 			i: INTEGER
 			field_name: STRING
@@ -135,13 +135,13 @@ feature {NONE} -- Implementation
 			create reflection
 				-- See at generic argument. Retrieve PS_METADATA from the metadata manager.
 			obj := reflection.new_instance_of (reflection.dynamic_type_from_string (reflection.class_name_of_type (reflection.generic_dynamic_type (query, 1))))
-			obj_metadata := metadata.get_metadata (obj)
+			obj_metadata := metadata.create_metadata_from_object (obj)
 			from
 			until
 				found
 			loop
 					-- call strategy.retrieve_an_object
-				values := strategy.retrieve_an_object (query, obj_metadata, query.transaction)
+				values := strategy.retrieve_an_object (query, obj_metadata.class_of_type, query.transaction)
 				if values = Void then
 					query.result_cursor.set_entry (void)
 					found := true
@@ -156,10 +156,10 @@ feature {NONE} -- Implementation
 							--print (field_name)
 						check attached values[field_name] as val then
 
-							if obj_metadata.get_attribute_type (field_name).is_basic_type then
-								if obj_metadata.get_attribute_type (field_name).name.has_substring ("STRING") then
+							if obj_metadata.attribute_type (field_name).is_basic_type then
+								if obj_metadata.attribute_type (field_name).class_of_type.name.has_substring ("STRING") then
 									reflection.set_reference_field (i, obj, val)
-								elseif obj_metadata.get_attribute_type (field_name).name.has_substring ("INTEGER") then
+								elseif obj_metadata.attribute_type (field_name).class_of_type.name.has_substring ("INTEGER") then
 									reflection.set_integer_32_field (i, obj, val.to_integer_32)
 								end -- todo: extend this list for all basic types
 							end

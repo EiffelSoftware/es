@@ -10,7 +10,7 @@ deferred class
 inherit
 	PS_EIFFELSTORE_EXPORT
 
-feature
+feature -- Single object retrieval
 
 
 	retrieve (class_name:STRING; criteria:PS_CRITERION; attributes:LIST[STRING]; transaction:PS_TRANSACTION) : ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
@@ -23,11 +23,13 @@ feature
 			-- That way we can later reduce the number or round trip times by collecting all the foreign keys of the same type
 		end
 
+feature -- Collection retrieval
 
 	retrieve_collection (parent_key, parent_type, child_type: INTEGER; parent_attr_name: STRING):
 		PS_PAIR [
 					LIST[INTEGER], -- The foreign keys in correct order
 					TUPLE ] -- Any additional information required to create the actual collection
+		obsolete "The handler shouldn't care any more"
 		local
 			reflection:INTERNAL
 		do
@@ -45,6 +47,20 @@ feature
 		end
 
 
+	retrieve_relational_collection (parent_key: INTEGER; parent_type, child_type: TYPE[detachable ANY]; parent_attribute_name: STRING; transaction: PS_TRANSACTION) : LIST[INTEGER]
+			-- Function to retrieve a collection that is stored in relational mode.
+		do
+			create {LINKED_LIST[INTEGER]}Result.make
+		end
+
+	retrieve_object_collection (type: TYPE[detachable ANY]; collection_primary_key: INTEGER; transaction: PS_TRANSACTION): PS_PAIR [LIST[INTEGER],HASH_TABLE[STRING, STRING]]
+			-- Function to retrieve a collection that is stored in object-oriented mode. The hash table in the result pair is the additional information required by the handler.
+	 	do
+			create Result.make (create{LINKED_LIST[INTEGER]}.make, create {HASH_TABLE[STRING, STRING]}.make (1))
+	 	end
+
+
+feature -- Single object write
 
 	insert (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
 		-- Inserts the object into the database
@@ -66,6 +82,9 @@ feature
 			mode_is_delete: an_object.write_mode = an_object.write_mode.delete
 		deferred
 		end
+
+feature -- Collection write
+
 
 
 

@@ -23,7 +23,7 @@ inherit
 
 feature {PS_EIFFELSTORE_EXPORT} -- CRUD operations
 
-	retrieve_an_object (query: PS_QUERY [ANY]; metadata: PS_METADATA; transaction: PS_TRANSACTION): detachable HASH_TABLE [STRING, STRING] --attribute name is the hash key
+	retrieve_an_object (query: PS_QUERY [ANY]; metadata: PS_CLASS_METADATA; transaction: PS_TRANSACTION): detachable HASH_TABLE [STRING, STRING] --attribute name is the hash key
 			-- Retrieves an object in a query. It will remember the query and return the next object that matches the criteria
 			-- If not possible to compile to SQL completely (agents...), it will just do a "best effort" compile and might return some that don't fit.
 			-- It will return void if there are no more objects.
@@ -31,18 +31,18 @@ feature {PS_EIFFELSTORE_EXPORT} -- CRUD operations
 		deferred
 		end
 
-	insert (object: HASH_TABLE [STRING, STRING]; metadata: PS_METADATA; transaction: PS_TRANSACTION): INTEGER
+	insert (object: HASH_TABLE [STRING, STRING]; metadata: PS_CLASS_METADATA; transaction: PS_TRANSACTION): INTEGER
 			-- Inserts `object' into `database' and returns the primary key of the newly inserted object.
 			-- In hashtable `object' everey referenced item needs to have the correct foreign key
 		deferred
 		end
 
-	update (object: ARRAY [PS_PAIR [STRING, STRING]]; metadata: PS_METADATA; transaction: PS_TRANSACTION)
+	update (object: ARRAY [PS_PAIR [STRING, STRING]]; metadata: PS_CLASS_METADATA; transaction: PS_TRANSACTION)
 			-- Updates `object' in the database. `Object' is assumed to have the correct primary key, and the name/value pairs to be updated
 		deferred
 		end
 
-	delete (object: ARRAY [PS_PAIR [STRING, STRING]]; metadata: PS_METADATA; transaction: PS_TRANSACTION)
+	delete (object: ARRAY [PS_PAIR [STRING, STRING]]; metadata: PS_CLASS_METADATA; transaction: PS_TRANSACTION)
 			-- Delete `object', identified by the primary key in the hashtable, from the database
 		deferred
 		end

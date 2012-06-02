@@ -5,88 +5,142 @@ note
 	revision: "$Revision$"
 
 class
-	PS_METADATA
+	PS_CLASS_METADATA
+
+inherit PS_EIFFELSTORE_EXPORT
+inherit {NONE}INTERNAL
 
 create
-	make
+	make_from_type
+
 
 feature {PS_EIFFELSTORE_EXPORT} -- Access
-
-	parents: LIST [PS_METADATA]
-			-- The parents of this class
-
-	children: LIST [PS_METADATA]
-			-- The class' children
 
 	name: STRING
 			--name of the class
 
-	class_id: INTEGER
-			-- id of class, as stored in database	
-
-	attributes: LIST [STRING]
-			-- List of name of the attributes
-
-	get_attribute_id (attribute_name: STRING): INTEGER
-			-- return the id of the specified attribute, as stored in the database
+	type: PS_TYPE_METADATA
+		require
+			not_generic: not is_generic
 		do
-			Result := private_attr_id_hash [attribute_name]
+			Result:=manager.create_metadata_from_type (type_of_type (dynamic_type_from_string(name)))
 		end
 
-	get_attribute_type (attribute_name: STRING): PS_METADATA
-			-- Get the metadata of the type of the attribute `attribute_name'
-		do
-			check attached private_type_hash[attribute_name] as res then
-				Result := res
-			end
-		end
+
+feature {PS_EIFFELSTORE_EXPORT} -- Access
+
+	proper_ancestors: LIST [PS_CLASS_METADATA]
+			-- The proper ancestors
+
+
+	proper_descendants: LIST [PS_CLASS_METADATA]
+			-- The proper descendants
+
+
+	--immediate_ancestors: LIST[PS_CLASS_METADATA]
+			-- The immediate ancestors
+			-- there is no way to get the immediate ancestors when just using the (transitive) conformsTo relation.
+	--immediate_descendants: LIST[PS_CLASS_METADATA]
+			-- The immediate descendants
+
+
+
+
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status
 
 	is_basic_type: BOOLEAN
 			-- Is `Current' a basic type, i.e. a String, Boolean or Numeric value?
 
+	is_generic: BOOLEAN
 
-feature {NONE} -- Implementation
 
-	private_attr_id_hash: HASH_TABLE [INTEGER, STRING]
+feature {PS_EIFFELSTORE_EXPORT} -- obsolete
 
-	private_type_hash: HASH_TABLE [PS_METADATA, STRING]
+	attributes: LINKED_LIST[STRING]
+		once
+			create Result.make
+		end
+
+	get_attribute_id (arg: STRING):INTEGER
+		do
+			Result:=0
+		end
+
+	attribute_type (arg: STRING): like Current
+		do
+			Result:= Current
+		end
 
 feature {NONE} -- Initialization
 
-	make (class_name: STRING; basic: BOOLEAN)
+	make (cl_name: STRING; basic: BOOLEAN)
 			-- Initialize `Current'
 		do
-			create {LINKED_LIST [PS_METADATA]} parents.make
-			create {LINKED_LIST [PS_METADATA]} children.make
-			create {LINKED_LIST [STRING]} attributes.make
-			create private_type_hash.make (50)
-			create private_attr_id_hash.make (50)
-			name := class_name
+--			create {LINKED_LIST [PS_CLASS_METADATA]} proper_ancestors.make
+--			create {LINKED_LIST [PS_CLASS_METADATA]} proper_descendants.make
+--			create {LINKED_LIST [STRING]} attributes.make
+--			create private_type_hash.make (50)
+--			create private_attr_id_hash.make (50)
+			name := cl_name
 			is_basic_type := basic
 		end
 
-feature {PS_METADATA_MANAGER} -- Initialization
-
-	set_class_id (i: INTEGER)
-			-- Set class id, as stored in the database
+	make_from_type (type_metadata: PS_TYPE_METADATA; a_manager:PS_METADATA_MANAGER)
 		do
-			class_id := i
-		end
+			name:= class_name_of_type (type_metadata.type.type_id)
+			is_generic:= type_metadata.is_generic
+			is_basic_type:= type_metadata.is_basic_type
+			manager:= a_manager
 
-	set_attribute_id (i: INTEGER; attr: STRING)
-			-- Set the attribute id, as stored in the database
-		do
-			private_attr_id_hash.put (i, attr)
+			proper_ancestors:= calculate_proper_ancestors (type_metadata)
+			proper_descendants:= calculate_proper_descendants (type_metadata)
 		end
 
 
-	add_attribute (attribute_name: STRING; type: PS_METADATA)
-			-- Add an attrubute to the list.
+
+	calculate_proper_ancestors(type_metadata: PS_TYPE_METADATA): LIST[PS_CLASS_METADATA]
+		local
+			type_names: LINKED_LIST[STRING]
+			local_class_name: STRING
 		do
-			attributes.extend (attribute_name)
-			private_type_hash.put (type, attribute_name)
+			create {LINKED_LIST[PS_CLASS_METADATA]} Result.make
+			create type_names.make
+
+			across type_metadata.supertypes as type_cursor loop
+				local_class_name:= class_name_of_type (type_cursor.item.type.type_id)
+				if not type_names.has (local_class_name) and local_class_name /= name then
+					type_names.extend (local_class_name)
+					Result.extend (type_cursor.item.class_of_type)
+				end
+			end
 		end
+
+
+	calculate_proper_descendants(type_metadata: PS_TYPE_METADATA): LIST[PS_CLASS_METADATA]
+		local
+			type_names: LINKED_LIST[STRING]
+			local_class_name: STRING
+		do
+			create {LINKED_LIST[PS_CLASS_METADATA]} Result.make
+			create type_names.make
+
+			across type_metadata.subtypes as type_cursor loop
+				local_class_name:= class_name_of_type (type_cursor.item.type.type_id)
+				if not type_names.has (local_class_name) and local_class_name /= name then
+					type_names.extend (local_class_name)
+					Result.extend (type_cursor.item.class_of_type)
+				end
+			end
+		end
+
+	manager: PS_METADATA_MANAGER
+
+
+
+
+
+
+
 
 end
