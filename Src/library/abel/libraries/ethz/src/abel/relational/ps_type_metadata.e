@@ -8,7 +8,9 @@ class
 	PS_TYPE_METADATA
 
 inherit PS_EIFFELSTORE_EXPORT
-inherit{NONE} INTERNAL
+
+--inherit{NONE}
+--	INTERNAL
 
 create {PS_METADATA_MANAGER} make
 
@@ -25,7 +27,7 @@ feature
 
 	is_basic_type: BOOLEAN
 		do
-			Result:= type.is_expanded or type_conforms_to (type.type_id, dynamic_type_from_string ("READABLE_STRING_GENERAL"))
+			Result:= type.is_expanded or reflection.type_conforms_to (type.type_id, reflection.dynamic_type_from_string ("READABLE_STRING_GENERAL"))
 		end
 
 	is_generic: BOOLEAN
@@ -35,7 +37,7 @@ feature
 
 	number_of_generics: INTEGER
 		do
-			Result:= generic_count_of_type (type.type_id)
+			Result:= reflection.generic_count_of_type (type.type_id)
 		end
 
 
@@ -100,6 +102,9 @@ feature
 			Result:= attach (attr_name_to_type_hash[attribute_name])
 		end
 
+	reflection:INTERNAL
+		-- instance of INTERNAL.
+
 
 feature {PS_METADATA_MANAGER} -- Initialization
 
@@ -109,6 +114,7 @@ feature {PS_METADATA_MANAGER} -- Initialization
 			manager:= a_manager
 			create attr_name_to_type_hash.make (100)
 			create {LINKED_LIST[STRING]} attributes.make
+			create reflection
 		end
 
 
@@ -119,14 +125,16 @@ feature {PS_METADATA_MANAGER} -- Initialization
 			new_type: TYPE[detachable ANY]
 		do
 			from i:=1
-			until i< field_count_of_type (type.type_id)
+			until i> reflection.field_count_of_type (type.type_id)
 			loop
-				new_type:= type_of_type (field_static_type_of_type (i, type.type_id))
-				attr_name_to_type_hash.extend (manager.create_metadata_from_type (new_type), field_name_of_type (i, type.type_id))
+				new_type:= reflection.type_of_type (reflection.field_static_type_of_type (i, type.type_id))
+				attr_name_to_type_hash.extend (manager.create_metadata_from_type (new_type), reflection.field_name_of_type (i, type.type_id))
 
-				attributes.extend (field_name_of_type (i, type.type_id))
+				attributes.extend (reflection.field_name_of_type (i, type.type_id))
+				i:= i+1
 			end
 		end
+
 
 
 feature{NONE} -- Implementation
@@ -154,7 +162,7 @@ feature{NONE} -- Implementation
 
 	conforms (subtype, supertype: TYPE[detachable ANY]): BOOLEAN
 		do
-			Result:= type_conforms_to (subtype.type_id, supertype.type_id)
+			Result:= reflection.type_conforms_to (subtype.type_id, supertype.type_id)
 		end
 
 end

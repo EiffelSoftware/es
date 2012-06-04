@@ -62,9 +62,10 @@ feature
 --			flat_executor.insert (test_data.flat_class)
 			create ref_executor.make_with_repository (repository)
 			ref_executor.insert (test_data.reference_1)
+--			print (int_repo.disassembler.disassembled_object.to_string)
 --			structures_executor.insert (test_data.data_structures_1)
 
---			print (int_repo.memory_db.string_representation)
+			print (int_repo.memory_db.string_representation)
 			create query.make
 			ref_executor.execute_query (query)
 
@@ -91,8 +92,8 @@ feature
 --			print ( three.tagged_out+ attach (three.refer).tagged_out + attach (attach (three.refer).refer).tagged_out + "%N")
 --			print ( original.tagged_out+ attach (original.refer).tagged_out + attach (attach (original.refer).refer).tagged_out)
 
-			print (original.ref_arrays.out + ref_list[3].ref_arrays.out)
-			print (original.ref_arrays.area.count.out + " " + ref_list[3].ref_arrays.area.count.out)
+--			print (original.ref_arrays.out + ref_list[3].ref_arrays.out)
+--			print (original.ref_arrays.area.count.out + " " + ref_list[3].ref_arrays.area.count.out)
 
 			assert ("The results are not the same", eq)
 		end

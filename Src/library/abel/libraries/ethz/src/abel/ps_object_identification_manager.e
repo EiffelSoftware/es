@@ -50,16 +50,18 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 			identified: is_identified (an_object)
 		local
 			found:BOOLEAN
+			meta: PS_TYPE_METADATA
 		do
+			meta:= metadata_manager.create_metadata_from_object (an_object)
 			from
 				identifier_table.start
 				found:=false
-				create Result.make (0, Current) -- Void safety
+				create Result.make (0, Current, meta) -- Void safety
 			until
 				identifier_table.after or found
 			loop
 				if identifier_table.item.first.exists and then identifier_table.item.first.item = an_object then
-					create Result.make (identifier_table.item.second.item, an_object)
+					create Result.make (identifier_table.item.second.item, an_object, meta)
 				end
 				identifier_table.forth
 			end
@@ -114,6 +116,7 @@ feature { NONE } -- Implementation
 		do
 			create identifier_table.make
 			create subscribers.make
+			create metadata_manager.make_new
 			last_id:=0
 		end
 
@@ -126,5 +129,8 @@ feature { NONE } -- Implementation
 
 	last_id:INTEGER
 		-- the last id generated
+
+	metadata_manager: PS_METADATA_MANAGER
+		-- A manager to generate metadata
 
 end

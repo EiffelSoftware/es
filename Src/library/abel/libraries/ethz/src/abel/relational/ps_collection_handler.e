@@ -35,11 +35,13 @@ feature {PS_EIFFELSTORE_EXPORT}-- Disassemble functions
 		require
 		--	no_multidimensional_collections_in_relational_mode: is_in_relational_storage_mode implies not attached {PS_COLLECTION_PART [ITERABLE[ANY]]} ref_owner
 		do
-			create Result.make (obj, ref_owner, attr_name, mode, Current)
+			create {PS_OBJECT_COLLECTION_PART[COLLECTION_TYPE]} Result.make (obj, mode, Current)
+			fixme ("TODO")
 			--Result.set_capacity (evaluate_capacity (obj))
 		ensure
 			values_not_set_yet: Result.values.is_empty
 		end
+
 
 
 	disassemble_collection (collection: PS_OBJECT_IDENTIFIER_WRAPPER; depth: INTEGER; mode:PS_WRITE_OPERATION; a_disassembler:PS_OBJECT_DISASSEMBLER; reference_owner:PS_OBJECT_GRAPH_PART; ref_attribute_name:STRING):	PS_COLLECTION_PART [COLLECTION_TYPE]

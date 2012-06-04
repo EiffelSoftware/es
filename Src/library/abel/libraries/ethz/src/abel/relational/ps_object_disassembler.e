@@ -46,6 +46,10 @@ feature {PS_EIFFELSTORE_EXPORT}
 		do
 			object_has_id:= id_manager.is_identified (an_object)
 
+			if id_manager.is_identified (an_object) and then internal_operation_store.has (id_manager.get_identifier_wrapper (an_object).object_identifier) then
+				Result:= attach (internal_operation_store[id_manager.get_identifier_wrapper (an_object).object_identifier])
+			else
+
 			if depth=0 and current_global_depth(mode) /= settings.object_graph_depth_infinite then
 				if object_has_id then
 					-- see if we deal with a collection - those still have to be updated
@@ -118,6 +122,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 					create {PS_IGNORE_PART} Result.make
 				end
 			end
+			end
 		end
 
 		perform_disassemble (an_object:ANY; depth: INTEGER; mode:PS_WRITE_OPERATION; reference_owner:PS_OBJECT_GRAPH_PART; ref_attribute_name:STRING): PS_OBJECT_GRAPH_PART
@@ -139,7 +144,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 					check attached internal_operation_store.item (object_id.object_identifier) as res then
 						Result:= res
 					end
-					--print ("blab")
+					print ("blab")
 				else
 					-- ask all collection handlers if they can cope with the data structure
 					collection_found:=False

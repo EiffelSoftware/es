@@ -12,7 +12,7 @@ inherit
 	PS_EIFFELSTORE_EXPORT
 
 create
-	make
+	make, make_new
 
 feature {PS_EIFFELSTORE_EXPORT}
 
@@ -42,28 +42,33 @@ feature {NONE} -- Initialization
 	make (a_connection: MYSQLI_CLIENT)
 			-- Initialize `Current'
 		do
-			connection := a_connection
+--			connection := a_connection
 			create metadata_cache.make (capacity)
 			--initialize
 		end
 
-	initialize
-			-- This function fetches all metadata from the tables in the database.
+	make_new
 		do
-			-- check if scheme is present in database. if not, create it
-			connection.execute_query ("SHOW tables")
-			if connection.last_result.there_exists (agent are_metadata_tables_present) then
-				-- load all metadata about classes and inheritance structure
-				-- TODO
-			else
-					-- Create tables. Do not load anything.
-				connection.execute_query (Class_table_sql)
-				connection.execute_query (Inheritance_table_sql)
-				connection.execute_query (Attributetype_table_sql)
-				connection.execute_query (Attribute_table_sql)
-				print (connection.last_error_message)
-			end
+			create metadata_cache.make (capacity)
 		end
+
+--	initialize
+			-- This function fetches all metadata from the tables in the database.
+--		do
+--			-- check if scheme is present in database. if not, create it
+--			connection.execute_query ("SHOW tables")
+--			if connection.last_result.there_exists (agent are_metadata_tables_present) then
+--				-- load all metadata about classes and inheritance structure
+--				-- TODO
+--			else
+--					-- Create tables. Do not load anything.
+--				connection.execute_query (Class_table_sql)
+--				connection.execute_query (Inheritance_table_sql)
+--				connection.execute_query (Attributetype_table_sql)
+--				connection.execute_query (Attribute_table_sql)
+--				print (connection.last_error_message)
+--			end
+--		end
 
 
 feature {NONE} -- Implementation
@@ -71,7 +76,7 @@ feature {NONE} -- Implementation
 	metadata_cache: HASH_TABLE[PS_TYPE_METADATA, INTEGER]
 	capacity: INTEGER = 100
 
-	connection: MYSQLI_CLIENT
+--	connection: MYSQLI_CLIENT
 
 	are_metadata_tables_present (row: MYSQLI_ROW): BOOLEAN
 			-- Are the tables used for storing metadata present in the database?

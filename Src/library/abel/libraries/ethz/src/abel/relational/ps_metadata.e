@@ -8,7 +8,9 @@ class
 	PS_CLASS_METADATA
 
 inherit PS_EIFFELSTORE_EXPORT
-inherit {NONE}INTERNAL
+
+inherit {NONE}
+	INTERNAL
 
 create
 	make_from_type

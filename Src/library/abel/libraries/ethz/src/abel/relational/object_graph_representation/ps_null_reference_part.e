@@ -12,9 +12,19 @@ inherit
 
 create make
 
-feature {NONE}
+feature
 
 	dependencies: LINKED_LIST[PS_OBJECT_GRAPH_PART]
+
+	is_basic_attribute:BOOLEAN = False
+
+	to_string:STRING
+		do
+			Result:= "Null reference%N"
+		end
+
+feature {NONE}
+
 
 	make
 		-- initialize `Current'
@@ -24,6 +34,5 @@ feature {NONE}
 			write_mode:=write_mode.No_operation
 		end
 
-	is_basic_attribute:BOOLEAN = False
 
 end

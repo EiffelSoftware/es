@@ -23,10 +23,13 @@ feature {NONE}
 			create query_to_cursor_map.make (100)
 			create bookkeeping_manager.make (100)
 			create collection_handlers.make
+			create metadata_manager.make_new
 		end
 
 	backend:PS_BACKEND_STRATEGY
 		-- The storage backend
+
+	metadata_manager: PS_METADATA_MANAGER
 
 	query_to_cursor_map: HASH_TABLE[ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]], INTEGER]
 
@@ -55,11 +58,13 @@ feature
 		local
 			results: ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
 			bookkeeping_table:HASH_TABLE[ANY, INTEGER]
+			reflection: INTERNAL
 		do
+			create reflection
 			query.set_identifier (new_identifier)
 			query.register_as_executed (transaction)
 
-			results:=backend.retrieve (query.class_name, query.criteria, create{LINKED_LIST[STRING]}.make, transaction)
+			results:=backend.retrieve (metadata_manager.create_metadata_from_type (reflection.type_of_type (reflection.generic_dynamic_type (query, 1))), query.criteria, create{LINKED_LIST[STRING]}.make, transaction)
 			query_to_cursor_map.extend (results, query.backend_identifier)
 
 			create bookkeeping_table.make (100)
@@ -190,7 +195,7 @@ feature {NONE} -- Implementation
 									else
 										-- retrieve single object
 										from
-											cursor:= backend.retrieve (reflection.class_name_of_type (reflection.generic_dynamic_type_of_type (field_type, 1)), create{PS_EMPTY_CRITERION}, create{LINKED_LIST[STRING]}.make, transaction)
+											cursor:= backend.retrieve (metadata_manager.create_metadata_from_type (reflection.type_of_type (reflection.generic_dynamic_type_of_type (field_type, 1))), create{PS_EMPTY_CRITERION}, create{LINKED_LIST[STRING]}.make, transaction)
 										until
 											cursor.after
 										loop
@@ -206,7 +211,7 @@ feature {NONE} -- Implementation
 							else -- reference type
 
 								from
-									cursor:= backend.retrieve (reflection.class_name_of_type (field_type), create{PS_EMPTY_CRITERION}, create{LINKED_LIST[STRING]}.make, transaction)
+									cursor:= backend.retrieve (metadata_manager.create_metadata_from_type (reflection.type_of_type (field_type)), create{PS_EMPTY_CRITERION}, create{LINKED_LIST[STRING]}.make, transaction)
 								until
 									cursor.after
 								loop

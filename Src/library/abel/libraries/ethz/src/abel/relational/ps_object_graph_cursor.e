@@ -8,7 +8,7 @@ class
 	PS_OBJECT_GRAPH_CURSOR
 inherit
 	ITERATION_CURSOR[PS_OBJECT_GRAPH_PART]
-
+	PS_EIFFELSTORE_EXPORT
 create
 	make
 
@@ -16,30 +16,21 @@ feature -- Cursor status and movement
 
 	item: PS_OBJECT_GRAPH_PART
 		-- Item at current cursor position.
+		do
+			Result:= current_cursor.item
+		end
 
 
 	after:BOOLEAN
 		-- Are there no more items to iterate over?
+		do
+			Result:= cursor_stack.is_empty and current_cursor.after
+		end
 
 	forth
 		-- Move to next position
 		do
-			-- do a depth first search - first follow dependencies
-			if not current_cursor.after then
-				step_in
-				if object_graph_stack.has (item) then
-					-- found an already visited item
-					visited_handler.call ([previous, item])
-					retreat
-				end
-			else
-				-- we have reached the end of the dependency list - time to retreat
-				if not is_at_root_object then
-					retreat
-				else
-					after:= True
-				end
-			end
+			move
 		end
 
 	previous:PS_OBJECT_GRAPH_PART
@@ -48,6 +39,8 @@ feature -- Cursor status and movement
 			not after and not is_at_root_object
 		do
 			Result:= object_graph_stack.item
+		ensure
+			not_item: Result /= item
 		end
 
 	is_at_root_object:BOOLEAN
@@ -76,60 +69,100 @@ feature -- Visited item handler function
 
 feature {NONE} -- Implementation
 
-	retreat
-		-- Retreat from current item - we either reached an end or the object was already visited
+
+	move
+		-- Move to the next item
+		require
+			not_after: not after
+			consistent: is_consistent
 		do
-			step_out
-			current_cursor.forth
-			-- check if we've reached the end - else call Current.forth again as we need to step in if there's a new item, or step out again if we've already reached the end of the list
-			if not object_graph_stack.is_empty and current_cursor.after then
-				Current.forth
-			else
-				after:=True
+			from step_in
+			until is_consistent
+			loop
+				fix
+			variant
+				object_graph_stack.count
 			end
-
+		ensure
+			consistent: is_consistent
 		end
-
 
 	step_in
 		-- Do a step down the object graph
+		require
+			not object_graph_stack.has (item)
 		do
 			object_graph_stack.put (item)
 			cursor_stack.put (current_cursor)
-			item:= current_cursor.item
-			current_cursor:= item.new_cursor
+			current_cursor:= item.dependencies.new_cursor
+		ensure
+			object_graph_stack.has (old item)
 		end
 
 	step_out
 		-- Do a step up the object graph
 		do
-			item:= object_graph_stack.item
 			current_cursor:= cursor_stack.item
 			object_graph_stack.remove
 			cursor_stack.remove
 		end
 
 
+	fix
+		do
+--			print ("state: " +  current_cursor.after.out + object_graph_stack.count.out + "%N")
+			if not current_cursor.after and then object_graph_stack.has (item) then
+--				print ("calling removal feature%N")
+				visited_handler.call ([previous, item])
+			end
+			step_out
+			current_cursor.forth
+		end
+
+
+	is_consistent: BOOLEAN
+		do
+			Result:= True
+			if after then
+				Result:= True
+			elseif current_cursor.after then
+				Result:= False
+			elseif object_graph_stack.has (item) then
+				Result:= False
+			else
+				Result:= True
+			end
+
+		end
+
+
 feature {NONE} -- Implementation
 
 	object_graph_stack:LINKED_STACK[ PS_OBJECT_GRAPH_PART]
-	cursor_stack: LINKED_STACK[ ITERATION_CURSOR[PS_OBJECT_GRAPH_PART]]
+	cursor_stack: LINKED_STACK[ INDEXABLE_ITERATION_CURSOR[PS_OBJECT_GRAPH_PART]]
 
-	current_cursor: ITERATION_CURSOR[PS_OBJECT_GRAPH_PART]
+	current_cursor: INDEXABLE_ITERATION_CURSOR[PS_OBJECT_GRAPH_PART]
+
+	root: LINKED_LIST[PS_OBJECT_GRAPH_PART]
 
 
 feature {NONE} -- Initialization
 
 	make (graph:PS_OBJECT_GRAPH_PART)
 		do
-			item:=graph
+			create root.make
+			root.extend (graph)
+			current_cursor:= root.new_cursor
+
 			create object_graph_stack.make
 			create cursor_stack.make
-			current_cursor:= item.dependencies.new_cursor
 			visited_handler:= agent default_handler
 		end
 
 
-
+invariant
+	previous_dependant: not (after or is_at_root_object) implies previous.dependencies.has (item)
+	current_cursor_not_in_stack: not cursor_stack.has (current_cursor)
+	single_root: root.count = 1
 
 end

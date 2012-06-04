@@ -54,12 +54,20 @@ feature
 	remove_dependency (obj:PS_OBJECT_GRAPH_PART)
 		-- Remove dependency `obj' from the list
 		do
+--			print (obj)
 			from attributes.start
 			until attributes.after
 			loop
-				if attached attribute_values.item (attributes.item_for_iteration) as item and then item = obj then
-					attribute_values.remove (attributes.item_for_iteration)
-					attributes.remove
+				print (attributes.item.out + "%N")
+				if attached attribute_values.item (attributes.item_for_iteration) as item then
+--					print (item)
+					if  item.is_equal( obj )then
+						attribute_values.remove (attributes.item_for_iteration)
+						attributes.remove
+						print ("removed%N")
+					else
+						attributes.forth
+					end
 				else
 					attributes.forth
 				end

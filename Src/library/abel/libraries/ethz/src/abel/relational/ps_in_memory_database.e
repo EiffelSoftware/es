@@ -15,13 +15,15 @@ create make
 
 feature
 
-	retrieve (class_name:STRING; criteria:PS_CRITERION; attributes:LIST[STRING]; transaction:PS_TRANSACTION) : ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
+	retrieve (type: PS_TYPE_METADATA; criteria:PS_CRITERION; attributes:LIST[STRING]; transaction:PS_TRANSACTION) : ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
 		-- Retrieves all objects of class `class_name' that match the criteria in `criteria' within transaction `transaction'.
 		-- If `atributes' is not empty, it will only retrieve the attributes listed there.
 		local
+			class_name: STRING
 			result_list: LINKED_LIST[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
 			pair:PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]
 		do
+			class_name:= type.class_of_type.name
 			create result_list.make
 
 			across attach (class_to_object_keys[class_name]) as obj_cursor
@@ -85,9 +87,9 @@ feature
 			loop
 				--print (i.out + "%N " + attr_name.item + "%N")
 				if attached{PS_BASIC_ATTRIBUTE_PART} an_object.attribute_values.at (attr_name.item) as basic then
-					existing_values.replace (basic.value.out, attr_name.item)
+					existing_values.force (basic.value.out, attr_name.item)
 				elseif attached {PS_COMPLEX_ATTRIBUTE_PART} an_object.attribute_values.at (attr_name.item) as complex then
-					existing_values.replace (complex.object_id.object_identifier.out, attr_name.item)
+					existing_values.force (complex.object_id.object_identifier.out, attr_name.item)
 				end
 				i:=i-1
 			variant
@@ -102,39 +104,50 @@ feature
 			attach (class_to_object_keys[an_object.object_id.class_name]).prune (an_object.object_id.object_identifier)
 		end
 
-	--insert_collection (a_collection: PS_COLLECTION_PART[ITERABLE[ANY]]; a_transaction:PS_TRANSACTION)
+
+
+	insert_objectoriented_collection (a_collection: PS_OBJECT_COLLECTION_PART[ITERABLE[detachable ANY]]; a_transaction:PS_TRANSACTION)
 		-- Add all entries in a_collection to the database
-	--	do
-	--	end
+		local
+			id: INTEGER
+			new_inserts: LINKED_LIST[STRING]
+		do
+			id:= a_collection.object_id.object_identifier
+			if not collections.has (id) then
+				collections.extend (create{LINKED_LIST[STRING]}.make, id)
+			end
 
---	update_collection (a_collection: PS_COLLECTION_PART[ITERABLE[ANY]]; a_transaction:PS_TRANSACTION)
-		-- Update a_collection (replace with any pre-existing collection)
---		do
---		end
+			create new_inserts.make
+			across a_collection.values as val loop
+				if attached{PS_BASIC_ATTRIBUTE_PART} val.item as basic then
+					new_inserts.extend (basic.value)
+				elseif attached {PS_COMPLEX_ATTRIBUTE_PART} val.item as complex then
+					new_inserts.extend (complex.object_id.object_identifier.out)
+				end
+			end
 
-	--delete_collection (a_collection: PS_COLLECTION_PART[ITERABLE[ANY]]; a_transaction:PS_TRANSACTION)
+			attach (collections[id]).append (new_inserts) -- TODO: order
+
+			collection_info.force (a_collection.additional_information, id)
+
+		end
+
+	delete_objectoriented_collection (a_collection: PS_OBJECT_COLLECTION_PART[ITERABLE[detachable ANY]]; a_transaction:PS_TRANSACTION)
 		-- Delete a_collection from the database
-	--	do
-	--	end
+		do
+			collection_info.remove (a_collection.object_id.object_identifier)
+			collections.remove (a_collection.object_id.object_identifier)
+		end
+
+	retrieve_objectoriented_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER; transaction: PS_TRANSACTION): PS_PAIR [LIST[STRING],HASH_TABLE[STRING, STRING]]
+			-- Retrieves the object-oriented collection of type `object_type' and with primary key `object_primary_key'.
+			-- The result is a list of values in correct order, with string representation of either foreign keys  or just basic types - depending on the generic argument of the collection.
+			-- The hash table in the result pair is the additional information required by the handler, as given by a previous insert function.
+	 	do
+			create Result.make (attach (collections[collection_primary_key]) , attach (collection_info[collection_primary_key]))
+	 	end
 
 
-	-- How to access the data?
-	-- Queries: CLASS_NAME (+ Criteria) -> Cursor of primary keys (or actual data)
-	-- Reload: Key -> Object
-
-	-- Update: Key, Object ->
-	-- Insert: Object ->
-	-- Delete: Key ->
-
-
-	-- HASH_TABLE [LIST[INTEGER] (key), STRING (class_name) ]
-	-- HASH_TABLE [HASH_TABLE [STRING (Value), STRING (attr_name)], INTEGER (key) ]
-
-
-	internal_db:HASH_TABLE[HASH_TABLE[ STRING, STRING], INTEGER]
-		-- The internal data store. First key is the POID, and second key is the attribute name
-
-	class_to_object_keys: HASH_TABLE [attached LIST[INTEGER], STRING]
 
 	string_representation:STRING
 		-- The current DB content as a string
@@ -172,11 +185,24 @@ feature{NONE} -- Initialization
 			create internal_db.make (db_size)
 			create class_to_object_keys.make (db_size)
 			create collection_handlers.make
+			create collections.make (db_size)
+			create collection_info.make (db_size)
 		end
 
 	db_size:INTEGER = 100
 
 
+	internal_db:HASH_TABLE[HASH_TABLE[ STRING, STRING], INTEGER]
+		-- The internal data store. First key is the POID, and second key is the attribute name
 
+	class_to_object_keys: HASH_TABLE [attached LIST[INTEGER], STRING]
+
+feature {NONE} -- Collection handling
+
+	collections: HASH_TABLE[LINKED_LIST[STRING],INTEGER]
+		-- Internal store of collection objects
+
+	collection_info: HASH_TABLE [HASH_TABLE[STRING, STRING], INTEGER]
+		-- The capacity of individual SPECIAL objects
 
 end

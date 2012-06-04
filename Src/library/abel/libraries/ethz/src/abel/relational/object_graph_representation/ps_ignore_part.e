@@ -26,4 +26,9 @@ feature
 
 	is_basic_attribute:BOOLEAN = False
 
+	to_string:STRING
+		do
+			Result:= "IGNORE reference"+ "%N"
+		end
+
 end

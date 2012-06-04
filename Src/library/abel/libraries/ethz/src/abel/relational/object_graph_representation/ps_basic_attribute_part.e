@@ -39,5 +39,10 @@ feature -- Initialization
 	is_basic_attribute:BOOLEAN = True
 
 
+	to_string:STRING
+		do
+			Result:= "Basic attribute: " + value.out + "%N"
+		end
+
 
 end

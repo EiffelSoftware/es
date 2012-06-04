@@ -6,16 +6,20 @@ note
 
 class
 	PS_OBJECT_IDENTIFIER_WRAPPER
+inherit
+	PS_EIFFELSTORE_EXPORT
+
 
 create make
 
 feature {NONE}
 
-	make (id:INTEGER; obj:ANY)
+	make (id:INTEGER; obj:ANY; meta: PS_TYPE_METADATA)
 		-- create `current' with object_identifier `id' and object `obj'
 		do
 			object_identifier:=id
 			item:=obj
+			metadata:= meta
 		end
 
 feature	{PS_EIFFELSTORE_EXPORT} -- Access
@@ -26,12 +30,13 @@ feature	{PS_EIFFELSTORE_EXPORT} -- Access
 	item: ANY
 		-- A reference to the actual object
 
+	metadata: PS_TYPE_METADATA
+		-- Metadata information about the type of `item'
+
 	class_name: STRING
 		-- The object's class name
-		local
-			reflection:INTERNAL
+		obsolete "use metadata.class_of_type.name instead"
 		do
-			create reflection
-			Result:= reflection.class_name (item)
+			Result:= metadata.class_of_type.name
 		end
 end

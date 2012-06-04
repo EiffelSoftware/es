@@ -18,7 +18,7 @@ feature
 	write_mode: PS_WRITE_OPERATION
 		-- Insert, Update, Delete or No_operation mode
 
-	Insert, Update, Delete, No_operation: INTEGER = unique
+--	Insert, Update, Delete, No_operation: INTEGER = unique
 		-- The different modes
 
 
@@ -29,8 +29,12 @@ feature
 
 	remove_dependency (obj:PS_OBJECT_GRAPH_PART)
 		-- Remove dependency `obj' from the list
+		require
+--			is_present: dependencies.has (obj)
 		do
 			dependencies.prune (obj)
+		ensure
+			not_present: not dependencies.has (obj)
 		end
 
 
@@ -45,6 +49,11 @@ feature
 	set_visited (var:BOOLEAN)
 		do
 			is_visited:= var
+		end
+
+
+	to_string:STRING
+		deferred
 		end
 
 

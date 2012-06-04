@@ -52,7 +52,7 @@ feature -- Low-level operations
 			else
 				create current_collection.make
 				collections.extend (current_collection, a_collection.object_id.object_identifier)
-				print (a_collection.object_id.object_identifier)
+				--print (a_collection.object_id.object_identifier)
 			end
 
 			-- fill the "foreign key table"
@@ -70,7 +70,7 @@ feature -- Low-level operations
 
 			check attached{SPECIAL[detachable ANY]} a_collection.object_id.item as actual_collection then
 				collection_counts.extend (actual_collection.capacity, a_collection.object_id.object_identifier)
-				print (actual_collection.capacity.out + "%N")
+				--print (actual_collection.capacity.out + "%N")
 			end
 
 		end
@@ -91,7 +91,7 @@ feature -- Low-level operations
 		local
 			count_tuple: TUPLE[INTEGER]
 		do
-			print (parent_key.out + collection_counts[parent_key].out)
+			--print (parent_key.out + collection_counts[parent_key].out)
 			create count_tuple.default_create
 			count_tuple.put_integer (collection_counts[parent_key], 1)
 			create Result.make (attach (collections[parent_key]), count_tuple)
