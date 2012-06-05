@@ -123,6 +123,8 @@ feature
 					new_inserts.extend (basic.value)
 				elseif attached {PS_COMPLEX_ATTRIBUTE_PART} val.item as complex then
 					new_inserts.extend (complex.object_id.object_identifier.out)
+				elseif attached{PS_NULL_REFERENCE_PART} val.item as null then
+					new_inserts.extend ("0")
 				end
 			end
 
@@ -184,7 +186,7 @@ feature{NONE} -- Initialization
 		do
 			create internal_db.make (db_size)
 			create class_to_object_keys.make (db_size)
-			create collection_handlers.make
+--			create collection_handlers.make
 			create collections.make (db_size)
 			create collection_info.make (db_size)
 		end

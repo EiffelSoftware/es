@@ -105,6 +105,11 @@ feature -- Layout information
 		end
 
 
+	is_in_relational_mode_by_type (a_collection: TYPE[detachable ANY]): BOOLEAN
+		do
+			Result:= false
+			fixme ("Implement this - also look if feature signature is sufficient like that")
+		end
 
 feature -- Utilities
 
@@ -138,7 +143,7 @@ feature -- Low-level operations
 
 feature -- Object assembly
 
-	build_collection (type_id: INTEGER; objects: LIST[detachable ANY]; additional_information: TUPLE): COLLECTION_TYPE
+	build_collection (type_id: INTEGER; objects: LIST[detachable ANY]; additional_information: HASH_TABLE[STRING, STRING]): COLLECTION_TYPE
 		-- Dynamic type id of the collection
 		deferred
 		end

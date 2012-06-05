@@ -90,6 +90,15 @@ feature
 			end
 		end
 
+	index_of (attribute_name:STRING): INTEGER
+		require
+			attribute_present: attributes.has (attribute_name)
+		do
+			Result:= attr_name_to_index_hash[attribute_name]
+		ensure
+			correct: reflection.field_name_of_type (Result, type.type_id).is_equal (attribute_name)
+		end
+
 --	is_generic_attribute (attribute_name:STRING): BOOLEAN
 --		do
 --		end
@@ -113,6 +122,7 @@ feature {PS_METADATA_MANAGER} -- Initialization
 			type:= a_type
 			manager:= a_manager
 			create attr_name_to_type_hash.make (100)
+			create attr_name_to_index_hash.make (100)
 			create {LINKED_LIST[STRING]} attributes.make
 			create reflection
 		end
@@ -128,6 +138,7 @@ feature {PS_METADATA_MANAGER} -- Initialization
 			until i> reflection.field_count_of_type (type.type_id)
 			loop
 				new_type:= reflection.type_of_type (reflection.field_static_type_of_type (i, type.type_id))
+				attr_name_to_index_hash.extend (i, reflection.field_name_of_type (i, type.type_id))
 				attr_name_to_type_hash.extend (manager.create_metadata_from_type (new_type), reflection.field_name_of_type (i, type.type_id))
 
 				attributes.extend (reflection.field_name_of_type (i, type.type_id))
@@ -143,6 +154,7 @@ feature{NONE} -- Implementation
 
 	attr_name_to_type_hash: HASH_TABLE[PS_TYPE_METADATA, STRING]
 
+	attr_name_to_index_hash: HASH_TABLE[INTEGER, STRING]
 
 	subtypes_internal_wrapper (a_type: TYPE[detachable ANY]): LIST[TYPE[detachable ANY]]
 		do

@@ -100,7 +100,7 @@ feature -- Low-level operations
 
 feature -- Object assembly
 
-	build_collection (type_id: INTEGER; objects: LIST[detachable ANY]; additional_information: TUPLE):SPECIAL[detachable ANY]
+	build_collection (type_id: INTEGER; objects: LIST[detachable ANY]; additional_information: HASH_TABLE[STRING, STRING]):SPECIAL[detachable ANY]
 		-- Dynamic type id of the collection
 		local
 			reflection: INTERNAL
@@ -108,7 +108,8 @@ feature -- Object assembly
 		do
 			create reflection
 			fixme ("TODO: handle case where SPECIAL doesn't have a reference type")
-			count:= additional_information.integer_32_item (1)
+	--		count:= additional_information.integer_32_item (1)
+	count:=10
 			--print (additional_information.out + count.out)
 
 			Result:= reflection.new_special_any_instance (type_id, count)
@@ -118,6 +119,8 @@ feature -- Object assembly
 				Result.extend (obj_cursor.item)
 				i:=i+1
 			end
+
+			print (Result)
 
 		end
 

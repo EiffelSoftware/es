@@ -147,7 +147,7 @@ feature {NONE} -- Implementation
 			cursor:ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
 
 			collection_handler: detachable PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]]
-			collection_result: PS_PAIR [LIST[INTEGER], TUPLE ]
+			collection_result: PS_PAIR [LIST[STRING], HASH_TABLE[STRING, STRING] ]
 			collection_as_list: LINKED_LIST[detachable ANY]
 			collection_item: detachable ANY
 		do
@@ -186,11 +186,13 @@ feature {NONE} -- Implementation
 							end
 
 							if attached collection_handler then -- collection
-								collection_result:= backend.retrieve_collection (field_val.to_integer, dynamic_type, field_type, field_name)
+								fixme ("relational collections")
+								--collection_result:= backend.retrieve_collection (field_val.to_integer, dynamic_type, field_type, field_name)
+								collection_result:= backend.retrieve_objectoriented_collection (metadata_manager.create_metadata_from_type (reflection.type_of_type (field_type)), field_val.to_integer, transaction)
 								create collection_as_list.make
 								across collection_result.first as foreignkey_cursor loop
 
-									if foreignkey_cursor.item = 0 then
+									if foreignkey_cursor.item.to_integer = 0 then
 										collection_as_list.extend (Void)
 									else
 										-- retrieve single object
@@ -199,7 +201,7 @@ feature {NONE} -- Implementation
 										until
 											cursor.after
 										loop
-											if cursor.item.first = foreignkey_cursor.item then
+											if cursor.item.first = foreignkey_cursor.item.to_integer then
 												collection_as_list.extend (build (reflection.generic_dynamic_type_of_type (field_type, 1), cursor.item, transaction, bookkeeping))
 											end
 											cursor.forth
@@ -231,7 +233,6 @@ feature {NONE} -- Implementation
 			end
 
 		end
-
 
 
 

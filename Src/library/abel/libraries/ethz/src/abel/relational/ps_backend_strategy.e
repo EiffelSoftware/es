@@ -69,28 +69,6 @@ feature -- Single object retrieval
 
 feature -- Collection retrieval
 
-	retrieve_collection (parent_key, parent_type, child_type: INTEGER; parent_attr_name: STRING):
-		PS_PAIR [
-					LIST[INTEGER], -- The foreign keys in correct order
-					TUPLE ] -- Any additional information required to create the actual collection
-		obsolete "The handler shouldn't care any more"
-		local
-			reflection:INTERNAL
-		do
-
-			create reflection
-			create Result.make (create{LINKED_LIST[INTEGER]}.make, create {TUPLE})
-			across collection_handlers as handler_cursor loop
-				if handler_cursor.item.can_handle_type (reflection.type_of_type (child_type)) then
-					Result:= handler_cursor.item.retrieve (parent_key, parent_type, child_type, parent_attr_name)
-				end
-			end
-			-- TODO: It should be possible to do this in a generic way - i.e. without using the handler.
-			-- In relational mode, the two class names (or types) and the feature name of the parent is sufficient to build a structure anyway - anything else can't be stored anyway.
-			-- In objectoriented mode, the backend basically has to store the list and some additional information, which can be modelled separately using a HASH_TABLE
-			-- The only thing the backend needs to know is if the collection in question is stored in object or relational mode!
-		end
-
 
 	retrieve_relational_collection (owner_type, collection_item_type: PS_TYPE_METADATA; owner_key: INTEGER; owner_attribute_name: STRING; transaction: PS_TRANSACTION) : LIST[STRING]
 			-- Retrieves the relational collection between class `owner_type' and `collection_item_type', where the owner has primary key `owner_key' and the attribute name of the collection inside the owner object is called `owner_attribute_name'
@@ -129,37 +107,6 @@ feature -- Single object write
 		require
 			mode_is_delete: an_object.write_mode = an_object.write_mode.delete
 		deferred
-		end
-
-feature -- Collection write OBSOLETE
-
-
-
-
-	insert_collection (a_collection: PS_COLLECTION_PART[ITERABLE[detachable ANY]]; a_transaction:PS_TRANSACTION)
-		-- Add all entries in a_collection to the database
-		require
-			mode_is_insert: a_collection.write_mode = a_collection.write_mode.insert
-		do
-			a_collection.handler.insert (a_collection)
-		end
-
-	update_collection (a_collection: PS_COLLECTION_PART[ITERABLE[detachable ANY]]; a_transaction:PS_TRANSACTION)
-		-- Update a_collection (replace with any pre-existing collection)
-		require
-			mode_is_update: a_collection.write_mode = a_collection.write_mode.update
-		do
-			-- Delete this - Updates are handled earlier by creating a delete and then an insert statement
-			check false end
-
-		end
-
-	delete_collection (a_collection: PS_COLLECTION_PART[ITERABLE[detachable ANY]]; a_transaction:PS_TRANSACTION)
-		-- Delete a_collection from the database
-		require
-			mode_is_delete: a_collection.write_mode = a_collection.write_mode.delete
-		do
-			a_collection.handler.delete (a_collection)
 		end
 
 
@@ -204,11 +151,11 @@ feature -- Collection write
 
 
 
-	collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]]]
+--	collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]]]
 
 	add_handler (a_handler: PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]])
 		do
-			collection_handlers.extend (a_handler)
+--			collection_handlers.extend (a_handler)
 		end
 
 

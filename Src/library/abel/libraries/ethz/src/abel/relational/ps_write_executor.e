@@ -26,18 +26,26 @@ feature
 						backend.delete (obj, transaction)
 					end
 
-				elseif attached{PS_COLLECTION_PART[ITERABLE[detachable ANY]]} op_cursor.item as coll then
+				elseif attached{PS_OBJECT_COLLECTION_PART[ITERABLE[detachable ANY]]} op_cursor.item as coll then
 
 					if coll.write_mode = coll.write_mode.insert then
-						backend.insert_collection (coll, transaction)
+						backend.insert_objectoriented_collection (coll, transaction)
 					elseif coll.write_mode = coll.write_mode.update then
-						backend.update_collection (coll, transaction)
+						check false end
 					elseif coll.write_mode = coll.write_mode.delete then
-						backend.delete_collection (coll, transaction)
+						backend.delete_objectoriented_collection (coll, transaction)
+					end
+				elseif attached{PS_RELATIONAL_COLLECTION_PART[ITERABLE[detachable ANY]]} op_cursor.item as coll then
+
+					if coll.write_mode = coll.write_mode.insert then
+						backend.insert_relational_collection (coll, transaction)
+					elseif coll.write_mode = coll.write_mode.update then
+						check false end
+					elseif coll.write_mode = coll.write_mode.delete then
+						backend.delete_relational_collection (coll, transaction)
 					end
 
 				end
-
 			end
 		end
 
