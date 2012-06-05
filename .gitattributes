@@ -3255,6 +3255,11 @@ Src/unstable/library/persistency/database/sqlite3/README -text
 Src/unstable/library/persistency/database/sqlite3/license.lic -text
 Src/unstable/library/text/regexp/pcre/pcre.rc -text
 benchmarks/scoop/scoop0001/description.txt -text
+benchmarks/scoop/scoop0002/description.txt -text
+benchmarks/scoop/scoop0003/description.txt -text
+benchmarks/scoop/scoop0004/description.txt -text
+benchmarks/scoop/scoop0005/description.txt -text
+benchmarks/scoop/scoop0006/description.txt -text
 eweasel/BUGS -text
 eweasel/CHANGES -text
 eweasel/GPL.txt -text
