@@ -102,7 +102,8 @@ feature
 
 	index_of (attribute_name:STRING): INTEGER
 		require
-			attribute_present: attributes.has (attribute_name)
+			attribute_present: across attributes as cursor some cursor.item.is_equal (attribute_name) end
+			attr_persent_second_try: attributes.has (attribute_name)
 		do
 			Result:= attr_name_to_index_hash[attribute_name]
 		ensure
@@ -134,6 +135,7 @@ feature {PS_METADATA_MANAGER} -- Initialization
 			create attr_name_to_type_hash.make (100)
 			create attr_name_to_index_hash.make (100)
 			create {LINKED_LIST[STRING]} attributes.make
+			attributes.compare_objects
 			create reflection
 		end
 
@@ -147,7 +149,9 @@ feature {PS_METADATA_MANAGER} -- Initialization
 			from i:=1
 			until i> reflection.field_count_of_type (type.type_id)
 			loop
-				new_type:= reflection.type_of_type (reflection.field_static_type_of_type (i, type.type_id))
+				fixme ("check if the detachable type really is needed all the time")
+				
+				new_type:= reflection.type_of_type (reflection.detachable_type (reflection.field_static_type_of_type (i, type.type_id)))
 				attr_name_to_index_hash.extend (i, reflection.field_name_of_type (i, type.type_id))
 				attr_name_to_type_hash.extend (manager.create_metadata_from_type (new_type), reflection.field_name_of_type (i, type.type_id))
 

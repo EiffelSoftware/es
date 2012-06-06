@@ -44,11 +44,11 @@ feature {PS_EIFFELSTORE_EXPORT}
 				end
 				across attr as cursor loop
 					if type.attribute_type (cursor.item).is_basic_type then
-						current_obj.add_basic_attribute (cursor.item, get_basic_attribute (obj_primary.item, type.class_of_type.name, cursor.item))
+						current_obj.add_attribute (cursor.item, get_basic_attribute (obj_primary.item, type.class_of_type.name, cursor.item), "BASIC")
 					else
 						if has_reference_attribute (obj_primary.item, type.class_of_type.name, cursor.item) then
 							ref:= get_reference_attribute (obj_primary.item, type.class_of_type.name, cursor.item)
-							current_obj.add_foreign_key (cursor.item, ref.first, ref.second)
+							current_obj.add_attribute (cursor.item, ref.first.out, ref.second)
 						end
 					end
 				end
@@ -72,6 +72,38 @@ feature {PS_EIFFELSTORE_EXPORT}
 	--		Result:= result_list.new_cursor
 		end
 
+
+
+	retrieve_from_keys (type: PS_TYPE_METADATA; primary_keys: LIST[INTEGER]; transaction:PS_TRANSACTION) : LINKED_LIST[PS_RETRIEVED_OBJECT]
+		-- Retrieve all objects of type `type' and with primary key in `primary_keys'.
+		local
+			current_obj: PS_RETRIEVED_OBJECT
+			attr: LIST[STRING]
+			ref:PS_PAIR[INTEGER, STRING]
+		do
+			create Result.make
+
+			across primary_keys as obj_primary loop
+
+				create current_obj.make (obj_primary.item, type.class_of_type)
+				attr:= type.attributes
+
+				across attr as cursor loop
+					if type.attribute_type (cursor.item).is_basic_type then
+						current_obj.add_attribute (cursor.item, get_basic_attribute (obj_primary.item, type.class_of_type.name, cursor.item), "BASIC")
+					else
+						if has_reference_attribute (obj_primary.item, type.class_of_type.name, cursor.item) then
+							ref:= get_reference_attribute (obj_primary.item, type.class_of_type.name, cursor.item)
+							current_obj.add_attribute (cursor.item, ref.first.out, ref.second)
+						end
+					end
+				end
+
+
+				Result.extend (current_obj)
+
+			end
+		end
 
 
 	insert (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)

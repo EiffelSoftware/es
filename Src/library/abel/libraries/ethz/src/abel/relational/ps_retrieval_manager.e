@@ -117,7 +117,9 @@ feature {NONE} -- Implementation
 				new_type:= reflection.detachable_type (reflection.generic_dynamic_type (query, 1))
 --				print (new_type.out + " " + reflection.detachable_type (query.generating_type.generic_parameter_type (1).type_id).out + "%N")
 --				check new_type = query.generating_type.generic_parameter_type (1).type_id end
-				new_object:= build (new_type, current_object, transaction, bookkeeping)
+
+				--new_object:= build (new_type, current_object, transaction, bookkeeping)
+				new_object:= build_new (metadata_manager.create_metadata_from_type (reflection.type_of_type (new_type)), current_object, transaction, bookkeeping)
 
 
 				if query.criteria.is_satisfied_by (new_object) then
@@ -167,7 +169,7 @@ feature {NONE} -- Implementation
 				create reflection
 				Result:= reflection.new_instance_of  (dynamic_type)
 
-				bookkeeping.extend (Result, obj.primary_key+ obj.class_metadata.name.hash_code)
+				bookkeeping.extend (Result, obj.primary_key + obj.class_metadata.name.hash_code)
 				no_fields:= reflection.field_count (Result)
 
 				from i:=1
@@ -230,7 +232,7 @@ feature {NONE} -- Implementation
 									if cursor.item.primary_key = field_val.to_integer_32 and then cursor.item.class_metadata.name.is_equal (reflection.class_name_of_type (field_type)) then
 										print (reflection.type_of_type (field_type).out)
 										print (reflection.type_of_type (reflection.field_static_type_of_type (i, dynamic_type)).out)
-
+										--check false end
 										new_obj:= build (field_type, cursor.item, transaction, bookkeeping)
 										print (new_obj.generating_type.out)
 										reflection.set_reference_field (i, Result, new_obj)
@@ -249,6 +251,40 @@ feature {NONE} -- Implementation
 			type_correct: Result.generating_type.type_id = dynamic_type
 		end
 
+
+	build_new(type:PS_TYPE_METADATA; obj:PS_RETRIEVED_OBJECT; transaction:PS_TRANSACTION; bookkeeping:HASH_TABLE[ANY, INTEGER]): ANY
+		require
+			obj.class_metadata.name.is_equal (type.class_of_type.name)
+		local
+			reflection:INTERNAL
+			field_value: ANY
+			field_type:PS_TYPE_METADATA
+			keys: LINKED_LIST [INTEGER]
+		do
+			if bookkeeping.has (obj.primary_key+ obj.class_metadata.name.hash_code) then
+				Result:= attach (bookkeeping[obj.primary_key+ obj.class_metadata.name.hash_code])
+			else
+				create reflection
+				Result:= reflection.new_instance_of  (type.type.type_id)
+				bookkeeping.extend (Result, obj.primary_key + obj.class_metadata.name.hash_code)
+
+				across obj.attributes as attr_cursor loop
+					print (attr_cursor.item)
+					if not try_basic_attribute (Result, obj.attribute_value (attr_cursor.item).first, type.index_of (attr_cursor.item)) then
+
+						field_type:= type.attribute_type (attr_cursor.item)
+
+						create keys.make
+						keys.extend (obj.attribute_value (attr_cursor.item).first.to_integer)
+						field_value:= build_new (field_type, backend.retrieve_from_keys (field_type, keys, transaction).first, transaction, bookkeeping)
+
+						reflection.set_reference_field (type.index_of (attr_cursor.item), Result, field_value)
+					end
+				end
+			end
+		ensure
+			type_correct: Result.generating_type.type_id = type.type.type_id
+		end
 
 
 

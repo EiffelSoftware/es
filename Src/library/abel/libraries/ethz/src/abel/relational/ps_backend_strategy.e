@@ -62,17 +62,17 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 		deferred
 			-- TODO: to have lazy loading support, we need to have a special ITERATION_CURSOR and a function next in this class to load the next item of this customized cursor
 		ensure
---			all_attributes_loaded: attributes.is_empty implies across type.attributes as cursor all Result.item.has_attribute (cursor.item) end -- TODO: except if version mismatch...
---			custom_attributes_loaded:not attributes.is_empty implies across attributes as cursor all Result.item.has_attribute (cursor.item) end-- TODO: except if version mismatch...
+--			all_attributes_loaded: attributes.is_empty implies across type.attributes as cursor all Result.item.has_attribute (cursor.item) end -- TODO: except if version mismatch or Void references...
+--			custom_attributes_loaded:not attributes.is_empty implies across attributes as cursor all Result.item.has_attribute (cursor.item) end-- TODO: except if version mismatch or Void references...
 		end
 
 
 	retrieve_from_keys (type: PS_TYPE_METADATA; primary_keys: LIST[INTEGER]; transaction:PS_TRANSACTION) : LINKED_LIST[PS_RETRIEVED_OBJECT]
 		-- Retrieve all objects of type `type' and with primary key in `primary_keys'.
-		do
-			create Result.make
+		deferred
 		ensure
 			primary_keys.count = Result.count
+			across Result as res all res.item.class_metadata.name = type.class_of_type.name end
 		end
 
 
