@@ -65,7 +65,7 @@ feature
 --			print (int_repo.disassembler.disassembled_object.to_string)
 --			structures_executor.insert (test_data.data_structures_1)
 
-			print (int_repo.memory_db.string_representation)
+--			print (int_repo.memory_db.string_representation)
 			create query.make
 			ref_executor.execute_query (query)
 
@@ -204,6 +204,19 @@ feature
 			print (ref_special.out)
 			create detached_ref_special.make_filled (Void, 10)
 			print (detached_ref_special.out)
+
+		end
+
+
+	test_generic_objects_type
+		local
+			list: LIST[ANY]
+		do
+			create {LINKED_LIST[ANY]} list.make
+			print (attached{LIST[PERSON]} list)
+			list.extend (create {PERSON}.make("a", "b", 0))
+			print (attached{LIST[PERSON]} list)
+
 
 		end
 

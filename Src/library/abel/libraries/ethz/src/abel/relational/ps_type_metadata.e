@@ -40,6 +40,16 @@ feature
 			Result:= reflection.generic_count_of_type (type.type_id)
 		end
 
+	is_subtype_of (other :PS_TYPE_METADATA):BOOLEAN
+		do
+			Result:= conforms (type, other.type)
+		end
+
+	is_supertype_of (other :PS_TYPE_METADATA):BOOLEAN
+		do
+			Result:= conforms (other.type, type)
+		end
+
 
 	supertypes: LIST[PS_TYPE_METADATA]
 		do

@@ -18,7 +18,7 @@ feature
 		do
 			ref_class_id:= i
 			create references.make
-			create ref_arrays.make_filled (Void, 1, 10)
+--			create ref_arrays.make_filled (Void, 1, 10)
 		end
 
 	ref_class_id:INTEGER
@@ -30,7 +30,7 @@ feature
 			refer:= ref
 		end
 
-	ref_arrays: ARRAY[detachable REFERENCE_CLASS_1]
+--	ref_arrays: ARRAY[detachable REFERENCE_CLASS_1]
 
 
 	out:STRING

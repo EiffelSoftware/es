@@ -31,7 +31,8 @@ feature {NONE}
 
 	metadata_manager: PS_METADATA_MANAGER
 
-	query_to_cursor_map: HASH_TABLE[ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]], INTEGER]
+--	query_to_cursor_map: HASH_TABLE[ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]], INTEGER]
+	query_to_cursor_map: HASH_TABLE[ITERATION_CURSOR[PS_RETRIEVED_OBJECT], INTEGER]
 
 	bookkeeping_manager: HASH_TABLE[HASH_TABLE[ANY, INTEGER], INTEGER]
 		-- keeps track of already loaded object for each query
@@ -56,7 +57,7 @@ feature
 
 	setup_query (query:PS_OBJECT_QUERY[ANY]; transaction:PS_TRANSACTION)
 		local
-			results: ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
+			results: ITERATION_CURSOR[PS_RETRIEVED_OBJECT]
 			bookkeeping_table:HASH_TABLE[ANY, INTEGER]
 			reflection: INTERNAL
 		do
@@ -92,8 +93,9 @@ feature {NONE} -- Implementation
 	retrieve_until_criteria_match (query:PS_OBJECT_QUERY[ANY]; transaction:PS_TRANSACTION; bookkeeping:HASH_TABLE[ANY, INTEGER])
 		-- Retrieve objects until the criteria in `query.criteria' are satisfied
 		local
-			results: ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
-			current_object:PS_PAIR[INTEGER, HASH_TABLE[STRING, STRING]]
+--			results: ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
+			results: ITERATION_CURSOR[PS_RETRIEVED_OBJECT]
+			current_object:PS_RETRIEVED_OBJECT
 			new_object:ANY
 			found:BOOLEAN
 			reflection:INTERNAL
@@ -134,7 +136,10 @@ feature {NONE} -- Implementation
 
 	build (--query: PS_OBJECT_QUERY[ANY];
 		dynamic_type:INTEGER
-		 obj:PS_PAIR[INTEGER, HASH_TABLE[STRING, STRING]]; transaction:PS_TRANSACTION; bookkeeping:HASH_TABLE[ANY, INTEGER]):ANY
+		 obj:PS_RETRIEVED_OBJECT;
+--		 obj:PS_PAIR[INTEGER, HASH_TABLE[STRING, STRING]];
+
+		  transaction:PS_TRANSACTION; bookkeeping:HASH_TABLE[ANY, INTEGER]):ANY
 		-- Retrieve the results of `query'
 		local
 			reflection:INTERNAL
@@ -143,35 +148,39 @@ feature {NONE} -- Implementation
 			field_type_name:STRING
 			field_type:INTEGER
 			test:ANY
+			new_obj:ANY
 
-			cursor:ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
+--			cursor:ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
+			cursor:ITERATION_CURSOR[PS_RETRIEVED_OBJECT]
+
 
 			collection_handler: detachable PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]]
 			collection_result: PS_PAIR [LIST[STRING], HASH_TABLE[STRING, STRING] ]
 			collection_as_list: LINKED_LIST[detachable ANY]
 			collection_item: detachable ANY
 		do
-			if bookkeeping.has (obj.first) then
-				Result:= attach (bookkeeping[obj.first])
+			if bookkeeping.has (obj.primary_key+ obj.class_metadata.name.hash_code) then
+				Result:= attach (bookkeeping[obj.primary_key+ obj.class_metadata.name.hash_code])
 			else
 
 
 				create reflection
-				Result:= reflection.new_instance_of (dynamic_type)
+				Result:= reflection.new_instance_of  (dynamic_type)
 
-				bookkeeping.extend (Result, obj.first)
-
+				bookkeeping.extend (Result, obj.primary_key+ obj.class_metadata.name.hash_code)
 				no_fields:= reflection.field_count (Result)
 
 				from i:=1
 				until i> no_fields
 				loop
 					field_name := reflection.field_name (i, Result)
-					if obj.second.has (field_name) then
-						field_val := attach (obj.second[field_name])
+					if obj.to_old_format.second.has (field_name) then
+						field_val := attach (obj.to_old_format.second[field_name])
 
 						--field_type_name := reflection.class_name_of_type (reflection.field_static_type_of_type (i, reflection.dynamic_type (Result)))
-						field_type:= reflection.detachable_type (reflection.field_static_type_of_type (i, reflection.dynamic_type (Result)))
+						field_type:= reflection.detachable_type (
+							reflection.field_static_type_of_type (i, reflection.dynamic_type (Result))
+							)
 						--print (field_type.out + "%N")
 						--print (field_name + ": " + field_type_name + " = " + field_val + " type: " + field_type.out+ "%N")
 
@@ -201,7 +210,7 @@ feature {NONE} -- Implementation
 										until
 											cursor.after
 										loop
-											if cursor.item.first = foreignkey_cursor.item.to_integer then
+											if cursor.item.to_old_format.first = foreignkey_cursor.item.to_integer then
 												collection_as_list.extend (build (reflection.generic_dynamic_type_of_type (field_type, 1), cursor.item, transaction, bookkeeping))
 											end
 											cursor.forth
@@ -217,9 +226,14 @@ feature {NONE} -- Implementation
 								until
 									cursor.after
 								loop
-									if cursor.item.first = field_val.to_integer_32 then
+									print ("XXXXXXXXXXXX" + cursor.item.class_metadata.name + reflection.class_name_of_type (field_type) + "%N")
+									if cursor.item.primary_key = field_val.to_integer_32 and then cursor.item.class_metadata.name.is_equal (reflection.class_name_of_type (field_type)) then
+										print (reflection.type_of_type (field_type).out)
+										print (reflection.type_of_type (reflection.field_static_type_of_type (i, dynamic_type)).out)
 
-										reflection.set_reference_field (i, Result, build (field_type, cursor.item, transaction, bookkeeping))
+										new_obj:= build (field_type, cursor.item, transaction, bookkeeping)
+										print (new_obj.generating_type.out)
+										reflection.set_reference_field (i, Result, new_obj)
 									end
 									cursor.forth
 								end
@@ -231,7 +245,8 @@ feature {NONE} -- Implementation
 					no_fields+1 - i
 				end
 			end
-
+		ensure
+			type_correct: Result.generating_type.type_id = dynamic_type
 		end
 
 

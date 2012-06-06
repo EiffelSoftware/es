@@ -80,7 +80,6 @@ feature{NONE} -- Initialization
 			create retriever.make (memory_db)
 
 			create special_handler.make
-			memory_db.add_handler (special_handler)
 			retriever.add_handler (special_handler)
 			disassembler.add_handler (special_handler)
 		end

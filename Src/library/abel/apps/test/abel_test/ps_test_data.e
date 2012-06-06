@@ -52,8 +52,8 @@ feature {NONE} -- Initialization
 			ref3.references.extend (reference_1)
 			ref3.references.extend (ref2)
 
-			reference_1.ref_arrays.grow (1)
-			reference_1.ref_arrays[1]:= ref2
+--			reference_1.ref_arrays.grow (1)
+--			reference_1.ref_arrays[1]:= ref2
 
 		end
 

@@ -108,8 +108,10 @@ feature -- Object assembly
 		do
 			create reflection
 			fixme ("TODO: handle case where SPECIAL doesn't have a reference type")
-	--		count:= additional_information.integer_32_item (1)
-	count:=10
+
+			fixme ("TODO: the following line:-)")
+			count:=10
+			--count:= attach (additional_information["count"]).to_integer
 			--print (additional_information.out + count.out)
 
 			Result:= reflection.new_special_any_instance (type_id, count)

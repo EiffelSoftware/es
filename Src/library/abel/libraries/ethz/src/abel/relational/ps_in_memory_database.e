@@ -13,26 +13,63 @@ inherit
 
 create make
 
-feature
+feature {PS_EIFFELSTORE_EXPORT}
 
-	retrieve (type: PS_TYPE_METADATA; criteria:PS_CRITERION; attributes:LIST[STRING]; transaction:PS_TRANSACTION) : ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
+	retrieve (type: PS_TYPE_METADATA; criteria:PS_CRITERION; attributes:LIST[STRING]; transaction:PS_TRANSACTION) : ITERATION_CURSOR[
+		PS_RETRIEVED_OBJECT]
+	--	PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
 		-- Retrieves all objects of class `class_name' that match the criteria in `criteria' within transaction `transaction'.
 		-- If `atributes' is not empty, it will only retrieve the attributes listed there.
 		local
-			class_name: STRING
-			result_list: LINKED_LIST[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
-			pair:PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]
+	--		class_name: STRING
+	--		result_list: LINKED_LIST[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
+	--		pair:PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]
+			keys: ARRAY[INTEGER]
+			current_obj: PS_RETRIEVED_OBJECT
+			list: LINKED_LIST[PS_RETRIEVED_OBJECT]
+			attr: LIST[STRING]
+			ref:PS_PAIR[INTEGER, STRING]
 		do
-			class_name:= type.class_of_type.name
-			create result_list.make
+			keys:= attach (db[type.class_of_type.name]).current_keys
+			create list.make
 
-			across attach (class_to_object_keys[class_name]) as obj_cursor
-			loop
-				create pair.make (obj_cursor.item, attach (internal_db[obj_cursor.item]))
-				result_list.extend (pair)
+			across keys as obj_primary loop
+
+				create current_obj.make (obj_primary.item, type.class_of_type)
+				-- fill attributes
+				if attributes.is_empty then
+					attr:= type.attributes
+				else
+					attr:= attributes
+				end
+				across attr as cursor loop
+					if type.attribute_type (cursor.item).is_basic_type then
+						current_obj.add_basic_attribute (cursor.item, get_basic_attribute (obj_primary.item, type.class_of_type.name, cursor.item))
+					else
+						if has_reference_attribute (obj_primary.item, type.class_of_type.name, cursor.item) then
+							ref:= get_reference_attribute (obj_primary.item, type.class_of_type.name, cursor.item)
+							current_obj.add_foreign_key (cursor.item, ref.first, ref.second)
+						end
+					end
+				end
+
+
+				list.extend (current_obj)
+
 			end
 
-			Result:= result_list.new_cursor
+			Result:=list.new_cursor
+
+	--		class_name:= type.class_of_type.name
+	--		create result_list.make
+
+	--		across attach (class_to_object_keys[class_name]) as obj_cursor
+	--		loop
+	--			create pair.make (obj_cursor.item, attach (internal_db[obj_cursor.item]))
+	--			result_list.extend (pair)
+	--		end
+
+	--		Result:= result_list.new_cursor
 		end
 
 
@@ -45,8 +82,12 @@ feature
 			values:HASH_TABLE[STRING,STRING]
 			new_list:LINKED_LIST[INTEGER]
 		do
-			class_name:= an_object.object_id.class_name
-			key:= an_object.object_id.object_identifier
+			class_name:= new_key (an_object.object_id).second
+			key:= new_key (an_object.object_id).first
+			key_mapper.add_entry (an_object.object_id, key)
+
+			insert_empty_object (key, class_name)
+
 
 			create values.make (an_object.attributes.count)
 			across an_object.attributes as attr_name loop
@@ -54,8 +95,14 @@ feature
 
 					if attached{PS_BASIC_ATTRIBUTE_PART} ref as basic then
 						values.extend (basic.value.out, attr_name.item)
+
+						add_basic_attribute (key, class_name, attr_name.item, basic.value.out)
+
 					elseif attached {PS_COMPLEX_ATTRIBUTE_PART} ref as complex then
 						values.extend (complex.object_id.object_identifier.out, attr_name.item)
+
+						add_reference_attribute (key, class_name, attr_name.item, key_mapper.primary_key_of (complex.object_id))
+
 					end
 
 				end
@@ -78,8 +125,11 @@ feature
 		local
 			existing_values:HASH_TABLE[STRING, STRING]
 			i:INTEGER
+			primary:PS_PAIR[INTEGER, PS_CLASS_METADATA]
 		do
-			existing_values := attach ( internal_db[an_object.object_id.object_identifier] )
+--			existing_values := attach ( internal_db[an_object.object_id.object_identifier] )
+
+			primary:= key_mapper.primary_key_of (an_object.object_id)
 
 			across an_object.attributes as attr_name
 			from
@@ -87,9 +137,18 @@ feature
 			loop
 				--print (i.out + "%N " + attr_name.item + "%N")
 				if attached{PS_BASIC_ATTRIBUTE_PART} an_object.attribute_values.at (attr_name.item) as basic then
-					existing_values.force (basic.value.out, attr_name.item)
+--					existing_values.force (basic.value.out, attr_name.item)
+
+						remove_basic_attribute (primary.first, primary.second.name, attr_name.item)
+						add_basic_attribute (primary.first, primary.second.name, attr_name.item, basic.value.out)
+
+
 				elseif attached {PS_COMPLEX_ATTRIBUTE_PART} an_object.attribute_values.at (attr_name.item) as complex then
-					existing_values.force (complex.object_id.object_identifier.out, attr_name.item)
+--					existing_values.force (complex.object_id.object_identifier.out, attr_name.item)
+
+						remove_reference_attribute (primary.first, primary.second.name, attr_name.item)
+						add_reference_attribute (primary.first, primary.second.name, attr_name.item, key_mapper.primary_key_of (complex.object_id))
+
 				end
 				i:=i-1
 			variant
@@ -99,7 +158,15 @@ feature
 
 	delete (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
 		-- Deletes an_object from the database
+		local
+			primary:PS_PAIR[INTEGER, PS_CLASS_METADATA]
 		do
+			primary:= key_mapper.primary_key_of (an_object.object_id)
+
+			attach (db[primary.second.name]).remove (primary.first)
+			key_mapper.remove_primary_key (primary.first, an_object.object_id.metadata)
+
+
 			internal_db.remove (an_object.object_id.object_identifier)
 			attach (class_to_object_keys[an_object.object_id.class_name]).prune (an_object.object_id.object_identifier)
 		end
@@ -189,15 +256,119 @@ feature{NONE} -- Initialization
 --			create collection_handlers.make
 			create collections.make (db_size)
 			create collection_info.make (db_size)
+			create db.make (db_size)
+			create key_mapper.make
+			create key_set.make (100)
 		end
 
 	db_size:INTEGER = 100
+
+
+	key_set:HASH_TABLE[INTEGER, STRING]
+
+	new_key (obj:PS_OBJECT_IDENTIFIER_WRAPPER):PS_PAIR[INTEGER, STRING]
+		local
+			max:INTEGER
+		do
+			max:= key_set[obj.metadata.class_of_type.name]
+			max:= max+1
+
+			create Result.make (max, obj.metadata.class_of_type.name)
+			key_set.force (max, obj.metadata.class_of_type.name)
+		end
+
+
+	insert_empty_object (key:INTEGER; class_name:STRING)
+		local
+		new_class: HASH_TABLE [ -- primary key to object
+			PS_PAIR [ -- object
+				HASH_TABLE[STRING, STRING], -- basic types
+				HASH_TABLE[PS_PAIR[INTEGER, STRING],STRING]], -- reference types
+			INTEGER]
+		new_obj: PS_PAIR [ -- object
+				HASH_TABLE[STRING, STRING], -- basic types
+				HASH_TABLE[PS_PAIR[INTEGER, STRING],STRING]] -- reference types
+		do
+			if not db.has (class_name) then
+				create new_class.make (100)
+				db.extend (new_class, class_name)
+			else
+				new_class:= attach (db[class_name])
+			end
+			create new_obj.make (create {HASH_TABLE[STRING, STRING]}.make (10), create {HASH_TABLE[PS_PAIR[INTEGER, STRING],STRING]}.make (10))
+			new_class.extend (new_obj, key)
+		end
+
+
+
+	has_reference_attribute (key: INTEGER; class_name:STRING; attr_name:STRING):BOOLEAN
+		do
+			Result:= get_obj_representation(class_name, key).second.has (attr_name)
+		end
+
+
+	get_reference_attribute (key: INTEGER; class_name:STRING; attr_name:STRING):PS_PAIR[INTEGER, STRING]
+		do
+			Result:= attach (get_obj_representation(class_name, key).second.item (attr_name))
+		end
+
+	get_basic_attribute (key:INTEGER; class_name, attr_name:STRING):STRING
+		do
+			Result:= attach (get_obj_representation(class_name, key).first.item (attr_name))
+
+		end
+
+
+	remove_reference_attribute (key: INTEGER; class_name:STRING; attr_name:STRING)
+		do
+			get_obj_representation(class_name, key).second.remove (attr_name)
+		end
+
+	remove_basic_attribute (key:INTEGER; class_name, attr_name:STRING)
+		do
+			get_obj_representation(class_name, key).first.remove (attr_name)
+		end
+
+
+
+	add_reference_attribute (key: INTEGER; class_name:STRING; attr_name:STRING; value:PS_PAIR[INTEGER, PS_CLASS_METADATA])
+		local
+			compat_value: PS_PAIR[INTEGER, STRING]
+		do
+			create compat_value.make (value.first, value.second.name)
+			get_obj_representation(class_name, key).second.extend (compat_value, attr_name)
+		end
+
+	add_basic_attribute (key:INTEGER; class_name, attr_name:STRING; value:STRING)
+		do
+			get_obj_representation(class_name, key).first.extend (value, attr_name)
+		end
+
+
+	get_obj_representation (class_name:STRING; key:INTEGER):PS_PAIR [HASH_TABLE[STRING, STRING], -- basic types
+															 HASH_TABLE[PS_PAIR[INTEGER, STRING],STRING]] -- reference types
+		do
+			Result:= attach (attach (db[class_name]).item(key))
+		end
+
+
+	db: HASH_TABLE [ -- class_name to objects table
+		HASH_TABLE [ -- primary key to object
+			PS_PAIR [ -- object
+				HASH_TABLE[STRING, STRING], -- basic types
+				HASH_TABLE[PS_PAIR[INTEGER, STRING],STRING]], -- reference types
+			INTEGER] ,
+		STRING]
+
 
 
 	internal_db:HASH_TABLE[HASH_TABLE[ STRING, STRING], INTEGER]
 		-- The internal data store. First key is the POID, and second key is the attribute name
 
 	class_to_object_keys: HASH_TABLE [attached LIST[INTEGER], STRING]
+
+
+
 
 feature {NONE} -- Collection handling
 

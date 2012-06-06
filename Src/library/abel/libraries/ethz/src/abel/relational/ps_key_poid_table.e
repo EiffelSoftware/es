@@ -14,10 +14,21 @@ create make
 
 feature
 
-	primary_key_of (obj: PS_OBJECT_IDENTIFIER_WRAPPER): INTEGER
+	has_primary_key_of(obj: PS_OBJECT_IDENTIFIER_WRAPPER): BOOLEAN
+		do
+			Result:= obj_to_key_hash.has (obj.object_identifier)
+		end
+
+	has_objects_of (primary_key: INTEGER; type: PS_TYPE_METADATA) : BOOLEAN
+		do
+			-- probably not the fastest implementation...
+			Result:= not objects_of (primary_key, type).is_empty
+		end
+
+	primary_key_of (obj: PS_OBJECT_IDENTIFIER_WRAPPER): PS_PAIR[INTEGER, PS_CLASS_METADATA]
 		-- Returns the primary key of object `obj' as stored in the backend.
 		do
-			Result:= obj_to_key_hash[obj.object_identifier]
+			Result:= attach (obj_to_key_hash[obj.object_identifier])
 		end
 
 
@@ -45,7 +56,7 @@ feature
 			type_hash: HASH_TABLE[LINKED_LIST[PS_OBJECT_IDENTIFIER_WRAPPER], INTEGER]
 			local_list: LINKED_LIST[PS_OBJECT_IDENTIFIER_WRAPPER]
 		do
-			obj_to_key_hash.extend (primary_key, obj.object_identifier)
+			obj_to_key_hash.extend (create {PS_PAIR[INTEGER, PS_CLASS_METADATA]}.make (primary_key, obj.metadata.class_of_type), obj.object_identifier)
 			if not key_to_obj_hash.has (obj.metadata.type.type_id) then
 				create type_hash.make (default_size)
 				key_to_obj_hash.extend (type_hash, obj.metadata.type.type_id)
@@ -72,7 +83,7 @@ feature
 		do
 			if obj_to_key_hash.has (obj.object_identifier) then
 
-				primary_key := obj_to_key_hash[obj.object_identifier]
+				primary_key := attach (obj_to_key_hash[obj.object_identifier]).first
 				obj_to_key_hash.remove (obj.object_identifier)
 
 				-- also remove from linked list
@@ -117,7 +128,7 @@ feature {NONE} -- Implementation
 								INTEGER ] , -- the primary key
 							INTEGER] -- the type
 
-	obj_to_key_hash: HASH_TABLE [INTEGER, -- the primary key
+	obj_to_key_hash: HASH_TABLE [PS_PAIR[INTEGER, PS_CLASS_METADATA], -- the primary key and class
 							INTEGER] -- the object_id
 
 
