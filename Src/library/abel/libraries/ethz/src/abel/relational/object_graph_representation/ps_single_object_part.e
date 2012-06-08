@@ -63,13 +63,13 @@ feature
 			from attributes.start
 			until attributes.after
 			loop
-				print (attributes.item.out + "%N")
+--				print (attributes.item.out + "%N")
 				if attached attribute_values.item (attributes.item_for_iteration) as item then
 --					print (item)
 					if  item.is_equal( obj )then
 						attribute_values.remove (attributes.item_for_iteration)
 						attributes.remove
-						print ("removed%N")
+--						print ("removed%N")
 					else
 						attributes.forth
 					end

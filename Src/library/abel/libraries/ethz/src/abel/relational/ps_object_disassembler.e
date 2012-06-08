@@ -144,7 +144,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 					check attached internal_operation_store.item (object_id.object_identifier) as res then
 						Result:= res
 					end
-					print ("blab")
+				--	print ("blab")
 				else
 					-- ask all collection handlers if they can cope with the data structure
 					collection_found:=False

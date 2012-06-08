@@ -1,95 +1,77 @@
 note
-	description: "Represents a freshly retrieved object consisting of strings only."
+	description: "[
+		Represents a freshly retrieved object.
+		The attribute values are all stored as strings, no matter if they are an actual value or just a foreign key.
+		Every attribute value is attached to the class name of its generating class as well.
+		A NULL value in the database is represented as an empty string, and the class name of a NULL value is `NONE'.
+		]"
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
 	PS_RETRIEVED_OBJECT
-inherit PS_EIFFELSTORE_EXPORT
+inherit
+	PS_EIFFELSTORE_EXPORT
 
 
-create
+create {PS_BACKEND_STRATEGY}
 	make
 
---convert
---	 to_old_format: {PS_PAIR [INTEGER_32, HASH_TABLE[STRING_8, STRING_8]]}
 
-feature
+feature {PS_EIFFELSTORE_EXPORT} -- Access
 
 	primary_key: INTEGER
+		-- The retrieved object's primary key, as used in the database
 
 	class_metadata: PS_CLASS_METADATA
+		-- Some metadata information about the object
 
 	attributes:LINKED_LIST[STRING]
-
-	has_attribute (attr_name: STRING):BOOLEAN
-		do
-			Result:= values.has (attr_name)--basic_values.has (attr_name) or reference_values.has (attr_name)
-		end
+		-- The attributes of the object that have been loaded.
 
 	attribute_value (attribute_name:STRING):PS_PAIR[STRING, STRING]
+		-- The value of the attribute `attribute_name'.
+		-- The first item in the result is the value, and the second item is the class name of the generating class of the first item.
+		require
+			attribute_present: has_attribute (attribute_name) and then has_value_for_attribute (attribute_name)
 		do
 			Result:= attach (values[attribute_name])
 		end
 
-	add_attribute (name:STRING; value:STRING; class_name:STRING)
+feature {PS_EIFFELSTORE_EXPORT} -- Status report
+
+	has_attribute (attribute_name: STRING): BOOLEAN
+		-- Does the `Current' retrieved object have an attribute with name `attribute_name'?
+		do
+			Result:= attributes.has (attribute_name)
+		end
+
+	has_value_for_attribute (attribute_name:STRING): BOOLEAN
+		-- Does the `Current' retrieved object have a value to the attribute with name `attribute_name'?
+		require
+			has_attribute (attribute_name)
+		do
+			Result:=values.has (attribute_name)
+		end
+
+feature {PS_BACKEND_STRATEGY} -- Element change
+
+	add_attribute (attribute_name:STRING; value:STRING; class_name_of_value:STRING)
+		-- Add the attribute `attribute_name' with value tuple <`value', `class_name_of_value'>
+		require
+			attribute_exists: class_metadata.attributes.has (attribute_name)
+			class_name_not_empty: not class_name_of_value.is_empty
+			void_value_means_none_type: value.is_empty implies class_name_of_value.is_equal ("NONE")
 		local
 			pair:PS_PAIR[STRING, STRING]
 		do
-			create pair.make (value, class_name)
-			values.extend (pair, name)
-			attributes.extend (name)
-		end
-
---	basic_attribute (attribute_name: STRING):STRING
---		do
---			Result:= attach (basic_values[attribute_name])
---		end
-
---	foreign_key (attribute_name: STRING):PS_PAIR[INTEGER, STRING]
---		do
---			if reference_values.has (attribute_name) then
---				Result:= attach (reference_values[attribute_name])
---			else
---				create Result.make (0, "")
---			end
---		end
-
-
---	add_basic_attribute (name, value: STRING)
---		do
---			basic_values.extend (value, name)
---			values.extend (create {PS_PAIR[STRING, STRING]}.make (value, "BASIC"), name)
---		end
-
---	add_foreign_key (attribute_name: STRING; key:INTEGER; class_type:STRING)
---		local
---			new_pair: PS_PAIR[INTEGER, STRING]
---		do
---			create new_pair.make (key, class_type)
---			reference_values.extend (new_pair, attribute_name)
---			values.extend (create {PS_PAIR[STRING, STRING]}.make (key.out, class_type ), attribute_name)
---		end
-
-
-
-feature -- conversion - should be replaced sometime!
-
-	to_old_format: PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]
-		local
-			string_hash: HASH_TABLE[STRING, STRING]
-		do
-			create string_hash.make (20)
-			across basic_values.current_keys as key_cursor loop
-				string_hash.extend (attach (basic_values[key_cursor.item]), key_cursor.item)
-			end
-			across reference_values.current_keys as key_cursor loop
-				string_hash.extend (attach (reference_values[key_cursor.item]).first.out , key_cursor.item)
-			end
-
-			create Result.make (primary_key, string_hash)
-
+			create pair.make (value, class_name_of_value)
+			values.extend (pair, attribute_name)
+			attributes.extend (attribute_name)
+		ensure
+			value_inserted: attribute_value (attribute_name).first.is_equal (value)
+			class_name_inserted: attribute_value(attribute_name).second.is_equal (class_name_of_value)
 		end
 
 
@@ -97,20 +79,22 @@ feature {NONE} -- Initialization
 
 	values: HASH_TABLE[PS_PAIR[STRING, STRING], STRING]
 
-	basic_values: HASH_TABLE[STRING, STRING]
-
-	reference_values: HASH_TABLE [PS_PAIR[INTEGER, STRING], STRING]
-
-
 	make (key: INTEGER; class_data: PS_CLASS_METADATA)
 			-- Initialization for `Current'.
 		do
 			primary_key:= key
 			class_metadata:= class_data
-			create basic_values.make (10)
-			create reference_values.make (10)
 			create values.make (10)
 			create attributes.make
+			attributes.compare_objects
+		ensure
+			attributes_empty: attributes.is_empty
+			key_set: primary_key = key
+			metadata_set: class_metadata.is_equal (class_data)
 		end
+
+invariant
+	has_value_for_all_attributes: across attributes as attribute_cursor all has_attribute (attribute_cursor.item) end
+	void_references_have_NONE_type: across values as val all val.item.first.is_empty implies val.item.second.is_equal ("NONE") end
 
 end

@@ -95,7 +95,7 @@ feature
 				create new_update.make_with_mode (obj.object_id, obj.write_mode.Update)
 				new_update.add_attribute (obj.get_attribute_name (dependency), dependency)
 				roots.extend (new_update)
-				print ("New update: %N" + new_update.to_string)
+			--	print ("New update: %N" + new_update.to_string)
 			end
 
 			node.remove_dependency (dependency)

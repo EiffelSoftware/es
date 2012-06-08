@@ -11,41 +11,36 @@ inherit
 	PS_EIFFELSTORE_EXPORT
 
 
-feature -- Status report
+feature {PS_EIFFELSTORE_EXPORT}-- Supported collection operations
+
+	is_objectoriented_collection_store_supported:BOOLEAN
+			-- Can the current backend handle relational collections?
+		deferred
+		end
+
+	is_relational_collection_store_supported:BOOLEAN
+			-- Can the current backend handle relational collections?
+		deferred
+		end
+
+feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
 	can_handle_type (type: PS_TYPE_METADATA) : BOOLEAN
 			-- Can the current backend handle objects of type `type'?
-		do
-
+		deferred
 		end
 
 	can_handle_relational_collection (owner_type, collection_item_type: PS_TYPE_METADATA; owner_key: INTEGER; owner_attribute_name: STRING): BOOLEAN
 			-- Can the current backend handle the relational collection denoted by the arguments?
-		do
-			Result:= is_relational_collection_store_supported and can_handle_type (owner_type) and can_handle_type (collection_item_type)
+		deferred
 		end
-
-
-	is_relational_collection_store_supported:BOOLEAN
-			-- Can the current backend handle relational collections in a generic way?
-		do
-
-		end
-
-
 
 	can_handle_objectoriented_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER): BOOLEAN
 			-- Can the current backend handle the objectoriented collection denoted by the arguments?
-		do
-			Result:= is_objectoriented_collection_store_supported
+		deferred
 		end
 
 
-	is_objectoriented_collection_store_supported:BOOLEAN
-			-- Can the current backend handle relational collections in a generic way?
-		do
-
-		end
 
 
 feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
@@ -54,15 +49,22 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 	retrieve (type: PS_TYPE_METADATA; criteria:PS_CRITERION; attributes:LIST[STRING]; transaction:PS_TRANSACTION) : ITERATION_CURSOR[PS_RETRIEVED_OBJECT]
 		-- Retrieves all objects of class `type' (direct instance - not inherited from) that match the criteria in `criteria' within transaction `transaction'.
 		-- If `attributes' is not empty, it will only retrieve the attributes listed there.
+		-- If an attribute was `Void' during an insert, or it doesn't exist in the database because of a version mismatch, the attribute value during retrieval will be an empty string and its class name `NONE'.
+
+		-- If `type' has a generic parameter, the retrieve function will return objects of all generic instances of the generating class.
+		-- You can find out about the actual generic parameter by comparing the class name associated to a foreign key value.
 		require
 			most_general_type: across type.supertypes as supertype all not (supertype.item.class_of_type.name.is_equal (type.class_of_type.name) and type.is_subtype_of (supertype.item)) end
 			all_attributes_exist: across attributes as attr all type.attributes.has (attr.item) end
+
 		deferred
 			-- TODO: to have lazy loading support, we need to have a special ITERATION_CURSOR and a function next in this class to load the next item of this customized cursor
 		ensure
---			all_attributes_loaded: attributes.is_empty implies across type.attributes as cursor all Result.item.has_attribute (cursor.item) end -- TODO: except if version mismatch or Void references...
---			custom_attributes_loaded:not attributes.is_empty implies across attributes as cursor all Result.item.has_attribute (cursor.item) end-- TODO: except if version mismatch or Void references...
+			attributes_loaded: not Result.after implies check_attributes_loaded (type, attributes, Result.item)
+			class_metadata_set: not Result.after implies Result.item.class_metadata.name.is_equal (type.class_of_type.name)
 		end
+
+
 
 
 	retrieve_from_keys (type: PS_TYPE_METADATA; primary_keys: LIST[INTEGER]; transaction:PS_TRANSACTION) : LINKED_LIST[PS_RETRIEVED_OBJECT]
@@ -109,38 +111,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		end
 
 
-feature {PS_EIFFELSTORE_EXPORT}-- Relational collection operations
-
-
-	retrieve_relational_collection (owner_type, collection_item_type: PS_TYPE_METADATA; owner_key: INTEGER; owner_attribute_name: STRING; transaction: PS_TRANSACTION) : PS_RETRIEVED_RELATIONAL_COLLECTION
-			-- Retrieves the relational collection between class `owner_type' and `collection_item_type', where the owner has primary key `owner_key' and the attribute name of the collection inside the owner object is called `owner_attribute_name'
-		do
-			-- Note that the collection may be of a basic type - If the backend is not able to handle this, indicate it in the can_handle_relational_collection feature
-			create Result.make (owner_key, owner_type.class_of_type, owner_attribute_name)
-		end
-
-
-	insert_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART[ITERABLE[detachable ANY]]; a_transaction:PS_TRANSACTION)
-		-- Add all entries in a_collection to the database
-		require
-			mode_is_insert: a_collection.write_mode = a_collection.write_mode.insert
-			is_relational: a_collection.handler.is_in_relational_storage_mode (a_collection)
-		do
-			a_collection.handler.insert (a_collection)
-		end
-
-
-	delete_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART[ITERABLE[detachable ANY]]; a_transaction:PS_TRANSACTION)
-		-- Delete a_collection from the database
-		require
-			mode_is_delete: a_collection.write_mode = a_collection.write_mode.delete
-			is_relational: a_collection.handler.is_in_relational_storage_mode (a_collection)
-		do
-			a_collection.handler.delete (a_collection)
-		end
-
-
-
 
 feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 
@@ -173,6 +143,43 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			not_known_anymore: not key_mapper.has_primary_key_of (a_collection.object_id)
 		end
 
+feature {PS_EIFFELSTORE_EXPORT}-- Relational collection operations
+
+
+	retrieve_relational_collection (owner_type, collection_item_type: PS_TYPE_METADATA; owner_key: INTEGER; owner_attribute_name: STRING; transaction: PS_TRANSACTION) : PS_RETRIEVED_RELATIONAL_COLLECTION
+			-- Retrieves the relational collection between class `owner_type' and `collection_item_type', where the owner has primary key `owner_key' and the attribute name of the collection inside the owner object is called `owner_attribute_name'
+		deferred
+		end
+
+
+	insert_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART[ITERABLE[detachable ANY]]; a_transaction:PS_TRANSACTION)
+		-- Add all entries in a_collection to the database
+		require
+			mode_is_insert: a_collection.write_mode = a_collection.write_mode.insert
+			is_relational: a_collection.handler.is_in_relational_storage_mode (a_collection)
+		deferred
+		end
+
+
+	delete_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART[ITERABLE[detachable ANY]]; a_transaction:PS_TRANSACTION)
+		-- Delete a_collection from the database
+		require
+			mode_is_delete: a_collection.write_mode = a_collection.write_mode.delete
+			is_relational: a_collection.handler.is_in_relational_storage_mode (a_collection)
+		deferred
+		end
+
+feature{NONE} -- Correctness checks
+
+	check_attributes_loaded (type:PS_TYPE_METADATA; attributes:LIST[STRING]; obj:PS_RETRIEVED_OBJECT):BOOLEAN
+		-- Check that there is a value for every attribute in `attributes' (or `type.attributes', if `attributes' is empty)
+		do
+			if attributes.is_empty then
+				Result:= across type.attributes as cursor all obj.has_attribute (cursor.item) end
+			else
+				Result:= across attributes as cursor all obj.has_attribute (cursor.item) end
+			end
+		end
 
 
 feature

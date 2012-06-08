@@ -16,6 +16,37 @@ inherit{NONE}
 
 create make
 
+
+
+feature {PS_EIFFELSTORE_EXPORT}-- Supported collection operations
+
+	is_objectoriented_collection_store_supported:BOOLEAN = True
+			-- Can the current backend handle relational collections?
+
+	is_relational_collection_store_supported:BOOLEAN = False
+			-- Can the current backend handle relational collections?
+
+
+feature {PS_EIFFELSTORE_EXPORT} -- Status report
+
+	can_handle_type (type: PS_TYPE_METADATA) : BOOLEAN
+			-- Can the current backend handle objects of type `type'?
+		do
+			Result:= True
+		end
+
+	can_handle_relational_collection (owner_type, collection_item_type: PS_TYPE_METADATA; owner_key: INTEGER; owner_attribute_name: STRING): BOOLEAN
+			-- Can the current backend handle the relational collection denoted by the arguments?
+		do
+			Result:= False
+		end
+
+	can_handle_objectoriented_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER): BOOLEAN
+			-- Can the current backend handle the objectoriented collection denoted by the arguments?
+		do
+			Result:= True
+		end
+
 feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 
 	retrieve (type: PS_TYPE_METADATA; criteria:PS_CRITERION; attributes:LIST[STRING]; transaction:PS_TRANSACTION) : ITERATION_CURSOR[PS_RETRIEVED_OBJECT]
@@ -150,6 +181,32 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			collections.remove (key_mapper.primary_key_of (a_collection.object_id).first)
 		end
 
+feature {PS_EIFFELSTORE_EXPORT}-- Relational collection operations
+
+
+	retrieve_relational_collection (owner_type, collection_item_type: PS_TYPE_METADATA; owner_key: INTEGER; owner_attribute_name: STRING; transaction: PS_TRANSACTION) : PS_RETRIEVED_RELATIONAL_COLLECTION
+			-- Retrieves the relational collection between class `owner_type' and `collection_item_type', where the owner has primary key `owner_key' and the attribute name of the collection inside the owner object is called `owner_attribute_name'
+		do
+			check not_implemented: False end
+			create Result.make (owner_key, owner_type.class_of_type, owner_attribute_name)
+		end
+
+
+	insert_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART[ITERABLE[detachable ANY]]; a_transaction:PS_TRANSACTION)
+		-- Add all entries in a_collection to the database
+		do
+			check not_implemented: False end
+		end
+
+
+	delete_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART[ITERABLE[detachable ANY]]; a_transaction:PS_TRANSACTION)
+		-- Delete a_collection from the database
+		do
+			check not_implemented: False end
+		end
+
+
+
 
 feature {PS_EIFFELSTORE_EXPORT} -- Miscellaneous
 
@@ -170,6 +227,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Miscellaneous
 feature {NONE} -- Implementation - Loading and storing objects
 
 	load_objects (type:PS_TYPE_METADATA; attributes:LIST[STRING]; keys: LIST[INTEGER]):LINKED_LIST[PS_RETRIEVED_OBJECT]
+		-- Loads all objects of class `type' whose primary key is listed in `keys'. Only loads the attributes listed in `attributes'
 		local
 			current_obj:PS_RETRIEVED_OBJECT
 			attr_val:PS_PAIR[STRING, STRING]
@@ -182,8 +240,11 @@ feature {NONE} -- Implementation - Loading and storing objects
 				across attributes as cursor loop
 					if has_attribute (type.class_of_type.name, obj_primary.item, cursor.item) then
 						attr_val:= get_attribute (type.class_of_type.name, obj_primary.item, cursor.item)
-						current_obj.add_attribute (cursor.item, attr_val.first, attr_val.second)
+					else
+						create attr_val.make (Void_value, None_type)
 					end
+					current_obj.add_attribute (cursor.item, attr_val.first, attr_val.second)
+--					print ("loaded attribute: " + cursor.item + "%N%T value: " + attr_val.first + "%N%T type: " + attr_val.second + "%N%N")
 				end
 
 				Result.extend (current_obj)
@@ -191,6 +252,7 @@ feature {NONE} -- Implementation - Loading and storing objects
 		end
 
 	write_attributes (an_object:PS_SINGLE_OBJECT_PART)
+		-- Stores all attributes of `an_object' in the internal database, replacing any existing attribute with the same name if present
 		local
 			attr_primary:INTEGER
 			primary:PS_PAIR[INTEGER, PS_CLASS_METADATA]
@@ -224,7 +286,9 @@ feature {NONE} -- Implementation - Key generation
 feature{NONE} -- Implementation - Database and DB access for objects
 
 
-	db: HASH_TABLE [ -- class_name to objects table
+	db:
+	-- The internal "database" that stores every object as a collection of strings.
+	HASH_TABLE [ -- class_name to objects table
 		HASH_TABLE [ -- primary key to object
 				HASH_TABLE[PS_PAIR[STRING, STRING],STRING], -- attribute to value
 			INTEGER],
@@ -281,6 +345,7 @@ feature{NONE} -- Implementation - Database and DB access for Object-oriented Col
 
 
 	insert_empty_collection (key: INTEGER)
+		-- Insert an empty object-oriented collection with pimary key `key'
 		local
 			list:LINKED_LIST[PS_PAIR[STRING, PS_PAIR[STRING, INTEGER]]]
 		do
@@ -291,6 +356,8 @@ feature{NONE} -- Implementation - Database and DB access for Object-oriented Col
 
 
 	add_to_collection (key:INTEGER; value:PS_PAIR [STRING, STRING]; order:INTEGER)
+		-- Add `value' to the collection with primary key `key'.
+		-- Insert the object in the collection list such that (previous.order <= order < next.order).
 		local
 			collection: LINKED_LIST[PS_PAIR[STRING, PS_PAIR[STRING, INTEGER]]]
 			new_item: PS_PAIR[STRING, PS_PAIR[STRING, INTEGER]]
@@ -310,7 +377,9 @@ feature{NONE} -- Implementation - Database and DB access for Object-oriented Col
 			end
 		end
 
+
 	get_ordered_collection (key:INTEGER):LINKED_LIST[PS_PAIR[STRING, STRING]]
+		-- Get all values of the collection with primary key `key' in the correct order.
 		local
 			collection: LINKED_LIST[PS_PAIR[STRING, PS_PAIR[STRING, INTEGER]]]
 			coll_item: PS_PAIR[STRING, STRING]
@@ -338,6 +407,7 @@ feature{NONE} -- Implementation - Database and DB access for Object-oriented Col
 feature{NONE} -- Initialization
 
 	make
+		-- Initialize `Current'
 		do
 			create collections.make (default_collection_db_capacity)
 			create collection_info.make (default_collection_db_capacity)
@@ -364,5 +434,8 @@ feature{NONE} -- Initialization
 	default_collection_db_capacity:INTEGER = 50
 		-- The default capacity of the in-memory database for storing collection objects
 
+	Void_value: STRING = ""
 
+	None_type: STRING = "NONE"
+		-- The type used for an attribute that is Void.
 end

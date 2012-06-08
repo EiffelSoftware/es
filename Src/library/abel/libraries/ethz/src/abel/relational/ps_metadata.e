@@ -28,6 +28,10 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access
 			Result:=manager.create_metadata_from_type (type_of_type (dynamic_type_from_string(name)))
 		end
 
+	attributes: LIST [STRING]
+			-- List of name of the attributes
+
+
 
 feature {PS_EIFFELSTORE_EXPORT} -- Access
 
@@ -59,10 +63,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status
 
 feature {PS_EIFFELSTORE_EXPORT} -- obsolete
 
-	attributes: LINKED_LIST[STRING]
-		once
-			create Result.make
-		end
 
 	get_attribute_id (arg: STRING):INTEGER
 		do
@@ -76,7 +76,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- obsolete
 
 feature {NONE} -- Initialization
 
-	make (cl_name: STRING; basic: BOOLEAN)
+	make (cl_name: STRING; basic: BOOLEAN; attr:LIST[STRING])
 			-- Initialize `Current'
 		do
 --			create {LINKED_LIST [PS_CLASS_METADATA]} proper_ancestors.make
@@ -86,6 +86,7 @@ feature {NONE} -- Initialization
 --			create private_attr_id_hash.make (50)
 			name := cl_name
 			is_basic_type := basic
+
 		end
 
 	make_from_type (type_metadata: PS_TYPE_METADATA; a_manager:PS_METADATA_MANAGER)
@@ -94,6 +95,7 @@ feature {NONE} -- Initialization
 			is_generic:= type_metadata.is_generic
 			is_basic_type:= type_metadata.is_basic_type
 			manager:= a_manager
+			attributes:=type_metadata.attributes
 
 			proper_ancestors:= calculate_proper_ancestors (type_metadata)
 			proper_descendants:= calculate_proper_descendants (type_metadata)

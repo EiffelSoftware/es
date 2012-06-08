@@ -60,12 +60,14 @@ feature
 			results: ITERATION_CURSOR[PS_RETRIEVED_OBJECT]
 			bookkeeping_table:HASH_TABLE[ANY, INTEGER]
 			reflection: INTERNAL
+			type: PS_TYPE_METADATA
 		do
 			create reflection
 			query.set_identifier (new_identifier)
 			query.register_as_executed (transaction)
+			type:= metadata_manager.create_metadata_from_type (reflection.type_of_type (reflection.generic_dynamic_type (query, 1)))
+			results:=backend.retrieve (type, query.criteria, create{LINKED_LIST[STRING]}.make, transaction)
 
-			results:=backend.retrieve (metadata_manager.create_metadata_from_type (reflection.type_of_type (reflection.generic_dynamic_type (query, 1))), query.criteria, create{LINKED_LIST[STRING]}.make, transaction)
 			query_to_cursor_map.extend (results, query.backend_identifier)
 
 			create bookkeeping_table.make (100)
@@ -111,7 +113,7 @@ feature {NONE} -- Implementation
 				found or results.after
 			loop
 
-				current_object := attach (results.item)
+				current_object := results.item
 
 				-- This has to be the detachable type, otherwise the is_deep_equal feature won't work any more
 				new_type:= reflection.detachable_type (reflection.generic_dynamic_type (query, 1))
@@ -271,16 +273,17 @@ feature {NONE} -- Implementation
 				bookkeeping.extend (Result, obj.primary_key + obj.class_metadata.name.hash_code)
 
 				across obj.attributes as attr_cursor loop
-					print (attr_cursor.item)
+--					print (attr_cursor.item)
 					if not try_basic_attribute (Result, obj.attribute_value (attr_cursor.item).first, type.index_of (attr_cursor.item)) then
 
 						field_type:= type.attribute_type (attr_cursor.item)
 
-						create keys.make
-						keys.extend (obj.attribute_value (attr_cursor.item).first.to_integer)
-						field_value:= build_new (field_type, backend.retrieve_from_keys (field_type, keys, transaction).first, transaction, bookkeeping)
-
-						reflection.set_reference_field (type.index_of (attr_cursor.item), Result, field_value)
+						if not obj.attribute_value (attr_cursor.item).first.is_empty then
+							create keys.make
+							keys.extend (obj.attribute_value (attr_cursor.item).first.to_integer)
+							field_value:= build_new (field_type, backend.retrieve_from_keys (field_type, keys, transaction).first, transaction, bookkeeping)
+							reflection.set_reference_field (type.index_of (attr_cursor.item), Result, field_value)
+						end
 					end
 				end
 			end
