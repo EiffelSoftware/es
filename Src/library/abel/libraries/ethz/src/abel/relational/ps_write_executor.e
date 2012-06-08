@@ -7,6 +7,8 @@ note
 class
 	PS_WRITE_EXECUTOR
 
+inherit PS_EIFFELSTORE_EXPORT
+
 create make
 
 feature

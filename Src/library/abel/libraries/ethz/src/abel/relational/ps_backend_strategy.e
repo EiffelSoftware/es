@@ -76,7 +76,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 
 
 
-feature -- Object write operations
+feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 
 	insert (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
 		-- Inserts the object into the database
@@ -109,7 +109,7 @@ feature -- Object write operations
 		end
 
 
-feature -- Relational collection operations
+feature {PS_EIFFELSTORE_EXPORT}-- Relational collection operations
 
 
 	retrieve_relational_collection (owner_type, collection_item_type: PS_TYPE_METADATA; owner_key: INTEGER; owner_attribute_name: STRING; transaction: PS_TRANSACTION) : PS_RETRIEVED_RELATIONAL_COLLECTION
@@ -142,7 +142,7 @@ feature -- Relational collection operations
 
 
 
-feature -- Object-oriented collection operations
+feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 
 
 	retrieve_objectoriented_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER; transaction: PS_TRANSACTION): PS_RETRIEVED_OBJECT_COLLECTION

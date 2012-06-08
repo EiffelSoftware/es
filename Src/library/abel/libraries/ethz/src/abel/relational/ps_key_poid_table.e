@@ -31,6 +31,14 @@ feature
 			Result:= attach (obj_to_key_hash[obj.object_identifier])
 		end
 
+	quick_translate (a_poid:INTEGER):INTEGER
+		-- Returns the primary key of a_poid, or 0 if a_poid doesn't have a primary key
+		do
+			if obj_to_key_hash.has (a_poid) then
+				Result:= attach (obj_to_key_hash[a_poid]).first
+			end
+		end
+
 
 	objects_of (primary_key: INTEGER; type: PS_TYPE_METADATA) : LINKED_LIST[PS_OBJECT_IDENTIFIER_WRAPPER]
 		-- Returns all objects that are associated to the primary key `primary_key' in the database.

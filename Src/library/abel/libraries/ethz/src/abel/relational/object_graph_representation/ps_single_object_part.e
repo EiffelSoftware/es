@@ -39,6 +39,11 @@ feature
 
 	attribute_values: HASH_TABLE [PS_OBJECT_GRAPH_PART, STRING]
 
+	get_value (attr:STRING):PS_OBJECT_GRAPH_PART
+		do
+			Result:= attach (attribute_values[attr])
+		end
+
 	dependencies:LINKED_LIST[PS_OBJECT_GRAPH_PART]
 		do
 			create Result.make

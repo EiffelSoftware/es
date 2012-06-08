@@ -21,6 +21,14 @@ feature
 --	Insert, Update, Delete, No_operation: INTEGER = unique
 		-- The different modes
 
+	poid: INTEGER
+		-- The POID of `Current', if it is not a basic attribute
+		do
+			Result:= 0
+		ensure
+			is_basic_attribute implies Result = 0
+		end
+
 
 	dependencies: LIST[PS_OBJECT_GRAPH_PART]
 		-- All (immediate) parts on which `Current' is dependent on.
