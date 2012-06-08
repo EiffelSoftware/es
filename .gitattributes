@@ -3390,6 +3390,7 @@ eweasel/tests/dotnet108/Ace -text
 eweasel/tests/dotnet114/dotnet_excep_trace -text
 eweasel/tests/dotnet116/a.dll -text
 eweasel/tests/except036/dotnet_output -text
+eweasel/tests/except038/bad_file -text
 eweasel/tests/exec002/notes -text
 eweasel/tests/exec003/notes -text
 eweasel/tests/exec004/notes -text
