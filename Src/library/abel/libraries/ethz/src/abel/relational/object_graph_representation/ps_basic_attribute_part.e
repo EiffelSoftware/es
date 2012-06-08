@@ -10,6 +10,8 @@ class
 inherit
 	PS_OBJECT_GRAPH_PART
 
+inherit{NONE} REFACTORING_HELPER
+
 create
 	make
 
@@ -38,6 +40,13 @@ feature -- Initialization
 
 	is_basic_attribute:BOOLEAN = True
 
+
+	storable_tuple (optional_primary: INTEGER):PS_PAIR[STRING, STRING]
+		-- The storable tuple of the current object.
+		do
+			fixme ("TODO: add type information to basic attributes as well")
+			create Result.make (value, "BASIC")
+		end
 
 	to_string:STRING
 		do

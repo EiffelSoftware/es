@@ -9,8 +9,11 @@ class
 
 inherit PS_EIFFELSTORE_EXPORT
 
---inherit{NONE}
+inherit{NONE}
+	REFACTORING_HELPER
 --	INTERNAL
+
+
 
 create {PS_METADATA_MANAGER} make
 
@@ -150,7 +153,7 @@ feature {PS_METADATA_MANAGER} -- Initialization
 			until i> reflection.field_count_of_type (type.type_id)
 			loop
 				fixme ("check if the detachable type really is needed all the time")
-				
+
 				new_type:= reflection.type_of_type (reflection.detachable_type (reflection.field_static_type_of_type (i, type.type_id)))
 				attr_name_to_index_hash.extend (i, reflection.field_name_of_type (i, type.type_id))
 				attr_name_to_type_hash.extend (manager.create_metadata_from_type (new_type), reflection.field_name_of_type (i, type.type_id))

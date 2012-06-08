@@ -15,9 +15,7 @@ create make
 
 feature {PS_EIFFELSTORE_EXPORT}
 
-	retrieve (type: PS_TYPE_METADATA; criteria:PS_CRITERION; attributes:LIST[STRING]; transaction:PS_TRANSACTION) : ITERATION_CURSOR[
-		PS_RETRIEVED_OBJECT]
-	--	PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
+	retrieve (type: PS_TYPE_METADATA; criteria:PS_CRITERION; attributes:LIST[STRING]; transaction:PS_TRANSACTION) : ITERATION_CURSOR[PS_RETRIEVED_OBJECT]
 		-- Retrieves all objects of class `class_name' that match the criteria in `criteria' within transaction `transaction'.
 		-- If `atributes' is not empty, it will only retrieve the attributes listed there.
 		local
@@ -240,12 +238,13 @@ feature {PS_EIFFELSTORE_EXPORT}
 			collections.remove (a_collection.object_id.object_identifier)
 		end
 
-	retrieve_objectoriented_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER; transaction: PS_TRANSACTION): PS_PAIR [LIST[STRING],HASH_TABLE[STRING, STRING]]
+	retrieve_objectoriented_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER; transaction: PS_TRANSACTION): PS_RETRIEVED_OBJECT_COLLECTION
 			-- Retrieves the object-oriented collection of type `object_type' and with primary key `object_primary_key'.
 			-- The result is a list of values in correct order, with string representation of either foreign keys  or just basic types - depending on the generic argument of the collection.
 			-- The hash table in the result pair is the additional information required by the handler, as given by a previous insert function.
 	 	do
-			create Result.make (attach (collections[collection_primary_key]) , attach (collection_info[collection_primary_key]))
+			--create Result.make (attach (collections[collection_primary_key]) , attach (collection_info[collection_primary_key]))
+			create Result.make (collection_primary_key, collection_type.class_of_type)
 	 	end
 
 

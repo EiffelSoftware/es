@@ -9,6 +9,7 @@ class
 
 inherit
 	PS_COLLECTION_PART [COLLECTION_TYPE]
+	redefine split end
 
 create make
 
@@ -19,7 +20,12 @@ feature -- Object storage mode data
 		require
 			part_of_values: values.has (a_value)
 		do
-			fixme ("TODO: some explicit mechanism to denote order, as the implicit order in 'values' is easy to break unintentionally")
+			across order_map as cursor loop
+				if cursor.item.first = a_value then
+					Result:= cursor.item.second
+				end
+			end
+--			fixme ("TODO: some explicit mechanism to denote order, as the implicit order in 'values' is easy to break unintentionally")
 		end
 
 	additional_information: HASH_TABLE[STRING, STRING]
@@ -34,7 +40,9 @@ feature -- Object storage mode data
 	add_value (a_graph_part: PS_OBJECT_GRAPH_PART)
 		-- Add a value to the collection
 		do
-			values.extend (a_graph_part)
+			--values.extend (a_graph_part)
+			add_value_explicit_order (a_graph_part, order_count)
+			order_count:= order_count+1
 		end
 
 
@@ -65,7 +73,8 @@ feature -- Object storage mode data
 			create values.make
 			handler:= a_handler
 			create additional_information.make (10)
---			order_count:= 1
+			order_count:= 1
+			create order_map.make
 
 			if a_mode = a_mode.update then
 				write_mode:= a_mode.insert
@@ -84,8 +93,28 @@ feature -- Object storage mode data
 	is_in_relational_storage_mode:BOOLEAN = False
 		-- Is current collection inserted in relational mode?
 
---	feature {NONE}
 
---		order_count: INTEGER
+	split (a_dependency:PS_OBJECT_GRAPH_PART): like Current
+		-- Create a copy of `Current', whose only dependency is `a_dependency', and with mode `Insert'
+		do
+			Result:= clone_except_values
+			Result.set_mode (write_mode.insert)
+			Result.add_value_explicit_order (a_dependency, order_of (a_dependency))
+		end
+
+	feature {PS_OBJECT_COLLECTION_PART}
+
+		add_value_explicit_order (val: PS_OBJECT_GRAPH_PART; order:INTEGER)
+			do
+				values.extend (val)
+				order_map.extend (create {PS_PAIR[PS_OBJECT_GRAPH_PART, INTEGER]}.make (val, order))
+			end
+
+
+	feature {NONE}
+
+		order_count: INTEGER
+
+		order_map: LINKED_LIST[PS_PAIR[PS_OBJECT_GRAPH_PART, INTEGER]]
 
 end

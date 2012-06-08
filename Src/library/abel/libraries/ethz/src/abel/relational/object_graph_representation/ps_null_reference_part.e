@@ -23,6 +23,13 @@ feature
 			Result:= "Null reference%N"
 		end
 
+
+	storable_tuple (optional_primary: INTEGER):PS_PAIR[STRING, STRING]
+		-- The storable tuple of the current object.
+		do
+			create Result.make ("0", "NONE")
+		end
+
 feature {NONE}
 
 

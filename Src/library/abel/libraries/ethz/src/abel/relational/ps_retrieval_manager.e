@@ -134,7 +134,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-
+	big_multiline_comment:STRING = "[
 
 	build (--query: PS_OBJECT_QUERY[ANY];
 		dynamic_type:INTEGER
@@ -250,6 +250,8 @@ feature {NONE} -- Implementation
 		ensure
 			type_correct: Result.generating_type.type_id = dynamic_type
 		end
+
+	]"
 
 
 	build_new(type:PS_TYPE_METADATA; obj:PS_RETRIEVED_OBJECT; transaction:PS_TRANSACTION; bookkeeping:HASH_TABLE[ANY, INTEGER]): ANY

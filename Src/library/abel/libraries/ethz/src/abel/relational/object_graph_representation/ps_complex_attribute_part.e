@@ -20,13 +20,19 @@ feature
 
 	is_basic_attribute:BOOLEAN = False
 
+	storable_tuple (optional_primary: INTEGER):PS_PAIR[STRING, STRING]
+		-- The storable tuple of the current object.
+		do
+			create Result.make (optional_primary.out, object_id.metadata.class_of_type.name)
+		end
+
 
 	to_string:STRING
 		do
 			Result:= "Complex object: " + object_id.object_identifier.out + "%N"
 			across dependencies as dep loop
 				if attached{PS_COMPLEX_ATTRIBUTE_PART} dep.item as comp then
-					Result := Result +  "%T Reference attribute: " + comp.object_id.object_identifier.out + "%N" 
+					Result := Result +  "%T Reference attribute: " + comp.object_id.object_identifier.out + "%N"
 				else
 					Result := Result +   "%T " + dep.item.to_string
 				end

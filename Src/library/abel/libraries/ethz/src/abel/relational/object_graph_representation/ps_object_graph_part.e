@@ -37,6 +37,11 @@ feature
 			not_present: not dependencies.has (obj)
 		end
 
+	storable_tuple (optional_primary: INTEGER):PS_PAIR[STRING, STRING]
+		-- The storable tuple of the current object.
+		deferred
+		end
+
 
 	is_basic_attribute:BOOLEAN
 		-- Is `Current' an instance of PS_BASIC_ATTRIBUTE_PART?

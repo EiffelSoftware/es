@@ -51,9 +51,7 @@ feature -- Status report
 feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 
 
-	retrieve (type: PS_TYPE_METADATA; criteria:PS_CRITERION; attributes:LIST[STRING]; transaction:PS_TRANSACTION) : ITERATION_CURSOR[
-				PS_RETRIEVED_OBJECT]
-			--PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]]
+	retrieve (type: PS_TYPE_METADATA; criteria:PS_CRITERION; attributes:LIST[STRING]; transaction:PS_TRANSACTION) : ITERATION_CURSOR[PS_RETRIEVED_OBJECT]
 		-- Retrieves all objects of class `type' (direct instance - not inherited from) that match the criteria in `criteria' within transaction `transaction'.
 		-- If `attributes' is not empty, it will only retrieve the attributes listed there.
 		require
@@ -114,11 +112,11 @@ feature -- Object write operations
 feature -- Relational collection operations
 
 
-	retrieve_relational_collection (owner_type, collection_item_type: PS_TYPE_METADATA; owner_key: INTEGER; owner_attribute_name: STRING; transaction: PS_TRANSACTION) : LIST[STRING]
+	retrieve_relational_collection (owner_type, collection_item_type: PS_TYPE_METADATA; owner_key: INTEGER; owner_attribute_name: STRING; transaction: PS_TRANSACTION) : PS_RETRIEVED_RELATIONAL_COLLECTION
 			-- Retrieves the relational collection between class `owner_type' and `collection_item_type', where the owner has primary key `owner_key' and the attribute name of the collection inside the owner object is called `owner_attribute_name'
 		do
 			-- Note that the collection may be of a basic type - If the backend is not able to handle this, indicate it in the can_handle_relational_collection feature
-			create {LINKED_LIST[STRING]}Result.make
+			create Result.make (owner_key, owner_type.class_of_type, owner_attribute_name)
 		end
 
 
@@ -147,16 +145,14 @@ feature -- Relational collection operations
 feature -- Object-oriented collection operations
 
 
-	retrieve_objectoriented_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER; transaction: PS_TRANSACTION): PS_PAIR [LIST[STRING],HASH_TABLE[STRING, STRING]]
+	retrieve_objectoriented_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER; transaction: PS_TRANSACTION): PS_RETRIEVED_OBJECT_COLLECTION
 			-- Retrieves the object-oriented collection of type `object_type' and with primary key `object_primary_key'.
-			-- The result is a list of values in correct order, with string representation of either foreign keys  or just basic types - depending on the generic argument of the collection.
-			-- The hash table in the result pair is the additional information required by the handler, as given by a previous insert function.
 	 	deferred
 			-- Note that the collection may be of a basic type - If the backend is not able to handle this, indicate it in the can_handle_relational_collection feature
 	 	end
 
 	insert_objectoriented_collection (a_collection: PS_OBJECT_COLLECTION_PART[ITERABLE[detachable ANY]]; a_transaction:PS_TRANSACTION)
-		-- Add all entries in a_collection to the database
+		-- Add all entries in a_collection to the database. If the order is not conflicting with the items already in the database, it will try to preserve order.
 		require
 			mode_is_insert: a_collection.write_mode = a_collection.write_mode.insert
 			objectoriented_mode: not a_collection.handler.is_in_relational_storage_mode (a_collection)
@@ -182,13 +178,5 @@ feature -- Object-oriented collection operations
 feature
 
 	key_mapper: PS_KEY_POID_TABLE
-
---	collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]]]
-
-	add_handler (a_handler: PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]])
-		do
---			collection_handlers.extend (a_handler)
-		end
-
 
 end
