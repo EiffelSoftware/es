@@ -6,6 +6,8 @@ note
 
 deferred class
 	PS_SQL_CONNECTION_ABSTRACTION
+inherit
+	ITERABLE[PS_SQL_ROW_ABSTRACTION]
 
 feature
 
@@ -19,6 +21,11 @@ feature
 
 	last_result: ITERATION_CURSOR[PS_SQL_ROW_ABSTRACTION]
 		deferred
+		end
+
+	new_cursor:ITERATION_CURSOR[PS_SQL_ROW_ABSTRACTION]
+		do
+			Result:= last_result
 		end
 
 end

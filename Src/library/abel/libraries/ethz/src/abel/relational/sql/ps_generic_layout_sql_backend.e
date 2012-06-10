@@ -52,9 +52,40 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 
 		-- If `type' has a generic parameter, the retrieve function will return objects of all generic instances of the generating class.
 		-- You can find out about the actual generic parameter by comparing the class name associated to a foreign key value.
+		local
+			connection:PS_SQL_CONNECTION_ABSTRACTION
+			current_obj: PS_RETRIEVED_OBJECT
+			result_list: LINKED_LIST[PS_RETRIEVED_OBJECT]
+			row_cursor: ITERATION_CURSOR[PS_SQL_ROW_ABSTRACTION]
 		do
-			check not_implemented: False end
-			Result:= (create {LINKED_LIST[PS_RETRIEVED_OBJECT]}.make).new_cursor
+			connection:= database.acquire_connection
+			create result_list.make
+
+			connection.execute_sql (Current.query_values_from_class (db_metadata_manager.key_of_class (type.class_of_type.name, connection)))
+			from row_cursor:= connection.last_result
+			until row_cursor.after
+			loop
+				-- create new object
+				create current_obj.make (row_cursor.item.get_value ("objectid").to_integer, type.class_of_type)
+
+				-- fill all attributes - The result is ordered by the object id, therefore the attributes of a single object are grouped together.
+				from
+				until
+					row_cursor.after or else row_cursor.item.get_value ("objectid").to_integer /= current_obj.primary_key
+				loop
+					current_obj.add_attribute (
+						db_metadata_manager.attribute_name_of_key (row_cursor.item.get_value ("attributeid").to_integer), -- attribute_name
+						row_cursor.item.get_value ("value"), -- value
+						db_metadata_manager.class_name_of_key (row_cursor.item.get_value ("runtimetype").to_integer)) -- class_name_of_value
+
+					row_cursor.forth
+				end
+
+				result_list.extend (current_obj)
+				-- do NOT go forth - we are already pointing to the next item, otherwise the inner loop would not have stopped.
+			end
+			database.release_connection (connection)
+			Result:= result_list.new_cursor
 		end
 
 
@@ -63,9 +94,20 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 
 	retrieve_from_keys (type: PS_TYPE_METADATA; primary_keys: LIST[INTEGER]; transaction:PS_TRANSACTION) : LINKED_LIST[PS_RETRIEVED_OBJECT]
 		-- Retrieve all objects of type `type' and with primary key in `primary_keys'.
+		local
+			all_items: ITERATION_CURSOR[PS_RETRIEVED_OBJECT]
 		do
-			check not_implemented: False end
 			create Result.make
+			-- Cheating a little ;-)
+			all_items:= retrieve (type, create {PS_EMPTY_CRITERION}, create {LINKED_LIST [STRING]}.make, transaction)
+			from
+			until all_items.after
+			loop
+				if primary_keys.has (all_items.item.primary_key) then
+					Result.extend (all_items.item)
+				end
+				all_items.forth
+			end
 		end
 
 
@@ -143,12 +185,19 @@ feature {PS_EIFFELSTORE_EXPORT}-- Relational collection operations
 feature{NONE} -- Initialization
 
 	make (a_database: PS_SQL_DATABASE_ABSTRACTION)
+		local
+			initialization_connection: PS_SQL_CONNECTION_ABSTRACTION
 		do
 			database:= a_database
 			create key_mapper.make
+			initialization_connection:=a_database.acquire_connection
+			create db_metadata_manager.make (initialization_connection)
+			a_database.release_connection (initialization_connection)
 		end
 
 	database: PS_SQL_DATABASE_ABSTRACTION
+
+	db_metadata_manager: PS_GENERIC_LAYOUT_KEY_MANAGER
 
 end
 

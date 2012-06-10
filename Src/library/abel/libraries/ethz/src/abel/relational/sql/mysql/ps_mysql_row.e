@@ -21,6 +21,10 @@ feature
 			Result:= internal_row.at_field (table_header).as_string_8
 		end
 
+	get_value_by_index (index:INTEGER):STRING
+		do
+			Result:= internal_row.at (index).as_string_8
+		end
 
 
 feature {NONE} -- Initialization

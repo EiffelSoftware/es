@@ -13,4 +13,8 @@ feature
 		deferred
 		end
 
+
+	get_value_by_index (index:INTEGER):STRING
+		deferred
+		end
 end
