@@ -122,6 +122,7 @@ feature {NONE} -- Initialization
 --			create basic_attribute_values.make (hashtable_size)
 --			create reference_values.make (hashtable_size)
 			create attributes.make
+			attributes.compare_objects
 			create attribute_values.make (hashtable_size)
 
 		end

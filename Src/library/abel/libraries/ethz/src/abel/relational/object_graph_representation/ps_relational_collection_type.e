@@ -15,7 +15,7 @@ create make
 
 feature -- Relational storage mode data
 
-	reference_owner:PS_OBJECT_GRAPH_PART
+	reference_owner: PS_SINGLE_OBJECT_PART--PS_OBJECT_GRAPH_PART
 		-- An object that holds a reference to `Current.object_id'
 		-- Please note that this is only required if the insertion happens in relational mode, and the design is flawed if more than one object holds a reference to this collection
 		-- (this cannot really be mapped to relational databases anyway)
@@ -71,7 +71,7 @@ feature {NONE}
 
 
 
-	make (obj: PS_OBJECT_IDENTIFIER_WRAPPER; owner: PS_OBJECT_GRAPH_PART; attr_name: STRING ; a_mode:PS_WRITE_OPERATION; a_handler: PS_COLLECTION_HANDLER[COLLECTION_TYPE])
+	make (obj: PS_OBJECT_IDENTIFIER_WRAPPER; owner: PS_SINGLE_OBJECT_PART; attr_name: STRING ; a_mode:PS_WRITE_OPERATION; a_handler: PS_COLLECTION_HANDLER[COLLECTION_TYPE])
 		-- initialize `Current'
 		local
 			del_dependency: like Current

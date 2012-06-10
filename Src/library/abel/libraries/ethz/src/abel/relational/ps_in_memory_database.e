@@ -35,14 +35,14 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 			Result:= True
 		end
 
-	can_handle_relational_collection (owner_type, collection_item_type: PS_TYPE_METADATA; owner_key: INTEGER; owner_attribute_name: STRING): BOOLEAN
-			-- Can the current backend handle the relational collection denoted by the arguments?
+	can_handle_relational_collection (owner_type, collection_item_type: PS_TYPE_METADATA): BOOLEAN
+			-- Can the current backend handle the relational collection between the two classes `owner_type' and `collection_type'?
 		do
 			Result:= False
 		end
 
-	can_handle_objectoriented_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER): BOOLEAN
-			-- Can the current backend handle the objectoriented collection denoted by the arguments?
+	can_handle_objectoriented_collection (collection_type: PS_TYPE_METADATA): BOOLEAN
+			-- Can the current backend handle an objectoriented collection of type `collection_type'?
 		do
 			Result:= True
 		end
@@ -168,7 +168,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 
 			-- Now add all collection values to the collection
 			across a_collection.values as coll_item loop
-				item_primary:= key_mapper.quick_translate (coll_item.item.poid)
+				item_primary:= key_mapper.quick_translate (coll_item.item.object_identifier)
 
 				add_to_collection (primary, coll_item.item.storable_tuple (item_primary), a_collection.order_of (coll_item.item))
 			end
@@ -260,7 +260,7 @@ feature {NONE} -- Implementation - Loading and storing objects
 			primary:= key_mapper.primary_key_of (an_object.object_id)
 
 			across an_object.attributes as attr_cursor loop
-				attr_primary:= key_mapper.quick_translate (an_object.get_value (attr_cursor.item).poid)
+				attr_primary:= key_mapper.quick_translate (an_object.get_value (attr_cursor.item).object_identifier)
 				add_or_replace_attribute (primary.second.name, primary.first, attr_cursor.item, an_object.get_value (attr_cursor.item).storable_tuple (attr_primary))
 			end
 		end

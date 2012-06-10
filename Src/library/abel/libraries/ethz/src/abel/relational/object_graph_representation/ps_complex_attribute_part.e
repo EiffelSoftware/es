@@ -12,7 +12,7 @@ inherit
 	undefine
 		remove_dependency
 	redefine
-		poid
+		object_identifier
 	end
 
 feature
@@ -20,7 +20,7 @@ feature
 	object_id:PS_OBJECT_IDENTIFIER_WRAPPER
 		-- The repository-wide unique object identifier of the object represented by `Current'
 
-	poid:INTEGER
+	object_identifier:INTEGER
 	do
 		Result:= object_id.object_identifier
 	end
