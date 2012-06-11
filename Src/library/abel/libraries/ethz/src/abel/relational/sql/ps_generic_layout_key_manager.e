@@ -32,10 +32,14 @@ feature
 			if class_map.has (class_name) then
 				Result:= class_map[class_name]
 			else
-				active_connection.execute_sql ("INSERT INTO ps_class (classname) VALUES (" + class_name + ")")
-				Result:= active_connection.last_insert_id
+				active_connection.execute_sql ("INSERT INTO ps_class (classname) VALUES ('" + class_name + "')")
+				active_connection.execute_sql ("SELECT classid FROM ps_class WHERE classname = '" + class_name + "'")
+				Result:= active_connection.last_result.item.get_value_by_index (1).to_integer
+--				Result:= active_connection.last_insert_id
 				class_map.extend (Result, class_name)
 				class_key_to_name_map.extend (class_name, Result)
+
+				attr_map.extend (create {HASH_TABLE[INTEGER, STRING]}.make (20), Result)
 			end
 		end
 
@@ -46,7 +50,9 @@ feature
 				Result:= attach (attr_map[class_id]).item (attribute_name)
 			else
 				active_connection.execute_sql ("INSERT INTO ps_attribute (name, class) VALUES ('" + attribute_name + "', " + class_id.out +  ")")
-				Result:= active_connection.last_insert_id
+				active_connection.execute_sql ("SELECT attributeid FROM ps_attribute WHERE name = '" + attribute_name + "' AND class = " +class_id.out)
+				Result:= active_connection.last_result.item.get_value_by_index (1).to_integer
+--				Result:= active_connection.last_insert_id
 				add_attribute_key (attribute_name, Result, class_id)
 			end
 		end
@@ -94,20 +100,20 @@ feature {NONE} -- Initialization
 
 			-- Create all tables if they do not yet exist
 			create all_tables.make
-			all_tables.compare_objects
 
 			a_connection.execute_sql ("SHOW TABLES")
 			across a_connection as cursor loop
 				all_tables.extend (cursor.item.get_value_by_index (1))
+				print (all_tables.last)
 			end
 
-			if not all_tables.has ("ps_class") then
+			if not all_tables.there_exists ( agent {STRING}.is_case_insensitive_equal ("ps_class")) then
 				a_connection.execute_sql (Create_class_table)
 			end
-			if not all_tables.has ("ps_attribute") then
+			if not all_tables.there_exists ( agent {STRING}.is_case_insensitive_equal  ("ps_attribute")) then
 				a_connection.execute_sql (Create_attribute_table)
 			end
-			if not all_tables.has ("ps_value") then
+			if not all_tables.there_exists ( agent {STRING}.is_case_insensitive_equal  ("ps_value")) then
 				a_connection.execute_sql (Create_value_table)
 			end
 

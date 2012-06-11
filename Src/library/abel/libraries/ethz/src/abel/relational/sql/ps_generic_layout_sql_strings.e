@@ -18,8 +18,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Table creation
 					value VARCHAR(128),
 
 					PRIMARY KEY (objectid, attributeid),
-					FOREIGN KEY (attributeid) REFERENCES ps_attribute (attributeid) ON DELETE CASCADE
-					FOREIGN KEY (runtimetype) REFERECES ps_class (classid) ON DELETE CASCADE
+					FOREIGN KEY (attributeid) REFERENCES ps_attribute (attributeid) ON DELETE CASCADE,
+					FOREIGN KEY (runtimetype) REFERENCES ps_class (classid) ON DELETE CASCADE
 					)
 		]"
 
@@ -34,12 +34,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Table creation
 		]"
 
 --	Create_inheritance_table: STRING = "[
-			
+
 --			CREATE TABLE ps_inheritance (
---				superclass INTEGER, 
---				subclass INTEGER, 
+--				superclass INTEGER,
+--				subclass INTEGER,
 --				
---				PRIMARY KEY (superclass, subclass), 
+--				PRIMARY KEY (superclass, subclass),
 --				FOREIGN KEY (superclass) REFERENCES ps_class (classid) ON DELETE CASCADE,
 --				FOREIGN KEY (subclass) REFERENCES ps_class (classid) ON DELETE CASCADE
 --			 )
@@ -94,10 +94,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Data querying
 				WHERE objectid IN (
 					SELECT v.objectid
 					FROM ps_value v, ps_attribute a
-					WHERE a.class = ]" + class_id + "[
-				)
-				ORDER BY objectid
+					WHERE v.attributeid = a.attributeid AND a.class = 
 			]"
+			Result := Result + class_id.out + " ) ORDER BY objectid "
 		end
 
 end

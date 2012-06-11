@@ -15,7 +15,7 @@ feature{NONE}
 
 	on_prepare
 		do
-			create int_repo.make
+			create int_repo.make (create {PS_IN_MEMORY_DATABASE}.make)
 			repository := int_repo
 			initialize_tests_general
 			initialize_criteria_tests
@@ -29,6 +29,7 @@ feature
 
 	test_criteria_in_relational_memory
 	do
+		insert_data
 		test_criteria_agents
 		test_criteria_predefined
 		test_criteria_agents_and_predefined

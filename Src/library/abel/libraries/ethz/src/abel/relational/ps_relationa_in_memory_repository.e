@@ -62,12 +62,19 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing
 	clean_db_for_testing
 		-- Wipe out all data
 		do
-			make
+			-- Ugly, but it works for now...
+			if attached{PS_GENERIC_LAYOUT_SQL_BACKEND} backend as sql_backend then
+				sql_backend.wipe_out_all
+			else
+				create {PS_IN_MEMORY_DATABASE} backend.make
+			end
+
+			make (backend)
 		end
 
 feature{NONE} -- Initialization
 
-	make
+	make (a_backend: PS_BACKEND_STRATEGY)
 		-- Initialize `Current'
 		do
 			create transaction_isolation_level
@@ -75,9 +82,10 @@ feature{NONE} -- Initialization
 			create id_manager.make
 			create disassembler.make (id_manager, default_object_graph)
 			create planner.make
-			create memory_db.make
-			create executor.make (memory_db)
-			create retriever.make (memory_db)
+		--	create memory_db.make
+			backend:= a_backend
+			create executor.make (backend)
+			create retriever.make (backend)
 
 			create special_handler.make
 			retriever.add_handler (special_handler)
@@ -89,7 +97,8 @@ feature {PS_EIFFELSTORE_EXPORT}
 	disassembler:PS_OBJECT_DISASSEMBLER
 	planner:PS_WRITE_PLANNER
 	executor: PS_WRITE_EXECUTOR
-	memory_db: PS_IN_MEMORY_DATABASE
+--	memory_db: PS_IN_MEMORY_DATABASE
+	backend: PS_BACKEND_STRATEGY
 	retriever:PS_RETRIEVAL_MANAGER
 
 	special_handler: PS_SPECIAL_COLLECTION_HANDLER

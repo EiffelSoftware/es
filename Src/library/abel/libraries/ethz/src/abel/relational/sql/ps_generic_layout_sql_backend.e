@@ -25,7 +25,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 	can_handle_type (type: PS_TYPE_METADATA) : BOOLEAN
 			-- Can the current backend handle objects of type `type'?
 		do
-			Result:= False
+			Result:= True
 		end
 
 	can_handle_relational_collection (owner_type, collection_item_type: PS_TYPE_METADATA): BOOLEAN
@@ -67,19 +67,26 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			loop
 				-- create new object
 				create current_obj.make (row_cursor.item.get_value ("objectid").to_integer, type.class_of_type)
-
+				print (current_obj.class_metadata.name + current_obj.primary_key.out + "%N")
 				-- fill all attributes - The result is ordered by the object id, therefore the attributes of a single object are grouped together.
 				from
 				until
 					row_cursor.after or else row_cursor.item.get_value ("objectid").to_integer /= current_obj.primary_key
 				loop
+					--print (current_obj.class_metadata.name + ": " + db_metadata_manager.attribute_name_of_key (row_cursor.item.get_value ("attributeid").to_integer) + "%N")
 					current_obj.add_attribute (
 						db_metadata_manager.attribute_name_of_key (row_cursor.item.get_value ("attributeid").to_integer), -- attribute_name
 						row_cursor.item.get_value ("value"), -- value
 						db_metadata_manager.class_name_of_key (row_cursor.item.get_value ("runtimetype").to_integer)) -- class_name_of_value
-
 					row_cursor.forth
 				end
+				-- fill in Void attributes
+				across type.attributes as attr loop
+					if not current_obj.has_attribute (attr.item) then
+						current_obj.add_attribute (attr.item, "", "NONE")
+					end
+				end
+
 
 				result_list.extend (current_obj)
 				-- do NOT go forth - we are already pointing to the next item, otherwise the inner loop would not have stopped.
@@ -117,20 +124,52 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 
 	insert (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
 		-- Inserts the object into the database
+		local
+			connection:PS_SQL_CONNECTION_ABSTRACTION
+			new_primary_key: INTEGER
+			none_class: INTEGER
+			stub_attribute:INTEGER
 		do
-			check not_implemented: False end
+			-- Generate a new primary key in the database by inserting a stub attribute
+			connection:= database.acquire_connection
+			none_class:= db_metadata_manager.key_of_class ("NONE", connection)
+			stub_attribute := db_metadata_manager.key_of_attribute ("stub", none_class, connection)
+			connection.execute_sql ("INSERT INTO ps_value (attributeid, runtimetype, value) VALUES (" + stub_attribute.out+ ", " + none_class.out + ", 'STUB')")
+			connection.execute_sql ("SELECT objectid FROM ps_value WHERE attributeid = " + stub_attribute.out + "  AND value = 'STUB'")
+			new_primary_key:=connection.last_result.item.get_value_by_index (1).to_integer
+
+			-- Insert the primary key to the key manager
+			key_mapper.add_entry (an_object.object_id, new_primary_key)
+
+			-- Write all attributes
+			write_attributes (an_object, connection)
+
+			-- Delete the stub argument
+			connection.execute_sql ("DELETE FROM ps_value WHERE attributeid = " + stub_attribute.out + "  AND value = 'STUB'")
+			database.release_connection (connection)
 		end
 
 	update (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
 		-- Updates an_object
+		local
+			connection:PS_SQL_CONNECTION_ABSTRACTION
 		do
-			check not_implemented: False end
+			connection:= database.acquire_connection
+			write_attributes (an_object, connection)
+			database.release_connection (connection)
 		end
 
 	delete (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
 		-- Deletes an_object from the database
+		local
+			connection:PS_SQL_CONNECTION_ABSTRACTION
+			primary:INTEGER
 		do
-			check not_implemented: False end
+			connection:= database.acquire_connection
+			primary:= key_mapper.primary_key_of (an_object.object_id).first
+			connection.execute_sql ("DELETE FROM ps_value WHERE objectid = " + primary.out)
+			database.release_connection (connection)
+			key_mapper.remove_primary_key (primary, an_object.object_id.metadata)
 		end
 
 
@@ -182,6 +221,77 @@ feature {PS_EIFFELSTORE_EXPORT}-- Relational collection operations
 			check not_implemented: False end
 		end
 
+
+feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
+
+	wipe_out_data
+		-- Wipe out all object data, but keep the metadata
+		local
+			connection:PS_SQL_CONNECTION_ABSTRACTION
+		do
+			connection:= database.acquire_connection
+			create key_mapper.make
+			connection.execute_sql ("DELETE FROM ps_value")
+			database.release_connection (connection)
+		end
+
+	wipe_out_all
+		-- Wipe out everything and initialize new.
+		local
+			connection:PS_SQL_CONNECTION_ABSTRACTION
+		do
+			connection:= database.acquire_connection
+			connection.execute_sql ("DROP TABLE ps_value")
+			connection.execute_sql ("DROP TABLE ps_attribute")
+			connection.execute_sql ("DROP TABLE ps_class")
+			database.release_connection (connection)
+			make (database)
+		end
+
+
+
+feature {NONE} -- Implementation
+
+
+	write_attributes (object: PS_SINGLE_OBJECT_PART; a_connection: PS_SQL_CONNECTION_ABSTRACTION)
+		local
+			primary: INTEGER
+			already_present_attributes: LINKED_LIST[INTEGER]
+			runtime_type: INTEGER
+			attribute_id:INTEGER
+			value: STRING
+			referenced_part: PS_OBJECT_GRAPH_PART
+		do
+			primary:= key_mapper.primary_key_of (object.object_id).first
+
+			create already_present_attributes.make
+			a_connection.execute_sql ("SELECT attributeid FROM ps_value WHERE objectid = " + primary.out)
+			across a_connection as cursor loop
+				already_present_attributes.extend (cursor.item.get_value_by_index (1).to_integer)
+			end
+
+			across object.attributes as current_attribute loop
+				-- get the needed information
+				referenced_part:= object.get_value (current_attribute.item)
+				value:= referenced_part.storable_tuple (key_mapper.quick_translate (referenced_part.object_identifier)).first
+				attribute_id:= db_metadata_manager.key_of_attribute (current_attribute.item, db_metadata_manager.key_of_class (object.object_id.metadata.class_of_type.name, a_connection), a_connection)
+				runtime_type:= db_metadata_manager.key_of_class (referenced_part.storable_tuple (key_mapper.quick_translate (referenced_part.object_identifier)).second, a_connection)
+
+				-- Perform update or insert, depending on the presence in the database
+				if already_present_attributes.has (attribute_id) then
+					-- Update
+					a_connection.execute_sql ("UPDATE ps_value SET runtimetype = " + runtime_type.out + ", value = '" + value + "' WHERE objectid = " + primary.out + " AND attributeid = "+ attribute_id.out)
+
+				else
+					-- Insert
+					a_connection.execute_sql ("INSERT INTO ps_value (objectid, attributeid, runtimetype, value) VALUES ( " + primary.out + ", " + attribute_id.out + ", " + runtime_type.out + ", '" + value + "')")
+				end
+			end
+		end
+
+
+
+
 feature{NONE} -- Initialization
 
 	make (a_database: PS_SQL_DATABASE_ABSTRACTION)
@@ -189,6 +299,7 @@ feature{NONE} -- Initialization
 			initialization_connection: PS_SQL_CONNECTION_ABSTRACTION
 		do
 			database:= a_database
+--			connection:= database.acquire_connection
 			create key_mapper.make
 			initialization_connection:=a_database.acquire_connection
 			create db_metadata_manager.make (initialization_connection)
@@ -198,6 +309,8 @@ feature{NONE} -- Initialization
 	database: PS_SQL_DATABASE_ABSTRACTION
 
 	db_metadata_manager: PS_GENERIC_LAYOUT_KEY_MANAGER
+
+--	connection: PS_SQL_CONNECTION_ABSTRACTION
 
 end
 

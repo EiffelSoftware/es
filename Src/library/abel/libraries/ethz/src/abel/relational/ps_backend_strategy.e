@@ -91,7 +91,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		deferred
 		ensure
 			object_known: key_mapper.has_primary_key_of (an_object.object_id)
-			check_successful_write (an_object, a_transaction)
+--			check_successful_write (an_object, a_transaction)
 		end
 
 	update (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
@@ -228,6 +228,7 @@ feature{NONE} -- Correctness checks
 			Result:= True
 			create keys.make
 			keys.extend (key_mapper.primary_key_of (an_object.object_id).first)
+--			print (keys.count)
 			retrieved_object := retrieve_from_keys (an_object.object_id.metadata, keys, transaction).first
 
 			across an_object.object_id.metadata.attributes as attr

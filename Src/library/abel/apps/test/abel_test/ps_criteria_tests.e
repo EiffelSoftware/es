@@ -362,7 +362,7 @@ feature {NONE} -- Initialization
 			initialize_tests_general
 			create person_executor.make_with_repository (repository)
 			create p_dao
-			insert_data
+--			insert_data
 		end
 
 	insert_data

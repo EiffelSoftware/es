@@ -29,6 +29,9 @@ feature
 
 	release_connection (a_connection:PS_SQL_CONNECTION_ABSTRACTION)
 		do
+			check attached{PS_MYSQL_CONNECTION} a_connection as conn then
+				conn.internal_connection.close
+			end
 			-- ignore for the moment - connection pooling first has to be implemented
 		end
 
