@@ -3193,6 +3193,7 @@ Src/library/diff/diff_line_del.e -text
 Src/library/ebbro/documentation/Docs_1.webarchive -text
 Src/library/ebbro/documentation/Docs_2.webarchive -text
 Src/library/ebbro/documentation/ebbro_integrated_demo.swf -text
+Src/library/ebbro/readme.txt -text
 Src/library/editor/bitmaps/copy_selection.png -text
 Src/library/editor/bitmaps/cut_selection.png -text
 Src/library/editor/bitmaps/icon_close_color.png -text
