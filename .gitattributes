@@ -3198,6 +3198,10 @@ Src/library/editor/bitmaps/right_scroll_arrow.png -text
 Src/library/edk/include/edk.lib -text
 Src/library/edk/spec/msc/windows/lib/edk.lib -text
 Src/library/encoding/implementation/unix/Clib/iconv-config -text
+Src/library/escher/documentation/Schema_Evolution_Management.webarchive -text
+Src/library/escher/documentation/library_doc_1.webarchive -text
+Src/library/escher/documentation/library_doc_2.webarchive -text
+Src/library/escher/documentation/tutorial.webarchive -text
 Src/library/graph/license.lic -text
 Src/library/i18n/README -text
 Src/library/i18n/TODO -text
