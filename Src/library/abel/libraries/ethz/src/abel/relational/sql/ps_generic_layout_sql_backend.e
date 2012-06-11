@@ -261,6 +261,7 @@ feature {NONE} -- Implementation
 			attribute_id:INTEGER
 			value: STRING
 			referenced_part: PS_OBJECT_GRAPH_PART
+			collected_insert_statements: STRING
 		do
 			primary:= key_mapper.primary_key_of (object.object_id).first
 
@@ -269,6 +270,8 @@ feature {NONE} -- Implementation
 			across a_connection as cursor loop
 				already_present_attributes.extend (cursor.item.get_value_by_index (1).to_integer)
 			end
+
+			collected_insert_statements:= ""
 
 			across object.attributes as current_attribute loop
 				-- get the needed information
@@ -280,13 +283,15 @@ feature {NONE} -- Implementation
 				-- Perform update or insert, depending on the presence in the database
 				if already_present_attributes.has (attribute_id) then
 					-- Update
-					a_connection.execute_sql ("UPDATE ps_value SET runtimetype = " + runtime_type.out + ", value = '" + value + "' WHERE objectid = " + primary.out + " AND attributeid = "+ attribute_id.out)
-
+--					a_connection.execute_sql ("UPDATE ps_value SET runtimetype = " + runtime_type.out + ", value = '" + value + "' WHERE objectid = " + primary.out + " AND attributeid = "+ attribute_id.out)
+					collected_insert_statements:= collected_insert_statements + "UPDATE ps_value SET runtimetype = " + runtime_type.out + ", value = '" + value + "' WHERE objectid = " + primary.out + " AND attributeid = "+ attribute_id.out + "; "
 				else
 					-- Insert
-					a_connection.execute_sql ("INSERT INTO ps_value (objectid, attributeid, runtimetype, value) VALUES ( " + primary.out + ", " + attribute_id.out + ", " + runtime_type.out + ", '" + value + "')")
+--					a_connection.execute_sql ("INSERT INTO ps_value (objectid, attributeid, runtimetype, value) VALUES ( " + primary.out + ", " + attribute_id.out + ", " + runtime_type.out + ", '" + value + "')")
+					collected_insert_statements:= collected_insert_statements + "INSERT INTO ps_value (objectid, attributeid, runtimetype, value) VALUES ( " + primary.out + ", " + attribute_id.out + ", " + runtime_type.out + ", '" + value + "'); "
 				end
 			end
+			a_connection.execute_sql (collected_insert_statements)
 		end
 
 

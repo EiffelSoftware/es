@@ -15,9 +15,9 @@ feature
 		deferred
 		end
 
-	last_insert_id: INTEGER
-		deferred
-		end
+--	last_insert_id: INTEGER
+--		deferred
+--		end
 
 	last_result: ITERATION_CURSOR[PS_SQL_ROW_ABSTRACTION]
 		deferred

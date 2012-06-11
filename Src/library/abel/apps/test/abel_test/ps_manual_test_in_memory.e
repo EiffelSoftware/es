@@ -7,6 +7,9 @@ note
 class
 	PS_MANUAL_TEST_IN_MEMORY
 
+feature
+	multiline_comment: STRING = "[
+
 inherit
 	PS_CRITERIA_TESTS
 	PS_CRUD_TESTS
@@ -43,5 +46,7 @@ feature
 		test_data_structures_store
 		test_update_on_reference
 	end
+
+]"
 
 end

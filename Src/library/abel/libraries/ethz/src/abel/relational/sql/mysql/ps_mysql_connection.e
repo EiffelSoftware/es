@@ -25,10 +25,10 @@ feature {PS_EIFFELSTORE_EXPORT}
 			end
 		end
 
-	last_insert_id: INTEGER
-		do
-			Result:= internal_connection.last_result.last_insert_id
-		end
+--	last_insert_id: INTEGER
+--		do
+--			Result:= internal_connection.last_result.last_insert_id
+--		end
 
 	last_result: ITERATION_CURSOR[PS_SQL_ROW_ABSTRACTION]
 		local
