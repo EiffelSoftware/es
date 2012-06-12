@@ -58,7 +58,11 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 		do
 			-- Evaluate which objects to load
 			-- (here: ignore criteria and just return everything from that class)
-			create keys.make_from_array ( attach (db[type.class_of_type.name]).current_keys )
+			if db.has (type.class_of_type.name) then
+				create keys.make_from_array ( attach (db[type.class_of_type.name]).current_keys )
+			else
+				create keys.make (0)
+			end
 
 			-- Evaluate which attributes to load
 			if attributes.is_empty then

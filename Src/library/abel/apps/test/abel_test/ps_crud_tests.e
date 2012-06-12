@@ -1,17 +1,86 @@
 note
-	description: "Summary description for {PS_CRUD_TESTS}."
-	author: ""
+	description: "Provides tests for the CRUD (Create, Read, Update, Delete) operations"
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
+class
 	PS_CRUD_TESTS
 
 inherit
-	PS_TESTS_GENERAL
+	PS_TEST_PROVIDER
+
+create make
+
+feature {PS_REPOSITORY_TESTS}
+
+	test_insert_void_reference
+		local
+			ref:REFERENCE_CLASS_1
+			query:PS_OBJECT_QUERY[REFERENCE_CLASS_1]
+		do
+			create ref.make (1)
+			create query.make
+
+			executor.insert (ref)
+			executor.execute_query (query)
+
+			assert ("Equal results", ref.is_deep_equal (query.result_cursor.item))
+			repository.clean_db_for_testing
+		end
 
 
-feature {NONE}
+	test_insert_one_reference
+		local
+			query:PS_OBJECT_QUERY[REFERENCE_CLASS_1]
+			first_result, second_result: REFERENCE_CLASS_1
+		do
+			create query.make
+			executor.insert (test_data.reference_to_single_other)
+			executor.execute_query (query)
+
+			assert ("The result is empty", not query.result_cursor.after)
+			first_result:= query.result_cursor.item
+			query.result_cursor.forth
+			assert ("The result has only one item", not query.result_cursor.after)
+			second_result:= query.result_cursor.item
+			query.result_cursor.forth
+			assert ("The result has more than two items", query.result_cursor.after)
+
+			assert ("The items are not equal", test_data.reference_to_single_other.is_deep_equal (first_result) or test_data.reference_to_single_other.is_deep_equal (second_result))
+
+			repository.clean_db_for_testing
+		end
+
+	test_insert_reference_cycle
+		local
+			query:PS_OBJECT_QUERY[REFERENCE_CLASS_1]
+			original:REFERENCE_CLASS_1
+			ref_list: LINKED_LIST[REFERENCE_CLASS_1]
+			equality: BOOLEAN
+		do
+			executor.insert (test_data.reference_1)
+			create query.make
+			executor.execute_query (query)
+
+			assert ("The result is empty", not query.result_cursor.after)
+
+			-- collect results
+			create ref_list.make
+			across query as cursor loop
+				ref_list.extend (cursor.item)
+			end
+
+			assert ("The result contains less than 3 items", ref_list.count >= 3)
+			assert ("The result contains more than 3 items", ref_list.count <= 3)
+
+			-- here we have the problem that the result is not sorted...
+			original:= test_data.reference_1
+			equality:= original.is_deep_equal (ref_list[1]) or original.is_deep_equal (ref_list[2]) or original.is_deep_equal (ref_list[3])
+
+			assert ("The results are not the same", equality)
+			repository.clean_db_for_testing
+		end
 
 
 	test_flat_class_store
@@ -19,20 +88,13 @@ feature {NONE}
 		local
 			query: PS_OBJECT_QUERY[FLAT_CLASS_1]
 		do
-			repository.clean_db_for_testing
+--			repository.clean_db_for_testing
 			create query.make
-			flat_executor.insert (test_data.flat_class)
-			flat_executor.execute_query (query)
+			executor.insert (test_data.flat_class)
+			executor.execute_query (query)
 			assert ("The query doesn't return a result", not query.result_cursor.after)
---			print (query.result_cursor.item.a_string_32)
---			print (test_data.flat_class.a_string_32)
---			print ( (query.result_cursor.item.a_string_32.is_deep_equal (test_data.flat_class.a_string_32)).out + "%N")
---			print ( (query.result_cursor.item.real_32_max = test_data.flat_class.real_32_max).out + "%N")
---			print (query.result_cursor.item.out + test_data.flat_class.out)
---			print ((query.result_cursor.item.almost_equals (test_data.flat_class)).out)
---			print (test_data.flat_class.tagged_out)
---			print (query.result_cursor.item.tagged_out)
 			assert ("The results are not equal", query.result_cursor.item.is_almost_equal (test_data.flat_class, 0.00001))
+			repository.clean_db_for_testing
 		end
 
 
@@ -41,28 +103,28 @@ feature {NONE}
 		local
 			query: PS_OBJECT_QUERY[FLAT_CLASS_1]
 		do
-			repository.clean_db_for_testing
+--			repository.clean_db_for_testing
 			-- Insert:
 			create query.make
-			flat_executor.insert (test_data.flat_class)
-			flat_executor.execute_query (query)
+			executor.insert (test_data.flat_class)
+			executor.execute_query (query)
 			assert ("The query doesn't return a result", not query.result_cursor.after)
 			assert ("The results are not equal after insert", query.result_cursor.item.is_almost_equal (test_data.flat_class, 0.00001))
 
 			test_data.flat_class.update
-			flat_executor.update (test_data.flat_class)
+			executor.update (test_data.flat_class)
 			create query.make
-			flat_executor.execute_query (query)
+			executor.execute_query (query)
 			assert ("The query doesn't return a result", not query.result_cursor.after)
 --			print (test_data.flat_class.out + query.result_cursor.item.out)
 			assert ("The results are not equal after update", query.result_cursor.item.is_almost_equal (test_data.flat_class, 0.00001))
 
-			flat_executor.delete (test_data.flat_class)
+			executor.delete (test_data.flat_class)
 			create query.make
-			flat_executor.execute_query (query)
+			executor.execute_query (query)
 			assert ("The query returns a result, but it should be empty", query.result_cursor.after)
 
-
+			repository.clean_db_for_testing
 		end
 
 
@@ -74,10 +136,12 @@ feature {NONE}
 		do
 			repository.clean_db_for_testing
 			create query.make
-			structures_executor.insert (test_data.data_structures_1)
-			structures_executor.execute_query (query)
+			executor.insert (test_data.data_structures_1)
+			executor.execute_query (query)
 			assert ("The query doesn't return a result", not query.result_cursor.after)
 			assert ("The results are not equal", query.result_cursor.item.is_deep_equal (test_data.data_structures_1))
+
+			repository.clean_db_for_testing
 		end
 
 
@@ -91,19 +155,19 @@ feature {NONE}
 			repository.clean_db_for_testing
 
 			create query.make
-			structures_executor.insert (test_data.data_structures_1)
-			structures_executor.execute_query (query)
+			executor.insert (test_data.data_structures_1)
+			executor.execute_query (query)
 			assert ("The query doesn't return a result", not query.result_cursor.after)
 			retrieved:= query.result_cursor.item
 			assert ("The results are not equal", retrieved.is_deep_equal (test_data.data_structures_1))
 
 			-- perform update
 			retrieved.array_1[1].update
-			flat_executor.update (retrieved.array_1[1])
+			executor.update (retrieved.array_1[1])
 
 			-- check if update worked
 			create query.make
-			structures_executor.execute_query (query)
+			executor.execute_query (query)
 			assert ("The query doesn't return a result", not query.result_cursor.after)
 			retrieved:= query.result_cursor.item
 			assert ("The results are equal", not retrieved.is_deep_equal (test_data.data_structures_1))
@@ -113,22 +177,6 @@ feature {NONE}
 			testdata_copy.array_1[1].update
 			assert ("There was more than just one update", retrieved.is_deep_equal (testdata_copy))
 
+			repository.clean_db_for_testing
 		end
-
-
-
-
-
-	initialize_crud_tests
-		do
-			create flat_executor.make_with_repository (repository)
-			create structures_executor.make_with_repository (repository)
-		end
-
-
-
-
-	flat_executor: PS_CRUD_EXECUTOR --[FLAT_CLASS_1]
-	structures_executor: PS_CRUD_EXECUTOR --[DATA_STRUCTURES_CLASS_1]
-
 end

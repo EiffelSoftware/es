@@ -1,52 +1,48 @@
 note
-	description: "Summary description for {PS_MANUAL_TEST_IN_MEMORY}."
-	author: ""
+	description: "Tests ABEL with an in-memory 'database' backend."
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
 	PS_MANUAL_TEST_IN_MEMORY
-
-feature
-	multiline_comment: STRING = "[
-
 inherit
-	PS_CRITERIA_TESTS
-	PS_CRUD_TESTS
+	PS_REPOSITORY_TESTS
 
+feature{NONE}
 
-feature {NONE}
-	on_prepare
+	make_repository: PS_RELATIONA_IN_MEMORY_REPOSITORY
 		do
-			create {PS_IN_MEMORY_REPOSITORY} repository.make
-			initialize_tests_general
-			initialize_criteria_tests
-			initialize_crud_tests
+			create Result.make (create {PS_IN_MEMORY_DATABASE}.make)
 		end
-
 
 feature
 
 	test_criteria_in_memory
-	do
-		test_criteria_agents
-		test_criteria_predefined
-		test_criteria_agents_and_predefined
-	end
+		do
+			criteria_tests.test_criteria_agents
+			criteria_tests.test_criteria_predefined
+			criteria_tests.test_criteria_agents_and_predefined
+		end
 
 
 	test_crud_flat_in_memory
-	do
-		test_flat_class_store
-		test_flat_class_all_crud
-	end
+		do
+			crud_tests.test_flat_class_store
+			crud_tests.test_flat_class_all_crud
+		end
 
-	test_crud_structures_in_memory
-	do
-		test_data_structures_store
-		test_update_on_reference
-	end
+	test_references_in_memory
+		do
+			crud_tests.test_insert_void_reference
+			crud_tests.test_insert_one_reference
+			crud_tests.test_insert_reference_cycle
+		end
 
-]"
+--	test_crud_structures_in_memory
+--		do
+--			test_data_structures_store
+--			test_update_on_reference
+--		end
 
 end

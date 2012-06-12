@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PS_TEST_DATA}."
-	author: ""
+	description: "Collects and initializes some data."
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -20,6 +20,8 @@ feature
 	flat_class: FLAT_CLASS_1
 
 	data_structures_1: DATA_STRUCTURES_CLASS_1
+
+	reference_to_single_other: REFERENCE_CLASS_1
 
 	reference_1: REFERENCE_CLASS_1
 		-- 1 references 2, 2 references 3, 3 references 1 and 2
@@ -55,6 +57,10 @@ feature {NONE} -- Initialization
 --			reference_1.ref_arrays.grow (1)
 --			reference_1.ref_arrays[1]:= ref2
 
+			create reference_to_single_other.make (1)
+			create ref2.make (2)
+			reference_to_single_other.add_ref (ref2)
+
 		end
 
 
@@ -62,7 +68,7 @@ feature {NONE} -- Initialization
 
 
 	fill_people
-			-- Populate an in-memory database.
+			-- Add some persons to `people'
 		local
 			pe:PERSON
 		do
