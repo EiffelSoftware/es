@@ -67,7 +67,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			loop
 				-- create new object
 				create current_obj.make (row_cursor.item.get_value ("objectid").to_integer, type.class_of_type)
-				print (current_obj.class_metadata.name + current_obj.primary_key.out + "%N")
+--				print (current_obj.class_metadata.name + current_obj.primary_key.out + "%N")
 				-- fill all attributes - The result is ordered by the object id, therefore the attributes of a single object are grouped together.
 				from
 				until

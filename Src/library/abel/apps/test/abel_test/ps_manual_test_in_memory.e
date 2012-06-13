@@ -28,25 +28,20 @@ feature
 
 	test_crud_flat_in_memory
 		do
-			crud_tests.test_flat_class_store
-			crud_tests.test_flat_class_all_crud
+			crud_tests.all_flat_object_tests
+			--crud_tests.test_flat_class_store
+			--crud_tests.test_flat_class_all_crud
 		end
 
 	test_references_in_memory
 		do
-			crud_tests.test_insert_void_reference
-			crud_tests.test_insert_one_reference
-			crud_tests.test_insert_reference_cycle
-			crud_tests.test_crud_reference_cycle
-			crud_tests.test_crud_update_on_reference
+			crud_tests.all_references_tests
 		end
 
 
-
---	test_crud_structures_in_memory
---		do
---			test_data_structures_store
---			test_update_on_reference
---		end
+	test_collections_in_memory
+		do
+			crud_tests.all_collection_tests
+		end
 
 end

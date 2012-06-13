@@ -104,7 +104,7 @@ feature {NONE} -- Initialization
 			a_connection.execute_sql ("SHOW TABLES")
 			across a_connection as cursor loop
 				all_tables.extend (cursor.item.get_value_by_index (1))
-				print (all_tables.last)
+--				print (all_tables.last)
 			end
 
 			if not all_tables.there_exists ( agent {STRING}.is_case_insensitive_equal ("ps_class")) then

@@ -16,10 +16,12 @@ deferred class
 
 inherit
 	PS_EIFFELSTORE_EXPORT
+	undefine default_create end
 
-inherit {NONE}
+--inherit {NONE}
 	EQA_TEST_SET
-	rename default_create as eqa_test_set_default_create end
+		export {NONE} all end
+--	rename default_create as eqa_test_set_default_create end
 
 
 
@@ -34,7 +36,7 @@ feature {PS_TEST_PROVIDER}
 
 	make (a_repository: PS_REPOSITORY)
 		do
-			eqa_test_set_default_create
+			default_create
 			repository:= a_repository
 			create executor.make_with_repository (repository)
 			create test_data.make

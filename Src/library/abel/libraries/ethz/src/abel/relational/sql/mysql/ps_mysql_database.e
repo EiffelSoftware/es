@@ -24,6 +24,7 @@ feature
 			database.set_host (host)
 			database.set_port (port)
 			database.connect
+--			print (database.last_error_message)
 			create {PS_MYSQL_CONNECTION} Result.make (database)
 		end
 

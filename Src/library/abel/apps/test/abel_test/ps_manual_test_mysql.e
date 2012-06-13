@@ -13,26 +13,31 @@ inherit
 
 feature
 
-	test_crud_flat_mysql
-		do
-			crud_tests.test_flat_class_store
-			crud_tests.test_flat_class_all_crud
-		end
 
-	test_criteria_mysql
+	test_criteria_in_memory
 		do
 			criteria_tests.test_criteria_agents
 			criteria_tests.test_criteria_predefined
 			criteria_tests.test_criteria_agents_and_predefined
 		end
 
-	test_references_mysql
+
+	test_crud_flat_in_memory
 		do
-			crud_tests.test_insert_void_reference
-			crud_tests.test_insert_one_reference
-			crud_tests.test_insert_reference_cycle
-			crud_tests.test_crud_reference_cycle
-			crud_tests.test_crud_update_on_reference
+			crud_tests.all_flat_object_tests
+			--crud_tests.test_flat_class_store
+			--crud_tests.test_flat_class_all_crud
+		end
+
+	test_references_in_memory
+		do
+			crud_tests.all_references_tests
+		end
+
+
+	test_collections_in_memory
+		do
+			crud_tests.all_collection_tests
 		end
 
 
@@ -57,13 +62,19 @@ feature {NONE} -- Initialization
 		end
 
 
-	username:STRING = "pfadief_eiffel"
-	password:STRING = "eiffelstore"
+--	username:STRING = "pfadief_eiffel"
+--	password:STRING = "eiffelstore"
 
-	db_name:STRING = "pfadief_eiffelstoretest"
-	db_host:STRING = "pfadief.mysql.db.hostpoint.ch"
+--	db_name:STRING = "pfadief_eiffelstoretest"
+--	db_host:STRING = "pfadief.mysql.db.hostpoint.ch"
+--	db_port:INTEGER = 3306
+
+	username:STRING = "eiffelstoretest"
+	password:STRING = "eiffelstoretest"
+
+	db_name:STRING = "eiffelstoretest"
+	db_host:STRING = "127.0.0.1"
 	db_port:INTEGER = 3306
-
 
 
 end

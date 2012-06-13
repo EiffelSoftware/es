@@ -31,6 +31,13 @@ feature
 
 	tuple_query: detachable PS_TUPLE_QUERY[ANY]
 
+	array_of_persons: ARRAY[PERSON]
+		-- An array of 10 persons
+
+	special_of_persons: SPECIAL[PERSON]
+		-- A special object of 10 persons
+
+	array_of_integers: ARRAY[INTEGER]
 
 feature {NONE} -- Initialization
 
@@ -39,6 +46,7 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		local
 			ref2, ref3: REFERENCE_CLASS_1
+			i:INTEGER
 		do
 			fill_people
 			create flat_class.make
@@ -64,6 +72,18 @@ feature {NONE} -- Initialization
 			create reference_to_single_other.make (1)
 			create ref2.make (2)
 			reference_to_single_other.add_ref (ref2)
+
+			create special_of_persons.make_empty (4)
+			across people as p loop special_of_persons.extend (p.item) end
+			create array_of_persons.make_from_special (special_of_persons.deep_twin)
+
+			create array_of_integers.make_filled (0, 1, 10)
+			from i:=1
+			until i>10
+			loop
+				array_of_integers[i] := i
+				i:= i+1
+			end
 
 		end
 
