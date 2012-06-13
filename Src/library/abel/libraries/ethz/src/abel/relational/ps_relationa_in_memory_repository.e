@@ -85,7 +85,7 @@ feature{NONE} -- Initialization
 		--	create memory_db.make
 			backend:= a_backend
 			create executor.make (backend)
-			create retriever.make (backend)
+			create retriever.make (backend, id_manager)
 
 			create special_handler.make
 			retriever.add_handler (special_handler)

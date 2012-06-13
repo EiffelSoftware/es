@@ -41,6 +41,11 @@ feature -- Access
 
 feature -- Basic operations
 
+	add_item
+		do
+			items_owned:= items_owned+1
+		end
+
 feature {NONE} -- Implementation
 
 invariant

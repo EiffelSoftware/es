@@ -16,14 +16,16 @@ create make
 
 feature {NONE}
 
-	make (a_backend: PS_BACKEND_STRATEGY)
+	make (a_backend: PS_BACKEND_STRATEGY; an_id_manager: PS_OBJECT_IDENTIFICATION_MANAGER)
 		-- Initialize `Current'
 		do
 			backend:= a_backend
+			id_manager:= an_id_manager
 			create query_to_cursor_map.make (100)
 			create bookkeeping_manager.make (100)
 			create collection_handlers.make
 			create metadata_manager.make_new
+
 		end
 
 	backend:PS_BACKEND_STRATEGY
@@ -31,6 +33,7 @@ feature {NONE}
 
 	metadata_manager: PS_METADATA_MANAGER
 
+	id_manager: PS_OBJECT_IDENTIFICATION_MANAGER
 --	query_to_cursor_map: HASH_TABLE[ITERATION_CURSOR[PS_PAIR [INTEGER, HASH_TABLE[STRING, STRING]]], INTEGER]
 	query_to_cursor_map: HASH_TABLE[ITERATION_CURSOR[PS_RETRIEVED_OBJECT], INTEGER]
 
@@ -272,6 +275,8 @@ feature {NONE} -- Implementation
 				create reflection
 				Result:= reflection.new_instance_of  (type.type.type_id)
 				bookkeeping.extend (Result, obj.primary_key + obj.class_metadata.name.hash_code)
+				id_manager.identify (Result)
+				backend.key_mapper.add_entry (id_manager.get_identifier_wrapper (Result), obj.primary_key)
 
 				across obj.attributes as attr_cursor loop
 --					print (attr_cursor.item)

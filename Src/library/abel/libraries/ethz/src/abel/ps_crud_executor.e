@@ -118,6 +118,7 @@ feature -- Transaction-based data retrieval and querying
 		ensure
 			query_executed: a_query.is_executed
 			transaction_set: a_query.transaction = a_transaction
+			object_known_to_system_now: not a_query.result_cursor.after implies is_already_loaded (a_query.result_cursor.item)
 		end
 
 	insert_within_transaction (an_object: ANY; a_transaction: PS_TRANSACTION)

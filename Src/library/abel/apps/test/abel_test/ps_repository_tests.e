@@ -25,6 +25,7 @@ feature
 			repository:= make_repository
 			create crud_tests.make (repository)
 			create criteria_tests.make (repository)
+			create transaction_tests.make (repository)
 		end
 
 
@@ -48,5 +49,6 @@ feature {PS_REPOSITORY_TESTS} -- Access
 	criteria_tests: PS_CRITERIA_TESTS
 		-- Provider for criteria tests
 
+	transaction_tests: PS_TRANSACTION_TESTS
 
 end
