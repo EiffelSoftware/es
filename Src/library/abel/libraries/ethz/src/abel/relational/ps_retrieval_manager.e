@@ -264,6 +264,7 @@ feature {NONE} -- Implementation
 			field_value: ANY
 			field_type:PS_TYPE_METADATA
 			keys: LINKED_LIST [INTEGER]
+			referenced_obj: LIST[PS_RETRIEVED_OBJECT]
 		do
 			if bookkeeping.has (obj.primary_key+ obj.class_metadata.name.hash_code) then
 				Result:= attach (bookkeeping[obj.primary_key+ obj.class_metadata.name.hash_code])
@@ -281,8 +282,11 @@ feature {NONE} -- Implementation
 						if not obj.attribute_value (attr_cursor.item).first.is_empty then
 							create keys.make
 							keys.extend (obj.attribute_value (attr_cursor.item).first.to_integer)
-							field_value:= build_new (field_type, backend.retrieve_from_keys (field_type, keys, transaction).first, transaction, bookkeeping)
-							reflection.set_reference_field (type.index_of (attr_cursor.item), Result, field_value)
+							referenced_obj:= backend.retrieve_from_keys (field_type, keys, transaction)
+							if not referenced_obj.is_empty then
+								field_value:= build_new (field_type, referenced_obj.first, transaction, bookkeeping)
+								reflection.set_reference_field (type.index_of (attr_cursor.item), Result, field_value)
+							end
 						end
 					end
 				end

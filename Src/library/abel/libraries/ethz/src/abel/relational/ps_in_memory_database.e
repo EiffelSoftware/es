@@ -238,20 +238,22 @@ feature {NONE} -- Implementation - Loading and storing objects
 		do
 			create Result.make
 			across keys as obj_primary loop
+				if has_object (type.class_of_type.name, obj_primary.item) then
 
-				create current_obj.make (obj_primary.item, type.class_of_type)
+					create current_obj.make (obj_primary.item, type.class_of_type)
 
-				across attributes as cursor loop
-					if has_attribute (type.class_of_type.name, obj_primary.item, cursor.item) then
-						attr_val:= get_attribute (type.class_of_type.name, obj_primary.item, cursor.item)
-					else
-						create attr_val.make (Void_value, None_type)
+					across attributes as cursor loop
+						if has_attribute (type.class_of_type.name, obj_primary.item, cursor.item) then
+							attr_val:= get_attribute (type.class_of_type.name, obj_primary.item, cursor.item)
+						else
+							create attr_val.make (Void_value, None_type)
+						end
+						current_obj.add_attribute (cursor.item, attr_val.first, attr_val.second)
+	--					print ("loaded attribute: " + cursor.item + "%N%T value: " + attr_val.first + "%N%T type: " + attr_val.second + "%N%N")
 					end
-					current_obj.add_attribute (cursor.item, attr_val.first, attr_val.second)
---					print ("loaded attribute: " + cursor.item + "%N%T value: " + attr_val.first + "%N%T type: " + attr_val.second + "%N%N")
-				end
 
-				Result.extend (current_obj)
+					Result.extend (current_obj)
+				end
 			end
 		end
 
@@ -317,6 +319,7 @@ feature{NONE} -- Implementation - Database and DB access for objects
 		end
 
 
+
 	get_object_as_strings (class_name:STRING; key:INTEGER): HASH_TABLE[PS_PAIR[STRING, STRING],STRING]
 		-- Get the object of type `class_name' with key `key' in string representation
 		local
@@ -324,6 +327,11 @@ feature{NONE} -- Implementation - Database and DB access for objects
 		do
 			intermediate:= attach (db[class_name])
 			Result:= attach (intermediate[key])
+		end
+
+	has_object (class_name: STRING; key:INTEGER):BOOLEAN
+		do
+			Result:= db.has (class_name) and then attach (db[class_name]).has (key)
 		end
 
 	has_attribute (class_name:STRING; key: INTEGER;  attr_name:STRING):BOOLEAN

@@ -69,10 +69,10 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 	retrieve_from_keys (type: PS_TYPE_METADATA; primary_keys: LIST[INTEGER]; transaction:PS_TRANSACTION) : LINKED_LIST[PS_RETRIEVED_OBJECT]
 		-- Retrieve all objects of type `type' and with primary key in `primary_keys'.
 		require
-			keys_exist: across primary_keys as cursor all key_mapper.has_objects_of (cursor.item, type) end
+			keys_exist: TRUE --TODO across primary_keys as cursor all key_mapper.has_objects_of (cursor.item, type) end
 		deferred
 		ensure
-			primary_keys.count = Result.count
+		--	primary_keys.count = Result.count
 			across Result as res all res.item.class_metadata.name = type.class_of_type.name end
 		end
 

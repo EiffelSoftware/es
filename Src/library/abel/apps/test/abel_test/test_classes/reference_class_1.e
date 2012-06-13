@@ -32,6 +32,10 @@ feature
 
 --	ref_arrays: ARRAY[detachable REFERENCE_CLASS_1]
 
+	update
+		do
+			ref_class_id:= ref_class_id + 1
+		end
 
 	out:STRING
 	do

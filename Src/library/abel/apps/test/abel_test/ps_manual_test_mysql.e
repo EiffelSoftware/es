@@ -31,7 +31,10 @@ feature
 			crud_tests.test_insert_void_reference
 			crud_tests.test_insert_one_reference
 			crud_tests.test_insert_reference_cycle
+			crud_tests.test_crud_reference_cycle
+			crud_tests.test_crud_update_on_reference
 		end
+
 
 
 feature {NONE} -- Initialization

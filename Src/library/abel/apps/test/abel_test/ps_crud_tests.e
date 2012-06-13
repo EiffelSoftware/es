@@ -16,84 +16,60 @@ feature {PS_REPOSITORY_TESTS}
 
 	test_insert_void_reference
 		local
-			ref:REFERENCE_CLASS_1
-			query:PS_OBJECT_QUERY[REFERENCE_CLASS_1]
+			test: PS_GENERIC_CRUD_TEST[REFERENCE_CLASS_1]
 		do
-			create ref.make (1)
-			create query.make
-
-			executor.insert (ref)
-			executor.execute_query (query)
-
-			assert ("Equal results", ref.is_deep_equal (query.result_cursor.item))
+			create test.make (repository)
+			test.test_insert (test_data.void_reference)
 			repository.clean_db_for_testing
 		end
 
 
 	test_insert_one_reference
 		local
-			query:PS_OBJECT_QUERY[REFERENCE_CLASS_1]
-			first_result, second_result: REFERENCE_CLASS_1
+			test: PS_GENERIC_CRUD_TEST [REFERENCE_CLASS_1]
 		do
-			create query.make
-			executor.insert (test_data.reference_to_single_other)
-			executor.execute_query (query)
+			create test.make (repository)
+			test.test_insert (test_data.reference_to_single_other)
 
-			assert ("The result is empty", not query.result_cursor.after)
-			first_result:= query.result_cursor.item
-			query.result_cursor.forth
-			assert ("The result has only one item", not query.result_cursor.after)
-			second_result:= query.result_cursor.item
-			query.result_cursor.forth
-			assert ("The result has more than two items", query.result_cursor.after)
-
-			assert ("The items are not equal", test_data.reference_to_single_other.is_deep_equal (first_result) or test_data.reference_to_single_other.is_deep_equal (second_result))
-
+			assert ("The result does not have exactly two items", test.count_results = 2)
 			repository.clean_db_for_testing
 		end
 
 	test_insert_reference_cycle
 		local
-			query:PS_OBJECT_QUERY[REFERENCE_CLASS_1]
-			original:REFERENCE_CLASS_1
-			ref_list: LINKED_LIST[REFERENCE_CLASS_1]
-			equality: BOOLEAN
+			test: PS_GENERIC_CRUD_TEST[REFERENCE_CLASS_1]
 		do
-			executor.insert (test_data.reference_1)
-			create query.make
-			executor.execute_query (query)
-
-			assert ("The result is empty", not query.result_cursor.after)
-
-			-- collect results
-			create ref_list.make
-			across query as cursor loop
-				ref_list.extend (cursor.item)
-			end
-
-			assert ("The result contains less than 3 items", ref_list.count >= 3)
-			assert ("The result contains more than 3 items", ref_list.count <= 3)
-
-			-- here we have the problem that the result is not sorted...
-			original:= test_data.reference_1
-			equality:= original.is_deep_equal (ref_list[1]) or original.is_deep_equal (ref_list[2]) or original.is_deep_equal (ref_list[3])
-
-			assert ("The results are not the same", equality)
+			create test.make (repository)
+			test.test_insert (test_data.reference_cycle)
+			assert ("The wrong number of items has been inserted", test.count_results = 3)
 			repository.clean_db_for_testing
+		end
+
+	test_crud_reference_cycle
+		local
+			test: PS_GENERIC_CRUD_TEST[REFERENCE_CLASS_1]
+		do
+			create test.make (repository)
+			test.test_crud_operations (test_data.reference_cycle, agent {REFERENCE_CLASS_1}.update)
+			repository.clean_db_for_testing
+		end
+
+	test_crud_update_on_reference
+		local
+			test: PS_GENERIC_CRUD_TEST [REFERENCE_CLASS_1]
+		do
+			create test.make (repository)
+			test.test_crud_operations (test_data.reference_to_single_other, agent update_reference)
 		end
 
 
 	test_flat_class_store
 		-- Test if a simple store-and-retrieve returns the same result
 		local
-			query: PS_OBJECT_QUERY[FLAT_CLASS_1]
+			test: PS_GENERIC_CRUD_TEST[FLAT_CLASS_1]
 		do
---			repository.clean_db_for_testing
-			create query.make
-			executor.insert (test_data.flat_class)
-			executor.execute_query (query)
-			assert ("The query doesn't return a result", not query.result_cursor.after)
-			assert ("The results are not equal", query.result_cursor.item.is_almost_equal (test_data.flat_class, 0.00001))
+			create test.make (repository)
+			test.test_insert_special_equality (test_data.flat_class, agent {FLAT_CLASS_1}.is_almost_equal (?, 0.00001))
 			repository.clean_db_for_testing
 		end
 
@@ -101,29 +77,10 @@ feature {PS_REPOSITORY_TESTS}
 	test_flat_class_all_crud
 		-- Test all CRUD operations on a flat class
 		local
-			query: PS_OBJECT_QUERY[FLAT_CLASS_1]
+			test: PS_GENERIC_CRUD_TEST[FLAT_CLASS_1]
 		do
---			repository.clean_db_for_testing
-			-- Insert:
-			create query.make
-			executor.insert (test_data.flat_class)
-			executor.execute_query (query)
-			assert ("The query doesn't return a result", not query.result_cursor.after)
-			assert ("The results are not equal after insert", query.result_cursor.item.is_almost_equal (test_data.flat_class, 0.00001))
-
-			test_data.flat_class.update
-			executor.update (test_data.flat_class)
-			create query.make
-			executor.execute_query (query)
-			assert ("The query doesn't return a result", not query.result_cursor.after)
---			print (test_data.flat_class.out + query.result_cursor.item.out)
-			assert ("The results are not equal after update", query.result_cursor.item.is_almost_equal (test_data.flat_class, 0.00001))
-
-			executor.delete (test_data.flat_class)
-			create query.make
-			executor.execute_query (query)
-			assert ("The query returns a result, but it should be empty", query.result_cursor.after)
-
+			create test.make (repository)
+			test.test_crud_operations_special_equality (test_data.flat_class, agent{FLAT_CLASS_1}.update,  agent {FLAT_CLASS_1}.is_almost_equal (?, 0.00001))
 			repository.clean_db_for_testing
 		end
 
@@ -132,15 +89,12 @@ feature {PS_REPOSITORY_TESTS}
 	test_data_structures_store
 		-- Test if a simple store-and-retrieve returns the same result
 		local
+			test: PS_GENERIC_CRUD_TEST[DATA_STRUCTURES_CLASS_1]
 			query: PS_OBJECT_QUERY[DATA_STRUCTURES_CLASS_1]
 		do
-			repository.clean_db_for_testing
-			create query.make
-			executor.insert (test_data.data_structures_1)
-			executor.execute_query (query)
-			assert ("The query doesn't return a result", not query.result_cursor.after)
-			assert ("The results are not equal", query.result_cursor.item.is_deep_equal (test_data.data_structures_1))
-
+			create test.make (repository)
+			test.test_insert (test_data.data_structures_1)
+			-- TODO: They are probably not equal, as DATA_STRUCTURES uses FLAT_CLASS, which uses REALs that have a rounding error.
 			repository.clean_db_for_testing
 		end
 
@@ -179,4 +133,17 @@ feature {PS_REPOSITORY_TESTS}
 
 			repository.clean_db_for_testing
 		end
+
+
+feature {NONE}
+
+	update_reference (obj: REFERENCE_CLASS_1)
+		local
+			ref_obj: REFERENCE_CLASS_1
+		do
+			ref_obj:= attach (obj.refer)
+			ref_obj.update
+			executor.update (ref_obj)
+		end
+
 end
