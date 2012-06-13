@@ -1,6 +1,6 @@
 note
 	description: "Tests ABEL with a MySQL backend"
-	author: ""
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -14,7 +14,7 @@ inherit
 feature
 
 
-	test_criteria_in_memory
+	test_criteria_mysql
 		do
 			criteria_tests.test_criteria_agents
 			criteria_tests.test_criteria_predefined
@@ -22,20 +22,20 @@ feature
 		end
 
 
-	test_crud_flat_in_memory
+	test_crud_flat_mysql
 		do
 			crud_tests.all_flat_object_tests
 			--crud_tests.test_flat_class_store
 			--crud_tests.test_flat_class_all_crud
 		end
 
-	test_references_in_memory
+	test_references_mysql
 		do
 			crud_tests.all_references_tests
 		end
 
 
-	test_collections_in_memory
+	test_collections_mysql
 		do
 			crud_tests.all_collection_tests
 		end

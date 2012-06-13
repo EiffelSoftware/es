@@ -85,12 +85,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		-- Inserts the object into the database
 		require
 			mode_is_insert: an_object.write_mode = an_object.write_mode.insert
-			not_yet_known: not key_mapper.has_primary_key_of (an_object.object_id)
+			not_yet_known: not key_mapper.has_primary_key_of (an_object.object_id, a_transaction)
 			backend_can_handle_object: can_handle_type (an_object.object_id.metadata)
-			dependencies_known: check_dependencies_have_primary (an_object)
+			dependencies_known: check_dependencies_have_primary (an_object, a_transaction)
 		deferred
 		ensure
-			object_known: key_mapper.has_primary_key_of (an_object.object_id)
+			object_known: key_mapper.has_primary_key_of (an_object.object_id, a_transaction)
 			check_successful_write (an_object, a_transaction)
 		end
 
@@ -98,11 +98,11 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		-- Updates an_object
 		require
 			mode_is_update: an_object.write_mode = an_object.write_mode.update
-			object_known: key_mapper.has_primary_key_of (an_object.object_id)
+			object_known: key_mapper.has_primary_key_of (an_object.object_id, a_transaction)
 			backend_can_handle_object: can_handle_type (an_object.object_id.metadata)
 		deferred
 		ensure
-			object_still_known: key_mapper.has_primary_key_of (an_object.object_id)
+			object_still_known: key_mapper.has_primary_key_of (an_object.object_id, a_transaction)
 			check_successful_write (an_object, a_transaction)
 		end
 
@@ -110,11 +110,11 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		-- Deletes an_object from the database
 		require
 			mode_is_delete: an_object.write_mode = an_object.write_mode.delete
-			object_known: key_mapper.has_primary_key_of (an_object.object_id)
+			object_known: key_mapper.has_primary_key_of (an_object.object_id, a_transaction)
 			backend_can_handle_object: can_handle_type (an_object.object_id.metadata)
 		deferred
 		ensure
-			not_known_anymore: not key_mapper.has_primary_key_of (an_object.object_id)
+			not_known_anymore: not key_mapper.has_primary_key_of (an_object.object_id, a_transaction)
 		end
 
 
@@ -135,7 +135,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 		require
 			mode_is_insert: a_collection.write_mode = a_collection.write_mode.insert
 			objectoriented_mode: not a_collection.handler.is_in_relational_storage_mode (a_collection)
-			not_yet_known: not key_mapper.has_primary_key_of (a_collection.object_id)
+			not_yet_known: not key_mapper.has_primary_key_of (a_collection.object_id, a_transaction)
 	 		objectoriented_collection_operation_supported: is_objectoriented_collection_store_supported
 	 		backend_can_handle_collection: can_handle_objectoriented_collection (a_collection.object_id.metadata)
 		deferred
@@ -148,12 +148,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 		require
 			mode_is_delete: a_collection.write_mode = a_collection.write_mode.delete
 			objectoriented_mode: not a_collection.handler.is_in_relational_storage_mode (a_collection)
-			collection_known: key_mapper.has_primary_key_of (a_collection.object_id)
+			collection_known: key_mapper.has_primary_key_of (a_collection.object_id, a_transaction)
 	 		objectoriented_collection_operation_supported: is_objectoriented_collection_store_supported
 	 		backend_can_handle_collection: can_handle_objectoriented_collection (a_collection.object_id.metadata)
 		deferred
 		ensure
-			not_known_anymore: not key_mapper.has_primary_key_of (a_collection.object_id)
+			not_known_anymore: not key_mapper.has_primary_key_of (a_collection.object_id, a_transaction)
 		end
 
 feature {PS_EIFFELSTORE_EXPORT}-- Relational collection operations
@@ -199,9 +199,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Mapping
 
 feature {PS_EIFFELSTORE_EXPORT} -- Precondition checks
 
-	check_dependencies_have_primary (an_object:PS_SINGLE_OBJECT_PART):BOOLEAN
+	check_dependencies_have_primary (an_object:PS_SINGLE_OBJECT_PART; transaction: PS_TRANSACTION):BOOLEAN
 		do
-			Result:= across an_object.attribute_values as val all attached {PS_COMPLEX_ATTRIBUTE_PART} val as comp implies key_mapper.has_primary_key_of (comp.object_id) end
+			Result:= across an_object.attribute_values as val all attached {PS_COMPLEX_ATTRIBUTE_PART} val as comp implies key_mapper.has_primary_key_of (comp.object_id, transaction) end
 		end
 
 
@@ -228,7 +228,7 @@ feature{NONE} -- Correctness checks
 		do
 			Result:= True
 			create keys.make
-			keys.extend (key_mapper.primary_key_of (an_object.object_id).first)
+			keys.extend (key_mapper.primary_key_of (an_object.object_id, transaction).first)
 --			print (keys.count)
 			retrieved_obj_list := retrieve_from_keys (an_object.object_id.metadata, keys, transaction)
 
@@ -237,8 +237,8 @@ feature{NONE} -- Correctness checks
 				if an_object.attributes.has (attr.item) then
 					retrieved_object:= retrieved_obj_list.first
 					current_item:= attach (an_object.attribute_values[attr.item])
-					Result:= Result and current_item.storable_tuple (key_mapper.quick_translate (current_item.object_identifier)).first.is_equal (retrieved_object.attribute_value (attr.item).first)
-					Result:= Result and current_item.storable_tuple (key_mapper.quick_translate (current_item.object_identifier)).second.is_equal (retrieved_object.attribute_value (attr.item).second)
+					Result:= Result and current_item.storable_tuple (key_mapper.quick_translate (current_item.object_identifier, transaction)).first.is_equal (retrieved_object.attribute_value (attr.item).first)
+					Result:= Result and current_item.storable_tuple (key_mapper.quick_translate (current_item.object_identifier, transaction)).second.is_equal (retrieved_object.attribute_value (attr.item).second)
 				end
 			end
 		end

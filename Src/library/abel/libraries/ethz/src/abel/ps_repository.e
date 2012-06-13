@@ -112,10 +112,10 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status
 
-	is_identified (an_object:ANY):BOOLEAN
+	is_identified (an_object:ANY; a_transaction:PS_TRANSACTION):BOOLEAN
 		-- Is `an_object' already identified and thus registered in this repository?
 		do
-			Result:=id_manager.is_identified (an_object)
+			Result:=id_manager.is_identified (an_object, a_transaction)
 		end
 
 

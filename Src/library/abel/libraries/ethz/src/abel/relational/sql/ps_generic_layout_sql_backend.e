@@ -139,10 +139,10 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 			new_primary_key:=connection.last_result.item.get_value_by_index (1).to_integer
 
 			-- Insert the primary key to the key manager
-			key_mapper.add_entry (an_object.object_id, new_primary_key)
+			key_mapper.add_entry (an_object.object_id, new_primary_key, a_transaction)
 
 			-- Write all attributes
-			write_attributes (an_object, connection)
+			write_attributes (an_object, connection, a_transaction)
 
 			-- Delete the stub argument
 			connection.execute_sql ("DELETE FROM ps_value WHERE attributeid = " + stub_attribute.out + "  AND value = 'STUB'")
@@ -155,7 +155,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 			connection:PS_SQL_CONNECTION_ABSTRACTION
 		do
 			connection:= database.acquire_connection
-			write_attributes (an_object, connection)
+			write_attributes (an_object, connection, a_transaction)
 			database.release_connection (connection)
 		end
 
@@ -166,10 +166,10 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 			primary:INTEGER
 		do
 			connection:= database.acquire_connection
-			primary:= key_mapper.primary_key_of (an_object.object_id).first
+			primary:= key_mapper.primary_key_of (an_object.object_id, a_transaction).first
 			connection.execute_sql ("DELETE FROM ps_value WHERE objectid = " + primary.out)
 			database.release_connection (connection)
-			key_mapper.remove_primary_key (primary, an_object.object_id.metadata)
+			key_mapper.remove_primary_key (primary, an_object.object_id.metadata, a_transaction)
 		end
 
 
@@ -253,7 +253,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
 feature {NONE} -- Implementation
 
 
-	write_attributes (object: PS_SINGLE_OBJECT_PART; a_connection: PS_SQL_CONNECTION_ABSTRACTION)
+	write_attributes (object: PS_SINGLE_OBJECT_PART; a_connection: PS_SQL_CONNECTION_ABSTRACTION; transaction: PS_TRANSACTION)
 		local
 			primary: INTEGER
 			already_present_attributes: LINKED_LIST[INTEGER]
@@ -263,7 +263,7 @@ feature {NONE} -- Implementation
 			referenced_part: PS_OBJECT_GRAPH_PART
 			collected_insert_statements: STRING
 		do
-			primary:= key_mapper.primary_key_of (object.object_id).first
+			primary:= key_mapper.primary_key_of (object.object_id, transaction).first
 
 			create already_present_attributes.make
 			a_connection.execute_sql ("SELECT attributeid FROM ps_value WHERE objectid = " + primary.out)
@@ -276,9 +276,9 @@ feature {NONE} -- Implementation
 			across object.attributes as current_attribute loop
 				-- get the needed information
 				referenced_part:= object.get_value (current_attribute.item)
-				value:= referenced_part.storable_tuple (key_mapper.quick_translate (referenced_part.object_identifier)).first
+				value:= referenced_part.storable_tuple (key_mapper.quick_translate (referenced_part.object_identifier, transaction)).first
 				attribute_id:= db_metadata_manager.key_of_attribute (current_attribute.item, db_metadata_manager.key_of_class (object.object_id.metadata.class_of_type.name, a_connection), a_connection)
-				runtime_type:= db_metadata_manager.key_of_class (referenced_part.storable_tuple (key_mapper.quick_translate (referenced_part.object_identifier)).second, a_connection)
+				runtime_type:= db_metadata_manager.key_of_class (referenced_part.storable_tuple (key_mapper.quick_translate (referenced_part.object_identifier, transaction)).second, a_connection)
 
 				-- Perform update or insert, depending on the presence in the database
 				if already_present_attributes.has (attribute_id) then

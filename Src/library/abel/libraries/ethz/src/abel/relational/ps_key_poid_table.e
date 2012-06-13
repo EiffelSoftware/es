@@ -14,24 +14,24 @@ create make
 
 feature
 
-	has_primary_key_of(obj: PS_OBJECT_IDENTIFIER_WRAPPER): BOOLEAN
+	has_primary_key_of(obj: PS_OBJECT_IDENTIFIER_WRAPPER; transaction:PS_TRANSACTION): BOOLEAN
 		do
 			Result:= obj_to_key_hash.has (obj.object_identifier)
 		end
 
-	has_objects_of (primary_key: INTEGER; type: PS_TYPE_METADATA) : BOOLEAN
-		do
+--	has_objects_of (primary_key: INTEGER; type: PS_TYPE_METADATA) : BOOLEAN
+--		do
 			-- probably not the fastest implementation...
-			Result:= not objects_of (primary_key, type).is_empty
-		end
+--			Result:= not objects_of (primary_key, type).is_empty
+--		end
 
-	primary_key_of (obj: PS_OBJECT_IDENTIFIER_WRAPPER): PS_PAIR[INTEGER, PS_CLASS_METADATA]
+	primary_key_of (obj: PS_OBJECT_IDENTIFIER_WRAPPER; transaction: PS_TRANSACTION): PS_PAIR[INTEGER, PS_CLASS_METADATA]
 		-- Returns the primary key of object `obj' as stored in the backend.
 		do
 			Result:= attach (obj_to_key_hash[obj.object_identifier])
 		end
 
-	quick_translate (a_poid:INTEGER):INTEGER
+	quick_translate (a_poid:INTEGER; transaction: PS_TRANSACTION):INTEGER
 		-- Returns the primary key of a_poid, or 0 if a_poid doesn't have a primary key
 		do
 			if obj_to_key_hash.has (a_poid) then
@@ -40,25 +40,22 @@ feature
 		end
 
 
-	objects_of (primary_key: INTEGER; type: PS_TYPE_METADATA) : LINKED_LIST[PS_OBJECT_IDENTIFIER_WRAPPER]
+--	objects_of (primary_key: INTEGER; type: PS_TYPE_METADATA) : LINKED_LIST[PS_OBJECT_IDENTIFIER_WRAPPER]
 		-- Returns all objects that are associated to the primary key `primary_key' in the database.
-		local
-			type_hash: HASH_TABLE[LINKED_LIST[PS_OBJECT_IDENTIFIER_WRAPPER], INTEGER]
-		do
-			create Result.make
-
-			if key_to_obj_hash.has (type.type.type_id) then
-				type_hash:= attach (key_to_obj_hash[type.type.type_id])
-
-				if type_hash.has (primary_key) then
-					Result.append (attach (type_hash[primary_key]))
-				end
-
-			end
-		end
+--		local
+--			type_hash: HASH_TABLE[LINKED_LIST[PS_OBJECT_IDENTIFIER_WRAPPER], INTEGER]
+--		do
+--			create Result.make
+--			if key_to_obj_hash.has (type.type.type_id) then
+--				type_hash:= attach (key_to_obj_hash[type.type.type_id])
+--				if type_hash.has (primary_key) then
+--					Result.append (attach (type_hash[primary_key]))
+--				end
+--			end
+--		end
 
 
-	add_entry (obj: PS_OBJECT_IDENTIFIER_WRAPPER; primary_key: INTEGER)
+	add_entry (obj: PS_OBJECT_IDENTIFIER_WRAPPER; primary_key: INTEGER; transaction: PS_TRANSACTION)
 		-- Add a new table entry
 		local
 			type_hash: HASH_TABLE[LINKED_LIST[PS_OBJECT_IDENTIFIER_WRAPPER], INTEGER]
@@ -83,35 +80,32 @@ feature
 		end
 
 
-	remove_object (obj: PS_OBJECT_IDENTIFIER_WRAPPER)
+--	remove_object (obj: PS_OBJECT_IDENTIFIER_WRAPPER)
 		-- Remove `obj' from the table, but keep any other object associated to the same primary key if possible.
-		local
-			primary_key: INTEGER
-			local_list: LINKED_LIST[PS_OBJECT_IDENTIFIER_WRAPPER]
-		do
-			if obj_to_key_hash.has (obj.object_identifier) then
+--		local
+--			primary_key: INTEGER
+--			local_list: LINKED_LIST[PS_OBJECT_IDENTIFIER_WRAPPER]
+--		do
+--			if obj_to_key_hash.has (obj.object_identifier) then
 
-				primary_key := attach (obj_to_key_hash[obj.object_identifier]).first
-				obj_to_key_hash.remove (obj.object_identifier)
-
+--				primary_key := attach (obj_to_key_hash[obj.object_identifier]).first
+--				obj_to_key_hash.remove (obj.object_identifier)
 				-- also remove from linked list
-
-				local_list:= attach (attach (key_to_obj_hash[obj.metadata.type.type_id]).item (primary_key))
-
-				from local_list.start
-				until local_list.after
-				loop
-					if local_list.item.object_identifier = obj.object_identifier then
-						local_list.remove
-					else
-						local_list.forth
-					end
-				end
-			end
-		end
+--				local_list:= attach (attach (key_to_obj_hash[obj.metadata.type.type_id]).item (primary_key))
+--				from local_list.start
+--				until local_list.after
+--				loop
+--					if local_list.item.object_identifier = obj.object_identifier then
+--						local_list.remove
+--					else
+--						local_list.forth
+--					end
+--				end
+--			end
+--		end
 
 
-	remove_primary_key (primary_key: INTEGER; type:PS_TYPE_METADATA)
+	remove_primary_key (primary_key: INTEGER; type:PS_TYPE_METADATA; transaction:PS_TRANSACTION)
 		-- Remove the primary key `primary_key' from the table, alongside all objects associated to it
 		local
 			local_list: LINKED_LIST[PS_OBJECT_IDENTIFIER_WRAPPER]

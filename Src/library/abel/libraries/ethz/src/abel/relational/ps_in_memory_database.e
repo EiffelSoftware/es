@@ -96,11 +96,11 @@ feature {PS_EIFFELSTORE_EXPORT}-- Object write operations
 		do
 			-- Add a new entry in primary <--> POID mapping table
 			new_primary:= new_key (an_object.object_id.metadata.class_of_type.name)
-			key_mapper.add_entry (an_object.object_id, new_primary.first)
+			key_mapper.add_entry (an_object.object_id, new_primary.first, a_transaction)
 
 			-- Create new object in DB with freshly created primary key and then write all attributes
 			insert_empty_object (new_primary.first, new_primary.second)
-			write_attributes (an_object)
+			write_attributes (an_object, a_transaction)
 		end
 
 
@@ -108,7 +108,7 @@ feature {PS_EIFFELSTORE_EXPORT}-- Object write operations
 		-- Updates an_object
 		do
 			-- write all attributes in `an_object'
-			write_attributes (an_object)
+			write_attributes (an_object, a_transaction)
 		end
 
 	delete (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
@@ -117,8 +117,8 @@ feature {PS_EIFFELSTORE_EXPORT}-- Object write operations
 			primary:PS_PAIR[INTEGER, PS_CLASS_METADATA]
 		do
 			-- Remove the entry in the primary <--> POID mapping table
-			primary:= key_mapper.primary_key_of (an_object.object_id)
-			key_mapper.remove_primary_key (primary.first, an_object.object_id.metadata)
+			primary:= key_mapper.primary_key_of (an_object.object_id, a_transaction)
+			key_mapper.remove_primary_key (primary.first, an_object.object_id.metadata, a_transaction)
 
 			-- remove the complete object from DB
 			attach (db[primary.second.name]).remove (primary.first)
@@ -155,10 +155,10 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			item_primary:INTEGER
 			new_inserts: LINKED_LIST[STRING]
 		do
-			if not key_mapper.has_primary_key_of (a_collection.object_id) then -- Collection not yet in database
+			if not key_mapper.has_primary_key_of (a_collection.object_id, a_transaction) then -- Collection not yet in database
 				-- first set up everything
 				primary:= new_key (default_class_string_for_collections).first -- only key is interesting
-				key_mapper.add_entry (a_collection.object_id, primary)
+				key_mapper.add_entry (a_collection.object_id, primary, a_transaction)
 				insert_empty_collection (primary)
 
 				-- add additional information
@@ -167,12 +167,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 
 			else
 				-- we already have the collection and its additional information in the database, we just have to extend it
-				primary:= key_mapper.primary_key_of (a_collection.object_id).first
+				primary:= key_mapper.primary_key_of (a_collection.object_id, a_transaction).first
 			end
 
 			-- Now add all collection values to the collection
 			across a_collection.values as coll_item loop
-				item_primary:= key_mapper.quick_translate (coll_item.item.object_identifier)
+				item_primary:= key_mapper.quick_translate (coll_item.item.object_identifier, a_transaction)
 
 				add_to_collection (primary, coll_item.item.storable_tuple (item_primary), a_collection.order_of (coll_item.item))
 			end
@@ -181,8 +181,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 	delete_objectoriented_collection (a_collection: PS_OBJECT_COLLECTION_PART[ITERABLE[detachable ANY]]; a_transaction:PS_TRANSACTION)
 		-- Delete `a_collection' from the database
 		do
-			collection_info.remove (key_mapper.primary_key_of (a_collection.object_id).first)
-			collections.remove (key_mapper.primary_key_of (a_collection.object_id).first)
+			collection_info.remove (key_mapper.primary_key_of (a_collection.object_id, a_transaction).first)
+			collections.remove (key_mapper.primary_key_of (a_collection.object_id, a_transaction).first)
 		end
 
 feature {PS_EIFFELSTORE_EXPORT}-- Relational collection operations
@@ -257,16 +257,16 @@ feature {NONE} -- Implementation - Loading and storing objects
 			end
 		end
 
-	write_attributes (an_object:PS_SINGLE_OBJECT_PART)
+	write_attributes (an_object:PS_SINGLE_OBJECT_PART; transaction: PS_TRANSACTION)
 		-- Stores all attributes of `an_object' in the internal database, replacing any existing attribute with the same name if present
 		local
 			attr_primary:INTEGER
 			primary:PS_PAIR[INTEGER, PS_CLASS_METADATA]
 		do
-			primary:= key_mapper.primary_key_of (an_object.object_id)
+			primary:= key_mapper.primary_key_of (an_object.object_id, transaction)
 
 			across an_object.attributes as attr_cursor loop
-				attr_primary:= key_mapper.quick_translate (an_object.get_value (attr_cursor.item).object_identifier)
+				attr_primary:= key_mapper.quick_translate (an_object.get_value (attr_cursor.item).object_identifier, transaction)
 				add_or_replace_attribute (primary.second.name, primary.first, attr_cursor.item, an_object.get_value (attr_cursor.item).storable_tuple (attr_primary))
 			end
 		end

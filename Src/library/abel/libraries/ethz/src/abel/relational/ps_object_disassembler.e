@@ -20,9 +20,10 @@ feature {PS_EIFFELSTORE_EXPORT}
 -- Todo: The algorithm is currently broken: an object that has already been inserted with depth X won't change its depth if the disassembler finds it again at a later stage with depth >X
 
 
-	execute_disassembly (an_object:ANY; a_mode:PS_WRITE_OPERATION)
+	execute_disassembly (an_object:ANY; a_mode:PS_WRITE_OPERATION; transaction: PS_TRANSACTION)
 	do
 		internal_operation_store.wipe_out
+		int_transaction:= transaction
 		disassembled_object:= disassemble (an_object, current_global_depth (a_mode), a_mode, create {PS_IGNORE_PART}.make, "root")
 	end
 
@@ -35,6 +36,12 @@ feature {PS_EIFFELSTORE_EXPORT}
 
 	has_error: BOOLEAN
 
+	current_transaction: PS_TRANSACTION
+		do
+			Result:= attach (int_transaction)
+		end
+
+	int_transaction: detachable PS_TRANSACTION
 	--counter: INTEGER
 
 	disassemble (an_object:ANY; depth: INTEGER; mode:PS_WRITE_OPERATION; reference_owner:PS_OBJECT_GRAPH_PART; ref_attribute_name:STRING): PS_OBJECT_GRAPH_PART
@@ -44,10 +51,10 @@ feature {PS_EIFFELSTORE_EXPORT}
 			collection_found:BOOLEAN
 			object_has_id:BOOLEAN
 		do
-			object_has_id:= id_manager.is_identified (an_object)
+			object_has_id:= id_manager.is_identified (an_object, current_transaction)
 
-			if id_manager.is_identified (an_object) and then internal_operation_store.has (id_manager.get_identifier_wrapper (an_object).object_identifier) then
-				Result:= attach (internal_operation_store[id_manager.get_identifier_wrapper (an_object).object_identifier])
+			if id_manager.is_identified (an_object, current_transaction) and then internal_operation_store.has (id_manager.get_identifier_wrapper (an_object, current_transaction).object_identifier) then
+				Result:= attach (internal_operation_store[id_manager.get_identifier_wrapper (an_object, current_transaction).object_identifier])
 			else
 
 			if depth=0 and current_global_depth(mode) /= settings.object_graph_depth_infinite then
@@ -56,7 +63,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 					if collection_handlers.there_exists (agent {PS_COLLECTION_HANDLER[ITERABLE[ANY]]}.can_handle (an_object)) then
 						Result:=perform_disassemble (an_object, depth, mode, reference_owner, ref_attribute_name)
 					else -- just return the correct poid
-						create {PS_SINGLE_OBJECT_PART} Result.make_with_mode ( id_manager.get_identifier_wrapper(an_object), mode.No_operation)
+						create {PS_SINGLE_OBJECT_PART} Result.make_with_mode ( id_manager.get_identifier_wrapper(an_object, current_transaction), mode.No_operation)
 					end
 				elseif settings.is_insert_during_update_enabled then
 					-- call again disassemble on the same object with different parameters
@@ -81,12 +88,12 @@ feature {PS_EIFFELSTORE_EXPORT}
 								--print ("already known object found")
 		--					else
 								--check false end
-								create {PS_SINGLE_OBJECT_PART} Result.make_with_mode ( id_manager.get_identifier_wrapper(an_object), mode.No_operation)
+								create {PS_SINGLE_OBJECT_PART} Result.make_with_mode ( id_manager.get_identifier_wrapper(an_object, current_transaction), mode.No_operation)
 		--					end
 
 						end
 					else
-						id_manager.identify (an_object)
+						id_manager.identify (an_object, current_transaction)
 						Result:= perform_disassemble (an_object, depth, mode, reference_owner, ref_attribute_name)
 					end
 				elseif mode = mode.Update then
@@ -128,7 +135,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 		perform_disassemble (an_object:ANY; depth: INTEGER; mode:PS_WRITE_OPERATION; reference_owner:PS_OBJECT_GRAPH_PART; ref_attribute_name:STRING): PS_OBJECT_GRAPH_PART
 			-- Checks if the operation for the object already exists and if not, issues the command to the plain_object feature or a collection handler.
 			require
-				object_known: id_manager.is_identified (an_object)
+				object_known: id_manager.is_identified (an_object, current_transaction)
 			local
 				object_id: PS_OBJECT_IDENTIFIER_WRAPPER
 				collection_found:BOOLEAN
@@ -136,7 +143,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 			do
 				create void_safety_default.make -- Void safety...
 				Result:=void_safety_default
-				object_id:= id_manager.get_identifier_wrapper (an_object)
+				object_id:= id_manager.get_identifier_wrapper (an_object, current_transaction)
 
 				-- ask the internal store if the object is already disassembled (infinite recurion prevention)
 					-- if yes, just return that object

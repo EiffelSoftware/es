@@ -145,7 +145,7 @@ feature {PS_REPOSITORY_TESTS}
 
 			executor.execute_query (q2)
 			assert ("Result not empty", q2.result_cursor.after)
-			assert ("Person not properly removed", not executor.is_already_loaded (some_person) and not executor.is_already_loaded (q1.result_cursor.item))
+			assert ("Person not properly removed", not executor.is_already_loaded (some_person, executor.new_transaction) and not executor.is_already_loaded (q1.result_cursor.item, executor.new_transaction))
 
 			repository.clean_db_for_testing
 		end
@@ -201,8 +201,8 @@ feature {PS_REPOSITORY_TESTS}
 			t1.rollback
 
 			executor.execute_query (q2)
-			assert ("Item not present in database", not q2.after)
-			asert ("Object not known any more", executor.is_already_loaded (some_person))
+			assert ("Item not present in database", not q2.result_cursor.after)
+			assert ("Object not known any more", executor.is_already_loaded (some_person, executor.new_transaction))
 			repository.clean_db_for_testing
 		end
 

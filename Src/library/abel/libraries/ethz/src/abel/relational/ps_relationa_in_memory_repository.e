@@ -37,14 +37,14 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 	insert (object: ANY; transaction: PS_TRANSACTION)
 			-- Insert `object' within `transaction' into `Current'
 		do
-			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).insert)
+			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).insert, transaction)
 			executor.perform_operations (planner.generate_plan (disassembler.disassembled_object), transaction)
 		end
 
 	update (object: ANY; transaction: PS_TRANSACTION)
 			-- Update `object' within `transaction'
 		do
-			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).update)
+			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).update, transaction)
 			executor.perform_operations (planner.generate_plan (disassembler.disassembled_object), transaction)
 			--check false end
 		end
@@ -52,7 +52,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 	delete (object: ANY; transaction: PS_TRANSACTION)
 			-- Delete `object' within `transaction' from `Current'
 		do
-			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).delete)
+			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).delete, transaction)
 			executor.perform_operations (planner.generate_plan (disassembler.disassembled_object), transaction)
 
 		end
@@ -80,8 +80,8 @@ feature{NONE} -- Initialization
 			create transaction_isolation_level
 			create default_object_graph.make_default
 			create id_manager.make
-			create disassembler.make (id_manager, default_object_graph)
 			create planner.make
+			create disassembler.make (id_manager, default_object_graph)
 		--	create memory_db.make
 			backend:= a_backend
 			create executor.make (backend)

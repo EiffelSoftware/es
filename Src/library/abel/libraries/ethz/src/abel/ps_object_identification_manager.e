@@ -23,14 +23,14 @@ feature
 
 feature {PS_EIFFELSTORE_EXPORT} -- Identification
 
-	is_identified ( an_object:ANY ): BOOLEAN
+	is_identified (an_object:ANY; a_transaction: PS_TRANSACTION): BOOLEAN
 			-- Is `an_object' already identified and thus known to the system?
 		do
 			Result:= across identifier_table as cursor some (cursor.item.first.exists and then cursor.item.first.item = an_object) end
 		end
 
 
-	identify (an_object:ANY)
+	identify (an_object:ANY; transaction:PS_TRANSACTION)
 			-- Generate an identifier for `an_object' and store it
 		local
 			temp: WEAK_REFERENCE[ANY]
@@ -40,14 +40,14 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 			create pair.make (temp, new_id)
 			identifier_table.extend (pair)
 		ensure
-			identified: is_identified (an_object)
+			identified: is_identified (an_object, transaction)
 		end
 
 
-	get_identifier_wrapper (an_object:ANY) : PS_OBJECT_IDENTIFIER_WRAPPER
+	get_identifier_wrapper (an_object:ANY; transaction:PS_TRANSACTION) : PS_OBJECT_IDENTIFIER_WRAPPER
 			-- Get the REPO_IDENTIFIER of `an_object'
 		require
-			identified: is_identified (an_object)
+			identified: is_identified (an_object, transaction)
 		local
 			found:BOOLEAN
 			meta: PS_TYPE_METADATA

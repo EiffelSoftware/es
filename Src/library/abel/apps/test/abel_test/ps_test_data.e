@@ -16,12 +16,16 @@ create
 
 feature
 	people:LIST[PERSON]
+		-- A list of 4 persons
 
 	flat_class: FLAT_CLASS_1
+		-- An object containing all basic types
 
 	data_structures_1: DATA_STRUCTURES_CLASS_1
+		-- An object containing the most common data structures in EiffelBase.
 
 	reference_to_single_other: REFERENCE_CLASS_1
+		-- A reference class object that points to another one of its kind.
 
 	reference_cycle: REFERENCE_CLASS_1
 		-- 1 references 2, 2 references 3, 3 references 1 and 2
@@ -32,12 +36,13 @@ feature
 	tuple_query: detachable PS_TUPLE_QUERY[ANY]
 
 	array_of_persons: ARRAY[PERSON]
-		-- An array of 10 persons
+		-- An array of 4 persons
 
 	special_of_persons: SPECIAL[PERSON]
-		-- A special object of 10 persons
+		-- A special object of 4 persons
 
 	array_of_integers: ARRAY[INTEGER]
+		-- An integer array with numbers from 1 to 10
 
 feature {NONE} -- Initialization
 

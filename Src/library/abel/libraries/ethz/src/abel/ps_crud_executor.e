@@ -52,7 +52,7 @@ feature -- Data manipulation
 	insert (an_object: ANY)
 			-- Insert `an_object' into the repository.
 		require
-			object_not_previously_loaded: not is_already_loaded (an_object)
+			object_not_previously_loaded: not is_already_loaded (an_object, new_transaction)
 		local
 			transaction: PS_TRANSACTION
 		do
@@ -64,7 +64,7 @@ feature -- Data manipulation
 	update (an_object: ANY)
 			-- Write back changes of `an_object' into the repository.
 		require
-			object_previously_loaded: is_already_loaded (an_object)
+			object_previously_loaded: is_already_loaded (an_object, new_transaction)
 		local
 			transaction: PS_TRANSACTION
 		do
@@ -76,7 +76,7 @@ feature -- Data manipulation
 	delete (an_object: ANY)
 			-- Delete `an_object' from the repository
 		require
-			object_previously_loaded: is_already_loaded (an_object)
+			object_previously_loaded: is_already_loaded (an_object, new_transaction)
 		local
 			transaction: PS_TRANSACTION
 		do
@@ -99,11 +99,11 @@ feature -- Data manipulation
 
 feature -- Status
 
-	is_already_loaded (an_object: ANY): BOOLEAN
+	is_already_loaded (an_object: ANY; a_transaction:PS_TRANSACTION): BOOLEAN
 			-- Has `an_object' been previously loaded from (or inserted to) the database?
 		do
 			fixme ("TODO")
-			Result := repository.is_identified (an_object)
+			Result := repository.is_identified (an_object, a_transaction)
 		end
 
 feature -- Transaction-based data retrieval and querying
@@ -118,14 +118,14 @@ feature -- Transaction-based data retrieval and querying
 		ensure
 			query_executed: a_query.is_executed
 			transaction_set: a_query.transaction = a_transaction
-			object_known_to_system_now: not a_query.result_cursor.after implies is_already_loaded (a_query.result_cursor.item)
+			object_known_to_system_now: not a_query.result_cursor.after implies is_already_loaded (a_query.result_cursor.item, a_transaction)
 		end
 
 	insert_within_transaction (an_object: ANY; a_transaction: PS_TRANSACTION)
 			-- Insert `an_object' within the transaction `a_transaction' into the repository.
 		require
 			same_repository: a_transaction.repository = Current.repository
-			object_new_to_system: not is_already_loaded (an_object)
+			object_new_to_system: not is_already_loaded (an_object, a_transaction)
 		do
 			repository.insert (an_object, a_transaction)
 		ensure
@@ -136,7 +136,7 @@ feature -- Transaction-based data retrieval and querying
 			-- Write back changes of `an_object' into the repository, within the transaction `a_transaction'.
 		require
 			same_repository: a_transaction.repository = Current.repository
-			object_known: is_already_loaded (an_object)
+			object_known: is_already_loaded (an_object, a_transaction)
 		do
 			repository.update (an_object, a_transaction)
 		end
@@ -145,7 +145,7 @@ feature -- Transaction-based data retrieval and querying
 				-- Delete `an_object' within the transaction `a_transaction' from the repository.
 		require
 			same_repository: a_transaction.repository = Current.repository
-			object_known: is_already_loaded (an_object)
+			object_known: is_already_loaded (an_object, a_transaction)
 		do
 			repository.delete (an_object, a_transaction)
 		end
