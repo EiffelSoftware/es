@@ -58,7 +58,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			result_list: LINKED_LIST[PS_RETRIEVED_OBJECT]
 			row_cursor: ITERATION_CURSOR[PS_SQL_ROW_ABSTRACTION]
 		do
-			connection:= database.acquire_connection
+			print ("retrieving " + type.class_of_type.name + "%N")
+			connection:= get_connection (transaction)
+
 			create result_list.make
 
 			connection.execute_sql (Current.query_values_from_class (db_metadata_manager.key_of_class (type.class_of_type.name, connection)))
@@ -91,8 +93,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 				result_list.extend (current_obj)
 				-- do NOT go forth - we are already pointing to the next item, otherwise the inner loop would not have stopped.
 			end
-			connection.commit
-			database.release_connection (connection)
+--			connection.commit
+--			database.release_connection (connection)
 			Result:= result_list.new_cursor
 		end
 
@@ -132,7 +134,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 			stub_attribute:INTEGER
 		do
 			-- Generate a new primary key in the database by inserting a stub attribute
-			connection:= database.acquire_connection
+--			connection:= database.acquire_connection
+--			print ("insert " + an_object.object_id.metadata.class_of_type.name)
+			connection:= get_connection (a_transaction)
 			none_class:= db_metadata_manager.key_of_class ("NONE", connection)
 			stub_attribute := db_metadata_manager.key_of_attribute ("stub", none_class, connection)
 			connection.execute_sql ("INSERT INTO ps_value (attributeid, runtimetype, value) VALUES (" + stub_attribute.out+ ", " + none_class.out + ", 'STUB')")
@@ -147,8 +151,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 
 			-- Delete the stub argument
 			connection.execute_sql ("DELETE FROM ps_value WHERE attributeid = " + stub_attribute.out + "  AND value = 'STUB'")
-			connection.commit
-			database.release_connection (connection)
+--			connection.commit
+--			database.release_connection (connection)
 		end
 
 	update (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
@@ -156,10 +160,11 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		local
 			connection:PS_SQL_CONNECTION_ABSTRACTION
 		do
-			connection:= database.acquire_connection
+--			connection:= database.acquire_connection
+			connection:= get_connection (a_transaction)
 			write_attributes (an_object, connection, a_transaction)
-			connection.commit
-			database.release_connection (connection)
+--			connection.commit
+--			database.release_connection (connection)
 		end
 
 	delete (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
@@ -168,12 +173,13 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 			connection:PS_SQL_CONNECTION_ABSTRACTION
 			primary:INTEGER
 		do
-			connection:= database.acquire_connection
+--			connection:= database.acquire_connection
+			connection:= get_connection (a_transaction)
 			primary:= key_mapper.primary_key_of (an_object.object_id, a_transaction).first
-			connection.execute_sql ("DELETE FROM ps_value WHERE objectid = " + primary.out)
-			connection.commit
-			database.release_connection (connection)
 			key_mapper.remove_primary_key (primary, an_object.object_id.metadata, a_transaction)
+			connection.execute_sql ("DELETE FROM ps_value WHERE objectid = " + primary.out)
+--			connection.commit
+--			database.release_connection (connection)
 		end
 
 
@@ -225,6 +231,31 @@ feature {PS_EIFFELSTORE_EXPORT}-- Relational collection operations
 			check not_implemented: False end
 		end
 
+feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
+
+	commit (a_transaction: PS_TRANSACTION)
+		-- Tries to commit `a_transaction'. As with every other error, a failed commit will result in a new exception and the error will be placed inside `a_transaction'
+		local
+			connection: PS_SQL_CONNECTION_ABSTRACTION
+		do
+			connection:= get_connection (a_transaction)
+			connection.commit
+			database.release_connection (connection)
+			release_connection (a_transaction)
+			key_mapper.commit (a_transaction)
+		end
+
+	rollback (a_transaction: PS_TRANSACTION)
+		-- Aborts `a_transaction' and undoes all changes in the database
+		local
+			connection: PS_SQL_CONNECTION_ABSTRACTION
+		do
+			connection:= get_connection (a_transaction)
+			connection.rollback
+			release_connection (a_transaction)
+			key_mapper.rollback (a_transaction)
+		end
+
 
 feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
 
@@ -245,10 +276,19 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
 		local
 			connection:PS_SQL_CONNECTION_ABSTRACTION
 		do
+			from active_connections.start
+			until active_connections.after
+			loop
+				active_connections.item.first.commit
+				database.release_connection (active_connections.item.first)
+				active_connections.remove
+			end
 			connection:= database.acquire_connection
 			connection.execute_sql ("DROP TABLE ps_value")
 			connection.execute_sql ("DROP TABLE ps_attribute")
 			connection.execute_sql ("DROP TABLE ps_class")
+
+
 			connection.commit
 			database.release_connection (connection)
 			make (database)
@@ -303,6 +343,47 @@ feature {NONE} -- Implementation
 		end
 
 
+feature {NONE} -- Implementation - Connection and Transaction handling
+
+	get_connection (transaction: PS_TRANSACTION): PS_SQL_CONNECTION_ABSTRACTION
+		local
+			new_connection: PS_PAIR[PS_SQL_CONNECTION_ABSTRACTION, PS_TRANSACTION]
+			the_actual_result_as_detachable_because_of_stupid_void_safety_rule: detachable PS_SQL_CONNECTION_ABSTRACTION
+		do
+			across active_connections as cursor loop
+				if cursor.item.second.is_equal (transaction) then
+					the_actual_result_as_detachable_because_of_stupid_void_safety_rule:= cursor.item.first
+					print ("found existing%N")
+				end
+			end
+
+			if not attached the_actual_result_as_detachable_because_of_stupid_void_safety_rule then
+				the_actual_result_as_detachable_because_of_stupid_void_safety_rule := database.acquire_connection
+				create new_connection.make (the_actual_result_as_detachable_because_of_stupid_void_safety_rule, transaction)
+				active_connections.extend (new_connection)
+					print ("created new%N")
+			end
+			Result:= attach (the_actual_result_as_detachable_because_of_stupid_void_safety_rule)
+		end
+
+	release_connection (transaction: PS_TRANSACTION)
+		do
+			from active_connections.start
+			until active_connections.after
+			loop
+				if active_connections.item.second.is_equal (transaction) then
+					database.release_connection (active_connections.item.first)
+					active_connections.remove
+					print (i.out + "removed%N")
+					i:= i+1
+				else
+					active_connections.forth
+				end
+			end
+		end
+	i:INTEGER
+
+	active_connections: LINKED_LIST[PS_PAIR[PS_SQL_CONNECTION_ABSTRACTION, PS_TRANSACTION]]
 
 
 feature{NONE} -- Initialization
@@ -318,6 +399,7 @@ feature{NONE} -- Initialization
 			create db_metadata_manager.make (initialization_connection)
 			initialization_connection.commit
 			a_database.release_connection (initialization_connection)
+			create active_connections.make
 		end
 
 	database: PS_SQL_DATABASE_ABSTRACTION

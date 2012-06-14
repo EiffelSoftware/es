@@ -36,6 +36,8 @@ feature -- Data retrieval
 		do
 			create transaction.make (repository)
 			execute_query_within_transaction (a_query, transaction)
+				fixme ("This doesn't work with lazy loading - maybe run such queries as readonly?")
+				--transaction.commit
 		ensure
 			query_executed: a_query.is_executed
 		end

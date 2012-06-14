@@ -85,6 +85,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 		-- Can `Current' commit the changes in `Transaction'
 		do
 			-- check if there is an equal object in the global pool and the transaction pool
+			Result:= True
 		end
 
 	commit (a_transaction: PS_TRANSACTION)

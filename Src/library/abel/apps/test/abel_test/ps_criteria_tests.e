@@ -384,6 +384,7 @@ feature {NONE} -- Initialization
 			across
 				test_data.people as p
 			loop
+	--			print (p.item)
 				executor.insert (p.item)
 			end
 		end

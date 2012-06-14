@@ -196,14 +196,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 
 	commit (a_transaction: PS_TRANSACTION)
 		-- Tries to commit `a_transaction'. As with every other error, a failed commit will result in a new exception and the error will be placed inside `a_transaction'
-		do
-
+		deferred
 		end
 
 	rollback (a_transaction: PS_TRANSACTION)
 		-- Aborts `a_transaction' and undoes all changes in the database
-		do
-
+		deferred
 		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Mapping

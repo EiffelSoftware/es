@@ -95,8 +95,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 			no_error: not transaction.has_error
 			repository_correct: transaction.repository = Current
 			not_readonly: not transaction.is_readonly
-		do
-
+		deferred
 		end
 
 	rollback_transaction (transaction: PS_TRANSACTION)
@@ -105,8 +104,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 			transaction_alive: transaction.is_active
 			repository_correct: transaction.repository = Current
 			not_readonly: not transaction.is_readonly
-		do
-
+		deferred
 		end
 
 

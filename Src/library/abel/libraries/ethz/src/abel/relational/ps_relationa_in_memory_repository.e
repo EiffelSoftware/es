@@ -57,6 +57,26 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 
 		end
 
+
+feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
+
+	commit_transaction (transaction: PS_TRANSACTION)
+		-- Explicitly commit the transaction
+		do
+			if id_manager.can_commit (transaction) then
+				backend.commit (transaction)
+				id_manager.commit (transaction)
+			else
+				rollback_transaction (transaction)
+			end
+		end
+
+	rollback_transaction (transaction: PS_TRANSACTION)
+		-- Rollback the transaction
+		do
+			backend.rollback (transaction)
+			id_manager.rollback (transaction)
+		end
 feature {PS_EIFFELSTORE_EXPORT} -- Testing
 
 	clean_db_for_testing

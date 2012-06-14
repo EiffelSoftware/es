@@ -41,12 +41,14 @@ feature
 		end
 
 
+	test_transaction_lost
+		do
+			transaction_tests.test_no_lost_update
+		end
+
+
 
 feature {NONE} -- Initialization
-
-
-
-
 
 	make_repository: PS_RELATIONA_IN_MEMORY_REPOSITORY
 		local
