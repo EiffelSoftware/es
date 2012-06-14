@@ -1,6 +1,10 @@
 note
-	description: "Summary description for {PS_GENERIC_LAYOUT_KEY_MANAGER}."
-	author: ""
+	description: "[
+			This class manages the metadata in the database. 
+			It is responsible for reading and writing tables ps_class and ps_attribute, and also for creating all tables.
+			It maintains a copy of the current metadata layout, and the backend should access this information only through the key manager, and not by using SQL.
+		]"
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -14,122 +18,285 @@ inherit
 create
 	make
 
-feature
+feature {PS_GENERIC_LAYOUT_SQL_BACKEND} -- Status report
 
-	class_name_of_key (a_key: INTEGER):STRING
+	has_primary_key_of_class (class_name: STRING): BOOLEAN
+		-- Does the class `class_name' have a primary key in the database?
 		do
-			Result:= attach (class_key_to_name_map[a_key])
+			Result:= class_name_to_key_map.has (class_name)
 		end
 
-	attribute_name_of_key (attribute_key: INTEGER):STRING
+	has_primary_key_of_attribute (attribute_name: STRING; class_key: INTEGER): BOOLEAN
+		-- Does the attribute `attribute_name' in class `class_key' have a primary key?
+		require
+			class_key_exists: valid_class_key (class_key)
 		do
-		--	Result:= attach (attach (attribute_key_to_name_map[class_key]).item(attribute_key))
+			Result:= attach (attribute_name_to_key_map[class_key]).has (attribute_name)
+		end
+
+	valid_class_key (class_key: INTEGER):BOOLEAN
+		-- Is there a class that has the primary key `class_key'?
+		do
+			Result:= class_key_to_name_map.has (class_key)
+		end
+
+	valid_attribute_key (attribute_key: INTEGER):BOOLEAN
+		-- Is there an attribute that has the primary key `attribute_key'?
+		do
+			Result:= attribute_key_to_name_map.has (attribute_key)
+		end
+
+
+feature {PS_GENERIC_LAYOUT_SQL_BACKEND} -- Access - Class
+
+	class_name_of_key (class_key: INTEGER):STRING
+		-- Get the class name of the class with primary key `class_key'
+		require
+			class_key_exists: valid_class_key(class_key)
+		do
+			Result:= attach (class_key_to_name_map[class_key])
+		end
+
+	primary_key_of_class (class_name: STRING):INTEGER
+		-- Get the primary key of class `class_name'
+		require
+			class_present_in_database: has_primary_key_of_class (class_name)
+		do
+			Result:= class_name_to_key_map[class_name]
+		end
+
+
+
+feature {PS_GENERIC_LAYOUT_SQL_BACKEND} -- Access - Attribute
+
+	attribute_name_of_key (attribute_key: INTEGER):STRING
+		-- Get the attribute name of the attribute with primary key `class_key'
+		require
+			attribute_key_exists: valid_attribute_key (attribute_key)
+		do
 			Result:= attach (attribute_key_to_name_map[attribute_key])
 		end
 
-	key_of_class (class_name:STRING; active_connection: PS_SQL_CONNECTION_ABSTRACTION):INTEGER
+	primary_key_of_attribute (attribute_name: STRING; class_key: INTEGER): INTEGER
+		-- Get the primary key of attribute `attribute_name' in class `class_key'.
+		require
+			class_key_exists: valid_class_key (class_key)
+			attribute_present_in_database: has_primary_key_of_attribute (attribute_name, class_key)
 		do
-			if class_map.has (class_name) then
-				Result:= class_map[class_name]
-			else
-				active_connection.execute_sql ("INSERT INTO ps_class (classname) VALUES ('" + class_name + "')")
-				active_connection.execute_sql ("SELECT classid FROM ps_class WHERE classname = '" + class_name + "'")
-				Result:= active_connection.last_result.item.get_value_by_index (1).to_integer
---				Result:= active_connection.last_insert_id
-				class_map.extend (Result, class_name)
-				class_key_to_name_map.extend (class_name, Result)
-
-				attr_map.extend (create {HASH_TABLE[INTEGER, STRING]}.make (20), Result)
-			end
+			Result:= attach (attribute_name_to_key_map[class_key]).item (attribute_name)
 		end
 
 
-	key_of_attribute (attribute_name:STRING; class_id:INTEGER; active_connection: PS_SQL_CONNECTION_ABSTRACTION):INTEGER
+	attribute_keys_of_class (class_key: INTEGER):LINKED_LIST[INTEGER]
+		-- Get all the primary keys of attributes defined in class `class_id'
+		require
+			class_key_exists: valid_class_key (class_key)
 		do
-			if attach (attr_map[class_id]).has (attribute_name) then
-				Result:= attach (attr_map[class_id]).item (attribute_name)
-			else
-				active_connection.execute_sql ("INSERT INTO ps_attribute (name, class) VALUES ('" + attribute_name + "', " + class_id.out +  ")")
-				active_connection.execute_sql ("SELECT attributeid FROM ps_attribute WHERE name = '" + attribute_name + "' AND class = " +class_id.out)
-				Result:= active_connection.last_result.item.get_value_by_index (1).to_integer
---				Result:= active_connection.last_insert_id
-				add_attribute_key (attribute_name, Result, class_id)
-			end
+			create Result.make
+			across attach (attribute_name_to_key_map[class_key]) as keys loop Result.extend (keys.item)  end
 		end
 
 
-feature {NONE} -- Implementation
+feature {PS_GENERIC_LAYOUT_SQL_BACKEND} -- Key creation
+
+
+	create_get_primary_key_of_class (class_name:STRING):INTEGER
+		-- Get the primary key of class `class_name'. Create a table entry if not present yet.
+		do
+			if not has_primary_key_of_class (class_name) then
+				create_primary_key_of_class (class_name)
+			end
+			Result:= primary_key_of_class (class_name)
+		ensure
+			present_in_database: has_primary_key_of_class (class_name)
+		end
+
+
+	create_get_primary_key_of_attribute (attribute_name:STRING; class_key:INTEGER):INTEGER
+		-- Get the primary key of attribute `attribute_name' in class `class_key'. Create a table entry if not present yet.
+		require
+			class_key_exists: valid_class_key (class_key)
+		do
+			if not has_primary_key_of_attribute (attribute_name, class_key) then
+				create_primary_key_of_attribute(attribute_name, class_key)
+			end
+			Result:= primary_key_of_attribute (attribute_name, class_key)
+		ensure
+			present_in_database: has_primary_key_of_attribute (attribute_name, class_key)
+		end
+
+
+	create_primary_key_of_class (class_name: STRING)
+		-- Insert `class_name' to the database and get the new (auto-incremented) primary key.
+		require
+			not_present_in_database: not has_primary_key_of_class (class_name)
+		local
+			new_primary_key: INTEGER
+		do
+			-- Insert the new class, implicitly using auto-increment for the primary key
+			management_connection.execute_sql (Insert_class_use_autoincrement (class_name))
+
+			-- Retrieve the generated primary key
+			management_connection.execute_sql (Query_new_id_of_class (class_name))
+			new_primary_key:= management_connection.last_result.item.get_value_by_index (1).to_integer
+
+			-- Add the class and its primary key to the local copy
+			add_class_key (class_name, new_primary_key)
+		ensure
+			present_in_database: has_primary_key_of_class (class_name)
+		end
+
+
+	create_primary_key_of_attribute (attribute_name:STRING; class_key:INTEGER)
+		-- Insert `attribute_name' to the database and retrieve the new (auto-incremented) primary key
+		require
+			class_key_exists: valid_class_key (class_key)
+			not_present_in_database: not has_primary_key_of_attribute (attribute_name, class_key)
+		local
+			new_primary_key: INTEGER
+		do
+			-- Insert the new attribute, implicitly using auto-increment for the primary key
+			management_connection.execute_sql (Insert_attribute_use_autoincrement(attribute_name, class_key))
+
+			-- Retrieve the generated primary key
+			management_connection.execute_sql (Query_new_id_of_attribute (attribute_name, class_key))
+			new_primary_key:= management_connection.last_result.item.get_value_by_index (1).to_integer
+
+			-- Add the attribute and its new primary key to the local copy
+			add_attribute_key (attribute_name, new_primary_key, class_key)
+		ensure
+			present_in_database: has_primary_key_of_attribute (attribute_name, class_key)
+		end
+
+feature {NONE} -- Implementation - Local copy
 
 	class_key_to_name_map: HASH_TABLE[STRING, INTEGER]
+		-- A hash table that maps class primary keys to their names
 
-	attribute_key_to_name_map: HASH_TABLE[STRING, INTEGER]
+	class_name_to_key_map: HASH_TABLE[INTEGER, STRING]
+		-- A hash table that maps class names to their primary key
 
-	class_map: HASH_TABLE[INTEGER, STRING]
-
-	attr_map: HASH_TABLE[HASH_TABLE[INTEGER, STRING], INTEGER]
-
-	add_attribute_key (name:STRING; key, class_id: INTEGER)
+	add_class_key (class_name:STRING; new_primary_key: INTEGER)
+		-- Add a new mapping from `class_name' to `new_primary_key' and vice-versa.
 		do
-			if not attr_map.has (class_id) then
-				attr_map.extend (create {HASH_TABLE[INTEGER, STRING]}.make (10), class_id)
-			end
-			attach (attr_map[class_id]).extend(key, name)
+			class_name_to_key_map.extend (new_primary_key, class_name)
+			class_key_to_name_map.extend (class_name, new_primary_key)
 
---			if not attribute_key_to_name_map.has (class_id) then
---				attribute_key_to_name_map.extend (create {HASH_TABLE[STRING, INTEGER]}.make (10), class_id)
---			end
---			attach (attribute_key_to_name_map[class_id]).extend (name, key)
-
-			attribute_key_to_name_map.extend (name, key)
-
+			-- Also create an empty hash table in the attribute_name_to_key_map for later inserts of attributes of this class.
+			attribute_name_to_key_map.extend (create {HASH_TABLE[INTEGER, STRING]}.make (20), new_primary_key)
 		end
 
+
+	attribute_key_to_name_map: HASH_TABLE[STRING, INTEGER]
+		-- A hash table that maps attribute primary keys to their names.
+
+	attribute_name_to_key_map: HASH_TABLE[HASH_TABLE[INTEGER, STRING], INTEGER]
+		-- A double hash table that first maps a class primary key to the secondary table, which maps attribute names to their primary key
+
+	add_attribute_key (attribute_name:STRING; attribute_key:INTEGER; class_key: INTEGER)
+		-- Add a new mapping for `attribute_name' and its primary key `attribute_key' in class `class_key'
+		do
+			attach (attribute_name_to_key_map[class_key]).extend(attribute_key, attribute_name)
+			attribute_key_to_name_map.extend (attribute_name, attribute_key)
+		end
+
+	management_connection: PS_SQL_CONNECTION_ABSTRACTION
+		-- An auto-commited connection to manipulate the tables ps_class and ps_attribute
 
 feature {NONE} -- Initialization
 
 	make (a_connection: PS_SQL_CONNECTION_ABSTRACTION)
-			-- Initialization for `Current'.
+			-- Read existing database entries and initialize local copy with them.
+			-- If necessary, create missing tables.
 		local
-			all_tables: LINKED_LIST[STRING]
+			existing_tables: LINKED_LIST[STRING]
 		do
-			create class_map.make (20)
-			create attr_map.make (20)
+			-- Initialize `Current'
+			create class_name_to_key_map.make (20)
+			create attribute_name_to_key_map.make (20)
 			create class_key_to_name_map.make(20)
 			create attribute_key_to_name_map.make(20)
 
+			management_connection:= a_connection
 
 			-- Create all tables if they do not yet exist
-			create all_tables.make
+			management_connection.execute_sql (Show_tables)
 
-			a_connection.execute_sql ("SHOW TABLES")
-			across a_connection as cursor loop
-				all_tables.extend (cursor.item.get_value_by_index (1))
---				print (all_tables.last)
+			create existing_tables.make
+			across management_connection as cursor loop
+				existing_tables.extend (cursor.item.get_value_by_index (1))
 			end
 
-			if not all_tables.there_exists ( agent {STRING}.is_case_insensitive_equal ("ps_class")) then
-				a_connection.execute_sql (Create_class_table)
+			if not existing_tables.there_exists ( agent {STRING}.is_case_insensitive_equal (Class_table)) then
+				management_connection.execute_sql (Create_class_table)
 			end
-			if not all_tables.there_exists ( agent {STRING}.is_case_insensitive_equal  ("ps_attribute")) then
-				a_connection.execute_sql (Create_attribute_table)
+			if not existing_tables.there_exists ( agent {STRING}.is_case_insensitive_equal  (Attribute_table)) then
+				management_connection.execute_sql (Create_attribute_table)
 			end
-			if not all_tables.there_exists ( agent {STRING}.is_case_insensitive_equal  ("ps_value")) then
-				a_connection.execute_sql (Create_value_table)
+			if not existing_tables.there_exists ( agent {STRING}.is_case_insensitive_equal  (Value_table)) then
+				management_connection.execute_sql (Create_value_table)
 			end
 
 			-- Get the needed information from ps_class and ps_attribute table
 
-			a_connection.execute_sql (Query_class_table)
+			management_connection.execute_sql (Query_class_table)
 
 			across a_connection as row_cursor loop
-				class_map.extend (row_cursor.item.get_value ("classid").to_integer, row_cursor.item.get_value ("classname"))
+				add_class_key (row_cursor.item.get_value (Class_table_name_column), row_cursor.item.get_value (Class_table_id_column).to_integer)
 			end
 
-			a_connection.execute_sql (Query_attribute_table)
+			management_connection.execute_sql (Query_attribute_table)
 
 			across a_connection as row_cursor loop
-				add_attribute_key (row_cursor.item.get_value ("name"), row_cursor.item.get_value ("attributeid").to_integer, row_cursor.item.get_value ("class").to_integer)
+				add_attribute_key (row_cursor.item.get_value (Attribute_table_name_column), row_cursor.item.get_value (Attribute_table_id_column).to_integer, row_cursor.item.get_value (Attribute_table_class_column).to_integer)
 			end
-
 		end
+
+
+feature {NONE} -- Consistency checks
+
+	check_two_way_class_mapping: BOOLEAN
+		-- See if class mappings are identical in both hash tables
+		do
+			Result:=
+				across class_key_to_name_map as name
+				all
+					class_name_to_key_map.has (name.item)
+				end
+			and
+				across class_name_to_key_map as key
+				all
+					class_key_to_name_map.has (key.item)
+				end
+		end
+
+	check_attribute_hash_initialized: BOOLEAN
+		-- See if there is a hash table for attributes for every class
+		do
+			Result:= across class_name_to_key_map as key all attribute_name_to_key_map.has (key.item) end
+		end
+
+	check_two_way_attribute_mapping: BOOLEAN
+		-- See if attribute mappings are identical in both hash tables
+		do
+			Result:=
+				across attribute_name_to_key_map as attr_keys_per_class all
+					across attr_keys_per_class.item as key all
+						attribute_key_to_name_map.has (key.item)
+					end
+				end
+
+			and
+				across attribute_key_to_name_map as names all
+					across attribute_name_to_key_map as attr_keys_per_class some
+						attr_keys_per_class.item.has (names.item)
+					end
+				end
+		end
+
+invariant
+	two_way_class_mapping: check_two_way_class_mapping
+	every_class_has_attribute_hash: check_attribute_hash_initialized
+	two_way_attribute_mapping: check_two_way_attribute_mapping
+
 end

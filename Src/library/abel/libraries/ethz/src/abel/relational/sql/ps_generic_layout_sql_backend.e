@@ -64,9 +64,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 
 			create result_list.make
 
-			sql_string:= Current.query_values_from_class (db_metadata_manager.key_of_class (type.class_of_type.name, connection))
+--			sql_string:= Current.query_values_from_class (db_metadata_manager.key_of_class (type.class_of_type.name ))--, connection))
+			sql_string:= Current.query_values_from_class_new (convert_to_sql (db_metadata_manager.attribute_keys_of_class (db_metadata_manager.create_get_primary_key_of_class (type.class_of_type.name ))))
 			if not transaction.is_readonly then
 				sql_string.append (" FOR UPDATE")
+				print (sql_string + "%N")
+				print (type.class_of_type.name + "%N")
 			end
 			connection.execute_sql (sql_string)
 			from row_cursor:= connection.last_result
@@ -142,8 +145,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 --			connection:= database.acquire_connection
 --			print ("insert " + an_object.object_id.metadata.class_of_type.name)
 			connection:= get_connection (a_transaction)
-			none_class:= db_metadata_manager.key_of_class ("NONE", connection)
-			stub_attribute := db_metadata_manager.key_of_attribute ("stub", none_class, connection)
+			none_class:= db_metadata_manager.create_get_primary_key_of_class ("NONE"  )--, connection)
+			stub_attribute := db_metadata_manager.create_get_primary_key_of_attribute ("stub", none_class)--, connection)
 			connection.execute_sql ("INSERT INTO ps_value (attributeid, runtimetype, value) VALUES (" + stub_attribute.out+ ", " + none_class.out + ", 'STUB')")
 			connection.execute_sql ("SELECT objectid FROM ps_value WHERE attributeid = " + stub_attribute.out + "  AND value = 'STUB'")
 			new_primary_key:=connection.last_result.item.get_value_by_index (1).to_integer
@@ -153,7 +156,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 
 			-- Write all attributes
 			write_attributes (an_object, connection, a_transaction)
-
+			print (an_object.attributes.count)
 			-- Delete the stub argument
 			connection.execute_sql ("DELETE FROM ps_value WHERE attributeid = " + stub_attribute.out + "  AND value = 'STUB'")
 --			connection.commit
@@ -329,8 +332,9 @@ feature {NONE} -- Implementation
 				-- get the needed information
 				referenced_part:= object.get_value (current_attribute.item)
 				value:= referenced_part.storable_tuple (key_mapper.quick_translate (referenced_part.object_identifier, transaction)).first
-				attribute_id:= db_metadata_manager.key_of_attribute (current_attribute.item, db_metadata_manager.key_of_class (object.object_id.metadata.class_of_type.name, a_connection), a_connection)
-				runtime_type:= db_metadata_manager.key_of_class (referenced_part.storable_tuple (key_mapper.quick_translate (referenced_part.object_identifier, transaction)).second, a_connection)
+				attribute_id:= db_metadata_manager.create_get_primary_key_of_attribute (current_attribute.item, db_metadata_manager.create_get_primary_key_of_class (object.object_id.metadata.class_of_type.name		))
+																																										--, a_connection), a_connection)
+				runtime_type:= db_metadata_manager.create_get_primary_key_of_class (referenced_part.storable_tuple (key_mapper.quick_translate (referenced_part.object_identifier, transaction)).second)--, a_connection)
 
 				-- Perform update or insert, depending on the presence in the database
 				if already_present_attributes.has (attribute_id) then

@@ -76,6 +76,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Table creation
 
 feature {PS_EIFFELSTORE_EXPORT} -- Data querying
 
+	Show_tables: STRING = "SHOW TABLES"
+
 	Query_class_table: STRING = "[
 			SELECT classid, classname 
 			FROM ps_class
@@ -86,6 +88,16 @@ feature {PS_EIFFELSTORE_EXPORT} -- Data querying
 			FROM ps_attribute
 		]"
 
+	Query_new_id_of_class (class_name:STRING):STRING
+		do
+			Result:= "SELECT classid FROM ps_class WHERE classname = '" + class_name + "'"
+		end
+
+	Query_new_id_of_attribute (attribute_name:STRING; class_key:INTEGER):STRING
+		do
+			Result:= "SELECT attributeid FROM ps_attribute WHERE name = '" + attribute_name + "' AND class = " +class_key.out
+		end
+
 	Query_values_from_class (class_id:INTEGER) : STRING
 		do
 			Result:= "[
@@ -94,9 +106,63 @@ feature {PS_EIFFELSTORE_EXPORT} -- Data querying
 				WHERE objectid IN (
 					SELECT v.objectid
 					FROM ps_value v, ps_attribute a
-					WHERE v.attributeid = a.attributeid AND a.class = 
+					WHERE v.attributeid = a.attributeid AND a.class =
 			]"
 			Result := Result + class_id.out + " ) ORDER BY objectid "
 		end
+
+
+	Query_values_from_class_new (attributes: STRING) :STRING
+		do
+			Result:= "[
+				SELECT objectid, attributeid, runtimetype, value
+				FROM ps_value
+				WHERE attributeid IN
+			]"
+			Result := Result + attributes  + " ORDER BY objectid "
+		end
+
+
+	convert_to_sql (primary_keys: LIST[INTEGER] ):STRING
+		-- Convert `primary_keys' to a string with format `( 0, 1, 2 )'.
+		-- If empty, the result is `( 0 )'.
+		do
+			Result:= " ( 0, "
+			across primary_keys as key
+			loop
+				Result.append (key.item.out + ", ")
+			end
+			Result.remove_tail (2)
+			Result.append (" )")
+		end
+
+feature {PS_EIFFELSTORE_EXPORT} -- Data modification
+
+	Insert_class_use_autoincrement (class_name:STRING):STRING
+		do
+			Result:="INSERT INTO ps_class (classname) VALUES ('" + class_name + "')"
+		end
+
+	Insert_attribute_use_autoincrement (attribute_name:STRING; class_key:INTEGER):STRING
+		do
+			Result:= "INSERT INTO ps_attribute (name, class) VALUES ('" + attribute_name + "', " + class_key.out +  ")"
+		end
+
+feature {PS_EIFFELSTORE_EXPORT} -- Table and column names
+
+	Class_table: STRING = "ps_class"
+
+	Class_table_id_column: STRING = "classid"
+	Class_table_name_column: STRING = "classname"
+
+
+	Attribute_table: STRING = "ps_attribute"
+
+	Attribute_table_id_column: STRING = "attributeid"
+	Attribute_table_name_column: STRING = "name"
+	Attribute_table_class_column: STRING = "class"
+
+
+	Value_table: STRING = "ps_value"
 
 end
