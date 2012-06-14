@@ -34,7 +34,7 @@ feature -- Data retrieval
 		local
 			transaction: PS_TRANSACTION
 		do
-			create transaction.make (repository)
+			create transaction.make_readonly (repository)
 			execute_query_within_transaction (a_query, transaction)
 				fixme ("This doesn't work with lazy loading - maybe run such queries as readonly?")
 				--transaction.commit

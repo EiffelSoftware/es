@@ -57,13 +57,18 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			current_obj: PS_RETRIEVED_OBJECT
 			result_list: LINKED_LIST[PS_RETRIEVED_OBJECT]
 			row_cursor: ITERATION_CURSOR[PS_SQL_ROW_ABSTRACTION]
+			sql_string: STRING
 		do
-			print ("retrieving " + type.class_of_type.name + "%N")
+--			print ("retrieving " + type.class_of_type.name + "%N")
 			connection:= get_connection (transaction)
 
 			create result_list.make
 
-			connection.execute_sql (Current.query_values_from_class (db_metadata_manager.key_of_class (type.class_of_type.name, connection)))
+			sql_string:= Current.query_values_from_class (db_metadata_manager.key_of_class (type.class_of_type.name, connection))
+			if not transaction.is_readonly then
+				sql_string.append (" FOR UPDATE")
+			end
+			connection.execute_sql (sql_string)
 			from row_cursor:= connection.last_result
 			until row_cursor.after
 			loop
@@ -264,11 +269,11 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
 		local
 			connection:PS_SQL_CONNECTION_ABSTRACTION
 		do
-			connection:= database.acquire_connection
+--			connection:= database.acquire_connection
 			create key_mapper.make
-			connection.execute_sql ("DELETE FROM ps_value")
-			connection.commit
-			database.release_connection (connection)
+			management_connection.execute_sql ("DELETE FROM ps_value")
+--			connection.commit
+--			database.release_connection (connection)
 		end
 
 	wipe_out_all
@@ -282,14 +287,15 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
 				active_connections.item.first.commit
 				database.release_connection (active_connections.item.first)
 				active_connections.remove
+				print ("error: found active transaction")
 			end
-			connection:= database.acquire_connection
+			connection:= management_connection -- database.acquire_connection
 			connection.execute_sql ("DROP TABLE ps_value")
 			connection.execute_sql ("DROP TABLE ps_attribute")
 			connection.execute_sql ("DROP TABLE ps_class")
 
 
-			connection.commit
+--			connection.commit
 			database.release_connection (connection)
 			make (database)
 		end
@@ -350,20 +356,24 @@ feature {NONE} -- Implementation - Connection and Transaction handling
 			new_connection: PS_PAIR[PS_SQL_CONNECTION_ABSTRACTION, PS_TRANSACTION]
 			the_actual_result_as_detachable_because_of_stupid_void_safety_rule: detachable PS_SQL_CONNECTION_ABSTRACTION
 		do
-			across active_connections as cursor loop
-				if cursor.item.second.is_equal (transaction) then
-					the_actual_result_as_detachable_because_of_stupid_void_safety_rule:= cursor.item.first
-					print ("found existing%N")
+			if transaction.is_readonly then
+				Result:= management_connection
+			else
+				across active_connections as cursor loop
+					if cursor.item.second.is_equal (transaction) then
+						the_actual_result_as_detachable_because_of_stupid_void_safety_rule:= cursor.item.first
+	--					print ("found existing%N")
+					end
 				end
-			end
 
-			if not attached the_actual_result_as_detachable_because_of_stupid_void_safety_rule then
-				the_actual_result_as_detachable_because_of_stupid_void_safety_rule := database.acquire_connection
-				create new_connection.make (the_actual_result_as_detachable_because_of_stupid_void_safety_rule, transaction)
-				active_connections.extend (new_connection)
-					print ("created new%N")
+				if not attached the_actual_result_as_detachable_because_of_stupid_void_safety_rule then
+					the_actual_result_as_detachable_because_of_stupid_void_safety_rule := database.acquire_connection
+					create new_connection.make (the_actual_result_as_detachable_because_of_stupid_void_safety_rule, transaction)
+					active_connections.extend (new_connection)
+	--					print ("created new%N")
+				end
+				Result:= attach (the_actual_result_as_detachable_because_of_stupid_void_safety_rule)
 			end
-			Result:= attach (the_actual_result_as_detachable_because_of_stupid_void_safety_rule)
 		end
 
 	release_connection (transaction: PS_TRANSACTION)
@@ -374,16 +384,24 @@ feature {NONE} -- Implementation - Connection and Transaction handling
 				if active_connections.item.second.is_equal (transaction) then
 					database.release_connection (active_connections.item.first)
 					active_connections.remove
-					print (i.out + "removed%N")
-					i:= i+1
+--					print (i.out + "removed%N")
+--					i:= i+1
 				else
 					active_connections.forth
 				end
 			end
 		end
-	i:INTEGER
+--	i:INTEGER
 
 	active_connections: LINKED_LIST[PS_PAIR[PS_SQL_CONNECTION_ABSTRACTION, PS_TRANSACTION]]
+		-- These are the normal connections attached to a transactions.
+		-- They do not have auto-commit and they are closed once the transaction is finished.
+		-- They only write to the ps_value table.
+
+	management_connection: PS_SQL_CONNECTION_ABSTRACTION
+		-- This is a special connection used for management and read-only transactions.
+		-- It has isolation level `read-uncommited', uses auto-commit, and is always open.
+		-- The connection can only write to ps_attribute and ps_class
 
 
 feature{NONE} -- Initialization
@@ -395,10 +413,12 @@ feature{NONE} -- Initialization
 			database:= a_database
 --			connection:= database.acquire_connection
 			create key_mapper.make
-			initialization_connection:=a_database.acquire_connection
-			create db_metadata_manager.make (initialization_connection)
-			initialization_connection.commit
-			a_database.release_connection (initialization_connection)
+			management_connection:=a_database.acquire_connection
+			management_connection.execute_sql ("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED")
+			management_connection.execute_sql ("SET AUTOCOMMIT = 1")
+			create db_metadata_manager.make (management_connection)
+			--initialization_connection.commit
+			--a_database.release_connection (initialization_connection)
 			create active_connections.make
 		end
 

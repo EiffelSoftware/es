@@ -46,7 +46,15 @@ feature
 			transaction_tests.test_no_lost_update
 		end
 
+	test_transaction_dirty
+		do
+			transaction_tests.test_no_dirty_reads
+		end
 
+	test_transaction_repeatable_read
+		do
+			transaction_tests.test_repeatable_read
+		end
 
 feature {NONE} -- Initialization
 
