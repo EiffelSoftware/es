@@ -22,6 +22,8 @@ feature {PS_EIFFELSTORE_EXPORT}
 				print (sql_string)
 				print (internal_connection.last_error_message)
 --				check sql_error: FALSE end
+				last_error:= get_error
+				last_error.raise
 			end
 		end
 
@@ -29,6 +31,26 @@ feature {PS_EIFFELSTORE_EXPORT}
 --		do
 --			Result:= internal_connection.last_result.last_insert_id
 --		end
+
+	commit
+		do
+			internal_connection.commit
+			if internal_connection.has_error then
+				print (internal_connection.last_error_message)
+				last_error:= get_error
+				last_error.raise
+			end
+		end
+
+	rollback
+		do
+			internal_connection.rollback
+			if internal_connection.has_error then
+				last_error:= get_error
+				last_error.raise
+			end
+		end
+
 
 	last_result: ITERATION_CURSOR[PS_SQL_ROW_ABSTRACTION]
 		local
@@ -43,6 +65,10 @@ feature {PS_EIFFELSTORE_EXPORT}
 		end
 
 
+	last_error: PS_ERROR
+
+
+
 
 feature {PS_MYSQL_DATABASE} -- Initialization
 
@@ -50,8 +76,34 @@ feature {PS_MYSQL_DATABASE} -- Initialization
 			-- Initialization for `Current'.
 		do
 			internal_connection:= a_connection
+			create {PS_NO_ERROR} last_error
 		end
 
 	internal_connection: MYSQLI_CLIENT
+
+
+feature {NONE} -- Implementation
+
+	get_error: PS_ERROR
+		-- Translate the MySQL specific error code to an ABEL error object.
+		local
+			error_number: INTEGER
+		do
+			error_number:= internal_connection.last_server_error_number
+			if transaction_errors.has (error_number) then
+				create {PS_TRANSACTION_ERROR} Result
+			else
+				create {PS_GENERAL_ERROR} Result.make (internal_connection.last_error_message)
+			end
+		end
+
+
+
+	transaction_errors: ARRAY[INTEGER]
+		once
+			Result :=  <<
+				1205 -- Lock timeout
+				>>
+		end
 
 end

@@ -19,6 +19,14 @@ feature
 --		deferred
 --		end
 
+	commit
+		deferred
+		end
+
+	rollback
+		deferred
+		end
+
 	last_result: ITERATION_CURSOR[PS_SQL_ROW_ABSTRACTION]
 		deferred
 		end
@@ -27,5 +35,12 @@ feature
 		do
 			Result:= last_result
 		end
+
+	last_error: PS_ERROR
+		deferred
+		end
+
+invariant
+	-- no_autocommit: true
 
 end

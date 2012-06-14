@@ -24,4 +24,7 @@ feature
 		deferred
 		end
 
+	visit_general_error (general_error: PS_GENERAL_ERROR)
+		deferred
+		end
 end

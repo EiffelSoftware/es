@@ -8,8 +8,14 @@ deferred class
 	PS_ERROR
 inherit
 	DEVELOPER_EXCEPTION
+	redefine meaning end
 
 feature
+
+	meaning: STRING
+		do
+			Result:= description
+		end
 
 	description:STRING
 			-- A human-readable string containing an error description

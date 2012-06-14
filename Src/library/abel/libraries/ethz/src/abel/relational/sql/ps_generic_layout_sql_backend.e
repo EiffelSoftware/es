@@ -91,6 +91,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 				result_list.extend (current_obj)
 				-- do NOT go forth - we are already pointing to the next item, otherwise the inner loop would not have stopped.
 			end
+			connection.commit
 			database.release_connection (connection)
 			Result:= result_list.new_cursor
 		end
@@ -146,6 +147,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 
 			-- Delete the stub argument
 			connection.execute_sql ("DELETE FROM ps_value WHERE attributeid = " + stub_attribute.out + "  AND value = 'STUB'")
+			connection.commit
 			database.release_connection (connection)
 		end
 
@@ -156,6 +158,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		do
 			connection:= database.acquire_connection
 			write_attributes (an_object, connection, a_transaction)
+			connection.commit
 			database.release_connection (connection)
 		end
 
@@ -168,6 +171,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 			connection:= database.acquire_connection
 			primary:= key_mapper.primary_key_of (an_object.object_id, a_transaction).first
 			connection.execute_sql ("DELETE FROM ps_value WHERE objectid = " + primary.out)
+			connection.commit
 			database.release_connection (connection)
 			key_mapper.remove_primary_key (primary, an_object.object_id.metadata, a_transaction)
 		end
@@ -232,6 +236,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
 			connection:= database.acquire_connection
 			create key_mapper.make
 			connection.execute_sql ("DELETE FROM ps_value")
+			connection.commit
 			database.release_connection (connection)
 		end
 
@@ -244,6 +249,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
 			connection.execute_sql ("DROP TABLE ps_value")
 			connection.execute_sql ("DROP TABLE ps_attribute")
 			connection.execute_sql ("DROP TABLE ps_class")
+			connection.commit
 			database.release_connection (connection)
 			make (database)
 		end
@@ -291,7 +297,9 @@ feature {NONE} -- Implementation
 					collected_insert_statements:= collected_insert_statements + "INSERT INTO ps_value (objectid, attributeid, runtimetype, value) VALUES ( " + primary.out + ", " + attribute_id.out + ", " + runtime_type.out + ", '" + value + "'); "
 				end
 			end
-			a_connection.execute_sql (collected_insert_statements)
+			if not collected_insert_statements.is_empty then
+				a_connection.execute_sql (collected_insert_statements)
+			end
 		end
 
 
@@ -308,6 +316,7 @@ feature{NONE} -- Initialization
 			create key_mapper.make
 			initialization_connection:=a_database.acquire_connection
 			create db_metadata_manager.make (initialization_connection)
+			initialization_connection.commit
 			a_database.release_connection (initialization_connection)
 		end
 

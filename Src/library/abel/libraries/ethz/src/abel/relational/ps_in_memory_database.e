@@ -114,14 +114,14 @@ feature {PS_EIFFELSTORE_EXPORT}-- Object write operations
 	delete (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
 		-- Deletes an_object from the database
 		local
-			primary:PS_PAIR[INTEGER, PS_CLASS_METADATA]
+			primary:PS_PAIR[INTEGER, PS_TYPE_METADATA]
 		do
 			-- Remove the entry in the primary <--> POID mapping table
 			primary:= key_mapper.primary_key_of (an_object.object_id, a_transaction)
 			key_mapper.remove_primary_key (primary.first, an_object.object_id.metadata, a_transaction)
 
 			-- remove the complete object from DB
-			attach (db[primary.second.name]).remove (primary.first)
+			attach (db[primary.second.class_of_type.name]).remove (primary.first)
 		end
 
 
@@ -261,13 +261,13 @@ feature {NONE} -- Implementation - Loading and storing objects
 		-- Stores all attributes of `an_object' in the internal database, replacing any existing attribute with the same name if present
 		local
 			attr_primary:INTEGER
-			primary:PS_PAIR[INTEGER, PS_CLASS_METADATA]
+			primary:PS_PAIR[INTEGER, PS_TYPE_METADATA]
 		do
 			primary:= key_mapper.primary_key_of (an_object.object_id, transaction)
 
 			across an_object.attributes as attr_cursor loop
 				attr_primary:= key_mapper.quick_translate (an_object.get_value (attr_cursor.item).object_identifier, transaction)
-				add_or_replace_attribute (primary.second.name, primary.first, attr_cursor.item, an_object.get_value (attr_cursor.item).storable_tuple (attr_primary))
+				add_or_replace_attribute (primary.second.class_of_type.name, primary.first, attr_cursor.item, an_object.get_value (attr_cursor.item).storable_tuple (attr_primary))
 			end
 		end
 
