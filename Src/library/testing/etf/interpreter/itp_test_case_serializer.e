@@ -36,6 +36,7 @@ feature{NONE} -- Initialization
 			create object_graph_traversor
 			create test_case_hashs.make (2048)
 			create state_counts.make (2048)
+			state_counts.compare_objects
 			test_case_hashs.compare_objects
 			is_post_state_serialized := a_post_state_serialized
 		ensure
@@ -47,11 +48,11 @@ feature -- Access
 	interpreter: ITP_INTERPRETER
 			-- AutoTest interpreter attached to current serializer
 
-	test_case_hashs: HASH_TABLE [STRING, INTEGER]
+	test_case_hashs: HASH_TABLE [STRING, STRING]
 			-- Table of hash codes for test cases seen so far.
 			-- Key is hash code, value is the string representation of that hash code
 
-	state_counts: HASH_TABLE [INTEGER, INTEGER]
+	state_counts: HASH_TABLE [INTEGER, STRING]
 			-- Table of counts for established pre-states for test cases
 			-- Keys are state hash codes, values are the number of times those states have been
 			-- seen.
@@ -68,36 +69,54 @@ feature -- Access
 			l_index: INTEGER
 			l_object: detachable ANY
 			l_should_serialize: BOOLEAN
-			l_hash: INTEGER
 			l_serialization: STRING
 			l_states: STRING
 			l_state_count: INTEGER
 			l_id: STRING
+			l_state_hash: STRING
+			l_idx: INTEGER
+			l_hash: STRING
+			l_test_case_id: STRING
+			l_tc_signature: STRING
 		do
 			if is_test_case_setup then
-				l_hash := test_case_hash_code.hash_code
+				l_hash := test_case_hash_code.twin
+
+				l_idx := l_hash.index_of ('#', 1)
+				l_state_hash := l_hash.substring (l_idx + 1, l_hash.count)
+
+				if interpreter.is_failing_test_case then
+						-- For failing test cases, ID = recipient_class.recipient.exception_code.tag
+					l_test_case_id := interpreter.last_fault_id
+				else
+						-- For passing test cases, ID = class_under_test.feature_under_test.0.noname
+					l_test_case_id := l_hash.substring (1, l_idx - 1) + ".0.noname"
+				end
+
+				l_tc_signature := l_test_case_id + "#" + l_state_hash
 
 					-- Update state counts.
-				state_counts.search (l_hash)
-				create l_states.make (1024)
+				state_counts.search (l_state_hash)
 				if state_counts.found then
 					l_state_count := state_counts.found_item + 1
-					state_counts.replace (l_state_count, l_hash)
+					state_counts.replace (l_state_count, l_state_hash)
 				else
 					l_state_count := 1
-					state_counts.force (1, l_hash)
+					state_counts.force (1, l_state_hash)
 				end
+
+				create l_states.make (1024)
 				create l_id.make (128)
 				l_id.append (class_name)
 				l_id.append_character ('.')
 				l_id.append (feature_name)
 				l_id.append_character ('.')
-				l_id.append_integer (l_hash)
+				l_id.append_integer (l_state_hash.hash_code)
 
 				l_states.append (once "<state>")
 				l_states.append (l_id)
 				l_states.append (once " count=")
-				l_states.append_integer (state_counts.item (l_hash))
+				l_states.append_integer (state_counts.item (l_state_hash))
 				l_states.append (once "; fault=")
 				l_states.append_boolean (exception /= Void and then not exception.is_empty)
 				l_states.append (once "</state>%N")
@@ -114,13 +133,13 @@ feature -- Access
 
 				l_should_serialize :=
 					interpreter.is_duplicated_test_case_serialized or else
-					not test_case_hashs.has (l_hash)
+					not test_case_hashs.has (l_tc_signature)
 
 				if not l_should_serialize then
 					l_serialization := ""
 				else
 					if not interpreter.is_duplicated_test_case_serialized then
-						test_case_hashs.put (test_case_hash_code, l_hash)
+						test_case_hashs.put (l_tc_signature, l_tc_signature)
 					end
 
 						-- Synthesize serialization part for a test case.
@@ -140,7 +159,7 @@ feature -- Access
 					append_exception_trace (exception, l_serialization)
 
 						-- Synthesize hash.
-					append_test_case_hash_code (test_case_hash_code, l_serialization)
+					append_test_case_hash_code (l_tc_signature, l_serialization)
 
 						-- Synthesize pre-/post-state object summary.
 					append_object_state (pre_state_object_summary, l_serialization, True)
@@ -364,7 +383,7 @@ feature{NONE} -- Implementation
 			-- List of variables in `pre_state_serialization' along with their object index.
 			-- Key is variable index, value is the variable object itself in pre-execution state.
 
-	abstract_object_state (a_pre_state: BOOLEAN): TUPLE [summary: STRING; hash: STRING] is
+	abstract_object_state (a_pre_state: BOOLEAN): TUPLE [summary: STRING; hash: STRING]
 			-- Retrieve object state summary from objects specified by `operands'
 			-- `summary' is the state summary for `operands'.
 			-- `hash' is the hash code of `summary'.
@@ -383,7 +402,7 @@ feature{NONE} -- Implementation
 					l_hash_code.append (class_name)
 					l_hash_code.append_character ('.')
 					l_hash_code.append (feature_name)
-					l_hash_code.append_character ('.')
+					l_hash_code.append_character ('#')
 				end
 
 				create l_summary.make (256)
@@ -406,6 +425,8 @@ feature{NONE} -- Implementation
 					-- Calculate hash code of current test case for test case duplication detection.
 				if a_pre_state then
 					l_hash_code.append (hash_code_from_list (interpreter.query_value_hash_list).out)
+				else
+					l_hash_code.append ("0")
 				end
 				Result := [l_summary, l_hash_code]
 			else
@@ -530,7 +551,7 @@ feature{NONE} -- Implementation
 			-- specified by `a_roots'. Result is a list of such referenced object pairs. In each pair, `index' is the
 			-- variable index in the object pool, `object' is the variable itself.
 			-- Objects specified in `a_roots' are also included in Result.
-			-- A pair [Void, 1] is always included in Result.
+			-- A pair [[Void, "NONE"], 1] is always included in Result.
 		require
 			a_roots_not_empty: a_roots.count > 0
 		local
@@ -544,7 +565,7 @@ feature{NONE} -- Implementation
 		do
 			create l_tbl.make (20)
 				-- Insert [Void, v_1], becuase AutoTest will always set v_1 to Void.
-			l_tbl.put (Void, 1)
+			l_tbl.put ([Void, "NONE"], 1)
 
 			l_store := interpreter.store
 			l_traversor := object_graph_traversor
@@ -560,22 +581,20 @@ feature{NONE} -- Implementation
 				l_object := l_store.variable_value (l_index)
 				if l_object /= Void then
 						-- For each root object, recursively traverse the whole object graph.
-					if l_object = Void then
-						l_tbl.put ([l_object, l_object.generating_type.name.out], l_index)
-					else
-						l_tbl.put ([l_object, "NONE"], l_index)
-					end
+					l_tbl.put ([l_object, l_object.generating_type.name.out], l_index)
 					l_traversor.wipe_out
 					l_traversor.set_object_action (agent on_object_visited (?, l_tbl))
 					l_traversor.set_root_object (l_object)
 					l_traversor.traverse
+				else
+					l_tbl.put ([Void, "NONE"], l_index)
 				end
 				i := i + 1
 			end
 			Result := l_tbl
 		end
 
-	on_object_visited (a_object: detachable ANY; a_object_table: HASH_TABLE [detachable ANY, INTEGER])
+	on_object_visited (a_object: detachable ANY; a_object_table: HASH_TABLE [TUPLE [detachable ANY, STRING], INTEGER])
 			-- Action to be performed when `a_object' is visited during object graph traversal.
 			-- If `a_object' is found in the object pool in `interpreter', put it in `a_object_table'.
 			-- Key of `a_object_table' is the object index in the object pool, value is the object itself.
@@ -588,18 +607,84 @@ feature{NONE} -- Implementation
 				l_index := l_interpreter.store.variable_index (l_int)
 				if l_index > 0 then
 --					interpreter.log_message ("Serialization: Found an integer%N")
-					a_object_table.put (l_int.item, l_index)
+					a_object_table.put ([l_int.item, l_int.generating_type.out], l_index)
 				end
 			elseif attached {BOOLEAN} a_object as l_bool then
 				l_index := l_interpreter.store.variable_index (l_bool)
 				if l_index > 0 then
 --					interpreter.log_message ("Serialization: Found boolean%N")
-					a_object_table.put (l_bool.item, l_index)
+					a_object_table.put ([l_bool.item, l_bool.generating_type.out], l_index)
 				end
+			elseif attached{INTEGER_8} a_object as l_int8 then
+				l_index := l_interpreter.store.variable_index (l_int8)
+				if l_index > 0 then
+					a_object_table.put ([l_int8.item, l_int8.generating_type.out], l_index)
+				end
+			elseif attached{INTEGER_16} a_object as l_int16 then
+				l_index := l_interpreter.store.variable_index (l_int16)
+				if l_index > 0 then
+					a_object_table.put ([l_int16.item, l_int16.generating_type.out], l_index)
+				end
+			elseif attached{INTEGER_64} a_object as l_int64 then
+				l_index := l_interpreter.store.variable_index (l_int64)
+				if l_index > 0 then
+					a_object_table.put ([l_int64.item, l_int64.generating_type.out], l_index)
+				end
+			elseif attached{NATURAL_8} a_object as l_nat8 then
+				l_index := l_interpreter.store.variable_index (l_nat8)
+				if l_index > 0 then
+					a_object_table.put ([l_nat8.item, l_nat8.generating_type.out], l_index)
+				end
+			elseif attached{NATURAL_16} a_object as l_nat16 then
+				l_index := l_interpreter.store.variable_index (l_nat16)
+				if l_index > 0 then
+					a_object_table.put ([l_nat16.item, l_nat16.generating_type.out], l_index)
+				end
+			elseif attached{NATURAL_32} a_object as l_nat32 then
+				l_index := l_interpreter.store.variable_index (l_nat32)
+				if l_index > 0 then
+					a_object_table.put ([l_nat32.item, l_nat32.generating_type.out], l_index)
+				end
+			elseif attached{NATURAL_64} a_object as l_nat64 then
+				l_index := l_interpreter.store.variable_index (l_nat64)
+				if l_index > 0 then
+					a_object_table.put ([l_nat64.item, l_nat64.generating_type.out], l_index)
+				end
+			elseif attached{CHARACTER_8} a_object as l_char8 then
+				l_index := l_interpreter.store.variable_index (l_char8)
+				if l_index > 0 then
+					a_object_table.put ([l_char8.item, l_char8.generating_type.out], l_index)
+				end
+			elseif attached{CHARACTER_32} a_object as l_char32 then
+				l_index := l_interpreter.store.variable_index (l_char32)
+				if l_index > 0 then
+					a_object_table.put ([l_char32.item, l_char32.generating_type.out], l_index)
+				end
+			elseif attached{REAL_32} a_object as l_real32 then
+				l_index := l_interpreter.store.variable_index (l_real32)
+				if l_index > 0 then
+					a_object_table.put ([l_real32.item, l_real32.generating_type.out], l_index)
+				end
+			elseif attached{REAL_64} a_object as l_real64 then
+				l_index := l_interpreter.store.variable_index (l_real64)
+				if l_index > 0 then
+					a_object_table.put ([l_real64.item, l_real64.generating_type.out], l_index)
+				end
+--			elseif attached{POINTER} a_object as l_ptr then
+--				l_index := l_interpreter.store.variable_index (l_ptr)
+--				if l_index > 0 then
+--					a_object_table.put ([l_ptr.item, l_ptr.generating_type.out], l_index)
+--				end
+
 			else
 				l_index := l_interpreter.store.variable_index (a_object)
 				if l_index > 0 then
-					a_object_table.put (a_object, l_index)
+					if a_object = Void then
+						a_object_table.put ([Void, "NONE"], l_index)
+					else
+						a_object_table.put ([a_object, a_object.generating_type.out], l_index)
+					end
+
 				end
 			end
 		end

@@ -578,14 +578,31 @@ feature {ITP_TEST_CASE_SERIALIZER} -- Logging
 			l_tag: like tag_name
 			l_trace: like exception_trace
 			l_meaning: like meaning
+			l_line_number: INTEGER
 		do
 				-- Gather exception information.
-			l_exception_code := exception
-			l_meaning := meaning (l_exception_code)
-			l_tag := tag_name
-			l_recipient := recipient_name
-			l_recipient_class_name := class_name
+--			l_exception_code := exception
+--			l_tag := tag_name
+--			l_recipient := recipient_name
+--			l_recipient_class_name := class_name
+
+			l_exception_code := original_exception
+			l_tag := original_tag_name
+			if l_tag = Void then
+				l_tag := "noname"
+			end
+			l_recipient := original_recipient_name
+			l_recipient_class_name := original_class_name
+			if attached {EXCEPTION} exception_manager.last_exception as l_except then
+				if attached {EXCEPTION} l_except.cause as l_cause then
+					l_line_number := l_cause.line_number
+				end
+			end
+			last_fault_id := l_recipient_class_name + "." + l_recipient + "." + l_exception_code.out + "." + l_tag
+
 			l_trace := exception_trace
+
+			l_meaning := meaning (l_exception_code)
 			check l_trace /= Void end
 
 			if l_meaning = Void then
@@ -625,6 +642,10 @@ feature {ITP_TEST_CASE_SERIALIZER} -- Logging
 			log_message (once "]]>%N</exception_trace>%N")
 			log_message (once "</call_result>%N")
 		end
+
+	last_fault_id: detachable STRING
+			-- Id of the last detected fault
+			-- Only have correct value if is_failing_test_case is True
 
 feature -- IO Buffer
 
@@ -813,7 +834,7 @@ feature {NONE} -- Byte code
 
 				-- Book keeps found faults.
 			if not is_last_invariant_violated then
-				if (recipient_name.is_equal (once "execute_byte_code") and then exception = {EXCEP_CONST}.Precondition) then
+				if (original_recipient_name.is_equal (once "execute_byte_code") and then exception = {EXCEP_CONST}.Precondition) then
 					is_invalid_test_case := True
 					is_failing_test_case := False
 				else
