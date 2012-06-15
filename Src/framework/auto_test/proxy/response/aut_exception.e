@@ -1,4 +1,4 @@
-﻿note
+note
 	description:
 
 		"Exception"
@@ -51,7 +51,7 @@ feature {NONE} -- Initialization
 			tag_name := an_exception_tag_name.twin
 			trace := an_exception_trace.twin
 			set_is_invariant_violation_on_feature_entry (an_inv_violation_on_entry_flag)
-			parse_trace (trace, interpreter_root_class.name_in_upper, {AUT_SHARED_INTERPRETER_INFO}.feature_name_for_byte_code_injection)
+			parse_trace (trace, {TEST_SYSTEM_I}.eqa_interpreter_name, {AUT_SHARED_INTERPRETER_INFO}.feature_name_for_byte_code_injection)
 			is_test_invalid := is_test_invalid or else is_invariant_violation_on_feature_entry
 
 			create signature.make (64)
@@ -166,7 +166,7 @@ feature -- Setting
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

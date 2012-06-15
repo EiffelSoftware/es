@@ -2354,6 +2354,9 @@ feature -- Status report
 					if a_is_tab_navigatable and then Result /= Void and then not Result.is_tab_navigatable then
 						Result := Void
 					end
+					if Result /= Void and then not is_item_navigatable_to (Result) then
+						Result := Void
+					end
 					l_current_row_index := l_current_row_index + l_row_offset
 				end
 					-- Increase column and row values to the next valid index.
@@ -4378,14 +4381,14 @@ feature {EV_GRID_LOCKED_I} -- Drawing implementation
 						end
 						if Result then
 							Result := not a_key.is_arrow and then
-								is_item_tab_navigation_enabled implies (
+								(is_item_tab_navigation_enabled implies (
 									ev_application.ctrl_pressed or
 										-- Ctrl+Tab performs regular tab navigation from within the grid.
 									attached selected_items as l_sel_items and then
 										(l_sel_items.count > 0 implies
 												-- If row selection is enabled override default behavior if an item is activated.
 											(is_row_selection_enabled and then currently_active_item = Void) or else
-											(next_navigatable_activatable_item (l_sel_items.first, a_key) = l_sel_items.first)))
+											(next_navigatable_activatable_item (l_sel_items.first, a_key) = l_sel_items.first))))
 											-- If `is_item_tab_navigation_enabled' then we prevent default tab navigation to/from the next widget
 											-- and propagate to the next available item if not at the first (unless shift is pressed) or last (unless shift not pressed).
 						end
@@ -5432,6 +5435,10 @@ feature {EV_GRID_LOCKED_I} -- Event handling
 							-- If `is_tab_navigatable' then Result must also be 'is_tab_navigatable'
 					Result := Void
 				end
+					-- Check to make sure that `Result' is navigatable to, if not then we continue to the next item.
+				if Result /= Void and then not Result.column.is_show_requested then
+					Result := Void
+				end
 				item_index := item_index + item_offset
 			end
 		end
@@ -5488,7 +5495,7 @@ feature {EV_GRID_LOCKED_I} -- Event handling
 					end
 				end
 				if Result /= Void and then not is_item_navigatable_to (Result) then
-						Result := Void
+					Result := Void
 				end
 				item_index := item_index + item_offset
 			end
@@ -5499,21 +5506,19 @@ feature {EV_GRID_LOCKED_I} -- Event handling
 		local
 			l_parent_row_i: detachable EV_GRID_ROW_I
 		do
-			if a_item.row.height > 0 and then a_item.row.is_show_requested then
-					-- Only visible rows may be navigated to.
-				Result := True
-				if is_tree_enabled then
-					from
-						l_parent_row_i := a_item.row.implementation.parent_row_i
-					until
-						l_parent_row_i = Void or else not Result
-					loop
-						check l_parent_row_i /= Void end
-						if not l_parent_row_i.is_expanded or not l_parent_row_i.is_show_requested then
-							Result := False
-						end
-						l_parent_row_i := l_parent_row_i.parent_row_i
+				-- Only visible rows/columns may be navigated to.
+			Result := a_item.row.height > 0 and then a_item.row.is_show_requested and then a_item.column.is_show_requested
+			if Result and then is_tree_enabled then
+				from
+					l_parent_row_i := a_item.row.implementation.parent_row_i
+				until
+					l_parent_row_i = Void or else not Result
+				loop
+					check l_parent_row_i /= Void end
+					if not l_parent_row_i.is_expanded or not l_parent_row_i.is_show_requested then
+						Result := False
 					end
+					l_parent_row_i := l_parent_row_i.parent_row_i
 				end
 			end
 		end

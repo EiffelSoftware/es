@@ -2234,6 +2234,7 @@ feature -- Title part
 	t_Find: STRING_32							do Result := locale.translation("Find: ")	end
 	t_Find_test_case_classes: STRING_32			do Result := locale.translation("Find test case classes")	end
 	t_finish_freezing_status: STRING_32			do Result := locale.translation("Finish Freezing Status")	end
+	t_go_to_info: STRING_32						do Result := locale.translation ("Go to the selected external information source") end
 	t_Index: STRING_32							do Result := locale.translation("Index")	end
 	t_New_class: STRING_32						do Result := locale.translation("Add New Class")	end
 	t_Existing_class: STRING_32					do Result := locale.translation("Add Existing Class")	end
@@ -2289,6 +2290,7 @@ feature -- Title part
 		end
 	t_Stop_test_run: STRING_32					do Result := locale.translation("Stop test run")	end
 	t_Show_failures_only: STRING_32				do Result := locale.translation("Show failures only")	end
+	t_show_variable_suggestion: STRING_32		do Result := locale.translation("Type '$' to show available variables")	end
 	t_precompile_progress: STRING_32 			do Result := locale.translation ("Precompilation Progress") end
 	t_Slice_limits: STRING_32					do Result := locale.translation("Choose New Slice Limits for Special Objects")	end
 	t_System: STRING_32							do Result := locale.translation("Project Settings")	end

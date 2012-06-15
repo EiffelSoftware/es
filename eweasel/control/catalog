@@ -78,6 +78,7 @@ test	remove-default-key		table007 tcf pass table
 test	current_keys_void_safe	table008 tcf pass table
 test	extend-after-removal-failures	table009 tcf pass table
 test	valid-iteration-index-failure	table010 tcf fail table
+test	table-disjoint			table011 tcf fail table
 
 test	recursive-delete-with-symlinks	directory001 tcf pass directory
 
@@ -129,6 +130,7 @@ test	last-exception-not-cleared		except034 tcf fail exception
 test	code-compatible-io-failure		except035 tcf fail exception
 test	original_routines_in_exceptions		except036 tcf pass exception
 test	exception_cause				except037 tcf pass exception
+test	io_exception_code			except038 tcf pass exception
 
 -- Unicode
 test unicode_manifest_string_char_and_constants unicode001 tcf pass unicode
@@ -136,6 +138,7 @@ test unicode_free_operator unicode002 tcf pass unicode
 test big_extended_ascii_src unicode003 tcf pass unicode
 test extended_ascii_string_compatibility unicode004 tcf pass unicode
 test manifest-string-with-null-character unicode005 tcf pass unicode
+test invalid-manifest-string-8-with-unicode unicode006 tcf pass unicode
 
 -- Non Conforming Inheritance
 test basic-non-conforming-inheritance			noncon001 tcf pass non-conforming
@@ -1317,6 +1320,7 @@ test	thread-join-crash			thread019	tcf pass multithreaded
 test	thread-profiling-crash		thread020	tcf pass multithreaded profile
 test	thread-crashes-on-die		thread021	tcf pass multithreaded
 if UNIX test	thread-hangs-on-fork	thread022	tcf pass multithreaded
+test	root-thread-exit-continues		thread023	tcf pass multithreaded
 
 -- Execution
 
@@ -1668,6 +1672,7 @@ test	wrong-attribute-type-in-tuple	exec345 tcf pass execution
 test	ptr-is-default-pointer			exec346 tcf pass execution
 test	small-eif-memory-scavenge-2		exec347	tcf pass execution
 test	environment-setting				exec348	tcf pass execution eweasel
+test	none-and-attachement			exec349	tcf pass execution conformance
 
 -- Once specific
 

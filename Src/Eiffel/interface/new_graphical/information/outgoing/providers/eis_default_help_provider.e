@@ -52,31 +52,17 @@ feature -- Basic operation
 			end
 		end
 
-	es_built_in_variables: HASH_TABLE [STRING, STRING]
-			-- ES built-in variables.
-			-- These variables should ideally be built into a configure file.
-		once
-			create Result.make (5)
-			Result.put ("http://dev.eiffel.com", "ISE_WIKI")
-			Result.put ("http://www.eiffelroom.com", "EIFFELROOM")
-			Result.put ("http://doc.eiffel.com", "ISE_DOC")
-			Result.put ("http://doc.eiffel.com/isedoc/uuid", "ISE_DOC_UUID")
-			Result.put ("http://doc.eiffel.com/isedoc/eis", "ISE_DOC_REF")
-		ensure
-			result_attached: Result /= Void
-		end
-
 feature {NONE} -- Implementation
 
 	context_variables: HASH_TABLE [STRING_8, READABLE_STRING_8]
 			-- <precursor>
 		do
-			Result := es_built_in_variables.twin
+			Result := eis_variables.es_built_in_variables.twin
 			Result.merge (Precursor)
 		end
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
