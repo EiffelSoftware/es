@@ -285,7 +285,7 @@ feature{NONE} -- Implementation
 			l_name.replace_substring_all (ph_exception_recipient, tc_exception_recipient)
 			l_name.replace_substring_all (ph_exception_recipient_class, tc_exception_recipient_class)
 			l_name.replace_substring_all (ph_assertion_tag, tc_assertion_tag)
-			l_name.replace_substring_all (ph_hash_code, tc_hash_code)
+			l_name.replace_substring_all (ph_hash_code, tc_hash_code.hash_code.out)
 			l_name.replace_substring_all (ph_uuid, tc_uuid)
 			test_case_class_name := l_name
 		end
@@ -327,7 +327,7 @@ feature{NONE} -- Constants
 
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
