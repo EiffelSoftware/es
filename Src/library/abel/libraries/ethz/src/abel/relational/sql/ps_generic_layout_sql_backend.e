@@ -68,8 +68,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			sql_string:= Current.query_values_from_class_new (convert_to_sql (db_metadata_manager.attribute_keys_of_class (db_metadata_manager.create_get_primary_key_of_class (type.class_of_type.name ))))
 			if not transaction.is_readonly then
 				sql_string.append (" FOR UPDATE")
-				print (sql_string + "%N")
-				print (type.class_of_type.name + "%N")
+--				print (sql_string + "%N")
+--				print (type.class_of_type.name + "%N")
 			end
 			connection.execute_sql (sql_string)
 			from row_cursor:= connection.last_result
@@ -104,6 +104,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 --			connection.commit
 --			database.release_connection (connection)
 			Result:= result_list.new_cursor
+		rescue
+			rollback (transaction)
 		end
 
 
@@ -156,11 +158,13 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 
 			-- Write all attributes
 			write_attributes (an_object, connection, a_transaction)
-			print (an_object.attributes.count)
+--			print (an_object.attributes.count)
 			-- Delete the stub argument
 			connection.execute_sql ("DELETE FROM ps_value WHERE attributeid = " + stub_attribute.out + "  AND value = 'STUB'")
 --			connection.commit
 --			database.release_connection (connection)
+		rescue
+			rollback (a_transaction)
 		end
 
 	update (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
@@ -173,6 +177,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 			write_attributes (an_object, connection, a_transaction)
 --			connection.commit
 --			database.release_connection (connection)
+		rescue
+			rollback (a_transaction)
 		end
 
 	delete (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
@@ -188,6 +194,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 			connection.execute_sql ("DELETE FROM ps_value WHERE objectid = " + primary.out)
 --			connection.commit
 --			database.release_connection (connection)
+		rescue
+			rollback (a_transaction)
 		end
 
 
@@ -251,6 +259,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 			database.release_connection (connection)
 			release_connection (a_transaction)
 			key_mapper.commit (a_transaction)
+		rescue
+			rollback (a_transaction)
 		end
 
 	rollback (a_transaction: PS_TRANSACTION)
@@ -258,10 +268,13 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 		local
 			connection: PS_SQL_CONNECTION_ABSTRACTION
 		do
-			connection:= get_connection (a_transaction)
-			connection.rollback
-			release_connection (a_transaction)
-			key_mapper.rollback (a_transaction)
+			if not a_transaction.has_error then -- Avoid a "double rollback"
+				connection:= get_connection (a_transaction)
+				a_transaction.set_error (connection.last_error)
+				connection.rollback
+				release_connection (a_transaction)
+				key_mapper.rollback (a_transaction)
+			end
 		end
 
 

@@ -56,6 +56,14 @@ feature
 			transaction_tests.test_repeatable_read
 		end
 
+	test_transaction_cleanup
+		do
+			transaction_tests.test_correct_insert_rollback
+			transaction_tests.test_correct_update_rollback
+			transaction_tests.test_correct_delete_rollback
+		end
+
+
 feature {NONE} -- Initialization
 
 	make_repository: PS_RELATIONA_IN_MEMORY_REPOSITORY

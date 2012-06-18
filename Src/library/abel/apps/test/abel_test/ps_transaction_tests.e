@@ -34,24 +34,31 @@ feature {PS_REPOSITORY_TESTS}
 			executor.execute_query_within_transaction (q1, t1)
 
 			-- t2 reads, updates and commits
-			executor.execute_query_within_transaction (q2, t2)
-			q2.result_cursor.item.add_item
-			executor.update_within_transaction (q2.result_cursor.item, t2)
-			t2.commit
+			executor.execute_query_within_transaction (q2, t2) -- This step can abort already in lock-based systems
 
-			-- t2 now updates, but it has to fail at commit time
-			q1.result_cursor.item.add_item
-			executor.update_within_transaction (q1.result_cursor.item, t1)
-			t1.commit
+			if q2.result_cursor.after then -- Transaction has been aborted
+				-- A commit has to fail now
+				t2.commit
+				assert ("The transaction should be aborted", t2.has_error)
+			else  -- Transaction has not been aborted (which is the case in multiversion concurrency control)
+				-- Let T2 finish its update
+				q2.result_cursor.item.add_item
+				executor.update_within_transaction (q2.result_cursor.item, t2)
+				t2.commit
 
-			assert ("The transaction should be aborted", t1.has_error and then attached{PS_TRANSACTION_ERROR} t1.error)
+				-- t1 now updates, but it has to fail at commit time
+				q1.result_cursor.item.add_item
+				executor.update_within_transaction (q1.result_cursor.item, t1)
+				t1.commit
+
+				assert ("The transaction should be aborted", t1.has_error and then attached{PS_TRANSACTION_ERROR} t1.error)
+			end
 			repository.clean_db_for_testing
 		end
 
 
 	test_no_dirty_reads
 		-- Test if a dirty read can happen.
-		-- Please note that this test will very likely deadlock in a lock-based transaction management system (except if there is some sort of timeout).
 		local
 			some_person: PERSON
 			t1, t2: PS_TRANSACTION
@@ -72,10 +79,18 @@ feature {PS_REPOSITORY_TESTS}
 			executor.update_within_transaction (q1.result_cursor.item, t1)
 
 			-- t2 reads, updates and commits
-			executor.execute_query_within_transaction (q2, t2)
-			q2.result_cursor.item.add_item
-			executor.update_within_transaction (q2.result_cursor.item, t2)
-			t2.commit
+			executor.execute_query_within_transaction (q2, t2) -- This can block and abort in lock-based systems
+
+			if q2.result_cursor.after then -- Query has been aborted, which is great
+				-- A commit at this time has to fail
+				t2.commit
+				assert ("Transaction should have an error", t2.has_error)
+			else -- If we have multi-version concurrency control
+				q2.result_cursor.item.add_item
+				executor.update_within_transaction (q2.result_cursor.item, t2)
+				t2.commit
+			end
+
 
 			-- t1 now does a rollback
 			t1.rollback
@@ -111,15 +126,21 @@ feature {PS_REPOSITORY_TESTS}
 
 			-- t2 updates some_person and commits
 			executor.execute_query_within_transaction (q2, t2)
-			q2.result_cursor.item.add_item
-			executor.update_within_transaction (q2.result_cursor.item, t2)
-			t2.commit
+			if q2.result_cursor.after then -- T2 has been aborted, which is good in lock-based systems
+				t2.commit
+				assert ("The transaction should have an error", t2.has_error)
+			else
+				q2.result_cursor.item.add_item
+				executor.update_within_transaction (q2.result_cursor.item, t2)
+				t2.commit
+			end
+
 
 			-- t1 reads again some_person
 			executor.execute_query_within_transaction (q3, t1)
 
 			-- Now ensure that t1 has read the same value twice
-			assert ("T1 has suffered a non-repeadable read", q1.result_cursor.item.items_owned = q2.result_cursor.item.items_owned)
+			assert ("T1 has suffered a non-repeadable read", q1.result_cursor.item.items_owned = q3.result_cursor.item.items_owned)
 			repository.clean_db_for_testing
 
 		end

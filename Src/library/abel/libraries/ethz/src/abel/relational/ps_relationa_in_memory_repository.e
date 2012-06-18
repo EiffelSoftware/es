@@ -20,6 +20,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 			if attached {PS_OBJECT_QUERY[ANY]} query as obj_query then
 				retriever.setup_query (obj_query, transaction)
 			end
+		rescue
+			transaction.rollback
 		end
 
 	next_entry (query: PS_QUERY [ANY])
@@ -29,6 +31,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 			if attached {PS_OBJECT_QUERY[ANY]} query as obj_query then
 				retriever.next_entry (obj_query)
 			end
+		rescue
+			query.transaction.rollback
 		end
 
 
@@ -39,6 +43,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 		do
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).insert, transaction)
 			executor.perform_operations (planner.generate_plan (disassembler.disassembled_object), transaction)
+		rescue
+			transaction.rollback
 		end
 
 	update (object: ANY; transaction: PS_TRANSACTION)
@@ -46,7 +52,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 		do
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).update, transaction)
 			executor.perform_operations (planner.generate_plan (disassembler.disassembled_object), transaction)
-			--check false end
+		rescue
+			transaction.rollback
 		end
 
 	delete (object: ANY; transaction: PS_TRANSACTION)
@@ -54,7 +61,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 		do
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).delete, transaction)
 			executor.perform_operations (planner.generate_plan (disassembler.disassembled_object), transaction)
-
+		rescue
+			transaction.rollback
 		end
 
 

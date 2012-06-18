@@ -44,10 +44,10 @@ feature -- Data retrieval
 
 
 
-	load_to_depth (object: ANY; depth: INTEGER)
+--	load_to_depth (object: ANY; depth: INTEGER)
 			-- Load  `object' (assumed to be partially loaded) further to object graph depth `depth'.
-		do
-		end
+--		do
+--		end
 
 feature -- Data manipulation
 
@@ -115,12 +115,29 @@ feature -- Transaction-based data retrieval and querying
 		require
 			query_not_executed: not a_query.is_executed
 			same_repository: a_transaction.repository = Current.repository
+		local
+			retried: BOOLEAN
 		do
-			repository.execute_query (a_query, a_transaction)
+			if a_transaction.has_error then
+				if attached {PS_TRANSACTION_ERROR} a_transaction.error then
+					-- Ignore query in case of a transaction error
+				else
+					-- Raise the error again
+					a_transaction.error.raise
+				end
+			else -- No error - Proceed as usual
+				repository.execute_query (a_query, a_transaction)
+			end
+
 		ensure
 			query_executed: a_query.is_executed
 			transaction_set: a_query.transaction = a_transaction
 			object_known_to_system_now: not a_query.result_cursor.after implies is_already_loaded (a_query.result_cursor.item, a_transaction)
+		rescue
+			if not retried then
+				retried:= True
+				retry -- This ensures that transaction errors are "catched", but every other error is raised
+			end
 		end
 
 	insert_within_transaction (an_object: ANY; a_transaction: PS_TRANSACTION)
@@ -128,10 +145,26 @@ feature -- Transaction-based data retrieval and querying
 		require
 			same_repository: a_transaction.repository = Current.repository
 			object_new_to_system: not is_already_loaded (an_object, a_transaction)
+		local
+			retried: BOOLEAN
 		do
-			repository.insert (an_object, a_transaction)
+			if a_transaction.has_error then
+				if attached {PS_TRANSACTION_ERROR} a_transaction.error then
+					-- Ignore query in case of a transaction error
+				else
+					-- Raise the error again
+					a_transaction.error.raise
+				end
+			else -- No error - Proceed as usual
+				repository.insert (an_object, a_transaction)
+			end
 		ensure
 			-- object_known: is_already_loaded (an_object) -- Disabled because is_already_loaded not implemented yet
+		rescue
+			if not retried then
+				retried:= True
+				retry -- This ensures that transaction errors are "catched", but every other error is raised
+			end
 		end
 
 	update_within_transaction (an_object: ANY; a_transaction: PS_TRANSACTION)
@@ -139,8 +172,24 @@ feature -- Transaction-based data retrieval and querying
 		require
 			same_repository: a_transaction.repository = Current.repository
 			object_known: is_already_loaded (an_object, a_transaction)
+		local
+			retried: BOOLEAN
 		do
-			repository.update (an_object, a_transaction)
+			if a_transaction.has_error then
+				if attached {PS_TRANSACTION_ERROR} a_transaction.error then
+					-- Ignore query in case of a transaction error
+				else
+					-- Raise the error again
+					a_transaction.error.raise
+				end
+			else -- No error - Proceed as usual
+				repository.update (an_object, a_transaction)
+			end
+		rescue
+			if not retried then
+				retried:= True
+				retry -- This ensures that transaction errors are "catched", but every other error is raised
+			end
 		end
 
 	delete_within_transaction (an_object: ANY; a_transaction: PS_TRANSACTION)
@@ -148,8 +197,24 @@ feature -- Transaction-based data retrieval and querying
 		require
 			same_repository: a_transaction.repository = Current.repository
 			object_known: is_already_loaded (an_object, a_transaction)
+		local
+			retried: BOOLEAN
 		do
-			repository.delete (an_object, a_transaction)
+			if a_transaction.has_error then
+				if attached {PS_TRANSACTION_ERROR} a_transaction.error then
+					-- Ignore query in case of a transaction error
+				else
+					-- Raise the error again
+					a_transaction.error.raise
+				end
+			else -- No error - Proceed as usual
+				repository.delete (an_object, a_transaction)
+			end
+		rescue
+			if not retried then
+				retried:= True
+				retry -- This ensures that transaction errors are "catched", but every other error is raised
+			end
 		end
 
 	execute_deletion_query_within_transaction (a_query: PS_QUERY [ANY]; a_transaction: PS_TRANSACTION)
@@ -157,8 +222,24 @@ feature -- Transaction-based data retrieval and querying
 		require
 			query_not_executed: not a_query.is_executed
 			same_repository: a_transaction.repository = Current.repository
+		local
+			retried: BOOLEAN
 		do
-			repository.delete_query (a_query, a_transaction)
+			if a_transaction.has_error then
+				if attached {PS_TRANSACTION_ERROR} a_transaction.error then
+					-- Ignore query in case of a transaction error
+				else
+					-- Raise the error again
+					a_transaction.error.raise
+				end
+			else -- No error - Proceed as usual
+				repository.delete_query (a_query, a_transaction)
+			end
+		rescue
+			if not retried then
+				retried:= True
+				retry -- This ensures that transaction errors are "catched", but every other error is raised
+			end
 		end
 
 	new_transaction: PS_TRANSACTION

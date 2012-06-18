@@ -45,11 +45,13 @@ feature -- Basic operations
 
 	commit
 			-- Try to commit the transaction.
-		require
-			transaction_alive: is_active
+--		require
+--			transaction_alive: is_active
 		do
-			repository.commit_transaction (Current)
-			is_active:=false
+			if is_active then
+				repository.commit_transaction (Current)
+				is_active:=false
+			end
 		ensure
 			transaction_terminted: not is_active
 		end
@@ -60,6 +62,7 @@ feature -- Basic operations
 			transaction_alive: is_active
 		do
 			repository.rollback_transaction (Current)
+			is_active:= False
 		ensure
 			transaction_terminated: not is_active
 		end
