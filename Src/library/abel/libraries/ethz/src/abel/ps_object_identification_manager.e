@@ -15,6 +15,9 @@ class
 inherit
 	PS_EIFFELSTORE_EXPORT
 
+inherit{NONE}
+	REFACTORING_HELPER
+
 create make
 
 feature
@@ -51,6 +54,21 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 			identified: is_identified (an_object, transaction)
 		end
 
+	delete_identification (an_object: ANY; transaction: PS_TRANSACTION)
+		-- Delete the identification.
+		require
+			identified: is_identified (an_object, transaction)
+		do
+			from identifier_table.start until identifier_table.after loop
+				if identifier_table.item.first.item = an_object then
+					identifier_table.remove
+				else
+					identifier_table.forth
+				end
+			end
+		ensure
+			not_identified: not is_identified (an_object, transaction)
+		end
 
 	get_identifier_wrapper (an_object:ANY; transaction:PS_TRANSACTION) : PS_OBJECT_IDENTIFIER_WRAPPER
 			-- Get the identifier of `an_object'
@@ -79,7 +97,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 			item_present: Result.item = an_object
 		end
 
-feature {PS_EIFFELSTORE_EXPORT}
+feature {PS_EIFFELSTORE_EXPORT} -- Transaction Status
 
 	can_commit (transaction: PS_TRANSACTION):BOOLEAN
 		-- Can `Current' commit the changes in `Transaction'
@@ -88,18 +106,51 @@ feature {PS_EIFFELSTORE_EXPORT}
 			Result:= True
 		end
 
-	commit (a_transaction: PS_TRANSACTION)
+
+	is_registered (transaction: PS_TRANSACTION) :BOOLEAN
+		-- Is `transaction' known to `Current'?
+		do
+			Result:= registered_transactions.has (transaction)
+		end
+
+feature {PS_EIFFELSTORE_EXPORT} -- Transaction management
+
+	register_transaction (transaction: PS_TRANSACTION)
+		-- Add `transaction' to the pool of active transactions, if not present yet.
+		do
+			if not is_registered (transaction) then
+				registered_transactions.extend (transaction)
+			end
+		ensure
+			is_registered (transaction)
+		end
+
+	commit (transaction: PS_TRANSACTION)
 		-- Commit `transaction', making all identifications permanent
+		require
+			registered: is_registered (transaction)
 		do
 			-- Insert all objects in the transaction pool to the global pool
+			registered_transactions.start
+			registered_transactions.prune (transaction)
+		ensure
+			not_registered: not is_registered (transaction)
 		end
 
-	rollback (a_transaction: PS_TRANSACTION)
+	rollback (transaction: PS_TRANSACTION)
 		-- Rollback all identifications performed within `transaction'
+		require
+			registered: is_registered (transaction)
 		do
 			-- Delete the transaction pool
+			registered_transactions.start
+			registered_transactions.prune (transaction)
+		ensure
+			not_registered: not is_registered (transaction)
 		end
 
+
+	registered_transactions: LINKED_LIST[PS_TRANSACTION]
 
 feature {PS_EIFFELSTORE_EXPORT} -- Deletion management
 
@@ -149,6 +200,7 @@ feature { NONE } -- Implementation
 			create subscribers.make
 			create metadata_manager.make_new
 			last_id:=0
+			create registered_transactions.make
 		end
 
 	new_id:INTEGER

@@ -9,7 +9,6 @@ class
 
 inherit
 	PS_TEST_PROVIDER
-	THREAD_CONTROL undefine default_create end
 
 create make
 

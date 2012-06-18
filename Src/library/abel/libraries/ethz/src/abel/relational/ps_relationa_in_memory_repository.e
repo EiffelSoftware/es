@@ -9,6 +9,8 @@ class
 
 inherit
 	PS_REPOSITORY
+inherit {NONE}
+	REFACTORING_HELPER
 
 create make
 
@@ -17,22 +19,24 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 	execute_query (query: PS_QUERY [ANY]; transaction: PS_TRANSACTION)
 			-- Execute `query'.
 		do
+			id_manager.register_transaction (transaction)
 			if attached {PS_OBJECT_QUERY[ANY]} query as obj_query then
 				retriever.setup_query (obj_query, transaction)
 			end
 		rescue
-			transaction.rollback
+			default_transactional_rescue (transaction)
 		end
 
 	next_entry (query: PS_QUERY [ANY])
 			-- retrieves the next object. stores item directly into result_set
 			-- in case of an error it is written into the transaction connected to the query
 		do
+			id_manager.register_transaction (query.transaction)
 			if attached {PS_OBJECT_QUERY[ANY]} query as obj_query then
 				retriever.next_entry (obj_query)
 			end
 		rescue
-			query.transaction.rollback
+			default_transactional_rescue (query.transaction)
 		end
 
 
@@ -41,28 +45,33 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 	insert (object: ANY; transaction: PS_TRANSACTION)
 			-- Insert `object' within `transaction' into `Current'
 		do
+			id_manager.register_transaction (transaction)
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).insert, transaction)
 			executor.perform_operations (planner.generate_plan (disassembler.disassembled_object), transaction)
 		rescue
-			transaction.rollback
+			default_transactional_rescue (transaction)
 		end
 
 	update (object: ANY; transaction: PS_TRANSACTION)
 			-- Update `object' within `transaction'
 		do
+			id_manager.register_transaction (transaction)
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).update, transaction)
 			executor.perform_operations (planner.generate_plan (disassembler.disassembled_object), transaction)
 		rescue
-			transaction.rollback
+			default_transactional_rescue (transaction)
 		end
 
 	delete (object: ANY; transaction: PS_TRANSACTION)
 			-- Delete `object' within `transaction' from `Current'
 		do
+			id_manager.register_transaction (transaction)
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).delete, transaction)
 			executor.perform_operations (planner.generate_plan (disassembler.disassembled_object), transaction)
+			fixme ("TODO: fix this for depth > 1")
+			id_manager.delete_identification (object, transaction)
 		rescue
-			transaction.rollback
+			default_transactional_rescue (transaction)
 		end
 
 
@@ -72,19 +81,25 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 		-- Explicitly commit the transaction
 		do
 			if id_manager.can_commit (transaction) then
-				backend.commit (transaction)
+				backend.commit (transaction) -- can fail and raise an exception
 				id_manager.commit (transaction)
+				transaction.declare_as_successful
 			else
-				rollback_transaction (transaction)
+				rollback_transaction (transaction, False)
 			end
+		rescue
+			default_transactional_rescue (transaction)
 		end
 
-	rollback_transaction (transaction: PS_TRANSACTION)
+	rollback_transaction (transaction: PS_TRANSACTION; manual_rollback: BOOLEAN)
 		-- Rollback the transaction
 		do
 			backend.rollback (transaction)
 			id_manager.rollback (transaction)
+			transaction.declare_as_aborted
 		end
+
+
 feature {PS_EIFFELSTORE_EXPORT} -- Testing
 
 	clean_db_for_testing
