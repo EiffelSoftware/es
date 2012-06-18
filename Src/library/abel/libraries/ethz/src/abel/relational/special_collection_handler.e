@@ -9,7 +9,7 @@ class
 
 inherit
 	PS_COLLECTION_HANDLER [SPECIAL [detachable ANY]]
-	redefine can_handle_type end
+	redefine can_handle_type, do_disassemble end
 
 create make
 
@@ -97,10 +97,23 @@ feature -- Low-level operations
 			create Result.make (attach (collections[parent_key]), count_tuple)
 		end
 
+	do_disassemble (collection:PS_COLLECTION_PART [SPECIAL[detachable ANY]]; disassemble_function:FUNCTION[ANY, TUPLE[ANY], PS_OBJECT_GRAPH_PART])
+		local
+			cursor:ITERATION_CURSOR[detachable ANY]
+	--		attached_item: ANY
+		do
+			precursor (collection, disassemble_function)
+			check attached{SPECIAL[detachable ANY]} collection.object_id.item as actual_collection then
+				check attached {PS_OBJECT_COLLECTION_PART[SPECIAL[detachable ANY]]} collection as part then
+					part.add_information ("count", actual_collection.capacity.out)
+				end
+			end
+		end
+
 
 feature -- Object assembly
 
-	build_collection (type_id: INTEGER; objects: LIST[detachable ANY]; additional_information: HASH_TABLE[STRING, STRING]):SPECIAL[detachable ANY]
+	build_collection (type_id: PS_TYPE_METADATA; objects: LIST[detachable ANY]; additional_information: PS_RETRIEVED_OBJECT_COLLECTION):SPECIAL[detachable ANY]
 		-- Dynamic type id of the collection
 		local
 			reflection: INTERNAL
@@ -110,11 +123,11 @@ feature -- Object assembly
 			fixme ("TODO: handle case where SPECIAL doesn't have a reference type")
 
 			fixme ("TODO: the following line:-)")
-			count:=10
-			--count:= attach (additional_information["count"]).to_integer
+--			count:=10
+			count:= additional_information.get_information("count").to_integer
 			--print (additional_information.out + count.out)
 
-			Result:= reflection.new_special_any_instance (type_id, count)
+			Result:= reflection.new_special_any_instance (type_id.type.type_id, count)
 			--print (Result.count)
 
 			across objects as obj_cursor from i:=0 loop

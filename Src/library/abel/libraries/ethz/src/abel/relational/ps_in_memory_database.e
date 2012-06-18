@@ -137,6 +137,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 
 			across get_ordered_collection (collection_primary_key) as cursor loop
 				Result.add_item (cursor.item.first, cursor.item.second)
+				print ("added result item")
 			end
 
 			info:= attach (collection_info[collection_primary_key])
@@ -173,16 +174,19 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			-- Now add all collection values to the collection
 			across a_collection.values as coll_item loop
 				item_primary:= key_mapper.quick_translate (coll_item.item.object_identifier, a_transaction)
-
 				add_to_collection (primary, coll_item.item.storable_tuple (item_primary), a_collection.order_of (coll_item.item))
 			end
 		end
 
 	delete_objectoriented_collection (a_collection: PS_OBJECT_COLLECTION_PART[ITERABLE[detachable ANY]]; a_transaction:PS_TRANSACTION)
 		-- Delete `a_collection' from the database
+		local
+			key:INTEGER
 		do
-			collection_info.remove (key_mapper.primary_key_of (a_collection.object_id, a_transaction).first)
-			collections.remove (key_mapper.primary_key_of (a_collection.object_id, a_transaction).first)
+			key:= key_mapper.primary_key_of (a_collection.object_id, a_transaction).first
+			collection_info.remove (key)
+			collections.remove (key)
+			key_mapper.remove_primary_key (key, a_collection.object_id.metadata, a_transaction)
 		end
 
 feature {PS_EIFFELSTORE_EXPORT}-- Relational collection operations
@@ -387,15 +391,22 @@ feature{NONE} -- Implementation - Database and DB access for Object-oriented Col
 		do
 			create new_item.make (value.first, create {PS_PAIR[STRING, INTEGER]}.make (value.second, order))
 
+			fixme ("BROKEN: doesn't work as intended...")
 			from
 				collection:= attach (collections[key])
+	--			if collection.is_empty then
+					collection.extend (new_item)
+					--collection.forth
+	--			end
 				collection.start
 			until
 				collection.after
 			loop
 				if (collection.isfirst or else previous_order <= order) and order < collection.item.second.second then
 					collection.put_left (new_item)
+					print ("added item")
 				end
+				collection.forth
 			end
 		end
 
@@ -408,7 +419,7 @@ feature{NONE} -- Implementation - Database and DB access for Object-oriented Col
 		do
 			create Result.make
 			collection:= attach (collections[key])
-
+			print ("in get_ordered_collection")
 			across collection as cursor loop
 				-- The database should be ordered already
 				create coll_item.make (cursor.item.first, cursor.item.second.first)

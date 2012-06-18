@@ -176,7 +176,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 			transaction_alive: transaction.is_active
 			no_error: not transaction.has_error
 			repository_correct: transaction.repository = Current
-			not_readonly: not transaction.is_readonly
+--			not_readonly: not transaction.is_readonly
 		deferred
 		ensure -- This will only hold of course if the commit has not failed...
 			transaction_dead: not transaction.is_active
@@ -193,7 +193,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 		require
 			transaction_alive: transaction.is_active
 			repository_correct: transaction.repository = Current
-			not_readonly: not transaction.is_readonly
+--			not_readonly: not transaction.is_readonly
 		deferred
 		ensure
 			transaction_dead: not transaction.is_active

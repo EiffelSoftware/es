@@ -143,7 +143,7 @@ feature -- Low-level operations
 
 feature -- Object assembly
 
-	build_collection (type_id: INTEGER; objects: LIST[detachable ANY]; additional_information: HASH_TABLE[STRING, STRING]): COLLECTION_TYPE
+	build_collection (type_id: PS_TYPE_METADATA; objects: LIST[detachable ANY]; additional_information: PS_RETRIEVED_OBJECT_COLLECTION): COLLECTION_TYPE
 		-- Dynamic type id of the collection
 		deferred
 		end

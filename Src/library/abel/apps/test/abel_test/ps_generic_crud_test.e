@@ -111,6 +111,8 @@ feature {NONE}
 
 			-- See if one result is equal
 			one_equal:= across ref_list as cursor some equality_test.item ([cursor.item, object]) end
+
+		across ref_list as cursor from print (object) loop print (cursor.item) end
 			assert ("The results are not the same", one_equal)
 		end
 

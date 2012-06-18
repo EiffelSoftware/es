@@ -7,8 +7,8 @@ note
 class
 	PS_RDB_REPOSITORY
 
-inherit
-	PS_REPOSITORY
+--inherit
+--	PS_REPOSITORY
 
 inherit {NONE}
 	REFACTORING_HELPER

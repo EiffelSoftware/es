@@ -54,7 +54,8 @@ feature {PS_BACKEND_STRATEGY} -- Element change
 			description_not_empty: not description.is_empty
 			value_not_empty: not value.is_empty
 		do
-			additional_information_hash.extend (description, value)
+			information_descriptions.extend (description)
+			additional_information_hash.extend (value, description)
 		ensure
 			information_set: get_information (description).is_equal (value)
 		end

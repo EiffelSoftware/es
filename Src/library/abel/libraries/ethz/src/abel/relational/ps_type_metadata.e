@@ -43,6 +43,13 @@ feature
 			Result:= reflection.generic_count_of_type (type.type_id)
 		end
 
+	generic_type (index:INTEGER) :PS_TYPE_METADATA
+		require
+			index <= number_of_generics and index > 0
+		do
+			Result:= manager.create_metadata_from_type (reflection.type_of_type (reflection.detachable_type (reflection.generic_dynamic_type_of_type (type.type_id, index))))
+		end
+
 	is_subtype_of (other :PS_TYPE_METADATA):BOOLEAN
 		do
 			Result:= conforms (type, other.type)

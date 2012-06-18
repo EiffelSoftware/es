@@ -280,10 +280,12 @@ feature {NONE} -- Implementation
 
 				across obj.attributes as attr_cursor loop
 --					print (attr_cursor.item)
-					if not try_basic_attribute (Result, obj.attribute_value (attr_cursor.item).first, type.index_of (attr_cursor.item)) then
+					if not try_basic_attribute (Result, obj.attribute_value (attr_cursor.item).first, type.index_of (attr_cursor.item))
+						and then not try_collection (Result, type, attr_cursor.item, obj.attribute_value (attr_cursor.item), transaction, bookkeeping ) then
 
+
+						-- It is a referenced object - Build it.
 						field_type:= type.attribute_type (attr_cursor.item)
-
 						if not obj.attribute_value (attr_cursor.item).first.is_empty then
 							create keys.make
 							keys.extend (obj.attribute_value (attr_cursor.item).first.to_integer)
@@ -301,6 +303,55 @@ feature {NONE} -- Implementation
 		end
 
 
+	try_collection (obj:ANY;type:PS_TYPE_METADATA; attr_name:STRING; value: PS_PAIR[STRING, STRING]; transaction:PS_TRANSACTION; bookkeeping: HASH_TABLE[ANY, INTEGER]):BOOLEAN
+		local
+			reflection:INTERNAL
+			field_type:PS_TYPE_METADATA
+			collection_handler: detachable PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]]
+			collection_result: PS_RETRIEVED_OBJECT_COLLECTION
+			collection_as_list: LINKED_LIST[detachable ANY]
+			collection_item: detachable ANY
+			keys: LINKED_LIST[INTEGER]
+			retrieved_item: LINKED_LIST[PS_RETRIEVED_OBJECT]
+		do
+			create reflection
+			field_type:= type.attribute_type (attr_name)
+
+			across collection_handlers as coll_cursor loop
+				if coll_cursor.item.can_handle_type (field_type.type) then
+					collection_handler:= coll_cursor.item
+				end
+			end
+
+			if attached collection_handler then -- collection
+				fixme ("relational collections")
+
+				collection_result:= backend.retrieve_objectoriented_collection (field_type, value.first.to_integer, transaction)
+
+				create collection_as_list.make
+				across collection_result.collection_items as foreignkey_cursor loop
+					if foreignkey_cursor.item.first.to_integer = 0 then
+						collection_as_list.extend (Void)
+					else
+						-- retrieve single object
+						create keys.make
+						keys.extend (foreignkey_cursor.item.first.to_integer)
+						retrieved_item:= backend.retrieve_from_keys (field_type.generic_type (1), keys, transaction)
+
+						if not retrieved_item.is_empty then
+							collection_as_list.extend (build_new(field_type.generic_type (1), retrieved_item.first, transaction, bookkeeping))
+						end
+					end
+				end
+--				print (attr_name + type.index_of (attr_name).out + reflection.class_name_of_type (field_type.type.type_id) + collection_handler.build_collection (field_type, collection_as_list, collection_result).out)
+--				across type.attributes as attr loop print (attr.item.out + type.index_of (attr.item).out + reflection.field_name_of_type (type.index_of (attr.item), type.type.type_id) + "%N")  end
+				reflection.set_reference_field (type.index_of (attr_name), obj, collection_handler.build_collection (field_type, collection_as_list, collection_result))
+				Result:= True
+			else
+				Result:= False
+			end
+
+		end
 
 	try_basic_attribute (obj:ANY; value:STRING; index:INTEGER):BOOLEAN
 		-- See if field at `index' is of basic type, and set it if true

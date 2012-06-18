@@ -7,8 +7,8 @@ note
 class
 	PS_IN_MEMORY_REPOSITORY
 
-inherit
-	PS_REPOSITORY
+--inherit
+--	PS_REPOSITORY
 
 create
 	make

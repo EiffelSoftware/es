@@ -291,7 +291,7 @@ feature {NONE} -- Implementation
 		rescue
 			if not retried then
 				retried:= True
-				retry -- The retry will "catch" transaction conflicts, but raise every other exception
+--				retry -- The retry will "catch" transaction conflicts, but raise every other exception
 			end
 		end
 
