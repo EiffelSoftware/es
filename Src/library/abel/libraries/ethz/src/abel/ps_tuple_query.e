@@ -60,7 +60,8 @@ feature -- Projections
 			field_type, string_type : INTEGER
 		do
 			create reflection
-			instance:=reflection.new_instance_of (reflection.dynamic_type_from_string (class_name))
+			instance:=reflection.new_instance_of (reflection.generic_dynamic_type (Current, 1))
+				--reflection.dynamic_type_from_string (class_name))
 			num_fields:= reflection.field_count (instance)
 			create Result.make_filled (create {STRING}.make_empty, 1, num_fields)
 

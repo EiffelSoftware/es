@@ -9,14 +9,13 @@ class
 
 inherit
 	PS_REPOSITORY
-inherit {NONE}
-	REFACTORING_HELPER
+
 
 create make
 
 feature {PS_EIFFELSTORE_EXPORT} -- Object query
 
-	execute_query (query: PS_QUERY [ANY]; transaction: PS_TRANSACTION)
+	execute_query (query: PS_OBJECT_QUERY [ANY]; transaction: PS_TRANSACTION)
 			-- Execute `query'.
 		do
 			id_manager.register_transaction (transaction)
@@ -27,7 +26,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 			default_transactional_rescue (transaction)
 		end
 
-	next_entry (query: PS_QUERY [ANY])
+	next_entry (query: PS_OBJECT_QUERY [ANY])
 			-- retrieves the next object. stores item directly into result_set
 			-- in case of an error it is written into the transaction connected to the query
 		do
@@ -121,6 +120,7 @@ feature{NONE} -- Initialization
 		-- Initialize `Current'
 		do
 			create transaction_isolation_level
+			set_transaction_isolation_level (transaction_isolation_level.repeatable_read)
 			create default_object_graph.make_default
 			create id_manager.make
 			create planner.make

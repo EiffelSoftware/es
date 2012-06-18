@@ -1,52 +1,70 @@
 note
-	description: "Class to perform all kinds of CRUD operations, either in an implicit or explicit transaction."
+	description: "[
+		Performs any kind of CRUD operations.
+		Errors are reported in the `Current.last_error' field and an excepion is raised if an error happens, 
+		so you don't have to manually check on errors every time you call a feature in `Current'
+		
+		If you use explicit transaction management (the *_within_transaction features),
+		a transaction conflict exception will be caught and the transaction will be aborted automatically, without raising another exception.
+		You can then continue to use the transaction, but operations on an aborted transaction have no effect on the repository,
+		and a future commit call on the transaction is doomed to fail.
+
+		]"
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	PS_CRUD_EXECUTOR --[G -> ANY]
-	-- Executes any CRUD operation (in a very crude and violent way:)
+	PS_CRUD_EXECUTOR
 
 inherit
 	PS_EIFFELSTORE_EXPORT
-
-inherit {NONE}
- 	REFACTORING_HELPER
+--inherit {NONE}
+-- 	REFACTORING_HELPER
 
 create
-	make_with_repository
+	make
 
 feature --Access
 
 	repository: PS_REPOSITORY
-			-- The data repository on which 'Current' operates
+			-- The data repository on which `Current' operates
 
---	object_graph: PS_OBJECT_GRAPH_DEPTH -- Deleted because it is irrelevant now that the executor isn't generic any more
-			-- The object graph depth strategies for the different storage operations. Default is to take whatever is defined in repository.
+feature -- Status
+
+	is_persistent (an_object: ANY; a_transaction:PS_TRANSACTION): BOOLEAN
+			-- Is there a database entry for `an_object'?
+		do
+			Result := repository.is_identified (an_object, a_transaction)
+		end
 
 feature -- Data retrieval
 
-	execute_query (a_query: PS_QUERY [ANY])
-			-- Run `a_query' against the repository.
-		require
-			query_not_executed: not a_query.is_executed
-		local
-			transaction: PS_TRANSACTION
+	execute_query (query: PS_OBJECT_QUERY [ANY])
+			-- Execute `query' and store the result in `query.result_cursor'.
 		do
-			create transaction.make_readonly (repository)
-			execute_query_within_transaction (a_query, transaction)
-				fixme ("This doesn't work with lazy loading - maybe run such queries as readonly?")
-				--transaction.commit
+			execute_within_implicit_transaction (agent execute_query_within_transaction (query, ?), True)
 		ensure
-			query_executed: a_query.is_executed
+			query_executed: query.is_executed
+			retrieved_item_persistent: not query.result_cursor.after implies is_persistent (query.result_cursor.item, new_transaction)
 		end
 
+	execute_tuple_query (tuple_query: PS_TUPLE_QUERY[ANY])
+			-- Execute `tuple_query' and store the result in `query.result_cursor'.
+		do
+			execute_within_implicit_transaction (agent execute_tuple_query_within_transaction (tuple_query, ?), True)
+		ensure
+			query_executed: tuple_query.is_executed
+		end
 
-
---	load_to_depth (object: ANY; depth: INTEGER)
-			-- Load  `object' (assumed to be partially loaded) further to object graph depth `depth'.
+--	reload (object: ANY)
+			-- Reload  `object'.
+--		require
+--			already_loaded: is_persistent (object, new_transaction)
 --		do
+--			fixme ("TODO: see reload_within_transaction")
+--		ensure
+--			still_persistent: is_persistent (object, new_transaction)
 --		end
 
 feature -- Data manipulation
@@ -54,196 +72,141 @@ feature -- Data manipulation
 	insert (an_object: ANY)
 			-- Insert `an_object' into the repository.
 		require
-			object_not_previously_loaded: not is_already_loaded (an_object, new_transaction)
-		local
-			transaction: PS_TRANSACTION
+			object_not_persistent_yet: not is_persistent (an_object, new_transaction)
 		do
-			create transaction.make (repository)
-			insert_within_transaction (an_object, transaction)
-			transaction.commit
+			execute_within_implicit_transaction (agent insert_within_transaction (an_object, ?), False)
+		ensure
+			object_persistent: is_persistent (an_object, new_transaction)
 		end
 
 	update (an_object: ANY)
-			-- Write back changes of `an_object' into the repository.
+			-- Write changes of `an_object' to the repository.
 		require
-			object_previously_loaded: is_already_loaded (an_object, new_transaction)
-		local
-			transaction: PS_TRANSACTION
+			object_persistent: is_persistent (an_object, new_transaction)
 		do
-			create transaction.make (repository)
-			update_within_transaction (an_object, transaction)
-			transaction.commit
+			execute_within_implicit_transaction (agent update_within_transaction (an_object, ?), False)
+		ensure
+			object_persistent: is_persistent (an_object, new_transaction)
 		end
 
 	delete (an_object: ANY)
 			-- Delete `an_object' from the repository
 		require
-			object_previously_loaded: is_already_loaded (an_object, new_transaction)
-		local
-			transaction: PS_TRANSACTION
+			object_persistent: is_persistent (an_object, new_transaction)
 		do
-			create transaction.make (repository)
-			delete_within_transaction (an_object, transaction)
-			transaction.commit
+			execute_within_implicit_transaction (agent delete_within_transaction (an_object, ?), False)
+		ensure
+			not_persistent_anymore: not is_persistent (an_object, new_transaction)
 		end
 
-	execute_deletion_query (a_query: PS_QUERY [ANY])
-			-- Delete all objects that match the criteria defined in `a_query'
-		require
-			query_not_executed: not a_query.is_executed
-		local
-			transaction: PS_TRANSACTION
+	execute_deletion_query (deletion_query: PS_OBJECT_QUERY [ANY])
+			-- Delete all objects that match the criteria defined in `deletion_query'
 		do
-			create transaction.make (repository)
-			execute_deletion_query_within_transaction (a_query, transaction)
-			transaction.commit
+			execute_within_implicit_transaction (agent execute_deletion_query_within_transaction (deletion_query, ?), False)
 		end
 
-feature -- Status
 
-	is_already_loaded (an_object: ANY; a_transaction:PS_TRANSACTION): BOOLEAN
-			-- Has `an_object' been previously loaded from (or inserted to) the database?
-		do
-			fixme ("TODO")
-			Result := repository.is_identified (an_object, a_transaction)
-		end
 
 feature -- Transaction-based data retrieval and querying
 
-	execute_query_within_transaction (a_query: PS_QUERY [ANY]; a_transaction: PS_TRANSACTION)
-			-- Execute `a_query' within the transaction `a_transaction'.
+	execute_query_within_transaction (a_query: PS_OBJECT_QUERY [ANY]; transaction: PS_TRANSACTION)
+		-- Execute `a_query' within the transaction `transaction'.
+		-- In case of a conflict between transactions, it will abort `transaction' and return normally with an empty result.
+		-- In every other case of errors it will abort `transaction' and raise an exception.
 		require
-			query_not_executed: not a_query.is_executed
-			same_repository: a_transaction.repository = Current.repository
-		local
-			retried: BOOLEAN
+			same_repository: transaction.repository = Current.repository
 		do
-			if a_transaction.has_error then
-				if attached {PS_TRANSACTION_ERROR} a_transaction.error then
-					-- Ignore query in case of a transaction error
-				else
-					-- Raise the error again
-					a_transaction.error.raise
-				end
-			else -- No error - Proceed as usual
-				repository.execute_query (a_query, a_transaction)
+			if a_query.is_executed then
+				a_query.reset
 			end
-
+			handle_error_on_action ( agent repository.execute_query (a_query, transaction) , transaction)
 		ensure
 			query_executed: a_query.is_executed
-			transaction_set: a_query.transaction = a_transaction
-			object_known_to_system_now: not a_query.result_cursor.after implies is_already_loaded (a_query.result_cursor.item, a_transaction)
-		rescue
-			if not retried then
-				retried:= True
-				retry -- This ensures that transaction errors are "catched", but every other error is raised
-			end
+			transaction_set: a_query.transaction = transaction
+			result_is_persistent: not a_query.result_cursor.after implies is_persistent (a_query.result_cursor.item, transaction)
+			aborted_implies_after: transaction.has_error implies a_query.result_cursor.after
+			only_transaction_conflicts_return_normally: transaction.has_error implies attached{PS_TRANSACTION_ERROR} transaction.error
 		end
 
-	insert_within_transaction (an_object: ANY; a_transaction: PS_TRANSACTION)
-			-- Insert `an_object' within the transaction `a_transaction' into the repository.
+--	reload_within_transaction (object:ANY; transaction: PS_TRANSACTION)
+		-- Reload `object' within transaction `transaction'
+		-- In case of a conflict between transactions, it will abort `transaction' and return normally.
+		-- In every other case of errors it will abort `transaction' and raise an exception.
+--		require
+--			already_loaded: is_persistent (object, transaction)
+--		do
+--			fixme ("TODO: The function is dangerous: In case of an abort because of transaction conflicts, the state of `object' is undefined, and the callee only realizes that when transaction commits.")
+--		ensure
+--			still_persistent: is_persistent (object, transaction)
+--		end			
+
+
+	insert_within_transaction (an_object: ANY; transaction: PS_TRANSACTION)
+		-- Insert `an_object' within the transaction `transaction' into the repository.
+		-- In case of a conflict between transactions, it will abort `transaction' and return normally.
+		-- In every other case of errors it will abort `transaction' and raise an exception.
 		require
-			same_repository: a_transaction.repository = Current.repository
-			object_new_to_system: not is_already_loaded (an_object, a_transaction)
-		local
-			retried: BOOLEAN
+			same_repository: transaction.repository = Current.repository
+			object_not_yet_inserted: not is_persistent (an_object, transaction)
 		do
-			if a_transaction.has_error then
-				if attached {PS_TRANSACTION_ERROR} a_transaction.error then
-					-- Ignore query in case of a transaction error
-				else
-					-- Raise the error again
-					a_transaction.error.raise
-				end
-			else -- No error - Proceed as usual
-				repository.insert (an_object, a_transaction)
-			end
+			handle_error_on_action (agent repository.insert (an_object, transaction), transaction)
 		ensure
-			-- object_known: is_already_loaded (an_object) -- Disabled because is_already_loaded not implemented yet
-		rescue
-			if not retried then
-				retried:= True
-				retry -- This ensures that transaction errors are "catched", but every other error is raised
-			end
+			success_implies_persistent: not transaction.has_error implies is_persistent (an_object, transaction)
+			failure_implies_not_persistent: transaction.has_error implies not is_persistent (an_object, transaction)
+			only_transaction_conflicts_return_normally: transaction.has_error implies attached{PS_TRANSACTION_ERROR} transaction.error
 		end
 
-	update_within_transaction (an_object: ANY; a_transaction: PS_TRANSACTION)
-			-- Write back changes of `an_object' into the repository, within the transaction `a_transaction'.
+	update_within_transaction (an_object: ANY; transaction: PS_TRANSACTION)
+		-- Write back changes of `an_object' into the repository, within the transaction `transaction'.
+		-- In case of a conflict between transactions, it will abort `transaction' and return normally.
+		-- In every other case of errors it will abort `transaction' and raise an exception.
 		require
-			same_repository: a_transaction.repository = Current.repository
-			object_known: is_already_loaded (an_object, a_transaction)
-		local
-			retried: BOOLEAN
+			same_repository: transaction.repository = Current.repository
+			object_persistent: is_persistent (an_object, transaction)
 		do
-			if a_transaction.has_error then
-				if attached {PS_TRANSACTION_ERROR} a_transaction.error then
-					-- Ignore query in case of a transaction error
-				else
-					-- Raise the error again
-					a_transaction.error.raise
-				end
-			else -- No error - Proceed as usual
-				repository.update (an_object, a_transaction)
-			end
-		rescue
-			if not retried then
-				retried:= True
-				retry -- This ensures that transaction errors are "catched", but every other error is raised
-			end
+			handle_error_on_action (agent repository.update (an_object, transaction), transaction)
+		ensure
+			only_transaction_conflicts_return_normally: transaction.has_error implies attached{PS_TRANSACTION_ERROR} transaction.error
 		end
 
-	delete_within_transaction (an_object: ANY; a_transaction: PS_TRANSACTION)
-				-- Delete `an_object' within the transaction `a_transaction' from the repository.
+	delete_within_transaction (an_object: ANY; transaction: PS_TRANSACTION)
+		-- Delete `an_object' within the transaction `transaction' from the repository.
+		-- In case of a conflict between transactions, it will abort `transaction' and return normally.
+		-- In every other case of errors it will abort `transaction' and raise an exception.
 		require
-			same_repository: a_transaction.repository = Current.repository
-			object_known: is_already_loaded (an_object, a_transaction)
-		local
-			retried: BOOLEAN
+			same_repository: transaction.repository = Current.repository
+			object_persistent: is_persistent (an_object, transaction)
 		do
-			if a_transaction.has_error then
-				if attached {PS_TRANSACTION_ERROR} a_transaction.error then
-					-- Ignore query in case of a transaction error
-				else
-					-- Raise the error again
-					a_transaction.error.raise
-				end
-			else -- No error - Proceed as usual
-				repository.delete (an_object, a_transaction)
-			end
-		rescue
-			if not retried then
-				retried:= True
-				retry -- This ensures that transaction errors are "catched", but every other error is raised
-			end
+			handle_error_on_action (agent repository.delete (an_object, transaction), transaction)
+		ensure
+			success_implies_not_persistent: not transaction.has_error implies not is_persistent (an_object, transaction)
+			failure_implies_still_persistent: transaction.has_error implies is_persistent (an_object, transaction)
+			only_transaction_conflicts_return_normally: transaction.has_error implies attached{PS_TRANSACTION_ERROR} transaction.error
 		end
 
-	execute_deletion_query_within_transaction (a_query: PS_QUERY [ANY]; a_transaction: PS_TRANSACTION)
-				-- Delete, within the transaction `a_transaction', all objects that match the criteria defined in `a_query'
+	execute_deletion_query_within_transaction (a_query: PS_OBJECT_QUERY [ANY]; transaction: PS_TRANSACTION)
+		-- Delete, within the transaction `transaction', all objects that match the criteria defined in `a_query'
+		-- In case of a conflict between transactions, it will abort `transaction' and return normally.
+		-- In every other case of errors it will abort `transaction' and raise an exception.
 		require
-			query_not_executed: not a_query.is_executed
-			same_repository: a_transaction.repository = Current.repository
-		local
-			retried: BOOLEAN
+			same_repository: transaction.repository = Current.repository
 		do
-			if a_transaction.has_error then
-				if attached {PS_TRANSACTION_ERROR} a_transaction.error then
-					-- Ignore query in case of a transaction error
-				else
-					-- Raise the error again
-					a_transaction.error.raise
-				end
-			else -- No error - Proceed as usual
-				repository.delete_query (a_query, a_transaction)
+			if a_query.is_executed then
+				a_query.reset
 			end
-		rescue
-			if not retried then
-				retried:= True
-				retry -- This ensures that transaction errors are "catched", but every other error is raised
-			end
+			handle_error_on_action (agent repository.delete_query (a_query, transaction), transaction)
+		ensure
+			query_executed: a_query.is_executed
+			transaction_set: a_query.transaction = transaction
+			result_is_empty: a_query.result_cursor.after
+			only_transaction_conflicts_return_normally: transaction.has_error implies attached{PS_TRANSACTION_ERROR} transaction.error
 		end
+
+
+feature -- Transaction factory function
 
 	new_transaction: PS_TRANSACTION
-			-- Create a new transaction to be used for this CRUD_EXECUTOR
+			-- Create a new transaction for `Current.repository'
 		do
 			create Result.make (repository)
 		end
@@ -251,23 +214,110 @@ feature -- Transaction-based data retrieval and querying
 feature --Error handling
 
 	has_error: BOOLEAN
-		-- Did the last operation produce an error?
+		-- Did the last operation have an error?
 		do
 			Result := not attached {PS_NO_ERROR} last_error
 		end
 
 
 	last_error: PS_ERROR
-		-- Description of last error message
+		-- The last error
+
+
+feature {NONE} -- Implementation
+
+	default_retries: INTEGER = 2
+		-- The default retries for implicit transaction handling, if there is a transaction conflict.
+
+	execute_within_implicit_transaction (action: PROCEDURE[ANY, TUPLE[PS_TRANSACTION]]; readonly: BOOLEAN)
+		-- This function will execute `action' with implicit transaction handling
+		-- It will retry `action' `Current.default_retries' times if there's a transaction conflict, and then raise a `PS_UNRESOLVABLE_TRANSACTION_CONFLICT' error
+		local
+			retries:INTEGER
+			transaction:PS_TRANSACTION
+			success:BOOLEAN
+		do
+			from
+				retries:= 1
+				success:= False
+			until
+				retries > default_retries or success
+			loop
+				if readonly then
+					create transaction.make_readonly (repository)
+					action.call ([transaction])
+				else
+					transaction:= new_transaction
+					action.call ([transaction])
+					transaction.commit
+				end
+
+				if not transaction.has_error then
+					success:= True
+				end
+
+				retries:= retries + 1
+			end
+
+			if not success then
+				create {PS_UNRESOLVABLE_TRANSACTION_CONFLICT} last_error
+				last_error.raise
+			end
+		end
+
+
+	handle_error_on_action (action: PROCEDURE[ANY, TUPLE]; transaction:PS_TRANSACTION)
+		-- This function will try the repository operation `action' and catch any error.
+		-- In case of a conflict between transactions, it will abort `transaction' and return normally.
+		-- In every other case of errors it will abort `transaction' and raise an exception.
+		local
+			retried:BOOLEAN
+		do
+			-- Please note that this function accepts transactions that already have an error, especially (but not exclusively) in case of a retry
+
+			last_error:= transaction.error
+			if transaction.has_error then
+				if attached {PS_TRANSACTION_ERROR} transaction.error then
+					-- Ignore query in case of a transaction error
+				else
+					-- Raise the error again
+					transaction.error.raise
+				end
+			else -- No error - Proceed as usual
+				action.call ([]) -- This may cause an exception which will be handled by the rescue clause
+			end
+		ensure
+			only_transaction_conflicts_return_normally: transaction.has_error implies attached {PS_TRANSACTION_ERROR} transaction.error
+		rescue
+			if not retried then
+				retried:= True
+				retry -- The retry will "catch" transaction conflicts, but raise every other exception
+			end
+		end
+
+	execute_tuple_query_within_transaction (query: PS_TUPLE_QUERY[ANY]; transaction: PS_TRANSACTION)
+		-- Execute tuple query `query'. Exported to `NONE' because you can only have tuple queries with readonly transactions and implicit transaction management
+		require
+			readonly_transaction: transaction.is_readonly
+		do
+			if query.is_executed then
+				query.reset
+			end
+			handle_error_on_action (agent repository.execute_tuple_query (query, transaction), transaction)
+		ensure
+			query_executed: query.is_executed
+			transaction_set: query.transaction = transaction
+			aborted_implies_after: transaction.has_error implies query.result_cursor.after
+			only_transaction_conflicts_return_normally: transaction.has_error implies attached{PS_TRANSACTION_ERROR} transaction.error
+		end
 
 
 feature {NONE} -- Initialization
 
-	make_with_repository (a_repository: PS_REPOSITORY)
+	make (a_repository: PS_REPOSITORY)
 			-- Initialization for `Current'.
 		do
 			repository := a_repository
---			create object_graph.make_rely_on_repository
 			create {PS_NO_ERROR} last_error
 		end
 

@@ -38,7 +38,7 @@ feature {PS_TEST_PROVIDER}
 		do
 			default_create
 			repository:= a_repository
-			create executor.make_with_repository (repository)
+			create executor.make (repository)
 			create test_data.make
 		end
 

@@ -106,15 +106,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Internal
 			transaction_set: transaction = a_transaction
 		end
 
-	class_name: STRING
-			-- The name of the class `G'.
-		local
-			reflection:INTERNAL
-		once
-			create reflection
-			Result:= reflection.class_name_of_type (reflection.generic_dynamic_type (Current, 1))
-		end
-
 	backend_identifier: INTEGER
 			-- Identifier for the backend to recognize an already executed query
 
@@ -147,6 +138,7 @@ feature {NONE} -- Initialization
 
 
 	initialize
+		-- Initialize the shared parts between object and tuple queries
 		do
 			create {PS_EMPTY_CRITERION} criteria
 			reset

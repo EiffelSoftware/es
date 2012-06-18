@@ -34,8 +34,12 @@ feature -- Cursor movement
 	forth
 			-- Move cursor to next position.
 		do
-			check attached query as q then
+			if attached {PS_OBJECT_QUERY[ANY]} query as q then
 				q.transaction.repository.next_entry (q)
+			else
+				check attached {PS_TUPLE_QUERY[ANY]} query as tq then
+					tq.transaction.repository.next_tuple_entry (tq)
+				end
 			end
 		end
 

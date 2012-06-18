@@ -27,4 +27,8 @@ feature
 	visit_general_error (general_error: PS_GENERAL_ERROR)
 		deferred
 		end
+
+	visit_unresolvable_transaction_conflict (unres_error: PS_UNRESOLVABLE_TRANSACTION_CONFLICT)
+		deferred
+		end
 end
