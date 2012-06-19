@@ -130,7 +130,7 @@ feature {PS_REPOSITORY_TESTS} -- Collections
 			test_direct_collection_new_object
 			test_collection_basic_type_store
 			--test_data_structures_store
-			--test_update_on_reference			
+			--test_update_on_reference
 		end
 
 	test_referenced_collection_store
