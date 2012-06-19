@@ -19,8 +19,8 @@ class
 
 inherit
 	PS_EIFFELSTORE_EXPORT
---inherit {NONE}
--- 	REFACTORING_HELPER
+inherit {NONE}
+ 	REFACTORING_HELPER
 
 create
 	make
@@ -291,7 +291,8 @@ feature {NONE} -- Implementation
 		rescue
 			if not retried then
 				retried:= True
---				retry -- The retry will "catch" transaction conflicts, but raise every other exception
+				fixme ("Uncomment the following line - At the moment it is disabled because it somehow overwrites the exception stack, which is bad for debugging...")
+				--retry -- The retry will "catch" transaction conflicts, but raise every other exception
 			end
 		end
 

@@ -202,6 +202,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 
 feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 
+	retrieve_all_collections (collection_type: PS_TYPE_METADATA; transaction:PS_TRANSACTION): ITERATION_CURSOR[PS_RETRIEVED_OBJECT_COLLECTION]
+			-- Retrieves all collections of type `collection_type'.
+	 	do
+	 		check not_implemented: False end
+	 		Result:= (create {LINKED_LIST[PS_RETRIEVED_OBJECT_COLLECTION]}.make).new_cursor
+	 	end
 
 	retrieve_objectoriented_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER; transaction: PS_TRANSACTION): PS_RETRIEVED_OBJECT_COLLECTION
 			-- Retrieves the object-oriented collection of type `object_type' and with primary key `object_primary_key'.

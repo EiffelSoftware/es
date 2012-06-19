@@ -39,6 +39,20 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 		end
 
 
+	execute_tuple_query (tuple_query: PS_TUPLE_QUERY[ANY]; transaction: PS_TRANSACTION)
+		-- Execute the tuple query `tuple_query' within the readonly transaction `transaction'
+		do
+			fixme ("TODO")
+		end
+
+
+	next_tuple_entry (tuple_query: PS_TUPLE_QUERY[ANY])
+		-- Retrieves the next tuple and stores it in `query.result_cursor'
+		do
+			fixme ("TODO")
+		end
+
+
 feature {PS_EIFFELSTORE_EXPORT} -- Modification
 
 	insert (object: ANY; transaction: PS_TRANSACTION)

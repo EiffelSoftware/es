@@ -20,7 +20,7 @@ feature
 			reflection: INTERNAL
 		do
 			create reflection
-			Result:= reflection.is_special_any_type (a_type.type_id)
+			Result:= reflection.is_special_type (a_type.type_id)
 			fixme ("TODO: check this attached/detachable type problem here..")
 		end
 
@@ -120,14 +120,18 @@ feature -- Object assembly
 			count, i:INTEGER
 		do
 			create reflection
-			fixme ("TODO: handle case where SPECIAL doesn't have a reference type")
 
-			fixme ("TODO: the following line:-)")
+--			fixme ("TODO: the following line:-)")
 --			count:=10
 			count:= additional_information.get_information("count").to_integer
 			--print (additional_information.out + count.out)
 
-			Result:= reflection.new_special_any_instance (type_id.type.type_id, count)
+			if reflection.is_special_any_type (type_id.type.type_id) then
+				Result:= reflection.new_special_any_instance (type_id.type.type_id, count)
+			else
+			fixme ("TODO: all other basic types")
+				create {SPECIAL[INTEGER]} Result.make_empty (count)
+			end
 			--print (Result.count)
 
 			across objects as obj_cursor from i:=0 loop
@@ -135,8 +139,13 @@ feature -- Object assembly
 				i:=i+1
 			end
 
-			print (Result)
+--			print (Result)
+		end
 
+	build_relational_collection (type_id: PS_TYPE_METADATA; objects: LIST[detachable ANY]):SPECIAL[detachable ANY]
+		do
+			fixme ("TODO")
+			create Result.make_empty (10)
 		end
 
 feature {NONE}-- Implementation

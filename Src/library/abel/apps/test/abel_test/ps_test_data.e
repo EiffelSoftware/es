@@ -78,7 +78,7 @@ feature {NONE} -- Initialization
 			create ref2.make (2)
 			reference_to_single_other.add_ref (ref2)
 
-			create special_of_persons.make_empty (4)
+			create special_of_persons.make_empty (5)
 			across people as p loop special_of_persons.extend (p.item) end
 			create array_of_persons.make_from_special (special_of_persons.deep_twin)
 

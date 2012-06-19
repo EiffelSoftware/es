@@ -106,6 +106,15 @@ feature {PS_EIFFELSTORE_EXPORT} -- Internal
 			transaction_set: transaction = a_transaction
 		end
 
+	generic_type: TYPE[detachable ANY]
+		-- Get the (detachable) generic type of `Current'
+		local
+			reflection:INTERNAL
+		once ("OBJECT")
+			create reflection
+			Result:= reflection.type_of_type (reflection.detachable_type (reflection.generic_dynamic_type (Current, 1)))
+		end
+
 	backend_identifier: INTEGER
 			-- Identifier for the backend to recognize an already executed query
 

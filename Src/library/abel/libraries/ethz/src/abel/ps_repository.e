@@ -76,8 +76,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 			not_executed: not tuple_query.is_executed
 			transaction_repository_correct: transaction.repository = Current
 			active_transaction: transaction.is_active
-		do
-			fixme ("TODO")
+		deferred
 		ensure
 			executed: tuple_query.is_executed
 			transaction_set: tuple_query.transaction = transaction
@@ -94,8 +93,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 			active_transaction: tuple_query.transaction.is_active
 			query_executed_by_me: tuple_query.transaction.repository = Current
 			readonly_transaction: tuple_query.transaction.is_readonly
-		do
-			fixme ("TODO")
+		deferred
 		ensure
 			transaction_still_alive: tuple_query.transaction.is_active
 			no_error: not tuple_query.transaction.has_error

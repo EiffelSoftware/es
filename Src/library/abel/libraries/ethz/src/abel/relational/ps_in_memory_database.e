@@ -128,6 +128,19 @@ feature {PS_EIFFELSTORE_EXPORT}-- Object write operations
 feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 
 
+	retrieve_all_collections (collection_type: PS_TYPE_METADATA; transaction:PS_TRANSACTION): ITERATION_CURSOR[PS_RETRIEVED_OBJECT_COLLECTION]
+			-- Retrieves all collections of type `collection_type'.
+		local
+			res_list: LINKED_LIST[PS_RETRIEVED_OBJECT_COLLECTION]
+	 	do
+	 		create res_list.make
+	 		across collections.current_keys as key_cursor
+	 		loop
+	 			res_list.extend (retrieve_objectoriented_collection (collection_type, key_cursor.item, transaction))
+	 		end
+	 		Result:=res_list.new_cursor
+	 	end
+
 	retrieve_objectoriented_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER; transaction: PS_TRANSACTION): PS_RETRIEVED_OBJECT_COLLECTION
 			-- Retrieves the object-oriented collection of type `object_type' and with primary key `object_primary_key'.
 	 	local
@@ -137,7 +150,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 
 			across get_ordered_collection (collection_primary_key) as cursor loop
 				Result.add_item (cursor.item.first, cursor.item.second)
-				print ("added result item")
 			end
 
 			info:= attach (collection_info[collection_primary_key])
@@ -404,7 +416,7 @@ feature{NONE} -- Implementation - Database and DB access for Object-oriented Col
 			loop
 				if (collection.isfirst or else previous_order <= order) and order < collection.item.second.second then
 					collection.put_left (new_item)
-					print ("added item")
+--					print ("added item")
 				end
 				collection.forth
 			end
@@ -419,7 +431,7 @@ feature{NONE} -- Implementation - Database and DB access for Object-oriented Col
 		do
 			create Result.make
 			collection:= attach (collections[key])
-			print ("in get_ordered_collection")
+--			print ("in get_ordered_collection")
 			across collection as cursor loop
 				-- The database should be ordered already
 				create coll_item.make (cursor.item.first, cursor.item.second.first)

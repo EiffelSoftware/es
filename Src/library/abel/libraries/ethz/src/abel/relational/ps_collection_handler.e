@@ -148,4 +148,10 @@ feature -- Object assembly
 		deferred
 		end
 
+	build_relational_collection (type_id: PS_TYPE_METADATA; objects: LIST[detachable ANY]): COLLECTION_TYPE
+		-- Dynamic type id of the collection
+		deferred
+		end
+
+
 end

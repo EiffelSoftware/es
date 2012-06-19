@@ -64,6 +64,15 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 		end
 
 
+	retrieve_from_single_key (type: PS_TYPE_METADATA; primary_key: INTEGER; transaction: PS_TRANSACTION) : LINKED_LIST[PS_RETRIEVED_OBJECT]
+		-- Retrieve the object of type `type' and key `primary_key'. Wrapper of the `retrieve_from_keys' in case you only need one object
+		local
+			keys: LINKED_LIST[INTEGER]
+		do
+			create keys.make
+			keys.extend (primary_key)
+			Result:= Current.retrieve_from_keys (type, keys, transaction)
+		end
 
 
 	retrieve_from_keys (type: PS_TYPE_METADATA; primary_keys: LIST[INTEGER]; transaction:PS_TRANSACTION) : LINKED_LIST[PS_RETRIEVED_OBJECT]
@@ -120,6 +129,14 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 
 
 feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
+
+	retrieve_all_collections (collection_type: PS_TYPE_METADATA; transaction:PS_TRANSACTION): ITERATION_CURSOR[PS_RETRIEVED_OBJECT_COLLECTION]
+			-- Retrieves all collections of type `collection_type'.
+	 	require
+	 		objectoriented_collection_operation_supported: is_objectoriented_collection_store_supported
+	 		backend_can_handle_collection: can_handle_objectoriented_collection (collection_type)
+	 	deferred
+	 	end
 
 
 	retrieve_objectoriented_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER; transaction: PS_TRANSACTION): PS_RETRIEVED_OBJECT_COLLECTION
