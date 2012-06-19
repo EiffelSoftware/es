@@ -65,7 +65,7 @@ feature -- Process operations
 
 	process_create_creation_as (l_as: CREATE_CREATION_AS)
 		do
-			-- Nothing to be done
+			interesting_pre_states.force_last (l_as.breakpoint_slot)
 		end
 
 	process_nested_as (l_as: NESTED_AS)
