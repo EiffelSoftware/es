@@ -102,19 +102,19 @@ feature -- Object storage mode data
 			Result.add_value_explicit_order (a_dependency, order_of (a_dependency))
 		end
 
-	feature {PS_OBJECT_COLLECTION_PART}
+feature {PS_OBJECT_COLLECTION_PART}
 
-		add_value_explicit_order (val: PS_OBJECT_GRAPH_PART; order:INTEGER)
-			do
-				values.extend (val)
-				order_map.extend (create {PS_PAIR[PS_OBJECT_GRAPH_PART, INTEGER]}.make (val, order))
-			end
+	add_value_explicit_order (val: PS_OBJECT_GRAPH_PART; order:INTEGER)
+		do
+			values.extend (val)
+			order_map.extend (create {PS_PAIR[PS_OBJECT_GRAPH_PART, INTEGER]}.make (val, order))
+		end
 
 
-	feature {NONE}
+feature {NONE}
 
-		order_count: INTEGER
+	order_count: INTEGER
 
-		order_map: LINKED_LIST[PS_PAIR[PS_OBJECT_GRAPH_PART, INTEGER]]
+	order_map: LINKED_LIST[PS_PAIR[PS_OBJECT_GRAPH_PART, INTEGER]]
 
 end

@@ -115,7 +115,7 @@ feature {NONE} -- Implementation: Build functions for PS_RETRIEVED_* objects
 					-- Set all the attributes
 
 					-- See if it is a basic attribute
-					if not try_basic_attribute (Result, obj.attribute_value (attr_cursor.item).first, type.index_of (attr_cursor.item)) then
+					if not try_basic_attribute (Result, obj.attribute_value (attr_cursor.item).value, type.index_of (attr_cursor.item)) then
 
 						-- If not it is either a referenced object or a collection. In either case, use the `Current.build' function.
 						field_type:= type.attribute_type (attr_cursor.item)

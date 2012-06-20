@@ -221,6 +221,18 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 		deferred
 		end
 
+
+	transaction_isolation_level: PS_TRANSACTION_ISOLATION_LEVEL
+		-- The currently active transaction isolation level
+		deferred
+		end
+
+	set_transaction_isolation_level (a_level: PS_TRANSACTION_ISOLATION_LEVEL)
+		-- Set the transaction isolation level `a_level' for all future transactions
+		deferred
+		end
+
+
 feature {PS_EIFFELSTORE_EXPORT} -- Mapping
 
 	key_mapper: PS_KEY_POID_TABLE
@@ -267,8 +279,8 @@ feature{NONE} -- Correctness checks
 				if an_object.attributes.has (attr.item) then
 					retrieved_object:= retrieved_obj_list.first
 					current_item:= attach (an_object.attribute_values[attr.item])
-					Result:= Result and current_item.storable_tuple (key_mapper.quick_translate (current_item.object_identifier, transaction)).first.is_equal (retrieved_object.attribute_value (attr.item).first)
-					Result:= Result and current_item.storable_tuple (key_mapper.quick_translate (current_item.object_identifier, transaction)).second.is_equal (retrieved_object.attribute_value (attr.item).second)
+					Result:= Result and current_item.storable_tuple (key_mapper.quick_translate (current_item.object_identifier, transaction)).first.is_equal (retrieved_object.attribute_value (attr.item).value)
+					Result:= Result and current_item.storable_tuple (key_mapper.quick_translate (current_item.object_identifier, transaction)).second.is_equal (retrieved_object.attribute_value (attr.item).attribute_class_name)
 				end
 			end
 		end

@@ -51,4 +51,12 @@ feature {PS_REPOSITORY_TESTS} -- Access
 
 	transaction_tests: PS_TRANSACTION_TESTS
 
+feature {PS_REPOSITORY_TESTS} -- Utilities
+
+	stop
+		-- Manually stop execution (e.g. to inspect the database)
+		do
+			check manual_stop: False end
+		end
+
 end

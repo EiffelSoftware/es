@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PS_GENERIC_LAYOUT_SQL_BACKEND}."
-	author: ""
+	description: "Stores objects in a SQL database using a generic layout."
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -58,36 +58,35 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			result_list: LINKED_LIST[PS_RETRIEVED_OBJECT]
 			row_cursor: ITERATION_CURSOR[PS_SQL_ROW_ABSTRACTION]
 			sql_string: STRING
+			attribute_name, attribute_value, class_name_of_value: STRING
 		do
---			print ("retrieving " + type.class_of_type.name + "%N")
 			connection:= get_connection (transaction)
 
 			create result_list.make
 
---			sql_string:= Current.query_values_from_class (db_metadata_manager.key_of_class (type.class_of_type.name ))--, connection))
-			sql_string:= Current.query_values_from_class_new (convert_to_sql (db_metadata_manager.attribute_keys_of_class (db_metadata_manager.create_get_primary_key_of_class (type.class_of_type.name ))))
+			sql_string:= Current.query_values_from_class (convert_to_sql (db_metadata_manager.attribute_keys_of_class (db_metadata_manager.create_get_primary_key_of_class (type.class_of_type.name ))))
 			if not transaction.is_readonly then
-				sql_string.append (" FOR UPDATE")
---				print (sql_string + "%N")
---				print (type.class_of_type.name + "%N")
+				sql_string.append (For_update_appendix)
 			end
 			connection.execute_sql (sql_string)
 			from row_cursor:= connection.last_result
 			until row_cursor.after
 			loop
 				-- create new object
-				create current_obj.make (row_cursor.item.get_value ("objectid").to_integer, type.class_of_type)
---				print (current_obj.class_metadata.name + current_obj.primary_key.out + "%N")
+				create current_obj.make (row_cursor.item.get_value (Value_table_id_column).to_integer, type.class_of_type)
+
 				-- fill all attributes - The result is ordered by the object id, therefore the attributes of a single object are grouped together.
 				from
 				until
-					row_cursor.after or else row_cursor.item.get_value ("objectid").to_integer /= current_obj.primary_key
+					row_cursor.after or else row_cursor.item.get_value (Value_table_id_column).to_integer /= current_obj.primary_key
 				loop
 					--print (current_obj.class_metadata.name + ": " + db_metadata_manager.attribute_name_of_key (row_cursor.item.get_value ("attributeid").to_integer) + "%N")
-					current_obj.add_attribute (
-						db_metadata_manager.attribute_name_of_key (row_cursor.item.get_value ("attributeid").to_integer), -- attribute_name
-						row_cursor.item.get_value ("value"), -- value
-						db_metadata_manager.class_name_of_key (row_cursor.item.get_value ("runtimetype").to_integer)) -- class_name_of_value
+					attribute_name:=db_metadata_manager.attribute_name_of_key (row_cursor.item.get_value (Value_table_attributeid_column).to_integer)
+					attribute_value:= row_cursor.item.get_value (Value_table_value_column)
+					class_name_of_value:= db_metadata_manager.class_name_of_key (row_cursor.item.get_value (Value_table_runtimetype_column).to_integer)
+					if not attribute_name.is_equal (Existence_attribute) then
+						current_obj.add_attribute (attribute_name, attribute_value, class_name_of_value)
+					end
 					row_cursor.forth
 				end
 				-- fill in Void attributes
@@ -101,8 +100,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 				result_list.extend (current_obj)
 				-- do NOT go forth - we are already pointing to the next item, otherwise the inner loop would not have stopped.
 			end
---			connection.commit
---			database.release_connection (connection)
 			Result:= result_list.new_cursor
 		rescue
 			rollback (transaction)
@@ -140,17 +137,17 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		local
 			connection:PS_SQL_CONNECTION_ABSTRACTION
 			new_primary_key: INTEGER
-			none_class: INTEGER
-			stub_attribute:INTEGER
+			none_class_key: INTEGER
+			existence_attribute_key:INTEGER
 		do
-			-- Generate a new primary key in the database by inserting a stub attribute
---			connection:= database.acquire_connection
---			print ("insert " + an_object.object_id.metadata.class_of_type.name)
+			-- Retrieve some required information
 			connection:= get_connection (a_transaction)
-			none_class:= db_metadata_manager.create_get_primary_key_of_class ("NONE"  )--, connection)
-			stub_attribute := db_metadata_manager.create_get_primary_key_of_attribute ("stub", none_class)--, connection)
-			connection.execute_sql ("INSERT INTO ps_value (attributeid, runtimetype, value) VALUES (" + stub_attribute.out+ ", " + none_class.out + ", 'STUB')")
-			connection.execute_sql ("SELECT objectid FROM ps_value WHERE attributeid = " + stub_attribute.out + "  AND value = 'STUB'")
+			none_class_key:= db_metadata_manager.create_get_primary_key_of_class (None_class)
+			existence_attribute_key := db_metadata_manager.create_get_primary_key_of_attribute (Existence_attribute, db_metadata_manager.create_get_primary_key_of_class (an_object.object_id.metadata.class_of_type.name))
+
+			-- Generate a new primary key in the database by inserting the "existence" attribute with the objects object_identifier as a temporary value
+			connection.execute_sql ( Insert_value_use_autoincrement (existence_attribute_key, none_class_key, an_object.object_identifier.out))
+			connection.execute_sql ( Query_new_primary_of_object (existence_attribute_key, an_object.object_identifier.out))
 			new_primary_key:=connection.last_result.item.get_value_by_index (1).to_integer
 
 			-- Insert the primary key to the key manager
@@ -158,11 +155,10 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 
 			-- Write all attributes
 			write_attributes (an_object, connection, a_transaction)
---			print (an_object.attributes.count)
-			-- Delete the stub argument
-			connection.execute_sql ("DELETE FROM ps_value WHERE attributeid = " + stub_attribute.out + "  AND value = 'STUB'")
---			connection.commit
---			database.release_connection (connection)
+
+			-- Delete the object identifier in the existence attribute
+			connection.execute_sql ( Remove_old_object_identifier (existence_attribute_key, an_object.object_identifier.out))
+
 		rescue
 			rollback (a_transaction)
 		end
@@ -172,11 +168,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		local
 			connection:PS_SQL_CONNECTION_ABSTRACTION
 		do
---			connection:= database.acquire_connection
 			connection:= get_connection (a_transaction)
 			write_attributes (an_object, connection, a_transaction)
---			connection.commit
---			database.release_connection (connection)
 		rescue
 			rollback (a_transaction)
 		end
@@ -187,13 +180,10 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 			connection:PS_SQL_CONNECTION_ABSTRACTION
 			primary:INTEGER
 		do
---			connection:= database.acquire_connection
 			connection:= get_connection (a_transaction)
 			primary:= key_mapper.primary_key_of (an_object.object_id, a_transaction).first
 			key_mapper.remove_primary_key (primary, an_object.object_id.metadata, a_transaction)
-			connection.execute_sql ("DELETE FROM ps_value WHERE objectid = " + primary.out)
---			connection.commit
---			database.release_connection (connection)
+			connection.execute_sql (Delete_values_of_object (primary))
 		rescue
 			rollback (a_transaction)
 		end
@@ -283,6 +273,18 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 			end
 		end
 
+	transaction_isolation_level: PS_TRANSACTION_ISOLATION_LEVEL
+		-- The currently active transaction isolation level
+		do
+			Result:= database.transaction_isolation_level
+		end
+
+	set_transaction_isolation_level (a_level: PS_TRANSACTION_ISOLATION_LEVEL)
+		-- Set the transaction isolation level `a_level' for all future transactions
+		do
+			database.set_transaction_isolation_level (a_level)
+		end
+
 
 feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
 
@@ -291,17 +293,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
 		local
 			connection:PS_SQL_CONNECTION_ABSTRACTION
 		do
---			connection:= database.acquire_connection
 			create key_mapper.make
-			management_connection.execute_sql ("DELETE FROM ps_value")
---			connection.commit
---			database.release_connection (connection)
+			management_connection.execute_sql (Delete_all_values)
 		end
 
 	wipe_out_all
 		-- Wipe out everything and initialize new.
-		local
-			connection:PS_SQL_CONNECTION_ABSTRACTION
 		do
 			from active_connections.start
 			until active_connections.after
@@ -309,16 +306,14 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
 				active_connections.item.first.commit
 				database.release_connection (active_connections.item.first)
 				active_connections.remove
-				print ("error: found active transaction")
+				print ("found active transaction")
 			end
-			connection:= management_connection -- database.acquire_connection
-			connection.execute_sql ("DROP TABLE ps_value")
-			connection.execute_sql ("DROP TABLE ps_attribute")
-			connection.execute_sql ("DROP TABLE ps_class")
 
+			management_connection.execute_sql (Drop_value_table)
+			management_connection.execute_sql (Drop_attribute_table)
+			management_connection.execute_sql (Drop_class_table)
 
---			connection.commit
-			database.release_connection (connection)
+			database.release_connection (management_connection)
 			make (database)
 		end
 
@@ -340,7 +335,7 @@ feature {NONE} -- Implementation
 			primary:= key_mapper.primary_key_of (object.object_id, transaction).first
 
 			create already_present_attributes.make
-			a_connection.execute_sql ("SELECT attributeid FROM ps_value WHERE objectid = " + primary.out)
+			a_connection.execute_sql (Query_present_attributes_of_object (primary))
 			across a_connection as cursor loop
 				already_present_attributes.extend (cursor.item.get_value_by_index (1).to_integer)
 			end
@@ -358,12 +353,10 @@ feature {NONE} -- Implementation
 				-- Perform update or insert, depending on the presence in the database
 				if already_present_attributes.has (attribute_id) then
 					-- Update
---					a_connection.execute_sql ("UPDATE ps_value SET runtimetype = " + runtime_type.out + ", value = '" + value + "' WHERE objectid = " + primary.out + " AND attributeid = "+ attribute_id.out)
-					collected_insert_statements:= collected_insert_statements + "UPDATE ps_value SET runtimetype = " + runtime_type.out + ", value = '" + value + "' WHERE objectid = " + primary.out + " AND attributeid = "+ attribute_id.out + "; "
+					collected_insert_statements.append ( Update_value (primary, attribute_id, runtime_type, value) + "; " )
 				else
 					-- Insert
---					a_connection.execute_sql ("INSERT INTO ps_value (objectid, attributeid, runtimetype, value) VALUES ( " + primary.out + ", " + attribute_id.out + ", " + runtime_type.out + ", '" + value + "')")
-					collected_insert_statements:= collected_insert_statements + "INSERT INTO ps_value (objectid, attributeid, runtimetype, value) VALUES ( " + primary.out + ", " + attribute_id.out + ", " + runtime_type.out + ", '" + value + "'); "
+					collected_insert_statements.append ( Insert_value (primary, attribute_id, runtime_type, value) + "; " )
 				end
 			end
 			if not collected_insert_statements.is_empty then
@@ -407,24 +400,22 @@ feature {NONE} -- Implementation - Connection and Transaction handling
 				if active_connections.item.second.is_equal (transaction) then
 					database.release_connection (active_connections.item.first)
 					active_connections.remove
---					print (i.out + "removed%N")
---					i:= i+1
 				else
 					active_connections.forth
 				end
 			end
 		end
---	i:INTEGER
+
 
 	active_connections: LINKED_LIST[PS_PAIR[PS_SQL_CONNECTION_ABSTRACTION, PS_TRANSACTION]]
 		-- These are the normal connections attached to a transactions.
 		-- They do not have auto-commit and they are closed once the transaction is finished.
-		-- They only write to the ps_value table.
+		-- They only write and read the ps_value table.
 
 	management_connection: PS_SQL_CONNECTION_ABSTRACTION
 		-- This is a special connection used for management and read-only transactions.
-		-- It has isolation level `read-uncommited', uses auto-commit, and is always open.
-		-- The connection can only write to ps_attribute and ps_class
+		-- It uses auto-commit, and is always active.
+		-- The connection can only read and write tables ps_attribute and ps_class
 
 
 feature{NONE} -- Initialization
@@ -434,22 +425,17 @@ feature{NONE} -- Initialization
 			initialization_connection: PS_SQL_CONNECTION_ABSTRACTION
 		do
 			database:= a_database
---			connection:= database.acquire_connection
 			create key_mapper.make
-			management_connection:=a_database.acquire_connection
-			management_connection.execute_sql ("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED")
-			management_connection.execute_sql ("SET AUTOCOMMIT = 1")
+			management_connection:=database.acquire_connection
+			management_connection.execute_sql (Enable_autocommit)
+
 			create db_metadata_manager.make (management_connection)
-			--initialization_connection.commit
-			--a_database.release_connection (initialization_connection)
 			create active_connections.make
 		end
 
 	database: PS_SQL_DATABASE_ABSTRACTION
 
 	db_metadata_manager: PS_GENERIC_LAYOUT_KEY_MANAGER
-
---	connection: PS_SQL_CONNECTION_ABSTRACTION
 
 end
 

@@ -25,8 +25,13 @@ feature
 			database.set_port (port)
 			database.connect
 			database.set_flag_autocommit (False)
+
+			internal_set_transaction_level (database)
 --			print (database.last_error_message)
 			create {PS_MYSQL_CONNECTION} Result.make (database)
+
+
+
 		end
 
 	release_connection (a_connection:PS_SQL_CONNECTION_ABSTRACTION)
@@ -36,7 +41,6 @@ feature
 				conn.internal_connection.close
 
 			end
-			-- ignore for the moment - connection pooling first has to be implemented
 		end
 
 
@@ -49,6 +53,8 @@ feature{NONE}
 			name:= db_name
 			host:= db_host
 			port:= db_port
+			create transaction_isolation_level
+			transaction_isolation_level:= transaction_isolation_level.repeatable_read -- This is the standard in MySQL for InnoDB tables
 		end
 
 	user:STRING
@@ -56,5 +62,18 @@ feature{NONE}
 	name:STRING
 	host:STRING
 	port:INTEGER
+
+	internal_set_transaction_level (a_connection: MYSQLI_CLIENT)
+		do
+			if transaction_isolation_level = transaction_isolation_level.read_uncommitted then
+				a_connection.execute_query ("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED")
+			elseif transaction_isolation_level = transaction_isolation_level.read_committed then
+				a_connection.execute_query ("SET TRANSACTION ISOLATION LEVEL READ COMMITTED")
+			elseif transaction_isolation_level = transaction_isolation_level.repeatable_read then
+				-- Do nothing - This is the standard
+			elseif transaction_isolation_level = transaction_isolation_level.serializable then
+				a_connection.execute_query ("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE")
+			end
+		end
 
 end

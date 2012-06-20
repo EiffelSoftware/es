@@ -8,7 +8,12 @@ class
 	PS_PAIR [A,B]
 
 create
-	make
+	make,
+	make_from_tuple
+
+convert
+	to_tuple: {TUPLE[first:A; second:B]},
+	make_from_tuple ({TUPLE[first:A; second:B]})
 
 feature
 
@@ -20,15 +25,22 @@ feature
 
 	set_first (a:A)
 		-- Set the first element
-	do
-		first := a
-	end
+		do
+			first := a
+		end
 
 	set_second (b:B)
 		-- Set the second element
-	do
-		second:=b
-	end
+		do
+			second:=b
+		end
+
+	to_tuple: TUPLE[ first: A; second:B ]
+		do
+			create Result.make
+			Result.first := first
+			Result.second := second
+		end
 
 feature {NONE} -- Initialization
 
@@ -37,6 +49,12 @@ feature {NONE} -- Initialization
 		do
 			first:=a
 			second:=b
+		end
+
+	make_from_tuple (tup:TUPLE[first:A; second:B])
+		do
+			first:= tup.first
+			second:= tup.second
 		end
 
 end

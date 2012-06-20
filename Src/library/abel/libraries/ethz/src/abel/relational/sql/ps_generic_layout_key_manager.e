@@ -12,7 +12,6 @@ class
 	PS_GENERIC_LAYOUT_KEY_MANAGER
 
 inherit
-	PS_GENERIC_LAYOUT_SQL_STRINGS
 	PS_EIFFELSTORE_EXPORT
 
 create
@@ -134,10 +133,10 @@ feature {PS_GENERIC_LAYOUT_SQL_BACKEND} -- Key creation
 			new_primary_key: INTEGER
 		do
 			-- Insert the new class, implicitly using auto-increment for the primary key
-			management_connection.execute_sql (Insert_class_use_autoincrement (class_name))
+			management_connection.execute_sql (SQL_Strings.Insert_class_use_autoincrement (class_name))
 
 			-- Retrieve the generated primary key
-			management_connection.execute_sql (Query_new_id_of_class (class_name))
+			management_connection.execute_sql (SQL_Strings.Query_new_id_of_class (class_name))
 			new_primary_key:= management_connection.last_result.item.get_value_by_index (1).to_integer
 
 			-- Add the class and its primary key to the local copy
@@ -156,10 +155,10 @@ feature {PS_GENERIC_LAYOUT_SQL_BACKEND} -- Key creation
 			new_primary_key: INTEGER
 		do
 			-- Insert the new attribute, implicitly using auto-increment for the primary key
-			management_connection.execute_sql (Insert_attribute_use_autoincrement(attribute_name, class_key))
+			management_connection.execute_sql (SQL_Strings.Insert_attribute_use_autoincrement(attribute_name, class_key))
 
 			-- Retrieve the generated primary key
-			management_connection.execute_sql (Query_new_id_of_attribute (attribute_name, class_key))
+			management_connection.execute_sql (SQL_Strings.Query_new_id_of_attribute (attribute_name, class_key))
 			new_primary_key:= management_connection.last_result.item.get_value_by_index (1).to_integer
 
 			-- Add the attribute and its new primary key to the local copy
@@ -212,6 +211,7 @@ feature {NONE} -- Initialization
 			existing_tables: LINKED_LIST[STRING]
 		do
 			-- Initialize `Current'
+			create SQL_Strings
 			create class_name_to_key_map.make (20)
 			create attribute_name_to_key_map.make (20)
 			create class_key_to_name_map.make(20)
@@ -220,38 +220,40 @@ feature {NONE} -- Initialization
 			management_connection:= a_connection
 
 			-- Create all tables if they do not yet exist
-			management_connection.execute_sql (Show_tables)
+			management_connection.execute_sql (SQL_Strings.Show_tables)
 
 			create existing_tables.make
 			across management_connection as cursor loop
 				existing_tables.extend (cursor.item.get_value_by_index (1))
 			end
 
-			if not existing_tables.there_exists ( agent {STRING}.is_case_insensitive_equal (Class_table)) then
-				management_connection.execute_sql (Create_class_table)
+			if not existing_tables.there_exists ( agent {STRING}.is_case_insensitive_equal (SQL_Strings.Class_table)) then
+				management_connection.execute_sql (SQL_Strings.Create_class_table)
 			end
-			if not existing_tables.there_exists ( agent {STRING}.is_case_insensitive_equal  (Attribute_table)) then
-				management_connection.execute_sql (Create_attribute_table)
+			if not existing_tables.there_exists ( agent {STRING}.is_case_insensitive_equal  (SQL_Strings.Attribute_table)) then
+				management_connection.execute_sql (SQL_Strings.Create_attribute_table)
 			end
-			if not existing_tables.there_exists ( agent {STRING}.is_case_insensitive_equal  (Value_table)) then
-				management_connection.execute_sql (Create_value_table)
+			if not existing_tables.there_exists ( agent {STRING}.is_case_insensitive_equal  (SQL_Strings.Value_table)) then
+				management_connection.execute_sql (SQL_Strings.Create_value_table)
 			end
 
 			-- Get the needed information from ps_class and ps_attribute table
 
-			management_connection.execute_sql (Query_class_table)
+			management_connection.execute_sql (SQL_Strings.Query_class_table)
 
 			across a_connection as row_cursor loop
-				add_class_key (row_cursor.item.get_value (Class_table_name_column), row_cursor.item.get_value (Class_table_id_column).to_integer)
+				add_class_key (row_cursor.item.get_value (SQL_Strings.Class_table_name_column), row_cursor.item.get_value (SQL_Strings.Class_table_id_column).to_integer)
 			end
 
-			management_connection.execute_sql (Query_attribute_table)
+			management_connection.execute_sql (SQL_Strings.Query_attribute_table)
 
 			across a_connection as row_cursor loop
-				add_attribute_key (row_cursor.item.get_value (Attribute_table_name_column), row_cursor.item.get_value (Attribute_table_id_column).to_integer, row_cursor.item.get_value (Attribute_table_class_column).to_integer)
+				add_attribute_key (row_cursor.item.get_value (SQL_Strings.Attribute_table_name_column), row_cursor.item.get_value (SQL_Strings.Attribute_table_id_column).to_integer, row_cursor.item.get_value (SQL_Strings.Attribute_table_class_column).to_integer)
 			end
 		end
 
+
+	SQL_Strings: PS_GENERIC_LAYOUT_SQL_STRINGS
 
 feature {NONE} -- Consistency checks
 

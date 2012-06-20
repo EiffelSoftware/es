@@ -76,7 +76,7 @@ feature {PS_REPOSITORY_TESTS} -- Flat objects
 
 	all_flat_object_tests
 		do
---			test_empty_object
+			test_empty_object
 			test_flat_class_store
 			test_flat_class_all_crud
 		end

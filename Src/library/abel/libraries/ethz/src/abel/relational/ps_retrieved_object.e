@@ -30,7 +30,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access
 	attributes:LINKED_LIST[STRING]
 		-- The attributes of the object that have been loaded.
 
-	attribute_value (attribute_name:STRING):PS_PAIR[STRING, STRING]
+	attribute_value (attribute_name:STRING):TUPLE[value: STRING; attribute_class_name: STRING]
 		-- The value of the attribute `attribute_name'.
 		-- The first item in the result is the value, and the second item is the class name of the generating class of the first item.
 		require
@@ -70,8 +70,8 @@ feature {PS_BACKEND_STRATEGY} -- Element change
 			values.extend (pair, attribute_name)
 			attributes.extend (attribute_name)
 		ensure
-			value_inserted: attribute_value (attribute_name).first.is_equal (value)
-			class_name_inserted: attribute_value(attribute_name).second.is_equal (class_name_of_value)
+			value_inserted: attribute_value (attribute_name).value.is_equal (value)
+			class_name_inserted: attribute_value(attribute_name).attribute_class_name.is_equal (class_name_of_value)
 		end
 
 
