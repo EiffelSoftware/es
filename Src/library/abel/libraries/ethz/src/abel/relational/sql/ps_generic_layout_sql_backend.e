@@ -8,7 +8,7 @@ class
 	PS_GENERIC_LAYOUT_SQL_BACKEND
 inherit
 	PS_BACKEND_STRATEGY
-	PS_GENERIC_LAYOUT_SQL_STRINGS
+--	PS_GENERIC_LAYOUT_SQL_STRINGS
 
 create make
 
@@ -64,27 +64,27 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 
 			create result_list.make
 
-			sql_string:= Current.query_values_from_class (convert_to_sql (db_metadata_manager.attribute_keys_of_class (db_metadata_manager.create_get_primary_key_of_class (type.class_of_type.name ))))
+			sql_string:= SQL_Strings.query_values_from_class (SQL_Strings.convert_to_sql (db_metadata_manager.attribute_keys_of_class (db_metadata_manager.create_get_primary_key_of_class (type.class_of_type.name ))))
 			if not transaction.is_readonly then
-				sql_string.append (For_update_appendix)
+				sql_string.append (SQL_Strings.For_update_appendix)
 			end
 			connection.execute_sql (sql_string)
 			from row_cursor:= connection.last_result
 			until row_cursor.after
 			loop
 				-- create new object
-				create current_obj.make (row_cursor.item.get_value (Value_table_id_column).to_integer, type.class_of_type)
+				create current_obj.make (row_cursor.item.get_value (SQL_Strings.Value_table_id_column).to_integer, type.class_of_type)
 
 				-- fill all attributes - The result is ordered by the object id, therefore the attributes of a single object are grouped together.
 				from
 				until
-					row_cursor.after or else row_cursor.item.get_value (Value_table_id_column).to_integer /= current_obj.primary_key
+					row_cursor.after or else row_cursor.item.get_value (SQL_Strings.Value_table_id_column).to_integer /= current_obj.primary_key
 				loop
 					--print (current_obj.class_metadata.name + ": " + db_metadata_manager.attribute_name_of_key (row_cursor.item.get_value ("attributeid").to_integer) + "%N")
-					attribute_name:=db_metadata_manager.attribute_name_of_key (row_cursor.item.get_value (Value_table_attributeid_column).to_integer)
-					attribute_value:= row_cursor.item.get_value (Value_table_value_column)
-					class_name_of_value:= db_metadata_manager.class_name_of_key (row_cursor.item.get_value (Value_table_runtimetype_column).to_integer)
-					if not attribute_name.is_equal (Existence_attribute) then
+					attribute_name:=db_metadata_manager.attribute_name_of_key (row_cursor.item.get_value (SQL_Strings.Value_table_attributeid_column).to_integer)
+					attribute_value:= row_cursor.item.get_value (SQL_Strings.Value_table_value_column)
+					class_name_of_value:= db_metadata_manager.class_name_of_key (row_cursor.item.get_value (SQL_Strings.Value_table_runtimetype_column).to_integer)
+					if not attribute_name.is_equal (SQL_Strings.Existence_attribute) then
 						current_obj.add_attribute (attribute_name, attribute_value, class_name_of_value)
 					end
 					row_cursor.forth
@@ -142,12 +142,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		do
 			-- Retrieve some required information
 			connection:= get_connection (a_transaction)
-			none_class_key:= db_metadata_manager.create_get_primary_key_of_class (None_class)
-			existence_attribute_key := db_metadata_manager.create_get_primary_key_of_attribute (Existence_attribute, db_metadata_manager.create_get_primary_key_of_class (an_object.object_id.metadata.class_of_type.name))
+			none_class_key:= db_metadata_manager.create_get_primary_key_of_class (SQL_Strings.None_class)
+			existence_attribute_key := db_metadata_manager.create_get_primary_key_of_attribute (SQL_Strings.Existence_attribute, db_metadata_manager.create_get_primary_key_of_class (an_object.object_id.metadata.class_of_type.name))
 
 			-- Generate a new primary key in the database by inserting the "existence" attribute with the objects object_identifier as a temporary value
-			connection.execute_sql ( Insert_value_use_autoincrement (existence_attribute_key, none_class_key, an_object.object_identifier.out))
-			connection.execute_sql ( Query_new_primary_of_object (existence_attribute_key, an_object.object_identifier.out))
+			connection.execute_sql ( SQL_Strings.Insert_value_use_autoincrement (existence_attribute_key, none_class_key, an_object.object_identifier.out))
+			connection.execute_sql ( SQL_Strings.Query_new_primary_of_object (existence_attribute_key, an_object.object_identifier.out))
 			new_primary_key:=connection.last_result.item.get_value_by_index (1).to_integer
 
 			-- Insert the primary key to the key manager
@@ -157,7 +157,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 			write_attributes (an_object, connection, a_transaction)
 
 			-- Delete the object identifier in the existence attribute
-			connection.execute_sql ( Remove_old_object_identifier (existence_attribute_key, an_object.object_identifier.out))
+			connection.execute_sql ( SQL_Strings.Remove_old_object_identifier (existence_attribute_key, an_object.object_identifier.out))
 
 		rescue
 			rollback (a_transaction)
@@ -183,7 +183,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 			connection:= get_connection (a_transaction)
 			primary:= key_mapper.primary_key_of (an_object.object_id, a_transaction).first
 			key_mapper.remove_primary_key (primary, an_object.object_id.metadata, a_transaction)
-			connection.execute_sql (Delete_values_of_object (primary))
+			connection.execute_sql (SQL_Strings.Delete_values_of_object (primary))
 		rescue
 			rollback (a_transaction)
 		end
@@ -294,7 +294,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
 			connection:PS_SQL_CONNECTION_ABSTRACTION
 		do
 			create key_mapper.make
-			management_connection.execute_sql (Delete_all_values)
+			management_connection.execute_sql (SQL_Strings.Delete_all_values)
 		end
 
 	wipe_out_all
@@ -309,9 +309,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
 				print ("found active transaction")
 			end
 
-			management_connection.execute_sql (Drop_value_table)
-			management_connection.execute_sql (Drop_attribute_table)
-			management_connection.execute_sql (Drop_class_table)
+			management_connection.execute_sql (SQL_Strings.Drop_value_table)
+			management_connection.execute_sql (SQL_Strings.Drop_attribute_table)
+			management_connection.execute_sql (SQL_Strings.Drop_class_table)
 
 			database.release_connection (management_connection)
 			make (database)
@@ -335,7 +335,7 @@ feature {NONE} -- Implementation
 			primary:= key_mapper.primary_key_of (object.object_id, transaction).first
 
 			create already_present_attributes.make
-			a_connection.execute_sql (Query_present_attributes_of_object (primary))
+			a_connection.execute_sql (SQL_Strings.Query_present_attributes_of_object (primary))
 			across a_connection as cursor loop
 				already_present_attributes.extend (cursor.item.get_value_by_index (1).to_integer)
 			end
@@ -353,10 +353,10 @@ feature {NONE} -- Implementation
 				-- Perform update or insert, depending on the presence in the database
 				if already_present_attributes.has (attribute_id) then
 					-- Update
-					collected_insert_statements.append ( Update_value (primary, attribute_id, runtime_type, value) + "; " )
+					collected_insert_statements.append ( SQL_Strings.Update_value (primary, attribute_id, runtime_type, value) + "; " )
 				else
 					-- Insert
-					collected_insert_statements.append ( Insert_value (primary, attribute_id, runtime_type, value) + "; " )
+					collected_insert_statements.append ( SQL_Strings.Insert_value (primary, attribute_id, runtime_type, value) + "; " )
 				end
 			end
 			if not collected_insert_statements.is_empty then
@@ -424,10 +424,11 @@ feature{NONE} -- Initialization
 		local
 			initialization_connection: PS_SQL_CONNECTION_ABSTRACTION
 		do
+			create SQL_Strings
 			database:= a_database
 			create key_mapper.make
 			management_connection:=database.acquire_connection
-			management_connection.execute_sql (Enable_autocommit)
+			management_connection.execute_sql (SQL_Strings.Enable_autocommit)
 
 			create db_metadata_manager.make (management_connection)
 			create active_connections.make
@@ -436,6 +437,8 @@ feature{NONE} -- Initialization
 	database: PS_SQL_DATABASE_ABSTRACTION
 
 	db_metadata_manager: PS_GENERIC_LAYOUT_KEY_MANAGER
+
+	SQL_Strings: PS_GENERIC_LAYOUT_SQL_STRINGS
 
 end
 

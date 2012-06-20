@@ -1,19 +1,25 @@
 note
-	description: "Summary description for {PS_SQL_DATABASE_ABSTRACTION}."
-	author: ""
+	description: "[
+		Provides the interface for a wrapper to a database like MySQL or SQlite.
+		Descendants may implement connection pooling, or just open and close connections all the time.		
+		]"
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
 deferred class
 	PS_SQL_DATABASE_ABSTRACTION
 
-feature
+feature {PS_EIFFELSTORE_EXPORT}
 
 	acquire_connection: PS_SQL_CONNECTION_ABSTRACTION
+		-- Get a new connection.
+		-- The transaction isolation level of th new connection is the same as in `Current.transaction_isolation_level', and autocommit is disabled.
 		deferred
 		end
 
 	release_connection (a_connection:PS_SQL_CONNECTION_ABSTRACTION)
+		-- Release connection `a_connection'
 		deferred
 		end
 
