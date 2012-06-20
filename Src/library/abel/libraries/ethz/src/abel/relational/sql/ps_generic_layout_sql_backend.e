@@ -314,7 +314,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
 			management_connection.execute_sql (SQL_Strings.Drop_class_table)
 
 			database.release_connection (management_connection)
-			make (database)
+			make (database, SQL_Strings)
 		end
 
 
@@ -420,17 +420,17 @@ feature {NONE} -- Implementation - Connection and Transaction handling
 
 feature{NONE} -- Initialization
 
-	make (a_database: PS_SQL_DATABASE_ABSTRACTION)
+	make (a_database: PS_SQL_DATABASE_ABSTRACTION; strings: PS_GENERIC_LAYOUT_SQL_STRINGS)
 		local
 			initialization_connection: PS_SQL_CONNECTION_ABSTRACTION
 		do
-			create SQL_Strings
+			SQL_Strings:= strings
 			database:= a_database
 			create key_mapper.make
 			management_connection:=database.acquire_connection
-			management_connection.execute_sql (SQL_Strings.Enable_autocommit)
+			management_connection.set_autocommit (True)
 
-			create db_metadata_manager.make (management_connection)
+			create db_metadata_manager.make (management_connection, SQL_Strings)
 			create active_connections.make
 		end
 

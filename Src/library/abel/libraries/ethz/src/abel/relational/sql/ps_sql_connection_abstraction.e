@@ -9,6 +9,13 @@ deferred class
 inherit
 	ITERABLE[PS_SQL_ROW_ABSTRACTION]
 
+feature {PS_EIFFELSTORE_EXPORT} -- Settings
+
+	set_autocommit (flag:BOOLEAN)
+		-- Enable or disable autocommit
+		deferred
+		end
+
 feature {PS_EIFFELSTORE_EXPORT} -- Database operations
 
 	execute_sql (statement: STRING)
@@ -42,8 +49,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Database results
 		-- The last occured error
 		deferred
 		end
-
-
 
 feature {PS_EIFFELSTORE_EXPORT} -- Utilities
 

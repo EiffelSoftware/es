@@ -204,14 +204,14 @@ feature {NONE} -- Implementation - Local copy
 
 feature {NONE} -- Initialization
 
-	make (a_connection: PS_SQL_CONNECTION_ABSTRACTION)
+	make (a_connection: PS_SQL_CONNECTION_ABSTRACTION; strings: PS_GENERIC_LAYOUT_SQL_STRINGS)
 			-- Read existing database entries and initialize local copy with them.
 			-- If necessary, create missing tables.
 		local
 			existing_tables: LINKED_LIST[STRING]
 		do
 			-- Initialize `Current'
-			create SQL_Strings
+			SQL_Strings:= strings
 			create class_name_to_key_map.make (20)
 			create attribute_name_to_key_map.make (20)
 			create class_key_to_name_map.make(20)

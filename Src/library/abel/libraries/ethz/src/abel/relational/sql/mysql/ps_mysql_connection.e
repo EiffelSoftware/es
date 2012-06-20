@@ -16,6 +16,15 @@ inherit{NONE}
 create
 	make
 
+feature {PS_EIFFELSTORE_EXPORT} -- Settings
+
+	set_autocommit (flag:BOOLEAN)
+		-- Enable or disable autocommit
+		do
+			internal_connection.set_flag_autocommit (flag)
+		end
+
+
 feature {PS_EIFFELSTORE_EXPORT}
 
 	execute_sql (statement: STRING)
@@ -75,8 +84,6 @@ feature {PS_EIFFELSTORE_EXPORT}
 
 	last_error: PS_ERROR
 		-- The last occured error
-
-
 
 
 feature {PS_MYSQL_DATABASE} -- Initialization

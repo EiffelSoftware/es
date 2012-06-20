@@ -9,10 +9,19 @@ class
 
 feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Table creation
 
+	Auto_increment_keyword: STRING
+		do
+			Result:= " AUTO_INCREMENT "
+		end
 
-	Create_value_table: STRING = "[
+	Create_value_table: STRING
+		do
+			Result:= "[
 					CREATE TABLE ps_value (
-					objectid INTEGER NOT NULL AUTO_INCREMENT,
+					objectid INTEGER NOT NULL
+					]"
+					 + Auto_increment_keyword + ", " +
+					"[
 					attributeid INTEGER,
 					runtimetype INTEGER,
 					value VARCHAR(128),
@@ -22,16 +31,23 @@ feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Table creation
 					FOREIGN KEY (runtimetype) REFERENCES ps_class (classid) ON DELETE CASCADE
 					)
 		]"
+		end
 
 
-	Create_class_table: STRING = "[
-		
+	Create_class_table: STRING
+	do
+		Result:= "[
+
 			CREATE TABLE ps_class (
-				classid INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+				classid INTEGER NOT NULL
+					]"
+					 + Auto_increment_keyword +
+					"[
+					PRIMARY KEY, 
 				classname VARCHAR(64)
 			)
-
 		]"
+	end
 
 --	Create_inheritance_table: STRING = "[
 
@@ -52,19 +68,29 @@ feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Table creation
 --			)
 --		]"
 
-	Create_attribute_table: STRING = "[
+	Create_attribute_table: STRING
+	do
+		Result:= "[
 			CREATE TABLE ps_attribute (
-				attributeid INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				attributeid INTEGER NOT NULL
+					]"
+					 + Auto_increment_keyword +
+					"[
+					PRIMARY KEY,
 				name VARCHAR(128),
 				class INTEGER,
 
 				FOREIGN KEY (class) REFERENCES ps_class (classid) ON DELETE CASCADE
 			)
 		]"
+	end
 
 feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Data querying - Key manager
 
-	Show_tables: STRING = "SHOW TABLES"
+	Show_tables: STRING
+		do
+			Result:= "SHOW TABLES"
+		end
 
 	Query_class_table: STRING = "[
 			SELECT classid, classname 
@@ -200,7 +226,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Special attributes and classes
 
 feature {PS_EIFFELSTORE_EXPORT} -- Management and testing
 
-	Enable_autocommit: STRING = "SET AUTOCOMMIT = 1"
+--	Enable_autocommit: STRING  do Result:= "SET AUTOCOMMIT = 1" end
 
 	Delete_all_values: STRING = "DELETE FROM ps_value"
 
