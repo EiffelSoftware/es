@@ -21,8 +21,7 @@
 			</option>
 		</library>
 		<library name="mysql" location="..\..\..\libraries\ethz\src\mysqli\mysqli.ecf"/>
-		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf" readonly="false"/>
-		<library name="thread" location="$ISE_LIBRARY\library\thread\thread-safe.ecf"/>
+		<library name="testing" location="$ISE_LIBRARY\library\testing\testing-safe.ecf"/>
 		<cluster name="test_classes" location=".\test_classes\" recursive="true"/>
 		<tests name="tests" location=".\">
 			<option void_safety="all" syntax="provisional" namespace="Tests">

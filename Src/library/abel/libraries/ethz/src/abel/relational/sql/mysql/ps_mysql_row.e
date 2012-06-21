@@ -9,19 +9,34 @@ class
 inherit
 	PS_SQL_ROW_ABSTRACTION
 
-create
+create {PS_MYSQL_CONNECTION}
 	make
 
-feature {PS_EIFFELSTORE_EXPORT}
+feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
-	get_value (column_name: STRING): STRING
-		-- Get the value in column `column_name'
+	has_column (column_name: STRING):BOOLEAN
+		-- Does `Current' have a column with name `column_name'?
+		do
+			Result:= internal_row.mysql_result.field_map.has (column_name)
+		end
+
+feature {PS_EIFFELSTORE_EXPORT} -- Access
+
+
+	count: INTEGER
+		-- The number of items in `Current' row.
+		do
+			Result:= internal_row.count
+		end
+
+	at alias "@" (column_name: STRING): STRING
+		-- Get the item at column `column_name'. Empty string if database field is NULL.
 		do
 			Result:= internal_row.at_field (column_name).as_string_8
 		end
 
-	get_value_by_index (index:INTEGER):STRING
-		-- Get the value at index `index'
+	item alias "[]" (index:INTEGER):STRING
+		-- Get the item at index `index'. Empty string if database field is NULL.
 		do
 			Result:= internal_row.at (index).as_string_8
 		end

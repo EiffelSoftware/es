@@ -73,17 +73,17 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			until row_cursor.after
 			loop
 				-- create new object
-				create current_obj.make (row_cursor.item.get_value (SQL_Strings.Value_table_id_column).to_integer, type.class_of_type)
+				create current_obj.make (row_cursor.item.at (SQL_Strings.Value_table_id_column).to_integer, type.class_of_type)
 
 				-- fill all attributes - The result is ordered by the object id, therefore the attributes of a single object are grouped together.
 				from
 				until
-					row_cursor.after or else row_cursor.item.get_value (SQL_Strings.Value_table_id_column).to_integer /= current_obj.primary_key
+					row_cursor.after or else row_cursor.item.at (SQL_Strings.Value_table_id_column).to_integer /= current_obj.primary_key
 				loop
 					--print (current_obj.class_metadata.name + ": " + db_metadata_manager.attribute_name_of_key (row_cursor.item.get_value ("attributeid").to_integer) + "%N")
-					attribute_name:=db_metadata_manager.attribute_name_of_key (row_cursor.item.get_value (SQL_Strings.Value_table_attributeid_column).to_integer)
-					attribute_value:= row_cursor.item.get_value (SQL_Strings.Value_table_value_column)
-					class_name_of_value:= db_metadata_manager.class_name_of_key (row_cursor.item.get_value (SQL_Strings.Value_table_runtimetype_column).to_integer)
+					attribute_name:=db_metadata_manager.attribute_name_of_key (row_cursor.item.at (SQL_Strings.Value_table_attributeid_column).to_integer)
+					attribute_value:= row_cursor.item.at (SQL_Strings.Value_table_value_column)
+					class_name_of_value:= db_metadata_manager.class_name_of_key (row_cursor.item.at (SQL_Strings.Value_table_runtimetype_column).to_integer)
 					if not attribute_name.is_equal (SQL_Strings.Existence_attribute) then
 						current_obj.add_attribute (attribute_name, attribute_value, class_name_of_value)
 					end
@@ -148,7 +148,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 			-- Generate a new primary key in the database by inserting the "existence" attribute with the objects object_identifier as a temporary value
 			connection.execute_sql ( SQL_Strings.Insert_value_use_autoincrement (existence_attribute_key, none_class_key, an_object.object_identifier.out))
 			connection.execute_sql ( SQL_Strings.Query_new_primary_of_object (existence_attribute_key, an_object.object_identifier.out))
-			new_primary_key:=connection.last_result.item.get_value_by_index (1).to_integer
+			new_primary_key:=connection.last_result.item.item (1).to_integer
 
 			-- Insert the primary key to the key manager
 			key_mapper.add_entry (an_object.object_id, new_primary_key, a_transaction)
@@ -314,6 +314,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
 			management_connection.execute_sql (SQL_Strings.Drop_class_table)
 
 			database.release_connection (management_connection)
+--			database.close_connections
 			make (database, SQL_Strings)
 		end
 
@@ -337,7 +338,7 @@ feature {NONE} -- Implementation
 			create already_present_attributes.make
 			a_connection.execute_sql (SQL_Strings.Query_present_attributes_of_object (primary))
 			across a_connection as cursor loop
-				already_present_attributes.extend (cursor.item.get_value_by_index (1).to_integer)
+				already_present_attributes.extend (cursor.item.item (1).to_integer)
 			end
 
 			collected_insert_statements:= ""

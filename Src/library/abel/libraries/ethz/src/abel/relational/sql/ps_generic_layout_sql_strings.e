@@ -16,37 +16,19 @@ feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Table creation
 
 
 	Create_class_table: STRING
-	deferred
-	end
+		deferred
+		end
 
---	Create_inheritance_table: STRING = "[
-
---			CREATE TABLE ps_inheritance (
---				superclass INTEGER,
---				subclass INTEGER,
---				
---				PRIMARY KEY (superclass, subclass),
---				FOREIGN KEY (superclass) REFERENCES ps_class (classid) ON DELETE CASCADE,
---				FOREIGN KEY (subclass) REFERENCES ps_class (classid) ON DELETE CASCADE
---			 )
-		--]"
-
---	Attributetype_table_sql: STRING = "[
---			CREATE TABLE ps_attributetype (
---				attributetypeid INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
---				description VARCHAR(64)
---			)
---		]"
 
 	Create_attribute_table: STRING
-	deferred
-	end
+		deferred
+		end
+
 
 feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Data querying - Key manager
 
 	Show_tables: STRING
-		do
-			Result:= "SHOW TABLES"
+		deferred
 		end
 
 	Query_class_table: STRING = "[
@@ -66,7 +48,7 @@ feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Data querying - Key manager
 
 	Query_new_id_of_attribute (attribute_name:STRING; class_key:INTEGER):STRING
 		do
-			Result:= "SELECT attributeid FROM ps_attribute WHERE name = '" + attribute_name + "' AND class = " +class_key.out
+			Result:= "SELECT attributeid FROM ps_attribute WHERE name = '" + attribute_name + "' AND class = " + class_key.out
 		end
 
 
@@ -182,13 +164,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Special attributes and classes
 
 feature {PS_EIFFELSTORE_EXPORT} -- Management and testing
 
---	Enable_autocommit: STRING  do Result:= "SET AUTOCOMMIT = 1" end
-
 	Delete_all_values: STRING = "DELETE FROM ps_value"
 
 	Drop_value_table: STRING = "DROP TABLE ps_value"
 	Drop_attribute_table: STRING = "DROP TABLE ps_attribute"
 	Drop_class_table: STRING = "DROP TABLE ps_class"
+
 
 
 end

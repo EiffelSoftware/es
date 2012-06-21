@@ -19,25 +19,42 @@ feature {PS_EIFFELSTORE_EXPORT}
 		-- Get a new connection.
 		-- The transaction isolation level of th new connection is the same as in `Current.transaction_isolation_level', and autocommit is disabled.
 		local
-			sqlite_connection: SQLITE_DATABASE
+--			sqlite_connection: SQLITE_DATABASE
 		do
-	--		create sqlite_connection.make_create_read_write (database)
-	--		sqlite_connection.begin_transaction (False)
-	--		create {PS_SQLITE_CONNECTION} Result.make (sqlite_connection)
-
+			-- It only works with one connection, so create a wrappe around it and return that.
 			create {PS_SQLITE_CONNECTION} Result.make (unique_connection)
+
+--			create sqlite_connection.make_create_read_write (database)
+--			sqlite_connection.begin_transaction (False)
+--			create {PS_SQLITE_CONNECTION} Result.make (sqlite_connection)
 
 		end
 
 	release_connection (a_connection:PS_SQL_CONNECTION_ABSTRACTION)
 		-- Release connection `a_connection'
 		do
-			--check attached {PS_SQLITE_CONNECTION} a_connection as conn then
-			--	conn.internal_connection.rollback
-			--	conn.internal_connection.close
-			--end
+			-- There is only one connection which should not be closed, therefore
+			do_nothing
+
+--			check attached {PS_SQLITE_CONNECTION} a_connection as conn then
+--				conn.internal_connection.rollback
+--				conn.internal_connection.close
+--			end
+		end
 
 
+	set_transaction_isolation_level (a_level: PS_TRANSACTION_ISOLATION_LEVEL)
+		-- Set the transaction isolation level `a_level' for all connections that are acquired in the future
+		-- Note: Some databases don't support all transaction isolation levels. In that case, a higher isolation level is chosen.
+		do
+			-- Serializable is the default, and it can't be changed.
+		end
+
+	close_connections
+		-- Close all currently open connections
+		do
+			unique_connection.rollback
+			unique_connection.close
 		end
 
 feature {NONE} -- Initialization
@@ -46,13 +63,17 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		do
 			create transaction_isolation_level
-			transaction_isolation_level:= transaction_isolation_level.repeatable_read
-			database:= database_file
-			create unique_connection.make_create_read_write (database)
+			transaction_isolation_level:= transaction_isolation_level.serializable -- This is the default in SQLite
+
+			database_location:= database_file
+
+			create unique_connection.make_create_read_write (database_location)
+			unique_connection.begin_transaction (false)
 		end
 
-	database: STRING
-
+	database_location: STRING
+		-- The location of the database file
 
 	unique_connection: SQLITE_DATABASE
+		-- The only connection to the database
 end

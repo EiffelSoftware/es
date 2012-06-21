@@ -29,11 +29,13 @@ feature
 			internal_connection.connect
 
 			-- Set the default settings
-			internal_connection.set_flag_autocommit (False)
 			internal_set_transaction_level (internal_connection)
 
 			-- Use `internal_connection' to create the MySQL connection wrapper
-			create {PS_MYSQL_CONNECTION} Result.make (internal_connection)
+			create {PS_MYSQL_CONNECTION} Result.make (internal_connection, transaction_isolation_level)
+
+			-- Disable autocommit
+			Result.set_autocommit (False)
 		end
 
 	release_connection (a_connection:PS_SQL_CONNECTION_ABSTRACTION)
@@ -46,6 +48,18 @@ feature
 			end
 		end
 
+	close_connections
+		-- Close all currently open connections
+		do
+		end
+
+
+	set_transaction_isolation_level (a_level: PS_TRANSACTION_ISOLATION_LEVEL)
+		-- Set the transaction isolation level `a_level' for all connections that are acquired in the future
+		-- Note: Some databases don't support all transaction isolation levels. In that case, a higher isolation level is chosen.
+		do
+			transaction_isolation_level:= a_level
+		end
 
 feature{NONE}-- Initialization
 
@@ -58,7 +72,7 @@ feature{NONE}-- Initialization
 			mysql_server_hostname:= db_host
 			mysql_server_port:= db_port
 			create transaction_isolation_level
-			transaction_isolation_level:= transaction_isolation_level.repeatable_read -- This is the standard in MySQL for InnoDB tables
+			transaction_isolation_level:= transaction_isolation_level.repeatable_read -- This is the default in MySQL for InnoDB tables
 		end
 
 feature {NONE} -- Connection details
@@ -71,7 +85,7 @@ feature {NONE} -- Connection details
 
 
 feature {NONE} -- Implementation
-	
+
 	internal_set_transaction_level (a_connection: MYSQLI_CLIENT)
 		-- Set the default transaction level defined in `Current.transaction_isolation_level'
 		do

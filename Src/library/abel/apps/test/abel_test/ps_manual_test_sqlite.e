@@ -9,6 +9,7 @@ class
 
 inherit
 	PS_REPOSITORY_TESTS
+	redefine on_clean end
 
 feature -- Tests
 
@@ -30,11 +31,12 @@ feature -- Tests
 		end
 
 
+
+
 feature {NONE} -- Initialization
 
 	make_repository: PS_RELATIONA_IN_MEMORY_REPOSITORY
 		local
-			database: PS_SQLITE_DATABASE
 			backend: PS_GENERIC_LAYOUT_SQL_BACKEND
 		do
 			create database.make (sqlite_file)
@@ -47,5 +49,14 @@ feature {NONE} -- Initialization
 
 	sqlite_file: STRING = "/home/roman_arch/sqlite_database.db"
 	--sqlite_file: STRING = "sqlite_database.db"
+
+	database: PS_SQLITE_DATABASE
+
+
+
+	on_clean
+		do
+			database.close_connections
+		end
 
 end

@@ -7,18 +7,33 @@ note
 deferred class
 	PS_SQL_ROW_ABSTRACTION
 
-feature {PS_EIFFELSTORE_EXPORT}
+feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
-	get_value (column_name: STRING): STRING
-		-- Get the value in column `column_name'
+	has_column (column_name: STRING):BOOLEAN
+		-- Does `Current' have a column with name `column_name'?
+		deferred
+		end
+
+feature {PS_EIFFELSTORE_EXPORT} -- Access
+
+
+	count: INTEGER
+		-- The number of items in `Current' row.
+		deferred
+		end
+
+	at alias "@" (column_name: STRING): STRING
+		-- Get the item at column `column_name'. Empty string if database field is NULL.
+		require
+			column_exists: has_column (column_name)
 		deferred
 		end
 
 
-	get_value_by_index (index:INTEGER):STRING
-		-- Get the value at index `index'
+	item alias "[]" (index:INTEGER):STRING
+		-- Get the item at index `index'. Empty string if database field is NULL.
 		require
-			positive_index: index > 0
+			valid_index: 0 < index and index <= count
 		deferred
 		end
 end

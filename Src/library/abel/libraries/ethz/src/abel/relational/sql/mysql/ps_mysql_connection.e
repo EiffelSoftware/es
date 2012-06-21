@@ -13,7 +13,7 @@ inherit
 inherit{NONE}
 	REFACTORING_HELPER
 
-create
+create {PS_MYSQL_DATABASE}
 	make
 
 feature {PS_EIFFELSTORE_EXPORT} -- Settings
@@ -22,6 +22,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Settings
 		-- Enable or disable autocommit
 		do
 			internal_connection.set_flag_autocommit (flag)
+			autocommit:= flag
+		ensure then
+			correctly_set: autocommit = flag
 		end
 
 
@@ -41,11 +44,9 @@ feature {PS_EIFFELSTORE_EXPORT}
 		end
 
 
-
 	commit
 		-- Commit the currently active transaction.
-		-- In case of an error, it will report it in `last_error' and raise an exception.
-		-- (Note that by default autocommit should be disabled)
+		-- In case of an error, including a failed commit, it will report it in `last_error' and raise an exception.
 		do
 			internal_connection.commit
 			if internal_connection.has_error then
@@ -58,7 +59,6 @@ feature {PS_EIFFELSTORE_EXPORT}
 	rollback
 		-- Rollback the currently active transaction.
 		-- In case of an error, it will report it in `last_error' and raise an exception.
-		-- (Note that by default autocommit should be disabled)
 		do
 			internal_connection.rollback
 			if internal_connection.has_error then
@@ -86,18 +86,21 @@ feature {PS_EIFFELSTORE_EXPORT}
 		-- The last occured error
 
 
-feature {PS_MYSQL_DATABASE} -- Initialization
-
-	make (a_connection: MYSQLI_CLIENT)
-			-- Initialization for `Current'.
-		do
-			internal_connection:= a_connection
-			create {PS_NO_ERROR} last_error
-		end
+feature {PS_MYSQL_DATABASE} -- Access
 
 	internal_connection: MYSQLI_CLIENT
 		-- The actual connection that gets wrapped here
 
+
+feature {NONE} -- Initialization
+
+	make (a_connection: MYSQLI_CLIENT; isolation_level: PS_TRANSACTION_ISOLATION_LEVEL)
+			-- Initialization for `Current'.
+		do
+			internal_connection:= a_connection
+			create {PS_NO_ERROR} last_error
+			transaction_isolation_level:= isolation_level
+		end
 
 feature {NONE} -- Implementation
 

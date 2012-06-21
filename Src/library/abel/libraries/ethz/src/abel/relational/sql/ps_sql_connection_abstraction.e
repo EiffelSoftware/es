@@ -12,9 +12,17 @@ inherit
 feature {PS_EIFFELSTORE_EXPORT} -- Settings
 
 	set_autocommit (flag:BOOLEAN)
-		-- Enable or disable autocommit
+		-- Enable or disable autocommit on this connection.
 		deferred
+		ensure
+			autocommit_correctly_disabled: not flag implies not autocommit -- We actually can't guarantee it the other way round in all cases
 		end
+
+	autocommit: BOOLEAN
+		-- Is autocommit enabled? Default: no
+
+	transaction_isolation_level: PS_TRANSACTION_ISOLATION_LEVEL
+		-- The transaction isolation level of the current connection, as set at creation time.
 
 feature {PS_EIFFELSTORE_EXPORT} -- Database operations
 
@@ -22,19 +30,21 @@ feature {PS_EIFFELSTORE_EXPORT} -- Database operations
 		-- Execute the SQL statement `statement', and store the result (if any) in `Current.last_result'
 		-- In case of an error, it will report it in `last_error' and raise an exception.
 		deferred
+			-- Remarks when implementing this feature:
+			-- The SQL string can come with or without a `;' character at the end.
+			-- It is also possible that there are multiple statements in `statement'. In this case they are separated by a `;'.
+			-- In case of such multi-statement function call, only the result of the last statement has to be stored in `last_result'.
 		end
 
 	commit
 		-- Commit the currently active transaction.
-		-- In case of an error, it will report it in `last_error' and raise an exception.
-		-- (Note that by default autocommit should be disabled)
+		-- In case of an error, including a failed commit, it will report it in `last_error' and raise an exception.
 		deferred
 		end
 
 	rollback
 		-- Rollback the currently active transaction.
 		-- In case of an error, it will report it in `last_error' and raise an exception.
-		-- (Note that by default autocommit should be disabled)
 		deferred
 		end
 

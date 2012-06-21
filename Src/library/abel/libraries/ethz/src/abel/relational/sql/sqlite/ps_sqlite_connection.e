@@ -9,8 +9,10 @@ class
 
 inherit
 	PS_SQL_CONNECTION_ABSTRACTION
+inherit {NONE}
+	REFACTORING_HELPER
 
-create
+create {PS_SQLITE_DATABASE}
 	make
 
 feature {PS_EIFFELSTORE_EXPORT} -- Settings
@@ -18,8 +20,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Settings
 	set_autocommit (flag:BOOLEAN)
 		-- Enable or disable autocommit
 		do
-			autocommit:= flag
---			print ("TODO")
+			-- Autocommit has to be disabled with only a single connection, so don't enable it
 		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Database operations
@@ -36,7 +37,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Database operations
 			-- By default we can get multiple SQL statements - SQLite somehow handles them differently, therefore split them.
 			all_statements:=statement.split (';')
 			all_statements.do_all (agent {STRING}.trim)
-			-- Remove all empty statements and add a `;' to all non-empty ones (as opposed to MySQL, SQLite needs this character)
+			-- Remove all empty statements, and add a `;' to all non-empty ones (as opposed to MySQL, SQLite needs this character)
 			from all_statements.start
 			until all_statements.after
 			loop
@@ -58,13 +59,15 @@ feature {PS_EIFFELSTORE_EXPORT} -- Database operations
 				create stmt.make (current_statement.item, internal_connection)
 				create res.make (stmt) -- This executes the statement
 
-				-- Error handling for easier debugging
+				-- Do error handling
 				if stmt.has_error then
+					-- Print information for easier debugging
 					print (current_statement.item)
 					if attached stmt.last_exception as ex then
 						print (ex.meaning)
 					end
-					check sql_error: False end
+					last_error:= get_error
+					last_error.raise
 				end
 
 				-- Collect the result (if any)
@@ -79,11 +82,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Database operations
 			-- Return the cursor of the result list
 			last_result:= result_list.new_cursor
 
-			if autocommit then
-			--	internal_connection.commit
-			--	internal_connection.begin_transaction (False)
-			end
-
 		rescue
 			-- Information to faciliate error handling
 			if attached internal_connection.last_exception as ex then
@@ -94,20 +92,18 @@ feature {PS_EIFFELSTORE_EXPORT} -- Database operations
 
 	commit
 		-- Commit the currently active transaction.
-		-- In case of an error, it will report it in `last_error' and raise an exception.
-		-- (Note that by default autocommit should be disabled)
+		-- In case of an error, including a failed commit, it will report it in `last_error' and raise an exception.
 		do
-		--	internal_connection.commit
-		--	internal_connection.begin_transaction (False)
+			internal_connection.commit
+			internal_connection.begin_transaction (False)
 		end
 
 	rollback
 		-- Rollback the currently active transaction.
 		-- In case of an error, it will report it in `last_error' and raise an exception.
-		-- (Note that by default autocommit should be disabled)
 		do
-		--	internal_connection.rollback
-		--	internal_connection.begin_transaction (False)
+			internal_connection.rollback
+			internal_connection.begin_transaction (False)
 		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Database results
@@ -120,7 +116,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Database results
 		-- The last occured error
 
 
-
 feature {PS_SQLITE_DATABASE} -- Initialization
 
 	make (connection: SQLITE_DATABASE)
@@ -131,10 +126,29 @@ feature {PS_SQLITE_DATABASE} -- Initialization
 
 			last_result:= (create {LINKED_LIST[PS_SQL_ROW_ABSTRACTION]}.make).new_cursor
 
+			-- The default isolation level is Serializable, and it can't be changed to something else
+			create transaction_isolation_level
+			transaction_isolation_level:= transaction_isolation_level.serializable
 		end
 
 	internal_connection: SQLITE_DATABASE
 
-	autocommit: BOOLEAN
+feature {NONE} -- Error handling
 
+	get_error: PS_ERROR
+		-- Translate the SQLite specific error to an ABEL error object.
+		local
+			error_number: INTEGER
+		do
+			if attached internal_connection.last_exception as exception then
+				error_number:= exception.result_code
+
+				fixme ("TODO: Extend this for all types of errors")
+				create {PS_GENERAL_ERROR} Result.make (exception.meaning)
+
+			else
+				create {PS_GENERAL_ERROR} Result.make ("Unknown error")
+			end
+
+		end
 end

@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PS_SQLITE_STRINGS}."
-	author: ""
+	description: "The SQLite specific SQL statements for the generic layout mapping strategy."
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -9,18 +9,8 @@ class
 
 inherit
 	PS_GENERIC_LAYOUT_SQL_STRINGS
-	redefine
-		Show_tables
-	end
 
-feature
-
-	Auto_increment_keyword: STRING
-		do
-			Result:= " AUTOINCREMENT "
-		end
-
-	Show_tables: STRING = "SELECT name FROM sqlite_master WHERE type = 'table'"
+feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Table creation
 
 
 	Create_value_table: STRING
@@ -64,6 +54,10 @@ feature
 			]"
 		end
 
+feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Data querying - Key manager
+
+
+	Show_tables: STRING = "SELECT name FROM sqlite_master WHERE type = 'table'"
 
 
 feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Data modification - Key manager

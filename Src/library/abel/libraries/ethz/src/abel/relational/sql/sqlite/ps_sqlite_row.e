@@ -10,29 +10,37 @@ class
 inherit
 	PS_SQL_ROW_ABSTRACTION
 
-create
+create {PS_SQLITE_CONNECTION}
 	make
 
-feature {PS_EIFFELSTORE_EXPORT}
+feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
-	get_value (column_name: STRING): STRING
-		-- Get the value in column `column_name'
+	has_column (column_name: STRING):BOOLEAN
+		-- Does `Current' have a column with name `column_name'?
 		do
-			if attached values.item (name_to_index_map[column_name]) as val then
+			Result:=name_to_index_map.has (column_name)
+		end
+
+feature {PS_EIFFELSTORE_EXPORT} -- Access
+
+
+	count: INTEGER
+		-- The number of items in `Current' row.
+
+	at alias "@" (column_name: STRING): STRING
+		-- Get the item at column `column_name'. Empty string if database field is NULL.
+		do
+			check attached values.item (name_to_index_map[column_name]) as val then
 				Result:= val
-			else
-				Result:= ""
 			end
 		end
 
 
-	get_value_by_index (index:INTEGER):STRING
-		-- Get the value at index `index'
+	item alias "[]" (index:INTEGER):STRING
+		-- Get the item at index `index'. Empty string if database field is NULL.
 		do
-			if attached values.item (index.as_natural_32) as val then
+			check attached values.item (index.as_natural_32) as val then
 				Result:= val
-			else
-				Result:= ""
 			end
 		end
 
@@ -43,30 +51,34 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		local
 			i:NATURAL
+			field_value: STRING
 		do
-			internal_row:= sqlite_row
-			create name_to_index_map.make (sqlite_row.count.as_integer_32 * 2)
-			create values.make (sqlite_row.count.as_integer_32 * 2)
+			-- Create the hash tables
+			count:= sqlite_row.count.to_integer_32
+			create name_to_index_map.make (count * 2)
+			create values.make (count * 2)
+
+			-- Copy all field values, as the entries in `sqlite_row' are not stable.
 			from i:= 1
-			until i> sqlite_row.count
+			until i > sqlite_row.count
 			loop
-				--print (sqlite_row.string_value (i))
-				--print (sqlite_row.column_name (i))
-	--			print ( sqlite_row.column_name (i) + "%N")
+				field_value:= ""
+				if not sqlite_row.is_null (i) then
+					field_value:= sqlite_row.string_value (i)
+				end
+
 				name_to_index_map.extend (i, sqlite_row.column_name (i))
-				values.extend (sqlite_row.string_value (i), i)
---				check false end
+				values.extend (field_value, i)
+
 				i:= i+1
 			end
 		end
 
 
 	values:HASH_TABLE[STRING, NATURAL]
-
-
-	internal_row: SQLITE_RESULT_ROW
-		-- Actually, don't store the internal row - it gets deleted in the background...
+		-- Maps the column index to the actual result
 
 	name_to_index_map: HASH_TABLE[NATURAL, STRING]
+		-- Maps the column name to its index
 
 end

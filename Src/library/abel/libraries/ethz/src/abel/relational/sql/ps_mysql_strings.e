@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PS_MYSQL_STRINGS}."
-	author: ""
+	description: "The MySQL specific SQL statements for the generic layout mapping strategy."
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -13,19 +13,12 @@ inherit
 
 feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Table creation
 
-	Auto_increment_keyword: STRING
-		do
-			Result:= " AUTO_INCREMENT "
-		end
 
 	Create_value_table: STRING
 		do
 			Result:= "[
 					CREATE TABLE ps_value (
-					objectid INTEGER NOT NULL
-					]"
-					 + Auto_increment_keyword + ", " +
-					"[
+					objectid INTEGER NOT NULL AUTO_INCREMENT, 
 					attributeid INTEGER,
 					runtimetype INTEGER,
 					value VARCHAR(128),
@@ -43,11 +36,7 @@ feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Table creation
 			Result:= "[
 
 				CREATE TABLE ps_class (
-					classid INTEGER NOT NULL
-						]"
-						 + Auto_increment_keyword +
-						"[
-						PRIMARY KEY, 
+					classid INTEGER NOT NULL AUTO_INCREMENT	PRIMARY KEY, 
 					classname VARCHAR(64)
 				)
 			]"
@@ -57,11 +46,7 @@ feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Table creation
 		do
 			Result:= "[
 				CREATE TABLE ps_attribute (
-					attributeid INTEGER NOT NULL
-						]"
-						 + Auto_increment_keyword +
-						"[
-						PRIMARY KEY,
+					attributeid INTEGER NOT NULL AUTO_INCREMENT	PRIMARY KEY,
 					name VARCHAR(128),
 					class INTEGER,
 
@@ -69,6 +54,14 @@ feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Table creation
 				)
 			]"
 		end
+
+feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Data querying - Key manager
+
+	Show_tables: STRING
+		do
+			Result:= "SHOW TABLES"
+		end
+
 
 
 feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Data modification - Key manager

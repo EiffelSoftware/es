@@ -137,7 +137,7 @@ feature {PS_GENERIC_LAYOUT_SQL_BACKEND} -- Key creation
 
 			-- Retrieve the generated primary key
 			management_connection.execute_sql (SQL_Strings.Query_new_id_of_class (class_name))
-			new_primary_key:= management_connection.last_result.item.get_value_by_index (1).to_integer
+			new_primary_key:= management_connection.last_result.item.item (1).to_integer
 
 			-- Add the class and its primary key to the local copy
 			add_class_key (class_name, new_primary_key)
@@ -159,7 +159,7 @@ feature {PS_GENERIC_LAYOUT_SQL_BACKEND} -- Key creation
 
 			-- Retrieve the generated primary key
 			management_connection.execute_sql (SQL_Strings.Query_new_id_of_attribute (attribute_name, class_key))
-			new_primary_key:= management_connection.last_result.item.get_value_by_index (1).to_integer
+			new_primary_key:= management_connection.last_result.item.item (1).to_integer
 
 			-- Add the attribute and its new primary key to the local copy
 			add_attribute_key (attribute_name, new_primary_key, class_key)
@@ -224,7 +224,7 @@ feature {NONE} -- Initialization
 
 			create existing_tables.make
 			across management_connection as cursor loop
-				existing_tables.extend (cursor.item.get_value_by_index (1))
+				existing_tables.extend (cursor.item.item (1))
 			end
 
 			if not existing_tables.there_exists ( agent {STRING}.is_case_insensitive_equal (SQL_Strings.Class_table)) then
@@ -242,13 +242,13 @@ feature {NONE} -- Initialization
 			management_connection.execute_sql (SQL_Strings.Query_class_table)
 
 			across a_connection as row_cursor loop
-				add_class_key (row_cursor.item.get_value (SQL_Strings.Class_table_name_column), row_cursor.item.get_value (SQL_Strings.Class_table_id_column).to_integer)
+				add_class_key (row_cursor.item.at ( SQL_Strings.Class_table_name_column), row_cursor.item.at (SQL_Strings.Class_table_id_column).to_integer)
 			end
 
 			management_connection.execute_sql (SQL_Strings.Query_attribute_table)
 
 			across a_connection as row_cursor loop
-				add_attribute_key (row_cursor.item.get_value (SQL_Strings.Attribute_table_name_column), row_cursor.item.get_value (SQL_Strings.Attribute_table_id_column).to_integer, row_cursor.item.get_value (SQL_Strings.Attribute_table_class_column).to_integer)
+				add_attribute_key (row_cursor.item.at (SQL_Strings.Attribute_table_name_column), row_cursor.item.at (SQL_Strings.Attribute_table_id_column).to_integer, row_cursor.item.at (SQL_Strings.Attribute_table_class_column).to_integer)
 			end
 		end
 
