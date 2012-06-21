@@ -19,6 +19,15 @@ feature -- Tests
 			criteria_tests.test_criteria_agents_and_predefined
 		end
 
+	test_crud_flat_sqlite
+		do
+			crud_tests.all_flat_object_tests
+		end
+
+	test_references_sqlite
+		do
+			crud_tests.all_references_tests
+		end
 
 
 feature {NONE} -- Initialization
@@ -36,6 +45,7 @@ feature {NONE} -- Initialization
 			create Result.make (backend)
 		end
 
-	sqlite_file: STRING = "sqlite_database.db"
+	sqlite_file: STRING = "/home/roman_arch/sqlite_database.db"
+	--sqlite_file: STRING = "sqlite_database.db"
 
 end

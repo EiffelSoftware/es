@@ -353,10 +353,10 @@ feature {NONE} -- Implementation
 				-- Perform update or insert, depending on the presence in the database
 				if already_present_attributes.has (attribute_id) then
 					-- Update
-					collected_insert_statements.append ( SQL_Strings.Update_value (primary, attribute_id, runtime_type, value) + "; " )
+					collected_insert_statements.append ( " " + SQL_Strings.Update_value (primary, attribute_id, runtime_type, value) + ";" )
 				else
 					-- Insert
-					collected_insert_statements.append ( SQL_Strings.Insert_value (primary, attribute_id, runtime_type, value) + "; " )
+					collected_insert_statements.append ( " " + SQL_Strings.Insert_value (primary, attribute_id, runtime_type, value) + ";" )
 				end
 			end
 			if not collected_insert_statements.is_empty then

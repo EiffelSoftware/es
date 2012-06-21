@@ -21,17 +21,23 @@ feature {PS_EIFFELSTORE_EXPORT}
 		local
 			sqlite_connection: SQLITE_DATABASE
 		do
-			create sqlite_connection.make_create_read_write (database)
-			sqlite_connection.begin_transaction (False)
-			create {PS_SQLITE_CONNECTION} Result.make (sqlite_connection)
+	--		create sqlite_connection.make_create_read_write (database)
+	--		sqlite_connection.begin_transaction (False)
+	--		create {PS_SQLITE_CONNECTION} Result.make (sqlite_connection)
+
+			create {PS_SQLITE_CONNECTION} Result.make (unique_connection)
+
 		end
 
 	release_connection (a_connection:PS_SQL_CONNECTION_ABSTRACTION)
 		-- Release connection `a_connection'
 		do
-			check attached {PS_SQLITE_CONNECTION} a_connection as conn then
-				conn.internal_connection.close
-			end
+			--check attached {PS_SQLITE_CONNECTION} a_connection as conn then
+			--	conn.internal_connection.rollback
+			--	conn.internal_connection.close
+			--end
+
+
 		end
 
 feature {NONE} -- Initialization
@@ -42,8 +48,11 @@ feature {NONE} -- Initialization
 			create transaction_isolation_level
 			transaction_isolation_level:= transaction_isolation_level.repeatable_read
 			database:= database_file
+			create unique_connection.make_create_read_write (database)
 		end
 
 	database: STRING
 
+
+	unique_connection: SQLITE_DATABASE
 end

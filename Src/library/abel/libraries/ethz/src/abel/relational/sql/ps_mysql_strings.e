@@ -1,38 +1,36 @@
 note
-	description: "Summary description for {PS_SQLITE_STRINGS}."
+	description: "Summary description for {PS_MYSQL_STRINGS}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	PS_SQLITE_STRINGS
+	PS_MYSQL_STRINGS
 
 inherit
 	PS_GENERIC_LAYOUT_SQL_STRINGS
-	redefine
-		Show_tables
-	end
 
-feature
+
+feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Table creation
 
 	Auto_increment_keyword: STRING
 		do
-			Result:= " AUTOINCREMENT "
+			Result:= " AUTO_INCREMENT "
 		end
-
-	Show_tables: STRING = "SELECT name FROM sqlite_master WHERE type = 'table'"
-
 
 	Create_value_table: STRING
 		do
 			Result:= "[
 					CREATE TABLE ps_value (
-					objectid INTEGER, 
+					objectid INTEGER NOT NULL
+					]"
+					 + Auto_increment_keyword + ", " +
+					"[
 					attributeid INTEGER,
 					runtimetype INTEGER,
 					value VARCHAR(128),
 
-					PRIMARY KEY (objectid ASC, attributeid),
+					PRIMARY KEY (objectid, attributeid),
 					FOREIGN KEY (attributeid) REFERENCES ps_attribute (attributeid) ON DELETE CASCADE,
 					FOREIGN KEY (runtimetype) REFERENCES ps_class (classid) ON DELETE CASCADE
 					)
@@ -45,7 +43,11 @@ feature
 			Result:= "[
 
 				CREATE TABLE ps_class (
-					classid INTEGER PRIMARY KEY AUTOINCREMENT,
+					classid INTEGER NOT NULL
+						]"
+						 + Auto_increment_keyword +
+						"[
+						PRIMARY KEY, 
 					classname VARCHAR(64)
 				)
 			]"
@@ -55,7 +57,11 @@ feature
 		do
 			Result:= "[
 				CREATE TABLE ps_attribute (
-					attributeid INTEGER PRIMARY KEY AUTOINCREMENT,
+					attributeid INTEGER NOT NULL
+						]"
+						 + Auto_increment_keyword +
+						"[
+						PRIMARY KEY,
 					name VARCHAR(128),
 					class INTEGER,
 
@@ -65,17 +71,16 @@ feature
 		end
 
 
-
 feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Data modification - Key manager
 
 	Insert_class_use_autoincrement (class_name:STRING):STRING
 		do
-			Result:="INSERT INTO ps_class ( classname) VALUES ( '" + class_name + "')"
+			Result:="INSERT INTO ps_class (classname) VALUES ('" + class_name + "')"
 		end
 
 	Insert_attribute_use_autoincrement (attribute_name:STRING; class_key:INTEGER):STRING
 		do
-			Result:= "INSERT INTO ps_attribute (attributeid, name, class) VALUES (NULL, '" + attribute_name + "', " + class_key.out +  ")"
+			Result:= "INSERT INTO ps_attribute (name, class) VALUES ('" + attribute_name + "', " + class_key.out +  ")"
 		end
 
 
@@ -83,12 +88,13 @@ feature {PS_GENERIC_LAYOUT_SQL_BACKEND} -- Data modification - Backend
 
 	Insert_value_use_autoincrement (attribute_id, runtimetype:INTEGER;  value: STRING): STRING
 		do
-			Result:= "INSERT INTO ps_value (objectid, attributeid, runtimetype, value) VALUES ( (SELECT CASE WHEN MAX(objectid) IS NULL THEN 1 ELSE (MAX(objectid) + 1) END FROM ps_value) ," + attribute_id.out + ", " + runtimetype.out + ", '" + value + "')"
+			Result:= "INSERT INTO ps_value (attributeid, runtimetype, value) VALUES (" + attribute_id.out + ", " + runtimetype.out + ", '" + value + "')"
 		end
+
 
 feature {PS_GENERIC_LAYOUT_SQL_BACKEND}
 
-	For_update_appendix: STRING = ""
+	For_update_appendix: STRING = " FOR UPDATE "
 
 
 end

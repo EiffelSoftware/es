@@ -72,7 +72,7 @@ feature {NONE} -- Initialization
 			backend: PS_GENERIC_LAYOUT_SQL_BACKEND
 		do
 			create database.make (username, password, db_name, db_host, db_port)
-			create backend.make (database, create {PS_GENERIC_LAYOUT_SQL_STRINGS})
+			create backend.make (database, create {PS_MYSQL_STRINGS})
 
 			backend.wipe_out_all
 
