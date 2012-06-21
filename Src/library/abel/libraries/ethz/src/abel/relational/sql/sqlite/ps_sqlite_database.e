@@ -24,7 +24,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 			-- It only works with one connection, so create a wrappe around it and return that.
 			create {PS_SQLITE_CONNECTION} Result.make (unique_connection)
 
---			create sqlite_connection.make_create_read_write (database)
+--			create sqlite_connection.make_create_read_write (database_location)
 --			sqlite_connection.begin_transaction (False)
 --			create {PS_SQLITE_CONNECTION} Result.make (sqlite_connection)
 

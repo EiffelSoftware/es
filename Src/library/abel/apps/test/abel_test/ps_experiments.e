@@ -99,4 +99,21 @@ feature
 		end
 
 
+	test_sqlite_multiple_open_connections
+		local
+			conn1, conn2: detachable SQLITE_DATABASE
+			file:STRING
+		do
+			file:= "test.db"
+			create conn1.make_create_read_write (file)
+			create conn2.make_create_read_write (file)
+
+			conn1.begin_transaction (False)
+			conn2.begin_transaction (False)
+		rescue
+			check attached conn2 as c and then  attached c.last_exception as ex then
+				print (ex.meaning)
+			end
+		end
+
 end
