@@ -66,7 +66,7 @@ feature
 
 feature {NONE} -- Initialization
 
-	make_repository: PS_RELATIONA_IN_MEMORY_REPOSITORY
+	make_repository: PS_RELATIONAL_REPOSITORY
 		local
 			database: PS_MYSQL_DATABASE
 			backend: PS_GENERIC_LAYOUT_SQL_BACKEND

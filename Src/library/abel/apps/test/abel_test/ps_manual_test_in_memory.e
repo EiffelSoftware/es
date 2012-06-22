@@ -11,7 +11,7 @@ inherit
 
 feature{NONE}
 
-	make_repository: PS_RELATIONA_IN_MEMORY_REPOSITORY
+	make_repository: PS_RELATIONAL_REPOSITORY
 		do
 			create Result.make (create {PS_IN_MEMORY_DATABASE}.make)
 		end

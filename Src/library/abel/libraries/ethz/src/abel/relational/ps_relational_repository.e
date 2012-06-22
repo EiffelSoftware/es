@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	PS_RELATIONA_IN_MEMORY_REPOSITORY
+	PS_RELATIONAL_REPOSITORY
 
 inherit
 	PS_REPOSITORY
