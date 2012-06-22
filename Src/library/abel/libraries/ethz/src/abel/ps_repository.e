@@ -52,6 +52,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 			transaction_set: query.transaction = transaction
 			transaction_still_alive: transaction.is_active
 			no_error: not transaction.has_error
+			can_handle_retrieved_object: not query.result_cursor.after implies  can_handle (query.result_cursor.item)
 			not_after_means_known: not query.result_cursor.after implies is_identified (query.result_cursor.item, transaction)
 		end
 
@@ -66,6 +67,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 		ensure
 			transaction_still_alive: query.transaction.is_active
 			no_error: not query.transaction.has_error
+			can_handle_retrieved_object: not query.result_cursor.after implies  can_handle (query.result_cursor.item)
 			not_after_means_known: not query.result_cursor.after implies is_identified (query.result_cursor.item, query.transaction)
 		end
 
@@ -106,6 +108,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 		require
 			transaction_repository_correct: transaction.repository = Current
 			active_transaction: transaction.is_active
+			can_handle_object: can_handle (object)
 			not_known: not is_identified (object, transaction)
 		deferred
 		ensure
@@ -120,6 +123,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 		require
 			transaction_repository_correct: transaction.repository = Current
 			active_transaction: transaction.is_active
+			can_handle_object: can_handle (object)
 			object_known: is_identified (object, transaction)
 		deferred
 		ensure
@@ -134,6 +138,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 		require
 			transaction_repository_correct: transaction.repository = Current
 			active_transaction: transaction.is_active
+			can_handle_object: can_handle (object)
 			object_known: is_identified (object, transaction)
 		deferred
 		ensure
@@ -208,6 +213,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status
 		-- Is `an_object' already identified and thus registered in this repository?
 		do
 			Result:=id_manager.is_identified (an_object, a_transaction)
+		end
+
+
+	can_handle (object:ANY): BOOLEAN
+		-- Can `Current' handle the object `object'?
+		deferred
 		end
 
 

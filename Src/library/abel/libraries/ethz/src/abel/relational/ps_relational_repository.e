@@ -128,6 +128,16 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing
 			make (backend)
 		end
 
+feature {PS_EIFFELSTORE_EXPORT} -- Status Report
+
+
+	can_handle (object:ANY): BOOLEAN
+		-- Can `Current' handle the object `object'?
+		do
+			to_implement ("Disassemble object and then ask backend for each part")
+			Result:=True
+		end
+
 feature{NONE} -- Initialization
 
 	make (a_backend: PS_BACKEND_STRATEGY)

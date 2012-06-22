@@ -38,6 +38,12 @@ feature -- Status Report
 			Result := repository.is_identified (an_object, a_transaction)
 		end
 
+	can_handle (object:ANY): BOOLEAN
+			-- Can the executor with the current repository handle the object `object'?
+		do
+			Result:= repository.can_handle (object)
+		end
+
 feature -- Data retrieval
 
 	execute_query (query: PS_OBJECT_QUERY [ANY])
@@ -47,6 +53,7 @@ feature -- Data retrieval
 		ensure
 			query_executed: query.is_executed
 			retrieved_item_persistent: not query.result_cursor.after implies is_persistent (query.result_cursor.item, new_transaction)
+			can_handle_retrieved_item: not query.result_cursor.after implies can_handle (query.result_cursor.item)
 		end
 
 	execute_tuple_query (tuple_query: PS_TUPLE_QUERY[ANY])
@@ -73,6 +80,7 @@ feature -- Data manipulation
 			-- Insert `an_object' into the repository.
 		require
 			object_not_persistent_yet: not is_persistent (an_object, new_transaction)
+			can_handle_object: can_handle (an_object)
 		do
 			execute_within_implicit_transaction (agent insert_within_transaction (an_object, ?), False)
 		ensure
@@ -83,6 +91,7 @@ feature -- Data manipulation
 			-- Write changes of `an_object' to the repository.
 		require
 			object_persistent: is_persistent (an_object, new_transaction)
+			can_handle_object: can_handle (an_object)
 		do
 			execute_within_implicit_transaction (agent update_within_transaction (an_object, ?), False)
 		ensure
@@ -93,6 +102,7 @@ feature -- Data manipulation
 			-- Delete `an_object' from the repository
 		require
 			object_persistent: is_persistent (an_object, new_transaction)
+			can_handle_object: can_handle (an_object)
 		do
 			execute_within_implicit_transaction (agent delete_within_transaction (an_object, ?), False)
 		ensure
@@ -124,6 +134,7 @@ feature -- Transaction-based data retrieval and querying
 			query_executed: a_query.is_executed
 			transaction_set: a_query.transaction = transaction
 			result_is_persistent: not a_query.result_cursor.after implies is_persistent (a_query.result_cursor.item, transaction)
+			can_handle_retrieved_item: not a_query.result_cursor.after implies can_handle (a_query.result_cursor.item)
 			aborted_implies_after: transaction.has_error implies a_query.result_cursor.after
 			only_transaction_conflicts_return_normally: transaction.has_error implies attached{PS_TRANSACTION_ERROR} transaction.error
 		end
@@ -148,6 +159,7 @@ feature -- Transaction-based data retrieval and querying
 		require
 			same_repository: transaction.repository = Current.repository
 			object_not_yet_inserted: not is_persistent (an_object, transaction)
+			can_handle_object: can_handle (an_object)
 		do
 			handle_error_on_action (agent repository.insert (an_object, transaction), transaction)
 		ensure
@@ -163,6 +175,7 @@ feature -- Transaction-based data retrieval and querying
 		require
 			same_repository: transaction.repository = Current.repository
 			object_persistent: is_persistent (an_object, transaction)
+			can_handle_object: can_handle (an_object)
 		do
 			handle_error_on_action (agent repository.update (an_object, transaction), transaction)
 		ensure
@@ -176,6 +189,7 @@ feature -- Transaction-based data retrieval and querying
 		require
 			same_repository: transaction.repository = Current.repository
 			object_persistent: is_persistent (an_object, transaction)
+			can_handle_object: can_handle (an_object)
 		do
 			handle_error_on_action (agent repository.delete (an_object, transaction), transaction)
 		ensure

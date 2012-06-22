@@ -19,9 +19,7 @@ feature -- Access
 	item: G
 			-- Item at current cursor position.
 		do
-			check attached int_item as res then
-				Result := res
-			end
+			Result := attach (detachable_item)
 		end
 
 feature -- Status report	
@@ -41,6 +39,9 @@ feature -- Cursor movement
 					tq.transaction.repository.next_tuple_entry (tq)
 				end
 			end
+		ensure then
+			item_is_identified: query.transaction.repository.is_identified (item, query.transaction)
+			item_can_be_handled: query.transaction.repository.can_handle (item)
 		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
@@ -51,7 +52,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 			actual_type_is_G: (object /= Void) implies (attached {G} object)
 		do
 			if attached {G} object as new_item then
-				int_item := new_item
+				detachable_item := new_item
 				after := False
 			else
 				after:=True
@@ -67,12 +68,15 @@ feature {PS_QUERY} -- Initialization
 	set_query (a_query: PS_QUERY [ANY])
 			-- Set query to `a_query'. Part of initialization process
 		do
-			query := a_query
+			detachable_query := a_query
 		ensure
 			query_set: query = a_query
 		end
 
-	query: detachable PS_QUERY [ANY]
+	query: PS_QUERY [ANY]
+		do
+			Result:= attach (detachable_query)
+		end
 
 	make
 			-- Create a new result set.
@@ -82,8 +86,16 @@ feature {PS_QUERY} -- Initialization
 
 feature {NONE} -- Implementation
 
-	int_item: detachable G
+	detachable_item: detachable G
+		-- `item' as detachable (Void safety)
+
+	detachable_query: detachable PS_QUERY[ANY]
+		-- `query' as detachable (Void safety)
 
 invariant
-	attached_item_or_after: int_item /= Void or after
+	attached_item_or_after: attached detachable_item or after
+	attached_query_or_after: attached detachable_query or after
+	item_identified: not after implies query.transaction.repository.is_identified (item, query.transaction)
+	item_can_be_handled:  not after implies query.transaction.repository.can_handle (item)
+
 end
