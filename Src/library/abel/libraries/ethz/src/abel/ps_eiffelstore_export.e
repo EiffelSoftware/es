@@ -17,4 +17,10 @@ feature {NONE}
 			end
 		end
 
+	todo_stop
+		-- Stop execution because of unimplemented feature
+		do
+			check not_implemented: False end
+		end
+
 end

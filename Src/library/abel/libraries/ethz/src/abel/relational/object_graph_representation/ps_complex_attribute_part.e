@@ -30,7 +30,7 @@ feature
 	storable_tuple (optional_primary: INTEGER):PS_PAIR[STRING, STRING]
 		-- The storable tuple of the current object.
 		do
-			create Result.make (optional_primary.out, object_id.metadata.class_of_type.name)
+			create Result.make (optional_primary.out, object_id.metadata.base_class.name)
 		end
 
 

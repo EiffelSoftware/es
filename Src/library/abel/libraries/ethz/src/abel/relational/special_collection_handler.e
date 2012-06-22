@@ -130,7 +130,7 @@ feature -- Object assembly
 				Result:= reflection.new_special_any_instance (type_id.type.type_id, count)
 			else
 			fixme ("TODO: all other basic types")
-				if type_id.generic_type (1).type.out.is_equal ("BOOLEAN") then
+				if type_id.actual_generic_parameter (1).type.out.is_equal ("BOOLEAN") then
 					create {SPECIAL[BOOLEAN]} Result.make_empty (count)
 				else
 					create {SPECIAL[INTEGER]} Result.make_empty (count)

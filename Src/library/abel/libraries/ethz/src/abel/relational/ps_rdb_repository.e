@@ -113,7 +113,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status
 
-	metadata: PS_METADATA_MANAGER
+	metadata: PS_METADATA_FACTORY
 
 	database: MYSQLI_CLIENT
 

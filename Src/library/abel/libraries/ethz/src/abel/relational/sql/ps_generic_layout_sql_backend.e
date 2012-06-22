@@ -64,7 +64,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 
 			create result_list.make
 
-			sql_string:= SQL_Strings.query_values_from_class (SQL_Strings.convert_to_sql (db_metadata_manager.attribute_keys_of_class (db_metadata_manager.create_get_primary_key_of_class (type.class_of_type.name ))))
+			sql_string:= SQL_Strings.query_values_from_class (SQL_Strings.convert_to_sql (db_metadata_manager.attribute_keys_of_class (db_metadata_manager.create_get_primary_key_of_class (type.base_class.name ))))
 			if not transaction.is_readonly then
 				sql_string.append (SQL_Strings.For_update_appendix)
 			end
@@ -73,7 +73,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			until row_cursor.after
 			loop
 				-- create new object
-				create current_obj.make (row_cursor.item.at (SQL_Strings.Value_table_id_column).to_integer, type.class_of_type)
+				create current_obj.make (row_cursor.item.at (SQL_Strings.Value_table_id_column).to_integer, type.base_class)
 
 				-- fill all attributes - The result is ordered by the object id, therefore the attributes of a single object are grouped together.
 				from
@@ -143,7 +143,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 			-- Retrieve some required information
 			connection:= get_connection (a_transaction)
 			none_class_key:= db_metadata_manager.create_get_primary_key_of_class (SQL_Strings.None_class)
-			existence_attribute_key := db_metadata_manager.create_get_primary_key_of_attribute (SQL_Strings.Existence_attribute, db_metadata_manager.create_get_primary_key_of_class (an_object.object_id.metadata.class_of_type.name))
+			existence_attribute_key := db_metadata_manager.create_get_primary_key_of_attribute (SQL_Strings.Existence_attribute, db_metadata_manager.create_get_primary_key_of_class (an_object.object_id.metadata.base_class.name))
 
 			-- Generate a new primary key in the database by inserting the "existence" attribute with the objects object_identifier as a temporary value
 			connection.execute_sql ( SQL_Strings.Insert_value_use_autoincrement (existence_attribute_key, none_class_key, an_object.object_identifier.out))
@@ -203,7 +203,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			-- Retrieves the object-oriented collection of type `object_type' and with primary key `object_primary_key'.
 		do
 			check not_implemented: False end
-			create Result.make (collection_primary_key, collection_type.class_of_type)
+			create Result.make (collection_primary_key, collection_type.base_class)
 	 	end
 
 	insert_objectoriented_collection (a_collection: PS_OBJECT_COLLECTION_PART[ITERABLE[detachable ANY]]; a_transaction:PS_TRANSACTION)
@@ -226,7 +226,7 @@ feature {PS_EIFFELSTORE_EXPORT}-- Relational collection operations
 			-- Retrieves the relational collection between class `owner_type' and `collection_item_type', where the owner has primary key `owner_key' and the attribute name of the collection inside the owner object is called `owner_attribute_name'
 		do
 			check not_implemented: False end
-			create Result.make (owner_key, owner_type.class_of_type, owner_attribute_name)
+			create Result.make (owner_key, owner_type.base_class, owner_attribute_name)
 		end
 
 
@@ -347,7 +347,7 @@ feature {NONE} -- Implementation
 				-- get the needed information
 				referenced_part:= object.get_value (current_attribute.item)
 				value:= referenced_part.storable_tuple (key_mapper.quick_translate (referenced_part.object_identifier, transaction)).first
-				attribute_id:= db_metadata_manager.create_get_primary_key_of_attribute (current_attribute.item, db_metadata_manager.create_get_primary_key_of_class (object.object_id.metadata.class_of_type.name		))
+				attribute_id:= db_metadata_manager.create_get_primary_key_of_attribute (current_attribute.item, db_metadata_manager.create_get_primary_key_of_class (object.object_id.metadata.base_class.name		))
 																																										--, a_connection), a_connection)
 				runtime_type:= db_metadata_manager.create_get_primary_key_of_class (referenced_part.storable_tuple (key_mapper.quick_translate (referenced_part.object_identifier, transaction)).second)--, a_connection)
 

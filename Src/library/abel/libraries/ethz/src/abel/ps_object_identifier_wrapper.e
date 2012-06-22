@@ -37,6 +37,6 @@ feature	{PS_EIFFELSTORE_EXPORT} -- Access
 		-- The object's class name
 		obsolete "use metadata.class_of_type.name instead"
 		do
-			Result:= metadata.class_of_type.name
+			Result:= metadata.base_class.name
 		end
 end

@@ -198,7 +198,7 @@ feature { NONE } -- Implementation
 		do
 			create identifier_table.make
 			create subscribers.make
-			create metadata_manager.make_new
+			create metadata_manager.make
 			last_id:=0
 			create registered_transactions.make
 		end
@@ -213,7 +213,7 @@ feature { NONE } -- Implementation
 	last_id:INTEGER
 		-- the last id generated
 
-	metadata_manager: PS_METADATA_MANAGER
+	metadata_manager: PS_METADATA_FACTORY
 		-- A manager to generate metadata
 
 invariant

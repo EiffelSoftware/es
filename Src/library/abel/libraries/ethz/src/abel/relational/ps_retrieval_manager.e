@@ -92,7 +92,7 @@ feature {NONE} -- Implementation: Build functions for PS_RETRIEVED_* objects
 	build_object(type:PS_TYPE_METADATA; obj:PS_RETRIEVED_OBJECT; transaction:PS_TRANSACTION; bookkeeping:HASH_TABLE[ANY, INTEGER]): ANY
 		-- Build the object `obj'
 		require
-			obj.class_metadata.name.is_equal (type.class_of_type.name)
+			obj.class_metadata.name.is_equal (type.base_class.name)
 		local
 			reflection:INTERNAL
 			field_value: ANY
@@ -115,17 +115,17 @@ feature {NONE} -- Implementation: Build functions for PS_RETRIEVED_* objects
 					-- Set all the attributes
 
 					-- See if it is a basic attribute
-					if not try_basic_attribute (Result, obj.attribute_value (attr_cursor.item).value, type.index_of (attr_cursor.item)) then
+					if not try_basic_attribute (Result, obj.attribute_value (attr_cursor.item).value, type.field_index (attr_cursor.item)) then
 
 						-- If not it is either a referenced object or a collection. In either case, use the `Current.build' function.
 						field_type:= type.attribute_type (attr_cursor.item)
 						field_val:= build (field_type, obj.attribute_value (attr_cursor.item), transaction, bookkeeping)
 
 						if attached field_val then
-							print (reflection.field_name (type.index_of (attr_cursor.item), Result).out + "%N")
+							print (reflection.field_name (type.field_index (attr_cursor.item), Result).out + "%N")
 							print (type.type.out + field_type.type.out + "%N")
 
-							reflection.set_reference_field (type.index_of (attr_cursor.item), Result, field_val)
+							reflection.set_reference_field (type.field_index (attr_cursor.item), Result, field_val)
 						end
 					end
 				end
@@ -226,7 +226,7 @@ feature {NONE} -- Implementation - Build support functions.
 			create Result.make
 
 			across collection.collection_items as items loop
-				item:= build (type.generic_type (1), items.item, transaction, bookkeeping)
+				item:= build (type.actual_generic_parameter (1), items.item, transaction, bookkeeping)
 				Result.extend (item)
 			end
 		end
@@ -388,7 +388,7 @@ feature {NONE} -- Implementation: Query initialization
 
 feature {NONE} -- Implementation - Core data structures
 
-	metadata_manager: PS_METADATA_MANAGER
+	metadata_manager: PS_METADATA_FACTORY
 		-- Creates metadata for types
 
 	id_manager: PS_OBJECT_IDENTIFICATION_MANAGER
@@ -411,7 +411,7 @@ feature {NONE} -- Initialization
 			create query_to_cursor_map.make (100)
 			create bookkeeping_manager.make (100)
 			create collection_handlers.make
-			create metadata_manager.make_new
+			create metadata_manager.make
 		end
 
 	backend:PS_BACKEND_STRATEGY

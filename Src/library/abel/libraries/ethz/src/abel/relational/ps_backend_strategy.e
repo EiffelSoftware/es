@@ -53,14 +53,14 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 		-- If `type' has a generic parameter, the retrieve function will return objects of all generic instances of the generating class.
 		-- You can find out about the actual generic parameter by comparing the class name associated to a foreign key value.
 		require
-			most_general_type: across type.supertypes as supertype all not (supertype.item.class_of_type.name.is_equal (type.class_of_type.name) and type.is_subtype_of (supertype.item)) end
+			most_general_type: across type.supertypes as supertype all not (supertype.item.base_class.name.is_equal (type.base_class.name) and type.is_subtype_of (supertype.item)) end
 			all_attributes_exist: across attributes as attr all type.attributes.has (attr.item) end
 
 		deferred
 			-- TODO: to have lazy loading support, we need to have a special ITERATION_CURSOR and a function next in this class to load the next item of this customized cursor
 		ensure
 			attributes_loaded: not Result.after implies check_attributes_loaded (type, attributes, Result.item)
-			class_metadata_set: not Result.after implies Result.item.class_metadata.name.is_equal (type.class_of_type.name)
+			class_metadata_set: not Result.after implies Result.item.class_metadata.name.is_equal (type.base_class.name)
 		end
 
 
@@ -82,7 +82,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 		deferred
 		ensure
 		--	primary_keys.count = Result.count
-			across Result as res all res.item.class_metadata.name = type.class_of_type.name end
+			across Result as res all res.item.class_metadata.name = type.base_class.name end
 		end
 
 
