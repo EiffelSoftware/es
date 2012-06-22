@@ -1,5 +1,11 @@
 note
-	description: "Objects that ..."
+	description: "[
+				Root class for ecf updater
+				
+				note: we should support unicode path in the future, that's why we tried to use STRING_GENERAL
+				      but in many places we have  .as_string_8
+				      so this is hybrid for now, and now it works only with ASCII path...
+			]"
 	author: "$Author$"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -24,6 +30,7 @@ feature {NONE} -- Initialization
 			create tb.make_with_key_tester (50, create {STRING_EQUALITY_TESTER})
 
 			create errors.make (0)
+			create warnings.make (0)
 			ecf_table := tb
 			root_directory := args.root_directory	--"c:\_dev\EWF\EWF-dev"
 			root_base_name := args.base_name	--"$EIFFEL_LIBRARY"
@@ -32,6 +39,13 @@ feature {NONE} -- Initialization
 					rep_lst as r
 				loop
 					add_replacement (r.item)
+				end
+			end
+			if attached args.variable_expansions as exp_lst and then not exp_lst.is_empty then
+				across
+					exp_lst as x
+				loop
+					add_variable_expansion (x.item)
 				end
 			end
 
@@ -80,7 +94,13 @@ feature {NONE} -- Initialization
 
 			if confirmed then
 				create dv.make (agent analyze_ecf)
+				if verbose then
+					report_progress ("Scanning %"" + root_directory.as_string_8 + "%" for .ecf files ...")
+				end
 				dv.process_directory (absolute_directory_path (root_directory))
+				if verbose then
+					report_progress ("Found " + ecf_table.count.out + " .ecf files.")
+				end
 
 	-- TESTS
 	--			update_ecf (root_directory + "\library\server\wsf\tests\echo\echo-safe.ecf")
@@ -102,6 +122,17 @@ feature {NONE} -- Initialization
 						l_dirs as c
 					loop
 						dv.process_directory (absolute_directory_path (c.item))
+					end
+				end
+
+				if not warnings.is_empty then
+					io.error.put_string ("[WARNING] " + warnings.count.out + " warnings occurred.")
+					io.error.put_new_line
+					across
+						warnings as warn
+					loop
+						io.error.put_string (warn.item.as_string_8)
+						io.error.put_new_line
 					end
 				end
 
@@ -139,6 +170,43 @@ feature -- Access
 	verbose: BOOLEAN
 
 	errors: ARRAYED_LIST [READABLE_STRING_GENERAL]
+	warnings: ARRAYED_LIST [READABLE_STRING_GENERAL]
+
+
+feature -- Variable expansions
+
+	variable_expansions: detachable LIST [TUPLE [src,new: READABLE_STRING_GENERAL]]
+			-- Optional variable expansions
+
+	add_variable_expansion	(s: READABLE_STRING_GENERAL)
+		local
+			l_expansions: like variable_expansions
+			p: INTEGER
+		do
+			l_expansions := variable_expansions
+			if l_expansions = Void then
+				create {ARRAYED_LIST [like variable_expansions.item]} l_expansions.make (1)
+				variable_expansions := l_expansions
+			end
+
+			p := s.index_of_code (('=').natural_32_code, 1)
+			if p > 0 then
+				l_expansions.extend ([s.substring (1, p-1), s.substring (p+1, s.count)])
+			else
+				check wrong_syntax: False end
+			end
+		end
+
+	apply_variable_expansions (s: STRING_8)
+		do
+			if attached variable_expansions as l_variable_expansions then
+				across
+					l_variable_expansions as rpl
+				loop
+					s.replace_substring_all ("$" + rpl.item.src.as_string_8, rpl.item.new.as_string_8)
+				end
+			end
+		end
 
 feature -- Substitutions	
 
@@ -180,11 +248,12 @@ feature -- Basic operation
 	analyze_ecf (a_fn: READABLE_STRING_GENERAL)
 		local
 			fn: STRING_GENERAL
-			lst: like segments_from_string
+			--lst: like segments_from_string
 		do
 			create {STRING_32} fn.make (a_fn.count)
-			lst := segments_from_string (a_fn)
-			append_segments_to_string (lst, fn)
+			fn := reduced_path (a_fn, 0)
+			--lst := segments_from_string (a_fn)
+			--append_segments_to_string (lst, fn)
 
 			if attached path_details (fn) as d then
 				ecf_table.force (d, fn)
@@ -198,7 +267,7 @@ feature -- Basic operation
 			l_new_path: READABLE_STRING_GENERAL
 			p,q: INTEGER
 			l_rn: STRING_32
-			l_ecf: READABLE_STRING_GENERAL
+			l_ecf: STRING_8
 			l_old_content, l_new_content: STRING_32
 		do
 			if attached path_details (fn) as l_info then
@@ -224,10 +293,21 @@ feature -- Basic operation
 						if p > 0 and l_line[p + 4] = '"' then
 							q := l_line.last_index_of ('"', p)
 							if q > 0 then
+								l_ecf := l_line.substring (q + 1, p + 3)
 								if l_line [q + 1] = '$' then
+									if root_base_name /= Void then
+										apply_variable_expansions (l_ecf)
+									end
+
+									-- Should be using absolute path based on variable name
+									-- FIXME: check the first segment related to `l_ecf' exists ...
+								else
+									apply_variable_expansions (l_ecf)
+									l_ecf := l_info.dir.as_string_8 + l_ecf
+								end
+								if l_ecf [1] = '$' then
 --									l_line.replace_substring_all ("\", "/")
 								else
-									l_ecf := l_info.dir.as_string_8 + l_line.substring (q + 1, p + 3)
 									if attached ecf_location (l_ecf) as l_location then
 										l_new_path := relative_path (l_location, fn, l_rn, root_base_name)
 									else
@@ -238,7 +318,7 @@ feature -- Basic operation
 									end
 									if same_path (l_line.substring (q + 1, p + 3), l_new_path) then
 
-									else
+									elseif not l_new_path.is_empty then
 										l_line.replace_substring (l_new_path.as_string_8, q+1, p+3)
 									end
 								end
@@ -296,6 +376,9 @@ feature -- Basic operation
 							diff_enabled and then
 							attached diff (l_old_content, l_new_content) as l_diff
 						then
+							if is_simulation and not verbose then
+								report_progress ("Updated %"" + f.name + "%"")
+							end
 							io.output.put_string (l_diff.as_string_8)
 							io.output.put_new_line
 						end
@@ -330,6 +413,13 @@ feature -- Basic operation
 
 feature {NONE} -- Implementation
 
+	report_warning (m: READABLE_STRING_GENERAL)
+		do
+			warnings.extend (m)
+			io.error.put_string ("[Warning] " + m.as_string_8)
+			io.error.put_new_line
+		end
+
 	report_progress (m: READABLE_STRING_GENERAL)
 		do
 			io.output.put_string (m.as_string_8)
@@ -339,7 +429,7 @@ feature {NONE} -- Implementation
 	report_error (m: READABLE_STRING_GENERAL)
 		do
 			errors.extend (m)
-			io.error.put_string ("Error" + m.as_string_8)
+			io.error.put_string ("[Error] " + m.as_string_8)
 			io.error.put_new_line
 		end
 
@@ -365,7 +455,7 @@ feature {NONE} -- Implementation
 					loop
 						if c.item.file.same_string (l_info.file) then
 							from
-								n := 0
+								n := 1
 								i_lst := c.item.segments
 								i_lst.finish
 								lst.finish
@@ -374,6 +464,9 @@ feature {NONE} -- Implementation
 							loop
 								if i_lst.item.same_string (lst.item) then
 									n := n + 1
+								else
+										-- Exit look
+									lst.start
 								end
 								i_lst.back
 								lst.back
@@ -381,21 +474,20 @@ feature {NONE} -- Implementation
 							if n > r then
 								r := n
 								Result := c.key
+							elseif n = r then
+								-- Choose the closest
+								if common_segment_count (l_ecf, Result) < common_segment_count (l_ecf, c.key) then
+									Result := c.key
+								end
 							end
 						end
 					end
 				else
---					l_ecf := reduced_path (a_ecf, 2) -- keep only sub dir and ecf filename		
---					n := 0
---					across
---						ecf_table as c
---					until
---						Result /= Void
---					loop
---						if c.item.subdir_file.same_string (l_ecf) and c.item.uuid ~ l_uuid then
---							Result := c.key
---						end
---					end
+				end
+			end
+			if Result = Void then
+				if not file_system.file_exists (l_ecf) then
+					report_warning ("Unable to find %"" + a_ecf.as_string_8 + "%"")
 				end
 			end
 		end
@@ -438,28 +530,23 @@ feature {NONE} -- Implementation
 						n := n - 1
 					end
 				end
-
 				create s.make (a_lib_ecf.count)
 				append_segments_to_string (lst, s)
 
 			else
-				create s.make (a_lib_ecf.count)
-				append_segments_to_string (lst, s)
-
-				if bn /= Void then
-					s.replace_substring (bn.as_string_8, 1, rn.count)
-				end
+				s := reduced_path (a_lib_ecf, 0).as_string_8
+				s.replace_substring (bn.as_string_8, 1, rn.count)
 			end
 
 			Result := s
 		end
 
-	path_details (fn: READABLE_STRING_GENERAL): detachable TUPLE [uuid: detachable READABLE_STRING_8; segments: like segments_from_string; dir, subdir_file, file: READABLE_STRING_GENERAL]
+	path_details (fn: READABLE_STRING_GENERAL): detachable TUPLE [uuid: detachable READABLE_STRING_8; segments: like segments_from_string; dir, file: READABLE_STRING_GENERAL]
 		local
 			f: RAW_FILE
 			n,p: INTEGER
 			l_uuid: detachable READABLE_STRING_8
-			l_dir, l_subdir: detachable READABLE_STRING_GENERAL
+			l_dir: detachable READABLE_STRING_GENERAL
 			l_file: detachable READABLE_STRING_GENERAL
 			c_slash, c_bslash: NATURAL_32
 			c: NATURAL_32
@@ -469,25 +556,18 @@ feature {NONE} -- Implementation
 			from
 				n := fn.count
 			until
-				n = 0 or l_subdir /= Void
+				n = 0 or l_dir /= Void
 			loop
 				c := fn.code (n)
 				if c = c_slash or c = c_bslash then
-					if l_dir = Void then
-						l_file := fn.substring (n + 1, fn.count)
-						l_dir := fn.substring (1, n)
-					else
-						l_subdir := l_dir.substring (n + 1, l_dir.count)
-					end
+					l_file := fn.substring (n + 1, fn.count)
+					l_dir := fn.substring (1, n)
 				else
 				end
 				n := n - 1
 			end
 			if l_dir = Void then
 				l_dir := ""
-			end
-			if l_subdir = Void then
-				l_subdir := ""
 			end
 			if l_file /= Void then
 				create f.make (fn.as_string_8)
@@ -510,9 +590,12 @@ feature {NONE} -- Implementation
 						f.read_line
 					end
 					f.close
-					check has_uuid: l_uuid /= Void end
+					if verbose and l_uuid = Void then
+--						check has_uuid: l_uuid /= Void end
+						report_warning ("No UUID in %"" + fn.as_string_8 + "%"")
+					end
 				end
-				Result := [l_uuid, segments_from_string (l_dir), l_dir, l_subdir + l_file, l_file]
+				Result := [l_uuid, segments_from_string (l_dir), l_dir, l_file]
 			end
 		end
 
@@ -533,7 +616,35 @@ feature {NONE} -- Path manipulation
 					lst.remove
 				end
 			end
+			if fn.starts_with ("/") then
+				Result.append ("/")
+			end
 			append_segments_to_string (lst, Result)
+		end
+
+	common_segment_count (p1, p2: detachable READABLE_STRING_GENERAL): INTEGER
+			-- Number of segments common between p1 and p2 starting from the left.
+		do
+			if
+				(p1 /= Void and then attached segments_from_string (p1) as lst_1) and
+				(p2 /= Void and then attached segments_from_string (p2) as lst_2)
+			then
+				from
+					lst_1.start
+					lst_2.start
+				until
+					lst_1.after or lst_2.after
+				loop
+					if lst_1.item.same_string (lst_2.item) then
+						Result := Result  + 1
+					else
+						lst_1.finish
+						lst_2.finish
+					end
+					lst_1.forth
+					lst_2.forth
+				end
+			end
 		end
 
 	append_segments_to_string (lst: LIST [READABLE_STRING_GENERAL]; s: STRING_GENERAL)
@@ -542,7 +653,9 @@ feature {NONE} -- Path manipulation
 				lst as curs
 			loop
 				if not s.is_empty then
-					s.append ("/")
+					if not s.ends_with ("/") then
+						s.append ("/")
+					end
 				end
 				s.append (curs.item)
 			end

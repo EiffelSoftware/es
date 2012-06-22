@@ -2,7 +2,7 @@
 	description:	"SCOOP support."
 	date:		"$Date$"
 	revision:	"$Revision$"
-	copyright:	"Copyright (c) 2010, Eiffel Software."
+	copyright:	"Copyright (c) 2010-2012, Eiffel Software."
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"Commercial license is available at http://www.eiffel.com/licensing"
 	copying: "[
@@ -26,11 +26,11 @@
 			51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 */
 
@@ -44,6 +44,8 @@
 extern "C" {
 #endif
 
+#define RT_MAX_SCOOP_PROCESSOR_COUNT 1536 /* Maximum number of SCOOP processors, including root. */
+
 /* Separate calls */
 
 typedef struct call_data {
@@ -51,6 +53,7 @@ typedef struct call_data {
 #ifdef WORKBENCH
 	BODY_INDEX        body_index;      /* Routine to be called */
 	EIF_TYPED_VALUE * result;          /* Address of a result for queries */
+	EIF_REFERENCE *   result_address;  /* Address of GC-protected address for a reference result. */
 #else
 	union {
 		fnptr             address;         /* Routine to be called */
@@ -66,9 +69,9 @@ typedef struct call_data {
 } call_data;
 
 #ifdef WORKBENCH
-rt_public void eif_log_call (int static_type_id, int feature_id, EIF_SCP_PID current_pid, call_data * data);
-rt_public void eif_log_callp (int origin, int offset, EIF_SCP_PID current_pid, call_data * data);
-rt_public void eif_try_call (call_data * a);
+extern void eif_log_call (int static_type_id, int feature_id, EIF_SCP_PID current_pid, call_data * data);
+extern void eif_log_callp (int origin, int offset, EIF_SCP_PID current_pid, call_data * data);
+extern void eif_try_call (call_data * a);
 #else
 #define eif_log_call(p,a) RTS_TCB(scoop_task_add_call,((EIF_SCP_PID)(p)),RTS_PID(eif_access (((call_data*)(a))->target)),((call_data*)(a)));
 #define eif_try_call(a) ((call_data *)(a))->pattern (a);
@@ -76,14 +79,14 @@ void eif_call_const (call_data * a);
 #endif
 
 
-rt_public void eif_free_call (call_data * a);
-rt_public EIF_BOOLEAN eif_is_uncontrolled (EIF_SCP_PID c, EIF_SCP_PID s);
+extern void eif_free_call (call_data * a);
+extern EIF_BOOLEAN eif_is_uncontrolled (EIF_SCP_PID c, EIF_SCP_PID s);
 
 /* Request chain stack */
 
-rt_public void eif_request_chain_push (EIF_REFERENCE c, struct stack * stk);      /* Push client `c' on the request chain stack `stk' without notifying SCOOP mananger. */
-rt_public void eif_request_chain_pop (struct stack * stk);                        /* Pop one element from the request chain stack `stk' without notifying SCOOP mananger. */
-rt_public void eif_request_chain_restore (EIF_REFERENCE * t, struct stack * stk); /* Restore request chain stack `stk' to have the top `t' notifying SCOOP manager about all removed request chains. */
+extern void eif_request_chain_push (EIF_REFERENCE c, struct stack * stk);      /* Push client `c' on the request chain stack `stk' without notifying SCOOP mananger. */
+extern void eif_request_chain_pop (struct stack * stk);                        /* Pop one element from the request chain stack `stk' without notifying SCOOP mananger. */
+extern void eif_request_chain_restore (EIF_REFERENCE * t, struct stack * stk); /* Restore request chain stack `stk' to have the top `t' notifying SCOOP manager about all removed request chains. */
 
 /* Scoop Macros */
 
@@ -93,6 +96,14 @@ rt_public void eif_request_chain_restore (EIF_REFERENCE * t, struct stack * stk)
 #define call_data_sync_pid(a_call_data) ((call_data*) a_call_data)->sync_pid
 #define call_data_is_lock_passing(a_call_data) ((call_data*) a_call_data)->is_lock_passing
 
+/* Processor properties */
+
+extern void eif_set_processor_id (EIF_SCP_PID pid); /* Associate processor of ID `pid' with the current thread. */
+extern void eif_unset_processor_id (void);              /* Dissociate processor from the current thread. */
+
+/* Garbage collection */
+
+extern void eif_mark_live_pid (EIF_SCP_PID pid); /* Mark processor `pid' as live. */
 
 #ifdef __cplusplus
 }

@@ -2,7 +2,7 @@
 	description:	"SCOOP support."
 	date:		"$Date$"
 	revision:	"$Revision$"
-	copyright:	"Copyright (c) 2010, Eiffel Software."
+	copyright:	"Copyright (c) 2010-2012, Eiffel Software."
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"Commercial license is available at http://www.eiffel.com/licensing"
 	copying: "[
@@ -26,11 +26,11 @@
 			51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone /R805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 */
 
@@ -45,6 +45,7 @@ doc:<file name="scoop.c" header="eif_scoop.h" version="$Id$" summary="SCOOP supp
 #include "rt_wbench.h"
 #include "rt_malloc.h"
 #include "rt_garcol.h"
+#include "rt_macros.h"
 
 #ifndef EIF_THREADS
 #error "SCOOP is currenly supported only in multithreaded mode."
@@ -63,24 +64,56 @@ rt_public EIF_BOOLEAN eif_is_uncontrolled (EIF_SCP_PID c, EIF_SCP_PID s)
 
 rt_public void eif_log_call (int s, int f, EIF_SCP_PID p, call_data * a)
 {
+	EIF_GET_CONTEXT
 	BODY_INDEX body_id;
 	EIF_REFERENCE t = eif_access (a -> target);
-
+	EIF_TYPED_VALUE * result = a -> result;
+	EIF_REFERENCE result_reference = NULL;
+    
+	if (result) {
+		RT_GC_PROTECT (result_reference);
+		a -> result_address = &result_reference;
+	}
 	CHECK("Target attached", t);
 	CBodyId(body_id,Routids(s)[f],Dtype(t));
 	a -> body_index = body_id;
 	RTS_TCB(scoop_task_add_call,p,RTS_PID(t),a);
+	if (result) {
+		switch (result -> type & SK_HEAD) {
+		case SK_REF:
+		case SK_EXP:
+				/* Retrieve reference from the GC-protected storage. */
+			result -> it_ref = result_reference;
+		}
+		RT_GC_WEAN (result_reference);
+	}
 }
  
 rt_public void eif_log_callp (int s, int f, EIF_SCP_PID p, call_data * a)
 {
+	EIF_GET_CONTEXT
 	BODY_INDEX body_id;
 	EIF_REFERENCE t = eif_access (a -> target);
-
+	EIF_TYPED_VALUE * result = a -> result;
+	EIF_REFERENCE result_reference = NULL;
+    
+	if (result) {
+		RT_GC_PROTECT (result_reference);
+		a -> result_address = &result_reference;
+	}
 	CHECK("Target attached", t);
 	body_id = desc_tab[s][Dtype(t)][f].body_index;
 	a -> body_index = body_id;
 	RTS_TCB(scoop_task_add_call,p,RTS_PID(t),a);
+	if (result) {
+		switch (result -> type & SK_HEAD) {
+		case SK_REF:
+		case SK_EXP:
+				/* Retrieve reference from the GC-protected storage. */
+			result -> it_ref = result_reference;
+		}
+		RT_GC_WEAN (result_reference);
+	}
 }
  
 rt_public void eif_try_call (call_data * a)
@@ -118,6 +151,12 @@ rt_public void eif_try_call (call_data * a)
 	v = a -> result;
 	if (v) {
 		* v = * opop ();
+		switch (v -> type & SK_HEAD) {
+		case SK_REF:
+		case SK_EXP:
+				/* Avoid reference result to be GC'ed by storing it in the protected location, pointed by `a -> result_address. */
+			* (a -> result_address) = v -> it_r;
+		}
 	}
 }
 
@@ -201,6 +240,39 @@ rt_public void eif_request_chain_restore (EIF_REFERENCE * t, struct stack * stk)
 		top = stk->st_top;
 		RTS_RD (*top);               /* Notify SCOOP manager about removed item. */
 	}
+}
+
+/* Processor properties */
+
+/*
+doc:	<routine name="eif_set_processor_id" export="public">
+doc:		<summary>Associate processor of ID `pid' with the current thread.</summary>
+doc:		<param name="pid" type="EIF_SCP_PID">ID of the processor.</param>
+doc:		<thread_safety>Safe</thread_safety>
+doc:		<synchronization>Not required because called before starting any threads.</synchronization>
+doc:	</routine>
+*/
+rt_public void eif_set_processor_id (EIF_SCP_PID pid)
+{
+	RT_GET_CONTEXT
+	rt_thr_context * c = rt_globals->eif_thr_context_cx;
+	c -> logical_id = pid;
+	c -> is_processor = EIF_TRUE;
+}
+
+/*
+doc:	<routine name="eif_unset_processor_id" export="public">
+doc:		<summary>Dissociate processor from the current thread.</summary>
+doc:		<thread_safety>Safe</thread_safety>
+doc:		<synchronization>Not required because changes a single integer value.</synchronization>
+doc:	</routine>
+*/
+rt_public void eif_unset_processor_id (void)
+{
+	RT_GET_CONTEXT
+	eif_synchronize_gc (rt_globals);
+	rt_globals -> eif_thr_context_cx -> is_processor = EIF_FALSE;
+	eif_unsynchronize_gc (rt_globals);
 }
 
 /*

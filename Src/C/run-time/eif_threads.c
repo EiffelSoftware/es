@@ -2,7 +2,7 @@
 	description: "Thread management routines."
 	date:		"$Date$"
 	revision:	"$Revision$"
-	copyright:	"Copyright (c) 1985-2011, Eiffel Software."
+	copyright:	"Copyright (c) 1985-2012, Eiffel Software."
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"Commercial license is available at http://www.eiffel.com/licensing"
 	copying: "[
@@ -26,11 +26,11 @@
 			51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 */
 
@@ -189,13 +189,13 @@ doc:	</attribute>
 rt_public int volatile eif_is_gc_collecting = EIF_GC_NOT_RUNNING;
 
 /*
-doc:	<attribute name="rt_globals_list" return_type="struct stack_list" export="private">
+doc:	<attribute name="rt_globals_list" return_type="struct stack_list" export="shared">
 doc:		<summary>Used to store all per thread data of all running threads.</summary>
 doc:		<thread_safety>Safe</thread_safety>
 doc:		<synchronization>eif_gc_mutex</synchronization>
 doc:	</attribute>
 */
-rt_private struct stack_list rt_globals_list = {
+rt_shared struct stack_list rt_globals_list = {
 	(int) 0,	/* count */
 	(int) 0,	/* capacity */
 	{NULL}		/* rt_globals_list */
@@ -441,7 +441,7 @@ rt_public void eif_thr_register(int is_external)
 				eif_thr_context->is_root = 1;
 				eif_thr_context->thread_id = eif_thr_current_thread();
 #if defined(EIF_ASSERTIONS) && defined(EIF_WINDOWS)
-				eif_thr_context->win_thread_id = eif_pthread_id(eif_thr_context->thread_id);
+				eif_thr_context->win_thread_id = eif_pthread_current_id();
 #endif
 				eif_thr_context->is_processor = eif_thr_context->is_processor;
 				eif_thr_context->logical_id = eif_thr_context->logical_id; 
@@ -481,7 +481,7 @@ rt_public void eif_set_thr_context (void) {
 			eif_thr_context->is_processor = EIF_FALSE;
 			eif_thr_context->thread_id = eif_thr_current_thread();
 #if defined(EIF_ASSERTIONS) && defined(EIF_WINDOWS)
-			eif_thr_context->win_thread_id = eif_pthread_id(eif_thr_context->thread_id);
+			eif_thr_context->win_thread_id = eif_pthread_current_id();
 #endif
 		}
 	}
@@ -795,9 +795,6 @@ rt_public void eif_thr_create_with_attr_new (EIF_OBJECT thr_root_obj,
 
 			/* Actual creation of the thread in the next 3 lines. */
 		RT_TRACE_KEEP(res, eif_pthread_create (&routine_ctxt->thread_id, attr, eif_thr_entry, routine_ctxt));
-#if defined(EIF_ASSERTIONS) && defined(EIF_WINDOWS)
-		routine_ctxt->win_thread_id = eif_pthread_id(routine_ctxt->thread_id);
-#endif
 		last_child = routine_ctxt->thread_id;
 		LAUNCH_MUTEX_UNLOCK;
 		SIGRESUME;
@@ -915,14 +912,13 @@ rt_public void eif_thr_exit(void)
 		if (l_has_parent_thread) {
 
 			if (eif_thr_context->is_processor == EIF_FALSE) {
-				// Set {THREAD}.terminated to True, not applicable to SCOOP Processors.
-
+					/* Set {THREAD}.terminated to True, not applicable to SCOOP Processors. */
 				offset = eifaddr_offset (eif_access(eif_thr_context->current), "terminated", &ret);
-				CHECK("terminated attribute exists", ret == EIF_CECIL_OK);
-
-					/* Set the `terminated' field of the thread object to True so that
-					* it knows the thread is terminated */
-				*(EIF_BOOLEAN *) (eif_access(eif_thr_context->current) + offset) = EIF_TRUE;
+				if (ret == EIF_CECIL_OK) {
+						/* Set the `terminated' field of the thread object to True so that
+						 * it knows the thread is terminated */
+					*(EIF_BOOLEAN *) (eif_access(eif_thr_context->current) + offset) = EIF_TRUE;
+				}
 			}
 				
 				/* Remove current object from hector and reset entry to NULL. */

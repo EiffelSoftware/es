@@ -120,7 +120,7 @@ LSRC = malloc.c garcol.c local.c store.c retrieve.c \
 
 WADD = debug.c interp.c update.c wbench.c
 
-MTADD = scoop.c
+MTADD = scoop.c scoop_gc.c
 
 WOBJ = \
 	$(IDRS_OBJ) \
@@ -235,6 +235,7 @@ MT_WOBJ = \
 	MTupdate.o \
 	MTwbench.o \
 	MTwscoop.o \
+	MTwscoop_gc.o \
 	MTwmalloc.o \
 	MTwgarcol.o \
 	MTwlocal.o \
@@ -285,6 +286,7 @@ MT_WOBJ = \
 MT_LOBJ = \
 	$(MTIDRS_OBJ) \
 	MTscoop.o \
+	MTscoop_gc.o \
 	MTmalloc.o \
 	MTgarcol.o \
 	MTlocal.o \
@@ -778,8 +780,14 @@ MTwbench.o: wbench.c
 MTwscoop.o: scoop.c
 	$(CC) -c $(JMTCFLAGS) -DWORKBENCH $? -o $@
 
+MTwscoop_gc.o: scoop_gc.c
+	$(CC) -c $(JMTCFLAGS) -DWORKBENCH $? -o $@
+
 
 MTscoop.o: scoop.c
+	$(CC) -c $(JMTCFLAGS) $? -o $@
+
+MTscoop_gc.o: scoop_gc.c
 	$(CC) -c $(JMTCFLAGS) $? -o $@
 
 
