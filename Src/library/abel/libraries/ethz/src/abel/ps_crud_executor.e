@@ -30,7 +30,7 @@ feature --Access
 	repository: PS_REPOSITORY
 			-- The data repository on which `Current' operates
 
-feature -- Status
+feature -- Status Report
 
 	is_persistent (an_object: ANY; a_transaction:PS_TRANSACTION): BOOLEAN
 			-- Is there a database entry for `an_object'?

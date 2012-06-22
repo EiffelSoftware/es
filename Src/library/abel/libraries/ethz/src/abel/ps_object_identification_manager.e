@@ -2,8 +2,10 @@ note
 	description:
 		"[
 		This class generates unique object identifiers, attaches them to objects, and maintains a weak reference to every identified object.
-		The unique identifier is hidden except for the transaction that has generated it. 
+		
+		A new identifier is first hidden except for the transaction that has generated it. 
 		When this transaction successfully commits, other transactions can see the new identifier.
+		
 		The class also observes the state of weak references providing a sort of publish-subscribe mechanism if it finds a deleted object.
 		]"
 	author: "Roman Schmocker"
@@ -31,6 +33,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 	is_identified (an_object:ANY; transaction: PS_TRANSACTION): BOOLEAN
 			-- Is `an_object' already identified and thus known to the system?
 		do
+			fixme ("TODO: Make this transaction-aware")
 			-- See if `an_object' is either in the `transaction' or the global pool
 			Result:= across identifier_table as cursor some (cursor.item.first.exists and then cursor.item.first.item = an_object) end
 		end
@@ -44,6 +47,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 			temp: WEAK_REFERENCE[ANY]
 			pair: PS_PAIR [WEAK_REFERENCE [ANY], INTEGER]
 		do
+			fixme ("TODO: Make this transaction-aware")
 			-- check ALL the other transaction's pools if someone already has the same object
 				-- if yes add a copy of the same identification to `transaction's pool.
 			 	-- if no create it and add it to `transaction's pool
@@ -59,6 +63,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 		require
 			identified: is_identified (an_object, transaction)
 		do
+			fixme ("TODO: Make this transaction-aware")
 			from identifier_table.start until identifier_table.after loop
 				if identifier_table.item.first.item = an_object then
 					identifier_table.remove
@@ -78,6 +83,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 			found:BOOLEAN
 			meta: PS_TYPE_METADATA
 		do
+			fixme ("TODO: Make this transaction-aware")
 			-- FIRST, lok at the transaction pool, then look at the global pool
 
 			meta:= metadata_manager.create_metadata_from_object (an_object)
@@ -102,6 +108,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction Status
 	can_commit (transaction: PS_TRANSACTION):BOOLEAN
 		-- Can `Current' commit the changes in `Transaction'
 		do
+			fixme ("TODO: Make this transaction-aware")
 			-- check if there is an equal object in the global pool and the transaction pool
 			Result:= True
 		end
@@ -130,6 +137,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction management
 		require
 			registered: is_registered (transaction)
 		do
+			fixme ("TODO: Finish implementing this feature")
 			-- Insert all objects in the transaction pool to the global pool
 			registered_transactions.start
 			registered_transactions.prune (transaction)
@@ -142,6 +150,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction management
 		require
 			registered: is_registered (transaction)
 		do
+			fixme ("TODO: Finish implementing this feature")
 			-- Delete the transaction pool
 			registered_transactions.start
 			registered_transactions.prune (transaction)

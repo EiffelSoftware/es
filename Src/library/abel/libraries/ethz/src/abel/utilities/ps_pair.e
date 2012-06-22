@@ -1,6 +1,6 @@
 note
-	description: "Small helper utility (TUPLE is a bit awkward...)"
-	author: ""
+	description: "Stores a value pair"
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -13,7 +13,7 @@ create
 
 convert
 	to_tuple: {TUPLE[first:A; second:B]},
-	make_from_tuple ({TUPLE[first:A; second:B]})
+	make_from_tuple ({TUPLE[A, B]})
 
 feature
 
@@ -36,6 +36,7 @@ feature
 		end
 
 	to_tuple: TUPLE[ first: A; second:B ]
+		-- Conversion routine to tuples
 		do
 			create Result.make
 			Result.first := first
@@ -52,6 +53,7 @@ feature {NONE} -- Initialization
 		end
 
 	make_from_tuple (tup:TUPLE[first:A; second:B])
+		-- Conversion routine from tuples
 		do
 			first:= tup.first
 			second:= tup.second

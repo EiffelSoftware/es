@@ -32,7 +32,7 @@ feature -- Access
 		end
 
 
-feature -- Status
+feature -- Status report
 
 	is_executed: BOOLEAN
 			-- Has query been executed?

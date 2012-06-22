@@ -11,9 +11,9 @@ inherit
 
 feature{NONE}
 
-	make_repository: PS_RELATIONAL_REPOSITORY
+	make_repository: PS_IN_MEMORY_REPOSITORY
 		do
-			create Result.make (create {PS_IN_MEMORY_DATABASE}.make)
+			create Result.make_empty
 		end
 
 feature
@@ -29,8 +29,6 @@ feature
 	test_crud_flat_in_memory
 		do
 			crud_tests.all_flat_object_tests
-			--crud_tests.test_flat_class_store
-			--crud_tests.test_flat_class_all_crud
 		end
 
 	test_references_in_memory

@@ -135,7 +135,7 @@ feature{NONE} -- Initialization
 		do
 			create transaction_isolation_level
 			set_transaction_isolation_level (transaction_isolation_level.repeatable_read)
-			create default_object_graph.make_default
+			create default_object_graph.make
 			create id_manager.make
 			create planner.make
 			create disassembler.make (id_manager, default_object_graph)

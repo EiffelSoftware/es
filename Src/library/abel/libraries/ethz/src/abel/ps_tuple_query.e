@@ -15,34 +15,22 @@ class
 
 inherit
 	PS_QUERY [G]
+	ITERABLE[TUPLE]
 
-create make
-
-
-feature {NONE} -- Creation
-
+create
 	make
-			-- Create an new query on objects of type `G'.
-		do
-			create projection.make_empty -- some stupid void safety rule...
-			initialize
-			create projection.make_from_array (default_projection)
-		ensure then
-			projection_correctly_initialized: projection = default_projection
-		end
 
-	create_result_cursor
-		do
-			create result_cursor.make
-		end
+feature -- Access
 
-feature
+	result_cursor: PS_RESULT_SET[TUPLE]
+			-- Iteration cursor containing the result of the query.
+
+
+feature -- Status report
 
 	is_object_query:BOOLEAN = False
 			-- Is `Current' an instance of PS_OBJECT_QUERY?
 
-
-	result_cursor: PS_RESULT_SET[TUPLE]
 
 feature -- Projections
 
@@ -87,14 +75,39 @@ feature -- Projections
 			end
 		end
 
-
-
 	set_projection (a_projection: ARRAY [STRING])
 			-- Set `a_projection' to the current query.
 		do
 			projection := a_projection
 		ensure
 			projected_data_set: projection = a_projection
+		end
+
+
+feature -- Cursor generation
+
+	new_cursor: PS_RESULT_SET[TUPLE]
+			-- Return the result_cursor
+		do
+			Result:= result_cursor
+		end
+
+feature {NONE} -- Initialization
+
+	make
+			-- Create an new query on objects of type `G'.
+		do
+			create projection.make_empty -- some stupid void safety rule...
+			initialize
+			create projection.make_from_array (default_projection)
+		ensure then
+			projection_correctly_initialized: projection = default_projection
+		end
+
+	create_result_cursor
+			-- Create a new result set
+		do
+			create result_cursor.make
 		end
 
 end

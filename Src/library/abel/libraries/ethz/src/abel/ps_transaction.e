@@ -7,13 +7,8 @@ note
 class
 	PS_TRANSACTION
 
-
 inherit
 	PS_EIFFELSTORE_EXPORT
-
-inherit {NONE}
-	REFACTORING_HELPER
-
 
 create
 	make
@@ -41,36 +36,15 @@ feature {NONE} -- Initialization
 			is_active:=True
 		end
 
-feature -- Basic operations
 
-	commit
-			-- Try to commit the transaction.
-			--The result of the commit operation is set in the `is_successful_commit' attribute.
-		do
-			if is_active then
-				repository.commit_transaction (Current)
-			end
-			
-		ensure
-			transaction_terminted: not is_active
-
-		rescue -- Catch any exception if the commit failed
-			check ensure_correct_rollback: not is_active and not is_successful_commit end
-			retry -- Do nothing, but terminate normally.
-		end
+feature -- Access
 
 
-	rollback
-			-- Rollback all operations within this transaction.
-		require
-			transaction_alive: is_active
-		do
-			repository.rollback_transaction (Current, True)
-		ensure
-			transaction_terminated: not is_active
-			no_success: not is_successful_commit
-		end
+	error: PS_ERROR
+			-- Error description of the last error
 
+	repository: PS_REPOSITORY
+			-- The repository this `Current' is bound to.
 
 feature -- Status report
 
@@ -96,14 +70,39 @@ feature -- Status report
 			-- Is this a readonly transaction?
 
 
-feature -- Access
+
+feature -- Basic operations
+
+	commit
+			-- Try to commit the transaction.
+			--The result of the commit operation is set in the `is_successful_commit' attribute.
+		do
+			if is_active then
+				repository.commit_transaction (Current)
+			end
+
+		ensure
+			transaction_terminted: not is_active
+
+		rescue
+			-- Catch any exception if the commit failed
+			check
+				ensure_correct_rollback: not is_active and not is_successful_commit
+			end
+			retry -- Do nothing, but terminate normally.
+		end
 
 
-	error: PS_ERROR
-			-- Error description
-
-	repository: PS_REPOSITORY
-			-- The repository this transaction is bound to.
+	rollback
+			-- Rollback all operations within this transaction.
+		require
+			transaction_alive: is_active
+		do
+			repository.rollback_transaction (Current, True)
+		ensure
+			transaction_terminated: not is_active
+			no_success: not is_successful_commit
+		end
 
 
 feature {PS_EIFFELSTORE_EXPORT} -- Internals

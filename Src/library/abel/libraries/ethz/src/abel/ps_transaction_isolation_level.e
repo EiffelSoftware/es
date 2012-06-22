@@ -1,38 +1,45 @@
 note
-	description: "Summary description for {PS_TRANSACTION_ISOLATION_LEVEL}."
-	author: ""
+	description: "Enumeration class for transaction isolation levels, as defined in ANSI/ISO SQL."
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
 frozen class
 	PS_TRANSACTION_ISOLATION_LEVEL
 
-inherit COMPARABLE
+inherit
+	COMPARABLE
 
-feature
+feature -- Isolation levels
 
 	Read_uncommitted: PS_TRANSACTION_ISOLATION_LEVEL
+			-- The READ UNCOMMITED isolation level
 		once
 			create Result
 		end
 
 	Read_committed: PS_TRANSACTION_ISOLATION_LEVEL
+			-- The READ COMMITED isolation level
 		once
 			create Result
 		end
 
 	Repeatable_read: PS_TRANSACTION_ISOLATION_LEVEL
+			-- The REPEATABLE READ isolation level
 		once
 			create Result
 		end
 
 	Serializable: PS_TRANSACTION_ISOLATION_LEVEL
+			-- The SERIALIZABLE isolation level
 		once
 			create Result
 		end
 
+feature -- Comparison operation
+
 	is_less alias "<" (other: like Current): BOOLEAN
-			-- Is current object less than `other'?
+			-- Is `Current' a weaker isolation level than `other'
 		local
 			valid_levels: LINKED_LIST[PS_TRANSACTION_ISOLATION_LEVEL]
 		do

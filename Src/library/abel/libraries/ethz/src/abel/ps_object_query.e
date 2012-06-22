@@ -1,5 +1,5 @@
 note
-	description: "Represents a repository query that returns stored objects"
+	description: "Represents a query to objects of type G."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -8,34 +8,31 @@ class
 	PS_OBJECT_QUERY [G -> ANY]
 
 inherit
+	ITERABLE[G]
+
 	PS_QUERY [G]
 		redefine
 			set_criterion
 		end
 
-	ITERABLE[G]
---		rename new_cursor
---			as result_cursor
---		end
--- renames don't seem to work with the across syntax...
-
-create make
-
-
-feature {NONE} -- Initialization
-
+create
 	make
-			-- Create an new query on objects of type `G'.
-		do
-			initialize
-		end
 
-	create_result_cursor
-		do
-			create result_cursor.make
-		end
 
-feature
+feature -- Access
+
+	result_cursor: PS_RESULT_SET[G]
+			-- Iteration cursor containing the result of the query.
+
+
+feature -- Status report
+
+
+	is_object_query:BOOLEAN = True
+			-- Is `Current' an instance of PS_OBJECT_QUERY?
+
+
+feature -- Basic operations
 
 	set_criterion (a_criterion: PS_CRITERION)
 			-- Set the criteria `a_criterion', against which the objects will be selected
@@ -47,16 +44,28 @@ feature
 		end
 
 
-	result_cursor: PS_RESULT_SET[G]
+feature -- Cursor generation
 
 	new_cursor: PS_RESULT_SET[G]
-		-- Just return the result_cursor.
+			-- Return the result_cursor
 		do
 			Result:= result_cursor
 		end
 
-	is_object_query:BOOLEAN = True
-			-- Is `Current' an instance of PS_OBJECT_QUERY?
 
+
+feature {NONE} -- Initialization
+
+	make
+			-- Create an new query on objects of type `G'.
+		do
+			initialize
+		end
+
+	create_result_cursor
+		-- Create a new result set
+		do
+			create result_cursor.make
+		end
 
 end

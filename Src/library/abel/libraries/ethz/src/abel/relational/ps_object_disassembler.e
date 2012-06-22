@@ -262,7 +262,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 		id_manager: PS_OBJECT_IDENTIFICATION_MANAGER
 
 --			collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER[ITERABLE[ANY]]]
-		settings: PS_OBJECT_GRAPH_DEPTH
+		settings: PS_OBJECT_GRAPH_SETTINGS
 
 		collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]]]
 
@@ -273,7 +273,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 
 feature{NONE} -- Initialization
 
-		make (an_id_manager: PS_OBJECT_IDENTIFICATION_MANAGER; graph_settings: PS_OBJECT_GRAPH_DEPTH)
+		make (an_id_manager: PS_OBJECT_IDENTIFICATION_MANAGER; graph_settings: PS_OBJECT_GRAPH_SETTINGS)
 			do
 				create internal_operation_store.make (100)
 				create {PS_IGNORE_PART} disassembled_object.make

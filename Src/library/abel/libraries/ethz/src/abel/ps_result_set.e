@@ -43,7 +43,7 @@ feature -- Cursor movement
 			end
 		end
 
-feature {PS_EIFFELSTORE_EXPORT}
+feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 
 	set_entry (object: detachable ANY)
 			-- Set `object' as item if not Void, otherwise set after to True
@@ -56,15 +56,20 @@ feature {PS_EIFFELSTORE_EXPORT}
 			else
 				after:=True
 			end
+		ensure
+			Void_means_after: object = Void implies after
+			not_void_means_item: object /= Void implies not after and object = item
 		end
 
 
-feature {PS_QUERY} -- Creation
+feature {PS_QUERY} -- Initialization
 
 	set_query (a_query: PS_QUERY [ANY])
 			-- Set query to `a_query'. Part of initialization process
 		do
 			query := a_query
+		ensure
+			query_set: query = a_query
 		end
 
 	query: detachable PS_QUERY [ANY]
@@ -79,8 +84,6 @@ feature {NONE} -- Implementation
 
 	int_item: detachable G
 
-
 invariant
 	attached_item_or_after: int_item /= Void or after
-
 end

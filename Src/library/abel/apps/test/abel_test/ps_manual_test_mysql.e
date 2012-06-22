@@ -25,8 +25,6 @@ feature
 	test_crud_flat_mysql
 		do
 			crud_tests.all_flat_object_tests
-			--crud_tests.test_flat_class_store
-			--crud_tests.test_flat_class_all_crud
 		end
 
 	test_references_mysql

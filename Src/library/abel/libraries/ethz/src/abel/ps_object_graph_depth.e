@@ -1,5 +1,5 @@
 note
-	description: "This class collects information about the object graph depth strategy for objects."
+	description: "This class collects settings about how ABEL should handle an object graph."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -14,23 +14,23 @@ note
 			all referenced objects  should be loaded/stored as if the repository operation has been called on them with 
 			object graph depth 1 (you can already see how to continue this for higher numbers...)
 			
-			There are two special values for the depth: Object_graph_depth_infinite means that an object has to be loaded completely,
-			i.e. that there are no more Void references. Object_graph_depth_repository means that the operation should use the global
-			object graph depth defined in the Repository. Obviously, this cannot be set as a global value in a repository.
+			There is a special value for the depth: Object_graph_depth_infinite means that an object has to be loaded completely,
+			i.e. that there are no more Void references.
 			
 			The system's default values are Object_graph_depth_infinite for inserting and reading objects, and a depth of 1 for
-			updates and deletions. These default values can be overwritten for a whole repository in the correpsonding instance of 
-			PS_REPOSITORY or separately in each CLASS_MANAGER object.
+			updates and deletions. These default values can be overwritten for a whole repository in {REPOSITORY}.default_object_graph_settings
 			
 			Note: On some repositories the actual object graph depth will be ignored, and it will always use Object_graph_depth_infinite
-			instead. The reason is that some backends are faster with this option.
+			instead.
 	]"
 
+	fixme: "Some settings are constant right now. They should get implemeted in the future"
+
 class
-	PS_OBJECT_GRAPH_DEPTH
+	PS_OBJECT_GRAPH_SETTINGS
 
 create
-	make_rely_on_repository, make_default
+	make
 
 feature -- Query settings
 
@@ -57,33 +57,33 @@ feature -- Insert settings
 feature -- Update settings
 
 	update_depth: INTEGER
-			-- object graph depth for updates
+			-- Object graph depth for updates
 			-- Updates are somewhat special: For depth 1, the system will look at references and update them if they point to another object than before, but it will not
 			-- call update on the referenced object. In addition, if an update operation finds a new (= not previously loaded) object,
 			-- it will insert it with the insertion depth defined globally in the repository (usually Object_graph_depth_infinite)
 
-	update_last_references:BOOLEAN = True
+	update_last_references: BOOLEAN = True
 			-- Should the last (Depth = 1) references be updated?
 			-- Note: This only covers the references (-> foreign keys) to objects, not the referenced object itself.
 
 
-	is_insert_during_update_enabled:BOOLEAN = True
+	is_insert_during_update_enabled: BOOLEAN = True
 			-- Should the system automatically insert objects which are not present in the database and found during an update?
 
 
-	custom_insert_depth_during_update:INTEGER
-			-- The object graph depth that should be applied for an insert to an object, which is found during update but isn't yet in the database.	
+	custom_insert_depth_during_update: INTEGER
+			-- The object graph depth that should be applied to insert an object which is found during an update, but isn't yet in the database.	
 		do
 			Result:=insert_depth
 		end
 
-	throw_error_for_unknown_objects:BOOLEAN
+	throw_error_for_unknown_objects: BOOLEAN
 			-- If a new object is found an (is_insert_during_update_enabled = False), should an error be thrown for a new object?
-			-- Otherwise the reference is set to 0
+			-- If not, the reference is set to NULL in the database.
 		require
 			no_automatic_insert: not is_insert_during_update_enabled
 		do
-			Result:= false
+			Result:= False
 		end
 
 
@@ -97,7 +97,7 @@ feature -- Modification
 	set_query_depth (depth: INTEGER)
 			-- Change the object graph depth for queries
 		require
-			depth_in_range: depth >= -1
+			valid_depth: is_valid_depth (depth)
 		do
 			query_depth := depth
 		end
@@ -105,7 +105,7 @@ feature -- Modification
 	set_insert_depth (depth: INTEGER)
 			-- Change the object graph depth for insertion
 		require
-			depth_in_range: depth >= -1
+			valid_depth: is_valid_depth (depth)
 		do
 			insert_depth := depth
 		end
@@ -113,7 +113,7 @@ feature -- Modification
 	set_update_depth (depth: INTEGER)
 			-- Change the object graph depth for updates
 		require
-			depth_in_range: depth >= -1
+			valid_depth: is_valid_depth (depth)
 		do
 			update_depth := depth
 		end
@@ -121,48 +121,43 @@ feature -- Modification
 	set_deletion_depth (depth: INTEGER)
 			-- Change the object graph depth for deletion
 		require
-			depth_in_range: depth >= -1
+			valid_depth: is_valid_depth (depth)
 		do
 			deletion_depth := depth
 		end
 
 feature -- Status
 
-	is_relying_on_repository: BOOLEAN
-			-- Is an object graph depth set to Object_graph_depth_repository?
+	is_valid_depth (depth:INTEGER):BOOLEAN
+		-- Is `depth' in a valid range?
 		do
-			Result := query_depth >= 0 and insert_depth >= 0 and update_depth >= 0 and deletion_depth >= 0
+			Result := depth >= Minimum_depth or depth = Object_graph_depth_infinite
 		end
 
 feature -- Creation
 
-	make_rely_on_repository
-			-- Create a new OBJECT_GRAPH_DEPTH object which relies on values in PS_REPOSITORY
-		do
-			query_depth := Object_graph_depth_repository
-			insert_depth := Object_graph_depth_repository
-			update_depth := Object_graph_depth_repository
-			deletion_depth := Object_graph_depth_repository
-		end
 
-	make_default
+	make, reset_to_default
 			-- Create a new OBJECT_GRAPH_DEPTH object with our system's default values
 		do
 			query_depth := Object_graph_depth_infinite
 			insert_depth := Object_graph_depth_infinite
-			update_depth := 1
-			deletion_depth := 1
+			update_depth := Minimum_depth
+			deletion_depth := Minimum_depth
 		end
 
 feature -- Constants
 
-	Object_graph_depth_repository: INTEGER = -1
-			-- Rely on the global repository value.
+	Minimum_depth: INTEGER = 1
+		-- The smallest possible object graph depth
 
-	Object_graph_depth_infinite: INTEGER = 0
-	-- Load/store full object
+	Object_graph_depth_infinite: INTEGER = -1
+		-- Load/store full object
 
 invariant
-	valid_range: query_depth >= -1 and insert_depth >= -1 and update_depth >= -1 and deletion_depth >= -1
+	valid_query_depth: is_valid_depth (query_depth)
+	valid_insert_depth: is_valid_depth (insert_depth)
+	valid_update_depth: is_valid_depth (update_depth)
+	valid_deletion_depth: is_valid_depth (deletion_depth)
 
 end

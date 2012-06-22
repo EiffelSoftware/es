@@ -6,20 +6,23 @@ note
 
 class
 	PS_OBJECT_IDENTIFIER_WRAPPER
+	
 inherit
 	PS_EIFFELSTORE_EXPORT
 
 
-create make
+create {PS_OBJECT_IDENTIFICATION_MANAGER}
+	make
 
-feature {NONE}
 
-	make (id:INTEGER; obj:ANY; meta: PS_TYPE_METADATA)
-		-- create `current' with object_identifier `id' and object `obj'
+feature {NONE} -- Initialization
+
+	make (identifier:INTEGER; object:ANY; object_metadata: PS_TYPE_METADATA)
+		-- Initialize `Current'
 		do
-			object_identifier:=id
-			item:=obj
-			metadata:= meta
+			object_identifier:=identifier
+			item:=object
+			metadata:= object_metadata
 		end
 
 feature	{PS_EIFFELSTORE_EXPORT} -- Access
@@ -33,10 +36,4 @@ feature	{PS_EIFFELSTORE_EXPORT} -- Access
 	metadata: PS_TYPE_METADATA
 		-- Metadata information about the type of `item'
 
-	class_name: STRING
-		-- The object's class name
-		obsolete "use metadata.class_of_type.name instead"
-		do
-			Result:= metadata.base_class.name
-		end
 end

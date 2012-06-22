@@ -7,8 +7,6 @@ note
 
 class
 	PS_METADATA_FACTORY
---inherit
---	PS_EIFFELSTORE_EXPORT
 
 create
 	make
