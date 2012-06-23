@@ -1,0 +1,465 @@
+\section{API tutorial}
+
+\subsection{Intro}
+
+ABEL is the acronym for ``A better Eiffelstore library''.
+It is a persistence library that unifies a lot of different persistence solutions under a simple, object-oriented API.
+
+In this section you will be introduced to the basic operations of the ABEL API. 
+You will start by initializing the library using a simple in-memory database and learn the CRUD (Create, Read, Update, Delete) operations.
+Later on you will learn how ABEL handles objects with references, how transactions are handled, and what happens in case of an error.
+
+In this little tutorial, we are using PERSON objects to show the usage of the API.
+In the source code below you will see that ABEL handles objects "as they are", meaning that you don't need to inherit from any specific class to make them persistent.
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The PERSON class}, label={lst:simple_insert}]
+class PERSON
+
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make (first, last: STRING)
+			-- Create a new person
+		do
+			first_name := first
+			last_name := last
+			age:= 0
+		end
+
+feature -- Basic operations
+
+	celebrate_birthday
+			-- Increase age by 1
+		do
+			age:= age+1
+		end
+
+feature -- Status report
+
+	first_name: STRING
+		-- First name of person
+	last_name: STRING
+		-- Last name of person
+
+	age: INTEGER
+		-- The person's age
+
+end
+
+\end{lstlisting}
+
+
+
+
+
+\subsection{Initialization}
+
+There are 3 very important classes in ABEL:
+\begin{itemize}
+ \item The CRUD\_EXECUTOR is, as the name suggests, responsible to execute any of the CRUD commands.
+	It is the core interface in ABEL and completely agnostic of the actual storage backend, therefore we will use an in-memory storage mechanism for this tutorial.
+
+ \item The OBJECT\_QUERY [G] class is used to describe a read operation in ABEL. You can execute such a query in the CRUD\_EXECUTOR, and the result will be objects (thus the name).
+
+ \item The deferred class REPOSITORY provides an abstraction to the actual storage mechanism.
+	Every CRUD\_EXECUTOR is attached to a specific REPOSITORY.
+\end{itemize}
+
+
+To start using the library, we therefore first need to create a REPOSITORY.
+For this tutorial we will use a simple RELATIONAL\_IN\_MEMORY\_REPOSITORY, which simulates a relational database but stores all values in memory.
+Although this repository will not give us persistence, it is chosen here because the initialization is very easy and thus great for this tutorial.
+
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The TUTORIAL class}, label={lst:tutorial_class}]
+class TUTORIAL
+
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make
+		-- Initialize ABEL, set up a simple in-memory repository
+		local
+			repository:RELATIONAL_IN_MEMORY_REPOSITORY
+		do
+			create repository.make
+			create executor.make (repository)
+		end
+
+feature
+	
+	executor: PS_CRUD_EXECUTOR
+		-- The CRUD executor used throughout the tutorial
+
+end
+\end{lstlisting}
+
+We will use this class throughout the tutorial. You can assume that listings of Eiffel features are inside the TUTORIAL class, if they are not enclosed in another class declaration.
+
+If you want to set up ABEL using a real persistence mechanism, you can read section XY.
+
+
+\subsection{Querying objects}
+
+A query for objects is done by creating a new OBJECT\_QUERY [G] object and execute it with the CRUD\_EXECUTOR.
+The generic parameter G of the OBJECT\_QUERY instance denotes the type of objects that should be queried.
+In this tutorial they are objects of type PERSON, but ABEL will also return all objects that are descendants of type PERSON.
+The result can then be found in the OBJECT\_QUERY.result\_cursor:
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:simple_query}]
+	simple_query: detachable PERSON
+		-- Query a person object from the current repository
+		local
+			query:OBJECT_QUERY[PERSON]
+		do
+			create query.make
+			executor.execute_query (query)
+
+			if not query.result_cursor.after then
+				-- Return the first person that was found in the database
+				Result:= query.result_cursor.item
+			else
+				-- The database did not contain objects of type PERSON - return Void
+				Result:= Void
+			end
+		end
+\end{lstlisting}
+
+Such a query can return multiple objects, therefore the OBJECT\_QUERY.result\_cursor feature is in fact an iteration cursor.
+ABEL does not enforce an order on the results, so we don't actually know which person the last example will return.
+
+ABEL can also filter the query results in advance so you only get a result set that meets certain criteria: 
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:simple_filtered_query}]
+	simple_filtered_query (name:STRING; age:INTEGER): detachable PERSON
+		-- Query a person object from the current repository
+		local
+			query:PS_OBJECT_QUERY[PERSON]
+			criterion:PS_PREDEFINED_CRITERION
+		do
+			create query.make
+			create criterion.make ("last_name", "=", name)
+			query.set_criterion (criterion)
+
+			from
+				executor.execute_query (query)
+			until 
+				query.result_cursor.after
+			loop
+				if query.result_cursor.item.age = age then 
+					Result:= query.result_cursor.item
+				end
+			end
+		end
+\end{lstlisting}
+
+This is just a very simple example for a query with a certain criterion.
+ABEL has a powerful mechanism that also supports a logical combinations of multiple criteria, or using agents for filtering.
+You can read more about criteria in section XY.
+
+\subsection{Inserting, updating and deleting objects}
+
+Inserting and updating an object is done through CRUD\_EXECUTOR.insert (or CRUD\_EXECUTOR.update, respectively): 
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:simple_insert}]
+	simple_insert_and_update (a_person:PERSON)
+		-- insert `a_person' into the current repository
+		do
+			executor.insert (a_person)
+			a_person.celebrate_birthday
+			executor.update (a_person)
+		end
+\end{lstlisting}
+
+Deleting objects can be done in two ways: 
+You can either give ABEL an object that it should delete, or you can give it an OBJECT\_QUERY and ABEL will delete all objects that meet the criteria in the query.
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:simple_insert}]
+	delete_person (name:STRING)
+		-- Delete the person called `name' in two different ways.
+		local
+			normal_query, deletion_query: PS_OBJECT_QUERY[PERSON]
+			criterion:PS_PREDEFINED_CRITERION
+		do
+			-- Delete him by giving his object to ABEL
+
+			create normal_query.make
+			from
+				executor.execute_query (normal_query)
+			until
+				normal_query.result_cursor.after
+			loop
+				if normal_query.result_cursor.item.last_name.equals (name) then
+					executor.delete (normal_query.result_cursor.item)
+				end
+			end
+
+
+			-- Delete him by issuing a deletion query
+
+			create deletion_query.make
+			create criterion.make ("last_name", "=", name)
+			query.set_criterion (criterion)
+			executor.execute_deletion_query (deletion_query)
+		end
+\end{lstlisting}
+
+You can see that the second option is nicer in this example. This is the recommended way if you want to e.g. delete all persons that meet a certain criteria.
+The second option may be useful if you have the objects already loaded. E.g. consider an address book application, where the user manually issues a delete command on a specific person.
+As this person has been loaded previously to show the user a list of all persons, you already have the object in memory, and you can just issue a single delete command in the executor
+instead of first assembling a deletion query.
+
+It is important to know that ABEL keeps track of objects which have been inserted or queried before.
+Because of that, you can not update or delete an object that is not known to ABEL yet.
+As an example, the following two functions will fail:
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:simple_insert}]
+	failing_update
+		-- Try and fail to update a person that has never been inserted or queried before
+		local
+			a_person:PERSON
+		do
+			create a_person.make ("Albo", "Bitossi")
+			executor.update (a_person)
+				-- Results in a precondition violation
+		end
+
+	failing_delete (name:STRING)
+		-- Try and fail to delete a person that has never been inserted or queried before
+		local
+			a_person:PERSON
+		do
+			create a_person.make ("Albo", "Bitossi")
+			executor.delete (a_person) 
+				-- Results in a precondition violation
+		end
+\end{lstlisting}
+
+
+
+
+\subsection{Dealing with references}
+
+In ABEL, a basic type is an object of type STRING, BOOLEAN, CHARACTER or any numeric object like REAL or INTEGER.
+The PERSON class has only attributes that are of a basic type, and those are stored together as a single unit in the database.
+
+However, there's also the possibility that an object contains references to other objects.
+ABEL is able to handle these references by storing and reconstructing the whole object graph.
+
+Let's look at the new class CHILD:
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The CHILD class}, label={lst:child_class}]
+
+class CHILD
+
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make (first, last: STRING)
+			-- Create a new person
+		do
+			first_name := first
+			last_name := last
+			age:= 0
+		end
+
+feature -- Basic operations
+
+	celebrate_birthday
+			-- Increase age by 1
+		do
+			age:= age+1
+		end
+
+feature -- Status report
+
+	first_name: STRING
+		-- First name of person
+	last_name: STRING
+		-- Last name of person
+
+	age: INTEGER
+		-- The person's age
+
+feature	-- Parents 
+
+	mother: detachable CHILD
+		-- `Current's mother
+
+	father: detachable CHILD
+		-- `Current's father
+	
+	set_mother (a_mother: CHILD)
+		do
+			mother:= a_mother
+		end
+
+	set_father (a_father: CHILD)
+		do
+			father:= a_father
+		end
+end
+\end{lstlisting}
+
+
+This adds in some complexity: 
+Instead of having a single object, ABEL has to insert a CHILD's mother and father as well, and if they too are instances of CHILD, then it has to repeat that again.
+The good news for you is that the examples above will work exactly the same way.
+
+However, there are some additional caveats to take into consideration. 
+Let's consider a simple example with CHILD objects ``Baby Doe'', ``John Doe'' and ``Grandpa Doe''.
+From the name of the object instances you can already guess what the object graph looks like: 
+
+	\begin{center}
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=6cm,
+  thick,main node/.style={rectangle,fill=white,draw}]
+
+  \node[main node] (1) {$Baby Doe$};
+  \node[main node] (2) [right of=1] {$John Doe$};
+  \node[main node] (3) [right of=2] {$Grandpa Doe$};
+
+ 
+
+  \path
+    (1) edge node {$father$} (2)
+    (2) edge node {$father$} (3);
+\end{tikzpicture}
+	\end{center}
+
+Now if you insert ``Baby Doe'' into the repository, ABEL will by default follow all references and insert every single object along the object graph, which means that ``John Doe'' and ``Grandpa Doe'' will be inserted as well.
+This is usually the desired behaviour, as objects are stored completely that way, but it also has some side effects:
+
+\begin{itemize}
+\item Assume an insert of ``Baby Doe'' has happened to an empty database. 
+If you now query the database for CHILD objects, it will return exactly the same object graph as above, but the query result will actually have three items, as the object graph consists of three single CHILD objects.
+	
+\item After you've inserted ``Baby Doe'', it has by default no effect if you insert ``John Doe'' or ``Grandpa Doe'' afterwards, because they have already been inserted through the first statement.
+\end{itemize}
+
+\subsubsection{Updates}
+
+By default, ABEL does not follow references on updates. So for example the following statement has no effect to the database.
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:reference_update}]
+	celebrate_fathers_birthday (a_child: CHILD)
+		require
+			a_child_is_in_database: executor.is_already_loaded (a_child)
+		do
+			a_child.father.celebrate_birthday
+
+			-- This won't have any effect
+			executor.update (a_child)
+
+			-- however, it works that way:
+			executor.update (a_child.father)
+		end
+\end{lstlisting}
+
+\subsubsection{Going deeper}
+
+ABEL has no limits regarding the depth of an object graph, and it will detect and handle reference cycles correctly. 
+You are welcome to test ABEL's capability with very complex objects, however please keep in mind that this will cause a big performance impact.
+
+To overcome this problem, you can either use simple object structures, or you can tell ABEL to only load or store an object up to a certain depth.
+You can see how this is done in Section XY.
+
+\subsection{Transaction handling}
+
+Every CRUD operation in ABEL is executed within a transaction. 
+Transactions are created and commited implicitly, and have e.g. the advantage that - especially when dealing with complex object graphs - an object doesn't get ``halfway inserted'' in case of an error.
+
+As a user, you also have the possibility to use transactions explicitly. This is done by manually creating an object of type TRANSACTION and using the *\_within\_transaction features in the executor, instead of the normal ones.
+For convenience, there is a factory method for transactions built into the executor.
+
+Let's consider an example where you want to update the age of every person by one:
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:update_all_ages}]
+	update_ages
+		local
+			query: PS_OBJECT_QUERY[PERSON]
+			transaction: PS_TRANSACTION
+		do
+			create query.make
+			transaction := executor.new_transaction
+
+			from
+				executor.execute_query_within_transaction (query, transaction)
+			until
+				query.after
+			loop
+				query.result_cursor.celebrate_birthday
+				executor.update_within_transaction (query, transaction
+			end
+
+			transaction.commit
+
+			-- It might be that the transaction has encountered an error at commit time:
+			if transaction.has_error then
+				print ("Commit has not been successful")
+			end
+		end
+\end{lstlisting}
+
+You can see here as well that a commit may fail, e.g. when a write conflict happened in the database.
+These errors are indicated in the TRANSACTION.has\_error attribute.
+In case of an error, all changes of the transaction are rolled back automatically.
+You can also abort a transaction manually by calling TRANSACTION.rollback. 
+
+
+TODO: transaction levels
+
+\subsection{Error handling}
+
+As ABEL is dealing with IO and databases, there are several runtime errors that can happen. 
+ABEL will in general raise exceptions if an error happens, and propagate errors through an ERROR object.
+ABEL distinguishes between three different kinds of errors.
+
+\begin{itemize}
+\item Fatal errors: Those happen in serious problems like a broken connection. 
+The default action inside ABEL is to try shutting down everything if still possible (e.g., rollback all transactions). 
+Afterwards, the REPOSITORY will go into kind of a zombie state: 
+Any attempt to call a feature of it will result in an exception again.
+\item Unresolvable routine failures: This is the case if there's a problem in the backend that can't be solved by ABEL.
+An example could be an integrity constraint violation in the database. 
+The usual measure is to raise an exception, but the current instance of REPOSITORY remains in an active state, meaning that you can still use it if you can resolve (or just ignore) the error.
+\item Resolvable routine failures: Those are not really visible to the user, as no exception is raised if they occur.
+A typical example is a conflict between two transactions.
+ABEL will catch the exception itself and, in case of implicit transaction management, retry.
+If you use explicit transaction management, it will just doom the current transaction to fail at commit time.
+\end{itemize}
+
+ABEL represents errors as objects. 
+All specific error classes inherit from the deferred ERROR.
+The following list denotes all errors that can happen at runtime, and the category they belong to:
+
+\begin{itemize}
+\item CONNECTION\_LOST: Happens e.g. if the internet link breaks, or a serialization file gets exernally deleted. Fatal error
+\item TRANSACTION\_CONFLICT: Happens if there's a conflict between two transactions. Resolvable error
+\item ACCESS\_RIGHT\_VIOLATION: Can happen if you don't have write permission to the database. Unresolvable error.
+\item TODO Create all error types... 
+\end{itemize}
+
+If you want to handle an error, you have to add a rescue clause somewhere in your code. 
+You can get the actual error from the REPOSITORY.error field or - as all ABEL errors inherit from DEVELOPER\_EXCEPTION - by casting the Eiffel EXCEPTION\_MANAGER.last\_exception to an ABEL ERROR.
+For your convenience, there is a visitor pattern for all ABEL error types. You can just implement the appropriate functions and use that for your error handling code.
+
+
+\subsection{Limitations of the library}
+TODO
+
+Current limitations:
+\begin{itemize}
+\item Not all features available if adapted to a custom DB layout 
+\item Inheritance currently not properly supported (due to limitation of INTERNAL)
+\item Reals have rounding error
+\item No ordering support (at least not yet)
+\item
+\end{itemize}
+
+%What exactly has to be here? Is a missing feature (like ordering support) a limitation as well?

@@ -142,6 +142,8 @@ feature{NONE} -- Initialization
 
 	make (a_backend: PS_BACKEND_STRATEGY)
 		-- Initialize `Current'
+		local
+			special_handler: PS_SPECIAL_COLLECTION_HANDLER
 		do
 			create transaction_isolation_level
 			set_transaction_isolation_level (transaction_isolation_level.repeatable_read)
@@ -155,8 +157,16 @@ feature{NONE} -- Initialization
 			create retriever.make (backend, id_manager)
 
 			create special_handler.make
-			retriever.add_handler (special_handler)
-			disassembler.add_handler (special_handler)
+			add_collection_handler (special_handler)
+		end
+
+feature -- Initialization
+
+	add_collection_handler (handler: PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]])
+		-- Add a handler for a specific type of collections
+		do
+			retriever.add_handler (handler)
+			disassembler.add_handler (handler)
 		end
 
 feature {PS_EIFFELSTORE_EXPORT}
@@ -168,6 +178,5 @@ feature {PS_EIFFELSTORE_EXPORT}
 	backend: PS_BACKEND_STRATEGY
 	retriever:PS_RETRIEVAL_MANAGER
 
-	special_handler: PS_SPECIAL_COLLECTION_HANDLER
 
 end

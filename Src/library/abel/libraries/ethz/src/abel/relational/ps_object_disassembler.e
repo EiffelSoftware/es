@@ -51,6 +51,19 @@ feature {PS_EIFFELSTORE_EXPORT}
 			collection_found:BOOLEAN
 			object_has_id:BOOLEAN
 		do
+
+			fixme ( "[
+				This function is really ugly - however, it works at the moment.
+				
+				At some time one could refactor it, like putting the logic to calculate the next write_mode, or the next graph part, into their own functions.
+				
+				Also, it is essential that the disassembler does not identify unidentified objects by itself. 
+				This should be done by the WRITE_EXECUTOR.
+				If that is done, we can implement the PS_RELATIONAL_REPOSITORY.can_handle feature
+
+
+			]")
+
 			object_has_id:= id_manager.is_identified (an_object, current_transaction)
 
 			if id_manager.is_identified (an_object, current_transaction) and then internal_operation_store.has (id_manager.get_identifier_wrapper (an_object, current_transaction).object_identifier) then

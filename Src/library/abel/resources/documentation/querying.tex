@@ -1,0 +1,249 @@
+\section{Querying the Database}
+
+\subsection{The query mechanism}
+
+Queries to the database are done by creating a new OBJECT\_QUERY and letting it be executed by the CRUD\_EXECUTOR.
+The generic parameter of the OBJECT\_QUERY instance determines the class of the objects that will be returned. 
+This does also include any descendant of this class.
+
+%\subsection{Handling references}
+
+ABEL will by default load an object completely, that means all objects that can be reached by following references will be loaded as well. 
+However, there is a mechanism in ABEL that ensures that an object will not be loaded twice in a single query.
+
+
+\subsection{Criteria}
+
+You can filter your query results by setting criteria in the query object, using the OBJECT\_QUERY.set\_criteria feature.
+There are two types: the predefined and the agent criterion.
+
+\subsubsection{Predefined Criteria}
+Predefined criteria take an attribute name, an operator and a value. 
+You can only use attributes that are of a basic type, like strings or numbers.
+During retrieval, they check the object's own value against the value set in the criterion, and filter objects that don't satisfy the criterion.
+
+The supported operators are pretty self-describing (see Listing 4), except for the ``like''-operator. 
+That does pattern-matching on strings.
+You can give the criterion a pattern as a value, which can contain the wildcard characters '*' and '?'.
+The asterisk stands for any number (including zero) of undefined characters, and the question mark means exactly one undefined character.
+
+Not every type of attribute supports every operator. Valid combinations for each type are:
+
+ \begin{itemize}
+  \item Strings: =, like
+  \item Any numeric value: $=, <, <=, >, >=$
+  \item Booleans: =
+ \end{itemize}
+
+
+\subsubsection{Agent Criteria}
+
+An agent criterion will filter the objects according to the result of an agent applied to them.
+
+The criterion is initialized with an agent of type PREDICATE [ANY, TUPLE [ANY]]. 
+There should be either an open target or a single open argument, and the type of the objects in the query result should conform to the agent's open operand.
+
+
+\subsubsection{Creating criteria objects}
+
+The criteria instances are best created using the CRITERION\_FACTORY class.
+
+The main functions to the class are the following: 
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The CRITERION\_FACTORY interface}, label={lst:factory_interface}]
+class
+	PS_CRITERION_FACTORY
+create
+	default_create
+
+feature -- Creating a criterion
+
+	new alias "[]" (tuple: TUPLE [ANY]): PS_CRITERION
+			-- This function creates a new criterion according to the tuple in the argument.
+			-- The tuple should either contain a single PREDICATE or three values of the form [STRING, STRING, ANY]
+
+
+
+	new_agent (a_predicate: PREDICATE [ANY, TUPLE [ANY]]): PS_CRITERION
+			-- creates a criterion with an agent
+
+	new_predefined (object_attribute: STRING; operator: STRING; value: ANY): PS_CRITERION
+			-- creates a predefined criterion
+
+feature -- Operators
+
+	equals: STRING = "="
+
+	greater: STRING = ">"
+
+	greater_equal: STRING = ">="
+
+	less: STRING = "<"
+
+	less_equal: STRING = "<="
+
+	like_string: STRING = "like"
+
+end
+\end{lstlisting}
+
+To create a new criterion, you basically have two possibilities.
+The first one is the more traditional one, using CRITERION\_FACTORY.new\_agent or CRITERION\_FACTORY.new\_predefined.
+The second one uses some syntactic sugar:
+The criterion is created with two brackets after the factory object, of which one is an overloaded operator and the other a tuple definition.
+It can be used for both types of criteria, and it is up to you to choose which approach you like best.
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The CRITERION\_FACTORY interface}, label={lst:factory_interface}]
+
+	create_criteria_traditional : PS_CRITERION
+		-- Create a new criteria using the traditional approach
+		do
+			-- for predefined criteria
+			Result:= factory.new_predefined ("age", factory.less, 5)
+			-- for agent criteria
+			Result := factory.new_agent (agent age_less_than (?, 5))
+		end
+
+
+	create_criteria_double_bracket : PS_CRITERION
+		-- Create a new criteria using the double bracket syntax
+		do
+			-- for predefined criteria
+			Result:= factory[["age", factory.less, 5]]
+			-- for agent criteria
+			Result := factory[[agent age_less_than (?, 5)]]
+		end			
+
+
+	age_less_than (a_person: PERSON, an_age: INTEGER) : BOOLEAN
+		-- Just a little example agent
+		do
+			Result:= a_person.age < 5
+		end
+
+\end{lstlisting}
+
+
+
+\subsubsection{Combining criteria}
+
+If you want to set multiple criterion objects, you can combine them using the standard Eiffel keywords. 
+For example, if you want to search for a person called ``Albo Bitossi'' with age /= 20, you can just create a criterion object for each of the constraints and combine them:  
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:search_albo_bitossi}]
+
+	search_albo_bitossi : PS_CRITERION
+		-- Create a criterion object that searches for an Albo Bitossi which is not 20 years old
+		local
+			first_name_criterion:PS_CRITERION
+			last_name_criterion: PS_CRITERION
+			age_criterion: PS_CRITERION
+		do
+			first_name_criterion:= factory[[ "first_name", factory.equals, "Albo" ]]
+			last_name_criterion := factory[[ "last_name", factory.equals, "Bitossi" ]]
+			age_criterion := factory[[ "age", factory.equals, 20 ]]
+			
+			Result := first_name_criterion and last_name_criterion and not age_criterion
+
+			-- or a bit shorter
+			Result := factory[[ "first_name", "=", "Albo" ]] 
+				and factory[[ "last_name", "=", "Bitossi" ]] 
+				and not factory[[ "age", "=", 20 ]]
+		end
+\end{lstlisting}
+
+ABEL supports the three standard logical operators AND, OR and NOT. Their precedence is the same as in Eiffel, which means that NOT is stronger than AND, which is in turn stronger than OR.
+
+
+
+\subsection{Tuple queries}
+
+So far, we've only looked at queries that return objects. However, in ABEL there is a second option to query data which returns tuples as a result.
+Now consider an example where you just want to have a list of all first an last names of persons in the database. 
+To load every object of type PERSON might lead to a very bad performance, especially if there is a big object graph attached to each person object.
+
+To solve this problem, you can instead send a TUPLE\_QUERY to the executor. 
+The result is an iterator over a list of tuples in which the attributes of an object are collected. The order of these attributes is the one defined in TUPLE\_QUERY.projection
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:tuple_query_simple}]
+	print_all_names
+		-- Print the last name of all PERSON objects in the database
+		local
+			query: PS_TUPLE_QUERY[PERSON]
+			index:INTEGER
+			single_result: TUPLE
+		do
+			create query.make
+			-- Find out at which index in the tuple the last_name is returned
+			index:= query.projection.index_of ("last_name", 1)
+
+			from
+				executor.execute_query (query)
+			until
+				query.result_cursor.after
+			loop
+				single_result:= query.result_cursor.item
+				print (single_result [index] )
+			end			
+		end
+\end{lstlisting}
+\subsubsection{Tuple queries and projections}
+By default, a TUPLE\_QUERY will only return attributes of an object that are of a basic type, so no references are followed during a retrieve.
+You can change this default by calling TUPLE\_QUERY.set\_projection, which expects a list of names of the attributes you would like to have.
+If you include an attribute name whose type is not a basic one, ABEL will actually retrieve and build the real object, and not just another tuple.
+
+\subsubsection{Tuple queries and criteria}
+As you can't use agents on tuples (instead of the object they expect), you are restricted to use predefined criteria in tuple queries. You can still combine them as usual.
+It is ok to include a criterion on an attribute that is not present in the projection list - these attributes will be loaded internally to check if the object satisfies the criterion, but then they are discarded for the actual result.
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:tuple_projection_selection}]
+	print_names_of_20_year_old
+		-- Print the last name of all PERSON objects with age=20
+		local
+			query: PS_TUPLE_QUERY[PERSON]
+		do
+			create query.make
+
+			-- Only return the last_name of persons
+			query.set_projection (<<"last_name">>)
+
+			-- Only return persons with age=20
+			query.set_criterion (factory [["age", "=", 20]])
+
+			from
+				executor.execute_query (query)
+			until
+				query.result_cursor.after
+			loop
+				-- As we only have the last_name in the tuple,
+				-- its index is 1
+				print (query.result_cursor.item [1] )
+			end			
+		end
+\end{lstlisting}
+
+
+\section{Object graph settings}
+
+\section{Advanced Initialization}
+
+
+%\section{ PART 2: Technical Documentation}
+
+%\subsection{Moved to technical documentation}
+%about criteria
+%It will internally build a tree of criteria, with specialized AND, OR or NOT instances as nodes and the usual predefined or agent instances as leafs.
+
+
+%\subsubsection{Performance remarks}
+
+%ABEL will try to let the backend do as much of the filtering as is possible, to reduce the overhead of e.g. network communication or building unnecessary objects.
+%This especially means that ABEL will compile predefined queries to SQL if you have a relational database as a backend. 
+%However, if there is an agent criterion OR-ed to a predefined criterion, the test can not be made in the database because you might get false negatives.
+%Therefore, to have optimal performance, you should consider the following points:
+
+%\begin{itemize}
+%\item Try not to use agent criteria if you have a relational database backend.
+%\item Try not to use OR on agent criteria.
+%\item Try to keep OR-ed agent criteria as deep down the tree as possible (as the above OR-node defaults to true and thus is not checked for in the backend)
+%\end{itemize}

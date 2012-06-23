@@ -20,9 +20,12 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		local
 			in_memory_database: PS_IN_MEMORY_DATABASE
+			special_handler: PS_SPECIAL_COLLECTION_HANDLER
 		do
 			create in_memory_database.make
 			make (in_memory_database)
+			create special_handler.make
+		--	add_collection_handler (special_handler)
 		end
 
 end

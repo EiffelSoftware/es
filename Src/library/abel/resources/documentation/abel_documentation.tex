@@ -1,0 +1,78 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{palatino}
+\usepackage[cmex10]{amsmath}
+\usepackage{stmaryrd,amssymb}
+\usepackage{graphicx}
+\usepackage{amsfonts}
+\usepackage{rotating}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{url,boxedminipage,listings}
+\usepackage{booktabs}
+\usepackage{rotating}
+\usepackage{array}
+\usepackage{color,url,varioref,xcolor}
+\usepackage{alltt,epsfig,comment}
+\usepackage{supertabular,fancyhdr}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{xspace}
+\usepackage{dsfont}
+\usepackage[english]{babel}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata}
+
+% HAS TO BE LAST PACKAGE:
+\usepackage[pdftex,bookmarks=true,pageanchor=false]{hyperref}
+
+
+
+% Eiffel Code Stuff
+\lstset{language=OOSC2Eiffel,basicstyle=\ttfamily\small}
+\definecolor{codebg}{rgb}{0.95,0.95,0.95}
+\setlength{\headheight}{28pt}
+
+% Inline Eiffel Code
+\let\e\lstinline
+% Eiffel Identifiers or expressions
+\newcommand{\eid}[1]{\textsl{{\color[HTML]{000000} #1}}}
+% Eiffel Class names
+%\newcommand{\ecl}[1]{\textsl{{\color[HTML]{3333FF} #1}}}
+\newcommand{\ecl}[1]{\textsl{{\color[HTML]{000000} #1}}}
+% Eiffel Keywords
+%\newcommand{\ekey}[1]{\textbf{{\color[HTML]{333399} #1}}}
+\newcommand{\ekey}[1]{\textbf{{\color[HTML]{000000} #1}}}
+
+\newcommand{\distance}[2]{\ensuremath{#1\leftrightarrow#2}}
+
+
+\title {ABEL Documentation}
+\author {
+	\textbf{Student:} Roman Schmocker \\
+	\textbf{Supervisor:} Marco Piccioni and Bertrand Meyer  
+}
+
+\date {Revision x: Date}
+
+\begin{document}
+
+\maketitle
+
+\part{Documentation of the API}
+
+\input{intro}
+\input{querying}
+
+\part{Technical documentation}
+\includegraphics[width = 13cm] {class_diagram.png}
+%\input{sampleinclude}
+%\input{sampleinclude2}
+
+{{{
+\bibliographystyle {plain}
+\bibliography {./references}
+}}}
+\end{document}
