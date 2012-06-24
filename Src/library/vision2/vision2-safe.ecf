@@ -13,6 +13,7 @@
 
 		
 		<option warning="true" full_class_checking="true" is_attached_by_default="true" void_safety="all" syntax="transitional" namespace="EiffelSoftware.Library">
+			<warning name="syntax" enabled="false"/>
 		</option>
 		<setting name="dotnet_naming_convention" value="true"/>
 		<external_include location="$(ISE_LIBRARY)\library\vision2\spec\include">
