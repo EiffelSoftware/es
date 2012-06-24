@@ -1,0 +1,37 @@
+\section{Limitations of the library}
+TODO
+
+Current limitations:
+\begin{itemize}
+\item Not all features available if adapted to a custom DB layout 
+\item Inheritance currently not properly supported (due to limitation of INTERNAL)
+\item Reals have rounding error
+\item No ordering support (at least not yet)
+\item
+\end{itemize}
+
+%What exactly has to be here? Is a missing feature (like ordering support) a limitation as well?
+
+\section{Object graph settings}
+
+TODO
+
+%\section{ PART 2: Technical Documentation}
+
+%\subsection{Moved to technical documentation}
+%about criteria
+%It will internally build a tree of criteria, with specialized AND, OR or NOT instances as nodes and the usual predefined or agent instances as leafs.
+
+
+%\subsubsection{Performance remarks}
+
+%ABEL will try to let the backend do as much of the filtering as is possible, to reduce the overhead of e.g. network communication or building unnecessary objects.
+%This especially means that ABEL will compile predefined queries to SQL if you have a relational database as a backend. 
+%However, if there is an agent criterion OR-ed to a predefined criterion, the test can not be made in the database because you might get false negatives.
+%Therefore, to have optimal performance, you should consider the following points:
+
+%\begin{itemize}
+%\item Try not to use agent criteria if you have a relational database backend.
+%\item Try not to use OR on agent criteria.
+%\item Try to keep OR-ed agent criteria as deep down the tree as possible (as the above OR-node defaults to true and thus is not checked for in the backend)
+%\end{itemize}
