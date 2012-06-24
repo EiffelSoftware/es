@@ -1,6 +1,5 @@
-\section{API tutorial}
 
-\subsection{Intro}
+\section{Intro}
 
 ABEL is the acronym for ``A better Eiffelstore library''.
 It is a persistence library that unifies a lot of different persistence solutions under a simple, object-oriented API.
@@ -54,7 +53,7 @@ end
 
 
 
-\subsection{Initialization}
+\section{Initialization}
 
 There are 3 very important classes in ABEL:
 \begin{itemize}
@@ -69,8 +68,8 @@ There are 3 very important classes in ABEL:
 
 
 To start using the library, we therefore first need to create a REPOSITORY.
-For this tutorial we will use a simple RELATIONAL\_IN\_MEMORY\_REPOSITORY, which simulates a relational database but stores all values in memory.
-Although this repository will not give us persistence, it is chosen here because the initialization is very easy and thus great for this tutorial.
+For this tutorial we will use a simple IN\_MEMORY\_REPOSITORY, which simulates a relational database but stores all values in memory.
+Although this repository will not give us any persistence, it is chosen here because the initialization is very easy and thus great for this tutorial.
 
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The TUTORIAL class}, label={lst:tutorial_class}]
@@ -84,7 +83,7 @@ feature {NONE} -- Initialization
 	make
 		-- Initialize ABEL, set up a simple in-memory repository
 		local
-			repository:RELATIONAL_IN_MEMORY_REPOSITORY
+			repository:IN_MEMORY_REPOSITORY
 		do
 			create repository.make
 			create executor.make (repository)
@@ -102,36 +101,40 @@ We will use this class throughout the tutorial. You can assume that listings of 
 
 If you want to set up ABEL using a real persistence mechanism, you can read section XY.
 
+\section{Basic operations}
 
-\subsection{Querying objects}
+\subsection{Query}
 
 A query for objects is done by creating a new OBJECT\_QUERY [G] object and execute it with the CRUD\_EXECUTOR.
 The generic parameter G of the OBJECT\_QUERY instance denotes the type of objects that should be queried.
-In this tutorial they are objects of type PERSON, but ABEL will also return all objects that are descendants of type PERSON.
-The result can then be found in the OBJECT\_QUERY.result\_cursor:
+%In this tutorial they are objects of type PERSON, but ABEL will also return all objects that are descendants of type PERSON.
+
+After a successful execution of the query, you can get the result through the iteration cursor OBJECT\_QUERY.result\_cursor.
+Having an iteration cursor as a result has several advantages, e.g. support for lazy loading or the across syntax, as you will see in the next example:
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:simple_query}]
-	simple_query: detachable PERSON
-		-- Query a person object from the current repository
+	simple_query: LINKED_LIST [PERSON]
+		-- Query all person objects from the current repository
 		local
 			query:OBJECT_QUERY[PERSON]
 		do
+			create Result.make
 			create query.make
 			executor.execute_query (query)
 
-			if not query.result_cursor.after then
-				-- Return the first person that was found in the database
-				Result:= query.result_cursor.item
-			else
-				-- The database did not contain objects of type PERSON - return Void
-				Result:= Void
+			across query as	query_result
+			loop
+				Result.extend (query_result.item)
 			end
 		end
 \end{lstlisting}
 
-Such a query can return multiple objects, therefore the OBJECT\_QUERY.result\_cursor feature is in fact an iteration cursor.
-ABEL does not enforce an order on the results, so we don't actually know which person the last example will return.
+Please note that ABEL does not enforce an order on a query result.
 
+Usually the result of such a query is very big, and you are probably only interested in objects that meet a certain criteria, e.g. all persons of age 20.
+ABEL has a mechanism to support this kind of result filtering, and you can read about it in section ~\ref{sec:query}
+
+\begin{comment}
 ABEL can also filter the query results in advance so you only get a result set that meets certain criteria: 
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:simple_filtered_query}]
@@ -161,7 +164,9 @@ This is just a very simple example for a query with a certain criterion.
 ABEL has a powerful mechanism that also supports a logical combinations of multiple criteria, or using agents for filtering.
 You can read more about criteria in section XY.
 
-\subsection{Inserting, updating and deleting objects}
+\end{comment}
+
+\subsection{Insert and update}
 
 Inserting and updating an object is done through CRUD\_EXECUTOR.insert (or CRUD\_EXECUTOR.update, respectively): 
 
@@ -177,6 +182,8 @@ Inserting and updating an object is done through CRUD\_EXECUTOR.insert (or CRUD\
 
 Deleting objects can be done in two ways: 
 You can either give ABEL an object that it should delete, or you can give it an OBJECT\_QUERY and ABEL will delete all objects that meet the criteria in the query.
+
+\subsection{Deletion}
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:simple_insert}]
 	delete_person (name:STRING)
@@ -203,7 +210,7 @@ You can either give ABEL an object that it should delete, or you can give it an 
 
 			create deletion_query.make
 			create criterion.make ("last_name", "=", name)
-			query.set_criterion (criterion)
+			deletion_query.set_criterion (criterion)
 			executor.execute_deletion_query (deletion_query)
 		end
 \end{lstlisting}
@@ -213,8 +220,11 @@ The second option may be useful if you have the objects already loaded. E.g. con
 As this person has been loaded previously to show the user a list of all persons, you already have the object in memory, and you can just issue a single delete command in the executor
 instead of first assembling a deletion query.
 
-It is important to know that ABEL keeps track of objects which have been inserted or queried before.
-Because of that, you can not update or delete an object that is not known to ABEL yet.
+\subsection{ABEL is memorable}
+
+ABEL keeps track of objects that have been inserted or queried.
+This is important because in case of an update or delete, ABEL needs to internally map the object in the current execution of the program to its specific entry in the database.
+Because of that, you can not update or directly delete an object that is not known to ABEL yet.
 As an example, the following two functions will fail:
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:simple_insert}]
@@ -239,10 +249,15 @@ As an example, the following two functions will fail:
 		end
 \end{lstlisting}
 
+The CRUD\_EXECUTOR.is\_persistent feature can tell you if a specific object is known to ABEL and therefore has a link to its entry in the database.
 
 
+%Insert the section about sophisticated queries here:
+\input{querying}
 
-\subsection{Dealing with references}
+
+\section{Dealing with references}
+\label {sec:references}
 
 In ABEL, a basic type is an object of type STRING, BOOLEAN, CHARACTER or any numeric object like REAL or INTEGER.
 The PERSON class has only attributes that are of a basic type, and those are stored together as a single unit in the database.
@@ -342,7 +357,7 @@ If you now query the database for CHILD objects, it will return exactly the same
 \item After you've inserted ``Baby Doe'', it has by default no effect if you insert ``John Doe'' or ``Grandpa Doe'' afterwards, because they have already been inserted through the first statement.
 \end{itemize}
 
-\subsubsection{Updates}
+\subsection{Updates}
 
 By default, ABEL does not follow references on updates. So for example the following statement has no effect to the database.
 
@@ -361,7 +376,7 @@ By default, ABEL does not follow references on updates. So for example the follo
 		end
 \end{lstlisting}
 
-\subsubsection{Going deeper}
+\subsection{Going deeper}
 
 ABEL has no limits regarding the depth of an object graph, and it will detect and handle reference cycles correctly. 
 You are welcome to test ABEL's capability with very complex objects, however please keep in mind that this will cause a big performance impact.
@@ -369,7 +384,16 @@ You are welcome to test ABEL's capability with very complex objects, however ple
 To overcome this problem, you can either use simple object structures, or you can tell ABEL to only load or store an object up to a certain depth.
 You can see how this is done in Section XY.
 
-\subsection{Transaction handling}
+
+\section{Object graph settings}
+
+TODO
+
+\section{Advanced Initialization}
+
+TODO
+
+\section{Transaction handling}
 
 Every CRUD operation in ABEL is executed within a transaction. 
 Transactions are created and commited implicitly, and have e.g. the advantage that - especially when dealing with complex object graphs - an object doesn't get ``halfway inserted'' in case of an error.
@@ -414,7 +438,9 @@ You can also abort a transaction manually by calling TRANSACTION.rollback.
 
 TODO: transaction levels
 
-\subsection{Error handling}
+
+
+\section{Error handling}
 
 As ABEL is dealing with IO and databases, there are several runtime errors that can happen. 
 ABEL will in general raise exceptions if an error happens, and propagate errors through an ERROR object.
@@ -450,7 +476,7 @@ You can get the actual error from the REPOSITORY.error field or - as all ABEL er
 For your convenience, there is a visitor pattern for all ABEL error types. You can just implement the appropriate functions and use that for your error handling code.
 
 
-\subsection{Limitations of the library}
+\section{Limitations of the library}
 TODO
 
 Current limitations:

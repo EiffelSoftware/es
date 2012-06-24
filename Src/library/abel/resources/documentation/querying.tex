@@ -1,15 +1,16 @@
-\section{Querying the Database}
+\section{Advanced Queries}
+\label{sec:query}
 
 \subsection{The query mechanism}
 
-Queries to the database are done by creating a new OBJECT\_QUERY and letting it be executed by the CRUD\_EXECUTOR.
+As you already know, queries to the database are done by creating a new OBJECT\_QUERY and letting it be executed by the CRUD\_EXECUTOR.
 The generic parameter of the OBJECT\_QUERY instance determines the class of the objects that will be returned. 
 This does also include any descendant of this class.
 
 %\subsection{Handling references}
 
 ABEL will by default load an object completely, that means all objects that can be reached by following references will be loaded as well. 
-However, there is a mechanism in ABEL that ensures that an object will not be loaded twice in a single query.
+There is however a mechanism in ABEL that ensures that an object will not be loaded twice in a single query (see also ~\ref{sec:references}).
 
 
 \subsection{Criteria}
@@ -222,10 +223,6 @@ It is ok to include a criterion on an attribute that is not present in the proje
 		end
 \end{lstlisting}
 
-
-\section{Object graph settings}
-
-\section{Advanced Initialization}
 
 
 %\section{ PART 2: Technical Documentation}
