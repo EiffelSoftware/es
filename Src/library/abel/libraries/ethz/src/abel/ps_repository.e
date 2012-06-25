@@ -26,7 +26,7 @@ inherit {NONE}
 feature -- Settings
 
 	default_object_graph: PS_OBJECT_GRAPH_SETTINGS
-		-- Default object graph depth
+		-- Default object graph settings
 
 	transaction_isolation_level:PS_TRANSACTION_ISOLATION_LEVEL
 		-- Transaction isolation level
