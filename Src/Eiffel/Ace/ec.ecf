@@ -212,6 +212,7 @@
 		<library name="diff" location="$ISE_LIBRARY\library\diff\diff.ecf" readonly="false"/>
 		<library name="docking" location="$ISE_LIBRARY\library\docking\docking.ecf" readonly="false" use_application_options="true"/>
 		<library name="dotnet_assembly_information" location="$EIFFEL_SRC\dotnet\assembly_info\dotnet_assembly_information.ecf" readonly="false" use_application_options="true"/>
+		<library name="dynamic_program_analysis" location="$EIFFEL_SRC\framework\dynamic_program_analysis\dynamic_program_analysis.ecf" readonly="false"/>
 		<library name="editor" location="$ISE_LIBRARY\library\editor\editor.ecf" readonly="false"/>
 		<library name="eiffel2boogie" location="$ISE_LIBRARY\framework\eiffel2boogie\eiffel2boogie.ecf" readonly="false"/>
 		<library name="eve_blackboard" location="$ISE_LIBRARY\framework\eve_blackboard\eve_blackboard.ecf" readonly="false"/>
