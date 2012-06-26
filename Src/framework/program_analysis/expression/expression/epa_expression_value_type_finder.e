@@ -10,10 +10,12 @@ class
 inherit
 	EPA_EXPRESSION_VALUE_VISITOR
 
+	EPA_EXPRESSION_VALUE_TYPE_CONSTANTS
+
 feature -- Find
 
 	find
-			--
+			-- Find type of `value' and make result available in `type'
 		do
 			value.process (Current)
 		end
@@ -21,15 +23,15 @@ feature -- Find
 feature -- Access
 
 	type: STRING
-			--
+			-- Last found type
 
 	value: EPA_EXPRESSION_VALUE
-			--
+			-- Value for which the type should be found
 
 feature -- Setting
 
 	set_value (a_value: like value)
-			--
+			-- Set `value' to `a_value'
 		require
 			a_value_not_void: a_value /= Void
 		do
@@ -43,85 +45,85 @@ feature -- Process
 	process_boolean_value (a_value: EPA_BOOLEAN_VALUE)
 			-- Process `a_value'.
 		do
-			type := "EPA_BOOLEAN_VALUE"
+			type := boolean_value
 		end
 
 	process_random_boolean_value (a_value: EPA_RANDOM_BOOLEAN_VALUE)
 			-- Process `a_value'.
 		do
-			type := "EPA_RANDOM_BOOLEAN_VALUE"
+			type := random_boolean_value
 		end
 
 	process_integer_value (a_value: EPA_INTEGER_VALUE)
 			-- Process `a_value'.
 		do
-			type := "EPA_INTEGER_VALUE"
+			type := integer_value
 		end
 
 	process_real_value (a_value: EPA_REAL_VALUE)
 			-- Process `a_value'.
 		do
-			type := "EPA_REAL_VALUE"
+			type := real_value
 		end
 
 	process_pointer_value (a_value: EPA_POINTER_VALUE)
 			-- Process `a_value'.
 		do
-			type := "EPA_POINTER_VALUE"
+			type := pointer_value
 		end
 
 	process_random_integer_value (a_value: EPA_RANDOM_INTEGER_VALUE)
 			-- Process `a_value'.
 		do
-			type := "EPA_RANDOM_INTEGER_VALUE"
+			type := random_integer_value
 		end
 
 	process_nonsensical_value (a_value: EPA_NONSENSICAL_VALUE)
 			-- Process `a_value'.
 		do
-			type := "EPA_NONSENSICAL_VALUE"
+			type := nonsensical_value
 		end
 
 	process_void_value (a_value: EPA_VOID_VALUE)
 			-- Process `a_value'.
 		do
-			type := "EPA_VOID_VALUE"
+			type := void_value
 		end
 
 	process_any_value (a_value: EPA_ANY_VALUE)
 			-- Process `a_value'.
 		do
-			type := "EPA_ANY_VALUE"
+			type := any_value
 		end
 
 	process_reference_value (a_value: EPA_REFERENCE_VALUE)
 			-- Process `a_value'.
 		do
-			type := "EPA_REFERENCE_VALUE"
+			type := reference_value
 		end
 
 	process_ast_expression_value (a_value: EPA_AST_EXPRESSION_VALUE)
 			-- Process `a_value'.
 		do
-			type := "EPA_AST_EXPRESSION_VALUE"
+			type := ast_expression_value
 		end
 
 	process_string_value (a_value: EPA_STRING_VALUE)
 			-- Process `a_value'.
 		do
-			type := "EPA_STRING_VALUE"
+			type := string_value
 		end
 
 	process_set_value (a_value: EPA_EXPRESSION_SET_VALUE)
 			-- Process `a_value'.
 		do
-			type := "EPA_EXPRESSION_SET_VALUE"
+			type := expression_set_value
 		end
 
 	process_numeric_range_value (a_value: EPA_NUMERIC_RANGE_VALUE)
 			-- Process `a_value'.
 		do
-			type := "EPA_NUMERIC_RANGE_VALUE"
+			type := numeric_range_value
 		end
 
 end
