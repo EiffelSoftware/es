@@ -3021,6 +3021,7 @@ Src/library/abel/libraries/openehr/src/dadl_syntax/parser/dadl_validator.html -t
 Src/library/abel/libraries/openehr/src/dadl_syntax/parser/parser_errs.txt -text
 Src/library/abel/libraries/openehr/src/object_graph/path/og_path_scanner.l -text
 Src/library/abel/libraries/openehr/src/object_graph/path/og_path_validator.html -text
+Src/library/abel/resources/documentation/abel_documentation.pdf -text svneol=unset#application/pdf
 Src/library/abel/resources/documentation/abel_documentation.tex -text
 Src/library/abel/resources/documentation/class_diagram.png -text svneol=unset#image/png
 Src/library/abel/resources/documentation/intro.tex -text

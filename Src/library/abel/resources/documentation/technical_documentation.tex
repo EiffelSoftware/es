@@ -26,25 +26,47 @@ You can see that the main objective of the frontend is to provide an easy to use
 The frontend needs a repository which is specific to a data storage engine, and the backend provides a framework to implement these repositories (in cluster Framework).
 There are also some already predefined repositories inside the backend (cluster Backends), like the IN\_MEMORY\_REPOSITORY.
 
-Inside the framework, there are basically three layers of abstraction. The first is the deferred class REPOSITORY, which is still very object-oriented:
-It takes Eiffel objects that may have a big object graph attached, and returns such fully loaded objects. 
-It also provides some fine-grained control to restrict depth in an object graph.
+\subsubsection{The backend layers}
 
-The second important level of abstraction is the deferred class BACKEND\_STRATEGY, which deals only with one object at once. 
-The layer in between REPOSITORY and BACKEND\_STRATEGY take care of disassembling the object graph into single objects, wrapped in a more explicit notion of the object graph. 
-You can read in the object-relational mapping section ~\ref{section:ORM} how this is exactly done.
-Anyway, the BACKEND\_STRATEGY only knows the concept of a single object and of a collection, and it is responsible to map these to the actual persistence mechanism, e.g. a database with a specific layout. 
+The framework is built of several layers, each layer more specific to a persistence mechanism as it goes down.
 
-The third layer of abstraction is a set of wrappers to a database. It only wraps the connection details, and has functions to execute SQL and retrieve the result in a standardized way.
-It is very useful if you want to easily swap e.g. from a MySQL database to SQLite, but its abstraction is not perfect - i.e. it doesn't take into account the different SQL variations.
+The uppermost layer is the REPOSITORY class. 
+It provides a very high level of abstraction which should be sufficient for all kinds of persistence mechanisms.
+It deals with normal Eiffel objects that may reference a lot of other objects.
 
-The most important data structure in the framework is the OBJECT\_\-IDENTIFICATION\_MANAGER: 
+One level below you can find the object-relational mapping layer.
+It is responsible to take an object graph apart into its pieces and generate a plan for the write operations.
+On the other hand it is responsible to build an object graph from its pieces during object retrieval.
+This layer is described more precisely in the next section ~\ref{section:ORM}.
+
+On the next level there is the BACKEND\_STRATEGY layer.
+It is responsible to map the object pieces generated before to a specific storage engine, e.g. a database with some table layout.
+
+The lowest level of abstraction is only significant for databases that can understand SQL. 
+It provides a set of wrapper classes that hide connection details and error handling and has a features to execute SQL and retrieve the result in a standardized way.
+
+\subsubsection{Important data structures}
+
+The key data structure in the framework is the OBJECT\_\-IDENTIFICATION\_MANAGER: 
 It maintains a weak reference to every object that has been queried or inserted before, and assigns a repository-wide unique number to it (called the object\_identifier).
 It is, for example, responsible for the fact that the update fails in section ``Recognizing Objects''~\ref{subsection:recognize_objects}.
 
 Another important datastructure is the KEY\_POID\_TABLE, which maps the objects object\_identifier to the primary key of the corresponding entry in the database.
 
-To visualize the whole structure, there is a class diagram that shows the most important classes and concepts. You can also see two implementations of the backend abstraction there.
+\subsubsection{Transactions}
+
+Although not directly visible, transactions play an important role in the backend.
+Every operation internally runs in a backend, and almost every part in the backend is aware of transactions.
+For example, the two important data structures described above have to provide some kind of rollback mechanism, and ideally all ACID properties as well.
+
+Another important task of transactions is error propagation within the backend.
+If for example an SQL statement fails because of some integrity constraint violation, then the database wrapper can set the error field in the current transaction instance and raise an exception.
+As the exception propagates upwards, every layer in the backend can do the appropriate steps to bring the library back in a consistent state, using the transaction with the error inside to decide on actions.
+
+\subsubsection{Class diagram}
+
+To visualize the whole structure, there is a class diagram that shows the most important classes and concepts. 
+You can also see two implementations of the backend abstraction there.
 
 \includegraphics[width = 13cm] {class_diagram.png}
 
@@ -65,19 +87,20 @@ These are the most important ones:
 \end{itemize}
 
 All these classes inherit from a deferred class OBJECT\_GRAPH\_PART. 
-They have a builtin iteration cursor, and they share the concept of dependencies.
+They have a builtin iteration cursor, and they share the concept of a dependency.
 If an object graph part X is dependent on another part Y, then it means for example that Y has to be inserted first, because X needs its primary key as a foreign key in the database.
 
 The four classes listed here are the ones that do the actual work:
 
 \begin{itemize}
  \item The OBJECT\_DISASSEMBLER is responsible to create the explicit data structure for an object graph.
- \item The WRITE\_PLANNER is responsible to generate a total order on all write operations.
+ \item The WRITE\_PLANNER is responsible to generate a total order on all write operations, taking care of the dependency relations.
  \item The RETRIEVAL\_MANAGER builds objects from the parts that it gets from the backend, and takes care that all referenced objects of a retrieved object get loaded as well.
- \item The COLLECTION\_HANDLER, or rather its descendants, add collection handling support to the basic ORM layer. You need at least one handler for SPECIAL, but you can add handlers for other collection as well.
+ \item The COLLECTION\_HANDLER, or rather its descendants, add collection handling support to the basic ORM layer. 
+ You need at least one handler for SPECIAL, but you can add handlers for other collection as well.
 \end{itemize}
 
-The object writing part is a bit more complex than the reading part, because of this dependency issue.
+The object writing part is a bit more complex than the reading part, because of the dependency issue.
 
 
 \todo{ Add a little visualization of the different parts}
@@ -92,18 +115,20 @@ There are two types of collections that you can create within a handler.
 The RELATIONAL\_COLLECTION is intended for a case when you have a typical database layout, with tables for a specific class and relations stored either with in the referenced object table (1:N-Relations) or inside their own table.
 The OBJECT\_COLLECTION is intended for a scenario where you can store collections in a separate table, having their own primary key, and with the collection owner using this key as a foreign key.
 
+\todo{Elaborate more on this, especially tell what happens if you have a 1:N relation}
+
 It depends on the database layout of the backend which collection part you need to create.
 
 \subsection{Object graph settings}
 
 First, let's define the object graph more exactly, using graph theory.
-A vertex in the graph corresponds to an object, and a reference is an edge.
+A vertex in the graph corresponds to an object, and a reference is a directed edge.
 
 The (global) object graph is the web of objects and references as it is currently in main memory.
 
 An object Y can be ``reached'' from another object X if there is a path between X and Y, i.e. Y is in the transitive closure of X.
 
-The object graph of an object X is the induced subgraph containing all vertices that can be reached from X.
+The object graph of an object X is an induced subgraph of the global object graph which contains all vertices that can be reached from X.
 
 The level of an object Y in the object graph of X is the length of the shortest path from X to Y.
 
@@ -112,7 +137,7 @@ Using these definitions we can now describe how ABEL handles object graphs, and 
 Every operation in ABEL has its own depth parameter (defined in OBJECT\_GRAPH\_SETTINGS), which has the following effect:
 Each operation will only handle the objects when the following condition holds: $ level(object) < depth $
 
-Now, let's put this in a known context:
+Now, let's put this in a context:
 You already know that the insert and retrieve features handle the complete object graph of an object. 
 In fact, the depth for both functions is infinity by default.
 
@@ -131,39 +156,134 @@ Apart from the depth, there are some other settings as well, i.e. what ABEL shou
 
 \section{Backend abstraction}
 
+ABEL provides some powerful abstractions to be able to support many different storage engines. 
+The three main levels of abstraction are the REPOSITORY class, the BACKEND\_STRATEGY and the database wrapper classes.
 
 \subsection{REPOSITORY}
 
+The deferred class REPOSITORY is the highest level of abstraction.
+It deals with raw Eiffel objects and always deals with the complete object graph of such an object.
+It provides a good interface for persistence mechanism that provide a similarly high level of abstraction, like for example db4o \todo{reference db4o}.
+
+At the moment, only the RELATIONAL\_REPOSITORY implements REPOSITORY.
+The RELATIONAL\_REPOSITORY uses the object-relational mapping layer and uses a generic BACKEND\_STRATEGY to perform the operations at a lower level.
+
 \subsection{BACKEND\_STRATEGY}
+
+The second important level of abstraction is the deferred class BACKEND\_STRATEGY.
+This layer deals with one object graph part at once, either a single object or a collection.
+It is responsible to map these to the actual persistence mechanism, which is usually a specific layout in a database.
+Its use however is not restricted to relational databases.
+The IN\_MEMORY\_DATABASE for example implements this interface to provide a fake storage engine useful for testing, and it is planned to wrap the serialization libraries using this abstraction.
 
 \subsection{Database wrapper}
 
 
-\section{Extensions}
-
-\section{Adaption to a specific database layout}
-
-
-\section{Limitations of the library}
-TODO
-
-Current limitations:
+The last layer of abstraction is a set of wrappers to a database. 
+It consists of three deferred classes: 
 \begin{itemize}
-\item Not all features available if adapted to a custom DB layout 
-\item Inheritance currently not properly supported (due to limitation of INTERNAL)
-\item Reals have rounding error
-\item No ordering support (at least not yet)
-\item
+ \item The SQL\_DATABASE\_ABSTRACTION represents a database. The main function is to acquire or release a SQL\_CONNECTION\_ABSTRACTION.
+ \item The SQL\_CONNECTION\_ABSTRACTION represents a single connection. 
+Its main responsibility is to forward SQL statements to the database and to represent the result in an iteration cursor of SQL\_ROW\_ABSTRACTIONs.
+Another important task is to map database errors to ABEL ERROR instances.
+  \item The SQL\_ROW\_ABSTRACTION represents a single row in the result of an SQL query.
 \end{itemize}
 
-%What exactly has to be here? Is a missing feature (like ordering support) a limitation as well?
+The wrapper is very useful if you want to easily swap e.g. from a MySQL database to SQLite
+
+However, keep in mind that its abstraction is not perfect. 
+For example, the wrapper doesn't care about the different SQL variations, as it just forwards the statements to the database.
+
+To overcome this problem, you can put all SQL statements in your implementation of BACKEND\_STRATEGY into a separate class and generally stick to standard SQL as much as possible.
 
 
-TODO
+\section{Extensions}
 
-%\section{ PART 2: Technical Documentation}
+Due to its very flexible abstraction mechanism, you can easily extend ABEL with features like transaction management or ESCHER \todo {reference escher} integration.
+The pattern how to do this is quite simple: 
+You can implement a BACKEND\_STRATEGY which uses another instance of BACKEND\_STRATEGY, but does some processing on the intermediate result.
+That way you can add:
 
-%\subsection{Moved to technical documentation}
+\begin{itemize}
+ \item Filter support for some non-persistent attributes by removing them from the OBJECT\_GRAPH\_PART during a write, and adding a default value during retrieval.
+ \item ESCHER support by checking on the version attribute during a retrieval, and calling the conversion function if necessary.
+ \item Client-side transaction management by using a multiversion concurrency control mechanism and delaying write operations until you can definitely commit.
+ \item Caching of objects
+ \item An instance that does correctness checks, e.g. by routing the calls to two different backends and comparing if the results are the same.
+ \item Anything else you can imagine...
+\end{itemize}
+
+The really nice thing is that you can do that without adding complexity to the core of ABEL, and for all possible implementations of BACKEND\_STRATEGY at once.
+
+
+\section{Database adaption}
+
+The BACKEND\_STRATEGY interface allows to adapt ABEL to a lot of database layout.
+Shipped with the library is a backend that uses a generic database layout which is suitable for all kinds of objects, which is explained in the next section.
+But you can also adapt ABEL to your very own private database layout, as described in section ~\ref{subsection:specific_adaption}
+
+\subsection{The generic layout backend}
+
+The layout in the database is based upon metadata of the class. It is very flexible and allows for any type of objects to be inserted:
+
+\todo {Add Entity-Relationship model}
+
+In fact, this is a simplified view. 
+The real model uses another relation between value and class to determine the runtime type of a value, which is required in some special cases.
+
+The generic layout backend, located in ``backends/generic\_database\_layout'', maps Eiffel objects to this layout.
+It is separated into a key manager and the actual backend.
+
+The key manager is managing the metadata tables ps\_class and ps\_attribute. 
+Its name is derived from the fact that it is responsible to cache the primary keys of attributes and classes for the other backend to use.
+
+The actual backend uses the key manager to get the necessary primary keys and then inserts the attribute values one by one.
+
+\todo{This can be written better}
+
+\subsection{Adaption to a custom database layout}
+\label{subsection:specific_adaption}
+
+Adapting ABEL to a specific database layout needs two steps:
+ \begin{itemize}
+  \item Implement a BACKEND\_STRATEGY for your layout
+  \item Implement COLLECTION\_HANDLERS for all collections that need to be mapped relationally
+ \end{itemize}
+
+Let's consider a very simple example. You only have two classes PERSON and ITEM:
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Application classes}, label={lst:example_application}]
+class PERSON
+
+feature
+	name:STRING
+
+	items_owned: LINKED_LIST [ITEM]
+end
+
+
+class ITEM
+
+feature
+	value:INTEGER
+
+end
+\end{lstlisting}
+
+In the database, there is table Person with the only attribute name, and table Item with attributes value and a foreign key to Person (as it is usual in an 1:N relation)
+
+In this setup, you only need a collection handler for LINKED\_LIST.
+The collection is a RELATIONAL\_COLLECTION and it is always 1:N mapped in this simple setup.
+
+This also makes the BACKEND\_STRATEGY a lot simpler, because the planner adds an attribute in the collection items for 1:N-mapped collections.
+That means that you only have to implement the functions that deal with objects.
+
+
+
+%\section{Tuning performance}
+
+%Performance rather belongs to the future work section...
+
 %about criteria
 %It will internally build a tree of criteria, with specialized AND, OR or NOT instances as nodes and the usual predefined or agent instances as leafs.
 
@@ -180,3 +300,31 @@ TODO
 %\item Try not to use OR on agent criteria.
 %\item Try to keep OR-ed agent criteria as deep down the tree as possible (as the above OR-node defaults to true and thus is not checked for in the backend)
 %\end{itemize}
+
+\section{Limitations of the library}
+TODO
+
+Current limitations:
+\begin{itemize}
+\item ABEL can't handle all objects if adapted to a custom layout
+\item SPECIAL not yet supported in generic layout strategy
+\item Inheritance currently not properly supported (due to limitation of INTERNAL)
+\item Reals have rounding error
+\end{itemize}
+
+\section{Future work}
+\begin{itemize}
+ \item Order support in queries
+ \item Query-like updates
+ \item Performance: Compiling criteria to SQL
+ \item Performance: Multiple inserts at once for the backend strategy if there's no dependency problem
+ \item A framework to adapt ABEL more easily to a custom database layout
+ \item Serialization support
+ \item Client-side transaction management for backends without transactions
+ \item ESCHER integration
+ \item Inheritance support
+\end{itemize}
+
+
+
+%What exactly has to be here? Is a missing feature (like ordering support) a limitation as well?
