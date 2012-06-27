@@ -9,7 +9,7 @@ note
 	revision: "$Revision$"
 
 class
-	PS_GENERIC_LAYOUT_KEY_MANAGER
+	PS_METADATA_TABLES_MANAGER
 
 inherit
 	PS_EIFFELSTORE_EXPORT

@@ -1,5 +1,5 @@
 note
-	description: "Stores objects in a SQL database using a generic layout."
+	description: "Stores objects in a SQL database using a generic database layout."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -8,7 +8,6 @@ class
 	PS_GENERIC_LAYOUT_SQL_BACKEND
 inherit
 	PS_BACKEND_STRATEGY
---	PS_GENERIC_LAYOUT_SQL_STRINGS
 
 create make
 
@@ -437,7 +436,7 @@ feature{NONE} -- Initialization
 
 	database: PS_SQL_DATABASE_ABSTRACTION
 
-	db_metadata_manager: PS_GENERIC_LAYOUT_KEY_MANAGER
+	db_metadata_manager: PS_METADATA_TABLES_MANAGER
 
 	SQL_Strings: PS_GENERIC_LAYOUT_SQL_STRINGS
 

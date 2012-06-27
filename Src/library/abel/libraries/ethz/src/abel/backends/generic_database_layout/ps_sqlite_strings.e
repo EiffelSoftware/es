@@ -10,7 +10,7 @@ class
 inherit
 	PS_GENERIC_LAYOUT_SQL_STRINGS
 
-feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Table creation
+feature {PS_METADATA_TABLES_MANAGER} -- Table creation
 
 
 	Create_value_table: STRING
@@ -54,13 +54,13 @@ feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Table creation
 			]"
 		end
 
-feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Data querying - Key manager
+feature {PS_METADATA_TABLES_MANAGER} -- Data querying - Key manager
 
 
 	Show_tables: STRING = "SELECT name FROM sqlite_master WHERE type = 'table'"
 
 
-feature {PS_GENERIC_LAYOUT_KEY_MANAGER} -- Data modification - Key manager
+feature {PS_METADATA_TABLES_MANAGER} -- Data modification - Key manager
 
 	Insert_class_use_autoincrement (class_name:STRING):STRING
 		do

@@ -112,12 +112,20 @@ By default you need at least one handler for SPECIAL, because of its peculiarity
 But you can include any other collection, e.g. a LIST or an ARRAY.
 
 There are two types of collections that you can create within a handler. 
-The RELATIONAL\_COLLECTION is intended for a case when you have a typical database layout, with tables for a specific class and relations stored either with in the referenced object table (1:N-Relations) or inside their own table.
+The RELATIONAL\_COLLECTION is intended for a case when you have a typical database layout, with tables for a specific class and relations stored either with in the referenced object table (1:N-Relations) or inside their own table (M:N-Relations).
 The OBJECT\_COLLECTION is intended for a scenario where you can store collections in a separate table, having their own primary key, and with the collection owner using this key as a foreign key.
 
-\todo{Elaborate more on this, especially tell what happens if you have a 1:N relation}
+Note that the choice of the collection has an effect in the object-relational mapping layer already:
+\begin{itemize}
+ \item An OBJECT\_COLLECTION is handled like a SINGLE\_OBJECT\_PART: The owner of the collection object depends on the collection, and the collection depends on all items that it references.
+ \item A RELATIONAL\_COLLECTION in an M:N mapping mode depends on both the collection owner and all items that it references, but the owner does not depend on its collection.
+ This comes from the fact that you need both a foreign key of the owner and the collection items to insert a row in a M:N-relation table
+\item A RELATIONAL\_COLLECTION in an 1:N mapping mode actually isn't forwarded to the backend at all. Instead, for each collection item there is a dependency added to the collection owner.
+ Again, this comes from the normal practice in database layouts for 1:N relations.
+\end{itemize}
 
 It depends on the database layout of the backend which collection part you need to create.
+
 
 \subsection{Object graph settings}
 
@@ -232,14 +240,24 @@ In fact, this is a simplified view.
 The real model uses another relation between value and class to determine the runtime type of a value, which is required in some special cases.
 
 The generic layout backend, located in ``backends/generic\_database\_layout'', maps Eiffel objects to this layout.
-It is separated into a key manager and the actual backend.
 
-The key manager is managing the metadata tables ps\_class and ps\_attribute. 
-Its name is derived from the fact that it is responsible to cache the primary keys of attributes and classes for the other backend to use.
+It is split into three main classes:
+\begin{itemize}
+ \item The METADATA\_TABLES\_MANAGER is responsible to read and write tables ``ps\_class'' and ``ps\_attribute''.
+ \item The GENERIC\_LAYOUT\_SQL\_BACKEND actually implements BACKEND\_STRATEGY and is responsible to write and read the ps\_value table
+ \item The GENERIC\_LAYOUT\_SQL\_STRINGS collects all SQL statements needed by the other classes. Its descendants adapt the statements to a specific database if there is an incompatibility.
+\end{itemize}
 
-The actual backend uses the key manager to get the necessary primary keys and then inserts the attribute values one by one.
+The functionality of the metadata table manager is quite easy:
+It just caches both metadata tables in memory and provides features to get the primary key of an attribute or a class.
+If the class is not present in the database, then it will insert it and return the new primary key.
 
-\todo{This can be written better}
+A write operation is now possible, as all required information is available: 
+The attribute value in the SINGLE\_OBJECT\_PART, the attribute foreign key from the METADATA\_TABLES\_MANAGER, and the object primary key either stored in the KEY\_POID\_TABLE or generated during an insert.
+
+The retrieval operations is similar.
+You can get all attribute primary keys of a specific class from the METADATA\_TABLES\_MANAGER and then execute an SQL query which returns all values whose attribute foreign key is in the set of primary keys retrieved before, sorted by the object primary key.
+
 
 \subsection{Adaption to a custom database layout}
 \label{subsection:specific_adaption}
@@ -270,14 +288,19 @@ feature
 end
 \end{lstlisting}
 
-In the database, there is table Person with the only attribute name, and table Item with attributes value and a foreign key to Person (as it is usual in an 1:N relation)
+In the database, there is table Person with columns primary\_key and name, and table Item with columns primary\_key, item, and a foreign key to Person (as it is usual in an 1:N relation)
 
 In this setup, you only need a collection handler for LINKED\_LIST.
 The collection is a RELATIONAL\_COLLECTION and it is always 1:N mapped in this simple setup.
 
-This also makes the BACKEND\_STRATEGY a lot simpler, because the planner adds an attribute in the collection items for 1:N-mapped collections.
-That means that you only have to implement the functions that deal with objects.
+The implementation of BACKEND\_STRATEGY is quite straightforward as well.
+You just have to distinguish between PERSON and ITEM objects and insert them in the corresponding table.
 
+Please remember that the object-rlational mapping layer adds an attribute with name ``items\_owned'' to the ITEM object, which is the default behaviour for 1:N relations.
+This especially menans that you don't need to implement the relational collection write operations.
+
+During a retrieval operation, you similarly have to select your values from the correct table.
+Note that you need the retrieve\_relational\_collection here.
 
 
 %\section{Tuning performance}
@@ -301,29 +324,7 @@ That means that you only have to implement the functions that deal with objects.
 %\item Try to keep OR-ed agent criteria as deep down the tree as possible (as the above OR-node defaults to true and thus is not checked for in the backend)
 %\end{itemize}
 
-\section{Limitations of the library}
-TODO
 
-Current limitations:
-\begin{itemize}
-\item ABEL can't handle all objects if adapted to a custom layout
-\item SPECIAL not yet supported in generic layout strategy
-\item Inheritance currently not properly supported (due to limitation of INTERNAL)
-\item Reals have rounding error
-\end{itemize}
-
-\section{Future work}
-\begin{itemize}
- \item Order support in queries
- \item Query-like updates
- \item Performance: Compiling criteria to SQL
- \item Performance: Multiple inserts at once for the backend strategy if there's no dependency problem
- \item A framework to adapt ABEL more easily to a custom database layout
- \item Serialization support
- \item Client-side transaction management for backends without transactions
- \item ESCHER integration
- \item Inheritance support
-\end{itemize}
 
 
 
