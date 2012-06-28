@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt]{article}
+\documentclass[a4paper,12pt]{report}
 \usepackage{url}
 \usepackage{enumitem}
 \usepackage{palatino}
@@ -22,6 +22,8 @@
 \usepackage{dsfont}
 \usepackage[english]{babel}
 \usepackage{todonotes}
+
+\usepackage{pdfpages}
 
 \usepackage{tikz}
 \usetikzlibrary{arrows,automata}
@@ -49,6 +51,13 @@
 
 \newcommand{\distance}[2]{\ensuremath{#1\leftrightarrow#2}}
 
+\newcommand{\blankpage}{
+\newpage
+\thispagestyle{empty}
+\mbox{}
+\newpage
+}
+
 
 \title {ABEL Documentation}
 \author {
@@ -56,21 +65,35 @@
 	\textbf{Supervisor:} Marco Piccioni and Bertrand Meyer  
 }
 
-\date {Revision x: Date}
 
 \begin{document}
 
-\maketitle
+\pagenumbering{roman}
+\includepdf {title_page}
+%\maketitle
 
-\part{API documentation}
+\blankpage
 
-\input{intro}
-%\input{querying}
+\input{abstract}
 
-\part{Technical documentation}
+\blankpage
+
+\tableofcontents
+
+\chapter{Introduction}
+\pagenumbering{arabic}
+
+
+\input{introduction}
+
+\chapter{API tutorial}
+
+\input{tutorial}
+
+\chapter{Technical documentation}
 \input{technical_documentation}
 
-\part{Conclusions}
+\chapter{Conclusions}
 \input{conclusions}
 
 {{{

@@ -1,14 +1,8 @@
 
-\section{Intro}
+\section{Getting started}
 
-ABEL is the acronym for ``A better Eiffelstore library''.
-It is a persistence library that unifies a lot of different persistence solutions under a simple, object-oriented API.
-
-In this section you will be introduced to the basic operations of the ABEL API. 
-You will start by initializing the library using a simple in-memory database and learn the CRUD (Create, Read, Update, Delete) operations.
-Later on you will learn how ABEL handles objects with references, how transactions are handled, and what happens in case of an error.
-
-In this little tutorial, we are using PERSON objects to show the usage of the API.
+\subsection{The setup}
+n this little tutorial, we are using PERSON objects to show the usage of the API.
 In the source code below you will see that ABEL handles objects "as they are", meaning that you don't need to inherit from any specific class to make them persistent.
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The PERSON class}, label={lst:person_class}]
@@ -51,7 +45,6 @@ end
 
 
 
-\section{Initialization}
 
 There are 3 very important classes in ABEL:
 \begin{itemize}
@@ -64,6 +57,7 @@ There are 3 very important classes in ABEL:
 	Every CRUD\_EXECUTOR is attached to a specific REPOSITORY.
 \end{itemize}
 
+\subsection{Initialization}
 
 To start using the library, we therefore first need to create a REPOSITORY.
 For this tutorial we will use a simple IN\_MEMORY\_REPOSITORY, which simulates a relational database but stores all values in memory.
@@ -241,7 +235,7 @@ The CRUD\_EXECUTOR.is\_persistent feature can tell you if a specific object is k
 
 
 %Insert the section about advanced queries here:
-\include{querying}
+\input{querying}
 
 
 \section{Dealing with references}
@@ -378,7 +372,66 @@ You can see how this is done in Section \todo{TODO: insert section reference} in
 \section{Advanced Initialization}
 \label{section:advanced_initialization}
 
-\todo{Write section}
+The in-memory repository we've used so far doesn't store data permanently.
+This is acceptable for testing or a tutorial, but not in a real application.
+Therefore, ABEL ships with repositories for a MySQL database and an SQLite database.
+
+To use them, you currently have to assemble the parts that are needed.
+For MySQL, you need to create a MYSQL\_DATABASE and MYSQL\_STRINGS object.
+You need them to create the GENERIC\_LAYOUT\_SQL\_BACKEND, which you need in turn to create the RELATIONAL\_REPOSITORY.
+
+The following little factory class show the process for either a MySQL or an SQLite database:
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:advanced_initialization}]
+
+class REPOSITORY_FACTORY
+
+feature -- Connection details
+	
+	username:STRING = "tutorial"
+	password:STRING = "tutorial"
+
+	db_name:STRING = "tutorial"
+	db_host:STRING = "127.0.0.1"
+	db_port:INTEGER = 3306
+
+	sqlite_filename: STRING = "tutorial.db"
+
+feature -- Factory methods
+
+	create_mysql_repository: PS_RELATIONAL_REPOSITORY
+		-- Create a MySQL repository
+		local
+			database: PS_MYSQL_DATABASE
+			mysql_strings: PS_MYSQL_STRINGS
+			backend: PS_GENERIC_LAYOUT_SQL_BACKEND
+		do
+			create database.make (username, password, db_name, db_host, db_port)
+			create mysql_strings
+			create backend.make (database, strings)
+			create Result.make (backend)
+		end
+
+	create_sqlite_repository: PS_RELATIONAL_REPOSITORY
+		-- Create an SQLite repository
+		local
+			database: PS_SQLITE_DATABASE
+			sqlite_strings: PS_SQLITE_STRINGS
+			backend: PS_GENERIC_LAYOUT_SQL_BACKEND
+		do
+			create database.make (sqlite_filename)
+			create sqlite_strings
+			create backend.make (database, strings)
+			create Result.make (backend)
+		end
+end	
+
+\end{lstlisting}
+
+
+That's all. You can now use the repository to create a CRUD\_EXECUTOR and start programming on it.
+All examples from this tutorial work exactly the same, no matter if you use the IN\_MEMORY\_REPOSITORY or any of the database repositories.
+
 
 \section{Transaction handling}
 

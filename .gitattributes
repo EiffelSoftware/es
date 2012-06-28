@@ -3023,9 +3023,10 @@ Src/library/abel/libraries/openehr/src/object_graph/path/og_path_scanner.l -text
 Src/library/abel/libraries/openehr/src/object_graph/path/og_path_validator.html -text
 Src/library/abel/resources/documentation/abel_documentation.pdf -text svneol=unset#application/pdf
 Src/library/abel/resources/documentation/abel_documentation.tex -text
+Src/library/abel/resources/documentation/abstract.tex -text
 Src/library/abel/resources/documentation/class_diagram.png -text svneol=unset#image/png
 Src/library/abel/resources/documentation/conclusions.tex -text
-Src/library/abel/resources/documentation/intro.tex -text
+Src/library/abel/resources/documentation/introduction.tex -text
 Src/library/abel/resources/documentation/lstlang0.sty -text
 Src/library/abel/resources/documentation/old/Abel_class_diagram.odt -text
 Src/library/abel/resources/documentation/old/Abel_class_diagram.pdf -text
@@ -3038,6 +3039,9 @@ Src/library/abel/resources/documentation/old/Abel_class_diagram_2.odt -text
 Src/library/abel/resources/documentation/querying.tex -text
 Src/library/abel/resources/documentation/references.bib -text
 Src/library/abel/resources/documentation/technical_documentation.tex -text
+Src/library/abel/resources/documentation/title_page.odt -text svneol=unset#application/vnd.oasis.opendocument.text
+Src/library/abel/resources/documentation/title_page.pdf -text svneol=unset#application/pdf
+Src/library/abel/resources/documentation/tutorial.tex -text
 Src/library/api_wrapper/implementation/unix/Clib/dl-config -text
 Src/library/api_wrapper/license.lic -text
 Src/library/cURL/readme.txt -text
