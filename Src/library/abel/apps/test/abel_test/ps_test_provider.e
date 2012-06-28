@@ -40,8 +40,12 @@ feature {PS_TEST_PROVIDER}
 			repository:= a_repository
 			create executor.make (repository)
 			create test_data.make
+			initialize
 		end
 
-
+	initialize
+		-- Initialize every other field
+		do
+		end
 
 end

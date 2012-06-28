@@ -44,6 +44,10 @@ feature
 	array_of_integers: ARRAY[INTEGER]
 		-- An integer array with numbers from 1 to 10
 
+
+	reference_chain: CHAIN_HEAD
+		-- A chain of objects with one head and exactly 10 tail objects
+
 feature {NONE} -- Initialization
 
 
@@ -52,6 +56,7 @@ feature {NONE} -- Initialization
 		local
 			ref2, ref3: REFERENCE_CLASS_1
 			i:INTEGER
+			tail: CHAIN_TAIL
 		do
 			fill_people
 			create flat_class.make
@@ -87,6 +92,19 @@ feature {NONE} -- Initialization
 			until i>10
 			loop
 				array_of_integers[i] := i
+				i:= i+1
+			end
+
+
+			from
+				create tail.make (1)
+				create reference_chain.make (tail)
+				i:=2
+
+			until i>10
+			loop
+				tail.set_tail (create {CHAIN_TAIL}.make (i))
+				tail:= tail.next
 				i:= i+1
 			end
 

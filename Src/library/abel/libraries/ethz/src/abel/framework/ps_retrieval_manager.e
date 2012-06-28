@@ -122,8 +122,8 @@ feature {NONE} -- Implementation: Build functions for PS_RETRIEVED_* objects
 						field_val:= build (field_type, obj.attribute_value (attr_cursor.item), transaction, bookkeeping)
 
 						if attached field_val then
-							print (reflection.field_name (type.field_index (attr_cursor.item), Result).out + "%N")
-							print (type.type.out + field_type.type.out + "%N")
+							--print (reflection.field_name (type.field_index (attr_cursor.item), Result).out + "%N")
+							--print (type.type.out + field_type.type.out + "%N")
 
 							reflection.set_reference_field (type.field_index (attr_cursor.item), Result, field_val)
 						end

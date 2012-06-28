@@ -57,4 +57,14 @@ feature
 		do
 			transaction_tests.test_repeatable_read
 		end
+
+	test_object_graph_write_settings
+		do
+			object_graph_tests.test_write_settings
+		end
+
+	test_object_graph_read_settings
+		do
+			object_graph_tests.test_retrieval_settings
+		end
 end

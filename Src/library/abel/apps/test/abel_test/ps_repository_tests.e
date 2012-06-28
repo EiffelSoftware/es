@@ -26,6 +26,7 @@ feature
 			create crud_tests.make (repository)
 			create criteria_tests.make (repository)
 			create transaction_tests.make (repository)
+			create object_graph_tests.make (repository)
 		end
 
 
@@ -50,6 +51,10 @@ feature {PS_REPOSITORY_TESTS} -- Access
 		-- Provider for criteria tests
 
 	transaction_tests: PS_TRANSACTION_TESTS
+		-- Provider for transaction tests
+
+	object_graph_tests: PS_OBJECT_GRAPH_SETTINGS_TEST
+		-- Provider for object graph settings tests
 
 feature {PS_REPOSITORY_TESTS} -- Utilities
 
