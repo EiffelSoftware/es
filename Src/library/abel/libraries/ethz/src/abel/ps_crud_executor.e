@@ -136,7 +136,7 @@ feature -- Transaction-based data retrieval and querying
 			result_is_persistent: not a_query.result_cursor.after implies is_persistent (a_query.result_cursor.item, transaction)
 			can_handle_retrieved_item: not a_query.result_cursor.after implies can_handle (a_query.result_cursor.item)
 			aborted_implies_after: transaction.has_error implies a_query.result_cursor.after
-			only_transaction_conflicts_return_normally: transaction.has_error implies attached{PS_TRANSACTION_ERROR} transaction.error
+			only_transaction_conflicts_return_normally: transaction.has_error implies attached{PS_TRANSACTION_CONFLICT} transaction.error
 		end
 
 --	reload_within_transaction (object:ANY; transaction: PS_TRANSACTION)
@@ -165,7 +165,7 @@ feature -- Transaction-based data retrieval and querying
 		ensure
 			success_implies_persistent: not transaction.has_error implies is_persistent (an_object, transaction)
 			failure_implies_not_persistent: transaction.has_error implies not is_persistent (an_object, transaction)
-			only_transaction_conflicts_return_normally: transaction.has_error implies attached{PS_TRANSACTION_ERROR} transaction.error
+			only_transaction_conflicts_return_normally: transaction.has_error implies attached{PS_TRANSACTION_CONFLICT} transaction.error
 		end
 
 	update_within_transaction (an_object: ANY; transaction: PS_TRANSACTION)
@@ -179,7 +179,7 @@ feature -- Transaction-based data retrieval and querying
 		do
 			handle_error_on_action (agent repository.update (an_object, transaction), transaction)
 		ensure
-			only_transaction_conflicts_return_normally: transaction.has_error implies attached{PS_TRANSACTION_ERROR} transaction.error
+			only_transaction_conflicts_return_normally: transaction.has_error implies attached{PS_TRANSACTION_CONFLICT} transaction.error
 		end
 
 	delete_within_transaction (an_object: ANY; transaction: PS_TRANSACTION)
@@ -195,7 +195,7 @@ feature -- Transaction-based data retrieval and querying
 		ensure
 			success_implies_not_persistent: not transaction.has_error implies not is_persistent (an_object, transaction)
 			failure_implies_still_persistent: transaction.has_error implies is_persistent (an_object, transaction)
-			only_transaction_conflicts_return_normally: transaction.has_error implies attached{PS_TRANSACTION_ERROR} transaction.error
+			only_transaction_conflicts_return_normally: transaction.has_error implies attached{PS_TRANSACTION_CONFLICT} transaction.error
 		end
 
 	execute_deletion_query_within_transaction (a_query: PS_OBJECT_QUERY [ANY]; transaction: PS_TRANSACTION)
@@ -213,7 +213,7 @@ feature -- Transaction-based data retrieval and querying
 			query_executed: a_query.is_executed
 			transaction_set: a_query.transaction = transaction
 			result_is_empty: a_query.result_cursor.after
-			only_transaction_conflicts_return_normally: transaction.has_error implies attached{PS_TRANSACTION_ERROR} transaction.error
+			only_transaction_conflicts_return_normally: transaction.has_error implies attached{PS_TRANSACTION_CONFLICT} transaction.error
 		end
 
 
@@ -291,7 +291,7 @@ feature {NONE} -- Implementation
 
 			last_error:= transaction.error
 			if transaction.has_error then
-				if attached {PS_TRANSACTION_ERROR} transaction.error then
+				if attached {PS_TRANSACTION_CONFLICT} transaction.error then
 					-- Ignore query in case of a transaction error
 				else
 					-- Raise the error again
@@ -301,7 +301,7 @@ feature {NONE} -- Implementation
 				action.call ([]) -- This may cause an exception which will be handled by the rescue clause
 			end
 		ensure
-			only_transaction_conflicts_return_normally: transaction.has_error implies attached {PS_TRANSACTION_ERROR} transaction.error
+			only_transaction_conflicts_return_normally: transaction.has_error implies attached {PS_TRANSACTION_CONFLICT} transaction.error
 		rescue
 			if not retried then
 				retried:= True
@@ -323,7 +323,7 @@ feature {NONE} -- Implementation
 			query_executed: query.is_executed
 			transaction_set: query.transaction = transaction
 			aborted_implies_after: transaction.has_error implies query.result_cursor.after
-			only_transaction_conflicts_return_normally: transaction.has_error implies attached{PS_TRANSACTION_ERROR} transaction.error
+			only_transaction_conflicts_return_normally: transaction.has_error implies attached{PS_TRANSACTION_CONFLICT} transaction.error
 		end
 
 

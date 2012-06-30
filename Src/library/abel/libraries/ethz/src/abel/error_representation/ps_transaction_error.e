@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	PS_TRANSACTION_ERROR
+	PS_TRANSACTION_CONFLICT
 inherit
 	PS_ERROR
 

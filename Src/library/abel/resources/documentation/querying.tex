@@ -204,7 +204,7 @@ To solve this problem, you can instead send a TUPLE\_QUERY to the executor.
 The result is an iterator over a list of tuples in which the attributes of an object are collected. The order of these attributes is the one defined in TUPLE\_QUERY.projection
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:tuple_query_simple}]
-	print_all_names
+	print_all_last_names
 		-- Print the last name of all PERSON objects in the database
 		local
 			query: PS_TUPLE_QUERY[PERSON]
@@ -236,7 +236,7 @@ As you can't use agents on tuples (as they expect an object and not a tuple), yo
 It is ok to include a criterion on an attribute that is not present in the projection list - these attributes will be loaded internally to check if the object satisfies the criterion, but then they are discarded for the actual result.
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:tuple_projection_selection}]
-	print_names_of_20_year_old
+	print_last_names_of_20_year_old
 		-- Print the last name of all PERSON objects with age=20
 		local
 			query: PS_TUPLE_QUERY[PERSON]

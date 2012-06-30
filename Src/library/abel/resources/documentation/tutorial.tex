@@ -231,7 +231,10 @@ As an example, the following two functions will fail:
 		end
 \end{lstlisting}
 
+Please note that the second way to delete objects, described in Section ~\ref{subsection:deletion_query}, doesn't have this restriction.
+
 The CRUD\_EXECUTOR.is\_persistent feature can tell you if a specific object is known to ABEL and therefore has a link to its entry in the data\-base.
+
 
 
 %Insert the section about advanced queries here:
@@ -515,15 +518,19 @@ If you use explicit transaction management, it will just doom the current transa
 
 ABEL represents errors as objects. 
 All specific error classes inherit from the deferred class ERROR.
-The following list denotes all errors that can happen at runtime. 
+The following list denotes all errors that can happen at runtime- 
 If not explicitly stated otherwise, the errors in this lists belong to the first category (Fatal errors).
 
 \begin{itemize}
-\item CONNECTION\_LOST: Happens e.g. if the internet link breaks, or a serialization file gets exernally deleted.
+\item CONNECTION\_PROBLEM: A broken internet link, or a deleted serialization file.
 \item TRANSACTION\_CONFLICT: Happens if there's a conflict between two transactions. This is a resolvable failure.
-\item ACCESS\_RIGHT\_VIOLATION: Can happen if you don't have write permission to the database.
-\item \todo {Create all error types... }
+\item UNRESOLVABLE\_TRANSACTION\_CONFLICT: A conflict in implicit transaction management that doesn't resolve even after a retry
+\item ACCESS\_RIGHT\_VIOLATION: Insufficient privileges in database, or no write permission to serialization file.
+\item INTERNAL\_ERROR: Any error happening inside the library, like a failed SQL compilation.
+\item GENERAL\_ERROR: Anything that doesn't fit into one of the categories above.
 \end{itemize}
+
+Please note that this list isn't complete yet. ABEL first needs to get in a releasable state.
 
 If you want to handle an error, you have to add a rescue clause somewhere in your code. 
 You can get the actual error from the CRUD\_EXECU\-TOR.error or TRANSACTION.error feature or - as ERROR inherits from DEVELOPER\_EXCEPTION -
@@ -531,6 +538,64 @@ by performing an object test on Eiffel's EXCEPTION\_MANAGER.last\_exception.
 
 For your convenience, there is a visitor pattern for all ABEL error types. 
 You can just implement the appropriate functions and use it for your error handling code.
+
+The following code shows an example. 
+Note that there's some pseudocode inside, and only the some important features are shown:
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:error_visitor_example}]
+
+class
+	MY_PRIVATE_VISITOR
+inherit
+	PS_ERROR_VISITOR
+
+feature
+	shall_retry: BOOLEAN
+		-- Should my client retry the operation?
+
+	visit_access_right_violation (error: PS_ACCESS_RIGHT_VIOLATION)
+		-- Visit an access right violation error
+		do
+			add_some_privileges
+			shall_retry:=True
+		end
+
+	visit_connection_problem (error: PS_CONNECTION_PROBLEM)
+		-- Visit a connection problem error
+		do
+			notify_user_of_abort
+			shall_retry:=False
+		end
+end
+
+
+class
+	TUTORIAL
+
+feature
+
+	my_visitor: MY_PRIVATE_VISITOR
+		-- A user-defined visitor to react to an error
+
+	executor: PS_CRUD_EXECUTOR
+		-- The CRUD executor used throughout the tutorial
+
+	do_something_with_error_handling
+		-- Perform some operations. Deal with errors in case of a problem
+		do
+			-- Some complicated operations
+		rescue
+			my_visitor.visit (executor.error)
+			if my_visitor.shall_retry then
+				retry
+			else
+				-- The exception propagates upwards, and maybe
+				-- another feature can handle it
+			end
+		end
+end
+
+\end{lstlisting}
 
 
 

@@ -111,7 +111,7 @@ feature {NONE} -- Implementation
 		do
 			error_number:= internal_connection.last_server_error_number
 			if transaction_errors.has (error_number) then
-				create {PS_TRANSACTION_ERROR} Result
+				create {PS_TRANSACTION_CONFLICT} Result
 			else
 				fixme ("TODO: Extend this for all types of errors")
 				create {PS_GENERAL_ERROR} Result.make (internal_connection.last_error_message)

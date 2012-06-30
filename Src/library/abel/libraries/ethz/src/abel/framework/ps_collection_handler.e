@@ -121,25 +121,6 @@ feature -- Utilities
 		end
 
 
-feature -- Low-level operations
-
-	insert (a_collection: PS_COLLECTION_PART[COLLECTION_TYPE])
-		deferred
-		end
-
-
-	delete (a_collection: PS_COLLECTION_PART[COLLECTION_TYPE])
-		deferred
-		end
-
-
-	retrieve (parent_key, parent_type, child_type: INTEGER; parent_attr_name: STRING):
-			PS_PAIR [
-					LIST[INTEGER], -- The foreign keys in correct order
-					TUPLE ] -- Any additional information required to create the actual collection
-		deferred
-		end
-
 
 feature -- Object assembly
 

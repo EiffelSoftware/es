@@ -88,6 +88,7 @@ These are the most important ones:
 
 All these classes inherit from a deferred class OBJECT\_GRAPH\_PART. 
 They have a builtin iteration cursor, and they share the concept of a dependency.
+
 If an object graph part X is dependent on another part Y, then it means for example that Y has to be inserted first, because X needs its primary key as a foreign key in the database.
 
 The four classes listed here are the ones that do the actual work:
@@ -108,7 +109,7 @@ The object writing part is a bit more complex than the reading part, because of 
 \subsection{Collection handling}
 
 You can extend the ORM algorithm to include collections. A collection is usually mapped differently from a normal object in the backend, e.g. through a M:N-relation table.
-By default you need at least one handler for SPECIAL, because of its peculiarity that it doesn't have a fixed amount of fields.
+You need at least one handler for SPECIAL, because of its peculiarity that it doesn't have a fixed amount of fields.
 But you can include any other collection, e.g. a LIST or an ARRAY.
 
 There are two types of collections that you can create within a handler. 
@@ -120,12 +121,20 @@ Note that the choice of the collection has an effect in the object-relational ma
  \item An OBJECT\_COLLECTION is handled like a SINGLE\_OBJECT\_PART: The owner of the collection object depends on the collection, and the collection depends on all items that it references.
  \item A RELATIONAL\_COLLECTION in an M:N mapping mode depends on both the collection owner and all items that it references, but the owner does not depend on its collection.
  This comes from the fact that you need both a foreign key of the owner and the collection items to insert a row in a M:N-relation table
-\item A RELATIONAL\_COLLECTION in an 1:N mapping mode actually isn't forwarded to the backend at all. Instead, for each collection item there is a dependency added to the collection owner.
+ \item A RELATIONAL\_COLLECTION in an 1:N mapping mode actually isn't forwarded to the backend at all. Instead, for each collection item there is a dependency added to the collection owner.
  Again, this comes from the normal practice in database layouts for 1:N relations.
 \end{itemize}
 
-It depends on the database layout of the backend which collection part you need to create.
+The following diagram shows an example entity-relationship model for each type of collection:
 
+\todo{Add model}
+
+
+If you use one of the predefined backends, you usually don't have to care about collection handlers.
+They become important however if you want to adapt ABEL to a custom database layout, as you can see in section ~\ref{subsection:specific_adaption}.
+
+Please note that the framework itself does not provide any collection handler, and inserting a SPECIAL object without setting an appropriate handler will result in a runtime crash.
+However, there is a SPECIAL handler shipped with the predefined backends, and e.g. the IN\_MEMORY\_REPOSITORY makes use of it.
 
 \subsection{Object graph settings}
 
@@ -288,16 +297,78 @@ feature
 end
 \end{lstlisting}
 
-In the database, there is table Person with columns primary\_key and name, and table Item with columns primary\_key, item, and a foreign key to Person (as it is usual in an 1:N relation)
+In the database, there is table Person with columns primary\_key and name, and table Item with columns primary\_key, item, and a foreign key 'owner' to Person (as it is usual in an 1:N relation)
+
+\todo{ER-Model}
 
 In this setup, you only need a collection handler for LINKED\_LIST.
 The collection is a RELATIONAL\_COLLECTION and it is always 1:N mapped in this simple setup.
+Therefore, the implementation of your (only) collection handler is very simple:
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The collection handler for LINKED\_LIST}, label={lst:my_linked_list_collection_handler}]
+class 
+	LINKED_LIST_HANDLER
+inherit
+	PS_COLLECTION_HANDLER [LINKED_LIST [ITEM]]
+feature
+
+	create_object_graph_part (
+			obj: PS_OBJECT_IDENTIFIER_WRAPPER;
+			ref_owner:PS_OBJECT_GRAPH_PART; 
+			attr_name: STRING;
+			mode:PS_WRITE_OPERATION)
+		 : PS_RELATIONAL_COLLECTION_PART [LINKED_LIST[ITEM]]
+		-- Create a new part, but don't disassemble
+		do
+			create Result.make (obj, ref_owner, attr_name, mode, Current)
+		end
+
+	is_in_relational_storage_mode (a_collection: PS_COLLECTION_PART[LINKED_LIST[ITEM]]):BOOLEAN = True
+		-- Is `a_collection' stored in relational mode?
+
+
+	is_1_to_n_mapped (a_collection:PS_COLLECTION_PART[LINKED_LIST[ITEM]]): BOOLEAN = True
+		-- Is `a_collection' stored relationally in a 1:N mapping?
+
+end
+\end{lstlisting}
+
 
 The implementation of BACKEND\_STRATEGY is quite straightforward as well.
 You just have to distinguish between PERSON and ITEM objects and insert them in the corresponding table.
 
 Please remember that the object-rlational mapping layer adds an attribute with name ``items\_owned'' to the ITEM object, which is the default behaviour for 1:N relations.
 This especially menans that you don't need to implement the relational collection write operations.
+
+The following code listing shows the insert feature in pseudocode:
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The collection handler for LINKED\_LIST}, label={lst:my_backend_adaption}]
+class 
+	MY_SIMPLE_BACKEND
+inherit
+	PS_BACKEND_STRATEGY
+feature
+
+	insert (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
+		-- Inserts the object into the database
+		do
+			if an_object is a PERSON object then
+				database.execute_sql ("INSERT INTO person (name) VALUES " + an_object.get_value ("name"))
+				key_mapper.add_entry (an_object, database.execute_sql ( "Get last autoincremented primary key of Person")
+			else
+				-- The ORM layer has added an attribute `items_owned' in ITEM
+				foreign_key:= key_mapper.primary_key_of (an_object.get_value ("items_owned"))
+				database.execute_sql ("INSERT INTO item (value, owner) VALUES " + an_object.get_value ("value") + foreign_key)
+				key_mapper.add_entry (an_object, database.execute_sql ("Get last autoincremented primary key of Item")
+			end
+		end
+
+
+	key_mapper: PS_KEY_POID_TABLE
+		-- Maps object identifiers to primary keys
+
+end
+\end{lstlisting}
 
 During a retrieval operation, you similarly have to select your values from the correct table.
 Note that you need the retrieve\_relational\_collection here.
@@ -306,9 +377,6 @@ Note that you need the retrieve\_relational\_collection here.
 %\section{Tuning performance}
 
 %Performance rather belongs to the future work section...
-
-%about criteria
-%It will internally build a tree of criteria, with specialized AND, OR or NOT instances as nodes and the usual predefined or agent instances as leafs.
 
 
 %\subsubsection{Performance remarks}
@@ -323,9 +391,3 @@ Note that you need the retrieve\_relational\_collection here.
 %\item Try not to use OR on agent criteria.
 %\item Try to keep OR-ed agent criteria as deep down the tree as possible (as the above OR-node defaults to true and thus is not checked for in the backend)
 %\end{itemize}
-
-
-
-
-
-%What exactly has to be here? Is a missing feature (like ordering support) a limitation as well?

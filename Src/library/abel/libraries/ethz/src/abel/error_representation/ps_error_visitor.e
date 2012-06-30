@@ -9,6 +9,8 @@ deferred class
 
 feature
 
+
+
 	visit (an_error:PS_ERROR)
 		do
 			an_error.accept (Current)
@@ -20,7 +22,7 @@ feature
 		do
 		end
 
-	visit_transaction_error (transaction_error:PS_TRANSACTION_ERROR)
+	visit_transaction_error (transaction_error:PS_TRANSACTION_CONFLICT)
 		deferred
 		end
 
@@ -31,4 +33,21 @@ feature
 	visit_unresolvable_transaction_conflict (unres_error: PS_UNRESOLVABLE_TRANSACTION_CONFLICT)
 		deferred
 		end
+
+
+	visit_access_right_violation (access_right_violation: PS_ACCESS_RIGHT_VIOLATION)
+		deferred
+		end
+
+
+	visit_connection_problem (connection_error: PS_CONNECTION_PROBLEM)
+		deferred
+		end
+
+
+	visit_internal_error (internal_error: PS_INTERNAL_ERROR)
+		deferred
+		end
+
+
 end
