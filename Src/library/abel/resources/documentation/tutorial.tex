@@ -2,7 +2,7 @@
 \section{Getting started}
 
 \subsection{The setup}
-n this little tutorial, we are using PERSON objects to show the usage of the API.
+In this little tutorial, we are using PERSON objects to show the usage of the API.
 In the source code below you will see that ABEL handles objects "as they are", meaning that you don't need to inherit from any specific class to make them persistent.
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The PERSON class}, label={lst:person_class}]
@@ -29,7 +29,7 @@ feature -- Basic operations
 			age:= age+1
 		end
 
-feature -- Status report
+feature -- Access
 
 	first_name: STRING
 		-- First name of person
@@ -48,10 +48,12 @@ end
 
 There are 3 very important classes in ABEL:
 \begin{itemize}
- \item The CRUD\_EXECUTOR is, as the name suggests, responsible to execute any of the CRUD commands.
-	It is the core interface in ABEL and completely agnostic of the actual storage backend.
+ \item The CRUD\_EXECUTOR is, as the name suggests, responsible to execute CRUD commands.
+	It is the core interface in ABEL and completely transparent to the actual storage backend.
 
- \item The OBJECT\_QUERY [G] class is used to describe a read operation in ABEL. You can execute such a query in the CRUD\_EXECUTOR, and the result will be objects (thus the name).
+ \item The OBJECT\_QUERY [G] class is used to describe a read operation in ABEL. 
+	You can execute such a query in the CRUD\_EXECUTOR. 
+	The result will be objects of type G.
 
  \item The deferred class REPOSITORY provides an abstraction to the actual storage mechanism.
 	Every CRUD\_EXECUTOR is attached to a specific REPOSITORY.
@@ -61,7 +63,7 @@ There are 3 very important classes in ABEL:
 
 To start using the library, we therefore first need to create a REPOSITORY.
 For this tutorial we will use a simple IN\_MEMORY\_REPOSITORY, which simulates a relational database but stores all values in memory.
-Although this repository will not give us any persistence, it is chosen here because the initialization is very easy.
+Although this repository will not give us any persistence, we use it here because initialization is very easy.
 
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The TUTORIAL class}, label={lst:tutorial_class}]
@@ -73,7 +75,7 @@ create
 feature {NONE} -- Initialization
 
 	make
-		-- Initialize ABEL, set up a simple in-memory repository
+		-- Set up a simple in-memory repository
 		local
 			repository:PS_IN_MEMORY_REPOSITORY
 		do
@@ -91,18 +93,18 @@ end
 
 We will use this class throughout the tutorial. You can assume that listings of Eiffel features are inside the TUTORIAL class, if they are not enclosed in another class declaration.
 
-If you want to set up ABEL using a real persistence mechanism, you can read section ``Advanced Initialization'' ~\ref{section:advanced_initialization}.
+If you want to set up ABEL using a real persistence mechanism, you can read section ~\ref{section:advanced_initialization}, ``Advanced Initialization.''
 
 \section{Basic operations}
 
 \subsection{Query}
 
-A query for objects is done by creating a new OBJECT\_QUERY [G] object and execute it with the CRUD\_EXECUTOR.
+A query for objects is done by creating a OBJECT\_QUERY [G] object and executing it in the CRUD\_EXECUTOR.
 The generic parameter G of the OBJECT\_QUERY instance denotes the type of objects that should be queried.
 %In this tutorial they are objects of type PERSON, but ABEL will also return all objects that are descendants of type PERSON.
 
 After a successful execution of the query, you can get the result through the iteration cursor OBJECT\_QUERY.result\_cursor.
-Having an iteration cursor as a result has several advantages, e.g. support for lazy loading or the across syntax, as you will see in the next example:
+Having an iteration cursor as a result has several advantages, e.g. support for lazy loading or the across syntax\todo{cite?}, as you will see in the next example:
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:simple_query}]
 	simple_query: LINKED_LIST [PERSON]
@@ -122,7 +124,7 @@ Having an iteration cursor as a result has several advantages, e.g. support for 
 \end{lstlisting}
 
 Usually the result of such a query is very big, and you are probably only interested in objects that meet a certain criteria, e.g. all persons of age 20.
-ABEL has a mechanism to support this kind of result filtering, and you can read about it in section ~\ref{sec:query}.
+ABEL has a mechanism to support this kind of result filtering. You can read about it in section ~\ref{sec:query}.
 
 Please note that ABEL does not enforce any kind of order on a query result.
 
@@ -211,7 +213,7 @@ As an example, the following two functions will fail:
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:failing_update_delete}]
 	failing_update
-		-- Try and fail to update a person that has never been inserted or queried before
+		-- Try and fail to update a new person object
 		local
 			a_person:PERSON
 		do
@@ -221,7 +223,7 @@ As an example, the following two functions will fail:
 		end
 
 	failing_delete (name:STRING)
-		-- Try and fail to delete a person that has never been inserted or queried before
+		-- Try and fail to delete a new person object
 		local
 			a_person:PERSON
 		do
@@ -231,7 +233,7 @@ As an example, the following two functions will fail:
 		end
 \end{lstlisting}
 
-Please note that the second way to delete objects, described in Section ~\ref{subsection:deletion_query}, doesn't have this restriction.
+Please note that there's another way to delete objects, described in Section ~\ref{subsection:deletion_query}, which doesn't have this restriction.
 
 The CRUD\_EXECUTOR.is\_persistent feature can tell you if a specific object is known to ABEL and therefore has a link to its entry in the data\-base.
 
@@ -255,7 +257,8 @@ Let's look at the new class CHILD:
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The CHILD class}, label={lst:child_class}]
 
-class CHILD
+class 
+	CHILD
 
 create
 	make
@@ -263,14 +266,14 @@ create
 feature {NONE} -- Initialization
 
 	make (first, last: STRING)
-			-- Create a new person
+			-- Create a new child
 		do
 			first_name := first
 			last_name := last
 			age:= 0
 		end
 
-feature -- Basic operations
+feature -- Access
 
 	celebrate_birthday
 			-- Increase age by 1
@@ -281,12 +284,12 @@ feature -- Basic operations
 feature -- Status report
 
 	first_name: STRING
-		-- First name of person
+		-- First name of child
 	last_name: STRING
-		-- Last name of person
+		-- Last name of child
 
 	age: INTEGER
-		-- The person's age
+		-- The child's age
 
 feature	-- Parents 
 
@@ -297,11 +300,13 @@ feature	-- Parents
 		-- `Current's father
 	
 	set_mother (a_mother: CHILD)
+		-- Set the mother
 		do
 			mother:= a_mother
 		end
 
 	set_father (a_father: CHILD)
+		-- Set the father
 		do
 			father:= a_father
 		end
@@ -310,8 +315,8 @@ end
 
 
 This adds in some complexity: 
-Instead of having a single object, ABEL has to insert a CHILD's mother and father as well, and if they too are instances of CHILD, then it has to repeat that again.
-The good news for you is that the examples above will work exactly the same way.
+Instead of having a single object, ABEL has to insert a CHILD's mother and father as well, and if their parent attribute is attached as well it has to repeat again.
+The good news for you is that the examples above will work exactly the same.
 
 However, there are some additional caveats to take into consideration. 
 Let's consider a simple example with CHILD objects ``Baby Doe'', ``John Doe'' and ``Grandpa Doe''.
@@ -345,12 +350,13 @@ If you now query the database for CHILD objects, it will return exactly the same
 
 \subsection{Updates}
 
-By default, ABEL does not follow references on updates. So for example the following statement has no effect to the database.
+By default, ABEL does not follow references on updates. So for example the following statement has no effect on the database.
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:reference_update}]
 	celebrate_fathers_birthday (a_child: CHILD)
+		-- Increase age of `a_child's father
 		require
-			a_child_is_in_database: executor.is_already_loaded (a_child)
+			child_persistent: executor.is_persistent (a_child)
 		do
 			a_child.father.celebrate_birthday
 
@@ -368,7 +374,7 @@ ABEL has no limits regarding the depth of an object graph, and it will detect an
 You are welcome to test ABEL's capability with very complex objects, however please keep in mind that this will cause a big performance impact.
 
 To overcome this problem, you can either use simple object structures, or you can tell ABEL to only load or store an object up to a certain depth.
-You can see how this is done in Section \todo{TODO: insert section reference} in the technical documentation, where the whole concept of an object graphs and its depth is described more detailed.
+You can see how this is done in Section ~\ref{subsection:obect_graph_settings} in the technical documentation, where the whole concept of an object graphs and its depth is described more detailed.
 
 
 
@@ -387,7 +393,8 @@ The following little factory class show the process for either a MySQL or an SQL
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:advanced_initialization}]
 
-class REPOSITORY_FACTORY
+class 
+	REPOSITORY_FACTORY
 
 feature -- Connection details
 	
@@ -439,7 +446,7 @@ All examples from this tutorial work exactly the same, no matter if you use the 
 \section{Transaction handling}
 
 Every CRUD operation in ABEL is executed within a transaction. 
-Transactions are created and commited implicitly, and have e.g. the advantage that - especially when dealing with complex object graphs - an object doesn't get ``halfway inserted'' in case of an error.
+Transactions are created and commited implicitly, which has the advantage that - especially when dealing with complex object graphs - an object doesn't get ``halfway inserted'' in case of an error.
 
 As a user, you also have the possibility to use transactions explicitly. 
 This is done by manually creating an object of type TRANSACTION and using the *\_within\_transaction features in CRUD\_EXECUTOR, instead of the normal ones.
@@ -449,6 +456,7 @@ Let's consider an example where you want to update the age of every person by on
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:update_all_ages}]
 	update_ages
+		-- Increase everyone's age by one
 		local
 			query: PS_OBJECT_QUERY[PERSON]
 			transaction: PS_TRANSACTION
@@ -461,7 +469,8 @@ Let's consider an example where you want to update the age of every person by on
 			across query as query_result
 			loop
 				query_result.item.celebrate_birthday
-				executor.update_within_transaction (query_result.item, transaction)
+				executor.update_within_transaction 
+					(query_result.item, transaction)
 			end
 
 			transaction.commit
@@ -474,8 +483,9 @@ Let's consider an example where you want to update the age of every person by on
 \end{lstlisting}
 
 You can see here as well that a commit may fail, e.g. when a write conflict happened in the database.
-These errors are indicated in the TRANSACTION.has\_error attribute.
+The errors are reported in the TRANSACTION.has\_error attribute.
 In case of an error, all changes of the transaction are rolled back automatically.
+
 You can also abort a transaction manually by calling TRANSACTION.rollback. 
 
 \subsection{Transaction isolation levels}
@@ -490,40 +500,41 @@ ABEL supports the four standard transaction isolation levels found in most datab
 
 The different levels are defined in the ``enum class'' TRANSACTION\_\-ISOLATION\_LEVEL.
 
-You can set a transaction isolation level using the feature REPOSITORY. set\_\-transaction\_isolation\_level.
+You can set a transaction isolation level using the feature REPOSITO\-RY.set\_\-transaction\_isolation\_level.
 The default transaction isolation level of ABEL is defined by the actual storage backend.
 
 Please note: Not every backend supports all isolation levels.
-Therefore a backend can also use a higher isolation level than you actually need, but it is not allowed to use a lesser isolation level.
+Therefore a backend can also use a higher isolation level than you actually instruct it to use, but it is not allowed to use a lesser isolation level.
 
 
 
 \section{Error handling}
 
-As ABEL is dealing with IO and databases, there are several runtime errors that can happen. 
-ABEL will in general raise exceptions if an error happens, and propagate errors through an ERROR object.
+As ABEL is dealing with IO and databases, runtime errors may happen. 
+ABEL will in general raise exceptions in case of an error and expose the error to the library user as an ERROR object.
 ABEL distinguishes between two different kinds of errors.
 
 \begin{itemize}
 
 \item Fatal errors: Irrecoverable errors happening in a scenario like a broken connection or an integrity constraint violation in the database.
 The usual measure is to rollback the current transaction and raise an exception. 
-If you catch the exception in a rescue clause and manage to resolve the problem, then you can continue using ABEL.
+If you catch the exception in a rescue clause and manage to resolve the problem, you can continue using ABEL.
 
-\item Resolvable failures: Those are not really visible to the user, because no exception is raised if they occur.
+\item Resolvable failures: Those are not really visible to the user, because no exception is raised when they occur.
 A typical example is a conflict between two transactions.
 ABEL will detect the failure and, in case of implicit transaction management, retry.
+
 If you use explicit transaction management, it will just doom the current transaction to fail at commit time.
 \end{itemize}
 
-ABEL represents errors as objects. 
-All specific error classes inherit from the deferred class ERROR.
-The following list denotes all errors that can happen at runtime- 
+ABEL represents errors as objects, and all specific error classes inherit from the deferred class ERROR.
+The following list shows all errors that can happen at runtime.
+
 If not explicitly stated otherwise, the errors in this lists belong to the first category (Fatal errors).
 
 \begin{itemize}
 \item CONNECTION\_PROBLEM: A broken internet link, or a deleted serialization file.
-\item TRANSACTION\_CONFLICT: Happens if there's a conflict between two transactions. This is a resolvable failure.
+\item TRANSACTION\_CONFLICT: A write conflict between two transactions. This is a resolvable failure.
 \item UNRESOLVABLE\_TRANSACTION\_CONFLICT: A conflict in implicit transaction management that doesn't resolve even after a retry
 \item ACCESS\_RIGHT\_VIOLATION: Insufficient privileges in database, or no write permission to serialization file.
 \item INTERNAL\_ERROR: Any error happening inside the library, like a failed SQL compilation.
@@ -540,7 +551,7 @@ For your convenience, there is a visitor pattern for all ABEL error types.
 You can just implement the appropriate functions and use it for your error handling code.
 
 The following code shows an example. 
-Note that there's some pseudocode inside, and only the some important features are shown:
+Note that there's some pseudocode inside, and only important features are shown:
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:error_visitor_example}]
 
@@ -553,7 +564,8 @@ feature
 	shall_retry: BOOLEAN
 		-- Should my client retry the operation?
 
-	visit_access_right_violation (error: PS_ACCESS_RIGHT_VIOLATION)
+	visit_access_right_violation (
+		error: PS_ACCESS_RIGHT_VIOLATION)
 		-- Visit an access right violation error
 		do
 			add_some_privileges

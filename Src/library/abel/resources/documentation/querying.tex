@@ -4,12 +4,10 @@
 \subsection{The query mechanism}
 
 As you already know, queries to the database are done by creating a new OBJECT\_QUERY and letting it be executed by the CRUD\_EXECUTOR.
-The generic parameter of the OBJECT\_QUERY instance determines the type of the objects that will be returned, including every conforming types (e.g. descendants of that class).
-
-%\subsection{Handling references}
+The generic parameter G of the OBJECT\_QUERY instance determines the type of the objects that will be returned, including any conforming type (e.g. descendants of G).
 
 ABEL will by default load an object completely, that means all objects that can be reached by following references will be loaded as well. 
-There is however a mechanism in ABEL that ensures that an object will not be loaded twice in a single query (see also ~\ref{sec:references}).
+There is a mechanism in ABEL that ensures that an object will not be loaded twice in a single query (see also section ~\ref{sec:references}).
 
 
 \subsection{Criteria}
@@ -20,11 +18,11 @@ There are two types: predefined and agent criteria.
 \subsubsection{Predefined Criteria}
 Predefined criteria take an attribute name, an operator and a value. 
 You can only use attributes that are of a basic type, like strings or numbers.
-During retrieval, they check the object's own value against the value set in the criterion, and filter objects that don't satisfy the criterion.
+During retrieval, ABEL checks the object's own value against the value set in the criterion, and filters objects that don't satisfy the criterion.
 
-The supported operators are pretty self-describing (see Listing 4), except for the ``like''-operator. 
-That does pattern-matching on strings.
-You can give the criterion a pattern as a value, which can contain the wildcard characters '*' and '?'.
+Most supported operators are pretty self-describing (see Listing ~\ref{lst:factory_interface}).
+The likely exception is the ``like''-operator, which does pattern-matching on strings.
+You can give the ``like''-operator a string pattern as a value, which can contain the wildcard characters * and ?.
 The asterisk stands for any number (including zero) of undefined characters, and the question mark means exactly one undefined character.
 
 Not every type of attribute supports every operator. Valid combinations for each type are:
@@ -49,7 +47,7 @@ There should be either an open target or a single open argument, and the type of
 
 The criteria instances are best created using the CRITERION\_FACTORY class.
 
-The main functions to the class are the following: 
+The main functions of the class are the following: 
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The CRITERION\_FACTORY interface}, label={lst:factory_interface}]
 class
@@ -60,16 +58,18 @@ create
 feature -- Creating a criterion
 
 	new alias "[]" (tuple: TUPLE [ANY]): PS_CRITERION
-			-- This function creates a new criterion according to the tuple in the argument.
-			-- The tuple should either contain a single PREDICATE or three values of the form [STRING, STRING, ANY]
-
+		-- This function creates a new criterion according to 
+		-- the tuple in the argument. The tuple should either 
+		-- contain a single PREDICATE or three values with 
+		-- type [STRING, STRING, ANY]
 
 
 	new_agent (a_predicate: PREDICATE [ANY, TUPLE [ANY]]): PS_CRITERION
-			-- creates a criterion with an agent
+		-- creates a criterion with an agent
 
-	new_predefined (object_attribute: STRING; operator: STRING; value: ANY): PS_CRITERION
-			-- creates a predefined criterion
+	new_predefined (object_attribute: STRING; 
+		operator: STRING; value: ANY): PS_CRITERION
+		-- creates a predefined criterion
 
 feature -- Operators
 
@@ -173,7 +173,7 @@ Their precedence is the same as in Eiffel, which means that NOT is stronger than
 \label{subsection:deletion_query}
 
 
-As already mentioned previously, there is another way to perform a delete in the repository.
+As already mentioned previously, there is another way to perform a deletion in the repository.
 When you call CRUD\_EXECUTOR.execute\_deletion\_query, ABEL will delete all objects in the database that would have been retrieved by executing the query normally.
 You can look at the following example and compare it with its variation in the delete section ~\ref{subsection:simple_delete}
 
@@ -192,12 +192,12 @@ You can look at the following example and compare it with its variation in the d
 \end{lstlisting}
 
 It depends on the situation if you want to use deletion queries or a direct delete command. 
-Usually, a direct command is better if you already have the object in memory, whereas deletion queries are nicer to use if the object is not yet loaded from the database.
+Usually, a direct command is better if you already have the object in memory, whereas deletion queries are nice to use if the object is not yet loaded from the database.
 
 \subsection{Tuple queries}
 
 So far, we've only looked at queries that return objects. However, in ABEL there is a second option to query data which returns tuples as a result.
-Consider an example where you just want to have a list of all first an last names of persons in the database. 
+Consider an example where you just want to have a list of all last names of persons in the database. 
 To load every object of type PERSON might lead to a very bad performance, especially if there is a big object graph attached to each person object.
 
 To solve this problem, you can instead send a TUPLE\_QUERY to the executor. 
@@ -205,7 +205,7 @@ The result is an iterator over a list of tuples in which the attributes of an ob
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:tuple_query_simple}]
 	print_all_last_names
-		-- Print the last name of all PERSON objects in the database
+		-- Print the last name of all PERSON objects
 		local
 			query: PS_TUPLE_QUERY[PERSON]
 			last_name_index:INTEGER
@@ -227,12 +227,12 @@ The result is an iterator over a list of tuples in which the attributes of an ob
 \end{lstlisting}
 
 \subsubsection{Tuple queries and projections}
-By default, a TUPLE\_QUERY will only return attributes of an object that are of a basic type, so no references are followed during a retrieve.
-You can change this default by calling TUPLE\_QUERY.set\_projection, which expects a list of names of the attributes you would like to have.
+By default, a TUPLE\_QUERY will only return attributes which are of a basic type, so no references are followed during a retrieve.
+You can change this default by calling TUPLE\_QUERY.set\_projection, which expects an array of names of the attributes you would like to have.
 If you include an attribute name whose type is not a basic one, ABEL will actually retrieve and build the attribute object, and not just another tuple.
 
 \subsubsection{Tuple queries and criteria}
-As you can't use agents on tuples (as they expect an object and not a tuple), you are restricted to use predefined criteria in tuple queries. You can still combine them as usual.
+As you can't use agents on tuples (because they expect an object and not a tuple), you are restricted to use predefined criteria in tuple queries. You can still combine them as usual.
 It is ok to include a criterion on an attribute that is not present in the projection list - these attributes will be loaded internally to check if the object satisfies the criterion, but then they are discarded for the actual result.
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:tuple_projection_selection}]

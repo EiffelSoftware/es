@@ -3,10 +3,10 @@
 In this thesis, we have developed a software library to access different persitence mechanism.
 The library features a simple yet powerful programming interface, which is completely agnostic of the actual backend.
 
-Behind the API we developed a very flexible framework to adapt ABEL to a lot of existing storage engines.
+Below the API we developed a very flexible framework to adapt ABEL to a lot of existing storage engines.
 The framework includes a reusable object-relational mapping layer, a database library wrapper, and some interfaces for extension and customization.
 
-Based on this framework we have developed an in-memory backend which is useful for testing along with a test suite that is independent of the actual backend.
+Based on this framework we have developed an in-memory backend which is useful for testing, and a test suite that is mostly independent of the actual backend.
 
 Furthermore, we have developed a backend that uses a generic database layout for storing objects, working both for MySQL and SQLite databases.
 
@@ -14,15 +14,15 @@ Furthermore, we have developed a backend that uses a generic database layout for
 
 \begin{itemize}
 \item Due to a limitation in INTERNAL, inheritance is not properly supported.
-This especially means that a query of an object of class X will not return descendants of X.
-\item If you adapt ABEL to a custom layout, it can only handle object types that have corresponding tables in the database.
-\item If a custom database layout isn't well designed, i.e. if there are redundancies, you might get into trouble when adapting ABEL to it.
+This especially means that a query of an object of class G will not return descendants of G.
+\item If you adapt ABEL to a custom database layout, it can only handle object types that have corresponding tables in the database.
+\item If a custom database layout isn't well designed, e.g. if there are redundancies, you might get into trouble when trying to adapt ABEL to it.
 \item Some basic types are not fully supported:
 \begin{itemize}
-	\item Reals have a rounding error
+	\item REALs have a rounding error
 	\item STRING\_32 is converted to STRING\_8, which distorts them sometimes.
 	\item CHARACTER is converted to INTEGER for storage.
-	This is usually fine, but in custom database layouts this results in a type mismatch.
+	This is usually fine, but in custom database layouts it results in a type mismatch.
 \end{itemize}
 \item The generic database layout backend doesn't support SPECIAL yet (or collections in general).
 \item The library completely lacks any performance optimization.
@@ -32,12 +32,12 @@ This especially means that a query of an object of class X will not return desce
 
 \section{Future work}
 \begin{description}
- \item [Ordering] At the moment, a query result has no defined order. A mechanism to enforce an order in the result set might be a useful addition to the library user.
+ \item [Ordering] At the moment, a query result has no defined order. A mechanism to enforce an order in the result set might be useful.
  \item [Update Query] With the current API you can only do an update if the object has been retrieved or inserted before. 
 Another way to do update operations could use a QUERY instead, but you also need some new mechanism to be able to say which attributes should be updated with a new value.
  \item [Performance] Currently there is no optimization in ABEL, and there is a lot that can be done in this area:
  \begin{itemize}
-  \item Move the filtering of objects according to the CRITERIA in a query to the database, by compiling criteria to SQL.
+  \item Compile PREDEFINED\_CRITERIA to SQL in order to get smaller results.
  \item Add support for lazy loading in the generic database layout implementation by using SQL cursors instead of normal select statements.
  \item Use prepared statements and maybe even stored procedures instead of normal SQL statements.
  \item Optimize ABEL by trying to reduce network round trip times to a minimum.
@@ -45,18 +45,18 @@ Another way to do update operations could use a QUERY instead, but you also need
 \end{itemize}
 
  \item [Adaptor Framework] Adaption to a specific layout is a tedious task at the moment, as everything has to be hardcoded. 
-It would be much easier to just be able to define a mapping from classes to tables, attribute names to column names, and the framework takes care of the rest.
-As an extension this mapping could be defined as an XML file, which lifts the burden of the user to hack on ABEL itself.
+It would be much easier if you could just define a mapping from classes to tables and attribute names to column names, and the framework takes care of the rest.
+As an extension this mapping could be defined in an XML file.
 \item [Backends] Extend ABEL to support more backends, e.g.
 \begin{itemize}
  \item A serialization library
- \item An object database, e.g. db4o
+ \item An object database like db4o
  \item EiffelStore
  \item A NoSQL database like CouchDB
 \end{itemize}
  \item [Inheritance] ABEL needs proper inheritance support as soon as the required features in INTERNAL get implemented.
 \item [Transaction management] Some backends, e.g. the in-memory backend or the serialization library, don't support transactions.
- Therefore it would be nice to implement local transaction management for these libraries by using e.g. multiversion concurrency control at the BACKEND\_STRATEGY level.
-\item [ESCHER] At the moment, the behaviour of ABEL is undefined in case of a version mismatch between stored objects and their runtime type. 
+ Therefore it would be nice to implement local transaction management for these libraries by using multiversion concurrency control at the BACKEND\_STRATEGY level.
+\item [ESCHER] At the moment, the behaviour of ABEL is undefined in case of a version mismatch between the type of stored objects and their current runtime type. 
 An integration of ESCHER into the ABEL framework would help detecting a version mismatch and, if possible, correct it immediately.
 \end{description}
