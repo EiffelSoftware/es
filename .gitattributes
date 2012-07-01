@@ -3024,8 +3024,14 @@ Src/library/abel/libraries/openehr/src/object_graph/path/og_path_validator.html 
 Src/library/abel/resources/documentation/abel_documentation.pdf -text svneol=unset#application/pdf
 Src/library/abel/resources/documentation/abel_documentation.tex -text
 Src/library/abel/resources/documentation/abstract.tex -text
+Src/library/abel/resources/documentation/backend.png -text svneol=unset#image/png
+Src/library/abel/resources/documentation/backend.xml -text
 Src/library/abel/resources/documentation/class_diagram.png -text svneol=unset#image/png
 Src/library/abel/resources/documentation/conclusions.tex -text
+Src/library/abel/resources/documentation/dataflow.png -text svneol=unset#image/png
+Src/library/abel/resources/documentation/dataflow.xml -text
+Src/library/abel/resources/documentation/frontend.png -text svneol=unset#image/png
+Src/library/abel/resources/documentation/frontend.xml -text
 Src/library/abel/resources/documentation/introduction.tex -text
 Src/library/abel/resources/documentation/lstlang0.sty -text
 Src/library/abel/resources/documentation/old/Abel_class_diagram.odt -text

@@ -1,11 +1,11 @@
 \section{Introduction}
 
 The Eiffel language \cite{EcmaEiffel} \cite{Meyer09} features a lot of different persistence libraries, and every solution has its own advantages and drawback.
-A database such as MySQL \cite {MySQL} for example is quite fast, but it comes at the expence of the object-relational impedance mismatch.\todo {find citation}
+A database such as MySQL \cite {MySQL} for example is quite fast, but it comes at the expence of the object-relational impedance mismatch.\cite{ORImpedance}
 A serialization library on the other hand is easier to handle for the programmer, but its performance rapidly decreases for large data sets.
 
 It is very hard to switch from one persistence solution to another, because all have their own interface.
-Even changing the database from MySQL to Oracle \todo{cite} is usually very hard to achieve, if only because their SQL dialects are different.
+Even changing for example the database from MySQL to Oracle \cite{Oracle} is usually very hard to achieve, if only because their SQL dialects are different.
 
 To overcome such problems we have developed a new library called ABEL, which is the acronym for ``A better Eiffelstore library''.
 ABEL tries to unify existing persistence libraries unter a simple and yet powerful API, which is completely transparent to the actual storage mechanism.

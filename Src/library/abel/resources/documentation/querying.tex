@@ -22,7 +22,7 @@ During retrieval, ABEL checks the object's own value against the value set in th
 
 Most supported operators are pretty self-describing (see Listing ~\ref{lst:factory_interface}).
 The likely exception is the ``like''-operator, which does pattern-matching on strings.
-You can give the ``like''-operator a string pattern as a value, which can contain the wildcard characters * and ?.
+You can give the ``like''-operator a pattern string as a value, which can contain the wildcard characters * and ?.
 The asterisk stands for any number (including zero) of undefined characters, and the question mark means exactly one undefined character.
 
 Not every type of attribute supports every operator. Valid combinations for each type are:
@@ -174,7 +174,7 @@ Their precedence is the same as in Eiffel, which means that NOT is stronger than
 
 
 As already mentioned previously, there is another way to perform a deletion in the repository.
-When you call CRUD\_EXECUTOR.execute\_deletion\_query, ABEL will delete all objects in the database that would have been retrieved by executing the query normally.
+When you call CRUD\_EXECUTOR.execute\_dele\-tion\_query, ABEL will delete all objects in the database that would have been retrieved by executing the query normally.
 You can look at the following example and compare it with its variation in the delete section ~\ref{subsection:simple_delete}
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:deletion_query}]
