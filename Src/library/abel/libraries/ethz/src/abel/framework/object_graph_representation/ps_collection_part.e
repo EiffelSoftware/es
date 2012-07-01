@@ -106,7 +106,7 @@ feature {PS_COLLECTION_PART} -- Deletion dependency
 		end
 
 
-feature {NONE} -- Initialization
+feature {PS_OBJECT_GRAPH_PART} -- Initialization
 
 	initialize (a_level:INTEGER; a_mode:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
 		local

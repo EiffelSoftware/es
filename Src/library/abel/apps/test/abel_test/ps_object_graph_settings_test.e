@@ -260,7 +260,7 @@ feature {PS_REPOSITORY_TESTS}
 				tail_count:= tail_count + 1
 			end
 
-			assert ("The number of tails is wrong", arbitrary_depth -1 = tail_count )
+			assert ("The number of tails is wrong", arbitrary_depth -1 = tail_count)
 
 			repository.clean_db_for_testing
 			repository.default_object_graph.reset_to_default

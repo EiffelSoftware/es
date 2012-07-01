@@ -75,6 +75,7 @@ feature {NONE} -- Initialization
 			ref2.references.extend (ref3)
 			ref3.references.extend (reference_cycle)
 			ref3.references.extend (ref2)
+--			ref3.references.extend (create {REFERENCE_CLASS_1}.make(5))
 
 --			reference_1.ref_arrays.grow (1)
 --			reference_1.ref_arrays[1]:= ref2

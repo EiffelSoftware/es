@@ -24,7 +24,21 @@ feature {PS_EIFFELSTORE_EXPORT}
 	do
 		internal_operation_store.wipe_out
 		int_transaction:= transaction
-		disassembled_object:= disassemble (an_object, current_global_depth (a_mode), a_mode, create {PS_IGNORE_PART}.make, "root")
+		internal_store.wipe_out
+--		disassembled_object:= disassemble (an_object, current_global_depth (a_mode), a_mode, create {PS_IGNORE_PART}.make, "root")
+		disassembled_object := Current.next_object_graph_part (an_object, create {PS_IGNORE_PART}.make, a_mode)
+		disassembled_object.initialize (0, a_mode, Current)
+		across disassembled_object as obj loop
+			if attached {PS_COMPLEX_ATTRIBUTE_PART} obj.item as complex then
+				if --not obj.item.is_persistent and
+				not id_manager.is_identified (complex.represented_object, transaction) then
+					id_manager.identify (complex.represented_object, transaction)
+				end
+				complex.set_object_id (id_manager.get_identifier_wrapper (complex.represented_object, transaction))
+			end
+		end
+
+
 	end
 
 	disassembled_object: PS_OBJECT_GRAPH_PART
@@ -285,7 +299,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 				collection_handlers.extend (a_handler)
 			end
 
-feature {NONE} -- Helper functions
+feature {PS_EIFFELSTORE_EXPORT} -- Helper functions
 
 	next_level (current_level:INTEGER; current_persistent:BOOLEAN; current_is_collection:BOOLEAN; next_persistent:BOOLEAN):INTEGER
 		do
@@ -386,8 +400,10 @@ feature {NONE} -- Bookkeeping
 		end
 
 	get_from_store (object:ANY):PS_OBJECT_GRAPH_PART
+		require
+			is_in_store (object)
 		do
-			Result := internal_store.item
+			Result := internal_store.at (1)
 			across internal_store as cursor loop
 				if cursor.item.represented_object = object then
 					Result:= cursor.item

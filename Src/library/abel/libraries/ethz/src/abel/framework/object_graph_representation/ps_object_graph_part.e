@@ -139,7 +139,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access: Cursor
 			create Result.make (Current)
 		end
 
-feature {NONE} -- Initialization
+feature {PS_EIFFELSTORE_EXPORT} -- Initialization
 
 	initialize (a_level:INTEGER; a_mode:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
 		deferred

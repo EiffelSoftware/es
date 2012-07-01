@@ -139,14 +139,54 @@ feature {NONE} -- Initialization
 			make
 		end
 
+feature {PS_EIFFELSTORE_EXPORT} -- Initialization
 
 	initialize (a_level:INTEGER; mode:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
+		local
+			i:INTEGER
+			reflection:INTERNAL
+			next_persistent: BOOLEAN
 		do
 			if not is_initialized then
 				is_initialized:= True
 				level:= a_level
 				write_mode:= mode
 				fixme ("if level +1 < global depth, create all attributes, then initialie all attributes, else if level +1 = global depth only create and initialize basic or  persistent attributes")
+
+				create reflection
+
+				if not (write_mode = write_mode.no_operation) then
+
+
+					if (level+1 < disassembler.current_global_depth (mode) or disassembler.current_global_depth (mode) = disassembler.settings.object_graph_depth_infinite) then
+						from i:= 1
+						until i> reflection.field_count (represented_object)
+						loop
+							add_attribute (reflection.field_name (i, represented_object), disassembler.next_object_graph_part (reflection.field (i, represented_object), Current, write_mode))
+							i:= i+1
+						end
+						across attributes as cursor loop
+							next_persistent:= get_value(cursor.item).is_persistent
+							get_value (cursor.item).initialize (disassembler.next_level (level, is_persistent, False, next_persistent), disassembler.next_operation (write_mode, level, is_persistent, next_persistent), disassembler)
+						end
+
+					elseif level +1 = disassembler.current_global_depth (mode) then
+
+						from i:= 1
+						until i > reflection.field_count (represented_object)
+						loop
+							if attached reflection.field (i, represented_object) as attr and then (disassembler.is_next_persistent (attr) or disassembler.is_basic_type (attr)) then
+								add_attribute (reflection.field_name (i, represented_object), disassembler.next_object_graph_part (reflection.field (i, represented_object), Current, write_mode))
+
+							end
+
+							i:= i+1
+						end
+
+					end
+
+
+				end
 			end
 		end
 

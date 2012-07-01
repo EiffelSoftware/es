@@ -1,5 +1,5 @@
 note
-	description: "A cursor for an object graph data structure. Can call an agent in case of cycle detection. Items might be iterated over twice."
+	description: "A cursor for an object graph data structure. Can call an agent in case of cycle detection."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -53,12 +53,12 @@ feature -- Cursor status and movement
 
 feature -- Visited item handler function
 
-	visited_handler: PROCEDURE [ANY, TUPLE[PS_OBJECT_GRAPH_PART, PS_OBJECT_GRAPH_PART]]
+	cycle_handler: PROCEDURE [ANY, TUPLE[PS_OBJECT_GRAPH_PART, PS_OBJECT_GRAPH_PART]]
 		-- A handler function in case an already visited item is found. In that case, `item' is the object that was found twice
 
 	set_handler (a_handler: PROCEDURE  [ANY, TUPLE[PS_OBJECT_GRAPH_PART, PS_OBJECT_GRAPH_PART]])
 		do
-			visited_handler:= a_handler
+			cycle_handler:= a_handler
 		end
 
 
@@ -80,8 +80,8 @@ feature {NONE} -- Implementation
 			until is_consistent
 			loop
 				fix
-			variant
-				object_graph_stack.count
+	--		variant
+	--			object_graph_stack.count
 			end
 		ensure
 			consistent: is_consistent
@@ -94,6 +94,7 @@ feature {NONE} -- Implementation
 		do
 			object_graph_stack.put (item)
 			cursor_stack.put (current_cursor)
+			visited_items.extend (item)
 			current_cursor:= item.dependencies.new_cursor
 		ensure
 			object_graph_stack.has (old item)
@@ -113,9 +114,11 @@ feature {NONE} -- Implementation
 --			print ("state: " +  current_cursor.after.out + object_graph_stack.count.out + "%N")
 			if not current_cursor.after and then object_graph_stack.has (item) then
 --				print ("calling removal feature%N")
-				visited_handler.call ([previous, item])
+				cycle_handler.call ([previous, item])
 			end
-			step_out
+			if current_cursor.after then
+				step_out
+			end
 			current_cursor.forth
 		end
 
@@ -127,7 +130,7 @@ feature {NONE} -- Implementation
 				Result:= True
 			elseif current_cursor.after then
 				Result:= False
-			elseif object_graph_stack.has (item) then
+			elseif object_graph_stack.has (item) or visited_items.has (item) then
 				Result:= False
 			else
 				Result:= True
@@ -145,6 +148,7 @@ feature {NONE} -- Implementation
 
 	root: LINKED_LIST[PS_OBJECT_GRAPH_PART]
 
+	visited_items: LINKED_LIST[PS_OBJECT_GRAPH_PART]
 
 feature {NONE} -- Initialization
 
@@ -156,7 +160,8 @@ feature {NONE} -- Initialization
 
 			create object_graph_stack.make
 			create cursor_stack.make
-			visited_handler:= agent default_handler
+			cycle_handler:= agent default_handler
+			create visited_items.make
 		end
 
 
