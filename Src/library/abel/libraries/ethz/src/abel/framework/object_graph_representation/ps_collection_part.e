@@ -108,7 +108,26 @@ feature {PS_COLLECTION_PART} -- Deletion dependency
 
 feature {NONE} -- Initialization
 
+	initialize (a_level:INTEGER; a_mode:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
+		local
+			del_dependency: like Current
+		do
+			if not is_initialized then
+				is_initialized:= True
+				level:= a_level
+				if a_mode = a_mode.update then
+					write_mode:= a_mode.insert
+					del_dependency:= clone_except_values
+					del_dependency.set_mode (write_mode.delete)
+					deletion_dependency_for_updates:= del_dependency
+				else
+	--				deletion_dependency_for_updates:= handler.create_object_graph_part (obj, owner, attr_name, a_mode.no_operation)
+					write_mode:= a_mode
+				end
 
+				fixme ("create all items, then initialize all items")
+			end
+		end
 
 
 

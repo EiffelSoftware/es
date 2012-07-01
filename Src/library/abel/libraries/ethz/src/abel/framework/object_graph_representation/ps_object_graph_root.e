@@ -22,7 +22,11 @@ feature {NONE} -- Initialization
 			create write_mode
 			write_mode:= write_mode.no_operation
 		end
-
+		
+	initialize (a_level:INTEGER; a_mode:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
+		do
+			check implementation_error:False end
+		end
 feature
 
 
@@ -42,15 +46,6 @@ feature
 		-- Add `obj' to the dependency list
 		do
 			dependencies.extend (obj)
-		end
-
-
-	storable_tuple (optional_primary: INTEGER):PS_PAIR[STRING, STRING]
-		-- The storable tuple of the current object.
-		do
-			-- Should never be called on this object
-			check implementation_error: False end
-			create Result.make ("", "")
 		end
 
 

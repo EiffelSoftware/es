@@ -19,21 +19,13 @@ class
 inherit
 	PS_COMPLEX_ATTRIBUTE_PART
 
-create make_with_mode
+inherit{NONE}
+	REFACTORING_HELPER
+
+create make_with_mode, make_new
 
 
-feature
-
-
---	metadata: PS_METADATA
-
---	basic_attributes: LINKED_LIST[STRING]
-
---	basic_attribute_values: HASH_TABLE [ANY, STRING]
-
---	references: LINKED_LIST[STRING]
-
---	reference_values: HASH_TABLE [PS_OBJECT_GRAPH_PART, STRING]
+feature {PS_EIFFELSTORE_EXPORT}
 
 	attributes: LINKED_LIST[STRING]
 
@@ -124,17 +116,39 @@ feature {NONE} -- Initialization
 			create attributes.make
 			attributes.compare_objects
 			create attribute_values.make (hashtable_size)
-
 		end
 
 
 	make_with_mode (an_object:PS_OBJECT_IDENTIFIER_WRAPPER; a_mode: PS_WRITE_OPERATION)
 		do
-			object_id:=an_object
+			internal_object_id:=an_object
+			represented_object:= an_object.item
 			write_mode:=a_mode
+			make
+			internal_metadata:= object_id.metadata
+		end
+
+
+	make_new (obj:ANY; a_metadata:PS_TYPE_METADATA; persistent:BOOLEAN)
+		do
+			represented_object:= obj
+			create write_mode
+			write_mode:= write_mode.no_operation
+			internal_metadata:= a_metadata
+			is_persistent:= persistent
 			make
 		end
 
+
+	initialize (a_level:INTEGER; mode:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
+		do
+			if not is_initialized then
+				is_initialized:= True
+				level:= a_level
+				write_mode:= mode
+				fixme ("if level +1 < global depth, create all attributes, then initialie all attributes, else if level +1 = global depth only create and initialize basic or  persistent attributes")
+			end
+		end
 
 	hashtable_size:INTEGER = 20
 

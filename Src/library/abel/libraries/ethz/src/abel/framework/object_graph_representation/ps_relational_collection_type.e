@@ -10,7 +10,7 @@ inherit
 	PS_COLLECTION_PART [COLLECTION_TYPE]
 
 
-create make
+create make, make_new
 
 
 feature {PS_EIFFELSTORE_EXPORT}-- Relational storage mode data
@@ -76,7 +76,7 @@ feature {NONE}
 		local
 			del_dependency: like Current
 		do
-			object_id:=obj
+			internal_object_id:=obj
 			reference_owner:= owner
 			reference_owner_attribute_name:= attr_name
 			create values.make
@@ -91,11 +91,41 @@ feature {NONE}
 --				deletion_dependency_for_updates:= handler.create_object_graph_part (obj, owner, attr_name, a_mode.no_operation)
 				write_mode:= a_mode
 			end
+			internal_metadata:= obj.metadata
+
+			represented_object:= obj.item
 		ensure
 			no_update_mode: write_mode /= write_mode.update
 		end
 
 
+	make_new (obj:ANY; meta:PS_TYPE_METADATA; owner:PS_SINGLE_OBJECT_PART; a_handler:PS_COLLECTION_HANDLER[COLLECTION_TYPE])
+		local
+			attr_name:STRING
+			i:INTEGER
+			reflection:INTERNAL
+		do
+			reference_owner:= owner
+			create values.make
+			handler:= a_handler
+			internal_metadata:= meta
+			represented_object:= obj
 
+			from
+				reference_owner_attribute_name:= ""
+				create reflection
+				i:=1
+			until
+				i > reflection.field_count (owner.represented_object)
+			loop
+				if reflection.field (i, owner.represented_object) = obj then
+					reference_owner_attribute_name:= reflection.field_name (i, owner.represented_object)
+				end
+				i:= i+1
+			end
+
+			create write_mode
+			write_mode:= write_mode.no_operation
+		end
 
 end

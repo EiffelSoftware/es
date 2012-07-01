@@ -255,6 +255,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 
 		current_global_depth (mode:PS_WRITE_OPERATION):INTEGER
 			do
+				fixme ("support custom depths")
 				if mode = mode.Insert then
 					Result:=settings.insert_depth
 				elseif mode = mode.update then
@@ -284,6 +285,116 @@ feature {PS_EIFFELSTORE_EXPORT}
 				collection_handlers.extend (a_handler)
 			end
 
+feature {NONE} -- Helper functions
+
+	next_level (current_level:INTEGER; current_persistent:BOOLEAN; current_is_collection:BOOLEAN; next_persistent:BOOLEAN):INTEGER
+		do
+			if next_persistent /= current_persistent then
+				Result:= 0
+			else
+				if current_is_collection then
+					Result:= current_level
+				else
+					Result:= current_level + 1
+				end
+			end
+		end
+
+	next_operation (current_operation: PS_WRITE_OPERATION; current_level:INTEGER; current_persistent:BOOLEAN; next_persistent:BOOLEAN):PS_WRITE_OPERATION
+		do
+			Result:= current_operation.no_operation
+
+			if current_level < current_global_depth (current_operation) or current_global_depth(current_operation) = settings.object_graph_depth_infinite then
+				if current_persistent = next_persistent then
+					Result:= current_operation
+				elseif current_operation = current_operation.update and not next_persistent and settings.is_insert_during_update_enabled then
+					Result:= current_operation.insert
+				elseif current_operation = current_operation.insert and next_persistent and settings.is_update_during_insert_enabled then
+					Result:= current_operation.update
+				end
+			end
+		end
+
+	is_next_persistent (next_object:ANY):BOOLEAN
+		do
+			if not is_basic_type (next_object) then
+				Result:= id_manager.is_identified (next_object, current_transaction)
+			else
+				Result:= False
+			end
+		end
+
+	next_object_graph_part (next_object:detachable ANY; current_part:PS_OBJECT_GRAPH_PART; current_operation:PS_WRITE_OPERATION):PS_OBJECT_GRAPH_PART
+
+		do
+			if attached next_object as object  then
+				if is_basic_type (object) then
+					create {PS_BASIC_ATTRIBUTE_PART} Result.make (object, id_manager.metadata_manager.create_metadata_from_object (object))
+				else
+
+					if is_in_store (object) then
+						Result:= get_from_store (object)
+					else
+						if across collection_handlers as handler some handler.item.can_handle (object) end then
+							Result:= create_collection_part (object, current_part, current_operation)
+						else
+							if current_operation = current_operation.update and not is_next_persistent (next_object) and not settings.is_insert_during_update_enabled then
+								if settings.throw_error_for_unknown_objects then
+									has_error:= True
+								end
+								create {PS_NULL_REFERENCE_PART} Result.make
+							else
+								create {PS_SINGLE_OBJECT_PART} Result.make_new (object,id_manager.metadata_manager.create_metadata_from_object (object), is_next_persistent (object))
+							end
+						end
+						store (Result)
+					end
+				end
+
+			else
+				create {PS_IGNORE_PART} Result.make
+			end
+		end
+
+	create_collection_part (next_object:ANY; current_part:PS_OBJECT_GRAPH_PART; current_operation:PS_WRITE_OPERATION):PS_OBJECT_GRAPH_PART
+		do
+			create {PS_IGNORE_PART} Result.make
+
+			across collection_handlers as cursor loop
+				if cursor.item.can_handle (next_object) then
+					Result:= cursor.item.create_part (next_object, id_manager.metadata_manager.create_metadata_from_object (next_object), current_part)
+				end
+			end
+
+		end
+
+
+feature {NONE} -- Bookkeeping
+
+	internal_store: LINKED_LIST[PS_OBJECT_GRAPH_PART]
+
+	is_in_store (an_object:ANY):BOOLEAN
+		do
+			Result := across internal_store as cursor some cursor.item.represented_object = an_object end
+		end
+
+	store (a_part: PS_OBJECT_GRAPH_PART)
+		require
+			a_part.is_representing_object and not a_part.is_basic_attribute
+		do
+			internal_store.extend (a_part)
+		end
+
+	get_from_store (object:ANY):PS_OBJECT_GRAPH_PART
+		do
+			Result := internal_store.item
+			across internal_store as cursor loop
+				if cursor.item.represented_object = object then
+					Result:= cursor.item
+				end
+			end
+		end
+
 feature{NONE} -- Initialization
 
 		make (an_id_manager: PS_OBJECT_IDENTIFICATION_MANAGER; graph_settings: PS_OBJECT_GRAPH_SETTINGS)
@@ -293,6 +404,7 @@ feature{NONE} -- Initialization
 				id_manager:= an_id_manager
 				create collection_handlers.make
 				settings:= graph_settings
+				create internal_store.make
 			end
 
 

@@ -35,19 +35,17 @@ feature
 			write_mode:=write_mode.No_operation
 		end
 
-	storable_tuple (optional_primary: INTEGER):PS_PAIR[STRING, STRING]
-		-- The storable tuple of the current object.
-		do
-			check ignore_part_should_not_be_stored: false end
-			create Result.make ("", "")
-		end
-
 
 	is_basic_attribute:BOOLEAN = False
 
 	to_string:STRING
 		do
 			Result:= "IGNORE reference"+ "%N"
+		end
+
+	initialize (a_level:INTEGER; a_mode:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
+		do
+			check implementation_error:False end
 		end
 feature {NONE} -- Implementation
 

@@ -82,7 +82,14 @@ feature {PS_EIFFELSTORE_EXPORT} -- Utilities
 
 	storable_tuple (optional_primary: INTEGER):PS_PAIR[STRING, STRING]
 		-- The storable tuple of the current object.
-		deferred
+		require
+			is_representing_object
+		do
+			if is_basic_attribute then
+				create Result.make (basic_attribute_value, metadata.base_class.name)
+			else
+				create Result.make (optional_primary.out, metadata.base_class.name)
+			end
 		end
 
 	object_identifier: INTEGER
@@ -91,6 +98,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Utilities
 			Result:= 0
 		ensure
 			is_basic_attribute implies Result = 0
+			not is_representing_object implies Result = 0
+			is_complex_attribute implies Result > 0
 		end
 
 	basic_attribute_value: STRING
@@ -130,6 +139,16 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access: Cursor
 			create Result.make (Current)
 		end
 
+feature {NONE} -- Initialization
+
+	initialize (a_level:INTEGER; a_mode:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
+		deferred
+		ensure
+			is_initialized
+		end
+
+	is_initialized:BOOLEAN
+
 feature {NONE} -- Implementation
 
 	internal_metadata: detachable like metadata
@@ -139,7 +158,8 @@ feature {NONE} -- Implementation
 
 invariant
 	no_self_dependence: not dependencies.has (Current)
-	--metadata_attached_if_representing_object: is_representing_object implies attached internal_metadata
+	metadata_attached_if_representing_object: is_representing_object implies attached internal_metadata
+	only_complex_attributes_get_written: not is_complex_attribute implies write_mode = write_mode.no_operation
 
 end
 

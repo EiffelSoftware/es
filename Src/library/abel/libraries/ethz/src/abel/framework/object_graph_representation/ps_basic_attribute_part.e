@@ -25,6 +25,15 @@ feature {PS_EIFFELSTORE_EXPORT}-- Initialization
 
 	value:STRING
 		-- The value of the basic attribute as a string
+		do
+			if attached{CHARACTER_8} represented_object as char then
+				Result:= char.natural_32_code.out
+			elseif attached{CHARACTER_32} represented_object as char then
+				Result:= char.natural_32_code.out
+			else
+				Result:= represented_object.out
+			end
+		end
 
 	is_representing_object:BOOLEAN = True
 		-- Is `Current' representing an existing object?
@@ -36,13 +45,7 @@ feature {PS_EIFFELSTORE_EXPORT}-- Initialization
 		do
 			represented_object:= a_value
 			internal_metadata:=meta
-			if attached{CHARACTER_8} a_value as char then
-				value:= char.natural_32_code.out
-			elseif attached{CHARACTER_32} a_value as char then
-				value:= char.natural_32_code.out
-			else
-				value:= a_value.out
-			end
+
 			create dependencies.make
 			create write_mode
 			write_mode:=write_mode.No_operation
@@ -51,12 +54,12 @@ feature {PS_EIFFELSTORE_EXPORT}-- Initialization
 	is_basic_attribute:BOOLEAN = True
 
 
-	storable_tuple (optional_primary: INTEGER):PS_PAIR[STRING, STRING]
+--	storable_tuple (optional_primary: INTEGER):PS_PAIR[STRING, STRING]
 		-- The storable tuple of the current object.
-		do
-			fixme ("TODO: add type information to basic attributes as well")
-			create Result.make (value, "BASIC")
-		end
+--		do
+--			fixme ("TODO: add type information to basic attributes as well")
+--			create Result.make (value, "BASIC")
+--		end
 
 	to_string:STRING
 		do
@@ -72,5 +75,12 @@ feature {PS_EIFFELSTORE_EXPORT}-- Initialization
 
 	internal_metadata: detachable like metadata
 
+	initialize (a_level:INTEGER; a_mode:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
+		do
+			if not is_initialized then
+				is_initialized:= True
+				level:= a_level
+			end
+		end
 
 end

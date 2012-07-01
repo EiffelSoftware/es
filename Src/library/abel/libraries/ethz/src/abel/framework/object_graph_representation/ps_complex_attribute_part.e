@@ -19,12 +19,15 @@ inherit
 feature
 
 	represented_object:ANY
-		do
-			Result:= object_id.item
-		end
+--		do
+--			Result:= object_id.item
+--		end
 
 	object_id:PS_OBJECT_IDENTIFIER_WRAPPER
 		-- The repository-wide unique object identifier of the object represented by `Current'
+		do
+			Result:= attach (internal_object_id)
+		end
 
 	object_identifier:INTEGER
 	do
@@ -43,11 +46,6 @@ feature
 			Result:= True
 		end
 
-	storable_tuple (optional_primary: INTEGER):PS_PAIR[STRING, STRING]
-		-- The storable tuple of the current object.
-		do
-			create Result.make (optional_primary.out, object_id.metadata.base_class.name)
-		end
 
 
 	to_string:STRING
@@ -66,9 +64,15 @@ feature
 		end
 
 	internal_metadata: detachable like metadata
-		do
-			Result:= object_id.metadata
-		end
+--		do
+--			Result:= object_id.metadata
+--		end
 
+	internal_object_id: detachable like object_id
+
+	set_object_id (an_object_id: PS_OBJECT_IDENTIFIER_WRAPPER)
+		do
+			internal_object_id:= an_object_id
+		end
 
 end

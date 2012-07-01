@@ -9,6 +9,9 @@ class
 
 inherit
 	PS_OBJECT_GRAPH_PART
+		redefine
+			storable_tuple
+		end
 
 create make
 
@@ -34,8 +37,18 @@ feature
 
 	storable_tuple (optional_primary: INTEGER):PS_PAIR[STRING, STRING]
 		-- The storable tuple of the current object.
+		require else
+			True
 		do
 			create Result.make ("0", "NONE")
+		end
+
+	initialize (a_level:INTEGER; a_mode:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
+		do
+			if not is_initialized then
+				is_initialized:= True
+				level:= a_level
+			end
 		end
 
 feature {NONE}

@@ -11,7 +11,7 @@ inherit
 	PS_COLLECTION_PART [COLLECTION_TYPE]
 	redefine split end
 
-create make
+create make, make_new
 
 feature {PS_EIFFELSTORE_EXPORT}-- Object storage mode data
 
@@ -69,7 +69,7 @@ feature {PS_EIFFELSTORE_EXPORT}-- Object storage mode data
 		local
 			del_dependency: like Current
 		do
-			object_id:=obj
+			internal_object_id:=obj
 			create values.make
 			handler:= a_handler
 			create additional_information.make (10)
@@ -85,6 +85,8 @@ feature {PS_EIFFELSTORE_EXPORT}-- Object storage mode data
 --				deletion_dependency_for_updates:= handler.create_object_graph_part (obj, owner, attr_name, a_mode.no_operation)
 				write_mode:= a_mode
 			end
+			internal_metadata:= obj.metadata
+			represented_object:= obj.item
 		ensure
 			no_update_mode: write_mode /= write_mode.update
 		end
@@ -112,6 +114,27 @@ feature {PS_OBJECT_COLLECTION_PART}
 
 
 feature {NONE}
+
+
+	make_new (obj: ANY; meta:PS_TYPE_METADATA;  a_handler: PS_COLLECTION_HANDLER[COLLECTION_TYPE])
+		-- initialize `Current'
+		local
+			del_dependency: like Current
+		do
+			create values.make
+			handler:= a_handler
+			create additional_information.make (10)
+			order_count:= 1
+			create order_map.make
+
+			create write_mode
+			write_mode:= write_mode.no_operation
+
+			internal_metadata:= meta
+			represented_object:= obj
+		ensure
+			no_update_mode: write_mode /= write_mode.update
+		end
 
 	order_count: INTEGER
 
