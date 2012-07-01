@@ -11,10 +11,79 @@ inherit
 	ITERABLE[PS_OBJECT_GRAPH_PART]
 	PS_EIFFELSTORE_EXPORT
 
-feature
+feature {PS_EIFFELSTORE_EXPORT} -- Access
+
+	represented_object:ANY
+		-- The object which gets represented by `Current'
+		require
+			is_representing_object
+		deferred
+		end
+
+	metadata:PS_TYPE_METADATA
+		-- Some metadata about `represented_object'
+		require
+			is_representing_object
+		do
+			Result:= attach (internal_metadata)
+		end
+
+	level:INTEGER
+		-- The level of the current object graph part.
 
 	write_mode: PS_WRITE_OPERATION
 		-- Insert, Update, Delete or No_operation mode
+
+	root: PS_OBJECT_GRAPH_ROOT
+		-- The root of the object graph
+		do
+			-- Add this to the creation procedures of the descendants
+			check not_implemented:False end
+			create Result.make
+		end
+
+	dependencies: LIST[PS_OBJECT_GRAPH_PART]
+		-- All (immediate) parts on which `Current' is dependent on.
+		deferred
+		end
+
+
+feature {PS_EIFFELSTORE_EXPORT} -- Status report
+
+	is_persistent:BOOLEAN
+		-- Is `Current' already persistent?
+		attribute
+		ensure
+			is_basic_attribute implies not Result
+		end
+
+
+	is_basic_attribute:BOOLEAN
+		-- Is `Current' an instance of PS_BASIC_ATTRIBUTE_PART?
+		deferred
+		end
+
+	is_complex_attribute:BOOLEAN
+		-- Is `Current' an instance of PS_COMPLEX_ATTRIBUTE_PART?
+		do
+			Result:= False
+		end
+
+	is_representing_object:BOOLEAN
+		-- Is `Current' representing an existing object?
+		deferred
+		end
+
+	is_visited:BOOLEAN
+		-- Has current part been visited?
+
+
+feature {PS_EIFFELSTORE_EXPORT} -- Utilities
+
+	storable_tuple (optional_primary: INTEGER):PS_PAIR[STRING, STRING]
+		-- The storable tuple of the current object.
+		deferred
+		end
 
 	object_identifier: INTEGER
 		-- The object identifier of `Current'. Returns 0 if `Current' is a basic type
@@ -24,10 +93,23 @@ feature
 			is_basic_attribute implies Result = 0
 		end
 
+	basic_attribute_value: STRING
+		-- The value of `Current' as a string.
+		require
+			is_basic_attribute
+		do
+			Result:= ""
+		end
 
-	dependencies: LIST[PS_OBJECT_GRAPH_PART]
-		-- All (immediate) parts on which `Current' is dependent on.
+	to_string:STRING
 		deferred
+		end
+
+feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
+
+	set_visited (var:BOOLEAN)
+		do
+			is_visited:= var
 		end
 
 	remove_dependency (obj:PS_OBJECT_GRAPH_PART)
@@ -40,38 +122,24 @@ feature
 			not_present: not dependencies.has (obj)
 		end
 
-	storable_tuple (optional_primary: INTEGER):PS_PAIR[STRING, STRING]
-		-- The storable tuple of the current object.
-		deferred
-		end
 
-
-	is_basic_attribute:BOOLEAN
-		-- Is `Current' an instance of PS_BASIC_ATTRIBUTE_PART?
-		deferred
-		end
-
-	is_visited:BOOLEAN
-		-- Has current part been visited?
-
-	set_visited (var:BOOLEAN)
-		do
-			is_visited:= var
-		end
-
-
-	to_string:STRING
-		deferred
-		end
-
+feature {PS_EIFFELSTORE_EXPORT} -- Access: Cursor
 
 	new_cursor:PS_OBJECT_GRAPH_CURSOR
 		do
 			create Result.make (Current)
 		end
 
+feature {NONE} -- Implementation
+
+	internal_metadata: detachable like metadata
+		-- A little helper to circumvent void safety
+		deferred
+		end
+
 invariant
 	no_self_dependence: not dependencies.has (Current)
+	--metadata_attached_if_representing_object: is_representing_object implies attached internal_metadata
 
 end
 

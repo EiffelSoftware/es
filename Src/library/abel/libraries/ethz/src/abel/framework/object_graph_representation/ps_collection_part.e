@@ -13,7 +13,7 @@ inherit{NONE}
 	REFACTORING_HELPER
 
 
-feature -- Collection data
+feature {PS_EIFFELSTORE_EXPORT}-- Collection data
 
 	values:LINKED_LIST[PS_OBJECT_GRAPH_PART]
 		-- The objects in the collection
@@ -28,7 +28,7 @@ feature -- Collection data
 		end
 
 
-feature -- Status report
+feature {PS_EIFFELSTORE_EXPORT}-- Status report
 
 	are_items_of_basic_type:BOOLEAN
 		-- are the current collection's items of a basic type?
@@ -46,7 +46,7 @@ feature -- Status report
 		end
 
 
-feature -- Dependency handling
+feature {PS_EIFFELSTORE_EXPORT}-- Dependency handling
 
 
 

@@ -13,6 +13,14 @@ inherit
 create make
 
 feature
+	is_representing_object:BOOLEAN = False
+		-- Is `Current' representing an existing object?
+
+	represented_object:ANY
+		do
+			check not_implemented:False end
+			Result:= Current
+		end
 
 	dependencies: LINKED_LIST[PS_OBJECT_GRAPH_PART]
 
@@ -41,5 +49,9 @@ feature {NONE}
 			write_mode:=write_mode.No_operation
 		end
 
+feature {NONE} -- Implementation
+
+	internal_metadata: detachable like metadata
+		-- A little helper to circumvent void safety
 
 end

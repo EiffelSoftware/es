@@ -12,10 +12,16 @@ inherit
 	undefine
 		remove_dependency
 	redefine
-		object_identifier
+		object_identifier,
+		is_complex_attribute
 	end
 
 feature
+
+	represented_object:ANY
+		do
+			Result:= object_id.item
+		end
 
 	object_id:PS_OBJECT_IDENTIFIER_WRAPPER
 		-- The repository-wide unique object identifier of the object represented by `Current'
@@ -26,6 +32,16 @@ feature
 	end
 
 	is_basic_attribute:BOOLEAN = False
+
+	is_representing_object:BOOLEAN = True
+		-- Is `Current' representing an existing object?
+
+
+	is_complex_attribute:BOOLEAN
+		-- Is `Current' an instance of PS_COMPLEX_ATTRIBUTE_PART?
+		do
+			Result:= True
+		end
 
 	storable_tuple (optional_primary: INTEGER):PS_PAIR[STRING, STRING]
 		-- The storable tuple of the current object.
@@ -48,5 +64,11 @@ feature
 				Result:= Result +  "%TNo operation%N"
 			end
 		end
+
+	internal_metadata: detachable like metadata
+		do
+			Result:= object_id.metadata
+		end
+
 
 end

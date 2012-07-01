@@ -9,23 +9,33 @@ class
 
 inherit
 	PS_OBJECT_GRAPH_PART
+	redefine
+		basic_attribute_value
+	end
 
 inherit{NONE} REFACTORING_HELPER
 
 create
 	make
 
-feature -- Initialization
+feature {PS_EIFFELSTORE_EXPORT}-- Initialization
+
+	represented_object:ANY
+
 
 	value:STRING
 		-- The value of the basic attribute as a string
 
+	is_representing_object:BOOLEAN = True
+		-- Is `Current' representing an existing object?
 
 	dependencies:LINKED_LIST[PS_OBJECT_GRAPH_PART]
 
-	make (a_value:ANY)
+	make (a_value:ANY; meta:PS_TYPE_METADATA)
 			-- Initialization for `Current'.
 		do
+			represented_object:= a_value
+			internal_metadata:=meta
 			if attached{CHARACTER_8} a_value as char then
 				value:= char.natural_32_code.out
 			elseif attached{CHARACTER_32} a_value as char then
@@ -52,6 +62,15 @@ feature -- Initialization
 		do
 			Result:= "Basic attribute: " + value.out + "%N"
 		end
+
+
+	basic_attribute_value: STRING
+		-- The value of `Current' as a string.
+		do
+			Result:= value
+		end
+
+	internal_metadata: detachable like metadata
 
 
 end

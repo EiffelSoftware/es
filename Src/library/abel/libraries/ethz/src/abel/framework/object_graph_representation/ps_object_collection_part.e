@@ -13,7 +13,7 @@ inherit
 
 create make
 
-feature -- Object storage mode data
+feature {PS_EIFFELSTORE_EXPORT}-- Object storage mode data
 
 
 	order_of (a_value: PS_OBJECT_GRAPH_PART) :INTEGER

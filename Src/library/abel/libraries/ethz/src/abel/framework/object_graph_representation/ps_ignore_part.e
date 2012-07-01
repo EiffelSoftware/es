@@ -14,6 +14,17 @@ create make
 
 feature
 
+	represented_object:ANY
+		do
+			check not_implemented:False end
+			Result:= Current
+		end
+
+
+	is_representing_object:BOOLEAN = False
+		-- Is `Current' representing an existing object?
+
+
 	dependencies:LINKED_LIST[PS_OBJECT_GRAPH_PART]
 
 
@@ -38,5 +49,9 @@ feature
 		do
 			Result:= "IGNORE reference"+ "%N"
 		end
+feature {NONE} -- Implementation
+
+	internal_metadata: detachable like metadata
+		-- A little helper to circumvent void safety
 
 end

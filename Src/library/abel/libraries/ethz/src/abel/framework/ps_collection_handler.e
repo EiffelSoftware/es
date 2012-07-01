@@ -55,11 +55,11 @@ feature {PS_EIFFELSTORE_EXPORT}-- Disassemble functions
 			a_disassembler.register_operation (Result, collection.object_identifier)
 
 			-- do actual business code, use agent to disassemble all referenced objects
-			do_disassemble (Result, agent a_disassembler.disassemble (?, depth, mode, Result, ""))
+			do_disassemble (Result, agent a_disassembler.disassemble (?, depth, mode, Result, ""), a_disassembler.id_manager.metadata_manager)
 
 		end
 
-	do_disassemble (collection:PS_COLLECTION_PART [COLLECTION_TYPE]; disassemble_function:FUNCTION[ANY, TUPLE[ANY], PS_OBJECT_GRAPH_PART])
+	do_disassemble (collection:PS_COLLECTION_PART [COLLECTION_TYPE]; disassemble_function:FUNCTION[ANY, TUPLE[ANY], PS_OBJECT_GRAPH_PART]; metadata_manager:PS_METADATA_FACTORY)
 		local
 			cursor:ITERATION_CURSOR[detachable ANY]
 	--		attached_item: ANY
@@ -72,7 +72,7 @@ feature {PS_EIFFELSTORE_EXPORT}-- Disassemble functions
 				loop
 					if attached cursor.item as attached_item then
 						if is_of_basic_type (attached_item) then
-							collection.add_value (create {PS_BASIC_ATTRIBUTE_PART}.make (attached_item))
+							collection.add_value (create {PS_BASIC_ATTRIBUTE_PART}.make (attached_item, metadata_manager.create_metadata_from_object(attached_item)))
 						else
 							collection.add_value (disassemble_function.item ([attached_item]))
 						end

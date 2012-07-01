@@ -7,6 +7,9 @@ note
 class
 	PS_WRITE_PLANNER
 
+inherit
+	PS_EIFFELSTORE_EXPORT
+
 inherit{NONE}
 	REFACTORING_HELPER
 

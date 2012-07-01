@@ -13,7 +13,7 @@ inherit
 create make
 
 
-feature -- Relational storage mode data
+feature {PS_EIFFELSTORE_EXPORT}-- Relational storage mode data
 
 	reference_owner: PS_SINGLE_OBJECT_PART--PS_OBJECT_GRAPH_PART
 		-- An object that holds a reference to `Current.object_id'

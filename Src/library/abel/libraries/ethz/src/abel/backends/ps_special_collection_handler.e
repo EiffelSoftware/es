@@ -97,12 +97,12 @@ feature -- Low-level operations
 			create Result.make (attach (collections[parent_key]), count_tuple)
 		end
 
-	do_disassemble (collection:PS_COLLECTION_PART [SPECIAL[detachable ANY]]; disassemble_function:FUNCTION[ANY, TUPLE[ANY], PS_OBJECT_GRAPH_PART])
+	do_disassemble (collection:PS_COLLECTION_PART [SPECIAL[detachable ANY]]; disassemble_function:FUNCTION[ANY, TUPLE[ANY], PS_OBJECT_GRAPH_PART]; metadata_manager:PS_METADATA_FACTORY)
 		local
 			cursor:ITERATION_CURSOR[detachable ANY]
 	--		attached_item: ANY
 		do
-			precursor (collection, disassemble_function)
+			precursor (collection, disassemble_function, metadata_manager)
 			check attached{SPECIAL[detachable ANY]} collection.object_id.item as actual_collection then
 				check attached {PS_OBJECT_COLLECTION_PART[SPECIAL[detachable ANY]]} collection as part then
 					part.add_information ("count", actual_collection.capacity.out)

@@ -210,7 +210,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 						attr_name:= reflection.field_name (i, id.item)
 						if is_basic_type (attr_value) then
 --							print ("basic attribute found: " + attr_name + "%N")
-							create basic_attr.make (attr_value)
+							create basic_attr.make (attr_value, id_manager.metadata_manager.create_metadata_from_object (attr_value))
 							Result.add_attribute (attr_name, basic_attr)
 							--if attr_name.is_case_insensitive_equal ("char_32_max") then
 							--	print (attr_value.out)

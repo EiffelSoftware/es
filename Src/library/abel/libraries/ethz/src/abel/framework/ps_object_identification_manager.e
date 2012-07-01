@@ -195,6 +195,10 @@ feature {PS_EIFFELSTORE_EXPORT} -- Deletion management
 	subscribers: LINKED_LIST[PROCEDURE[ANY, TUPLE[INTEGER]]]
 		-- A list of all subscribers interested in deletion events
 
+feature {PS_EIFFELSTORE_EXPORT} -- Utilities
+
+	metadata_manager: PS_METADATA_FACTORY
+		-- A manager to generate metadata
 
 
 feature { NONE } -- Implementation
@@ -222,8 +226,6 @@ feature { NONE } -- Implementation
 	last_id:INTEGER
 		-- the last id generated
 
-	metadata_manager: PS_METADATA_FACTORY
-		-- A manager to generate metadata
 
 invariant
 	no_object_twice_in_global_pool: TRUE -- Check that no object is listed twice in the global pool (check for reference equality)
