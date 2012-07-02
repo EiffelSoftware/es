@@ -303,6 +303,7 @@ feature {NONE} -- Implementation
 		ensure
 			only_transaction_conflicts_return_normally: transaction.has_error implies attached {PS_TRANSACTION_CONFLICT} transaction.error
 		rescue
+			last_error:= transaction.error
 			if not retried then
 				retried:= True
 				fixme ("Uncomment the following line - At the moment it is disabled because it somehow overwrites the exception stack, which is bad for debugging...")

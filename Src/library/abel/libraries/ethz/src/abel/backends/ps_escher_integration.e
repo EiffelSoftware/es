@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PS_ESCHER_INTEGRATION}."
-	author: ""
+	description: "An ESCHER extension to ABEL. Adds a version attribute to inserted objects, and checks on this version during retrieval."
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -18,11 +18,17 @@ feature {NONE} -- Initialization
 
 	make (real: PS_BACKEND_STRATEGY)
 			-- Initialization for `Current'.
+		local
+			factory:PS_METADATA_FACTORY
 		do
 			real_backend:= real
+			create factory.make
+			integer_metadata:=factory.create_metadata_from_type ({INTEGER})
 		end
 
 	real_backend:PS_BACKEND_STRATEGY
+
+	integer_metadata: PS_TYPE_METADATA
 
 --	schema_evolution_handlers_table: DS_HASH_TABLE[SCHEMA_EVOLUTION_HANDLER,STRING]
 
@@ -81,17 +87,20 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			error: PS_VERSION_MISMATCH
 		do
 			create reflection
-
 			type_instance:= reflection.new_instance_of (type.type.type_id)
 
 			if  attached {VERSIONED_CLASS} type_instance as versioned_object then
 
 				current_version:= versioned_object.version
-
 				check version_positive: current_version > 0 end
 
+				-- Collect the results
 				from
 					create result_list.make
+					if attributes.is_empty then
+						attributes.append (type.attributes)
+					end
+					attributes.extend ("version")
 					Result:= real_backend.retrieve (type, criteria, attributes, transaction)
 				until
 					Result.after
@@ -100,6 +109,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 					Result.forth
 				end
 
+				-- Check for each result if the version matchs
 				across result_list as cursor loop
 
 					stored_version:= cursor.item.attribute_value ("version").value.to_integer
@@ -109,9 +119,15 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 						transaction.set_error (error)
 						error.raise
 					end
+					-- Remove version attribute, as it is in theory not an object attribute
+					cursor.item.remove_attribute ("version")
 				end
 
 				Result:= result_list.new_cursor
+
+				-- Required because of postcondition...
+				attributes.compare_objects
+				attributes.prune ("version")
 
 			else
 				Result:= real_backend.retrieve (type, criteria, attributes, transaction)
@@ -125,31 +141,25 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 		local
 			reflection: INTERNAL
 			type_instance:ANY
-			current_version, stored_version:INTEGER
-			error: PS_VERSION_MISMATCH
+			res_cursor: ITERATION_CURSOR[PS_RETRIEVED_OBJECT]
 		do
 			create reflection
-
 			type_instance:= reflection.new_instance_of (type.type.type_id)
 
 			if  attached {VERSIONED_CLASS} type_instance as versioned_object then
 
-				current_version:= versioned_object.version
-
-				check version_positive: current_version > 0 end
-
-				Result:= real_backend.retrieve_from_keys (type, primary_keys, transaction)
-				across Result as cursor loop
-
-					stored_version:= cursor.item.attribute_value ("version").value.to_integer
-
-					if stored_version /= current_version then
-						create error
-						transaction.set_error (error)
-						error.raise
+				-- Use the retrieve function for checking
+				from
+					create Result.make
+					res_cursor:= real_backend.retrieve (type, create {PS_EMPTY_CRITERION}, create {LINKED_LIST[STRING]}.make, transaction)
+				until
+					res_cursor.after
+				loop
+					if primary_keys.has (res_cursor.item.primary_key) then
+						Result.extend (res_cursor.item)
 					end
+					res_cursor.forth
 				end
-
 			else
 				Result:= real_backend.retrieve_from_keys (type, primary_keys, transaction)
 			end
@@ -161,8 +171,26 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 
 	insert (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
 		-- Inserts the object into the database
+		local
+			stored_version:INTEGER
+			version_attribute: PS_BASIC_ATTRIBUTE_PART
 		do
-			real_backend.insert (an_object, a_transaction)
+			if attached {VERSIONED_CLASS} an_object.represented_object as versioned_object then
+				stored_version:= versioned_object.version
+				if simulate_version_mismatch then
+					stored_version:= stored_version - 1
+				end
+				create version_attribute.make (stored_version, integer_metadata)
+				an_object.add_attribute ("version", version_attribute)
+
+				real_backend.insert (an_object, a_transaction)
+
+				an_object.attributes.prune ("version") -- to satisfy postcondition
+				an_object.attribute_values.remove ("version")
+			else
+				real_backend.insert (an_object, a_transaction)
+			end
+
 		end
 
 	update (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
@@ -264,5 +292,16 @@ feature {PS_EIFFELSTORE_EXPORT} -- Mapping
 		do
 			Result:= real_backend.key_mapper
 		end
+
+feature -- Testing
+
+	set_simulation (switch:BOOLEAN)
+		-- Enable or disable the testing simulation
+		do
+			simulate_version_mismatch:= switch
+		end
+
+	simulate_version_mismatch:BOOLEAN
+		-- Insert a wrong version on purpose for testing
 
 end

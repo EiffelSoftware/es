@@ -116,4 +116,31 @@ feature
 			end
 		end
 
+
+	test_constant_initialized
+		local
+			reflection:INTERNAL
+			test_obj:ANY
+			i:INTEGER
+		do
+			create reflection
+
+			test_obj:= reflection.new_instance_of (reflection.dynamic_type_from_string ("ESCHER_TEST_CLASS"))
+
+			from
+				i:=1
+			until
+				i > reflection.field_count (test_obj)
+			loop
+				print (reflection.field (i, test_obj))
+--				print (i)
+				i:= i+1
+			end
+
+			check attached {VERSIONED_CLASS} test_obj as escher_obj then
+				assert ("version not correct", escher_obj.version = 3)
+			end
+
+		end
+
 end

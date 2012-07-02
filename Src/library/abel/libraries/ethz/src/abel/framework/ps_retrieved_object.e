@@ -60,7 +60,7 @@ feature {PS_BACKEND_STRATEGY} -- Element change
 	add_attribute (attribute_name:STRING; value:STRING; class_name_of_value:STRING)
 		-- Add the attribute `attribute_name' with value tuple <`value', `class_name_of_value'>
 		require
-			attribute_exists: class_metadata.attributes.has (attribute_name)
+		--	attribute_exists: class_metadata.attributes.has (attribute_name)
 			class_name_not_empty: not class_name_of_value.is_empty
 			void_value_means_none_type: value.is_empty implies class_name_of_value.is_equal ("NONE")
 		local
@@ -74,6 +74,16 @@ feature {PS_BACKEND_STRATEGY} -- Element change
 			class_name_inserted: attribute_value(attribute_name).attribute_class_name.is_equal (class_name_of_value)
 		end
 
+	remove_attribute (attribute_name:STRING)
+		-- Remove the attribute `attribute_name'
+		require
+			attribute_present: has_attribute (attribute_name)
+		do
+			values.remove (attribute_name)
+			attributes.prune (attribute_name)
+		ensure
+			attribute_removed: not has_attribute (attribute_name)
+		end
 
 feature {NONE} -- Initialization
 

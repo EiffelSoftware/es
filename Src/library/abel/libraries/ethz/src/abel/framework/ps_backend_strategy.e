@@ -54,7 +54,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 		-- You can find out about the actual generic parameter by comparing the class name associated to a foreign key value.
 		require
 			most_general_type: across type.supertypes as supertype all not (supertype.item.base_class.name.is_equal (type.base_class.name) and type.is_subtype_of (supertype.item)) end
-			all_attributes_exist: across attributes as attr all type.attributes.has (attr.item) end
+			--all_attributes_exist: across attributes as attr all type.attributes.has (attr.item) end
 
 		deferred
 			-- TODO: to have lazy loading support, we need to have a special ITERATION_CURSOR and a function next in this class to load the next item of this customized cursor

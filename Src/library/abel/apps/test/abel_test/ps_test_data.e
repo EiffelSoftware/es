@@ -48,6 +48,9 @@ feature
 	reference_chain: CHAIN_HEAD
 		-- A chain of objects with one head and exactly 10 tail objects
 
+	escher_test: ESCHER_TEST_CLASS
+		-- An ESCHER test object with version = 3
+
 feature {NONE} -- Initialization
 
 
@@ -108,6 +111,8 @@ feature {NONE} -- Initialization
 				tail:= tail.next
 				i:= i+1
 			end
+
+			create escher_test.make ("first", 2143)
 
 		end
 
