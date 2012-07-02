@@ -237,6 +237,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Mapping
 
 	key_mapper: PS_KEY_POID_TABLE
 		-- Maps POIDs to primary keys as used by this backend
+		deferred
+		end
 
 
 feature {PS_EIFFELSTORE_EXPORT} -- Precondition checks

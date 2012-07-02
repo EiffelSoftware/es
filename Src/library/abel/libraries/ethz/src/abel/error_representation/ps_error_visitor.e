@@ -49,5 +49,10 @@ feature
 		deferred
 		end
 
+	visit_version_mismatch (version_error: PS_VERSION_MISMATCH)
+		deferred
+		end
+
+
 
 end

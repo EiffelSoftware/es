@@ -21,9 +21,10 @@
 			</option>
 		</library>
 		<library name="mysql" location="..\..\..\libraries\ethz\src\mysqli\mysqli.ecf"/>
+		<library name="serializer" location="..\..\..\libraries\ethz\src\schema_evolution\serializer_lib\serializer.ecf"/>
+		<library name="sqlite" location="$ISE_LIBRARY\unstable\library\persistency\database\sqlite3\sqlite-safe.ecf"/>
 		<library name="testing" location="$ISE_LIBRARY\library\testing\testing-safe.ecf"/>
 		<cluster name="test_classes" location=".\test_classes\" recursive="true"/>
-		<library name="sqlite" location="$ISE_LIBRARY\unstable\library\persistency\database\sqlite3\sqlite-safe.ecf"/>
 		<tests name="tests" location=".\">
 			<option void_safety="all" syntax="provisional" namespace="Tests">
 			</option>

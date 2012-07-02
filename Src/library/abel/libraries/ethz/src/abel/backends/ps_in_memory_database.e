@@ -251,6 +251,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 		do
 		end
 
+feature {PS_EIFFELSTORE_EXPORT} -- Mapping
+
+	key_mapper: PS_KEY_POID_TABLE
+		-- Maps POIDs to primary keys as used by this backend
+
+
 feature {PS_EIFFELSTORE_EXPORT} -- Miscellaneous
 
 
