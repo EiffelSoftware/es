@@ -8,7 +8,7 @@ The framework includes a reusable object-relational mapping layer, a database li
 
 Based on this framework we have developed an in-memory backend which is useful for testing, and a test suite that is mostly independent of the actual backend.
 
-Furthermore, we have developed a backend that uses a generic database layout for storing objects, working both for MySQL and SQLite databases.
+Furthermore, we have developed a backend that uses a generic data\-base layout for storing objects, working both for MySQL and SQLite data\-bases.
 
 \section{Current limitations}
 
@@ -19,8 +19,8 @@ This especially means that a query of an object of class \lstinline!G! will not 
 \item If a custom database layout isn't well designed, e.g. if there are redundancies, you might get into trouble when trying to adapt ABEL to it.
 \item Some basic types are not fully supported:
 \begin{itemize}
-	\item \lstinline!REAL! has a rounding error
-	\item \lstinline!STRING_32! is converted to \lstinline!STRING_8!, which distorts them sometimes.
+	\item \lstinline!REAL! has a rounding error.
+	\item \lstinline!STRING_32! is converted to \lstinline!STRING_8!, which may distort them sometimes.
 	\item \lstinline!CHARACTER! is converted to \lstinline!INTEGER! for storage.
 	This is usually fine, but in custom database layouts it results in a type mismatch.
 \end{itemize}
@@ -34,11 +34,11 @@ This especially means that a query of an object of class \lstinline!G! will not 
 \begin{description}
  \item [Ordering] At the moment, a query result has no defined order. A mechanism to enforce an order in the result set might be useful.
  \item [Update Query] With the current API you can only do an update if the object has been retrieved or inserted before. 
-Another way to do update operations could use a QUERY instead, but you also need some new mechanism to be able to say which attributes should be updated with a new value.
+To select the object to be updated, you could also use a \lstinline!QUERY! object, but additionally you need some mechanism to be able to say which attributes should be updated with a new value.
  \item [Performance] Currently there is no optimization in ABEL, and there is a lot that can be done in this area:
  \begin{itemize}
   \item Compile \lstinline!PREDEFINED_CRITERIA! to SQL in order to get smaller results.
- \item Add support for lazy loading in the generic database layout implementation by using SQL cursors instead of normal select statements.
+ \item Add support for lazy loading in the generic database layout implementation by using SQL cursors instead of normal SELECT statements.
  \item Use prepared statements and maybe even stored procedures instead of normal SQL statements.
  \item Optimize ABEL by trying to reduce network round trip times to a minimum.
  \item Finding and fixing performance bottlenecks in the code with the help of a profiler
@@ -56,7 +56,7 @@ As an extension this mapping could be defined in an XML file.
 \end{itemize}
  \item [Inheritance] ABEL needs proper inheritance support as soon as the required features in \lstinline!INTERNAL! get implemented.
 \item [Transaction management] Some backends, e.g. the in-memory backend or the serialization library, don't support transactions.
- Therefore it would be nice to implement local transaction management for these libraries by using multiversion concurrency control at the \lstinline!BACKEND_STRATEGY! level.
+ Therefore it would be nice to implement an extension that provides local transaction management by using multiversion concurrency control at the \lstinline!BACKEND_STRATEGY! level.
 \item [ESCHER] At the moment, there is an initial integration of ESCHER into the ABEL framework, but the functionality is limited to a simple version check and error reporting in case of a mismatch.
  This solution could be extended to support automatic conversion as well.
 \end{description}
