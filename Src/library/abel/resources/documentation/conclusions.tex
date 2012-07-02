@@ -13,18 +13,18 @@ Furthermore, we have developed a backend that uses a generic database layout for
 \section{Current limitations}
 
 \begin{itemize}
-\item Due to a limitation in INTERNAL, inheritance is not properly supported.
-This especially means that a query of an object of class G will not return descendants of G.
+\item Due to a limitation in \lstinline!INTERNAL!, inheritance is not properly supported.
+This especially means that a query of an object of class \lstinline!G! will not return descendants of \lstinline!G!.
 \item If you adapt ABEL to a custom database layout, it can only handle object types that have corresponding tables in the database.
 \item If a custom database layout isn't well designed, e.g. if there are redundancies, you might get into trouble when trying to adapt ABEL to it.
 \item Some basic types are not fully supported:
 \begin{itemize}
-	\item REALs have a rounding error
-	\item STRING\_32 is converted to STRING\_8, which distorts them sometimes.
-	\item CHARACTER is converted to INTEGER for storage.
+	\item \lstinline!REAL! has a rounding error
+	\item \lstinline!STRING_32! is converted to \lstinline!STRING_8!, which distorts them sometimes.
+	\item \lstinline!CHARACTER! is converted to \lstinline!INTEGER! for storage.
 	This is usually fine, but in custom database layouts it results in a type mismatch.
 \end{itemize}
-\item The generic database layout backend doesn't support SPECIAL yet (or collections in general).
+\item The generic database layout backend doesn't support \lstinline!SPECIAL! yet (or collections in general).
 \item The library completely lacks any performance optimization.
 \item The retrieval operation in the object-relational mapping doesn't support the depth parameter.
 \item The error representation is not complete.
@@ -37,7 +37,7 @@ This especially means that a query of an object of class G will not return desce
 Another way to do update operations could use a QUERY instead, but you also need some new mechanism to be able to say which attributes should be updated with a new value.
  \item [Performance] Currently there is no optimization in ABEL, and there is a lot that can be done in this area:
  \begin{itemize}
-  \item Compile PREDEFINED\_CRITERIA to SQL in order to get smaller results.
+  \item Compile \lstinline!PREDEFINED_CRITERIA! to SQL in order to get smaller results.
  \item Add support for lazy loading in the generic database layout implementation by using SQL cursors instead of normal select statements.
  \item Use prepared statements and maybe even stored procedures instead of normal SQL statements.
  \item Optimize ABEL by trying to reduce network round trip times to a minimum.
@@ -54,9 +54,9 @@ As an extension this mapping could be defined in an XML file.
  \item EiffelStore
  \item A NoSQL database like CouchDB
 \end{itemize}
- \item [Inheritance] ABEL needs proper inheritance support as soon as the required features in INTERNAL get implemented.
+ \item [Inheritance] ABEL needs proper inheritance support as soon as the required features in \lstinline!INTERNAL! get implemented.
 \item [Transaction management] Some backends, e.g. the in-memory backend or the serialization library, don't support transactions.
- Therefore it would be nice to implement local transaction management for these libraries by using multiversion concurrency control at the BACKEND\_STRATEGY level.
-\item [ESCHER] At the moment, the behaviour of ABEL is undefined in case of a version mismatch between the type of stored objects and their current runtime type. 
-An integration of ESCHER into the ABEL framework would help detecting a version mismatch and, if possible, correct it immediately.
+ Therefore it would be nice to implement local transaction management for these libraries by using multiversion concurrency control at the \lstinline!BACKEND_STRATEGY! level.
+\item [ESCHER] At the moment, there is an initial integration of ESCHER into the ABEL framework, but the functionality is limited to a simple version check and error reporting in case of a mismatch.
+ This solution could be extended to support automatic conversion as well.
 \end{description}

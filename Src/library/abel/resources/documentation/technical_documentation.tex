@@ -3,17 +3,17 @@
 The ABEL library can be splitted into a frontend and a backend part.
 The frontend provides the main API, which is completely agnostic of the actual storage engine, 
 whereas the backend provides a framework and some implementations to adapt ABEL to a specific storage engine.
-The boundary between Backend and Frontend can be drawn straight through the deferred class REPOSITORY.
+The boundary between Backend and Frontend can be drawn straight through the deferred class \lstinline!REPOSITORY!.
 
 \subsection{Frontend}
 
 If you've read the previos part of the documentation, then you should be quite familiar now with the frontend.
 The main classes are:
  \begin{itemize}
-  \item CRUD\_EXECUTOR: Provides features for CRUD operations, and does some error handling for transaction conflicts.
-  \item QUERY: Collects information like the Criteria, Projection, and (through its generic parameter) the type of the object to be retrieved. It doesn't do anything by itself.
-  \item TRANSACTION: Represents a transaction, and is responsible to internally propagate errors. It provides the features commit and rollback, but internally it relies on REPOSITORY to execute them.
-  \item CRITERION: Its descendants provide a filtering function for retrieved objects, and it has builtin functions to generate a tree of criteria using the overloaded logical operators.
+  \item \lstinline!CRUD_EXECUTOR!: Provides features for CRUD operations, and does some error handling for transaction conflicts.
+  \item \lstinline!QUERY!: Collects information like the Criteria, Projection, and (through its generic parameter) the type of the object to be retrieved. It doesn't do anything by itself.
+  \item \lstinline!TRANSACTION!: Represents a transaction, and is responsible to internally propagate errors. It provides the features \lstinline!commit! and \lstinline!rollback!, but internally it relies on REPOSITORY to execute them.
+  \item \lstinline!CRITERION!: Its descendants provide a filtering function for retrieved objects, and it has builtin functions to generate a tree of criteria using the overloaded logical operators.
  \end{itemize}
 
 You can see that the main objective of the frontend is to provide an easy to use, backend-agnostic API and to collect any information the backend needs.
@@ -31,14 +31,14 @@ Note that this diagram only shows the most important classes and their relations
 
 \subsection{Backend}
 
-The frontend needs a repository which is specific to a persistence library, and the backend part provides a framework to implement these repositories (in cluster Framework).
-There are also some already predefined repositories inside the backend (cluster Backends), like the IN\_MEMORY\_REPOSITORY.
+The frontend needs a repository which is specific to a persistence library, and the backend part provides a framework to implement these repositories (in cluster \lstinline!framework!).
+There are also some already predefined repositories inside the backend (cluster \lstinline!backends!), like the \lstinline!IN_MEMORY_REPOSITORY!.
 
 \subsubsection{The framework layers}
 
 The framework is built of several layers, with each layer being more specific to a persistence mechanism as it goes down.
 
-The uppermost layer is the REPOSITORY class. 
+The uppermost layer is the \lstinline!REPOSITORY! class. 
 It provides a very high level of abstraction, as it deals with normal Eiffel objects that may reference a lot of other objects.
 
 One level below you can find the object-relational mapping layer.
@@ -46,7 +46,7 @@ It is responsible to take an object graph apart into its pieces and generate a p
 It is also responsible to build an object graph from its pieces during object retrieval.
 This layer is described more precisely in the next section ~\ref{section:ORM}.
 
-On the next level there is the BACKEND\_STRATEGY layer.
+On the next level there is the \lstinline!BACKEND_STRATEGY! layer.
 Its task is to map the object pieces generated before to a specific storage engine, e.g. a database with some table layout.
 
 The lowest level of abstraction is only significant for databases that understand SQL. 
@@ -54,11 +54,11 @@ It provides a set of wrapper classes that hide connection details and error hand
 
 \subsubsection{Important data structures}
 
-The key data structure in the framework is the OBJECT\_\-IDENTIFICA\-TION\_MANAGER.
-It maintains a weak reference to every object that has been queried or inserted before and assigns a repository-wide unique number to it (called the object\_identifier).
+The key data structure in the framework is the \lstinline!OBJECT_IDENTIFICATION_MANAGER!.
+It maintains a weak reference to every object that has been queried or inserted before and assigns a repository-wide unique number to it (called the \lstinline!object_identifier!).
 It is, for example, responsible for the fact that the update fails in section ~\ref{subsection:recognize_objects}, ``Recognizing Objects.''
 
-Another important datastructure is the KEY\_POID\_TABLE, which maps the objects object\_identifier to the primary key of the corresponding entry in the database.
+Another important datastructure is the \lstinline!KEY_POID_TABLE!, which maps the objects \lstinline!object_identifier! to the primary key of the corresponding entry in the database.
 
 \subsubsection{Transactions}
 
@@ -73,7 +73,7 @@ As the exception propagates upwards, every layer in the backend can do the appro
 \subsubsection{Class diagram}
 
 To visualize the whole structure, there is a class diagram that shows the most important classes and concepts of the framework. 
-You can also see the IN\_MEMORY\_DATABASE and GENERIC\_LAYOUT\_SQL\_BACKEND, which are two implementations of the BACKEND\_STRATEGY.
+You can also see the \lstinline!IN_MEMORY_DATABASE! and \lstinline!GENERIC_LAYOUT_SQL_BACKEND!, which are two implementations of \lstinline!BACKEND_STRATEGY!.
 
 \begin{figure} [h]
 \centering
@@ -86,31 +86,31 @@ You can also see the IN\_MEMORY\_DATABASE and GENERIC\_LAYOUT\_SQL\_BACKEND, whi
 \section{Object-relational Mapping}
 \label{section:ORM}
 
-The object-relational mapping layer (abbreviated as ORM layer) lies between the REPOSITORY and the BACKEND\_STRATEGY.
+The object-relational mapping layer (abbreviated as ORM layer) lies between the \lstinline!REPOSITORY! and the \lstinline!BACKEND_STRATEGY!.
 It consists of four main classes doing the actual work, and a set of helper classes to represent an object graph.
 
-All object graph representation classes are in ``framework/object\_graph\_representation''. \todo{ a better way to include folders}
-Beside representation of an object graph, they are also used to describe a write operation in the BACKEND\_STRATEGY.
+All object graph representation classes are in \lstinline!framework/object_graph_representation!.
+Beside representation of an object graph, they are also used to describe a write operation in the \lstinline!BACKEND_STRATEGY!.
 The most important helper classes are:
 
 \begin{itemize}
- \item BASIC\_ATTRIBUTE\_PART represents an object of a basic type
- \item COLLECTION\_PART represents a collection, e.g. an instance of SPECIAL.
- \item SINGLE\_OBJECT\_PART: represets an Eiffel object that is neither a basic type nor a collection.
+ \item \lstinline!BASIC_ATTRIBUTE_PART! represents an object of a basic type
+ \item \lstinline!COLLECTION_PART! represents a collection, e.g. an instance of \lstinline!SPECIAL!.
+ \item \lstinline!SINGLE_OBJECT_PART!: represets an Eiffel object that is neither a basic type nor a collection.
 \end{itemize}
 
-All these classes inherit from a deferred class OBJECT\_GRAPH\_PART. 
+All these classes inherit from a deferred class \lstinline!OBJECT_GRAPH_PART!. 
 They have a builtin iteration cursor, and they share the concept of a dependency:
-If an object graph part X is dependent on another part Y, then it means for example that Y has to be inserted first, because X needs its primary key as a foreign key in the database.
+If an object graph part $X$ is dependent on another part $Y$, then it means for example that $Y$ has to be inserted first, because $X$ needs its primary key as a foreign key in the database.
 
 The four classes listed here are the ones that do the actual work:
 
 \begin{itemize}
- \item The OBJECT\_DISASSEMBLER is responsible to create the explicit object graph representation.
- \item The WRITE\_PLANNER is responsible to generate a total order on all write operations, taking care of the dependency issues.
- \item The RETRIEVAL\_MANAGER builds objects from the parts that it gets from the backend, and takes care that the complete object graph gets loaded.
- \item The COLLECTION\_HANDLER, or rather its descendants, add collection handling support to the basic ORM layer. 
- You need at least one handler for SPECIAL, but you can add handlers for other collection as well.
+ \item The \lstinline!OBJECT_DISASSEMBLER! is responsible to create the explicit object graph representation.
+ \item The \lstinline!WRITE_PLANNER! is responsible to generate a total order on all write operations, taking care of the dependency issues.
+ \item The \lstinline!RETRIEVAL_MANAGER! builds objects from the parts that it gets from the backend, and takes care that the complete object graph gets loaded.
+ \item The \lstinline!COLLECTION_HANDLER!, or rather its descendants, add collection handling support to the basic ORM layer. 
+ You need at least one handler for \lstinline!SPECIAL!, but you can add handlers for other collection as well.
 \end{itemize}
 
 The graph visualizes the process and shows the intermediate representation of data in the object-relational mapping layer.
@@ -127,23 +127,16 @@ The graph visualizes the process and shows the intermediate representation of da
 The object writing part is a bit more complex than the reading part, because of the dependency issue.
 
 
-%\todo{ Add a little visualization of the different parts}
-
 \subsection{Collection handling}
 
 You can extend the ORM algorithm to include collections. A collection is usually mapped differently from a normal object in the backend, e.g. through a M:N-relation table.
-You need at least one handler for SPECIAL, because of its peculiarity that it doesn't have a fixed amount of fields, but you can include any other collection, e.g. a LIST or an ARRAY.
+You need at least one handler for \lstinline!SPECIAL!, because of its peculiarity that it doesn't have a fixed amount of fields, but you can include any other collection, e.g. a \lstinline!LIST! or an \lstinline!ARRAY!.
 
 There are two types of collections you can create within a handler. 
-The RELATIONAL\_COLLECTION is intended for a case when you have a typical database layout, with tables for a specific class and relations stored either with in the referenced object table (1:N-Relations) or inside their own table (M:N-Relations).
-The OBJECT\_COLLECTION is intended for a scenario where you can store collections in a separate table, having their own primary key, and with the collection owner using this key as a foreign key.
+The \lstinline!RELATIONAL_COLLECTION! is intended for a case when you have a typical database layout, with tables for a specific class and relations stored either with in the referenced object table (1:N-Relations) or inside their own table (M:N-Relations).
+The \lstinline!OBJECT_COLLECTION! is intended for a scenario where you can store collections in a separate table, having their own primary key, and with the collection owner using this key as a foreign key.
 
 The following diagrams shows an example entity-relationship model for each type of collection:
-
-%\tikzstyle{every entity} = [draw=black]
-%\tikzstyle{every weak entity} = []
-%\tikzstyle{every attribute} = [ node distance=1cm]
-%\tikzstyle{every relationship} = [draw=black]
 
 \begin{figure} [h!]
 \centering
@@ -205,12 +198,13 @@ The following diagrams shows an example entity-relationship model for each type 
 \end{figure}
 
 
-Note that the choice of the collection has an effect in the object-relational mapping layer already:
+Note that the choice of the collection has an effect in the object-relatio\-nal mapping layer already:
 \begin{itemize}
- \item An OBJECT\_COLLECTION is handled like a SINGLE\_OBJECT\_PART: The owner of the collection object depends on the collection, and the collection depends on all items that it references.
- \item A RELATIONAL\_COLLECTION in an M:N mapping mode depends on both the collection owner and all items that it references, but the owner does not depend on its collection.
+ \item An \lstinline!OBJECT_COLLECTION! is handled like a \lstinline!SINGLE_OBJECT_PART!: The owner of the collection object depends on the collection, and the collection depends on all items that it references.
+ \item A \lstinline!RELATIONAL_COLLECTION! in an M:N mapping mode depends on both the collection owner and all items that it references, but the owner does not depend on its collection.
  This comes from the fact that you need both a foreign key of the owner and the collection items to insert a row in a M:N-relation table
- \item A RELATIONAL\_COLLECTION in an 1:N mapping mode actually isn't forwarded to the backend at all. Instead, for each collection item there is a dependency added to the collection owner.
+ \item A \lstinline!RELATIONAL_COLLECTION! in an 1:N mapping mode actually isn't forwarded to the backend at all. 
+ Instead, for each collection item there is a dependency added to the collection owner.
  Again, this comes from the normal practice in database layouts for 1:N relations.
 \end{itemize}
 
@@ -219,7 +213,7 @@ If you use one of the predefined backends, you usually don't have to care about 
 They become important however if you want to adapt ABEL to a custom database layout, as you can see in section ~\ref{subsection:specific_adaption}.
 
 Please note that the framework itself does not provide any collection handler, and inserting a SPECIAL object without setting an appropriate handler will result in a runtime crash.
-However, there is a SPECIAL handler shipped with the predefined backends, and for example the IN\_MEMORY\_REPOSITORY makes use of it.
+However, there is a \lstinline!SPECIAL! handler shipped with the predefined backends, and for example the \lstinline!IN_MEMORY_REPOSITORY! makes use of it.
 
 \subsection{Object graph settings}
 \label{subsection:obect_graph_settings}
@@ -229,34 +223,34 @@ A vertex in the graph corresponds to an object, and a reference is a directed ed
 
 The (global) object graph is the web of objects and references as it is currently in main memory.
 
-An object Y can be reached from another object X if there is a path between X and Y, i.e. Y is in the transitive closure of X.
+An object $Y$ can be $reached$ from another object $X$ if there is a path between $X$ and $Y$, i.e. $Y$ is in the transitive closure of $X$.
 
-The object graph of an object X is the induced subgraph of the global object graph that contains all vertices that can be reached from X.
+The object graph of an object $X$ is the induced subgraph of the global object graph that contains all vertices that can be reached from $X$.
 
-The level of an object Y in the object graph of X is the length of the shortest path from X to Y.
+The $level$ of an object $Y$ in the object graph of $X$ is the length of the shortest path from $X$ to $Y$.
 
 Using these definitions we can now describe how ABEL handles object graphs, and how you can tweak the default settings to increase performance.
 
-Every operation in ABEL has its own depth parameter (defined in OBJECT\_GRAPH\_SETTINGS), which has the following effect:
+Every operation in ABEL has its own depth parameter (defined in \lstinline!OBJECT_GRAPH_SETTINGS!), which has the following effect:
 Each operation will only handle the objects when the following condition holds:
 
 \begin{center}
- $ level(object) < depth $ %\todo{don't inline this}
+ $ level(object) < depth $ 
 \end{center}
 
 Now, let's put this in a context:
 You already know that the insert and retrieve features handle the complete object graph of an object. 
-In fact, the depth for both functions is Infinity by default.
+In fact, the depth for both functions is $Infinity$ by default.
 
 On the other hand, the update or delete operations only handle first object they get, and don't care about the object graph.
-Their depth is defined as exactly 1, which means that only an object with a level of 0 satisfies the condition above.
-The only object with level 0 is in fact the root object of an object graph.
+Their depth is defined as exactly $1$, which means that only an object with a level of $0$ satisfies the condition above.
+The only object with level $0$ is in fact the root object of an object graph.
 
 To fully understand the behaviour of ABEL, we also have to look at what happens when the algorithm reaches the ``last'' object, i.e. when the condition $level + 1 = depth$ holds.
 In that case the object with all basic attributes gets inserted/updated, but references only get written if the referenced object is already persistent.
 If it isn't persistent, then in a later retrieval operation the reference will be Void.
 
-You can change the depth of the individual operations in REPOSITORY.default\_object\_graph. 
+You can change the depth of the individual operations in \lstinline!REPOSITORY.default_object_graph!. 
 Please keep in mind that this is a dangerous operation, as a not fully retrieved or inserted object will contain Void references even in a void-safe environment, and a partially loaded object may also violate its invariant.
 
 Apart from the depth, there are some other settings as well, i.e. what ABEL should do if it finds an already persistent object along the object graph of a new object to insert, or vice versa.
@@ -264,20 +258,20 @@ Apart from the depth, there are some other settings as well, i.e. what ABEL shou
 \section{Backend abstraction}
 
 The framework provides some very flexible interfaces to be able to support many different storage engines. 
-The three main levels of abstraction are the REPOSITORY, the BACKEND\_STRATEGY and the database wrapper classes.
+The three main levels of abstraction are the \lstinline!REPOSITORY!, the \lstinline!BACKEND\_STRATEGY! and the database wrapper classes.
 
 \subsection{REPOSITORY}
 
-The deferred class REPOSITORY provides the highest level of abstraction.
+The deferred class \lstinline!REPOSITORY! provides the highest level of abstraction.
 It deals with raw Eiffel objects including their complete object graph.
 It provides a good interface to wrap a persistence mechanism that provides a similarly high level of abstraction, like for example db4o \cite{db4o}.
 
-The RELATIONAL\_REPOSITORY is the main implementation of this interface.
-It uses the ORM layer and a BACKEND\_STRATEGY and is therefore the default repository for persistence libraries which are wrapped through BACKEND\_STRATEGY.
+The \lstinline!RELATIONAL_REPOSITORY! is the main implementation of this interface.
+It uses the ORM layer and a \lstinline!BACKEND_STRATEGY! and is therefore the default repository for persistence libraries which are wrapped through \lstinline!BACKEND_STRATEGY!.
 
 \subsection{BACKEND\_STRATEGY}
 
-The second important interface is the deferred class BACKEND\_STRATEGY.
+The second important interface is the deferred class \lstinline!BACKEND_STRATEGY!.
 This layer only deals with one object graph part at once, either a single object or a collection.
 It is responsible to map these to the actual persistence mechanism, which is usually a specific layout in a database.
 
@@ -290,11 +284,11 @@ The IN\_MEMORY\_DATABASE for example implements this interface to provide a fake
 The last layer of abstraction is a set of wrappers to a database. 
 It consists of three deferred classes: 
 \begin{itemize}
- \item The SQL\_DATABASE\_ABSTRACTION represents a database. Its main task is to acquire or release a SQL\_CONNECTION\_ABSTRACTION.
- \item The SQL\_CONNECTION\_ABSTRACTION represents a single connection. 
-It has to forward SQL statements to the database and represent the result in an iteration cursor of SQL\_ROW\_ABSTRACTIONs.
-Another important task is to map database specufuc error messages to ABEL ERROR instances.
-  \item The SQL\_ROW\_ABSTRACTION represents a single row in the result of an SQL query.
+ \item The \lstinline!SQL_DATABASE_ABSTRACTION! represents a database. Its main task is to acquire or release a \lstinline!SQL_CONNECTION_ABSTRACTION!.
+ \item The \lstinline!SQL_CONNECTION_ABSTRACTION! represents a single connection. 
+It has to forward SQL statements to the database and represent the result in an iteration cursor of \lstinline!SQL_ROW_ABSTRACTION!s.
+Another important task is to map database specufuc error messages to ABEL \lstinline!ERROR! instances.
+  \item The \lstinline!SQL_ROW_ABSTRACTION! represents a single row in the result of an SQL query.
 \end{itemize}
 
 The wrapper is very useful if you want to easily swap e.g. from a MySQL database to SQLite
@@ -302,7 +296,7 @@ The wrapper is very useful if you want to easily swap e.g. from a MySQL database
 However, keep in mind that the abstraction is not perfect. 
 For example, the wrapper doesn't care about the different SQL variations, as it just forwards the statements to the database.
 
-To overcome this problem, you can put all SQL statements in your implementation of BACKEND\_STRATEGY into a separate class, and generally stick to standard SQL as much as possible.
+To overcome this problem, you can put all SQL statements in your implementation of \lstinline!BACKEND_STRATEGY! into a separate class, and generally stick to standard SQL as much as possible.
 
 
 \section{Extensions}
@@ -310,24 +304,24 @@ To overcome this problem, you can put all SQL statements in your implementation 
 Due to its very flexible abstraction mechanism, you can easily extend ABEL with features like client-side transaction management or ESCHER \cite {escher} integration.
 
 The general pattern on how to do this is quite simple: 
-You can implement a BACKEND\_STRATEGY which uses another instance of BACKEND\_STRATEGY, but does some processing on the intermediate result.
+You can implement a \lstinline!BACKEND_STRATEGY! which uses another instance of \lstinline!BACKEND_STRATEGY!, but does some processing on the intermediate result.
 That way you can add:
 
 \begin{itemize}
- \item Filter support for some non-persistent attributes by removing them from the OBJECT\_GRAPH\_PART during a write, and adding a default value during retrieval.
+ \item Filter support for some non-persistent attributes by removing them from the \lstinline!OBJECT_GRAPH_PART! during a write, and adding a default value during retrieval.
  \item ESCHER support by checking on the version attribute during a retrieval, and calling the conversion function if necessary.
  \item Client-side transaction management by using a multiversion concurrency control mechanism and delaying write operations until you can definitely commit.
- \item Caching of objects by using an IN\_MEMORY\_DATABASE alongside the actual backend.
+ \item Caching of objects by using an \lstinline!IN_MEMORY_DATABASE! alongside the actual backend.
  \item An instance that does correctness checks, e.g. by routing the calls to two different backends and comparing if the results are the same.
  \item Anything else you can imagine...
 \end{itemize}
 
-The really nice thing is that you can add extensions without really adding complexity to the core of ABEL, and it works for all possible implementations of BACKEND\_STRATEGY at once.
+The really nice thing is that you can add extensions without really adding complexity to the core of ABEL, and it works for all possible implementations of \lstinline!BACKEND_STRATEGY! at once.
 
 
 \section{Database adaption}
 
-The BACKEND\_STRATEGY interface allows to adapt the framework to many database layouts.
+The \lstinline!BACKEND_STRATEGY! interface allows to adapt the framework to many database layouts.
 Shipped with the library is a backend that uses a generic database layout which can handle every type of object.
 It is explained in the next section.
 
@@ -339,8 +333,6 @@ An example on how to do this is shown in section ~\ref{subsection:specific_adapt
 The database layout is based upon metadata of the class. 
 It is very flexible and allows for any type of objects to be inserted.
 The layout is a modified version from the suggestion in Scott W. Ambler's article ``Mapping Objects to Relational Databases'' \cite{AmblerORM}.
-
-%\todo {Add Entity-Relationship model}
 
 \begin{figure} [h!]
 \centering
@@ -371,7 +363,6 @@ The layout is a modified version from the suggestion in Scott W. Ambler's articl
     (3) edge node {$1$} (4)
     (4) edge node {$N$} (5);
 \end{tikzpicture}
-%\includegraphics[trim= 0mm -10mm 0mm -10mm,clip, width = 13cm] {collection_er3.png}
 \caption{The ER-Model of the generic database layout.}
 \label{fig:er_model_generic_layout}
 \end{figure}
@@ -379,25 +370,26 @@ The layout is a modified version from the suggestion in Scott W. Ambler's articl
 The ER-model in the diagram is in fact a simplified view. 
 The real model uses another relationship between value and class to determine the runtime type of a value, which is required in some special cases.
 
-The predefined backend located in ``backends/generic\_database\_layout''\todo{folder representation} maps Eiffel objects to this layout.
+The predefined backend located in \lstinline!backends/generic_database_layout! maps Eiffel objects to this layout.
 
 It is split into three classes:
 \begin{itemize}
- \item The METADATA\_TABLES\_MANAGER is responsible to read and write tables ``ps\_class'' and ``ps\_attribute''.
- \item The GENERIC\_LAYOUT\_SQL\_BACKEND, which actually implements BACKEND\_STRATEGY, is responsible to write and read the ps\_value table
- \item The GENERIC\_LAYOUT\_SQL\_STRINGS collects all SQL statements. Its descendants adapt the statements to a specific database if there is an incompatibility.
+ \item The \lstinline!METADATA_TABLES_MANAGER! is responsible to read and write tables \lstinline!ps_class! and \lstinline!ps_attribute!.
+ \item The \lstinline!GENERIC_LAYOUT_SQL_BACKEND!, which actually implements \lstinline!BACKEND_STRATEGY!, is responsible to write and read the \lstinline!ps_value! table
+ \item The \lstinline!GENERIC_LAYOUT_SQL_STRINGS! collects all SQL statements. Its descendants adapt the statements to a specific database if there is an incompatibility.
 \end{itemize}
 
 The functionality of the metadata table manager is quite easy:
-It just caches table ps\_class and ps\_attribute in memory and provides features to get the primary key of an attribute or a class.
+It just caches table \lstinline!ps_class! and \lstinline!ps_attribute! in memory and provides features to get the primary key of an attribute or a class.
 If the class is not present in the database, then it will insert it and return the new primary key.
 
-Using the table manager, the GENERIC\_LAYOUT\_SQL\_BACKEND has all information to perform a write operation:
-The attribute value in the SINGLE\_OBJECT\_PART, the attribute foreign key from the METADATA\_TABLES\_MANAGER, and the object primary key either stored in the KEY\_POID\_TABLE or generated during an insert.
+Using the table manager, the \lstinline!GENERIC_LAYOUT_SQL_BACKEND! has all information to perform a write operation:
+The attribute value in the \lstinline!SINGLE_OBJECT_PART!, the attribute foreign key from the \lstinline!METADATA_TABLES_MANAGER!, 
+and the object primary key either stored in the \lstinline!KEY_POID_TABLE! or generated during an insert.
 
 The retrieval operation is similar.
 First, the backend gets all attribute primary keys of a specific class from the table manager, and then it executes an SQL query to retrieve all values whose attribute foreign keys match the ones retrieved before.
-The backend can also sort the result by the object primary key, such that attributes of the same object are grouped together.
+The backend does also sort the result by the object primary key, such that attributes of the same object are grouped together.
 
 
 \subsection{Adaption to a custom database layout}
@@ -405,8 +397,8 @@ The backend can also sort the result by the object primary key, such that attrib
 
 Adapting ABEL to a custom database layout needs two steps:
  \begin{itemize}
-  \item Implement a BACKEND\_STRATEGY for your layout
-  \item Implement COLLECTION\_HANDLERS for all collections that need to be mapped relationally
+  \item Implement a \lstinline!BACKEND_STRATEGY! for your layout
+  \item Implement \lstinline!COLLECTION_HANDLERS! for all collections that need to be mapped relationally
  \end{itemize}
 
 Let's consider a very simple example with only two classes:
@@ -429,7 +421,8 @@ feature
 end
 \end{lstlisting}
 
-In the database, there is table Person with columns primary\_key and name, and table Item with columns primary\_key, item, and a foreign key $owner$ to Person.
+In the database, there is table \lstinline!Person! with columns \lstinline!primary_key! and \lstinline!name!, 
+and table \lstinline!Item! with columns \lstinline!primary_key!, \lstinline!item!, and a foreign key \lstinline!owner! to table \lstinline!Person!.
 
 
 \begin{figure} [h!]
@@ -458,7 +451,7 @@ In the database, there is table Person with columns primary\_key and name, and t
 \end{figure}
 %\todo{ER-Model}
 
-In this setup, you only need a relational collection handler for LINKED\_LIST which always has to be 1:N mapped.
+In this setup, you only need a relational collection handler for \lstinline!LINKED_LIST! which always has to be 1:N mapped.
 Therefore, the implementation of the (only) collection handler is very simple:
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The collection handler for LINKED\_LIST}, label={lst:my_linked_list_collection_handler}]
@@ -490,10 +483,10 @@ end
 \end{lstlisting}
 
 
-The implementation of BACKEND\_STRATEGY is quite straightforward as well.
-You just have to distinguish between PERSON and ITEM objects and insert them in the corresponding table.
+The implementation of \lstinline!BACKEND_STRATEGY! is quite straightforward as well.
+You just have to distinguish between \lstinline!PERSON! and \lstinline!ITEM! objects and insert them in the corresponding table.
 
-Please remember that the object-rlational mapping layer adds an attribute with name ``items\_owned''\todo{inline Eiffel?} to the ITEM object, which is the default behaviour for 1:N relations.
+Please remember that the object-rlational mapping layer adds an attribute with name \lstinline!items_owned! to the \lstinline!ITEM! object, which is the default behaviour for 1:N relations.
 This especially menans that you don't need to implement the relational collection write operations.
 
 The following code listing shows the insert feature in pseudocode:
@@ -528,7 +521,7 @@ end
 
 During a retrieval operation, you similarly have to select your values from the correct table.
 
-Please note that you need the retrieve\_relational\_collection feature here.
+Please note that you need the \lstinline!retrieve_relational_collection! feature here.
 
 
 %\section{Tuning performance}
