@@ -53,10 +53,13 @@ feature {PS_CRUD_TESTS}
 			internal_check_equality (object, equality_function)
 
 			-- Test successful update
+--print (object)
 			update_operation.call ([object])
 			first_count:= count_results
 			executor.update (object)
 			second_count:= count_results
+--print (object)
+--print (first_count.out + " "+ second_count.out)
 			internal_check_equality (object, equality_function)
 			assert ("Something has been deleted or inserted during an update", second_count = first_count)
 
@@ -107,7 +110,7 @@ feature {NONE}
 			create ref_list.make
 			across query as cursor loop
 				ref_list.extend (cursor.item)
-			--	print (cursor.item)
+print (cursor.item)
 			end
 
 			-- See if one result is equal

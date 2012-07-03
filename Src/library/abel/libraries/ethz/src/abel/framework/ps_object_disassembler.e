@@ -269,7 +269,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 
 		current_global_depth (mode:PS_WRITE_OPERATION):INTEGER
 			do
-				fixme ("support custom depths")
+				fixme ("support custom insert/update depths")
 				if mode = mode.Insert then
 					Result:=settings.insert_depth
 				elseif mode = mode.update then
@@ -376,7 +376,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Helper functions
 
 			across collection_handlers as cursor loop
 				if cursor.item.can_handle (next_object) then
-					Result:= cursor.item.create_part (next_object, id_manager.metadata_manager.create_metadata_from_object (next_object), current_part)
+					Result:= cursor.item.create_part (next_object, id_manager.metadata_manager.create_metadata_from_object (next_object), is_next_persistent(next_object), current_part)
 				end
 			end
 

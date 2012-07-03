@@ -294,7 +294,7 @@ feature {NONE} -- Implementation - Loading and storing objects
 							create attr_val.make (Void_value, None_type)
 						end
 						current_obj.add_attribute (cursor.item, attr_val.first, attr_val.second)
-						print ("loaded attribute: " + cursor.item + "%N%T value: " + attr_val.first + "%N%T type: " + attr_val.second + "%N%N")
+				--		print ("loaded attribute: " + cursor.item + "%N%T value: " + attr_val.first + "%N%T type: " + attr_val.second + "%N%N")
 					end
 
 					Result.extend (current_obj)

@@ -43,9 +43,10 @@ feature {PS_EIFFELSTORE_EXPORT}-- Relational storage mode data
 		end
 
 
-	clone_except_values: like Current
+	clone_except_values: PS_RELATIONAL_COLLECTION_PART [COLLECTION_TYPE]
 		do
-			create Result.make (object_id, reference_owner, reference_owner_attribute_name, write_mode, handler)
+			--create Result.make (object_id, reference_owner, reference_owner_attribute_name, write_mode, handler)
+			create {PS_RELATIONAL_COLLECTION_PART [COLLECTION_TYPE]} Result.make_new (represented_object, metadata, reference_owner, handler)
 			Result.set_deletion_dependency (deletion_dependency_for_updates)
 		end
 
@@ -66,6 +67,9 @@ feature {PS_EIFFELSTORE_EXPORT}-- Relational storage mode data
 	is_in_relational_storage_mode:BOOLEAN = True
 		-- Is current collection inserted in relational mode?
 
+	add_additional_information
+		do
+		end
 
 feature {NONE}
 
@@ -76,6 +80,7 @@ feature {NONE}
 		local
 			del_dependency: like Current
 		do
+			represented_object:= obj.item
 			internal_object_id:=obj
 			reference_owner:= owner
 			reference_owner_attribute_name:= attr_name
@@ -93,7 +98,6 @@ feature {NONE}
 			end
 			internal_metadata:= obj.metadata
 
-			represented_object:= obj.item
 		ensure
 			no_update_mode: write_mode /= write_mode.update
 		end
@@ -105,11 +109,11 @@ feature {NONE}
 			i:INTEGER
 			reflection:INTERNAL
 		do
+			represented_object:= obj
 			reference_owner:= owner
 			create values.make
 			handler:= a_handler
 			internal_metadata:= meta
-			represented_object:= obj
 
 			from
 				reference_owner_attribute_name:= ""

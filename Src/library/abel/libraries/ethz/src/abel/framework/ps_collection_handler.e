@@ -43,17 +43,22 @@ feature {PS_EIFFELSTORE_EXPORT}-- Disassemble functions
 		end
 
 
-	create_part (collection:ANY; metadata:PS_TYPE_METADATA; owner:PS_OBJECT_GRAPH_PART):PS_OBJECT_GRAPH_PART
+	create_part (collection:ANY; metadata:PS_TYPE_METADATA; persistent:BOOLEAN; owner:PS_OBJECT_GRAPH_PART):PS_OBJECT_GRAPH_PART
 		do
 			if is_relational_1toN_collection (collection) then
 				check attached {PS_SINGLE_OBJECT_PART} owner as good_owner then
 					create {PS_RELATIONAL_COLLECTION_PART[COLLECTION_TYPE]} Result.make_new (collection, metadata, good_owner, Current)
 				end
 			else
-				create {PS_OBJECT_COLLECTION_PART[COLLECTION_TYPE]}  Result.make_new (collection, metadata, Current)
+				create {PS_OBJECT_COLLECTION_PART[COLLECTION_TYPE]}  Result.make_new (collection, metadata, persistent, Current)
 			end
 		end
 
+
+	add_information (object_collection: PS_OBJECT_COLLECTION_PART[ITERABLE[detachable ANY]])
+		deferred
+
+		end
 
 	disassemble_collection (collection: PS_OBJECT_IDENTIFIER_WRAPPER; depth: INTEGER; mode:PS_WRITE_OPERATION; a_disassembler:PS_OBJECT_DISASSEMBLER; reference_owner:PS_OBJECT_GRAPH_PART; ref_attribute_name:STRING):	PS_COLLECTION_PART [COLLECTION_TYPE]
 		-- disassemble the collection

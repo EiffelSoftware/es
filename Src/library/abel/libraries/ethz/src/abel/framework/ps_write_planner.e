@@ -94,8 +94,8 @@ feature
 			if attached {PS_COLLECTION_PART[ITERABLE[ANY]]} node as col then
 				roots.extend (col.split (dependency))
 			elseif attached {PS_SINGLE_OBJECT_PART} node as obj then
-				print (obj.represented_object.out)
-				print (obj.object_id.item.out)
+			--	print (obj.represented_object.out)
+			--	print (obj.object_id.item.out)
 				create new_update.make_with_mode (obj.object_id, obj.write_mode.Update)
 				new_update.add_attribute (obj.get_attribute_name (dependency), dependency)
 				roots.extend (new_update)

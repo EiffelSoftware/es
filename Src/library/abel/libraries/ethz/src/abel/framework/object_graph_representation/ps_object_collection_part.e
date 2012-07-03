@@ -59,7 +59,8 @@ feature {PS_EIFFELSTORE_EXPORT}-- Object storage mode data
 	clone_except_values: like Current
 		-- Create a copy of `Current', with the exception that the `values' list is empty
 		do
-			create Result.make (object_id,  write_mode, handler)
+		--	create Result.make (object_id,  write_mode, handler)
+			create Result.make_new (attach (represented_object), metadata, is_persistent, handler)
 			Result.set_deletion_dependency (deletion_dependency_for_updates)
 		end
 
@@ -69,6 +70,7 @@ feature {PS_EIFFELSTORE_EXPORT}-- Object storage mode data
 		local
 			del_dependency: like Current
 		do
+			represented_object:= obj.item
 			internal_object_id:=obj
 			create values.make
 			handler:= a_handler
@@ -86,7 +88,6 @@ feature {PS_EIFFELSTORE_EXPORT}-- Object storage mode data
 				write_mode:= a_mode
 			end
 			internal_metadata:= obj.metadata
-			represented_object:= obj.item
 		ensure
 			no_update_mode: write_mode /= write_mode.update
 		end
@@ -104,6 +105,11 @@ feature {PS_EIFFELSTORE_EXPORT}-- Object storage mode data
 			Result.add_value_explicit_order (a_dependency, order_of (a_dependency))
 		end
 
+	add_additional_information
+		do
+			handler.add_information (Current)
+		end
+
 feature {PS_OBJECT_COLLECTION_PART}
 
 	add_value_explicit_order (val: PS_OBJECT_GRAPH_PART; order:INTEGER)
@@ -113,10 +119,12 @@ feature {PS_OBJECT_COLLECTION_PART}
 		end
 
 
+
+
 feature {NONE}
 
 
-	make_new (obj: ANY; meta:PS_TYPE_METADATA;  a_handler: PS_COLLECTION_HANDLER[COLLECTION_TYPE])
+	make_new (obj: ANY; meta:PS_TYPE_METADATA; persistent:BOOLEAN; a_handler: PS_COLLECTION_HANDLER[COLLECTION_TYPE])
 		-- initialize `Current'
 		local
 			del_dependency: like Current
@@ -132,6 +140,7 @@ feature {NONE}
 
 			internal_metadata:= meta
 			represented_object:= obj
+			is_persistent:= persistent
 		ensure
 			no_update_mode: write_mode /= write_mode.update
 		end

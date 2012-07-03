@@ -36,6 +36,7 @@ feature
 						check false end
 					elseif coll.write_mode = coll.write_mode.delete then
 						backend.delete_objectoriented_collection (coll, transaction)
+						print ("deleted objectoriented collection")
 					end
 				elseif attached{PS_RELATIONAL_COLLECTION_PART[ITERABLE[detachable ANY]]} op_cursor.item as coll then
 

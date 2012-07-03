@@ -204,7 +204,7 @@ Note that the choice of the collection part has an effect in the object-re\-la\-
 \begin{itemize}
  \item \lstinline!OBJECT_COLLECTION!s are handled like a \lstinline!SINGLE_OBJECT_PART!: The owner of the collection object depends on the collection, and the collection depends on all items that it references.
  \item A \lstinline!RELATIONAL_COLLECTION! in an M:N mapping mode depends on both the collection owner and all items that it references, but the owner does not depend on its collection.
- This comes from the fact that you need both a foreign key of the owner and the collection item to insert a single row in an M:N-relation table
+ This comes from the fact that you need both a foreign key of the owner and the collection item to insert a single row in an M:N-relation table.
  \item A \lstinline!RELATIONAL_COLLECTION! in a 1:N mapping mode actually isn't forwarded to the backend at all. 
  Instead, each item in the collection gets a new dependency to the collection owner.
  Again, this comes from the normal practice in database layouts for 1:N relations.

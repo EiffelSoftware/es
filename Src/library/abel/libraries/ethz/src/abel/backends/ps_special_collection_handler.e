@@ -109,6 +109,12 @@ feature -- Low-level operations
 				end
 			end
 		end
+	add_information (object_collection: PS_OBJECT_COLLECTION_PART[ITERABLE[detachable ANY]])
+		do
+			check attached{SPECIAL[detachable ANY]} object_collection.represented_object as actual_collection then
+				object_collection.add_information ("count", actual_collection.capacity.out)
+			end
+		end
 
 
 feature -- Object assembly

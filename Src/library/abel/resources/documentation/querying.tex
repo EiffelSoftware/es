@@ -174,7 +174,7 @@ Their precedence is the same as in Eiffel, which means that \lstinline!NOT! is s
 
 As mentioned previously, there is another way to perform a deletion in the repository.
 When you call \lstinline!CRUD_EXECUTOR.execute_deletion_query!, ABEL will delete all objects in the database that would have been retrieved by executing the query normally.
-You can look at the following example and compare it with its variation in section ~\ref{subsection:simple_delete}
+You can look at the following example and compare it with its variation in section ~\ref{subsection:simple_delete}.
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:deletion_query}]
 	delete_person (name:STRING)
@@ -200,7 +200,7 @@ Consider an example where you just want to have a list of all last names of pers
 To load every object of type \lstinline!PERSON! might lead to a very bad performance, especially if there is a big object graph attached to each person object.
 
 To solve this problem, you can instead send a \lstinline!TUPLE_QUERY! to the executor. 
-The result is an iteration cursor over a list of tuples in which the attributes of an object are stored. The order of these attributes is the one defined in \lstinline!TUPLE_QUERY.projection!
+The result is an iteration cursor over a list of tuples in which the attributes of an object are stored. The order of these attributes is the one defined in \lstinline!TUPLE_QUERY.projection!.
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:tuple_query_simple}]
 	print_all_last_names

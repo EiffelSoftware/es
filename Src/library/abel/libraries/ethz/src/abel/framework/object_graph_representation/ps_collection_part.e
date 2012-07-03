@@ -111,6 +111,8 @@ feature {PS_OBJECT_GRAPH_PART} -- Initialization
 	initialize (a_level:INTEGER; a_mode:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
 		local
 			del_dependency: like Current
+			cursor: ITERATION_CURSOR[detachable ANY]
+			next: PS_OBJECT_GRAPH_PART
 		do
 			if not is_initialized then
 				is_initialized:= True
@@ -123,13 +125,42 @@ feature {PS_OBJECT_GRAPH_PART} -- Initialization
 				else
 	--				deletion_dependency_for_updates:= handler.create_object_graph_part (obj, owner, attr_name, a_mode.no_operation)
 					write_mode:= a_mode
+					print (write_mode.tagged_out)
 				end
 
+				check attached {COLLECTION_TYPE} represented_object as collection  then
+
+					from
+						cursor:= collection.new_cursor
+					until
+						cursor.after
+					loop
+						next:= disassembler.next_object_graph_part (cursor.item, Current, a_mode)
+						if attached {PS_IGNORE_PART} next then
+							create {PS_NULL_REFERENCE_PART} next.make
+						end
+						add_value (next)
+						cursor.forth
+					end
+
+				end
+
+				across values as val
+				loop
+					if attached val.item as coll_item then
+						coll_item.initialize (disassembler.next_level (a_level, is_persistent, True, coll_item.is_persistent), disassembler.next_operation (a_mode, a_level, is_persistent, coll_item.is_persistent), disassembler)
+					end
+				end
+
+				add_additional_information
 				fixme ("create all items, then initialize all items")
 			end
 		end
 
 
+	add_additional_information
+		deferred
+		end
 
 invariant
 	same_types: values.for_all (agent {PS_OBJECT_GRAPH_PART}.is_basic_attribute)  or not values.for_all (agent {PS_OBJECT_GRAPH_PART}.is_basic_attribute)
