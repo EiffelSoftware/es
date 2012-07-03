@@ -164,7 +164,7 @@ feature {PS_OBJECT_GRAPH_PART} -- Disassembly: Factory methods
 								create {PS_NULL_REFERENCE_PART} Result.default_make (object_graph)
 
 							else -- create the single object part
-								create {PS_SINGLE_OBJECT_PART} Result.make_new (object,metadata_factory.create_metadata_from_object (object), is_next_persistent (object), object_graph)
+								create {PS_SINGLE_OBJECT_PART} Result.make (object,metadata_factory.create_metadata_from_object (object), is_next_persistent (object), object_graph)
 							end
 						end
 

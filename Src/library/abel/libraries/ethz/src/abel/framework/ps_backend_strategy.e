@@ -245,7 +245,11 @@ feature {PS_EIFFELSTORE_EXPORT} -- Precondition checks
 
 	check_dependencies_have_primary (an_object:PS_SINGLE_OBJECT_PART; transaction: PS_TRANSACTION):BOOLEAN
 		do
-			Result:= across an_object.attribute_values as val all attached {PS_COMPLEX_PART} val as comp implies key_mapper.has_primary_key_of (comp.object_id, transaction) end
+			Result:= across an_object.attributes as attr_name all
+				(attached {PS_COMPLEX_PART} an_object.attribute_value (attr_name.item) as comp
+				and an_object.attribute_value (attr_name.item).write_mode /= an_object.write_mode.no_operation)
+					implies key_mapper.has_primary_key_of (comp.object_id, transaction)
+			end
 		end
 
 
@@ -280,7 +284,8 @@ feature{NONE} -- Correctness checks
 			loop
 				if an_object.attributes.has (attr.item) then
 					retrieved_object:= retrieved_obj_list.first
-					current_item:= attach (an_object.attribute_values[attr.item])
+					--current_item:= attach (an_object.attribute_values[attr.item])
+					current_item:= an_object.attribute_value (attr.item)
 					Result:= Result and current_item.storable_tuple (key_mapper.quick_translate (current_item.object_identifier, transaction)).first.is_equal (retrieved_object.attribute_value (attr.item).value)
 					Result:= Result and current_item.storable_tuple (key_mapper.quick_translate (current_item.object_identifier, transaction)).second.is_equal (retrieved_object.attribute_value (attr.item).attribute_class_name)
 				end

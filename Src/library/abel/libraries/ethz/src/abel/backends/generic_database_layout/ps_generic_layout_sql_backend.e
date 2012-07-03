@@ -349,7 +349,7 @@ feature {NONE} -- Implementation
 
 			across object.attributes as current_attribute loop
 				-- get the needed information
-				referenced_part:= object.get_value (current_attribute.item)
+				referenced_part:= object.attribute_value (current_attribute.item)
 				value:= referenced_part.storable_tuple (key_mapper.quick_translate (referenced_part.object_identifier, transaction)).first
 				attribute_id:= db_metadata_manager.create_get_primary_key_of_attribute (current_attribute.item, db_metadata_manager.create_get_primary_key_of_class (object.object_id.metadata.base_class.name		))
 																																										--, a_connection), a_connection)

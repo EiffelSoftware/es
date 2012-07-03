@@ -311,9 +311,9 @@ feature {NONE} -- Implementation - Loading and storing objects
 			primary:= key_mapper.primary_key_of (an_object.object_id, transaction)
 
 			across an_object.attributes as attr_cursor loop
-				attr_primary:= key_mapper.quick_translate (an_object.get_value (attr_cursor.item).object_identifier, transaction)
+				attr_primary:= key_mapper.quick_translate (an_object.attribute_value (attr_cursor.item).object_identifier, transaction)
 --				print (attr_cursor.item)
-				add_or_replace_attribute (primary.second.base_class.name, primary.first, attr_cursor.item, an_object.get_value (attr_cursor.item).storable_tuple (attr_primary))
+				add_or_replace_attribute (primary.second.base_class.name, primary.first, attr_cursor.item, an_object.attribute_value (attr_cursor.item).storable_tuple (attr_primary))
 			end
 		end
 

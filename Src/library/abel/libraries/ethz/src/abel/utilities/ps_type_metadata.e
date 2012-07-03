@@ -188,6 +188,11 @@ feature -- Attributes
 		end
 
 
+feature  -- Utilities
+
+	reflection:INTERNAL
+		-- An instance of INTERNAL.
+
 
 feature {PS_METADATA_FACTORY} -- Initialization
 
@@ -243,8 +248,6 @@ feature {PS_METADATA_FACTORY} -- Initialization
 
 feature{NONE} -- Implementation
 
-	reflection:INTERNAL
-		-- An instance of INTERNAL.
 
 	factory: PS_METADATA_FACTORY
 		-- The factory that created `Current'

@@ -53,14 +53,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 		end
 
 
-feature {PS_EIFFELSTORE_EXPORT} -- Initialization
-
-
-	finish_initialization (disassembler:PS_OBJECT_DISASSEMBLER)
-		-- Initialize all attributes or collection items of `Current'
-		deferred
-		end
-
+feature {PS_OBJECT_GRAPH_PART, PS_OBJECT_DISASSEMBLER} -- Initialization
 
 
 	initialize (a_level:INTEGER; operation:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
@@ -80,7 +73,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Initialization
 
 
 				if  disassembler.is_level_condition_fulfilled (a_level) then
-					
+
 					-- First finish initializing `Current'
 					is_initialized:= True
 					level:= a_level
@@ -99,12 +92,18 @@ feature {PS_EIFFELSTORE_EXPORT} -- Initialization
 			is_initialized:= True
 		end
 
+feature {PS_COMPLEX_PART} -- Initialization
+
+
+	finish_initialization (disassembler:PS_OBJECT_DISASSEMBLER)
+		-- Initialize all attributes or collection items of `Current'
+		deferred
+		end
 
 
 feature {NONE} -- Implementation
 
 	internal_object_id: detachable like object_id
 		-- A little helper to circumvent Void safety		
-
 
 end

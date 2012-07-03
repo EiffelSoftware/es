@@ -186,7 +186,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 				real_backend.insert (an_object, a_transaction)
 
 				an_object.attributes.prune ("version") -- to satisfy postcondition
-				an_object.attribute_values.remove ("version")
+				--an_object.attribute_values.remove ("version")
 			else
 				real_backend.insert (an_object, a_transaction)
 			end
