@@ -245,7 +245,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Precondition checks
 
 	check_dependencies_have_primary (an_object:PS_SINGLE_OBJECT_PART; transaction: PS_TRANSACTION):BOOLEAN
 		do
-			Result:= across an_object.attribute_values as val all attached {PS_COMPLEX_ATTRIBUTE_PART} val as comp implies key_mapper.has_primary_key_of (comp.object_id, transaction) end
+			Result:= across an_object.attribute_values as val all attached {PS_COMPLEX_PART} val as comp implies key_mapper.has_primary_key_of (comp.object_id, transaction) end
 		end
 
 

@@ -7,8 +7,7 @@ note
 deferred class
 	PS_COLLECTION_PART [COLLECTION_TYPE -> ITERABLE[detachable ANY]]
 inherit
-	PS_COMPLEX_ATTRIBUTE_PART
-	redefine is_collection end
+	PS_COMPLEX_PART
 
 inherit{NONE}
 	REFACTORING_HELPER
@@ -62,6 +61,14 @@ feature {PS_EIFFELSTORE_EXPORT}-- Dependency handling
 --				]"
 --				)
 
+
+	break_dependency (dependency: PS_OBJECT_GRAPH_PART)
+		-- Break the dependency `dependency'
+		do
+			fixme ("TODO: The planner can't just take away a dependency like the 'parent' in case of relational mode - Investigate if this is actually possible")
+			root.add_dependency (split (dependency))
+			values.prune_all (dependency)
+		end
 
 	remove_dependency (obj:PS_OBJECT_GRAPH_PART)
 		-- Remove dependency `obj' from the list
@@ -146,7 +153,7 @@ feature {PS_OBJECT_GRAPH_PART} -- Initialization
 				loop
 					next:= disassembler.next_object_graph_part (cursor.item, Current, operation)
 					if attached {PS_IGNORE_PART} next then
-						create {PS_NULL_REFERENCE_PART} next.make (next.root)
+						create {PS_NULL_REFERENCE_PART} next.default_make (next.root)
 					end
 					add_value (next)
 					cursor.forth
@@ -164,37 +171,8 @@ feature {PS_OBJECT_GRAPH_PART} -- Initialization
 			add_additional_information
 		end
 
-comment :STRING = "[
-	initialize (a_level:INTEGER; a_mode:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
-		local
-			new_mode:BOOLEAN
-		do
-			if not is_initialized then
-
-				if a_level = 0 and root.dependencies.first /= Current then
-					disassembler.register_new_operation (a_mode)
-					new_mode:=True
-				end
-
-
-				if  disassembler.check_level_condition (a_level) and a_mode /= a_mode.no_operation then
-					is_initialized:= True
-					level:= a_level
-
-					check disassembler.active_operation = a_mode end
-					finish_initialization (disassembler)
-
-				end
-
-				if new_mode then
-					disassembler.unregister_operation
-				end
-
-			end
-		end
-]"
-
 	is_collection:BOOLEAN = True
+		-- Is `Current' an instance of PS_COLLECTION_PART?
 
 	add_additional_information
 		deferred

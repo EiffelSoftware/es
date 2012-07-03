@@ -18,15 +18,15 @@ create make
 feature
 
 
-	generate_plan (dependency_graph: PS_OBJECT_GRAPH_PART) : LIST[PS_OBJECT_GRAPH_PART]
+	generate_plan (dependency_graph: PS_OBJECT_GRAPH_ROOT) : LIST[PS_OBJECT_GRAPH_PART]
 			-- Generate the plan
 		local
 			dependencies_to_remove:LIST[ANY]
 		do
-
-			roots.wipe_out
+			root:= dependency_graph
+		--	roots.wipe_out
 			sorted_operations.wipe_out
-			roots.extend(dependency_graph)
+		--	roots.extend(dependency_graph)
 
 			-- first find all relational collections and break their parents dependency / add them to roots
 			across dependency_graph as graph_cursor
@@ -68,7 +68,7 @@ feature
 		do
 			from
 				cursor:= node.new_cursor
-				cursor.set_handler (agent remove_dependency (?, ?))
+				cursor.set_handler (agent {PS_OBJECT_GRAPH_PART}.break_dependency )
 			until
 				cursor.after
 			loop
@@ -77,9 +77,13 @@ feature
 			end
 		end
 
+	root:PS_OBJECT_GRAPH_ROOT
 
 	roots:LINKED_LIST[PS_OBJECT_GRAPH_PART]
 		-- A list of operations that no other operation depends on.
+		do
+			Result:= root.dependencies
+		end
 
 
 	sorted_operations: LINKED_LIST [PS_OBJECT_GRAPH_PART]
@@ -88,23 +92,8 @@ feature
 
 	remove_dependency (node, dependency:PS_OBJECT_GRAPH_PART)
 		-- Removes a depencency by changing a dependency to SET_NULL and adding an appropriate UPDATE statement in the roots list
-		local
-			new_update:PS_SINGLE_OBJECT_PART
 		do
-			if attached {PS_COLLECTION_PART[ITERABLE[ANY]]} node as col then
-				roots.extend (col.split (dependency))
-			elseif attached {PS_SINGLE_OBJECT_PART} node as obj then
-			--	print (obj.represented_object.out)
-			--	print (obj.object_id.item.out)
-				create new_update.make_with_mode (obj.object_id, obj.write_mode.Update, obj.root)
-				new_update.add_attribute (obj.get_attribute_name (dependency), dependency)
-				roots.extend (new_update)
-			--	print ("New update: %N" + new_update.to_string)	
-			end
-
-			node.remove_dependency (dependency)
-
-
+			node.break_dependency (dependency)
 		end
 
 	topological_sort
@@ -147,7 +136,8 @@ feature {NONE} -- Initialization
 
 	make
 		do
-			create roots.make
+			create root.make
+			--create roots.make
 			create sorted_operations.make
 		end
 

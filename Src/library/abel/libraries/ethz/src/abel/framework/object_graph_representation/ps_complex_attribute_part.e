@@ -1,30 +1,23 @@
 note
-	description: "Represents an object in the object graph that is not of a basic type."
+	description: "Represents an object in the object graph that can have dependencies."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 deferred class
-	PS_COMPLEX_ATTRIBUTE_PART
+	PS_COMPLEX_PART
 
 inherit
 	PS_OBJECT_GRAPH_PART
-	undefine
-		remove_dependency
-	redefine
-		object_identifier,
-		is_complex_attribute
-	end
 
-feature
+feature {PS_EIFFELSTORE_EXPORT} -- Access
+
+	represented_object:ANY
+		-- The object which gets represented by `Current'
+
 
 	root: PS_OBJECT_GRAPH_ROOT
 		-- The root of the object graph
-
-	represented_object:ANY
---		do
---			Result:= object_id.item
---		end
 
 	object_id:PS_OBJECT_IDENTIFIER_WRAPPER
 		-- The repository-wide unique object identifier of the object represented by `Current'
@@ -32,82 +25,86 @@ feature
 			Result:= attach (internal_object_id)
 		end
 
-	object_identifier:INTEGER
-	do
-		Result:= object_id.object_identifier
-	end
+	object_identifier: INTEGER
+		-- The object identifier of `Current'. Returns 0 if `Current' is a basic type
+		do
+			Result:= object_id.object_identifier
+		end
 
-	is_basic_attribute:BOOLEAN = False
+
+feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
 	is_representing_object:BOOLEAN = True
 		-- Is `Current' representing an existing object?
 
 
-	is_complex_attribute:BOOLEAN
+
+	is_complex_attribute:BOOLEAN = True
 		-- Is `Current' an instance of PS_COMPLEX_ATTRIBUTE_PART?
-		do
-			Result:= True
-		end
 
 
+feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 
-	to_string:STRING
-		do
-			Result:= "Complex object: " + object_id.object_identifier.out + "%N"
-			across dependencies as dep loop
-				if attached{PS_COMPLEX_ATTRIBUTE_PART} dep.item as comp then
-					Result := Result +  "%T Reference attribute: " + comp.object_id.object_identifier.out + "%N"
-				else
-					Result := Result +   "%T " + dep.item.to_string
-				end
-			end
-			if write_mode = write_mode.no_operation then
-				Result:= Result +  "%TNo operation%N"
-			end
-		end
-
-	internal_metadata: detachable like metadata
---		do
---			Result:= object_id.metadata
---		end
-
-	internal_object_id: detachable like object_id
 
 	set_object_id (an_object_id: PS_OBJECT_IDENTIFIER_WRAPPER)
+		-- Set the object identifier wrapper of `Current'
 		do
 			internal_object_id:= an_object_id
 		end
 
+
+feature {PS_EIFFELSTORE_EXPORT} -- Initialization
+
+
 	finish_initialization (disassembler:PS_OBJECT_DISASSEMBLER)
+		-- Initialize all attributes or collection items of `Current'
 		deferred
 		end
 
+
+
 	initialize (a_level:INTEGER; operation:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
+		-- Initialize `Current' and its whole object graph.
 		local
 			new_mode: BOOLEAN
 		do
 			if not is_initialized and operation /= operation.no_operation then
 
+				-- The following condition only holds when a new object was found during update, or a persistent one during insert.
+				-- Then the operation will be switched, but the disassembler doesn't know that yet.
 				if a_level = 0 and root.dependencies.first /= Current then
+					-- Inform the disassembler about he new operation
 					disassembler.set_operation (operation)
 					new_mode:=True
 				end
 
 
-				if  disassembler.is_level_condition_fulfilled (a_level) and operation /= operation.no_operation then
-
+				if  disassembler.is_level_condition_fulfilled (a_level) then
+					
+					-- First finish initializing `Current'
 					is_initialized:= True
 					level:= a_level
 
-					check disassembler.active_operation = operation end
+					check correct_operation: disassembler.active_operation = operation end
+
+					-- Now initialize all attributes or collection items
 					finish_initialization (disassembler)
 				end
 
+				-- We need to reset the operation if we changed it previously
 				if new_mode then
 					disassembler.cancel_operation
 				end
 			end
 			is_initialized:= True
 		end
+
+
+
+feature {NONE} -- Implementation
+
+	internal_object_id: detachable like object_id
+		-- A little helper to circumvent Void safety		
+
 
 end

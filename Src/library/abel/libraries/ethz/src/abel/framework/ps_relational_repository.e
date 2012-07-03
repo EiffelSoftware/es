@@ -57,33 +57,42 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 
 	insert (object: ANY; transaction: PS_TRANSACTION)
 			-- Insert `object' within `transaction' into `Current'
+		local
+			operations: LIST[PS_OBJECT_GRAPH_PART]
 		do
 			id_manager.register_transaction (transaction)
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).insert, agent id_manager.is_identified (?, transaction))
-			identify_all (id_manager, transaction, disassembler.object_graph)
-			executor.perform_operations (planner.generate_plan (disassembler.object_graph), transaction)
+			operations:= planner.generate_plan (disassembler.object_graph)
+			across operations as op loop identify_all (id_manager, transaction, op.item) end
+			executor.perform_operations (operations, transaction)
 		rescue
 			default_transactional_rescue (transaction)
 		end
 
 	update (object: ANY; transaction: PS_TRANSACTION)
 			-- Update `object' within `transaction'
+		local
+			operations: LIST[PS_OBJECT_GRAPH_PART]
 		do
 			id_manager.register_transaction (transaction)
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).update, agent id_manager.is_identified (?, transaction))
-			identify_all (id_manager, transaction, disassembler.object_graph)
-			executor.perform_operations (planner.generate_plan (disassembler.object_graph), transaction)
+			operations:= planner.generate_plan (disassembler.object_graph)
+			across operations as op loop identify_all (id_manager, transaction, op.item) end
+			executor.perform_operations (operations, transaction)
 		rescue
 			default_transactional_rescue (transaction)
 		end
 
 	delete (object: ANY; transaction: PS_TRANSACTION)
 			-- Delete `object' within `transaction' from `Current'
+		local
+			operations: LIST[PS_OBJECT_GRAPH_PART]
 		do
 			id_manager.register_transaction (transaction)
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).delete, agent id_manager.is_identified (?, transaction))
-			identify_all (id_manager, transaction, disassembler.object_graph)
-			executor.perform_operations (planner.generate_plan (disassembler.object_graph), transaction)
+			operations:= planner.generate_plan (disassembler.object_graph)
+			across operations as op loop identify_all (id_manager, transaction, op.item) end
+			executor.perform_operations (operations, transaction)
 			fixme ("TODO: fix this for depth > 1")
 			id_manager.delete_identification (object, transaction)
 		rescue
@@ -190,7 +199,7 @@ feature {NONE} -- obsolete
 		do
 			fixme ("move to executor as soon as the planner doesn't need it any more")
 			across object_graph as obj loop
-				if attached {PS_COMPLEX_ATTRIBUTE_PART} obj.item as complex then
+				if attached {PS_COMPLEX_PART} obj.item as complex then
 					if not identifier_manager.is_identified (complex.represented_object, transaction) then
 						identifier_manager.identify (complex.represented_object, transaction)
 					end

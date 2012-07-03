@@ -8,52 +8,14 @@ class
 	PS_IGNORE_PART
 
 inherit
-	PS_OBJECT_GRAPH_PART
+	PS_SIMPLE_PART
 
-create make
+create
+	default_make
 
-feature
-
-	root: PS_OBJECT_GRAPH_ROOT
-		-- The root of the object graph
-
-	represented_object:ANY
-		do
-			check not_implemented:False end
-			Result:= Current
-		end
-
+feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
 	is_representing_object:BOOLEAN = False
 		-- Is `Current' representing an existing object?
-
-
-	dependencies:LINKED_LIST[PS_OBJECT_GRAPH_PART]
-
-
-	make (a_root: PS_OBJECT_GRAPH_ROOT)
-		do
-			create dependencies.make
-			create write_mode
-			write_mode:=write_mode.No_operation
-			root:= a_root
-		end
-
-
-	is_basic_attribute:BOOLEAN = False
-
-	to_string:STRING
-		do
-			Result:= "IGNORE reference"+ "%N"
-		end
-
-	initialize (a_level:INTEGER; a_mode:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
-		do
-			check implementation_error:False end
-		end
-feature {NONE} -- Implementation
-
-	internal_metadata: detachable like metadata
-		-- A little helper to circumvent void safety
 
 end

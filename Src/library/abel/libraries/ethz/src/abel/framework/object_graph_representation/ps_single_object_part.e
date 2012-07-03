@@ -17,7 +17,7 @@ class
 	PS_SINGLE_OBJECT_PART
 
 inherit
-	PS_COMPLEX_ATTRIBUTE_PART
+	PS_COMPLEX_PART
 
 inherit{NONE}
 	REFACTORING_HELPER
@@ -32,6 +32,8 @@ feature {PS_EIFFELSTORE_EXPORT}
 	attribute_values: HASH_TABLE [PS_OBJECT_GRAPH_PART, STRING]
 
 	get_value (attr:STRING):PS_OBJECT_GRAPH_PART
+		require
+			has_attribute: attributes.has (attr)
 		do
 			Result:= attach (attribute_values[attr])
 		end
@@ -71,6 +73,28 @@ feature {PS_EIFFELSTORE_EXPORT}
 			end
 		end
 
+	break_dependency (dependency: PS_OBJECT_GRAPH_PART)
+		-- Break the dependency `dependency'
+		local
+			new_update:PS_SINGLE_OBJECT_PART
+			attr:STRING
+		do
+			create new_update.make_new (represented_object, metadata, is_persistent, root)
+			new_update.internal_initialize (write_mode.update)
+			attr:= get_attribute_name (dependency)
+			new_update.add_attribute (attr, dependency)
+			root.add_dependency (new_update)
+
+			attribute_values.remove (attr)
+			attributes.prune_all (attr)
+		end
+
+	internal_initialize (operation:PS_WRITE_OPERATION)
+		do
+			write_mode:= operation
+			is_initialized:=True
+		end
+
 	get_attribute_name (value: PS_OBJECT_GRAPH_PART):STRING
 		-- Get the attribute name of a dependeny
 		local
@@ -102,6 +126,10 @@ feature {PS_EIFFELSTORE_EXPORT}
 
 
 feature {NONE} -- Initialization
+
+	is_collection:BOOLEAN
+		-- Is `Current' an instance of PS_COLLECTION_PART?
+
 
 	make
 		do
@@ -160,36 +188,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Initialization
 			end
 		end
 
-comment :STRING = "[
-
-	initialize (a_level:INTEGER; operation:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
-		local
-			new_mode: BOOLEAN
-		do
-			if not is_initialized then
-
-				if a_level = 0 and root.dependencies.first /= Current then
-					disassembler.register_new_operation (operation)
-					new_mode:=True
-				end
-
-
-				if  disassembler.check_level_condition (a_level) and operation /= operation.no_operation then
-
-					is_initialized:= True
-					level:= a_level
-
-					check disassembler.active_operation = operation end
-					finish_initialization (disassembler)
-				end
-
-				if new_mode then
-					disassembler.unregister_operation
-				end
-			end
-			is_initialized:= True
-		end
-]"
 	hashtable_size:INTEGER = 20
 
 

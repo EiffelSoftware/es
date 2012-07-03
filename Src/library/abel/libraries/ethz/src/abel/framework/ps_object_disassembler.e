@@ -161,7 +161,7 @@ feature {PS_OBJECT_GRAPH_PART} -- Disassembly: Factory methods
 								if settings.throw_error_for_unknown_objects then
 									has_error:= True
 								end
-								create {PS_NULL_REFERENCE_PART} Result.make (object_graph)
+								create {PS_NULL_REFERENCE_PART} Result.default_make (object_graph)
 
 							else -- create the single object part
 								create {PS_SINGLE_OBJECT_PART} Result.make_new (object,metadata_factory.create_metadata_from_object (object), is_next_persistent (object), object_graph)
@@ -177,7 +177,7 @@ feature {PS_OBJECT_GRAPH_PART} -- Disassembly: Factory methods
 
 			else
 				-- We found a Void reference - Ignore it.
-				create {PS_IGNORE_PART} Result.make (object_graph)
+				create {PS_IGNORE_PART} Result.default_make (object_graph)
 			end
 		end
 
@@ -194,7 +194,7 @@ feature {NONE} -- Internal: Status report
 		-- Is `next_object' persistent, i.e. does it have an entry in the database?
 		do
 			if not is_basic_type (next_object) then
-				Result:= is_persistent_query.item ([next_object])
+				Result:= persistence_query.item ([next_object])
 			else
 				Result:= False
 			end
@@ -283,7 +283,7 @@ feature {NONE} -- Implementation
 	object_graph_part_cache: LINKED_LIST[PS_OBJECT_GRAPH_PART]
 		-- A cache to avoid creating an object graph part twice
 
-	is_persistent_query: PREDICATE[ANY, TUPLE[ANY]]
+	persistence_query: PREDICATE[ANY, TUPLE[ANY]]
 		-- An agent to the OBJECT_IDENTIFICATION_MANAGER.is_persistent feature (if correctly initialized)
 
 	operation_stack: LINKED_STACK[PS_WRITE_OPERATION]
@@ -302,7 +302,7 @@ feature{NONE} -- Initialization
 			create object_graph_part_cache.make
 			create object_graph.make
 			create operation_stack.make
-			is_persistent_query:= agent (something:ANY):BOOLEAN do Result:=False end
+			persistence_query:= agent (something:ANY):BOOLEAN do Result:=False end
 		end
 
 	prepare (operation:PS_WRITE_OPERATION; persistence_query_agent:PREDICATE[ANY, TUPLE[ANY]])
@@ -311,7 +311,7 @@ feature{NONE} -- Initialization
 			object_graph_part_cache.wipe_out
 			create object_graph.make
 			operation_stack.wipe_out
-			is_persistent_query:= persistence_query_agent
+			persistence_query:= persistence_query_agent
 			has_error:= False
 
 			operation_stack.extend (operation)

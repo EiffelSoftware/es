@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PS_OBJECT_GRAPH_ROOT}."
-	author: ""
+	description: "Represents the root of an object graph."
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -9,46 +9,49 @@ class
 
 inherit
 	PS_OBJECT_GRAPH_PART
-		redefine
-			root
-		end
 
 create
 	make
 
-feature {NONE} -- Initialization
-
-	make
-			-- Initialization for `Current'.
-		do
-			create dependencies.make
-			create write_mode
-			write_mode:= write_mode.no_operation
-		end
-
-	initialize (a_level:INTEGER; a_mode:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
-		do
-			check implementation_error:False end
-		end
-
 feature {PS_EIFFELSTORE_EXPORT} -- Access
 
-	root:PS_OBJECT_GRAPH_ROOT
-		once
+	dependencies: LINKED_LIST[PS_OBJECT_GRAPH_PART]
+		-- All parts on which `Current' depends on.
+
+	root: PS_OBJECT_GRAPH_ROOT
+		-- The root of the object graph
+		do
 			Result := Current
 		end
 
 	represented_object:ANY
-		do
-			check not_implemented:False end
-			Result:= Current
-		end
+		-- The object which gets represented by `Current'
+
+
+	object_identifier: INTEGER = 0
+		-- The object identifier of `Current'. Returns 0 if `Current' is no complex part.
+
+
+feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
 	is_representing_object:BOOLEAN = False
 		-- Is `Current' representing an existing object?
 
-	dependencies: LINKED_LIST[PS_OBJECT_GRAPH_PART]
-		-- All (immediate) parts on which `Current' is dependent on.
+	is_collection:BOOLEAN = False
+		-- Is `Current' an instance of PS_COLLECTION_PART?
+
+	is_complex_attribute:BOOLEAN = False
+		-- Is `Current' an instance of PS_COMPLEX_ATTRIBUTE_PART?
+
+
+feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
+
+
+	break_dependency (dependency: PS_OBJECT_GRAPH_PART)
+		-- Break the dependency `dependency'
+		do
+			dependencies.prune_all (dependency)
+		end
 
 	add_dependency (obj: PS_OBJECT_GRAPH_PART)
 		-- Add `obj' to the dependency list
@@ -56,15 +59,26 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access
 			dependencies.extend (obj)
 		end
 
+feature {NONE} -- Initialization
 
-	is_basic_attribute:BOOLEAN = False
-		-- Is `Current' an instance of PS_BASIC_ATTRIBUTE_PART?
+	make
+			-- Initialization for `Current'.
+		do
+			create dependencies.make
+			write_mode:= new_operation
+			create represented_object
+		end
 
+feature {PS_EIFFELSTORE_EXPORT} -- Initialization
 
-	to_string:STRING = ""
-feature {NONE} -- Implementation
+	initialize (a_level:INTEGER; a_mode:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
+		-- Initialize `Current' and its whole object graph.
+		do
+			if not is_initialized then
+				is_initialized:= True
+				level:= a_level
+			end
+		end
 
-	internal_metadata: detachable like metadata
-		-- A little helper to circumvent void safety
 
 end
