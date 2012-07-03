@@ -110,7 +110,6 @@ feature {NONE}
 			create ref_list.make
 			across query as cursor loop
 				ref_list.extend (cursor.item)
-print (cursor.item)
 			end
 
 			-- See if one result is equal

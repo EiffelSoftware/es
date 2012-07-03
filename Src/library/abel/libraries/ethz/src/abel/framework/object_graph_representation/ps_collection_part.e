@@ -8,6 +8,7 @@ deferred class
 	PS_COLLECTION_PART [COLLECTION_TYPE -> ITERABLE[detachable ANY]]
 inherit
 	PS_COMPLEX_ATTRIBUTE_PART
+	redefine is_collection end
 
 inherit{NONE}
 	REFACTORING_HELPER
@@ -108,55 +109,92 @@ feature {PS_COLLECTION_PART} -- Deletion dependency
 
 feature {PS_OBJECT_GRAPH_PART} -- Initialization
 
-	initialize (a_level:INTEGER; a_mode:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
+	handle_operation (operation:PS_WRITE_OPERATION)
+		-- Set the write_mode to `operation'. If `operation' is an update operation, create a new deletion dependency.
 		local
 			del_dependency: like Current
-			cursor: ITERATION_CURSOR[detachable ANY]
-			next: PS_OBJECT_GRAPH_PART
 		do
-			if not is_initialized then
-				is_initialized:= True
-				level:= a_level
-				if a_mode = a_mode.update then
-					write_mode:= a_mode.insert
-					del_dependency:= clone_except_values
-					del_dependency.set_mode (write_mode.delete)
-					deletion_dependency_for_updates:= del_dependency
-				else
-	--				deletion_dependency_for_updates:= handler.create_object_graph_part (obj, owner, attr_name, a_mode.no_operation)
-					write_mode:= a_mode
-					print (write_mode.tagged_out)
-				end
-
-				check attached {COLLECTION_TYPE} represented_object as collection  then
-
-					from
-						cursor:= collection.new_cursor
-					until
-						cursor.after
-					loop
-						next:= disassembler.next_object_graph_part (cursor.item, Current, a_mode)
-						if attached {PS_IGNORE_PART} next then
-							create {PS_NULL_REFERENCE_PART} next.make
-						end
-						add_value (next)
-						cursor.forth
-					end
-
-				end
-
-				across values as val
-				loop
-					if attached val.item as coll_item then
-						coll_item.initialize (disassembler.next_level (a_level, is_persistent, True, coll_item.is_persistent), disassembler.next_operation (a_mode, a_level, is_persistent, coll_item.is_persistent), disassembler)
-					end
-				end
-
-				add_additional_information
-				fixme ("create all items, then initialize all items")
+			if operation = operation.update then
+				write_mode:= operation.insert
+				del_dependency:= clone_except_values
+				del_dependency.set_mode (write_mode.delete)
+				deletion_dependency_for_updates:= del_dependency
+			else
+				write_mode:= operation
 			end
+		ensure
+			operation = operation.update implies attached deletion_dependency_for_updates and write_mode = write_mode.insert
+			operation /= operation.update implies not attached deletion_dependency_for_updates and write_mode = operation
 		end
 
+
+	finish_initialization (disassembler:PS_OBJECT_DISASSEMBLER)
+		local
+			cursor: ITERATION_CURSOR[detachable ANY]
+			next: PS_OBJECT_GRAPH_PART
+			operation:PS_WRITE_OPERATION
+		do
+			operation:= disassembler.active_operation
+			handle_operation (operation)
+
+			check attached {COLLECTION_TYPE} represented_object as collection  then
+
+				from
+					cursor:= collection.new_cursor
+				until
+					cursor.after
+				loop
+					next:= disassembler.next_object_graph_part (cursor.item, Current, operation)
+					if attached {PS_IGNORE_PART} next then
+						create {PS_NULL_REFERENCE_PART} next.make (next.root)
+					end
+					add_value (next)
+					cursor.forth
+				end
+
+			end
+
+			across values as val
+			loop
+				if attached val.item as coll_item then
+					coll_item.initialize (disassembler.next_level (level, is_persistent, coll_item.is_collection, coll_item.is_persistent), disassembler.next_operation (level, is_persistent, coll_item.is_persistent), disassembler)
+				end
+			end
+
+			add_additional_information
+		end
+
+comment :STRING = "[
+	initialize (a_level:INTEGER; a_mode:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
+		local
+			new_mode:BOOLEAN
+		do
+			if not is_initialized then
+
+				if a_level = 0 and root.dependencies.first /= Current then
+					disassembler.register_new_operation (a_mode)
+					new_mode:=True
+				end
+
+
+				if  disassembler.check_level_condition (a_level) and a_mode /= a_mode.no_operation then
+					is_initialized:= True
+					level:= a_level
+
+					check disassembler.active_operation = a_mode end
+					finish_initialization (disassembler)
+
+				end
+
+				if new_mode then
+					disassembler.unregister_operation
+				end
+
+			end
+		end
+]"
+
+	is_collection:BOOLEAN = True
 
 	add_additional_information
 		deferred

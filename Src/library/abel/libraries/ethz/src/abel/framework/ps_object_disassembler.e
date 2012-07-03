@@ -1,5 +1,5 @@
 note
-	description: "This class follows the object graph and collects information necessary to perform write operations."
+	description: "Converts an object into an web of OBJECT_GRAPH_PARTs."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -13,416 +13,318 @@ inherit
 inherit {NONE}
 	REFACTORING_HELPER
 
-create make
+create
+	make
 
-feature {PS_EIFFELSTORE_EXPORT}
+feature {PS_EIFFELSTORE_EXPORT} -- Access
 
--- Todo: The algorithm is currently broken: an object that has already been inserted with depth X won't change its depth if the disassembler finds it again at a later stage with depth >X
-
-
-	execute_disassembly (an_object:ANY; a_mode:PS_WRITE_OPERATION; transaction: PS_TRANSACTION)
-	do
-		internal_operation_store.wipe_out
-		int_transaction:= transaction
-		internal_store.wipe_out
---		disassembled_object:= disassemble (an_object, current_global_depth (a_mode), a_mode, create {PS_IGNORE_PART}.make, "root")
-		disassembled_object := Current.next_object_graph_part (an_object, create {PS_IGNORE_PART}.make, a_mode)
-		disassembled_object.initialize (0, a_mode, Current)
-		across disassembled_object as obj loop
-			if attached {PS_COMPLEX_ATTRIBUTE_PART} obj.item as complex then
-				if --not obj.item.is_persistent and
-				not id_manager.is_identified (complex.represented_object, transaction) then
-					id_manager.identify (complex.represented_object, transaction)
-				end
-				complex.set_object_id (id_manager.get_identifier_wrapper (complex.represented_object, transaction))
-			end
-		end
-
-
-	end
-
-	disassembled_object: PS_OBJECT_GRAPH_PART
+	object_graph:PS_OBJECT_GRAPH_ROOT
+		-- The successfully disassembled object graph
 		require
 			no_error: not has_error
 		attribute
 		end
 
+feature {PS_EIFFELSTORE_EXPORT} -- Status repurt
 
 	has_error: BOOLEAN
+		-- Has there been an error in the last operation?
 
-	current_transaction: PS_TRANSACTION
+
+feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
+
+	execute_disassembly (object:ANY; operation:PS_WRITE_OPERATION; persistence_query_agent: PREDICATE[ANY, TUPLE[ANY]])
+		-- Take `object' apart and store the result in `object_graph'.
 		do
-			Result:= attach (int_transaction)
-		end
+			prepare (operation, persistence_query_agent)
 
-	int_transaction: detachable PS_TRANSACTION
-	--counter: INTEGER
-
-	disassemble (an_object:ANY; depth: INTEGER; mode:PS_WRITE_OPERATION; reference_owner:PS_OBJECT_GRAPH_PART; ref_attribute_name:STRING): PS_OBJECT_GRAPH_PART
-		-- Disassembles the object, returning a graph of database operations.
-		local
-			object_id: PS_OBJECT_IDENTIFIER_WRAPPER
-			collection_found:BOOLEAN
-			object_has_id:BOOLEAN
-		do
-
-			fixme ( "[
-				This function is really ugly - however, it works at the moment.
-				
-				At some time one could refactor it, like putting the logic to calculate the next write_mode, or the next graph part, into their own functions.
-				
-				Also, it is essential that the disassembler does not identify unidentified objects by itself. 
-				This should be done by the WRITE_EXECUTOR.
-				If that is done, we can implement the PS_RELATIONAL_REPOSITORY.can_handle feature
-
-
-			]")
-
-			object_has_id:= id_manager.is_identified (an_object, current_transaction)
-
-			if id_manager.is_identified (an_object, current_transaction) and then internal_operation_store.has (id_manager.get_identifier_wrapper (an_object, current_transaction).object_identifier) then
-				Result:= attach (internal_operation_store[id_manager.get_identifier_wrapper (an_object, current_transaction).object_identifier])
-			else
-
-			if depth=0 and current_global_depth(mode) /= settings.object_graph_depth_infinite then
-				if object_has_id then
-					-- see if we deal with a collection - those still have to be updated
-					if collection_handlers.there_exists (agent {PS_COLLECTION_HANDLER[ITERABLE[ANY]]}.can_handle (an_object)) then
-						Result:=perform_disassemble (an_object, depth, mode, reference_owner, ref_attribute_name)
-					else -- just return the correct poid
-						create {PS_SINGLE_OBJECT_PART} Result.make_with_mode ( id_manager.get_identifier_wrapper(an_object, current_transaction), mode.No_operation)
-					end
-				elseif settings.is_insert_during_update_enabled then
-					-- call again disassemble on the same object with different parameters
-					Result:=disassemble (an_object, settings.custom_insert_depth_during_update, mode.Insert, reference_owner, ref_attribute_name)
-				else
-					create {PS_IGNORE_PART} Result.make
-				end
-
-			else --if depth > 0
-
-				if mode = mode.Insert then
-					if object_has_id then
-						-- known object found - decide if we need to update or just set the correct poid.
-						if settings.is_update_during_insert_enabled then
-							Result:= disassemble (an_object, settings.custom_update_depth_during_insert, mode.Update, reference_owner, ref_attribute_name)
-						else
-		--					object_id:= id_manager.get_identifier_wrapper (an_object)
-		--					if internal_operation_store.has (object_id.object_identifier) then
-								--counter:= counter + 1
-								--check counter<2 end
-		--						Result:= attach (internal_operation_store[object_id.object_identifier])
-								--print ("already known object found")
-		--					else
-								--check false end
-								create {PS_SINGLE_OBJECT_PART} Result.make_with_mode ( id_manager.get_identifier_wrapper(an_object, current_transaction), mode.No_operation)
-		--					end
-
-						end
-					else
-						id_manager.identify (an_object, current_transaction)
-						Result:= perform_disassemble (an_object, depth, mode, reference_owner, ref_attribute_name)
-					end
-				elseif mode = mode.Update then
-					if object_has_id then
-						Result:= perform_disassemble (an_object, depth, mode, reference_owner, ref_attribute_name)
-						--print ("blub")
-					else
-						-- unknown object found - decide if we insert it or not
-						if settings.is_insert_during_update_enabled then
-							Result:= disassemble (an_object, settings.custom_insert_depth_during_update, mode.Insert, reference_owner, ref_attribute_name)
-						else
-					--		fixme ("decide on behaviour if no inserts should happen during update - throw exception or set reference to 0")
-							if settings.throw_error_for_unknown_objects then
-								create {PS_IGNORE_PART} Result.make
-								has_error:=True
-							else
-								create {PS_NULL_REFERENCE_PART} Result.make
-							end
-						end
-					end
-					--check false end
-				elseif mode = mode.Delete then
-					if object_has_id then
-						Result:= perform_disassemble (an_object, depth, mode, reference_owner, ref_attribute_name)
-					else
-						has_error:=True
-						fixme ("Throw error - Unknown object for deletion")
-						create {PS_IGNORE_PART} Result.make
-					end
-				else
-					has_error:=True
-					fixme ("Throw error - Implementation error in function disassemble")
-					create {PS_IGNORE_PART} Result.make
-				end
-			end
-			end
-		end
-
-		perform_disassemble (an_object:ANY; depth: INTEGER; mode:PS_WRITE_OPERATION; reference_owner:PS_OBJECT_GRAPH_PART; ref_attribute_name:STRING): PS_OBJECT_GRAPH_PART
-			-- Checks if the operation for the object already exists and if not, issues the command to the plain_object feature or a collection handler.
-			require
-				object_known: id_manager.is_identified (an_object, current_transaction)
-			local
-				object_id: PS_OBJECT_IDENTIFIER_WRAPPER
-				collection_found:BOOLEAN
-				void_safety_default: PS_IGNORE_PART
-			do
-				create void_safety_default.make -- Void safety...
-				Result:=void_safety_default
-				object_id:= id_manager.get_identifier_wrapper (an_object, current_transaction)
-
-				-- ask the internal store if the object is already disassembled (infinite recurion prevention)
-					-- if yes, just return that object
-				if internal_operation_store.has (object_id.object_identifier) then
-					check attached internal_operation_store.item (object_id.object_identifier) as res then
-						Result:= res
-					end
-				--	print ("blab")
-				else
-					-- ask all collection handlers if they can cope with the data structure
-					collection_found:=False
-					across collection_handlers as collection_cursor
-					loop
-						if collection_cursor.item.can_handle (an_object) then
-							-- if yes, give it to them,
-							Result:= collection_cursor.item.disassemble_collection (object_id, depth, mode, Current, reference_owner, ref_attribute_name)
-							collection_found:=True
-						end
-					end
-					-- else call disassemble_plain_object
-					if not collection_found then
-						Result:=disassemble_plain_object (object_id, depth, mode, reference_owner, ref_attribute_name)
-					end
-				end
-
-				-- just a little check ensuring correctness (unfortunately not possible in postcondition)
-				check Result /= void_safety_default end
-
-			end
-
-		disassemble_plain_object (id: PS_OBJECT_IDENTIFIER_WRAPPER; depth: INTEGER; mode:PS_WRITE_OPERATION; reference_owner:PS_OBJECT_GRAPH_PART; ref_attribute_name:STRING): PS_SINGLE_OBJECT_PART
-				-- disassembles a normal object, and recursively calls disassemble on reference types.
-			local
-				reflection:INTERNAL
-				i:INTEGER
-				attr_name:STRING
-				ref_value:PS_OBJECT_GRAPH_PART
-				basic_attr:PS_BASIC_ATTRIBUTE_PART
-			do
-				--print ("plain object")
-				create Result.make_with_mode (id, mode)
-				create reflection
-				register_operation (Result, Result.object_id.object_identifier)
-
-				from i:=1
-				until i> reflection.field_count (id.item) or mode = mode.no_operation
-				loop
-					fixme ("Should this be an IF attached?")
-					attr_name:= reflection.field_name (i, id.item)
-					if attached reflection.field (i, id.item) as attr_value then
-						attr_name:= reflection.field_name (i, id.item)
-						if is_basic_type (attr_value) then
---							print ("basic attribute found: " + attr_name + "%N")
-							create basic_attr.make (attr_value, id_manager.metadata_manager.create_metadata_from_object (attr_value))
-							Result.add_attribute (attr_name, basic_attr)
-							--if attr_name.is_case_insensitive_equal ("char_32_max") then
-							--	print (attr_value.out)
-							--end
---							Result.basic_attributes.extend (attr_name)
---							Result.basic_attribute_values.extend (attr_value, attr_name)
-
-						else
-							--check false end
-							-- if (depth > 1 or infinite) or (mode = Update and followRefs) then handle reference types:
---							print ("complex attribute found: "+attr_name +"%N")
-
-							if depth > 1 or current_global_depth(mode) = settings.object_graph_depth_infinite or (depth=1 and settings.update_last_references and mode=mode.Update) then
-								ref_value:= disassemble (attr_value, depth-1, mode, Result, attr_name)
-								Result.add_attribute (attr_name, ref_value)
---								if not attached{PS_IGNORE_PART} ref_value then
---									Result.references.extend (attr_name)
---									Result.reference_values.extend (ref_value, attr_name)
---								end
-							end
-						end
-					else
---						print ("void field found")
-						--check false end
-					end
-					i:= i+1
-				end
-			end
-
-		is_basic_type (obj:ANY):BOOLEAN
-		do
-				fixme ("TODO")
-			Result:=attached{NUMERIC} obj or attached{BOOLEAN} obj or attached{CHARACTER_8} obj or attached{CHARACTER_32} obj or attached{READABLE_STRING_GENERAL} obj
-	--			or attached{SPECIAL[ANY]} obj
+			object_graph.add_dependency (next_object_graph_part (object, object_graph, operation))
+			object_graph.dependencies.first.initialize (0, operation, Current)
 		end
 
 
-		register_operation (an_operation:PS_OBJECT_GRAPH_PART; a_poid:INTEGER)
-			do
-				internal_operation_store.extend (an_operation, a_poid)
-			end
+feature {PS_OBJECT_GRAPH_PART} -- Disassembly: Access
 
-		current_global_depth (mode:PS_WRITE_OPERATION):INTEGER
-			do
-				fixme ("support custom insert/update depths")
-				if mode = mode.Insert then
-					Result:=settings.insert_depth
-				elseif mode = mode.update then
-					Result := settings.update_depth
-				elseif mode = mode.delete then
-					Result:= settings.deletion_depth
-				else
-					Result := 1
-				end
-			end
+	active_operation: PS_WRITE_OPERATION
+		-- The currently active operation
+		do
+			Result:= operation_stack.item
+		end
 
 
-
-		internal_operation_store: HASH_TABLE[PS_OBJECT_GRAPH_PART, INTEGER]
-			-- translates POIDs to operations.
+feature {PS_OBJECT_GRAPH_PART} -- Disassembly: Status report
 
 
-		id_manager: PS_OBJECT_IDENTIFICATION_MANAGER
+	is_level_condition_fulfilled (level:INTEGER):BOOLEAN
+		-- Is `level' still smaller than the depth parameter of `active_operation'?
+		do
+			Result := current_depth = settings.object_graph_depth_infinite or level < current_depth
+		end
 
---			collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER[ITERABLE[ANY]]]
-		settings: PS_OBJECT_GRAPH_SETTINGS
 
-		collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]]]
+feature {PS_OBJECT_GRAPH_PART} -- Disassembly: Basic operations
 
-		add_handler (a_handler: PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]])
-			do
-				collection_handlers.extend (a_handler)
-			end
 
-feature {PS_EIFFELSTORE_EXPORT} -- Helper functions
+	set_operation (operation:PS_WRITE_OPERATION)
+		-- Put `active_operation' to `operation'
+		require
+			not_no_operation: operation /= operation.no_operation
+		do
+			operation_stack.put (operation)
+		ensure
+			operation_set: operation = active_operation
+		end
 
-	next_level (current_level:INTEGER; current_persistent:BOOLEAN; current_is_collection:BOOLEAN; next_persistent:BOOLEAN):INTEGER
+	cancel_operation
+		-- Revert the last `set_operation' command
+		do
+			operation_stack.remove
+		end
+
+feature {PS_OBJECT_GRAPH_PART} -- Disassembly: Factory methods
+
+	next_level (current_level:INTEGER; current_persistent:BOOLEAN; next_is_collection:BOOLEAN; next_persistent:BOOLEAN):INTEGER
+		-- Calculate the level of the next object in the object graph
 		do
 			if next_persistent /= current_persistent then
+				-- We've stepped over a boundary - the next object part will either result in a no-operation
+				-- or it will be an insert after update (or vice versa). In any case, the Result is 0.
 				Result:= 0
 			else
-				if current_is_collection then
+				if next_is_collection then
+					-- Don't increment the level for collections
 					Result:= current_level
 				else
+					-- This should be the normal case: an incremented level for a normal reference between two objects.
 					Result:= current_level + 1
 				end
 			end
 		end
 
-	next_operation (current_operation: PS_WRITE_OPERATION; current_level:INTEGER; current_persistent:BOOLEAN; next_persistent:BOOLEAN):PS_WRITE_OPERATION
+	next_operation (current_level:INTEGER; current_persistent:BOOLEAN; next_persistent:BOOLEAN):PS_WRITE_OPERATION
+		-- Calculate the operation for the next object in the object graph
+		require
+			not_no_operation: active_operation /= active_operation.no_operation
 		do
-			Result:= current_operation.no_operation
+			if is_level_condition_fulfilled (current_level) then
+				-- The level is still valid, so we should handle the next object.
 
-			if current_level < current_global_depth (current_operation) or current_global_depth(current_operation) = settings.object_graph_depth_infinite then
 				if current_persistent = next_persistent then
-					Result:= current_operation
-				elseif current_operation = current_operation.update and not next_persistent and settings.is_insert_during_update_enabled then
-					Result:= current_operation.insert
-				elseif current_operation = current_operation.insert and next_persistent and settings.is_update_during_insert_enabled then
-					Result:= current_operation.update
+					-- The normal case: don't change the mode if either both objects are persistent or both objects are new to ABEL.
+					Result:= active_operation
+
+				elseif active_operation = active_operation.update and not next_persistent and settings.is_insert_during_update_enabled then
+					-- This is a case where an insert for a new object during found an update should happen
+					Result:= active_operation.insert
+
+				elseif active_operation = active_operation.insert and next_persistent and settings.is_update_during_insert_enabled then
+					-- This is the case if an update for an already persistent object found during an insert should happen
+					Result:= active_operation.update
+
+				else
+					-- E.g. for a new object found during a delete, or when updates during insert are disabled.
+					Result:= active_operation.no_operation
+
 				end
+			else
+				-- The level has become too big, so the next object should not be written any more
+				Result:= active_operation.no_operation
 			end
 		end
 
+
+
+	next_object_graph_part (next_object:detachable ANY; current_part:PS_OBJECT_GRAPH_PART; current_operation:PS_WRITE_OPERATION):PS_OBJECT_GRAPH_PART
+		-- Create the next object graph part
+		require
+			current_operation = active_operation
+			not_no_operation: active_operation /= active_operation.no_operation
+		do
+
+			if attached next_object as object  then
+
+				if is_basic_type (object) then
+					-- Create a basic attribute part
+					create {PS_BASIC_ATTRIBUTE_PART} Result.make (object, metadata_factory.create_metadata_from_object (object), object_graph)
+				else
+					-- First check the cache to prevent infinite recursion
+					if is_cached (object) then
+						Result:= cached_part (object)
+					else
+						-- See if it is a collection
+						if attached search_handler (next_object) as handler then
+							Result:= handler.create_part  (next_object, metadata_factory.create_metadata_from_object (next_object), is_next_persistent(next_object), current_part)
+
+						else
+							if current_operation = current_operation.update and not is_next_persistent (next_object) and not settings.is_insert_during_update_enabled then
+								-- Handle special case: An new object was found during update and the automatic insert is disabled
+								if settings.throw_error_for_unknown_objects then
+									has_error:= True
+								end
+								create {PS_NULL_REFERENCE_PART} Result.make (object_graph)
+
+							else -- create the single object part
+								create {PS_SINGLE_OBJECT_PART} Result.make_new (object,metadata_factory.create_metadata_from_object (object), is_next_persistent (object), object_graph)
+							end
+						end
+
+						-- Cache the result
+						if Result.is_complex_attribute then
+							cache (Result)
+						end
+					end
+				end
+
+			else
+				-- We found a Void reference - Ignore it.
+				create {PS_IGNORE_PART} Result.make (object_graph)
+			end
+		end
+
+
+feature {NONE} -- Internal: Status report
+
+	is_cached (object:ANY):BOOLEAN
+		-- Does `object' have an object graph part in the cache?
+		do
+			Result := across object_graph_part_cache as cursor some cursor.item.represented_object = object end
+		end
+
 	is_next_persistent (next_object:ANY):BOOLEAN
+		-- Is `next_object' persistent, i.e. does it have an entry in the database?
 		do
 			if not is_basic_type (next_object) then
-				Result:= id_manager.is_identified (next_object, current_transaction)
+				Result:= is_persistent_query.item ([next_object])
 			else
 				Result:= False
 			end
 		end
 
-	next_object_graph_part (next_object:detachable ANY; current_part:PS_OBJECT_GRAPH_PART; current_operation:PS_WRITE_OPERATION):PS_OBJECT_GRAPH_PART
-
+	is_basic_type (object:ANY):BOOLEAN
+		-- Is `object' of a basic type?
 		do
-			if attached next_object as object  then
-				if is_basic_type (object) then
-					create {PS_BASIC_ATTRIBUTE_PART} Result.make (object, id_manager.metadata_manager.create_metadata_from_object (object))
-				else
-
-					if is_in_store (object) then
-						Result:= get_from_store (object)
-					else
-						if across collection_handlers as handler some handler.item.can_handle (object) end then
-							Result:= create_collection_part (object, current_part, current_operation)
-						else
-							if current_operation = current_operation.update and not is_next_persistent (next_object) and not settings.is_insert_during_update_enabled then
-								if settings.throw_error_for_unknown_objects then
-									has_error:= True
-								end
-								create {PS_NULL_REFERENCE_PART} Result.make
-							else
-								create {PS_SINGLE_OBJECT_PART} Result.make_new (object,id_manager.metadata_manager.create_metadata_from_object (object), is_next_persistent (object))
-							end
-						end
-						store (Result)
-					end
-				end
-
-			else
-				create {PS_IGNORE_PART} Result.make
-			end
+			Result:=attached{NUMERIC} object or attached{BOOLEAN} object or attached{CHARACTER_8} object or attached{CHARACTER_32} object or attached{READABLE_STRING_GENERAL} object
 		end
 
-	create_collection_part (next_object:ANY; current_part:PS_OBJECT_GRAPH_PART; current_operation:PS_WRITE_OPERATION):PS_OBJECT_GRAPH_PART
-		do
-			create {PS_IGNORE_PART} Result.make
 
+feature {NONE} -- Internal: Access
+
+	settings: PS_OBJECT_GRAPH_SETTINGS
+		-- The current object graph settings
+
+	search_handler (object:ANY): detachable PS_COLLECTION_HANDLER [ITERABLE[detachable ANY]]
+		-- Search for a collection handler for `object'. Return Void if none present.
+		do
 			across collection_handlers as cursor loop
-				if cursor.item.can_handle (next_object) then
-					Result:= cursor.item.create_part (next_object, id_manager.metadata_manager.create_metadata_from_object (next_object), is_next_persistent(next_object), current_part)
-				end
-			end
-
-		end
-
-
-feature {NONE} -- Bookkeeping
-
-	internal_store: LINKED_LIST[PS_OBJECT_GRAPH_PART]
-
-	is_in_store (an_object:ANY):BOOLEAN
-		do
-			Result := across internal_store as cursor some cursor.item.represented_object = an_object end
-		end
-
-	store (a_part: PS_OBJECT_GRAPH_PART)
-		require
-			a_part.is_representing_object and not a_part.is_basic_attribute
-		do
-			internal_store.extend (a_part)
-		end
-
-	get_from_store (object:ANY):PS_OBJECT_GRAPH_PART
-		require
-			is_in_store (object)
-		do
-			Result := internal_store.at (1)
-			across internal_store as cursor loop
-				if cursor.item.represented_object = object then
+				if cursor.item.can_handle (object) then
 					Result:= cursor.item
 				end
 			end
 		end
 
+
+	collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]]]
+		-- The registered collection handlers
+
+	metadata_factory: PS_METADATA_FACTORY
+		-- A factory for PS_TYPE_METADATA
+
+	cached_part (object:ANY):PS_OBJECT_GRAPH_PART
+		-- Get the cached object graph part for `object'
+		require
+			cached: is_cached (object)
+		do
+			Result := object_graph -- Void safety
+			across object_graph_part_cache as cursor loop
+				if cursor.item.represented_object = object then
+					Result:= cursor.item
+				end
+			end
+		ensure
+			not_root: Result /= object_graph
+			correct_part: Result.represented_object = object
+		end
+
+	current_depth:INTEGER
+		-- The depth parameter of the currently active operation
+		do
+			if operation_stack.item = operation_stack.item.insert then
+				if operation_stack.count > 1 then
+					Result:= settings.custom_insert_depth_during_update
+				else
+					Result:= settings.insert_depth
+				end
+			elseif operation_stack.item = operation_stack.item.update then
+				if operation_stack.count > 1 then
+					Result:= settings.custom_update_depth_during_insert
+				else
+					Result:= settings.update_depth
+				end
+			else
+				Result:= settings.deletion_depth
+			end
+		end
+
+feature {NONE} -- Internal: Basic operations
+
+	cache (part: PS_OBJECT_GRAPH_PART)
+		-- Cache the object graph part `part'
+		require
+			complex_attribute: part.is_complex_attribute
+		do
+			object_graph_part_cache.extend (part)
+		ensure
+			cached: is_cached (part.represented_object) and cached_part (part.represented_object) = part
+		end
+
+
+feature {NONE} -- Implementation
+
+	object_graph_part_cache: LINKED_LIST[PS_OBJECT_GRAPH_PART]
+		-- A cache to avoid creating an object graph part twice
+
+	is_persistent_query: PREDICATE[ANY, TUPLE[ANY]]
+		-- An agent to the OBJECT_IDENTIFICATION_MANAGER.is_persistent feature (if correctly initialized)
+
+	operation_stack: LINKED_STACK[PS_WRITE_OPERATION]
+		-- A stack to keep track of the active and previous operations
+
 feature{NONE} -- Initialization
 
-		make (an_id_manager: PS_OBJECT_IDENTIFICATION_MANAGER; graph_settings: PS_OBJECT_GRAPH_SETTINGS)
-			do
-				create internal_operation_store.make (100)
-				create {PS_IGNORE_PART} disassembled_object.make
-				id_manager:= an_id_manager
-				create collection_handlers.make
-				settings:= graph_settings
-				create internal_store.make
-			end
+	make (a_factory: PS_METADATA_FACTORY; graph_settings: PS_OBJECT_GRAPH_SETTINGS)
+		-- Initialize `Current'
+		do
+			metadata_factory:= a_factory
+			settings:= graph_settings
+			create collection_handlers.make
 
+			-- Add some void safety defaults for the attributes specific to a single disassembly run.
+			create object_graph_part_cache.make
+			create object_graph.make
+			create operation_stack.make
+			is_persistent_query:= agent (something:ANY):BOOLEAN do Result:=False end
+		end
 
+	prepare (operation:PS_WRITE_OPERATION; persistence_query_agent:PREDICATE[ANY, TUPLE[ANY]])
+		-- Prepare a disassemble for an object
+		do
+			object_graph_part_cache.wipe_out
+			create object_graph.make
+			operation_stack.wipe_out
+			is_persistent_query:= persistence_query_agent
+			has_error:= False
+
+			operation_stack.extend (operation)
+		end
+
+feature {PS_EIFFELSTORE_EXPORT} -- Initialization
+
+	add_handler (a_handler: PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]])
+		-- Add `a_handler' to the collection handlers
+		do
+			collection_handlers.extend (a_handler)
+		ensure
+			collection_handlers.has (a_handler)
+		end
 
 end

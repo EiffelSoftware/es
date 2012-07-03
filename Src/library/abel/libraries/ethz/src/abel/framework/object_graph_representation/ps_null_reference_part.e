@@ -16,6 +16,10 @@ inherit
 create make
 
 feature
+
+	root: PS_OBJECT_GRAPH_ROOT
+		-- The root of the object graph
+
 	is_representing_object:BOOLEAN = False
 		-- Is `Current' representing an existing object?
 
@@ -54,12 +58,13 @@ feature
 feature {NONE}
 
 
-	make
+	make (a_root: PS_OBJECT_GRAPH_ROOT)
 		-- initialize `Current'
 		do
 			create dependencies.make
 			create write_mode
 			write_mode:=write_mode.No_operation
+			root:= a_root
 		end
 
 feature {NONE} -- Implementation

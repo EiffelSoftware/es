@@ -10,7 +10,7 @@ inherit
 	PS_COLLECTION_PART [COLLECTION_TYPE]
 
 
-create make, make_new
+create make_new
 
 
 feature {PS_EIFFELSTORE_EXPORT}-- Relational storage mode data
@@ -46,7 +46,7 @@ feature {PS_EIFFELSTORE_EXPORT}-- Relational storage mode data
 	clone_except_values: PS_RELATIONAL_COLLECTION_PART [COLLECTION_TYPE]
 		do
 			--create Result.make (object_id, reference_owner, reference_owner_attribute_name, write_mode, handler)
-			create {PS_RELATIONAL_COLLECTION_PART [COLLECTION_TYPE]} Result.make_new (represented_object, metadata, reference_owner, handler)
+			create {PS_RELATIONAL_COLLECTION_PART [COLLECTION_TYPE]} Result.make_new (represented_object, metadata, reference_owner, handler, root)
 			Result.set_deletion_dependency (deletion_dependency_for_updates)
 		end
 
@@ -74,36 +74,7 @@ feature {PS_EIFFELSTORE_EXPORT}-- Relational storage mode data
 feature {NONE}
 
 
-
-	make (obj: PS_OBJECT_IDENTIFIER_WRAPPER; owner: PS_SINGLE_OBJECT_PART; attr_name: STRING ; a_mode:PS_WRITE_OPERATION; a_handler: PS_COLLECTION_HANDLER[COLLECTION_TYPE])
-		-- initialize `Current'
-		local
-			del_dependency: like Current
-		do
-			represented_object:= obj.item
-			internal_object_id:=obj
-			reference_owner:= owner
-			reference_owner_attribute_name:= attr_name
-			create values.make
-			handler:= a_handler
-
-			if a_mode = a_mode.update then
-				write_mode:= a_mode.insert
-				del_dependency:= clone_except_values
-				del_dependency.set_mode (write_mode.delete)
-				deletion_dependency_for_updates:= del_dependency
-			else
---				deletion_dependency_for_updates:= handler.create_object_graph_part (obj, owner, attr_name, a_mode.no_operation)
-				write_mode:= a_mode
-			end
-			internal_metadata:= obj.metadata
-
-		ensure
-			no_update_mode: write_mode /= write_mode.update
-		end
-
-
-	make_new (obj:ANY; meta:PS_TYPE_METADATA; owner:PS_SINGLE_OBJECT_PART; a_handler:PS_COLLECTION_HANDLER[COLLECTION_TYPE])
+	make_new (obj:ANY; meta:PS_TYPE_METADATA; owner:PS_SINGLE_OBJECT_PART; a_handler:PS_COLLECTION_HANDLER[COLLECTION_TYPE]; a_root:PS_OBJECT_GRAPH_ROOT)
 		local
 			attr_name:STRING
 			i:INTEGER
@@ -114,6 +85,7 @@ feature {NONE}
 			create values.make
 			handler:= a_handler
 			internal_metadata:= meta
+			root:= a_root
 
 			from
 				reference_owner_attribute_name:= ""

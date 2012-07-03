@@ -18,6 +18,9 @@ inherit
 
 feature
 
+	root: PS_OBJECT_GRAPH_ROOT
+		-- The root of the object graph
+
 	represented_object:ANY
 --		do
 --			Result:= object_id.item
@@ -73,6 +76,38 @@ feature
 	set_object_id (an_object_id: PS_OBJECT_IDENTIFIER_WRAPPER)
 		do
 			internal_object_id:= an_object_id
+		end
+
+	finish_initialization (disassembler:PS_OBJECT_DISASSEMBLER)
+		deferred
+		end
+
+	initialize (a_level:INTEGER; operation:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
+		local
+			new_mode: BOOLEAN
+		do
+			if not is_initialized and operation /= operation.no_operation then
+
+				if a_level = 0 and root.dependencies.first /= Current then
+					disassembler.set_operation (operation)
+					new_mode:=True
+				end
+
+
+				if  disassembler.is_level_condition_fulfilled (a_level) and operation /= operation.no_operation then
+
+					is_initialized:= True
+					level:= a_level
+
+					check disassembler.active_operation = operation end
+					finish_initialization (disassembler)
+				end
+
+				if new_mode then
+					disassembler.cancel_operation
+				end
+			end
+			is_initialized:= True
 		end
 
 end

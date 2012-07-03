@@ -96,7 +96,7 @@ feature
 			elseif attached {PS_SINGLE_OBJECT_PART} node as obj then
 			--	print (obj.represented_object.out)
 			--	print (obj.object_id.item.out)
-				create new_update.make_with_mode (obj.object_id, obj.write_mode.Update)
+				create new_update.make_with_mode (obj.object_id, obj.write_mode.Update, obj.root)
 				new_update.add_attribute (obj.get_attribute_name (dependency), dependency)
 				roots.extend (new_update)
 			--	print ("New update: %N" + new_update.to_string)	

@@ -36,10 +36,10 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access
 
 	root: PS_OBJECT_GRAPH_ROOT
 		-- The root of the object graph
-		do
+		deferred
 			-- Add this to the creation procedures of the descendants
-			check not_implemented:False end
-			create Result.make
+--			check not_implemented:False end
+--			create Result.make
 		end
 
 	dependencies: LIST[PS_OBJECT_GRAPH_PART]
@@ -77,6 +77,11 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 	is_visited:BOOLEAN
 		-- Has current part been visited?
 
+	is_collection:BOOLEAN
+		-- Is `Current' an instance of PS_COLLECTION_PART?
+		do
+			Result:=False
+		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Utilities
 

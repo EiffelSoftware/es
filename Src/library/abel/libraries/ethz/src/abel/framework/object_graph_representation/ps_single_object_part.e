@@ -94,10 +94,6 @@ feature {PS_EIFFELSTORE_EXPORT}
 	add_attribute (name:STRING; value:PS_OBJECT_GRAPH_PART)
 		-- add an attribute to the object (only if it should not be ignored)
 		do
-			if attribute_values.count *2  >= attribute_values.capacity * 3 then
-				attribute_values.accommodate (attribute_values.capacity * 2)
-			end
-
 			if not attached {PS_IGNORE_PART} value then
 				attributes.extend (name)
 				attribute_values.extend (value, name)
@@ -109,70 +105,91 @@ feature {NONE} -- Initialization
 
 	make
 		do
---			create basic_attributes.make
---			create references.make
---			create basic_attribute_values.make (hashtable_size)
---			create reference_values.make (hashtable_size)
 			create attributes.make
 			attributes.compare_objects
 			create attribute_values.make (hashtable_size)
 		end
 
 
-	make_with_mode (an_object:PS_OBJECT_IDENTIFIER_WRAPPER; a_mode: PS_WRITE_OPERATION)
+	make_with_mode (an_object:PS_OBJECT_IDENTIFIER_WRAPPER; a_mode: PS_WRITE_OPERATION; a_root:PS_OBJECT_GRAPH_ROOT)
 		do
 			internal_object_id:=an_object
 			represented_object:= an_object.item
 			write_mode:=a_mode
 			make
 			internal_metadata:= object_id.metadata
+			root:= a_root
 		end
 
 
-	make_new (obj:ANY; a_metadata:PS_TYPE_METADATA; persistent:BOOLEAN)
+	make_new (obj:ANY; a_metadata:PS_TYPE_METADATA; persistent:BOOLEAN; a_root:PS_OBJECT_GRAPH_ROOT)
 		do
 			represented_object:= obj
 			create write_mode
 			write_mode:= write_mode.no_operation
 			internal_metadata:= a_metadata
 			is_persistent:= persistent
+			root:= a_root
 			make
 		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Initialization
 
-	initialize (a_level:INTEGER; mode:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
+	finish_initialization (disassembler:PS_OBJECT_DISASSEMBLER)
 		local
 			i:INTEGER
 			reflection:INTERNAL
-			next_persistent: BOOLEAN
+			next_persistent, new_mode: BOOLEAN
+			operation:PS_WRITE_OPERATION
 		do
-			if not is_initialized
-				and (a_level < disassembler.current_global_depth (mode) or disassembler.current_global_depth (mode) = disassembler.settings.object_graph_depth_infinite)
-				and mode /= mode.no_operation then
+			operation:= disassembler.active_operation
+			write_mode:= operation
+			from
+				create reflection
+				i:= 1
+			until
+				i > reflection.field_count (represented_object)
+			loop
+				add_attribute (reflection.field_name (i, represented_object), disassembler.next_object_graph_part (reflection.field (i, represented_object), Current, write_mode))
+				i:= i+1
+			end
 
-				is_initialized:= True
-				level:= a_level
-				write_mode:= mode
+			across attributes as cursor loop
+				next_persistent:= get_value(cursor.item).is_persistent
+				get_value (cursor.item).initialize (disassembler.next_level (level, is_persistent, get_value(cursor.item).is_collection, next_persistent), disassembler.next_operation (level, is_persistent, next_persistent), disassembler)
+			end
+		end
 
-				from
-					create reflection
-					i:= 1
-				until
-					i > reflection.field_count (represented_object)
-				loop
-					add_attribute (reflection.field_name (i, represented_object), disassembler.next_object_graph_part (reflection.field (i, represented_object), Current, write_mode))
-					i:= i+1
+comment :STRING = "[
+
+	initialize (a_level:INTEGER; operation:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
+		local
+			new_mode: BOOLEAN
+		do
+			if not is_initialized then
+
+				if a_level = 0 and root.dependencies.first /= Current then
+					disassembler.register_new_operation (operation)
+					new_mode:=True
 				end
 
-				across attributes as cursor loop
-					next_persistent:= get_value(cursor.item).is_persistent
-					get_value (cursor.item).initialize (disassembler.next_level (level, is_persistent, False, next_persistent), disassembler.next_operation (write_mode, level, is_persistent, next_persistent), disassembler)
+
+				if  disassembler.check_level_condition (a_level) and operation /= operation.no_operation then
+
+					is_initialized:= True
+					level:= a_level
+
+					check disassembler.active_operation = operation end
+					finish_initialization (disassembler)
+				end
+
+				if new_mode then
+					disassembler.unregister_operation
 				end
 			end
 			is_initialized:= True
 		end
-
+]"
 	hashtable_size:INTEGER = 20
 
 

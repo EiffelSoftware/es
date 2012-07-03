@@ -59,8 +59,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 			-- Insert `object' within `transaction' into `Current'
 		do
 			id_manager.register_transaction (transaction)
-			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).insert, transaction)
-			executor.perform_operations (planner.generate_plan (disassembler.disassembled_object), transaction)
+			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).insert, agent id_manager.is_identified (?, transaction))
+			identify_all (id_manager, transaction, disassembler.object_graph)
+			executor.perform_operations (planner.generate_plan (disassembler.object_graph), transaction)
 		rescue
 			default_transactional_rescue (transaction)
 		end
@@ -69,8 +70,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 			-- Update `object' within `transaction'
 		do
 			id_manager.register_transaction (transaction)
-			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).update, transaction)
-			executor.perform_operations (planner.generate_plan (disassembler.disassembled_object), transaction)
+			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).update, agent id_manager.is_identified (?, transaction))
+			identify_all (id_manager, transaction, disassembler.object_graph)
+			executor.perform_operations (planner.generate_plan (disassembler.object_graph), transaction)
 		rescue
 			default_transactional_rescue (transaction)
 		end
@@ -79,8 +81,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 			-- Delete `object' within `transaction' from `Current'
 		do
 			id_manager.register_transaction (transaction)
-			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).delete, transaction)
-			executor.perform_operations (planner.generate_plan (disassembler.disassembled_object), transaction)
+			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).delete, agent id_manager.is_identified (?, transaction))
+			identify_all (id_manager, transaction, disassembler.object_graph)
+			executor.perform_operations (planner.generate_plan (disassembler.object_graph), transaction)
 			fixme ("TODO: fix this for depth > 1")
 			id_manager.delete_identification (object, transaction)
 		rescue
@@ -150,7 +153,7 @@ feature{NONE} -- Initialization
 			create default_object_graph.make
 			create id_manager.make
 			create planner.make
-			create disassembler.make (id_manager, default_object_graph)
+			create disassembler.make (id_manager.metadata_manager, default_object_graph)
 		--	create memory_db.make
 			backend:= a_backend
 			create executor.make (backend)
@@ -177,6 +180,24 @@ feature {PS_EIFFELSTORE_EXPORT}
 --	memory_db: PS_IN_MEMORY_DATABASE
 	backend: PS_BACKEND_STRATEGY
 	retriever:PS_RETRIEVAL_MANAGER
+
+
+
+feature {NONE} -- obsolete
+
+	identify_all (identifier_manager: PS_OBJECT_IDENTIFICATION_MANAGER; transaction: PS_TRANSACTION; object_graph: PS_OBJECT_GRAPH_PART)
+		-- Add an object identifier to all objects in object_graph.
+		do
+			fixme ("move to executor as soon as the planner doesn't need it any more")
+			across object_graph as obj loop
+				if attached {PS_COMPLEX_ATTRIBUTE_PART} obj.item as complex then
+					if not identifier_manager.is_identified (complex.represented_object, transaction) then
+						identifier_manager.identify (complex.represented_object, transaction)
+					end
+					complex.set_object_id (identifier_manager.get_identifier_wrapper (complex.represented_object, transaction))
+				end
+			end
+		end
 
 
 end

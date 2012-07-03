@@ -180,7 +180,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 				if simulate_version_mismatch then
 					stored_version:= stored_version - 1
 				end
-				create version_attribute.make (stored_version, integer_metadata)
+				create version_attribute.make (stored_version, integer_metadata, an_object.root)
 				an_object.add_attribute ("version", version_attribute)
 
 				real_backend.insert (an_object, a_transaction)

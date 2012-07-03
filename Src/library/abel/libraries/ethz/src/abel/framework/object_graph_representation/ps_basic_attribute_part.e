@@ -22,6 +22,8 @@ feature {PS_EIFFELSTORE_EXPORT}-- Initialization
 
 	represented_object:ANY
 
+	root: PS_OBJECT_GRAPH_ROOT
+		-- The root of the object graph
 
 	value:STRING
 		-- The value of the basic attribute as a string
@@ -40,7 +42,7 @@ feature {PS_EIFFELSTORE_EXPORT}-- Initialization
 
 	dependencies:LINKED_LIST[PS_OBJECT_GRAPH_PART]
 
-	make (a_value:ANY; meta:PS_TYPE_METADATA)
+	make (a_value:ANY; meta:PS_TYPE_METADATA; a_root:PS_OBJECT_GRAPH_ROOT)
 			-- Initialization for `Current'.
 		do
 			represented_object:= a_value
@@ -49,6 +51,8 @@ feature {PS_EIFFELSTORE_EXPORT}-- Initialization
 			create dependencies.make
 			create write_mode
 			write_mode:=write_mode.No_operation
+			root:= a_root
+
 		end
 
 	is_basic_attribute:BOOLEAN = True

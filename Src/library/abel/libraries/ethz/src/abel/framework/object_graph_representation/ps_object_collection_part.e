@@ -11,7 +11,7 @@ inherit
 	PS_COLLECTION_PART [COLLECTION_TYPE]
 	redefine split end
 
-create make, make_new
+create make_new
 
 feature {PS_EIFFELSTORE_EXPORT}-- Object storage mode data
 
@@ -60,38 +60,9 @@ feature {PS_EIFFELSTORE_EXPORT}-- Object storage mode data
 		-- Create a copy of `Current', with the exception that the `values' list is empty
 		do
 		--	create Result.make (object_id,  write_mode, handler)
-			create Result.make_new (attach (represented_object), metadata, is_persistent, handler)
+			create Result.make_new (represented_object, metadata, is_persistent, handler, root)
 			Result.set_deletion_dependency (deletion_dependency_for_updates)
 		end
-
-
-	make (obj: PS_OBJECT_IDENTIFIER_WRAPPER; a_mode:PS_WRITE_OPERATION; a_handler: PS_COLLECTION_HANDLER[COLLECTION_TYPE])
-		-- initialize `Current'
-		local
-			del_dependency: like Current
-		do
-			represented_object:= obj.item
-			internal_object_id:=obj
-			create values.make
-			handler:= a_handler
-			create additional_information.make (10)
-			order_count:= 1
-			create order_map.make
-
-			if a_mode = a_mode.update then
-				write_mode:= a_mode.insert
-				del_dependency:= clone_except_values
-				del_dependency.set_mode (write_mode.delete)
-				deletion_dependency_for_updates:= del_dependency
-			else
---				deletion_dependency_for_updates:= handler.create_object_graph_part (obj, owner, attr_name, a_mode.no_operation)
-				write_mode:= a_mode
-			end
-			internal_metadata:= obj.metadata
-		ensure
-			no_update_mode: write_mode /= write_mode.update
-		end
-
 
 	is_in_relational_storage_mode:BOOLEAN = False
 		-- Is current collection inserted in relational mode?
@@ -124,7 +95,7 @@ feature {PS_OBJECT_COLLECTION_PART}
 feature {NONE}
 
 
-	make_new (obj: ANY; meta:PS_TYPE_METADATA; persistent:BOOLEAN; a_handler: PS_COLLECTION_HANDLER[COLLECTION_TYPE])
+	make_new (obj: ANY; meta:PS_TYPE_METADATA; persistent:BOOLEAN; a_handler: PS_COLLECTION_HANDLER[COLLECTION_TYPE]; a_root:PS_OBJECT_GRAPH_ROOT)
 		-- initialize `Current'
 		local
 			del_dependency: like Current
@@ -141,6 +112,7 @@ feature {NONE}
 			internal_metadata:= meta
 			represented_object:= obj
 			is_persistent:= persistent
+			root:=a_root
 		ensure
 			no_update_mode: write_mode /= write_mode.update
 		end

@@ -31,26 +31,14 @@ feature -- Status report
 
 feature {PS_EIFFELSTORE_EXPORT}-- Disassemble functions
 
-	create_object_graph_part (obj: PS_OBJECT_IDENTIFIER_WRAPPER ref_owner:PS_OBJECT_GRAPH_PART; attr_name: STRING ; mode:PS_WRITE_OPERATION) : PS_COLLECTION_PART [COLLECTION_TYPE]
-		require
-		--	no_multidimensional_collections_in_relational_mode: is_in_relational_storage_mode implies not attached {PS_COLLECTION_PART [ITERABLE[ANY]]} ref_owner
-		do
-			create {PS_OBJECT_COLLECTION_PART[COLLECTION_TYPE]} Result.make (obj, mode, Current)
-			fixme ("TODO")
-			--Result.set_capacity (evaluate_capacity (obj))
-		ensure
-			values_not_set_yet: Result.values.is_empty
-		end
-
-
 	create_part (collection:ANY; metadata:PS_TYPE_METADATA; persistent:BOOLEAN; owner:PS_OBJECT_GRAPH_PART):PS_OBJECT_GRAPH_PART
 		do
 			if is_relational_1toN_collection (collection) then
 				check attached {PS_SINGLE_OBJECT_PART} owner as good_owner then
-					create {PS_RELATIONAL_COLLECTION_PART[COLLECTION_TYPE]} Result.make_new (collection, metadata, good_owner, Current)
+					create {PS_RELATIONAL_COLLECTION_PART[COLLECTION_TYPE]} Result.make_new (collection, metadata, good_owner, Current, owner.root)
 				end
 			else
-				create {PS_OBJECT_COLLECTION_PART[COLLECTION_TYPE]}  Result.make_new (collection, metadata, persistent, Current)
+				create {PS_OBJECT_COLLECTION_PART[COLLECTION_TYPE]}  Result.make_new (collection, metadata, persistent, Current, owner.root)
 			end
 		end
 
@@ -58,50 +46,6 @@ feature {PS_EIFFELSTORE_EXPORT}-- Disassemble functions
 	add_information (object_collection: PS_OBJECT_COLLECTION_PART[ITERABLE[detachable ANY]])
 		deferred
 
-		end
-
-	disassemble_collection (collection: PS_OBJECT_IDENTIFIER_WRAPPER; depth: INTEGER; mode:PS_WRITE_OPERATION; a_disassembler:PS_OBJECT_DISASSEMBLER; reference_owner:PS_OBJECT_GRAPH_PART; ref_attribute_name:STRING):	PS_COLLECTION_PART [COLLECTION_TYPE]
-		-- disassemble the collection
-		require
-			can_handle_collection: can_handle (collection.item)
-		do
-	--		print (collection)
-
-			Result := create_object_graph_part (collection, reference_owner, ref_attribute_name, mode)
-			a_disassembler.register_operation (Result, collection.object_identifier)
-
-			-- do actual business code, use agent to disassemble all referenced objects
-			do_disassemble (Result, agent a_disassembler.disassemble (?, depth, mode, Result, ""), a_disassembler.id_manager.metadata_manager)
-
-		end
-
-	do_disassemble (collection:PS_COLLECTION_PART [COLLECTION_TYPE]; disassemble_function:FUNCTION[ANY, TUPLE[ANY], PS_OBJECT_GRAPH_PART]; metadata_manager:PS_METADATA_FACTORY)
-		local
-			cursor:ITERATION_CURSOR[detachable ANY]
-	--		attached_item: ANY
-		do
-			check attached{COLLECTION_TYPE} collection.object_id.item as actual_collection then
-
-				cursor:= actual_collection.new_cursor
-				from
-				until cursor.after
-				loop
-					if attached cursor.item as attached_item then
-						if is_of_basic_type (attached_item) then
-							collection.add_value (create {PS_BASIC_ATTRIBUTE_PART}.make (attached_item, metadata_manager.create_metadata_from_object(attached_item)))
-						else
-							collection.add_value (disassemble_function.item ([attached_item]))
-						end
-					else
-						-- create a null reference part to indicate that the reference at `cursor.item' is Void
-						collection.add_value (create {PS_NULL_REFERENCE_PART}.make)
-					end
-					cursor.forth
-				end
---				the following line produces a reproducible bug in EiffelStudio, even when doing a clean compile...
---				across actual_collection as cursor loop disassemble_function.call ([cursor.item])  end
-
-			end
 		end
 
 

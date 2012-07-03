@@ -14,6 +14,9 @@ create make
 
 feature
 
+	root: PS_OBJECT_GRAPH_ROOT
+		-- The root of the object graph
+
 	represented_object:ANY
 		do
 			check not_implemented:False end
@@ -28,11 +31,12 @@ feature
 	dependencies:LINKED_LIST[PS_OBJECT_GRAPH_PART]
 
 
-	make
+	make (a_root: PS_OBJECT_GRAPH_ROOT)
 		do
 			create dependencies.make
 			create write_mode
 			write_mode:=write_mode.No_operation
+			root:= a_root
 		end
 
 

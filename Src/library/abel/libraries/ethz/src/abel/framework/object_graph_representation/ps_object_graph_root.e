@@ -9,6 +9,9 @@ class
 
 inherit
 	PS_OBJECT_GRAPH_PART
+		redefine
+			root
+		end
 
 create
 	make
@@ -22,13 +25,18 @@ feature {NONE} -- Initialization
 			create write_mode
 			write_mode:= write_mode.no_operation
 		end
-		
+
 	initialize (a_level:INTEGER; a_mode:PS_WRITE_OPERATION; disassembler:PS_OBJECT_DISASSEMBLER)
 		do
 			check implementation_error:False end
 		end
-feature
 
+feature {PS_EIFFELSTORE_EXPORT} -- Access
+
+	root:PS_OBJECT_GRAPH_ROOT
+		once
+			Result := Current
+		end
 
 	represented_object:ANY
 		do
