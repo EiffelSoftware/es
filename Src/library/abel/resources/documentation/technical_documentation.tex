@@ -89,7 +89,7 @@ To visualize the whole structure, there is a class diagram that shows the most i
 The object-relational mapping layer (abbreviated as ORM layer) lies between the \lstinline!REPOSITORY! and the \lstinline!BACKEND_STRATEGY!.
 It consists of four main classes doing the actual work, and a set of helper classes to represent an object graph.
 
-The helper classes are in \lstinline!framework/object_graph_representation!.
+All helper classes are in \lstinline!framework/object_graph_representation!.
 Besides representation of an object graph, they are also used to describe a write operation in the \lstinline!BACKEND_STRATEGY!.
 The most important ones are:
 
@@ -214,8 +214,8 @@ Note that the choice of the collection part has an effect in the object-re\-la\-
 If you use one of the predefined backends, you usually don't have to care about collection handlers.
 They get important however if you want to adapt ABEL to a custom database layout, as you can see in section ~\ref{subsection:specific_adaption}.
 
-Please note that the framework itself does not provide any collection handler, and inserting a SPECIAL object without setting an appropriate handler will result in a runtime crash.
-However, there is a \lstinline!SPECIAL! handler shipped with the predefined backends, which is used for example by the \lstinline!IN_MEMORY_REPOSITORY!.
+Please note that the framework itself does not provide any collection handler, and inserting a \lstinline!SPECIAL! object without setting an appropriate handler will result in a runtime crash.
+However, there is a handler for \lstinline!SPECIAL! shipped with the predefined backends, which is used for example by the \lstinline!IN_MEMORY_REPOSITORY!.
 
 \subsection{Object graph settings}
 \label{subsection:obect_graph_settings}
@@ -462,26 +462,27 @@ All \lstinline!LINKED_LIST! instances are relationally mapped in 1:M mode, there
 class 
 	LINKED_LIST_HANDLER
 inherit
-	PS_COLLECTION_HANDLER [LINKED_LIST [ITEM]]
+	PS_COLLECTION_HANDLER [LINKED_LIST [detachable ANY]]
 feature
 
-	create_object_graph_part (
-			obj: PS_OBJECT_IDENTIFIER_WRAPPER;
-			ref_owner:PS_OBJECT_GRAPH_PART; 
-			attr_name: STRING;
-			mode:PS_WRITE_OPERATION)
-		 : PS_RELATIONAL_COLLECTION_PART [LINKED_LIST[ITEM]]
-		-- Create a new part, but don't disassemble
+	is_relationally_mapped (collection, owner_type: PS_TYPE_METADATA):BOOLEAN
+		-- Is `collection' mapped as a 1:N or M:N - Relation?
 		do
-			create Result.make (obj, ref_owner, attr_name, mode, Current)
+			Result:= True
 		end
 
-	is_in_relational_storage_mode (a_collection: PS_COLLECTION_PART[LINKED_LIST[ITEM]]):BOOLEAN = True
-		-- Is `a_collection' stored in relational mode?
+	is_mapped_as_1_to_N (collection, owner_type: PS_TYPE_METADATA):BOOLEAN
+		-- Is `collection' mapped as a 1:N - Relation?
+		do
+			Result:= True
+		end
 
-
-	is_1_to_n_mapped (a_collection:PS_COLLECTION_PART[LINKED_LIST[ITEM]]): BOOLEAN = True
-		-- Is `a_collection' stored relationally in a 1:N mapping?
+	build_relational_collection (collection_type: PS_TYPE_METADATA; objects: LIST[detachable ANY]): LINKED_LIST[detachable ANY]
+		-- Build a new LINKED_LIST
+		do
+			create Result.make
+			Result.append (objects)
+		end
 
 end
 \end{lstlisting}
