@@ -93,37 +93,37 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 	insert (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
 		-- Inserts the object into the database
 		require
-			mode_is_insert: an_object.write_mode = an_object.write_mode.insert
-			not_yet_known: not key_mapper.has_primary_key_of (an_object.object_id, a_transaction)
-			backend_can_handle_object: can_handle_type (an_object.object_id.metadata)
+			mode_is_insert: an_object.write_operation = an_object.write_operation.insert
+			not_yet_known: not key_mapper.has_primary_key_of (an_object.object_wrapper, a_transaction)
+			backend_can_handle_object: can_handle_type (an_object.object_wrapper.metadata)
 			dependencies_known: check_dependencies_have_primary (an_object, a_transaction)
 		deferred
 		ensure
-			object_known: key_mapper.has_primary_key_of (an_object.object_id, a_transaction)
+			object_known: key_mapper.has_primary_key_of (an_object.object_wrapper, a_transaction)
 			check_successful_write (an_object, a_transaction)
 		end
 
 	update (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
 		-- Updates an_object
 		require
-			mode_is_update: an_object.write_mode = an_object.write_mode.update
-			object_known: key_mapper.has_primary_key_of (an_object.object_id, a_transaction)
-			backend_can_handle_object: can_handle_type (an_object.object_id.metadata)
+			mode_is_update: an_object.write_operation = an_object.write_operation.update
+			object_known: key_mapper.has_primary_key_of (an_object.object_wrapper, a_transaction)
+			backend_can_handle_object: can_handle_type (an_object.object_wrapper.metadata)
 		deferred
 		ensure
-			object_still_known: key_mapper.has_primary_key_of (an_object.object_id, a_transaction)
+			object_still_known: key_mapper.has_primary_key_of (an_object.object_wrapper, a_transaction)
 			check_successful_write (an_object, a_transaction)
 		end
 
 	delete (an_object:PS_SINGLE_OBJECT_PART; a_transaction:PS_TRANSACTION)
 		-- Deletes an_object from the database
 		require
-			mode_is_delete: an_object.write_mode = an_object.write_mode.delete
-			object_known: key_mapper.has_primary_key_of (an_object.object_id, a_transaction)
-			backend_can_handle_object: can_handle_type (an_object.object_id.metadata)
+			mode_is_delete: an_object.write_operation = an_object.write_operation.delete
+			object_known: key_mapper.has_primary_key_of (an_object.object_wrapper, a_transaction)
+			backend_can_handle_object: can_handle_type (an_object.object_wrapper.metadata)
 		deferred
 		ensure
-			not_known_anymore: not key_mapper.has_primary_key_of (an_object.object_id, a_transaction)
+			not_known_anymore: not key_mapper.has_primary_key_of (an_object.object_wrapper, a_transaction)
 		end
 
 
@@ -150,11 +150,11 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 	insert_objectoriented_collection (a_collection: PS_OBJECT_COLLECTION_PART[ITERABLE[detachable ANY]]; a_transaction:PS_TRANSACTION)
 		-- Add all entries in a_collection to the database. If the order is not conflicting with the items already in the database, it will try to preserve order.
 		require
-			mode_is_insert: a_collection.write_mode = a_collection.write_mode.insert
-			objectoriented_mode: not a_collection.handler.is_in_relational_storage_mode (a_collection)
-			not_yet_known: not key_mapper.has_primary_key_of (a_collection.object_id, a_transaction)
+			mode_is_insert: a_collection.write_operation = a_collection.write_operation.insert
+			--objectoriented_mode: not a_collection.handler.is_in_relational_storage_mode (a_collection)
+			not_yet_known: not key_mapper.has_primary_key_of (a_collection.object_wrapper, a_transaction)
 	 		objectoriented_collection_operation_supported: is_objectoriented_collection_store_supported
-	 		backend_can_handle_collection: can_handle_objectoriented_collection (a_collection.object_id.metadata)
+	 		backend_can_handle_collection: can_handle_objectoriented_collection (a_collection.object_wrapper.metadata)
 		deferred
 		ensure
 --			collection_known: key_mapper.has_primary_key_of (a_collection.object_id)
@@ -163,14 +163,14 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 	delete_objectoriented_collection (a_collection: PS_OBJECT_COLLECTION_PART[ITERABLE[detachable ANY]]; a_transaction:PS_TRANSACTION)
 		-- Delete a_collection from the database
 		require
-			mode_is_delete: a_collection.write_mode = a_collection.write_mode.delete
-			objectoriented_mode: not a_collection.handler.is_in_relational_storage_mode (a_collection)
-			collection_known: key_mapper.has_primary_key_of (a_collection.object_id, a_transaction)
+			mode_is_delete: a_collection.write_operation = a_collection.write_operation.delete
+			--objectoriented_mode: not a_collection.handler.is_in_relational_storage_mode (a_collection)
+			collection_known: key_mapper.has_primary_key_of (a_collection.object_wrapper, a_transaction)
 	 		objectoriented_collection_operation_supported: is_objectoriented_collection_store_supported
-	 		backend_can_handle_collection: can_handle_objectoriented_collection (a_collection.object_id.metadata)
+	 		backend_can_handle_collection: can_handle_objectoriented_collection (a_collection.object_wrapper.metadata)
 		deferred
 		ensure
-			not_known_anymore: not key_mapper.has_primary_key_of (a_collection.object_id, a_transaction)
+			not_known_anymore: not key_mapper.has_primary_key_of (a_collection.object_wrapper, a_transaction)
 		end
 
 feature {PS_EIFFELSTORE_EXPORT}-- Relational collection operations
@@ -188,7 +188,7 @@ feature {PS_EIFFELSTORE_EXPORT}-- Relational collection operations
 	insert_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART[ITERABLE[detachable ANY]]; a_transaction:PS_TRANSACTION)
 		-- Add all entries in a_collection to the database
 		require
-			mode_is_insert: a_collection.write_mode = a_collection.write_mode.insert
+			mode_is_insert: a_collection.write_operation = a_collection.write_operation.insert
 			is_relational: a_collection.is_in_relational_storage_mode
 			relational_collection_operation_supported: is_relational_collection_store_supported
 --			backend_can_handle_collection: can_handle_relational_collection (a_collection.reference_owner, a_collection.values.first.)
@@ -200,7 +200,7 @@ feature {PS_EIFFELSTORE_EXPORT}-- Relational collection operations
 	delete_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART[ITERABLE[detachable ANY]]; a_transaction:PS_TRANSACTION)
 		-- Delete a_collection from the database
 		require
-			mode_is_delete: a_collection.write_mode = a_collection.write_mode.delete
+			mode_is_delete: a_collection.write_operation = a_collection.write_operation.delete
 			is_relational: a_collection.is_in_relational_storage_mode
 			relational_collection_operation_supported: is_relational_collection_store_supported
 --			backend_can_handle_collection: can_handle_relational_collection (a_collection.reference_owner, a_collection.values.first.)
@@ -247,8 +247,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Precondition checks
 		do
 			Result:= across an_object.attributes as attr_name all
 				(attached {PS_COMPLEX_PART} an_object.attribute_value (attr_name.item) as comp
-				and an_object.attribute_value (attr_name.item).write_mode /= an_object.write_mode.no_operation)
-					implies key_mapper.has_primary_key_of (comp.object_id, transaction)
+				and an_object.attribute_value (attr_name.item).write_operation /= an_object.write_operation.no_operation)
+					implies key_mapper.has_primary_key_of (comp.object_wrapper, transaction)
 			end
 		end
 
@@ -276,18 +276,18 @@ feature{NONE} -- Correctness checks
 		do
 			Result:= True
 			create keys.make
-			keys.extend (key_mapper.primary_key_of (an_object.object_id, transaction).first)
+			keys.extend (key_mapper.primary_key_of (an_object.object_wrapper, transaction).first)
 --			print (keys.count)
-			retrieved_obj_list := retrieve_from_keys (an_object.object_id.metadata, keys, transaction)
+			retrieved_obj_list := retrieve_from_keys (an_object.object_wrapper.metadata, keys, transaction)
 
-			across an_object.object_id.metadata.attributes as attr
+			across an_object.object_wrapper.metadata.attributes as attr
 			loop
 				if an_object.attributes.has (attr.item) then
 					retrieved_object:= retrieved_obj_list.first
 					--current_item:= attach (an_object.attribute_values[attr.item])
 					current_item:= an_object.attribute_value (attr.item)
-					Result:= Result and current_item.storable_tuple (key_mapper.quick_translate (current_item.object_identifier, transaction)).first.is_equal (retrieved_object.attribute_value (attr.item).value)
-					Result:= Result and current_item.storable_tuple (key_mapper.quick_translate (current_item.object_identifier, transaction)).second.is_equal (retrieved_object.attribute_value (attr.item).attribute_class_name)
+					Result:= Result and current_item.as_attribute (key_mapper.quick_translate (current_item.object_identifier, transaction)).value.is_equal (retrieved_object.attribute_value (attr.item).value)
+					Result:= Result and current_item.as_attribute (key_mapper.quick_translate (current_item.object_identifier, transaction)).type.is_equal (retrieved_object.attribute_value (attr.item).attribute_class_name)
 				end
 			end
 		end

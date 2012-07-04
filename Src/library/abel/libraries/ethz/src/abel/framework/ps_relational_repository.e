@@ -203,7 +203,7 @@ feature {NONE} -- obsolete
 					if not identifier_manager.is_identified (complex.represented_object, transaction) then
 						identifier_manager.identify (complex.represented_object, transaction)
 					end
-					complex.set_object_id (identifier_manager.get_identifier_wrapper (complex.represented_object, transaction))
+					complex.set_object_wrapper (identifier_manager.get_identifier_wrapper (complex.represented_object, transaction))
 				end
 			end
 		end

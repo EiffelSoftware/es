@@ -142,7 +142,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 			-- Retrieve some required information
 			connection:= get_connection (a_transaction)
 			none_class_key:= db_metadata_manager.create_get_primary_key_of_class (SQL_Strings.None_class)
-			existence_attribute_key := db_metadata_manager.create_get_primary_key_of_attribute (SQL_Strings.Existence_attribute, db_metadata_manager.create_get_primary_key_of_class (an_object.object_id.metadata.base_class.name))
+			existence_attribute_key := db_metadata_manager.create_get_primary_key_of_attribute (SQL_Strings.Existence_attribute, db_metadata_manager.create_get_primary_key_of_class (an_object.object_wrapper.metadata.base_class.name))
 
 			-- Generate a new primary key in the database by inserting the "existence" attribute with the objects object_identifier as a temporary value
 			connection.execute_sql ( SQL_Strings.Insert_value_use_autoincrement (existence_attribute_key, none_class_key, an_object.object_identifier.out))
@@ -150,7 +150,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 			new_primary_key:=connection.last_result.item.item (1).to_integer
 
 			-- Insert the primary key to the key manager
-			key_mapper.add_entry (an_object.object_id, new_primary_key, a_transaction)
+			key_mapper.add_entry (an_object.object_wrapper, new_primary_key, a_transaction)
 
 			-- Write all attributes
 			write_attributes (an_object, connection, a_transaction)
@@ -180,8 +180,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 			primary:INTEGER
 		do
 			connection:= get_connection (a_transaction)
-			primary:= key_mapper.primary_key_of (an_object.object_id, a_transaction).first
-			key_mapper.remove_primary_key (primary, an_object.object_id.metadata, a_transaction)
+			primary:= key_mapper.primary_key_of (an_object.object_wrapper, a_transaction).first
+			key_mapper.remove_primary_key (primary, an_object.object_wrapper.metadata, a_transaction)
 			connection.execute_sql (SQL_Strings.Delete_values_of_object (primary))
 		rescue
 			rollback (a_transaction)
@@ -283,7 +283,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 		do
 			database.set_transaction_isolation_level (a_level)
 		end
-		
+
 feature {PS_EIFFELSTORE_EXPORT} -- Mapping
 
 	key_mapper: PS_KEY_POID_TABLE
@@ -337,7 +337,7 @@ feature {NONE} -- Implementation
 			referenced_part: PS_OBJECT_GRAPH_PART
 			collected_insert_statements: STRING
 		do
-			primary:= key_mapper.primary_key_of (object.object_id, transaction).first
+			primary:= key_mapper.primary_key_of (object.object_wrapper, transaction).first
 
 			create already_present_attributes.make
 			a_connection.execute_sql (SQL_Strings.Query_present_attributes_of_object (primary))
@@ -350,10 +350,10 @@ feature {NONE} -- Implementation
 			across object.attributes as current_attribute loop
 				-- get the needed information
 				referenced_part:= object.attribute_value (current_attribute.item)
-				value:= referenced_part.storable_tuple (key_mapper.quick_translate (referenced_part.object_identifier, transaction)).first
-				attribute_id:= db_metadata_manager.create_get_primary_key_of_attribute (current_attribute.item, db_metadata_manager.create_get_primary_key_of_class (object.object_id.metadata.base_class.name		))
+				value:= referenced_part.as_attribute (key_mapper.quick_translate (referenced_part.object_identifier, transaction)).value
+				attribute_id:= db_metadata_manager.create_get_primary_key_of_attribute (current_attribute.item, db_metadata_manager.create_get_primary_key_of_class (object.object_wrapper.metadata.base_class.name		))
 																																										--, a_connection), a_connection)
-				runtime_type:= db_metadata_manager.create_get_primary_key_of_class (referenced_part.storable_tuple (key_mapper.quick_translate (referenced_part.object_identifier, transaction)).second)--, a_connection)
+				runtime_type:= db_metadata_manager.create_get_primary_key_of_class (referenced_part.as_attribute (key_mapper.quick_translate (referenced_part.object_identifier, transaction)).type)--, a_connection)
 
 				-- Perform update or insert, depending on the presence in the database
 				if already_present_attributes.has (attribute_id) then

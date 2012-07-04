@@ -49,7 +49,7 @@ feature {NONE} -- Initialization
 		-- Initialize `Current'
 		do
 			create dependencies.make
-			write_mode:= new_operation
+			write_operation:= new_operation
 			root:= a_root
 			create represented_object
 		end

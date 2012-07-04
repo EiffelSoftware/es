@@ -123,7 +123,7 @@ feature
 			from a_plan.start
 			until a_plan.after
 			loop
-				if a_plan.item.write_mode = a_plan.item.write_mode.No_operation then
+				if a_plan.item.write_operation = a_plan.item.write_operation.No_operation then
 					a_plan.remove
 				else
 					a_plan.forth

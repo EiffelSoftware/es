@@ -1,5 +1,5 @@
 note
-	description: "Represents a collection in an object graph. It stores a superset of all the data required for either an object or relational storage mode"
+	description: "Represents a collection in an object graph."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -9,14 +9,41 @@ deferred class
 inherit
 	PS_COMPLEX_PART
 
-inherit{NONE}
-	REFACTORING_HELPER
 
-
-feature {PS_EIFFELSTORE_EXPORT}-- Collection data
+feature {PS_EIFFELSTORE_EXPORT} -- Access
 
 	values:LINKED_LIST[PS_OBJECT_GRAPH_PART]
 		-- The objects in the collection
+
+	actual_collection: COLLECTION_TYPE
+		-- The collection that `Current' represents
+		do
+			check attached {COLLECTION_TYPE} represented_object as res then
+				Result:= res
+			end
+		end
+
+
+feature {PS_EIFFELSTORE_EXPORT}-- Status report
+
+	are_items_of_basic_type:BOOLEAN
+		-- are the current collection's items of a basic type?
+		do
+			Result:= metadata.actual_generic_parameter (1).is_basic_type
+		end
+
+
+	is_in_relational_storage_mode:BOOLEAN
+		-- Is current collection inserted in relational mode?
+		deferred
+		end
+
+	is_collection:BOOLEAN = True
+		-- Is `Current' an instance of PS_COLLECTION_PART?
+
+
+feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
+
 
 	add_value (a_graph_part: PS_OBJECT_GRAPH_PART)
 		-- Add a value to the collection
@@ -28,140 +55,49 @@ feature {PS_EIFFELSTORE_EXPORT}-- Collection data
 		end
 
 
-feature {PS_EIFFELSTORE_EXPORT}-- Status report
+feature {PS_COLLECTION_PART} -- Duplication
 
-	are_items_of_basic_type:BOOLEAN
-		-- are the current collection's items of a basic type?
-		require
-			not values.is_empty
-		do
-			Result:= values[1].is_basic_attribute
-		end
-
-	handler: PS_COLLECTION_HANDLER[COLLECTION_TYPE]
-
-	is_in_relational_storage_mode:BOOLEAN
-		-- Is current collection inserted in relational mode?
+	clone_empty_with_operation (operation:PS_WRITE_OPERATION): like Current
+		-- Create a copy of `Current' with empty values and write_mode set to `operation'
 		deferred
 		end
 
 
-feature {PS_EIFFELSTORE_EXPORT}-- Dependency handling
-
-
-
---	dependencies:LINKED_LIST[PS_OBJECT_GRAPH_PART]
-		-- All operations that depend on this one
-
---			fixme ("[
---				TODO: Getting the dependencies is tricky... In object mode, it's all items in `values'.
---				In relational mode, it can either be all the 'values' plus the parent, or every item in 'values' additionally has the dependency 'parent'.
---				Asking the handler what to do might be the best solution.
---				In case of an Update, probably there should be a Delete generated first, which is also a dependency of Current.
---				]"
---				)
-
-
-	break_dependency (dependency: PS_OBJECT_GRAPH_PART)
-		-- Break the dependency `dependency'
-		do
-			fixme ("TODO: The planner can't just take away a dependency like the 'parent' in case of relational mode - Investigate if this is actually possible")
-			root.add_dependency (split (dependency))
-			values.prune_all (dependency)
-		end
-
-	remove_dependency (obj:PS_OBJECT_GRAPH_PART)
-		-- Remove dependency `obj' from the list
-		do
-			fixme ("TODO: The planner can't just take away a dependency like the 'parent' in case of relational mode - Investigate if this is actually possible")
-			values.prune (obj)
-		end
-
-	split (a_dependency:PS_OBJECT_GRAPH_PART): like Current
-		-- Create a copy of `Current', whose only dependency is `a_dependency', and with mode `Insert'
-		do
-			Result:= clone_except_values
-			Result.set_mode (write_mode.insert)
-			Result.values.extend (a_dependency)
-		ensure
-			Result.write_mode = write_mode.insert
-			Result.values.count = 1
-			Result.values.i_th (1) = a_dependency
-		end
-
-
-	clone_except_values: like Current
-		-- Create a copy of `Current', with the exception that the `values' list is empty
-		require
-			not_in_delete_mode: write_mode /= write_mode.delete
-		deferred
-		end
-
-
-feature {PS_COLLECTION_PART} -- Deletion dependency
-
-	set_deletion_dependency (a_dep: detachable like Current)
-		do
-			deletion_dependency_for_updates:= a_dep
-		end
-
-	deletion_dependency_for_updates: detachable like Current
-		-- If `Current' is an update, the collection needs to be deleted and inserted again. This is the statement to delete it.
-
-	set_mode (a_mode: PS_WRITE_OPERATION)
-		do
-			write_mode:= a_mode
-		end
-
-
-feature {PS_OBJECT_GRAPH_PART} -- Initialization
-
-	handle_operation (operation:PS_WRITE_OPERATION)
-		-- Set the write_mode to `operation'. If `operation' is an update operation, create a new deletion dependency.
-		local
-			del_dependency: like Current
-		do
-			if operation = operation.update then
-				write_mode:= operation.insert
-				del_dependency:= clone_except_values
-				del_dependency.set_mode (write_mode.delete)
-				deletion_dependency_for_updates:= del_dependency
-			else
-				write_mode:= operation
-			end
-		ensure
-			operation = operation.update implies attached deletion_dependency_for_updates and write_mode = write_mode.insert
-			operation /= operation.update implies not attached deletion_dependency_for_updates and write_mode = operation
-		end
+feature {PS_COMPLEX_PART} -- Initialization
 
 
 	finish_initialization (disassembler:PS_OBJECT_DISASSEMBLER)
+		-- Initialize all attributes or collection items of `Current'
 		local
 			cursor: ITERATION_CURSOR[detachable ANY]
 			next: PS_OBJECT_GRAPH_PART
 			operation:PS_WRITE_OPERATION
+			generated_items: LINKED_LIST[PS_OBJECT_GRAPH_PART]
 		do
 			operation:= disassembler.active_operation
 			handle_operation (operation)
 
-			check attached {COLLECTION_TYPE} represented_object as collection  then
+			-- First generate all item parts
+			from
+				cursor:= actual_collection.new_cursor
+				create generated_items.make
+			until
+				cursor.after
+			loop
+				next:= disassembler.next_object_graph_part (cursor.item, Current, operation)
 
-				from
-					cursor:= collection.new_cursor
-				until
-					cursor.after
-				loop
-					next:= disassembler.next_object_graph_part (cursor.item, Current, operation)
-					if attached {PS_IGNORE_PART} next then
-						create {PS_NULL_REFERENCE_PART} next.default_make (next.root)
-					end
-					add_value (next)
-					cursor.forth
+				-- Change an IGNORE_PART to a NULL_REFRENCE_PART in object collections
+				if attached {PS_IGNORE_PART} next and not is_in_relational_storage_mode then
+					create {PS_NULL_REFERENCE_PART} next.default_make (next.root)
 				end
-
+				add_value (next)
+				generated_items.extend (next)
+				cursor.forth
 			end
 
-			across values as val
+
+			-- Now initialize all of them
+			across generated_items as val
 			loop
 				if attached val.item as coll_item then
 					coll_item.initialize (disassembler.next_level (level, is_persistent, coll_item.is_collection, coll_item.is_persistent), disassembler.next_operation (level, is_persistent, coll_item.is_persistent), disassembler)
@@ -171,14 +107,59 @@ feature {PS_OBJECT_GRAPH_PART} -- Initialization
 			add_additional_information
 		end
 
-	is_collection:BOOLEAN = True
-		-- Is `Current' an instance of PS_COLLECTION_PART?
+
+feature {PS_COLLECTION_PART} -- Implementation
+
+
+	set_deletion_dependency (deletion_dependency: detachable like Current)
+		-- Set a deletion dependency for `Current'
+		require
+			operation_is_delete: attached deletion_dependency as dep implies dep.write_operation = dep.write_operation.delete
+		do
+			deletion_dependency_for_updates:= deletion_dependency
+		end
+
+	set_mode (operation: PS_WRITE_OPERATION)
+		-- Manually set `write_operation' to `operation'
+		do
+			write_operation:= operation
+		end
+
+
+feature {NONE} -- Implementation
+
+	handle_operation (operation:PS_WRITE_OPERATION)
+		-- Set the `write_operation' to `operation'. If `operation' is an update operation, create a new deletion dependency.
+		local
+			del_dependency: like Current
+		do
+			if operation = operation.update then
+				write_operation:= operation.insert
+				deletion_dependency_for_updates:= clone_empty_with_operation (write_operation.delete)
+			else
+				write_operation:= operation
+			end
+		ensure
+			operation = operation.update implies attached deletion_dependency_for_updates and write_operation = write_operation.insert
+			operation /= operation.update implies not attached deletion_dependency_for_updates and write_operation = operation
+		end
 
 	add_additional_information
+		-- Add additional information for object collections
 		deferred
 		end
 
+	handler: PS_COLLECTION_HANDLER[COLLECTION_TYPE]
+		-- The handler which created `Current'
+
+	deletion_dependency_for_updates: detachable like Current
+		-- If `Current' is an update operation, the collection needs to be deleted and inserted again. This is the statement to delete it.
+
+
 invariant
 	same_types: values.for_all (agent {PS_OBJECT_GRAPH_PART}.is_basic_attribute)  or not values.for_all (agent {PS_OBJECT_GRAPH_PART}.is_basic_attribute)
-	deletion_dependency_mode_correct: attached deletion_dependency_for_updates as dep implies dep.write_mode = dep.write_mode.delete
+	deletion_dependency_mode_correct: attached deletion_dependency_for_updates as dep implies dep.write_operation = dep.write_operation.delete
+	deletion_dependency_in_dependencies: attached deletion_dependency_for_updates as dep implies dependencies.has (dep)
+
+	stable_handler: handler.is_in_relational_storage_mode (Current) = is_in_relational_storage_mode
 end

@@ -1,6 +1,6 @@
 note
 	description: "Represents an object in the object graph that can have dependencies."
-	author: ""
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -19,7 +19,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access
 	root: PS_OBJECT_GRAPH_ROOT
 		-- The root of the object graph
 
-	object_id:PS_OBJECT_IDENTIFIER_WRAPPER
+	object_wrapper:PS_OBJECT_IDENTIFIER_WRAPPER
 		-- The repository-wide unique object identifier of the object represented by `Current'
 		do
 			Result:= attach (internal_object_id)
@@ -28,7 +28,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access
 	object_identifier: INTEGER
 		-- The object identifier of `Current'. Returns 0 if `Current' is a basic type
 		do
-			Result:= object_id.object_identifier
+			Result:= object_wrapper.object_identifier
 		end
 
 
@@ -46,7 +46,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 
 
-	set_object_id (an_object_id: PS_OBJECT_IDENTIFIER_WRAPPER)
+	set_object_wrapper (an_object_id: PS_OBJECT_IDENTIFIER_WRAPPER)
 		-- Set the object identifier wrapper of `Current'
 		do
 			internal_object_id:= an_object_id
@@ -103,7 +103,7 @@ feature {PS_COMPLEX_PART} -- Initialization
 
 feature {NONE} -- Implementation
 
-	internal_object_id: detachable like object_id
+	internal_object_id: detachable like object_wrapper
 		-- A little helper to circumvent Void safety		
 
 end

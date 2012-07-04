@@ -31,8 +31,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access
 	level:INTEGER
 		-- The level of the current object graph part.
 
-	write_mode: PS_WRITE_OPERATION
-		-- Insert, Update, Delete or No_operation mode
+	write_operation: PS_WRITE_OPERATION
+		-- The operation that should be performed in the database
 
 	root: PS_OBJECT_GRAPH_ROOT
 		-- The root of the object graph
@@ -87,15 +87,15 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
 feature {PS_EIFFELSTORE_EXPORT} -- Utilities
 
-	storable_tuple (optional_primary: INTEGER):PS_PAIR[STRING, STRING]
-		-- The storable tuple of the current object.
-		require
-			is_representing_object
+	as_attribute (primary_key: INTEGER): TUPLE [value: STRING; type: STRING]
+		-- The value and type of `Current' as an attribute to other objects.
 		do
-			if is_basic_attribute then
-				create Result.make (basic_attribute_value, metadata.base_class.name)
+			if not is_representing_object then
+				Result:= ["0", "NONE"]
+			elseif is_basic_attribute then
+				Result:= [basic_attribute_value, metadata.base_class.name]
 			else
-				create Result.make (optional_primary.out, metadata.base_class.name)
+				Result:= [primary_key.out, metadata.base_class.name]
 			end
 		end
 
@@ -172,7 +172,7 @@ feature {NONE} -- Implementation
 invariant
 	no_self_dependence: not dependencies.has (Current)
 	metadata_attached_if_representing_object: is_representing_object implies attached internal_metadata
-	only_complex_attributes_get_written: not is_complex_attribute implies write_mode = write_mode.no_operation
+	only_complex_attributes_get_written: not is_complex_attribute implies write_operation = write_operation.no_operation
 
 end
 

@@ -35,10 +35,10 @@ feature {PS_EIFFELSTORE_EXPORT}-- Disassemble functions
 		do
 			if is_relational_1toN_collection (collection) then
 				check attached {PS_SINGLE_OBJECT_PART} owner as good_owner then
-					create {PS_RELATIONAL_COLLECTION_PART[COLLECTION_TYPE]} Result.make_new (collection, metadata, good_owner, Current, owner.root)
+					create {PS_RELATIONAL_COLLECTION_PART[COLLECTION_TYPE]} Result.make_new (collection, metadata, good_owner, persistent, Current, owner.root)
 				end
 			else
-				create {PS_OBJECT_COLLECTION_PART[COLLECTION_TYPE]}  Result.make_new (collection, metadata, persistent, Current, owner.root)
+				create {PS_OBJECT_COLLECTION_PART[COLLECTION_TYPE]}  Result.make (collection, metadata, persistent, Current, owner.root)
 			end
 		end
 

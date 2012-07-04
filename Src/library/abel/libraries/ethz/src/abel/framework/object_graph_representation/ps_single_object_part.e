@@ -61,7 +61,13 @@ feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 	add_attribute (name:STRING; value:PS_OBJECT_GRAPH_PART)
 		-- Add a attribute `name' with value `value' to `Current'
 		do
-			if not attached {PS_IGNORE_PART} value then
+			if attached {PS_IGNORE_PART} value then
+				-- ignore
+			elseif attached {PS_RELATIONAL_COLLECTION_PART[ITERABLE[detachable ANY]]} value then
+				-- Add dependency to root
+				root.add_dependency (value)
+			else
+				-- Add new attribute
 				attributes.extend (name)
 				attribute_values.extend (value, name)
 			end
@@ -77,7 +83,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 			attr:STRING
 		do
 			create new_update.make (represented_object, metadata, is_persistent, root)
-			new_update.internal_initialize (write_mode.update, level)
+			new_update.internal_initialize (write_operation.update, level)
 
 			across attributes as attr_name from attr:="" loop
 				if attribute_value (attr_name.item) = dependency then
@@ -101,7 +107,7 @@ feature {NONE} -- Initialization
 			is_persistent:= persistent
 			root:= a_root
 
-			write_mode:= new_operation
+			write_operation:= new_operation
 			create attributes.make
 			create attribute_values.make (hashtable_size)
 			attributes.compare_objects
@@ -115,11 +121,11 @@ feature {PS_COMPLEX_PART} -- Initialization
 		local
 			val:PS_OBJECT_GRAPH_PART
 		do
-			write_mode:= disassembler.active_operation
+			write_operation:= disassembler.active_operation
 
 			-- First create all object graph parts of the attributes
 			across metadata.attributes as attr loop
-				val:= disassembler.next_object_graph_part (metadata.reflection.field (metadata.field_index (attr.item), represented_object), Current, write_mode)
+				val:= disassembler.next_object_graph_part (metadata.reflection.field (metadata.field_index (attr.item), represented_object), Current, write_operation)
 				add_attribute (attr.item, val)
 			end
 
@@ -136,7 +142,7 @@ feature {PS_SINGLE_OBJECT_PART} -- Implementation
 	internal_initialize (operation:PS_WRITE_OPERATION; a_level: INTEGER)
 		-- Initialize without attributes, for the `break_dependency' feature
 		do
-			write_mode:= operation
+			write_operation:= operation
 			level:=a_level
 			is_initialized:=True
 		end

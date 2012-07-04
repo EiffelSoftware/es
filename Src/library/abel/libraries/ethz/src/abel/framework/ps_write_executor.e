@@ -20,30 +20,30 @@ feature
 
 				if attached{PS_SINGLE_OBJECT_PART} op_cursor.item as obj then
 
-					if obj.write_mode = obj.write_mode.insert then
+					if obj.write_operation = obj.write_operation.insert then
 						backend.insert (obj, transaction)
-					elseif obj.write_mode = obj.write_mode.update then
+					elseif obj.write_operation = obj.write_operation.update then
 						backend.update (obj, transaction)
-					elseif obj.write_mode = obj.write_mode.delete then
+					elseif obj.write_operation = obj.write_operation.delete then
 						backend.delete (obj, transaction)
 					end
 
 				elseif attached{PS_OBJECT_COLLECTION_PART[ITERABLE[detachable ANY]]} op_cursor.item as coll then
 
-					if coll.write_mode = coll.write_mode.insert then
+					if coll.write_operation = coll.write_operation.insert then
 						backend.insert_objectoriented_collection (coll, transaction)
-					elseif coll.write_mode = coll.write_mode.update then
+					elseif coll.write_operation = coll.write_operation.update then
 						check false end
-					elseif coll.write_mode = coll.write_mode.delete then
+					elseif coll.write_operation = coll.write_operation.delete then
 						backend.delete_objectoriented_collection (coll, transaction)
 					end
 				elseif attached{PS_RELATIONAL_COLLECTION_PART[ITERABLE[detachable ANY]]} op_cursor.item as coll then
 
-					if coll.write_mode = coll.write_mode.insert then
+					if coll.write_operation = coll.write_operation.insert then
 						backend.insert_relational_collection (coll, transaction)
-					elseif coll.write_mode = coll.write_mode.update then
+					elseif coll.write_operation = coll.write_operation.update then
 						check false end
-					elseif coll.write_mode = coll.write_mode.delete then
+					elseif coll.write_operation = coll.write_operation.delete then
 						backend.delete_relational_collection (coll, transaction)
 					end
 
