@@ -189,7 +189,7 @@ feature {PS_EIFFELSTORE_EXPORT}-- Relational collection operations
 		-- Add all entries in a_collection to the database
 		require
 			mode_is_insert: a_collection.write_operation = a_collection.write_operation.insert
-			is_relational: a_collection.is_in_relational_storage_mode
+			is_relational: a_collection.is_relationally_mapped
 			relational_collection_operation_supported: is_relational_collection_store_supported
 --			backend_can_handle_collection: can_handle_relational_collection (a_collection.reference_owner, a_collection.values.first.)
 --			TODO: add a mechanism in all PS_OBJECT_GRAPH_PARTs to get metadata
@@ -201,7 +201,7 @@ feature {PS_EIFFELSTORE_EXPORT}-- Relational collection operations
 		-- Delete a_collection from the database
 		require
 			mode_is_delete: a_collection.write_operation = a_collection.write_operation.delete
-			is_relational: a_collection.is_in_relational_storage_mode
+			is_relational: a_collection.is_relationally_mapped
 			relational_collection_operation_supported: is_relational_collection_store_supported
 --			backend_can_handle_collection: can_handle_relational_collection (a_collection.reference_owner, a_collection.values.first.)
 --			TODO: add a mechanism in all PS_OBJECT_GRAPH_PARTs to get metadata

@@ -332,7 +332,7 @@ feature {NONE} -- Implementation: Collection handlers
 	has_handler (type: PS_TYPE_METADATA):BOOLEAN
 		-- Is `type' a collection that has a handler?
 		do
-			Result:= across collection_handlers as handler some handler.item.can_handle_type (type.type)  end
+			Result:= across collection_handlers as handler some handler.item.can_handle_type (type)  end
 		end
 
 	get_handler (type: PS_TYPE_METADATA): PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]]
@@ -343,7 +343,7 @@ feature {NONE} -- Implementation: Collection handlers
 			res: detachable PS_COLLECTION_HANDLER[ITERABLE[detachable ANY]]
 		do
 			across collection_handlers as handler loop
-				if handler.item.can_handle_type(type.type) then
+				if handler.item.can_handle_type(type) then
 					res:= handler.item
 				end
 			end

@@ -57,44 +57,48 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 
 	insert (object: ANY; transaction: PS_TRANSACTION)
 			-- Insert `object' within `transaction' into `Current'
-		local
-			operations: LIST[PS_OBJECT_GRAPH_PART]
 		do
 			id_manager.register_transaction (transaction)
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).insert, agent id_manager.is_identified (?, transaction))
-			operations:= planner.generate_plan (disassembler.object_graph)
-			across operations as op loop identify_all (id_manager, transaction, op.item) end
-			executor.perform_operations (operations, transaction)
+
+			planner.set_object_graph (disassembler.object_graph)
+			planner.generate_plan
+
+			executor.perform_operations (planner.operation_plan, transaction)
 		rescue
 			default_transactional_rescue (transaction)
 		end
 
 	update (object: ANY; transaction: PS_TRANSACTION)
 			-- Update `object' within `transaction'
-		local
-			operations: LIST[PS_OBJECT_GRAPH_PART]
 		do
 			id_manager.register_transaction (transaction)
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).update, agent id_manager.is_identified (?, transaction))
-			operations:= planner.generate_plan (disassembler.object_graph)
-			across operations as op loop identify_all (id_manager, transaction, op.item) end
-			executor.perform_operations (operations, transaction)
+
+			planner.set_object_graph (disassembler.object_graph)
+			planner.generate_plan
+
+			executor.perform_operations (planner.operation_plan, transaction)
 		rescue
 			default_transactional_rescue (transaction)
 		end
 
 	delete (object: ANY; transaction: PS_TRANSACTION)
 			-- Delete `object' within `transaction' from `Current'
-		local
-			operations: LIST[PS_OBJECT_GRAPH_PART]
 		do
 			id_manager.register_transaction (transaction)
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).delete, agent id_manager.is_identified (?, transaction))
-			operations:= planner.generate_plan (disassembler.object_graph)
-			across operations as op loop identify_all (id_manager, transaction, op.item) end
-			executor.perform_operations (operations, transaction)
-			fixme ("TODO: fix this for depth > 1")
-			id_manager.delete_identification (object, transaction)
+
+			planner.set_object_graph (disassembler.object_graph)
+			planner.generate_plan
+
+			executor.perform_operations (planner.operation_plan, transaction)
+
+			across planner.operation_plan as op loop
+				if attached {PS_COMPLEX_PART} op.item as complex and then complex.write_operation = complex.write_operation.delete  then
+					id_manager.delete_identification (complex.represented_object, transaction)
+				end
+			end
 		rescue
 			default_transactional_rescue (transaction)
 		end
@@ -145,9 +149,16 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status Report
 
 	can_handle (object:ANY): BOOLEAN
 		-- Can `Current' handle the object `object'?
+		local
+			new_transaction: PS_TRANSACTION
 		do
-			to_implement ("Disassemble object and then ask backend for each part")
-			Result:=True
+			create new_transaction.make_readonly (Current)
+			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).insert, agent id_manager.is_identified (?, new_transaction))
+
+			planner.set_object_graph (disassembler.object_graph)
+			planner.generate_plan
+
+			Result:= executor.can_backend_handle_operations (planner.operation_plan)
 		end
 
 feature{NONE} -- Initialization
@@ -165,7 +176,7 @@ feature{NONE} -- Initialization
 			create disassembler.make (id_manager.metadata_manager, default_object_graph)
 		--	create memory_db.make
 			backend:= a_backend
-			create executor.make (backend)
+			create executor.make (backend, id_manager)
 			create retriever.make (backend, id_manager)
 
 			create special_handler.make
@@ -186,7 +197,6 @@ feature {PS_EIFFELSTORE_EXPORT}
 	disassembler:PS_OBJECT_DISASSEMBLER
 	planner:PS_WRITE_PLANNER
 	executor: PS_WRITE_EXECUTOR
---	memory_db: PS_IN_MEMORY_DATABASE
 	backend: PS_BACKEND_STRATEGY
 	retriever:PS_RETRIEVAL_MANAGER
 

@@ -33,8 +33,8 @@ feature {PS_EIFFELSTORE_EXPORT}-- Status report
 		end
 
 
-	is_in_relational_storage_mode:BOOLEAN
-		-- Is current collection inserted in relational mode?
+	is_relationally_mapped:BOOLEAN
+		-- Is current collection mapped as a 1:N or M:N Relation between two objects?
 		deferred
 		end
 
@@ -49,8 +49,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 		-- Add a value to the collection
 		require
 			no_mixed_type_collections: not values.is_empty implies values[1].is_basic_attribute = a_graph_part.is_basic_attribute
-			no_basic_type_in_relational_mode: is_in_relational_storage_mode implies not a_graph_part.is_basic_attribute
-			no_multidimensional_collections_in_relational_mode: is_in_relational_storage_mode implies not attached{PS_COLLECTION_PART[ITERABLE[ANY]]} a_graph_part
+			no_basic_type_in_relational_mode: is_relationally_mapped implies not a_graph_part.is_basic_attribute
+			no_multidimensional_collections_in_relational_mode: is_relationally_mapped implies not attached{PS_COLLECTION_PART[ITERABLE[ANY]]} a_graph_part
 		deferred
 		end
 
@@ -87,7 +87,7 @@ feature {PS_COMPLEX_PART} -- Initialization
 				next:= disassembler.next_object_graph_part (cursor.item, Current, operation)
 
 				-- Change an IGNORE_PART to a NULL_REFRENCE_PART in object collections
-				if attached {PS_IGNORE_PART} next and not is_in_relational_storage_mode then
+				if attached {PS_IGNORE_PART} next and not is_relationally_mapped then
 					create {PS_NULL_REFERENCE_PART} next.default_make (next.root)
 				end
 				add_value (next)
@@ -161,5 +161,5 @@ invariant
 	deletion_dependency_mode_correct: attached deletion_dependency_for_updates as dep implies dep.write_operation = dep.write_operation.delete
 	deletion_dependency_in_dependencies: attached deletion_dependency_for_updates as dep implies dependencies.has (dep)
 
-	stable_handler: handler.is_in_relational_storage_mode (Current) = is_in_relational_storage_mode
+--	stable_handler: handler.is_in_relational_storage_mode (Current) = is_in_relational_storage_mode
 end

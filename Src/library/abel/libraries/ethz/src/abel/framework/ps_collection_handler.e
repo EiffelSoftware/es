@@ -1,5 +1,5 @@
 note
-	description: "This is a partially implemented class that adds support for collections in ABEL."
+	description: "Extends the object-relational mapping layer with collection support."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -7,10 +7,11 @@ note
 deferred class
 	PS_COLLECTION_HANDLER [COLLECTION_TYPE -> ITERABLE[detachable ANY]]
 
-inherit PS_EIFFELSTORE_EXPORT
-inherit{NONE} REFACTORING_HELPER
+inherit
+	PS_EIFFELSTORE_EXPORT
 
-feature -- Status report
+
+feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
 	can_handle (a_collection:ANY):BOOLEAN
 		-- Can `Current' handle the collection `a_collection'?
@@ -19,94 +20,71 @@ feature -- Status report
 		end
 
 
-	can_handle_type (a_type: TYPE[detachable ANY]):BOOLEAN
+	can_handle_type (type: PS_TYPE_METADATA):BOOLEAN
 		-- Can `Current' handle the collection type `a_type'?
-		local
-			reflection: INTERNAL
 		do
-			create reflection
-			Result:= reflection.type_conforms_to (a_type.type_id, Current.generating_type.generic_parameter_type (1).type_id)
-			fixme ("TODO: check this attached/detachable type problem here..")
+			Result:= type.reflection.type_conforms_to (type.type.type_id, ( {detachable COLLECTION_TYPE} ).type_id)
 		end
 
-feature {PS_EIFFELSTORE_EXPORT}-- Disassemble functions
+	is_relationally_mapped (collection: PS_TYPE_METADATA; owner_type:PS_TYPE_METADATA):BOOLEAN
+		-- Is `collection' mapped as a 1:N or M:N Relation between two objects?
+		deferred
+		end
 
-	create_part (collection:ANY; metadata:PS_TYPE_METADATA; persistent:BOOLEAN; owner:PS_OBJECT_GRAPH_PART):PS_OBJECT_GRAPH_PART
+
+	is_mapped_as_1_to_N (collection: PS_TYPE_METADATA; owner_type: PS_TYPE_METADATA):BOOLEAN
+		-- Is `collection' mapped as a 1:N - Relation in the database?
+		deferred
+		ensure
+			false_if_not_relational: not is_relationally_mapped (collection, owner_type) implies not Result
+		end
+
+feature {PS_EIFFELSTORE_EXPORT} -- Object graph creation
+
+
+	create_collection_part (collection:ANY; metadata:PS_TYPE_METADATA; persistent:BOOLEAN; owner:PS_OBJECT_GRAPH_PART):PS_OBJECT_GRAPH_PART
+		-- Create a new OBJECT_GRAPH_PART for `collection'
+		require
+			can_handle_collection: can_handle (collection)
+			owner_normal_object_if_relational: (owner.is_representing_object and then is_relationally_mapped (metadata, owner.metadata)) implies attached {PS_SINGLE_OBJECT_PART} owner
 		do
-			if is_relational_1toN_collection (collection) then
+			-- Create relational or object collection based on `is_relationally_mapped'
+			if owner.is_representing_object and then  is_relationally_mapped (metadata, owner.metadata) then
 				check attached {PS_SINGLE_OBJECT_PART} owner as good_owner then
-					create {PS_RELATIONAL_COLLECTION_PART[COLLECTION_TYPE]} Result.make_new (collection, metadata, good_owner, persistent, Current, owner.root)
+					create {PS_RELATIONAL_COLLECTION_PART[COLLECTION_TYPE]} Result.make (collection, metadata, good_owner, persistent, is_mapped_as_1_to_N (metadata, owner.metadata), Current, owner.root)
 				end
 			else
 				create {PS_OBJECT_COLLECTION_PART[COLLECTION_TYPE]}  Result.make (collection, metadata, persistent, Current, owner.root)
 			end
+		ensure
+			collection_set: Result.represented_object = collection
+			metadata_set: Result.metadata = metadata
+			persitent_set: Result.is_persistent = persistent
+			owner_set: attached {PS_RELATIONAL_COLLECTION_PART[COLLECTION_TYPE]} Result as res implies res.reference_owner = owner
 		end
 
 
 	add_information (object_collection: PS_OBJECT_COLLECTION_PART[ITERABLE[detachable ANY]])
-		deferred
-
-		end
-
-
-feature -- Layout information
-
-
-	is_in_relational_storage_mode (a_collection: PS_COLLECTION_PART[COLLECTION_TYPE]):BOOLEAN
-		-- Is `a_collection' stored in relational mode?
+		-- Add some additional information to `object_collection'
 		deferred
 		end
 
-	is_1_to_n_mapped (a_collection:PS_COLLECTION_PART[COLLECTION_TYPE]): BOOLEAN
-		-- Is `a_collection' stored relationally in a 1:N mapping, meaning that the primary key of the parent is stored as a foreign key in the child's table?
-		deferred
-		ensure
-			false_if_not_relational: not is_in_relational_storage_mode (a_collection) implies Result = False
-		end
 
 
-	is_in_relational_mode_by_type (a_collection: TYPE[detachable ANY]): BOOLEAN
-		do
-			Result:= false
-			fixme ("Implement this - also look if feature signature is sufficient like that")
-		end
+feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval
 
-	is_relational_collection (a_collection:ANY):BOOLEAN
+	build_collection (collection_type: PS_TYPE_METADATA; objects: LIST[detachable ANY]; additional_information: PS_RETRIEVED_OBJECT_COLLECTION): COLLECTION_TYPE
+		-- Build a collection object of type `collection_type' with items `objects', using `additional_information' that contains information generated during the last insert.
 		require
-			can_handle (a_collection)
-		do
-			fixme ("implement")
-			Result:= False
-		end
-
-	is_relational_1toN_collection (a_collection:ANY):BOOLEAN
-		do
-			fixme ("implement")
-			Result:= False
-		end
-
-feature -- Utilities
-
-
-	is_of_basic_type (obj:ANY): BOOLEAN
-		do
-			Result:=attached{NUMERIC} obj or attached{BOOLEAN} obj or attached{CHARACTER_8} obj or attached{CHARACTER_32} obj or attached{READABLE_STRING_GENERAL} obj
-			fixme ("Some common ancestor for all these types of functions would be nice")
-		end
-
-
-
-feature -- Object assembly
-
-	build_collection (type_id: PS_TYPE_METADATA; objects: LIST[detachable ANY]; additional_information: PS_RETRIEVED_OBJECT_COLLECTION): COLLECTION_TYPE
-		-- Dynamic type id of the collection
+			--can_handle_type: can_handle (collection_type)
 		deferred
 		end
 
-	build_relational_collection (type_id: PS_TYPE_METADATA; objects: LIST[detachable ANY]): COLLECTION_TYPE
-		-- Dynamic type id of the collection
+	build_relational_collection (collection_type: PS_TYPE_METADATA; objects: LIST[detachable ANY]): COLLECTION_TYPE
+		-- Build a collection object of type `collection_type' with items `objects'.
+		require
+			--can_handle_type: can_handle (collection_type)
 		deferred
 		end
-
 
 end

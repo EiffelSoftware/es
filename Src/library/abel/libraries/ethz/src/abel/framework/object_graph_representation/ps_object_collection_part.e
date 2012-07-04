@@ -43,8 +43,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
-	is_in_relational_storage_mode:BOOLEAN = False
-		-- Is current collection inserted in relational mode?
+	is_relationally_mapped:BOOLEAN = False
+		-- Is current collection mapped as a 1:N or M:N Relation between two objects?
 
 
 

@@ -153,7 +153,7 @@ feature {PS_OBJECT_GRAPH_PART} -- Disassembly: Factory methods
 					else
 						-- See if it is a collection
 						if attached search_handler (next_object) as handler then
-							Result:= handler.create_part  (next_object, metadata_factory.create_metadata_from_object (next_object), is_next_persistent(next_object), current_part)
+							Result:= handler.create_collection_part  (next_object, metadata_factory.create_metadata_from_object (next_object), is_next_persistent(next_object), current_part)
 
 						else
 							if current_operation = current_operation.update and not is_next_persistent (next_object) and not settings.is_insert_during_update_enabled then

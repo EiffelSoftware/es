@@ -6,11 +6,11 @@ note
 
 class
 	PS_RELATIONAL_COLLECTION_PART [COLLECTION_TYPE -> ITERABLE[detachable ANY]]
+
 inherit
 	PS_COLLECTION_PART [COLLECTION_TYPE]
 
-
-create make_new
+create make
 
 
 feature {PS_EIFFELSTORE_EXPORT} -- Access
@@ -28,7 +28,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access
 		do
 			create Result.make
 
-			if handler.is_1_to_n_mapped (Current) then 	-- 1:N relational mode
+			if is_mapped_as_1_to_N then
 				-- no dependency required as foreign keys are stored within the objects
 
 			else -- M:N relational mode
@@ -43,8 +43,11 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
-	is_in_relational_storage_mode:BOOLEAN = True
-		-- Is current collection inserted in relational mode?
+	is_relationally_mapped:BOOLEAN = True
+		-- Is current collection mapped as a 1:N or M:N Relation between two objects?
+
+	is_mapped_as_1_to_N:BOOLEAN
+		-- Is current collection mapped as a 1:N - Relation in the database?
 
 
 feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
@@ -52,7 +55,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 	add_value (a_graph_part: PS_OBJECT_GRAPH_PART)
 		-- Add a value to the collection
 		do
-			if handler.is_1_to_n_mapped (Current) then
+			if is_mapped_as_1_to_N then
 				-- Add the value to the object instead
 				check attached{PS_SINGLE_OBJECT_PART} a_graph_part as obj then
 					-- everything else is covered by preconditions
@@ -82,7 +85,7 @@ feature {PS_COLLECTION_PART} -- Duplication
 	clone_empty_with_operation (operation:PS_WRITE_OPERATION): like Current
 		-- Create a copy of `Current' with empty values and write_mode set to `operation'
 		do
-			create Result.make_new (represented_object, metadata, reference_owner, is_persistent, handler, root)
+			create Result.make (represented_object, metadata, reference_owner, is_persistent,is_mapped_as_1_to_N, handler, root)
 			Result.set_deletion_dependency (deletion_dependency_for_updates)
 			Result.set_mode (operation)
 		end
@@ -90,7 +93,7 @@ feature {PS_COLLECTION_PART} -- Duplication
 feature {NONE} -- Initialization
 
 
-	make_new (obj:ANY; meta:PS_TYPE_METADATA; owner:PS_SINGLE_OBJECT_PART; persistent:BOOLEAN; a_handler:PS_COLLECTION_HANDLER[COLLECTION_TYPE]; a_root:PS_OBJECT_GRAPH_ROOT)
+	make (obj:ANY; meta:PS_TYPE_METADATA; owner:PS_SINGLE_OBJECT_PART; persistent:BOOLEAN; mapped_as_1_to_n: BOOLEAN; a_handler:PS_COLLECTION_HANDLER[COLLECTION_TYPE]; a_root:PS_OBJECT_GRAPH_ROOT)
 		-- Initialize `Current', but don't initialize collection items.
 		local
 			attr_name:STRING
