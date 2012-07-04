@@ -31,6 +31,8 @@ feature -- Cursor status and movement
 		-- Move to next position
 		do
 			move
+		ensure then
+			consistent: is_consistent
 		end
 
 	previous:PS_OBJECT_GRAPH_PART
@@ -54,15 +56,17 @@ feature -- Cursor status and movement
 feature -- Visited item handler function
 
 	cycle_handler: PROCEDURE [ANY, TUPLE[PS_OBJECT_GRAPH_PART, PS_OBJECT_GRAPH_PART]]
-		-- A handler function in case an already visited item is found. In that case, `item' is the object that was found twice
+		-- A handler function to handle cycles in the object graph.
 
 	set_handler (a_handler: PROCEDURE  [ANY, TUPLE[PS_OBJECT_GRAPH_PART, PS_OBJECT_GRAPH_PART]])
+		-- Set a handler function to be called when a cycle is detected
 		do
 			cycle_handler:= a_handler
 		end
 
 
 	default_handler (parent, visited_item:PS_OBJECT_GRAPH_PART)
+		-- A default handler that does nothing
 		do
 		end
 
@@ -110,10 +114,9 @@ feature {NONE} -- Implementation
 
 
 	fix
+		-- Try to fix any inconsistency
 		do
---			print ("state: " +  current_cursor.after.out + object_graph_stack.count.out + "%N")
 			if not current_cursor.after and then object_graph_stack.has (item) then
---				print ("calling removal feature%N")
 				cycle_handler.call ([previous, item])
 			end
 			if current_cursor.after then
@@ -124,6 +127,7 @@ feature {NONE} -- Implementation
 
 
 	is_consistent: BOOLEAN
+		-- Is the cursor in a consistent state at the moment?
 		do
 			Result:= True
 			if after then
@@ -142,6 +146,7 @@ feature {NONE} -- Implementation
 feature {NONE} -- Implementation
 
 	object_graph_stack:LINKED_STACK[ PS_OBJECT_GRAPH_PART]
+
 	cursor_stack: LINKED_STACK[ INDEXABLE_ITERATION_CURSOR[PS_OBJECT_GRAPH_PART]]
 
 	current_cursor: INDEXABLE_ITERATION_CURSOR[PS_OBJECT_GRAPH_PART]

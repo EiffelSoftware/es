@@ -50,7 +50,7 @@ On the next level there is the \lstinline!BACKEND_STRATEGY! layer.
 Its task is to map the object graph pieces to a specific storage engine, e.g. a database with some table layout.
 
 The lowest level of abstraction is only significant for databases that understand SQL. 
-It provides a set of wrapper classes that hide connection details and error handling, and it has a features to execute SQL and retrieve the result in a standardized way.
+It provides a set of wrapper classes that hide connection details and error handling, and it has features to execute SQL and retrieve the result in a standardized way.
 
 \subsubsection{Important data structures}
 
@@ -58,7 +58,7 @@ The key data structure is the \lstinline!OBJECT_IDENTIFICATION_MANAGER!.
 It maintains a weak reference to every object that has been retrieved or inserted before, and it assigns a repository-wide unique number to such objects (called the \lstinline!object_identifier!).
 It is for example responsible for the fact that the update fails in section ~\ref{subsection:recognize_objects}, ``Recognizing Objects.''
 
-Another important datastructure is the \lstinline!KEY_POID_TABLE!, which maps the objects \lstinline!object_identifier! to the primary key of the corresponding entry in the database.
+Another important data structure is the \lstinline!KEY_POID_TABLE!, which maps the objects \lstinline!object_identifier! to the primary key of the corresponding entry in the database.
 
 \subsubsection{Transactions}
 
@@ -244,7 +244,7 @@ Now let's put this in a context:
 You already know that the insert and retrieve features handle the complete object graph of an object. 
 In fact, the depth for both functions is $Infinity$ by default.
 
-On the other hand, the update or delete operations only handle first object they get, and don't care about the object graph.
+On the other hand, the update or delete operations only handle the first object they get, and don't care about the object graph.
 Their depth is defined as exactly $1$, which means that only an object with a level of $0$ satisfies the condition above.
 The only object with level $0$ is in fact the root object of an object graph.
 
@@ -272,9 +272,9 @@ It uses the ORM layer and a \lstinline!BACKEND_STRATEGY! and is therefore the de
 
 \subsection{BACKEND\_STRATEGY}
 
-The second important interface is the deferred class \lstinline!BACKEND_STRATEGY!.
+Another important interface is the deferred class \lstinline!BACKEND_STRATEGY!.
 This layer only deals with one object graph part at once, either a single object or a collection.
-It is responsible to map them to the actual persistence mechanism, which is usually a specific layout in a database.
+It is responsible to map them to the actual persistence mechanism which is usually a specific layout in a database.
 
 Its use however is not restricted to relational databases.
 The predefined IN\_MEMORY\_DATABASE backend for example implements this interface to provide a fake storage engine useful for testing, and it is planned to wrap the serialization libraries using this abstraction.
@@ -310,14 +310,14 @@ That way you can add:
 
 \begin{itemize}
  \item Filter support for some non-persistent attributes by removing them from the \lstinline!OBJECT_GRAPH_PART! during a write, and adding a default value during retrieval.
- \item ESCHER support by checking on the version attribute during a retrieval, and calling the conversion function if necessary.
+ \item ESCHER support by checking on the version attribute during a retrieval and calling the conversion function if necessary.
  \item Client-side transaction management by using a multiversion concurrency control mechanism and delaying write operations until you can definitely commit.
  \item Caching of objects by using an \lstinline!IN_MEMORY_DATABASE! alongside the actual backend.
  \item An instance that does correctness checks, e.g. by routing the calls to two different backends and comparing if the results are the same.
  \item Anything else you can imagine...
 \end{itemize}
 
-The really nice thing is that you can add such extensions without really adding complexity to the core of ABEL, and it works for all possible implementations of \lstinline!BACKEND_STRATEGY! at once.
+The nice thing is that you can add such extensions without adding much complexity to the core of ABEL, and it works for all possible implementations of \lstinline!BACKEND_STRATEGY! at once.
 
 
 \section{Database adaption}
@@ -492,7 +492,7 @@ The implementation of \lstinline!BACKEND_STRATEGY! is quite straightforward as w
 You just have to distinguish between \lstinline!PERSON! and \lstinline!ITEM! objects and insert them in the corresponding table.
 
 Please remember that the object-rlational mapping layer adds an attribute with name \lstinline!items_owned! to the \lstinline!ITEM! object, which is the default behaviour for 1:N relations.
-This especially means that you don't need to implement the relational collection write operations.
+This especially means that you don't need to implement the write operations for relational collections.
 
 The following code listing shows the insert feature in pseudocode:
 
@@ -507,12 +507,12 @@ feature
 		-- Inserts the object into the database
 		do
 			if object is a PERSON object then
-				database.execute_sql ("INSERT INTO person (name) VALUES " + object.get_value ("name"))
+				database.execute_sql ("INSERT INTO person (name) VALUES " + object.attribute_value ("name"))
 				key_mapper.add_entry (object, database.execute_sql ("Get autoincremented primary key of Person")
 			else
 				-- The ORM layer added `items_owned' to ITEM
 				foreign_key:= key_mapper.primary_key_of (object.get_value ("items_owned"))
-				database.execute_sql ("INSERT INTO item (value, owner) VALUES " + object.get_value ("value") + foreign_key)
+				database.execute_sql ("INSERT INTO item (value, owner) VALUES " + object.attribute_value ("value") + foreign_key)
 				key_mapper.add_entry (object, database.execute_sql("Get autoincremented primary key of Item")
 			end
 		end

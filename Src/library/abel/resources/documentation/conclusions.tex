@@ -26,7 +26,7 @@ This especially means that a query of an object of class \lstinline!G! will not 
 \end{itemize}
 \item The generic database layout backend doesn't support \lstinline!SPECIAL! yet (or collections in general).
 \item The library completely lacks any performance optimization.
-\item The retrieval operation in the object-relational mapping doesn't support the depth parameter.
+\item The retrieval operation in the object-relational mapping layer doesn't support the depth parameter.
 \item The error representation is not complete.
 \end{itemize}
 
@@ -37,7 +37,7 @@ This especially means that a query of an object of class \lstinline!G! will not 
 To select the object to be updated, you could also use a \lstinline!QUERY! object, but additionally you need some mechanism to be able to say which attributes should be updated with a new value.
  \item [Performance] Currently there is no optimization in ABEL, and there is a lot that can be done in this area:
  \begin{itemize}
-  \item Compile \lstinline!PREDEFINED_CRITERIA! to SQL in order to get smaller results.
+  \item Compile \lstinline!PREDEFINED_CRITERIA! to SQL in order to get smaller results from the database.
  \item Add support for lazy loading in the generic database layout implementation by using SQL cursors instead of normal SELECT statements.
  \item Use prepared statements and maybe even stored procedures instead of normal SQL statements.
  \item Optimize ABEL by trying to reduce network round trip times to a minimum.

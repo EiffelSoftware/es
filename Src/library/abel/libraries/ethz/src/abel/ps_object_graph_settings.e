@@ -7,7 +7,7 @@ note
 	documentation:
 	"[
 		Documentation of the object graph depth concept:
-			For each operation on a repository the object has a certain object graph depth. The depth indicates how much of an object should be loaded.
+			Each CRUD operation has a depth parameter. The depth indicates how much of an object should be loaded.
 			
 			A depth of 1 for example means that only the basic types of an object (Numbers, Booleans and Strings)
 			should be loaded/inserted/updated, but no referenced object. A depth of 2 means that, additionally to the basic types,
@@ -59,8 +59,8 @@ feature -- Update settings
 	update_depth: INTEGER
 			-- Object graph depth for updates
 			-- Updates are somewhat special: For depth 1, the system will look at references and update them if they point to another object than before, but it will not
-			-- call update on the referenced object. In addition, if an update operation finds a new (= not previously loaded) object,
-			-- it will insert it with the insertion depth defined globally in the repository (usually Object_graph_depth_infinite)
+			-- call update on the referenced object. In addition, if an update operation finds a new (= not previously loaded) object, it will insert it
+			-- if is_isert_during_update_enabled is True
 
 	update_last_references: BOOLEAN = True
 			-- Should the last (Depth = 1) references be updated?
