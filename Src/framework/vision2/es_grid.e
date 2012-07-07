@@ -268,7 +268,7 @@ feature -- Change
 			if a_expand_recursive then
 				l_agent := expand_selected_rows_recursive_agent
 				if l_agent = Void then
-					l_agent := agent expand_rows (False)
+					l_agent := agent expand_rows (True)
 					set_expand_selected_rows_recursive_agent (l_agent)
 				end
 				default_expand_rows_recursive_shortcuts.do_all (agent register_shortcut (?, l_agent))
@@ -921,6 +921,60 @@ feature -- Grid helpers
 			end
 		end
 
+	expand_all_rows (rec: BOOLEAN)
+			-- Expand all expandable rows.
+			-- if `rec' is True then do it recursively.
+		require
+			tree_enabled: is_tree_enabled
+		local
+			r: INTEGER
+			l_row: EV_GRID_ROW
+		do
+			from
+				r := 1
+			until
+				r > row_count
+			loop
+				l_row := row (r)
+				if
+					not l_row.is_destroyed and
+					l_row.is_show_requested and -- not hidden
+					l_row.is_expandable and
+					not l_row.is_expanded
+				then
+					expand_row (l_row, rec)
+				end
+				r := r + 1
+			end
+		end
+
+	collapse_all_rows (rec: BOOLEAN)
+			-- Collapse all expandable rows.
+			-- if `rec' is True then do it recursively.
+		require
+			tree_enabled: is_tree_enabled
+		local
+			r: INTEGER
+			l_row: EV_GRID_ROW
+		do
+			from
+				r := 1
+			until
+				r > row_count
+			loop
+				l_row := row (r)
+				if
+					not l_row.is_destroyed and
+					l_row.is_show_requested and -- not hidden
+					l_row.is_expandable and
+					not l_row.is_expanded
+				then
+					collapse_row (l_row, rec)
+				end
+				r := r + 1
+			end
+		end
+
 feature -- Delayed cleaning
 
 	delayed_cleaning_exists: BOOLEAN
@@ -1258,8 +1312,8 @@ invariant
 	selected_rows_agent_attached: selected_rows_function /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software and others"
+	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
