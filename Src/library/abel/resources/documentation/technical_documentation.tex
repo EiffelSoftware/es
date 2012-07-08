@@ -301,7 +301,7 @@ To overcome this problem, you can put all SQL statements in your implementation 
 
 \section{Extensions}
 
-Due to its flexible abstraction mechanism, you can easily extend ABEL with features like client-side transaction management or ESCHER \cite {escher} integration.
+Due to its flexible abstraction mechanism, you can easily extend ABEL with features like client-side transaction management or ESCHER \cite {PiccioniOriolMeyer12} integration.
 
 The general pattern on how to do this is quite simple: 
 You can implement the extension in a class that inherits from \lstinline!BACKEND_STRATEGY! and forwards all calls to another \lstinline!BACKEND_STRATEGY! that does the actual storage.
