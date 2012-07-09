@@ -6,16 +6,20 @@ note
 
 class
 	PS_NO_ERROR
+
 inherit
+
 	PS_ERROR
 
 feature
 
-	description:STRING = "No error occured"
+	description: STRING = "No error occured"
+			-- A human-readable string containing an error description
 
-	accept (a_visitor:PS_ERROR_VISITOR)
+	accept (a_visitor: PS_ERROR_VISITOR)
+			-- `accept' function of the visitor pattern
 		do
-			a_visitor.visit_no_error(Current)
+			a_visitor.visit_no_error (Current)
 		end
 
 end

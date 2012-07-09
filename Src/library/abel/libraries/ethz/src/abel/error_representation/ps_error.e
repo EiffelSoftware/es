@@ -6,27 +6,30 @@ note
 
 deferred class
 	PS_ERROR
+
 inherit
+
 	DEVELOPER_EXCEPTION
-	redefine meaning end
+		redefine
+			meaning
+		end
 
 feature
 
 	meaning: STRING
+			-- A message in English describing what current exception is
 		do
-			Result:= description
+			Result := description
 		end
 
-	description:STRING
+	description: STRING
 			-- A human-readable string containing an error description
 		deferred
 		end
-
 
 	accept (a_visitor: PS_ERROR_VISITOR)
 			-- `accept' function of the visitor pattern
 		deferred
 		end
-
 
 end

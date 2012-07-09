@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PS_VERSION_MISMATCH}."
-	author: ""
+	description: "Represents a version mismatch between stored and current object type."
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -8,13 +8,13 @@ class
 	PS_VERSION_MISMATCH
 
 inherit
+
 	PS_ERROR
 
 feature
 
-	description:STRING = "Version mismatch between stored and current object type"
+	description: STRING = "Version mismatch between stored and current object type"
 			-- A human-readable string containing an error description
-
 
 	accept (a_visitor: PS_ERROR_VISITOR)
 			-- `accept' function of the visitor pattern

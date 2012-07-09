@@ -6,17 +6,20 @@ note
 
 class
 	PS_TRANSACTION_CONFLICT
+
 inherit
+
 	PS_ERROR
 
 feature
 
-	description:STRING = "Transaction error"
+	description: STRING = "Transaction error"
+			-- A human-readable string containing an error description
 
 	accept (a_visitor: PS_ERROR_VISITOR)
+			-- `accept' function of the visitor pattern
 		do
 			a_visitor.visit_transaction_error (Current)
 		end
-
 
 end
