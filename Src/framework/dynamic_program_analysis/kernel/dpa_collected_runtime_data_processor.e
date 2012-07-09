@@ -5,14 +5,17 @@ note
 	revision: "$Revision$"
 
 class
-	EPA_COLLECTED_RUNTIME_DATA_PROCESSOR
+	DPA_OFFLINE_PROCESSOR
+
+inherit
+	DPA_DATA_PROCESSOR
 
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (a_program_locations: like program_locations; a_post_state_map: like post_state_map; a_prgm_locs_with_exprs: like prgm_locs_with_exprs; a_debugger_manager: like debugger_manager)
+	make (a_program_locations: like program_locations; a_post_state_map: like post_state_map; a_debugger_manager: like debugger_manager)
 			-- Initialize Current.
 		require
 			a_program_locations_not_void: a_program_locations /= Void
@@ -22,35 +25,20 @@ feature {NONE} -- Initialization
 			create collected_states.make (0)
 			program_locations := a_program_locations
 			post_state_map := a_post_state_map
-			prgm_locs_with_exprs := a_prgm_locs_with_exprs
 			debugger_manager := a_debugger_manager
+			create last_keys.make_default
+			last_keys.set_equality_tester (string_equality_tester)
 		ensure
 			collected_states_not_void: collected_states /= Void
 			program_locations_set: program_locations = a_program_locations
 			post_state_map_set: post_state_map = a_post_state_map
-			prgm_locs_with_exprs_set: prgm_locs_with_exprs = a_prgm_locs_with_exprs
 			debugger_manager_set: debugger_manager = a_debugger_manager
 		end
-
-feature -- Access
-
-	last_data: DS_HASH_TABLE [LINKED_LIST [TUPLE [INTEGER, EPA_POSITIONED_VALUE, EPA_POSITIONED_VALUE]], STRING]
-			-- Runtime data collected through dynamic means
-			-- Keys are program locations and expressions of the form `loc;expr'.
-			-- Values are a list of pre-state / post-state pairs containing pre-state and post-state values.
-
-	last_analysis_order: LINKED_LIST [TUPLE [INTEGER, INTEGER]]
-			-- List of pre-state / post-state pairs in the order they were analyzed.
-			-- Note: The analysis order is not the same as the execution order which is complete
-			-- whilst the analysis order only contains the hit pre-state / post-state breakpoint slots.
 
 feature {EPA_DYNAMIC_ANALYSIS_CMD} -- Process
 
 	process (a_bp: BREAKPOINT; a_state: EPA_STATE)
 			-- Add `a_bp' and `a_state' to `collected_states'.
-		require
-			a_bp_not_void: a_bp /= Void
-			a_state_not_void: a_state /= Void
 		local
 			l_status: APPLICATION_STATUS
 			l_stack: EIFFEL_CALL_STACK
@@ -75,65 +63,66 @@ feature -- Post processing
 			l_key, l_expr, l_pre_bp: STRING
 			l_expressions: ARRAY [STRING]
 		do
-			-- Initialize `last_data' and `last_analysis_order' where the result of the post-processing
-			-- will be made available.
-			create last_data.make_default
-			create last_analysis_order.make
+			if not collected_states.is_empty then
+				-- Initialize `last_data' and `last_analysis_order' where the result of the post-processing
+				-- will be made available.
+				create last_data.make_default
+				create last_analysis_order.make
 
-			-- Iterate over collected states
-			from
-				i := 1
-				l_upper_bound := collected_states.count - 1
-			until
-				i > l_upper_bound
-			loop
-				-- Fetch pre-state and post-state breakpoint slot values
-				-- and check if they form a valid pre-state / post-state pair.
-				l_pre_state_bp_slot := collected_states.i_th (i).bp_slot
-				l_post_state_bp_slot := collected_states.i_th (i + 1).bp_slot
-				if is_valid_pre_post_state_pair (l_pre_state_bp_slot, l_post_state_bp_slot) then
-					last_analysis_order.extend ([l_pre_state_bp_slot, l_post_state_bp_slot])
+				-- Iterate over collected states
+				from
+					i := 1
+					l_upper_bound := collected_states.count - 1
+				until
+					i > l_upper_bound
+				loop
+					-- Fetch pre-state and post-state breakpoint slot values
+					-- and check if they form a valid pre-state / post-state pair.
+					l_pre_state_bp_slot := collected_states.i_th (i).bp_slot
+					l_post_state_bp_slot := collected_states.i_th (i + 1).bp_slot
+					if is_valid_pre_post_state_pair (l_pre_state_bp_slot, l_post_state_bp_slot) then
+						last_analysis_order.extend ([l_pre_state_bp_slot, l_post_state_bp_slot])
 
-					-- Fetch pre-state and post-state values
-					l_pre_state_values := collected_states.i_th (i).state.to_hash_table
-					l_post_state_values := collected_states.i_th (i + 1).state.to_hash_table
+						-- Fetch pre-state and post-state values
+						l_pre_state_values := collected_states.i_th (i).state.to_hash_table
+						l_post_state_values := collected_states.i_th (i + 1).state.to_hash_table
 
-					-- Iterate over the collected expressions
-					if prgm_locs_with_exprs /= Void then
-						l_expressions := prgm_locs_with_exprs.item (l_pre_state_bp_slot).to_array
-					else
-						l_expressions := l_pre_state_values.current_keys
-					end
-					across l_expressions as l_exprs loop
-						l_expr := l_exprs.item
+						-- Iterate over the collected expressions
+						if prgm_locs_with_exprs /= Void then
+							l_expressions := prgm_locs_with_exprs.item (l_pre_state_bp_slot).to_array
+						else
+							l_expressions := l_pre_state_values.current_keys
+						end
+						across l_expressions as l_exprs loop
+							l_expr := l_exprs.item
 
-						-- Check if `l_expr' appears both in the pre-state and post-state
-						if l_pre_state_values.has (l_expr) and l_post_state_values.has (l_expr) then
-							-- Create positioned pre-state and post-state values for `l_expr'
-							create l_pre_state_value.make (l_pre_state_bp_slot, l_pre_state_values.item (l_expr))
-							create l_post_state_value.make (l_post_state_bp_slot, l_post_state_values.item (l_expr))
+							-- Check if `l_expr' appears both in the pre-state and post-state
+							if l_pre_state_values.has (l_expr) and l_post_state_values.has (l_expr) then
+								-- Create positioned pre-state and post-state values for `l_expr'
+								create l_pre_state_value.make (l_pre_state_bp_slot, l_pre_state_values.item (l_expr))
+								create l_post_state_value.make (l_post_state_bp_slot, l_post_state_values.item (l_expr))
 
-							-- Check if the key already exists in `last_data'
-							l_pre_bp := l_pre_state_bp_slot.out
-							create l_key.make (l_pre_bp.count + l_expr.count + 1)
-							l_key.append (l_pre_bp)
-							l_key.append_character (';')
-							l_key.append (l_expr)
-							if last_data.has (l_key) then
-								l_list := last_data.item (l_key)
-								l_list.extend ([collected_states.i_th (i).call_stack_count, l_pre_state_value, l_post_state_value])
-							else
-								create l_list.make
-								l_list.extend ([collected_states.i_th (i).call_stack_count, l_pre_state_value, l_post_state_value])
-								last_data.force_last (l_list, l_key)
+								-- Check if the key already exists in `last_data'
+								l_pre_bp := l_pre_state_bp_slot.out
+								create l_key.make (l_pre_bp.count + l_expr.count + 1)
+								l_key.append (l_pre_bp)
+								l_key.append_character (';')
+								l_key.append (l_expr)
+								last_keys.force_last (l_key)
+								if last_data.has (l_key) then
+									l_list := last_data.item (l_key)
+									l_list.extend ([collected_states.i_th (i).call_stack_count, l_pre_state_value, l_post_state_value])
+								else
+									create l_list.make
+									l_list.extend ([collected_states.i_th (i).call_stack_count, l_pre_state_value, l_post_state_value])
+									last_data.force_last (l_list, l_key)
+								end
 							end
 						end
 					end
+					i := i + 1
 				end
-				i := i + 1
 			end
-		ensure
-			last_data_not_void: last_data /= Void
 		end
 
 feature {NONE} -- Implementation
@@ -159,10 +148,6 @@ feature {NONE} -- Implementation
 	post_state_map: DS_HASH_TABLE [DS_HASH_SET [INTEGER], INTEGER]
 			-- Contains the found post-states.
 			-- Keys are pre-states and values are (possibly multiple) post-states
-
-	prgm_locs_with_exprs: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
-			-- Program locations where the associated expressions should
-			-- be evaluated.
 
 	debugger_manager: DEBUGGER_MANAGER
 			-- Manager in charge of debugging operations.

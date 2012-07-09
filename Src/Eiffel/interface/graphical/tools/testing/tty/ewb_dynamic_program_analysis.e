@@ -1,5 +1,5 @@
 note
-	description: "Command for annotation"
+	description: "Command for dynamic program analysis"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -22,16 +22,16 @@ feature {NONE} -- Initialization
 		require
 			a_arguments_attached: a_arguments /= Void
 		do
-			create {LINKED_LIST [STRING]} contract_inference_arguments.make
-			a_arguments.do_all (agent contract_inference_arguments.extend)
+			create {LINKED_LIST [STRING]} dynamic_program_analysis_arguments.make
+			a_arguments.do_all (agent dynamic_program_analysis_arguments.extend)
 		ensure
-			arguments_set: contract_inference_arguments /= Void and then contract_inference_arguments.count = a_arguments.count
+			arguments_set: dynamic_program_analysis_arguments /= Void and then dynamic_program_analysis_arguments.count = a_arguments.count
 		end
 
 feature -- Access
 
-	contract_inference_arguments: LINKED_LIST [STRING];
-			-- Arguments to AutoFix command line
+	dynamic_program_analysis_arguments: LINKED_LIST [STRING];
+			-- Arguments to dynamic program analysis command line
 
 feature -- Properties
 
@@ -54,13 +54,13 @@ feature -- Properties
 			-- Action performed when invoked from the
 			-- command line.
 		local
-			l_parser: EPA_DYN_ANALYSIS_CMD_LINE_PARSER
-			l_config: EPA_DYNAMIC_ANALYSIS_CONFIG
-			l_cmd, l_dynamic_cmd: EPA_DYNAMIC_ANALYSIS_CMD
+			l_parser: DPA_COMMAND_LINE_PARSER
+			l_config: DPA_CONFIGURATION
+			l_cmd, l_dynamic_cmd: DPA_COMMAND
 		do
-			create l_parser.make_with_arguments (contract_inference_arguments, system)
+			create l_parser.make_with_arguments (dynamic_program_analysis_arguments, system)
 			l_parser.parse
-			l_config := l_parser.config
+			l_config := l_parser.configuration
 
 			create l_dynamic_cmd.make (l_config)
 			l_cmd := l_dynamic_cmd
@@ -71,7 +71,7 @@ feature -- Properties
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

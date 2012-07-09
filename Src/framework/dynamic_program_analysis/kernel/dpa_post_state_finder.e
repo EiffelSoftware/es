@@ -1,11 +1,11 @@
 note
-	description: "Class to find post-states in terms of breakpoint slots."
+	description: "Class to find post-state breakpoint slots."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	EPA_POST_STATE_FINDER
+	DPA_POST_STATE_FINDER
 
 inherit
 	EPA_UTILITY
@@ -15,7 +15,7 @@ inherit
 create
 	default_create, make
 
-feature -- Creation procedure
+feature {NONE} -- Initialization
 
 	make (a_class: like class_; a_feature: like feature_)
 			-- Initialize `class_' with `a_class' and `feature_' with `a_feature'
@@ -27,15 +27,15 @@ feature -- Creation procedure
 feature -- Operation
 
 	find
-			-- Finds all post-states and makes them available in `post_state_map'
+			-- Finds all post-states and makes them available in `post_state_bp_map'
 		local
 			l_cfg_builder: EPA_CFG_BUILDER
 			l_cfg_printer: EGX_SIMPLE_DOT_GRAPH_PRINTER [EPA_BASIC_BLOCK, EPA_CFG_EDGE]
 		do
 			-- Initialize helper attributes
-			create post_state_map.make_default
+			create post_state_bp_map.make_default
 			create stack.make
-			create missing_post_states.make_default
+			create missing_post_state_bp.make_default
 			create visited_loop_branching_blocks.make_default
 			maximal_breakpoint_slot := 1
 
@@ -52,10 +52,10 @@ feature -- Operation
 
 			-- Look for all post-states
 			cfg.start_node.process (Current)
-			add_missing_post_states
-			add_contract_post_states
+			add_missing_post_state_bp
+			add_contract_post_state_bp
 		ensure
-			post_state_map_not_void: post_state_map /= Void
+			post_state_bp_map_not_void: post_state_bp_map /= Void
 		end
 
 feature -- Setting
@@ -82,49 +82,49 @@ feature -- Setting
 
 feature -- Access
 
-	class_: CLASS_C assign set_class
-			-- Class in which post-states should be found
+	class_: CLASS_C
+			-- Class belonging to `feature_'
 
-	feature_: FEATURE_I assign set_feature
-			-- Feature for which post-states should be found
+	feature_: FEATURE_I
+			-- Feature for which post-state breakpoint slots should be found
 
-	post_state_map: DS_HASH_TABLE [DS_HASH_SET [INTEGER], INTEGER]
-			-- Contains the found post-states.
-			-- Keys are pre-states and values are (possibly multiple) post-states
+	post_state_bp_map: DS_HASH_TABLE [DS_HASH_SET [INTEGER], INTEGER]
+			-- Contains the found post-state breakpoint slot.
+			-- Keys are pre-state breakpoint slots and values are (possibly multiple) post-state breakpoint slots
 
 	cfg: EPA_CONTROL_FLOW_GRAPH
-			-- Control flow graph which is used to find the post-states
+			-- Control flow graph which is used to find post-state breakpoint slots
 
 feature -- Printing			
 
-	print_post_state_map
+	print_post_state_bp_map
 			-- Prints the post-state map in the console
 		do
 			from
-				post_state_map.start
+				post_state_bp_map.start
 			until
-				post_state_map.after
+				post_state_bp_map.after
 			loop
-				io.put_string (post_state_map.key_for_iteration.out + ": ")
+				io.put_string (post_state_bp_map.key_for_iteration.out + ": ")
 				from
-					post_state_map.item_for_iteration.start
+					post_state_bp_map.item_for_iteration.start
 				until
-					post_state_map.item_for_iteration.after
+					post_state_bp_map.item_for_iteration.after
 				loop
-					io.put_string (post_state_map.item_for_iteration.item_for_iteration.out)
-					if not post_state_map.item_for_iteration.is_last then
+					io.put_string (post_state_bp_map.item_for_iteration.item_for_iteration.out)
+					if not post_state_bp_map.item_for_iteration.is_last then
 						io.put_string (", ")
 					end
-					post_state_map.item_for_iteration.forth
+					post_state_bp_map.item_for_iteration.forth
 				end
-				if not post_state_map.is_last then
+				if not post_state_bp_map.is_last then
 					io.put_string ("%N%N")
 				end
-				post_state_map.forth
+				post_state_bp_map.forth
 			end
 		end
 
-	print_post_state_map_into_file (a_path: STRING)
+	print_post_state_bp_map_into_file (a_path: STRING)
 			-- Prints the post-state map into the folder specified by `a_path'.
 			-- The file name contains the class and feature name to which the post-state
 			-- map belongs to.
@@ -135,26 +135,26 @@ feature -- Printing
 		do
 			create l_text_file.make_create_read_write (a_path + class_.name + "." + feature_.feature_name + ".txt")
 			from
-				post_state_map.start
+				post_state_bp_map.start
 			until
-				post_state_map.after
+				post_state_bp_map.after
 			loop
-				l_text_file.put_string (post_state_map.key_for_iteration.out + ": ")
+				l_text_file.put_string (post_state_bp_map.key_for_iteration.out + ": ")
 				from
-					post_state_map.item_for_iteration.start
+					post_state_bp_map.item_for_iteration.start
 				until
-					post_state_map.item_for_iteration.after
+					post_state_bp_map.item_for_iteration.after
 				loop
-					l_text_file.put_string (post_state_map.item_for_iteration.item_for_iteration.out)
-					if not post_state_map.item_for_iteration.is_last then
+					l_text_file.put_string (post_state_bp_map.item_for_iteration.item_for_iteration.out)
+					if not post_state_bp_map.item_for_iteration.is_last then
 						l_text_file.put_string (", ")
 					end
-					post_state_map.item_for_iteration.forth
+					post_state_bp_map.item_for_iteration.forth
 				end
-				if not post_state_map.is_last then
+				if not post_state_bp_map.is_last then
 					l_text_file.put_string ("%N%N")
 				end
-				post_state_map.forth
+				post_state_bp_map.forth
 			end
 		end
 
@@ -201,11 +201,11 @@ feature -- Roundtrip
 					l_successors.forth
 				end
 			else
-				missing_post_states.force_last (stack.item)
+				missing_post_state_bp.force_last (stack.item)
 			end
 
-			if not post_state_map.has (stack.item) then
-				missing_post_states.force_last (stack.item)
+			if not post_state_bp_map.has (stack.item) then
+				missing_post_state_bp.force_last (stack.item)
 			end
 
 			stack.remove
@@ -229,7 +229,7 @@ feature -- Roundtrip
 					l_successors.forth
 				end
 			else
-				missing_post_states.force_last (stack.item)
+				missing_post_state_bp.force_last (stack.item)
 			end
 		end
 
@@ -261,7 +261,7 @@ feature -- Roundtrip
 					l_successors.forth
 				end
 			else
-				missing_post_states.force_last (stack.item)
+				missing_post_state_bp.force_last (stack.item)
 			end
 
 			stack.remove
@@ -295,7 +295,7 @@ feature -- Roundtrip
 					l_successors.forth
 				end
 			else
-				missing_post_states.force_last (stack.item)
+				missing_post_state_bp.force_last (stack.item)
 			end
 
 			stack.remove
@@ -333,7 +333,7 @@ feature -- Roundtrip
 						l_successors.forth
 					end
 				else
-					missing_post_states.force_last (stack.item)
+					missing_post_state_bp.force_last (stack.item)
 				end
 			end
 
@@ -346,7 +346,7 @@ feature {NONE} -- Implementation
 			-- A stack temporarily storing the pre-states whose post-states are not
 			-- in the same block of the CFG.
 
-	missing_post_states: DS_HASH_SET [INTEGER]
+	missing_post_state_bp: DS_HASH_SET [INTEGER]
 			-- A set storing the pre-states for which post-states could not be found
 			-- because the end node of the current CFG is a auxilary node.
 
@@ -371,33 +371,33 @@ feature {NONE} -- Implementation
 		local
 			l_set: DS_HASH_SET [INTEGER]
 		do
-			if post_state_map.has (a_pre_state_slot) then
-				l_set := post_state_map.item (a_pre_state_slot)
+			if post_state_bp_map.has (a_pre_state_slot) then
+				l_set := post_state_bp_map.item (a_pre_state_slot)
 				l_set.force_last (a_post_state_slot)
 			else
 				create l_set.make_default
 				l_set.force_last (a_post_state_slot)
-				post_state_map.force_last (l_set, a_pre_state_slot)
+				post_state_bp_map.force_last (l_set, a_pre_state_slot)
 			end
 		end
 
-	add_missing_post_states
+	add_missing_post_state_bp
 			-- Adds the missing post-states to the post-state map.
 		do
 			maximal_breakpoint_slot := maximal_breakpoint_slot + 1
 
 			from
-				missing_post_states.start
+				missing_post_state_bp.start
 			until
-				missing_post_states.after
+				missing_post_state_bp.after
 			loop
-				add_post_state (missing_post_states.item_for_iteration, maximal_breakpoint_slot)
+				add_post_state (missing_post_state_bp.item_for_iteration, maximal_breakpoint_slot)
 
-				missing_post_states.forth
+				missing_post_state_bp.forth
 			end
 		end
 
-	add_contract_post_states
+	add_contract_post_state_bp
 			--
 		local
 			l_bp_interval: INTEGER_INTERVAL
@@ -411,10 +411,10 @@ feature {NONE} -- Implementation
 				until
 					i = l_bp_interval.lower
 				loop
-					check not post_state_map.has (i) end
+					check not post_state_bp_map.has (i) end
 					create l_post_state_bp.make_default
 					l_post_state_bp.force_last (i + 1)
-					post_state_map.force_last (l_post_state_bp, i)
+					post_state_bp_map.force_last (l_post_state_bp, i)
 					i := i + 1
 				end
 			end
@@ -424,10 +424,10 @@ feature {NONE} -- Implementation
 				until
 					i = breakpoint_count (feature_)
 				loop
-					check not post_state_map.has (i) end
+					check not post_state_bp_map.has (i) end
 					create l_post_state_bp.make_default
 					l_post_state_bp.force_last (i + 1)
-					post_state_map.force_last (l_post_state_bp, i)
+					post_state_bp_map.force_last (l_post_state_bp, i)
 					i := i + 1
 				end
 			end

@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	EPA_COLLECTED_RUNTIME_DATA_PRINT_VISITOR
+	DPA_PRINT_JSON_VISITOR
 
 inherit
 	PRINT_JSON_VISITOR

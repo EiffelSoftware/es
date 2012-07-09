@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	EPA_INTERESTING_PRE_STATE_FINDER
+	DPA_INTERESTING_PRE_STATE_FINDER
 
 inherit
 	AST_ITERATOR
@@ -24,11 +24,11 @@ inherit
 	KL_SHARED_STRING_EQUALITY_TESTER
 
 create
-	default_create, make_with
+	default_create, make
 
-feature -- Initialization
+feature {NONE} -- Initialization
 
-	make_with (a_ast: like ast)
+	make (a_ast: like ast)
 			-- Sets `ast' to `a_ast'
 		require
 			a_ast_not_void: a_ast /= Void
