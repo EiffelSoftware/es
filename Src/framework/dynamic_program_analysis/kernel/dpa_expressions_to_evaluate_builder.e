@@ -241,10 +241,6 @@ feature -- Access
 	feature_: FEATURE_I
 			-- Feature which should be analyzed
 
-	program_locations: DS_HASH_SET [INTEGER]
-			-- Program locations used to determine
-			-- if a variable found in
-
 	is_storage_of_vars_exprs_mapping_activated: BOOLEAN
 			--
 
