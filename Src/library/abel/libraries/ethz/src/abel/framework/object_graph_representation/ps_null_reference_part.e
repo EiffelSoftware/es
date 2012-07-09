@@ -8,13 +8,15 @@ class
 	PS_NULL_REFERENCE_PART
 
 inherit
+
 	PS_SIMPLE_PART
 
-create default_make
+create
+	default_make
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
-	is_representing_object:BOOLEAN = False
-		-- Is `Current' representing an existing object?
+	is_representing_object: BOOLEAN = False
+			-- Is `Current' representing an existing object?
 
 end

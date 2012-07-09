@@ -1,22 +1,23 @@
 note
 	description: "[
-	Test objects for serialization, filled in with attributes of the following types:
-	ARRAY [FLAT_CLASS_1], ARRAY2 [FLAT_CLASS_1], SPECIAL [FLAT_CLASS_1],
-	ARRAYED_LIST [FLAT_CLASS_1], LINKED_LIST [FLAT_CLASS_1], 
-	HASH_TABLE [FLAT_CLASS_1, STRING], TUPLE [FLAT_CLASS_1, INTEGER, STRING].
+		Test objects for serialization, filled in with attributes of the following types:
+		ARRAY [FLAT_CLASS_1], ARRAY2 [FLAT_CLASS_1], SPECIAL [FLAT_CLASS_1],
+		ARRAYED_LIST [FLAT_CLASS_1], LINKED_LIST [FLAT_CLASS_1], 
+		HASH_TABLE [FLAT_CLASS_1, STRING], TUPLE [FLAT_CLASS_1, INTEGER, STRING].
 	]"
 	author: "Marco Piccioni"
 	date: "$Date$"
 	revision: "$Revision$"
 
-
 class
 	DATA_STRUCTURES_CLASS_1
 
-inherit ANY
+inherit
 
-redefine
-	out end
+	ANY
+		redefine
+			out
+		end
 
 create
 	make
@@ -34,7 +35,6 @@ feature {DATA_STRUCTURES_CLASS_1_FOR_STORABLE} -- Initialization
 			create array_3.make_filled (create {FLAT_CLASS_1}.make, 10)
 			create arrayed_list_1.make_from_array (array_1)
 			create linked_list_1.make
-
 			from
 				i := 1
 			until
@@ -44,7 +44,6 @@ feature {DATA_STRUCTURES_CLASS_1_FOR_STORABLE} -- Initialization
 				linked_list_1.forth
 				i := i + 1
 			end
-
 			create hash_table_1.make (10)
 			from
 				i := 1
@@ -73,11 +72,17 @@ feature {DATA_STRUCTURES_CLASS_1_FOR_STORABLE} -- Initialization
 feature -- Access
 
 	array_1: ARRAY [FLAT_CLASS_1]
+
 	array_2: ARRAY2 [FLAT_CLASS_1]
+
 	array_3: SPECIAL [FLAT_CLASS_1]
+
 	arrayed_list_1: ARRAYED_LIST [FLAT_CLASS_1]
+
 	linked_list_1: LINKED_LIST [FLAT_CLASS_1]
+
 	hash_table_1: HASH_TABLE [FLAT_CLASS_1, STRING]
+
 	tuple_1: TUPLE [FLAT_CLASS_1, INTEGER, STRING]
 
 feature -- Status Report
@@ -92,4 +97,5 @@ feature -- Status Report
 			Result.append ("hash_table_1:%N " + hash_table_1.out)
 			Result.append ("tuple_1:%N " + tuple_1.out)
 		end
+
 end

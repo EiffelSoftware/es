@@ -15,6 +15,7 @@ create make
 feature {PS_REPOSITORY_TESTS}
 
 	test_no_lost_update
+		-- Test if a lost update can happen.
 		local
 			some_person: PERSON
 			t1, t2: PS_TRANSACTION

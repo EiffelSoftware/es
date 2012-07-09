@@ -5,7 +5,6 @@ note
 	revision: "$Revision$"
 
 class
-	--PERSON_renamed
 	PERSON
 
 create
@@ -43,7 +42,7 @@ feature -- Basic operations
 
 	add_item
 		do
-			items_owned:= items_owned+1
+			items_owned := items_owned + 1
 		end
 
 feature {NONE} -- Implementation

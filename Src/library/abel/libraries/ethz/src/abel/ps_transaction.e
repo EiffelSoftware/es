@@ -8,6 +8,7 @@ class
 	PS_TRANSACTION
 
 inherit
+
 	PS_EIFFELSTORE_EXPORT
 
 create
@@ -23,22 +24,20 @@ feature {NONE} -- Initialization
 		do
 			repository := a_repository
 			create {PS_NO_ERROR} error
-			is_readonly:=False
-			is_active:=True
+			is_readonly := False
+			is_active := True
 		end
 
-	make_readonly (a_repository:PS_REPOSITORY)
+	make_readonly (a_repository: PS_REPOSITORY)
 			-- Initialize `Current', mark transaction as readonly
 		do
 			repository := a_repository
 			create {PS_NO_ERROR} error
-			is_readonly:=True
-			is_active:=True
+			is_readonly := True
+			is_active := True
 		end
 
-
 feature -- Access
-
 
 	error: PS_ERROR
 			-- Error description of the last error
@@ -58,18 +57,14 @@ feature -- Status report
 		attribute
 		end
 
-
 	has_error: BOOLEAN
 			-- Has there been an error in any of the operations or the final commit?
 		do
 			Result := not attached {PS_NO_ERROR} error
 		end
 
-
-	is_readonly:BOOLEAN
+	is_readonly: BOOLEAN
 			-- Is this a readonly transaction?
-
-
 
 feature -- Basic operations
 
@@ -80,18 +75,15 @@ feature -- Basic operations
 			if is_active then
 				repository.commit_transaction (Current)
 			end
-
 		ensure
 			transaction_terminted: not is_active
-
 		rescue
-			-- Catch any exception if the commit failed
+				-- Catch any exception if the commit failed
 			check
 				ensure_correct_rollback: not is_active and not is_successful_commit
 			end
 			retry -- Do nothing, but terminate normally.
 		end
-
 
 	rollback
 			-- Rollback all operations within this transaction.
@@ -104,10 +96,9 @@ feature -- Basic operations
 			no_success: not is_successful_commit
 		end
 
-
 feature {PS_EIFFELSTORE_EXPORT} -- Internals
 
-	set_error (an_error:PS_ERROR)
+	set_error (an_error: PS_ERROR)
 			-- Set the error field if an error occured.
 		do
 			error := an_error
@@ -116,19 +107,20 @@ feature {PS_EIFFELSTORE_EXPORT} -- Internals
 		end
 
 	declare_as_aborted
+			-- Declare `Current' as aborted
 		do
-			is_active:= False
-			is_successful_commit:= False
+			is_active := False
+			is_successful_commit := False
 		end
 
 	declare_as_successful
+			-- Declare `Current' as successfully committed
 		do
-			is_active:= False
-			is_successful_commit:= True
+			is_active := False
+			is_successful_commit := True
 		end
 
 invariant
 	error_implies_no_success: not is_active and has_error implies not is_successful_commit
 
 end
-

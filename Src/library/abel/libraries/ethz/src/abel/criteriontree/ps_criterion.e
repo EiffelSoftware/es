@@ -10,23 +10,22 @@ deferred class
 feature -- Functions to build a criterion tree.
 
 	criterion_and alias "and" (t: PS_CRITERION): PS_AND_CRITERION
-		-- Create and return an "and"-node with `Current' and `t' as children.
+			-- Create and return an "and"-node with `Current' and `t' as children.
 		do
 			create Result.make (Current, t)
 		end
 
 	criterion_or alias "or" (t: PS_CRITERION): PS_OR_CRITERION
-		-- Create and return an "or"-node with `Current' and `t' as children.
+			-- Create and return an "or"-node with `Current' and `t' as children.
 		do
 			create Result.make (Current, t)
 		end
 
 	criterion_not alias "not": PS_NOT_CRITERION
-		-- Create and return a "not"-node with `Current' as child.
+			-- Create and return a "not"-node with `Current' as child.
 		do
 			create Result.make (Current)
 		end
-
 
 feature -- Check
 
@@ -42,21 +41,20 @@ feature -- Check
 		deferred
 		end
 
-
 feature -- Miscellaneous
 
-	has_agent_criterion:BOOLEAN
-		-- Is there an agent criterion in the criterion tree?
+	has_agent_criterion: BOOLEAN
+			-- Is there an agent criterion in the criterion tree?
 		deferred
 		end
 
-	is_empty_criterion:BOOLEAN
+	is_empty_criterion: BOOLEAN
 			-- Is `Current' a PS_EMPTY_CRITERION?
 		do
-			Result:=false
+			Result := false
 		end
 
-	accept (a_visitor: PS_CRITERION_VISITOR[ANY]) :ANY
+	accept (a_visitor: PS_CRITERION_VISITOR [ANY]): ANY
 			-- `accept' function of the Visitor pattern
 		deferred
 		end

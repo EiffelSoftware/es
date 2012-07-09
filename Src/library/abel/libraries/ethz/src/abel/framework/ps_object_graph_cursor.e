@@ -6,115 +6,112 @@ note
 
 class
 	PS_OBJECT_GRAPH_CURSOR
+
 inherit
-	ITERATION_CURSOR[PS_OBJECT_GRAPH_PART]
+
+	ITERATION_CURSOR [PS_OBJECT_GRAPH_PART]
+
 	PS_EIFFELSTORE_EXPORT
+
 create
 	make
 
 feature -- Cursor status and movement
 
 	item: PS_OBJECT_GRAPH_PART
-		-- Item at current cursor position.
+			-- Item at current cursor position.
 		do
-			Result:= current_cursor.item
+			Result := current_cursor.item
 		end
 
-
-	after:BOOLEAN
-		-- Are there no more items to iterate over?
+	after: BOOLEAN
+			-- Are there no more items to iterate over?
 		do
-			Result:= cursor_stack.is_empty and current_cursor.after
+			Result := cursor_stack.is_empty and current_cursor.after
 		end
 
 	forth
-		-- Move to next position
+			-- Move to next position
 		do
 			move
 		ensure then
 			consistent: is_consistent
 		end
 
-	previous:PS_OBJECT_GRAPH_PART
-		-- The previous item
+	previous: PS_OBJECT_GRAPH_PART
+			-- The previous item
 		require
 			not after and not is_at_root_object
 		do
-			Result:= object_graph_stack.item
+			Result := object_graph_stack.item
 		ensure
 			not_item: Result /= item
 		end
 
-	is_at_root_object:BOOLEAN
-		-- Is the cursor currently pointing at the root object?
+	is_at_root_object: BOOLEAN
+			-- Is the cursor currently pointing at the root object?
 		do
-			Result:= object_graph_stack.is_empty and not after
+			Result := object_graph_stack.is_empty and not after
 		end
-
-
 
 feature -- Visited item handler function
 
-	cycle_handler: PROCEDURE [ANY, TUPLE[PS_OBJECT_GRAPH_PART, PS_OBJECT_GRAPH_PART]]
-		-- A handler function to handle cycles in the object graph.
+	cycle_handler: PROCEDURE [ANY, TUPLE [PS_OBJECT_GRAPH_PART, PS_OBJECT_GRAPH_PART]]
+			-- A handler function to handle cycles in the object graph.
 
-	set_handler (a_handler: PROCEDURE  [ANY, TUPLE[PS_OBJECT_GRAPH_PART, PS_OBJECT_GRAPH_PART]])
-		-- Set a handler function to be called when a cycle is detected
+	set_handler (a_handler: PROCEDURE [ANY, TUPLE [PS_OBJECT_GRAPH_PART, PS_OBJECT_GRAPH_PART]])
+			-- Set a handler function to be called when a cycle is detected
 		do
-			cycle_handler:= a_handler
+			cycle_handler := a_handler
 		end
 
-
-	default_handler (parent, visited_item:PS_OBJECT_GRAPH_PART)
-		-- A default handler that does nothing
+	default_handler (parent, visited_item: PS_OBJECT_GRAPH_PART)
+			-- A default handler that does nothing
 		do
 		end
-
 
 feature {NONE} -- Implementation
 
-
 	move
-		-- Move to the next item
+			-- Move to the next item
 		require
 			not_after: not after
 			consistent: is_consistent
 		do
-			from step_in
-			until is_consistent
+			from
+				step_in
+			until
+				is_consistent
 			loop
 				fix
-	--		variant
-	--			object_graph_stack.count
 			end
 		ensure
 			consistent: is_consistent
 		end
 
 	step_in
-		-- Do a step down the object graph
+			-- Do a step down the object graph
 		require
 			not object_graph_stack.has (item)
 		do
 			object_graph_stack.put (item)
 			cursor_stack.put (current_cursor)
 			visited_items.extend (item)
-			current_cursor:= item.dependencies.new_cursor
+			current_cursor := item.dependencies.new_cursor
 		ensure
 			object_graph_stack.has (old item)
 		end
 
 	step_out
-		-- Do a step up the object graph
+			-- Do a step up the object graph
 		do
-			current_cursor:= cursor_stack.item
+			current_cursor := cursor_stack.item
 			object_graph_stack.remove
 			cursor_stack.remove
 		end
 
-
 	fix
-		-- Try to fix any inconsistency
+			-- Try to fix any inconsistency
 		do
 			if not current_cursor.after and then object_graph_stack.has (item) then
 				cycle_handler.call ([previous, item])
@@ -125,50 +122,46 @@ feature {NONE} -- Implementation
 			current_cursor.forth
 		end
 
-
 	is_consistent: BOOLEAN
-		-- Is the cursor in a consistent state at the moment?
+			-- Is the cursor in a consistent state at the moment?
 		do
-			Result:= True
+			Result := True
 			if after then
-				Result:= True
+				Result := True
 			elseif current_cursor.after then
-				Result:= False
+				Result := False
 			elseif object_graph_stack.has (item) or visited_items.has (item) then
-				Result:= False
+				Result := False
 			else
-				Result:= True
+				Result := True
 			end
-
 		end
-
 
 feature {NONE} -- Implementation
 
-	object_graph_stack:LINKED_STACK[ PS_OBJECT_GRAPH_PART]
+	object_graph_stack: LINKED_STACK [PS_OBJECT_GRAPH_PART]
 
-	cursor_stack: LINKED_STACK[ INDEXABLE_ITERATION_CURSOR[PS_OBJECT_GRAPH_PART]]
+	cursor_stack: LINKED_STACK [INDEXABLE_ITERATION_CURSOR [PS_OBJECT_GRAPH_PART]]
 
-	current_cursor: INDEXABLE_ITERATION_CURSOR[PS_OBJECT_GRAPH_PART]
+	current_cursor: INDEXABLE_ITERATION_CURSOR [PS_OBJECT_GRAPH_PART]
 
-	root: LINKED_LIST[PS_OBJECT_GRAPH_PART]
+	root: LINKED_LIST [PS_OBJECT_GRAPH_PART]
 
-	visited_items: LINKED_LIST[PS_OBJECT_GRAPH_PART]
+	visited_items: LINKED_LIST [PS_OBJECT_GRAPH_PART]
 
 feature {NONE} -- Initialization
 
-	make (graph:PS_OBJECT_GRAPH_PART)
+	make (graph: PS_OBJECT_GRAPH_PART)
+			-- Initialization for `Current'
 		do
 			create root.make
 			root.extend (graph)
-			current_cursor:= root.new_cursor
-
+			current_cursor := root.new_cursor
 			create object_graph_stack.make
 			create cursor_stack.make
-			cycle_handler:= agent default_handler
+			cycle_handler := agent default_handler
 			create visited_items.make
 		end
-
 
 invariant
 	previous_dependant: not (after or is_at_root_object) implies previous.dependencies.has (item)

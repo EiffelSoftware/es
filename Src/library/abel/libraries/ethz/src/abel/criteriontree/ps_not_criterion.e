@@ -8,6 +8,7 @@ class
 	PS_NOT_CRITERION
 
 inherit
+
 	PS_CRITERION
 
 create
@@ -38,7 +39,6 @@ feature -- Check
 			Result := not child.is_satisfied_by (retrieved_obj)
 		end
 
-
 	can_handle_object (an_object: ANY): BOOLEAN
 			-- Can `Current' handle `an_object' in the is_satisfied_by check?
 		do
@@ -47,16 +47,16 @@ feature -- Check
 
 feature -- Miscellaneous
 
-	has_agent_criterion:BOOLEAN
+	has_agent_criterion: BOOLEAN
 			-- Is there an agent criterion in the criterion tree?
 		do
 			Result := child.has_agent_criterion
 		end
 
-	accept (a_visitor: PS_CRITERION_VISITOR[ANY]): ANY
+	accept (a_visitor: PS_CRITERION_VISITOR [ANY]): ANY
 			-- call visit_not on `a_visitor'
 		do
-			Result:=a_visitor.visit_not (Current)
+			Result := a_visitor.visit_not (Current)
 		end
 
 end

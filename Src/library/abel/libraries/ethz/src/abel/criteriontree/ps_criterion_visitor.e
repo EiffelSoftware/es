@@ -12,7 +12,7 @@ feature
 	visit (a_criterion: PS_CRITERION): RETURN_VALUE
 		do
 			check attached {RETURN_VALUE} a_criterion.accept (Current) as ret then
-				Result:=ret
+				Result := ret
 			end
 		end
 
@@ -36,7 +36,7 @@ feature
 		deferred
 		end
 
-	visit_empty (empty_crit:PS_EMPTY_CRITERION): RETURN_VALUE
+	visit_empty (empty_crit: PS_EMPTY_CRITERION): RETURN_VALUE
 		deferred
 		end
 

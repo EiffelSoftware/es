@@ -8,20 +8,21 @@ class
 	PS_EMPTY_CRITERION
 
 inherit
+
 	PS_CRITERION
 		redefine
 			is_empty_criterion
 		end
 
-create
-	{PS_QUERY, PS_EIFFELSTORE_EXPORT} default_create
+create {PS_QUERY, PS_EIFFELSTORE_EXPORT}
+	default_create
 
 feature -- Check
 
 	is_satisfied_by (retrieved_obj: ANY): BOOLEAN
 			-- Does `retrieved_obj' satisfy the criteria in Current?
 		do
-			Result:=True
+			Result := True
 		end
 
 	can_handle_object (an_object: ANY): BOOLEAN
@@ -30,22 +31,21 @@ feature -- Check
 			Result := True
 		end
 
-
 feature -- Miscellaneous
 
-	has_agent_criterion:BOOLEAN = False
+	has_agent_criterion: BOOLEAN = False
 			-- Is there an agent criterion in the criterion tree?
 
-	is_empty_criterion:BOOLEAN
+	is_empty_criterion: BOOLEAN
 			-- Is `Current' a PS_EMPTY_CRITERION?
 		do
-			Result:=True
+			Result := True
 		end
 
-	accept (a_visitor: PS_CRITERION_VISITOR[ANY]): ANY
+	accept (a_visitor: PS_CRITERION_VISITOR [ANY]): ANY
 			-- Call visit_empty on `a_visitor'
 		do
-			Result:=a_visitor.visit_empty (Current)
+			Result := a_visitor.visit_empty (Current)
 		end
 
 end

@@ -12,15 +12,15 @@ create
 
 feature {NONE} -- Initialization
 
-	make (t:CHAIN_TAIL)
+	make (t: CHAIN_TAIL)
 			-- Initialization for `Current'.
 		do
-			tail:=t
+			tail := t
 		end
 
 feature
 
-	level:INTEGER = 0
+	level: INTEGER = 0
 
 	tail: CHAIN_TAIL
 

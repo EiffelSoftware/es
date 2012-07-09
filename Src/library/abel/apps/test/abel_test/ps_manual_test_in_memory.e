@@ -6,12 +6,15 @@ note
 
 class
 	PS_MANUAL_TEST_IN_MEMORY
+
 inherit
+
 	PS_REPOSITORY_TESTS
 
-feature{NONE}
+feature {NONE}
 
 	make_repository: PS_IN_MEMORY_REPOSITORY
+			-- Create the repository for this test
 		do
 			create Result.make_empty
 		end
@@ -25,7 +28,6 @@ feature
 			criteria_tests.test_criteria_agents_and_predefined
 		end
 
-
 	test_crud_flat_in_memory
 		do
 			crud_tests.all_flat_object_tests
@@ -36,12 +38,10 @@ feature
 			crud_tests.all_references_tests
 		end
 
-
 	test_collections_in_memory
 		do
 			crud_tests.all_collection_tests
 		end
-
 
 	test_transaction_lost
 		do
@@ -67,4 +67,5 @@ feature
 		do
 			object_graph_tests.test_retrieval_settings
 		end
+
 end

@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PS_ESCHER_TEST}."
-	author: ""
+	description: "A small unit test for ESCHER integration."
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -8,28 +8,29 @@ class
 	PS_ESCHER_TEST
 
 inherit
-	EQA_TEST_SET
-	redefine on_prepare end
 
+	EQA_TEST_SET
+		redefine
+			on_prepare
+		end
 
 feature
 
-
 	test_normal_operation
-	 	-- Test if no version mismatch gets handled correctly
-	 	local
-	 		query:PS_OBJECT_QUERY[ESCHER_TEST_CLASS]
-	 	do
+			-- Test if no version mismatch gets handled correctly
+		local
+			query: PS_OBJECT_QUERY [ESCHER_TEST_CLASS]
+		do
 			escher_integration.set_simulation (False)
 			create query.make
 			executor.insert (test_data.escher_test)
 			executor.execute_query (query)
-	 	end
+		end
 
 	test_version_mismatch
-		-- Test the ESCHER version checking by simulating a version mismatch.
+			-- Test the ESCHER version checking by simulating a version mismatch.
 		local
-			query: PS_OBJECT_QUERY[ESCHER_TEST_CLASS]
+			query: PS_OBJECT_QUERY [ESCHER_TEST_CLASS]
 			retried: BOOLEAN
 		do
 			escher_integration.set_simulation (True)
@@ -40,25 +41,23 @@ feature
 			end
 		rescue
 			assert ("No version mismatch error was raised", executor.has_error and then attached {PS_VERSION_MISMATCH} executor.last_error)
-			retried:= True
+			retried := True
 			retry
 		end
 
-
 feature {NONE}
 
+	executor: PS_CRUD_EXECUTOR
 
-	executor:PS_CRUD_EXECUTOR
-	test_data:PS_TEST_DATA
+	test_data: PS_TEST_DATA
 
-	escher_integration:PS_ESCHER_INTEGRATION
-
+	escher_integration: PS_ESCHER_INTEGRATION
 
 	on_prepare
-		-- Set up an in-memory database with an ESCHER integration layer
+			-- Set up an in-memory database with an ESCHER integration layer
 		local
-			real_backend:PS_IN_MEMORY_DATABASE
-			repo:PS_RELATIONAL_REPOSITORY
+			real_backend: PS_IN_MEMORY_DATABASE
+			repo: PS_RELATIONAL_REPOSITORY
 		do
 			create real_backend.make
 			create escher_integration.make (real_backend)

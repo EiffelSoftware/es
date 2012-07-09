@@ -6,47 +6,32 @@ note
 
 class
 	REFERENCE_CLASS_1
-inherit
-	ANY redefine out end
 
-
-create make
+create
+	make
 
 feature
 
-	make (i:INTEGER)
+	make (i: INTEGER)
 		do
-			ref_class_id:= i
+			ref_class_id := i
 			create references.make
---			create ref_arrays.make_filled (Void, 1, 10)
 		end
 
-	ref_class_id:INTEGER
-	references:LINKED_LIST[REFERENCE_CLASS_1]
+	ref_class_id: INTEGER
+
+	references: LINKED_LIST [REFERENCE_CLASS_1]
+
 	refer: detachable REFERENCE_CLASS_1
 
 	add_ref (ref: REFERENCE_CLASS_1)
 		do
-			refer:= ref
+			refer := ref
 		end
-
---	ref_arrays: ARRAY[detachable REFERENCE_CLASS_1]
 
 	update
 		do
-			ref_class_id:= ref_class_id + 1
+			ref_class_id := ref_class_id + 1
 		end
-
-	out:STRING
-	do
-		Result:= tagged_out
---		Result:= "id = " + ref_class_id.out + "%N %T references: %N%T%T"
---		across references as cursor
---		loop
---			Result := result + cursor.item.ref_class_id.out + "%N%T%T"
---		end
-
---		Result:= Result + "%N"
-	end
 
 end

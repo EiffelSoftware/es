@@ -4,22 +4,18 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-
 deferred class
 	PS_QUERY [G -> ANY]
-
 
 feature -- Access
 
 	criteria: PS_CRITERION
 			-- Criteria for `Current' query.
 
-
 	result_cursor: PS_RESULT_SET [ANY]
 			-- Iteration cursor containing the result of the query.
 		deferred
 		end
-
 
 	transaction: PS_TRANSACTION
 			-- The transaction in which this query is embedded
@@ -27,28 +23,25 @@ feature -- Access
 			already_executed: is_executed
 		do
 			check attached transaction_impl as transact then
-				Result:=transact
+				Result := transact
 			end
 		end
-
 
 feature -- Status report
 
 	is_executed: BOOLEAN
 			-- Has query been executed?
 
-
-	is_object_query:BOOLEAN
+	is_object_query: BOOLEAN
 			-- Is `Current' an instance of PS_OBJECT_QUERY?
 		deferred
 		end
 
-	is_tuple_query:BOOLEAN
+	is_tuple_query: BOOLEAN
 			-- Is `Current' an instance of PS_TUPLE_QUERY?
 		do
-			Result:= not is_object_query
+			Result := not is_object_query
 		end
-
 
 feature -- Basic operations
 
@@ -65,13 +58,13 @@ feature -- Basic operations
 		end
 
 	reset
-		-- Reset the query result, do not change criteron or projection.
+			-- Reset the query result, do not change criteron or projection.
 		do
-			transaction_impl:= Void
+			transaction_impl := Void
 			create_result_cursor
 			result_cursor.set_query (Current)
-			is_executed:= False
-			backend_identifier:= 0
+			is_executed := False
+			backend_identifier := 0
 		ensure
 			not_executed: not is_executed
 			not_bound_to_transaction: transaction_impl = Void
@@ -79,18 +72,16 @@ feature -- Basic operations
 			criteria_unchanged: criteria = old criteria
 		end
 
-
 feature -- Miscellaneous
 
-	is_criterion_fitting_generic_type (a_criterion:PS_CRITERION): BOOLEAN
+	is_criterion_fitting_generic_type (a_criterion: PS_CRITERION): BOOLEAN
 			-- Can `a_criterion' handle objects of type `G'?
 		local
-			reflection:INTERNAL
+			reflection: INTERNAL
 		do
 			create reflection
-			Result:= a_criterion.can_handle_object ( reflection.new_instance_of (reflection.generic_dynamic_type (Current, 1)))
+			Result := a_criterion.can_handle_object (reflection.new_instance_of (reflection.generic_dynamic_type (Current, 1)))
 		end
-
 
 feature {PS_EIFFELSTORE_EXPORT} -- Internal
 
@@ -106,13 +97,13 @@ feature {PS_EIFFELSTORE_EXPORT} -- Internal
 			transaction_set: transaction = a_transaction
 		end
 
-	generic_type: TYPE[detachable ANY]
-		-- Get the (detachable) generic type of `Current'
+	generic_type: TYPE [detachable ANY]
+			-- Get the (detachable) generic type of `Current'
 		local
-			reflection:INTERNAL
+			reflection: INTERNAL
 		once ("OBJECT")
 			create reflection
-			Result:= reflection.type_of_type (reflection.detachable_type (reflection.generic_dynamic_type (Current, 1)))
+			Result := reflection.type_of_type (reflection.detachable_type (reflection.generic_dynamic_type (Current, 1)))
 		end
 
 	backend_identifier: INTEGER
@@ -123,38 +114,34 @@ feature {PS_EIFFELSTORE_EXPORT} -- Internal
 		do
 			backend_identifier := identifier
 		ensure
-			identifier_set: backend_identifier=identifier
+			identifier_set: backend_identifier = identifier
 		end
-
-
 
 feature {NONE} -- Implementation
 
 	transaction_impl: detachable PS_TRANSACTION
 
-
 feature {NONE} -- Initialization
 
 	make
-		-- Initialize Current
+			-- Initialize Current
 		deferred
 		ensure
 			not_executed: not is_executed
 			query_result_after: result_cursor.after
 			query_result_initialized: result_cursor.query = Current
-			default_criterion: attached{PS_EMPTY_CRITERION} criteria
+			default_criterion: attached {PS_EMPTY_CRITERION} criteria
 		end
 
-
 	initialize
-		-- Initialize the shared parts between object and tuple queries
+			-- Initialize the shared parts between object and tuple queries
 		do
 			create {PS_EMPTY_CRITERION} criteria
 			reset
 		end
 
 	create_result_cursor
-		-- Create a new result set
+			-- Create a new result set
 		deferred
 		end
 
@@ -162,4 +149,5 @@ invariant
 	query_result_correctly_initialized: result_cursor.query = Current
 	transaction_set_if_executed: is_executed implies transaction_impl /= Void
 	not_executed_implies_after: not is_executed implies result_cursor.after
+
 end

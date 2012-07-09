@@ -8,6 +8,7 @@ class
 	PS_AND_CRITERION
 
 inherit
+
 	PS_CRITERION
 
 create
@@ -50,20 +51,18 @@ feature -- Check
 			Result := left.can_handle_object (an_object) and right.can_handle_object (an_object)
 		end
 
-
 feature -- Miscellaneous
 
-	has_agent_criterion:BOOLEAN
+	has_agent_criterion: BOOLEAN
 			-- Is there an agent criterion in the criterion tree?
 		do
 			Result := left.has_agent_criterion and right.has_agent_criterion
 		end
 
-
-	accept (a_visitor: PS_CRITERION_VISITOR[ANY]): ANY
+	accept (a_visitor: PS_CRITERION_VISITOR [ANY]): ANY
 			-- Call visit_and on `a_visitor'
 		do
-			Result:=a_visitor.visit_and (Current)
+			Result := a_visitor.visit_and (Current)
 		end
 
 end

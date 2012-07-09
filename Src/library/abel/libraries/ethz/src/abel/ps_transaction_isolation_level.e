@@ -8,6 +8,7 @@ frozen class
 	PS_TRANSACTION_ISOLATION_LEVEL
 
 inherit
+
 	COMPARABLE
 
 feature -- Isolation levels
@@ -41,22 +42,22 @@ feature -- Comparison operation
 	is_less alias "<" (other: like Current): BOOLEAN
 			-- Is `Current' a weaker isolation level than `other'
 		local
-			valid_levels: LINKED_LIST[PS_TRANSACTION_ISOLATION_LEVEL]
+			valid_levels: LINKED_LIST [PS_TRANSACTION_ISOLATION_LEVEL]
 		do
 			create valid_levels.make
 			valid_levels.extend (Serializable)
 			if Current = Repeatable_read and valid_levels.has (other) then
-				Result:= True
+				Result := True
 			else
 				valid_levels.extend (Repeatable_read)
 				if Current = Read_committed and valid_levels.has (other) then
-					Result:= True
+					Result := True
 				else
 					valid_levels.extend (Read_committed)
 					if Current = Read_uncommitted and valid_levels.has (other) then
 						Result := True
 					else
-						Result:=False
+						Result := False
 					end
 				end
 			end

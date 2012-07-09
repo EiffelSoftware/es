@@ -2,21 +2,23 @@ note
 	description: "[
 		Provides the interface for a wrapper to a database like MySQL or SQlite.
 		Descendants may implement connection pooling, or just open and close connections all the time.
-		]"
+	]"
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
 deferred class
 	PS_SQL_DATABASE_ABSTRACTION
+
 inherit
+
 	PS_EIFFELSTORE_EXPORT
 
 feature {PS_EIFFELSTORE_EXPORT}
 
 	acquire_connection: PS_SQL_CONNECTION_ABSTRACTION
-		-- Get a new connection.
-		-- The transaction isolation level of th new connection is the same as in `Current.transaction_isolation_level', and autocommit is disabled.
+			-- Get a new connection.
+			-- The transaction isolation level of th new connection is the same as in `Current.transaction_isolation_level', and autocommit is disabled.
 		deferred
 			-- Remarks when implementing this feature:
 			-- You can create a new connection to the database or use a pool of connections.
@@ -30,29 +32,28 @@ feature {PS_EIFFELSTORE_EXPORT}
 			transaction_level_set: Result.transaction_isolation_level.is_equal (Current.transaction_isolation_level)
 		end
 
-	release_connection (a_connection:PS_SQL_CONNECTION_ABSTRACTION)
-		-- Release connection `a_connection'
+	release_connection (a_connection: PS_SQL_CONNECTION_ABSTRACTION)
+			-- Release connection `a_connection'
 		deferred
-			-- Remarks when implementing this feature:
-			-- Close it or add it back to the pool of free connections.
-			-- If you only have one connection, don't do anything.
+				-- Remarks when implementing this feature:
+				-- Close it or add it back to the pool of free connections.
+				-- If you only have one connection, don't do anything.
 		end
 
 	close_connections
-		-- Close all currently open connections
+			-- Close all currently open connections
 		deferred
 		end
 
-
 	transaction_isolation_level: PS_TRANSACTION_ISOLATION_LEVEL
-		-- The transaction isolation level for new connections
-
+			-- The transaction isolation level for new connections
 
 	set_transaction_isolation_level (a_level: PS_TRANSACTION_ISOLATION_LEVEL)
-		-- Set the transaction isolation level `a_level' for all connections that are acquired in the future
-		-- Note: Some databases don't support all transaction isolation levels. In that case, a higher isolation level is chosen.
+			-- Set the transaction isolation level `a_level' for all connections that are acquired in the future
+			-- Note: Some databases don't support all transaction isolation levels. In that case, a higher isolation level is chosen.
 		deferred
 		ensure
 			correct_result: transaction_isolation_level >= a_level
 		end
+
 end

@@ -6,7 +6,9 @@ note
 
 class
 	PS_CRITERION_FACTORY
+
 inherit
+
 	PS_PREDEFINED_OPERATORS
 
 create
@@ -22,17 +24,16 @@ feature -- Creating a criterion
 		do
 			if is_agent (tuple) then
 				check attached {PREDICATE [ANY, TUPLE [ANY]]} tuple [1] as predicate then
-					Result:=new_agent (predicate)
+					Result := new_agent (predicate)
 				end
 			else
-			-- is_predefined = True, otherwise there would be a contract violation
-				-- however, we need to do all these checks again because of void safety-.-
-				check attached {STRING} tuple[1] as attr and attached{STRING} tuple[2] as operator and attached tuple[3] as value then
+					-- is_predefined = True, otherwise there would be a contract violation
+					-- however, we need to do all these checks again because of void safety-.-
+				check attached {STRING} tuple [1] as attr and attached {STRING} tuple [2] as operator and attached tuple [3] as value then
 					Result := new_predefined (attr, operator, value)
 				end
 			end
 		end
-
 
 	new_agent (a_predicate: PREDICATE [ANY, TUPLE [ANY]]): PS_CRITERION
 			-- creates a criterion with an agent
@@ -48,7 +49,6 @@ feature -- Creating a criterion
 			create {PS_PREDEFINED_CRITERION} Result.make (object_attribute, operator, value)
 		end
 
-
 feature -- Preconditions
 
 	is_agent (tuple: TUPLE [ANY]): BOOLEAN
@@ -60,10 +60,11 @@ feature -- Preconditions
 	is_predefined (tuple: TUPLE [ANY]): BOOLEAN
 			-- See if the tuple corresponds to the format of predefined tuples and has a valid operator/value combination
 		do
-			if attached {TUPLE [STRING, STRING, ANY]} tuple and then (attached {STRING} tuple[2] as operator and attached tuple[3] as value) then
+			if attached {TUPLE [STRING, STRING, ANY]} tuple and then (attached {STRING} tuple [2] as operator and attached tuple [3] as value) then
 				Result := is_valid_combination (operator, value)
 			else
-				Result:=false
+				Result := false
 			end
 		end
+
 end

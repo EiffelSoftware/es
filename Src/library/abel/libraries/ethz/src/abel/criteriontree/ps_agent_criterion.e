@@ -6,7 +6,9 @@ note
 
 class
 	PS_AGENT_CRITERION
+
 inherit
+
 	PS_CRITERION
 
 create
@@ -28,18 +30,18 @@ feature -- Check
 	can_handle_object (an_object: ANY): BOOLEAN
 			-- Can `Current' handle `an_object' in the is_satisfied_by check?
 		do
-			Result:= agent_criterion.valid_operands ([an_object])
+			Result := agent_criterion.valid_operands ([an_object])
 		end
 
 feature -- Miscellaneous
 
-	has_agent_criterion:BOOLEAN = True
-		-- Is there an agent criterion in the criterion tree?
+	has_agent_criterion: BOOLEAN = True
+			-- Is there an agent criterion in the criterion tree?
 
-	accept (a_visitor: PS_CRITERION_VISITOR[ANY]): ANY
+	accept (a_visitor: PS_CRITERION_VISITOR [ANY]): ANY
 			-- Call visit_agent on `a_visitor'
 		do
-			Result:=a_visitor.visit_agent (Current)
+			Result := a_visitor.visit_agent (Current)
 		end
 
 feature {NONE} -- Initialization

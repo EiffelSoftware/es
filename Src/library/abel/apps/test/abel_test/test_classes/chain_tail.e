@@ -12,12 +12,11 @@ create
 
 feature {NONE} -- Initialization
 
-	make (lvl:INTEGER)
+	make (lvl: INTEGER)
 			-- Initialization for `Current'.
 		do
-			level:= lvl
+			level := lvl
 		end
-
 
 feature
 
@@ -28,27 +27,27 @@ feature
 			not last
 		do
 			check attached internal_next as res then
-				Result:= res
+				Result := res
 			end
 		end
 
-	last:BOOLEAN
+	last: BOOLEAN
 		do
-			Result:= internal_next = Void
+			Result := internal_next = Void
 		end
 
-	set_tail (t:CHAIN_TAIL)
+	set_tail (t: CHAIN_TAIL)
 		do
-			internal_next:=t
+			internal_next := t
 		end
 
 	increment
 		do
-			level:= level + 1
+			level := level + 1
 		end
 
 feature {NONE}
 
- 	internal_next: detachable CHAIN_TAIL
+	internal_next: detachable CHAIN_TAIL
 
 end

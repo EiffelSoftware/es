@@ -8,6 +8,7 @@ class
 	PS_BASIC_ATTRIBUTE_PART
 
 inherit
+
 	PS_SIMPLE_PART
 		redefine
 			basic_attribute_value
@@ -18,33 +19,31 @@ create
 
 feature {PS_EIFFELSTORE_EXPORT} -- Access
 
-
 	basic_attribute_value: STRING
-		-- The value of the basic attribute as a string
+			-- The value of the basic attribute as a string
 		do
-			if attached{CHARACTER_8} represented_object as char then
-				Result:= char.natural_32_code.out
-			elseif attached{CHARACTER_32} represented_object as char then
-				Result:= char.natural_32_code.out
+			if attached {CHARACTER_8} represented_object as char then
+				Result := char.natural_32_code.out
+			elseif attached {CHARACTER_32} represented_object as char then
+				Result := char.natural_32_code.out
 			else
-				Result:= represented_object.out
+				Result := represented_object.out
 			end
 		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
-	is_representing_object:BOOLEAN = True
-		-- Is `Current' representing an existing object?
-
+	is_representing_object: BOOLEAN = True
+			-- Is `Current' representing an existing object?
 
 feature {NONE} -- Initialization
 
-	make (a_value:ANY; meta:PS_TYPE_METADATA; a_root:PS_OBJECT_GRAPH_ROOT)
+	make (a_value: ANY; meta: PS_TYPE_METADATA; a_root: PS_OBJECT_GRAPH_ROOT)
 			-- Initialization for `Current'.
 		do
 			default_make (a_root)
-			represented_object:= a_value
-			internal_metadata:=meta
+			represented_object := a_value
+			internal_metadata := meta
 		end
 
 end

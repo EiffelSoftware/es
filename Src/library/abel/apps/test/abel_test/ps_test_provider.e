@@ -6,7 +6,7 @@ note
 			- The test shall leave an empty database after execution
 			- The test can assume an empty database before execution
 		Additionaly, the provider class should be instantiated using the make feature defined here.
-		]"
+	]"
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -15,36 +15,40 @@ deferred class
 	PS_TEST_PROVIDER
 
 inherit
+
 	PS_EIFFELSTORE_EXPORT
-	undefine default_create end
+		undefine
+			default_create
+		end
 
---inherit {NONE}
 	EQA_TEST_SET
-		export {NONE} all end
---	rename default_create as eqa_test_set_default_create end
-
-
+		export
+			{NONE} all
+		end
 
 feature {PS_TEST_PROVIDER}
 
 	repository: PS_REPOSITORY
+			-- The repository to operate on
 
 	executor: PS_CRUD_EXECUTOR
+			-- An executor for `repository'
 
 	test_data: PS_TEST_DATA
-
+			-- Some useful test data
 
 	make (a_repository: PS_REPOSITORY)
+			-- Initialization for `Current'
 		do
 			default_create
-			repository:= a_repository
+			repository := a_repository
 			create executor.make (repository)
 			create test_data.make
 			initialize
 		end
 
 	initialize
-		-- Initialize every other field
+			-- Initialize every other field
 		do
 		end
 

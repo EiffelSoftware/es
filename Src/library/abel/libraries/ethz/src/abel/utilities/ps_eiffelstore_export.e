@@ -7,20 +7,14 @@ note
 class
 	PS_EIFFELSTORE_EXPORT
 
+feature {NONE} -- Utilities
 
-feature {NONE}
 	attach (obj: detachable ANY): attached like obj
-		-- Nice little helper function to make implementation with void safety easier
+			-- Nice little helper function to make implementation with void safety easier
 		do
 			check attached obj as attached_obj then
-				Result:= obj
+				Result := obj
 			end
-		end
-
-	todo_stop
-		-- Stop execution because of unimplemented feature
-		do
-			check not_implemented: False end
 		end
 
 end

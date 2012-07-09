@@ -8,7 +8,8 @@ class
 	PS_OBJECT_QUERY [G -> ANY]
 
 inherit
-	ITERABLE[G]
+
+	ITERABLE [G]
 
 	PS_QUERY [G]
 		redefine
@@ -18,19 +19,15 @@ inherit
 create
 	make
 
-
 feature -- Access
 
-	result_cursor: PS_RESULT_SET[G]
+	result_cursor: PS_RESULT_SET [G]
 			-- Iteration cursor containing the result of the query.
-
 
 feature -- Status report
 
-
-	is_object_query:BOOLEAN = True
+	is_object_query: BOOLEAN = True
 			-- Is `Current' an instance of PS_OBJECT_QUERY?
-
 
 feature -- Basic operations
 
@@ -43,16 +40,13 @@ feature -- Basic operations
 			criteria := a_criterion
 		end
 
-
 feature -- Cursor generation
 
-	new_cursor: PS_RESULT_SET[G]
+	new_cursor: PS_RESULT_SET [G]
 			-- Return the result_cursor
 		do
-			Result:= result_cursor
+			Result := result_cursor
 		end
-
-
 
 feature {NONE} -- Initialization
 
@@ -63,7 +57,7 @@ feature {NONE} -- Initialization
 		end
 
 	create_result_cursor
-		-- Create a new result set
+			-- Create a new result set
 		do
 			create result_cursor.make
 		end
