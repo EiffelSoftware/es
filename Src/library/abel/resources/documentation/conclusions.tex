@@ -13,8 +13,9 @@ Furthermore, we have developed a backend that uses a generic data\-base layout f
 \section{Current limitations}
 
 \begin{itemize}
-\item Due to a limitation in \lstinline!INTERNAL!, inheritance is not properly supported.
-This especially means that a query of an object of class \lstinline!G! will not return descendants of \lstinline!G!.
+\item Due to a limitation in \lstinline!INTERNAL! the framework is not able to get ancestors or descendants of a class.
+It therefore treats all classes as if they are flat, meaning that all inherited features are defined directly inside the class.
+That way ABEL can handle classes inside an inheritance hierarchy, but the drawback of this approach is that a query to objects of class \lstinline!G! will not return descendants of \lstinline!G!.
 \item If you adapt ABEL to a custom database layout, it can only handle object types that have corresponding tables in the database.
 \item If a custom database layout isn't well designed, e.g. if there are redundancies, you might get into trouble when trying to adapt ABEL to it.
 \item Some basic types are not fully supported:
