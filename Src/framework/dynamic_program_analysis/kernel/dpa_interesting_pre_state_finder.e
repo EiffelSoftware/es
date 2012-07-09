@@ -52,6 +52,7 @@ feature -- Basic operations
 feature -- Process operations
 
 	process_access_id_as (l_as: ACCESS_ID_AS)
+			-- Process `l_as'.
 		do
 			if is_nested then
 				if not l_as.access_name_8.is_equal (io_string) then
@@ -64,11 +65,13 @@ feature -- Process operations
 		end
 
 	process_create_creation_as (l_as: CREATE_CREATION_AS)
+			-- Process `l_as'.
 		do
 			interesting_pre_states.force_last (l_as.breakpoint_slot)
 		end
 
 	process_nested_as (l_as: NESTED_AS)
+			-- Process `l_as'.
 		do
 			is_nested := True
 			l_as.target.process (Current)
@@ -76,21 +79,25 @@ feature -- Process operations
 		end
 
 	process_assign_as (l_as: ASSIGN_AS)
+			-- Process `l_as'.
 		do
 			l_as.target.process (Current)
 		end
 
 	process_assigner_call_as (l_as: ASSIGNER_CALL_AS)
+			-- Process `l_as'.
 		do
 			l_as.target.process (Current)
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
+			-- Process `l_as'.
 		do
 			-- Nothing to be done
 		end
 
 	process_if_as (l_as: IF_AS)
+			-- Process `l_as'.
 		do
 			safe_process (l_as.compound)
 			safe_process (l_as.elsif_list)
@@ -98,6 +105,7 @@ feature -- Process operations
 		end
 
 	process_loop_as (l_as: LOOP_AS)
+			-- Process `l_as'.
 		do
 			safe_process (l_as.iteration)
 			safe_process (l_as.from_part)
@@ -105,6 +113,7 @@ feature -- Process operations
 		end
 
 	process_result_as (l_as: RESULT_AS)
+			-- Process `l_as'.
 		do
 			interesting_pre_states.force_last (l_as.breakpoint_slot)
 		end
@@ -133,7 +142,7 @@ feature -- Setting
 
 feature {NONE} -- Implementation
 
-	ast: AST_EIFFEL assign set_ast
+	ast: AST_EIFFEL
 			-- AST which is used to collect interesting variables
 
 	is_nested: BOOLEAN

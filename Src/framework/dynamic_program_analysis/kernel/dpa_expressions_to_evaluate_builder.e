@@ -242,13 +242,15 @@ feature -- Access
 			-- Feature which should be analyzed
 
 	is_storage_of_vars_exprs_mapping_activated: BOOLEAN
-			--
+			-- Is the mapping of variables to expressions stored?
 
 	expressions_to_evaluate: DS_HASH_SET [EPA_EXPRESSION]
 			-- Built expressions to evaluate
 
 	vars_with_exprs: DS_HASH_TABLE [DS_HASH_SET [STRING], STRING]
-			--
+			-- Mapping of variables to expressions
+			-- Keys are variables and values are expressions derived
+			-- from a variable.
 
 	interesting_variables: DS_HASH_SET [STRING]
 			-- Contains all found interesting variables
@@ -261,7 +263,8 @@ feature -- Access
 feature {NONE} -- Implementation
 
 	is_basic_type (a_type: TYPE_A): BOOLEAN
-			--
+			-- Is `a_type' conforming to one of the types contained
+			-- in `basic_types'?
 		require
 			a_type_not_void: a_type /= Void
 		local
@@ -296,7 +299,8 @@ feature {NONE} -- Implementation
 		end
 
 	is_string_type (a_type: TYPE_A): BOOLEAN
-			--
+			-- Is `a_type' conforming to one of the types contained
+			-- in `string_types'?
 		require
 			a_type_not_void: a_type /= Void
 		local
@@ -331,7 +335,8 @@ feature {NONE} -- Implementation
 		end
 
 	is_file_type (a_type: TYPE_A): BOOLEAN
-			--
+			-- Is `a_type' conforming to the type specified
+			-- by `file_type'?
 		require
 			a_type_not_void: a_type /= Void
 		local
@@ -392,7 +397,7 @@ feature {NONE} -- Implementation
 		end
 
 	file_type: STRING = "FILE"
-			-- Name of the file class
+			-- File type
 
 	eiffelbase_cluster_name: STRING = "elks"
 			-- Name of the Eiffelbase cluster

@@ -29,7 +29,7 @@ create
 feature -- Initialization
 
 	make (a_ast: like ast; a_program_locations: like program_locations)
-			-- Sets `ast' to `a_ast'
+			-- Sets `ast' to `a_ast' and `program_locations' to `a_program_locations'.
 		require
 			a_ast_not_void: a_ast /= Void
 			a_program_locations_not_void: a_program_locations /= Void
@@ -45,7 +45,8 @@ feature -- Basic operations
 
 	find
 			-- Find all interesting variables and make them available
-			-- in `interesting_variables'
+			-- in `interesting_variables' and in
+			-- `interesting_variables_from_assignments'
 		do
 			create interesting_variables.make_default
 			interesting_variables.set_equality_tester (string_equality_tester)
@@ -59,6 +60,7 @@ feature -- Basic operations
 feature -- Process operations
 
 	process_access_id_as (l_as: ACCESS_ID_AS)
+			-- Process `l_as'.
 		do
 			if program_locations.has (l_as.breakpoint_slot) then
 				if is_nested then
@@ -73,6 +75,7 @@ feature -- Process operations
 		end
 
 	process_create_creation_as (l_as: CREATE_CREATION_AS)
+			-- Process `l_as'.
 		do
 			if program_locations.has (l_as.breakpoint_slot) then
 				interesting_variables.force_last (l_as.target.access_name)
@@ -80,9 +83,10 @@ feature -- Process operations
 		end
 
 	process_nested_as (l_as: NESTED_AS)
+			-- Process `l_as'.
 		do
 			is_nested := True
-			if is_assignment then
+			if is_assigner_call then
 				interesting_variables_from_assignments.force_last (text_from_ast (l_as))
 			end
 			l_as.target.process (Current)
@@ -90,23 +94,27 @@ feature -- Process operations
 		end
 
 	process_assign_as (l_as: ASSIGN_AS)
+			-- Process `l_as'.
 		do
 			interesting_variables_from_assignments.force_last (l_as.target.access_name)
 		end
 
 	process_assigner_call_as (l_as: ASSIGNER_CALL_AS)
+			-- Process `l_as'.
 		do
-			is_assignment := True
+			is_assigner_call := True
 			l_as.target.process (Current)
-			is_assignment := False
+			is_assigner_call := False
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
+			-- Process `l_as'.
 		do
 			-- Nothing to be done
 		end
 
 	process_if_as (l_as: IF_AS)
+			-- Process `l_as'.
 		do
 			safe_process (l_as.compound)
 			safe_process (l_as.elsif_list)
@@ -114,6 +122,7 @@ feature -- Process operations
 		end
 
 	process_loop_as (l_as: LOOP_AS)
+			-- Process `l_as'.
 		do
 			safe_process (l_as.iteration)
 			safe_process (l_as.from_part)
@@ -121,6 +130,7 @@ feature -- Process operations
 		end
 
 	process_result_as (l_as: RESULT_AS)
+			-- Process `l_as'.
 		do
 			if program_locations.has (l_as.breakpoint_slot) then
 				interesting_variables.force_last (ti_result)
@@ -137,11 +147,11 @@ feature -- Access
 			-- Contains all found interesting variables from assignments
 			-- with respect to data flow.
 
-	ast: AST_EIFFEL assign set_ast
+	ast: AST_EIFFEL
 			-- AST which is used to collect interesting variables
 
 	program_locations: DS_HASH_SET [INTEGER]
-			--
+			-- Program locations at which variables should be found.
 
 feature -- Setting
 
@@ -174,8 +184,8 @@ feature {NONE} -- Implementation
 	is_nested: BOOLEAN
 			-- Is the current node part of a NESTED_AS node?
 
-	is_assignment: BOOLEAN
-			--
+	is_assigner_call: BOOLEAN
+			-- Is the current node part of a ASSIGNER_CALL_AS node?
 
 	io_string: STRING = "io"
 			-- Constant string representing "io"
