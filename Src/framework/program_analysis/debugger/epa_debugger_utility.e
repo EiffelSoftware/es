@@ -78,7 +78,7 @@ feature -- Basic operations
 		end
 
 	remove_debugger_session
-			-- Remove the debugger serssion file for currently loaded projects.
+			-- Remove the debugger session file for currently loaded projects.
 		local
 			l_ver: STRING
 			l_target_name: STRING
