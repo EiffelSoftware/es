@@ -31,7 +31,7 @@ feature -- Cursor status and movement
 		end
 
 	forth
-			-- Move to next position
+			-- Move to next position.
 		do
 			move
 		ensure then
@@ -39,7 +39,7 @@ feature -- Cursor status and movement
 		end
 
 	previous: PS_OBJECT_GRAPH_PART
-			-- The previous item
+			-- The previous item.
 		require
 			not after and not is_at_root_object
 		do
@@ -60,20 +60,20 @@ feature -- Visited item handler function
 			-- A handler function to handle cycles in the object graph.
 
 	set_handler (a_handler: PROCEDURE [ANY, TUPLE [PS_OBJECT_GRAPH_PART, PS_OBJECT_GRAPH_PART]])
-			-- Set a handler function to be called when a cycle is detected
+			-- Set a handler function to be called when a cycle is detected.
 		do
 			cycle_handler := a_handler
 		end
 
 	default_handler (parent, visited_item: PS_OBJECT_GRAPH_PART)
-			-- A default handler that does nothing
+			-- A default handler that does nothing.
 		do
 		end
 
 feature {NONE} -- Implementation
 
 	move
-			-- Move to the next item
+			-- Move to the next item.
 		require
 			not_after: not after
 			consistent: is_consistent
@@ -90,7 +90,7 @@ feature {NONE} -- Implementation
 		end
 
 	step_in
-			-- Do a step down the object graph
+			-- Do a step down the object graph.
 		require
 			not object_graph_stack.has (item)
 		do
@@ -103,7 +103,7 @@ feature {NONE} -- Implementation
 		end
 
 	step_out
-			-- Do a step up the object graph
+			-- Do a step up the object graph.
 		do
 			current_cursor := cursor_stack.item
 			object_graph_stack.remove
@@ -111,7 +111,7 @@ feature {NONE} -- Implementation
 		end
 
 	fix
-			-- Try to fix any inconsistency
+			-- Try to fix any inconsistency.
 		do
 			if not current_cursor.after and then object_graph_stack.has (item) then
 				cycle_handler.call ([previous, item])

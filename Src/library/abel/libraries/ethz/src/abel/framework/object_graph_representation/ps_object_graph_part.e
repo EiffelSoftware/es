@@ -16,14 +16,14 @@ inherit
 feature {PS_EIFFELSTORE_EXPORT} -- Access
 
 	represented_object: ANY
-			-- The object which gets represented by `Current'
+			-- The object which gets represented by `Current'.
 		require
 			represents_object: is_representing_object
 		deferred
 		end
 
 	metadata: PS_TYPE_METADATA
-			-- Some metadata about `represented_object'
+			-- Some metadata about `represented_object'.
 		require
 			represents_object: is_representing_object
 		do
@@ -34,10 +34,10 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access
 			-- The level of the current object graph part.
 
 	write_operation: PS_WRITE_OPERATION
-			-- The operation that should be performed in the database
+			-- The operation that should be performed in the database.
 
 	root: PS_OBJECT_GRAPH_ROOT
-			-- The root of the object graph
+			-- The root of the object graph.
 		deferred
 		end
 
@@ -101,7 +101,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Utilities
 		end
 
 	object_identifier: INTEGER
-			-- The object identifier of `Current'. Returns 0 if `Current' is a basic type
+			-- The object identifier of `Current'. Returns 0 if `Current' is a basic type.
 		deferred
 		ensure
 			is_basic_attribute implies Result = 0
@@ -120,7 +120,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Utilities
 feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 
 	set_visited (flag: BOOLEAN)
-			-- Set `is_visited' to `flag'
+			-- Set `is_visited' to `flag'.
 		do
 			is_visited := flag
 		ensure
@@ -128,7 +128,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 		end
 
 	break_dependency (dependency: PS_OBJECT_GRAPH_PART)
-			-- Break the dependency `dependency'
+			-- Break the dependency `dependency'.
 		require
 			is_present: dependencies.has (dependency)
 		deferred
@@ -139,7 +139,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 feature {PS_EIFFELSTORE_EXPORT} -- Access: Cursor
 
 	new_cursor: PS_OBJECT_GRAPH_CURSOR
-			-- Create a new cursor over the current object graph
+			-- Create a new cursor over the current object graph.
 		do
 			create Result.make (Current)
 		end
@@ -157,7 +157,7 @@ feature {PS_OBJECT_GRAPH_PART, PS_OBJECT_DISASSEMBLER} -- Initialization
 			-- Has `Current' been initialized?
 
 	new_operation: PS_WRITE_OPERATION
-			-- Create a new write operation, initialized as no_operation
+			-- Create a new write operation, initialized as no_operation.
 		do
 			create Result
 			Result := Result.no_operation
@@ -166,7 +166,7 @@ feature {PS_OBJECT_GRAPH_PART, PS_OBJECT_DISASSEMBLER} -- Initialization
 feature {NONE} -- Implementation
 
 	internal_metadata: detachable like metadata
-			-- A little helper to circumvent void safety
+			-- A little helper to circumvent void safety.
 
 invariant
 	no_self_dependence: not dependencies.has (Current)

@@ -53,19 +53,19 @@ feature {PS_EIFFELSTORE_EXPORT} -- Database operations
 feature {PS_EIFFELSTORE_EXPORT} -- Database results
 
 	last_result: ITERATION_CURSOR [PS_SQL_ROW_ABSTRACTION]
-			-- The result of the last database operation
+			-- The result of the last database operation.
 		deferred
 		end
 
 	last_error: PS_ERROR
-			-- The last occured error
+			-- The last occurred error
 		deferred
 		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Utilities
 
 	new_cursor: ITERATION_CURSOR [PS_SQL_ROW_ABSTRACTION]
-			-- Get a cursor over the `last_result' (Convenience function to support the `across' syntax)
+			-- Get a cursor over the `last_result' (Convenience function to support the `across' syntax).
 		do
 			Result := last_result
 		end

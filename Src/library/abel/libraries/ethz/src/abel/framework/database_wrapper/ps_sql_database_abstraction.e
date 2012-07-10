@@ -18,7 +18,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 
 	acquire_connection: PS_SQL_CONNECTION_ABSTRACTION
 			-- Get a new connection.
-			-- The transaction isolation level of th new connection is the same as in `Current.transaction_isolation_level', and autocommit is disabled.
+			-- The transaction isolation level of the new connection is the same as in `Current.transaction_isolation_level', and autocommit is disabled.
 		deferred
 			-- Remarks when implementing this feature:
 			-- You can create a new connection to the database or use a pool of connections.
@@ -33,7 +33,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 		end
 
 	release_connection (a_connection: PS_SQL_CONNECTION_ABSTRACTION)
-			-- Release connection `a_connection'
+			-- Release connection `a_connection'.
 		deferred
 				-- Remarks when implementing this feature:
 				-- Close it or add it back to the pool of free connections.
@@ -41,12 +41,12 @@ feature {PS_EIFFELSTORE_EXPORT}
 		end
 
 	close_connections
-			-- Close all currently open connections
+			-- Close all currently open connections.
 		deferred
 		end
 
 	transaction_isolation_level: PS_TRANSACTION_ISOLATION_LEVEL
-			-- The transaction isolation level for new connections
+			-- The transaction isolation level for new connections.
 
 	set_transaction_isolation_level (a_level: PS_TRANSACTION_ISOLATION_LEVEL)
 			-- Set the transaction isolation level `a_level' for all connections that are acquired in the future

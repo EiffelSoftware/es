@@ -1,5 +1,5 @@
 note
-	description: "This error indicates that some operation didn't meet the ACID requireents for transactions and therefore it has been aborted"
+	description: "This error indicates that some operation didn't meet the ACID requirements for transactions and therefore it has been aborted"
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"

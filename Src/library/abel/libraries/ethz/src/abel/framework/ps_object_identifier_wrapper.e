@@ -17,7 +17,7 @@ create {PS_OBJECT_IDENTIFICATION_MANAGER}
 feature {NONE} -- Initialization
 
 	make (identifier: INTEGER; object: ANY; object_metadata: PS_TYPE_METADATA)
-			-- Initialize `Current'
+			-- Initialize `Current'.
 		do
 			object_identifier := identifier
 			item := object
@@ -27,12 +27,12 @@ feature {NONE} -- Initialization
 feature {PS_EIFFELSTORE_EXPORT} -- Access
 
 	object_identifier: INTEGER
-			-- the unique identifier for this object
+			-- The unique identifier for this object.
 
 	item: ANY
-			-- A reference to the actual object
+			-- A reference to the actual object.
 
 	metadata: PS_TYPE_METADATA
-			-- Metadata information about the type of `item'
+			-- Metadata information about the type of `item'.
 
 end

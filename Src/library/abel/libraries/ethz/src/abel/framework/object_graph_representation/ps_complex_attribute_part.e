@@ -14,19 +14,19 @@ inherit
 feature {PS_EIFFELSTORE_EXPORT} -- Access
 
 	represented_object: ANY
-			-- The object which gets represented by `Current'
+			-- The object which gets represented by `Current'.
 
 	root: PS_OBJECT_GRAPH_ROOT
 			-- The root of the object graph
 
 	object_wrapper: PS_OBJECT_IDENTIFIER_WRAPPER
-			-- The repository-wide unique object identifier of the object represented by `Current'
+			-- The repository-wide unique object identifier of the object represented by `Current'.
 		do
 			Result := attach (internal_object_id)
 		end
 
 	object_identifier: INTEGER
-			-- The object identifier of `Current'. Returns 0 if `Current' is a basic type
+			-- The object identifier of `Current'. Returns 0 if `Current' is a basic type.
 		do
 			Result := object_wrapper.object_identifier
 		end
@@ -42,7 +42,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 
 	set_object_wrapper (an_object_id: PS_OBJECT_IDENTIFIER_WRAPPER)
-			-- Set the object identifier wrapper of `Current'
+			-- Set the object identifier wrapper of `Current'.
 		do
 			internal_object_id := an_object_id
 		end
@@ -83,13 +83,13 @@ feature {PS_OBJECT_GRAPH_PART, PS_OBJECT_DISASSEMBLER} -- Initialization
 feature {PS_COMPLEX_PART} -- Initialization
 
 	finish_initialization (disassembler: PS_OBJECT_DISASSEMBLER)
-			-- Initialize all attributes or collection items of `Current'
+			-- Initialize all attributes or collection items of `Current'.
 		deferred
 		end
 
 feature {NONE} -- Implementation
 
 	internal_object_id: detachable like object_wrapper
-			-- A little helper to circumvent Void safety
+			-- A little helper to circumvent Void safety.
 
 end

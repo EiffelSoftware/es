@@ -40,7 +40,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 feature {PS_EIFFELSTORE_EXPORT} -- Object graph creation
 
 	create_collection_part (collection: ANY; metadata: PS_TYPE_METADATA; persistent: BOOLEAN; owner: PS_OBJECT_GRAPH_PART): PS_OBJECT_GRAPH_PART
-			-- Create a new OBJECT_GRAPH_PART for `collection'
+			-- Create a new OBJECT_GRAPH_PART for `collection'.
 		require
 			can_handle_collection: can_handle (collection)
 			owner_normal_object_if_relational: (owner.is_representing_object and then is_relationally_mapped (metadata, owner.metadata)) implies attached {PS_SINGLE_OBJECT_PART} owner
@@ -61,7 +61,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object graph creation
 		end
 
 	add_information (object_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]])
-			-- Add some additional information to `object_collection'
+			-- Add some additional information to `object_collection'.
 		deferred
 		end
 

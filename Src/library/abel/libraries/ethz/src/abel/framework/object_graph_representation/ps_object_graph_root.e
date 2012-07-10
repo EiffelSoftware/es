@@ -20,13 +20,13 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access
 			-- All parts on which `Current' depends on.
 
 	root: PS_OBJECT_GRAPH_ROOT
-			-- The root of the object graph
+			-- The root of the object graph.
 		do
 			Result := Current
 		end
 
 	represented_object: ANY
-			-- The object which gets represented by `Current'
+			-- The object which gets represented by `Current'.
 
 	object_identifier: INTEGER = 0
 			-- The object identifier of `Current'. Returns 0 if `Current' is no complex part.
@@ -45,13 +45,13 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 
 	break_dependency (dependency: PS_OBJECT_GRAPH_PART)
-			-- Break the dependency `dependency'
+			-- Break the dependency `dependency'.
 		do
 			dependencies.prune_all (dependency)
 		end
 
 	add_dependency (obj: PS_OBJECT_GRAPH_PART)
-			-- Add `obj' to the dependency list
+			-- Add `obj' to the dependency list.
 		do
 			dependencies.extend (obj)
 		end

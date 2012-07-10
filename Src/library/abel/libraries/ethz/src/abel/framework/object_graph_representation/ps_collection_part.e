@@ -14,10 +14,10 @@ inherit
 feature {PS_EIFFELSTORE_EXPORT} -- Access
 
 	values: LINKED_LIST [PS_OBJECT_GRAPH_PART]
-			-- The objects in the collection
+			-- The objects in the collection.
 
 	actual_collection: COLLECTION_TYPE
-			-- The collection that `Current' represents
+			-- The collection that `Current' represents.
 		do
 			check attached {COLLECTION_TYPE} represented_object as res then
 				Result := res
@@ -43,7 +43,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 
 	add_value (a_graph_part: PS_OBJECT_GRAPH_PART)
-			-- Add a value to the collection
+			-- Add a value to the collection.
 		require
 			no_mixed_type_collections: not values.is_empty implies values [1].is_basic_attribute = a_graph_part.is_basic_attribute
 			no_basic_type_in_relational_mode: is_relationally_mapped implies not a_graph_part.is_basic_attribute
@@ -54,14 +54,14 @@ feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 feature {PS_COLLECTION_PART} -- Duplication
 
 	clone_empty_with_operation (operation: PS_WRITE_OPERATION): like Current
-			-- Create a copy of `Current' with empty values and write_mode set to `operation'
+			-- Create a copy of `Current' with empty values and write_mode set to `operation'.
 		deferred
 		end
 
 feature {PS_COMPLEX_PART} -- Initialization
 
 	finish_initialization (disassembler: PS_OBJECT_DISASSEMBLER)
-			-- Initialize all attributes or collection items of `Current'
+			-- Initialize all attributes or collection items of `Current'.
 		local
 			cursor: ITERATION_CURSOR [detachable ANY]
 			next: PS_OBJECT_GRAPH_PART
@@ -100,7 +100,7 @@ feature {PS_COMPLEX_PART} -- Initialization
 feature {PS_COLLECTION_PART} -- Implementation
 
 	set_deletion_dependency (deletion_dependency: detachable like Current)
-			-- Set a deletion dependency for `Current'
+			-- Set a deletion dependency for `Current'.
 		require
 			operation_is_delete: attached deletion_dependency as dep implies dep.write_operation = dep.write_operation.delete
 		do
@@ -108,7 +108,7 @@ feature {PS_COLLECTION_PART} -- Implementation
 		end
 
 	set_mode (operation: PS_WRITE_OPERATION)
-			-- Manually set `write_operation' to `operation'
+			-- Manually set `write_operation' to `operation'.
 		do
 			write_operation := operation
 		end
@@ -132,12 +132,12 @@ feature {NONE} -- Implementation
 		end
 
 	add_additional_information
-			-- Add additional information for object collections
+			-- Add additional information for object collections.
 		deferred
 		end
 
 	handler: PS_COLLECTION_HANDLER [COLLECTION_TYPE]
-			-- The handler which created `Current'
+			-- The handler which created `Current'.
 
 	deletion_dependency_for_updates: detachable like Current
 			-- If `Current' is an update operation, the collection needs to be deleted and inserted again. This is the statement to delete it.

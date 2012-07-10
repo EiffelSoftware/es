@@ -25,8 +25,6 @@ inherit {NONE}
 create
 	make
 
-
-
 		-- TODO: Speedup things, e.g. by separating objects by class name...
 		-- It might be possible to hash objects on the {ANY}.tagged_out string, but only on the hex number in the first brackets, and only if the number is stable.
 		-- This seems to be the memory location.
@@ -37,12 +35,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 			-- Is `an_object' already identified and thus known to the system?
 		do
 			fixme ("TODO: Make this transaction-aware")
-				-- See if `an_object' is either in the `transaction' or the global pool
+				-- See if `an_object' is either in the `transaction' or the global pool.
 			Result := across identifier_table as cursor some (cursor.item.first.exists and then cursor.item.first.item = an_object) end
 		end
 
 	identify (an_object: ANY; transaction: PS_TRANSACTION)
-			-- Generate an identifier for `an_object' and store it
+			-- Generate an identifier for `an_object' and store it.
 		require
 			not_identified: not is_identified (an_object, transaction)
 		local
@@ -50,9 +48,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 			pair: PS_PAIR [WEAK_REFERENCE [ANY], INTEGER]
 		do
 			fixme ("TODO: Make this transaction-aware")
-				-- check ALL the other transaction's pools if someone already has the same object
+				-- check ALL the other transaction's pools if someone already has the same object.
 				-- if yes add a copy of the same identification to `transaction's pool.
-				-- if no create it and add it to `transaction's pool
+				-- if no create it and add it to `transaction's pool.
 			create temp.put (an_object)
 			create pair.make (temp, new_id)
 			identifier_table.extend (pair)
@@ -82,7 +80,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 		end
 
 	get_identifier_wrapper (an_object: ANY; transaction: PS_TRANSACTION): PS_OBJECT_IDENTIFIER_WRAPPER
-			-- Get the identifier of `an_object'
+			-- Get the identifier of `an_object'.
 		require
 			identified: is_identified (an_object, transaction)
 		local
@@ -111,7 +109,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 feature {PS_EIFFELSTORE_EXPORT} -- Transaction Status
 
 	can_commit (transaction: PS_TRANSACTION): BOOLEAN
-			-- Can `Current' commit the changes in `Transaction'
+			-- Can `Current' commit the changes in `Transaction'?
 		do
 			fixme ("TODO: Make this transaction-aware")
 				-- check if there is an equal object in the global pool and the transaction pool

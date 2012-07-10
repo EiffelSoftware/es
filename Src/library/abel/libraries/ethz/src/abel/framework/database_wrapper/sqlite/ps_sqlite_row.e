@@ -72,9 +72,9 @@ feature {NONE} -- Initialization
 		end
 
 	values: HASH_TABLE [STRING, NATURAL]
-			-- Maps the column index to the actual result
+			-- Maps the column index to the actual result.
 
 	name_to_index_map: HASH_TABLE [NATURAL, STRING]
-			-- Maps the column name to its index
+			-- Maps the column name to its index.
 
 end

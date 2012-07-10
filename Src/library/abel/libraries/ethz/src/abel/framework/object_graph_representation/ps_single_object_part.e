@@ -23,10 +23,10 @@ create
 feature {PS_EIFFELSTORE_EXPORT} -- Access
 
 	attributes: LINKED_LIST [STRING]
-			-- The names of all attributes in `Current'
+			-- The names of all attributes in `Current'.
 
 	attribute_value (name: STRING): PS_OBJECT_GRAPH_PART
-			-- Get the value of attribute `name'
+			-- Get the value of attribute `name'.
 		require
 			has_attribute: attributes.has (name)
 		do
@@ -55,7 +55,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 
 	add_attribute (name: STRING; value: PS_OBJECT_GRAPH_PART)
-			-- Add a attribute `name' with value `value' to `Current'
+			-- Add a attribute `name' with value `value' to `Current'.
 		do
 			if attached {PS_IGNORE_PART} value then
 					-- ignore
@@ -73,7 +73,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 		end
 
 	break_dependency (dependency: PS_OBJECT_GRAPH_PART)
-			-- Break the dependency `dependency'
+			-- Break the dependency `dependency'.
 		local
 			new_update: PS_SINGLE_OBJECT_PART
 			attr: STRING
@@ -98,7 +98,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 feature {NONE} -- Initialization
 
 	make (obj: ANY; a_metadata: PS_TYPE_METADATA; persistent: BOOLEAN; a_root: PS_OBJECT_GRAPH_ROOT)
-			-- Initialization for `Current'
+			-- Initialization for `Current'.
 		do
 			represented_object := obj
 			internal_metadata := a_metadata
@@ -113,7 +113,7 @@ feature {NONE} -- Initialization
 feature {PS_COMPLEX_PART} -- Initialization
 
 	finish_initialization (disassembler: PS_OBJECT_DISASSEMBLER)
-			-- Initialize all attributes or collection items of `Current'
+			-- Initialize all attributes or collection items of `Current'.
 		local
 			val: PS_OBJECT_GRAPH_PART
 		do
@@ -137,7 +137,7 @@ feature {PS_COMPLEX_PART} -- Initialization
 feature {PS_SINGLE_OBJECT_PART} -- Implementation
 
 	internal_initialize (operation: PS_WRITE_OPERATION; a_level: INTEGER)
-			-- Initialize without attributes, for the `break_dependency' feature
+			-- Initialize without attributes, for the `break_dependency' feature.
 		do
 			write_operation := operation
 			level := a_level
@@ -145,9 +145,9 @@ feature {PS_SINGLE_OBJECT_PART} -- Implementation
 		end
 
 	attribute_values: HASH_TABLE [PS_OBJECT_GRAPH_PART, STRING]
-			-- A hash table to store the attribute values
+			-- A hash table to store the attribute values.
 
 	hashtable_size: INTEGER = 20
-			-- The initial capacity for `attribute_values'
+			-- The initial capacity for `attribute_values'.
 
 end

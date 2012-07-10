@@ -17,10 +17,10 @@ create
 feature {PS_EIFFELSTORE_EXPORT} -- Access
 
 	additional_information: HASH_TABLE [STRING, STRING]
-			-- Any additional information that the backend has to store
+			-- Any additional information that the backend has to store.
 
 	dependencies: LINKED_LIST [PS_OBJECT_GRAPH_PART]
-			-- All operations that depend on this one
+			-- All operations that depend on this one.
 		do
 			create Result.make
 			Result.append (values)
@@ -51,20 +51,20 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 
 	add_value (a_graph_part: PS_OBJECT_GRAPH_PART)
-			-- Add a value to the collection
+			-- Add a value to the collection.
 		do
 			add_value_explicit_index (a_graph_part, next_index)
 			next_index := next_index + 1
 		end
 
 	add_information (description: STRING; value: STRING)
-			-- Add the information `value' with key `description' to `Current'
+			-- Add the information `value' with key `description' to `Current'.
 		do
 			additional_information.extend (value, description)
 		end
 
 	break_dependency (dependency: PS_OBJECT_GRAPH_PART)
-			-- Break the dependency `dependency'
+			-- Break the dependency `dependency'.
 		local
 			new_insert: like Current
 		do
@@ -77,7 +77,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 feature {PS_COLLECTION_PART} -- Duplication
 
 	clone_empty_with_operation (operation: PS_WRITE_OPERATION): like Current
-			-- Create a copy of `Current' with empty values and write_mode set to `operation'
+			-- Create a copy of `Current' with empty values and write_mode set to `operation'.
 		do
 			create Result.make (represented_object, metadata, is_persistent, handler, root)
 			Result.set_deletion_dependency (deletion_dependency_for_updates)
@@ -87,7 +87,7 @@ feature {PS_COLLECTION_PART} -- Duplication
 feature {NONE} -- Initialization
 
 	make (obj: ANY; meta: PS_TYPE_METADATA; persistent: BOOLEAN; a_handler: PS_COLLECTION_HANDLER [COLLECTION_TYPE]; a_root: PS_OBJECT_GRAPH_ROOT)
-			-- initialize `Current'
+			-- initialize `Current'.
 		do
 			represented_object := obj
 			internal_metadata := meta
@@ -106,7 +106,7 @@ feature {NONE} -- Initialization
 feature {PS_OBJECT_COLLECTION_PART} -- Implementation
 
 	add_value_explicit_index (value: PS_OBJECT_GRAPH_PART; index: INTEGER)
-			-- Add the value `value' with an explicit index `index'
+			-- Add the value `value' with an explicit index `index'.
 		do
 			values.extend (value)
 			index_mapping.extend (create {PS_PAIR [PS_OBJECT_GRAPH_PART, INTEGER]}.make (value, index))
@@ -115,16 +115,16 @@ feature {PS_OBJECT_COLLECTION_PART} -- Implementation
 feature {NONE} -- Implementation
 
 	next_index: INTEGER
-			-- The next usable index
+			-- The next usable index.
 
 	index_mapping: LINKED_LIST [PS_PAIR [PS_OBJECT_GRAPH_PART, INTEGER]]
-			-- The mapping between `values' and their index
+			-- The mapping between `values' and their index.
 
 	hashtable_size: INTEGER = 10
-			-- The initial capacity for `additional_information'
+			-- The initial capacity for `additional_information'.
 
 	add_additional_information
-			-- Add additional information for object collections
+			-- Add additional information for object collections.
 		do
 			handler.add_information (Current)
 		end

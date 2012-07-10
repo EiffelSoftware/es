@@ -14,10 +14,10 @@ inherit
 feature {PS_EIFFELSTORE_EXPORT} -- Access
 
 	root: PS_OBJECT_GRAPH_ROOT
-			-- The root of the object graph
+			-- The root of the object graph.
 
 	represented_object: ANY
-			-- The object which gets represented by `Current'
+			-- The object which gets represented by `Current'.
 
 	dependencies: LINKED_LIST [PS_OBJECT_GRAPH_PART]
 			-- All parts on which `Current' depends on.
@@ -36,7 +36,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 
 	break_dependency (dependency: PS_OBJECT_GRAPH_PART)
-			-- Break the dependency `dependency'
+			-- Break the dependency `dependency'.
 		do
 		end
 

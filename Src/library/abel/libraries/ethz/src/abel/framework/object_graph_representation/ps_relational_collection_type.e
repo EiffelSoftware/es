@@ -17,17 +17,17 @@ create
 feature {PS_EIFFELSTORE_EXPORT} -- Access
 
 	reference_owner: PS_SINGLE_OBJECT_PART
-			-- The object that holds a reference to `represented_object'
+			-- The object that holds a reference to `represented_object'.
 
 	reference_owner_attribute_name: STRING
 			-- The attribute name for `Current' in `reference_owner'.
 
 	dependencies: LINKED_LIST [PS_OBJECT_GRAPH_PART]
-			-- All operations that depend on this one
+			-- All operations that depend on this one.
 		do
 			create Result.make
 			if is_mapped_as_1_to_N then
-					-- no dependency required as foreign keys are stored within the objects
+					-- no dependency required as foreign keys are stored within the objects.
 			else -- M:N relational mode
 				Result.append (values)
 				Result.extend (reference_owner)
@@ -48,7 +48,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 
 	add_value (a_graph_part: PS_OBJECT_GRAPH_PART)
-			-- Add a value to the collection
+			-- Add a value to the collection.
 		do
 			if is_mapped_as_1_to_N then
 					-- Add the value to the object instead
@@ -62,7 +62,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 		end
 
 	break_dependency (dependency: PS_OBJECT_GRAPH_PART)
-			-- Break the dependency `dependency'
+			-- Break the dependency `dependency'.
 		local
 			new_insert: like Current
 		do
@@ -78,7 +78,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 feature {PS_COLLECTION_PART} -- Duplication
 
 	clone_empty_with_operation (operation: PS_WRITE_OPERATION): like Current
-			-- Create a copy of `Current' with empty values and write_mode set to `operation'
+			-- Create a copy of `Current' with empty values and write_mode set to `operation'.
 		do
 			create Result.make (represented_object, metadata, reference_owner, is_persistent, is_mapped_as_1_to_N, handler, root)
 			Result.set_deletion_dependency (deletion_dependency_for_updates)
@@ -115,7 +115,7 @@ feature {NONE} -- Initialization
 feature {NONE} -- Implementation
 
 	add_additional_information
-			-- Add additional information for object collections
+			-- Add additional information for object collections.
 		do
 		end
 

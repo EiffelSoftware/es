@@ -1,5 +1,5 @@
 note
-	description: "Abstraction of the actual DB backend and schema"
+	description: "Abstraction of the actual DB backend and schema."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -36,7 +36,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 		end
 
 	can_handle_objectoriented_collection (collection_type: PS_TYPE_METADATA): BOOLEAN
-			-- Can the current backend handle an objectoriented collection of type `collection_type'?
+			-- Can the current backend handle an object-oriented collection of type `collection_type'?
 		deferred
 		end
 
@@ -46,7 +46,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			-- Retrieves all objects of class `type' (direct instance - not inherited from) that match the criteria in `criteria' within transaction `transaction'.
 			-- If `attributes' is not empty, it will only retrieve the attributes listed there.
 			-- If an attribute was `Void' during an insert, or it doesn't exist in the database because of a version mismatch, the attribute value during retrieval will be an empty string and its class name `NONE'.
-
 			-- If `type' has a generic parameter, the retrieve function will return objects of all generic instances of the generating class.
 			-- You can find out about the actual generic parameter by comparing the class name associated to a foreign key value.
 		require
@@ -60,7 +59,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 		end
 
 	retrieve_from_single_key (type: PS_TYPE_METADATA; primary_key: INTEGER; transaction: PS_TRANSACTION): LINKED_LIST [PS_RETRIEVED_OBJECT]
-			-- Retrieve the object of type `type' and key `primary_key'. Wrapper of the `retrieve_from_keys' in case you only need one object
+			-- Retrieve the object of type `type' and key `primary_key'. Wrapper of the `retrieve_from_keys' in case you only need one object.
 		local
 			keys: LINKED_LIST [INTEGER]
 		do
@@ -82,7 +81,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 
 	insert (an_object: PS_SINGLE_OBJECT_PART; a_transaction: PS_TRANSACTION)
-			-- Inserts the object into the database
+			-- Inserts the object into the database.
 		require
 			mode_is_insert: an_object.write_operation = an_object.write_operation.insert
 			not_yet_known: not key_mapper.has_primary_key_of (an_object.object_wrapper, a_transaction)
@@ -95,7 +94,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		end
 
 	update (an_object: PS_SINGLE_OBJECT_PART; a_transaction: PS_TRANSACTION)
-			-- Updates an_object
+			-- Updates an_object.
 		require
 			mode_is_update: an_object.write_operation = an_object.write_operation.update
 			object_known: key_mapper.has_primary_key_of (an_object.object_wrapper, a_transaction)
@@ -107,7 +106,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		end
 
 	delete (an_object: PS_SINGLE_OBJECT_PART; a_transaction: PS_TRANSACTION)
-			-- Deletes an_object from the database
+			-- Deletes an_object from the database.
 		require
 			mode_is_delete: an_object.write_operation = an_object.write_operation.delete
 			object_known: key_mapper.has_primary_key_of (an_object.object_wrapper, a_transaction)
@@ -149,7 +148,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 		end
 
 	delete_objectoriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
-			-- Delete a_collection from the database
+			-- Delete a_collection from the database.
 		require
 			mode_is_delete: a_collection.write_operation = a_collection.write_operation.delete
 				--objectoriented_mode: not a_collection.handler.is_in_relational_storage_mode (a_collection)
@@ -164,7 +163,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 
 	retrieve_relational_collection (owner_type, collection_item_type: PS_TYPE_METADATA; owner_key: INTEGER; owner_attribute_name: STRING; transaction: PS_TRANSACTION): PS_RETRIEVED_RELATIONAL_COLLECTION
-			-- Retrieves the relational collection between class `owner_type' and `collection_item_type', where the owner has primary key `owner_key' and the attribute name of the collection inside the owner object is called `owner_attribute_name'
+			-- Retrieves the relational collection between class `owner_type' and `collection_item_type', where the owner has primary key `owner_key' and the attribute name of the collection inside the owner object is called `owner_attribute_name'.
 		require
 			relational_collection_operation_supported: is_relational_collection_store_supported
 			backend_can_handle_collection: can_handle_relational_collection (owner_type, collection_item_type)
@@ -172,7 +171,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 		end
 
 	insert_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
-			-- Add all entries in a_collection to the database
+			-- Add all entries in a_collection to the database.
 		require
 			mode_is_insert: a_collection.write_operation = a_collection.write_operation.insert
 			is_relational: a_collection.is_relationally_mapped
@@ -183,7 +182,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 		end
 
 	delete_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
-			-- Delete a_collection from the database
+			-- Delete a_collection from the database.
 		require
 			mode_is_delete: a_collection.write_operation = a_collection.write_operation.delete
 			is_relational: a_collection.is_relationally_mapped
@@ -196,29 +195,29 @@ feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 
 	commit (a_transaction: PS_TRANSACTION)
-			-- Tries to commit `a_transaction'. As with every other error, a failed commit will result in a new exception and the error will be placed inside `a_transaction'
+			-- Tries to commit `a_transaction'. As with every other error, a failed commit will result in a new exception and the error will be placed inside `a_transaction'.
 		deferred
 		end
 
 	rollback (a_transaction: PS_TRANSACTION)
-			-- Aborts `a_transaction' and undoes all changes in the database
+			-- Aborts `a_transaction' and undoes all changes in the database.
 		deferred
 		end
 
 	transaction_isolation_level: PS_TRANSACTION_ISOLATION_LEVEL
-			-- The currently active transaction isolation level
+			-- The currently active transaction isolation level.
 		deferred
 		end
 
 	set_transaction_isolation_level (a_level: PS_TRANSACTION_ISOLATION_LEVEL)
-			-- Set the transaction isolation level `a_level' for all future transactions
+			-- Set the transaction isolation level `a_level' for all future transactions.
 		deferred
 		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Mapping
 
 	key_mapper: PS_KEY_POID_TABLE
-			-- Maps POIDs to primary keys as used by this backend
+			-- Maps POIDs to primary keys as used by this backend.
 		deferred
 		end
 
@@ -232,7 +231,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Precondition checks
 feature {NONE} -- Correctness checks
 
 	check_attributes_loaded (type: PS_TYPE_METADATA; attributes: LIST [STRING]; obj: PS_RETRIEVED_OBJECT): BOOLEAN
-			-- Check that there is a value for every attribute in `attributes' (or `type.attributes', if `attributes' is empty)
+			-- Check that there is a value for every attribute in `attributes' (or `type.attributes', if `attributes' is empty).
 		do
 			if attributes.is_empty then
 				Result := across type.attributes as cursor all obj.has_attribute (cursor.item) end
@@ -242,7 +241,7 @@ feature {NONE} -- Correctness checks
 		end
 
 	check_successful_write (an_object: PS_SINGLE_OBJECT_PART; transaction: PS_TRANSACTION): BOOLEAN
-			-- Checks if a write to an object returns the correct result
+			-- Checks if a write to an object returns the correct result.
 		local
 			retrieved_object: PS_RETRIEVED_OBJECT
 			retrieved_obj_list: LIST [PS_RETRIEVED_OBJECT]

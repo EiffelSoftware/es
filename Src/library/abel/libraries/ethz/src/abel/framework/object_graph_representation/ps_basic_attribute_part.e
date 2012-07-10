@@ -20,7 +20,7 @@ create
 feature {PS_EIFFELSTORE_EXPORT} -- Access
 
 	basic_attribute_value: STRING
-			-- The value of the basic attribute as a string
+			-- The value of the basic attribute as a string.
 		do
 			if attached {CHARACTER_8} represented_object as char then
 				Result := char.natural_32_code.out

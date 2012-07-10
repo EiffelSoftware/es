@@ -21,7 +21,7 @@ create
 feature {PS_EIFFELSTORE_EXPORT} -- Access
 
 	object_graph: PS_OBJECT_GRAPH_ROOT
-			-- The successfully disassembled object graph
+			-- The successfully disassembled object graph.
 		require
 			no_error: not has_error
 		attribute
@@ -45,7 +45,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 feature {PS_OBJECT_GRAPH_PART} -- Disassembly: Access
 
 	active_operation: PS_WRITE_OPERATION
-			-- The currently active operation
+			-- The currently active operation.
 		do
 			Result := operation_stack.item
 		end
@@ -61,7 +61,7 @@ feature {PS_OBJECT_GRAPH_PART} -- Disassembly: Status report
 feature {PS_OBJECT_GRAPH_PART} -- Disassembly: Basic operations
 
 	set_operation (operation: PS_WRITE_OPERATION)
-			-- Put `active_operation' to `operation'
+			-- Put `active_operation' to `operation'.
 		require
 			not_no_operation: operation /= operation.no_operation
 		do
@@ -71,7 +71,7 @@ feature {PS_OBJECT_GRAPH_PART} -- Disassembly: Basic operations
 		end
 
 	cancel_operation
-			-- Revert the last `set_operation' command
+			-- Revert the last `set_operation' command.
 		do
 			operation_stack.remove
 		end
@@ -79,7 +79,7 @@ feature {PS_OBJECT_GRAPH_PART} -- Disassembly: Basic operations
 feature {PS_OBJECT_GRAPH_PART} -- Disassembly: Factory methods
 
 	next_level (current_level: INTEGER; current_persistent: BOOLEAN; next_is_collection: BOOLEAN; next_persistent: BOOLEAN): INTEGER
-			-- Calculate the level of the next object in the object graph
+			-- Calculate the level of the next object in the object graph.
 		do
 			if next_persistent /= current_persistent then
 					-- We've stepped over a boundary - the next object part will either result in a no-operation
@@ -97,7 +97,7 @@ feature {PS_OBJECT_GRAPH_PART} -- Disassembly: Factory methods
 		end
 
 	next_operation (current_level: INTEGER; current_persistent: BOOLEAN; next_persistent: BOOLEAN): PS_WRITE_OPERATION
-			-- Calculate the operation for the next object in the object graph
+			-- Calculate the operation for the next object in the object graph.
 		require
 			not_no_operation: active_operation /= active_operation.no_operation
 		do
@@ -123,7 +123,7 @@ feature {PS_OBJECT_GRAPH_PART} -- Disassembly: Factory methods
 		end
 
 	next_object_graph_part (next_object: detachable ANY; current_part: PS_OBJECT_GRAPH_PART; current_operation: PS_WRITE_OPERATION): PS_OBJECT_GRAPH_PART
-			-- Create the next object graph part
+			-- Create the next object graph part.
 		require
 			current_operation = active_operation
 			not_no_operation: active_operation /= active_operation.no_operation
@@ -190,7 +190,7 @@ feature {NONE} -- Internal: Status report
 feature {NONE} -- Internal: Access
 
 	settings: PS_OBJECT_GRAPH_SETTINGS
-			-- The current object graph settings
+			-- The current object graph settings.
 
 	search_handler (object: ANY): detachable PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]]
 			-- Search for a collection handler for `object'. Return Void if none present.
@@ -205,13 +205,13 @@ feature {NONE} -- Internal: Access
 		end
 
 	collection_handlers: LINKED_LIST [PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]]]
-			-- The registered collection handlers
+			-- The registered collection handlers.
 
 	metadata_factory: PS_METADATA_FACTORY
-			-- A factory for PS_TYPE_METADATA
+			-- A factory for PS_TYPE_METADATA.
 
 	cached_part (object: ANY): PS_OBJECT_GRAPH_PART
-			-- Get the cached object graph part for `object'
+			-- The cached object graph part for `object'.
 		require
 			cached: is_cached (object)
 		do
@@ -229,7 +229,7 @@ feature {NONE} -- Internal: Access
 		end
 
 	current_depth: INTEGER
-			-- The depth parameter of the currently active operation
+			-- The depth parameter of the currently active operation.
 		do
 			if operation_stack.item = operation_stack.item.insert then
 				if operation_stack.count > 1 then
@@ -251,7 +251,7 @@ feature {NONE} -- Internal: Access
 feature {NONE} -- Internal: Basic operations
 
 	cache (part: PS_OBJECT_GRAPH_PART)
-			-- Cache the object graph part `part'
+			-- Cache the object graph part `part'.
 		require
 			complex_attribute: part.is_complex_attribute
 		do
@@ -263,18 +263,18 @@ feature {NONE} -- Internal: Basic operations
 feature {NONE} -- Implementation
 
 	object_graph_part_cache: LINKED_LIST [PS_OBJECT_GRAPH_PART]
-			-- A cache to avoid creating an object graph part twice
+			-- A cache to avoid creating an object graph part twice.
 
 	persistence_query: PREDICATE [ANY, TUPLE [ANY]]
-			-- An agent to the OBJECT_IDENTIFICATION_MANAGER.is_persistent feature (if correctly initialized)
+			-- An agent to the OBJECT_IDENTIFICATION_MANAGER.is_persistent feature (if correctly initialized).
 
 	operation_stack: LINKED_STACK [PS_WRITE_OPERATION]
-			-- A stack to keep track of the active and previous operations
+			-- A stack to keep track of the active and previous operations.
 
 feature {NONE} -- Initialization
 
 	make (a_factory: PS_METADATA_FACTORY; graph_settings: PS_OBJECT_GRAPH_SETTINGS)
-			-- Initialize `Current'
+			-- Initialize `Current'.
 		do
 			metadata_factory := a_factory
 			settings := graph_settings
@@ -290,7 +290,7 @@ feature {NONE} -- Initialization
 		end
 
 	prepare (operation: PS_WRITE_OPERATION; persistence_query_agent: PREDICATE [ANY, TUPLE [ANY]])
-			-- Prepare a disassemble for an object
+			-- Prepare a disassemble for an object.
 		do
 			object_graph_part_cache.wipe_out
 			create object_graph.make
@@ -303,7 +303,7 @@ feature {NONE} -- Initialization
 feature {PS_EIFFELSTORE_EXPORT} -- Initialization
 
 	add_handler (a_handler: PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]])
-			-- Add `a_handler' to the collection handlers
+			-- Add `a_handler' to the collection handlers.
 		do
 			collection_handlers.extend (a_handler)
 		ensure

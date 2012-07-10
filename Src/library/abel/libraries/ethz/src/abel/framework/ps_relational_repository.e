@@ -1,5 +1,5 @@
 note
-	description: "A repository that holds values in memory, but takes objects apart and stores them in a relational-like fashion"
+	description: "A repository that holds values in memory, but takes objects apart and stores them in a relational-like fashion."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -21,7 +21,7 @@ create
 feature {PS_EIFFELSTORE_EXPORT} -- Object query
 
 	execute_query (query: PS_OBJECT_QUERY [ANY]; transaction: PS_TRANSACTION)
-			-- Execute `query'.
+			-- Execute `query' within `transaction'.
 		do
 			id_manager.register_transaction (transaction)
 			if attached {PS_OBJECT_QUERY [ANY]} query as obj_query then
@@ -32,8 +32,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 		end
 
 	next_entry (query: PS_OBJECT_QUERY [ANY])
-			-- retrieves the next object. stores item directly into result_set
-			-- in case of an error it is written into the transaction connected to the query
+			-- Retrieves the next object. Stores item directly into result_set.
+			-- In case of an error it is written into the transaction connected to the query.
 		do
 			id_manager.register_transaction (query.transaction)
 			if attached {PS_OBJECT_QUERY [ANY]} query as obj_query then
@@ -44,13 +44,13 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 		end
 
 	execute_tuple_query (tuple_query: PS_TUPLE_QUERY [ANY]; transaction: PS_TRANSACTION)
-			-- Execute the tuple query `tuple_query' within the readonly transaction `transaction'
+			-- Execute the tuple query `tuple_query' within the readonly transaction `transaction'.
 		do
 			fixme ("TODO")
 		end
 
 	next_tuple_entry (tuple_query: PS_TUPLE_QUERY [ANY])
-			-- Retrieves the next tuple and stores it in `query.result_cursor'
+			-- Retrieves the next tuple and stores it in `query.result_cursor'.
 		do
 			fixme ("TODO")
 		end
@@ -58,7 +58,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 feature {PS_EIFFELSTORE_EXPORT} -- Modification
 
 	insert (object: ANY; transaction: PS_TRANSACTION)
-			-- Insert `object' within `transaction' into `Current'
+			-- Insert `object' within `transaction' into `Current'.
 		do
 			id_manager.register_transaction (transaction)
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).insert, agent id_manager.is_identified(?, transaction))
@@ -70,7 +70,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 		end
 
 	update (object: ANY; transaction: PS_TRANSACTION)
-			-- Update `object' within `transaction'
+			-- Update `object' within `transaction'.
 		do
 			id_manager.register_transaction (transaction)
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).update, agent id_manager.is_identified(?, transaction))
@@ -82,7 +82,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 		end
 
 	delete (object: ANY; transaction: PS_TRANSACTION)
-			-- Delete `object' within `transaction' from `Current'
+			-- Delete `object' within `transaction' from `Current'.
 		do
 			id_manager.register_transaction (transaction)
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).delete, agent id_manager.is_identified(?, transaction))
@@ -103,7 +103,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 
 	commit_transaction (transaction: PS_TRANSACTION)
-			-- Explicitly commit the transaction
+			-- Explicitly commit the transaction.
 		do
 			if id_manager.can_commit (transaction) then
 				backend.commit (transaction) -- can fail and raise an exception
@@ -117,7 +117,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 		end
 
 	rollback_transaction (transaction: PS_TRANSACTION; manual_rollback: BOOLEAN)
-			-- Rollback the transaction
+			-- Rollback the transaction.
 		do
 			backend.rollback (transaction)
 			id_manager.rollback (transaction)
@@ -127,7 +127,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 feature {PS_EIFFELSTORE_EXPORT} -- Testing
 
 	clean_db_for_testing
-			-- Wipe out all data
+			-- Wipe out all data.
 		do
 				-- Ugly, but it works for now...
 			if attached {PS_GENERIC_LAYOUT_SQL_BACKEND} backend as sql_backend then
@@ -155,7 +155,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status Report
 feature {NONE} -- Initialization
 
 	make (a_backend: PS_BACKEND_STRATEGY)
-			-- Initialize `Current'
+			-- Initialize `Current'.
 		local
 			special_handler: PS_SPECIAL_COLLECTION_HANDLER
 		do
@@ -176,7 +176,7 @@ feature {NONE} -- Initialization
 feature -- Initialization
 
 	add_collection_handler (handler: PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]])
-			-- Add a handler for a specific type of collections
+			-- Add a handler for a specific type of collections.
 		do
 			retriever.add_handler (handler)
 			disassembler.add_handler (handler)

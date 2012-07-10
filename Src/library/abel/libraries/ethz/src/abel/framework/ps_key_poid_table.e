@@ -17,6 +17,7 @@ create
 feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
 	has_primary_key_of (obj: PS_OBJECT_IDENTIFIER_WRAPPER; transaction: PS_TRANSACTION): BOOLEAN
+			-- Has `obj' a primary key?		
 		do
 			Result := obj_to_key_hash.has (obj.object_identifier)
 		end
@@ -31,7 +32,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access
 		end
 
 	quick_translate (a_poid: INTEGER; transaction: PS_TRANSACTION): INTEGER
-			-- Returns the primary key of a_poid, or 0 if a_poid doesn't have a primary key
+			-- Returns the primary key of a_poid, or 0 if a_poid doesn't have a primary key.
 		do
 			if obj_to_key_hash.has (a_poid) then
 				Result := attach (obj_to_key_hash [a_poid]).first
@@ -42,7 +43,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access
 feature {PS_EIFFELSTORE_EXPORT} -- Element change
 
 	add_entry (obj: PS_OBJECT_IDENTIFIER_WRAPPER; primary_key: INTEGER; transaction: PS_TRANSACTION)
-			-- Add a new table entry
+			-- Add a new table entry.
 		local
 			type_hash: HASH_TABLE [LINKED_LIST [PS_OBJECT_IDENTIFIER_WRAPPER], INTEGER]
 			local_list: LINKED_LIST [PS_OBJECT_IDENTIFIER_WRAPPER]
@@ -66,7 +67,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Element change
 		end
 
 	remove_primary_key (primary_key: INTEGER; type: PS_TYPE_METADATA; transaction: PS_TRANSACTION)
-			-- Remove the primary key `primary_key' from the table, alongside all objects associated to it
+			-- Remove the primary key `primary_key' from the table, alongside all objects associated to it.
 		local
 			local_list: LINKED_LIST [PS_OBJECT_IDENTIFIER_WRAPPER]
 			to_remove: LINKED_LIST [INTEGER]
@@ -134,7 +135,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Cleanup and Memory management
 feature {PS_EIFFELSTORE_EXPORT} -- Primary key to object mapping functions
 
 		-- TODO: the vice-versa part (primary key to object identifier) is currently not used.
-		-- It was intended to deliever fast results in some cases where the object is already built by another query and is still in memory,
+		-- It was intended to deliver fast results in some cases where the object is already built by another query and is still in memory,
 		-- but maybe caching at a lower level is better for that (easier, and less side effects)
 
 	--	has_objects_of (primary_key: INTEGER; type: PS_TYPE_METADATA) : BOOLEAN
@@ -171,7 +172,7 @@ feature {NONE} -- Implementation
 	default_size: INTEGER = 100
 
 	make
-			-- Initialization for `Current'
+			-- Initialization for `Current'.
 		do
 			--create key_to_obj_hash.make (100)
 			create obj_to_key_hash.make (100)

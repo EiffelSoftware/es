@@ -116,7 +116,7 @@ feature {NONE} -- Implementation
 		end
 
 	transaction_errors: ARRAY [INTEGER]
-			-- All MySQL error codes that indicate a tconflict between transactions
+			-- All MySQL error codes that indicate a conflict between transactions
 		once
 			Result := <<1205 -- Lock timeout
 				>>

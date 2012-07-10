@@ -18,7 +18,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 
 	acquire_connection: PS_SQL_CONNECTION_ABSTRACTION
 			-- Get a new connection.
-			-- The transaction isolation level of th new connection is the same as in `Current.transaction_isolation_level', and autocommit is disabled.
+			-- The transaction isolation level of the new connection is the same as in `Current.transaction_isolation_level', and autocommit is disabled.
 		do
 				-- It only works with one connection, so create a wrapper around it and return that.
 			create {PS_SQLITE_CONNECTION} Result.make (unique_connection)
@@ -27,7 +27,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 	release_connection (a_connection: PS_SQL_CONNECTION_ABSTRACTION)
 			-- Release connection `a_connection'
 		do
-				-- There is only one connection which should not be closed, therefore do nothing
+				-- There is only one connection which should not be closed, therefore do nothing.
 		end
 
 	set_transaction_isolation_level (a_level: PS_TRANSACTION_ISOLATION_LEVEL)
@@ -38,7 +38,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 		end
 
 	close_connections
-			-- Close all currently open connections
+			-- Close all currently open connections.
 		do
 			unique_connection.rollback
 			unique_connection.close
@@ -57,9 +57,9 @@ feature {NONE} -- Initialization
 		end
 
 	database_location: STRING
-			-- The location of the database file
+			-- The location of the database file.
 
 	unique_connection: SQLITE_DATABASE
-			-- The only connection to the database
+			-- The only connection to the database.
 
 end

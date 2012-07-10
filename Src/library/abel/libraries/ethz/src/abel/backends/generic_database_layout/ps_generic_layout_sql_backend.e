@@ -409,7 +409,7 @@ feature {NONE} -- Implementation - Connection and Transaction handling
 		end
 
 	active_connections: LINKED_LIST [PS_PAIR [PS_SQL_CONNECTION_ABSTRACTION, PS_TRANSACTION]]
-			-- These are the normal connections attached to a transactions.
+			-- These are the normal connections attached to a transaction.
 			-- They do not have auto-commit and they are closed once the transaction is finished.
 			-- They only write and read the ps_value table.
 
