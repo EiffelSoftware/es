@@ -109,13 +109,6 @@ feature -- Inheritance
 	proper_descendants: LIST [PS_CLASS_METADATA]
 			-- The proper descendants.
 
-	--immediate_ancestors: LIST[PS_CLASS_METADATA]
-			-- The immediate ancestors.
-			-- there is no way to get the immediate ancestors when just using the (transitive) conformsTo relation.
-
-	--immediate_descendants: LIST[PS_CLASS_METADATA]
-			-- The immediate descendants.
-
 feature {NONE} -- Initialization
 
 	make (type_metadata: PS_TYPE_METADATA; a_manager: PS_METADATA_FACTORY)

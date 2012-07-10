@@ -17,8 +17,7 @@
 		<setting name="concurrency" value="none"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
 		<library name="eiffelstore2" location="..\..\..\libraries\ethz\src\abel\eiffelstore2.ecf" readonly="false">
-			<option full_class_checking="true" void_safety="all">
-			</option>
+			<!--			<option full_class_checking="true" void_safety="all">	</option> -->
 		</library>
 		<library name="mysql" location="..\..\..\libraries\ethz\src\mysqli\mysqli.ecf"/>
 		<library name="serializer" location="..\..\..\libraries\ethz\src\schema_evolution\serializer_lib\serializer.ecf"/>

@@ -42,7 +42,7 @@ feature {NONE} -- Initialization
 		do
 			create database.make (sqlite_file)
 			create backend.make (database, create {PS_SQLITE_STRINGS})
-			backend.wipe_out_all
+			backend.wipe_out
 			create Result.make (backend)
 		end
 

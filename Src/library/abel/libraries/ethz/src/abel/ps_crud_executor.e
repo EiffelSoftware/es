@@ -65,15 +65,17 @@ feature -- Data retrieval
 		ensure
 			query_executed: tuple_query.is_executed
 		end
-			--	reload (object: ANY)
-			-- Reload  `object'.
-			--		require
-			--			already_loaded: is_persistent (object, new_transaction)
-			--		do
-			--			fixme ("TODO: see reload_within_transaction")
-			--		ensure
-			--			still_persistent: is_persistent (object, new_transaction)
-			--		end
+
+
+	--reload (object: ANY)
+				-- Reload  `object'.
+	--		require
+	--			already_loaded: is_persistent (object, new_transaction)
+	--		do
+	--			fixme ("TODO: see reload_within_transaction")
+	--		ensure
+	--			still_persistent: is_persistent (object, new_transaction)
+	--		end
 
 feature -- Data manipulation
 
@@ -137,17 +139,19 @@ feature -- Transaction-based data retrieval and querying
 			aborted_implies_after: transaction.has_error implies a_query.result_cursor.after
 			only_transaction_conflicts_return_normally: transaction.has_error implies attached {PS_TRANSACTION_CONFLICT} transaction.error
 		end
-			--	reload_within_transaction (object:ANY; transaction: PS_TRANSACTION)
+
+
+	--reload_within_transaction (object:ANY; transaction: PS_TRANSACTION)
 			-- Reload `object' within transaction `transaction'
 			-- In case of a conflict between transactions, it will abort `transaction' and return normally.
 			-- In every other case of errors it will abort `transaction' and raise an exception.
-			--		require
-			--			already_loaded: is_persistent (object, transaction)
-			--		do
-			--			fixme ("TODO: The function is dangerous: In case of an abort because of transaction conflicts, the state of `object' is undefined, and the callee only realizes that when transaction commits.")
-			--		ensure
-			--			still_persistent: is_persistent (object, transaction)
-			--		end
+		--		require
+		--			already_loaded: is_persistent (object, transaction)
+		--		do
+		--			fixme ("TODO: The function is dangerous: In case of an abort because of transaction conflicts, the state of `object' is undefined, and the callee only realizes that when transaction commits.")
+		--		ensure
+		--			still_persistent: is_persistent (object, transaction)
+		--		end
 
 	insert_within_transaction (an_object: ANY; transaction: PS_TRANSACTION)
 			-- Insert `an_object' within the transaction `transaction' into the repository.
@@ -295,9 +299,9 @@ feature {NONE} -- Implementation
 			last_error := transaction.error
 			if not retried then
 				retried := True
-				
-					--fixme ("Uncomment the following line - At the moment it is disabled because it somehow overwrites the exception stack, which is bad for debugging...")
-				retry -- The retry will "catch" transaction conflicts, but raise every other exception
+
+					fixme ("Uncomment the following line - At the moment it is disabled because it somehow overwrites the exception stack, which is bad for debugging...")
+				--retry -- The retry will "catch" transaction conflicts, but raise every other exception
 			end
 		end
 

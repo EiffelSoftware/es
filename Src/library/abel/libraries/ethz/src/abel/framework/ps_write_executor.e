@@ -142,7 +142,9 @@ feature {NONE} -- Implementation
 feature {NONE} -- Implementation
 
 	backend: PS_BACKEND_STRATEGY
+			-- The backend to execute the operations on.
 
 	id_manager: PS_OBJECT_IDENTIFICATION_MANAGER
+			-- The identification manager used to generate unique object identifiers for the objects in an operation plan.
 
 end

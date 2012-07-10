@@ -246,6 +246,14 @@ feature {PS_EIFFELSTORE_EXPORT} -- Mapping
 	key_mapper: PS_KEY_POID_TABLE
 			-- Maps POIDs to primary keys as used by this backend
 
+feature {PS_EIFFELSTORE_EXPORT} -- Testing
+
+	wipe_out
+			-- Wipe out everything and initialize new.
+		do
+			make
+		end
+
 feature {PS_EIFFELSTORE_EXPORT} -- Miscellaneous
 
 	string_representation: STRING

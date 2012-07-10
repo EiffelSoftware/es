@@ -3,6 +3,7 @@ note
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
+	TODO: "Make the features of this class transaction-aware"
 
 class
 	PS_KEY_POID_TABLE
@@ -50,20 +51,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Element change
 		do
 			obj_to_key_hash.extend (create {PS_PAIR [INTEGER, PS_TYPE_METADATA]}.make (primary_key, obj.metadata), obj.object_identifier)
 				-- TODO: write to transaction-local write set, (and remove delete from transaction-local delete set if there is one)
-
-				--			if not key_to_obj_hash.has (obj.metadata.type.type_id) then
-				--				create type_hash.make (default_size)
-				--				key_to_obj_hash.extend (type_hash, obj.metadata.type.type_id)
-				--			else
-				--				type_hash := attach (key_to_obj_hash[obj.metadata.type.type_id])
-				--			end
-				--			if not type_hash.has (primary_key) then
-				--				create local_list.make
-				--				type_hash.extend (local_list, primary_key)
-				--			else
-				--				local_list := attach (type_hash[primary_key])
-				--			end
-				--			local_list.extend (obj)
 		end
 
 	remove_primary_key (primary_key: INTEGER; type: PS_TYPE_METADATA; transaction: PS_TRANSACTION)
@@ -72,13 +59,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Element change
 			local_list: LINKED_LIST [PS_OBJECT_IDENTIFIER_WRAPPER]
 			to_remove: LINKED_LIST [INTEGER]
 		do
-				--			if key_to_obj_hash.has (type.type.type_id) and then attach (key_to_obj_hash[type.type.type_id]).has (primary_key) then
-				--				local_list:= attach (attach (key_to_obj_hash[type.type.type_id]).item (primary_key))
-				--				attach (key_to_obj_hash[type.type.type_id]).remove (primary_key)
-				--				across local_list as cursor loop
-				--					obj_to_key_hash.remove (cursor.item.object_identifier)
-				--				end
-				--			end
 			create to_remove.make
 			across
 				obj_to_key_hash as cursor
@@ -98,72 +78,25 @@ feature {PS_EIFFELSTORE_EXPORT} -- Element change
 feature {PS_EIFFELSTORE_EXPORT} -- Transaction management
 
 	commit (transaction: PS_TRANSACTION)
+			-- Make the changes done within transaction `transaction' permanent.
 		do
 		end
 
 	rollback (transaction: PS_TRANSACTION)
+			-- Undo all changes done within transaction `transaction'.
 		do
 		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Cleanup and Memory management
 
-		-- TODO: reimplement this feature and add it as an agent to the object identification manager.
+	-- TODO: reimplement this feature and add it as an agent to the object identification manager.
 
 	--	remove_object (obj: PS_OBJECT_IDENTIFIER_WRAPPER)
 		-- Remove `obj' from the table, but keep any other object associated to the same primary key if possible.
-		--		local
-		--			primary_key: INTEGER
-		--			local_list: LINKED_LIST[PS_OBJECT_IDENTIFIER_WRAPPER]
 		--		do
-		--			if obj_to_key_hash.has (obj.object_identifier) then
-		--				primary_key := attach (obj_to_key_hash[obj.object_identifier]).first
-		--				obj_to_key_hash.remove (obj.object_identifier)
-		-- also remove from linked list
-		--				local_list:= attach (attach (key_to_obj_hash[obj.metadata.type.type_id]).item (primary_key))
-		--				from local_list.start
-		--				until local_list.after
-		--				loop
-		--					if local_list.item.object_identifier = obj.object_identifier then
-		--						local_list.remove
-		--					else
-		--						local_list.forth
-		--					end
-		--				end
-		--			end
-		--		end
-
-feature {PS_EIFFELSTORE_EXPORT} -- Primary key to object mapping functions
-
-		-- TODO: the vice-versa part (primary key to object identifier) is currently not used.
-		-- It was intended to deliver fast results in some cases where the object is already built by another query and is still in memory,
-		-- but maybe caching at a lower level is better for that (easier, and less side effects)
-
-	--	has_objects_of (primary_key: INTEGER; type: PS_TYPE_METADATA) : BOOLEAN
-		--		do
-		-- probably not the fastest implementation...
-		--			Result:= not objects_of (primary_key, type).is_empty
-		--		end
-		--	objects_of (primary_key: INTEGER; type: PS_TYPE_METADATA) : LINKED_LIST[PS_OBJECT_IDENTIFIER_WRAPPER]
-		-- Returns all objects that are associated to the primary key `primary_key' in the database.
-		--		local
-		--			type_hash: HASH_TABLE[LINKED_LIST[PS_OBJECT_IDENTIFIER_WRAPPER], INTEGER]
-		--		do
-		--			create Result.make
-		--			if key_to_obj_hash.has (type.type.type_id) then
-		--				type_hash:= attach (key_to_obj_hash[type.type.type_id])
-		--				if type_hash.has (primary_key) then
-		--					Result.append (attach (type_hash[primary_key]))
-		--				end
-		--			end
 		--		end
 
 feature {NONE} -- Implementation
-
-		--	key_to_obj_hash: HASH_TABLE [
-		--							HASH_TABLE [
-		--								LINKED_LIST[PS_OBJECT_IDENTIFIER_WRAPPER], -- the objects
-		--								INTEGER ] , -- the primary key
-		--							INTEGER] -- the type
 
 	obj_to_key_hash: HASH_TABLE [
 							PS_PAIR [INTEGER, PS_TYPE_METADATA], -- the primary key and class
@@ -174,7 +107,6 @@ feature {NONE} -- Implementation
 	make
 			-- Initialization for `Current'.
 		do
-			--create key_to_obj_hash.make (100)
 			create obj_to_key_hash.make (100)
 		end
 

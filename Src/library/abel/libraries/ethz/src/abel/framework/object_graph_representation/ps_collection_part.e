@@ -132,7 +132,7 @@ feature {NONE} -- Implementation
 		end
 
 	add_additional_information
-			-- Add additional information for object collections.
+			-- Ask the handler for additional information about `Current', if `Current' is an instance of PS_OBJECT_COLLECTION_PART.
 		deferred
 		end
 

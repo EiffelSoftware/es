@@ -128,14 +128,15 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing
 
 	clean_db_for_testing
 			-- Wipe out all data.
+		local
+			handlers: LINKED_LIST[PS_COLLECTION_HANDLER[ITERABLE [detachable ANY]]]
 		do
-				-- Ugly, but it works for now...
-			if attached {PS_GENERIC_LAYOUT_SQL_BACKEND} backend as sql_backend then
-				sql_backend.wipe_out_all
-			else
-				create {PS_IN_MEMORY_DATABASE} backend.make
-			end
+			handlers:= collection_handlers
+			backend.wipe_out
 			make (backend)
+			across handlers as handler_cursor loop
+				add_collection_handler (handler_cursor.item)
+			end
 		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status Report
@@ -156,21 +157,17 @@ feature {NONE} -- Initialization
 
 	make (a_backend: PS_BACKEND_STRATEGY)
 			-- Initialize `Current'.
-		local
-			special_handler: PS_SPECIAL_COLLECTION_HANDLER
 		do
+			backend := a_backend
 			create transaction_isolation_level
 			set_transaction_isolation_level (transaction_isolation_level.repeatable_read)
 			create default_object_graph.make
 			create id_manager.make
 			create planner.make
 			create disassembler.make (id_manager.metadata_manager, default_object_graph)
-				--	create memory_db.make
-			backend := a_backend
 			create executor.make (backend, id_manager)
 			create retriever.make (backend, id_manager)
-			create special_handler.make
-			add_collection_handler (special_handler)
+			create collection_handlers.make
 		end
 
 feature -- Initialization
@@ -180,18 +177,26 @@ feature -- Initialization
 		do
 			retriever.add_handler (handler)
 			disassembler.add_handler (handler)
+			collection_handlers.extend (handler)
 		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Implementation
 
 	disassembler: PS_OBJECT_DISASSEMBLER
+			-- A disassembler to create explicit object graphs.
 
 	planner: PS_WRITE_PLANNER
+			-- A write planner to generate an operation plan from an object graph.
 
 	executor: PS_WRITE_EXECUTOR
+			-- An executor to execute operations in an operation plan
 
 	backend: PS_BACKEND_STRATEGY
+			-- A BACKEND_STRATEGY implementation
 
 	retriever: PS_RETRIEVAL_MANAGER
+			-- A retrieval manager to build objects.
 
+	collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER[ITERABLE [detachable ANY]]]
+			-- The collection handlers registered with `Current'
 end

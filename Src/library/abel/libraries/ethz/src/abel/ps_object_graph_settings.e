@@ -21,7 +21,7 @@ note
 			Note: On some repositories the actual object graph depth will be ignored, and it will always use Object_graph_depth_infinite
 			instead.
 	]"
-	TODO:fixme: "Some settings are constant right now. They should get implemented in the future"
+	TODO: "Some settings are constant right now. They should get implemented in the future"
 
 class
 	PS_OBJECT_GRAPH_SETTINGS

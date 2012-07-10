@@ -50,9 +50,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			-- You can find out about the actual generic parameter by comparing the class name associated to a foreign key value.
 		require
 			most_general_type: across type.supertypes as supertype all not (supertype.item.base_class.name.is_equal (type.base_class.name) and type.is_subtype_of (supertype.item)) end
-				--all_attributes_exist: across attributes as attr all type.attributes.has (attr.item) end
+			--all_attributes_exist: across attributes as attr all type.attributes.has (attr.item) end
 		deferred
-			-- TODO: to have lazy loading support, we need to have a special ITERATION_CURSOR and a function next in this class to load the next item of this customized cursor
+			-- To have lazy loading support, you need to have a special ITERATION_CURSOR and a function next in this class to load the next item of this customized cursor
 		ensure
 			attributes_loaded: not Result.after implies check_attributes_loaded (type, attributes, Result.item)
 			class_metadata_set: not Result.after implies Result.item.class_metadata.name.is_equal (type.base_class.name)
@@ -74,7 +74,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			keys_exist: TRUE --TODO across primary_keys as cursor all key_mapper.has_objects_of (cursor.item, type) end
 		deferred
 		ensure
-				--	primary_keys.count = Result.count
+			--primary_keys.count = Result.count
 			across Result as res all res.item.class_metadata.name = type.base_class.name end
 		end
 
@@ -138,7 +138,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			-- Add all entries in a_collection to the database. If the order is not conflicting with the items already in the database, it will try to preserve order.
 		require
 			mode_is_insert: a_collection.write_operation = a_collection.write_operation.insert
-				--objectoriented_mode: not a_collection.handler.is_in_relational_storage_mode (a_collection)
+			objectoriented_mode: not a_collection.is_relationally_mapped
 			not_yet_known: not key_mapper.has_primary_key_of (a_collection.object_wrapper, a_transaction)
 			objectoriented_collection_operation_supported: is_objectoriented_collection_store_supported
 			backend_can_handle_collection: can_handle_objectoriented_collection (a_collection.object_wrapper.metadata)
@@ -151,7 +151,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			-- Delete a_collection from the database.
 		require
 			mode_is_delete: a_collection.write_operation = a_collection.write_operation.delete
-				--objectoriented_mode: not a_collection.handler.is_in_relational_storage_mode (a_collection)
+			objectoriented_mode: not a_collection.is_relationally_mapped
 			collection_known: key_mapper.has_primary_key_of (a_collection.object_wrapper, a_transaction)
 			objectoriented_collection_operation_supported: is_objectoriented_collection_store_supported
 			backend_can_handle_collection: can_handle_objectoriented_collection (a_collection.object_wrapper.metadata)
@@ -176,8 +176,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 			mode_is_insert: a_collection.write_operation = a_collection.write_operation.insert
 			is_relational: a_collection.is_relationally_mapped
 			relational_collection_operation_supported: is_relational_collection_store_supported
-				--			backend_can_handle_collection: can_handle_relational_collection (a_collection.reference_owner, a_collection.values.first.)
-				--			TODO: add a mechanism in all PS_OBJECT_GRAPH_PARTs to get metadata
+			backend_can_handle_collection: can_handle_relational_collection (a_collection.reference_owner.metadata, a_collection.values.first.metadata)
 		deferred
 		end
 
@@ -187,8 +186,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 			mode_is_delete: a_collection.write_operation = a_collection.write_operation.delete
 			is_relational: a_collection.is_relationally_mapped
 			relational_collection_operation_supported: is_relational_collection_store_supported
-				--			backend_can_handle_collection: can_handle_relational_collection (a_collection.reference_owner, a_collection.values.first.)
-				--			TODO: add a mechanism in all PS_OBJECT_GRAPH_PARTs to get metadata
+			backend_can_handle_collection: can_handle_relational_collection (a_collection.reference_owner.metadata, a_collection.values.first.metadata)
 		deferred
 		end
 
@@ -221,12 +219,20 @@ feature {PS_EIFFELSTORE_EXPORT} -- Mapping
 		deferred
 		end
 
+feature {PS_EIFFELSTORE_EXPORT} -- Testing
+
+	wipe_out
+			-- Wipe out everything and initialize new.
+		deferred
+		end
+
 feature {PS_EIFFELSTORE_EXPORT} -- Precondition checks
 
 	check_dependencies_have_primary (an_object: PS_SINGLE_OBJECT_PART; transaction: PS_TRANSACTION): BOOLEAN
 		do
 			Result := across an_object.attributes as attr_name all (attached {PS_COMPLEX_PART} an_object.attribute_value (attr_name.item) as comp and an_object.attribute_value (attr_name.item).write_operation /= an_object.write_operation.no_operation) implies key_mapper.has_primary_key_of (comp.object_wrapper, transaction) end
 		end
+
 
 feature {NONE} -- Correctness checks
 
@@ -251,14 +257,12 @@ feature {NONE} -- Correctness checks
 			Result := True
 			create keys.make
 			keys.extend (key_mapper.primary_key_of (an_object.object_wrapper, transaction).first)
-				--			print (keys.count)
 			retrieved_obj_list := retrieve_from_keys (an_object.object_wrapper.metadata, keys, transaction)
 			across
 				an_object.object_wrapper.metadata.attributes as attr
 			loop
 				if an_object.attributes.has (attr.item) then
 					retrieved_object := retrieved_obj_list.first
-						--current_item:= attach (an_object.attribute_values[attr.item])
 					current_item := an_object.attribute_value (attr.item)
 					Result := Result and current_item.as_attribute (key_mapper.quick_translate (current_item.object_identifier, transaction)).value.is_equal (retrieved_object.attribute_value (attr.item).value)
 					Result := Result and current_item.as_attribute (key_mapper.quick_translate (current_item.object_identifier, transaction)).type.is_equal (retrieved_object.attribute_value (attr.item).attribute_class_name)

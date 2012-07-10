@@ -295,7 +295,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
 			management_connection.execute_sql (SQL_Strings.Delete_all_values)
 		end
 
-	wipe_out_all
+	wipe_out
 			-- Wipe out everything and initialize new.
 		do
 			from

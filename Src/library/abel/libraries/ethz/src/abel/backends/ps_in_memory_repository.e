@@ -25,7 +25,7 @@ feature {NONE} -- Initialization
 			create in_memory_database.make
 			make (in_memory_database)
 			create special_handler.make
-				--	add_collection_handler (special_handler)
+			add_collection_handler (special_handler)
 		end
 
 end

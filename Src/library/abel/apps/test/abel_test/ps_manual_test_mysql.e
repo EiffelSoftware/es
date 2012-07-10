@@ -67,7 +67,7 @@ feature {NONE} -- Initialization
 		do
 			create database.make (username, password, db_name, db_host, db_port)
 			create backend.make (database, create {PS_MYSQL_STRINGS})
-			backend.wipe_out_all
+			backend.wipe_out
 			create Result.make (backend)
 		end
 		

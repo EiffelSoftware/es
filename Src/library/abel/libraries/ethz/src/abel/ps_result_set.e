@@ -49,7 +49,7 @@ feature -- Cursor movement
 feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 
 	set_entry (object: detachable ANY)
-			-- Set `object' as item if not Void, otherwise set after to True.
+			-- Set `item' to `object', or after if `object' is Void.
 		require
 			actual_type_is_G: (object /= Void) implies (attached {G} object)
 		do
@@ -75,6 +75,7 @@ feature {PS_QUERY} -- Initialization
 		end
 
 	query: PS_QUERY [ANY]
+			-- Get the query which has `Current' as its result cursor.
 		do
 			Result := attach (detachable_query)
 		end

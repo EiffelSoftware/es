@@ -111,7 +111,7 @@ feature {NONE} -- Implementation
 		end
 
 	fix
-			-- Try to fix any inconsistency.
+			-- Try to fix any inconsistency by moving the cursor forth or stepping back in the graph.
 		do
 			if not current_cursor.after and then object_graph_stack.has (item) then
 				cycle_handler.call ([previous, item])
@@ -140,14 +140,19 @@ feature {NONE} -- Implementation
 feature {NONE} -- Implementation
 
 	object_graph_stack: LINKED_STACK [PS_OBJECT_GRAPH_PART]
+		-- A stack of visited items in depth-first search.
 
 	cursor_stack: LINKED_STACK [INDEXABLE_ITERATION_CURSOR [PS_OBJECT_GRAPH_PART]]
+		-- The cursors of the items in `object_graph_stack'
 
 	current_cursor: INDEXABLE_ITERATION_CURSOR [PS_OBJECT_GRAPH_PART]
+		-- The cursor of the currently visited item.
 
-	root: LINKED_LIST [PS_OBJECT_GRAPH_PART]
+	root:LINKED_LIST[PS_OBJECT_GRAPH_PART]
+		-- The root object as a list, because we need an initial `current_cursor'
 
 	visited_items: LINKED_LIST [PS_OBJECT_GRAPH_PART]
+		-- All items that have already been visited by `Current'
 
 feature {NONE} -- Initialization
 

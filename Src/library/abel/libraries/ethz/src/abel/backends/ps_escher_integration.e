@@ -272,6 +272,15 @@ feature {PS_EIFFELSTORE_EXPORT} -- Mapping
 			Result := real_backend.key_mapper
 		end
 
+feature {PS_EIFFELSTORE_EXPORT} -- Testing
+
+	wipe_out
+			-- Wipe out everything and initialize new.
+		do
+			real_backend.wipe_out
+		end
+
+
 feature -- Testing
 
 	set_simulation (switch: BOOLEAN)
