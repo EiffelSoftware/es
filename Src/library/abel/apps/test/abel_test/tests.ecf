@@ -10,15 +10,13 @@
 		<file_rule>
 			<exclude>^/test_classes$</exclude>
 		</file_rule>
-		<option trace="false" cat_call_detection="false" is_attached_by_default="true" void_safety="all" syntax="provisional" namespace="EiffelSoftware.Library">
+		<option trace="false" warning="true" cat_call_detection="false" is_attached_by_default="true" void_safety="all" syntax="provisional" namespace="EiffelSoftware.Library">
 			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
 		</option>
 		<setting name="dotnet_naming_convention" value="true"/>
 		<setting name="concurrency" value="none"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
-		<library name="eiffelstore2" location="..\..\..\libraries\ethz\src\abel\eiffelstore2.ecf" readonly="false">
-			<!--			<option full_class_checking="true" void_safety="all">	</option> -->
-		</library>
+		<library name="eiffelstore2" location="..\..\..\libraries\ethz\src\abel\eiffelstore2.ecf" readonly="false"/>
 		<library name="mysql" location="..\..\..\libraries\ethz\src\mysqli\mysqli.ecf"/>
 		<library name="serializer" location="..\..\..\libraries\ethz\src\schema_evolution\serializer_lib\serializer.ecf"/>
 		<library name="sqlite" location="$ISE_LIBRARY\unstable\library\persistency\database\sqlite3\sqlite-safe.ecf"/>

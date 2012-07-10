@@ -17,7 +17,7 @@ class
 create
 	make
 
-feature {DATA_STRUCTURES_CLASS_2_FOR_STORABLE} -- Initialization
+feature {NONE} -- Initialization
 
 	make
 			-- Initialization for `Current'.
