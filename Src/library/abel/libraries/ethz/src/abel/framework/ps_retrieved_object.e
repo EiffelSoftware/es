@@ -22,10 +22,10 @@ create {PS_BACKEND_STRATEGY}
 feature {PS_EIFFELSTORE_EXPORT} -- Access
 
 	primary_key: INTEGER
-			-- The retrieved object's primary key, as used in the database
+			-- The retrieved object's primary key, as used in the database.
 
 	class_metadata: PS_CLASS_METADATA
-			-- Some metadata information about the object
+			-- Metadata information about the object.
 
 	attributes: LINKED_LIST [STRING]
 			-- The attributes of the object that have been loaded.
@@ -58,7 +58,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 feature {PS_BACKEND_STRATEGY} -- Element change
 
 	add_attribute (attribute_name: STRING; value: STRING; class_name_of_value: STRING)
-			-- Add the attribute `attribute_name' with value tuple <`value', `class_name_of_value'>
+			-- Add the attribute `attribute_name' with value tuple <`value', `class_name_of_value'>.
 		require
 				--	attribute_exists: class_metadata.attributes.has (attribute_name)
 			class_name_not_empty: not class_name_of_value.is_empty
@@ -75,7 +75,7 @@ feature {PS_BACKEND_STRATEGY} -- Element change
 		end
 
 	remove_attribute (attribute_name: STRING)
-			-- Remove the attribute `attribute_name'
+			-- Remove the attribute `attribute_name'.
 		require
 			attribute_present: has_attribute (attribute_name)
 		do
@@ -88,7 +88,7 @@ feature {PS_BACKEND_STRATEGY} -- Element change
 feature {NONE} -- Initialization
 
 	values: HASH_TABLE [PS_PAIR [STRING, STRING], STRING]
-			-- Maps attribute names to the corresponding value and runtime type
+			-- Maps attribute names to the corresponding value and runtime types.
 
 	make (key: INTEGER; class_data: PS_CLASS_METADATA)
 			-- Initialization for `Current'.

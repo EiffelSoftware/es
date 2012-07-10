@@ -1,5 +1,5 @@
 note
-	description: "Calls the appropriate features on the backend to insert objects"
+	description: "Calls the appropriate features on the backend to insert objects."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -17,7 +17,7 @@ create
 feature {NONE} -- Initialization
 
 	make (a_backend: PS_BACKEND_STRATEGY; an_id_manager: PS_OBJECT_IDENTIFICATION_MANAGER)
-			-- Initialize `Current'
+			-- Initialize `Current'.
 		do
 			backend := a_backend
 			id_manager := an_id_manager
@@ -46,7 +46,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 
 	perform_operations (operation_plan: LIST [PS_OBJECT_GRAPH_PART]; transaction: PS_TRANSACTION)
-			-- Performs all operations in `operation_plan'
+			-- Performs all operations in `operation_plan'.
 		do
 			across
 				operation_plan as op_cursor
@@ -64,7 +64,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 feature {NONE} -- Implementation
 
 	handle_object (object: PS_SINGLE_OBJECT_PART; transaction: PS_TRANSACTION)
-			-- Perform a write operation on `object'
+			-- Perform a write operation on `object'.
 		local
 			attribute_values: LINKED_LIST [PS_OBJECT_GRAPH_PART]
 		do
@@ -86,7 +86,7 @@ feature {NONE} -- Implementation
 		end
 
 	handle_object_collection (object_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; transaction: PS_TRANSACTION)
-			-- Perform a write operation on `object_collection'
+			-- Perform a write operation on `object_collection'.
 		do
 			identify_all (object_collection, object_collection.values.new_cursor, transaction)
 			if object_collection.write_operation = object_collection.write_operation.insert then
@@ -101,7 +101,7 @@ feature {NONE} -- Implementation
 		end
 
 	handle_relational_collection (relational_collection: PS_RELATIONAL_COLLECTION_PART [ITERABLE [detachable ANY]]; transaction: PS_TRANSACTION)
-			-- Perform a write operation on `relational_collection'
+			-- Perform a write operation on `relational_collection'.
 		do
 			identify_all (relational_collection, relational_collection.values.new_cursor, transaction)
 			if relational_collection.write_operation = relational_collection.write_operation.insert then

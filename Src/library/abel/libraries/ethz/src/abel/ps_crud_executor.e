@@ -2,7 +2,7 @@ note
 	description: "[
 		Performs any kind of CRUD operations.
 		Errors are reported in the `Current.last_error' field and an excepion is raised if an error happens, 
-		so you don't have to manually check on errors every time you call a feature in `Current'
+		so you don't have to manually check on errors every time you call a feature in `Current'.
 		
 		If you use explicit transaction management (the *_within_transaction features),
 		a transaction conflict exception will be caught and the transaction will be aborted automatically, without raising another exception.
@@ -30,7 +30,7 @@ create
 feature --Access
 
 	repository: PS_REPOSITORY
-			-- The data repository on which `Current' operates
+			-- The data repository on which `Current' operates.
 
 feature -- Status Report
 
@@ -100,7 +100,7 @@ feature -- Data manipulation
 		end
 
 	delete (an_object: ANY)
-			-- Delete `an_object' from the repository
+			-- Delete `an_object' from the repository.
 		require
 			object_persistent: is_persistent (an_object, new_transaction)
 			can_handle_object: can_handle (an_object)
@@ -111,7 +111,7 @@ feature -- Data manipulation
 		end
 
 	execute_deletion_query (deletion_query: PS_OBJECT_QUERY [ANY])
-			-- Delete all objects that match the criteria defined in `deletion_query'
+			-- Delete all objects that match the criteria defined in `deletion_query'.
 		do
 			execute_within_implicit_transaction (agent execute_deletion_query_within_transaction(deletion_query, ?), False)
 		end
@@ -216,7 +216,7 @@ feature -- Transaction-based data retrieval and querying
 feature -- Transaction factory function
 
 	new_transaction: PS_TRANSACTION
-			-- Create a new transaction for `Current.repository'
+			-- Create a new transaction for `Current.repository'..
 		do
 			create Result.make (repository)
 		end
@@ -230,7 +230,7 @@ feature --Error handling
 		end
 
 	last_error: PS_ERROR
-			-- The last error
+			-- The last encountered error.
 
 feature {NONE} -- Implementation
 
@@ -302,7 +302,7 @@ feature {NONE} -- Implementation
 		end
 
 	execute_tuple_query_within_transaction (query: PS_TUPLE_QUERY [ANY]; transaction: PS_TRANSACTION)
-			-- Execute tuple query `query'. Exported to `NONE' because you can only have tuple queries with readonly transactions and implicit transaction management
+			-- Execute tuple query `query'. Exported to `NONE' because you can only have tuple queries with readonly transactions and implicit transaction management.
 		require
 			readonly_transaction: transaction.is_readonly
 		do

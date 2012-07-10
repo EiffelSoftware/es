@@ -1,7 +1,7 @@
 note
 	description: "[
 		Represents a freshly retrieved object-oriented collection.
-		(see also description of PS_RETRIEVED_COLLECTION)
+		See also description of PS_RETRIEVED_COLLECTION.
 	]"
 	author: "Roman Schmocker"
 	date: "$Date$"
@@ -20,17 +20,17 @@ create {PS_BACKEND_STRATEGY}
 feature {PS_EIFFELSTORE_EXPORT} -- Access
 
 	primary_key: INTEGER
-			-- The retrieved collection's primary key, as used in the database
+			-- The retrieved collection's primary key, as used in the database.
 
 	class_metadata: PS_CLASS_METADATA
-			-- Some metadata information about the generating class of the collection
+			-- Some metadata information about the generating class of the collection.
 
 	information_descriptions: LIST [STRING]
 			-- Get all descriptions which have an information value.
 
 	get_information (description: STRING): STRING
 			-- Returns the additional information to the key `description'.
-			-- (Background info: Information is generated during insert and needed during retrieval by a PS_COLLECTION_HANDLER. The backend just stores the < description, value> tuple.)
+			-- (Background info: Information is generated during insert and needed during retrieval by a PS_COLLECTION_HANDLER. The backend just stores the <description, value> tuple.)
 		require
 			description_not_empty: not description.is_empty
 			information_present: has_information (description)
@@ -51,7 +51,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 feature {PS_BACKEND_STRATEGY} -- Element change
 
 	add_information (description: STRING; value: STRING)
-			-- Add the information `value' with its description `description' to the retrieved collection
+			-- Add the information `value' with its description `description' to the retrieved collection.
 		require
 			description_not_empty: not description.is_empty
 			value_not_empty: not value.is_empty
@@ -65,7 +65,7 @@ feature {PS_BACKEND_STRATEGY} -- Element change
 feature {NONE}
 
 	additional_information_hash: HASH_TABLE [STRING, STRING]
-			-- The internal store for additional information
+			-- The internal store for additional information.
 
 	make (key: INTEGER; meta: PS_CLASS_METADATA)
 			-- Initialize `Current'

@@ -1,5 +1,5 @@
 note
-	description: "Represents a query to objects of type G."
+	description: "Represents a query for objects of type G."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -32,7 +32,7 @@ feature -- Status report
 feature -- Basic operations
 
 	set_criterion (a_criterion: PS_CRITERION)
-			-- Set the criteria `a_criterion', against which the objects will be selected
+			-- Set the criteria `a_criterion', against which the objects will be selected.
 		require else
 			set_before_execution: not is_executed
 			criterion_can_handle_objects: is_criterion_fitting_generic_type (a_criterion)
@@ -43,7 +43,7 @@ feature -- Basic operations
 feature -- Cursor generation
 
 	new_cursor: PS_RESULT_SET [G]
-			-- Return the result_cursor
+			-- Return the result_cursor.
 		do
 			Result := result_cursor
 		end
@@ -57,7 +57,7 @@ feature {NONE} -- Initialization
 		end
 
 	create_result_cursor
-			-- Create a new result set
+			-- Create a new result set.
 		do
 			create result_cursor.make
 		end

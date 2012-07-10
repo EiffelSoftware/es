@@ -20,7 +20,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access
 			-- The root of an object graph to generate a plan for.
 
 	operation_plan: LINKED_LIST [PS_OBJECT_GRAPH_PART]
-			-- The plan for all write operations
+			-- The plan for all write operations.
 		require
 			generated: is_plan_generated
 		attribute
@@ -34,7 +34,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 
 	generate_plan
-			-- Generate an `operation_plan' for `object_graph'
+			-- Generate an `operation_plan' for `object_graph'.
 		require
 			has_graph: not object_graph.dependencies.is_empty
 		do
@@ -59,7 +59,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 feature {NONE} -- Implementation
 
 	break_cycles
-			-- Search and break all cycles
+			-- Search and break all cycles.
 		local
 			cursor: PS_OBJECT_GRAPH_CURSOR
 		do
@@ -77,13 +77,13 @@ feature {NONE} -- Implementation
 		end
 
 	topological_sort
-			-- Do a topological sort on the object graph
+			-- Do a topological sort on the object graph.
 		do
 			visit (object_graph)
 		end
 
 	visit (node: PS_OBJECT_GRAPH_PART)
-			-- Visit a node in depth-first search and then add the node to the operation plan
+			-- Visit a node in depth-first search and then add the node to the operation plan.
 		do
 			if not node.is_visited then
 				node.set_visited (True)
@@ -97,7 +97,7 @@ feature {NONE} -- Implementation
 		end
 
 	remove_noops
-			-- Remove all `No_operation' items from the list
+			-- Remove all `No_operation' items from the list.
 		do
 			from
 				operation_plan.start
@@ -115,7 +115,7 @@ feature {NONE} -- Implementation
 feature {NONE} -- Initialization
 
 	make
-			-- Initialization for `Current'
+			-- Initialization for `Current'.
 		do
 			create object_graph.make
 			create operation_plan.make

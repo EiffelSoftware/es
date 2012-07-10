@@ -18,7 +18,7 @@ feature -- Access
 		end
 
 	transaction: PS_TRANSACTION
-			-- The transaction in which this query is embedded
+			-- The transaction in which this query is embedded.
 		require
 			already_executed: is_executed
 		do
@@ -46,7 +46,7 @@ feature -- Status report
 feature -- Basic operations
 
 	set_criterion (a_criterion: PS_CRITERION)
-			-- Set the criteria `a_criterion', against which the objects will be selected
+			-- Set the criteria `a_criterion', against which the objects will be selected.
 		require
 			set_before_execution: not is_executed
 			only_predefined: not a_criterion.has_agent_criterion
@@ -86,7 +86,7 @@ feature -- Miscellaneous
 feature {PS_EIFFELSTORE_EXPORT} -- Internal
 
 	register_as_executed (a_transaction: PS_TRANSACTION)
-			-- Set `is_executed' to true and bind query to `a_transaction'
+			-- Set `is_executed' to true and bind query to `a_transaction'.
 		require
 			not_yet_executed: not is_executed
 		do
@@ -98,7 +98,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Internal
 		end
 
 	generic_type: TYPE [detachable ANY]
-			-- Get the (detachable) generic type of `Current'
+			-- Get the (detachable) generic type of `Current'.
 		local
 			reflection: INTERNAL
 		once ("OBJECT")
@@ -107,10 +107,10 @@ feature {PS_EIFFELSTORE_EXPORT} -- Internal
 		end
 
 	backend_identifier: INTEGER
-			-- Identifier for the backend to recognize an already executed query
+			-- Identifier for the backend to recognize an already executed query.
 
 	set_identifier (identifier: INTEGER)
-			-- Set backend_identifier with `identifier'
+			-- Set backend_identifier with `identifier'.
 		do
 			backend_identifier := identifier
 		ensure
@@ -124,7 +124,7 @@ feature {NONE} -- Implementation
 feature {NONE} -- Initialization
 
 	make
-			-- Initialize Current
+			-- Initialize `Current'.
 		deferred
 		ensure
 			not_executed: not is_executed
@@ -134,14 +134,14 @@ feature {NONE} -- Initialization
 		end
 
 	initialize
-			-- Initialize the shared parts between object and tuple queries
+			-- Initialize the shared parts between object and tuple queries.
 		do
 			create {PS_EMPTY_CRITERION} criteria
 			reset
 		end
 
 	create_result_cursor
-			-- Create a new result set
+			-- Create a new result set.
 		deferred
 		end
 

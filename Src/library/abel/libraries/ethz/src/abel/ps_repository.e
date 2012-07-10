@@ -24,13 +24,13 @@ inherit
 feature -- Settings
 
 	default_object_graph: PS_OBJECT_GRAPH_SETTINGS
-			-- Default object graph settings
+			-- Default object graph settings.
 
 	transaction_isolation_level: PS_TRANSACTION_ISOLATION_LEVEL
-			-- Transaction isolation level
+			-- Transaction isolation level.
 
 	set_transaction_isolation_level (a_level: PS_TRANSACTION_ISOLATION_LEVEL)
-			-- Set the isolation level for transactions
+			-- Set the isolation level for transactions.
 		do
 			transaction_isolation_level := a_level
 		end
@@ -38,7 +38,7 @@ feature -- Settings
 feature {PS_EIFFELSTORE_EXPORT} -- Object query
 
 	execute_query (query: PS_OBJECT_QUERY [ANY]; transaction: PS_TRANSACTION)
-			-- Executes the object query `query' within transaction `transaction'
+			-- Executes the object query `query' within `transaction'.
 		require
 			not_executed: not query.is_executed
 			transaction_repository_correct: transaction.repository = Current
@@ -69,7 +69,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 		end
 
 	execute_tuple_query (tuple_query: PS_TUPLE_QUERY [ANY]; transaction: PS_TRANSACTION)
-			-- Execute the tuple query `tuple_query' within the readonly transaction `transaction'
+			-- Execute the tuple query `tuple_query' within the readonly `transaction'.
 		require
 			readonly_transaction: transaction.is_readonly
 			not_executed: not tuple_query.is_executed
@@ -84,7 +84,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 		end
 
 	next_tuple_entry (tuple_query: PS_TUPLE_QUERY [ANY])
-			-- Retrieves the next tuple and stores it in `query.result_cursor'
+			-- Retrieves the next tuple and stores it in `query.result_cursor'.
 		require
 			not_after: not tuple_query.result_cursor.after
 			already_executed: tuple_query.is_executed
@@ -100,7 +100,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 feature {PS_EIFFELSTORE_EXPORT} -- Modification
 
 	insert (object: ANY; transaction: PS_TRANSACTION)
-			-- Insert `object' within `transaction' into `Current'
+			-- Insert `object' within `transaction' into `Current'.
 		require
 			transaction_repository_correct: transaction.repository = Current
 			active_transaction: transaction.is_active
@@ -115,7 +115,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 		end
 
 	update (object: ANY; transaction: PS_TRANSACTION)
-			-- Update `object' within `transaction'
+			-- Update `object' within `transaction'.
 		require
 			transaction_repository_correct: transaction.repository = Current
 			active_transaction: transaction.is_active
@@ -130,7 +130,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 		end
 
 	delete (object: ANY; transaction: PS_TRANSACTION)
-			-- Delete `object' within `transaction' from `Current'
+			-- Delete `object' within `transaction' from `Current'.
 		require
 			transaction_repository_correct: transaction.repository = Current
 			active_transaction: transaction.is_active
@@ -145,7 +145,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 		end
 
 	delete_query (query: PS_OBJECT_QUERY [ANY]; transaction: PS_TRANSACTION)
-			-- Delete all objects that match the criteria in `query' from `Current' repository within transaction `transaction'
+			-- Delete all objects that match the criteria in `query' from `Current' repository within `transaction'.
 		require
 			not_executed: not query.is_executed
 			transaction_repository_correct: transaction.repository = Current
@@ -169,8 +169,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 
 	commit_transaction (transaction: PS_TRANSACTION)
-			-- Commit `transaction'
-			-- Please note that this function will also raise an exception if the commit fails
+			-- Commit `transaction'. It raises an exception if the commit fails.
 		require
 			transaction_alive: transaction.is_active
 			no_error: not transaction.has_error
@@ -186,7 +185,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 
 	rollback_transaction (transaction: PS_TRANSACTION; manual_rollback: BOOLEAN)
 			-- Rollback `transaction'.
-			-- This is also kind of the `default_rescue' clause, so this feature's `ensure' part defines what happens in case of an error.
+			-- This acts as a `default_rescue' clause, so the postcondition defines what happens in case of an error.
 		require
 			transaction_alive: transaction.is_active
 			repository_correct: transaction.repository = Current
@@ -216,14 +215,14 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status
 feature {PS_EIFFELSTORE_EXPORT} -- Testing
 
 	clean_db_for_testing
-			-- Wipe out all data
+			-- Wipe out all data.
 		deferred
 		end
 
 feature {NONE} -- Rescue
 
 	default_transactional_rescue (transaction: PS_TRANSACTION)
-			-- The default action if a routine has failed (e.g. connection problems, write conflicts etc...)
+			-- The default action if a routine has failed.
 		do
 			rollback_transaction (transaction, False)
 		end

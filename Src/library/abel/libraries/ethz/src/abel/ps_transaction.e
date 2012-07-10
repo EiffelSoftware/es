@@ -20,7 +20,7 @@ create {PS_EIFFELSTORE_EXPORT}
 feature {NONE} -- Initialization
 
 	make (a_repository: PS_REPOSITORY)
-			-- Initialize `Current'
+			-- Initialize `Current'.
 		do
 			repository := a_repository
 			create {PS_NO_ERROR} error
@@ -29,7 +29,7 @@ feature {NONE} -- Initialization
 		end
 
 	make_readonly (a_repository: PS_REPOSITORY)
-			-- Initialize `Current', mark transaction as readonly
+			-- Initialize `Current', mark transaction as readonly.
 		do
 			repository := a_repository
 			create {PS_NO_ERROR} error
@@ -40,7 +40,7 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	error: PS_ERROR
-			-- Error description of the last error
+			-- Error description of the last error.
 
 	repository: PS_REPOSITORY
 			-- The repository this `Current' is bound to.
@@ -99,7 +99,7 @@ feature -- Basic operations
 feature {PS_EIFFELSTORE_EXPORT} -- Internals
 
 	set_error (an_error: PS_ERROR)
-			-- Set the error field if an error occured.
+			-- Set the error field if an error occurred.
 		do
 			error := an_error
 		ensure
@@ -107,14 +107,14 @@ feature {PS_EIFFELSTORE_EXPORT} -- Internals
 		end
 
 	declare_as_aborted
-			-- Declare `Current' as aborted
+			-- Declare `Current' as aborted.
 		do
 			is_active := False
 			is_successful_commit := False
 		end
 
 	declare_as_successful
-			-- Declare `Current' as successfully committed
+			-- Declare `Current' as successfully committed.
 		do
 			is_active := False
 			is_successful_commit := True

@@ -1,5 +1,5 @@
 note
-	description: "Stores a value pair"
+	description: "Stores a value pair."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -17,25 +17,25 @@ convert
 feature
 
 	first: A
-			-- First element of pair
+			-- First element of pair.
 
 	second: B
-			-- Second element of pair
+			-- Second element of pair.
 
 	set_first (a: A)
-			-- Set the first element
+			-- Set the first element.
 		do
 			first := a
 		end
 
 	set_second (b: B)
-			-- Set the second element
+			-- Set the second element.
 		do
 			second := b
 		end
 
 	to_tuple: TUPLE [first: A; second: B]
-			-- Conversion routine to tuples
+			-- Conversion routine to tuples.
 		do
 			create Result.make
 			Result.first := first
@@ -52,7 +52,7 @@ feature {NONE} -- Initialization
 		end
 
 	make_from_tuple (tup: TUPLE [first: A; second: B])
-			-- Conversion routine from tuples
+			-- Conversion routine from tuples.
 		do
 			first := tup.first
 			second := tup.second

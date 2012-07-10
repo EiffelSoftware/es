@@ -10,7 +10,7 @@ class
 feature {NONE} -- Utilities
 
 	attach (obj: detachable ANY): attached like obj
-			-- Nice little helper function to make implementation with void safety easier
+			-- Nice little helper function to make implementation with void safety easier.
 		do
 			check attached obj as attached_obj then
 				Result := obj

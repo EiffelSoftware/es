@@ -1,5 +1,5 @@
 note
-	description: "Enumeration class for transaction isolation levels, as defined in ANSI/ISO SQL."
+	description: "Enumeration class for transaction isolation levels, as defined in ANSI/ISO SQL Standard (SQL92)."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -14,25 +14,25 @@ inherit
 feature -- Isolation levels
 
 	Read_uncommitted: PS_TRANSACTION_ISOLATION_LEVEL
-			-- The READ UNCOMMITED isolation level
+			-- The READ UNCOMMITED isolation level.
 		once
 			create Result
 		end
 
 	Read_committed: PS_TRANSACTION_ISOLATION_LEVEL
-			-- The READ COMMITED isolation level
+			-- The READ COMMITED isolation level.
 		once
 			create Result
 		end
 
 	Repeatable_read: PS_TRANSACTION_ISOLATION_LEVEL
-			-- The REPEATABLE READ isolation level
+			-- The REPEATABLE READ isolation level.
 		once
 			create Result
 		end
 
 	Serializable: PS_TRANSACTION_ISOLATION_LEVEL
-			-- The SERIALIZABLE isolation level
+			-- The SERIALIZABLE isolation level.
 		once
 			create Result
 		end
@@ -40,7 +40,7 @@ feature -- Isolation levels
 feature -- Comparison operation
 
 	is_less alias "<" (other: like Current): BOOLEAN
-			-- Is `Current' a weaker isolation level than `other'
+			-- Is `Current' a weaker isolation level than `other'?
 		local
 			valid_levels: LINKED_LIST [PS_TRANSACTION_ISOLATION_LEVEL]
 		do

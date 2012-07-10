@@ -17,19 +17,19 @@ create {PS_BACKEND_STRATEGY}
 feature -- Access
 
 	owner_key: INTEGER
-			-- The primary key of the reference owner of the retrieved relational collection
+			-- The primary key of the reference owner of the retrieved relational collection.
 			-- Note that a relational collection does not have a primary key in the database!
 
 	owner_type: PS_CLASS_METADATA
-			-- The class metadata of the reference owner of the retrieved relational collection
+			-- The class metadata of the reference owner of the retrieved relational collection.
 
 	owner_attribute_name: STRING
-			-- The attribute name of the reference that points to the current collection
+			-- The attribute name of the reference that points to the current collection.
 
 feature {NONE}
 
 	make (o_key: INTEGER; o_type: PS_CLASS_METADATA; o_attr_name: STRING)
-			-- Initialize `Current'
+			-- Initialize `Current'.
 		do
 			owner_key := o_key
 			owner_type := o_type

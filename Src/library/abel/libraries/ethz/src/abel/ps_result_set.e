@@ -49,7 +49,7 @@ feature -- Cursor movement
 feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 
 	set_entry (object: detachable ANY)
-			-- Set `object' as item if not Void, otherwise set after to True
+			-- Set `object' as item if not Void, otherwise set after to True.
 		require
 			actual_type_is_G: (object /= Void) implies (attached {G} object)
 		do
@@ -67,7 +67,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 feature {PS_QUERY} -- Initialization
 
 	set_query (a_query: PS_QUERY [ANY])
-			-- Set query to `a_query'. Part of initialization process
+			-- Set query to `a_query'. Part of initialization process.
 		do
 			detachable_query := a_query
 		ensure
@@ -88,10 +88,10 @@ feature {PS_QUERY} -- Initialization
 feature {NONE} -- Implementation
 
 	detachable_item: detachable G
-			-- `item' as detachable (Void safety)
+			-- `item' as detachable (Void safety).
 
 	detachable_query: detachable PS_QUERY [ANY]
-			-- `query' as detachable (Void safety)
+			-- `query' as detachable (Void safety).
 
 invariant
 	attached_item_or_after: attached detachable_item or after

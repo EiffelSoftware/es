@@ -1,5 +1,5 @@
 note
-	description: "Responsible for correct retrieval of objects"
+	description: "Responsible for correct retrieval of objects."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -21,14 +21,14 @@ create
 feature {PS_EIFFELSTORE_EXPORT} -- Query execution
 
 	setup_query (query: PS_OBJECT_QUERY [ANY]; transaction: PS_TRANSACTION)
-			-- Set up query `query' and retrieve the first result
+			-- Set up query `query' and retrieve the first result.
 		do
 			initialize_query (query, create {LINKED_LIST [STRING]}.make, transaction)
 			retrieve_until_criteria_match (query, transaction)
 		end
 
 	next_entry (query: PS_OBJECT_QUERY [ANY])
-			-- Retrieve the next entry of query `query'
+			-- Retrieve the next entry of query `query'.
 		do
 			attach (query_to_cursor_map [query.backend_identifier]).forth
 			retrieve_until_criteria_match (query, query.transaction)
@@ -37,7 +37,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Query execution
 feature {NONE} -- Implementation - Retrieval
 
 	retrieve_until_criteria_match (query: PS_OBJECT_QUERY [ANY]; transaction: PS_TRANSACTION)
-			-- Retrieve objects until the criteria in `query.criteria' are satisfied
+			-- Retrieve objects until the criteria in `query.criteria' are satisfied.
 		local
 			new_object: ANY
 			found: BOOLEAN
@@ -82,7 +82,7 @@ feature {NONE} -- Implementation - Retrieval
 feature {NONE} -- Implementation: Build functions for PS_RETRIEVED_* objects
 
 	build_object (type: PS_TYPE_METADATA; obj: PS_RETRIEVED_OBJECT; transaction: PS_TRANSACTION; bookkeeping: HASH_TABLE [ANY, INTEGER]): ANY
-			-- Build the object `obj'
+			-- Build the object `obj'.
 		require
 			obj.class_metadata.name.is_equal (type.base_class.name)
 		local
@@ -124,14 +124,14 @@ feature {NONE} -- Implementation: Build functions for PS_RETRIEVED_* objects
 		end
 
 	build_relational_collection (type: PS_TYPE_METADATA; relational_collection: PS_RETRIEVED_RELATIONAL_COLLECTION; handler: PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]]; transaction: PS_TRANSACTION; bookkeeping: HASH_TABLE [ANY, INTEGER]): ANY
-			-- Build a new collection object from the retrieved collection `relational_collection'
+			-- Build a new collection object from the retrieved collection `relational_collection'.
 		do
 			Result := handler.build_relational_collection (type, build_collection_items (type, relational_collection, transaction, bookkeeping))
 			id_manager.identify (Result, transaction)
 		end
 
 	build_object_collection (type: PS_TYPE_METADATA; object_collection: PS_RETRIEVED_OBJECT_COLLECTION; handler: PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]]; transaction: PS_TRANSACTION; bookkeeping: HASH_TABLE [ANY, INTEGER]): ANY
-			-- Build a new collection object from the retrieved collection `object_collection'
+			-- Build a new collection object from the retrieved collection `object_collection'.
 		do
 			Result := handler.build_collection (type, build_collection_items (type, object_collection, transaction, bookkeeping), object_collection)
 			id_manager.identify (Result, transaction)
@@ -199,7 +199,7 @@ feature {NONE} -- Implementation - Build support functions.
 		end
 
 	build_collection_items (type: PS_TYPE_METADATA; collection: PS_RETRIEVED_COLLECTION; transaction: PS_TRANSACTION; bookkeeping: HASH_TABLE [ANY, INTEGER]): LINKED_LIST [detachable ANY]
-			-- Build a list with all collection items correctly loaded
+			-- Build a list with all collection items correctly loaded.
 		local
 			collection_items: LINKED_LIST [detachable ANY]
 			retrieved_item: LIST [PS_RETRIEVED_OBJECT]
@@ -216,7 +216,7 @@ feature {NONE} -- Implementation - Build support functions.
 		end
 
 	try_basic_attribute (obj: ANY; value: STRING; index: INTEGER): BOOLEAN
-			-- See if field at `index' is of basic type, and if so, initialize it
+			-- See if field at `index' is of basic type, and if so, initialize it.
 		local
 			type: INTEGER
 			reflection: INTERNAL
@@ -244,7 +244,7 @@ feature {NONE} -- Implementation - Build support functions.
 		end
 
 	set_expanded_attribute (obj: ANY; value: STRING; index: INTEGER)
-			-- Set the attribute `index' of type `type' of object obj to value `generic_value'
+			-- Set the attribute `index' of type `type' of object obj to value `generic_value'.
 		local
 			type: INTEGER
 			reflection: INTERNAL
@@ -290,7 +290,7 @@ feature {NONE} -- Implementation - Build support functions.
 feature {NONE} -- Implementation: Collection handlers
 
 	collection_handlers: LINKED_LIST [PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]]]
-			-- All registered collection handlers
+			-- All registered collection handlers.
 
 	has_handler (type: PS_TYPE_METADATA): BOOLEAN
 			-- Is `type' a collection that has a handler?
@@ -299,7 +299,7 @@ feature {NONE} -- Implementation: Collection handlers
 		end
 
 	get_handler (type: PS_TYPE_METADATA): PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]]
-			-- Get the handler for collections of type `type'
+			-- Get the handler for collections of type `type'.
 		require
 			has_handler (type)
 		local
@@ -338,7 +338,7 @@ feature {NONE} -- Implementation: Query initialization
 		end
 
 	new_query_identifier: INTEGER
-			-- Get a new identifier for a query
+			-- Get a new identifier for a query.
 		do
 			Result := next_query_identifier
 			next_query_identifier := next_query_identifier + 1
@@ -350,21 +350,21 @@ feature {NONE} -- Implementation: Query initialization
 feature {NONE} -- Implementation - Core data structures
 
 	metadata_manager: PS_METADATA_FACTORY
-			-- Creates metadata for types
+			-- Creates metadata for types.
 
 	id_manager: PS_OBJECT_IDENTIFICATION_MANAGER
-			-- A reference to the main object identification manager
+			-- A reference to the main object identification manager.
 
 	query_to_cursor_map: HASH_TABLE [ITERATION_CURSOR [ANY], INTEGER]
-			-- Has a result cursor (as returned from the storage backend) for every executed query
+			-- Has a result cursor (as returned from the storage backend) for every executed query.
 
 	bookkeeping_manager: HASH_TABLE [HASH_TABLE [ANY, INTEGER], INTEGER]
-			-- keeps track of already loaded object for each query
+			-- Keeps track of already loaded object for each query.
 
 feature {NONE} -- Initialization
 
 	make (a_backend: PS_BACKEND_STRATEGY; an_id_manager: PS_OBJECT_IDENTIFICATION_MANAGER)
-			-- Initialize `Current'
+			-- Initialize `Current'.
 		do
 			backend := a_backend
 			id_manager := an_id_manager
@@ -375,12 +375,12 @@ feature {NONE} -- Initialization
 		end
 
 	backend: PS_BACKEND_STRATEGY
-			-- The storage backend
+			-- The storage backend.
 
 feature {PS_REPOSITORY} -- Initialization - Collection handlers
 
 	add_handler (a_handler: PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]])
-			-- Add a collection handler to `Current'
+			-- Add a collection handler to `Current'.
 		do
 			collection_handlers.extend (a_handler)
 		end

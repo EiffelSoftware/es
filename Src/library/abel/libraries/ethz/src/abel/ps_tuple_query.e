@@ -4,7 +4,7 @@ note
 		Please note that you cannot update or insert data tuples of objects into the repository.
 		
 		You can set a projection on the attributes you would like to have, to restrict the amount of data that is going to be retrieved.
-		You'll get completely loaded objects as attributes if you include an attribute in your projection that is not of a basic type (strings and numbers)
+		You'll get completely loaded objects as attributes if you include an attribute in your projection that is not of a basic type (strings and numbers).
 	]"
 	author: "Roman Schmocker"
 	date: "$Date$"
@@ -35,7 +35,7 @@ feature -- Status report
 feature -- Projections
 
 	projection: ARRAY [STRING]
-			-- Data to be included for projection. Defaults to all basic types: numbers and strings
+			-- Data to be included for projection. Defaults to all basic types: numbers and strings.
 
 	default_projection: ARRAY [STRING]
 			-- An array containing all the attribute names that are of a basic type.
@@ -85,7 +85,7 @@ feature -- Projections
 feature -- Cursor generation
 
 	new_cursor: PS_RESULT_SET [TUPLE]
-			-- Return the result_cursor
+			-- Return the result_cursor.
 		do
 			Result := result_cursor
 		end
@@ -103,7 +103,7 @@ feature {NONE} -- Initialization
 		end
 
 	create_result_cursor
-			-- Create a new result set
+			-- Create a new result set.
 		do
 			create result_cursor.make
 		end

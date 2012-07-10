@@ -21,7 +21,7 @@ create {PS_METADATA_FACTORY}
 feature -- Access
 
 	type: TYPE [detachable ANY]
-			-- The actual dynamic type
+			-- The actual dynamic type.
 
 	base_class: PS_CLASS_METADATA
 			-- The class of which `Current' type is an instance of.
@@ -64,7 +64,7 @@ feature -- Status report
 feature -- Genericity
 
 	generic_parameter_count: INTEGER
-			-- The number of generic parameters of `Current'
+			-- The number of generic parameters of `Current'.
 		do
 			Result := reflection.generic_count_of_type (type.type_id)
 		ensure
@@ -73,7 +73,7 @@ feature -- Genericity
 		end
 
 	actual_generic_parameter (index: INTEGER): PS_TYPE_METADATA
-			-- The type metadata of the generic parameter at position `index'
+			-- The type metadata of the generic parameter at position `index'.
 		require
 			is_generic: is_generic_derivation
 			valid_index: index <= generic_parameter_count and index > 0
@@ -97,7 +97,7 @@ feature -- Conformance
 		end
 
 	subtypes: LIST [PS_TYPE_METADATA]
-			-- All types that conform to `Current'
+			-- All types that conform to `Current'.
 		do
 			create {LINKED_LIST [PS_TYPE_METADATA]} Result.make
 			across
@@ -112,7 +112,7 @@ feature -- Conformance
 feature -- Attributes
 
 	attribute_count: INTEGER
-			-- The number of attributes in `Current'
+			-- The number of attributes in `Current'.
 		do
 			Result := attributes.count
 		ensure
@@ -120,10 +120,10 @@ feature -- Attributes
 		end
 
 	attributes: LIST [STRING]
-			-- Names of all attributes in `Current' type
+			-- Names of all attributes in `Current' type.
 
 	basic_attributes: LIST [STRING]
-			-- Names of all attributes of a basic type
+			-- Names of all attributes of a basic type.
 		do
 			create {LINKED_LIST [STRING]} Result.make
 			across
@@ -140,7 +140,7 @@ feature -- Attributes
 		end
 
 	reference_attributes: LIST [STRING]
-			-- Name of all attributes of a reference type
+			-- Name of all attributes of a reference type.
 		do
 			create {LINKED_LIST [STRING]} Result.make
 			across
@@ -157,7 +157,7 @@ feature -- Attributes
 		end
 
 	field_index (attribute_name: STRING): INTEGER
-			-- The field index of `attribute_name', to be used for INTERNAL
+			-- The field index of `attribute_name', to be used for INTERNAL.
 		require
 			attribute_present: has_attribute (attribute_name)
 		do
@@ -168,7 +168,7 @@ feature -- Attributes
 		end
 
 	attribute_type (attribute_name: STRING): PS_TYPE_METADATA
-			-- Metadata of the detachable type of attribute `attribute_name'
+			-- Metadata of the detachable type of attribute `attribute_name'.
 		require
 			has_attribute: attributes.has (attribute_name)
 		do
@@ -178,7 +178,7 @@ feature -- Attributes
 		end
 
 	hash_code: INTEGER
-			-- Hash code value
+			-- Hash code value.
 		do
 			Result := type.type_id
 		end
@@ -203,7 +203,7 @@ feature {PS_METADATA_FACTORY} -- Initialization
 		end
 
 	initialize
-			-- Initialie all attributes
+			-- Initialie all attributes.
 		local
 			i: INTEGER
 			attr_type: TYPE [detachable ANY]
@@ -232,16 +232,16 @@ feature {PS_METADATA_FACTORY} -- Initialization
 feature {NONE} -- Implementation
 
 	factory: PS_METADATA_FACTORY
-			-- The factory that created `Current'
+			-- The factory that created `Current'.
 
 	attr_name_to_type_hash: HASH_TABLE [PS_TYPE_METADATA, STRING]
-			-- A hash table to map attribute names to types
+			-- A hash table to map attribute names to types.
 
 	attr_name_to_index_hash: HASH_TABLE [INTEGER, STRING]
-			-- A hash table to map attribute names to their index, as used by INTERNAL
+			-- A hash table to map attribute names to their index, as used by INTERNAL.
 
 	subtypes_internal_wrapper (a_type: TYPE [detachable ANY]): LIST [TYPE [detachable ANY]]
-			-- A wrapper for a not-yet-implemented INTERNAL feature
+			-- A wrapper for a not-yet-implemented INTERNAL feature.
 		do
 			to_implement ("As soon as INTERNAL has the appropriate features, implement this function")
 			check
@@ -253,7 +253,7 @@ feature {NONE} -- Implementation
 		end
 
 	supertypes_internal_wrapper (a_type: TYPE [detachable ANY]): LIST [TYPE [detachable ANY]]
-			-- A wrapper for a not-yet-implemented INTERNAL feature
+			-- A wrapper for a not-yet-implemented INTERNAL feature.
 		do
 			to_implement ("As soon as INTERNAL has the appropriate features, implement this function")
 			check
@@ -265,7 +265,7 @@ feature {NONE} -- Implementation
 		end
 
 	conforms (subtype, supertype: TYPE [detachable ANY]): BOOLEAN
-			-- A small helper utility to check conformance between two types
+			-- A small helper utility to check conformance between two types.
 		do
 			Result := reflection.type_conforms_to (subtype.type_id, supertype.type_id)
 		end
