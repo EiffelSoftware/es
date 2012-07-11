@@ -10,6 +10,13 @@ note
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
+	TODO: "[
+		Create a global pool of committed object identifiers and some transaction-local pools of changes to be applied at commit time.
+		Generally make the whole class transaction-aware.
+
+		Speedup things, e.g. by separating objects by class name...
+		It might be possible to hash objects on the {ANY}.tagged_out string, which seems to be the memory location.
+	]"
 
 class
 	PS_OBJECT_IDENTIFICATION_MANAGER
@@ -25,17 +32,12 @@ inherit {NONE}
 create
 	make
 
-		-- TODO: Speedup things, e.g. by separating objects by class name...
-		-- It might be possible to hash objects on the {ANY}.tagged_out string, but only on the hex number in the first brackets, and only if the number is stable.
-		-- This seems to be the memory location.
-
 feature {PS_EIFFELSTORE_EXPORT} -- Identification
 
 	is_identified (an_object: ANY; transaction: PS_TRANSACTION): BOOLEAN
 			-- Is `an_object' already identified and thus known to the system?
 		do
-			fixme ("TODO: Make this transaction-aware")
-				-- See if `an_object' is either in the `transaction' or the global pool.
+			fixme ("See if `an_object' is either in the `transaction' or the global pool.")
 			Result := across identifier_table as cursor some (cursor.item.first.exists and then cursor.item.first.item = an_object) end
 		end
 
@@ -47,10 +49,11 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 			temp: WEAK_REFERENCE [ANY]
 			pair: PS_PAIR [WEAK_REFERENCE [ANY], INTEGER]
 		do
-			fixme ("TODO: Make this transaction-aware")
-				-- check ALL the other transaction's pools if someone already has the same object.
-				-- if yes add a copy of the same identification to `transaction's pool.
-				-- if no create it and add it to `transaction's pool.
+			fixme ("[
+				check ALL the other transaction's pools if someone already has the same object.
+				if yes add a copy of the same identification to `transaction's pool.
+				if no create it and add it to `transaction's pool.
+				]")
 			create temp.put (an_object)
 			create pair.make (temp, new_id)
 			identifier_table.extend (pair)
@@ -87,8 +90,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 			found: BOOLEAN
 			meta: PS_TYPE_METADATA
 		do
-			fixme ("TODO: Make this transaction-aware")
-				-- FIRST, lok at the transaction pool, then look at the global pool
+			fixme ("FIRST, lok at the transaction pool, then look at the global pool")
 			meta := metadata_manager.create_metadata_from_object (an_object)
 			from
 				identifier_table.start
@@ -111,8 +113,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction Status
 	can_commit (transaction: PS_TRANSACTION): BOOLEAN
 			-- Can `Current' commit the changes in `Transaction'?
 		do
-			fixme ("TODO: Make this transaction-aware")
-				-- check if there is an equal object in the global pool and the transaction pool
+			fixme ("check if there is an equal object in the global pool and the transaction pool")
 			Result := True
 		end
 
@@ -139,8 +140,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction management
 		require
 			registered: is_registered (transaction)
 		do
-			fixme ("TODO: Finish implementing this feature")
-				-- Insert all objects in the transaction pool to the global pool
+			fixme ("Insert all objects in the transaction pool to the global pool")
 			registered_transactions.start
 			registered_transactions.prune (transaction)
 		ensure
@@ -152,8 +152,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction management
 		require
 			registered: is_registered (transaction)
 		do
-			fixme ("TODO: Finish implementing this feature")
-				-- Delete the transaction pool
+			fixme ("Delete the transaction pool")
 			registered_transactions.start
 			registered_transactions.prune (transaction)
 		ensure
@@ -231,6 +230,6 @@ feature {NONE} -- Implementation
 			--Tthe last id generated
 
 invariant
-	no_object_twice_in_global_pool: TRUE -- Check that no object is listed twice in the global pool (check for reference equality)
+	no_object_twice_in_global_pool: to_implement_assertion ("Check that no object is listed twice in the global pool (check for reference equality)")
 
 end

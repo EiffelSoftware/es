@@ -11,6 +11,10 @@ inherit
 
 	PS_EIFFELSTORE_EXPORT
 
+inherit {NONE}
+
+	REFACTORING_HELPER
+
 feature {PS_EIFFELSTORE_EXPORT} -- Supported collection operations
 
 	is_objectoriented_collection_store_supported: BOOLEAN
@@ -50,7 +54,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			-- You can find out about the actual generic parameter by comparing the class name associated to a foreign key value.
 		require
 			most_general_type: across type.supertypes as supertype all not (supertype.item.base_class.name.is_equal (type.base_class.name) and type.is_subtype_of (supertype.item)) end
-			--all_attributes_exist: across attributes as attr all type.attributes.has (attr.item) end
+			all_attributes_exist: to_implement_assertion ("The requirement is too strong - e.g. ESCHER requires attributes that are theoretically not part of the object itself. across attributes as attr all type.attributes.has (attr.item) end")
 		deferred
 			-- To have lazy loading support, you need to have a special ITERATION_CURSOR and a function next in this class to load the next item of this customized cursor
 		ensure
@@ -71,11 +75,11 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 	retrieve_from_keys (type: PS_TYPE_METADATA; primary_keys: LIST [INTEGER]; transaction: PS_TRANSACTION): LINKED_LIST [PS_RETRIEVED_OBJECT]
 			-- Retrieve all objects of type `type' and with primary key in `primary_keys'.
 		require
-			keys_exist: TRUE --TODO across primary_keys as cursor all key_mapper.has_objects_of (cursor.item, type) end
+			keys_exist: to_implement_assertion ("Some way to ensure that no arbitrary primary keys are getting queried")
 		deferred
 		ensure
-			--primary_keys.count = Result.count
-			across Result as res all res.item.class_metadata.name = type.base_class.name end
+			objects_loaded: to_implement_assertion ("This doesn't work: (primary_keys.count = Result.count), as some objects might have been deleted.")
+			all_metadata_set: across Result as res all res.item.class_metadata.name = type.base_class.name end
 		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
@@ -90,7 +94,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		deferred
 		ensure
 			object_known: key_mapper.has_primary_key_of (an_object.object_wrapper, a_transaction)
-			check_successful_write (an_object, a_transaction)
+			object_written: check_successful_write (an_object, a_transaction)
 		end
 
 	update (an_object: PS_SINGLE_OBJECT_PART; a_transaction: PS_TRANSACTION)
@@ -102,7 +106,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		deferred
 		ensure
 			object_still_known: key_mapper.has_primary_key_of (an_object.object_wrapper, a_transaction)
-			check_successful_write (an_object, a_transaction)
+			object_written: check_successful_write (an_object, a_transaction)
 		end
 
 	delete (an_object: PS_SINGLE_OBJECT_PART; a_transaction: PS_TRANSACTION)
@@ -144,7 +148,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			backend_can_handle_collection: can_handle_objectoriented_collection (a_collection.object_wrapper.metadata)
 		deferred
 		ensure
-				--			collection_known: key_mapper.has_primary_key_of (a_collection.object_id)
+			collection_known: key_mapper.has_primary_key_of (a_collection.object_wrapper, a_transaction)
 		end
 
 	delete_objectoriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
@@ -229,8 +233,13 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing
 feature {PS_EIFFELSTORE_EXPORT} -- Precondition checks
 
 	check_dependencies_have_primary (an_object: PS_SINGLE_OBJECT_PART; transaction: PS_TRANSACTION): BOOLEAN
+			-- Ensure that every dependency in `an_object' has an object_wrapper attached.
 		do
-			Result := across an_object.attributes as attr_name all (attached {PS_COMPLEX_PART} an_object.attribute_value (attr_name.item) as comp and an_object.attribute_value (attr_name.item).write_operation /= an_object.write_operation.no_operation) implies key_mapper.has_primary_key_of (comp.object_wrapper, transaction) end
+			Result := across an_object.attributes as attr_name
+				all (attached {PS_COMPLEX_PART} an_object.attribute_value (attr_name.item) as comp
+					and an_object.attribute_value (attr_name.item).write_operation /= an_object.write_operation.no_operation)
+						implies key_mapper.has_primary_key_of (comp.object_wrapper, transaction)
+				end
 		end
 
 
