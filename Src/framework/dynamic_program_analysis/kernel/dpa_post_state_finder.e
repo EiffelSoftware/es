@@ -45,13 +45,13 @@ feature -- Operation
 			l_cfg_builder.set_is_bp_slot_init_activated (True)
 			l_cfg_builder.set_is_auxilary_nodes_created (True)
 			l_cfg_builder.build_from_feature (class_, feature_)
-			cfg := l_cfg_builder.last_control_flow_graph
+			control_flow_graph := l_cfg_builder.last_control_flow_graph
 
 			create l_cfg_printer.make_default
-			l_cfg_printer.print_and_save_graph (cfg, "/tmp/" + feature_.e_feature.name + ".dot")
+			l_cfg_printer.print_and_save_graph (control_flow_graph, "/tmp/" + feature_.e_feature.name + ".dot")
 
 			-- Look for all post-states
-			cfg.start_node.process (Current)
+			control_flow_graph.start_node.process (Current)
 			add_missing_post_state_bp
 			add_contract_post_state_bp
 		ensure
@@ -92,7 +92,7 @@ feature -- Access
 			-- Contains the found post-state breakpoint slot.
 			-- Keys are pre-state breakpoint slots and values are (possibly multiple) post-state breakpoint slots
 
-	cfg: EPA_CONTROL_FLOW_GRAPH
+	control_flow_graph: EPA_CONTROL_FLOW_GRAPH
 			-- Control flow graph which is used to find post-state breakpoint slots
 
 feature -- Printing			
@@ -359,9 +359,9 @@ feature {NONE} -- Implementation
 feature {NONE} -- Implementation
 
 	is_start_node_auxilary_node: BOOLEAN
-			-- Is the start node of `cfg' an auxilary node?
+			-- Is the start node of `control_flow_graph' an auxilary node?
 		do
-			Result := cfg.start_node.is_auxilary
+			Result := control_flow_graph.start_node.is_auxilary
 		end
 
 feature {NONE} -- Implementation
@@ -398,7 +398,7 @@ feature {NONE} -- Implementation
 		end
 
 	add_contract_post_state_bp
-			--
+			-- Adds the missing contract post-states to the post-state map.
 		local
 			l_bp_interval: INTEGER_INTERVAL
 			i: INTEGER

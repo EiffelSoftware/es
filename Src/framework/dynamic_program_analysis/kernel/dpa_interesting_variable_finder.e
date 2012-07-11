@@ -63,7 +63,7 @@ feature -- Process operations
 			-- Process `l_as'.
 		do
 			if program_locations.has (l_as.breakpoint_slot) then
-				if is_nested then
+				if is_nested_node then
 					if not l_as.access_name_8.is_equal (io_string) then
 						interesting_variables.force_last (l_as.access_name_8)
 					end
@@ -85,12 +85,12 @@ feature -- Process operations
 	process_nested_as (l_as: NESTED_AS)
 			-- Process `l_as'.
 		do
-			is_nested := True
-			if is_assigner_call then
+			is_nested_node := True
+			if is_assigner_call_node then
 				interesting_variables_from_assignments.force_last (text_from_ast (l_as))
 			end
 			l_as.target.process (Current)
-			is_nested := False
+			is_nested_node := False
 		end
 
 	process_assign_as (l_as: ASSIGN_AS)
@@ -102,9 +102,9 @@ feature -- Process operations
 	process_assigner_call_as (l_as: ASSIGNER_CALL_AS)
 			-- Process `l_as'.
 		do
-			is_assigner_call := True
+			is_assigner_call_node := True
 			l_as.target.process (Current)
-			is_assigner_call := False
+			is_assigner_call_node := False
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
@@ -181,10 +181,10 @@ feature -- Setting
 
 feature {NONE} -- Implementation
 
-	is_nested: BOOLEAN
+	is_nested_node: BOOLEAN
 			-- Is the current node part of a NESTED_AS node?
 
-	is_assigner_call: BOOLEAN
+	is_assigner_call_node: BOOLEAN
 			-- Is the current node part of a ASSIGNER_CALL_AS node?
 
 	io_string: STRING = "io"
