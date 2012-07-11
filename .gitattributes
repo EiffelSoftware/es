@@ -5130,6 +5130,7 @@ eweasel/tests/term197/test.def -text
 eweasel/tests/term209/test -text svneol=unset#application/octet-stream
 eweasel/tests/thread002/Ace -text
 eweasel/tests/thread010/Ace -text
+eweasel/tests/thread024/Ace -text svneol=native#application/xml
 eweasel/tests/time004/Ace -text
 eweasel/tests/valid001/notes -text
 eweasel/tests/valid002/notes -text
