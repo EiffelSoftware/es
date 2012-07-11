@@ -46,6 +46,6 @@ feature {NONE} -- Implementation
 			-- A cache for already generated metadata.
 
 	cache_capacity: INTEGER = 20
-			-- The initial capacity for `metadata_cache'.
+			-- An arbitrarily chosen initial capacity for `metadata_cache'.
 
 end
