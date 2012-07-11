@@ -273,7 +273,7 @@ feature {NONE} -- Implementation
 			-- Setup expressions which are evaluated
 		local
 			l_var_finder: DPA_INTERESTING_VARIABLE_FINDER
-			l_expr_builder: DPA_EXPRESSIONS_TO_EVALUATE_BUILDER
+			l_expr_builder: DPA_EXPRESSION_BUILDER
 			l_locs_with_exprs, l_locs_with_vars: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
 			l_keys: DS_BILINEAR [INTEGER]
 			l_mapping: DS_HASH_TABLE [DS_HASH_SET [STRING], STRING]
