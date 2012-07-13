@@ -842,7 +842,7 @@ feature {NONE} -- Implementation
 			a_parameters.right_adjust
 
 			-- Check if `a_parameters' has the correct input format
-			if a_parameters.occurrences (';') = 1 then
+			if a_parameters.occurrences (';') = 4 then
 				-- Extract output-path and file name prefix
 				l_options := a_parameters.split (';')
 
@@ -862,9 +862,9 @@ feature {NONE} -- Implementation
 				l_user.left_adjust
 				l_user.right_adjust
 
-				-- Check if `l_host' is empty
-				if l_host.count = 0 then
-					print_parsing_error_message ("The host is invalid.")
+				-- Check if `l_user' is empty
+				if l_user.count = 0 then
+					print_parsing_error_message ("The user is invalid.")
 					die (-1)
 				end
 
