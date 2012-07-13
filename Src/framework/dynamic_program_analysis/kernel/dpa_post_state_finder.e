@@ -47,8 +47,8 @@ feature -- Operation
 			l_cfg_builder.build_from_feature (class_, feature_)
 			control_flow_graph := l_cfg_builder.last_control_flow_graph
 
-			create l_cfg_printer.make_default
-			l_cfg_printer.print_and_save_graph (control_flow_graph, "/tmp/" + feature_.e_feature.name + ".dot")
+--			create l_cfg_printer.make_default
+--			l_cfg_printer.print_and_save_graph (control_flow_graph, "/tmp/" + feature_.e_feature.name + ".dot")
 
 			-- Look for all post-states
 			control_flow_graph.start_node.process (Current)
