@@ -18,7 +18,7 @@ inherit {NONE}
 feature {PS_EIFFELSTORE_EXPORT} -- Supported collection operations
 
 	is_objectoriented_collection_store_supported: BOOLEAN
-			-- Can the current backend handle relational collections?
+			-- Can the current backend handle object collections?
 		deferred
 		end
 
