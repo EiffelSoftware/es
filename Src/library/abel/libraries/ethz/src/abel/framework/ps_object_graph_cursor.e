@@ -125,7 +125,6 @@ feature {NONE} -- Implementation
 	is_consistent: BOOLEAN
 			-- Is the cursor in a consistent state at the moment?
 		do
-			Result := True
 			if after then
 				Result := True
 			elseif current_cursor.after then
