@@ -3664,6 +3664,7 @@ Src/library/abel/apps/sample/ComputerScienceEventList/web/userform.html -text
 Src/library/abel/apps/sample/ComputerScienceEventList/web/userlist.html -text
 Src/library/abel/apps/sample/ComputerScienceEventList/webex/eiffelweb.cgi.rc -text
 Src/library/abel/apps/sample/ComputerScienceEventList/webex/eiffelweb.rc -text
+Src/library/abel/apps/sample/tutorial/project.ecf svneol=native#text/xml
 Src/library/abel/apps/test/abel_test/eweasel/bin/eiffel_execute -text
 Src/library/abel/apps/test/abel_test/eweasel/bin/eiffel_freeze -text
 Src/library/abel/apps/test/abel_test/eweasel/bin/run_eweasel -text
