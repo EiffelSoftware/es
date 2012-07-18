@@ -9,7 +9,7 @@ class
 
 inherit
 
-	PS_BACKEND_STRATEGY
+	PS_BACKEND
 		redefine
 			key_mapper
 		end
@@ -19,7 +19,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (real: PS_BACKEND_STRATEGY)
+	make (real: PS_BACKEND)
 			-- Initialization for `Current'.
 		local
 			factory: PS_METADATA_FACTORY
@@ -29,7 +29,7 @@ feature {NONE} -- Initialization
 			integer_metadata := factory.create_metadata_from_type ({INTEGER})
 		end
 
-	real_backend: PS_BACKEND_STRATEGY
+	real_backend: PS_BACKEND
 			-- The actual backend used for storage
 
 	integer_metadata: PS_TYPE_METADATA

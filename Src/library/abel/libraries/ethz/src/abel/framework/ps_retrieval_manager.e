@@ -363,7 +363,7 @@ feature {NONE} -- Implementation - Core data structures
 
 feature {NONE} -- Initialization
 
-	make (a_backend: PS_BACKEND_STRATEGY; an_id_manager: PS_OBJECT_IDENTIFICATION_MANAGER)
+	make (a_backend: PS_BACKEND; an_id_manager: PS_OBJECT_IDENTIFICATION_MANAGER)
 			-- Initialize `Current'.
 		do
 			backend := a_backend
@@ -374,7 +374,7 @@ feature {NONE} -- Initialization
 			create metadata_manager.make
 		end
 
-	backend: PS_BACKEND_STRATEGY
+	backend: PS_BACKEND
 			-- The storage backend.
 
 feature {PS_REPOSITORY} -- Initialization - Collection handlers

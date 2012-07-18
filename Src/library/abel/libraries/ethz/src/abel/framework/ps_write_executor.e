@@ -16,7 +16,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_backend: PS_BACKEND_STRATEGY; an_id_manager: PS_OBJECT_IDENTIFICATION_MANAGER)
+	make (a_backend: PS_BACKEND; an_id_manager: PS_OBJECT_IDENTIFICATION_MANAGER)
 			-- Initialize `Current'.
 		do
 			backend := a_backend
@@ -141,7 +141,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
-	backend: PS_BACKEND_STRATEGY
+	backend: PS_BACKEND
 			-- The backend to execute the operations on.
 
 	id_manager: PS_OBJECT_IDENTIFICATION_MANAGER

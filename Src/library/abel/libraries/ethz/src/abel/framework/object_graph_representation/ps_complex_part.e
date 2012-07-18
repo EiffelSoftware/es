@@ -91,7 +91,7 @@ feature {NONE} -- Implementation
 
 	internal_object_id: detachable like object_wrapper
 			-- A little helper to circumvent Void safety:
-			-- The object_id field will be set just before it gets executed by the PS_BACKEND_STRATEGY,
-			-- and this way the field doesn't always have to be checked by PS_BACKEND_STRATEGY for a Void reference
+			-- The object_id field will be set just before it gets executed by the PS_BACKEND,
+			-- and this way the field doesn't always have to be checked by PS_BACKEND for a Void reference
 
 end

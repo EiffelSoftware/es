@@ -16,7 +16,7 @@ inherit
 
 	PS_EIFFELSTORE_EXPORT
 
-create {PS_BACKEND_STRATEGY}
+create {PS_BACKEND}
 	make
 
 feature {PS_EIFFELSTORE_EXPORT} -- Access
@@ -55,7 +55,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 			Result := values.has (attribute_name)
 		end
 
-feature {PS_BACKEND_STRATEGY} -- Element change
+feature {PS_BACKEND} -- Element change
 
 	add_attribute (attribute_name: STRING; value: STRING; class_name_of_value: STRING)
 			-- Add the attribute `attribute_name' with value tuple <`value', `class_name_of_value'>.

@@ -11,7 +11,7 @@ inherit
 
 	PS_RETRIEVED_COLLECTION
 
-create {PS_BACKEND_STRATEGY}
+create {PS_BACKEND}
 	make
 
 feature -- Access

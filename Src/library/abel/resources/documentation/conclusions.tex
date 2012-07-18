@@ -57,7 +57,7 @@ As an extension this mapping could be defined in an XML file.
 \end{itemize}
  \item [Inheritance] ABEL needs proper inheritance support as soon as the required features in \lstinline!INTERNAL! get implemented.
 \item [Transaction management] Some backends, e.g. the in-memory backend or the serialization library, don't support transactions.
- Therefore it would be nice to implement an extension that provides local transaction management by using multiversion concurrency control at the \lstinline!BACKEND_STRATEGY! level.
+ Therefore it would be nice to implement an extension that provides local transaction management by using multiversion concurrency control at the \lstinline!BACKEND! level.
 \item [ESCHER] At the moment, there is an initial integration of ESCHER into the ABEL framework, but the functionality is limited to a simple version check and error reporting in case of a mismatch.
  This solution could be extended to support automatic conversion as well.
 \end{description}

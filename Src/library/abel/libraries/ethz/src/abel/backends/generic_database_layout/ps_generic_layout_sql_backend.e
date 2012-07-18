@@ -9,7 +9,7 @@ class
 
 inherit
 
-	PS_BACKEND_STRATEGY
+	PS_BACKEND
 
 create
 	make

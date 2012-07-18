@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	PS_BACKEND_STRATEGY
+	PS_BACKEND
 
 inherit
 

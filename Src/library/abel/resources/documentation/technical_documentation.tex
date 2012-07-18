@@ -46,7 +46,7 @@ One level below you can find the object-relational mapping layer.
 It is responsible to take an object graph apart into its pieces and generate a plan for the write operations, and also to build an object graph from the pieces during retrieval.
 This layer is described more precisely in section ~\ref{section:ORM}.
 
-On the next level there is the \lstinline!BACKEND_STRATEGY! layer.
+On the next level there is the \lstinline!BACKEND! layer.
 Its task is to map the object graph pieces to a specific storage engine, e.g. a database with some table layout.
 
 The lowest level of abstraction is only significant for databases that understand SQL. 
@@ -86,11 +86,11 @@ To visualize the whole structure, there is a class diagram that shows the most i
 \section{Object-relational Mapping}
 \label{section:ORM}
 
-The object-relational mapping layer (abbreviated as ORM layer) lies between the \lstinline!REPOSITORY! and the \lstinline!BACKEND_STRATEGY!.
+The object-relational mapping layer (abbreviated as ORM layer) lies between the \lstinline!REPOSITORY! and the \lstinline!BACKEND!.
 It consists of four main classes doing the actual work, and a set of helper classes to represent an object graph.
 
 All helper classes are in \lstinline!framework/object_graph_representation!.
-Besides representation of an object graph, they are also used to describe a write operation in the \lstinline!BACKEND_STRATEGY!.
+Besides representation of an object graph, they are also used to describe a write operation in the \lstinline!BACKEND!.
 The most important ones are:
 
 \begin{itemize}
@@ -260,7 +260,7 @@ Apart from the depth, there are some other settings as well, i.e. what ABEL shou
 \section{Backend abstraction}
 
 The framework provides some very flexible interfaces to be able to support many different storage engines. 
-The three main levels of abstraction are the \lstinline!REPOSITORY!, the \lstinline!BACKEND_STRATEGY! and the database wrapper classes.
+The three main levels of abstraction are the \lstinline!REPOSITORY!, the \lstinline!BACKEND! and the database wrapper classes.
 
 \subsection{REPOSITORY}
 
@@ -268,11 +268,11 @@ The deferred class \lstinline!REPOSITORY! provides the highest level of abstract
 It provides a good interface to wrap a persistence mechanism that provides a similarly high level of abstraction, like for example db4o \cite{db4o}.
 
 The \lstinline!RELATIONAL_REPOSITORY! is the main implementation of this interface.
-It uses the ORM layer and a \lstinline!BACKEND_STRATEGY! and is therefore the default repository for persistence libraries which are wrapped through \lstinline!BACKEND_STRATEGY!.
+It uses the ORM layer and a \lstinline!BACKEND! and is therefore the default repository for persistence libraries which are wrapped through \lstinline!BACKEND!.
 
-\subsection{BACKEND\_STRATEGY}
+\subsection{BACKEND}
 
-Another important interface is the deferred class \lstinline!BACKEND_STRATEGY!.
+Another important interface is the deferred class \lstinline!BACKEND!.
 This layer only deals with one object graph part at once, either a single object or a collection.
 It is responsible to map them to the actual persistence mechanism which is usually a specific layout in a database.
 
@@ -296,7 +296,7 @@ The wrapper is very useful if you want to easily swap e.g. from a MySQL database
 However, keep in mind that the abstraction is not perfect. 
 For example, the wrapper doesn't care about the different SQL variations as it just forwards the statements to the database.
 
-To overcome this problem, you can put all SQL statements in your implementation of \lstinline!BACKEND_STRATEGY! into a separate class, and generally stick to standard SQL as much as possible.
+To overcome this problem, you can put all SQL statements in your implementation of \lstinline!BACKEND! into a separate class, and generally stick to standard SQL as much as possible.
 
 
 \section{Extensions}
@@ -304,7 +304,7 @@ To overcome this problem, you can put all SQL statements in your implementation 
 Due to its flexible abstraction mechanism, you can easily extend ABEL with features like client-side transaction management or ESCHER \cite {PiccioniOriolMeyer12} integration.
 
 The general pattern on how to do this is quite simple: 
-You can implement the extension in a class that inherits from \lstinline!BACKEND_STRATEGY! and forwards all calls to another \lstinline!BACKEND_STRATEGY! that does the actual storage.
+You can implement the extension in a class that inherits from \lstinline!BACKEND! and forwards all calls to another \lstinline!BACKEND! that does the actual storage.
 Then the extension can do some processing on the intermediate result.
 That way you can add:
 
@@ -317,12 +317,12 @@ That way you can add:
  \item Anything else you can imagine...
 \end{itemize}
 
-The nice thing is that you can add such extensions without adding much complexity to the core of ABEL, and it works for all possible implementations of \lstinline!BACKEND_STRATEGY! at once.
+The nice thing is that you can add such extensions without adding much complexity to the core of ABEL, and it works for all possible implementations of \lstinline!BACKEND! at once.
 
 
 \section{Database adaption}
 
-The \lstinline!BACKEND_STRATEGY! interface allows to adapt the framework to many database layouts.
+The \lstinline!BACKEND! interface allows to adapt the framework to many database layouts.
 Shipped with the library is a backend that uses a generic database layout which can handle every type of object.
 It is explained in the next section.
 
@@ -376,7 +376,7 @@ The backend located in \lstinline!backends/generic_database_layout! maps Eiffel 
 It is split into three classes:
 \begin{itemize}
  \item The \lstinline!METADATA_TABLES_MANAGER! is responsible to read and write tables \lstinline!ps_class! and \lstinline!ps_attribute!.
- \item The \lstinline!GENERIC_LAYOUT_SQL_BACKEND! is responsible to write and read the \lstinline!ps_value! table. It is an implementation of \lstinline!BACKEND_STRATEGY!.
+ \item The \lstinline!GENERIC_LAYOUT_SQL_BACKEND! is responsible to write and read the \lstinline!ps_value! table. It is an implementation of \lstinline!BACKEND!.
  \item The \lstinline!GENERIC_LAYOUT_SQL_STRINGS! collects all SQL statements. Its descendants adapt the statements to a specific database if there is an incompatibility.
 \end{itemize}
 
@@ -398,7 +398,7 @@ The backend does also sort the result by the object primary key, such that attri
 
 Adapting ABEL to a custom database layout needs two steps:
  \begin{itemize}
-  \item Implement a \lstinline!BACKEND_STRATEGY! for your layout
+  \item Implement a \lstinline!BACKEND! for your layout
   \item Implement \lstinline!COLLECTION_HANDLERS! for all collections that need to be mapped
  \end{itemize}
 
@@ -488,7 +488,7 @@ end
 \end{lstlisting}
 
 
-The implementation of \lstinline!BACKEND_STRATEGY! is quite straightforward as well.
+The implementation of \lstinline!BACKEND! is quite straightforward as well.
 You just have to distinguish between \lstinline!PERSON! and \lstinline!ITEM! objects and insert them in the corresponding table.
 
 Please remember that the object-rlational mapping layer adds an attribute with name \lstinline!items_owned! to the \lstinline!ITEM! object, which is the default behaviour for 1:N relations.
@@ -500,7 +500,7 @@ The following code listing shows the insert feature in pseudocode:
 class 
 	MY_SIMPLE_BACKEND
 inherit
-	PS_BACKEND_STRATEGY
+	PS_BACKEND
 feature
 
 	insert (object:PS_SINGLE_OBJECT_PART; tx:PS_TRANSACTION)
