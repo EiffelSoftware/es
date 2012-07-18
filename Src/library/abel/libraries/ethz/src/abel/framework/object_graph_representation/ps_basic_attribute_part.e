@@ -14,6 +14,10 @@ inherit
 			basic_attribute_value
 		end
 
+inherit {NONE}
+
+	REFACTORING_HELPER
+
 create
 	make
 
@@ -22,6 +26,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access
 	basic_attribute_value: STRING
 			-- The value of the basic attribute as a string.
 		do
+			fixme ("We need to escape STRING and STRING_32 here, to prevent SQL injection. Addtionally, a check to see if we really only get basic types would be helpful for security")
 			if attached {CHARACTER_8} represented_object as char then
 				Result := char.natural_32_code.out
 			elseif attached {CHARACTER_32} represented_object as char then

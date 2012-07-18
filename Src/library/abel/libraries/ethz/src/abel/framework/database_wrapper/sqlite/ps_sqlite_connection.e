@@ -9,7 +9,7 @@ class
 
 inherit
 
-	PS_SQL_CONNECTION_ABSTRACTION
+	PS_SQL_CONNECTION
 
 inherit {NONE}
 
@@ -109,7 +109,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Database operations
 
 feature {PS_EIFFELSTORE_EXPORT} -- Database results
 
-	last_result: ITERATION_CURSOR [PS_SQL_ROW_ABSTRACTION]
+	last_result: ITERATION_CURSOR [PS_SQL_ROW]
 			-- The result of the last database operation
 
 	last_error: PS_ERROR
@@ -122,7 +122,7 @@ feature {PS_SQLITE_DATABASE} -- Initialization
 		do
 			internal_connection := connection
 			create {PS_NO_ERROR} last_error
-			last_result := (create {LINKED_LIST [PS_SQL_ROW_ABSTRACTION]}.make).new_cursor
+			last_result := (create {LINKED_LIST [PS_SQL_ROW]}.make).new_cursor
 				-- The default isolation level is Serializable, and it can't be changed to something else
 			create transaction_isolation_level
 			transaction_isolation_level := transaction_isolation_level.serializable

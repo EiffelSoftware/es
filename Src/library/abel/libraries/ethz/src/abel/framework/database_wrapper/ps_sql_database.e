@@ -8,7 +8,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	PS_SQL_DATABASE_ABSTRACTION
+	PS_SQL_DATABASE
 
 inherit
 
@@ -16,7 +16,7 @@ inherit
 
 feature {PS_EIFFELSTORE_EXPORT}
 
-	acquire_connection: PS_SQL_CONNECTION_ABSTRACTION
+	acquire_connection: PS_SQL_CONNECTION
 			-- Get a new connection.
 			-- The transaction isolation level of the new connection is the same as in `Current.transaction_isolation_level', and autocommit is disabled.
 		deferred
@@ -32,7 +32,7 @@ feature {PS_EIFFELSTORE_EXPORT}
 			transaction_level_set: Result.transaction_isolation_level.is_equal (Current.transaction_isolation_level)
 		end
 
-	release_connection (a_connection: PS_SQL_CONNECTION_ABSTRACTION)
+	release_connection (a_connection: PS_SQL_CONNECTION)
 			-- Release connection `a_connection'.
 		deferred
 				-- Remarks when implementing this feature:

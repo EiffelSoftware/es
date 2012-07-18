@@ -285,11 +285,11 @@ The predefined IN\_MEMORY\_DATABASE backend for example implements this interfac
 The last layer of abstraction is a set of wrappers to a database. 
 It consists of three deferred classes: 
 \begin{itemize}
- \item The \lstinline!SQL_DATABASE_ABSTRACTION! represents a database. Its main task is to acquire or release a \lstinline!SQL_CONNECTION_ABSTRACTION!.
- \item The \lstinline!SQL_CONNECTION_ABSTRACTION! represents a single connection. 
-It has to forward SQL statements to the database and represent the result in an iteration cursor of \lstinline!SQL_ROW_ABSTRACTION!s.
+ \item The \lstinline!SQL_DATABASE! represents a database. Its main task is to acquire or release a \lstinline!SQL_CONNECTION!.
+ \item The \lstinline!SQL_CONNECTION! represents a single connection. 
+It has to forward SQL statements to the database and represent the result in an iteration cursor of \lstinline!SQL_ROW!s.
 Another important task is to map database specific error messages to ABEL \lstinline!ERROR! instances.
-  \item The \lstinline!SQL_ROW_ABSTRACTION! represents a single row in the result of an SQL query.
+  \item The \lstinline!SQL_ROW! represents a single row in the result of an SQL query.
 \end{itemize}
 
 The wrapper is very useful if you want to easily swap e.g. from a MySQL database to SQLite.

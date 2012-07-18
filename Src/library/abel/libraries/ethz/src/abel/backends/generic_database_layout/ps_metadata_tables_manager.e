@@ -189,12 +189,12 @@ feature {NONE} -- Implementation - Local copy
 			attribute_key_to_name_map.extend (attribute_name, attribute_key)
 		end
 
-	management_connection: PS_SQL_CONNECTION_ABSTRACTION
+	management_connection: PS_SQL_CONNECTION
 			-- An auto-commited connection to manipulate the tables ps_class and ps_attribute
 
 feature {NONE} -- Initialization
 
-	make (a_connection: PS_SQL_CONNECTION_ABSTRACTION; strings: PS_GENERIC_LAYOUT_SQL_STRINGS)
+	make (a_connection: PS_SQL_CONNECTION; strings: PS_GENERIC_LAYOUT_SQL_STRINGS)
 			-- Read existing database entries and initialize local copy with them.
 			-- If necessary, create missing tables.
 		local

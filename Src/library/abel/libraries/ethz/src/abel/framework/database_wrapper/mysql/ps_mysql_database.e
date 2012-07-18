@@ -9,14 +9,14 @@ class
 
 inherit
 
-	PS_SQL_DATABASE_ABSTRACTION
+	PS_SQL_DATABASE
 
 create
 	make
 
 feature
 
-	acquire_connection: PS_SQL_CONNECTION_ABSTRACTION
+	acquire_connection: PS_SQL_CONNECTION
 			-- Get a new connection.
 			-- The transaction isolation level of th new connection is the same as in `Current.transaction_isolation_level', and autocommit is disabled.
 		local
@@ -38,7 +38,7 @@ feature
 			Result.set_autocommit (False)
 		end
 
-	release_connection (a_connection: PS_SQL_CONNECTION_ABSTRACTION)
+	release_connection (a_connection: PS_SQL_CONNECTION)
 			-- Release connection `a_connection'
 		do
 				-- Just close the connection

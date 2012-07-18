@@ -9,7 +9,7 @@ class
 
 inherit
 
-	PS_SQL_CONNECTION_ABSTRACTION
+	PS_SQL_CONNECTION
 
 inherit {NONE}
 
@@ -67,10 +67,10 @@ feature {PS_EIFFELSTORE_EXPORT}
 			end
 		end
 
-	last_result: ITERATION_CURSOR [PS_SQL_ROW_ABSTRACTION]
+	last_result: ITERATION_CURSOR [PS_SQL_ROW]
 			-- The result of the last database operation
 		local
-			result_list: LINKED_LIST [PS_SQL_ROW_ABSTRACTION]
+			result_list: LINKED_LIST [PS_SQL_ROW]
 		do
 			create result_list.make
 			across

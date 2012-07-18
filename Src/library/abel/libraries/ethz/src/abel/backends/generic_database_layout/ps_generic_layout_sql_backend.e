@@ -51,10 +51,10 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			-- If `type' has a generic parameter, the retrieve function will return objects of all generic instances of the generating class.
 			-- You can find out about the actual generic parameter by comparing the class name associated to a foreign key value.
 		local
-			connection: PS_SQL_CONNECTION_ABSTRACTION
+			connection: PS_SQL_CONNECTION
 			current_obj: PS_RETRIEVED_OBJECT
 			result_list: LINKED_LIST [PS_RETRIEVED_OBJECT]
-			row_cursor: ITERATION_CURSOR [PS_SQL_ROW_ABSTRACTION]
+			row_cursor: ITERATION_CURSOR [PS_SQL_ROW]
 			sql_string: STRING
 			attribute_name, attribute_value, class_name_of_value: STRING
 		do
@@ -126,7 +126,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 	insert (an_object: PS_SINGLE_OBJECT_PART; a_transaction: PS_TRANSACTION)
 			-- Inserts the object into the database
 		local
-			connection: PS_SQL_CONNECTION_ABSTRACTION
+			connection: PS_SQL_CONNECTION
 			new_primary_key: INTEGER
 			none_class_key: INTEGER
 			existence_attribute_key: INTEGER
@@ -152,7 +152,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 	update (an_object: PS_SINGLE_OBJECT_PART; a_transaction: PS_TRANSACTION)
 			-- Updates an_object
 		local
-			connection: PS_SQL_CONNECTION_ABSTRACTION
+			connection: PS_SQL_CONNECTION
 		do
 			connection := get_connection (a_transaction)
 			write_attributes (an_object, connection, a_transaction)
@@ -163,7 +163,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 	delete (an_object: PS_SINGLE_OBJECT_PART; a_transaction: PS_TRANSACTION)
 			-- Deletes an_object from the database
 		local
-			connection: PS_SQL_CONNECTION_ABSTRACTION
+			connection: PS_SQL_CONNECTION
 			primary: INTEGER
 		do
 			connection := get_connection (a_transaction)
@@ -242,7 +242,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 	commit (a_transaction: PS_TRANSACTION)
 			-- Tries to commit `a_transaction'. As with every other error, a failed commit will result in a new exception and the error will be placed inside `a_transaction'
 		local
-			connection: PS_SQL_CONNECTION_ABSTRACTION
+			connection: PS_SQL_CONNECTION
 		do
 			connection := get_connection (a_transaction)
 			connection.commit
@@ -256,7 +256,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 	rollback (a_transaction: PS_TRANSACTION)
 			-- Aborts `a_transaction' and undoes all changes in the database
 		local
-			connection: PS_SQL_CONNECTION_ABSTRACTION
+			connection: PS_SQL_CONNECTION
 		do
 			if not a_transaction.has_error then -- Avoid a "double rollback"
 				connection := get_connection (a_transaction)
@@ -289,7 +289,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
 	wipe_out_data
 			-- Wipe out all object data, but keep the metadata
 		local
-			connection: PS_SQL_CONNECTION_ABSTRACTION
+			connection: PS_SQL_CONNECTION
 		do
 			create key_mapper.make
 			management_connection.execute_sql (SQL_Strings.Delete_all_values)
@@ -318,7 +318,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
 
 feature {NONE} -- Implementation
 
-	write_attributes (object: PS_SINGLE_OBJECT_PART; a_connection: PS_SQL_CONNECTION_ABSTRACTION; transaction: PS_TRANSACTION)
+	write_attributes (object: PS_SINGLE_OBJECT_PART; a_connection: PS_SQL_CONNECTION; transaction: PS_TRANSACTION)
 			-- Write all attributes of `object'
 		local
 			primary: INTEGER
@@ -363,12 +363,12 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation - Connection and Transaction handling
 
-	get_connection (transaction: PS_TRANSACTION): PS_SQL_CONNECTION_ABSTRACTION
+	get_connection (transaction: PS_TRANSACTION): PS_SQL_CONNECTION
 			-- Get the connection associated with `transaction'.
 			-- Acquire a new connection if the transaction is new.
 		local
-			new_connection: PS_PAIR [PS_SQL_CONNECTION_ABSTRACTION, PS_TRANSACTION]
-			the_actual_result_as_detachable_because_of_stupid_void_safety_rule: detachable PS_SQL_CONNECTION_ABSTRACTION
+			new_connection: PS_PAIR [PS_SQL_CONNECTION, PS_TRANSACTION]
+			the_actual_result_as_detachable_because_of_stupid_void_safety_rule: detachable PS_SQL_CONNECTION
 		do
 			if transaction.is_readonly then
 				Result := management_connection
@@ -408,22 +408,22 @@ feature {NONE} -- Implementation - Connection and Transaction handling
 			end
 		end
 
-	active_connections: LINKED_LIST [PS_PAIR [PS_SQL_CONNECTION_ABSTRACTION, PS_TRANSACTION]]
+	active_connections: LINKED_LIST [PS_PAIR [PS_SQL_CONNECTION, PS_TRANSACTION]]
 			-- These are the normal connections attached to a transaction.
 			-- They do not have auto-commit and they are closed once the transaction is finished.
 			-- They only write and read the ps_value table.
 
-	management_connection: PS_SQL_CONNECTION_ABSTRACTION
+	management_connection: PS_SQL_CONNECTION
 			-- This is a special connection used for management and read-only transactions.
 			-- It uses auto-commit, and is always active.
 			-- The connection can only read and write tables ps_attribute and ps_class
 
 feature {NONE} -- Initialization
 
-	make (a_database: PS_SQL_DATABASE_ABSTRACTION; strings: PS_GENERIC_LAYOUT_SQL_STRINGS)
+	make (a_database: PS_SQL_DATABASE; strings: PS_GENERIC_LAYOUT_SQL_STRINGS)
 			-- Initialization for `Current'
 		local
-			initialization_connection: PS_SQL_CONNECTION_ABSTRACTION
+			initialization_connection: PS_SQL_CONNECTION
 		do
 			SQL_Strings := strings
 			database := a_database
@@ -434,7 +434,7 @@ feature {NONE} -- Initialization
 			create active_connections.make
 		end
 
-	database: PS_SQL_DATABASE_ABSTRACTION
+	database: PS_SQL_DATABASE
 			-- The actual database
 
 	db_metadata_manager: PS_METADATA_TABLES_MANAGER

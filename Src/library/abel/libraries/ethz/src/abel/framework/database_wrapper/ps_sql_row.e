@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	PS_SQL_ROW_ABSTRACTION
+	PS_SQL_ROW
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status report
 

@@ -5,11 +5,11 @@ note
 	revision: "$Revision$"
 
 deferred class
-	PS_SQL_CONNECTION_ABSTRACTION
+	PS_SQL_CONNECTION
 
 inherit
 
-	ITERABLE [PS_SQL_ROW_ABSTRACTION]
+	ITERABLE [PS_SQL_ROW]
 
 feature {PS_EIFFELSTORE_EXPORT} -- Settings
 
@@ -52,7 +52,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Database operations
 
 feature {PS_EIFFELSTORE_EXPORT} -- Database results
 
-	last_result: ITERATION_CURSOR [PS_SQL_ROW_ABSTRACTION]
+	last_result: ITERATION_CURSOR [PS_SQL_ROW]
 			-- The result of the last database operation.
 		deferred
 		end
@@ -64,7 +64,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Database results
 
 feature {PS_EIFFELSTORE_EXPORT} -- Utilities
 
-	new_cursor: ITERATION_CURSOR [PS_SQL_ROW_ABSTRACTION]
+	new_cursor: ITERATION_CURSOR [PS_SQL_ROW]
 			-- Get a cursor over the `last_result' (Convenience function to support the `across' syntax).
 		do
 			Result := last_result

@@ -9,7 +9,7 @@ class
 
 inherit
 
-	PS_SQL_ROW_ABSTRACTION
+	PS_SQL_ROW
 
 create {PS_SQLITE_CONNECTION}
 	make
