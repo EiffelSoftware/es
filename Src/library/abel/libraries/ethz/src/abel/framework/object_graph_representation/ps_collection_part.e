@@ -60,7 +60,7 @@ feature {PS_COLLECTION_PART} -- Duplication
 
 feature {PS_COMPLEX_PART} -- Initialization
 
-	finish_initialization (disassembler: PS_OBJECT_DISASSEMBLER)
+	finish_initialization (disassembler: PS_OBJECT_GRAPH_BUILDER)
 			-- Initialize all attributes or collection items of `Current'.
 		local
 			cursor: ITERATION_CURSOR [detachable ANY]

@@ -40,16 +40,16 @@ feature {NONE} -- Initialization
 
 feature {PS_EIFFELSTORE_EXPORT} -- Supported collection operations
 
-	is_objectoriented_collection_store_supported: BOOLEAN
+	supports_object_collection: BOOLEAN
 			-- Can the current backend handle relational collections?
 		do
-			Result := real_backend.is_objectoriented_collection_store_supported
+			Result := real_backend.supports_object_collection
 		end
 
-	is_relational_collection_store_supported: BOOLEAN
+	supports_relational_collection: BOOLEAN
 			-- Can the current backend handle relational collections?
 		do
-			Result := real_backend.is_relational_collection_store_supported
+			Result := real_backend.supports_relational_collection
 		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status report

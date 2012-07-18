@@ -144,9 +144,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access: Cursor
 			create Result.make (Current)
 		end
 
-feature {PS_OBJECT_GRAPH_PART, PS_OBJECT_DISASSEMBLER} -- Initialization
+feature {PS_OBJECT_GRAPH_PART, PS_OBJECT_GRAPH_BUILDER} -- Initialization
 
-	initialize (a_level: INTEGER; a_mode: PS_WRITE_OPERATION; disassembler: PS_OBJECT_DISASSEMBLER)
+	initialize (a_level: INTEGER; a_mode: PS_WRITE_OPERATION; disassembler: PS_OBJECT_GRAPH_BUILDER)
 			-- Initialize `Current' and its whole object graph.
 		deferred
 		ensure

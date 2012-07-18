@@ -22,10 +22,10 @@ create
 
 feature {PS_EIFFELSTORE_EXPORT} -- Supported collection operations
 
-	is_objectoriented_collection_store_supported: BOOLEAN = True
+	supports_object_collection: BOOLEAN = True
 			-- Can the current backend handle relational collections?
 
-	is_relational_collection_store_supported: BOOLEAN = False
+	supports_relational_collection: BOOLEAN = False
 			-- Can the current backend handle relational collections?
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status report

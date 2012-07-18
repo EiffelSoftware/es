@@ -47,9 +47,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
 			internal_object_id := an_object_id
 		end
 
-feature {PS_OBJECT_GRAPH_PART, PS_OBJECT_DISASSEMBLER} -- Initialization
+feature {PS_OBJECT_GRAPH_PART, PS_OBJECT_GRAPH_BUILDER} -- Initialization
 
-	initialize (a_level: INTEGER; operation: PS_WRITE_OPERATION; disassembler: PS_OBJECT_DISASSEMBLER)
+	initialize (a_level: INTEGER; operation: PS_WRITE_OPERATION; disassembler: PS_OBJECT_GRAPH_BUILDER)
 			-- Initialize `Current' and its whole object graph.
 		local
 			new_mode: BOOLEAN
@@ -82,7 +82,7 @@ feature {PS_OBJECT_GRAPH_PART, PS_OBJECT_DISASSEMBLER} -- Initialization
 
 feature {PS_COMPLEX_PART} -- Initialization
 
-	finish_initialization (disassembler: PS_OBJECT_DISASSEMBLER)
+	finish_initialization (disassembler: PS_OBJECT_GRAPH_BUILDER)
 			-- Initialize all attributes or collection items of `Current'.
 		deferred
 		end

@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	PS_OBJECT_DISASSEMBLER
+	PS_OBJECT_GRAPH_BUILDER
 
 inherit
 

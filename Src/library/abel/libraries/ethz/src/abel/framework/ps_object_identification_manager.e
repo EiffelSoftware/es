@@ -82,7 +82,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 			not_identified: not is_identified (an_object, transaction)
 		end
 
-	get_identifier_wrapper (an_object: ANY; transaction: PS_TRANSACTION): PS_OBJECT_IDENTIFIER_WRAPPER
+	identifier_wrapper (an_object: ANY; transaction: PS_TRANSACTION): PS_OBJECT_IDENTIFIER_WRAPPER
 			-- Get the identifier of `an_object'.
 		require
 			identified: is_identified (an_object, transaction)

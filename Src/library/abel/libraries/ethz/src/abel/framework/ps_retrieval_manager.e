@@ -101,7 +101,7 @@ feature {NONE} -- Implementation: Build functions for PS_RETRIEVED_* objects
 				Result := reflection.new_instance_of (type.type.type_id)
 				bookkeeping.extend (Result, obj.primary_key + obj.class_metadata.name.hash_code)
 				id_manager.identify (Result, transaction)
-				backend.key_mapper.add_entry (id_manager.get_identifier_wrapper (Result, transaction), obj.primary_key, transaction)
+				backend.key_mapper.add_entry (id_manager.identifier_wrapper (Result, transaction), obj.primary_key, transaction)
 				across
 					obj.attributes as attr_cursor
 				loop

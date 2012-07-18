@@ -106,7 +106,7 @@ If an object graph part $X$ is dependent on another part $Y$, then it means for 
 The four classes listed here are the ones that do the actual work:
 
 \begin{itemize}
- \item The \lstinline!OBJECT_DISASSEMBLER! is responsible to create the explicit object graph representation.
+ \item The \lstinline!OBJECT_GRAPH_BUILDER! is responsible to create the explicit object graph representation.
  \item The \lstinline!WRITE_PLANNER! is responsible to generate a total order on all write operations, taking care of the dependency issues.
  \item The \lstinline!RETRIEVAL_MANAGER! builds objects from the parts that it gets from the backend, and takes care that the complete object graph gets loaded.
  \item The \lstinline!COLLECTION_HANDLER!, or rather its descendants, add collection handling support to the basic ORM layer. 

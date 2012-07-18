@@ -182,8 +182,8 @@ feature -- Initialization
 
 feature {PS_EIFFELSTORE_EXPORT} -- Implementation
 
-	disassembler: PS_OBJECT_DISASSEMBLER
-			-- A disassembler to create explicit object graphs.
+	disassembler: PS_OBJECT_GRAPH_BUILDER
+			-- An object graph builder to create explicit object graphs.
 
 	planner: PS_WRITE_PLANNER
 			-- A write planner to generate an operation plan from an object graph.

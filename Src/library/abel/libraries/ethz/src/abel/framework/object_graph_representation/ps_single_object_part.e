@@ -112,7 +112,7 @@ feature {NONE} -- Initialization
 
 feature {PS_COMPLEX_PART} -- Initialization
 
-	finish_initialization (disassembler: PS_OBJECT_DISASSEMBLER)
+	finish_initialization (disassembler: PS_OBJECT_GRAPH_BUILDER)
 			-- Initialize all attributes or collection items of `Current'.
 		local
 			val: PS_OBJECT_GRAPH_PART
