@@ -17,7 +17,7 @@ inherit
 		end
 
 create
-	make
+	make, make_with_criterion
 
 feature -- Access
 

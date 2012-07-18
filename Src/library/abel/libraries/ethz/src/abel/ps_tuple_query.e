@@ -20,7 +20,7 @@ inherit
 	ITERABLE [TUPLE]
 
 create
-	make
+	make, make_with_criterion
 
 feature -- Access
 
@@ -80,6 +80,26 @@ feature -- Projections
 			projection := a_projection
 		ensure
 			projected_data_set: projection = a_projection
+		end
+
+feature -- Utilities
+
+	attribute_index (name: STRING): INTEGER
+			-- Get the tuple index for the attribute with name `name'
+		require
+			name_exists: projection.has (name)
+		do
+			from
+				Result:= 0
+			until
+				Result > projection.count or name.is_equal (projection[Result])
+			loop
+				Result:= Result + 1
+			end
+		ensure
+			positive: Result > 0
+			in_range: Result <= projection.count
+			correct: name.is_equal (projection[Result])
 		end
 
 feature -- Cursor generation

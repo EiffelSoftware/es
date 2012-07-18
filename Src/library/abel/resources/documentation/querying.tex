@@ -212,7 +212,7 @@ The result is an iteration cursor over a list of tuples in which the attributes 
 		do
 			create query.make
 			-- Find out at which position in the tuple the last_name is returned
-			last_name_index:= find_index_of_attribute("last_name")
+			last_name_index:= query.attribute_index ("last_name")
 
 			from
 				executor.execute_tuple_query (query)
