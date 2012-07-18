@@ -10,10 +10,22 @@ class
 inherit
 
 	HASHABLE
+		undefine
+			is_equal
+		end
+
+	ANY
+		redefine
+			is_equal
+		end
 
 inherit {NONE}
 
 	REFACTORING_HELPER
+		undefine
+			is_equal
+		end
+
 
 create {PS_METADATA_FACTORY}
 	make
@@ -30,6 +42,13 @@ feature -- Access
 		end
 
 feature -- Status report
+
+	is_equal (other: like Current): BOOLEAN
+			-- Is `other' attached to an object considered
+			-- equal to current object?
+		do
+			Result:= type.type_id = other.type.type_id
+		end
 
 	is_basic_type: BOOLEAN
 			-- Is `Current' of an ABEL basic type (STRING or expanded types)?

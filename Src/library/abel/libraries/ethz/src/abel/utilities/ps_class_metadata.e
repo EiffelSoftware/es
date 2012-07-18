@@ -12,9 +12,19 @@ note
 class
 	PS_CLASS_METADATA
 
+inherit
+
+	ANY
+		redefine
+			is_equal
+		end
+
 inherit {NONE}
 
 	REFACTORING_HELPER
+		undefine
+			is_equal
+		end
 
 create
 	make
@@ -25,6 +35,13 @@ feature -- Access
 			--The class name of the Eiffel class.
 
 feature -- Status report
+
+	is_equal (other: like Current): BOOLEAN
+			-- Is `other' attached to an object considered
+			-- equal to current object?
+		do
+			Result:= name.is_equal (other.name)
+		end
 
 	is_basic_type: BOOLEAN
 			-- Is `Current' of an ABEL basic type (STRING or expanded types)?
