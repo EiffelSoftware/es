@@ -14,6 +14,10 @@ inherit
 			key_mapper
 		end
 
+inherit {NONE}
+
+	REFACTORING_HELPER
+
 create
 	make
 
@@ -168,13 +172,13 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 			if attached {VERSIONED_CLASS} an_object.represented_object as versioned_object then
 				stored_version := versioned_object.version
 				if simulate_version_mismatch then
+					fixme ("Remove testing-related code")
 					stored_version := stored_version - 1
 				end
 				create version_attribute.make (stored_version, integer_metadata, an_object.root)
 				an_object.add_attribute ("version", version_attribute)
 				real_backend.insert (an_object, a_transaction)
 				an_object.attributes.prune ("version") -- to satisfy postcondition
-					--an_object.attribute_values.remove ("version")
 			else
 				real_backend.insert (an_object, a_transaction)
 			end
@@ -287,6 +291,7 @@ feature -- Testing
 			-- Enable or disable the testing simulation
 		do
 			simulate_version_mismatch := switch
+			fixme ("Remove testing-related code")
 		end
 
 	simulate_version_mismatch: BOOLEAN
