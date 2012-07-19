@@ -20,10 +20,6 @@ inherit
 
 	PS_EIFFELSTORE_EXPORT
 
-inherit {NONE}
-
-	REFACTORING_HELPER
-
 create
 	make
 
@@ -283,14 +279,7 @@ feature {NONE} -- Implementation
 		do
 				-- Please note that this function accepts transactions that already have an error, especially (but not exclusively) in case of a retry
 			last_error := transaction.error
-			if transaction.has_error then
-				if attached {PS_TRANSACTION_CONFLICT} transaction.error then
-						-- Ignore query in case of a transaction error
-				else
-						-- Raise the error again
-					transaction.error.raise
-				end
-			else -- No error - Proceed as usual
+			if not transaction.has_error then
 				action.call ([]) -- This may cause an exception which will be handled by the rescue clause
 			end
 		ensure
@@ -299,9 +288,11 @@ feature {NONE} -- Implementation
 			last_error := transaction.error
 			if not retried then
 				retried := True
-
-					fixme ("Uncomment the following line - At the moment it is disabled because it somehow overwrites the exception stack, which is bad for debugging...")
-				--retry -- The retry will "catch" transaction conflicts, but raise every other exception
+				if transaction.has_error and then attached {PS_TRANSACTION_CONFLICT} transaction.error then
+					retry -- The retry will "catch" transaction conflicts
+				else
+					-- Any other error will propagate upwards
+				end
 			end
 		end
 
