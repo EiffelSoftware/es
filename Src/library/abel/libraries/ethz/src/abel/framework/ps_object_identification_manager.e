@@ -38,7 +38,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 			-- Is `an_object' already identified and thus known to the system?
 		do
 			fixme ("See if `an_object' is either in the `transaction' or the global pool.")
-			Result := across identifier_table as cursor some (cursor.item.first.exists and then cursor.item.first.item = an_object) end
+		--	Result := across identifier_table as cursor some (cursor.item.first.exists and then cursor.item.first.item = an_object) end
+			Result:= global_set.is_identified (an_object)
 		end
 
 	identify (an_object: ANY; transaction: PS_TRANSACTION)
@@ -57,6 +58,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 			create temp.put (an_object)
 			create pair.make (temp, new_id)
 			identifier_table.extend (pair)
+
+			global_set.add_identifier (an_object, new_id)
 		ensure
 			identified: is_identified (an_object, transaction)
 		end
@@ -78,6 +81,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 					identifier_table.forth
 				end
 			end
+
+			global_set.delete_identifier (an_object)
 		ensure
 			not_identified: not is_identified (an_object, transaction)
 		end
@@ -104,6 +109,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 				end
 				identifier_table.forth
 			end
+
+			create Result.make (global_set.identifier (an_object), an_object, meta)
 		ensure
 			item_present: Result.item = an_object
 		end
@@ -208,15 +215,20 @@ feature {NONE} -- Implementation
 
 	identifier_table: LINKED_LIST [PS_PAIR [WEAK_REFERENCE [ANY], INTEGER]]
 			-- The internal storage for identifiers
+		do
+			create Result.make
+			Result.start
+		end
 
 	make
 			-- Initialize `Current'
 		do
-			create identifier_table.make
+--			create identifier_table.make
 			create subscribers.make
 			create metadata_manager.make
 			last_id := 0
 			create registered_transactions.make
+			create global_set.make
 		end
 
 	new_id: INTEGER
@@ -228,6 +240,9 @@ feature {NONE} -- Implementation
 
 	last_id: INTEGER
 			--Tthe last id generated
+
+	global_set: PS_IDENTIFIER_SET
+			-- The global set of (committed) identifiers
 
 invariant
 	no_object_twice_in_global_pool: to_implement_assertion ("Check that no object is listed twice in the global pool (check for reference equality)")
