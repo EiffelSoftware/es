@@ -19,10 +19,6 @@ inherit
 
 	PS_EIFFELSTORE_EXPORT
 
-inherit {NONE}
-
-	REFACTORING_HELPER
-
 create
 	make
 
@@ -169,7 +165,10 @@ feature {PS_EIFFELSTORE_EXPORT} -- Deletion management
 	cleanup
 			-- Remove all entries where the weak reference is Void, i.e. the garbage collector has collected the object
 		do
-			fixme ("TODO")
+			across global_set.garbage_collected_items as cursor
+			loop
+				publish_deletion (cursor.item)
+			end
 		end
 
 	publish_deletion (identifier: INTEGER)

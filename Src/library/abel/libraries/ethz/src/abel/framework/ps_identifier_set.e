@@ -7,11 +7,13 @@ note
 		Speedup things, e.g. by separating objects by class name...
 		Also the invariant check takes a very long time, maybe disable it
 		The number in ANY.tagged_out is not stable, but stable enough that we might first try to hash on it and then, if the memory location has changed, look at big list
-		]"
+	]"
+
 class
 	PS_IDENTIFIER_SET
 
 inherit
+
 	PS_EIFFELSTORE_EXPORT
 
 create
@@ -24,61 +26,61 @@ feature {NONE} -- Initialization
 		do
 			create deleted_objects.make
 			create weak_reference_items.make
+			create garbage_collected_items.make
 		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Access
 
-	identifier (object:ANY): INTEGER
+	identifier (object: ANY): INTEGER
 			-- Get the identifier for `object'
 		require
 			identified: is_identified (object)
 		do
-			Result:= actual_identifier (object)
+			Result := actual_identifier (object)
 		end
 
 	current_items: LINKED_LIST [TUPLE [object: ANY; identifier: INTEGER]]
 			-- All objects and their identifiers in the set.
 		do
 			create Result.make
-			across weak_reference_items as cursor
+			across
+				weak_reference_items as cursor
 			loop
 				if cursor.item.object.exists then
-					Result.extend ([ attach (cursor.item.object.item) , cursor.item.identifier ])
+					Result.extend ([attach (cursor.item.object.item), cursor.item.identifier])
 				end
 			end
 		end
 
-	deleted_objects: LINKED_LIST[ANY]
+	deleted_objects: LINKED_LIST [ANY]
 			-- All object identifiers that have been deleted
-
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
 	is_identified (object: ANY): BOOLEAN
 			--Does `Current' have an identifier for `object'?
 		do
-			Result:= not is_deleted (object) and then has_identifier (object)
+			Result := not is_deleted (object) and then has_identifier (object)
 		end
 
-	is_deleted (object:ANY): BOOLEAN
+	is_deleted (object: ANY): BOOLEAN
 			-- Has the identifier for `object' been deleted?
 		do
-			Result:= deleted_objects.has (object)
+			Result := deleted_objects.has (object)
 		end
-
 
 feature {PS_EIFFELSTORE_EXPORT} -- Element change
 
-	add_identifier (object:ANY; new_identifier:INTEGER)
+	add_identifier (object: ANY; new_identifier: INTEGER)
 			-- Add `object' with identifier `new_identifier' to the set
 		do
-			weak_reference_items.put_front ([ create {WEAK_REFERENCE[ANY]}.put (object) , new_identifier ])
+			weak_reference_items.put_front ([create {WEAK_REFERENCE [ANY]}.put (object), new_identifier])
 		ensure
 			identified: is_identified (object)
 			correct: identifier (object) = new_identifier
 		end
 
-	delete_identifier (object:ANY)
+	delete_identifier (object: ANY)
 			-- Delete the idenifier for `object'
 		do
 			deleted_objects.put_front (object)
@@ -86,7 +88,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Element change
 			not_identified: not is_identified (object)
 			deleted: is_deleted (object)
 		end
-
 
 feature {PS_EIFFELSTORE_EXPORT} -- Set operations
 
@@ -96,13 +97,17 @@ feature {PS_EIFFELSTORE_EXPORT} -- Set operations
 			equal_objects_have_equal_identifier: across other.current_items as cursor all Current.is_identified (cursor.item.object) implies cursor.item.identifier = identifier (cursor.item.object) end
 			deleted_objects_exist: across other.deleted_objects as cursor all is_identified (cursor.item) end
 		do
-			across other.current_items as cursor
+				-- First add all identifiers
+			across
+				other.current_items as cursor
 			loop
 				add_identifier (cursor.item.object, cursor.item.identifier)
 			end
-
-			from weak_reference_items.start
-			until weak_reference_items.after
+				-- Then perform all deletions
+			from
+				weak_reference_items.start
+			until
+				weak_reference_items.after
 			loop
 				if attached weak_reference_items.item.object.item as attached_item and then other.deleted_objects.has (attached_item) then
 					weak_reference_items.remove
@@ -110,32 +115,65 @@ feature {PS_EIFFELSTORE_EXPORT} -- Set operations
 					weak_reference_items.forth
 				end
 			end
-
 		ensure
 			all_added: across other.current_items as cursor all is_identified (cursor.item.object) end
 			correctly_deleted: across other.deleted_objects as cursor all not is_identified (cursor.item) end
 		end
 
+feature {PS_EIFFELSTORE_EXPORT} -- Cleanup
+
+	garbage_collected_items: LINKED_LIST [INTEGER]
+			-- All identifiers whose objects have been garbage collected
+
 feature {NONE} -- Implementation
 
-	weak_reference_items: LINKED_LIST [TUPLE [object: WEAK_REFERENCE[ANY]; identifier:INTEGER]]
+	weak_reference_items: LINKED_LIST [TUPLE [object: WEAK_REFERENCE [ANY]; identifier: INTEGER]]
 			-- The actual store with weak references
 
-	has_identifier (object:ANY): BOOLEAN
+	has_identifier (object: ANY): BOOLEAN
 			-- Does the actual store have an identifier for `object'?
 		do
-			Result:= across weak_reference_items as cursor some cursor.item.object.exists and then attach (cursor.item.object.item) = object end
+			from
+				weak_reference_items.start
+				Result := False
+			until
+				weak_reference_items.after or Result
+			loop
+				if not weak_reference_items.item.object.exists then
+						-- Found a garbage-collected item
+					garbage_collected_items.extend (weak_reference_items.item.identifier)
+					weak_reference_items.remove
+				else
+					Result := Result or (attach (weak_reference_items.item.object.item) = object)
+					weak_reference_items.forth
+				end
+			end
 		end
 
-	actual_identifier (object:ANY): INTEGER
+	actual_identifier (object: ANY): INTEGER
 			-- Get the actual identifier from the store
 		require
 			has_identifier (object)
+		local
+			found: BOOLEAN
 		do
-			across weak_reference_items as cursor
+			from
+				weak_reference_items.start
+				found := False
+			until
+				weak_reference_items.after or found
 			loop
-				if cursor.item.object.exists and then attach (cursor.item.object.item) = object then
-					Result:= cursor.item.identifier
+				if not weak_reference_items.item.object.exists then
+						-- Found a garbage-collected item
+					garbage_collected_items.extend (weak_reference_items.item.identifier)
+					weak_reference_items.remove
+				else
+						-- See if the objects are the same and then return the identifier
+					if attach (weak_reference_items.item.object.item) = object then
+						Result := weak_reference_items.item.identifier
+						found := True
+					end
+					weak_reference_items.forth
 				end
 			end
 		end
@@ -146,16 +184,10 @@ feature {NONE} -- Invariant checking
 			-- Is there an object in the set that has been identified twice?
 			-- PLEASE NOTE: This is a very expensive operation - it basically doubles the time needed for some unit tests.
 		do
-			Result:=
-				across current_items as cursor
-				all
-					across current_items as inner_cursor
-					all
-						cursor.item.object = inner_cursor.item.object implies cursor.item.identifier = inner_cursor.item.identifier
-					end
-				end
+			Result := across current_items as cursor all across current_items as inner_cursor all cursor.item.object = inner_cursor.item.object implies cursor.item.identifier = inner_cursor.item.identifier end end
 		end
 
 invariant
 	no_object_twice_in_set: are_objects_identified_only_once
+
 end
