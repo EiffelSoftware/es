@@ -234,7 +234,7 @@ feature {NONE} -- Implementation - Build support functions.
 					reflection.set_reference_field (index, obj, value.to_string_32)
 					Result := True
 				elseif type_name.is_case_insensitive_equal ("STRING_8") then
-					reflection.set_reference_field (index, obj, value.to_string_8)
+					reflection.set_reference_field (index, obj, value.twin)
 					Result := True
 				else
 						-- Not of a basic type - return false
