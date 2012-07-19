@@ -10,13 +10,7 @@ note
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
-	TODO: "[
-		Create a global pool of committed object identifiers and some transaction-local pools of changes to be applied at commit time.
-		Generally make the whole class transaction-aware.
 
-		Speedup things, e.g. by separating objects by class name...
-		It might be possible to hash objects on the {ANY}.tagged_out string, which seems to be the memory location.
-	]"
 
 class
 	PS_OBJECT_IDENTIFICATION_MANAGER
@@ -37,9 +31,11 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 	is_identified (an_object: ANY; transaction: PS_TRANSACTION): BOOLEAN
 			-- Is `an_object' already identified and thus known to the system?
 		do
-			fixme ("See if `an_object' is either in the `transaction' or the global pool.")
-		--	Result := across identifier_table as cursor some (cursor.item.first.exists and then cursor.item.first.item = an_object) end
-			Result:= global_set.is_identified (an_object)
+			if is_registered (transaction) then
+				Result:= local_set (transaction).is_identified (an_object) or (not local_set(transaction).is_deleted (an_object) and global_set.is_identified(an_object))
+			else
+				Result:= global_set.is_identified (an_object)
+			end
 		end
 
 	identify (an_object: ANY; transaction: PS_TRANSACTION)
@@ -49,17 +45,28 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 		local
 			temp: WEAK_REFERENCE [ANY]
 			pair: PS_PAIR [WEAK_REFERENCE [ANY], INTEGER]
+			new_identifier: INTEGER
 		do
-			fixme ("[
-				check ALL the other transaction's pools if someone already has the same object.
-				if yes add a copy of the same identification to `transaction's pool.
-				if no create it and add it to `transaction's pool.
-				]")
-			create temp.put (an_object)
-			create pair.make (temp, new_id)
-			identifier_table.extend (pair)
+			--check all other transaction local sets if someone already has the same object.
+			across transaction_sets as cursor loop
+				if cursor.item.set.is_identified (an_object) then
+					-- if yes, use copy of the same identification
+					new_identifier:= cursor.item.set.identifier (an_object)
+				end
+			end
 
-			global_set.add_identifier (an_object, new_id)
+				--if not create a new one.
+			if new_identifier = 0 then
+				new_identifier := new_id
+			end
+
+			if transaction.is_readonly then
+				-- Readonly transactions are not committed, therefore add those identifiers to the global set
+				global_set.add_identifier (an_object, new_identifier)
+			else
+				local_set (transaction).add_identifier (an_object, new_identifier)
+			end
+
 		ensure
 			identified: is_identified (an_object, transaction)
 		end
@@ -68,21 +75,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 			-- Delete the identification.
 		require
 			identified: is_identified (an_object, transaction)
+			not_readonly: not transaction.is_readonly
 		do
-			fixme ("TODO: Make this transaction-aware")
-			from
-				identifier_table.start
-			until
-				identifier_table.after
-			loop
-				if identifier_table.item.first.item = an_object then
-					identifier_table.remove
-				else
-					identifier_table.forth
-				end
-			end
-
-			global_set.delete_identifier (an_object)
+			local_set (transaction).delete_identifier (an_object)
 		ensure
 			not_identified: not is_identified (an_object, transaction)
 		end
@@ -95,22 +90,15 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 			found: BOOLEAN
 			meta: PS_TYPE_METADATA
 		do
-			fixme ("FIRST, lok at the transaction pool, then look at the global pool")
+					-- first look at the local transaction set, then look at the global set
 			meta := metadata_manager.create_metadata_from_object (an_object)
-			from
-				identifier_table.start
-				found := false
-				create Result.make (0, Current, meta) -- Void safety
-			until
-				identifier_table.after or found
-			loop
-				if identifier_table.item.first.exists and then identifier_table.item.first.item = an_object then
-					create Result.make (identifier_table.item.second.item, an_object, meta)
-				end
-				identifier_table.forth
+
+			if local_set (transaction).is_identified (an_object) then
+				create Result.make (local_set(transaction).identifier (an_object), an_object, meta)
+			else
+				create Result.make (global_set.identifier (an_object), an_object, meta)
 			end
 
-			create Result.make (global_set.identifier (an_object), an_object, meta)
 		ensure
 			item_present: Result.item = an_object
 		end
@@ -120,7 +108,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction Status
 	can_commit (transaction: PS_TRANSACTION): BOOLEAN
 			-- Can `Current' commit the changes in `Transaction'?
 		do
-			fixme ("check if there is an equal object in the global pool and the transaction pool")
 			Result := True
 		end
 
@@ -137,6 +124,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction management
 		do
 			if not is_registered (transaction) then
 				registered_transactions.extend (transaction)
+				transaction_sets.extend ([transaction, create {PS_IDENTIFIER_SET}.make])
 			end
 		ensure
 			is_registered (transaction)
@@ -147,9 +135,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction management
 		require
 			registered: is_registered (transaction)
 		do
-			fixme ("Insert all objects in the transaction pool to the global pool")
-			registered_transactions.start
-			registered_transactions.prune (transaction)
+			global_set.merge (local_set (transaction))
+			-- That might be a bit misleading, but rollback just does cleanup
+			rollback (transaction)
 		ensure
 			not_registered: not is_registered (transaction)
 		end
@@ -159,7 +147,15 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction management
 		require
 			registered: is_registered (transaction)
 		do
-			fixme ("Delete the transaction pool")
+			from transaction_sets.start
+			until transaction_sets.after
+			loop
+				if transaction_sets.item.transaction = transaction then
+					transaction_sets.remove
+				else
+					transaction_sets.forth
+				end
+			end
 			registered_transactions.start
 			registered_transactions.prune (transaction)
 		ensure
@@ -173,18 +169,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Deletion management
 	cleanup
 			-- Remove all entries where the weak reference is Void, i.e. the garbage collector has collected the object
 		do
-			from
-				identifier_table.start
-			until
-				identifier_table.after
-			loop
-				if not identifier_table.item.first.exists then
-					publish_deletion (identifier_table.item.second)
-					identifier_table.remove
-				else
-					identifier_table.forth
-				end
-			end
+			fixme ("TODO")
 		end
 
 	publish_deletion (identifier: INTEGER)
@@ -213,22 +198,15 @@ feature {PS_EIFFELSTORE_EXPORT} -- Utilities
 
 feature {NONE} -- Implementation
 
-	identifier_table: LINKED_LIST [PS_PAIR [WEAK_REFERENCE [ANY], INTEGER]]
-			-- The internal storage for identifiers
-		do
-			create Result.make
-			Result.start
-		end
-
 	make
 			-- Initialize `Current'
 		do
---			create identifier_table.make
 			create subscribers.make
 			create metadata_manager.make
 			last_id := 0
 			create registered_transactions.make
 			create global_set.make
+			create transaction_sets.make
 		end
 
 	new_id: INTEGER
@@ -244,7 +222,22 @@ feature {NONE} -- Implementation
 	global_set: PS_IDENTIFIER_SET
 			-- The global set of (committed) identifiers
 
-invariant
-	no_object_twice_in_global_pool: to_implement_assertion ("Check that no object is listed twice in the global pool (check for reference equality)")
+	transaction_sets: LINKED_LIST [TUPLE [transaction: PS_TRANSACTION; set: PS_IDENTIFIER_SET]]
+			-- The transaction-local sets
+
+	local_set (transaction: PS_TRANSACTION): PS_IDENTIFIER_SET
+			-- Get the local set for `transaction'
+		require
+			registered: is_registered (transaction)
+		do
+			Result:= global_set
+			across transaction_sets as cursor loop
+				if cursor.item.transaction = transaction then
+					Result:= cursor.item.set
+				end
+			end
+		ensure
+			not_global: Result /= global_set
+		end
 
 end

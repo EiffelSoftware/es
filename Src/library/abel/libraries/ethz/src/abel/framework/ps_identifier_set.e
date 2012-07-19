@@ -3,7 +3,11 @@ note
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
-
+	TODO: "[
+		Speedup things, e.g. by separating objects by class name...
+		Also the invariant check takes a very long time, maybe disable it
+		The number in ANY.tagged_out is not stable, but stable enough that we might first try to hash on it and then, if the memory location has changed, look at big list
+		]"
 class
 	PS_IDENTIFIER_SET
 
