@@ -139,7 +139,6 @@ feature {PS_REPOSITORY_TESTS}
 	test_exact_delete
 			-- Test if a delete up to a defined depth works
 		local
-			tail, tail2: CHAIN_TAIL
 			tail_count: INTEGER
 		do
 			reset

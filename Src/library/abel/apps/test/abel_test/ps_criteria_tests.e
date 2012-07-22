@@ -62,7 +62,6 @@ feature {NONE} -- Implementation: Agent criteria tests
 			-- Test a query using agent criterion `items_greater_than' yielding no result.
 		local
 			q: PS_OBJECT_QUERY [PERSON]
-			p: PERSON
 		do
 			create q.make
 			q.set_criterion (factory [[agent p_dao.items_greater_than(?, 7)]])
@@ -239,7 +238,6 @@ feature {NONE} -- Implementation: Predefined criteria tests
 			-- Test a query using criterion equals_to. One result expected.
 		local
 			query: PS_OBJECT_QUERY [PERSON]
-			p: PERSON
 		do
 			create query.make
 			query.set_criterion (factory [["first_name", factory.like_string, "*lb*"]] and factory [["last_name", factory.like_string, "it*ssi"]])
