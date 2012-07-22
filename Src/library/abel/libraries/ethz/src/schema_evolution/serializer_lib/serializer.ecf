@@ -5,7 +5,7 @@
 		<root all_classes="true"/>
 		<option  is_attached_by_default="true" void_safety="all" syntax="standard">
 		</option>
-		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
 		<!--	<library name="gobo_structure" location="$ISE_LIBRARY\library\gobo\gobo_structure.ecf"/> -->
 		<cluster name="serializer" location=".\" recursive="true">
 			<option namespace="Base">
