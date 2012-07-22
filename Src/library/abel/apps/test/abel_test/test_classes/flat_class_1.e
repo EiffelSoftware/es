@@ -24,7 +24,7 @@ inherit
 create
 	make
 
-feature {FLAT_CLASS_1_FOR_STORABLE} -- Initialization
+feature -- Initialization
 
 	make
 			-- Initialization for `Current'.

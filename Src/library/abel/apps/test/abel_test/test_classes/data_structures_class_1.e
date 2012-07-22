@@ -22,7 +22,7 @@ inherit
 create
 	make
 
-feature {DATA_STRUCTURES_CLASS_1_FOR_STORABLE} -- Initialization
+feature -- Initialization
 
 	make
 			-- Initialization for `Current'.
