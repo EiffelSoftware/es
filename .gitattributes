@@ -3673,15 +3673,6 @@ Src/library/abel/resources/documentation/includes/title_page.odt -text svneol=un
 Src/library/abel/resources/documentation/includes/title_page.pdf -text svneol=unset#application/pdf
 Src/library/abel/resources/documentation/introduction.tex -text
 Src/library/abel/resources/documentation/lstlang0.sty -text
-Src/library/abel/resources/documentation/old/Abel_class_diagram.odt -text
-Src/library/abel/resources/documentation/old/Abel_class_diagram.pdf -text
-Src/library/abel/resources/documentation/old/Abel_class_diagram.png -text
-Src/library/abel/resources/documentation/old/Abel_class_diagram_01.pdf -text
-Src/library/abel/resources/documentation/old/Abel_class_diagram_01.png -text
-Src/library/abel/resources/documentation/old/Abel_class_diagram_02.pdf -text
-Src/library/abel/resources/documentation/old/Abel_class_diagram_02.png -text
-Src/library/abel/resources/documentation/old/Abel_class_diagram_2.odt -text
-Src/library/abel/resources/documentation/old/class_diagram.png -text svneol=unset#image/png
 Src/library/abel/resources/documentation/querying.tex -text
 Src/library/abel/resources/documentation/references.bib -text
 Src/library/abel/resources/documentation/technical_documentation.tex -text
