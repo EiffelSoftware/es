@@ -65,6 +65,7 @@ feature {NONE} -- Status setting
 								sub_task := l_test_task
 							elseif is_random_testing_enabled then
 								create l_test_task.make_random (Current, class_names)
+								l_test_task.generation.log_start_time ("Testing started")
 								l_test_task.start
 								sub_task := l_test_task
 							end
@@ -176,7 +177,7 @@ feature {NONE} -- Factory
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

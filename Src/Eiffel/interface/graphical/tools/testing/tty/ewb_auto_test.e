@@ -97,6 +97,7 @@ feature -- Execution
 				end
 
 				create l_generator.make (a_test_suite, etest_suite, False)
+				l_generator.log_start_time ("Test preparation started")
 				l_error_handler.set_configuration (l_generator)
 
 					-- Types

@@ -1434,6 +1434,25 @@ feature -- Log processor
 			l_log_loader.load
 		end
 
+	log_start_time (a_message: STRING)
+			-- Log time in a file in `a_dir' with `a_message'.
+		local
+			l_time_file: FILE_NAME
+			l_file: PLAIN_TEXT_FILE
+			l_time: DATE_TIME
+			l_duration: DATE_TIME_DURATION
+		do
+
+			create l_time_file.make_from_string (workbench.project_location.testing_results_path)
+			l_time_file.extend ("start_time.txt")
+			create l_file.make_open_append (l_time_file.out)
+			create l_time.make_now
+			l_duration := l_time.duration
+			l_duration.set_origin_date_time (create {DATE_TIME}.make_from_epoch(0))
+			l_file.put_string (l_time.out + "%T" + l_duration.seconds_count.out + "%T" + a_message + "%N")
+			l_file.close
+		end
+
 feature -- Deserialization
 
 	process_deserialization
