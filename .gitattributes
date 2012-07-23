@@ -3659,10 +3659,6 @@ Src/library/abel/libraries/openehr/src/dadl_syntax/parser/dadl_validator.html -t
 Src/library/abel/libraries/openehr/src/dadl_syntax/parser/parser_errs.txt -text
 Src/library/abel/libraries/openehr/src/object_graph/path/og_path_scanner.l -text
 Src/library/abel/libraries/openehr/src/object_graph/path/og_path_validator.html -text
-Src/library/abel/resources/documentation/abel_documentation.pdf -text svneol=unset#application/pdf
-Src/library/abel/resources/documentation/abel_documentation.tex -text
-Src/library/abel/resources/documentation/abstract.tex -text
-Src/library/abel/resources/documentation/conclusions.tex -text
 Src/library/abel/resources/documentation/includes/backend.png -text svneol=unset#image/png
 Src/library/abel/resources/documentation/includes/backend.xml -text
 Src/library/abel/resources/documentation/includes/dataflow.png -text svneol=unset#image/png
@@ -3671,15 +3667,9 @@ Src/library/abel/resources/documentation/includes/frontend.png -text svneol=unse
 Src/library/abel/resources/documentation/includes/frontend.xml -text
 Src/library/abel/resources/documentation/includes/title_page.odt -text svneol=unset#application/vnd.oasis.opendocument.text
 Src/library/abel/resources/documentation/includes/title_page.pdf -text svneol=unset#application/pdf
-Src/library/abel/resources/documentation/introduction.tex -text
-Src/library/abel/resources/documentation/lstlang0.sty -text
-Src/library/abel/resources/documentation/querying.tex -text
-Src/library/abel/resources/documentation/references.bib -text
-Src/library/abel/resources/documentation/technical_documentation.tex -text
 Src/library/abel/resources/documentation/technical_documentation/abel_documentation.pdf -text
 Src/library/abel/resources/documentation/technical_documentation/abel_documentation.tex -text
 Src/library/abel/resources/documentation/technical_documentation/lstlang0.sty -text
-Src/library/abel/resources/documentation/tutorial.tex -text
 Src/library/abel/resources/documentation/tutorial/abel_tutorial.pdf -text svneol=unset#unset
 Src/library/abel/resources/documentation/tutorial/abel_tutorial.tex -text
 Src/library/abel/resources/documentation/tutorial/lstlang0.sty -text
