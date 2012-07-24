@@ -92,11 +92,14 @@
 
 %\input{introduction}
 
-\chapter{Getting started}
+\chapter{Setting things up}
+We are assuming you have checked out the ABEL code from the EiffelStudio SVN repository\footnote{https://svn.eiffel.com/eiffelstudio/branches/eth/eve/Src/library/abel}, and have EiffelStudio installed. Launch it and in the initial window choose "persistence\_tutorial\_project". If it is not there just push "Add project" and navigate to the location where you downloaded ABEL, and look for the \emph{persistence\_tutorial\_project.ecf} project file in \emph{abel/apps/sample/tutorial/}. You can then load the project and you are ready to go. 
 
-\section{Setting it up}
-In this tutorial, we are using \lstinline!PERSON! objects to show the usage of the API.
-In the source code below you will see that ABEL handles objects "as they are", meaning that you don't need to inherit from any specific class to make them persistent.
+For convenience, in this tutorial we will use a simple in-memory repository simulating a relational database but storing all values in memory. To set up ABEL using a full-fledged relational back-end (like MySQL or SQLite) please read section ~\ref{section:advanced_initialization}.
+
+\section{Getting started}
+We will be using \lstinline!PERSON! objects to show the usage of the API. 
+In the source code below you will see that ABEL handles objects "as they are", meaning that to make them persistent you don't need to add any dependencies to their class source code.
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The PERSON class}, label={lst:person_class}]
 class PERSON
@@ -107,7 +110,7 @@ create
 feature {NONE} -- Initialization
 
 	make (first, last: STRING)
-			-- Create a new person
+			-- Create a newborn person.
 		do
 			first_name := first
 			last_name := last
@@ -117,47 +120,38 @@ feature {NONE} -- Initialization
 feature -- Basic operations
 
 	celebrate_birthday
-			-- Increase age by 1
+			-- Increase age by 1.
 		do
-			age:= age+1
+			age:= age + 1
 		end
 
 feature -- Access
 
 	first_name: STRING
-		-- First name of person
+		-- The person's first name.
+
 	last_name: STRING
-		-- Last name of person
+		-- The person's last name.
 
 	age: INTEGER
-		-- The person's age
+		-- The person's age.
 
 end
 
 \end{lstlisting}
 
-
-
-
 There are three very important classes in ABEL:
 \begin{itemize}
- \item The \lstinline!CRUD_EXECUTOR! is, as the name suggests, responsible to execute CRUD commands.
-	It is the core interface in ABEL and completely transparent to the actual storage backend.
+ \item The deferred class \lstinline!PS_REPOSITORY! provides an abstraction to the actual storage mechanism.
+ \item The \lstinline!PS_CRUD_EXECUTOR! class is, as the name suggests, responsible to execute CRUD (Create Read Update Delete) commands. Every \lstinline!PS_CRUD_EXECUTOR! object works with a \lstinline!PS_REPOSITORY!.
 
- \item The \lstinline!OBJECT_QUERY [G]! class is used to describe a read operation. 
-	You can execute such a query in the \lstinline!CRUD_EXECUTOR!. 
+ \item The \lstinline!PS_OBJECT_QUERY [G]! class is used to describe a read operation over objects of type \lstinline!G!. You can execute such a query in the \lstinline!PS_CRUD_EXECUTOR!. 
 	The result will be objects of type \lstinline!G!.
 
- \item The deferred class \lstinline!REPOSITORY! provides an abstraction to the actual storage mechanism.
-	Every \lstinline!CRUD_EXECUTOR! is attached to a specific \lstinline!REPOSITORY!.
+ 
 \end{itemize}
 
-\section{Initialization}
-
-To start using the library, we first need to create a \lstinline!REPOSITORY!.
-For this tutorial we will use a simple \lstinline!IN_MEMORY_REPOSITORY!, which simulates a relational database but stores all values in memory.
-Although this repository will not give us any persistency, we use it here because initialization is very easy.
-
+To start using the library, we first need to create a \lstinline!PS_REPOSITORY!.
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The TUTORIAL class}, label={lst:tutorial_class}]
 class TUTORIAL
@@ -168,7 +162,7 @@ create
 feature {NONE} -- Initialization
 
 	make
-		-- Set up a simple in-memory repository
+		-- Set up a simple in-memory repository.
 		local
 			repository:PS_IN_MEMORY_REPOSITORY
 		do
@@ -179,29 +173,26 @@ feature {NONE} -- Initialization
 feature
 	
 	executor: PS_CRUD_EXECUTOR
-		-- The CRUD executor used throughout the tutorial
+		-- The CRUD executor used throughout the tutorial.
 
 end
 \end{lstlisting}
 
-We will use this class throughout the tutorial. You can assume that listings of Eiffel features are inside the \lstinline!TUTORIAL! class, if they are not enclosed in another class declaration.
-
-If you want to set up ABEL using a real persistence mechanism you can read section ~\ref{section:advanced_initialization}, ``Advanced Initialization.''
+We will use this class throughout the tutorial. You can assume that the Eiffel features listed in this tutorial are located inside the \lstinline!TUTORIAL! class, if they are not enclosed in another class declaration.
 
 \chapter{Basic operations}
 
 \section{Querying}
-
-A query for objects is done by creating a \lstinline!OBJECT_QUERY [G]! object and executing it in the \lstinline!CRUD_EXECUTOR!.
+\label{section:querying}
+A query for objects is done by creating a \lstinline!PS_OBJECT_QUERY [G]! object and executing it using features of \lstinline!PS_CRUD_EXECUTOR!.
 The generic parameter \lstinline!G! denotes the type of objects that should be queried.
-%In this tutorial they are objects of type PERSON, but ABEL will also return all objects that are descendants of type PERSON.
 
-After a successful execution of the query, you can find the result in the iteration cursor \lstinline!OBJECT_QUERY.result_cursor!.
-Having an iteration cursor as a result has several advantages, e.g. support for lazy loading or the across syntax, as you will see in the next example:
+After a successful execution of the query, you can find the result in the iteration cursor \lstinline{result_cursor} in class \lstinline{PS_OBJECT_QUERY}. The feature \lstinline{simple_query} below shows how to get a list of persons from the repository:
+%Having an iteration cursor as a result has several advantages, e.g. support for lazy loading or the across syntax, as you will see in the next example:
 
-\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:simple_query}]
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={A simple query.}, label={lst:simple_query}]
 	simple_query: LINKED_LIST [PERSON]
-		-- Query all person objects from the current repository
+		-- Query all person objects from the current active repository.
 		local
 			query:PS_OBJECT_QUERY[PERSON]
 		do
@@ -216,8 +207,7 @@ Having an iteration cursor as a result has several advantages, e.g. support for 
 		end
 \end{lstlisting}
 
-Usually the result of such a query is very big, and you are probably only interested in objects that meet a certain criteria, e.g. all persons of age 20.
-ABEL has a mechanism to support this kind of result filtering. You can read more about it in section ~\ref{sec:query}.
+Usually the result of such a query is very big, and you are probably only interested in objects that meet certain criteria, e.g. all persons of age 20. You can read more about it in section ~\ref{sec:query}.
 
 Please note that ABEL does not enforce any kind of order on a query result.
 
@@ -255,9 +245,9 @@ You can read more about criteria in section XY.
 
 \section{Inserting and Updating}
 
-Inserting and updating an object is done through \lstinline!CRUD_EXECUTOR.insert! (or \lstinline!CRUD_EXECUTOR.update!, respectively): 
+Inserting and updating an object is done through features \lstinline{insert} and \lstinline{update} in \lstinline{PS_CRUD_EXECUTOR}: 
 
-\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:simple_insert}]
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Insertion query.}, label={lst:simple_insert}]
 	simple_insert_and_update (a_person:PERSON)
 		-- Insert `a_person' into the current repository
 		do
@@ -269,24 +259,24 @@ Inserting and updating an object is done through \lstinline!CRUD_EXECUTOR.insert
 
 
 \section{Deleting}
-\label{subsection:simple_delete}
+\label{section:simple_delete}
 
-Deletion is done through the \lstinline!CRUD_EXECUTOR.delete! feature, like shown in the following example:
+Deletion is done through the feature \lstinline{delete} in \lstinline{PS_CRUD_EXECUTOR}, like in the following example:
 
-\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:simple_delete}]
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Deletion query.}, label={lst:simple_delete}]
 	delete_person (name:STRING)
 		-- Delete the person called `name'.
 		local
-			query: PS_OBJECT_QUERY[PERSON]
+			query: PS_OBJECT_QUERY [PERSON]
 		do
-			-- First retrieve the person from the database
+			-- First retrieve the person from the database.
 			create query.make
 			executor.execute_query (query)
 			across query as query_result
 			loop
 				if query_result.item.last_name.is_equal (name) then
 
-					-- Now delete him
+					-- Now delete the person.
 					executor.delete (query_result.item)
 				end
 			end
@@ -295,8 +285,8 @@ Deletion is done through the \lstinline!CRUD_EXECUTOR.delete! feature, like show
 
 Another way to delete objects is described in section ~\ref{subsection:deletion_query}.
 
-\section{Recognizing Objects}
-\label{subsection:recognize_objects}
+\section{Dealing with Known Objects}
+\label{section:dealing_with_known_objects}
 
 ABEL keeps track of objects that have been inserted or queried.
 This is important because in case of an update or delete, the library internally needs to map the object in the current execution of the program to its specific entry in the database.
@@ -304,11 +294,11 @@ This is important because in case of an update or delete, the library internally
 Because of that, you can't update or delete an object that is not yet known to ABEL.
 As an example, the following two functions will fail:
 
-\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:failing_update_delete}]
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Failing updates and deletes.}, label={lst:failing_update_delete}]
 	failing_update
 		-- Try and fail to update a new person object
 		local
-			a_person:PERSON
+			a_person: PERSON
 		do
 			create a_person.make ("Albo", "Bitossi")
 			executor.update (a_person)
@@ -328,36 +318,33 @@ As an example, the following two functions will fail:
 
 Please note that there's another way to delete objects, described in section ~\ref{subsection:deletion_query}, which doesn't have this restriction.
 
-The \lstinline!CRUD_EXECUTOR.is_persistent! feature can tell you if a specific object is known to ABEL and hence has a link to its entry in the data\-base.
-
+The feature \lstinline{is_persistent} in \lstinline!PS_CRUD_EXECUTOR! can tell you if a specific object is known to ABEL and hence has a link to its entry in the database.
 
 \chapter{Advanced Queries}
-\label{sec:query}
+\label{sec:advanced_queries}
 
 \section{The query mechanism}
 
-As you already know, queries to the database are done by creating a new \lstinline!OBJECT_QUERY! and letting it be executed by the \lstinline!CRUD_EXECUTOR!.
-The generic parameter \lstinline!G! of the \lstinline!OBJECT_QUERY! instance determines the type of the objects that will be returned, including any conforming type (e.g. descendants of \lstinline!G!).
+As you already know from Section~\ref{section:querying}, queries to a database are done by creating a  \lstinline!PS_OBJECT_QUERY[G]! object and using it from within a \lstinline!PS_CRUD_EXECUTOR!.
+The actual value of the generic parameter \lstinline!G! determines the type of the objects that will be returned, including any conforming type (e.g. descendants of \lstinline!G!).
 
 ABEL will by default load an object completely, meaning all objects that can be reached by following references will be loaded as well (see also section ~\ref{sec:references}).
 
-
 \section{Criteria}
 
-You can filter your query results by setting criteria in the query object, using the \lstinline!OBJECT_QUERY.set_criteria! feature.
+You can filter your query results by setting criteria in the query object, using feature \lstinline{set_criteria} in \lstinline{PS_OBJECT_QUERY}.
 There are two types of criteria: predefined and agent criteria.
 
 \subsection{Predefined Criteria}
-Predefined criteria take an attribute name, an operator and a value. 
-During a read operation, ABEL checks the attribute value of the freshly retrieved object against the value set in the criterion, and filters objects that don't satisfy the criterion.
+When using a predefined criterion you pick an attribute name, an operator and a value. 
+During a read operation, ABEL checks the attribute value of the freshly retrieved object against the value set in the criterion, and filters away objects that don't satisfy the criterion.
 
-Most supported operators are pretty self-describing (see Listing ~\ref{lst:factory_interface}).
-The likely exception is the \lstinline!like!-operator, which does pattern-matching on strings.
-You can give the \lstinline!like!-operator a pattern as a value which can contain the wildcard characters \lstinline!*! and \lstinline!?!.
+Most of the supported operators are pretty self-describing (see class \lstinline{CRITERION_FACTORY} in Section~\ref{sec:creating_criteria_objects}).
+An exception could be the \lstinline!like! operator, which does pattern-matching on strings.
+You can provide the \lstinline!like! operator with a pattern as a value. The pattern can contain the wildcard characters \lstinline!*! and \lstinline!?!.
 The asterisk stands for any number (including zero) of undefined characters, and the question mark means exactly one undefined character.
 
-You can only use attributes that are of a basic type, like strings or numbers, and not every type of attribute supports every operator. 
-Valid combinations for each type are:
+You can only use attributes that are strings or numbers, but not every type of attribute supports every other operator. Valid combinations for each type are:
 
  \begin{itemize}
   \item Strings: =, like
@@ -372,16 +359,15 @@ Note that for performance reasons it is usually better to use predefined criteri
 An agent criterion will filter the objects according to the result of an agent applied to them.
 
 The criterion is initialized with an agent of type \lstinline!PREDICATE [ANY, TUPLE [ANY]]!. 
-There should be either an open target or a single open argument, and the type of the objects in the query result should conform to the agent's open operand.
-
+There should be either an open target or a single open argument, and the type of the objects in the query result should conform to the agent's open operand. For an example see Section~\ref{sec:creating_criteria_objects}.
 
 \subsection{Creating criteria objects}
-
+\label{sec:creating_criteria_objects}
 The criteria instances are best created using the \lstinline!CRITERION_FACTORY! class.
 
-The main functions of the class are the following: 
+The main features of the class are the following: 
 
-\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The CRITERION\_FACTORY interface}, label={lst:factory_interface}]
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The CRITERION\_FACTORY class interface}, label={lst:factory_interface}]
 class
 	PS_CRITERION_FACTORY
 create
@@ -390,18 +376,16 @@ create
 feature -- Creating a criterion
 
 	new alias "[]" (tuple: TUPLE [ANY]): PS_CRITERION
-		-- This function creates a new criterion according to 
-		-- the tuple in the argument. The tuple should either 
-		-- contain a single PREDICATE or three values with 
-		-- type [STRING, STRING, ANY]
-
+		-- Creates a new criterion according to a `tuple'
+		-- containing either a single PREDICATE or three 
+		-- values of type [STRING, STRING, ANY].
 
 	new_agent (a_predicate: PREDICATE [ANY, TUPLE [ANY]]): PS_CRITERION
-		-- creates an agent criterion
+		-- Creates an agent criterion.
 
 	new_predefined (object_attribute: STRING; 
 		operator: STRING; value: ANY): PS_CRITERION
-		-- creates a predefined criterion
+		-- Creates a predefined criterion.
 
 feature -- Operators
 
@@ -420,19 +404,26 @@ feature -- Operators
 end
 \end{lstlisting}
 
-To create a new criterion, you basically have two possibilities.
-The first one is more traditional, by using \lstinline!CRITERION_FACTORY.new_agent! or \lstinline!CRITERION_FACTORY.new_predefined!.
+Assuming you have an object \lstinline{f: PS_CRITERION_FACTORY}, to create a new criterion you have  two possibilities:
 
-The second possibility uses some syntactic sugar:
-The criterion is created with two brackets after the factory object, of which one is an overloaded operator and the other a tuple definition.
-It can be used for both types of criteria, and it is up to you to choose which approach you like best.
-
-\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, , label={lst:factory_usage}]
+ \begin{itemize}
+  \item The "traditional" way
+  \begin{itemize}
+  \item \lstinline!f.new_agent (agent an_agent)!
+  \item \lstinline!f.new_predefined (an_attr_name, an_operator, a_val)!
+  \end{itemize}
+  \item The "syntactic sugared" way
+  \begin{itemize}
+  \item \lstinline!f[[an_attr_name, an_operator, a_value]]!
+  \item \lstinline!f[[agent an_agent]]!
+  \end{itemize} 
+  \end{itemize}
+caption={The CRITERION\_FACTORY interface}
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Different ways of creating criteria.}, label={lst:factory_usage}]
 
 	create_criteria_traditional : PS_CRITERION
-		-- Create a new criteria using the traditional approach
+		-- Create a new criteria using the traditional approach.
 		do
-
 			-- for predefined criteria
 			Result:= 
 				factory.new_predefined ("age", factory.less, 5)
@@ -442,18 +433,15 @@ It can be used for both types of criteria, and it is up to you to choose which a
 				factory.new_agent (agent age_less_than (?, 5))
 		end
 
-
 	create_criteria_double_bracket : PS_CRITERION
-		-- Create a new criteria using the double bracket syntax
+		-- Create a new criteria using the double bracket syntax.
 		do
-
 			-- for predefined criteria
 			Result:= factory[["age", factory.less, 5]]
 
 			-- for agent criteria
 			Result := factory[[agent age_less_than (?, 5)]]
 		end			
-
 
 	age_less_than (person: PERSON; age: INTEGER): BOOLEAN
 		-- An example agent
@@ -463,17 +451,15 @@ It can be used for both types of criteria, and it is up to you to choose which a
 
 \end{lstlisting}
 
-
-
 \subsection{Combining criteria}
 
-If you want to set multiple criterion objects, you can combine them using the standard Eiffel keywords. 
+You can combine multiple criterion objects by using the standard Eiffel logical operators. 
 For example, if you want to search for a person called ``Albo Bitossi'' with $age \ne 20$, you can just create a criterion object for each of the constraints and combine them:  
 
-\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:search_albo_bitossi}]
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Combining criteria.}, label={lst:search_albo_bitossi}]
 
 	search_albo_bitossi : PS_CRITERION
-		-- Create a criterion object that searches for an Albo Bitossi which is not 20 years old
+		-- Combining criterion objects.
 		local
 			first_name_criterion:PS_CRITERION
 			last_name_criterion: PS_CRITERION
@@ -490,7 +476,7 @@ For example, if you want to search for a person called ``Albo Bitossi'' with $ag
 			
 			Result := first_name_criterion and last_name_criterion and not age_criterion
 
-			-- or a bit shorter
+			-- using double brackets for compactness. 
 			Result := factory[[ "first_name", "=", "Albo" ]] 
 				and factory[[ "last_name", "=", "Bitossi" ]] 
 				and not factory[[ "age", "=", 20 ]]
@@ -498,22 +484,22 @@ For example, if you want to search for a person called ``Albo Bitossi'' with $ag
 \end{lstlisting}
 
 ABEL supports the three standard logical operators \lstinline!AND!, \lstinline!OR! and \lstinline!NOT!. 
-Their precedence is the same as in Eiffel, which means that \lstinline!NOT! is stronger than \lstinline!AND!, which in turn is stronger than \lstinline!OR!.
+The precedence rules are the same as in Eiffel, which means that \lstinline!NOT! is stronger than \lstinline!AND!, which in turn is stronger than \lstinline!OR!.
 
 
 \section{Deletion queries}
 \label{subsection:deletion_query}
 
 
-As mentioned previously, there is another way to perform a deletion in the repository.
-When you call \lstinline!CRUD_EXECUTOR.execute_deletion_query!, ABEL will delete all objects in the database that would have been retrieved by executing the query normally.
-You can look at the following example and compare it with its variation in section ~\ref{subsection:simple_delete}.
+As mentioned previously, there is another way to perform a deletion in the repository from within
+\lstinline!PS_CRUD_EXECUTOR!. By calling \lstinline{execute_deletion_query} instead of \lstinline{delete}, ABEL will delete all objects in the database that would have been retrieved by executing the query normally.
+You can look at the following example and compare it with its variation in section ~\ref{section:simple_delete}.
 
-\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:deletion_query}]
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Using a deletion query.}, label={lst:deletion_query}]
 	delete_person (name:STRING)
 		-- Delete `name' using a deletion query.
 		local
-			deletion_query: PS_OBJECT_QUERY[PERSON]
+			deletion_query: PS_OBJECT_QUERY [PERSON]
 			criterion:PS_PREDEFINED_CRITERION
 		do
 			create deletion_query.make
@@ -528,25 +514,26 @@ Usually, a direct command is better if you already have the object in memory, wh
 
 \section{Tuple queries}
 
-So far, we've only looked at queries that return objects. However, in ABEL there is a second option to query data which returns tuples as a result.
-Consider an example where you just want to have a list of all last names of persons in the database. 
-To load every object of type \lstinline!PERSON! might lead to a very bad performance, especially if there is a big object graph attached to each person object.
+Consider a scenario in which you just want to have a list of all last names of persons in the database. Loading every object of type \lstinline!PERSON! might lead to a very bad performance, especially if there is a big object graph attached to each person object.
 
-To solve this problem, you can instead send a \lstinline!TUPLE_QUERY! to the executor. 
-The result is an iteration cursor over a list of tuples in which the attributes of an object are stored. The order of these attributes is the one defined in \lstinline!TUPLE_QUERY.projection!.
+To solve this problem, \lstinline{PS_CRUD_EXECUTOR} allows to query data while returning tuples as a result. You can do this by calling feature\\
 
-\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:tuple_query_simple}]
+\lstinline{execute_tuple_query (a_tuple_query)}, \\
+
+where \lstinline{a_tuple_query} is of type \lstinline{PS_TUPLE_QUERY [G]}.
+The result is an iteration cursor over a list of tuples in which the attributes of an object are stored. The order of these attributes is the one defined in feature \lstinline{projection} in \lstinline{PS_TUPLE_QUERY [G]}.
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Using tuple queries.}, label={lst:tuple_query_simple}]
 	print_all_last_names
-		-- Print the last name of all PERSON objects
+		-- Print the last name of all PERSON objects.
 		local
-			query: PS_TUPLE_QUERY[PERSON]
-			last_name_index:INTEGER
+			query: PS_TUPLE_QUERY [PERSON]
+			last_name_index: INTEGER
 			single_result: TUPLE
 		do
 			create query.make
-			-- Find out at which position in the tuple the last_name is returned
-			last_name_index:= query.attribute_index ("last_name")
-
+			---- Find out at which position in the tuple the last_name is.
+			last_name_index := query.attribute_index ("last_name")
 			from
 				executor.execute_tuple_query (query)
 			until
@@ -559,14 +546,12 @@ The result is an iteration cursor over a list of tuples in which the attributes 
 \end{lstlisting}
 
 \subsection{Tuple queries and projections}
-By default, a \lstinline!TUPLE_QUERY! will only return attributes which are of a basic type, so no references are followed during a retrieve.
-You can change this default by calling \lstinline!TUPLE_QUERY.set_projection!, which expects an array of names of the attributes you would like to have.
+By default, a \lstinline!TUPLE_QUERY! object will only return values of attributes which are of a basic type, so no references are followed during a retrieve.
+You can change this default by calling \lstinline{set_projection}, which expects an array of names of the attributes you would like to have.
 If you include an attribute name whose type is not a basic one, ABEL will actually retrieve and build the attribute object, and not just another tuple.
 
 \subsection{Tuple queries and criteria}
-You are restricted to use predefined criteria in tuple queries, because agent criteria expect an object and not a tuple. 
-You can still combine them with logical operators.
-It is ok to include a predefined criterion on an attribute that is not present in the projection list - these attributes will be loaded internally to check if the object satisfies the criterion, but then they are discarded for the actual result.
+You are restricted to use predefined criteria in tuple queries, because agent criteria expect an object and not a tuple. You can still combine them with logical operators, and even include a predefined criterion on an attribute that is not present in the projection list. These attributes will be loaded internally to check if the object satisfies the criterion, and then they are discarded for the actual result.
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:tuple_projection_selection}]
 	print_last_names_of_20_year_old
@@ -575,35 +560,27 @@ It is ok to include a predefined criterion on an attribute that is not present i
 			query: PS_TUPLE_QUERY[PERSON]
 		do
 			create query.make
-
 			-- Only return the last_name of persons
 			query.set_projection (<<"last_name">>)
-
 			-- Only return persons with age=20
 			query.set_criterion (factory [["age", "=", 20]])
-
 			from
 				executor.execute_tuple_query (query)
 			until
 				query.result_cursor.after
 			loop
 				-- As we only have the last_name in the tuple,
-				-- its index has to be 1
+				-- its index has to be 1.
 				print (query.result_cursor.item [1] )
 			end			
 		end
 \end{lstlisting}
 
-
 \chapter{Dealing with references}
 \label {sec:references}
 
 In ABEL, a basic type is an object of type \lstinline!STRING!, \lstinline!BOOLEAN!, \lstinline!CHARACTER! or any numeric class like \lstinline!REAL! or \lstinline!INTEGER!.
-The \lstinline!PERSON! class only has attributes that are of a basic type.
-
-However, in Eiffel there's also the fact that an object can contain references to other objects.
-ABEL is able to handle these references by storing and reconstructing the whole object graph 
-(an object graph is sloppily defined as all objects that can be reached by recursively following all references, starting at some root object).
+The \lstinline!PERSON! class only has attributes of a basic type. However, an object can contain references to other objects. ABEL is able to handle these references by storing and reconstructing the whole object graph (an object graph is roughly defined as all the objects that can be reached by recursively following all references, starting at some root object).
 
 Let's look at the new class \lstinline!CHILD!:
 
@@ -618,7 +595,7 @@ create
 feature {NONE} -- Initialization
 
 	make (first, last: STRING)
-			-- Create a new child
+			-- Create a new child.
 		do
 			first_name := first
 			last_name := last
@@ -628,37 +605,38 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	celebrate_birthday
-			-- Increase age by 1
+			-- Increase age by 1.
 		do
-			age:= age+1
+			age := age + 1
 		end
 
 feature -- Status report
 
 	first_name: STRING
-		-- First name of child
+		-- The child's first name.
+
 	last_name: STRING
-		-- Last name of child
+		-- The child's last name.
 
 	age: INTEGER
-		-- The child's age
+		-- The child's age.
 
 feature	-- Parents 
 
 	mother: detachable CHILD
-		-- `Current's mother
+		-- The child's mother.
 
 	father: detachable CHILD
-		-- `Current's father
+		-- The child's father.
 	
 	set_mother (a_mother: CHILD)
-		-- Set the mother
+		-- Set a mother for the child.
 		do
 			mother:= a_mother
 		end
 
 	set_father (a_father: CHILD)
-		-- Set the father
+		-- Set a father for the child.
 		do
 			father:= a_father
 		end
@@ -722,13 +700,13 @@ So for example the following statement has no effect on the database.
 		end
 \end{lstlisting}
 
-\section{Going deeper}
+\section{Going deeper in the Object Graph}
 
 ABEL has no limits regarding the depth of an object graph, and it will detect and handle reference cycles correctly. 
-You are welcome to test ABEL's capability with very complex objects, however please keep in mind that this will cause a big performance impact.
+You are welcome to test ABEL's capability with very complex objects, however please keep in mind that this may impact performance significantly.
 
 To overcome this problem, you can either use simple object structures, or you can tell ABEL to only load or store an object up to a certain depth.
-You can see how this is done in section ~\ref{subsection:obect_graph_settings} in the technical documentation, where the whole concept of an object graphs and its depth is described more detailed.
+You can see how this is done in the technical documentation, where the object graph depth is described more detailed.
 
 
 
@@ -740,8 +718,8 @@ This is acceptable for testing or a tutorial, but not in a real application.
 Therefore, ABEL ships with repositories for a MySQL database and an SQLite database.
 
 To use them, you currently have to assemble the parts that are needed.
-For MySQL, you need to create a \lstinline!MYSQL_DATABASE! and \lstinline!MYSQL_STRINGS! object.
-You need them to create a \lstinline!GENERIC_LAYOUT_SQL_BACKEND!, which you need in turn to create the \lstinline!RELATIONAL_REPOSITORY!.
+For MySQL, you need to create a \lstinline!PS_MYSQL_DATABASE! and \lstinline!PS_MYSQL_STRINGS! object.
+You need them to create a \lstinline!PS_GENERIC_LAYOUT_SQL_BACKEND!, which you need in turn to create the \lstinline!PS_RELATIONAL_REPOSITORY!.
 
 The following little factory class show the process for either a MySQL or an SQLite \cite{SQLite} database:
 
@@ -792,7 +770,7 @@ end
 
 \end{lstlisting}
 
-All examples from this tutorial work exactly the same, no matter if you use the \lstinline!IN_MEMORY_REPOSITORY! or any of the database repositories.
+All examples from this tutorial work exactly the same, no matter if you use the \lstinline!PS_IN_MEMORY_REPOSITORY! or any of the database repositories.
 
 
 \chapter{Transaction handling}
@@ -801,7 +779,7 @@ Every CRUD operation in ABEL is executed within a transaction.
 Transactions are created and commited implicitly, which has the advantage that - especially when dealing with complex object graphs - an object doesn't get ``halfway inserted'' in case of an error.
 
 As a user, you also have the possibility to use transactions explicitly. 
-This is done by manually creating an object of type \lstinline!TRANSACTION! and using the \lstinline!*_within_transaction! features in \lstinline!CRUD_EXECUTOR! instead of the normal ones.
+This is done by manually creating an object of type \lstinline!TRANSACTION! and using the \lstinline!*_within_transaction! features in \lstinline!PS_CRUD_EXECUTOR! instead of the normal ones.
 For your convenience there is a factory method for transactions built into the executor.
 
 Let's consider an example where you want to update the age of every person by one:
@@ -852,7 +830,7 @@ ABEL supports the four standard transaction isolation levels found in almost eve
 
 The different levels are defined in \lstinline!TRANSACTION_ISOLATION_LEVEL!.
 
-You can change the transaction isolation level by calling the feature \lstinline!REPOSITORY.set_transaction_isolation_level!.
+You can change the transaction isolation level by calling feature \lstinline{set_transaction_isolation_level} in  \lstinline{PS_REPOSITORY}.
 The default transaction isolation level of ABEL is defined by the actual storage backend.
 
 Please note: Not every backend supports all isolation levels.
@@ -896,7 +874,7 @@ If not explicitly stated otherwise, the errors in this lists belong to the first
 
 If you want to handle an error, you have to add a rescue clause somewhere in your code.
 
-You can get the actual error from the feature \lstinline!CRUD_EXECUTOR.error! or \lstinline!TRANSACTION.error! or - due to the fact that the \lstinline!ERROR! class inherits from \lstinline!DEVELOPER_EXCEPTION! -
+You can get the actual error from the feature \lstinline!PS_CRUD_EXECUTOR.error! or \lstinline!TRANSACTION.error! or - due to the fact that the \lstinline!ERROR! class inherits from \lstinline!DEVELOPER_EXCEPTION! -
 by performing an object test on Eiffel's \lstinline!EXCEPTION_MANAGER.last_exception!.
 
 For your convenience, there is a visitor pattern for all ABEL error types. 
