@@ -3665,8 +3665,6 @@ Src/library/abel/resources/documentation/includes/dataflow.png -text svneol=unse
 Src/library/abel/resources/documentation/includes/dataflow.xml -text
 Src/library/abel/resources/documentation/includes/frontend.png -text svneol=unset#image/png
 Src/library/abel/resources/documentation/includes/frontend.xml -text
-Src/library/abel/resources/documentation/includes/title_page.odt -text svneol=unset#application/vnd.oasis.opendocument.text
-Src/library/abel/resources/documentation/includes/title_page.pdf -text svneol=unset#application/pdf
 Src/library/abel/resources/documentation/technical_documentation/abel_documentation.pdf -text
 Src/library/abel/resources/documentation/technical_documentation/abel_documentation.tex -text
 Src/library/abel/resources/documentation/technical_documentation/lstlang0.sty -text
