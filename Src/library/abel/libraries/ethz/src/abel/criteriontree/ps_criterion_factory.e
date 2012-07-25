@@ -17,8 +17,9 @@ create
 feature -- Creating a criterion
 
 	new alias "[]" (tuple: TUPLE [ANY]): PS_CRITERION
-			-- This function creates a new criterion according to the tuple in the argument.
-			-- The tuple should either contain a single PREDICATE or tree values of the form [STRING, STRING, ANY]
+			-- Creates a new criterion according to a `tuple'
+			-- containing either a single PREDICATE or theree
+			-- values of type [STRING, STRING, ANY].
 		require
 			well_formed: is_agent (tuple) or is_predefined (tuple)
 		do
