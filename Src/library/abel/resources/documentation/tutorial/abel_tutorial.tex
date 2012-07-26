@@ -196,8 +196,20 @@ feature
 end
 \end{lstlisting}
 We will use this class throughout the tutorial. You can assume that the Eiffel features listed in this tutorial are located inside the \lstinline!TUTORIAL! class, if they are not enclosed in another class declaration.\\ 
-We encourage you to test the features in class \lstinline!TUTORIAL! by inserting your code in feature \lstinline{make} (or by creating a new feature if you wish).
+We encourage you to test the features shown in this tutorial by calling them from feature \lstinline{explore} in class \lstinline!TUTORIAL!.
 \chapter{Basic operations}
+
+\section{Inserting}
+
+You insert an object in the repository using feature \lstinline{insert} in class\\ \lstinline{PS_CRUD_EXECUTOR}: 
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Insertion query.}, label={lst:simple_insert}]
+	simple_insert (a_person: PERSON)
+		-- Insert `a_person' into the current repository.
+		do
+			executor.insert (a_person)
+		end
+\end{lstlisting}
 
 \section{Querying}
 \label{section:querying}
@@ -209,9 +221,9 @@ After a successful execution of the query, you can find the result in the iterat
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={A simple query.}, label={lst:simple_query}]
 	simple_query: LINKED_LIST [PERSON]
-		-- Query all person objects from the current active repository.
+		-- Query all persons from the current repository.
 		local
-			query:PS_OBJECT_QUERY[PERSON]
+			query: PS_OBJECT_QUERY [PERSON]
 		do
 			create Result.make
 			create query.make
@@ -228,52 +240,52 @@ Usually the result of such a query is very big, and you are probably only intere
 
 Please note that ABEL does not enforce any kind of order on a query result.
 
-\begin{comment}
-ABEL can also filter the query results in advance so you only get a result set that meets certain criteria: 
+%\begin{comment}
+%ABEL can also filter the query results in advance so you only get a result set that meets certain criteria: 
+%
+%\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:simple_filtered_query}]
+%	simple_filtered_query (name: STRING; age: INTEGER): detachable PERSON
+%		-- Query a person object from the current repository
+%		local
+%			query:PS_OBJECT_QUERY[PERSON]
+%			criterion:PS_PREDEFINED_CRITERION
+%		do
+%			create query.make
+%			create criterion.make ("last_name", "=", name)
+%			query.set_criterion (criterion)
+%
+%			from
+%				executor.execute_query (query)
+%			until 
+%				query.result_cursor.after
+%			loop
+%				if query.result_cursor.item.age = age then 
+%					Result:= query.result_cursor.item
+%				end
+%			end
+%		end
+%\end{lstlisting}
+%
+%This is just a very simple example for a query with a certain criterion.
+%ABEL has a powerful mechanism that also supports a logical combinations of multiple criteria, or using agents for filtering.
+%You can read more about criteria in section XY.
+%
+%\end{comment}
 
-\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:simple_filtered_query}]
-	simple_filtered_query (name: STRING; age: INTEGER): detachable PERSON
-		-- Query a person object from the current repository
-		local
-			query:PS_OBJECT_QUERY[PERSON]
-			criterion:PS_PREDEFINED_CRITERION
+\section{Updating}
+
+Updating an object is done through feature \lstinline{update} in \lstinline{PS_CRUD_EXECUTOR}: 
+
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Update query.}, label={lst:simple_update}]
+	simple_update (a_person: PERSON)
+		-- Update `a_person' into the current repository.
 		do
-			create query.make
-			create criterion.make ("last_name", "=", name)
-			query.set_criterion (criterion)
-
-			from
-				executor.execute_query (query)
-			until 
-				query.result_cursor.after
-			loop
-				if query.result_cursor.item.age = age then 
-					Result:= query.result_cursor.item
-				end
-			end
-		end
-\end{lstlisting}
-
-This is just a very simple example for a query with a certain criterion.
-ABEL has a powerful mechanism that also supports a logical combinations of multiple criteria, or using agents for filtering.
-You can read more about criteria in section XY.
-
-\end{comment}
-
-\section{Inserting and Updating}
-
-Inserting and updating an object is done through features \lstinline{insert} and \lstinline{update} in \lstinline{PS_CRUD_EXECUTOR}: 
-
-\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Insertion query.}, label={lst:simple_insert}]
-	simple_insert_and_update (a_person: PERSON)
-		-- Insert `a_person' into the current repository
-		do
-			executor.insert (a_person)
 			a_person.celebrate_birthday
 			executor.update (a_person)
 		end
 \end{lstlisting}
 
+The object to update needs to be previously known to ABEL through an insert or a successful query (see Section~\ref{section:dealing_with_known_objects}).
 
 \section{Deleting}
 \label{section:simple_delete}
