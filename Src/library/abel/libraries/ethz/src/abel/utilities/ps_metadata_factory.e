@@ -28,8 +28,11 @@ feature -- Factory methods
 
 	create_metadata_from_object (object: ANY): PS_TYPE_METADATA
 			-- Get the metadata of `object'.
+		local
+			reflection: INTERNAL
 		do
-			Result := create_metadata_from_type (object.generating_type)
+			create reflection
+			Result := create_metadata_from_type (reflection.type_of_type (reflection.dynamic_type (object)))
 		end
 
 feature {NONE} -- Initialization
