@@ -12,6 +12,34 @@ inherit
 create
 	make
 
+feature 	-- Tutorial exploration features
+
+	explore
+			-- Your code goes here.
+		local
+			lis: LINKED_LIST [PERSON]
+			p1, p2: PERSON
+		do
+			create p1.make ("Albo", "Bitossi")
+			p1.celebrate_birthday
+			simple_insert (p1)
+			create p2.make ("Berno", "Citrini")
+			p2.celebrate_birthday
+			p2.celebrate_birthday
+			p2.celebrate_birthday
+			simple_insert (p2)
+			lis := simple_query
+			across lis as local_lis
+			loop
+				io.new_line
+				print (local_lis.item.first_name + " ")
+				print (local_lis.item.last_name + ", age: ")
+				print (local_lis.item.age)
+			end
+
+
+		end
+
 feature {NONE} -- Initialization
 
 	make
@@ -23,6 +51,7 @@ feature {NONE} -- Initialization
 			create executor.make (repository)
 			create factory
 			create my_visitor
+			explore
 		end
 
 feature -- Access
@@ -39,7 +68,7 @@ feature -- Access
 feature -- CRUD operations
 
 	simple_query: LINKED_LIST [PERSON]
-		-- Query all person objects from the active repository.
+		-- Query all persons from repository.
 		local
 			query:PS_OBJECT_QUERY [PERSON]
 		do
@@ -53,12 +82,15 @@ feature -- CRUD operations
 			end
 		end
 
-	simple_insert_and_update (a_person: PERSON)
+	simple_insert (a_person: PERSON)
 		-- Insert `a_person' into the current repository.
-		require
-
 		do
 			executor.insert (a_person)
+		end
+
+	simple_update (a_person: PERSON)
+		-- Update age of `a_person' age into the current repository.
+		do
 			a_person.celebrate_birthday
 			executor.update (a_person)
 		end
