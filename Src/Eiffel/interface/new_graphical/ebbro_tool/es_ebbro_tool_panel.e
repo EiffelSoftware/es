@@ -802,7 +802,7 @@ feature {NONE} -- Factory
 
 		end
 
-	create_mini_tool_bar_items: DS_ARRAYED_LIST[SD_TOOL_BAR_ITEM]
+	create_mini_tool_bar_items: ARRAYED_LIST[SD_TOOL_BAR_ITEM]
 			-- Available tool bar items
 		local
 			l_item:SD_TOOL_BAR_WIDGET_ITEM
@@ -813,11 +813,11 @@ feature {NONE} -- Factory
 			active_filter_label.set_minimum_width (150)
 
 			create l_item.make (active_filter_label)
-			result.put_last (l_item)
+			result.extend (l_item)
 
 		end
 
-	create_tool_bar_items: DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+	create_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			-- Available tool bar items
 		do
 
@@ -828,8 +828,8 @@ feature {NONE} -- Factory
 			open_file_button.set_tooltip (locale_formatter.translation (f_open_button))
 
 			create Result.make (4)
-			Result.put_last (open_file_button)
-			Result.put_last (create {SD_TOOL_BAR_SEPARATOR}.make)
+			Result.extend (open_file_button)
+			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 
 			create custom_serialization_button.make
 			custom_serialization_button.set_pixel_buffer (icons.gui_custom_serialization_icon_buffer)
@@ -838,7 +838,7 @@ feature {NONE} -- Factory
 			custom_serialization_button.drop_actions.extend (agent on_custom_serialization_drop)
 			custom_serialization_button.set_tooltip (locale_formatter.translation (f_custom_serialization_button))
 
-			Result.put_last (custom_serialization_button)
+			Result.extend (custom_serialization_button)
 
 			create object_compare_button.make
 			object_compare_button.set_pixel_buffer (icons.gui_comparer_icon_buffer)
@@ -846,11 +846,11 @@ feature {NONE} -- Factory
 			object_compare_button.select_actions.extend(agent on_object_compare)
 			object_compare_button.set_tooltip (locale_formatter.translation (f_object_compare_button))
 
-			Result.put_last (object_compare_button)
+			Result.extend (object_compare_button)
 
 		end
 
-	create_right_tool_bar_items: DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+	create_right_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			-- Available tool bar items
 		do
 			create result.make (8)
@@ -861,7 +861,7 @@ feature {NONE} -- Factory
 			move_left_button.set_tooltip (locale_formatter.translation (f_move_left_button))
 			register_action (move_left_button.select_actions, agent on_move_left)
 			move_left_button.disable_sensitive
-			result.put_last (move_left_button)
+			result.extend (move_left_button)
 
 			create move_right_button.make
 			move_right_button.set_pixel_buffer (icons.gui_move_right_icon_buffer)
@@ -869,9 +869,9 @@ feature {NONE} -- Factory
 			move_right_button.set_tooltip (locale_formatter.translation (f_move_right_button))
 			register_action (move_right_button.select_actions, agent on_move_right)
 			move_right_button.disable_sensitive
-			result.put_last (move_right_button)
+			Result.extend (move_right_button)
 
-			Result.put_last (create {SD_TOOL_BAR_SEPARATOR}.make)
+			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 
 			create undo_edit_button.make
 			undo_edit_button.set_pixel_buffer (stock_pixmaps.general_undo_icon_buffer)
@@ -879,7 +879,7 @@ feature {NONE} -- Factory
 			undo_edit_button.set_tooltip (locale_formatter.translation (f_undo_button))
 			register_action (undo_edit_button.select_actions, agent on_undo)
 			undo_edit_button.disable_sensitive
-			result.put_last (undo_edit_button)
+			Result.extend (undo_edit_button)
 
 			create redo_edit_button.make
 			redo_edit_button.set_pixel_buffer (stock_pixmaps.general_redo_icon_buffer)
@@ -887,7 +887,7 @@ feature {NONE} -- Factory
 			redo_edit_button.set_tooltip (locale_formatter.translation (f_redo_button))
 			register_action (redo_edit_button.select_actions, agent on_redo)
 			redo_edit_button.disable_sensitive
-			result.put_last (redo_edit_button)
+			Result.extend (redo_edit_button)
 
 
 			create delete_button.make
@@ -896,9 +896,9 @@ feature {NONE} -- Factory
 			delete_button.set_tooltip (locale_formatter.translation (f_delete_button))
 			register_action (delete_button.select_actions, agent on_remove_object)
 			delete_button.disable_sensitive
-			result.put_last (delete_button)
+			Result.extend (delete_button)
 
-			Result.put_last (create {SD_TOOL_BAR_SEPARATOR}.make)
+			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 
 			build_view_menu
 
@@ -909,7 +909,7 @@ feature {NONE} -- Factory
 			view_menu_entry.set_text ("View")
 
 
-			result.put_last (view_menu_entry)
+			result.extend (view_menu_entry)
 
 		end
 

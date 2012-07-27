@@ -34,7 +34,7 @@ feature
 			propagate_drop_actions (Void)
 		end
 
-	create_tool_bar_items: ?DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+	create_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 		local
 			texts: ARRAY [STRING]
 			actions: ARRAY [PROCEDURE [ANY, TUPLE]]
@@ -60,7 +60,7 @@ feature
 				create button.make
 				button.set_text (texts [i])
 				button.select_actions.extend (actions [i])
-				Result.put (button, i)
+				Result.extend (button)
 				i := i + 1
 			end
 		end
@@ -293,7 +293,7 @@ feature {NONE} -- Unused, but possibly handy
        end
 
 ;note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

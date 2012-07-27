@@ -145,18 +145,18 @@ feature {NONE} -- Factory
 			create Result.make (Current)
 		end
 
-    create_tool_bar_items: DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+    create_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
             -- <Precursor>
 		do
 			--| No tool bar
 		end
 
-    create_mini_tool_bar_items: DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+    create_mini_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
             -- <Precursor>
 		local
 			l_item: SD_TOOL_BAR_BUTTON
         do
-  			create Result.make_default
+  			create Result.make (10)
         end
 
 note

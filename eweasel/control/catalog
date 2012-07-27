@@ -19,6 +19,7 @@ test	time-bug-reports		time001 tcf pass time
 test	date-duration-with-leap-years	time002 tcf pass time
 test	date-time-with-epoch	time003 tcf pass time
 test	date-make-by-days		time004 tcf pass time
+test	date-make-by-days-min-value		time005 tcf fail time
 
 -- EiffelBase tests
 
@@ -31,6 +32,7 @@ test	manifest-array-invariant	array006 tcf pass array
 test	array-force				array007 tcf pass array
 test	array2-basics			array008 tcf pass array array2
 test	array-force-precondition	array009 tcf pass array
+test	array-binary-search-overflow	array010 tcf fail array
 
 test	list-is-equal			list001 tcf pass list
 test	list-put-extend			list002 tcf pass list
@@ -536,6 +538,7 @@ test	spurious-vtgc3-with-vmfn		valid273 tcf fail validity
 test	duplicate-vfac1				valid274 tcf fail validity
 test	non-conforming-equality			valid275 tcf pass validity conformance equality warning
 test	missing-assigner-feature		valid276 tcf pass validity fixed
+test	insufficiently-exported-assigner-feature valid277 tcf fail validity assigner
 
 -- Multiple error reporting tests
 test	multi-error-degree-4	multierr001 tcf pass multi-errors
@@ -580,6 +583,7 @@ test	svalid-conversion-forget		svalid027 tcf fail system-validity conversion
 test	svalid-generic-rename-with-alias	svalid028 tcf fail system-validity generic rename
 test	svalid-inherited-renamed-prefix		svalid029 tcf fail system-validity rename
 test	svalid-generic-creation			svalid030 tcf fail system-validity generic
+test	svalid-remove-bracket-alias-via-rename	svalid031 tcf fail system-validity bracket_expression
 
 -- Catcall tests
 test	simple-catcall				catcall001 tcf pass catcall
@@ -1018,6 +1022,8 @@ test	duplicate-vlec-after-resume		incr423	tcf fail incrementality expanded
 test 	inline-agent-removal-crash		incr424	tcf fail incrementality agents
 test 	inline-agent-removal-crash-2	incr425	tcf fail incrementality agents
 test 	finalization-with-error-crash	incr426	tcf fail incrementality agents finalizing
+test 	create-generic-remove-generic-inheritance incr427 tcf fail incrementality generic
+test	config-remove-library-indirectly	incr428 tcf fail incrementality
 
 
 -- Melting
@@ -1279,7 +1285,7 @@ test	finalize-inline-attribute-with-body	final113 tcf fail finalizing inlining
 test	finalize-inline-across-loop		final114 tcf fail finalizing inlining
 test	finalize-inline-none-generic-derivation	final115 tcf fail finalizing
 test	profile-crash-on-override		final116 tcf fail finalizing profile
-test	tight-loop-integer-constant-infinite-loop final117 tcf fail finalizing
+test	tight-loop-integer-constant-infinite-loop final117 tcf fail finalizing manual
 test	finalize-once-strings-in-invariant	final118 tcf fail finalizing
 
 -- Runtime
@@ -1615,13 +1621,13 @@ test	clear-all-on-special		exec283 tcf fail execution expanded special
 test	wrong-expanded-generic-type	exec284 tcf fail execution expanded
 test	wrong-polymorphic-call-with-select	exec285 tcf pass execution
 test	wrong-formal-type-specification	exec286 tcf pass execution
-test	conversion-for-tuple-assignment-crash exec287 tcf pass execution
+test	conversion-for-tuple-assignment-crash exec287 tcf pass execution tuple
 test	wrong-formal-type-local-initialization	exec288 tcf pass execution
 test	wrong-finalized-invariant-check	exec289 tcf pass execution finalizing
 test	wrong-optimization-of-as-attached	exec290 tcf pass execution finalizing
 test	crash-on-divisible			exec291 tcf pass execution finalizing
 test	wrong-inherited-formal-type	exec292 tcf pass execution finalizing attached_types
-test	access-by-label-on-void-tuple	exec293 tcf fail execution
+test	access-by-label-on-void-tuple	exec293 tcf fail execution tuple
 test	self-init-attribute-non-void-safe	exec294 tcf fail execution
 test	check-invariant-attached-by-default	exec295 tcf fail execution
 test	self-init-attribute-void-safe		exec296 tcf fail execution
@@ -1672,12 +1678,13 @@ test	plus-with-mixed-types			exec340 tcf pass execution
 test	static-assigner					exec341 tcf pass execution
 test	generating-type-on-typed-pointer	exec342 tcf pass execution expanded generic
 test	deep-twin-control-c				exec343 tcf pass execution manual
-test	wrong-argument-type-in-tuple	exec344 tcf pass execution
-test	wrong-attribute-type-in-tuple	exec345 tcf pass execution
+test	wrong-argument-type-in-tuple	exec344 tcf pass execution tuple
+test	wrong-attribute-type-in-tuple	exec345 tcf pass execution tuple
 test	ptr-is-default-pointer			exec346 tcf pass execution
 test	small-eif-memory-scavenge-2		exec347	tcf pass execution
 test	environment-setting				exec348	tcf pass execution eweasel
 test	none-and-attachement			exec349	tcf pass execution conformance
+test	wrong-type-in-tuple				exec350	tcf pass execution tuple
 
 -- Once specific
 
@@ -1946,6 +1953,7 @@ test	config-extra-trailing-text		config031 tcf fail config
 test	config-4kb-config-file			config032 tcf fail config
 test	config-multiple-system-elements		config033 tcf fail config
 test	config-custom-tags-of-the-same-name			config034 tcf fail config
+test	config-variables-with-same-name			config035 tcf pass config
 
 -- Lace
 
@@ -2729,6 +2737,9 @@ test	qat-constraints-crash		anchor063 tcf fail anchored_type formal generic
 test	qat-generic-with-rename-inherited anchor064 tcf fail anchored_type formal generic
 test 	qat-generic-func-expanded-actual anchor065 tcf fail finalizing anchored_type
 test 	qat-generic-resolving-to-none 	anchor066 tcf fail finalizing anchored_type
+test 	qat-with-tuple-labels		anchor067 tcf fail anchored_type tuple
+test 	qat-with-secret-features	anchor068 tcf fail anchored_type
+test 	qat-instantiated-in-crash-4 	anchor069 tcf fail finalizing formal generic anchored_type
 
 -- SCOOP
 test	scoop-access-smoke					scoop001 tcf pass scoop execution

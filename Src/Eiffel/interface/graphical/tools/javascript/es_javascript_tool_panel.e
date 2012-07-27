@@ -15,12 +15,12 @@ create {ES_JAVASCRIPT_TOOL}
 
 feature {NONE} -- Initialization
 
-    create_tool_bar_items: DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+    create_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
             -- <Precursor>
 		do
-			create Result.make_default
+			create Result.make (1)
 
-			Result.put_last (develop_window.commands.javascript_compile_command.new_sd_toolbar_item (True))
+			Result.extend (develop_window.commands.javascript_compile_command.new_sd_toolbar_item (True))
 		end
 
 	build_tool_interface (a_widget: EV_VERTICAL_BOX)
@@ -37,7 +37,7 @@ feature {NONE} -- Factory
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -28,7 +28,7 @@ feature
 			propagate_drop_actions (Void)
 		end
 
-	create_tool_bar_items: detachable DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+	create_tool_bar_items: detachable ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 		do
 			create Result.make (2)
 			create analyze_button.make
@@ -40,11 +40,11 @@ feature
 			analyze_button.select_actions.extend (agent user_widget.append_text ("%N"))
 			analyze_button.select_actions.extend (agent user_widget.append_text (guide_drop_message))
 			analyze_button.disable_sensitive
-			Result.force_last (analyze_button)
+			Result.extend (analyze_button)
 			create inherited_assertions_toggle.make
 			inherited_assertions_toggle.set_text ("Inherited asserions")
 			inherited_assertions_toggle.set_tooltip ("Process inherited assertions.")
-			Result.force_last (inherited_assertions_toggle)
+			Result.extend (inherited_assertions_toggle)
 		end
 
 feature {NONE}
@@ -154,7 +154,7 @@ feature {NONE} -- Analyzer
 			-- The engine to perform alias analysis.
 
 ;note
-	copyright: "Copyright (c) 2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

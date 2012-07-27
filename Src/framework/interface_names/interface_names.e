@@ -323,7 +323,6 @@ feature -- Choice original (No translation)
 feature -- Graphical degree output
 
 	d_Classes_to_go: STRING_32					do Result := locale.translation("Classes to Go:")	end
-	d_Class_name_already_exists: STRING_32		do Result := locale.translation("Class name already exits. Please choose other names.")	end
 	d_Class_under_test_not_valid: STRING_32		do Result := locale.translation("Class under test is not valid. Please enter a valid class name or leave blank.")	end
 	d_Clusters_to_go: STRING_32					do Result := locale.translation("Clusters to Go:")	end
 	d_Compilation_class: STRING_32				do Result := locale.translation("Class:")	end
@@ -668,6 +667,7 @@ feature -- Accelerator, focus label and menu name
 	l_regexp: STRING_32					do Result := locale.translation("Regexp")	end
 	l_replace_comments: STRING_32		do Result := locale.translation("Replace Name in Comments")	end
 	l_replace_strings: STRING_32			do Result := locale.translation("Replace Name in Strings")	end
+	l_allow_duplicate_name: STRING_32	do Result := locale.translation ("Reuse existing name") end
 	m_Recent_project: STRING_32			do Result := locale.translation("&Recent Projects")	end
 	m_Redo: STRING_32					do Result := locale.translation("Re&do%TCtrl+Y")	end
 	f_Redo: STRING_32					do Result := locale.translation("Redo (Ctrl+Y)")	end

@@ -4455,7 +4455,6 @@ Src/library/runtime/logging/doc/Arch_Design_and_Impl.vsd -text
 Src/library/runtime/logging/doc/Readme.1st -text
 Src/library/scoopli/support/scoop_base.ecf.noany -text
 Src/library/store/dbms/rdbms/mysql/Readme -text
-Src/library/store/test/test_results/odbc_PostgreSQL_results.txt svneol=native#unset
 Src/library/text/parser/xml/parser/callbacks/README.TXT -text
 Src/library/text/parser/xml/parser/license.lic -text
 Src/library/text/parser/xml/tree/README.TXT -text
@@ -5505,6 +5504,7 @@ eweasel/tests/incr371/Ace -text
 eweasel/tests/incr379/Ace_rev2 -text
 eweasel/tests/incr380/Ace_rev2 -text
 eweasel/tests/incr381/Ace_rev2 -text
+eweasel/tests/incr428/Ace_rev2 -text
 eweasel/tests/lace003/notes -text
 eweasel/tests/lace007/notes -text
 eweasel/tests/lace011/notes -text

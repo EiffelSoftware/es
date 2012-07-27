@@ -67,14 +67,14 @@ feature {NONE} -- Initialization
 			create Result
 		end
 
-	create_tool_bar_items: DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+	create_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			-- <Precursor>
 		local
 			l_button: SD_TOOL_BAR_BUTTON
 		do
 		end
 
-	create_mini_tool_bar_items: DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+	create_mini_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			-- Retrieves a list of tool bar items to display on the window title
 		local
 			l_button: SD_TOOL_BAR_BUTTON
@@ -89,7 +89,7 @@ feature {NONE} -- Initialization
 			l_button.set_pixmap (stock_pixmaps.debug_run_icon)
 			l_button.set_tooltip ("Start verification assistant")
 			register_action (l_button.select_actions, agent on_start_control_clicked)
-			Result.put_last (l_button)
+			Result.extend (l_button)
 			start_control_button := l_button
 
 			create l_button.make
@@ -98,10 +98,10 @@ feature {NONE} -- Initialization
 			l_button.set_tooltip ("Stop verification assistant")
 			l_button.disable_sensitive
 			register_action (l_button.select_actions, agent on_stop_control_clicked)
-			Result.put_last (l_button)
+			Result.extend (l_button)
 			stop_control_button := l_button
 
-			Result.put_last (create {SD_TOOL_BAR_SEPARATOR}.make)
+			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 
 			create l_menu.make_with_text ("a")
 			create l_menu_item.make_with_text ("b")
@@ -115,17 +115,17 @@ feature {NONE} -- Initialization
 			filter_button.set_tooltip (interface_names.f_filter_warnings)
 			filter_button.set_popup_widget (create {ES_WARNINGS_FILTER_WIDGET}.make)
 --			filter_button.set_popup_widget (filter_widget)
-			Result.put_last (filter_button)
+			Result.extend (filter_button)
 
 			create class_name_text
 			class_name_text.set_minimum_width_in_characters (7)
 			class_name_text.key_release_actions.force_extend (agent do overview_panel.set_class_name_filter (class_name_text.text) end)
-			Result.put_last (create {SD_TOOL_BAR_RESIZABLE_ITEM}.make (class_name_text))
+			Result.extend (create {SD_TOOL_BAR_RESIZABLE_ITEM}.make (class_name_text))
 
 			create feature_name_text
 			feature_name_text.set_minimum_width_in_characters (7)
 			feature_name_text.key_release_actions.force_extend (agent do overview_panel.set_feature_name_filter (feature_name_text.text) end)
-			Result.put_last (create {SD_TOOL_BAR_RESIZABLE_ITEM}.make (feature_name_text))
+			Result.extend (create {SD_TOOL_BAR_RESIZABLE_ITEM}.make (feature_name_text))
 
 				-- clear button
 			create l_button.make
@@ -139,10 +139,10 @@ feature {NONE} -- Initialization
 						overview_panel.set_feature_name_filter ("")
 					end
 				)
-			Result.put_last (l_button)
+			Result.extend (l_button)
 
-			Result.put_last (create {SD_TOOL_BAR_SEPARATOR}.make)
-			Result.put_last (create {SD_TOOL_BAR_SEPARATOR}.make)
+			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
+			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 		end
 
 	build_tool_interface (root_widget: EV_NOTEBOOK)
@@ -276,7 +276,7 @@ feature {NONE} -- Clean up
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

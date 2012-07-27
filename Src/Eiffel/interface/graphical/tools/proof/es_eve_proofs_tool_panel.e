@@ -60,10 +60,10 @@ feature {NONE} -- Initialization
 			Precursor
 		end
 
-    create_tool_bar_items: DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+    create_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
             -- <Precursor>
 		do
-			create Result.make_default
+			create Result.make (10)
 
 				-- "toggle successful" button
 			create successful_button.make
@@ -88,20 +88,20 @@ feature {NONE} -- Initialization
 
 			update_button_titles
 
-			Result.put_last (develop_window.commands.eve_proofs_command.new_sd_toolbar_item (True))
-			Result.put_last (create {SD_TOOL_BAR_SEPARATOR}.make)
-			Result.put_last (successful_button)
-			Result.put_last (failed_button)
-			Result.put_last (skipped_button)
+			Result.extend (develop_window.commands.eve_proofs_command.new_sd_toolbar_item (True))
+			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
+			Result.extend (successful_button)
+			Result.extend (failed_button)
+			Result.extend (skipped_button)
 		end
 
-	create_right_tool_bar_items: DS_ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+	create_right_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			-- <Precursor>
 		local
 			l_box: EV_HORIZONTAL_BOX
 			l_button: SD_TOOL_BAR_BUTTON
 		do
-			create Result.make_default
+			create Result.make (5)
 
 				-- live text filter
 			create l_box
@@ -124,8 +124,8 @@ feature {NONE} -- Initialization
 					end
 				)
 
-			Result.put_last (create {SD_TOOL_BAR_RESIZABLE_ITEM}.make (l_box))
-			Result.put_last (l_button)
+			Result.extend (create {SD_TOOL_BAR_RESIZABLE_ITEM}.make (l_box))
+			Result.extend (l_button)
 		end
 
 	 build_tool_interface (a_widget: ES_GRID)
@@ -320,7 +320,7 @@ feature {NONE} -- Events
 			is_initialized: is_appliable_event (a_event_item) implies is_initialized
 		end
 
-	on_update_visiblity 
+	on_update_visiblity
 			-- Called when visibility settings change
 		require
 			is_interface_usable: is_interface_usable
@@ -648,7 +648,7 @@ feature {NONE} -- Constants
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
