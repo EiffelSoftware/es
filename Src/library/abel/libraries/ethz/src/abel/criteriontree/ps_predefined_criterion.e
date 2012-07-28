@@ -66,8 +66,12 @@ feature -- Check
 				Result := my_agent.item ([nat.to_natural_64])
 			elseif attached {NATURAL_8} field_value as nat then
 				Result := my_agent.item ([nat.to_natural_64])
+			--ADDED by MARCO: we also need strings
+			elseif attached {STRING} field_value as str then
+				Result := my_agent.item ([str])
+			--END 		
 			elseif attached {ANY} field_value as field_val then
-					-- for the rest we don't need conversions
+					-- for the rest we don't need conversions.
 				Result := my_agent.item ([field_val])
 			else
 				Result := false
