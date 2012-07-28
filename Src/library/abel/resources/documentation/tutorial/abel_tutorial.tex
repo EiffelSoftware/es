@@ -201,13 +201,25 @@ We encourage you to test the features shown in this tutorial by calling them fro
 
 \section{Inserting}
 
-You insert an object in the repository using feature \lstinline{insert} in class\\ \lstinline{PS_CRUD_EXECUTOR}: 
-
-\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Insertion query.}, label={lst:simple_insert}]
-	simple_insert (a_person: PERSON)
-		-- Insert `a_person' into the current repository.
+You insert an object in the repository using feature \lstinline{insert} in class\\ 
+\lstinline{PS_CRUD_EXECUTOR}. Let's add three new persons to the database in feature \lstinline{explore}:
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Insertion code.}, label={lst:tutorial_insert}]
+	explore
+			-- Tutorial code.
+		local
+			p1, p2, p3: PERSON
 		do
-			executor.insert (a_person)
+			-- Insert 3 new persons in the database
+			create p1.make ("Albo", "Bitossi")
+			p1.celebrate_birthday
+			executor.insert (p1)
+			create p2.make ("Berno", "Citrini")
+			p2.celebrate_birthday
+			p2.celebrate_birthday
+			p2.celebrate_birthday
+			executor.insert (p2)
+			create p3.make ("Dumbo", "Ermini")
+			executor.insert (p3)			
 		end
 \end{lstlisting}
 
@@ -235,7 +247,18 @@ After a successful execution of the query, you can find the result in the iterat
 			end
 		end
 \end{lstlisting}
-
+We now add in feature \lstinline{explore} the code to print the linked list returned by feature \lstinline{simple_query}:  
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Printing the query result.}, label={lst:tutorial_print_result}]
+	explore
+			-- Tutorial code.
+		local
+			p1, p2: PERSON
+		do
+			-- Same code as before
+			-- Query the database and print result			print_result (simple_query)
+		end
+\end{lstlisting}
+Feature  \lstinline{print_result} takes the linked list result of the query and prints all its elements.
 Usually the result of such a query is very big, and you are probably only interested in objects that meet certain criteria, e.g. all persons of age 20. You can read more about it in Chapter ~\ref{sec:advanced_queries}.
 
 Please note that ABEL does not enforce any kind of order on a query result.
@@ -274,46 +297,35 @@ Please note that ABEL does not enforce any kind of order on a query result.
 
 \section{Updating}
 
-Updating an object is done through feature \lstinline{update} in \lstinline{PS_CRUD_EXECUTOR}: 
+Updating an object is done through feature \lstinline{update} in \lstinline{PS_CRUD_EXECUTOR}. Let's update the \lstinline{age} attribute of Berno Citrini by celebrating his birthday:
 
-\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Update query.}, label={lst:simple_update}]
-	simple_update (a_person: PERSON)
-		-- Update `a_person' into the current repository.
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Printing the query result.}, label={lst:tutorial_print_result}]
+	explore
+			-- Tutorial code.
+		local
+			p1, p2: PERSON
 		do
-			a_person.celebrate_birthday
-			executor.update (a_person)
+			-- Same code as before
+			-- Update an existing person in the database and print the result again			p2.celebrate_birthday			executor.update (p2)			print_result (simple_query)		
 		end
 \end{lstlisting}
-
 The object to update needs to be previously known to ABEL through an insert or a successful query (see Section~\ref{section:dealing_with_known_objects}).
 
 \section{Deleting}
 \label{section:simple_delete}
 
-Deletion is done through the feature \lstinline{delete} in \lstinline{PS_CRUD_EXECUTOR}, like in the following example:
-
-\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Deletion query.}, label={lst:simple_delete}]
-	delete_person (name: STRING)
-		-- Delete the person called `name'.
+Deletion is done through feature \lstinline{delete} in \lstinline{PS_CRUD_EXECUTOR}.
+Let's now delete Albo Bitossi from the database:
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Deleting an object.}, label={lst:tutorial_print_result}]
+	explore
+			-- Tutorial code.
 		local
-			query: PS_OBJECT_QUERY [PERSON]
+			p1, p2: PERSON
 		do
-			-- First retrieve the person from the database.
-			create query.make
-			executor.execute_query (query)
-			across query as query_result
-			loop
-				if query_result.item.last_name.is_equal (name) then
-
-					-- Now delete the person.
-					executor.delete (query_result.item)
-				end
-			end
+			-- Same code as before			-- Delete Dumbo Ermini from the database and print the result again			executor.delete (p3)			print_result (simple_query)
 		end
 \end{lstlisting}
-
 Another way to delete objects is described in Section ~\ref{section:deletion_query}.
-
 \section{Dealing with Known Objects}
 \label{section:dealing_with_known_objects}
 
@@ -329,17 +341,17 @@ As an example, the following two functions will fail:
 		local
 			a_person: PERSON
 		do
-			create a_person.make ("Albo", "Bitossi")
+			create a_person.make ("Bob", "Barath")
 			executor.update (a_person)
 				-- Results in a precondition violation
 		end
 
-	failing_delete (name:STRING)
+	failing_delete
 		-- Try and fail to delete a new person object
 		local
 			a_person:PERSON
 		do
-			create a_person.make ("Albo", "Bitossi")
+			create a_person.make ("Cersei", "Lannis")
 			executor.delete (a_person) 
 				-- Results in a precondition violation
 		end
@@ -490,7 +502,7 @@ For example, if you want to search for a person called ``Albo Bitossi'' with $ag
 	search_albo_bitossi : PS_CRITERION
 		-- Combining criterion objects.
 		local
-			first_name_criterion:PS_CRITERION
+			first_name_criterion: PS_CRITERION
 			last_name_criterion: PS_CRITERION
 			age_criterion: PS_CRITERION
 		do
