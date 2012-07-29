@@ -72,6 +72,7 @@ feature -- Projections
 				end
 				i := i + 1
 			end
+			Result.compare_objects
 		end
 
 	set_projection (a_projection: ARRAY [STRING])
@@ -118,6 +119,7 @@ feature {NONE} -- Initialization
 			create projection.make_empty
 			initialize
 			create projection.make_from_array (default_projection)
+			projection.compare_objects
 		ensure then
 			projection_correctly_initialized: projection.is_deep_equal (old default_projection)
 		end
