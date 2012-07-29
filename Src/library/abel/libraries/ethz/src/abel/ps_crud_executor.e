@@ -47,7 +47,7 @@ feature -- Data retrieval
 	execute_query (query: PS_OBJECT_QUERY [ANY])
 			-- Execute `query' and store the result in `query.result_cursor'.
 		do
-			execute_within_implicit_transaction (agent execute_query_within_transaction(query, ?), True)
+			execute_within_implicit_transaction (agent execute_query_within_transaction (query, ?), True)
 		ensure
 			query_executed: query.is_executed
 			retrieved_item_persistent: not query.result_cursor.after implies is_persistent (query.result_cursor.item, new_transaction)

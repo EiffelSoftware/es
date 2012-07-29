@@ -23,8 +23,26 @@ feature -- Check
 
 	is_satisfied_by (retrieved_obj: ANY): BOOLEAN
 			-- Does `retrieved_obj' satisfy the criteria in Current?
+		local
+			reflection: INTERNAL
+			a_tuple: TUPLE [ANY]
+			temp: ANY
+			s: STRING
 		do
-			Result := agent_criterion.item ([retrieved_obj])
+			create reflection
+			create a_tuple.default_create
+			create s.make_from_string ("detachable TUPLE [!" + retrieved_obj.generator + "]")
+			-- Dynamic creation of a TUPLE containing objects of the type of retrieved_obj
+			temp := reflection.new_instance_of (reflection.dynamic_type_from_string (s))
+			if attached {TUPLE [ANY]} temp as l then
+				-- Set retrieved_object in the newly created TUPLE
+				l.put_reference (retrieved_obj, 1)
+				a_tuple := l
+			end
+			-- I had to use the code above to be able to obtain a TUPLE [X], where X is the type of retrieved_obj.
+			-- Otherwise the execution of Result := agent_criterion.item ([retrieved_obj]) fails because of the argument with
+			-- the message: "expected TUPLE [!X] but got TUPLE [!ANY]"
+			Result := agent_criterion.item (a_tuple)
 		end
 
 	can_handle_object (an_object: ANY): BOOLEAN
