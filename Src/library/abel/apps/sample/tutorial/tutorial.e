@@ -19,7 +19,10 @@ feature 	-- Tutorial exploration features
 		local
 			p1, p2, p3: PERSON
 		do
-			-- Insert 3 new persons in the database
+			print ("-o- ABEL Tutorial -o-")
+			io.new_line
+			print ("Insert 3 new persons in the database")
+			io.new_line
 			create p1.make ("Albo", "Bitossi")
 			p1.celebrate_birthday
 			executor.insert (p1)
@@ -30,20 +33,22 @@ feature 	-- Tutorial exploration features
 			executor.insert (p2)
 			create p3.make ("Dumbo", "Ermini")
 			executor.insert (p3)
-			-- Query the database and print result
+			print ("Query the database and print result")
 			print_result (simple_query)
-			-- Update an existing person in the database and print the result again
+			print ("Update an existing person in the database and print result")
 			p2.celebrate_birthday
 			executor.update (p2)
 			print_result (simple_query)
-			-- Delete Dumbo Ermini from the database
+			print ("Delete Dumbo Ermini from the database and print result")
 			executor.delete (p3)
 			print_result (simple_query)
-			-- Uncomment the following 2 lines to have failing updates and deletes of objects not known to ABEL
+			-- Uncomment the following 2 lines to have a failing update of an object not known to ABEL
+			--print ("A failing update...")
 			--failing_update
+			-- Uncomment the following 2 lines to have a failing update of an object not known to ABEL
+			--print ("A failing delete...")			
 			--failing_delete
-			-- Combined criterion
-
+			print ("Combined criterion example: search for an Albo Bitossi who is not 20")
 			print_result (query_with_composite_criterion)
 
 
@@ -94,7 +99,7 @@ feature -- CRUD operations
 	query_with_composite_criterion: LINKED_LIST [PERSON]
 		-- Query using a composite criterion.
 		local
-			query:PS_OBJECT_QUERY [PERSON]
+			query: PS_OBJECT_QUERY [PERSON]
 		do
 			create Result.make
 			create query.make
@@ -138,22 +143,21 @@ feature -- Queries with criteria
 			last_name_criterion: PS_CRITERION
 			age_criterion: PS_CRITERION
 		do
-	--		first_name_criterion :=
-	--			factory[[ "first_name", factory.equals, "Albo" ]]
+			first_name_criterion :=
+				factory[[ "first_name", factory.equals, "Albo" ]]
 
-	--		last_name_criterion :=
-	--			factory[[ "last_name", factory.equals, "Bitossi" ]]
+			last_name_criterion :=
+				factory[[ "last_name", factory.equals, "Bitossi" ]]
 
-	--		age_criterion :=
-	--			factory[[ "age", factory.equals, 20 ]]
+			age_criterion :=
+				factory[[ agent age_more_than (?, 20)]]
 
-	--		Result := first_name_criterion and last_name_criterion and not age_criterion
---
-			-- using double brackets for compactness.
-			Result := factory.new_predefined ("first_name", "=", "Albo")
-	--		Result := factory[[ "first_name", "=", "Albo" ]]
-		--		and factory[[ "last_name", "=", "Bitossi" ]]
-		--		and not factory[[ "age", "=", 20 ]]
+			Result := first_name_criterion and last_name_criterion and not age_criterion
+
+			-- using double brackets for compactness (comment this Result to get the previous one).
+			Result := factory[[ "first_name", "=", "Albo" ]]
+				and factory[[ "last_name", "=", "Bitossi" ]]
+				and not factory[[ agent age_more_than (?, 20) ]]
 		end
 
 feature -- Deletion queries
@@ -265,12 +269,12 @@ feature -- Error handling
 
 feature -- Utilities
 
-	age_less_than (person: PERSON; age: INTEGER): BOOLEAN
+	age_more_than (person: PERSON; age: INTEGER): BOOLEAN
 		-- Age check on `person' used as an agent routine.
 		require
 			age_non_negative: age >= 0
 		do
-			Result:= person.age < age
+			Result:= person.age > age
 		end
 
 	print_result (lis: LINKED_LIST [PERSON])
@@ -283,5 +287,6 @@ feature -- Utilities
 				print (local_list.item.last_name + ", age: ")
 				print (local_list.item.age)
 			end
+			io.new_line
 		end
 end

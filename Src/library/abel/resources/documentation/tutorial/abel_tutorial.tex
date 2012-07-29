@@ -97,9 +97,7 @@
 ABEL (A Better EiffelStore Library) is an object-oriented persistence library written in Eiffel and aiming at seamlessly integrating various kinds of data stores.
  
 \section{Setting things up}
-We are assuming you have checked out the ABEL code from the EiffelStudio SVN repository\footnote{https://svn.eiffel.com/eiffelstudio/branches/eth/eve/Src/library/abel}, and have EiffelStudio installed. Launch it and in the initial window choose "persistence\_tutorial\_project". If it is not there just push "Add project" and navigate to the location where you downloaded ABEL, and look for the \emph{persistence\_tutorial\_project.ecf} project file in \emph{abel/apps/sample/tutorial/}. You can then load the project and you are ready to go. 
-
-For convenience, in this tutorial we will use a simple in-memory repository simulating a relational database but storing all values in memory. To set up ABEL using a full-fledged relational back-end (like MySQL or SQLite) please read Chapter ~\ref{chapter:advanced_initialization}.
+We are assuming you have checked out the ABEL code from the EiffelStudio SVN repository\footnote{https://svn.eiffel.com/eiffelstudio/branches/eth/eve/Src/library/abel}, and have EiffelStudio installed. Launch it and in the initial window choose "tutorial\_project". If it is not there just push "Add project" and navigate to the location where you downloaded ABEL, and look for the \emph{tutorial\_project.ecf} project file in \emph{abel/apps/sample/tutorial/}. You can then load and compile the project. To be able to compile the ABEL tutorial you don't need particular dependencies, because we are using an in-memory database simulating a relational database. If you want to experiment with ABEL's support for a full-fledged relational back-end (like MySQL or SQLite, see Chapter~\ref{chapter:advanced_initialization}), you need to install the databases and the appropriate drivers.
 
 \section{Getting started}
 We will be using \lstinline!PERSON! objects to show the usage of the API. 
@@ -255,7 +253,8 @@ We now add in feature \lstinline{explore} the code to print the linked list retu
 			p1, p2: PERSON
 		do
 			-- Same code as before
-			-- Query the database and print result			print_result (simple_query)
+			-- Query the database and print result
+			print_result (simple_query)
 		end
 \end{lstlisting}
 Feature  \lstinline{print_result} takes the linked list result of the query and prints all its elements.
@@ -306,7 +305,10 @@ Updating an object is done through feature \lstinline{update} in \lstinline{PS_C
 			p1, p2: PERSON
 		do
 			-- Same code as before
-			-- Update an existing person in the database and print the result again			p2.celebrate_birthday			executor.update (p2)			print_result (simple_query)		
+			-- Update an existing person in the database and print the result again
+			p2.celebrate_birthday
+			executor.update (p2)
+			print_result (simple_query)		
 		end
 \end{lstlisting}
 The object to update needs to be previously known to ABEL through an insert or a successful query (see Section~\ref{section:dealing_with_known_objects}).
@@ -322,7 +324,10 @@ Let's now delete Albo Bitossi from the database:
 		local
 			p1, p2: PERSON
 		do
-			-- Same code as before			-- Delete Dumbo Ermini from the database and print the result again			executor.delete (p3)			print_result (simple_query)
+			-- Same code as before
+			-- Delete Dumbo Ermini from the database and print the result again
+			executor.delete (p3)
+			print_result (simple_query)
 		end
 \end{lstlisting}
 Another way to delete objects is described in Section ~\ref{section:deletion_query}.
@@ -471,7 +476,7 @@ caption={The CRITERION\_FACTORY interface}
 
 			-- for agent criteria
 			Result := 
-				factory.new_agent (agent age_less_than (?, 5))
+				factory.new_agent (agent age_more_than (?, 5))
 		end
 
 	create_criteria_double_bracket : PS_CRITERION
@@ -481,13 +486,13 @@ caption={The CRITERION\_FACTORY interface}
 			Result:= factory[["age", factory.less, 5]]
 
 			-- for agent criteria
-			Result := factory[[agent age_less_than (?, 5)]]
+			Result := factory[[agent age_more_than (?, 5)]]
 		end			
 
-	age_less_than (person: PERSON; age: INTEGER): BOOLEAN
+	age_more_than (person: PERSON; age: INTEGER): BOOLEAN
 		-- An example agent
 		do
-			Result:= person.age < age
+			Result:= person.age > age
 		end
 
 \end{lstlisting}
@@ -495,11 +500,11 @@ caption={The CRITERION\_FACTORY interface}
 \subsection{Combining criteria}
 
 You can combine multiple criterion objects by using the standard Eiffel logical operators. 
-For example, if you want to search for a person called ``Albo Bitossi'' with $age \ne 20$, you can just create a criterion object for each of the constraints and combine them:  
+For example, if you want to search for a person called ``Albo Bitossi'' with $age <= 20$, you can just create a criterion object for each of the constraints and combine them:  
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Combining criteria.}, label={lst:search_albo_bitossi}]
 
-	search_albo_bitossi : PS_CRITERION
+	composite_search_criterion : PS_CRITERION
 		-- Combining criterion objects.
 		local
 			first_name_criterion: PS_CRITERION
@@ -513,19 +518,53 @@ For example, if you want to search for a person called ``Albo Bitossi'' with $ag
 				factory[[ "last_name", factory.equals, "Bitossi" ]]
 
 			age_criterion := 
-				factory[[ "age", factory.equals, 20 ]]
+				factory[[ agent age_more_than (?, 20) ]]
 			
 			Result := first_name_criterion and last_name_criterion and not age_criterion
 
 			-- using double brackets for compactness. 
 			Result := factory[[ "first_name", "=", "Albo" ]] 
 				and factory[[ "last_name", "=", "Bitossi" ]] 
-				and not factory[[ "age", "=", 20 ]]
+				and not factory[[ agent age_more_than (?, 20)  ]]
 		end
 \end{lstlisting}
 
 ABEL supports the three standard logical operators \lstinline!AND!, \lstinline!OR! and \lstinline!NOT!. 
 The precedence rules are the same as in Eiffel, which means that \lstinline!NOT! is stronger than \lstinline!AND!, which in turn is stronger than \lstinline!OR!.
+
+We can now add the necessary code to feature \lstinline{explore}:  
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Invoking the code that searches for Albo Bitossi}, label={lst:tutorial_print_result}]
+	explore
+			-- Tutorial code.
+		local
+			p1, p2: PERSON
+		do
+			-- Same code as before
+			-- Search for Albo Bitossi with age <= 20
+			print_result (query_with_composite_criterion)
+		end
+\end{lstlisting}
+
+Where feature \lstinline{query_with_composite_criterion} looks like the following:
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Invoking the code that searches for Albo Bitossi}, label={lst:tutorial_print_result}]
+	query_with_composite_criterion: LINKED_LIST [PERSON]
+		-- Query using a composite criterion.
+		local
+			query: PS_OBJECT_QUERY [PERSON]
+		do
+			create Result.make
+			create query.make
+			query.set_criterion (composite_search_criterion)
+			executor.execute_query (query)
+
+			across query as	query_result
+			loop
+				Result.extend (query_result.item)
+			end
+		end
+\end{lstlisting}
+
+As you may have noticed, it is very simple to set criteria on a query.
 
 \section{Deletion queries}
 \label{section:deletion_query}
