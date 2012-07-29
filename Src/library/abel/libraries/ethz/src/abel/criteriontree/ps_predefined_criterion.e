@@ -66,12 +66,16 @@ feature -- Check
 				Result := my_agent.item ([nat.to_natural_64])
 			elseif attached {NATURAL_8} field_value as nat then
 				Result := my_agent.item ([nat.to_natural_64])
-			--ADDED by MARCO: we also need strings
+			--ADDED by MARCO: we also need to be able to pass strings
 			elseif attached {STRING} field_value as str then
+				Result := my_agent.item ([str])
+			elseif attached {STRING_32} field_value as str then
 				Result := my_agent.item ([str])
 			--END 		
 			elseif attached {ANY} field_value as field_val then
 					-- for the rest we don't need conversions.
+				fixme ("TODO: I am afraid we do need conversion. So we could use reflection for a generalized solution and get rid of the code for strings above as well.")
+				-- The issue is that the arg: [field_val] will always be of type TUPLE [ANY], and never of type TUPLE [X], where is the type of field_val.
 				Result := my_agent.item ([field_val])
 			else
 				Result := false
@@ -135,7 +139,7 @@ feature --Access
 			-- The value to check for
 
 	my_agent: PREDICATE [ANY, TUPLE [ANY]]
-			-- The agent is used if the predefined queries cannot be executed by the database backend
+			-- Used if the predefined queries cannot be executed by the database backend
 
 feature -- Predefined Operators
 
