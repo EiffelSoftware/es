@@ -330,7 +330,7 @@ Let's now delete Albo Bitossi from the database:
 			print_result (simple_query)
 		end
 \end{lstlisting}
-Another way to delete objects is described in Section ~\ref{section:deletion_query}.
+The object to delete needs to be previously known to ABEL through an insert or a successful query (see Section~\ref{section:dealing_with_known_objects}). A way to delete objects that always works (because ABEL  queries for them in advance) is described in Section ~\ref{section:deletion_query}.
 \section{Dealing with Known Objects}
 \label{section:dealing_with_known_objects}
 
@@ -569,26 +569,37 @@ As you may have noticed, it is very simple to set criteria on a query.
 \section{Deletion queries}
 \label{section:deletion_query}
 
-As mentioned previously, there is another way to perform a deletion in the repository from within
+As mentioned in Section~\ref{section:simple_delete}, there is another way to perform a deletion in the repository from within
 \lstinline!PS_CRUD_EXECUTOR!. By calling \lstinline{execute_deletion_query} instead of \lstinline{delete}, ABEL will delete all objects in the database that would have been retrieved by executing the query normally.
-You can look at the following example and compare it with its variation in Section ~\ref{section:simple_delete}.
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Using a deletion query.}, label={lst:deletion_query}]
-	delete_person (name:STRING)
-		-- Delete `name' using a deletion query.
+	delete_person_with_deletion_query (last_name: STRING)
+		-- Delete person with `last_name' using a deletion query.
 		local
 			deletion_query: PS_OBJECT_QUERY [PERSON]
 			criterion:PS_PREDEFINED_CRITERION
 		do
 			create deletion_query.make
-			create criterion.make ("last_name", "=", name)
+			create criterion.make ("last_name", "=", last_name)
 			deletion_query.set_criterion (criterion)
 			executor.execute_deletion_query (deletion_query)
 		end
 \end{lstlisting}
 
-It depends upon the situation if you want to use deletion queries or a direct delete command. 
-Usually, a direct command is better if you already have the object in memory, whereas deletion queries are nice to use if the object is not yet loaded from the database.
+We can now add the necessary code to feature \lstinline{explore}:  
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Invoking the code that searches for Albo Bitossi}, label={lst:tutorial_print_result}]
+	explore
+			-- Tutorial code.
+		local
+			p1, p2: PERSON
+		do
+			-- Same code as before
+			-- Delete Albo Bitossi using a deletion query
+			delete_person_with_deletion_query ("Bitossi")
+			print_result (simple_query)
+		end
+\end{lstlisting}
+Using a deletion query instead of a direct delete command depends upon the situation. Usually, a direct command is better if you already have the object in memory, whereas deletion queries are nice to use if the object is not yet loaded from the database.
 
 \section{Tuple queries}
 

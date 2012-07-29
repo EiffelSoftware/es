@@ -50,7 +50,11 @@ feature 	-- Tutorial exploration features
 			--failing_delete
 			print ("Combined criterion example: search for an Albo Bitossi who is not 20")
 			print_result (query_with_composite_criterion)
-
+			print ("Delete Albo Bitossi using a deletion query")
+			--delete_person_with_deletion_query ("Bitossi")
+			--print_result (simple_query)
+			print ("Print last names of all person objects")
+			print_all_last_names
 
 		end
 
@@ -162,14 +166,14 @@ feature -- Queries with criteria
 
 feature -- Deletion queries
 
-	delete_person_with_deletion_query (name: STRING)
-		-- Delete `name' using a deletion query.
+	delete_person_with_deletion_query (last_name: STRING)
+		-- Delete person with `last_name' using a deletion query.
 		local
 			deletion_query: PS_OBJECT_QUERY [PERSON]
 			criterion: PS_PREDEFINED_CRITERION
 		do
 			create deletion_query.make
-			create criterion.make ("last_name", "=", name)
+			create criterion.make ("last_name", "=", last_name)
 			deletion_query.set_criterion (criterion)
 			executor.execute_deletion_query (deletion_query)
 		end
