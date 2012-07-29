@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-9-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-9-0 http://www.eiffel.com/developers/xml/configuration-1-9-0.xsd" name="project" uuid="56B4F8CD-473D-4F79-B711-EF0C6EB7CB45">
-	<target name="project">
-		<root class="TUTORIAL_APPLICATION" feature="make"/>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-9-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-9-0 http://www.eiffel.com/developers/xml/configuration-1-9-0.xsd" name="tutorial_project" uuid="56B4F8CD-473D-4F79-B711-EF0C6EB7CB45">
+	<target name="tutorial_project">
+		<root class="TUTORIAL" feature="make"/>
 		<option warning="true" is_attached_by_default="false" syntax="transitional">
 			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
 		</option>
@@ -15,7 +15,7 @@
 			</file_rule>
 		</cluster>
 	</target>
-	<target name="project_dotnet" extends="project">
+	<target name="tutorial_project_dotnet" extends="tutorial_project">
 		<setting name="msil_generation" value="true"/>
 	</target>
 </system>

@@ -3617,7 +3617,7 @@ Src/help/wizards/eweb/pixmaps/Eiffel_wizard_new.bmp -text
 Src/help/wizards/eweb/pixmaps/database_small.bmp -text
 Src/help/wizards/wizard.ico -text
 Src/library/GIF/Clib/gd_lib/gd.lib svneol=native#unset
-Src/library/abel/apps/sample/tutorial/project.ecf svneol=native#text/xml
+Src/library/abel/apps/sample/tutorial/tutorial_project.ecf svneol=native#text/xml
 Src/library/abel/apps/test/abel_test/eweasel/bin/eiffel_execute -text
 Src/library/abel/apps/test/abel_test/eweasel/bin/eiffel_freeze -text
 Src/library/abel/apps/test/abel_test/eweasel/bin/run_eweasel -text
