@@ -111,7 +111,7 @@ feature -- Data manipulation
 	execute_deletion_query (deletion_query: PS_OBJECT_QUERY [ANY])
 			-- Delete all objects that match the criteria defined in `deletion_query'.
 		do
-			execute_within_implicit_transaction (agent execute_deletion_query_within_transaction(deletion_query, ?), False)
+			execute_within_implicit_transaction (agent execute_deletion_query_within_transaction (deletion_query, ?), False)
 		end
 
 feature -- Transaction-based data retrieval and querying
@@ -126,7 +126,7 @@ feature -- Transaction-based data retrieval and querying
 			if a_query.is_executed then
 				a_query.reset
 			end
-			handle_error_on_action (agent repository.execute_query(a_query, transaction), transaction)
+			handle_error_on_action (agent repository.execute_query (a_query, transaction), transaction)
 		ensure
 			query_executed: a_query.is_executed
 			transaction_set: a_query.transaction = transaction
@@ -188,7 +188,7 @@ feature -- Transaction-based data retrieval and querying
 			object_persistent: is_persistent (an_object, transaction)
 			can_handle_object: can_handle (an_object)
 		do
-			handle_error_on_action (agent repository.delete(an_object, transaction), transaction)
+			handle_error_on_action (agent repository.delete (an_object, transaction), transaction)
 		ensure
 			success_implies_not_persistent: not transaction.has_error implies not is_persistent (an_object, transaction)
 			failure_implies_still_persistent: transaction.has_error implies is_persistent (an_object, transaction)
@@ -205,7 +205,7 @@ feature -- Transaction-based data retrieval and querying
 			if a_query.is_executed then
 				a_query.reset
 			end
-			handle_error_on_action (agent repository.delete_query(a_query, transaction), transaction)
+			handle_error_on_action (agent repository.delete_query (a_query, transaction), transaction)
 		ensure
 			query_executed: a_query.is_executed
 			transaction_set: a_query.transaction = transaction

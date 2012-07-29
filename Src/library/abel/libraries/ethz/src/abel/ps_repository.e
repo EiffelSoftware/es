@@ -130,7 +130,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 		end
 
 	delete (object: ANY; transaction: PS_TRANSACTION)
-			-- Delete `object' within `transaction' from `Current'.
+			-- Delete `object' within `transaction' from `Current' within `transaction'.
 		require
 			transaction_repository_correct: transaction.repository = Current
 			active_transaction: transaction.is_active
@@ -145,11 +145,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 		end
 
 	delete_query (query: PS_OBJECT_QUERY [ANY]; transaction: PS_TRANSACTION)
-			-- Delete all objects that match the criteria in `query' from `Current' repository within `transaction'.
+			-- Delete all objects that match the criteria in `query' from `Current' within `transaction'.
 		require
 			not_executed: not query.is_executed
 			transaction_repository_correct: transaction.repository = Current
-			active_transaction: query.transaction.is_active
+			--active_transaction: query.transaction.is_active
+			active_transaction: transaction.is_active
 		do
 			from
 				execute_query (query, transaction)
