@@ -51,11 +51,14 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 			fixme ("TODO")
 			create exception
 			exception.set_message ("Feature not yet implemented.")
+			transaction.set_error (exception)
 			exception.raise
 		end
 
 	next_tuple_entry (tuple_query: PS_TUPLE_QUERY [ANY])
 			-- Retrieves the next tuple and stores it in `query.result_cursor'.
+		local
+			exception: PS_INTERNAL_ERROR
 		do
 			fixme ("TODO")
 		end
