@@ -250,14 +250,14 @@ feature -- Error handling
 		do
 			-- Some complicated operations.
 		rescue
-			my_visitor.visit (executor.last_error)
-			if my_visitor.shall_retry then
-				retry
-			else
-				-- The exception propagates upwards, and maybe
-				-- another feature can handle it.
+				my_visitor.visit (executor.last_error)
+				if my_visitor.shall_retry then
+					retry
+				else
+					-- The exception propagates upwards, and maybe
+					-- another feature can handle it.
+				end
 			end
-		end
 
 feature -- Utilities
 

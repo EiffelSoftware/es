@@ -20,7 +20,7 @@ feature -- Visitor features
 		-- Visit an access right violation error
 		do
 			add_some_privileges
-			shall_retry:=True
+			shall_retry := True
 		end
 
 	visit_connection_problem (error: PS_CONNECTION_PROBLEM)
@@ -52,6 +52,7 @@ feature -- Unimplemented visitor features
 	visit_internal_error (internal_error: PS_INTERNAL_ERROR)
 			-- Visit an internal error
 		do
+			print ("Visiting internal error")
 		end
 
 	visit_version_mismatch (version_error: PS_VERSION_MISMATCH)

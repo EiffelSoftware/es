@@ -958,11 +958,7 @@ As usual, here is the code for feature \lstinline{explore}:
 		end
 \end{lstlisting}
 
-
-
-
 \section{Transaction isolation levels}
-
 ABEL supports the four standard transaction isolation levels found in almost every database system:
 \begin{itemize}
  \item Read Uncommitted
@@ -980,7 +976,7 @@ Therefore a backend can also use a more restrictive isolation level than you act
 
 \chapter{Error handling}
 
-As ABEL is dealing with IO and databases, runtime errors may happen. 
+As ABEL is dealing with I/O and databases, runtime errors may happen. 
 The library will in general raise an exception in case of an error and expose the error to the library user as an \lstinline!PS_ERROR! object.
 ABEL recognizes two different kinds of errors:
 
@@ -1020,7 +1016,7 @@ For your convenience, there is a visitor pattern for all ABEL error types.
 You can just implement the appropriate functions and use it for your error handling code.
 
 The following code shows an example. 
-Note that only some important features are shown:
+Note that only relevant features are shown:
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Sample error handling using a visitor.}, label={lst:error_visitor_example}]
 
@@ -1047,7 +1043,6 @@ feature
 			notify_user_of_abort
 			shall_retry:=False
 		end
-
 end
 
 class
@@ -1067,7 +1062,7 @@ feature
 		do
 			-- Some complicated operations
 		rescue
-			my_visitor.visit (executor.error)
+			my_visitor.visit (executor.last_error)
 			if my_visitor.shall_retry then
 				retry
 			else
