@@ -63,7 +63,7 @@ feature -- Data retrieval
 	execute_tuple_query (tuple_query: PS_TUPLE_QUERY [ANY])
 			-- Execute `tuple_query' and store the result in `query.result_cursor'.
 		do
-			execute_within_implicit_transaction (agent execute_tuple_query_within_transaction(tuple_query, ?), True)
+			execute_within_implicit_transaction (agent execute_tuple_query_within_transaction (tuple_query, ?), True)
 		ensure
 			query_executed: tuple_query.is_executed
 		end
@@ -310,7 +310,7 @@ feature {NONE} -- Implementation
 			if query.is_executed then
 				query.reset
 			end
-			handle_error_on_action (agent repository.execute_tuple_query(query, transaction), transaction)
+			handle_error_on_action (agent repository.execute_tuple_query (query, transaction), transaction)
 		ensure
 			query_executed: query.is_executed
 			transaction_set: query.transaction = transaction
