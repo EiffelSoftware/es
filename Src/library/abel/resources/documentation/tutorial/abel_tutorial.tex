@@ -842,14 +842,12 @@ The default ABEL's behavior with respect to the object graph can be changed by u
 
 The in-memory repository we've used so far doesn't store data permanently.
 This is acceptable for testing or for a tutorial, but not in a real application.
-Therefore, ABEL ships with support for a MySQL database and an SQLite database.
-
-To use them, you have to assemble the needed parts. Let's focus on MySQL: you will need to create a \lstinline!PS_MYSQL_DATABASE! and a \lstinline!PS_MYSQL_STRINGS! object.
+Therefore, we will be now looking at the ABEL support for the MySQL and SQLite databases. For MySQL, you will need to create a \lstinline!PS_MYSQL_DATABASE! object and a \lstinline!PS_MYSQL_STRINGS! object.
 Then you will use them to create a \lstinline!PS_GENERIC_LAYOUT_SQL_BACKEND!, which you will need in turn to create the \lstinline!PS_RELATIONAL_REPOSITORY!.
 
-The following little factory class shows the process for both a MySQL and an SQLite database:
+The following little factory class shows the process for both a MySQL and a SQLite database:
 
-\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Setting up a MySQL and a SQLite repository}, label={lst:advanced_initialization}]
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Setting up a MySQL and a SQLite repositories}, label={lst:advanced_initialization}]
 
 class 
 	REPOSITORY_FACTORY
@@ -896,12 +894,12 @@ end
 
 \end{lstlisting}
 
-All examples from this tutorial work exactly the same, no matter if you use the \lstinline!PS_IN_MEMORY_REPOSITORY! or any of the provided database repositories.
+All examples from this tutorial work exactly the same, regardless of the specific kind of repository you are working with.
 
 \chapter{Transaction handling}
 
 Every CRUD operation in ABEL is by default executed within a transaction. 
-Transactions are created and committed implicitly, which has the advantage that - especially when dealing with complex object graphs - an object doesn't get inserted halfway in case of an error.
+Transactions are created and committed implicitly. This is convenient when dealing with complex object graphs, because an object doesn't get inserted halfway in case of an error.
 
 As a user, you also have the possibility to use transactions explicitly. 
 This is done by manually creating an object of type \lstinline!PS_TRANSACTION! and using the \lstinline!*_within_transaction! features in \lstinline!PS_CRUD_EXECUTOR! instead of the normal ones.
@@ -911,7 +909,7 @@ Let's consider an example where you want to update the age of every person by on
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={}, label={lst:update_all_ages}]
 	update_ages
-		-- Increase everyone's age by one.
+		-- Increase the age of all persons by one.
 		local
 			query: PS_OBJECT_QUERY [PERSON]
 			transaction: PS_TRANSACTION
@@ -944,6 +942,24 @@ The errors are reported in the \lstinline!PS_TRANSACTION.has_error! attribute.
 In case of an error, all changes of the transaction are rolled back automatically.
 
 You can also abort a transaction manually by calling feature \lstinline{rollback} in class \lstinline{PS_TRANSACTION}.
+
+As usual, here is the code for feature \lstinline{explore}:
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Testing an update with explicit transaction.}, label={lst:explicit_transactions_update}]
+	explore
+			-- Tutorial code.
+		local
+			p1, p2: PERSON
+			c1, c2, c3: CHILD
+		do
+			-- Same code as before
+			print ("Celebrating the birthday fo all PERSON objects in the repository")
+			update_ages
+			print_result (simple_query)
+		end
+\end{lstlisting}
+
+
+
 
 \section{Transaction isolation levels}
 

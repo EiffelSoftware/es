@@ -46,7 +46,7 @@ feature 	-- Tutorial exploration features
 			-- Uncomment the following 2 lines to have a failing update of an object not known to ABEL
 			--print ("A failing update...")
 			--failing_update
-			-- Uncomment the following 2 lines to have a failing update of an object not known to ABEL
+			-- Uncomment the following 2 lines to have a failing delete of an object not known to ABEL
 			--print ("A failing delete...")			
 			--failing_delete
 			print ("Combined criterion example: search for an Albo Bitossi who is not 20")
@@ -73,6 +73,9 @@ feature 	-- Tutorial exploration features
 			end
 			executor.update (c1)
 			print_children_result (query_for_children)
+			print ("Celebrating the birthday fo all PERSON objects in the repository")
+			update_ages
+			print_result (simple_query)
 		end
 
 feature {NONE} -- Initialization
@@ -213,7 +216,7 @@ feature -- Deletion queries
 feature -- Transaction handling
 
 	update_ages
-		-- Increase everyone's age by one.
+		-- Increase the age of all persons by one.
 		local
 			query: PS_OBJECT_QUERY [PERSON]
 			transaction: PS_TRANSACTION
@@ -291,5 +294,4 @@ feature -- Utilities
 			end
 			io.new_line
 		end
-
 end
