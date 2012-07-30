@@ -50,11 +50,9 @@ feature 	-- Tutorial exploration features
 			--failing_delete
 			print ("Combined criterion example: search for an Albo Bitossi who is not 20")
 			print_result (query_with_composite_criterion)
-			print ("Delete Albo Bitossi using a deletion query")
+--			print ("Delete Albo Bitossi using a deletion query")
 			--delete_person_with_deletion_query ("Bitossi")
 			--print_result (simple_query)
-			print ("Print last names of all person objects")
-			print_all_last_names
 
 		end
 
@@ -176,53 +174,6 @@ feature -- Deletion queries
 			create criterion.make ("last_name", "=", last_name)
 			deletion_query.set_criterion (criterion)
 			executor.execute_deletion_query (deletion_query)
-		end
-
-feature -- Tuple queries
-
-	print_all_last_names
-		-- Print the last name of all PERSON objects.
-		local
-			query: PS_TUPLE_QUERY [PERSON]
-			last_name_index: INTEGER
-			single_result: TUPLE
-		do
-			create query.make
-			-- Find out at which position in the tuple the last_name is returned.
-			last_name_index := query.attribute_index ("last_name")
-
-			from
-				executor.execute_tuple_query (query)
-			until
-				query.result_cursor.after
-			loop
-				single_result := query.result_cursor.item
-				print (single_result [last_name_index] )
-			end
-		end
-
-	print_last_names_of_20_year_old
-		-- Print the last name of all PERSON objects with age = 20.
-		local
-			query: PS_TUPLE_QUERY [PERSON]
-		do
-			create query.make
-
-			-- Only return the last_name of persons.
-			query.set_projection (<<"last_name">>)
-
-			-- Only return persons with age = 20.
-			query.set_criterion (factory [["age", "=", 20]])
-
-			from
-				executor.execute_tuple_query (query)
-			until
-				query.result_cursor.after
-			loop
-				-- As we only have the last_name in the tuple,
-				-- its index has to be 1.
-				print (query.result_cursor.item [1])
-			end
 		end
 
 feature -- Transaction handling
