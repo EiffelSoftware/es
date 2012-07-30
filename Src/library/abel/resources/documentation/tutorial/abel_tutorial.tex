@@ -67,9 +67,8 @@
 
 \title {The ABEL Persistence Library Tutorial}
 \author {
-	\textbf{Written by:} Roman Schmocker\\
-	\textbf{Reviewed by:} Marco Piccioni\\\\
-	\textbf{Last updated:}
+	Roman Schmocker, Marco Piccioni\\\\
+	Last updated:
 }
 
 
@@ -671,6 +670,7 @@ Using a deletion query instead of a direct delete command depends upon the situa
 In ABEL, a basic type is an object of type \lstinline!STRING!, \lstinline!BOOLEAN!, \lstinline!CHARACTER! or any numeric class like \lstinline!REAL! or \lstinline!INTEGER!.
 The \lstinline!PERSON! class only has attributes of a basic type. However, an object can contain references to other objects. ABEL is able to handle these references by storing and reconstructing the whole object graph (an object graph is roughly defined as all the objects that can be reached by recursively following all references, starting at some root object).
 
+\section{Inserting objects with dependencies}
 Let's look at the new class \lstinline!CHILD!:
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The CHILD class.}, label={lst:child_class}]
@@ -808,25 +808,25 @@ Here is the code in feature \lstinline{explore} that tests what we have stated a
 \end{lstlisting}
 You can find the code for \lstinline{query_for_children} and \lstinline{print_children_result} in the ABEL repository. You will notice it is very similar to the corresponding routines seen before (the only thing that changes is the kind of linked list that is passed as an argument).
 
-\section{Updates}
+\section{Updating objects with dependencies}
 ABEL does not follow references during an update by default, so for example the following statement has no effect on the database:
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={References are not followed by default during updates.}, label={lst:reference_update}]
-	celebrate_fathers_birthday (a_child: CHILD)
-		-- Increase age of `a_child's father.
-		require
-			child_persistent: executor.is_persistent (a_child)
+	explore
+			-- Tutorial code.
+		local
+			p1, p2: PERSON
+			c1, c2, c3: CHILD
 		do
-			a_child.father.celebrate_birthday
-
-			-- This won't have any effect
-			executor.update (a_child)
-
-			-- however, it works that way
-			executor.update (a_child.father)
+			-- Same code as before
+			print ("Updating John Doe has no effect")
+			if attached {CHILD} c1.father as dad then
+				dad.celebrate_birthday
+			end
+			executor.update (c1)
+			print_children_result (query_for_children)
 		end
 \end{lstlisting}
-
 Section~\ref{sec:going_deeper_in_object_graph} will tell you how do change the default settings.
  
 \section{Going deeper in the Object Graph}

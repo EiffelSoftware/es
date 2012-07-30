@@ -67,6 +67,12 @@ feature 	-- Tutorial exploration features
 			print ("Inserting John Doe has no effect")
 			executor.insert (c2)
 			print_children_result (query_for_children)
+			print ("Updating John Doe has no effect")
+			if attached {CHILD} c1.father as dad then
+				dad.celebrate_birthday
+			end
+			executor.update (c1)
+			print_children_result (query_for_children)
 		end
 
 feature {NONE} -- Initialization
