@@ -766,8 +766,6 @@ From the name of the object instances you can already guess what the object grap
   \node[main node] (2) [right of=1] {$John Doe$};
   \node[main node] (3) [right of=2] {$Grandpa Doe$};
 
- 
-
   \path
     (1) edge node {$father$} (2)
     (2) edge node {$father$} (3);
@@ -784,8 +782,33 @@ If you now query the database for \lstinline!CHILD! objects, it will return exac
 \item After you've inserted ``Baby Doe'', it has no effect if you insert ``John Doe'' or ``Grandpa Doe'' afterwards, because they have already been inserted by the first statement.
 \end{itemize}
 
-\section{Updates}
+Here is the code in feature \lstinline{explore} that tests what we have stated above:
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Inserting objects having references to other objects.}, label={lst:references_handling}]
+	explore
+			-- Tutorial code.
+		local
+			p1, p2: PERSON
+			c1, c2, c3: CHILD
+		do
+			-- Same code as before
+			print ("Insert 3 children in the database")
+			create c1.make ("Baby", "Doe")
+			create c2.make ("John", "Doe")
+			create c3.make ("Grandpa", "Doe")
+			c1.set_father (c2)
+			c2.set_father (c3)
+			executor.insert (c1)
+			io.new_line
+			print ("Query the database for children and print result")
+			print_children_result (query_for_children)
+			print ("Inserting John Doe has no effect")
+			executor.insert (c2)
+			print_children_result (query_for_children)
+		end
+\end{lstlisting}
+You can find the code for \lstinline{query_for_children} and \lstinline{print_children_result} in the ABEL repository. You will notice it is very similar to the corresponding routines seen before (the only thing that changes is the kind of linked list that is passed as an argument).
 
+\section{Updates}
 ABEL does not follow references during an update by default, so for example the following statement has no effect on the database:
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={References are not followed by default during updates.}, label={lst:reference_update}]

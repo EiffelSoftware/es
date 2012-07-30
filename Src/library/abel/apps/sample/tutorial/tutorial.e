@@ -18,6 +18,7 @@ feature 	-- Tutorial exploration features
 			-- Tutorial code.
 		local
 			p1, p2, p3: PERSON
+			c1, c2, c3: CHILD
 		do
 			print ("-o- ABEL Tutorial -o-")
 			io.new_line
@@ -33,7 +34,7 @@ feature 	-- Tutorial exploration features
 			executor.insert (p2)
 			create p3.make ("Dumbo", "Ermini")
 			executor.insert (p3)
-			print ("Query the database and print result")
+			print ("Query the database for persons and print result")
 			print_result (simple_query)
 			print ("Update an existing person in the database and print result")
 			p2.celebrate_birthday
@@ -53,7 +54,19 @@ feature 	-- Tutorial exploration features
 --			print ("Delete Albo Bitossi using a deletion query")
 			--delete_person_with_deletion_query ("Bitossi")
 			--print_result (simple_query)
-
+			print ("Insert 3 children in the database")
+			create c1.make ("Baby", "Doe")
+			create c2.make ("John", "Doe")
+			create c3.make ("Grandpa", "Doe")
+			c1.set_father (c2)
+			c2.set_father (c3)
+			executor.insert (c1)
+			io.new_line
+			print ("Query the database for children and print result")
+			print_children_result (query_for_children)
+			print ("Inserting John Doe has no effect")
+			executor.insert (c2)
+			print_children_result (query_for_children)
 		end
 
 feature {NONE} -- Initialization
@@ -106,6 +119,21 @@ feature -- CRUD operations
 			create Result.make
 			create query.make
 			query.set_criterion (composite_search_criterion)
+			executor.execute_query (query)
+
+			across query as	query_result
+			loop
+				Result.extend (query_result.item)
+			end
+		end
+
+	query_for_children: LINKED_LIST [CHILD]
+		-- Query all children from repository.
+		local
+			query:PS_OBJECT_QUERY [CHILD]
+		do
+			create Result.make
+			create query.make
 			executor.execute_query (query)
 
 			across query as	query_result
@@ -244,4 +272,18 @@ feature -- Utilities
 			end
 			io.new_line
 		end
+
+	print_children_result (lis: LINKED_LIST [CHILD])
+		-- Utility to print a query result.
+		do
+			across lis as local_list
+			loop
+				io.new_line
+				print (local_list.item.first_name + " ")
+				print (local_list.item.last_name + ", age: ")
+				print (local_list.item.age)
+			end
+			io.new_line
+		end
+
 end
