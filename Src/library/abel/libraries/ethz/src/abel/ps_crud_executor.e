@@ -30,8 +30,14 @@ feature --Access
 
 feature -- Status Report
 
-	is_persistent (an_object: ANY; a_transaction: PS_TRANSACTION): BOOLEAN
+	is_persistent (an_object: ANY): BOOLEAN
 			-- Is there a database entry for `an_object'?
+		do
+			Result := repository.is_identified (an_object, new_transaction)
+		end
+
+	is_persistent_within_transaction (an_object: ANY; a_transaction: PS_TRANSACTION): BOOLEAN
+			-- Is there a database entry for `an_object' within `a_transaction'?
 		do
 			Result := repository.is_identified (an_object, a_transaction)
 		end
@@ -50,7 +56,7 @@ feature -- Data retrieval
 			execute_within_implicit_transaction (agent execute_query_within_transaction (query, ?), True)
 		ensure
 			query_executed: query.is_executed
-			retrieved_item_persistent: not query.result_cursor.after implies is_persistent (query.result_cursor.item, new_transaction)
+			retrieved_item_persistent: not query.result_cursor.after implies is_persistent_within_transaction (query.result_cursor.item, new_transaction)
 			can_handle_retrieved_item: not query.result_cursor.after implies can_handle (query.result_cursor.item)
 		end
 
@@ -61,7 +67,6 @@ feature -- Data retrieval
 		ensure
 			query_executed: tuple_query.is_executed
 		end
-
 
 	--reload (object: ANY)
 				-- Reload  `object'.
@@ -78,34 +83,34 @@ feature -- Data manipulation
 	insert (an_object: ANY)
 			-- Insert `an_object' into the repository.
 		require
-			object_not_persistent_yet: not is_persistent (an_object, new_transaction)
+			object_not_persistent_yet: not is_persistent_within_transaction (an_object, new_transaction)
 			can_handle_object: can_handle (an_object)
 		do
 			execute_within_implicit_transaction (agent insert_within_transaction(an_object, ?), False)
 		ensure
-			object_persistent: is_persistent (an_object, new_transaction)
+			object_persistent: is_persistent_within_transaction (an_object, new_transaction)
 		end
 
 	update (an_object: ANY)
 			-- Write changes of `an_object' to the repository.
 		require
-			object_persistent: is_persistent (an_object, new_transaction)
+			object_persistent: is_persistent_within_transaction (an_object, new_transaction)
 			can_handle_object: can_handle (an_object)
 		do
 			execute_within_implicit_transaction (agent update_within_transaction(an_object, ?), False)
 		ensure
-			object_persistent: is_persistent (an_object, new_transaction)
+			object_persistent: is_persistent_within_transaction (an_object, new_transaction)
 		end
 
 	delete (an_object: ANY)
 			-- Delete `an_object' from the repository.
 		require
-			object_persistent: is_persistent (an_object, new_transaction)
+			object_persistent: is_persistent_within_transaction (an_object, new_transaction)
 			can_handle_object: can_handle (an_object)
 		do
 			execute_within_implicit_transaction (agent delete_within_transaction(an_object, ?), False)
 		ensure
-			not_persistent_anymore: not is_persistent (an_object, new_transaction)
+			not_persistent_anymore: not is_persistent_within_transaction (an_object, new_transaction)
 		end
 
 	execute_deletion_query (deletion_query: PS_OBJECT_QUERY [ANY])
@@ -130,7 +135,7 @@ feature -- Transaction-based data retrieval and querying
 		ensure
 			query_executed: a_query.is_executed
 			transaction_set: a_query.transaction = transaction
-			result_is_persistent: not a_query.result_cursor.after implies is_persistent (a_query.result_cursor.item, transaction)
+			result_is_persistent: not a_query.result_cursor.after implies is_persistent_within_transaction (a_query.result_cursor.item, transaction)
 			can_handle_retrieved_item: not a_query.result_cursor.after implies can_handle (a_query.result_cursor.item)
 			aborted_implies_after: transaction.has_error implies a_query.result_cursor.after
 			only_transaction_conflicts_return_normally: transaction.has_error implies attached {PS_TRANSACTION_CONFLICT} transaction.error
@@ -155,13 +160,13 @@ feature -- Transaction-based data retrieval and querying
 			-- In every other case of errors it will abort `transaction' and raise an exception.
 		require
 			same_repository: transaction.repository = Current.repository
-			object_not_yet_inserted: not is_persistent (an_object, transaction)
+			object_not_yet_inserted: not is_persistent_within_transaction (an_object, transaction)
 			can_handle_object: can_handle (an_object)
 		do
 			handle_error_on_action (agent repository.insert(an_object, transaction), transaction)
 		ensure
-			success_implies_persistent: not transaction.has_error implies is_persistent (an_object, transaction)
-			failure_implies_not_persistent: transaction.has_error implies not is_persistent (an_object, transaction)
+			success_implies_persistent: not transaction.has_error implies is_persistent_within_transaction (an_object, transaction)
+			failure_implies_not_persistent: transaction.has_error implies not is_persistent_within_transaction (an_object, transaction)
 			only_transaction_conflicts_return_normally: transaction.has_error implies attached {PS_TRANSACTION_CONFLICT} transaction.error
 		end
 
@@ -171,7 +176,7 @@ feature -- Transaction-based data retrieval and querying
 			-- In every other case of errors it will abort `transaction' and raise an exception.
 		require
 			same_repository: transaction.repository = Current.repository
-			object_persistent: is_persistent (an_object, transaction)
+			object_persistent: is_persistent_within_transaction (an_object, transaction)
 			can_handle_object: can_handle (an_object)
 		do
 			handle_error_on_action (agent repository.update(an_object, transaction), transaction)
@@ -185,13 +190,13 @@ feature -- Transaction-based data retrieval and querying
 			-- In every other case of errors it will abort `transaction' and raise an exception.
 		require
 			same_repository: transaction.repository = Current.repository
-			object_persistent: is_persistent (an_object, transaction)
+			object_persistent: is_persistent_within_transaction (an_object, transaction)
 			can_handle_object: can_handle (an_object)
 		do
 			handle_error_on_action (agent repository.delete (an_object, transaction), transaction)
 		ensure
-			success_implies_not_persistent: not transaction.has_error implies not is_persistent (an_object, transaction)
-			failure_implies_still_persistent: transaction.has_error implies is_persistent (an_object, transaction)
+			success_implies_not_persistent: not transaction.has_error implies not is_persistent_within_transaction (an_object, transaction)
+			failure_implies_still_persistent: transaction.has_error implies is_persistent_within_transaction (an_object, transaction)
 			only_transaction_conflicts_return_normally: transaction.has_error implies attached {PS_TRANSACTION_CONFLICT} transaction.error
 		end
 
@@ -239,7 +244,8 @@ feature {NONE} -- Implementation
 
 	execute_within_implicit_transaction (action: PROCEDURE [ANY, TUPLE [PS_TRANSACTION]]; readonly: BOOLEAN)
 			-- This function will execute `action' with implicit transaction handling
-			-- It will retry `action' `Current.default_retries' times if there's a transaction conflict, and then raise a `PS_UNRESOLVABLE_TRANSACTION_CONFLICT' error
+			-- It will retry `action' `Current.default_retries' times if there's a transaction conflict,
+			-- and then raise a `PS_UNRESOLVABLE_TRANSACTION_CONFLICT' error.
 		local
 			retries: INTEGER
 			transaction: PS_TRANSACTION
@@ -319,6 +325,8 @@ feature {NONE} -- Initialization
 		do
 			repository := a_repository
 			create {PS_NO_ERROR} last_error
+		ensure
+			repository_set: repository = a_repository
 		end
 
 end
