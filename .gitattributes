@@ -3670,6 +3670,7 @@ Src/library/abel/resources/documentation/technical_documentation/abel_documentat
 Src/library/abel/resources/documentation/technical_documentation/lstlang0.sty -text
 Src/library/abel/resources/documentation/tutorial/abel_tutorial.pdf -text svneol=unset#unset
 Src/library/abel/resources/documentation/tutorial/abel_tutorial.tex -text
+Src/library/abel/resources/documentation/tutorial/lstlang0.sty -text
 Src/library/api_wrapper/implementation/unix/Clib/dl-config -text
 Src/library/api_wrapper/license.lic -text
 Src/library/cURL/readme.txt -text

@@ -601,69 +601,69 @@ We can now add the necessary code to feature \lstinline{explore}:
 \end{lstlisting}
 Using a deletion query instead of a direct delete command depends upon the situation. Usually, a direct command is better if you already have the object in memory, whereas deletion queries are nice to use if the object is not yet loaded from the database.
 
-\section{Tuple queries}
-
-Consider a scenario in which you just want to have a list of all last names of persons in the database. Loading every attribute of each object of type \lstinline!PERSON! might lead to a very bad performance, especially if there is a big object graph attached to each \lstinline!PERSON! object.
-
-To solve this problem, \lstinline{PS_CRUD_EXECUTOR} allows to query data while returning tuples as a result. You can do this by calling feature\\
-
-\lstinline{execute_tuple_query (a_tuple_query)}, \\
-
-where \lstinline{a_tuple_query} is of type \lstinline{PS_TUPLE_QUERY [G]}.
-The result is an iteration cursor over a list of tuples in which the attributes of an object are stored. The order of these attributes is the one defined in feature \lstinline{projection} in \lstinline{PS_TUPLE_QUERY [G]}.
-
-\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Using tuple queries.}, label={lst:tuple_query_simple}]
-	print_all_last_names
-		-- Print the last name of all PERSON objects.
-		local
-			query: PS_TUPLE_QUERY [PERSON]
-			last_name_index: INTEGER
-			single_result: TUPLE
-		do
-			create query.make
-			---- Find out at which position in the tuple the last_name is.
-			last_name_index := query.attribute_index ("last_name")
-			from
-				executor.execute_tuple_query (query)
-			until
-				query.result_cursor.after
-			loop
-				single_result:= query.result_cursor.item
-				print (single_result [last_name_index] )
-			end			
-		end
-\end{lstlisting}
-
-\subsection{Tuple queries and projections}
-By default, a \lstinline!TUPLE_QUERY! object will only return values of attributes which are of a basic type, so no references are followed during a retrieve.
-You can change this default by calling \lstinline{set_projection}, which expects an array of names of the attributes you would like to have.
-If you include an attribute name whose type is not a basic one, ABEL will actually retrieve and build the attribute object, and not just another tuple.
-
-\subsection{Tuple queries and criteria}
-You are restricted to use predefined criteria in tuple queries, because agent criteria expect an object and not a tuple. You can still combine them with logical operators, and even include a predefined criterion on an attribute that is not present in the projection list. These attributes will be loaded internally to check if the object satisfies the criterion, and then they are discarded for the actual result.
-
-\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Using tuple queries with criteria.}, label={lst:tuple_projection_selection}]
-	print_last_names_of_20_year_old
-		-- Print the last name of all PERSON objects with age = 20.
-		local
-			query: PS_TUPLE_QUERY [PERSON]
-		do
-			create query.make
-			-- Only return the last_name of persons
-			query.set_projection (<<"last_name">>)
-			-- Only return persons with age = 20
-			query.set_criterion (factory [["age", "=", 20]])
-			from
-				executor.execute_tuple_query (query)
-			until
-				query.result_cursor.after
-			loop
-				-- As we only have the last_name in the tuple,
-				-- its index has to be 1.
-				print (query.result_cursor.item [1] )
-			end			
-		end
-\end{lstlisting}
+%\section{Tuple queries}
+%
+%Consider a scenario in which you just want to have a list of all last names of persons in the database. Loading every attribute of each object of type \lstinline!PERSON! might lead to a very bad performance, especially if there is a big object graph attached to each \lstinline!PERSON! object.
+%
+%To solve this problem, \lstinline{PS_CRUD_EXECUTOR} allows to query data while returning tuples as a result. You can do this by calling feature\\
+%
+%\lstinline{execute_tuple_query (a_tuple_query)}, \\
+%
+%where \lstinline{a_tuple_query} is of type \lstinline{PS_TUPLE_QUERY [G]}.
+%The result is an iteration cursor over a list of tuples in which the attributes of an object are stored. The order of these attributes is the one defined in feature \lstinline{projection} in \lstinline{PS_TUPLE_QUERY [G]}.
+%
+%\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Using tuple queries.}, label={lst:tuple_query_simple}]
+%	print_all_last_names
+%		-- Print the last name of all PERSON objects.
+%		local
+%			query: PS_TUPLE_QUERY [PERSON]
+%			last_name_index: INTEGER
+%			single_result: TUPLE
+%		do
+%			create query.make
+%			---- Find out at which position in the tuple the last_name is.
+%			last_name_index := query.attribute_index ("last_name")
+%			from
+%				executor.execute_tuple_query (query)
+%			until
+%				query.result_cursor.after
+%			loop
+%				single_result:= query.result_cursor.item
+%				print (single_result [last_name_index] )
+%			end			
+%		end
+%\end{lstlisting}
+%
+%\subsection{Tuple queries and projections}
+%By default, a \lstinline!TUPLE_QUERY! object will only return values of attributes which are of a basic type, so no references are followed during a retrieve.
+%You can change this default by calling \lstinline{set_projection}, which expects an array of names of the attributes you would like to have.
+%If you include an attribute name whose type is not a basic one, ABEL will actually retrieve and build the attribute object, and not just another tuple.
+%
+%\subsection{Tuple queries and criteria}
+%You are restricted to use predefined criteria in tuple queries, because agent criteria expect an object and not a tuple. You can still combine them with logical operators, and even include a predefined criterion on an attribute that is not present in the projection list. These attributes will be loaded internally to check if the object satisfies the criterion, and then they are discarded for the actual result.
+%
+%\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Using tuple queries with criteria.}, label={lst:tuple_projection_selection}]
+%	print_last_names_of_20_year_old
+%		-- Print the last name of all PERSON objects with age = 20.
+%		local
+%			query: PS_TUPLE_QUERY [PERSON]
+%		do
+%			create query.make
+%			-- Only return the last_name of persons
+%			query.set_projection (<<"last_name">>)
+%			-- Only return persons with age = 20
+%			query.set_criterion (factory [["age", "=", 20]])
+%			from
+%				executor.execute_tuple_query (query)
+%			until
+%				query.result_cursor.after
+%			loop
+%				-- As we only have the last_name in the tuple,
+%				-- its index has to be 1.
+%				print (query.result_cursor.item [1] )
+%			end			
+%		end
+%\end{lstlisting}
 
 \chapter{Dealing with references}
 \label {chapter:references}
