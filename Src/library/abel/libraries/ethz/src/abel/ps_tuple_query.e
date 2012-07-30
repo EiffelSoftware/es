@@ -91,7 +91,7 @@ feature -- Utilities
 			 name_exists: projection.has (name)
 		do
 			from
-				Result:= 0
+				Result:= 1
 			until
 				Result > projection.count or name.is_equal (projection [Result])
 			loop
