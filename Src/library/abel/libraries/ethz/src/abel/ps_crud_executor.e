@@ -83,10 +83,12 @@ feature -- Data manipulation
 	insert (an_object: ANY)
 			-- Insert `an_object' into the repository.
 		require
-			object_not_persistent_yet: not is_persistent_within_transaction (an_object, new_transaction)
 			can_handle_object: can_handle (an_object)
 		do
-			execute_within_implicit_transaction (agent insert_within_transaction(an_object, ?), False)
+			if not is_persistent_within_transaction (an_object, new_transaction)
+			then
+				execute_within_implicit_transaction (agent insert_within_transaction(an_object, ?), False)
+			end
 		ensure
 			object_persistent: is_persistent_within_transaction (an_object, new_transaction)
 		end
@@ -160,10 +162,12 @@ feature -- Transaction-based data retrieval and querying
 			-- In every other case of errors it will abort `transaction' and raise an exception.
 		require
 			same_repository: transaction.repository = Current.repository
-			object_not_yet_inserted: not is_persistent_within_transaction (an_object, transaction)
 			can_handle_object: can_handle (an_object)
 		do
-			handle_error_on_action (agent repository.insert(an_object, transaction), transaction)
+			if not is_persistent_within_transaction (an_object, transaction)
+			then
+				handle_error_on_action (agent repository.insert(an_object, transaction), transaction)
+			end
 		ensure
 			success_implies_persistent: not transaction.has_error implies is_persistent_within_transaction (an_object, transaction)
 			failure_implies_not_persistent: transaction.has_error implies not is_persistent_within_transaction (an_object, transaction)
