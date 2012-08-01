@@ -19,8 +19,9 @@ feature 	-- Tutorial exploration features
 		local
 			p1, p2, p3: PERSON
 			c1, c2, c3: CHILD
+			repo_factory: REPOSITORY_FACTORY
 		do
-			print ("-o- ABEL Tutorial -o-")
+			print ("---o--- ABEL Tutorial ---o---")
 			io.new_line
 			print ("Insert 3 new persons in the database")
 			io.new_line
@@ -76,6 +77,7 @@ feature 	-- Tutorial exploration features
 			print ("Celebrating the birthday fo all PERSON objects in the repository")
 			update_ages
 			print_result (simple_query)
+
 		end
 
 feature {NONE} -- Initialization

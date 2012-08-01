@@ -18,7 +18,7 @@ feature
 
 	acquire_connection: PS_SQL_CONNECTION
 			-- Get a new connection.
-			-- The transaction isolation level of th new connection is the same as in `Current.transaction_isolation_level', and autocommit is disabled.
+			-- The transaction isolation level of the new connection is the same as in `Current.transaction_isolation_level', and autocommit is disabled.
 		local
 			internal_connection: MYSQLI_CLIENT
 		do

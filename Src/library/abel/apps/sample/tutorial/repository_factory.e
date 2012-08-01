@@ -1,27 +1,22 @@
 note
-	description: "A sample factory class to create repositories with a database backend."
-	author: "Roman Schmocker"
+	description: "A factory class to create repositories with a database backend."
+	author: "Roman Schmocker, Marco Piccioni"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
 	REPOSITORY_FACTORY
 
-feature -- Connection details
-
-	username:STRING = "tutorial"
-	password:STRING = "tutorial"
-
-	db_name:STRING = "tutorial"
-	db_host:STRING = "127.0.0.1"
-	db_port:INTEGER = 3306
-
-	sqlite_filename: STRING = "tutorial.db"
-
 feature -- Factory methods
 
-	create_mysql_repository: PS_RELATIONAL_REPOSITORY
-		-- Create a MySQL repository.
+	create_mysql_repository (username, password, db_name, db_host: STRING; db_port: INTEGER): PS_RELATIONAL_REPOSITORY
+		-- Create a MySQL repository providing all the necessary information.
+		require
+			username_not_empty: not username.is_empty
+			password_not_empty: not password.is_empty
+			db_name_not_empty: not db_name.is_empty
+			db_host_not_empty: not db_host.is_empty
+			db_port_legal: db_port > 1024 and db_port < 65535
 		local
 			database: PS_MYSQL_DATABASE
 			mysql_strings: PS_MYSQL_STRINGS
@@ -33,14 +28,32 @@ feature -- Factory methods
 			create Result.make (backend)
 		end
 
-	create_sqlite_repository: PS_RELATIONAL_REPOSITORY
-		-- Create an SQLite repository.
+	create_mysql_repository_with_default_host_port (username, password, db_name: STRING): PS_RELATIONAL_REPOSITORY
+		-- Create a MySQL repository relying on the default host 127.0.0.1 and port 3306.
+		require
+			username_not_empty: not username.is_empty
+			password_not_empty: not password.is_empty
+			db_name_not_empty: not db_name.is_empty
+		local
+			database: PS_MYSQL_DATABASE
+			mysql_strings: PS_MYSQL_STRINGS
+			backend: PS_GENERIC_LAYOUT_SQL_BACKEND
+		do
+			create database.make (username, password, db_name, "127.0.0.1", 3306)
+			create mysql_strings
+			create backend.make (database, mysql_strings)
+			create Result.make (backend)
+		end
+
+	create_sqlite_repository (db_file_name: STRING): PS_RELATIONAL_REPOSITORY
+		-- Create an SQLite repository named `db_file_name'.
+		-- If passing an empty string, then a private, temporary on-disk database is created.
 		local
 			database: PS_SQLITE_DATABASE
 			sqlite_strings: PS_SQLITE_STRINGS
 			backend: PS_GENERIC_LAYOUT_SQL_BACKEND
 		do
-			create database.make (sqlite_filename)
+			create database.make (db_file_name)
 			create sqlite_strings
 			create backend.make (database, sqlite_strings)
 			create Result.make (backend)
