@@ -19,7 +19,8 @@ feature 	-- Tutorial exploration features
 		local
 			p1, p2, p3: PERSON
 			c1, c2, c3: CHILD
-			repo_factory: REPOSITORY_FACTORY
+			repo_factory: PS_REPOSITORY_FACTORY
+			mysql_repo: PS_RELATIONAL_REPOSITORY
 		do
 			print ("---o--- ABEL Tutorial ---o---")
 			io.new_line
@@ -77,7 +78,9 @@ feature 	-- Tutorial exploration features
 			print ("Celebrating the birthday fo all PERSON objects in the repository")
 			update_ages
 			print_result (simple_query)
-
+			create repo_factory
+			mysql_repo := repo_factory.create_mysql_repository_with_default_host_port ("tutorial","tutorial","tutorial")
+			create executor.make (mysql_repo)
 		end
 
 feature {NONE} -- Initialization

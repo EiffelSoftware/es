@@ -96,7 +96,7 @@
 ABEL (A Better EiffelStore Library) is an object-oriented persistence library written in Eiffel and aiming at seamlessly integrating various kinds of data stores.
  
 \section{Setting things up}
-We are assuming you have checked out the ABEL code from the EiffelStudio SVN repository\footnote{https://svn.eiffel.com/eiffelstudio/branches/eth/eve/Src/library/abel}, and have EiffelStudio installed. Launch it and in the initial window choose "tutorial\_project". If it is not there just push "Add project" and navigate to the location where you downloaded ABEL, and look for the \emph{tutorial\_project.ecf} project file in \emph{abel/apps/sample/tutorial/}. You can then load and compile the project. To be able to compile the ABEL tutorial you don't need particular dependencies, because we are using an in-memory database simulating a relational database. If you want to experiment with ABEL's support for a full-fledged relational back-end (like MySQL or SQLite, see Chapter~\ref{chapter:advanced_initialization}), you need to install the databases and the appropriate drivers.
+We are assuming you have checked out the ABEL code from the EiffelStudio SVN repository\footnote{https://svn.eiffel.com/eiffelstudio/branches/eth/eve/Src/library/abel}, and have EiffelStudio installed. Launch it and in the initial window choose "tutorial\_project". If it is not there just push "Add project" and navigate to the location where you downloaded ABEL, and look for the \emph{tutorial\_project.ecf} project file in \emph{abel/apps/sample/tutorial/}. You can then load and compile the project. To be able to compile the ABEL tutorial you don't need particular dependencies, because we are using an in-memory database simulating a relational database. If you want to experiment with ABEL's support for full-fledged relational back-ends (like MySQL or SQLite), you need to install the databases and the appropriate drivers first.
 
 \section{Getting started}
 We will be using \lstinline!PERSON! objects to show the usage of the API. 
@@ -165,8 +165,8 @@ There are three very important classes in ABEL:
  
 \end{itemize}
 To start using the library, we first need to create an object of type\\
-\lstinline!PS_REPOSITORY!. In this case we will be creating a more specific object of type \lstinline!PS_IN_MEMORY_REPOSITORY!. \\
-As a second step, we need to create an object of type  \lstinline{PS_CRUD_EXECUTOR}, useful to execute CRUD operations. To create it, we will pass as an argument to its creation feature the previously created repository.
+\lstinline!PS_REPOSITORY!. In this case we will be creating a more specific object of type \lstinline!PS_IN_MEMORY_REPOSITORY!. More in general, ABEL provides support for creating \lstinline{PS_RELATIONAL_REPOSITORY} objects with the factory class \lstinline!PS_REPOSITORY_FACTORY!.\\
+As a second step, we need to create an object of type  \lstinline{PS_CRUD_EXECUTOR}. To do so, we will pass the previously created repository as an argument to its creation feature.
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The TUTORIAL class}, label={lst:tutorial_class}]
 class TUTORIAL
@@ -837,64 +837,64 @@ You are welcome to test ABEL's capability with very complex objects, however ple
 To overcome this problem, you can either use simple object structures, or you can tell ABEL to only load or store an object up to a certain depth.
 The default ABEL's behavior with respect to the object graph can be changed by using feature \lstinline{default_object_graph} in class \lstinline{PS_REPOSITORY} and passing an appropriate object of type \lstinline{PS_DEFAULT_OBJECT_GRAPH_SETTINGS}.
 
-\chapter{Advanced Initialization}
-\label{chapter:advanced_initialization}
-
-The in-memory repository we've used so far doesn't store data permanently.
-This is acceptable for testing or for a tutorial, but not in a real application.
-Therefore, we will be now looking at the ABEL support for the MySQL and SQLite databases. For MySQL, you will need to create a \lstinline!PS_MYSQL_DATABASE! object and a \lstinline!PS_MYSQL_STRINGS! object.
-Then you will use them to create a \lstinline!PS_GENERIC_LAYOUT_SQL_BACKEND!, which you will need in turn to create the \lstinline!PS_RELATIONAL_REPOSITORY!.
-
-The following little factory class shows the process for both a MySQL and a SQLite database:
-
-\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Setting up a MySQL and a SQLite repositories}, label={lst:advanced_initialization}]
-
-class 
-	REPOSITORY_FACTORY
-
-feature -- Connection details
-	
-	username:STRING = "tutorial"
-	password:STRING = "tutorial"
-
-	db_name:STRING = "tutorial"
-	db_host:STRING = "127.0.0.1"
-	db_port:INTEGER = 3306
-
-	sqlite_filename: STRING = "tutorial.db"
-
-feature -- Factory methods
-
-	create_mysql_repository: PS_RELATIONAL_REPOSITORY
-		-- Create a MySQL repository
-		local
-			database: PS_MYSQL_DATABASE
-			mysql_strings: PS_MYSQL_STRINGS
-			backend: PS_GENERIC_LAYOUT_SQL_BACKEND
-		do
-			create database.make (username, password, db_name, db_host, db_port)
-			create mysql_strings
-			create backend.make (database, mysql_strings)
-			create Result.make (backend)
-		end
-
-	create_sqlite_repository: PS_RELATIONAL_REPOSITORY
-		-- Create an SQLite repository
-		local
-			database: PS_SQLITE_DATABASE
-			sqlite_strings: PS_SQLITE_STRINGS
-			backend: PS_GENERIC_LAYOUT_SQL_BACKEND
-		do
-			create database.make (sqlite_filename)
-			create sqlite_strings
-			create backend.make (database, sqlite_strings)
-			create Result.make (backend)
-		end
-end
-
-\end{lstlisting}
-
-All examples from this tutorial work exactly the same, regardless of the specific kind of repository you are working with.
+%\chapter{Advanced Initialization}
+%\label{chapter:advanced_initialization}
+%
+%The in-memory repository we've used so far doesn't store data permanently.
+%This is acceptable for testing or for a tutorial, but not in a real application.
+%Therefore, we will be now looking at the ABEL support for the MySQL and SQLite databases. For MySQL, you will need to create a \lstinline!PS_MYSQL_DATABASE! object and a \lstinline!PS_MYSQL_STRINGS! object.
+%Then you will use them to create a \lstinline!PS_GENERIC_LAYOUT_SQL_BACKEND!, which you will need in turn to create the \lstinline!PS_RELATIONAL_REPOSITORY!.
+%
+%The following little factory class shows the process for both a MySQL and a SQLite database:
+%
+%\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Setting up a MySQL and a SQLite repositories}, label={lst:advanced_initialization}]
+%
+%class 
+%	REPOSITORY_FACTORY
+%
+%feature -- Connection details
+%	
+%	username:STRING = "tutorial"
+%	password:STRING = "tutorial"
+%
+%	db_name:STRING = "tutorial"
+%	db_host:STRING = "127.0.0.1"
+%	db_port:INTEGER = 3306
+%
+%	sqlite_filename: STRING = "tutorial.db"
+%
+%feature -- Factory methods
+%
+%	create_mysql_repository: PS_RELATIONAL_REPOSITORY
+%		-- Create a MySQL repository
+%		local
+%			database: PS_MYSQL_DATABASE
+%			mysql_strings: PS_MYSQL_STRINGS
+%			backend: PS_GENERIC_LAYOUT_SQL_BACKEND
+%		do
+%			create database.make (username, password, db_name, db_host, db_port)
+%			create mysql_strings
+%			create backend.make (database, mysql_strings)
+%			create Result.make (backend)
+%		end
+%
+%	create_sqlite_repository: PS_RELATIONAL_REPOSITORY
+%		-- Create an SQLite repository
+%		local
+%			database: PS_SQLITE_DATABASE
+%			sqlite_strings: PS_SQLITE_STRINGS
+%			backend: PS_GENERIC_LAYOUT_SQL_BACKEND
+%		do
+%			create database.make (sqlite_filename)
+%			create sqlite_strings
+%			create backend.make (database, sqlite_strings)
+%			create Result.make (backend)
+%		end
+%end
+%
+%\end{lstlisting}
+%
+%All examples from this tutorial work exactly the same, regardless of the specific kind of repository you are working with.
 
 \chapter{Transaction handling}
 

@@ -13,7 +13,6 @@ feature -- Factory methods
 		-- Create a MySQL repository providing all the necessary information.
 		require
 			username_not_empty: not username.is_empty
-			password_not_empty: not password.is_empty
 			db_name_not_empty: not db_name.is_empty
 			db_host_not_empty: not db_host.is_empty
 			db_port_legal: db_port > 1024 and db_port < 65535
@@ -32,7 +31,6 @@ feature -- Factory methods
 		-- Create a MySQL repository relying on the default host 127.0.0.1 and port 3306.
 		require
 			username_not_empty: not username.is_empty
-			password_not_empty: not password.is_empty
 			db_name_not_empty: not db_name.is_empty
 		local
 			database: PS_MYSQL_DATABASE
