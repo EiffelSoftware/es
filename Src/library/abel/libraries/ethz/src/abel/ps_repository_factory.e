@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	REPOSITORY_FACTORY
+	PS_REPOSITORY_FACTORY
 
 feature -- Factory methods
 
