@@ -1,5 +1,5 @@
 note
-	description: "A repository that holds values in memory, but takes objects apart and stores them in a relational-like fashion."
+	description: "A repository that while holding objects in memory, decomposes them and stores them in a relational-like fashion."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -205,6 +205,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Implementation
 	retriever: PS_RETRIEVAL_MANAGER
 			-- A retrieval manager to build objects.
 
-	collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER[ITERABLE [detachable ANY]]]
+	collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]]]
 			-- The collection handlers registered with `Current'
 end
