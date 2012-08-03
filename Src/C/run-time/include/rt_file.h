@@ -2,7 +2,7 @@
 	description: "Private declaration for CECIL."
 	date:		"$Date$"
 	revision:	"$Revision$"
-	copyright:	"Copyright (c) 1985-2006, Eiffel Software."
+	copyright:	"Copyright (c) 1985-2012, Eiffel Software."
 	license:	"GPL version 2 see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"Commercial license is available at http://www.eiffel.com/licensing"
 	copying: "[
@@ -26,11 +26,11 @@
 			51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 */
 
@@ -111,15 +111,21 @@ extern "C" {
 #ifdef EIF_WINDOWS
 #	ifdef EIF_64_BITS
 #		define rt_stat		_stat64
+#		define rt_wstat		_wstat64
 #		define rt_fstat		_fstat64
 #	else
 #		define rt_stat		_stat64i32
+#		define rt_wstat		_wstat64i32
 #		define rt_fstat		_fstat64i32
 #	endif
 #else
 #	define rt_stat			stat
 #	define rt_lstat			lstat
 #	define rt_fstat			fstat
+#endif
+
+#ifdef EIF_WINDOWS
+extern void rt_file_stat_16(EIF_NATURAL_16 *path, rt_stat_buf *buf);
 #endif
 
 #ifdef __cplusplus

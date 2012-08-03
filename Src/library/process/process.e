@@ -21,7 +21,7 @@ deferred class
 
 feature {NONE} -- Initialization
 
-	make (a_exec_name: STRING; args: detachable LIST [STRING]; a_working_directory: like working_directory)
+	make (a_exec_name: READABLE_STRING_GENERAL; args: detachable LIST [READABLE_STRING_GENERAL]; a_working_directory: detachable READABLE_STRING_GENERAL)
 			-- Create process object with `a_exec_name' as executable with `args'
 			-- as arguments, and with `a_working_directory' as its working directory.
 			-- Apply Void to `a_working_directory' if no working directory is specified.
@@ -33,12 +33,12 @@ feature {NONE} -- Initialization
 		ensure
 			command_line_not_empty: command_line /= Void and then not command_line.is_empty
 			working_directory_set: a_working_directory /= Void implies
-				(attached working_directory as l_wd and then l_wd.same_string (a_working_directory))
+				(attached working_directory as l_wd and then l_wd.same_string_general (a_working_directory))
 			working_directory_set: a_working_directory = Void implies working_directory = Void
 			init_succeeded: parameter_initialized
 		end
 
-	make_with_command_line (cmd_line: STRING; a_working_directory: like working_directory)
+	make_with_command_line (cmd_line: READABLE_STRING_GENERAL; a_working_directory: detachable READABLE_STRING_GENERAL)
 			-- Create process object with `cmd_line' as command line in which executable and
 			-- arguments are included and with `a_working_directory' as its working directory.
 			-- Apply Void to `a_working_directory' if no working directory is specified.		
@@ -50,7 +50,7 @@ feature {NONE} -- Initialization
 		ensure
 			command_line_not_empty: command_line /= Void and then not command_line.is_empty
 			working_directory_set: a_working_directory /= Void implies
-				(attached working_directory as l_wd and then l_wd.same_string (a_working_directory))
+				(attached working_directory as l_wd and then l_wd.same_string_general (a_working_directory))
 			working_directory_set: a_working_directory = Void implies working_directory = Void
 			init_succeeded: parameter_initialized
 		end
@@ -71,7 +71,7 @@ feature -- IO redirection
 			input_file_name_void: input_file_name = Void
 		end
 
-	redirect_input_to_file (a_file_name: STRING)
+	redirect_input_to_file (a_file_name: READABLE_STRING_GENERAL)
 			-- Redirect input stream of process to a file
 			-- with name`a_file_name'.
 		require
@@ -80,11 +80,11 @@ feature -- IO redirection
 			a_file_name_not_empty: not a_file_name.is_empty
 		do
 			input_direction := {PROCESS_REDIRECTION_CONSTANTS}.to_file
-			input_file_name := a_file_name
+			input_file_name := a_file_name.as_string_32
 		ensure
 			input_redirectd_to_file:
 				input_direction = {PROCESS_REDIRECTION_CONSTANTS}.to_file
-			input_file_name_set: input_file_name = a_file_name
+			input_file_name_set: attached input_file_name as l_file_name and then l_file_name.same_string_general (a_file_name)
 		end
 
 	cancel_input_redirection
@@ -605,20 +605,20 @@ feature -- Access
 	buffer_size: INTEGER
 			-- Size of buffer used for interprocess data transmission
 
-	command_line: STRING
+	command_line: IMMUTABLE_STRING_32
 			-- Program name, with its arguments, if any, which will be run
 			-- in launched process
 
-	working_directory: detachable STRING
+	working_directory: detachable IMMUTABLE_STRING_32
 			-- Working directory of the program to be launched
 
-	input_file_name: detachable STRING
+	input_file_name: detachable IMMUTABLE_STRING_32
 			-- File name served as the redirected input stream of the new process
 
-	output_file_name: detachable STRING
+	output_file_name: detachable IMMUTABLE_STRING_32
 			-- File name served as the redirected output stream of the new process
 
-	error_file_name: detachable STRING
+	error_file_name: detachable IMMUTABLE_STRING_32
 			-- File name served as the redirected error stream of the new process
 
 	input_direction: INTEGER
@@ -773,17 +773,17 @@ feature {NONE} -- Implementation
 	on_successful_launch_handler: detachable ROUTINE [ANY, TUPLE]
 			-- Agent called when process launch is successful
 
-	arguments: detachable LINKED_LIST [STRING]
+	arguments: detachable LIST [READABLE_STRING_GENERAL]
 			-- Arguments of the program indicated by file_name
 
 	timer: PROCESS_TIMER
 			-- Timer used to check process termination so that some cleanups are done
 
-	initialize_working_directory (a_working_directory: like working_directory)
+	initialize_working_directory (a_working_directory: detachable READABLE_STRING_GENERAL)
 			-- Setup `working_directory' according to `a_working_directory'.
 		do
 			if a_working_directory /= Void then
-				create working_directory.make_from_string (a_working_directory)
+				working_directory := a_working_directory.as_string_32
 			else
 				working_directory := Void
 			end
@@ -840,13 +840,13 @@ feature {NONE} -- Implementation
 				(last_termination_successful)
 		end
 
-	is_separator (a_char: CHARACTER): BOOLEAN
+	is_separator (a_char: CHARACTER_32): BOOLEAN
 			-- Is `a_char' a separator for argument in command line?
 		do
 			Result := a_char = ' '
 		end
 
-	separated_words (a_cmd: STRING): LIST [STRING]
+	separated_words (a_cmd: STRING_32): ARRAYED_LIST [STRING_32]
 			-- Break shell command held in 'a_cmd' into words and
 			-- return retrieved word list.
 		require
@@ -856,21 +856,21 @@ feature {NONE} -- Implementation
 			l_in_quote: BOOLEAN
 			l_was_closing_quote: BOOLEAN
 			l_was_backslash: BOOLEAN
-			l_current_word: STRING
+			l_current_word: STRING_32
 			l_pos: INTEGER
 			l_pos_all: INTEGER
 			l_length: INTEGER
-			l_char: CHARACTER
+			l_char: CHARACTER_32
 			l_should_process: BOOLEAN
 		do
-			create {LINKED_LIST [STRING]} Result.make
+			create {ARRAYED_LIST [STRING_32]} Result.make (1)
 			if not a_cmd.is_empty then
 				create l_current_word.make (128)
 				from
 					l_length := a_cmd.count
 					l_pos := 1
 					l_pos_all := 1
-					l_char := a_cmd.item (l_pos_all)
+					l_char := a_cmd.code (l_pos_all).to_character_32
 				until
 					l_pos_all > l_length or else l_char = '%U'
 				loop
@@ -915,7 +915,7 @@ feature {NONE} -- Implementation
 							l_was_backslash := True
 							l_current_word.append_character (l_char)
 							l_pos := l_pos + 1
-							l_char := a_cmd.item (l_pos)
+							l_char := a_cmd.code (l_pos).to_character_32
 						when '%'' then
 							l_in_simple := True
 						when '"' then
@@ -958,7 +958,7 @@ feature {NONE} -- Implementation
 					end
 					l_pos_all := l_pos_all + 1
 					if l_pos_all <= l_length then
-						l_char := a_cmd.item (l_pos_all)
+						l_char := a_cmd.code (l_pos_all).to_character_32
 					end
 				end
 				if l_pos > 1 then

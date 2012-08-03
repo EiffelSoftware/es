@@ -166,6 +166,7 @@ test non-conforming-reference-attribute-access	noncon021 tcf pass non-conforming
 test non-conforming-constant-access	noncon022 tcf pass non-conforming
 test non-conforming-crash						noncon023 tcf pass non-conforming
 test finalize-with-nonconforming-inheritance			noncon024 tcf fail finalizing non-conforming
+test inline-with-nonconforming-inheritance			noncon025 tcf fail finalizing non-conforming inlining
 
 -- Replication
 test replicate-precursor				replication001 tcf pass replication
@@ -539,6 +540,7 @@ test	duplicate-vfac1				valid274 tcf fail validity
 test	non-conforming-equality			valid275 tcf pass validity conformance equality warning
 test	missing-assigner-feature		valid276 tcf pass validity fixed
 test	insufficiently-exported-assigner-feature valid277 tcf fail validity assigner
+test	invalid-static-inspect-constant	 	valid278 tcf fail validity
 
 -- Multiple error reporting tests
 test	multi-error-degree-4	multierr001 tcf pass multi-errors
@@ -1024,6 +1026,7 @@ test 	inline-agent-removal-crash-2	incr425	tcf fail incrementality agents
 test 	finalization-with-error-crash	incr426	tcf fail incrementality agents finalizing
 test 	create-generic-remove-generic-inheritance incr427 tcf fail incrementality generic
 test	config-remove-library-indirectly	incr428 tcf fail incrementality
+test	ececil-undefined-symbol-4	incr429	tcf fail incrementality
 
 
 -- Melting
@@ -2514,7 +2517,8 @@ test	multi-constraint-static-access-2			multicon057 tcf fail multiconstraint
 test	inherited-unary-with-generic				multicon058 tcf pass multiconstraint formal
 test	multi-constraint-real-type-in-crash			multicon059 tcf fail multiconstraint formal
 test	saving-multiconstraint-generic-class-crash	multicon060 tcf pass multiconstraint formal incrementality
-test	 expanded-generic-with-multiconstraint		multicon061 tcf pass multiconstraint formal execution
+test	expanded-generic-with-multiconstraint		multicon061 tcf pass multiconstraint formal execution
+test	multi-constraint-with-bracket			multicon062 tcf pass multiconstraint validity
 
 -- tests for expanded types
 test	expanded-array-attached-reference-array			expanded001 tcf pass expanded
@@ -2649,6 +2653,7 @@ test	indirect-self-init-attribute		attach093 tcf pass attached_types void_safe s
 test	initialization-error-suppression	attach094 tcf pass attached_types void_safe stable attribute generic validity
 test	nested-tuple-undetected-vevi		attach095 tcf fail attached_types void_safe validity
 test	missing-vevi-error-with-agent		attach096 tcf fail attached_types void_safe validity agents
+test	void-safe-convert-to-generic		attach097 tcf fail attached_types void_safe validity convert
 
 -- Tests for conformance in general
 test	basic-conformance		conform001 tcf pass conformance
