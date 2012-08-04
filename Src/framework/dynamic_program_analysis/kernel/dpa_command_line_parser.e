@@ -70,22 +70,22 @@ feature -- Parsing
 
 			-- Options related to program locations, variables and expressions
 
-			create l_location_search.make_with_long_form ("search-locations")
+			create l_location_search.make_with_long_form ("location-search")
 			l_location_search.set_description (
 				"Choose program locations automatically.%
-				%Format: --search-locations")
+				%Format: --location-search")
 			l_parser.options.force_last (l_location_search)
 
-			create l_expression_search.make_with_long_form ("search-expressions")
+			create l_expression_search.make_with_long_form ("expression-search")
 			l_expression_search.set_description (
 				"Choose expressions to be evaluated automatically.%
-				%Format: --search-expressions")
+				%Format: --expression-search")
 			l_parser.options.force_last (l_expression_search)
 
-			create l_all_locations.make_with_long_form ("use-all-locations")
+			create l_all_locations.make_with_long_form ("all-locations")
 			l_all_locations.set_description (
 				"Consider all program locations.%
-				%Format: --use-all-locations")
+				%Format: --all-locations")
 			l_parser.options.force_last (l_all_locations)
 
 			create l_variables.make_with_long_form ("variables")
@@ -417,12 +417,13 @@ feature {NONE} -- Implementation
 			a_parameters_not_void: a_parameters /= Void
 		local
 			l_expression: STRING
-			l_expressions: LINKED_LIST [STRING]
+			l_expressions: DS_HASH_SET [STRING]
 		do
 			a_parameters.left_adjust
 			a_parameters.right_adjust
 
-			create l_expressions.make
+			create l_expressions.make_default
+			l_expressions.set_equality_tester (string_equality_tester)
 
 			-- Determine input format of `a_parameters'
 			if a_parameters.has (';') then
@@ -438,7 +439,7 @@ feature {NONE} -- Implementation
 						die (-1)
 					end
 
-					l_expressions.extend (l_expression)
+					l_expressions.force_last (l_expression)
 				end
 			else
 				-- Case: expr
@@ -449,7 +450,7 @@ feature {NONE} -- Implementation
 					die (-1)
 				end
 
-				l_expressions.extend (a_parameters)
+				l_expressions.force_last (a_parameters)
 			end
 
 			-- Set up configuration
@@ -514,7 +515,7 @@ feature {NONE} -- Implementation
 		local
 			l_location_with_expression: LIST [STRING]
 			l_expression: STRING
-			l_expressions: LINKED_LIST [STRING]
+			l_expressions: DS_HASH_SET [STRING]
 			l_expressions_at_location: DS_HASH_SET [STRING]
 			l_location: INTEGER
 			l_location_string: STRING
@@ -528,7 +529,8 @@ feature {NONE} -- Implementation
 			create l_location_expressions_map.make_default
 
 			-- Initialize the set of expressions.
-			create l_expressions.make
+			create l_expressions.make_default
+			l_expressions.set_equality_tester (string_equality_tester)
 
 			-- Determine input format of `a_parameters'.
 			if a_parameters.has (';') then
@@ -551,7 +553,7 @@ feature {NONE} -- Implementation
 					end
 
 					-- Add the expression to the set of expressions
-					l_expressions.extend (l_expression)
+					l_expressions.force_last (l_expression)
 				end
 			elseif a_parameters.has (':') then
 				-- Case: loc:expr
@@ -569,7 +571,7 @@ feature {NONE} -- Implementation
 				l_location_expressions_map.put (l_expressions_at_location, l_location)
 
 				-- Add the expression to the set of expressions
-				l_expressions.extend (l_expression)
+				l_expressions.force_last (l_expression)
 			else
 				-- Case: invalid input format
 				print_parsing_error_message ("The specified program location(s) with expression(s) is respectively are invalid.%N")
@@ -704,7 +706,6 @@ feature {NONE} -- Implementation
 				end
 
 				-- Set up configuration
-				configuration.set_is_offline_processor_selected (True)
 				configuration.set_is_single_json_data_file_writer_selected (True)
 				configuration.set_single_json_data_file_writer_options ([l_output_path, l_file_name])
 			else
@@ -712,7 +713,6 @@ feature {NONE} -- Implementation
 				die (-1)
 			end
 		ensure
-			is_offline_processor_selected_set: configuration.is_offline_processor_selected
 			is_single_json_data_file_writer_selected_set: configuration.is_single_json_data_file_writer_selected
 			single_json_data_file_writer_options_not_void: configuration.single_json_data_file_writer_options /= Void
 		end
@@ -758,7 +758,6 @@ feature {NONE} -- Implementation
 				end
 
 				-- Set up configuration
-				configuration.set_is_online_processor_selected (True)
 				configuration.set_is_multiple_json_data_files_writer_selected (True)
 				configuration.set_multiple_json_data_files_writer_options ([l_output_path, l_file_name_prefix])
 			else
@@ -766,7 +765,6 @@ feature {NONE} -- Implementation
 				die (-1)
 			end
 		ensure
-			is_online_processor_selected_set: configuration.is_online_processor_selected
 			is_multiple_json_data_files_writer_selected_set: configuration.is_multiple_json_data_files_writer_selected
 			multiple_json_data_files_writer_options_not_void: configuration.multiple_json_data_files_writer_options /= Void
 		end
@@ -812,7 +810,6 @@ feature {NONE} -- Implementation
 				end
 
 				-- Set up configuration
-				configuration.set_is_online_processor_selected (True)
 				configuration.set_is_serialized_data_files_writer_selected (True)
 				configuration.set_serialized_data_files_writer_options ([l_output_path, l_file_name_prefix])
 			else
@@ -820,7 +817,6 @@ feature {NONE} -- Implementation
 				die (-1)
 			end
 		ensure
-			is_online_processor_selected_set: configuration.is_online_processor_selected
 			is_serialized_data_files_writer_selected_set: configuration.is_serialized_data_files_writer_selected
 			serialized_data_files_writer_options_not_void: configuration.serialized_data_files_writer_options /= Void
 		end
@@ -896,16 +892,14 @@ feature {NONE} -- Implementation
 				end
 
 				-- Set up configuration
-				configuration.set_is_online_processor_selected (True)
-				configuration.set_is_mysql_writer_selected (True)
+				configuration.set_is_mysql_data_writer_selected (True)
 				configuration.set_mysql_data_writer_options ([l_host, l_user, l_password, l_database, l_port.to_integer])
 			else
 				print_parsing_error_message ("The specified MYSQL data writer options are invalid.")
 				die (-1)
 			end
 		ensure
-			is_online_processor_selected_set: configuration.is_online_processor_selected
-			is_mysql_writer_selected_set: configuration.is_mysql_writer_selected
+			is_mysql_writer_selected_set: configuration.is_mysql_data_writer_selected
 			mysql_data_writer_options_not_void: configuration.mysql_data_writer_options /= Void
 		end
 

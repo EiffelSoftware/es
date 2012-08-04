@@ -9,22 +9,34 @@ class
 
 feature -- Access
 
-	analysis_order_json_string: JSON_STRING
-			-- JSON_STRING representing "analysis_order"
+	class_json_string: JSON_STRING
+			-- JSON_STRING representing "class"
 		once
-			create Result.make_json ("analysis_order")
+			create Result.make_json ("class")
 		end
 
-	data_json_string: JSON_STRING
-			-- JSON_STRING representing "data"
+	feature_json_string: JSON_STRING
+			-- JSON_STRING representing "feature"
 		once
-			create Result.make_json ("data")
+			create Result.make_json ("feature")
 		end
 
-	call_stack_count_json_string: JSON_STRING
-			-- JSON_STRING representing "call_stack_count"
+	number_of_analyses_json_string: JSON_STRING
+			-- JSON_STRING representing "number_of_analyses"
 		once
-			create Result.make_json ("call_stack_count")
+			create Result.make_json ("number_of_analyses")
+		end
+
+	analysis_order_pairs_json_string: JSON_STRING
+			-- JSON_STRING representing "analysis_order_pairs"
+		once
+			create Result.make_json ("analysis_order_pairs")
+		end
+
+	expression_value_transitions_json_string: JSON_STRING
+			-- JSON_STRING representing "expression_value_transitions"
+		once
+			create Result.make_json ("expression_value_transitions")
 		end
 
 	pre_bp_json_string: JSON_STRING

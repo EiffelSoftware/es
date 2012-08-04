@@ -52,7 +52,7 @@ feature -- Basic operations
 			find_all_post_state_breakpoint_slots
 
 			-- Choose pre-states breakpoint slots
-			choose_pre_state_breakpoint_slots
+			choose_locations
 
 			-- Setup expressions which are evaluated
 			setup_expressions
@@ -69,14 +69,8 @@ feature -- Basic operations
 			-- Remove the last debugging session.
 			remove_debugger_session
 
-			-- Post process data for writing to disk.
-			processor.post_process
-
 			-- Write data to disk
-			write
-
-			-- Generate additional files
-			generate_meta_data_files
+			writer.write
 		end
 
 feature {NONE} -- Implemenation
@@ -143,7 +137,7 @@ feature {NONE} -- Implemenation
 				a_configuration.is_single_json_data_file_writer_selected xor
 				a_configuration.is_multiple_json_data_files_writer_selected xor
 				a_configuration.is_serialized_data_files_writer_selected xor
-				a_configuration.is_mysql_writer_selected
+				a_configuration.is_mysql_data_writer_selected
 
 			if not l_writer_combination_valid then
 				error_message.append ("Multiple writers were specified.%N")
@@ -201,7 +195,7 @@ feature {NONE} -- Implemenation
 				is_configuration_valid := is_configuration_valid and l_serialized_data_writer_options_valid
 			end
 
-			if a_configuration.is_mysql_writer_selected then
+			if a_configuration.is_mysql_data_writer_selected then
 				l_mysql_data_writer_options := a_configuration.mysql_data_writer_options
 				l_mysql_writer_options_valid := l_mysql_data_writer_options.port >= 1 and l_mysql_data_writer_options.port <= 65535
 				if not l_mysql_writer_options_valid then
@@ -217,8 +211,36 @@ feature {NONE} -- Implemenation
 
 feature {NONE} -- Implementation
 
+	process_and_write (a_bp: BREAKPOINT; a_state: EPA_STATE)
+			-- Process `a_bp' and `a_state' using `processor' and write
+			-- results of processing using `writer'.
+		require
+			a_bp_not_void: a_bp /= Void
+			a_state_not_void: a_state /= Void
+		do
+			processor.process (a_bp, a_state)
+			writer.add_analysis_order_pairs (processor.last_analysis_order_pairs)
+			writer.add_expression_value_transitions (processor.last_transitions)
+			writer.try_write
+		end
+
+	process_filter_and_write (a_bp: BREAKPOINT; a_state: EPA_STATE)
+			-- Process and filter `a_bp' and `a_state' using `processor' and
+			-- write results of processing using `writer'.
+		require
+			a_bp_not_void: a_bp /= Void
+			a_state_not_void: a_state /= Void
+		do
+			processor.process_and_filter (a_bp, a_state)
+			writer.add_analysis_order_pairs (processor.last_analysis_order_pairs)
+			writer.add_expression_value_transitions (processor.last_transitions)
+			writer.try_write
+		end
+
+feature {NONE} -- Implementation
+
 	print_configuration_error_message
-			--
+			-- Print `error_message' in the standard output.
 		require
 			error_message_not_void: error_message /= Void
 		do
@@ -236,7 +258,7 @@ feature {NONE} -- Implementation
 			post_state_bp_map := l_post_state_bp_finder.post_state_bp_map
 		end
 
-	choose_pre_state_breakpoint_slots
+	choose_locations
 			-- Choose pre-state breakpoint slots depending on specified options
 			-- `configuration'
 		local
@@ -275,53 +297,64 @@ feature {NONE} -- Implementation
 			l_var_finder: DPA_INTERESTING_VARIABLE_FINDER
 			l_expr_builder: DPA_EXPRESSION_BUILDER
 			l_locs_with_exprs, l_locs_with_vars: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
-			l_keys: DS_BILINEAR [INTEGER]
-			l_mapping: DS_HASH_TABLE [DS_HASH_SET [STRING], STRING]
+			l_locs: DS_BILINEAR [INTEGER]
+			l_vars_exprs_mapping: DS_HASH_TABLE [DS_HASH_SET [STRING], STRING]
 			l_vars: DS_HASH_SET [STRING]
+			l_var: STRING
 			l_set: DS_HASH_SET [STRING]
+			l_loc: INTEGER
 		do
 			create l_expr_builder.make (class_, feature_)
 			if configuration.is_set_of_variables_given then
-				l_expr_builder.build_from_variables (configuration.variables)
+				l_expr_builder.set_interesting_variables (configuration.variables)
+				l_expr_builder.build_from_variables
 			elseif configuration.is_set_of_locations_with_variables_given then
-				l_expr_builder.store_vars_exprs_mapping (True)
-				l_expr_builder.build_from_variables (configuration.variables)
+				l_expr_builder.set_interesting_variables (configuration.variables)
+				l_expr_builder.build_from_variables
 			elseif configuration.is_set_of_expressions_given or configuration.is_set_of_locations_with_expressions_given then
-				l_expr_builder.build_from_expressions (configuration.expressions)
+				l_expr_builder.set_interesting_expressions (configuration.expressions)
+				l_expr_builder.build_from_expressions
 			elseif configuration.is_expression_search_activated then
 				create l_var_finder.make (feature_.e_feature.ast, program_locations)
 				l_var_finder.find
+				l_expr_builder.set_interesting_variables (l_var_finder.interesting_variables)
 				l_expr_builder.set_interesting_variables_from_assignments (l_var_finder.interesting_variables_from_assignments)
-				l_expr_builder.build_from_variables (l_var_finder.interesting_variables)
+				l_expr_builder.build_from_variables
 			end
 
 			expressions := l_expr_builder.expressions_to_evaluate
 
-			if l_expr_builder.is_storage_of_vars_exprs_mapping_activated then
+			if configuration.is_set_of_locations_with_variables_given then
 				create l_locs_with_exprs.make_default
-				l_mapping := l_expr_builder.vars_with_exprs
+				l_vars_exprs_mapping := l_expr_builder.vars_with_exprs
 				l_locs_with_vars := configuration.locations_with_variables
-				l_keys := l_locs_with_vars.keys
+				l_locs := l_locs_with_vars.keys
 				from
-					l_keys.start
+					l_locs.start
 				until
-					l_keys.after
+					l_locs.after
 				loop
-					l_vars := l_locs_with_vars.item (l_keys.item_for_iteration)
+					l_loc := l_locs.item_for_iteration
+					l_vars := l_locs_with_vars.item (l_loc)
 					from
 						l_vars.start
 					until
 						l_vars.after
 					loop
-						l_set := l_mapping.item (l_vars.item_for_iteration)
-						if l_set = Void then
+						l_var := l_vars.item_for_iteration
+						if l_vars_exprs_mapping.has (l_var) then
+							l_set := l_vars_exprs_mapping.item (l_var)
+							l_locs_with_exprs.force_last (l_set, l_loc)
+						else
 							create l_set.make_default
 							l_set.set_equality_tester (string_equality_tester)
+
+							l_set.force_last (l_var)
+							l_locs_with_exprs.force_last (l_set, l_loc)
 						end
-						l_locs_with_exprs.force_last (l_set, l_keys.item_for_iteration)
 						l_vars.forth
 					end
-					l_keys.forth
+					l_locs.forth
 				end
 				configuration.set_locations_with_expressions (l_locs_with_exprs)
 			end
@@ -329,125 +362,124 @@ feature {NONE} -- Implementation
 
 	setup_action_for_evaluation
 			-- Setup action for evaluation
+		require
+			pre_state_breakpoints_not_void: pre_state_breakpoints /= Void
+			post_state_bp_map_not_void: post_state_bp_map /= Void
 		local
 			l_bp_mgr: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
 			l_bp_count, l_pre_state_bp: INTEGER
-			l_threshold: DOUBLE
+			l_process_write_feature: PROCEDURE [ANY, TUPLE [BREAKPOINT, EPA_STATE]]
 		do
-			if configuration.is_offline_processor_selected then
-				initialize_offline_processor
-			elseif configuration.is_online_processor_selected then
-				initialize_online_processor
-			end
+			create processor.make (pre_state_breakpoints, post_state_bp_map, debugger_manager)
 
 			if configuration.is_set_of_locations_with_expressions_given or configuration.is_set_of_locations_with_variables_given then
 				processor.set_prgm_locs_with_exprs (configuration.locations_with_expressions)
+				l_process_write_feature := agent process_filter_and_write
+			else
+				l_process_write_feature := agent process_and_write
 			end
 
-			if configuration.is_serialized_data_files_writer_selected then
-				initialize_single_json_data_file_writer
+			if configuration.is_single_json_data_file_writer_selected then
+				writer := new_single_json_data_file_writer
 			elseif configuration.is_multiple_json_data_files_writer_selected then
-				initialize_multiple_json_data_files_writer
+				writer := new_multiple_json_data_files_writer
 			elseif configuration.is_serialized_data_files_writer_selected then
-				initialize_serialized_data_files_writer
-			elseif configuration.is_mysql_writer_selected then
-				initialize_mysql_data_writer
+				writer := new_serialized_data_files_writer
+			elseif configuration.is_mysql_data_writer_selected then
+				writer := new_mysql_data_writer
 			end
 
 			l_bp_count := breakpoint_count (feature_)
-			across program_locations.to_array as l_pre_states loop
+
+			across pre_state_breakpoints.to_array as l_pre_states loop
 				l_pre_state_bp := l_pre_states.item
 				if l_pre_state_bp < l_bp_count then
 					create l_bp_mgr.make (class_, feature_)
-					l_bp_mgr.set_breakpoint_with_expression_and_action (l_pre_state_bp, expressions, agent processor.process)
+					l_bp_mgr.set_breakpoint_with_expression_and_action (l_pre_state_bp, expressions, l_process_write_feature)
 					l_bp_mgr.toggle_breakpoints (True)
 
 					across post_state_bp_map.item (l_pre_state_bp).to_array as l_post_states loop
 						create l_bp_mgr.make (class_, feature_)
-						l_bp_mgr.set_breakpoint_with_expression_and_action (l_post_states.item, expressions, agent processor.process)
+						l_bp_mgr.set_breakpoint_with_expression_and_action (l_post_states.item, expressions, l_process_write_feature)
 						l_bp_mgr.toggle_breakpoints (True)
 					end
 				end
 			end
-		end
-
-	write
-			-- Write data.
-		do
-			writer.set_analysis_order (processor.last_analysis_order)
-			writer.set_collected_data (processor.last_data)
-			writer.write
-		end
-
-	generate_meta_data_files
-			-- Generate meta-data files if needed
-		do
-			if attached {DPA_MULTIPLE_JSON_DATA_FILES_WRITER} writer as l_multiple_json_data_files_writer then
-				l_multiple_json_data_files_writer.set_keys (processor.last_keys)
-				l_multiple_json_data_files_writer.generate_root_file
-			end
-			if attached {DPA_SERIALIZED_DATA_FILE_WRITER} writer as l_serialized_data_files_writer then
-				l_serialized_data_files_writer.generate_root_file
-				l_serialized_data_files_writer.generate_keys_file
-			end
+		ensure
+			processor_not_void: processor /= Void
+			writer_not_void: writer /= Void
 		end
 
 feature {NONE} -- Implementation
 
-	initialize_offline_processor
-			-- Initialize `processor' with an offline processor
-		do
-			create {DPA_OFFLINE_PROCESSOR} processor.make (program_locations, post_state_bp_map, debugger_manager)
-		end
-
-	initialize_online_processor
-			-- Initialize `processor' with an online processor
-		do
-			create {DPA_ONLINE_PROCESSOR} processor.make (program_locations, post_state_bp_map, debugger_manager)
-		end
-
-	initialize_single_json_data_file_writer
+	new_single_json_data_file_writer: DPA_SINGLE_JSON_DATA_FILE_WRITER
 			-- Initialize `writer' with a single JSON data file writer
+		require
+			single_json_data_file_writer_options_not_void: configuration.single_json_data_file_writer_options /= Void
+			output_path_not_void: configuration.single_json_data_file_writer_options.output_path /= Void
+			file_name_not_void: configuration.single_json_data_file_writer_options.file_name /= Void
 		local
 			l_options: TUPLE [output_path: STRING; file_name: STRING]
 		do
 			l_options := configuration.single_json_data_file_writer_options
-			create {DPA_SINGLE_JSON_DATA_FILE_WRITER} writer.make (class_, feature_, l_options.output_path, l_options.file_name)
+			create Result.make (class_, feature_, l_options.output_path, l_options.file_name)
+		ensure
+			Result_not_void: Result /= Void
 		end
 
-	initialize_multiple_json_data_files_writer
+	new_multiple_json_data_files_writer: DPA_MULTIPLE_JSON_DATA_FILES_WRITER
 			-- Initialize `writer' with a multiple JSON data files writer
+		require
+			multiple_json_data_files_writer_options_not_void: configuration.multiple_json_data_files_writer_options /= Void
+			output_path_not_void: configuration.multiple_json_data_files_writer_options.output_path /= Void
+			file_name_prefix_not_void: configuration.multiple_json_data_files_writer_options.file_name_prefix /= Void
 		local
 			l_options: TUPLE [output_path: STRING; file_name_prefix: STRING]
 		do
 			l_options := configuration.multiple_json_data_files_writer_options
-			create {DPA_MULTIPLE_JSON_DATA_FILES_WRITER} writer.make (class_, feature_, l_options.output_path, l_options.file_name_prefix)
+			create Result.make (class_, feature_, l_options.output_path, l_options.file_name_prefix)
+		ensure
+			Result_not_void: Result /= Void
 		end
 
-	initialize_serialized_data_files_writer
+	new_serialized_data_files_writer: DPA_SERIALIZED_DATA_FILE_WRITER
 			-- Initialize `writer' with a serialized data files writer
+		require
+			serialized_data_files_writer_options_not_void: configuration.serialized_data_files_writer_options /= Void
+			output_path_not_void: configuration.serialized_data_files_writer_options.output_path /= Void
+			file_name_prefix_not_void: configuration.serialized_data_files_writer_options.file_name_prefix /= Void
 		local
 			l_options: TUPLE [output_path: STRING; file_name_prefix: STRING]
 		do
 			l_options := configuration.serialized_data_files_writer_options
-			create {DPA_SERIALIZED_DATA_FILE_WRITER} writer.make (class_, feature_, l_options.output_path, l_options.file_name_prefix)
+			create Result.make (class_, feature_, l_options.output_path, l_options.file_name_prefix)
+		ensure
+			Result_not_void: Result /= Void
 		end
 
-	initialize_mysql_data_writer
+	new_mysql_data_writer: DPA_MYSQL_DATA_WRITER
 			-- Initialize `writer' with a MYSQL data writer
+		require
+			mysql_data_writer_options_not_void: configuration.mysql_data_writer_options /= Void
+			host_not_void: configuration.mysql_data_writer_options.host /= Void
+			user_not_void: configuration.mysql_data_writer_options.user /= Void
+			password_not_void: configuration.mysql_data_writer_options.password /= Void
+			database_not_void: configuration.mysql_data_writer_options.database /= Void
 		local
 			l_options: TUPLE [host: STRING; user: STRING; password: STRING; database: STRING; port: INTEGER]
 			l_mysql_client: MYSQL_CLIENT
 		do
 			l_options := configuration.mysql_data_writer_options
-			create l_mysql_client.make_with_database (l_options.host, l_options.host, l_options.password, l_options.database, l_options.port)
-			--create {DPA_MYSQL_DATA_WRITER} writer.make (class_, feature_, l_mysql_client)
+			create l_mysql_client.make_with_database (l_options.host, l_options.user, l_options.password, l_options.database, l_options.port)
+			create Result.make (class_, feature_, l_mysql_client)
+		ensure
+			Result_not_void: Result /= Void
 		end
 
 feature {NONE} -- Implementation
 
 	class_: CLASS_C
-			-- Class belonging to `feature_'
+			-- Class belonging to `feature_'.
 
 	feature_: FEATURE_I
 			-- Feature which will be analyzed.
@@ -456,7 +488,14 @@ feature {NONE} -- Implementation
 			-- Expressions which are evaluated
 
 	program_locations: DS_HASH_SET [INTEGER]
-			-- Pre-state breakpoint slots at which `expressions' are evaluated
+			-- Program locations at which `expressions' are evaluated before
+			-- and after the execution of every program location in this set.
+
+	pre_state_breakpoints: DS_HASH_SET [INTEGER]
+			-- Breakpoints at which `expressions' are evaluated as pre-states
+		do
+			Result := program_locations
+		end
 
 	post_state_bp_map: DS_HASH_TABLE [DS_HASH_SET [INTEGER], INTEGER]
 			-- Contains the found post-states.
@@ -465,24 +504,23 @@ feature {NONE} -- Implementation
 	error_message: STRING
 			-- Error message indicating why the configuration is not a valid configuration.
 
-	processor: DPA_DATA_PROCESSOR
+	processor: DPA_PROCESSOR
 			-- Processor used for processing the runtime data during the execution
 			-- of `feature_'.
 
 	writer: DPA_DATA_WRITER
 			-- Writer used to persistently store the runtime data.
 
-	reference_feature
-			-- Feature referencing all classes currently not used.
-			-- This feature will be removed after testing.
-		local
-			--l_retriever: DPA_DATA_RETRIEVER
-			--l_multiple: DPA_MULTIPLE_JSON_DATA_FILES_READER
-			--l_single: DPA_SINGLE_JSON_DATA_FILE_READER
-			--l_database: DPA_MYSQL_DATA_READER
-			--l_serialized_reader: DPA_SERIALIZED_DATA_FILE_READER
-			--l_serialized_writer: DPA_SERIALIZED_DATA_FILE_WRITER
-		do
-		end
+--	reference_feature
+--			-- Feature referencing all classes currently not used.
+--			-- This feature will be removed after testing.
+--		local
+--			l_retriever: DPA_DATA_RETRIEVER
+--			l_multiple: DPA_MULTIPLE_JSON_DATA_FILES_READER
+--			l_single: DPA_SINGLE_JSON_DATA_FILE_READER
+--			l_database: DPA_MYSQL_DATA_READER
+--			l_serialized_reader: DPA_SERIALIZED_DATA_FILE_READER
+--		do
+--		end
 
 end

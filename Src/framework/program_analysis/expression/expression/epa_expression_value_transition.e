@@ -10,16 +10,28 @@ class
 create
 	make
 
-feature -- Creation procedure
+feature {NONE} -- Initialization
 
-	make (a_expr: like expression; a_pre_bp: like pre_state_bp; a_post_bp: like post_state_bp; a_pre_value: like pre_state_value; a_post_value: like post_state_value)
+	make (a_expression: like expression; a_pre_state_bp: like pre_state_bp; a_pre_state_value: like pre_state_value; a_post_state_bp: like post_state_bp; a_post_state_value: like post_state_value)
 			--
+		require
+			a_expression_not_void: a_expression /= Void
+			a_pre_state_bp_valid: a_pre_state_bp >= 1
+			a_post_state_bp_valid: a_post_state_bp >= 1
+			a_pre_state_value_not_void: a_pre_state_value /= Void
+			a_post_state_value_not_void: a_post_state_value /= Void
 		do
-			expression := a_expr
-			pre_state_bp := a_pre_bp
-			post_state_bp := a_post_bp
-			pre_state_value := a_pre_value
-			post_state_value := a_post_value
+			expression := a_expression
+			pre_state_bp := a_pre_state_bp
+			pre_state_value := a_pre_state_value
+			post_state_bp := a_post_state_bp
+			post_state_value := a_post_state_value
+		ensure
+			expression_set: expression = a_expression
+			pre_state_bp_set: pre_state_bp = a_pre_state_bp
+			pre_state_value_set: pre_state_value = a_pre_state_value
+			post_state_bp_set: post_state_bp = a_post_state_bp
+			post_state_value_set: post_state_value = a_post_state_value
 		end
 
 feature -- Access

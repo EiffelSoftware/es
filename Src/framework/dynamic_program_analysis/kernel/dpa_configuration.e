@@ -39,7 +39,7 @@ feature -- Access
 	variables: DS_HASH_SET [STRING]
 			-- Variables used to construct expressions which are evaluated
 
-	expressions: LINKED_LIST [STRING]
+	expressions: DS_HASH_SET [STRING]
 			-- Expressions which are evaluated
 
 	locations: DS_HASH_SET [INTEGER]
@@ -49,19 +49,19 @@ feature -- Access
 			-- Expressions which are evaluated at a specific program location
 
 	locations_with_variables: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
-			-- Variables used to construction expressions which are evaluated at a specific program location
+			-- Variables used to construct expressions which are evaluated at a specific program location
 
 	single_json_data_file_writer_options: TUPLE [output_path: STRING; file_name: STRING]
-			--
+			-- Options used for writing a single JSON data file.
 
 	multiple_json_data_files_writer_options: TUPLE [output_path: STRING; file_name_prefix: STRING]
-			--
+			-- Options used for writing multiple JSON data files.
 
 	serialized_data_files_writer_options: TUPLE [output_path: STRING; file_name_prefix: STRING]
-			--
+			-- Options used for writing serialized data files.
 
 	mysql_data_writer_options: TUPLE [host: STRING; user: STRING; password: STRING; database: STRING; port: INTEGER]
-			--
+			-- Options used for writing a MYSQL database.
 
 	working_directory: STRING
 			-- Working directory of the project
@@ -105,12 +105,6 @@ feature -- Status report
 	is_set_of_locations_with_variables_given: BOOLEAN
 			-- Is a set of locations with variables given?
 
-	is_online_processor_selected: BOOLEAN
-			-- Is an online processor selected?
-
-	is_offline_processor_selected: BOOLEAN
-			-- Is an offline processor selected?
-
 	is_single_json_data_file_writer_selected: BOOLEAN
 			-- Is a single JSON data file writerselected?
 
@@ -120,7 +114,7 @@ feature -- Status report
 	is_serialized_data_files_writer_selected: BOOLEAN
 			-- Is a serialized data files writer selected?
 
-	is_mysql_writer_selected: BOOLEAN
+	is_mysql_data_writer_selected: BOOLEAN
 			-- Is a MYSQL database writer selected?
 
 feature -- Setting
@@ -155,7 +149,7 @@ feature -- Setting
 			variables_set: variables = a_variables
 		end
 
-	set_expressions (a_expressions: LINKED_LIST [STRING])
+	set_expressions (a_expressions: like expressions)
 			-- Set `expressions' to `a_expressions'
 		require
 			a_expressions_not_void: a_expressions /= Void
@@ -165,7 +159,7 @@ feature -- Setting
 			expressions_set: expressions = a_expressions
 		end
 
-	set_locations (a_locations: DS_HASH_SET [INTEGER])
+	set_locations (a_locations: like locations)
 			-- Set `locations' to `a_locations'
 		require
 			a_locations_not_void: a_locations /= Void
@@ -175,7 +169,7 @@ feature -- Setting
 			locations_set: locations = a_locations
 		end
 
-	set_locations_with_expressions (a_locations_with_expressions: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER])
+	set_locations_with_expressions (a_locations_with_expressions: like locations_with_expressions)
 			-- Set `locations_with_expressions' to `a_locations_with_expressions'
 		require
 			a_locations_with_expressions_not_void: a_locations_with_expressions /= Void
@@ -185,7 +179,7 @@ feature -- Setting
 			locations_with_expressions_set: locations_with_expressions = a_locations_with_expressions
 		end
 
-	set_locations_with_variables (a_locations_with_variables: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER])
+	set_locations_with_variables (a_locations_with_variables: like locations_with_variables)
 			-- Set `locations_with_variables' to `a_locations_with_variables'
 		require
 			a_locations_with_variables_not_void: a_locations_with_variables /= Void
@@ -299,22 +293,6 @@ feature -- Setting
 			is_set_of_locations_with_variables_given_set: is_set_of_locations_with_variables_given = b
 		end
 
-	set_is_offline_processor_selected (b: BOOLEAN)
-			-- Set `is_offline_processor_selected' to `b'
-		do
-			is_offline_processor_selected := b
-		ensure
-			is_offline_processor_selected_set: is_offline_processor_selected = b
-		end
-
-	set_is_online_processor_selected (b: BOOLEAN)
-			-- Set `is_online_processor_selected' to `b'
-		do
-			is_online_processor_selected := b
-		ensure
-			is_online_processor_selected_set: is_online_processor_selected = b
-		end
-
 	set_is_single_json_data_file_writer_selected (b: BOOLEAN)
 			-- Set `is_single_json_data_file_writer_selected' to `b'
 		do
@@ -339,12 +317,12 @@ feature -- Setting
 			is_serialized_data_files_writer_selected_set: is_serialized_data_files_writer_selected = b
 		end
 
-	set_is_mysql_writer_selected (b: BOOLEAN)
-			-- Set `is_mysql_writer_selected' to `b'
+	set_is_mysql_data_writer_selected (b: BOOLEAN)
+			-- Set `is_mysql_data_writer_selected' to `b'
 		do
-			is_mysql_writer_selected := b
+			is_mysql_data_writer_selected := b
 		ensure
-			is_mysql_writer_selected_set: is_mysql_writer_selected = b
+			is_mysql_data_writer_selected_set: is_mysql_data_writer_selected = b
 		end
 
 end

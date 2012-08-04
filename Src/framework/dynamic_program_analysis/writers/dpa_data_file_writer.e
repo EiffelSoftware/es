@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {EPA_DATA_FILE_WRITER}."
+	description: "Summary description for {DPA_DATA_WRITER}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

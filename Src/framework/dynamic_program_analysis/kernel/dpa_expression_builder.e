@@ -9,8 +9,14 @@ class
 
 inherit
 	EPA_SHARED_EQUALITY_TESTERS
+		rename
+			pointer_type as shared_pointer_type
+		end
 
 	EPA_UTILITY
+		rename
+			pointer_type as shared_pointer_type
+		end
 
 create
 	make
@@ -26,28 +32,19 @@ feature {NONE} -- Initialization
 
 feature -- Basic operations
 
-	build_from_variables (a_variables: DS_HASH_SET [STRING])
+	build_from_variables
 			-- Build expressions to evaluate from `a_variables'
 		require
-			a_variables_not_void: a_variables /= Void
+			interesting_variables_not_void: interesting_variables /= Void
 		local
 			l_feature_selector: EPA_FEATURE_SELECTOR
 			l_expr: EPA_AST_EXPRESSION
 			l_set, l_tmp_set: DS_HASH_SET [STRING]
 		do
-			set_interesting_variables (a_variables)
-
-			if interesting_variables_from_assignments = Void then
-				create interesting_variables_from_assignments.make_default
-				interesting_variables_from_assignments.set_equality_tester (string_equality_tester)
-			end
-
 			create expressions_to_evaluate.make_default
 			expressions_to_evaluate.set_equality_tester (expression_equality_tester)
 
-			if is_storage_of_vars_exprs_mapping_activated then
-				create vars_with_exprs.make_default
-			end
+			create vars_with_exprs.make_default
 
 			-- Consider only attributes and queries without arguments which are not
 			-- inherited from ANY.
@@ -59,25 +56,19 @@ feature -- Basic operations
 			-- Case unqualified calls detected			
 			if interesting_variables.has (ti_current) then
 				create l_expr.make_with_text (class_, feature_, ti_current, class_)
-				if not is_file_type (l_expr.type) and not is_basic_type (l_expr.type) and not is_string_type (l_expr.type) then
-					if is_storage_of_vars_exprs_mapping_activated then
-						create l_set.make_default
-						l_set.set_equality_tester (string_equality_tester)
-					end
+				if not is_file_type (l_expr.type) and not is_pointer_type (l_expr.type) and not is_basic_type (l_expr.type) and not is_string_type (l_expr.type) then
+					create l_set.make_default
+					l_set.set_equality_tester (string_equality_tester)
 					across local_names_of_feature (feature_).to_array as l_locals loop
 						create l_expr.make_with_text (class_, feature_, l_locals.item, class_)
 						expressions_to_evaluate.force_last (l_expr)
-						if is_storage_of_vars_exprs_mapping_activated then
-							l_set.force_last (l_expr.text)
-						end
+						l_set.force_last (l_expr.text)
 					end
-					if is_storage_of_vars_exprs_mapping_activated then
-						if vars_with_exprs.has (ti_current) then
-							l_tmp_set := vars_with_exprs.item (ti_current)
-							l_set.do_all (agent l_tmp_set.force_last)
-						else
-							vars_with_exprs.force_last (l_set, ti_current)
-						end
+					if vars_with_exprs.has (ti_current) then
+						l_tmp_set := vars_with_exprs.item (ti_current)
+						l_set.do_all (agent l_tmp_set.force_last)
+					else
+						vars_with_exprs.force_last (l_set, ti_current)
 					end
 				end
 			end
@@ -88,15 +79,13 @@ feature -- Basic operations
 				if not is_file_type (l_expr.type) then
 					create l_expr.make_with_text (class_, feature_, ti_result, class_)
 					expressions_to_evaluate.force_last (l_expr)
-					if is_storage_of_vars_exprs_mapping_activated then
-						if vars_with_exprs.has (ti_result) then
-							vars_with_exprs.item (ti_result).force_last (l_expr.text)
-						else
-							create l_set.make_default
-							l_set.set_equality_tester (string_equality_tester)
-							l_set.force_last (l_expr.text)
-							vars_with_exprs.force_last (l_set, ti_result)
-						end
+					if vars_with_exprs.has (ti_result) then
+						vars_with_exprs.item (ti_result).force_last (l_expr.text)
+					else
+						create l_set.make_default
+						l_set.set_equality_tester (string_equality_tester)
+						l_set.force_last (l_expr.text)
+						vars_with_exprs.force_last (l_set, ti_result)
 					end
 				end
 			end
@@ -104,12 +93,10 @@ feature -- Basic operations
 			-- Case variables from calls
 			across interesting_variables.to_array as l_var loop
 				create l_expr.make_with_text (class_, feature_, l_var.item, class_)
-				if not is_file_type (l_expr.type) and not is_basic_type (l_expr.type) and not is_string_type (l_expr.type) then
-					if is_storage_of_vars_exprs_mapping_activated then
-						create l_set.make_default
-						l_set.set_equality_tester (string_equality_tester)
-						l_set.force_last (l_expr.text)
-					end
+				if not is_file_type (l_expr.type) and not is_pointer_type (l_expr.type) and not is_basic_type (l_expr.type) and not is_string_type (l_expr.type) then
+					create l_set.make_default
+					l_set.set_equality_tester (string_equality_tester)
+					l_set.force_last (l_expr.text)
 					expressions_to_evaluate.force_last (l_expr)
 
 					l_feature_selector.select_from_class (l_expr.type.associated_class)
@@ -117,35 +104,29 @@ feature -- Basic operations
 					across l_feature_selector.last_features as l_queries loop
 						create l_expr.make_with_text (class_, feature_, l_var.item + "." + l_queries.item.feature_name, class_)
 						expressions_to_evaluate.force_last (l_expr)
-						if is_storage_of_vars_exprs_mapping_activated then
-							l_set.force_last (l_expr.text)
-						end
+						l_set.force_last (l_expr.text)
 					end
 
-					if is_storage_of_vars_exprs_mapping_activated then
-						if vars_with_exprs.has (l_var.item) then
-							l_tmp_set := vars_with_exprs.item (l_var.item)
-							l_set.do_all (agent l_tmp_set.force_last)
-						else
-							vars_with_exprs.force_last (l_set, l_var.item)
-						end
+					if vars_with_exprs.has (l_var.item) then
+						l_tmp_set := vars_with_exprs.item (l_var.item)
+						l_set.do_all (agent l_tmp_set.force_last)
+					else
+						vars_with_exprs.force_last (l_set, l_var.item)
 					end
 				end
 			end
 
-			-- Case variables from assignments
-			across interesting_variables_from_assignments.to_array as l_var loop
-				create l_expr.make_with_text (class_, feature_, l_var.item, class_)
-				if not is_file_type (l_expr.type) and not is_basic_type (l_expr.type) and not is_string_type (l_expr.type) then
-					if is_storage_of_vars_exprs_mapping_activated then
+			if attached {DS_HASH_SET [STRING]} interesting_variables_from_assignments then
+				-- Case variables from assignments
+				across interesting_variables_from_assignments.to_array as l_var loop
+					create l_expr.make_with_text (class_, feature_, l_var.item, class_)
+					if not is_file_type (l_expr.type) and not is_pointer_type (l_expr.type) then
 						create l_set.make_default
 						l_set.set_equality_tester (string_equality_tester)
 						l_set.force_last (l_expr.text)
-					end
 
-					expressions_to_evaluate.force_last (l_expr)
+						expressions_to_evaluate.force_last (l_expr)
 
-					if is_storage_of_vars_exprs_mapping_activated then
 						if vars_with_exprs.has (l_var.item) then
 							l_tmp_set := vars_with_exprs.item (l_var.item)
 							l_set.do_all (agent l_tmp_set.force_last)
@@ -157,10 +138,10 @@ feature -- Basic operations
 			end
 		end
 
-	build_from_expressions (a_expressions: LINKED_LIST [STRING])
+	build_from_expressions
 			-- Build expressions to evaluate from `a_expressions'
 		require
-			a_expressions_not_void: a_expressions /= Void
+			interesting_expressions_not_void: interesting_expressions /= Void
 		local
 			l_expr: EPA_AST_EXPRESSION
 			l_expr_string: STRING
@@ -168,7 +149,7 @@ feature -- Basic operations
 		do
 			create expressions_to_evaluate.make_default
 			expressions_to_evaluate.set_equality_tester (expression_equality_tester)
-			across a_expressions as l_exprs loop
+			across interesting_expressions.to_array as l_exprs loop
 				l_expr_string := l_exprs.item
 				if l_expr_string.has ('.') then
 					l_var := l_expr_string.split ('.').i_th (1)
@@ -205,14 +186,6 @@ feature -- Element change
 			feature_set: feature_ = a_feature
 		end
 
-	store_vars_exprs_mapping (b: BOOLEAN)
-			-- Set `is_storage_of_vars_exprs_mapping_activated' to `b'
-		do
-			is_storage_of_vars_exprs_mapping_activated := b
-		ensure
-			is_storage_of_vars_exprs_mapping_activated_set: is_storage_of_vars_exprs_mapping_activated = b
-		end
-
 	set_interesting_variables (a_interesting_variables: like interesting_variables)
 			-- Set `interesting_variables' to `a_interesting_variables'
 		require
@@ -233,6 +206,16 @@ feature -- Element change
 			interesting_variables_from_assignments_set: interesting_variables_from_assignments = a_interesting_variables_from_assignments
 		end
 
+	set_interesting_expressions (a_interesting_expressions: like interesting_expressions)
+			-- Set `interesting_expressions' to `a_interesting_expressions'
+		require
+			a_interesting_expressions_not_void: a_interesting_expressions /= Void
+		do
+			interesting_expressions := a_interesting_expressions
+		ensure
+			interesting_expressions_set: interesting_expressions = a_interesting_expressions
+		end
+
 feature -- Access
 
 	class_: CLASS_C
@@ -240,9 +223,6 @@ feature -- Access
 
 	feature_: FEATURE_I
 			-- Feature which should be analyzed
-
-	is_storage_of_vars_exprs_mapping_activated: BOOLEAN
-			-- Is the mapping of variables to expressions stored?
 
 	expressions_to_evaluate: DS_HASH_SET [EPA_EXPRESSION]
 			-- Built expressions to evaluate
@@ -253,12 +233,13 @@ feature -- Access
 			-- from a variable.
 
 	interesting_variables: DS_HASH_SET [STRING]
-			-- Contains all found interesting variables
-			-- with respect to data flow.
+			-- Interesting variables used to build expressions for evaluation.
 
 	interesting_variables_from_assignments: DS_HASH_SET [STRING]
-			-- Contains all found interesting variables from assignments
-			-- with respect to data flow.
+			-- Interesting variables from assignments used to build expressions for evaluation.
+
+	interesting_expressions: DS_HASH_SET [STRING]
+			-- Interesting expressions used to build expressions for evaluation.
 
 feature {NONE} -- Implementation
 
@@ -334,6 +315,36 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	is_pointer_type (a_type: TYPE_A): BOOLEAN
+			-- Is `a_type' conforming to the type specified
+			-- by `pointer_type'?
+		require
+			a_type_not_void: a_type /= Void
+		local
+			l_classes: LIST [CLASS_I]
+			l_found: BOOLEAN
+			l_class: CLASS_I
+			l_type: TYPE_A
+		do
+			l_classes := universe.classes_with_name (pointer_type)
+			from
+				l_classes.start
+				l_found := False
+			until
+				l_classes.after or l_found
+			loop
+				l_class := l_classes.item
+				if attached {EIFFEL_CLASS_I} l_class as l_eiffel_class then
+					if l_eiffel_class.cluster.cluster_name.is_equal (Eiffelbase_cluster_name) then
+						l_type := l_eiffel_class.compiled_representation.actual_type
+						l_found := True
+					end
+				end
+				l_classes.forth
+			end
+			Result := is_type_conformant_in_application_context (a_type, l_type)
+		end
+
 	is_file_type (a_type: TYPE_A): BOOLEAN
 			-- Is `a_type' conforming to the type specified
 			-- by `file_type'?
@@ -382,8 +393,7 @@ feature {NONE} -- Implementation
 				"REAL_32",
 				"REAL_64",
 				"CHARACTER_8",
-				"CHARACTER_32",
-				"POINTER"
+				"CHARACTER_32"
 			>>)
 		end
 
@@ -395,6 +405,9 @@ feature {NONE} -- Implementation
 				"STRING_32"
 			>>)
 		end
+
+	pointer_type: STRING = "POINTER"
+			-- Pointer type
 
 	file_type: STRING = "FILE"
 			-- File type
