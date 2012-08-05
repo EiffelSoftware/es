@@ -36,7 +36,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 				if attached {PS_SINGLE_OBJECT_PART} op_cursor.item as obj then
 					Result := Result and backend.can_handle_type (obj.metadata)
 				elseif attached {PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]} op_cursor.item as coll then
-					Result := Result and backend.can_handle_objectoriented_collection (coll.metadata)
+					Result := Result and backend.can_handle_object_oriented_collection (coll.metadata)
 				elseif attached {PS_RELATIONAL_COLLECTION_PART [ITERABLE [detachable ANY]]} op_cursor.item as coll then
 					Result := Result and backend.can_handle_relational_collection (coll.reference_owner.metadata, coll.metadata.actual_generic_parameter (1))
 				end
@@ -90,9 +90,9 @@ feature {NONE} -- Implementation
 		do
 			identify_all (object_collection, object_collection.values.new_cursor, transaction)
 			if object_collection.write_operation = object_collection.write_operation.insert then
-				backend.insert_objectoriented_collection (object_collection, transaction)
+				backend.insert_object_oriented_collection (object_collection, transaction)
 			elseif object_collection.write_operation = object_collection.write_operation.delete then
-				backend.delete_objectoriented_collection (object_collection, transaction)
+				backend.delete_object_oriented_collection (object_collection, transaction)
 			else
 				check
 					wrong_operation: False

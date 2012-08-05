@@ -42,8 +42,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 			Result := False
 		end
 
-	can_handle_objectoriented_collection (collection_type: PS_TYPE_METADATA): BOOLEAN
-			-- Can the current backend handle an objectoriented collection of type `collection_type'?
+	can_handle_object_oriented_collection (collection_type: PS_TYPE_METADATA): BOOLEAN
+			-- Can the current backend handle an object-oriented collection of type `collection_type'?
 		do
 			Result := True
 		end
@@ -84,7 +84,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 
 	insert (an_object: PS_SINGLE_OBJECT_PART; a_transaction: PS_TRANSACTION)
-			-- Inserts the object into the database
+			-- Inserts `an_object' into the database.
 		local
 			new_primary: PS_PAIR [INTEGER, STRING]
 		do
@@ -97,14 +97,14 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		end
 
 	update (an_object: PS_SINGLE_OBJECT_PART; a_transaction: PS_TRANSACTION)
-			-- Updates an_object
+			-- Updates `an_object' in the database.
 		do
 				-- write all attributes in `an_object'
 			write_attributes (an_object, a_transaction)
 		end
 
 	delete (an_object: PS_SINGLE_OBJECT_PART; a_transaction: PS_TRANSACTION)
-			-- Deletes an_object from the database
+			-- Deletes `an_object' from the database.
 		local
 			primary: PS_PAIR [INTEGER, PS_TYPE_METADATA]
 		do
@@ -126,12 +126,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			across
 				collections.current_keys as key_cursor
 			loop
-				res_list.extend (retrieve_objectoriented_collection (collection_type, key_cursor.item, transaction))
+				res_list.extend (retrieve_object_oriented_collection (collection_type, key_cursor.item, transaction))
 			end
 			Result := res_list.new_cursor
 		end
 
-	retrieve_objectoriented_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER; transaction: PS_TRANSACTION): PS_RETRIEVED_OBJECT_COLLECTION
+	retrieve_object_oriented_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER; transaction: PS_TRANSACTION): PS_RETRIEVED_OBJECT_COLLECTION
 			-- Retrieves the object-oriented collection of type `object_type' and with primary key `object_primary_key'.
 		local
 			info: HASH_TABLE [STRING, STRING]
@@ -150,7 +150,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			end
 		end
 
-	insert_objectoriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
+	insert_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
 			-- Add all entries in `a_collection' to the database
 		local
 			id: INTEGER
@@ -179,8 +179,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			end
 		end
 
-	delete_objectoriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
-			-- Delete `a_collection' from the database
+	delete_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
+			-- Delete `a_collection' from the database.
 		local
 			key: INTEGER
 		do
@@ -193,7 +193,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 
 	retrieve_relational_collection (owner_type, collection_item_type: PS_TYPE_METADATA; owner_key: INTEGER; owner_attribute_name: STRING; transaction: PS_TRANSACTION): PS_RETRIEVED_RELATIONAL_COLLECTION
-			-- Retrieves the relational collection between class `owner_type' and `collection_item_type', where the owner has primary key `owner_key' and the attribute name of the collection inside the owner object is called `owner_attribute_name'
+			-- Retrieves the relational collection between class `owner_type' and `collection_item_type', where the owner has primary key `owner_key' and the attribute name of the collection inside the owner object is called `owner_attribute_name'.
 		do
 			check
 				not_implemented: False
@@ -202,7 +202,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 		end
 
 	insert_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
-			-- Add all entries in a_collection to the database
+			-- Add all entries in `a_collection' to the database.
 		do
 			check
 				not_implemented: False
@@ -210,7 +210,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 		end
 
 	delete_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
-			-- Delete a_collection from the database
+			-- Delete `a_collection' from the database.
 		do
 			check
 				not_implemented: False
@@ -220,31 +220,31 @@ feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 
 	commit (a_transaction: PS_TRANSACTION)
-			-- Tries to commit `a_transaction'. As with every other error, a failed commit will result in a new exception and the error will be placed inside `a_transaction'
+			-- Tries to commit `a_transaction'. As with every other error, a failed commit will result in a new exception and the error will be placed inside `a_transaction'.
 		do
 		end
 
 	rollback (a_transaction: PS_TRANSACTION)
-			-- Aborts `a_transaction' and undoes all changes in the database
+			-- Aborts `a_transaction' and undoes all changes in the database.
 		do
 		end
 
 	transaction_isolation_level: PS_TRANSACTION_ISOLATION_LEVEL
-			-- The currently active transaction isolation level
+			-- The currently active transaction isolation level.
 		do
 			create Result
 			Result := Result.read_uncommitted
 		end
 
 	set_transaction_isolation_level (a_level: PS_TRANSACTION_ISOLATION_LEVEL)
-			-- Set the transaction isolation level `a_level' for all future transactions
+			-- Set the transaction isolation level `a_level' for all future transactions.
 		do
 		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Mapping
 
 	key_mapper: PS_KEY_POID_TABLE
-			-- Maps POIDs to primary keys as used by this backend
+			-- Maps POIDs to primary keys as used by this backend.
 
 feature {PS_EIFFELSTORE_EXPORT} -- Testing
 
@@ -257,7 +257,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing
 feature {PS_EIFFELSTORE_EXPORT} -- Miscellaneous
 
 	string_representation: STRING
-			-- The current DB content as a string
+			-- The current DB content as a string.
 		local
 			class_names: ARRAY [STRING]
 			objects: LIST [INTEGER]
@@ -270,7 +270,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Miscellaneous
 feature {NONE} -- Implementation - Loading and storing objects
 
 	load_objects (type: PS_TYPE_METADATA; attributes: LIST [STRING]; keys: LIST [INTEGER]): LINKED_LIST [PS_RETRIEVED_OBJECT]
-			-- Loads all objects of class `type' whose primary key is listed in `keys'. Only loads the attributes listed in `attributes'
+			-- Loads all objects of class `type' whose primary key is listed in `keys'. Only loads the attributes listed in `attributes'.
 		local
 			current_obj: PS_RETRIEVED_OBJECT
 			attr_val: PS_PAIR [STRING, STRING]
@@ -298,7 +298,7 @@ feature {NONE} -- Implementation - Loading and storing objects
 		end
 
 	write_attributes (an_object: PS_SINGLE_OBJECT_PART; transaction: PS_TRANSACTION)
-			-- Stores all attributes of `an_object' in the internal database, replacing any existing attribute with the same name if present
+			-- Stores all attributes of `an_object' in the internal database, replacing any existing attribute with the same name if present.
 		local
 			attr_primary: INTEGER
 			primary: PS_PAIR [INTEGER, PS_TYPE_METADATA]
@@ -316,10 +316,10 @@ feature {NONE} -- Implementation - Loading and storing objects
 feature {NONE} -- Implementation - Key generation
 
 	key_set: HASH_TABLE [INTEGER, STRING]
-			-- stores the maximum key for every class
+			-- stores the maximum key for every class.
 
 	new_key (class_name: STRING): PS_PAIR [INTEGER, STRING]
-			-- creates a new, not yet used, primary key for objects of type `class_name'
+			-- creates a new, not yet used, primary key for objects of type `class_name'.
 		local
 			max: INTEGER
 		do
@@ -340,7 +340,7 @@ feature {NONE} -- Implementation - Database and DB access for objects
 			-- The internal "database" that stores every object as a collection of strings.
 
 	insert_empty_object (key: INTEGER; class_name: STRING)
-			-- Insert an empty object of type `class_name' with primary key `key'
+			-- Insert an empty object of type `class_name' with primary key `key'.
 		local
 			new_class: HASH_TABLE [HASH_TABLE [PS_PAIR [STRING, STRING], STRING], INTEGER]
 			new_obj: HASH_TABLE [PS_PAIR [STRING, STRING], STRING]
@@ -356,7 +356,7 @@ feature {NONE} -- Implementation - Database and DB access for objects
 		end
 
 	get_object_as_strings (class_name: STRING; key: INTEGER): HASH_TABLE [PS_PAIR [STRING, STRING], STRING]
-			-- Get the object of type `class_name' with key `key' in string representation
+			-- Get the object of type `class_name' with key `key' in string representation.
 		local
 			intermediate: HASH_TABLE [HASH_TABLE [PS_PAIR [STRING, STRING], STRING], INTEGER]
 		do
@@ -376,13 +376,13 @@ feature {NONE} -- Implementation - Database and DB access for objects
 		end
 
 	add_or_replace_attribute (class_name: STRING; key: INTEGER; attr_name: STRING; value: PS_PAIR [STRING, STRING])
-			-- Add or replace the value of `attr_name' in the object of type `class_name' and with primary key `key'
+			-- Add or replace the value of `attr_name' in the object of type `class_name' and with primary key `key'.
 		do
 			get_object_as_strings (class_name, key).force (value, attr_name)
 		end
 
 	get_attribute (class_name: STRING; key: INTEGER; attr_name: STRING): PS_PAIR [STRING, STRING]
-			-- Get the value of the attribute `attr_name' from the object of type `class_name' and with primary key `key'
+			-- Get the value of the attribute `attr_name' from the object of type `class_name' and with primary key `key'.
 		do
 			Result := attach (get_object_as_strings (class_name, key).item (attr_name))
 		end
@@ -390,7 +390,7 @@ feature {NONE} -- Implementation - Database and DB access for objects
 feature {NONE} -- Implementation - Database and DB access for Object-oriented Collections
 
 	insert_empty_collection (key: INTEGER)
-			-- Insert an empty object-oriented collection with pimary key `key'
+			-- Insert an empty object-oriented collection with pimary key `key'.
 		local
 			list: LINKED_LIST [PS_PAIR [STRING, PS_PAIR [STRING, INTEGER]]]
 		do
@@ -446,15 +446,15 @@ feature {NONE} -- Implementation - Database and DB access for Object-oriented Co
 		end
 
 	collections: HASH_TABLE [LINKED_LIST [PS_PAIR [STRING, PS_PAIR [STRING, INTEGER]]], INTEGER]
-			-- Internal store of collection objects
+			-- Internal store of collection objects.
 
 	collection_info: HASH_TABLE [HASH_TABLE [STRING, STRING], INTEGER]
-			-- The capacity of individual SPECIAL objects
+			-- The capacity of individual SPECIAL objects.
 
 feature {NONE} -- Initialization
 
 	make
-			-- Initialize `Current'
+			-- Initialize `Current'.
 		do
 			create collections.make (default_collection_db_capacity)
 			create collection_info.make (default_collection_db_capacity)
@@ -464,19 +464,19 @@ feature {NONE} -- Initialization
 		end
 
 	default_class_size: INTEGER = 20
-			-- The default capacity for the amount of classes the DB can handle
+			-- The default capacity for the amount of classes the DB can handle.
 
 	default_objects_per_class_size: INTEGER = 50
-			-- The default capacity for the amount of objects per class
+			-- The default capacity for the amount of objects per class.
 
 	default_attribute_count: INTEGER = 10
-			-- The default capacity for attributes per object
+			-- The default capacity for attributes per object.
 
 	default_class_string_for_collections: STRING = "COLLECTION"
-			-- The default string for the key generator when dealing with collections
+			-- The default string for the key generator when dealing with collections.
 
 	default_collection_db_capacity: INTEGER = 50
-			-- The default capacity of the in-memory database for storing collection objects
+			-- The default capacity of the in-memory database for storing collection objects.
 
 	Void_value: STRING = ""
 

@@ -10,12 +10,6 @@ class
 inherit
 
 	PS_BACKEND
-		rename
-			can_handle_objectoriented_collection as can_handle_object_oriented_collection,
-			retrieve_objectoriented_collection as retrieve_object_oriented_collection,
-			insert_objectoriented_collection as insert_object_oriented_collection,
-			delete_objectoriented_collection as delete_object_oriented_collection
-		end
 
 create
 	make
@@ -156,7 +150,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		end
 
 	update (an_object: PS_SINGLE_OBJECT_PART; a_transaction: PS_TRANSACTION)
-			-- Updates `an_object'.
+			-- Updates `an_object' in the database.
 		local
 			connection: PS_SQL_CONNECTION
 		do
@@ -192,7 +186,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 		end
 
 	retrieve_object_oriented_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER; transaction: PS_TRANSACTION): PS_RETRIEVED_OBJECT_COLLECTION
-			-- Retrieves the object-oriented collection of type `object_type' and with primary key `object_primary_key'.
+			-- Retrieves the object-oriented collection of type `collection_type' and with primary key `collection_primary_key'.
 		do
 			check
 				not_implemented: False

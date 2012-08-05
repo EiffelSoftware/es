@@ -39,7 +39,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 		deferred
 		end
 
-	can_handle_objectoriented_collection (collection_type: PS_TYPE_METADATA): BOOLEAN
+	can_handle_object_oriented_collection (collection_type: PS_TYPE_METADATA): BOOLEAN
 			-- Can the current backend handle an object-oriented collection of type `collection_type'?
 		deferred
 		end
@@ -90,7 +90,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 
 	insert (an_object: PS_SINGLE_OBJECT_PART; a_transaction: PS_TRANSACTION)
-			-- Inserts the object into the database.
+			-- Inserts `an_object' into the database.
 		require
 			mode_is_insert: an_object.write_operation = an_object.write_operation.insert
 			not_yet_known: not key_mapper.has_primary_key_of (an_object.object_wrapper, a_transaction)
@@ -103,7 +103,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		end
 
 	update (an_object: PS_SINGLE_OBJECT_PART; a_transaction: PS_TRANSACTION)
-			-- Updates an_object.
+			-- Updates `an_object' in the database.
 		require
 			mode_is_update: an_object.write_operation = an_object.write_operation.update
 			object_known: key_mapper.has_primary_key_of (an_object.object_wrapper, a_transaction)
@@ -115,7 +115,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		end
 
 	delete (an_object: PS_SINGLE_OBJECT_PART; a_transaction: PS_TRANSACTION)
-			-- Deletes an_object from the database.
+			-- Deletes `an_object' from the database.
 		require
 			mode_is_delete: an_object.write_operation = an_object.write_operation.delete
 			object_known: key_mapper.has_primary_key_of (an_object.object_wrapper, a_transaction)
@@ -131,39 +131,39 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			-- Retrieves all collections of type `collection_type'.
 		require
 			objectoriented_collection_operation_supported: supports_object_collection
-			backend_can_handle_collection: can_handle_objectoriented_collection (collection_type)
+			backend_can_handle_collection: can_handle_object_oriented_collection (collection_type)
 		deferred
 		end
 
-	retrieve_objectoriented_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER; transaction: PS_TRANSACTION): PS_RETRIEVED_OBJECT_COLLECTION
-			-- Retrieves the object-oriented collection of type `object_type' and with primary key `object_primary_key'.
+	retrieve_object_oriented_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER; transaction: PS_TRANSACTION): PS_RETRIEVED_OBJECT_COLLECTION
+			-- Retrieves the object-oriented collection of type `collection_type' and with primary key `collection_primary_key'.
 		require
-			objectoriented_collection_operation_supported: supports_object_collection
-			backend_can_handle_collection: can_handle_objectoriented_collection (collection_type)
+			object_oriented_collection_operation_supported: supports_object_collection
+			backend_can_handle_collection: can_handle_object_oriented_collection (collection_type)
 		deferred
 		end
 
-	insert_objectoriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
-			-- Add all entries in a_collection to the database. If the order is not conflicting with the items already in the database, it will try to preserve order.
+	insert_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
+			-- Add all entries in `a_collection' to the database. If the order is not conflicting with the items already in the database, it will try to preserve order.
 		require
 			mode_is_insert: a_collection.write_operation = a_collection.write_operation.insert
 			objectoriented_mode: not a_collection.is_relationally_mapped
 			not_yet_known: not key_mapper.has_primary_key_of (a_collection.object_wrapper, a_transaction)
 			objectoriented_collection_operation_supported: supports_object_collection
-			backend_can_handle_collection: can_handle_objectoriented_collection (a_collection.object_wrapper.metadata)
+			backend_can_handle_collection: can_handle_object_oriented_collection (a_collection.object_wrapper.metadata)
 		deferred
 		ensure
 			collection_known: key_mapper.has_primary_key_of (a_collection.object_wrapper, a_transaction)
 		end
 
-	delete_objectoriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
-			-- Delete a_collection from the database.
+	delete_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
+			-- Delete `a_collection' from the database.
 		require
 			mode_is_delete: a_collection.write_operation = a_collection.write_operation.delete
 			objectoriented_mode: not a_collection.is_relationally_mapped
 			collection_known: key_mapper.has_primary_key_of (a_collection.object_wrapper, a_transaction)
 			objectoriented_collection_operation_supported: supports_object_collection
-			backend_can_handle_collection: can_handle_objectoriented_collection (a_collection.object_wrapper.metadata)
+			backend_can_handle_collection: can_handle_object_oriented_collection (a_collection.object_wrapper.metadata)
 		deferred
 		ensure
 			not_known_anymore: not key_mapper.has_primary_key_of (a_collection.object_wrapper, a_transaction)
@@ -180,7 +180,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 		end
 
 	insert_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
-			-- Add all entries in a_collection to the database.
+			-- Add all entries in `a_collection' to the database.
 		require
 			mode_is_insert: a_collection.write_operation = a_collection.write_operation.insert
 			is_relational: a_collection.is_relationally_mapped
@@ -190,7 +190,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 		end
 
 	delete_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
-			-- Delete a_collection from the database.
+			-- Delete `a_collection' from the database.
 		require
 			mode_is_delete: a_collection.write_operation = a_collection.write_operation.delete
 			is_relational: a_collection.is_relationally_mapped

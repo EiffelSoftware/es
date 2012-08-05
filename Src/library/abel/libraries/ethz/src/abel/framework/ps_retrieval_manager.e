@@ -185,7 +185,7 @@ feature {NONE} -- Implementation - Build support functions.
 				end
 			elseif has_handler (type) then
 					-- Build a collection
-				collection_result := backend.retrieve_objectoriented_collection (type, value.first.to_integer, transaction)
+				collection_result := backend.retrieve_object_oriented_collection (type, value.first.to_integer, transaction)
 				Result := build_object_collection (type, collection_result, get_handler (type), transaction, bookkeeping)
 			else
 					-- Build a new object
