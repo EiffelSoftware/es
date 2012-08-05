@@ -19,11 +19,12 @@ feature 	-- Tutorial exploration features
 		local
 			p1, p2, p3: PERSON
 			c1, c2, c3: CHILD
-			repo_factory: PS_REPOSITORY_FACTORY
-			mysql_repo: PS_RELATIONAL_REPOSITORY
+			in_memory_repo, mysql_repo: PS_RELATIONAL_REPOSITORY
 		do
 			print ("---o--- ABEL Tutorial ---o---")
 			io.new_line
+			in_memory_repo := repo_factory.create_in_memory_repository
+			create executor.make (in_memory_repo)
 			print ("Insert 3 new persons in the database")
 			io.new_line
 			create p1.make ("Albo", "Bitossi")
@@ -78,21 +79,17 @@ feature 	-- Tutorial exploration features
 			print ("Celebrating the birthday fo all PERSON objects in the repository")
 			update_ages
 			print_result (simple_query)
-			create repo_factory
-			mysql_repo := repo_factory.create_mysql_repository_with_default_host_port ("tutorial","tutorial","tutorial")
-			create executor.make (mysql_repo)
+		--	mysql_repo := repo_factory.create_mysql_repository_with_default_host_port ("tutorial","tutorial","tutorial")
+		--	create executor.make (mysql_repo)
 		end
 
 feature {NONE} -- Initialization
 
 	make
-		-- Set up a simple in-memory repository.
-		local
-			repository: PS_IN_MEMORY_REPOSITORY
+		-- Tutorial initialization.
 		do
-			create repository.make_empty
-			create executor.make (repository)
 			create factory
+			create repo_factory
 			create my_visitor
 			explore
 		end
@@ -103,10 +100,13 @@ feature -- Access
 		-- The CRUD executor used throughout the tutorial.
 
 	factory: PS_CRITERION_FACTORY
-		-- A criterion factory.
+		-- Criterion factory.
+
+	repo_factory: PS_REPOSITORY_FACTORY
+		-- Repository factory.
 
 	my_visitor: MY_PRIVATE_VISITOR
-		-- A user-defined visitor to react to an error.
+		-- User-defined visitor to react to an error.
 
 feature -- CRUD operations
 
