@@ -10,6 +10,12 @@ class
 inherit
 
 	PS_BACKEND
+		rename
+			can_handle_objectoriented_collection as can_handle_object_oriented_collection,
+			retrieve_objectoriented_collection as retrieve_object_oriented_collection,
+			insert_objectoriented_collection as insert_object_oriented_collection,
+			delete_objectoriented_collection as delete_object_oriented_collection
+		end
 
 create
 	make
@@ -36,8 +42,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 			Result := False
 		end
 
-	can_handle_objectoriented_collection (collection_type: PS_TYPE_METADATA): BOOLEAN
-			-- Can the current backend handle an objectoriented collection of type `collection_type'?
+	can_handle_object_oriented_collection (collection_type: PS_TYPE_METADATA): BOOLEAN
+			-- Can the current backend handle an object-oriented collection of type `collection_type'?
 		do
 			Result := False
 		end
@@ -45,7 +51,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 
 	retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: LIST [STRING]; transaction: PS_TRANSACTION): ITERATION_CURSOR [PS_RETRIEVED_OBJECT]
-			-- Retrieves all objects of class `type' (direct instance - not inherited from) that match the criteria in `criteria' within transaction `transaction'.
+			-- Retrieves all objects of type `type' (direct instance - not inherited from) that match the criteria in `criteria' within transaction `transaction'.
 			-- If `attributes' is not empty, it will only retrieve the attributes listed there.
 			-- If an attribute was `Void' during an insert, or it doesn't exist in the database because of a version mismatch, the attribute value during retrieval will be an empty string and its class name `NONE'.
 			-- If `type' has a generic parameter, the retrieve function will return objects of all generic instances of the generating class.
@@ -124,7 +130,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 
 	insert (an_object: PS_SINGLE_OBJECT_PART; a_transaction: PS_TRANSACTION)
-			-- Inserts the object into the database
+			-- Inserts `an_object' into the database.
 		local
 			connection: PS_SQL_CONNECTION
 			new_primary_key: INTEGER
@@ -150,7 +156,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		end
 
 	update (an_object: PS_SINGLE_OBJECT_PART; a_transaction: PS_TRANSACTION)
-			-- Updates an_object
+			-- Updates `an_object'.
 		local
 			connection: PS_SQL_CONNECTION
 		do
@@ -161,7 +167,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 		end
 
 	delete (an_object: PS_SINGLE_OBJECT_PART; a_transaction: PS_TRANSACTION)
-			-- Deletes an_object from the database
+			-- Deletes `an_object' from the database.
 		local
 			connection: PS_SQL_CONNECTION
 			primary: INTEGER
@@ -185,7 +191,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			Result := (create {LINKED_LIST [PS_RETRIEVED_OBJECT_COLLECTION]}.make).new_cursor
 		end
 
-	retrieve_objectoriented_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER; transaction: PS_TRANSACTION): PS_RETRIEVED_OBJECT_COLLECTION
+	retrieve_object_oriented_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER; transaction: PS_TRANSACTION): PS_RETRIEVED_OBJECT_COLLECTION
 			-- Retrieves the object-oriented collection of type `object_type' and with primary key `object_primary_key'.
 		do
 			check
@@ -194,16 +200,16 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			create Result.make (collection_primary_key, collection_type.base_class)
 		end
 
-	insert_objectoriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
-			-- Add all entries in a_collection to the database. If the order is not conflicting with the items already in the database, it will try to preserve order.
+	insert_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
+			-- Add all entries in `a_collection' to the database. If the order is not conflicting with the items already in the database, it will try to preserve order.
 		do
 			check
 				not_implemented: False
 			end
 		end
 
-	delete_objectoriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
-			-- Delete a_collection from the database
+	delete_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
+			-- Delete `a_collection' from the database.
 		do
 			check
 				not_implemented: False
@@ -213,7 +219,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 
 	retrieve_relational_collection (owner_type, collection_item_type: PS_TYPE_METADATA; owner_key: INTEGER; owner_attribute_name: STRING; transaction: PS_TRANSACTION): PS_RETRIEVED_RELATIONAL_COLLECTION
-			-- Retrieves the relational collection between class `owner_type' and `collection_item_type', where the owner has primary key `owner_key' and the attribute name of the collection inside the owner object is called `owner_attribute_name'
+			-- Retrieves the relational collection between class `owner_type' and `collection_item_type', where the owner has primary key `owner_key' and the attribute name of the collection inside the owner object is called `owner_attribute_name'.
 		do
 			check
 				not_implemented: False
@@ -222,7 +228,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 		end
 
 	insert_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
-			-- Add all entries in a_collection to the database
+			-- Add all entries in `a_collection' to the database.
 		do
 			check
 				not_implemented: False
@@ -230,7 +236,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 		end
 
 	delete_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
-			-- Delete a_collection from the database
+			-- Delete `a_collection' from the database.
 		do
 			check
 				not_implemented: False
@@ -240,7 +246,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 
 	commit (a_transaction: PS_TRANSACTION)
-			-- Tries to commit `a_transaction'. As with every other error, a failed commit will result in a new exception and the error will be placed inside `a_transaction'
+			-- Tries to commit `a_transaction'. As with every other error, a failed commit will result in a new exception and the error will be placed inside `a_transaction'.
 		local
 			connection: PS_SQL_CONNECTION
 		do
@@ -254,7 +260,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 		end
 
 	rollback (a_transaction: PS_TRANSACTION)
-			-- Aborts `a_transaction' and undoes all changes in the database
+			-- Aborts `a_transaction' and undoes all changes in the database.
 		local
 			connection: PS_SQL_CONNECTION
 		do
@@ -268,13 +274,13 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 		end
 
 	transaction_isolation_level: PS_TRANSACTION_ISOLATION_LEVEL
-			-- The currently active transaction isolation level
+			-- The currently active transaction isolation level.
 		do
 			Result := database.transaction_isolation_level
 		end
 
 	set_transaction_isolation_level (a_level: PS_TRANSACTION_ISOLATION_LEVEL)
-			-- Set the transaction isolation level `a_level' for all future transactions
+			-- Set the transaction isolation level `a_level' for all future transactions.
 		do
 			database.set_transaction_isolation_level (a_level)
 		end
@@ -282,12 +288,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 feature {PS_EIFFELSTORE_EXPORT} -- Mapping
 
 	key_mapper: PS_KEY_POID_TABLE
-			-- Maps POIDs to primary keys as used by this backend
+			-- Maps POIDs to primary keys as used by this backend.
 
 feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
 
 	wipe_out_data
-			-- Wipe out all object data, but keep the metadata
+			-- Wipe out all object data, but keep the metadata.
 		local
 			connection: PS_SQL_CONNECTION
 		do
@@ -319,7 +325,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing helpers
 feature {NONE} -- Implementation
 
 	write_attributes (object: PS_SINGLE_OBJECT_PART; a_connection: PS_SQL_CONNECTION; transaction: PS_TRANSACTION)
-			-- Write all attributes of `object'
+			-- Write all attributes of `object'.
 		local
 			primary: INTEGER
 			already_present_attributes: LINKED_LIST [INTEGER]
@@ -392,7 +398,7 @@ feature {NONE} -- Implementation - Connection and Transaction handling
 		end
 
 	release_connection (transaction: PS_TRANSACTION)
-			-- Release the connection associated with `transaction'
+			-- Release the connection associated with `transaction'.
 		do
 			from
 				active_connections.start
@@ -416,12 +422,12 @@ feature {NONE} -- Implementation - Connection and Transaction handling
 	management_connection: PS_SQL_CONNECTION
 			-- This is a special connection used for management and read-only transactions.
 			-- It uses auto-commit, and is always active.
-			-- The connection can only read and write tables ps_attribute and ps_class
+			-- The connection can only read and write tables ps_attribute and ps_class.
 
 feature {NONE} -- Initialization
 
 	make (a_database: PS_SQL_DATABASE; strings: PS_GENERIC_LAYOUT_SQL_STRINGS)
-			-- Initialization for `Current'
+			-- Initialization for `Current'.
 		local
 			initialization_connection: PS_SQL_CONNECTION
 		do
@@ -435,12 +441,12 @@ feature {NONE} -- Initialization
 		end
 
 	database: PS_SQL_DATABASE
-			-- The actual database
+			-- The actual database.
 
 	db_metadata_manager: PS_METADATA_TABLES_MANAGER
-			-- The manager for the metadata tables
+			-- The manager for the metadata tables.
 
 	SQL_Strings: PS_GENERIC_LAYOUT_SQL_STRINGS
-			-- All predefined SQL statements
+			-- All predefined SQL statements.
 
 end
