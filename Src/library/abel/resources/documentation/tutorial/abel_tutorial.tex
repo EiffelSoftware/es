@@ -165,7 +165,7 @@ There are three very important classes in ABEL:
  
 \end{itemize}
 To start using the library, we first need to create an object of type\\
-\lstinline!PS_REPOSITORY!. In this case we will be creating a more specific object of type \lstinline!PS_IN_MEMORY_REPOSITORY!. More in general, ABEL provides support for creating \lstinline{PS_RELATIONAL_REPOSITORY} objects with the factory class \lstinline!PS_REPOSITORY_FACTORY!.\\
+\lstinline!PS_REPOSITORY!. In this case we will be using a more specific object of type \lstinline{PS_RELATIONAL_REPOSITORY}, and even more specifically a  \lstinline!PS_IN_MEMORY_REPOSITORY!, which simulates a relational repository while storing the data in memory. ABEL provides support for creating all kinds of \lstinline!PS_REPOSITORY! objects through the factory class \lstinline!PS_REPOSITORY_FACTORY!, so that is what we are going to use.\\
 As a second step, we need to create an object of type  \lstinline{PS_CRUD_EXECUTOR}. To do so, we will pass the previously created repository as an argument to its creation feature.
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The TUTORIAL class}, label={lst:tutorial_class}]
@@ -174,19 +174,24 @@ class TUTORIAL
 create
 	make
 
-feature {NONE} -- Initialization
+feature 	-- Tutorial exploration features
 
-	make
-		-- Set up a simple in-memory repository.
+	explore
+			-- Tutorial code.
 		local
-			repository: PS_IN_MEMORY_REPOSITORY
+			in_memory_repo: PS_RELATIONAL_REPOSITORY
 		do
-			create repository.make_empty
-			create executor.make (repository)
+			print ("---o--- ABEL Tutorial ---o---")
+			io.new_line
+			in_memory_repo := repo_factory.create_in_memory_repository
+			create executor.make (in_memory_repo)
 		end
 
-feature
-	
+feature -- Access
+
+	repo_factory: PS_REPOSITORY_FACTORY
+		-- Repository factory.	
+
 	executor: PS_CRUD_EXECUTOR
 		-- The CRUD executor used throughout the tutorial.
 
@@ -204,8 +209,13 @@ You insert an object in the repository using feature \lstinline{insert} in class
 	explore
 			-- Tutorial code.
 		local
+			in_memory_repo: PS_RELATIONAL_REPOSITORY
 			p1, p2, p3: PERSON
 		do
+			print ("---o--- ABEL Tutorial ---o---")
+			io.new_line
+			in_memory_repo := repo_factory.create_in_memory_repository
+			create executor.make (in_memory_repo)
 			-- Insert 3 new persons in the database
 			create p1.make ("Albo", "Bitossi")
 			p1.celebrate_birthday
@@ -249,7 +259,8 @@ We now add in feature \lstinline{explore} the code to print the linked list retu
 	explore
 			-- Tutorial code.
 		local
-			p1, p2: PERSON
+			in_memory_repo: PS_RELATIONAL_REPOSITORY
+			p1, p2, p3: PERSON
 		do
 			-- Same code as before
 			-- Query the database and print result
@@ -301,7 +312,8 @@ Updating an object is done through feature \lstinline{update} in \lstinline{PS_C
 	explore
 			-- Tutorial code.
 		local
-			p1, p2: PERSON
+			in_memory_repo: PS_RELATIONAL_REPOSITORY
+			p1, p2, p3: PERSON
 		do
 			-- Same code as before
 			-- Update an existing person in the database and print the result again
@@ -321,7 +333,8 @@ Let's now delete Albo Bitossi from the database:
 	explore
 			-- Tutorial code.
 		local
-			p1, p2: PERSON
+			in_memory_repo: PS_RELATIONAL_REPOSITORY
+			p1, p2, p3: PERSON
 		do
 			-- Same code as before
 			-- Delete Dumbo Ermini from the database and print the result again
@@ -536,7 +549,8 @@ We can now add the necessary code to feature \lstinline{explore}:
 	explore
 			-- Tutorial code.
 		local
-			p1, p2: PERSON
+			in_memory_repo: PS_RELATIONAL_REPOSITORY
+			p1, p2, p3: PERSON
 		do
 			-- Same code as before
 			-- Search for Albo Bitossi with age <= 20
@@ -590,7 +604,8 @@ We can now add the necessary code to feature \lstinline{explore}:
 	explore
 			-- Tutorial code.
 		local
-			p1, p2: PERSON
+			in_memory_repo: PS_RELATIONAL_REPOSITORY
+			p1, p2, p3: PERSON
 		do
 			-- Same code as before
 			-- Delete Albo Bitossi using a deletion query
@@ -787,7 +802,8 @@ Here is the code in feature \lstinline{explore} that tests what we have stated a
 	explore
 			-- Tutorial code.
 		local
-			p1, p2: PERSON
+			in_memory_repo: PS_RELATIONAL_REPOSITORY
+			p1, p2, p3: PERSON
 			c1, c2, c3: CHILD
 		do
 			-- Same code as before
@@ -815,7 +831,8 @@ ABEL does not follow references during an update by default, so for example the 
 	explore
 			-- Tutorial code.
 		local
-			p1, p2: PERSON
+			in_memory_repo: PS_RELATIONAL_REPOSITORY
+			p1, p2, p3: PERSON
 			c1, c2, c3: CHILD
 		do
 			-- Same code as before
@@ -948,11 +965,12 @@ As usual, here is the code for feature \lstinline{explore}:
 	explore
 			-- Tutorial code.
 		local
-			p1, p2: PERSON
+			in_memory_repo: PS_RELATIONAL_REPOSITORY
+			p1, p2, p3: PERSON
 			c1, c2, c3: CHILD
 		do
 			-- Same code as before
-			print ("Celebrating the birthday fo all PERSON objects in the repository")
+			print ("Celebrating the birthday for all PERSON objects in the repository")
 			update_ages
 			print_result (simple_query)
 		end
