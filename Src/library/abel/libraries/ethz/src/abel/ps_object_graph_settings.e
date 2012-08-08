@@ -80,7 +80,7 @@ feature -- Update settings
 
 feature -- Deletion settings
 
-	deletion_depth: INTEGER
+	delete_depth: INTEGER
 			-- Object graph depth for deletion.
 
 feature -- Modification
@@ -109,12 +109,12 @@ feature -- Modification
 			update_depth := depth
 		end
 
-	set_deletion_depth (depth: INTEGER)
+	set_delete_depth (depth: INTEGER)
 			-- Change the object graph depth for deletion.
 		require
 			valid_depth: is_valid_depth (depth)
 		do
-			deletion_depth := depth
+			delete_depth := depth
 		end
 
 feature -- Status
@@ -133,7 +133,7 @@ feature -- Creation
 			query_depth := Object_graph_depth_infinite
 			insert_depth := Object_graph_depth_infinite
 			update_depth := Minimum_depth
-			deletion_depth := Minimum_depth
+			delete_depth := Minimum_depth
 		end
 
 feature -- Constants
@@ -148,6 +148,6 @@ invariant
 	valid_query_depth: is_valid_depth (query_depth)
 	valid_insert_depth: is_valid_depth (insert_depth)
 	valid_update_depth: is_valid_depth (update_depth)
-	valid_deletion_depth: is_valid_depth (deletion_depth)
+	valid_delete_depth: is_valid_depth (delete_depth)
 
 end

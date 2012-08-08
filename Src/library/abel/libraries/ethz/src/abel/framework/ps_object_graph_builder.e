@@ -244,7 +244,7 @@ feature {NONE} -- Internal: Access
 					Result := settings.update_depth
 				end
 			else
-				Result := settings.deletion_depth
+				Result := settings.delete_depth
 			end
 		end
 
