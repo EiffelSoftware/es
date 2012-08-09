@@ -1446,10 +1446,9 @@ feature -- Log processor
 			create l_time_file.make_from_string (workbench.project_location.testing_results_path)
 			l_time_file.extend ("start_time.txt")
 			create l_file.make_open_append (l_time_file.out)
-			create l_time.make_now
-			l_duration := l_time.duration
-			l_duration.set_origin_date_time (create {DATE_TIME}.make_from_epoch(0))
-			l_file.put_string (l_time.out + "%T" + l_duration.seconds_count.out + "%T" + a_message + "%N")
+			create l_time.make_now_utc
+			l_duration := l_time.relative_duration (create {DATE_TIME}.make_from_epoch(0))
+			l_file.put_string (l_time.out + "%T" + l_duration.fine_seconds_count.out + "%T" + a_message + "%N")
 			l_file.close
 		end
 
