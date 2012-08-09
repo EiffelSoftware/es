@@ -272,21 +272,6 @@ feature {NONE} -- Initialization
 			create exec_replay_right_cmd.make_right
 			toolbarable_commands.extend (exec_replay_right_cmd)
 
--- SCOOP REPLAY
-			create scoop_execution_recording_mode_cmd.make (Current)
-			scoop_execution_recording_mode_cmd.enable_sensitive
-			toolbarable_commands.extend (scoop_execution_recording_mode_cmd)
-
-			create scoop_execution_replay_cmd.make
-			scoop_execution_replay_cmd.enable_sensitive
-			toolbarable_commands.extend (scoop_execution_replay_cmd)
-
-			create scoop_execution_diagram_cmd.make (Current)
-			scoop_execution_diagram_cmd.enable_sensitive
-			toolbarable_commands.extend (scoop_execution_diagram_cmd)
--- SCOOP REPLAY end
-
-
 			create ignore_contract_violation.make
 			toolbarable_commands.extend (ignore_contract_violation)
 
@@ -423,21 +408,7 @@ feature -- Access
 			-- Command that can exec replay left the execution
 
 	exec_replay_right_cmd: EB_EXEC_DEBUG_REPLAY_CMD
-			-- Command that can exec replay right the execution	
-
-
--- SCOOP REPLAY
-	scoop_execution_recording_mode_cmd: EB_SCOOP_EXECUTION_RECORDING_MODE_CMD
-			-- Command that activates/deactivates scoop execution recording
-
-	scoop_execution_replay_cmd: EB_SCOOP_EXECUTION_REPLAY_CMD
-			-- Command that launches wizard for scoop execution replay
-
-	scoop_execution_diagram_cmd: EB_SCOOP_EXECUTION_DIAGRAM_CMD
-			-- Command that activates/deactivates generating scoop execution diagram
--- SCOOP REPLAY end
-
-		
+			-- Command that can exec replay right the execution
 
 	toolbarable_commands: ARRAYED_LIST [EB_TOOLBARABLE_AND_MENUABLE_COMMAND]
 			-- All commands that can be put in a toolbar.
@@ -832,15 +803,6 @@ feature -- tools management
 
 			exec_replay_right_item := exec_replay_right_cmd.new_menu_item
 			a_recycler.auto_recycle (exec_replay_right_item)
-
-			scoop_execution_recording_mode_item := scoop_execution_recording_mode_cmd.new_menu_item
-			a_recycler.auto_recycle (scoop_execution_recording_mode_item)
-
-			scoop_execution_replay_item := scoop_execution_replay_cmd.new_menu_item
-			a_recycler.auto_recycle (scoop_execution_replay_item)
-
-			scoop_execution_diagram_item := scoop_execution_diagram_cmd.new_menu_item
-			a_recycler.auto_recycle (scoop_execution_diagram_item)
 
 			create record_replay_bottom_separator
 				-- Don't need to show it here, just create
@@ -1342,12 +1304,6 @@ feature -- Change
 			ignore_contract_violation.update (w)
 			toggle_exec_replay_recording_mode_cmd.update (w)
 
--- SCOOP REPLAY
-			scoop_execution_recording_mode_cmd.update (w)
-			scoop_execution_replay_cmd.update (w)
-			scoop_execution_diagram_cmd.update (w)
--- SCOOP REPLAY end
-
 
 			from
 				l_cmds := show_tool_commands
@@ -1533,12 +1489,6 @@ feature -- Status setting
 
 			assertion_checking_handler_cmd.disable_sensitive
 
--- SCOOP REPLAY
-			scoop_execution_recording_mode_cmd.disable_sensitive
-			scoop_execution_replay_cmd.disable_sensitive
-			scoop_execution_diagram_cmd.disable_sensitive
--- SCOOP REPLAY end
-
 		end
 
 	on_compile_stop
@@ -1557,12 +1507,6 @@ feature -- Status setting
 					attach_cmd.enable_sensitive
 					ignore_breakpoints_cmd.enable_sensitive
 					enable_debug
-
--- SCOOP REPLAY
-					scoop_execution_recording_mode_cmd.enable_sensitive
-					scoop_execution_replay_cmd.enable_sensitive
-					scoop_execution_diagram_cmd.enable_sensitive
--- SCOOP REPLAY end
 
 				end
 			end
@@ -1935,13 +1879,6 @@ feature -- Debugging events
 			object_storage_management_cmd.disable_sensitive
 
 
--- SCOOP REPLAY
-			scoop_execution_recording_mode_cmd.disable_sensitive
-			scoop_execution_replay_cmd.disable_sensitive
-			scoop_execution_diagram_cmd.disable_sensitive
--- SCOOP REPLAY end
-
-
 			if dialog /= Void and then not dialog.is_destroyed then
 				close_dialog
 			end
@@ -2176,14 +2113,6 @@ feature -- Debugging events
 			exec_replay_right_cmd.disable_sensitive
 			object_storage_management_cmd.disable_sensitive
 
-
--- SCOOP REPLAY
-			scoop_execution_recording_mode_cmd.enable_sensitive
-			scoop_execution_replay_cmd.enable_sensitive
-			scoop_execution_diagram_cmd.enable_sensitive
--- SCOOP REPLAY end
-
-
 			Precursor (was_executing)
 		end
 
@@ -2275,24 +2204,6 @@ feature -- Application change
 				debugger_warning_message (interface_names.l_only_available_for_stopped_application)
 			end
 		end
-
-
--- SCOOP REPLAY
-	activate_scoop_execution_recording_mode (b: BOOLEAN)
-		-- Activate or Deactivate SCOOP execution recording
-	do
-		scoop_execution_recording_enabled := b
-		scoop_execution_recording_mode_cmd.set_select (b)
-	end
-
-	activate_scoop_execution_diagram (b: BOOLEAN)
-		-- Activate or Deactivate generating SCOOP execution diagram
-	do
-		scoop_execution_diagram_enabled := b
-		scoop_execution_diagram_cmd.set_select (b)
-	end
--- SCOOP REPLAY end
-
 
 	disable_assertion_checking
 			-- Disable assertion checking
@@ -2753,7 +2664,7 @@ feature {NONE} -- MSIL system implementation
 			-- DLL type constant for MSIL system
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

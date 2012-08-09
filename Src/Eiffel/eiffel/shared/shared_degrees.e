@@ -16,12 +16,6 @@ feature {NONE} -- Access
 			create Result.make
 		end
 
-	Degree_SCOOP: DEGREE_SCOOP
-			-- Degree SCOOP	
-		once
-			create Result.make
-		end
-
 	Degree_4: DEGREE_4
 			-- Degree 4
 		once
@@ -47,7 +41,7 @@ feature {NONE} -- Access
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

@@ -225,17 +225,8 @@ feature {NONE} -- Attributes
 					end
 				end
 
--- SCOOP REPLAY
-			if dbg.workbench.is_degree_scoop_processed then
-				Result.extend (create {EV_MENU_SEPARATOR})
-				Result.extend (dbg.scoop_execution_recording_mode_cmd.new_menu_item_unmanaged)
-				Result.extend (dbg.scoop_execution_replay_cmd.new_menu_item_unmanaged)
-				Result.extend (dbg.scoop_execution_diagram_cmd.new_menu_item_unmanaged)
-			else
 				--| Execution replay recording status
 				Result.extend (dbg.toggle_exec_replay_recording_mode_cmd.new_menu_item_unmanaged)
-			end
--- SCOOP REPLAY end
 
 				Result.extend (create {EV_MENU_SEPARATOR})
 
@@ -296,7 +287,7 @@ feature {NONE} -- Attributes
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

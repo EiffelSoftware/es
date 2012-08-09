@@ -654,7 +654,7 @@ feature {NONE} -- Implementation
 					l_tooltip := warning_messages.w_no_compilable_target
 				else
 					create l_project_location.make (l_last_location, l_last_target)
-					if l_project_location.is_compiled and not does_SCOOP_compilation_exist (l_project_location) then
+					if l_project_location.is_compiled then
 						l_project_file := l_project_location.project_file
 						l_project_file.check_version_number (0)
 						if l_project_file.has_error then
@@ -743,20 +743,6 @@ feature {NONE} -- Implementation
 			if has_error and not is_initializing then
 				sensitive_container.disable_sensitive
 			end
-		end
-
-		-- Added for SCOOP
-	does_SCOOP_compilation_exist (a_project_location: PROJECT_DIRECTORY): BOOLEAN
-			-- Does a SCOOP compilation exists in the project location.
-		local
-			l_scoop_override_cluster_directory_path: DIRECTORY_NAME
-			l_scoop_override_cluster_directory: DIRECTORY
-		do
-			l_scoop_override_cluster_directory_path := a_project_location.eifgens_path.twin
-			l_scoop_override_cluster_directory_path.set_subdirectory (a_project_location.target)
-			l_scoop_override_cluster_directory_path.set_subdirectory ({SCOOP_SYSTEM_CONSTANTS}.override_cluster_name)
-			create l_scoop_override_cluster_directory.make (l_scoop_override_cluster_directory_path)
-			Result := l_scoop_override_cluster_directory.exists
 		end
 
 
@@ -1305,7 +1291,7 @@ invariant
 	post_project_selected_actions_not_void: post_project_selected_actions /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

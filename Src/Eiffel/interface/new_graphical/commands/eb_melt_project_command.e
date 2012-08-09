@@ -131,11 +131,6 @@ feature {NONE} -- Compilation implementation
 				reset_debugger
 				Window_manager.on_compile
 
-					-- Added for SCOOP
-				if workbench.system_defined then
-					system.remove_scoop_compilation_artifacts
-				end
-
 				perform_compilation
 				display_eiffel_compilation_status
 				if Eiffel_project.successful then
@@ -524,7 +519,7 @@ feature {NONE} -- Implementation
 			-- Number of compilations done in a certain mode so far.
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

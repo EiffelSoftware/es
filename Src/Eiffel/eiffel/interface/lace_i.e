@@ -1143,7 +1143,7 @@ feature {NONE} -- Implementation
 					system.concurrency_index = {CONF_TARGET}.setting_concurrency_index_scoop
 				then
 						-- Value can't change from a precompile or in a compiled system.
-					if not workbench.is_degree_scoop_processed and a_target.setting_concurrency.index /= system.concurrency_index and then (a_target.precompile /= Void or workbench.has_compilation_started) then
+					if a_target.setting_concurrency.index /= system.concurrency_index and then (a_target.precompile /= Void or workbench.has_compilation_started) then
 							-- It's not obvious from the code, but at this point `system.concurrency_index' should be set
 							-- either because the system is compiled or because it uses a precompile.
 						check
@@ -1385,7 +1385,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
