@@ -76,7 +76,7 @@ feature 	-- Tutorial exploration features
 			end
 			executor.update (c1)
 			print_children_result (query_for_children)
-			print ("Celebrating the birthday fo all PERSON objects in the repository")
+			print ("Celebrating the birthday for all PERSON objects in the repository")
 			update_ages
 			print_result (simple_query)
 		--	mysql_repo := repo_factory.create_mysql_repository_with_default_host_port ("tutorial","tutorial","tutorial")
