@@ -211,7 +211,7 @@ feature -- Type checking
 		do
 			qualifier.update_dependance (feat_depend)
 			from
-				c := qualifier.associated_class
+				c := qualifier.base_class
 			until
 				i >= chain.count
 			loop
@@ -219,7 +219,7 @@ feature -- Type checking
 					f := c.feature_table.item_id (chain [i])
 					if attached f then
 						feat_depend.extend_depend_unit_with_level (c.class_id, f, 0)
-						c := f.type.associated_class
+						c := f.type.base_class
 					end
 				end
 				i := i + 1
@@ -246,7 +246,7 @@ feature -- Modification
 			qualifier_set: qualifier = q
 		end
 
-feature {TYPE_A_CHECKER} -- Modification
+feature {TYPE_A_CHECKER, EXPRESSION_CONTEXT} -- Modification
 
 	set_chain (n: like chain; c: CLASS_C)
 			-- Set `chain' to the value relative to class `c'.
@@ -301,7 +301,7 @@ feature -- IL code generation
 		do
 			qualifier.dispatch_anchors (a_context_class)
 			from
-				c := qualifier.associated_class
+				c := qualifier.base_class
 			until
 				i >= chain.count
 			loop
@@ -309,7 +309,7 @@ feature -- IL code generation
 					f := c.feature_table.item_id (chain [i])
 					if attached f then
 						c.extend_type_set (f.rout_id_set.first)
-						c := f.type.associated_class
+						c := f.type.base_class
 					end
 				end
 				i := i + 1
@@ -360,7 +360,7 @@ feature -- Output
 			qualifier.ext_append_to (st, c)
 			st.process_symbol_text ({SHARED_TEXT_ITEMS}.ti_r_curly)
 			from
-				q := qualifier.associated_class
+				q := qualifier.base_class
 			until
 				i >= chain.count
 			loop
@@ -503,7 +503,7 @@ feature {NONE} -- Lookup
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

@@ -1,4 +1,4 @@
-﻿note
+note
 	description	: "Shared text format items."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -374,9 +374,6 @@ feature -- Feature signature items
 	ti_Generic_index: STRING = "Generic #"
 			-- Index in formal generic parameter list.
 
-	ti_Open_arg: STRING = "Open argument"
-			-- Index in open arguments parameter list.
-
 feature -- Standard classes
 
 	ti_None_class: STRING = "NONE"
@@ -388,7 +385,7 @@ feature -- Standard classes
 	ti_quantification_sperator: STRING = "::";
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

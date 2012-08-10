@@ -77,7 +77,7 @@ feature -- Roundtrip
 	obsolete_keyword_index, rescue_keyword_index: INTEGER
 			-- Index of keyword "obsolete" and "rescue" associated with this class
 
-	obsolete_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
+	obsolete_keyword (a_list: LEAF_AS_LIST): detachable KEYWORD_AS
 			-- Keyword "obsolete" associated with this class
 		require
 			a_list_not_void: a_list /= Void
@@ -90,7 +90,7 @@ feature -- Roundtrip
 			end
 		end
 
-	rescue_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
+	rescue_keyword (a_list: LEAF_AS_LIST): detachable KEYWORD_AS
 			-- Keyword "rescue" associated with this class
 		require
 			a_list_not_void: a_list /= Void
@@ -117,7 +117,7 @@ feature -- Attributes
 	precondition: REQUIRE_AS
 			-- Precondition list
 
-	locals: EIFFEL_LIST [TYPE_DEC_AS]
+	locals: detachable EIFFEL_LIST [TYPE_DEC_AS]
 			-- Local declarations
 		do
 			if
@@ -156,7 +156,7 @@ feature -- Location
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS
+	first_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			if a_list /= Void and obsolete_keyword_index /= 0 then
 				Result := obsolete_keyword (a_list)
@@ -183,7 +183,7 @@ feature -- Roundtrip/Token
 			end
 		end
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS
+	last_token (a_list:detachable  LEAF_AS_LIST): detachable LEAF_AS
 		do
 			Result := end_keyword.last_token (a_list)
 		end
@@ -383,7 +383,7 @@ invariant
 --	end_keyword_not_void: end_keyword /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

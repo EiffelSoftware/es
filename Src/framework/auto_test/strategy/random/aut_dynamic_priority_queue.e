@@ -21,8 +21,6 @@ inherit
 
 	INTERNAL_COMPILER_STRING_EXPORTER
 
-	ERL_G_TYPE_ROUTINES
-
 	KL_SHARED_STRING_EQUALITY_TESTER
 
 create
@@ -202,7 +200,7 @@ feature -- Changing Priority
 			l_cursor: CURSOR
 		do
 			l_any_class := system.any_class.compiled_class
-			class_ := a_type.associated_class
+			class_ := a_type.base_class
 			l_feat_table := class_.feature_table
 			create l_exported_creators.make
 			l_cursor := l_feat_table.cursor
@@ -452,6 +450,35 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	is_exported_creator (a_feature: FEATURE_I; a_type: TYPE_A): BOOLEAN
+			-- Is `a_feature' declared in `a_type' a creator which is exported to all classes?
+		require
+			a_feature_attached: a_feature /= Void
+			a_type_attached: a_type /= Void
+		local
+			l_class: CLASS_C
+		do
+			if
+				a_type.has_associated_class and then
+				a_type.base_class.has_creator_of_name_id (a_feature.feature_name_id)
+			then
+				Result := a_type.base_class.creator_of_name_id (a_feature.feature_name_id).is_all
+			end
+
+			if a_type.has_associated_class then
+				l_class := a_type.base_class
+
+				if l_class.has_creator_of_name_id (a_feature.feature_name_id) then
+						-- For normal creators.
+					Result := l_class.creator_of_name_id (a_feature.feature_name_id).is_all
+
+				elseif l_class.allows_default_creation and then l_class.default_create_feature.feature_name.is_equal (a_feature.feature_name) then
+						-- For default creators.
+					Result := True
+				end
+			end
+		end
+
 feature {NONE} -- Assertion helpers
 
 	is_highest_priority_valid: BOOLEAN
@@ -523,7 +550,7 @@ invariant
 	tables_valid: are_tables_valid
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

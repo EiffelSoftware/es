@@ -29,7 +29,7 @@ feature -- Visitor
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS
+	first_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			if a_list = Void then
 				Result := Precursor (a_list)
@@ -38,7 +38,7 @@ feature -- Roundtrip/Token
 			end
 		end
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS
+	last_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			if a_list = Void then
 				Result := Precursor (a_list)
@@ -62,7 +62,7 @@ feature -- Roundtrip
 	none_id_as_index: INTEGER
 			-- 'NONE' ID_AS used for specifying non-conforming inheritance.
 
-	inherit_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
+	inherit_keyword (a_list: LEAF_AS_LIST): detachable KEYWORD_AS
 			-- Keyword "inherit" associated with current AST node.
 		require
 			a_list_not_void: a_list /= Void
@@ -75,7 +75,7 @@ feature -- Roundtrip
 			end
 		end
 
-	lcurly_symbol (a_list: LEAF_AS_LIST): SYMBOL_AS
+	lcurly_symbol (a_list: LEAF_AS_LIST): detachable SYMBOL_AS
 			-- Symbol '{' associated with current AST node if non-conforming inheritance is specified.
 		require
 			a_list_not_void: a_list /= Void
@@ -88,7 +88,7 @@ feature -- Roundtrip
 			end
 		end
 
-	rcurly_symbol (a_list: LEAF_AS_LIST): SYMBOL_AS
+	rcurly_symbol (a_list: LEAF_AS_LIST): detachable SYMBOL_AS
 			-- Symbol '}' associated with current AST node if non-conforming inheritance is specified.
 		require
 			a_list_not_void: a_list /= Void
@@ -101,20 +101,18 @@ feature -- Roundtrip
 			end
 		end
 
-	none_id_as (a_list: LEAF_AS_LIST): ID_AS
+	none_id_as (a_list: LEAF_AS_LIST): detachable ID_AS
 			-- 'NONE' ID_AS used for specifying non-conforming inheritance.
 		require
 			a_list_not_void: a_list /= Void
 		local
 			i: INTEGER
-			l_leaf: LEAF_STUB_AS
 		do
 			i := none_id_as_index
 			if a_list.valid_index (i) then
-				l_leaf ?= a_list.i_th (i)
 					-- It is not an ID_AS, because the roundtrip parser does not store ID_AS
 					-- but LEAF_STUB_AS, so we reconstruct the associated ID_AS from the LEAF_STUB_AS.
-				if l_leaf /= Void then
+				if attached {LEAF_STUB_AS} a_list.i_th (i) as l_leaf then
 					create Result.initialize (l_leaf.literal_text (a_list))
 					Result.set_position (l_leaf.line, l_leaf.column, l_leaf.position, l_leaf.location_count)
 					Result.set_index (l_leaf.index)
@@ -145,7 +143,7 @@ feature -- Roundtrip
 		end
 
 note
-	copyright: "Copyright (c) 1984-2008, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
@@ -169,10 +167,10 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

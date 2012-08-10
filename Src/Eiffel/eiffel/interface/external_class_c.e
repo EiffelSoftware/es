@@ -462,7 +462,7 @@ feature {NONE} -- Initialization
 
 			if external_class.parent /= Void then
 				parent_type := internal_type_from_consumed_type (True, external_class.parent)
-				parent_class := parent_type.associated_class
+				parent_class := parent_type.base_class
 				conforming_parents.extend (parent_type)
 				conforming_parents_classes.extend (parent_class)
 				parent_class.add_descendant (Current)
@@ -491,7 +491,7 @@ feature {NONE} -- Initialization
 					l_ext_class := external_class.interfaces.item
 					if l_ext_class /= Void then
 						parent_type := internal_type_from_consumed_type (True, l_ext_class)
-						parent_class := parent_type.associated_class
+						parent_class := parent_type.base_class
 						conforming_parents.extend (parent_type)
 						conforming_parents_classes.extend (parent_class)
 						parent_class.add_descendant (Current)
@@ -504,7 +504,7 @@ feature {NONE} -- Initialization
 			if class_id = System.system_object_id then
 					-- Add ANY as a parent class of SYSTEM_OBJECT, and therefore
 					-- of all .NET classes
-				parent_class := any_type.associated_class
+				parent_class := any_type.base_class
 				conforming_parents.extend (any_type)
 				conforming_parents_classes.extend (parent_class)
 				parent_class.add_descendant (Current)
@@ -750,12 +750,12 @@ feature {NONE} -- Initialization
 						check
 							l_literal_not_void: l_literal /= Void
 						end
-						if l_return_type.associated_class.is_enum then
+						if l_return_type.base_class.is_enum then
 								-- Too bad here we just discarded newly created extension
 								-- object `l_ext', but that simpler this way.
 							create l_enum_ext
 							l_ext := l_enum_ext
-							if l_return_type.associated_class = Current then
+							if l_return_type.base_class = Current then
 								create l_constant.make
 								l_constant.set_extension (l_ext)
 								l_feat := l_constant
@@ -804,7 +804,7 @@ feature {NONE} -- Initialization
 
 				if l_member.is_static then
 					if l_member.is_attribute then
-						if l_member.is_literal and l_return_type.associated_class.is_enum then
+						if l_member.is_literal and l_return_type.base_class.is_enum then
 							l_ext.set_type ({SHARED_IL_CONSTANTS}.Enum_field_type)
 						else
 							l_ext.set_type ({SHARED_IL_CONSTANTS}.Static_field_type)
@@ -1142,7 +1142,7 @@ feature {NONE} -- Initialization
 			convert_to_unattached: convert_to = Void
 		local
 			l_feat: FEATURE_I
-			l_type: NAMED_TYPE_A
+			l_type: DEANCHORED_TYPE_A
 		do
 			l_feat := a_feat_tbl.item_id ({NAMES_HEAP}.to_integer_name_id)
 			check
@@ -1155,7 +1155,7 @@ feature {NONE} -- Initialization
 					l_type_is_integer_or_natural: l_type.is_integer or l_type.is_natural
 				end
 				if l_type /= Void then
-					create {HASH_TABLE_EX [INTEGER, NAMED_TYPE_A]} convert_to.make_with_key_tester (1, create {CONVERTIBILITY_CHECKER})
+					create {HASH_TABLE_EX [INTEGER, DEANCHORED_TYPE_A]} convert_to.make_with_key_tester (1, create {CONVERTIBILITY_CHECKER})
 					convert_to.force ({NAMES_HEAP}.to_integer_name_id, l_type)
 				end
 			end
@@ -1174,7 +1174,7 @@ feature {NONE} -- Initialization
 			if l_nested /= Void then
 				l_enclosing_type := internal_type_from_consumed_type (True, l_nested.enclosing_type)
 				is_nested := True
-				enclosing_class := l_enclosing_type.associated_class
+				enclosing_class := l_enclosing_type.base_class
 				add_syntactical_supplier (l_enclosing_type)
 			end
 		end
@@ -1240,7 +1240,7 @@ feature {NONE} -- Implementation
 					l_parents.after
 				loop
 					l_feat := matching_external_feature_in (a_feat,
-						l_parents.item.associated_class, a_member)
+						l_parents.item.base_class, a_member)
 					if l_feat /= Void then
 						l_rout_id_set.merge (l_feat.rout_id_set)
 						if l_feat.written_in = a_feat.written_in then
@@ -1557,7 +1557,7 @@ feature {NONE} -- Implementation
 				end
 				create l_char_value.make_character_8 (a_value.item (1))
 				l_value := l_char_value
-			elseif a_external_type.associated_class.original_class = System.system_string_class then
+			elseif a_external_type.base_class.original_class = System.system_string_class then
 				create l_string_value.make (a_value, True)
 				l_value := l_string_value
 			end
@@ -1568,20 +1568,20 @@ feature {NONE} -- Implementation
 			-- Add every class mentioned in `cl' to `syntactical_suppliers' list.
 		do
 			if cl /= Void then
-				syntactical_suppliers.force (cl.associated_class)
+				syntactical_suppliers.force (cl.base_class)
 				if cl.has_generics then
 					check
 						one_generic_parameter: cl.generics.count = 1
 						lower_is_one: cl.generics.lower = 1
-						has_class: cl.generics.item (1).associated_class /= Void
+						has_class: cl.generics.item (1).base_class /= Void
 					end
-					syntactical_suppliers.force (cl.generics.item (1).associated_class)
+					syntactical_suppliers.force (cl.generics.item (1).base_class)
 				end
 			end
 		ensure
-			inserted_class: cl /= Void implies syntactical_suppliers.has (cl.associated_class)
+			inserted_class: cl /= Void implies syntactical_suppliers.has (cl.base_class)
 			inserted_generic_parameter: (cl /= Void and then cl.has_generics) implies
-				syntactical_suppliers.has (cl.generics.item (1).associated_class)
+				syntactical_suppliers.has (cl.generics.item (1).base_class)
 		end
 
 	prefix_infix_names: PREFIX_INFIX_NAMES

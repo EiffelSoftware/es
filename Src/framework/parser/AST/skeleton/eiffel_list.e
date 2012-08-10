@@ -50,7 +50,7 @@ feature -- Roundtrip
 		attribute
 		end
 
-	separator_list_i_th (i: INTEGER; a_list: LEAF_AS_LIST): LEAF_AS
+	separator_list_i_th (i: INTEGER; a_list: LEAF_AS_LIST): detachable LEAF_AS
 			-- Terminals at position `i' in `separator_list' using `a_list'.
 		require
 			valid_index: separator_list.valid_index (i)
@@ -60,7 +60,7 @@ feature -- Roundtrip
 		do
 			n := separator_list.i_th (i)
 			if a_list.valid_index (n) then
-				Result ?= a_list.i_th (n)
+				Result := a_list.i_th (n)
 			end
 		end
 
@@ -115,7 +115,7 @@ feature -- Access
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS
+	first_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			if a_list = Void then
 				if not is_empty then
@@ -130,7 +130,7 @@ feature -- Roundtrip/Token
 			end
 		end
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS
+	last_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			if a_list = Void then
 				if not is_empty then
@@ -198,7 +198,7 @@ feature -- Comparison
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

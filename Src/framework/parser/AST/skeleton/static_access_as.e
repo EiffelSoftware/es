@@ -62,7 +62,7 @@ feature -- Visitor
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS
+	first_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			if a_list /= Void and feature_keyword_index /= 0 then
 				Result := feature_keyword (a_list)
@@ -79,7 +79,7 @@ feature -- Roundtrip
 	dot_symbol_index: INTEGER
 			-- Index of symbol "." associated with this structure
 
-	feature_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
+	feature_keyword (a_list: LEAF_AS_LIST): detachable KEYWORD_AS
 			-- Keyword "feature" associated with this structure
 		require
 			a_list_not_void: a_list /= Void
@@ -92,7 +92,7 @@ feature -- Roundtrip
 			end
 		end
 
-	dot_symbol (a_list: LEAF_AS_LIST): SYMBOL_AS
+	dot_symbol (a_list: LEAF_AS_LIST): detachable SYMBOL_AS
 			-- Symbol "." associated with this structure
 		require
 			a_list_not_void: a_list /= Void
@@ -137,7 +137,7 @@ invariant
 	feature_name_not_void: feature_name /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

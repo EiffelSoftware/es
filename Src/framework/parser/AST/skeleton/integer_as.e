@@ -137,7 +137,7 @@ feature -- Roundtrip
 	sign_symbol_index: INTEGER
 			-- Index of symbol "+" or "-" associated with this structure
 
-	sign_symbol (a_list: LEAF_AS_LIST): SYMBOL_AS
+	sign_symbol (a_list: LEAF_AS_LIST): detachable SYMBOL_AS
 			-- Symbol "+" or "-" associated with this structure
 		require
 			a_list_not_void: a_list /= Void
@@ -162,7 +162,7 @@ feature -- Roundtrip
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS
+	first_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			if a_list = Void then
 				Result := Current
@@ -191,7 +191,7 @@ feature -- Roundtrip/Text
 
 feature -- Access
 
-	constant_type: TYPE_AS
+	constant_type: detachable TYPE_AS
 			-- Type of integer constant if specified.
 
 	has_constant_type: BOOLEAN
@@ -702,7 +702,7 @@ invariant
 	non_negative_natural: (has_natural (8) or has_natural (16) or has_natural (32) or has_natural (64)) implies not has_minus
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

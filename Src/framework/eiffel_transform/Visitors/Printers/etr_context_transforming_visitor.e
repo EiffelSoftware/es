@@ -167,13 +167,13 @@ feature {NONE} -- Implementation
 				changed_old_type := a_old_type.associated_class
 				changed_new_type := a_new_type.associated_class
 
-				if attached {RENAMED_TYPE_A[TYPE_A]}a_old_type as l_ren_old then
+				if attached {RENAMED_TYPE_A}a_old_type as l_ren_old then
 					changed_old_renamings := l_ren_old.renaming
 				else
 					changed_old_renamings := void
 				end
 
-				if attached {RENAMED_TYPE_A[TYPE_A]}a_new_type as l_ren_new then
+				if attached {RENAMED_TYPE_A}a_new_type as l_ren_new then
 					changed_new_renamings := l_ren_new.renaming
 				else
 					changed_new_renamings := void

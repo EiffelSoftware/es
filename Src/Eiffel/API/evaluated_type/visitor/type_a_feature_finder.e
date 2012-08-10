@@ -48,10 +48,8 @@ feature -- Status report
 			c_attached: attached c
 		do
 			if
-				not t.is_renamed_type and then
 				not t.is_like_argument and then
 				not t.is_void and then
-				not attached {OPEN_TYPE_A} t and then
 				not attached {UNEVALUATED_BITS_SYMBOL_A} t and then
 				not attached {UNEVALUATED_LIKE_TYPE} t and then
 				not attached {UNEVALUATED_QUALIFIED_ANCHORED_TYPE} t
@@ -79,7 +77,7 @@ feature {NONE} -- Context
 	feature_in_class: FUNCTION [TYPE_A_FEATURE_FINDER, TUPLE [CLASS_C], detachable FEATURE_I]
 			-- Lookup procedure for {CL_TYPE_A}
 
-	find_in_renamed_type_a: PROCEDURE [TYPE_A_FEATURE_FINDER, TUPLE [RENAMED_TYPE_A [TYPE_A]]]
+	find_in_renamed_type_a: PROCEDURE [TYPE_A_FEATURE_FINDER, TUPLE [RENAMED_TYPE_A]]
 			-- Lookup procedure for {RENAMED_TYPE_A}
 
 	formal_generics: detachable ARRAYED_LIST [FORMAL_A]
@@ -97,7 +95,7 @@ feature {NONE} -- Search by name
 			Result := c.feature_of_name_id (n)
 		end
 
-	find_in_renamed_type_a_by_name (n: like {FEATURE_I}.feature_name_id; t: RENAMED_TYPE_A [TYPE_A])
+	find_in_renamed_type_a_by_name (n: like {FEATURE_I}.feature_name_id; t: RENAMED_TYPE_A)
 		require
 			valid_n: names_heap.has (n)
 			t_attached: attached t
@@ -156,7 +154,7 @@ feature -- Search
 			feature_from_class:
 				attached found_feature as f implies
 				attached found_site as s and then
-				(s.associated_class.feature_of_name_id (n) ~ f or else True) -- Feature can be renamed in formal constraints
+				(s.base_class.feature_of_name_id (n) ~ f or else True) -- Feature can be renamed in formal constraints
 		end
 
 	find_by_routine_id (r: INTEGER; t: TYPE_A; c: CLASS_C)
@@ -180,7 +178,7 @@ feature -- Search
 					Result := s.feature_of_rout_id (f)
 				end
 				(r, ?)
-			find_in_renamed_type_a := agent (renamed_type: RENAMED_TYPE_A [TYPE_A])
+			find_in_renamed_type_a := agent (renamed_type: RENAMED_TYPE_A)
 				require
 					renamed_type_attached: attached renamed_type
 				do
@@ -196,7 +194,7 @@ feature -- Search
 			feature_from_class:
 				attached found_feature as f implies
 				attached found_site as s and then
-				(s.associated_class.feature_of_rout_id (r) ~ f)
+				(s.base_class.feature_of_rout_id (r) ~ f)
 		end
 
 feature {TYPE_A} -- Visitor
@@ -229,7 +227,7 @@ feature {TYPE_A} -- Visitor
 			-- <Precursor>
 		do
 			if
-				attached t.associated_class as c and then
+				attached t.base_class as c and then
 				attached feature_in_class.item ([c]) as f
 			then
 				found_site := t
@@ -237,7 +235,7 @@ feature {TYPE_A} -- Visitor
 			end
 		end
 
-	process_renamed_type_a (t: RENAMED_TYPE_A [TYPE_A])
+	process_renamed_type_a (t: RENAMED_TYPE_A)
 			-- <Precursor>
 		do
 			check valid_t: False end
@@ -353,12 +351,6 @@ feature {TYPE_A} -- Visitor
 		do
 		end
 
-	process_open_type_a (t: OPEN_TYPE_A)
-			-- <Precursor>
-		do
-			check valid_t: False end
-		end
-
 	process_pointer_a (t: POINTER_A)
 			-- <Precursor>
 		do
@@ -414,7 +406,7 @@ feature {TYPE_A} -- Visitor
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

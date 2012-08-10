@@ -16,6 +16,7 @@ inherit
 		export
 			{NONE} all
 			{ANY} last_type, set_is_checking_postcondition, is_checking_postcondition, set_is_inherited, set_is_checking_precondition, is_checking_precondition
+			{ANY} is_valid
 		redefine
 			set_routine_ids,
 			match_list_of_class,
@@ -82,7 +83,7 @@ feature -- Output
 			create Result.make_empty
 
 			-- print attachment marks etc
-			if attached {ATTACHABLE_TYPE_A}a_type as l_att_type then
+			if attached {ANNOTATED_TYPE_A}a_type as l_att_type then
 				-- print attachment marks
 				if l_att_type.has_attached_mark then
 					Result.append_character ('!')
@@ -184,14 +185,6 @@ feature -- Output
 				end
 			elseif attached {CL_TYPE_A}a_type as l_cl_t then
 				Result.append (l_cl_t.associated_class.name_in_upper)
-			elseif a_type.is_type_set then
-				if attached {TYPE_SET_A}a_type as l_set then
-					Result := print_type (l_set.first, a_context)
-				end
-			elseif a_type.has_renaming then
-				if attached {RENAMED_TYPE_A[TYPE_A]}a_type as l_ren then
-					Result := print_type(l_ren.actual_type, a_context)
-				end
 			else
 				Result := a_type.dump -- can't handle, just use debug-dump
 				logger.log_warning("{ETR_TYPE_CHCKER}.print_type: Using default dump ("+Result+")")
@@ -712,7 +705,7 @@ feature -- Quantification
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

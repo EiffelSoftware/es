@@ -10,6 +10,7 @@ inherit
 	ETR_AST_STRUCTURE_PRINTER_WITH_HOOKS
 		export
 			{NONE} all
+			{ANY} is_valid
 		redefine
 				-- AST Structure Printer
 			output,

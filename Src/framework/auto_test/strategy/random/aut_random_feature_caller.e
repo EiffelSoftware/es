@@ -1,4 +1,4 @@
-﻿note
+note
 
 	description:
 
@@ -131,7 +131,7 @@ feature -- Change
 		require
 			a_feature_not_void: a_feature /= Void
 			a_type_not_void: a_type /= Void
-			class_has_feature: has_feature (a_type.associated_class, a_feature)
+			class_has_feature: has_feature (a_type.base_class, a_feature)
 		do
 			feature_to_call := a_feature
 			type := a_type
@@ -369,7 +369,7 @@ feature {NONE} -- Implementation
 			i: INTEGER
 			l_feature_table: like feature_table
 		do
-			class_ := type.associated_class
+			class_ := type.base_class
 			random.forth
 			l_feature_table := feature_table
 			update_feature_table (l_feature_table, class_)
@@ -562,7 +562,7 @@ invariant
 	interpreter_not_void: interpreter /= Void
 	type_and_feature_valid: (type /= Void) = (feature_to_call /= Void)
 	queue_not_void: queue /= Void
-	class_has_feature: (type /= Void) implies has_feature (type.associated_class, feature_to_call)
+	class_has_feature: (type /= Void) implies has_feature (type.base_class, feature_to_call)
 	error_handler_not_void: error_handler /= Void
 
 note

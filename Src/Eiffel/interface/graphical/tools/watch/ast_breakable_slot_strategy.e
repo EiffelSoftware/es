@@ -602,7 +602,7 @@ feature {NONE} -- Implementation
 							end
 						end
 						if not last_type.is_none then
-							last_class := last_type.associated_class
+							last_class := last_type.base_class
 						else
 							last_class := Void
 						end
@@ -615,7 +615,7 @@ feature {NONE} -- Implementation
 								l_feat_result := feature_from_type_set (l_last_type_set, l_rout_id_set)
 								if l_feat_result.count >= 1 then
 									l_feat := l_feat_result.first.feature_item
-									last_class := l_feat_result.first.class_type.associated_class
+									last_class := l_feat_result.first.class_type.base_class
 								else
 									l_feat := Void
 									last_class := Void
@@ -623,7 +623,7 @@ feature {NONE} -- Implementation
 							else
 								l_feat := feature_in_class (current_class, l_rout_id_set)
 								if last_type /= Void then
-									last_class := last_type.associated_class
+									last_class := last_type.base_class
 								else
 									last_class := current_class
 								end
@@ -939,9 +939,9 @@ feature {NONE} -- Implementation
 						reset_last_class_and_type
 						l_as.target.process (Current)
 					else
-						if not expr_type_visiting then
-						else
-							create {OPEN_TYPE_A} last_type
+						if expr_type_visiting then
+							fixme ("Currently we only handle ? for targets, current code does not handle ? for arguments")
+							last_type := current_class.actual_type
 						end
 					end
 				end
@@ -1105,11 +1105,11 @@ feature {NONE} -- Implementation
 						end
 					else
 						l_last_type := l_formal.constrained_type (current_class)
-						l_feat := feature_in_class (l_last_type.associated_class, l_as.routine_ids)
+						l_feat := feature_in_class (l_last_type.base_class, l_as.routine_ids)
 					end
 				else
 					l_last_type := l_expr_type.actual_type
-					l_feat := feature_in_class (l_last_type.associated_class, l_as.routine_ids)
+					l_feat := feature_in_class (l_last_type.base_class, l_as.routine_ids)
 				end
 			end
 			if not has_error_internal then
@@ -1129,7 +1129,7 @@ feature {NONE} -- Implementation
 				check l_feat_is_not_procedure: not l_feat.is_procedure end
 				l_type := l_feat.type.actual_type
 				check last_type_not_void: last_type /= Void end
-				last_class := l_last_type.associated_class
+				last_class := l_last_type.base_class
 				if l_type.is_loose then
 					last_type := l_type.instantiation_in (l_last_type, last_class.class_id)
 				else
@@ -1226,11 +1226,11 @@ feature {NONE} -- Implementation
 							l_left_type_set_void: l_left_type_set = Void
 							l_left_type_has_associated_class: l_left_type.has_associated_class
 						end
-						l_feat := feature_in_class (l_left_type.associated_class, l_as.routine_ids)
+						l_feat := feature_in_class (l_left_type.base_class, l_as.routine_ids)
 					end
 					check not has_error_internal implies l_left_type /= Void end
 					if not has_error_internal then
-						l_left_class := l_left_type.associated_class
+						l_left_class := l_left_type.base_class
 						last_type := l_left_type
 					end
 				end
@@ -1389,7 +1389,7 @@ feature {NONE} -- Implementation
 			l_formal: FORMAL_A
 			l_last_type_set: TYPE_SET_A
 			l_last_class: CLASS_C
-			l_result: LIST[TUPLE[feature_item: E_FEATURE; type: RENAMED_TYPE_A [TYPE_A]]]
+			l_result: LIST[TUPLE[feature_item: E_FEATURE; type: RENAMED_TYPE_A]]
 		do
 			l_as.target.process (Current)
 			check
@@ -1404,14 +1404,14 @@ feature {NONE} -- Implementation
 						l_last_type_set := l_formal.constrained_types (current_class)
 							-- Here we get back the feature and the renamed type where the feature is from (it means that it includes a possible renaming)
 						l_result := l_last_type_set.e_feature_list_by_rout_id(l_as.routine_ids.first)
-						last_class := l_result.first.type.associated_class
+						last_class := l_result.first.type.base_class
 						l_feat := l_result.first.feature_item
 					else
-						last_class := l_formal.constrained_type (current_class).associated_class
+						last_class := l_formal.constrained_type (current_class).base_class
 						l_feat := feature_in_class (last_class, l_as.routine_ids)
 					end
 				else
-					last_class := last_type.associated_class
+					last_class := last_type.base_class
 					l_feat := feature_in_class (last_class, l_as.routine_ids)
 				end
 			end
@@ -1766,7 +1766,7 @@ feature {NONE} -- Implementation
 			check
 				last_type_not_void: last_type /= Void
 			end
-			last_parent := last_type.associated_class
+			last_parent := last_type.base_class
 			check
 				last_parent_not_void: last_parent /= Void
 			end
@@ -2153,7 +2153,6 @@ feature -- Expression visitor
 			end
 		ensure
 			no_error_implies_result_is_not_void: not has_error_internal implies Result /= Void
-			Result_is_not_a_type_set: not has_error_internal implies (not Result.is_type_set)
 		end
 
 	expr_types (a_exprs: EIFFEL_LIST [EXPR_AS]): ARRAY [TYPE_A]
@@ -2411,7 +2410,7 @@ feature {NONE} -- Implementation: helpers
 			feature_in_class_not_void: not has_error_internal implies Result /= Void
 		end
 
-	feature_from_type_set (a_type_set: TYPE_SET_A;	a_id_set: ID_SET): LIST[TUPLE[feature_item: E_FEATURE; class_type: RENAMED_TYPE_A [TYPE_A]]]
+	feature_from_type_set (a_type_set: TYPE_SET_A;	a_id_set: ID_SET): LIST[TUPLE[feature_item: E_FEATURE; class_type: RENAMED_TYPE_A]]
 			-- Feature with `a_id_set' in `a_class_c'
 		require
 			a_type_set_not_void: a_type_set /= Void
@@ -2472,9 +2471,9 @@ feature {NONE} -- Implementation: helpers
 				end
 				l_formal_dec ?= current_class.generics.i_th (l_formal.position)
 				check l_formal_dec_not_void: l_formal_dec /= Void end
-				Result := l_formal_dec.constraint_type (current_class).associated_class
+				Result := l_formal_dec.constraint_type (current_class).base_class
 			else
-				Result := l_type.associated_class
+				Result := l_type.base_class
 			end
 		end
 
@@ -2538,7 +2537,7 @@ feature {NONE} -- Implementation: helpers
 			l_type: TYPE_A
 		do
 				-- Convert TYPE_AS into TYPE_A in the context of `source_class'.
-			l_type := type_a_generator.evaluate_optional_unchecked (a_type, source_class)
+			l_type := type_a_generator.evaluate_type (a_type, source_class)
 
 				-- An error occurs when a class was renamed.
 			if not has_error_internal and l_type = Void then
@@ -2586,7 +2585,6 @@ feature {NONE} -- Implementation: helpers
 			l_result_type: GEN_TYPE_A
 			l_actual_target_type: TYPE_A
 			l_feat: E_FEATURE
-			l_open: OPEN_TYPE_A
 		do
 			l_feat := feature_in_class (system.class_of_id (l_as.class_id), l_as.routine_ids)
 			if not has_error_internal then
@@ -2607,11 +2605,6 @@ feature {NONE} -- Implementation: helpers
 				else
 					l_as.target.process (Current)
 					l_target_type := last_type
-					l_open ?= l_target_type
-					if l_open /= Void then
-							-- Target is actually an open operand.
-						l_target_type := current_class.actual_type
-					end
 				end
 
 				l_actual_target_type := l_target_type.actual_type
@@ -2761,7 +2754,7 @@ invariant
 	has_error_implies_error_message_not_empty: has_error implies not error_message.is_empty
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

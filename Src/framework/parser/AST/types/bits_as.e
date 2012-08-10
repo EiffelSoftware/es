@@ -45,7 +45,7 @@ feature -- Roundtrip
 	bit_keyword_index: INTEGER
 		-- Integer of keyword "bit" associated with this structure		
 
-	bit_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
+	bit_keyword (a_list: LEAF_AS_LIST): detachable KEYWORD_AS
 		-- Keyword "bit" associated with this structure		
 		require
 			a_list_not_void: a_list /= Void
@@ -71,7 +71,7 @@ feature -- Attributes
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS
+	first_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			Result := Precursor (a_list)
 			if Result = Void then
@@ -83,7 +83,7 @@ feature -- Roundtrip/Token
 			end
 		end
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS
+	last_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			Result := Precursor (a_list)
 			if Result = Void then
@@ -110,7 +110,7 @@ feature -- Output
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

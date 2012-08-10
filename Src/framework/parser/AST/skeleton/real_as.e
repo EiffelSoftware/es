@@ -57,7 +57,7 @@ feature -- Roundtrip
 	sign_symbol_index: INTEGER
 			-- Index of symbol "+" or "-" associated with this structure
 
-	sign_symbol (a_list: LEAF_AS_LIST): SYMBOL_AS
+	sign_symbol (a_list: LEAF_AS_LIST): detachable SYMBOL_AS
 			-- Symbol "+" or "-" associated with this structure
 		require
 			a_list_not_void: a_list /= Void
@@ -82,7 +82,7 @@ feature -- Roundtrip
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS
+	first_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			if a_list = Void then
 				Result := Current
@@ -133,7 +133,7 @@ feature {AST_EIFFEL} -- Output
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

@@ -11,6 +11,7 @@ inherit
 	ETR_AST_STRUCTURE_PRINTER
 		export{NONE}
 			all
+			{ANY} is_valid
 		redefine
 			process_like_id_as,
 			process_instr_call_as,

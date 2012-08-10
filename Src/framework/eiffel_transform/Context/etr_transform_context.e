@@ -21,10 +21,10 @@ feature {NONE} -- Implementation
 			l_source_renaming, l_target_renaming: RENAMING_A
 			l_constraint_renaming: ETR_CT_CONSTRAINT_RENAMING
 		do
-			if attached {RENAMED_TYPE_A[TYPE_A]}a_source_type as l_ren then
+			if attached {RENAMED_TYPE_A}a_source_type as l_ren then
 				l_source_renaming := l_ren.renaming
 			end
-			if attached {RENAMED_TYPE_A[TYPE_A]}a_target_type as l_ren then
+			if attached {RENAMED_TYPE_A}a_target_type as l_ren then
 				l_target_renaming := l_ren.renaming
 			end
 
@@ -279,7 +279,7 @@ feature -- Transformations
 			end
 		end
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

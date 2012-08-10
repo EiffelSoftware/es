@@ -53,7 +53,7 @@ feature -- Roundtrip
 	elseif_keyword_index, then_keyword_index: INTEGER
 			-- Index of keyword "elseif" and "then" assoicated with this structure
 
-	elseif_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
+	elseif_keyword (a_list: LEAF_AS_LIST): detachable KEYWORD_AS
 			-- Keyword "elseif" assoicated with this structure
 		require
 			a_list_not_void: a_list /= Void
@@ -66,7 +66,7 @@ feature -- Roundtrip
 			end
 		end
 
-	then_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
+	then_keyword (a_list: LEAF_AS_LIST): detachable KEYWORD_AS
 			-- Keyword "then" assoicated with this structure
 		require
 			a_list_not_void: a_list /= Void
@@ -89,7 +89,7 @@ feature -- Attributes
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS
+	first_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			if a_list /= Void and elseif_keyword_index /= 0 then
 				Result := elseif_keyword (a_list)
@@ -98,7 +98,7 @@ feature -- Roundtrip/Token
 			end
 		end
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS
+	last_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			if compound /= Void then
 				Result := compound.last_token (a_list)
@@ -136,7 +136,7 @@ invariant
 	expr_not_void: expr /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -149,22 +149,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class ELSIF_AS

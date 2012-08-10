@@ -114,7 +114,7 @@ feature {TYPE_A} -- Visitors
 				text_formatter.process_keyword_text (ti_reference_keyword, Void)
 				text_formatter.add_space
 			end
-			l_class := a_type.associated_class
+			l_class := a_type.base_class
 			if l_class /= Void  then
 				l_class.append_name (text_formatter)
 			else
@@ -275,12 +275,6 @@ feature {TYPE_A} -- Visitors
 			text_formatter.add (ti_none_class)
 		end
 
-	process_open_type_a (a_type: OPEN_TYPE_A)
-			-- Process `a_type'.
-		do
-			text_formatter.add (ti_open_arg)
-		end
-
 	process_pointer_a (a_type: POINTER_A)
 			-- Process `a_type'.
 		do
@@ -305,7 +299,7 @@ feature {TYPE_A} -- Visitors
 				text_formatter.process_symbol_text (ti_r_curly)
 			end
 			from
-				c := a_type.qualifier.associated_class
+				c := a_type.qualifier.base_class
 			until
 				i >= a_type.chain.count
 			loop
@@ -313,7 +307,7 @@ feature {TYPE_A} -- Visitors
 				n := a_type.chain [i]
 				if c /= Void and then attached c.feature_with_name_id (n) as f then
 					f.append_name (text_formatter)
-					c := f.type.associated_class
+					c := f.type.base_class
 				else
 					text_formatter.process_feature_name_text (names_heap.item_32 (n), c)
 				end
@@ -325,19 +319,6 @@ feature {TYPE_A} -- Visitors
 			-- Process `a_type'.
 		do
 			process_cl_type_a (a_type)
-		end
-
-	process_renamed_type_a (a_type: RENAMED_TYPE_A [TYPE_A])
-			-- Process `a_type'.
-		do
-			a_type.type.append_to (text_formatter)
-			if a_type.has_renaming then
-				if a_type.has_associated_class then
-					a_type.renaming.append_to_with_pebbles (text_formatter, a_type.associated_class)
-				else
-					a_type.renaming.append_to (text_formatter)
-				end
-			end
 		end
 
 	process_tuple_type_a (a_type: TUPLE_TYPE_A)
@@ -404,7 +385,7 @@ feature {TYPE_A} -- Visitors
 
 feature {NONE} -- Generic visitors
 
-	process_attachable_type_a (t: ATTACHABLE_TYPE_A)
+	process_attachable_type_a (t: ANNOTATED_TYPE_A)
 			-- Output marks leading marks of `t'.
 		require
 			t_attached: attached t
@@ -423,7 +404,7 @@ feature {NONE} -- Generic visitors
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

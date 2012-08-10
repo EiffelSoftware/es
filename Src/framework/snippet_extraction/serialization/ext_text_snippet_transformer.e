@@ -9,6 +9,8 @@ class
 
 inherit
 	ETR_AST_STRUCTURE_PRINTER
+		export
+			{ANY} is_valid
 		redefine
 			process_id_as,
 			processing_access_feat_as

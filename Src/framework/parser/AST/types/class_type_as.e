@@ -48,7 +48,7 @@ feature -- Attributes
 	class_name: ID_AS
 			-- Class type name
 
-	generics: TYPE_LIST_AS
+	generics: detachable TYPE_LIST_AS
 			-- Possible generical parameters
 		do
 		end
@@ -64,7 +64,7 @@ feature -- Roundtrip
 	expanded_keyword_index: INTEGER
 			-- Index of keyword "expanded" associated with this structure.
 
-	expanded_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
+	expanded_keyword (a_list: LEAF_AS_LIST): detachable KEYWORD_AS
 			-- Keyword "expanded" associated with this structure.
 		require
 			a_list_not_void: a_list /= Void
@@ -79,7 +79,7 @@ feature -- Roundtrip
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS
+	first_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			Result := Precursor (a_list)
 			if Result = Void then
@@ -92,7 +92,7 @@ feature -- Roundtrip/Token
 			end
 		end
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS
+	last_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			Result := Precursor (a_list)
 			if Result = Void then
@@ -142,7 +142,7 @@ feature {AST_FACTORY, COMPILER_EXPORTER} -- Conveniences
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

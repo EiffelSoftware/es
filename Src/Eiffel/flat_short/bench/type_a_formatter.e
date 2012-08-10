@@ -75,13 +75,7 @@ feature {TYPE_A} -- Visitors
 	process_cl_type_a (a_type: CL_TYPE_A)
 			-- Process `a_type'.
 		do
-			ctxt.put_classi (a_type.associated_class.lace_class)
-		end
-
-	process_renamed_type_a (a_type: RENAMED_TYPE_A [TYPE_A])
-			-- Process `a_type'.
-		do
-			ctxt.process_string_text (a_type.dump, Void)
+			ctxt.put_classi (a_type.base_class.lace_class)
 		end
 
 	process_formal_a (a_type: FORMAL_A)
@@ -95,7 +89,7 @@ feature {TYPE_A} -- Visitors
 		local
 			i, count: INTEGER
 		do
-			ctxt.put_classi (a_type.associated_class.lace_class)
+			ctxt.put_classi (a_type.base_class.lace_class)
 			count := a_type.generics.count
 
 				-- TUPLE may have zero generic parameters
@@ -184,12 +178,6 @@ feature {TYPE_A} -- Visitors
 			ctxt.process_string_text (a_type.dump, Void)
 		end
 
-	process_open_type_a (a_type: OPEN_TYPE_A)
-			-- Process `a_type'.
-		do
-			ctxt.process_string_text ("?", Void)
-		end
-
 	process_pointer_a (a_type: POINTER_A)
 			-- Process `a_type'.
 		do
@@ -245,7 +233,7 @@ feature {TYPE_A} -- Visitors
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

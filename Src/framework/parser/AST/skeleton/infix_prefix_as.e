@@ -98,28 +98,17 @@ feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Access
 feature -- Conveniences
 
 	is_less alias "<" (other: FEATURE_NAME): BOOLEAN
-		local
-			infix_feature: INFIX_PREFIX_AS
-			normal_feature: FEAT_NAME_ID_AS
 		do
-			normal_feature ?= other
-			infix_feature ?= other
-
-			check
-				Void_normal_feature: normal_feature = Void implies infix_feature /= Void
-				Void_infix_feature: infix_feature = Void implies normal_feature /= Void
-			end
-
-			if infix_feature = Void then
+			if attached {INFIX_PREFIX_AS} other as l_infix_feature then
+				Result := visual_name < l_infix_feature.visual_name
+			elseif attached {FEAT_NAME_ID_AS} other then
 				Result := False
-			else
-				Result := visual_name < infix_feature.visual_name
 			end
 		end
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS
+	first_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			Result := frozen_keyword
 			if Result = Void or else Result.is_null then
@@ -130,7 +119,7 @@ feature -- Roundtrip/Token
 			end
 		end
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS
+	last_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			Result := alias_name.last_token (a_list)
 		end
@@ -139,7 +128,7 @@ invariant
 	alias_name_not_void: alias_name /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

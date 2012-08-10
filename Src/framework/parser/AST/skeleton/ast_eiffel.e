@@ -65,7 +65,7 @@ feature -- Comparison
 		deferred
 		end
 
-	frozen equivalent (o1, o2: AST_EIFFEL): BOOLEAN
+	frozen equivalent (o1, o2: detachable AST_EIFFEL): BOOLEAN
 			-- Are `o1' and `o2' equivalent ?
 			-- this feature is similar to `deep_equal'
 			-- but ARRAYs and STRINGs are processed correctly
@@ -93,8 +93,9 @@ feature -- Location
 	frozen start_location: LOCATION_AS
 			-- Starting point for current construct.
 		do
-			Result := first_token (Void)
-			if Result = Void then
+			if attached first_token (Void) as l_token then
+				Result := l_token
+			else
 				Result := null_location
 			end
 		ensure
@@ -104,8 +105,9 @@ feature -- Location
 	frozen end_location: LOCATION_AS
 			-- Ending point for current construct.
 		do
-			Result := last_token (Void)
-			if Result = Void then
+			if attached last_token (Void) as l_token then
+				Result := l_token
+			else
 				Result := null_location
 			end
 		ensure
@@ -135,8 +137,9 @@ feature -- Roundtrip/Location
 		require
 			a_list_not_void: a_list /= Void
 		do
-			Result := first_token (a_list)
-			if Result = Void then
+			if attached first_token (a_list) as l_token then
+				Result := l_token
+			else
 				Result := null_location
 			end
 		ensure
@@ -148,8 +151,9 @@ feature -- Roundtrip/Location
 		require
 			a_list_not_void: a_list /= Void
 		do
-			Result := last_token (a_list)
-			if Result = Void then
+			if attached last_token (a_list) as l_token then
+				Result := l_token
+			else
 				Result := null_location
 			end
 		ensure
@@ -174,7 +178,7 @@ feature -- Roundtrip/Location
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: detachable LEAF_AS_LIST): LEAF_AS
+	first_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 			-- First token in current AST node
 			--| Note for implementors of this routine as `last_token'.
 			--| Do not rely on `a_list' non-voidness to figure out the
@@ -189,7 +193,7 @@ feature -- Roundtrip/Token
 		deferred
 		end
 
-	last_token (a_list: detachable LEAF_AS_LIST): LEAF_AS
+	last_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 			-- Last token in current AST node
 			--| Note: see comment on `last_token'.
 		deferred

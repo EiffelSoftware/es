@@ -52,7 +52,7 @@ feature -- Roundtrip
 	lparan_symbol_index, rparan_symbol_index: INTEGER
 			-- Index of symbol "(" and ")" associated with this structure
 
-	lparan_symbol (a_list: LEAF_AS_LIST): SYMBOL_AS
+	lparan_symbol (a_list: LEAF_AS_LIST): detachable SYMBOL_AS
 			-- Symbol "(" associated with this structure
 		require
 			a_list_not_void: a_list /= Void
@@ -65,7 +65,7 @@ feature -- Roundtrip
 			end
 		end
 
-	rparan_symbol (a_list: LEAF_AS_LIST): SYMBOL_AS
+	rparan_symbol (a_list: LEAF_AS_LIST): detachable SYMBOL_AS
 			-- Symbol ")" associated with this structure
 		require
 			a_list_not_void: a_list /= Void
@@ -90,7 +90,7 @@ feature -- Status Report
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS
+	first_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			if a_list /= Void and lparan_symbol_index /= 0 then
 				Result := lparan_symbol (a_list)
@@ -99,7 +99,7 @@ feature -- Roundtrip/Token
 			end
 		end
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS
+	last_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			if a_list /= Void and rparan_symbol_index /= 0 then
 				Result := rparan_symbol (a_list)

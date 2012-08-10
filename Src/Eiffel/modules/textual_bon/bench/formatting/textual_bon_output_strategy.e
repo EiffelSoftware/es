@@ -9,6 +9,7 @@ deferred class
 
 inherit
 	AST_DECORATED_OUTPUT_STRATEGY
+		rename is_valid as is_valid_ast_visitor end
 
 	TBON_TEXT_ITEMS
 

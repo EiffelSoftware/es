@@ -84,7 +84,7 @@ feature -- Roundtrip
 	convert_keyword_index: INTEGER
 		-- Index of keyword "convert" associated with this structure.
 
-	alias_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
+	alias_keyword (a_list: LEAF_AS_LIST): detachable KEYWORD_AS
 		-- Keyword "alias" associated with this structure.
 		require
 			a_list_not_void: a_list /= Void
@@ -97,7 +97,7 @@ feature -- Roundtrip
 			end
 		end
 
-	convert_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
+	convert_keyword (a_list: LEAF_AS_LIST): detachable KEYWORD_AS
 		-- Keyword "convert" associated with this structure.
 		require
 			a_list_not_void: a_list /= Void
@@ -165,7 +165,7 @@ feature -- Status setting
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS
+	first_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			Result := frozen_keyword
 			if Result = Void or else Result.is_null then
@@ -173,7 +173,7 @@ feature -- Roundtrip/Token
 			end
 		end
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS
+	last_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			if a_list = Void then
 				Result := alias_name.last_token (a_list)
@@ -209,7 +209,7 @@ invariant
 	alias_name_not_empty: not alias_name.value.is_empty
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

@@ -51,7 +51,7 @@ feature -- Roundtrip
 	like_keyword_index: INTEGER
 			-- Index of keyword "like" associated with this structure		
 
-	like_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
+	like_keyword (a_list: LEAF_AS_LIST): detachable KEYWORD_AS
 			-- Keyword "like" associated with this structure		
 		require
 			a_list_not_void: a_list /= Void
@@ -77,7 +77,7 @@ feature -- Comparison
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS
+	first_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			Result := Precursor (a_list)
 			if Result = Void then
@@ -89,7 +89,7 @@ feature -- Roundtrip/Token
 			end
 		end
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS
+	last_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			Result := Precursor (a_list)
 			if Result = Void then
@@ -111,7 +111,7 @@ invariant
 	current_keyword_not_void: current_keyword /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

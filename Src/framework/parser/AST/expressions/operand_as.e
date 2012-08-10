@@ -45,7 +45,7 @@ feature -- Roundtrip
 	question_mark_symbol_index: INTEGER
 			-- Index of symbol "?" associated with thie structure
 
-	question_mark_symbol (a_list: LEAF_AS_LIST): SYMBOL_AS
+	question_mark_symbol (a_list: LEAF_AS_LIST): detachable SYMBOL_AS
 			-- Symbol "?" associated with thie structure
 		require
 			a_list_not_void: a_list /= Void
@@ -81,7 +81,7 @@ feature -- Attributes
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS
+	first_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			if class_type /= Void then
 				Result := class_type.first_token (a_list)
@@ -96,7 +96,7 @@ feature -- Roundtrip/Token
 			end
 		end
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS
+	last_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			if class_type /= Void then
 				Result := class_type.last_token (a_list)

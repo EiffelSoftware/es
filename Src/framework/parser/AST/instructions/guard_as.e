@@ -58,7 +58,7 @@ feature -- Roundtrip
 	check_keyword_index, then_keyword_index: INTEGER
 			-- Index of keyword "check" and "then" assoicated with this structure
 
-	check_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
+	check_keyword (a_list: LEAF_AS_LIST): detachable KEYWORD_AS
 			-- Keyword "check" assoicated with this structure
 		require
 			a_list_not_void: a_list /= Void
@@ -71,7 +71,7 @@ feature -- Roundtrip
 			end
 		end
 
-	then_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
+	then_keyword (a_list: LEAF_AS_LIST): detachable KEYWORD_AS
 			-- Keyword "then" assoicated with this structure
 		require
 			a_list_not_void: a_list /= Void
@@ -86,7 +86,7 @@ feature -- Roundtrip
 
 feature -- Attributes
 
-	check_list: EIFFEL_LIST [TAGGED_AS]
+	check_list: detachable EIFFEL_LIST [TAGGED_AS]
 			-- List of tagged boolean expression
 			-- (only complete assertions are included)
 			-- e.g. "tag:expr", "expr"
@@ -105,7 +105,7 @@ feature -- Roundtrip
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS
+	first_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			if a_list /= Void then
 				Result := check_keyword (a_list)
@@ -124,7 +124,7 @@ feature -- Roundtrip/Token
 			end
 		end
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS
+	last_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			if attached end_keyword as e then
 				Result := e.last_token (a_list)

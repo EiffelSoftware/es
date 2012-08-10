@@ -1,27 +1,26 @@
 note
-
-	description: 
-		"Error for name clash on formal generic parameter."
+	description: "Types that are presented as a class name or generic parameter"
 	legal: "See notice at end of class."
-	status: "See notice at end of class.";
-	date: "$Date$";
-	revision: "$Revision $"
+	status: "See notice at end of class."
+	date: "$Date$"
+	revision: "$Revision$"
 
-class VCFG3 
+deferred class
+	DEANCHORED_TYPE_A
 
 inherit
-
-	VCFG1
+	ANNOTATED_TYPE_A
 		redefine
-			subcode
-		end;
+			is_named_type
+		end
 
-feature -- Properties
+feature -- Property
 
-	subcode: INTEGER = 3;
+	is_named_type: BOOLEAN = True;
+			-- Current is a named type
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2007, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -52,4 +51,4 @@ note
 			 Customer support http://support.eiffel.com
 		]"
 
-end -- class VCFG3
+end -- class NAMED_TYPE_A

@@ -8,7 +8,7 @@ note
 class FORMAL_A
 
 inherit
-	NAMED_TYPE_A
+	DEANCHORED_TYPE_A
 		rename
 			is_multi_constrained as has_multi_constrained
 		redefine
@@ -344,7 +344,7 @@ feature -- Access
 			end
 		end
 
-	associated_class: CLASS_C
+	base_class: CLASS_C
 		do
 			-- No associated class
 		end
@@ -492,7 +492,7 @@ feature {COMPILER_EXPORTER} -- Type checking
 			l_is_exp := is_expanded
 			is_reference := True
 			is_expanded := False
-			Precursor {NAMED_TYPE_A} (a_gen_type, a_target_type, a_class, i)
+			Precursor {DEANCHORED_TYPE_A} (a_gen_type, a_target_type, a_class, i)
 			is_reference := l_is_ref
 			is_expanded := l_is_exp
 
@@ -577,7 +577,7 @@ feature -- Access
 						i := i + 1
 							-- There are no anchored types in constraints,
 							-- so there is no need to use `conformance_type'.
-						if attached {FORMAL_A} l_constraints [i].type.to_other_attachment (Current) as g then
+						if attached {FORMAL_A} l_constraints.i_th (i).type.to_other_attachment (Current) as g then
 							if g.direct_conform_to_formal (a_context_class, f) then
 									-- Types conform.
 								Result := True
@@ -603,7 +603,7 @@ feature -- Access
 						-- Take only class types into account since there is no other way
 						-- this formal can conform to other and leaving formal generics in
 						-- the type set can lead to infinite recursion for no need.
-					Result := l_constraints.constraining_types (a_context_class).to_other_attachment (Current).conform_to_type (a_context_class, other)
+					Result := l_constraints.constraining_types (a_context_class).to_other_attachment (Current).conform_to_type (a_context_class, other.to_type_set)
 				end
 			end
 		end
@@ -637,7 +637,7 @@ feature -- Access
 			-- Instantiation of Current in the context of `type',
 			-- assuming that Current is written in class of id `written_id'.
 		local
-			t: ATTACHABLE_TYPE_A
+			t: ANNOTATED_TYPE_A
 			l_class: CLASS_C
 			l_type_set: TYPE_SET_A
 		do
@@ -654,7 +654,7 @@ feature -- Access
 					l_type_set := l_class.constrained_types (position)
 					if
 						l_type_set.is_attached and then
-						attached {ATTACHABLE_TYPE_A} Result as a and then not a.has_detachable_mark
+						attached {ANNOTATED_TYPE_A} Result as a and then not a.has_detachable_mark
 					then
 							-- Promote attachment setting of the current contraint unless the formal has explicit detachable mark.
 						t := a.duplicate
@@ -735,7 +735,7 @@ feature {NONE} -- Status adaptation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

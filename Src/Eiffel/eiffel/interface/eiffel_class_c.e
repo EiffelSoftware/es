@@ -21,7 +21,7 @@ inherit
 			pass4, melt, update_execution_table, has_features_to_melt,
 			melt_all, check_generics, check_generic_parameters,
 			check_creation_constraint_genericity,
-			check_constraint_genericity,
+			check_constraint_genericity, check_types_in_constraints,
 			check_constraint_renaming,
 			feature_of_feature_id,
 			feature_of_rout_id,
@@ -1811,25 +1811,54 @@ feature {NONE} -- Class initialization
 			end
 		end
 
-	check_constraint_genericity
-			-- Check validity of constraint genericity
+	check_types_in_constraints
+			-- Check simple validity of constraints: not anchors, generics with proper number
+			-- of actual generics. No validity check.
+		local
+			l_type: TYPE_A
+			l_vtgc1: VTGC1
+			l_vtug: VTUG
+			l_constraint_type: TYPE_AS
 		do
 			Inst_context.set_group (cluster)
-			generics.do_all (
-				agent (a_generic_dec: FORMAL_DEC_AS)
-					do
-						a_generic_dec.constraints.do_all (
-							agent (a_constraint: CONSTRAINING_TYPE_AS)
-								local
-									l_constraint_type: TYPE_AS
-								do
-									l_constraint_type := a_constraint.type
-									if l_constraint_type /= Void then
-										type_a_checker.check_constraint_type (Current, l_constraint_type, error_handler)
-									end
-								end)
-					end)
+			across generics as l_formal_generic loop
+				across l_formal_generic.item.constraints as l_constraint loop
+					l_constraint_type := l_constraint.item.type
+					l_type := type_a_generator.evaluate_type (l_constraint_type, Current)
+					if l_type.has_like or not l_type.is_class_valid then
+						create l_vtgc1
+						l_vtgc1.set_class (Current)
+						l_vtgc1.set_location (l_constraint_type.start_location)
+						error_handler.insert_error (l_vtgc1)
+					elseif not l_type.good_generics then
+						l_vtug := l_type.error_generics
+						l_vtug.set_class (Current)
+						l_vtug.set_location (l_constraint_type.start_location)
+						l_vtug.set_is_in_class_constraint (True)
+						error_handler.insert_error (l_vtug)
+					end
+				end
+			end
 		end
+
+	check_constraint_genericity
+			-- Check validity of constraint genericity
+		local
+			l_constraint_type: TYPE_AS
+		do
+			Inst_context.set_group (cluster)
+			across generics as l_formal_generic loop
+				if is_expanded and then l_formal_generic.item.constraints.count > 1 then
+					Error_handler.insert_error (create {NOT_SUPPORTED}.make ("Multiple constraints are not permitted in an expanded generic class"))
+				else
+					across l_formal_generic.item.constraints as l_constraint loop
+						l_constraint_type := l_constraint.item.type
+						type_a_checker.check_constraint_type (Current, l_constraint_type, error_handler)
+					end
+				end
+			end
+		end
+
 
 	check_constraint_renaming
 			-- Check validity of constraint renaming

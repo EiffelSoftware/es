@@ -314,20 +314,13 @@ feature -- IL code generation
 
 feature -- Properties
 
-	has_renaming: BOOLEAN
-			-- Does current type have renamed features?
-			-- This can occur in code like: "G -> A rename a as b end"
-		do
-			Result := false
-		end
-
 	has_associated_class: BOOLEAN
 			-- Does Current have an associated class?
 		do
-			Result := not (is_void or else is_formal or else is_none or else is_type_set)
+			Result := not (is_void or else is_formal or else is_none)
 		ensure
 			Yes_if_is: Result implies not (is_void or else
-								is_formal or else is_none or else is_type_set)
+								is_formal or else is_none)
 		end
 
 	has_associated_class_type (a_context_type: TYPE_A): BOOLEAN
@@ -365,18 +358,11 @@ feature -- Properties
 			a_context_type_valid: a_context_type.is_valid
 			is_valid: is_valid
 			is_valid_context: has_formal_generic implies
-				(a_context_type.has_associated_class and then is_valid_for_class (a_context_type.associated_class))
+				(a_context_type.has_associated_class and then is_valid_for_class (a_context_type.base_class))
 		do
 				-- For the time being, actual generic parameter are considered variant.
 			Result := has_formal_generic
  		end
-
-	is_type_set: BOOLEAN
-			-- Is current type a type_set?
-			-- | example: {A, B}
-		do
-			-- False
-		end
 
 	is_valid_generic_derivation: BOOLEAN
 			-- Is current still a valid type to be used as a generic derivation?
@@ -430,7 +416,7 @@ feature -- Properties
 						-- First type should be the one from a generic derivation.
 					a_type.generic_derivation.same_as (a_type) and then
 						-- Second it should be valid for Current type.
-					(a_type.has_associated_class and then is_valid_for_class (a_type.associated_class))
+					(a_type.has_associated_class and then is_valid_for_class (a_type.base_class))
 			else
 				Result := True
 			end
@@ -507,12 +493,6 @@ feature -- Properties
 			-- Do nothing
 		end
 
-	is_renamed_type: BOOLEAN
-			-- Is current type an instance of `RENAMED_TYPE_A [TYPE_A]'?
-			-- If so there is the possibility that some features of this type are renamed.
-		do
-		end
-
 	is_reference: BOOLEAN
 			-- Is current actual type a reference one?
 		do
@@ -541,7 +521,7 @@ feature -- Properties
 		local
 			l_class: CLASS_C
 		do
-			l_class := associated_class
+			l_class := base_class
 			if l_class /= Void then
 				Result := l_class.is_external_class_c
 			end
@@ -794,11 +774,19 @@ feature {CL_TYPE_A} -- Comparison
 
 feature -- Access
 
-	associated_class: CLASS_C
-			-- Class associated to the current type.
+	base_class: CLASS_C
+			-- Base class of current type.
 		deferred
 		ensure
 			definition: (Result /= Void) = has_associated_class
+		end
+
+	associated_class: CLASS_C
+			-- Base class of current type.
+		obsolete
+			"use base_class instead"
+		do
+			Result := base_class
 		end
 
 	associated_class_type (a_context_type: TYPE_A): CLASS_TYPE
@@ -935,7 +923,7 @@ feature -- Attachment properties
 			as_marks_free_attached: attached Result
 		end
 
-	to_other_attachment (other: ATTACHABLE_TYPE_A): like Current
+	to_other_attachment (other: ANNOTATED_TYPE_A): like Current
 			-- Current type to which attachment status of `other' is applied
 		require
 			other_attached: other /= Void
@@ -945,7 +933,7 @@ feature -- Attachment properties
 			result_attached: Result /= Void
 		end
 
-	to_other_immediate_attachment (other: ATTACHABLE_TYPE_A): like Current
+	to_other_immediate_attachment (other: ANNOTATED_TYPE_A): like Current
 			-- Current type to which attachment status of `other' is applied
 			-- without taking into consideration attachment status of an anchor (if any)
 		require
@@ -956,7 +944,7 @@ feature -- Attachment properties
 			result_attached: Result /= Void
 		end
 
-	to_other_separateness (other: ATTACHABLE_TYPE_A): like Current
+	to_other_separateness (other: ANNOTATED_TYPE_A): like Current
 			-- Current type to which separateness status of `other' is applied
 		require
 			other_attached: other /= Void
@@ -1000,7 +988,7 @@ feature -- Conversion
 			-- Create a type set containing one element which is `Current'.
 		do
 			create Result.make (1)
-			Result.extend (create {RENAMED_TYPE_A [TYPE_A]}.make (Current, Void))
+			Result.extend (create {RENAMED_TYPE_A}.make (Current, Void))
 		ensure
 			to_type_set_not_void: Result /= Void
 		end
@@ -1187,7 +1175,7 @@ feature -- Access
 	frozen conforms_to_array: BOOLEAN
 			-- Does current conform to ARRAY regardless of the context.
 		do
-			Result := has_associated_class and then associated_class.conform_to (system.array_class.compiled_class)
+			Result := has_associated_class and then base_class.conform_to (system.array_class.compiled_class)
 		end
 
 	is_conformant_to (a_context_class: CLASS_C; other: TYPE_A): BOOLEAN
@@ -1231,7 +1219,7 @@ feature -- Access
 			type_not_void: type /= Void
 			type_has_class: type.has_associated_class
 			has_associated_class: has_associated_class
-			conforming_type: type.associated_class.conform_to (associated_class)
+			conforming_type: type.base_class.conform_to (base_class)
 		do
 		end
 
@@ -1272,8 +1260,8 @@ feature -- Access
 
 	formal_instantiated_in (a_type: TYPE_A): TYPE_A
 			-- Instantiation of formals, if any, of Current in the context of `a_type'.
-			--| Unlike `instantiated_in' it preserves the anchors while updating 
-			--| the `actual_type'/`conformance_type'. 
+			--| Unlike `instantiated_in' it preserves the anchors while updating
+			--| the `actual_type'/`conformance_type'.
 		require
 			valid: is_valid
 			a_type_valid: a_type /= Void
@@ -1394,7 +1382,7 @@ feature -- Access
 			act_type: TYPE_A
 		do
 			act_type := actual_type
-			Result := act_type.is_expanded and then act_type.associated_class.is_deferred
+			Result := act_type.is_expanded and then act_type.base_class.is_deferred
 		end
 
 	valid_expanded_creation (c: CLASS_C): BOOLEAN
@@ -1408,7 +1396,7 @@ feature -- Access
 			creators: HASH_TABLE [EXPORT_I, STRING]
 		do
 			if is_expanded then
-				a := associated_class
+				a := base_class
 				if a.is_external then
 					Result := True
 				else
@@ -1435,7 +1423,7 @@ feature -- Access
 			il_generation: system.il_generation
 		do
 			Result := True
-			if is_expanded and then not is_external and then associated_class.has_external_ancestor_class then
+			if is_expanded and then not is_external and then base_class.has_external_ancestor_class then
 				Result := False
 			end
 		end
@@ -1460,7 +1448,7 @@ feature -- Access
 		do
 			if not current_class.is_obsolete and (current_feature = Void or else not current_feature.is_obsolete) then
 		   		if actual_type.has_associated_class then
-					ass_class := actual_type.associated_class
+					ass_class := actual_type.base_class
 					if ass_class.is_obsolete and then ass_class.lace_class.options.is_warning_enabled (w_obsolete_class) then
 						create warn.make_with_class (current_class)
 						if current_feature /= Void then
@@ -1517,7 +1505,7 @@ feature {NONE} -- Implementation
 	delayed_convert_constraint_check (
 			context_class: CLASS_C;
 			gen_type: GEN_TYPE_A
-			a_set_to_check, 	a_constraint_types: TYPE_SET_A;
+			a_set_to_check, a_constraint_types: TYPE_SET_A;
 			i: INTEGER;
 			in_constraint: BOOLEAN)
 
@@ -1545,7 +1533,7 @@ feature {NONE} -- Implementation
 			if context_class.is_valid and a_set_to_check.is_valid then
 				l_to_check := a_set_to_check.first.type
 				if a_set_to_check.count /= 1 or else a_constraint_types.count /= 1 then
-					generate_constraint_error (gen_type, l_to_check, a_constraint_types, i, Void)
+					generate_constraint_error (gen_type, l_to_check.to_type_set, a_constraint_types, i, Void)
 						-- The feature listed in the creation constraint has
 						-- not been declared in the constraint class.
 					create l_vtcg7
@@ -1558,7 +1546,7 @@ feature {NONE} -- Implementation
 					not (l_to_check.convert_to (context_class, l_constraint_type) and
 					l_to_check.is_conformant_to (context_class, l_constraint_type))
 				then
-					generate_constraint_error (gen_type, l_to_check, a_constraint_types, i, Void)
+					generate_constraint_error (gen_type, l_to_check.to_type_set, a_constraint_types, i, Void)
 						-- The feature listed in the creation constraint has
 						-- not been declared in the constraint class.
 					create l_vtcg7
@@ -1571,24 +1559,20 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	generate_constraint_error (gen_type: GEN_TYPE_A; current_type: TYPE_A; constraint_type: TYPE_A; position: INTEGER; a_unmatched_creation_constraints: LIST[FEATURE_I])
+	generate_constraint_error (gen_type: GEN_TYPE_A; current_type, constraint_type: TYPE_SET_A; position: INTEGER; a_unmatched_creation_constraints: LIST[FEATURE_I])
 			-- Build the error corresponding to the VTCG error
 		local
 			constraint_info: CONSTRAINT_INFO
-			l_current_type_set, l_constraint_type_set: TYPE_SET_A
 		do
-			l_current_type_set := current_type.to_type_set
-			l_constraint_type_set := constraint_type.to_type_set
 			create constraint_info
 			constraint_info.set_type (gen_type)
-			constraint_info.set_actual_type_set (l_current_type_set)
+			constraint_info.set_actual_type_set (current_type)
 			constraint_info.set_formal_number (position)
 				-- This is necessary to instantiate the constraint in the context of `gen_type'
 				-- as the constraint may involve some formal generic parameters that do not exist
 				-- in the context of the class which triggerred the error.
 				-- This fixes eweasel test#valid266.
-			l_constraint_type_set := l_constraint_type_set.instantiated_in (gen_type)
-			constraint_info.set_constraint_types (l_constraint_type_set)
+			constraint_info.set_constraint_types (constraint_type.instantiated_in (gen_type))
 			constraint_info.set_unmatched_creation_constraints (a_unmatched_creation_constraints)
 			constraint_error_list.extend (constraint_info)
 		end
@@ -1599,7 +1583,7 @@ invariant
 	generics_not_void_implies_generics_not_empty_or_tuple: (generics /= Void implies (not generics.is_empty or is_tuple))
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

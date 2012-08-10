@@ -128,12 +128,12 @@ feature -- Access
 			a_system_not_void: a_system /= Void
 		do
 			if a_type.has_associated_class then
-				Result := exported_creators (a_type.associated_class, a_system).count
+				Result := exported_creators (a_type.base_class, a_system).count
 			end
 		ensure
 			good_result:
 				(not a_type.has_associated_class implies Result = 0) and then
-				(a_type.has_associated_class implies Result = exported_creators (a_type.associated_class, a_system).count)
+				(a_type.has_associated_class implies Result = exported_creators (a_type.base_class, a_system).count)
 		end
 
 	is_exported_creator (a_feature: FEATURE_I; a_type: TYPE_A): BOOLEAN
@@ -212,7 +212,7 @@ feature {NONE} -- Parsing class types
 				l_roots.after or Result /= Void
 			loop
 				if attached l_roots.item_for_iteration.root_class.compiled_class as l_root_class then
-					Result := type_a_generator.evaluate_optional_unchecked (a_type, l_root_class)
+					Result := type_a_generator.evaluate_type (a_type, l_root_class)
 				end
 				l_roots.forth
 			end
@@ -356,7 +356,7 @@ feature -- Types
 
 					-- Generate TYPE_A object from type AST node.
 				if l_type_as /= Void and then attached {CLASS_C} a_context_class as l_context_class then
-					Result := type_a_generator.evaluate_type_if_possible (l_type_as, l_context_class)
+					Result := type_a_generator.evaluate_type (l_type_as, l_context_class)
 				end
 			end
 		end
@@ -377,7 +377,7 @@ feature -- Types
 			fixme ("Refactoring, see header comment.")
 			type_parser.parse_from_utf8_string ("type " + a_type, a_context_class)
 			if attached {CLASS_TYPE_AS} type_parser.type_node as l_type_as then
-				l_type_a := type_a_generator.evaluate_type_if_possible (l_type_as, a_context_class)
+				l_type_a := type_a_generator.evaluate_type (l_type_as, a_context_class)
 				if l_type_a /= Void then
 					create l_type.make (20)
 					l_type.append (l_type_a.name)
@@ -440,7 +440,7 @@ feature -- Types
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

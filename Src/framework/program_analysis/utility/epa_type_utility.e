@@ -83,7 +83,7 @@ feature -- Access
 
 					-- Generate TYPE_A object from type AST node.
 				if l_type_as /= Void and then attached {CLASS_C} a_context_class as l_context_class then
-					Result := type_a_generator.evaluate_type_if_possible (l_type_as, l_context_class)
+					Result := type_a_generator.evaluate_type (l_type_as, l_context_class)
 				end
 			end
 		end

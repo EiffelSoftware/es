@@ -578,7 +578,7 @@ feature {NONE} -- Temporary
 								-- Attempt to resolve type once again if previous evaluation failed. The following call
 								-- succeeds for generic delarations.
 							if not attached l_type_a then
-								l_type_a := type_a_generator.evaluate_type_if_possible (l_type, a_context_class)
+								l_type_a := type_a_generator.evaluate_type (l_type, a_context_class)
 							end
 
 								-- Did type evaluation finally succeed?

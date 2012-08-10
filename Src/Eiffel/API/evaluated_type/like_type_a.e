@@ -9,7 +9,7 @@ deferred class
 	LIKE_TYPE_A
 
 inherit
-	ATTACHABLE_TYPE_A
+	ANNOTATED_TYPE_A
 		undefine
 			same_as
 		redefine
@@ -41,7 +41,6 @@ inherit
 			is_none,
 			is_reference,
 			is_separate,
-			is_type_set,
 			internal_is_valid_for_class,
 			meta_type,
 			set_attached_mark,
@@ -169,12 +168,6 @@ feature -- Status report
 			Result := actual_type.is_none
 		end
 
-	is_type_set: BOOLEAN
-			-- <Precursor>
-		do
-			Result := actual_type.is_type_set
-		end
-
 	same_as (other: TYPE_A): BOOLEAN
 			-- Is the current type the same as `other' ?
 		deferred
@@ -243,10 +236,10 @@ feature -- Access
 			Result := actual_type.hash_code
 		end
 
-	associated_class: CLASS_C
+	base_class: CLASS_C
 			-- Associated class
 		do
-			Result := actual_type.associated_class
+			Result := actual_type.base_class
 		end
 
 	associated_class_type (a_context_type: TYPE_A): CLASS_TYPE
@@ -577,7 +570,7 @@ feature {TYPE_A} -- Helpers
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

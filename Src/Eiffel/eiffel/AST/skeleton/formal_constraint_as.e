@@ -46,52 +46,20 @@ create
 
 feature -- Status
 
-	constraint_types (a_context_class: CLASS_C): TYPE_SET_A
+constraint_types (a_context_class: CLASS_C): TYPE_SET_A
 			-- Actual type of the constraint.
 		require
 			a_context_class_not_void: a_context_class /= Void
 			-- Assumes that we are past degree 4, so that one can be sure that it works.
-		local
-			l_constraining_type: CONSTRAINING_TYPE_AS
-			l_renamed_type: RENAMED_TYPE_A [TYPE_A]
-			l_constraints: like constraints
-			l_constraints_cursor: INTEGER
-			l_constraint_position: INTEGER
-			l_renaming_cache: ARRAY [RENAMING_A]
 		do
-			if not has_constraint then
-					-- Default constraint to ANY
-					-- Do a twin because it's an eiffel base list and this could lead to troubles.
-				Result := Constraint_types_containing_any.twin
-			else
-				l_constraints := constraints
-				create Result.make (l_constraints.count)
-				from
-					l_constraints_cursor := l_constraints.index
-					l_constraint_position := 1
-					l_renaming_cache := a_context_class.constraint_renaming (Current)
-					l_constraints.start
-				until
-					l_constraints.after
-				loop
-					l_constraining_type := l_constraints.item
-					create l_renamed_type.make (
-						type_a_generator.evaluate_type_if_possible (l_constraining_type.type,
-							a_context_class), l_renaming_cache.item (l_constraint_position))
-					Result.extend (l_renamed_type)
-
-					l_constraint_position := l_constraint_position + 1
-					l_constraints.forth
-				end
-				l_constraints.go_i_th (l_constraints_cursor)
-			end
+			Result := constraint_types_if_possible (a_context_class)
 		ensure
 			result_not_void: Result /= Void
 			result_not_empty: not Result.is_empty
-			result_does_not_containt_void: Result.for_all (agent (a_any: RENAMED_TYPE_A [TYPE_A]): BOOLEAN do Result := (a_any /= Void) end)
+			result_does_not_containt_void: across Result as l_item all l_item.item /= Void end
 		end
 
-	constraint_types_if_possible (a_context_class: CLASS_C): TYPE_SET_A
+	constraint_types_if_possible (a_context_class: CLASS_C): detachable TYPE_SET_A
 			-- Fault tolerant actual type of the constraint.
 			--
 			-- `a_context_class' is the context class.
@@ -102,7 +70,7 @@ feature -- Status
 		local
 			l_constraining_type: CONSTRAINING_TYPE_AS
 			l_type: TYPE_A
-			l_renamed_type: RENAMED_TYPE_A [TYPE_A]
+			l_renamed_type: RENAMED_TYPE_A
 			l_constraints: like constraints
 			l_constraints_cursor: INTEGER
 			l_constraint_position: INTEGER
@@ -124,9 +92,11 @@ feature -- Status
 					l_constraints.after
 				loop
 					l_constraining_type := l_constraints.item
-					l_type := type_a_generator.evaluate_type_if_possible (l_constraining_type.type, a_context_class)
-					if l_type /= Void then
-						create l_renamed_type.make (l_type, l_renaming_cache.item (l_constraint_position))
+					if
+						attached {DEANCHORED_TYPE_A} type_a_generator.evaluate_type (l_constraining_type.type,
+							a_context_class) as l_deanchored_type
+					then
+						create l_renamed_type.make (l_deanchored_type, l_renaming_cache.item (l_constraint_position))
 						Result.extend (l_renamed_type)
 					end
 					l_constraint_position := l_constraint_position + 1
@@ -138,7 +108,7 @@ feature -- Status
 			result_not_void: Result /= Void
 		end
 
-	constraint_type (a_context_class: CLASS_C): RENAMED_TYPE_A [TYPE_A]
+	constraint_type (a_context_class: CLASS_C): RENAMED_TYPE_A
 			-- Actual type of the constraint.
 			--
 			-- `a_context_class' is used to evaluate the type.
@@ -147,31 +117,25 @@ feature -- Status
 			a_context_class_not_void: a_context_class /= Void
 			not_has_multi_constraints: not has_multi_constraints
 			-- Assume that we are past degree 4, so that one can be sure that it works.
-		local
-			l_constraint: like constraint
-			l_type: TYPE_A
 		do
-			l_constraint := constraint
-			if l_constraint = Void then
-					-- Default constraint to ANY
-				Result := Any_constraint_type
+			if attached constraint_type_if_possible (a_context_class) as l_result then
+				Result := l_result
 			else
-				l_type := type_a_generator.evaluate_type_if_possible (l_constraint.type, a_context_class)
-				check l_type_not_void: l_type /= Void end
-				create Result.make (l_type, a_context_class.constraint_renaming (Current).item (1))
+					-- This should not happen.
+				check has_constraint: False end
+				Result := any_constraint_type
 			end
 		ensure
 			result_not_void: Result /= Void
 		end
 
-	constraint_type_if_possible (a_context_class: CLASS_C): RENAMED_TYPE_A [TYPE_A]
+	constraint_type_if_possible (a_context_class: CLASS_C): RENAMED_TYPE_A
 			-- Actual type of the constraint.
 		require
 			a_context_class_not_void: a_context_class /= Void
 			not_has_multi_constraints: not has_multi_constraints
 		local
 			l_constraint: like constraint
-			l_type: TYPE_A
 		do
 			l_constraint := constraint
 			if l_constraint = Void then
@@ -179,11 +143,10 @@ feature -- Status
 				Result := Any_constraint_type
 			else
 					-- No need to check validity of `Result' after converting
-					-- TYPE_AS into TYPE_A because at this stage it should be
+					-- TYPE_AS into DEANCHORED_TYPE_A because at this stage it should be
 					-- a valid class.				
-				l_type := type_a_generator.evaluate_type_if_possible (l_constraint.type, a_context_class)
-				if l_type /= Void then
-					create Result.make (l_type, a_context_class.constraint_renaming (Current).item (1))
+				if attached {DEANCHORED_TYPE_A} type_a_generator.evaluate_type (l_constraint.type, a_context_class) as l_deanchored_type then
+				 	create Result.make (l_deanchored_type, a_context_class.constraint_renaming (Current).item (1))
 				end
 			end
 		end
@@ -200,7 +163,7 @@ feature -- Status
 			a_context_class_not_void: a_context_class /= Void
 		local
 			class_type: CL_TYPE_A
-			l_constraint_types: LIST[RENAMED_TYPE_A [TYPE_A]]
+			l_constraint_types: TYPE_SET_A
 		do
 			l_constraint_types := constraint_types (a_context_class)
 			Result := True
@@ -213,14 +176,14 @@ feature -- Status
 					class_type ?= l_constraint_types.item
 
 					if class_type /= Void then
-						Result := Result and class_type.associated_class.has_feature_table
+						Result := Result and class_type.base_class.has_feature_table
 					end
 					l_constraint_types.forth
 				end
 			end
 		end
 
-	constraint_creation_list (a_context_class: CLASS_C): LINKED_LIST [TUPLE [type_item: RENAMED_TYPE_A [TYPE_A]; feature_item: FEATURE_I]]
+	constraint_creation_list (a_context_class: CLASS_C): LINKED_LIST [TUPLE [type_item: RENAMED_TYPE_A; feature_item: FEATURE_I]]
 			-- Actual creation routines from a constraint clause.
 			--
 			-- `a_context_class' is used to compute a flat version of the formal constraints.
@@ -237,7 +200,7 @@ feature -- Status
 			feature_name: ID_AS
 			feat_table: FEATURE_TABLE
 			l_renaming: RENAMING_A
-			l_constraint_types_item: RENAMED_TYPE_A [TYPE_A]
+			l_constraint_types_item: RENAMED_TYPE_A
 			l_has_more_than_one_version_default_create, l_is_version_of_default_create: BOOLEAN
 		do
 				-- Reset `has_default_create' as the algorithm depends on its initial state as False
@@ -255,7 +218,7 @@ feature -- Status
 				l_renaming := l_constraint_types_item.renaming
 
 				if class_type /= Void then
-					feat_table := class_type.associated_class.feature_table
+					feat_table := class_type.base_class.feature_table
 					check
 							-- A feature table associated to `class_type' should
 							-- always be in the system
@@ -305,7 +268,7 @@ feature -- Status
 
 feature {NONE} -- Access
 
-	Any_constraint_type: RENAMED_TYPE_A [CL_TYPE_A]
+	Any_constraint_type: RENAMED_TYPE_A
 			-- Default constraint actual type
 		local
 			t: CL_TYPE_A
@@ -373,7 +336,7 @@ feature -- Output
 						loop
 							a_text_formatter.add_space
 							eiffel_name := creation_feature_list.item.internal_name.name
-							l_feature := l_type_set.e_feature_state (creation_feature_list.item.internal_name).feature_item
+							l_feature := l_type_set.e_feature_state_by_name_id (creation_feature_list.item.internal_name.name_id).feature_item
 							if l_feature /= Void then
 								a_text_formatter.process_feature_text (eiffel_name, l_feature, false)
 							else
@@ -576,13 +539,13 @@ feature {NONE} -- Implementation
 				l_constraints.after
 			loop
 				l_constraining_type := l_constraints.item
-				l_type := type_a_generator.evaluate_type_if_possible (l_constraining_type.type, a_context_class)
+				l_type := type_a_generator.evaluate_type (l_constraining_type.type, a_context_class)
 				if l_type /= Void then
 						-- Type was found: Process the type
 					type_output_strategy.process (l_type, a_text_formatter, a_context_class, Void)
 					if l_constraining_type.has_at_least_one_renaming then
 						if l_type.has_associated_class then
-							l_constraint_class := l_type.associated_class
+							l_constraint_class := l_type.base_class
 						end
 						a_text_formatter.add_space
 						append_rename_clause (a_text_formatter, l_constraining_type.renaming , l_constraint_class, a_short)
@@ -718,7 +681,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

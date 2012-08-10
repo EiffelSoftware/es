@@ -15,6 +15,7 @@ inherit
 	AST_ITERATOR
 		export
 			{AST_EIFFEL} all
+			{ANY} is_valid
 		redefine
 			process_bool_as,
 			process_char_as,

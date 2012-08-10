@@ -353,7 +353,7 @@ feature{NONE} -- Process
 			l_type_checker: TYPE_A_CHECKER
 		do
 				-- Resolve type in `l_as'.
-			l_type := type_a_generator.evaluate_type_if_possible (l_as, current_assertion.written_class)
+			l_type := type_a_generator.evaluate_type (l_as, current_assertion.written_class)
 			l_type_checker := type_checker
 			l_type_checker.init_for_checking (current_feature.feature_, current_written_class, Void, error_handler)
 			l_type2 := l_type_checker.check_and_solved (l_type, l_as).actual_type.deep_actual_type
@@ -853,7 +853,7 @@ feature -- Status report
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

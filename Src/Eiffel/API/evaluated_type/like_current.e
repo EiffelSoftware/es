@@ -12,7 +12,7 @@ inherit
 	LIKE_TYPE_A
 		redefine
 			actual_type, deep_actual_type, context_free_type,
-			associated_class, associated_class_type, conform_to, conformance_type, convert_to,
+			base_class, associated_class_type, conform_to, conformance_type, convert_to,
 			generics, has_associated_class, has_associated_class_type, formal_instantiated_in,
 			instantiated_in, duplicate, set_separate_mark,
 			is_basic, is_expanded, is_external, is_like_current, is_none, is_reference, is_ephemeral,
@@ -25,7 +25,7 @@ inherit
 			maximum_interval_value, minimum_interval_value, is_optimized_as_frozen,
 			is_generated_as_single_type, heaviest, instantiation_in, adapted_in,
 			hash_code, internal_generic_derivation, internal_same_generic_derivation_as,
-			is_class_valid, skeleton_adapted_in, good_generics, has_like_current, is_type_set
+			is_class_valid, skeleton_adapted_in, good_generics, has_like_current
 		end
 
 feature -- Visitor
@@ -131,12 +131,6 @@ feature -- Properties
 	is_none: BOOLEAN = False
 			-- Is current actual type NONE?
 
-	is_type_set: BOOLEAN
-			-- <Precursor>
-		do
-			Result := conformance_type /= Void and then conformance_type.is_type_set
-		end
-
 	is_basic: BOOLEAN
 			-- Is the current actual type a basic one?
 		do
@@ -186,10 +180,10 @@ feature -- Access
 			Result := {SHARED_HASH_CODE}.other_code
 		end
 
-	associated_class: CLASS_C
+	base_class: CLASS_C
 			-- Associated class
 		do
-			Result := conformance_type.associated_class
+			Result := conformance_type.base_class
 		end
 
 	associated_class_type (a_context_type: TYPE_A): CLASS_TYPE
@@ -497,7 +491,7 @@ feature {COMPILER_EXPORTER} -- Primitives
 			-- Instantiation of Current in the context of `class_type',
 			-- assuming that Current is written in class of id `written_id'.
 		local
-			a: ATTACHABLE_TYPE_A
+			a: ANNOTATED_TYPE_A
 		do
 				-- Special cases for calls on a target which is a manifest integer
 				-- that might be compatible with _8 or _16. The returned
@@ -522,7 +516,7 @@ feature {COMPILER_EXPORTER} -- Primitives
 				Result := Result.to_other_attachment (Current)
 			elseif Result.is_attached then
 					-- Remove explicit "attached" mark.
-				if attached {ATTACHABLE_TYPE_A} Result as t then
+				if attached {ANNOTATED_TYPE_A} Result as t then
 					a := t.duplicate
 					a.set_detachable_mark
 					Result := a
@@ -637,7 +631,7 @@ feature {COMPILER_EXPORTER} -- Primitives
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

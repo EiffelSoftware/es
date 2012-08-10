@@ -363,10 +363,10 @@ feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Access
 
 feature -- Access: Convertibility
 
-	convert_to: HASH_TABLE [INTEGER, NAMED_TYPE_A]
+	convert_to: HASH_TABLE [INTEGER, DEANCHORED_TYPE_A]
 			-- Set of feature name IDs indexed by type to which they convert to.
 
-	convert_from: HASH_TABLE [INTEGER, NAMED_TYPE_A]
+	convert_from: HASH_TABLE [INTEGER, DEANCHORED_TYPE_A]
 			-- Set of feature name IDs indexed by type to which they convert from.
 
 feature -- Access: CLI implementation
@@ -604,7 +604,7 @@ feature -- Expanded rules validity
 			-- Pass 2 must be done on all the classes
 			-- (the creators must be up to date)
 		local
-			constraint_types: LIST[RENAMED_TYPE_A [TYPE_A]]
+			l_constraint_types: TYPE_SET_A
 			l_formals: like generic_features
 			l_cursor: CURSOR
 			l_formal_dec: FORMAL_CONSTRAINT_AS
@@ -641,16 +641,16 @@ end
 				loop
 					l_formal_dec ?= generics.item
 					check l_formal_dec_not_void: l_formal_dec /= Void end
-					constraint_types := l_formal_dec.constraint_types (Current)
+					l_constraint_types := l_formal_dec.constraint_types (Current)
 					from
-						constraint_types.start
+						l_constraint_types.start
 					until
-						constraint_types.after
+						l_constraint_types.after
 					loop
-						if constraint_types.item.type.has_generics then
-							System.expanded_checker.check_actual_type (constraint_types.item.type)
+						if l_constraint_types.item.type.has_generics then
+							System.expanded_checker.check_actual_type (l_constraint_types.item.type)
 						end
-						constraint_types.forth
+						l_constraint_types.forth
 					end
 					generics.forth
 				end
@@ -1207,6 +1207,13 @@ feature
 		do
 		end
 
+	check_types_in_constraints
+			-- Check validity of constraint genericity
+		require
+			generics_exists: is_generic
+		do
+		end
+
 	check_constraint_genericity
 			-- Check validity of constraint genericity
 		require
@@ -1519,7 +1526,7 @@ feature -- Parent checking
 				i = nb
 			loop
 				parent_actual_type := l_area.item (i)
-				l_parent_class := parent_actual_type.associated_class
+				l_parent_class := parent_actual_type.base_class
 				l_has_external_parent := l_parent_class.is_external and then not l_parent_class.is_interface and then not l_parent_class.is_basic
 				if l_has_external_parent then
 					has_external_main_parent := True
@@ -2105,7 +2112,13 @@ feature -- Convenience features
 feature -- Actual class type
 
 	constraint_actual_type: CL_TYPE_A
-			-- Actual type of class where all formals are replaced by their constraint.
+			-- Actual type of class where all formals are replaced by their constraint if possible,
+			-- and if not ANY.
+		obsolete
+			"[
+				Although it is used in 2 places at the time of this writing ({CLASS_TYPE} sorting and {CONVERTIBILITY_CHECKER} conformance),
+				it should not be used otherwise as it does not support multiple constraint.
+			]"
 		local
 			i, count: INTEGER
 			actual_generic: ARRAY [TYPE_A]
@@ -2121,7 +2134,7 @@ feature -- Actual class type
 				until
 					i > count
 				loop
-					actual_generic.put (constraints (i), i)
+					actual_generic.put (single_constraint (i), i)
 					i := i + 1
 				end
 			end
@@ -2237,7 +2250,7 @@ end
 			not_is_multi_constraint: not generics.i_th (i).has_multi_constraints
 		local
 			l_formal_dec: FORMAL_CONSTRAINT_AS
-			l_result: RENAMED_TYPE_A [TYPE_A]
+			l_result: RENAMED_TYPE_A
 		do
 			l_formal_dec ?= generics.i_th (i)
 			check l_formal_dec_not_void: l_formal_dec /= Void end
@@ -2259,6 +2272,29 @@ end
 			l_formal_dec ?= generics.i_th (i)
 			check l_formal_dec_not_void: l_formal_dec /= Void end
 			Result := l_formal_dec.constraint_types (Current)
+		ensure
+			constraint_not_void: Result /= Void
+		end
+
+	single_constraint (i: INTEGER): TYPE_A
+			-- Evaluation of the constraint if it is just one type,
+			-- otherwise ANY.
+			-- This is used only by `constraint_actual_type' for sorting
+			-- TYPE_A's instances in a TYPE_LIST.
+		require
+			generics_exists: is_generic
+			valid_index: generics.valid_index (i)
+		local
+			l_type_set: TYPE_SET_A
+		do
+			l_type_set := constrained_types (i)
+			if l_type_set.count = 1 then
+					-- Simply take the constraint.
+				Result := l_type_set.first.type
+			else
+					-- It is a multiple constraint, we simply assume ANY.
+				Result := any_type
+			end
 		ensure
 			constraint_not_void: Result /= Void
 		end
@@ -2362,7 +2398,7 @@ end
 				i = nb
 			loop
 				parent_type := l_area.item (i)
-				if parent_type.associated_class.is_expanded then
+				if parent_type.base_class.is_expanded then
 						-- Original parent type is expanded so we have to make sure that the expanded version
 						-- of the parent type gets added to the list of available types.
 					l_expanded_parent_type := parent_type.duplicate
@@ -2380,12 +2416,9 @@ end
 				until
 					i <= 0
 				loop
-					constrained_types (i).do_all (
-						agent (t: RENAMED_TYPE_A [TYPE_A])
-							do
-								instantiator.dispatch (t.type, Current)
-							end
-					)
+					across constrained_types (i).types as l_renamed_type loop
+						instantiator.dispatch (l_renamed_type.item.type, Current)
+					end
 					i := i - 1
 				end
 			end
@@ -2414,7 +2447,7 @@ end
 			-- Update `types' with `data'.
 		require
 			good_argument: data /= Void
-			consistency: data.associated_class = Current
+			consistency: data.base_class = Current
 			good_context: not data.is_formal
 		local
 			new_class_type: CLASS_TYPE
@@ -2601,7 +2634,7 @@ end
 					-- since in that case there is nothing to propagate.
 				filter := class_filters.item_for_iteration.adapted_in (new_class_type)
 				if not filter.is_formal then
-					filter.associated_class.update_types (filter)
+					filter.base_class.update_types (filter)
 				end
 				class_filters.go_to (class_filters_cursor)
 				class_filters.forth
@@ -2645,7 +2678,7 @@ feature {CLASS_C} -- Incrementality
 					check
 						has_associated_class: filter.has_associated_class
 					end
-					filter.associated_class.update_types (filter)
+					filter.base_class.update_types (filter)
 				end
 				class_filters.go_to (class_filters_cursor)
 				class_filters.forth
@@ -2976,7 +3009,7 @@ feature -- Properties
 				until
 					conforming_parents.after
 				loop
-					Result := Result + conforming_parents.item.associated_class.number_of_ancestors
+					Result := Result + conforming_parents.item.base_class.number_of_ancestors
 					conforming_parents.forth
 				end
 			end
@@ -2987,7 +3020,7 @@ feature -- Properties
 				until
 					non_conforming_parents.after
 				loop
-					Result := Result + non_conforming_parents.item.associated_class.number_of_ancestors
+					Result := Result + non_conforming_parents.item.base_class.number_of_ancestors
 					non_conforming_parents.forth
 				end
 			end
@@ -4143,7 +4176,7 @@ feature -- Genericity
 			until
 				l_parents.after
 			loop
-				l_generic_features := l_parents.item.associated_class.generic_features
+				l_generic_features := l_parents.item.base_class.generic_features
 				if l_generic_features /= Void then
 					from
 						l_generic_features.start
@@ -4975,7 +5008,7 @@ invariant
 	-- has_ast: has_ast
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

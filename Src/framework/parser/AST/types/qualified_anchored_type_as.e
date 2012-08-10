@@ -94,7 +94,7 @@ feature -- Roundtrip
 	like_keyword_index: INTEGER
 			-- Index of keyword "like" associated with this structure (0 if none)
 
-	like_keyword (a_list: LEAF_AS_LIST): KEYWORD_AS
+	like_keyword (a_list: LEAF_AS_LIST): detachable KEYWORD_AS
 			-- Keyword "like" associated with this structure (if any)
 		require
 			a_list_not_void: a_list /= Void
@@ -119,7 +119,7 @@ feature -- Attributes
 
 feature -- Roundtrip/Token
 
-	first_token (a_list: LEAF_AS_LIST): LEAF_AS
+	first_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			Result := Precursor (a_list)
 			if Result = Void then
@@ -132,7 +132,7 @@ feature -- Roundtrip/Token
 			end
 		end
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS
+	last_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 		do
 			Result := Precursor (a_list)
 			if Result = Void then

@@ -186,7 +186,7 @@ feature {NONE} -- Implementation
 			type_parser.parse_from_string_32 ("type " + a_type, root_class)
 			error_handler.wipe_out
 			if attached {CLASS_TYPE_AS} type_parser.type_node as l_type_as then
-				l_type_a := type_a_generator.evaluate_type_if_possible (l_type_as, root_class)
+				l_type_a := type_a_generator.evaluate_type (l_type_as, root_class)
 				if l_type_a /= Void then
 					create l_type.make (20)
 					l_type.append (l_type_a.name)
@@ -262,7 +262,7 @@ feature -- Predicate evaluation
 
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

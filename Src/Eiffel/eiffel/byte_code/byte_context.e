@@ -1279,7 +1279,7 @@ feature -- Access
 	associated_class: CLASS_C
 			-- Class associated with current type
 		do
-			Result := current_type.associated_class
+			Result := current_type.base_class
 		end
 
 	constrained_type_in (type: TYPE_A; a_context_type: CL_TYPE_A): TYPE_A
@@ -1302,10 +1302,10 @@ feature -- Access
 				formal_position := formal.position
 				Result := a_context_type.generics.item (formal_position)
 				if attached {FORMAL_A} Result as actual_formal then
-					if actual_formal.is_multi_constrained (a_context_type.associated_class) then
+					if actual_formal.is_multi_constrained (a_context_type.base_class) then
 						create {MULTI_FORMAL_A} Result.make (True, actual_formal.is_expanded, actual_formal.position)
 					else
-						Result := a_context_type.associated_class.constrained_type (formal_position)
+						Result := a_context_type.base_class.constrained_type (formal_position)
 					end
 						-- Preserve attachment and separateness status of the context parameter.
 					Result := Result.to_other_attachment (formal).to_other_separateness (formal)
@@ -2195,7 +2195,7 @@ feature -- Access
 				buf.put_integer (a_pos)
 				buf.put_two_character (',', ' ')
 				if l_optimized then
-					if attached {ATTACHABLE_TYPE_A} a_type as l_type_1 then
+					if attached {ANNOTATED_TYPE_A} a_type as l_type_1 then
 						if l_type_1.is_attached then
 							buf.put_string ("eif_attached_type(")
 							byte_code.feature_origin (buf)
@@ -2212,7 +2212,7 @@ feature -- Access
 					end
 					buf.put_two_character (')', ';')
 				else
-					if attached {ATTACHABLE_TYPE_A} a_type as l_type_2 then
+					if attached {ANNOTATED_TYPE_A} a_type as l_type_2 then
 						if l_type_2.is_attached then
 							buf.put_string ("eif_attached_type(")
 							l_info.generate_type_id (buf, final_mode, 0)
@@ -2298,7 +2298,7 @@ feature -- Access
 					-- We sometime need to convert a type to either it associated attached/non-attached
 					-- version. First boolean is to figure out if there is an action to be taken, the
 					-- second which action.
-				if attached {ATTACHABLE_TYPE_A} a_type as l_type_1 then
+				if attached {ANNOTATED_TYPE_A} a_type as l_type_1 then
 					if l_type_1.is_attached then
 						ba.append_boolean (True)
 						ba.append_boolean (True)

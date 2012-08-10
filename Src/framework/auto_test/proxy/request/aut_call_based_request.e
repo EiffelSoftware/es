@@ -34,9 +34,9 @@ feature -- Access
 		require
 			ready: is_setup_ready
 		do
-			Result := target_type.associated_class
+			Result := target_type.base_class
 		ensure
-			definition: Result = target_type.associated_class
+			definition: Result = target_type.base_class
 		end
 
 	argument_list: detachable DS_LINEAR [ITP_EXPRESSION]

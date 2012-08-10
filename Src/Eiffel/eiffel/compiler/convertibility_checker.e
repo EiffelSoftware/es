@@ -34,7 +34,7 @@ inherit
 			{NONE} all
 		end
 
-	EQUALITY_TESTER [NAMED_TYPE_A]
+	EQUALITY_TESTER [DEANCHORED_TYPE_A]
 		export
 			{NONE} all
 		redefine
@@ -60,8 +60,8 @@ feature -- Initialization/Checking
 		local
 			l_feat: CONVERT_FEAT_AS
 			l_type: TYPE_AS
-			l_named_type: NAMED_TYPE_A
-			l_convert_to, l_convert_from: HASH_TABLE [INTEGER, NAMED_TYPE_A]
+			l_named_type: DEANCHORED_TYPE_A
+			l_convert_to, l_convert_from: HASH_TABLE [INTEGER, DEANCHORED_TYPE_A]
 			l_name_id: INTEGER
 			l_processed: SEARCH_TABLE [INTEGER]
 			l_vtug: VTUG
@@ -177,7 +177,16 @@ feature -- Initialization/Checking
 														l_vncp.set_location (l_feat.conversion_types.item.start_location)
 														Error_handler.insert_error (l_vncp)
 														has_error := True
+													elseif l_named_type.is_formal then
+															-- A formal never conforms to the types of `a_class' since
+															-- otherwise we would have an infinite number of generic derivations
+														l_convert_from.force (l_name_id, l_named_type)
 													elseif l_named_type.conform_to (a_class, a_class.constraint_actual_type.as_attachment_mark_free) then
+															-- The above check is not ideal. Instead we should use
+															-- `l_named_type.conform_to_actual_type (a_class.actual_type)'
+															-- which would check that if at some point we are checking against one of the formal
+															-- of `a_class.actual_type' then we check that there is no conformance to the formal or to
+															-- some of its constrained types in the case of a multiple constraint.
 														if a_class.is_generic then
 															Error_handler.insert_error (create {VYCP}.make
 																(a_class, l_feat.feature_name, l_named_type, l_type.start_location, 3))
@@ -197,7 +206,14 @@ feature -- Initialization/Checking
 														l_vncp.set_location (l_feat.conversion_types.item.start_location)
 														Error_handler.insert_error (l_vncp)
 														has_error := True
+													elseif l_named_type.is_formal then
+														l_convert_to.force (l_name_id, l_named_type)
 													elseif a_class.constraint_actual_type.as_attachment_mark_free.conform_to (a_class, l_named_type) then
+															-- The above check is not ideal. Instead we should use
+															-- `a_class.actual_type.conform_to_actual_type (l_named_type)'
+															-- which would check that if at some point we are checking against one of the formal
+															-- of `a_class.actual_type' then we check that there is no conformance to the formal or to
+															-- some of its constrained types in the case of a multiple constraint.
 														if a_class.is_generic then
 															Error_handler.insert_error (create {VYCQ}.make
 																(a_class, l_feat.feature_name, l_named_type, l_type.start_location, 3))
@@ -305,7 +321,7 @@ feature -- Initialization/Checking
 		local
 			l_success: BOOLEAN
 			l_source_class, l_target_class: CLASS_C
-			l_convert_table: HASH_TABLE [INTEGER, NAMED_TYPE_A]
+			l_convert_table: HASH_TABLE [INTEGER, DEANCHORED_TYPE_A]
 			l_conversion_type: TYPE_A
 			l_type: TYPE_A
 			l_feat_name_id: INTEGER
@@ -321,7 +337,7 @@ feature -- Initialization/Checking
 				-- as otherwise this we would be breaking void-safety.
 			if a_source_type.is_attached or else not a_context_class.lace_class.is_void_safe_call then
 				if a_target_type.has_associated_class then
-					l_target_class := a_target_type.associated_class
+					l_target_class := a_target_type.base_class
 					l_convert_table := l_target_class.convert_from
 				end
 				if l_convert_table /= Void then
@@ -348,8 +364,8 @@ feature -- Initialization/Checking
 							-- the types can still be the same if they conform to each other.
 						if
 							l_type.same_as (l_conversion_type) or else
-							l_type.conform_to (a_context_class, l_conversion_type) and then
-							l_conversion_type.conform_to (a_context_class, l_type)
+							(l_type.conform_to (a_context_class, l_conversion_type) and then
+							l_conversion_type.conform_to (a_context_class, l_type))
 						then
 							l_success := True
 							l_feat_name_id := l_convert_table.item_for_iteration
@@ -374,7 +390,7 @@ feature -- Initialization/Checking
 				end
 				if not l_success then
 					if a_source_type.has_associated_class then
-						l_source_class := a_source_type.associated_class
+						l_source_class := a_source_type.base_class
 						l_convert_table := l_source_class.convert_to
 					else
 						l_convert_table := Void
@@ -401,9 +417,10 @@ feature -- Initialization/Checking
 							end
 								-- In case there is a mismatch in attachment marks,
 								-- the types can still be the same if they conform to each other.
-							if l_type.same_as (l_conversion_type) or else
-								l_type.conform_to (a_context_class, l_conversion_type) and then
-								l_conversion_type.conform_to (a_context_class, l_type)
+							if
+								l_type.same_as (l_conversion_type) or else
+								(l_type.conform_to (a_context_class, l_conversion_type) and then
+								l_conversion_type.conform_to (a_context_class, l_type))
 							then
 								l_success := True
 								l_feat_name_id := l_convert_table.item_for_iteration
@@ -449,7 +466,7 @@ feature -- Initialization/Checking
 				if not a_formal.is_single_constraint_without_renaming (a_context_class) then
 						-- Multi constraint case, use TYPE_SET_A.
 					l_constraints := a_context_class.constraints (a_formal.position)
-					l_convert_ok := l_constraints.conform_to_type (a_context_class, a_target_type)
+					l_convert_ok := l_constraints.conform_to_type (a_context_class, a_target_type.to_type_set)
 				else
 						-- Single constraint, common case.
 					l_constraint := a_context_class.constraint (a_formal.position)
@@ -484,11 +501,11 @@ feature -- Status report
 
 feature {NONE} -- Implementation: initialization
 
-	new_convert_table: HASH_TABLE [INTEGER, NAMED_TYPE_A]
+	new_convert_table: HASH_TABLE [INTEGER, DEANCHORED_TYPE_A]
 			-- Create new instance used to initialize `convert_to' or `convert_from' of CLASS_C
 			-- where equality on keys is done using `same_as' from NAMED_TYPE_A.
 		do
-			create {HASH_TABLE_EX [INTEGER, NAMED_TYPE_A]} Result.make_with_key_tester (10, Current)
+			create {HASH_TABLE_EX [INTEGER, DEANCHORED_TYPE_A]} Result.make_with_key_tester (10, Current)
 		ensure
 			new_convert_table_not_void: Result /= Void
 		end
@@ -579,7 +596,7 @@ feature {NONE} -- Implementation: checking
 			a_class: CLASS_C;
 			a_feat: FEATURE_I;
 			a_convert_feat: CONVERT_FEAT_AS;
-			a_type: NAMED_TYPE_A)
+			a_type: DEANCHORED_TYPE_A)
 			-- Possible delayed call to `check_conversion_type'.
 		require
 			a_class_not_void: a_class /= Void
@@ -599,7 +616,7 @@ feature {NONE} -- Implementation: checking
 			a_class: CLASS_C;
 			a_feat: FEATURE_I;
 			a_convert_feat: CONVERT_FEAT_AS;
-			a_type: NAMED_TYPE_A)
+			a_type: DEANCHORED_TYPE_A)
 
 			-- Check validity of `a_type' used to convert to or from using `a_convert_feat' routine
 			-- so that it matches routine specified in `a_convert_feat', and that `a_type' does not
@@ -657,8 +674,8 @@ feature {NONE} -- Implementation: status report
 			a_not_void: a /= Void
 			b_not_void: b /= Void
 		local
-			l_convert: HASH_TABLE [INTEGER, NAMED_TYPE_A]
-			l_type: NAMED_TYPE_A
+			l_convert: HASH_TABLE [INTEGER, DEANCHORED_TYPE_A]
+			l_type: DEANCHORED_TYPE_A
 		do
 				-- First check if there are no conversion to `b' from `a'.
 			l_convert := a.convert_to
@@ -670,7 +687,7 @@ feature {NONE} -- Implementation: status report
 				loop
 					l_type := l_convert.key_for_iteration
 					if l_type.has_associated_class then
-						Result := l_type.associated_class = b
+						Result := l_type.base_class = b
 					end
 					l_convert.forth
 				end
@@ -689,7 +706,7 @@ feature {NONE} -- Implementation: status report
 					loop
 						l_type := l_convert.key_for_iteration
 						if l_type.has_associated_class then
-							Result := l_type.associated_class = a
+							Result := l_type.base_class = a
 						end
 						l_convert.forth
 					end
@@ -715,7 +732,7 @@ feature {NONE} -- Implementation: access
 	has_error: BOOLEAN
 			-- Did we find an error in last checking.
 
-	test (u, v: NAMED_TYPE_A): BOOLEAN
+	test (u, v: DEANCHORED_TYPE_A): BOOLEAN
 			-- Compare two instances `u' and `v' of NAMED_TYPE_A using `same_as'.
 		do
 			if v = Void then
@@ -728,7 +745,7 @@ feature {NONE} -- Implementation: access
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

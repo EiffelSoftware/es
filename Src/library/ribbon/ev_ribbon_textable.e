@@ -22,6 +22,9 @@ feature -- Command
 
 	set_text (a_text: STRING_32)
 			-- Set `label_title' with `a_text'
+		require
+			has_ribbon: attached ribbon
+			ribbon_exists: attached ribbon as l_ribbon and then l_ribbon.exists
 		local
 			l_key: EV_PROPERTY_KEY
 			l_command_id: NATURAL_32
@@ -68,7 +71,7 @@ feature {NONE} --Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

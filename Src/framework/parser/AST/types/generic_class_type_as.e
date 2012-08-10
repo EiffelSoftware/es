@@ -53,7 +53,7 @@ feature -- Visitor
 
 feature -- Access
 
-	generics: TYPE_LIST_AS
+	generics: detachable TYPE_LIST_AS
 			-- Possible generical parameters
 		do
 			Result := internal_generics
@@ -69,7 +69,7 @@ feature -- Roundtrip
 
 feature -- Roundtrip/Token
 
-	last_token (a_list: LEAF_AS_LIST): LEAF_AS
+	last_token (a_list: detachable LEAF_AS_LIST): detachable LEAF_AS
 			-- <Precursor>
 		do
 			if a_list /= Void then
