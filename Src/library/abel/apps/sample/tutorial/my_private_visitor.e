@@ -23,7 +23,7 @@ feature -- Visitor features
 			shall_retry := True
 		end
 
-	visit_connection_problem (error: PS_CONNECTION_PROBLEM)
+	visit_connection_problem (error: PS_CONNECTION_ERROR)
 		-- Visit a connection problem error
 		do
 			notify_user_of_abort

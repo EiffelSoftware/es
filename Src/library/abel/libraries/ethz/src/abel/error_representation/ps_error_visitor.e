@@ -40,7 +40,7 @@ feature
 		deferred
 		end
 
-	visit_connection_problem (connection_error: PS_CONNECTION_PROBLEM)
+	visit_connection_problem (connection_error: PS_CONNECTION_ERROR)
 			-- Visit a connection problem error
 		deferred
 		end

@@ -23,8 +23,10 @@ feature 	-- Tutorial exploration features
 		do
 			print ("---o--- ABEL Tutorial ---o---")
 			io.new_line
-			in_memory_repo := repo_factory.create_in_memory_repository
-			create executor.make (in_memory_repo)
+			mysql_repo := repo_factory.create_mysql_repository_with_default_host_port ("tutorial","tutorial","tutorial")
+			create executor.make (mysql_repo)
+--			in_memory_repo := repo_factory.create_in_memory_repository
+--			create executor.make (in_memory_repo)
 			print ("Insert 3 new persons in the database")
 			io.new_line
 			create p1.make ("Albo", "Bitossi")
@@ -79,8 +81,7 @@ feature 	-- Tutorial exploration features
 			print ("Celebrating the birthday for all PERSON objects in the repository")
 			update_ages
 			print_result (simple_query)
-		--	mysql_repo := repo_factory.create_mysql_repository_with_default_host_port ("tutorial","tutorial","tutorial")
-		--	create executor.make (mysql_repo)
+
 		end
 
 feature {NONE} -- Initialization
