@@ -61,8 +61,8 @@ feature {NONE} -- Initialization
 				-- Initialize configurator.
 			initialize_ast_node_configurator
 				-- Apply default setup to configurator.
---			Current.allow_all
-			Current.deny_all
+			Current.allow_all
+--			Current.deny_all
 --			Current.allow_node (node_instr_call_as)
 --			Current.allow_node (node_nested_as)
 

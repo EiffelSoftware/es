@@ -72,6 +72,8 @@ feature -- Basic operations
 			l_max_fix_postcondition: AP_INTEGER_OPTION
 			l_model_dir_option: AP_STRING_OPTION
 			l_path_name: FILE_NAME
+			l_postmortem_analysis_of_fixes: AP_STRING_OPTION
+			l_postmortem_analysis_output_dir: AP_STRING_OPTION
 
 			l_report_file_name_str: FILE_NAME
 			l_report_file: PLAIN_TEXT_FILE
@@ -190,6 +192,14 @@ feature -- Basic operations
 			l_model_dir_option.set_description ("The directory to find behavior model files. Default: EIFGENs/target/AutoFix/model")
 			l_parser.options.force_last (l_model_dir_option)
 
+			create l_postmortem_analysis_of_fixes.make_with_long_form ("postmortem-analysis")
+			l_postmortem_analysis_of_fixes.set_description ("Conduct postmortem analysis on the collection of generated proper fixes.")
+			l_parser.options.force_last (l_postmortem_analysis_of_fixes)
+
+			create l_postmortem_analysis_output_dir.make_with_long_form ("postmortem-analysis-output")
+			l_postmortem_analysis_output_dir.set_description ("Directory to store the results from postmortem analysis.")
+			l_parser.options.force_last (l_postmortem_analysis_output_dir)
+
 				-- Parse `arguments'.
 			l_parser.parse_list (l_args)
 
@@ -250,6 +260,22 @@ feature -- Basic operations
 				end
 			else
 				config.set_rank_computation_mean_type ({AFX_CONFIG}.Default_mean_type)
+			end
+
+			if l_postmortem_analysis_of_fixes.was_found then
+				if attached {STRING} l_postmortem_analysis_of_fixes.parameter as lt_fixes_file then
+					config.postmortem_analysis_source := lt_fixes_file
+				else
+					config.postmortem_analysis_source := ""
+				end
+			end
+
+			if l_postmortem_analysis_output_dir.was_found then
+				if attached {STRING} l_postmortem_analysis_output_dir.parameter as lt_postmortem_analysis_output_dir then
+					config.postmortem_analysis_output_dir := lt_postmortem_analysis_output_dir
+				else
+					config.postmortem_analysis_output_dir := ""
+				end
 			end
 
 			if l_fault_localization_strategy.was_found then

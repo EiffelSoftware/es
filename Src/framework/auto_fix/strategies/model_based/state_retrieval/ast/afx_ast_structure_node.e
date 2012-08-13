@@ -91,6 +91,7 @@ feature -- Status report
 			-- Does current represent a feature node?
 			-- This means that `ast' is the DO_AS node for `feature_'
 		do
+			Result := attached {DO_AS} ast.ast as l_if
 		end
 
 feature -- Status report
@@ -102,6 +103,16 @@ feature -- Status report
 		end
 
 feature -- AST Type
+
+	is_of_same_type (a_node: like Current): BOOLEAN
+			-- Is `a_node' of the same type as `Current'?
+		require
+			node_attached: a_node /= Void
+		do
+			Result := is_loop and then a_node.is_loop or else is_if and then a_node.is_if or else is_elseif and then a_node.is_elseif
+					or else is_inspect and then a_node.is_inspect or else is_check and then a_node.is_check
+					or else is_instruction and then a_node.is_instruction or else is_debug and then a_node.is_debug
+		end
 
 	is_loop: BOOLEAN
 			-- Is `ast' a loop?
@@ -184,6 +195,22 @@ feature -- Setting
 feature{NONE} -- Implementation
 
 feature -- AST node
+
+	ast_nodes_string_representation (a_nodes: LINKED_LIST[AFX_AST_STRUCTURE_NODE]; a_level: INTEGER): STRING
+			-- String representation for `a_nodes' at indentation level `a_level'.
+			-- Strings from nodes are seperated by '%N'.
+		require
+			nodes_attached: a_nodes /= Void
+		do
+			create Result.make (1024)
+			from a_nodes.start
+			until a_nodes.after
+			loop
+				Result.append (ast_node_string_representation (a_nodes.item_for_iteration, a_level) + "%N")
+
+				a_nodes.forth
+			end
+		end
 
 	ast_node_string_representation (a_node: AFX_AST_STRUCTURE_NODE; a_level: INTEGER): STRING
 			-- String representation for `a_node' at indentation level `a_level'

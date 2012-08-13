@@ -410,6 +410,58 @@ feature -- Fix validation
 			max_socket_port_number := a_max
 		end
 
+feature -- Postmortem analysis
+
+	postmortem_analysis_source: STRING assign set_postmortem_analysis_source
+			-- Full path indicating the set of generated proper fixes to be postmortemly analyzed.
+			-- Possibly invalid.
+
+	postmortem_analysis_output_dir: STRING assign set_postmortem_analysis_output_dir
+			-- Directory to store the results from postmortem analysis.
+			-- Valid or Void.
+
+	set_postmortem_analysis_output_dir (a_dir: STRING)
+			-- Set `postmortem_analysis_output_dir' with `a_dir', if `a_dir' is a valid directory path;
+			-- Set `postmortem_analysis_output_dir' to Void, otherwise.
+		local
+			l_retried: BOOLEAN
+			l_path: DIRECTORY
+		do
+			if not l_retried then
+				if attached {STRING} a_dir as lt_dir and then not lt_dir.is_empty then
+					create l_path.make (lt_dir)
+					if not l_path.exists then
+						l_path.recursive_create_dir
+					end
+					if l_path.exists and then l_path.is_writable then
+						postmortem_analysis_output_dir := a_dir.twin
+					else
+						postmortem_analysis_output_dir := Void
+					end
+				else
+					postmortem_analysis_output_dir := Void
+				end
+			end
+		rescue
+			l_retried := True
+			postmortem_analysis_output_dir := Void
+			retry
+		end
+
+	is_for_postmortem_analysis: BOOLEAN
+			-- Is the configuration for postmortem analysis?
+		do
+			Result := postmortem_analysis_source /= Void
+		end
+
+	set_postmortem_analysis_source (a_source: STRING)
+			-- Set `postmortem_analysis_source' with `a_source'.
+		do
+			postmortem_analysis_source := a_source
+		ensure
+			source_set: a_source = postmortem_analysis_source
+		end
+
 feature -- AutoFix report
 
 	report_file: PLAIN_TEXT_FILE
@@ -684,8 +736,8 @@ feature{NONE} -- Implementation
 	is_using_random_based_strategy_cache: BOOLEAN
 			-- Cache for `is_using_random_based_strategy'.
 
-invariant
+--invariant
 
-	one_fixing_strategy_specified: is_using_model_based_strategy xor is_using_random_based_strategy
+--	one_fixing_strategy_specified: is_using_model_based_strategy xor is_using_random_based_strategy
 
 end

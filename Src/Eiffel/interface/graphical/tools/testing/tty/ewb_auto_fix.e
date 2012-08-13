@@ -78,26 +78,49 @@ feature -- Properties
 			create l_initializer
 			l_initializer.prepare (config)
 
-				-- Re-structure the project to include test cases.
-			if config.should_build_test_cases then
-				create l_fixing_project_builder
-				l_fixing_project_builder.execute
-			end
-
-			if is_fixing_root_available then
-				if not system.is_explicit_root (afx_project_root_class, afx_project_root_feature) then
-					system.add_explicit_root (system.test_system.eifgens_cluster_name, afx_project_root_class, afx_project_root_feature)
+			if is_fixing then
+					-- Re-structure the project to include test cases.
+				if config.should_build_test_cases then
+					create l_fixing_project_builder
+					l_fixing_project_builder.execute
 				end
 
-				create l_fix_proposer.make
-				l_fix_proposer.execute
+				if is_fixing_root_available then
+					if not system.is_explicit_root (afx_project_root_class, afx_project_root_feature) then
+						system.add_explicit_root (system.test_system.eifgens_cluster_name, afx_project_root_class, afx_project_root_feature)
+					end
 
-				system.remove_explicit_root(afx_project_root_class, afx_project_root_feature)
-				system.make_update (False)
+					create l_fix_proposer.make
+					l_fix_proposer.execute
+
+					system.remove_explicit_root(afx_project_root_class, afx_project_root_feature)
+					system.make_update (False)
+				else
+					Io.put_string ("AutoFixing failed: Missing Project root for fixing.%N")
+				end
 			else
-				Io.put_string ("AutoFixing failed: Missing Project root for fixing.%N")
+				perform_non_fixing_tasks()
 			end
+		end
 
+	is_fixing: BOOLEAN
+			-- Is the run for fixing?
+		do
+			Result := not session.config.is_for_postmortem_analysis
+		end
+
+	perform_non_fixing_tasks()
+			-- Perform tasks other than fixing.
+		require
+			not_fixing: not is_fixing
+		local
+			l_postmortem_analyzer: AFX_POSTMORTEM_ANALYZER
+		do
+			if session.config.is_for_postmortem_analysis then
+				create l_postmortem_analyzer.make(session.config.postmortem_analysis_source)
+				l_postmortem_analyzer.analyze()
+				-- l_postmortem_analyzer.generate_report()
+			end
 		end
 
 	is_fixing_root_available: BOOLEAN

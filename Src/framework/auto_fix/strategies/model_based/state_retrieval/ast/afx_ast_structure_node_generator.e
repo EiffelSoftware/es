@@ -39,6 +39,13 @@ feature -- Basic operations
 	generate (a_class: CLASS_C; a_feature: FEATURE_I)
 			-- Generate AST structure for `a_feature' in context class `a_class',
 			-- and store result in `structure'.
+		do
+			fixme ("Does not support inline agent, rescue clause for the moment. 12.12.2009 Jasonw")
+			generate_from_feature_as (a_class, a_feature, a_feature.body)
+		end
+
+	generate_from_feature_as (a_class: CLASS_C; a_feature: FEATURE_I; a_feature_as: FEATURE_AS)
+			-- Generate AST structure for `a_feature_as', in the context of `current_feature' from `written_class'.
 		local
 			l_ast: AFX_HASHABLE_AST
 		do
@@ -48,7 +55,7 @@ feature -- Basic operations
 			current_feature := a_feature
 			structure := Void
 
-			if attached {BODY_AS} a_feature.body.body as l_body then
+			if attached {BODY_AS} a_feature_as.body as l_body then
 				if attached {ROUTINE_AS} l_body.content as l_routine then
 					if attached {DO_AS} l_routine.routine_body as l_do then
 						next_bpslot := a_feature.first_breakpoint_slot_index - 1
