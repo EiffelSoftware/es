@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test features of class UC_UTF8_STRING"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel Kernel Library"
 	copyright: "Copyright (c) 2001, Eric Bezault and others"
 	license: "MIT License"
@@ -26,7 +27,7 @@ create
 
 feature -- Test
 
-	test_make1 is
+	test_make1
 			-- Test feature `make'.
 		local
 			a_string: UC_UTF8_STRING
@@ -37,7 +38,7 @@ feature -- Test
 			assert_integers_equal ("count2", 0, a_string.count)
 		end
 
-	test_make2 is
+	test_make2
 			-- Test feature `make'.
 		local
 			a_string: UC_UTF8_STRING
@@ -49,7 +50,7 @@ feature -- Test
 			assert_integers_equal ("count2", 0, a_string.count)
 		end
 
-	test_make3 is
+	test_make3
 			-- Test feature `make'.
 		local
 			a_string: UC_STRING
@@ -61,7 +62,7 @@ feature -- Test
 			assert_integers_equal ("count2", 0, a_string.count)
 		end
 
-	test_make_from_string1 is
+	test_make_from_string1
 			-- Test feature `make_from_string'.
 		local
 			a_string: UC_UTF8_STRING
@@ -80,7 +81,7 @@ feature -- Test
 			assert_equal ("utf8", "%%/265/%%/1021/f%%/23456/", a_string.out)
 		end
 
-	test_make_from_string2 is
+	test_make_from_string2
 			-- Test feature `make_from_string'.
 		local
 			a_string: UC_UTF8_STRING
@@ -100,7 +101,7 @@ feature -- Test
 			assert_equal ("utf8", "%%/265/%%/1021/f%%/23456/", a_string.out)
 		end
 
-	test_make_from_string3 is
+	test_make_from_string3
 			-- Test feature `make_from_string'.
 		local
 			a_string: UC_STRING
@@ -120,7 +121,7 @@ feature -- Test
 			assert_equal ("utf8", "%%/265/%%/1021/f%%/23456/", a_string.out)
 		end
 
-	test_make_from_utf8 is
+	test_make_from_utf8
 			-- Test feature `make_from_utf8'.
 		local
 			a_string: UC_UTF8_STRING
@@ -139,7 +140,7 @@ feature -- Test
 			assert_equal ("utf8", "%%/265/%%/1021/f%%/23456/", a_string.out)
 		end
 
-	test_make_empty is
+	test_make_empty
 			-- Test feature `make_empty'.
 		local
 			a_string: UC_UTF8_STRING
@@ -148,7 +149,7 @@ feature -- Test
 			assert_integers_equal ("empty", 0, a_string.count)
 		end
 
-	test_make_filled_unicode is
+	test_make_filled_unicode
 			-- Test feature `make_filled_unicode'.
 		local
 			a_string: UC_UTF8_STRING
@@ -164,7 +165,7 @@ feature -- Test
 			assert_equal ("filled3", "", a_string.out)
 		end
 
-	test_make_filled_code is
+	test_make_filled_code
 			-- Test feature `make_filled_code'.
 		local
 			a_string: UC_UTF8_STRING
@@ -177,7 +178,7 @@ feature -- Test
 			assert_equal ("filled3", "", a_string.out)
 		end
 
-	test_make_filled is
+	test_make_filled
 			-- Test feature `make_filled'.
 		local
 			a_string: UC_UTF8_STRING
@@ -188,7 +189,7 @@ feature -- Test
 			assert_equal ("filled2", "", a_string.out)
 		end
 
-	test_count1 is
+	test_count1
 			-- Test feature `count'.
 		local
 			a_string: UC_UTF8_STRING
@@ -208,7 +209,7 @@ feature -- Test
 			assert_integers_equal ("count4", 3, a_string.count)
 		end
 
-	test_count2 is
+	test_count2
 			-- Test feature `count'.
 		local
 			a_string: UC_STRING
@@ -228,7 +229,7 @@ feature -- Test
 			assert_integers_equal ("count4", 3, a_string.count)
 		end
 
-	test_count3 is
+	test_count3
 			-- Test feature `count'.
 		local
 			a_string: STRING
@@ -248,7 +249,7 @@ feature -- Test
 			assert_integers_equal ("count4", 3, a_string.count)
 		end
 
-	test_valid_index1 is
+	test_valid_index1
 			-- Test feature `valid_index'.
 		local
 			a_string: UC_UTF8_STRING
@@ -277,7 +278,7 @@ feature -- Test
 			assert ("not_valid6", not a_string.valid_index (5))
 		end
 
-	test_valid_index2 is
+	test_valid_index2
 			-- Test feature `valid_index'.
 		local
 			a_string: UC_STRING
@@ -306,7 +307,7 @@ feature -- Test
 			assert ("not_valid6", not a_string.valid_index (5))
 		end
 
-	test_valid_index3 is
+	test_valid_index3
 			-- Test feature `valid_index'.
 		local
 			a_string: STRING
@@ -335,7 +336,7 @@ feature -- Test
 			assert ("not_valid6", not a_string.valid_index (5))
 		end
 
-	test_unicode_item1 is
+	test_unicode_item1
 			-- Test feature `unicode_item'.
 		local
 			a_string: UC_UTF8_STRING
@@ -356,7 +357,7 @@ feature -- Test
 			assert_equal ("item5", c, a_string.unicode_item (2))
 		end
 
-	test_unicode_item2 is
+	test_unicode_item2
 			-- Test feature `unicode_item'.
 		local
 			a_string: UC_STRING
@@ -377,7 +378,7 @@ feature -- Test
 			assert_equal ("item5", c, a_string.unicode_item (2))
 		end
 
-	test_item_code1 is
+	test_item_code1
 			-- Test feature `item_code'.
 		local
 			a_string: UC_UTF8_STRING
@@ -392,7 +393,7 @@ feature -- Test
 			assert_integers_equal ("item_code5", 134, a_string.item_code (2))
 		end
 
-	test_item_code2 is
+	test_item_code2
 			-- Test feature `item_code'.
 		local
 			a_string: UC_STRING
@@ -407,7 +408,7 @@ feature -- Test
 			assert_integers_equal ("item_code5", 134, a_string.item_code (2))
 		end
 
-	test_item_code3 is
+	test_item_code3
 			-- Test feature `item_code'.
 		local
 			a_string: STRING
@@ -425,7 +426,7 @@ feature -- Test
 			assert_integers_equal ("item_code5", 134, a_string.item_code (2))
 		end
 
-	test_item1 is
+	test_item1
 			-- Test feature `item'.
 		local
 			a_string: UC_UTF8_STRING
@@ -438,7 +439,7 @@ feature -- Test
 			assert_characters_equal ("item4", '%U', a_string.item (2))
 		end
 
-	test_item2 is
+	test_item2
 			-- Test feature `item'.
 		local
 			a_string: UC_STRING
@@ -451,7 +452,7 @@ feature -- Test
 			assert_characters_equal ("item4", '%U', a_string.item (2))
 		end
 
-	test_item3 is
+	test_item3
 			-- Test feature `item'.
 		local
 			a_string: STRING
@@ -467,7 +468,7 @@ feature -- Test
 			assert_characters_equal ("item4", '%U', a_string.item (2))
 		end
 
-	test_infix_at1 is
+	test_infix_at1
 			-- Test feature `infix "@"'.
 		local
 			a_string: UC_UTF8_STRING
@@ -480,7 +481,7 @@ feature -- Test
 			assert_characters_equal ("item4", '%U', a_string @ 2)
 		end
 
-	test_infix_at2 is
+	test_infix_at2
 			-- Test feature `infix "@"'.
 		local
 			a_string: UC_STRING
@@ -493,7 +494,7 @@ feature -- Test
 			assert_characters_equal ("item4", '%U', a_string @ 2)
 		end
 
-	test_infix_at3 is
+	test_infix_at3
 			-- Test feature `infix "@"'.
 		local
 			a_string: STRING
@@ -509,7 +510,7 @@ feature -- Test
 			assert_characters_equal ("item4", '%U', a_string @ 2)
 		end
 
-	test_put_unicode1 is
+	test_put_unicode1
 			-- Test feature `put_unicode'.
 		local
 			a_string: UC_UTF8_STRING
@@ -534,7 +535,7 @@ feature -- Test
 			assert_equal ("put5", "boz", a_string.out)
 		end
 
-	test_put_unicode2 is
+	test_put_unicode2
 			-- Test feature `put_unicode'.
 		local
 			a_string: UC_STRING
@@ -559,7 +560,7 @@ feature -- Test
 			assert_equal ("put5", "boz", a_string.out)
 		end
 
-	test_put_item_code1 is
+	test_put_item_code1
 			-- Test feature `put_item_code'.
 		local
 			a_string: UC_UTF8_STRING
@@ -577,7 +578,7 @@ feature -- Test
 			assert_equal ("put_code5", "boz", a_string.out)
 		end
 
-	test_put_item_code2 is
+	test_put_item_code2
 			-- Test feature `put_item_code'.
 		local
 			a_string: UC_STRING
@@ -595,7 +596,7 @@ feature -- Test
 			assert_equal ("put_code5", "boz", a_string.out)
 		end
 
-	test_put1 is
+	test_put1
 			-- Test feature `put'.
 		local
 			a_string: UC_UTF8_STRING
@@ -609,7 +610,7 @@ feature -- Test
 			assert_equal ("put3", "foz", a_string.out)
 		end
 
-	test_put2 is
+	test_put2
 			-- Test feature `put'.
 		local
 			a_string: UC_STRING
@@ -623,7 +624,7 @@ feature -- Test
 			assert_equal ("put3", "foz", a_string.out)
 		end
 
-	test_put3 is
+	test_put3
 			-- Test feature `put'.
 		local
 			a_string: STRING
@@ -637,7 +638,7 @@ feature -- Test
 			assert_equal ("put3", "foz", a_string.out)
 		end
 
-	test_substring1 is
+	test_substring1
 			-- Test feature `substring'.
 		local
 			a_string, a_string2: UC_UTF8_STRING
@@ -662,7 +663,7 @@ feature -- Test
 			assert_equal ("substring6", a_string2, a_string.substring (2, 6))
 		end
 
-	test_substring2 is
+	test_substring2
 			-- Test feature `substring'.
 		local
 			a_string: UC_STRING
@@ -688,7 +689,7 @@ feature -- Test
 			assert_equal ("substring6", a_string2, a_string.substring (2, 6))
 		end
 
-	test_substring3 is
+	test_substring3
 			-- Test feature `substring'.
 		local
 			a_string: STRING
@@ -716,7 +717,7 @@ feature -- Test
 			assert_equal ("substring6", a_string2, a_string.substring (2, 6))
 		end
 
-	test_is_equal is
+	test_is_equal
 			-- Test feature `is_equal'.
 		local
 			a_string, a_string2: UC_UTF8_STRING
@@ -751,7 +752,7 @@ feature -- Test
 			assert ("not_is_equal5",  not a_string.is_equal (a_string2))
 		end
 
-	test_out1 is
+	test_out1
 			-- Test feature `out'.
 		local
 			a_string: UC_UTF8_STRING
@@ -765,7 +766,7 @@ feature -- Test
 			assert_equal ("out3", "f%%/934/o", a_string.out)
 		end
 
-	test_out2 is
+	test_out2
 			-- Test feature `out'.
 		local
 			a_string: UC_STRING
@@ -779,7 +780,7 @@ feature -- Test
 			assert_equal ("out3", "f%%/934/o", a_string.out)
 		end
 
-	test_out3 is
+	test_out3
 			-- Test feature `out'.
 		local
 			a_string: STRING
@@ -796,7 +797,7 @@ feature -- Test
 			assert_equal ("out3", "f%%/934/o", a_string.out)
 		end
 
-	test_to_utf8_1 is
+	test_to_utf8_1
 			-- Test feature `to_utf8'.
 		local
 			a_string: UC_UTF8_STRING
@@ -818,7 +819,7 @@ feature -- Test
 			assert_integers_equal ("foo_5", 129, a_string.to_utf8.item (5).code)
 		end
 
-	test_to_utf8_2 is
+	test_to_utf8_2
 			-- Test feature `to_utf8'.
 		local
 			a_string: UC_STRING
@@ -840,7 +841,7 @@ feature -- Test
 			assert_integers_equal ("foo_5", 129, a_string.to_utf8.item (5).code)
 		end
 
-	test_copy is
+	test_copy
 			-- Test feature `copy'.
 		local
 			a_string, a_string2: UC_UTF8_STRING
@@ -867,7 +868,7 @@ feature -- Test
 			assert_equal ("copy4", "fo%%/692/bar", a_string.out)
 		end
 
-	test_append_unicode_character1 is
+	test_append_unicode_character1
 			-- Test feature `append_unicode_character'.
 		local
 			a_string: UC_UTF8_STRING
@@ -889,7 +890,7 @@ feature -- Test
 			assert_equal ("append_unicode_character4", "%%/462/z", a_string.out)
 		end
 
-	test_append_unicode_character2 is
+	test_append_unicode_character2
 			-- Test feature `append_unicode_character'.
 		local
 			a_string: UC_STRING
@@ -911,7 +912,7 @@ feature -- Test
 			assert_equal ("append_unicode_character4", "%%/462/z", a_string.out)
 		end
 
-	test_append_character1 is
+	test_append_character1
 			-- Test feature `append_character'.
 		local
 			a_string: UC_UTF8_STRING
@@ -924,7 +925,7 @@ feature -- Test
 			assert_equal ("append_character2", "z", a_string.out)
 		end
 
-	test_append_character2 is
+	test_append_character2
 			-- Test feature `append_character'.
 		local
 			a_string: UC_STRING
@@ -937,7 +938,7 @@ feature -- Test
 			assert_equal ("append_character2", "z", a_string.out)
 		end
 
-	test_append_character3 is
+	test_append_character3
 			-- Test feature `append_character'.
 		local
 			a_string: STRING
@@ -950,7 +951,7 @@ feature -- Test
 			assert_equal ("append_character2", "z", a_string.out)
 		end
 
-	test_append_string1 is
+	test_append_string1
 			-- Test feature `append_string'.
 		local
 			a_string: UC_UTF8_STRING
@@ -981,7 +982,7 @@ feature -- Test
 			assert_equal ("append_string6", "b%%/888/rb%%/888/r", a_string.out)
 		end
 
-	test_append_string2 is
+	test_append_string2
 			-- Test feature `append_string'.
 		local
 			a_string: UC_STRING
@@ -1012,7 +1013,7 @@ feature -- Test
 			assert_equal ("append_string6", "b%%/888/rb%%/888/r", a_string.out)
 		end
 
-	test_append_string3 is
+	test_append_string3
 			-- Test feature `append_string'.
 		local
 			a_string: STRING
@@ -1045,7 +1046,7 @@ feature -- Test
 			assert_equal ("append_string6", "b%%/888/rb%%/888/r", a_string.out)
 		end
 
-	test_infix_plus1 is
+	test_infix_plus1
 			-- Test feature `infix "+"'.
 		local
 			a_string, a_string2: UC_UTF8_STRING
@@ -1075,7 +1076,7 @@ feature -- Test
 			assert_equal ("append_string6", "b%%/888/rb%%/888/r", (a_string + a_string).out)
 		end
 
-	test_infix_plus2 is
+	test_infix_plus2
 			-- Test feature `infix "+"'.
 		local
 			a_string, a_string2: UC_STRING
@@ -1105,7 +1106,7 @@ feature -- Test
 			assert_equal ("append_string6", "b%%/888/rb%%/888/r", (a_string + a_string).out)
 		end
 
-	test_index_of_unicode1 is
+	test_index_of_unicode1
 			-- Test feature `index_of_unicode'.
 		local
 			a_string: UC_UTF8_STRING
@@ -1138,7 +1139,7 @@ feature -- Test
 			assert_integers_equal ("index_of_o1", 0, a_string.index_of_unicode (c, 1))
 		end
 
-	test_index_of_unicode2 is
+	test_index_of_unicode2
 			-- Test feature `index_of_unicode'.
 		local
 			a_string: UC_STRING
@@ -1171,7 +1172,7 @@ feature -- Test
 			assert_integers_equal ("index_of_o1", 0, a_string.index_of_unicode (c, 1))
 		end
 
-	test_index_of_item_code1 is
+	test_index_of_item_code1
 			-- Test feature `index_of_item_code'.
 		local
 			a_string: UC_UTF8_STRING
@@ -1204,7 +1205,7 @@ feature -- Test
 			assert_integers_equal ("index_of_o1", 0, a_string.index_of_item_code (a_code, 1))
 		end
 
-	test_index_of_item_code2 is
+	test_index_of_item_code2
 			-- Test feature `index_of_item_code'.
 		local
 			a_string: UC_STRING
@@ -1237,7 +1238,7 @@ feature -- Test
 			assert_integers_equal ("index_of_o1", 0, a_string.index_of_item_code (a_code, 1))
 		end
 
-	test_index_of1 is
+	test_index_of1
 			-- Test feature `index_of'.
 		local
 			a_string: UC_UTF8_STRING
@@ -1269,7 +1270,7 @@ feature -- Test
 			assert_integers_equal ("index_of_o1", 0, a_string.index_of ('o', 1))
 		end
 
-	test_index_of2 is
+	test_index_of2
 			-- Test feature `index_of'.
 		local
 			a_string: UC_STRING
@@ -1301,7 +1302,7 @@ feature -- Test
 			assert_integers_equal ("index_of_o1", 0, a_string.index_of ('o', 1))
 		end
 
-	test_index_of3 is
+	test_index_of3
 			-- Test feature `index_of'.
 		local
 			a_string: STRING
@@ -1336,7 +1337,7 @@ feature -- Test
 			assert_integers_equal ("index_of_o1", 0, a_string.index_of ('o', 1))
 		end
 
-	test_has_unicode1 is
+	test_has_unicode1
 			-- Test feature `has_unicode'.
 		local
 			a_string: UC_UTF8_STRING
@@ -1363,7 +1364,7 @@ feature -- Test
 			assert ("not_has_678", not a_string.has_unicode (c))
 		end
 
-	test_has_unicode2 is
+	test_has_unicode2
 			-- Test feature `has_unicode'.
 		local
 			a_string: UC_STRING
@@ -1390,7 +1391,7 @@ feature -- Test
 			assert ("not_has_678", not a_string.has_unicode (c))
 		end
 
-	test_has_item_code1 is
+	test_has_item_code1
 			-- Test feature `has_item_code'.
 		local
 			a_string: UC_UTF8_STRING
@@ -1417,7 +1418,7 @@ feature -- Test
 			assert ("not_has_678", not a_string.has_item_code (a_code))
 		end
 
-	test_has_item_code2 is
+	test_has_item_code2
 			-- Test feature `has_item_code'.
 		local
 			a_string: UC_STRING
@@ -1444,7 +1445,7 @@ feature -- Test
 			assert ("not_has_678", not a_string.has_item_code (a_code))
 		end
 
-	test_has1 is
+	test_has1
 			-- Test feature `has'.
 		local
 			a_string: UC_UTF8_STRING
@@ -1460,7 +1461,7 @@ feature -- Test
 			assert ("not_has_f", not a_string.has ('f'))
 		end
 
-	test_has2 is
+	test_has2
 			-- Test feature `has'.
 		local
 			a_string: UC_STRING
@@ -1476,7 +1477,7 @@ feature -- Test
 			assert ("not_has_f", not a_string.has ('f'))
 		end
 
-	test_has3 is
+	test_has3
 			-- Test feature `has'.
 		local
 			a_string: STRING
@@ -1495,7 +1496,7 @@ feature -- Test
 			assert ("not_has_f", not a_string.has ('f'))
 		end
 
-	test_unicode_occurrences1 is
+	test_unicode_occurrences1
 			-- Test feature `unicode_occurrences'.
 		local
 			a_string: UC_UTF8_STRING
@@ -1528,7 +1529,7 @@ feature -- Test
 			assert_integers_equal ("555", 0, a_string.unicode_occurrences (c))
 		end
 
-	test_unicode_occurrences2 is
+	test_unicode_occurrences2
 			-- Test feature `unicode_occurrences'.
 		local
 			a_string: UC_STRING
@@ -1561,7 +1562,7 @@ feature -- Test
 			assert_integers_equal ("555", 0, a_string.unicode_occurrences (c))
 		end
 
-	test_code_occurrences1 is
+	test_code_occurrences1
 			-- Test feature `code_occurrences'.
 		local
 			a_string: UC_UTF8_STRING
@@ -1594,7 +1595,7 @@ feature -- Test
 			assert_integers_equal ("555", 0, a_string.code_occurrences (a_code))
 		end
 
-	test_code_occurrences2 is
+	test_code_occurrences2
 			-- Test feature `code_occurrences'.
 		local
 			a_string: UC_STRING
@@ -1627,7 +1628,7 @@ feature -- Test
 			assert_integers_equal ("555", 0, a_string.code_occurrences (a_code))
 		end
 
-	test_occurrences1 is
+	test_occurrences1
 			-- Test feature `occurrences'.
 		local
 			a_string: UC_UTF8_STRING
@@ -1648,7 +1649,7 @@ feature -- Test
 			assert_integers_equal ("null", 0, a_string.occurrences ('%U'))
 		end
 
-	test_occurrences2 is
+	test_occurrences2
 			-- Test feature `occurrences'.
 		local
 			a_string: UC_STRING
@@ -1669,7 +1670,7 @@ feature -- Test
 			assert_integers_equal ("null", 0, a_string.occurrences ('%U'))
 		end
 
-	test_occurrences3 is
+	test_occurrences3
 			-- Test feature `occurrences'.
 		local
 			a_string: STRING
@@ -1751,7 +1752,7 @@ feature -- Test
 --			assert_equal ("head_0", "", a_string.out)
 --		end
 
-	test_keep_head1 is
+	test_keep_head1
 			-- Test feature `keep_head'.
 		local
 			a_string: UC_UTF8_STRING
@@ -1769,7 +1770,7 @@ feature -- Test
 			assert_equal ("head_0", "", a_string.out)
 		end
 
-	test_keep_head2 is
+	test_keep_head2
 			-- Test feature `keep_head'.
 		local
 			a_string: UC_STRING
@@ -1845,7 +1846,7 @@ feature -- Test
 --			assert_equal ("tail_0", "", a_string.out)
 --		end
 
-	test_keep_tail1 is
+	test_keep_tail1
 			-- Test feature `keep_tail'.
 		local
 			a_string: UC_UTF8_STRING
@@ -1863,7 +1864,7 @@ feature -- Test
 			assert_equal ("tail_0", "", a_string.out)
 		end
 
-	test_keep_tail2 is
+	test_keep_tail2
 			-- Test feature `keep_tail'.
 		local
 			a_string: UC_STRING
@@ -1881,7 +1882,7 @@ feature -- Test
 			assert_equal ("tail_0", "", a_string.out)
 		end
 
-	test_remove_head1 is
+	test_remove_head1
 			-- Test feature `remove_head'.
 		local
 			a_string: UC_UTF8_STRING
@@ -1902,7 +1903,7 @@ feature -- Test
 			assert_equal ("removed4", "", a_string.out)
 		end
 
-	test_remove_head2 is
+	test_remove_head2
 			-- Test feature `remove_head'.
 		local
 			a_string: UC_STRING
@@ -1923,7 +1924,7 @@ feature -- Test
 			assert_equal ("removed4", "", a_string.out)
 		end
 
-	test_remove_tail1 is
+	test_remove_tail1
 			-- Test feature `remove_tail'.
 		local
 			a_string: UC_UTF8_STRING
@@ -1944,7 +1945,7 @@ feature -- Test
 			assert_equal ("removed4", "", a_string.out)
 		end
 
-	test_remove_tail2 is
+	test_remove_tail2
 			-- Test feature `remove_tail'.
 		local
 			a_string: UC_STRING
@@ -1965,7 +1966,7 @@ feature -- Test
 			assert_equal ("removed4", "", a_string.out)
 		end
 
-	test_hash_code1 is
+	test_hash_code1
 			-- Test feature `hash_code'.
 		local
 			a_string, a_string2: UC_UTF8_STRING
@@ -1995,7 +1996,7 @@ feature -- Test
 			assert_integers_equal ("same_hash_code3", s.hash_code, a_string.hash_code)
 		end
 
-	test_hash_code2 is
+	test_hash_code2
 			-- Test feature `hash_code'.
 		local
 			a_string, a_string2: UC_STRING
@@ -2025,7 +2026,7 @@ feature -- Test
 			assert_integers_equal ("same_hash_code3", s.hash_code, a_string.hash_code)
 		end
 
-	test_hash_code3 is
+	test_hash_code3
 			-- Test feature `hash_code'.
 		local
 			a_string, a_string2: STRING
@@ -2066,7 +2067,7 @@ feature -- Test
 			assert_integers_equal ("same_hash_code3", s.hash_code, a_string.hash_code)
 		end
 
-	test_same_string1 is
+	test_same_string1
 			-- Test feature `same_string'.
 		local
 			a_string, a_string2: UC_UTF8_STRING
@@ -2090,7 +2091,7 @@ feature -- Test
 --			assert ("same5", a_string.same_string ("foo%Ubar"))
 		end
 
-	test_same_string2 is
+	test_same_string2
 			-- Test feature `same_string'.
 		local
 			a_string, a_string2: UC_STRING
@@ -2114,7 +2115,7 @@ feature -- Test
 --			assert ("same5", a_string.same_string ("foo%Ubar"))
 		end
 
-	test_same_unicode_string1 is
+	test_same_unicode_string1
 			-- Test feature `same_unicode_string'.
 		local
 			a_string, a_string2: UC_UTF8_STRING
@@ -2141,7 +2142,7 @@ feature -- Test
 			assert ("same4", a_string.same_unicode_string (a_string2))
 		end
 
-	test_same_unicode_string2 is
+	test_same_unicode_string2
 			-- Test feature `same_unicode_string'.
 		local
 			a_string, a_string2: UC_STRING
@@ -2168,7 +2169,7 @@ feature -- Test
 			assert ("same4", a_string.same_unicode_string (a_string2))
 		end
 
-	test_string1 is
+	test_string1
 			-- Test feature `string'.
 		local
 			a_string: UC_UTF8_STRING
@@ -2183,7 +2184,7 @@ feature -- Test
 			assert_equal ("string3", "", a_string.string)
 		end
 
-	test_string2 is
+	test_string2
 			-- Test feature `string'.
 		local
 			a_string: UC_STRING
@@ -2198,7 +2199,7 @@ feature -- Test
 			assert_equal ("string3", "", a_string.string)
 		end
 
-	test_fill_with_unicode1 is
+	test_fill_with_unicode1
 			-- Test feature `fill_with_unicode'.
 		local
 			a_string: UC_UTF8_STRING
@@ -2217,7 +2218,7 @@ feature -- Test
 			assert_equal ("filled3", "", a_string.out)
 		end
 
-	test_fill_with_unicode2 is
+	test_fill_with_unicode2
 			-- Test feature `fill_with_unicode'.
 		local
 			a_string: UC_STRING
@@ -2236,7 +2237,7 @@ feature -- Test
 			assert_equal ("filled3", "", a_string.out)
 		end
 
-	test_fill_with_code1 is
+	test_fill_with_code1
 			-- Test feature `fill_with_code'.
 		local
 			a_string: UC_UTF8_STRING
@@ -2252,7 +2253,7 @@ feature -- Test
 			assert_equal ("filled3", "", a_string.out)
 		end
 
-	test_fill_with_code2 is
+	test_fill_with_code2
 			-- Test feature `fill_with_code'.
 		local
 			a_string: UC_STRING
@@ -2268,7 +2269,7 @@ feature -- Test
 			assert_equal ("filled3", "", a_string.out)
 		end
 
-	test_fill_with1 is
+	test_fill_with1
 			-- Test feature `fill_with'.
 		local
 			a_string: UC_UTF8_STRING
@@ -2281,7 +2282,7 @@ feature -- Test
 			assert_equal ("filled3", "", a_string.out)
 		end
 
-	test_fill_with2 is
+	test_fill_with2
 			-- Test feature `fill_with'.
 		local
 			a_string: UC_STRING
@@ -2294,7 +2295,7 @@ feature -- Test
 			assert_equal ("filled3", "", a_string.out)
 		end
 
-	test_unicode_substring_index1 is
+	test_unicode_substring_index1
 			-- Test feature `unicode_substring_index'.
 		local
 			a_string: UC_UTF8_STRING
@@ -2346,7 +2347,7 @@ feature -- Test
 			assert_integers_equal ("index34", 0, a_string.unicode_substring_index (a_string2, 8))
 		end
 
-	test_unicode_substring_index2 is
+	test_unicode_substring_index2
 			-- Test feature `unicode_substring_index'.
 		local
 			a_string: UC_STRING
@@ -2398,7 +2399,7 @@ feature -- Test
 			assert_integers_equal ("index34", 0, a_string.unicode_substring_index (a_string2, 8))
 		end
 
-	test_substring_index1 is
+	test_substring_index1
 			-- Test feature `substring_index'.
 		local
 			a_string: UC_UTF8_STRING
@@ -2464,7 +2465,7 @@ feature -- Test
 			assert_integers_equal ("index42", 0, a_string.substring_index (a_string2, 8))
 		end
 
-	test_substring_index2 is
+	test_substring_index2
 			-- Test feature `substring_index'.
 		local
 			a_string: UC_STRING
@@ -2530,7 +2531,7 @@ feature -- Test
 			assert_integers_equal ("index42", 0, a_string.substring_index (a_string2, 8))
 		end
 
-	test_has_unicode_substring1 is
+	test_has_unicode_substring1
 			-- Test feature `has_unicode_substring'.
 		local
 			a_string: UC_UTF8_STRING
@@ -2554,7 +2555,7 @@ feature -- Test
 			assert ("has5", a_string.has_unicode_substring (a_string2))
 		end
 
-	test_has_unicode_substring2 is
+	test_has_unicode_substring2
 			-- Test feature `has_unicode_substring'.
 		local
 			a_string: UC_STRING
@@ -2578,7 +2579,7 @@ feature -- Test
 			assert ("has5", a_string.has_unicode_substring (a_string2))
 		end
 
-	test_has_substring1 is
+	test_has_substring1
 			-- Test feature `has_substring'.
 		local
 			a_string: UC_UTF8_STRING
@@ -2609,7 +2610,7 @@ feature -- Test
 			assert ("has6", a_string.has_substring (a_string2))
 		end
 
-	test_has_substring2 is
+	test_has_substring2
 			-- Test feature `has_substring'.
 		local
 			a_string: UC_STRING
@@ -2640,7 +2641,7 @@ feature -- Test
 			assert ("has6", a_string.has_substring (a_string2))
 		end
 
-	test_is_empty1 is
+	test_is_empty1
 			-- Test feature `is_empty'.
 		local
 			a_string: UC_UTF8_STRING
@@ -2653,7 +2654,7 @@ feature -- Test
 			assert ("not_empty2", not a_string.is_empty)
 		end
 
-	test_is_empty2 is
+	test_is_empty2
 			-- Test feature `is_empty'.
 		local
 			a_string: UC_STRING
@@ -2666,7 +2667,7 @@ feature -- Test
 			assert ("not_empty2", not a_string.is_empty)
 		end
 
-	test_replace_substring1 is
+	test_replace_substring1
 			-- Test feature `replace_substring'.
 		local
 			a_string, a_string2: UC_UTF8_STRING
@@ -2696,7 +2697,7 @@ feature -- Test
 			assert_equal ("replaced6", "foototobar", a_string.out)
 		end
 
-	test_replace_substring2 is
+	test_replace_substring2
 			-- Test feature `replace_substring'.
 		local
 			a_string, a_string2: UC_STRING
@@ -2726,7 +2727,7 @@ feature -- Test
 			assert_equal ("replaced6", "foototobar", a_string.out)
 		end
 
-	test_replace_substring3 is
+	test_replace_substring3
 			-- Test feature `replace_substring'.
 		local
 			a_string, a_string2: STRING
@@ -2756,7 +2757,7 @@ feature -- Test
 			assert_equal ("replaced6", "foototobar", a_string.out)
 		end
 
-	test_replace_substring_by_string1 is
+	test_replace_substring_by_string1
 			-- Test feature `replace_substring_by_string'.
 		local
 			a_string: UC_UTF8_STRING
@@ -2829,7 +2830,7 @@ feature -- Test
 			assert_equal ("replaced16", "foototobar", a_string.out)
 		end
 
-	test_replace_substring_by_string2 is
+	test_replace_substring_by_string2
 			-- Test feature `replace_substring_by_string'.
 		local
 			a_string: UC_STRING
@@ -2902,7 +2903,7 @@ feature -- Test
 			assert_equal ("replaced16", "foototobar", a_string.out)
 		end
 
-	test_insert_unicode_character1 is
+	test_insert_unicode_character1
 			-- Test feature `insert_unicode_character'.
 		local
 			a_string: UC_UTF8_STRING
@@ -2924,7 +2925,7 @@ feature -- Test
 			assert_equal ("inserted4", "z%%/462/", a_string.out)
 		end
 
-	test_insert_unicode_character2 is
+	test_insert_unicode_character2
 			-- Test feature `insert_unicode_character'.
 		local
 			a_string: UC_STRING
@@ -2946,7 +2947,7 @@ feature -- Test
 			assert_equal ("inserted4", "z%%/462/", a_string.out)
 		end
 
-	test_insert_code1 is
+	test_insert_code1
 			-- Test feature `insert_code'.
 		local
 			a_string: UC_UTF8_STRING
@@ -2968,7 +2969,7 @@ feature -- Test
 			assert_equal ("inserted4", "z%%/462/", a_string.out)
 		end
 
-	test_insert_code2 is
+	test_insert_code2
 			-- Test feature `insert_code'.
 		local
 			a_string: UC_STRING
@@ -2990,7 +2991,7 @@ feature -- Test
 			assert_equal ("inserted4", "z%%/462/", a_string.out)
 		end
 
-	test_insert_character1 is
+	test_insert_character1
 			-- Test feature `insert_character'.
 		local
 			a_string: UC_UTF8_STRING
@@ -3007,7 +3008,7 @@ feature -- Test
 			assert_equal ("inserted4", "zt", a_string.out)
 		end
 
-	test_insert_character2 is
+	test_insert_character2
 			-- Test feature `insert_character'.
 		local
 			a_string: UC_STRING
@@ -3024,7 +3025,7 @@ feature -- Test
 			assert_equal ("inserted4", "zt", a_string.out)
 		end
 
-	test_insert_string1 is
+	test_insert_string1
 			-- Test feature `insert_string'.
 		local
 			a_string: UC_UTF8_STRING
@@ -3055,7 +3056,7 @@ feature -- Test
 			assert_equal ("inserted6", "b%%/888/rb%%/888/r", a_string.out)
 		end
 
-	test_insert_string2 is
+	test_insert_string2
 			-- Test feature `insert_string'.
 		local
 			a_string: UC_STRING
@@ -3086,7 +3087,7 @@ feature -- Test
 			assert_equal ("inserted6", "b%%/888/rb%%/888/r", a_string.out)
 		end
 
-	test_remove_substring1 is
+	test_remove_substring1
 			-- Test feature `remove_substring'.
 		local
 			a_string: UC_UTF8_STRING
@@ -3108,7 +3109,7 @@ feature -- Test
 			assert_equal ("removed5", "", a_string.out)
 		end
 
-	test_remove_substring2 is
+	test_remove_substring2
 			-- Test feature `remove_substring'.
 		local
 			a_string: UC_STRING
@@ -3130,7 +3131,7 @@ feature -- Test
 			assert_equal ("removed5", "", a_string.out)
 		end
 
-	test_wipe_out1 is
+	test_wipe_out1
 			-- Test feature `wipe_out'.
 		local
 			a_string: UC_UTF8_STRING
@@ -3148,7 +3149,7 @@ feature -- Test
 			assert_equal ("wiped_out3", "", a_string.out)
 		end
 
-	test_wipe_out2 is
+	test_wipe_out2
 			-- Test feature `wipe_out'.
 		local
 			a_string: UC_STRING
@@ -3166,7 +3167,7 @@ feature -- Test
 			assert_equal ("wiped_out3", "", a_string.out)
 		end
 
-	test_wipe_out3 is
+	test_wipe_out3
 			-- Test feature `wipe_out'.
 		local
 			a_string: STRING
@@ -3187,7 +3188,7 @@ feature -- Test
 			assert_equal ("wiped_out3", "", a_string.out)
 		end
 
-	test_remove1 is
+	test_remove1
 			-- Test feature `remove'.
 		local
 			a_string: UC_UTF8_STRING
@@ -3202,7 +3203,7 @@ feature -- Test
 			assert_equal ("removed3", "ooa", a_string.out)
 		end
 
-	test_remove2 is
+	test_remove2
 			-- Test feature `remove'.
 		local
 			a_string: UC_STRING
@@ -3217,7 +3218,7 @@ feature -- Test
 			assert_equal ("removed3", "ooa", a_string.out)
 		end
 
-	test_remove3 is
+	test_remove3
 			-- Test feature `remove'.
 		local
 			a_string: STRING
@@ -3235,7 +3236,7 @@ feature -- Test
 			assert_equal ("removed3", "ooa", a_string.out)
 		end
 
-	test_to_lower1 is
+	test_to_lower1
 			-- Test feature `to_lower'.
 		local
 			a_string: UC_UTF8_STRING
@@ -3248,7 +3249,7 @@ feature -- Test
 			assert_equal ("to_lower2", "", a_string.out)
 		end
 
-	test_to_lower2 is
+	test_to_lower2
 			-- Test feature `to_lower'.
 		local
 			a_string: UC_STRING
@@ -3261,7 +3262,7 @@ feature -- Test
 			assert_equal ("to_lower2", "", a_string.out)
 		end
 
-	test_to_lower3 is
+	test_to_lower3
 			-- Test feature `to_lower'.
 		local
 			a_string: STRING
@@ -3274,7 +3275,7 @@ feature -- Test
 			assert_equal ("to_lower2", "", a_string.out)
 		end
 
-	test_to_upper1 is
+	test_to_upper1
 			-- Test feature `to_upper'.
 		local
 			a_string: UC_UTF8_STRING
@@ -3287,7 +3288,7 @@ feature -- Test
 			assert_equal ("to_upper2", "", a_string.out)
 		end
 
-	test_to_upper2 is
+	test_to_upper2
 			-- Test feature `to_upper'.
 		local
 			a_string: UC_STRING
@@ -3300,7 +3301,7 @@ feature -- Test
 			assert_equal ("to_upper2", "", a_string.out)
 		end
 
-	test_to_upper3 is
+	test_to_upper3
 			-- Test feature `to_upper'.
 		local
 			a_string: STRING
@@ -3313,7 +3314,7 @@ feature -- Test
 			assert_equal ("to_upper2", "", a_string.out)
 		end
 
-	test_as_lower1 is
+	test_as_lower1
 			-- Test feature `as_lower'.
 		local
 			a_string, a_string2: UC_UTF8_STRING
@@ -3326,7 +3327,7 @@ feature -- Test
 			assert_equal ("to_lower2", "", a_string.as_lower.out)
 		end
 
-	test_as_lower2 is
+	test_as_lower2
 			-- Test feature `as_lower'.
 		local
 			a_string, a_string2: UC_STRING
@@ -3339,7 +3340,7 @@ feature -- Test
 			assert_equal ("to_lower2", "", a_string.as_lower.out)
 		end
 
-	test_as_upper1 is
+	test_as_upper1
 			-- Test feature `as_upper'.
 		local
 			a_string, a_string2: UC_UTF8_STRING
@@ -3352,7 +3353,7 @@ feature -- Test
 			assert_equal ("to_upper2", "", a_string.as_upper.out)
 		end
 
-	test_as_upper2 is
+	test_as_upper2
 			-- Test feature `as_upper'.
 		local
 			a_string, a_string2: UC_STRING
@@ -3365,7 +3366,7 @@ feature -- Test
 			assert_equal ("to_upper2", "", a_string.as_upper.out)
 		end
 
-	test_infix_less1 is
+	test_infix_less1
 			-- Test feature `infix "<"'.
 		local
 			a_string, a_string2: UC_UTF8_STRING
@@ -3395,7 +3396,7 @@ feature -- Test
 			assert ("not_less7", not (a_string2 < a_string))
 		end
 
-	test_infix_less2 is
+	test_infix_less2
 			-- Test feature `infix "<"'.
 		local
 			a_string, a_string2: UC_STRING
@@ -3425,7 +3426,7 @@ feature -- Test
 			assert ("not_less7", not (a_string2 < a_string))
 		end
 
-	test_infix_less3 is
+	test_infix_less3
 			-- Test feature `infix "<"'.
 		local
 			a_string, a_string2: STRING
@@ -3460,7 +3461,7 @@ feature -- Test
 			assert ("not_less7", not (a_string2 < a_string))
 		end
 
-	test_infix_less_equal1 is
+	test_infix_less_equal1
 			-- Test feature `infix "<="'.
 		local
 			a_string, a_string2: UC_UTF8_STRING
@@ -3490,7 +3491,7 @@ feature -- Test
 			assert ("not_less4", not (a_string2 <= a_string))
 		end
 
-	test_infix_less_equal2 is
+	test_infix_less_equal2
 			-- Test feature `infix "<="'.
 		local
 			a_string, a_string2: UC_STRING
@@ -3520,7 +3521,7 @@ feature -- Test
 			assert ("not_less4", not (a_string2 <= a_string))
 		end
 
-	test_infix_less_equal3 is
+	test_infix_less_equal3
 			-- Test feature `infix "<="'.
 		local
 			a_string, a_string2: STRING
@@ -3555,7 +3556,7 @@ feature -- Test
 			assert ("not_less4", not (a_string2 <= a_string))
 		end
 
-	test_infix_greater1 is
+	test_infix_greater1
 			-- Test feature `infix ">"'.
 		local
 			a_string, a_string2: UC_UTF8_STRING
@@ -3585,7 +3586,7 @@ feature -- Test
 			assert ("not_greater7", not (a_string2 > a_string))
 		end
 
-	test_infix_greater2 is
+	test_infix_greater2
 			-- Test feature `infix ">"'.
 		local
 			a_string, a_string2: UC_STRING
@@ -3615,7 +3616,7 @@ feature -- Test
 			assert ("not_greater7", not (a_string2 > a_string))
 		end
 
-	test_infix_greater3 is
+	test_infix_greater3
 			-- Test feature `infix ">"'.
 		local
 			a_string, a_string2: STRING
@@ -3650,7 +3651,7 @@ feature -- Test
 			assert ("not_greater7", not (a_string2 > a_string))
 		end
 
-	test_infix_greater_equal1 is
+	test_infix_greater_equal1
 			-- Test feature `infix ">="'.
 		local
 			a_string, a_string2: UC_UTF8_STRING
@@ -3680,7 +3681,7 @@ feature -- Test
 			assert ("not_greater4", not (a_string2 >= a_string))
 		end
 
-	test_infix_greater_equal2 is
+	test_infix_greater_equal2
 			-- Test feature `infix ">="'.
 		local
 			a_string, a_string2: UC_STRING
@@ -3710,7 +3711,7 @@ feature -- Test
 			assert ("not_greater4", not (a_string2 >= a_string))
 		end
 
-	test_infix_greater_equal3 is
+	test_infix_greater_equal3
 			-- Test feature `infix ">="'.
 		local
 			a_string, a_string2: STRING
@@ -3745,7 +3746,7 @@ feature -- Test
 			assert ("not_greater4", not (a_string2 >= a_string))
 		end
 
-	test_min1 is
+	test_min1
 			-- Test feature `min'.
 		local
 			a_string, a_string2: UC_UTF8_STRING
@@ -3765,7 +3766,7 @@ feature -- Test
 			assert_same ("min7", a_string2, a_string2.min (a_string))
 		end
 
-	test_min2 is
+	test_min2
 			-- Test feature `min'.
 		local
 			a_string, a_string2: UC_STRING
@@ -3785,7 +3786,7 @@ feature -- Test
 			assert_same ("min7", a_string2, a_string2.min (a_string))
 		end
 
-	test_min3 is
+	test_min3
 			-- Test feature `min'.
 		local
 			a_string, a_string2: STRING
@@ -3805,7 +3806,7 @@ feature -- Test
 			assert_same ("min7", a_string2, a_string2.min (a_string))
 		end
 
-	test_max1 is
+	test_max1
 			-- Test feature `max'.
 		local
 			a_string, a_string2: UC_UTF8_STRING
@@ -3825,7 +3826,7 @@ feature -- Test
 			assert_same ("max7", a_string2, a_string2.max (a_string))
 		end
 
-	test_max2 is
+	test_max2
 			-- Test feature `max'.
 		local
 			a_string, a_string2: UC_STRING
@@ -3845,7 +3846,7 @@ feature -- Test
 			assert_same ("max7", a_string2, a_string2.max (a_string))
 		end
 
-	test_max3 is
+	test_max3
 			-- Test feature `max'.
 		local
 			a_string, a_string2: STRING
@@ -3865,7 +3866,7 @@ feature -- Test
 			assert_same ("max7", a_string2, a_string2.max (a_string))
 		end
 
-	test_three_way_comparison1 is
+	test_three_way_comparison1
 			-- Test feature `three_way_comparison'.
 		local
 			a_string, a_string2: UC_UTF8_STRING
@@ -3885,7 +3886,7 @@ feature -- Test
 			assert_integers_equal ("compare7", 0, a_string2.three_way_comparison (a_string))
 		end
 
-	test_three_way_comparison2 is
+	test_three_way_comparison2
 			-- Test feature `three_way_comparison'.
 		local
 			a_string, a_string2: UC_STRING
@@ -3905,7 +3906,7 @@ feature -- Test
 			assert_integers_equal ("compare7", 0, a_string2.three_way_comparison (a_string))
 		end
 
-	test_three_way_comparison3 is
+	test_three_way_comparison3
 			-- Test feature `three_way_comparison'.
 		local
 			a_string, a_string2: STRING
@@ -3925,7 +3926,7 @@ feature -- Test
 			assert_integers_equal ("compare7", 0, a_string2.three_way_comparison (a_string))
 		end
 
-	test_is_ascii1 is
+	test_is_ascii1
 			-- Test feature `is_ascii'.
 		local
 			a_string: UC_UTF8_STRING
@@ -3940,7 +3941,7 @@ feature -- Test
 			assert ("not_is_ascii1", not a_string.is_ascii)
 		end
 
-	test_is_ascii2 is
+	test_is_ascii2
 			-- Test feature `is_ascii'.
 		local
 			a_string: UC_STRING
@@ -3957,7 +3958,7 @@ feature -- Test
 
 feature {NONE} -- Implementation
 
-	too_big_character: INTEGER is
+	too_big_character: INTEGER
 			-- Code of a character that does not fit into a CHARACTER
 		once
 			Result := Platform.Maximum_character_code + 1
@@ -3965,7 +3966,7 @@ feature {NONE} -- Implementation
 			too_big: Result > Platform.Maximum_character_code
 		end
 
-	too_big_character2: INTEGER is
+	too_big_character2: INTEGER
 			-- Code of a character that does not fit into a CHARACTER
 		once
 			Result := Platform.Maximum_character_code + 2

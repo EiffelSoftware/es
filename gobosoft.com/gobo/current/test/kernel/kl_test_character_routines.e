@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test features of KL_CHARACTER_ROUTINES"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel Kernel Library"
 	copyright: "Copyright (c) 2006, Berend de Boer and others"
 	license: "MIT License"
@@ -25,14 +26,14 @@ create
 
 feature -- Test
 
-	test_is_digit is
+	test_is_digit
 			-- Test feature `is_digit'.
 		do
 			assert ("0 is a digit", CHARACTER_.is_digit ('0'))
 			assert ("a is not a digit", not CHARACTER_.is_digit ('a'))
 		end
 
-	test_is_hex_digit is
+	test_is_hex_digit
 			-- Test feature `is_hex_digit'.
 		do
 			assert ("0 is a hex digit", CHARACTER_.is_hex_digit ('0'))

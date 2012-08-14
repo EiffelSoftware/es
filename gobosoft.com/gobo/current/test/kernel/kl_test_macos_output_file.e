@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test features of class KL_MACOS_OUTPUT_FILE"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel Kernel Library"
 	copyright: "Copyright (c) 2001, Eric Bezault and others"
 	license: "MIT License"
@@ -25,7 +26,7 @@ create
 
 feature -- Test
 
-	test_make is
+	test_make
 			-- Test feature `make'.
 		local
 			a_file: KL_MACOS_OUTPUT_FILE
@@ -38,7 +39,7 @@ feature -- Test
 			assert ("is_closed", a_file.is_closed)
 		end
 
-	test_exists is
+	test_exists
 			-- Test feature `exists'.
 		local
 			a_file: KL_MACOS_OUTPUT_FILE
@@ -101,7 +102,7 @@ feature -- Test
 			end
 		end
 
-	test_is_readable is
+	test_is_readable
 			-- Test feature `is_readable'.
 		local
 			a_file: KL_MACOS_OUTPUT_FILE
@@ -164,7 +165,7 @@ feature -- Test
 			end
 		end
 
-	test_eol is
+	test_eol
 			-- Test feature `eol'.
 		local
 			a_file: KL_MACOS_OUTPUT_FILE
@@ -175,7 +176,7 @@ feature -- Test
 			assert_equal ("eol", "%R", a_file.eol)
 		end
 
-	test_count is
+	test_count
 			-- Test feature `count'.
 		local
 			a_file: KL_MACOS_OUTPUT_FILE
@@ -199,7 +200,7 @@ feature -- Test
 			assert_integers_equal ("count4", 48 + 2 * file_system.eol.count, a_file.count)
 		end
 
-	test_time_stamp is
+	test_time_stamp
 			-- Test feature `time_stamp'.
 		local
 			a_file: KL_MACOS_OUTPUT_FILE
@@ -232,7 +233,7 @@ feature -- Test
 			a_file.delete
 		end
 
-	test_open_write is
+	test_open_write
 			-- Test feature `open_write'.
 		local
 			a_file: KL_MACOS_OUTPUT_FILE
@@ -249,7 +250,7 @@ feature -- Test
 			file_system.delete_file (a_name)
 		end
 
-	test_open_append is
+	test_open_append
 			-- Test feature `open_append'.
 		local
 			a_file: KL_MACOS_OUTPUT_FILE
@@ -294,7 +295,7 @@ feature -- Test
 			a_file.delete
 		end
 
-	test_put_character is
+	test_put_character
 			-- Test feature `put_character'.
 		local
 			a_file: KL_MACOS_OUTPUT_FILE
@@ -323,7 +324,7 @@ feature -- Test
 			end
 		end
 
-	test_put_string is
+	test_put_string
 			-- Test feature `put_string'.
 		local
 			a_file: KL_MACOS_OUTPUT_FILE
@@ -345,7 +346,7 @@ feature -- Test
 			end
 		end
 
-	test_put_line is
+	test_put_line
 			-- Test feature `put_line'.
 		local
 			a_file: KL_MACOS_OUTPUT_FILE
@@ -369,7 +370,7 @@ feature -- Test
 			end
 		end
 
-	test_put_new_line is
+	test_put_new_line
 			-- Test feature `put_new_line'.
 		local
 			a_file: KL_MACOS_OUTPUT_FILE
@@ -395,7 +396,7 @@ feature -- Test
 			end
 		end
 
-	test_put_integer is
+	test_put_integer
 			-- Test feature `put_integer'.
 		local
 			a_file: KL_MACOS_OUTPUT_FILE
@@ -434,7 +435,7 @@ feature -- Test
 			end
 		end
 
-	test_put_boolean is
+	test_put_boolean
 			-- Test feature `put_boolean'.
 		local
 			a_file: KL_MACOS_OUTPUT_FILE
@@ -459,7 +460,7 @@ feature -- Test
 			end
 		end
 
-	test_flush is
+	test_flush
 			-- Test feature `flush'.
 		local
 			a_file: KL_MACOS_OUTPUT_FILE
@@ -484,7 +485,7 @@ feature -- Test
 			end
 		end
 
-	test_change_name1 is
+	test_change_name1
 			-- Test feature `change_name'.
 			-- Old file exists and new file does not exist.
 		local
@@ -513,7 +514,7 @@ feature -- Test
 			end
 		end
 
-	test_change_name2 is
+	test_change_name2
 			-- Test feature `change_name'.
 			-- Old file and new file do not exist.
 		local
@@ -531,7 +532,7 @@ feature -- Test
 			assert ("not_readable4", not file_system.is_file_readable (new_name))
 		end
 
-	test_change_name3 is
+	test_change_name3
 			-- Test feature `change_name'.
 			-- Old file does not exist and new file exists.
 		local
@@ -562,7 +563,7 @@ feature -- Test
 			end
 		end
 
-	test_change_name4 is
+	test_change_name4
 			-- Test feature `change_name'.
 			-- Old file and new file exist.
 		local
@@ -607,7 +608,7 @@ feature -- Test
 			end
 		end
 
-	test_delete_file is
+	test_delete_file
 			-- Test feature `delete_file'.
 		local
 			a_file: KL_MACOS_OUTPUT_FILE
@@ -629,7 +630,7 @@ feature -- Test
 			end
 		end
 
-	test_macos is
+	test_macos
 			-- Test that file is a MacOS file.
 		local
 			a_file: KL_MACOS_OUTPUT_FILE

@@ -1,11 +1,12 @@
-indexing
+note
 
 	description:
 
 		"Test features of class ET_AST_PRETTY_PRINTER"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel Tools Library"
-	copyright: "Copyright (c) 2008, Eric Bezault and others"
+	copyright: "Copyright (c) 2008-2009, Eric Bezault and others"
 	license: "MIT License"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -34,34 +35,38 @@ create
 
 feature -- Test
 
-	test_pretty_printer is
+	test_pretty_printer
 			-- Test pretty-printer with some Eiffel classes.
 		local
 			a_system: ET_SYSTEM
 			an_ast_factory: ET_DECORATED_AST_FACTORY
 			a_cluster: ET_XACE_CLUSTER
 			a_class: ET_CLASS
-			a_filename: STRING
 			a_class_name: ET_IDENTIFIER
+			a_master_class: ET_MASTER_CLASS
+			a_filename: STRING
 		do
-			create a_system.make
+			create a_system.make ("system_name")
 			create an_ast_factory.make
 			an_ast_factory.set_keep_all_breaks (True)
 			a_system.set_ast_factory (an_ast_factory)
 			a_system.set_ise_version (ise_latest)
 			a_system.activate_processors
-			create a_cluster.make ("dt_cluster_name", ".", a_system)
 			create a_class_name.make ("PRETTY_PRINTED1")
+			a_class := an_ast_factory.new_class (a_class_name)
+			a_system.register_class (a_class)
+			create a_cluster.make ("dt_cluster_name", ".", a_system)
 			a_filename := input_filename1
-			a_class := a_system.eiffel_class (a_class_name)
 			a_class.set_filename (a_filename)
 			a_class.set_group (a_cluster)
+			a_master_class := a_system.master_class (a_class_name)
+			a_master_class.add_first_local_class (a_class)
 			check_class (a_class)
 		end
 
 feature {NONE} -- Test
 
-	check_class (a_class: ET_CLASS) is
+	check_class (a_class: ET_CLASS)
 			-- Check that after parsing `a_class' and printing back its AST,
 			-- we get two files containing the same text.
 		require
@@ -94,7 +99,7 @@ feature {NONE} -- Test
 
 feature -- Execution
 
-	set_up is
+	set_up
 			-- Setup for a test.
 		local
 			a_testdir: STRING
@@ -107,7 +112,7 @@ feature -- Execution
 			file_system.cd (a_testdir)
 		end
 
-	tear_down is
+	tear_down
 			-- Tear down after a test.
 		do
 			if old_cwd /= Void then
@@ -122,10 +127,10 @@ feature -- Execution
 
 feature {NONE} -- Implementation
 
-	testdir: STRING is "Ttools"
+	testdir: STRING = "Ttools"
 			-- Name of temporary directory where to run the test
 
-	input_filename1: STRING is
+	input_filename1: STRING
 			-- Filename of Eiffel class to be pretty-printed
 		once
 			Result := file_system.nested_pathname ("${GOBO}", <<"test", "tools", "data", "pretty_printed1.txt">>)

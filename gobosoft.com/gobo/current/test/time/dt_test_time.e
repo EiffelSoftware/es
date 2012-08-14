@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test features of class DT_TIME"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel Time Library"
 	copyright: "Copyright (c) 2000, Eric Bezault and others"
 	license: "MIT License"
@@ -22,7 +23,7 @@ create
 
 feature -- Test
 
-	test_time1 is
+	test_time1
 			-- Test features of DT_TIME.
 		local
 			t1, t2: DT_TIME
@@ -45,7 +46,7 @@ feature -- Test
 			assert_integers_equal ("millisecond_count", 50604432, t1.millisecond_count)
 		end
 
-	test_time2 is
+	test_time2
 			-- Test features of DT_TIME.
 		local
 			t1, t2: DT_TIME
@@ -69,7 +70,7 @@ feature -- Test
 			assert_integers_equal ("millisecond_count", 63116476, t2.millisecond_count)
 		end
 
-	test_time3 is
+	test_time3
 			-- Test features of DT_TIME.
 		local
 			t1, t2: DT_TIME
@@ -84,7 +85,7 @@ feature -- Test
 			assert_equal ("add_duration", t2, t1)
 		end
 
-	test_time4 is
+	test_time4
 			-- Test features of DT_TIME.
 		local
 			t1, t2: DT_TIME
@@ -102,7 +103,7 @@ feature -- Test
 			assert_equal ("add_time_duration", t2, t1)
 		end
 
-	test_time5 is
+	test_time5
 			-- Test features of DT_TIME.
 		local
 			t1, t2: DT_TIME

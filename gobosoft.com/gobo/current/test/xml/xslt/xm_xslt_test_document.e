@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test the XSLT document() function"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel XSLT test suite"
 	copyright: "Copyright (c) 2004, Colin Adams and others"
 	license: "MIT License"
@@ -32,7 +33,7 @@ create
 
 feature -- Test
 
-	test_document_function is
+	test_document_function
 			-- Test of document() function.
 		local
 			l_transformer_factory: XM_XSLT_TRANSFORMER_FACTORY
@@ -64,7 +65,7 @@ feature -- Test
 			assert ("Correct result", STRING_.same_string (l_output.last_output, expected_result_string))
 		end
 
-	test_document_function_with_xpointer_element_scheme is
+	test_document_function_with_xpointer_element_scheme
 			-- Test of XPointer element() scheme.
 		local
 			l_transformer_factory: XM_XSLT_TRANSFORMER_FACTORY
@@ -96,7 +97,7 @@ feature -- Test
 			assert ("Correct result", STRING_.same_string (l_output.last_output, expected_result_string))
 		end
 
-	test_document_function_with_gexslt_xpath_scheme is
+	test_document_function_with_gexslt_xpath_scheme
 			-- Test of gexslt:xpath() scheme.
 		local
 			l_transformer_factory: XM_XSLT_TRANSFORMER_FACTORY
@@ -128,7 +129,7 @@ feature -- Test
 			assert ("Correct result", STRING_.same_string (l_output.last_output, expected_result_string))
 		end
 
-	test_document_function_with_node_sequence is
+	test_document_function_with_node_sequence
 			-- Test of gexslt:xpath() scheme returning multiple nodes.
 		local
 			l_transformer_factory: XM_XSLT_TRANSFORMER_FACTORY
@@ -160,7 +161,7 @@ feature -- Test
 			assert ("Correct result", l_output.last_output.count = 625)
 		end
 
-	test_document_function_with_xml_id_shorthand is
+	test_document_function_with_xml_id_shorthand
 			-- Test of shorthand pointer with xml:id.
 		local
 			l_transformer_factory: XM_XSLT_TRANSFORMER_FACTORY
@@ -192,12 +193,12 @@ feature -- Test
 			assert ("Correct result", STRING_.same_string (l_output.last_output, expected_result_string))
 		end
 
-	expected_result_string: STRING is "<?xml version=%"1.0%" encoding=%"UTF-8%"?><output>Number, the Language of Science</output>"
+	expected_result_string: STRING = "<?xml version=%"1.0%" encoding=%"UTF-8%"?><output>Number, the Language of Science</output>"
 			-- Expected result
 
 feature {NONE} -- Implementation
 
-	data_dirname: STRING is
+	data_dirname: STRING
 			-- Name of directory containing schematron data files
 		once
 			Result := file_system.nested_pathname ("${GOBO}",
@@ -208,15 +209,15 @@ feature {NONE} -- Implementation
 			data_dirname_not_empty: not Result.is_empty
 		end
 
-	dummy_uri: UT_URI is
+	dummy_uri: UT_URI
 			-- Dummy URI
 		once
 			create Result.make ("dummy:")
 		ensure
 			dummy_uri_is_absolute: Result /= Void and then Result.is_absolute
 		end
-		
-	document1_xsl_uri: UT_URI is
+
+	document1_xsl_uri: UT_URI
 			-- URI of file 'document1.xsl'
 		local
 			l_path: STRING
@@ -227,7 +228,7 @@ feature {NONE} -- Implementation
 			document1_xsl_uri_not_void: Result /= Void
 		end
 
-	document2_xsl_uri: UT_URI is
+	document2_xsl_uri: UT_URI
 			-- URI of file 'document2.xsl'
 		local
 			l_path: STRING
@@ -238,7 +239,7 @@ feature {NONE} -- Implementation
 			document2_xsl_uri_not_void: Result /= Void
 		end
 
-	document3_xsl_uri: UT_URI is
+	document3_xsl_uri: UT_URI
 			-- URI of file 'document3.xsl'
 		local
 			l_path: STRING
@@ -249,7 +250,7 @@ feature {NONE} -- Implementation
 			document3_xsl_uri_not_void: Result /= Void
 		end
 
-	document4_xsl_uri: UT_URI is
+	document4_xsl_uri: UT_URI
 			-- URI of file 'document4.xsl'
 		local
 			l_path: STRING
@@ -260,7 +261,7 @@ feature {NONE} -- Implementation
 			document4_xsl_uri_not_void: Result /= Void
 		end
 
-	document5_xsl_uri: UT_URI is
+	document5_xsl_uri: UT_URI
 			-- URI of file 'document5.xsl'
 		local
 			l_path: STRING

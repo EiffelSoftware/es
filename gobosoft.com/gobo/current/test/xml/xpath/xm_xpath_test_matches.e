@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test XPath matches() function."
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel XPath Library"
 	copyright: "Copyright (c) 2005, Colin Adams and others"
 	license: "MIT License"
@@ -20,7 +21,7 @@ inherit
 		end
 
 	XM_XPATH_TYPE
-	
+
 	XM_XPATH_ERROR_TYPES
 
 	XM_XPATH_SHARED_CONFORMANCE
@@ -31,7 +32,7 @@ inherit
 
 	KL_SHARED_FILE_SYSTEM
 		export {NONE} all end
-	
+
 	UT_SHARED_FILE_URI_ROUTINES
 		export {NONE} all end
 
@@ -44,7 +45,7 @@ create
 
 feature -- Test
 
-	test_matches_one is
+	test_matches_one
 			-- Test fn:matches("abracadabra", "bra") returns true.
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -64,7 +65,7 @@ feature -- Test
 			assert ("Matches", a_boolean_value.value)
 		end
 
-	test_matches_two is
+	test_matches_two
 			-- Test fn:matches("abracadabra", "^a.*a$") returns true.
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -84,7 +85,7 @@ feature -- Test
 			assert ("Matches", a_boolean_value.value)
 		end
 
-	test_matches_three is
+	test_matches_three
 			-- Test fn:matches("abracadabra", "^bra") returns false.
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -104,7 +105,7 @@ feature -- Test
 			assert ("Doesnt match", not a_boolean_value.value)
 		end
 
-	test_matches_four is
+	test_matches_four
 			-- Test fn:matches(., "Kaum.*krähen") returns false when applied to poem.
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -124,7 +125,7 @@ feature -- Test
 			assert ("Doesnt match", not a_boolean_value.value)
 		end
 
-	test_matches_five is
+	test_matches_five
 			-- Test fn:matches(., "Kaum.*krähen", "s") returns true when applied to poem.
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -144,7 +145,7 @@ feature -- Test
 			assert ("Matches", a_boolean_value.value)
 		end
 
-	test_matches_four_chinese is
+	test_matches_four_chinese
 			-- Test fn:matches returns false when applied to chinese.xml.
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -169,7 +170,7 @@ feature -- Test
 			assert ("Doesnt match", not a_boolean_value.value)
 		end
 
-	test_matches_five_chinese is
+	test_matches_five_chinese
 			-- Test fn:matches returns true when applied to chinese.xml.
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -194,7 +195,7 @@ feature -- Test
 			assert ("Matches", a_boolean_value.value)
 		end
 
-	test_matches_six is
+	test_matches_six
 			-- Test fn:matches(., "^Kaum.*gesehen,$", "m") returns true when applied to poem.
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -215,7 +216,7 @@ feature -- Test
 		end
 
 
-	test_matches_seven is
+	test_matches_seven
 			-- Test fn:matches(., "^Kaum.*gesehen,$") returns false when applied to poem.
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -234,8 +235,8 @@ feature -- Test
 			assert ("Boolean value", a_boolean_value /= Void)
 			assert ("Doesnt match", not a_boolean_value.value)
 		end
-	
-	test_matches_eight is
+
+	test_matches_eight
 			-- Test fn:matches(., "kiki", "i") returns true when applied to poem.
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -255,14 +256,14 @@ feature -- Test
 			assert ("Matches", a_boolean_value.value)
 		end
 
-	set_up is
+	set_up
 		do
 			conformance.set_basic_xslt_processor
 		end
 
 feature {NONE} -- Implementation
 
-	chinese_character_one: STRING is
+	chinese_character_one: STRING
 			-- First chinese character used in regular expression
 		once
 			Result := new_unicode_string_filled_code (21326, 1)
@@ -270,7 +271,7 @@ feature {NONE} -- Implementation
 			chinese_character_one_not_void: Result /= Void
 		end
 
-	chinese_character_two: STRING is
+	chinese_character_two: STRING
 			-- Second chinese character used in regular expression
 		once
 			Result := new_unicode_string_filled_code (21457, 1)
@@ -278,7 +279,7 @@ feature {NONE} -- Implementation
 			chinese_character_two_not_void: Result /= Void
 		end
 
-	data_dirname: STRING is
+	data_dirname: STRING
 			-- Name of directory containing data files
 		once
 			Result := file_system.nested_pathname ("${GOBO}",
@@ -288,8 +289,8 @@ feature {NONE} -- Implementation
 			data_dirname_not_void: Result /= Void
 			data_dirname_not_empty: not Result.is_empty
 		end
-		
-	books_xml_uri: UT_URI is
+
+	books_xml_uri: UT_URI
 			-- URI of file 'books.xml'
 		local
 			a_path: STRING
@@ -299,8 +300,8 @@ feature {NONE} -- Implementation
 		ensure
 			books_xml_uri_not_void: Result /= Void
 		end
-		
-	poem_xml_uri: UT_URI is
+
+	poem_xml_uri: UT_URI
 			-- URI of file 'poem.xml'
 		local
 			a_path: STRING
@@ -310,8 +311,8 @@ feature {NONE} -- Implementation
 		ensure
 			poem_xml_uri_not_void: Result /= Void
 		end
-		
-	chinese_xml_uri: UT_URI is
+
+	chinese_xml_uri: UT_URI
 			-- URI of file 'chinese.xml'
 		local
 			a_path: STRING
@@ -324,4 +325,4 @@ feature {NONE} -- Implementation
 
 end
 
-			
+

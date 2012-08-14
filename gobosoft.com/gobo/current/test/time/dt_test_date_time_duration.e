@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test features of class DT_DATE_TIME_DURATION"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel Time Library"
 	copyright: "Copyright (c) 2000, Eric Bezault and others"
 	license: "MIT License"
@@ -22,7 +23,7 @@ create
 
 feature -- Test
 
-	test_date_time_duration1 is
+	test_date_time_duration1
 			-- Test features of DT_DATE_TIME_DURATION.
 		local
 			d1, d2, d3: DT_DATE_TIME_DURATION
@@ -58,7 +59,7 @@ feature -- Test
 			assert_equal ("time_duration", td1, d1.time_duration)
 		end
 
-	test_date_time_duration2 is
+	test_date_time_duration2
 			-- Test features of DT_DATE_TIME_DURATION.
 		local
 			d1, d2, d3: DT_DATE_TIME_DURATION
@@ -91,7 +92,7 @@ feature -- Test
 			assert_equal ("time_duration", td1, d2.time_duration)
 		end
 
-	test_date_time_duration3 is
+	test_date_time_duration3
 			-- Test features of DT_DATE_TIME_DURATION.
 		local
 			d1, d2, d3: DT_DATE_TIME_DURATION
@@ -124,7 +125,7 @@ feature -- Test
 			assert_equal ("time_duration", td1, d2.time_duration)
 		end
 
-	test_date_time_duration4 is
+	test_date_time_duration4
 			-- Test features of DT_DATE_TIME_DURATION.
 		local
 			d1, d2, d3: DT_DATE_TIME_DURATION
@@ -157,7 +158,7 @@ feature -- Test
 			assert_equal ("time_duration", td1, d2.time_duration)
 		end
 
-	test_date_time_duration5 is
+	test_date_time_duration5
 			-- Test features of DT_DATE_TIME_DURATION.
 		local
 			d1, d2: DT_DATE_TIME_DURATION
@@ -180,7 +181,7 @@ feature -- Test
 			assert_equal ("time_to_date_time_duration", d2, d1.time_to_date_time_duration)
 		end
 
-	test_date_time_duration6 is
+	test_date_time_duration6
 			-- Test features of DT_DATE_TIME_DURATION.
 		local
 			d1, d2: DT_DATE_TIME_DURATION
@@ -203,7 +204,7 @@ feature -- Test
 			assert_equal ("time_to_date_time_duration", d2, d1.time_to_date_time_duration)
 		end
 
-	test_date_time_duration7 is
+	test_date_time_duration7
 			-- Test features of DT_DATE_TIME_DURATION.
 		local
 			d1, d2: DT_DATE_TIME_DURATION
@@ -228,7 +229,7 @@ feature -- Test
 			assert_equal ("time_to_date_time_duration", d2, d1.time_to_date_time_duration)
 		end
 
-	test_date_time_duration8 is
+	test_date_time_duration8
 			-- Test features of DT_DATE_TIME_DURATION.
 		local
 			d1, d2: DT_DATE_TIME_DURATION
@@ -250,7 +251,7 @@ feature -- Test
 			assert_equal ("time_to_date_time_duration", d2, d1.time_to_date_time_duration)
 		end
 
-	test_date_time_duration9 is
+	test_date_time_duration9
 			-- Test features of DT_DATE_TIME_DURATION.
 		local
 			d1, d2: DT_DATE_TIME_DURATION
@@ -274,7 +275,7 @@ feature -- Test
 			assert_equal ("time_to_date_time_duration", d2, d1.time_to_date_time_duration)
 		end
 
-	test_date_time_duration10 is
+	test_date_time_duration10
 			-- Test features of DT_DATE_TIME_DURATION.
 		local
 			d1, d2: DT_DATE_TIME_DURATION
@@ -298,7 +299,7 @@ feature -- Test
 			assert_equal ("time_to_date_time_duration", d2, d1.time_to_date_time_duration)
 		end
 
-	test_date_time_duration11 is
+	test_date_time_duration11
 			-- Test features of DT_DATE_TIME_DURATION.
 		local
 			d1, d2: DT_DATE_TIME_DURATION
@@ -376,7 +377,7 @@ feature -- Test
 			assert_equal ("set_time_duration", d2, d1)
 		end
 
-	test_date_time_duration12 is
+	test_date_time_duration12
 			-- Test features of DT_DATE_TIME_DURATION.
 		local
 			d1, d2: DT_DATE_TIME_DURATION
@@ -392,7 +393,7 @@ feature -- Test
 			assert ("infix_less4", d2 < d1)
 		end
 
-	test_is_time_canonical is
+	test_is_time_canonical
 			-- Test feature 'is_time_canonical'.
 		local
 			d1: DT_DATE_TIME_DURATION

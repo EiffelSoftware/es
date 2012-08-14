@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test features of class LX_DFA_WILDCARD"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel Lexical Library"
 	copyright: "Copyright (c) 2001, Eric Bezault and others"
 	license: "MIT License"
@@ -22,7 +23,7 @@ create
 
 feature -- Test
 
-	test_make is
+	test_make
 			-- Test feature `make'.
 		local
 			a_wildcard: LX_DFA_WILDCARD
@@ -32,7 +33,7 @@ feature -- Test
 			assert ("not_compiled", not a_wildcard.is_compiled)
 		end
 
-	test_compile is
+	test_compile
 			-- Test feature `compile'.
 		local
 			a_wildcard: LX_DFA_WILDCARD
@@ -41,7 +42,7 @@ feature -- Test
 			assert ("compiled1", a_wildcard.is_compiled)
 		end
 
-	test_recognizes is
+	test_recognizes
 			-- Test feature `recognizes'.
 		local
 			a_wildcard: LX_DFA_WILDCARD
@@ -60,7 +61,7 @@ feature -- Test
 			assert ("not_recognizes5", not a_wildcard.recognizes ("library/foo/kl_bar.o"))
 		end
 
-	test_matches is
+	test_matches
 			-- Test feature `matches'.
 		local
 			a_wildcard: LX_DFA_WILDCARD
@@ -83,7 +84,7 @@ feature -- Test
 			assert ("not_matches4", not a_wildcard.matches ("library/foo/kl_bar.o"))
 		end
 
-	test_matched_position is
+	test_matched_position
 			-- Test feature `matched_position'.
 		local
 			a_wildcard: LX_DFA_WILDCARD

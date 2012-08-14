@@ -124,6 +124,8 @@
 		<geant file="build.eant" target="clean" dir="semantics" if="${do_clean}=true"/>
 		<geant file="build.eant" target="${target}" dir="validity"/>
 		<geant file="build.eant" target="clean" dir="validity" if="${do_clean}=true"/>
+		<geant file="build.eant" target="${target}" dir="ecf"/>
+		<geant file="build.eant" target="clean" dir="ecf" if="${do_clean}=true"/>
 	</target>
 
 </project>

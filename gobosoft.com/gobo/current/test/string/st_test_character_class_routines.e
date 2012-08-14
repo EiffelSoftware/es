@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test features of ST_UNICODE_CHARACTER_CLASS_ROUTINES"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel String Library"
 	copyright: "Copyright (c) 2005, Eric Bezault and others"
 	license: "MIT License"
@@ -23,7 +24,7 @@ create
 
 feature -- Test
 
-	test_categories is
+	test_categories
 			-- Test `is_upper_case', etc.
 		do
 			assert ("A is upper case", is_upper_case (65))
@@ -76,7 +77,7 @@ feature -- Test
 			assert ("Private use character", is_private_use (57344))
 		end
 
-	test_decimal_digit_values is
+	test_decimal_digit_values
 			-- Test `decimal_digit_value'.
 		do
 			assert ("A is not decimal", not is_decimal_digit (65))

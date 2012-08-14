@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test URI parsing."
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel Utility Library"
 	copyright:"Copyright (c) 2004, Berend de Boer and others"
 	license: "MIT License"
@@ -22,7 +23,7 @@ create
 
 feature -- Tests
 
-	test_parsing is
+	test_parsing
 			-- Test URI parsing.
 		local
 			uri: UT_URI
@@ -64,7 +65,7 @@ feature -- Tests
 
 		end
 
-	test_query is
+	test_query
 			-- Test query parsing.
 		local
 			uri: UT_URI
@@ -91,7 +92,7 @@ feature -- Tests
 			check_uri (uri, Void, Void, "abc", "", Void)
 		end
 
-	test_fragment is
+	test_fragment
 			-- Test fragment.
 		local
 			uri: UT_URI
@@ -115,7 +116,7 @@ feature -- Tests
 			check_uri (uri, Void, Void, "abc", Void, "")
 		end
 
-	test_broken_parsing is
+	test_broken_parsing
 			-- Test parsing of broken URI.
 		local
 			uri: UT_URI
@@ -135,7 +136,7 @@ feature -- Tests
 			assert_equal ("scheme_specific", "foo", uri.scheme_specific_part)
 		end
 
-	test_rootless_path is
+	test_rootless_path
 			-- Test rootless path (opaque URI).
 		local
 			uri: UT_URI
@@ -152,7 +153,7 @@ feature -- Tests
 
 feature {NONE} -- Implementation
 
-	check_uri (uri: UT_URI; scheme, authority, path, query, fragment: STRING) is
+	check_uri (uri: UT_URI; scheme, authority, path, query, fragment: STRING)
 			-- Check a parsed URI.
 		require
 			uri_not_void: uri /= Void
@@ -179,7 +180,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	check_invalid_scheme (a_uri: UT_URI) is
+	check_invalid_scheme (a_uri: UT_URI)
 			-- Check invalid scheme.
 		require
 			a_uri_not_void: a_uri /= Void

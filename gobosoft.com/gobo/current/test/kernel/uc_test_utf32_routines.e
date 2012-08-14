@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test features of class UC_UTF32_ROUTINES"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel Kernel Library"
 	copyright: "Copyright (c) 2005, Colin Adams and others"
 	license: "MIT License"
@@ -21,9 +22,9 @@ create
 
 	make_default
 
-feature
+feature -- Tests
 
-	test_valid is
+	test_valid
 			-- Test feature `valid_utf32' when valid.
 		do
 			assert ("empty", utf32.valid_utf32 (""))
@@ -32,7 +33,7 @@ feature
 			assert ("valid_no_byte_order_marker", utf32.valid_utf32 ("%/0/%/0/%/0/M"))
 		end
 
-	test_invalid is
+	test_invalid
 			-- Test feature `valid_utf32' when invalid.
 		do
 			assert ("only_3_bytes_be", not utf32.valid_utf32 (utf32.bom_be + "%/0/%/0/M"))

@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test parser stop on error filter"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel XML Tests"
 	copyright: "Copyright (c) 2004, Eric Bezault and others"
 	license: "MIT License"
@@ -22,7 +23,7 @@ create
 
 feature -- Test
 
-	test_stop is
+	test_stop
 			-- Test stop filter stops the parser.
 		local
 			error_filter: XM_STOP_ON_ERROR_FILTER

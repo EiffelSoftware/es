@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test XPath index-of() function."
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel XPath Library"
 	copyright: "Copyright (c) 2005, Colin Adams and others"
 	license: "MIT License"
@@ -20,7 +21,7 @@ inherit
 		end
 
 	XM_XPATH_TYPE
-	
+
 	XM_XPATH_ERROR_TYPES
 
 	XM_XPATH_SHARED_CONFORMANCE
@@ -31,7 +32,7 @@ inherit
 
 	KL_SHARED_FILE_SYSTEM
 		export {NONE} all end
-	
+
 	UT_SHARED_FILE_URI_ROUTINES
 		export {NONE} all end
 
@@ -41,7 +42,7 @@ create
 
 feature -- Test
 
-	test_index_of_one is
+	test_index_of_one
 			-- Test fn:index-of ((10, 20, 30, 40), 35) returns ().
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -57,7 +58,7 @@ feature -- Test
 			assert ("Empty sequence", evaluated_items /= Void and then evaluated_items.count = 0)
 		end
 
-	test_index_of_two is
+	test_index_of_two
 			-- Test fn:index-of ((10, 20, 30, 30, 20, 10), 20) returns (2, 5).
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -78,7 +79,7 @@ feature -- Test
 			assert ("Second position is 5", an_integer_value /= Void and then an_integer_value.value = 5)
 		end
 
-	test_index_of_three is
+	test_index_of_three
 			-- Test fn:index-of (("a", "sport", "and", "a", "pastime"), "a") returns (1, 4).
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -99,7 +100,7 @@ feature -- Test
 			assert ("Second position is 4", an_integer_value /= Void and then an_integer_value.value = 4)
 		end
 
-	test_index_of_error is
+	test_index_of_error
 			-- Test fn:index-of (("a", 7, "and", "a", "pastime"), "a") returns an error.
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -113,7 +114,7 @@ feature -- Test
 			assert ("Error FOTY0012", STRING_.same_string (an_evaluator.error_value.code, "FOTY0012"))
 		end
 
-	test_index_of_error2 is
+	test_index_of_error2
 			-- Test fn:index-of with a node is error.
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -127,14 +128,14 @@ feature -- Test
 			assert ("Error XPTY0019", STRING_.same_string (an_evaluator.error_value.code, "XPTY0019"))
 		end
 
-	set_up is
+	set_up
 		do
 			conformance.set_basic_xslt_processor
 		end
 
 feature {NONE} -- Implementation
 
-	data_dirname: STRING is
+	data_dirname: STRING
 			-- Name of directory containing data files
 		once
 			Result := file_system.nested_pathname ("${GOBO}",
@@ -144,8 +145,8 @@ feature {NONE} -- Implementation
 			data_dirname_not_void: Result /= Void
 			data_dirname_not_empty: not Result.is_empty
 		end
-		
-	languages_xml_uri: UT_URI is
+
+	languages_xml_uri: UT_URI
 			-- URI of file 'languages.xml'
 		local
 			a_path: STRING
@@ -158,4 +159,4 @@ feature {NONE} -- Implementation
 
 end
 
-			
+

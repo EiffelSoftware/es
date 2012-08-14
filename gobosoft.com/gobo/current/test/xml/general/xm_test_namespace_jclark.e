@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test namespace from http://www.jclark.com/xml/xmlns.htm (normalised)"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel XML Library"
 	copyright: "Copyright (c) 2002, Eric Bezault and others"
 	license: "MIT License"
@@ -25,7 +26,7 @@ create
 
 feature -- Test
 
-	test_cars is
+	test_cars
 			-- Test namespace "cars".
 		do
 			assert_namespace ("cars",
@@ -33,7 +34,7 @@ feature -- Test
 				"<{http://www.cars.com/xml}part></{http://www.cars.com/xml}part>")
 		end
 
-	test_html is
+	test_html
 			-- Test namespace "HTML".
 		do
 			assert_namespace ("test",
@@ -41,7 +42,7 @@ feature -- Test
 				"<NAME {http://www.w3.org/TR/REC-html40}CLASS=%"largeSansSerif%">Layman, A</NAME>")
 		end
 
-	test_reservation is
+	test_reservation
 			-- Test namespace "HTML".
 		do
 			assert_namespace ("reservation",
@@ -58,7 +59,7 @@ feature -- Test
 			"<DEPARTURE>1997-05-24T07:55:00+1</DEPARTURE></RESERVATION>")
 		end
 
-	test_book is
+	test_book
 			-- Test namespace "urn:com:books-r-us".
 		do
 			assert_namespace ("book",
@@ -79,7 +80,7 @@ feature -- Test
 				"</{urn:com:books-r-us}section>")
 		end
 
-	test_book_empty is
+	test_book_empty
 			-- Test namespace "urn:com:books-r-us".
 		do
 			assert_namespace ("book_empty",
@@ -102,7 +103,7 @@ feature -- Test
 
 feature {NONE} -- Implementation
 
-	assert_namespace (a_name: STRING; a_xml: STRING; a_parsed: STRING) is
+	assert_namespace (a_name: STRING; a_xml: STRING; a_parsed: STRING)
 			-- Test resolved namespaces and pretty printed as expected.
 		require
 			a_name_not_void: a_name /= Void

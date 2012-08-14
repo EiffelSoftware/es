@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test xpointer parser"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel XPointer Library"
 	copyright: "Copyright (c) 2005, Colin Adams and others"
 	license: "MIT License"
@@ -24,7 +25,7 @@ create
 
 feature -- Test
 
-	test_two_schemes is
+	test_two_schemes
 			-- Test parsing two schemes.
 		local
 			a_parser: XM_XPOINTER_PARSER
@@ -40,7 +41,7 @@ feature -- Test
 			assert_strings_equal ("Second scheme data", "boy-blue/3", a_parser.scheme_data.item (2))
 		end
 
-	test_two_schemes_with_white_space is
+	test_two_schemes_with_white_space
 			-- Test parsing two schemes separated by white space.
 		local
 			a_parser: XM_XPOINTER_PARSER
@@ -50,7 +51,7 @@ feature -- Test
 			assert ("Parse successful", not a_parser.is_error)
 		end
 
-	test_escaped_data is
+	test_escaped_data
 			-- Test parsing with escaped data.
 		local
 			a_parser: XM_XPOINTER_PARSER
@@ -63,7 +64,7 @@ feature -- Test
 			assert_strings_equal ("Unescaped scheme data", "string-range(//P,%"my (favorite smiley :-)%")", a_parser.scheme_data.item (1))
 		end
 
-	test_shorthand is
+	test_shorthand
 			-- Test parsing shorthand pointer
 		local
 			a_parser: XM_XPOINTER_PARSER
@@ -75,7 +76,7 @@ feature -- Test
 			assert ("Shorthand is fred", a_parser.shorthand.is_equal ("fred"))
 		end
 
-	test_invalid_shorthand is
+	test_invalid_shorthand
 			-- Test parsing shorthand pointer
 		local
 			a_parser: XM_XPOINTER_PARSER

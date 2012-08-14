@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test features of class DS_SHELL_SORTER"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel Structure Library"
 	copyright: "Copyright (c) 2001, Eric Bezault and others"
 	license: "MIT License"
@@ -22,7 +23,7 @@ create
 
 feature -- Test
 
-	test_make is
+	test_make
 			-- Test feature `make'.
 		local
 			a_comparator: KL_COMPARABLE_COMPARATOR [INTEGER]
@@ -35,7 +36,7 @@ feature -- Test
 			assert_same ("comparator_set", a_comparator, a_sorter.comparator)
 		end
 
-	test_sorted is
+	test_sorted
 			-- Test feature `sorted'.
 		local
 			a_comparator: KL_COMPARABLE_COMPARATOR [INTEGER]
@@ -54,7 +55,7 @@ feature -- Test
 			assert ("not_sorted2", not a_sorter.sorted (a_list))
 		end
 
-	test_reverse_sorted is
+	test_reverse_sorted
 			-- Test feature `reverse_sorted'.
 		local
 			a_comparator: KL_COMPARABLE_COMPARATOR [INTEGER]
@@ -73,7 +74,7 @@ feature -- Test
 			assert ("reverse_sorted2", a_sorter.reverse_sorted (a_list))
 		end
 
-	test_sort is
+	test_sort
 			-- Test feature `sort'.
 		local
 			a_comparator: KL_COMPARABLE_COMPARATOR [INTEGER]
@@ -107,7 +108,7 @@ feature -- Test
 			assert_iarrays_same ("items3", <<INTEGER_.to_integer (1), 2, 3, 4>>, a_list.to_array)
 		end
 
-	test_reverse_sort is
+	test_reverse_sort
 			-- Test feature `reverse_sort'.
 		local
 			a_comparator: KL_COMPARABLE_COMPARATOR [INTEGER]

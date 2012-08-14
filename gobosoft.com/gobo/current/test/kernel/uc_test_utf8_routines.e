@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test features of class UC_UTF8_ROUTINES"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel Kernel Library"
 	copyright: "Copyright (c) 2005, Colin Adams and others"
 	license: "MIT License"
@@ -21,9 +22,9 @@ create
 
 	make_default
 
-feature
+feature -- Tests
 
-	test_valid is
+	test_valid
 			-- Test feature `valid_utf8' when valid.
 		do
 			assert ("empty", utf8.valid_utf8 (""))
@@ -53,7 +54,7 @@ feature
 			assert ("0xf4_0x8f_0xbf_0xbf", utf8.valid_utf8 ("%/244/%/143/%/191/%/191/"))
 		end
 
-	test_invalid is
+	test_invalid
 			-- Test feature `valid_utf8' when invalid.
 		do
 			assert ("0x80", not utf8.valid_utf8 ("%/128/"))

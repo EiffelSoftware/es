@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test features of class KL_WINDOWS_FILE_SYSTEM"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel Kernel Library"
 	copyright: "Copyright (c) 2001, Eric Bezault and others"
 	license: "MIT License"
@@ -23,7 +24,7 @@ create
 
 feature -- Creation
 
-	test_make is
+	test_make
 			-- Test feature `make'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -35,7 +36,7 @@ feature -- Creation
 
 feature -- File handling
 
-	test_is_file_readable is
+	test_is_file_readable
 			-- Test feature `is_file_readable'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -89,7 +90,7 @@ feature -- File handling
 			end
 		end
 
-	test_rename_file1 is
+	test_rename_file1
 			-- Test feature `rename_file'.
 			-- Old file exists and new file does not exist.
 		local
@@ -125,7 +126,7 @@ feature -- File handling
 			end
 		end
 
-	test_rename_file2 is
+	test_rename_file2
 			-- Test feature `rename_file'.
 			-- Old file and new file do not exist.
 		local
@@ -145,7 +146,7 @@ feature -- File handling
 			assert ("not_readable4", not a_file_system.is_file_readable (new_name))
 		end
 
-	test_rename_file3 is
+	test_rename_file3
 			-- Test feature `rename_file'.
 			-- Old file does not exist and new file exists.
 		local
@@ -181,7 +182,7 @@ feature -- File handling
 			end
 		end
 
-	test_rename_file4 is
+	test_rename_file4
 			-- Test feature `rename_file'.
 			-- Old file and new file exist.
 		local
@@ -231,7 +232,7 @@ feature -- File handling
 			end
 		end
 
-	test_rename_file5 is
+	test_rename_file5
 			-- Test feature `rename_file'.
 			-- Old file exists and new file does not exist
 			-- but has an empty name.
@@ -269,7 +270,7 @@ feature -- File handling
 			end
 		end
 
-	test_rename_file6 is
+	test_rename_file6
 			-- Test feature `rename_file'.
 			-- Old file exists and new file does not exist
 			-- but has a non-existing dirname in its pathname.
@@ -308,7 +309,7 @@ feature -- File handling
 			end
 		end
 
-	test_rename_file7 is
+	test_rename_file7
 			-- Test feature `rename_file'.
 			-- Old file exists and has the same pathname as new file.
 		local
@@ -346,7 +347,7 @@ feature -- File handling
 			end
 		end
 
-	test_rename_file8 is
+	test_rename_file8
 			-- Test feature `rename_file'.
 			-- Old file exists and is the same file as new file
 			-- although they don't have the same pathname.
@@ -385,7 +386,7 @@ feature -- File handling
 			end
 		end
 
-	test_rename_file9 is
+	test_rename_file9
 			-- Test feature `rename_file'.
 			-- Old file does not exist and has an empty name,
 			-- and new file exists.
@@ -422,7 +423,7 @@ feature -- File handling
 			end
 		end
 
-	test_copy_file1 is
+	test_copy_file1
 			-- Test feature `copy_file'.
 			-- Old file exists and new file does not exist.
 		local
@@ -461,7 +462,7 @@ feature -- File handling
 			end
 		end
 
-	test_copy_file2 is
+	test_copy_file2
 			-- Test feature `copy_file'.
 			-- Old file and new file do not exist.
 		local
@@ -481,7 +482,7 @@ feature -- File handling
 			assert ("not_readable4", not a_file_system.is_file_readable (new_name))
 		end
 
-	test_copy_file3 is
+	test_copy_file3
 			-- Test feature `copy_file'.
 			-- Old file does not exist and new file exists.
 		local
@@ -517,7 +518,7 @@ feature -- File handling
 			end
 		end
 
-	test_copy_file4 is
+	test_copy_file4
 			-- Test feature `copy_file'.
 			-- Old file and new file exist.
 		local
@@ -570,7 +571,7 @@ feature -- File handling
 			end
 		end
 
-	test_copy_file5 is
+	test_copy_file5
 			-- Test feature `copy_file'.
 			-- Old file exists and new file does not exist
 			-- but has an empty name.
@@ -608,7 +609,7 @@ feature -- File handling
 			end
 		end
 
-	test_copy_file6 is
+	test_copy_file6
 			-- Test feature `copy_file'.
 			-- Old file exists and new file does not exist
 			-- but has a non-existing dirname in its pathname.
@@ -647,7 +648,7 @@ feature -- File handling
 			end
 		end
 
-	test_copy_file7 is
+	test_copy_file7
 			-- Test feature `copy_file'.
 			-- Old file exists and has the same pathname as new file.
 		local
@@ -685,7 +686,7 @@ feature -- File handling
 			end
 		end
 
-	test_copy_file8 is
+	test_copy_file8
 			-- Test feature `copy_file'.
 			-- Old file exists and is the same file as new file
 			-- although they don't have the same pathname.
@@ -724,7 +725,7 @@ feature -- File handling
 			end
 		end
 
-	test_copy_file9 is
+	test_copy_file9
 			-- Test feature `copy_file'.
 			-- Old file does not exist and has an empty name,
 			-- and new file exists.
@@ -761,7 +762,7 @@ feature -- File handling
 			end
 		end
 
-	test_delete_file is
+	test_delete_file
 			-- Test feature `delete_file'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -796,7 +797,7 @@ feature -- File handling
 			assert ("not_readable2", not a_file_system.is_file_readable (a_name))
 		end
 
-	test_new_input_file is
+	test_new_input_file
 			-- Test feature `new_input_file'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -814,7 +815,7 @@ feature -- File handling
 			assert ("is_windows", a_windows_file /= Void)
 		end
 
-	test_new_output_file is
+	test_new_output_file
 			-- Test feature `new_output_file'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -832,7 +833,7 @@ feature -- File handling
 			assert ("is_windows", a_windows_file /= Void)
 		end
 
-	test_eol is
+	test_eol
 			-- Test feature `eol'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -843,7 +844,7 @@ feature -- File handling
 
 feature -- Directory handling
 
-	test_is_directory_readable is
+	test_is_directory_readable
 			-- Test feature `is_directory_readable'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -888,7 +889,7 @@ feature -- Directory handling
 			assert ("not_readable6", not a_file_system.is_directory_readable (a_name))
 		end
 
-	test_create_directory1 is
+	test_create_directory1
 			-- Test feature `create_directory'.
 			-- Create non-existing directory.
 		local
@@ -906,7 +907,7 @@ feature -- Directory handling
 			assert ("not_readable2", not a_file_system.is_directory_readable (a_name))
 		end
 
-	test_create_directory2 is
+	test_create_directory2
 			-- Test feature `create_directory'.
 			-- Create existing directory.
 		local
@@ -946,7 +947,7 @@ feature -- Directory handling
 			end
 		end
 
-	test_create_directory3 is
+	test_create_directory3
 			-- Test feature `create_directory'.
 			-- Create nested directory.
 		local
@@ -983,7 +984,7 @@ feature -- Directory handling
 			assert ("not_readable8", not a_file_system.is_directory_readable (a_name))
 		end
 
-	test_create_directory4 is
+	test_create_directory4
 			-- Test feature `create_directory'.
 			-- Create non-existing directory with an empty pathname.
 		local
@@ -999,7 +1000,7 @@ feature -- Directory handling
 			assert ("not_readable2", not a_file_system.is_directory_readable (a_name))
 		end
 
-	test_delete_directory1 is
+	test_delete_directory1
 			-- Test feature `delete_directory'.
 			-- Empty directory.
 		local
@@ -1016,7 +1017,7 @@ feature -- Directory handling
 			assert ("not_readable2", not a_file_system.is_directory_readable (a_name))
 		end
 
-	test_delete_directory2 is
+	test_delete_directory2
 			-- Test feature `delete_directory'.
 			-- Non-existing directory.
 		local
@@ -1031,7 +1032,7 @@ feature -- Directory handling
 			assert ("not_readable2", not a_file_system.is_directory_readable (a_name))
 		end
 
-	test_delete_directory3 is
+	test_delete_directory3
 			-- Test feature `delete_directory'.
 			-- Non-empty directory.
 		local
@@ -1071,7 +1072,7 @@ feature -- Directory handling
 			end
 		end
 
-	test_delete_directory4 is
+	test_delete_directory4
 			-- Test feature `delete_directory'.
 			-- Nested directory.
 		local
@@ -1100,7 +1101,7 @@ feature -- Directory handling
 			assert ("not_readable6", not a_file_system.is_directory_readable (a_name))
 		end
 
-	test_delete_directory5 is
+	test_delete_directory5
 			-- Test feature `delete_directory'.
 			-- Non-existing directory with empty pathname.
 		local
@@ -1117,7 +1118,7 @@ feature -- Directory handling
 
 feature -- Working directory
 
-	test_current_working_directory is
+	test_current_working_directory
 			-- Test feature `current_working_directory'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1154,7 +1155,7 @@ feature -- Working directory
 			end
 		end
 
-	test_cwd is
+	test_cwd
 			-- Test feature `cwd'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1191,7 +1192,7 @@ feature -- Working directory
 			end
 		end
 
-	test_set_current_working_directory1 is
+	test_set_current_working_directory1
 			-- Test feature `set_current_working_directory'.
 			-- Existing directory.
 		local
@@ -1253,7 +1254,7 @@ feature -- Working directory
 			end
 		end
 
-	test_cd1 is
+	test_cd1
 			-- Test feature `cd'.
 			-- Existing directory.
 		local
@@ -1315,7 +1316,7 @@ feature -- Working directory
 			end
 		end
 
-	test_set_current_working_directory2 is
+	test_set_current_working_directory2
 			-- Test feature `set_current_working_directory'.
 			-- Non-existing directory.
 		local
@@ -1346,7 +1347,7 @@ feature -- Working directory
 			end
 		end
 
-	test_cd2 is
+	test_cd2
 			-- Test feature `cd'.
 			-- Non-existing directory.
 		local
@@ -1379,7 +1380,7 @@ feature -- Working directory
 
 feature -- Pathname handling
 
-	test_is_absolute_pathname is
+	test_is_absolute_pathname
 			-- Test feature `is_absolute_pathname'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1399,7 +1400,7 @@ feature -- Pathname handling
 			assert ("not_absolute5", not a_file_system.is_absolute_pathname ("c:/foo"))
 		end
 
-	test_is_relative_pathname is
+	test_is_relative_pathname
 			-- Test feature `is_relative_pathname'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1421,7 +1422,7 @@ feature -- Pathname handling
 			assert ("relative6", a_file_system.is_relative_pathname ("c:/foo"))
 		end
 
-	test_is_root_directory is
+	test_is_root_directory
 			-- Test feature `is_root_directory'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1445,7 +1446,7 @@ feature -- Pathname handling
 			assert ("root8", a_file_system.is_root_directory ("\\foo\bar/gobo"))
 		end
 
-	test_basename is
+	test_basename
 			-- Test feature `basename'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1470,7 +1471,7 @@ feature -- Pathname handling
 			assert_equal ("basename16", "foo/bar", a_file_system.basename ("foo/bar"))
 		end
 
-	test_dirname is
+	test_dirname
 			-- Test feature `dirname'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1498,7 +1499,7 @@ feature -- Pathname handling
 			assert_equal ("dirname17", "\\foo\bar/gobo", a_file_system.dirname ("\\foo\bar/gobo"))
 		end
 
-	test_pathname is
+	test_pathname
 			-- Test feature `pathname'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1513,7 +1514,7 @@ feature -- Pathname handling
 			assert_equal ("pathname7", "", a_file_system.pathname ("", ""))
 		end
 
-	test_canonical_pathname is
+	test_canonical_pathname
 			-- Test feature `canonical_pathname'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1533,7 +1534,7 @@ feature -- Pathname handling
 			assert_equal ("pathname12", "..", a_file_system.canonical_pathname (".\.."))
 		end
 
-	test_relative_current_directory is
+	test_relative_current_directory
 			-- Test feature `relative_current_directory'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1542,7 +1543,7 @@ feature -- Pathname handling
 			assert_equal ("current", ".", a_file_system.relative_current_directory)
 		end
 
-	test_relative_parent_directory is
+	test_relative_parent_directory
 			-- Test feature `relative_parent_directory'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1551,7 +1552,7 @@ feature -- Pathname handling
 			assert_equal ("parent", "..", a_file_system.relative_parent_directory)
 		end
 
-	test_root_directory is
+	test_root_directory
 			-- Test feature `root_directory'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1560,7 +1561,7 @@ feature -- Pathname handling
 			assert_equal ("root", "\", a_file_system.root_directory)
 		end
 
-	test_absolute_pathname is
+	test_absolute_pathname
 			-- Test feature `absolute_pathname'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1577,7 +1578,7 @@ feature -- Pathname handling
 			end
 		end
 
-	test_absolute_parent_directory1 is
+	test_absolute_parent_directory1
 			-- Test feature `absolute_parent_directory'.
 			-- Absolute directory name.
 		local
@@ -1621,7 +1622,7 @@ feature -- Pathname handling
 			end
 		end
 
-	test_absolute_parent_directory2 is
+	test_absolute_parent_directory2
 			-- Test feature `absolute_parent_directory'.
 			-- Relative directory name.
 		local
@@ -1651,7 +1652,7 @@ feature -- Pathname handling
 			end
 		end
 
-	test_absolute_parent_directory3 is
+	test_absolute_parent_directory3
 			-- Test feature `parent_absolute_directory'.
 			-- Non-existing directory name.
 		local
@@ -1677,7 +1678,7 @@ feature -- Pathname handling
 			end
 		end
 
-	test_absolute_parent_directory4 is
+	test_absolute_parent_directory4
 			-- Test feature `parent_absolute_directory'.
 			-- UNC directory name.
 		local
@@ -1702,7 +1703,7 @@ feature -- Pathname handling
 			end
 		end
 
-	test_absolute_root_directory is
+	test_absolute_root_directory
 			-- Test feature `absolute_root_directory'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1713,7 +1714,7 @@ feature -- Pathname handling
 			end
 		end
 
-	test_string_to_pathname is
+	test_string_to_pathname
 			-- Test feature `string_to_pathname'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1744,7 +1745,7 @@ feature -- Pathname handling
 			assert ("absolute3", a_file_system.string_to_pathname ("\\gobo\shares\foo\bar").same_pathname (a_pathname))
 		end
 
-	test_pathname_to_string is
+	test_pathname_to_string
 			-- Test feature `pathname_to_string'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1774,7 +1775,7 @@ feature -- Pathname handling
 			assert_equal ("absolute3", "\\gobo\foo\bar", a_file_system.pathname_to_string (a_pathname))
 		end
 
-	test_pathname_from_file_system is
+	test_pathname_from_file_system
 			-- Test feature `pathname_from_file_system'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1787,7 +1788,7 @@ feature -- Pathname handling
 			assert_equal ("windows3", "\\gobo\foo\bar", a_file_system.pathname_from_file_system ("\\gobo\foo\bar", windows_file_system))
 		end
 
-	test_has_extension is
+	test_has_extension
 			-- Test feature `has_extension'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1799,7 +1800,7 @@ feature -- Pathname handling
 			assert ("not_extension1", not a_file_system.has_extension ("foo\bar.e", ".o"))
 		end
 
-	test_extension is
+	test_extension
 			-- Test feature `extension'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1813,7 +1814,7 @@ feature -- Pathname handling
 			assert_equal ("extension6", "", a_file_system.extension (""))
 		end
 
-	test_exe_extension is
+	test_exe_extension
 			-- Test feature `exe_extension'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM
@@ -1822,7 +1823,7 @@ feature -- Pathname handling
 			assert_equal ("exe_extension", ".exe", a_file_system.exe_extension)
 		end
 
-	test_directory_separator is
+	test_directory_separator
 			-- Test feature `directory_separator'.
 		local
 			a_file_system: KL_WINDOWS_FILE_SYSTEM

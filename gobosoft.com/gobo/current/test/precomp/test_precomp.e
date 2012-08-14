@@ -1,11 +1,11 @@
-indexing
+note
 
 	description:
 
 		"Test precompilation of Gobo Library classes"
 
 	library: "Gobo Eiffel Library"
-	copyright: "Copyright (c) 2001-2008, Eric Bezault and others"
+	copyright: "Copyright (c) 2001-2012, Eric Bezault and others"
 	license: "MIT License"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -37,7 +37,7 @@ create
 
 feature -- Test
 
-	test_ge is
+	test_ge
 			-- Test precompilation with Gobo Eiffel.
 		do
 			if eiffel_compiler.is_ge then
@@ -45,7 +45,7 @@ feature -- Test
 			end
 		end
 
-	test_ise is
+	test_ise
 			-- Test precompilation with ISE Eiffel.
 		do
 			if eiffel_compiler.is_ise then
@@ -55,7 +55,7 @@ feature -- Test
 
 feature -- Execution
 
-	tear_down is
+	tear_down
 			-- Tear down after a test.
 		do
 			if old_cwd /= Void then
@@ -69,7 +69,7 @@ feature -- Execution
 
 feature {NONE} -- Precompilation
 
-	precomp_ge is
+	precomp_ge
 			-- Test precompilation with Gobo Eiffel.
 		do
 			old_cwd := file_system.cwd
@@ -82,11 +82,13 @@ feature {NONE} -- Precompilation
 			assert_execute ("gelint --flat ge.xace" + output_log)
 		end
 
-	precomp_ise is
+	precomp_ise
 			-- Test precompilation with ISE Eiffel.
 		local
 			define_option: STRING
 			dotnet: STRING
+			l_compatible: STRING
+			l_compat_option: STRING
 		do
 			old_cwd := file_system.cwd
 			file_system.create_directory (testdir)
@@ -106,12 +108,22 @@ feature {NONE} -- Precompilation
 					define_option.append_string (" GOBO_DOTNET")
 				end
 			end
+			l_compat_option := ""
+			l_compatible := Execution_environment.variable_value ("GOBO_COMPATIBLE")
+			if l_compatible /= Void and then l_compatible.count > 0 then
+				l_compat_option := " -compat"
+				if define_option.count = 0 then
+					define_option.append_string ("--define=%"GOBO_COMPATIBLE")
+				else
+					define_option.append_string (" GOBO_COMPATIBLE")
+				end
+			end
 			if define_option.count > 0 then
 				define_option.append_string ("%" ")
 			end
 			assert_execute ("gexace " + define_option + "--library=ise " + xace_filename + output_log)
 				-- Eiffel precompilation.
-			assert_execute ("ecb -precompile -batch -config ise.ecf" + output_log)
+			assert_execute ("ecb " + l_compat_option + "-precompile -batch -config ise.ecf" + output_log)
 				-- Done.
 			file_system.cd (old_cwd)
 			file_system.recursive_delete_directory (testdir)
@@ -119,7 +131,7 @@ feature {NONE} -- Precompilation
 
 feature {NONE} -- Implementation
 
-	xace_filename: STRING is
+	xace_filename: STRING
 			-- Name of Xace file used for precompilation
 		once
 			Result := file_system.nested_pathname ("${GOBO}", <<"test", "precomp", "precomp.xace">>)
@@ -129,17 +141,17 @@ feature {NONE} -- Implementation
 			xace_filename_not_empty: Result.count > 0
 		end
 
-	testdir: STRING is "Tprecomp"
+	testdir: STRING = "Tprecomp"
 			-- Name of temporary directory where to launch
 			-- the precompilation
 
-	output_log_filename: STRING is "output.log"
+	output_log_filename: STRING = "output.log"
 			-- Output log filename
 
-	error_log_filename: STRING is "error.log"
+	error_log_filename: STRING = "error.log"
 			-- Error log filename
 
-	output_log: STRING is
+	output_log: STRING
 			-- Where and how to redirect output logs
 		once
 			Result := " > " + output_log_filename + " 2> " + error_log_filename

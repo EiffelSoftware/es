@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test features of class ST_UNICODE_FULL_CASE_MAPPING"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel String Library"
 	copyright: "Copyright (c) 2006, Colin Adams and others"
 	license: "MIT License"
@@ -24,7 +25,7 @@ create
 
 feature -- Test
 
-	test_upper_case is
+	test_upper_case
 			-- Test upper case mapping
 		local
 			l_unicode_string: UC_UTF8_STRING
@@ -38,7 +39,7 @@ feature -- Test
 			assert ("Expected_result", STRING_.same_string (Unorthodox_essen, l_unicode_string))
 		end
 
-	test_lower_case is
+	test_lower_case
 			-- Test loer case mapping
 		local
 			l_unicode: 	UC_UNICODE_ROUTINES
@@ -55,13 +56,13 @@ feature -- Test
 
 feature {NONE} -- Implementation
 
-	Lower_essen: STRING is "e%/223/en"
+	Lower_essen: STRING = "e%/223/en"
 			-- German verb meaning 'to eat'
 
-	Upper_essen: STRING is "ESSEN"
+	Upper_essen: STRING = "ESSEN"
 			-- German verb meaning 'to eat'
 
-	Unorthodox_essen: STRING is "essen"
+	Unorthodox_essen: STRING = "essen"
 			-- German verb meaning 'to eat' with unorthodox spelling
 
 end

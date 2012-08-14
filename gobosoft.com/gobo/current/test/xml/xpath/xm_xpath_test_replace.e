@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test XPath replace() function."
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel XPath Library"
 	copyright: "Copyright (c) 2005, Colin Adams and others"
 	license: "MIT License"
@@ -20,7 +21,7 @@ inherit
 		end
 
 	XM_XPATH_TYPE
-	
+
 	XM_XPATH_ERROR_TYPES
 
 	XM_XPATH_SHARED_CONFORMANCE
@@ -31,7 +32,7 @@ inherit
 
 	KL_SHARED_FILE_SYSTEM
 		export {NONE} all end
-	
+
 	UT_SHARED_FILE_URI_ROUTINES
 		export {NONE} all end
 
@@ -41,7 +42,7 @@ create
 
 feature -- Test
 
-	test_replace_one is
+	test_replace_one
 			-- Test replace("abracadabra", "bra", "*") returns "a*cada*".
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -61,7 +62,7 @@ feature -- Test
 			assert ("Correct result", STRING_.same_string (a_string_value.string_value, "a*cada*"))
 		end
 
-	test_replace_two is
+	test_replace_two
 			-- Test replace("abracadabra", "a.*a", "*") returns "*".
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -81,7 +82,7 @@ feature -- Test
 			assert ("Star", STRING_.same_string (a_string_value.string_value, "*"))
 		end
 
-	test_replace_three is
+	test_replace_three
 			-- Test replace("abracadabra", "a.*?a", "*") returns "*c*bra".
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -101,7 +102,7 @@ feature -- Test
 			assert ("Correct result", STRING_.same_string (a_string_value.string_value, "*c*bra"))
 		end
 
-	test_replace_four is
+	test_replace_four
 			-- Test replace("abracadabra", "a", "") returns "brcdbr".
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -121,7 +122,7 @@ feature -- Test
 			assert ("Correct result", STRING_.same_string (a_string_value.string_value, "brcdbr"))
 		end
 
-	test_replace_five is
+	test_replace_five
 			-- Test replace("abracadabra", "a(.)", "a$1$1") returns "abbraccaddabbra".
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -141,7 +142,7 @@ feature -- Test
 			assert ("Correct result", STRING_.same_string (a_string_value.string_value, "abbraccaddabbra"))
 		end
 
-	test_replace_six is
+	test_replace_six
 			-- Test replace("abracadabra", ".*?", "$1") raises an error, because the pattern matches the zero-length string.
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -155,7 +156,7 @@ feature -- Test
 			assert ("Error FORX0003", STRING_.same_string (an_evaluator.error_value.code, "FORX0003"))
 		end
 
-	test_replace_seven is
+	test_replace_seven
 			-- Test replace("AAAA", "A+", "b") returns "b".
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -175,7 +176,7 @@ feature -- Test
 			assert ("Correct result", STRING_.same_string (a_string_value.string_value, "b"))
 		end
 
-	test_replace_eight is
+	test_replace_eight
 			-- Test replace("AAAA", "A+?", "b") returns "bbbb".
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -194,8 +195,8 @@ feature -- Test
 			assert ("String value", a_string_value /= Void)
 			assert ("Correct result", STRING_.same_string (a_string_value.string_value, "bbbb"))
 		end
-	
-	test_replace_nine is
+
+	test_replace_nine
 			-- Test replace("darted", "^(.*?)d(.*)$", "$1c$2") returns "carted". The first "d" is replaced.
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -215,14 +216,14 @@ feature -- Test
 			assert ("Correct result", STRING_.same_string (a_string_value.string_value, "carted"))
 		end
 
-	set_up is
+	set_up
 		do
 			conformance.set_basic_xslt_processor
 		end
 
 feature {NONE} -- Implementation
 
-	data_dirname: STRING is
+	data_dirname: STRING
 			-- Name of directory containing data files
 		once
 			Result := file_system.nested_pathname ("${GOBO}",
@@ -232,8 +233,8 @@ feature {NONE} -- Implementation
 			data_dirname_not_void: Result /= Void
 			data_dirname_not_empty: not Result.is_empty
 		end
-		
-	books_xml_uri: UT_URI is
+
+	books_xml_uri: UT_URI
 			-- URI of file 'books.xml'
 		local
 			a_path: STRING
@@ -243,7 +244,7 @@ feature {NONE} -- Implementation
 		ensure
 			books_xml_uri_not_void: Result /= Void
 		end
-		
+
 end
 
-			
+

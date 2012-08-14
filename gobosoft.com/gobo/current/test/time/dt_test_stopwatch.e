@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test features of class DT_STOPWATCH"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel Time Library"
 	copyright: "Copyright (c) 2009, Eric Bezault and others"
 	license: "MIT License"
@@ -23,7 +24,7 @@ create
 
 feature -- Test
 
-	test_start_stop is
+	test_start_stop
 			-- Test starting and stopping the stopwatch.
 		local
 			s: DT_STOPWATCH
@@ -51,7 +52,7 @@ feature -- Test
 
 feature {NONE} -- Implementation
 
-	wait is
+	wait
 			-- Make sure that some time is elapsed.
 		local
 			l_time: DT_DATE_TIME

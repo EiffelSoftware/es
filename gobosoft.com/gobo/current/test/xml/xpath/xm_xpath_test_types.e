@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test type functions"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel XPath Library"
 	copyright: "Copyright (c) 2004, Colin Adams and others"
 	license: "MIT License"
@@ -28,7 +29,7 @@ feature -- Test
 
 	-- Some tests commented out, as they don't apply to a basic xslt processor
 
-	test_types is
+	test_types
 		do
 			conformance.set_basic_xslt_processor
 			assert ("super type", type_factory.decimal_type.super_type = type_factory.numeric_type)

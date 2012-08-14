@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test transforming books.xml with books.xsl"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel XSLT test suite"
 	copyright: "Copyright (c) 2004, Colin Adams and others"
 	license: "MIT License"
@@ -30,7 +31,7 @@ create
 
 feature -- Test
 
-	test_transform is
+	test_transform
 			-- Transform books.xml with books.xsl.
 		local
 			l_transformer_factory: XM_XSLT_TRANSFORMER_FACTORY
@@ -67,7 +68,7 @@ feature -- Test
 
 feature {NONE} -- Implementation
 
-	data_dirname: STRING is
+	data_dirname: STRING
 			-- Name of directory containing data files
 		once
 			Result := file_system.nested_pathname ("${GOBO}",
@@ -77,8 +78,8 @@ feature {NONE} -- Implementation
 			data_dirname_not_void: Result /= Void
 			data_dirname_not_empty: not Result.is_empty
 		end
-		
-	books_xsl_uri: UT_URI is
+
+	books_xsl_uri: UT_URI
 			-- URI of file 'books.xsl'
 		local
 			l_path: STRING
@@ -88,8 +89,8 @@ feature {NONE} -- Implementation
 		ensure
 			books_xsl_uri_not_void: Result /= Void
 		end
-		
-	books_xml_uri: UT_URI is
+
+	books_xml_uri: UT_URI
 			-- URI of file 'books.xml'
 		local
 			l_path: STRING
@@ -100,7 +101,7 @@ feature {NONE} -- Implementation
 			books_xml_uri_not_void: Result /= Void
 		end
 
-	dummy_uri: UT_URI is
+	dummy_uri: UT_URI
 			-- Dummy URI
 		once
 			create Result.make ("dummy:")

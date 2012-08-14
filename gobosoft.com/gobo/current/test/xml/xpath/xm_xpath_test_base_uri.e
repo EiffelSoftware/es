@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test XPath base-uri() function."
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel XPath Library"
 	copyright: "Copyright (c) 2005, Colin Adams and others"
 	license: "MIT License"
@@ -22,7 +23,7 @@ inherit
 		end
 
 	XM_XPATH_TYPE
-	
+
 	XM_XPATH_ERROR_TYPES
 
 	XM_XPATH_SHARED_CONFORMANCE
@@ -43,7 +44,7 @@ create
 
 feature -- Access
 
-	document_uri: STRING is
+	document_uri: STRING
 			-- Base-uri of books2.xml
 		local
 			a_uri: UT_URI
@@ -52,7 +53,7 @@ feature -- Access
 			Result := a_uri.full_reference
 		end
 
-	secondary_uri: STRING is
+	secondary_uri: STRING
 			-- Base-uri of base_uri_a.xml
 		local
 			a_uri: UT_URI
@@ -61,19 +62,19 @@ feature -- Access
 			Result := a_uri.full_reference
 		end
 
-	nested_xml_base_uri: STRING is
+	nested_xml_base_uri: STRING
 			-- Base-uri of nested element with xml:base
 		once
 			Result := "http://www.gobosoft.com/xml-tests/AAMilne-book"
 		end
 
-	xml_base_uri: STRING is
+	xml_base_uri: STRING
 			-- Base-uri of element with xml:base
 		once
 			Result := "urn:base-uri:element2"
 		end
 
-	base_directory: UT_URI is
+	base_directory: UT_URI
 			-- URI of directory containing this class
 		local
 			l_uri: STRING
@@ -85,7 +86,7 @@ feature -- Access
 
 feature -- Tests
 
-	test_implicit_document_root is
+	test_implicit_document_root
 			-- Test fn:base-uri().
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -103,7 +104,7 @@ feature -- Tests
 			assert_strings_case_insensitive_equal ("Correct base-URI", document_uri, a_uri.string_value)
 		end
 
-	test_context_item_not_a_node is
+	test_context_item_not_a_node
 			-- Test (1,2,3)[fn:base-uri() eq 'fred'].
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -117,7 +118,7 @@ feature -- Tests
 			assert_strings_equal ("Error FORG0006", "FORG0006", an_evaluator.error_value.code)
 		end
 
-	test_empty_sequence is
+	test_empty_sequence
 			-- Test fn:base-uri(()).
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -131,7 +132,7 @@ feature -- Tests
 			assert ("Empty sequence",  an_evaluator.evaluated_items.count = 0)
 		end
 
-	test_empty_sequence_tiny_tree is
+	test_empty_sequence_tiny_tree
 			-- Test fn:base-uri(()).
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -145,7 +146,7 @@ feature -- Tests
 			assert ("Empty sequence",  an_evaluator.evaluated_items.count = 0)
 		end
 
-	test_element_with_xml_base is
+	test_element_with_xml_base
 			-- Test fn:base-uri(/*[1]/*[2]/ITEM[2]).
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -163,7 +164,7 @@ feature -- Tests
 			assert_strings_equal ("Correct base-URI", nested_xml_base_uri, a_uri.string_value)
 		end
 
-	test_element_with_xml_base_tiny_tree is
+	test_element_with_xml_base_tiny_tree
 			-- Test fn:base-uri(/*[1]/*[2]/ITEM[2]).
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -181,7 +182,7 @@ feature -- Tests
 			assert_strings_equal ("Correct base-URI", nested_xml_base_uri, a_uri.string_value)
 		end
 
-	test_element is
+	test_element
 			-- Test fn:base-uri(/*[1]/*[2]/ITEM[1]).
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -199,7 +200,7 @@ feature -- Tests
 			assert_strings_case_insensitive_equal ("Correct base-URI", secondary_uri, a_uri.string_value)
 		end
 
-	test_element_tiny_tree is
+	test_element_tiny_tree
 			-- Test fn:base-uri(/*[1]/*[2]/ITEM[1]).
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -217,7 +218,7 @@ feature -- Tests
 			assert_strings_case_insensitive_equal ("Correct base-URI", secondary_uri, a_uri.string_value)
 		end
 
-	test_nested_element is
+	test_nested_element
 			-- Test fn:base-uri(/*[1]/*[2]/nested-element).
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -235,7 +236,7 @@ feature -- Tests
 			assert_strings_equal ("Correct base-URI", xml_base_uri, a_uri.string_value)
 		end
 
-	test_nested_element_tiny_tree is
+	test_nested_element_tiny_tree
 			-- Test fn:base-uri(/*[1]/*[2]/nested-element).
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -253,7 +254,7 @@ feature -- Tests
 			assert_strings_equal ("Correct base-URI", xml_base_uri, a_uri.string_value)
 		end
 
-	test_pi_child_of_element_with_xml_base is
+	test_pi_child_of_element_with_xml_base
 			-- Test fn:base-uri(/*[1]/*[1]/ITEM[2]/processing-instruction()).
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -271,7 +272,7 @@ feature -- Tests
 			assert_strings_equal ("Correct base-URI", nested_xml_base_uri, a_uri.string_value)
 		end
 
-	test_pi_child_of_element_with_xml_base_tiny_tree is
+	test_pi_child_of_element_with_xml_base_tiny_tree
 			-- Test fn:base-uri(/*[1]/*[1]/ITEM[2]/processing-instruction()).
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -289,7 +290,7 @@ feature -- Tests
 			assert_strings_equal ("Correct base-URI", nested_xml_base_uri, a_uri.string_value)
 		end
 
-	test_pi_at_top_level is
+	test_pi_at_top_level
 			-- Test fn:base-uri(/*[1]/*[1]/processing-instruction()[2]).
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -307,7 +308,7 @@ feature -- Tests
 			assert_strings_case_insensitive_equal ("Correct base-URI", secondary_uri, a_uri.string_value)
 		end
 
-	test_pi_at_top_level_tiny_tree is
+	test_pi_at_top_level_tiny_tree
 			-- Test fn:base-uri(/*[1]/*[1]/processing-instruction()[2]).
 		local
 			an_evaluator: XM_XPATH_EVALUATOR
@@ -325,7 +326,7 @@ feature -- Tests
 			assert_strings_case_insensitive_equal ("Correct base-URI", secondary_uri, a_uri.string_value)
 		end
 
-	set_up is
+	set_up
 			-- <Precursor>.
 		do
 			conformance.set_basic_xslt_processor
@@ -333,7 +334,7 @@ feature -- Tests
 
 feature {NONE} -- Implementation
 
-	data_dirname: STRING is
+	data_dirname: STRING
 			-- Name of directory containing data files
 		once
 			Result := file_system.nested_pathname ("${GOBO}", <<"test", "xml", "xpath", "data">>)
@@ -342,8 +343,8 @@ feature {NONE} -- Implementation
 			data_dirname_not_void: Result /= Void
 			data_dirname_not_empty: not Result.is_empty
 		end
-		
-	base_uri_master_xml_uri: UT_URI is
+
+	base_uri_master_xml_uri: UT_URI
 			-- URI of file 'base_uri_master.xml'
 		local
 			a_path: STRING

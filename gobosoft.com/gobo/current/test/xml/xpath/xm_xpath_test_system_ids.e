@@ -1,9 +1,10 @@
-indexing
+note
 
 	description:
 
 		"Test system ids and line numbers"
 
+	test_status: "ok_to_run"
 	library: "Gobo Eiffel XPath Library"
 	copyright: "Copyright (c) 2001, Colin Adams and others"
 	license: "MIT License"
@@ -36,19 +37,19 @@ create
 
 feature -- Test. These tests check the system_id and base_uri routines
 
-	test_with_dtd_using_tiny_tree is
+	test_with_dtd_using_tiny_tree
 			-- Test using tiny tree
 		do
 			main_routine (True)
 		end
 
-	test_with_dtd_using_standard_tree is
+	test_with_dtd_using_standard_tree
 			-- Test using standard tree
 		do
 			main_routine (False)
 		end
 
-	main_routine (is_tiny: BOOLEAN) is
+	main_routine (is_tiny: BOOLEAN)
 			-- Read a file with a DTD and entities
 		local
 			system_id: STRING
@@ -179,7 +180,7 @@ feature -- Test. These tests check the system_id and base_uri routines
 
 feature {NONE} -- Implementation
 
-	make_parser (a_base_uri: STRING; is_tiny: BOOLEAN) is
+	make_parser (a_base_uri: STRING; is_tiny: BOOLEAN)
 			-- Create XML parser.
 		require
 			a_base_uri_not_void: a_base_uri /= Void
@@ -215,7 +216,7 @@ feature {NONE} -- Implementation
 	tree_pipe: XM_XPATH_TREE_CALLBACKS_PIPE
 			-- Tree pipe
 
-	data_dirname: STRING is
+	data_dirname: STRING
 			-- Name of directory containing data files
 		once
 			Result := file_system.nested_pathname ("${GOBO}", <<"test", "xml", "xpath", "data">>)
@@ -225,7 +226,7 @@ feature {NONE} -- Implementation
 			data_dirname_not_empty: not Result.is_empty
 		end
 
-	books2_xml_uri: UT_URI is
+	books2_xml_uri: UT_URI
 			-- URI of file 'books2.xml'
 		local
 			l_path: STRING
@@ -236,7 +237,7 @@ feature {NONE} -- Implementation
 			books2_xml_uri_not_void: Result /= Void
 		end
 
-	resolved_uri_string (a_relative_uri: STRING): STRING is
+	resolved_uri_string (a_relative_uri: STRING): STRING
 			-- Resolved path for `a_relative_uri' relative to `books2_xml_uri'
 		require
 			a_relative_uri_not_void: a_relative_uri /= Void
