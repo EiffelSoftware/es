@@ -112,12 +112,14 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 					result_list.extend (Result.item)
 					Result.forth
 				end
-					-- Check for each result if the version matchs
+					-- Check for each result if the version matches
 				across
 					result_list as cursor
 				loop
 					stored_version := cursor.item.attribute_value ("version").value.to_integer
 					if stored_version /= current_version then
+						fixme ("check if a transformation function between the two version exists.")
+						fixme ("if it does, invoke it. If it does not, raise an exception")
 						create error
 						transaction.set_error (error)
 						error.raise
