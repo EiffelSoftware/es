@@ -42,7 +42,7 @@ feature -- Cursor movement
 				end
 			end
 		ensure then
-			item_is_identified: query.transaction.repository.is_identified (item, query.transaction)
+			item_is_identified: not after implies query.transaction.repository.is_identified (item, query.transaction)
 			item_can_be_handled: query.transaction.repository.can_handle (item)
 		end
 
@@ -97,7 +97,5 @@ feature {NONE} -- Implementation
 invariant
 	attached_item_or_after: attached detachable_item or after
 	attached_query_or_after: attached detachable_query or after
-	item_identified: not after and query.transaction.is_active implies query.transaction.repository.is_identified (item, query.transaction)
 	item_can_be_handled: not after implies query.transaction.repository.can_handle (item)
-
 end
