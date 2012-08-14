@@ -158,6 +158,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 				query.result_cursor.after
 			loop
 				delete (query.result_cursor.item, transaction)
+				query.result_cursor.forth
 			end
 		ensure
 			transaction_still_alive: transaction.is_active
