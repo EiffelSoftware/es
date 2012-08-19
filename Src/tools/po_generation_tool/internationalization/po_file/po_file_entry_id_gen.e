@@ -1,72 +1,31 @@
 note
-	description: "Splash displayer."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	description: "Po file entry id generator"
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	SPLASH_DISPLAYER_I
+expanded class
+	PO_FILE_ENTRY_ID_GEN
 
-inherit
-	EIFFEL_LAYOUT
+feature -- Generation
 
-feature {NONE} -- Creation
-
-	make_with_text (s: STRING_GENERAL)
-		do
-			text := s
-		end
-
-feature -- Access
-
-	show
-			-- Show spash box
-		deferred
-		end
-
-	close
-			-- Close spash box
-		deferred
-		end
-
-	verbose_text: STRING_GENERAL;
-			-- verbose text to display if needed
-
-
-feature -- Change
-
-	set_splash_pixmap_filename (fn: STRING)
+	generate_id_from_msgid_and_msgctxt (a_msgid: READABLE_STRING_GENERAL; a_msgctxt: detachable READABLE_STRING_GENERAL): STRING_32
+			-- Generate id from msgid and msgctxt.
 		require
-			file_exists: (create {RAW_FILE}.make (fn)).exists
+			a_msg_id_not_void: a_msgid  /= Void
 		do
-			splash_pixmap_filename := fn
+			if attached a_msgctxt as l_ctxt then
+				Result := a_msgid.as_string_32 + l_ctxt.as_string_32
+			else
+				Result := a_msgid.as_string_32
+			end
+		ensure
+			Result_set: Result /= Void
 		end
-
-	set_verbose_text (s: STRING_GENERAL)
-		do
-			verbose_text := s
-		end
-
-	output_text (s: STRING_GENERAL)
-		require
-			s /= Void
-		do
-			io.put_string (s.as_string_8)
-		end
-
-feature {NONE} -- Properties
-
-	splash_pixmap_filename: STRING
-			-- File name of the splash pixmap
-
-	text: STRING_GENERAL;
-			-- bottom text to display
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	licensing_options:	"http://www.eiffel.com/licensing"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
@@ -94,5 +53,4 @@ note
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
-
 end

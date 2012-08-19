@@ -1,40 +1,27 @@
 note
-	description: "Tests for EV_APPLICATION"
+	description: "Tests for EV_WINDOW"
 	author: "Daniel Furrer <daniel.furrer@gmail.com>"
 	date: "$Date$"
 	revision: "$Revision$"
 	testing: "type/manual"
 
 class
-	TEST_EV_APPLICATION
+	TEST_EV_COLOR
 
 inherit
 	VISION2_TEST_SET
 
 feature -- Test routines
 
-	test_idle_action_called
-			-- Checks if idle actions are called correctly
+	test_set_rgb_with_24_bit
+			-- Shows an empty window without title bar, 100x200px in size.
 		note
 			testing: "execution/isolated"
-		do
-			run_test (agent idle_action_called)
-		end
-
-feature {NONE} -- Actual Test
-
-	idle_action_called
 		local
-			flag: BOOLEAN_REF
+			l_color: EV_COLOR
 		do
-			flag := (False).to_reference
-			application.add_idle_action_kamikaze (agent (a_flag: BOOLEAN_REF) do
-				a_flag.set_item (True)
-			end (flag))
-
-			application.process_events
-
-			assert ("Idle actions called", flag.item)
+			create l_color
+			l_color.set_rgb_with_24_bit (0xD3D7CF)
 		end
 
 note

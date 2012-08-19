@@ -7,7 +7,7 @@ note
 class
 	AFX_POSTMORTEM_ANALYSIS_RECORD
 
-inherit{NONE}
+inherit
 	EPA_UTILITY
 
 	SHARED_EIFFEL_PARSER

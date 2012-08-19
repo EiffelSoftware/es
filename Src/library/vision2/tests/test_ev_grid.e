@@ -6,56 +6,50 @@ note
 	testing: "type/manual"
 
 class
-	TEST_EV_PIXMAP
+	TEST_EV_GRID
 
 inherit
 	VISION2_TEST_SET
 
 feature -- Test routines
 
-	create_with_size
-			-- Set the text and reads it again.
-		note
-			testing: "execution/isolated"
-		local
-			pixmap: EV_PIXMAP
-		do
-			create pixmap.make_with_size (123, 345)
-
-			assert ("size_correct", pixmap.width = 123 and pixmap.height = 345)
-		end
-
-	clear
+	test_hide_row
 			-- Set the text and reads it again.
 		note
 			testing: "execution/isolated"
 		do
-			run_test (agent test_clear)
+			run_test (agent hide_row)
 		end
 
 feature {NONE} -- Actual Test
 
-	test_clear
+	hide_row
 		local
-			pixmap: EV_PIXMAP
+			l_grid: EV_GRID
 			window: EV_WINDOW
+			l_except: DEVELOPER_EXCEPTION
+			is_retried: BOOLEAN
 		do
-			create pixmap.make_with_size (100, 100)
-			pixmap.set_background_color (red)
-			pixmap.clear
+			if not is_retried then
+				create window
 
-			create window
-			window.extend (pixmap)
-			window.set_size (100, 100)
-			window.show
+				create l_grid
+				l_grid.set_row_count_to (10)
+				l_grid.row (5).hide
+				l_grid.row (5).show
+
+				window.extend (l_grid)
+				window.show
+
+				application.process_events
+			else
+				create l_except
+				first_recorded_exception := l_except
+			end
+		rescue
+			is_retried := True
+			retry
 		end
-
-feature -- Helpers
-
-    red: EV_COLOR
-    	once
-    		create Result.make_with_rgb ({REAL_32}1.0, {REAL_32}0.0, {REAL_32}0.0)
-    	end
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
