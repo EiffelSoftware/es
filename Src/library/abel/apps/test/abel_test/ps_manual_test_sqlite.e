@@ -46,10 +46,10 @@ feature {NONE} -- Initialization
 			create Result.make (backend)
 		end
 
-	sqlite_file: STRING = "/home/roman_arch/sqlite_database.db"
+	-- sqlite_file: STRING = "/home/roman_arch/sqlite_database.db"
 			-- The SQLite database file
 
-	--sqlite_file: STRING = "sqlite_database.db"
+	sqlite_file: STRING = "/Users/marcopiccioni/sqlite_database.db"
 			-- The SQLite database file
 
 	database: PS_SQLITE_DATABASE

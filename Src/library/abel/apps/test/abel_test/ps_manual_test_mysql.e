@@ -70,7 +70,7 @@ feature {NONE} -- Initialization
 			backend.wipe_out
 			create Result.make (backend)
 		end
-		
+
 	--	username:STRING = "pfadief_eiffel"
 	--	password:STRING = "eiffelstore"
 	--	db_name:STRING = "pfadief_eiffelstoretest"
