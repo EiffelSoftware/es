@@ -43,7 +43,7 @@ feature
 		do
 				-- Just close the connection
 			check attached {PS_MYSQL_CONNECTION} a_connection as conn then
-				conn.internal_connection.rollback
+			--	conn.internal_connection.rollback
 				conn.internal_connection.close
 			end
 		end

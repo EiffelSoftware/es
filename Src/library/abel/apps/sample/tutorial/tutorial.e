@@ -48,17 +48,17 @@ feature 	-- Tutorial exploration features
 			print ("Delete Dumbo Ermini from the database and print result")
 			executor.delete (p3)
 			print_result (simple_query)
-			-- Uncomment the following 2 lines to have a failing update of an object not known to ABEL
-			--print ("A failing update...")
-			--failing_update
-			-- Uncomment the following 2 lines to have a failing delete of an object not known to ABEL
-			--print ("A failing delete...")			
-			--failing_delete
+--			-- Uncomment the following 2 lines to have a failing update of an object not known to ABEL
+--			--print ("A failing update...")
+--			--failing_update
+--			-- Uncomment the following 2 lines to have a failing delete of an object not known to ABEL
+--			--print ("A failing delete...")			
+--			--failing_delete
 			print ("Combined criterion example: search for an Albo Bitossi who is not 20")
 			print_result (query_with_composite_criterion)
 			print ("Delete Albo Bitossi using a deletion query")
-			delete_person_with_deletion_query ("Bitossi")
-			print_result (simple_query)
+--			delete_person_with_deletion_query ("Bitossi")
+--			print_result (simple_query)
 			print ("Insert 3 children in the database")
 			create c1.make ("Baby", "Doe")
 			create c2.make ("John", "Doe")
