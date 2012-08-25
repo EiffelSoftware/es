@@ -28,7 +28,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Identification
 			-- Is `an_object' already identified and thus known to the system?
 		do
 			if is_registered (transaction) then
-				Result:= local_set (transaction).is_identified (an_object) or (not local_set(transaction).is_deleted (an_object) and global_set.is_identified(an_object))
+				Result:= local_set (transaction).is_identified (an_object) or
+				(not local_set(transaction).is_deleted (an_object) and global_set.is_identified(an_object))
 			else
 				Result:= global_set.is_identified (an_object)
 			end

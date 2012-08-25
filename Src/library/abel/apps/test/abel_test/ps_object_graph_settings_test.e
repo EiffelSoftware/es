@@ -125,7 +125,7 @@ feature {PS_REPOSITORY_TESTS}
 			-- Test if a cascadubg delete works if the deletion depth is set to Infinity
 		do
 			reset
-			repository.default_object_graph.set_deletion_depth (repository.default_object_graph.object_graph_depth_infinite)
+			repository.default_object_graph.set_delete_depth (repository.default_object_graph.object_graph_depth_infinite)
 			executor.insert (test_data.reference_chain)
 			executor.delete (test_data.reference_chain)
 			executor.execute_query (query)
@@ -142,7 +142,7 @@ feature {PS_REPOSITORY_TESTS}
 			tail_count: INTEGER
 		do
 			reset
-			repository.default_object_graph.set_deletion_depth (arbitrary_depth)
+			repository.default_object_graph.set_delete_depth (arbitrary_depth)
 			executor.insert (test_data.reference_chain)
 			executor.delete (test_data.reference_chain)
 			executor.execute_query (tail_query)

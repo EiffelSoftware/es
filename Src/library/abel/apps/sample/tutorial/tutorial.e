@@ -56,9 +56,9 @@ feature 	-- Tutorial exploration features
 			--failing_delete
 			print ("Combined criterion example: search for an Albo Bitossi who is not 20")
 			print_result (query_with_composite_criterion)
---			print ("Delete Albo Bitossi using a deletion query")
-			--delete_person_with_deletion_query ("Bitossi")
-			--print_result (simple_query)
+			print ("Delete Albo Bitossi using a deletion query")
+			delete_person_with_deletion_query ("Bitossi")
+			print_result (simple_query)
 			print ("Insert 3 children in the database")
 			create c1.make ("Baby", "Doe")
 			create c2.make ("John", "Doe")

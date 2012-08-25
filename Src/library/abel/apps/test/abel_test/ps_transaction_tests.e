@@ -166,7 +166,7 @@ feature {PS_REPOSITORY_TESTS}
 
 			executor.execute_query (q2)
 			assert ("Result not empty", q2.result_cursor.after)
-			assert ("Person not properly removed", not executor.is_persistent (some_person, executor.new_transaction) and not executor.is_persistent (q1.result_cursor.item, executor.new_transaction))
+			assert ("Person not properly removed", not executor.is_persistent_within_transaction (some_person, executor.new_transaction) and not executor.is_persistent_within_transaction (q1.result_cursor.item, executor.new_transaction))
 
 			repository.clean_db_for_testing
 		end
@@ -223,7 +223,7 @@ feature {PS_REPOSITORY_TESTS}
 
 			executor.execute_query (q2)
 			assert ("Item not present in database", not q2.result_cursor.after)
-			assert ("Object not known any more", executor.is_persistent (some_person, executor.new_transaction))
+			assert ("Object not known any more", executor.is_persistent_within_transaction (some_person, executor.new_transaction))
 			repository.clean_db_for_testing
 		end
 

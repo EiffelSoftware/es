@@ -51,7 +51,7 @@ feature {NONE}
 
 	test_data: PS_TEST_DATA
 
-	escher_integration: PS_ESCHER_INTEGRATION
+	escher_integration: PS_VERSION_HANDLER
 
 	on_prepare
 			-- Set up an in-memory database with an ESCHER integration layer

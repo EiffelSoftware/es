@@ -132,6 +132,7 @@ feature {NONE} -- Implementation
 
 	has_identifier (object: ANY): BOOLEAN
 			-- Does the actual store have an identifier for `object'?
+			-- TODO: This query has side effects that should be removed.
 		do
 			from
 				weak_reference_items.start
@@ -151,7 +152,8 @@ feature {NONE} -- Implementation
 		end
 
 	actual_identifier (object: ANY): INTEGER
-			-- Get the actual identifier from the store
+			-- Get the actual identifier from the store.
+			-- TODO: This query has side effects that should be removed.
 		require
 			has_identifier (object)
 		local
