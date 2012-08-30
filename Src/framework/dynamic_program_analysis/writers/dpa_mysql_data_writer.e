@@ -66,12 +66,7 @@ feature {NONE} -- Initialization
 					l_loc_expr.append (l_loc)
 					l_loc_expr.append_character (';')
 					l_loc_expr.append (l_expr)
-					if pre_state_bp_exprs_occurrences.has (l_loc_expr) then
-						l_occurrence := pre_state_bp_exprs_occurrences.item (l_loc_expr) + 1
-						pre_state_bp_exprs_occurrences.force_last (l_occurrence, l_loc_expr)
-					else
-						pre_state_bp_exprs_occurrences.force_last (1, l_loc_expr)
-					end
+					pre_state_bp_exprs_occurrences.force_last (l_mysql_result.at (3).to_integer, l_loc_expr)
 					l_mysql_result.forth
 				end
 				mysql_client.execute_query ("SELECT MAX(" + evt_round_attribute_name + ") FROM " + expression_value_transitions_table_name)
