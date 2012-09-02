@@ -163,11 +163,14 @@ feature -- Access
 					j > l_upper_bound
 				loop
 					check l_data.i_th (j).occurrences (';') = 1 then
-						l_locations := l_file.last_string.split (';')
+						l_locations := l_data.i_th (j).split (';')
 						Result.extend ([l_locations.i_th (1).to_integer, l_locations.i_th (2).to_integer])
 					end
 					j := j + l_stride
 				end
+
+				l_file.close
+
 				i := i + 1
 			end
 		end
@@ -207,6 +210,9 @@ feature -- Access
 					end
 					j := j + l_stride
 				end
+
+				l_file.close
+
 				i := i + 1
 			end
 		end
@@ -251,12 +257,15 @@ feature -- Access
 					check l_data.i_th (j).occurrences (';') = 1 then
 						l_pairs_count := l_pairs_count + 1
 						if a_lower_bound <= l_pairs_count and l_pairs_count <= a_upper_bound then
-							l_locations := l_file.last_string.split (';')
+							l_locations := l_data.i_th (j).split (';')
 							Result.extend ([l_locations.i_th (1).to_integer, l_locations.i_th (2).to_integer])
 						end
 					end
 					j := j + l_stride
 				end
+
+				l_file.close
+
 				i := i + 1
 			end
 		end
@@ -296,7 +305,7 @@ feature -- Access
 					j > l_upper_bound
 				loop
 					l_current_line := l_data.i_th (j)
-					if l_current_line.occurrences (';') = 9 then
+					if l_current_line.occurrences (';') = 8 then
 						l_transition := l_current_line.split (';')
 						l_expression := l_transition.i_th (1)
 						l_location := l_transition.i_th (2).to_integer
@@ -312,6 +321,8 @@ feature -- Access
 
 					j := j + 1
 				end
+
+				l_file.close
 
 				i := i + 1
 			end
@@ -368,9 +379,9 @@ feature -- Access
 					j > l_upper_bound
 				loop
 					l_current_line := l_data.i_th (j)
-					if l_current_line.occurrences (';') = 9 then
+					if l_current_line.occurrences (';') = 8 then
 						l_transition := l_current_line.split (';')
-						if l_data.i_th (1).is_equal (a_expression) and l_data.i_th (2).to_integer = a_location then
+						if l_transition.i_th (1).is_equal (a_expression) and l_transition.i_th (2).to_integer = a_location then
 							l_stride := strides_of_files.item (i)
 							Result := Result + 1
 						end
@@ -378,6 +389,8 @@ feature -- Access
 
 					j := j + l_stride
 				end
+
+				l_file.close
 
 				i := i + 1
 			end
@@ -401,7 +414,7 @@ feature -- Access
 			until
 				i > number_of_data_files
 			loop
-				create l_file_name.make_from_string (path + file_name_prefix + "_data_" + i.out + ".txt")
+				create l_file_name.make_from_string (path + file_name_prefix + "_" + i.out + ".txt")
 				check valid_file_name: l_file_name.is_valid end
 				create l_file.make (l_file_name.string)
 				check l_file.exists and l_file.is_readable end
@@ -416,7 +429,7 @@ feature -- Access
 				until
 					j > l_upper_bound
 				loop
-					if l_data.i_th (j).occurrences (';') = 9 then
+					if l_data.i_th (j).occurrences (';') = 8 then
 						l_stride := strides_of_files.item (i)
 						l_transition := l_data.i_th (j).split (';')
 						l_pre_state_bp := l_transition.i_th (2).to_integer
@@ -445,6 +458,9 @@ feature -- Access
 					end
 					j := j + l_stride
 				end
+
+				l_file.close
+
 				i := i + 1
 			end
 		end
@@ -470,7 +486,7 @@ feature -- Access
 			until
 				i > number_of_data_files or Result.count = l_number_of_pairs
 			loop
-				create l_file_name.make_from_string (path + file_name_prefix + "_data_" + i.out + ".txt")
+				create l_file_name.make_from_string (path + file_name_prefix + "_" + i.out + ".txt")
 				check valid_file_name: l_file_name.is_valid end
 				create l_file.make (l_file_name.string)
 				check l_file.exists and l_file.is_readable end
@@ -485,7 +501,7 @@ feature -- Access
 				until
 					j > l_upper_bound or Result.count = l_number_of_pairs
 				loop
-					if l_data.i_th (j).occurrences (';') = 9 then
+					if l_data.i_th (j).occurrences (';') = 8 then
 						l_stride := strides_of_files.item (i)
 						l_transition := l_data.i_th (j).split (';')
 						l_pre_state_bp := l_transition.i_th (2).to_integer
@@ -517,6 +533,9 @@ feature -- Access
 					end
 					j := j + l_stride
 				end
+
+				l_file.close
+
 				i := i + 1
 			end
 		end
