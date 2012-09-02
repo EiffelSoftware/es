@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {DPA_DATA_WRITER}."
+	description: "A writer that writes the data from a dynamic program analysis to disk using one or multiple JSON data files."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -98,21 +98,22 @@ feature {NONE} -- Implementation
 	restore
 			--	
 		local
+			l_file_name: FILE_NAME
 			l_file: PLAIN_TEXT_FILE
 			i: INTEGER
 			l_file_content, l_class, l_feature: STRING
 			l_parser: JSON_PARSER
 			l_parsed_json_value: JSON_VALUE
-			l_number_of_analyses: INTEGER
 		do
 			from
 				i := 1
-				number_of_analyses := 1
-				create l_file.make (output_path + file_name_prefix + "_" + i.out + ".txt")
+				create l_file_name.make_from_string (output_path + file_name_prefix + "_" + i.out + ".txt")
+				check l_file_name.is_valid end
+				create l_file.make (l_file_name.string)
 			until
 				not l_file.exists
 			loop
-				Check l_file.is_readable end
+				check l_file.is_readable end
 				l_file.open_read
 				l_file.read_stream (l_file.count)
 				l_file_content := l_file.last_string
@@ -123,9 +124,6 @@ feature {NONE} -- Implementation
 					Check l_class.is_equal (class_.name) end
 					l_feature := string_from_json (l_json_object.item (feature_json_string))
 					Check l_feature.is_equal (feature_.feature_name_32) end
-					l_number_of_analyses := string_from_json (l_json_object.item (number_of_analyses_json_string)).to_integer
-					Check l_number_of_analyses + 1 > number_of_analyses end
-					number_of_analyses := l_number_of_analyses + 1
 				end
 				i := i + 1
 				create l_file.make (output_path + file_name_prefix + "_" + i.out + ".txt")
@@ -145,7 +143,6 @@ feature {NONE} -- Implementation
 			create json_data_file_content.make
 			json_data_file_content.put (json_string_from_string (class_.name), class_json_string)
 			json_data_file_content.put (json_string_from_string (feature_.feature_name_32), feature_json_string)
-			json_data_file_content.put (json_string_from_string (number_of_analyses.out), number_of_analyses_json_string)
 			json_data_file_content.put (json_analysis_order_pairs, analysis_order_pairs_json_string)
 			json_data_file_content.put (json_expression_value_transitions, expression_value_transitions_json_string)
 		end
@@ -158,16 +155,6 @@ feature {NONE} -- Implementation
 			create l_json_printer.make
 			json_data_file_content.accept (l_json_printer)
 			string_data_file_content := l_json_printer.to_json
-		end
-
-	string_from_json (a_json_value: JSON_VALUE): STRING
-			-- String contained in `a_json_value' if `a_json_value' is a JSON_STRING.
-		require
-			a_json_value_not_void: a_json_value /= Void
-		do
-			if attached {JSON_STRING} a_json_value as l_json_string then
-				Result := l_json_string.item
-			end
 		end
 
 end

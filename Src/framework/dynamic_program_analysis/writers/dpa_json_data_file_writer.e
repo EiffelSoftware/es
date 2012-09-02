@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {DPA_DATA_WRITER}."
+	description: "A writer that writes the data from a dynamic program analysis to disk using one or multiple JSON files."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -12,6 +12,8 @@ inherit
 
 	DPA_JSON_CONSTANTS
 
+	DPA_JSON_UTILITY
+
 feature {NONE} -- Implementation
 
 	json_analysis_order_pairs: JSON_ARRAY
@@ -21,16 +23,6 @@ feature {NONE} -- Implementation
 			-- JSON representation of expression value transitions.
 
 feature {NONE} -- Implementation
-
-	json_string_from_string (a_string: STRING): JSON_STRING
-			-- JSON_STRING representing `a_string'
-		require
-			a_string_not_void: a_string /= Void
-		do
-			Result := create {JSON_STRING}.make_json (a_string)
-		ensure
-			Result_not_void: Result /= Void
-		end
 
 	update_json_analysis_order_pairs
 			--

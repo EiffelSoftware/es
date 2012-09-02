@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {DPA_DATA_WRITER}."
+	description: "A writer that writes the data from a dynamic program analysis to disk using serialized data files."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -37,8 +37,6 @@ feature {NONE} -- Initialization
 			string_data_file_content.append (class_.name)
 			string_data_file_content.append_character ('%N')
 			string_data_file_content.append (feature_.feature_name_32)
-			string_data_file_content.append_character ('%N')
-			string_data_file_content.append_integer (number_of_analyses)
 			string_data_file_content.append_character ('%N')
 		ensure
 			class_set: class_ = a_class
@@ -84,8 +82,6 @@ feature -- Writing
 			string_data_file_content.append_character ('%N')
 			string_data_file_content.append (feature_.feature_name_32)
 			string_data_file_content.append_character ('%N')
-			string_data_file_content.append_integer (number_of_analyses)
-			string_data_file_content.append_character ('%N')
 		end
 
 feature {NONE} -- Implementation
@@ -106,22 +102,24 @@ feature {NONE} -- Implementation
 		local
 			l_file: PLAIN_TEXT_FILE
 			i: INTEGER
+			l_data: LIST [STRING]
 		do
 			from
 				i := 1
-				number_of_analyses := 1
 				create l_file.make (output_path + file_name_prefix + "_" + i.out + ".txt")
 			until
 				not l_file.exists
 			loop
 				Check l_file.is_readable end
 				l_file.open_read
-				l_file.read_line
-				Check l_file.last_string.is_equal (class_.name) end
-				l_file.read_line
-				Check l_file.last_string.is_equal (feature_.feature_name_32) end
-				l_file.read_line
-				number_of_analyses := l_file.last_string.to_integer + 1
+				l_file.read_stream (l_file.count)
+
+				l_data := l_file.last_string.split ('%N')
+
+				check l_data.i_th (1).is_equal (class_.name) end
+				check l_data.i_th (2).is_equal (feature_.feature_name_32) end
+				check l_data.last.is_equal ("EOF") end
+				l_file.close
 				i := i + 1
 				create l_file.make (output_path + file_name_prefix + "_" + i.out + ".txt")
 			end

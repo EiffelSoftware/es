@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {DPA_DATA_WRITER}."
+	description: "A writer that writes the data from a dynamic program analysis to disk using one or multiple files."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

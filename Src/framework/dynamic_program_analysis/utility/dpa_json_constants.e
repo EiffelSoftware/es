@@ -21,12 +21,6 @@ feature -- Access
 			create Result.make_json ("feature")
 		end
 
-	number_of_analyses_json_string: JSON_STRING
-			-- JSON_STRING representing "number_of_analyses"
-		once
-			create Result.make_json ("number_of_analyses")
-		end
-
 	analysis_order_pairs_json_string: JSON_STRING
 			-- JSON_STRING representing "analysis_order_pairs"
 		once

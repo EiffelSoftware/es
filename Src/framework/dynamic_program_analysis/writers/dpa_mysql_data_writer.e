@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {DPA_evt_WRITER}."
+	description: "A writer that writes the data from a dynamic program analysis to disk using a MYSQL database."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -28,7 +28,6 @@ feature {NONE} -- Initialization
 			l_loc_expr: STRING
 			l_loc: STRING
 			l_expr: STRING
-			l_occurrence: INTEGER
 		do
 			class_ := a_class
 			feature_ := a_feature
@@ -37,7 +36,7 @@ feature {NONE} -- Initialization
 			if not mysql_client.is_connected then
 				mysql_client.connect
 			end
-			Check MYSQL_Client_connected_to_database: mysql_client.is_connected end
+			check MYSQL_Client_connected_to_database: mysql_client.is_connected end
 
 			mysql_client.execute_query ("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '" + mysql_client.database + "' AND table_name = '" + analysis_order_pairs_table_name + "';")
 			mysql_client.last_result.start
@@ -45,14 +44,18 @@ feature {NONE} -- Initialization
 				mysql_client.execute_query ("CREATE TABLE " + analysis_order_pairs_table_name + " (" + aop_counter_attribute_name + " INT AUTO_INCREMENT, " + aop_pre_state_bp_attribute_name + " INT, " + aop_post_state_bp_attribute_name + " INT, PRIMARY KEY (" + aop_counter_attribute_name + "))")
 			end
 
-			create pre_state_bp_exprs_occurrences.make_default
+			create expression_evaluation_count.make_default
 
 			mysql_client.execute_query ("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '" + mysql_client.database + "' AND table_name = '" + expression_value_transitions_table_name + "';")
 			mysql_client.last_result.start
 			if mysql_client.last_result.at (1).to_integer = 0 then
-				mysql_client.execute_query ("CREATE TABLE " + expression_value_transitions_table_name + " (" + evt_counter_attribute_name + " INT AUTO_INCREMENT, " + evt_round_attribute_name + " INT, " + evt_class_attribute_name + " TEXT, " + evt_feature_attribute_name + " TEXT, " + evt_expression_attribute_name + " TEXT, " + evt_location_expression_occurrence_attribute_name + " INT, " + evt_pre_state_bp_attribute_name + " INT, " + evt_pre_state_type_attribute_name + " TEXT, " + evt_pre_state_type_information_attribute_name + " TEXT, " + evt_pre_state_value_attribute_name + " TEXT, " + evt_post_state_bp_attribute_name + " INT, " + evt_post_state_type_attribute_name + " TEXT, " + evt_post_state_type_information_attribute_name + " TEXT, " + evt_post_state_value_attribute_name + " TEXT, PRIMARY KEY (" + evt_counter_attribute_name + "))")
-				number_of_analyses := 1
+				mysql_client.execute_query ("CREATE TABLE " + expression_value_transitions_table_name + " (" + evt_counter_attribute_name + " INT AUTO_INCREMENT, " + evt_class_attribute_name + " TEXT, " + evt_feature_attribute_name + " TEXT, " + evt_expression_attribute_name + " TEXT, " + evt_location_expression_occurrence_attribute_name + " INT, " + evt_pre_state_bp_attribute_name + " INT, " + evt_pre_state_type_attribute_name + " TEXT, " + evt_pre_state_type_information_attribute_name + " TEXT, " + evt_pre_state_value_attribute_name + " TEXT, " + evt_post_state_bp_attribute_name + " INT, " + evt_post_state_type_attribute_name + " TEXT, " + evt_post_state_type_information_attribute_name + " TEXT, " + evt_post_state_value_attribute_name + " TEXT, PRIMARY KEY (" + evt_counter_attribute_name + "))")
 			else
+				mysql_client.execute_query ("SELECT DISTINCT " + evt_class_attribute_name + ", " + evt_feature_attribute_name + " FROM " + expression_value_transitions_table_name)
+				l_mysql_result := mysql_client.last_result
+				l_mysql_result.start
+				check same_class_and_feature: l_mysql_result.at (1).is_equal (class_.name) and l_mysql_result.at (2).is_equal (feature_.feature_name_32) end
+
 				mysql_client.execute_query ("SELECT " + evt_pre_state_bp_attribute_name + ", " + evt_expression_attribute_name + ", COUNT(" + evt_pre_state_bp_attribute_name + ") FROM " + expression_value_transitions_table_name + " GROUP BY " + evt_pre_state_bp_attribute_name + ", " + evt_expression_attribute_name)
 				l_mysql_result := mysql_client.last_result
 				from
@@ -66,13 +69,9 @@ feature {NONE} -- Initialization
 					l_loc_expr.append (l_loc)
 					l_loc_expr.append_character (';')
 					l_loc_expr.append (l_expr)
-					pre_state_bp_exprs_occurrences.force_last (l_mysql_result.at (3).to_integer, l_loc_expr)
+					expression_evaluation_count.force_last (l_mysql_result.at (3).to_integer, l_loc_expr)
 					l_mysql_result.forth
 				end
-				mysql_client.execute_query ("SELECT MAX(" + evt_round_attribute_name + ") FROM " + expression_value_transitions_table_name)
-				l_mysql_result := mysql_client.last_result
-				l_mysql_result.start
-				number_of_analyses := l_mysql_result.at (1).to_integer + 1
 			end
 
 			create analysis_order_pairs.make
@@ -128,9 +127,8 @@ feature -- Writing
 				analysis_order_pairs.forth
 			end
 
-			mysql_client.prepare_statement ("INSERT INTO " + expression_value_transitions_table_name + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+			mysql_client.prepare_statement ("INSERT INTO " + expression_value_transitions_table_name + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)")
 			l_prepared_statement := mysql_client.last_prepared_statement
-			l_prepared_statement.set_integer (evt_round_attribute_column_number, number_of_analyses)
 			l_prepared_statement.set_string (evt_class_attribute_column_number, class_.name)
 			l_prepared_statement.set_string (evt_feature_attribute_column_number, feature_.feature_name_32)
 
@@ -152,12 +150,12 @@ feature -- Writing
 
 				l_prepared_statement.set_string (evt_expression_attribute_column_number, l_expr)
 
-				if pre_state_bp_exprs_occurrences.has (l_loc_expr) then
-					l_evt_key_occurrence := pre_state_bp_exprs_occurrences.item (l_loc_expr) + 1
-					pre_state_bp_exprs_occurrences.force_last (l_evt_key_occurrence, l_loc_expr)
+				if expression_evaluation_count.has (l_loc_expr) then
+					l_evt_key_occurrence := expression_evaluation_count.item (l_loc_expr) + 1
+					expression_evaluation_count.force_last (l_evt_key_occurrence, l_loc_expr)
 					l_prepared_statement.set_integer (evt_location_expression_occurrence_attribute_column_number, l_evt_key_occurrence)
 				else
-					pre_state_bp_exprs_occurrences.force_last (1, l_loc_expr)
+					expression_evaluation_count.force_last (1, l_loc_expr)
 					l_prepared_statement.set_integer (evt_location_expression_occurrence_attribute_column_number, 1)
 				end
 
@@ -203,7 +201,9 @@ feature -- Writing
 
 feature {NONE} -- Implementation
 
-	pre_state_bp_exprs_occurrences: DS_HASH_TABLE [INTEGER, STRING]
-			-- Occurrences of pre-state breakpoint and expression pairs.
+	expression_evaluation_count: DS_HASH_TABLE [INTEGER, STRING]
+			-- Number of evaluations of an expression at a location.
+			-- Keys are the expressions and locations of the form 'loc:expr'.
+			-- Values are the number of evaluations of 'loc:expr'.
 
 end

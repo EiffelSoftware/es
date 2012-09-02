@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {DPA_DATA_WRITER}."
+	description: "A writer that writes the data from a dynamic program analysis to disk."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -13,7 +13,7 @@ inherit
 feature -- Access
 
 	class_: CLASS_C
-			-- Class belonging to `feature_'.
+			-- Context class of `feature_'.
 
 	feature_: FEATURE_I
 			-- Feature which was analyzed.
@@ -61,10 +61,5 @@ feature -- Writing
 			-- Write data.
 		deferred
 		end
-
-feature {NONE} -- Implementation
-
-	number_of_analyses: INTEGER
-			-- Number of analyses including current one of `feature_'
 
 end

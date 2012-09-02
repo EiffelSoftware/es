@@ -47,6 +47,13 @@ feature -- Basic operations
 
 	execute
 			-- Execute current command
+--		local
+--			l_class, l_feature: STRING
+--			l_aop_count: INTEGER
+--			l_expressions_and_locations: LINKED_LIST [TUPLE [expression: STRING; location: INTEGER]]
+--			l_expression_location_count: INTEGER
+--			l_expression: STRING
+--			l_location: INTEGER
 		do
 			-- Find post-state(s) breakpoint slot(s) for all pre-state breakpoint slots in `l_feature'.
 			find_all_post_state_breakpoint_slots
@@ -71,6 +78,41 @@ feature -- Basic operations
 
 			-- Write data to disk
 			writer.write
+
+--			if configuration.is_single_json_data_file_writer_selected then
+--				create {DPA_SINGLE_JSON_DATA_FILE_READER} reader.make (configuration.single_json_data_file_writer_options.output_path, configuration.single_json_data_file_writer_options.file_name)
+--			elseif configuration.is_multiple_json_data_files_writer_selected then
+--				create {DPA_MULTIPLE_JSON_DATA_FILES_READER} reader.make (configuration.multiple_json_data_files_writer_options.output_path, configuration.multiple_json_data_files_writer_options.file_name_prefix)
+--			elseif configuration.is_serialized_data_files_writer_selected then
+--				create {DPA_SERIALIZED_DATA_FILE_READER} reader.make (configuration.serialized_data_files_writer_options.output_path, configuration.serialized_data_files_writer_options.file_name_prefix)
+--			elseif configuration.is_mysql_data_writer_selected then
+--				if attached {DPA_MYSQL_DATA_WRITER} writer as mysql_writer then
+--					create {DPA_MYSQL_DATA_READER} reader.make (mysql_writer.mysql_client)
+--				end
+--			end
+
+--			l_class := reader.class_
+--			l_feature := reader.feature_
+--			across reader.analysis_order_pairs as aop loop
+--			end
+--			l_aop_count := reader.analysis_order_pairs_count
+--			across reader.limited_analysis_order_pairs (1, l_aop_count) as aop loop
+--			end
+--			l_expressions_and_locations := reader.expressions_and_locations
+--			from
+--				l_expressions_and_locations.start
+--			until
+--				l_expressions_and_locations.after
+--			loop
+--				l_expression := l_expressions_and_locations.item.expression
+--				l_location := l_expressions_and_locations.item.location
+--				l_expression_location_count := reader.expression_value_transitions_count (l_expression, l_location)
+--				across reader.expression_value_transitions (l_expression, l_location) as evt loop
+--				end
+--				across reader.limited_expression_value_transitions (l_expression, l_location, 1, l_expression_location_count) as evt loop
+--				end
+--				l_expressions_and_locations.forth
+--			end
 		end
 
 feature {NONE} -- Implemenation
@@ -262,7 +304,6 @@ feature {NONE} -- Implementation
 			-- Choose pre-state breakpoint slots depending on specified options
 			-- `configuration'
 		local
-			i, l_upper: INTEGER
 			l_pre_state_bp_finder: DPA_INTERESTING_PRE_STATE_FINDER
 			l_bp_interval: INTEGER_INTERVAL
 		do
@@ -511,16 +552,7 @@ feature {NONE} -- Implementation
 	writer: DPA_DATA_WRITER
 			-- Writer used to persistently store the runtime data.
 
---	reference_feature
---			-- Feature referencing all classes currently not used.
---			-- This feature will be removed after testing.
---		local
---			l_retriever: DPA_DATA_RETRIEVER
---			l_multiple: DPA_MULTIPLE_JSON_DATA_FILES_READER
---			l_single: DPA_SINGLE_JSON_DATA_FILE_READER
---			l_database: DPA_MYSQL_DATA_READER
---			l_serialized_reader: DPA_SERIALIZED_DATA_FILE_READER
---		do
---		end
+--	reader: DPA_DATA_READER
+--			-- Temporarily for testing purposes used attribute.
 
 end

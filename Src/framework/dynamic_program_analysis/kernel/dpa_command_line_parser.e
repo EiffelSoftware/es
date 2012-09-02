@@ -513,12 +513,10 @@ feature {NONE} -- Implementation
 		require
 			a_parameters_not_void: a_parameters /= Void
 		local
-			l_location_with_expression: LIST [STRING]
 			l_expression: STRING
 			l_expressions: DS_HASH_SET [STRING]
 			l_expressions_at_location: DS_HASH_SET [STRING]
 			l_location: INTEGER
-			l_location_string: STRING
 			l_location_expressions_map: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
 			l_parsed_location_with_expression: TUPLE [program_location: INTEGER; expression: STRING]
 		do
@@ -592,12 +590,10 @@ feature {NONE} -- Implementation
 		require
 			a_parameters_not_void: a_parameters /= Void
 		local
-			l_location_with_variable: LIST [STRING]
 			l_variable: STRING
 			l_variables: DS_HASH_SET [STRING]
 			l_variables_at_location: DS_HASH_SET [STRING]
 			l_location: INTEGER
-			l_location_string: STRING
 			l_location_variables_map: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
 			l_parsed_location_with_variable: TUPLE [program_location: INTEGER; expression: STRING]
 		do

@@ -30,7 +30,7 @@ feature -- Operation
 			-- Finds all post-states and makes them available in `post_state_bp_map'
 		local
 			l_cfg_builder: EPA_CFG_BUILDER
-			l_cfg_printer: EGX_SIMPLE_DOT_GRAPH_PRINTER [EPA_BASIC_BLOCK, EPA_CFG_EDGE]
+--			l_cfg_printer: EGX_SIMPLE_DOT_GRAPH_PRINTER [EPA_BASIC_BLOCK, EPA_CFG_EDGE]
 		do
 			-- Initialize helper attributes
 			create post_state_bp_map.make_default
