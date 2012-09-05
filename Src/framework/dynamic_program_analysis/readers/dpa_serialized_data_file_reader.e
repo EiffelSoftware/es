@@ -94,7 +94,7 @@ feature {NONE} -- Initialization
 					else
 						l_stride_found := True
 					end
-					i := i + 1
+					j := j + 1
 				end
 				strides_of_files.force_last (l_stride, i)
 
