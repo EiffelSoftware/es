@@ -39,7 +39,7 @@ feature -- Basic operations
 		local
 			l_feature_selector: EPA_FEATURE_SELECTOR
 			l_expr: EPA_AST_EXPRESSION
-			l_set, l_tmp_set: DS_HASH_SET [STRING]
+			l_locals, l_set, l_tmp_set: DS_HASH_SET [STRING]
 		do
 			create expressions_to_evaluate.make_default
 			expressions_to_evaluate.set_equality_tester (expression_equality_tester)
@@ -59,10 +59,17 @@ feature -- Basic operations
 				if not is_file_type (l_expr.type) and not is_pointer_type (l_expr.type) and not is_basic_type (l_expr.type) and not is_string_type (l_expr.type) then
 					create l_set.make_default
 					l_set.set_equality_tester (string_equality_tester)
-					across local_names_of_feature (feature_).to_array as l_locals loop
-						create l_expr.make_with_text (class_, feature_, l_locals.item, class_)
+					l_locals := local_names_of_feature (feature_)
+					from
+						l_locals.start
+					until
+						l_locals.after
+					loop
+						create l_expr.make_with_text (class_, feature_, l_locals.item_for_iteration, class_)
 						expressions_to_evaluate.force_last (l_expr)
 						l_set.force_last (l_expr.text)
+
+						l_locals.forth
 					end
 					if vars_with_exprs.has (ti_current) then
 						l_tmp_set := vars_with_exprs.item (ti_current)
@@ -91,8 +98,12 @@ feature -- Basic operations
 			end
 
 			-- Case variables from calls
-			across interesting_variables.to_array as l_var loop
-				create l_expr.make_with_text (class_, feature_, l_var.item, class_)
+			from
+				interesting_variables.start
+			until
+				interesting_variables.after
+			loop
+				create l_expr.make_with_text (class_, feature_, interesting_variables.item_for_iteration, class_)
 				if not is_file_type (l_expr.type) and not is_pointer_type (l_expr.type) and not is_basic_type (l_expr.type) and not is_string_type (l_expr.type) then
 					create l_set.make_default
 					l_set.set_equality_tester (string_equality_tester)
@@ -102,24 +113,29 @@ feature -- Basic operations
 					l_feature_selector.select_from_class (l_expr.type.associated_class)
 
 					across l_feature_selector.last_features as l_queries loop
-						create l_expr.make_with_text (class_, feature_, l_var.item + "." + l_queries.item.feature_name, class_)
+						create l_expr.make_with_text (class_, feature_, interesting_variables.item_for_iteration + "." + l_queries.item.feature_name, class_)
 						expressions_to_evaluate.force_last (l_expr)
 						l_set.force_last (l_expr.text)
 					end
 
-					if vars_with_exprs.has (l_var.item) then
-						l_tmp_set := vars_with_exprs.item (l_var.item)
+					if vars_with_exprs.has (interesting_variables.item_for_iteration) then
+						l_tmp_set := vars_with_exprs.item (interesting_variables.item_for_iteration)
 						l_set.do_all (agent l_tmp_set.force_last)
 					else
-						vars_with_exprs.force_last (l_set, l_var.item)
+						vars_with_exprs.force_last (l_set, interesting_variables.item_for_iteration)
 					end
 				end
+				interesting_variables.forth
 			end
 
 			if attached {DS_HASH_SET [STRING]} interesting_variables_from_assignments then
 				-- Case variables from assignments
-				across interesting_variables_from_assignments.to_array as l_var loop
-					create l_expr.make_with_text (class_, feature_, l_var.item, class_)
+				from
+					interesting_variables_from_assignments.start
+				until
+					interesting_variables_from_assignments.after
+				loop
+					create l_expr.make_with_text (class_, feature_, interesting_variables_from_assignments.item_for_iteration, class_)
 					if not is_file_type (l_expr.type) and not is_pointer_type (l_expr.type) then
 						create l_set.make_default
 						l_set.set_equality_tester (string_equality_tester)
@@ -127,13 +143,15 @@ feature -- Basic operations
 
 						expressions_to_evaluate.force_last (l_expr)
 
-						if vars_with_exprs.has (l_var.item) then
-							l_tmp_set := vars_with_exprs.item (l_var.item)
+						if vars_with_exprs.has (interesting_variables_from_assignments.item_for_iteration) then
+							l_tmp_set := vars_with_exprs.item (interesting_variables_from_assignments.item_for_iteration)
 							l_set.do_all (agent l_tmp_set.force_last)
 						else
-							vars_with_exprs.force_last (l_set, l_var.item)
+							vars_with_exprs.force_last (l_set, interesting_variables_from_assignments.item_for_iteration)
 						end
 					end
+
+					interesting_variables_from_assignments.forth
 				end
 			end
 		end
@@ -149,8 +167,12 @@ feature -- Basic operations
 		do
 			create expressions_to_evaluate.make_default
 			expressions_to_evaluate.set_equality_tester (expression_equality_tester)
-			across interesting_expressions.to_array as l_exprs loop
-				l_expr_string := l_exprs.item
+			from
+				interesting_expressions.start
+			until
+				interesting_expressions.after
+			loop
+				l_expr_string := interesting_expressions.item_for_iteration
 				if l_expr_string.has ('.') then
 					l_var := l_expr_string.split ('.').i_th (1)
 				else
@@ -158,9 +180,11 @@ feature -- Basic operations
 				end
 				create l_expr.make_with_text (class_, feature_, l_var, class_)
 				if not is_file_type (l_expr.type) then
-					create l_expr.make_with_text (class_, feature_, l_exprs.item, class_)
+					create l_expr.make_with_text (class_, feature_, interesting_expressions.item_for_iteration, class_)
 					expressions_to_evaluate.force_last (l_expr)
 				end
+
+				interesting_expressions.forth
 			end
 		end
 

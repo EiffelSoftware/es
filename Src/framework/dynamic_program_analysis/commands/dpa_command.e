@@ -47,13 +47,6 @@ feature -- Basic operations
 
 	execute
 			-- Execute current command
---		local
---			l_class, l_feature: STRING
---			l_aop_count: INTEGER
---			l_expressions_and_locations: LINKED_LIST [TUPLE [expression: STRING; location: INTEGER]]
---			l_expression_location_count: INTEGER
---			l_expression: STRING
---			l_location: INTEGER
 		do
 			-- Find post-state(s) breakpoint slot(s) for all pre-state breakpoint slots in `l_feature'.
 			find_all_post_state_breakpoint_slots
@@ -78,41 +71,6 @@ feature -- Basic operations
 
 			-- Write data to disk
 			writer.write
-
---			if configuration.is_single_json_data_file_writer_selected then
---				create {DPA_SINGLE_JSON_DATA_FILE_READER} reader.make (configuration.single_json_data_file_writer_options.output_path, configuration.single_json_data_file_writer_options.file_name)
---			elseif configuration.is_multiple_json_data_files_writer_selected then
---				create {DPA_MULTIPLE_JSON_DATA_FILES_READER} reader.make (configuration.multiple_json_data_files_writer_options.output_path, configuration.multiple_json_data_files_writer_options.file_name_prefix)
---			elseif configuration.is_serialized_data_files_writer_selected then
---				create {DPA_SERIALIZED_DATA_FILE_READER} reader.make (configuration.serialized_data_files_writer_options.output_path, configuration.serialized_data_files_writer_options.file_name_prefix)
---			elseif configuration.is_mysql_data_writer_selected then
---				if attached {DPA_MYSQL_DATA_WRITER} writer as mysql_writer then
---					create {DPA_MYSQL_DATA_READER} reader.make (mysql_writer.mysql_client)
---				end
---			end
-
---			l_class := reader.class_
---			l_feature := reader.feature_
---			across reader.analysis_order_pairs as aop loop
---			end
---			l_aop_count := reader.analysis_order_pairs_count
---			across reader.limited_analysis_order_pairs (1, l_aop_count) as aop loop
---			end
---			l_expressions_and_locations := reader.expressions_and_locations
---			from
---				l_expressions_and_locations.start
---			until
---				l_expressions_and_locations.after
---			loop
---				l_expression := l_expressions_and_locations.item.expression
---				l_location := l_expressions_and_locations.item.location
---				l_expression_location_count := reader.expression_value_transitions_count (l_expression, l_location)
---				across reader.expression_value_transitions (l_expression, l_location) as evt loop
---				end
---				across reader.limited_expression_value_transitions (l_expression, l_location, 1, l_expression_location_count) as evt loop
---				end
---				l_expressions_and_locations.forth
---			end
 		end
 
 feature {NONE} -- Implemenation
@@ -409,6 +367,7 @@ feature {NONE} -- Implementation
 		local
 			l_bp_mgr: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
 			l_bp_count, l_pre_state_bp: INTEGER
+			l_post_states: DS_HASH_SET [INTEGER]
 			l_process_write_feature: PROCEDURE [ANY, TUPLE [BREAKPOINT, EPA_STATE]]
 		do
 			create processor.make (pre_state_breakpoints, post_state_bp_map, debugger_manager)
@@ -432,19 +391,33 @@ feature {NONE} -- Implementation
 
 			l_bp_count := breakpoint_count (feature_)
 
-			across pre_state_breakpoints.to_array as l_pre_states loop
-				l_pre_state_bp := l_pre_states.item
+			from
+				pre_state_breakpoints.start
+			until
+				pre_state_breakpoints.after
+			loop
+				l_pre_state_bp := pre_state_breakpoints.item_for_iteration
 				if l_pre_state_bp < l_bp_count then
 					create l_bp_mgr.make (class_, feature_)
 					l_bp_mgr.set_breakpoint_with_expression_and_action (l_pre_state_bp, expressions, l_process_write_feature)
 					l_bp_mgr.toggle_breakpoints (True)
 
-					across post_state_bp_map.item (l_pre_state_bp).to_array as l_post_states loop
+					l_post_states := post_state_bp_map.item (l_pre_state_bp)
+
+					from
+						l_post_states.start
+					until
+						l_post_states.after
+					loop
 						create l_bp_mgr.make (class_, feature_)
-						l_bp_mgr.set_breakpoint_with_expression_and_action (l_post_states.item, expressions, l_process_write_feature)
+						l_bp_mgr.set_breakpoint_with_expression_and_action (l_post_states.item_for_iteration, expressions, l_process_write_feature)
 						l_bp_mgr.toggle_breakpoints (True)
+
+						l_post_states.forth
 					end
 				end
+
+				pre_state_breakpoints.forth
 			end
 		ensure
 			processor_not_void: processor /= Void
@@ -551,8 +524,5 @@ feature {NONE} -- Implementation
 
 	writer: DPA_DATA_WRITER
 			-- Writer used to persistently store the runtime data.
-
---	reader: DPA_DATA_READER
---			-- Temporarily for testing purposes used attribute.
 
 end
