@@ -1223,8 +1223,6 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			Result.extend (create {EV_MENU_SEPARATOR})
 			insert_show_tool_menu_item (Result, {ES_WINDOWS_TOOL})
 			insert_show_tool_menu_item (Result, {ES_FAVORITES_TOOL})
-			Result.extend (create {EV_MENU_SEPARATOR})
-			insert_show_tool_menu_item (Result, {ES_BREAKPOINTS_TOOL})
 			if (create {SERVICE_CONSUMER [TEST_SUITE_S]}).is_service_available then
 				Result.extend (create {EV_MENU_SEPARATOR})
 				insert_show_tool_menu_item (Result, {ES_TESTING_TOOL})
