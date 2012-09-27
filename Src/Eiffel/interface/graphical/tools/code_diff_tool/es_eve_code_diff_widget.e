@@ -55,6 +55,7 @@ feature{NONE} -- Initialization
 			l_vertical_box.disable_item_expand (base_code_label)
 			create base_rich_text
 			base_rich_text.disable_edit
+			base_rich_text.set_background_color (l_vertical_box.background_color)
 			base_rich_text.set_tab_width (30)
 			l_vertical_box.extend (base_rich_text)
 			l_horizontal_box.extend (l_vertical_box)
@@ -68,6 +69,7 @@ feature{NONE} -- Initialization
 			create diff_rich_text
 			diff_rich_text.disable_edit
 			diff_rich_text.set_tab_width (30)
+			diff_rich_text.set_background_color (l_vertical_box.background_color)
 			l_vertical_box.extend (diff_rich_text)
 			l_horizontal_box.extend (l_vertical_box)
 
@@ -126,7 +128,7 @@ feature {NONE} -- Implementation
 			l_format_range: EV_CHARACTER_FORMAT_RANGE_INFORMATION
 		do
 			if hunk = Void then
-				base_rich_text.set_text ("")
+			base_rich_text.set_text ("")
 				diff_rich_text.set_text ("")
 			else
 					-- Regular text
@@ -157,13 +159,16 @@ feature {NONE} -- Implementation
 			-- Objects used for highlighting code differences.
 		local
 			l_character_format: EV_CHARACTER_FORMAT
+			l_font: EV_FONT
 			l_background_color: EV_COLOR
 			l_format_range: EV_CHARACTER_FORMAT_RANGE_INFORMATION
 		once
-			create l_character_format
+			l_font := base_rich_text.font
+			create l_font.make_with_values (l_font.family, {EV_FONT_CONSTANTS}.Weight_bold, l_font.shape, l_font.height)
+			create l_character_format.make_with_font (l_font)
 			create l_background_color.make_with_8_bit_rgb (255, 255, 0)
 			l_character_format.set_background_color (l_background_color)
-			create l_format_range.make_with_flags ({EV_CHARACTER_FORMAT_CONSTANTS}.background_color)
+			create l_format_range.make_with_flags ({EV_CHARACTER_FORMAT_CONSTANTS}.background_color | {EV_CHARACTER_FORMAT_CONSTANTS}.font_weight)
 			Result := [l_character_format, l_format_range]
 		end
 

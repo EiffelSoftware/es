@@ -17,10 +17,11 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_target: EPA_FEATURE_WITH_CONTEXT_CLASS; a_id: STRING; a_is_proper: BOOLEAN; a_fix: STRING; a_schema_type: INTEGER; a_nbr_old_statements, a_size_snippet, a_branching_factor: INTEGER)
+	make (a_target: EPA_FEATURE_WITH_CONTEXT_CLASS; a_sig: STRING; a_id: STRING; a_is_proper: BOOLEAN; a_fix: STRING; a_schema_type: INTEGER; a_nbr_old_statements, a_size_snippet, a_branching_factor: INTEGER)
 			-- Initialization.
 		do
 			target := a_target
+			signature := a_sig.twin
 			id := a_id.twin
 			is_proper := a_is_proper
 			fix_text := a_fix.twin
@@ -34,6 +35,9 @@ feature -- Access
 
 	target: EPA_FEATURE_WITH_CONTEXT_CLASS
 			-- Target feature associated with the record.
+
+	signature: STRING
+			-- Signature of the fault.
 
 	id: STRING
 			-- ID of the fix.
@@ -63,7 +67,7 @@ feature -- String representation
 	csv_header: STRING
 			-- Header for CSV format.
 		once
-			Result := "target, id, is_proper, schema_type, nbr_old_statements, size_snippet, branching_factor"
+			Result := "target, signature, id, is_proper, schema_type, nbr_old_statements, size_snippet, branching_factor"
 		end
 
 	csv_out: STRING
@@ -72,6 +76,8 @@ feature -- String representation
 		do
 			create Result.make (128)
 			Result.append (target.out)
+			Result.append (",")
+			Result.append (signature)
 			Result.append (",")
 			Result.append (id)
 			Result.append (",")

@@ -54,14 +54,14 @@ feature {NONE} -- Initialization
 		do
 			Precursor {ES_DOCKABLE_TOOL_PANEL}
 
-			load_all_autofix_results
+			reload_all_from_result_directory
 			user_widget.refresh_all
 		end
 
 feature -- Basic operation
 
-	refresh_result (a_fault_signature: STRING)
-			-- Refresh the result for `a_fault_signature'.
+	reload (a_fault_signature: STRING)
+			-- Reload the result for `a_fault_signature'.
 		require
 			signature_not_empty: a_fault_signature /= Void and then not a_fault_signature.is_empty
 		local
@@ -69,30 +69,24 @@ feature -- Basic operation
 		do
 			if autofix_results.has (a_fault_signature) then
 				l_result := autofix_results.item (a_fault_signature)
-				l_result.refresh
+				l_result.reload
 			else
 				create l_result.make (a_fault_signature)
 				autofix_results.force (l_result, a_fault_signature)
 			end
-			user_widget.refresh_result (a_fault_signature)
+			user_widget.refresh (a_fault_signature)
 		end
 
-	refresh_all_autofix_results
-			-- Refresh the autofix results.
+	reload_all
+			-- Reload all autofix results from AutoFix result directory.
 		do
-			load_all_autofix_results
+			reload_all_from_result_directory
 			user_widget.refresh_all
---			from autofix_results.start
---			until autofix_results.after
---			loop
---				autofix_results.item_for_iteration.refresh
---				autofix_results.forth
---			end
 		end
 
 feature {NONE} -- Implementation
 
-	load_all_autofix_results
+	reload_all_from_result_directory
 			-- Load all autofix_results from the default output directory of AutoFix.
 		local
 			l_result_dir: DIRECTORY
@@ -101,24 +95,26 @@ feature {NONE} -- Implementation
 			l_result: ES_EVE_AUTOFIX_RESULT
 		do
 			autofix_results.wipe_out
-			create l_result_dir.make (eiffel_project.project_directory.fixing_results_path)
-			if l_result_dir.exists then
-				l_result_dir.open_read
-				if not l_result_dir.is_closed then
-					from
-						l_result_dir.start
-						l_result_dir.readentry
-					until
-						l_result_dir.lastentry = Void
-					loop
-						l_entry_name := l_result_dir.lastentry.twin
-						if l_entry_name.ends_with (".afr") then
-							l_fault_signature := l_entry_name.substring (1, l_entry_name.count -4)
-							create l_result.make (l_fault_signature)
-							autofix_results.force (l_result, l_fault_signature)
-						end
+			if attached eiffel_project as lt_prj and then attached lt_prj.project_directory as lt_dir then
+				create l_result_dir.make (lt_dir.fixing_results_path)
+				if l_result_dir.exists then
+					l_result_dir.open_read
+					if not l_result_dir.is_closed then
+						from
+							l_result_dir.start
+							l_result_dir.readentry
+						until
+							l_result_dir.lastentry = Void
+						loop
+							l_entry_name := l_result_dir.lastentry.twin
+							if l_entry_name.ends_with (".afr") then
+								l_fault_signature := l_entry_name.substring (1, l_entry_name.count -4)
+								create l_result.make (l_fault_signature)
+								autofix_results.force (l_result, l_fault_signature)
+							end
 
-						l_result_dir.readentry
+							l_result_dir.readentry
+						end
 					end
 				end
 			end

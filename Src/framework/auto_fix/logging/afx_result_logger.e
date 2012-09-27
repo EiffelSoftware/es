@@ -114,9 +114,11 @@ feature -- Actions
 			-- `a_valid' indicates whether `a_candidate' is valid.
 		local
 			l_message: STRING
+			l_rank: DOUBLE
 		do
 			if a_valid then
-				log_line (">> valid_fix_candidate_start_tag <<")
+				l_rank := a_candidate.ranking.pre_validation_score + a_candidate.ranking.post_validation_score
+				log_line (">> valid_fix_candidate_start_tag << @ " + l_rank.out)
 				log_fix (a_candidate, True)
 				log_line (">> valid_fix_candidate_end_tag <<")
 

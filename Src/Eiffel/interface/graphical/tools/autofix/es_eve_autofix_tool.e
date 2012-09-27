@@ -14,7 +14,7 @@ feature -- Basic operation
 			is_tool_instantiated: is_tool_instantiated
 			signature_not_empty: a_fault_signature /= Void and then not a_fault_signature.is_empty
 		do
-			internal_panel.refresh_result (a_fault_signature)
+			internal_panel.reload (a_fault_signature)
 		end
 
 	show_fixes_for_all (a_fault_signatures: ARRAYED_LIST [STRING])
@@ -61,7 +61,7 @@ feature {NONE} -- Factory
 
 feature {NONE} -- Internationalization
 
-	t_title: STRING = "AutoFix"
+	t_title: STRING = "AutoFix Results"
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"

@@ -283,10 +283,12 @@ feature{NONE} -- Analysis
 			l_old_start_node, l_then_start_node, l_else_start_node, l_failing_node: AFX_AST_STRUCTURE_NODE
 			l_original_string, l_fixed_string, l_then_start_string, l_else_start_string: STRING
 			l_nbr_old_statements, l_size_snippet, l_branching_factor, l_failing_node_depth: INTEGER
+			l_old_start_breakpoint, l_old_end_breakpoint: INTEGER
 			l_then_size, l_else_size: INTEGER
 			l_schema_type: INTEGER
 		do
 			l_old_start_node := a_original
+			l_old_start_breakpoint := a_fixed.breakpoint_slot
 			if a_fixed.is_if then
 				l_children_count := a_fixed.children.count
 
@@ -299,16 +301,19 @@ feature{NONE} -- Analysis
 				l_else_size := l_else_trunk.count
 
 				if l_else_size = 0 then
-					if a_original.ast.ast ~ l_then_start_node.ast.ast then
+					if a_original.ast.ast.same_type (l_then_start_node.ast.ast) and then a_original.ast.ast.is_equivalent (l_then_start_node.ast.ast) then
 							-- if old_statement end
 						l_schema_type := {AFX_POSTMORTEM_ANALYSIS_RECORD}.Schema_if_old
 						l_nbr_old_statements := l_then_size
 						l_size_snippet := 0
+						l_old_end_breakpoint := l_then_trunk.last.breakpoint_slot - 1
 					else
 							-- if snippet end; old_statement
 						l_schema_type := {AFX_POSTMORTEM_ANALYSIS_RECORD}.Schema_if_snippet
 						l_nbr_old_statements := 0
 						l_size_snippet := l_then_size
+							-- Empty enclosed block from old program, i.e. l_old_end_breakpoint < l_old_start_breakpoint
+						l_old_end_breakpoint := l_old_start_breakpoint - 1
 					end
 				elseif l_else_size > 0 then
 					l_else_start_node := l_else_trunk.first
@@ -317,11 +322,13 @@ feature{NONE} -- Analysis
 						l_schema_type := {AFX_POSTMORTEM_ANALYSIS_RECORD}.Schema_if_old_else_snippet
 						l_nbr_old_statements := l_then_size
 						l_size_snippet := l_else_size
+						l_old_end_breakpoint := l_then_trunk.last.breakpoint_slot - 1
 					elseif a_original.ast.ast.same_type (l_else_start_node.ast.ast) and then a_original.ast.ast.is_equivalent (l_else_start_node.ast.ast) then
 							-- if c1 then snippet else old_statement end
 						l_schema_type := {AFX_POSTMORTEM_ANALYSIS_RECORD}.Schema_if_snippet_else_old
 						l_nbr_old_statements := l_else_size
 						l_size_snippet := l_then_size
+						l_old_end_breakpoint := l_else_trunk.last.breakpoint_slot - l_else_trunk.first.breakpoint_slot + l_old_start_breakpoint
 					else
 						check False end
 					end
@@ -330,19 +337,24 @@ feature{NONE} -- Analysis
 				l_schema_type := {AFX_POSTMORTEM_ANALYSIS_RECORD}.Schema_snippet
 				l_nbr_old_statements := 0
 				l_size_snippet := 1
+					-- Empty enclosed block from old program, i.e. l_old_end_breakpoint < l_old_start_breakpoint
+				l_old_end_breakpoint := l_old_start_breakpoint - 1
 			end
 
 				-- Compute branching factor.
-			l_failing_node := recipient_feature_ast_structure_node.surrounding_instruction (breakpoint)
-			if l_failing_node = Void then
-					-- Postcondition or class invariant violations.
-				l_failing_node_depth := 1
-			else
+			if l_old_start_breakpoint <= breakpoint and then breakpoint <= l_old_end_breakpoint then
+				l_failing_node := recipient_feature_ast_structure_node.surrounding_instruction (breakpoint)
 				l_failing_node_depth := l_failing_node.depth
+				l_branching_factor := l_failing_node_depth + 1 - l_old_start_node.depth
+				if l_branching_factor < 0 then
+					l_branching_factor := l_branching_factor
+				end
+			else
+					-- Failing instruction not enclosed by an conditional fix (if ... then ... else ...)
+				l_branching_factor := 0
 			end
-			l_branching_factor := l_failing_node_depth - l_old_start_node.depth
 
-			create Result.make (recipient_feature_with_context, fix_under_analysis.starting_ln.out, fix_under_analysis.is_proper, fix_under_analysis.text.twin, l_schema_type, l_nbr_old_statements, l_size_snippet, l_branching_factor)
+			create Result.make (recipient_feature_with_context, base_name, fix_under_analysis.starting_ln.out, fix_under_analysis.is_proper, fix_under_analysis.text.twin, l_schema_type, l_nbr_old_statements, l_size_snippet, l_branching_factor)
 		end
 
 	compare_structure_node (a_original, a_fixed: AFX_AST_STRUCTURE_NODE)
@@ -410,7 +422,7 @@ feature{NONE} -- Analysis
 				l_nbr_old_statements := 0
 				l_size_snippet := 1
 				l_branching_factor := 0
-				create l_record.make (recipient_feature_with_context, fix_under_analysis.starting_ln.out, fix_under_analysis.is_proper, fix_under_analysis.text, l_schema_type, l_nbr_old_statements, l_size_snippet, l_branching_factor)
+				create l_record.make (recipient_feature_with_context, base_name, fix_under_analysis.starting_ln.out, fix_under_analysis.is_proper, fix_under_analysis.text, l_schema_type, l_nbr_old_statements, l_size_snippet, l_branching_factor)
 				result_records.force_last (l_record)
 				has_found_difference := True
 			end

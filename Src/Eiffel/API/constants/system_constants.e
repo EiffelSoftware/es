@@ -172,7 +172,7 @@ feature {NONE}
 			-- Directory EIFGENs/[target]/Testing
 
 	fixing_results_directory: STRING = "AutoFix"
-			-- Directory EIFGENs/[target]/Fixing
+			-- Directory EIFGENs/[target]/AutoFix
 
 	contract_inference_results_directory: STRING = "Contract_inference"
 			-- Directory EIFGENs/[target]/Contract_inference
@@ -242,7 +242,7 @@ feature {AUXILIARY_FILES} -- Versioning
 			-- Tags used in project file header.
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

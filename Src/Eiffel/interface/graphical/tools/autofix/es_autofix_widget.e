@@ -52,8 +52,8 @@ feature -- GUI elements
 	apply_fix_button: EV_BUTTON
 			-- Button to apply the current selected fix.
 
-	unapply_fix_button: EV_BUTTON
-			-- Button to unapply the fix, if it's applied before.
+	recall_fix_button: EV_BUTTON
+			-- Button to recall a fix, if it's applied before.
 
 	code_diff_widget: ES_EVE_CODE_DIFF_WIDGET
 			-- Widget for showing the faulty code and the fixed code side-by-side.
@@ -63,25 +63,25 @@ feature -- GUI elements
 
 feature -- GUI labels
 
-	faults_label_text: STRING = "Faults"
+	faults_label_text: STRING = "Faults with fixing suggestions"
 			-- Label text shown above the faults combo-box.
 
 	refresh_button_text: STRING = "Refresh"
 			-- Text for the `Refresh' button.
 
-	fixes_label_text: STRING = "Valid fixes"
+	fixes_label_text: STRING = "Candidate fixes"
 			-- Label text shown above the fixes list-box.
 
 	apply_fix_button_text: STRING = "Apply"
 			-- Text for the `Apply' button.
 
-	unapply_fix_button_text: STRING = "Revert"
-			-- Text for the `Revert' button.
+	recall_fix_button_text: STRING = "Recall"
+			-- Text for the `Recall' button.
 
-	before_fixing_label_text: STRING = "Before fixing"
+	before_fixing_label_text: STRING = "Feature before fix"
 			-- Label text above the before-fixing code.
 
-	after_fixing_label_text: STRING = "After fixing"
+	after_fixing_label_text: STRING = "Feature after fix"
 			-- Label text above the after-fixing code.
 
 feature {NONE} -- Implementation
@@ -96,11 +96,11 @@ feature {NONE} -- Implementation
 			l_button: SD_TOOL_BAR_BUTTON
 		do
 			create l_v_box
-			l_v_box.set_minimum_size (152, 200)
+			l_v_box.set_minimum_size (252, 200)
 			l_v_box.set_padding ({ES_UI_CONSTANTS}.vertical_padding)
 			create l_label.make_with_text (faults_label_text)
 			l_label.align_text_left
-			create refresh_button.make_with_text_and_action (refresh_button_text, agent panel.refresh_all_autofix_results)
+			create refresh_button.make_with_text_and_action (refresh_button_text, agent panel.reload_all)
 			create l_h_box
 			l_h_box.extend (l_label)
 			l_h_box.extend (refresh_button)
@@ -108,7 +108,7 @@ feature {NONE} -- Implementation
 			l_v_box.extend (l_h_box)
 			l_v_box.disable_item_expand (l_h_box)
 			create faults_combo.make_with_text ("--")
-			faults_combo.set_minimum_size (150, 30)
+			faults_combo.set_minimum_size (250, 30)
 			faults_combo.disable_edit
 			l_v_box.extend (faults_combo)
 			l_v_box.disable_item_expand (faults_combo)
@@ -116,25 +116,25 @@ feature {NONE} -- Implementation
 			l_label.set_minimum_height (32)
 			l_label.align_text_left
 			create apply_fix_button.make_with_text_and_action (apply_fix_button_text, agent on_apply_fix)
-			create unapply_fix_button.make_with_text_and_action (unapply_fix_button_text, agent on_unapply_fix)
+			create recall_fix_button.make_with_text_and_action (recall_fix_button_text, agent on_unapply_fix)
 			create l_h_box
 			l_h_box.extend (l_label)
 			l_h_box.extend (apply_fix_button)
 			l_h_box.disable_item_expand (apply_fix_button)
-			l_h_box.extend (unapply_fix_button)
-			l_h_box.disable_item_expand (unapply_fix_button)
+			l_h_box.extend (recall_fix_button)
+			l_h_box.disable_item_expand (recall_fix_button)
 			l_v_box.extend (l_h_box)
 			l_v_box.disable_item_expand (l_h_box)
 			create fixes_list
-			fixes_list.set_minimum_size (150, 120)
+			fixes_list.set_minimum_size (250, 120)
 			fixes_list.disable_multiple_selection
 			l_v_box.extend (fixes_list)
 			create l_left_frame
-			l_left_frame.set_minimum_size (150, 200)
+			l_left_frame.set_minimum_size (350, 200)
 			l_left_frame.extend (l_v_box)
 
-			create code_diff_widget.make ("Fix Detail", before_fixing_label_text, after_fixing_label_text)
-			code_diff_widget.set_minimum_size (200, 200)
+			create code_diff_widget.make ("Fix Preview", before_fixing_label_text, after_fixing_label_text)
+			code_diff_widget.set_minimum_size (400, 200)
 
 			create split_area
 			split_area.set_first (l_left_frame)
@@ -144,16 +144,16 @@ feature {NONE} -- Implementation
 
 feature -- Actions
 
-	refresh_result (a_fault_signature: STRING)
-			-- Refresh the result for `a_fault_signature'.
+	refresh (a_fault_signature: STRING)
+			-- Refresh the view of `a_fault_signature'.
 		require
 			signature_not_empty: a_fault_signature /= Void and then not a_fault_signature.is_empty
-			result_available: panel.autofix_results.has (a_fault_signature)
+			result_available: autofix_results.has (a_fault_signature)
 		local
 			l_list_item, l_result_item: EV_LIST_ITEM
 			l_result: ES_EVE_AUTOFIX_RESULT
 		do
-			l_result := panel.autofix_results.item (a_fault_signature)
+			l_result := autofix_results.item (a_fault_signature)
 			l_result_item := faults_combo.retrieve_item_by_data (l_result, False)
 			if l_result_item = Void then
 				create l_result_item.make_with_text (l_result.short_summary_text)
@@ -170,7 +170,7 @@ feature -- Actions
 		end
 
 	refresh_all
-			-- Clean out the current GUI contents, and fill with data from `autofix_results'.
+			-- Refresh the view of all faults from `autofix_results'.
 		local
 			l_item_text: STRING
 			l_list_item: EV_LIST_ITEM
@@ -179,8 +179,8 @@ feature -- Actions
 			l_result: ES_EVE_AUTOFIX_RESULT
 			l_suggestion: ES_EVE_AUTOFIX_FIXING_SUGGESTION
 		do
-			fixes_list.wipe_out
 			faults_combo.wipe_out
+			fixes_list.wipe_out
 
 			if not autofix_results.is_empty then
 				from autofix_results.start
@@ -199,7 +199,7 @@ feature -- Actions
 					autofix_results.forth
 				end
 			else
-				create l_list_item.make_with_text ("-- No AutoFix Available --")
+				create l_list_item.make_with_text ("-- No such fault found. Run AutoFix and then try again.")
 				l_list_item.select_actions.extend (agent on_fault_selected (Void))
 				faults_combo.extend (l_list_item)
 			end
@@ -240,7 +240,7 @@ feature -- Actions
 							a_result.forth
 						end
 					else
-						create l_list_item.make_with_text ("-- No Valid Fix Available --")
+						create l_list_item.make_with_text ("-- No candidate fix suggested")
 						l_list_item.select_actions.extend (agent on_fix_selected (Void))
 						fixes_list.extend (l_list_item)
 					end
@@ -257,14 +257,8 @@ feature -- Actions
 		do
 			if a_suggestion = Void then
 				code_diff_widget.set_hunk (Void)
-				apply_fix_button.hide
 			else
 				code_diff_widget.set_hunk (a_suggestion)
-				if a_suggestion.parent /= Void and then not a_suggestion.parent.is_fixed then
-					apply_fix_button.show
-				else
-					apply_fix_button.hide
-				end
 			end
 			update_buttons
 		end
@@ -321,6 +315,8 @@ feature -- Actions
 			end
 		end
 
+feature{NONE} -- Implementation
+
 	update_buttons
 			-- Update the show/hide status of buttons.
 		local
@@ -329,16 +325,18 @@ feature -- Actions
 		do
 			if attached fixes_list.selected_item as lt_item and then attached {ES_EVE_AUTOFIX_FIXING_SUGGESTION} lt_item.data as lt_fix
 					and then not lt_fix.parent.is_fixed then
-				apply_fix_button.show
+				apply_fix_button.enable_sensitive
 			else
-				apply_fix_button.hide
+				apply_fix_button.disable_sensitive
 			end
 
-			if attached faults_combo.selected_item as lt_item and then attached {ES_EVE_AUTOFIX_RESULT} lt_item.data as lt_result
-					and then lt_result.is_fixed and then lt_result.backup_class_file /= Void then
-				unapply_fix_button.show
+			if attached faults_combo.selected_item as lt_fault_item and then attached {ES_EVE_AUTOFIX_RESULT} lt_fault_item.data as lt_result
+					and then lt_result.is_fixed and then lt_result.backup_class_file /= Void
+					and then attached fixes_list.selected_item as lt_fix_item and then attached {ES_EVE_AUTOFIX_FIXING_SUGGESTION} lt_fix_item.data as lt_fix
+					and then lt_result.fix_index_applied = lt_fix.index then
+				recall_fix_button.enable_sensitive
 			else
-				unapply_fix_button.hide
+				recall_fix_button.disable_sensitive
 			end
 		end
 

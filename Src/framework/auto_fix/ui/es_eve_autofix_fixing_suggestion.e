@@ -16,10 +16,9 @@ create
 
 feature {NONE} -- Initialize
 
-	make (a_index: INTEGER; a_parent: ES_EVE_AUTOFIX_RESULT; a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_base_code, a_diff_code: STRING)
+	make (a_parent: ES_EVE_AUTOFIX_RESULT; a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_base_code, a_diff_code: STRING; a_ranking: DOUBLE)
 			-- Initialization.
 		require
-			positive_index: a_index > 0
 			parent_attached: a_parent /= VOid
 			context_attached: a_context_class /= Void and then a_context_feature /= VOid
 			code_attached: a_base_code /= Void and then a_diff_code /= Void
@@ -31,9 +30,9 @@ feature {NONE} -- Initialize
 			l_new_diff := a_diff_code.substring (1, a_diff_code.last_index_of ('d', a_diff_code.count))
 			l_new_diff.append (" -- routine")
 			make_hunk (a_context_class, l_new_base, l_new_diff)
-			index := a_index
 			parent := a_parent
 			context_feature := a_context_feature
+			ranking := a_ranking
 		end
 
 feature -- Access
@@ -41,19 +40,24 @@ feature -- Access
 	context_feature: FEATURE_I
 			-- Context feature.
 
-	index: INTEGER
+	index: INTEGER assign set_index
 			-- Index of the fix.
 
 	parent: ES_EVE_AUTOFIX_RESULT
 			-- AutoFix result containing the suggestion.
 
+	ranking: DOUBLE
+			-- Ranking of the fix.
+
 	short_summary_text: STRING
 			-- Short summary text.
+		local
+			l_rank_str: STRING
 		do
+			l_rank_str := ranking.out
+			Result := "Candidate fix #" + index.out + "    (" + l_rank_str.substring (1, l_rank_str.count.min (4)) + ")"
 			if parent /= Void and then parent.fix_index_applied = index then
-				Result := "Fix_" + index.out + " (Applied)"
-			else
-				Result := "Fix_" + index.out
+				Result := Result + " (Applied)"
 			end
 		end
 
@@ -65,11 +69,19 @@ feature -- Basic operation
 			parent.apply_fix (Current)
 		end
 
+	set_index (a_index: INTEGER)
+			-- Set `index' with `a_index'.
+		require
+			positive_index: a_index > 0
+		do
+			index := a_index
+		end
+
 
 invariant
 
 	parent_not_void: parent /= Void
-	positive_index:  index > 0
+	positive_index:  index >= 0
 
 ;note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
