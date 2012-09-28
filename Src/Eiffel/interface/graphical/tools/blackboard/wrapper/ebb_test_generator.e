@@ -95,7 +95,7 @@ feature {NONE}
 		local
 			l_feature: FEATURE_I
 			l_failed: BOOLEAN
-			l_path: DIRECTORY_NAME
+			l_path: DIRECTORY_NAME_32
 			l_filename: FILE_NAME
 		do
 
@@ -239,7 +239,7 @@ feature {NONE}
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

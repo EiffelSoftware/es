@@ -75,7 +75,7 @@ feature -- Generation
 			file_system_routines.copy_recursive (pathnames.runtime_dirname, file_system.pathname (a_pathname, "runtime"))
 		end
 
-	create_interpreter (a_log_dirname: STRING; a_config: TEST_GENERATOR)
+	create_interpreter (a_log_dirname: READABLE_STRING_GENERAL; a_config: TEST_GENERATOR)
 			-- Create interpreter proxy based on executable found in `a_pathname'
 			-- and make it available via `last_interpreter'.
 			--
@@ -85,26 +85,27 @@ feature -- Generation
 			a_log_dirname_not_empty: not a_log_dirname.is_empty
 		local
 			absolute_pathname: STRING
-			executable_filename: STRING
+			executable_filename: like {E_SYSTEM}.application_name
 			l_new: like last_interpreter
 			l_serialization_file: STRING
+			u: FILE_UTILITIES
 		do
-			file_system.recursive_create_directory (a_log_dirname)
+			u.create_directory (a_log_dirname)
 			executable_filename := system.eiffel_system.application_name (True)
 
 			if session.test_case_serialization_file /= Void and then not session.test_case_serialization_file.is_empty then
 				l_serialization_file := session.test_case_serialization_file
 			else
-				l_serialization_file := file_system.pathname (a_log_dirname, "serialization.txt")
+				l_serialization_file := file_system.pathname (a_log_dirname.as_string_8, "serialization.txt")
 			end
 
 			--compute_interpreter_root_class
-			if file_system.file_exists (executable_filename) and interpreter_root_class /= Void then
+			if u.file_exists (executable_filename) and interpreter_root_class /= Void then
 				create l_new.make (
 					executable_filename,
 					system,
-					file_system.pathname (a_log_dirname, "interpreter_log.txt"),
-					file_system.pathname (a_log_dirname, "proxy_log.txt"),
+					u.make_file_name_in ("interpreter_log.txt", a_log_dirname),
+					u.make_file_name_in ("proxy_log.txt", a_log_dirname),
 					l_serialization_file,
 					session.error_handler,
 					a_config)
@@ -115,7 +116,7 @@ feature -- Generation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

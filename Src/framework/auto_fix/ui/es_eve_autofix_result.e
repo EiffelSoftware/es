@@ -218,7 +218,7 @@ feature -- Applying and recalling a fix
 			create l_origin_file_name.make_from_string (l_class_to_fix.file_name)
 
 			if l_should_backup then
-				create l_backup_dir_name.make_from_string (eiffel_project.project_directory.backup_path)
+				create l_backup_dir_name.make_from_string (eiffel_project.project_directory.backup_path.to_string_32.as_string_8)
 				create l_dir.make (l_backup_dir_name)
 				if not l_dir.exists then
 					file_system.recursive_create_directory (l_backup_dir_name)

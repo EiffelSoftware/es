@@ -75,7 +75,7 @@ feature -- Basic operation
 			l_test_case_file_selector: AFX_TEST_CASE_FILE_SELECTOR
 			l_system: SYSTEM_I
 			l_dir: PROJECT_DIRECTORY
-			l_eifgens_dir_path: DIRECTORY_NAME
+			l_eifgens_dir_path: STRING
 			l_file: KL_TEXT_OUTPUT_FILE
 			l_file_name: FILE_NAME
 			l_source_writer: TEST_INTERPRETER_SOURCE_WRITER
@@ -95,7 +95,7 @@ feature -- Basic operation
 				-- Build new root class for fixing.
 			create l_root_builder.make_with_test_cases (l_system, current_failing_test_cases, current_passing_test_cases, current_fault_signature)
 			l_root_builder.build
-			l_eifgens_dir_path := l_system.project_location.eifgens_cluster_path
+			l_eifgens_dir_path := l_system.project_location.eifgens_cluster_path.to_string_32.as_string_8
 			create l_file_name.make_from_string (l_eifgens_dir_path)
 			l_file_name.set_file_name (afx_project_root_class.as_lower)
 			l_file_name.add_extension ("e")

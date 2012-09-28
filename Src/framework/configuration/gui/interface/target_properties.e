@@ -443,9 +443,9 @@ feature {NONE} -- Implementation helper
 			a_name_valid: valid_setting (a_name)
 			current_target_not_void: current_target /= Void
 		do
-			a_property.set_refresh_action (agent get_setting (a_name))
+			a_property.set_refresh_action (agent (current_target.settings).item (a_name))
 			a_property.refresh
-			a_property.change_value_actions.extend (agent simple_wrapper ({STRING_32}?, agent set_string_setting (a_name, a_default, ?)))
+			a_property.change_value_actions.extend (agent set_string_setting (a_name, a_default, ?))
 			a_property.change_value_actions.extend (agent change_no_argument_wrapper ({STRING_32}?, agent update_inheritance_setting (a_name, a_property)))
 			a_property.change_value_actions.extend (agent change_no_argument_wrapper ({STRING_32}?, agent handle_value_changes (False)))
 			a_property.use_inherited_actions.extend (agent current_target.update_setting (a_name, Void))
@@ -474,7 +474,7 @@ feature {NONE} -- Implementation helper
 
 feature {NONE} -- Inheritance handling
 
-	update_inheritance_setting (a_name: STRING; a_property: PROPERTY)
+	update_inheritance_setting (a_name: STRING_32; a_property: PROPERTY)
 			-- Enable inheritance/override on `a_property' accordint to the setting `a_name'.
 		require
 			a_name_valid: valid_setting (a_name)
@@ -556,7 +556,7 @@ feature {NONE} -- Configuration setting
 			end
 		end
 
-	set_string_setting (a_name: STRING; a_default: STRING; a_value: STRING)
+	set_string_setting (a_name: STRING_32; a_default: STRING_32; a_value: STRING_32)
 			-- Set a string setting with `a_name' to `a_value'.
 		require
 			a_name_valid: valid_setting (a_name)
@@ -626,22 +626,6 @@ feature {NONE} -- Validation and warning generation
 				Result := a_value.is_natural_8 and then a_value.to_natural_8 <= 100
 			else
 				Result := True
-			end
-		end
-
-feature {NONE} -- Wrappers
-
-	get_setting (a_name: STRING): STRING_32
-			-- Get value of a setting as STRING_32.
-		require
-			current_target: current_target /= Void
-			valid_name: valid_setting (a_name)
-		local
-			l_val: STRING
-		do
-			l_val := current_target.settings.item (a_name)
-			if l_val /= Void then
-				Result := l_val
 			end
 		end
 

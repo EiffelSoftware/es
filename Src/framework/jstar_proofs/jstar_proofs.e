@@ -130,7 +130,7 @@ feature {NONE} -- Implementation
 	directory: STRING
 			-- The directory where the jStar input and output files will be written
 		do
-			Result := system.eiffel_project.project_directory.target_path
+			Result := system.eiffel_project.project_directory.target_path.to_string_32.as_string_8
 		end
 
 end

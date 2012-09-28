@@ -292,15 +292,15 @@ feature {NONE} -- Implementation
 	boogie_output: STRING
 			-- Output from Boogie execution
 
-	boogie_code_file_name: STRING
+	boogie_code_file_name: STRING_32
 			-- File name for Boogie code file
 		local
-			l_output_path: FILE_NAME
+			l_output_path: FILE_NAME_32
 		do
 			create l_output_path.make_from_string (system.eiffel_project.project_directory.target_path)
 			l_output_path.extend ("Boogie")
 			l_output_path.extend ("output.bpl")
-			Result := l_output_path
+			Result := l_output_path.to_string_32
 
 				-- TODO: remove this to use the EIFGENs directory
 			if {PLATFORM}.is_windows then

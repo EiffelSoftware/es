@@ -1,4 +1,4 @@
-﻿note
+note
 	description: "[
 		Task performing testing part of test generation either randomly or by replaying a log.
 	]"
@@ -381,9 +381,11 @@ feature {NONE} -- Factory
 			-- Create a new interpreter proxy, Void if executable did not exist.
 		local
 			l_itp_gen: AUT_INTERPRETER_GENERATOR
+			u: FILE_UTILITIES
 		do
 			l_itp_gen := interpreter_generator
-			l_itp_gen.create_interpreter (file_system.pathname (generation.output_dirname, "log"), generation)
+			l_itp_gen.create_interpreter
+				(u.make_directory_name_in ({STRING_32} "log", generation.output_dirname), generation)
 
 				-- FIXME: ensure `last_interpreter' is attached, even if executable does not exist!
 			Result := l_itp_gen.last_interpreter

@@ -1,4 +1,4 @@
-﻿note
+note
 	description:
 
 		"Proxy for Erl-G interpreters"
@@ -29,19 +29,13 @@ inherit
 	DT_SHARED_SYSTEM_CLOCK
 		export {NONE} all end
 
-	KL_SHARED_FILE_SYSTEM
-		export {NONE} all end
-
-	KL_SHARED_EXECUTION_ENVIRONMENT
-		export {NONE} all end
-
 	KL_SHARED_OPERATING_SYSTEM
 		export {NONE} all end
 
 	UNIX_SIGNALS
 		export {NONE} all end
 
-	EXECUTION_ENVIRONMENT
+	EXECUTION_ENVIRONMENT_32
 		rename
 			system as execution_system
 		export
@@ -87,10 +81,10 @@ create
 
 feature {NONE} -- Initialization
 
-	make (an_executable_file_name: STRING;
+	make (an_executable_file_name: READABLE_STRING_GENERAL;
 			a_system: like system;
-			an_interpreter_log_filename: STRING;
-			a_proxy_log_filename: STRING;
+			an_interpreter_log_filename: READABLE_STRING_GENERAL;
+			a_proxy_log_filename: READABLE_STRING_GENERAL;
 			a_serialization_file_name: STRING;
 			a_error_handler: like error_handler;
 			a_config: like configuration)
@@ -107,6 +101,7 @@ feature {NONE} -- Initialization
 			l_itp_class: CLASS_C
 			l_file_printer: AUT_PROXY_LOG_TEXT_STREAM_PRINTER
 			l_dir: DIRECTORY_NAME
+			u: FILE_UTILITIES
 		do
 			configuration := a_config
 
@@ -128,13 +123,12 @@ feature {NONE} -- Initialization
 			create socket_data_printer.make (system, variable_table, Current)
 
 			executable_file_name := an_executable_file_name
-			melt_path := file_system.dirname (executable_file_name)
+			melt_path := u.file_directory_path (an_executable_file_name)
 			interpreter_log_filename := an_interpreter_log_filename
 			test_case_serialization_filename := a_serialization_file_name.twin
-
+			proxy_log_file := u.make_text_output_file (a_proxy_log_filename)
 				-- Create proxy log printers.
 			create proxy_log_printers.make
-			create proxy_log_file.make (a_proxy_log_filename)
 			proxy_log_file.open_write
 
 			if not configuration.proxy_log_options.is_empty then
@@ -1006,12 +1000,12 @@ feature{NONE} -- Process scheduling
 	launch_process
 			-- Launch `process'.
 		local
-			arguments: ARRAYED_LIST [STRING]
+			arguments: ARRAYED_LIST [READABLE_STRING_GENERAL]
 			l_body_id: INTEGER
-			l_workdir: STRING
+			l_workdir: STRING_32
 		do
 				-- $MELT_PATH needs to be set here in only to allow debugging.
-			execution_environment.set_variable_value ("MELT_PATH", melt_path)
+			put (melt_path, "MELT_PATH")
 			create stdout_reader.make
 
 				-- We need `injected_feature_body_id'-1 because the underlying C array is 0-based.
@@ -1341,16 +1335,16 @@ feature {NONE} -- Logging
 
 feature {NONE} -- Implementation
 
-	executable_file_name: STRING
+	executable_file_name: READABLE_STRING_GENERAL
 			-- File name of interpreter executable
 
-	interpreter_log_filename: STRING
+	interpreter_log_filename: READABLE_STRING_GENERAL
 			-- File name of the interpreters log
 
 	test_case_serialization_filename: STRING
 			-- Name of the file to store serialized test cases
 
-	melt_path: STRING
+	melt_path: READABLE_STRING_GENERAL
 			-- Path where melt file of test client resides
 
 	socket_data_printer: AUT_REQUEST_PRINTER

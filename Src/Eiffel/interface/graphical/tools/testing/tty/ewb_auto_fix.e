@@ -126,11 +126,11 @@ feature -- Properties
 	is_fixing_root_available: BOOLEAN
 			-- Is the project root for fixing available in the EIFGENs/Cluster directory?
 		local
-			l_eifgens_dir_path: DIRECTORY_NAME
+			l_eifgens_dir_path: STRING
 			l_file: KL_TEXT_OUTPUT_FILE
 			l_file_name: FILE_NAME
 		do
-			l_eifgens_dir_path := system.project_location.eifgens_cluster_path
+			l_eifgens_dir_path := system.project_location.eifgens_cluster_path.to_string_32.as_string_8
 			create l_file_name.make_from_string (l_eifgens_dir_path)
 			l_file_name.set_file_name (afx_project_root_class.as_lower)
 			l_file_name.add_extension ("e")

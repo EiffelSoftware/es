@@ -53,6 +53,8 @@ feature {NONE} -- Initialization
 
 	make (a_test_suite: like test_suite; a_etest_suite: like etest_suite; a_is_gui: BOOLEAN)
 			-- <Precursor>
+		local
+			u: FILE_UTILITIES
 		do
 			Precursor (a_test_suite, a_etest_suite, a_is_gui)
 			create output_stream.make_empty
@@ -65,7 +67,9 @@ feature {NONE} -- Initialization
 			class_names.set_equality_tester (create {KL_STRING_EQUALITY_TESTER_A [STRING]})
 			proxy_time_out := 2
 			set_time_out (3)
-			output_dirname := file_system.pathname (etest_suite.project_access.project.project_directory.testing_results_path, "auto_test")
+			output_dirname := u.make_file_name_in
+				({STRING_32} "auto_test",
+				etest_suite.project_access.project.project_directory.testing_results_path).as_string_32
 			set_seed ((create {TIME}.make_now).milli_second.as_natural_32)
 			create error_handler.make (system)
 			error_handler.set_configuration (Current)
@@ -87,7 +91,7 @@ feature -- Access
 
 feature -- Options: basic
 
-	output_dirname: STRING
+	output_dirname: STRING_32
 			-- Name of output directory
 
 	log_dirname: STRING
@@ -1443,7 +1447,7 @@ feature -- Log processor
 			l_duration: DATE_TIME_DURATION
 		do
 
-			create l_time_file.make_from_string (workbench.project_location.testing_results_path)
+			create l_time_file.make_from_string (workbench.project_location.testing_results_path.to_string_32.as_string_8)
 			l_time_file.extend ("start_time.txt")
 			create l_file.make_open_append (l_time_file.out)
 			create l_time.make_now_utc
@@ -1471,7 +1475,7 @@ feature -- Collect interface related classes
 			-- Collect non-deferred classes that are used in the interfaces of `class_names'.
 		local
 			l_related_class_collector: AUT_INTERFACE_RELATED_CLASS_COLLECTOR
-			l_path: DIRECTORY_NAME
+			l_path: STRING
 			l_directory: DIRECTORY
 			l_file_name: FILE_NAME
 		do
@@ -1484,7 +1488,7 @@ feature -- Collect interface related classes
 				create l_file_name.make_from_string (data_output)
 			else
 				-- Save result to the testing result path.
-				l_path := system.eiffel_project.project_directory.testing_results_path
+				l_path := system.eiffel_project.project_directory.testing_results_path.to_string_32.as_string_8
 				create l_file_name.make_from_string (l_path)
 				l_file_name.set_file_name ("related_classes.txt")
 			end

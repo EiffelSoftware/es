@@ -617,13 +617,13 @@ feature {NONE} -- Write to HDD
 			Result := l_output_path
 		end
 
-	project_target_path: attached STRING
+	project_target_path: attached STRING_32
 			-- Path name to the target of current project
 		local
 			l_system: SYSTEM_I
 			l_project: E_PROJECT
 			l_project_directory: PROJECT_DIRECTORY
-			l_dir_name: DIRECTORY_NAME
+			l_dir_name: DIRECTORY_NAME_32
 		do
 			l_system := system
 			check l_system /= Void end
@@ -637,7 +637,7 @@ feature {NONE} -- Write to HDD
 			l_dir_name := l_project_directory.target_path
 			check l_dir_name /= Void end
 
-			Result := l_dir_name
+			Result := l_dir_name.to_string_32
 		end
 
 end

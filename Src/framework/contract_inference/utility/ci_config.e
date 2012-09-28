@@ -50,10 +50,10 @@ feature -- Access
 			Result := feature_name_for_test_cases_cache
 		end
 
-	project_directory: STRING
+	project_directory: STRING_32
 			-- Directory of current project
 		do
-			Result := eiffel_system.eiffel_project.project_directory.path
+			Result := eiffel_system.eiffel_project.project_directory.path.to_string_32
 		end
 
 	root_class: CLASS_C

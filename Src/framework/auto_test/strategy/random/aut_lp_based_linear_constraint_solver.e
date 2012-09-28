@@ -121,7 +121,7 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	lpsolve_file_path: FILE_NAME
+	lpsolve_file_path: FILE_NAME_32
 			-- Full path for the generated lpsolve file
 		do
 			create Result.make_from_string (universe.project_location.workbench_path)
@@ -133,8 +133,10 @@ feature{NONE} -- Implementation
 			-- at location `lpsolve_file_path'.
 		local
 			l_file: PLAIN_TEXT_FILE
+			u: FILE_UTILITIES
 		do
-			create l_file.make_create_read_write (lpsolve_file_path)
+			l_file := u.make_text_file (lpsolve_file_path)
+			l_file.open_read
 			l_file.put_string (a_content)
 			l_file.close
 		end
@@ -210,7 +212,7 @@ invariant
 	constraining_queries_attached: context_queries /= Void
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -71,7 +71,7 @@ feature{NONE} -- Implementation
 	smtlib_file_path: FILE_NAME
 			-- Full path for the generated SMT-LIB file
 		do
-			create Result.make_from_string (universe.project_location.workbench_path)
+			create Result.make_from_string (universe.project_location.workbench_path.to_string_32.as_string_8)
 			Result.set_file_name ("linear.smt")
 		end
 
@@ -226,7 +226,7 @@ invariant
 	constraining_queries_attached: context_queries /= Void
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

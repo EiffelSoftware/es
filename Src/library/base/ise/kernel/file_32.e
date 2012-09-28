@@ -30,6 +30,7 @@ inherit
 				is_directory,
 				is_equal,
 				is_empty,
+				is_access_executable,
 				is_executable,
 				is_open_append,
 				is_open_read,
@@ -43,6 +44,7 @@ inherit
 				last_string,
 				path_exists,
 				position,
+				prunable,
 				put_boolean,
 				put_character,
 				put_new_line,
@@ -52,10 +54,13 @@ inherit
 				read_stream,
 				retrieved,
 				support_storable,
-				standard_is_equal
+				standard_is_equal,
+				wipe_out
 		redefine
+			access_date,
 			buffered_file_info,
 			create_read_write,
+			date,
 			delete,
 			exists,
 			is_creatable,
@@ -198,6 +203,28 @@ feature -- Access
 			end
 		end
 
+feature -- Access
+
+	date: INTEGER
+			-- <Precursor>
+		do
+			if attached external_name_16 as n then
+				Result := eif_file_date_16 ($n)
+			else
+				Result := Precursor
+			end
+		end
+
+	access_date: INTEGER
+			-- <Precursor>
+		do
+			if attached external_name_16 as n then
+				Result := eif_file_access_date_16 ($n)
+			else
+				Result := Precursor
+			end
+		end
+
 feature -- Modification
 
 	reset (fn: STRING_32)
@@ -298,6 +325,22 @@ feature {NONE} -- Status report
 			-- Is `f_name' of count `n' creatable.
 		external
 			"C signature (EIF_NATURAL_16 *, EIF_INTEGER): EIF_BOOLEAN use %"eif_file.h%""
+		end
+
+	eif_file_date_16 (f_name: POINTER): INTEGER
+			-- Modification date of a file `f_name' in UTF-16 encoding.
+		require
+			{PLATFORM}.is_windows
+		external
+			"C signature (EIF_NATURAL_16 *): EIF_INTEGER use %"eif_file.h%""
+		end
+
+	eif_file_access_date_16 (f_name: POINTER): INTEGER
+			-- Access date of a file `f_name' in UTF-16 encoding.
+		require
+			{PLATFORM}.is_windows
+		external
+			"C signature (EIF_NATURAL_16 *): EIF_INTEGER use %"eif_file.h%""
 		end
 
 feature {NONE} -- Modification
