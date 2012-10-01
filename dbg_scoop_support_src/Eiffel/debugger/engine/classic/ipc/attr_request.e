@@ -77,6 +77,10 @@ feature -- Properites
 			-- Type ID of the inspected object.
 			-- 0 if the object is special.
 
+	scoop_processor_id: NATURAL_16
+			-- SCOOP Processor id of the inspected object
+			-- 0 is not relevant.
+
 feature -- Update
 
 	send
@@ -93,6 +97,7 @@ feature -- Update
 			is_special := to_boolean (c_tread)
 			is_tuple := to_boolean (c_tread)
 			object_type_id := to_integer_32 (c_tread) + 1
+			scoop_processor_id := to_natural_16 (c_tread)
 			if object_type_id <= 0 then
 					--| Error occurred
 				debug ("DEBUG_RECV")
@@ -182,15 +187,19 @@ feature {NONE} -- Implementation
 			sk_type: NATURAL_32
 			i, attr_nb: INTEGER
 			attr: ABSTRACT_DEBUG_VALUE
+			ref_attr: REFERENCE_VALUE
 			exp_attr: EXPANDED_VALUE
 			spec_attr: SPECIAL_VALUE
 			type_id: INTEGER
+			scoop_id: NATURAL_16
 			p: POINTER
 			i1,i2: INTEGER
 			l_attr_address: like object_address
 		do
+			-- Get attributes count							
 			s := c_tread
 			if is_valid_integer_32_string (s) then
+
 				attr_nb := to_integer_32 (s)
 				if attr_list.capacity <= attr_nb then
 					attr_list.resize (attr_nb)
@@ -209,7 +218,10 @@ feature {NONE} -- Implementation
 				until
 					i > attr_nb
 				loop
+					-- Get attribute name
 					attr_name := c_tread
+
+					-- Get type
 					s := c_tread
 					if is_valid_integer_32_string (s) then
 						sk_type := to_natural_32 (s)
@@ -257,6 +269,7 @@ feature {NONE} -- Implementation
 					when Sk_bit then
 						create {BITS_VALUE} attr.make_attribute (attr_name, e_class, c_tread)
 					when Sk_exp then
+						-- Get type id
 						type_id := to_integer_32 (c_tread) + 1;
 						if container_is_special then
 							--| If expanded contained in SPECIAL, it doesn't have a specific (hector) address
@@ -278,13 +291,18 @@ feature {NONE} -- Implementation
 							create {REFERENCE_VALUE} attr.make_attribute (attr_name, e_class, type_id, create {DBG_ADDRESS}.make_from_pointer (p));
 						end
 					when Sk_ref then
-							-- Is this a special object?
+						-- Get Scoop id
+						scoop_id := to_natural_16 (c_tread)
+
+						-- Is this a special object?						
 						if to_boolean (c_tread) then
 								-- Is this a tuple object?
 							if to_boolean (c_tread) then
 								type_id := to_integer_32 (c_tread) + 1
-								create {REFERENCE_VALUE} attr.make_attribute (attr_name, e_class,
+								create ref_attr.make_attribute (attr_name, e_class,
 									type_id, create {DBG_ADDRESS}.make_from_pointer (to_pointer (c_tread)))
+								ref_attr.set_scoop_processor_id (scoop_id)
+								attr := ref_attr
 							else
 								debug("DEBUG_RECV")
 									io.error.put_string ("Creating SPECIAL object.%N")
@@ -309,6 +327,7 @@ feature {NONE} -- Implementation
 									spec_attr.set_sp_bounds (sp_lower, sp_upper);
 								end;
 								max_capacity := max_capacity.max (spec_attr.capacity);
+								spec_attr.set_scoop_processor_id (scoop_id)
 								attr := spec_attr;
 									-- We don't get anymore the special items at this step
 							end
@@ -316,12 +335,13 @@ feature {NONE} -- Implementation
 								-- Is this a void object?
 							if not to_boolean (c_tread) then
 								type_id := to_integer_32 (c_tread) + 1
-								create {REFERENCE_VALUE} attr.make_attribute (attr_name, e_class,
+								create ref_attr.make_attribute (attr_name, e_class,
 															type_id, create {DBG_ADDRESS}.make_from_pointer (to_pointer (c_tread)))
 							else
-								create {REFERENCE_VALUE} attr.make_attribute (attr_name, e_class,
-															0, create {DBG_ADDRESS}.make_void)
+								create ref_attr.make_attribute (attr_name, e_class, 0, create {DBG_ADDRESS}.make_void)
 							end
+							ref_attr.set_scoop_processor_id (scoop_id)
+							attr := ref_attr
 						end
 					else
 							-- We should never go through this path.
@@ -381,7 +401,7 @@ invariant
 	object_address_attached: object_address /= Void and then not object_address.is_void
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

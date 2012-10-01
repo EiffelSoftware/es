@@ -63,7 +63,6 @@ feature {NONE} -- Initialization
 	build_tool_interface (a_widget: EV_VERTICAL_BOX)
 			-- Build all the tool's widgets.
 		local
-			development_window: EB_DEVELOPMENT_WINDOW
 			box2: EV_VERTICAL_BOX
 			t_label: EV_LABEL
 			g: like stack_grid
@@ -183,9 +182,12 @@ feature {NONE} -- Initialization
 			g.row_deselect_actions.extend (agent on_row_deselected)
 
 				--| Context menu handler
-			development_window ?= develop_window
 			g.set_configurable_target_menu_mode
-			g.set_configurable_target_menu_handler (agent (development_window.menus.context_menu_factory).call_stack_menu)
+			if attached develop_window as l_development_window then
+				g.set_configurable_target_menu_handler (agent (l_development_window.menus.context_menu_factory).call_stack_menu)
+			else
+				check is_development_window: False end
+			end
 
 				--| Call stack level selection mode
 			update_call_stack_level_selection_mode (preferences.debug_tool_data.select_call_stack_level_on_double_click_preference)
@@ -1307,6 +1309,22 @@ feature {NONE} -- Export call stack
 			retry
 		end
 
+feature {NONE} -- Disabled stack element
+
+	is_internal_call_stack_element (e: CALL_STACK_ELEMENT): BOOLEAN
+			-- Call stack element `e' should be hidden ?
+		do
+			if e.is_eiffel_call_stack_element then
+				if attached e.class_name as cl then
+					Result := cl.same_string ("ISE_SCOOP_MANAGER") or else cl.same_string ("ISE_EXCEPTION_MANAGER")
+				end
+			else
+				-- Do not show pure dotnet calls.
+				Result := True
+			end
+		end
+
+
 feature {NONE} -- Stack grid implementation
 
 	clean_stack_grid
@@ -1353,8 +1371,9 @@ feature {NONE} -- Stack grid implementation
 					row := stack_grid.row (i)
 					stack_data[i] := stack.item
 					row.set_data (i)
-					if not stack.item.is_eiffel_call_stack_element then
+					if is_internal_call_stack_element (stack.item) then
 						row.disable_select
+--						row.hide
 					end
 					i := i + 1
 					stack.forth
@@ -1578,7 +1597,7 @@ feature {NONE} -- Stack grid implementation
 		require
 			a_row /= Void
 		local
-			glab: EV_GRID_LABEL_ITEM
+			l_grid_label: detachable EV_GRID_LABEL_ITEM
 			level: INTEGER
 			ep: EV_PIXMAP
 		do
@@ -1586,10 +1605,8 @@ feature {NONE} -- Stack grid implementation
 			a_row.set_foreground_color (Void)
 			a_row.set_background_color (Void)
 
-			glab ?= a_row.item (Feature_column_index)
-			if glab = Void then
-				a_row.clear
-			else
+			if attached {EV_GRID_LABEL_ITEM} a_row.item (Feature_column_index) as glab then
+				l_grid_label := glab
 				if level = current_level then
 					glab.set_pixmap (pixmaps.icon_pixmaps.callstack_active_arrow_icon)
 					a_row.set_background_color (row_highlight_bg_color)
@@ -1603,6 +1620,8 @@ feature {NONE} -- Stack grid implementation
 						a_row.set_foreground_color (unsensitive_fg_color)
 					end
 				end
+			else
+				a_row.clear
 			end
 			if execution_replay_activated then
 				if level - 1 <= execution_replay_level_limit then
@@ -1610,8 +1629,8 @@ feature {NONE} -- Stack grid implementation
 					a_row.set_background_color (row_replayable_bg_color)
 				end
 				if level = marked_level then
-					if glab /= Void then
-						glab.set_pixmap (pixmaps.icon_pixmaps.callstack_marked_arrow_icon)
+					if l_grid_label /= Void then
+						l_grid_label.set_pixmap (pixmaps.icon_pixmaps.callstack_marked_arrow_icon)
 					end
 				end
 			end
@@ -1822,15 +1841,17 @@ feature {NONE} -- Stone handlers
 
 feature {NONE} -- Grid Implementation
 
-	replayed_call_stack_element_from_row (a_row: EV_GRID_ROW): REPLAYED_CALL_STACK_ELEMENT
+	replayed_call_stack_element_from_row (a_row: EV_GRID_ROW): detachable REPLAYED_CALL_STACK_ELEMENT
 			-- Call stack level related to `a_row'.
 		require
 			a_row /= Void
 		do
-			Result ?= a_row.data
+			if attached {REPLAYED_CALL_STACK_ELEMENT} a_row.data as res then
+				Result := res
+			end
 		end
 
-	replayed_call_stack_element_from_row_with_rt_info (a_row: EV_GRID_ROW): REPLAYED_CALL_STACK_ELEMENT
+	replayed_call_stack_element_from_row_with_rt_info (a_row: EV_GRID_ROW): detachable REPLAYED_CALL_STACK_ELEMENT
 			-- Call stack level related to `a_row'.
 		require
 			a_row /= Void
@@ -1845,18 +1866,18 @@ feature {NONE} -- Grid Implementation
 			Result_with_rt_info: Result /= Void implies Result.rt_information_available
 		end
 
-	stack_data_at (lev: INTEGER): CALL_STACK_ELEMENT
+	stack_data_at (lev: INTEGER): detachable CALL_STACK_ELEMENT
 			-- Stack data for level `lev'
 		do
-			if stack_data /= Void and then stack_data.valid_index (lev) then
-				Result := stack_data[lev]
+			if attached stack_data as l_data and then l_data.valid_index (lev) then
+				Result := l_data [lev]
 			end
 		end
 
 	is_eiffel_callstack_at (lev: INTEGER): BOOLEAN
 			-- Is stack data related to `lev' an Eiffel call stack ?
 		do
-			Result := (attached stack_data_at (lev) as s) and then s.is_eiffel_call_stack_element
+			Result := attached stack_data_at (lev) as s and then s.is_eiffel_call_stack_element
 		end
 
 	level_associated_with (rep: REPLAYED_CALL_STACK_ELEMENT): INTEGER

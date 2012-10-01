@@ -41,6 +41,7 @@ feature {NONE} -- Creation
 				is_special := rqst.is_special
 				is_tuple := rqst.is_tuple
 				capacity := rqst.capacity
+				scoop_processor_id := rqst.scoop_processor_id
 				max_capacity := rqst.max_capacity
 				get_type_info (rqst)
 			end
@@ -141,7 +142,7 @@ feature -- Properties
 			-- Attributes of object being inspected (sorted by name)
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

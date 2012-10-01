@@ -439,9 +439,24 @@ feature -- Access: SCOOP related
 			-- SCOOP Processor id indexed by thread id
 
 	scoop_processor_id (tid: like current_thread_id): POINTER
+			-- Scoop processor id associated with thread id `tid'.
 		do
 			if attached scoop_processor_ids as scp then
 				Result := scp.item (tid)
+			end
+		end
+
+	thread_id_from_scoop_processor_id (pid: like scoop_processor_id): like current_thread_id
+			-- Thread id associated with process id `pid'.
+		do
+			across
+				scoop_processor_ids as c
+			until
+				not Result.is_default_pointer
+			loop
+				if c.item = pid then
+					Result := c.key
+				end
 			end
 		end
 
@@ -832,7 +847,7 @@ feature -- Setting
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

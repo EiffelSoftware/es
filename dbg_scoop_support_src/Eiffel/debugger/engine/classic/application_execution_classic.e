@@ -323,6 +323,23 @@ feature -- Remote access to RT_
 			reset_recv_value
 		end
 
+feature -- Remote access to SCOOP MANAGER
+
+	imp_remote_rt_scoop_manager: detachable ABSTRACT_REFERENCE_VALUE
+			-- Return the remote scp_mnger
+		do
+			ewb_request.send_rqst_1 (rqst_rt_operation, Rtop_dump_scoop_manager)
+			ewb_request.reset_recv_value
+			ewb_request.recv_value (ewb_request)
+			if attached {like imp_remote_rt_scoop_manager} ewb_request.item as ref then
+				Result := ref
+				Result.set_hector_addr
+			else
+				check ewb_request.item = Void end
+			end
+			ewb_request.reset_recv_value
+		end
+
 feature {NONE} -- Breakpoints implementation
 
 	send_execution_information (a_execution_mode: INTEGER; ign_bp: BOOLEAN)

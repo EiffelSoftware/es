@@ -35,6 +35,9 @@ feature -- Properties
 	thread_id: POINTER
 			-- Thread id related to Current
 
+	scoop_processor_id: NATURAL_16
+			-- Associated scoop processor id if relevant.
+
 	break_index: INTEGER
 			-- the "Line number" where application is stopped within current feature
 
@@ -50,6 +53,14 @@ feature -- Properties
 			--| Initialially it is the physical address but is then
 			--| protected in the `set_hector_addr_for_current_object' routine.
 		deferred
+		end
+
+feature -- Element change
+
+	set_scoop_processor_id (a_pid: like scoop_processor_id)
+			-- Set `scoop_processor_id' to `a_pid'
+		do
+			scoop_processor_id := a_pid
 		end
 
 feature -- Status
@@ -96,7 +107,7 @@ feature -- Output
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
