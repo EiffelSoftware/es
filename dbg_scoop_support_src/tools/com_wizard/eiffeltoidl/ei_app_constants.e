@@ -1,0 +1,88 @@
+note
+	description: "Common application constants"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	EI_APP_CONSTANTS
+
+feature {NONE} -- Access
+
+	Filter_output_file_name: STRING = "com_filter.output"
+
+	Return_value_variable_name: STRING = "return_value"
+
+feature -- Constants for input parser
+	
+	Feature_indicator: STRING = "#feature#"
+
+	Description_indicator: STRING = "description:"
+
+	Type_indicator: STRING = "#type#"
+
+	Comment_indicator: STRING = "#--#"
+
+	Class_header_indicator: STRING = "#class#"
+
+	Infix_feature_indicator: STRING = "#infix#"
+
+	Prefix_feature_indicator: STRING = "#prefix#"
+
+	Constant_indicator: STRING = " is "
+
+	Current_type: STRING = "Current"
+
+	Like_word: STRING = "like"
+
+	Empty_string: STRING = ""
+
+	Colon_character: CHARACTER = ':'
+
+	Space_character: CHARACTER = ' '
+
+	Open_parenthesis_char: CHARACTER = '('
+
+	Close_parenthesis_char: CHARACTER = ')'
+
+	Comma_character: CHARACTER = ','
+
+	Semicolon_character: CHARACTER = ';'
+
+	Double_quote_character: CHARACTER = '%"';
+
+note
+	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options:	"http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful,	but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the	GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+		]"
+	source: "[
+			 Eiffel Software
+			 356 Storke Road, Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
+end -- class EI_APP_CONSTANTS
+
+

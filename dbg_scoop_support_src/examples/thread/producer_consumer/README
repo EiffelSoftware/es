@@ -1,0 +1,12 @@
+Producer-consumer example using the EiffelThread library.
+---------------------------------------------------------
+
+A proposition of Eiffel code for implementing
+the famous Producer-Consumer example.
+
+Implementation notes
+--------------------
+
+Condition variables are used to synchronize consumers and
+producers access to the shared buffer.
+A mutex synchronized the output.

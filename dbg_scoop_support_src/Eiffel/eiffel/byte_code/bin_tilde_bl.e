@@ -1,0 +1,260 @@
+note
+	description: "Node for ~ equality operator for C code generation"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	BIN_TILDE_BL
+
+inherit
+	BIN_TILDE_B
+		redefine
+			analyze, unanalyze, free_register,
+			generate, print_register,
+			generate_operator, generate_real_comparison_routine_name
+		end
+
+create
+	make
+
+feature -- Access
+
+	left_register: REGISTRABLE
+			-- Where metamorphosed left value is kept
+
+	right_register: REGISTRABLE
+			-- Where metamorphosed right value is kept
+
+feature -- C code generation
+
+	generate_negation
+			-- Generate negation of an equality test (if required).
+		do
+				-- Nothing by default
+		end
+
+	generate_operator (a_buffer: GENERATION_BUFFER)
+			-- <Precursor>
+		do
+			a_buffer.put_four_character (' ', '=', '=', ' ')
+		end
+
+	generate_boolean_constant
+			-- Generate false constant
+		do
+			buffer.put_string ("EIF_FALSE")
+		end
+
+	get_left_register
+			-- Get register for left expression
+		local
+			tmp_register: REGISTER
+		do
+			if left_register = Void then
+				create tmp_register.make (Reference_c_type)
+				set_left_register (tmp_register)
+			end
+		end
+
+	get_right_register
+			-- Get register for right expression
+		local
+			tmp_register: REGISTER
+		do
+			if right_register = Void then
+				create tmp_register.make (Reference_c_type)
+				set_right_register (tmp_register)
+			end
+		end
+
+	analyze
+			-- Analyze expression
+		local
+			left_type: TYPE_A
+			right_type: TYPE_A
+		do
+			if is_real_comparison then
+				Precursor
+			else
+				left_type := context.real_type (left.type)
+				right_type := context.real_type (right.type)
+				left.analyze
+				right.analyze
+				if
+					(left_type.is_basic and not (right_type.is_none or right_type.is_basic)) or
+				 	(right_type.is_basic and not (left_type.is_none or left_type.is_basic))
+				then
+					if left_type.is_basic then
+						get_left_register
+					else
+						get_right_register
+					end
+				end
+			end
+		end
+
+	unanalyze
+			-- Undo the analysis
+		local
+			void_register: REGISTER
+		do
+			Precursor {BIN_TILDE_B}
+			set_left_register (void_register)
+			set_right_register (void_register)
+		end
+
+	free_register
+			-- Free registers used
+		do
+			Precursor {BIN_TILDE_B}
+			if left_register /= Void then
+				left_register.free_register
+			end
+			if right_register /= Void then
+				right_register.free_register
+			end
+		end
+
+	generate
+			-- Generate expression
+		local
+			basic_i: BASIC_A
+			buf: GENERATION_BUFFER
+		do
+			left.generate
+			right.generate
+			buf := buffer
+			if left_register /= Void then
+				basic_i ?= context.real_type (left.type)
+				basic_i.metamorphose (left_register, left, buf)
+				buf.put_character (';')
+			end
+			if right_register /= Void then
+				basic_i ?= context.real_type (right.type)
+				basic_i.metamorphose (right_register, right, buf)
+				buf.put_character (';')
+			end
+		end
+
+	generate_real_comparison_routine_name (buf: GENERATION_BUFFER)
+			-- <Precursor>
+		do
+			if attached {BIN_NOT_TILDE_BL} Current then
+				buf.put_character ('!')
+			end
+			buf.put_string ("eif_is_equal_real_")
+			if context.real_type (left.type).is_real_32 then
+				buf.put_two_character ('3', '2')
+			else
+				buf.put_two_character ('6', '4')
+			end
+		end
+
+	print_register
+			-- Print expression value
+		local
+			left_type: TYPE_A
+			right_type: TYPE_A
+			buf: GENERATION_BUFFER
+		do
+			if is_real_comparison then
+				Precursor
+			else
+				left_type := context.real_type (left.type)
+				right_type := context.real_type (right.type)
+
+					-- For values of the same basic type the equality test is generated.
+				if left_type.is_basic and right_type.is_basic and then left_type.same_as (right_type) then
+					buf := buffer
+					buf.put_character ('(')
+					left.print_register
+					generate_operator (buffer)
+					right.print_register
+					buf.put_character (')')
+				elseif
+					(left_type.is_none and right_type.is_expanded) or else
+					(left_type.is_expanded and right_type.is_none) or else
+					(left_type.is_expanded and then right_type.is_expanded and then
+					left_type.has_associated_class and then right_type.has_associated_class and then
+					left_type.base_class.class_id /= right_type.base_class.class_id)
+				then
+						-- A value of an expanded type is not Void.
+						-- Two values of different expanded types are not equal.
+						-- In both cases result is known at compile time.
+					generate_boolean_constant
+				else
+					buf := buffer
+					generate_negation
+						-- FIXME: This call assumes that `is_equal' from ANY always takes
+						-- `like Current' as argument, but actually it could be different.
+					buf.put_string ("RTEQ")
+					buf.put_character ('(')
+					if left_register = Void then
+						left.print_register
+					else
+						left_register.print_register
+					end
+					buf.put_string ({C_CONST}.comma_space)
+					if right_register = Void then
+						right.print_register
+					else
+						right_register.print_register
+					end
+					buf.put_character (')')
+				end
+			end
+		end
+
+feature -- Settings
+
+	set_left_register (r: REGISTRABLE)
+			-- Assign `r' to `left_register'
+		do
+			left_register := r
+		ensure
+			left_register_set: left_register = r
+		end
+
+	set_right_register (r: REGISTRABLE)
+			-- Assign `r' to `right_register'
+		do
+			right_register := r
+		ensure
+			right_register_set: right_register = r
+		end
+
+note
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options:	"http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
+
+end

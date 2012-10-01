@@ -1,0 +1,63 @@
+system
+	help 
+
+root
+	viewer(graphical):"make" 
+
+default
+	assertion(all);
+	exception_trace (no); 
+	dead_code_removal (no);
+
+cluster
+	help_base:				"."
+	graphical(help_base): 		"$\graphical"
+	kernel(help_base):	 	"$\kernel"
+	xml_specific(help_base):	"$\xml_specific"
+
+	-- eXML
+	exml:				 	"$EIFFEL4\library\exml"
+	eXML_main(exml):			"$\main"
+	eXML_tree_parser(exml):	"$\main\tree_parser"
+	eXML_ise(exml): 	 		"$\compiler_specific\ise"
+
+	-- Gobo Eiffel Kernel Library
+	gobo:					"$EIFFEL4\library\gobo"
+	kl_kernel(gobo):			"$\library\kernel"
+	kl_kernel_spec(gobo):		"$\library\kernel\spec\ise"
+	all ds_structure(gobo):	"$\library\structure"
+		exclude
+			"hact"
+			"se"
+			"ve"
+		end
+
+	libraries:	"$EIFFEL4\library"
+
+	-- EiffelBase
+	all base:	"$EIFFEL4\library\base"
+		exclude
+			"table_eiffel3"
+		end
+
+	-- Wel
+	all wel(libraries):	"$\wel"
+                        
+	-- EiffelVision
+	all vision2(libraries):	"$\vision2"
+		exclude
+			"gtk"
+		end
+
+external
+
+    include_path:
+	"$EIFFEL4\library\wel\spec\$(PLATFORM)\include",
+	 "$EXML\expat\xmlparse",
+	 "$EXML\compiler_specific\ise\clib";
+
+    object: 
+	"$EIFFEL4\library\wel\spec\$(COMPILER)\lib\wel.lib",
+	"$EXML\compiler_specific\ise\clib\msc\exml.lib",
+	"$EXML\expat\lib\xmlparse.lib";
+end

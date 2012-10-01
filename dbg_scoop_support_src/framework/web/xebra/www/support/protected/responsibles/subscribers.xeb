@@ -1,0 +1,12 @@
+<page:include template="support_side">
+<page:define_region id="main_content">
+	<div id="title_box"><h1>Categories Subscribers</h1></div>
+	<p>
+		
+	</p>
+	<div  id="main_div">
+	 <Columns>
+	</Columns>
+	</div>
+</page:define_region>
+</page:include>

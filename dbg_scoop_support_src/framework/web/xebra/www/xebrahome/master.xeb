@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<page:controller class="master_controller" />
+<head>
+<title>Xebra - Eiffel Web Framework</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="base.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="main">
+<div id="header">
+<div class="xebra_head" onclick="javascript:document.location.href='index.xeb';"> </div>
+<div id="btn_download" onclick="location.href='download.xeb';"></div>
+<div id="btn_documentation"	onclick="location.href='doc.xeb';"></div>
+<div id="btn_about" onclick="location.href='about.xeb';"></div>
+</div>
+<page:declare_region id="content" />
+<div id="footer">Copyright (c) 1993-2009 Eiffel Software</div>
+</div>
+</body>
+</html>

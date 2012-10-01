@@ -1,0 +1,118 @@
+// ******************************************************************************
+// * This is an automatically generated file containing the ribbon resource for *
+// * your application.                                                          *
+// ******************************************************************************
+
+#include ".\ribbon.h"
+
+STRINGTABLE 
+BEGIN
+    tab_LabelTitle_RESID L"All widgets" /* LabelTitle tab_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    button_LabelTitle_RESID L"Button" /* LabelTitle button_LabelTitle_RESID: (null) */
+END
+
+button_SmallImages_RESID    BITMAP    ".\\res\\PrintRelationshipsS.bmp" /* SmallImages button_SmallImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    toggle_button_LabelTitle_RESID L"Toggle Button" /* LabelTitle toggle_button_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    checkbox_LabelTitle_RESID L"Check Box" /* LabelTitle checkbox_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    spinner_LabelTitle_RESID L"Spinner" /* LabelTitle spinner_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    combobox_LabelTitle_RESID L"Combo Box" /* LabelTitle combobox_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    split_button_LabelTitle_RESID L"Split Button" /* LabelTitle split_button_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    split_button_child_1_LabelTitle_RESID L"Split button child 1" /* LabelTitle split_button_child_1_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    split_button_child_2_LabelTitle_RESID L"Split button child 2" /* LabelTitle split_button_child_2_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    drop_down_gallery_LabelTitle_RESID L"Drop down gallery" /* LabelTitle drop_down_gallery_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    drop_down_color_picker_LabelTitle_RESID L"Color picker" /* LabelTitle drop_down_color_picker_LabelTitle_RESID: (null) */
+END
+
+drop_down_color_picker_LargeImages_RESID    BITMAP    ".\\res\\Paste.bmp" /* LargeImages drop_down_color_picker_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    button_show_mini_toolbar_LabelTitle_RESID L"Show mini toolbar" /* LabelTitle button_show_mini_toolbar_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    button_show_context_menu_LabelTitle_RESID L"Show context menu" /* LabelTitle button_show_context_menu_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    button_in_app_menu_LabelTitle_RESID L"Button in app menu" /* LabelTitle button_in_app_menu_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    drop_down_button_in_app_menu_LabelTitle_RESID L"Drop down button in app menu" /* LabelTitle drop_down_button_in_app_menu_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    button_of_drop_down_button_LabelTitle_RESID L"Button of drop down button" /* LabelTitle button_of_drop_down_button_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    button_2_of_drop_down_button_LabelTitle_RESID L"Button 2  of drop down button" /* LabelTitle button_2_of_drop_down_button_LabelTitle_RESID: (null) */
+END
+
+button_in_mini_toolbar_SmallImages_RESID    BITMAP    ".\\res\\PrintRelationshipsS.bmp" /* SmallImages button_in_mini_toolbar_SmallImages_RESID: (null) */
+button_2_in_mini_toolbar_SmallImages_RESID    BITMAP    ".\\res\\Copy.bmp" /* SmallImages button_2_in_mini_toolbar_SmallImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    button_in_context_menu_LabelTitle_RESID L"One" /* LabelTitle button_in_context_menu_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    button_2_in_context_menu_LabelTitle_RESID L"Two" /* LabelTitle button_2_in_context_menu_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    button_in_quick_access_toolbar_LabelTitle_RESID L"Button in quick access tool bar" /* LabelTitle button_in_quick_access_toolbar_LabelTitle_RESID: (null) */
+END
+
+button_in_quick_access_toolbar_SmallImages_RESID    BITMAP    ".\\res\\PrintRelationshipsS.bmp" /* SmallImages button_in_quick_access_toolbar_SmallImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    InternalCmd2_LabelTitle_RESID L"Label:InternalCmd2" /* LabelTitle InternalCmd2_LabelTitle_RESID: (null) */
+END
+
+APPLICATION_RIBBON    UIFILE    "ribbon.bml"

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<project name="PROJECT_esbuilder" default="help">
+	<description>
+		description: "esbuilder compilation"
+	</description>
+	<inherit>
+		<parent location="${PROJECT_esbuilder.absdir}/_inc/_eiffel_tools_compilation.eant">
+			<redefine target="init"/>
+			<redefine target="copy_resources"/>
+		</parent>
+	</inherit>
+
+	<target name="init" >
+		<precursor/>
+		<geant target="set_ECF" arguments="${EIFFEL_SRC}${path_separator}build${path_separator}esbuilder.ecf" />
+		<geant target="set_TARGET" arguments="esbuilder" />
+		<geant target="set_NAME" arguments="esbuilder" />
+	</target>
+
+	<target name="copy_resources" if="$is_windows">
+		<argument name="a_dir" />
+		<precursor arguments="$a_dir" />
+		<set name="_ecf_dir" value="${EIFFEL_SRC}${path_separator}build" />
+		<copy dir="$_ecf_dir" file="esbuilder.rc" to_directory="$a_dir" />
+		<copy dir="$_ecf_dir" file="build.ico" to_directory="$a_dir" />
+		<copy dir="$_ecf_dir" file="esbuilder.exe.manifest" to_directory="$a_dir" />
+		<unset name="_ecf_dir" />
+	</target>
+
+</project>

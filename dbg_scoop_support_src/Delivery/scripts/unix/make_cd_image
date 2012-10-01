@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ $# -ne 3 ]; then
+    echo "Command requires three arguments"
+    echo "Application id, Image file name and source directory"
+    exit
+fi
+
+mkisofs -R -v -l -d -D -L -p "Eiffel Software 5949 Hollister Avenue, Goleta, CA 93117 (805) 685 1006,info@eiffel.com" -P "Eiffel Software 5949 Hollister Avenue, Goleta, CA 93117 (805) 685 1006, http://www.eiffel.com" -A $1 -o $2 $3

@@ -1,0 +1,200 @@
+note
+	description: "An Eiffel pixmap matrix accessor"
+	generator: "Eiffel Matrix Generator"
+	command_line: "${COMMAND_LINE}"
+	legal      : "See notice at end of class."
+	status     : "See notice at end of class."
+	date       : "$Date$"
+	revision   : "$Revision$"
+
+class
+	${NAME}
+	
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make (a_file_name: STRING)
+			-- Initialize matrix
+		require
+			not_a_file_name_is_empty: not a_file_name.is_empty
+			a_file_name_exists: (create {RAW_FILE}.make (a_file_name)).exists
+		local
+			retried: BOOLEAN
+		do
+			if not retried and then (create {RAW_FILE}.make (a_file_name)).exists then
+				create matrix_buffer
+				matrix_buffer.set_with_named_file (a_file_name)
+			else
+					-- Fail safe, use blank pixmap
+				create matrix_buffer.make_with_size ((${WIDTH} * ${PIXEL_WIDTH}) + 1,(${HEIGHT} * ${PIXEL_HEIGHT}) + 1)
+			end
+		rescue
+			retried := True
+			retry
+		end
+		
+feature -- Access
+
+	icon_width: NATURAL_8 = ${PIXEL_WIDTH}
+			-- <Precursor>
+
+	icon_height: NATURAL_8 = ${PIXEL_HEIGHT}
+			-- <Precursor>
+
+	width: NATURAL_8 = ${WIDTH}
+			-- <Precursor>
+
+	height: NATURAL_8 = ${HEIGHT}
+			-- <Precursor>
+
+feature {NONE} -- Access
+
+	matrix_pixel_border: NATURAL_8 = ${PIXEL_BORDER}
+			-- <Precursor>
+
+	matrix_buffer: EV_PIXEL_BUFFER
+			-- Raw matrix pixel buffer
+
+	frozen icon_coordinates_table: HASH_TABLE [TUPLE [x: NATURAL_8; y: NATURAL_8], STRING]
+			-- Table of icon coordinates.
+			--
+			-- Key: An icon name.
+			-- Value: Icon matrix coordinates.
+		do
+			if attached {like icon_coordinates_table} internal_icon_coordinates_table as l_result then
+				Result := l_result
+			else
+				create Result.make (10)
+				populate_coordinates_table (Result)
+				internal_icon_coordinates_table := Result
+			end
+		ensure
+			result_consistent: Result = icon_coordinates_table
+		end
+
+feature -- Status report
+
+	has_named_icon (a_name: STRING): BOOLEAN
+			-- Indicates if a name icon if availalbe.
+			--
+			-- `a_name': The icon name. (See section Access: Icon name constants)
+			-- `Result': True if the named icon exists for Current; False otherwise.
+		require
+			not_a_name_is_empty: not a_name.is_empty
+		do
+			Result := icon_coordinates_table.has (a_name)
+		ensure
+			icon_coordinates_table_has_a_name: Result implies icon_coordinates_table.has (a_name)
+		end
+
+feature -- Query
+
+	named_icon_buffer (a_name: STRING): EV_PIXEL_BUFFER
+			-- Retrieves a icon buffer given a known icon name
+			--
+			-- `a_name':
+			-- `Result':
+		require
+			not_a_name_is_empty: not a_name.is_empty
+			has_named_icon_a_name: has_named_icon (a_name)
+		do
+			check attached icon_coordinates_table.item (a_name) as l_coords then
+				Result := matrix_buffer.sub_pixel_buffer (pixel_rectangle (l_coords.x, l_coords.y))
+			end
+		ensure
+			not_result_is_destroyed: not Result.is_destroyed
+		end
+
+	named_icon (a_name: STRING): EV_PIXMAP
+			-- Retrieves a icon buffer given a known icon name
+			--
+			-- `a_name':
+			-- `Result':
+		require
+			not_a_name_is_empty: not a_name.is_empty
+			has_named_icon_a_name: has_named_icon (a_name)
+		do
+			check attached icon_coordinates_table.item (a_name) as l_coords then
+				Result := matrix_buffer.sub_pixmap (pixel_rectangle (l_coords.x, l_coords.y))
+			end
+		ensure
+			not_result_is_destroyed: not Result.is_destroyed
+		end
+
+feature -- Icons
+	
+${ICONS}
+
+feature -- Icons: Animations
+	
+${ANIMATIONS}
+
+feature -- Constants: Icon names
+
+${ICON_NAMES}
+
+feature {NONE} -- Query
+
+	frozen pixel_rectangle (a_x: INTEGER; a_y: INTEGER): EV_RECTANGLE
+			-- Retrieves a rectangle from an icon matrix coordinates.
+			--
+			-- `a_x': Icon x coordinate.
+			-- `a_y': Icon y coordinate.
+			-- `Result': A rectangle representing the icon at the supplied coordinates.
+		require
+			a_x_positive: a_x > 0
+			a_x_small_enough: a_x <= width
+			a_y_positive: a_y > 0
+			a_y_small_enough: a_y <= height
+		local
+			l_x_offset: INTEGER
+			l_y_offset: INTEGER
+			l_border: like matrix_pixel_border
+		do
+			l_border := matrix_pixel_border
+			l_x_offset := ((a_x - 1) * (icon_width + l_border)) + l_border
+			l_y_offset := ((a_y - 1) * (icon_height + l_border)) + l_border
+
+			Result := rectangle
+			Result.set_x (l_x_offset)
+			Result.set_y (l_y_offset)
+			Result.set_width (icon_width)
+			Result.set_height (icon_height)
+		end
+
+feature {NONE} -- Basic operation
+
+	populate_coordinates_table (a_table: HASH_TABLE [TUPLE [x: NATURAL_8; y: NATURAL_8], STRING])
+			-- <Precursor>
+		do
+${COORDINATES}
+		end
+
+feature {NONE} -- Implementation: cache
+
+	internal_icon_coordinates_table: detachable like icon_coordinates_table
+			-- Cached version of `icon_coordinates_table'
+			-- Note: Do not use directly!
+		
+feature {NONE} -- Implementation: cache
+
+	frozen rectangle: EV_RECTANGLE
+			-- Reusable rectangle for `pixmap_from_constant'.
+		once
+			create Result
+		end
+
+note
+	copyright: "Copyright (c) 1984-2009, Eiffel Software and others"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
+
+end -- class {${NAME}}

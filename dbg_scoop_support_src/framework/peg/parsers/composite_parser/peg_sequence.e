@@ -1,0 +1,103 @@
+note
+	description: "[
+		The sequence parser parses with one child after the other sequentially. If one fails the sequence fails.
+		A sequence can be created with the binary '+' operator.
+	]"
+	legal: "See notice at end of class."
+	status: "Pre-release"
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	PEG_SEQUENCE
+
+inherit
+	PEG_COMPOSITE
+		redefine
+			add,
+			add_with_whitespace,
+			add_with_optional_whitespace
+		end
+
+create
+	make
+
+feature -- Implementation
+
+	internal_parse (a_string: PEG_PARSER_STRING): PEG_PARSER_RESULT
+			-- <Precursor>
+		local
+			l_parse_result : PEG_PARSER_RESULT
+			l_i: INTEGER
+		do
+			create Result.make (a_string, True)
+			from
+				Result := children.first.parse (a_string)
+				l_parse_result := Result
+				l_i := 2
+			until
+				l_i > children.count or not l_parse_result.success
+			loop
+				l_parse_result := children [l_i].parse (l_parse_result.left_to_parse)
+				Result.append_results (l_parse_result)
+				Result.left_to_parse := l_parse_result.left_to_parse
+				l_i := l_i + 1
+			end
+
+			if l_parse_result.success then
+				Result := build_result (Result)
+			else
+				Result.set_success (False)
+				Result := fix_result (Result)
+			end
+		end
+
+	add alias "+" (a_other: PEG_ABSTRACT_PEG): PEG_SEQUENCE
+			-- <Precursor>
+		do
+			if fixated then
+				Result := Precursor (a_other)
+			else
+				children.extend(a_other)
+				Result := Current
+			end
+		end
+
+	add_with_whitespace alias "&+" (a_other: PEG_ABSTRACT_PEG): PEG_SEQUENCE
+			-- <Precursor>
+		local
+			l_ws: PEG_WHITE_SPACE_CHARACTER
+		do
+			if fixated then
+				Result := Precursor (a_other)
+			else
+				create l_ws.make
+				l_ws.ommit_result
+				children.extend (+l_ws)
+				children.extend (a_other)
+				Result := Current
+			end
+		end
+
+	add_with_optional_whitespace alias "|+" (a_other: PEG_ABSTRACT_PEG): PEG_SEQUENCE
+				-- <Precursor>
+		local
+			l_ws: PEG_WHITE_SPACE_CHARACTER
+		do
+			if fixated then
+				Result := Precursor (a_other)
+			else
+				create l_ws.make
+				l_ws.ommit_result
+				children.extend (-l_ws)
+				children.extend (a_other)
+				Result := Current
+			end
+		end
+
+	serialization_separator: READABLE_STRING_8
+			-- <Precursor>
+		do
+			Result := " "
+		end
+end
