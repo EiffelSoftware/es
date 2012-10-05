@@ -1701,6 +1701,22 @@ feature -- Directories (platform independent)
 			not_result_is_empty: not Result.is_empty
 		end
 
+	lib_application_path_32: DIRECTORY_NAME_32
+			-- Location of lib files specific for the current application (platform dependent).
+		require
+			is_valid_environment: is_valid_environment
+		once
+			if is_unix_layout then
+				Result := unix_layout_lib_path_32.twin
+				Result.extend (unix_product_version_name)
+			else
+				Result := install_path_32.twin
+			end
+			Result.extend (distribution_name)
+		ensure
+			not_result_is_empty: not Result.is_empty
+		end
+
 	lib_application_path: DIRECTORY_NAME
 			-- Location of lib files specific for the current application (platform dependent).
 		require
@@ -1883,15 +1899,15 @@ feature -- Files (commands)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	ecdbgd_command_name: FILE_NAME
+	ecdbgd_command_name: FILE_NAME_32
 			-- Complete path to `ecdbgd'.
 		require
 			is_valid_environment: is_valid_environment
 		once
 			if is_unix_layout then
-				create Result.make_from_string (lib_application_path)
+				create Result.make_from_string (lib_application_path_32)
 			else
-				create Result.make_from_string (bin_path)
+				create Result.make_from_string (bin_path_32)
 			end
 			Result.set_file_name (ecdbg_name)
 			if not executable_suffix.is_empty then
@@ -1993,11 +2009,28 @@ feature {NONE} -- Configuration of layout
 			not_result_is_empty: not Result.is_empty
 		end
 
+	unix_layout_base_path_32: DIRECTORY_NAME_32
+			-- Base for the unix layout. e.g. "/usr".
+		once
+			create Result.make_from_string ("usr")
+		ensure
+			not_result_is_empty: not Result.is_empty
+		end
+
 	unix_layout_share_path: DIRECTORY_NAME
 			-- share for the unix layout. e.g. "/usr/share".
 		once
 			Result := unix_layout_base_path.twin
 			Result.extend ("share")
+		ensure
+			not_result_is_empty: not Result.is_empty
+		end
+
+	unix_layout_lib_path_32: DIRECTORY_NAME_32
+			-- Directory name for lib. e.g. "/usr/lib".
+		once
+			Result := unix_layout_base_path_32.twin
+			Result.extend ("lib")
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
@@ -2036,13 +2069,17 @@ feature -- Environment access
 			end
 		end
 
-	get_environment_32 (a_var: READABLE_STRING_32): detachable STRING_32
+	get_environment_32 (a_var: READABLE_STRING_GENERAL): detachable STRING_32
 			-- Get `a_var' from the environment, taking into account the `application_name' to lookup the defaults.
 		require
 			a_var_attached: a_var /= Void
 			not_a_var_is_empty: not a_var.is_empty
 		do
-			Result := environment.get_from_application (a_var, application_name)
+			if {PLATFORM}.is_windows then
+				Result := environment.get_from_application (a_var.to_string_32, application_name)
+			elseif attached environment.get_from_application (a_var.to_string_8, application_name) as l_val then
+				Result := l_val
+			end
 		end
 
 feature -- Environment update

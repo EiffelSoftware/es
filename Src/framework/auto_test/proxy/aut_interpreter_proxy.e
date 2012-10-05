@@ -101,7 +101,7 @@ feature {NONE} -- Initialization
 			l_itp_class: CLASS_C
 			l_file_printer: AUT_PROXY_LOG_TEXT_STREAM_PRINTER
 			l_dir: DIRECTORY_NAME
-			u: FILE_UTILITIES
+			u: GOBO_FILE_UTILITIES
 		do
 			configuration := a_config
 

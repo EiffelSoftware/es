@@ -1,4 +1,4 @@
-﻿note
+note
 	description: "Visitor to iterate through all the nodes of an AST."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -897,7 +897,7 @@ feature {NONE} -- Implementation
 	process_parameter_list_as (l_as: PARAMETER_LIST_AS)
 			-- Process `l_as'.
 		local
-			l_list: EIFFEL_LIST [EXPR_AS]
+			l_list: detachable EIFFEL_LIST [EXPR_AS]
 		do
 			l_list := l_as.parameters
 			if l_list /= Void and then not l_list.is_empty then
@@ -956,7 +956,7 @@ feature -- Quantification
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
