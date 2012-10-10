@@ -3990,6 +3990,7 @@ Src/tools/resource_bench/rb.ico svneol=native#unset
 Src/tools/resource_bench/rb.lic -text
 Src/tools/resource_bench/toolbar.bmp svneol=native#unset
 Src/tools/syntax_updater/syntax_updater.lic -text
+Src/tools/unicode/character_32_property.template -text
 Src/tools/visitor_factory/visitor_factory.lic -text
 Src/unstable/README.txt -text
 Src/unstable/library/persistency/database/sqlite3/README -text
