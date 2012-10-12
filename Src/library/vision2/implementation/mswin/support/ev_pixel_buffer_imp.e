@@ -61,6 +61,7 @@ feature -- Initialization
 			create l_source_graphics.make_from_image (l_gdip_bitmap)
 
 			l_source_dc := l_source_graphics.dc
+			l_source_dc.enable_reference_tracking
 
 			create {EV_PIXMAP_IMP_DRAWABLE} l_drawable.make_with_pixel_buffer (l_source_dc)
 			-- We have to set drawing mode here, otherwise if `a_pixmap' doesn't have mask bitmap, drawing mode will not correct.
@@ -103,7 +104,7 @@ feature -- Initialization
 
 feature -- Command
 
-	set_with_named_file (a_file_name: STRING)
+	set_with_named_file (a_file_name: READABLE_STRING_GENERAL)
 			-- Load pixel data from a file.
 		local
 			l_gdip_bitmap: like gdip_bitmap
@@ -230,10 +231,9 @@ feature -- Command
 			end
 		end
 
-	save_to_named_file (a_file_name: STRING)
+	save_to_named_file (a_file_name: READABLE_STRING_GENERAL)
 			-- Save pixel data to `a_file_name'
 		local
-			l_file_name: FILE_NAME
 			l_gdip_bitmap: like gdip_bitmap
 			l_pixmap: like pixmap
 		do
@@ -242,11 +242,10 @@ feature -- Command
 				check l_gdip_bitmap /= Void end
 				l_gdip_bitmap.save_image_to_file (a_file_name)
 			else
-				create l_file_name.make_from_string (a_file_name)
 				-- FIXIT: How to know the orignal format of `pixmap'? It's BMP or PNG.
 				l_pixmap := pixmap
 				check l_pixmap /= Void end
-				l_pixmap.save_to_named_file (create {EV_PNG_FORMAT}, l_file_name)
+				l_pixmap.save_to_named_file (create {EV_PNG_FORMAT}, a_file_name)
 			end
 		end
 
@@ -726,14 +725,14 @@ feature {NONE} -- Externals
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end

@@ -18,6 +18,7 @@ inherit
 			{ANY}
 				close,
 				count,
+				copy_to,
 				date,
 				deep_twin,
 				descriptor,
@@ -27,6 +28,7 @@ inherit
 				go,
 				is_closed,
 				is_deep_equal,
+				is_device,
 				is_directory,
 				is_equal,
 				is_empty,
