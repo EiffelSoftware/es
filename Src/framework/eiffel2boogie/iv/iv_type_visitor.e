@@ -20,6 +20,11 @@ feature -- Visitor
 		deferred
 		end
 
+	process_real_type (a_type: IV_BASIC_TYPE)
+			-- Process integer type.
+		deferred
+		end
+
 	process_reference_type (a_type: IV_BASIC_TYPE)
 			-- Process integer type.
 		deferred

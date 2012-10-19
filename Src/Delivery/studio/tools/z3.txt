@@ -1,0 +1,5 @@
+Latest tested version: Z3 4.0
+ftp://ftp.research.microsoft.com/downloads/0a7db466-c2d7-4c51-8246-07e25900c7e7/z3-4.0.msi
+
+Windows: http://research.microsoft.com/en-us/downloads/0a7db466-c2d7-4c51-8246-07e25900c7e7/
+Other platforms see: http://research.microsoft.com/en-us/um/redmond/projects/z3/download.html

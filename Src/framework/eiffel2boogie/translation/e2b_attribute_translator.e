@@ -24,6 +24,8 @@ feature -- Basic operations
 			l_forall: IV_FORALL
 			l_type: TYPE_A
 			l_heap_access: IV_HEAP_ACCESS
+			l_value1, l_value2: IV_VALUE
+			l_op: IV_BINARY_OPERATION
 		do
 
 				-- Translation
@@ -32,6 +34,14 @@ feature -- Basic operations
 			l_boogie_name := name_translator.boogie_name_for_feature (a_feature, a_type)
 			create l_constant.make (l_boogie_name, types.field (types.for_type_a (l_type)))
 			boogie_universe.add_declaration (l_constant)
+
+			if a_feature.written_in /= l_type.base_class.class_id then
+				create l_value1.make (l_boogie_name, types.field (types.for_type_a (l_type)))
+				create l_value2.make (name_translator.boogie_name_for_feature (a_feature, a_feature.written_class.actual_type), types.field (types.for_type_a (l_type)))
+				create l_op.make (l_value1, "==", l_value2, types.bool)
+				create l_axiom.make (l_op)
+				boogie_universe.add_declaration (l_axiom)
+			end
 
 			if a_feature.type.is_reference then
 				if a_feature.type.is_attached then

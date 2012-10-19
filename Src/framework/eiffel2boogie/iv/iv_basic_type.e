@@ -79,6 +79,8 @@ feature -- Visitor
 				a_visitor.process_boolean_type (Current)
 			elseif is_integer then
 				a_visitor.process_integer_type (Current)
+			elseif is_real then
+				a_visitor.process_real_type (Current)
 			elseif is_reference then
 				a_visitor.process_reference_type (Current)
 			elseif is_type then

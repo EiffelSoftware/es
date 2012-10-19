@@ -127,7 +127,7 @@ feature {NONE} -- Implementation
 				end
 			else
 				create l_exec
-				create socket.make_client_by_port (33892, "bmse-pc243.inf.ethz.ch")
+				create socket.make_client_by_port (33892, "funk.inf.ethz.ch")
 				create last_output.make (1024)
 				socket.connect
 				socket.put_string ("boogie%N")

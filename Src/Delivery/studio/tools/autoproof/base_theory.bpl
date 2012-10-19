@@ -51,6 +51,9 @@ axiom (forall t: Type :: t <: ANY);
 // Type function for objects
 function type_of(o: ref) returns (Type);
 
+// Objects that have different type cannot be aliased
+axiom (forall a, b: ref :: (type_of(a) != type_of(b)) ==> (a != b));
+
 // ----------------------------------------------------------------------
 // Helper functions
 
@@ -78,6 +81,7 @@ function detachable_attribute(heap: HeapType, o: ref, f: Field ref, t: Type) ret
 
 
 // Integer boxing
+
 const unique INTEGER: Type;
 
 function boxed_int(i: int) returns (ref);
@@ -90,6 +94,7 @@ axiom (forall heap: HeapType, r: ref :: attached(heap, r, INTEGER) ==> boxed_int
 axiom (forall heap: HeapType, r1, r2: ref :: (attached(heap, r1, INTEGER) && attached(heap, r2, INTEGER)) ==> (unboxed_int(r1) == unboxed_int(r2) ==> (r1 == r2)));
 
 // Boolean boxing
+
 const unique BOOLEAN: Type;
 const unique boxed_true: ref;
 const unique boxed_false: ref;
@@ -107,6 +112,7 @@ axiom (forall heap: HeapType :: attached(heap, boxed_false, BOOLEAN));
 axiom (forall heap: HeapType, r: ref :: attached(heap, r, BOOLEAN) <==> (r == boxed_true || r == boxed_false));
 
 // Bounded integers
+
 function is_integer_8(i: int) returns (bool) {
 	(-128 <= i) && (i <= 127)
 }
@@ -126,15 +132,32 @@ function is_natural_64(i: int) returns (bool) {
 	(0 <= i) && (i <= 18446744073709551615)
 }
 
-// Integer division (from Dafny)
+// Conversion from real to bounded integers
 
-axiom (forall x: int, y: int :: { x % y } { x / y } x % y == x - x / y * y);
-axiom (forall x: int, y: int :: { x % y } 0 < y ==> 0 <= x % y && x % y < y);
-axiom (forall x: int, y: int :: { x % y } y < 0 ==> 0 <= x % y && x % y < 0 - y);
-axiom (forall a: int, b: int, d: int :: { a % d, b % d } 2 <= d && a % d == b % d && a < b ==> a + d <= b);
+function real_to_integer_32(r: real) returns (int);
+axiom (forall r: real :: is_integer_32(int(r)) ==> real_to_integer_32(r) == int(r));
+axiom (forall r: real :: (!is_integer_32(int(r)) && r < 0.0) ==> real_to_integer_32(r) == -2147483648);
+axiom (forall r: real :: (!is_integer_32(int(r)) && r > 0.0) ==> real_to_integer_32(r) ==  2147483647);
 
-// Real numbers
-type real;
+function real_to_integer_64(r: real) returns (int);
+axiom (forall r: real :: is_integer_64(int(r)) ==> real_to_integer_64(r) == int(r));
+axiom (forall r: real :: (!is_integer_64(int(r)) && r < 0.0) ==> real_to_integer_64(r) == -9223372036854775808);
+axiom (forall r: real :: (!is_integer_64(int(r)) && r > 0.0) ==> real_to_integer_64(r) ==  9223372036854775807);
+
+procedure REAL_64.truncated_to_integer(arg: real) returns (result: int);
+	ensures result == real_to_integer_32(arg);
+
+procedure REAL_64.truncated_to_integer_64(arg: real) returns (result: int);
+	ensures result == real_to_integer_64(arg);
+
+// Conversion from integers to reals
+
+procedure INTEGER_32.to_double(arg: int) returns (result: real);
+	ensures result == real(arg);
+
+procedure INTEGER_64.to_double(arg: int) returns (result: real);
+	ensures result == real(arg);
 
 // Expanded types
+
 type unknown;

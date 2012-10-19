@@ -33,16 +33,54 @@ feature -- Basic operations
 			-- Generate verifier input for `boogie_universe'.
 		local
 			l_printer: IV_BOOGIE_PRINTER
+			l_filename: FILE_NAME
 		do
 			create last_generated_verifier_input.make
 
 				-- Add background theory
-			last_generated_verifier_input.add_boogie_file ("D:\Eiffel\eve\Delivery\studio\tools\autoproof\base_theory.bpl")
-			last_generated_verifier_input.add_boogie_file ("D:\Eiffel\eve\Delivery\studio\tools\autoproof\arrays.bpl")
+			create l_filename.make
+			l_filename.set_directory (theory_directory)
+			l_filename.set_file_name ("base_theory.bpl")
+			last_generated_verifier_input.add_boogie_file (l_filename)
+			create l_filename.make
+			l_filename.set_directory (theory_directory)
+			l_filename.set_file_name ("arrays.bpl")
+			last_generated_verifier_input.add_boogie_file (l_filename)
 
 			create l_printer.make
 			boogie_universe.process (l_printer)
 			last_generated_verifier_input.add_custom_content (l_printer.output.out)
+		end
+
+feature {NONE} -- Implementation
+
+	theory_directory: DIRECTORY_NAME
+			-- Directory containing theory files.
+		local
+			l_ee: EXECUTION_ENVIRONMENT
+			l_ise_eiffel, l_eiffel_src: STRING
+			l_path: DIRECTORY_NAME
+			l_dir: DIRECTORY
+		once
+			create l_ee
+
+				-- 1. Delivery of installation
+			create l_path.make_from_string (l_ee.get ("ISE_EIFFEL"))
+			l_path.extend ("studio")
+			l_path.extend ("tools")
+			l_path.extend ("autoproof")
+			create l_dir.make (l_path)
+
+				-- 2. Delivery of development version
+			if not l_dir.exists then
+				create l_path.make_from_string (l_ee.get ("EIFFEL_SRC"))
+				l_path.extend ("Delivery")
+				l_path.extend ("studio")
+				l_path.extend ("tools")
+				l_path.extend ("autoproof")
+			end
+
+			Result := l_path
 		end
 
 end

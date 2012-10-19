@@ -22,6 +22,12 @@ feature -- Access: default types
 			create {IV_BASIC_TYPE} Result.make_integer
 		end
 
+	real: IV_TYPE
+			-- Integer type.
+		once
+			create {IV_BASIC_TYPE} Result.make_real
+		end
+
 	ref: IV_TYPE
 			-- Reference type.
 		once
@@ -68,7 +74,7 @@ feature -- Access: default types
 			elseif l_type.is_boolean then
 				Result := bool
 			elseif l_type.is_real_32 or else l_type.is_real_64 then
-				Result := generic_type
+				Result := real
 			elseif l_type.is_expanded then
 				Result := generic_type
 			elseif l_type.is_formal then

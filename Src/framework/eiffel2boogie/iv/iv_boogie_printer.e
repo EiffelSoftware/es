@@ -534,6 +534,12 @@ feature -- Type Visitor
 			output.put ("int")
 		end
 
+	process_real_type (a_type: IV_BASIC_TYPE)
+			-- <Precursor>
+		do
+			output.put ("real")
+		end
+
 	process_reference_type (a_type: IV_BASIC_TYPE)
 			-- <Precursor>
 		do
@@ -605,6 +611,8 @@ feature -- Other
 				Result := "false"
 			elseif a_type.is_integer then
 				Result := "0"
+			elseif a_type.is_real then
+				Result := "0.0"
 			elseif a_type.is_reference then
 				Result := "Void"
 			else

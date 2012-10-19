@@ -1,0 +1,2 @@
+Latest tested version: Boogie Nighlty Build 03.10.2012
+http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=boogie&DownloadId=500154&FileTime=129937178442670000&Build=19471

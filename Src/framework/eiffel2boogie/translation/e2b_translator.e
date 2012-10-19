@@ -29,6 +29,18 @@ feature {NONE} -- Initialization
 			translation_pool.mark_translated (translation_pool.next_untranslated_element)
 			translation_pool.add_type (system.boolean_class.compiled_class.actual_type)
 			translation_pool.mark_translated (translation_pool.next_untranslated_element)
+			mark_feature_translated (system.real_64_class, "truncated_to_integer")
+			mark_feature_translated (system.real_64_class, "truncated_to_integer_64")
+			mark_feature_translated (system.integer_32_class, "to_double")
+		end
+
+	mark_feature_translated (a_class: CLASS_I; a_feature: STRING)
+			-- Mark feature `a_feature' of class `a_class' as translated.
+		do
+			check a_class.is_compiled end
+			check a_class.compiled_class.feature_named_32 (a_feature) /= Void end
+			translation_pool.add_referenced_feature (a_class.compiled_class.feature_named_32 (a_feature), a_class.compiled_class.actual_type)
+			translation_pool.mark_translated (translation_pool.next_untranslated_element)
 		end
 
 feature -- Status report

@@ -1827,6 +1827,7 @@ Src/Delivery/studio/templates/licenses/mssdk.lic -text
 Src/Delivery/studio/tools/autoproof/agents.bpl -text
 Src/Delivery/studio/tools/autoproof/arrays.bpl -text
 Src/Delivery/studio/tools/autoproof/base_theory.bpl -text
+Src/Delivery/studio/tools/boogie.txt -text
 Src/Delivery/studio/tools/testing/auto_test/image/class_bad_response.gif -text
 Src/Delivery/studio/tools/testing/auto_test/image/class_bad_response.svg -text
 Src/Delivery/studio/tools/testing/auto_test/image/class_fail.gif -text
@@ -1886,6 +1887,7 @@ Src/Delivery/studio/tools/twitter_feed/icons.ini -text
 Src/Delivery/studio/tools/twitter_feed/icons.png -text
 Src/Delivery/studio/tools/twitter_feed/logo.png -text
 Src/Delivery/studio/tools/twitter_feed/spacer.png -text
+Src/Delivery/studio/tools/z3.txt -text
 Src/Delivery/studio/wizards/new_projects/cocoa.dsc -text
 Src/Delivery/studio/wizards/new_projects/cocoa/pixmaps/eiffel_wizard.png -text
 Src/Delivery/studio/wizards/new_projects/cocoa/pixmaps/wizard.png -text

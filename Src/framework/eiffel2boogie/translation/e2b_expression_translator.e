@@ -58,6 +58,7 @@ inherit
 			process_parameter_b,
 			process_paran_b,
 			process_result_b,
+			process_real_const_b,
 			process_routine_creation_b,
 			process_string_b,
 			process_tuple_access_b,
@@ -266,8 +267,10 @@ feature -- Visitors
 	process_bin_div_b (a_node: BIN_DIV_B)
 			-- <Precursor>
 		do
-			if a_node.is_built_in then
+			if a_node.type.is_real_32 or a_node.type.is_real_64 then
 				process_binary (a_node, "/")
+			elseif a_node.is_built_in then
+				process_binary (a_node, "div")
 			else
 				process_binary_infix (a_node)
 			end
@@ -344,7 +347,7 @@ feature -- Visitors
 	process_bin_mod_b (a_node: BIN_MOD_B)
 			-- <Precursor>
 		do
-			process_binary (a_node, "%%")
+			process_binary (a_node, "mod")
 		end
 
 	process_bin_ne_b (a_node: BIN_NE_B)
@@ -378,7 +381,11 @@ feature -- Visitors
 	process_bin_power_b (a_node: BIN_POWER_B)
 			-- <Precursor>
 		do
-			last_expression := dummy_node (a_node.type)
+			if a_node.is_built_in then
+				process_binary (a_node, "**")
+			else
+				process_binary_infix (a_node)
+			end
 		end
 
 	process_bin_slash_b (a_node: BIN_SLASH_B)
@@ -700,12 +707,14 @@ feature -- Visitors
 				end
 
 					-- Check if target is attached
-				translation_pool.add_type (current_target_type)
-				create l_call.make ("attached", types.bool)
-				l_call.add_argument (entity_mapping.heap)
-				l_call.add_argument (current_target)
-				l_call.add_argument (create {IV_VALUE}.make (name_translator.boogie_name_for_type (current_target_type), types.type))
-				add_safety_check (l_call, "attached")
+				if not current_target_type.is_expanded then
+					translation_pool.add_type (current_target_type)
+					create l_call.make ("attached", types.bool)
+					l_call.add_argument (entity_mapping.heap)
+					l_call.add_argument (current_target)
+					l_call.add_argument (create {IV_VALUE}.make (name_translator.boogie_name_for_type (current_target_type), types.type))
+					add_safety_check (l_call, "attached")
+				end
 
 					-- Evaluate message with original expression
 --				if attached {CL_TYPE_A} current_target_type as l_cl_type then
@@ -794,6 +803,12 @@ feature -- Visitors
 			l_type: IV_TYPE
 		do
 			last_expression := entity_mapping.result_expression
+		end
+
+	process_real_const_b (a_node: REAL_CONST_B)
+			-- <Precursor>
+		do
+			create {IV_VALUE} last_expression.make (a_node.value, types.real)
 		end
 
 	process_routine_creation_b (a_node: ROUTINE_CREATION_B)
