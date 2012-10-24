@@ -61,6 +61,19 @@ feature -- Modification
 			result_added: entities.has_key ([0, f.rout_id_set.first, c.class_id])
 		end
 
+	add_attribute (a: FEATURE_I; c: CLASS_C)
+			-- Add an attribute  `a' in the class `c'.
+			-- Set `last_added' to the index of the item.
+		require
+			a_attached: attached a
+			c_attached: attached c
+		do
+			add ([a.rout_id_set.first, 0, c.class_id])
+		ensure
+			attribute_added: entities.has_key ([a.rout_id_set.first, 0, c.class_id])
+		end
+
+
 feature {NONE} -- Modification
 
 	add (t: TUPLE [INTEGER, INTEGER, INTEGER])
