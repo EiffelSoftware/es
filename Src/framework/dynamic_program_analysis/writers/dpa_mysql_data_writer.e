@@ -1,16 +1,24 @@
 note
-	description: "A writer that writes the data from a dynamic program analysis to disk using a MYSQL database."
+	description: "Writer using a MYSQL database to write analysis results."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	DPA_MYSQL_DATA_WRITER
+	DPA_MYSQL_WRITER
 
 inherit
-	DPA_DATA_WRITER
+	DPA_WRITER
 
 	DPA_MYSQL_CONSTANTS
+		export
+			{NONE} all
+		end
+
+	KL_SHARED_STRING_EQUALITY_TESTER
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -18,192 +26,299 @@ create
 feature {NONE} -- Initialization
 
 	make (a_class: like class_; a_feature: like feature_; a_mysql_client: like mysql_client)
-			--
+			-- Initialize MYSQL writer.
 		require
 			a_class_not_void: a_class /= Void
 			a_feature_not_void: a_feature /= Void
 			a_mysql_client_not_void: a_mysql_client /= Void
 		local
-			l_mysql_result: MYSQL_RESULT
-			l_loc_expr: STRING
-			l_loc: STRING
-			l_expr: STRING
+			l_last_mysql_result: MYSQL_RESULT
+			l_localized_expression: STRING
+			l_program_location: STRING
+			l_expression: STRING
 		do
 			class_ := a_class
 			feature_ := a_feature
 			mysql_client := a_mysql_client
 
-			if not mysql_client.is_connected then
+			-- Connect MYSQL client to database if the MYSQL client is not connected.
+			if
+				not mysql_client.is_connected
+			then
 				mysql_client.connect
 			end
-			check MYSQL_Client_connected_to_database: mysql_client.is_connected end
 
-			mysql_client.execute_query ("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '" + mysql_client.database + "' AND table_name = '" + analysis_order_pairs_table_name + "';")
-			mysql_client.last_result.start
-			if mysql_client.last_result.at (1).to_integer = 0 then
-				mysql_client.execute_query ("CREATE TABLE " + analysis_order_pairs_table_name + " (" + aop_counter_attribute_name + " INT AUTO_INCREMENT, " + aop_pre_state_bp_attribute_name + " INT, " + aop_post_state_bp_attribute_name + " INT, PRIMARY KEY (" + aop_counter_attribute_name + "))")
+			check
+				mysql_client_connected: mysql_client.is_connected
 			end
 
-			create expression_evaluation_count.make_default
+			create localized_expression_occurrences.make_default
+			localized_expression_occurrences.set_key_equality_tester (string_equality_tester)
 
-			mysql_client.execute_query ("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '" + mysql_client.database + "' AND table_name = '" + expression_value_transitions_table_name + "';")
-			mysql_client.last_result.start
-			if mysql_client.last_result.at (1).to_integer = 0 then
-				mysql_client.execute_query ("CREATE TABLE " + expression_value_transitions_table_name + " (" + evt_counter_attribute_name + " INT AUTO_INCREMENT, " + evt_class_attribute_name + " TEXT, " + evt_feature_attribute_name + " TEXT, " + evt_expression_attribute_name + " TEXT, " + evt_location_expression_occurrence_attribute_name + " INT, " + evt_pre_state_bp_attribute_name + " INT, " + evt_pre_state_type_attribute_name + " TEXT, " + evt_pre_state_type_information_attribute_name + " TEXT, " + evt_pre_state_value_attribute_name + " TEXT, " + evt_post_state_bp_attribute_name + " INT, " + evt_post_state_type_attribute_name + " TEXT, " + evt_post_state_type_information_attribute_name + " TEXT, " + evt_post_state_value_attribute_name + " TEXT, PRIMARY KEY (" + evt_counter_attribute_name + "))")
+			-- Create table for transitions if table does not already exist. Otherwise validate
+			-- class and feature from already existing analysis results with `class_' and
+			-- `feature_'.
+			mysql_client.execute_query (
+				"SELECT COUNT(*) FROM information_schema.tables WHERE %
+				%table_schema = '" + mysql_client.database + "' AND %
+				%table_name = '" + Mysql_transitions_table_name + "';"
+			)
+
+			l_last_mysql_result := mysql_client.last_result
+			l_last_mysql_result.start
+
+			if
+				l_last_mysql_result.at (1).to_integer = 0
+			then
+				mysql_client.execute_query (
+					"CREATE TABLE " + Mysql_transitions_table_name + " (" +
+					Mysql_counter_name + " INT AUTO_INCREMENT, " +
+					Mysql_class_name + " TEXT, " +
+					Mysql_feature_name + " TEXT, " +
+					Mysql_expression_name + " TEXT, " +
+					Mysql_localized_expression_occurrences_name + " INT, " +
+					Mysql_pre_state_breakpoint_name + " INT, " +
+					Mysql_pre_state_type_name + " TEXT, " +
+					Mysql_pre_state_type_information_name + " TEXT, " +
+					Mysql_pre_state_value_name + " TEXT, " +
+					Mysql_post_state_breakpoint_name + " INT, " +
+					Mysql_post_state_type_name + " TEXT, " +
+					Mysql_post_state_type_information_name + " TEXT, " +
+					Mysql_post_state_value_name + " TEXT, %
+					%PRIMARY KEY (" + Mysql_counter_name + ")" +
+					")"
+				)
 			else
-				mysql_client.execute_query ("SELECT DISTINCT " + evt_class_attribute_name + ", " + evt_feature_attribute_name + " FROM " + expression_value_transitions_table_name)
-				l_mysql_result := mysql_client.last_result
-				l_mysql_result.start
-				check same_class_and_feature: l_mysql_result.at (1).is_equal (class_.name) and l_mysql_result.at (2).is_equal (feature_.feature_name_32) end
+				mysql_client.execute_query (
+					"SELECT DISTINCT " + mysql_class_name + ", " +
+					mysql_feature_name + " FROM " +
+					Mysql_transitions_table_name
+				)
 
-				mysql_client.execute_query ("SELECT " + evt_pre_state_bp_attribute_name + ", " + evt_expression_attribute_name + ", COUNT(" + evt_pre_state_bp_attribute_name + ") FROM " + expression_value_transitions_table_name + " GROUP BY " + evt_pre_state_bp_attribute_name + ", " + evt_expression_attribute_name)
-				l_mysql_result := mysql_client.last_result
+				l_last_mysql_result := mysql_client.last_result
+				l_last_mysql_result.start
+
+				check
+					same_class_and_feature:
+						l_last_mysql_result.at (1).is_equal (class_.name) and then
+						l_last_mysql_result.at (2).is_equal (feature_.feature_name_32) and then
+						l_last_mysql_result.row_count = 1
+				end
+
+				--	Restore `localized_expression_occurrences' from previous analysis results.
+				mysql_client.execute_query (
+					"SELECT " + Mysql_expression_name + ", " +
+					Mysql_pre_state_breakpoint_name + ", %
+					%COUNT(" + Mysql_pre_state_breakpoint_name + ") FROM " +
+					Mysql_transitions_table_name + " GROUP BY " +
+					Mysql_pre_state_breakpoint_name + ", " +
+					Mysql_expression_name
+				)
+
+				l_last_mysql_result := mysql_client.last_result
+
 				from
-					l_mysql_result.start
+					l_last_mysql_result.start
 				until
-					l_mysql_result.after
+					l_last_mysql_result.after
 				loop
-					l_loc := l_mysql_result.at (1)
-					l_expr := l_mysql_result.at (2)
-					create l_loc_expr.make (l_loc.count + l_expr.count + 1)
-					l_loc_expr.append (l_loc)
-					l_loc_expr.append_character (';')
-					l_loc_expr.append (l_expr)
-					expression_evaluation_count.force_last (l_mysql_result.at (3).to_integer, l_loc_expr)
-					l_mysql_result.forth
+					l_expression := l_last_mysql_result.at (1)
+					l_program_location := l_last_mysql_result.at (2)
+
+					create l_localized_expression.make (
+						l_expression.count + l_program_location.count + 1
+					)
+					l_localized_expression.append (l_expression)
+					l_localized_expression.append_character (';')
+					l_localized_expression.append (l_program_location)
+
+					localized_expression_occurrences.force_last (
+						l_last_mysql_result.at (3).to_integer,
+						l_localized_expression
+					)
+
+					l_last_mysql_result.forth
 				end
 			end
 
-			create analysis_order_pairs.make
-			create expression_value_transitions.make
+			create transitions.make
 		ensure
 			class_set: class_ = a_class
 			feature_set: feature_ = a_feature
 			mysql_client_set: mysql_client = a_mysql_client
+			localized_expression_occurrences_not_void: localized_expression_occurrences /= Void
+			transitions_not_void: transitions /= Void
 		end
 
 feature -- Access
 
 	mysql_client: MYSQL_CLIENT
-			--
+			-- MYSQL client used to read and write analysis results.
 
-feature -- Writing
+feature -- Basic operations
 
 	try_write
-			-- Try to write the content of `analysis_order_pairs' and `expression_value_transitions'.
-			-- Succeeds if the sum of analysis order pairs and expression value transitions exceeds 5000.
+			-- Try to write analysis results.
+			-- Analysis results are only written if the number of
+			-- transitions is greater than `Transitions_size_limit'.
 		do
-			if analysis_order_pairs.count + expression_value_transitions.count > 5000 then
+			if
+				transitions.count > Transitions_size_limit
+			then
 				write
 			end
 		end
 
 	write
-			-- Write `analysis_order_pairs' and `expression_value_transitions' to `mysql_client.database'
+			-- Write analysis results.
 		local
 			l_prepared_statement: MYSQL_PREPARED_STATEMENT
 			l_transition: EPA_EXPRESSION_VALUE_TRANSITION
-			l_pre_state_bp, l_expr: STRING
-			l_loc_expr: STRING
-			l_type_finder: EPA_EXPRESSION_VALUE_TYPE_FINDER
-			l_bp_slots: TUPLE [pre_state_bp_slot: INTEGER; post_state_bp_slot: INTEGER]
-			l_evt_key_occurrence: INTEGER
+			l_pre_state_breakpoint, l_expression: STRING
+			l_localized_expression: STRING
+			l_expression_value_type_finder: EPA_EXPRESSION_VALUE_TYPE_FINDER
+			l_localized_expression_occurrence: INTEGER
 		do
-			mysql_client.prepare_statement ("INSERT INTO " + analysis_order_pairs_table_name + " VALUES (?,?,?)")
+			-- Insert transitions into MYSQL database.
+			mysql_client.prepare_statement (
+				"INSERT INTO " + Mysql_transitions_table_name +
+				" VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"
+			)
+
 			l_prepared_statement := mysql_client.last_prepared_statement
+			l_prepared_statement.set_string (Mysql_class_column, class_.name)
+			l_prepared_statement.set_string (Mysql_feature_column, feature_.feature_name_32)
+
+			create l_expression_value_type_finder
 
 			from
-				analysis_order_pairs.start
+				transitions.start
 			until
-				analysis_order_pairs.after
+				transitions.after
 			loop
-				l_bp_slots := analysis_order_pairs.item
+				l_transition := transitions.item_for_iteration
 
-				l_prepared_statement.set_integer (aop_pre_state_bp_attribute_column_number, l_bp_slots.pre_state_bp_slot)
-				l_prepared_statement.set_integer (aop_post_state_bp_attribute_column_number, l_bp_slots.post_state_bp_slot)
-				l_prepared_statement.execute
-				Check analysis_order_pair_inserted: l_prepared_statement.is_executed end
+				l_pre_state_breakpoint := l_transition.pre_state_breakpoint.out
+				l_expression := l_transition.expression.text
 
-				analysis_order_pairs.forth
-			end
+				create l_localized_expression.make (
+					l_expression.count + l_pre_state_breakpoint.count + 1
+				)
+				l_localized_expression.append (l_expression)
+				l_localized_expression.append_character (';')
+				l_localized_expression.append (l_pre_state_breakpoint)
 
-			mysql_client.prepare_statement ("INSERT INTO " + expression_value_transitions_table_name + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)")
-			l_prepared_statement := mysql_client.last_prepared_statement
-			l_prepared_statement.set_string (evt_class_attribute_column_number, class_.name)
-			l_prepared_statement.set_string (evt_feature_attribute_column_number, feature_.feature_name_32)
-
-			create l_type_finder
-
-			from
-				expression_value_transitions.start
-			until
-				expression_value_transitions.after
-			loop
-				l_transition := expression_value_transitions.item_for_iteration
-
-				l_pre_state_bp := l_transition.pre_state_bp.out
-				l_expr := l_transition.expression.text
-				create l_loc_expr.make (l_pre_state_bp.count + l_expr.count + 1)
-				l_loc_expr.append (l_pre_state_bp)
-				l_loc_expr.append_character (';')
-				l_loc_expr.append (l_expr)
-
-				l_prepared_statement.set_string (evt_expression_attribute_column_number, l_expr)
-
-				if expression_evaluation_count.has (l_loc_expr) then
-					l_evt_key_occurrence := expression_evaluation_count.item (l_loc_expr) + 1
-					expression_evaluation_count.force_last (l_evt_key_occurrence, l_loc_expr)
-					l_prepared_statement.set_integer (evt_location_expression_occurrence_attribute_column_number, l_evt_key_occurrence)
+				if
+					localized_expression_occurrences.has (l_localized_expression)
+				then
+					l_localized_expression_occurrence :=
+						localized_expression_occurrences.item (l_localized_expression) + 1
+					localized_expression_occurrences.force_last (
+						l_localized_expression_occurrence, l_localized_expression
+					)
+					l_prepared_statement.set_integer (
+						Mysql_localized_expression_occurrences_column,
+						l_localized_expression_occurrence
+					)
 				else
-					expression_evaluation_count.force_last (1, l_loc_expr)
-					l_prepared_statement.set_integer (evt_location_expression_occurrence_attribute_column_number, 1)
+					localized_expression_occurrences.force_last (1, l_localized_expression)
+					l_prepared_statement.set_integer (
+						Mysql_localized_expression_occurrences_column,
+						1
+					)
 				end
+
+				l_prepared_statement.set_string (Mysql_expression_column, l_expression)
 
 				-- Pre-state value
-				l_type_finder.set_value (l_transition.pre_state_value)
-				l_type_finder.find
+				l_expression_value_type_finder.set_value (l_transition.pre_state_value)
+				l_expression_value_type_finder.find
 
-				l_prepared_statement.set_integer (evt_pre_state_bp_attribute_column_number, l_transition.pre_state_bp)
-				l_prepared_statement.set_string (evt_pre_state_type_attribute_column_number, l_type_finder.type)
-				l_prepared_statement.set_string (evt_pre_state_value_attribute_column_number, l_transition.pre_state_value.text)
-				l_prepared_statement.set_null (evt_pre_state_type_information_attribute_column_number)
-				if l_type_finder.type.is_equal (reference_value) then
-					if attached {CL_TYPE_A} l_transition.pre_state_value.type as l_type then
-						l_prepared_statement.set_string (evt_pre_state_type_information_attribute_column_number, l_type.class_id.out)
-					end
+				l_prepared_statement.set_integer (
+					Mysql_pre_state_breakpoint_column, l_transition.pre_state_breakpoint
+				)
+				l_prepared_statement.set_string (
+					Mysql_pre_state_type_column, l_expression_value_type_finder.type
+				)
+				l_prepared_statement.set_string (
+					Mysql_pre_state_value_column, l_transition.pre_state_value.text
+				)
+				l_prepared_statement.set_null (Mysql_pre_state_type_information_column)
+
+				if
+					l_expression_value_type_finder.type.is_equal (Reference_value) and then
+					attached {CL_TYPE_A} l_transition.pre_state_value.type as l_type
+				then
+					l_prepared_statement.set_string (
+						Mysql_pre_state_type_information_column, l_type.class_id.out
+					)
 				end
-				if l_type_finder.type.is_equal (string_value) then
-					l_prepared_statement.set_string (evt_pre_state_type_information_attribute_column_number, l_transition.pre_state_value.item.out)
+
+				if
+					l_expression_value_type_finder.type.is_equal (String_value)
+				then
+					l_prepared_statement.set_string (
+						Mysql_pre_state_type_information_column,
+						l_transition.pre_state_value.item.out
+					)
 				end
 
 				-- Post-state value
-				l_type_finder.set_value (l_transition.post_state_value)
-				l_type_finder.find
+				l_expression_value_type_finder.set_value (l_transition.post_state_value)
+				l_expression_value_type_finder.find
 
-				l_prepared_statement.set_integer (evt_post_state_bp_attribute_column_number, l_transition.post_state_bp)
-				l_prepared_statement.set_string (evt_post_state_type_attribute_column_number, l_type_finder.type)
-				l_prepared_statement.set_string (evt_post_state_value_attribute_column_number, l_transition.post_state_value.text)
-				l_prepared_statement.set_null (evt_post_state_type_information_attribute_column_number)
-				if l_type_finder.type.is_equal (reference_value) then
-					if attached {CL_TYPE_A} l_transition.post_state_value.type as l_type then
-						l_prepared_statement.set_string (evt_post_state_type_information_attribute_column_number, l_type.class_id.out)
-					end
+				l_prepared_statement.set_integer (
+					Mysql_post_state_breakpoint_column, l_transition.post_state_breakpoint
+				)
+				l_prepared_statement.set_string (
+					Mysql_post_state_type_column, l_expression_value_type_finder.type
+				)
+				l_prepared_statement.set_string (
+					Mysql_post_state_value_column, l_transition.post_state_value.text
+				)
+				l_prepared_statement.set_null (Mysql_post_state_type_information_column)
+
+				if
+					l_expression_value_type_finder.type.is_equal (Reference_value) and then
+					attached {CL_TYPE_A} l_transition.post_state_value.type as l_type
+				then
+					l_prepared_statement.set_string (
+						Mysql_post_state_type_information_column, l_type.class_id.out
+					)
 				end
-				if l_type_finder.type.is_equal (string_value) then
-					l_prepared_statement.set_string (evt_post_state_type_information_attribute_column_number, l_transition.post_state_value.item.out)
+
+				if
+					l_expression_value_type_finder.type.is_equal (String_value)
+				then
+					l_prepared_statement.set_string (
+						Mysql_post_state_type_information_column,
+						l_transition.post_state_value.item.out
+					)
 				end
 
 				l_prepared_statement.execute
-				Check expression_value_transition_inserted: l_prepared_statement.is_executed end
-				expression_value_transitions.forth
+
+				check
+					transition_inserted: l_prepared_statement.is_executed
+				end
+
+				transitions.forth
 			end
+
+			-- Empty `transitions' since all of them were written to MYSQL database.
+			create transitions.make
 		end
 
 feature {NONE} -- Implementation
 
-	expression_evaluation_count: DS_HASH_TABLE [INTEGER, STRING]
-			-- Number of evaluations of an expression at a location.
-			-- Keys are the expressions and locations of the form 'loc:expr'.
-			-- Values are the number of evaluations of 'loc:expr'.
+	Transitions_size_limit: INTEGER = 5000
+			-- Size limit of `transitions'.
+
+feature {NONE} -- Implementation
+
+	localized_expression_occurrences: DS_HASH_TABLE [INTEGER, STRING]
+			-- Occurrences of localized expressions.
+			-- Keys are localized expressions of the form 'expression:program location'.
+			-- Values are occurrences of localized expressions.
 
 end

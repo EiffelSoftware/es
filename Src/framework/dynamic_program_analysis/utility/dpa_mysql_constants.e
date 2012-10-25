@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {DPA_MYSQL_CONSTANTS}."
+	description: "MYSQL constants used by the MYSQL writer and reader."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -9,106 +9,85 @@ class
 
 feature -- Access
 
-	analysis_order_pairs_table_name: STRING = "analysis_order_pairs"
-			-- Name of the analysis order pairs table.
+	Mysql_transitions_table_name: STRING = "transitions"
+			-- Name of the transition table.
 
-	aop_counter_attribute_name: STRING = "counter"
-			-- Name of the counter attribute of the analysis order pairs table.
+	Mysql_counter_name: STRING = "counter"
+			-- Name of the counter attribute in the transition table.
 
-	aop_counter_attribute_column_number: INTEGER = 1
-			-- Column of the counter attribute of the analysis order pairs table.
+	Mysql_counter_column: INTEGER = 1
+			-- Column of the counter attribute in the transition table.
 
-	aop_pre_state_bp_attribute_name: STRING = "pre_state_bp"
-			-- Name of the pre-state breakpoint attribute of the analysis order pairs table.
+	Mysql_class_name: STRING = "class"
+			-- Name of the class attribute in the transition table.
 
-	aop_pre_state_bp_attribute_column_number: INTEGER = 2
-			-- Column of the pre-state breakpoint attribute of the analysis order pairs table.
+	Mysql_class_column: INTEGER = 2
+			-- Column of the class attribute in the transition table.
 
-	aop_post_state_bp_attribute_name: STRING = "post_state_bp"
-			-- Name of the post-state breakpoint attribute of the analysis order pairs table.
+	Mysql_feature_name: STRING = "feature"
+			-- Name of the feature attribute in the transition table.
 
-	aop_post_state_bp_attribute_column_number: INTEGER = 3
-			-- Column of the post-state breakpoint attribute of the analysis order pairs table.
+	Mysql_feature_column: INTEGER = 3
+			-- Column of the feature attribute in the transition table.
 
-	expression_value_transitions_table_name: STRING = "expression_value_transitions"
-			-- Name of the expression value transition table.
+	Mysql_expression_name: STRING = "expression"
+			-- Name of the expression attribute in the transition table.
 
-	evt_counter_attribute_name: STRING = "counter"
-			-- Name of the counter attribute of the expression value transition table.
+	Mysql_expression_column: INTEGER = 4
+			-- Column of the expression attribute in the transition table.
 
-	evt_counter_attribute_column_number: INTEGER = 1
-			-- Column of the counter attribute of the expression value transition table.
+	Mysql_localized_expression_occurrences_name: STRING = "localized_expression_occurrences"
+			-- Name of the localized expression occurrences attribute in the transition table.
 
-	evt_class_attribute_name: STRING = "class"
-			-- Name of the class attribute of the expression value transition table.
+	Mysql_localized_expression_occurrences_column: INTEGER = 5
+			-- Column of the localized expression occurrence attribute in the transition table.
 
-	evt_class_attribute_column_number: INTEGER = 2
-			-- Column of the class attribute of the expression value transition table.
+	Mysql_pre_state_breakpoint_name: STRING = "pre_state_breakpoint"
+			-- Name of the pre-state breakpoint attribute in the transition table.
 
-	evt_feature_attribute_name: STRING = "feature"
-			-- Name of the feature attribute of the expression value transition table.
+	Mysql_pre_state_breakpoint_column: INTEGER = 6
+			-- Column of the pre-state breakpoint attribute in the transition table.
 
-	evt_feature_attribute_column_number: INTEGER = 3
-			-- Column of the feature attribute of the expression value transition table.
+	Mysql_pre_state_type_name: STRING = "pre_state_type"
+			-- Name of the pre-state type attribute in the transition table.
 
-	evt_expression_attribute_name: STRING = "expression"
-			-- Name of the expression attribute of the expression value transition table.
+	Mysql_pre_state_type_column: INTEGER = 7
+			-- Column of the pre-state type attribute in the transition table.
 
-	evt_expression_attribute_column_number: INTEGER = 4
-			-- Column of the expression attribute of the expression value transition table.
+	Mysql_pre_state_type_information_name: STRING = "pre_state_type_information"
+			-- Name of the pre-state type information attribute in the transition table.
 
-	evt_location_expression_occurrence_attribute_name: STRING = "location_expression_occurrence"
-			-- Name of the location expression occurrence attribute of the expression value transition table.
+	Mysql_pre_state_type_information_column: INTEGER = 8
+			-- Column of the pre-state type information attribute in the transition table.
 
-	evt_location_expression_occurrence_attribute_column_number: INTEGER = 5
-			-- Column of the location expression occurrence attribute of the expression value transition table.
+	Mysql_pre_state_value_name: STRING = "pre_state_value"
+			-- Name of the pre-state value attribute in the transition table.
 
-	evt_pre_state_bp_attribute_name: STRING = "pre_state_bp"
-			-- Name of the pre-state breakpoint attribute of the expression value transition table.
+	Mysql_pre_state_value_column: INTEGER = 9
+			-- Column of the pre-state value attribute in the transition table.
 
-	evt_pre_state_bp_attribute_column_number: INTEGER = 6
-			-- Column of the pre-state breakpoint attribute of the expression value transition table.
+	Mysql_post_state_breakpoint_name: STRING = "post_state_breakpoint"
+			-- Name of the post-state breakpoint attribute in the transition table.
 
-	evt_pre_state_type_attribute_name: STRING = "pre_state_type"
-			-- Name of the pre-state type attribute of the expression value transition table.
+	Mysql_post_state_breakpoint_column: INTEGER = 10
+			-- Column of the post-state breakpoint attribute in the transition table.
 
-	evt_pre_state_type_attribute_column_number: INTEGER = 7
-			-- Column of the pre-state type attribute of the expression value transition table.
+	Mysql_post_state_type_name: STRING = "post_state_type"
+			-- Name of the post-state type attribute in the transition table.
 
-	evt_pre_state_type_information_attribute_name: STRING = "pre_state_type_information"
-			-- Name of the pre-state type information attribute of the expression value transition table.
+	Mysql_post_state_type_column: INTEGER = 11
+			-- Column of the post-state type attribute in the transition table.
 
-	evt_pre_state_type_information_attribute_column_number: INTEGER = 8
-			-- Column of the pre-state type information attribute of the expression value transition table.
+	Mysql_post_state_type_information_name: STRING = "post_state_type_information"
+			-- Name of the post-state type information attribute in the transition table.
 
-	evt_pre_state_value_attribute_name: STRING = "pre_state_value"
-			-- Name of the pre-state value attribute of the expression value transition table.
+	Mysql_post_state_type_information_column: INTEGER = 12
+			-- Column of the post-state type information attribute in the transition table.
 
-	evt_pre_state_value_attribute_column_number: INTEGER = 9
-			-- Column of the pre-state value attribute of the expression value transition table.
+	Mysql_post_state_value_name: STRING = "post_state_value"
+			-- Name of the post-state value attribute in the transition table.
 
-	evt_post_state_bp_attribute_name: STRING = "post_state_bp"
-			-- Name of the post-state breakpoint attribute of the expression value transition table.
-
-	evt_post_state_bp_attribute_column_number: INTEGER = 10
-			-- Column of the post-state breakpoint attribute of the expression value transition table.
-
-	evt_post_state_type_attribute_name: STRING = "post_state_type"
-			-- Name of the post-state type attribute of the expression value transition table.
-
-	evt_post_state_type_attribute_column_number: INTEGER = 11
-			-- Column of the post-state type attribute of the expression value transition table.
-
-	evt_post_state_type_information_attribute_name: STRING = "post_state_type_information"
-			-- Name of the post-state type information attribute of the expression value transition table.
-
-	evt_post_state_type_information_attribute_column_number: INTEGER = 12
-			-- Column of the post-state type information attribute of the expression value transition table.
-
-	evt_post_state_value_attribute_name: STRING = "post_state_value"
-			-- Name of the post-state value attribute of the expression value transition table.
-
-	evt_post_state_value_attribute_column_number: INTEGER = 13
-			-- Column of the post-state value attribute of the expression value transition table.
+	Mysql_post_state_value_column: INTEGER = 13
+			-- Column of the post-state value attribute in the transition table.
 
 end

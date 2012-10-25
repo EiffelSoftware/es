@@ -1,14 +1,17 @@
 note
-	description: "Class to find interesting pre-states with respect to data flow."
+	description: "Program location finder which finds potentially interesting program locations%
+		%of an abstract syntax tree with respect to data flow."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	DPA_INTERESTING_PRE_STATE_FINDER
+	DPA_PROGRAM_LOCATION_FINDER
 
 inherit
 	AST_ITERATOR
+		export
+			{AST_EIFFEL} all
 		redefine
 			process_access_id_as,
 			process_create_creation_as,
@@ -17,11 +20,13 @@ inherit
 			process_assigner_call_as,
 			process_access_feat_as,
 			process_if_as,
-			process_loop_as,
-			process_result_as
+			process_loop_as
 		end
 
 	KL_SHARED_STRING_EQUALITY_TESTER
+		export
+			{NONE} all
+		end
 
 create
 	default_create, make
@@ -29,7 +34,7 @@ create
 feature {NONE} -- Initialization
 
 	make (a_ast: like ast)
-			-- Initialize `ast' with `a_ast'
+			-- Initialize current program location finder.
 		require
 			a_ast_not_void: a_ast /= Void
 		do
@@ -38,51 +43,75 @@ feature {NONE} -- Initialization
 			ast_set: ast = a_ast
 		end
 
+feature -- Access
+
+	last_program_locations: DS_HASH_SET [INTEGER]
+			-- Last found program locations of `ast' which are interesting with respect to data flow.
+
+	ast: AST_EIFFEL
+			-- AST which is used to find potentially interesting program locations.
+
 feature -- Basic operations
 
 	find
-			-- Find all interesting pre-states and make them available
-			-- in `interesting_pre_states'
+			-- Find all potentially interesting program locations of `ast' and make them available
+			-- in `last_program_locations'.
 		require
 			ast_not_void: ast /= Void
 		local
-			l_bp_slot_initializer: ETR_BP_SLOT_INITIALIZER
+			l_breakpoint_initializer: ETR_BP_SLOT_INITIALIZER
 		do
-			create interesting_pre_states.make_default
+			-- Initialize `program_locations' which will contain
+			-- the found potentially interesting program locations.
+			create last_program_locations.make_default
 
-			create l_bp_slot_initializer
-			l_bp_slot_initializer.init_from (ast)
+			-- Initialize breakpoints of `ast'.
+			create l_breakpoint_initializer
+			l_breakpoint_initializer.init_from (ast)
 
+			-- Find potentially interesting program locations in `ast'.
 			ast.process (Current)
 		end
 
-feature -- Process operations
+feature -- Setting
+
+	set_ast (a_ast: like ast)
+			-- Set `ast' to `a_ast'.
+		require
+			a_ast_not_void: a_ast /= Void
+		do
+			ast := a_ast
+		ensure
+			ast_set: ast = a_ast
+		end
+
+feature {AST_EIFFEL} -- Roundtrip
 
 	process_access_id_as (l_as: ACCESS_ID_AS)
 			-- Process `l_as'.
 		do
-			if is_nested_node then
-				if not l_as.access_name_8.is_equal (io_string) then
-					interesting_pre_states.force_last (l_as.breakpoint_slot)
-				end
-			else
-				interesting_pre_states.force_last (l_as.breakpoint_slot)
+			-- Store breakpoint of `l_as' if and only if the target of the qualified call is
+			-- not "io".
+			if
+				not l_as.access_name_8.is_equal (Io_string)
+			then
+				last_program_locations.force_last (l_as.breakpoint_slot)
 			end
+
 			process_access_feat_as (l_as)
 		end
 
 	process_create_creation_as (l_as: CREATE_CREATION_AS)
 			-- Process `l_as'.
 		do
-			interesting_pre_states.force_last (l_as.breakpoint_slot)
+			-- Store breakpoint of `l_as'.
+			last_program_locations.force_last (l_as.breakpoint_slot)
 		end
 
 	process_nested_as (l_as: NESTED_AS)
 			-- Process `l_as'.
 		do
-			is_nested_node := True
 			l_as.target.process (Current)
-			is_nested_node := False
 		end
 
 	process_assign_as (l_as: ASSIGN_AS)
@@ -119,41 +148,9 @@ feature -- Process operations
 			safe_process (l_as.compound)
 		end
 
-	process_result_as (l_as: RESULT_AS)
-			-- Process `l_as'.
-		do
-			interesting_pre_states.force_last (l_as.breakpoint_slot)
-		end
-
-feature -- Access
-
-	interesting_pre_states: DS_HASH_SET [INTEGER]
-			-- Contains all found interesting pre-states
-			-- in terms of breakpoint slots.
-
-	ast: AST_EIFFEL
-			-- AST which is used to collect interesting variables
-
-feature -- Setting
-
-	set_ast (a_ast: like ast)
-			-- Set `ast' to `a_ast'
-		require
-			a_ast_not_void: a_ast /= Void
-		do
-			ast := a_ast
-		ensure
-			ast_set: ast = a_ast
-		end
-
 feature {NONE} -- Implementation
 
-	is_nested_node: BOOLEAN
-			-- Is the current node part of a NESTED_AS node?
-
-feature {NONE} -- Implementation
-
-	io_string: STRING = "io"
-			-- Constant string representing "io"
+	Io_string: STRING = "io"
+			-- String representation of "io"
 
 end

@@ -8,895 +8,986 @@ class
 	DPA_COMMAND_LINE_PARSER
 
 inherit
+	DPA_COMMAND_LINE_OPTIONS
+		export
+			{NONE} all
+		end
+
+	DPA_COMMAND_LINE_PARSING_ERROR_MESSAGES
+		export
+			{NONE} all
+		end
+
 	EPA_UTILITY
+		export
+			{NONE} all
+		end
 
 	EXCEPTIONS
+		export
+			{NONE} all
+		end
 
 create
-	make_with_arguments
+	make
 
 feature {NONE} -- Initialization
 
-	make_with_arguments (a_arguments: LINKED_LIST [STRING]; a_system: SYSTEM_I)
-			-- Initialize `configuration' with `a_system' and
-			-- `arguments' with `a_arguments'.
+	make (a_options: like options; a_configuration: like last_configuration)
+			-- Initialize command line parser.
 		require
-			a_arguments_not_void: a_arguments /= Void
-			a_system_not_void: a_system /= Void
+			a_options_not_void: a_options /= Void
+			a_configuration_not_void: a_configuration /= Void
 		do
-			create configuration.make (a_system)
-			arguments := a_arguments
+			options := a_options
+			last_configuration := a_configuration
 		ensure
-			arguments_set: arguments = a_arguments
-			eiffel_system_set: configuration.eiffel_system = a_system
+			options_set: options = a_options
+			last_configuration_set: last_configuration = a_configuration
 		end
 
 feature -- Access
 
-	arguments: LINKED_LIST [STRING]
-			-- Command line options
+	options: LINKED_LIST [STRING]
+			-- Dynamic program analysis options.
 
-	configuration: DPA_CONFIGURATION
-			-- Dynamic program analysis configuration
+	last_configuration: DPA_CONFIGURATION
+			-- Last parsed configuration whose options are set according to `options'.
 
-feature -- Parsing
+feature -- Basic operations
 
 	parse
-			-- Parse `arguments' and store result in `configuration'.
-		require
-			arguments_not_void: arguments /= Void
+			-- Parse `options' to set options in `last_configuration' accordingly.
 		local
 			l_parser: AP_PARSER
-			l_arguments: DS_LINKED_LIST [STRING]
-			l_location_search, l_expression_search, l_all_locations: AP_FLAG
-			l_single_json_data_file, l_multiple_json_data_files, l_serialized_data_files, l_mysql_database: AP_STRING_OPTION
-			l_program, l_locations, l_variables, l_expressions: AP_STRING_OPTION
-			l_locs_with_exprs, l_locs_with_vars: AP_STRING_OPTION
+			l_parser_options: DS_LIST [AP_OPTION]
+			l_options: DS_LINKED_LIST [STRING]
+			l_program_location_search_option, l_expression_search_option, l_all_program_locations_option: AP_FLAG
+			l_class_option, l_feature_option: AP_STRING_OPTION
+			l_program_locations_option, l_variables_option, l_expressions_option: AP_STRING_OPTION
+			l_localized_expressions_option, l_localized_variables_option: AP_STRING_OPTION
+			l_json_file_writer_option, l_mysql_writer_option: AP_STRING_OPTION
 		do
-			-- Initialize command line parser
+			-- Initialize command line parser.
 			create l_parser.make
-			create l_arguments.make
-			arguments.do_all (agent l_arguments.force_last)
+			l_parser_options := l_parser.options
+			create l_options.make
+			options.do_all (agent l_options.force_last)
 
-			-- Set up command line options
+			-- Set up command line options.
 
-			-- Option specifying the program
-			create l_program.make_with_long_form ("program")
-			l_program.set_description (
-				"Specify the program under analysis.%
-				%Format: --program CLASS_NAME.feature_name.")
-			l_parser.options.force_last (l_program)
+			-- Option to specifiy the context class of the feature under analysis.
+			create l_class_option.make_with_long_form (Option_class)
+			l_class_option.set_description (
+				"Specify the context class of the feature under analysis.%
+				%Format: --" + Option_class + " CLASS_NAME")
+			l_parser_options.force_last (l_class_option)
 
+			-- Option to specifiy the feature under analysis.
+			create l_feature_option.make_with_long_form (Option_feature)
+			l_feature_option.set_description (
+				"Specify the feature under analysis.%
+				%Format: --" + Option_feature + " feature_name")
+			l_parser_options.force_last (l_feature_option)
 
-			-- Options related to program locations, variables and expressions
+			-- Options related to program locations, variables and expressions.
 
-			create l_location_search.make_with_long_form ("location-search")
-			l_location_search.set_description (
-				"Choose program locations automatically.%
-				%Format: --location-search")
-			l_parser.options.force_last (l_location_search)
+			-- Option to specify program location search.
+			create l_program_location_search_option.make_with_long_form (Option_program_location_search)
+			l_program_location_search_option.set_description (
+				"Search program locations in feature under analysis.%
+				%Format: --" + Option_program_location_search)
+			l_parser_options.force_last (l_program_location_search_option)
 
-			create l_expression_search.make_with_long_form ("expression-search")
-			l_expression_search.set_description (
-				"Choose expressions to be evaluated automatically.%
-				%Format: --expression-search")
-			l_parser.options.force_last (l_expression_search)
+			-- Option to specify usage of all program locations.
+			create l_all_program_locations_option.make_with_long_form (Option_all_program_locations)
+			l_all_program_locations_option.set_description (
+				"Use all program locations in feature under analysis.%
+				%Format: --" + Option_all_program_locations)
+			l_parser_options.force_last (l_all_program_locations_option)
 
-			create l_all_locations.make_with_long_form ("all-locations")
-			l_all_locations.set_description (
-				"Consider all program locations.%
-				%Format: --all-locations")
-			l_parser.options.force_last (l_all_locations)
+			-- Option to specify program locations.
+			create l_program_locations_option.make_with_long_form (Option_program_locations)
+			l_program_locations_option.set_description (
+				"Specify program locations in terms of breakpoints.%
+				%Format: --" + Option_program_locations + " breakpoint[,breakpoint]")
+			l_parser.options.force_last (l_program_locations_option)
 
-			create l_variables.make_with_long_form ("variables")
-			l_variables.set_description (
-				"Specify variables which should be used to construct expressions to be evaluated.%
-				%Format: --variables variable[,variable].")
-			l_parser.options.force_last (l_variables)
+			-- Option to specify variables.
+			create l_variables_option.make_with_long_form (Option_variables)
+			l_variables_option.set_description (
+				"Specify variables which should be used to construct expressions.%
+				%These expressions are evaluated during analysis.%
+				%Format: --" + Option_variables + " variable[,variable]")
+			l_parser_options.force_last (l_variables_option)
 
-			create l_expressions.make_with_long_form ("expressions")
-			l_expressions.set_description (
-				"Specify expressions to be evaluated.%
-				%Format: --expressions expression[,expression]")
-			l_parser.options.force_last (l_expressions)
+			-- Option to specify expression search.
+			create l_expression_search_option.make_with_long_form (Option_expression_search)
+			l_expression_search_option.set_description (
+				"Search expressions in feature under analysis.%
+				%These expressions are evaluated during analysis.%
+				%Format: --" + Option_expression_search)
+			l_parser_options.force_last (l_expression_search_option)
 
-			create l_locations.make_with_long_form ("locations")
-			l_locations.set_description (
-				"Specify program locations at which expressions should be evaluated.%
-				%Format: --locations bp_slot[,bp_slot]")
-			l_parser.options.force_last (l_locations)
+			-- Option to specify expressions.
+			create l_expressions_option.make_with_long_form (Option_expressions)
+			l_expressions_option.set_description (
+				"Specify expressions which are evaluated during analysis.%
+				%Format: --" + Option_expressions + " expression[,expression]")
+			l_parser_options.force_last (l_expressions_option)
 
-			create l_locs_with_exprs.make_with_long_form ("locations-with-expressions")
-			l_locs_with_exprs.set_description (
-				"Specify expressions to be evaluated at specific program locations.%
-				%Format: --locations-with-expressions bp_slot:expr[;bp_slot:expr].")
-			l_parser.options.force_last (l_locs_with_exprs)
+			-- Option to specify localized variables.
+			create l_localized_variables_option.make_with_long_form (Option_localized_variables)
+			l_localized_variables_option.set_description (
+				"Specify localized variables which are pairs of variables and program locations.%
+				%The variable of such a pair is used to construct expressions which are evaluated%
+				%before and after the execution of the program location of that pair. Program%
+				%locations are specified in terms of breakpoints.%
+				%Format: --" + Option_localized_variables +
+				" variable:program location[;variable:program location]")
+			l_parser_options.force_last (l_localized_variables_option)
 
-			create l_locs_with_vars.make_with_long_form ("locations-with-variables")
-			l_locs_with_vars.set_description (
-				"Specify variables which should be used to construct expressions to be evaluated at specific program locations.%
-				%Format: --locations-with-variables bp_slot:expr[;bp_slot:expr].")
-			l_parser.options.force_last (l_locs_with_vars)
+			-- Option to specify localized expressions.
+			create l_localized_expressions_option.make_with_long_form (Option_localized_expressions)
+			l_localized_expressions_option.set_description (
+				"Specify localized expressions which are pairs of expressions and%
+				%program locations. The expression of such a pair is evaluated before and after the%
+				%execution of the program location of that pair.%
+				%Program locations are specified in terms of breakpoints.%
+				%Format: --" + Option_localized_expressions +
+				" expression:program location[;expression:program location]")
+			l_parser_options.force_last (l_localized_expressions_option)
 
-			-- Options related to data storage
+			-- Options related to the persistent storage of the analysis results.
 
-			create l_single_json_data_file.make_with_long_form ("single-json-data-file")
-			l_single_json_data_file.set_description ("Specify a path and file name used for the storage in a JSON data file.%
-				%Format: --single-json-file path;file_name")
-			l_parser.options.force_last (l_single_json_data_file)
+			-- Option to specify JSON file writer options.
+			create l_json_file_writer_option.make_with_long_form (Option_json_file_writer)
+			l_json_file_writer_option.set_description ("Specify JSON file writer options in terms %
+				%of a path and a file name used for the%
+				%persistent storage in a file in the JSON format.%
+				%Format: --" + Option_json_file_writer + " path;file name")
+			l_parser_options.force_last (l_json_file_writer_option)
 
-			create l_multiple_json_data_files.make_with_long_form ("multiple-json-data-files")
-			l_multiple_json_data_files.set_description ("Specify a path and file name prefix used for the storage in JSON data files.%
-				%Format: --multiple-json-files path;file_name_prefix")
-			l_parser.options.force_last (l_multiple_json_data_files)
+			-- Option to specify MYSQL writer options.
+			create l_mysql_writer_option.make_with_long_form (Option_mysql_writer)
+			l_mysql_writer_option.set_description ("Specify MYSQL writer options in terms of %
+				%a host, user, password, database and port%
+				%used for the persistent storage in a MYSQL database.%
+				%Format: --" + Option_mysql_writer + " host;user;password;database;port")
+			l_parser_options.force_last (l_mysql_writer_option)
 
-			create l_serialized_data_files.make_with_long_form ("serialized-data-files")
-			l_serialized_data_files.set_description ("Specify a path and file name prefix used for the storage in serialized data files.%
-				%Format: --serialized-file path;file_name_prefix")
-			l_parser.options.force_last (l_serialized_data_files)
+			-- Parse command line input.
+			l_parser.parse_list (l_options)
 
-			create l_mysql_database.make_with_long_form ("mysql")
-			l_mysql_database.set_description ("Specify a host, user, password, database and port used for the storage in a MYSQL database.%
-				%Format: --mysql host;user;password;database;port")
-			l_parser.options.force_last (l_mysql_database)
+			-- Set up configuration according to command line options.
 
-			-- Parse command line input
-			l_parser.parse_list (l_arguments)
-
-			-- Set up configuration according to command line options
-
-			-- Parameters specifying the program
-			if l_program.was_found then
-				parse_program_parameters (l_program.parameter)
+			-- Parse parameter specifying the class.
+			if
+				l_class_option.was_found
+			then
+				parse_class_parameter (l_class_option.parameter)
 			end
 
-			-- Parameters specifying program locations, expressions and variables
-
-			configuration.set_is_expression_search_activated (l_expression_search.was_found)
-			configuration.set_is_location_search_activated (l_location_search.was_found)
-			configuration.set_is_usage_of_all_locations_activated (l_all_locations.was_found)
-
-			if l_variables.was_found then
-				configuration.set_is_set_of_variables_given (True)
-				parse_variables_parameters (l_variables.parameter)
+			-- Parse parameter specifying the feature.
+			if
+				l_feature_option.was_found
+			then
+				parse_feature_parameter (l_feature_option.parameter)
 			end
 
-			if l_expressions.was_found then
-				configuration.set_is_set_of_expressions_given (True)
-				parse_expressions_parameters (l_expressions.parameter)
+			-- Parameters specifying the analysis choice.
+
+			last_configuration.set_is_expression_search_option_used (l_expression_search_option.was_found)
+			last_configuration.set_is_program_location_search_option_used (
+				l_program_location_search_option.was_found
+			)
+			last_configuration.set_is_all_program_locations_option_used (
+				l_all_program_locations_option.was_found
+			)
+
+			-- Parse parameter specifying the variables.
+			if
+				l_variables_option.was_found
+			then
+				last_configuration.set_is_variables_option_used (True)
+				parse_variables_parameter (l_variables_option.parameter)
 			end
 
-			if l_locations.was_found then
-				configuration.set_is_set_of_locations_given (True)
-				parse_program_locations_parameters (l_locations.parameter)
+			-- Parse parameter specifying the expressions.
+			if
+				l_expressions_option.was_found
+			then
+				last_configuration.set_is_expressions_option_used (True)
+				parse_expressions_parameter (l_expressions_option.parameter)
 			end
 
-			if l_locs_with_exprs.was_found then
-				configuration.set_is_set_of_locations_with_expressions_given (True)
-				parse_program_locations_with_expressions_parameters (l_locs_with_exprs.parameter)
+			-- Parse parameter specifying the program locations.
+			if
+				l_program_locations_option.was_found
+			then
+				last_configuration.set_is_program_locations_option_used (True)
+				parse_program_locations_parameter (l_program_locations_option.parameter)
 			end
 
-			if l_locs_with_vars.was_found then
-				configuration.set_is_set_of_locations_with_variables_given (True)
-				parse_program_locations_with_variables_parameters (l_locs_with_vars.parameter)
+			-- Parse parameter specifying the localized variables.
+			if
+				l_localized_variables_option.was_found
+			then
+				last_configuration.set_is_localized_variables_option_used (True)
+				parse_localized_variables_parameter (l_localized_variables_option.parameter)
 			end
 
-			-- Parameters specifying data storage
-
-			if l_single_json_data_file.was_found then
-				parse_single_json_data_file_parameters (l_single_json_data_file.parameter)
+			-- Parse parameter specifying the localized expressions.
+			if
+				l_localized_expressions_option.was_found
+			then
+				last_configuration.set_is_localized_expressions_option_used (True)
+				parse_localized_expressions_parameter (l_localized_expressions_option.parameter)
 			end
 
-			if l_multiple_json_data_files.was_found then
-				parse_multiple_json_data_files_parameters (l_multiple_json_data_files.parameter)
+			-- Parameters specifying persistent storage of analysis results.
+
+			-- Parse parameter specifying the JSON file writer options.
+			if
+				l_json_file_writer_option.was_found
+			then
+				last_configuration.set_is_json_file_writer_option_used (True)
+				parse_json_file_writer_parameter (l_json_file_writer_option.parameter)
 			end
 
-			if l_serialized_data_files.was_found then
-				parse_serialized_data_files_parameters (l_serialized_data_files.parameter)
-			end
-
-			if l_mysql_database.was_found then
-				parse_mysql_database_parameters (l_mysql_database.parameter)
+			-- Parse parameter specifying the MYSQL writer options.
+			if
+				l_mysql_writer_option.was_found
+			then
+				last_configuration.set_is_mysql_writer_option_used (True)
+				parse_mysql_writer_parameter (l_mysql_writer_option.parameter)
 			end
 		end
 
 feature {NONE} -- Implementation
 
-	print_parsing_error_message (a_error_message: STRING)
-			-- Print `a_error_message' in the standard output.
+	handle_parsing_error (a_error_message: STRING)
+			-- Handle a parsing error by issuing an error message and aborting
+			-- the dynamic program analysis.
 		require
 			a_error_message_not_void: a_error_message /= Void
 		local
 			l_error_message: STRING
 		do
-			l_error_message := "%N----------------%NParsing failure:%N----------------%N%N"
+			-- Print an error message containing the parsing error to the standard output.
+			create l_error_message.make (Error_message_header.count + a_error_message.count)
+			l_error_message := Error_message_header
 			l_error_message.append (a_error_message)
-			l_error_message.append_character ('%N')
 			io.put_string (l_error_message)
+
+			-- Abort dynamic program analysis.
+			die(-1)
 		end
 
-	location_with_expression_from_string (a_location_with_expression: STRING): TUPLE [program_location: INTEGER; expression: STRING]
-			-- Extract program location and expression from `a_location_with_expression'.
-			-- Input is expected to be in the format "loc:expr".
+	localized_expression_from_raw_string (a_raw_localized_expression: STRING):
+		TUPLE [expression: STRING; program_location: INTEGER]
+			-- Expression and program location from `a_raw_localized_expression'.
+			-- `a_raw_localized_expression' is expected to be in the format
+			-- "expression:program location".
 		require
-			a_location_with_expression_not_void: a_location_with_expression /= Void
+			a_raw_localized_expression_not_void: a_raw_localized_expression /= Void
 		local
-			l_location_with_expression: LIST [STRING]
-			l_location: STRING
-			l_expression: STRING
+			l_localized_expression: LIST [STRING]
+			l_expression, l_program_location: STRING
 		do
-			if a_location_with_expression.occurrences (':') = 1 then
-				-- Extract program location and expression
-				l_location_with_expression := a_location_with_expression.split (':')
+			-- Check if `a_raw_localized_expression' is a valid expression and program location
+			-- pair.
+			if
+				a_raw_localized_expression.occurrences (':') = 1
+			then
+				-- `a_raw_localized_expression' is an valid expression and program location pair.
 
-				-- Process program location
-				l_location := l_location_with_expression.i_th (1)
-				l_location.left_adjust
-				l_location.right_adjust
+				-- Extract expression and program location.
+				l_localized_expression := a_raw_localized_expression.split (':')
 
-				-- Process expression
-				l_expression := l_location_with_expression.i_th (2)
+				l_expression := l_localized_expression.i_th (1)
 				l_expression.left_adjust
 				l_expression.right_adjust
 
-				-- Check if `l_location' is empty
-				if l_location.count = 0 then
-					print_parsing_error_message ("One of the specified program locations is invalid.")
-					die (-1)
+				l_program_location := l_localized_expression.i_th (2)
+				l_program_location.left_adjust
+				l_program_location.right_adjust
+
+				-- Check if `l_expression' is an empty string.
+				if
+					l_expression.count = 0
+				then
+					handle_parsing_error (Error_message_invalid_expression)
 				end
 
-				-- Check if `l_expression' is empty
-				if l_expression.count = 0 then
-					print_parsing_error_message ("One of the specified expressions is invalid.")
-					die (-1)
+				-- Check if `l_program_location' is an empty string.
+				if
+					l_program_location.count = 0 or else not l_program_location.is_integer
+				then
+					handle_parsing_error (Error_message_invalid_program_location)
 				end
 
-				Result := [l_location.to_integer, l_expression]
+				Result := [l_expression, l_program_location.to_integer]
 			else
-				print_parsing_error_message ("One of the program location and expression pairs is invalid.")
-				die (-1)
+				-- `a_raw_localized_expression' is an invalid localized expression.
+				handle_parsing_error (Error_message_invalid_localized_expression)
 			end
-
 		ensure
 			Result_not_void: Result /= Void
+			expression_not_void: Result.expression /= Void
+			program_location_valid: Result.program_location >= 1
 		end
 
-	location_with_variable_from_string (a_location_with_variable: STRING): TUPLE [program_location: INTEGER; variable: STRING]
-			-- Extract program location and variable from `a_location_with_variable'.
-			-- Input is expected to be in the format "loc:var".
+	localized_variable_from_raw_string (a_raw_localized_variable: STRING):
+		TUPLE [variable: STRING; program_location: INTEGER]
+			-- Variable and program location from `a_raw_localized_variable'.
+			-- `a_raw_localized_variable' is expected to be in the format
+			-- "variable:program location".
 		require
-			a_location_with_variable_not_void: a_location_with_variable /= Void
+			a_raw_localized_variable_not_void: a_raw_localized_variable /= Void
 		local
-			l_location_with_variable: LIST [STRING]
-			l_location: STRING
-			l_variable: STRING
+			l_localized_variable: LIST [STRING]
+			l_variable, l_program_location: STRING
 		do
-			if a_location_with_variable.occurrences (':') = 1 then
-				-- Extract program location and variable
-				l_location_with_variable := a_location_with_variable.split (':')
+			-- Check if `a_raw_localized_variable' is a valid variable and program location pair.
+			if
+				a_raw_localized_variable.occurrences (':') = 1
+			then
+				-- `a_raw_localized_variable' is a valid variable and  program location pair.
 
-				-- Process program location
-				l_location := l_location_with_variable.i_th (1)
-				l_location.left_adjust
-				l_location.right_adjust
+				-- Extract variable and program location.
+				l_localized_variable := a_raw_localized_variable.split (':')
 
-				-- Process expression
-				l_variable := l_location_with_variable.i_th (2)
+				l_variable := l_localized_variable.i_th (1)
 				l_variable.left_adjust
 				l_variable.right_adjust
 
-				-- Check if `l_location' is empty
-				if l_location.count = 0 then
-					print_parsing_error_message ("One of the specified program locations is invalid.")
-					die (-1)
+				l_program_location := l_localized_variable.i_th (2)
+				l_program_location.left_adjust
+				l_program_location.right_adjust
+
+				-- Check if `l_variable' is an empty string.
+				if
+					l_variable.count = 0
+				then
+					handle_parsing_error (Error_message_invalid_variable)
 				end
 
-				-- Check if `l_variable' is empty
-				if l_variable.count = 0 then
-					print_parsing_error_message ("One of the specified variables is invalid.")
-					die (-1)
+				-- Check if `l_program_location' is an empty string.
+				if
+					l_program_location.count = 0 or else not l_program_location.is_integer
+				then
+					handle_parsing_error (Error_message_invalid_program_location)
 				end
 
-				Result := [l_location.to_integer, l_variable]
+				Result := [l_variable, l_program_location.to_integer]
 			else
-				print_parsing_error_message ("One of the program location and expression pairs is invalid.")
-				die (-1)
+				-- `a_raw_localized_variable' is an invalid localized variable.
+				handle_parsing_error (Error_message_invalid_localized_variable)
 			end
 		ensure
 			Result_not_void: Result /= Void
+			variable_not_void: Result.variable /= Void
+			program_location_valid: Result.program_location >= 1
 		end
 
-	parse_program_parameters (a_parameters: STRING)
-			-- Parse program in `configuration'.
-			-- Input is expected to be in the format "CLASS.feature".
+	parse_class_parameter (a_parameter: STRING)
+			-- Parse class from `a_parameter'.
+			-- Set `class_' in `last_configuration'.
 		require
-			a_parameters_not_void: a_parameters /= Void
+			a_parameter_not_void: a_parameter /= Void
 		local
-			l_program: LIST [STRING]
-			l_class_name, l_feature_name: STRING
+			l_class_name: STRING
 			l_class: CLASS_C
+		do
+			l_class_name := a_parameter
+			l_class_name.left_adjust
+			l_class_name.right_adjust
+
+			-- Check if `l_class_name' is an empty string.
+			if
+				l_class_name.count = 0
+			then
+				handle_parsing_error (Error_message_invalid_class)
+			end
+
+			l_class := first_class_starts_with_name (l_class_name)
+
+			-- Set `class_' in `last_configuration'.
+			last_configuration.set_class (l_class)
+		end
+
+	parse_feature_parameter (a_parameter: STRING)
+			-- Parse feature from `a_parameter'.
+			-- Set `feature_' in `last_configuration'.
+		require
+			a_parameter_not_void: a_parameter /= Void
+		local
+			l_feature_name: STRING
 			l_feature: FEATURE_I
 		do
+			l_feature_name := a_parameter
+			l_feature_name.left_adjust
+			l_feature_name.right_adjust
 
-
-			-- Check if `a_parameters' is a feature call.
-			if a_parameters.occurrences ('.') = 1 then
-				-- Case: Feature call
-				l_program := a_parameters.split ('.')
-
-				l_class_name := l_program.i_th (1)
-				l_feature_name := l_program.i_th (2)
-
-				-- Check if `l_class_name' is an empty string
-				if l_class_name.count = 0 then
-					print_parsing_error_message ("The specified class is invalid.")
-					die (-1)
-				end
-
-				-- Check if `l_feature_name' is an empty string
-				if l_feature_name.count = 0 then
-					print_parsing_error_message ("The specified feature is invalid.")
-					die (-1)
-				end
-
-				-- Process class name
-				l_class_name.left_adjust
-				l_class_name.right_adjust
-
-				-- Process feature name
-				l_feature_name.left_adjust
-				l_feature_name.right_adjust
-
-				-- Create actual class and feature object
-				l_class := first_class_starts_with_name (l_class_name)
-				l_feature := feature_from_class (l_class_name, l_feature_name)
-
-				-- Set up configuration
-				configuration.set_class (l_class)
-				configuration.set_feature (l_feature)
-			else
-				-- Case: No feature call
-				print_parsing_error_message ("The specified program is invalid.%N")
-				die (-1)
+			-- Check if `l_feature_name' is an empty string.
+			if
+				l_feature_name.count = 0
+			then
+				handle_parsing_error (Error_message_invalid_feature)
 			end
+
+			l_feature := feature_from_class (last_configuration.class_.name, l_feature_name)
+
+			-- Set `feature_' in `last_configuration'.
+			last_configuration.set_feature (l_feature)
 		end
 
-	parse_variables_parameters (a_parameters: STRING)
-			-- Parse variables in `configuration'.
-			-- Input is expected to be in the format var[;var].
+	parse_variables_parameter (a_parameter: STRING)
+			-- Parse variables from `a_parameter'.
+			-- Set `variables' in `last_configuration'.
+			-- `a_parameter' is expected to be in the format "variable[;variable]".
 		require
-			a_parameters_not_void: a_parameters /= Void
+			a_parameter_not_void: a_parameter /= Void
 		local
-			l_variable: STRING
+			l_number_of_variables: INTEGER
 			l_variables: DS_HASH_SET [STRING]
+			l_raw_variables: LIST [STRING]
+			l_variable: STRING
 		do
-			a_parameters.left_adjust
-			a_parameters.right_adjust
+			a_parameter.left_adjust
+			a_parameter.right_adjust
 
-			create l_variables.make_default
+			l_number_of_variables := a_parameter.occurrences (';') + 1
+
+			create l_variables.make (l_number_of_variables)
 			l_variables.set_equality_tester (string_equality_tester)
 
-			-- Determine input format of `a_parameters'
-			if a_parameters.has (';') then
-				-- Case: var;var[;var]
-				across a_parameters.split (';') as l_raw_variables loop
-					l_variable := l_raw_variables.item
+			-- Determine input format of `a_parameter'.
+			if
+				l_number_of_variables > 1
+			then
+				-- Multiple variables are specified.
+				l_raw_variables := a_parameter.split (';')
+
+				from
+					l_raw_variables.start
+				until
+					l_raw_variables.after
+				loop
+					l_variable := l_raw_variables.item_for_iteration
+
 					l_variable.left_adjust
 					l_variable.right_adjust
 
-					-- Check if `l_variable' is empty
-					if l_variable.count = 0 then
-						print_parsing_error_message ("One of the specified variables is invalid.")
-						die (-1)
+					-- Check if `l_variable' is an empty string.
+					if
+						l_variable.count = 0
+					then
+						handle_parsing_error (Error_message_invalid_variable)
 					end
 
 					l_variables.force_last (l_variable)
+
+					l_raw_variables.forth
 				end
 			else
-				-- Case: var
+				-- One variable is specified.
 
-				-- Check if `a_parameters' is empty
-				if a_parameters.count = 0 then
-					print_parsing_error_message ("The specified variable is invalid.")
-					die (-1)
+				-- Check if `a_parameter' is an empty string.
+				if
+					a_parameter.count = 0
+				then
+					handle_parsing_error (Error_message_invalid_variable)
 				end
 
-				l_variables.force_last (a_parameters)
+				l_variables.force_last (a_parameter)
 			end
 
-			-- Set up configuration
-			configuration.set_variables (l_variables)
+			-- Set `variables' in `last_configuration'.
+			last_configuration.set_variables (l_variables)
 		ensure
-			variables_not_void: configuration.variables /= Void
+			variables_not_void: last_configuration.variables /= Void
 		end
 
-	parse_expressions_parameters (a_parameters: STRING)
-			-- Parse expressions in `configuration'.
-			-- Input is expected to be in the format expr[;expr].
+	parse_expressions_parameter (a_parameter: STRING)
+			-- Parse expressions from `a_parameter'.
+			-- Set `expressions' in `last_configuration'.
+			-- `a_parameter' is expected to be in the format "expression[;expression]".
 		require
-			a_parameters_not_void: a_parameters /= Void
+			a_parameter_not_void: a_parameter /= Void
 		local
-			l_expression: STRING
+			l_number_of_expressions: INTEGER
 			l_expressions: DS_HASH_SET [STRING]
+			l_raw_expressions: LIST [STRING]
+			l_expression: STRING
 		do
-			a_parameters.left_adjust
-			a_parameters.right_adjust
+			a_parameter.left_adjust
+			a_parameter.right_adjust
 
-			create l_expressions.make_default
+			l_number_of_expressions := a_parameter.occurrences (';') + 1
+
+			create l_expressions.make (l_number_of_expressions)
 			l_expressions.set_equality_tester (string_equality_tester)
 
-			-- Determine input format of `a_parameters'
-			if a_parameters.has (';') then
-				-- Case: expr;expr[;expr]
-				across a_parameters.split (';') as l_raw_expressions loop
-					l_expression := l_raw_expressions.item
+			-- Determine input format of `a_parameter'.
+			if
+				l_number_of_expressions > 1
+			then
+				-- Multiple expressions are specified.
+				l_raw_expressions := a_parameter.split (';')
+
+				from
+					l_raw_expressions.start
+				until
+					l_raw_expressions.after
+				loop
+					l_expression := l_raw_expressions.item_for_iteration
+
 					l_expression.left_adjust
 					l_expression.right_adjust
 
-					-- Check if `l_expression' is empty
-					if l_expression.count = 0 then
-						print_parsing_error_message ("One of the specified expressions is invalid.")
-						die (-1)
+					-- Check if `l_expression' is an empty string.
+					if
+						l_expression.count = 0
+					then
+						handle_parsing_error (Error_message_invalid_expression)
 					end
 
 					l_expressions.force_last (l_expression)
+
+					l_raw_expressions.forth
 				end
 			else
-				-- Case: expr
+				-- One expression is specified.
 
-				-- Check if `a_parameters' is empty
-				if a_parameters.count = 0 then
-					print_parsing_error_message ("The specified expression is invalid.")
-					die (-1)
+				-- Check if `a_parameter' is an empty string.
+				if
+					a_parameter.count = 0
+				then
+					handle_parsing_error (Error_message_invalid_expression)
 				end
 
-				l_expressions.force_last (a_parameters)
+				l_expressions.force_last (a_parameter)
 			end
 
-			-- Set up configuration
-			configuration.set_expressions (l_expressions)
+			-- Set `expressions' in `last_configuration'.
+			last_configuration.set_expressions (l_expressions)
 		ensure
-			expressions_not_void: configuration.expressions /= Void
+			expressions_not_void: last_configuration.expressions /= Void
 		end
 
-	parse_program_locations_parameters (a_parameters: STRING)
-			-- Parse program locations in `configuration'.
-			-- Input is expected to be in the format loc[;loc].
+	parse_program_locations_parameter (a_parameter: STRING)
+			-- Parse program locations from `a_parameter'.
+			-- Set `program_locations' in `last_configuration'.
+			-- `a_parameter' is expected to be in the format "program location[;program location]".
 		require
-			a_parameters_not_void: a_parameters /= Void
+			a_parameter_not_void: a_parameter /= Void
 		local
-			l_program_location: STRING
+			l_number_of_program_locations: INTEGER
 			l_program_locations: DS_HASH_SET [INTEGER]
+			l_raw_program_locations: LIST [STRING]
+			l_program_location: STRING
 		do
-			a_parameters.left_adjust
-			a_parameters.right_adjust
+			a_parameter.left_adjust
+			a_parameter.right_adjust
 
-			create l_program_locations.make_default
+			l_number_of_program_locations := a_parameter.occurrences (';') + 1
 
-			-- Determine input format of `a_parameters'
-			if a_parameters.has (';') then
-				-- Case: loc;loc[;loc]
-				across a_parameters.split (';') as l_raw_program_locations loop
-					l_program_location := l_raw_program_locations.item
+			create l_program_locations.make (l_number_of_program_locations)
+
+			-- Determine input format of `a_parameter'.
+			if
+				l_number_of_program_locations > 1
+			then
+				-- Multiple program locations are specified.
+				l_raw_program_locations := a_parameter.split (';')
+
+				from
+					l_raw_program_locations.start
+				until
+					l_raw_program_locations.after
+				loop
+					l_program_location := l_raw_program_locations.item_for_iteration
+
 					l_program_location.left_adjust
 					l_program_location.right_adjust
 
-					-- Check if `l_program_location' is empty
-					if l_program_location.count = 0 then
-						print_parsing_error_message ("One of the specified program locations is invalid.")
-						die (-1)
+					-- Check if `l_program_location' is an empty string.
+					if
+						l_program_location.count = 0 or else not l_program_location.is_integer
+					then
+						handle_parsing_error (Error_message_invalid_program_location)
 					end
 
 					l_program_locations.force_last (l_program_location.to_integer)
+
+					l_raw_program_locations.forth
 				end
 			else
-				-- Case: loc
+				-- One program location is specified.
 
-				-- Check if `a_parameters' is empty
-				if a_parameters.count = 0 then
-					print_parsing_error_message ("The specified program location is invalid.")
-					die (-1)
+				-- Check if `a_parameter' is an empty string.
+				if
+					a_parameter.count = 0 or else not a_parameter.is_integer
+				then
+					handle_parsing_error (Error_message_invalid_program_location)
 				end
 
-				l_program_locations.force_last (a_parameters.to_integer)
+				l_program_locations.force_last (a_parameter.to_integer)
 			end
 
-			-- Set up configuration
-			configuration.set_locations (l_program_locations)
+			-- Set `program_location' in `last_configuration'.
+			last_configuration.set_program_locations (l_program_locations)
 		ensure
-			locations_not_void: configuration.locations /= Void
+			locations_not_void: last_configuration.program_locations /= Void
 		end
 
-	parse_program_locations_with_expressions_parameters (a_parameters: STRING)
-			-- Parse program locations with expressions in `configuration'.
-			-- Input is expected to be in the format loc:expr[;loc:expr]
+	parse_localized_variables_parameter (a_parameter: STRING)
+			-- Parse localized variables from `a_parameter'.
+			-- Set `localized_variables' in `last_configuration'.
+			-- `a_parameter' is expected to be in the format
+			-- "variable:program location[;variable:program location]".
 		require
-			a_parameters_not_void: a_parameters /= Void
+			a_parameter_not_void: a_parameter /= Void
 		local
-			l_expression: STRING
-			l_expressions: DS_HASH_SET [STRING]
-			l_expressions_at_location: DS_HASH_SET [STRING]
-			l_location: INTEGER
-			l_location_expressions_map: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
-			l_parsed_location_with_expression: TUPLE [program_location: INTEGER; expression: STRING]
-		do
-			a_parameters.left_adjust
-			a_parameters.right_adjust
-
-			-- Initialize the map containing the expressions for the different program locations.
-			create l_location_expressions_map.make_default
-
-			-- Initialize the set of expressions.
-			create l_expressions.make_default
-			l_expressions.set_equality_tester (string_equality_tester)
-
-			-- Determine input format of `a_parameters'.
-			if a_parameters.has (';') then
-				-- Case: loc:expr;loc:expr[;loc:expr]
-				across a_parameters.split (';') as l_raw_locations_with_expressions loop
-					-- Extract program location and expression
-					l_parsed_location_with_expression := location_with_expression_from_string (l_raw_locations_with_expressions.item)
-					l_location := l_parsed_location_with_expression.program_location
-					l_expression := l_parsed_location_with_expression.expression
-
-					-- Does the location already exist as a key in the map?
-					if l_location_expressions_map.has (l_location) then
-						l_location_expressions_map.item (l_location).force_last (l_expression)
-					else
-						create l_expressions_at_location.make_default
-						l_expressions_at_location.set_equality_tester (string_equality_tester)
-						l_expressions_at_location.force_last (l_expression)
-
-						l_location_expressions_map.force_last (l_expressions_at_location, l_location)
-					end
-
-					-- Add the expression to the set of expressions
-					l_expressions.force_last (l_expression)
-				end
-			elseif a_parameters.has (':') then
-				-- Case: loc:expr
-
-				-- Extract program location and expression
-				l_parsed_location_with_expression := location_with_expression_from_string (a_parameters)
-				l_location := l_parsed_location_with_expression.program_location
-				l_expression := l_parsed_location_with_expression.expression
-
-				-- Add the program location and expression to the map.
-				create l_expressions_at_location.make_default
-				l_expressions_at_location.set_equality_tester (string_equality_tester)
-				l_expressions_at_location.force_last (l_expression)
-
-				l_location_expressions_map.put (l_expressions_at_location, l_location)
-
-				-- Add the expression to the set of expressions
-				l_expressions.force_last (l_expression)
-			else
-				-- Case: invalid input format
-				print_parsing_error_message ("The specified program location(s) with expression(s) is respectively are invalid.%N")
-				die (-1)
-			end
-
-			-- Set up configuration
-			configuration.set_locations_with_expressions (l_location_expressions_map)
-			configuration.set_expressions (l_expressions)
-		ensure
-			locations_with_expressions_not_void: configuration.locations_with_expressions /= Void
-			expressions_not_void: configuration.expressions /= Void
-		end
-
-	parse_program_locations_with_variables_parameters (a_parameters: STRING)
-			-- Parse program locations with variables in `configuration'.
-			-- Input is expected to be in the format loc:var[;loc:var]
-		require
-			a_parameters_not_void: a_parameters /= Void
-		local
+			l_number_of_localized_variables: INTEGER
+			l_raw_localized_variables: LIST [STRING]
 			l_variable: STRING
-			l_variables: DS_HASH_SET [STRING]
-			l_variables_at_location: DS_HASH_SET [STRING]
-			l_location: INTEGER
-			l_location_variables_map: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
-			l_parsed_location_with_variable: TUPLE [program_location: INTEGER; expression: STRING]
+			l_all_variables: DS_HASH_SET [STRING]
+			l_program_location: INTEGER
+			l_program_locations, l_all_program_locations: DS_HASH_SET [INTEGER]
+			l_localized_variables: DS_HASH_TABLE [DS_HASH_SET [INTEGER], STRING]
+			l_parsed_localized_variable: TUPLE [variable: STRING; program_location: INTEGER]
 		do
-			a_parameters.left_adjust
-			a_parameters.right_adjust
+			a_parameter.left_adjust
+			a_parameter.right_adjust
 
-			-- Initialize the map containing the variables for the different program locations.
-			create l_location_variables_map.make_default
+			l_number_of_localized_variables := a_parameter.occurrences (';') + 1
 
-			-- Initialize the set of variables.
-			create l_variables.make_default
-			l_variables.set_equality_tester (string_equality_tester)
+			create l_localized_variables.make (l_number_of_localized_variables)
+			l_localized_variables.set_key_equality_tester (string_equality_tester)
 
-			-- Determine input format of `a_parameters'.
-			if a_parameters.has (';') then
-				-- Case: loc:var;loc:var[;loc:var]
-				across a_parameters.split (';') as l_raw_locations_with_variables loop
-					-- Extract program location and expression
-					l_parsed_location_with_variable := location_with_variable_from_string (l_raw_locations_with_variables.item)
-					l_location := l_parsed_location_with_variable.program_location
-					l_variable := l_parsed_location_with_variable.expression
+			create l_all_variables.make (l_number_of_localized_variables)
+			l_all_variables.set_equality_tester (string_equality_tester)
 
-					-- Does the location already exist as a key in the map?
-					if l_location_variables_map.has (l_location) then
-						l_location_variables_map.item (l_location).force_last (l_variable)
+			create l_all_program_locations.make (l_number_of_localized_variables)
+
+			-- Determine input format of `a_parameter'.
+			if
+				l_number_of_localized_variables > 1
+			then
+				-- Multiple localized variables are specified.
+				l_raw_localized_variables := a_parameter.split (';')
+
+				from
+					l_raw_localized_variables.start
+				until
+					l_raw_localized_variables.after
+				loop
+					-- Extract localized variable.
+					l_parsed_localized_variable := localized_variable_from_raw_string (
+						l_raw_localized_variables.item_for_iteration
+					)
+
+					l_variable := l_parsed_localized_variable.variable
+					l_program_location := l_parsed_localized_variable.program_location
+
+					-- Add localized variable to other localized variables.
+					if
+						l_localized_variables.has (l_variable)
+					then
+						l_localized_variables.item (l_variable).force_last (l_program_location)
 					else
-						create l_variables_at_location.make_default
-						l_variables_at_location.set_equality_tester (string_equality_tester)
-						l_variables_at_location.force_last (l_variable)
+						create l_program_locations.make_default
+						l_program_locations.force_last (l_program_location)
 
-						l_location_variables_map.force_last (l_variables_at_location, l_location)
+						l_localized_variables.force_last (l_program_locations, l_variable)
 					end
 
-					-- Add the variable to the set of expressions
-					l_variables.force_last (l_variable)
+					-- Add variable from current localized variable to other variables.
+					l_all_variables.force_last (l_variable)
+
+					-- Add program location from current localized variable to other program locations.
+					l_all_program_locations.force_last (l_program_location)
+
+					l_raw_localized_variables.forth
 				end
-			elseif a_parameters.has (':') then
-				-- Case: loc:var
-
-				-- Extract program location and variable
-				l_parsed_location_with_variable := location_with_variable_from_string (a_parameters)
-				l_location := l_parsed_location_with_variable.program_location
-				l_variable := l_parsed_location_with_variable.expression
-
-				-- Add the program location and variable to the map.
-				create l_variables_at_location.make_default
-				l_variables_at_location.set_equality_tester (string_equality_tester)
-				l_variables_at_location.force_last (l_variable)
-
-				l_location_variables_map.put (l_variables_at_location, l_location)
-
-				-- Add the variable to the set of variables
-				l_variables.force_last (l_variable)
 			else
-				-- Case: invalid input format
-				print_parsing_error_message ("The specified program location(s) with variable(s) is respectively are invalid.%N")
-				die (-1)
+				-- One localized variable is specified.
+
+				-- Extract localized variable.
+				l_parsed_localized_variable := localized_variable_from_raw_string (a_parameter)
+
+				l_variable := l_parsed_localized_variable.variable
+				l_program_location := l_parsed_localized_variable.program_location
+
+				-- Add localized variable.
+				create l_program_locations.make_default
+				l_program_locations.force_last (l_program_location)
+
+				l_localized_variables.force_last (l_program_locations, l_variable)
+
+				-- Add variable.
+				l_all_variables.force_last (l_variable)
+
+				-- Add program location.
+				l_all_program_locations.force_last (l_program_location)
 			end
 
-			-- Set up configuration
-			configuration.set_locations_with_variables (l_location_variables_map)
-			configuration.set_variables (l_variables)
+			-- Set `localized_variables', `variables' and `program_locations' in
+			-- `last_configuration'.
+			last_configuration.set_localized_variables (l_localized_variables)
+			last_configuration.set_variables (l_all_variables)
+			last_configuration.set_program_locations (l_all_program_locations)
 		ensure
-			locations_with_variables_not_void: configuration.locations_with_variables /= Void
-			variables_not_void: configuration.variables /= Void
+			localized_variables_not_void: last_configuration.localized_variables /= Void
+			variables_not_void: last_configuration.variables /= Void
+			program_locations_not_void: last_configuration.program_locations /= Void
 		end
 
-	parse_single_json_data_file_parameters (a_parameters: STRING)
-			-- Parse output-path and file name in `configuration'.
-			-- Input is expected to be in the format output_path;file_name
+	parse_localized_expressions_parameter (a_parameter: STRING)
+			-- Parse localized expressions from `a_parameter'.
+			-- Set `localized_expressions' in `last_configuration'.
+			-- `a_parameter' is expected to be in the format
+			-- "expression:program location[;expression:program location]".
 		require
-			a_parameters_not_void: a_parameters /= Void
+			a_parameter_not_void: a_parameter /= Void
 		local
-			l_options: LIST [STRING]
-			l_output_path: STRING
+			l_number_of_localized_expressions: INTEGER
+			l_expression: STRING
+			l_all_expressions: DS_HASH_SET [STRING]
+			l_raw_localized_expressions: LIST [STRING]
+			l_program_locations, l_all_program_locations: DS_HASH_SET [INTEGER]
+			l_program_location: INTEGER
+			l_localized_expressions: DS_HASH_TABLE [DS_HASH_SET [INTEGER], STRING]
+			l_parsed_localized_expression: TUPLE [expression: STRING; program_location: INTEGER]
+		do
+			a_parameter.left_adjust
+			a_parameter.right_adjust
+
+			l_number_of_localized_expressions := a_parameter.occurrences (';') + 1
+
+			create l_localized_expressions.make (l_number_of_localized_expressions)
+			l_localized_expressions.set_key_equality_tester (string_equality_tester)
+
+			create l_all_expressions.make (l_number_of_localized_expressions)
+			l_all_expressions.set_equality_tester (string_equality_tester)
+
+			create l_all_program_locations.make (l_number_of_localized_expressions)
+
+			-- Determine input format of `a_parameter'.
+			if
+				l_number_of_localized_expressions > 1
+			then
+				-- Multiple localized expressions are specified.
+				l_raw_localized_expressions := a_parameter.split (';')
+
+				from
+					l_raw_localized_expressions.start
+				until
+					l_raw_localized_expressions.after
+				loop
+					-- Extract expression and program location
+					l_parsed_localized_expression := localized_expression_from_raw_string (
+						l_raw_localized_expressions.item_for_iteration
+					)
+
+					l_expression := l_parsed_localized_expression.expression
+					l_program_location := l_parsed_localized_expression.program_location
+
+					-- Add localized expression to other localized expressions.
+					if
+						l_localized_expressions.has (l_expression)
+					then
+						l_localized_expressions.item (l_expression).force_last (l_program_location)
+					else
+						create l_program_locations.make_default
+						l_program_locations.force_last (l_program_location)
+
+						l_localized_expressions.force_last (l_program_locations, l_expression)
+					end
+
+					-- Add expression to other expressions.
+					l_all_expressions.force_last (l_expression)
+
+					-- Add program location to other program location.
+					l_all_program_locations.force_last (l_program_location)
+
+					l_raw_localized_expressions.forth
+				end
+			else
+				-- One localized expression is specified.
+
+				-- Extract expression and program location
+				l_parsed_localized_expression := localized_expression_from_raw_string (a_parameter)
+
+				l_expression := l_parsed_localized_expression.expression
+				l_program_location := l_parsed_localized_expression.program_location
+
+				-- Add localized expression.
+				create l_program_locations.make (1)
+				l_program_locations.force_last (l_program_location)
+
+				l_localized_expressions.force_last (l_program_locations, l_expression)
+
+				-- Add expression.
+				l_all_expressions.force_last (l_expression)
+
+				-- Add program location.
+				l_all_program_locations.force_last (l_program_location)
+			end
+
+			-- Set `expressions', `program_locations' and `localized_expressions' in
+			-- `last_configuration'.
+			last_configuration.set_localized_expressions (l_localized_expressions)
+			last_configuration.set_expressions (l_all_expressions)
+			last_configuration.set_program_locations (l_all_program_locations)
+		ensure
+			localized_expressions_not_void: last_configuration.localized_expressions /= Void
+			expressions_not_void: last_configuration.expressions /= Void
+			program_locations_not_void: last_configuration.program_locations /= Void
+		end
+
+	parse_json_file_writer_parameter (a_parameter: STRING)
+			-- Parse JSON file writer options in `a_parameter'.
+			-- Set `json_file_writer_options' in `last_configuration'.
+			-- `a_parameter' is expected to be in the format "path;file name".
+		require
+			a_parameter_not_void: a_parameter /= Void
+		local
+			l_json_file_writer_options: LIST [STRING]
+			l_directory: STRING
 			l_file_name: STRING
 		do
-			a_parameters.left_adjust
-			a_parameters.right_adjust
+			a_parameter.left_adjust
+			a_parameter.right_adjust
 
-			-- Check if `a_parameters' has the correct input format
-			if a_parameters.occurrences (';') = 1 then
-				-- Extract output-path and file name
-				l_options := a_parameters.split (';')
+			-- Determine the input format of `a_parameter'.
+			if
+				a_parameter.occurrences (';') = 1
+			then
+				-- Input format is correct.
 
-				-- Process output-path
-				l_output_path := l_options.i_th (1)
-				l_output_path.left_adjust
-				l_output_path.right_adjust
+				-- Extract path and file name.
+				l_json_file_writer_options := a_parameter.split (';')
 
-				-- Check if `l_output_path' is empty
-				if l_output_path.count = 0 then
-					print_parsing_error_message ("The output-path is invalid.")
-					die (-1)
-				end
+				l_directory := l_json_file_writer_options.i_th (1)
+				l_directory.left_adjust
+				l_directory.right_adjust
 
-				-- Process file name
-				l_file_name := l_options.i_th (2)
+				l_file_name := l_json_file_writer_options.i_th (2)
 				l_file_name.left_adjust
 				l_file_name.right_adjust
 
-				-- Check if `l_file_name' is empty
-				if l_file_name.count = 0 then
-					print_parsing_error_message ("The file name is invalid.")
-					die (-1)
+				-- Check if `l_path' is an empty string.
+				if
+					l_directory.count = 0
+				then
+					handle_parsing_error (Error_message_invalid_directory)
 				end
 
-				-- Set up configuration
-				configuration.set_is_single_json_data_file_writer_selected (True)
-				configuration.set_single_json_data_file_writer_options ([l_output_path, l_file_name])
+				-- Check if `l_file_name' is an empty string.
+				if
+					l_file_name.count = 0
+				then
+					handle_parsing_error (Error_message_invalid_file_name)
+				end
+
+				-- Set `json_file_writer_options' in `last_configuration'.
+				last_configuration.set_json_file_writer_options ([l_directory, l_file_name])
 			else
-				print_parsing_error_message ("The specified single JSON data file writer options are invalid.")
-				die (-1)
+				-- Input format is invalid.
+				handle_parsing_error (Error_message_invalid_json_file_writer_options)
 			end
 		ensure
-			is_single_json_data_file_writer_selected_set: configuration.is_single_json_data_file_writer_selected
-			single_json_data_file_writer_options_not_void: configuration.single_json_data_file_writer_options /= Void
+			json_file_writer_options_not_void: last_configuration.json_file_writer_options /= Void
 		end
 
-	parse_multiple_json_data_files_parameters (a_parameters: STRING)
-			-- Parse path and file name prefix in `configuration'.
-			-- Input is expected to be in the format output_path;file_name_prefix
+	parse_mysql_writer_parameter (a_parameter: STRING)
+			-- Parse MYSQL writer options in `a_parameter'.
+			-- Set `mysql_writer_options' in `last_configuration'.
+			-- `a_parameter' is expected to be in the format "host;user;password;database;port".
 		require
-			a_parameters_not_void: a_parameters /= Void
+			a_parameter_not_void: a_parameter /= Void
 		local
-			l_options: LIST [STRING]
-			l_output_path: STRING
-			l_file_name_prefix: STRING
-		do
-			a_parameters.left_adjust
-			a_parameters.right_adjust
-
-			-- Check if `a_parameters' has the correct input format
-			if a_parameters.occurrences (';') = 1 then
-				-- Extract output-path and file name prefix
-				l_options := a_parameters.split (';')
-
-				-- Process output-path
-				l_output_path := l_options.i_th (1)
-				l_output_path.left_adjust
-				l_output_path.right_adjust
-
-				-- Check if `l_output_path' is empty
-				if l_output_path.count = 0 then
-					print_parsing_error_message ("The output-path is invalid.")
-					die (-1)
-				end
-
-				-- Process file name prefix
-				l_file_name_prefix := l_options.i_th (2)
-				l_file_name_prefix.left_adjust
-				l_file_name_prefix.right_adjust
-
-				-- Check if `l_file_name_prefix' is empty
-				if l_file_name_prefix.count = 0 then
-					print_parsing_error_message ("The file name prefix is invalid.")
-					die (-1)
-				end
-
-				-- Set up configuration
-				configuration.set_is_multiple_json_data_files_writer_selected (True)
-				configuration.set_multiple_json_data_files_writer_options ([l_output_path, l_file_name_prefix])
-			else
-				print_parsing_error_message ("The specified multiple JSON data files writer options are invalid.")
-				die (-1)
-			end
-		ensure
-			is_multiple_json_data_files_writer_selected_set: configuration.is_multiple_json_data_files_writer_selected
-			multiple_json_data_files_writer_options_not_void: configuration.multiple_json_data_files_writer_options /= Void
-		end
-
-	parse_serialized_data_files_parameters (a_parameters: STRING)
-			-- Parse path and file name prefix in `configuration'.
-			-- Input is expected to be in the format output_path;file_name_prefix
-		require
-			a_parameters_not_void: a_parameters /= Void
-		local
-			l_options: LIST [STRING]
-			l_output_path: STRING
-			l_file_name_prefix: STRING
-		do
-			a_parameters.left_adjust
-			a_parameters.right_adjust
-
-			-- Check if `a_parameters' has the correct input format
-			if a_parameters.occurrences (';') = 1 then
-				-- Extract output-path and file name prefix
-				l_options := a_parameters.split (';')
-
-				-- Process output-path
-				l_output_path := l_options.i_th (1)
-				l_output_path.left_adjust
-				l_output_path.right_adjust
-
-				-- Check if `l_output_path' is empty
-				if l_output_path.count = 0 then
-					print_parsing_error_message ("The output-path is invalid.")
-					die (-1)
-				end
-
-				-- Process file name prefix
-				l_file_name_prefix := l_options.i_th (2)
-				l_file_name_prefix.left_adjust
-				l_file_name_prefix.right_adjust
-
-				-- Check if `l_file_name_prefix' is empty
-				if l_file_name_prefix.count = 0 then
-					print_parsing_error_message ("The file name prefix is invalid.")
-					die (-1)
-				end
-
-				-- Set up configuration
-				configuration.set_is_serialized_data_files_writer_selected (True)
-				configuration.set_serialized_data_files_writer_options ([l_output_path, l_file_name_prefix])
-			else
-				print_parsing_error_message ("The specified serialized data files writer options are invalid.")
-				die (-1)
-			end
-		ensure
-			is_serialized_data_files_writer_selected_set: configuration.is_serialized_data_files_writer_selected
-			serialized_data_files_writer_options_not_void: configuration.serialized_data_files_writer_options /= Void
-		end
-
-	parse_mysql_database_parameters (a_parameters: STRING)
-			-- Parse host, user, password, database and port in `configuration'.
-			-- Input is expected to be in the format host;user;password;database;port
-		require
-			a_parameters_not_void: a_parameters /= Void
-		local
-			l_options: LIST [STRING]
+			l_mysql_writer_options: LIST [STRING]
 			l_host: STRING
 			l_user: STRING
 			l_password: STRING
 			l_database: STRING
 			l_port: STRING
 		do
-			a_parameters.left_adjust
-			a_parameters.right_adjust
+			a_parameter.left_adjust
+			a_parameter.right_adjust
 
-			-- Check if `a_parameters' has the correct input format
-			if a_parameters.occurrences (';') = 4 then
-				-- Extract output-path and file name prefix
-				l_options := a_parameters.split (';')
+			-- Determine the input format of `a_parameter'
+			if
+				a_parameter.occurrences (';') = 4
+			then
+				-- Input format is correct.
 
-				-- Process host
-				l_host := l_options.i_th (1)
+				-- Extract host, user, password, database and port.
+				l_mysql_writer_options := a_parameter.split (';')
+
+				l_host := l_mysql_writer_options.i_th (1)
 				l_host.left_adjust
 				l_host.right_adjust
 
-				-- Check if `l_host' is empty
-				if l_host.count = 0 then
-					print_parsing_error_message ("The host is invalid.")
-					die (-1)
-				end
-
-				-- Process user
-				l_user := l_options.i_th (2)
+				l_user := l_mysql_writer_options.i_th (2)
 				l_user.left_adjust
 				l_user.right_adjust
 
-				-- Check if `l_user' is empty
-				if l_user.count = 0 then
-					print_parsing_error_message ("The user is invalid.")
-					die (-1)
-				end
-
-				-- Process password
-				l_password := l_options.i_th (3)
+				l_password := l_mysql_writer_options.i_th (3)
 				l_password.left_adjust
 				l_password.right_adjust
 
-				-- Process database
-				l_database := l_options.i_th (4)
+				l_database := l_mysql_writer_options.i_th (4)
 				l_database.left_adjust
 				l_database.right_adjust
 
-				-- Check if `l_database' is empty
-				if l_database.count = 0 then
-					print_parsing_error_message ("The database is invalid.")
-					die (-1)
-				end
-
-				-- Process port
-				l_port := l_options.i_th (5)
+				l_port := l_mysql_writer_options.i_th (5)
 				l_port.left_adjust
 				l_port.right_adjust
 
-				-- Check if `l_port' is empty
-				if l_port.count = 0 then
-					print_parsing_error_message ("The port is invalid.")
-					die (-1)
+				-- Check if `l_host' is an empty string.
+				if
+					l_host.count = 0
+				then
+					handle_parsing_error (Error_message_invalid_host)
 				end
 
-				-- Set up configuration
-				configuration.set_is_mysql_data_writer_selected (True)
-				configuration.set_mysql_data_writer_options ([l_host, l_user, l_password, l_database, l_port.to_integer])
+				-- Check if `l_user' is an empty string.
+				if
+					l_user.count = 0
+				then
+					handle_parsing_error (Error_message_invalid_user)
+				end
+
+				-- Check if `l_database' is an empty string.
+				if
+					l_database.count = 0
+				then
+					handle_parsing_error (Error_message_invalid_database)
+				end
+
+				-- Check if `l_port' is an empty string.
+				if
+					l_port.count = 0 or else not l_port.is_integer
+				then
+					handle_parsing_error (Error_message_invalid_port)
+				end
+
+				-- Set `mysql_writer_options' in `last_configuration'.
+				last_configuration.set_mysql_writer_options (
+					[l_host, l_user, l_password, l_database, l_port.to_integer]
+				)
 			else
-				print_parsing_error_message ("The specified MYSQL data writer options are invalid.")
-				die (-1)
+				-- Input format is invalid.
+				handle_parsing_error (Error_message_invalid_mysql_writer_options)
 			end
 		ensure
-			is_mysql_writer_selected_set: configuration.is_mysql_data_writer_selected
-			mysql_data_writer_options_not_void: configuration.mysql_data_writer_options /= Void
+			mysql_writer_options_not_void: last_configuration.mysql_writer_options /= Void
 		end
 
 end

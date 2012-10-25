@@ -9,6 +9,9 @@ class
 
 inherit
 	SHARED_EXEC_ENVIRONMENT
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -16,7 +19,7 @@ create
 feature {NONE} -- Initialization
 
 	make (a_eiffel_system: like eiffel_system)
-			-- Initialize `eiffel_system' with `a_eiffel_system'.
+			-- Initialize configuration.
 		require
 			a_eiffel_system_not_void: a_eiffel_system /= Void
 		do
@@ -28,51 +31,53 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	eiffel_system: SYSTEM_I
-			-- Current compiled system
+			-- Current compiled system.
 
 	class_: CLASS_C
-			-- Class belonging to `feature_'
+			-- Context class of `feature_'.
 
 	feature_: FEATURE_I
-			-- Feature under analysis
+			-- Feature under analysis.
 
 	variables: DS_HASH_SET [STRING]
-			-- Variables used to construct expressions which are evaluated
+			-- Variables which are used to build expressions.
+			-- The built expressions are evaluated during analysis.
 
 	expressions: DS_HASH_SET [STRING]
-			-- Expressions which are evaluated
+			-- Expressions which are evaluated during analysis.
 
-	locations: DS_HASH_SET [INTEGER]
-			-- Program locations at which expressions are evaluated
+	program_locations: DS_HASH_SET [INTEGER]
+			-- Program locations which are used to evaluate expressions
+			-- before and after the execution of a program location during analysis.
 
-	locations_with_expressions: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
-			-- Expressions which are evaluated at a specific program location
+	localized_variables: DS_HASH_TABLE [DS_HASH_SET [INTEGER], STRING]
+			-- Localized variables which are used to construct expressions.
+			-- These expressions are evaluated before and after the execution of
+			-- the associated program locations during analysis.
+			-- Keys are variables.
+			-- Values are progrm locations.
 
-	locations_with_variables: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
-			-- Variables used to construct expressions which are evaluated at a specific program location
+	localized_expressions: DS_HASH_TABLE [DS_HASH_SET [INTEGER], STRING]
+			-- Expressions which are evaluated before and after the execution of
+			-- its associated program locations during analysis.
+			-- Keys are expressions.
+			-- Values are program locations.
 
-	single_json_data_file_writer_options: TUPLE [output_path: STRING; file_name: STRING]
-			-- Options used for writing a single JSON data file.
+	json_file_writer_options: TUPLE [directory: STRING; file_name: STRING]
+			-- JSON file writer options.
 
-	multiple_json_data_files_writer_options: TUPLE [output_path: STRING; file_name_prefix: STRING]
-			-- Options used for writing multiple JSON data files.
-
-	serialized_data_files_writer_options: TUPLE [output_path: STRING; file_name_prefix: STRING]
-			-- Options used for writing serialized data files.
-
-	mysql_data_writer_options: TUPLE [host: STRING; user: STRING; password: STRING; database: STRING; port: INTEGER]
-			-- Options used for writing a MYSQL database.
+	mysql_writer_options:
+		TUPLE [host: STRING; user: STRING; password: STRING; database: STRING; port: INTEGER]
+			-- MYSQL writer options.
 
 	working_directory: STRING
-			-- Working directory of the project
+			-- Working directory of the project.
 		do
 			Result := execution_environment.current_working_directory
 		end
 
 	root_class: CLASS_C
 			-- Root class in `eiffel_system'.
-		require
-			eiffel_system_not_void: eiffel_system /= Void
 		do
 			Result := eiffel_system.root_type.associated_class
 		ensure
@@ -81,46 +86,122 @@ feature -- Access
 
 feature -- Status report
 
-	is_location_search_activated: BOOLEAN
-			-- Are the program locations automatically chosen?
+	is_program_location_search_option_used: BOOLEAN
+			-- Is the program location search option used?
 
-	is_set_of_locations_given: BOOLEAN
-			-- Is a set of locations given?
+	is_program_locations_option_used: BOOLEAN
+			-- Is the program locations option used?
 
-	is_usage_of_all_locations_activated: BOOLEAN
-			-- Are all program locations chosen?
+	is_all_program_locations_option_used: BOOLEAN
+			-- Is the all program locations option used?
 
-	is_expression_search_activated: BOOLEAN
-			-- Are expressions which are evaluated automatically chosen?
+	is_expression_search_option_used: BOOLEAN
+			-- Is the expression search option used?
 
-	is_set_of_variables_given: BOOLEAN
-			-- Is a set of variables given?
+	is_variables_option_used: BOOLEAN
+			-- Is the variables option used?
 
-	is_set_of_expressions_given: BOOLEAN
-			-- Is a set of expressions given?
+	is_expressions_option_used: BOOLEAN
+			-- Is the expressions option used?
 
-	is_set_of_locations_with_expressions_given: BOOLEAN
-			-- Is a set of locations with expressions given?
+	is_localized_variables_option_used: BOOLEAN
+			-- Is the localized variables option used?
 
-	is_set_of_locations_with_variables_given: BOOLEAN
-			-- Is a set of locations with variables given?
+	is_localized_expressions_option_used: BOOLEAN
+			-- Is the localized expressions option used?
 
-	is_single_json_data_file_writer_selected: BOOLEAN
-			-- Is a single JSON data file writerselected?
+	is_json_file_writer_option_used: BOOLEAN
+			-- Is the JSON file writer option used?
 
-	is_multiple_json_data_files_writer_selected: BOOLEAN
-			-- Is a multiple JSON data files writer selected?
+	is_mysql_writer_option_used: BOOLEAN
+			-- Is the MYSQL writer option used?
 
-	is_serialized_data_files_writer_selected: BOOLEAN
-			-- Is a serialized data files writer selected?
+feature {DPA_COMMAND_LINE_PARSER} -- Setting
 
-	is_mysql_data_writer_selected: BOOLEAN
-			-- Is a MYSQL database writer selected?
+	set_is_program_location_search_option_used (b: BOOLEAN)
+			-- Set `is_program_location_search_option_used' to `b'.
+		do
+			is_program_location_search_option_used := b
+		ensure
+			is_program_location_search_option_used_set: is_program_location_search_option_used = b
+		end
 
-feature -- Setting
+	set_is_program_locations_option_used (b: BOOLEAN)
+			-- Set `is_program_locations_option_used' to `b'.
+		do
+			is_program_locations_option_used := b
+		ensure
+			is_program_locations_option_used_set: is_program_locations_option_used = b
+		end
+
+	set_is_all_program_locations_option_used (b: BOOLEAN)
+			-- Set `is_all_program_locations_option_used' to `b'.
+		do
+			is_all_program_locations_option_used := b
+		ensure
+			is_all_program_locations_option_used_set: is_all_program_locations_option_used = b
+		end
+
+	set_is_expression_search_option_used (b: BOOLEAN)
+			-- Set `is_expression_search_option_used' to `b'.
+		do
+			is_expression_search_option_used := b
+		ensure
+			is_expression_search_option_used_set: is_expression_search_option_used = b
+		end
+
+	set_is_variables_option_used (b: BOOLEAN)
+			-- Set `is_variables_option_used' to `b'.
+		do
+			is_variables_option_used := b
+		ensure
+			is_variables_option_used_set: is_variables_option_used = b
+		end
+
+	set_is_expressions_option_used (b: BOOLEAN)
+			-- Set `is_expressions_option_used' to `b'.
+		do
+			is_expressions_option_used := b
+		ensure
+			is_expressions_option_used_set: is_expressions_option_used = b
+		end
+
+	set_is_localized_variables_option_used (b: BOOLEAN)
+			-- Set `is_localized_variables_option_used' to `b'.
+		do
+			is_localized_variables_option_used := b
+		ensure
+			is_localized_variables_option_used_set: is_localized_variables_option_used = b
+		end
+
+	set_is_localized_expressions_option_used (b: BOOLEAN)
+			-- Set `is_localized_expressions_option_used' to `b'.
+		do
+			is_localized_expressions_option_used := b
+		ensure
+			is_localized_expressions_option_used_set: is_localized_expressions_option_used = b
+		end
+
+	set_is_json_file_writer_option_used (b: BOOLEAN)
+			-- Set `is_json_file_writer_option_used' to `b'.
+		do
+			is_json_file_writer_option_used := b
+		ensure
+			is_json_file_writer_option_used_set: is_json_file_writer_option_used = b
+		end
+
+	set_is_mysql_writer_option_used (b: BOOLEAN)
+			-- Set `is_mysql_writer_option_used' to `b'.
+		do
+			is_mysql_writer_option_used := b
+		ensure
+			is_mysql_writer_option_used_set: is_mysql_writer_option_used = b
+		end
+
+feature {DPA_COMMAND_LINE_PARSER} -- Setting
 
 	set_class (a_class: like class_)
-			-- Set `class_' to `a_class'
+			-- Set `class_' to `a_class'.
 		require
 			a_class_not_void: a_class /= Void
 		do
@@ -130,7 +211,7 @@ feature -- Setting
 		end
 
 	set_feature (a_feature: like feature_)
-			-- Set `feature_' to `a_feature'
+			-- Set `feature_' to `a_feature'.
 		require
 			a_feature_not_void: a_feature /= Void
 		do
@@ -139,8 +220,18 @@ feature -- Setting
 			feature_set: feature_ = a_feature
 		end
 
+	set_program_locations (a_program_locations: like program_locations)
+			-- Set `program_locations' to `a_program_locations'.
+		require
+			a_program_locations_not_void: a_program_locations /= Void
+		do
+			program_locations := a_program_locations
+		ensure
+			program_locations_set: program_locations = a_program_locations
+		end
+
 	set_variables (a_variables: like variables)
-			-- Set `variables' to `a_variables'
+			-- Set `variables' to `a_variables'.
 		require
 			a_variables_not_void: a_variables /= Void
 		do
@@ -150,7 +241,7 @@ feature -- Setting
 		end
 
 	set_expressions (a_expressions: like expressions)
-			-- Set `expressions' to `a_expressions'
+			-- Set `expressions' to `a_expressions'.
 		require
 			a_expressions_not_void: a_expressions /= Void
 		do
@@ -159,170 +250,44 @@ feature -- Setting
 			expressions_set: expressions = a_expressions
 		end
 
-	set_locations (a_locations: like locations)
-			-- Set `locations' to `a_locations'
+	set_localized_variables (a_localized_variables: like localized_variables)
+			-- Set `localized_variables' to `a_localized_variables'.
 		require
-			a_locations_not_void: a_locations /= Void
+			a_localized_variables_not_void: a_localized_variables /= Void
 		do
-			locations := a_locations
+			localized_variables := a_localized_variables
 		ensure
-			locations_set: locations = a_locations
+			localized_variables_set: localized_variables = a_localized_variables
 		end
 
-	set_locations_with_expressions (a_locations_with_expressions: like locations_with_expressions)
-			-- Set `locations_with_expressions' to `a_locations_with_expressions'
+	set_localized_expressions (a_localized_expressions: like localized_expressions)
+			-- Set `localized_expressions' to `a_localized_expressions'.
 		require
-			a_locations_with_expressions_not_void: a_locations_with_expressions /= Void
+			a_localized_expressions_not_void: a_localized_expressions /= Void
 		do
-			locations_with_expressions := a_locations_with_expressions
+			localized_expressions := a_localized_expressions
 		ensure
-			locations_with_expressions_set: locations_with_expressions = a_locations_with_expressions
+			localized_expressions_set: localized_expressions = a_localized_expressions
 		end
 
-	set_locations_with_variables (a_locations_with_variables: like locations_with_variables)
-			-- Set `locations_with_variables' to `a_locations_with_variables'
+	set_json_file_writer_options (a_json_file_writer_options: like json_file_writer_options)
+			-- Set `json_file_writer_options' to `a_json_file_writer_options'.
 		require
-			a_locations_with_variables_not_void: a_locations_with_variables /= Void
+			a_json_file_writer_options_not_void: a_json_file_writer_options /= Void
 		do
-			locations_with_variables := a_locations_with_variables
+			json_file_writer_options := a_json_file_writer_options
 		ensure
-			locations_with_variables_set: locations_with_variables = a_locations_with_variables
+			json_file_writer_options_set: json_file_writer_options = a_json_file_writer_options
 		end
 
-	set_single_json_data_file_writer_options (a_single_json_data_file_writer_options: like single_json_data_file_writer_options)
-			-- Set `single_json_data_file_writer_options' to `a_single_json_data_file_writer_options'.
+	set_mysql_writer_options (a_mysql_writer_options: like mysql_writer_options)
+			-- Set `mysql_writer_options' to `a_mysql_writer_options'.
 		require
-			a_single_json_data_file_writer_options_not_void: a_single_json_data_file_writer_options /= Void
+			a_mysql_writer_options_not_void: a_mysql_writer_options /= Void
 		do
-			single_json_data_file_writer_options := a_single_json_data_file_writer_options
+			mysql_writer_options := a_mysql_writer_options
 		ensure
-			single_json_data_file_writer_options_set: single_json_data_file_writer_options = a_single_json_data_file_writer_options
-		end
-
-	set_multiple_json_data_files_writer_options (a_multiple_json_data_files_writer_options: like multiple_json_data_files_writer_options)
-			-- Set `multiple_json_data_files_writer_options' to `a_multiple_json_data_files_writer_options'.
-		require
-			a_multiple_json_data_files_writer_options_not_void: a_multiple_json_data_files_writer_options /= Void
-		do
-			multiple_json_data_files_writer_options := a_multiple_json_data_files_writer_options
-		ensure
-			multiple_json_data_files_writer_options_set: multiple_json_data_files_writer_options = a_multiple_json_data_files_writer_options
-		end
-
-	set_serialized_data_files_writer_options (a_serialized_data_files_writer_options: like serialized_data_files_writer_options)
-			-- Set `serialized_data_files_writer_options' to `a_serialized_data_files_writer_options'.
-		require
-			a_serialized_data_files_writer_options_not_void: a_serialized_data_files_writer_options /= Void
-		do
-			serialized_data_files_writer_options := a_serialized_data_files_writer_options
-		ensure
-			serialized_data_files_writer_options_set: serialized_data_files_writer_options = a_serialized_data_files_writer_options
-		end
-
-	set_mysql_data_writer_options (a_mysql_data_writer_options: like mysql_data_writer_options)
-			-- Set `mysql_data_writer_options' to `a_mysql_data_writer_options'.
-		require
-			a_mysql_data_writer_options_not_void: a_mysql_data_writer_options /= Void
-		do
-			mysql_data_writer_options := a_mysql_data_writer_options
-		ensure
-			mysql_data_writer_options_set: mysql_data_writer_options = a_mysql_data_writer_options
-		end
-
-	set_is_location_search_activated (b: BOOLEAN)
-			-- Set `is_location_search_activated' to `b'
-		do
-			is_location_search_activated := b
-		ensure
-			is_location_search_activated_set: is_location_search_activated = b
-		end
-
-	set_is_set_of_locations_given (b: BOOLEAN)
-			-- Set `is_set_of_locations_given' to `b'
-		do
-			is_set_of_locations_given := b
-		ensure
-			is_set_of_locations_given_set: is_set_of_locations_given = b
-		end
-
-	set_is_usage_of_all_locations_activated (b: BOOLEAN)
-			-- Set `is_usage_of_all_locations_activated' to `b'
-		do
-			is_usage_of_all_locations_activated := b
-		ensure
-			is_usage_of_all_locations_activated_set: is_usage_of_all_locations_activated = b
-		end
-
-	set_is_expression_search_activated (b: BOOLEAN)
-			-- Set `is_expression_search_activated' to `b'
-		do
-			is_expression_search_activated := b
-		ensure
-			is_expression_search_activated_set: is_expression_search_activated = b
-		end
-
-	set_is_set_of_variables_given (b: BOOLEAN)
-			-- Set `is_set_of_variables_given' to `b'
-		do
-			is_set_of_variables_given := b
-		ensure
-			is_set_of_variables_given_set: is_set_of_variables_given = b
-		end
-
-	set_is_set_of_expressions_given (b: BOOLEAN)
-			-- Set `is_set_of_expressions_given' to `b'
-		do
-			is_set_of_expressions_given := b
-		ensure
-			is_set_of_expressions_given_set: is_set_of_expressions_given = b
-		end
-
-	set_is_set_of_locations_with_expressions_given (b: BOOLEAN)
-			-- Set `is_set_of_locations_with_expressions_given' to `b'
-		do
-			is_set_of_locations_with_expressions_given := b
-		ensure
-			is_set_of_locations_with_expressions_given_set: is_set_of_locations_with_expressions_given = b
-		end
-
-	set_is_set_of_locations_with_variables_given (b: BOOLEAN)
-			-- Set `is_set_of_locations_with_variables_given' to `b'
-		do
-			is_set_of_locations_with_variables_given := b
-		ensure
-			is_set_of_locations_with_variables_given_set: is_set_of_locations_with_variables_given = b
-		end
-
-	set_is_single_json_data_file_writer_selected (b: BOOLEAN)
-			-- Set `is_single_json_data_file_writer_selected' to `b'
-		do
-			is_single_json_data_file_writer_selected := b
-		ensure
-			is_single_json_data_file_writer_selected_set: is_single_json_data_file_writer_selected = b
-		end
-
-	set_is_multiple_json_data_files_writer_selected (b: BOOLEAN)
-			-- Set `is_multiple_json_data_files_writer_selected' to `b'
-		do
-			is_multiple_json_data_files_writer_selected := b
-		ensure
-			is_multiple_json_data_files_writer_selected_set: is_multiple_json_data_files_writer_selected = b
-		end
-
-	set_is_serialized_data_files_writer_selected (b: BOOLEAN)
-			-- Set `is_serialized_data_files_writer_selected' to `b'
-		do
-			is_serialized_data_files_writer_selected := b
-		ensure
-			is_serialized_data_files_writer_selected_set: is_serialized_data_files_writer_selected = b
-		end
-
-	set_is_mysql_data_writer_selected (b: BOOLEAN)
-			-- Set `is_mysql_data_writer_selected' to `b'
-		do
-			is_mysql_data_writer_selected := b
-		ensure
-			is_mysql_data_writer_selected_set: is_mysql_data_writer_selected = b
+			mysql_writer_options_set: mysql_writer_options = a_mysql_writer_options
 		end
 
 end

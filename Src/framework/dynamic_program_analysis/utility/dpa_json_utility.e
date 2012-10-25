@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {DPA_JSON_UTILITY}."
+	description: "Utility class for the JSON file writer and reader."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -7,26 +7,30 @@ note
 class
 	DPA_JSON_UTILITY
 
-feature -- Access
+feature -- Transformation
 
 	json_string_from_string (a_string: STRING): JSON_STRING
-			-- JSON_STRING representing `a_string'
+			-- JSON_STRING representing `a_string'.
 		require
 			a_string_not_void: a_string /= Void
 		do
-			Result := create {JSON_STRING}.make_json (a_string)
+			create Result.make_json (a_string)
 		ensure
 			Result_not_void: Result /= Void
 		end
 
-	string_from_json (a_json_value: JSON_VALUE): STRING
+	string_from_json_value (a_json_value: JSON_VALUE): STRING
 			-- String contained in `a_json_value' if `a_json_value' is a JSON_STRING.
 		require
 			a_json_value_not_void: a_json_value /= Void
 		do
-			if attached {JSON_STRING} a_json_value as l_json_string then
+			check
+				attached {JSON_STRING} a_json_value as l_json_string
+			then
 				Result := l_json_string.item
 			end
+		ensure
+			Result_not_void: Result /= Void
 		end
 
 end

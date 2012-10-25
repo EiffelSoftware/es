@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {DPA_PROCESSOR}."
+	description: "Processor to process the run time data delivered by the debugger."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -9,178 +9,156 @@ class
 
 inherit
 	EPA_UTILITY
+		export
+			{NONE} all
+		end
 
 create
 	make
 
-feature {NONE} -- Implementation
+feature {NONE} -- Initialization
 
-	make (a_program_locations: like pre_state_breakpoints; a_post_state_map: like post_state_map; a_debugger_manager: like debugger_manager)
-			-- Initialize current.
+	make (
+		a_pre_state_breakpoints: like pre_state_breakpoints;
+		a_post_state_breakpoints: like post_state_breakpoints;
+		a_expression_evaluation_plan: like expression_evaluation_plan
+	)
+			-- Initialize processor.
 		require
-			a_program_locations_not_void: a_program_locations /= Void
-			a_post_state_map_not_void: a_post_state_map /= Void
-			a_debugger_manager_not_void: a_debugger_manager /= Void
+			a_pre_state_breakpoints_not_void: a_pre_state_breakpoints /= Void
+			a_post_state_breakpoints_not_void: a_post_state_breakpoints /= Void
+			a_expression_evaluation_plan_not_void: a_expression_evaluation_plan /= Void
 		do
-			pre_state_breakpoints := a_program_locations
-			post_state_map := a_post_state_map
-			debugger_manager := a_debugger_manager
+			pre_state_breakpoints := a_pre_state_breakpoints
+			post_state_breakpoints := a_post_state_breakpoints
+			expression_evaluation_plan := a_expression_evaluation_plan
 		ensure
-			program_locations_set: pre_state_breakpoints = a_program_locations
-			post_state_map_set: post_state_map = a_post_state_map
-			debugger_manager_set: debugger_manager = a_debugger_manager
+			pre_state_breakpoints_set: pre_state_breakpoints = a_pre_state_breakpoints
+			post_state_breakpoints_set: post_state_breakpoints = a_post_state_breakpoints
+			expression_evaluation_plan_set: expression_evaluation_plan = a_expression_evaluation_plan
 		end
 
 feature -- Access
 
-	last_analysis_order_pairs: LINKED_LIST [TUPLE [pre_state_bp_slot: INTEGER; post_state_bp_slot: INTEGER]]
-			-- List of pre-state / post-state breakpoint pairs in the order they were analyzed.
-			-- Note: The analysis order is not the same as the execution order which is complete
-			-- whilst the analysis order only contains the hit pre-state / post-state breakpoints.
-
 	last_transitions: LINKED_LIST [EPA_EXPRESSION_VALUE_TRANSITION]
-			-- Expression value transitions of the last processed state.
+			-- Last processed transitions of the last processed
+			-- pre-state and post-state pair.
 
-feature -- Processing
+	pre_state_breakpoints: DS_HASH_SET [INTEGER]
+			-- Breakpoints which serve as pre-state breakpoints.
 
-	process (a_bp: BREAKPOINT; a_state: EPA_STATE)
-			-- Process `a_bp' and `a_state'. Result is made available in
-			-- `last_analysis_order_pairs' and `last_transitions'.
+	post_state_breakpoints: DS_HASH_TABLE [DS_HASH_SET [INTEGER], INTEGER]
+			-- Breakpoints which serve as post-state breakpoints.
+			-- Keys are pre-state breakpoints.
+			-- Values are (possibly multiple) post-state breakpoints.
+
+	expression_evaluation_plan: DS_HASH_TABLE [DS_HASH_SET [INTEGER], EPA_EXPRESSION]
+			-- Expression evaluation plan specifying the program locations at which an expression
+			-- is evaluated before and after the execution of a program location.
+			-- Keys are expressions.
+			-- Values are program locations.
+
+feature -- Basic operations
+
+	process (a_breakpoint: BREAKPOINT; a_state: EPA_STATE)
+			-- Process `a_breakpoint' and `a_state' to extract transitions and make them available
+			-- in `last_transitions'.
 		require
-			a_bp_not_void: a_bp /= Void
+			a_breakpoint_not_void: a_breakpoint /= Void
 			a_state_not_void: a_state /= Void
 		local
---			l_status: APPLICATION_STATUS
---			l_stack: EIFFEL_CALL_STACK
-			l_pre_state_bp, l_post_state_bp: INTEGER
-			l_pre_state, l_post_state: HASH_TABLE [EPA_EXPRESSION_VALUE, STRING]
-			l_expr_value_transition: EPA_EXPRESSION_VALUE_TRANSITION
-			l_expression: STRING
+			l_pre_state_breakpoint, l_post_state_breakpoint: INTEGER
+			l_transition: EPA_EXPRESSION_VALUE_TRANSITION
+			l_expression: EPA_EXPRESSION
+			l_equation: EPA_EQUATION
+			l_pre_state, l_post_state: EPA_STATE
 		do
-			create last_analysis_order_pairs.make
 			create last_transitions.make
 
---			l_status := debugger_manager.application_status
---			l_status.force_reload_current_call_stack
---			l_stack := l_status.current_call_stack
-			current_state := [a_bp.breakable_line_number, a_state]
+			-- `a_state' is the current state.
+			current_state := [a_breakpoint.breakable_line_number, a_state]
 
-			if previous_state /= Void then
+			-- Use `previous_state' and `current_state' to extract transitions.
+			if
+				previous_state /= Void
+			then
+				l_pre_state_breakpoint := previous_state.breakpoint
+				l_post_state_breakpoint := current_state.breakpoint
 
+				-- Extract transitions if `l_pre_state_breakpoint' and `l_post_state_breakpoint'
+				-- are a valid pre-state breakpoint and post-state breakpoint pair.
+				if
+					is_valid_pre_and_post_state_breakpoint_pair (
+						l_pre_state_breakpoint,
+						l_post_state_breakpoint
+					)
+				then
+					l_pre_state := previous_state.state
+					l_post_state := current_state.state
 
-				l_pre_state_bp := previous_state.breakpoint
-				l_post_state_bp := current_state.breakpoint
+					from
+						l_pre_state.start
+					until
+						l_pre_state.after
+					loop
+						l_equation := l_pre_state.item_for_iteration
+						l_expression := l_equation.expression
 
-				if is_valid_pre_post_state_pair (l_pre_state_bp, l_post_state_bp) then
-					last_analysis_order_pairs.extend ([l_pre_state_bp, l_post_state_bp])
+						-- Only take into account expressions which should be evaluated at current
+						-- pre-state breakpoint.
+						if
+							expression_evaluation_plan.item (l_expression).has (
+								l_pre_state_breakpoint
+							)
+						then
+							create l_transition.make (
+								l_expression,
+								l_pre_state_breakpoint,
+								l_equation.value,
+								l_post_state_breakpoint,
+								l_post_state.item_with_expression (l_expression).value
+							)
 
-					l_pre_state := previous_state.state.to_hash_table
-					l_post_state := current_state.state.to_hash_table
-
-					across l_pre_state.current_keys as l_expressions loop
-						l_expression := l_expressions.item
-						check l_pre_state.has (l_expression) and l_post_state.has (l_expression) end
-						create l_expr_value_transition.make (previous_state.state.item_with_expression_text (l_expression).expression, l_pre_state_bp, l_pre_state.item (l_expression), l_post_state_bp, l_post_state.item (l_expression))
-						last_transitions.extend (l_expr_value_transition)
-					end
-				end
-			end
-			previous_state := current_state
-		end
-
-	process_and_filter (a_bp: BREAKPOINT; a_state: EPA_STATE)
-			-- Process and filter `a_bp' and `a_state'. Expressions of `a_state' at `a_bp' are discarded
-			-- if they are not contained in `progm_locs_with_exprs'. Result is made available in
-			-- `last_analysis_order_pairs' and `last_transitions'.
-		require
-			a_bp_not_void: a_bp /= Void
-			a_state_not_void: a_state /= Void
-		local
---			l_status: APPLICATION_STATUS
---			l_stack: EIFFEL_CALL_STACK
-			l_pre_state_bp, l_post_state_bp: INTEGER
-			l_pre_state, l_post_state: HASH_TABLE [EPA_EXPRESSION_VALUE, STRING]
-			l_expr_value_transition: EPA_EXPRESSION_VALUE_TRANSITION
-			l_expression: STRING
-		do
-			create last_analysis_order_pairs.make
-			create last_transitions.make
-
---			l_status := debugger_manager.application_status
---			l_status.force_reload_current_call_stack
---			l_stack := l_status.current_call_stack
-			current_state := [a_bp.breakable_line_number, a_state]
-
-			if previous_state /= Void then
-				create last_analysis_order_pairs.make
-				create last_transitions.make
-
-				l_pre_state_bp := previous_state.breakpoint
-				l_post_state_bp := current_state.breakpoint
-
-				if is_valid_pre_post_state_pair (l_pre_state_bp, l_post_state_bp) then
-					last_analysis_order_pairs.extend ([l_pre_state_bp, l_post_state_bp])
-
-					l_pre_state := previous_state.state.to_hash_table
-					l_post_state := current_state.state.to_hash_table
-
-					across l_pre_state.current_keys as l_expressions loop
-						l_expression := l_expressions.item
-						check l_pre_state.has (l_expression) and l_post_state.has (l_expression) end
-						if prgm_locs_with_exprs.item (l_pre_state_bp).has (l_expression) then
-							create l_expr_value_transition.make (previous_state.state.item_with_expression_text (l_expression).expression, l_pre_state_bp, l_pre_state.item (l_expression), l_post_state_bp, l_post_state.item (l_expression))
-							last_transitions.extend (l_expr_value_transition)
+							last_transitions.extend (l_transition)
 						end
+
+						l_pre_state.forth
 					end
 				end
 			end
+
+			-- Assign `current_state' to `previous_state' so that it can be used with the next
+			-- processed state.
 			previous_state := current_state
-		end
-
-feature -- Setting
-
-	set_prgm_locs_with_exprs (a_prgm_locs_with_exprs: like prgm_locs_with_exprs)
-			-- Set `prgm_locs_with_exprs' to `a_prgm_locs_with_exprs'
-		require
-			a_prgm_locs_with_exprs_not_void: a_prgm_locs_with_exprs /= Void
-		do
-			prgm_locs_with_exprs := a_prgm_locs_with_exprs
-		ensure
-			prgm_locs_with_exprs_set: prgm_locs_with_exprs = a_prgm_locs_with_exprs
 		end
 
 feature {NONE} -- Implementation
 
 	previous_state: TUPLE [breakpoint: INTEGER; state: EPA_STATE]
-			-- Previous processed state.
+			-- Previously processed state.
 
 	current_state: TUPLE [breakpoint: INTEGER; state: EPA_STATE]
-			-- Current processed state.
-
-	pre_state_breakpoints: DS_HASH_SET [INTEGER]
-			-- Program locations which were analyzed.
-
-	post_state_map: DS_HASH_TABLE [DS_HASH_SET [INTEGER], INTEGER]
-			-- Contains the found post-states.
-			-- Keys are pre-states and values are (possibly multiple) post-states
-
-	prgm_locs_with_exprs: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
-			-- Program locations where the associated expressions should
-			-- be evaluated.
-
-	debugger_manager: DEBUGGER_MANAGER
-			-- Manager in charge of debugging operations.
+			-- Currently processed state.
 
 feature {NONE} -- Implementation
 
-	is_valid_pre_post_state_pair (a_pre_state_bp_slot: INTEGER; a_post_state_bp_slot: INTEGER): BOOLEAN
-			-- Is `a_pre_state_bp_slot' and `a_post_state_bp_slot' a valid pre-state / post-state pair?
+	is_valid_pre_and_post_state_breakpoint_pair (
+		a_pre_state_breakpoint: INTEGER;
+		a_post_state_breakpoint: INTEGER
+	): BOOLEAN
+			-- Is `a_pre_state_breakpoint' and `a_post_state_bp_slot' a valid pre-state breakpoint
+			-- and post-state breakpoint pair?
 		require
-			program_locations_not_void: pre_state_breakpoints /= Void
-			post_state_map_not_void: post_state_map /= Void
-			valid_bp_slots: a_pre_state_bp_slot >= 1 and a_post_state_bp_slot >= 1
+			a_pre_state_breakpoint_valid: a_pre_state_breakpoint >= 1
+			a_post_state_breakpoint_valid: a_post_state_breakpoint >= 1
 		do
-			Result := pre_state_breakpoints.has (a_pre_state_bp_slot) and post_state_map.item (a_pre_state_bp_slot).has (a_post_state_bp_slot)
+			Result :=
+				pre_state_breakpoints.has (a_pre_state_breakpoint) and then
+				post_state_breakpoints.item (a_pre_state_breakpoint).has (a_post_state_breakpoint)
+		ensure
+			Result_set: Result =
+				pre_state_breakpoints.has (a_pre_state_breakpoint) and then
+				post_state_breakpoints.item (a_pre_state_breakpoint).has (a_post_state_breakpoint)
 		end
 
 end

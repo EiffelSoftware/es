@@ -1,5 +1,5 @@
 note
-	description: "Command for dynamic program analysis"
+	description: "Command for dynamic program analysis."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -9,65 +9,71 @@ class
 
 inherit
 	EWB_CMD
+		rename
+			arguments as raw_arguments
+		export
+			{NONE} all
+			{ANY} workbench
+		end
 
 	CI_SHARED_SESSION
+		export
+			{NONE} all
+		end
 
 create
 	make_with_arguments
 
 feature {NONE} -- Initialization
 
-	make_with_arguments (a_arguments: LINKED_LIST [STRING])
-			-- Initialize `auto_test_arguments' with `a_arguments'.
+	make_with_arguments (a_arguments: like arguments)
+			-- Initialize command.
 		require
-			a_arguments_attached: a_arguments /= Void
+			a_arguments_not_void: a_arguments /= Void
 		do
-			create {LINKED_LIST [STRING]} dynamic_program_analysis_arguments.make
-			a_arguments.do_all (agent dynamic_program_analysis_arguments.extend)
+			create arguments.make
+			a_arguments.do_all (agent arguments.extend)
 		ensure
-			arguments_set: dynamic_program_analysis_arguments /= Void and then dynamic_program_analysis_arguments.count = a_arguments.count
+			arguments_not_void: arguments /= Void
+			arguments_set: arguments.count = a_arguments.count
 		end
 
 feature -- Access
 
-	dynamic_program_analysis_arguments: LINKED_LIST [STRING];
-			-- Arguments to dynamic program analysis command line
+	arguments: LINKED_LIST [STRING]
+			-- Arguments to dynamic program analysis command line.
 
 feature -- Properties
 
 	name: STRING
-		do
+		once
 			Result := "Dynamic Program Analysis"
 		end
 
 	help_message: STRING_GENERAL
-		do
+		once
 			Result := "Dynamic Program Analysis"
 		end
 
 	abbreviation: CHARACTER
-		do
+		once
 			Result := 't'
 		end
 
 	execute
-			-- Action performed when invoked from the
-			-- command line.
+			-- Action performed when invoked from the command line.
 		local
 			l_parser: DPA_COMMAND_LINE_PARSER
-			l_config: DPA_CONFIGURATION
-			l_cmd, l_dynamic_cmd: DPA_COMMAND
+			l_configuration: DPA_CONFIGURATION
+			l_command: DPA_COMMAND
 		do
-			create l_parser.make_with_arguments (dynamic_program_analysis_arguments, system)
+			create l_configuration.make (system)
+			create l_parser.make (arguments, l_configuration)
 			l_parser.parse
-			l_config := l_parser.configuration
+			l_configuration := l_parser.last_configuration
 
-			create l_dynamic_cmd.make (l_config)
-			l_cmd := l_dynamic_cmd
-
-			if l_cmd /= Void then
-				l_cmd.execute
-			end
+			create l_command.make (l_configuration)
+			l_command.execute
 		end
 
 note

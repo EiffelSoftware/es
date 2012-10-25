@@ -1,5 +1,5 @@
 note
-	description: "Command to collect runtime data through dynamic means"
+	description: "Command to analyze the runtime behaviour of a feature through dynamic means."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -9,10 +9,22 @@ class
 
 inherit
 	EPA_DEBUGGER_UTILITY
+		rename
+			remove_breakpoint as remove_breakpoints,
+			remove_debugger_session as remove_last_debugger_session
+		export
+			{NONE} all
+		end
 
 	EPA_UTILITY
+		export
+			{NONE} all
+		end
 
 	EXCEPTIONS
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -20,15 +32,24 @@ create
 feature {NONE} -- Initialization
 
 	make (a_configuration: like configuration)
-			-- Initialize current command.
+			-- Initialize command.
 		require
 			a_configuration_not_void: a_configuration /= Void
+		local
+			l_configuration_validator: DPA_CONFIGURATION_VALIDATOR
 		do
-			check_configuration_validity (a_configuration)
-			if not is_configuration_valid then
-				print_configuration_error_message
+			-- Validate configuration before usage.
+			create l_configuration_validator.make (a_configuration)
+			l_configuration_validator.validate
+
+			if
+				not l_configuration_validator.is_configuration_valid
+			then
+				-- Reject configuration and stop current analysis.
+				io.put_string (l_configuration_validator.last_status_message)
 				die (-1)
 			end
+
 			configuration := a_configuration
 			class_ := configuration.class_
 			feature_ := configuration.feature_
@@ -46,483 +67,329 @@ feature -- Access
 feature -- Basic operations
 
 	execute
-			-- Execute current command
+			-- Execute command.
 		do
-			-- Find post-state(s) breakpoint slot(s) for all pre-state breakpoint slots in `l_feature'.
-			find_all_post_state_breakpoint_slots
+			-- Find post-state breakpoint(s) for all pre-state breakpoints in `feature_'.
+			find_post_state_breakpoints
 
-			-- Choose pre-states breakpoint slots
-			choose_locations
+			-- Choose program locations based on options specified in `configuration'.
+			choose_program_locations
 
-			-- Setup expressions which are evaluated
-			setup_expressions
+			-- Build expressions which are evaluated based on options specified in `configuration'.
+			-- Build the expression evaluation plan based on options specified in `configuration'.
+			build_expressions_and_expression_evaluation_plan
 
 			-- Remove breakpoints set by previous debugging sessions.
-			remove_breakpoint (debugger_manager, configuration.root_class)
+			remove_breakpoints (debugger_manager, configuration.root_class)
 
-			-- Set up the action for the evaluation of pre- and post-states.
-			setup_action_for_evaluation
+			-- Initialize `processor' and `writer'.
+			initialize_processor_and_writer
 
-			-- Start program execution in debugger.
-			start_debugger (debugger_manager, "", configuration.working_directory, {EXEC_MODES}.run, False)
+			-- Set up the action for the expression evaluation.
+			set_up_action_for_expression_evaluation
 
-			-- Remove the last debugging session.
-			remove_debugger_session
+			-- Start program execution and analysis in debugger.
+			start_debugger (
+				debugger_manager, "", configuration.working_directory, {EXEC_MODES}.run, False
+			)
 
-			-- Write data to disk
-			writer.write
+			-- Remove the last debugger session.
+			remove_last_debugger_session
+
+			-- Write unwritten analysis results to disk.
+			write_unwritten_analysis_results
 		end
 
-feature {NONE} -- Implemenation
+feature {NONE} -- Implementation
 
-	check_configuration_validity (a_configuration: like configuration)
-			-- Check if `a_configuration' is a valid configuration, make result available
-			-- in `is_configuration_valid' and make message containing configuration errors available in `error_message'.
+	class_: CLASS_C
+			-- Context class of `feature_'.
+
+	feature_: FEATURE_I
+			-- Feature under analysis.
+
+	expressions: DS_HASH_SET [EPA_EXPRESSION]
+			-- Expressions which are evaluated.
+
+	program_locations: DS_HASH_SET [INTEGER]
+			-- Program locations at which `expressions' are evaluated before and after the
+			-- execution of a program location.
+
+	pre_state_breakpoints: DS_HASH_SET [INTEGER]
+			-- Breakpoints at which `expressions' are evaluated to gain pre-state values.
 		require
-			a_configuration_not_void: a_configuration /= Void
-		local
-			l_class_valid, l_feature_valid, l_program_location_options_valid, l_expression_options_valid: BOOLEAN
-			l_expression_location_combinations_valid, l_writer_combination_valid: BOOLEAN
-			l_single_json_data_file_writer_options_valid, l_multiple_json_data_files_writer_options_valid, l_serialized_data_writer_options_valid: BOOLEAN
-			l_mysql_writer_options_valid: BOOLEAN
-			l_single_json_data_file_writer_options: TUPLE [output_path: STRING; file_name: STRING]
-			l_multiple_json_data_files_writer_options: TUPLE [output_path: STRING; file_name_prefix: STRING]
-			l_serialized_data_files_writer_options: TUPLE [output_path: STRING; file_name_prefix: STRING]
-			l_mysql_data_writer_options: TUPLE [host: STRING; user: STRING; password: STRING; database: STRING; port: INTEGER]
-			l_directory_name: DIRECTORY_NAME
-			l_file_name, l_file_name_prefix: FILE_NAME
+			program_locations_not_void: program_locations /= Void
 		do
-			is_configuration_valid := True
-			error_message := ""
+			Result := program_locations
+		ensure
+			Result_set: Result = program_locations
+		end
 
-			l_class_valid := a_configuration.class_ /= Void
-			if not l_class_valid then
-				error_message.append ("Specified class is invalid.%N")
+	post_state_breakpoints: DS_HASH_TABLE [DS_HASH_SET [INTEGER], INTEGER]
+			-- Breakpoints at which `expressions' are evaluated to gain post-state values.
+			-- Keys are pre-state breakpoints.
+			-- Values are (possibly multiple) post-state breakpoints.
+
+	expression_evaluation_plan: DS_HASH_TABLE [DS_HASH_SET [INTEGER], EPA_EXPRESSION]
+			-- Expression evaluation plan specifying the program locations at which an expression
+			-- is evaluated before and after the execution of a program location.
+			-- Keys are expressions.
+			-- Values are program locations.
+
+	processor: DPA_PROCESSOR
+			-- Processor used to process the analysis results during the
+			-- execution of `feature_'.
+
+	writer: DPA_WRITER
+			-- Writer used to persistently store the analysis results.
+
+feature {NONE} -- Implementation
+
+	find_post_state_breakpoints
+			-- Find post-state breakpoints for every pre-state breakpoint in `feature_'.
+		local
+			l_post_state_breakpoint_finder: DPA_POST_STATE_BREAKPOINT_FINDER
+		do
+			create l_post_state_breakpoint_finder.make (class_, feature_)
+			l_post_state_breakpoint_finder.find
+			post_state_breakpoints := l_post_state_breakpoint_finder.last_post_state_breakpoints
+		ensure
+			post_state_breakpoints_not_void: post_state_breakpoints /= Void
+		end
+
+	choose_program_locations
+			-- Choose program locations to be considered according to options specified in `configuration'.
+		local
+			l_program_location_finder: DPA_PROGRAM_LOCATION_FINDER
+			l_feature_body_breakpoints: INTEGER_INTERVAL
+		do
+			if
+				configuration.is_all_program_locations_option_used
+			then
+				-- Use all program locations of the feature body of `feature_'.
+				l_feature_body_breakpoints := feature_body_breakpoint_slots (feature_)
+				create program_locations.make (l_feature_body_breakpoints.count)
+				l_feature_body_breakpoints.do_all (agent program_locations.force_last)
+			elseif
+				configuration.is_program_locations_option_used or else
+				configuration.is_localized_expressions_option_used or else
+				configuration.is_localized_variables_option_used
+			then
+				-- Use given program locations.
+				program_locations := configuration.program_locations
+			elseif
+				configuration.is_program_location_search_option_used
+			then
+				-- Find program locations to be considered using abstract syntax tree of `l_feature'.
+				create l_program_location_finder.make (feature_.e_feature.ast)
+				l_program_location_finder.find
+				program_locations := l_program_location_finder.last_program_locations
 			end
-			is_configuration_valid := is_configuration_valid and l_class_valid
+		ensure
+			program_locations_not_void: program_locations /= Void
+		end
 
-			l_feature_valid := a_configuration.feature_ /= Void
-			if not l_feature_valid then
-				error_message.append ("Specified feature is invalid.%N")
-			end
-			is_configuration_valid := is_configuration_valid and l_feature_valid
+	build_expressions_and_expression_evaluation_plan
+			-- Build expressions which are evaluated and expression evaluation plan.
+		local
+			l_expression_builder: DPA_EXPRESSION_BUILDER
+			l_expression_evaluation_planer: DPA_EXPRESSION_EVALUATION_PLANER
+		do
+			-- Build expressions which are evaluated according to options specified in
+			-- `configuration'.
+			create l_expression_builder.make (class_, feature_)
 
-			l_program_location_options_valid :=
-				a_configuration.is_usage_of_all_locations_activated xor
-				a_configuration.is_location_search_activated xor
-				a_configuration.is_set_of_locations_given
-
-			l_expression_options_valid :=
-				a_configuration.is_expression_search_activated xor
-				a_configuration.is_set_of_expressions_given xor
-				a_configuration.is_set_of_variables_given
-
-			l_expression_location_combinations_valid :=
-				(l_program_location_options_valid and l_expression_options_valid) xor
-				a_configuration.is_set_of_locations_with_expressions_given xor
-				a_configuration.is_set_of_locations_with_variables_given
-
-			if not l_expression_location_combinations_valid then
-				error_message.append (
-					"The combination of program locations and expressions must fulfill the following property: " +
-					"((all_prgm_locs xor aut_choice_of_prgm_locs xor specific_prgm_locs) and " +
-					"(aut_choice_of_exprs xor specific_exprs xor specific_vars)) xor " +
-					"prgm_locs_with_exprs xor" +
-					"prgm_locs_with_vars%N"
+			if
+				configuration.is_variables_option_used or else
+				configuration.is_localized_variables_option_used
+			then
+				-- Use given variables.
+				l_expression_builder.build_from_variables (configuration.variables)
+			elseif
+				configuration.is_expressions_option_used or else
+				configuration.is_localized_expressions_option_used
+			then
+				-- Use given expressions.
+				l_expression_builder.build_from_expressions (configuration.expressions)
+			elseif
+				configuration.is_expression_search_option_used
+			then
+				-- Build expressions from abstract syntax tree of `l_feature' and previously choosen program locations.
+				l_expression_builder.build_from_ast (
+					feature_.e_feature.ast, program_locations
 				)
 			end
-			is_configuration_valid := is_configuration_valid and l_expression_location_combinations_valid
 
-			l_writer_combination_valid :=
-				a_configuration.is_single_json_data_file_writer_selected xor
-				a_configuration.is_multiple_json_data_files_writer_selected xor
-				a_configuration.is_serialized_data_files_writer_selected xor
-				a_configuration.is_mysql_data_writer_selected
+			expressions := l_expression_builder.last_expressions
 
-			if not l_writer_combination_valid then
-				error_message.append ("Multiple writers were specified.%N")
-			end
-			is_configuration_valid := is_configuration_valid and l_writer_combination_valid
+			-- Plan evaluation of expressions according to options specified in `configuration'.
+			create l_expression_evaluation_planer
 
-			if a_configuration.is_single_json_data_file_writer_selected then
-				l_single_json_data_file_writer_options := a_configuration.single_json_data_file_writer_options
-				create l_directory_name.make_from_string (l_single_json_data_file_writer_options.output_path)
-				l_single_json_data_file_writer_options_valid := l_directory_name.is_valid
-				if not l_single_json_data_file_writer_options_valid then
-					error_message.append ("Invalid output-path%N")
-				end
-
-				create l_file_name.make_from_string (l_single_json_data_file_writer_options.file_name)
-				l_single_json_data_file_writer_options_valid := l_single_json_data_file_writer_options_valid and l_file_name.is_valid
-				if not l_single_json_data_file_writer_options_valid then
-					error_message.append ("Invalid file name%N")
-				end
-
-				is_configuration_valid := is_configuration_valid and l_single_json_data_file_writer_options_valid
-			end
-
-			if a_configuration.is_multiple_json_data_files_writer_selected then
-				l_multiple_json_data_files_writer_options := a_configuration.multiple_json_data_files_writer_options
-				create l_directory_name.make_from_string (l_multiple_json_data_files_writer_options.output_path)
-				l_multiple_json_data_files_writer_options_valid := l_directory_name.is_valid
-				if not l_multiple_json_data_files_writer_options_valid then
-					error_message.append ("Invalid output-path%N")
-				end
-
-				create l_file_name_prefix.make_from_string (l_multiple_json_data_files_writer_options.file_name_prefix)
-				l_multiple_json_data_files_writer_options_valid := l_multiple_json_data_files_writer_options_valid and l_file_name_prefix.is_valid
-				if not l_multiple_json_data_files_writer_options_valid  then
-					error_message.append ("Invalid file name prefix%N")
-				end
-
-				is_configuration_valid := is_configuration_valid and l_multiple_json_data_files_writer_options_valid
-			end
-
-			if a_configuration.is_serialized_data_files_writer_selected then
-				l_serialized_data_files_writer_options := a_configuration.serialized_data_files_writer_options
-				create l_directory_name.make_from_string (l_serialized_data_files_writer_options.output_path)
-				l_serialized_data_writer_options_valid := l_directory_name.is_valid
-				if not l_serialized_data_writer_options_valid then
-					error_message.append ("Invalid output-path%N")
-				end
-
-				create l_file_name_prefix.make_from_string (l_serialized_data_files_writer_options.file_name_prefix)
-				l_serialized_data_writer_options_valid := l_serialized_data_writer_options_valid and l_file_name_prefix.is_valid
-				if not l_serialized_data_writer_options_valid then
-					error_message.append ("Invalid file name prefix%N")
-				end
-
-				is_configuration_valid := is_configuration_valid and l_serialized_data_writer_options_valid
-			end
-
-			if a_configuration.is_mysql_data_writer_selected then
-				l_mysql_data_writer_options := a_configuration.mysql_data_writer_options
-				l_mysql_writer_options_valid := l_mysql_data_writer_options.port >= 1 and l_mysql_data_writer_options.port <= 65535
-				if not l_mysql_writer_options_valid then
-					error_message.append ("Port must be in the interval [1,65535]%N")
-				end
-
-				is_configuration_valid := is_configuration_valid and l_mysql_writer_options_valid
-			end
-		end
-
-	is_configuration_valid: BOOLEAN
-			-- Is `configuration' valid?
-
-feature {NONE} -- Implementation
-
-	process_and_write (a_bp: BREAKPOINT; a_state: EPA_STATE)
-			-- Process `a_bp' and `a_state' using `processor' and write
-			-- results of processing using `writer'.
-		require
-			a_bp_not_void: a_bp /= Void
-			a_state_not_void: a_state /= Void
-		do
-			processor.process (a_bp, a_state)
-			writer.add_analysis_order_pairs (processor.last_analysis_order_pairs)
-			writer.add_expression_value_transitions (processor.last_transitions)
-			writer.try_write
-		end
-
-	process_filter_and_write (a_bp: BREAKPOINT; a_state: EPA_STATE)
-			-- Process and filter `a_bp' and `a_state' using `processor' and
-			-- write results of processing using `writer'.
-		require
-			a_bp_not_void: a_bp /= Void
-			a_state_not_void: a_state /= Void
-		do
-			processor.process_and_filter (a_bp, a_state)
-			writer.add_analysis_order_pairs (processor.last_analysis_order_pairs)
-			writer.add_expression_value_transitions (processor.last_transitions)
-			writer.try_write
-		end
-
-feature {NONE} -- Implementation
-
-	print_configuration_error_message
-			-- Print `error_message' in the standard output.
-		require
-			error_message_not_void: error_message /= Void
-		do
-			io.put_string ("%N----------------%NConfiguration invalid:%N----------------%N%N")
-			io.put_string (error_message)
-		end
-
-	find_all_post_state_breakpoint_slots
-			-- Find post-state breakpoint slots for every pre-state breakpoint slot.
-		local
-			l_post_state_bp_finder: DPA_POST_STATE_FINDER
-		do
-			create l_post_state_bp_finder.make (class_, feature_)
-			l_post_state_bp_finder.find
-			post_state_bp_map := l_post_state_bp_finder.post_state_bp_map
-		end
-
-	choose_locations
-			-- Choose pre-state breakpoint slots depending on specified options
-			-- `configuration'
-		local
-			l_pre_state_bp_finder: DPA_INTERESTING_PRE_STATE_FINDER
-			l_bp_interval: INTEGER_INTERVAL
-		do
-			-- Choose pre-states
-			if configuration.is_usage_of_all_locations_activated then
-				-- Use all pre-state breakpoint slots
-				l_bp_interval := feature_body_breakpoint_slots (feature_)
-				create program_locations.make_default
-				l_bp_interval.do_all (agent program_locations.force_last)
-			elseif configuration.is_set_of_locations_given then
-				-- Use given pre-state breakpoint slots
-				program_locations := configuration.locations
-			elseif configuration.is_set_of_locations_with_expressions_given then
-				-- Use given pre-state breakpoint slots
-				create program_locations.make_default
-				configuration.locations_with_expressions.keys.do_all (agent program_locations.force_last)
-			elseif configuration.is_set_of_locations_with_variables_given then
-				-- Use given pre-state breakpoint slots
-				create program_locations.make_default
-				configuration.locations_with_variables.keys.do_all (agent program_locations.force_last)
-			elseif configuration.is_location_search_activated then
-				-- Find and use interesting pre-state breakpoint slots in `l_feature'.
-				create l_pre_state_bp_finder.make (feature_.e_feature.ast)
-				l_pre_state_bp_finder.find
-				program_locations := l_pre_state_bp_finder.interesting_pre_states
-			end
-		end
-
-	setup_expressions
-			-- Setup expressions which are evaluated
-		local
-			l_var_finder: DPA_INTERESTING_VARIABLE_FINDER
-			l_expr_builder: DPA_EXPRESSION_BUILDER
-			l_locs_with_exprs, l_locs_with_vars: DS_HASH_TABLE [DS_HASH_SET [STRING], INTEGER]
-			l_locs: DS_BILINEAR [INTEGER]
-			l_vars_exprs_mapping: DS_HASH_TABLE [DS_HASH_SET [STRING], STRING]
-			l_vars: DS_HASH_SET [STRING]
-			l_var: STRING
-			l_set: DS_HASH_SET [STRING]
-			l_loc: INTEGER
-		do
-			create l_expr_builder.make (class_, feature_)
-			if configuration.is_set_of_variables_given then
-				l_expr_builder.set_interesting_variables (configuration.variables)
-				l_expr_builder.build_from_variables
-			elseif configuration.is_set_of_locations_with_variables_given then
-				l_expr_builder.set_interesting_variables (configuration.variables)
-				l_expr_builder.build_from_variables
-			elseif configuration.is_set_of_expressions_given or configuration.is_set_of_locations_with_expressions_given then
-				l_expr_builder.set_interesting_expressions (configuration.expressions)
-				l_expr_builder.build_from_expressions
-			elseif configuration.is_expression_search_activated then
-				create l_var_finder.make (feature_.e_feature.ast, program_locations)
-				l_var_finder.find
-				l_expr_builder.set_interesting_variables (l_var_finder.interesting_variables)
-				l_expr_builder.set_interesting_variables_from_assignments (l_var_finder.interesting_variables_from_assignments)
-				l_expr_builder.build_from_variables
-			end
-
-			expressions := l_expr_builder.expressions_to_evaluate
-
-			if configuration.is_set_of_locations_with_variables_given then
-				create l_locs_with_exprs.make_default
-				l_vars_exprs_mapping := l_expr_builder.vars_with_exprs
-				l_locs_with_vars := configuration.locations_with_variables
-				l_locs := l_locs_with_vars.keys
-				from
-					l_locs.start
-				until
-					l_locs.after
-				loop
-					l_loc := l_locs.item_for_iteration
-					l_vars := l_locs_with_vars.item (l_loc)
-					from
-						l_vars.start
-					until
-						l_vars.after
-					loop
-						l_var := l_vars.item_for_iteration
-						if l_vars_exprs_mapping.has (l_var) then
-							l_set := l_vars_exprs_mapping.item (l_var)
-							l_locs_with_exprs.force_last (l_set, l_loc)
-						else
-							create l_set.make_default
-							l_set.set_equality_tester (string_equality_tester)
-
-							l_set.force_last (l_var)
-							l_locs_with_exprs.force_last (l_set, l_loc)
-						end
-						l_vars.forth
-					end
-					l_locs.forth
-				end
-				configuration.set_locations_with_expressions (l_locs_with_exprs)
-			end
-		end
-
-	setup_action_for_evaluation
-			-- Setup action for evaluation
-		require
-			pre_state_breakpoints_not_void: pre_state_breakpoints /= Void
-			post_state_bp_map_not_void: post_state_bp_map /= Void
-		local
-			l_bp_mgr: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
-			l_bp_count, l_pre_state_bp: INTEGER
-			l_post_states: DS_HASH_SET [INTEGER]
-			l_process_write_feature: PROCEDURE [ANY, TUPLE [BREAKPOINT, EPA_STATE]]
-		do
-			create processor.make (pre_state_breakpoints, post_state_bp_map, debugger_manager)
-
-			if configuration.is_set_of_locations_with_expressions_given or configuration.is_set_of_locations_with_variables_given then
-				processor.set_prgm_locs_with_exprs (configuration.locations_with_expressions)
-				l_process_write_feature := agent process_filter_and_write
+			if
+				configuration.is_localized_variables_option_used
+			then
+				-- Use localized variables.
+				l_expression_evaluation_planer.plan_from_localized_variables (
+					configuration.localized_variables,
+					l_expression_builder.last_expression_mapping
+				)
+			elseif
+				configuration.is_localized_expressions_option_used
+			then
+				-- Use localized expressions.
+				l_expression_evaluation_planer.plan_from_localized_expressions (
+					configuration.localized_expressions,
+					expressions
+				)
 			else
-				l_process_write_feature := agent process_and_write
+				-- Use program locations and expressions.
+				l_expression_evaluation_planer.plan_from_expressions_and_program_locations (
+					expressions,
+					program_locations
+				)
 			end
 
-			if configuration.is_single_json_data_file_writer_selected then
-				writer := new_single_json_data_file_writer
-			elseif configuration.is_multiple_json_data_files_writer_selected then
-				writer := new_multiple_json_data_files_writer
-			elseif configuration.is_serialized_data_files_writer_selected then
-				writer := new_serialized_data_files_writer
-			elseif configuration.is_mysql_data_writer_selected then
-				writer := new_mysql_data_writer
-			end
+			expression_evaluation_plan :=
+				l_expression_evaluation_planer.last_expression_evaluation_plan
+		ensure
+			expressions_not_void: expressions /= Void
+			expression_evaluation_plan_not_void: expression_evaluation_plan /= Void
+		end
 
-			l_bp_count := breakpoint_count (feature_)
+	initialize_processor_and_writer
+			-- Initialize `processor' and `writer'.
+		do
+			-- Initialize processor.
+			create processor.make (
+				pre_state_breakpoints,
+				post_state_breakpoints,
+				expression_evaluation_plan
+			)
 
-			from
-				pre_state_breakpoints.start
-			until
-				pre_state_breakpoints.after
-			loop
-				l_pre_state_bp := pre_state_breakpoints.item_for_iteration
-				if l_pre_state_bp < l_bp_count then
-					create l_bp_mgr.make (class_, feature_)
-					l_bp_mgr.set_breakpoint_with_expression_and_action (l_pre_state_bp, expressions, l_process_write_feature)
-					l_bp_mgr.toggle_breakpoints (True)
-
-					l_post_states := post_state_bp_map.item (l_pre_state_bp)
-
-					from
-						l_post_states.start
-					until
-						l_post_states.after
-					loop
-						create l_bp_mgr.make (class_, feature_)
-						l_bp_mgr.set_breakpoint_with_expression_and_action (l_post_states.item_for_iteration, expressions, l_process_write_feature)
-						l_bp_mgr.toggle_breakpoints (True)
-
-						l_post_states.forth
-					end
-				end
-
-				pre_state_breakpoints.forth
+			-- Initialize writer according to the options specified in `configuration'.
+			if
+				configuration.is_json_file_writer_option_used
+			then
+				writer := new_json_file_writer
+			elseif
+				configuration.is_mysql_writer_option_used
+			then
+				writer := new_mysql_writer
 			end
 		ensure
 			processor_not_void: processor /= Void
 			writer_not_void: writer /= Void
 		end
 
+	set_up_action_for_expression_evaluation
+			-- Set up action for the evaluation of expressions.
+		local
+			l_breakpoint_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
+			l_pre_state_breakpoint: INTEGER
+			l_post_state_breakpoints: DS_HASH_SET [INTEGER]
+		do
+			-- Iterate over pre-state breakpoints to set up action for evaluation of expressions.
+			from
+				pre_state_breakpoints.start
+			until
+				pre_state_breakpoints.after
+			loop
+				l_pre_state_breakpoint := pre_state_breakpoints.item_for_iteration
+
+				-- Set up action for evaluation of expressions at current pre-state
+				-- breakpoint.
+				create l_breakpoint_manager.make (class_, feature_)
+				l_breakpoint_manager.set_breakpoint_with_expression_and_action (
+					l_pre_state_breakpoint, expressions, agent process_and_write
+				)
+				l_breakpoint_manager.toggle_breakpoints (True)
+
+				-- Retrieve post-state breakpoints for current pre-state breakpoint.
+				l_post_state_breakpoints := post_state_breakpoints.item (l_pre_state_breakpoint)
+
+				-- Iterate over possible post-state breakpoints of current pre-state breakpoint
+				-- to set up action for evaluation of expressions.
+				from
+					l_post_state_breakpoints.start
+				until
+					l_post_state_breakpoints.after
+				loop
+					-- Set up action for evaluation of expressions at current post-state
+					-- breakpoint.
+					create l_breakpoint_manager.make (class_, feature_)
+					l_breakpoint_manager.set_breakpoint_with_expression_and_action (
+						l_post_state_breakpoints.item_for_iteration,
+						expressions,
+						agent process_and_write
+					)
+					l_breakpoint_manager.toggle_breakpoints (True)
+
+					l_post_state_breakpoints.forth
+				end
+
+				pre_state_breakpoints.forth
+			end
+		end
+
+	process_and_write (a_breakpoint: BREAKPOINT; a_state: EPA_STATE)
+			-- Process `a_breakpoint' and `a_state' using `processor' and write
+			-- analysis results to disk using `writer'.
+		require
+			a_breakpoint_not_void: a_breakpoint /= Void
+			a_state_not_void: a_state /= Void
+		do
+			processor.process (a_breakpoint, a_state)
+			writer.extend (processor.last_transitions)
+			writer.try_write
+		end
+
+	write_unwritten_analysis_results
+			-- Write unwritten analysis results to disk using `writer'.
+		do
+			writer.write
+		end
+
 feature {NONE} -- Implementation
 
-	new_single_json_data_file_writer: DPA_SINGLE_JSON_DATA_FILE_WRITER
-			-- Initialize `writer' with a single JSON data file writer
-		require
-			single_json_data_file_writer_options_not_void: configuration.single_json_data_file_writer_options /= Void
-			output_path_not_void: configuration.single_json_data_file_writer_options.output_path /= Void
-			file_name_not_void: configuration.single_json_data_file_writer_options.file_name /= Void
+	new_json_file_writer: DPA_JSON_FILE_WRITER
+			-- JSON file writer configured according to the options specified in
+			-- `configuration'.
 		local
-			l_options: TUPLE [output_path: STRING; file_name: STRING]
+			l_json_file_writer_options: TUPLE [directory: STRING; file_name: STRING]
 		do
-			l_options := configuration.single_json_data_file_writer_options
-			create Result.make (class_, feature_, l_options.output_path, l_options.file_name)
+			l_json_file_writer_options := configuration.json_file_writer_options
+
+			create Result.make (
+				class_,
+				feature_,
+				l_json_file_writer_options.directory,
+				l_json_file_writer_options.file_name
+			)
 		ensure
 			Result_not_void: Result /= Void
 		end
 
-	new_multiple_json_data_files_writer: DPA_MULTIPLE_JSON_DATA_FILES_WRITER
-			-- Initialize `writer' with a multiple JSON data files writer
-		require
-			multiple_json_data_files_writer_options_not_void: configuration.multiple_json_data_files_writer_options /= Void
-			output_path_not_void: configuration.multiple_json_data_files_writer_options.output_path /= Void
-			file_name_prefix_not_void: configuration.multiple_json_data_files_writer_options.file_name_prefix /= Void
+	new_mysql_writer: DPA_MYSQL_WRITER
+			-- MYSQL writer configured according to the options specified in
+			-- `configuration'.
 		local
-			l_options: TUPLE [output_path: STRING; file_name_prefix: STRING]
-		do
-			l_options := configuration.multiple_json_data_files_writer_options
-			create Result.make (class_, feature_, l_options.output_path, l_options.file_name_prefix)
-		ensure
-			Result_not_void: Result /= Void
-		end
-
-	new_serialized_data_files_writer: DPA_SERIALIZED_DATA_FILE_WRITER
-			-- Initialize `writer' with a serialized data files writer
-		require
-			serialized_data_files_writer_options_not_void: configuration.serialized_data_files_writer_options /= Void
-			output_path_not_void: configuration.serialized_data_files_writer_options.output_path /= Void
-			file_name_prefix_not_void: configuration.serialized_data_files_writer_options.file_name_prefix /= Void
-		local
-			l_options: TUPLE [output_path: STRING; file_name_prefix: STRING]
-		do
-			l_options := configuration.serialized_data_files_writer_options
-			create Result.make (class_, feature_, l_options.output_path, l_options.file_name_prefix)
-		ensure
-			Result_not_void: Result /= Void
-		end
-
-	new_mysql_data_writer: DPA_MYSQL_DATA_WRITER
-			-- Initialize `writer' with a MYSQL data writer
-		require
-			mysql_data_writer_options_not_void: configuration.mysql_data_writer_options /= Void
-			host_not_void: configuration.mysql_data_writer_options.host /= Void
-			user_not_void: configuration.mysql_data_writer_options.user /= Void
-			password_not_void: configuration.mysql_data_writer_options.password /= Void
-			database_not_void: configuration.mysql_data_writer_options.database /= Void
-		local
-			l_options: TUPLE [host: STRING; user: STRING; password: STRING; database: STRING; port: INTEGER]
+			l_mysql_writer_options: TUPLE [
+				host: STRING; user: STRING; password: STRING; database: STRING; port: INTEGER
+			]
 			l_mysql_client: MYSQL_CLIENT
 		do
-			l_options := configuration.mysql_data_writer_options
-			create l_mysql_client.make_with_database (l_options.host, l_options.user, l_options.password, l_options.database, l_options.port)
+			l_mysql_writer_options := configuration.mysql_writer_options
+
+			create l_mysql_client.make_with_database (
+				l_mysql_writer_options.host,
+				l_mysql_writer_options.user,
+				l_mysql_writer_options.password,
+				l_mysql_writer_options.database,
+				l_mysql_writer_options.port)
+
 			create Result.make (class_, feature_, l_mysql_client)
 		ensure
 			Result_not_void: Result /= Void
 		end
-
-feature {NONE} -- Implementation
-
-	class_: CLASS_C
-			-- Class belonging to `feature_'.
-
-	feature_: FEATURE_I
-			-- Feature which will be analyzed.
-
-	expressions: DS_HASH_SET [EPA_EXPRESSION]
-			-- Expressions which are evaluated
-
-	program_locations: DS_HASH_SET [INTEGER]
-			-- Program locations at which `expressions' are evaluated before
-			-- and after the execution of every program location in this set.
-
-	pre_state_breakpoints: DS_HASH_SET [INTEGER]
-			-- Breakpoints at which `expressions' are evaluated as pre-states
-		do
-			Result := program_locations
-		end
-
-	post_state_bp_map: DS_HASH_TABLE [DS_HASH_SET [INTEGER], INTEGER]
-			-- Contains the found post-states.
-			-- Keys are pre-states and values are (possibly multiple) post-states
-
-	error_message: STRING
-			-- Error message indicating why the configuration is not a valid configuration.
-
-	processor: DPA_PROCESSOR
-			-- Processor used for processing the runtime data during the execution
-			-- of `feature_'.
-
-	writer: DPA_DATA_WRITER
-			-- Writer used to persistently store the runtime data.
 
 end

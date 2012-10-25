@@ -1,14 +1,18 @@
 note
-	description: "A writer that writes the data from a dynamic program analysis to disk."
+	description: "A writer that writes the analysis results of a dynamic program %
+		%analysis to disk."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 deferred class
-	DPA_DATA_WRITER
+	DPA_WRITER
 
 inherit
 	EPA_EXPRESSION_VALUE_TYPE_CONSTANTS
+		export
+			{NONE} all
+		end
 
 feature -- Access
 
@@ -16,49 +20,32 @@ feature -- Access
 			-- Context class of `feature_'.
 
 	feature_: FEATURE_I
-			-- Feature which was analyzed.
+			-- Feature under analysis.
 
-	analysis_order_pairs: LINKED_LIST [TUPLE [INTEGER, INTEGER]]
-			-- List of pre-state / post-state breakpoint pairs in the order they were analyzed.
-			-- Note: The analysis order is not the same as the execution order which is complete
-			-- whilst the analysis order only contains the hit pre-state / post-state breakpoints.
+	transitions: LINKED_LIST [EPA_EXPRESSION_VALUE_TRANSITION]
+			-- Unwritten transitions of the last processed state(s).
 
-	expression_value_transitions: LINKED_LIST [EPA_EXPRESSION_VALUE_TRANSITION]
-			-- Expression value transitions of the last processed state.
+feature -- Element change
 
-feature -- Adding
-
-	add_analysis_order_pairs (a_analysis_order_pairs: like analysis_order_pairs)
-			-- Add `a_analysis_order_pairs' to `analysis_order_pairs'.
+	extend (a_transitions: like transitions)
+			-- Add `a_transitions' to `transitions'.
 		require
-			a_analysis_order_pairs_not_void: a_analysis_order_pairs /= Void
-			analysis_order_pairs_not_void: analysis_order_pairs /= Void
+			a_transitions_not_void: a_transitions /= Void
 		do
-			a_analysis_order_pairs.do_all (agent analysis_order_pairs.extend)
+			a_transitions.do_all (agent transitions.extend)
 		ensure
-			pairs_added: analysis_order_pairs.count = old analysis_order_pairs.count + a_analysis_order_pairs.count
+			transitions_added: transitions.count = old transitions.count + a_transitions.count
 		end
 
-	add_expression_value_transitions (a_expression_value_transitions: like expression_value_transitions)
-			-- Add `a_expression_value_transitions' to `expression_value_transitions'.
-		require
-			a_expression_value_transitions_not_void: a_expression_value_transitions /= Void
-			expression_value_transitions_not_void: expression_value_transitions /= Void
-		do
-			a_expression_value_transitions.do_all (agent expression_value_transitions.extend)
-		ensure
-			transitions_added: expression_value_transitions.count = old expression_value_transitions.count + a_expression_value_transitions.count
-		end
-
-feature -- Writing
+feature -- Basic operations
 
 	try_write
-			-- Try to write data.
+			-- Try to write analysis results.
 		deferred
 		end
 
 	write
-			-- Write data.
+			-- Write analysis results.
 		deferred
 		end
 
