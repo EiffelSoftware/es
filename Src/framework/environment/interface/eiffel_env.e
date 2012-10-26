@@ -101,16 +101,16 @@ feature -- Access
 
 feature {NONE} -- Access
 
-	required_environment_variables: ARRAYED_LIST [TUPLE [var: STRING_8; is_directory: BOOLEAN]]
+	required_environment_variables: ARRAYED_LIST [TUPLE [var: STRING_32; is_directory: BOOLEAN]]
 			-- List of required environment variables.
 		once
 			create Result.make (4)
 			if not is_unix_layout then
-				Result.extend ([{EIFFEL_CONSTANTS}.ise_eiffel_env, True])
-				Result.extend ([{EIFFEL_CONSTANTS}.ise_platform_env, False])
+				Result.extend ([{EIFFEL_CONSTANTS}.ise_eiffel_env.as_string_32, True])
+				Result.extend ([{EIFFEL_CONSTANTS}.ise_platform_env.as_string_32, False])
 			end
 			if {PLATFORM}.is_windows then
-				Result.extend ([{EIFFEL_CONSTANTS}.ise_c_compiler_env, False])
+				Result.extend ([{EIFFEL_CONSTANTS}.ise_c_compiler_env.as_string_32, False])
 			end
 		end
 
@@ -151,9 +151,9 @@ feature -- Status update
 			l_product_names: PRODUCT_NAMES
 			l_op_env: like operating_environment
 			l_ise_library, l_eiffel_library,
-			l_value: detachable STRING_8
+			l_value: detachable STRING_32
 			l_variables: like required_environment_variables
-			l_variable: TUPLE [var: STRING_8; is_directory: BOOLEAN]
+			l_variable: TUPLE [var: STRING_32; is_directory: BOOLEAN]
 			l_is_valid: like is_valid_environment
 			u: FILE_UTILITIES
 		do
@@ -163,7 +163,7 @@ feature -- Status update
 
 			if {PLATFORM_CONSTANTS}.is_unix then
 					-- On Unix platforms, if not ISE_EIFFEL is defined then it's probably the unix layout.
-				l_value := get_environment ({EIFFEL_CONSTANTS}.ise_eiffel_env)
+				l_value := get_environment_32 ({EIFFEL_CONSTANTS}.ise_eiffel_env)
 				is_unix_layout := (l_value = Void) or else l_value.is_empty
 			end
 
@@ -173,7 +173,7 @@ feature -- Status update
 			l_variables := required_environment_variables
 			from l_variables.start until l_variables.after loop
 				l_variable := l_variables.item
-				l_value := get_environment (l_variable.var)
+				l_value := get_environment_32 (l_variable.var)
 
 				if
 					l_value /= Void and then l_value.item (l_value.count) = l_op_env.directory_separator and then
@@ -187,13 +187,13 @@ feature -- Status update
 					io.error.put_string (l_product_names.workbench_name)
 					io.error.put_string (": the environment variable " + l_variable.var + " has not been set!%N")
 					l_is_valid := False
-				elseif l_variable.is_directory and then not (create {DIRECTORY}.make (l_value)).exists then
+				elseif l_variable.is_directory and then not (create {DIRECTORY_32}.make (l_value)).exists then
 					io.error.put_string (l_product_names.workbench_name)
 					io.error.put_string (": the environment variable " + {EIFFEL_CONSTANTS}.ise_eiffel_env + " points to a non-existing directory.%N")
 					l_is_valid := False
 				else
 						-- Set the environment variable, as it may have come from the Windows registry.
-					set_environment (l_value, l_variable.var)
+					set_environment_32 (l_value, l_variable.var)
 				end
 				l_variables.forth
 			end
@@ -207,12 +207,12 @@ feature -- Status update
 					-- Set new ISE_EIFFEL variable. This is done to ensure that the workbench path is
 					-- set correctly, or if in unix layout that ISE_EIFFEL is set
 				if not is_unix_layout then
-					set_environment (shared_path, {EIFFEL_CONSTANTS}.ise_eiffel_env)
+					set_environment_32 (shared_path_32, {EIFFEL_CONSTANTS}.ise_eiffel_env)
 				end
 
 					-- Set Unix platform
 				if is_unix_layout then
-					l_value := get_environment ({EIFFEL_CONSTANTS}.ise_platform_env)
+					l_value := get_environment_32 ({EIFFEL_CONSTANTS}.ise_platform_env)
 					if l_value = Void or else l_value.is_empty then
 							-- Set platform for Unix
 						set_environment (unix_layout_platform, {EIFFEL_CONSTANTS}.ise_platform_env)
@@ -241,8 +241,8 @@ feature -- Status update
 				--
 				-- Note: if a value is set, we never change it (apart from "compatible" support))
 
-			l_eiffel_library := get_environment ({EIFFEL_CONSTANTS}.eiffel_library_env)
-			l_ise_library := get_environment ({EIFFEL_CONSTANTS}.ise_library_env)
+			l_eiffel_library := get_environment_32 ({EIFFEL_CONSTANTS}.eiffel_library_env)
+			l_ise_library := get_environment_32 ({EIFFEL_CONSTANTS}.ise_library_env)
 
 				-- If ISE_LIBRARY is not defined, use EIFFEL_LIBRARY's value (if any)
 			if l_ise_library = Void or else l_ise_library.is_empty then
@@ -270,8 +270,8 @@ feature -- Status update
 			check eiffel_library_set: l_eiffel_library /= Void end
 
 				-- Ensure environment variables are set
-			set_environment (l_ise_library, {EIFFEL_CONSTANTS}.ise_library_env)
-			set_environment (l_eiffel_library, {EIFFEL_CONSTANTS}.eiffel_library_env)
+			set_environment_32 (l_ise_library, {EIFFEL_CONSTANTS}.ise_library_env)
+			set_environment_32 (l_eiffel_library, {EIFFEL_CONSTANTS}.eiffel_library_env)
 
 				-- Continue checking and initializing the environement
 			if is_valid_environment then
@@ -401,16 +401,16 @@ feature -- Status setting
 
 feature {NONE} -- Helpers
 
-	path_under_compiler_profile (a_path: STRING_8): STRING_8
+	path_under_compiler_profile (a_path: STRING_32): STRING_32
 			-- To avoid editing value of variable (like ISE_LIBRARY) when compiling against specific compiler profile
 			-- modify the value of the related environment variable.
 		local
-			l_dir_name: DIRECTORY_NAME
+			l_dir_name: DIRECTORY_NAME_32
 		do
 			if is_compatible_mode and a_path.substring_index ("compatible", 1) = 0 then
 				create l_dir_name.make_from_string (a_path)
 				l_dir_name.extend ("compatible")
-				Result := l_dir_name.string
+				Result := l_dir_name
 			else
 				Result := a_path
 			end
@@ -811,12 +811,12 @@ feature -- Directories (distribution)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	built_ins_path (a_is_platform_neutral, a_is_dotnet: BOOLEAN): DIRECTORY_NAME
+	built_ins_path (a_is_platform_neutral, a_is_dotnet: BOOLEAN): DIRECTORY_NAME_32
 			-- Path where implementation for `built_ins' are found.
 		require
 			is_valid_environment: is_valid_environment
 		do
-			create Result.make_from_string (shared_application_path)
+			create Result.make_from_string (shared_application_path_32)
 			Result.extend (built_ins_name)
 			if a_is_platform_neutral then
 				Result.extend (neutral_name)
@@ -897,18 +897,18 @@ feature -- Directories (distribution)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	help_path: DIRECTORY_NAME
+	help_path: DIRECTORY_NAME_32
 			-- Path containing the help files.
 		require
 			is_valid_environment: is_valid_environment
 		once
-			Result := shared_application_path.twin
+			Result := shared_application_path_32.twin
 			Result.extend (help_name)
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
 
-	error_path: DIRECTORY_NAME
+	error_path: DIRECTORY_NAME_32
 			-- Path containing the compiler error description files.
 		require
 			is_valid_environment: is_valid_environment
@@ -919,7 +919,7 @@ feature -- Directories (distribution)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	default_templates_path: DIRECTORY_NAME
+	default_templates_path: DIRECTORY_NAME_32
 			-- Path containing the default templates.
 		require
 			is_valid_environment: is_valid_environment
@@ -1060,7 +1060,7 @@ feature -- Directories (distribution)
 		require
 			is_valid_environment: is_valid_environment
 		once
-			create Result.make_from_string (lib_application_path.string)
+			create Result.make_from_string (lib_application_path_32)
 			Result.extend (wizards_name)
 		ensure
 			not_result_is_empty: not Result.is_empty
@@ -1490,7 +1490,7 @@ feature -- User Directories
 
 feature -- Files
 
-	default_config_file_name: FILE_NAME
+	default_config_file_name: FILE_NAME_32
 			-- Default Eiffel confiration file name location
 		require
 			is_valid_environment: is_valid_environment
@@ -1499,7 +1499,7 @@ feature -- Files
 			Result.set_file_name (default_config_file)
 			if is_user_files_supported then
 					-- Check user override file.
-				if attached user_priority_file_name (Result, True) as l_user then
+				if attached user_priority_file_name_32 (Result, True) as l_user then
 					Result := l_user
 				end
 			end
@@ -1735,16 +1735,16 @@ feature -- Directories (platform independent)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	lib_path: DIRECTORY_NAME
+	lib_path: DIRECTORY_NAME_32
 			-- Location of libs files (platform dependent).
 		require
 			is_valid_environment: is_valid_environment
 		once
 			if is_unix_layout then
-				Result := unix_layout_lib_path.twin
+				Result := unix_layout_lib_path_32.twin
 				Result.extend (unix_product_version_name)
 			else
-				Result := install_path.twin
+				Result := install_path_32.twin
 			end
 			if is_experimental_mode then
 				Result.extend ("experimental")
@@ -1869,11 +1869,11 @@ feature -- Files (commands)
 			end
 		end
 
-	freeze_command_name: FILE_NAME
+	freeze_command_name: FILE_NAME_32
 		require
 			is_valid_environment: is_valid_environment
 		once
-			create Result.make_from_string (bin_path)
+			create Result.make_from_string (bin_path_32)
 			Result.set_file_name (finish_freezing_script)
 			if not executable_suffix.is_empty then
 				Result.add_extension (executable_suffix)
@@ -1882,15 +1882,15 @@ feature -- Files (commands)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	emake_command_name: FILE_NAME
+	emake_command_name: FILE_NAME_32
 			-- Complete path to `emake'.
 		require
 			is_valid_environment: is_valid_environment
 		once
 			if is_unix_layout then
-				create Result.make_from_string (lib_application_path)
+				create Result.make_from_string (lib_application_path_32)
 			else
-				create Result.make_from_string (bin_path)
+				create Result.make_from_string (bin_path_32)
 			end
 			Result.set_file_name (emake_name)
 			if not executable_suffix.is_empty then
@@ -1900,15 +1900,15 @@ feature -- Files (commands)
 			not_result_is_empty: not Result.is_empty
 		end
 
-	quick_finalize_command_name: FILE_NAME
+	quick_finalize_command_name: FILE_NAME_32
 			-- Complete path to `quick_finalize'.
 		require
 			is_valid_environment: is_valid_environment
 		once
 			if is_unix_layout then
-				create Result.make_from_string (lib_application_path)
+				create Result.make_from_string (lib_application_path_32)
 			else
-				create Result.make_from_string (bin_path)
+				create Result.make_from_string (bin_path_32)
 			end
 			Result.set_file_name (quick_finalize_name)
 			if not executable_suffix.is_empty then
@@ -2028,22 +2028,22 @@ feature -- Executable names
 			not_result_is_empty: not Result.is_empty
 		end
 
-	finish_freezing_script: STRING_8
+	finish_freezing_script: STRING_32
 			-- Name of post-eiffel compilation processing to launch C code.
 		once
-			create Result.make_from_string ("finish_freezing")
-			Result.append (release_suffix)
+			Result := {STRING_32} "finish_freezing"
+			Result.append_string_general (release_suffix)
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
 
-	quick_finalize_name: STRING_8 = "quick_finalize"
+	quick_finalize_name: STRING_32 = "quick_finalize"
 			-- Name of estudio command
 
 	x2c_name: STRING_8 = "x2c"
 			-- Complete path to `x2c'.
 
-	emake_name: STRING_8 = "emake"
+	emake_name: STRING_32 = "emake"
 			-- Name of emake command.
 
 	prelink_name: STRING_8 = "prelink"
@@ -2290,7 +2290,7 @@ feature -- Environment variables
 	eiffel_install_32: STRING_32
 			-- ISE_EIFFEL name
 		do
-			if attached get_environment ({EIFFEL_CONSTANTS}.ise_eiffel_env) as l_result then
+			if attached get_environment_32 ({EIFFEL_CONSTANTS}.ise_eiffel_env) as l_result then
 				Result := l_result
 				remove_trailing_dir_separator_32 (Result)
 			else
@@ -2382,13 +2382,13 @@ feature -- File constants
 
 feature -- Directory constants (platform)
 
-	dotnet_name: STRING = "dotnet"
+	dotnet_name: STRING_32 = "dotnet"
 			-- .NET folder name.
 
-	neutral_name: STRING_8 = "neutral"
+	neutral_name: STRING_32 = "neutral"
 			-- Neutral platform folder name.
 
-	classic_name: STRING_8 = "classic"
+	classic_name: STRING_32 = "classic"
 			-- Classic Eiffel folder name.
 
 	windows_name: STRING_8 = "windows"
@@ -2437,13 +2437,13 @@ feature -- Directory constants (distribution)
 	borland_name: STRING_8 = "BCC55"
 			-- Borland C compiler folder name.
 
-	built_ins_name: STRING_8 = "built_ins"
+	built_ins_name: STRING_32 = "built_ins"
 			-- Built-in code classes folder name.
 
 	defaults_name: STRING_8 = "defaults"
 			-- Default templates folder name.
 
-	errors_name: STRING_8 = "errors"
+	errors_name: STRING_32 = "errors"
 			-- Error file descriptions folder name.
 
 	etc_name: STRING_8 = "etc"
@@ -2452,7 +2452,7 @@ feature -- Directory constants (distribution)
 	filters_name: STRING_8 = "filters"
 			-- Documentation filters folder name.
 
-	help_name: STRING_8 = "help"
+	help_name: STRING_32 = "help"
 			-- Help files folder name.
 
 	include_name: STRING_8 = "include"
