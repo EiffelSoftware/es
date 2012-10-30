@@ -8,9 +8,39 @@ note
 class
 	E2B_OPTIONS
 
-feature -- Inlining
+create
+	make
 
-	is_inlining_enabled: BOOLEAN = True
+feature {NONE} -- Initialization
+
+	make
+			-- Initialize default options.
+		do
+			is_reverification_with_inlining_enabled := True
+			is_inlining_enabled := True
+			is_automatic_inlining_enabled := True
+			is_automatic_loop_unrolling_enabled := True
+			is_sound_loop_unrolling_enabled := True
+			is_precondition_predicate_enabled := False
+			is_postcondition_predicate_enabled := True
+			is_checking_overflow := False
+			is_checking_frame := True
+		end
+
+feature -- Inlining verification step
+
+	is_reverification_with_inlining_enabled: BOOLEAN
+			-- Is a verification with inlining done in case of failed verifications?
+
+	set_reverification_with_inlining_enabled (a_value: BOOLEAN)
+			-- Set `is_reverification_with_inlining_enabled' to `a_value'.
+		do
+			is_reverification_with_inlining_enabled := a_value
+		end
+
+feature -- Inlining options
+
+	is_inlining_enabled: BOOLEAN
 			-- Is inlining enabled?
 
 	inlining_depth: INTEGER
@@ -25,8 +55,14 @@ feature -- Inlining
 			inlining_depth := a_value
 		end
 
-	is_automatic_inlining_enabled: BOOLEAN = True
+	is_automatic_inlining_enabled: BOOLEAN
 			-- Is automatic inlining of certain routines enabled?
+
+	set_automatic_inlining_enabled (a_value: BOOLEAN)
+			-- Set `is_automatic_inlining_enabled' to `a_value'.
+		do
+			is_automatic_inlining_enabled := a_value
+		end
 
 	routines_to_inline: LINKED_LIST [INTEGER]
 			-- Routines to inline.
@@ -39,23 +75,64 @@ feature -- Loop unrolling
 	loop_unrolling_depth: INTEGER = 13
 			-- Loop unrolling depth.
 
-	is_automatic_loop_unrolling_enabled: BOOLEAN = True
+	is_automatic_loop_unrolling_enabled: BOOLEAN
 			-- Is automatic unrolling of certain loops enabled?
 
-	is_sound_loop_unrolling_enabled: BOOLEAN = True
+	set_automatic_loop_unrolling_enabled (a_value: BOOLEAN)
+			-- Set `is_automatic_loop_unrolling_enabled' to `a_value'.
+		do
+			is_automatic_loop_unrolling_enabled := a_value
+		end
+
+	is_sound_loop_unrolling_enabled: BOOLEAN
 			-- Is loop unrolling being done in a sound way?
+
+	set_sound_loop_unrolling_enabled (a_value: BOOLEAN)
+			-- Set `is_sound_loop_unrolling_enabled' to `a_value'.
+		do
+			is_sound_loop_unrolling_enabled := a_value
+		end
 
 feature -- Precondition and postcondition predicates
 
-	is_precondition_predicate_enabled: BOOLEAN = False
+	is_precondition_predicate_enabled: BOOLEAN
 			-- Is generation of precondition predicates enabled?
 
-	is_postcondition_predicate_enabled: BOOLEAN = True
+	set_precondition_predicate_enabled (a_value: BOOLEAN)
+			-- Set `is_precondition_predicate_enabled' to `a_value'.
+		do
+			is_precondition_predicate_enabled := a_value
+		end
+
+	is_postcondition_predicate_enabled: BOOLEAN
 			-- Is generation of postcondition predicates enabled?
+
+	set_postcondition_predicate_enabled (a_value: BOOLEAN)
+			-- Set `is_postcondition_predicate_enabled' to `a_value'.
+		do
+			is_postcondition_predicate_enabled := a_value
+		end
 
 feature -- Overflow checks
 
-	is_checking_overflow: BOOLEAN = False
+	is_checking_overflow: BOOLEAN
 			-- Is checking of overflow enabled?
+
+	set_checking_overflow (a_value: BOOLEAN)
+			-- Set `is_checking_overflow' to `a_value'.
+		do
+			is_checking_overflow := a_value
+		end
+
+feature -- Framing
+
+	is_checking_frame: BOOLEAN
+			-- Is frame checked?
+
+	set_checking_frame (a_value: BOOLEAN)
+			-- Set `is_checking_frame' to `a_value'.
+		do
+			is_checking_frame := a_value
+		end
 
 end

@@ -317,6 +317,11 @@ feature -- Basic operations
 				-- Axioms per redefinition.
 			generate_postcondition_axiom (current_feature, current_type, current_type)
 				-- TODO: generate postcondition axiom for all known subtypes with redefined contracts
+			if not current_feature.written_class.name_in_upper.is_equal ("ANY") then
+				across current_feature.written_class.direct_descendants as d loop
+					generate_postcondition_axiom (d.item.feature_named_32 (current_feature.feature_name_32), current_type, d.item.actual_type)
+				end
+			end
 --			current_feature.written_class.direct_descendants.item.feature_of_rout_id_set (current_feature.rout_id_set)
 		end
 
@@ -544,6 +549,10 @@ feature {NONE} -- Implementation
 			create l_postcondition.make (l_forall)
 			create l_info.make ("frame")
 			l_postcondition.set_information (l_info)
+			if not options.is_checking_frame then
+				l_postcondition.set_free
+			end
+
 			current_boogie_procedure.add_contract (l_postcondition)
 		end
 

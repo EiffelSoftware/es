@@ -227,7 +227,7 @@ feature {NONE} -- Implementation: regular expressions
 			-- Regular expression for verified information line.
 		once
 			create Result.make
-			Result.compile ("^\s*\[([0-9.]*)\s*s\]\s*(\w+)\s*$")
+			Result.compile ("^\s*\[([0-9.]*) s, [0-9]+ proof obligations?\]\s*(\w+)\s*$")
 		end
 
 	time_regexp: RX_PCRE_REGULAR_EXPRESSION

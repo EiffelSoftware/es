@@ -1,6 +1,7 @@
 note
-	description: "Summary description for {E2B_MERGE_RESULTS_TASK}."
-	author: ""
+	description: "[
+		TODO
+	]"
 	date: "$Date$"
 	revision: "$Revision$"
 

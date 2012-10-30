@@ -583,6 +583,7 @@ feature {NONE} -- Menu section, Granularity 2.
 					extend_debug_feature_menus (a_menu, l_feat)
 				end
 				extend_add_to_menu (a_menu, l_feature_stone)
+			    (create {ES_AUTOPROOF_BENCH_HELPER}).build_context_menu_for_feature_stone (a_menu, l_feature_stone)
 			elseif attached {CLASSC_STONE} a_pebble as l_stonec then
 				extend_basic_opening_menus (a_menu, l_stonec, True)
 				extend_separator (a_menu)
@@ -591,6 +592,7 @@ feature {NONE} -- Menu section, Granularity 2.
 				extend_debug_class_menus (a_menu, l_stonec.e_class)
 				extend_add_to_menu (a_menu, l_stonec)
 			    (create {ES_BLACKBOARD_BENCH_HELPER}).build_context_menu_for_class_stone (a_menu, l_stonec)
+			    (create {ES_AUTOPROOF_BENCH_HELPER}).build_context_menu_for_class_stone (a_menu, l_stonec)
 			elseif attached {CLASSI_STONE} a_pebble as l_stonei then
 				extend_basic_opening_menus (a_menu, l_stonei, True)
 				extend_separator (a_menu)

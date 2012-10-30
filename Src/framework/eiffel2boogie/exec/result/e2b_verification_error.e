@@ -62,6 +62,9 @@ feature -- Access
 	tag: STRING
 			-- Assertion tag (if any)
 
+	associated_error: E2B_VIOLATION
+			-- Associated error.
+
 feature -- Status report
 
 	has_tag: BOOLEAN
@@ -209,6 +212,12 @@ feature {E2B_OUTPUT_PARSER} -- Element change
 				parse_info (assert_regexp.captured_substring (7), assert_regexp.captured_substring (8))
 			end
 
+			if is_check_violation then
+				create {E2B_CHECK_VIOLATION} associated_error.make (Current)
+			elseif is_precondition_violation then
+				
+			end
+
 
 --				-- Eiffel source
 --			if l_is_assert or l_is_pre then
@@ -240,6 +249,8 @@ feature {E2B_OUTPUT_PARSER} -- Element change
 --			is_attached_violation := l_type ~ "attached"
 --			is_frame_condition_violation := l_type ~ "frame"
 		end
+
+
 
 feature {NONE} -- Implementation
 

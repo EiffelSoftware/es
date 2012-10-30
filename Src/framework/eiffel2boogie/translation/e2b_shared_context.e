@@ -32,7 +32,7 @@ feature -- Access (public)
 	options: E2B_OPTIONS
 			-- Sahred translation options.
 		once
-			create Result
+			create Result.make
 		end
 
 	helper: E2B_HELPER
