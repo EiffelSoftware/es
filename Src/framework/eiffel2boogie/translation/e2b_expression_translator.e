@@ -113,6 +113,17 @@ feature -- Access
 	locals_map: HASH_TABLE [IV_EXPRESSION, INTEGER]
 			-- Mapping of object test locals to entities.
 
+	across_handler_map: HASH_TABLE [E2B_ACROSS_HANDLER, INTEGER]
+			-- Mapping of object test locals from across loops to across handlers.
+
+feature -- Element change
+
+	set_last_expression (a_expression: IV_EXPRESSION)
+			-- Set `last_expression' to `a_expression'.
+		do
+			last_expression := a_expression
+		end
+
 feature -- Basic operations
 
 	set_context (a_feature: FEATURE_I; a_type: TYPE_A)
@@ -147,6 +158,7 @@ feature -- Basic operations
 			current_target_type := Void
 			create entity_mapping.make
 			create locals_map.make (10)
+			create across_handler_map.make (10)
 			create special_mapping.make (10)
 			create safety_check_condition.make
 			add_special_mapping_by_name (agent process_array_routine (?, ?, ?, ?), "ARRAY", "")
@@ -565,6 +577,9 @@ feature -- Visitors
 			l_expression: IV_EXPRESSION
 			l_array: IV_EXPRESSION
 			l_call: IV_FUNCTION_CALL
+
+			l_across_handler: E2B_ACROSS_HANDLER
+
 		do
 			l_assign ?= a_node.iteration_code.first
 			check l_assign /= Void end
@@ -577,63 +592,19 @@ feature -- Visitors
 
 			l_name := l_nested.target.type.associated_class.name_in_upper
 			if l_name ~ "ARRAY" then
-
-					-- Array expression
-				l_nested.target.process (Current)
-				l_array := last_expression
-
-					-- Loop content
-				create_iterator (types.int)
-				l_counter := last_local
-				locals_map.put (l_counter, l_object_test_local.position)
-				a_node.expression_code.process (Current)
-				l_expression := last_expression
-				locals_map.remove (l_object_test_local.position)
-
-				create l_call.make ("ARRAY.$is_index", types.bool)
-				l_call.add_argument (entity_mapping.heap)
-				l_call.add_argument (l_array)
-				l_call.add_argument (l_counter)
-				create l_implies.make (l_call, "==>", l_expression, types.bool)
-				if a_node.is_all then
-					create {IV_FORALL} l_quantifier.make (l_implies)
-				else
-					create {IV_EXISTS} l_quantifier.make (l_implies)
-				end
-				l_quantifier.add_bound_variable (l_counter.name, l_counter.type)
-				last_expression := l_quantifier
-
+				create {E2B_ARRAY_ACROSS_HANDLER} l_across_handler.make (Current, a_node, l_nested.target, l_object_test_local)
 			elseif l_name ~ "INTEGER_INTERVAL" then
-
 				l_bin_free ?= l_access.expr
 				check l_bin_free /= Void end
-
-				create_iterator (types.int)
-				l_counter := last_local
-
-				l_bin_free.left.process (Current)
-				l_lower := last_expression
-				l_bin_free.right.process (Current)
-				l_upper := last_expression
-
-				locals_map.put (l_counter, l_object_test_local.position)
-				a_node.expression_code.process (Current)
-				l_expression := last_expression
-				locals_map.remove (l_object_test_local.position)
-
-				create l_binop1.make (l_lower, "<=", l_counter, types.bool)
-				create l_binop2.make (l_counter, "<=", l_upper, types.bool)
-				create l_and.make (l_binop1, "&&", l_binop2, types.bool)
-				create l_implies.make (l_and, "==>", l_expression, types.bool)
-				if a_node.is_all then
-					create {IV_FORALL} l_quantifier.make (l_implies)
-				else
-					create {IV_EXISTS} l_quantifier.make (l_implies)
-				end
-				l_quantifier.add_bound_variable (l_counter.name, l_counter.type)
-				last_expression := l_quantifier
+				create {E2B_INTERVAL_ACROSS_HANDLER} l_across_handler.make (Current, a_node, l_bin_free, l_object_test_local)
 			else
 				last_expression := dummy_node (a_node.type)
+			end
+
+			if attached l_across_handler then
+				across_handler_map.put (l_across_handler, l_object_test_local.position)
+				l_across_handler.handle_across_expression (a_node)
+				across_handler_map.remove (l_object_test_local.position)
 			end
 		end
 
@@ -659,29 +630,22 @@ feature -- Visitors
 			l_formal: FORMAL_A
 
 			l_object_test_local: OBJECT_TEST_LOCAL_B
+			l_across_handler: E2B_ACROSS_HANDLER
 			l_feature: FEATURE_B
 			l_call: IV_FUNCTION_CALL
 			l_info: IV_ASSERTION_INFORMATION
 		do
 			l_object_test_local ?= a_node.target
-			if False and l_object_test_local /= Void and then locals_map.has (l_object_test_local.position) then
+			if l_object_test_local /= Void and then across_handler_map.has (l_object_test_local.position) then
 					-- Special mapping of object test local in across loop
+				l_across_handler := across_handler_map.item (l_object_test_local.position)
 				l_feature ?= a_node.message
 				if l_feature.feature_name.is_case_insensitive_equal ("item") then
-
-					if true then -- INTEGER INTERVAL
-						last_expression := locals_map.item (l_object_test_local.position)
-					else -- ARRAY
-						create l_call.make ("ARRAY.item", types.generic_type)
-						l_call.add_argument (entity_mapping.heap)
-						l_call.add_argument (entity_mapping.current_entity)
-						l_call.add_argument (locals_map.item (l_object_test_local.position))
-						last_expression := l_call
-					end
-
-				elseif l_feature.feature_name.is_case_insensitive_equal ("index") then
-						-- TODO: lower bound needed
-					last_expression := dummy_node (a_node.type)
+					l_across_handler.handle_call_item (Void)
+				elseif l_feature.feature_name.is_case_insensitive_equal ("index") or l_feature.feature_name.is_case_insensitive_equal ("cursor_index") then
+					l_across_handler.handle_call_cursor_index (Void)
+				elseif l_feature.feature_name.is_case_insensitive_equal ("after") then
+					l_across_handler.handle_call_after (Void)
 				else
 					last_expression := dummy_node (a_node.type)
 				end
@@ -1006,7 +970,7 @@ feature -- Special mapping
 			l_agent.call ([Current, current_target_type, a_feature, a_parameters])
 		end
 
-feature {NONE} -- Implementation
+feature {E2B_ACROSS_HANDLER} -- Implementation
 
 	last_local: IV_ENTITY
 			-- Last created local.
