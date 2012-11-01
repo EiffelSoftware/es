@@ -789,13 +789,21 @@ feature -- Visitors
 
 	process_tuple_access_b (a_node: TUPLE_ACCESS_B)
 			-- <Precursor>
+		local
+			l_call: IV_FUNCTION_CALL
 		do
-			last_expression := dummy_node (a_node.type)
+			create l_call.make ("$TUPLE.item", types.generic_type)
+			l_call.add_argument (entity_mapping.heap)
+			l_call.add_argument (current_target)
+			l_call.add_argument (create {IV_VALUE}.make (a_node.position.out, types.int))
+			last_expression := l_call
 		end
 
 	process_tuple_const_b (a_node: TUPLE_CONST_B)
 			-- <Precursor>
 		do
+			-- body: create tuple ref
+			-- loop through `expressions' and put elements
 			last_expression := dummy_node (a_node.type)
 		end
 

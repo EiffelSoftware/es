@@ -20,6 +20,7 @@ inherit
 			process_inspect_b,
 			process_instr_call_b,
 			process_loop_b,
+			process_nested_b,
 			process_retry_b,
 			process_reverse_b
 		end
@@ -704,6 +705,16 @@ feature -- Processing
 			add_statement (l_assume)
 
 			current_block := l_temp_block
+		end
+
+	process_nested_b (a_node: NESTED_B)
+			-- <Precursor>
+		do
+			set_current_origin_information (a_node)
+				-- Instruction call is in the side effect of the expression,
+				-- so the generated expression itself is ignored.
+			process_expression (a_node)
+			add_trace_statement (a_node)
 		end
 
 	process_retry_b (a_node: RETRY_B)

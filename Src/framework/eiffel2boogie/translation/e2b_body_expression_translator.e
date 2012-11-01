@@ -14,7 +14,9 @@ inherit
 		redefine
 			reset,
 			process_creation_expr_b,
-			process_parameter_b
+			process_parameter_b,
+			process_tuple_access_b,
+			process_tuple_const_b
 		end
 
 create
@@ -112,6 +114,73 @@ feature -- Visitors
 			check not procedure_calls.is_empty end
 			safe_process (a_node.expression)
 			procedure_calls.item.add_argument (last_expression)
+		end
+
+	process_tuple_access_b (a_node: TUPLE_ACCESS_B)
+			-- <Precursor>
+		local
+			l_proc_call: IV_PROCEDURE_CALL
+		do
+			if a_node.source = Void then
+				Precursor (a_node)
+			else
+					-- TODO: add check that position is in the range of the tuple
+				a_node.source.expression.process (Current)
+				create l_proc_call.make ("$TUPLE.put")
+				l_proc_call.add_argument (current_target)
+				l_proc_call.add_argument (last_expression)
+				l_proc_call.add_argument (factory.int_value (a_node.position))
+				side_effect.extend (l_proc_call)
+				last_expression := Void
+			end
+		end
+
+	process_tuple_const_b (a_node: TUPLE_CONST_B)
+			-- <Precursor>
+		local
+			l_local: IV_ENTITY
+			l_havoc: IV_HAVOC
+			l_assume: IV_ASSUME
+			l_assignment: IV_ASSIGNMENT
+			l_allocated: IV_ENTITY
+			l_binop: IV_BINARY_OPERATION
+			l_heap_access: IV_HEAP_ACCESS
+			l_call: IV_FUNCTION_CALL
+			l_type_value: IV_VALUE
+			l_proc_call: IV_PROCEDURE_CALL
+		do
+			create_local (a_node.type)
+
+			l_local := last_local
+			create l_havoc.make (l_local.name)
+			side_effect.extend (l_havoc)
+
+			create l_assume.make (factory.not_equal (l_local, factory.void_))
+			side_effect.extend (l_assume)
+			create l_allocated.make ("$allocated", types.field (types.bool))
+			create l_heap_access.make (entity_mapping.heap.name, l_local, l_allocated)
+			create l_assume.make (factory.equal (l_heap_access, factory.false_))
+			side_effect.extend (l_assume)
+			create l_type_value.make ("TUPLE", types.type)
+			create l_assume.make (factory.equal (factory.type_of (l_local), l_type_value))
+			side_effect.extend (l_assume)
+			create l_assignment.make (l_heap_access, factory.true_)
+			side_effect.extend (l_assignment)
+			create l_proc_call.make ("$TUPLE.make")
+			l_proc_call.add_argument (l_local)
+			l_proc_call.add_argument (factory.int_value (a_node.expressions.count))
+			side_effect.extend (l_proc_call)
+
+			across a_node.expressions as i loop
+				i.item.process (Current)
+				create l_proc_call.make ("$TUPLE.put")
+				l_proc_call.add_argument (l_local)
+				l_proc_call.add_argument (last_expression)
+				l_proc_call.add_argument (factory.int_value (i.cursor_index))
+				side_effect.extend (l_proc_call)
+			end
+
+			last_expression := l_local
 		end
 
 feature -- Translation
