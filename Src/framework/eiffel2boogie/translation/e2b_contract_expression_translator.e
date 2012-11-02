@@ -144,6 +144,11 @@ feature -- Translation
 			last_expression := l_call
 		end
 
+	process_special_routine_call (a_handler: E2B_CUSTOM_CALL_HANDLER; a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
+			-- <Precursor>
+		do
+			a_handler.handle_routine_call_in_contract (Current, a_feature, a_parameters)
+		end
 
 	add_safety_check (a_expression: IV_EXPRESSION; a_name: STRING)
 			-- <Precursor>

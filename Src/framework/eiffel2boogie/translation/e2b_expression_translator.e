@@ -159,9 +159,7 @@ feature -- Basic operations
 			create entity_mapping.make
 			create locals_map.make (10)
 			create across_handler_map.make (10)
-			create special_mapping.make (10)
 			create safety_check_condition.make
-			add_special_mapping_by_name (agent process_array_routine (?, ?, ?, ?), "ARRAY", "")
 		end
 
 feature -- Visitors
@@ -511,6 +509,7 @@ feature -- Visitors
 		local
 			l_feature: FEATURE_I
 			l_constant: CONSTANT_I
+			l_handler: E2B_CUSTOM_CALL_HANDLER
 		do
 			l_feature := helper.feature_for_call_access (a_node, current_target_type)
 			check feature_valid: l_feature /= Void end
@@ -522,7 +521,12 @@ feature -- Visitors
 				check l_constant /= Void end
 				process_constant_call (l_constant)
 			elseif l_feature.is_routine then
-				process_routine_call (l_feature, a_node.parameters)
+				l_handler := translation_mapping.handler_for_call (current_target_type, l_feature)
+				if l_handler /= Void then
+					process_special_routine_call (l_handler, l_feature, a_node.parameters)
+				else
+					process_routine_call (l_feature, a_node.parameters)
+				end
 			else
 					-- TODO: what else is there?
 				check False end
@@ -559,27 +563,13 @@ feature -- Visitors
 	process_loop_expr_b (a_node: LOOP_EXPR_B)
 			-- <Precursor>
 		local
-			b: BOOLEAN
 			l_assign: ASSIGN_B
+			l_object_test_local: OBJECT_TEST_LOCAL_B
 			l_nested: NESTED_B
 			l_access: ACCESS_EXPR_B
 			l_bin_free: BIN_FREE_B
-			l_object_test_local: OBJECT_TEST_LOCAL_B
 			l_name: STRING
-
-			l_counter: IV_ENTITY
-			l_lower: IV_EXPRESSION
-			l_upper: IV_EXPRESSION
-			l_binop1, l_binop2: IV_BINARY_OPERATION
-			l_and: IV_BINARY_OPERATION
-			l_implies: IV_BINARY_OPERATION
-			l_quantifier: IV_QUANTIFIER
-			l_expression: IV_EXPRESSION
-			l_array: IV_EXPRESSION
-			l_call: IV_FUNCTION_CALL
-
 			l_across_handler: E2B_ACROSS_HANDLER
-
 		do
 			l_assign ?= a_node.iteration_code.first
 			check l_assign /= Void end
@@ -895,6 +885,13 @@ feature -- Translation
 		deferred
 		end
 
+	process_special_routine_call (a_handler: E2B_CUSTOM_CALL_HANDLER; a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
+			-- Process feature call with custom handler.
+		require
+			not_attribute: a_feature.is_routine
+		deferred
+		end
+
 	add_safety_check (a_expression: IV_EXPRESSION; a_name: STRING)
 			-- Add safety check `a_expression' of type `a_name'.
 		require
@@ -912,70 +909,6 @@ feature -- Translation
 			else
 				create {IV_BINARY_OPERATION} Result.make (safety_check_condition.item, "==>", a_expr, types.bool)
 			end
-		end
-
-feature -- Special mapping
-
-	special_mapping: HASH_TABLE [PROCEDURE [ANY, TUPLE], TUPLE [STRING, STRING]]
-			-- Special mapping for translating certain feature calls.
-
-	add_special_mapping (a_agent: PROCEDURE [ANY, TUPLE []]; a_type: TYPE_A; a_feature: FEATURE_I)
-			-- Add special mapping for translating feature `a_feature' of type `a_type'.
-		local
-			l_tuple: TUPLE [STRING, STRING]
-		do
-			if attached a_feature then
-				l_tuple := [a_type.associated_class.name_in_upper, a_feature.feature_name.as_lower]
-			else
-				l_tuple := [a_type.associated_class.name_in_upper, ""]
-			end
-			l_tuple.compare_objects
-			special_mapping.extend (a_agent, l_tuple)
-		end
-
-	add_special_mapping_by_name (a_agent: PROCEDURE [ANY, TUPLE []]; a_type: STRING; a_feature: STRING)
-			-- Add special mapping for translating feature `a_feature' of type `a_type'.
-		local
-			l_tuple: TUPLE [STRING, STRING]
-		do
-			l_tuple := [a_type, a_feature]
-			l_tuple.compare_objects
-			special_mapping.extend (a_agent, l_tuple)
-		end
-
-	has_special_mapping (a_feature: FEATURE_I; a_type: TYPE_A): BOOLEAN
-			-- Does a special mapping exist for feature `a_feature' of type `a_type'?
-		local
-			l_tuple: TUPLE [STRING, STRING]
-		do
-			l_tuple := [a_type.associated_class.name_in_upper, a_feature.feature_name.as_lower]
-			l_tuple.compare_objects
-			Result := special_mapping.has_key (l_tuple)
-			if not Result then
-				l_tuple := [a_type.associated_class.name_in_upper, ""]
-				l_tuple.compare_objects
-				Result := special_mapping.has_key (l_tuple)
-			end
-		end
-
-	process_special_mapping_call (a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
-			-- Process feature call with special mapping.
-		require
-			has_special_mapping: has_special_mapping (a_feature, current_target_type)
-		local
-			l_tuple: TUPLE [STRING, STRING]
-			l_agent: PROCEDURE [ANY, TUPLE]
-		do
-			l_tuple := [current_target_type.associated_class.name_in_upper, a_feature.feature_name.as_lower]
-			l_tuple.compare_objects
-			l_agent := special_mapping.item (l_tuple)
-			if l_agent = Void then
-				l_tuple := [current_target_type.associated_class.name_in_upper, ""]
-				l_tuple.compare_objects
-				l_agent := special_mapping.item (l_tuple)
-			end
-			check l_agent /= Void end
-			l_agent.call ([Current, current_target_type, a_feature, a_parameters])
 		end
 
 feature {E2B_ACROSS_HANDLER} -- Implementation

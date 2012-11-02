@@ -8,22 +8,37 @@ note
 class
 	E2B_SPECIAL_MAPPING
 
-feature -- Access
+create
+	make
 
-	agent_type: PROCEDURE [ANY, TUPLE [f: FEATURE_I; t: TYPE_A; args: BYTE_LIST [PARAMETER_B]; translator: E2B_EXPRESSION_TRANSLATOR]]
+feature {NONE} -- Initialization
 
-feature -- Status report
-
-	has_special_mapping (a_feature: FEATURE_I; a_context_type: TYPE_A): BOOLEAN
-			-- Does a special mapping for feature `a_feature' of type `a_context_type' exist?
+	make
+			-- Initialize special mappings.
 		do
-
+			create {LINKED_LIST [E2B_CUSTOM_CALL_HANDLER]} call_handlers.make
+			call_handlers.extend (create {E2B_CUSTOM_ARRAY_CALL_HANDLER})
+			call_handlers.extend (create {E2B_CUSTOM_INTEGER_CALL_HANDLER})
 		end
 
-feature -- Element change
+feature -- Access
 
-feature -- Basic operations
+	call_handlers: LIST [E2B_CUSTOM_CALL_HANDLER]
+			-- List of custom call handlers.
 
-
+	handler_for_call (a_target_type: TYPE_A; a_feature: FEATURE_I): detachable E2B_CUSTOM_CALL_HANDLER
+			-- Custom handler for `a_feature' (if any).
+		do
+			from
+				call_handlers.start
+			until
+				call_handlers.after or attached Result
+			loop
+				if call_handlers.item.is_handling_call (a_target_type, a_feature) then
+					Result := call_handlers.item
+				end
+				call_handlers.forth
+			end
+		end
 
 end

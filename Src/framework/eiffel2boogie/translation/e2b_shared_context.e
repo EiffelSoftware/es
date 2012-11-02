@@ -24,7 +24,7 @@ feature {NONE} -- Access
 	translation_mapping: E2B_SPECIAL_MAPPING
 			-- Shared mapping for special translations.
 		once
-			create Result
+			create Result.make
 		end
 
 feature -- Access (public)
