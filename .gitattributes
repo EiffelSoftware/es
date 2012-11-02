@@ -1,7 +1,4 @@
 * text=auto !eol
-.git-svn/readme.txt -text
-.git-svn/scm -text
-.git-svn/users.txt -text
 Documentation/tools/web/trunk/bin/README.txt -text
 Documentation/tools/web/trunk/bin/data/favicon.ico -text
 Documentation/tools/web/trunk/bin/data/logo.gif -text
@@ -76,6 +73,9 @@ Documentation/tools/web/trunk/misc/patches/eiffel.php -text
 Documentation/tools/web/trunk/misc/patches/htaccess -text
 Documentation/tools/web/trunk/misc/patches/trash.module -text
 Documentation/tools/xmldoc2wiki/README.txt -text
+Src/.git-svn/readme.txt -text
+Src/.git-svn/scm -text
+Src/.git-svn/users.txt -text
 Src/C/eif_config_h.SH eol=lf
 Src/C/run-time/eif_size_h.SH eol=lf
 Src/C/shell/bin/cat.exe -text
