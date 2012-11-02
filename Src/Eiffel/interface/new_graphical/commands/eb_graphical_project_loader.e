@@ -135,7 +135,7 @@ feature -- Settings
 			l_dialog: EB_EXTERNAL_OUTPUT_DIALOG
 		do
 			create l_prc_factory
-			l_prc_launcher := l_prc_factory.process_launcher (eiffel_layout.ec_command_name, a_arguments, Void)
+			l_prc_launcher := l_prc_factory.process_launcher (eiffel_layout.ec_command_name.string_representation, a_arguments, Void)
 			l_prc_launcher.set_separate_console (False)
 			l_prc_launcher.set_hidden (True)
 			create l_dialog
@@ -462,13 +462,13 @@ feature {NONE} -- User interaction
 			a_dlg_not_void: a_dlg /= Void
 			a_action_not_void: a_action /= Void
 		local
-			file_name: STRING
+			file_name: STRING_32
 			file: RAW_FILE
 		do
 				-- This is a callback from the name chooser when user click OK.
 			file_name := a_dlg.file_name
 			check file_name_not_empty: not file_name.is_empty end
-			create file.make (file_name)
+			create file.make_with_name (file_name)
 			if file.exists then
 				prompts.show_warning_prompt_with_cancel (Warning_messages.w_file_exists (file_name), parent_window, agent a_action.call ([file_name]), agent a_dlg.show_modal_to_window (parent_window))
 			else
@@ -609,7 +609,7 @@ feature {NONE} -- Actions
 	choose_again: BOOLEAN
 			-- We need to choose again the file
 
-	on_delete_directory (deleted_files: LIST [READABLE_STRING_32])
+	on_delete_directory (deleted_files: LIST [READABLE_STRING_GENERAL])
 			-- The files in `deleted_files' have just been deleted.
 			-- Display
 		local
@@ -717,7 +717,7 @@ invariant
 	parent_window_not_destroyed: not parent_window.is_destroyed
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

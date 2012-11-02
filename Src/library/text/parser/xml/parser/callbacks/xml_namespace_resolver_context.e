@@ -31,7 +31,7 @@ feature -- Recyling
 
 feature -- Element change
 
-	add_default (a_namespace: STRING)
+	add_default (a_namespace: READABLE_STRING_32)
 			-- Add default namespace to context.
 		require
 			a_namespace_not_void: a_namespace /= Void
@@ -40,7 +40,7 @@ feature -- Element change
 			add (a_namespace, Default_pseudo_prefix)
 		end
 
-	add (a_namespace: STRING; a_prefix: STRING)
+	add (a_namespace: READABLE_STRING_32; a_prefix: READABLE_STRING_32)
 			-- Add namespace to context.
 		require
 			a_namespace_not_void: a_namespace /= Void
@@ -48,7 +48,7 @@ feature -- Element change
 			not_has: not shallow_has (a_prefix)
 			context_not_empty: not is_context_empty
 		do
-			context.first.force (a_namespace, a_prefix)
+			context.first.force (a_namespace, to_context_key (a_prefix))
 		end
 
 feature -- Status report
@@ -61,39 +61,29 @@ feature -- Status report
 			definition: Result = context.is_empty
 		end
 
-	shallow_has (a_prefix: STRING): BOOLEAN
+	shallow_has (a_prefix: READABLE_STRING_32): BOOLEAN
 			-- Is this prefix known at the current level?
 			-- (for duplicate declaration checks)
 		require
 			a_prefix_not_void: a_prefix /= Void
 		do
-			Result := context.count > 0 and then context.first.has (a_prefix)
+			Result := context.count > 0 and then context.first.has (to_context_key (a_prefix))
 		end
 
-	has (a_prefix: STRING): BOOLEAN
+	has (a_prefix: READABLE_STRING_32): BOOLEAN
 			-- Is this prefix known?
 		require
 			a_prefix_not_void: a_prefix /= Void
 		local
-			c: LINKED_LIST_ITERATION_CURSOR [HASH_TABLE [STRING, STRING]]
+			p: like to_context_key
 		do
-			c := context.new_cursor
-			from
-				c.start
-			until
-				c.after or Result
-			loop
-				if c.item.has (a_prefix) then
-					Result := True
-				else
-					c.forth
-				end
-			end
+			p := to_context_key (a_prefix)
+			Result := across context as c some c.item.has (p) end
 		end
 
 feature -- Access
 
-	resolve_default: STRING
+	resolve_default: READABLE_STRING_32
 			-- Resolve default namespace.
 		do
 			Result := resolve (Default_pseudo_prefix)
@@ -101,31 +91,29 @@ feature -- Access
 			resoled_not_void: Result /= Void
 		end
 
-	resolve (a_prefix: STRING): STRING
+	resolve (a_prefix: READABLE_STRING_32): READABLE_STRING_32
 			-- Resolve a prefix.
 		require
 			a_prefix_not_void: a_prefix /= Void
 		local
-			c: LINKED_LIST_ITERATION_CURSOR [HASH_TABLE [STRING, STRING]]
-			i: HASH_TABLE [STRING, STRING]
+			i: like context.item
 			result_found: BOOLEAN
+			p: like to_context_key
 		do
 			Result := Default_namespace
-
-			c := context.new_cursor
-			from
-				c.start
+			p := to_context_key (a_prefix)
+			across
+				context as c
 			until
-				c.after or result_found
+				result_found
 			loop
 				i := c.item
 				if
-					i.has (a_prefix) and then attached i.item (a_prefix) as v
+					i.has (p) and then
+					attached i.item (p) as v
 				then
 					Result := v
 					result_found := True
-				else
-					c.forth
 				end
 			end
 		ensure
@@ -151,20 +139,26 @@ feature -- Stack
 
 feature {NONE} -- Implementation
 
-	context: LINKED_LIST [HASH_TABLE [STRING, STRING]]
+	to_context_key (s: READABLE_STRING_32): like context.item.key_for_iteration
+			-- Return the adapted key associated with `s'.
+		do
+			Result := s.to_string_32
+		end
+
+	context: LINKED_LIST [like new_string_string_table]
 			-- Really a STACK but we need to see the content
 
-	new_string_string_table: HASH_TABLE [STRING, STRING]
+	new_string_string_table: HASH_TABLE [READABLE_STRING_32, STRING_32]
 		do
 			create Result.make (5)
 		end
 
 feature {NONE} -- Constants
 
-	Default_pseudo_prefix: STRING = ""
+	Default_pseudo_prefix: STRING_32 = ""
 			-- Default pseudo prefix
 
-	Default_namespace: STRING = ""
+	Default_namespace: STRING_32 = ""
 			-- Default namespace (empty)
 
 invariant
@@ -172,7 +166,7 @@ invariant
 	context_not_void: context /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

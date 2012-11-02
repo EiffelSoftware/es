@@ -32,10 +32,10 @@ feature -- Query
 			l_parts := a_path.split (l_sep)
 			from l_parts.start until l_parts.after or l_error loop
 				l_part := l_parts.item
-				if l_part.is_equal ({STRING_32} ".") then
+				if l_part.same_string_general (".") then
 						-- Current directory, simple remove
 					l_parts.remove
-				elseif l_part.is_equal ({STRING_32} "..") then
+				elseif l_part.same_string_general ("..") then
 						-- Remove parent
 					l_parts.remove
 					if not l_parts.is_empty then
@@ -189,14 +189,16 @@ feature -- File name operations
 
 feature -- Directory operations
 
+ 	directory_path_exists (p: PATH): BOOLEAN
+			-- Does directory of path `p' exist?
+		do
+			Result := not p.is_empty and then (create {DIRECTORY}.make_with_path (p)).exists
+		end
+
 	make_directory (n: READABLE_STRING_GENERAL): DIRECTORY
 			-- New {DIRECTORY} for directory name `n'.
 		do
-			if attached {READABLE_STRING_32} n as s then
-				create {DIRECTORY_32} Result.make (s)
-			else
-				create Result.make (n.as_string_8)
-			end
+			create Result.make (n)
 		end
 
 	directory_exists (n: READABLE_STRING_GENERAL): BOOLEAN
@@ -209,23 +211,23 @@ feature -- Directory operations
 			-- List of file names in directory with name `n'.
 			-- Or void if directory is not readable (does not exist, cannot be accessed, etc.).
 		local
-			d: detachable DIRECTORY_32
+			d: detachable DIRECTORY
 			l: ARRAYED_LIST [STRING_32]
 			is_retried: BOOLEAN
-			f: RAW_FILE_32
+			f: RAW_FILE
 			fn: FILE_NAME_32
 		do
 			if not is_retried then
 				create d.make (n)
-				d.open_read
-				if not d.is_closed then
+				if d.exists and then d.is_readable then
+					d.open_read
 					from
-						create f.make ({STRING_32} ".")
+						create f.make_with_name ({STRING_32} ".")
 						create fn.make_from_string ({STRING_32} ".")
 						create l.make (0)
 						d.readentry
 					until
-						not attached d.lastentry as e
+						not attached d.last_entry_32 as e
 					loop
 						fn.reset (n)
 						fn.set_file_name (e)
@@ -236,8 +238,8 @@ feature -- Directory operations
 						d.readentry
 					end
 					Result := l
+					d.close
 				end
-				d.close
 			elseif attached d and then not d.is_closed then
 				d.close
 			end
@@ -250,26 +252,26 @@ feature -- Directory operations
 			-- List of directory names (excluding current and parent directory) in directory with name `n'.
 			-- Or void if directory is not readable (does not exist, cannot be accessed, etc.).
 		local
-			d: detachable DIRECTORY_32
+			d: detachable DIRECTORY
 			l: ARRAYED_LIST [STRING_32]
 			is_retried: BOOLEAN
-			f: DIRECTORY_32
+			f: DIRECTORY
 			fn: DIRECTORY_NAME_32
 		do
 			if not is_retried then
 				create d.make (n)
-				d.open_read
-				if not d.is_closed then
+				if d.exists and then d.is_readable then
+					d.open_read
 					from
 						create fn.make_from_string ({STRING_32} ".")
 						create l.make (0)
 						d.readentry
 					until
-						not attached d.lastentry as e
+						not attached d.last_entry_32 as e
 					loop
 						if
 							(e.count = 1 and then e [1] = '.') or else
-							(e.count = 2 and then e [1] ='.' and then e [2] = '.')
+							(e.count = 2 and then e [1] = '.' and then e [2] = '.')
 						then
 								-- This is a reference to the current or to the parent directory.
 						else
@@ -283,8 +285,8 @@ feature -- Directory operations
 						d.readentry
 					end
 					Result := l
+					d.close
 				end
-				d.close
 			elseif attached d and then not d.is_closed then
 				d.close
 			end
@@ -320,11 +322,7 @@ feature -- File operations
 	make_raw_file (n: READABLE_STRING_GENERAL): RAW_FILE
 			-- New {RAW_FILE} for file name `n'.
 		do
-			if attached {READABLE_STRING_32} n as s then
-				create {RAW_FILE_32} Result.make (s)
-			else
-				create Result.make (n.as_string_8)
-			end
+			create Result.make_with_name (n)
 		end
 
 	make_raw_file_in (name: READABLE_STRING_GENERAL; location: READABLE_STRING_GENERAL): RAW_FILE
@@ -336,11 +334,7 @@ feature -- File operations
 	make_text_file (n: READABLE_STRING_GENERAL): PLAIN_TEXT_FILE
 			-- New {PLAIN_TEXT_FILE} for file name `n'.
 		do
-			if attached {READABLE_STRING_32} n as s then
-				create {PLAIN_TEXT_FILE_32} Result.make (s)
-			else
-				create Result.make (n.as_string_8)
-			end
+			create Result.make_with_name (n)
 		end
 
 	make_text_file_in (name: READABLE_STRING_GENERAL; location: READABLE_STRING_GENERAL): PLAIN_TEXT_FILE
@@ -379,20 +373,54 @@ feature -- File operations
 			end
 		end
 
+	copy_file_path (old_path, new_path: PATH)
+			-- Copy file named `old_path' to `new_path'.
+		local
+			f: detachable RAW_FILE
+			t: detachable RAW_FILE
+			is_rescued: BOOLEAN
+		do
+			if is_rescued then
+				if attached f and then f.is_open_read then
+					f.close
+				end
+				if attached t and then t.is_open_write then
+					t.close
+				end
+			else
+				create f.make_with_path (old_path)
+				f.open_read
+				create t.make_with_path (new_path)
+				t.open_write
+				f.copy_to (t)
+				f.close
+				t.close
+			end
+		rescue
+			if not is_rescued then
+				is_rescued := True
+				retry
+			end
+		end
+
 	rename_file (old_name, new_name: READABLE_STRING_GENERAL)
 			-- Rename file named `old_name' to `new_name'.
 		local
 			f: RAW_FILE
-			f32: RAW_FILE_32
 		do
-			if attached {READABLE_STRING_32} old_name or else attached {READABLE_STRING_32} new_name then
-				create f32.make (old_name.as_string_32)
-				f32.change_name (new_name.as_string_32)
-			else
-				create f.make (old_name.as_string_8)
-				f.change_name (new_name.as_string_8)
-			end
+			create f.make_with_name (old_name)
+			f.rename_file (new_name)
 		end
+
+	rename_file_path (old_path, new_path: PATH)
+			-- Rename file named `old_path' to `new_path'.
+		local
+			f: RAW_FILE
+		do
+			create f.make_with_path (old_path)
+			f.rename_file (new_path.string_representation)
+		end
+
 
 	open_read_raw_file (n: READABLE_STRING_GENERAL): RAW_FILE
 			-- Open {RAW_FILE} of name `n' for reading.
@@ -433,11 +461,7 @@ feature -- File operations
 	file_name (f: FILE): READABLE_STRING_GENERAL
 			-- Name associated with `f'.
 		do
-			if attached {FILE_32} f as f32 then
-				Result := f32.name
-			else
-				Result := f.name
-			end
+			Result := f.name_32
 		end
 
 	file_exists (n: READABLE_STRING_GENERAL): BOOLEAN
@@ -448,6 +472,21 @@ feature -- File operations
 		do
 			if not n.is_empty and then not is_retried then
 				f := make_raw_file (n)
+				Result := f.exists and then f.is_plain
+			end
+		rescue
+			is_retried := True
+			retry
+		end
+
+	file_path_exists (p: PATH): BOOLEAN
+			-- Does file of path `p' exist?
+		local
+			f: RAW_FILE
+			is_retried: BOOLEAN
+		do
+			if not p.is_empty and then not is_retried then
+				create f.make_with_path (p)
 				Result := f.exists and then f.is_plain
 			end
 		rescue

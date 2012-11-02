@@ -182,7 +182,7 @@ feature {NONE} -- Implementation
 			l_executable: STRING
 			l_error: EP_GENERAL_ERROR
 			l_path_string: STRING
-			l_path: DIRECTORY_NAME
+			l_path: PATH
 			l_file_name: FILE_NAME
 			l_file: RAW_FILE
 		do
@@ -203,7 +203,7 @@ feature {NONE} -- Implementation
 				l_path.extend ("boogie")
 				l_path.extend ("bin")
 				create l_file_name.make
-				l_file_name.set_directory (l_path.string)
+				l_file_name.set_directory (l_path.out)
 				l_file_name.set_file_name ("Boogie.exe")
 				create l_file.make (l_file_name.string)
 				if l_file.exists then

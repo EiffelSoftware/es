@@ -456,10 +456,10 @@ feature{NONE} -- Implementation
 			a_file_name_attached: a_file_name /= Void
 		local
 			l_retried: BOOLEAN
-			l_file: PLAIN_TEXT_FILE_32
+			l_file: PLAIN_TEXT_FILE
 		do
 			if not l_retried then
-				create l_file.make (a_file_name)
+				create l_file.make_with_name (a_file_name)
 				l_file.open_read
 				l_file.read_stream (l_file.count)
 				Result := l_file.last_string
@@ -484,7 +484,7 @@ feature{NONE} -- Implementation
 		local
 			l_file_name: FILE_NAME
 		do
-			create l_file_name.make_from_string (eiffel_layout.temporary_path)
+			create l_file_name.make_from_string (eiffel_layout.temporary_path_8)
 			l_file_name.set_file_name ("~" + a_base_name)
 			Result := l_file_name
 		ensure
@@ -518,7 +518,7 @@ feature{NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

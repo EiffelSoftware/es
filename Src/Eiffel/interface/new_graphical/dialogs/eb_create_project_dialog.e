@@ -215,7 +215,7 @@ feature -- Execution
 				ace_file_name := blank_project_builder.ace_filename
 				compile_project := compile_project_check_button.is_selected
 
-				if (create {PLAIN_TEXT_FILE_32}.make (ace_file_name)).exists then
+				if (create {PLAIN_TEXT_FILE}.make_with_name (ace_file_name)).exists then
 						-- Warn that the existing configuration file will be overwritten.
 					prompts.show_warning_prompt_with_cancel (
 						warning_messages.w_file_exists (ace_file_name),
@@ -501,7 +501,7 @@ feature {NONE} -- Implementation
 		local
 			l_project_location: STRING_32
 		do
-			l_project_location := eiffel_layout.user_projects_path_32.twin
+			l_project_location := eiffel_layout.user_projects_path.string_representation
 			if l_project_location @ l_project_location.count /= Operating_environment.Directory_separator then
 				l_project_location.append_character (Operating_environment.Directory_separator)
 			end
@@ -647,15 +647,15 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			Eiffel Software

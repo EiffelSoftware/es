@@ -75,7 +75,7 @@ feature {NONE} -- Implementation
 		local
 			l_nb_cpu, l_make, l_make_flags, l_target: STRING
 			l_has_error: BOOLEAN
-			l_dir: DIRECTORY_32
+			l_dir: DIRECTORY
 			l_help: STRING
 			l_index: INTEGER
 		do
@@ -212,16 +212,16 @@ feature {NONE} -- Implementation
 			l_dirs: ARRAYED_LIST [STRING_32]
 			l_dir_name: STRING_32
 			l_name: like target
-			l_dir: DIRECTORY_32
+			l_dir: DIRECTORY
 			l_worker_thread: WORKER_THREAD
 			i, l_min: INTEGER
-			l_file: RAW_FILE_32
+			l_file: RAW_FILE
 			l_sorted_list: ARRAYED_LIST [STRING_32]
 			l_sorter: QUICK_SORTER [STRING_32]
 			l_has_e1: BOOLEAN
 		do
 			create l_dir.make (target)
-			l_dirs := l_dir.linear_representation
+			l_dirs := l_dir.linear_representation_32
 			from
 				l_dirs.start
 				create l_sorted_list.make (10)
@@ -229,8 +229,8 @@ feature {NONE} -- Implementation
 				l_dirs.after
 			loop
 				l_dir_name := l_dirs.item
-				if l_dir_name /= Void and then (not l_dir_name.is_equal (".") and not l_dir_name.is_equal ("..")) then
-					if l_dir_name.is_equal ("E1") then
+				if l_dir_name /= Void and then (not l_dir_name.same_string (".") and not l_dir_name.same_string ("..")) then
+					if l_dir_name.same_string ("E1") then
 						l_has_e1 := True
 					else
 						l_name := target.twin
@@ -242,7 +242,7 @@ feature {NONE} -- Implementation
 						if l_dir.exists then
 							l_sorted_list.extend (l_dir_name)
 						else
-							create l_file.make (l_name)
+							create l_file.make_with_name (l_name)
 							if l_file.exists and then l_file.is_directory then
 								l_sorted_list.extend (l_dir_name)
 							end
@@ -351,20 +351,20 @@ feature {NONE} -- Implementation
 		local
 			l_name: DIRECTORY_NAME_32
 			l_makefile, l_finished: FILE_NAME_32
-			l_file: RAW_FILE_32
+			l_file: RAW_FILE
 		do
 			l_name := target.twin
 			l_name.extend (a_dir)
 			create l_makefile.make_from_string (l_name)
 			l_makefile.set_file_name (makefile_name)
-			create l_file.make (l_makefile)
+			create l_file.make_with_name (l_makefile)
 			if l_file.exists then
 					-- Only process directories which have a Makefile.
 				l_name := target.twin
 				l_name.extend (a_dir)
 				create l_finished.make_from_string (l_name)
 				l_finished.set_file_name (finished_name)
-				create l_file.make (l_finished)
+				create l_file.make_with_name (l_finished)
 				if not l_file.exists then
 						-- Only process directories which do not have a `finished' file, which shows
 						-- that the directory needs to be processed.

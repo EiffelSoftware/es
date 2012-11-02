@@ -72,8 +72,8 @@ feature -- Basic operatons
 		local
 			l_mod: ES_CLASS_LICENSE_MODIFIER
 			l_name: detachable STRING_32
-			l_fn: detachable FILE_NAME
-			l_path: STRING
+			l_fn: detachable FILE_NAME_32
+			l_path: STRING_32
 			l_index: INTEGER
 			l_license: detachable like load_license
 			l_libraries: LIST [CONF_LIBRARY]
@@ -123,8 +123,8 @@ feature -- Basic operatons
 								l_fn.add_extension (license_extension)
 
 									-- Try to load the license
-								l_path := l_fn.string
-								if (create {RAW_FILE}.make (l_path)).exists then
+								l_path := l_fn.to_string_32
+								if (create {RAW_FILE}.make_with_name (l_path)).exists then
 									l_license := load_license (l_path, l_use_old_syntax)
 									l_load_default := False
 								else
@@ -135,16 +135,16 @@ feature -- Basic operatons
 										create l_fn.make_from_string (l_path)
 										l_fn.set_file_name (default_license_filename)
 										l_fn.add_extension (license_extension)
-										l_path := l_fn.string
-										if (create {RAW_FILE}.make (l_path)).exists then
+										l_path := l_fn.to_string_32
+										if (create {RAW_FILE}.make_with_name (l_path)).exists then
 											l_license := load_license (l_path, l_use_old_syntax)
 											l_load_default := False
 										else
 											create l_fn.make_from_string (l_path)
 											l_fn.set_file_name (alternative_default_license_filename)
 											l_fn.add_extension (license_extension)
-											l_path := l_fn.string
-											if (create {RAW_FILE}.make (l_path)).exists then
+											l_path := l_fn.to_string_32
+											if (create {RAW_FILE}.make_with_name (l_path)).exists then
 												l_license := load_license (l_path, l_use_old_syntax)
 												l_load_default := False
 											end
@@ -234,7 +234,7 @@ feature {NONE} -- Basic operation
 			retried: BOOLEAN
 		do
 			if not retried then
-				if (create {RAW_FILE}.make (a_file_name)).exists then
+				if (create {RAW_FILE}.make_with_name (a_file_name)).exists then
 					if wizard_enginer.is_service_available then
 							-- Set up wizard parameters
 						create l_parameters.make (2)
@@ -292,13 +292,13 @@ feature {NONE} -- Basic operation
 			retried: BOOLEAN
 		do
 			if not retried then
-				create l_fn.make_from_string (eiffel_layout.templates_path.string)
+				create l_fn.make_from_string (eiffel_layout.templates_path_8.string)
 				l_fn.extend ("licenses")
 				l_fn.set_file_name (a_name)
 				l_fn.add_extension (license_extension)
 
 					-- Check user file
-				l_user_fn := eiffel_layout.user_priority_file_name (l_fn, True)
+				l_user_fn := eiffel_layout.user_priority_file_name_8 (l_fn, True)
 				if l_user_fn /= Void then
 					l_fn := l_user_fn
 				end
@@ -335,7 +335,7 @@ feature {NONE} -- Internationalization
 			-- Default invalid license.
 
 ;note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

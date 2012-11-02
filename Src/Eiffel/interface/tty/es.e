@@ -97,7 +97,7 @@ feature -- Initialization
 				-- Initialization of compiler resources.
 
 			create l_preference_access.make_with_defaults_and_location (
-				<<eiffel_layout.general_preferences, eiffel_layout.platform_preferences>>, eiffel_layout.eiffel_preferences)
+				<<eiffel_layout.general_preferences_8, eiffel_layout.platform_preferences_8>>, eiffel_layout.eiffel_preferences_8)
 			create l_ec_preferences.make (l_preference_access)
 			create l_compiler_setting
 			l_compiler_setting.set_preferences (l_ec_preferences)
@@ -408,10 +408,10 @@ feature -- Access
 
 feature -- Setting
 
-	set_file (filename: STRING)
+	set_file (filename: READABLE_STRING_GENERAL)
 			-- Set the output_window file to `filename'.
 		do
-			create output_window.make (filename)
+			create output_window.make_with_name (filename)
 			if output_window.exists then
 				localized_print_error (ewb_names.file_exists (filename))
 				file_error := True

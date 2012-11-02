@@ -205,7 +205,7 @@ feature {NONE} -- Tools
 			-- called
 		local
 			it: EV_MULTI_COLUMN_LIST_ROW
-			eiffel_directory: DIRECTORY_32
+			eiffel_directory: DIRECTORY
 			list_of_preprecompilable_libraries: ARRAYED_LIST [STRING_32]
 			current_lib: STRING_32
 			current_precomp: FILE_NAME_32
@@ -213,9 +213,9 @@ feature {NONE} -- Tools
 				-- NOTE: for now `a_is_dotnet' is set to False, in future
 				-- the wizard should support dotnet precompiles
 			eiffel_layout.set_precompile (False)
-			create eiffel_directory.make (eiffel_layout.precompilation_path_32 (False))
+			create eiffel_directory.make_with_path (eiffel_layout.precompilation_path (False))
 			if eiffel_directory.exists then
-				list_of_preprecompilable_libraries:= eiffel_directory.linear_representation
+				list_of_preprecompilable_libraries:= eiffel_directory.linear_representation_32
 
 				from
 					list_of_preprecompilable_libraries.start
@@ -246,11 +246,11 @@ feature {NONE} -- Tools
 			-- 'dir/lib' is the directory where the ace file should be
 			-- for the ISE precompile libraries
 		local
-			info_lib: TUPLE [STRING, BOOLEAN]
+			info_lib: TUPLE [STRING_32, BOOLEAN]
 			path_name: FILE_NAME_32
 			l_conf: CONF_LOAD
 			l_factory: CONF_PARSE_FACTORY
-			l_file: RAW_FILE_32
+			l_file: RAW_FILE
 			l_target_name: STRING
 			l_targets: HASH_TABLE [CONF_TARGET, STRING]
 		do
@@ -265,7 +265,7 @@ feature {NONE} -- Tools
 			if l_targets /= Void and l_targets.count = 1 then
 				create Result
 				create info_lib
-				info_lib.put (path_name, 1)
+				info_lib.put (path_name.to_string_32, 1)
 
 				create path_name.make_from_string (path_lib)
 				path_name.extend ("EIFGENs")
@@ -273,7 +273,7 @@ feature {NONE} -- Tools
 				l_target_name := l_targets.item_for_iteration.name
 				path_name.extend (l_target_name)
 				path_name.extend ("project.epr")
-				create l_file.make (path_name)
+				create l_file.make_with_name (path_name)
 
 				if l_file.exists then
 					info_lib.put (True, 2)
@@ -456,10 +456,10 @@ feature {NONE} -- Tools
 			-- Is the row `a_row' represent the same row as a row found in `a_mc_list'?
 		local
 			cur_row: EV_MULTI_COLUMN_LIST_ROW
-			cur_info_lib: TUPLE [STRING, BOOLEAN]
-			ref_info_lib: TUPLE [STRING, BOOLEAN]
-			ref_ace: STRING
-			cur_ace: STRING
+			cur_info_lib: TUPLE [STRING_32, BOOLEAN]
+			ref_info_lib: TUPLE [STRING_32, BOOLEAN]
+			ref_ace: STRING_32
+			cur_ace: STRING_32
 			retried: BOOLEAN
 		do
 			if not retried then
@@ -520,8 +520,8 @@ feature {NONE} -- Implementation
 				if l_item.x_position <= a_x and l_item.y_position <= (a_y - l_header_height) and
 					 (l_item.x_position + l_item.width) > a_x and
 					 (l_item.y_position + l_item.height) > (a_y - l_header_height) then
-					if attached {TUPLE [STRING, BOOLEAN]} l_item.data as l_info_lib then
-						if attached {FILE_NAME} l_info_lib.at (1) as l_path_name then
+					if attached {TUPLE [STRING_32, BOOLEAN]} l_item.data as l_info_lib then
+						if attached {STRING_32} l_info_lib.at (1) as l_path_name then
 							a_list.set_tooltip (l_path_name)
 						else
 							check False end -- Implied by string set by `fill_ev_list_items' should not void

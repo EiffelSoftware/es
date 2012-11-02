@@ -9,6 +9,9 @@ class
 
 inherit
 	XML_NAMED_NODE
+		redefine
+			parent
+		end
 
 create
 	make,
@@ -16,7 +19,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_name: like name; a_ns: like namespace; a_value: like value; a_parent: XML_ELEMENT)
+	make (a_name: READABLE_STRING_32; a_ns: like namespace; a_value: READABLE_STRING_32; a_parent: XML_ELEMENT)
 			-- Create a new attribute.
 		require
 			a_name_not_void: a_name /= Void
@@ -25,18 +28,18 @@ feature {NONE} -- Initialization
 			a_value_not_void: a_value /= Void
 			a_parent_not_void: a_parent /= Void
 		do
-			name := a_name
 			namespace := a_ns
-			value := a_value
+			set_name (a_name)
+			set_value (a_value)
 			parent := a_parent
 		ensure
 			parent_set: parent = a_parent
-			name_set: name = a_name
+			name_set: a_name.same_string (name)
 			namespace_set: namespace = a_ns
-			value_set: value = a_value
+			value_set: a_value.same_string (value)
 		end
 
-	make_last (a_name: like name; a_ns: like namespace; a_value: like value; a_parent: XML_ELEMENT)
+	make_last (a_name: READABLE_STRING_32; a_ns: like namespace; a_value: READABLE_STRING_32; a_parent: XML_ELEMENT)
 			-- Create a new attribute,
 			-- and add it to parent..
 		require
@@ -46,16 +49,16 @@ feature {NONE} -- Initialization
 			a_value_not_void: a_value /= Void
 			a_parent_not_void: a_parent /= Void
 		do
-			name := a_name
 			namespace := a_ns
-			value := a_value
+			set_name (a_name)
+			set_value (a_value)
 			a_parent.force_last (Current)
 		ensure
 			parent_set: parent = a_parent
 			in_parent: a_parent.last = Current
-			name_set: name = a_name
+			name_set: a_name.same_string (name)
 			ns_prefix_set: namespace = a_ns
-			value_set: value = a_value
+			value_set: a_value.same_string (value)
 		end
 
 feature -- Status report
@@ -63,14 +66,17 @@ feature -- Status report
 	is_namespace_declaration: BOOLEAN
 			-- Is current attribute a namespace declaration?
 		do
-			if attached ns_prefix as p and then has_prefix then
-				Result := same_string (Xmlns, p)
+			if has_prefix then
+				Result := has_same_ns_prefix (Xmlns)
 			else
-				Result := same_string (Xmlns, name)
+				Result := has_same_name (Xmlns)
 			end
 		end
 
 feature -- Access
+
+	parent: detachable XML_ELEMENT
+			-- Parent of current node;
 
 	namespace_declaration: XML_NAMESPACE
 			-- Namespace corresponding to the declaration
@@ -78,34 +84,34 @@ feature -- Access
 		require
 			is_namespace_declaration: is_namespace_declaration
 		local
-			a_prefix: STRING
+			a_prefix: READABLE_STRING_32
 		do
 			if has_prefix then
 				a_prefix := name
 			else
 					-- New empty string with the same dynamic type as `name'.
-				create a_prefix.make_empty
+				create {STRING_32} a_prefix.make_empty
 			end
 			create Result.make (a_prefix, value)
 		ensure
 			namespace_not_void: Result /= Void
 		end
 
-feature -- Access
+feature -- Access		
 
-	value: STRING
-			-- Value	
+	value: READABLE_STRING_32
+			-- Value
 
 feature -- Setting
 
-	set_value (a_value: like value)
+	set_value (a_value: READABLE_STRING_32)
 			-- Set `a_value' to `value'.
 		require
 			a_value_not_void: a_value /= Void
 		do
 			value := a_value
 		ensure
-			value_set: value = a_value
+			value_set: a_value.same_string (value)
 		end
 
 feature -- Visitor processing
@@ -120,7 +126,7 @@ invariant
 	value_not_void: value /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

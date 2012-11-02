@@ -326,7 +326,7 @@ feature -- Actions
 			fi: FILE_NAME
 			rf, wf: PLAIN_TEXT_FILE
 		do
-			create fi.make_from_string (eiffel_layout.filter_path)
+			create fi.make_from_string (eiffel_layout.filter_path_8)
 			fi.extend (fn)
 			create rf.make_open_read (fi)
 			rf.read_stream (rf.count)
@@ -696,8 +696,9 @@ feature -- Specific Generation
 			-- Output `ctxt.text' using `filter' to `target_file_name'.
 		local
 			fi: PLAIN_TEXT_FILE
+			u: UTF_CONVERTER
 		do
-			create fi.make (target_file_name)
+			create fi.make_with_name (target_file_name)
 			if not fi.exists then
 				fi.create_read_write
 			elseif fi.is_writable then
@@ -706,8 +707,8 @@ feature -- Specific Generation
 				check file_writable: False end
 			end
 			if fi.is_open_write then
-				fi.put_string (text.image.as_string_8) -- Truncated to STRING_8 ...
-				--| FIXME: 2010-12-09: find a way to doc unicode text.
+					-- FIXME 2012/10/29: Shouldn't we put some kind of BOM in the file?
+				fi.put_string (u.utf_32_string_to_utf_8_string_8 (text.image))
 				fi.close
 			end
 			filter.wipe_out_image
@@ -918,7 +919,7 @@ feature {NONE} -- Menu bars
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

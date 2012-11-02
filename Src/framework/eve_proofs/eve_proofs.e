@@ -295,7 +295,7 @@ feature --{NONE} -- Implementation
 			-- File to include for the background theory
 			-- Default path is 'EiffelStudio xy/studio/tools/eve_proofs/eve_proofs_theory.bpl'
 		local
-			l_path: DIRECTORY_NAME
+			l_path: PATH
 			l_file_name: FILE_NAME
 			l_file: RAW_FILE
 			l_dev_location: STRING
@@ -304,7 +304,7 @@ feature --{NONE} -- Implementation
 			l_path := eiffel_layout.tools_path.twin
 			l_path.extend ("eve_proofs")
 			create l_file_name.make
-			l_file_name.set_directory (l_path.string)
+			l_file_name.set_directory (l_path.out)
 			l_file_name.set_file_name ("eve_proofs_theory.bpl")
 			create l_file.make (l_file_name.string)
 			if l_file.exists then

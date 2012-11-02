@@ -103,7 +103,7 @@ feature -- Basic operations
 			if not l_retry then
 					-- Always assume a saving is successful.
 				last_saving_success := True
-				new_file := u.make_raw_file (a_file_name)
+				create new_file.make_with_name (a_file_name)
 
 				aok := True
 				if not new_file.exists then
@@ -128,7 +128,7 @@ feature -- Basic operations
 
 				-- Create a backup of the file in case there will be a problem during the savings.
 				tmp_name := a_file_name + ".swp"
-				tmp_file := u.make_raw_file (tmp_name)
+				create tmp_file.make_with_name (tmp_name)
 				create_backup := not new_created and not tmp_file.exists and then tmp_file.is_creatable
 				if not create_backup then
 					tmp_file := new_file
@@ -158,10 +158,11 @@ feature -- Basic operations
 					elseif last_saving_success then
 						new_file := u.make_raw_file (tmp_name)
 						if new_file.exists then
+							last_saving_date := new_file.date
 							robust_delete (new_file)
 						end
 					end
-					if last_saving_success then
+					if last_saving_success and tmp_file.exists then
 						last_saving_date := tmp_file.date
 					end
 					workbench.set_changed
@@ -261,7 +262,7 @@ feature {NONE} -- Implementation
 		do
 			l_pref := preferences.dialog_data.last_saved_save_file_as_directory_preference
 			if l_pref.value = Void or else l_pref.value.is_empty then
-				l_pref.set_value (eiffel_layout.user_projects_path)
+				l_pref.set_value (eiffel_layout.user_projects_path_8)
 			end
 			create fsd.make_with_preference (l_pref)
 			fsd.save_actions.extend (agent save_file_with_file_name (fsd, a_text, a_encoding, a_bom))
@@ -277,7 +278,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

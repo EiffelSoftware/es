@@ -91,7 +91,7 @@ feature -- Basic operations
 			else
 				l_ver := workbench.lace.target.system.uuid.out
 			end
-			create l_file_name.make_from_string (eiffel_layout.session_data_path)
+			create l_file_name.make_from_string (eiffel_layout.session_data_path.out)
 			l_ver.replace_substring_all ("-", "")
 			l_file_name.set_file_name (l_ver + "." + l_target_name + ".dbg.ses")
 			create l_file.make (l_file_name)

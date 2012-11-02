@@ -11,7 +11,6 @@ note
 class XML_CONTENT_CONCATENATOR
 
 inherit
-
 	XML_CALLBACKS_FILTER
 		redefine
 			on_processing_instruction,
@@ -29,7 +28,7 @@ create
 
 feature {NONE} -- Content
 
-	last_content: detachable STRING
+	last_content: detachable STRING_32
 			-- Current content
 
 	flush_content
@@ -43,18 +42,22 @@ feature {NONE} -- Content
 
 feature -- Content
 
-	on_content (a_content: STRING)
+	on_content (a_content: READABLE_STRING_32)
 			-- Aggregate content events so that two content events
 			-- never follow each other.
+		local
+			s32: STRING_32
 		do
 			if attached last_content as s then
-				s.append_string (a_content)
+				s.append (a_content)
 			else
-				last_content := a_content.twin
+				create s32.make (a_content.count)
+				s32.append_string_general (a_content)
+				last_content := s32
 			end
 		end
 
-	on_comment (a_comment: STRING)
+	on_comment (a_comment: READABLE_STRING_32)
 			-- Eat comment when in content, otherwise the event would be
 			-- out of order.
 		do
@@ -64,28 +67,28 @@ feature -- Content
 
 feature -- Events
 
-	on_processing_instruction (a_name: STRING; a_content: STRING)
+	on_processing_instruction (a_name: READABLE_STRING_32; a_content: READABLE_STRING_32)
 			-- Flush content and forward.
 		do
 			flush_content
 			Precursor (a_name, a_content)
 		end
 
-	on_start_tag (a_namespace: detachable STRING; a_prefix: detachable STRING; a_local_part: STRING)
+	on_start_tag (a_namespace: detachable READABLE_STRING_32; a_prefix: detachable READABLE_STRING_32; a_local_part: READABLE_STRING_32)
 			-- Flush content and forward.
 		do
 			flush_content
 			Precursor (a_namespace, a_prefix, a_local_part)
 		end
 
-	on_attribute (a_namespace: detachable STRING; a_prefix: detachable STRING; a_local_part: STRING; a_value: STRING)
+	on_attribute (a_namespace: detachable READABLE_STRING_32; a_prefix: detachable READABLE_STRING_32; a_local_part: READABLE_STRING_32; a_value: READABLE_STRING_32)
 			-- Flush content and forward.
 		do
 			flush_content
 			Precursor (a_namespace, a_prefix, a_local_part, a_value)
 		end
 
-	on_end_tag (a_namespace: detachable STRING; a_prefix: detachable STRING; a_local_part: STRING)
+	on_end_tag (a_namespace: detachable READABLE_STRING_32; a_prefix: detachable READABLE_STRING_32; a_local_part: READABLE_STRING_32)
 			-- Flush content and forward.
 		do
 			flush_content
@@ -100,7 +103,7 @@ feature -- Events
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

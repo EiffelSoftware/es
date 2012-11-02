@@ -18,64 +18,64 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_parent: like parent; a_data: like data)
+	make (a_parent: like parent; a_data: READABLE_STRING_32)
 			-- Create a new comment node.
 		require
 			a_parent_not_void: a_parent /= Void
 			a_data_not_void: a_data /= Void
 		do
 			parent := a_parent
-			data := a_data
+			set_data (a_data)
 		ensure
 			parent_set: parent = a_parent
-			data_set: data = a_data
+			data_set: a_data.same_string (data)
 		end
 
-	make_last (a_parent: XML_ELEMENT; a_data: like data)
+	make_last (a_parent: XML_ELEMENT; a_data: READABLE_STRING_32)
 			-- Create a new comment node.
 			-- and add it to parent.
 		require
 			a_parent_not_void: a_parent /= Void
 			a_data_not_void: a_data /= Void
 		do
-			data := a_data
+			set_data (a_data)
 			a_parent.force_last (Current)
 		ensure
 			parent_set: parent = a_parent
 			in_parent: a_parent.last = Current
-			data_set: data = a_data
+			data_set: a_data.same_string (data)
 		end
 
-	make_last_in_document (a_parent: XML_DOCUMENT; a_data: like data)
+	make_last_in_document (a_parent: XML_DOCUMENT; a_data: READABLE_STRING_32)
 			-- Create a new comment node,
 			-- and add it to parent.
 		require
 			a_parent_not_void: a_parent /= Void
 			a_data_not_void: a_data /= Void
 		do
-			data := a_data
+			set_data (a_data)
 			a_parent.force_last (Current)
 		ensure
 			parent_set: parent = a_parent
 			in_parent: a_parent.last = Current
-			data_set: data = a_data
+			data_set: a_data.same_string (data)
 		end
 
-feature -- Access
+feature -- Access		
 
-	data: STRING
-			-- Comment's character data
+	data: READABLE_STRING_32
+			-- Comment's character data	
 
 feature -- Setting
 
-	set_data (a_data: STRING)
+	set_data (a_data: READABLE_STRING_32)
 			-- Set comment's data.
 		require
 			a_data_not_void: a_data /= Void
 		do
 			data := a_data
 		ensure
-			set: data = a_data
+			set: a_data.same_string (data)
 		end
 
 feature -- Visitor processing
@@ -90,7 +90,7 @@ invariant
 	data_not_void: data /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

@@ -443,7 +443,7 @@ feature {NONE} -- Implementation
 	load_available_wizards
 			-- Enumerate the available wizards.
 		local
-			new_project_directory: DIRECTORY_32
+			new_project_directory: DIRECTORY
 			entries: ARRAYED_LIST [STRING_32]
 			extension: STRING_32
 			wizard: EB_NEW_PROJECT_WIZARD
@@ -453,8 +453,8 @@ feature {NONE} -- Implementation
 			if not retried then
 				create available_wizards.make
 
-				create new_project_directory.make (eiffel_layout.new_project_wizards_path)
-				entries := new_project_directory.linear_representation
+				create new_project_directory.make_with_path (eiffel_layout.new_project_wizards_path)
+				entries := new_project_directory.linear_representation_32
 				from
 					entries.start
 				until
@@ -464,7 +464,7 @@ feature {NONE} -- Implementation
 					extension.keep_tail(4)
 
 					if extension.is_equal ({STRING_32} ".dsc") then
-						create filename.make_from_string (eiffel_layout.new_project_wizards_path)
+						create filename.make_from_path (eiffel_layout.new_project_wizards_path)
 						filename.extend (entries.item)
 						create wizard.make_with_file (filename)
 						if wizard.target_platform_supported then

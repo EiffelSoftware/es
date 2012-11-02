@@ -38,16 +38,17 @@ feature {NONE} -- Initialization
 			column := a_column
 			line := a_line
 		ensure
-			source_set: source_name = a_source
+			source_set: a_source = source_name or else
+					((a_source /= Void and attached source_name as n) and then 
+					 (a_source.same_string (n)))
 			byte_index_set: byte_index = a_byte_index
 			column_set: column = a_column
 			line_set: line = a_line
 		end
 
-
 feature -- Access
 
-	source_name: detachable STRING
+	source_name: detachable STRING_32
 			-- Name of source.
 
 	byte_index: INTEGER
@@ -70,15 +71,21 @@ feature -- Output
 	out: STRING
 			-- Textual representation
 		do
+			Result := to_string_32.as_string_8 -- FIXME: unicode
+		end
+
+	to_string_32: STRING_32
+			-- Textual representation
+		do
 			create Result.make_empty
-			Result.append_string ("line: ")
+			Result.append_string ({STRING_32} "line: ")
 			Result.append_integer (line)
-			Result.append_string (" column: ")
+			Result.append_string ({STRING_32} " column: ")
 			Result.append_integer (column)
-			Result.append_string (" byte_index: ")
+			Result.append_string ({STRING_32} " byte_index: ")
 			Result.append_integer (byte_index)
 			if attached source_name as n then
-				Result.append_string (" -> ")
+				Result.append_string ({STRING_32} " -> ")
 				Result.append_string (n)
 			end
 		end
@@ -97,7 +104,7 @@ invariant
 	line_positive: line >= 0
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

@@ -18,22 +18,22 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_parent: like parent; a_target: like target; a_data: like data)
+	make (a_parent: like parent; a_target: READABLE_STRING_32; a_data: READABLE_STRING_32)
 			-- Create a new processing instruction node.
 		require
 			a_target_not_void: a_target /= Void
 			a_data_not_void: a_data /= Void
 		do
-			target := a_target
-			data := a_data
+			set_target (a_target)
+			set_data (a_data)
 			parent := a_parent
 		ensure
 			parent_set: parent = a_parent
-			target_set: target = a_target
-			data_set: data = a_data
+			target_set: a_target.same_string (target)
+			data_set: a_data.same_string (data)
 		end
 
-	make_last (a_parent: XML_ELEMENT; a_target: like target; a_data: like data)
+	make_last (a_parent: XML_ELEMENT; a_target: READABLE_STRING_32; a_data: READABLE_STRING_32)
 			-- Create a new processing instruction node,
 			-- and add it to parent.
 		require
@@ -41,17 +41,17 @@ feature {NONE} -- Initialization
 			a_target_not_void: a_target /= Void
 			a_data_not_void: a_data /= Void
 		do
-			target := a_target
-			data := a_data
+			set_target (a_target)
+			set_data (a_data)
 			a_parent.force_last (Current)
 		ensure
 			parent_set: parent = a_parent
 			in_parent: a_parent.last = Current
-			target_set: target = a_target
-			data_set: data = a_data
+			target_set: a_target.same_string (target)
+			data_set: a_data.same_string (data)
 		end
 
-	make_last_in_document (a_parent: XML_DOCUMENT; a_target: like target; a_data: like data)
+	make_last_in_document (a_parent: XML_DOCUMENT; a_target: READABLE_STRING_32; a_data: READABLE_STRING_32)
 			-- Create a new processing instruction node.
 			-- and add it to parent.
 		require
@@ -59,48 +59,48 @@ feature {NONE} -- Initialization
 			a_target_not_void: a_target /= Void
 			a_data_not_void: a_data /= Void
 		do
-			target := a_target
-			data := a_data
+			set_target (a_target)
+			set_data (a_data)
 			a_parent.force_last (Current)
 		ensure
 			parent_set: parent = a_parent
 			in_parent: a_parent.last = Current
-			target_set: target = a_target
-			data_set: data = a_data
+			target_set: a_target.same_string (target)
+			data_set: a_data.same_string (data)
 		end
 
 feature -- Access
 
-	target: STRING
+	target: READABLE_STRING_32
 			-- Target of current processing instruction;
 			-- XML defines this as being the first token following
 			-- the markup that begins the processing instruction.
 
-	data: STRING
+	data: READABLE_STRING_32
 			-- Content of current processing instruction;
 			-- This is from the first non white space character after
 			-- the target to the character immediately preceding the ?>.
 
 feature -- Setting
 
-	set_target (a_target: STRING)
+	set_target (a_target: READABLE_STRING_32)
 			-- Set target.
 		require
 			a_target_not_void: a_target /= Void
 		do
 			target := a_target
 		ensure
-			set: target = a_target
+			set: a_target.same_string (target)
 		end
 
-	set_data (a_data: STRING)
+	set_data (a_data: READABLE_STRING_32)
 			-- Set data.
 		require
 			a_data_not_void: a_data /= Void
 		do
 			data := a_data
 		ensure
-			set: data = a_data
+			set: a_data.same_string (data)
 		end
 
 feature -- Visitor processing
@@ -117,7 +117,7 @@ invariant
 	data_not_void: data /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

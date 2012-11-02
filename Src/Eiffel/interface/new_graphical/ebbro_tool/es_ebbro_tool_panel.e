@@ -442,7 +442,7 @@ feature {ES_EBBRO_GRID} -- Action handlers
 		do
 			l_pref := preferences.dialog_data.last_opened_object_directory_in_ebbro
 			if l_pref.value = Void or else l_pref.value.is_empty then
-				l_pref.set_value (eiffel_layout.user_projects_path)
+				l_pref.set_value (eiffel_layout.user_projects_path.out)
 			end
 
 			create dialog.make_with_preference (l_pref)

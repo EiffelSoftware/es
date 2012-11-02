@@ -110,29 +110,29 @@ feature -- Implementation
 			create Result.make (Void, "attribute", xml_ns_xsd)
 
 			if attached id then
-				Result.add_unqualified_attribute ("id", id)
+				Result.add_unqualified_attribute ("id", id.as_string_32)
 			end
 
-			Result.add_unqualified_attribute ("name", name)
+			Result.add_unqualified_attribute ("name", name.as_string_32)
 
 			if attached type then
-				Result.add_unqualified_attribute ("type", type)
+				Result.add_unqualified_attribute ("type", type.as_string_32)
 			end
 
 			if attached attribute_form then
-				Result.add_unqualified_attribute ("form", attribute_form)
+				Result.add_unqualified_attribute ("form", attribute_form.as_string_32)
 			end
 
 			if attached attribute_use then
-				Result.add_unqualified_attribute ("use", attribute_use)
+				Result.add_unqualified_attribute ("use", attribute_use.as_string_32)
 			end
 
 			if attached default_value then
-				Result.add_unqualified_attribute ("default", default_value)
+				Result.add_unqualified_attribute ("default", default_value.as_string_32)
 			end
 
 			if attached fixed_value then
-				Result.add_unqualified_attribute ("fixed", fixed_value)
+				Result.add_unqualified_attribute ("fixed", fixed_value.as_string_32)
 			end
 		end
 

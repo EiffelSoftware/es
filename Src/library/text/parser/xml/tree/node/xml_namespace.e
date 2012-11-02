@@ -13,54 +13,81 @@ inherit
 			out
 		end
 
-create
+	DEBUG_OUTPUT
+		redefine
+			is_equal,
+			out
+		end
 
+create
 	make,
 	make_default
 
 feature {NONE} -- Initialization
 
-	make (a_prefix: like ns_prefix; a_uri: like uri)
+	make (a_prefix: detachable READABLE_STRING_32; a_uri: READABLE_STRING_32)
 			-- Create a new namespace declaration.
 		require
 			uri_attached: a_uri /= Void
 		do
-			ns_prefix := a_prefix
-			uri := a_uri
+			set_ns_prefix (a_prefix)
+			set_uri (a_uri)
 		ensure
-			ns_prefix_set: ns_prefix = a_prefix
-			uri_set: uri = a_uri
+			ns_prefix_set: (a_prefix = Void and ns_prefix = Void) or
+						(a_prefix /= Void implies attached ns_prefix as p and then a_prefix.same_string (p))
+			uri_set: a_uri.same_string (uri)
 		end
 
 	make_default
 			-- Make default namespace (empty URI)
 		do
-			make (Void, "")
+			make (Void, {XML_XMLNS_CONSTANTS}.default_namespace)
 		ensure
 			no_prefix: not has_prefix
-			default_namespace: uri.count = 0
+			default_namespace: uri.is_empty
+		end
+
+feature -- Status report
+
+	uri_is_empty: BOOLEAN
+			-- Is associated uri empty?
+		do
+			Result := uri.is_empty
 		end
 
 feature -- Access
 
-	ns_prefix: detachable STRING
-			-- Prefix of current namespace
+	ns_prefix: detachable READABLE_STRING_32
+			-- Prefix of current namespace	
 
-	uri: STRING
-			-- Namespace URI	
+	uri: READABLE_STRING_32
+			-- Namespace URI
+
+feature -- Element change
+
+	set_ns_prefix (a_ns_prefix: detachable READABLE_STRING_32)
+		do
+			ns_prefix := a_ns_prefix
+		ensure
+			ns_prefix_set: (a_ns_prefix = Void and ns_prefix = Void) or
+					((a_ns_prefix /= Void and attached ns_prefix as p) and then a_ns_prefix.same_string (p))
+		end
+
+	set_uri (a_uri: READABLE_STRING_32)
+		do
+			uri := a_uri
+		ensure
+			uri_set: a_uri.same_string (uri)
+		end
 
 feature -- Status report
 
 	is_equal (other: like Current): BOOLEAN
-		local
-			u, v: like uri
 		do
 			if other = Current then
 				Result := True
 			else
-				u := uri
-				v := other.uri
-				Result := (u = v) or else u.same_string (v)
+				Result := other.has_same_uri (uri)
 			end
 		end
 
@@ -73,43 +100,66 @@ feature -- Status report
 	out: STRING
 			-- Out
 		do
-			Result := uri
+			Result := uri.as_string_8 -- FIXME: truncated...
+		end
+
+	debug_output: STRING
+			-- String that should be displayed in debugger to represent `Current'.
+		do
+			create Result.make_empty
+			if attached ns_prefix as p then
+				Result.append ("xmlns:")
+				Result.append (p)
+				Result.append_character ('=')
+			end
+			Result.append (uri)
 		end
 
 feature -- Status report
 
+	has_same_uri (a_uri: READABLE_STRING_GENERAL): BOOLEAN
+			-- Current uri is same as `a_uri' ?
+		local
+			v: like uri
+		do
+			v := uri
+			Result := (v = a_uri) or else a_uri.same_string (v)
+		end
+
+	has_same_ns_prefix (a_ns_prefix: detachable READABLE_STRING_GENERAL): BOOLEAN
+			-- Current uri is same as `a_uri' ?
+		local
+			v: like ns_prefix
+		do
+			v := ns_prefix
+			Result := (v = a_ns_prefix) or else (v /= Void and a_ns_prefix /= Void) and then a_ns_prefix.same_string (v)
+		end
+
 	same_prefix (other: XML_NAMESPACE): BOOLEAN
 			-- Same
-		local
-			p,q: like ns_prefix
 		do
 			if is_equal (other) then
-				p := ns_prefix
-				q := other.ns_prefix
-				Result := (p = q) or else (
-							(p /= Void and q /= Void) and then p.same_string (q)
-						)
+				Result := other.has_same_ns_prefix (ns_prefix)
 			end
 		ensure
 			equal: Result implies is_equal (other)
-			same_prefix: Result implies
-				((ns_prefix = other.ns_prefix) or else (ns_prefix ~ other.ns_prefix))
+			same_prefix: Result implies other.has_same_ns_prefix (ns_prefix)
 		end
 
 	has_prefix: BOOLEAN
 			-- Is there an explicit prefix?
 			-- (not a default namespace declaration)
 		do
-			Result := (attached ns_prefix as p and then p.count > 0)
+			Result := (attached ns_prefix as p and then not p.is_empty)
 		ensure
-			definition: Result = (attached ns_prefix as p and then p.count > 0)
+			definition: Result = (attached ns_prefix as p and then not p.is_empty)
 		end
 
 invariant
 	uri_not_void: uri /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

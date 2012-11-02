@@ -7,7 +7,7 @@ class
 	XML_FILE_OUTPUT_STREAM
 
 inherit
-	XML_OUTPUT_STREAM
+	XML_CHARACTER_8_OUTPUT_STREAM
 
 create
 	make
@@ -19,15 +19,9 @@ feature {NONE} -- Initialization
 		require
 			a_file_attached: a_file /= Void
 		do
-			name := a_file.name
 			set_chunk_size (Default_chunk_size)
 			target := a_file
 		end
-
-feature -- Access
-
-	name: STRING
-			-- Name of current stream
 
 feature -- Status report
 
@@ -71,7 +65,7 @@ feature -- Basic operation
 
 feature -- Output
 
-	put_character (c: CHARACTER)
+	put_character_8 (c: CHARACTER_8)
 		local
 			cn: INTEGER
 		do
@@ -82,7 +76,7 @@ feature -- Output
 			current_chunk.append_character (c)
 		end
 
-	put_string (a_string: STRING)
+	put_string_8 (a_string: READABLE_STRING_8)
 			-- Write `a_string' to output stream.
 		local
 			n: INTEGER
@@ -116,7 +110,7 @@ invariant
 	target_attached: target /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

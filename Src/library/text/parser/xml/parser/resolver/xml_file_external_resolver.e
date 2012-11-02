@@ -22,12 +22,12 @@ feature {NONE} -- Initialization
 	make
 			-- Make.
 		do
-			last_error := "no stream"
+			last_error := {STRING_32} "no stream"
 		end
 
 feature -- Action(s)
 
-	resolve (a_system_name: STRING)
+	resolve (a_system_name: READABLE_STRING_GENERAL)
 			-- Open file with corresponding name.
 		local
 			s: like last_stream
@@ -38,8 +38,8 @@ feature -- Action(s)
 			last_stream := s
 			s.open_read
 			if not s.is_open_read then
-				create e.make_from_string ("cannot open input file: ")
-				e.append (a_system_name)
+				create e.make_from_string ({STRING_32} "cannot open input file: ")
+				e.append_string_general (a_system_name)
 				last_error := e
 				last_stream := Void
 			end
@@ -50,7 +50,7 @@ feature -- Result
 	last_stream: detachable XML_FILE_INPUT_STREAM
 			-- File matching stream
 
-	last_error: detachable STRING
+	last_error: detachable STRING_32
 			-- Error
 
 	has_error: BOOLEAN
@@ -63,7 +63,7 @@ invariant
 	error_or_stream: last_stream /= Void xor last_error /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

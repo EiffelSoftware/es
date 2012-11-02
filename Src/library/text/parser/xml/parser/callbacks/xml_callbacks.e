@@ -23,17 +23,19 @@ feature -- Document
 		deferred
 		end
 
-	on_xml_declaration (a_version: STRING; an_encoding: detachable STRING; a_standalone: BOOLEAN)
+	on_xml_declaration (a_version: READABLE_STRING_32; an_encoding: detachable READABLE_STRING_32; a_standalone: BOOLEAN)
 			-- XML declaration.
 		require
 			a_version_not_void: a_version /= Void
 			a_version_not_empty: a_version.count > 0
+			a_version_is_valid: a_version.is_valid_as_string_8
+			an_encoding_is_valid: an_encoding /= Void implies an_encoding.is_valid_as_string_8
 		deferred
 		end
 
 feature -- Errors
 
-	on_error (a_message: STRING)
+	on_error (a_message: READABLE_STRING_32)
 			-- Event producer detected an error.
 		require
 			not_void: a_message /= Void
@@ -42,9 +44,8 @@ feature -- Errors
 
 feature -- Meta
 
-	on_processing_instruction (a_name: STRING; a_content: STRING)
+	on_processing_instruction (a_name: READABLE_STRING_32; a_content: READABLE_STRING_32)
 			-- Processing instruction.
-			-- Warning: strings may be polymorphic, see XM_STRING_MODE.
 			--| See http://en.wikipedia.org/wiki/Processing_instruction
 		require
 			name_not_void: a_name /= Void
@@ -52,7 +53,7 @@ feature -- Meta
 		deferred
 		end
 
-	on_comment (a_content: STRING)
+	on_comment (a_content: READABLE_STRING_32)
 			-- Processing a comment.
 			-- Atomic: single comment produces single event
 		require
@@ -62,7 +63,7 @@ feature -- Meta
 
 feature -- Tag
 
-	on_start_tag (a_namespace: detachable STRING; a_prefix: detachable STRING; a_local_part: STRING)
+	on_start_tag (a_namespace: detachable READABLE_STRING_32; a_prefix: detachable READABLE_STRING_32; a_local_part: READABLE_STRING_32)
 			-- Start of start tag.
 		require
 			unresolved_namespace_is_void: has_resolved_namespaces implies a_namespace /= Void
@@ -70,7 +71,7 @@ feature -- Tag
 		deferred
 		end
 
-	on_attribute (a_namespace: detachable STRING; a_prefix: detachable STRING; a_local_part: STRING; a_value: STRING)
+	on_attribute (a_namespace: detachable READABLE_STRING_32; a_prefix: detachable READABLE_STRING_32; a_local_part: READABLE_STRING_32; a_value: READABLE_STRING_32)
 			-- Start of attribute.
 		require
 			unresolved_namespace_is_void: has_resolved_namespaces implies a_namespace /= Void
@@ -84,7 +85,7 @@ feature -- Tag
 		deferred
 		end
 
-	on_end_tag (a_namespace: detachable STRING; a_prefix: detachable STRING; a_local_part: STRING)
+	on_end_tag (a_namespace: detachable READABLE_STRING_32; a_prefix: detachable READABLE_STRING_32; a_local_part: READABLE_STRING_32)
 			-- End tag.
 		require
 			unresolved_namespace_is_void: has_resolved_namespaces implies a_namespace /= Void
@@ -94,7 +95,7 @@ feature -- Tag
 
 feature -- Content
 
-	on_content (a_content: STRING)
+	on_content (a_content: READABLE_STRING_32)
 			-- Text content.
 			-- NOT atomic: two on_content events may follow each other
 			-- without a markup event in between.
@@ -107,19 +108,19 @@ feature -- Content
 
 feature -- Support
 
-	has_prefix (a: detachable STRING): BOOLEAN
+	has_prefix (a: detachable READABLE_STRING_32): BOOLEAN
 			-- Is prefix in use?
 		do
 			Result := a /= Void and then a.count > 0
 		end
 
-	has_namespace (a: detachable STRING): BOOLEAN
+	has_namespace (a: detachable READABLE_STRING_32): BOOLEAN
 			-- Is namespace resolved?
 		do
 			Result := a /= Void
 		end
 
-	is_local_part (a: detachable STRING): BOOLEAN
+	is_local_part (a: detachable READABLE_STRING_32): BOOLEAN
 			-- Is this a valid local part string?
 		do
 			Result := a /= Void and then a.count > 0

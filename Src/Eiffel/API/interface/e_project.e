@@ -65,7 +65,7 @@ feature -- Initialization
 		base_dir: DIRECTORY;
 		a_project_location: PROJECT_DIRECTORY
 		deletion_requested: BOOLEAN
-		deletion_agent: PROCEDURE [ANY, TUPLE [LIST [READABLE_STRING_32]]]
+		deletion_agent: PROCEDURE [ANY, TUPLE [LIST [READABLE_STRING_GENERAL]]]
 		cancel_agent: FUNCTION [ANY, TUPLE, BOOLEAN]
 	)
 			-- Create an Eiffel Project.
@@ -98,7 +98,7 @@ feature -- Initialization
 			prev_read_write_error: not read_write_error
 			valid_deletion_agent: deletion_agent /= Void implies deletion_requested
 		local
-			d: DIRECTORY_32
+			d: DIRECTORY
 			new_name: STRING_32
 			l_prev_work: STRING
 		do
@@ -642,7 +642,7 @@ feature -- Update
 		end
 
 	delete_generation_directory (
-			base_name: READABLE_STRING_32; deletion_agent: PROCEDURE [ANY, TUPLE [LIST [READABLE_STRING_32]]];
+			base_name: READABLE_STRING_32; deletion_agent: PROCEDURE [ANY, TUPLE [LIST [READABLE_STRING_GENERAL]]];
 			cancel_agent: FUNCTION [ANY, TUPLE, BOOLEAN])
 
 			-- Delete then EIFFEL generated directory named `base_name'.
@@ -651,7 +651,7 @@ feature -- Update
 			-- files are deleted.
 			-- same for `cancel_agent'. Make it return `True' to cancel the operation.
 		local
-			generation_directory: DIRECTORY_32
+			generation_directory: DIRECTORY
 			retried: BOOLEAN
 		do
 			if not retried then
@@ -717,7 +717,7 @@ feature {NONE} -- C compilation
 				path := project_directory.final_path
 			end
 			l_cmd := {STRING_32} "%""
-			l_cmd.append_string (eiffel_layout.freeze_command_name)
+			l_cmd.append_string (eiffel_layout.freeze_command_name.string_representation)
 			l_cmd.append_character ('"')
 			if comp_system.il_generation and (not {PLATFORM_CONSTANTS}.is_64_bits or Comp_system.force_32bits) then
 					-- Force 32bit compilation
@@ -1024,7 +1024,7 @@ feature {NONE} -- Implementation
 
 	link_driver
 		local
-			uf: PLAIN_TEXT_FILE_32
+			uf: PLAIN_TEXT_FILE
 			app_name: STRING
 			file_name: FILE_NAME_32
 		do
@@ -1037,13 +1037,13 @@ feature {NONE} -- Implementation
 					file_name.add_extension (app_name)
 				end
 
-				create uf.make (file_name)
+				create uf.make_with_name (file_name)
 				if not uf.exists then
-					create uf.make (Precompilation_driver)
+					create uf.make_with_name (Precompilation_driver)
 					if uf.exists and then uf.is_readable then
 						compiler_objects.command_executor.link_eiffel_driver (project_directory.workbench_path,
 							system.name,
-							eiffel_layout.Prelink_command_name,
+							eiffel_layout.prelink_command_name_8,
 							Precompilation_driver)
 					end
 				end

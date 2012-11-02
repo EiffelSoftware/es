@@ -33,10 +33,10 @@ feature {NONE} -- Initialization
 		require
 			valid_filename: a_filename /= Void and then not a_filename.is_empty
 		local
-			file: PLAIN_TEXT_FILE_32
+			file: PLAIN_TEXT_FILE
 			entry: TUPLE [name: STRING_32; value: STRING_32]
 		do
-			create file.make (a_filename)
+			create file.make_with_name (a_filename)
 			from
 				file.open_read
 			until
@@ -50,7 +50,7 @@ feature {NONE} -- Initialization
 					elseif entry.name.is_equal ("description") then
 						set_description (wrap_word (entry.value, 70))
 					elseif entry.name.is_equal ("location") then
-						create location.make_from_string (eiffel_layout.New_project_wizards_path)
+						create location.make_from_path (eiffel_layout.new_project_wizards_path)
 						location.extend (entry.value)
 					elseif entry.name.is_equal ("platform") then
 						target_platform := entry.value.as_lower
@@ -123,7 +123,7 @@ feature {NONE} -- Constants
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

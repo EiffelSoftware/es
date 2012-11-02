@@ -69,7 +69,7 @@ feature -- Basic Operation
 			next_window: WIZARD_STATE_WINDOW
 			rescued: BOOLEAN
 			a_project_location: DIRECTORY_NAME_32
-			a_directory: DIRECTORY_32
+			a_directory: DIRECTORY
 		do
 			if not rescued then
 				if not is_project_name_valid (project_name.text_32) then
@@ -141,8 +141,6 @@ feature {NONE} -- Implementation
 	validate_directory_string (a_directory: STRING_32): DIRECTORY_NAME_32
 			-- Validate the directory `a_directory' and return the
 			-- validated version of `a_directory'.
-		local
-			a_directory_name: DIRECTORY_NAME
 		do
 			if a_directory /= Void then
 				create Result.make_from_string (a_directory)

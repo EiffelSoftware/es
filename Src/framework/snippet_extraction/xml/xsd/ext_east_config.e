@@ -759,20 +759,20 @@ feature -- Access (Local Records)
 
 				-- ACCESS_AS
 			create l_access_as_name.make ("name")
-			l_access_as_name.type :=  xml_ns_xsd.ns_prefix + ":string"
+			l_access_as_name.type :=  (xml_ns_xsd.ns_prefix + ":string").out
 
 			Result.extend (create {EXT_EAST_LOCAL_ATTRIBUTE}.make_from_argument_list (node_access_as, l_access_as_name))
 
 				-- BOOL_AS
 			create l_bool_as_value.make ("value")
-			l_bool_as_value.type := xml_ns_xsd.ns_prefix + ":boolean"
+			l_bool_as_value.type := (xml_ns_xsd.ns_prefix + ":boolean").out
 			l_bool_as_value.attribute_use := "required"
 
 			Result.extend (create {EXT_EAST_LOCAL_ATTRIBUTE}.make_from_argument_list (node_bool_as, l_bool_as_value))
 
 				-- ID_AS
 			create l_id_as_name.make ("name")
-			l_id_as_name.type := xml_ns_xsd.ns_prefix + ":string"
+			l_id_as_name.type := (xml_ns_xsd.ns_prefix + ":string").out
 
 			Result.extend (create {EXT_EAST_LOCAL_ATTRIBUTE}.make_from_argument_list (node_id_as, l_id_as_name))
 		end

@@ -18,8 +18,10 @@ feature {NONE} -- Initialization
 			-- Create current stream for file `a_file'
 		require
 			a_file_attached: a_file /= Void
+		local
+			u: FILE_UTILITIES
 		do
-			name := a_file.name			
+			set_name (u.file_name (a_file))
 			create previous_chunk.make_empty
 			current_chunk := previous_chunk
 			chunk_size := default_chunk_size
@@ -29,8 +31,25 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	name: STRING
-			-- Name of current stream
+	name: READABLE_STRING_32
+		do
+			Result := internal_name.to_string_32
+		end
+
+feature -- Change
+
+	set_name (v: READABLE_STRING_GENERAL)
+			-- Set associated name to `v'
+		do
+			internal_name := v
+		ensure
+			v.same_string (internal_name)
+		end
+
+feature {NONE} -- Access
+
+	internal_name: READABLE_STRING_GENERAL
+			-- Internal value of `name(_32)'
 
 feature -- Status report
 
@@ -56,6 +75,11 @@ feature -- Access
 	column: INTEGER
 
 	last_character: CHARACTER
+
+	last_character_code: NATURAL_32
+		do
+			Result := last_character.natural_32_code
+		end
 
 feature -- Debug purpose
 
@@ -153,6 +177,11 @@ feature -- Basic operation
 			current_chunk := previous_chunk
 		end
 
+	read_character_code
+		do
+			read_character
+		end
+
 	read_character
 		local
 			c: CHARACTER
@@ -237,7 +266,7 @@ invariant
 	source_attached: source /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

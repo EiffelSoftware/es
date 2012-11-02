@@ -7,10 +7,11 @@ class
 	XML_FILE_INPUT_STREAM
 
 inherit
-	XML_INPUT_STREAM
+	XML_CHARACTER_8_INPUT_STREAM
 
 create
 	make,
+	make_with_path,
 	make_with_filename
 
 feature {NONE} -- Initialization
@@ -20,25 +21,48 @@ feature {NONE} -- Initialization
 		require
 			a_file_attached: a_file /= Void
 		do
-			name := a_file.name
+			set_name (a_file.name_32)
 			create current_chunk.make_empty
 			chunk_size := default_chunk_size
 			count := a_file.count
 			source := a_file
 		end
 
-	make_with_filename (a_filename: STRING)
+	make_with_path (a_path: PATH)
 		require
-			a_filename_not_empty: a_filename /= Void and then not a_filename.is_empty
+			a_path_not_empty: a_path /= Void and then not a_path.is_empty
+		local
+			f: RAW_FILE
 		do
 			set_inner_source (True)
-			make (create {RAW_FILE}.make (a_filename))
+			create f.make_with_path (a_path)
+			make (f)
+		end
+
+	make_with_filename (a_filename: READABLE_STRING_GENERAL)
+		require
+			a_filename_not_empty: a_filename /= Void and then not a_filename.is_empty
+		local
+			f: RAW_FILE
+		do
+			set_inner_source (True)
+			create f.make_with_name (a_filename)
+			make (f)
 		end
 
 feature -- Access
 
-	name: STRING
-			-- Name of current stream
+	name: READABLE_STRING_32
+
+feature -- Change
+
+	set_name (v: READABLE_STRING_32)
+			-- Set associated name to `v'
+		do
+			name := v
+		ensure
+			v.same_string (name)
+		end
 
 feature -- Status report
 
@@ -190,7 +214,7 @@ invariant
 	source_attached: source /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

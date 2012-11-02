@@ -26,9 +26,8 @@ feature {NONE} -- Initialization
 	make
 			-- Assign default values
 		local
-			l_dir: DIRECTORY_32
+			l_dir: DIRECTORY
 			l_count: INTEGER
-			l_layout: WIZARD_EIFFEL_LAYOUT
 		do
 			compile_project := True
 			freeze_required := False

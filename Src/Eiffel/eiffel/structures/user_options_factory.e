@@ -48,7 +48,7 @@ feature -- Store/Retrieve
 		require
 			a_options_set: a_options /= Void
 		local
-			l_file: RAW_FILE_32
+			l_file: RAW_FILE
 			l_sed_rw: SED_MEDIUM_READER_WRITER
 			l_sed_facilities: SED_STORABLE_FACILITIES
 			retried: BOOLEAN
@@ -56,7 +56,7 @@ feature -- Store/Retrieve
 			l_uuid_str: STRING
 		do
 			if not retried then
-				create last_file_name.make_from_string (eiffel_layout.projects_data_path)
+				create last_file_name.make_from_path (eiffel_layout.projects_data_path)
 					-- Find associated file mapping, otherwise create a new one.
 					-- The mapped name is always a UUID.
 				l_mapping := mapping
@@ -70,7 +70,7 @@ feature -- Store/Retrieve
 				end
 				last_file_name.extend (l_uuid_str)
 				if eiffel_layout.is_hidden_files_path_available then
-					create l_file.make (last_file_name)
+					create l_file.make_with_name (last_file_name)
 					l_file.open_write
 					if l_file.is_writable then
 						create l_sed_rw.make (l_file)
@@ -97,7 +97,7 @@ feature -- Store/Retrieve
 		require
 			a_file_path_not_void: a_file_path /= Void
 		local
-			l_file: RAW_FILE_32
+			l_file: RAW_FILE
 			l_sed_rw: SED_MEDIUM_READER_WRITER
 			l_sed_facilities: SED_STORABLE_FACILITIES
 			retried: BOOLEAN
@@ -105,7 +105,7 @@ feature -- Store/Retrieve
 		do
 			if not retried then
 				last_options := Void
-				create last_file_name.make_from_string (eiffel_layout.projects_data_path)
+				create last_file_name.make_from_path (eiffel_layout.projects_data_path)
 					-- Even if we could not create `eiffel_home', or find the user option
 					-- file, we simply handle it as if they were not user file.
 					-- This is why `successful' is set to `True' in all cases.
@@ -115,7 +115,7 @@ feature -- Store/Retrieve
 				if l_mapping.found then
 					last_file_name.extend (l_mapping.found_item)
 						-- if file exists, load it
-					create l_file.make (last_file_name)
+					create l_file.make_with_name (last_file_name)
 					if l_file.exists and then l_file.is_readable then
 						l_file.open_read
 						create l_sed_rw.make (l_file)
@@ -149,7 +149,7 @@ feature {NONE} -- Implementation
 	mapping: HASH_TABLE [STRING_32, STRING_32]
 			-- Mapping between path to a config file and its associated user option file.
 		local
-			l_file: RAW_FILE_32
+			l_file: RAW_FILE
 			l_sed_rw: SED_MEDIUM_READER_WRITER
 			l_sed_facilities: SED_STORABLE_FACILITIES
 			retried: BOOLEAN
@@ -157,12 +157,12 @@ feature {NONE} -- Implementation
 			r: detachable ANY
 		do
 			if not retried then
-				create l_file_name.make_from_string (eiffel_layout.projects_data_path)
+				create l_file_name.make_from_path (eiffel_layout.projects_data_path)
 				l_file_name.extend (mapping_file_name)
 					-- Even if we could not create `eiffel_home', we simply handle
 					-- it as if they were not mapping file.
 					-- if file exists, load it
-				create l_file.make (l_file_name)
+				create l_file.make_with_name (l_file_name)
 				if l_file.exists and then l_file.is_readable then
 					l_file.open_read
 					create l_sed_rw.make (l_file)
@@ -189,17 +189,17 @@ feature {NONE} -- Implementation
 		require
 			a_mapping_not_void: a_mapping /= Void
 		local
-			l_file: RAW_FILE_32
+			l_file: RAW_FILE
 			l_sed_rw: SED_MEDIUM_READER_WRITER
 			l_sed_facilities: SED_STORABLE_FACILITIES
 			retried: BOOLEAN
 			l_file_name: FILE_NAME_32
 		do
 			if not retried then
-				create l_file_name.make_from_string (eiffel_layout.projects_data_path)
+				create l_file_name.make_from_path (eiffel_layout.projects_data_path)
 				l_file_name.extend (mapping_file_name)
 				if eiffel_layout.is_hidden_files_path_available then
-					create l_file.make (l_file_name)
+					create l_file.make_with_name (l_file_name)
 					l_file.open_write
 					if l_file.is_writable then
 						create l_sed_rw.make (l_file)

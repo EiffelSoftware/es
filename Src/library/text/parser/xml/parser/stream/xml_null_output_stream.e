@@ -19,11 +19,6 @@ feature {NONE} -- Initialization
 		do
 		end
 
-feature -- Access
-
-	name: STRING = "null"
-			-- Name of current stream
-
 feature -- Status report
 
 	is_open_write: BOOLEAN = True
@@ -37,17 +32,26 @@ feature -- Basic operation
 
 feature -- Output
 
-	put_character (c: CHARACTER)
+	put_character_8 (c: CHARACTER_8)
 		do
 		end
 
-	put_string (a_string: STRING)
+	put_string_8 (a_string: READABLE_STRING_8)
+			-- Write `a_string' to output stream.
+		do
+		end
+
+	put_character_32 (c: CHARACTER_32)
+		do
+		end
+
+	put_string_32 (a_string: READABLE_STRING_32)
 			-- Write `a_string' to output stream.
 		do
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

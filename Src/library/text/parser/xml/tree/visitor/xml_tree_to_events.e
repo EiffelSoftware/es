@@ -11,7 +11,6 @@ inherit
 	XML_NODE_VISITOR
 
 create
-
 	make
 
 feature {NONE} -- Creation
@@ -72,6 +71,13 @@ feature -- Node processor
 			events.on_content (a_data.content)
 		end
 
+	process_xml_declaration (a_decl: XML_DECLARATION)
+			-- Process xml declaration `a_decl'
+		do
+			process_start_tag_finish
+			events.on_xml_declaration (a_decl.version, a_decl.encoding, a_decl.standalone)
+		end
+
 	process_processing_instruction (a_pi: XML_PROCESSING_INSTRUCTION)
 			-- Process processing instruction `a_pi'.
 		do
@@ -102,7 +108,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

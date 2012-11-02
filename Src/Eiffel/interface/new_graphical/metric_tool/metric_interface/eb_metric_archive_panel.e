@@ -90,7 +90,7 @@ feature {NONE} -- Initialization
 				-- Setup `open_file_dialog'.
 			l_pref := preferences.dialog_data.last_opened_metric_browse_archive_directory_preference
 			if l_pref.value = Void or else l_pref.value.is_empty then
-				l_pref.set_value (eiffel_layout.user_projects_path)
+				l_pref.set_value (eiffel_layout.user_projects_path_8)
 			end
 			create open_file_dialog.make_with_preference (l_pref)
 			open_file_dialog.set_title (metric_names.t_select_archive)
@@ -296,7 +296,7 @@ feature -- Actions
 		local
 			l_selected_metrics: LIST [STRING]
 			l_msg: STRING_GENERAL
-			l_file_name: STRING
+			l_file_name: STRING_32
 			l_archive: LIST [EB_METRIC_ARCHIVE_NODE]
 			l_archive_tbl: HASH_TABLE [EB_METRIC_ARCHIVE_NODE, STRING]
 		do
@@ -408,8 +408,8 @@ feature -- Actions
 	on_compare_archives
 			-- Action to be performed when user wants to compare selected archives
 		local
-			l_cur_archive: STRING
-			l_ref_archive: STRING
+			l_cur_archive: STRING_32
+			l_ref_archive: STRING_32
 			l_ref_arc: LIST [EB_METRIC_ARCHIVE_NODE]
 			l_cur_arc: LIST [EB_METRIC_ARCHIVE_NODE]
 			l_is_ref_ok: BOOLEAN
@@ -519,12 +519,12 @@ feature {NONE} -- Implementation
 		local
 			l_dir: DIRECTORY
 			l_file: RAW_FILE
-			l_file_name: STRING
+			l_file_name: STRING_32
 			l_archive: LIST [EB_METRIC_ARCHIVE_NODE]
 		do
 			l_file_name := a_text_field.text
 			if not l_file_name.is_empty then
-				create l_file.make (l_file_name)
+				create l_file.make_with_name (l_file_name)
 				create l_dir.make (l_file_name)
 				if l_file.exists and then not l_file.is_directory then
 					metric_tool.show_feedback_dialog (metric_names.t_analysing_archive, agent metric_manager.load_metric_archive (l_file_name), metric_tool.develop_window)
@@ -561,7 +561,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	metric_archive_from_file (a_file_name: STRING): HASH_TABLE [EB_METRIC_ARCHIVE_NODE, STRING]
+	metric_archive_from_file (a_file_name: STRING_32): HASH_TABLE [EB_METRIC_ARCHIVE_NODE, STRING]
 			-- Metric archive from file `a_file_name'.
 			-- Key is metric name, value is the metric archive for that metric.
 			-- Void if error occurs.
@@ -634,7 +634,7 @@ feature {NONE} -- Implementation
 		require
 			a_text_field_attached: a_text_field /= Void
 		local
-			url_address, http, ftp, file: STRING
+			url_address, http, ftp, file: STRING_32
 			l_is_file: BOOLEAN
 		do
 			url_address := a_text_field.text.twin
@@ -643,10 +643,10 @@ feature {NONE} -- Implementation
 				http := url_address.substring (1, 7).as_lower
 				ftp := url_address.substring (1, 6).as_lower
 				file := url_address.substring (1, 7).as_lower
-				if equal (file, "file://") then
+				if file.same_string_general ("file://") then
 					l_is_file := True
 					url_address := url_address.substring (8, url_address.count)
-				elseif equal (ftp, "ftp://") or equal (http, "http://") then
+				elseif ftp.same_string_general ("ftp://") or http.same_string_general ("http://") then
 				else
 					l_is_file := True
 				end
@@ -666,20 +666,20 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	save_file_from_url (a_url_address: STRING; a_target_file_name: STRING): READABLE_STRING_GENERAL
+	save_file_from_url (a_url_address: STRING_32; a_target_file_name: STRING_32): STRING_32
 			-- Save file from url address `a_url_address' and return the saved file name in local machine.
 		require
 			a_url_address_attached: a_url_address /= Void
 			a_target_file_name_attached: a_target_file_name /= Void
 		local
-			file_name: READABLE_STRING_GENERAL
+			file_name: STRING_32
 			target_file: STRING_32
 			file: PLAIN_TEXT_FILE
-			u: GOBO_FILE_UTILITIES
+			u: FILE_UTILITIES
 		do
 			u.create_directory (metric_manager.userdefined_metrics_path)
 			file := u.make_text_file_in (a_target_file_name, metric_manager.userdefined_metrics_path)
-			file_name := u.file_name (file)
+			file_name := u.file_name (file).as_string_32
 
 			if file.exists then
 				(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_warning_prompt_with_cancel (
@@ -753,7 +753,7 @@ feature -- Overwritting
 			overwrite := False
 		end
 
-	load_archive (a_file_name: STRING): LIST [EB_METRIC_ARCHIVE_NODE]
+	load_archive (a_file_name: STRING_32): LIST [EB_METRIC_ARCHIVE_NODE]
 			-- Load archive from file `a_file_name'.
 		require
 			a_file_name_attached: a_file_name /= Void
@@ -966,7 +966,7 @@ invariant
 	calculator_attached: calculator /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -990,11 +990,11 @@ note
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 5949 Hollister Ave., Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_METRIC_ARCHIVE_PANEL

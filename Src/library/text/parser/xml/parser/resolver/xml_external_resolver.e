@@ -13,7 +13,7 @@ deferred class XML_EXTERNAL_RESOLVER
 
 feature -- Action(s)
 
-	resolve (a_system: STRING)
+	resolve (a_system: READABLE_STRING_GENERAL)
 			-- Resolve a system identifier to an input stream
 			-- on behalf of an XML parser.
 		require
@@ -25,7 +25,7 @@ feature -- Action(s)
 			--depth: not has_error implies resolve_depth = old resolve_depth + 1
 		end
 
-	resolve_public (a_public: STRING; a_system: STRING)
+	resolve_public (a_public: READABLE_STRING_GENERAL; a_system: READABLE_STRING_GENERAL)
 			-- Resolve a public/system identified pair to an input stream.
 			-- (Default implementation: resolve using system ID only.)
 		require
@@ -66,7 +66,7 @@ feature -- Result
 		deferred
 		end
 
-	last_error: detachable STRING
+	last_error: detachable STRING_32
 			-- Last error message.
 		require
 			has_error: has_error
@@ -76,7 +76,7 @@ feature -- Result
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

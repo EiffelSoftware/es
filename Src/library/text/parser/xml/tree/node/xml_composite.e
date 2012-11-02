@@ -82,7 +82,7 @@ feature -- Access
 
 feature -- Access
 
-	element_by_name (a_name: STRING): detachable XML_ELEMENT
+	element_by_name (a_name: READABLE_STRING_GENERAL): detachable XML_ELEMENT
 			-- Direct child element with name `a_name';
 			-- If there are more than one element with that name, anyone may be returned.
 			-- Return Void if no element with that name is a child of current node.
@@ -94,7 +94,7 @@ feature -- Access
 			--namespace: Result /= Void implies same_namespace (Result)
 		end
 
-	element_by_qualified_name (a_uri: STRING; a_name: STRING): detachable XML_ELEMENT
+	element_by_qualified_name (a_uri: READABLE_STRING_GENERAL; a_name: READABLE_STRING_GENERAL): detachable XML_ELEMENT
 			-- Direct child element with given qualified name;
 			-- If there are more than one element with that name, anyone may be returned.
 			-- Return Void if no element with that name is a child of current node.
@@ -106,7 +106,7 @@ feature -- Access
 			element_not_void: has_element_by_qualified_name (a_uri, a_name) = (Result /= Void)
 		end
 
-	has_element_by_name (a_name: STRING): BOOLEAN
+	has_element_by_name (a_name: READABLE_STRING_GENERAL): BOOLEAN
 			-- Has current node at least one direct child
 			-- element with the name `a_name'?
 		require
@@ -114,7 +114,7 @@ feature -- Access
 		deferred
 		end
 
-	has_element_by_qualified_name (a_uri: STRING; a_name: STRING): BOOLEAN
+	has_element_by_qualified_name (a_uri: READABLE_STRING_GENERAL; a_name: READABLE_STRING_GENERAL): BOOLEAN
 			-- Has current node at least one direct child
 			-- element with given qualified name ?
 		require
@@ -150,7 +150,7 @@ feature -- Access
 
 feature -- Text
 
-	text: detachable STRING
+	text: detachable STRING_32
 			-- Concatenation of all texts directly found in
 			-- current element; Void if no text found
 			-- (Return a new string at each call.)
@@ -167,9 +167,9 @@ feature -- Text
 			loop
 				if attached {XML_CHARACTER_DATA} lst.item as l_cdata then
 					if Result = Void then
-						Result := l_cdata.content.string
+						create Result.make_from_string (l_cdata.content)
 					else
-						Result.append_string (l_cdata.content.string)
+						Result.append_string (l_cdata.content)
 					end
 				end
 				lst.forth

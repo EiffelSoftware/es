@@ -6,10 +6,9 @@ note
 deferred class
 	XML_INPUT_STREAM
 
-feature -- Access
+feature -- Access		
 
-	name: STRING
-			-- Name of current stream
+	name: READABLE_STRING_32
 		deferred
 		end
 
@@ -24,7 +23,7 @@ feature -- Status report
 			-- Can items be read from input stream?
 		deferred
 		end
-		
+
 feature -- Access
 
 	index: INTEGER
@@ -42,23 +41,23 @@ feature -- Access
 		deferred
 		end
 
-	last_character: CHARACTER
+	last_character_code: NATURAL_32
 			-- Last read character
 		deferred
 		end
 
 feature -- Basic operation
 
-	read_character
-			-- Read a character
-			-- and keep it in `last_character'
+	read_character_code
+			-- Read a character's code
+			-- and keep it in `last_character_code'
 		require
 			not_end_of_input: not end_of_input
 		deferred
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

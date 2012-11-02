@@ -318,7 +318,7 @@ feature -- Visit nodes
 
 				-- if it is a local assembly, check that the file exists
 			if state.is_dotnet and then not an_assembly.is_non_local_assembly then
-				create l_file.make (an_assembly.location.evaluated_path)
+				create l_file.make_with_name (an_assembly.location.evaluated_path)
 				if not l_file.exists or else not l_file.is_readable then
 					add_and_raise_error (create {CONF_ERROR_FILE}.make_with_config (an_assembly.location.evaluated_path, an_assembly.location.original_path, current_system.file_name))
 				end
@@ -478,7 +478,7 @@ feature -- Visit nodes
 			a_cluster.set_classes (l_current_classes)
 			a_cluster.set_classes_by_filename (current_classes_by_filename)
 
-			process_cluster_recursive ("", a_cluster, a_cluster.active_file_rule (state))
+			process_cluster_recursive ({STRING_32} "", a_cluster, a_cluster.active_file_rule (state))
 
 			if partial_classes /= Void then
 				process_partial_classes
@@ -910,7 +910,7 @@ feature {NONE} -- Implementation
 							-- remove partial class files
 						l_partial ?= l_cl
 						if l_partial /= Void then
-							create l_file.make (l_partial.full_file_name)
+							create l_file.make_with_name (l_partial.full_file_name)
 							if l_file.exists then
 								l_file.delete
 							end

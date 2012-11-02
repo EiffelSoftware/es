@@ -1,13 +1,13 @@
 note
-	description	: "Page in which the user choose where he wants to generate the sources."
+	description	: "Page in which the user choose between a dialog and frame based application."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
-	author		: "David Solal"
+	author		: "Arnaud PICHERY [aranud@mail.dotcom.fr]"
 	date		: "$Date$"
 	revision	: "$Revision$"
 
 class
-	WIZARD_THIRD_STATE
+	WIZARD_SECOND_STATE
 
 inherit
 	BENCH_WIZARD_INTERMEDIARY_STATE_WINDOW
@@ -26,19 +26,53 @@ feature -- Basic Operation
 
 	build
 			-- Build entries.
+		local
+			radio_box: EV_VERTICAL_BOX
+			hbox: EV_HORIZONTAL_BOX
 		do
-			create icon_location.make (Current)
-			icon_location.set_textfield_string (wizard_information.icon_location)
-			icon_location.set_label_string_and_size (interface_names.l_project_icon, 10)
-			icon_location.enable_file_browse_button ("*.ico")
-			icon_location.generate
+			create win_application.make_with_text (interface_names.l_frame_application)
+			create dialog_application.make_with_text (interface_names.l_dialog_application)
 
-			choice_box.set_padding (Default_padding_size)
-			choice_box.extend (icon_location.widget)
-			choice_box.disable_item_expand(icon_location.widget)
-			choice_box.extend (create {EV_CELL}) -- Expandable item
+			create radio_box
+			radio_box.extend (win_application)
+			radio_box.disable_item_expand (win_application)
+			radio_box.extend (dialog_application)
+			radio_box.disable_item_expand (dialog_application)
+			radio_box.extend (create {EV_CELL})
 
-			set_updatable_entries(<<icon_location.change_actions>>)
+			create preview_pixmap
+				-- Set the right pixmap depending on `dialog_information' and
+				-- select the right radio button
+			if wizard_information.dialog_application then
+				preview_pixmap.set_with_named_file (Preview_dialog_pixmap)
+				dialog_application.enable_select
+			else
+				preview_pixmap.set_with_named_file (Preview_frame_pixmap)
+				win_application.enable_select
+			end
+			preview_pixmap.set_minimum_size (preview_pixmap.width, preview_pixmap.height)
+
+			create hbox
+			hbox.extend (radio_box)
+			hbox.extend (preview_pixmap)
+			choice_box.extend (hbox)
+			choice_box.disable_item_expand (hbox)
+
+			set_updatable_entries(<<win_application.select_actions, dialog_application.select_actions>>)
+
+				-- Connect actions.
+			win_application.select_actions.extend (agent change_preview)
+			dialog_application.select_actions.extend (agent change_preview)
+		end
+
+	change_preview
+			-- Change the pixmap used to preview the application.
+		do
+			if dialog_application.is_selected then
+				preview_pixmap.set_with_named_file (Preview_dialog_pixmap)
+			else
+				preview_pixmap.set_with_named_file (Preview_frame_pixmap)
+			end
 		end
 
 	proceed_with_current_info
@@ -46,13 +80,17 @@ feature -- Basic Operation
 			next_window: WIZARD_STATE_WINDOW
 			existing_target_files: TRAVERSABLE [STRING_GENERAL]
 		do
-			existing_target_files := (create {WIZARD_PROJECT_GENERATOR}.make (wizard_information)).existing_target_files
-			if existing_target_files.is_empty then
-					-- Go to code generation step.
-				create {WIZARD_FINAL_STATE} next_window.make (wizard_information)
+			if dialog_application.is_selected then
+				existing_target_files := (create {WIZARD_PROJECT_GENERATOR}.make (wizard_information)).existing_target_files
+				if existing_target_files.is_empty then
+						-- Go to code generation step.
+					create {WIZARD_FINAL_STATE} next_window.make (wizard_information)
+				else
+						-- Warn that there are files to be overwritten.
+					create {WIZARD_WARNING_FILE_PRESENCE} next_window.make_with_names (existing_target_files, wizard_information)
+				end
 			else
-					-- Warn that there are files to be overwritten.
-				create {WIZARD_WARNING_FILE_PRESENCE} next_window.make_with_names (existing_target_files, wizard_information)
+				create {WIZARD_THIRD_STATE} next_window.make(wizard_information)
 			end
 			Precursor
 			proceed_with_new_state (next_window)
@@ -60,17 +98,8 @@ feature -- Basic Operation
 
 	update_state_information
 			-- Check User Entries
-		local
-			icon_path: FILE_NAME
 		do
-			if not icon_location.text.is_equal ("") then
-				wizard_information.set_icon_location (icon_location.text)
-			else
-				create icon_path.make_from_string (wizard_resources_path)
-				icon_path.set_file_name ("eiffel")
-				icon_path.add_extension ("ico")
-				wizard_information.set_icon_location (icon_path)
-			end
+			wizard_information.set_dialog_application (dialog_application.is_selected)
 			Precursor
 		end
 
@@ -79,13 +108,42 @@ feature {NONE} -- Implementation
 
 	display_state_text
 		do
-			title.set_text (interface_names.t_project_icon)
-			subtitle.set_text (interface_names.t_choose_icon_subtitle)
-			message.set_text (interface_names.m_choose_icon)
+			title.set_text (interface_names.t_wel_app_type)
+			subtitle.set_text (interface_names.t_choose_type_subtitle)
+			message.set_text (interface_names.m_a_frame_based_application)
 		end
 
-	icon_location: WIZARD_SMART_TEXT_FIELD;
-			-- Label and Textfield for the icon location.
+feature {NONE} -- Constants
+
+	Preview_dialog_pixmap: FILE_NAME_32
+			-- Filename for the pixmap representing a dialog-based application
+		once
+			create Result.make_from_string (wizard_pixmaps_path_32)
+			Result.set_file_name ("dialog_application")
+			Result.add_extension (pixmap_extension)
+		end
+
+	Preview_frame_pixmap: FILE_NAME_32
+			-- Filename for the pixmap representing a frame-based application
+		once
+			create Result.make_from_string (wizard_pixmaps_path_32)
+			Result.set_file_name ("frame_application")
+			Result.add_extension (pixmap_extension)
+		end
+
+feature {NONE} -- Vision2 layout
+
+	dialog_application: EV_RADIO_BUTTON
+			-- When checked, create a Dialog application
+
+	win_application: EV_RADIO_BUTTON
+			-- When checked, create a Frame application
+
+	vbox_dialog: EV_VERTICAL_BOX
+			-- vbox that contains the dialog buttons
+
+	preview_pixmap: EV_PIXMAP;
+			-- Pixmap used to preview the application.
 
 note
 	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
@@ -118,4 +176,4 @@ note
 			 Website http://www.eiffel.com
 			 Customer support http://support.eiffel.com
 		]"
-end -- class WIZARD_SECOND_STATE
+end -- class WIZARD_FIRST_STATE

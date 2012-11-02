@@ -21,9 +21,9 @@ feature -- Status report
 			-- Has a prefix been used to define the namespace?
 			-- (It could also be that the namespace used was the default namespace)
 		do
-			Result := (attached ns_prefix as p and then p.count > 0)
+			Result := (attached ns_prefix as p and then not p.is_empty)
 		ensure
-			definition: Result = (attached ns_prefix as p and then p.count > 0)
+			definition: Result = (attached ns_prefix as p and then not p.is_empty)
 		end
 
 	same_namespace (other: XML_NAMED_NODE): BOOLEAN
@@ -41,34 +41,31 @@ feature -- Status report
 		require
 			other_attached: other /= Void
 		do
-			Result := same_namespace (other) and
-				(name ~ other.name)
+			Result := same_namespace (other) and other.has_same_name (name)
 		ensure
 			definition: Result = (same_namespace (other) and same_name (other))
 		end
 
-	has_qualified_name (a_uri: STRING; a_name: STRING): BOOLEAN
+	has_qualified_name (a_uri: READABLE_STRING_GENERAL; a_name: READABLE_STRING_GENERAL): BOOLEAN
 			-- Does this node match the qualified name?
 		require
 			a_uri_not_void: a_uri /= Void
 			a_name_not_void: a_name /= Void
 		do
-			Result := ((a_uri ~ namespace.uri)
-					and (a_name ~ name))
+			Result := namespace.has_same_uri (a_uri) and has_same_name (a_name)
 		ensure
-			definition: Result = ((a_uri ~ namespace.uri)
-					and (a_name ~ name))
+			definition: Result = (namespace.has_same_uri (a_uri) and has_same_name (a_name))
 		end
 
 feature -- Access
 
-	name: STRING
+	name: READABLE_STRING_32
 
 	namespace: XML_NAMESPACE
 
 feature -- Access
 
-	ns_prefix: detachable STRING
+	ns_prefix: like namespace.ns_prefix
 			-- Namespace prefix used to declare the namespace of the
 			-- name of current node
 		do
@@ -77,7 +74,7 @@ feature -- Access
 			definition: Result = namespace.ns_prefix
 		end
 
-	ns_uri: STRING
+	ns_uri: like namespace.uri
 			-- URI of namespace.
 		do
 			Result := namespace.uri
@@ -87,7 +84,7 @@ feature -- Access
 
 feature -- Element change
 
-	set_name (a_name: like name)
+	set_name (a_name: READABLE_STRING_32)
 			-- Set `name' to `a_name'.
 		require
 			a_name_attached: a_name /= Void
@@ -95,7 +92,7 @@ feature -- Element change
 		do
 			name := a_name
 		ensure
-			name_set: name = a_name
+			name_set: a_name.same_string (name)
 		end
 
 	set_namespace (a_namespace: like namespace)
@@ -110,6 +107,27 @@ feature -- Element change
 
 feature -- Status report
 
+	has_same_name (a_name: READABLE_STRING_GENERAL): BOOLEAN
+			-- Current name is same as `a_name' ?
+		local
+			v: like name
+		do
+			v := name
+			Result := (v = a_name) or else a_name.same_string (v)
+		end
+
+	has_same_ns_uri (a_uri: READABLE_STRING_GENERAL): BOOLEAN
+		do
+			Result := namespace.has_same_uri (a_uri)
+		end
+
+	has_same_ns_prefix (a_ns_prefix: detachable READABLE_STRING_GENERAL): BOOLEAN
+		do
+			Result := namespace.has_same_ns_prefix (a_ns_prefix)
+		end
+
+feature -- Status report
+
 	debug_output: STRING
 		do
 			Result := Precursor
@@ -117,18 +135,18 @@ feature -- Status report
 			Result.append_character ('-')
 			Result.append_character (' ')
 			if attached ns_prefix as p and then not p.is_empty then
-				Result.append_string (p)
+				Result.append_string (debug_output_representation (p))
 				Result.append_character (':')
 			end
-			Result.append_string (name)
+			Result.append_string (debug_output_representation (name))
 		end
 
 invariant
 	name_attached: name /= Void
-	name_not_empty: name.count > 0
+	name_not_empty: not name.is_empty
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

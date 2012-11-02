@@ -7,7 +7,7 @@ class
 	XML_STRING_INPUT_STREAM
 
 inherit
-	XML_INPUT_STREAM
+	XML_CHARACTER_8_INPUT_STREAM
 
 create
 	make,
@@ -19,6 +19,7 @@ feature {NONE} -- Initialization
 		do
 			source := a_string
 			count := a_string.count
+			start
 		end
 
 	make_empty
@@ -28,7 +29,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	name: STRING = "STRING"
+	name: STRING_32 = "STRING"
 			-- Name of current stream
 
 feature -- Status report
@@ -99,7 +100,7 @@ invariant
 	source_attached: source /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

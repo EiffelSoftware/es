@@ -31,17 +31,17 @@ feature {NONE} -- Creation
 			element_prefixes.compare_objects
 			last_item := Void
 			create default_namespaces.make
-			default_namespaces.force (Default_namespace)
+			default_namespaces.force ({XML_XMLNS_CONSTANTS}.Default_namespace)
 		end
 
 feature {NONE} -- Default context
 
-	default_namespaces: LINKED_STACK [STRING]
+	default_namespaces: LINKED_STACK [READABLE_STRING_32]
 			-- Default namespace URI stack.
 
 feature -- Default
 
-	is_same_as_default (a_namespace: STRING): BOOLEAN
+	is_same_as_default (a_namespace: READABLE_STRING_32): BOOLEAN
 			-- Is namespace the same as the default one for the current element?
 		require
 			a_namespace_not_void: a_namespace /= Void
@@ -49,7 +49,7 @@ feature -- Default
 			Result := same_string (a_namespace, default_namespaces.item)
 		end
 
-	set_default (a_namespace: STRING)
+	set_default (a_namespace: READABLE_STRING_32)
 			-- Set default namespace URI.
 		require
 			a_namespace_not_void: a_namespace /= Void
@@ -62,45 +62,48 @@ feature -- Default
 
 feature {NONE} -- Prefixed context
 
-	prefixes: LINKED_LIST [HASH_TABLE [STRING, STRING]]
+	prefixes: LINKED_LIST [HASH_TABLE [READABLE_STRING_32, STRING_32]]
 			-- Prefixes by namespace
 
-	element_prefixes: HASH_TABLE [STRING, STRING] -- HASH_SET ?
+	element_prefixes: HASH_TABLE [READABLE_STRING_32, STRING_32] -- HASH_SET ?
 			-- Prefixes in use (not only declared) in top element.
 
-	last_item: detachable STRING
+	last_item: detachable READABLE_STRING_32
 			-- Cache for lookup
 
 feature -- Status
 
-	has (a_namespace: STRING): BOOLEAN
+	has (a_namespace: READABLE_STRING_32): BOOLEAN
 			-- Is namespace known to prefixes table?
 			-- If found, set `last_item' to the related item
 		require
 			a_namespace_not_void: a_namespace /= Void
 			a_namespace_not_empty: not a_namespace.is_empty
 		local
-			a_cursor: LINKED_LIST_ITERATION_CURSOR [HASH_TABLE [STRING, STRING]]
+			a_cursor: like prefixes.new_cursor
 			done: BOOLEAN
+			ns: STRING_32
 		do
 			from
+				ns := a_namespace.to_string_32
 				a_cursor := prefixes.new_cursor
 				a_cursor.reverse
 				a_cursor.start
 			until
 				a_cursor.after or done
 			loop
-				Result := a_cursor.item.has (a_namespace)
-				if Result then
-					last_item := a_cursor.item.item (a_namespace)
+				if a_cursor.item.has (ns) then
+					Result := True
+					last_item := a_cursor.item.item (ns)
 					done := True
 				else
+					Result := False
 					a_cursor.forth
 				end
 			end
 		end
 
-	item (a_namespace: STRING): detachable STRING
+	item (a_namespace: READABLE_STRING_32): detachable READABLE_STRING_32
 			-- Find prefix for namespace
 		require
 			a_namespace_not_void: a_namespace /= Void
@@ -113,7 +116,7 @@ feature -- Status
 			result_not_empty: Result /= Void implies not Result.is_empty
 		end
 
-	new_element_cursor: HASH_TABLE_ITERATION_CURSOR [STRING, STRING]
+	new_element_cursor: HASH_TABLE_ITERATION_CURSOR [READABLE_STRING_32, STRING_32]
 			-- New element cursor.
 		do
 			check in_element: not prefixes.is_empty end
@@ -124,7 +127,7 @@ feature -- Status
 
 feature -- Setting
 
-	force (a_prefix: STRING; a_namespace: STRING)
+	force (a_prefix: READABLE_STRING_32; a_namespace: READABLE_STRING_32)
 			-- Add namespace, prefix to context.
 		require
 			a_namespace_not_void: a_namespace /= Void
@@ -132,7 +135,7 @@ feature -- Setting
 			a_prefix_not_void: a_prefix /= Void
 			a_prefix_not_empty: not a_prefix.is_empty
 		do
-			prefixes.last.force (a_prefix, a_namespace)
+			prefixes.last.force (a_prefix, a_namespace.to_string_32)
 		ensure
 			has: has (a_namespace)
 			item: item (a_namespace) = a_prefix
@@ -140,22 +143,22 @@ feature -- Setting
 
 feature -- Status
 
-	element_has_prefix (a_prefix: STRING): BOOLEAN
+	element_has_prefix (a_prefix: READABLE_STRING_32): BOOLEAN
 			-- Is this prefix used in the top element?
 		require
 			a_prefix_not_void: a_prefix /= Void
 			a_prefix_not_empty: not a_prefix.is_empty
 		do
-			Result := element_prefixes.has (a_prefix)
+			Result := element_prefixes.has (a_prefix.to_string_32)
 		end
 
-	element_prefix (a_prefix: STRING)
+	element_prefix (a_prefix: READABLE_STRING_32)
 			-- Declare prefix in use in top element.
 		require
 			a_prefix_not_void: a_prefix /= Void
 			a_prefix_not_empty: not a_prefix.is_empty
 		do
-			element_prefixes.force (a_prefix, a_prefix)
+			element_prefixes.force (a_prefix, a_prefix.to_string_32)
 		ensure
 			has: element_has_prefix (a_prefix)
 		end
@@ -165,7 +168,7 @@ feature -- Elements
 	on_start_element
 			-- Push context.
 		local
-			a_table: HASH_TABLE [STRING, STRING]
+			a_table: like prefixes.item
 		do
 			create a_table.make (10)
 			a_table.compare_objects
@@ -186,7 +189,7 @@ feature -- Elements
 
 feature {NONE} -- Implementation
 
-	same_string (a,b: detachable READABLE_STRING_GENERAL): BOOLEAN
+	same_string (a,b: detachable READABLE_STRING_32): BOOLEAN
 			-- Are `a' and `b' the same string?
 		do
 			if a = b then
@@ -203,7 +206,7 @@ invariant
 	default_namespaces_not_void: default_namespaces /= Void
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

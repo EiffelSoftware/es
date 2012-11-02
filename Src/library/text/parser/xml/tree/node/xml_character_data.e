@@ -15,50 +15,65 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_parent: XML_ELEMENT; c: like content)
+	make (a_parent: XML_ELEMENT; c: READABLE_STRING_32)
 			-- Create a new character data node.
 		require
 			a_parent_not_void: a_parent /= Void
 			c_not_void: c /= Void
 		do
 			parent := a_parent
-			content := c
+			set_content (c)
 		ensure
 			parent_set: parent = a_parent
-			content_set: content = c
+			content_set: has_same_content (c)
 		end
 
-	make_last (a_parent: XML_ELEMENT; c: like content)
+	make_last (a_parent: XML_ELEMENT; c: READABLE_STRING_32)
 			-- Create a new character data node,
 			-- and add it to parent.
 		require
 			a_parent_not_void: a_parent /= Void
 			c_not_void: c /= Void
 		do
-			content := c
+			set_content (c)
 			a_parent.force_last (Current)
 		ensure
 			parent_set: parent = a_parent
 			in_parent: a_parent.last = Current
-			content_set: content = c
+			content_set: has_same_content (c)
 		end
 
-feature -- Access
+feature -- Status report
 
-	content: STRING
+	has_same_content (a_content: like content): BOOLEAN
+		local
+			v: like content
+		do
+			v := content
+			Result := (v = a_content) or (a_content.same_string (v))
+		end
+
+feature -- Access		
+
+	content: READABLE_STRING_32
 			-- Actual character data
+
+	content_count: INTEGER
+			-- Count of `content'.
+		do
+			Result := content.count
+		end
 
 feature -- Element change
 
-	set_content (a_content: STRING)
+	set_content (a_content: READABLE_STRING_32)
 			-- Set content.
 		require
 			a_content_not_void: a_content /= Void
 		do
 			content := a_content
 		ensure
-			set: content = a_content
-			same_string: content ~ a_content
+			same_string: a_content.same_string (content)
 		end
 
 	append_content (other: like Current)
@@ -66,14 +81,20 @@ feature -- Element change
 			-- the content of `Current'.
 		require
 			other_not_void: other /= Void
+		local
+			s32: STRING_32
 		do
-			content.append_string (other.content)
+			if attached {STRING_32} content as s then
+				s.append (other.content)
+			else
+				s32 := content.to_string_32
+				s32.append_string (other.content)
+				content := s32
+			end
 		ensure
-			appended_count: content.count = other.content.count + old (content.count)
-			appended: other.content ~
-					content.substring (content.count - other.content.count + 1, content.count)
+			appended_count: content_count = other.content_count + old (content_count)
+			appended: other.has_same_content (content.substring (content_count - other.content_count + 1, content_count))
 		end
-
 
 feature -- Visitor processing
 
@@ -87,7 +108,7 @@ invariant
 	content_not_void: content /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

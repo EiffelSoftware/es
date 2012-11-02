@@ -192,7 +192,7 @@ feature -- Counters
 			feature_as_counter.append (feature_as_counter)
 			routine_id_counter.append (routine_id_counter)
 			static_type_id_counter.append (static_type_id_counter)
-			server_controler.append (server_controler)
+			server_controler.file_counter.append (server_controler.file_counter)
 		end
 
 feature -- Properties
@@ -968,7 +968,7 @@ end
 			vd80: VD80
 			vd25: VD25
 			l_target: CONF_TARGET
-			l_file: PLAIN_TEXT_FILE_32
+			l_file: PLAIN_TEXT_FILE
 			d1, d2: DATE_TIME
 			l_factory: CONF_COMP_FACTORY
 			l_state: CONF_STATE
@@ -1101,7 +1101,7 @@ end
 
 					-- removed classes
 				if automatic_backup then
-					create l_file.make (workbench.backup_info_file_name)
+					create l_file.make_with_name (workbench.backup_info_file_name)
 					l_file.open_append
 				end
 				l_classes := l_vis_build.removed_classes
@@ -4815,7 +4815,7 @@ feature -- Generation
 			a_class: CLASS_C
 			final_mode: BOOLEAN
 			temp: STRING
-			subdir: DIRECTORY_32
+			subdir: DIRECTORY
 			f_name: FILE_NAME_32
 			dir_name: DIRECTORY_NAME_32
 			cecil_file, header_file: INDENT_FILE
@@ -6110,11 +6110,11 @@ feature -- Log files
 					-- removed_log_file is used only in final mode
 				create f_name.make_from_string (project_location.final_path)
 				f_name.set_file_name (Removed_log_file_name)
-				create removed_log_file.make (f_name)
+				create removed_log_file.make_with_name (f_name)
 
 				create f_name.make_from_string (project_location.final_path)
 				f_name.set_file_name (Translation_log_file_name)
-				create used_features_log_file.make (f_name)
+				create used_features_log_file.make_with_name (f_name)
 
 					-- Files are open using the `write' mode
 				removed_log_file.open_write
@@ -6122,7 +6122,7 @@ feature -- Log files
 			else
 				create f_name.make_from_string (project_location.workbench_path)
 				f_name.set_file_name (Translation_log_file_name)
-				create used_features_log_file.make (f_name)
+				create used_features_log_file.make_with_name (f_name)
 
 					-- File is open using the `append' mode
 					-- (refreezing)

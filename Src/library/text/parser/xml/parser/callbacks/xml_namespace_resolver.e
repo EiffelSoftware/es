@@ -78,7 +78,7 @@ feature -- Forwarding policy
 
 feature -- Element
 
-	on_start_tag (a_namespace: detachable STRING; a_prefix: detachable STRING; a_local_part: STRING)
+	on_start_tag (a_namespace: detachable READABLE_STRING_32; a_prefix: detachable READABLE_STRING_32; a_local_part: READABLE_STRING_32)
 			-- Process start of start tag.
 		do
 			context.push
@@ -88,12 +88,12 @@ feature -- Element
 			element_local_part := a_local_part
 		end
 
-	on_attribute (a_namespace: detachable STRING; a_prefix: detachable STRING; a_local_part: STRING; a_value: STRING)
+	on_attribute (a_namespace: detachable READABLE_STRING_32; a_prefix: detachable READABLE_STRING_32; a_local_part: READABLE_STRING_32; a_value: READABLE_STRING_32)
 			-- Process attribute.
 		do
 			if not has_prefix (a_prefix) and is_xmlns (a_local_part) then
 					-- Default declaration.
-				context.add_default (a_value.string)
+				context.add_default (a_value)
 					-- Optionally do not eat xmlns attributes
 				if forward_xmlns then
 					attributes_force (a_prefix, a_local_part, a_value)
@@ -120,27 +120,28 @@ feature -- Element
 	on_start_tag_finish
 			-- Process end of start tag.
 		local
-			error_msg: STRING
+			error_msg: STRING_GENERAL
 			l_element_prefix: like element_prefix
 		do
 			if attached element_local_part as l_element_local_part then
 				l_element_prefix := element_prefix
 				if l_element_prefix /= Void and then has_prefix (l_element_prefix) then
 					if context.has (l_element_prefix) then
-						next.on_start_tag (context.resolve (l_element_prefix),
+						on_start_tag_resolved (context.resolve (l_element_prefix),
 								l_element_prefix, l_element_local_part)
 						on_delayed_attributes
 					else
-						create error_msg.make_from_string (Undeclared_namespace_error)
-						error_msg.append_string (" in tag <")
-						error_msg.append_string (l_element_prefix)
-						error_msg.append_character (':')
-						error_msg.append_string (l_element_local_part)
-						error_msg.append_character ('>')
+						create {STRING_32} error_msg.make_empty
+						error_msg.append (Undeclared_namespace_error)
+						error_msg.append (" in tag <")
+						error_msg.append (l_element_prefix)
+						error_msg.append (":")
+						error_msg.append (l_element_local_part)
+						error_msg.append (">")
 						on_error (error_msg)
 					end
 				else
-					next.on_start_tag (context.resolve_default,
+					on_start_tag_resolved (context.resolve_default,
 							l_element_prefix, l_element_local_part)
 					on_delayed_attributes
 				end
@@ -150,7 +151,7 @@ feature -- Element
 			Precursor
 		end
 
-	on_end_tag (a_namespace: detachable STRING; a_prefix: detachable STRING; a_local_part: STRING)
+	on_end_tag (a_namespace: detachable READABLE_STRING_32; a_prefix: detachable READABLE_STRING_32; a_local_part: READABLE_STRING_32)
 			-- Process end tag.
 		do
 			if a_prefix /= Void and then has_prefix (a_prefix) then
@@ -166,7 +167,7 @@ feature {NONE} -- Attribute events
 	on_delayed_attributes
 			-- Resolve attributes.
 		local
-			l_att_prefix: detachable STRING
+			l_att_prefix: detachable READABLE_STRING_32
 		do
 			from
 			until
@@ -176,18 +177,18 @@ feature {NONE} -- Attribute events
 				if l_att_prefix /= Void and then has_prefix (l_att_prefix) then
 					-- Resolve the attribute's prefix if it has any.
 					if context.has (l_att_prefix) then
-						next.on_attribute (context.resolve (l_att_prefix),
+						on_attribute_resolved (context.resolve (l_att_prefix),
 							l_att_prefix, attributes_local_part.item,
 							attributes_value.item)
 					elseif is_xml (l_att_prefix) then
 							-- xml: prefix has implicit namespace
-						next.on_attribute (Xml_prefix_namespace,
+						on_attribute_resolved (Xml_prefix_namespace,
 							l_att_prefix,
 							attributes_local_part.item,
 							attributes_value.item)
 					elseif is_xmlns (l_att_prefix) then
 							-- xmlns: prefix has implicit namespace
-						next.on_attribute (Xmlns_namespace,
+						on_attribute_resolved (Xmlns_namespace,
 							l_att_prefix,
 							attributes_local_part.item,
 							attributes_value.item)
@@ -195,13 +196,23 @@ feature {NONE} -- Attribute events
 						on_error (Undeclared_namespace_error)
 					end
 				else
-					next.on_attribute (Unprefixed_attribute_namespace,
+					on_attribute_resolved (Unprefixed_attribute_namespace,
 						l_att_prefix, attributes_local_part.item,
 						attributes_value.item)
 				end
 					-- Forth:
 				attributes_remove
 			end
+		end
+
+	on_start_tag_resolved (a_namespace: READABLE_STRING_32; a_prefix, a_local_part: detachable READABLE_STRING_32)
+		do
+			next.on_start_tag (a_namespace, a_prefix, a_local_part)
+		end
+
+	on_attribute_resolved (a_namespace: READABLE_STRING_32; a_prefix: detachable READABLE_STRING_32; a_local_part: READABLE_STRING_32; a_value: READABLE_STRING_32)
+		do
+			next.on_attribute (a_namespace, a_prefix, a_local_part, a_value)
 		end
 
 feature {NONE} -- Context
@@ -211,19 +222,19 @@ feature {NONE} -- Context
 
 feature {NONE} -- Context
 
-	is_xmlns (a: detachable STRING): BOOLEAN
+	is_xmlns (a: detachable READABLE_STRING_32): BOOLEAN
 			-- Is this an xmlns[:] declaration?
 		do
 			Result := a /= Void and then same_string (Xmlns, a)
 		end
 
-	is_xml (a: STRING): BOOLEAN
+	is_xml (a: READABLE_STRING_32): BOOLEAN
 			-- Is this a xml: declaration?
 		do
 			Result := a /= Void and then same_string (Xml_prefix, a)
 		end
 
-	Unprefixed_attribute_namespace: STRING
+	Unprefixed_attribute_namespace: READABLE_STRING_32
 			-- Namespace used for unprefixed attributes.
 		do
 			Result := Default_namespace
@@ -231,20 +242,20 @@ feature {NONE} -- Context
 
 feature {NONE} -- Element
 
-	element_prefix: detachable STRING
-	element_local_part: detachable STRING
+	element_prefix: detachable READABLE_STRING_32
+	element_local_part: detachable READABLE_STRING_32
 
 feature {NONE} -- Attributes
 
 	attributes_make
 			-- Intialize queue.
 		do
-			create {ARRAYED_QUEUE [detachable STRING]} attributes_prefix.make (5)
-			create {ARRAYED_QUEUE [STRING]} attributes_local_part.make (5)
-			create {ARRAYED_QUEUE [STRING]} attributes_value.make (5)
+			create attributes_prefix.make (5)
+			create attributes_local_part.make (5)
+			create attributes_value.make (5)
 		end
 
-	attributes_force (a_prefix: detachable STRING; a_local_part: STRING; a_value: STRING)
+	attributes_force (a_prefix: detachable READABLE_STRING_32; a_local_part: READABLE_STRING_32; a_value: READABLE_STRING_32)
 			-- Like attributes.force.
 		do
 			attributes_prefix.force (a_prefix)
@@ -268,28 +279,28 @@ feature {NONE} -- Attributes
 			Result := attributes_prefix.is_empty
 		end
 
-	attributes_prefix: ARRAYED_QUEUE [detachable STRING]
-	attributes_local_part: ARRAYED_QUEUE [STRING]
-	attributes_value: ARRAYED_QUEUE [STRING]
+	attributes_prefix: ARRAYED_QUEUE [detachable READABLE_STRING_32]
+	attributes_local_part: ARRAYED_QUEUE [READABLE_STRING_32]
+	attributes_value: ARRAYED_QUEUE [READABLE_STRING_32]
 
 feature {NONE} -- Error
 
-	Default_namespace: STRING = ""
-	Xml_prefix: STRING = "xml"
-	Xmlns: STRING = "xmlns"
+	Default_namespace: STRING_32 = ""
+	Xml_prefix: STRING_32 = "xml"
+	Xmlns: STRING_32 = "xmlns"
 
-	Xml_prefix_namespace: STRING = "http://www.w3.org/XML/1998/namespace"
-	Xmlns_namespace: STRING = "http://www.w3.org/2000/xmlns/"
+	Xml_prefix_namespace: STRING_32 = "http://www.w3.org/XML/1998/namespace"
+	Xmlns_namespace: STRING_32 = "http://www.w3.org/2000/xmlns/"
 
-	Undeclared_namespace_error: STRING = "Undeclared namespace error"
+	Undeclared_namespace_error: STRING_32 = "Undeclared namespace error"
 			-- Error messages	
 
-	Duplicate_namespace_declaration_error: STRING = "Namespace declared twice"
+	Duplicate_namespace_declaration_error: STRING_32 = "Namespace declared twice"
 			-- Error messages
 
 feature {NONE} -- Implementation
 
-	same_string (a,b: detachable READABLE_STRING_GENERAL): BOOLEAN
+	same_string (a,b: detachable READABLE_STRING_32): BOOLEAN
 			-- Are `a' and `b' the same string?
 		do
 			if a = b then
@@ -300,7 +311,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

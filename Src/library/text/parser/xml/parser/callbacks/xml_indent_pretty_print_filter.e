@@ -23,7 +23,7 @@ inherit
 
 create
 	make_null,
-	set_next
+	make_with_next
 
 feature {NONE} -- Initialization
 
@@ -69,7 +69,7 @@ feature -- Events
 			indent_not_void: indent /= Void
 		end
 
-	on_start_tag (a_namespace: detachable STRING; a_prefix: detachable STRING; a_local_part: STRING)
+	on_start_tag (a_namespace: detachable READABLE_STRING_32; a_prefix: detachable READABLE_STRING_32; a_local_part: READABLE_STRING_32)
 			-- Start of start tag.
 		do
 			check space_preserved_not_void: space_preserved /= Void end
@@ -91,7 +91,7 @@ feature -- Events
 			space_preserved.force (space_preserved.item)
 		end
 
-	on_attribute (a_namespace: detachable STRING; a_prefix: detachable STRING; a_local_part: STRING; a_value: STRING)
+	on_attribute (a_namespace: detachable READABLE_STRING_32; a_prefix: detachable READABLE_STRING_32; a_local_part: READABLE_STRING_32; a_value: READABLE_STRING_32)
 			-- Handle xml:space.
 		do
 			check space_preserved_not_void: space_preserved /= Void end
@@ -104,7 +104,7 @@ feature -- Events
 			Precursor (a_namespace, a_prefix, a_local_part, a_value)
 		end
 
-	on_end_tag (a_namespace: detachable STRING; a_prefix: detachable STRING; a_local_part: STRING)
+	on_end_tag (a_namespace: detachable READABLE_STRING_32; a_prefix: detachable READABLE_STRING_32; a_local_part: READABLE_STRING_32)
 			-- End tag.
 		do
 			depth := depth - 1
@@ -120,7 +120,7 @@ feature -- Events
 			space_preserved.remove
 		end
 
-	on_content (a_content: STRING)
+	on_content (a_content: READABLE_STRING_32)
 			-- Test if we had a content event.
 		do
 			has_content := True
@@ -137,7 +137,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Space preserve
 
-	has_xml_space (a_prefix: detachable STRING; a_local_part: STRING): BOOLEAN
+	has_xml_space (a_prefix: detachable READABLE_STRING_32; a_local_part: READABLE_STRING_32): BOOLEAN
 			-- Is this attribute xml:space?
 		do
 			Result := has_prefix (a_prefix) and then
@@ -193,7 +193,7 @@ feature {NONE} -- Indent
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
