@@ -35,7 +35,8 @@ feature {NONE} -- Initialization
 		ensure
 			pre_state_breakpoints_set: pre_state_breakpoints = a_pre_state_breakpoints
 			post_state_breakpoints_set: post_state_breakpoints = a_post_state_breakpoints
-			expression_evaluation_plan_set: expression_evaluation_plan = a_expression_evaluation_plan
+			expression_evaluation_plan_set:
+				expression_evaluation_plan = a_expression_evaluation_plan
 		end
 
 feature -- Access

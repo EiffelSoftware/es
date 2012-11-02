@@ -145,8 +145,8 @@ feature {EPA_BASIC_BLOCK} -- Roundtrip
 			if
 				not a_block.is_end_node
 			then
-				-- Iterate over successor blocks of the current instruction block to find post-state
-				-- breakpoints.
+				-- Iterate over successor blocks of the current instruction block to
+				-- find post-state breakpoints.
 				l_successor_blocks := a_block.successors
 
 				from
@@ -171,7 +171,9 @@ feature {EPA_BASIC_BLOCK} -- Roundtrip
 			-- instruction block. If not add last pre-state breakpoint of current instruction block
 			-- to set of unresolved pre-state breakpoints.
 			if
-				not last_post_state_breakpoints.has (final_pre_state_breakpoints_of_previous_blocks.item)
+				not last_post_state_breakpoints.has (
+					final_pre_state_breakpoints_of_previous_blocks.item
+				)
 			then
 				unresolved_pre_state_breakpoints.force_last (
 					final_pre_state_breakpoints_of_previous_blocks.item
@@ -303,13 +305,13 @@ feature {EPA_BASIC_BLOCK} -- Roundtrip
 			-- inspect branching block.
 			final_pre_state_breakpoints_of_previous_blocks.put (l_switch_breakpoint)
 
-			-- Find post-state breakpoints in successor blocks of the current inspect branching block
-			-- if there are any.
+			-- Find post-state breakpoints in successor blocks of the current inspect branching
+			-- block if there are any.
 			if
 				not a_block.is_end_node
 			then
-				-- Iterate over successor blocks of the current inspect branching block to find post-state
-				-- breakpoints.
+				-- Iterate over successor blocks of the current inspect branching block to find
+				-- post-state breakpoints.
 				l_successor_blocks := a_block.successors
 
 				from
@@ -453,8 +455,9 @@ feature {NONE} -- Implementation
 			end
 		ensure
 			a_pre_state_breakpoint_added: last_post_state_breakpoints.has (a_pre_state_breakpoint)
-			a_post_state_breakpoint_added:
-				last_post_state_breakpoints.item (a_pre_state_breakpoint).has (a_post_state_breakpoint)
+			a_post_state_breakpoint_added: last_post_state_breakpoints.item (
+				a_pre_state_breakpoint
+			).has (a_post_state_breakpoint)
 		end
 
 	find_for_feature_body

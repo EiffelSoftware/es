@@ -79,7 +79,8 @@ feature {NONE} -- Initialization
 					feature_exists: l_json_analysis_results.has_key (Json_feature)
 				then
 					-- Extract feature.
-					feature_ := string_from_json_value (l_json_analysis_results.item (Json_feature))
+					feature_ :=
+						string_from_json_value (l_json_analysis_results.item (Json_feature))
 				end
 
 				check

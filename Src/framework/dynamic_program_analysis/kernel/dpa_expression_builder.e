@@ -268,7 +268,12 @@ feature -- Basic operations
 					not is_file_type (l_expression_type) and
 					not is_pointer_type (l_expression_type)
 				then
-					create l_expression.make_with_text (class_, feature_, l_expression_text, class_)
+					create l_expression.make_with_text (
+						class_,
+						feature_,
+						l_expression_text,
+						class_
+					)
 					last_expressions.force_last (l_expression)
 				end
 

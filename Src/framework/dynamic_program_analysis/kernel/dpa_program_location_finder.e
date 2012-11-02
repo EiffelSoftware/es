@@ -1,6 +1,6 @@
 note
-	description: "Program location finder which finds potentially interesting program locations%
-		%of an abstract syntax tree with respect to data flow."
+	description: "Program location finder which finds potentially interesting program locations of%
+		%an abstract syntax tree with respect to data flow."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -46,7 +46,8 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	last_program_locations: DS_HASH_SET [INTEGER]
-			-- Last found program locations of `ast' which are interesting with respect to data flow.
+			-- Last found program locations of `ast' which are interesting with respect to data
+			-- flow.
 
 	ast: AST_EIFFEL
 			-- AST which is used to find potentially interesting program locations.

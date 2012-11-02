@@ -24,7 +24,8 @@ feature -- Basic operations
 		a_localized_expressions: DS_HASH_TABLE [DS_HASH_SET [INTEGER], STRING];
 		a_expressions: DS_HASH_SET [EPA_EXPRESSION]
 	)
-			-- Plan from localized expressions and make result available in `last_expression_evaluation_plan'.
+			-- Plan from localized expressions and make result available in
+			-- `last_expression_evaluation_plan'.
 		require
 			a_localized_expressions_not_void: a_localized_expressions /= void
 			a_expressions_not_void: a_expressions /= Void
@@ -104,7 +105,8 @@ feature -- Basic operations
 				loop
 					l_expression := l_expressions.item_for_iteration
 
-					-- Add program locations of current expression to the expression evaluation plan.
+					-- Add program locations of current expression to the expression evaluation
+					-- plan.
 					if
 						last_expression_evaluation_plan.has (l_expression)
 					then

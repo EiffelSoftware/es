@@ -205,8 +205,8 @@ feature -- Basic operations
 				transitions.forth
 			end
 
-			-- Parse `l_json_analysis_results' to get a writable JSON representation of
-			-- analysis results.
+			-- Parse `l_json_analysis_results' to get a writable JSON representation of analysis
+			-- results.
 			create l_json_print_visitor.make
 			l_json_analysis_results.accept (l_json_print_visitor)
 

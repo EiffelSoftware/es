@@ -41,9 +41,11 @@ feature -- Access
 	Error_message_invalid_port: STRING = "The specified port used by the MYSQL data%
 		%writer must be in the interval between 1 (inclusive) and 65535 (inclusive).%
 		%%N%N"
-			-- Error message indicating that the specified port used by the MYSQL data writer must be in the interval between 1 (inclusive) and 65535 (inclusive).
+			-- Error message indicating that the specified port used by the MYSQL data writer must
+			-- be in the interval between 1 (inclusive) and 65535 (inclusive).
 
-	Error_message_failing_mysql_connection_attempt: STRING = "The connection attempt to MYSQL database failed.%
+	Error_message_failing_mysql_connection_attempt: STRING =
+		"The connection attempt to MYSQL database failed.%
 		%MYSQL client error message:%N%N"
 			-- Error message indicating that the connection attempt to MYSQL database failed.
 

@@ -62,7 +62,8 @@ feature -- Basic operations
 			l_parser: AP_PARSER
 			l_parser_options: DS_LIST [AP_OPTION]
 			l_options: DS_LINKED_LIST [STRING]
-			l_program_location_search_option, l_expression_search_option, l_all_program_locations_option: AP_FLAG
+			l_program_location_search_option, l_expression_search_option: AP_FLAG
+			l_all_program_locations_option: AP_FLAG
 			l_class_option, l_feature_option: AP_STRING_OPTION
 			l_program_locations_option, l_variables_option, l_expressions_option: AP_STRING_OPTION
 			l_localized_expressions_option, l_localized_variables_option: AP_STRING_OPTION
@@ -93,14 +94,18 @@ feature -- Basic operations
 			-- Options related to program locations, variables and expressions.
 
 			-- Option to specify program location search.
-			create l_program_location_search_option.make_with_long_form (Option_program_location_search)
+			create l_program_location_search_option.make_with_long_form (
+				Option_program_location_search
+			)
 			l_program_location_search_option.set_description (
 				"Search program locations in feature under analysis.%
 				%Format: --" + Option_program_location_search)
 			l_parser_options.force_last (l_program_location_search_option)
 
 			-- Option to specify usage of all program locations.
-			create l_all_program_locations_option.make_with_long_form (Option_all_program_locations)
+			create l_all_program_locations_option.make_with_long_form (
+				Option_all_program_locations
+			)
 			l_all_program_locations_option.set_description (
 				"Use all program locations in feature under analysis.%
 				%Format: --" + Option_all_program_locations)
@@ -148,11 +153,13 @@ feature -- Basic operations
 			l_parser_options.force_last (l_localized_variables_option)
 
 			-- Option to specify localized expressions.
-			create l_localized_expressions_option.make_with_long_form (Option_localized_expressions)
+			create l_localized_expressions_option.make_with_long_form (
+				Option_localized_expressions
+			)
 			l_localized_expressions_option.set_description (
 				"Specify localized expressions which are pairs of expressions and%
-				%program locations. The expression of such a pair is evaluated before and after the%
-				%execution of the program location of that pair.%
+				%program locations. The expression of such a pair is evaluated before and after%
+				%the execution of the program location of that pair.%
 				%Program locations are specified in terms of breakpoints.%
 				%Format: --" + Option_localized_expressions +
 				" expression:program location[;expression:program location]")
@@ -162,7 +169,7 @@ feature -- Basic operations
 
 			-- Option to specify JSON file writer options.
 			create l_json_file_writer_option.make_with_long_form (Option_json_file_writer)
-			l_json_file_writer_option.set_description ("Specify JSON file writer options in terms %
+			l_json_file_writer_option.set_description ("Specify JSON file writer options in terms%
 				%of a path and a file name used for the%
 				%persistent storage in a file in the JSON format.%
 				%Format: --" + Option_json_file_writer + " path;file name")
@@ -170,7 +177,7 @@ feature -- Basic operations
 
 			-- Option to specify MYSQL writer options.
 			create l_mysql_writer_option.make_with_long_form (Option_mysql_writer)
-			l_mysql_writer_option.set_description ("Specify MYSQL writer options in terms of %
+			l_mysql_writer_option.set_description ("Specify MYSQL writer options in terms of%
 				%a host, user, password, database and port%
 				%used for the persistent storage in a MYSQL database.%
 				%Format: --" + Option_mysql_writer + " host;user;password;database;port")
@@ -197,7 +204,9 @@ feature -- Basic operations
 
 			-- Parameters specifying the analysis choice.
 
-			last_configuration.set_is_expression_search_option_used (l_expression_search_option.was_found)
+			last_configuration.set_is_expression_search_option_used (
+				l_expression_search_option.was_found
+			)
 			last_configuration.set_is_program_location_search_option_used (
 				l_program_location_search_option.was_found
 			)
@@ -267,8 +276,8 @@ feature -- Basic operations
 feature {NONE} -- Implementation
 
 	handle_parsing_error (a_error_message: STRING)
-			-- Handle a parsing error by issuing an error message and aborting
-			-- the dynamic program analysis.
+			-- Handle a parsing error by issuing an error message and aborting the dynamic program
+			-- analysis.
 		require
 			a_error_message_not_void: a_error_message /= Void
 		local
@@ -708,7 +717,8 @@ feature {NONE} -- Implementation
 					-- Add variable from current localized variable to other variables.
 					l_all_variables.force_last (l_variable)
 
-					-- Add program location from current localized variable to other program locations.
+					-- Add program location from current localized variable to other program
+					-- locations.
 					l_all_program_locations.force_last (l_program_location)
 
 					l_raw_localized_variables.forth

@@ -51,11 +51,13 @@ feature -- Access
 		"The specified JSON file writer options are invalid.%N%N"
 			-- Error message indicating that the specified JSON file writer options are invalid.
 
-	Error_message_invalid_host: STRING = "The specified host used by the MYSQL writer is invalid.%N%N"
+	Error_message_invalid_host: STRING =
+		"The specified host used by the MYSQL writer is invalid.%N%N"
 			-- Error message indicating that the specified host used by the MYSQL writer is
 			-- invalid.
 
-	Error_message_invalid_user: STRING = "The specified user used by the MYSQL writer is invalid.%N%N"
+	Error_message_invalid_user: STRING =
+		"The specified user used by the MYSQL writer is invalid.%N%N"
 			-- Error message indicating that the specified user used by the MYSQL writer is
 			-- invalid.
 
@@ -64,8 +66,10 @@ feature -- Access
 			-- Error message indicating that the specified database used by the MYSQL writer is
 			-- invalid.
 
-	Error_message_invalid_port: STRING = "The specified port used by the MYSQL writer is invalid.%N%N"
-			-- Error message indicating that the specified port used by the MYSQL writer is invalid.
+	Error_message_invalid_port: STRING =
+		"The specified port used by the MYSQL writer is invalid.%N%N"
+			-- Error message indicating that the specified port used by the MYSQL writer is
+			-- invalid.
 
 	Error_message_invalid_mysql_writer_options: STRING =
 		"The specified MYSQL writer options are invalid.%N%N"

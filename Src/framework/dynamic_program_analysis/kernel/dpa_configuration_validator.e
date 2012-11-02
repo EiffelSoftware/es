@@ -1,5 +1,6 @@
 note
-	description: "Configuration validator to validate a configuration for dynamic program analysis."
+	description: "Configuration validator to validate a configuration for dynamic program%
+		%analysis."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -39,8 +40,8 @@ feature -- Access
 			-- Configuration which is validated.
 
 	last_status_message: STRING
-			-- Last status message containing configuration errors and explanations why `configuration'
-			-- is not a valid configuration if the configuration is invalid.
+			-- Last status message containing configuration errors and explanations why
+			-- `configuration' is not a valid configuration if the configuration is invalid.
 
 feature -- Status report
 
@@ -64,8 +65,8 @@ feature -- Basic operations
 			l_json_file_writer_options: TUPLE [directory: STRING; file_name: STRING]
 			l_directory_name: DIRECTORY_NAME
 			l_file_name: FILE_NAME
-			l_mysql_writer_options:
-				TUPLE [host: STRING; user: STRING; password: STRING; database: STRING; port: INTEGER]
+			l_mysql_writer_options: TUPLE
+				[host: STRING; user: STRING; password: STRING; database: STRING; port: INTEGER]
 			l_mysql_client: MYSQL_CLIENT
 		do
 			is_configuration_valid := True
@@ -119,16 +120,22 @@ feature -- Basic operations
 				configuration.is_localized_expressions_option_used
 			then
 				l_program_locations := configuration.program_locations
-				create l_feature_breakpoint_interval.make (1, breakpoint_count (configuration.feature_))
+				create l_feature_breakpoint_interval.make (
+					1,
+					breakpoint_count (configuration.feature_)
+				)
 
 				from
 					l_program_locations.start
 				until
 					l_program_locations.after
 				loop
-					-- Is the current program location a valid program location of the feature under analysis?
+					-- Is the current program location a valid program location of the feature
+					-- under analysis?
 					if
-						not l_feature_breakpoint_interval.has (l_program_locations.item_for_iteration)
+						not l_feature_breakpoint_interval.has (
+							l_program_locations.item_for_iteration
+						)
 					then
 						-- The current program location is invalid.
 						l_last_status_message.append (Error_message_invalid_program_location)
@@ -212,7 +219,9 @@ feature -- Basic operations
 						not l_mysql_client.is_connected
 					then
 						-- The connection to the database couldn't be established.
-						l_last_status_message.append (Error_message_failing_mysql_connection_attempt)
+						l_last_status_message.append (
+							Error_message_failing_mysql_connection_attempt
+						)
 						l_last_status_message.append (l_mysql_client.last_error + "%N%N")
 					else
 						l_mysql_client.close

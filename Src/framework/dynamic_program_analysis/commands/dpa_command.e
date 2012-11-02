@@ -137,8 +137,7 @@ feature {NONE} -- Implementation
 			-- Values are program locations.
 
 	processor: DPA_PROCESSOR
-			-- Processor used to process the analysis results during the
-			-- execution of `feature_'.
+			-- Processor used to process the analysis results during the execution of `feature_'.
 
 	writer: DPA_WRITER
 			-- Writer used to persistently store the analysis results.
@@ -158,7 +157,8 @@ feature {NONE} -- Implementation
 		end
 
 	choose_program_locations
-			-- Choose program locations to be considered according to options specified in `configuration'.
+			-- Choose program locations to be considered according to options specified in
+			-- `configuration'.
 		local
 			l_program_location_finder: DPA_PROGRAM_LOCATION_FINDER
 			l_feature_body_breakpoints: INTEGER_INTERVAL
@@ -180,7 +180,8 @@ feature {NONE} -- Implementation
 			elseif
 				configuration.is_program_location_search_option_used
 			then
-				-- Find program locations to be considered using abstract syntax tree of `l_feature'.
+				-- Find program locations to be considered using abstract syntax tree of
+				-- `l_feature'.
 				create l_program_location_finder.make (feature_.e_feature.ast)
 				l_program_location_finder.find
 				program_locations := l_program_location_finder.last_program_locations
@@ -214,7 +215,8 @@ feature {NONE} -- Implementation
 			elseif
 				configuration.is_expression_search_option_used
 			then
-				-- Build expressions from abstract syntax tree of `l_feature' and previously choosen program locations.
+				-- Build expressions from abstract syntax tree of `l_feature' and previously
+				-- choosen program locations.
 				l_expression_builder.build_from_ast (
 					feature_.e_feature.ast, program_locations
 				)
@@ -307,8 +309,8 @@ feature {NONE} -- Implementation
 				-- Retrieve post-state breakpoints for current pre-state breakpoint.
 				l_post_state_breakpoints := post_state_breakpoints.item (l_pre_state_breakpoint)
 
-				-- Iterate over possible post-state breakpoints of current pre-state breakpoint
-				-- to set up action for evaluation of expressions.
+				-- Iterate over possible post-state breakpoints of current pre-state breakpoint to
+				-- set up action for evaluation of expressions.
 				from
 					l_post_state_breakpoints.start
 				until
@@ -332,8 +334,8 @@ feature {NONE} -- Implementation
 		end
 
 	process_and_write (a_breakpoint: BREAKPOINT; a_state: EPA_STATE)
-			-- Process `a_breakpoint' and `a_state' using `processor' and write
-			-- analysis results to disk using `writer'.
+			-- Process `a_breakpoint' and `a_state' using `processor' and write analysis results to
+			-- disk using `writer'.
 		require
 			a_breakpoint_not_void: a_breakpoint /= Void
 			a_state_not_void: a_state /= Void
@@ -352,8 +354,7 @@ feature {NONE} -- Implementation
 feature {NONE} -- Implementation
 
 	new_json_file_writer: DPA_JSON_FILE_WRITER
-			-- JSON file writer configured according to the options specified in
-			-- `configuration'.
+			-- JSON file writer configured according to the options specified in `configuration'.
 		local
 			l_json_file_writer_options: TUPLE [directory: STRING; file_name: STRING]
 		do
@@ -370,8 +371,7 @@ feature {NONE} -- Implementation
 		end
 
 	new_mysql_writer: DPA_MYSQL_WRITER
-			-- MYSQL writer configured according to the options specified in
-			-- `configuration'.
+			-- MYSQL writer configured according to the options specified in `configuration'.
 		local
 			l_mysql_writer_options: TUPLE [
 				host: STRING; user: STRING; password: STRING; database: STRING; port: INTEGER

@@ -1,6 +1,5 @@
 note
-	description: "A writer that writes the analysis results of a dynamic program %
-		%analysis to disk."
+	description: "A writer that writes the analysis results of a dynamic program analysis to disk."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
