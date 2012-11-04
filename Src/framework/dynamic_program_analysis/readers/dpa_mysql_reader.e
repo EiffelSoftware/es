@@ -34,6 +34,17 @@ feature {NONE} -- Initialization
 		do
 			mysql_client := a_mysql_client
 
+			-- Connect MYSQL client to database if the MYSQL client is not connected.
+			if
+				not mysql_client.is_connected
+			then
+				mysql_client.connect
+			end
+
+			check
+				mysql_client_connected: mysql_client.is_connected
+			end
+
 			-- Check existence of transitions table.
 			mysql_client.execute_query (
 				"SELECT COUNT(*) FROM information_schema.tables WHERE %
