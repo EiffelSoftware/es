@@ -17,6 +17,8 @@ inherit
 
 	IV_SHARED_FACTORY
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 feature -- Access
 
 	expression_translator: E2B_EXPRESSION_TRANSLATOR

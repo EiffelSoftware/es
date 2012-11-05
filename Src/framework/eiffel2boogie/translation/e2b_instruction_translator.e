@@ -749,10 +749,22 @@ feature {NONE} -- Implementation
 
 	origin_information (a_node: BYTE_NODE): IV_STATEMENT_ORIGIN
 			-- Origin information of node `a_node'.
+		local
+			l_error: BOOLEAN
 		do
-			create Result
-			Result.set_file (current_feature.written_class.file_name)
-			Result.set_line (a_node.line_number)
+			if l_error then
+				create Result
+				Result.set_file (current_feature.written_class.file_name)
+				Result.set_line (-1)
+			else
+				create Result
+				Result.set_file (current_feature.written_class.file_name)
+				Result.set_line (a_node.line_number)
+			end
+		rescue
+				-- a_node.line_number might result in a postcondition violation
+			l_error := True
+			retry
 		end
 
 	add_statement (a_statement: IV_STATEMENT)

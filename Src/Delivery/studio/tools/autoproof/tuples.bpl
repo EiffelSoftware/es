@@ -35,7 +35,7 @@ procedure $TUPLE.make(
 	requires count >= 0;
 	ensures Heap[c, TUPLE.count] == count;
 	modifies Heap;
-	ensures (forall<beta> o: ref, f: Field beta :: (o != c) ==> (Heap[o, f] == old(Heap)[o, f]));
+	ensures (forall<beta> o: ref, f: Field beta :: (o != c || f == $allocated) ==> (Heap[o, f] == old(Heap)[o, f]));
 
 // Procedure for putting elements in tuples
 procedure $TUPLE.put<alpha>(
@@ -59,6 +59,12 @@ axiom (forall<alpha> h: HeapType, v1: alpha :: h[TUPLE.create1(v1), TUPLE.count]
 axiom (forall<alpha> h: HeapType, v1: alpha :: $TUPLE.item(h, TUPLE.create1(v1), 1) == v1);
 
 function TUPLE.create2<alpha, beta>(value1: alpha, value2: beta) returns (ref);
-axiom (forall<alpha, beta> h: HeapType, v1: alpha, v2: beta :: h[TUPLE.create2(v1, v2), TUPLE.count] == 1);
+axiom (forall<alpha, beta> h: HeapType, v1: alpha, v2: beta :: h[TUPLE.create2(v1, v2), TUPLE.count] == 2);
 axiom (forall<alpha, beta> h: HeapType, v1: alpha, v2: beta :: $TUPLE.item(h, TUPLE.create2(v1, v2), 1) == v1);
 axiom (forall<alpha, beta> h: HeapType, v1: alpha, v2: beta :: $TUPLE.item(h, TUPLE.create2(v1, v2), 2) == v2);
+
+function TUPLE.create3<alpha, beta, gamma>(value1: alpha, value2: beta, value3: gamma) returns (ref);
+axiom (forall<alpha, beta, gamma> h: HeapType, v1: alpha, v2: beta, v3: gamma :: h[TUPLE.create3(v1, v2, v3), TUPLE.count] == 3);
+axiom (forall<alpha, beta, gamma> h: HeapType, v1: alpha, v2: beta, v3: gamma :: $TUPLE.item(h, TUPLE.create3(v1, v2, v3), 1) == v1);
+axiom (forall<alpha, beta, gamma> h: HeapType, v1: alpha, v2: beta, v3: gamma :: $TUPLE.item(h, TUPLE.create3(v1, v2, v3), 2) == v2);
+axiom (forall<alpha, beta, gamma> h: HeapType, v1: alpha, v2: beta, v3: gamma :: $TUPLE.item(h, TUPLE.create3(v1, v2, v3), 3) == v3);

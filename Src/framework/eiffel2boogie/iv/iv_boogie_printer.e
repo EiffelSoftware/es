@@ -474,7 +474,14 @@ feature -- Expression Visitor
 	process_forall (a_forall: IV_FORALL)
 			-- <Precursor>
 		do
+			generic_index.put (generic_index.item + 1)
 			process_quantifier ("forall<beta>", a_forall)
+--			process_quantifier ("forall<beta"+generic_index.item.out+">", a_forall)
+		end
+
+	generic_index: CELL [INTEGER]
+		once
+			create Result.put (0)
 		end
 
 	process_function_call (a_call: IV_FUNCTION_CALL)

@@ -30,6 +30,7 @@ feature -- Access
 	loop_expr: LOOP_EXPR_B
 	array_access: ACCESS_B
 	object_test_local: OBJECT_TEST_LOCAL_B
+	array_expr: IV_EXPRESSION
 
 feature -- Basic operations
 
@@ -50,6 +51,7 @@ feature -- Basic operations
 				-- Array expression
 			array_access.process (expression_translator)
 			l_array := expression_translator.last_expression
+			array_expr := l_array
 
 				-- Loop content
 			expression_translator.create_iterator (types.int)
@@ -80,7 +82,7 @@ feature -- Basic operations
 		do
 			create l_call.make ("ARRAY.$item", types.generic_type)
 			l_call.add_argument (expression_translator.entity_mapping.heap)
-			l_call.add_argument (expression_translator.entity_mapping.current_entity)
+			l_call.add_argument (array_expr)
 			l_call.add_argument (expression_translator.locals_map.item (object_test_local.position))
 			expression_translator.set_last_expression (l_call)
 		end
