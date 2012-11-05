@@ -5144,7 +5144,6 @@ eweasel/tests/term130/notes -text
 eweasel/tests/term134/notes -text
 eweasel/tests/term137/notes -text
 eweasel/tests/term163/Ace -text
-eweasel/tests/term195/Ace -text
 eweasel/tests/term197/test.def -text
 eweasel/tests/term209/test -text svneol=unset#application/octet-stream
 eweasel/tests/thread002/Ace -text
