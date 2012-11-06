@@ -3655,7 +3655,6 @@ Src/library/abel/apps/test/dadl_test/src/gui_main/system_interface.xml -text
 Src/library/abel/apps/test/readme.txt -text
 Src/library/abel/apps/test/serialization_test/serialization_test.ecf svneol=native#text/xml
 Src/library/abel/libraries/ethz/src/abel/obsolete/old_disassembler.txt -text
-Src/library/abel/libraries/ethz/src/couchdb/__MACOSX/eCouchDB/._.DS_Store -text
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/.DS_Store -text
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/README -text
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/library/couchdb_client.rc -text

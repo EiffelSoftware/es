@@ -34,7 +34,7 @@ feature -- Initialization
 		do
 			print ("%N COUCHDB DATABASE API %N")
 			print("%NCreation%N"+cdb_database.db_create ("erest"))
---			print("%NInfo%N"+cdb_database.info ("erest"))
+			print("%NInfo%N"+cdb_database.info ("erest"))
 --			print("%NChange feed%N"+cdb_database.change_feed ("erest"))
 --			--		print ("%NCompaction:%N" +cdb_database.compaction("erest"))
 --			--
