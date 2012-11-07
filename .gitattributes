@@ -3659,7 +3659,6 @@ Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/.DS_Store -text
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/README -text
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/library/couchdb_client.rc -text
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/library/exception_trace.log -text
-Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/test/exception_trace.log -text
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/test/test.rc -text
 Src/library/abel/libraries/ethz/src/mysql/README -text
 Src/library/abel/libraries/ethz/src/mysql/README_OLD -text
