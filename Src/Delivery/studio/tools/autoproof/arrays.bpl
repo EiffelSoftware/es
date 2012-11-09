@@ -123,24 +123,24 @@ function fun.ARRAY#int#.has_not(heap: HeapType, c: ref, val: int) returns (bool)
 }
 
 
-procedure ARRAY#int#.subarray(
-			c: ref where attached(Heap, c, ARRAY^INTEGER_32^),
-			l: int where is_integer_32(l),
-			u: int where is_integer_32(u)
-		) returns (result: ref);
-	requires 1 <= l && l <= fun.ARRAY#int#.count(Heap, c) + 1;
-	requires 0 <= u && u <= fun.ARRAY#int#.count(Heap, c);
-//	requires (l <= u) || (l == u + 1);
-	ensures (forall o: ref :: old(Heap)[o, $allocated] ==> o != result);
-	ensures attached(Heap, result, ARRAY^INTEGER_32^);
-	ensures ARRAY.$inv(Heap, result);
-	ensures Heap[result, ARRAY.lower] == 1;
-	ensures Heap[result, ARRAY.count] == (u - l + 1);
-	ensures 0 <= fun.ARRAY#int#.count(Heap, result) && fun.ARRAY#int#.count(Heap, result) <= fun.ARRAY#int#.count(Heap, c);
-	ensures (forall i: int :: ARRAY.$is_index(Heap, result, i) ==> ARRAY.$item(Heap, result, i) == ARRAY.$item(Heap, c, i + l - 1));
-	ensures (forall i: int :: ARRAY.$is_index(Heap, result, i) ==> ARRAY.$item(Heap, result, i) == ARRAY.$item(Heap, c, i + l - 1));
-	modifies Heap;
-	ensures (forall<beta> o: ref, f: Field beta :: (o != result) ==> (Heap[o, f] == old(Heap)[o, f]));
+// procedure ARRAY#int#.subarray(
+			// c: ref where attached(Heap, c, ARRAY^INTEGER_32^),
+			// l: int where is_integer_32(l),
+			// u: int where is_integer_32(u)
+		// ) returns (result: ref);
+	// requires 1 <= l && l <= fun.ARRAY#int#.count(Heap, c) + 1;
+	// requires 0 <= u && u <= fun.ARRAY#int#.count(Heap, c);
+// //	requires (l <= u) || (l == u + 1);
+	// ensures (forall o: ref :: old(Heap)[o, $allocated] ==> o != result);
+	// ensures attached(Heap, result, ARRAY^INTEGER_32^);
+	// ensures ARRAY.$inv(Heap, result);
+	// ensures Heap[result, ARRAY.lower] == 1;
+	// ensures Heap[result, ARRAY.count] == (u - l + 1);
+	// ensures 0 <= fun.ARRAY#int#.count(Heap, result) && fun.ARRAY#int#.count(Heap, result) <= fun.ARRAY#int#.count(Heap, c);
+	// ensures (forall i: int :: ARRAY.$is_index(Heap, result, i) ==> ARRAY.$item(Heap, result, i) == ARRAY.$item(Heap, c, i + l - 1));
+	// ensures (forall i: int :: ARRAY.$is_index(Heap, result, i) ==> ARRAY.$item(Heap, result, i) == ARRAY.$item(Heap, c, i + l - 1));
+	// modifies Heap;
+	// ensures (forall<beta> o: ref, f: Field beta :: (o != result) ==> (Heap[o, f] == old(Heap)[o, f]));
 
 
 procedure ARRAY#ref#.make(

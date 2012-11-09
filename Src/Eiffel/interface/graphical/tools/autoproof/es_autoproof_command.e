@@ -150,6 +150,28 @@ feature {NONE} -- Basic operations
 	process_result (a_result: E2B_RESULT)
 			-- Process verification result.
 		local
+			l_success: E2B_SUCCESSFUL_VERIFICATION
+		do
+			event_list.prune_event_items (event_context_cookie)
+			across a_result.verified_procedures as i loop
+				create l_success.make (i.item)
+				event_list.put_event_item (event_context_cookie, l_success)
+			end
+			show_proof_tool
+		end
+
+	event_context_cookie: UUID
+			-- Context cookie for AutoProof events.
+		local
+			l_generator: UUID_GENERATOR
+		once
+			create l_generator
+			Result := l_generator.generate_uuid
+		end
+
+	process_result2 (a_result: E2B_RESULT)
+			-- Process verification result.
+		local
 			w: WARNING
 			s: E2B_SUCCESSFUL_VERIFICATION
 			e: EP_VERIFICATION_ERROR
@@ -391,6 +413,21 @@ feature {NONE} -- Implementation
 		end
 
 feature {NONE} -- Implementation
+
+	frozen service_consumer: SERVICE_CONSUMER [EVENT_LIST_S]
+			-- Access to an event list service {EVENT_LIST_S} consumer.
+		once
+			create Result
+		ensure
+			result_attached: Result /= Void
+		end
+
+	frozen event_list: EVENT_LIST_S
+			-- Access to an event list service.
+		do
+			check service_consumer.is_service_available end
+			Result := service_consumer.service
+		end
 
 	set_up_menu_items
 			-- Set up menu items of proof button

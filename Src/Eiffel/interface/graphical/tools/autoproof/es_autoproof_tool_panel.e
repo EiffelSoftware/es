@@ -281,7 +281,7 @@ feature -- Status report
 			-- Is `a_item' visible?
 		local
 			l_text: STRING
-			l_item: EVENT_LIST_PROOF_ITEM_I
+			l_item: E2B_FEATURE_RESULT
 		do
 			Result := True
 			l_item ?= a_item.data
@@ -423,31 +423,25 @@ feature {NONE} -- Query
 	is_appliable_event (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
 			-- Determines if event `a_event_item' can be shown with the current event list tool
 		do
-			Result := is_successful_event (a_event_item) or is_failed_event (a_event_item) or is_skipped_event (a_event_item)
+			Result := attached {E2B_FEATURE_RESULT} a_event_item
 		end
 
 	is_successful_event (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
 			-- Determines if event `a_event_item' is a successful event
 		do
-			if {e: EVENT_LIST_PROOF_SUCCESSFUL_ITEM} a_event_item then
-				Result := True
-			end
+			Result := attached {E2B_SUCCESSFUL_VERIFICATION} a_event_item
 		end
 
 	is_failed_event (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
 			-- Determines if event `a_event_item' is a failed event
 		do
-			if {e: EVENT_LIST_PROOF_FAILED_ITEM} a_event_item then
-				Result := True
-			end
+			Result := attached {E2B_VERIFICATION_ERROR} a_event_item
 		end
 
 	is_skipped_event (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
 			-- Determines if event `a_event_item' is a skipped event
 		do
-			if {e: EVENT_LIST_PROOF_SKIPPED_ITEM} a_event_item then
-				Result := True
-			end
+			Result := False
 		end
 
 feature {NONE} -- Basic operations
@@ -455,33 +449,17 @@ feature {NONE} -- Basic operations
 	do_default_action (a_row: EV_GRID_ROW)
 			-- <Precursor>
 		local
-			l_event_item: EVENT_LIST_PROOF_ITEM_I
-			l_error_list: LIST [EP_ERROR]
-			l_error: EP_ERROR
 			l_stone: STONE
 		do
-			l_event_item ?= a_row.data
-			l_error ?= a_row.data
-			if l_event_item /= Void then
+			if attached {E2B_FEATURE_RESULT} a_row.data as l_event_item then
 				if is_failed_event (l_event_item) then
-					l_error_list ?= l_event_item.data
-					check l_error_list /= Void end
-					l_error := l_error_list.first
+
 				else
 					if l_event_item.context_feature /= Void then
 						create {FEATURE_STONE} l_stone.make (l_event_item.context_feature.api_feature (l_event_item.context_class.class_id))
 					else
 						create {CLASSC_STONE} l_stone.make (l_event_item.context_class)
 					end
-				end
-			end
-			if l_error /= Void then
-				if l_error.line > 0 then
-					create {COMPILED_LINE_STONE} l_stone.make_with_line (l_error.class_c, l_error.line, False)
-				elseif l_error.e_feature /= Void then
-					create {FEATURE_STONE} l_stone.make (l_error.e_feature)
-				else
-					create {CLASSC_STONE} l_stone.make (l_error.class_c)
 				end
 			end
 			if l_stone /= Void and then l_stone.is_valid then
@@ -499,32 +477,34 @@ feature {NONE} -- Basic operations
 			l_gen, l_message_gen, l_text_gen: EB_EDITOR_TOKEN_GENERATOR
 			l_lines: LIST [EIFFEL_EDITOR_LINE]
 			l_tip: EB_EDITOR_TOKEN_TOOLTIP
-			l_proof_event_item: EVENT_LIST_PROOF_ITEM_I
+			l_result: E2B_FEATURE_RESULT
 			l_label: EV_GRID_LABEL_ITEM
 			l_error_list: LIST [EP_ERROR]
 			l_error: EP_ERROR
 			l_row: EV_GRID_ROW
 
 		do
-			l_proof_event_item ?= a_event_item
-			check l_proof_event_item /= Void end
+			if attached {E2B_FEATURE_RESULT} a_event_item as l then
+				l_result := l
+			end
+			check l_result /= Void end
 
 				-- Class location
 			create l_gen.make
-			l_proof_event_item.context_class.append_name (l_gen)
+			l_result.context_class.append_name (l_gen)
 			l_editor_item := create_clickable_grid_item (l_gen.last_line, True)
 			a_row.set_item (class_column, l_editor_item)
 
 				-- Feature location
-			if l_proof_event_item.context_feature /= Void then
+			if l_result.context_feature /= Void then
 				create l_gen.make
-				l_gen.add_feature_name (l_proof_event_item.context_feature.feature_name_32, l_proof_event_item.context_class)
+				l_gen.add_feature_name (l_result.context_feature.feature_name_32, l_result.context_class)
 				l_editor_item := create_clickable_grid_item (l_gen.last_line, True)
 				a_row.set_item (feature_column, l_editor_item)
 			end
 
 				-- Time information
-			create l_label.make_with_text (l_proof_event_item.milliseconds_used.out)
+			create l_label.make_with_text (l_result.milliseconds_used.out)
 			a_row.set_item (time_column, l_label)
 
 			if is_successful_event (a_event_item) then
@@ -536,7 +516,7 @@ feature {NONE} -- Basic operations
 				a_row.set_item (icon_column, l_label)
 
 					-- Info
-				a_row.set_item (info_column, create {EV_GRID_LABEL_ITEM}.make_with_text (l_proof_event_item.description))
+				a_row.set_item (info_column, create {EV_GRID_LABEL_ITEM}.make_with_text (l_result.description))
 
 					-- Display
 				a_row.set_background_color (successful_color)
@@ -552,26 +532,26 @@ feature {NONE} -- Basic operations
 				a_row.set_background_color (failed_color)
 
 					-- Info
-				l_error_list ?= a_event_item.data
-				check l_error_list /= Void end
+--				l_error_list ?= a_event_item.data
+--				check l_error_list /= Void end
 
 				create l_message_gen.make
 				create l_text_gen.make
 				l_text_gen.enable_multiline
 
-				from
-					l_error_list.start
-				until
-					l_error_list.after
-				loop
-					l_error := l_error_list.item_for_iteration
-					l_error.trace_single_line_message (l_message_gen)
-					tracer.trace (l_text_gen, l_error, {ERROR_TRACER}.normal)
-					l_error_list.forth
-					if not l_error_list.after then
-						l_message_gen.add (" / ")
-					end
-				end
+--				from
+--					l_error_list.start
+--				until
+--					l_error_list.after
+--				loop
+--					l_error := l_error_list.item_for_iteration
+--					l_error.trace_single_line_message (l_message_gen)
+--					tracer.trace (l_text_gen, l_error, {ERROR_TRACER}.normal)
+--					l_error_list.forth
+--					if not l_error_list.after then
+--						l_message_gen.add (" / ")
+--					end
+--				end
 
 				l_editor_item := create_clickable_grid_item (l_message_gen.last_line, True)
 				a_row.set_item (info_column, l_editor_item)
@@ -583,51 +563,51 @@ feature {NONE} -- Basic operations
 				end
 
 					-- Subrows
-				from
-					l_error_list.start
-				until
-					l_error_list.after
-				loop
-					l_error := l_error_list.item_for_iteration
-					create l_text_gen.make
-					l_text_gen.enable_multiline
-					tracer.trace (l_text_gen, l_error, {ERROR_TRACER}.normal)
-					l_lines := l_text_gen.lines
+--				from
+--					l_error_list.start
+--				until
+--					l_error_list.after
+--				loop
+--					l_error := l_error_list.item_for_iteration
+--					create l_text_gen.make
+--					l_text_gen.enable_multiline
+--					tracer.trace (l_text_gen, l_error, {ERROR_TRACER}.normal)
+--					l_lines := l_text_gen.lines
 
-					a_row.insert_subrow (l_error_list.index)
-					l_row := a_row.subrow (l_error_list.index)
-					l_row.set_data (l_error)
+--					a_row.insert_subrow (l_error_list.index)
+--					l_row := a_row.subrow (l_error_list.index)
+--					l_row.set_data (l_error)
 
-					if l_error_list.index \\ 2 = 0 then
-						l_row.set_background_color (even_failed_sub_color)
-					else
-						l_row.set_background_color (odd_failed_sub_color)
-					end
+--					if l_error_list.index \\ 2 = 0 then
+--						l_row.set_background_color (even_failed_sub_color)
+--					else
+--						l_row.set_background_color (odd_failed_sub_color)
+--					end
 
-					l_row.set_item (icon_column, create {EV_GRID_LABEL_ITEM})
-					l_row.set_item (class_column, create {EV_GRID_LABEL_ITEM})
-					l_row.set_item (feature_column, create {EV_GRID_LABEL_ITEM})
+--					l_row.set_item (icon_column, create {EV_GRID_LABEL_ITEM})
+--					l_row.set_item (class_column, create {EV_GRID_LABEL_ITEM})
+--					l_row.set_item (feature_column, create {EV_GRID_LABEL_ITEM})
 
-					l_editor_item := create_multiline_clickable_grid_item (l_lines, True, False)
-					l_row.set_height (l_editor_item.required_height_for_text_and_component)
-					l_row.set_item (info_column, l_editor_item)
+--					l_editor_item := create_multiline_clickable_grid_item (l_lines, True, False)
+--					l_row.set_height (l_editor_item.required_height_for_text_and_component)
+--					l_row.set_item (info_column, l_editor_item)
 
-					if l_error.column > 0 then
-						l_row.set_item (position_column, create {EV_GRID_LABEL_ITEM}.make_with_text (l_error.line.out + "," + l_error.column.out))
-					elseif l_error.line > 0 then
-						l_row.set_item (position_column, create {EV_GRID_LABEL_ITEM}.make_with_text (l_error.line.out + ",1"))
-					end
+--					if l_error.column > 0 then
+--						l_row.set_item (position_column, create {EV_GRID_LABEL_ITEM}.make_with_text (l_error.line.out + "," + l_error.column.out))
+--					elseif l_error.line > 0 then
+--						l_row.set_item (position_column, create {EV_GRID_LABEL_ITEM}.make_with_text (l_error.line.out + ",1"))
+--					end
 
-					l_error_list.forth
-				end
+--					l_error_list.forth
+--				end
 
 					-- Position
-				l_error := l_error_list.first
-				if l_error.column > 0 then
-					a_row.set_item (position_column, create {EV_GRID_LABEL_ITEM}.make_with_text (l_error.line.out + "," + l_error.column.out))
-				elseif l_error.line > 0 then
-					a_row.set_item (position_column, create {EV_GRID_LABEL_ITEM}.make_with_text (l_error.line.out + ",1"))
-				end
+--				l_error := l_error_list.first
+--				if l_error.column > 0 then
+--					a_row.set_item (position_column, create {EV_GRID_LABEL_ITEM}.make_with_text (l_error.line.out + "," + l_error.column.out))
+--				elseif l_error.line > 0 then
+--					a_row.set_item (position_column, create {EV_GRID_LABEL_ITEM}.make_with_text (l_error.line.out + ",1"))
+--				end
 
 
 			elseif is_skipped_event (a_event_item) then
@@ -639,7 +619,7 @@ feature {NONE} -- Basic operations
 				a_row.set_item (icon_column, l_label)
 
 					-- Info
-				a_row.set_item (info_column, create {EV_GRID_LABEL_ITEM}.make_with_text (l_proof_event_item.description))
+				a_row.set_item (info_column, create {EV_GRID_LABEL_ITEM}.make_with_text (l_result.description))
 
 					-- Display
 				a_row.set_background_color (skipped_color)
