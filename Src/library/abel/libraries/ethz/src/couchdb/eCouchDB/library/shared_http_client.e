@@ -13,7 +13,7 @@ class
 feature -- Access
 	http : HTTP_CLIENT
 		once
-			create Result.make
-			 create Result.make_with_endpoint ("https://ecouchdb.iriscouch.com")
+			-- create Result.make
+			create Result.make_with_endpoint ("https://ecouchdb.iriscouch.com")
 		end
 end

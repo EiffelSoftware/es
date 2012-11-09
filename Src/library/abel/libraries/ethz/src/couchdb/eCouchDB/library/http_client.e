@@ -202,6 +202,7 @@ feature -- HTTP VERBS
 			l_result: INTEGER
 			l_end_point : STRING
 			l_curl_string: CURL_STRING
+			curl_slist: POINTER
 		do
 
 			l_end_point := endpoint + a_uri
@@ -210,6 +211,7 @@ feature -- HTTP VERBS
 
 			if curl_easy.is_dynamic_library_exists then
 				create l_curl_string.make_empty
+				create curl_slist.default_create
 				curl_handle := curl_easy.init
 
 --				HTTPS trick
@@ -223,13 +225,17 @@ feature -- HTTP VERBS
 					-- data.
 				curl_easy.setopt_string (curl_handle, {CURL_OPT_CONSTANTS}.curlopt_url,l_end_point )
 
+					-- Now specify the Content-Type
+				curl_easy.setopt_slist (curl_handle, {CURL_OPT_CONSTANTS}.curlopt_httpheader, curl.slist_append (curl_slist,"Content-Type: application/json"))
+
 					-- Now specify the POST data
 				if a_data = Void then
-					curl_easy.setopt_string (curl_handle, {CURL_OPT_CONSTANTS}.curlopt_post, l_end_point)
+					-- curl_easy.setopt_string (curl_handle, {CURL_OPT_CONSTANTS}.curlopt_post, l_end_point)
+					-- the above line alone doesn't work nor does it seem to be required at all
+					curl_easy.setopt_string (curl_handle, {CURL_OPT_CONSTANTS}.curlopt_postfields, "")
 				else
 					curl_easy.setopt_string (curl_handle, {CURL_OPT_CONSTANTS}.curlopt_postfields, a_data)
 				end
-
 
 					-- Send all data to default Eiffel curl write function
                 curl_easy.set_write_function (curl_handle)
@@ -246,6 +252,7 @@ feature -- HTTP VERBS
 					print ("Error")
 				end
 					-- Always cleanup
+				curl.slist_free_all (curl_slist)
 				curl_easy.cleanup (curl_handle)
 			else
 				io.error.put_string ("cURL library not found!")
