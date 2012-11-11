@@ -179,6 +179,9 @@ feature -- Basic operations
 			l_expression_value_type_finder: EPA_EXPRESSION_VALUE_TYPE_FINDER
 			l_localized_expression_occurrence: INTEGER
 		do
+			-- Start a transaction to speed up the insertion of the transitions.
+			mysql_client.execute_query ("START TRANSACTION")
+
 			-- Insert transitions into MYSQL database.
 			mysql_client.prepare_statement (
 				"INSERT INTO " + Mysql_transitions_table_name +
@@ -304,6 +307,9 @@ feature -- Basic operations
 
 				transitions.forth
 			end
+
+			-- Commit the transction to conclude the insertion of the transitions.
+			mysql_client.execute_query ("COMMIT")
 
 			-- Empty `transitions' since all of them were written to MYSQL database.
 			create transitions.make
