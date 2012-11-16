@@ -16,7 +16,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_title, a_base_label, a_diff_label: STRING)
+	make (a_title, a_base_label, a_diff_label: STRING; a_panel: ES_EVE_AUTOFIX_TOOL_PANEL)
 			-- Initialization
 		require
 			title_not_empty: a_title /= Void and then not a_title.is_empty
@@ -26,14 +26,16 @@ feature{NONE} -- Initialization
 			title := a_title.twin
 			base_code_label_text := a_base_label.twin
 			diff_code_label_text := a_diff_label.twin
+			panel := a_panel
+			create difference_background_color.make_with_8_bit_rgb (255, 255, 0)
 
 			default_create
 		ensure
 			title_set: title /= Void and then title ~ a_title
 			base_label_set: base_code_label /= Void and then base_code_label.text ~ a_base_label
 			diff_label_set: diff_code_label /= Void and then diff_code_label.text ~ a_diff_label
-			base_rich_text_attached: base_rich_text /= Void
-			diff_rich_text_attached: diff_rich_text /= Void
+			base_text_editor_attached: base_text_editor /= Void
+			diff_text_editor_attached: diff_text_editor /= Void
 		end
 
 	initialize
@@ -53,11 +55,11 @@ feature{NONE} -- Initialization
 			create base_code_label.make_with_text (base_code_label_text)
 			l_vertical_box.extend (base_code_label)
 			l_vertical_box.disable_item_expand (base_code_label)
-			create base_rich_text
-			base_rich_text.disable_edit
-			base_rich_text.set_background_color (l_vertical_box.background_color)
-			base_rich_text.set_tab_width (30)
-			l_vertical_box.extend (base_rich_text)
+			create base_text_editor.make (panel.develop_window)
+			base_text_editor.disable_editable
+			base_text_editor.widget.set_background_color (l_vertical_box.background_color)
+			base_text_editor.widget.set_border_width (1)
+			l_vertical_box.extend (base_text_editor.widget)
 			l_horizontal_box.extend (l_vertical_box)
 
 			create l_vertical_box
@@ -66,11 +68,11 @@ feature{NONE} -- Initialization
 			create diff_code_label.make_with_text (diff_code_label_text)
 			l_vertical_box.extend (diff_code_label)
 			l_vertical_box.disable_item_expand (diff_code_label)
-			create diff_rich_text
-			diff_rich_text.disable_edit
-			diff_rich_text.set_tab_width (30)
-			diff_rich_text.set_background_color (l_vertical_box.background_color)
-			l_vertical_box.extend (diff_rich_text)
+			create diff_text_editor.make (panel.develop_window)
+			diff_text_editor.disable_editable
+			diff_text_editor.widget.set_background_color (l_vertical_box.background_color)
+			diff_text_editor.widget.set_border_width (1)
+			l_vertical_box.extend (diff_text_editor.widget)
 			l_horizontal_box.extend (l_vertical_box)
 
 			extend (l_horizontal_box)
@@ -95,16 +97,19 @@ feature -- Status set
 
 feature {NONE} -- GUI elements
 
+	panel: ES_EVE_AUTOFIX_TOOL_PANEL
+			-- AutoFix tool panel.
+
 	base_code_label: EV_LABEL
 			-- Label for the base code.
 
 	diff_code_label: EV_LABEL
 			-- Label for the diff code.
 
-	base_rich_text: EV_RICH_TEXT
+	base_text_editor: EB_SMART_EDITOR
 			-- Rich text control for the base code.
 
-	diff_rich_text: EV_RICH_TEXT
+	diff_text_editor: EB_SMART_EDITOR
 			-- Rich text control for the diff code.
 
 feature {NONE} -- GUI texts
@@ -116,24 +121,27 @@ feature {NONE} -- GUI texts
 
 	diff_code_label_text: STRING
 
+	difference_background_color: EV_COLOR
+			-- Background color of the differences.
+
 feature {NONE} -- Implementation
 
 	update_view
 			-- Update the widget view to reflect `hunk'.
 		local
 			l_segs: LINKED_LIST [TUPLE[start: INTEGER; finish: INTEGER]]
-			l_start_line, l_finish_line: INTEGER
+			l_cur_line, l_start_line, l_finish_line: INTEGER
 			l_start_pos, l_finish_pos: INTEGER
 			l_character_format: EV_CHARACTER_FORMAT
 			l_format_range: EV_CHARACTER_FORMAT_RANGE_INFORMATION
 		do
 			if hunk = Void then
-			base_rich_text.set_text ("")
-				diff_rich_text.set_text ("")
+				base_text_editor.load_text ("")
+				diff_text_editor.load_text ("")
 			else
 					-- Regular text
-				base_rich_text.set_text (hunk.base_code_with_padding)
-				diff_rich_text.set_text (hunk.diff_code_with_padding)
+				base_text_editor.load_text (hunk.base_code_with_padding)
+				diff_text_editor.load_text (hunk.diff_code_with_padding)
 
 					-- Difference in highlight
 				l_character_format := highlighting_format.character_format
@@ -145,10 +153,16 @@ feature {NONE} -- Implementation
 					l_start_line := l_segs.item_for_iteration.start
 					l_finish_line := l_segs.item_for_iteration.finish
 
-						-- Highlight the fix.
-					l_start_pos := diff_rich_text.first_position_from_line_number (l_start_line)
-					l_finish_pos := diff_rich_text.last_position_from_line_number (l_finish_line - 1)
-					diff_rich_text.modify_region (l_start_pos, l_finish_pos, l_character_format, l_format_range)
+					from l_cur_line := l_start_line
+					until l_cur_line >= l_finish_line
+					loop
+							-- Highlight the fix.
+						diff_text_editor.select_lines (l_cur_line, l_cur_line)
+						diff_text_editor.text_displayed.selection_start.line.content.do_all (agent {EDITOR_TOKEN}.set_background_color (difference_background_color))
+
+						l_cur_line := l_cur_line + 1
+					end
+					diff_text_editor.deselect_all
 
 					l_segs.forth
 				end
@@ -163,7 +177,7 @@ feature {NONE} -- Implementation
 			l_background_color: EV_COLOR
 			l_format_range: EV_CHARACTER_FORMAT_RANGE_INFORMATION
 		once
-			l_font := base_rich_text.font
+			l_font := base_text_editor.font
 			create l_font.make_with_values (l_font.family, {EV_FONT_CONSTANTS}.Weight_bold, l_font.shape, l_font.height)
 			create l_character_format.make_with_font (l_font)
 			create l_background_color.make_with_8_bit_rgb (255, 255, 0)

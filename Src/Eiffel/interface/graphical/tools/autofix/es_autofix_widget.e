@@ -133,7 +133,7 @@ feature {NONE} -- Implementation
 			l_left_frame.set_minimum_size (350, 200)
 			l_left_frame.extend (l_v_box)
 
-			create code_diff_widget.make ("Fix Preview", before_fixing_label_text, after_fixing_label_text)
+			create code_diff_widget.make ("Fix Preview", before_fixing_label_text, after_fixing_label_text, panel)
 			code_diff_widget.set_minimum_size (400, 200)
 
 			create split_area

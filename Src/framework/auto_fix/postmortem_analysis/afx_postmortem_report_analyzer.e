@@ -10,6 +10,8 @@ class
 inherit
 	EPA_UTILITY
 
+	SHARED_SERVER
+
 	REFACTORING_HELPER
 
 create
@@ -44,6 +46,7 @@ feature -- Basic operation
 			create result_records.make
 			parse_file_name
 			save_ast (recipient_feature_with_context.feature_.body, "original")
+			save_ast (recipient_feature_with_context.written_class.ast, "original")
 			l_fixes := fixes_from_file
 			l_fixes.do_all (agent (a_fix: TUPLE[INTEGER, BOOLEAN, STRING]) do analysis_record_for_fix (a_fix) end)
 		end
@@ -185,22 +188,55 @@ feature{NONE} -- Analysis
 		require
 			fix_not_empty: a_fix /= Void and then not a_fix.is_empty
 		local
+			l_written_class: CLASS_C
+			l_match_list: LEAF_AS_LIST
+			l_new_text: STRING
 			l_original_structure, l_fixed_structure: AFX_FEATURE_AST_STRUCTURE_NODE
 			l_fixed_feature_as: FEATURE_AS
+			l_retried: BOOLEAN
+			l_routine_body_as: ROUT_BODY_AS
+			l_new_body_text, l_new_class_content: STRING
 		do
-			l_original_structure := recipient_feature_ast_structure_node
-			Entity_feature_parser.parse_from_utf8_string ("feature " + a_fix.text, Void)
-			l_fixed_feature_as := Entity_feature_parser.feature_node
-			if l_fixed_feature_as /= Void and then l_fixed_feature_as.feature_name.name ~ recipient_feature_str then
-				fixme ("Bypass the cases where AutoFix didn't fix the right feature.")
-				structure_generator.generate_from_feature_as (recipient_feature_with_context.context_class, recipient_feature_with_context.feature_, l_fixed_feature_as)
-				l_fixed_structure := structure_generator.structure
+			if not l_retried then
+				l_written_class := recipient_feature_with_context.written_class
+				l_match_list := match_list_server.item (l_written_class.class_id)
 
-				has_found_difference := False
-				fix_under_analysis := a_fix
-				compare_structure_node (l_original_structure, l_fixed_structure)
-				save_ast (l_fixed_feature_as, fix_under_analysis.starting_ln.out)
+				l_original_structure := recipient_feature_ast_structure_node
+				Entity_feature_parser.parse_from_utf8_string ("feature " + a_fix.text, Void)
+				l_fixed_feature_as := Entity_feature_parser.feature_node
+				if l_fixed_feature_as /= Void and then l_fixed_feature_as.feature_name.name ~ recipient_feature_str then
+					fixme ("Bypass the cases where AutoFix didn't fix the right feature.")
+					structure_generator.generate_from_feature_as (recipient_feature_with_context.context_class, recipient_feature_with_context.feature_, l_fixed_feature_as)
+					l_fixed_structure := structure_generator.structure
+
+					has_found_difference := False
+					fix_under_analysis := a_fix
+					compare_structure_node (l_original_structure, l_fixed_structure)
+
+						-- Output the fix (feature) in XML.
+					save_ast (l_fixed_feature_as, fix_under_analysis.starting_ln.out)
+
+						-- Output the fix (class) in XML.
+					l_new_body_text := text_from_ast (l_fixed_feature_as.body.as_routine.routine_body)
+					l_new_body_text.replace_substring_all ("%N", "%N%T%T")
+
+					l_routine_body_as := recipient_feature_with_context.written_feature.body.body.as_routine.routine_body
+					l_routine_body_as.replace_text (l_new_body_text, l_match_list)
+					l_new_class_content := l_written_class.ast.text (l_match_list)
+					l_match_list.remove_modifications
+
+					Eiffel_parser.set_syntax_version ({EIFFEL_SCANNER_SKELETON}.provisional_syntax)
+					Eiffel_parser.parse_class_from_string (l_new_class_content, Void, Void)
+					save_ast (Eiffel_parser.root_node, fix_under_analysis.starting_ln.out)
+
+--					recipient_feature_with_context.written_feature.body.replace_text (a_fix.text, l_match_list)
+--					l_new_text := text_from_ast (recipient_feature_with_context.written_feature.body)
+--					save_ast (l_written_class.ast, fix_under_analysis.starting_ln.out)
+				end
 			end
+		rescue
+			l_retried := True
+			retry
 		end
 
 	summary_string_for_structure_node (a_node: AFX_AST_STRUCTURE_NODE): STRING
@@ -449,13 +485,24 @@ feature{NONE} -- Output
 			-- Save `a_ast' in XML format with `a_id'.
 		require
 			ast_attached: a_ast /= Void
+			ast_feature_or_class: attached {FEATURE_AS} a_ast or else attached {CLASS_AS} a_ast
 		local
 			l_path: FILE_NAME
+			l_ast_type: STRING
 			l_directory: DIRECTORY
 		do
 			if output_dir /= Void then
+				if attached {FEATURE_AS} a_ast then
+					l_ast_type := "feature"
+				elseif attached {CLASS_AS} a_ast then
+					l_ast_type := "class"
+				else
+					check False end
+				end
+
 				create l_path.make_from_string (output_dir)
 				l_path.set_subdirectory ("XML")
+				l_path.set_subdirectory (l_ast_type)
 				l_path.set_subdirectory (base_name)
 				create l_directory.make (l_path)
 				if not l_directory.exists then
