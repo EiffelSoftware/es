@@ -50,6 +50,7 @@ feature {NONE} -- Implementation
 			ensure_remaining_one_object_of_type (({detachable BUTTON_1}).type_id)
 			ensure_remaining_one_object_of_type (({detachable BUTTON_2}).type_id)
 			ensure_remaining_one_object_of_type (({detachable GROUP_1}).type_id)
+			ensure_remaining_one_object_of_type (({detachable EV_RIBBON_TITLED_WINDOW_IMP}).type_id)
 		end
 
 	ensure_remaining_one_object_of_type (a_type: INTEGER)
@@ -80,13 +81,18 @@ feature {NONE} -- Implementation
 			l_main_window: MAIN_WINDOW
 		do
 			main_window.set_title ("Do not close me, close the other one.")
+
+				-- Test `enabled' and `set_enabled', when the window is not shown.
+			test_set_enabled
+
 			main_window.show
 
 			create l_main_window
 			l_main_window.show
 			l_main_window.destroy
 
---			create m.make ("E:\70dev\library\memory_analyzer")
+				-- Location of memory analyzer library.
+--			create m.make ("C:\work\72dev\library\memory_analyzer")
 --			m.show
 		end
 
@@ -95,6 +101,17 @@ feature {NONE} -- Implementation
 	application: EV_APPLICATION
 
 --	m: detachable MA_WINDOW
+
+feature -- Test
+
+	test_set_enabled
+			-- Test `enabled' and `set_enabled'
+		do
+			main_window.application_menu.menu_group_1.button_3.set_enabled (True)
+			check enabled: main_window.application_menu.menu_group_1.button_3.is_enabled end
+			main_window.application_menu.menu_group_1.button_3.set_enabled (False)
+			check not_enabled: not main_window.application_menu.menu_group_1.button_3.is_enabled end
+		end
 
 feature -- Exception
 

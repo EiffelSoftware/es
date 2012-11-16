@@ -1,7 +1,4 @@
 * text=auto !eol
-.git-svn/readme.txt -text
-.git-svn/scm -text
-.git-svn/users.txt -text
 Documentation/tools/web/trunk/bin/README.txt -text
 Documentation/tools/web/trunk/bin/data/favicon.ico -text
 Documentation/tools/web/trunk/bin/data/logo.gif -text
@@ -76,6 +73,9 @@ Documentation/tools/web/trunk/misc/patches/eiffel.php -text
 Documentation/tools/web/trunk/misc/patches/htaccess -text
 Documentation/tools/web/trunk/misc/patches/trash.module -text
 Documentation/tools/xmldoc2wiki/README.txt -text
+Src/.git-svn/readme.txt -text
+Src/.git-svn/scm -text
+Src/.git-svn/users.txt -text
 Src/C/eif_config_h.SH eol=lf
 Src/C/run-time/eif_size_h.SH eol=lf
 Src/C/shell/bin/cat.exe -text
@@ -3031,6 +3031,7 @@ Src/examples/obsolete/vision2/pixmap/magenta.png -text
 Src/examples/obsolete/vision2/pixmap/new.png -text
 Src/examples/obsolete/vision2/pixmap/open.png -text
 Src/examples/obsolete/vision2/pixmap/save.png -text
+Src/examples/preferences/default.conf -text
 Src/examples/preferences/display.png -text
 Src/examples/preferences/graphics.png -text
 Src/examples/proofs/formatter/formatter.aps -text
@@ -3286,9 +3287,7 @@ Src/framework/cli_debugger/cli_debugger.lic -text
 Src/framework/cli_writer/cli_writer.lic -text
 Src/framework/com_light/tests/test.docx -text
 Src/framework/command_tunnel/command_tunnel.lic -text
-Src/framework/configuration/configuration_compiler.lic -text
-Src/framework/configuration/configuration_gui.lic -text
-Src/framework/configuration/configuration_parser.lic -text
+Src/framework/configuration/license.lic -text
 Src/framework/configuration/parser/implementation/lace/lace_compile/classname_finder.l -text
 Src/framework/configuration/parser/implementation/lace/lace_compile/lace.l -text
 Src/framework/configuration/versioning/configuration-1-0-0.xsd -text
@@ -5639,6 +5638,8 @@ eweasel/tests/melt073/notes -text
 eweasel/tests/once001/Ace -text
 eweasel/tests/once004/Ace -text
 eweasel/tests/once005/Ace -text
+eweasel/tests/path001/Ace svneol=native#text/xml
+eweasel/tests/path002/Ace svneol=native#text/xml
 eweasel/tests/replication002/Ace -text
 eweasel/tests/scoop010/tcf -text
 eweasel/tests/store001/notes -text
@@ -5870,7 +5871,6 @@ eweasel/tests/term130/notes -text
 eweasel/tests/term134/notes -text
 eweasel/tests/term137/notes -text
 eweasel/tests/term163/Ace -text
-eweasel/tests/term195/Ace -text
 eweasel/tests/term197/test.def -text
 eweasel/tests/term209/test -text svneol=unset#application/octet-stream
 eweasel/tests/thread002/Ace -text

@@ -155,36 +155,14 @@ feature -- File name operations
 
 	make_directory_name_in (name: READABLE_STRING_GENERAL; location: READABLE_STRING_GENERAL): READABLE_STRING_GENERAL
 			-- A directory name for directory `name' in directory `location'.
-		local
-			d: DIRECTORY_NAME
-			d32: DIRECTORY_NAME_32
 		do
-			if attached {READABLE_STRING_32} location as l then
-				create d32.make_from_string (l)
-				d32.extend (name.as_string_32)
-				Result := d32.to_string_32
-			else
-				create d.make_from_string (location.as_string_8)
-				d.extend (name.as_string_8)
-				Result := d
-			end
+			Result := make_file_name_in (name, location)
 		end
 
 	make_file_name_in (name: READABLE_STRING_GENERAL; location: READABLE_STRING_GENERAL): READABLE_STRING_GENERAL
 			-- A file name for file `name' in directory `location'.
-		local
-			f: FILE_NAME
-			f32: FILE_NAME_32
 		do
-			if attached {READABLE_STRING_32} location as l then
-				create f32.make_from_string (l)
-				f32.set_file_name (name.as_string_32)
-				Result := f32
-			else
-				create f.make_from_string (location.as_string_8)
-				f.set_file_name (name.as_string_8)
-				Result := f
-			end
+			Result := (create {PATH}.make_from_string (location)).extended (name).name
 		end
 
 feature -- Directory operations
@@ -195,16 +173,10 @@ feature -- Directory operations
 			Result := not p.is_empty and then (create {DIRECTORY}.make_with_path (p)).exists
 		end
 
-	make_directory (n: READABLE_STRING_GENERAL): DIRECTORY
-			-- New {DIRECTORY} for directory name `n'.
-		do
-			create Result.make (n)
-		end
-
 	directory_exists (n: READABLE_STRING_GENERAL): BOOLEAN
 			-- Does directory of name `n' exist?
 		do
-			Result := not n.is_empty and then make_directory (n).exists
+			Result := not n.is_empty and then (create {DIRECTORY}.make (n)).exists
 		end
 
 	file_names (n: READABLE_STRING_32): detachable LIST [STRING_32]
@@ -215,7 +187,6 @@ feature -- Directory operations
 			l: ARRAYED_LIST [STRING_32]
 			is_retried: BOOLEAN
 			f: RAW_FILE
-			fn: FILE_NAME_32
 		do
 			if not is_retried then
 				create d.make (n)
@@ -223,16 +194,13 @@ feature -- Directory operations
 					d.open_read
 					from
 						create f.make_with_name ({STRING_32} ".")
-						create fn.make_from_string ({STRING_32} ".")
 						create l.make (0)
 						d.readentry
 					until
 						not attached d.last_entry_32 as e
 					loop
-						fn.reset (n)
-						fn.set_file_name (e)
-						f.reset (fn)
-						if  f.exists and then f.is_readable and then f.is_plain then
+						create f.make_with_path ((create {PATH}.make_from_string (n)).extended (e))
+						if f.exists and then f.is_readable and then f.is_plain then
 							l.extend (e)
 						end
 						d.readentry
@@ -256,14 +224,12 @@ feature -- Directory operations
 			l: ARRAYED_LIST [STRING_32]
 			is_retried: BOOLEAN
 			f: DIRECTORY
-			fn: DIRECTORY_NAME_32
 		do
 			if not is_retried then
 				create d.make (n)
 				if d.exists and then d.is_readable then
 					d.open_read
 					from
-						create fn.make_from_string ({STRING_32} ".")
 						create l.make (0)
 						d.readentry
 					until
@@ -275,9 +241,7 @@ feature -- Directory operations
 						then
 								-- This is a reference to the current or to the parent directory.
 						else
-							fn.reset (n)
-							fn.extend (e)
-							create f.make (fn)
+							create f.make_with_path ((create {PATH}.make_from_string (n)).extended (e))
 							if f.exists and then f.is_readable then
 								l.extend (e)
 							end
@@ -303,11 +267,11 @@ feature -- Directory operations
 			a_path_attached: a_path /= Void
 			not_a_path_is_empty: not a_path.is_empty
 		local
-			d: DIRECTORY
 			is_retried: BOOLEAN
+			d: DIRECTORY
 		do
 			if not is_retried then
-				d := make_directory (a_path)
+				create d.make (a_path)
 				if not d.exists then
 					d.recursive_create_dir
 				end
@@ -418,7 +382,7 @@ feature -- File operations
 			f: RAW_FILE
 		do
 			create f.make_with_path (old_path)
-			f.rename_file (new_path.string_representation)
+			f.rename_path (new_path)
 		end
 
 
@@ -460,8 +424,10 @@ feature -- File operations
 
 	file_name (f: FILE): READABLE_STRING_GENERAL
 			-- Name associated with `f'.
+		obsolete
+			"Try to store the name used to create the file `f' rather than trying to retrieve it."
 		do
-			Result := f.name_32
+			Result := f.path.name
 		end
 
 	file_exists (n: READABLE_STRING_GENERAL): BOOLEAN

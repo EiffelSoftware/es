@@ -485,10 +485,9 @@ feature -- Status report
 			a_dir_name_not_void: a_dir_name /= Void
 			a_dir_name_not_empty: not a_dir_name.is_empty
 		local
-			u: FILE_UTILITIES
 			l_dir: DIRECTORY
 		do
-			l_dir := u.make_directory (a_dir_name)
+			create l_dir.make (a_dir_name)
 			Result := l_dir.exists and then l_dir.is_readable
 		end
 
@@ -1102,7 +1101,7 @@ feature {NONE} -- Implementation
 			l_storage: RAW_FILE
 		do
 			if not retried then
-				create l_storage.make (a_file_name)
+				create l_storage.make_with_name (a_file_name)
 				if l_storage.exists then
 					l_storage.open_read
 					from

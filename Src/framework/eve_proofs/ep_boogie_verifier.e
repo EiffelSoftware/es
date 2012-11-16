@@ -199,9 +199,7 @@ feature {NONE} -- Implementation
 				-- 2. Look in deliversy
 			if l_executable.is_empty then
 				l_path := eiffel_layout.shared_application_path.twin
-				l_path.extend ("tools")
-				l_path.extend ("boogie")
-				l_path.extend ("bin")
+				l_path := l_path.extended ("tools/boogie/bin")
 				create l_file_name.make
 				l_file_name.set_directory (l_path.out)
 				l_file_name.set_file_name ("Boogie.exe")

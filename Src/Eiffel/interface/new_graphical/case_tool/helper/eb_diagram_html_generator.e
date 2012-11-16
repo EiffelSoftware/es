@@ -97,7 +97,7 @@ feature {EB_DOCUMENTATION_WIZARD} -- Basic operations
 	available_views: LINKED_LIST [STRING]
 			-- Names of available views of `cluster'.
 		local
-			l_parser: XML_LITE_STOPPABLE_PARSER
+			l_parser: XML_STOPPABLE_PARSER
 			l_tree: XML_CALLBACKS_NULL_FILTER_DOCUMENT
 			l_file: RAW_FILE
 			l_concatenator: XML_CONTENT_CONCATENATOR
@@ -118,7 +118,7 @@ feature {EB_DOCUMENTATION_WIZARD} -- Basic operations
 				if l_parser.is_correct then
 					diagram_input := l_tree.document.root_element
 					check
-						valid_file: diagram_input.name.same_string ("EIFFEL_CLUSTER_DIAGRAM")
+						valid_file: diagram_input.has_same_name ("EIFFEL_CLUSTER_DIAGRAM")
 					end
 					a_cursor := diagram_input.new_cursor
 					from
@@ -130,7 +130,7 @@ feature {EB_DOCUMENTATION_WIZARD} -- Basic operations
 							check
 								valid_node: node.has_attribute_by_name ("NAME")
 							end
-							Result.extend (node.attribute_by_name ("NAME").value)
+							Result.extend (node.attribute_by_name ("NAME").value.to_string_8)
 						else
 							check node_is_element: False end
 						end
@@ -440,7 +440,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2011, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

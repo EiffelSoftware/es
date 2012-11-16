@@ -1320,6 +1320,7 @@ test	profile-crash-on-override		final116 tcf fail finalizing profile
 test	tight-loop-integer-constant-infinite-loop final117 tcf fail finalizing manual
 test	finalize-once-strings-in-invariant	final118 tcf fail finalizing
 test	equation-evaluation-sequence	final119 tcf fail finalizing
+test	comparison-involving-allocation	final120 tcf fail finalizing
 
 -- Runtime
 test	gc-tracking-001					runtime001	tcf pass runtime
@@ -2146,6 +2147,9 @@ test	flat-multi-export-lists		flat005	 tcf fail flat manual
 test	rename-inherited-bad-flat	flat006	 tcf pass flat manual
 
 -- Library class tests
+
+if UNIX test	basic-unix-path-operations	path001 tcf pass library file path
+if not UNIX test	basic-windows-path-operations	path002 tcf pass library file path
 
 test	unix-file-start-precond-error	lib001	 tcf pass library file
 test	string-copy-valid-count		lib002	 tcf pass library file

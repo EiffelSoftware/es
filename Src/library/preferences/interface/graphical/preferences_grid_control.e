@@ -1072,9 +1072,9 @@ feature {NONE} -- Implementation
 				Result := l_edit_widget.change_item_widget
 				Result.set_data (l_edit_widget)
 			elseif a_pref.generating_preference_type.is_equal ("COMBO") and then
-				attached {ABSTRACT_ARRAY_PREFERENCE [READABLE_STRING_GENERAL]} a_pref as l_array
+				attached {ABSTRACT_CHOICE_PREFERENCE [ANY]} a_pref as l_choice
 			then
-				l_choice_widget := new_choice_widget (l_array)
+				l_choice_widget := new_choice_widget (l_choice)
 				l_choice_widget.change_actions.extend (agent on_preference_changed (?, l_choice_widget))
 				Result := l_choice_widget.change_item_widget
 				Result.set_data (l_choice_widget)
@@ -1385,7 +1385,7 @@ feature {NONE} -- Widgets initialization
 			Result_not_void: Result /= Void
 		end
 
-	new_choice_widget (a_pref: ABSTRACT_ARRAY_PREFERENCE [READABLE_STRING_GENERAL]): CHOICE_PREFERENCE_WIDGET
+	new_choice_widget (a_pref: ABSTRACT_CHOICE_PREFERENCE [ANY]): CHOICE_PREFERENCE_WIDGET
 		require
 			a_pref_not_void: a_pref /= Void
 		do

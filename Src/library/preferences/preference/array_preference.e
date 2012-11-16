@@ -28,13 +28,13 @@ feature -- Status Setting
 			-- Parse the string value `a_value' and set `value'.
 		local
 			cnt: INTEGER
-			s: STRING
-			values: LIST [STRING]
+			s: STRING_32
+			values: LIST [STRING_32]
 			l_value: like value
 		do
 			create internal_value.make_empty
-			values := a_value.as_string_8.split (';')
-			if values.count > 1 or not values.first.is_empty then
+			values := splitted_strings (a_value.to_string_32)
+			if not values.is_empty and then (values.count > 1 or else not values.first.is_empty) then
 				from
 					l_value := value
 					check has_value: l_value /= Void end -- implied by `internal_value /= Void'
@@ -49,7 +49,7 @@ feature -- Status Setting
 						is_choice := True
 						set_selected_index (cnt)
 					end
-					l_value.force (s, cnt)
+					l_value.force (unescaped_string (s).to_string_8, cnt)
 					values.forth
 					cnt := cnt + 1
 				end

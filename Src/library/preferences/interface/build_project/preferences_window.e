@@ -638,14 +638,12 @@ feature {NONE} -- Implementation
 			valid_file_name: pn /= Void
 		local
 			retried: BOOLEAN
-			fullp: FILE_NAME
+			fullp: PATH
 		do
 			create Result
 			if not retried then
-				create fullp.make_from_string (pixmaps_path_cell.item)
-				fullp.set_file_name (pn)
-				fullp.add_extension (pixmaps_extension_cell.item)
-				Result.set_with_named_file (fullp)
+				fullp := pixmaps_path_cell.item.extended (pn + {STRING_32} "." + pixmaps_extension_cell.item)
+				Result.set_with_named_file (fullp.string_representation)
 			end
 		rescue
 			retried := True
@@ -683,6 +681,7 @@ feature {NONE} -- Implementation
 			l_font_widget: FONT_PREFERENCE_WIDGET
 			l_color_widget: COLOR_PREFERENCE_WIDGET
 			l_shortcut_widget: SHORTCUT_PREFERENCE_WIDGET
+			l_path_widget: PATH_PREFERENCE_WIDGET
 		do
 			if attached {BOOLEAN_PREFERENCE} a_preference as l_bool then
 					-- Boolean
@@ -692,6 +691,11 @@ feature {NONE} -- Implementation
 				l_bool_widget.change_item_widget.set_data (l_bool_widget)
 			else
 				if a_preference.generating_preference_type.is_equal ("TEXT") then
+					create l_path_widget.make_with_preference (a_preference)
+					l_path_widget.change_actions.extend (agent on_preference_changed)
+					grid.set_item (4, row_index, l_path_widget.change_item_widget)
+					l_path_widget.change_item_widget.set_data (l_path_widget)
+				elseif a_preference.generating_preference_type.is_equal ("PATH") then
 					create l_edit_widget.make_with_preference (a_preference)
 					l_edit_widget.change_actions.extend (agent on_preference_changed)
 					grid.set_item (4, row_index, l_edit_widget.change_item_widget)
