@@ -234,26 +234,26 @@ feature -- Applying and recalling a fix
 					l_backup_file_name.set_file_name (l_class_to_fix.name.as_lower + "__" + l_time_stamp)
 					l_backup_file_name.add_extension ("e")
 
-					file_system.copy_file (l_origin_file_name, l_backup_file_name)
+--					file_system.copy_file (l_origin_file_name, l_backup_file_name)
 				end
 			end
 
-				-- Update the faulty feature body in the class text.
-			l_match_list := match_list_server.item (l_class_to_fix.class_id)
-			l_routine_body_as := a_suggestion.context_feature.body.body.as_routine.routine_body
-			Entity_feature_parser.parse_from_utf8_string ("feature " + a_suggestion.diff_code, Void)
-			l_new_body_text := text_from_ast (Entity_feature_parser.feature_node.body.as_routine.routine_body)
-			l_new_body_text.replace_substring_all ("%N", "%N%T%T")
-			l_routine_body_as.replace_text (l_new_body_text, l_match_list)
-			l_new_class_content := l_class_to_fix.ast.text (l_match_list)
+--				-- Update the faulty feature body in the class text.
+--			l_match_list := match_list_server.item (l_class_to_fix.class_id)
+--			l_routine_body_as := a_suggestion.context_feature.body.body.as_routine.routine_body
+--			Entity_feature_parser.parse_from_utf8_string ("feature " + a_suggestion.diff_code, Void)
+--			l_new_body_text := text_from_ast (Entity_feature_parser.feature_node.body.as_routine.routine_body)
+--			l_new_body_text.replace_substring_all ("%N", "%N%T%T")
+--			l_routine_body_as.replace_text (l_new_body_text, l_match_list)
+--			l_new_class_content := l_class_to_fix.ast.text (l_match_list)
 
-				-- Write back the updated class text to file.
-			create l_file.make (l_origin_file_name)
-			l_file.open_write
-			if l_file.is_open_write then
-				l_file.put_string (l_new_class_content)
-				l_file.close
-			end
+--				-- Write back the updated class text to file.
+--			create l_file.make (l_origin_file_name)
+--			l_file.open_write
+--			if l_file.is_open_write then
+--				l_file.put_string (l_new_class_content)
+--				l_file.close
+--			end
 
 				-- Update the result file.
 			create l_file.make (result_file_name)
@@ -303,9 +303,9 @@ feature -- Applying and recalling a fix
 			create l_backup_file.make (backup_class_file)
 			l_size_backup := l_backup_file.count
 
-				-- Copy the backup to system.
-			l_system_file_name := faulty_feature.written_class.file_name
-			file_system.copy_file (backup_class_file, l_system_file_name)
+--				-- Copy the backup to system.
+--			l_system_file_name := faulty_feature.written_class.file_name
+--			file_system.copy_file (backup_class_file, l_system_file_name)
 
 				-- Update the result file.
 			create l_file.make (result_file_name)
@@ -456,6 +456,8 @@ feature {NONE} -- Implementation
 			l_order: AGENT_BASED_EQUALITY_TESTER [ES_EVE_AUTOFIX_FIXING_SUGGESTION]
 			l_sorter: DS_QUICK_SORTER [ES_EVE_AUTOFIX_FIXING_SUGGESTION]
 			l_index: INTEGER
+			l_suggestion: ES_EVE_AUTOFIX_FIXING_SUGGESTION
+			l_max_ranking, l_min_ranking: DOUBLE
 		do
 				-- Sort
 			create l_order.make (
@@ -466,6 +468,23 @@ feature {NONE} -- Implementation
 				)
 			create l_sorter.make (l_order)
 			sort (l_sorter)
+
+				-- Normalize the ranking.
+			l_min_ranking := first.ranking
+			l_max_ranking := last.ranking
+			from start
+			until after
+			loop
+				l_suggestion := item_for_iteration
+				if (l_suggestion.ranking - l_min_ranking).abs < 10 ^ -5 then
+					l_suggestion.set_normalized_ranking (0)
+				elseif (l_suggestion.ranking - l_max_ranking).abs < 10 ^ -5 then
+					l_suggestion.set_normalized_ranking (1.0)
+				else
+					l_suggestion.set_normalized_ranking((l_suggestion.ranking - l_min_ranking) / (l_max_ranking - l_min_ranking))
+				end
+				forth
+			end
 
 				-- Index
 			from

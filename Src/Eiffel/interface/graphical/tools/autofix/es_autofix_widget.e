@@ -46,7 +46,7 @@ feature -- GUI elements
 	faults_combo: EV_COMBO_BOX
 			-- Combo-box listing all the faults.
 
-	fixes_list: EV_LIST
+	fixes_list: ES_GRID
 			-- List showing all the fixes for a fault from `faults_combo'.
 
 	apply_fix_button: EV_BUTTON
@@ -127,7 +127,11 @@ feature {NONE} -- Implementation
 			l_v_box.disable_item_expand (l_h_box)
 			create fixes_list
 			fixes_list.set_minimum_size (250, 120)
-			fixes_list.disable_multiple_selection
+			fixes_list.set_column_count_to (3)
+			fixes_list.set_row_count_to (20)
+			fixes_list.hide_header
+			fixes_list.enable_single_row_selection
+			fixes_list.enable_column_resize_immediate
 			l_v_box.extend (fixes_list)
 			create l_left_frame
 			l_left_frame.set_minimum_size (350, 200)
@@ -216,37 +220,57 @@ feature -- Actions
 			l_fault: STRING
 			l_list_item: EV_LIST_ITEM
 			l_suggestion: ES_EVE_AUTOFIX_FIXING_SUGGESTION
+			l_fix_index: INTEGER
+			l_item: EV_GRID_LABEL_ITEM
 		do
+			fixes_list.lock_update
 			if a_result = Void then
 				fixes_list.wipe_out
+				fixes_list.set_item (1, 1, empty_grid_item)
+				fixes_list.set_item (2, 1, placeholder_grid_item)
+				fixes_list.set_item (3, 1, empty_grid_item)
+
 				code_diff_widget.set_hunk (Void)
 			else
 				if a_result /= previously_selected_result then
-						-- Refresh the 'fixes_list'.				
+						-- Refresh the 'fixes_list'.		
 					fixes_list.wipe_out
 
 					if not a_result.is_empty then
-						from a_result.start
+						from
+							a_result.start
+							l_fix_index := 1
 						until a_result.after
 						loop
 							l_suggestion := a_result.item_for_iteration
 
-							create l_list_item.make_with_text (l_suggestion.short_summary_text)
-							l_list_item.set_data (l_suggestion)
-							l_list_item.select_actions.extend (agent on_fix_selected (l_suggestion))
-							l_list_item.deselect_actions.extend (agent on_fix_selected (Void))
-							fixes_list.extend (l_list_item)
+							fixes_list.set_item (1, l_fix_index, color_grid_item (l_suggestion.normalized_ranking))
+							create l_item.make_with_text (l_suggestion.short_summary_text)
+							fixes_list.set_item (2, l_fix_index, l_item)
+							if l_suggestion.parent /= Void and then l_suggestion.parent.fix_index_applied = l_suggestion.index then
+								fixes_list.set_item (3, l_fix_index, applied_grid_item)
+							else
+								fixes_list.set_item (3, l_fix_index, empty_grid_item)
+							end
 
+							fixes_list.row (l_fix_index).set_data (l_suggestion)
+							fixes_list.row (l_fix_index).select_actions.extend (agent on_fix_selected (l_suggestion))
+							fixes_list.row (l_fix_index).deselect_actions.extend (agent on_fix_selected (Void))
+
+							l_fix_index := l_fix_index + 1
 							a_result.forth
 						end
 					else
-						create l_list_item.make_with_text ("-- No candidate fix suggested")
-						l_list_item.select_actions.extend (agent on_fix_selected (Void))
-						fixes_list.extend (l_list_item)
+						fixes_list.set_item (1, 1, empty_grid_item)
+						fixes_list.set_item (2, 1, placeholder_grid_item)
+						fixes_list.set_item (3, 1, empty_grid_item)
 					end
---					fixes_list.first.enable_select
 				end
 			end
+
+			fixes_list.column (1).resize_to_content
+			fixes_list.column (2).resize_to_content
+			fixes_list.unlock_update
 
 			previously_selected_result := a_result
 			update_buttons
@@ -266,7 +290,7 @@ feature -- Actions
 	on_unapply_fix
 			-- Unapply the fix.
 		local
-			l_applied_fix_index: INTEGER
+			l_applied_fix_index, l_selected_row: INTEGER
 			l_applied_fix: ES_EVE_AUTOFIX_FIXING_SUGGESTION
 			l_result: ES_EVE_AUTOFIX_RESULT
 		do
@@ -277,11 +301,10 @@ feature -- Actions
 			l_result.revert
 
 				-- Update GUI.
+			l_selected_row := fixes_list.selected_rows.first.index
 			faults_combo.selected_item.set_text (l_result.short_summary_text)
-			if fixes_list.count >= l_applied_fix_index and then attached fixes_list[l_applied_fix_index] as lt_item
-					and then attached {ES_EVE_AUTOFIX_FIXING_SUGGESTION} lt_item.data as lt_data then
-				lt_item.set_text (lt_data.short_summary_text)
-			end
+			fixes_list.set_item (3, l_selected_row, empty_grid_item)
+			fixes_list.select_row (l_selected_row)
 			update_buttons
 		end
 
@@ -289,23 +312,26 @@ feature -- Actions
 			-- Apply the fix.
 		local
 			l_result: ES_EVE_AUTOFIX_RESULT
+			l_selected_fix_index: INTEGER
 			l_suggestion: ES_EVE_AUTOFIX_FIXING_SUGGESTION
 			l_retried: BOOLEAN
 			l_information_dialog: EV_INFORMATION_DIALOG
 		do
-			if not l_retried then
-				l_result ?= faults_combo.selected_item.data
-				check l_result /= Void end
-				l_suggestion ?= fixes_list.selected_item.data
-				check l_suggestion /= Void end
+			l_selected_fix_index := fixes_list.selected_rows.first.index
+			l_result ?= faults_combo.selected_item.data
+			check l_result /= VOid end
+			l_suggestion ?= fixes_list.selected_rows.first.data
+			check l_suggestion /= Void end
 
+			if not l_retried then
 					-- Apply the fix.
 				l_suggestion.apply
 			end
 
 				-- Update GUI.
 			faults_combo.selected_item.set_text (l_result.short_summary_text)
-			fixes_list.selected_item.set_text (l_suggestion.short_summary_text)
+			fixes_list.set_item (3, l_selected_fix_index, applied_grid_item)
+			fixes_list.select_row (l_selected_fix_index)
 			update_buttons
 		rescue
 			if attached {ES_EVE_AUTOFIX_EXCEPTION} exception_manager.last_exception.original as lt_ex then
@@ -313,6 +339,51 @@ feature -- Actions
 				l_information_dialog.set_text ("AutoFix failed to apply the chosen fix due to %N%T" + lt_ex.reason + "%NThe system is not changed.")
 				l_information_dialog.show_modal_to_window (panel.window_manager.last_focused_development_window.window)
 			end
+		end
+
+	applied_grid_item: EV_GRID_LABEL_ITEM
+			-- The grid item showing "(Applied)".
+		do
+			create Result.make_with_text ("(Applied)")
+			Result.align_text_right
+		end
+
+	empty_grid_item: EV_GRID_LABEL_ITEM
+			-- The empty grid item.
+		do
+			create Result.make_with_text (" ")
+			Result.align_text_right
+		end
+
+	bound_rgb_value_for_extreme_ranking: INTEGER = 122
+			-- Bound RGB value for the smallest and biggest rankings.
+			-- The color range is then, smallest to biggest ranking,
+			-- RGB(0, bound_rgb, 0) ... RGB(0, 255, 0) -- RGB(1, 255, 1) ... RGB(bound_rgb, 255, bound_rgb)
+			-- R-value & B-value change when ranking is below 0.5, and G-value changes when ranking is above 0.5.
+
+	color_grid_item (a_ranking: DOUBLE): EV_GRID_LABEL_ITEM
+			-- A colored grid item for showing the ranking `a_ranking'.
+		local
+			r, g, b: INTEGER
+			l_color_range: INTEGER
+		do
+			create Result.make_with_text ("  ")
+			if a_ranking < 0.5 then
+				r := 0
+				b := 0
+				g := (bound_rgb_value_for_extreme_ranking + bound_rgb_value_for_extreme_ranking * a_ranking).truncated_to_integer
+			else
+				g := 255
+				r := (bound_rgb_value_for_extreme_ranking * 2 * a_ranking - bound_rgb_value_for_extreme_ranking).truncated_to_integer
+				b := r
+			end
+			Result.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (r, g, b))
+		end
+
+	placeholder_grid_item: EV_GRID_LABEL_ITEM
+			-- The placeholder grid item.
+		do
+			create Result.make_with_text ("-- No candidate fix to show")
 		end
 
 feature{NONE} -- Implementation
@@ -323,7 +394,7 @@ feature{NONE} -- Implementation
 			l_suggestion: ES_EVE_AUTOFIX_FIXING_SUGGESTION
 			l_result: ES_EVE_AUTOFIX_RESULT
 		do
-			if attached fixes_list.selected_item as lt_item and then attached {ES_EVE_AUTOFIX_FIXING_SUGGESTION} lt_item.data as lt_fix
+			if attached fixes_list.selected_rows as lt_rows and then lt_rows.count = 1 and then attached {ES_EVE_AUTOFIX_FIXING_SUGGESTION} lt_rows.first.data as lt_fix
 					and then not lt_fix.parent.is_fixed then
 				apply_fix_button.enable_sensitive
 			else
@@ -332,7 +403,7 @@ feature{NONE} -- Implementation
 
 			if attached faults_combo.selected_item as lt_fault_item and then attached {ES_EVE_AUTOFIX_RESULT} lt_fault_item.data as lt_result
 					and then lt_result.is_fixed and then lt_result.backup_class_file /= Void
-					and then attached fixes_list.selected_item as lt_fix_item and then attached {ES_EVE_AUTOFIX_FIXING_SUGGESTION} lt_fix_item.data as lt_fix
+					and then attached fixes_list.selected_rows as lt_rows and then lt_rows.count = 1 and then attached {ES_EVE_AUTOFIX_FIXING_SUGGESTION} lt_rows.first.data as lt_fix
 					and then lt_result.fix_index_applied = lt_fix.index then
 				recall_fix_button.enable_sensitive
 			else
@@ -344,6 +415,8 @@ feature {NONE} -- Implementation
 
 	previously_selected_result: ES_EVE_AUTOFIX_RESULT
 			-- Previously selected result in `faults_combo'.
+
+
 
 ;note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"

@@ -49,16 +49,25 @@ feature -- Access
 	ranking: DOUBLE
 			-- Ranking of the fix.
 
+	normalized_ranking: DOUBLE assign set_normalized_ranking
+			-- Ranking of the fix, normalized to [0, 1].
+
+	set_normalized_ranking (a_ranking: DOUBLE)
+			-- Set `normalized_ranking' with `a_ranking'.
+		require
+			normalized: 0 <= a_ranking and then a_ranking <= 1
+		do
+			normalized_ranking := a_ranking
+		end
+
 	short_summary_text: STRING
 			-- Short summary text.
 		local
 			l_rank_str: STRING
 		do
 			l_rank_str := ranking.out
-			Result := "Candidate fix #" + index.out + "    (" + l_rank_str.substring (1, l_rank_str.count.min (4)) + ")"
-			if parent /= Void and then parent.fix_index_applied = index then
-				Result := Result + " (Applied)"
-			end
+			Result := "Candidate fix #" + index.out
+			-- + "    (" + l_rank_str.substring (1, l_rank_str.count.min (4)) + ")"
 		end
 
 feature -- Basic operation
