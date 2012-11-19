@@ -280,6 +280,10 @@ feature {NONE} -- Implementation
 					create {E2B_VIOLATION} Result.make_with_description (a_code, a_message, "Possible void call.")
 				elseif assert_regexp.captured_substring (2) ~ "overflow" then
 					create {E2B_VIOLATION} Result.make_with_description (a_code, a_message, "Possible overflow.")
+				elseif assert_regexp.captured_substring (2) ~ "loop_var_ge" then
+					create {E2B_VIOLATION} Result.make_with_description (a_code, a_message, "Loop variant might be negative.")
+				elseif assert_regexp.captured_substring (2) ~ "loop_var_decr" then
+					create {E2B_VIOLATION} Result.make_with_description (a_code, a_message, "Loop variant might not decrease.")
 				else
 					check False end
 				end

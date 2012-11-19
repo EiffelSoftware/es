@@ -51,9 +51,7 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 		do
 			if attached verify_task.verifier_result then
 				blackboard.record_results
-				check False end
---				verify_task.verifier_result.verified_procedures.do_all (agent handle_verified_procedure (?))
---				verify_task.verifier_result.verification_errors.do_all (agent handle_verification_error (?))
+				verify_task.verifier_result.procedure_results.do_all (agent handle_procedure_result (?))
 				blackboard.commit_results
 			end
 			has_next_step := False
@@ -67,27 +65,23 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 
 feature {NONE} -- Implementation
 
-	handle_verified_procedure (a_procedure_result: E2B_PROCEDURE_RESULT)
+	handle_procedure_result (a_procedure_result: E2B_PROCEDURE_RESULT)
+			-- Handle procedure result `a_procedure_result'.
 		local
-			l_feature: FEATURE_I
-			l_feature_result: E2B_SUCCESSFUL_VERIFICATION_RESULT
+			l_result: E2B_BLACKBOARD_RESULT
+			l_score: REAL
 		do
-			l_feature := a_procedure_result.eiffel_feature
-
-			create l_feature_result.make (l_feature, tool_instance.configuration, {E2B_BLACKBOARD_SCORES}.successful)
-			blackboard.add_verification_result (l_feature_result)
-		end
-
-	handle_verification_error (a_verification_error: E2B_VERIFICATION_ERROR)
-		local
-			l_feature: FEATURE_I
-			l_feature_result: E2B_FAILED_VERIFICATION_RESULT
-		do
-			l_feature := a_verification_error.eiffel_feature
-
-			create l_feature_result.make (l_feature, tool_instance.configuration, {E2B_BLACKBOARD_SCORES}.failed)
-			l_feature_result.set_error (a_verification_error)
-			blackboard.add_verification_result (l_feature_result)
+			if attached {E2B_SUCCESSFUL_VERIFICATION} a_procedure_result as l_success then
+				if attached l_success.original_errors and then not l_success.original_errors.is_empty then
+					l_score := {E2B_BLACKBOARD_SCORES}.successful_with_errors
+				else
+					l_score := {E2B_BLACKBOARD_SCORES}.successful
+				end
+			else
+				l_score := {E2B_BLACKBOARD_SCORES}.failed
+			end
+			create l_result.make (a_procedure_result, tool_instance.configuration, l_score)
+			blackboard.add_verification_result (l_result)
 		end
 
 end

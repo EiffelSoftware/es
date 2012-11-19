@@ -35,8 +35,15 @@ feature -- Access
 
 	description: STRING_32
 			-- <Precursor>
+		local
+			l_string_formatter: YANK_STRING_WINDOW
 		do
-			check False end
+			if not attached internal_description then
+				create l_string_formatter.make
+				single_line_message (l_string_formatter)
+				internal_description := l_string_formatter.stored_output
+			end
+			Result := internal_description
 		end
 
 	context_class: CLASS_C
@@ -125,5 +132,10 @@ feature -- Basic operations
 		do
 			data.single_line_message (a_formatter)
 		end
+
+feature {NONE} -- Implementation
+
+	internal_description: detachable STRING_32
+			-- Internal buffer for description.
 
 end

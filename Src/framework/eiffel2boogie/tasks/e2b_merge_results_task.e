@@ -77,25 +77,6 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 						end
 					end
 				end
-
---				check False end
---				across secondary_verifier.last_result.verified_procedures as j loop
---					if not across primary_verifier.last_result.verified_procedures as pi some pi.item.eiffel_feature.body_index = j.item.eiffel_feature.body_index end then
---						primary_verifier.last_result.verified_procedures.extend (j.item)
---						from
---							primary_verifier.last_result.verification_errors.start
---						until
---							primary_verifier.last_result.verification_errors.after
---						loop
---							if primary_verifier.last_result.verification_errors.item.eiffel_feature.body_index = j.item.eiffel_feature.body_index then
---								j.item.original_errors.extend (primary_verifier.last_result.verification_errors.item)
---								primary_verifier.last_result.verification_errors.remove
---							else
---								primary_verifier.last_result.verification_errors.forth
---							end
---						end
---					end
---				end
 			end
 			has_next_step := False
 		end

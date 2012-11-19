@@ -459,6 +459,7 @@ feature -- Processing
 			l_op: IV_BINARY_OPERATION
 			l_variant: IV_ENTITY
 			l_assignment: IV_ASSIGNMENT
+			l_info: IV_ASSERTION_INFORMATION
 		do
 			set_current_origin_information (a_node)
 
@@ -492,6 +493,10 @@ feature -- Processing
 						add_statement (l_assert)
 					end
 					create l_assert.make (last_expression)
+					create l_info.make ("loop_inv")
+					l_info.set_tag (l_invariant.tag)
+					l_info.set_line (l_invariant.line_number)
+					l_assert.set_information (l_info)
 					add_statement (l_assert)
 					a_node.invariant_part.forth
 				end
@@ -506,6 +511,7 @@ feature -- Processing
 				create l_assignment.make (l_variant, last_expression)
 				add_statement (l_assignment)
 				create l_assert.make (factory.less_equal (factory.int_value (0), l_variant))
+				l_assert.set_assertion_type ("loop_var_ge")
 				add_statement (l_assert)
 			end
 
@@ -529,6 +535,7 @@ feature -- Processing
 				set_current_origin_information (a_node.variant_part)
 				process_expression (a_node.variant_part.expr)
 				create l_assert.make (factory.less (last_expression, l_variant))
+				l_assert.set_assertion_type ("loop_var_decr")
 				add_statement (l_assert)
 			end
 			create l_goto.make (l_head_block)
@@ -559,6 +566,7 @@ feature -- Processing
 			l_variant: IV_ENTITY
 			l_assignment: IV_ASSIGNMENT
 			l_unroll_counter: INTEGER
+			l_info: IV_ASSERTION_INFORMATION
 		do
 			l_temp_block := current_block
 
@@ -612,6 +620,10 @@ feature -- Processing
 						set_current_origin_information (l_invariant)
 						process_contract_expression (l_invariant.expr)
 						create l_assert.make (last_expression)
+						create l_info.make ("loop_inv")
+						l_info.set_tag (l_invariant.tag)
+						l_info.set_line (l_invariant.line_number)
+						l_assert.set_information (l_info)
 						add_statement (l_assert)
 						a_node.invariant_part.forth
 					end
@@ -625,6 +637,7 @@ feature -- Processing
 					add_statement (l_assignment)
 					create l_op.make (l_variant, ">=", create {IV_VALUE}.make ("0", types.int), types.bool)
 					create l_assert.make (l_op)
+					l_assert.set_assertion_type ("loop_var_ge")
 					add_statement (l_assert)
 				end
 
@@ -648,6 +661,7 @@ feature -- Processing
 					process_expression (a_node.variant_part.expr)
 					create l_op.make (last_expression, "<", l_variant, types.bool)
 					create l_assert.make (l_op)
+					l_assert.set_assertion_type ("loop_var_decr")
 					add_statement (l_assert)
 				end
 
