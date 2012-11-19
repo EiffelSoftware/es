@@ -34,6 +34,16 @@ feature -- Access
 
 feature -- Element change
 
+	set_assertion_type (a_string: STRING)
+			-- Create `assertion_information' with type `a_string'.
+		require
+			no_information_yet: information = Void
+		do
+			create information.make (a_string)
+		ensure
+			type_set: information.type ~ a_string
+		end
+
 	set_information (a_information: IV_ASSERTION_INFORMATION)
 			-- Set `information' to `a_information'.
 		do

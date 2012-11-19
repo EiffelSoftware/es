@@ -51,8 +51,9 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 		do
 			if attached verify_task.verifier_result then
 				blackboard.record_results
-				verify_task.verifier_result.verified_procedures.do_all (agent handle_verified_procedure (?))
-				verify_task.verifier_result.verification_errors.do_all (agent handle_verification_error (?))
+				check False end
+--				verify_task.verifier_result.verified_procedures.do_all (agent handle_verified_procedure (?))
+--				verify_task.verifier_result.verification_errors.do_all (agent handle_verification_error (?))
 				blackboard.commit_results
 			end
 			has_next_step := False

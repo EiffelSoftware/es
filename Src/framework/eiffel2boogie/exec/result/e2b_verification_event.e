@@ -1,43 +1,58 @@
 note
-	description: "[
-		TODO
-	]"
+	description: "Summary description for {E2B_VERIFICATION_EVENT}."
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	E2B_FEATURE_RESULT
+class
+	E2B_VERIFICATION_EVENT
 
 inherit
 
-	FEATURE_ERROR
-
 	EVENT_LIST_ITEM_I
+		redefine
+			data
+		end
+
+create
+	make
 
 feature {NONE} -- Initialization
 
-	initialize (a_class: CLASS_C; a_feature: FEATURE_I)
-			-- Initalize event item.
-			--
-			-- `a_class': Class associated with event.
-			-- `a_feature': Feature associated with event.
+	make (a_data: E2B_PROCEDURE_RESULT)
+			-- Initialize event item.
 		do
-			context_class := a_class
-			context_feature := a_feature
+			data := a_data
 			category := {ENVIRONMENT_CATEGORIES}.none
 			priority := {PRIORITY_LEVELS}.normal
 		ensure
-			context_class_set: context_class = a_class
-			context_feature_set: context_feature = a_feature
+			data_set: data = a_data
 		end
 
 feature -- Access
 
+	data: E2B_PROCEDURE_RESULT
+			-- <Precursor>
+
+	description: STRING_32
+			-- <Precursor>
+		do
+			check False end
+		end
+
 	context_class: CLASS_C
 			-- Class corresponding to event
+		do
+			Result := data.eiffel_class
+		end
 
 	context_feature: FEATURE_I
 			-- Feature corresponding to event
+		do
+			Result := data.eiffel_feature
+		end
+
+	line_number: INTEGER
+			-- Line number of event (if any)
 
 	milliseconds_used: NATURAL
 			-- Milliseconds used for proof
@@ -87,6 +102,16 @@ feature -- Element change
 			priority := a_priority
 		end
 
+	set_line_number (a_line: INTEGER)
+			-- Set `line_number' to `a_line'.
+		require
+			a_line_non_negative: a_line >= 0
+		do
+			line_number := a_line
+		ensure
+			line_number_set: line_number = a_line
+		end
+
 feature -- Basic operations
 
 	invalidate
@@ -95,11 +120,10 @@ feature -- Basic operations
 			is_invalidated := True
 		end
 
-feature -- Access
-
-	code: STRING = "AutoProof"
-			-- <Precursor>
-
-
+	single_line_message (a_formatter: TEXT_FORMATTER)
+			-- Single line description of result.
+		do
+			data.single_line_message (a_formatter)
+		end
 
 end

@@ -157,29 +157,31 @@ feature -- Execution
 						io.put_new_line
 					end
 			)
-			l_result.verification_errors.do_all (
-				agent (l_proc: E2B_VERIFICATION_ERROR)
-					do
-						io.put_string ("Failed: {" + l_proc.eiffel_class.name + "}." + l_proc.eiffel_feature.feature_name)
-						if l_proc.is_attached_violation then
-							io.put_string (" attached violation")
-						elseif l_proc.is_check_violation then
-							io.put_string (" check violation")
-						elseif l_proc.is_frame_condition_violation then
-							io.put_string (" frame violation")
-						elseif l_proc.is_invariant_violation then
-							io.put_string (" invariant violation")
-						elseif l_proc.is_postcondition_violation then
-							io.put_string (" postcondition violation")
-						elseif l_proc.is_precondition_violation then
-							io.put_string (" precondition violation")
-						end
-						if attached l_proc.tag then
-							io.put_string (" tag:" + l_proc.tag)
-						end
-						io.put_new_line
-					end
-			)
+				check False end
+--		l_result.verification_errors.do_all (
+--				agent (l_proc: E2B_VERIFICATION_ERROR)
+--					do
+--						io.put_string ("Failed: {" + l_proc.eiffel_class.name + "}." + l_proc.eiffel_feature.feature_name)
+----						if l_proc.is_attached_violation then
+----							io.put_string (" attached violation")
+----						elseif l_proc.is_check_violation then
+----							io.put_string (" check violation")
+----						elseif l_proc.is_frame_condition_violation then
+----							io.put_string (" frame violation")
+----						elseif l_proc.is_invariant_violation then
+----							io.put_string (" invariant violation")
+----						elseif l_proc.is_postcondition_violation then
+----							io.put_string (" postcondition violation")
+----						elseif l_proc.is_precondition_violation then
+----							io.put_string (" precondition violation")
+----						end
+--						check False end
+--						if attached l_proc.tag then
+--							io.put_string (" tag:" + l_proc.tag)
+--						end
+--						io.put_new_line
+--					end
+--			)
 
 --			if event_list.is_service_available then
 --				from

@@ -14,8 +14,9 @@ feature {NONE} -- Initialization
 	make
 			-- Initialize Boogie result.
 		do
-			create verified_procedures.make
-			create verification_errors.make
+			create procedure_results.make
+--			create verified_procedures.make
+--			create verification_errors.make
 			create syntax_errors.make
 		end
 
@@ -33,11 +34,22 @@ feature -- Access
 	total_time: REAL
 			-- Total time used for verification.
 
+	procedure_results: LINKED_LIST [E2B_PROCEDURE_RESULT]
+			-- List of procedure results.
+
 	verified_procedures: LINKED_LIST [E2B_PROCEDURE_RESULT]
 			-- List of verified procedures.
 
-	verification_errors: LINKED_LIST [E2B_VERIFICATION_ERROR]
+	verification_errors: LINKED_LIST [E2B_FAILED_VERIFICATION]
 			-- List of verification errors.
+		do
+			create Result.make
+			across procedure_results as i loop
+				if attached {E2B_FAILED_VERIFICATION} i.item as l_failed then
+					Result.extend (l_failed)
+				end
+			end
+		end
 
 	syntax_errors: LINKED_LIST [STRING]
 			-- List of syntax errors.
@@ -56,7 +68,14 @@ feature -- Status report
 	has_verification_errors: BOOLEAN
 			-- Did verification errors occur?
 		do
-			Result := not verification_errors.is_empty
+			from
+				procedure_results.start
+			until
+				procedure_results.after or Result
+			loop
+				Result := attached {E2B_FAILED_VERIFICATION} procedure_results.item
+				procedure_results.forth
+			end
 		end
 
 	is_verification_successful: BOOLEAN

@@ -3,7 +3,7 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	E2B_PROCEDURE_RESULT
 
 inherit
@@ -46,6 +46,13 @@ feature {E2B_OUTPUT_PARSER} -- Element change
 			time := a_time
 		ensure
 			time_set: time = a_time
+		end
+
+feature -- Display
+
+	single_line_message (a_formatter: TEXT_FORMATTER)
+			-- Single line description of this result.
+		deferred
 		end
 
 end

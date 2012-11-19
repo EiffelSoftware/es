@@ -143,19 +143,14 @@ feature {NONE} -- Basic operations
 			end
 			autoproof.add_notification (agent process_result)
 			autoproof.verify
-
-			show_proof_tool
 		end
 
 	process_result (a_result: E2B_RESULT)
 			-- Process verification result.
-		local
-			l_success: E2B_SUCCESSFUL_VERIFICATION
 		do
 			event_list.prune_event_items (event_context_cookie)
-			across a_result.verified_procedures as i loop
-				create l_success.make (i.item)
-				event_list.put_event_item (event_context_cookie, l_success)
+			across a_result.procedure_results as i loop
+				event_list.put_event_item (event_context_cookie, create {E2B_VERIFICATION_EVENT}.make (i.item))
 			end
 			show_proof_tool
 		end
@@ -167,53 +162,6 @@ feature {NONE} -- Basic operations
 		once
 			create l_generator
 			Result := l_generator.generate_uuid
-		end
-
-	process_result2 (a_result: E2B_RESULT)
-			-- Process verification result.
-		local
-			w: WARNING
-			s: E2B_SUCCESSFUL_VERIFICATION
-			e: EP_VERIFICATION_ERROR
-		do
-			error_handler.wipe_out
-			across a_result.verified_procedures as i loop
-				create s.make (i.item)
-				error_handler.insert_error (s)
-			end
-			across a_result.verification_errors as i loop
-				if i.item.is_attached_violation then
-					create e.make ("Attachment check failed")
-				elseif i.item.is_check_violation then
-					create e.make ("Check instruction failed")
-				elseif i.item.is_frame_condition_violation then
-					create e.make ("Frame condition failed")
-				elseif i.item.is_invariant_violation then
-					create e.make ("Invariant violated")
-				elseif i.item.is_loop_invariant_violation then
-					create e.make ("Loop invariant violated")
-				elseif i.item.is_loop_variant_violation then
-					create e.make ("Loop variant violated")
-				elseif i.item.is_overflow_violation then
-					create e.make ("Possible arithmetic overflow")
-				elseif i.item.is_postcondition_violation then
-					create e.make ("Postcondition violated")
-				elseif i.item.is_precondition_violation then
-					create e.make ("Precondition vioalted")
-				else
-					create e.make (i.item.message)
-				end
-
-				e.set_class (i.item.eiffel_class)
-				e.set_feature (i.item.eiffel_feature)
-				e.set_position (i.item.eiffel_line_number, 0)
-				if attached i.item.tag then
-					e.set_tag (i.item.tag)
-				end
-				error_handler.insert_error (e)
-			end
-			error_handler.trace
-			error_handler.force_display
 		end
 
 	show_proof_tool

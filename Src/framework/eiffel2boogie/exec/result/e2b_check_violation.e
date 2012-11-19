@@ -10,24 +10,23 @@ class
 
 inherit
 
-	E2B_VIOLATION
+	E2B_VERIFICATION_ERROR
 
 create
 	make
 
---feature -- Access
+feature -- Display
 
---	help_text: attached LIST [STRING]
---			-- <Precursor>
---		do
---			create {LINKED_LIST [STRING]} Result.make
---			Result.extend ("Verification of {" + class_c.name_in_upper + "}." + e_feature.name_8.as_lower + " successful.")
---		end
-
---	single_line_help_text: STRING
---			-- <Precursor>
---		do
---			Result := "Check violation"
---		end
+	single_line_message (a_formatter: TEXT_FORMATTER)
+			-- <Precursor>
+		do
+			if attached tag then
+				a_formatter.add ("Check of tag ")
+				a_formatter.add_comment_text (tag)
+				a_formatter.add (" may fail.")
+			else
+				a_formatter.add ("Check instruction may fail (unnamed assertion).")
+			end
+		end
 
 end

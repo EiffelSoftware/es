@@ -25,23 +25,24 @@ feature -- Access
 	message: STRING
 			-- <Precursor>
 		do
-			if error.is_postcondition_violation then
-				Result := "Postcondition may be violated"
-			elseif error.is_precondition_violation then
-				Result := "Precondition may be violated"
-			elseif error.is_invariant_violation then
-				Result := "Class invariant may be violated"
-			elseif error.is_frame_condition_violation then
-				Result := "Frame condition may be violated"
-			elseif error.is_check_violation then
-				Result := "Check instruction may be violated"
-			elseif error.is_loop_invariant_violation then
-				Result := "Loop invariant may be violated"
-			elseif error.is_attached_violation then
-				Result := "Target of call may not be attached"
-			else
-				check False end
-			end
+			check False end
+--			if error.is_postcondition_violation then
+--				Result := "Postcondition may be violated"
+--			elseif error.is_precondition_violation then
+--				Result := "Precondition may be violated"
+--			elseif error.is_invariant_violation then
+--				Result := "Class invariant may be violated"
+--			elseif error.is_frame_condition_violation then
+--				Result := "Frame condition may be violated"
+--			elseif error.is_check_violation then
+--				Result := "Check instruction may be violated"
+--			elseif error.is_loop_invariant_violation then
+--				Result := "Loop invariant may be violated"
+--			elseif error.is_attached_violation then
+--				Result := "Target of call may not be attached"
+--			else
+--				check False end
+--			end
 		end
 
 feature -- Element change

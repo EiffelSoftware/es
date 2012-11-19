@@ -10,39 +10,41 @@ class
 
 inherit
 
-	E2B_FEATURE_RESULT
-		rename
-			data as verification_error
-		redefine
-			verification_error
-		end
+	E2B_VERIFICATION_ERROR
+
+create
+	make_with_description
 
 feature {NONE} -- Initialization
 
-	make (a_error: E2B_VERIFICATION_ERROR)
+	make_with_description (a_code, a_message, a_description: STRING)
 			-- Initialize.
 		do
-			initialize (a_error.eiffel_class, a_error.eiffel_feature)
-			set_class (a_error.eiffel_class)
-			set_feature (a_error.eiffel_feature)
---			set_location (a_error.eiffel_line_number, 0)
-			tag := a_error.tag
+			make (a_code, a_message)
+			set_description (a_description)
 		end
 
 feature -- Access
 
-	verification_error: E2B_PROCEDURE_RESULT
-			-- Verification error associated with this event.
+	description: STRING
+			-- Description of violation.
 
-	description: STRING_32
+feature -- Element change
+
+	set_description (a_description: STRING)
+			-- Set `description' to `a_description'.
+		do
+			description := a_description.twin
+		ensure
+			description ~ a_description
+		end
+
+feature -- Display
+
+	single_line_message (a_formatter: TEXT_FORMATTER)
 			-- <Precursor>
 		do
-			Result := "Verification of {" + context_class.name_in_upper + "}." + context_feature.feature_name_32.as_lower + " failed."
+			a_formatter.add (description)
 		end
-
-feature -- Access
-
-	tag: STRING
-			-- Tag associated with violation (if any).
 
 end
