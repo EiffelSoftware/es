@@ -6,6 +6,10 @@ note
 class
 	E2B_OUTPUT_PARSER
 
+inherit
+
+	E2B_SHARED_CONTEXT
+
 create
 	make
 
@@ -64,6 +68,10 @@ feature {NONE} -- Implementation
 					if version_regexp.matches (l_line) then
 						-- version: version_regexp.captured_substring (1)
 						last_result.set_boogie_version (version_regexp.captured_substring (1))
+
+					elseif parsing_regexp.matches (l_line) then
+						-- boogie file name: parsing_regexp.captured_substring (1)
+						fill_boogie_file_lines (parsing_regexp.captured_substring (1))
 
 					elseif finished_regexp.matches (l_line) then
 						-- nr verified: finished_regexp.captured_substring (1).to_integer
@@ -248,6 +256,56 @@ feature {NONE} -- Implementation
 			l_file.close
 		end
 
+	eiffel_instruction_location (a_line: INTEGER): TUPLE [filename: STRING; line: INTEGER]
+			-- Instruction location of `a_line' (if any).
+		local
+			i: INTEGER
+			l_exit: BOOLEAN
+		do
+--			from
+--				i := a_line
+--			until
+--				i < 1 or l_exit
+--			loop
+--				if instruction_location_regexp.matches (boo) then
+--					Result := instruction_location_regexp.captured_substring (3).to_integer
+--					l_exit := True
+--				elseif  then
+--					l_exit := True
+--				end
+--				i := i - 1
+--			end
+		end
+
+	eiffel_feature_context_of_boogie_line (a_line: INTEGER): FEATURE_I
+			-- Eiffel feature context of Boogie line `a_line'.
+		local
+			i: INTEGER
+			l_exit: BOOLEAN
+			l_line: STRING
+			l_paran: INTEGER
+		do
+			from
+				i := a_line
+			until
+				i < 1 or l_exit
+			loop
+				l_line := boogie_file_lines [a_line]
+				if l_line.starts_with ("implementation") then
+					l_paran := l_line.index_of ('(', 15)
+					Result := name_translator.feature_for_boogie_name (l_line.substring (16, l_paran))
+					l_exit := True
+				elseif l_line.starts_with ("procedure") then
+					l_paran := l_line.index_of ('(', 10)
+					Result := name_translator.feature_for_boogie_name (l_line.substring (11, l_paran))
+					l_exit := True
+				elseif l_line.starts_with ("}") then
+					l_exit := True
+				end
+				i := i - 1
+			end
+		end
+
 	create_error (a_code: STRING; a_message: STRING; a_filename: STRING; a_linenumber, a_columnnumber: INTEGER): E2B_VERIFICATION_ERROR
 			-- Create error corresponding to given Boogie output.
 		local
@@ -255,6 +313,8 @@ feature {NONE} -- Implementation
 			l_is_loop_inv_on_entry, l_is_loop_inv_maintained: BOOLEAN
 			l_boogie_line: STRING
 		do
+			check attached boogie_file_lines end
+
 			l_is_assert := a_code ~ "BP5001"
 			l_is_pre := a_code ~ "BP5002"
 			l_is_post := a_code ~ "BP5003"
@@ -308,6 +368,8 @@ feature {NONE} -- Implementation
 			l_boogie_line, l_related_boogie_line: STRING
 			l_post_violation: E2B_POSTCONDITION_VIOLATION
 		do
+			check attached boogie_file_lines end
+
 			l_is_assert := a_code ~ "BP5001"
 			l_is_pre := a_code ~ "BP5002"
 			l_is_post := a_code ~ "BP5003"
@@ -315,9 +377,6 @@ feature {NONE} -- Implementation
 			l_is_loop_inv_maintained := a_code ~ "BP5005"
 			check l_is_pre or l_is_post end
 
-			if not attached boogie_file_lines then
-				fill_boogie_file_lines (a_filename)
-			end
 			l_boogie_line := boogie_file_lines [a_linenumber]
 			l_related_boogie_line := boogie_file_lines [a_related_linenumber]
 
@@ -375,8 +434,15 @@ feature {NONE} -- Implementation: regular expressions
 			Result.compile ("^Boogie program verifier version ([^,]*).*$")
 		end
 
+	parsing_regexp: RX_PCRE_REGULAR_EXPRESSION
+			-- Regular expression for parsing line
+		once
+			create Result.make
+			Result.compile ("^Parsing (.*)$")
+		end
+
 	finished_regexp: RX_PCRE_REGULAR_EXPRESSION
-			-- Regular expression for finsihed line.
+			-- Regular expression for finished line.
 		once
 			create Result.make
 			Result.compile ("^Boogie program verifier finished with ([0-9]*) verified, ([0-9]*) errors?$")
@@ -520,5 +586,6 @@ feature {NONE} -- Implementation: regular expressions
 			create Result.make
 			Result.compile ("^\s*// (.*) --- (.*):(\d+)$")
 		end
+
 
 end

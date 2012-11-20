@@ -45,6 +45,12 @@ feature -- Display
 			-- <Precursor>
 		do
 			a_formatter.add (description)
+			if has_tag then
+				a_formatter.add_space
+				a_formatter.add ("(tag: ")
+				a_formatter.add_comment_text (tag)
+				a_formatter.add (")")
+			end
 		end
 
 end
