@@ -101,9 +101,11 @@ feature -- Access
 			l_type := a_type.deep_actual_type
 			check not l_type.is_like end
 
-			if {l_formal: FORMAL_A} l_type then
+			if attached {FORMAL_A} l_type as l_formal then
 				Result := "G" + l_formal.position.out
-			elseif {l_gen_type: GEN_TYPE_A} l_type then
+			elseif attached {TUPLE_TYPE_A} l_type then
+				Result := "TUPLE"
+			elseif attached {GEN_TYPE_A} l_type as l_gen_type then
 				Result := l_gen_type.associated_class.name_in_upper.twin
 				Result.append ("^")
 				from

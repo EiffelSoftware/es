@@ -651,6 +651,7 @@ feature {NONE} -- Implementation
 		local
 			l_heap, l_ref, l_type: IV_ENTITY
 			l_expr: IV_FUNCTION_CALL
+			l_fcall: IV_FUNCTION_CALL
 		do
 			create l_heap.make ("Heap", types.heap_type)
 			create l_ref.make (a_name, types.ref)
@@ -664,6 +665,13 @@ feature {NONE} -- Implementation
 			l_expr.add_argument (l_ref)
 			l_expr.add_argument (l_type)
 			Result := l_expr
+				-- TODO: refactor
+			if a_type.base_class.name_in_upper ~ "ARRAY" then
+				create l_fcall.make ("ARRAY.$inv", types.bool)
+				l_fcall.add_argument (l_heap)
+				l_fcall.add_argument (l_ref)
+				Result := factory.and_ (Result, l_fcall)
+			end
 		end
 
 	numeric_property (a_name: STRING; a_type: TYPE_A): detachable IV_EXPRESSION

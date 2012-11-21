@@ -474,15 +474,16 @@ feature -- Expression Visitor
 	process_forall (a_forall: IV_FORALL)
 			-- <Precursor>
 		do
-			generic_index.put (generic_index.item + 1)
-			process_quantifier ("forall<beta>", a_forall)
+--			generic_index.put (generic_index.item + 1)
+			process_quantifier ("forall", a_forall)
+--			process_quantifier ("forall<beta>", a_forall)
 --			process_quantifier ("forall<beta"+generic_index.item.out+">", a_forall)
 		end
 
-	generic_index: CELL [INTEGER]
-		once
-			create Result.put (0)
-		end
+--	generic_index: CELL [INTEGER]
+--		once
+--			create Result.put (0)
+--		end
 
 	process_function_call (a_call: IV_FUNCTION_CALL)
 			-- <Precursor>
@@ -596,7 +597,16 @@ feature -- Other
 
 	process_quantifier (a_keyword: STRING; a_quantifier: IV_QUANTIFIER)
 			-- Process quantifier `a_quantifier'.
+		local
+			l_generic_printed: BOOLEAN
 		do
+			across a_quantifier.bound_variables as i until l_generic_printed loop
+				if attached {IV_GENERIC_TYPE} i.item.type then
+					output.put ("<beta>")
+					l_generic_printed := True
+				end
+			end
+
 			output.put ("(")
 			output.put (a_keyword)
 			output.put (" ")

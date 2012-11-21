@@ -40,14 +40,17 @@ feature -- Basic operations
 		do
 			l_boogie_type_name := name_translator.boogie_name_for_type (a_type)
 
-				-- Type definition
-			create l_constant.make (l_boogie_type_name, types.type)
-			l_constant.set_unique
-			boogie_universe.add_declaration (l_constant)
+			-- TODO: refactor
+			if not a_type.is_tuple then
+					-- Type definition
+				create l_constant.make (l_boogie_type_name, types.type)
+				l_constant.set_unique
+				boogie_universe.add_declaration (l_constant)
 
-				-- Inheritance relations
-			if not a_type.has_generics then
-				generate_inheritance_relations (a_type)
+					-- Inheritance relations
+				if not a_type.has_generics then
+					generate_inheritance_relations (a_type)
+				end
 			end
 		end
 

@@ -16,10 +16,10 @@ feature {NONE} -- Initialization
 	make
 			-- Initialize default options.
 		do
-			is_reverification_with_inlining_enabled := True
+			is_reverification_with_inlining_enabled := False
 			is_inlining_enabled := True
 			is_automatic_inlining_enabled := True
-			is_automatic_loop_unrolling_enabled := True
+			is_automatic_loop_unrolling_enabled := False
 			is_sound_loop_unrolling_enabled := True
 			is_precondition_predicate_enabled := False
 			is_postcondition_predicate_enabled := True
