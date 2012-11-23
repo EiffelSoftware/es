@@ -202,11 +202,11 @@ feature -- Access
 				l_classi_stone ?= l_editors.item.stone
 				l_external_file_stone ?= l_editors.item.stone
 				if l_classi_stone /= Void then
-					if l_classi_stone.file_name.is_equal (a_file_name.string_representation) then
+					if l_classi_stone.file_name.is_equal (a_file_name.name) then
 						Result := l_editors.item
 					end
 				elseif l_external_file_stone /= Void then
-					if l_external_file_stone.file_name.is_equal (a_file_name.string_representation) then
+					if l_external_file_stone.file_name.is_equal (a_file_name.name) then
 						Result := l_editors.item
 					end
 				end
@@ -1745,7 +1745,7 @@ feature {NONE} -- Implementation
 		do
 			if not retried then
 				if a_editor.changed then
-					tmp_name := a_editor.file_name
+					tmp_name := a_editor.file_path
 					if tmp_name /= Void then
 						tmp_name := tmp_name.appended (".swp")
 						create tmp_file.make_with_path (tmp_name)

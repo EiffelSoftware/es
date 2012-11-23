@@ -31,7 +31,7 @@ feature {PREFERENCE, PREFERENCE_WIDGET, PREFERENCES_STORAGE_I, PREFERENCE_VIEW} 
 	text_value: STRING_32
 			-- String representation of `value'.
 		do
-			Result := value.string_representation
+			Result := value.name
 		end
 
 feature -- Access	
@@ -51,6 +51,8 @@ feature -- Access
 feature -- Change		
 
 	require_existing_file
+			-- Requires that `value' represent an existing file
+			-- This is mainly to validate changes from UI
 		require
 			has_no_validation_agent: not has_validation_agent
 		do
@@ -64,6 +66,8 @@ feature -- Change
 		end
 
 	require_existing_directory
+			-- Requires that `value' represent an existing directory
+			-- This is mainly to validate changes from UI
 		require
 			has_no_validation_agent: not has_validation_agent
 		do
