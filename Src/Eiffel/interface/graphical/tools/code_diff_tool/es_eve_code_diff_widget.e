@@ -134,13 +134,23 @@ feature {NONE} -- Implementation
 			l_start_pos, l_finish_pos: INTEGER
 			l_character_format: EV_CHARACTER_FORMAT
 			l_format_range: EV_CHARACTER_FORMAT_RANGE_INFORMATION
+			l_stone: FEATURE_STONE
 		do
 			if hunk = Void then
 				base_text_editor.load_text ("")
 				diff_text_editor.load_text ("")
 			else
-					-- Regular text
+				base_text_editor.text_displayed.set_feature_for_click (hunk.context_feature.e_feature.written_feature)
+				base_text_editor.text_displayed.enable_feature_click
+				create l_stone.make (hunk.context_feature.e_feature.written_feature)
+				base_text_editor.set_stone (l_stone)
 				base_text_editor.load_text (hunk.base_code_with_padding)
+
+					-- Regular text
+				diff_text_editor.text_displayed.set_feature_for_click (hunk.context_feature.e_feature.written_feature)
+				diff_text_editor.text_displayed.enable_feature_click
+				create l_stone.make (hunk.context_feature.e_feature.written_feature)
+				diff_text_editor.set_stone (l_stone)
 				diff_text_editor.load_text (hunk.diff_code_with_padding)
 
 					-- Difference in highlight

@@ -29,16 +29,12 @@ feature {NONE} -- Initialize
 			l_new_base.append (" -- routine")
 			l_new_diff := a_diff_code.substring (1, a_diff_code.last_index_of ('d', a_diff_code.count))
 			l_new_diff.append (" -- routine")
-			make_hunk (a_context_class, l_new_base, l_new_diff)
+			make_hunk (a_context_class, a_context_feature, l_new_base, l_new_diff)
 			parent := a_parent
-			context_feature := a_context_feature
 			ranking := a_ranking
 		end
 
 feature -- Access
-
-	context_feature: FEATURE_I
-			-- Context feature.
 
 	index: INTEGER assign set_index
 			-- Index of the fix.
