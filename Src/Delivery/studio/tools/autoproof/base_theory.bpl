@@ -48,11 +48,20 @@ const unique G9: Type;
 // All types inherit from ANY
 axiom (forall t: Type :: t <: ANY);
 
-// Type function for objects
+// Type function for objects.
 function type_of(o: ref) returns (Type);
 
-// Objects that have different type cannot be aliased
+// Objects that have different type cannot be aliased.
 axiom (forall a, b: ref :: (type_of(a) != type_of(b)) ==> (a != b));
+
+// ----------------------------------------------------------------------
+// Features and argument types
+
+// Type for feature constants.
+type Feature;
+
+// Argument type of argument `i' of feature `f' of type `t'.
+function argument_type(t: Type, f: Feature, i: int) returns (Type);
 
 // ----------------------------------------------------------------------
 // Helper functions
@@ -116,6 +125,9 @@ axiom (forall heap: HeapType, r: ref :: attached(heap, r, BOOLEAN) <==> (r == bo
 function is_integer_8(i: int) returns (bool) {
 	(-128 <= i) && (i <= 127)
 }
+function is_integer_16(i: int) returns (bool) {
+	(-32768 <= i) && (i <= 32767)
+}
 function is_integer_32(i: int) returns (bool) {
 	(-2147483648 <= i) && (i <= 2147483647)
 }
@@ -124,6 +136,9 @@ function is_integer_64(i: int) returns (bool) {
 }
 function is_natural_8(i: int) returns (bool) {
 	(0 <= i) && (i <= 255)
+}
+function is_natural_16(i: int) returns (bool) {
+	(0 <= i) && (i <= 65535)
 }
 function is_natural_32(i: int) returns (bool) {
 	(0 <= i) && (i <= 4294967295)
@@ -135,16 +150,22 @@ function is_natural_64(i: int) returns (bool) {
 // Conversion from real to bounded integers
 
 function real_to_integer_32(r: real) returns (int);
-axiom (forall r: real :: is_integer_32(int(r)) ==> real_to_integer_32(r) == int(r));
-axiom (forall r: real :: (!is_integer_32(int(r)) && r < 0.0) ==> real_to_integer_32(r) == -2147483648);
-axiom (forall r: real :: (!is_integer_32(int(r)) && r > 0.0) ==> real_to_integer_32(r) ==  2147483647);
+axiom (forall r: real :: { real_to_integer_32(r) } is_integer_32(int(r)) ==> real_to_integer_32(r) == int(r));
+axiom (forall r: real :: { real_to_integer_32(r) } (!is_integer_32(int(r)) && r < 0.0) ==> real_to_integer_32(r) == -2147483648);
+axiom (forall r: real :: { real_to_integer_32(r) } (!is_integer_32(int(r)) && r > 0.0) ==> real_to_integer_32(r) ==  2147483647);
 
 function real_to_integer_64(r: real) returns (int);
-axiom (forall r: real :: is_integer_64(int(r)) ==> real_to_integer_64(r) == int(r));
-axiom (forall r: real :: (!is_integer_64(int(r)) && r < 0.0) ==> real_to_integer_64(r) == -9223372036854775808);
-axiom (forall r: real :: (!is_integer_64(int(r)) && r > 0.0) ==> real_to_integer_64(r) ==  9223372036854775807);
+axiom (forall r: real :: { real_to_integer_64(r) } is_integer_64(int(r)) ==> real_to_integer_64(r) == int(r));
+axiom (forall r: real :: { real_to_integer_64(r) } (!is_integer_64(int(r)) && r < 0.0) ==> real_to_integer_64(r) == -9223372036854775808);
+axiom (forall r: real :: { real_to_integer_64(r) } (!is_integer_64(int(r)) && r > 0.0) ==> real_to_integer_64(r) ==  9223372036854775807);
 
-procedure REAL_64.truncated_to_integer(arg: real) returns (result: int);
+procedure REAL_32.truncated_to_integer_32(arg: real) returns (result: int);
+	ensures result == real_to_integer_32(arg);
+
+procedure REAL_32.truncated_to_integer_64(arg: real) returns (result: int);
+	ensures result == real_to_integer_64(arg);
+
+procedure REAL_64.truncated_to_integer_32(arg: real) returns (result: int);
 	ensures result == real_to_integer_32(arg);
 
 procedure REAL_64.truncated_to_integer_64(arg: real) returns (result: int);

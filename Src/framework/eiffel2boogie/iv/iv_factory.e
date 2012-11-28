@@ -1,6 +1,6 @@
 note
 	description: "[
-		TODO
+		Helper class to create IV-nodes.
 	]"
 	date: "$Date$"
 	revision: "$Revision$"

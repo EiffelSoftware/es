@@ -1,6 +1,6 @@
 note
 	description: "[
-		TODO
+		IV-visitor that generates Boogie code.
 	]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -474,16 +474,8 @@ feature -- Expression Visitor
 	process_forall (a_forall: IV_FORALL)
 			-- <Precursor>
 		do
---			generic_index.put (generic_index.item + 1)
 			process_quantifier ("forall", a_forall)
---			process_quantifier ("forall<beta>", a_forall)
---			process_quantifier ("forall<beta"+generic_index.item.out+">", a_forall)
 		end
-
---	generic_index: CELL [INTEGER]
---		once
---			create Result.put (0)
---		end
 
 	process_function_call (a_call: IV_FUNCTION_CALL)
 			-- <Precursor>
@@ -585,7 +577,7 @@ feature -- Other
 	process_entity_declaration (a_declaration: IV_ENTITY_DECLARATION)
 			-- <Precursor>
 		do
-				-- TODO: inherit from someone
+				-- TODO: extract this helper function to some parent
 			output.put (a_declaration.name)
 			output.put (": ")
 			a_declaration.type.process (Current)
@@ -601,14 +593,16 @@ feature -- Other
 			l_generic_printed: BOOLEAN
 		do
 			across a_quantifier.bound_variables as i until l_generic_printed loop
-				if attached {IV_GENERIC_TYPE} i.item.type then
-					output.put ("<beta>")
+				if attached {IV_GENERIC_TYPE} i.item.type or attached {IV_FIELD_TYPE} i.item.type then
 					l_generic_printed := True
 				end
 			end
 
 			output.put ("(")
 			output.put (a_keyword)
+			if l_generic_printed then
+				output.put ("<beta>")
+			end
 			output.put (" ")
 			across a_quantifier.bound_variables as i loop
 				if i.cursor_index /= 1 then

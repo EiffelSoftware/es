@@ -72,6 +72,7 @@ feature -- Visitors
 			check l_type /= Void end
 			l_feature := a_node.type.associated_class.feature_of_rout_id (a_node.call.routine_id)
 			check feature_valid: l_feature /= Void end
+			translation_pool.add_type (l_type)
 --			translation_pool.add_referenced_feature (l_feature, l_type)
 
 			create_local (l_type)

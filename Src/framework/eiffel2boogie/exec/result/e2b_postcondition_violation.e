@@ -10,6 +10,9 @@ class
 
 inherit
 	E2B_VERIFICATION_ERROR
+		redefine
+			multi_line_message
+		end
 
 create
 	make
@@ -43,6 +46,36 @@ feature -- Status setting
 feature -- Display
 
 	single_line_message (a_formatter: TEXT_FORMATTER)
+			-- <Precursor>
+		do
+			if is_attached_check then
+				if attached tag then
+					a_formatter.add ("Possible Void call in postcondition ")
+					a_formatter.add_comment_text (tag)
+					a_formatter.add (".")
+				else
+					a_formatter.add ("Possible Void call in postcondition (unnamed assertion).")
+				end
+			elseif is_overflow_check then
+				if attached tag then
+					a_formatter.add ("Possible overflow in postcondition ")
+					a_formatter.add_comment_text (tag)
+					a_formatter.add (".")
+				else
+					a_formatter.add ("Possible overflow in postcondition (unnamed assertion).")
+				end
+			else
+				if attached tag then
+					a_formatter.add ("Postcondition ")
+					a_formatter.add_comment_text (tag)
+					a_formatter.add (" may fail.")
+				else
+					a_formatter.add ("Postcondition may fail (unnamed assertion).")
+				end
+			end
+		end
+
+	multi_line_message (a_formatter: TEXT_FORMATTER)
 			-- <Precursor>
 		do
 			if is_attached_check then

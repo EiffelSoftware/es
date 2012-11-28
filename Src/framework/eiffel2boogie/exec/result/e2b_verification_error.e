@@ -202,13 +202,17 @@ feature {NONE} -- Implementation
 			Result.compile ("^\s*// (.*) --- (.*):(\d+)$")
 		end
 
-
-
 feature -- Display
 
 	single_line_message (a_formatter: TEXT_FORMATTER)
 			-- Single line description of this error.
 		deferred
+		end
+
+	multi_line_message (a_formatter: TEXT_FORMATTER)
+			-- Multi line description of this error.
+		do
+			single_line_message (a_formatter)
 		end
 
 end

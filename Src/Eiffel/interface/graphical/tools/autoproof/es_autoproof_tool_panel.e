@@ -607,7 +607,7 @@ feature {NONE} -- Basic operations
 
 			create l_text_gen.make
 			l_text_gen.enable_multiline
-			a_error.single_line_message (l_text_gen)
+			a_error.multi_line_message (l_text_gen)
 			if l_text_gen.lines.is_empty then
 				l_text_gen.add_new_line
 			end
