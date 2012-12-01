@@ -1,20 +1,16 @@
+type Set T = [T]bool;
+
 // ----------------------------------------------------------------------
 // Reference types
 
-// Type definition for reference types
-type ref;
-
-// Constant for Void references
-const Void: ref;
+type ref; // Type definition for reference types
+const Void: ref; // Constant for Void references
 
 // ----------------------------------------------------------------------
 // Heap and allocation
 
-// Type of a field (with open subtype)
-type Field _;
-
-// Type of a heap (with generic field subtype and generic content type)
-type HeapType = <beta>[ref, Field beta]beta;
+type Field _; // Type of a field (with open subtype)
+type HeapType = <beta>[ref, Field beta]beta; // Type of a heap (with generic field subtype and generic content type)
 
 // Function which defines a heap
 function IsHeap(heap: HeapType) returns (bool);
@@ -22,17 +18,14 @@ function IsHeap(heap: HeapType) returns (bool);
 // The global heap (which is always a heap)
 var Heap: HeapType where IsHeap(Heap);
 
-// Allocation field (a gohst field)
-const unique $allocated: Field bool;
+const unique $allocated: Field bool; // Ghost field for allocation status of objects
 
 // ----------------------------------------------------------------------
 // Typing
 
-// Type definition for Eiffel types
-type Type;
-
-// Type for ANY
-const unique ANY: Type;
+type Type; // Type definition for Eiffel types
+const unique ANY: Type; // Type for ANY
+const unique NONE: Type; // Type for NONE
 
 // Type for generics
 const unique G1: Type;
@@ -45,14 +38,44 @@ const unique G7: Type;
 const unique G8: Type;
 const unique G9: Type;
 
-// All types inherit from ANY
-axiom (forall t: Type :: t <: ANY);
-
 // Type function for objects.
 function type_of(o: ref) returns (Type);
 
-// Objects that have different type cannot be aliased.
-axiom (forall a, b: ref :: (type_of(a) != type_of(b)) ==> (a != b));
+// Typing axioms
+axiom (forall t: Type :: t <: ANY); // All types inherit from ANY.
+axiom (forall t: Type :: NONE <: t); // NONE inherits from all types.
+axiom (forall h: HeapType :: h[Void, $allocated]); // Void is always allocated.
+axiom (forall h: HeapType, f: Field ref, o: ref :: h[o, $allocated] ==> h[h[o, f], $allocated]); // All reference fields are allocated.
+axiom (forall r: ref :: (r == Void) <==> (type_of(r) == NONE)); // Void is only reference of type NONE.
+axiom (forall a, b: ref :: (type_of(a) != type_of(b)) ==> (a != b)); // Objects that have different dynamic type cannot be aliased.
+
+// ----------------------------------------------------------------------
+// Ownership
+
+const unique $closed: Field bool; // Ghost field for open/closed status of an object.
+const unique $owner: Field ref; // Ghost field for owner of an object.
+const unique $owns: Field (Set ref); // Ghost field for owns set of an object.
+const unique $dependents: Field (Set ref); // Ghost field for dependents set of an object.
+const unique $depends: Field (Set ref); // Ghost field for depends set of an object.
+
+// Is o free? (owner is open)
+function is_free(h: HeapType, o: ref): bool {
+	h[o, $owner] == Void
+}
+
+// Is o wrapped in h? (closed and free)
+function is_wrapped(h: HeapType, o: ref): bool {
+	h[o, $closed] && is_free(h, o)
+}
+
+// Is o open in h? (not closed and free)
+function is_open(h: HeapType, o: ref): bool {
+	!h[o, $closed]
+}
+
+
+
+
 
 // ----------------------------------------------------------------------
 // Features and argument types
@@ -87,6 +110,15 @@ function detachable_attribute(heap: HeapType, o: ref, f: Field ref, t: Type) ret
 	true
 //	((o != Void) && (heap[o, $allocated]) && (heap[o, $initialized])) ==> (detachable(heap, heap[o, f], t))
 }
+
+
+
+
+
+
+
+
+
 
 
 // Integer boxing
@@ -178,6 +210,15 @@ procedure INTEGER_32.to_double(arg: int) returns (result: real);
 
 procedure INTEGER_64.to_double(arg: int) returns (result: real);
 	ensures result == real(arg);
+
+// Strings
+
+const unique STRING_8: Type;
+
+procedure create_manifest_string(size: int) returns (result: ref);
+	requires size >= 0;
+	ensures result != Void;
+	ensures attached(Heap, result, STRING_8);
 
 // Expanded types
 

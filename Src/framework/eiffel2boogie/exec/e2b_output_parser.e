@@ -102,7 +102,10 @@ feature {NONE} -- Implementation
 							l_successful_verification.set_time (verified_regexp.captured_substring (1).to_real)
 							last_result.procedure_results.extend (l_successful_verification)
 						else
-							check verified_regexp.captured_substring (2).starts_with ("error") end
+							check
+								verified_regexp.captured_substring (2).starts_with ("error") or
+								verified_regexp.captured_substring (2).starts_with ("inconclusive")
+							end
 							check not l_current_errors.is_empty end
 							if l_current_error_model /= Void then
 								l_current_errors.do_all (agent {E2B_VERIFICATION_ERROR}.set_error_model (l_current_error_model))

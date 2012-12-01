@@ -530,8 +530,8 @@ feature {NONE} -- Implementation
 			o, f: IV_ENTITY
 			l_info: IV_ASSERTION_INFORMATION
 		do
-			create o.make ("o", types.ref)
-			create f.make ("f", types.field (types.generic_type))
+			create o.make ("$o", types.ref)
+			create f.make ("$f", types.field (types.generic_type))
 			across a_fields as i loop
 				l_or := factory.or_ (factory.not_equal (o, i.item.o), factory.not_equal (f, i.item.f))
 				if l_expr = Void then
@@ -546,8 +546,8 @@ feature {NONE} -- Implementation
 			create l_access.make ("Heap", o, f)
 			create l_old_access.make ("old(Heap)", o, f)
 			create l_forall.make (factory.implies_ (l_expr, factory.equal (l_access, l_old_access)))
-			l_forall.add_bound_variable ("o", types.ref)
-			l_forall.add_bound_variable ("f", types.field (types.generic_type))
+			l_forall.add_bound_variable ("$o", types.ref)
+			l_forall.add_bound_variable ("$f", types.field (types.generic_type))
 			create l_postcondition.make (l_forall)
 			create l_info.make ("frame")
 			l_postcondition.set_information (l_info)
