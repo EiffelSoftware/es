@@ -45,10 +45,10 @@ feature -- Initialization
 			is_writable: a_project_location.is_path_writable
 			prev_read_write_error: not read_write_error
 		local
-			l_prev_work: STRING
+			l_prev_work: PATH
 		do
 			project_directory := a_project_location
-			l_prev_work := Execution_environment.current_working_directory
+			l_prev_work := Execution_environment.current_working_path
  			Execution_environment.change_working_directory (a_project_location.path)
 			retrieve
 			if not error_occurred then
@@ -56,7 +56,7 @@ feature -- Initialization
 				manager.on_project_create
 				manager.on_project_loaded
 			end
-			Execution_environment.change_working_directory (l_prev_work)
+			Execution_environment.change_working_path (l_prev_work)
 		ensure
   			initialized_if_no_error: not error_occurred implies initialized
 		end
@@ -732,7 +732,7 @@ feature {NONE} -- C compilation
 					-- Set below normal priority.
 				l_cmd.append ({STRING_32} " -low")
 			end
-			compiler_objects.command_executor.invoke_finish_freezing (path, l_cmd, is_asynchronous, workbench_mode)
+			compiler_objects.command_executor.invoke_finish_freezing (create {PATH}.make_from_string (path), l_cmd, is_asynchronous, workbench_mode)
 		end
 
 feature -- Output
@@ -755,6 +755,14 @@ feature -- Output
 			l_epr_file.store (Current, comp_system.compilation_id)
 
 			if l_epr_file.has_error then
+				debug
+					io.error.put_string ("Error while saving " + l_epr_file.name.to_string_8)
+					if attached l_epr_file.error_description  as d then
+						io.error.put_string (": ")
+						io.error.put_string (d)
+					end
+					io.error.put_new_line
+				end
 				set_error_status (Save_error_status)
 			end
 			saved_workbench := Void

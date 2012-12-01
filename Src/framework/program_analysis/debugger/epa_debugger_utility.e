@@ -69,7 +69,7 @@ feature -- Basic operations
 
 			create prof.make
 			prof.set_arguments (a_arguments)
-			prof.set_working_directory (wdir)
+			prof.set_working_directory (create {PATH}.make_from_string (wdir))
 			a_dm.set_execution_ignoring_breakpoints (a_ignore_breakpont)
 			a_dm.set_catcall_detection_in_console (False)
 			a_dm.set_catcall_detection_in_debugger (False)

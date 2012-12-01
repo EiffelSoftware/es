@@ -20,6 +20,8 @@ inherit
 			show_modal_to_window
 		end
 
+	NATIVE_STRING_HANDLER
+
 create
 	make
 
@@ -54,14 +56,13 @@ feature {NONE} -- Initialization
 
 			button := open_panel.run_modal.to_integer_32
 
-				--NSOkButton = 1
-			if button =  1 then
-				set_file_name (open_panel.url.absolute_string.to_eiffel_string)
+			if button =  {NS_PANEL}.ok_button then
+				set_full_file_path (open_panel.path)
 				selected_button := internal_accept
 				attached_interface.open_actions.call (Void)
 				-- NSCancelButton = 0
 			elseif button = 0 then
-				set_file_name ("")
+				set_full_file_path (create {PATH}.make_empty)
 				selected_button := ev_cancel
 				attached_interface.cancel_actions.call (Void)
 			end
@@ -77,9 +78,29 @@ feature {NONE} -- Access
 
 	file_names: ARRAYED_LIST [STRING_32]
 			-- List of filenames selected by user
+		obsolete
+			"Use `file_paths' instead."
 		local
-			l_filenames: NS_ARRAY --[NS_STRING]
-			i: NATURAL_64
+			l_paths: like file_paths
+		do
+			l_paths := file_paths
+			create Result.make (l_paths.count)
+			from
+				l_paths.start
+			until
+				l_paths.after
+			loop
+				Result.extend (l_paths.item.name)
+				l_paths.forth
+			end
+		end
+
+	file_paths: ARRAYED_LIST [PATH]
+			-- List of filenames selected by user
+		local
+			l_filenames: NS_ARRAY [NS_STRING]
+			l_item: detachable NS_STRING
+			i: like ns_uinteger
 		do
 			create Result.make (1)
 			l_filenames := open_panel.ur_ls
@@ -87,9 +108,9 @@ feature {NONE} -- Access
 			from i := 0
 			until i > l_filenames.count
 			loop
-				check attached {NS_URL} l_filenames.object_at_index_ (i) as l_url then
-					Result.extend (l_url.absolute_string.to_eiffel_string.as_string_32)
-				end
+				l_item := l_filenames.item (i)
+				check l_item /= Void end
+				Result.extend (create {PATH}.make_from_pointer (l_item.item))
 				i := i + 1
 			end
 		end
@@ -116,4 +137,14 @@ feature {EV_ANY, EV_ANY_I} -- Implementation
 
 	interface: detachable EV_FILE_OPEN_DIALOG note option: stable attribute end;
 
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end -- class EV_FILE_OPEN_DIALOG_IMP

@@ -63,12 +63,12 @@ feature {NONE} -- Initialization
 
 feature -- Command
 
-	set_with_named_file (a_path: STRING)
+	set_with_named_path (a_path: PATH)
 			-- Load pixel data file `a_file_name'.
 		local
 			l_image: NS_IMAGE
 		do
-			create l_image.make_by_referencing_file_ (a_path)
+			create l_image.make_with_referencing_file_path (a_path)
 			if l_image.representations.count > 0 then
 				-- File found, representation loaded
 				if attached {NS_IMAGE_REP}l_image.representations.object_at_index_ (0) as l_image_rep then
@@ -87,17 +87,17 @@ feature -- Command
 		do
 		end
 
-	save_to_named_file (a_filename: STRING)
+	save_to_named_path (a_filename: PATH)
 			-- Save pixel data to file `a_filename'.
 			-- NOTE Why there are different implementations to save a pixel_buffer and a pixmap is a mistery to me
 		local
 			l_image_rep: NS_BITMAP_IMAGE_REP
 			l_data: NS_DATA
 			l_success: BOOLEAN
-			l_extension: STRING
+			l_extension: STRING_32
 			l_format: INTEGER
 		do
-			l_extension := a_filename.split ('.').last.as_upper
+			l_extension := a_filename.name.split ('.').last.as_upper
 			if l_extension.is_equal ("JPEG") or l_extension.is_equal ("JPG") then
 				-- NSJPEGFileType = 3
 				l_format := 3
@@ -117,9 +117,9 @@ feature -- Command
 				(create {EXCEPTIONS}).raise ("Could not save image file: Format " + l_extension + " unknown.")
 			end
 
-			create l_image_rep.make_with_data_ (image.tiff_representation)
-			l_data := l_image_rep.representation_using_type__properties_ (l_format.to_natural_64, Void)
-			l_success := l_data.write_to_file__atomically_ (a_filename.string, False)
+			create l_image_rep.make_with_data (image.tiff_representation)
+			l_data := l_image_rep.representation_using_type (l_format, Void)
+			l_success := l_data.write_to_file_path_atomically (a_filename, False)
 			if not l_success then
 				(create {EXCEPTIONS}).raise ("Could not save image file.")
 			end
@@ -243,4 +243,14 @@ feature {EV_PIXEL_BUFFER_IMP, EV_POINTER_STYLE_IMP, EV_PIXMAP_IMP} -- Implementa
 			set_is_destroyed (True)
 		end
 
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

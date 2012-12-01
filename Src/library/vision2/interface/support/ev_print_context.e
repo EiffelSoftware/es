@@ -22,7 +22,7 @@ feature {NONE} -- Initialization
 			selection_type := all_pages
 			copies := 1
 			output_to_file := False
-			file_name := ""
+			create file_path.make_empty
 			printer_name := "Default"
 			portrait := True
 			horizontal_resolution := 575
@@ -33,49 +33,57 @@ feature {NONE} -- Initialization
 feature {NONE} -- Initialization
 
 	all_pages: INTEGER = 0
-		-- Constant for print all pages setting.
+			-- Constant for print all pages setting.
 
 	page_range: INTEGER = 1
-		-- Constant for print a range of pages setting.
+			-- Constant for print a range of pages setting.
 
 	selection: INTEGER = 2
-		-- Constant for print a selection of pages setting.
+			-- Constant for print a selection of pages setting.
 
 feature -- Access	
 
 	from_page: INTEGER
-		-- Page print job starts from.
+			-- Page print job starts from.
 
 	to_page: INTEGER
-		-- Page print job prints to.
+			-- Page print job prints to.
 
 	copies: INTEGER
-		-- Number of copies of print job.
+			-- Number of copies of print job.
 
 	selection_type: INTEGER
-		-- Type code of chosen selection.
-		-- corresponds to `all_pages', `page_range'
-		-- or `selection'.
+			-- Type code of chosen selection.
+			-- corresponds to `all_pages', `page_range'
+			-- or `selection'.
 
 	output_to_file: BOOLEAN
-		-- Will output be to file?
+			-- Will output be to file?
 
 	printer_name: STRING_32
-		-- Name of printer.
+			-- Name of printer.
 
 	horizontal_resolution: INTEGER
-		-- Horizontal resolution in points (1/72 of an inch), equating to full width
-		-- of printed page.
+			-- Horizontal resolution in points (1/72 of an inch), equating to full width
+			-- of printed page.
 
 	vertical_resolution: INTEGER
-		-- Vertical resolution in points (1/72 of an inch), equating to full height
-		-- of printed page.
+			-- Vertical resolution in points (1/72 of an inch), equating to full height
+			-- of printed page.
+
+	file_path: PATH
+			-- Path of output file
 
 	file_name: STRING_32
-		-- Name of output file.
+			-- Name of output file
+		obsolete
+			"Use `file_path' instead."
+		do
+			Result := file_path.name
+		end
 
 	portrait: BOOLEAN
-		-- Will print output be portrait?
+			-- Will print output be portrait?
 
 feature {EV_PRINT_DIALOG_I} -- Status setting
 
@@ -141,12 +149,24 @@ feature {EV_PRINT_DIALOG_I} -- Status setting
 
 	set_file_name (a_string: READABLE_STRING_GENERAL)
 			-- Set "file_name" to "a_string".
+		obsolete
+			"Use `set_file_path' instead."
 		require
 			a_string_not_empty: a_string.count > 0
 		do
-			file_name := a_string.as_string_32
+			create file_path.make_from_string (a_string)
 		ensure
 			file_name_set: file_name.same_string_general (a_string)
+		end
+
+	set_file_path (a_path: PATH)
+			-- Set `file_path' to `a_path'.
+		require
+			a_path_not_empty: not a_path.is_empty
+		do
+			file_path := a_path
+		ensure
+			a_path_set: file_path = a_path
 		end
 
 	set_horizontal_resolution (resolution: INTEGER)
@@ -217,14 +237,14 @@ invariant
 		or selection_type = selection
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

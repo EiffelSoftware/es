@@ -379,13 +379,7 @@ feature {NONE} -- Implementation / Attributes
 	need_to_wait: BOOLEAN
 			-- Do we need to wait until the end of the compilation?
 
-	dotnet_debugger: STRING
-			-- String indicating the .NET debugger to launch if specified in the
-			-- Preferences Tool.
-		do
-			Result := preferences.debugger_data.dotnet_debugger.item (1)
-		end
-
+invariant
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

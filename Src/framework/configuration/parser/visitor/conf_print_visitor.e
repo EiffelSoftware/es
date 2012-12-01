@@ -82,7 +82,6 @@ feature -- Visit nodes
 			-- Visit `a_system'.
 		local
 			l_target: CONF_TARGET
-			utf: UTF_CONVERTER
 		do
 			create text.make_from_string (header)
 			if not text.is_empty then
@@ -94,7 +93,9 @@ feature -- Visit nodes
 --Alternative:	append_text (utf.string_32_to_utf_8_string_8 (Namespace)) -- FIXME: maybe add utf-8 BOM ...
 			append_text ("%"")
 			append_text (" xmlns:xsi=%"http://www.w3.org/2001/XMLSchema-instance%"")
-			append_text (" xsi:schemaLocation=%"" + Schema + "%"")
+			append_text (" xsi:schemaLocation=%"")
+			append_text_escaped (Schema)
+			append_text ("%"")
 			append_text_attribute ("name", a_system.name)
 			append_text (" uuid=%"" + a_system.uuid.out + "%"")
 			if not a_system.is_readonly then
@@ -570,8 +571,8 @@ feature {NONE} -- Implementation
 		local
 			l_condition: CONF_CONDITION
 			l_done: BOOLEAN
-			l_custs: HASH_TABLE [EQUALITY_TUPLE [TUPLE [value: READABLE_STRING_32; invert: BOOLEAN]], READABLE_STRING_32]
-			l_custom: EQUALITY_TUPLE [TUPLE [value: READABLE_STRING_32; invert: BOOLEAN]]
+			l_custs: like {CONF_CONDITION}.custom
+			l_custom: HASH_TABLE [BOOLEAN, READABLE_STRING_32]
 			l_versions: HASH_TABLE [EQUALITY_TUPLE [TUPLE [min: CONF_VERSION; max: CONF_VERSION]], STRING]
 			l_name: STRING
 			l_ver: EQUALITY_TUPLE [TUPLE [min: CONF_VERSION; max: CONF_VERSION]]
@@ -643,19 +644,22 @@ feature {NONE} -- Implementation
 							l_custs.after
 						loop
 							l_custom := l_custs.item_for_iteration
-							if l_custom.item.invert then
-								l_name := "excluded_value"
-							else
-								l_name := "value"
+							from
+								l_custom.start
+							until
+								l_custom.after
+							loop
+								if l_custom.item_for_iteration then
+									l_name := "excluded_value"
+								else
+									l_name := "value"
+								end
+								append_text_indent ("<custom")
+								append_text_attribute ("name", l_custs.key_for_iteration)
+								append_text_attribute (l_name, l_custom.key_for_iteration)
+								append_text ("/>%N")
+								l_custom.forth
 							end
-							check
-								is_valid_as_string_8: l_custs.key_for_iteration.is_valid_as_string_8
-								is_valid_as_string_8: l_custom.item.value.is_valid_as_string_8
-							end
-							append_text_indent ("<custom")
-							append_text_attribute ("name", l_custs.key_for_iteration)
-							append_text_attribute (l_name, l_custom.item.value)
-							append_text ("/>%N")
 							l_custs.forth
 						end
 

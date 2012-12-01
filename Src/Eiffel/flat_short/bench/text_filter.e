@@ -46,28 +46,27 @@ inherit
 
 create
 	make,
-	make_from_filename
+	make_from_path
 
 feature {NONE} -- Initialization
 
-	make (filtername: STRING)
+	make (filtername: STRING_32)
 			-- Make a new text filter with information read from `filtername'.
 		require
 			filtername_not_void: filtername /= Void
 		local
-			full_pathname: FILE_NAME
+			full_pathname: PATH
 		do
 			if not filtername.is_empty then
 				create full_pathname.make_from_string (eiffel_layout.filter_path_8)
-				full_pathname.extend (filtername)
-				full_pathname.add_extension ("fil")
-				make_from_filename (full_pathname)
+				full_pathname := eiffel_layout.filter_path.extended (filtername + ".fil")
+				make_from_path (full_pathname)
 			else
-				make_from_filename (create {FILE_NAME}.make_from_string (filtername))
+				make_from_path (create {PATH}.make_from_string (filtername))
 			end
 		end
 
-	make_from_filename (filename: STRING)
+	make_from_path (filename: PATH)
 			-- Make a new text filter with information read from `filename'.
 		require
 			filename_not_void: filename /= Void;
@@ -94,7 +93,7 @@ feature {NONE} -- Initialization
 		do
 			if format_table.has_key (f_File_separator) then
 				file_separator := format_table.found_item.item1
-				if not file_separator.is_equal ("/") and then not file_separator.is_equal ("\") then
+				if not file_separator.same_string_general ("/") and then not file_separator.same_string_general ("\") then
 					file_separator := os_separator
 				end
 			else
@@ -115,7 +114,7 @@ feature {NONE} -- Initialization
 
 feature -- Optional initialization
 
-	prepend_to_file_suffix (a_suffix: STRING)
+	prepend_to_file_suffix (a_suffix: STRING_32)
 			-- Set `a_suffix' to be the suffix of every class link in
 			-- the output file.
 			-- Examples: "_flat" "_output"
@@ -146,30 +145,27 @@ feature -- Access
 	image: STRING_32;
 			-- Filtered output text
 
-	file_name: FILE_NAME;
-			-- File name for output of Current filter
-
 	base_path: STRING_32
 			-- For relative path names: zero or more "../".
 
-	file_suffix: STRING
+	file_suffix: STRING_32
 			-- Suffix of the file name where the filtered output text is stored;
 			-- Void if it has not been specified in the filter specification
 
 	file_separator: STRING_32
 			-- Preferred file separator.
 
-	class_suffix: STRING
+	class_suffix: STRING_32
 			-- Appended to all class paths. Ends with `file_suffix'.
 
-	feature_redirect: STRING
+	feature_redirect: STRING_32
 			-- When not `Void', prepend to file suffix to have features
 			-- redirected to format where a feature bookmark can exist.
 
 	doc_universe: DOCUMENTATION_UNIVERSE
 			-- Classes and clusters for which documentation is generated.
 
-	last_skipped_key: STRING
+	last_skipped_key: STRING_32
 
 feature -- Status setting
 
@@ -181,19 +177,11 @@ feature -- Status setting
 			doc_universe := a_universe
 		end
 
-	set_feature_redirect (a_suffix: STRING)
+	set_feature_redirect (a_suffix: like feature_redirect)
 			-- Let feature links be redirected to a different class format.
 			-- Reason: in "_chart" format there is no feature bookmark.
 		do
 			feature_redirect := a_suffix
-		end
-
-	set_file_name (f: like file_name)
-			-- Set `file_name' to `f'.
-		do
-			file_name := f
-		ensure
-			set: file_name = f
 		end
 
 	set_keyword (a_keyword, a_substitute: STRING_32)
@@ -220,7 +208,7 @@ feature -- Status setting
 		do
 			base_path := s
 			sep := file_separator
-			if sep /= Void and then sep.is_equal ("%U") then
+			if sep /= Void and then sep.same_string_general ("%U") then
 				sep := os_separator
 			end
 			if not base_path.is_empty then
@@ -233,22 +221,22 @@ feature -- Status setting
 
 	start_skipping
 			do
-				skipping := true
+				skipping := True
 			end
 
 	stop_skipping
 			do
-				skipping := false
+				skipping := False
 			end
 
 feature -- Status report
 
 	is_html: BOOLEAN
 		local
-			s: STRING
+			s: STRING_32
 		do
 			s := file_suffix.as_lower
-			Result := file_suffix.is_equal ("html")
+			Result := file_suffix.same_string_general ("html")
 		end
 
 	skipping: BOOLEAN
@@ -257,16 +245,13 @@ feature -- Status report
 
 feature -- Text processing
 
-	escaped_text (str: STRING_GENERAL): STRING_GENERAL
+	escaped_text (str: READABLE_STRING_GENERAL): STRING_32
 			-- New string where characters of `str' are escaped.
 		require
 			str_not_void: str /= Void
-		local
-			l_str: STRING_32
 		do
-			create l_str.make (str.count)
-			escaped_text_in_buffer (str.as_string_32, l_str)
-			Result := l_str
+			create Result.make (str.count)
+			escaped_text_in_buffer (str, Result)
 		ensure
 			escaped_text_not_void: Result /= Void
 		end
@@ -302,14 +287,14 @@ feature -- Text processing
 
 feature -- Text processing
 
-	process_symbol_text (text: STRING_GENERAL)
+	process_symbol_text (text: READABLE_STRING_GENERAL)
 			-- Process symbol text.
 		local
 			format: CELL2 [STRING_32, STRING_32];
 			text_image: STRING_32
 		do
 			if not skipping then
-				text_image := string_general_as_lower (text)
+				text_image := text.as_lower.as_string_32
 				if format_table.has_key (text_image) then
 					format := format_table.found_item
 				elseif format_table.has_key (f_Symbol) then
@@ -327,7 +312,7 @@ feature -- Text processing
 			end
 		end;
 
-	process_keyword_text (text: STRING_GENERAL; a_feature: E_FEATURE)
+	process_keyword_text (text: READABLE_STRING_GENERAL; a_feature: E_FEATURE)
 			-- Process keyword text.
 		local
 			format: CELL2 [STRING_32, STRING_32];
@@ -335,7 +320,7 @@ feature -- Text processing
 			l_feature_generated: BOOLEAN
 		do
 			if not skipping then
-				text_image := string_general_as_lower (text)
+				text_image := text.as_lower.as_string_32
 				if format_table.has_key (text_image) then
 					format := format_table.found_item
 				elseif a_feature /= Void and then format_table.has_key (f_Keyword_features) then
@@ -362,7 +347,7 @@ feature -- Text processing
 					end
 				else
 					if a_feature /= Void then
-						process_feature_text (text, a_feature, false)
+						process_feature_text (text, a_feature, False)
 					else
 						print_escaped_text (text)
 					end
@@ -370,7 +355,7 @@ feature -- Text processing
 			end
 		end
 
-	process_operator_text (text: STRING_GENERAL; a_feature: E_FEATURE)
+	process_operator_text (text: READABLE_STRING_GENERAL; a_feature: E_FEATURE)
 			-- Process operator text.
 		local
 			format: CELL2 [STRING_32, STRING_32]
@@ -381,7 +366,7 @@ feature -- Text processing
 			if not skipping then
 				operator_generated := doc_universe.is_feature_generated (a_feature)
 				l_group := doc_universe.found_group
-				text_image := string_general_as_lower (text)
+				text_image := text.as_lower.as_string_32
 				if format_table.has_key (text_image) then
 					format := format_table.found_item
 				elseif is_keyword (text) then
@@ -437,7 +422,7 @@ feature -- Text processing
 			end
 		end;
 
-	process_comment_text (text: STRING_GENERAL; url: STRING_GENERAL)
+	process_comment_text (text: READABLE_STRING_GENERAL; url: READABLE_STRING_GENERAL)
 			-- Process the quoted text within a comment.
 		local
 			format: CELL2 [STRING_32, STRING_32]
@@ -448,7 +433,7 @@ feature -- Text processing
 				process_multiple_spaces (s)
 				if url /= Void and then format_table.has_key (f_Comment_url) then
 					format := format_table.found_item
-					set_keyword (kw_File, url)
+					set_keyword (kw_File, url.to_string_32)
 				elseif format_table.has_key (f_Comment) then
 					format := format_table.found_item
 				end
@@ -467,7 +452,7 @@ feature -- Text processing
 			end
 		end
 
-	process_quoted_text (text: STRING_GENERAL)
+	process_quoted_text (text: READABLE_STRING_GENERAL)
 			-- Process the quoted `text' within a comment.
 		local
 			format: CELL2 [STRING_32, STRING_32];
@@ -486,7 +471,7 @@ feature -- Text processing
 			end
 		end
 
-	process_cluster_name_text (text: STRING_GENERAL; a_cluster: CONF_GROUP; a_quote: BOOLEAN)
+	process_cluster_name_text (text: READABLE_STRING_GENERAL; a_cluster: CONF_GROUP; a_quote: BOOLEAN)
 		local
 			format: CELL2 [STRING_32, STRING_32]
 			cluster_generated: BOOLEAN
@@ -496,7 +481,7 @@ feature -- Text processing
 			if a_quote then
 				l_string := text_quoted (text)
 			else
-				l_string := text
+				l_string := text.to_string_32
 			end
 			if not skipping then
 				cluster_generated := doc_universe.is_group_generated (a_cluster)
@@ -526,7 +511,7 @@ feature -- Text processing
 			end
 		end
 
-	process_class_name_text (text: STRING_GENERAL; a_class: CLASS_I; a_quote: BOOLEAN)
+	process_class_name_text (text: READABLE_STRING_GENERAL; a_class: CLASS_I; a_quote: BOOLEAN)
 		local
 			format: CELL2 [STRING_32, STRING_32]
 			class_generated: BOOLEAN
@@ -537,7 +522,7 @@ feature -- Text processing
 			if a_quote then
 				l_string := text_quoted (text)
 			else
-				l_string := text
+				l_string := text.to_string_32
 			end
 			if not skipping then
 				class_generated := doc_universe.is_class_generated (a_class)
@@ -573,7 +558,7 @@ feature -- Text processing
 			end
 		end
 
-	process_target_name_text (text: STRING_GENERAL; a_target: CONF_TARGET)
+	process_target_name_text (text: READABLE_STRING_GENERAL; a_target: CONF_TARGET)
 			-- Process target name text `text'.
 		do
 			process_basic_text (text)
@@ -625,15 +610,15 @@ feature -- Text processing
 			end
 		end;
 
-	process_filter_item (text: STRING_GENERAL; is_before: BOOLEAN)
+	process_filter_item (text: READABLE_STRING_GENERAL; is_before: BOOLEAN)
 			-- Mark appearing before or after major syntactic constructs.
 		local
 			construct: STRING_32
 			format: CELL2 [STRING_32, STRING_32]
 		do
-			construct := text
+			construct := text.to_string_32
 			if skipping then
-				if last_skipped_key /= Void and then last_skipped_key.is_equal (construct) then
+				if last_skipped_key /= Void and then last_skipped_key.same_string_general (construct) then
 					stop_skipping
 					if format_table.has_key (construct) then
 						format := format_table.found_item
@@ -670,7 +655,7 @@ feature -- Text processing
 			end
 		end;
 
-	process_feature_dec_item (a_feature_name: STRING_GENERAL; is_before: BOOLEAN)
+	process_feature_dec_item (a_feature_name: READABLE_STRING_GENERAL; is_before: BOOLEAN)
 			-- Process a feature start or after.
 		local
 			construct: STRING_32
@@ -678,7 +663,7 @@ feature -- Text processing
 		do
 			construct := f_Feature_declaration
 			if skipping then
-				if last_skipped_key /= Void and then last_skipped_key.is_equal (construct) then
+				if last_skipped_key /= Void and then last_skipped_key.same_string_general (construct) then
 					stop_skipping
 					if format_table.has_key (construct) then
 						set_keyword (kw_Feature, escaped_text (a_feature_name))
@@ -719,7 +704,7 @@ feature -- Text processing
 			end
 		end;
 
-	process_tooltip_item (a_tooltip: STRING_GENERAL; is_before: BOOLEAN)
+	process_tooltip_item (a_tooltip: READABLE_STRING_GENERAL; is_before: BOOLEAN)
 			-- Process a tooltip start or after.
 		local
 			construct: STRING_32
@@ -727,7 +712,7 @@ feature -- Text processing
 		do
 			construct := f_Tooltip
 			if skipping then
-				if last_skipped_key /= Void and then last_skipped_key.is_equal (construct) then
+				if last_skipped_key /= Void and then last_skipped_key.same_string_general (construct) then
 					stop_skipping
 				end
 			else
@@ -761,7 +746,7 @@ feature -- Text processing
 			end
 		end;
 
-	print_escaped_text (str: STRING_GENERAL)
+	print_escaped_text (str: READABLE_STRING_GENERAL)
 			-- Append `str' to `image' with escape characters
 			-- substitutions if required.
 		require
@@ -770,19 +755,19 @@ feature -- Text processing
 			escaped_text_in_buffer (str, image)
 		end
 
-	process_cl_syntax (text: STRING_GENERAL; a_syntax_message: ERROR; a_class: CLASS_C)
+	process_cl_syntax (text: READABLE_STRING_GENERAL; a_syntax_message: ERROR; a_class: CLASS_C)
 			-- Process class syntax text.
 		do
 			process_basic_text (text)
 		end;
 
-	process_ace_syntax (text: STRING_GENERAL; a_error: ERROR)
+	process_ace_syntax (text: READABLE_STRING_GENERAL; a_error: ERROR)
 			-- Process Ace syntax text.
 		do
 			process_basic_text (text)
 		end;
 
-	process_address_text (a_address, a_name: STRING_GENERAL; a_class: CLASS_C)
+	process_address_text (a_address, a_name: READABLE_STRING_GENERAL; a_class: CLASS_C)
 			-- Process address text.
 		do
 			process_basic_text (a_address)
@@ -793,7 +778,7 @@ feature -- Text processing
 		do
 		end;
 
-	process_feature_name_text (text: STRING_GENERAL; a_class: CLASS_C)
+	process_feature_name_text (text: READABLE_STRING_GENERAL; a_class: CLASS_C)
 			-- Process feature name text `t'.
 		do
 			process_basic_text (text)
@@ -837,7 +822,7 @@ feature -- Text processing
 			set_keyword (kw_Feature, escaped_text (l_name))
 		end
 
-	process_feature_text (text: STRING_GENERAL; a_feature: E_FEATURE; a_quote: BOOLEAN)
+	process_feature_text (text: READABLE_STRING_GENERAL; a_feature: E_FEATURE; a_quote: BOOLEAN)
 			-- Process feature text `text'.
 		local
 			format: CELL2 [STRING_32, STRING_32]
@@ -847,7 +832,7 @@ feature -- Text processing
 			if a_quote then
 				l_string := text_quoted (text)
 			else
-				l_string := text
+				l_string := text.to_string_32
 			end
 			if not skipping then
 				feature_generated := doc_universe.is_feature_generated (a_feature)
@@ -894,7 +879,7 @@ feature -- Text processing
 		do
 		end;
 
-	process_error_text (text: STRING_GENERAL; a_error: ERROR)
+	process_error_text (text: READABLE_STRING_GENERAL; a_error: ERROR)
 			-- Process error text.
 		do
 			process_basic_text (text)
@@ -905,7 +890,7 @@ feature -- Text processing
 		do
 		end;
 
-	process_character_text (text: STRING_GENERAL)
+	process_character_text (text: READABLE_STRING_GENERAL)
 			-- Process the character `text'.
 		local
 			format: CELL2 [STRING_32, STRING_32];
@@ -924,7 +909,7 @@ feature -- Text processing
 			end
 		end
 
-	process_generic_text (text: STRING_GENERAL)
+	process_generic_text (text: READABLE_STRING_GENERAL)
 			-- Process a dot.
 		local
 			format: CELL2 [STRING_32, STRING_32];
@@ -943,7 +928,7 @@ feature -- Text processing
 			end
 		end
 
-	process_indexing_tag_text (text: STRING_GENERAL)
+	process_indexing_tag_text (text: READABLE_STRING_GENERAL)
 			-- Process tag in indexing clause.
 		local
 			format: CELL2 [STRING_32, STRING_32];
@@ -962,7 +947,7 @@ feature -- Text processing
 			end
 		end
 
-	process_local_text (text: STRING_GENERAL)
+	process_local_text (text: READABLE_STRING_GENERAL)
 			-- Process local symbol `text'.
 		local
 			format: CELL2 [STRING_32, STRING_32];
@@ -981,7 +966,7 @@ feature -- Text processing
 			end
 		end
 
-	process_number_text (text: STRING_GENERAL)
+	process_number_text (text: READABLE_STRING_GENERAL)
 			-- Process manifest number constant `text'.
 		local
 			format: CELL2 [STRING_32, STRING_32];
@@ -1000,7 +985,7 @@ feature -- Text processing
 			end
 		end
 
-	process_assertion_tag_text (text: STRING_GENERAL)
+	process_assertion_tag_text (text: READABLE_STRING_GENERAL)
 			-- Process assertion tag `text'.
 		local
 			format: CELL2 [STRING_32, STRING_32]
@@ -1062,7 +1047,7 @@ feature -- Text processing
 			end
 		end
 
-	process_string_text (text: STRING_GENERAL; link: STRING_GENERAL)
+	process_string_text (text: READABLE_STRING_GENERAL; link: READABLE_STRING_GENERAL)
 			-- Process literal string `text'.
 		local
 			format: CELL2 [STRING_32, STRING_32]
@@ -1073,7 +1058,7 @@ feature -- Text processing
 				process_multiple_spaces (s)
 				if link /= Void and then format_table.has_key (f_String_url) then
 					format := format_table.found_item
-					set_keyword (kw_File, link)
+					set_keyword (kw_File, link.to_string_32)
 				elseif format_table.has_key (f_String) then
 					format := format_table.found_item
 				end
@@ -1093,7 +1078,7 @@ feature -- Text processing
 			end
 		end
 
-	process_reserved_word_text (text: STRING_GENERAL)
+	process_reserved_word_text (text: READABLE_STRING_GENERAL)
 			-- Process literal string `text'.
 		local
 			format: CELL2 [STRING_32, STRING_32];
@@ -1112,7 +1097,7 @@ feature -- Text processing
 			end
 		end
 
-	process_menu_text (text, link: STRING_GENERAL)
+	process_menu_text (text, link: READABLE_STRING_GENERAL)
 			-- Process literal string `text'.
 		local
 			format: CELL2 [STRING_32, STRING_32]
@@ -1137,7 +1122,7 @@ feature -- Text processing
 			end
 		end
 
-	process_class_menu_text (text, link: STRING_GENERAL)
+	process_class_menu_text (text, link: READABLE_STRING_GENERAL)
 			-- Process literal string `text'.
 		local
 			format: CELL2 [STRING_32, STRING_32]
@@ -1237,7 +1222,7 @@ feature {NONE} -- Implementation
 				Result.append (os_separator)
 			end
 			Result.append (rel_filename)
-			if not file_separator.is_equal ("%U") then
+			if not file_separator.same_string_general ("%U") then
 				Result.replace_substring_all (os_separator, file_separator)
 			end
 		ensure

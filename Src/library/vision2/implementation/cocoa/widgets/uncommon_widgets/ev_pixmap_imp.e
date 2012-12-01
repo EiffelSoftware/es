@@ -12,7 +12,7 @@ inherit
 	EV_PIXMAP_I
 		redefine
 			interface,
-			save_to_named_file
+			save_to_named_path
 		end
 
 	EV_DRAWABLE_IMP
@@ -143,13 +143,13 @@ feature -- Measurement
 
 feature -- Element change
 
-	read_from_named_file (a_path: READABLE_STRING_GENERAL)
+	read_from_named_path (a_path: PATH)
 			-- Attempt to load pixmap data from a file specified by `file_name'.
 		local
 			l_image: NS_IMAGE
 		do
-			create l_image.make_by_referencing_file_ (create {NS_STRING}.make_with_eiffel_string (a_path.as_string_8))
-			image_view.set_image_ (l_image)
+			create l_image.make_with_referencing_file_path (a_path)
+			image_view.set_image (l_image)
 			if l_image.representations.count > 0 then
 				-- File found, representation loaded
 				if attached {NS_IMAGE_REP} l_image.representations.object_at_index_ (0) as l_image_rep then
@@ -279,7 +279,7 @@ feature -- Duplication
 
 feature -- Saving
 
-	save_to_named_file (a_format: EV_GRAPHICAL_FORMAT; a_filename: FILE_NAME)
+	save_to_named_path (a_format: EV_GRAPHICAL_FORMAT; a_filename: PATH)
 			-- Save `Current' to `a_filename' in `a_format' format.
 		local
 			l_image_rep: NS_BITMAP_IMAGE_REP
@@ -287,18 +287,16 @@ feature -- Saving
 			l_success: BOOLEAN
 		do
 			if attached {EV_BMP_FORMAT} a_format as bmp_format then
-				create l_image_rep.make_with_data_ (image.tiff_representation)
-				-- NSBMPFileType = 1
-				l_data := l_image_rep.representation_using_type__properties_ (1, Void)
-				l_success := l_data.write_to_file__atomically_ (a_filename.string, False)
+				create l_image_rep.make_with_data (image.tiff_representation)
+				l_data := l_image_rep.representation_using_type ({NS_BITMAP_IMAGE_REP}.BMP_file_type, Void)
+				l_success := l_data.write_to_file_path_atomically (a_filename, False)
 				if not l_success then
 					(create {EXCEPTIONS}).raise ("Could not save image file.")
 				end
 			elseif attached {EV_PNG_FORMAT} a_format as png_format then
-				create l_image_rep.make_with_data_ (image.tiff_representation)
-				-- NSPNGFileType = 4
-				l_data := l_image_rep.representation_using_type__properties_ (4, Void)
-				l_success := l_data.write_to_file__atomically_ (a_filename.string, False)
+				create l_image_rep.make_with_data (image.tiff_representation)
+				l_data := l_image_rep.representation_using_type ({NS_BITMAP_IMAGE_REP}.PNG_file_type, Void)
+				l_success := l_data.write_to_file_path_atomically (a_filename, False)
 				if not l_success then
 					(create {EXCEPTIONS}).raise ("Could not save image file.")
 				end
@@ -330,4 +328,14 @@ feature {EV_ANY, EV_ANY_I} -- Implementation
 
 	interface: detachable EV_PIXMAP note option: stable attribute end;
 
+note
+	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end -- EV_PIXMAP_IMP
