@@ -324,9 +324,6 @@ Src/contrib/library/graphic/toolkit/wex/library/wex/spec/bcb
 Src/contrib/library/graphic/toolkit/wex/library/wex/spec/mingw
 Src/contrib/library/graphic/toolkit/wex/library/wex/spec/msc
 Src/dotnet/codedom_provider_2.0/configuration/*.rc
-Src/dotnet/consumer/*.wb
-Src/dotnet/consumer/EIFGENs
-Src/dotnet/consumer/EiffelSoftware.MetadataConsumer.rc
 Src/examples/docking/simple/EIFGENs
 Src/examples/scoop/baboon_crossing/EIFGENs
 Src/examples/scoop/barbershop/*.rc
