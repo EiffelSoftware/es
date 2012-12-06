@@ -525,8 +525,6 @@ Src/library/wel/spec/bcb
 Src/library/wel/spec/mingw
 Src/library/wel/spec/msc
 Src/scripts/EIFGENs
-Src/tools/com_wizard/root/*.wb
-Src/tools/com_wizard/root/EIFGENs
 Src/tools/compile_all/*.exe
 Src/tools/compile_all/*.rc
 Src/tools/compile_all/baseline/*.log
