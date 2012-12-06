@@ -5,7 +5,7 @@ note
 		ANY may be customized for individual projects or teams.
 		]"
 
-	library: "Free implementation of ELKS library"
+	library: "EVE base library"
 	status: "See notice at end of class."
 	legal: "See notice at end of class."
 	date: "$Date$"
@@ -367,69 +367,71 @@ feature -- Basic operations
 
 feature -- Verification
 
-	wrap_ (a: ANY)
+	frozen wrap_ (a: ANY)
 			-- Wrap object `a'.
 		do
 		end
 
-	unwrap_ (a: ANY)
+	frozen unwrap_ (a: ANY)
 			-- Unwrap object `a'.
 		do
 		end
 
-	wrapped_ (a: ANY): BOOLEAN
+	frozen is_wrapped_ (a: ANY): BOOLEAN
 			-- Is `a' wrapped?
 		do
 		end
 
-	unwrapped_ (a: ANY): BOOLEAN
-			-- Is `a' unwrapped?
+	frozen is_free_ (a: ANY): BOOLEAN
+			-- Is `a' free?
 		do
 		end
 
-	owner_: ANY assign set_owner_
+	frozen is_open_ (a: ANY): BOOLEAN
+			-- Is `a' open?
+		do
+		end
+
+	frozen owner_: ANY assign set_owner_
 			-- Owner of this object.
 		do
 		end
 
-	set_owner_ (a: ANY)
+	frozen set_owner_ (a: ANY)
 			-- Set owner of this object to `a'.
 		do
 		end
 
-	owns_: ANY assign set_owns_
+	frozen owns_: ANY assign set_owns_
 			-- Owns set of this object.
 		do
 		end
 
-	set_owns_ (a: ANY)
+	frozen set_owns_ (a: ANY)
 			-- Set owns set of this object.
 		do
 		end
 
-	depends_: ANY assign set_depends_
+	frozen depends_: ANY assign set_depends_
 			-- Depends set of this object.
 		do
 		end
 
-	set_depends_ (a: ANY)
+	frozen set_depends_ (a: ANY)
 			-- Set depends set of this object.
 		do
 		end
 
-invariant
-	reflexive_equality: standard_is_equal (Current)
-	reflexive_conformance: conforms_to (Current)
+--feature {NONE} -- Implementation
+--
+--	ownership_impl: OWNERSHIP
+--			-- Ownership implementation.
+--		once
+--			create Result.make
+--		end
 
-note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
-	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
-	source: "[
-			Eiffel Software
-			5949 Hollister Ave., Goleta, CA 93117 USA
-			Telephone 805-685-1006, Fax 805-685-6869
-			Website http://www.eiffel.com
-			Customer support http://support.eiffel.com
-		]"
+invariant
+--	reflexive_equality: standard_is_equal (Current)
+--	reflexive_conformance: conforms_to (Current)
 
 end

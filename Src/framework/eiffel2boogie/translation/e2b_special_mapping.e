@@ -17,6 +17,7 @@ feature {NONE} -- Initialization
 			-- Initialize special mappings.
 		do
 			create {LINKED_LIST [E2B_CUSTOM_CALL_HANDLER]} call_handlers.make
+			call_handlers.extend (create {E2B_CUSTOM_OWNERSHIP_HANDLER})
 			call_handlers.extend (create {E2B_CUSTOM_ARRAY_CALL_HANDLER})
 			call_handlers.extend (create {E2B_CUSTOM_INTEGER_CALL_HANDLER})
 		end

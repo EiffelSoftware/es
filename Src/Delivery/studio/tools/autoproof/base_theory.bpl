@@ -18,7 +18,7 @@ function IsHeap(heap: HeapType) returns (bool);
 // The global heap (which is always a heap)
 var Heap: HeapType where IsHeap(Heap);
 
-const unique $allocated: Field bool; // Ghost field for allocation status of objects
+const unique allocated: Field bool; // Ghost field for allocation status of objects
 
 // ----------------------------------------------------------------------
 // Typing
@@ -44,37 +44,63 @@ function type_of(o: ref) returns (Type);
 // Typing axioms
 axiom (forall t: Type :: t <: ANY); // All types inherit from ANY.
 axiom (forall t: Type :: NONE <: t); // NONE inherits from all types.
-axiom (forall h: HeapType :: h[Void, $allocated]); // Void is always allocated.
-axiom (forall h: HeapType, f: Field ref, o: ref :: h[o, $allocated] ==> h[h[o, f], $allocated]); // All reference fields are allocated.
+axiom (forall h: HeapType :: h[Void, allocated]); // Void is always allocated.
+axiom (forall h: HeapType, f: Field ref, o: ref :: h[o, allocated] ==> h[h[o, f], allocated]); // All reference fields are allocated.
 axiom (forall r: ref :: (r == Void) <==> (type_of(r) == NONE)); // Void is only reference of type NONE.
 axiom (forall a, b: ref :: (type_of(a) != type_of(b)) ==> (a != b)); // Objects that have different dynamic type cannot be aliased.
 
 // ----------------------------------------------------------------------
 // Ownership
 
-const unique $closed: Field bool; // Ghost field for open/closed status of an object.
-const unique $owner: Field ref; // Ghost field for owner of an object.
-const unique $owns: Field (Set ref); // Ghost field for owns set of an object.
-const unique $dependents: Field (Set ref); // Ghost field for dependents set of an object.
-const unique $depends: Field (Set ref); // Ghost field for depends set of an object.
+var Writes: Set ref; // Set of all currently writable objects
+
+const unique closed: Field bool; // Ghost field for open/closed status of an object.
+const unique owner: Field ref; // Ghost field for owner of an object.
+const unique owns: Field (Set ref); // Ghost field for owns set of an object.
+const unique dependents: Field (Set ref); // Ghost field for dependents set of an object.
+const unique depends: Field (Set ref); // Ghost field for depends set of an object.
 
 // Is o free? (owner is open)
 function is_free(h: HeapType, o: ref): bool {
-	h[o, $owner] == Void
+	h[o, owner] == Void
 }
 
 // Is o wrapped in h? (closed and free)
 function is_wrapped(h: HeapType, o: ref): bool {
-	h[o, $closed] && is_free(h, o)
+	h[o, closed] && is_free(h, o)
 }
 
 // Is o open in h? (not closed and free)
 function is_open(h: HeapType, o: ref): bool {
-	!h[o, $closed]
+	!h[o, closed]
 }
 
+// Is o' in the ownership domain of o? Yes if they are equal, or both closed and o' is transitively owned by o
+function in_domain(h: HeapType, o: ref, o': ref): bool
+{
+	o == o' ||
+	(
+		h[o, closed] &&
+		h[o', closed] &&
+		in_domain(h, o, h[o', owner])
+	)
+}
 
+axiom (forall h: HeapType, o, o': ref :: h[o, closed] && h[o, owns][o'] ==> in_domain(h, o, o'));
 
+// Objects outside of ownership domains of mods did not change
+function writes_(h: HeapType, h': HeapType, mods: Set ref): bool { 
+	(forall <T> o: ref, f: Field T :: (forall o': ref :: mods[o'] ==> !in_domain(h, o', o)) ==> h'[o, f] == h[o, f])
+}
+
+// Update Heap position Current.field with value.
+procedure update_heap<T>(Current: ref, field: Field T, value: T);
+	requires is_open(Heap, Current); // UP1
+	requires (forall o: ref :: Heap[Current, dependents][o] ==> is_open(Heap, o)); // UP2
+	requires Writes[Current]; // UP3
+	modifies Heap;
+	ensures Heap[Current, field] == value;
+	ensures (forall<U> o: ref, f: Field U :: !(o == Current && f == field) ==> Heap[o, f] == old(Heap[o, f]));
 
 
 // ----------------------------------------------------------------------
@@ -91,7 +117,7 @@ function argument_type(t: Type, f: Feature, i: int) returns (Type);
 
 // Property that reference `o' is attached to an object of type `t' on heap `heap'.
 function attached(heap: HeapType, o: ref, t: Type) returns (bool) {
-	(o != Void) && (heap[o, $allocated]) && (type_of(o) <: t)
+	(o != Void) && (heap[o, allocated]) && (type_of(o) <: t)
 }
 
 // Property that reference `o' is either Void or attached to an object of type `t' on heap `heap'.
@@ -102,13 +128,13 @@ function detachable(heap: HeapType, o: ref, t: Type) returns (bool) {
 // Property that field `f' is of attached type `t'.
 function attached_attribute(heap: HeapType, o: ref, f: Field ref, t: Type) returns (bool) {
 	true
-//	((o != Void) && (heap[o, $allocated]) && (heap[o, $initialized])) ==> (attached(heap, heap[o, f], t))
+//	((o != Void) && (heap[o, allocated]) && (heap[o, $initialized])) ==> (attached(heap, heap[o, f], t))
 }
 
 // Property that field `f' is of detachable type `t'.
 function detachable_attribute(heap: HeapType, o: ref, f: Field ref, t: Type) returns (bool) {
 	true
-//	((o != Void) && (heap[o, $allocated]) && (heap[o, $initialized])) ==> (detachable(heap, heap[o, f], t))
+//	((o != Void) && (heap[o, allocated]) && (heap[o, $initialized])) ==> (detachable(heap, heap[o, f], t))
 }
 
 
