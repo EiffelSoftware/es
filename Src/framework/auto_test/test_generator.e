@@ -69,7 +69,7 @@ feature {NONE} -- Initialization
 			set_time_out (3)
 			output_dirname := u.make_file_name_in
 				({STRING_32} "auto_test",
-				etest_suite.project_access.project.project_directory.testing_results_path).as_string_32
+				etest_suite.project_access.project.project_directory.testing_results_path.name).as_string_32
 			set_seed ((create {TIME}.make_now).milli_second.as_natural_32)
 			create error_handler.make (system)
 			error_handler.set_configuration (Current)
@@ -1447,7 +1447,7 @@ feature -- Log processor
 			l_duration: DATE_TIME_DURATION
 		do
 
-			create l_time_file.make_from_string (workbench.project_location.testing_results_path.to_string_32.as_string_8)
+			create l_time_file.make_from_string (workbench.project_location.testing_results_path.out)
 			l_time_file.extend ("start_time.txt")
 			create l_file.make_open_append (l_time_file.out)
 			create l_time.make_now_utc
@@ -1488,7 +1488,7 @@ feature -- Collect interface related classes
 				create l_file_name.make_from_string (data_output)
 			else
 				-- Save result to the testing result path.
-				l_path := system.eiffel_project.project_directory.testing_results_path.to_string_32.as_string_8
+				l_path := system.eiffel_project.project_directory.testing_results_path.out
 				create l_file_name.make_from_string (l_path)
 				l_file_name.set_file_name ("related_classes.txt")
 			end

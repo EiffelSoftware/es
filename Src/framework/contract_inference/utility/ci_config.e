@@ -53,7 +53,7 @@ feature -- Access
 	project_directory: STRING_32
 			-- Directory of current project
 		do
-			Result := eiffel_system.eiffel_project.project_directory.path.to_string_32
+			Result := eiffel_system.eiffel_project.project_directory.path.name
 		end
 
 	root_class: CLASS_C

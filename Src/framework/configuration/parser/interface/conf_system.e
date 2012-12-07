@@ -76,11 +76,8 @@ feature -- Status
 		require
 			fully_parsed: is_fully_parsed
 			filenames_set: all_libraries.linear_representation.for_all (agent (a_target: CONF_TARGET): BOOLEAN
-				local
-					l_fn: STRING
 				do
-					l_fn := a_target.system.file_name
-					 Result := l_fn /= Void and then not l_fn.is_empty
+					 Result := attached a_target.system.file_name as l_fn and then not l_fn.is_empty
 				end)
 		do
 			from
@@ -131,6 +128,12 @@ feature -- Access, in compiled only
 
 	file_name: STRING_32
 			-- File name of config file.
+
+	file_path: PATH
+			-- File path of config file.
+		do
+			create Result.make_from_string (file_name)
+		end
 
 	file_date: INTEGER
 			-- File modification date of config file.

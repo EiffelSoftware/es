@@ -95,14 +95,14 @@ feature {NONE}
 		local
 			l_feature: FEATURE_I
 			l_failed: BOOLEAN
-			l_path: DIRECTORY_NAME_32
+			l_path: DIRECTORY_NAME
 			l_filename: FILE_NAME
 		do
 
 			Precursor (a_task, a_cancel)
 				-- Report results when the testing is finished
 			if not a_cancel and not has_next_step then
-				l_path := system.eiffel_project.project_directory.testing_results_path.twin
+				create l_path.make_from_string (system.eiffel_project.project_directory.testing_results_path.out)
 				l_path.extend ("auto_test")
 				l_path.extend ("log")
 				create l_filename.make

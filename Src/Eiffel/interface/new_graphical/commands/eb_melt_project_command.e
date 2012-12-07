@@ -138,7 +138,7 @@ feature {NONE} -- Compilation implementation
 						-- or new derivation of SPECIAL), no need to freeze again.
 					if Eiffel_project.save_error then
 						degree_output.put_message ("Could not write to ")
-						degree_output.put_message (project_location.location)
+						degree_output.put_message (project_location.location.name)
 						degree_output.put_new_line
 						degree_output.put_message ("Please check permissions/disk space and retry")
 						degree_output.put_new_line
@@ -261,7 +261,7 @@ feature {NONE} -- Attributes
 	retried: BOOLEAN
 			-- Is this already tried?
 
-	c_code_directory: STRING_32
+	c_code_directory: PATH
 			-- Directory where the C code is stored.
 		do
 			Result := project_location.workbench_path

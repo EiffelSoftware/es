@@ -121,10 +121,10 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	lpsolve_file_path: FILE_NAME_32
+	lpsolve_file_path: FILE_NAME
 			-- Full path for the generated lpsolve file
 		do
-			create Result.make_from_string (universe.project_location.workbench_path)
+			create Result.make_from_string (universe.project_location.workbench_path.out)
 			Result.set_file_name ("lpsolve.lp")
 		end
 

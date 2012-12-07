@@ -768,11 +768,11 @@ feature {NONE} -- Implementation
 		do
 			if l_error then
 				create Result
-				Result.set_file (current_feature.written_class.file_name)
+				Result.set_file (current_feature.written_class.file_name.as_string_8)
 				Result.set_line (-1)
 			else
 				create Result
-				Result.set_file (current_feature.written_class.file_name)
+				Result.set_file (current_feature.written_class.file_name.as_string_8)
 				Result.set_line (a_node.line_number)
 			end
 		rescue

@@ -86,7 +86,7 @@ feature {NONE} -- Implementation
 		local
 			directory: STRING
 		do
-			directory := file_system.dirname (a_class.file_name)
+			directory := file_system.dirname (a_class.file_name.out)
 			Result := file_system.pathname (directory, a_file_name)
 			if not file_system.file_exists (Result) then
 				error (Result + " does not exist")

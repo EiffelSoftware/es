@@ -293,12 +293,12 @@ feature {NONE} -- Implementation
 	boogie_code_file_name: STRING_32
 			-- File name for Boogie code file
 		local
-			l_output_path: FILE_NAME_32
+			l_output_path: FILE_NAME
 		do
-			create l_output_path.make_from_string (system.eiffel_project.project_directory.target_path)
+			create l_output_path.make_from_string (system.eiffel_project.project_directory.target_path.out)
 			l_output_path.extend ("Boogie")
 			l_output_path.extend ("output.bpl")
-			Result := l_output_path.to_string_32
+			create Result.make_from_string_general (l_output_path)
 
 				-- TODO: remove this to use the EIFGENs directory
 			if {PLATFORM}.is_windows then

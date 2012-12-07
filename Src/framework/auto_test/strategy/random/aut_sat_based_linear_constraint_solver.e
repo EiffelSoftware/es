@@ -71,7 +71,7 @@ feature{NONE} -- Implementation
 	smtlib_file_path: FILE_NAME
 			-- Full path for the generated SMT-LIB file
 		do
-			create Result.make_from_string (universe.project_location.workbench_path.to_string_32.as_string_8)
+			create Result.make_from_string (universe.project_location.workbench_path.out)
 			Result.set_file_name ("linear.smt")
 		end
 

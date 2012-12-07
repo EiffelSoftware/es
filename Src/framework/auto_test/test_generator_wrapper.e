@@ -125,7 +125,7 @@ feature {NONE} -- Basic operations
 
 				-- Create actual root class in EIFGENs cluster
 			l_dir := l_system.project_location
-			create l_file_name.make_from_string (l_dir.eifgens_cluster_path.to_string_32.as_string_8)
+			create l_file_name.make_from_string (l_dir.eifgens_cluster_path.out)
 			l_file_name.set_file_name (interpreter_root_class_name.as_lower)
 			l_file_name.add_extension ("e")
 			create l_file.make (l_file_name)

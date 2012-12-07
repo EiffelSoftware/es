@@ -352,7 +352,7 @@ feature -- Cluster tree warnings
 				%- The destination directory can be written in.")
 		end
 
-	w_Cannot_delete_read_only_class (class_name: STRING_GENERAL): STRING_32
+	w_Cannot_delete_read_only_class (class_name: READABLE_STRING_GENERAL): STRING_32
 		require
 			class_name_not_void: class_name /= Void
 		do
@@ -363,7 +363,7 @@ feature -- Cluster tree warnings
 				)
 		end
 
-	w_Cannot_delete_library_cluster (cluster_name: STRING_GENERAL): STRING_32
+	w_Cannot_delete_library_cluster (cluster_name: READABLE_STRING_GENERAL): STRING_32
 		require
 			cluster_name_not_void: cluster_name /= Void
 		do
@@ -374,7 +374,7 @@ feature -- Cluster tree warnings
 				)
 		end
 
-	w_Cannot_delete_none_empty_cluster (cluster_name: STRING_GENERAL): STRING_32
+	w_Cannot_delete_none_empty_cluster (cluster_name: READABLE_STRING_GENERAL): STRING_32
 		require
 			cluster_name_not_void: cluster_name /= Void
 		do
@@ -385,7 +385,7 @@ feature -- Cluster tree warnings
 				)
 		end
 
-	w_Cannot_add_to_library_cluster (cluster_name: STRING_GENERAL): STRING_32
+	w_Cannot_add_to_library_cluster (cluster_name: READABLE_STRING_GENERAL): STRING_32
 		require
 			cluster_name_not_void: cluster_name /= Void
 		do
@@ -396,14 +396,14 @@ feature -- Cluster tree warnings
 				)
 		end
 
-	w_Cannot_find_class (class_name: STRING_GENERAL): STRING_32
+	w_Cannot_find_class (class_name: READABLE_STRING_GENERAL): STRING_32
 		require
 			class_name_not_void: class_name /= Void
 		do
 			Result := locale.formatted_string (locale.translation ("Cannot find class $1."), [class_name.as_upper])
 		end
 
-	w_Cannot_find_cluster (cluster_name: STRING_GENERAL): STRING_32
+	w_Cannot_find_cluster (cluster_name: READABLE_STRING_GENERAL): STRING_32
 		require
 			cluster_name_not_void: cluster_name /= Void
 		do
@@ -496,14 +496,14 @@ feature -- Cluster tree warnings
 
 	w_Clear_breakpoints: STRING_32 do Result := locale.translation ("Forget all breakpoints?") end
 
-	w_Cluster_path_already_exists (path: STRING_GENERAL): STRING_32
+	w_Cluster_path_already_exists (path: READABLE_STRING_GENERAL): STRING_32
 		require
 			path_not_void: path /= Void
 		do
 			Result := locale.formatted_string (locale.translation ("Cluster with path $1 already exists in the universe."), [path.as_upper])
 		end;
 
-	w_Cluster_name_already_exists (name: STRING_GENERAL): STRING_32
+	w_Cluster_name_already_exists (name: READABLE_STRING_GENERAL): STRING_32
 		require
 			name_not_void: name /= Void
 		do
@@ -1009,7 +1009,7 @@ feature -- Warning messages
 			Result := locale.formatted_string (locale.translation ("No feature named $1 could be found in class $2."), [feature_name, class_name])
 		end
 
-	w_No_system_generated (a_system_name: STRING): STRING_32
+	w_No_system_generated (a_system_name: READABLE_STRING_GENERAL): STRING_32
 		do
 			Result := locale.formatted_string (locale.translation (
 				"Could not find $1.%NPlease make sure the C compilation ended correctly."), [a_system_name])

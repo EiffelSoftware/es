@@ -358,7 +358,7 @@ feature -- Processing
 				-- Until
 			expression_writer.reset
 			expression_writer.set_context_target_type (current_feature.written_class.actual_type)
-			
+
 			a_node.stop.process (expression_writer)
 			locals.append (expression_writer.locals)
 			l_until_expression := expression_writer.expression.string
@@ -431,7 +431,7 @@ feature {NONE} -- Implementation
 		require
 			a_node_not_void: a_node /= Void
 		do
-			Result := current_feature.written_class.file_name + ":" + a_node.line_number.out
+			Result := current_feature.written_class.file_name.as_string_8 + ":" + a_node.line_number.out
 		end
 
 	assert_location (a_type: STRING; a_assert: ASSERT_B): STRING

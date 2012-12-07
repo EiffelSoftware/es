@@ -338,14 +338,15 @@ feature -- Control
 
 feature -- Unmanaged process launch
 
-	open_console_in_dir (dir: READABLE_STRING_GENERAL)
+	open_console_in_dir (dir: PATH)
 			-- Open console in `dir'.
 		require
-			dir_not_void: dir /= VOid
+			dir_not_void: dir /= Void
 		local
 			cmdexe: detachable STRING_32
 			cl: STRING_32
 			console_shell: STRING
+			l_old_path: PATH
 		do
 			create cl.make (50)
 			console_shell := preferences.misc_data.console_shell_command
@@ -366,9 +367,10 @@ feature -- Unmanaged process launch
 				end
 			end
 
-			execution_environment.change_working_directory (dir)
+			l_old_path := execution_environment.current_working_path
+			execution_environment.change_working_path (dir)
 			execution_environment.launch (cl)
-			execution_environment.change_working_directory (execution_environment.current_working_directory)
+			execution_environment.change_working_path (l_old_path)
 		end
 
 	open_file_in_file_browser (a_full_path: READABLE_STRING_GENERAL)
@@ -401,7 +403,7 @@ feature -- Unmanaged process launch
 			end
 		end
 
-	open_dir_in_file_browser (dir: READABLE_STRING_GENERAL)
+	open_dir_in_file_browser (dir: PATH)
 			-- Open directory `dir' in file browser.
 		require
 			dir_attached: dir /= Void
@@ -411,9 +413,9 @@ feature -- Unmanaged process launch
 		do
 			l_cmd := preferences.misc_data.file_browser_command
 			if l_cmd /= Void then
-				create l_target.make (2 + dir.count)
+				create l_target.make (2 + dir.name.count)
 				l_target.append_character ('%"')
-				l_target.append_string_general (dir)
+				l_target.append_string_general (dir.name)
 				l_target.append_character ('%"')
 				l_cmd := l_cmd.twin
 				l_cmd.replace_substring_all ("$target", l_target)

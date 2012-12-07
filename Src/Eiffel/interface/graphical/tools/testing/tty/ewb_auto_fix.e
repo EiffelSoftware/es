@@ -130,7 +130,7 @@ feature -- Properties
 			l_file: KL_TEXT_OUTPUT_FILE
 			l_file_name: FILE_NAME
 		do
-			l_eifgens_dir_path := system.project_location.eifgens_cluster_path.to_string_32.as_string_8
+			l_eifgens_dir_path := system.project_location.eifgens_cluster_path.out
 			create l_file_name.make_from_string (l_eifgens_dir_path)
 			l_file_name.set_file_name (afx_project_root_class.as_lower)
 			l_file_name.add_extension ("e")

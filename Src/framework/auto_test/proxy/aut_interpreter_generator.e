@@ -85,7 +85,7 @@ feature -- Generation
 			a_log_dirname_not_empty: not a_log_dirname.is_empty
 		local
 			absolute_pathname: STRING
-			executable_filename: like {E_SYSTEM}.application_name
+			executable_filename: PATH
 			l_new: like last_interpreter
 			l_serialization_file: STRING
 			u: GOBO_FILE_UTILITIES
@@ -100,9 +100,9 @@ feature -- Generation
 			end
 
 			--compute_interpreter_root_class
-			if u.file_exists (executable_filename) and interpreter_root_class /= Void then
+			if u.file_path_exists (executable_filename) and interpreter_root_class /= Void then
 				create l_new.make (
-					executable_filename,
+					executable_filename.name,
 					system,
 					u.make_file_name_in ("interpreter_log.txt", a_log_dirname),
 					u.make_file_name_in ("proxy_log.txt", a_log_dirname),

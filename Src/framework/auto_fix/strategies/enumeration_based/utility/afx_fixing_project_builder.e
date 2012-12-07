@@ -95,7 +95,7 @@ feature -- Basic operation
 				-- Build new root class for fixing.
 			create l_root_builder.make_with_test_cases (l_system, current_failing_test_cases, current_passing_test_cases, current_fault_signature)
 			l_root_builder.build
-			l_eifgens_dir_path := l_system.project_location.eifgens_cluster_path.to_string_32.as_string_8
+			l_eifgens_dir_path := l_system.project_location.eifgens_cluster_path.out
 			create l_file_name.make_from_string (l_eifgens_dir_path)
 			l_file_name.set_file_name (afx_project_root_class.as_lower)
 			l_file_name.add_extension ("e")

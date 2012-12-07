@@ -215,10 +215,10 @@ feature -- Applying and recalling a fix
 			l_should_backup := True
 
 			l_class_to_fix := a_suggestion.context_feature.written_class
-			create l_origin_file_name.make_from_string (l_class_to_fix.file_name)
+			create l_origin_file_name.make_from_string (l_class_to_fix.file_name.as_string_8)
 
 			if l_should_backup then
-				create l_backup_dir_name.make_from_string (eiffel_project.project_directory.backup_path.to_string_32.as_string_8)
+				create l_backup_dir_name.make_from_string (eiffel_project.project_directory.backup_path.out)
 				create l_dir.make (l_backup_dir_name)
 				if not l_dir.exists then
 					file_system.recursive_create_directory (l_backup_dir_name)

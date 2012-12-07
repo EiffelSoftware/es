@@ -44,9 +44,9 @@ feature {NONE} -- Initialization
 				-- Add the starting environment variables to the list of known variables.
 			tb := table
 			across
-				execution_environment.starting_environment_variables as c
+				execution_environment.starting_environment as c
 			loop
-				tb.force (c.item.to_string_32, c.key.to_string_32) -- FIXME: missing unicode version of execution_environment.starting_environment_variables
+				tb.force (c.item, c.key)
 			end
 		end
 
@@ -169,7 +169,6 @@ feature -- Element change
 			-- <Precursor>
 		local
 			l_changed: BOOLEAN
-			l_name: STRING
 		do
 			l_changed := set_variable_internal (a_value, a_name)
 

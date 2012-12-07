@@ -82,7 +82,7 @@ feature -- Basic operations
 			event_actions.notify_on_session_starts
 
 				-- HACK: force re-compiling the root class by "touch"ing it, otherwise expression evaluation might fail.
-			create l_file.make (root_class_of_system.file_name)
+			create l_file.make_with_name (root_class_of_system.file_name)
 			l_file.touch
 
 				-- Compile project		

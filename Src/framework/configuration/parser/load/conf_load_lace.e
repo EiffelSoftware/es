@@ -294,11 +294,11 @@ feature {NONE} -- Implementation of data retrieval
 					current_cluster.set_recursive (True)
 				end
 				if a_cluster.has_parent then
-					if not current_target.clusters.has (a_cluster.parent_name) then
-						set_error (create {CONF_ERROR_PARSE}.make ("Parent not found: "+a_cluster.parent_name))
+					if not current_target.clusters.has (l_parent) then
+						set_error (create {CONF_ERROR_PARSE}.make ("Parent not found: " + l_parent))
 					else
-						current_target.clusters.item (a_cluster.parent_name).add_child (current_cluster)
-						current_cluster.set_parent (current_target.clusters.item (a_cluster.parent_name))
+						current_target.clusters.item (l_parent).add_child (current_cluster)
+						current_cluster.set_parent (current_target.clusters.item (l_parent))
 						l_location.set_parent (current_cluster.parent.location)
 					end
 				end
@@ -862,12 +862,12 @@ feature {NONE} -- Implementation of data retrieval
 				l_name := l_settings.key_for_iteration
 				if boolean_settings.has (l_name) then
 					l_value := l_settings.item_for_iteration
-					if l_value.is_case_insensitive_equal ("yes") then
-						l_settings.force ("true", l_name)
-					elseif l_value.is_case_insensitive_equal ("no") then
-						l_settings.force ("false", l_name)
+					if l_value.is_case_insensitive_equal ({STRING_32} "yes") then
+						l_settings.force ({STRING_32} "true", l_name)
+					elseif l_value.is_case_insensitive_equal ({STRING_32} "no") then
+						l_settings.force ({STRING_32} "false", l_name)
 					else
-						set_error (create {CONF_ERROR_PARSE}.make ("Invalid value for option, must be yes or no: "+l_name))
+						set_error (create {CONF_ERROR_PARSE}.make ({STRING_32} "Invalid value for option, must be yes or no: " + l_name))
 					end
 				end
 				l_settings.forth

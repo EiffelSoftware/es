@@ -2932,6 +2932,7 @@ Src/dotnet/codedom_provider_2.0/tools/manager/icons/new.png -text
 Src/dotnet/codedom_provider_2.0/tools/manager/icons/new_wizard.png -text
 Src/dotnet/codedom_provider_2.0/tools/manager/icons/revert.png -text
 Src/dotnet/codedom_provider_2.0/tools/manager/icons/save.png -text
+Src/dotnet/consumer/EiffelSoftware.MetadataConsumer.rc -text
 Src/dotnet/consumer/resources/tray_icon.ico -text
 Src/dotnet/eac_browser/ressources/eac_ico/icon_all_features.ico -text
 Src/dotnet/eac_browser/ressources/eac_ico/icon_ancestors.ico -text
@@ -5358,7 +5359,6 @@ eweasel/tests/incr067/notes -text
 eweasel/tests/incr068/notes -text
 eweasel/tests/incr069/notes -text
 eweasel/tests/incr070/notes -text
-eweasel/tests/incr071/exception.e-dotnet -text
 eweasel/tests/incr072/notes -text
 eweasel/tests/incr073/notes -text
 eweasel/tests/incr074/notes -text

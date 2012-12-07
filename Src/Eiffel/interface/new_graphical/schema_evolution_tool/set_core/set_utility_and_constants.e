@@ -122,7 +122,7 @@ feature -- Constants
 	current_dir: STRING
 			-- Current root directory.
 		do
-			Result := workbench.project_location.location
+			Result := workbench.project_location.location.out
 		end
 
 	attributes_from_file (file: PLAIN_TEXT_FILE): DS_HASH_TABLE [STRING, STRING]
@@ -293,7 +293,7 @@ feature {NONE} --implementation
 invariant
 	-- Insert invariant here
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

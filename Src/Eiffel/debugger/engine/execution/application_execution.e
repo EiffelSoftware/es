@@ -152,7 +152,7 @@ feature -- Status
 		local
 			u: FILE_UTILITIES
 		do
-			Result := u.file_exists (Eiffel_system.application_name (True))
+			Result := u.file_path_exists (Eiffel_system.application_name (True))
 		end
 
 	is_valid_and_known_object_address (addr: DBG_ADDRESS): BOOLEAN
@@ -257,7 +257,7 @@ feature -- Execution
 			l_envstr := environment_variables_to_native_string (env)
 
 			-- FIXME: update if/when Eiffel_system.application_name becomes a PATH
-			run_with_env_string (create {PATH}.make_from_string (Eiffel_system.application_name (True).to_string_32), params.arguments, params.working_directory, l_envstr)
+			run_with_env_string (Eiffel_system.application_name (True), params.arguments, params.working_directory, l_envstr)
 		ensure
 			successful_app_is_not_stopped: is_running implies not is_stopped
 		end
@@ -280,7 +280,7 @@ feature -- Execution
 			parameters := Void
 			ctlr := debugger_manager.controller
 			-- FIXME: update if/when Eiffel_system.application_name becomes a PATH
-			attach_using_port (create {PATH}.make_from_string (Eiffel_system.application_name (True).to_string_32), a_port)
+			attach_using_port (Eiffel_system.application_name (True), a_port)
 		ensure
 			successful_app_is_not_stopped: is_running implies not is_stopped
 		end
@@ -595,12 +595,12 @@ feature -- Remote: Store/Load object on RT_
 			end
 		end
 
-	remotely_loaded_object (oa: DBG_ADDRESS; fn: STRING): detachable DUMP_VALUE
+	remotely_loaded_object (oa: DBG_ADDRESS; fn: READABLE_STRING_GENERAL): detachable DUMP_VALUE
 			-- Debug value related to remote loaded object from file `fn'.
 			-- and if `oa' is not Void, copy the value inside object addressed by `oa'.
 		do
 			if attached remote_rt_object as rto then
-				Result := rto.loaded_object (oa, fn)
+				Result := rto.loaded_object (oa, fn.as_string_8) -- FIXME: Unicode
 			end
 		end
 
