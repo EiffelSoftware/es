@@ -102,6 +102,32 @@ procedure update_heap<T>(Current: ref, field: Field T, value: T);
 	ensures Heap[Current, field] == value;
 	ensures (forall<U> o: ref, f: Field U :: !(o == Current && f == field) ==> Heap[o, f] == old(Heap[o, f]));
 
+// Unwrap o
+procedure unwrap(o: ref);
+//  free requires inv(Heap, o);
+  requires is_wrapped(Heap, o); // UW1
+  requires Writes[o]; // UW2
+  modifies Heap, Writes;
+  ensures is_open(Heap, o);
+//  ensures user_inv(Heap, o);
+  ensures (forall o': ref :: old(Heap[o, owns][o']) ==> is_wrapped(Heap, o'));
+  ensures (forall <T> o': ref, f: Field T :: !(o' == o && f == closed) && !(old(Heap[o, owns][o']) && f == owner) ==> Heap[o', f] == old(Heap[o', f]));
+//  ensures Set#Equal(Writes, old(Set#Union(Writes, Heap[o, owns])));
+
+
+// Wrap o
+procedure wrap(o: ref);
+  requires is_open(Heap, o); // W1
+//  requires user_inv(Heap, o); // W2
+  requires (forall o': ref :: Heap[o, owns][o'] ==> is_wrapped(Heap, o') && Writes[o']); // W3
+  requires Writes[o]; // W4
+  modifies Heap, Writes;
+  ensures is_wrapped(Heap, o);
+  ensures (forall o': ref :: old(Heap[o, owns][o']) ==> Heap[o', owner] == o);
+  ensures (forall <T> o': ref, f: Field T :: !(o' == o && f == closed) && !(old(Heap[o, owns][o']) && f == owner) ==> Heap[o', f] == old(Heap[o', f]));
+//  ensures Set#Equal(Writes, old(Set#Difference(Writes, Heap[o, owns])));
+
+
 
 // ----------------------------------------------------------------------
 // Features and argument types

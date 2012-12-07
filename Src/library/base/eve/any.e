@@ -367,64 +367,69 @@ feature -- Basic operations
 
 feature -- Verification
 
-	frozen wrap_ (a: ANY)
+	frozen wrap
 			-- Wrap object `a'.
 		do
 		end
 
-	frozen unwrap_ (a: ANY)
+	frozen multi_wrap (a: TUPLE)
+			-- Wrap all objects in `a' simultaniously.
+		do
+		end
+
+	frozen unwrap
 			-- Unwrap object `a'.
 		do
 		end
 
-	frozen is_wrapped_ (a: ANY): BOOLEAN
+	frozen is_wrapped: BOOLEAN
 			-- Is `a' wrapped?
 		do
 		end
 
-	frozen is_free_ (a: ANY): BOOLEAN
+	frozen is_free: BOOLEAN
 			-- Is `a' free?
 		do
 		end
 
-	frozen is_open_ (a: ANY): BOOLEAN
+	frozen is_open: BOOLEAN
 			-- Is `a' open?
 		do
 		end
 
-	frozen owner_: ANY assign set_owner_
+	frozen owner: ANY assign set_owner
 			-- Owner of this object.
 		do
 		end
 
-	frozen set_owner_ (a: ANY)
+	frozen set_owner (a: ANY)
 			-- Set owner of this object to `a'.
 		do
 		end
 
-	frozen owns_: ANY assign set_owns_
+	frozen owns: ANY assign set_owns
 			-- Owns set of this object.
 		do
 		end
 
-	frozen set_owns_ (a: ANY)
+	frozen set_owns (a: ANY)
 			-- Set owns set of this object.
 		do
 		end
 
-	frozen depends_: ANY assign set_depends_
+	frozen depends: ANY assign set_depends
 			-- Depends set of this object.
 		do
 		end
 
-	frozen set_depends_ (a: ANY)
+	frozen set_depends (a: ANY)
 			-- Set depends set of this object.
 		do
 		end
 
---feature {NONE} -- Implementation
---
---	ownership_impl: OWNERSHIP
+feature {NONE} -- Implementation
+
+--	ownership_impl_: OWNERSHIP
 --			-- Ownership implementation.
 --		once
 --			create Result.make

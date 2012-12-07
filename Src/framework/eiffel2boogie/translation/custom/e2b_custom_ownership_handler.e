@@ -19,7 +19,7 @@ feature -- Status report
 		do
 			Result :=
 				a_feature.written_in = system.any_id and then
-				a_feature.feature_name.ends_with ("_")
+				feature_names.has (a_feature.feature_name)
 		end
 
 feature -- Basic operations
@@ -28,20 +28,32 @@ feature -- Basic operations
 			-- <Precursor>
 		local
 			l_name: STRING
-			l_parameters: BYTE_LIST [PARAMETER_B]
 		do
-
-			l_name := a_feature.feature_name.substring (1, a_feature.feature_name.count-1)
-			if l_name ~ "wrap" or l_name ~ "unwrap" then
-
-			else
-				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
-			end
+			l_name := a_feature.feature_name
+			a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
 		end
 
 	handle_routine_call_in_contract (a_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR; a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
 			-- <Precursor>
+		local
+			l_name: STRING
 		do
+			l_name := a_feature.feature_name
+			a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
+		end
+
+	feature_names: ARRAY [STRING]
+			-- List of feature names.
+		once
+			Result := <<
+				"wrap",
+				"multi_wrap",
+				"unwrap",
+				"is_wrapped",
+				"is_free",
+				"is_open"
+			>>
+			Result.compare_objects
 		end
 
 end
