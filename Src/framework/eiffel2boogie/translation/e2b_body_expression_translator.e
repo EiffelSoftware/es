@@ -65,6 +65,7 @@ feature -- Visitors
 			l_binop: IV_BINARY_OPERATION
 			l_heap_access: IV_HEAP_ACCESS
 			l_call: IV_FUNCTION_CALL
+			l_proc_call: IV_PROCEDURE_CALL
 			l_type_value: IV_VALUE
 			l_handler: E2B_CUSTOM_CALL_HANDLER
 		do
@@ -73,27 +74,17 @@ feature -- Visitors
 			l_feature := a_node.type.associated_class.feature_of_rout_id (a_node.call.routine_id)
 			check feature_valid: l_feature /= Void end
 			translation_pool.add_type (l_type)
---			translation_pool.add_referenced_feature (l_feature, l_type)
 
+				-- Call to `allocate'
 			create_local (l_type)
-
 			l_local := last_local
-			create l_havoc.make (l_local.name)
-			side_effect.extend (l_havoc)
 
-			create l_assume.make (factory.not_equal (l_local, factory.void_))
-			side_effect.extend (l_assume)
-			create l_allocated.make ("$allocated", types.field (types.bool))
-			create l_heap_access.make (entity_mapping.heap.name, l_local, l_allocated)
-			create l_assume.make (factory.equal (l_heap_access, factory.false_))
-			side_effect.extend (l_assume)
-			create l_type_value.make (name_translator.boogie_name_for_type (l_type), types.type)
-			create l_assume.make (factory.equal (factory.type_of (l_local), l_type_value))
-			side_effect.extend (l_assume)
+			create l_proc_call.make ("allocate")
+			l_proc_call.add_argument (factory.type_value (l_type))
+			l_proc_call.set_target (l_local)
+			side_effect.extend (l_proc_call)
 
-			create l_assignment.make (l_heap_access, factory.true_)
-			side_effect.extend (l_assignment)
-
+				-- Call to creation procedure
 			l_target := current_target
 			l_target_type := current_target_type
 
@@ -106,8 +97,6 @@ feature -- Visitors
 			else
 				process_routine_call (l_feature, a_node.parameters)
 			end
-
---			process_routine_call (l_feature, a_node.parameters)
 
 			current_target := l_target
 			current_target_type := l_target_type
@@ -166,7 +155,7 @@ feature -- Visitors
 
 			create l_assume.make (factory.not_equal (l_local, factory.void_))
 			side_effect.extend (l_assume)
-			create l_allocated.make ("$allocated", types.field (types.bool))
+			create l_allocated.make ("allocated", types.field (types.bool))
 			create l_heap_access.make (entity_mapping.heap.name, l_local, l_allocated)
 			create l_assume.make (factory.equal (l_heap_access, factory.false_))
 			side_effect.extend (l_assume)

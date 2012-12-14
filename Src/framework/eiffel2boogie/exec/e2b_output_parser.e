@@ -10,6 +10,10 @@ inherit
 
 	E2B_SHARED_CONTEXT
 
+	SHARED_ERROR_HANDLER
+
+	COMPILER_EXPORTER
+
 create
 	make
 
@@ -170,15 +174,14 @@ feature {NONE} -- Implementation
 						-- line: syntax_error_regexp.captured_substring (2).to_integer
 						-- column: syntax_error_regexp.captured_substring (3).to_integer
 						-- message: syntax_error_regexp.captured_substring (4)
-						last_result.syntax_errors.extend (l_line)
+						last_result.execution_errors.extend (["Syntax error", l_line])
 
 					elseif semantic_error_regexp.matches (l_line) then
 						-- file: semantic_error_regexp.captured_substring (1)
 						-- line: semantic_error_regexp.captured_substring (2).to_integer
 						-- column: semantic_error_regexp.captured_substring (3).to_integer
 						-- message: semantic_error_regexp.captured_substring (4)
-						check False end
-							-- TODO: what kind of errors are these?
+						last_result.execution_errors.extend (["Semantic error", l_line])
 
 					elseif execution_trace_regexp.matches (l_line) then
 						-- file: execution_trace_regexp.captured_substring (1)
@@ -231,6 +234,9 @@ feature {NONE} -- Implementation
 				lines.forth
 			end
 			last_result.set_total_time (l_total_time)
+			if error_handler.has_warning then
+				error_handler.trace
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -394,7 +400,10 @@ feature {NONE} -- Implementation
 				elseif assert_regexp.captured_substring (2) ~ "overflow" then
 					create {E2B_VIOLATION} Result.make_with_description (a_code, a_message, "Precondition may be violated (overflow).")
 				else
-					check False end
+					l_related_boogie_line.left_adjust
+					l_related_boogie_line.right_adjust
+					create {E2B_VIOLATION} Result.make_with_description (a_code, a_message, "Precondition may be violated: " + l_related_boogie_line)
+--					check False end
 				end
 				Result.set_tag (assert_regexp_tag (assert_regexp))
 			elseif l_is_post then

@@ -1,4 +1,67 @@
+// ----------------------------------------------------------------------
+// Sets
+
 type Set T = [T]bool;
+
+function Set#Empty<T>(): Set T;
+axiom (forall<T> o: T :: { Set#Empty()[o] } !Set#Empty()[o]);
+
+function Set#Singleton<T>(T): Set T;
+axiom (forall<T> r: T :: { Set#Singleton(r) } Set#Singleton(r)[r]);
+axiom (forall<T> r: T, o: T :: { Set#Singleton(r)[o] } Set#Singleton(r)[o] <==> r == o);
+
+function Set#UnionOne<T>(Set T, T): Set T;
+axiom (forall<T> a: Set T, x: T, o: T :: { Set#UnionOne(a,x)[o] }
+  Set#UnionOne(a,x)[o] <==> o == x || a[o]);
+axiom (forall<T> a: Set T, x: T :: { Set#UnionOne(a, x) }
+  Set#UnionOne(a, x)[x]);
+axiom (forall<T> a: Set T, x: T, y: T :: { Set#UnionOne(a, x), a[y] }
+  a[y] ==> Set#UnionOne(a, x)[y]);
+
+function Set#Union<T>(Set T, Set T): Set T;
+axiom (forall<T> a: Set T, b: Set T, o: T :: { Set#Union(a,b)[o] }
+  Set#Union(a,b)[o] <==> a[o] || b[o]);
+axiom (forall<T> a, b: Set T, y: T :: { Set#Union(a, b), a[y] }
+  a[y] ==> Set#Union(a, b)[y]);
+axiom (forall<T> a, b: Set T, y: T :: { Set#Union(a, b), b[y] }
+  b[y] ==> Set#Union(a, b)[y]);
+axiom (forall<T> a, b: Set T :: { Set#Union(a, b) }
+  Set#Disjoint(a, b) ==>
+    Set#Difference(Set#Union(a, b), a) == b &&
+    Set#Difference(Set#Union(a, b), b) == a);
+
+function Set#Intersection<T>(Set T, Set T): Set T;
+axiom (forall<T> a: Set T, b: Set T, o: T :: { Set#Intersection(a,b)[o] }
+  Set#Intersection(a,b)[o] <==> a[o] && b[o]);
+
+axiom (forall<T> a, b: Set T :: { Set#Union(Set#Union(a, b), b) }
+  Set#Union(Set#Union(a, b), b) == Set#Union(a, b));
+axiom (forall<T> a, b: Set T :: { Set#Union(a, Set#Union(a, b)) }
+  Set#Union(a, Set#Union(a, b)) == Set#Union(a, b));
+axiom (forall<T> a, b: Set T :: { Set#Intersection(Set#Intersection(a, b), b) }
+  Set#Intersection(Set#Intersection(a, b), b) == Set#Intersection(a, b));
+axiom (forall<T> a, b: Set T :: { Set#Intersection(a, Set#Intersection(a, b)) }
+  Set#Intersection(a, Set#Intersection(a, b)) == Set#Intersection(a, b));
+
+function Set#Difference<T>(Set T, Set T): Set T;
+axiom (forall<T> a: Set T, b: Set T, o: T :: { Set#Difference(a,b)[o] }
+  Set#Difference(a,b)[o] <==> a[o] && !b[o]);
+axiom (forall<T> a, b: Set T, y: T :: { Set#Difference(a, b), b[y] }
+  b[y] ==> !Set#Difference(a, b)[y] );
+
+function Set#Subset<T>(Set T, Set T): bool;
+axiom(forall<T> a: Set T, b: Set T :: { Set#Subset(a,b) }
+  Set#Subset(a,b) <==> (forall o: T :: {a[o]} {b[o]} a[o] ==> b[o]));
+
+function Set#Equal<T>(Set T, Set T): bool;
+axiom(forall<T> a: Set T, b: Set T :: { Set#Equal(a,b) }
+  Set#Equal(a,b) <==> (forall o: T :: {a[o]} {b[o]} a[o] <==> b[o]));
+axiom(forall<T> a: Set T, b: Set T :: { Set#Equal(a,b) }  // extensionality axiom for sets
+  Set#Equal(a,b) ==> a == b);
+
+function Set#Disjoint<T>(Set T, Set T): bool;
+axiom (forall<T> a: Set T, b: Set T :: { Set#Disjoint(a,b) }
+  Set#Disjoint(a,b) <==> (forall o: T :: {a[o]} {b[o]} !a[o] || !b[o]));
 
 // ----------------------------------------------------------------------
 // Reference types
@@ -112,7 +175,7 @@ procedure unwrap(o: ref);
 //  ensures user_inv(Heap, o);
   ensures (forall o': ref :: old(Heap[o, owns][o']) ==> is_wrapped(Heap, o'));
   ensures (forall <T> o': ref, f: Field T :: !(o' == o && f == closed) && !(old(Heap[o, owns][o']) && f == owner) ==> Heap[o', f] == old(Heap[o', f]));
-//  ensures Set#Equal(Writes, old(Set#Union(Writes, Heap[o, owns])));
+  ensures Set#Equal(Writes, old(Set#Union(Writes, Heap[o, owns])));
 
 
 // Wrap o
@@ -125,7 +188,7 @@ procedure wrap(o: ref);
   ensures is_wrapped(Heap, o);
   ensures (forall o': ref :: old(Heap[o, owns][o']) ==> Heap[o', owner] == o);
   ensures (forall <T> o': ref, f: Field T :: !(o' == o && f == closed) && !(old(Heap[o, owns][o']) && f == owner) ==> Heap[o', f] == old(Heap[o', f]));
-//  ensures Set#Equal(Writes, old(Set#Difference(Writes, Heap[o, owns])));
+  ensures Set#Equal(Writes, old(Set#Difference(Writes, Heap[o, owns])));
 
 
 
@@ -143,12 +206,17 @@ function argument_type(t: Type, f: Feature, i: int) returns (Type);
 
 // Property that reference `o' is attached to an object of type `t' on heap `heap'.
 function attached(heap: HeapType, o: ref, t: Type) returns (bool) {
+	(o != Void) && (heap[o, allocated]) && (type_of(o) == t)
+}
+
+// Property that reference `o' is attached and conforms to type `t' on heap `heap'.
+function attached_conform(heap: HeapType, o: ref, t: Type) returns (bool) {
 	(o != Void) && (heap[o, allocated]) && (type_of(o) <: t)
 }
 
-// Property that reference `o' is either Void or attached to an object of type `t' on heap `heap'.
+// Property that reference `o' is either Void or attached and conforms to `t' on heap `heap'.
 function detachable(heap: HeapType, o: ref, t: Type) returns (bool) {
-	(o == Void) || (attached(heap, o, t))
+	(o == Void) || (attached_conform(heap, o, t))
 }
 
 // Property that field `f' is of attached type `t'.
@@ -165,7 +233,17 @@ function detachable_attribute(heap: HeapType, o: ref, f: Field ref, t: Type) ret
 
 
 
-
+procedure allocate(t: Type) returns (result: ref);
+	modifies Heap, Writes;
+	ensures !old(Heap[result, allocated]);
+	ensures Heap[result, allocated];
+	ensures result != Void;
+	ensures type_of(result) == t;
+	ensures is_open(Heap, result);
+	ensures Heap[result, owner] == Void;
+	ensures Set#Equal(Heap[result, dependents], Set#Empty());
+	ensures Writes == old(Set#UnionOne(Writes, result));
+	ensures (forall <T> o: ref, f: Field T :: o != result ==> Heap[o, f] == old(Heap[o, f]));
 
 
 
@@ -217,6 +295,9 @@ function is_integer_32(i: int) returns (bool) {
 }
 function is_integer_64(i: int) returns (bool) {
 	(-9223372036854775808 <= i) && (i <= 9223372036854775807)
+}
+function is_natural(i: int) returns (bool) {
+	(0 <= i)
 }
 function is_natural_8(i: int) returns (bool) {
 	(0 <= i) && (i <= 255)

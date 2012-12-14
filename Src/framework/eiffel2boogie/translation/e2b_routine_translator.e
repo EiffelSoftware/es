@@ -56,6 +56,7 @@ feature -- Basic operations
 			routine: a_feature.is_routine
 		local
 			l_boogie_type: IV_TYPE
+			l_pre: IV_PRECONDITION
 			l_expression: IV_EXPRESSION
 			i: INTEGER
 			l_contracts: TUPLE [pre: LIST [ASSERT_B]; post: LIST [ASSERT_B]]
@@ -77,7 +78,12 @@ feature -- Basic operations
 				translation_pool.add_type (l_type)
 				l_boogie_type := types.for_type_a (l_type)
 				l_expression := argument_property (current_feature.arguments.item_name (i), l_type)
-				current_boogie_procedure.add_argument_with_property (current_feature.arguments.item_name (i), l_boogie_type, l_expression)
+				create l_pre.make (l_expression)
+				l_pre.set_free
+				l_pre.set_assertion_type ("argument property")
+				current_boogie_procedure.add_contract (l_pre)
+				current_boogie_procedure.add_argument (current_feature.arguments.item_name (i), l_boogie_type)
+--				current_boogie_procedure.add_argument_with_property (current_feature.arguments.item_name (i), l_boogie_type, l_expression)
 				i := i + 1
 			end
 
@@ -108,6 +114,7 @@ feature -- Basic operations
 
 				-- Frame condition
 			create l_modifies.make ("Heap")
+			l_modifies.add_name ("Writes")
 			current_boogie_procedure.add_contract (l_modifies)
 
 			if helper.feature_note_values (current_feature, "framing").has ("False") then
@@ -687,12 +694,12 @@ feature {NONE} -- Implementation
 			if attached {INTEGER_A} a_type as l_int_type then
 				l_f_name := "is_integer_" + l_int_type.size.out
 			elseif attached {NATURAL_A} a_type as l_nat_type then
-				l_f_name := "is_integer_" + l_nat_type.size.out
+				l_f_name := "is_natural_" + l_nat_type.size.out
 			elseif attached {CHARACTER_A} a_type as l_char_type then
 				if l_char_type.is_character_32 then
-					l_f_name := "is_integer_32"
+					l_f_name := "is_natural_32"
 				else
-					l_f_name := "is_integer_8"
+					l_f_name := "is_natural_8"
 				end
 			else
 				check False end

@@ -35,7 +35,7 @@ procedure $TUPLE.make(
 	requires count >= 0;
 	ensures Heap[c, TUPLE.count] == count;
 	modifies Heap;
-	ensures (forall<beta> o: ref, f: Field beta :: (o != c || f == $allocated) ==> (Heap[o, f] == old(Heap)[o, f]));
+	ensures (forall<beta> o: ref, f: Field beta :: (o != c || f == allocated) ==> (Heap[o, f] == old(Heap)[o, f]));
 
 // Procedure for putting elements in tuples
 procedure $TUPLE.put<alpha>(
