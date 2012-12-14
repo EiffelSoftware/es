@@ -436,14 +436,15 @@ feature {ES_EBBRO_GRID} -- Action handlers
 		-- select the file to write to.
 		local
 			dialog:EB_FILE_SAVE_DIALOG
-			l_pref: STRING_PREFERENCE
+			l_pref: PATH_PREFERENCE
 		--	l_is_dadl:BOOLEAN
 			l_filename:STRING
 		do
 			l_pref := preferences.dialog_data.last_opened_object_directory_in_ebbro
 			if l_pref.value = Void or else l_pref.value.is_empty then
-				l_pref.set_value (eiffel_layout.user_projects_path.out)
+				l_pref.set_value (eiffel_layout.user_projects_path)
 			end
+
 
 			create dialog.make_with_preference (l_pref)
 

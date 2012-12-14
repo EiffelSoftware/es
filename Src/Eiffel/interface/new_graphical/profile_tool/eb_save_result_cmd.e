@@ -41,11 +41,11 @@ feature {EB_PROFILE_QUERY_WINDOW} -- Command Execution
 			-- Execute Current
 		local
 			fsd: EB_FILE_SAVE_DIALOG
-			l_pref: STRING_PREFERENCE
+			l_pref: PATH_PREFERENCE
 		do
 			l_pref := preferences.dialog_data.last_saved_profile_result_directory_preference
 			if l_pref.value = Void or else l_pref.value.is_empty then
-				l_pref.set_value (eiffel_layout.user_projects_path.name.as_string_8) -- FIXME: use STRING_32_PREFERENCE
+				l_pref.set_value (eiffel_layout.user_projects_path)
 			end
 			create fsd.make_with_preference (l_pref)
 			fsd.save_actions.extend (agent save_in (fsd))
@@ -60,11 +60,9 @@ feature -- Access
 		require
 			dialog_exists: dialog /= Void
 		local
-			file_name: STRING_32
 			file_opener: EB_FILE_OPENER
 		do
-			file_name := dialog.file_name.twin
-			create file_opener.make_with_parent (Current, file_name, query_window)
+			create file_opener.make_with_parent (Current, dialog.full_file_path, query_window)
 		end
 
 feature {EB_FILE_OPENER} -- Callbacks

@@ -19,11 +19,11 @@ feature -- open dialog
 	open_object_dialog: EB_FILE_OPEN_DIALOG
 			-- a common open file dialog, used in ebbro
 		local
-			l_pref: STRING_PREFERENCE
+			l_pref: PATH_PREFERENCE
 		do
 			l_pref := preferences.dialog_data.last_opened_object_directory_in_ebbro
 			if l_pref.value = Void or else l_pref.value.is_empty then
-				l_pref.set_value (eiffel_layout.user_projects_path.out)
+				l_pref.set_value (eiffel_layout.user_projects_path)
 			end
 
 			create result.make_with_preference (l_pref)

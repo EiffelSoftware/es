@@ -402,7 +402,7 @@ feature {NONE} -- Query
 						token_writer.add_comment ("unknown test")
 					end
 					if l_state /= Void and then l_state.is_tested and then not l_state.is_pass then
-						token_writer.process_basic_text (l_state.tag.as_string_32)
+						token_writer.process_basic_text (l_state.tag)
 					end
 					l_item.set_text_with_tokens (token_writer.last_line.content)
 					reset_token_writer
@@ -424,7 +424,7 @@ feature {NONE} -- Query
 
 feature -- Basic operations
 
-	compare_states (a_file_name: READABLE_STRING_8)
+	compare_states (a_file_name: PATH)
 			-- Compare current test suite state with state stored in `a_file_name'.
 			--
 			-- `a_file_name': File name in which old state is stored
@@ -513,7 +513,7 @@ feature -- Basic operations
 
 					statistic_widget.enable_sensitive
 					grid.enable_sensitive
-					file_text.set_text (a_file_name.to_string_32)
+					file_text.set_text (a_file_name.name)
 				end
 			end
 
@@ -803,7 +803,7 @@ invariant
 	current_bars_valid: current_bars.count = statistic_count
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2012, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

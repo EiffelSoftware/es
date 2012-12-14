@@ -535,7 +535,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	last_browsed_directory: STRING
+	last_browsed_directory: PATH
 			-- What was the last browsed directory when searching for a folder?
 		do
 			Result := preferences.development_window_data.last_browsed_cluster_directory
@@ -551,25 +551,27 @@ feature {NONE} -- Graphic interface
 			-- Pop up a browse dialog.
 		local
 			bd: EV_DIRECTORY_DIALOG
-			lastdir: STRING
+			l_dir_text: STRING_32
+			l_path: PATH
 		do
 			create bd
 			bd.ok_actions.extend (agent set_path (bd))
-			lastdir := folder_entry.text
-			if not lastdir.is_empty then
-				lastdir := (create {ENV_INTERP}).interpreted_string (lastdir)
-				if not (create {DIRECTORY}.make (lastdir)).exists then
-					lastdir := Void
+			l_dir_text := folder_entry.text
+			if not l_dir_text.is_empty then
+				l_dir_text := (create {ENV_INTERP}).interpreted_string (l_dir_text)
+				create l_path.make_from_string (l_dir_text)
+				if not (create {DIRECTORY}.make_with_path (l_path)).exists then
+					l_path := Void
 				end
 			end
-			if lastdir = Void or else lastdir.is_empty then
-				lastdir := last_browsed_directory
+			if l_path = Void or else l_path.is_empty then
+				l_path := last_browsed_directory
 			end
 			if
-				lastdir /= Void and then not lastdir.is_empty and then
-				(create {DIRECTORY}.make (lastdir)).exists
+				l_path /= Void and then not l_path.is_empty and then
+				(create {DIRECTORY}.make_with_path (l_path)).exists
 			then
-				bd.set_start_directory (lastdir)
+				bd.set_start_path (l_path)
 			end
 			bd.show_modal_to_window (Current)
 		end
@@ -577,22 +579,17 @@ feature {NONE} -- Graphic interface
 	set_path (bd: EV_DIRECTORY_DIALOG)
 			-- Initialize the cluster path with the directory selected in `bd'.
 		local
-			sep_index: INTEGER
-			dir: STRING
+			dir: PATH
 		do
-			dir := bd.directory
-			folder_entry.set_text (dir)
+			dir := bd.path
+			folder_entry.set_text (dir.name)
 			preferences.development_window_data.last_browsed_cluster_directory_preference.set_value (dir)
 			if
-				(not dir.is_empty and is_default_cluster_name_set) and then
+				(attached dir.entry as l_dir_entry and is_default_cluster_name_set) and then
 				(cluster_name.is_equal (default_cluster_name) or cluster_name.is_empty)
 			then
-				sep_index := dir.last_index_of (operating_environment.directory_separator,
-					dir.count)
-				dir := dir.as_lower
-				dir.remove_head (sep_index)
 				cluster_entry.change_actions.block
-				cluster_entry.set_text (dir)
+				cluster_entry.set_text (l_dir_entry.name)
 				cluster_entry.change_actions.resume
 			end
 		end

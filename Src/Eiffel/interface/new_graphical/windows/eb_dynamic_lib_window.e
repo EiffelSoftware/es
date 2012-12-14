@@ -491,7 +491,7 @@ feature {NONE} -- Status
 	exports: ARRAYED_LIST [DYNAMIC_LIB_EXPORT_FEATURE]
 			-- The abstract representation for all the exported features.
 
-	file_name: FILE_NAME
+	file_name: PATH
 			-- The name of the file we are currently working on.
 			-- May be Void if no file is loaded.
 
@@ -954,7 +954,8 @@ feature {NONE} -- Implementation: Low_level dialog, file operations
 			if not rescued then
 				if file_name /= Void then
 						-- It is really a save operation.
-					create f.make_create_read_write (file_name)
+					create f.make_with_path (file_name)
+					f.create_read_write
 					dynamic_library.save_to_file (f)
 					f.close
 					save_ok := True
@@ -963,8 +964,8 @@ feature {NONE} -- Implementation: Low_level dialog, file operations
 					ask_for_file_name (False, agent save_dynamic_lib)
 				end
 			else
-				if file_name /= Void then
-					prompts.show_error_prompt (Warning_messages.w_Cannot_save_library (file_name), window, Void)
+				if attached file_name as l_fn then
+					prompts.show_error_prompt (Warning_messages.w_Cannot_save_library (l_fn.name), window, Void)
 				end
 			end
 		rescue
@@ -987,7 +988,8 @@ feature {NONE} -- Implementation: Low_level dialog, file operations
 			if not rescued then
 				if file_name /= Void then
 					create dynamic_library
-					create f.make_open_read (file_name)
+					create f.make_with_path (file_name)
+					f.open_read
 					dynamic_library.parse_exports_from_file (f)
 					if not dynamic_library.is_content_valid then
 						prompts.show_error_prompt (Warning_messages.w_Error_parsing_the_library_file, window, Void)
@@ -1002,8 +1004,8 @@ feature {NONE} -- Implementation: Low_level dialog, file operations
 					ask_for_file_name (True, agent load_dynamic_lib)
 				end
 			else
-				if file_name /= Void then
-					prompts.show_error_prompt (Warning_messages.w_Cannot_load_library (file_name), window, Void)
+				if attached file_name as l_fn then
+					prompts.show_error_prompt (Warning_messages.w_Cannot_load_library (l_fn.name), window, Void)
 				end
 			end
 		rescue
@@ -1047,19 +1049,19 @@ feature {NONE} -- Implementation: Low_level dialog, file operations
 			-- If `load' then we assume we want to open a file. Otherwise we want to save it.
 		local
 			dd: EB_FILE_DIALOG
-			l_pref: STRING_PREFERENCE
+			l_pref: PATH_PREFERENCE
 		do
 			file_call_back := next_action
 			if load then
 				l_pref := preferences.dialog_data.last_opened_dynamic_lib_directory_preference
 				if l_pref.value = Void or else l_pref.value.is_empty then
-					l_pref.set_value (eiffel_layout.user_projects_path_8)
+					l_pref.set_value (eiffel_layout.user_projects_path)
 				end
 				create {EB_FILE_OPEN_DIALOG} dd.make_with_preference (l_pref)
 			else
 				l_pref := preferences.dialog_data.last_saved_dynamic_lib_directory_preference
 				if l_pref.value = Void or else l_pref.value.is_empty then
-					l_pref.set_value (eiffel_layout.user_projects_path_8)
+					l_pref.set_value (eiffel_layout.user_projects_path)
 				end
 				create {EB_FILE_SAVE_DIALOG} dd.make_with_preference (l_pref)
 			end
@@ -1075,14 +1077,12 @@ feature {NONE} -- Implementation: Low_level dialog, file operations
 		require
 			valid_dialog: dd /= Void
 		local
-			fn: FILE_NAME
-			tmpfn: STRING
+			fn: like file_name
 		do
-			tmpfn := dd.file_name
-			if not tmpfn.is_empty then
-				create fn.make_from_string (tmpfn)
-				if not (tmpfn.substring (tmpfn.count - 3, tmpfn.count)).is_equal (".def") then
-					fn.add_extension ("def")
+			fn := dd.full_file_path
+			if not fn.is_empty then
+				if not fn.name.tail (4).is_case_insensitive_equal_general (".def") then
+					fn := fn.appended (".def")
 				end
 				file_name := fn
 				file_call_back.call (Void)
@@ -1352,9 +1352,8 @@ feature {NONE} -- Implementation: Properties dialog
 									modified_exported_feature.routine /= Void
 		local
 			cit: EV_LIST_ITEM
-			curcr: STRING
+			curcr: STRING_32
 			crname: STRING_32
-			curcc: STRING_32
 		do
 			available_creation_routines := valid_creation_routines (modified_exported_feature.compiled_class)
 			class_field.set_text (modified_exported_feature.compiled_class.name)
@@ -1370,7 +1369,7 @@ feature {NONE} -- Implementation: Properties dialog
 				crname := available_creation_routines.item.name_32
 				create cit.make_with_text (crname)
 				creation_combo.extend (cit)
-				if curcr /= Void and then curcr.is_equal (crname) then
+				if curcr /= Void and then curcr.same_string_general (crname) then
 					cit.enable_select
 				end
 				available_creation_routines.forth
@@ -1382,15 +1381,14 @@ feature {NONE} -- Implementation: Properties dialog
 				if modified_exported_feature.index > 0 then
 					index_field.set_value (modified_exported_feature.index)
 				end
-				curcc := modified_exported_feature.call_type
-				if curcc /= Void then
+				if attached modified_exported_feature.call_type as curcc then
 					from
 						call_combo.start
 					until
 						call_combo.after
 					loop
 						cit := call_combo.item
-						if cit /= Void and then cit.text.is_equal (curcc) then
+						if cit /= Void and then cit.text.same_string_general (curcc) then
 							cit.enable_select
 						end
 						call_combo.forth
@@ -1455,7 +1453,7 @@ feature {NONE} -- Implementation: Properties dialog
 					else
 						modified_exported_feature.remove_index
 					end
-					if not default_calling_convention.is_equal (cc) then
+					if not default_calling_convention.same_string_general (cc) then
 						modified_exported_feature.set_call_type (cc)
 					else
 						modified_exported_feature.remove_call_type
@@ -1551,7 +1549,7 @@ feature {NONE} -- Implementation: Properties dialog
 					if ind /= 0 then
 						exp.set_index (ind)
 					end
-					if not default_calling_convention.is_equal (cc) then
+					if not default_calling_convention.same_string_general (cc) then
 						exp.set_call_type (cc)
 					end
 				else
@@ -1703,7 +1701,7 @@ feature {NONE} -- Implementation: checks
 							-- Two indices are similar.
 						exports.item.index /= 0 and exports.item.index = exp.index or else
 							-- Two exported names are similar.
-						oa /= Void and then oa.is_equal (exp.exported_name)
+						oa /= Void and then oa.same_string_general (exp.exported_name)
 					then
 						Result := True
 					end

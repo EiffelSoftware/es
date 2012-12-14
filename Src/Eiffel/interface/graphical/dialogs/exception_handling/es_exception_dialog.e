@@ -266,7 +266,7 @@ feature {NONE} -- Action handlers
 		local
 			l_save_dialog: EB_FILE_SAVE_DIALOG
 			l_file: PLAIN_TEXT_FILE
-			l_pref: STRING_PREFERENCE
+			l_pref: PATH_PREFERENCE
 			l_error: ES_ERROR_PROMPT
 			l_constants: EB_FILE_DIALOG_CONSTANTS
 			retried: BOOLEAN
@@ -274,20 +274,21 @@ feature {NONE} -- Action handlers
 			if not retried then
 				l_pref := preferences.dialog_data.last_saved_exception_directory_preference
 				if l_pref.value = Void or else l_pref.value.is_empty then
-					l_pref.set_value ((create {EIFFEL_LAYOUT}).eiffel_layout.user_projects_path.name.as_string_8) -- FIXME: use STRING_32_PREFERENCE
+					l_pref.set_value ((create {EIFFEL_LAYOUT}).eiffel_layout.user_projects_path)
 				end
 				create l_save_dialog.make_with_preference (l_pref)
 				create l_constants
 				l_constants.set_dialog_filters_and_add_all (l_save_dialog, <<l_constants.text_files_filter>>)
 				l_save_dialog.show_modal_to_window (dialog)
-				if not l_save_dialog.file_name.is_empty then
-					create l_file.make_open_write (l_save_dialog.file_name)
+				if not l_save_dialog.full_file_path.is_empty then
+					create l_file.make_with_path (l_save_dialog.full_file_path)
+					l_file.open_write
 					l_file.put_string (trace)
 					l_file.close
 				end
 			else
-				if l_save_dialog /= Void and then l_save_dialog.file_name /= Void then
-					create l_error.make_standard ((create {WARNING_MESSAGES}).w_cannot_save_file (l_save_dialog.file_name))
+				if l_save_dialog /= Void then
+					create l_error.make_standard ((create {WARNING_MESSAGES}).w_cannot_save_file (l_save_dialog.full_file_path.name))
 				else
 					create l_error.make_standard ((create {WARNING_MESSAGES}).w_cannot_save_file (Void))
 				end
