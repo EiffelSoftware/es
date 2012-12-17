@@ -152,15 +152,15 @@ function in_domain(h: HeapType, o: ref, o': ref): bool
 axiom (forall h: HeapType, o, o': ref :: h[o, closed] && h[o, owns][o'] ==> in_domain(h, o, o'));
 
 // Objects outside of ownership domains of mods did not change
-function writes_(h: HeapType, h': HeapType, mods: Set ref): bool { 
+function writes(h: HeapType, h': HeapType, mods: Set ref): bool { 
 	(forall <T> o: ref, f: Field T :: (forall o': ref :: mods[o'] ==> !in_domain(h, o', o)) ==> h'[o, f] == h[o, f])
 }
 
 // Update Heap position Current.field with value.
 procedure update_heap<T>(Current: ref, field: Field T, value: T);
-	requires is_open(Heap, Current); // UP1
-	requires (forall o: ref :: Heap[Current, dependents][o] ==> is_open(Heap, o)); // UP2
-	requires Writes[Current]; // UP3
+	requires is_open(Heap, Current); // pre tag:UP1
+	requires (forall o: ref :: Heap[Current, dependents][o] ==> is_open(Heap, o)); // pre tag:UP2
+	requires Writes[Current]; // pre tag:UP3
 	modifies Heap;
 	ensures Heap[Current, field] == value;
 	ensures (forall<U> o: ref, f: Field U :: !(o == Current && f == field) ==> Heap[o, f] == old(Heap[o, f]));
@@ -168,8 +168,8 @@ procedure update_heap<T>(Current: ref, field: Field T, value: T);
 // Unwrap o
 procedure unwrap(o: ref);
 //  free requires inv(Heap, o);
-  requires is_wrapped(Heap, o); // UW1
-  requires Writes[o]; // UW2
+  requires is_wrapped(Heap, o); // pre tag:UW1
+  requires Writes[o]; // pre tag:UW2
   modifies Heap, Writes;
   ensures is_open(Heap, o);
 //  ensures user_inv(Heap, o);
@@ -180,10 +180,10 @@ procedure unwrap(o: ref);
 
 // Wrap o
 procedure wrap(o: ref);
-  requires is_open(Heap, o); // W1
-//  requires user_inv(Heap, o); // W2
-  requires (forall o': ref :: Heap[o, owns][o'] ==> is_wrapped(Heap, o') && Writes[o']); // W3
-  requires Writes[o]; // W4
+  requires is_open(Heap, o); // pre tag:W1
+//  requires user_inv(Heap, o); // pre tag:W2
+  requires (forall o': ref :: Heap[o, owns][o'] ==> is_wrapped(Heap, o') && Writes[o']); // pre tag:W3
+  requires Writes[o]; // pre tag:W4
   modifies Heap, Writes;
   ensures is_wrapped(Heap, o);
   ensures (forall o': ref :: old(Heap[o, owns][o']) ==> Heap[o', owner] == o);

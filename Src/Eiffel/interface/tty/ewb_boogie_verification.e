@@ -45,6 +45,9 @@ feature {NONE} -- Initialization
 
 feature -- Properties
 
+	autoproof: E2B_AUTOPROOF
+			-- Autoproof.
+
 	options: LINKED_LIST [STRING]
 			-- Option arguments to Boogie command line.
 
@@ -70,256 +73,83 @@ feature -- Execution
 
 	execute
 			-- <Precursor>
-		local
-			l_proof_event: EVENT_LIST_PROOF_ITEM_I
-			l_boogie_universe: IV_UNIVERSE
-			l_translator: E2B_TRANSLATOR
-			l_boogie_generator: E2B_BOOGIE_GENERATOR
-			l_verifier: E2B_VERIFIER
-			l_result: E2B_RESULT
-			l_context: E2B_SHARED_CONTEXT
 		do
+			create autoproof.make
 				-- Load options
 			if options.has ("-abc") then
 
 			end
-
-				-- Load selection, add it to `translator_input'
-			create translator_input.make
 			if selection.is_empty then
 				load_universe
 			else
 				load_selection
 			end
-
-				-- Translate elements
-			from
-				create l_boogie_universe.make
-				create l_translator.make (l_boogie_universe)
-				l_translator.add_input (translator_input)
-			until
-				not l_translator.has_next_step
-			loop
-				l_translator.step
-			end
-
-				-- Generate Boogie code
-			create l_boogie_generator.make (l_boogie_universe)
-			l_boogie_generator.generate_verifier_input
-
-				-- Run Boogie verifier
-			create l_verifier.make
-			l_verifier.set_input (l_boogie_generator.last_generated_verifier_input)
-			l_verifier.verify
-			l_result := l_verifier.last_result
-
---			if l_result.has_verification_errors then
---				create l_context
---				create l_boogie_universe.make
---				create l_translator.make (l_boogie_universe)
---				across l_result.verification_errors as i loop
---					-- TODO: set up inlining for
---					l_translator.add_feature_of_type (i.item.eiffel_feature, i.item.eiffel_class.actual_type)
---					l_context.options.routines_to_inline.extend (i.item.eiffel_feature.body_index)
-
---				end
---				from until not l_translator.has_next_step loop
---					l_translator.step
---				end
---				create l_boogie_generator.make (l_boogie_universe)
---				l_boogie_generator.generate_verifier_input
---				create l_verifier.make
---				l_verifier.set_input (l_boogie_generator.last_generated_verifier_input)
---				l_verifier.verify
---				across l_verifier.last_result.verified_procedures as j loop
---					l_result.verified_procedures.extend (j.item)
---					from
---						l_result.verification_errors.start
---					until
---						l_result.verification_errors.after
---					loop
---						if l_result.verification_errors.item.eiffel_feature.body_index = j.item.eiffel_feature.body_index then
---							l_result.verification_errors.remove
---						else
---							l_result.verification_errors.forth
---						end
---					end
---				end
---			end
-
-
-
-				-- Create output
-			l_result.verified_procedures.do_all (
-				agent (l_proc: E2B_PROCEDURE_RESULT)
-					do
-						io.put_string ("Verified: {" + l_proc.eiffel_class.name + "}." + l_proc.eiffel_feature.feature_name)
-						io.put_new_line
-					end
-			)
-				check False end
---		l_result.verification_errors.do_all (
---				agent (l_proc: E2B_VERIFICATION_ERROR)
---					do
---						io.put_string ("Failed: {" + l_proc.eiffel_class.name + "}." + l_proc.eiffel_feature.feature_name)
-----						if l_proc.is_attached_violation then
-----							io.put_string (" attached violation")
-----						elseif l_proc.is_check_violation then
-----							io.put_string (" check violation")
-----						elseif l_proc.is_frame_condition_violation then
-----							io.put_string (" frame violation")
-----						elseif l_proc.is_invariant_violation then
-----							io.put_string (" invariant violation")
-----						elseif l_proc.is_postcondition_violation then
-----							io.put_string (" postcondition violation")
-----						elseif l_proc.is_precondition_violation then
-----							io.put_string (" precondition violation")
-----						end
---						check False end
---						if attached l_proc.tag then
---							io.put_string (" tag:" + l_proc.tag)
---						end
---						io.put_new_line
---					end
---			)
-
---			if event_list.is_service_available then
---				from
---					event_list.service.all_items.start
---					event_list.service.all_items.start
---				until
---					event_list.service.all_items.after
---				loop
---					l_proof_event ?= event_list.service.all_items.item_for_iteration
---					if l_proof_event /= Void then
---						print_event (l_proof_event)
---					end
---					event_list.service.all_items.forth
---				end
---			end
+			autoproof.verify
+			print_result (autoproof.last_result)
 		end
 
 feature {NONE} -- Implementation
 
-	translator_input: E2B_TRANSLATOR_INPUT
-			-- Translator.
-
-	frozen event_list: SERVICE_CONSUMER [EVENT_LIST_S]
-			-- Access to an event list service {EVENT_LIST_S} consumer
-		once
-			create Result
-		ensure
-			result_attached: Result /= Void
-		end
-
-	print_event (a_proof_event: EVENT_LIST_PROOF_ITEM_I)
-			-- Print event `a_proof_event' to console.
-		local
-			l_successful: EVENT_LIST_PROOF_SUCCESSFUL_ITEM
-			l_failed: EVENT_LIST_PROOF_FAILED_ITEM
-			l_skipped: EVENT_LIST_PROOF_SKIPPED_ITEM
+	print_result (a_result: E2B_RESULT)
+			-- Print results to output.
 		do
-			l_successful ?= a_proof_event
-			l_failed ?= a_proof_event
-			l_skipped ?= a_proof_event
-
-			if l_successful /= Void then
-				print_successful (l_successful)
-			elseif l_failed /= Void then
-				from
-					l_failed.error_list.start
-				until
-					l_failed.error_list.after
-				loop
-					print_error (l_failed.error_list.item, l_failed)
-					l_failed.error_list.forth
+			if a_result.has_execution_errors then
+				output_window.add ("Boogie verification failed!")
+				output_window.add_new_line
+				output_window.add_new_line
+				across a_result.execution_errors as i loop
+					output_window.add (i.item.title)
+					output_window.add (": ")
+					output_window.add (i.item.message)
 				end
-			elseif l_skipped /= Void then
-				print_skipped (l_skipped)
+			else
+				across a_result.procedure_results as i loop
+					output_window.add ("======================================%N")
+					if attached {E2B_SUCCESSFUL_VERIFICATION} i.item as l_success then
+						print_successful_verification (l_success)
+					elseif attached {E2B_FAILED_VERIFICATION} i.item as l_failure then
+						print_failed_verification (l_failure)
+					else
+						check False end
+					end
+				end
 			end
 		end
 
-	print_successful (a_event: EVENT_LIST_PROOF_SUCCESSFUL_ITEM)
+	print_successful_verification (a_success: E2B_SUCCESSFUL_VERIFICATION)
+			-- Print successful verification information.
 		do
-			output_window.add ("--------------------------------------%N")
-			output_window.add ("Type: successful%N")
-			output_window.add ("Title: proof successful%N")
-			print_class_and_feature (a_event)
-			print_time (a_event)
+			print_feature_information (a_success)
+			if a_success.original_errors = Void or else a_success.original_errors.is_empty then
+				output_window.add ("Successfully verified.%N")
+			else
+					-- Two-step verification result
+				output_window.add ("Successfully verified after inlining.%N")
+			end
 		end
 
-	print_skipped (a_event: EVENT_LIST_PROOF_SKIPPED_ITEM)
+	print_failed_verification (a_failure: E2B_FAILED_VERIFICATION)
+			-- Print failed verifcation information.
 		do
-			output_window.add ("--------------------------------------%N")
-			output_window.add ("Type: skipped%N")
-			output_window.add ("Title: proof skipped%N")
-			print_class_and_feature (a_event)
-
-			if a_event.description /= Void then
-				output_window.add ("Information: %N")
-				output_window.add (a_event.description)
+			print_feature_information (a_failure)
+			output_window.add ("Verification failed.%N")
+			across a_failure.errors as i loop
+				if i.cursor_index = 1 then
+					output_window.add_new_line
+				else
+					output_window.add ("--------------------------------------%N")
+				end
+				i.item.multi_line_message (output_window)
 				output_window.add_new_line
 			end
 		end
 
-	print_error (a_error: EP_ERROR; a_proof_event: EVENT_LIST_PROOF_FAILED_ITEM)
-			-- Print error to console.
-		local
-			l_verification_error: EP_VERIFICATION_ERROR
+	print_feature_information (a_proc: E2B_PROCEDURE_RESULT)
+			-- Print feature information.
 		do
-			output_window.add ("--------------------------------------%N")
-			output_window.add ("Type: failed%N")
-			output_window.add ("Title: ")
-			a_error.trace_single_line (output_window)
-			output_window.add_new_line
-
-			print_class_and_feature (a_proof_event)
-
-			l_verification_error ?= a_error
-			if l_verification_error /= Void and then l_verification_error.tag /= Void then
-				output_window.add ("Tag: ")
-				output_window.add (l_verification_error.tag)
-				output_window.add_new_line
-			end
-
-			if a_error.line > 0 then
-				output_window.add ("Line: ")
-				output_window.add (a_error.line.out)
-				output_window.add_new_line
-			end
-
-			print_time (a_proof_event)
-
-			if a_error.message /= Void then
-				output_window.add ("Message: ")
-				output_window.add (a_error.message)
-				output_window.add_new_line
-			end
-
-			if a_error.description /= Void then
-				output_window.add ("Information: %N")
-				output_window.add (a_error.description)
-				output_window.add_new_line
-			end
-
-			output_window.add_new_line
-		end
-
-	print_class_and_feature (a_proof_event: EVENT_LIST_PROOF_ITEM_I)
-		do
-			output_window.add ("Class: ")
-			output_window.add_class (a_proof_event.context_class.original_class)
-			output_window.add_new_line
-
-			output_window.add ("Feature: ")
-			output_window.add_feature (a_proof_event.context_feature.e_feature, a_proof_event.context_feature.feature_name)
-			output_window.add_new_line
-		end
-
-	print_time (a_proof_event: EVENT_LIST_PROOF_ITEM_I)
-		do
-			output_window.add ("Time: ")
-			output_window.add (a_proof_event.milliseconds_used.out)
+			output_window.add_class (a_proc.eiffel_class.original_class)
+			output_window.add (".")
+			output_window.add_feature (a_proc.eiffel_feature.e_feature, a_proc.eiffel_feature.feature_name_32)
 			output_window.add_new_line
 		end
 
@@ -387,7 +217,7 @@ feature {NONE} -- Implementation
 			if a_class.is_compiled then
 				l_feature := a_class.compiled_class.feature_named (a_feature_name)
 				if l_feature /= Void then
-					translator_input.add_feature (l_feature)
+					autoproof.add_feature (l_feature)
 				else
 					print ("Feature " + a_class.name + "." + a_feature_name + " not found (skipped).%N")
 				end
@@ -404,7 +234,7 @@ feature {NONE} -- Implementation
 			if a_class.is_compiled then
 				l_class_c := a_class.compiled_class
 				check l_class_c /= Void end
-				translator_input.add_class (l_class_c)
+				autoproof.add_class (l_class_c)
 			else
 				print ("Class " + a_class.name + " not compiled (skipped).%N")
 			end

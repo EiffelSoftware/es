@@ -181,7 +181,7 @@ feature -- Universe Visitor
 			output.put ("{")
 			output.put_new_line
 			output.indent
-			if not a_implementation.locals.is_empty then
+			if not a_implementation.locals.is_empty or not a_implementation.procedure.results.is_empty then
 				across a_implementation.locals as i loop
 					output.put_indentation
 					output.put ("var ")
@@ -194,6 +194,14 @@ feature -- Universe Visitor
 				output.put_new_line
 				output.put_line ("init_locals:")
 				across a_implementation.locals as i loop
+					output.put_indentation
+					output.put (i.item.name)
+					output.put (" := ")
+					output.put (default_value (i.item.type))
+					output.put (";")
+					output.put_new_line
+				end
+				across a_implementation.procedure.results as i loop
 					output.put_indentation
 					output.put (i.item.name)
 					output.put (" := ")

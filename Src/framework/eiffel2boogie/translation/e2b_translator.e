@@ -130,7 +130,8 @@ feature -- Basic operations
 			check translation_pool.has_untranslated_elements end
 
 			l_unit := translation_pool.next_untranslated_element
-			print ("translation unit: " + l_unit.id + "%N")
+-- TODO: remove
+--			print ("translation unit: " + l_unit.id + "%N")
 			l_unit.translate
 			translation_pool.mark_translated (l_unit)
 		end

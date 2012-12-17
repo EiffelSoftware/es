@@ -35,8 +35,16 @@ feature -- Access
 	procedure_results: LINKED_LIST [E2B_PROCEDURE_RESULT]
 			-- List of procedure results.
 
-	verified_procedures: LINKED_LIST [E2B_PROCEDURE_RESULT]
-			-- List of verified procedures.
+	verified_procedures: LINKED_LIST [E2B_SUCCESSFUL_VERIFICATION]
+			-- List of successfully verified features.
+		do
+			create Result.make
+			across procedure_results as i loop
+				if attached {E2B_SUCCESSFUL_VERIFICATION} i.item as l_failed then
+					Result.extend (l_failed)
+				end
+			end
+		end
 
 	verification_errors: LINKED_LIST [E2B_FAILED_VERIFICATION]
 			-- List of verification errors.

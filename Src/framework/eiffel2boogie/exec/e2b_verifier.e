@@ -38,9 +38,6 @@ feature -- Access
 			-- Result of last run of Boogie.
 		do
 			if not attached internal_last_result and then attached last_output then
-					-- TODO: remove
-				io.put_string (last_output)
-
 				parse_verification_output
 			end
 			Result := internal_last_result

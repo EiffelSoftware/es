@@ -80,9 +80,15 @@ feature -- Access
 			else
 				l_name := a_name
 			end
-			l_list := l_name.split ('.')
-			l_type_name := l_list.i_th (1)
-			l_feature_name := l_list.i_th (2)
+			if l_name.has ('.') then
+				l_list := l_name.split ('.')
+				l_type_name := l_list.i_th (1)
+				l_feature_name := l_list.i_th (2)
+			else
+					-- Built in features
+				l_type_name := "ANY"
+				l_feature_name := l_name
+			end
 			l_type := type_for_boogie_name (l_type_name)
 			Result := l_type.associated_class.feature_named_32 (l_feature_name)
 		ensure

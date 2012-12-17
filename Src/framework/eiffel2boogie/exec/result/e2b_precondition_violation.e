@@ -102,6 +102,7 @@ feature -- Display
 			a_formatter.add_new_line
 
 			a_formatter.add ("Location: ")
+--			a_formatter.add (eiffel_class.file_name)
 			a_formatter.add_class (eiffel_class.original_class)
 			a_formatter.add (".")
 			a_formatter.add_feature (eiffel_feature.e_feature, eiffel_feature.feature_name_32)

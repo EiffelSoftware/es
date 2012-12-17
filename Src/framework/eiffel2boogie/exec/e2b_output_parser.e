@@ -452,6 +452,7 @@ feature {NONE} -- Implementation
 					check False end
 				end
 				Result.set_tag (assert_regexp_tag (assert_regexp))
+				Result.set_eiffel_line_number (assert_regexp_line (assert_regexp))
 			else
 				check False end
 			end
