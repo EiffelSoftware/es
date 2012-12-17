@@ -93,6 +93,6 @@ feature -- Visitor
 		end
 
 invariant
-	exclusive_type: is_boolean xor is_integer xor is_real xor is_reference xor is_type
+--	exclusive_type: is_boolean xor is_integer xor is_real xor is_reference xor is_type
 
 end

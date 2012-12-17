@@ -448,16 +448,16 @@ feature {NONE} -- Basic operations
 		local
 			l_stone: STONE
 		do
-			if attached {E2B_VERIFICATION_EVENT} a_row.data as l_event_item then
-				if l_event_item.line_number > 0 then
+			if attached {E2B_VERIFICATION_EVENT} a_row.parent_row_root.data as l_event_item then
+				if attached {E2B_VERIFICATION_ERROR} a_row.data as l_error then
+					create {COMPILED_LINE_STONE} l_stone.make_with_line (l_event_item.context_class, l_error.eiffel_line_number, False)
+				elseif l_event_item.line_number > 0 then
 					create {COMPILED_LINE_STONE} l_stone.make_with_line (l_event_item.context_class, l_event_item.line_number, False)
 				elseif l_event_item.context_feature /= Void then
 					create {FEATURE_STONE} l_stone.make (l_event_item.context_feature.api_feature (l_event_item.context_class.class_id))
 				else
 					create {CLASSC_STONE} l_stone.make (l_event_item.context_class)
 				end
-			elseif attached {E2B_VERIFICATION_ERROR} a_row.data as l_error then
-				check False end
 			end
 			if l_stone /= Void and then l_stone.is_valid then
 				(create {EB_CONTROL_PICK_HANDLER}).launch_stone (l_stone)
@@ -602,18 +602,14 @@ feature {NONE} -- Basic operations
 			create l_text_gen.make
 			l_text_gen.enable_multiline
 			a_error.multi_line_message (l_text_gen)
-			if l_text_gen.lines.is_empty then
-				l_text_gen.add_new_line
-			end
+			l_text_gen.add_new_line
 			l_editor_item := create_multiline_clickable_grid_item (l_text_gen.lines, True, False)
 			l_row.set_height (l_editor_item.required_height_for_text_and_component)
 			l_row.set_item (info_column, l_editor_item)
 
---			if l_error.column > 0 then
---				l_row.set_item (position_column, create {EV_GRID_LABEL_ITEM}.make_with_text (l_error.line.out + "," + l_error.column.out))
---			elseif l_error.line > 0 then
---				l_row.set_item (position_column, create {EV_GRID_LABEL_ITEM}.make_with_text (l_error.line.out + ",1"))
---			end
+			if a_error.eiffel_line_number > 0 then
+				l_row.set_item (position_column, create {EV_GRID_LABEL_ITEM}.make_with_text (a_error.eiffel_line_number.out))
+			end
 
 			if l_index \\ 2 = 1 then
 				l_row.set_background_color (odd_failed_sub_color)
@@ -664,7 +660,7 @@ feature {NONE} -- Constants
 	failed_color: EV_COLOR
 			-- Background color for successful rows
 		once
-			create Result.make_with_rgb (1.0, 0.8, 0.8)
+			create Result.make_with_rgb (1.0, 0.7, 0.7)
 		end
 
 	even_failed_sub_color: EV_COLOR
@@ -676,7 +672,7 @@ feature {NONE} -- Constants
 	odd_failed_sub_color: EV_COLOR
 			-- Background color for successful rows
 		once
-			create Result.make_with_rgb (1.0, 0.9, 0.9)
+			create Result.make_with_rgb (1.0, 0.8, 0.8)
 		end
 
 	partial_color: EV_COLOR

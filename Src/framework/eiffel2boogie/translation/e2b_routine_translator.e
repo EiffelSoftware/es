@@ -78,10 +78,12 @@ feature -- Basic operations
 				translation_pool.add_type (l_type)
 				l_boogie_type := types.for_type_a (l_type)
 				l_expression := argument_property (current_feature.arguments.item_name (i), l_type)
-				create l_pre.make (l_expression)
-				l_pre.set_free
-				l_pre.set_assertion_type ("argument property")
-				current_boogie_procedure.add_contract (l_pre)
+				if l_expression /= Void then
+					create l_pre.make (l_expression)
+					l_pre.set_free
+					l_pre.set_assertion_type ("argument property")
+					current_boogie_procedure.add_contract (l_pre)
+				end
 				current_boogie_procedure.add_argument (current_feature.arguments.item_name (i), l_boogie_type)
 --				current_boogie_procedure.add_argument_with_property (current_feature.arguments.item_name (i), l_boogie_type, l_expression)
 				i := i + 1

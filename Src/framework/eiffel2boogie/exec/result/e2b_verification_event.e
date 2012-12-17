@@ -60,6 +60,11 @@ feature -- Access
 
 	line_number: INTEGER
 			-- Line number of event (if any)
+		do
+			if attached {E2B_FAILED_VERIFICATION} data as l_failed then
+				Result := l_failed.errors.first.eiffel_line_number
+			end
+		end
 
 	milliseconds_used: NATURAL
 			-- Milliseconds used for proof
@@ -107,16 +112,6 @@ feature -- Element change
 			-- <Precursor>
 		do
 			priority := a_priority
-		end
-
-	set_line_number (a_line: INTEGER)
-			-- Set `line_number' to `a_line'.
-		require
-			a_line_non_negative: a_line >= 0
-		do
-			line_number := a_line
-		ensure
-			line_number_set: line_number = a_line
 		end
 
 feature -- Basic operations
