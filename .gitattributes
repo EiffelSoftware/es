@@ -4427,6 +4427,7 @@ eweasel/tests/final030/notes -text
 eweasel/tests/final032/notes -text
 eweasel/tests/final033/notes -text
 eweasel/tests/final099/Ace -text
+eweasel/tests/final121/Ace svneol=native#text/xml
 eweasel/tests/fixed001/notes -text
 eweasel/tests/fixed002/notes -text
 eweasel/tests/fixed003/notes -text
@@ -4908,6 +4909,7 @@ eweasel/tests/melt070/test.e-rev1 -text
 eweasel/tests/melt071/notes -text
 eweasel/tests/melt072/notes -text
 eweasel/tests/melt073/notes -text
+eweasel/tests/melt103/Ace svneol=native#text/xml
 eweasel/tests/once001/Ace -text
 eweasel/tests/once004/Ace -text
 eweasel/tests/once005/Ace -text
