@@ -1741,7 +1741,6 @@ Src/Delivery/scripts/windows/install/images/up.bmp -text
 Src/Delivery/scripts/windows/install/images/warning.ico -text
 Src/Delivery/scripts/windows/install/interface/DialogMaintenanceWelcome.wxs -text
 Src/Delivery/scripts/windows/install/interface/DialogVerifyReadyMaintain.wxs -text
-Src/Delivery/scripts/windows/install/interface/eiffelstudio/DialogMscRestartRequire.wxs -text
 Src/Delivery/scripts/windows/install/licenses/eiffelenvision/enterprise.rtf -text
 Src/Delivery/scripts/windows/install/licenses/eiffelenvision/free.rtf -text
 Src/Delivery/scripts/windows/install/licenses/eiffelstudio/enterprise.rtf -text
