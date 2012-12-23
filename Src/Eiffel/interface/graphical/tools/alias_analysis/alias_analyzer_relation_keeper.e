@@ -9,16 +9,18 @@ class
 	ALIAS_ANALYZER_RELATION_KEEPER
 
 inherit
-	AST_STACKED_SCOPE_KEEPER [ALIAS_ANALYZER_RELATION [NATURAL_32]]
+	AST_STACKED_SCOPE_KEEPER [ALIAS_ANALYZER_RELATION [INTEGER_32]]
 		rename
 			scope as relation
 		export {ALIAS_ANALYZER}
 			enter_realm,
+			is_sibling_dominating,
 			leave_optional_realm,
 			leave_realm,
 			relation,
 			save_sibling,
-			update_realm
+			update_realm,
+			update_sibling
 		end
 
 create
@@ -46,6 +48,14 @@ feature {NONE} -- Initialization
 			create Result.make
 		end
 
+feature {NONE} -- Status report
+
+	is_dominating: BOOLEAN
+			-- <Precursor>
+		do
+			Result := relation.is_subset (inner_scopes.item)
+		end
+
 feature {NONE} -- Unused
 
 	is_attached (index: like count): BOOLEAN
@@ -56,13 +66,6 @@ feature {NONE} -- Unused
 		end
 
 	max_count: INTEGER_32
-			-- <Precursor>
-		do
-		ensure then
-			False
-		end
-
-	is_dominating: BOOLEAN
 			-- <Precursor>
 		do
 		ensure then

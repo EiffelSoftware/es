@@ -15,16 +15,25 @@ inherit
 			process_assign_as,
 			process_bin_eq_as,
 			process_bin_ne_as,
+			process_case_as,
 			process_creation_as,
 			process_creation_expr_as,
+			process_current_as,
+			process_debug_as,
 			process_eiffel_list,
+			process_elseif_as,
 			process_expr_call_as,
+			process_if_as,
+			process_inspect_as,
+			process_loop_as,
 			process_nested_as,
 			process_nested_expr_as,
 			process_result_as,
 			process_routine_as,
 			process_void_as
 		end
+
+	DEBUG_OUTPUT
 
 	SHARED_AST_CONTEXT
 
@@ -34,6 +43,8 @@ inherit
 		rename
 			error_handler as ast_error_handler
 		end
+
+	SHARED_WORKBENCH
 
 create
 	make
@@ -46,6 +57,8 @@ feature {NONE} -- Creation
 			create dictionary.make
 			create keeper.make (0)
 			create ast_type.make (0)
+			create ast_alias_after.make (0)
+			create ast_alias_before.make (0)
 			create {ARRAYED_STACK [INTEGER_32]} bodies.make (0)
 		end
 
@@ -98,8 +111,6 @@ feature {NONE} -- Analysis
 		local
 			s: GENERIC_SKELETON
 			i: like {GENERIC_SKELETON}.count
-			n: like last_item
-			t: TYPE_A
 		do
 			-- init (shared_context)
 			context.initialize (c, c.actual_type)
@@ -109,6 +120,8 @@ feature {NONE} -- Analysis
 				d.clear (uuid)
 			end
 			ast_type.wipe_out
+			ast_alias_after.wipe_out
+			ast_alias_before.wipe_out
 			bodies.wipe_out
 				-- Initialize type checker.
 			type_checker.init (context)
@@ -125,21 +138,12 @@ feature {NONE} -- Analysis
 			loop
 				if attached c.feature_of_feature_id (s [i].feature_id) as a then
 						-- Register an attribute `a' in a dictionary.
-					register_attribute (a)
-					n := last_item
-						-- Check if the attribute is void or non-void by default.
-					t := a.type.actual_type
-					if not t.is_reference then
-							-- Add a pair "[variable, NonVoid]".
-						keeper.relation.add_pair ({ALIAS_ANALYZER_DICTIONARY}.non_void_index, n)
-					end
-					if not t.is_expanded then
-							-- Attach "Void" to "variable".
-						keeper.relation.attach ({ALIAS_ANALYZER_DICTIONARY}.void_index, n)
-					end
+					register_attribute (a, target, c)
 				end
 				i := i - 1
 			end
+			dictionary.add_current
+			target := dictionary.last_added
 		end
 
 	analyze_feature (f: FEATURE_I; c: CLASS_C)
@@ -150,6 +154,7 @@ feature {NONE} -- Analysis
 			q: BOOLEAN
 		do
 			context.clear_feature_context
+			context.initialize (c, c.actual_type)
 			context.set_current_feature (f)
 			context.set_written_class (f.written_class)
 			bodies.put (f.body_index)
@@ -181,10 +186,11 @@ feature {NONE} -- Visitor
 
 	process_access_feat_as (a: ACCESS_FEAT_AS)
 			-- <Precursor>
+		local
+			old_target: like target
+			t: like target
 		do
 			Precursor (a)
-				-- Clear last found item.
-			last_item := 0
 			if
 				a.is_local and then
 				attached context.locals.item (a.feature_name.name_id) as i and then
@@ -198,22 +204,67 @@ feature {NONE} -- Visitor
 			else
 				if not is_qualified then
 					if attached context.current_class.feature_of_rout_id (a.routine_ids.first) as f then
-						-- Feature.
+							-- Feature.
 						if f.is_attribute then
 								-- Attribute.
-							register_attribute (f)
+							register_attribute (f, target, context.current_class)
 						elseif f.is_routine then
 								-- Routine.
-								-- TODO: Handle recursive calls.
-							if not bodies.has (f.body_index) then
-									-- This feature has not been processed yet.
-									-- Evaluate routine body.
+								-- TODO: use AST index and context class to detect recursive calls.
+							if
+								bodies.has (f.body_index) and then
+								attached node_alias_before (a, context.written_class, context.current_feature, context.current_class) as r and then
+								r.is_equal (keeper.relation)
+							then
+									-- Retrieve recorded relation.
+								if attached node_alias_after (a, context.written_class, context.current_feature, context.current_class) as o then
+										-- Use previously recorded relation.
+									keeper.relation.copy (o)
+								else
+										-- Remove all the pairs.
+									keeper.relation.wipe_out
+								end
+							else
+									-- This feature has not been processed yet or has been processed but the aliases before the call are different from the previous call.
+									-- Record  alias relation before the call.
+								record_node_alias_before (keeper.relation, a, context.written_class, context.current_feature, context.current_class)
+									-- Recurse only when alias relation before the call is different from already evaluated one.
 								analyze_feature (f, context.current_class)
+									-- Record  alias relation after the call.
+								record_node_alias_after (keeper.relation, a, context.written_class, context.current_feature, context.current_class)
 							end
+								-- Set `last_item' to the feature result.
+							dictionary.add_result (f, context.current_class)
+							last_item := dictionary.last_added
 						end
 					end
 				else
-						-- TODO: handle qualified calls.
+					if attached system.class_of_id (a.class_id) as c and then attached c.feature_of_rout_id (a.routine_ids.first) as f then
+						if f.is_attribute then
+								-- Attribute.
+							register_attribute (f, target, c)
+						elseif f.is_routine then
+								-- Routine.
+								-- TODO: handle recursive calls.
+							if not bodies.has (f.body_index) then
+									-- This feature has not been processed yet.
+									-- Evaluate routine body.
+								old_target := target
+								t := last_item
+								target := t
+								dictionary.add_reverse (t)
+									-- Replace current relation "A" with "t'.A".
+								keeper.relation.copy (keeper.relation.mapped (agent qualified (dictionary.last_added, ?)))
+								analyze_feature (f, c)
+									-- Replace current relation "A" with "t.A".
+								keeper.relation.copy (keeper.relation.mapped (agent qualified (t, ?)))
+								target := old_target
+							end
+								-- Set `last_item' to the feature result.
+							dictionary.add_result (f, context.current_class)
+							last_item := dictionary.last_added
+						end
+					end
 				end
 			end
 		end
@@ -231,7 +282,7 @@ feature {NONE} -- Visitor
 				s := last_item
 				if s > 0 then
 						-- Found the source of the assignment.
-					if s = {ALIAS_ANALYZER_DICTIONARY}.non_void_index then
+					if s = dictionary.non_void_index then
 							-- The source is a new object that cannot have any aliases.
 						keeper.relation.add_pair (s, t)
 					else
@@ -248,19 +299,34 @@ feature {NONE} -- Visitor
 			l: like last_item
 			r: like last_item
 		do
-			if not attached {BIN_TILDE_AS} a then
+			if
+				attached {BIN_TILDE_AS} a or else
+				attached node_type (a.left, context.written_class, context.current_feature, context.current_class) as tl and then not tl.is_reference or else
+				attached node_type (a.right, context.written_class, context.current_feature, context.current_class) as tr and then not tr.is_reference
+			then
+					-- Skip tilda expressions and those that are of expanded type.
+			else
 				a.left.process (Current)
 				l := last_item
 				if l > 0 then
 					a.right.process (Current)
 					r := last_item
-					if r > 0 and then not keeper.relation.has_pair (l, r) then
-						if (l /= r) = attached {BIN_NE_AS} a then
-								-- The condition is always true.
-							report_true_expression (a.first_token (Void))
+					if r > 0 and then l /= r then
+						if keeper.relation.has_pair (l, r) then
+							if attached {BIN_NE_AS} a then
+									-- This is a case of "cut" instruction.
+								keeper.relation.remove_pair (l, r)
+							else
+									-- This is a case of "bind" instruction.
+							end
 						else
-								-- The condition is always false.
-							report_false_expression (a.first_token (Void))
+							if attached {BIN_NE_AS} a then
+									-- The condition is always true.
+								report_true_expression (a.first_token (Void))
+							else
+									-- The condition is always false.
+								report_false_expression (a.first_token (Void))
+							end
 						end
 					end
 				end
@@ -290,8 +356,15 @@ feature {NONE} -- Visitor
 					-- Remove all relations for `t'.
 				keeper.relation.remove (t)
 					-- Add a pair to indicate that it is now attached to a non-void value.
-				keeper.relation.add_pair (t, {ALIAS_ANALYZER_DICTIONARY}.non_void_index)
+				keeper.relation.add_pair (t, dictionary.non_void_index)
 			end
+		end
+
+	process_current_as (a: CURRENT_AS)
+			-- <Precursor>
+		do
+			dictionary.add_current
+			last_item := dictionary.last_added
 		end
 
 	process_expr_call_as (a: EXPR_CALL_AS)
@@ -317,19 +390,22 @@ feature {NONE} -- Visitor
 			-- <Precursor>
 		local
 			t: TYPE_A
-			r: NATURAL_32
+			r: like last_item
 		do
 				-- Register "Result".
 			dictionary.add_result (context.current_feature, context.current_class)
 			r := dictionary.last_added
 			t := context.current_feature.type
-			if not t.is_reference then
-					-- Add a pair "[result, NonVoid]".
-				keeper.relation.add_pair ({ALIAS_ANALYZER_DICTIONARY}.non_void_index, r)
-			end
-			if not t.is_expanded then
-					-- Attach "Void" to "result".
-				keeper.relation.attach ({ALIAS_ANALYZER_DICTIONARY}.void_index, r)
+			if not t.is_void then
+					-- Register query result.
+				if not t.is_reference then
+						-- Add a pair "[result, NonVoid]".
+					keeper.relation.add_pair (dictionary.non_void_index, r)
+				end
+				if not t.is_attached then
+						-- Attach "Void" to "result".
+					keeper.relation.attach (dictionary.void_index, r)
+				end
 			end
 			Precursor (a)
 		end
@@ -337,7 +413,108 @@ feature {NONE} -- Visitor
 	process_void_as (a: VOID_AS)
 			-- <Precursor>
 		do
-			last_item := {ALIAS_ANALYZER_DICTIONARY}.void_index
+			last_item := dictionary.void_index
+		end
+
+feature {AST_EIFFEL} -- Visitor: compound
+
+	process_compound (c: EIFFEL_LIST [INSTRUCTION_AS])
+		do
+			if c /= Void then
+				c.process (Current)
+			end
+		end
+
+	process_case_as (a: CASE_AS)
+		do
+			a.interval.process (Current)
+			process_compound (a.compound)
+			keeper.save_sibling
+		end
+
+	process_debug_as (a: DEBUG_AS)
+		do
+			keeper.enter_realm
+			process_compound (a.compound)
+			keeper.leave_optional_realm
+		end
+
+	process_elseif_as (a: ELSIF_AS)
+		do
+			a.expr.process (Current)
+			process_compound (a.compound)
+			keeper.save_sibling
+			keeper.update_realm
+		end
+
+	process_if_as (a: IF_AS)
+		do
+			a.condition.process (Current)
+			keeper.enter_realm
+			process_compound (a.compound)
+			keeper.save_sibling
+			keeper.update_realm
+			safe_process (a.elsif_list)
+			process_compound (a.else_part)
+			keeper.save_sibling
+			keeper.leave_realm
+		end
+
+	process_inspect_as (a: INSPECT_AS)
+		do
+			a.switch.process (Current)
+			keeper.enter_realm
+			safe_process (a.case_list)
+			if a.else_part /= Void then
+				process_compound (a.else_part)
+				keeper.save_sibling
+			end
+			keeper.leave_realm
+		end
+
+	process_loop_as (a: LOOP_AS)
+		local
+			invariant_as: like {LOOP_AS}.invariant_part
+			variant_as: like {LOOP_AS}.variant_part
+			exit_as: like {LOOP_AS}.stop
+		do
+			safe_process (a.iteration)
+			safe_process (a.from_part)
+				-- Compute aliases for the loop invariant, variant, exit condition and compound
+				-- in a loop that computes new attachment information at every iteration.
+			keeper.enter_realm
+			from
+				invariant_as := a.invariant_part
+				variant_as := a.variant_part
+				exit_as := a.stop
+				check
+					has_at_least_one_iteration: not keeper.is_sibling_dominating
+				end
+			until
+				keeper.is_sibling_dominating
+			loop
+					-- Record most recent scope information before the loop, so that
+					-- it can be compared with the information after the loop on next iteration.
+				keeper.update_sibling
+				if attached invariant_as then
+						-- Type check the invariant loop
+					keeper.enter_realm
+					invariant_as.process (Current)
+					keeper.leave_optional_realm
+				end
+				if attached variant_as then
+						-- Type check th variant loop
+					variant_as.process (Current)
+				end
+					-- Type check the exit test.
+				if exit_as /= Void then
+					exit_as.process (Current)
+				end
+				if attached a.compound as c then
+					process_compound (c)
+				end
+			end
+			keeper.leave_realm
 		end
 
 feature {AST_EIFFEL} -- Visitor: nested call
@@ -355,22 +532,30 @@ feature {AST_EIFFEL} -- Visitor: nested call
 	process_nested_expr_as (a: NESTED_EXPR_AS)
 		local
 			q: BOOLEAN
+			old_target: like target
 		do
 			q := is_qualified
 			a.target.process (Current)
 			is_qualified := True
+			old_target := target
+			target := last_item
 			a.message.process (Current)
+			target := old_target
 			is_qualified := q
 		end
 
 	process_nested_as (a: NESTED_AS)
 		local
 			q: BOOLEAN
+			old_target: like target
 		do
 			q := is_qualified
 			a.target.process (Current)
 			is_qualified := True
+			old_target := target
+			target := last_item
 			a.message.process (Current)
+			target := old_target
 			is_qualified := q
 		end
 
@@ -390,7 +575,7 @@ feature {NONE} -- Entity access
 			-- Record which locals are initialized to void and non-void values.
 		local
 			t: TYPE_A
-			n: NATURAL_32
+			n: like last_item
 		do
 			if attached context.locals as l then
 				across
@@ -403,11 +588,11 @@ feature {NONE} -- Entity access
 					t := i.item.actual_type
 					if not t.is_reference then
 							-- Add a pair "[variable, NonVoid]".
-						keeper.relation.add_pair ({ALIAS_ANALYZER_DICTIONARY}.non_void_index, n)
+						keeper.relation.add_pair (dictionary.non_void_index, n)
 					end
 					if not t.is_expanded then
 							-- Attach "Void" to "variable".
-						keeper.relation.attach ({ALIAS_ANALYZER_DICTIONARY}.void_index, n)
+						keeper.relation.attach (dictionary.void_index, n)
 					end
 				end
 			end
@@ -424,18 +609,70 @@ feature {NONE} -- Entity access
 			last_item := dictionary.last_added
 		end
 
-	register_attribute (a: FEATURE_I)
-			-- Register attribute identified by `a'
+	register_attribute (a: FEATURE_I; t: like last_item; c: CLASS_C)
+			-- Register attribute identified by `a' with target `t' in class `c'
 			-- and set `lst_item' to the corresopnding dictionary entry.
+		local
+			n: like last_item
+			r: TYPE_A
 		do
-			dictionary.add_attribute (a, context.current_class)
-			last_item := dictionary.last_added
+			dictionary.add_feature (a, t, c)
+			n := dictionary.last_added
+			last_item := n
+				-- Check if the attribute is void or non-void by default.
+			r := a.type.actual_type
+			if not r.is_reference then
+					-- Add a pair "[variable, NonVoid]".
+				keeper.relation.add_pair (dictionary.non_void_index, n)
+			end
+			if not r.is_attached then
+					-- Attach "Void" to "variable".
+				keeper.relation.attach (dictionary.void_index, n)
+			end
 		end
 
 feature {NONE} -- Access
 
 	last_item: like {ALIAS_ANALYZER_DICTIONARY}.last_added
 			-- Last found item.
+
+	target: like last_item
+			-- Current target of a call.
+
+feature {ES_ALIAS_ANALYSIS_TOOL_PANEL} -- Output
+
+	debug_output: STRING
+			-- <Precursor>
+		local
+			a: SEARCH_TABLE [INTEGER_32]
+			s: STRING
+			t: STRING
+		do
+			create Result.make_empty
+				-- First item is not delimited with anything.
+			t := ""
+			across
+				keeper.relation.table as i
+			loop
+					-- Output alias for `i.key' in a format "x: a, b, c".
+				Result.append_string (t)
+				Result.append_string (dictionary.name (i.key))
+				s := ": "
+				from
+					a := i.item
+					a.start
+				until
+					a.after
+				loop
+					Result.append_string (s)
+					Result.append_string (dictionary.name (a.item_for_iteration))
+					s := ", "
+					a.forth
+				end
+					-- Set delimiter for next items.
+				t := "%N"
+			end
+		end
 
 feature {NONE} -- Storage
 
@@ -444,6 +681,57 @@ feature {NONE} -- Storage
 
 	keeper: ALIAS_ANALYZER_RELATION_KEEPER
 			-- Keeper of alias relations.
+
+feature {NONE} -- Mapping
+
+	qualified (q: like last_item; v: like last_item): like last_item
+			-- Item `v' with a qualifier `q'.
+		do
+			dictionary.add_qualification (q, v)
+			Result := dictionary.last_added
+		end
+
+feature {NONE} -- Alias recording
+
+	ast_alias_after: HASH_TABLE [like keeper.relation, TUPLE [a: INTEGER; w: INTEGER; f: INTEGER; c: INTEGER]]
+			-- Aliases after AST node `a' written in class `w'
+			-- when evaluated in a feature `f' of class `c'.
+
+	ast_alias_before: HASH_TABLE [like keeper.relation, TUPLE [a: INTEGER; w: INTEGER; f: INTEGER; c: INTEGER]]
+			-- Aliases before AST node `a' written in class `w'
+			-- when evaluated in a feature `f' of class `c'.
+
+	record_node_alias_after (t: like keeper.relation; a: AST_EIFFEL; w: CLASS_C; f: FEATURE_I; c: CLASS_C)
+			-- Record aliases `t' after AST node `a' written in class `w'
+			-- when evaluated in a feature `f' of class `c'.
+		do
+			if attached a then
+				ast_alias_after [[a.index, w.class_id, f.rout_id_set.first, c.class_id]] := t
+			end
+		end
+
+	record_node_alias_before (t: like keeper.relation; a: AST_EIFFEL; w: CLASS_C; f: FEATURE_I; c: CLASS_C)
+			-- Record aliases `t' before AST node `a' written in class `w'
+			-- when evaluated in a feature `f' of class `c'.
+		do
+			if attached a then
+				ast_alias_before [[a.index, w.class_id, f.rout_id_set.first, c.class_id]] := t
+			end
+		end
+
+	node_alias_after (a: AST_EIFFEL; w: CLASS_C; f: FEATURE_I; c: CLASS_C): detachable like keeper.relation
+			-- Aliases after AST node `a' written in class `w'
+			-- when evaluated in a feature `f' of class `c'.
+		do
+			Result := ast_alias_after [[a.index, w.class_id, f.rout_id_set.first, c.class_id]]
+		end
+
+	node_alias_before (a: AST_EIFFEL; w: CLASS_C; f: FEATURE_I; c: CLASS_C): detachable like keeper.relation
+			-- Aliases before AST node `a' written in class `w'
+			-- when evaluated in a feature `f' of class `c'.
+		do
+			Result := ast_alias_before [[a.index, w.class_id, f.rout_id_set.first, c.class_id]]
+		end
 
 feature {NONE} -- Type recording
 
@@ -456,15 +744,15 @@ feature {NONE} -- Type recording
 			-- when evaluated in a feature `f' of class `c'.
 		do
 			if attached a then
-				ast_type [[a.last_token (Void).end_position, w.class_id, f.rout_id_set.first, c.class_id]] := t
+				ast_type [[a.index, w.class_id, f.rout_id_set.first, c.class_id]] := t
 			end
 		end
 
 	node_type (a: AST_EIFFEL; w: CLASS_C; f: FEATURE_I; c: CLASS_C): detachable TYPE_A
-			-- Type `t' of AST node `a' written in class `w'
+			-- Type of AST node `a' written in class `w'
 			-- when evaluated in a feature `f' of class `c'.
 		do
-			Result := ast_type [[a.last_token (Void).end_position, w.class_id, f.rout_id_set.first, c.class_id]]
+			Result := ast_type [[a.index, w.class_id, f.rout_id_set.first, c.class_id]]
 		end
 
 feature {NONE} -- Output

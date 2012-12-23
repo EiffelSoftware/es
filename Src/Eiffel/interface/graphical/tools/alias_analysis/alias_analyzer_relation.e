@@ -10,6 +10,10 @@ class
 
 inherit
 	DEBUG_OUTPUT
+		redefine
+			copy,
+			is_equal
+		end
 
 create
 	make
@@ -28,6 +32,16 @@ feature -- Status report
 			-- Is an alias pair for `x' and `y' present in this relation?
 		do
 			Result := attached table [x] as t and then t.has (y)
+		end
+
+	is_subset (other: like Current): BOOLEAN
+			-- Is current object a subset of `other'?
+		do
+			Result := across
+				table as y
+			all
+				across y.item as x all other.has_pair (x.item, y.key) end
+			end
 		end
 
 feature -- Modification
@@ -139,6 +153,67 @@ feature -- Modification
 			end
 		end
 
+	remove_pair (x, y: G)
+			-- Remove an alias pair for `x' and `y'.
+			-- This corresponds to the operation
+			--   r' := r - {[x, y], [y, x]}
+		do
+			if x /~ y then
+					-- Remove an association for `x'.
+				if attached table [x] as t then
+					t.remove (y)
+				end
+					-- Remove an association for `y'.
+				if attached table [y] as t then
+					t.remove (x)
+				end
+			end
+		end
+
+	mapped (map: FUNCTION [ANY, TUPLE [G], G]): like Current
+			-- Replace all items with the application of `map'.
+		do
+			create Result.make
+			across
+				table as y
+			loop
+				across
+					y.item as x
+				loop
+					Result.add_pair (map.item ([x.item]), map.item ([y.key]))
+				end
+			end
+		end
+
+	wipe_out
+			-- Empty the relation.
+		do
+			table.wipe_out
+		end
+
+feature -- Duplication
+
+	copy (other: like Current)
+			-- <Precursor>
+		do
+				-- Duplicate all the elements.
+			table := other.table.twin
+			create table.make (other.table.count)
+			across
+				other.table as c
+			loop
+				table [c.key] := c.item.twin
+			end
+		end
+
+feature -- Comparison
+
+	is_equal (other: like Current): BOOLEAN
+			-- <Precursor>
+		do
+			Result := is_subset (other) and then other.is_subset (Current)
+		end
+
 feature -- Output
 
 	debug_output: STRING
@@ -174,7 +249,7 @@ feature -- Output
 			end
 		end
 
-feature {ALIAS_ANALYZER_RELATION} -- Storage
+feature {ALIAS_ANALYZER_RELATION, ALIAS_ANALYZER} -- Storage
 
 	table: HASH_TABLE [SEARCH_TABLE [G], G]
 			-- Expressions, containing a specific item, indexed by this item.

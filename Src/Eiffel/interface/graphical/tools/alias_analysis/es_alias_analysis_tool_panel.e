@@ -141,7 +141,8 @@ feature {NONE} -- Analyzer
 				if attached current_feature as f then
 					user_widget.set_text ({STRING_32} "Processing {" + c.name + "}." + f.feature_name_32 + "...")
 					analyzer.process_feature (f, c)
-					user_widget.set_text ({STRING_32} "Processed {" + c.name + "}." + f.feature_name_32 + ".")
+					user_widget.set_text ({STRING_32} "Processed {" + c.name + "}." + f.feature_name_32 + ".%R%N%R%N" +
+						analyzer.debug_output + "%R%N")
 				else
 					user_widget.set_text ({STRING_32} "Processing " + c.name + "...")
 					analyzer.process_class (c)
