@@ -10,7 +10,7 @@ class
 feature
 
 	successful: REAL = 1.0
-	successful_with_errors: REAL = 0.5
+	successful_with_errors: REAL = 0.25
 	failed: REAL = -0.25
 	skipped: REAL = 0.0
 

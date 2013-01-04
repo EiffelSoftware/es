@@ -89,7 +89,8 @@ feature {NONE} -- Initialization
 			update_button_titles
 
 			create Result.make (5)
-			Result.extend ((create {ES_AUTOPROOF_COMMAND}.make).new_sd_toolbar_item (True))
+			proof_button := (create {ES_AUTOPROOF_COMMAND}.make).new_sd_toolbar_item (True)
+			Result.extend (proof_button)
 			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 			Result.extend (successful_button)
 			Result.extend (failed_button)
@@ -248,6 +249,9 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
+	proof_button: EB_SD_COMMAND_TOOL_BAR_BUTTON
+			-- Button to launch AutoProof.
+
 	successful_count: INTEGER
 			-- Number of successful events
 
@@ -344,7 +348,7 @@ feature {NONE} -- Events
 				if is_successful_event (a_event_item) then
 					successful_count := successful_count + 1
 				elseif is_failed_event (a_event_item) then
-					failed_count := failed_count + 11
+					failed_count := failed_count + 1
 				else
 					check false end
 				end
@@ -678,7 +682,7 @@ feature {NONE} -- Constants
 	partial_color: EV_COLOR
 			-- Background color for partial success
 		once
-			create Result.make_with_rgb (1.0, 1.0, 0.9)
+			create Result.make_with_rgb (1.0, 0.9, 0.4)
 		end
 
 	ep_names: !EP_NAMES
@@ -688,7 +692,7 @@ feature {NONE} -- Constants
 		end
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

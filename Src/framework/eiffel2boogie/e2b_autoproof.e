@@ -100,7 +100,7 @@ feature -- Basic operations
 			running_or_finished: is_running or is_finished
 		end
 
-feature -- Implementation
+feature {NONE} -- Implementation
 
 	verify_task: detachable E2B_VERIFY_TASK
 			-- Verify task.

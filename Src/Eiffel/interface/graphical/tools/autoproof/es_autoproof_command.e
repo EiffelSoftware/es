@@ -143,6 +143,7 @@ feature {NONE} -- Basic operations
 			end
 			autoproof.add_notification (agent process_result)
 			autoproof.verify
+			disable_tool_button
 		end
 
 	process_result (a_result: E2B_RESULT)
@@ -156,6 +157,7 @@ feature {NONE} -- Basic operations
 				event_list.put_event_item (event_context_cookie, create {E2B_VERIFICATION_EVENT}.make (i.item))
 			end
 			show_proof_tool
+			enable_tool_button
 		end
 
 	event_context_cookie: UUID
@@ -167,8 +169,8 @@ feature {NONE} -- Basic operations
 			Result := l_generator.generate_uuid
 		end
 
-	show_proof_tool
-			-- Shows the proof tool
+	proof_tool: detachable ES_AUTOPROOF_TOOL
+			-- Proof tool (if applicable).
 		local
 			l_tool: ES_TOOL [EB_TOOL]
 			l_window: EB_DEVELOPMENT_WINDOW
@@ -176,10 +178,45 @@ feature {NONE} -- Basic operations
 			l_window := window_manager.last_focused_development_window
 			if not l_window.is_recycled and then l_window.is_visible and then l_window = window_manager.last_focused_development_window then
 				l_tool := l_window.shell_tools.tool ({ES_AUTOPROOF_TOOL})
-				if l_tool /= Void and then not l_tool.is_recycled then
-						-- Force tool to be shown
-					l_tool.show (True)
+				if attached {ES_AUTOPROOF_TOOL} l_tool as l_autoproof_tool then
+					Result := l_autoproof_tool
+				else
+					check False end
 				end
+			end
+		end
+
+	show_proof_tool
+			-- Shows the proof tool
+		local
+			l_tool: ES_AUTOPROOF_TOOL
+		do
+			l_tool := proof_tool
+			if l_tool /= Void and then not l_tool.is_recycled then
+						-- Force tool to be shown
+				l_tool.show (True)
+			end
+		end
+
+	disable_tool_button
+			-- Disable proof button on tool.
+		local
+			l_tool: ES_AUTOPROOF_TOOL
+		do
+			l_tool := proof_tool
+			if l_tool /= Void and then l_tool.is_tool_instantiated then
+				proof_tool.panel.proof_button.disable_sensitive
+			end
+		end
+
+	enable_tool_button
+			-- Enable proof button on tool.
+		local
+			l_tool: ES_AUTOPROOF_TOOL
+		do
+			l_tool := proof_tool
+			if l_tool /= Void and then l_tool.is_tool_instantiated then
+				proof_tool.panel.proof_button.enable_sensitive
 			end
 		end
 

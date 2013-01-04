@@ -372,7 +372,7 @@ feature -- Verification
 		do
 		end
 
-	frozen multi_wrap (a: TUPLE)
+	frozen wrap_all (a: TUPLE)
 			-- Wrap all objects in `a' simultaniously.
 		do
 		end

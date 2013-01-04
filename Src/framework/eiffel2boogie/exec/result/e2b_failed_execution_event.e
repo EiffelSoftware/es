@@ -36,6 +36,7 @@ feature -- Access
 	description: STRING_32
 			-- <Precursor>
 		do
+			Result := data
 		end
 
 	frozen type: NATURAL_8
