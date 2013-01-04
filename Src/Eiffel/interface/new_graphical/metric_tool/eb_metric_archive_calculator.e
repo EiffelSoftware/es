@@ -75,13 +75,13 @@ feature -- Status report
 
 feature -- Setting
 
-	set_last_error_message (a_message: like last_error_message)
+	set_last_error_message (a_message: detachable READABLE_STRING_GENERAL)
 			-- Set `last_error_message' with `a_message'.
 		do
 			if a_message = Void then
 				last_error_message := Void
 			else
-				create last_error_message.make_from_string (a_message)
+				create last_error_message.make_from_string_general (a_message)
 			end
 		end
 
@@ -162,12 +162,13 @@ feature -- Calculation
 			destroy_calculation_context (l_domain_generator)
 			if l_domain_generator.error_handler.has_error then
 				set_last_error_message (l_domain_generator.error_handler.error_list.last.text.as_string_32)
+			elseif
+				attached exception_manager.last_exception as lt_ex and then
+				attached lt_ex.original.description as l_descr
+			then
+				set_last_error_message (l_descr)
 			else
-				if attached {UNICODE_MESSAGE_EXCEPTION} exception_manager.last_exception.original as lt_ex then
-					set_last_error_message (lt_ex.unicode_message)
-				else
-					set_last_error_message (tag_name)
-				end
+				set_last_error_message (names.l_unknown_error)
 			end
 			retry
 		end

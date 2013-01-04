@@ -7,17 +7,17 @@ class
 inherit
 	ANY
 
-	PATH_CONVERTER
-		export
-			{NONE} all
-		end
-
 	EIFFEL_LAYOUT
 		export
 			{NONE} all
 		end
 
 	PROCESS_FACTORY
+		export
+			{NONE} all
+		end
+
+	LOCALIZED_PRINTER
 		export
 			{NONE} all
 		end
@@ -190,28 +190,28 @@ feature -- Execution
 				create l_file.make_with_name ("E1" + directory_separator + "estructure.x")
 				if l_file.exists then
 					l_flags := l_make_flags.split (' ')
-					l_flags.extend ("E1" + directory_separator + "estructure.h")
+					l_flags.extend ({STRING_32} "E1" + directory_separator + {STRING_32} "estructure.h")
 					l_process := process_launcher (command, l_flags, Void)
 					l_process.launch
 					l_success := l_process.launched
 					if l_success then
 						l_process.wait_for_exit
 					else
-						io.error.put_string ("ERROR: Cannot start %"" + command.as_string_8 + "%".")
+						io.error.put_string ("ERROR: Cannot start %"" + command + "%".")
 					end
 				end
 
 				create l_file.make_with_name ("E1" + directory_separator + "eoffsets.x")
 				if l_file.exists then
 					l_flags := l_make_flags.split (' ')
-					l_flags.extend ("E1" + directory_separator + "eoffsets.h")
+					l_flags.extend ({STRING_32} "E1" + directory_separator + {STRING_32} "eoffsets.h")
 					l_process := process_launcher (command, l_flags, Void)
 					l_process.launch
 					l_success := l_process.launched
 					if l_success then
 						l_process.wait_for_exit
 					else
-						io.error.put_string ("ERROR: Cannot start %"" + command.as_string_8 + "%".")
+						io.error.put_string ("ERROR: Cannot start %"" + command + "%".")
 					end
 				end
 			end
@@ -219,13 +219,13 @@ feature -- Execution
 				-- Launch emake.
 			create {ARRAYED_LIST [STRING_32]} l_flags.make (8)
 			if processor_count > 0 then
-				l_flags.extend ("-cpu")
+				l_flags.extend ({STRING_32} "-cpu")
 				l_flags.extend (processor_count.out)
 			end
-			l_flags.extend ("-make")
+			l_flags.extend ({STRING_32} "-make")
 			l_flags.extend (command)
 			if not l_make_flags.is_empty then
-				l_flags.extend ("-make_flags")
+				l_flags.extend ({STRING_32} "-make_flags")
 				l_flags.extend (l_make_flags)
 			end
 
@@ -235,7 +235,7 @@ feature -- Execution
 			if l_success then
 				l_process.wait_for_exit
 			else
-				io.error.put_string ("ERROR: Cannot start %"" + eiffel_layout.emake_command_name.name.as_string_8 + "%".")
+				localized_print_error ({STRING_32} "ERROR: Cannot start %"" + eiffel_layout.emake_command_name.name + "%".")
 			end
 				-- Restore original code page in case it has been changed.
 			{WEL_API}.set_console_input_code_page (input_code_page).do_nothing

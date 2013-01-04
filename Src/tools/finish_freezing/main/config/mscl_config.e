@@ -69,8 +69,8 @@ feature {NONE} -- Initalization
 
 				if is_eiffel_layout_defined and then eiffel_layout.is_valid_environment then
 						-- Added runtime include and lib paths
-					extend_variable (include_var_name, eiffel_layout.runtime_include_path_8)
-					extend_variable (lib_var_name, eiffel_layout.runtime_lib_path_8)
+					extend_variable (include_var_name, eiffel_layout.runtime_include_path.name)
+					extend_variable (lib_var_name, eiffel_layout.runtime_lib_path.name)
 				end
 			end
 		end
@@ -115,7 +115,7 @@ feature -- Access
 				end
 			end
 			if l_result = Void or else l_result.is_empty then
-				Result := ".\"
+				Result := {STRING_32} ".\"
 			else
 				Result := l_result
 			end
@@ -148,12 +148,12 @@ feature {NONE} -- Access
 			not_result_is_empty: Result /= Void implies not Result.is_empty
 		end
 
-	batch_file_options: STRING
+	batch_file_options: READABLE_STRING_32
 			-- Option to the COMSPEC DOS prompt.
 		require
 			exists: exists
 		do
-			create Result.make_empty
+			create {STRING_32} Result.make_empty
 		ensure
 			batch_file_options_not_void: Result /= Void
 		end

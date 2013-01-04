@@ -21,12 +21,12 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_arguments (a_arguments: LINKED_LIST [STRING])
+	make_with_arguments (a_arguments: LINKED_LIST [STRING_32])
 			-- Initialize `auto_test_arguments' with `a_arguments'.
 		require
 			a_arguments_attached: a_arguments /= Void
 		do
-			create {DS_LINKED_LIST [STRING]} auto_test_arguments.make
+			create {DS_LINKED_LIST [STRING_32]} auto_test_arguments.make
 			a_arguments.do_all (agent auto_test_arguments.force_last)
 		ensure
 			auto_test_arguments_set: auto_test_arguments /= Void and then auto_test_arguments.count = a_arguments.count
@@ -263,7 +263,7 @@ feature -- Execution
 			end
 		end
 
-	auto_test_arguments: detachable DS_LIST [STRING]
+	auto_test_arguments: detachable DS_LIST [STRING_32]
 			-- Arguments for AutoTest
 
 	check_arguments_and_execute
@@ -271,7 +271,7 @@ feature -- Execution
 			-- command line action.
 		local
 			i: INTEGER
-			l_args: DS_LINKED_LIST [STRING]
+			l_args: DS_LINKED_LIST [STRING_32]
 		do
 				-- Retrieve all arguments for AutoTest.
 			create l_args.make

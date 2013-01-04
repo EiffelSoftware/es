@@ -24,26 +24,26 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_id: like help_context_id; a_section: detachable like help_context_section)
+	make (a_id: READABLE_STRING_GENERAL; a_section: detachable like help_context_section)
 			-- Initialize a new custom help context.
 		require
 			a_id_attached: a_id /= Void
 			not_a_id_is_empty: not a_id.is_empty
 			not_a_section_is_empty: a_section /= Void implies not a_section.is_empty
 		do
-			help_context_id := a_id
+			create help_context_id.make_from_string_general (a_id)
 			help_context_section := a_section
 		ensure
-			help_context_id_set: help_context_id.same_string (a_id)
+			help_context_id_set: a_id.same_string (help_context_id)
 			help_context_section_set: help_context_section /= Void implies help_context_section.same_string (a_section)
 		end
 
 feature -- Access
 
-	help_context_id: STRING
+	help_context_id: STRING_32
 			-- <Precursor>
 
-	help_context_section: detachable STRING
+	help_context_section: detachable STRING_32
 			-- -- An optional sub-section in the help document, located using `help_context_id' to navigate to.
 
 feature {NONE} -- Access
@@ -68,7 +68,7 @@ invariant
 	not_help_context_section_is_empty: help_context_section /= Void implies not help_context_section.is_empty
 
 ;note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

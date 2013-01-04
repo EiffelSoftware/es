@@ -1000,7 +1000,7 @@ feature{NONE} -- Process scheduling
 	launch_process
 			-- Launch `process'.
 		local
-			arguments: ARRAYED_LIST [READABLE_STRING_GENERAL]
+			l_arguments: ARRAYED_LIST [READABLE_STRING_GENERAL]
 			l_body_id: INTEGER
 			l_workdir: STRING_32
 		do
@@ -1011,7 +1011,7 @@ feature{NONE} -- Process scheduling
 				-- We need `injected_feature_body_id'-1 because the underlying C array is 0-based.
 			l_body_id := injected_feature_body_id - 1
 			if configuration.is_test_case_serialization_enabled then
-				create arguments.make_from_array (
+				create l_arguments.make_from_array (
 					<<"localhost",
 					  port.out,
 					  l_body_id.out,
@@ -1026,7 +1026,7 @@ feature{NONE} -- Process scheduling
 					  configuration.is_test_case_serialization_retrieved_online.out,
 					  "-eif_root", interpreter_root_class_name + "." + interpreter_root_feature_name>>)
 			else
-				create arguments.make_from_array (
+				create l_arguments.make_from_array (
 					<<"localhost",
 					  port.out,
 					  l_body_id.out,
@@ -1037,7 +1037,7 @@ feature{NONE} -- Process scheduling
 			end
 
 			l_workdir := system.lace.directory_name
-			create process.make (executable_file_name, arguments, l_workdir)
+			create process.make (executable_file_name, l_arguments, l_workdir)
 			process.set_timeout (0)
 			process.launch (agent stdout_reader.put_string)
 		end
@@ -2395,7 +2395,7 @@ invariant
 
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

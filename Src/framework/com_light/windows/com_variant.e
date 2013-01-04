@@ -68,6 +68,17 @@ feature -- Access
 			end
 		end
 
+	string: detachable STRING_32
+			-- String from VARIANT
+		local
+			l_s: WEL_STRING
+		do
+			if c_variant_vt (item) = vt_bstr then
+				create l_s.make_by_pointer (c_variant_bstrVal (item))
+				Result := l_s.string
+			end
+		end
+
 feature -- Measurement
 
 	structure_size: INTEGER
@@ -95,11 +106,26 @@ feature {NONE} -- Externals
 			"pdispVal"
 		end
 
+	c_variant_vt (ptr: POINTER): INTEGER
+			-- (export status {NONE})
+		external
+			"C [struct <OleAuto.h>] (VARIANT): EIF_INTEGER"
+		alias
+			"vt"
+		end
+
 	c_variant_set_vt (ptr: POINTER; value: INTEGER)
 		external
 			"C [struct <OleAuto.h>] (VARIANT, VARTYPE)"
 		alias
 			"vt"
+		end
+
+	c_variant_bstrVal (ptr: POINTER): POINTER
+		external
+			"C [struct <OleAuto.h>] (VARIANT): EIF_POINTER"
+		alias
+			"bstrVal"
 		end
 
 	c_variant_set_bstrVal (ptr: POINTER; value: POINTER)
@@ -116,6 +142,20 @@ feature {NONE} -- Externals
 			"lVal"
 		end
 
+	c_variant_set_intVal (ptr: POINTER; value: INTEGER_32)
+		external
+			"C [struct <OleAuto.h>] (VARIANT, INT)"
+		alias
+			"intVal"
+		end
+
+	c_variant_set_llVal (ptr: POINTER; value: INTEGER_64)
+		external
+			"C [struct <OleAuto.h>] (VARIANT, LONGLONG)"
+		alias
+			"llVal"
+		end
+
 	vt_bstr: INTEGER
 		external
 			"C [macro <OleAuto.h>]"
@@ -130,12 +170,40 @@ feature {NONE} -- Externals
 			"VT_I4"
 		end
 
+	vt_i8: INTEGER
+		external
+			"C [macro <OleAuto.h>]"
+		alias
+			"VT_I8"
+		end
+
+	vt_int: INTEGER
+		external
+			"C [macro <OleAuto.h>]"
+		alias
+			"VT_INT"
+		end
+
+	c_variant_pcVal (ptr: POINTER): POINTER
+		external
+			"C [struct <OleAuto.h>] (VARIANT): EIF_POINTER"
+		alias
+			"pcVal"
+		end
+
+	c_variant_set_pcVal (ptr: POINTER; value: POINTER)
+		external
+			"C [struct <OleAuto.h>] (VARIANT, CHAR*)"
+		alias
+			"pcVal"
+		end
+
 feature {NONE} -- Implementation
 
 	bstr_string: detachable COM_BSTR_STRING
 
 ;note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

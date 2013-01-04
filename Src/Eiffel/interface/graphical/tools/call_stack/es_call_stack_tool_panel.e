@@ -297,10 +297,10 @@ feature {NONE} -- Initialization
 
 feature -- Access: Help
 
-	help_context_id: STRING
+	help_context_id: STRING_32
 			-- <Precursor>
 		once
-			Result := "8C3CD0FE-78AA-7EC6-F36A-2233A4E26755"
+			Result := {STRING_32} "8C3CD0FE-78AA-7EC6-F36A-2233A4E26755"
 		end
 
 feature {NONE} -- Factory
@@ -1162,7 +1162,6 @@ feature {NONE} -- Export call stack
 		local
 			fn: FILE_WINDOW
 			retried: BOOLEAN
-			u: UTF_CONVERTER
 		do
 			if not retried then
 					--| We create a file (or open it).
@@ -1181,8 +1180,7 @@ feature {NONE} -- Export call stack
 				end
 					-- Save the path to the preferences.
 					-- Encode it as UTF-8.
-				preferences.debug_tool_data.last_saved_stack_path_preference.set_value
-					(u.string_32_to_utf_8_string_8 (a_fn.parent.name))
+				preferences.debug_tool_data.last_saved_stack_path_preference.set_value (a_fn.parent)
 				preferences.preferences.save_preference (preferences.debug_tool_data.last_saved_stack_path_preference)
 			else
 					-- The file name was probably incorrect (not creatable).

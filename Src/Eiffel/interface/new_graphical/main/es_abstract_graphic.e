@@ -79,7 +79,7 @@ feature {NONE} -- Initialization
 		do
 				-- Check that environment variables
 				-- are properly set.
-			check not_is_eiffel_layout_defined: not is_eiffel_layout_defined end
+			check not_is_eiffel_layout_defined: is_eiffel_layout_defined implies eiffel_layout.generating_type ~ {ES_EIFFEL_LAYOUT} end
 			create l_layout
 			set_eiffel_layout (l_layout)
 			l_layout.check_environment_variable
@@ -168,8 +168,9 @@ feature {NONE} -- Implementation (preparation of all widgets)
 			project_index: INTEGER
 			path_index: INTEGER
 			target_index: INTEGER
-			l_config, l_project_path: STRING_32
-			l_target: STRING
+			l_config: PATH
+			l_project_path: detachable PATH
+			l_target: detachable STRING_8
 			l_conf_constants: CONF_GUI_INTERFACE_CONSTANTS
 			first_window: EB_DEVELOPMENT_WINDOW
 			l_loader: EB_GRAPHICAL_PROJECT_LOADER
@@ -201,21 +202,15 @@ feature {NONE} -- Implementation (preparation of all widgets)
 			project_index := index_of_word_option ("config")
 			if project_index /= 0 and argument_count >= project_index + 1 then
 					-- A project was specified.
-				l_config := argument (project_index + 1)
+				create l_config.make_from_string (argument (project_index + 1))
 				path_index := index_of_word_option ("project_path")
 				if path_index /= 0 and argument_count >= path_index + 1 then
-					l_project_path := argument (path_index + 1)
-					from
-					until
-						l_project_path.is_empty or else l_project_path.item (l_project_path.count) /= '\'
-					loop
-						l_project_path.remove_tail (1)
-					end
+					create l_project_path.make_from_string (argument (path_index + 1))
 				end
 
 				target_index := index_of_word_option ("target")
 				if target_index /= 0 and argument_count >= target_index + 1 then
-					l_target := argument (target_index + 1)
+					l_target := argument (target_index + 1).to_string_8
 				end
 
 				check window_manager.last_created_window /= Void end
@@ -278,7 +273,7 @@ feature {NONE} -- Exception handling
 			try_to_save_session_data
 
 				-- Raise exception dialog
-			clean_exit (a_exception.exception_trace)
+			clean_exit (a_exception.trace)
 		end
 
 	parent_for_dialog: EV_WINDOW
@@ -337,7 +332,7 @@ feature {NONE} -- Exception handling
 			retry
 		end
 
-	clean_exit (trace: STRING)
+	clean_exit (trace: READABLE_STRING_GENERAL)
 			-- Perform clean quit of $EiffelGraphicalCompiler$
 		local
 			l_dialog: ES_EXCEPTION_DIALOG

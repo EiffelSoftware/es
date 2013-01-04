@@ -162,6 +162,7 @@ test	code-compatible-io-failure		except035 tcf fail exception
 test	original_routines_in_exceptions		except036 tcf pass exception
 test	exception_cause				except037 tcf pass exception
 test	io_exception_code			except038 tcf pass exception
+test	unicode_in_exception			except039 tcf pass exception
 
 -- Unicode
 test unicode_manifest_string_char_and_constants unicode001 tcf pass unicode
@@ -1163,6 +1164,7 @@ test	melted-tuple-expression-order melt099 tcf pass execution melting tuple
 test	melted-creation-constrained-generic melt100 tcf fail execution melting generic
 test	melted-once-creation-of-generic	melt101 tcf fail execution melting generic
 test	melted-special-creation-crash-2	melt102  tcf pass melting execution special
+test	melted-on-character-32	melt103  tcf pass melting execution
 
 -- Freezing
 
@@ -1321,6 +1323,7 @@ test	tight-loop-integer-constant-infinite-loop final117 tcf fail finalizing manu
 test	finalize-once-strings-in-invariant	final118 tcf fail finalizing
 test	equation-evaluation-sequence	final119 tcf fail finalizing
 test	comparison-involving-allocation	final120 tcf fail finalizing
+test	bracket-wrong-dispatch			final121 tcf fail finalizing
 
 -- Runtime
 test	gc-tracking-001					runtime001	tcf pass runtime
@@ -2190,6 +2193,9 @@ test	format-double-crash				lib036	 tcf fail library ieee
 test	ptf-file-read-to-string		lib037	 tcf pass library file
 test	managed-pointer-invariant	lib038	 tcf pass library invariant
 test	file-info-not-duplicated	lib039	 tcf pass library file
+
+test	utf-16-basics			utf001	tcf pass library unicode
+test	utf-8-basics			utf002	tcf pass library unicode
 
 
 -- TUPLE tests

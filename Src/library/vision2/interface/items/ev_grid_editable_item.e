@@ -27,7 +27,7 @@ class
 inherit
 	EV_GRID_LABEL_ITEM
 		redefine
-			is_tab_navigatable,
+			initialize,
 			activate_action,
 			deactivate
 		end
@@ -35,6 +35,15 @@ inherit
 create
 	default_create,
 	make_with_text
+
+feature {EV_ANY} -- Initialization
+
+	initialize
+			-- <Precursor>
+		do
+			Precursor
+			set_is_tab_navigatable (True)
+		end
 
 feature -- Element change
 
@@ -46,11 +55,6 @@ feature -- Element change
 		ensure
 			validation_agent_set: validation_agent = a_validation_agent
 		end
-
-feature -- Status Report
-
-	is_tab_navigatable: BOOLEAN = True
-		-- <Precursor>
 
 feature -- Access
 
@@ -206,7 +210,7 @@ feature {NONE} -- Implementation
 			if attached text_field as l_text_field then
 				l_text_field.focus_out_actions.extend (agent deactivate)
 				l_text_field.set_focus
-				l_text_field.set_caret_position (l_text_field.text.count + 1)
+				l_text_field.set_caret_position (l_text_field.text_length + 1)
 				user_cancelled_activation := False
 				l_text_field.key_press_actions.extend (agent handle_key)
 			end

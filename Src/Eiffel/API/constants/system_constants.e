@@ -23,8 +23,6 @@ feature {NONE}
 
 	Backup_info: STRING = "compilation_info.txt"
 
-	Studio_directory_list: STRING = "DIRECTORYLIST"
-
 	C_prefix: CHARACTER = 'C'
 			-- Prefix for C generated directories and object files
 

@@ -1,4 +1,4 @@
-﻿note
+note
 	description:
 
 		"AutoTest command line parser"
@@ -22,7 +22,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make_with_arguments (a_arguments: DS_LIST [STRING]; error_handler: AUT_ERROR_HANDLER)
+	make_with_arguments (a_arguments: DS_LIST [STRING_32]; error_handler: AUT_ERROR_HANDLER)
 			-- Process `a_arguments'.		
 		require
 			a_arguments_attached: a_arguments /= Void
@@ -52,6 +52,8 @@ feature{NONE} -- Initialization
 			l_log_to_replay: AP_STRING_OPTION
 			l_help_option: AP_FLAG
 			l_help_flag: AP_DISPLAY_HELP_FLAG
+			l_args: DS_LINKED_LIST [STRING]
+
 			l_load_log_option: AP_STRING_OPTION
 			l_state_option: AP_STRING_OPTION
 			l_precondition_option: AP_FLAG
@@ -423,7 +425,17 @@ feature{NONE} -- Initialization
 			l_output_test_case_on_line_option.set_description ("Should AutoTest output test case files during testing? Have effect only if the option retrieve-serialization-online is enabled. Default: False")
 			parser.options.force_last (l_output_test_case_on_line_option)
 
-			parser.parse_list (a_arguments)
+			create l_args.make
+			from
+				a_arguments.start
+			until
+				a_arguments.after
+			loop
+				l_args.put_last (create {UC_STRING}.make_from_string_general (a_arguments.item_for_iteration))
+				a_arguments.forth
+			end
+			parser.parse_list (l_args)
+
 
 --			if version_option.was_found then
 --				error_handler.enable_verbose

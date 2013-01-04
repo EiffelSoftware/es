@@ -59,9 +59,9 @@ feature -- Creation
 			physical_not_exists: not exists
 		local
 			di: detachable DIRECTORY_INFO
-			l_sub_dir: STRING
+			l_sub_dir: STRING_32
 			l_sep_index: INTEGER
-			l_full_path: STRING
+			l_full_path: STRING_32
 		do
 			create di.make (internal_name.to_cil)
 			create l_full_path.make_from_cil (di.full_name)
@@ -93,7 +93,6 @@ feature -- Creation
 			l_path: PATH
 			l_parent, l_entry: detachable PATH
 			l_io_exception: IO_FAILURE
-			u: UTF_CONVERTER
 		do
 
 				-- Find the first existing directory in the path name
@@ -108,8 +107,7 @@ feature -- Creation
 				l_entry := l_path.entry
 				if l_parent = Void or l_entry = Void then
 					create l_io_exception
-						-- Directory name is converted to UTF-8
-					l_io_exception.set_message ("Invalid directory: " + u.utf_32_string_to_utf_8_string_8 (l_path.name))
+					l_io_exception.set_description ({STRING_32} "Invalid directory: " + l_path.name)
 					l_io_exception.raise
 				else
 					l_directories_to_build.extend (l_entry)
@@ -136,8 +134,7 @@ feature -- Creation
 				l_directory.create_dir
 				if not l_directory.exists then
 					create l_io_exception
-						-- Use UTF-8 to display directory we cannot create.
-					l_io_exception.set_message ("Cannot create: " + u.utf_32_string_to_utf_8_string_8 (l_path.name))
+					l_io_exception.set_description ({STRING_32} "Cannot create: " + l_path.name)
 					l_io_exception.raise
 				end
 			end
@@ -562,7 +559,7 @@ feature -- Removal
 				l_name = Void or requested_cancel
 			loop
 					-- Ignore current and parent directories.
-				if (not l_name.same_string (current_directory_string) and not l_name.same_string (parent_directory_string)) then
+				if (not l_name.same_string_general (current_directory_string) and not l_name.same_string_general (parent_directory_string)) then
 						-- Avoid creating too many objects.
 					l_file_name := l_path.extended (l_name)
 					create file.make_with_path (l_file_name)

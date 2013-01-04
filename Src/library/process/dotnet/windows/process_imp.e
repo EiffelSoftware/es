@@ -34,7 +34,6 @@ feature{NONE} -- Initialization
 			create exit_mutex.make
 			create input_mutex.make
 
-			arguments := args
 			create c.make (a_exec_name.count)
 			c.append_string_general (a_exec_name)
 
@@ -252,7 +251,7 @@ feature{PROCESS_TIMER} -- Process status checking
 
 feature -- Interprocess data transmission
 
-	put_string (s: STRING)
+	put_string (s: READABLE_STRING_8)
 			-- Send `s' into launched process as its input data.
 		do
 			append_input_buffer (s)
@@ -282,7 +281,7 @@ feature{NONE} -- Interprocess IO
 			-- This buffer is used temporarily to store data that can not be
 			-- consumed by launched process.
 
-	append_input_buffer (a_input:STRING)
+	append_input_buffer (a_input: READABLE_STRING_8)
 			-- Append `a_input' to `input_buffer'.
 		require
 			a_input_not_void: a_input /= Void
@@ -477,15 +476,19 @@ feature{NONE} -- Implementation
 				Result.set_redirect_standard_error (error_direction /= {PROCESS_REDIRECTION_CONSTANTS}.no_redirection)
 			end
 			if l_environ_tbl /= Void and then not l_environ_tbl.is_empty and then attached Result.environment_variables as l_environ_dic then
+				-- Clear previous environment table to replace with new one.
+				l_environ_dic.clear
+
 				from
 					l_environ_tbl.start
 				until
 					l_environ_tbl.after
 				loop
 					if l_environ_tbl.key_for_iteration /= Void and then l_environ_tbl.item_for_iteration /= Void then
-						l_key := l_environ_tbl.key_for_iteration
-						l_value := l_environ_tbl.item_for_iteration
+						l_key := l_environ_tbl.key_for_iteration.to_cil
+						l_value := l_environ_tbl.item_for_iteration.to_cil
 						if l_environ_dic.contains_key (l_key) then
+							-- Remove previous variable for key `l_key', in case we have duplication
 							l_environ_dic.remove (l_key)
 						end
 						l_environ_dic.add (l_key, l_value)

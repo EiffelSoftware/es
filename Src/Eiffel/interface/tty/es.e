@@ -82,7 +82,7 @@ feature -- Initialization
 
 				-- Set the default project path to the current working directory.
 				-- This may be overriden via user settings.
-			project_path :=(create {EXECUTION_ENVIRONMENT}).current_working_path.name
+			project_path :=(create {EXECUTION_ENVIRONMENT}).current_working_path
 
 				--| Initialization of the run-time, so that at the end of a store/retrieve
 				--| operation (like retrieving or storing the project, creating the CASEGEN
@@ -296,17 +296,17 @@ feature -- Properties
 	verbose_option: BOOLEAN
 			-- Make compiler output verbose (default: quiet)?
 
-	output_file_name: STRING
+	output_file_name: STRING_32
 			-- File which Output is redirected into
 			-- if `output_file_option' is set to True.
 
-	option: STRING
+	option: STRING_32
 			-- Current option being analyzed
 
-	single_file_compilation_filename: STRING
+	single_file_compilation_filename: PATH
 			-- File name of Eiffel class file in single file compilation mode
 
-	single_file_compilation_libraries: LIST [STRING]
+	single_file_compilation_libraries: ARRAYED_LIST [PATH]
 			-- List of specified libraries in single file compilation mode
 
 	is_finish_freezing_called: BOOLEAN
@@ -397,13 +397,13 @@ feature -- Access
 	is_precompiled_option: BOOLEAN
 			-- Is the current option `precompile'?
 		do
-			Result := option.is_equal ("-precompile")
+			Result := option.same_string_general ("-precompile")
 		end
 
 	is_precompiled_licensed_option: BOOLEAN
 			-- Is the current option `precompile_licensed'?
 		do
-			Result := option.is_equal ("-precompile_licensed")
+			Result := option.same_string_general ("-precompile_licensed")
 		end
 
 feature -- Setting
@@ -630,57 +630,57 @@ feature -- Update
 	analyze_one_option
 			-- Analyze current option.
 		local
-			cn, fn: STRING
-			filter_name: STRING
+			cn, fn: STRING_32
+			filter_name: STRING_32
 			show_all: BOOLEAN
 			show_assigners: BOOLEAN
 			show_creators: BOOLEAN
 			ewb_senders: EWB_SENDERS
 			ewb_callees: EWB_CALLEES
-			l_arg: STRING
-			l_at_args: LINKED_LIST [STRING]
-			in_filename, out_filename: STRING
+			l_arg: STRING_32
+			l_at_args: LINKED_LIST [STRING_8]
+			in_filename, out_filename: STRING_32
 		do
 			filter_name := ""
 			option := argument (current_option);
 
-			if option.is_equal ("-help") then
+			if option.same_string_general ("-help") then
 				help_only := True
-			elseif option.is_equal ("-loop") then
+			elseif option.same_string_general ("-loop") then
 				if command /= Void then
 					option_error := True
 				else
 					command := loop_cmd
 				end
-			elseif option.is_equal ("-verbose") then
+			elseif option.same_string_general ("-verbose") then
 				verbose_option := True
-			elseif option.is_equal ("-version") then
+			elseif option.same_string_general ("-version") then
 				version_only := True
-			elseif option.is_equal ("-quick_melt") then
+			elseif option.same_string_general ("-quick_melt") then
 				if command = Void then
 					create {EWB_QUICK_MELT} command
 				else
 					option_error := True
 				end
-			elseif option.is_equal ("-melt") then
+			elseif option.same_string_general ("-melt") then
 				if command = Void then
 					create {EWB_COMP} command
 				else
 					option_error := True
 				end
-			elseif option.is_equal ("-" + debug_cmd_name) then
+			elseif option.same_string_general ("-" + debug_cmd_name) then
 				if command = Void then
 					create {EWB_DEBUG} command
 				else
 					option_error := True
 				end
-			elseif eiffel_layout.has_documentation_generation and then option.is_equal ("-implementers") then
+			elseif eiffel_layout.has_documentation_generation and then option.same_string_general ("-implementers") then
 				if current_option < argument_count then
 					if command /= Void then
 						option_error := True
 					else
 						current_option := current_option + 1
-						if argument (current_option).is_equal ("-filter") then
+						if argument (current_option).same_string_general ("-filter") then
 							if current_option + 1 < argument_count then
 								current_option := current_option + 1
 								filter_name := argument (current_option)
@@ -703,13 +703,13 @@ feature -- Update
 				else
 					option_error := True
 				end
-			elseif eiffel_layout.has_documentation_generation and then option.is_equal ("-aversions") then
+			elseif eiffel_layout.has_documentation_generation and then option.same_string_general ("-aversions") then
 				if current_option < argument_count then
 					if command /= Void then
 						option_error := True
 					else
 						current_option := current_option + 1
-						if argument (current_option).is_equal ("-filter") then
+						if argument (current_option).same_string_general ("-filter") then
 							if current_option + 1 < argument_count then
 								current_option := current_option + 1
 								filter_name := argument (current_option)
@@ -732,13 +732,13 @@ feature -- Update
 				else
 					option_error := True
 				end
-			elseif eiffel_layout.has_documentation_generation and then option.is_equal ("-dversions") then
+			elseif eiffel_layout.has_documentation_generation and then option.same_string_general ("-dversions") then
 				if current_option < argument_count then
 					if command /= Void then
 						option_error := True
 					else
 						current_option := current_option + 1
-						if argument (current_option).is_equal ("-filter") then
+						if argument (current_option).same_string_general ("-filter") then
 							if current_option + 1 < argument_count then
 								current_option := current_option + 1
 								filter_name := argument (current_option)
@@ -761,13 +761,13 @@ feature -- Update
 				else
 					option_error := True
 				end
-			elseif eiffel_layout.has_documentation_generation and then option.is_equal ("-callers") then
+			elseif eiffel_layout.has_documentation_generation and then option.same_string_general ("-callers") then
 				if current_option < argument_count then
 					if command /= Void then
 						option_error := True
 					else
 						current_option := current_option + 1
-						if argument (current_option).is_equal ("-filter") then
+						if argument (current_option).same_string_general ("-filter") then
 							if current_option + 1 < argument_count then
 								current_option := current_option + 1
 								filter_name := argument (current_option)
@@ -776,14 +776,14 @@ feature -- Update
 								option_error := True
 							end
 						end
-						if argument (current_option).is_equal ("-show_all") then
+						if argument (current_option).same_string_general ("-show_all") then
 							show_all := True
 							current_option := current_option + 1
 						end
-						if argument (current_option).is_equal ("-assigners") then
+						if argument (current_option).same_string_general ("-assigners") then
 							show_assigners := True
 							current_option := current_option + 1
-						elseif argument (current_option).is_equal ("-creators") then
+						elseif argument (current_option).same_string_general ("-creators") then
 							show_creators := True
 							current_option := current_option + 1
 						end
@@ -810,13 +810,13 @@ feature -- Update
 				else
 					option_error := True
 				end
-			elseif eiffel_layout.has_documentation_generation and then option.is_equal ("-callees") then
+			elseif eiffel_layout.has_documentation_generation and then option.same_string_general ("-callees") then
 				if current_option < argument_count then
 					if command /= Void then
 						option_error := True
 					else
 						current_option := current_option + 1
-						if argument (current_option).is_equal ("-filter") then
+						if argument (current_option).same_string_general ("-filter") then
 							if current_option + 1 < argument_count then
 								current_option := current_option + 1
 								filter_name := argument (current_option)
@@ -825,14 +825,14 @@ feature -- Update
 								option_error := True
 							end
 						end
-						if argument (current_option).is_equal ("-show_all") then
+						if argument (current_option).same_string_general ("-show_all") then
 							show_all := True
 							current_option := current_option + 1
 						end
-						if argument (current_option).is_equal ("-assignees") then
+						if argument (current_option).same_string_general ("-assignees") then
 							show_assigners := True
 							current_option := current_option + 1
-						elseif argument (current_option).is_equal ("-creators") then
+						elseif argument (current_option).same_string_general ("-creators") then
 							show_creators := True
 							current_option := current_option + 1
 						end
@@ -859,7 +859,7 @@ feature -- Update
 				else
 					option_error := True
 				end
---			elseif option.is_equal ("-dependents") then
+--			elseif option.same_string_general ("-dependents") then
 --				if current_option < (argument_count - 1) then
 --					if command /= Void then
 --						option_error := True
@@ -873,19 +873,19 @@ feature -- Update
 --				else
 --					option_error := True
 --				end
-			elseif option.is_equal ("-c_compile") then
+			elseif option.same_string_general ("-c_compile") then
 				is_finish_freezing_called := True
 			elseif
 				eiffel_layout.has_documentation_generation and then
-				(option.is_equal ("-short") or else
-				option.is_equal ("-flatshort"))
+				(option.same_string_general ("-short") or else
+				option.same_string_general ("-flatshort"))
 			then
 				if current_option < argument_count then
 					if command /= Void then
 						option_error := True
 					else
 						current_option := current_option + 1
-						if argument (current_option).is_equal ("-filter") then
+						if argument (current_option).same_string_general ("-filter") then
 							if current_option + 1 < argument_count then
 								current_option := current_option + 1
 								filter_name := argument (current_option)
@@ -896,17 +896,17 @@ feature -- Update
 						end
 						if not option_error then
 							cn := argument (current_option)
-							if option.is_equal ("-short") then
-								if cn.is_equal ("-all") then
+							if option.same_string_general ("-short") then
+								if cn.same_string_general ("-all") then
 									create {EWB_DOCUMENTATION} command.make_short (filter_name, false)
-								elseif cn.is_equal ("-all_and_parents") then
+								elseif cn.same_string_general ("-all_and_parents") then
 									create {EWB_DOCUMENTATION} command.make_short (filter_name, true)
 								else
 									create {EWB_SHORT} command.make (cn, filter_name)
 								end
-							elseif cn.is_equal ("-all") then
+							elseif cn.same_string_general ("-all") then
 								create {EWB_DOCUMENTATION} command.make_flat_short (filter_name, false)
-							elseif cn.is_equal ("-all_and_parents") then
+							elseif cn.same_string_general ("-all_and_parents") then
 								create {EWB_DOCUMENTATION} command.make_flat_short (filter_name, true)
 							else
 								create {EWB_FS} command.make (cn, filter_name)
@@ -916,13 +916,13 @@ feature -- Update
 				else
 					option_error := True
 				end
-			elseif eiffel_layout.has_documentation_generation and then option.is_equal ("-flat") then
+			elseif eiffel_layout.has_documentation_generation and then option.same_string_general ("-flat") then
 				if current_option < argument_count then
 					if command /= Void then
 						option_error := True
 					else
 						current_option := current_option + 1
-						if argument (current_option).is_equal ("-filter") then
+						if argument (current_option).same_string_general ("-filter") then
 							if current_option + 1 < argument_count then
 								current_option := current_option + 1
 								filter_name := argument (current_option)
@@ -933,9 +933,9 @@ feature -- Update
 						end
 						if not option_error then
 							cn := argument (current_option)
-							if cn.is_equal ("-all") then
+							if cn.same_string_general ("-all") then
 								create {EWB_DOCUMENTATION} command.make_flat (filter_name, false)
-							elseif cn.is_equal ("-all_and_parents") then
+							elseif cn.same_string_general ("-all_and_parents") then
 								create {EWB_DOCUMENTATION} command.make_flat (filter_name, true)
 							else
 								create {EWB_FLAT} command.make (cn, filter_name)
@@ -946,7 +946,7 @@ feature -- Update
 					option_error := True
 				end
 
-			elseif eiffel_layout.has_documentation_generation and then option.is_equal ("-pretty") then
+			elseif eiffel_layout.has_documentation_generation and then option.same_string_general ("-pretty") then
 				no_project_needed := True
 
 				if current_option + 1 < argument_count then
@@ -970,7 +970,7 @@ feature -- Update
 					create {EWB_PRETTY} command.make (in_filename, out_filename)
 				end
 
-			elseif eiffel_layout.has_documentation_generation and then option.is_equal ("-filter") then
+			elseif eiffel_layout.has_documentation_generation and then option.same_string_general ("-filter") then
 				if current_option + 1 < argument_count then
 					if command /= Void then
 						option_error := True
@@ -979,7 +979,7 @@ feature -- Update
 						filter_name := argument (current_option)
 						current_option := current_option + 1
 						cn := argument (current_option)
-						if cn.is_equal ("-all") then
+						if cn.same_string_general ("-all") then
 							create {EWB_DOCUMENTATION} command.make_text (filter_name)
 						else
 							create {EWB_TEXT} command.make (cn, filter_name)
@@ -988,13 +988,13 @@ feature -- Update
 				else
 					option_error := True
 				end
-			elseif eiffel_layout.has_documentation_generation and then option.is_equal ("-ancestors") then
+			elseif eiffel_layout.has_documentation_generation and then option.same_string_general ("-ancestors") then
 				if current_option < argument_count then
 					if command /= Void then
 						option_error := True
 					else
 						current_option := current_option + 1
-						if argument (current_option).is_equal ("-filter") then
+						if argument (current_option).same_string_general ("-filter") then
 							if current_option + 1 < argument_count then
 								current_option := current_option + 1
 								filter_name := argument (current_option)
@@ -1011,13 +1011,13 @@ feature -- Update
 				else
 					option_error := True
 				end
-			elseif eiffel_layout.has_documentation_generation and then option.is_equal ("-clients") then
+			elseif eiffel_layout.has_documentation_generation and then option.same_string_general ("-clients") then
 				if current_option < argument_count then
 					if command /= Void then
 						option_error := True
 					else
 						current_option := current_option + 1
-						if argument (current_option).is_equal ("-filter") then
+						if argument (current_option).same_string_general ("-filter") then
 							if current_option + 1 < argument_count then
 								current_option := current_option + 1
 								filter_name := argument (current_option)
@@ -1034,13 +1034,13 @@ feature -- Update
 				else
 					option_error := True
 				end
-			elseif eiffel_layout.has_documentation_generation and then option.is_equal ("-suppliers") then
+			elseif eiffel_layout.has_documentation_generation and then option.same_string_general ("-suppliers") then
 				if current_option < argument_count then
 					if command /= Void then
 						option_error := True
 					else
 						current_option := current_option + 1
-						if argument (current_option).is_equal ("-filter") then
+						if argument (current_option).same_string_general ("-filter") then
 							if current_option + 1 < argument_count then
 								current_option := current_option + 1
 								filter_name := argument (current_option)
@@ -1057,13 +1057,13 @@ feature -- Update
 				else
 					option_error := True
 				end
-			elseif eiffel_layout.has_documentation_generation and then option.is_equal ("-descendants") then
+			elseif eiffel_layout.has_documentation_generation and then option.same_string_general ("-descendants") then
 				if current_option < argument_count then
 					if command /= Void then
 						option_error := True
 					else
 						current_option := current_option + 1
-						if argument (current_option).is_equal ("-filter") then
+						if argument (current_option).same_string_general ("-filter") then
 							if current_option + 1 < argument_count then
 								current_option := current_option + 1
 								filter_name := argument (current_option)
@@ -1080,7 +1080,7 @@ feature -- Update
 				else
 					option_error := True
 				end
-			elseif option.is_equal ("-project") then
+			elseif option.same_string_general ("-project") then
 				if is_single_file_compilation then
 						-- In single file compilation mode no ace file may be specified
 					option_error := True
@@ -1088,7 +1088,7 @@ feature -- Update
 					current_option := current_option + 1
 					l_arg := argument (current_option)
 					if l_arg /= Void then
-						old_project_file := l_arg
+						create old_project_file.make_from_string (l_arg)
 					else
 						option_error := True
 					end
@@ -1096,7 +1096,7 @@ feature -- Update
 					option_error := True
 				end
 
-			elseif option.is_equal ("-output_file") then
+			elseif option.same_string_general ("-output_file") then
 				if current_option < argument_count then
 					current_option := current_option + 1
 					output_file_name := argument (current_option)
@@ -1107,7 +1107,7 @@ feature -- Update
 					option_error := True
 				end
 
-			elseif option.is_equal ("-project_path") then
+			elseif option.same_string_general ("-project_path") then
 				if current_option < argument_count then
 					current_option := current_option + 1
 					l_arg := argument (current_option)
@@ -1119,7 +1119,7 @@ feature -- Update
 							loop
 								l_arg.remove_tail (1)
 							end
-							project_path := l_arg
+							create project_path.make_from_string (l_arg)
 							is_project_path_requested := True
 						else
 							project_path := Void
@@ -1133,7 +1133,7 @@ feature -- Update
 				else
 					option_error := True
 				end
-			elseif option.is_equal ("-ace") then
+			elseif option.same_string_general ("-ace") then
 				if is_single_file_compilation then
 						-- In single file compilation mode no ace file may be specified
 					option_error := True
@@ -1141,14 +1141,14 @@ feature -- Update
 					current_option := current_option + 1
 					l_arg := argument (current_option)
 					if l_arg /= Void then
-						old_ace_file := l_arg
+						create old_ace_file.make_from_string (l_arg)
 					else
 						option_error := True
 					end
 				else
 					option_error := True
 				end
-			elseif option.is_equal ("-config") then
+			elseif option.same_string_general ("-config") then
 				if is_single_file_compilation then
 						-- In single file compilation mode no config file may be specified
 					option_error := True
@@ -1156,14 +1156,14 @@ feature -- Update
 					current_option := current_option + 1
 					l_arg := argument (current_option)
 					if l_arg /= Void then
-						config_file_name := l_arg
+						create config_file_name.make_from_string (l_arg)
 					else
 						option_error := True
 					end
 				else
 					option_error := True
 				end
-			elseif option.is_equal ("-target") then
+			elseif option.same_string_general ("-target") then
 				if is_single_file_compilation then
 						-- In single file compilation mode no target may be specified
 					option_error := True
@@ -1176,18 +1176,18 @@ feature -- Update
 						option_error := True
 					end
 				end
-			elseif option.is_equal ("-stop") or else option.is_equal ("-batch") then
+			elseif option.same_string_general ("-stop") or else option.same_string_general ("-batch") then
 					-- The compiler stops on errors, useful for batch compilation without
 					-- user intervention.
 				set_stop_on_error (True)
-			elseif option.is_equal ("-clean") then
+			elseif option.same_string_general ("-clean") then
 					-- Compiler will delete project and recompile from scratch without
 					-- asking.
 				is_clean_requested := True
-			elseif option.is_equal ("-local") then
+			elseif option.same_string_general ("-local") then
 					-- FIXME: for temporary measure so that we do not reject -local which
 					-- is the behavior by default.
-			elseif option.is_equal ("-use_settings") then
+			elseif option.same_string_general ("-use_settings") then
 					-- Compiler will read user configuration file for that project
 				if not is_project_path_requested then
 					is_user_settings_requested := True
@@ -1197,44 +1197,44 @@ feature -- Update
 						-- It is an error to use 'project_path' and 'use_settings' together.
 					option_error := True
 				end
-			elseif option.is_equal ("-no_library") then
+			elseif option.same_string_general ("-no_library") then
 					-- Compiler will read user configuration file for that project
 				has_no_library_conversion := True
 
-			elseif option.is_equal ("-gc_stats") then
+			elseif option.same_string_general ("-gc_stats") then
 					-- Compiler will display some GC timing at the end of a compilation.
 				is_gc_stats_enabled := True
 					-- Start accounting for GC statistics.
 				(create {MEMORY}).enable_time_accounting
 
-			elseif option.is_equal ("-file") then
+			elseif option.same_string_general ("-file") then
 				if current_option < argument_count then
 					current_option := current_option + 1
 					set_file (argument (current_option))
 				else
 					option_error := True
 				end
-			elseif option.is_equal ("-dumploop") then
+			elseif option.same_string_general ("-dumploop") then
 					create {EWB_DUMP_LOOP} command
-			elseif option.is_equal ("-dumpuniverse") then
+			elseif option.same_string_general ("-dumpuniverse") then
 				if current_option < argument_count then
 					create {EWB_DUMP_UNIVERSE} command
 				else
 					option_error := True
 				end
-			elseif option.is_equal ("-dumpclasses") then
+			elseif option.same_string_general ("-dumpclasses") then
 				if current_option < argument_count then
 					create {EWB_DUMP_CLASSES} command
 				else
 					option_error := True
 				end
-			elseif option.is_equal ("-dumpfeatures") then
+			elseif option.same_string_general ("-dumpfeatures") then
 				if current_option < argument_count then
 					current_option := current_option + 1
 					cn := argument (current_option)
 					if
 						current_option < argument_count and then
-						argument (current_option + 1).is_equal ("verbose")
+						argument (current_option + 1).same_string_general ("verbose")
 					then
 						current_option := current_option + 1;
 						create {EWB_DUMP_FEATURES} command.make_verbose (cn)
@@ -1244,7 +1244,7 @@ feature -- Update
 				else
 					option_error := True
 				end
-			elseif option.is_equal ("-dumpoperands") then
+			elseif option.same_string_general ("-dumpoperands") then
 				if current_option + 1 < argument_count then
 					current_option := current_option + 1
 					cn := argument (current_option)
@@ -1266,24 +1266,24 @@ feature -- Update
 				else
 					create {EWB_PRECOMP} command
 				end
-			elseif option.is_equal ("-metadata_cache_path") then
+			elseif option.same_string_general ("-metadata_cache_path") then
 				if current_option + 1 < argument_count then
 					current_option := current_option + 1
 					set_overridden_metadata_cache_path (argument (current_option))
 				else
 					option_error := True
 				end
-			elseif option.is_equal ("-library") then
+			elseif option.same_string_general ("-library") then
 					-- This option is only valid if no other config options are set
 				if config_file_name = Void and target_name = Void and old_ace_file = Void and old_project_file = Void then
 					if single_file_compilation_libraries = Void then
-						create {LINKED_LIST [STRING]}single_file_compilation_libraries.make
+						create single_file_compilation_libraries.make (5)
 					end
 					if current_option < argument_count then
 						current_option := current_option + 1
 						l_arg := argument (current_option)
 						if l_arg /= Void then
-							single_file_compilation_libraries.extend (l_arg)
+							single_file_compilation_libraries.extend (create {PATH}.make_from_string (l_arg))
 						else
 							option_error := True
 						end
@@ -1291,7 +1291,7 @@ feature -- Update
 				else
 					option_error := True
 				end
-			elseif option.is_equal ("-compat") then
+			elseif option.same_string_general ("-compat") then
 					-- This option enables the default set of options of 6.3 and earlier if not specified
 					-- in the ECF file.
 				if is_experimental_flag_set then
@@ -1300,7 +1300,7 @@ feature -- Update
 					set_compatible_mode
 					is_compatible_flag_set := True
 				end
-			elseif option.is_equal ("-experiment") then
+			elseif option.same_string_general ("-experiment") then
 					-- This option enables the new options of the compiler that are not mainstream.
 				if is_compatible_flag_set then
 					option_error := True
@@ -1308,16 +1308,16 @@ feature -- Update
 					set_experimental_mode
 					is_experimental_flag_set := True
 				end
-			elseif option.is_equal ("-full") then
+			elseif option.same_string_general ("-full") then
 					-- This options enables full class checking even if not specified in ECF.
 				set_full_class_checking_mode
-			elseif option.is_equal ("-safe") then
+			elseif option.same_string_general ("-safe") then
 					-- Use "-safe" versions of ECFs if available.
 				set_safe_mode
-			elseif option.is_equal ("-auto_test") then
+			elseif option.same_string_general ("-auto_test") then
 				l_at_args := arguments_in_range (current_option + 1, argument_count)
 				current_option := argument_count + 1
-				create {EWB_AUTO_TEST} command.make_with_arguments (l_at_args)
+				create {EWB_AUTO_TEST} command.make_with_arguments (convert_to_string_32_list (l_at_args))
 			elseif option.is_equal ("-auto_fix") then
 				create l_at_args.make
 				l_at_args := arguments_in_range (current_option + 1, argument_count)
@@ -1355,21 +1355,21 @@ feature -- Update
 			elseif option.is_equal ("-js_compile") then
 				create {EWB_JAVASCRIPT_COMPILATION} command
 			elseif option.is_equal ("-dead_plan") then
-				workbench.set_planned_class_and_feature_name (argument (current_option + 1).twin,
-				                                              argument (current_option + 2).twin)
+				workbench.set_planned_class_and_feature_name (argument (current_option + 1).twin.as_string_8,
+				                                              argument (current_option + 2).twin.as_string_8)
 				current_option := argument_count + 2
-			elseif option.is_equal ("-tests") then
+			elseif option.same_string_general ("-tests") then
 				create {EWB_TEST_EXECUTION} command
-			elseif is_eiffel_class_file_name (option) then
+			elseif is_eiffel_class_file_name (create {PATH}.make_from_string (option)) then
 					-- This option is only valid if no other config options are set
 				if config_file_name = Void and target_name = Void and old_ace_file = Void and old_project_file = Void then
-					single_file_compilation_filename := argument (current_option)
+					create single_file_compilation_filename.make_from_string (argument (current_option))
 					is_single_file_compilation := True
 						-- Implies finish freezing
 					is_finish_freezing_called := True
 						-- If no libraries are set yet, initialize empty list
 					if single_file_compilation_libraries = Void then
-						create {LINKED_LIST [STRING]} single_file_compilation_libraries.make
+						create single_file_compilation_libraries.make (5)
 					end
 				else
 					option_error := True
@@ -1385,18 +1385,18 @@ feature -- Update
 		local
 			keep: BOOLEAN
 		do
-			if option.is_equal ("-freeze") then
+			if option.same_string_general ("-freeze") then
 				if command /= Void then
 					option_error := True
 				else
 					create {EWB_FREEZE} command
 				end
-			elseif option.is_equal ("-finalize") then
+			elseif option.same_string_general ("-finalize") then
 				if command /= Void then
 					option_error := True
 				else
 					if current_option < argument_count then
-						if argument (current_option + 1).is_equal ("-keep") then
+						if argument (current_option + 1).same_string_general ("-keep") then
 							current_option := current_option + 1
 							keep := True
 						end
@@ -1433,32 +1433,28 @@ feature {NONE} -- Onces
 
 feature {NONE} -- Implementation
 
-	old_ace_file: STRING_32
+	old_ace_file: PATH
 			-- Old ace file to convert.
 
-	old_project_file: STRING_32
+	old_project_file: PATH
 			-- Old project file to convert.
 
-	config_file_name: STRING_32
+	config_file_name: PATH
 			-- Name of the configuration file.
 
 	target_name: STRING
 			-- Name of the target.
 
-	project_path: STRING_32
+	project_path: PATH
 			-- Name of the path where project will be compiled.
 
-	is_eiffel_class_file_name (a_filename: STRING): BOOLEAN
+	is_eiffel_class_file_name (a_filename: PATH): BOOLEAN
 			-- Is `a_filename' an Eiffel class file?
 			-- This checks if the filename has an 'e' extension.
 		require
 			a_filename_not_void: a_filename /= Void
-		local
-			l_extension: STRING
 		do
-			l_extension := a_filename.twin
-			l_extension.keep_tail (2)
-			Result := l_extension.is_equal ("." + eiffel_extension)
+			Result := a_filename.has_extension (eiffel_extension)
 		end
 
 	print_memory_value (a_value: NATURAL_64)
@@ -1506,13 +1502,23 @@ feature{NONE} -- Implementation
 			until
 				i > a_upper
 			loop
-				Result.force (argument (i))
+				Result.force (argument (i).as_string_8)
 				i := i + 1
 			end
 		end
 
+	convert_to_string_32_list (a_arg: LINKED_LIST [STRING_8]): LINKED_LIST [STRING_32]
+			-- Convert a_arg to an array containing STRING_32 objects.
+			-- TODO: remove this and refactor arguments_in_range to use STRING_32.
+		do
+			create Result.make
+			across a_arg as i loop
+				Result.extend (i.item.as_string_32)
+			end
+		end
+
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

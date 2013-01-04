@@ -288,6 +288,7 @@ feature -- Update
 		local
 			s: STRING_32
 			file_w: FILE_WINDOW
+			l_name: READABLE_STRING_GENERAL
 			done: BOOLEAN
 		do
 			s := yank_window.stored_output
@@ -304,18 +305,19 @@ feature -- Update
 					end
 					command_line_io.get_last_input
 					if not command_line_io.last_input.is_empty then
-						create file_w.make_with_name (command_line_io.last_input)
+						l_name := command_line_io.last_input
+						create file_w.make_with_name (l_name)
 						if file_w.exists then
 							localized_print (ewb_names.file_already_exists)
 						else
 							file_w.open_file
 							if file_w.exists then
-								save_string_32_in_file (file_w, s)
+								save_string_in_file (file_w, s)
 								file_w.close
 								done := True
 							else
 								localized_print_error (ewb_names.cannot_create_file)
-								localized_print_error (file_w.name)
+								localized_print_error (l_name)
 								io.error.put_new_line
 							end
 						end

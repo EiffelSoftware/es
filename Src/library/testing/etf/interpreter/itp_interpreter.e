@@ -14,7 +14,7 @@ inherit
 
 	EXCEPTIONS
 
-	ARGUMENTS
+	ARGUMENTS_32
 		export {NONE} all end
 
 	ITP_SHARED_CONSTANTS
@@ -46,8 +46,8 @@ feature {NONE} -- Initialization
 			-- <melt feature id> is the feature body ID whose byte-code is to be injected
 			-- <log file> is the file to store logs.
 		local
-			l_log_filename: STRING
-			l_server_url: STRING
+			l_log_filename: IMMUTABLE_STRING_32
+			l_server_url: IMMUTABLE_STRING_32
 			l_port: INTEGER
 			l_tc_serialization_file_name: STRING
 			l_state_file_name: FILE_NAME
@@ -56,19 +56,22 @@ feature {NONE} -- Initialization
 				check Wrong_number_of_arguments: False end
 			end
 				-- Read command line argument
+				-- Note that `l_server_ulr' is still read even though not used
+				-- because we use the loopback of the current machine to communicate
+				-- and thus avoid firewall issues.
 			l_server_url := argument (1)
 			l_port := argument (2).to_integer
 			byte_code_feature_body_id := argument (3).to_integer
 			byte_code_feature_pattern_id := argument (4).to_integer
 			l_log_filename := argument (5)
-			interpreter_log_directory := l_log_filename.substring (1, l_log_filename.count - 19)
+			interpreter_log_directory := l_log_filename.substring (1, l_log_filename.count - 19).as_string_8
 			should_generate_log := argument (6).to_boolean
 
 				-- Setup file to store serialized test case.
 			if argument_count = 12 then
 				is_passing_test_case_serialized := argument (7).to_boolean
 				is_failing_test_case_serialized := argument (8).to_boolean
-				l_tc_serialization_file_name := argument (9)
+				l_tc_serialization_file_name := argument (9).as_string_8
 				is_test_case_serialization_enabled := True
 				is_duplicated_test_case_serialized := argument (10).to_boolean
 				is_post_state_serialized := argument (11).to_boolean
@@ -98,7 +101,8 @@ feature {NONE} -- Initialization
 			primitive_types.put (2, "BOOLEAN")
 
 				-- Create log file.
-			create log_file.make_open_append (l_log_filename)
+			create log_file.make_with_name (l_log_filename)
+			log_file.open_append
 			if not log_file.is_open_write then
 				report_error ("could not open log file '" + l_log_filename + "'.")
 				die (1)

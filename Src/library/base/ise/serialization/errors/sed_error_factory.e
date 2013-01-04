@@ -27,16 +27,16 @@ feature -- Access
 		require
 			a_exception_not_void: a_exception /= Void
 		local
-			l_msg: STRING
+			l_msg: STRING_32
 		do
-			create l_msg.make_from_string ("An exception of type {")
+			create l_msg.make_from_string_general ("An exception of type {")
 			l_msg.append (a_exception.generating_type)
-			if attached a_exception.message as l_message then
-				l_msg.append ("} with message %"")
-				l_msg.append (l_message)
-				l_msg.append ("%" occurred.")
+			if attached a_exception.description as l_message then
+				l_msg.append_string_general ("} with message %"")
+				l_msg.append_string_general (l_message)
+				l_msg.append_string_general ("%" occurred.")
 			else
-				l_msg.append ("} occurred.")
+				l_msg.append_string_general ("} occurred.")
 			end
 			create Result.make_with_string (l_msg)
 		ensure

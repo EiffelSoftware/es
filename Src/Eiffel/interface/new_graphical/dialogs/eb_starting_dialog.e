@@ -444,28 +444,24 @@ feature {NONE} -- Implementation
 			-- Enumerate the available wizards.
 		local
 			new_project_directory: DIRECTORY
-			entries: ARRAYED_LIST [STRING_32]
-			extension: STRING_32
+			entries: ARRAYED_LIST [PATH]
+			l_entry: PATH
 			wizard: EB_NEW_PROJECT_WIZARD
-			filename: PATH
 			retried: BOOLEAN
 		do
 			if not retried then
 				create available_wizards.make
 
 				create new_project_directory.make_with_path (eiffel_layout.new_project_wizards_path)
-				entries := new_project_directory.linear_representation_32
+				entries := new_project_directory.entries
 				from
 					entries.start
 				until
 					entries.after
 				loop
-					extension := entries.item.twin
-					extension.keep_tail(4)
-
-					if extension.same_string (".dsc") then
-						filename := eiffel_layout.new_project_wizards_path.extended (entries.item)
-						create wizard.make_with_file (filename)
+					l_entry := entries.item
+					if l_entry.has_extension ("dsc") then
+						create wizard.make_with_file (eiffel_layout.new_project_wizards_path.extended_path (l_entry))
 						if wizard.target_platform_supported then
 							available_wizards.extend (wizard)
 						end
@@ -508,7 +504,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	create_project (directory_name: STRING_32; ace_file_name: STRING_32)
+	create_project (directory_name, ace_file_name: PATH)
 			-- Create a project in directory `directory_name', with ace file
 			-- `ace_file_name'.
 		require
@@ -517,16 +513,11 @@ feature {NONE} -- Implementation
 		local
 			l_loader: EB_GRAPHICAL_PROJECT_LOADER
 			ebench_name: STRING
-			ace_name, dir_name: STRING_32
+			ace_name, dir_name: PATH
 		do
-			ace_name := ace_file_name.twin
-			dir_name := directory_name.twin
+			ace_name := ace_file_name
+			dir_name := directory_name
 
-			if dir_name.count > 1 then
-				if dir_name.item (dir_name.count) = Operating_environment.Directory_separator then
-					dir_name.remove (dir_name.count)
-				end
-			end
 			if not Eiffel_project.initialized then
 				create l_loader.make (Current)
 				l_loader.set_is_project_location_requested (False)
@@ -560,8 +551,7 @@ feature {NONE} -- Implementation
 			-- terminate and load the generated wizard.
 		local
 			result_parameters: LIST [TUPLE [name: STRING_32; value: STRING_32]]
-			ace_filename: STRING_32
-			directory_name: STRING_32
+			ace_filename, directory_name: PATH
 			retried: BOOLEAN
 		do
 			if not retried then
@@ -585,15 +575,13 @@ feature {NONE} -- Implementation
 						result_parameters.after
 					loop
 						if result_parameters.item.name.is_equal ("ace") then
-							ace_filename := result_parameters.item.value.twin
+							create ace_filename.make_from_string (result_parameters.item.value)
 						elseif result_parameters.item.name.is_equal ("directory") then
-							directory_name := result_parameters.item.value.twin
+							create directory_name.make_from_string (result_parameters.item.value)
 						elseif result_parameters.item.name.is_equal ("compilation") then
-							result_parameters.item.value.to_lower
-							compile_project := result_parameters.item.value.is_equal ("yes")
+							compile_project := result_parameters.item.value.is_case_insensitive_equal_general ("yes")
 						elseif result_parameters.item.name.is_equal ("compilation_type") then
-							result_parameters.item.value.to_lower
-							freeze_project := result_parameters.item.value.is_equal ("freeze")
+							freeze_project := result_parameters.item.value.is_case_insensitive_equal_general ("freeze")
 						elseif result_parameters.item.name.is_equal ("success") then
 							-- Do nothing
 						else

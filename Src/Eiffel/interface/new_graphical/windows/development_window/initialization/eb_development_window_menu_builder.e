@@ -1,4 +1,4 @@
-﻿note
+note
 	description: "Builder which build all EB_DEVELOPMENT_WINDOW menus."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -195,15 +195,6 @@ feature -- Command
 				l_show_tool_bar_commands.forth
 			end
 		end
-
---	attach_customized_tools (a_tools: LIST [EB_TOOL])
---			-- Attach `a_tools' into tools list menu.
---		require
---			a_tools_attached: a_tools /= Void
---			a_tools_valid: not a_tools.has (Void)
---		do
---			a_tools.do_all (agent fill_show_menu_for_tool (develop_window.menus.tools_list_menu, ?))
---		end
 
 feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 
@@ -1191,8 +1182,6 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 
 	tool_list_menu: EV_MENU
 			-- Build toolbar corresponding to available left panels.
-		local
---			l_customized_tools: LIST [EB_TOOL]
 		do
 			create Result.make_with_text (develop_window.Interface_names.m_Explorer_bar)
 			Result.wipe_out
@@ -1238,11 +1227,6 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			insert_show_tool_menu_item (Result, {ES_ALIAS_ANALYSIS_TOOL})
 			insert_show_tool_menu_item (Result, {ES_AUTOPROOF_TOOL})
 
---			l_customized_tools := develop_window.tools.customized_tools
---			if not l_customized_tools.is_empty then
---				Result.extend (create {EV_MENU_SEPARATOR})
---				l_customized_tools.do_all (agent fill_show_menu_for_tool (Result, ?))
---			end
 		end
 
 	build_window_menu
@@ -1311,23 +1295,6 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 		ensure
 			help_menu_created: is_help_menu_created
 		end
-
---	fill_show_menu_for_tool (a_menu: EV_MENU; a_tool: EB_TOOL)
---			-- Fill `a_menu' with the list of explorer bar iten `a_list'.
---		local
---			l_menu_item: EB_COMMAND_MENU_ITEM
---			l_com: EB_SHOW_TOOL_COMMAND
---		do
---			l_com := develop_window.commands.show_tool_commands.item (a_tool)
---			if l_com /= Void then
---				l_menu_item := l_com.new_menu_item
---				auto_recycle (l_menu_item)
---				a_menu.extend (l_menu_item)
---				if a_tool.is_customized_tool then
---					l_menu_item.set_data ([l_menu_item, a_tool.title_for_pre])
---				end
---			end
---		end
 
 	insert_show_tool_menu_item (a_menu: EV_MENU; a_tool: TYPE [ES_TOOL [EB_TOOL]])
 			-- Inserts a menu item for showing a tool.

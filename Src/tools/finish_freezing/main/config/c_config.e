@@ -102,7 +102,7 @@ feature -- Access
 			result_ends_with_dir_separator: Result.item (Result.count) = operating_environment.directory_separator
 		end
 
-	path_var: STRING
+	path_var: READABLE_STRING_32
 			-- PATH environment variable
 		require
 			exists: exists
@@ -112,7 +112,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	include_var: STRING
+	include_var: READABLE_STRING_32
 			-- INCLUDE environment variable
 		require
 			exists: exists
@@ -122,7 +122,7 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	lib_var: STRING
+	lib_var: READABLE_STRING_32
 			-- LIBS environment variable
 		require
 			exists: exists
@@ -174,7 +174,7 @@ feature {NONE} -- Status report
 
 feature {NONE} -- Variable caching
 
-	extend_variable (a_name: STRING; a_values: STRING)
+	extend_variable (a_name: READABLE_STRING_32; a_values: READABLE_STRING_32)
 			-- Extends internal variable `a_name' with values in `a_values'
 		require
 			a_name_attached: a_name /= Void
@@ -183,51 +183,48 @@ feature {NONE} -- Variable caching
 			variable_table_attached: variable_table /= Void
 		local
 			l_table: like variable_table
-			l_old_values: detachable STRING
-			l_new_values: STRING
+			l_new_values: STRING_32
 		do
 			l_table := variable_table
-			l_old_values := l_table.item (a_name)
-			if l_old_values = Void then
-				l_new_values := a_values
+			if not attached  l_table.item (a_name) as l_old_values then
+					-- Add a new entry.
+				l_table.force (a_values, a_name)
 			else
+					-- Extend an existing entry.
 				create l_new_values.make (l_old_values.count + 1 + a_values.count)
 				l_new_values.append (a_values)
 				if not a_values.is_empty and not l_old_values.is_empty then
 					if l_new_values.item (l_new_values.count) /= ';' then
 						l_new_values.append_character (';')
 					end
-					l_new_values.append (l_old_values)
+					l_new_values.append_string_general (l_old_values)
 				end
+				l_table.force (l_new_values, a_name)
 			end
-			l_table.force (l_new_values, a_name)
 		ensure
 			variable_table_has_a_name: variable_table.has (a_name)
 		end
 
-	variable_for_name (a_name: STRING): STRING
+	variable_for_name (a_name: READABLE_STRING_32): READABLE_STRING_32
 			-- Retrieves varaible for name `a_name'
 		require
 			a_name_attached: a_name /= Void
 			not_a_name_is_empty: not a_name.is_empty
 			variable_table_attached: variable_table /= Void
-		local
-			l_result: detachable STRING
 		do
-			l_result := variable_table.item (a_name)
-			if l_result /= Void then
+			if attached variable_table.item (a_name) as l_result then
 				Result := l_result
 			else
-				create Result.make_empty
+				create {STRING_32} Result.make_empty
 			end
 		ensure
 			result_attached: Result /= Void
 		end
 
-	variable_table: HASH_TABLE [STRING, STRING]
+	variable_table: HASH_TABLE [READABLE_STRING_32, READABLE_STRING_32]
 			-- Table of cached variables and values.
 			-- To extend use safe `extend_variable'
-			-- To query use `variable_for_name'
+			-- To query use `variable_for_name'.
 
 invariant
 	variable_table_attached: is_initialized implies variable_table /= Void

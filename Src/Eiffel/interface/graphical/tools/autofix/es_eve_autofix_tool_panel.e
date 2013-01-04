@@ -122,7 +122,7 @@ feature {NONE} -- Implementation
 
 feature -- Access: Help
 
-	help_context_id: STRING
+	help_context_id: STRING_32
 			-- <Precursor>
 		once
 			Result := "26E2C799-B48A-C588-CDF1-DD47B1994B09"
@@ -156,7 +156,7 @@ feature {NONE} -- Factory
         end
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
