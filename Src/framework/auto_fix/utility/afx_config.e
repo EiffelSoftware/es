@@ -477,6 +477,15 @@ feature -- AutoFix report
 
 feature -- Status report
 
+	is_fixing_contracts_enabled: BOOLEAN
+			-- Is fixing faults in contracts enabled?
+
+	enable_fixing_contracts (a_flag: BOOLEAN)
+			-- Enable fixing faults in contracts if `a_flag'; disable otherwise.
+		do
+			is_fixing_contracts_enabled := a_flag
+		end
+
 	is_using_model_based_strategy: BOOLEAN
 			-- Is current fixing process using model-based strategy?
 		do

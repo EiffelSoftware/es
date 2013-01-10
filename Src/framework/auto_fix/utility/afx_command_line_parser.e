@@ -74,6 +74,7 @@ feature -- Basic operations
 			l_path_name: FILE_NAME
 			l_postmortem_analysis_of_fixes: AP_STRING_OPTION
 			l_postmortem_analysis_output_dir: AP_STRING_OPTION
+			l_enable_fixing_contracts: AP_FLAG
 
 			l_report_file_name_str: FILE_NAME
 			l_report_file: PLAIN_TEXT_FILE
@@ -163,6 +164,10 @@ feature -- Basic operations
 			create l_daikon_option.make_with_long_form ("daikon")
 			l_daikon_option.set_description ("Enable Daikon to infer invariants on system states. Default: False")
 			l_parser.options.force_last (l_daikon_option)
+
+			create l_enable_fixing_contracts.make_with_long_form ("enable_fixing_contract")
+			l_enable_fixing_contracts.set_description ("Enable fixing faults in contract.")
+			l_parser.options.force_last (l_enable_fixing_contracts)
 
 			create l_max_valid_fix_option.make_with_long_form ("max-valid-fix")
 			l_max_test_case_no_option.set_description ("Maximal number of valid fix, stop after found this number of valid fixes. 0 means not bounded. Default: 0.")
@@ -396,6 +401,8 @@ feature -- Basic operations
 			config.set_should_analyze_test_cases (l_analyze_tc_option.was_found)
 
 			config.set_is_daikon_enabled (l_daikon_option.was_found)
+
+			config.enable_fixing_contracts (l_enable_fixing_contracts.was_found)
 		end
 
 feature{NONE} -- Implementation

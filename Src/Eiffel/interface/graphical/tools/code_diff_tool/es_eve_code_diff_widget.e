@@ -140,16 +140,16 @@ feature {NONE} -- Implementation
 				base_text_editor.load_text ("")
 				diff_text_editor.load_text ("")
 			else
-				base_text_editor.text_displayed.set_feature_for_click (hunk.context_feature.e_feature.written_feature)
+				base_text_editor.text_displayed.set_feature_for_click (hunk.e_feature.written_feature)
 				base_text_editor.text_displayed.enable_feature_click
-				create l_stone.make (hunk.context_feature.e_feature.written_feature)
+				create l_stone.make (hunk.e_feature.written_feature)
 				base_text_editor.set_stone (l_stone)
 				base_text_editor.load_text (hunk.base_code_with_padding)
 
 					-- Regular text
-				diff_text_editor.text_displayed.set_feature_for_click (hunk.context_feature.e_feature.written_feature)
+				diff_text_editor.text_displayed.set_feature_for_click (hunk.e_feature.written_feature)
 				diff_text_editor.text_displayed.enable_feature_click
-				create l_stone.make (hunk.context_feature.e_feature.written_feature)
+				create l_stone.make (hunk.e_feature.written_feature)
 				diff_text_editor.set_stone (l_stone)
 				diff_text_editor.load_text (hunk.diff_code_with_padding)
 

@@ -8,6 +8,9 @@ class
 	AFX_POSTMORTEM_REPORT_ANALYZER
 
 inherit
+
+	EXCEPTIONS
+
 	EPA_UTILITY
 
 	SHARED_SERVER
@@ -45,8 +48,10 @@ feature -- Basic operation
 		do
 			create result_records.make
 			parse_file_name
-			save_ast (recipient_feature_with_context.feature_.body, "original")
-			save_ast (recipient_feature_with_context.written_class.ast, "original")
+
+			fixme("Add command line argument to switch on/off this function.")
+--			save_ast (recipient_feature_with_context.feature_.body, "original")
+--			save_ast (recipient_feature_with_context.written_class.ast, "original")
 			l_fixes := fixes_from_file
 			l_fixes.do_all (agent (a_fix: TUPLE[INTEGER, BOOLEAN, STRING]) do analysis_record_for_fix (a_fix) end)
 		end
@@ -202,8 +207,9 @@ feature{NONE} -- Analysis
 				l_match_list := match_list_server.item (l_written_class.class_id)
 
 				l_original_structure := recipient_feature_ast_structure_node
-				Entity_feature_parser.parse_from_utf8_string ("feature " + a_fix.text, Void)
-				l_fixed_feature_as := Entity_feature_parser.feature_node
+				local_entity_feature_parser.set_syntax_version ({EIFFEL_PARSER}.Provisional_syntax)
+				local_entity_feature_parser.parse_from_utf8_string ("feature " + a_fix.text, Void)
+				l_fixed_feature_as := local_entity_feature_parser.feature_node
 				if l_fixed_feature_as /= Void and then l_fixed_feature_as.feature_name.name ~ recipient_feature_str then
 					fixme ("Bypass the cases where AutoFix didn't fix the right feature.")
 					structure_generator.generate_from_feature_as (recipient_feature_with_context.context_class, recipient_feature_with_context.feature_, l_fixed_feature_as)
@@ -213,25 +219,27 @@ feature{NONE} -- Analysis
 					fix_under_analysis := a_fix
 					compare_structure_node (l_original_structure, l_fixed_structure)
 
-						-- Output the fix (feature) in XML.
-					save_ast (l_fixed_feature_as, fix_under_analysis.starting_ln.out)
+					fixme("-- Add command line argument to switch on/off this function --")
+--						-- Output the fix (feature) in XML.
+--					save_ast (l_fixed_feature_as, fix_under_analysis.starting_ln.out)
 
-						-- Output the fix (class) in XML.
-					l_new_body_text := text_from_ast (l_fixed_feature_as.body.as_routine.routine_body)
-					l_new_body_text.replace_substring_all ("%N", "%N%T%T")
+--						-- Output the fix (class) in XML.
+--					l_new_body_text := text_from_ast (l_fixed_feature_as.body.as_routine.routine_body)
+--					l_new_body_text.replace_substring_all ("%N", "%N%T%T")
 
-					l_routine_body_as := recipient_feature_with_context.written_feature.body.body.as_routine.routine_body
-					l_routine_body_as.replace_text (l_new_body_text, l_match_list)
-					l_new_class_content := l_written_class.ast.text (l_match_list)
-					l_match_list.remove_modifications
+--					l_routine_body_as := recipient_feature_with_context.written_feature.body.body.as_routine.routine_body
+--					l_routine_body_as.replace_text (l_new_body_text, l_match_list)
+--					l_new_class_content := l_written_class.ast.text (l_match_list)
+--					l_match_list.remove_modifications
 
-					Eiffel_parser.set_syntax_version ({EIFFEL_SCANNER_SKELETON}.provisional_syntax)
-					Eiffel_parser.parse_class_from_string (l_new_class_content, Void, Void)
-					save_ast (Eiffel_parser.root_node, fix_under_analysis.starting_ln.out)
+--					Eiffel_parser.set_syntax_version ({EIFFEL_SCANNER_SKELETON}.provisional_syntax)
+--					Eiffel_parser.parse_class_from_string (l_new_class_content, Void, Void)
+--					save_ast (Eiffel_parser.root_node, fix_under_analysis.starting_ln.out)
+					fixme("-- end --")
 
---					recipient_feature_with_context.written_feature.body.replace_text (a_fix.text, l_match_list)
---					l_new_text := text_from_ast (recipient_feature_with_context.written_feature.body)
---					save_ast (l_written_class.ast, fix_under_analysis.starting_ln.out)
+----					recipient_feature_with_context.written_feature.body.replace_text (a_fix.text, l_match_list)
+----					l_new_text := text_from_ast (recipient_feature_with_context.written_feature.body)
+----					save_ast (l_written_class.ast, fix_under_analysis.starting_ln.out)
 				end
 			end
 		rescue
@@ -472,6 +480,21 @@ feature{NONE} -- Analysis
 
 feature{NONE} -- Output
 
+	local_expression_parser: EIFFEL_PARSER
+			-- Type parser.
+		once
+			create Result.make_with_factory (create {AST_COMPILER_FACTORY})
+			Result.set_syntax_version ({EIFFEL_PARSER}.Provisional_syntax)
+			Result.set_expression_parser
+		end
+
+	local_entity_feature_parser: EIFFEL_PARSER
+			-- Entity feature parser.
+		once
+			create Result.make_with_factory (create {AST_COMPILER_FACTORY})
+			Result.set_feature_parser
+		end
+
 	output_dir: STRING
 			-- Dir to store the fixes in XML.
 
@@ -480,6 +503,8 @@ feature{NONE} -- Output
 		once
 			create Result
 		end
+
+feature
 
 	save_ast (a_ast: AST_EIFFEL; a_id: STRING)
 			-- Save `a_ast' in XML format with `a_id'.

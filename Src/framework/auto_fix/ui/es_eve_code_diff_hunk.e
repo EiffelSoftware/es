@@ -18,6 +18,7 @@ feature	{NONE} -- Initialization
 		do
 			context_class := a_context_class
 			context_feature := a_context_feature
+			e_feature := context_feature.api_feature (context_class.class_id)
 			base_code := a_base_code.twin
 			diff_code := a_diff_code.twin
 		end
@@ -29,6 +30,9 @@ feature -- Access
 
 	context_feature: FEATURE_I
 			-- Context feature.
+
+	e_feature: E_FEATURE
+			-- E_feature of `context_feature'.
 
 	base_code: STRING
 			-- Base code fragment.
