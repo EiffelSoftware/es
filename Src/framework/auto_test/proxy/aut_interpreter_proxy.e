@@ -165,7 +165,7 @@ feature {NONE} -- Initialization
 			executable_file_name_set: executable_file_name = an_executable_file_name
 			system_set: system = a_system
 			proxy_log_file_created: proxy_log_file /= Void
-			test_case_serialization_filename_set: test_case_serialization_filename.is_equal (a_serialization_file_name)
+			test_case_serialization_filename_set: test_case_serialization_filename.same_string_general (a_serialization_file_name)
 			error_handler_set: error_handler = a_error_handler
 			timeout_set: timeout = default_timeout
 			is_logging_enabled: is_logging_enabled
@@ -241,7 +241,7 @@ feature -- Access
 			Result := proxy_log_file.name
 		ensure
 			filename_not_void: Result /= Void
-			valid_filename: Result.is_equal (proxy_log_file.name)
+			valid_filename: Result.same_string_general (proxy_log_file.name)
 		end
 
 	configuration: TEST_GENERATOR
@@ -254,7 +254,7 @@ feature -- Access
 			Result := proxy_failure_log_file.name
 		ensure
 			filename_not_void: Result /= Void
-			valid_filename: Result.is_equal (proxy_failure_log_file.name)
+			valid_filename: Result.same_string_general (proxy_failure_log_file.name)
 		end
 
 	on_test_case_serialization_actions: ACTION_SEQUENCE [TUPLE [serialization: detachable STRING]]

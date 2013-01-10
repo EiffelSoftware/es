@@ -1317,7 +1317,7 @@ feature -- Update
 			elseif option.same_string_general ("-auto_test") then
 				l_at_args := arguments_in_range (current_option + 1, argument_count)
 				current_option := argument_count + 1
-				create {EWB_AUTO_TEST} command.make_with_arguments (convert_to_string_32_list (l_at_args))
+				create {EWB_AUTO_TEST} command.make_with_arguments (l_at_args)
 			elseif option.is_equal ("-auto_fix") then
 				create l_at_args.make
 				l_at_args := arguments_in_range (current_option + 1, argument_count)
@@ -1504,16 +1504,6 @@ feature{NONE} -- Implementation
 			loop
 				Result.force (argument (i).as_string_8)
 				i := i + 1
-			end
-		end
-
-	convert_to_string_32_list (a_arg: LINKED_LIST [STRING_8]): LINKED_LIST [STRING_32]
-			-- Convert a_arg to an array containing STRING_32 objects.
-			-- TODO: remove this and refactor arguments_in_range to use STRING_32.
-		do
-			create Result.make
-			across a_arg as i loop
-				Result.extend (i.item.as_string_32)
 			end
 		end
 

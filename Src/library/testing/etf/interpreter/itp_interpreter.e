@@ -240,14 +240,16 @@ feature -- Access
 		do
 			Result := store.variable_value (a_index)
 
-				-- Uncomment for debugging		
---			b := {ISE_RUNTIME}.check_assert (False)
---			if Result /= Void then
---				log_message ("Load object: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + a_index.out + ": " + Result.generating_type.name + "%N")
---			else
---				log_message ("Load object: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + a_index.out + ": Void%N")
---			end
---			b := {ISE_RUNTIME}.check_assert (b)
+debug("AutoTest")
+	b := {ISE_RUNTIME}.check_assert (False)
+	if Result /= Void then
+		log_message ("Load object: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + a_index.out + ": " + Result.generating_type.name + "%N")
+	else
+		log_message ("Load object: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + a_index.out + ": Void%N")
+	end
+	b := {ISE_RUNTIME}.check_assert (b)
+end
+
 		end
 
 	interpreter_log_directory: STRING
@@ -279,7 +281,6 @@ feature {NONE} -- Handlers
 
 						-- Deserialize objects.
 					l_serialized_objects := lv_operands.serialized_objects
---					check even_count: l_serialized_objects.count \\ 2 = 0 end
 					from
 						create l_uuid_objects_mapping.make (l_serialized_objects.count)
 						l_uuid_objects_mapping.compare_objects
@@ -307,23 +308,22 @@ feature {NONE} -- Handlers
 						l_var_with_uuid := l_receivers.at (l_index).var_with_uuid
 
 						l_at_sign := l_var_with_uuid.index_of ('@', 1)
---						check found_at: l_at_sign > 0 end
 						l_var_name := l_var_with_uuid.substring (1, l_at_sign - 1)
 						l_uuid := l_var_with_uuid.substring (l_at_sign + 1, l_var_with_uuid.count)
 						l_var_index := l_var_name.substring (3, l_var_name.count.to_integer).to_integer
---						check var_with_uuid_exists: l_uuid_objects_mapping.has (l_uuid) and then l_uuid_objects_mapping.item (l_uuid).has (l_var_index) end
 						l_object := l_uuid_objects_mapping.item (l_uuid).item (l_var_index)
 
 						store_variable_at_index (l_object, l_variable.index)
 
-							-- Uncomment for debugging
---						b := {ISE_RUNTIME}.check_assert (False)
---						if l_object /= Void then
---							log_message ("Batch assign: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + l_variable.index.out + ": " + l_object.generating_type.name + "%N")
---						else
---							log_message ("Batch assign: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + l_variable.index.out + ": Void%N")
---						end
---						b := {ISE_RUNTIME}.check_assert (b)
+debug("AutoTest")
+	b := {ISE_RUNTIME}.check_assert (False)
+	if l_object /= Void then
+		log_message ("Batch assign: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + l_variable.index.out + ": " + l_object.generating_type.name + "%N")
+	else
+		log_message ("Batch assign: " + {ITP_SHARED_CONSTANTS}.variable_name_prefix + l_variable.index.out + ": Void%N")
+	end
+	b := {ISE_RUNTIME}.check_assert (b)
+end
 
 						l_index := l_index + 1
 					end
@@ -455,9 +455,6 @@ feature {NONE} -- Handlers
 					end
 
 						-- Run the feature with newly injected byte-code.
---					if variable_at_index (3) = Void then
---						log_message ("Error, Error: v_3 is Void.%N")
---					end
 					execute_protected
 					log_message (once "report_execute_request end%N")
 
@@ -465,17 +462,19 @@ feature {NONE} -- Handlers
 					if is_last_protected_execution_successful and then is_predicate_evaluation_enabled then
 						if attached {detachable ARRAY [detachable ANY]} l_last_request.l_data as l_extra_data then
 							if attached {TUPLE [feature_id: INTEGER; operands: SPECIAL [INTEGER]]} l_extra_data.item (extra_data_index_precondition_satisfaction) as l_feature_data then
--- Uncomment the following section for debugging purpose. 2.10.2010 Jasonw
---								log_message ("Feature id: " + l_feature_data.feature_id.out + "%N")
---								from
---									j := 0
---								until
---									j = l_feature_data.operands.count
---								loop
---									log_message ("Object id: " + l_feature_data.operands.item (j).out + ", ")
---									j := j + 1
---								end
---								log_message ("%N")
+
+debug("AutoTest")
+	log_message ("Feature id: " + l_feature_data.feature_id.out + "%N")
+	from
+		j := 0
+	until
+		j = l_feature_data.operands.count
+	loop
+		log_message ("Object id: " + l_feature_data.operands.item (j).out + ", ")
+		j := j + 1
+	end
+	log_message ("%N")
+end
 								l_predicate_results :=  [l_feature_data.feature_id, evaluated_predicate_results (l_feature_data.feature_id, l_feature_data.operands)]
 							else
 								l_predicate_results := Void
@@ -565,15 +564,13 @@ feature {ITP_TEST_CASE_SERIALIZER} -- Logging
 		require
 			a_message_not_void: a_message /= Void
 		do
-			if should_generate_log then
-				log_file.put_string (a_message)
-			end
+			log_file.put_string (a_message)
+--			log_file.flush
 		end
 
 	report_trace
 			-- Report trace information into `error_buffer'.
 		require
---			has_exception: An exception happened before
 		local
 			l_buffer: like error_buffer
 			l_exception_code: INTEGER
@@ -585,11 +582,6 @@ feature {ITP_TEST_CASE_SERIALIZER} -- Logging
 			l_line_number: INTEGER
 		do
 				-- Gather exception information.
---			l_exception_code := exception
---			l_tag := tag_name
---			l_recipient := recipient_name
---			l_recipient_class_name := class_name
-
 			l_exception_code := original_exception
 			l_tag := original_tag_name
 			if l_tag = Void then
@@ -739,6 +731,7 @@ feature {NONE} -- Socket IPC
 		do
 			if not l_retried then
 				socket.put_natural_32 (last_response_flag)
+				log_message("%TResponse_flag: " + last_response_flag.out + "%N")
 				l_last_response := last_response
 				check l_last_response /= Void end
 				socket.independent_store (l_last_response)
@@ -838,7 +831,7 @@ feature {NONE} -- Byte code
 
 				-- Book keeps found faults.
 			if not is_last_invariant_violated then
-				if (original_recipient_name.is_equal (once "execute_byte_code") and then exception = {EXCEP_CONST}.Precondition) then
+				if (original_recipient_name.same_string_general (once "execute_byte_code") and then exception = {EXCEP_CONST}.Precondition) then
 					is_invalid_test_case := True
 					is_failing_test_case := False
 				else

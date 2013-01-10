@@ -122,7 +122,10 @@ feature {NONE} -- Initialization
 					end
 					if attached last_class_name as l_cn then
 						if
-							l_cn.same_string (a_class_name) and
+								-- Original: l_cn.same_string_general (a_class_name)
+								-- Hack to workaround the difference between AutoTest@EiffelStudio and AutoTest@EVE.
+								-- Ref.: TEST_GENERATOR_WRAPPER.start_creation
+							l_cn.starts_with_general (a_class_name) and
 							(a_feature_name /= Void implies (attached last_routine_name as l_rn and then l_rn.same_string (a_feature_name)))
 						then
 							l_found := True

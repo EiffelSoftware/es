@@ -22,7 +22,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make_with_arguments (a_arguments: DS_LIST [STRING_32]; error_handler: AUT_ERROR_HANDLER)
+	make_with_arguments (a_arguments: DS_LIST [STRING_8]; error_handler: AUT_ERROR_HANDLER)
 			-- Process `a_arguments'.		
 		require
 			a_arguments_attached: a_arguments /= Void
@@ -425,16 +425,17 @@ feature{NONE} -- Initialization
 			l_output_test_case_on_line_option.set_description ("Should AutoTest output test case files during testing? Have effect only if the option retrieve-serialization-online is enabled. Default: False")
 			parser.options.force_last (l_output_test_case_on_line_option)
 
-			create l_args.make
-			from
-				a_arguments.start
-			until
-				a_arguments.after
-			loop
-				l_args.put_last (create {UC_STRING}.make_from_string_general (a_arguments.item_for_iteration))
-				a_arguments.forth
-			end
-			parser.parse_list (l_args)
+--			create l_args.make
+--			from
+--				a_arguments.start
+--			until
+--				a_arguments.after
+--			loop
+--				l_args.put_last (create {UC_STRING}.make_from_string_general (a_arguments.item_for_iteration))
+--				a_arguments.forth
+--			end
+--			parser.parse_list (l_args)
+			parser.parse_list (a_arguments)
 
 
 --			if version_option.was_found then
@@ -470,11 +471,11 @@ feature{NONE} -- Initialization
 
 			if is_minimization_enabled then
 				if minimize_option.was_found then
-					if minimize_option.parameter.is_equal ("slice") then
+					if minimize_option.parameter.same_string_general ("slice") then
 						is_slicing_enabled := True
-					elseif minimize_option.parameter.is_equal ("ddmin") then
+					elseif minimize_option.parameter.same_string_general ("ddmin") then
 						is_ddmin_enabled := True
-					elseif minimize_option.parameter.is_equal ("slice,ddmin") then
+					elseif minimize_option.parameter.same_string_general ("slice,ddmin") then
 						is_slicing_enabled := True
 						is_ddmin_enabled := True
 					else
@@ -518,9 +519,9 @@ feature{NONE} -- Initialization
 				random.start
 
 				if statistics_format_op.was_found then
-					if statistics_format_op.parameter.is_equal ("text") then
+					if statistics_format_op.parameter.same_string_general ("text") then
 						is_text_statistics_format_enabled := True
-					elseif statistics_format_op.parameter.is_equal ("html") then
+					elseif statistics_format_op.parameter.same_string_general ("html") then
 						is_html_statistics_format_enabled := True
 					else
 						error_handler.report_statistics_format_error (statistics_format_op.parameter)
@@ -721,9 +722,9 @@ feature{NONE} -- Initialization
 					until
 						l_strs.after
 					loop
-						if l_strs.item_for_iteration.is_equal ("passing") then
+						if l_strs.item_for_iteration.same_string_general ("passing") then
 							is_passing_test_cases_serialization_enabled := True
-						elseif l_strs.item_for_iteration.is_equal ("failing") then
+						elseif l_strs.item_for_iteration.same_string_general ("failing") then
 							is_failing_test_cases_serialization_enabled := True
 						end
 						l_strs.forth
@@ -762,9 +763,9 @@ feature{NONE} -- Initialization
 					until
 						l_strs.after
 					loop
-						if l_strs.item_for_iteration.is_equal ("passing") then
+						if l_strs.item_for_iteration.same_string_general ("passing") then
 							is_passing_test_cases_deserialization_enabled := True
-						elseif l_strs.item_for_iteration.is_equal ("failing") then
+						elseif l_strs.item_for_iteration.same_string_general ("failing") then
 							is_failing_test_cases_deserialization_enabled := True
 						end
 						l_strs.forth
@@ -828,14 +829,14 @@ feature{NONE} -- Initialization
 			if not error_handler.has_error then
 				is_interpreter_log_enabled := False
 				if l_interpreter_log_enabled.was_found then
-					is_interpreter_log_enabled := l_interpreter_log_enabled.parameter.is_case_insensitive_equal ("on")
+					is_interpreter_log_enabled := l_interpreter_log_enabled.parameter.is_case_insensitive_equal_general ("on")
 				end
 			end
 
 			if not error_handler.has_error then
 				is_console_log_enabled := True
 				if l_console_log_option.was_found then
-					is_console_log_enabled := l_console_log_option.parameter.is_case_insensitive_equal ("on")
+					is_console_log_enabled := l_console_log_option.parameter.is_case_insensitive_equal_general ("on")
 				end
 			end
 
@@ -849,35 +850,35 @@ feature{NONE} -- Initialization
 						l_strs.after
 					loop
 						l_word := l_strs.item_for_iteration
-						if l_word.is_equal ("off") then
+						if l_word.same_string_general ("off") then
 							-- Do nothing.
-						elseif l_word.is_case_insensitive_equal ("passing") then
+						elseif l_word.is_case_insensitive_equal_general ("passing") then
 							log_types.put (True, "passing")
-						elseif l_word.is_case_insensitive_equal ("failing") then
+						elseif l_word.is_case_insensitive_equal_general ("failing") then
 							log_types.put (True, "failing")
-						elseif l_word.is_case_insensitive_equal ("invalid") then
+						elseif l_word.is_case_insensitive_equal_general ("invalid") then
 							log_types.put (True, "invalid")
-						elseif l_word.is_case_insensitive_equal ("bad") then
+						elseif l_word.is_case_insensitive_equal_general ("bad") then
 							log_types.put (True, "bad")
-						elseif l_word.is_case_insensitive_equal ("error") then
+						elseif l_word.is_case_insensitive_equal_general ("error") then
 							log_types.put (True, "error")
-						elseif l_word.is_case_insensitive_equal ("state") then
+						elseif l_word.is_case_insensitive_equal_general ("state") then
 							log_types.put (True, "state")
-						elseif l_word.is_case_insensitive_equal ("operand-type") then
+						elseif l_word.is_case_insensitive_equal_general ("operand-type") then
 							log_types.put (True, "operand-type")
-						elseif l_word.is_case_insensitive_equal ("expr-assign") then
+						elseif l_word.is_case_insensitive_equal_general ("expr-assign") then
 							log_types.put (True, "expr-assign")
-						elseif l_word.is_case_insensitive_equal ("type") then
+						elseif l_word.is_case_insensitive_equal_general ("type") then
 							log_types.put (True, "type")
-						elseif l_word.is_case_insensitive_equal ("precondition") then
+						elseif l_word.is_case_insensitive_equal_general ("precondition") then
 							log_types.put (True, "precondition")
-						elseif l_word.is_case_insensitive_equal ("statistics") then
+						elseif l_word.is_case_insensitive_equal_general ("statistics") then
 							log_types.put (True, "statistics")
 						elseif l_word.is_case_insensitive_equal ("batch-assign") then
 							log_types.put (True, "batch-assign")
-						elseif l_word.is_case_insensitive_equal ("basic") then
+						elseif l_word.is_case_insensitive_equal_general ("basic") then
 							l_log_has_basic := True
-						elseif l_word.is_case_insensitive_equal ("all") then
+						elseif l_word.is_case_insensitive_equal_general ("all") then
 							log_types.put (True, "passing")
 							log_types.put (True, "failing")
 							log_types.put (True, "invalid")
@@ -1449,7 +1450,7 @@ invariant
 	minimization_is_either_slicing_or_ddmin: is_minimization_enabled implies (is_slicing_enabled xor is_ddmin_enabled)
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
