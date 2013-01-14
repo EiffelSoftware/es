@@ -253,15 +253,13 @@ feature -- Directories
 			end
 		end
 
-	fixing_results_path: DIRECTORY_NAME
+	fixing_results_path: PATH
 			-- Path to store AutoFix related output files
 		do
-			Result := internal_fixing_results_path
-			if Result = Void then
-				create Result.make_from_string (target_path.out)
-				Result.extend (fixing_results_directory)
-				internal_fixing_results_path := Result
+			if internal_fixing_results_path = Void then
+				internal_fixing_results_path := target_path.extended (fixing_results_directory)
 			end
+			Result := internal_fixing_results_path
 		end
 
 	contract_inference_results_path: DIRECTORY_NAME
@@ -599,7 +597,7 @@ invariant
 	target_not_empty: not target.is_empty
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

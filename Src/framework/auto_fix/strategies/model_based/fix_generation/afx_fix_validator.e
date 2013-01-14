@@ -161,10 +161,10 @@ feature -- Basic operations
 				if socket_listener.is_listening then
 					event_actions.notify_on_interpreter_starts (port)
 					create l_fac
-					l_cmd_line := system.eiffel_system.application_name (True).out + " --validate-fix " + config.interpreter_log_path + " true " + port.out + " -eif_root " + afx_project_root_class + "." + afx_project_root_feature
+					l_cmd_line := system.eiffel_system.application_name (True).out + " --validate-fix " + config.interpreter_log_path.utf_8_name + " true " + port.out + " -eif_root " + afx_project_root_class + "." + afx_project_root_feature
 --					Io.put_string ("Launching debugee with: " + l_cmd_line + "%N")
 --					Io.output.flush
-					process := l_fac.process_launcher_with_command_line (l_cmd_line, config.working_directory)
+					process := l_fac.process_launcher_with_command_line (l_cmd_line, config.working_directory.utf_8_name)
 					process.launch
 					check process.launched end
 
@@ -294,15 +294,14 @@ feature{NONE} -- Inter-process communication
 
 feature{NONE} -- Implementation
 
-	store_string_in_file (a_directory: STRING; a_file_name: STRING; a_content: STRING)
+	store_string_in_file (a_directory: PATH; a_file_name: STRING; a_content: STRING)
 			-- Create a file named `a_file_name' in `a_directory' and store `a_content' in it.
 		local
 			l_path: FILE_NAME
 			l_file: PLAIN_TEXT_FILE
 		do
-			create l_path.make_from_string (a_directory)
-			l_path.set_file_name (a_file_name)
-			create l_file.make_create_read_write (l_path)
+			create l_file.make_with_path (a_directory.extended (a_file_name))
+			l_file.create_read_write
 			l_file.put_string (a_content)
 			l_file.close
 		end
@@ -310,7 +309,7 @@ feature{NONE} -- Implementation
 	store_valid_fixes
 			-- Store `valid_fixes' into file.
 		local
-			l_file_name: FILE_NAME
+			l_file_name: PATH
 			l_file: PLAIN_TEXT_FILE
 			l_fixes: DS_ARRAYED_LIST [AFX_FIX]
 			l_sorter: DS_QUICK_SORTER [AFX_FIX]
@@ -330,9 +329,9 @@ feature{NONE} -- Implementation
 			l_sorter.sort (l_fixes)
 
 				-- Store fixes in file			
-			create l_file_name.make_from_string (config.data_directory)
-			l_file_name.set_file_name ("valid_fixes.txt")
-			create l_file.make_create_read_write (l_file_name)
+			l_file_name := config.data_directory.extended ("valid_fixes.txt")
+			create l_file.make_with_path (l_file_name)
+			l_file.create_read_write
 			from
 				l_fixes.start
 			until

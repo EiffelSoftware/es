@@ -12,7 +12,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_file_name: STRING)
+	make (a_file_name: PATH)
 			-- Initialize Current.
 			-- `a_file_name' is the full path indicating a test case file.
 		do
@@ -24,7 +24,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	file_name: STRING
+	file_name: PATH
 		-- Full path indicating a test case file
 
 	states: HASH_TABLE [NATURAL_8, STRING]
@@ -65,7 +65,8 @@ feature{NONE} -- Implementation
 			l_final_expr: STRING
 		do
 			create l_lines.make
-			create l_file.make_open_read (file_name)
+			create l_file.make_with_path (file_name)
+			l_file.open_read
 			l_var_index := 0
 			from
 				l_file.read_line

@@ -30,126 +30,90 @@ feature -- Access
 	eiffel_system: SYSTEM_I
 			-- Current system
 
-	working_directory: STRING is
+	working_directory: PATH
 			-- Working directory of the project
 		do
 			if working_directory_cache = Void then
-				Result := Execution_environment.current_working_directory
-			else
-				Result := working_directory_cache
+				working_directory_cache := Execution_environment.current_working_path
 			end
+			Result := working_directory_cache
 		end
 
-	state_output_file: STRING is
-			-- Full path of the output file
+	afx_test_cases_directory: PATH
+			-- Directory for putting test cases for fixing.
 		do
-			if state_output_file_cache = Void then
-				Result := once "state_log.txt"
-			else
-				Result := state_output_file_cache
-			end
+			Result := eiffel_system.eiffel_project.project_directory.path.extended ("afx_test_cases")
 		end
 
-	output_directory: STRING is
+	output_directory: PATH
 			-- Directory for output
-		local
-			l_path: FILE_NAME
 		do
-			create l_path.make_from_string (eiffel_system.eiffel_project.project_directory.fixing_results_path)
-			Result := l_path
+			Result := eiffel_system.eiffel_project.project_directory.fixing_results_path
 		end
 
-	log_directory: STRING is
+	log_directory: PATH is
 			-- Directory for AutoFix logs
 		local
-			l_path: FILE_NAME
+			l_path: PATH
 		do
-			create l_path.make_from_string (output_directory)
-			l_path.extend ("log")
-			Result := l_path
+			Result := output_directory.extended ("log")
 		end
 
-	data_directory: STRING is
+	data_directory: PATH is
 			-- Directory for AutoFix data
 		local
-			l_path: FILE_NAME
+			l_path: PATH
 		do
-			create l_path.make_from_string (output_directory)
-			l_path.extend ("data")
-			Result := l_path
+			Result := output_directory.extended ("data")
 		end
 
-	daikon_directory: STRING is
+	daikon_directory: PATH is
 			-- Directory to store daikon related data
 		local
-			l_path: FILE_NAME
+			l_path: PATH
 		do
-			create l_path.make_from_string (output_directory)
-			l_path.extend ("daikon")
-			Result := l_path
+			Result := output_directory.extended ("daikon")
 		end
 
-	model_directory: STRING
+	model_directory: PATH
 		-- Directory for state transition summary.
 
-	theory_directory: STRING
+	theory_directory: PATH
 			-- Directory to store theory related files
 		local
-			l_path: FILE_NAME
+			l_path: PATH
 		do
-			create l_path.make_from_string (output_directory)
-			l_path.extend ("theory")
-			Result := l_path
+			Result := output_directory.extended ("theory")
 		end
 
-	fix_directory: STRING
+	fix_directory: PATH
 			-- Directory to store generated fixes
-		local
-			l_path: FILE_NAME
 		do
-			create l_path.make_from_string (output_directory)
-			l_path.extend ("fix")
-			Result := l_path
+			Result := output_directory.extended ("fix")
 		end
 
-	afx_cluster_directory: STRING
+	afx_cluster_directory: PATH
 			-- Directory to store the classes useful for fixing.
-		local
-			l_path: FILE_NAME
 		do
-			create l_path.make_from_string (output_directory)
-			l_path.extend (Afx_cluster_name)
-			Result := l_path
+			Result := output_directory.extended (Afx_cluster_name)
 		end
 
-	valid_fix_directory: STRING
+	valid_fix_directory: PATH
 			-- Directory to store generated fixes
-		local
-			l_path: FILE_NAME
 		do
-			create l_path.make_from_string (output_directory)
-			l_path.extend ("valid_fix")
-			Result := l_path
+			Result := output_directory.extended ("valid_fix")
 		end
 
-	interpreter_log_path: STRING
+	interpreter_log_path: PATH
 			-- Full path to the interpreter log file
-		local
-			l_path: FILE_NAME
 		do
-			create l_path.make_from_string (log_directory)
-			l_path.set_file_name ("interpreter_log.txt")
-			Result := l_path
+			Result := log_directory.extended ("interpreter_log.txt")
 		end
 
-	proxy_log_path: STRING
+	proxy_log_path: PATH
 			-- Full path to the proxy log file
-		local
-			l_path: FILE_NAME
 		do
-			create l_path.make_from_string (log_directory)
-			l_path.set_file_name ("proxy_log.txt")
-			Result := l_path
+			Result := log_directory.extended ("proxy_log.txt")
 		end
 
 	is_using_default_report_file_path: BOOLEAN
@@ -161,16 +125,11 @@ feature -- Access
 			is_using_default_report_file_path := a_flag
 		end
 
-	report_file_path: STRING
+	report_file_path: PATH
 			-- Path to the AutoFix report file.
-		local
-			l_report_file: FILE_NAME
 		do
 			if is_using_default_report_file_path and then report_file_path_cache = Void then
-				create l_report_file.make_from_string (output_directory)
-				l_report_file.set_file_name (default_report_file_name)
-				l_report_file.add_extension (report_file_extension)
-				report_file_path_cache := l_report_file
+				report_file_path_cache := output_directory.extended (default_report_file_name + "." + report_file_extension)
 			end
 			Result := report_file_path_cache
 		end
@@ -710,7 +669,7 @@ feature -- Setting
 			max_fixing_target := a_max
 		end
 
-	set_report_file_path (a_path: STRING)
+	set_report_file_path (a_path: PATH)
 			-- Set `report_file_path'.
 		require
 			path_not_empty: a_path /= VOid and then not a_path.is_empty
@@ -721,14 +680,11 @@ feature -- Setting
 
 feature{NONE} -- Implementation
 
-	report_file_path_cache: STRING
+	report_file_path_cache: PATH
 			-- Cache of `report_file_path'.
 
-	working_directory_cache: detachable STRING
+	working_directory_cache: detachable like working_directory
 			-- Cache for working_directory
-
-	state_output_file_cache: detachable STRING
-			-- Cache for `state_output_file'
 
 	state_test_case_class_name_cache: detachable STRING
 			-- Cache for `state_test_case_class_name'
@@ -744,9 +700,5 @@ feature{NONE} -- Implementation
 
 	is_using_random_based_strategy_cache: BOOLEAN
 			-- Cache for `is_using_random_based_strategy'.
-
---invariant
-
---	one_fixing_strategy_specified: is_using_model_based_strategy xor is_using_random_based_strategy
 
 end

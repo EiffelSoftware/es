@@ -96,7 +96,7 @@ feature {NONE} -- Implementation
 		do
 			autofix_results.wipe_out
 			if attached eiffel_project as lt_prj and then attached lt_prj.project_directory as lt_dir then
-				create l_result_dir.make (lt_dir.fixing_results_path)
+				create l_result_dir.make_with_path (lt_dir.fixing_results_path)
 				if l_result_dir.exists then
 					l_result_dir.open_read
 					if not l_result_dir.is_closed then

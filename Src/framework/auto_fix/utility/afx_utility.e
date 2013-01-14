@@ -71,7 +71,7 @@ feature -- Fix
 
 feature -- Logging
 
-	store_fix_in_file (a_directory: STRING; a_fix: AFX_FIX; a_validated: BOOLEAN; a_big_file: detachable PLAIN_TEXT_FILE)
+	store_fix_in_file (a_directory: PATH; a_fix: AFX_FIX; a_validated: BOOLEAN; a_big_file: detachable PLAIN_TEXT_FILE)
 			-- Store `a_fix' as the `a_id'-th fix into a file in directory `a_directory'
 			-- `a_validated' indicates if `a_fix' has been validated.
 			-- Also append the fix in `a_big_file'.
@@ -81,9 +81,8 @@ feature -- Logging
 			l_lines: LIST [STRING]
 			l_formated_fix: STRING
 		do
-			create l_file_name.make_from_string (a_directory)
-			l_file_name.set_file_name (fix_file_name (a_fix, a_validated))
-			create l_file.make_create_read_write (l_file_name)
+			create l_file.make_with_path (a_directory.extended (fix_file_name (a_fix, a_validated)))
+			l_file.create_read_write
 
 				-- Print patched feature text.
 			l_formated_fix := formated_fix (a_fix)

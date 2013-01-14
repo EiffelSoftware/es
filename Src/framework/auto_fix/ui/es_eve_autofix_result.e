@@ -71,13 +71,11 @@ feature -- Access
 
 feature -- Result file
 
-	result_file_name: FILE_NAME
+	result_file_name: PATH
 			-- Name of the result file.
 		do
 			if result_file_name_cache = Void then
-				create result_file_name_cache.make_from_string (eiffel_project.project_directory.fixing_results_path)
-				result_file_name_cache.set_file_name (fault_signature)
-				result_file_name_cache.add_extension ("afr")
+				result_file_name_cache := eiffel_project.project_directory.fixing_results_path.extended (fault_signature + ".afr")
 			end
 			Result := result_file_name_cache
 		end
@@ -89,7 +87,8 @@ feature -- Result file
 			l_file: PLAIN_TEXT_FILE
 		do
 			if not l_retried then
-				create l_file.make_open_append (result_file_name)
+				create l_file.make_with_path (result_file_name)
+				l_file.open_append
 				if l_file.is_open_append then
 					l_file.close
 					Result := True
@@ -106,7 +105,7 @@ feature -- Result file
 			l_new_time_stamp: INTEGER
 		do
 			if is_result_file_ready then
-				l_new_time_stamp := file_system.file_time_stamp (result_file_name)
+				l_new_time_stamp := file_system.file_time_stamp (result_file_name.utf_8_name)
 				Result := l_new_time_stamp > time_stamp_of_result_file
 			else
 				Result := True
@@ -256,7 +255,7 @@ feature -- Applying and recalling a fix
 --			end
 
 				-- Update the result file.
-			create l_file.make (result_file_name)
+			create l_file.make_with_path (result_file_name)
 			l_file.open_read
 			if l_file.is_open_read then
 				create l_content.make(4096)
@@ -308,7 +307,7 @@ feature -- Applying and recalling a fix
 --			file_system.copy_file (backup_class_file, l_system_file_name)
 
 				-- Update the result file.
-			create l_file.make (result_file_name)
+			create l_file.make_with_path (result_file_name)
 			l_file.open_read
 			if l_file.is_open_read then
 				create l_content.make(4096)
@@ -391,7 +390,7 @@ feature {NONE} -- Implementation
 		do
 			reset
 			if not l_retried then
-				create l_file.make (result_file_name)
+				create l_file.make_with_path (result_file_name)
 				l_file.open_read
 				if l_file.is_open_read then
 					l_inside_valid_fix := False
@@ -504,7 +503,7 @@ feature {NONE} -- Access
 	time_stamp_of_result_file: INTEGER
 			-- Time stamp of the result file, from which the AutoFix result is loaded.
 
-	result_file_name_cache: FILE_NAME
+	result_file_name_cache: like result_file_name
 			-- Cache for `result_file_name'.
 
 	fault_summary_cache: STRING

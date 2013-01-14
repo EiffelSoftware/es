@@ -14,65 +14,35 @@ feature -- Access
 
 	prepare (a_config: AFX_CONFIG)
 		local
+			l_path: PATH
 			l_file_name: FILE_NAME
 			l_dir: KL_DIRECTORY
 			l_folder: DIRECTORY
 		do
-			create l_file_name.make_from_string (a_config.log_directory)
-			create l_dir.make (l_file_name)
-			l_dir.recursive_create_directory
+			make_empty_directory (a_config.log_directory)
+			make_empty_directory (a_config.data_directory)
+			make_empty_directory (a_config.daikon_directory)
+			make_empty_directory (a_config.theory_directory)
+			make_empty_directory (a_config.fix_directory)
+			make_empty_directory (a_config.afx_cluster_directory)
+			make_empty_directory (a_config.valid_fix_directory)
 
-			create l_file_name.make_from_string (a_config.data_directory)
-			create l_dir.make (l_file_name)
-			l_dir.recursive_create_directory
+			make_empty_directory (a_config.afx_test_cases_directory)
+		end
 
-			create l_file_name.make_from_string (a_config.daikon_directory)
-			create l_dir.make (l_file_name)
-			l_dir.recursive_create_directory
-
-			create l_file_name.make_from_string (a_config.theory_directory)
-			create l_dir.make (l_file_name)
-			l_dir.recursive_create_directory
-
-			create l_file_name.make_from_string (a_config.fix_directory)
-			create l_dir.make (l_file_name)
-			l_dir.recursive_create_directory
-
-			create l_file_name.make_from_string (a_config.afx_cluster_directory)
-			create l_dir.make (l_file_name)
-			l_dir.recursive_create_directory
-
-			create l_file_name.make_from_string (a_config.valid_fix_directory)
-			create l_dir.make (l_file_name)
-			l_dir.recursive_create_directory
-
-			create l_file_name.make_from_string (a_config.model_directory)
-			create l_dir.make (l_file_name)
-			l_dir.recursive_create_directory
-
-				-- Remove previously generate fixes.
-			create l_folder.make (a_config.afx_cluster_directory)
-			if l_folder.exists then
-				l_folder.delete_content
-			end
-			create l_folder.make (a_config.fix_directory)
-			if l_folder.exists then
-				l_folder.delete_content
-			end
-			create l_folder.make (a_config.valid_fix_directory)
-			if l_folder.exists then
-				l_folder.delete_content
+	make_empty_directory (a_dir: PATH)
+			-- Make the directory at `a_dir' empty.
+			-- Create the directory if not exists.
+		local
+			l_dir: DIRECTORY
+		do
+			create l_dir.make_with_path (a_dir)
+			if l_dir.exists then
+				l_dir.delete_content
+			else
+				l_dir.recursive_create_dir
 			end
 		end
 
---	prepare_model_repository (a_config: AFX_CONFIG)
---		local
---			l_file_name: FILE_NAME
---			l_dir: KL_DIRECTORY
---		do
---			create l_file_name.make_from_string (a_config.model_directory)
---			create l_dir.make (l_file_name)
---			l_dir.recursive_create_directory
---		end
 
 end

@@ -122,11 +122,10 @@ feature{NONE} -- Implementation
 			-- Store fixes in to files.
 		local
 			l_big_file: PLAIN_TEXT_FILE
-			l_file_name: FILE_NAME
+			l_file_name: PATH
 		do
-			create l_file_name.make_from_string (config.data_directory)
-			l_file_name.set_file_name (a_file_name)
-			create l_big_file.make_create_read_write (l_file_name)
+			create l_big_file.make_with_path (config.data_directory.extended (a_file_name))
+			l_big_file.create_read_write
 			a_fixes.do_all (agent store_fix_in_file (config.fix_directory, ?, False, l_big_file))
 			l_big_file.close
 		end

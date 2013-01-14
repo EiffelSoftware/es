@@ -25,7 +25,7 @@ feature -- Query
 		    l_transitor: AFX_STATE_TRANSITOR
 		do
 			if True then
-				create l_transitor.make (create {DIRECTORY}.make (config.model_directory))
+				create l_transitor.make (create {DIRECTORY}.make_with_path (config.model_directory))
 				l_transitor.construct_behavior (a_dest_objects)
 				Result := l_transitor.call_sequences
 			end

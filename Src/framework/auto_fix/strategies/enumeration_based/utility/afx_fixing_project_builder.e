@@ -41,10 +41,10 @@ feature -- Access
 	current_fault_signature: EPA_TEST_CASE_SIGNATURE
 			-- Signature of the fault under fix.
 
-	current_failing_test_cases: DS_ARRAYED_LIST [STRING]
+	current_failing_test_cases: DS_ARRAYED_LIST [PATH]
 			-- List of failing test case files for fixing.
 
-	current_passing_test_cases: DS_ARRAYED_LIST [STRING]
+	current_passing_test_cases: DS_ARRAYED_LIST [PATH]
 			-- List of passing test case files for fixing.
 
 feature{NONE} -- Access
@@ -75,9 +75,9 @@ feature -- Basic operation
 			l_test_case_file_selector: AFX_TEST_CASE_FILE_SELECTOR
 			l_system: SYSTEM_I
 			l_dir: PROJECT_DIRECTORY
-			l_eifgens_dir_path: STRING
-			l_file: KL_TEXT_OUTPUT_FILE
-			l_file_name: FILE_NAME
+			l_afx_test_case_path: PATH
+			l_file: PLAIN_TEXT_FILE
+			l_file_path: PATH
 			l_source_writer: TEST_INTERPRETER_SOURCE_WRITER
 			l_root_builder: AFX_FIXING_PROJECT_ROOT_BUILDER
 		do
@@ -95,23 +95,21 @@ feature -- Basic operation
 				-- Build new root class for fixing.
 			create l_root_builder.make_with_test_cases (l_system, current_failing_test_cases, current_passing_test_cases, current_fault_signature)
 			l_root_builder.build
-			l_eifgens_dir_path := l_system.project_location.eifgens_cluster_path.out
-			create l_file_name.make_from_string (l_eifgens_dir_path)
-			l_file_name.set_file_name (afx_project_root_class.as_lower)
-			l_file_name.add_extension ("e")
-			create l_file.make (l_file_name)
+			l_afx_test_case_path := l_system.project_location.eifgens_cluster_path
+			l_file_path := l_afx_test_case_path.extended (afx_project_root_class.as_lower + ".e")
+			create l_file.make_with_path (l_file_path)
 			if not l_file.exists then
 				l_system.force_rebuild
 			end
-			l_file.recursive_open_write
+			l_file.open_write
 			if l_file.is_open_write then
 				l_file.put_string (l_root_builder.last_class_text)
 				l_file.close
 			end
 
 				-- Copy test case files, both passing and failing, into `system'.
-			copy_test_case_files (current_passing_test_cases, l_eifgens_dir_path)
-			copy_test_case_files (current_failing_test_cases, l_eifgens_dir_path)
+			copy_test_case_files (current_passing_test_cases, l_afx_test_case_path)
+			copy_test_case_files (current_failing_test_cases, l_afx_test_case_path)
 
 				-- Recompile current project.
 			compile_project (eiffel_project, True)
@@ -119,28 +117,25 @@ feature -- Basic operation
 
 feature{NONE} -- Implementation
 
-	copy_test_case_files (a_class_file_names: DS_ARRAYED_LIST [STRING]; a_dest_dir: STRING)
+	copy_test_case_files (a_class_file_paths: DS_ARRAYED_LIST [PATH]; a_dest_dir: PATH)
 			-- Copy test cases, with names in `a_class_file_names' to `a_dest_dir'.
 			-- Existing files in `a_dest_file' with the same names will be overwritten.
 		require
-			class_file_names_attached: a_class_file_names /= Void
+			class_file_paths_attached: a_class_file_paths /= Void
 			dirs_not_empty: a_dest_dir /= Void and then not a_dest_dir.is_empty
 		local
-			l_src_file_name: STRING
-			l_dest_file_name: FILE_NAME
-			l_class_name: STRING
+			l_src_file_path, l_dest_file_path: PATH
+			l_utilities: FILE_UTILITIES
 		do
-			from a_class_file_names.start
-			until a_class_file_names.after
+			from a_class_file_paths.start
+			until a_class_file_paths.after
 			loop
-				l_src_file_name := a_class_file_names.item_for_iteration
-				create l_dest_file_name.make_from_string (a_dest_dir)
-				l_dest_file_name.set_file_name (base_eiffel_file_name_from_full_path(l_src_file_name))
-				l_dest_file_name.add_extension ("e")
+				l_src_file_path := a_class_file_paths.item_for_iteration
+				l_dest_file_path := a_dest_dir.extended (base_eiffel_file_name_from_full_path(l_src_file_path.utf_8_name) + ".e")
 
-				File_system.copy_file (l_src_file_name, l_dest_file_name)
+				l_utilities.copy_file_path (l_src_file_path, l_dest_file_path)
 
-				a_class_file_names.forth
+				a_class_file_paths.forth
 			end
 		end
 

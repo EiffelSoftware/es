@@ -19,7 +19,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_directory: STRING)
+	make (a_directory: PATH)
 			-- Initialize.
 			-- `a_directory' is the directory to store generated Mathematica program.
 		do
@@ -28,7 +28,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	program_directory: STRING
+	program_directory: PATH
 			-- Directory to store generated Mathematica program
 
 feature -- Solve
@@ -183,7 +183,7 @@ feature{NONE} -- Implementation
 				-- Use Mathematica to solve the linear constraint problem.
 			l_file_content := mathematica_program (a_method, a_function, a_constraints, a_arguments)
 			create_mathematica_file (l_file_content)
-			l_output := output_from_program_with_input_file (mathematica_command, Void, mathematica_file_path)
+			l_output := output_from_program_with_input_file (mathematica_command, Void, mathematica_file_path.utf_8_name)
 			l_output.replace_substring_all ("%R", "")
 			l_output.replace_substring_all ("%N", "")
 			l_output.left_adjust
@@ -322,18 +322,17 @@ feature{NONE} -- Implementation
 		local
 			l_file: PLAIN_TEXT_FILE
 		do
-			create l_file.make_create_read_write (mathematica_file_path)
+			create l_file.make_with_path (mathematica_file_path)
+			l_file.create_read_write
 			l_file.put_string (a_content)
 			l_file.close
 		end
 
-	mathematica_file_path: STRING
+	mathematica_file_path: PATH
 			-- File path to store Mathematica program for a linear constraint problem
 		local
 			l_file_name: FILE_NAME
 		do
-			create l_file_name.make_from_string (program_directory)
-			l_file_name.set_file_name ("linear_constraints.m")
-			Result := l_file_name
+			Result := program_directory.extended ("linear_constraints.m")
 		end
 end

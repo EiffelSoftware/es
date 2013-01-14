@@ -164,7 +164,7 @@ feature{NONE} -- Implementation
 			create l_constraining_exprs.make
 			l_constraint_table.keys.do_all (agent l_constraining_exprs.extend)
 
-			create l_solver.make (output_directory)
+			create l_solver.make (create {PATH}.make_from_string (output_directory))
 
 				-- Find the maximal and minimal value for the argument.
 			l_solver.maximize (a_argument, l_constraining_exprs, l_args)

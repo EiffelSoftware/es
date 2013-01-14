@@ -87,7 +87,7 @@ feature -- Basic operation
 
 						-- Start debugging the application.
 					dbg_timer.set_interval (l_time_left)
-					start_debugger (debugger_manager, " --analyze-tc " + config.interpreter_log_path + " false -eif_root " + afx_project_root_class + "." + afx_project_root_feature, config.working_directory, {EXEC_MODES}.Run, False)
+					start_debugger (debugger_manager, " --analyze-tc " + config.interpreter_log_path.utf_8_name + " false -eif_root " + afx_project_root_class + "." + afx_project_root_feature, config.working_directory.utf_8_name, {EXEC_MODES}.Run, False)
 					dbg_timer.set_interval (0)
 
 						-- Unregister debugger event listener.

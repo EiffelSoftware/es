@@ -65,10 +65,12 @@ feature{NONE} -- Implementation
 				else
 						-- Prepare input file for Daikon.
 					daikon_printer.print_trace_repository (a_repository)
-					create l_declaration_file.make_create_read_write (declaration_file_name)
+					create l_declaration_file.make_with_path (declaration_file_name)
+					l_declaration_file.create_read_write
 					l_declaration_file.put_string (daikon_printer.last_declarations.out)
 					l_declaration_file.close
-					create l_trace_file.make_create_read_write (trace_file_name)
+					create l_trace_file.make_with_path (trace_file_name)
+					l_trace_file.create_read_write
 					l_trace_file.put_string (daikon_printer.last_trace.out)
 					l_trace_file.close
 
@@ -200,18 +202,16 @@ feature{NONE} -- Implementation
 			create Result.make
 		end
 
-	declaration_file_name: FILE_NAME
+	declaration_file_name: PATH
 			-- Declaration file name for Daikon.
 		do
-			create Result.make_from_string (config.data_directory)
-			Result.set_file_name ("daikon_input.decls")
+			Result := config.data_directory.extended ("daikon_input.decls")
 		end
 
-	trace_file_name: FILE_NAME
+	trace_file_name: PATH
 			-- Trace file name.
 		do
-			create Result.make_from_string (config.data_directory)
-			Result.set_file_name ("daikon_input.dtrace")
+			Result := config.data_directory.extended ("daikon_input.dtrace")
 		end
 
 	daikon_command: STRING
@@ -223,9 +223,9 @@ feature{NONE} -- Implementation
 			else
 				Result.append ("/usr/bin/java daikon.Daikon ")
 			end
-			Result.append (declaration_file_name)
+			Result.append (declaration_file_name.utf_8_name)
 			Result.append_character (' ')
-			Result.append (trace_file_name)
+			Result.append (trace_file_name.utf_8_name)
 		end
 
 end

@@ -33,7 +33,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make_with_test_cases (a_system: like system; a_failing_test_cases, a_passing_test_cases: DS_ARRAYED_LIST [STRING];
+	make_with_test_cases (a_system: like system; a_failing_test_cases, a_passing_test_cases: DS_ARRAYED_LIST [PATH];
 					a_fault_signature: EPA_TEST_CASE_SIGNATURE)
 			-- Initialization.
 		do
@@ -51,10 +51,10 @@ feature -- Access
 	current_fault_signature: EPA_TEST_CASE_SIGNATURE
 			-- Signature of the fault under fix.
 
-	current_failing_test_cases: DS_ARRAYED_LIST [STRING]
+	current_failing_test_cases: DS_ARRAYED_LIST [PATH]
 			-- List of failing test case files for fixing.
 
-	current_passing_test_cases: DS_ARRAYED_LIST [STRING]
+	current_passing_test_cases: DS_ARRAYED_LIST [PATH]
 			-- List of passing test case files for fixing.
 
 	last_class_text: detachable STRING
@@ -127,13 +127,13 @@ feature{NONE} -- Auxiliary operation
 			result := l_feature_text.twin
 		end
 
-	types_from_test_case_list (a_test_case_files: DS_ARRAYED_LIST [STRING]): DS_HASH_SET [STRING]
+	types_from_test_case_list (a_test_case_files: DS_ARRAYED_LIST [PATH]): DS_HASH_SET [STRING]
 			-- All variable types mentioned by the test cases in `a_test_case_files'.
 		require
 			test_case_files_attached: a_test_case_files /= Void
 		local
-			l_test_case_file_path: STRING
-			l_cursor: DS_ARRAYED_LIST_CURSOR [STRING]
+			l_test_case_file_path: PATH
+			l_cursor: DS_ARRAYED_LIST_CURSOR [PATH]
 		do
 			create Result.make_equal (5)
 
@@ -153,7 +153,7 @@ feature{NONE} -- Auxiliary operation
 			result_not_empty: Result /= Void and then Result.count /= 0
 		end
 
-	types_from_test_case (a_file: STRING): DS_HASH_SET [STRING]
+	types_from_test_case (a_file: PATH): DS_HASH_SET [STRING]
 			-- All variable types mentioned by the test case in `a_file'.
 			-- `a_file' is the full path to the test case.
 		require
@@ -169,7 +169,8 @@ feature{NONE} -- Auxiliary operation
 			l_done: BOOLEAN
 		do
 			-- Get types from the file.
-			create l_file.make_open_read (a_file)
+			create l_file.make_with_path (a_file)
+			l_file.open_read
 			if l_file.is_open_read then
 				l_start_mark := once "<variable_declaration>"
 				l_start_count := l_start_mark.count
@@ -239,15 +240,15 @@ feature{NONE} -- Auxiliary operation
 			result_not_empty: Result /= Void and then Result.count /= 0
 		end
 
-	append_test_to_executor (a_executor: STRING; a_test_class_name: STRING; a_test: EPA_TEST_CASE_SIGNATURE; a_passing: BOOLEAN; a_execution_mode: INTEGER)
-			-- Append the execution command of the test with its name 'a_test_class_name' to the execution string 'a_executor'.
+	append_test_to_executor (a_executor: STRING; a_test_class_path: PATH; a_test: EPA_TEST_CASE_SIGNATURE; a_passing: BOOLEAN; a_execution_mode: INTEGER)
+			-- Append the execution command of the test at 'a_test_class_path' to the execution string 'a_executor'.
 			-- The way this test is executed depends on the execution mode given by 'a_execution_mode'.
 		local
 			l_test_case_class_file_base_name: STRING
 			l_test_executor: STRING
 			l_slices: LIST [STRING]
 		do
-			l_test_case_class_file_base_name := base_eiffel_file_name_from_full_path (a_test_class_name)
+			l_test_case_class_file_base_name := base_eiffel_file_name_from_full_path (a_test_class_path.utf_8_name)
 			l_test_executor := Execute_test_case_feature_template.twin
 			l_test_executor.replace_substring_all ("${TEST_CASE_INDEX}", test_case_index.out)
 			l_test_executor.replace_substring_all ("${TEST_CASE_CLASS_NAME}", l_test_case_class_file_base_name.as_upper)
@@ -317,7 +318,7 @@ feature{NONE} -- Auxiliary operation
 			l_uuid: STRING
 			l_signature: EPA_TEST_CASE_SIGNATURE
 		do
-			create l_signature.make_with_string (base_eiffel_file_name_from_full_path(current_failing_test_cases.first))
+			create l_signature.make_with_string (base_eiffel_file_name_from_full_path(current_failing_test_cases.first.utf_8_name))
 			check same_uuid: l_signature.uuid ~ current_fault_signature.uuid end
 			l_uuid := current_fault_signature.uuid
 

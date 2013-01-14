@@ -77,8 +77,12 @@ feature -- Timing in MILLISECONDS.
 	clean_up
 			-- Clean up session.
 		local
-			l_default_report_file, l_fault_signature: STRING
-			l_new_report_file: FILE_NAME
+			l_default_report_file_path, l_report_file_path_for_fault: PATH
+			l_report_file_name_for_fault: STRING
+			l_report_file: PLAIN_TEXT_FILE
+
+			l_fault_signature: STRING
+			l_new_report_file: PATH
 			l_file: PLAIN_TEXT_FILE
 			l_now: DATE_TIME
 		do
@@ -91,28 +95,22 @@ feature -- Timing in MILLISECONDS.
 
 				-- Rename the default report file after the signature of the fault under fix.
 			if config.is_using_default_report_file_path and then exception_signature /= Void then
-				l_default_report_file := config.report_file_path
+				l_default_report_file_path := config.report_file_path
 
-					-- New report file name.
-				create l_new_report_file.make_from_string (config.output_directory)
-				l_fault_signature := exception_signature.id
-				l_fault_signature.replace_substring_all (".", "__")
-				l_new_report_file.set_file_name (l_fault_signature)
-				l_new_report_file.add_extension (config.report_file_extension)
+					-- Report file name specific to the current exception.
+				l_report_file_name_for_fault := exception_signature.id + "." + config.report_file_extension
+				l_report_file_path_for_fault := config.output_directory.extended (l_report_file_name_for_fault)
 
-					-- Rename the existing report for the same fault.
-				create l_file.make (l_new_report_file)
-				if l_file.exists then
+					-- Backup the existing report for the same fault.
+				create l_report_file.make_with_path (l_report_file_path_for_fault)
+				if l_report_file.exists then
 					create l_now.make_now
-					l_file.change_name (l_new_report_file + "." + l_now.seconds.out)
+					l_report_file.rename_file (l_report_file_name_for_fault + "." + l_now.seconds.out)
 				end
 
-					-- Rename the default report name to the new name.
-				create l_file.make (l_new_report_file)
-				if not l_file.exists then
-					create l_file.make (l_default_report_file)
-					l_file.change_name (l_new_report_file)
-				end
+					-- Rename the default report name to the exception-specific one.
+				create l_report_file.make_with_path (l_default_report_file_path)
+				l_report_file.rename_file (l_report_file_name_for_fault)
 			end
 		end
 
@@ -198,17 +196,19 @@ feature -- Logging
 	initialize_logging
 			-- Initialize logging.
 		local
-			l_result_path: STRING
-			l_report_file: FILE_NAME
+			l_file: PLAIN_TEXT_FILE
 		do
 			create progression_monitor.make
 			event_actions.subscribe_action_listener (progression_monitor)
 
-			l_result_path := config.report_file_path
-			create result_logger.make (create {PLAIN_TEXT_FILE}.make_open_write (l_result_path))
+			create l_file.make_with_path (config.report_file_path)
+			l_file.open_write
+			create result_logger.make (l_file)
 			event_actions.subscribe_action_listener (result_logger)
 
-			create proxy_logger.make(create {PLAIN_TEXT_FILE}.make_open_write (config.proxy_log_path), False)
+			create l_file.make_with_path (config.proxy_log_path)
+			l_file.open_write
+			create proxy_logger.make(l_file, False)
 			event_actions.subscribe_action_listener (proxy_logger)
 
 			create console_logger.make(Io.default_output, False)

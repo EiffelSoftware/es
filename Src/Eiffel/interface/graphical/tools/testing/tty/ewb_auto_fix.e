@@ -127,19 +127,16 @@ feature -- Properties
 			-- Is the project root for fixing available in the EIFGENs/Cluster directory?
 		local
 			l_eifgens_dir_path: STRING
-			l_file: KL_TEXT_OUTPUT_FILE
-			l_file_name: FILE_NAME
+			l_file: PLAIN_TEXT_FILE
+			l_file_path: PATH
 		do
-			l_eifgens_dir_path := system.project_location.eifgens_cluster_path.out
-			create l_file_name.make_from_string (l_eifgens_dir_path)
-			l_file_name.set_file_name (afx_project_root_class.as_lower)
-			l_file_name.add_extension ("e")
-			create l_file.make (l_file_name)
+			l_file_path := system.project_location.eifgens_cluster_path.extended (afx_project_root_class.as_lower + ".e")
+			create l_file.make_with_path (l_file_path)
 			Result := l_file.exists
 		end
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -43,7 +43,7 @@ feature -- Event handler
 			-- <Precursor>
 		local
 			l_file_name: STRING
-			l_file_path: FILE_NAME
+			l_file_path: PATH
 			l_tbl: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]
 		do
 			create l_tbl.make (1000)
@@ -55,9 +55,8 @@ feature -- Event handler
 				last_file_name := l_file_name
 				close_output_file
 
-				create l_file_path.make_from_string (output_folder)
-				l_file_path.set_file_name (l_file_name + ".arff")
-				create output_file.make_create_read_write (l_file_path)
+				create output_file.make_with_path (output_folder.extended (l_file_name + ".arff"))
+				output_file.create_read_write
 				output_file.open_write
 				put_header (output_file, l_file_name, a_state)
 			end
@@ -162,7 +161,7 @@ feature{NONE} -- Implementation
 	output_file: detachable PLAIN_TEXT_FILE
 			-- File used to store output
 
-	output_folder: STRING
+	output_folder: PATH
 			-- Folder to store all generated ARFF files.
 		do
 			Result := config.data_directory
@@ -180,7 +179,7 @@ feature{NONE} -- Implementation
 			Result.append (l_bp_context_feature.feature_.feature_name_32)
 			Result.append (once "__")
 			Result.append (a_tc.id)
-			
+
 --			if a_tc.is_passing then
 --				Result.append (once "__S")
 --			else
