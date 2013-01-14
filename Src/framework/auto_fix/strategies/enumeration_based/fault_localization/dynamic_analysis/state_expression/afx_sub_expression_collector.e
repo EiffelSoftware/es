@@ -376,7 +376,7 @@ feature{NONE} -- Implementation
 			-- If a feature call "after" is used in `l_as', we add the implicit target object, i.e. "Current", to the expression list.
 		local
 			l_feature_name: STRING
-			l_feature_names: EPA_HASH_SET [STRING]
+			l_feature_names: EPA_STRING_HASH_SET
 			l_expr: EPA_AST_EXPRESSION
 		do
 			l_feature_name := l_as.feature_name.name.as_lower

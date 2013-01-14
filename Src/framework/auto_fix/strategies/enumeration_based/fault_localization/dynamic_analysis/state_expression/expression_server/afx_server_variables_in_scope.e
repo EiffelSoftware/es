@@ -20,18 +20,17 @@ create
 
 feature -- Access
 
-	integer_or_boolean_locals_and_attributes_for_feature (a_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [STRING]
+	integer_or_boolean_locals_and_attributes_for_feature (a_class: CLASS_C; a_feature: FEATURE_I): EPA_STRING_HASH_SET
 			-- Set of locals and attributes of type INTEGER/BOOLEAN, from {a_class}.{a_feature}.
 		local
 			l_query_key: STRING
 			l_table: like integer_or_boolean_locals_and_attributes_table
-			l_set: DS_HASH_SET [STRING]
+			l_set: EPA_STRING_HASH_SET
 		do
 			l_query_key := "" + a_class.name + "." + a_feature.feature_name_32
 			l_table := integer_or_boolean_locals_and_attributes_table
 			if not l_table.has (l_query_key) then
-				create l_set.make (20)
-				l_set.set_equality_tester (case_insensitive_string_equality_tester)
+				create l_set.make_case_insensitive_equal (20)
 				l_set.append (integer_or_boolean_locals_of_feature (a_class, a_feature))
 				l_set.append (integer_or_boolean_attributes_of_class (a_class))
 
@@ -42,14 +41,14 @@ feature -- Access
 			Result := l_table.item (l_query_key)
 		end
 
-	feature_names_from_class (a_class: CLASS_C): EPA_HASH_SET [STRING]
+	feature_names_from_class (a_class: CLASS_C): EPA_STRING_HASH_SET
 			-- Feature names from the `a_class'.
 		require
 			class_attached: a_class /= Void
 		local
 			l_class_id: INTEGER
 			l_feature_table: FEATURE_TABLE
-			l_names: EPA_HASH_SET [STRING]
+			l_names: EPA_STRING_HASH_SET
 			l_next_feature: FEATURE_I
 			l_feature_type: TYPE_A
 			l_feature_name: STRING_32
@@ -57,8 +56,7 @@ feature -- Access
 			l_class_id := a_class.class_id
 			if not feature_names_table.has (l_class_id) then
 				l_feature_table := a_class.feature_table
-				create l_names.make (l_feature_table.count + 1)
-				l_names.set_equality_tester (case_insensitive_string_equality_tester)
+				create l_names.make_case_insensitive_equal (l_feature_table.count + 1)
 
 				from
 					l_feature_table.start
@@ -80,7 +78,7 @@ feature -- Access
 
 feature{NONE} -- Implementation
 
-	integer_or_boolean_locals_of_feature (a_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [STRING]
+	integer_or_boolean_locals_of_feature (a_class: CLASS_C; a_feature: FEATURE_I): EPA_STRING_HASH_SET
 			-- Set of local variable names of the feature `a_class'.`a_feature'.
 		require
 			class_attached: a_class /= Void
@@ -89,8 +87,7 @@ feature{NONE} -- Implementation
 			l_local_info: HASH_TABLE [LOCAL_INFO, INTEGER]
 			l_local_type: TYPE_A
 		do
-			create Result.make (20)
-			Result.set_equality_tester (case_insensitive_string_equality_tester)
+			create Result.make_case_insensitive_equal (20)
 
 			l_local_info := local_info (a_class, a_feature)
 			from l_local_info.start
@@ -105,7 +102,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	integer_or_boolean_attributes_of_class (a_class: CLASS_C): DS_HASH_SET [STRING]
+	integer_or_boolean_attributes_of_class (a_class: CLASS_C): EPA_STRING_HASH_SET
 			-- Set of attribute names of a class `a_class'.
 		require
 			class_attached: a_class /= Void
@@ -116,7 +113,7 @@ feature{NONE} -- Implementation
 			l_feature_name: STRING_32
 		do
 			l_feature_table := a_class.feature_table
-			create Result.make (l_feature_table.count + 1)
+			create Result.make_case_insensitive_equal (l_feature_table.count + 1)
 			Result.set_equality_tester (case_insensitive_string_equality_tester)
 
 			-- Attributes of reference types can always be used as target objects.
@@ -142,7 +139,7 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	integer_or_boolean_locals_and_attributes_table: DS_HASH_TABLE [DS_HASH_SET [STRING], STRING]
+	integer_or_boolean_locals_and_attributes_table: DS_HASH_TABLE [EPA_STRING_HASH_SET, STRING]
 			-- Table mapping a feature to the set of its local variables and attributes, of type integer/boolean.
 			-- Key: class_name.feature_name
 			-- Val: set of names of locals and attributes.
@@ -151,7 +148,7 @@ feature{NONE} -- Implementation
 			Result.set_key_equality_tester (case_insensitive_string_equality_tester)
 		end
 
-	feature_names_table: DS_HASH_TABLE [EPA_HASH_SET[STRING], INTEGER]
+	feature_names_table: DS_HASH_TABLE [EPA_STRING_HASH_SET, INTEGER]
 			-- Table of feature names for classes.
 			-- Key: class_id
 			-- Val: set of feature names

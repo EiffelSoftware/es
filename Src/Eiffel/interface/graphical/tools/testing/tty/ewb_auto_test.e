@@ -221,7 +221,16 @@ feature -- Execution
 					-- Set test case deserialization arguments.
 				l_generator.set_is_passing_test_case_deserialization_enabled (l_ap.is_passing_test_cases_deserialization_enabled)
 				l_generator.set_is_failing_test_case_deserialization_enabled (l_ap.is_failing_test_cases_deserialization_enabled)
-				l_generator.set_features_under_test_to_deserialize (l_ap.features_under_test_to_deserialize)
+
+					-- Use STRING_8 internally
+				l_generator.set_features_under_test_to_deserialize (create {EPA_STRING_HASH_SET}.make_equal(l_ap.features_under_test_to_deserialize.count))
+				from l_ap.features_under_test_to_deserialize.start
+				until l_ap.features_under_test_to_deserialize.after
+				loop
+					l_generator.features_under_test_to_deserialize.force (l_ap.features_under_test_to_deserialize.item_for_iteration.out)
+					l_ap.features_under_test_to_deserialize.forth
+				end
+
 				l_generator.set_building_behavioral_models (l_ap.is_building_behavioral_model)
 				l_generator.set_model_directory (l_ap.model_dir)
 				l_generator.set_building_faulty_feature_list (l_ap.is_building_faulty_feature_list)
@@ -231,20 +240,44 @@ feature -- Execution
 
 				l_generator.set_recursive (l_ap.is_recursive)
 
-				l_generator.set_data_input (l_ap.data_input)
-				l_generator.set_data_output (l_ap.data_output)
+				l_generator.set_data_input (l_ap.data_input.out)
+				l_generator.set_data_output (l_ap.data_output.out)
 
 				l_generator.set_is_interpreter_log_enabled (l_ap.is_interpreter_log_enabled)
 				l_generator.set_is_console_output_enabled (l_ap.is_console_log_enabled)
 
-				l_generator.set_proxy_log_options (l_ap.log_types)
+					-- Use STRING_8 internally
+				l_generator.set_proxy_log_options (create {HASH_TABLE [BOOLEAN, STRING_8]}.make(l_ap.log_types.count))
+				l_generator.proxy_log_options.compare_objects
+				from l_ap.log_types.start
+				until l_ap.log_types.after
+				loop
+					l_generator.proxy_log_options.put (l_ap.log_types.item_for_iteration, l_ap.log_types.key_for_iteration)
+					l_ap.log_types.forth
+				end
+					-- l_generator.set_proxy_log_options (l_ap.log_types)
 
 				l_generator.set_is_duplicated_test_case_serialized (l_ap.is_duplicated_test_case_serialized)
 
 				l_generator.set_is_post_state_serialized (l_ap.is_post_state_serialized)
 
-				l_generator.excluded_features.append (l_ap.excluded_features)
-				l_generator.popular_features.append (l_ap.popular_features)
+					-- Use STRING_8 internally
+				from l_ap.excluded_features.start
+				until l_ap.excluded_features.after
+				loop
+					l_generator.excluded_features.force ([l_ap.excluded_features.item_for_iteration.class_name.out, l_ap.excluded_features.item_for_iteration.feature_name.out])
+					l_ap.excluded_features.forth
+				end
+					-- l_generator.excluded_features.append (l_ap.excluded_features)
+
+					-- Use STRING_8 internally
+				from l_ap.popular_features.start
+				until l_ap.popular_features.after
+				loop
+					l_generator.popular_features.force ([l_ap.popular_features.item_for_iteration.class_name.out, l_ap.popular_features.item_for_iteration.feature_name.out, l_ap.popular_features.item_for_iteration.level])
+					l_ap.popular_features.forth
+				end
+				-- l_generator.popular_features.append (l_ap.popular_features)
 
 				l_generator.set_collecting_interface_related_classes (l_ap.is_collecting_interface_related_classes)
 				l_generator.set_should_freeze_before_testing (l_ap.should_freeze_before_testing)
@@ -304,7 +337,7 @@ feature -- Execution
 		end
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

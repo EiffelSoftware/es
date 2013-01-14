@@ -61,7 +61,7 @@ feature{NONE} -- Implementation
 			-- If this function returns True when applied with an equation, that equation will be selected.
 			-- If this function is Void, all the expressions will be selected.
 
-	anonymous_postconditions: EPA_HASH_SET [STRING]
+	anonymous_postconditions: EPA_STRING_HASH_SET
 			-- Anonymous forms of expressions that appear in postcondition in all test cases in transitions in `transition_table'.
 
 	candidate_properties: EPA_HASH_SET [EPA_FUNCTION]
@@ -154,13 +154,12 @@ feature{NONE} -- Implementation
 		local
 			l_transition: SEM_FEATURE_CALL_TRANSITION
 			l_post_state: EPA_STATE
-			l_anony_post_asserts: EPA_HASH_SET [STRING]
+			l_anony_post_asserts: EPA_STRING_HASH_SET
 			l_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
 			l_anony_expr: STRING
 			l_tran_cursor: like transition_table.new_cursor
 		do
-			create l_anony_post_asserts.make (100)
-			l_anony_post_asserts.set_equality_tester (string_equality_tester)
+			create l_anony_post_asserts.make_equal (100)
 			l_transition := transition_table.first
 			l_post_state := l_transition.postconditions
 
@@ -314,7 +313,7 @@ feature{NONE} -- Implementation
 	generate_candidate_properties
 			-- Generate candidate properties and store result in `candidate_properties'.
 		local
-			l_candidates: LINKED_LIST [EPA_HASH_SET [STRING]]
+			l_candidates: LINKED_LIST [EPA_STRING_HASH_SET]
 			l_property: like candidate_property
 		do
 			create candidate_properties.make (1000)

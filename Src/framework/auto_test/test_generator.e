@@ -469,7 +469,7 @@ feature -- Options: test case deserialization
 			Result := is_failing_test_case_deserialization_enabled_cache
 		end
 
-	features_under_test_to_deserialize: EPA_HASH_SET [STRING] assign set_features_under_test_to_deserialize
+	features_under_test_to_deserialize: EPA_STRING_HASH_SET assign set_features_under_test_to_deserialize
 			-- Set of features, in the format of "CLASS_NAME.feature_name",
 			-- test cases exercising which would be deserialized.
 
@@ -1645,7 +1645,7 @@ feature -- Option caches
 			-- inferred implications.
 
 ;note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

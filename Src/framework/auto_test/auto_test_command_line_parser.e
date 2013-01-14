@@ -1303,7 +1303,7 @@ feature -- Status report
 	is_failing_test_cases_deserialization_enabled: BOOLEAN
 			-- Is test case deserialization for failing test cases enabled?
 
-	features_under_test_to_deserialize: EPA_HASH_SET [STRING]
+	features_under_test_to_deserialize: EPA_STRING_HASH_SET
 			-- Set of features, in the format of "CLASS_NAME.feature_name",
 			-- test cases exercising which would be deserialized.
 
