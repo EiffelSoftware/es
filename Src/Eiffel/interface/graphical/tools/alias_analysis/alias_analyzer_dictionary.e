@@ -18,13 +18,16 @@ feature {NONE} -- Creation
 		do
 			create indexes.make (0)
 			create values.make (0)
+			create qualification.make (0)
 				-- Add special entities.
-			add ([-1, -1])
+			add (-1, -1)
 			void_index := last_added
-			add ([-1, -2])
+			add (-2, -1)
 			non_void_index := last_added
-			add ([-1, -3])
+			add (-3, -1)
 			current_index := last_added
+			add (-4, -1)
+			any_index := last_added
 		end
 
 feature -- Access
@@ -34,6 +37,77 @@ feature -- Access
 
 	is_new: BOOLEAN
 			-- Is last added element new?
+
+	suffix (p, c: like last_added): like last_added
+			-- Suffix s of a chain `c' == `p'.s
+		require
+			has_index (p)
+			has_index (c)
+			has_prefix (p, c)
+		local
+			i: like last_added
+		do
+			from
+				i := c
+				Result := current_index
+			until
+				i = p or not attached values [i] as v
+			loop
+				i := v.qualifier
+				Result := v.tail.abs
+			end
+		end
+
+	prefixed (p: like last_added): ITERABLE [like last_added]
+			-- Enumeration of indexes of items that start with a prefix of index `p'.
+		require
+			has_index (p)
+		local
+			r: SEARCH_TABLE [like last_added]
+		do
+			create r.make (0)
+			across
+				values as v
+			loop
+				if has_prefix (p, v.target_index) then
+					r.force (v.target_index)
+				end
+			end
+			Result := r
+		end
+
+	next_prefix (p, c: like last_added): like last_added
+			-- A shortest prefix `p'.s of `c' if any, such that `p'.s.q == `c',
+			-- or a non-existing index if there is no such prefix.
+		require
+			has_index (p)
+			has_index (c)
+		local
+			i: like last_added
+		do
+			from
+				i := c
+			until
+				i = p
+			loop
+				if is_unqualified (i) then
+						-- No match found.
+					i := p
+					Result := 0
+				else
+						-- Follow the chain.
+					Result := i
+					check from_precondition_and_qualification: attached values [i] as v then
+						i := v.qualifier
+					end
+				end
+			end
+		ensure
+			valid_prefix_for_p: has_index (Result) implies has_prefix (Result, p)
+			valid_prefix_for_c: has_index (Result) implies has_prefix (Result, c)
+			invalid_prefix_for_p: not has_prefix (Result, p) implies not has_index (Result)
+			invalid_prefix_for_c: not has_prefix (Result, c) implies not has_index (Result)
+		end
 
 feature -- Status report
 
@@ -55,6 +129,26 @@ feature -- Status report
 			Result := v < 0
 		end
 
+	has_prefix (p, c: like last_added): BOOLEAN
+			-- Does index `c' correspond to an item starting with a prefix of index `p'?
+		require
+			has_index (p)
+			has_index (c)
+		local
+			i: like last_added
+		do
+			if p /= c then
+				from
+					i := c
+				until
+					i = p or else i <= 0 or else not attached values [i] as v or else v.qualifier > 0 and then v.tail > 0
+				loop
+					i := v.qualifier
+				end
+				Result := i = p
+			end
+		end
+
 feature {NONE} -- Status report
 
 	is_unqualified (v: like last_added): BOOLEAN
@@ -62,10 +156,12 @@ feature {NONE} -- Status report
 		require
 			has_index (v)
 		local
-			t: TUPLE [tail, qualifier: INTEGER_32]
+			t: like entry
 		do
 			t := values [v]
-			Result := t.tail >= 0 and then t.qualifier >= 0
+			Result :=
+				t.tail >= 0 and then t.qualifier >= 0 or else
+				t.tail < 0 and then t.qualifier < 0
 		end
 
 feature -- Special indexes
@@ -76,12 +172,28 @@ feature -- Special indexes
 	non_void_index: like last_added
 			-- Index of a special entity "non_void".
 
+	any_index: like last_added
+			-- Index that matches any other index.
+
 feature {NONE} -- Special indexes
 
 	current_index: like last_added
 			-- Index of "Current".
 
 feature -- Modification
+
+	add_argument (n: INTEGER; f: FEATURE_I; c: CLASS_C)
+			-- Add an argument `n' declared in feature `f' in class `c'.
+			-- Set `last_added' to the index of the item.
+		require
+			valid_n: n >= 1
+			f_attached: attached f
+			c_attached: attached c
+		do
+			add (n, f.rout_id_set.first)
+		ensure
+			local_added: indexes.has_key (entry (n, f.rout_id_set.first))
+		end
 
 	add_local (n: INTEGER; f: FEATURE_I; c: CLASS_C)
 			-- Add a local `n' declared in feature `f' in class `c'.
@@ -91,9 +203,9 @@ feature -- Modification
 			f_attached: attached f
 			c_attached: attached c
 		do
-			add ([n, f.rout_id_set.first])
+			add (n + f.argument_count, f.rout_id_set.first)
 		ensure
-			local_added: indexes.has_key ([n, f.rout_id_set.first])
+			local_added: indexes.has_key (entry (n + f.argument_count, f.rout_id_set.first))
 		end
 
 	add_result (f: FEATURE_I; c: CLASS_C)
@@ -103,9 +215,9 @@ feature -- Modification
 			f_attached: attached f
 			c_attached: attached c
 		do
-			add ([0, f.rout_id_set.first])
+			add (f.rout_id_set.first, 0)
 		ensure
-			result_added: indexes.has_key ([0, f.rout_id_set.first])
+			result_added: indexes.has_key (entry (f.rout_id_set.first, 0))
 		end
 
 	add_feature (f: FEATURE_I; t: like last_added; c: CLASS_C)
@@ -117,7 +229,7 @@ feature -- Modification
 		do
 			add_result (f, c)
 		ensure
-			attribute_added: indexes.has_key ([0, f.rout_id_set.first])
+			attribute_added: indexes.has_key (entry (f.rout_id_set.first, 0))
 		end
 
 	add_current
@@ -143,13 +255,27 @@ feature -- Modification
 			v_is_registered: has_index (v)
 			v_not_reversed: not is_reversed (v)
 		local
-			t: TUPLE [tail, qualifier: INTEGER_32]
+			t: like entry
+			p: like last_added
 		do
-			if q > 0 then
+				-- Check if `v' represents a special value.
+			if v = any_index or else v = non_void_index or else v = void_index then
+					-- Arbitrary value, non-void or void value have no qualification.
+				last_added := v
+			elseif q = current_index then
+					-- Current.foo == foo.
+				last_added := v
+			elseif v = current_index then
+					-- foo.Current == foo.
+				last_added := q
+			elseif q > 0 then
 					-- Add real qualification.
 				if is_unqualified (v) then
 						-- Add immediate qualification.
-					add ([- v, q])
+					add (- v, q)
+					if is_new then
+						qualification.put_i_th (1, last_added)
+					end
 				else
 					t := values [v]
 					if t.qualifier < 0 then
@@ -158,13 +284,22 @@ feature -- Modification
 					else
 							-- Add qualification to the current qualifier and use it instead.
 						add_qualification (q, t.qualifier)
-						add ([- t.tail, last_added])
+						p := last_added
+						if p /= any_index then
+							add (t.tail, p)
+							if is_new then
+								qualification.put_i_th (qualification.i_th (p) + 1, last_added)
+								if qualification.i_th (last_added) >= 20 then
+									last_added := any_index
+								end
+							end
+						end
 					end
 				end
 			else
 					-- Add the nested qualification by appending the qualifier `q' at end
 					-- so that it can be efficiently removed when a real qualification is applied.
-				add ([v, q])
+				add (v, q)
 			end
 		end
 
@@ -173,7 +308,7 @@ feature -- Output
 	name (index: like last_added): STRING
 			-- Name corresponding to `index'.
 		local
-			t: TUPLE [tail: INTEGER; qualifier: INTEGER]
+			t: like entry
 			w: SHARED_WORKBENCH
 		do
 			if index = void_index then
@@ -182,43 +317,81 @@ feature -- Output
 				Result := once "NonVoid"
 			elseif index = current_index then
 				Result := once "Current"
+			elseif index = any_index then
+				Result := once "Any"
 			else
-				t := values.i_th (index)
-				if t.tail = 0 then
-						-- 	[0, n] - feature of routine id "n"
-					create w
-					if
-						attached w.system.rout_info_table.origin (t.qualifier) as c and then
-						attached c.feature_of_rout_id (t.qualifier) as f
-					then
-						Result := "{" + c.name + "}." + f.feature_name_32
+				if index < 0 then
+						-- Negative expression.
+					Result := "-" + name (- index)
+				else
+					t := values.i_th (index)
+					if t.qualifier = 0 then
+							-- 	[n, 0] - feature of routine id "n"
+						create w
+						if
+							attached w.system.rout_info_table.origin (t.tail) as c and then
+							attached c.feature_of_rout_id (t.tail) as f
+						then
+							Result := "{" + c.name + "}." + f.feature_name_32
+						end
+					elseif t.tail >= 0 and then t.qualifier >= 0 then
+							-- 	[m, n] - local variable "m" of a feature of routine id "n"
+						create w
+						if
+							attached w.system.rout_info_table.origin (t.qualifier) as c and then
+							attached c.feature_of_rout_id (t.qualifier) as f
+						then
+							if t.tail <= f.argument_count then
+								Result := "{" + c.name + "}." + f.feature_name_32 + "(" + t.tail.out + ")"
+							else
+								Result := "{" + c.name + "}." + f.feature_name_32 + "." + (t.tail - f.argument_count).out
+							end
+						end
+					elseif t.tail >= 0 and then t.qualifier < 0 then
+							-- [m, -n] - expression "m" qualified by a negative expression "-n"
+						Result := "-" + name (- t.qualifier) + "." + name (t.tail)
+					elseif t.tail < 0 and then t.qualifier >= 0 then
+							-- [-m, n] - expression "m" qualified by an expression "n"
+						Result := name (t.qualifier) + "." + name (- t.tail)
 					end
-				elseif t.tail >= 0 and then t.qualifier >= 0 then
-						-- 	[m, n] - local variable "m" of a feature of routine id "n"
-					create w
-					if
-						attached w.system.rout_info_table.origin (t.qualifier) as c and then
-						attached c.feature_of_rout_id (t.qualifier) as f
-					then
-						Result := "{" + c.name + "}." + f.feature_name_32 + "." + t.tail.out
-					end
-				elseif t.tail >= 0 and then t.qualifier < 0 then
-						-- [m, -n] - expression "m" qualified by a negative expression "-n"
-				elseif t.tail < 0 and then t.qualifier >= 0 then
-						-- [-m, n] - expression "m" qualified by an expression "n"
 				end
 			end
 		end
 
+feature {NONE} -- Entry encoding
+
+	entry (tail: INTEGER_32; qualifier: INTEGER_32): TUPLE [tail: INTEGER_32; qualifier: INTEGER_32]
+			-- Entry value corresponding to `tail' and `qualifier'.
+		do
+			Result := [tail, qualifier]
+		ensure
+			entry_tail (Result) = tail
+			entry_qualifier (Result) = qualifier
+		end
+
+	entry_tail (e: like entry): INTEGER_32
+			-- Tail part of an entry `e'.
+		do
+			Result := e.tail
+		end
+
+	entry_qualifier (e: like entry): INTEGER_32
+			-- Qualifier part of an entry `e'.
+		do
+			Result := e.qualifier
+		end
+
 feature {NONE} -- Modification
 
-	add (t: TUPLE [INTEGER, INTEGER])
-			-- Add an entity identified by `t'.
+	add (tail: INTEGER; qualifier: INTEGER)
+			-- Add an entity identified by `tail' and `qualifier'.
 			-- Set `last_added' to the index of the item.
 			-- Set `is_new' to indicate whether this is a new element or not.
 		local
 			i: like count
+			t: like entry
 		do
+			t := entry (tail, qualifier)
 			i := count + 1
 			indexes.put (i, t)
 			if indexes.inserted then
@@ -230,6 +403,7 @@ feature {NONE} -- Modification
 				is_new := True
 					-- Save item for later use.
 				values.force (t)
+				qualification.force (0)
 			else
 					-- The number of items is unchanged.
 					-- Retrieve the index of the item.
@@ -238,8 +412,8 @@ feature {NONE} -- Modification
 				is_new := False
 			end
 		ensure
-			added_entity: indexes.has_key (t)
-			added_values: values [last_added] ~ t
+			added_entity: indexes.has_key (entry (tail, qualifier))
+			added_values: values [last_added] ~ entry (tail, qualifier)
 		end
 
 feature {NONE} -- Measurement
@@ -249,20 +423,26 @@ feature {NONE} -- Measurement
 
 feature {NONE} -- Storage
 
-	indexes: HASH_TABLE [like last_added, TUPLE [INTEGER, INTEGER]]
+	indexes: HASH_TABLE [like last_added, like entry]
 			-- Registered indexes.
 			-- See `values'.
 
-	values: ARRAYED_LIST [TUPLE [tail: INTEGER; qualifier: INTEGER]]
+	values: ARRAYED_LIST [like entry]
 			-- Values of registered indexes.
 			-- The following encoding is used ("n", "m" are positive numbers):
-			-- 	[0, n] - feature of routine id "n"
-			-- 	[m, n] - local variable "m" of a feature of routine id "n"
+			-- 	[m, 0] - feature of routine id "m"
+			-- 	[m, n] - argument (m<=argument_count) or local variable (m>argument_count) "m" of a feature of routine id "n"
 			-- [m, -n] - expression "m" qualified by a negative expression "-n"
 			-- [-m, n] - expression "m" qualified by an expression "n"
 
-;note
-	copyright: "Copyright (c) 2012, Eiffel Software"
+	qualification: ARRAYED_LIST [INTEGER]
+			-- Total number of qualifiers in the chain of given item.
+
+invariant
+	same_count: indexes.count = values.count and indexes.count = qualification.count
+
+note
+	copyright: "Copyright (c) 2012-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

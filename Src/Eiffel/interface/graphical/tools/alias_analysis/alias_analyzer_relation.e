@@ -94,34 +94,6 @@ feature -- Modification
 			end
 		end
 
-	attach (s, t: G)
-			-- Attach source `s' to target `t'.
-		do
-			if s /~ t then
-					-- Remove all occurences of target.
-					-- r' := r \- {target}
-				remove (t)
-					-- Make aliases of `s' to be aliases of `t'.
-					-- r' := r' ∪ {target} × r' (source)
-				if attached table [s] as a then
-						-- Use aliases of `s' as aliases of `t'.
-					table [t] := table [s].twin
-						-- Alias target `t' with the aliases of `s'.
-					from
-						a.start
-					until
-						a.after
-					loop
-						table [a.item_for_iteration].put (t)
-						a.forth
-					end
-				end
-					-- Add one pair for `s' and `t'.
-					-- r' := r' ∪ [target, source]
-				add_pair (s, t)
-			end
-		end
-
 	remove (x: G)
 			-- Remove all pairs with `x'.
 			-- This corresponds to the operation
@@ -162,25 +134,37 @@ feature -- Modification
 					-- Remove an association for `x'.
 				if attached table [x] as t then
 					t.remove (y)
+					if t.is_empty then
+						table.remove (x)
+					end
 				end
 					-- Remove an association for `y'.
 				if attached table [y] as t then
 					t.remove (x)
+					if t.is_empty then
+						table.remove (y)
+					end
 				end
 			end
 		end
 
 	mapped (map: FUNCTION [ANY, TUPLE [G], G]): like Current
 			-- Replace all items with the application of `map'.
+		local
+			old_table: like table.item
+			new_table: like table.item
 		do
 			create Result.make
 			across
 				table as y
 			loop
+				old_table := y.item
+				create new_table.make (old_table.count)
+				Result.table [map.item ([y.key])] := new_table
 				across
-					y.item as x
+					old_table as x
 				loop
-					Result.add_pair (map.item ([x.item]), map.item ([y.key]))
+					new_table.put (map.item ([x.item]))
 				end
 			end
 		end
@@ -264,7 +248,7 @@ invariant
 		end
 
 note
-	copyright: "Copyright (c) 2012, Eiffel Software"
+	copyright: "Copyright (c) 2012-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
