@@ -51,6 +51,9 @@ feature
 	escher_test: ESCHER_TEST_CLASS
 			-- An ESCHER test object with version = 3
 
+	escher_test_2: ESCHER_TEST_CLASS_2
+			-- An ESCHER test object
+
 feature {NONE} -- Initialization
 
 	make
@@ -108,6 +111,7 @@ feature {NONE} -- Initialization
 				i := i + 1
 			end
 			create escher_test.make ("first", 2143)
+			create escher_test_2.make ("first", 23, "24", "25")
 		end
 
 	fill_people
