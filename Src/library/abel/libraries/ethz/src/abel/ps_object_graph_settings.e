@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 	documentation: "[
 		Documentation of the object graph depth concept:
-			Each CRUD operation has a depth parameter. The depth indicates how much of an object should be loaded.
+			Each operation on a repository has a depth parameter. The depth indicates how much of an object should be loaded.
 			
 			A depth of 1 for example means that only the basic types of an object (Numbers, Booleans and Strings)
 			should be loaded/inserted/updated, but no referenced object. A depth of 2 means that, additionally to the basic types,
