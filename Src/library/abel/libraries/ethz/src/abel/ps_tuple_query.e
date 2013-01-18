@@ -114,7 +114,7 @@ feature -- Cursor generation
 feature {NONE} -- Initialization
 
 	make
-			-- Create a new query for objects of type `G'.
+			-- Create a query for all objects of type G (no filtering criteria).
 		do
 			create projection.make_empty
 			initialize

@@ -51,7 +51,7 @@ feature -- Cursor generation
 feature {NONE} -- Initialization
 
 	make
-			-- Create an new query on objects of type `G'.
+			-- Create a query for all objects of type G (no filtering criteria).
 		do
 			initialize
 		end
