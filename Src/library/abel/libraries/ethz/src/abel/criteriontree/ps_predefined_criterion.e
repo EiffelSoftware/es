@@ -1,5 +1,5 @@
 note
-	description: "A criterion to filter objects according to some predefined operations on attributes."
+	description: "A criterion to filter objects according to some predefined operations on attributes (see class PS_PREDEFINED_OPERATORS)."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -230,14 +230,17 @@ feature -- Predefined Operators
 
 feature {NONE} -- Creation
 
-	make (attr, op: STRING; val: ANY)
-			-- Initialization for `Current'
+	make (an_object_attribute_name, an_operator: STRING; a_value: ANY)
+			-- Creates a predefined selection criterion given
+			-- an object attribute name,
+			-- an operator (see 'PS_PREDEFINED_OPERATORS'),
+			-- and a value for the attribute.
 		require
-			correct_operator_and_value: is_valid_combination (op, val)
+			correct_operator_and_value: is_valid_combination (an_operator, a_value)
 		do
-			attribute_name := attr
-			operator := op
-			value := val
+			attribute_name := an_object_attribute_name
+			operator := an_operator
+			value := a_value
 				-- Initialize the agent. This is kind of ugly, but I think there's no other way if we want to support all the basic types
 				-- Strings
 			if attached {READABLE_STRING_8} value as str then
@@ -309,7 +312,7 @@ feature -- Implementation
 
 feature {NONE} -- Pattern matching
 		-- Unfortunately, I cannot use polymorphism or constrained genericity as some vital functions in the only common ancestor of both string types are missing...
-		-- Any idea on how to avoid this code duplication is welcome.
+		-- TODO: Any idea on how to avoid this code duplication is welcome.
 		-- The algorithms are exactly the same in both versions, just the function names and some variable types are different.
 
 	pattern_match_string8 (word, pattern: READABLE_STRING_8): BOOLEAN
