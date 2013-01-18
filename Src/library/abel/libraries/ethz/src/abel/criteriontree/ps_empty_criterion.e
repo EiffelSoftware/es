@@ -1,5 +1,5 @@
 note
-	description: "An empty criterion which will will not filter any objects. Cannot be used in a criterion tree."
+	description: "An empty criterion which will not filter any objects. Cannot be used in a criterion tree."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
