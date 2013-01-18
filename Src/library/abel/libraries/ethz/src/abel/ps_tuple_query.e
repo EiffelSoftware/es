@@ -5,6 +5,11 @@ note
 		
 		You can set a projection on the attributes you would like to have, to restrict the amount of data that is going to be retrieved.
 		You'll get completely loaded objects as attributes if you include an attribute in your projection that is not of a basic type (strings and numbers).
+		Objects of this type can be used directly to iterate through the query result.
+		Example: across my_query as cur
+				 loop 
+					-- do something with cur.item 
+				 end  
 	]"
 	author: "Roman Schmocker"
 	date: "$Date$"

@@ -1,5 +1,12 @@
 note
-	description: "Represents a query for objects of type G."
+	description: "[
+	Represents a query for objects of type G.
+	Objects of this type can be used directly to iterate through the query result.
+	Example: across my_query as cur
+			 loop 
+				-- do something with cur.item 
+			 end  
+	]"
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
