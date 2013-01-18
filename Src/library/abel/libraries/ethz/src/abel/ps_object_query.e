@@ -21,7 +21,7 @@ create
 
 feature -- Access
 
-	result_cursor: PS_RESULT_SET [G]
+	result_cursor: PS_RESULT_CURSOR [G]
 			-- Iteration cursor containing the result of the query.
 
 feature -- Status report
@@ -42,9 +42,10 @@ feature -- Basic operations
 
 feature -- Cursor generation
 
-	new_cursor: PS_RESULT_SET [G]
+	new_cursor: PS_RESULT_CURSOR [G]
 			-- Return the result_cursor.
 		do
+			--TODO: according to class ITERABLE, this should return a fresh copy of the cursor.
 			Result := result_cursor
 		end
 

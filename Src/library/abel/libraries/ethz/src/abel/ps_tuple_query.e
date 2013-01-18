@@ -24,7 +24,7 @@ create
 
 feature -- Access
 
-	result_cursor: PS_RESULT_SET [TUPLE]
+	result_cursor: PS_RESULT_CURSOR [TUPLE]
 			-- Iteration cursor containing the result of the query.
 
 feature -- Status report
@@ -105,9 +105,10 @@ feature -- Utilities
 
 feature -- Cursor generation
 
-	new_cursor: PS_RESULT_SET [TUPLE]
+	new_cursor: PS_RESULT_CURSOR [TUPLE]
 			-- Return the result_cursor.
 		do
+			--TODO: according to class ITERABLE, this should return a fresh copy of the cursor.
 			Result := result_cursor
 		end
 

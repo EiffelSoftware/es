@@ -12,7 +12,7 @@ feature -- Access
 	criteria: PS_CRITERION
 			-- Criteria for `Current' query.
 
-	result_cursor: PS_RESULT_SET [ANY]
+	result_cursor: PS_RESULT_CURSOR [ANY]
 			-- Iteration cursor containing the result of the query.
 		deferred
 		end

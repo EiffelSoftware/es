@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	PS_RESULT_SET [G -> ANY]
+	PS_RESULT_CURSOR [G -> ANY]
 
 inherit
 
