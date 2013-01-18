@@ -1,5 +1,5 @@
 note
-	description: "A criterion that will return a logical OR of its two child criterion"
+	description: "A criterion that will return a logical OR of its two child criteria."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
