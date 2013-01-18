@@ -70,7 +70,7 @@ feature -- Data retrieval
 			query_executed: tuple_query.is_executed
 		end
 
-	--reload (object: ANY)
+	--execute_reload (object: ANY)
 				-- Reload  `object'.
 	--		require
 	--			already_loaded: is_persistent (object, new_transaction)
@@ -82,37 +82,37 @@ feature -- Data retrieval
 
 feature -- Data manipulation
 
-	insert (an_object: ANY)
+	execute_insert (an_object: ANY)
 			-- Insert `an_object' into the repository.
 		require
 			can_handle_object: can_handle (an_object)
 		do
 			if not is_persistent_within_transaction (an_object, new_transaction)
 			then
-				execute_within_implicit_transaction (agent insert_within_transaction(an_object, ?), False)
+				execute_within_implicit_transaction (agent execute_insert_within_transaction(an_object, ?), False)
 			end
 		ensure
 			object_persistent: is_persistent_within_transaction (an_object, new_transaction)
 		end
 
-	update (an_object: ANY)
+	execute_update (an_object: ANY)
 			-- Write changes of `an_object' to the repository.
 		require
 			object_persistent: is_persistent_within_transaction (an_object, new_transaction)
 			can_handle_object: can_handle (an_object)
 		do
-			execute_within_implicit_transaction (agent update_within_transaction(an_object, ?), False)
+			execute_within_implicit_transaction (agent execute_update_within_transaction(an_object, ?), False)
 		ensure
 			object_persistent: is_persistent_within_transaction (an_object, new_transaction)
 		end
 
-	delete (an_object: ANY)
+	execute_delete (an_object: ANY)
 			-- Delete `an_object' from the repository.
 		require
 			object_persistent: is_persistent_within_transaction (an_object, new_transaction)
 			can_handle_object: can_handle (an_object)
 		do
-			execute_within_implicit_transaction (agent delete_within_transaction(an_object, ?), False)
+			execute_within_implicit_transaction (agent execute_delete_within_transaction(an_object, ?), False)
 		ensure
 			not_persistent_anymore: not is_persistent_within_transaction (an_object, new_transaction)
 		end
@@ -146,7 +146,7 @@ feature -- Transaction-based data retrieval and querying
 		end
 
 
-	--reload_within_transaction (object:ANY; transaction: PS_TRANSACTION)
+	--execute_reload_within_transaction (object:ANY; transaction: PS_TRANSACTION)
 			-- Reload `object' within transaction `transaction'
 			-- In case of a conflict between transactions, it will abort `transaction' and return normally.
 			-- In every other case of errors it will abort `transaction' and raise an exception.
@@ -158,7 +158,7 @@ feature -- Transaction-based data retrieval and querying
 		--			still_persistent: is_persistent (object, transaction)
 		--		end
 
-	insert_within_transaction (an_object: ANY; transaction: PS_TRANSACTION)
+	execute_insert_within_transaction (an_object: ANY; transaction: PS_TRANSACTION)
 			-- Insert `an_object' within the transaction `transaction' into the repository.
 			-- In case of a conflict between transactions, it will abort `transaction' and return normally.
 			-- In every other case of errors it will abort `transaction' and raise an exception.
@@ -176,7 +176,7 @@ feature -- Transaction-based data retrieval and querying
 			only_transaction_conflicts_return_normally: transaction.has_error implies attached {PS_TRANSACTION_CONFLICT} transaction.error
 		end
 
-	update_within_transaction (an_object: ANY; transaction: PS_TRANSACTION)
+	execute_update_within_transaction (an_object: ANY; transaction: PS_TRANSACTION)
 			-- Write back changes of `an_object' into the repository, within the transaction `transaction'.
 			-- In case of a conflict between transactions, it will abort `transaction' and return normally.
 			-- In every other case of errors it will abort `transaction' and raise an exception.
@@ -190,7 +190,7 @@ feature -- Transaction-based data retrieval and querying
 			only_transaction_conflicts_return_normally: transaction.has_error implies attached {PS_TRANSACTION_CONFLICT} transaction.error
 		end
 
-	delete_within_transaction (an_object: ANY; transaction: PS_TRANSACTION)
+	execute_delete_within_transaction (an_object: ANY; transaction: PS_TRANSACTION)
 			-- Delete `an_object' within the transaction `transaction' from the repository.
 			-- In case of a conflict between transactions, it will abort `transaction' and return normally.
 			-- In every other case of errors it will abort `transaction' and raise an exception.
