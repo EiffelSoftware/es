@@ -1,5 +1,9 @@
 note
-	description: "A factory class to create repositories with a database backend."
+	description: "[
+	A factory class to create repositories with a database backend.
+	Use this class as an entry point to the framework to get a repository object
+	and then use it to create an executor.
+	]"
 	author: "Roman Schmocker, Marco Piccioni"
 	date: "$Date$"
 	revision: "$Revision$"
