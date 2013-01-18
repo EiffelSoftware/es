@@ -18,7 +18,7 @@ feature -- Creating a criterion
 
 	new alias "[]" (tuple: TUPLE [ANY]): PS_CRITERION
 			-- Creates a new criterion according to a `tuple'
-			-- containing either a single PREDICATE or theree
+			-- containing either a single PREDICATE or three
 			-- values of type [STRING, STRING, ANY].
 		require
 			well_formed: is_agent (tuple) or is_predefined (tuple)
@@ -37,13 +37,13 @@ feature -- Creating a criterion
 		end
 
 	new_agent (a_predicate: PREDICATE [ANY, TUPLE [ANY]]): PS_CRITERION
-			-- creates a criterion with an agent
+			-- Creates a criterion with an agent.
 		do
 			create {PS_AGENT_CRITERION} Result.make (a_predicate)
 		end
 
 	new_predefined (object_attribute: STRING; operator: STRING; value: ANY): PS_CRITERION
-			-- creates a predefined criterion
+			-- Creates a predefined criterion.
 		require
 			correct_operator_and_value: is_valid_combination (operator, value)
 		do
@@ -53,13 +53,13 @@ feature -- Creating a criterion
 feature -- Preconditions
 
 	is_agent (tuple: TUPLE [ANY]): BOOLEAN
-			-- See if the tuple corresponds to the format for agents
+			-- Does `tuple' correspond to the format for agents?
 		do
 			Result := attached {TUPLE [PREDICATE [ANY, TUPLE [ANY]]]} tuple
 		end
 
 	is_predefined (tuple: TUPLE [ANY]): BOOLEAN
-			-- See if the tuple corresponds to the format of predefined tuples and has a valid operator/value combination
+			-- Does `tuple' correspond to the format for predefined tuples and have a valid operator/value combination?
 		do
 			if attached {TUPLE [STRING, STRING, ANY]} tuple and then (attached {STRING} tuple [2] as operator and attached tuple [3] as value) then
 				Result := is_valid_combination (operator, value)
