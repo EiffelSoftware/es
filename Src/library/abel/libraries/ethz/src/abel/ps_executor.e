@@ -1,7 +1,9 @@
 note
 	description: "[
-		Performs any kind of operations on a repository.
-		Errors are reported in the `Current.last_error' field and an excepion is raised if an error happens, 
+		Performs queries, insertions, updates and deletions on a repository.
+		The repository needed by the creation feature can be obtained by using class REPOSITORY_FACTORY.
+
+		Errors are reported in the `Current.last_error' field and an exception is raised if an error occurs, 
 		so you don't have to manually check on errors every time you call a feature in `Current'.
 		
 		If you use explicit transaction management (the *_within_transaction features),

@@ -1,5 +1,8 @@
 note
-	description: "A repository that while holding objects in memory, decomposes them and stores them in a relational-like fashion."
+	description: "[
+	A repository that while holding objects in memory, decomposes them and stores them in a relational-like fashion.
+	Use REPOSITORY_FACTORY to get an instance of this class associated with the specific database of interest.
+	]"
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"

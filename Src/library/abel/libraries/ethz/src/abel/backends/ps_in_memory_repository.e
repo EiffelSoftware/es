@@ -1,5 +1,8 @@
 note
-	description: "A repository that keeps all values in main memory. Useful for testing."
+	description: "[
+	A repository that keeps all values in main memory. Useful for testing.
+	Use REPOSITORY_FACTORY to get an instance of this class.
+	]"
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
