@@ -1,5 +1,5 @@
 note
-	description: "Defines the allowed predefined operators for each basic type."
+	description: "Objects of this class define the allowed operators for each basic type."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
