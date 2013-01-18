@@ -26,7 +26,7 @@ feature
 			escher_integration.set_simulation_added_attribute (True)
 			if not retried then
 				create query.make
-				executor.insert (test_data.escher_test_2)
+				executor.execute_insert (test_data.escher_test_2)
 				executor.execute_query (query)
 			end
 		end
@@ -41,7 +41,7 @@ feature
 			escher_integration.set_simulation_attribute_type_changed (True)
 			if not retried then
 				create query.make
-				executor.insert (test_data.escher_test_2)
+				executor.execute_insert (test_data.escher_test_2)
 				executor.execute_query (query)
 			end
 		end
@@ -56,7 +56,7 @@ feature
 			escher_integration.set_simulation_attribute_name_changed (True)
 			if not retried then
 				create query.make
-				executor.insert (test_data.escher_test_2)
+				executor.execute_insert (test_data.escher_test_2)
 				executor.execute_query (query)
 			end
 		end
@@ -71,7 +71,7 @@ feature
 			escher_integration.set_simulation_removed_attribute (True)
 			if not retried then
 				create query.make
-				executor.insert (test_data.escher_test_2)
+				executor.execute_insert (test_data.escher_test_2)
 				executor.execute_query (query)
 			end
 		end
@@ -92,7 +92,7 @@ feature
 			escher_integration.set_simulation_multiple_changes (True)
 			if not retried then
 				create query.make
-				executor.insert (test_data.escher_test_2)
+				executor.execute_insert (test_data.escher_test_2)
 				executor.execute_query (query)
 			end
 		end
@@ -104,7 +104,7 @@ feature
 		do
 			escher_integration.set_simulation (False)
 			create query.make
-			executor.insert (test_data.escher_test)
+			executor.execute_insert (test_data.escher_test)
 			executor.execute_query (query)
 		end
 

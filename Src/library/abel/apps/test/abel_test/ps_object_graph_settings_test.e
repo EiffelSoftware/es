@@ -45,17 +45,17 @@ feature {PS_REPOSITORY_TESTS}
 			res: CHAIN_HEAD
 		do
 			reset
-			executor.insert (test_data.reference_chain)
+			executor.execute_insert (test_data.reference_chain)
 			executor.execute_query (query)
 			res := query.result_cursor.item
 			assert ("The result is not equal", res.is_deep_equal (test_data.reference_chain))
 			res.tail.increment
-			executor.update (res) -- Should have no effect with update depth = 1
+			executor.execute_update (res) -- Should have no effect with update depth = 1
 			query.reset
 			executor.execute_query (query)
 			res := query.result_cursor.item
 			assert ("The result is not equal", res.is_deep_equal (test_data.reference_chain))
-			executor.delete (res) -- Should only delete the head
+			executor.execute_delete (res) -- Should only delete the head
 			query.reset
 			executor.execute_query (query)
 			assert ("The object has not been deleted", query.result_cursor.after)
@@ -69,10 +69,10 @@ feature {PS_REPOSITORY_TESTS}
 		do
 			reset
 			repository.default_object_graph.set_update_depth (repository.default_object_graph.object_graph_depth_infinite)
-			executor.insert (test_data.reference_chain)
+			executor.execute_insert (test_data.reference_chain)
 			executor.execute_query (query)
 			query.result_cursor.item.tail.increment
-			executor.update (query.result_cursor.item) -- Should have an effect now
+			executor.execute_update (query.result_cursor.item) -- Should have an effect now
 			executor.execute_query (query_2)
 			assert ("Not successfully updated", query_2.result_cursor.item.is_deep_equal (query.result_cursor.item))
 			repository.clean_db_for_testing
@@ -89,7 +89,7 @@ feature {PS_REPOSITORY_TESTS}
 			reset
 			depth := 4 -- Arbitrary...
 			repository.default_object_graph.set_update_depth (depth)
-			executor.insert (test_data.reference_chain)
+			executor.execute_insert (test_data.reference_chain)
 			executor.execute_query (query)
 			from
 				tail := query.result_cursor.item.tail
@@ -99,7 +99,7 @@ feature {PS_REPOSITORY_TESTS}
 				tail.increment
 				tail := tail.next
 			end
-			executor.update (query.result_cursor.item)
+			executor.execute_update (query.result_cursor.item)
 			executor.execute_query (query_2)
 			from
 				i := 1
@@ -126,8 +126,8 @@ feature {PS_REPOSITORY_TESTS}
 		do
 			reset
 			repository.default_object_graph.set_delete_depth (repository.default_object_graph.object_graph_depth_infinite)
-			executor.insert (test_data.reference_chain)
-			executor.delete (test_data.reference_chain)
+			executor.execute_insert (test_data.reference_chain)
+			executor.execute_delete (test_data.reference_chain)
 			executor.execute_query (query)
 			assert ("The head has not been deleted", query.result_cursor.after)
 			executor.execute_query (tail_query)
@@ -143,8 +143,8 @@ feature {PS_REPOSITORY_TESTS}
 		do
 			reset
 			repository.default_object_graph.set_delete_depth (arbitrary_depth)
-			executor.insert (test_data.reference_chain)
-			executor.delete (test_data.reference_chain)
+			executor.execute_insert (test_data.reference_chain)
+			executor.execute_delete (test_data.reference_chain)
 			executor.execute_query (tail_query)
 			across
 				tail_query as res
@@ -162,7 +162,7 @@ feature {PS_REPOSITORY_TESTS}
 		do
 			reset
 			repository.default_object_graph.set_insert_depth (1)
-			executor.insert (test_data.reference_chain)
+			executor.execute_insert (test_data.reference_chain)
 			executor.execute_query (query)
 			assert ("The reference of the retrieved object should be Void", query.result_cursor.item.tail = Void)
 			repository.clean_db_for_testing
@@ -176,7 +176,7 @@ feature {PS_REPOSITORY_TESTS}
 		do
 			reset
 			repository.default_object_graph.set_insert_depth (arbitrary_depth)
-			executor.insert (test_data.reference_chain)
+			executor.execute_insert (test_data.reference_chain)
 			executor.execute_query (query)
 			assert ("The reference of the retrieved object should be Void", query.result_cursor.item.tail.next.next.last)
 			executor.execute_query (tail_query)
@@ -195,7 +195,7 @@ feature {PS_REPOSITORY_TESTS}
 		do
 			reset
 			repository.default_object_graph.set_query_depth (1)
-			executor.insert (test_data.reference_chain)
+			executor.execute_insert (test_data.reference_chain)
 			executor.execute_query (query)
 			assert ("The reference of the retrieved object should be Void", query.result_cursor.item.tail = Void)
 			repository.clean_db_for_testing
@@ -209,7 +209,7 @@ feature {PS_REPOSITORY_TESTS}
 		do
 			reset
 			repository.default_object_graph.set_query_depth (arbitrary_depth)
-			executor.insert (test_data.reference_chain)
+			executor.execute_insert (test_data.reference_chain)
 			executor.execute_query (query)
 			assert ("The reference of the retrieved object should be Void", query.result_cursor.item.tail.next.next.last)
 			executor.execute_query (tail_query)

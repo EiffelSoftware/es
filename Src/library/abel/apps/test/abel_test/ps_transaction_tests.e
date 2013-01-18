@@ -22,7 +22,7 @@ feature {PS_REPOSITORY_TESTS}
 			q1, q2: PS_OBJECT_QUERY[PERSON]
 		do
 			create some_person.make ("first_name", "last_name", 0)
-			executor.insert (some_person)
+			executor.execute_insert (some_person)
 
 			t1:= executor.new_transaction
 			t2:= executor.new_transaction
@@ -43,12 +43,12 @@ feature {PS_REPOSITORY_TESTS}
 			else  -- Transaction has not been aborted (which is the case in multiversion concurrency control)
 				-- Let T2 finish its update
 				q2.result_cursor.item.add_item
-				executor.update_within_transaction (q2.result_cursor.item, t2)
+				executor.execute_update_within_transaction (q2.result_cursor.item, t2)
 				t2.commit
 
 				-- t1 now updates, but it has to fail at commit time
 				q1.result_cursor.item.add_item
-				executor.update_within_transaction (q1.result_cursor.item, t1)
+				executor.execute_update_within_transaction (q1.result_cursor.item, t1)
 				t1.commit
 
 				assert ("The transaction should be aborted", t1.has_error and then attached{PS_TRANSACTION_CONFLICT} t1.error)
@@ -65,7 +65,7 @@ feature {PS_REPOSITORY_TESTS}
 			q1, q2, q3: PS_OBJECT_QUERY[PERSON]
 		do
 			create some_person.make ("first_name", "last_name", 0)
-			executor.insert (some_person)
+			executor.execute_insert (some_person)
 
 			t1:= executor.new_transaction
 			t2:= executor.new_transaction
@@ -76,7 +76,7 @@ feature {PS_REPOSITORY_TESTS}
 			-- t1 reads and updates some_person
 			executor.execute_query_within_transaction (q1, t1)
 			q1.result_cursor.item.add_item
-			executor.update_within_transaction (q1.result_cursor.item, t1)
+			executor.execute_update_within_transaction (q1.result_cursor.item, t1)
 
 			-- t2 reads, updates and commits
 			executor.execute_query_within_transaction (q2, t2) -- This can block and abort in lock-based systems
@@ -87,7 +87,7 @@ feature {PS_REPOSITORY_TESTS}
 				assert ("Transaction should have an error", t2.has_error)
 			else -- If we have multi-version concurrency control
 				q2.result_cursor.item.add_item
-				executor.update_within_transaction (q2.result_cursor.item, t2)
+				executor.execute_update_within_transaction (q2.result_cursor.item, t2)
 				t2.commit
 			end
 
@@ -112,7 +112,7 @@ feature {PS_REPOSITORY_TESTS}
 			q1, q2, q3: PS_OBJECT_QUERY[PERSON]
 		do
 			create some_person.make ("first_name", "last_name", 0)
-			executor.insert (some_person)
+			executor.execute_insert (some_person)
 
 			t1:= executor.new_transaction
 			t2:= executor.new_transaction
@@ -131,7 +131,7 @@ feature {PS_REPOSITORY_TESTS}
 				assert ("The transaction should have an error", t2.has_error)
 			else
 				q2.result_cursor.item.add_item
-				executor.update_within_transaction (q2.result_cursor.item, t2)
+				executor.execute_update_within_transaction (q2.result_cursor.item, t2)
 				t2.commit
 			end
 
@@ -158,7 +158,7 @@ feature {PS_REPOSITORY_TESTS}
 			create q1.make
 			create q2.make
 
-			executor.insert_within_transaction (some_person, t1)
+			executor.execute_insert_within_transaction (some_person, t1)
 			executor.execute_query_within_transaction (q1, t1)
 			assert ("Person not inserted", not q1.result_cursor.after)
 
@@ -180,14 +180,14 @@ feature {PS_REPOSITORY_TESTS}
 			q1, q2: PS_OBJECT_QUERY[PERSON]
 		do
 			create some_person.make ("first_name", "last_name", 0)
-			executor.insert (some_person)
+			executor.execute_insert (some_person)
 			t1:= executor.new_transaction
 			create q1.make
 			create q2.make
 
 			executor.execute_query_within_transaction (q1, t1)
 			q1.result_cursor.item.add_item
-			executor.update_within_transaction (q1.result_cursor.item, t1)
+			executor.execute_update_within_transaction (q1.result_cursor.item, t1)
 
 			executor.execute_query_within_transaction (q2, t1)
 			assert ("Not updated correctly", q2.result_cursor.item.is_deep_equal (q1.result_cursor.item))
@@ -210,12 +210,12 @@ feature {PS_REPOSITORY_TESTS}
 			q1, q2: PS_OBJECT_QUERY[PERSON]
 		do
 			create some_person.make ("first_name", "last_name", 0)
-			executor.insert (some_person)
+			executor.execute_insert (some_person)
 			t1:= executor.new_transaction
 			create q1.make
 			create q2.make
 
-			executor.delete_within_transaction (some_person, t1)
+			executor.execute_delete_within_transaction (some_person, t1)
 			executor.execute_query_within_transaction (q1, t1)
 			assert ("Not deleted correctly", q1.result_cursor.after)
 

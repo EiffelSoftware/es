@@ -26,7 +26,7 @@ feature {PS_CRUD_TESTS}
 			-- Tests an insert (and successive read) operation on `an_object'
 			-- Use `equality_function' to test if `object' and the retrieved object from the database are equal.
 		do
-			executor.insert (object)
+			executor.execute_insert (object)
 			internal_check_equality (object, equality_function)
 		end
 
@@ -47,17 +47,17 @@ feature {PS_CRUD_TESTS}
 			first_count, second_count, third_count: INTEGER
 		do
 				-- Test successful insert
-			executor.insert (object)
+			executor.execute_insert (object)
 			internal_check_equality (object, equality_function)
 				-- Test successful update
 			update_operation.call ([object])
 			first_count := count_results
-			executor.update (object)
+			executor.execute_update (object)
 			second_count := count_results
 			internal_check_equality (object, equality_function)
 			assert ("Something has been deleted or inserted during an update", second_count = first_count)
 				-- Test successful delete
-			executor.delete (object)
+			executor.execute_delete (object)
 			third_count := count_results
 				-- In a successful delete, all we can guarantee is that the third count is smaller than the second
 			assert ("The object still exists in the database", second_count > third_count)

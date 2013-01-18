@@ -230,14 +230,14 @@ feature {PS_REPOSITORY_TESTS} -- Collections
 		do
 			repository.clean_db_for_testing
 			create query.make
-			executor.insert (test_data.data_structures_1)
+			executor.execute_insert (test_data.data_structures_1)
 			executor.execute_query (query)
 			assert ("The query doesn't return a result", not query.result_cursor.after)
 			retrieved := query.result_cursor.item
 			assert ("The results are not equal", retrieved.is_deep_equal (test_data.data_structures_1))
 				-- perform update
 			retrieved.array_1 [1].update
-			executor.update (retrieved.array_1 [1])
+			executor.execute_update (retrieved.array_1 [1])
 				-- check if update worked
 			create query.make
 			executor.execute_query (query)
@@ -260,7 +260,7 @@ feature {NONE} -- Update agents
 		do
 			ref_obj := attach (obj.refer)
 			ref_obj.update
-			executor.update (ref_obj)
+			executor.execute_update (ref_obj)
 		end
 
 end

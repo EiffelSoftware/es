@@ -364,7 +364,7 @@ feature {NONE} -- Initialization
 				test_data.people as p
 			loop
 					--			print (p.item)
-				executor.insert (p.item)
+				executor.execute_insert (p.item)
 			end
 		end
 
