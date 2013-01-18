@@ -31,7 +31,7 @@ feature {PS_TEST_PROVIDER}
 	repository: PS_REPOSITORY
 			-- The repository to operate on
 
-	executor: PS_CRUD_EXECUTOR
+	executor: PS_EXECUTOR
 			-- An executor for `repository'
 
 	test_data: PS_TEST_DATA

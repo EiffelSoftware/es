@@ -128,7 +128,7 @@ feature
 
 feature {NONE}
 
-	executor: PS_CRUD_EXECUTOR
+	executor: PS_EXECUTOR
 
 	test_data: PS_TEST_DATA
 
