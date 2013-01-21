@@ -77,15 +77,13 @@ feature {PREFERENCES} -- Resource Management
 	has_preference (a_name: READABLE_STRING_GENERAL): BOOLEAN
 			-- Does the underlying store contain a preference with `a_name'?
 		do
-			-- FIXME: preference does not support unicode pref name			
-			Result := session_values.has (a_name.as_string_8)
+			Result := session_values.has (a_name)
 		end
 
 	get_preference_value (a_name: READABLE_STRING_GENERAL): detachable STRING_32
 			-- Retrieve the preference string value from the underlying store.
 		do
-			-- FIXME: preference does not support unicode pref name			
-			Result := session_values.item (a_name.as_string_8)
+			Result := session_values.item (a_name)
 		end
 
 	save_preference (a_preference: PREFERENCE)
@@ -107,12 +105,11 @@ feature {PREFERENCES} -- Resource Management
 			l_preference: PREFERENCE
 			l_file: PLAIN_TEXT_FILE
 			pref_string1, pref_string2, pref_string3: STRING
-			u: FILE_UTILITIES
 		do
 			pref_string1 := "%N%T<PREFERENCE NAME=%""
 			pref_string2 := "%" VALUE=%""
 			pref_string3 := "%"/>"
-			l_file := u.make_text_file (location)
+			create l_file.make_with_name (location)
 			safe_open_write (l_file)
 			if l_file.is_open_write then
 				l_file.put_string ("<EIFFEL_DOCUMENT>")
@@ -160,18 +157,14 @@ feature {NONE} -- Implementation
 			parser: XML_STOPPABLE_PARSER
 			l_file: PLAIN_TEXT_FILE
 			l_tree: XML_CALLBACKS_DOCUMENT
-			l_attrib: detachable XML_ATTRIBUTE
-			pref_name: detachable READABLE_STRING_32
-			pref_value: detachable READABLE_STRING_32
 			l_root_element: XML_ELEMENT
 			t_preference, t_name, t_value: STRING
-			u: FILE_UTILITIES
 		do
 			create parser.make
 			create l_tree.make_null
 			parser.set_callbacks (l_tree)
 
-			l_file := u.make_text_file (location)
+			create l_file.make_with_name (location)
 			if l_file.exists and then l_file.is_readable then
 				safe_open_read (l_file)
 				if l_file.is_open_read then
@@ -192,28 +185,12 @@ feature {NONE} -- Implementation
 							l_root_element.after
 						loop
 							if attached {XML_ELEMENT} l_root_element.item_for_iteration as node then
-								if node.has_same_name (t_preference) then
-										-- Found preference
-									l_attrib := node.attribute_by_name (t_name)
-									if l_attrib /= Void then
-										-- FIXME: preference does not support unicode pref name
-										pref_name := l_attrib.value
-										if pref_name.is_valid_as_string_8 then
-
-											l_attrib := node.attribute_by_name (t_value)
-											if l_attrib /= Void then
-												pref_value := l_attrib.value
-											end
-											if pref_value = Void then
-												check xml_contain_value: False end
-												create {STRING_32} pref_value.make_empty
-											end
-											session_values.put (pref_value, pref_name.to_string_8)
-										else
-											--| Entry ignored.
-											pref_name := Void
-										end
-									end
+								if
+									node.has_same_name (t_preference) and then
+									attached node.attribute_by_name (t_name) as l_pref_name and then
+									attached node.attribute_by_name (t_value) as l_pref_value
+								then
+									session_values.put (l_pref_value.value, l_pref_name.value)
 								end
 							end
 							l_root_element.forth

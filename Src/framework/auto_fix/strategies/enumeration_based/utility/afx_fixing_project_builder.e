@@ -58,7 +58,7 @@ feature{NONE} -- Access
 	project_file_folder: STRING
 			-- Folder storing project files.
 		do
-			Result := root_class.group.location.evaluated_path
+			Result := root_class.group.location.evaluated_path.out
 		end
 
 	root_class: CLASS_C

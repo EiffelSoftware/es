@@ -85,7 +85,6 @@ feature {NONE} -- Initialization
 			l_frame: EV_FRAME
 			li: EV_LIST_ITEM
 			l_btn: EV_BUTTON
-			l_cell: EV_CELL
 		do
 			Precursor
 
@@ -487,7 +486,7 @@ feature {NONE} -- Actions
 	on_compiler_version
 			-- Compiler version was changed.
 		local
-			l_ver: STRING
+			l_ver: STRING_32
 			l_min, l_max: CONF_VERSION
 		do
 			l_ver := version_min_compiler.text
@@ -515,7 +514,7 @@ feature {NONE} -- Actions
 	on_msil_clr_version
 			-- MSIL CLR version was changed.
 		local
-			l_ver: STRING
+			l_ver: STRING_32
 			l_min, l_max: CONF_VERSION
 		do
 			l_ver := version_min_msil_clr.text
@@ -540,7 +539,7 @@ feature {NONE} -- Actions
 			end
 		end
 
-	update_variable (a_new_key: READABLE_STRING_32; a_old_key: READABLE_STRING_32; a_old_value: READABLE_STRING_32)
+	update_variable (a_new_key: READABLE_STRING_GENERAL; a_old_key: READABLE_STRING_GENERAL; a_old_value: READABLE_STRING_GENERAL)
 			-- Update variable name from `a_old_key' to `a_new_key'.
 		require
 			a_old_key_ok: a_old_key /= Void and then data.custom /= Void and then data.custom.has (a_old_key)
@@ -556,18 +555,18 @@ feature {NONE} -- Actions
 			fill_custom
 		end
 
-	update_invert (a_invert_value: READABLE_STRING_32; a_value: READABLE_STRING_32; a_key: READABLE_STRING_32)
+	update_invert (a_invert_value: READABLE_STRING_GENERAL; a_value: READABLE_STRING_GENERAL; a_key: READABLE_STRING_GENERAL)
 			-- Update inversion status of custom condition of `a_key'.
 		require
 			a_key_ok: a_key /= Void and then data.custom /= Void and then data.custom.has (a_key)
 			a_value_ok: a_value /= Void and then attached data.custom.item (a_key) as l_item and then l_item.has (a_value)
-			a_invert_value_ok: a_invert_value /= Void and then (a_invert_value.same_string_general ("=") or a_invert_value.same_string_general ("/="))
+			a_invert_value_ok: a_invert_value /= Void and then (a_invert_value.same_string ("=") or a_invert_value.same_string ("/="))
 		do
 			data.remove_custom (a_key, a_value)
-			data.add_custom (a_key, a_value, a_invert_value.same_string_general ("/="))
+			data.add_custom (a_key, a_value, a_invert_value.same_string ("/="))
 		end
 
-	update_value (a_value: READABLE_STRING_32; a_old_value: READABLE_STRING_32; a_key: READABLE_STRING_32)
+	update_value (a_value: READABLE_STRING_GENERAL; a_old_value: READABLE_STRING_GENERAL; a_key: READABLE_STRING_GENERAL)
 			-- Update value of custom condition of `a_key'.
 		require
 			a_key_ok: a_key /= Void and then data.custom /= Void and then data.custom.has (a_key.as_lower)
@@ -587,8 +586,6 @@ feature {NONE} -- Actions
 
 	add_custom
 			-- Add a new custom condition.
-		local
-			v: TUPLE [READABLE_STRING_32, BOOLEAN]
 		do
 			data.add_custom (conf_interface_names.dial_cond_new_custom, Conf_interface_names.dial_cond_new_custom_value, False)
 			fill_custom
@@ -673,9 +670,8 @@ feature {NONE} -- Implementation
 			l_text: STRING_PROPERTY
 			l_choice: STRING_CHOICE_PROPERTY
 			i: INTEGER
-			l_key: READABLE_STRING_32
-			l_list: ARRAYED_LIST [STRING]
-			l_values: HASH_TABLE [BOOLEAN, READABLE_STRING_32]
+			l_key: READABLE_STRING_GENERAL
+			l_values: STRING_TABLE [BOOLEAN]
 		do
 			custom.wipe_out
 			custom.enable_last_column_use_all_width

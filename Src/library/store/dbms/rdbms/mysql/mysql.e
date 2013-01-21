@@ -132,7 +132,7 @@ feature -- For DATABASE_FORMAT
 		obsolete
 			"Use `string_format_32' instead."
 		do
-			Result := string_format_32 (object)
+			Result := string_format_32 (object).as_string_8_conversion
 		end
 
 	string_format_32 (object: detachable READABLE_STRING_GENERAL): STRING_32
@@ -165,7 +165,7 @@ feature -- For DATABASE_SELECTION, DATABASE_CHANGE
 			Result := False
 		end
 
-	parse (descriptor: INTEGER; uht: detachable DB_STRING_HASH_TABLE [detachable ANY]; ht_order: detachable ARRAYED_LIST [READABLE_STRING_32]; uhandle: HANDLE; sql: READABLE_STRING_GENERAL): BOOLEAN
+	parse (descriptor: INTEGER; uht: detachable DB_STRING_HASH_TABLE [detachable ANY]; ht_order: detachable ARRAYED_LIST [READABLE_STRING_GENERAL]; uhandle: HANDLE; sql: READABLE_STRING_GENERAL): BOOLEAN
 			-- ???
 		do
 		end

@@ -80,7 +80,7 @@ feature{NONE} -- Implementation
 			-- Call `a_action' on each collected group.
 		do
 			across a_target.groups as l_groups loop
-				a_action.call ([l_groups.item, l_groups.key])
+				a_action.call ([l_groups.item, l_groups.key.as_string_8])
 			end
 		end
 

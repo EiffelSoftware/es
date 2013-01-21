@@ -13,11 +13,11 @@ create
 
 feature {NONE} -- Initialize
 
-	make_with_version (a_runtime_version: STRING)
+	make_with_version (a_runtime_version: like runtime_version)
 			-- Initialize Current. Initialize `exists' accordingly.
 		require
 			a_runtime_version_not_void: a_runtime_version /= Void
-			has_version: (create {IL_ENVIRONMENT}).installed_runtimes.has (a_runtime_version)
+			has_version: (create {IL_ENVIRONMENT}).is_version_installed (a_runtime_version)
 		local
 			l_dll: WEL_DLL
 		do
@@ -36,7 +36,7 @@ feature -- Status report
 	exists: BOOLEAN
 			-- Is `mscorsn.dll' available?
 
-	runtime_version: STRING
+	runtime_version: STRING_32
 			-- Version for which we are signing.
 
 feature {NONE} -- Status report
@@ -64,8 +64,8 @@ feature {NONE} -- Status report
 				if l_val > 0 then
 					s := path.string
 					if attached l_il_env.dotnet_framework_path as l_dotnet_framework_path then
-						s.prepend (";")
-						s.prepend (l_dotnet_framework_path)
+						s.prepend_string_general (";")
+						s.prepend_string (l_dotnet_framework_path.name)
 					end
 					create path.make (s)
 					success := set_environment_variable (path_name.item, path.item)
@@ -333,7 +333,7 @@ invariant
 	runtime_version_not_void: runtime_version /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

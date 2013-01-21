@@ -24,12 +24,10 @@ feature -- Access
 	directory: STRING_32
 			-- Path of currently selected directory.
 			-- `Result' is empty if "OK" was not pressed.
-		obsolete
-			"Use `path' instead."
 		require
 			not_destroyed: not is_destroyed
 		do
-			Result := path.name
+			create Result.make_from_string (path.name)
 		ensure
 			directory_not_void: Result /= Void
 		end
@@ -48,12 +46,10 @@ feature -- Access
 
 	start_directory: STRING_32
 			-- Base directory where browsing will start.
-		obsolete
-			"Use `start_path' instead."
 		require
 			not_destroyed: not is_destroyed
 		do
-			Result := start_path.name
+			create Result.make_from_string (start_path.name)
 		end
 
 	start_path: PATH
@@ -70,8 +66,6 @@ feature -- Element change
 
 	set_start_directory (a_path: READABLE_STRING_GENERAL)
 			-- Assign `a_path' to `start_directory'.
-		obsolete
-			"Use `set_start_path' instead."
 		require
 			not_destroyed: not is_destroyed
 			a_path_not_void: a_path /= Void

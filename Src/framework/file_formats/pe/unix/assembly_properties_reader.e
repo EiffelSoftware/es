@@ -18,7 +18,7 @@ create
 
 feature {NONE} -- Initialize
 
-	make (a_runtime_version: STRING)
+	make (a_runtime_version: READABLE_STRING_GENERAL)
 			-- Initialize Current. Initialize `exists' accordingly.
 		require
 			a_runtime_version_not_void: a_runtime_version /= Void
@@ -37,12 +37,12 @@ feature -- Clean up
 
 feature -- Basic operations
 
-	retrieve_assembly_properties (a_file_name: STRING): ASSEMBLY_PROPERTIES
+	retrieve_assembly_properties (a_file_name: READABLE_STRING_GENERAL): ASSEMBLY_PROPERTIES
 			-- Retrieves assembly properties for `a_file_name'
 		require
 			a_file_name_attached: a_file_name /= Void
 			not_a_file_name_is_empty: not a_file_name.is_empty
-			a_file_name_exists: (create {RAW_FILE}.make (a_file_name)).exists
+			a_file_name_exists: (create {RAW_FILE}.make_with_name (a_file_name)).exists
 			a_file_name_is_pe_file: (create {PE_FILE_INFO}).is_com2_pe_file (a_file_name)
 			exists: exists
 		do
@@ -58,7 +58,7 @@ feature -- Status report
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -71,22 +71,22 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class ASSEMBLY_PROPERTIES_READER

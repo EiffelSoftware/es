@@ -13,6 +13,11 @@ inherit
 			make, debug_output
 		end
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+		undefine
+			is_equal
+		end
+
 create
 	make
 
@@ -30,7 +35,7 @@ feature {NONE} -- Initialization
 
 feature -- Status report
 
-	debug_output: STRING
+	debug_output: STRING_32
 		do
 			Result := Precursor
 			Result.prepend (enclosing_feature.feature_name_32)
@@ -103,7 +108,7 @@ invariant
 	valid_enclosing_feature: is_inline_agent implies enclosing_feature /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

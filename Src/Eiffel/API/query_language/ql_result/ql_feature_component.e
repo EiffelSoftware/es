@@ -32,7 +32,7 @@ feature -- Access
 		do
 			if internal_hash_code = 0 then
 				create l_hash_name.make (50)
-				l_hash_name.append (class_c.name)
+				l_hash_name.append_string_general (class_c.name)
 				l_hash_name.append (e_feature.name_32)
 				l_hash_name.append (name)
 				internal_hash_code := l_hash_name.hash_code
@@ -133,10 +133,10 @@ invariant
 	parent_is_feature: parent.is_feature
 
 note
-        copyright:	"Copyright (c) 1984-2010, Eiffel Software"
-        license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-        licensing_options:	"http://www.eiffel.com/licensing"
-        copying: "[
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
 			Eiffel Software's Eiffel Development Environment is free
@@ -156,12 +156,14 @@ note
 			Environment; if not, write to the Free Software Foundation,
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
-        source: "[
+	source: "[
 			Eiffel Software
 			5949 Hollister Ave., Goleta, CA 93117 USA
 			Telephone 805-685-1006, Fax 805-685-6869
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
+
+
 
 end

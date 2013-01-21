@@ -73,7 +73,7 @@ inherit
 
 feature -- Loading
 
-	open_project_file (a_file_name: PATH; a_target_name: STRING; a_project_path: PATH; from_scratch: BOOLEAN)
+	open_project_file (a_file_name: PATH; a_target_name: STRING_32; a_project_path: PATH; from_scratch: BOOLEAN)
 			-- Initialize current project using `a_file_name'.
 		local
 			l_default_file_name: PATH
@@ -241,7 +241,7 @@ feature -- Loading
 		do
 				-- First split the class name into components. A possible classname is
 				-- 'path/to/file/hello_world.e' and we will extract just `hello_world' in `l_target_name'.
-			l_target_name := a_class_filename.entry.name.as_string_32
+			l_target_name := a_class_filename.entry.name
 			l_target_name.remove_tail (2)
 
 			create l_factory
@@ -404,7 +404,7 @@ feature {NONE} -- Implementation: access
 	config_file_name: detachable PATH
 			-- Name of new format config file chosen by user.
 
-	target_name: STRING
+	target_name: STRING_32
 			-- Name of a target chose by user.
 
 	project_location: PATH
@@ -620,8 +620,8 @@ feature {NONE} -- Settings
 	check_used_environemnt
 			-- Check if the current environment values still have the same values as the ones stored in the project settings.
 		local
-			l_envs: HASH_TABLE [STRING_32, STRING_32]
-			l_key, l_old_val, l_new_val: STRING_32
+			l_envs: STRING_TABLE [READABLE_STRING_GENERAL]
+			l_key, l_old_val, l_new_val: READABLE_STRING_GENERAL
 		do
 			if
 				eiffel_project.system_defined and then eiffel_project.initialized and then
@@ -638,9 +638,9 @@ feature {NONE} -- Settings
 					l_old_val := l_envs.item_for_iteration
 					l_new_val := eiffel_layout.get_environment_32 (l_key)
 					if {PLATFORM}.is_windows then
-						l_old_val.to_lower
+						l_old_val := l_old_val.as_lower
 						if l_new_val /= Void then
-							l_new_val.to_lower
+							l_new_val := l_new_val.as_lower
 						end
 					end
 					if
@@ -724,7 +724,7 @@ feature {NONE} -- Settings
 		local
 			l_path: STRING_32
 			l_target: CONF_TARGET
-			l_args: ARRAYED_LIST [READABLE_STRING_32]
+			l_args: ARRAYED_LIST [READABLE_STRING_GENERAL]
 		do
 			l_target := a_precompile.target
 			create l_args.make (10)
@@ -744,54 +744,40 @@ feature {NONE} -- Settings
 					l_path := l_target.setting_metadata_cache_path
 				end
 				if l_path /= Void and then not l_path.is_empty then
-						-- remove trailing \ as it makes problem with the escaping of arguments
-					from
-					until
-						l_path.is_empty or else l_path.item (l_path.count) /= '\'
-					loop
-						l_path.remove_tail (1)
-					end
 					l_args.extend ("-metadata_cache_path")
 					l_args.extend (l_path)
 				end
 			end
 			l_args.extend ("-project_path")
 			if a_precompile.eifgens_location /= Void then
-				l_path := a_precompile.eifgens_location.evaluated_path
-				from
-				until
-					l_path.is_empty or else l_path.item (l_path.count) /= '\'
-				loop
-					l_path.remove_tail (1)
-				end
+				l_args.extend (a_precompile.eifgens_location.evaluated_path.name)
 			else
 					-- If no path is specified we default to the location of the ecf.
-				l_path := a_precompile.location.evaluated_directory
+				l_args.extend (a_precompile.location.evaluated_path.parent.name)
 			end
-			l_args.extend (l_path)
 			launch_precompile_process (l_args)
 		end
 
-	launch_precompile_process (a_arguments: LIST [READABLE_STRING_32])
+	launch_precompile_process (a_arguments: LIST [READABLE_STRING_GENERAL])
 			-- Launch precompile process `a_command'.
 		require
 			a_arguments_ok: a_arguments /= Void
 		deferred
 		end
 
-	find_target_name (a_proposed_target: STRING; a_system: CONF_SYSTEM)
+	find_target_name (a_proposed_target: STRING_32; a_system: CONF_SYSTEM)
 			-- Given `a_proposed_target', try to find it in `a_targets'. If not found or if `a_proposed_target'
 			-- is not valid, ask the user to choose a target among `a_targets'.
 		require
 			a_system_not_void: a_system /= Void
 		local
 			l_not_found: BOOLEAN
-			l_list: ARRAYED_LIST [STRING]
-			l_targets: HASH_TABLE [CONF_TARGET, STRING]
+			l_list: ARRAYED_LIST [READABLE_STRING_GENERAL]
+			l_targets: STRING_TABLE [CONF_TARGET]
 			l_user_options_factory: USER_OPTIONS_FACTORY
-			l_last_target: STRING
+			l_last_target: READABLE_STRING_GENERAL
 			l_last_target_matched: BOOLEAN
-			l_sorter: QUICK_SORTER [STRING]
+			l_sorter: QUICK_SORTER [READABLE_STRING_GENERAL]
 		do
 			l_targets := a_system.compilable_targets
 			if a_proposed_target /= Void then
@@ -833,7 +819,7 @@ feature {NONE} -- Settings
 					end
 					l_targets.forth
 				end
-				create l_sorter.make (create {COMPARABLE_COMPARATOR [STRING]})
+				create l_sorter.make (create {COMPARABLE_COMPARATOR [READABLE_STRING_GENERAL]})
 				l_sorter.sort (l_list)
 				if l_last_target_matched then
 						-- Set the last used target as first in the list.
@@ -992,7 +978,7 @@ feature {NONE} -- User interaction
 		deferred
 		end
 
-	ask_for_target_name (a_target: STRING; a_targets: ARRAYED_LIST [STRING])
+	ask_for_target_name (a_target: READABLE_STRING_GENERAL; a_targets: ARRAYED_LIST [READABLE_STRING_GENERAL])
 			-- Ask user to choose one target among `a_targets'.
 			-- If not Void, `a_target' is the one selected by user.
 		require
@@ -1017,7 +1003,7 @@ feature {NONE} -- User interaction
 		deferred
 		end
 
-	ask_environment_update (a_key, a_old_val: READABLE_STRING_32; a_new_val: detachable READABLE_STRING_32)
+	ask_environment_update (a_key, a_old_val: READABLE_STRING_GENERAL; a_new_val: detachable READABLE_STRING_GENERAL)
 			-- Should new environment values be accepted?
 		require
 			a_key_ok: a_key /= Void and then not a_key.is_empty and then not a_key.has ('%U')
@@ -1095,7 +1081,7 @@ feature {NONE} -- Implementation
 			retry
 		end
 
-	add_single_file_compilation_target (a_system: CONF_SYSTEM; a_target_name, a_root_class_name, a_root_feature_name: STRING; a_libraries: LIST [PATH])
+	add_single_file_compilation_target (a_system: CONF_SYSTEM; a_target_name, a_root_class_name: STRING_32; a_root_feature_name: STRING; a_libraries: LIST [PATH])
 			-- Add a target to `a_system' consisting of given parameters.
 			--
 			-- `a_system': The configuration system which the target will be added to
@@ -1203,7 +1189,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

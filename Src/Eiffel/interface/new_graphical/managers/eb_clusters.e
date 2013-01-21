@@ -75,9 +75,9 @@ feature -- Initialization
 			-- Load all clusters and classes.
 		local
 			l_target: CONF_TARGET
-			l_libs: HASH_TABLE [CONF_GROUP, STRING]
-			l_cls: HASH_TABLE [CONF_CLUSTER, STRING]
-			l_cls_lst: HASH_TABLE [CONF_CLUSTER, STRING]
+			l_libs: STRING_TABLE [CONF_GROUP]
+			l_cls: STRING_TABLE [CONF_CLUSTER]
+			l_cls_lst: STRING_TABLE [CONF_CLUSTER]
 			l_cluster: CONF_CLUSTER
 		do
 			if workbench.universe_defined then
@@ -363,7 +363,7 @@ feature -- Element change
 			system.force_rebuild
 		end
 
-	move_class (a_class: CONF_CLASS; old_group: CONF_GROUP; new_cluster: CONF_CLUSTER; new_path: STRING)
+	move_class (a_class: CONF_CLASS; old_group: CONF_GROUP; new_cluster: CONF_CLUSTER; new_path: READABLE_STRING_32)
 			-- Move `a_class' from `old_group' to `new_cluster'/`new_path'.
 		require
 			valid_class: a_class /= Void
@@ -377,8 +377,8 @@ feature -- Element change
 			fname: PATH
 			tdirsrc, tdirdes: DIRECTORY
 			l_lib_usage: ARRAYED_LIST [CONF_LIBRARY]
-			l_src_path, l_dst_path: STRING_32
-			l_classes: HASH_TABLE [CONF_CLASS, STRING]
+			l_src_path, l_dst_path: PATH
+			l_classes: STRING_TABLE [CONF_CLASS]
 			l_old_relative_path: STRING_32
 		do
 			if
@@ -394,18 +394,15 @@ feature -- Element change
 					end
 					l_src_path := old_group.location.build_path (a_class.path, "")
 					l_dst_path := new_cluster.location.build_path (new_path, "")
-					create tdirsrc.make (l_src_path)
-					create tdirdes.make (l_dst_path)
+					create tdirsrc.make_with_path (l_src_path)
+					create tdirdes.make_with_path (l_dst_path)
 					if
 						tdirsrc.exists and then
 						tdirdes.exists
 					then
-						if
-							not l_src_path.is_equal (l_dst_path)
-						then
-							create old_file.make_with_name (a_class.full_file_name)
-							create fname.make_from_string (l_dst_path)
-							fname := fname.extended (a_class.file_name)
+						if not l_src_path.same_as (l_dst_path) then
+							create old_file.make_with_path (a_class.full_file_name)
+							fname := l_dst_path.extended (a_class.file_name)
 							create new_file.make_with_path (fname)
 							if
 								old_file.exists and then
@@ -619,7 +616,7 @@ feature -- Element change
 
 feature {NONE} -- Implementation
 
-	create_groups (a_groups: HASH_TABLE [CONF_GROUP, STRING]): DS_ARRAYED_LIST [EB_SORTED_CLUSTER]
+	create_groups (a_groups: STRING_TABLE [CONF_GROUP]): DS_ARRAYED_LIST [EB_SORTED_CLUSTER]
 			-- Create sorted groups out of `a_groups'.
 		require
 			a_groups_not_void: a_groups /= Void
@@ -948,7 +945,7 @@ invariant
 	assemblies_not_void: assemblies /= Void
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

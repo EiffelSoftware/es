@@ -169,7 +169,7 @@ feature{NONE} -- Implementation
 						until
 							l_invariants.item_for_iteration.after
 						loop
-							l_invs.force_last (decoded_daikon_name (l_invariants.item_for_iteration.item_for_iteration.debug_output))
+							l_invs.force_last (decoded_daikon_name (l_invariants.item_for_iteration.item_for_iteration.debug_output.as_string_8))
 							l_invariants.item_for_iteration.forth
 						end
 						create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [STRING]}.make (

@@ -57,10 +57,11 @@ feature {NONE} -- Initialization
 			a_target_not_void: a_target /= Void
 		do
 			consumed_assembly := a_consumed
+				-- FIXME: It would be better if {CONF_GROUP}.name was a READABLE_STRING_32 instance.
 			name := assembly_name.as_lower
 			target := a_target
 			cache_path := a_cache_path
-			create location.make (a_consumed.location, a_target)
+			create location.make (a_consumed.location.name, a_target)
 			create assemblies.make (0)
 			initialize_conditions
 				-- be default we assume that an assembly is only used as a dependency
@@ -113,10 +114,10 @@ feature -- Access, in compiled only
 	cache_path: PATH
 			-- Path to the metadata cache.
 
-	dotnet_classes: HASH_TABLE [like class_type, STRING]
+	dotnet_classes: STRING_TABLE [like class_type]
 			-- Same as `classes' but indexed by the dotnet name.
 
-	guid: STRING
+	guid: READABLE_STRING_32
 			-- A unique id.
 		do
 			check
@@ -142,7 +143,7 @@ feature -- Access, in compiled only
 
 feature -- Access queries
 
-	assembly_name: STRING
+	assembly_name: READABLE_STRING_32
 			-- Assembly name.
 		require
 			consumed_assembly /= Void
@@ -152,7 +153,7 @@ feature -- Access queries
 			result_ok: Result /= Void and then not Result.is_empty
 		end
 
-	assembly_version: STRING
+	assembly_version: READABLE_STRING_32
 			-- Assembly version.
 		require
 			consumed_assembly /= Void
@@ -162,7 +163,7 @@ feature -- Access queries
 			result_ok: Result /= Void and then not Result.is_empty
 		end
 
-	assembly_culture: STRING
+	assembly_culture: READABLE_STRING_32
 			-- Assembly culture.
 		require
 			consumed_assembly /= Void
@@ -172,7 +173,7 @@ feature -- Access queries
 			result_ok: Result /= Void
 		end
 
-	assembly_public_key_token: STRING
+	assembly_public_key_token: READABLE_STRING_32
 			-- Assembly public key token.
 		require
 			consumed_assembly /= Void
@@ -221,14 +222,14 @@ feature -- Access queries
 			Result := accessible_groups_cache
 		end
 
-	mapping: EQUALITY_HASH_TABLE [STRING, STRING]
+	mapping: STRING_TABLE [STRING_32]
 			-- Special classes name mapping (eg. STRING => STRING_32).
 		once
 				-- there are no mappings for assemblies
-			create Result.make (0)
+			create Result.make_equal (0)
 		end
 
-	class_by_name (a_class: STRING; a_dependencies: BOOLEAN): LINKED_SET [like class_type]
+	class_by_name (a_class: READABLE_STRING_GENERAL; a_dependencies: BOOLEAN): LINKED_SET [like class_type]
 			-- Get class by name.
 		local
 			l_dep: CONF_GROUP
@@ -251,7 +252,7 @@ feature -- Access queries
 			end
 		end
 
-	name_by_class (a_class: CONF_CLASS; a_dependencies: BOOLEAN): LINKED_SET [STRING]
+	name_by_class (a_class: CONF_CLASS; a_dependencies: BOOLEAN): LINKED_SET [READABLE_STRING_GENERAL]
 			-- Get name in this context of `a_class' (if `a_dependencies') then we check dependencies).
 		local
 			l_dep: CONF_GROUP
@@ -300,13 +301,13 @@ feature -- Access queries
 			Result.void_safety.put_index ({CONF_OPTION}.Void_safety_index_all)
 		end
 
-	class_options: HASH_TABLE [CONF_OPTION, STRING]
+	class_options: STRING_TABLE [CONF_OPTION]
 			-- Options of classes in the assembly.
 		do
 				-- classes in assemblies have no options
 		end
 
-	sub_group_by_name (a_name: STRING): CONF_GROUP
+	sub_group_by_name (a_name: READABLE_STRING_GENERAL): CONF_GROUP
 			-- Return assembly dependency with `a_name' if there is any.
 		do
 			if dependencies /= Void then
@@ -315,7 +316,7 @@ feature -- Access queries
 				until
 					Result /= Void or dependencies.after
 				loop
-					if dependencies.item_for_iteration.name.is_equal (a_name) then
+					if dependencies.item_for_iteration.name.same_string_general (a_name) then
 						Result := dependencies.item_for_iteration
 					end
 					dependencies.forth

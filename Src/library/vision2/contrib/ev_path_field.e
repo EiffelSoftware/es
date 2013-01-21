@@ -77,7 +77,7 @@ feature -- Access
 		obsolete
 			"Use `default_start_path' instead."
 		do
-			Result := default_start_path.name
+			create Result.make_from_string (default_start_path.name)
 		end
 
 	default_start_path: PATH
@@ -92,7 +92,7 @@ feature -- Status
 		require
 			not_destroyed: not is_destroyed
 		do
-			Result := file_path.name
+			create Result.make_from_string (file_path.name)
 		ensure
 			result_not_void: Result /= Void
 		end
@@ -346,7 +346,7 @@ feature {NONE} -- Interface names
 		require
 			f_not_void: f /= Void
 		do
-			Result := "Files of type ("
+			create Result.make_from_string_general ("Files of type (")
 			Result.append_string_general (f)
 			Result.append_character (')')
 		end

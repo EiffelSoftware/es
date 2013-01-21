@@ -11,19 +11,16 @@ class
 inherit
 	CONF_VALIDITY
 		redefine
-			out,
 			is_equal
 		end
 
 	SHARED_EXECUTION_ENVIRONMENT
 		redefine
-			out,
 			is_equal
 		end
 
 	SHARED_LOCALE
 		undefine
-			out,
 			is_equal
 		end
 
@@ -36,7 +33,7 @@ feature {NONE} -- Initialization
 			-- Create.
 		do
 			create version.make (1)
-			create custom.make (1)
+			create custom.make_caseless (1)
 		end
 
 feature -- Access
@@ -56,10 +53,10 @@ feature -- Access
 	dynamic_runtime: CELL [BOOLEAN]
 			-- Enabled for dynamic runtime?
 
-	version: HASH_TABLE [EQUALITY_TUPLE [TUPLE [min: CONF_VERSION; max: CONF_VERSION]], STRING]
+	version: STRING_TABLE [EQUALITY_TUPLE [TUPLE [min: CONF_VERSION; max: CONF_VERSION]]]
 			-- Enabled for a certain version number? Indexed by the type of the version number.
 
-	custom: HASH_TABLE [HASH_TABLE [BOOLEAN, READABLE_STRING_32], READABLE_STRING_32]
+	custom: STRING_TABLE [STRING_TABLE [BOOLEAN]]
 			-- Custom variables that have to be fullfilled indexed by the variable name.
 			-- Values having the same name are indexed by the value.
 			-- [[invert, value], key]
@@ -71,12 +68,12 @@ feature -- Queries
 		require
 			a_state_not_void: a_state /= Void
 		local
-			l_vars: EQUALITY_HASH_TABLE [READABLE_STRING_32, READABLE_STRING_32]
-			l_version: HASH_TABLE [CONF_VERSION, STRING]
+			l_vars: STRING_TABLE [READABLE_STRING_GENERAL]
+			l_version: STRING_TABLE [CONF_VERSION]
 			l_ver_cond: EQUALITY_TUPLE [TUPLE [min: CONF_VERSION; max: CONF_VERSION]]
 			l_ver_state: CONF_VERSION
-			l_var_key, l_var_val: READABLE_STRING_32
-			l_values: HASH_TABLE [BOOLEAN, READABLE_STRING_32]
+			l_var_key, l_var_val: READABLE_STRING_GENERAL
+			l_values: STRING_TABLE [BOOLEAN]
 		do
 			Result := True
 
@@ -148,7 +145,7 @@ feature -- Queries
 			end
 		end
 
-	exclusion_value (a_key, a_value: READABLE_STRING_32): BOOLEAN
+	exclusion_value (a_key, a_value: READABLE_STRING_GENERAL): BOOLEAN
 			-- Exclusion value of `a_key' and `a_value' pair
 		require
 			a_key_ok: a_key /= Void and then custom.has (a_key.as_lower)
@@ -287,44 +284,34 @@ feature -- Update
 			dynamic_runtime := Void
 		end
 
-	add_custom (a_name, a_value: READABLE_STRING_32; a_exclude: BOOLEAN)
+	add_custom (a_name, a_value: READABLE_STRING_GENERAL; a_exclude: BOOLEAN)
 			-- Add requirement that `a_name'=`a_value'.
 		require
 			a_name_not_void: a_name /= Void
 			a_value_not_void: a_value /= Void
 		local
-			l_values: HASH_TABLE [BOOLEAN, READABLE_STRING_32]
-			l_name: READABLE_STRING_32
+			l_values: STRING_TABLE [BOOLEAN]
 		do
-			l_name := a_name.as_lower
-			custom.search (l_name)
-			if not custom.found then
-				create l_values.make (1)
-				l_values.force (a_exclude, a_value)
-				custom.force (l_values, l_name)
+			if attached custom.item (a_name) as l_val then
+				l_values := l_val
 			else
-				l_values := custom.found_item
-				l_values.force (a_exclude, a_value)
+				create l_values.make (1)
+				custom.force (l_values, a_name)
 			end
+			l_values.force (a_exclude, a_value)
 		end
 
-	remove_custom (a_name, a_value: READABLE_STRING_32)
+	remove_custom (a_name, a_value: READABLE_STRING_GENERAL)
 			-- Remove custom attribute `a_name'=`a_value'.
 		require
 			a_name_not_void: a_name /= Void
 			a_value_not_void: a_value /= Void
-		local
-			l_name: READABLE_STRING_32
 		do
-			l_name := a_name.as_lower
-			custom.search (l_name)
-			if custom.found then
-				check attached custom.found_item as l_values then
-					l_values.remove (a_value)
-					if l_values.is_empty then
-							-- Remove the empty one
-						custom.remove (l_name)
-					end
+			if attached custom.item (a_name) as l_values then
+				l_values.remove (a_value)
+				if l_values.is_empty then
+						-- Remove the empty one
+					custom.remove (a_name)
 				end
 			end
 		end
@@ -347,7 +334,7 @@ feature -- Update
 			unset: not version.has (a_type)
 		end
 
-	add_version (a_min, a_max: CONF_VERSION; a_type: STRING)
+	add_version (a_min, a_max: CONF_VERSION; a_type: STRING_32)
 			-- Set version constraint.
 		require
 			min_or_max: a_min /= Void or a_max /= Void
@@ -371,12 +358,12 @@ feature -- Equality
 			-- equal to current object?
 		do
 				-- we consider them equal if the textual representation is equal
-			Result := out.is_equal (other.out)
+			Result := text.is_equal (other.text)
 		end
 
 feature -- Output
 
-	out: STRING
+	text: STRING_32
 			-- Text representation for the conditions.
 		do
 			create Result.make_empty
@@ -391,29 +378,31 @@ feature -- Output
 				version.after
 			loop
 				if version.item_for_iteration.item.min /= Void then
-					Result.append (version.item_for_iteration.item.min.version + " <= ")
+					Result.append (version.item_for_iteration.item.min.version)
+					Result.append_string_general (" <= ")
 				end
-				Result.append (version.key_for_iteration + " version")
+				Result.append_string_general (version.key_for_iteration + " version")
 				if version.item_for_iteration.item.max /= Void then
-					Result.append (" <= " + version.item_for_iteration.item.max.version)
+					Result.append_string_general (" <= ")
+					Result.append (version.item_for_iteration.item.max.version)
 				end
-				Result.append (" and ")
+				Result.append_string_general (" and ")
 				version.forth
 			end
 
 			if dotnet /= Void then
 				if dotnet.item then
-					Result.append (".NET and ")
+					Result.append_string_general (".NET and ")
 				else
-					Result.append ("not .NET and ")
+					Result.append_string_general ("not .NET and ")
 				end
 			end
 
 			if dynamic_runtime /= Void then
 				if dynamic_runtime.item then
-					Result.append ("dynamic_runtime and ")
+					Result.append_string_general ("dynamic_runtime and ")
 				else
-					Result.append ("not dynamic_runtime and ")
+					Result.append_string_general ("not dynamic_runtime and ")
 				end
 			end
 
@@ -422,22 +411,17 @@ feature -- Output
 			until
 				custom.after
 			loop
-				check
-					is_valid_as_string_8: custom.key_for_iteration.is_valid_as_string_8
-				end
 				across
 					custom.item_for_iteration as l_c
 				loop
-					check
-						is_valid_as_string_8: l_c.key.is_valid_as_string_8
-					end
-					Result.append (custom.key_for_iteration.as_string_8)
+					Result.append_string_general (custom.key_for_iteration)
 					if l_c.item then
-						Result.append (" /= ")
+						Result.append_string_general (" /= ")
 					else
-						Result.append (" = ")
+						Result.append_string_general (" = ")
 					end
-					Result.append (l_c.key.as_string_8 + " and ")
+					Result.append_string_general (l_c.key)
+					Result.append_string_general (" and ")
 				end
 				custom.forth
 			end
@@ -452,7 +436,7 @@ feature -- Output
 
 feature {NONE} -- Output
 
-	append_list (data: like platform; names: like platform_names; output: STRING)
+	append_list (data: like platform; names: like platform_names; output: STRING_32)
 			-- Append `data' (if any) to `output' using specified `names'.
 		require
 			names_attached: attached names
@@ -463,7 +447,7 @@ feature {NONE} -- Output
 			if attached data then
 				check attached data.item as i and then attached i.value as v then
 					if i.invert then
-						output.append ("not ")
+						output.append_string_general ("not ")
 						c := " and "
 					else
 						c := " or "
@@ -475,11 +459,11 @@ feature {NONE} -- Output
 						v.after
 					loop
 						output.append (names.item (v.item))
-						output.append (c)
+						output.append_string_general (c)
 						v.forth
 					end
 					output.remove_tail (c.count)
-					output.append (") and ")
+					output.append_string_general (") and ")
 				end
 			end
 		end

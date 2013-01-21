@@ -74,7 +74,7 @@ feature -- Access
 			Result.append_integer (basic_block_id)
 			Result.append_character (',')
 			Result.append_character (' ')
-			Result.append (token.debug_output)
+			Result.append (token.debug_output.as_string_8)
 			Result.append_character (')')
 		end
 

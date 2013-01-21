@@ -99,7 +99,7 @@ feature -- Setting
 			a_name_attached: a_name /= Void
 			a_name_is_not_empty: not a_name.is_empty
 		do
-			create name_internal.make_from_string (a_name.as_upper)
+			create {IMMUTABLE_STRING_32} name_internal.make_from_string (a_name.as_upper)
 		ensure
 			name_internal_set: name_internal /= Void and then name.is_equal (a_name.as_upper)
 			name_set: name.is_equal (a_name.as_upper)
@@ -115,11 +115,11 @@ feature -- Setting
 
 feature -- Access
 
-	name: STRING
+	name: READABLE_STRING_32
 			-- Name of current item
 		do
 			if name_internal = Void then
-				Result := conf_class.name
+				create {IMMUTABLE_STRING_32} Result.make_from_string_general (conf_class.name)
 			else
 				Result := name_internal
 			end
@@ -360,10 +360,10 @@ invariant
 	parent_valid: parent /= Void implies parent.is_group and parent.is_valid_domain_item
 
 note
-        copyright:	"Copyright (c) 1984-2010, Eiffel Software"
-        license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-        licensing_options:	"http://www.eiffel.com/licensing"
-        copying: "[
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
 			Eiffel Software's Eiffel Development Environment is free
@@ -383,12 +383,11 @@ note
 			Environment; if not, write to the Free Software Foundation,
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
-        source: "[
+	source: "[
 			Eiffel Software
 			5949 Hollister Ave., Goleta, CA 93117 USA
 			Telephone 805-685-1006, Fax 805-685-6869
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
-
 end

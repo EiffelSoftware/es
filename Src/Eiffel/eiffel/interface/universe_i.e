@@ -40,7 +40,7 @@ feature {NONE} -- Initialization
 
 feature -- Properties
 
-	target_name: STRING
+	target_name: STRING_32
 			-- Name of the universe target.
 		require
 			target_not_void: target /= Void
@@ -72,8 +72,8 @@ feature -- Properties
 		require
 			a_target_not_void: a_target /= Void
 		local
-			l_version: HASH_TABLE [CONF_VERSION, STRING]
-			l_ver: STRING
+			l_version: STRING_TABLE [CONF_VERSION]
+			l_ver: STRING_32
 			l_clr_version: CONF_VERSION
 		do
 			create l_version.make (1)
@@ -323,7 +323,7 @@ feature -- Properties
 
 feature -- Access
 
-	classes_with_name (a_class_name: STRING): LIST [CLASS_I]
+	classes_with_name (a_class_name: READABLE_STRING_GENERAL): LIST [CLASS_I]
 			-- Classes with a local name of `class_name' found in the Universe.
 			-- That means renamings on the cluster of the class itself are taken into
 			-- account, but not renamings because of the use as a library.
@@ -422,7 +422,7 @@ feature -- Access
 			end
 		end
 
-	cluster_of_name (cluster_name: STRING): CLUSTER_I
+	cluster_of_name (cluster_name: READABLE_STRING_GENERAL): CLUSTER_I
 			-- Cluster whose name is `cluster_name' (Void if none)
 		require
 			good_argument: cluster_name /= Void
@@ -430,7 +430,7 @@ feature -- Access
 			Result ?= group_of_name (cluster_name)
 		end
 
-	group_of_name (group_name: STRING): CONF_GROUP
+	group_of_name (group_name: READABLE_STRING_GENERAL): CONF_GROUP
 			-- Group whose name is `group_name' (Void if none)
 		require
 			good_argument: group_name /= Void
@@ -498,7 +498,7 @@ feature -- Access
 			Result_not_void: Result /= Void
 		end
 
-	class_from_assembly (an_assembly, a_dotnet_name: STRING): EXTERNAL_CLASS_I
+	class_from_assembly (an_assembly: READABLE_STRING_32; a_dotnet_name: STRING): EXTERNAL_CLASS_I
 			-- Associated EXTERNAL_CLASS_I instance for `a_dotnet_name' external class name
 			-- from given assembly `an_assembly'. If more than one assembly with
 			-- `an_assembly' as name, look only in first found item.
@@ -514,7 +514,7 @@ feature -- Access
 			a_dotnet_name_not_empty: not a_dotnet_name.is_empty
 			target_not_void: target /= Void
 		local
-			l_assemblies: HASH_TABLE [CONF_PHYSICAL_ASSEMBLY_INTERFACE, STRING]
+			l_assemblies: STRING_TABLE [CONF_PHYSICAL_ASSEMBLY_INTERFACE]
 			l_assembly: CONF_PHYSICAL_ASSEMBLY
 		do
 			from
@@ -633,7 +633,7 @@ feature -- Update
 
 feature {COMPILER_EXPORTER} -- Implementation
 
-	buffered_classes: HASH_TABLE [CLASS_I, STRING]
+	buffered_classes: STRING_TABLE [CLASS_I]
 			-- Hash table that contains recent results of calls to `classes_with_name'.
 		once
 			create Result.make (200)
@@ -913,7 +913,7 @@ feature {NONE} -- Implementation
 			-- Search for library whose UUID matches the known one for EiffelBase. This library
 			-- is the one that should include all the known classes of the compiler.
 		local
-			l_libraries: HASH_TABLE [CONF_LIBRARY, STRING_8]
+			l_libraries: STRING_TABLE [CONF_LIBRARY]
 			l_uuid: UUID
 		do
 			from
@@ -935,7 +935,7 @@ invariant
 	target_in_conf_system: (conf_system /= Void and new_target = Void) implies target.system = conf_system
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

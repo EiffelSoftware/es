@@ -92,13 +92,13 @@ feature -- Generation
 	generate
 			-- Generate a .NET assembly
 		local
-			file_name: STRING
+			file_name: STRING_32
 			location: like {PROJECT_DIRECTORY}.path
 			retried, is_assembly_loaded, is_error_available: BOOLEAN
 			deletion_successful: BOOLEAN
 			output_file: RAW_FILE
 			l_last_error_msg: STRING
-			l_key_file_name: STRING
+			l_key_file_name: PATH
 			l_public_key: MD_PUBLIC_KEY
 			l_res: ARRAYED_LIST [CONF_EXTERNAL_RESOURCE]
 		do
@@ -115,7 +115,10 @@ feature -- Generation
 				is_error_available := True
 
 					-- Compute name of generated file if any.
-				file_name := System.name + "." + System.msil_generation_type
+				create file_name.make (System.name.count + 1 + system.msil_generation_type.count)
+				file_name.append_string_general (System.name)
+				file_name.append_character ('.')
+				file_name.append (system.msil_generation_type)
 
 				if is_finalizing then
 					location := project_location.final_path
@@ -271,7 +274,7 @@ feature -- Generation
 			l_precomp: REMOTE_PROJECT_DIRECTORY
 			l_viop: VIOP
 			l_use_optimized_precomp: BOOLEAN
-			l_assemblies: HASH_TABLE [CONF_PHYSICAL_ASSEMBLY_INTERFACE, STRING]
+			l_assemblies: STRING_TABLE [CONF_PHYSICAL_ASSEMBLY_INTERFACE]
 			l_as: CONF_PHYSICAL_ASSEMBLY
 			l_state: CONF_STATE
 		do
@@ -292,7 +295,7 @@ feature -- Generation
 						physical_assembly: l_as /= Void
 					end
 					if l_as.is_enabled (l_state) and then not l_as.is_in_gac then
-						copy_to_local (create {PATH}.make_from_string (l_as.location.build_path ("", l_as.location.original_file)), assembly_location (is_finalizing), Void)
+						copy_to_local (l_as.location.build_path ({STRING_32} "", l_as.location.original_file), assembly_location (is_finalizing), Void)
 						l_has_local := True
 					end
 					l_assemblies.forth
@@ -341,7 +344,7 @@ feature -- Generation
 					end
 						-- Compute name of configuration file: It is `system_name.xxx.config'
 						-- where `xxx' is either `exe' or `dll'.
-					copy_to_local (l_source_name, l_target_name, System.name + "." + System.msil_generation_type + ".config")
+					copy_to_local (l_source_name, l_target_name, {STRING_32} "" + System.name + "." + System.msil_generation_type + ".config")
 				end
 			else
 					-- An error occurred, let's raise an Eiffel compilation
@@ -842,7 +845,7 @@ feature {NONE} -- Type description
 			l_decl_type: CL_TYPE_A
 		do
 			if
-				System.msil_generation_type.is_equal ("exe") and then
+				System.msil_generation_type.same_string_general ("exe") and then
 				not System.root_creation_name.is_empty
 			then
 					-- Update the root class info
@@ -1156,7 +1159,7 @@ invariant
 	system_exists: System /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

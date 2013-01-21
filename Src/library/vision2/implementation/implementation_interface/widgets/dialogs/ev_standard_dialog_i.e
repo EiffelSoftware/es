@@ -21,7 +21,7 @@ inherit
 
 	EV_STANDARD_DIALOG_ACTION_SEQUENCES_I
 
-	EV_DIALOG_CONSTANTS
+	EV_DIALOG_NAMES
 		export
 			{NONE} all
 		end
@@ -40,7 +40,7 @@ feature -- Access
 
 feature -- Status report
 
-	selected_button: detachable STRING_32
+	selected_button: detachable IMMUTABLE_STRING_32
 			-- Label of the last clicked button.
 		deferred
 		end
@@ -61,7 +61,7 @@ feature -- Status setting
 
 feature {NONE} -- Implementation
 
-	internal_accept: STRING_32
+	internal_accept: IMMUTABLE_STRING_32
 			-- The text of the "ok" type button of `Current'.
 			-- e.g. not the cancel button.
 			-- Normally "OK", but redefined in some descendents

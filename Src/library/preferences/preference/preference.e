@@ -8,6 +8,9 @@ note
 deferred class
 	PREFERENCE
 
+inherit
+	PREFERENCE_EXPORTER
+
 feature -- Status setting
 
 	set_name (new_name: STRING)
@@ -113,7 +116,7 @@ feature -- Access
 		require
 			has_value: has_value
 		do
-			Result := text_value.to_string_8
+			Result := text_value.as_string_8_conversion
 		ensure
 			not_void: Result /= Void
 		end
@@ -139,7 +142,7 @@ feature -- Access
 	auto_preference: detachable like Current
 			-- Preference to use for auto color.
 
-feature {PREFERENCE, PREFERENCE_WIDGET, PREFERENCES_STORAGE_I, PREFERENCE_VIEW} -- Access
+feature {PREFERENCE_EXPORTER} -- Access
 
 	text_value: STRING_32
 			-- String value for this preference.

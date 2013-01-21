@@ -1335,7 +1335,7 @@ feature
 			end
 
 			create subdirectory.make (5)
-			subdirectory.append_string (packet_name (C_prefix, packet_number))
+			subdirectory.append_string_general (packet_name (C_prefix, packet_number))
 
 			dir_name := dir_name.extended (subdirectory)
 			create dir.make_with_path (dir_name)
@@ -1344,10 +1344,10 @@ feature
 			end
 
 			create base_name.make (12)
-			base_name.append (base_file_name)
+			base_name.append_string_general (base_file_name)
 			base_name.append_integer (feature_table_file_id)
 			base_name.append_character (feature_table_file_suffix)
-			base_name.append (Dot_c)
+			base_name.append_string_general (Dot_c)
 			Result := dir_name.extended (base_name)
 
 			create finished_file.make_with_path (dir_name.extended (Finished_file_for_make))
@@ -2206,7 +2206,7 @@ feature {NONE} -- Backup implementation
 				-- cannot be two classes with the same name, but you can have two classes with the same
 				-- file name.
 			l_fname := l_dir_name.extended (a_class.name.as_lower + ".e")
-			u.copy_file_path (a_class.full_file_path, l_fname)
+			u.copy_file_path (a_class.full_file_name, l_fname)
 
 				-- if the class does override, also copy the overriden classes
 			if a_class.does_override then
@@ -2256,7 +2256,7 @@ feature {NONE} -- Backup implementation
 			if not l_load.is_error then
 				l_system := l_load.last_system
 				create l_vis
-				l_vis.set_backup_directory (a_location.name)
+				l_vis.set_backup_directory (a_location)
 				l_vis.set_is_il_generation (system.il_generation)
 				l_system.process (l_vis)
 				l_file_name := a_location.extended (a_system.uuid.out).extended (backup_adapted_config_file)
@@ -2274,7 +2274,7 @@ invariant
 	inline_agent_table_not_void: inline_agent_table /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

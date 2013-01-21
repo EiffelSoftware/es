@@ -173,11 +173,12 @@ feature -- Visit nodes
 	process_target (a_target: CONF_TARGET)
 			-- Visit `a_target'.
 		local
-			l_libraries, l_clusters, l_overrides, l_assemblies: HASH_TABLE [CONF_GROUP, STRING]
+			l_libraries, l_clusters, l_overrides: STRING_TABLE [CONF_GROUP]
+			l_assemblies: STRING_TABLE [CONF_ASSEMBLY]
 			l_pre, l_old_pre: CONF_PRECOMPILE
 			l_old_group: CONF_GROUP
 			l_consumer_manager: CONF_CONSUMER_MANAGER
-			l_old_assemblies: HASH_TABLE [CONF_PHYSICAL_ASSEMBLY_INTERFACE, STRING]
+			l_old_assemblies: STRING_TABLE [CONF_PHYSICAL_ASSEMBLY_INTERFACE]
 			l_retried: BOOLEAN
 			l_error_count: INTEGER
 		do
@@ -270,7 +271,7 @@ feature -- Visit nodes
 							end
 						end
 					else
-						a_target.system.set_all_assemblies (create {HASH_TABLE [CONF_PHYSICAL_ASSEMBLY, STRING]}.make (0))
+						a_target.system.set_all_assemblies (create {STRING_TABLE [CONF_PHYSICAL_ASSEMBLY]}.make (0))
 					end
 
 						-- overrides can only be in the application target, must be done at the very end
@@ -308,7 +309,7 @@ feature -- Visit nodes
 		local
 			l_file: RAW_FILE
 			l_old_assembly: CONF_ASSEMBLY
-			l_classes: HASH_TABLE [CONF_CLASS, STRING]
+			l_classes: STRING_TABLE [CONF_CLASS]
 			l_cl: CONF_CLASS
 		do
 			l_old_assembly ?= old_group
@@ -318,9 +319,9 @@ feature -- Visit nodes
 
 				-- if it is a local assembly, check that the file exists
 			if state.is_dotnet and then not an_assembly.is_non_local_assembly then
-				create l_file.make_with_name (an_assembly.location.evaluated_path)
+				create l_file.make_with_path (an_assembly.location.evaluated_path)
 				if not l_file.exists or else not l_file.is_readable then
-					add_and_raise_error (create {CONF_ERROR_FILE}.make_with_config (an_assembly.location.evaluated_path, an_assembly.location.original_path, current_system.file_name))
+					add_and_raise_error (create {CONF_ERROR_FILE}.make_with_config (an_assembly.location.evaluated_path.name, an_assembly.location.original_path, current_system.file_name))
 				end
 			end
 			new_assemblies.force (an_assembly)
@@ -348,9 +349,9 @@ feature -- Visit nodes
 			l_target: CONF_TARGET
 			l_uuid: UUID
 			l_vis: like Current
-			l_ren: EQUALITY_HASH_TABLE [STRING, STRING]
+			l_ren: STRING_TABLE [STRING_32]
 			l_prefixed_classes: like current_classes
-			l_pre: STRING
+			l_pre: STRING_32
 			l_old_library: CONF_LIBRARY
 			l_cl: CONF_CLASS
 			l_current_classes: like current_classes
@@ -600,7 +601,7 @@ feature {NONE} -- Implementation
 	assembly_cache_folder: PATH
 			-- Assembly cache folder.
 
-	il_version: STRING
+	il_version: STRING_32
 			-- Version of il to use. (If not set, use latest)
 
 	application_target: CONF_TARGET
@@ -615,7 +616,7 @@ feature {NONE} -- Implementation
 	old_libraries: HASH_TABLE [CONF_TARGET, UUID]
 			-- Mapping of processed library targets of the old target, mapped with their uuid.
 
-	current_classes: HASH_TABLE [CONF_CLASS, STRING]
+	current_classes: STRING_TABLE [CONF_CLASS]
 			-- The classes of the group we are currently processing.
 
 	current_classes_by_filename: HASH_TABLE [CONF_CLASS, STRING_32]
@@ -642,10 +643,10 @@ feature {NONE} -- Implementation
 	handle_class (a_file, a_path: READABLE_STRING_32; a_cluster: CONF_CLUSTER)
 			-- Put the class in `a_path' `a_file' into `current_classes'.
 		local
-			l_file: KL_BINARY_INPUT_FILE
+			l_file: KL_BINARY_INPUT_FILE_32
 			l_class: CONF_CLASS
 			l_name: STRING
-			l_full_file: STRING_32
+			l_full_file: PATH
 			l_pc: ARRAYED_LIST [READABLE_STRING_GENERAL]
 			l_file_name: STRING_32
 			l_done: BOOLEAN
@@ -654,7 +655,6 @@ feature {NONE} -- Implementation
 			l_old_group: like old_group
 			l_old_group_classes_by_filename: like old_group.classes_by_filename
 			l_classname_finder: like classname_finder
-			gobo: GOBO_FILE_UTILITIES
 		do
 			l_current_classes := current_classes
 			l_old_group := old_group
@@ -668,7 +668,7 @@ feature {NONE} -- Implementation
 			if valid_eiffel_extension (a_file) then
 				create l_file_name.make (a_path.count + 1 + a_file.count)
 				l_file_name.append_string_general (a_path)
-				l_file_name.append (once "/")
+				l_file_name.append_character ('/')
 				l_file_name.append_string_general (a_file)
 					-- try to get it directly from old_group by filename
 				if
@@ -688,7 +688,7 @@ feature {NONE} -- Implementation
 							-- add it to `reused_classes'
 						reused_classes.force (l_class)
 						if l_current_classes.has_key (l_name) then
-							add_error (create {CONF_ERROR_CLASSDBL}.make (l_name, l_current_classes.found_item.full_file_name, l_class.full_file_name, a_cluster.target.system.file_name))
+							add_error (create {CONF_ERROR_CLASSDBL}.make (l_name, l_current_classes.found_item.full_file_name.name, l_class.full_file_name.name, a_cluster.target.system.file_name))
 						else
 							l_current_classes.force (l_class, l_name)
 							current_classes_by_filename.force (l_class, l_file_name)
@@ -706,8 +706,8 @@ feature {NONE} -- Implementation
 							end
 							added_classes.force (l_class)
 							if l_current_classes.has_key (l_name) then
-								add_error (create {CONF_ERROR_CLASSDBL}.make (l_name, l_current_classes.found_item.full_file_name,
-									l_class.full_file_name, a_cluster.target.system.file_name))
+								add_error (create {CONF_ERROR_CLASSDBL}.make (l_name, l_current_classes.found_item.full_file_name.name,
+									l_class.full_file_name.name, a_cluster.target.system.file_name))
 							else
 								l_current_classes.force (l_class, l_name)
 								current_classes_by_filename.force (l_class, l_file_name)
@@ -721,12 +721,11 @@ feature {NONE} -- Implementation
 						-- need to make sure that the class name we read from a class in an override
 						-- cluster is really the one intended. Fixes eweasel test#incr263.
 					if is_full_class_name_analysis or a_cluster.is_override then
-						l_full_file := a_cluster.location.evaluated_directory
-						l_full_file.append (l_file_name)
-						l_file := gobo.make_binary_input_file (l_full_file)
+						l_full_file := a_cluster.location.evaluated_directory.extended (l_file_name)
+						create l_file.make_with_path (l_full_file)
 						l_file.open_read
 						if not l_file.is_open_read then
-							add_and_raise_error (create {CONF_ERROR_FILE}.make (l_full_file))
+							add_and_raise_error (create {CONF_ERROR_FILE}.make (l_full_file.name))
 						else
 								-- get class name
 							l_classname_finder := classname_finder
@@ -749,7 +748,7 @@ feature {NONE} -- Implementation
 									if l_pc = Void then
 										create l_pc.make (1)
 									end
-									l_pc.extend (l_full_file)
+									l_pc.extend (l_full_file.name)
 									partial_classes.force (l_pc, l_name)
 								else
 										-- normal classes
@@ -759,8 +758,8 @@ feature {NONE} -- Implementation
 									end
 									added_classes.force (l_class)
 									if l_current_classes.has_key (l_name) then
-										add_error (create {CONF_ERROR_CLASSDBL}.make (l_name, l_current_classes.found_item.full_file_name,
-											l_class.full_file_name, a_cluster.target.system.file_name))
+										add_error (create {CONF_ERROR_CLASSDBL}.make (l_name, l_current_classes.found_item.full_file_name.name,
+											l_class.full_file_name.name, a_cluster.target.system.file_name))
 									else
 										l_current_classes.force (l_class, l_name)
 										current_classes_by_filename.force (l_class, l_file_name)
@@ -781,8 +780,8 @@ feature {NONE} -- Implementation
 							end
 							added_classes.force (l_class)
 							if l_current_classes.has_key (l_name) then
-								add_error (create {CONF_ERROR_CLASSDBL}.make (l_name, l_current_classes.found_item.full_file_name,
-									l_class.full_file_name, a_cluster.target.system.file_name))
+								add_error (create {CONF_ERROR_CLASSDBL}.make (l_name, l_current_classes.found_item.full_file_name.name,
+									l_class.full_file_name.name, a_cluster.target.system.file_name))
 							else
 								l_current_classes.force (l_class, l_name)
 								current_classes_by_filename.force (l_class, l_file_name)
@@ -798,15 +797,15 @@ feature {NONE} -- Implementation
 						-- l_name is set by all execution paths since the ones where it is not set raise an error.
 					check l_name /= Void end
 						-- Check file name against class name
-					if not a_file.substring (1, a_file.count - 1 - eiffel_file_extension.count).is_case_insensitive_equal (l_name) then
+					if not a_file.substring (1, a_file.count - 1 - eiffel_file_extension.count).is_case_insensitive_equal_general (l_name) then
 							-- We propose the correct file name. The file name construction follows the same schema as above
-						l_suggested_filename := a_path + "/" + l_name.as_lower + "." + eiffel_file_extension
-						l_suggested_filename := a_cluster.location.evaluated_directory + l_suggested_filename
+						create l_suggested_filename.make (25)
+						l_suggested_filename.append_string (a_cluster.location.evaluated_directory.name)
+						l_suggested_filename.append_string ({STRING_32} "/" + a_path + "/" + l_name.as_lower + "." + eiffel_file_extension)
 						if l_full_file = Void then
-							l_full_file := a_cluster.location.evaluated_directory
-							l_full_file.append (l_file_name)
+							l_full_file := a_cluster.location.evaluated_directory.extended (l_file_name)
 						end
-						add_warning (create {CONF_ERROR_FILENAME}.make (l_full_file, l_name, l_suggested_filename))
+						add_warning (create {CONF_ERROR_FILENAME}.make (l_full_file.name, l_name, l_suggested_filename))
 					end
 				end
 			end
@@ -825,13 +824,13 @@ feature {NONE} -- Implementation
 			current_classes.merge (a_group.classes)
 		end
 
-	process_removed (a_groups: HASH_TABLE [CONF_GROUP, STRING])
+	process_removed (a_groups: STRING_TABLE [CONF_GROUP])
 			-- Add the classes that have been removed to `removed_classes'
 		local
 			l_group: CONF_GROUP
 			l_library: CONF_LIBRARY
 			l_done: BOOLEAN
-			l_classes: HASH_TABLE [CONF_CLASS, STRING]
+			l_classes: STRING_TABLE [CONF_CLASS]
 		do
 			if a_groups /= Void then
 				from
@@ -890,7 +889,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_removed_classes (a_classes: HASH_TABLE [CONF_CLASS, STRING])
+	process_removed_classes (a_classes: STRING_TABLE [CONF_CLASS])
 			-- Add compiled classes from `a_classes' that are not in `reused_classes' to `removed_classes'.
 		local
 			l_overrides: ARRAYED_LIST [CONF_CLASS]
@@ -911,7 +910,7 @@ feature {NONE} -- Implementation
 							-- remove partial class files
 						l_partial ?= l_cl
 						if l_partial /= Void then
-							create l_file.make_with_name (l_partial.full_file_name)
+							create l_file.make_with_path (l_partial.full_file_name)
 							if l_file.exists then
 								l_file.delete
 							end
@@ -943,7 +942,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_with_old (a_new_groups, an_old_groups: HASH_TABLE [CONF_GROUP, STRING])
+	process_with_old (a_new_groups, an_old_groups: STRING_TABLE [CONF_GROUP])
 			-- Process `a_new_groups' and set `old_group' to the corresponding group of `an_old_groups'.
 		require
 			old_group_void: old_group = Void

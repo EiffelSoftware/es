@@ -183,10 +183,10 @@ feature {NONE} -- Implementation
 			l_dir_prop: DIRECTORY_PROPERTY
 			l_file_prop: FILE_PROPERTY
 			l_key_file_prop: KEY_FILE_PROPERTY
-			l_installed_runtimes: LIST [STRING]
+			l_installed_runtimes: ARRAYED_LIST [READABLE_STRING_32]
 			l_il_env: IL_ENVIRONMENT
 			l_il_choices: ARRAYED_LIST [STRING_32]
-			l_il_version: STRING
+			l_il_version: STRING_32
 		do
 				-- does `current_target' extend something?
 			l_extends := current_target.extends /= Void
@@ -590,7 +590,7 @@ feature {NONE} -- Validation and warning generation
 			current_target: current_target /= Void
 			a_name_not_void: a_name /= Void
 		local
-			l_targets: HASH_TABLE [CONF_TARGET, STRING]
+			l_targets: STRING_TABLE [CONF_TARGET]
 		do
 			l_targets := conf_system.targets
 			l_targets.search (a_name.as_lower)

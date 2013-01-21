@@ -133,9 +133,8 @@ feature{NONE} -- Implementation
 			-- at location `lpsolve_file_path'.
 		local
 			l_file: PLAIN_TEXT_FILE
-			u: FILE_UTILITIES
 		do
-			l_file := u.make_text_file (lpsolve_file_path)
+			create l_file.make_with_name (lpsolve_file_path)
 			l_file.open_read
 			l_file.put_string (a_content)
 			l_file.close
@@ -212,7 +211,7 @@ invariant
 	constraining_queries_attached: context_queries /= Void
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -59,7 +59,7 @@ feature {NONE} -- Query
 		do
 			create Result.make (4)
 			Result.append_integer (calculate_percentage (a_to_go))
-			Result.append_string ("%%")
+			Result.append_string_general ("%%")
 		end
 
 feature -- Basic operations
@@ -111,7 +111,7 @@ feature -- Basic operations: Eiffel compiler
 
 feature {NONE} -- Basic operations
 
-	put_degree (a_degree: STRING_32; a_to_go: INTEGER; a_name: READABLE_STRING_32)
+	put_degree (a_degree: STRING_32; a_to_go: INTEGER; a_name: READABLE_STRING_GENERAL)
 			-- <Precursor>
 		do
 			open_file
@@ -138,12 +138,14 @@ feature {NONE} -- Basic operations
 			end
 		end
 
-	put_string (a_message: STRING_32)
+	put_string (a_message: READABLE_STRING_GENERAL)
 			-- <Precursor>
+		local
+			u: UTF_CONVERTER
 		do
 			open_file
 			if not output_file.is_closed then
-				output_file.put_string (encoding_converter.utf32_to_file_encoding (a_message))
+				output_file.put_string (u.utf_32_string_to_utf_8_string_8 (a_message))
 				output_file.put_new_line
 				close_file
 			end
@@ -179,7 +181,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

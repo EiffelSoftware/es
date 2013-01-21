@@ -364,7 +364,7 @@ feature {EV_ANY, EV_ANY_I, EV_RICH_TEXT_BUFFERING_STRUCTURES_I} -- Status settin
 			l_text: like text
 			current_format: EV_CHARACTER_FORMAT_I
 			buffer: EV_RICH_TEXT_BUFFERING_STRUCTURES_I
-			text_file: PLAIN_TEXT_FILE
+			text_file: RAW_FILE
 			paragraph_indexes: detachable ARRAYED_LIST [INTEGER]
 			paragraph_formats: detachable ARRAYED_LIST [STRING_32]
 			paragraphs_exhausted: BOOLEAN

@@ -136,7 +136,7 @@ feature {NONE} -- Informations
 
 feature {NONE} -- Implementation
 
-	format_integer_part (a_string: STRING_32): STRING_32
+	format_integer_part (a_string: READABLE_STRING_GENERAL): STRING_32
 			-- group the `a_string' according the rules in `grouping'
 		require
 			a_string_exists: a_string /= Void
@@ -148,8 +148,6 @@ feature {NONE} -- Implementation
 			from
 				i := grouping.lower
 				pos := a_string.count
-			variant
-				 grouping.upper - i + 1
 			until
 				i > grouping.upper or pos < 1
 			loop
@@ -157,56 +155,58 @@ feature {NONE} -- Implementation
 						-- Current item is the number of digits that comprise the current group.
 					if pos - grouping.item (i) > 0 then
 							-- there are enougth elements for a new group
-						Result.prepend (a_string.substring (pos - grouping.item (i) + 1, pos))
+						Result.prepend_string_general (a_string.substring (pos - grouping.item (i) + 1, pos))
 						Result.prepend (group_separator)
 						pos := pos-grouping.item (i)
 					else
 							--run out of digits, append rest and finish
-						Result.prepend (a_string.substring (1, pos))
+						Result.prepend_string_general (a_string.substring (1, pos))
 						pos := 0
 					end
 				elseif i - 1 >= grouping.lower then
 						-- The previous element has to be repeatedly used for the remainder of the digits.
 					from
-					variant
-						pos
 					until
 						pos < 1	-- no more digits
 					loop
 						if pos - grouping.item (i - 1) > 0 then
 							-- there are enougth elements for a new group
-							Result.prepend (a_string.substring (pos - grouping.item (i - 1) + 1, pos))
+							Result.prepend_string_general (a_string.substring (pos - grouping.item (i - 1) + 1, pos))
 							Result.prepend (group_separator)
 							pos := pos - grouping.item (i - 1)
 						else
 								--run out of digits, append rest and finish
-							Result.prepend (a_string.substring (1, pos))
+							Result.prepend_string_general (a_string.substring (1, pos))
 							pos := 0
 						end
+					variant
+						pos
 					end
 					i := grouping.upper -- to terminate loop
 				else	-- grouping.item (i) <= 0 and i-1 < grouping.lower
 						-- i.e. no valid grouping array. Append rest to result and finish
-					Result.prepend (a_string.substring (1, pos))
+					Result.prepend_string_general (a_string.substring (1, pos))
 					i := grouping.upper -- to terminate loop
 				end
 				i := i + 1
+			variant
+				 grouping.upper - i + 1
 			end
 		ensure
 			Result_exists: Result /= Void
 		end
 
-	format_real_part (a_string: STRING_32): STRING_32
+	format_real_part (a_string: READABLE_STRING_GENERAL): STRING_32
 			--
 		require
 			a_string_exists: a_string /= Void
 			is_integer: a_string.is_integer
 		do
-			if a_string.is_equal ("0") then
+			if a_string.same_string ("0") then
 					-- real part is equal 0
 				create Result.make_filled ('0', numbers_after_decimal_separator)
 			else
-				create Result.make_from_string (a_string.substring (1, numbers_after_decimal_separator))
+				create Result.make_from_string_general (a_string.substring (1, numbers_after_decimal_separator))
 			end
 		ensure
 			Result_exists: Result /= Void

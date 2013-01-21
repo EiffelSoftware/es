@@ -65,32 +65,35 @@ feature -- Access, in compiled only, not stored to configuration file
 	library_target: CONF_TARGET
 			-- The library target.
 
-	mapping: EQUALITY_HASH_TABLE [STRING, STRING]
+	mapping: STRING_TABLE [STRING_32]
 			-- We use the one from the target.
 		do
 			if library_target /= Void then
 				Result := library_target.mapping
 			else
-				create Result.make (0)
+				create Result.make_equal (0)
 			end
 		end
 
 feature -- Access queries
 
-	sub_group_by_name (a_name: STRING): CONF_GROUP
+	sub_group_by_name (a_name: READABLE_STRING_GENERAL): CONF_GROUP
 			-- Return sub group with `a_name' if there is any.
 		do
 			if library_target /= Void then
+					-- It is ok for the time being to use `as_string_8_conversion' since
+					-- names are just STRING_8 instances, but it would be better to update
+					-- the configuration library to accept STRING_32 too.
 				Result := library_target.groups.item (a_name)
 			end
 		end
 
-	class_by_name (a_class: STRING; a_dependencies: BOOLEAN): LINKED_SET [CONF_CLASS]
+	class_by_name (a_class: READABLE_STRING_GENERAL; a_dependencies: BOOLEAN): LINKED_SET [CONF_CLASS]
 			-- Get the class with the final (after renaming/prefix) name `a_class'
 			-- (if `a_dependencies' then we check dependencies)
 		local
 			l_conf_class: CONF_CLASS
-			l_class: STRING
+			l_class: READABLE_STRING_GENERAL
 			l_mapping: like mapping
 		do
 			l_mapping := mapping
@@ -129,7 +132,7 @@ feature -- Access queries
 			end
 		end
 
-	class_options: HASH_TABLE [CONF_OPTION, STRING]
+	class_options: STRING_TABLE [CONF_OPTION]
 			-- Options for classes.
 		do
 				-- get local options
@@ -138,10 +141,10 @@ feature -- Access queries
 			end
 		end
 
-	path: STRING_32
+	path: READABLE_STRING_32
 			-- Path to the configuration file.
 		do
-			Result := resolver.resolved_library_path (location.evaluated_path)
+			Result := resolver.resolved_library_path (location.evaluated_path.name)
 		end
 
 feature {CONF_ACCESS} -- Update, stored in configuration file

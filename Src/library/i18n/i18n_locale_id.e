@@ -26,7 +26,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_language, a_region: STRING_32; a_script: detachable STRING_32)
+	make (a_language, a_region: READABLE_STRING_GENERAL; a_script: detachable READABLE_STRING_GENERAL)
 			-- Initialize locale id.
 			--
 			-- `a_language': Language of locale, e.g. 'en'
@@ -36,19 +36,19 @@ feature {NONE} -- Initialization
 			language_not_void: a_language /= Void
 			region_not_void: a_region /= Void
 		do
-			create language.make_from_string (a_language)
-			create region.make_from_string (a_region)
+			create language.make_from_string_general (a_language)
+			create region.make_from_string_general (a_region)
 			if a_script /= Void then
-				create script.make_from_string (a_script)
+				create script.make_from_string_general (a_script)
 			end
 			set_name
 		ensure
-			language_set: language.is_equal (a_language)
-			region_set: region.is_equal (a_region)
-			script_set: script /= Void implies script ~ a_script
+			language_set: language.same_string_general (a_language)
+			region_set: region.same_string_general (a_region)
+			script_set: a_script /= Void implies (attached script as l_script and then l_script.same_string_general (a_script))
 		end
 
-	make_from_string (identifier: STRING_32)
+	make_from_string (identifier: READABLE_STRING_GENERAL)
 			-- Initialize locale id with identifier.
 			--
 			-- There are several ways this identifier could look
@@ -73,7 +73,7 @@ feature {NONE} -- Initialization
 			index: INTEGER
 			splits: LIST [STRING_32]
 		do
-			create temp.make_from_string(identifier)
+			create temp.make_from_string_general (identifier)
 				-- remove @ and keep SS if there
 			index := temp.index_of ('@',1)
 			if index > 0 then
@@ -104,7 +104,7 @@ feature {NONE} -- Initialization
 				inspect splits.count
 				when 1 then
 					language := splits.i_th (1)
-					region := ""
+					create region.make_empty
 				when 2  then
 					language := splits.i_th (1)
 					region := splits.i_th (2)
@@ -113,8 +113,8 @@ feature {NONE} -- Initialization
 					script := splits.i_th (2)
 					region := splits.i_th (3)
 				else
-					language := ""
-					region := ""
+					create language.make_empty
+					create region.make_empty
 				end
 			end
 			set_name
@@ -182,8 +182,10 @@ feature {NONE} -- Implementation
 			name := language.twin
 			full_name := language.twin
 			if not region.is_empty then
-				name.append ("_"+region)
-				full_name.append ("_"+region)
+				name.append_character ('_')
+				name.append (region)
+				full_name.append_character ('_')
+				full_name.append (region)
 			end
 			if encoding /= Void then
 				full_name.append_character ('.')

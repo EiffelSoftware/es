@@ -110,13 +110,15 @@ feature -- Query
 
 feature {NONE} -- Implementation
 
-	file_content: STRING
+	file_content: STRING_32
 			-- Content of ini file
 		local
 			l_file: PLAIN_TEXT_FILE
+			l_content: STRING
+			u: UTF_CONVERTER
 		do
-			create Result.make_empty
 			create l_file.make_with_path (eiffel_layout.user_external_command_file_name (ini_file_name))
+			create l_content.make (l_file.count)
 			if l_file.exists then
 				from
 					l_file.open_read
@@ -126,9 +128,13 @@ feature {NONE} -- Implementation
 				loop
 					l_file.read_line
 
-					Result.append (l_file.last_string)
-					Result.append ("%N")
+					l_content.append (l_file.last_string)
+					l_content.append ("%N")
 				end
+					-- The .ini file was generated in UTF-8 encoding.
+				Result := u.utf_8_string_8_to_string_32 (l_content)
+			else
+				create Result.make_empty
 			end
 		ensure
 			not_void: attached Result
@@ -178,15 +184,17 @@ feature {INI_FAST_PARSER} -- Actions
 				create l_string.make_from_string (a_value)
 				l_string.left_adjust
 				create l_command.make_from_string (editor, l_string)
-				l_command.setup_managed_shortcut (editor.accelerators)
-				commands.put (l_command, a_name.to_integer)
+				if l_command.is_valid then
+					l_command.setup_managed_shortcut (editor.accelerators)
+					commands.put (l_command, a_name.to_integer)
+				end
 			else
 				check False end	 -- Implied by `generate_ini'
 			end
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

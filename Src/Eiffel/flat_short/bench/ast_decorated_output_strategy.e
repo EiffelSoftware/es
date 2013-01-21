@@ -198,8 +198,8 @@ feature {AST_DECORATED_OUTPUT_STRATEGY} -- Access
 
 	last_actual_local_type: TYPE_A
 
-	locals_for_current_feature: HASH_TABLE [TYPE_A, STRING]
-	object_test_locals_for_current_feature: HASH_TABLE [TYPE_A, STRING]
+	locals_for_current_feature: HASH_TABLE [TYPE_A, STRING_32]
+	object_test_locals_for_current_feature: HASH_TABLE [TYPE_A, STRING_32]
 
 	renamed_feature: E_FEATURE
 			-- Saved renamed feature for formal declaration renaming.
@@ -1017,12 +1017,12 @@ feature {NONE} -- Implementation
 				last_type := current_feature.arguments.i_th (l_as.argument_position)
 			elseif l_as.is_local then
 				if last_type = Void then
-					if locals_for_current_feature.has_key (l_as.access_name_8) then
+					if locals_for_current_feature.has_key (l_as.access_name_32) then
 						last_type := locals_for_current_feature.found_item
 					end
 				end
 			elseif l_as.is_object_test_local then
-				if object_test_locals_for_current_feature.has_key (l_as.access_name_8) then
+				if object_test_locals_for_current_feature.has_key (l_as.access_name_32) then
 					last_type := object_test_locals_for_current_feature.found_item
 				end
 			elseif l_as.is_tuple_access then
@@ -1718,11 +1718,11 @@ feature {NONE} -- Implementation
 				if l_as.is_argument then
 					create {TYPED_POINTER_A} last_type.make_typed (current_feature.arguments.i_th (l_as.argument_position))
 				elseif l_as.is_local then
-					if locals_for_current_feature.has_key (l_as.feature_name.internal_name.name_8) then
+					if locals_for_current_feature.has_key (l_as.feature_name.internal_name.name_32) then
 						create {TYPED_POINTER_A} last_type.make_typed (locals_for_current_feature.found_item)
 					end
 				elseif l_as.is_object_test_local then
-					if object_test_locals_for_current_feature.has_key (l_as.feature_name.internal_name.name_8) then
+					if object_test_locals_for_current_feature.has_key (l_as.feature_name.internal_name.name_32) then
 						create {TYPED_POINTER_A} last_type.make_typed (object_test_locals_for_current_feature.found_item)
 					end
 				else
@@ -2321,7 +2321,7 @@ feature {NONE} -- Implementation
 
 				-- Remember found OT locals.
 			if l_ot_name /= Void and l_ot_type /= Void then
-				object_test_locals_for_current_feature.force (l_ot_type, l_ot_name.name_8)
+				object_test_locals_for_current_feature.force (l_ot_type, l_ot_name.name_32)
 			end
 			last_type := boolean_type
 		end
@@ -4638,7 +4638,7 @@ feature {NONE} -- Implementation: helpers
 		local
 			i, l_count: INTEGER
 			item: FEATURE_NAME
-			creators: HASH_TABLE [FEATURE_ADAPTER, STRING]
+			creators: STRING_TABLE [FEATURE_ADAPTER]
 			feat_adapter: FEATURE_ADAPTER
 			l_text_formatter_decorator: like text_formatter_decorator
 		do
@@ -4652,7 +4652,7 @@ feature {NONE} -- Implementation: helpers
 				i > l_count
 			loop
 				item := a_list.i_th (i)
-				feat_adapter := creators.item (item.internal_name.name_8)
+				feat_adapter := creators.item (item.internal_name.name_32)
 				if feat_adapter /= Void then
 					feat_adapter.format (l_text_formatter_decorator)
 					l_text_formatter_decorator.put_new_line
@@ -5044,7 +5044,7 @@ feature {NONE} -- Implementation: helpers
 			end
 				-- Compute type of the cursor and associate cursor name with this type.
 			if attached last_type and then attached expr_type (l_as.cursor_expression) as t then
-				object_test_locals_for_current_feature.force (t.as_attached_in (current_class), l_as.identifier.name_8)
+				object_test_locals_for_current_feature.force (t.as_attached_in (current_class), l_as.identifier.name_32)
 			end
 		end
 
@@ -5056,7 +5056,7 @@ invariant
 	object_test_locals_for_current_feature_not_void: object_test_locals_for_current_feature /= Void
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

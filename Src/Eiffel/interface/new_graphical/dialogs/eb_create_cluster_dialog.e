@@ -484,15 +484,14 @@ feature {NONE} -- Implementation
 				aok := False
 				prompts.show_error_prompt (warning_messages.w_cluster_path_not_valid, target.window, Void)
 			elseif cp.is_empty then
-				create chosen_dir.make_from_string (group.location.build_path (path, ""))
-				chosen_dir := chosen_dir.extended (cluster_name)
+				chosen_dir := group.location.build_path (path, "").extended (cluster_name)
 				original_path := chosen_dir
 			else
 				create l_loc.make (cp.name, Eiffel_universe.target)
 				if not is_top_level and then group.is_cluster then
 					l_loc.set_parent (group.location)
 				end
-				create icp.make_from_string (l_loc.evaluated_directory)
+				icp := l_loc.evaluated_directory
 				aok := Eiffel_universe.cluster_of_location (icp).is_empty
 				if not aok then
 					prompts.show_error_prompt (Warning_messages.w_cluster_path_already_exists (icp.name), target.window, Void)
@@ -558,7 +557,7 @@ feature {NONE} -- Graphic interface
 			bd.ok_actions.extend (agent set_path (bd))
 			l_dir_text := folder_entry.text
 			if not l_dir_text.is_empty then
-				l_dir_text := (create {ENV_INTERP}).interpreted_string (l_dir_text)
+				l_dir_text := (create {ENV_INTERP}).interpreted_string_32 (l_dir_text)
 				create l_path.make_from_string (l_dir_text)
 				if not (create {DIRECTORY}.make_with_path (l_path)).exists then
 					l_path := Void
@@ -643,7 +642,7 @@ invariant
 	group_implies_path: group /= Void implies path /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

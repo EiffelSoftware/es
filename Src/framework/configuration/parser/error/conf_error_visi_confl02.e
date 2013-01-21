@@ -16,12 +16,12 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_class: STRING)
+	make (a_class: READABLE_STRING_GENERAL)
 			-- Create.
 		require
 			a_class_not_void: a_class /= Void
 		do
-			text := "Visibility conflict (conflicting feature renamings) for class: "+a_class
+			text := {STRING_32} "Visibility conflict (conflicting feature renamings) for class: "+a_class
 		end
 
 feature -- Access

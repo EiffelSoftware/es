@@ -501,7 +501,7 @@ feature -- Access
 			result_not_void: Result /= Void
 		end
 
-	pixmap_from_group_path (a_group: CONF_GROUP; a_path: STRING): EV_PIXMAP
+	pixmap_from_group_path (a_group: CONF_GROUP; a_path: READABLE_STRING_GENERAL): EV_PIXMAP
 			-- Return pixmap based on `a_group' and `a_path'.
 		require
 			a_group_not_void: a_group /= Void
@@ -538,7 +538,7 @@ feature -- Access
 				elseif a_group.is_assembly or a_group.is_physical_assembly then
 					Result := folder_namespace_icon
 				else
-					check should_not_reach: false end
+					check should_not_reach: False end
 				end
 			else
 				if a_group.is_override then
@@ -580,7 +580,7 @@ feature -- Access
 				elseif a_group.is_assembly or a_group.is_physical_assembly then
 					Result := folder_assembly_icon
 				else
-					check should_not_reach: false end
+					check should_not_reach: False end
 				end
 			end
 		ensure

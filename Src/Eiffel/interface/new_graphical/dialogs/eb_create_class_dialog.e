@@ -249,7 +249,7 @@ feature -- Status Report
 	cluster: CONF_CLUSTER
 			-- Selected cluster
 
-	path: STRING
+	path: IMMUTABLE_STRING_32
 			-- Selected subfolder path
 
 feature -- Status Settings
@@ -604,8 +604,7 @@ feature {NONE} -- Implementation
 					check_valid_creation_procedure
 				end
 				if aok then
-					create f_name.make_from_string (cluster.location.build_path (path, ""))
-					f_name := f_name.extended_path (file_name)
+					f_name := cluster.location.build_path (path, "").extended_path (file_name)
 					base_name := file_name
 					create file.make_with_path (f_name)
 					if file.exists then
@@ -664,7 +663,7 @@ feature {NONE} -- Implementation
 		require
 			current_state_is_valid: aok
 		local
-			l_classes: HASH_TABLE [CONF_CLASS, STRING]
+			l_classes: STRING_TABLE [CONF_CLASS]
 		do
 			l_classes := cluster.accessible_classes
 			if l_classes.has_key (class_name) and then l_classes.found_item.is_valid then
@@ -915,7 +914,7 @@ invariant
 	cluster_implies_path: cluster /= Void implies path /= Void
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -9,6 +9,9 @@ note
 deferred class
 	PREFERENCES_STORAGE_I
 
+inherit
+	PREFERENCE_EXPORTER
+
 feature {NONE} -- Initialization
 
 	make_empty
@@ -88,7 +91,7 @@ feature {PREFERENCES} -- Access
 	location: READABLE_STRING_GENERAL
 			-- The actual location of the underlying preference (filename, registry key, etc).
 
-	session_values: HASH_TABLE [STRING_32, STRING_8]
+	session_values: STRING_TABLE [STRING_32]
 			-- Hash of user-defined values which have been loaded.
 
 	preferences: detachable PREFERENCES

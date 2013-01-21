@@ -37,7 +37,7 @@ feature -- Basic validity queries
 			Result := concurrency_names.has (a_concurrency)
 		end
 
-	is_warning_known (a_warning: STRING_8): BOOLEAN
+	is_warning_known (a_warning: READABLE_STRING_GENERAL): BOOLEAN
 			-- Is `a_warning' known?
 		require
 			a_warning_not_void: a_warning /= Void
@@ -46,7 +46,7 @@ feature -- Basic validity queries
 			Result := known_warnings.has (a_warning)
 		end
 
-	valid_warning (a_warning: STRING_8; a_namespace: like latest_namespace): BOOLEAN
+	valid_warning (a_warning: READABLE_STRING_GENERAL; a_namespace: like latest_namespace): BOOLEAN
 			-- Is `a_warning' a valid warning in `a_namespace'?
 		require
 			a_warning_not_void: a_warning /= Void
@@ -62,14 +62,16 @@ feature -- Basic validity queries
 			Result := w.has (a_warning)
 		end
 
-	valid_regexp (a_regexp: STRING): BOOLEAN
+	valid_regexp (a_regexp: READABLE_STRING_GENERAL): BOOLEAN
 			-- is `a_regexp' a valid regular expression?
 		local
 			l_regexp: REGULAR_EXPRESSION
+			u: UTF_CONVERTER
 		do
 			if a_regexp /= Void then
 				create l_regexp
-				l_regexp.compile (a_regexp)
+					-- FIXME: We currently perform the match on the UTF-8 version of the string.
+				l_regexp.compile (u.utf_32_string_to_utf_8_string_8 (a_regexp))
 				Result := l_regexp.is_compiled
 			end
 		end
@@ -77,10 +79,10 @@ feature -- Basic validity queries
 	valid_setting (a_setting: READABLE_STRING_GENERAL): BOOLEAN
 			-- Is `a_setting' a valid setting?
 		do
-			Result := a_setting /= Void and then (a_setting.is_valid_as_string_8 and then valid_settings.has (a_setting.as_string_8))
+			Result := a_setting /= Void and then (a_setting.is_valid_as_string_8 and then valid_settings.has (a_setting.to_string_8))
 		end
 
-	valid_version_type (a_version_type: STRING_8): BOOLEAN
+	valid_version_type (a_version_type: STRING_32): BOOLEAN
 			-- Is `a_version_type' valid?
 		do
 			Result := a_version_type /= Void and then valid_version_types.has (a_version_type)
@@ -237,48 +239,48 @@ feature {NONE} -- Onces
 
 feature {NONE} -- Implementation
 
-	known_warnings: SEARCH_TABLE [STRING]
+	known_warnings: STRING_TABLE [BOOLEAN]
 			-- The codes of known warnings.
 		once
 			Result := valid_warnings_1_10_0
 		end
 
-	valid_warnings_default: SEARCH_TABLE [STRING]
+	valid_warnings_default: STRING_TABLE [BOOLEAN]
 			-- The codes of valid warnings in a namespace below `namespace_1_10_0'.
 		once
 			create Result.make (13)
-			Result.force (w_unused_local)
-			Result.force (w_obsolete_class)
-			Result.force (w_obsolete_feature)
-			Result.force (w_once_in_generic)
-			Result.force (w_syntax)
-			Result.force (w_old_verbatim_strings)
-			Result.force (w_same_uuid)
-			Result.force (w_export_class_missing)
-			Result.force (w_vweq)
-			Result.force (w_vjrv)
-			Result.force (w_renaming_unknown_class)
-			Result.force (w_option_unknown_class)
-			Result.force (w_classname_filename_mismatch)
+			Result.force (True, w_unused_local)
+			Result.force (True, w_obsolete_class)
+			Result.force (True, w_obsolete_feature)
+			Result.force (True, w_once_in_generic)
+			Result.force (True, w_syntax)
+			Result.force (True, w_old_verbatim_strings)
+			Result.force (True, w_same_uuid)
+			Result.force (True, w_export_class_missing)
+			Result.force (True, w_vweq)
+			Result.force (True, w_vjrv)
+			Result.force (True, w_renaming_unknown_class)
+			Result.force (True, w_option_unknown_class)
+			Result.force (True, w_classname_filename_mismatch)
 		ensure
 			Result_not_void: Result /= Void
 		end
 
-	valid_warnings_1_10_0: SEARCH_TABLE [STRING]
+	valid_warnings_1_10_0: STRING_TABLE [BOOLEAN]
 			-- The codes of valid warnings in `namespace_1_10_0' and above.
 		once
 			Result := valid_warnings_default.twin
-			Result.force (w_vwab)
+			Result.force (True, w_vwab)
 		ensure
 			Result_not_void: Result /= Void
 		end
 
-	valid_version_types: SEARCH_TABLE [STRING]
+	valid_version_types: STRING_TABLE [BOOLEAN]
 			-- The codes of valid version types.
 		once
 			create Result.make (2)
-			Result.force (v_compiler)
-			Result.force (v_msil_clr)
+			Result.force (True, v_compiler)
+			Result.force (True, v_msil_clr)
 		ensure
 			Result_not_void: Result /= Void
 		end
@@ -334,34 +336,34 @@ feature {NONE} -- Implementation
 			Result_not_void: Result /= Void
 		end
 
-	boolean_settings: SEARCH_TABLE [STRING_32]
+	boolean_settings: STRING_TABLE [BOOLEAN]
 			-- Settings that have a boolean value.
 		once
 			create Result.make (23)
-			Result.force (s_dead_code_removal)
-			Result.force (s_array_optimization)
-			Result.force (s_inlining)
-			Result.force (s_check_for_void_target)
-			Result.force (s_check_for_catcall_at_runtime)
-			Result.force (s_check_generic_creation_constraint)
-			Result.force (s_check_vape)
-			Result.force (s_enforce_unique_class_names)
-			Result.force (s_exception_trace)
-			Result.force (s_address_expression)
-			Result.force (s_java_generation)
-			Result.force (s_msil_generation)
-			Result.force (s_msil_use_optimized_precompile)
-			Result.force (s_line_generation)
-			Result.force (s_cls_compliant)
-			Result.force (s_dotnet_naming_convention)
-			Result.force (s_dynamic_runtime)
-			Result.force (s_old_verbatim_strings)
-			Result.force (s_console_application)
-			Result.force (s_force_32bits)
-			Result.force (s_multithreaded)
-			Result.force (s_il_verifiable)
-			Result.force (s_use_cluster_name_as_namespace)
-			Result.force (s_use_all_cluster_name_as_namespace)
+			Result.force (True, s_dead_code_removal)
+			Result.force (True, s_array_optimization)
+			Result.force (True, s_inlining)
+			Result.force (True, s_check_for_void_target)
+			Result.force (True, s_check_for_catcall_at_runtime)
+			Result.force (True, s_check_generic_creation_constraint)
+			Result.force (True, s_check_vape)
+			Result.force (True, s_enforce_unique_class_names)
+			Result.force (True, s_exception_trace)
+			Result.force (True, s_address_expression)
+			Result.force (True, s_java_generation)
+			Result.force (True, s_msil_generation)
+			Result.force (True, s_msil_use_optimized_precompile)
+			Result.force (True, s_line_generation)
+			Result.force (True, s_cls_compliant)
+			Result.force (True, s_dotnet_naming_convention)
+			Result.force (True, s_dynamic_runtime)
+			Result.force (True, s_old_verbatim_strings)
+			Result.force (True, s_console_application)
+			Result.force (True, s_force_32bits)
+			Result.force (True, s_multithreaded)
+			Result.force (True, s_il_verifiable)
+			Result.force (True, s_use_cluster_name_as_namespace)
+			Result.force (True, s_use_all_cluster_name_as_namespace)
 		ensure
 			Result_not_void: Result /= Void
 		end

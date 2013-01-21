@@ -18,7 +18,7 @@ create
 
 feature {NONE} -- Initialize
 
-	make (a_runtime_version: STRING)
+	make (a_runtime_version: READABLE_STRING_GENERAL)
 			-- Initialize Current. Initialize `exists' accordingly.
 		require
 			a_runtime_version_not_void: a_runtime_version /= Void
@@ -27,7 +27,7 @@ feature {NONE} -- Initialize
 			l_reg: WEL_REGISTRY
 			l_val: WEL_REGISTRY_KEY_VALUE
 			l_p: POINTER
-			l_dir: STRING
+			l_dir: STRING_32
 			l_dll: WEL_DLL
 			l_dis: like dispenser
 			l_cache: like assembly_cache
@@ -81,7 +81,7 @@ feature -- Clean up
 
 feature -- Basic operations
 
-	retrieve_assembly_properties (a_file_name: STRING): ASSEMBLY_PROPERTIES
+	retrieve_assembly_properties (a_file_name: READABLE_STRING_GENERAL): ASSEMBLY_PROPERTIES
 			-- Retrieves assembly properties for `a_file_name'
 		require
 			a_file_name_attached: a_file_name /= Void
@@ -121,7 +121,7 @@ feature -- Basic operations
 						if strong_name_token_from_assembly (l_fn.item, $l_p, $l_bytes_len) then
 							create l_bytes.make_from_pointer (l_p, l_bytes_len.to_integer_32)
 							l_len := l_bytes_len.to_integer_32
-							create l_key.make (1, l_len)
+							create l_key.make_filled (0, 1, l_len)
 							from until i = l_len  loop
 								l_key.put (l_bytes.read_natural_8 (i), i + 1)
 								i := i + 1
@@ -137,12 +137,12 @@ feature -- Basic operations
 					create Result.make (a_file_name, l_name.string, l_hash, l_key, l_flags, l_amd)
 					if l_cache /= default_pointer and Result.is_signed then
 
-						create l_name.make (Result.out)
+						create l_name.make (Result.full_name)
 						if c_is_in_cache (l_cache, l_name.item) then
 							Result.set_is_locatable_in_gac
 						else
 								-- Check 1.x
-							create l_name.make (Result.out_v1x)
+							create l_name.make (Result.full_name_v1x)
 							if c_is_in_cache (l_cache, l_name.item) then
 								Result.set_is_locatable_in_gac
 							end
@@ -170,7 +170,7 @@ feature -- Status report
 
 feature {NONE} -- Caching
 
-	add_runtime_path (a_path: STRING)
+	add_runtime_path (a_path: STRING_32)
 			-- Add's `a_path' to PATH environment variable, if it has not already been added
 		require
 			a_path_attached: a_path /= Void
@@ -203,13 +203,13 @@ feature {NONE} -- Caching
 				create l_wpath.make (l_new_path)
 				l_done := c_set_environment_variable (l_wname.item, l_wpath.item)
 
-				added_paths.extend (a_path)
+				added_paths.force (True, a_path)
 			end
 		ensure
 			has_path: added_paths.has (a_path)
 		end
 
-	added_paths: ARRAYED_LIST [STRING]
+	added_paths: STRING_TABLE [BOOLEAN]
 			-- List of paths added to PATH environment variable
 		once
 			create Result.make (1)
@@ -412,7 +412,7 @@ feature {NONE} -- Externals
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

@@ -22,8 +22,6 @@ feature {NONE} -- Implementation
 			--
 			-- Note: You can remove this feature if you don't need
 			--       a progress bar.
-		local
-			h1: EV_HORIZONTAL_BOX
 		do
 			choice_box.wipe_out
 			choice_box.set_border_width (10)
@@ -67,7 +65,7 @@ feature {NONE} -- Implementation
 			message.set_text ("Summarize here what your wizard has done or will do.")
 		end
 
-	pixmap_icon_location: FILE_NAME
+	pixmap_icon_location: PATH
 			-- Icon for the Eiffel Store Wizard
 		once
 			create Result.make_from_string ("eiffel_wizard_icon.png")

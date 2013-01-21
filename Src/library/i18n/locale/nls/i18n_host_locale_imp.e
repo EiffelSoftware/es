@@ -208,7 +208,7 @@ feature {NONE} -- Currency formatting
 		do
 		--	Result := extract_locale_string (current_lcid, nls_constants.locale_snegativesign,
 		--									nls_constants.locale_snegativesign_maxlen)
-			Result := ""
+			create Result.make_empty
 		end
 
 	get_currency_negative_sign: STRING_32

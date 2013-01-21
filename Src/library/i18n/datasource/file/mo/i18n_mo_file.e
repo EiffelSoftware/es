@@ -33,7 +33,7 @@ feature {NONE} -- Initialization
 		local
 			l_list: detachable LIST [STRING_32]
 		do
-			create {RAW_FILE} file.make (a_path.to_string_8)
+			create {RAW_FILE} file.make_with_name (a_path)
 			last_translated := [0, l_list]
 			last_original := [0, l_list]
 		ensure then
@@ -167,7 +167,7 @@ feature -- Access
 			get_translated_entries (i)
 			l_list := last_translated.list
 			check l_list /= Void end -- Implied from postcondition of `get_translated_entries'
-			create Result.make_filled ("", 0, 3)
+			create Result.make_filled ({STRING_32} "", 0, 3)
 			from
 				l_list.start
 				counter := 0
@@ -185,24 +185,18 @@ feature -- Access
 	locale: detachable STRING_32
 			-- Best guess at locale of the file. This could also be a language.
 		local
-			file_name: STRING_32
-			ending: STRING_32
-			possible: STRING_32
-			separator_index: INTEGER
+			l_name: READABLE_STRING_GENERAL
 		do
-			-- The only inherent locale identifier in a .mo file is the name.
-			-- Any other way to identify it is project dependant, see FILE_MANAGER for more details
-			file_name := file.name.as_string_32
-			ending := file_name.twin
-			ending.keep_tail (3)
-			separator_index := file_name.last_index_of (Operating_environment.Directory_separator, file_name.count)
-			possible := file_name.substring(separator_index+1, file_name.count-3)
-
-			if ending.is_equal (".mo") then
-				if possible.count = 2 or
-					possible.count = 5 and (possible.item (3) = '_' or possible.item (3) = '-')
+				-- The only inherent locale identifier in a .mo file is the name.
+				-- Any other way to identify it is project dependant, see FILE_MANAGER for more details
+			if attached file.path.entry as l_entry and then l_entry.has_extension ("mo") then
+				l_name := l_entry.name
+				if
+					l_name.count = 5 or
+					(l_name.count = 8 and (l_name.item (3) = '_' or l_name.item (3) = '-'))
 				then
-					Result := possible
+					create Result.make_from_string_general (l_name)
+					Result.remove_tail (3)
 				end
 			end
 		end
@@ -286,14 +280,14 @@ feature {NONE} -- Implementation
 			t_list : LIST [STRING_32]
 			t_string : detachable STRING_32
 			index : INTEGER
-			char0: WIDE_CHARACTER
-			code0: INTEGER
+			char0: CHARACTER_32
+			code0: NATURAL_32
 			conditional: STRING_32
-			nplurals: INTEGER
+			nplurals: INTEGER_32
 			l_list: detachable LIST [STRING_32]
 		do
 			char0 := '0'
-			code0 := char0.code
+			code0 := char0.natural_32_code
 				-- Get the first translated string of the first entry in the .mo file - this is the headers entry (the empty string)
 			get_translated_entries (1)
 			l_list := last_translated.list
@@ -319,7 +313,8 @@ feature {NONE} -- Implementation
 					-- The following code is not very nice.
 				index := t_string.index_of (';', 1)
 				if index > 1 and t_string.has_substring ("nplurals=") then
-					nplurals := (t_string.item_code(index-1) - code0)
+					check greater: t_string.code (index - 1) >= code0 end
+					nplurals := (t_string.code(index-1) - code0).to_integer_32
 						-- ?????? Does this find out the integer value of the represented character???
 					index := t_string.index_of ('=', index)+1
 				    conditional := t_string.substring (index, t_string.count)

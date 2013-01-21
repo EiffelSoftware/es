@@ -1202,7 +1202,7 @@ feature {NONE} -- Implementation: preparation
 			-- Prepare test generation
 		local
 			l_file_name: FILE_NAME
-			l_file: KL_TEXT_OUTPUT_FILE
+			l_file: KL_TEXT_OUTPUT_FILE_32
 			l_error_handler: AUT_ERROR_HANDLER
 		do
 			eiffel_layout.check_environment_variable

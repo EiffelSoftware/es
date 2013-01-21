@@ -20,7 +20,7 @@ inherit
 
 feature{NONE} -- Initialization
 
-	make (a_name: STRING; a_parent: like parent; a_written_class: like written_class)
+	make (a_name: READABLE_STRING_GENERAL; a_parent: like parent; a_written_class: like written_class)
 			-- Initialize `name' with `a_name' and `parent' with `a_parent'.
 		require
 			a_name_attached: a_name /= Void
@@ -33,11 +33,11 @@ feature{NONE} -- Initialization
 			set_parent (a_parent)
 			written_class := a_written_class
 		ensure
-			name_set: name.is_equal (a_name.as_lower)
+			name_set: name.same_string_general (a_name.as_lower)
 			parent_set: parent = a_parent
 		end
 
-	make_with_ast (a_name: STRING; a_ast: like ast; a_parent: like parent; a_written_class: like written_class)
+	make_with_ast (a_name: READABLE_STRING_GENERAL; a_ast: like ast; a_parent: like parent; a_written_class: like written_class)
 			-- Initialize `ast' with `a_ast' and `parent' with `a_parent'.
 		require
 			a_name_attached: a_name /= Void
@@ -50,27 +50,27 @@ feature{NONE} -- Initialization
 			internal_ast := a_ast
 			make (a_name, a_parent, a_written_class)
 		ensure
-			name_set: name.is_equal (a_name.as_lower)
+			name_set: name.same_string_general (a_name.as_lower)
 			parent_set: parent = a_parent
 		end
 
 feature -- Setting
 
-	set_name (a_name: like name)
+	set_name (a_name: READABLE_STRING_GENERAL)
 			-- Set `name' with `a_name'.
 		require
 			a_name_attached: a_name /= Void
 			a_name_is_not_empty: not a_name.is_empty
 		do
-			create name.make_from_string (a_name.as_lower)
+			create {IMMUTABLE_STRING_32} name.make_from_string_general (a_name.as_lower)
 		ensure
 			name_attached: name /= Void
-			name_set: name.is_equal (a_name.as_lower)
+			name_set: name.same_string_general (a_name.as_lower)
 		end
 
 feature -- Access
 
-	name: STRING
+	name: READABLE_STRING_32
 			-- Name of current item
 
 	ast: TYPE_DEC_AS
@@ -150,35 +150,35 @@ invariant
 	parent_is_real_feature: parent.is_real_feature
 
 note
-        copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-        license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-        licensing_options:	"http://www.eiffel.com/licensing"
-        copying: "[
-                        This file is part of Eiffel Software's Eiffel Development Environment.
-                        
-                        Eiffel Software's Eiffel Development Environment is free
-                        software; you can redistribute it and/or modify it under
-                        the terms of the GNU General Public License as published
-                        by the Free Software Foundation, version 2 of the License
-                        (available at the URL listed under "license" above).
-                        
-                        Eiffel Software's Eiffel Development Environment is
-                        distributed in the hope that it will be useful,	but
-                        WITHOUT ANY WARRANTY; without even the implied warranty
-                        of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-                        See the	GNU General Public License for more details.
-                        
-                        You should have received a copy of the GNU General Public
-                        License along with Eiffel Software's Eiffel Development
-                        Environment; if not, write to the Free Software Foundation,
-                        Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
-                ]"
-        source: "[
-                         Eiffel Software
-                         356 Storke Road, Goleta, CA 93117 USA
-                         Telephone 805-685-1006, Fax 805-685-6869
-                         Website http://www.eiffel.com
-                         Customer support http://support.eiffel.com
-                ]"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 
 end

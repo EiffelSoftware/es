@@ -56,30 +56,30 @@ feature{NONE} -- Implementation
 
 feature -- Access
 
-	name: STRING
+	name: READABLE_STRING_32
 			-- Name of current item
 			-- `name' can be empty for an assertion that has no tag attached to it.
 		do
 			if ast.tag = Void then
 				Result := query_language_names.ql_no_tag
 			else
-				Result := ast.tag.name
+				Result := ast.tag.name_32
 			end
 		ensure then
-			good_result: (ast.tag = Void implies Result.is_equal (query_language_names.ql_no_tag)) and
-						 (ast.tag /= Void implies Result.is_equal (ast.tag.name))
+			good_result: (ast.tag = Void implies Result.same_string_general (query_language_names.ql_no_tag)) and
+						 (ast.tag /= Void implies Result.same_string_general (ast.tag.name_32))
 		end
 
-	path_name: STRING
+	path_name: STRING_32
 			-- Name used in `path'.
 			-- For an assertion, `path_name' is "assertion "`name', e.g., is "assertion a_arg" for example.
 			-- If an assertion doesn't has a tag attached to it, it's path name will be
 			-- assertion "" (the word "assertion" followed by a quoted empty string)
 		local
 			l_path_marker: like path_name_marker
-			l_name: STRING
-			l_opener: STRING
-			l_closer: STRING
+			l_name: READABLE_STRING_32
+			l_opener: IMMUTABLE_STRING_32
+			l_closer: IMMUTABLE_STRING_32
 		do
 			l_path_marker := path_name_marker
 			l_name := name
@@ -242,35 +242,35 @@ invariant
 	assertion_type_attached: assertion_type /= Void
 
 note
-        copyright:	"Copyright (c) 1984-2006, Eiffel Software"
-        license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-        licensing_options:	"http://www.eiffel.com/licensing"
-        copying: "[
-                        This file is part of Eiffel Software's Eiffel Development Environment.
-                        
-                        Eiffel Software's Eiffel Development Environment is free
-                        software; you can redistribute it and/or modify it under
-                        the terms of the GNU General Public License as published
-                        by the Free Software Foundation, version 2 of the License
-                        (available at the URL listed under "license" above).
-                        
-                        Eiffel Software's Eiffel Development Environment is
-                        distributed in the hope that it will be useful,	but
-                        WITHOUT ANY WARRANTY; without even the implied warranty
-                        of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-                        See the	GNU General Public License for more details.
-                        
-                        You should have received a copy of the GNU General Public
-                        License along with Eiffel Software's Eiffel Development
-                        Environment; if not, write to the Free Software Foundation,
-                        Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
-                ]"
-        source: "[
-                         Eiffel Software
-                         356 Storke Road, Goleta, CA 93117 USA
-                         Telephone 805-685-1006, Fax 805-685-6869
-                         Website http://www.eiffel.com
-                         Customer support http://support.eiffel.com
-                ]"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 
 end

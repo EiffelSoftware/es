@@ -16,13 +16,13 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_class, an_other_class: STRING)
+	make (a_class, an_other_class: READABLE_STRING_GENERAL)
 			-- Create.
 		require
 			a_class_not_void: a_class /= Void
 			an_other_class_not_void: an_other_class /= Void
 		do
-			text := "Visibility conflict, external class name different: "+a_class+" and "+an_other_class
+			text := {STRING_32} "Visibility conflict, external class name different: " + a_class + " and " + an_other_class
 		end
 
 feature -- Access

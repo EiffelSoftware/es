@@ -362,11 +362,12 @@ feature {NONE} -- Implementation
 			-- Is `text' a keyword?
 		require
 			valid_text: text /= Void and then not text.is_empty
+		local
+			c: CHARACTER_32
 		do
-			if text.is_valid_as_string_8 then
-				Result := (text.as_string_8 @ 1).is_alpha
-			end
-
+				-- FIXME: Use `Result := text.item (1).is_alpha' when optimized on CHARACTER_32.
+			c := text.item (1)
+			Result := c.is_character_8 and then c.to_character_8.is_alpha and then text.is_valid_as_string_8
 		end
 
 	is_symbol (text: READABLE_STRING_GENERAL): BOOLEAN
@@ -449,12 +450,10 @@ feature -- Text operator
 	add_class (class_i: CLASS_I)
 			-- Append class item.
 		local
-			l_name: STRING
-			l_list: LINKED_LIST [STRING]
+			l_name: READABLE_STRING_GENERAL
 		do
 			if context_group /= Void and then class_i.is_valid then
-				l_list := context_group.name_by_class (class_i.config_class, True)
-				if not l_list.is_empty then
+				if attached context_group.name_by_class (class_i.config_class, True) as l_list and then not l_list.is_empty then
 					l_name := l_list.first
 				end
 			end
@@ -512,8 +511,8 @@ feature -- Text operator
 			if l_is_prefix_infix then
 				process_keyword_text (ti_prefix_keyword, Void)
 				add_space
-				l_prefix_infix.prepend (ti_quote)
-				l_prefix_infix.append (ti_quote)
+				l_prefix_infix.prepend_string_general (ti_quote)
+				l_prefix_infix.append_string_general (ti_quote)
 				process_operator_text (l_prefix_infix, e_feature)
 			else
 				add_feature_name (e_feature.name_32, e_feature.written_class)
@@ -622,40 +621,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_quoted_item (text: READABLE_STRING_GENERAL; quote: BOOLEAN)
-			-- Process quoted `s' according to its type.
-		local
-			l_feature: E_FEATURE
-			l_class_i: CLASS_I
-			l_cluster_i: CLUSTER_I
-			l_text: STRING_32
-		do
-			if text.is_string_8 then
-				l_text := text.as_string_32
-				l_feature := feature_by_name_32 (l_text)
-				if l_feature = Void then
-					check l_text_is_valid_string_8: l_text.is_valid_as_string_8 end
-					if (create {EIFFEL_SYNTAX_CHECKER}).is_valid_class_name (l_text.as_string_8) and l_text.as_upper.is_equal (l_text) then
-						l_class_i := class_by_name (l_text)
-					end
-					if l_class_i = Void then
-						l_cluster_i := cluster_by_name (l_text)
-					end
-				end
-				if l_feature /= Void then
-					process_feature_text (l_text, l_feature, quote)
-				elseif l_class_i /= Void then
-					process_class_name_text (l_text, l_class_i, quote)
-				elseif l_cluster_i /= Void then
-					process_cluster_name_text (l_text, l_cluster_i, quote)
-				else
-					process_quoted_text (l_text)
-				end
-			else
-				process_quoted_text (text)
-			end
-		end
-
 	comment_context_class : CLASS_C
 			-- Current class for comment context.
 		do
@@ -666,7 +631,7 @@ feature {NONE} -- Implementation
 			-- Internal context group
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

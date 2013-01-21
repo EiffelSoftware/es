@@ -127,7 +127,7 @@ feature -- Settings
 				agent (window_manager.last_focused_development_window.melt_project_cmd).execute)
 		end
 
-	launch_precompile_process (a_arguments: LIST [READABLE_STRING_32])
+	launch_precompile_process (a_arguments: LIST [READABLE_STRING_GENERAL])
 			-- Launch precompile process `a_command'.
 		local
 			l_prc_factory: PROCESS_FACTORY
@@ -475,7 +475,7 @@ feature {NONE} -- User interaction
 			end
 		end
 
-	ask_for_target_name (a_target: STRING; a_targets: ARRAYED_LIST [STRING])
+	ask_for_target_name (a_target: READABLE_STRING_GENERAL; a_targets: ARRAYED_LIST [READABLE_STRING_GENERAL])
 			-- Ask user to choose one target among `a_targets'.
 			-- If not Void, `a_target' is the one selected by user.
 		local
@@ -492,7 +492,7 @@ feature {NONE} -- User interaction
 			if a_targets.count = 1 then
 				a_targets.start
 				if a_target = Void or else a_target.is_equal (a_targets.item_for_iteration) then
-					target_name := a_targets.item_for_iteration.twin
+					create target_name.make_from_string_general (a_targets.item_for_iteration)
 					l_need_choice := False
 				end
 			end
@@ -592,7 +592,7 @@ feature {NONE} -- User interaction
 			l_question.show (parent_window)
 		end
 
-	ask_environment_update (a_key, a_old_val, a_new_val: READABLE_STRING_32)
+	ask_environment_update (a_key, a_old_val: READABLE_STRING_GENERAL; a_new_val: detachable READABLE_STRING_GENERAL)
 			-- Should new environment values be accepted?
 		local
 			l_question: ES_QUESTION_PROMPT
@@ -716,7 +716,7 @@ invariant
 	parent_window_not_destroyed: not parent_window.is_destroyed
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

@@ -174,7 +174,7 @@ feature -- Importation
 			a_storage_not_void: a_storage /= Void
 		local
 			vals: like session_values
-			k: STRING_8
+			k: READABLE_STRING_GENERAL
 			v: STRING_32
 			p: detachable PREFERENCE
 		do
@@ -185,7 +185,7 @@ feature -- Importation
 			until
 				vals.after
 			loop
-				k := vals.key_for_iteration.string
+				k := vals.key_for_iteration
 				v := vals.item_for_iteration.string
 				session_values.force (v, k)
 				p := preferences.item (k)
@@ -218,12 +218,14 @@ feature -- Status report
 feature -- Access
 
 	error_message: detachable STRING_8
-			-- Message explaining why `Current' could not be initialized.	
+			-- Message explaining why `Current' could not be initialized.
+		obsolete
+			"Use `error_message_32' instead."
 		require
 			error_message_is_valid_as_string_8: error_message_is_valid_as_string_8
 		do
 			if attached error_message_32 as err then
-				Result := err.as_string_8
+				Result := err.to_string_8
 			end
 		end
 
@@ -456,16 +458,16 @@ feature -- Storage access
 			Result := preferences_storage.exists
 		end
 
-feature {PREFERENCE_FACTORY, PREFERENCE_MANAGER, PREFERENCE_VIEW, PREFERENCES_STORAGE_I} -- Implementation
+feature {PREFERENCE_EXPORTER} -- Implementation
 
-	default_values: HASH_TABLE [TUPLE [description: detachable STRING_32; value: detachable STRING_32; hidden: BOOLEAN; restart: BOOLEAN], STRING]
+	default_values: STRING_TABLE [TUPLE [description: detachable STRING_32; value: detachable STRING_32; hidden: BOOLEAN; restart: BOOLEAN]]
 			-- Hash table of known preference default values.  [[Description, Value, Hidden, Restart], Name].
 
-	session_values: HASH_TABLE [STRING_32, STRING_8]
+	session_values: STRING_TABLE [STRING_32]
 			-- Hash table of user-defined values retrieved from the underlying data store.
 			-- Depending upon the chosen implementation this will be the Windows registry or an XML file.
 
-	preferences: HASH_TABLE [PREFERENCE, STRING]
+	preferences: STRING_TABLE [PREFERENCE]
 			-- Preferences part of Current.
 
 	resources: like preferences
@@ -492,19 +494,18 @@ feature {NONE} -- Implementation
 		local
 			parser: XML_STOPPABLE_PARSER
 			ns: XML_NAMESPACE_RESOLVER
-			l_file: FILE
+			l_file: PLAIN_TEXT_FILE
 			l_tree: XML_CALLBACKS_DOCUMENT
 			xml_data: detachable XML_ELEMENT
 			l_document: detachable XML_DOCUMENT
 			has_error: BOOLEAN
-			u: FILE_UTILITIES
 		do
 			create parser.make
 			create l_tree.make_null
 			create ns.set_next (l_tree)
 			parser.set_callbacks (ns)
 
-			l_file := u.make_text_file (a_default_file_name)
+			create l_file.make_with_name (a_default_file_name)
 			if l_file.exists and then l_file.is_readable then
 				l_file.open_read
 				if l_file.is_open_read then
@@ -574,14 +575,14 @@ feature {NONE} -- Implementation
 
 									l_attribute := node.attribute_by_name (once "HIDDEN")
 									if l_attribute /= Void then
-										pref_hidden := l_attribute.value.is_case_insensitive_equal (once "true")
+										pref_hidden := l_attribute.value.is_case_insensitive_equal_general (once "true")
 									else
 										pref_hidden := False
 									end
 
 									l_attribute := node.attribute_by_name (once "RESTART")
 									if l_attribute /= Void then
-										pref_restart := l_attribute.value.is_case_insensitive_equal (once "true")
+										pref_restart := l_attribute.value.is_case_insensitive_equal_general (once "true")
 									else
 										pref_restart := False
 									end
@@ -596,21 +597,21 @@ feature {NONE} -- Implementation
 											if l_attribute /= Void then
 												att_pref_value.append (l_attribute.value.as_lower + "+")
 											else
-												att_pref_value.append ("false+")
+												att_pref_value.append_string_general ("false+")
 											end
 
 											l_attribute := sub_node.attribute_by_name (once "Ctrl")
 											if l_attribute /= Void then
 												att_pref_value.append (l_attribute.value.as_lower + "+")
 											else
-												att_pref_value.append ("false+")
+												att_pref_value.append_string_general ("false+")
 											end
 
 											l_attribute := sub_node.attribute_by_name (once "Shift")
 											if l_attribute /= Void then
 												att_pref_value.append (l_attribute.value.as_lower  + "+")
 											else
-												att_pref_value.append ("false+")
+												att_pref_value.append_string_general ("false+")
 											end
 										else
 											att_pref_value := Void
@@ -624,7 +625,7 @@ feature {NONE} -- Implementation
 										if att_pref_value /= Void and then not att_pref_value.is_empty then
 											pref_value.prepend (att_pref_value)
 										end
-										default_values.force ([pref_description, pref_value, pref_hidden, pref_restart], pref_name.to_string_8)
+										default_values.force ([pref_description, pref_value, pref_hidden, pref_restart], pref_name)
 									end
 								else
 									pref_name := Void

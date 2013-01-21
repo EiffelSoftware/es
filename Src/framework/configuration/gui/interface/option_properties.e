@@ -75,7 +75,6 @@ feature {NONE} -- Implementation
 		local
 			l_bool_prop: BOOLEAN_PROPERTY
 			c: detachable CONF_VALUE_CHOICE
-			l_string_prop: STRING_PROPERTY
 		do
 				-- General section.
 			properties.add_section (conf_interface_names.section_general)
@@ -365,7 +364,7 @@ feature {NONE} -- Implementation
 			properties_not_void: properties /= Void
 		local
 			l_bool_prop: BOOLEAN_PROPERTY
-			l_warning: STRING
+			l_warning: READABLE_STRING_GENERAL
 		do
 			properties.add_section (conf_interface_names.section_warning)
 
@@ -395,7 +394,7 @@ feature {NONE} -- Implementation
 			until
 				known_warnings.after
 			loop
-				l_warning := known_warnings.item_for_iteration
+				l_warning := known_warnings.key_for_iteration
 					-- Search if it is a warning that we show in the UI.
 					-- (we hide the obsolete warnings in the UI).
 				conf_interface_names.warning_names.search (l_warning)

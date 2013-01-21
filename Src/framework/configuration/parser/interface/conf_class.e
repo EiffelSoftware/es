@@ -87,7 +87,7 @@ feature -- Access, in compiled only, not stored to configuration file
 			Result_assertions: Result.assertions /= Void
 		end
 
-	visible: EQUALITY_TUPLE [TUPLE [class_renamed: STRING; features: EQUALITY_HASH_TABLE [STRING, STRING]]]
+	visible: EQUALITY_TUPLE [TUPLE [class_renamed: STRING_32; features: STRING_TABLE [STRING_32]]]
 			-- The visible features.
 
 	is_valid: BOOLEAN
@@ -116,7 +116,7 @@ feature -- Access, in compiled only, not stored to configuration file
 			Result := is_partial or group.is_readonly
 			if not Result then
 					-- check if the file itself is read only
-				create l_file.make_with_name (full_file_name)
+				create l_file.make_with_path (full_file_name)
 				Result := not l_file.exists or else not l_file.is_writable
 			end
 		end
@@ -157,16 +157,10 @@ feature -- Access, in compiled only, not stored to configuration file
 	file_name: STRING_32
 			-- The file name of the class.
 
-	full_file_name: like path
+	full_file_name: PATH
 			-- The full file name of the class (including path).
 		do
 			Result := group.location.build_path (path, file_name)
-		end
-
-	full_file_path: PATH
-			-- The full file path of the class (including parent path).
-		do
-			create Result.make_from_string (full_file_name)
 		end
 
 	path: STRING_32
@@ -191,7 +185,7 @@ feature -- Status report
 		local
 			l_date: INTEGER
 		do
-			l_date := file_modified_date (full_file_name)
+			l_date := file_path_modified_date (full_file_name)
 			Result := (l_date = -1) or (l_date /= date)
 		end
 
@@ -267,8 +261,8 @@ feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration f
 			a_vis_not_void: a_vis /= Void
 			a_renamed_not_void: a_vis.item.class_renamed /= Void
 		local
-			l_vis_check, l_vis_other: EQUALITY_HASH_TABLE [STRING, STRING]
-			l_other: STRING
+			l_vis_check, l_vis_other: STRING_TABLE [STRING_32]
+			l_other: STRING_32
 			l_error: BOOLEAN
 		do
 				-- easy case first, most of the time this will be the only thing that is needed to do
@@ -320,7 +314,7 @@ feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration f
 								l_error or l_vis_check.after
 							loop
 								l_other := l_vis_other.item (l_vis_check.key_for_iteration)
-								l_error := not (l_other = Void or l_other.is_equal (l_vis_check.item_for_iteration))
+								l_error := not (l_other = Void or l_other.same_string (l_vis_check.item_for_iteration))
 								l_vis_check.forth
 							end
 							if l_error then
@@ -401,7 +395,7 @@ feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration f
 		local
 			l_date: INTEGER
 		do
-			l_date := file_modified_date (full_file_name)
+			l_date := file_path_modified_date (full_file_name)
 			if l_date = -1 then
 				is_removed := True
 				date := 0
@@ -433,12 +427,11 @@ feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration f
 	name_from_associated_file: STRING
 			-- Read associated file and extract the name from it if possible.
 		local
-			l_file: KL_BINARY_INPUT_FILE
+			l_file: KL_BINARY_INPUT_FILE_32
 			l_classname_finder: like classname_finder
-			u: GOBO_FILE_UTILITIES
 		do
 			reset_error
-			l_file := u.make_binary_input_file (full_file_name)
+			create l_file.make_with_path (full_file_name)
 			if l_file.exists then
 				l_classname_finder := classname_finder
 				l_file.open_read
@@ -447,7 +440,7 @@ feature {CONF_ACCESS} -- Update, in compiled only, not stored to configuration f
 				Result := l_classname_finder.classname
 				if Result = Void then
 					date := -1
-					set_error (create {CONF_ERROR_CLASSN}.make (full_file_name, group.target.system.file_name))
+					set_error (create {CONF_ERROR_CLASSN}.make (full_file_name.name, group.target.system.file_name))
 				else
 					Result.to_upper
 				end

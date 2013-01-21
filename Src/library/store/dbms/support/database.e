@@ -117,7 +117,7 @@ feature -- For DATABASE_SELECTION, DATABASE_CHANGE
 		deferred
 		end
 
-	parse (descriptor: INTEGER; uht: detachable DB_STRING_HASH_TABLE [detachable ANY]; ht_order: detachable ARRAYED_LIST [READABLE_STRING_32]; uhandle: HANDLE; sql: READABLE_STRING_GENERAL): BOOLEAN
+	parse (descriptor: INTEGER; uht: detachable DB_STRING_HASH_TABLE [detachable ANY]; ht_order: detachable ARRAYED_LIST [READABLE_STRING_GENERAL]; uhandle: HANDLE; sql: READABLE_STRING_GENERAL): BOOLEAN
 			-- Prepare string `sql' by appending map
 			-- variables name from to `sql'. Map variables are used
 			-- for set input arguments
@@ -417,7 +417,7 @@ feature -- For DATABASE_PROC
 		require
 			par_name_not_void: par_name /= Void
 		do
-			Result := map_var_name_32 (par_name)
+			Result := map_var_name_32 (par_name).as_string_8_conversion
 		end
 
 	Select_text (proc_name: STRING): STRING
@@ -427,7 +427,7 @@ feature -- For DATABASE_PROC
 		require
 			proc_name_not_void: proc_name /= Void
 		do
-			Result := Select_text_32 (proc_name)
+			Result := Select_text_32 (proc_name).as_string_8_conversion
 		end
 
 	Select_exists (name: STRING): STRING
@@ -437,7 +437,7 @@ feature -- For DATABASE_PROC
 		require
 			name_not_void: name /= Void
 		do
-			Result := Select_exists_32 (name)
+			Result := Select_exists_32 (name).as_string_8_conversion
 		end
 
 	map_var_name_32 (par_name: READABLE_STRING_GENERAL): STRING_32
@@ -475,7 +475,7 @@ feature -- For DATABASE_PROC
 		do
 		end
 
-	text_not_supported: STRING
+	text_not_supported: STRING_32
 			-- Display the text saying that the database
 			-- does not support stored procedure text retrieving
 			-- Redefined for ODBC

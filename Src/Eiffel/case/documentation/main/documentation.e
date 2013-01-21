@@ -84,7 +84,7 @@ feature -- Actions
 			ir_error: INTERRUPT_ERROR
 			l_groups: like groups
 			l_group: CONF_GROUP
-			l_classes: HASH_TABLE [CONF_CLASS, STRING]
+			l_classes: STRING_TABLE [CONF_CLASS]
 			l_cursor: CURSOR
 			l_class: CONF_CLASS
 			l_context_group: CONF_GROUP
@@ -498,8 +498,8 @@ feature {NONE} -- Implementation
 				end
 				l_classes.forth
 				if l_add and then not l_classes.after then
-					class_array.append (",%N")
-					location_array.append (",%N")
+					class_array.append_string_general (",%N")
+					location_array.append_string_general (",%N")
 					l_add := False
 				end
 			end
@@ -632,6 +632,7 @@ feature -- Access
 			-- Path of `rel_filename' relative to documentation root dir.
 		local
 			l_filter: like filter
+			l_sep: STRING_32
 		do
 			create Result.make_from_string (base_path)
 			if not base_path.is_empty then
@@ -641,7 +642,9 @@ feature -- Access
 
 			l_filter := filter
 			if l_filter.file_separator /= Void and then not l_filter.file_separator.is_equal ("%U") then
-				Result.replace_substring_all (operating_environment.directory_separator.out, l_filter.file_separator)
+				create l_sep.make (1)
+				l_sep.append_character (operating_environment.directory_separator)
+				Result.replace_substring_all (l_sep, l_filter.file_separator)
 			end
 		end
 
@@ -923,7 +926,7 @@ feature {NONE} -- Menu bars
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

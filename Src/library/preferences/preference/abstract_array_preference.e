@@ -12,7 +12,7 @@ inherit
 
 	ABSTRACT_CHOICE_PREFERENCE [G]
 
-feature {PREFERENCE, PREFERENCE_WIDGET, PREFERENCES_STORAGE_I, PREFERENCE_VIEW} -- Access
+feature {PREFERENCE_EXPORTER} -- Access
 
 	text_value: STRING_32
 			-- String representation of `value'.				
@@ -35,14 +35,14 @@ feature {PREFERENCE, PREFERENCE_WIDGET, PREFERENCES_STORAGE_I, PREFERENCE_VIEW} 
 							Result.append (escaped_string (l_item.to_string_32))
 						end
 						if not (index = l_array.count) then
-							Result.append (";")
+							Result.append_string_general (";")
 						end
 					end
 					index := index + 1
 				end
 			else
 				check has_value: False end
-				Result := ""
+				create Result.make_empty
 			end
 		end
 
@@ -110,7 +110,7 @@ feature -- Status Setting
 --			index_set: selected_index = a_index
 		end
 
-feature -- Query
+feature -- Status report
 
 	is_choice: BOOLEAN
 			-- Is this preference a single choice or the full list?

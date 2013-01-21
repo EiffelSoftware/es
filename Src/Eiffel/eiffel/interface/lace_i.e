@@ -84,7 +84,7 @@ feature -- Access
 	directory_name: STRING_32
 			-- Full path to the universe/system description parent directory.
 
-	target_name: STRING
+	target_name: STRING_32
 			-- Target to use. (optional, if only one target).
 
 	project_path: PATH
@@ -182,9 +182,9 @@ feature -- Status setting
 				-- check if it needs to be (re)precompiled
 			if precompile /= Void and then not is_precompile_invalid then
 				if precompile.eifgens_location /= Void then
-					create l_project_location.make (create {PATH}.make_from_string (precompile.eifgens_location.evaluated_path), l_load.last_system.library_target.name)
+					create l_project_location.make (precompile.eifgens_location.evaluated_path, l_load.last_system.library_target.name)
 				else
-					create l_project_location.make (create {PATH}.make_from_string (precompile.location.build_path ("", "")), l_load.last_system.library_target.name)
+					create l_project_location.make (precompile.location.evaluated_path.parent, l_load.last_system.library_target.name)
 				end
 				create l_epr.make (l_project_location.target_path.extended (project_file_name))
 				l_epr.check_version_number (0)
@@ -209,7 +209,7 @@ feature -- Status setting
 			directory_name := p.parent.name
 		end
 
-	set_target_name (s: STRING)
+	set_target_name (s: like target_name)
 			-- Assign `s' to `target_name'.
 		require
 			s_ok: s /= Void and then not s.is_empty
@@ -500,7 +500,6 @@ feature {NONE} -- Implementation
 			l_old_pre, l_new_pre: CONF_PRECOMPILE
 			l_first: BOOLEAN
 			l_root: CONF_ROOT
-			l_all_libs: HASH_TABLE [CONF_TARGET, UUID]
 		do
 				-- get new target
 			l_new_target := conf_system.targets.item (target_name)
@@ -584,17 +583,17 @@ feature {NONE} -- Implementation
 				end
 
 					-- update dates of used config files
-				l_all_libs := l_old_target.system.all_libraries
-				check
-					libraries_set: l_all_libs /= Void
-				end
-				from
-					l_all_libs.start
-				until
-					l_all_libs.after
-				loop
-					l_all_libs.item_for_iteration.system.set_file_date
-					l_all_libs.forth
+				if attached l_old_target.system.all_libraries as l_all_libs then
+					from
+						l_all_libs.start
+					until
+						l_all_libs.after
+					loop
+						l_all_libs.item_for_iteration.system.set_file_date
+						l_all_libs.forth
+					end
+				else
+					check False end
 				end
 				l_new_target := l_old_target
 			end
@@ -681,6 +680,7 @@ feature {NONE} -- Implementation
 			system_valid: system /= Void
 		local
 			l_s: like {CONF_TARGET}.settings.item
+			l_p: PATH
 			l_b: BOOLEAN
 			vd15: VD15
 			vd83: VD83
@@ -914,7 +914,7 @@ feature {NONE} -- Implementation
 
 			l_s := l_settings.item (s_external_runtime)
 			if l_s /= Void then
-				system.set_external_runtime (l_s)
+				system.set_external_runtime (l_s.as_string_8_conversion)
 			end
 
 			l_s := l_settings.item (s_executable_name)
@@ -927,8 +927,8 @@ feature {NONE} -- Implementation
 				Error_handler.insert_error (vd15)
 				l_s := Void
 			end
-			if l_s /= Void and then (system.name = Void or else not system.name.is_equal (l_s)) then
-				system.set_name (l_s)
+			if l_s /= Void and then (system.name = Void or else not system.name.same_string_general (l_s)) then
+				system.set_name (l_s.as_string_8_conversion)
 				system.request_freeze
 			end
 
@@ -1016,7 +1016,7 @@ feature {NONE} -- Implementation
 				l_s := overridden_metadata_cache_path
 			end
 			if l_s /= Void then
-				l_s := l_factory.new_location_from_path (l_s, a_target).evaluated_directory
+				l_s := l_factory.new_location_from_path (l_s, a_target).evaluated_directory.name
 			end
 				-- value can't change from a precompile or in a compiled system
 			if
@@ -1100,7 +1100,7 @@ feature {NONE} -- Implementation
 
 			l_s := l_settings.item (s_msil_generation_type)
 			if l_s /= Void then
-				if l_s.is_case_insensitive_equal ("exe") or l_s.is_case_insensitive_equal ("dll") then
+				if l_s.is_case_insensitive_equal_general ("exe") or l_s.is_case_insensitive_equal_general ("dll") then
 					system.set_msil_generation_type (l_s.as_lower)
 				else
 					create vd15
@@ -1109,7 +1109,7 @@ feature {NONE} -- Implementation
 					Error_handler.insert_error (vd15)
 				end
 			else
-				system.set_msil_generation_type ("exe")
+				system.set_msil_generation_type ({STRING_32} "exe")
 			end
 
 			l_s := l_settings.item (s_msil_key_file_name)
@@ -1194,13 +1194,13 @@ feature {NONE} -- Implementation
 				-- If the release doesn't generate DLL's,
 				-- we do not take the option into account in the Ace.
 			if l_s /= Void and then eiffel_layout.has_dll_generation then
-				l_s := l_factory.new_location_from_full_path (l_s, a_target).evaluated_path
-				if	system.dynamic_def_file /~ l_s or else
-					shared_library_definition_stamp /= file_modified_date (l_s)
+				l_p := l_factory.new_location_from_full_path (l_s, a_target).evaluated_path
+				if system.dynamic_def_file = Void or else not system.dynamic_def_file.same_as (l_p) or else
+					shared_library_definition_stamp /= file_path_modified_date (l_p)
 				then
-					system.set_dynamic_def_file (l_s)
+					system.set_dynamic_def_file (l_p)
 						-- Record new time stamp.
-					shared_library_definition_stamp := file_modified_date (l_s)
+					shared_library_definition_stamp := file_path_modified_date (l_p)
 						-- New definition file is taken into account only during freeze.
 					system.request_freeze
 				end
@@ -1323,9 +1323,9 @@ feature {NONE} -- Implementation
 
 				-- retrieve precompile project (use EIFGENs location if specified, else next to the config file)
 			if l_pre.eifgens_location /= Void then
-				create l_project_location.make (create {PATH}.make_from_string (l_pre.eifgens_location.evaluated_path), l_system.library_target.name)
+				create l_project_location.make (l_pre.eifgens_location.evaluated_path, l_system.library_target.name)
 			else
-				create l_project_location.make (create {PATH}.make_from_string (l_pre.location.build_path ("", "")), l_system.library_target.name)
+				create l_project_location.make (l_pre.location.evaluated_path.parent, l_system.library_target.name)
 			end
 			create l_precomp_r
 			l_precomp_r.retrieve_precompiled (l_project_location)
@@ -1345,9 +1345,9 @@ feature {NONE} -- Implementation
 
 				-- Update the system name
 			if not a_target.setting_executable_name.is_empty then
-				system.set_name (a_target.setting_executable_name)
+				system.set_name (a_target.setting_executable_name.as_string_8_conversion)
 			else
-				system.set_name (a_target.system.name)
+				system.set_name (a_target.system.name.as_string_8_conversion)
 			end
 		ensure
 			valid_system: workbench.system /= Void
@@ -1356,8 +1356,6 @@ feature {NONE} -- Implementation
 	set_clr_runtime_version (a_version: detachable READABLE_STRING_GENERAL)
 			-- Set clr runtime version, use default if `a_version' is Void.
 		local
-			v: STRING
-			l_installed_runtimes: LIST [STRING]
 			l_il_env: IL_ENVIRONMENT
 			vd15: VD15
 		do
@@ -1366,17 +1364,14 @@ feature {NONE} -- Implementation
 			if a_version = Void then
 				system.set_clr_runtime_version (l_il_env.default_version)
 			else
-				v := a_version.as_string_8
-				l_installed_runtimes := l_il_env.installed_runtimes
-				if not l_installed_runtimes.has (v) then
+				if not l_il_env.is_version_installed (a_version) then
 					create vd15
 					vd15.set_option_name ("msil_clr_version")
 					vd15.set_option_value (a_version)
 					Error_handler.insert_error (vd15)
 					Error_handler.raise_error
 				end
-
-				system.set_clr_runtime_version (v)
+				system.set_clr_runtime_version (a_version)
 			end
 
 			create l_il_env.make (system.clr_runtime_version)
@@ -1384,7 +1379,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

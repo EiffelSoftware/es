@@ -1621,25 +1621,25 @@ feature {NONE} -- Implementation
 		local
 			l_emitter: IL_EMITTER
 			l_man: CONF_CONSUMER_MANAGER
-			l_assemblies: HASH_TABLE [CONF_PHYSICAL_ASSEMBLY_INTERFACE, STRING_8]
+			l_assemblies: STRING_TABLE [CONF_PHYSICAL_ASSEMBLY_INTERFACE]
 			l_assembly: CONF_PHYSICAL_ASSEMBLY
-			l_path: STRING
-			l_asm: STRING
-			l_key: STRING
+			l_path: STRING_32
+			l_asm: STRING_32
+			l_key: READABLE_STRING_32
 		do
 				-- Create message
 			create l_asm.make (128)
 			l_asm.append (assembly.assembly_name)
-			l_asm.append (once ", Version=")
+			l_asm.append_string_general (once ", Version=")
 			l_asm.append (assembly.assembly_version)
-			l_asm.append (once ", Culture=")
+			l_asm.append_string_general (once ", Culture=")
 			l_asm.append (assembly.assembly_culture)
 			l_key := assembly.assembly_public_key_token
-			l_asm.append (once ", PublicKeyToken=")
+			l_asm.append_string_general (once ", PublicKeyToken=")
 			if l_key /= Void and then not l_key.is_empty then
 				l_asm.append (l_key)
 			else
-				l_asm.append ("null")
+				l_asm.append_string_general ("null")
 			end
 			degree_output.put_string ("   Consuming required assembly '" + l_asm + "'...")
 
@@ -1656,7 +1656,7 @@ feature {NONE} -- Implementation
 					end
 					if not l_assembly.is_dependency then
 						l_path.append_character (';')
-						l_path.append (l_assembly.consumed_assembly.location)
+						l_path.append (l_assembly.consumed_assembly.location.name)
 					end
 					l_assemblies.forth
 				end
@@ -1664,7 +1664,7 @@ feature {NONE} -- Implementation
 					create l_man.make (create {CONF_COMP_FACTORY}, create {PATH}.make_from_string (system.metadata_cache_path), system.clr_runtime_version, assembly.target,  create {SEARCH_TABLE [CONF_CLASS]}.make (0), create {SEARCH_TABLE [CONF_CLASS]}.make (0), create {SEARCH_TABLE [CONF_CLASS]}.make (0))
 					l_emitter := new_emitter (l_man)
 					if l_emitter.exists and then l_emitter.is_initialized then
-						l_emitter.consume_assembly_from_path (assembly.consumed_assembly.location, False, l_path)
+						l_emitter.consume_assembly_from_path (assembly.consumed_assembly.location.name, False, l_path)
 						l_man.rebuild_assembly (assembly)
 						l_emitter.unload
 					end
@@ -1696,7 +1696,7 @@ invariant
 	valid_enclosing_class: is_nested implies enclosing_class /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

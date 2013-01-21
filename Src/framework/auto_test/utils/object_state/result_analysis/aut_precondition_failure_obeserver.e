@@ -40,8 +40,8 @@ feature
 			l_feature: AUT_FEATURE_OF_TYPE
 			tmp :REAL
 			preconditions_passed: REAL
-			strs : LIST[READABLE_STRING_8]
-			str :STRING
+			strs : LIST[READABLE_STRING_32]
+			str :STRING_32
 		do
 
 
@@ -85,7 +85,7 @@ feature
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

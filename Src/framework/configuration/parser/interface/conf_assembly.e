@@ -30,7 +30,7 @@ create {CONF_PARSE_FACTORY}
 
 feature {NONE} -- Initialization
 
-	make_from_gac (a_name, an_assembly_name, an_assembly_version, an_assembly_culture, an_assembly_key: STRING; a_target: CONF_TARGET)
+	make_from_gac (a_name: STRING_32; an_assembly_name, an_assembly_version, an_assembly_culture, an_assembly_key: READABLE_STRING_32; a_target: CONF_TARGET)
 			-- Create.
 		require
 			a_name_not_void: a_name /= Void
@@ -84,16 +84,16 @@ feature -- Access, stored in configuration file
 	location: CONF_FILE_LOCATION
 			-- Location of the assembly.
 
-	assembly_name: STRING
+	assembly_name: READABLE_STRING_32
 			-- Name of the assembly.
 
-	assembly_version: STRING
+	assembly_version: READABLE_STRING_32
 			-- Version of the assembly.
 
-	assembly_culture: STRING
+	assembly_culture: READABLE_STRING_32
 			-- Culture of the assembly.
 
-	assembly_public_key_token: STRING
+	assembly_public_key_token: READABLE_STRING_32
 			-- Public key of the assembly.
 
 feature -- Access, in compiled only
@@ -109,14 +109,14 @@ feature -- Access queries
 			Result := physical_assembly.accessible_groups
 		end
 
-	mapping: EQUALITY_HASH_TABLE [STRING, STRING]
+	mapping: STRING_TABLE [STRING_32]
 			-- Special classes name mapping (eg. STRING => STRING_32).
 		once
 				-- There are no mappings for assemblies
-			create Result.make (0)
+			create Result.make_equal (0)
 		end
 
-	class_by_name (a_class: STRING; a_dependencies: BOOLEAN): LINKED_SET [like class_type]
+	class_by_name (a_class: READABLE_STRING_GENERAL; a_dependencies: BOOLEAN): LINKED_SET [like class_type]
 			-- Get class by name.
 		local
 			l_dep: CONF_GROUP
@@ -139,7 +139,7 @@ feature -- Access queries
 			end
 		end
 
-	name_by_class (a_class: CONF_CLASS; a_dependencies: BOOLEAN): LINKED_SET [STRING]
+	name_by_class (a_class: CONF_CLASS; a_dependencies: BOOLEAN): LINKED_SET [READABLE_STRING_GENERAL]
 			-- Get name in this context of `a_class' (if `a_dependencies') then we check dependencies).
 		local
 			l_dep: CONF_GROUP
@@ -171,12 +171,12 @@ feature -- Access queries
 			create Result
 		end
 
-	class_options: HASH_TABLE [CONF_OPTION, STRING]
+	class_options: STRING_TABLE [CONF_OPTION]
 			-- Options of classes in the assembly.
 		do
 		end
 
-	sub_group_by_name (a_name: STRING): CONF_GROUP
+	sub_group_by_name (a_name: READABLE_STRING_GENERAL): CONF_GROUP
 			-- Return assembly dependency with `a_name' if there is any.
 		local
 			l_deps: HASH_TABLE [CONF_PHYSICAL_ASSEMBLY_INTERFACE, INTEGER_32]
@@ -190,7 +190,7 @@ feature -- Access queries
 				until
 					Result /= Void or l_deps.after
 				loop
-					if l_deps.item_for_iteration.name.is_equal (a_name) then
+					if l_deps.item_for_iteration.name.same_string_general (a_name) then
 						Result := l_deps.item_for_iteration
 					end
 					l_deps.forth

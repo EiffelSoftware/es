@@ -10,10 +10,7 @@ class
 	EIFFEL_SYNTAX_CHECKER
 
 inherit
-
 	SYNTAX_STRINGS
-
-	SHARED_ENCODING_CONVERTER
 
 feature -- Status report
 
@@ -41,10 +38,12 @@ feature -- Status report
 			Result := is_valid_config_identifier (gn)
 		end
 
-	is_valid_feature_name_32 (fn: STRING_32): BOOLEAN
+	is_valid_feature_name_32 (fn: READABLE_STRING_GENERAL): BOOLEAN
 			-- Is `fn' a valid feature name?
+		local
+			u: UTF_CONVERTER
 		do
-			Result := is_valid_feature_name (encoding_converter.utf32_to_utf8 (fn))
+			Result := is_valid_feature_name (u.utf_32_string_to_utf_8_string_8 (fn))
 		end
 
 	is_valid_target_name (tn: READABLE_STRING_GENERAL): BOOLEAN
@@ -65,14 +64,14 @@ feature -- Status report
 			i: INTEGER
 			cc: CHARACTER_32
 		do
-			Result := s /= Void and then not s.is_empty and then s.item (1).is_alpha
+			Result := s /= Void and then not s.is_empty and then is_alpha (s.item (1))
 			from
 				i := 2
 			until
 				not Result or else i > s.count
 			loop
 				cc := s.item (i)
-				Result := cc.is_alpha or cc.is_digit or cc = '_'
+				Result := is_alpha (cc) or is_digit (cc) or cc = '_'
 				i := i + 1
 			end
 		end
@@ -83,14 +82,14 @@ feature -- Status report
 			i: INTEGER
 			cc: CHARACTER_32
 		do
-			Result := s /= Void and then not s.is_empty and then s.item (1).is_alpha
+			Result := s /= Void and then not s.is_empty and then is_alpha (s.item (1))
 			from
 				i := 2
 			until
 				not Result or else i > s.count
 			loop
 				cc := s.item (i)
-				Result := cc.is_alpha or cc.is_digit or cc = '_' or cc = '.' or cc = '-'
+				Result := is_alpha (cc) or is_digit (cc) or cc = '_' or cc = '.' or cc = '-'
 				i := i + 1
 			end
 		end
@@ -137,12 +136,7 @@ feature -- Status report
 					not Result or else i > l_str32.count
 				loop
 					cc := l_str32.item (i)
-					Result := (cc.is_character_8 and then
-										cc.to_character_8.is_alpha or
-										cc.to_character_8.is_digit or
-										free_operators_characters.has (cc.to_character_8)
-								) or
-								(not cc.is_character_8)
+					Result := is_alpha (cc) or is_digit (cc) or free_operators_characters.has (cc) or not cc.is_character_8
 					i := i + 1
 				end
 			end
@@ -207,8 +201,20 @@ feature -- Status report
 				  (is_valid_operator (fn.substring (Infix_str.count + 1, fn.count - Quote_str.count))))))
 		end
 
+	is_alpha (a_char: CHARACTER_32): BOOLEAN
+			-- Is `a_char' an extended ASCII character that is alphabetic.
+		do
+			Result := a_char.is_character_8 and then a_char.to_character_8.is_alpha
+		end
+
+	is_digit (a_char: CHARACTER_32): BOOLEAN
+			-- Is `a_char' an extended ASCII character that is a digit.
+		do
+			Result := a_char.is_character_8 and then a_char.to_character_8.is_digit
+		end
+
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

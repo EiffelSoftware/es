@@ -1123,7 +1123,7 @@ feature {NONE} -- Debugger Info List Access
 		require
 			module_filename_not_empty: a_module_filename /= Void and then not a_module_filename.is_empty
 		local
-			l_module_key: STRING
+			l_module_key: STRING_32
 		do
 			if a_create_if_not_found then
 					--| This means we are recording, so we need to record
@@ -1137,7 +1137,7 @@ feature {NONE} -- Debugger Info List Access
 			end
 			if
 				last_info_from_module /= Void and then
-				last_info_from_module.module_filename.is_equal (l_module_key)
+				last_info_from_module.module_filename.same_string (l_module_key)
 			then
 				Result := last_info_from_module
 			else
@@ -1154,7 +1154,7 @@ feature {NONE} -- Debugger Info List Access
 
 feature {NONE} -- Debugger Info List
 
-	dbg_info_modules: HASH_TABLE [IL_DEBUG_INFO_FROM_MODULE, STRING]
+	dbg_info_modules: STRING_TABLE [IL_DEBUG_INFO_FROM_MODULE]
 			-- [module_key] => [IL_DEBUG_INFO_FROM_MODULE]
 
 	dbg_info_class_types: HASH_TABLE [IL_DEBUG_INFO_FROM_CLASS_TYPE, INTEGER]
@@ -1192,24 +1192,24 @@ feature {CIL_CODE_GENERATOR, IL_DEBUG_INFO_RECORDER_EXPORTER} -- Persistence
 	loading_errors_message: STRING_32
 		do
 			create Result.make (50)
-			Result.append_string (" ERROR while retrieving IL DEBUG INFO data ...%N")
+			Result.append_string_general (" ERROR while retrieving IL DEBUG INFO data ...%N")
 			if loading_errors /= Void then
-				Result.append_string ("%N")
+				Result.append_string_general ("%N")
 				from
 					loading_errors.start
 				until
 					loading_errors.after
 				loop
-					Result.append_string ("   - ")
-					Result.append_string (loading_errors.item.as_string_32)
-					Result.append_string ("%N")
+					Result.append_string_general ("   - ")
+					Result.append_string_general (loading_errors.item)
+					Result.append_string_general ("%N")
 					loading_errors.forth
 				end
 			end
-			Result.append_string ("%N")
-			Result.append_string ("   Debugging will be disabled.%N")
-			Result.append_string ("   Please reload, until you do not get this message.%N")
-			Result.append_string ("%N")
+			Result.append_string_general ("%N")
+			Result.append_string_general ("   Debugging will be disabled.%N")
+			Result.append_string_general ("   Please reload, until you do not get this message.%N")
+			Result.append_string_general ("%N")
 		end
 
 feature {NONE}-- Implementation for save and load task
@@ -1516,7 +1516,7 @@ feature {NONE} -- Module indexer implementation
 			a_mod_key_not_void: a_mod_key /= Void
 			a_mod_key_is_lower_case: a_mod_key.as_lower.is_equal (a_mod_key)
 		local
-			l_module_id: STRING
+			l_module_id: STRING_32
 			l_pos_dll, l_pos_sep: INTEGER
 			l_item: IL_DEBUG_INFO_FROM_MODULE
 			l_item_mod_id: STRING
@@ -1551,7 +1551,7 @@ feature {NONE} -- Module indexer implementation
 						loop
 							l_item := dbg_info_modules.item_for_iteration
 							l_item_mod_id := l_item.module_name
-							if l_item_mod_id.is_equal (l_module_id) then
+							if l_item_mod_id.same_string_general (l_module_id) then
 								last_info_from_module := l_item
 								Result := last_info_from_module.module_filename --| Should contain .dll
 								internal_module_key_table.force (Result, a_mod_key)
@@ -1575,7 +1575,7 @@ feature {NONE} -- Module indexer implementation
 			-- and internal key for module
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

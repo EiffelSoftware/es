@@ -187,10 +187,10 @@ feature -- Access, stored in configuration file
 	assertions: CONF_ASSERTIONS
 			-- The assertion settings.
 
-	namespace: STRING
+	namespace: STRING_32
 			-- .NET namespace that is computed on demand.
 
-	local_namespace: STRING
+	local_namespace: STRING_32
 			-- .NET namespace set in configuration file
 
 	is_profile: BOOLEAN
@@ -248,7 +248,7 @@ feature {NONE} -- Access: syntax
 	syntax_name: ARRAY [READABLE_STRING_32]
 			-- Available values for `syntax' option
 		once
-			Result := <<"obsolete", "transitional", "standard", "provisional">>
+			Result := <<{STRING_32} "obsolete", {STRING_32} "transitional", {STRING_32} "standard", {STRING_32} "provisional">>
 		ensure
 			result_attached: Result /= Void
 		end
@@ -272,17 +272,17 @@ feature {NONE} -- Access: void safety
 	void_safety_name: ARRAY [READABLE_STRING_32]
 			-- Available values for `void_safety' option
 		once
-			Result := <<"none", "initialization", "all">>
+			Result := <<{STRING_32} "none", {STRING_32} "initialization", {STRING_32} "all">>
 		ensure
 			result_attached: Result /= Void
 		end
 
 feature -- Access, stored in configuration file.
 
-	debugs: EQUALITY_HASH_TABLE [BOOLEAN, STRING]
+	debugs: STRING_TABLE [BOOLEAN]
 			-- Debug settings.
 
-	warnings: EQUALITY_HASH_TABLE [BOOLEAN, STRING]
+	warnings: STRING_TABLE [BOOLEAN]
 			-- Warning settings.
 
 feature -- Access queries
@@ -293,7 +293,7 @@ feature -- Access queries
 			Result := is_debug and then debugs /= Void and then debugs.item (a_debug)
 		end
 
-	is_warning_enabled (a_warning: STRING): BOOLEAN
+	is_warning_enabled (a_warning: READABLE_STRING_GENERAL): BOOLEAN
 			-- Is `a_warning' enabled?
 		require
 			a_warning_valid: is_warning_known (a_warning)
@@ -311,32 +311,32 @@ feature {CONF_ACCESS} -- Update, stored in configuration file.
 			assertions_set: assertions = an_assertions
 		end
 
-	add_debug (a_name: STRING; an_enabled: BOOLEAN)
+	add_debug (a_name: READABLE_STRING_GENERAL; an_enabled: BOOLEAN)
 			-- Add a debug.
 		require
 			a_name_ok: a_name /= Void and then not a_name.is_empty
 			a_name_lower: a_name.is_equal (a_name.as_lower)
 		do
 			if debugs = Void then
-				create debugs.make (1)
+				create debugs.make_equal (1)
 			end
 			debugs.force (an_enabled, a_name)
 		ensure
 			added: debugs.has (a_name) and then debugs.item (a_name) = an_enabled
 		end
 
-	add_warning (a_name: STRING_8; an_enabled: BOOLEAN)
+	add_warning (a_name: READABLE_STRING_GENERAL; an_enabled: BOOLEAN)
 			-- Add a warning.
 		require
 			a_name_ok: a_name /= Void and then not a_name.is_empty
-			a_name_lower: a_name.is_equal (a_name.as_lower)
+			a_name_lower: a_name.same_string (a_name.as_lower)
 			known_warning: is_warning_known (a_name)
 		local
 			w: like warnings
 		do
 			w := warnings
 			if w = Void then
-				create w.make (1)
+				create w.make_equal (1)
 				warnings := w
 			end
 			w.force (an_enabled, a_name)
@@ -565,6 +565,7 @@ feature -- Merging
 			-- Apply this only for options that can be overridden by the client.
 		local
 			l_tmp: like debugs
+			l_warnings: like warnings
 		do
 			if other /= Void then
 				if assertions = Void then
@@ -580,9 +581,9 @@ feature -- Merging
 				if warnings = Void then
 					warnings := other.warnings
 				elseif other.warnings /= Void then
-					l_tmp := other.warnings.twin
-					l_tmp.merge (warnings)
-					warnings := l_tmp
+					l_warnings := other.warnings.twin
+					l_warnings.merge (warnings)
+					warnings := l_warnings
 				end
 				if not is_profile_configured then
 					is_profile_configured := other.is_profile_configured or else is_profile /~ other.is_profile
@@ -661,6 +662,8 @@ invariant
 	local_namespace_not_empty: local_namespace = Void or else not local_namespace.is_empty
 	syntax_attached: syntax /= Void
 	void_safety_attached: void_safety /= Void
+	warnings_compare_objects: attached warnings as l_w implies l_w.object_comparison
+	debugs_compare_objects: attached debugs as l_d implies l_d.object_comparison
 
 note
 	copyright: "Copyright (c) 1984-2012, Eiffel Software"

@@ -1891,6 +1891,7 @@ Src/Delivery/studio/tools/twitter_feed/spacer.png -text
 Src/Delivery/studio/tools/z3.txt -text
 Src/Delivery/studio/wizards/new_projects/cocoa.dsc -text
 Src/Delivery/studio/wizards/new_projects/cocoa/pixmaps/eiffel_wizard.png -text
+Src/Delivery/studio/wizards/new_projects/cocoa/pixmaps/eiffel_wizard_icon.png -text
 Src/Delivery/studio/wizards/new_projects/cocoa/pixmaps/wizard.png -text
 Src/Delivery/studio/wizards/new_projects/dotnet/pixmaps/Eiffel_tower.png -text
 Src/Delivery/studio/wizards/new_projects/dotnet/pixmaps/eiffel_wizard.png -text
@@ -3113,6 +3114,7 @@ Src/examples/vision2/rich_text/left_alignment.png -text
 Src/examples/vision2/rich_text/right_alignment.png -text
 Src/examples/vision2/rich_text/strike.png -text
 Src/examples/vision2/rich_text/underline.png -text
+Src/examples/vision2/rich_text/unicode.rtf -text
 Src/examples/vision2/viewport/bm_About.png -text
 Src/examples/vision2/widgets/bm_About.png -text
 Src/examples/vision2/widgets/icon_wizard_blank_project.png -text

@@ -47,7 +47,7 @@ feature -- Access
 	out: STRING
 			-- String representation of Current
 		do
-			Result := debug_output
+			Result := debug_output.as_string_8
 		end
 
 feature -- Status report

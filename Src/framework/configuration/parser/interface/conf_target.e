@@ -29,7 +29,7 @@ create {CONF_PARSE_FACTORY}
 
 feature {NONE} -- Initialization
 
-	make (a_name: STRING; a_system: CONF_SYSTEM)
+	make (a_name: STRING_32; a_system: CONF_SYSTEM)
 			-- Create with `a_name'.
 		require
 			a_name_ok: a_name /= Void and not a_name.is_empty
@@ -53,7 +53,7 @@ feature {NONE} -- Initialization
 			create internal_external_make.make (1)
 			create internal_pre_compile_action.make (1)
 			create internal_post_compile_action.make (1)
-			create internal_variables.make (1)
+			create internal_variables.make_equal_caseless (1)
 			create environ_variables.make (1)
 			create internal_settings.make (1)
 			system := a_system
@@ -65,7 +65,7 @@ feature {NONE} -- Initialization
 
 feature -- Access, stored in configuration file
 
-	name: STRING
+	name: STRING_32
 			-- Name of the target.
 
 	description: STRING_32
@@ -82,10 +82,10 @@ feature -- Access, stored in configuration file
 
 feature -- Access, in compiled only, not stored to configuration file
 
-	environ_variables: HASH_TABLE [STRING_32, STRING_32]
+	environ_variables: STRING_TABLE [READABLE_STRING_32]
 			-- Saved environment variables.
 
-	library_root: STRING_32
+	library_root: PATH
 			-- Root location to use for relative paths, defaults to the location of the configuration file.
 		require
 			location_set: system.is_location_set
@@ -103,9 +103,6 @@ feature -- Access, in compiled only, not stored to configuration file
 			else
 				Result := system.directory
 			end
-			if Result.item (Result.count) /= operating_environment.directory_separator then
-				Result.append_character (operating_environment.directory_separator)
-			end
 		ensure
 			Result_not_void: Result /= Void
 		end
@@ -115,7 +112,7 @@ feature -- Access queries
 	child_targets: LIST [CONF_TARGET]
 			-- Targets that extend this target.
 		local
-			l_targets: HASH_TABLE [CONF_TARGET, STRING]
+			l_targets: STRING_TABLE [CONF_TARGET]
 			l_target: CONF_TARGET
 		do
 			create {ARRAYED_LIST [CONF_TARGET]}Result.make (5)
@@ -207,7 +204,7 @@ feature -- Access queries
 			Result_not_void: Result /= Void
 		end
 
-	groups: HASH_TABLE [CONF_GROUP, STRING]
+	groups: STRING_TABLE [CONF_GROUP]
 			-- All groups of this target (union of clusters, assemblies, overrides and libraries)
 		do
 			create Result.make (libraries.count + assemblies.count + clusters.count + overrides.count + 1)
@@ -401,7 +398,7 @@ feature -- Access queries
 				if internal_mapping /= Void then
 					Result := internal_mapping
 				else
-					create Result.make (5)
+					create Result.make_equal (5)
 				end
 			end
 		ensure
@@ -641,7 +638,7 @@ feature -- Access queries for settings
 			l_settings := settings
 			l_settings.search (s_msil_generation_type)
 			if l_settings.found then
-				check l_settings.found_item.is_case_insensitive_equal ("exe") or l_settings.found_item.is_case_insensitive_equal ("dll") end
+				check l_settings.found_item.is_case_insensitive_equal_general ("exe") or l_settings.found_item.is_case_insensitive_equal_general ("dll") end
 				Result := l_settings.found_item
 			else
 				Result := "exe"
@@ -824,7 +821,7 @@ feature {NONE} -- Access: concurrency setting
 	setting_concurrency_name: ARRAY [READABLE_STRING_32]
 			-- Available values for `setting_concurrency'.
 		once
-			Result := <<concurrency_none_name, concurrency_multithreaded_name, concurrency_scoop_name>>
+			Result := <<concurrency_none_name.as_string_32, concurrency_multithreaded_name.as_string_32, concurrency_scoop_name.as_string_32>>
 		ensure
 			result_attached: Result /= Void
 		end
@@ -939,7 +936,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 			override_added: internal_overrides.has (an_override.name)
 		end
 
-	remove_library (a_name: STRING)
+	remove_library (a_name: READABLE_STRING_GENERAL)
 			-- Remove a library with `a_name'.
 		require
 			a_name_ok: a_name /= Void and then not a_name.is_empty
@@ -948,7 +945,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 			internal_libraries.remove (a_name)
 		end
 
-	remove_assembly (a_name: STRING)
+	remove_assembly (a_name: READABLE_STRING_GENERAL)
 			-- Remove an assembly with `a_name'.
 		require
 			a_name_ok: a_name /= Void and then not a_name.is_empty
@@ -957,7 +954,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 			internal_assemblies.remove (a_name)
 		end
 
-	remove_cluster (a_name: STRING)
+	remove_cluster (a_name: READABLE_STRING_GENERAL)
 			-- Remove a cluster with `a_name'.
 		require
 			a_name_ok: a_name /= Void and then not a_name.is_empty
@@ -966,7 +963,7 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 			internal_clusters.remove (a_name)
 		end
 
-	remove_override (a_name: STRING)
+	remove_override (a_name: READABLE_STRING_GENERAL)
 			-- Remove an override with `a_name'.
 		require
 			a_name_ok: a_name /= Void and then not a_name.is_empty
@@ -1346,49 +1343,50 @@ feature {CONF_ACCESS} -- Update, stored in configuration file
 					not internal_post_compile_action.has (an_action)
 		end
 
-	add_variable (a_name, a_value: STRING_32)
+	add_variable (a_name: READABLE_STRING_GENERAL; a_value: READABLE_STRING_32)
 			-- Add a variable with `a_name' and `a_value'.
 		require
 			a_name_ok: a_name /= Void and then not a_name.is_empty
 			a_value_not_void: a_value /= Void
 		do
-			internal_variables.force (a_value, a_name.as_lower)
+			internal_variables.force (a_value, a_name)
 		ensure
-			variable_added: internal_variables.has (a_name.as_lower) and then internal_variables.item (a_name.as_lower) = a_value
+			variable_added: internal_variables.has (a_name) and then internal_variables.item (a_name) = a_value
 		end
 
-	remove_variable (a_name: STRING_32)
+	remove_variable (a_name: READABLE_STRING_GENERAL)
 			-- Remove a variable with `a_name'.
 		require
 			a_name_ok: a_name /= Void and then not a_name.is_empty
 		do
-			internal_variables.remove (a_name.as_lower)
+			internal_variables.remove (a_name)
 		ensure
-			variable_removed: not internal_variables.has (a_name.as_lower)
+			variable_removed: not internal_variables.has (a_name)
 		end
 
-	add_mapping (a_old_name, a_new_name: STRING)
+	add_mapping (a_old_name: READABLE_STRING_GENERAL; a_new_name: STRING_32)
 			-- Add/replace  mapping from `a_old_name' to `a_new_name'.
 		require
 			a_old_name_ok: a_old_name /= Void and then not a_old_name.is_empty
 			a_new_name_ok: a_new_name /= Void and then not a_new_name.is_empty
 		do
 			if internal_mapping = Void then
-				create internal_mapping.make (15)
+				create internal_mapping.make_equal_caseless (15)
 			end
+				-- Eventhough we are caseless, we do store mapping in upper.
 			internal_mapping.force (a_new_name.as_upper, a_old_name.as_upper)
 		end
 
-	remove_mapping (a_name: STRING)
+	remove_mapping (a_name: READABLE_STRING_GENERAL)
 			-- Remove a mapping with `a_name'.
 		require
 			a_name_ok: a_name /= Void and then not a_name.is_empty
 		do
 			if internal_mapping /= Void then
-				internal_mapping.remove (a_name.as_upper)
+				internal_mapping.remove (a_name)
 			end
 		ensure
-			mapping_removed: not internal_mapping.has (a_name.as_upper)
+			mapping_removed: not internal_mapping.has (a_name)
 		end
 
 	set_abstract (an_enabled: like is_abstract)
@@ -1449,7 +1447,7 @@ feature -- Equality
 		require
 			a_processed_libraries: a_processed_libraries /= Void
 		local
-			l_libs, l_other_libs: HASH_TABLE [CONF_LIBRARY, STRING]
+			l_libs, l_other_libs: like libraries
 			l_lib, l_other_lib: CONF_LIBRARY
 		do
 			Result := is_group_equivalent (other)
@@ -1495,7 +1493,7 @@ feature -- Visit
 
 feature -- Output
 
-	debug_output: STRING
+	debug_output: STRING_32
 			-- String that should be displayed in debugger to represent `Current'.
 		do
 			Result := system.name + "/" + name
@@ -1512,16 +1510,16 @@ feature {CONF_VISITOR, CONF_ACCESS} -- Implementation, attributes that are store
 	internal_precompile: CONF_PRECOMPILE
 			-- Precompile of this target itself.
 
-	internal_libraries: HASH_TABLE [CONF_LIBRARY, STRING]
+	internal_libraries: STRING_TABLE [CONF_LIBRARY]
 			-- The used libraries of this target itself.
 
-	internal_overrides: HASH_TABLE [CONF_OVERRIDE, STRING]
+	internal_overrides: STRING_TABLE [CONF_OVERRIDE]
 			-- The override clusters of this target itself.
 
-	internal_clusters: HASH_TABLE [CONF_CLUSTER, STRING]
+	internal_clusters: STRING_TABLE [CONF_CLUSTER]
 			-- The normal clusters of this target itself.
 
-	internal_assemblies: HASH_TABLE [CONF_ASSEMBLY, STRING]
+	internal_assemblies: STRING_TABLE [CONF_ASSEMBLY]
 			-- The assemblies of this target itself.
 
 	internal_file_rule: ARRAYED_LIST [CONF_FILE_RULE]
@@ -1530,7 +1528,7 @@ feature {CONF_VISITOR, CONF_ACCESS} -- Implementation, attributes that are store
 	internal_options: CONF_OPTION
 			-- Options (Debuglevel, assertions, ...) of this target itself.
 
-	internal_mapping: EQUALITY_HASH_TABLE [STRING, STRING]
+	internal_mapping: STRING_TABLE [STRING_32]
 			-- Special classes name mapping (eg. STRING => STRING_32) of this target itself.
 
 	changeable_internal_options: like internal_options
@@ -1574,12 +1572,12 @@ feature {CONF_VISITOR, CONF_ACCESS} -- Implementation, attributes that are store
 	internal_post_compile_action: ARRAYED_LIST [CONF_ACTION]
 			-- Actions to be executed after compilation of this target itself.
 
-	internal_variables: EQUALITY_HASH_TABLE [STRING_32, STRING_32]
+	internal_variables: STRING_TABLE [READABLE_STRING_32]
 			-- User defined variables of this target itself.
 
 feature {NONE} -- Implementation
 
-	is_group_equal_check (a, b: HASH_TABLE [CONF_GROUP, STRING]): BOOLEAN
+	is_group_equal_check (a, b: STRING_TABLE [CONF_GROUP]): BOOLEAN
 			-- Check if `a' and `b' are group equivalent.
 		do
 			if a.count = b.count then

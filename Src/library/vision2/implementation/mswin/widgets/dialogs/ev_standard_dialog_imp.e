@@ -64,7 +64,7 @@ feature -- Status setting
 
 feature -- Status report
 
-	selected_button: detachable STRING_32
+	selected_button: detachable IMMUTABLE_STRING_32
 			-- Label of last clicked button.
 
 feature -- Deferred

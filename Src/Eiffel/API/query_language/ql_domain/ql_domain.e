@@ -284,7 +284,9 @@ feature -- Sorting
 			if not is_empty then
 				create l_sorted_list.make (count)
 				l_content := content
-				l_content.do_all (agent l_sorted_list.extend)
+				across l_content as l_item loop
+					l_sorted_list.extend (l_item.item)
+				end
 				l_content.wipe_out
 				create l_agent_tester.make (a_test_agent)
 				create l_sorter.make (l_agent_tester)
@@ -444,7 +446,7 @@ feature{QL_CRITERION} -- Implementation
 			a_group_valid: a_group.is_valid_domain_item
 			a_class_table_attached: a_class_table /= Void
 		local
-			l_classes: HASH_TABLE [CONF_CLASS, STRING]
+			l_classes: STRING_TABLE [CONF_CLASS]
 			l_class_table: HASH_TABLE [QL_CLASS, CONF_CLASS]
 			l_conf_class: CONF_CLASS
 		do
@@ -654,10 +656,10 @@ invariant
 	domain_valid: is_domain_valid
 
 note
-        copyright:	"Copyright (c) 1984-2009, Eiffel Software"
-        license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-        licensing_options:	"http://www.eiffel.com/licensing"
-        copying: "[
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
 			Eiffel Software's Eiffel Development Environment is free
@@ -677,12 +679,14 @@ note
 			Environment; if not, write to the Free Software Foundation,
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
-        source: "[
+	source: "[
 			Eiffel Software
 			5949 Hollister Ave., Goleta, CA 93117 USA
 			Telephone 805-685-1006, Fax 805-685-6869
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
+
+
 
 end

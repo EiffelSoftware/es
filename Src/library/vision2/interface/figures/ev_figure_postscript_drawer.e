@@ -293,21 +293,21 @@ feature -- Figure drawing
 				add_ps_line (text_figure.foreground_color.out + " setrgbcolor")
 				font_name := text_figure.font.name.twin
 				font_name.put (font_name.item (1).as_upper, 1)
-				font_style := ""
+				create font_style.make (10)
 				if text_figure.font.weight = 8 then
-					font_style.append ("Bold")
+					font_style.append_string_general ("Bold")
 				end
-				if font_name.is_equal ("Times") then
+				if font_name.same_string_general ("Times") then
 					if text_figure.font.shape = 11 then
-						font_style.append ("Italic")
+						font_style.append_string_general ("Italic")
 					end
 				else
 					if text_figure.font.shape = 11 then
-						font_style.append ("Oblique")
+						font_style.append_string_general ("Oblique")
 					end
 				end
 				if font_style.count = 0 then
-					font_style.append ("Roman")
+					font_style.append_string_general ("Roman")
 				end
 				add_ps_line ("/" + font_name + "-" + font_style + " findfont")
 				add_ps_line (text_figure.font.height.out + " scalefont")
@@ -358,10 +358,11 @@ feature {NONE} -- Implementation
 			a_code_not_void: a_code /= Void
 		local
 			l_ps_result: like postscript_result
+			u: UTF_CONVERTER
 		do
 			l_ps_result := postscript_result
 			check l_ps_result /= Void end
-			l_ps_result.append (a_code.to_string_8)
+			u.utf_32_string_into_utf_8_string_8 (a_code, l_ps_result)
 			l_ps_result.append_character ('%N')
 		end
 
@@ -371,10 +372,11 @@ feature {NONE} -- Implementation
 			a_code_not_void: a_code /= Void
 		local
 			l_ps_result: like postscript_result
+			u: UTF_CONVERTER
 		do
 			l_ps_result := postscript_result
 			check l_ps_result /= Void end
-			l_ps_result.append (a_code.to_string_8)
+			u.utf_32_string_into_utf_8_string_8 (a_code, l_ps_result)
 		end
 
 	append_line_styles (a_figure: EV_ATOMIC_FIGURE)

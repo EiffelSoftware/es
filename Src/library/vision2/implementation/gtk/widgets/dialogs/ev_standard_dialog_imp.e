@@ -24,11 +24,6 @@ inherit
 
 	EV_STANDARD_DIALOG_ACTION_SEQUENCES_IMP
 
-	EV_DIALOG_CONSTANTS
-		export
-			{NONE} all
-		end
-
 feature -- Access
 
 	title: STRING_32
@@ -43,7 +38,7 @@ feature -- Access
 
 feature -- Status report
 
-	selected_button: detachable STRING_32
+	selected_button: detachable IMMUTABLE_STRING_32
 			-- Label of the last clicked button.
 
 feature -- Status setting

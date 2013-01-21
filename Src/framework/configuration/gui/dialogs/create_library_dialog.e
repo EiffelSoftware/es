@@ -116,10 +116,10 @@ feature {NONE} -- Initialization
 			libraries_grid.enable_single_row_selection
 			libraries_grid.set_column_count_to (location_column)
 			l_col := libraries_grid.column (name_column)
-			l_col.set_title ("Name")
+			l_col.set_title (conf_interface_names.dialog_create_library_name)
 			l_col.set_width (100)
 			l_col := libraries_grid.column (location_column)
-			l_col.set_title ("Location")
+			l_col.set_title (conf_interface_names.dialog_create_library_location)
 			l_col.set_width (100)
 			libraries_grid.disable_column_separators
 			libraries_grid.disable_row_separators
@@ -277,9 +277,9 @@ feature {NONE} -- GUI elements
 			l_dir: DIRECTORY
 		once
 			create Result
-			create l_dir.make (target.system.directory)
+			create l_dir.make_with_path (target.system.directory)
 			if l_dir.is_readable then
-				Result.set_start_directory (l_dir.name)
+				Result.set_start_path (l_dir.path)
 			end
 			Result.filters.extend ([config_files_filter, config_files_description])
 			Result.filters.extend ([all_files_filter, all_files_description])
@@ -302,14 +302,14 @@ feature {NONE} -- Access
 			l_dirs: like lookup_directories
 			l_libraries: SEARCH_TABLE [STRING_32]
 			l_dir: DIRECTORY
-			l_path: READABLE_STRING_32
+			l_path: IMMUTABLE_STRING_32
 			l_location: CONF_DIRECTORY_LOCATION
 		do
 			l_dirs := lookup_directories
 			create Result.make (l_dirs.count)
 			from l_dirs.start until l_dirs.after loop
 				create l_location.make (l_dirs.item_for_iteration.path, target)
-				l_path := l_location.evaluated_path
+				l_path := l_location.evaluated_path.name
 				create l_dir.make (l_path)
 				if l_dir.is_readable then
 					create l_libraries.make (10)
@@ -326,7 +326,7 @@ feature {NONE} -- Access
 			result_attached: attached Result
 		end
 
-	configuration_libraries: HASH_TABLE [CONF_SYSTEM, STRING]
+	configuration_libraries: STRING_TABLE [CONF_SYSTEM]
 			-- A set of libraries configurations to display in the dialog
 		require
 			is_eiffel_layout_defined: is_eiffel_layout_defined
@@ -343,7 +343,7 @@ feature {NONE} -- Access
 			from l_libs.start until l_libs.after loop
 				create l_loader.make (l_factory)
 				create l_location.make (l_libs.item_for_iteration, target)
-				l_loader.retrieve_configuration (l_location.evaluated_path)
+				l_loader.retrieve_configuration (l_location.evaluated_path.name)
 				if
 					not l_loader.is_error and then
 					attached l_loader.last_system as l_system and then
@@ -401,10 +401,10 @@ feature {NONE} -- Actions
 		do
 			if not location.text.is_empty then
 				create l_loc.make (location.text, target)
-				create l_dir.make (l_loc.evaluated_directory)
+				create l_dir.make_with_path (l_loc.evaluated_directory)
 			end
 			if l_dir /= Void and then l_dir.exists then
-				browse_dialog.set_start_directory (l_dir.name)
+				browse_dialog.set_start_path (l_dir.path)
 			end
 
 			browse_dialog.show_modal_to_window (Current)
@@ -415,9 +415,9 @@ feature {NONE} -- Actions
 					if not attached l_system.library_target as l_target then
 						prompts.show_error_prompt (conf_interface_names.file_is_not_a_library, Current, Void)
 					elseif (not attached void_safe_check as l_check) or else (not l_check.is_selected or else l_target.options.void_safety.index = {CONF_OPTION}.void_safety_index_all) then
-						on_library_selected (l_system, l_fn.as_string_8)
+						on_library_selected (l_system, l_fn)
 					else
-						prompts.show_question_prompt (conf_interface_names.add_non_void_safe_library, Current, agent on_library_selected (l_system, l_fn.as_string_8.as_attached), Void)
+						prompts.show_question_prompt (conf_interface_names.add_non_void_safe_library, Current, agent on_library_selected (l_system, l_fn), Void)
 					end
 				end
 			end
@@ -425,7 +425,7 @@ feature {NONE} -- Actions
 
 feature {NONE} -- Action handlers
 
-	on_library_selected (a_library: CONF_SYSTEM; a_location: STRING)
+	on_library_selected (a_library: CONF_SYSTEM; a_location: READABLE_STRING_GENERAL)
 			-- Called when a library is selected
 		require
 			has_library_target: a_library.library_target /= Void
@@ -485,7 +485,7 @@ feature {NONE} -- Action handlers
 				else
 					last_group := factory.new_library (name.text, location.text, target)
 						-- add an empty classes list that it get's displayed in the classes tree
-					last_group.set_classes (create {HASH_TABLE [CONF_CLASS, STRING]}.make (0))
+					last_group.set_classes (create {STRING_TABLE [CONF_CLASS]}.make (0))
 					l_sys := factory.new_system_generate_uuid ("dummy")
 					l_sys.set_application_target (target)
 					last_group.set_library_target (factory.new_target ("dummy", l_sys))
@@ -507,8 +507,8 @@ feature {NONE} -- Action handlers
 feature {NONE} -- Basic operation
 
 	populated_configuration_libraries: detachable like configuration_libraries
-	libraries_table: detachable HASH_TABLE [STRING, STRING]
-	libraries_sorted_keys: detachable ARRAYED_LIST [STRING]
+	libraries_table: detachable STRING_TABLE [READABLE_STRING_GENERAL]
+	libraries_sorted_keys: detachable ARRAYED_LIST [READABLE_STRING_GENERAL]
 
 	populate_libraries
 			-- Populates the list of libraries in the UI
@@ -517,10 +517,10 @@ feature {NONE} -- Basic operation
 			l_libraries_table: like libraries_table
 			l_libraries_sorted_keys: like libraries_sorted_keys
 			l_target: CONF_TARGET
-			l_path: STRING
-			l_key: STRING
+			l_path: READABLE_STRING_GENERAL
+			l_key: STRING_32
 			l_style: EV_POINTER_STYLE
-			l_sorter: QUICK_SORTER [STRING]
+			l_sorter: QUICK_SORTER [READABLE_STRING_GENERAL]
 		do
 			l_style := pointer_style
 			set_pointer_style (create {EV_POINTER_STYLE}.make_predefined ({EV_POINTER_STYLE_CONSTANTS}.busy_cursor))
@@ -535,9 +535,9 @@ feature {NONE} -- Basic operation
 				if l_target /= Void then
 					l_path := l_libraries.key_for_iteration
 					create l_key.make (256)
-					l_key.append_string (l_target.name)
-					l_key.append_string (once " # ")
-					l_key.append_string (l_path)
+					l_key.append_string_general (l_target.name)
+					l_key.append_string_general (once " # ")
+					l_key.append_string_general (l_path)
 					l_libraries_table.force (l_path, l_key)
 				end
 				l_libraries.forth
@@ -545,7 +545,7 @@ feature {NONE} -- Basic operation
 
 				-- Sort keys
 			create l_libraries_sorted_keys.make_from_array (l_libraries_table.current_keys)
-			create l_sorter.make (create {COMPARABLE_COMPARATOR [STRING]})
+			create l_sorter.make (create {COMPARABLE_COMPARATOR [READABLE_STRING_GENERAL]})
 			l_sorter.sort (l_libraries_sorted_keys)
 
 			libraries_table := l_libraries_table
@@ -572,14 +572,12 @@ feature {NONE} -- Basic operation
 			l_item: EV_GRID_LABEL_ITEM
 			l_col: EV_GRID_COLUMN
 			l_name_width: INTEGER
-			l_path: STRING
-			l_key: STRING
+			l_path: READABLE_STRING_GENERAL
 			l_description: STRING_32
 			l_void_safe_check: like void_safe_check
 			l_show_void_safe_only: BOOLEAN
-			l_filter: detachable STRING
+			l_filter: detachable STRING_32
 			l_filter_engine: detachable KMP_WILD
-			l_matched: BOOLEAN
 		do
 			l_libraries_grid := libraries_grid
 			l_libraries_grid.remove_and_clear_all_rows
@@ -682,14 +680,13 @@ feature {NONE} -- Basic operation
 			a_libraries_attached: attached a_libraries
 		local
 			l_dir_name: PATH
-			l_count, i: INTEGER
 			l_lib_file: STRING_32
 			l_file_name: PATH
-			l_file_string: STRING
+			l_file_string: STRING_32
 			l_file: RAW_FILE
 			s32: STRING_32
 		do
-			if attached a_dir.linear_representation as l_items then
+			if attached a_dir.linear_representation_32 as l_items then
 				across l_items as l_files loop
 					l_lib_file := l_files.item
 					if valid_config_extension (l_lib_file) then

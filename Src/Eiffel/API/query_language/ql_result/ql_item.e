@@ -78,20 +78,20 @@ feature -- Setting
 
 feature -- Access
 
-	name: STRING
+	name: READABLE_STRING_32
 			-- Name of current item
 		deferred
 		ensure
 			result_attached: Result /= Void
 		end
 
-	path_name: STRING
+	path_name: STRING_32
 			-- Name used in `path'.
 		local
 			l_path_marker: like path_name_marker
-			l_name: STRING
-			l_opener: STRING
-			l_closer: STRING
+			l_name: like name
+			l_opener: IMMUTABLE_STRING_32
+			l_closer: IMMUTABLE_STRING_32
 		do
 			l_path_marker := path_name_marker
 			l_name := name
@@ -101,22 +101,22 @@ feature -- Access
 			if not l_opener.is_empty then
 				Result.append (l_opener)
 			end
-			Result.append (l_name)
+			Result.append_string_general (l_name)
 			if not l_closer.is_empty then
 				Result.append (l_closer)
 			end
 		end
 
-	path: STRING
+	path: STRING_32
 			-- Full path of current item (current item itself is included)
 		require
 			valid_item: is_valid_domain_item
 		local
-			l_name: STRING
-			l_parent_path: STRING
+			l_name: like path_name
+			l_parent_path: STRING_32
 		do
 			if parent = Void then
-				Result := ""
+				create Result.make_empty
 			else
 				l_parent_path := parent.path
 				l_name := path_name
@@ -133,11 +133,11 @@ feature -- Access
 			result_attached: Result /= Void
 		end
 
-	partial_path: STRING
+	partial_path: STRING_32
 			-- Partial path of current item (current item itself is NOT included)
 		do
 			if parent = Void then
-				Result := ""
+				create Result.make_empty
 			else
 				Result := parent.path
 			end
@@ -162,7 +162,7 @@ feature -- Access
 			current_in_domain: Result.content.has (Current)
 		end
 
-	string_representation: STRING
+	string_representation: READABLE_STRING_32
 			-- String representation of current
 		do
 			Result := name
@@ -398,10 +398,10 @@ invariant
 	full_name_valid: path /= Void
 
 note
-        copyright:	"Copyright (c) 1984-2010, Eiffel Software"
-        license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-        licensing_options:	"http://www.eiffel.com/licensing"
-        copying: "[
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
 			Eiffel Software's Eiffel Development Environment is free
@@ -421,7 +421,7 @@ note
 			Environment; if not, write to the Free Software Foundation,
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
-        source: "[
+	source: "[
 			Eiffel Software
 			5949 Hollister Ave., Goleta, CA 93117 USA
 			Telephone 805-685-1006, Fax 805-685-6869

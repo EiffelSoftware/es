@@ -204,7 +204,7 @@ feature {NONE} -- Actions
 			l_property: ASSEMBLY_PROPERTIES
 			l_row: EV_GRID_ROW
 			l_item: EV_GRID_LABEL_ITEM
-			l_value: STRING
+			l_value: STRING_32
 			l_assemblies: like assemblies
 		do
 			l_assemblies := assemblies
@@ -216,7 +216,7 @@ feature {NONE} -- Actions
 				create l_il_env.make (target.setting_msil_clr_version)
 			end
 			if l_il_env.is_dotnet_installed then
-				create l_alb.make (l_il_env.dotnet_framework_path, l_il_env.version)
+				create l_alb.make (l_il_env.dotnet_framework_path.name, l_il_env.version)
 				l_properties := l_alb.assemblies_properties
 				l_assemblies.set_row_count_to (l_properties.count)
 				from
@@ -234,7 +234,7 @@ feature {NONE} -- Actions
 					l_row.set_item (2, create {EV_GRID_LABEL_ITEM}.make_with_text (l_property.version_string))
 
 					if l_property.is_neutral_locale then
-						l_value := once "Netural"
+						l_value := {STRING_32} "Netural"
 					else
 						l_value := l_property.locales.first
 					end
@@ -245,13 +245,13 @@ feature {NONE} -- Actions
 					end
 
 					if l_property.is_msil then
-						l_value := once "MSIL"
+						l_value := {STRING_32} "MSIL"
 					elseif l_property.is_x86 then
-						l_value := once "x86"
+						l_value := {STRING_32} "x86"
 					elseif l_property.is_x64 then
-						l_value := once "x64"
+						l_value := {STRING_32} "x64"
 					else
-						l_value := once "Unknown"
+						l_value := {STRING_32} "Unknown"
 					end
 					l_row.set_item (5, create {EV_GRID_LABEL_ITEM}.make_with_text (l_value))
 					l_row.set_item (6, create {EV_GRID_LABEL_ITEM}.make_with_text (l_property.location))
@@ -262,7 +262,7 @@ feature {NONE} -- Actions
 			end
 		end
 
-	fill_assembly (a_name, a_path: STRING)
+	fill_assembly (a_name, a_path: READABLE_STRING_GENERAL)
 			-- Fill location and name from `a_path' and `a_name'.
 		require
 			a_name_ok: a_name /= Void and then not a_name.is_empty
@@ -271,8 +271,8 @@ feature {NONE} -- Actions
 			location_ok: location /= Void
 		local
 			l_il_env: IL_ENVIRONMENT
-			l_loc: STRING
-			l_parts: LIST [STRING]
+			l_loc: STRING_32
+			l_parts: LIST [READABLE_STRING_GENERAL]
 		do
 			l_parts := a_name.split (',')
 			name.set_text (l_parts.first.as_lower)
@@ -282,8 +282,8 @@ feature {NONE} -- Actions
 			else
 				create l_il_env.make (target.setting_msil_clr_version)
 			end
-			l_loc := a_path.twin
-			l_loc.replace_substring_all (l_il_env.dotnet_framework_path, "$ISE_DOTNET_FRAMEWORK")
+			create l_loc.make_from_string_general (a_path)
+			l_loc.replace_substring_all (l_il_env.dotnet_framework_path.name, "$ISE_DOTNET_FRAMEWORK")
 			location.set_text (l_loc)
 		end
 
@@ -293,9 +293,9 @@ feature {NONE} -- Actions
 			l_dir: DIRECTORY
 		once
 			create Result
-			create l_dir.make (target.system.directory)
+			create l_dir.make_with_path (target.system.directory)
 			if l_dir.exists then
-				Result.set_start_directory (l_dir.name)
+				Result.set_start_path (l_dir.path)
 			end
 			Result.filters.extend ([all_assemblies_filter, all_assemblies_description])
 			Result.filters.extend ([all_files_filter, all_files_description])
@@ -311,10 +311,10 @@ feature {NONE} -- Actions
 		do
 			if not location.text.is_empty then
 				create l_loc.make (location.text, target)
-				create l_dir.make (l_loc.evaluated_directory)
-			end
-			if l_dir /= Void and then l_dir.exists then
-				browse_dialog.set_start_directory (l_dir.name)
+				create l_dir.make_with_path (l_loc.evaluated_directory)
+				if l_dir.exists then
+					browse_dialog.set_start_path (l_dir.path)
+				end
 			end
 
 			browse_dialog.open_actions.extend (agent fill_fields)
@@ -327,7 +327,7 @@ feature {NONE} -- Actions
 			l_il_env: IL_ENVIRONMENT
 			l_reader: ASSEMBLY_PROPERTIES_READER
 			l_properties: ASSEMBLY_PROPERTIES
-			l_file_name: STRING
+			l_file_name: STRING_32
 			l_added: BOOLEAN
 		do
 				-- get clr version
@@ -361,7 +361,7 @@ feature {NONE} -- Actions
 	on_ok
 			-- Add group and close the dialog.
 		local
-			l_local: STRING
+			l_local: STRING_32
 		do
 			if not name.text.is_empty then
 				l_local := location.text
@@ -374,7 +374,7 @@ feature {NONE} -- Actions
 					(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_error_prompt (conf_interface_names.assembly_no_location, Current, Void)
 				else
 					last_group := factory.new_assembly (name.text, location.text, target)
-					last_group.set_classes (create {HASH_TABLE [CONF_CLASS, STRING]}.make (0))
+					last_group.set_classes (create {STRING_TABLE [CONF_CLASS]}.make (0))
 					target.add_assembly (last_group)
 
 					is_ok := True

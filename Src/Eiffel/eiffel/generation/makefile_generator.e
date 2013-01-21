@@ -808,6 +808,7 @@ feature {NONE} -- Generate externals
 			l_added_items: SEARCH_TABLE [STRING_32]
 			l_path: STRING_32
 			l_state: CONF_STATE
+			u: UTF_CONVERTER
 		do
 			if not a_is_generated then
 				make_file.put_string (a_name)
@@ -828,15 +829,15 @@ feature {NONE} -- Generate externals
 					end
 					if a_is_mask_dollar then
 							-- Mask all remaining '$'.
-						l_path.replace_substring_all ("$", "\$")
+						l_path.replace_substring_all ({STRING_32} "$", {STRING_32} "\$")
 							-- Correct double masking if '$' were already masked.
-						l_path.replace_substring_all ("\\$", "\$")
+						l_path.replace_substring_all ({STRING_32} "\\$", {STRING_32} "\$")
 					end
 						-- Don't add the same items multiple times.
 					if not l_added_items.has (l_path) then
 						l_added_items.force (l_path)
 						make_file.put_string (a_prefix)
-						make_file.put_string (l_path)
+						make_file.put_string (u.utf_32_string_to_utf_8_string_8 (l_path))
 					end
 				end
 			end
@@ -1363,7 +1364,7 @@ feature {NONE} -- Constants
 	boehm_library: STRING
 			-- Addition library if boehm is selected
 		do
-			if not system.uses_ise_gc_runtime and then system.external_runtime.as_lower.is_equal ("boehm") then
+			if not system.uses_ise_gc_runtime and then system.external_runtime.is_case_insensitive_equal ("boehm") then
 				Result := " %"\$(ISE_EIFFEL)/studio/spec/\$(ISE_PLATFORM)/lib-boehm/"
 				Result.append ("$prefix")
 				Result.append ("$boehmgclib")
@@ -1377,7 +1378,7 @@ feature {NONE} -- Constants
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

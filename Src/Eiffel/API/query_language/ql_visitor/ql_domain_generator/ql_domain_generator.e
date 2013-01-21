@@ -411,7 +411,7 @@ feature{NONE} -- Implementation
 			a_parent_valid: a_parent.is_valid_domain_item
 			a_action_attached: a_action /= Void
 		local
-			l_groups: HASH_TABLE [CONF_GROUP, STRING]
+			l_groups: STRING_TABLE [CONF_GROUP]
 			l_cursor: CURSOR
 			l_group: QL_GROUP
 		do
@@ -441,7 +441,7 @@ feature{NONE} -- Implementation
 			a_action_attached: a_action /= Void
 		local
 			l_class: QL_CLASS
-			l_classes: HASH_TABLE [CONF_CLASS, STRING]
+			l_classes: STRING_TABLE [CONF_CLASS]
 			l_cursor: CURSOR
 			l_require_compiled: BOOLEAN
 			l_conf_class: CONF_CLASS
@@ -616,8 +616,8 @@ invariant
 	tautology_criterion_attached: tautology_criterion /= Void
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
-	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
@@ -646,5 +646,7 @@ note
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
+
+
 
 end

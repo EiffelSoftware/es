@@ -1171,6 +1171,7 @@ feature -- Update
 					current_option := current_option + 1
 					l_arg := argument (current_option)
 					if l_arg /= Void then
+							-- FIXME: Truncation for the time being
 						target_name := l_arg
 					else
 						option_error := True
@@ -1442,7 +1443,7 @@ feature {NONE} -- Implementation
 	config_file_name: PATH
 			-- Name of the configuration file.
 
-	target_name: STRING
+	target_name: STRING_32
 			-- Name of the target.
 
 	project_path: PATH

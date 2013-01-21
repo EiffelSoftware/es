@@ -63,13 +63,12 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	name: STRING
+	name: READABLE_STRING_32
 			-- Name of current item
 		do
-			-- |FIXME: name should be in STRING_32
-			Result := e_feature.name_32.as_string_8
+			Result := e_feature.name_32
 		ensure then
-			good_result: Result /= Void and then Result.is_equal (e_feature.name_32.as_string_8)
+			good_result: Result /= Void and then Result.same_string (e_feature.name_32)
 		end
 
 	description: STRING_32
@@ -172,10 +171,10 @@ invariant
 	e_feature_attached: e_feature /= Void
 
 note
-        copyright:	"Copyright (c) 1984-2010, Eiffel Software"
-        license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-        licensing_options:	"http://www.eiffel.com/licensing"
-        copying: "[
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
 			
 			Eiffel Software's Eiffel Development Environment is free
@@ -195,12 +194,14 @@ note
 			Environment; if not, write to the Free Software Foundation,
 			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
-        source: "[
+	source: "[
 			Eiffel Software
 			5949 Hollister Ave., Goleta, CA 93117 USA
 			Telephone 805-685-1006, Fax 805-685-6869
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
+
+
 
 end

@@ -32,7 +32,7 @@ feature -- Initialization
 			not_empty_an_assembly_name: not an_assembly_name.is_empty
 		local
 			retried: BOOLEAN
-			l_xml_file: KL_BINARY_INPUT_FILE
+			l_xml_file: KL_BINARY_INPUT_FILE_32
 			l_parser: XM_EIFFEL_PARSER
 			l_file: RAW_FILE
 			l_offset: INTEGER
@@ -41,7 +41,7 @@ feature -- Initialization
 				xml_file_path := path_to_assembly_doc (an_assembly_name)
 
 					-- get position of '<' because there could be some numbers for the encoding that are not taken into account by the positions returned by gobo
-				create l_file.make (xml_file_path)
+				create l_file.make_with_path (xml_file_path)
 				create member_parser.make
 				if l_file.exists and then l_file.is_readable then
 					l_file.open_read
@@ -52,7 +52,7 @@ feature -- Initialization
 						member_parser.set_offset (l_offset - 1)
 					end
 
-					create l_xml_file.make (xml_file_path)
+					create l_xml_file.make_with_path (xml_file_path)
 					l_xml_file.open_read
 					create l_parser.make
 					l_parser.set_string_mode_mixed
@@ -96,7 +96,7 @@ feature {NONE} -- Access
 	member_parser: MEMBER_FILTER
 			-- Current member parser.
 
-	xml_file_path: STRING
+	xml_file_path: PATH
 			-- Path to current xml document.
 
 	runtime_version: STRING
@@ -104,7 +104,7 @@ feature {NONE} -- Access
 
 feature -- Basic Operations
 
-	find_type (assembly_type_name: STRING; a_full_dotnet_type: STRING): MEMBER_INFORMATION
+	find_type (assembly_type_name, a_full_dotnet_type: READABLE_STRING_32): MEMBER_INFORMATION
 			-- Find comments relative to `a_full_dotnet_type'.
 		require
 			non_void_assembly_type_name: assembly_type_name /= Void
@@ -112,7 +112,7 @@ feature -- Basic Operations
 			non_void_a_full_dotnet_type: a_full_dotnet_type /= Void
 			not_empty_a_full_dotnet_type: not a_full_dotnet_type.is_empty
 		local
-			l_full_dotnet_type: STRING
+			l_full_dotnet_type: STRING_32
 		do
 			if not Member_parser_table.has (assembly_type_name) then
 				initialize (assembly_type_name)
@@ -130,7 +130,7 @@ feature -- Basic Operations
 			end
 		end
 
-	find_feature (assembly_type_name: STRING; a_full_dotnet_type: STRING; a_member_signature: STRING): MEMBER_INFORMATION
+	find_feature (assembly_type_name, a_full_dotnet_type: READABLE_STRING_32; a_member_signature: STRING): MEMBER_INFORMATION
 			-- Find comments of feature of `a_full_dotnet_type' corresponding to `a_feature_signature'.
 			-- Constructor signature: #ctor[(TYPE,TYPE,...)]
 			-- Feature signature: feature_name[(TYPE,TYPE,...)]
@@ -143,7 +143,7 @@ feature -- Basic Operations
 			not_empty_a_member_signature: not a_member_signature.is_empty
 			valid_dotnet_signature: is_valid_dotnet_signature (a_member_signature)
 		local
-			l_full_dotnet_type: STRING
+			l_full_dotnet_type: STRING_32
 			retried: BOOLEAN
 		do
 			if not retried then
@@ -168,34 +168,24 @@ feature -- Basic Operations
 			retry
 		end
 
-	path_to_assembly_doc (an_assembly_name: STRING): STRING
+	path_to_assembly_doc (an_assembly_name: STRING): PATH
 			-- Path to assembly XML file
 		require
 			non_void_an_assembly_name: an_assembly_name /= Void
 			not_empty_an_assembly_name: not an_assembly_name.is_empty
-		local
-			l_file_name: FILE_NAME
 		do
-			create l_file_name.make_from_string ((create {IL_ENVIRONMENT}.make (runtime_version)).dotnet_framework_path)
-			l_file_name.set_file_name (an_assembly_name)
-			l_file_name.add_extension ("xml")
-			Result := l_file_name
+			Result := (create {IL_ENVIRONMENT}.make (runtime_version)).dotnet_framework_path.extended (an_assembly_name).appended_with_extension ("xml")
 		ensure
 			non_void_result: Result /= Void
 		end
 
-	path_to_assembly_dll (an_assembly_name: STRING): STRING
+	path_to_assembly_dll (an_assembly_name: STRING): PATH
 			-- Path to assembly
 		require
 			non_void_an_assembly_name: an_assembly_name /= Void
 			not_empty_an_assembly_name: not an_assembly_name.is_empty
-		local
-			l_file_name: FILE_NAME
 		do
-			create l_file_name.make_from_string ((create {IL_ENVIRONMENT}.make (runtime_version)).dotnet_framework_path)
-			l_file_name.set_file_name (an_assembly_name)
-			l_file_name.add_extension ("dll")
-			Result := l_file_name
+			Result := (create {IL_ENVIRONMENT}.make (runtime_version)).dotnet_framework_path.extended (an_assembly_name).appended_with_extension ("dll")
 		ensure
 			non_void_result: Result /= Void
 		end
@@ -299,7 +289,8 @@ feature {NONE} -- Implementation
 			l_xml_members := member_parser.Xml_members
 			l_xml_members.search (l_key_member)
 			if l_xml_members.found then
-				create f.make_open_read (xml_file_path)
+				create f.make_with_path (xml_file_path)
+				f.open_read
 				l_xml_member := l_xml_members.found_item
 				f.go (l_xml_member.pos_in_file)
 				f.read_stream (l_xml_member.number_of_char)
