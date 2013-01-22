@@ -3999,142 +3999,130 @@ gobosoft.com/gobo/4.0/work/bootstrap/Readme.txt -text
 gobosoft.com/gobo/4.0/work/geuc/Readme.txt -text
 gobosoft.com/gobo/4.0/work/geuc/build.eant -text svneol=native#application/xml
 gobosoft.com/gobo/4.0/work/geuc/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/History.txt -text
-gobosoft.com/gobo/current/License.txt -text
-gobosoft.com/gobo/current/Readme.txt -text
-gobosoft.com/gobo/current/Release_notes.txt -text
-gobosoft.com/gobo/current/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/doc/Readme.txt -text
-gobosoft.com/gobo/current/doc/argument/alternate.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/argument/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/doc/argument/error.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/argument/help.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/argument/index.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/argument/introduction.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/argument/options.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/argument/parser.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/doc/download.html -text
-gobosoft.com/gobo/current/doc/geant/available_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/doc/geant/builtin_variables.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/copy_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/delete_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/echo_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/examples.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/exec_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/exit_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/fileset_element.xml -text
+gobosoft.com/gobo/current/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/doc/argument/alternate.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/argument/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/doc/argument/error.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/argument/help.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/argument/index.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/argument/introduction.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/argument/options.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/argument/parser.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/doc/download.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/available_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/doc/geant/builtin_variables.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/copy_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/delete_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/echo_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/examples.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/exec_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/exit_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/fileset_element.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/doc/geant/geant.rng -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/geant_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/gec_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/gelex_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/gepp_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/getest_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/gexace_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/geyacc_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/hello_world.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/input_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/introduction.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/ise_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/map_element.xml -text
-gobosoft.com/gobo/current/doc/geant/mkdir_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/move_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/outofdate_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/overview.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/precursor_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/replace_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/set_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/setenv_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/target.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/tasks.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/unset_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geant/xslt_task.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/gec/Readme.txt -text
-gobosoft.com/gobo/current/doc/gec/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/doc/gec/future.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/gec/index.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/gec/limitations.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/gec/platforms.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/gec/see_also.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/gec/technology.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/gec/usage.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/gelex/Readme.txt -text
-gobosoft.com/gobo/current/doc/gelex/actions.html -text
-gobosoft.com/gobo/current/doc/gelex/description.html -text
-gobosoft.com/gobo/current/doc/gelex/examples.html -text
-gobosoft.com/gobo/current/doc/gelex/index.html -text
-gobosoft.com/gobo/current/doc/gelex/introduction.html -text
-gobosoft.com/gobo/current/doc/gelex/limitations.html -text
-gobosoft.com/gobo/current/doc/gelex/matching_rules.html -text
-gobosoft.com/gobo/current/doc/gelex/options.html -text
-gobosoft.com/gobo/current/doc/gelex/patterns.html -text
-gobosoft.com/gobo/current/doc/gelex/scanner.html -text
-gobosoft.com/gobo/current/doc/gelex/see_also.html -text
-gobosoft.com/gobo/current/doc/gelex/skeleton.html -text
-gobosoft.com/gobo/current/doc/gelex/stages.html -text
-gobosoft.com/gobo/current/doc/gelex/start_conditions.html -text
-gobosoft.com/gobo/current/doc/gelint/Readme.txt -text
-gobosoft.com/gobo/current/doc/gelint/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/doc/gelint/index.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/gelint/limitations.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/gelint/see_also.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/gelint/technology.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/gelint/usage.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/getest/Readme.txt -text
-gobosoft.com/gobo/current/doc/getest/assertions.html -text
-gobosoft.com/gobo/current/doc/getest/configuration.html -text
-gobosoft.com/gobo/current/doc/getest/examples.html -text
-gobosoft.com/gobo/current/doc/getest/index.html -text
-gobosoft.com/gobo/current/doc/getest/options.html -text
-gobosoft.com/gobo/current/doc/getest/output.html -text
-gobosoft.com/gobo/current/doc/getest/see_also.html -text
-gobosoft.com/gobo/current/doc/getest/stages.html -text
-gobosoft.com/gobo/current/doc/gexace/Readme.txt -text
-gobosoft.com/gobo/current/doc/gexace/options.txt -text
+gobosoft.com/gobo/current/doc/geant/geant_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/gec_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/gelex_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/gepp_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/getest_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/gexace_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/geyacc_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/hello_world.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/input_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/introduction.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/ise_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/map_element.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/mkdir_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/move_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/outofdate_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/overview.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/precursor_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/replace_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/set_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/setenv_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/target.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/tasks.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/unset_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geant/xslt_task.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gec/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/doc/gec/future.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gec/index.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gec/limitations.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gec/platforms.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gec/see_also.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gec/technology.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gec/usage.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gelex/actions.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gelex/description.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gelex/examples.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gelex/index.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gelex/introduction.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gelex/limitations.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gelex/matching_rules.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gelex/options.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gelex/patterns.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gelex/scanner.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gelex/see_also.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gelex/skeleton.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gelex/stages.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gelex/start_conditions.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gelint/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/doc/gelint/index.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gelint/limitations.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gelint/see_also.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gelint/technology.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gelint/usage.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/getest/assertions.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/getest/configuration.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/getest/examples.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/getest/index.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/getest/options.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/getest/output.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/getest/see_also.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/getest/stages.html -text svneol=unset#text/xml
 gobosoft.com/gobo/current/doc/gexace/xace.rnc -text
 gobosoft.com/gobo/current/doc/gexace/xace.rng -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/gexslt/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/doc/gexslt/extension/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/doc/gexslt/extension/index.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/gexslt/index.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/gexslt/index_wrapper.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/gexslt/index_wrapper_2.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/gexslt/options.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/gexslt/options_wrapper.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/gexslt/options_wrapper_2.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/geyacc/Readme.txt -text
-gobosoft.com/gobo/current/doc/geyacc/actions.html -text
-gobosoft.com/gobo/current/doc/geyacc/algorithm.html -text
-gobosoft.com/gobo/current/doc/geyacc/context.html -text
-gobosoft.com/gobo/current/doc/geyacc/declarations.html -text
-gobosoft.com/gobo/current/doc/geyacc/description.html -text
-gobosoft.com/gobo/current/doc/geyacc/error.html -text
-gobosoft.com/gobo/current/doc/geyacc/examples.html -text
-gobosoft.com/gobo/current/doc/geyacc/index.html -text
-gobosoft.com/gobo/current/doc/geyacc/introduction.html -text
-gobosoft.com/gobo/current/doc/geyacc/limitations.html -text
-gobosoft.com/gobo/current/doc/geyacc/options.html -text
-gobosoft.com/gobo/current/doc/geyacc/parser.html -text
-gobosoft.com/gobo/current/doc/geyacc/precedence.html -text
-gobosoft.com/gobo/current/doc/geyacc/rules.html -text
-gobosoft.com/gobo/current/doc/geyacc/see_also.html -text
-gobosoft.com/gobo/current/doc/geyacc/skeleton.html -text
-gobosoft.com/gobo/current/doc/geyacc/stages.html -text
-gobosoft.com/gobo/current/doc/geyacc/symbols.html -text
-gobosoft.com/gobo/current/doc/guidelines/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/doc/guidelines/class_layout.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/guidelines/compilers.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/guidelines/documentation.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/guidelines/examples.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/guidelines/git.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/guidelines/index.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/guidelines/installation.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/guidelines/language.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/guidelines/license.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/guidelines/naming_conventions.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/guidelines/programming_style.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/guidelines/test.xml -text svneol=unset#application/xml
+gobosoft.com/gobo/current/doc/gexslt/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/doc/gexslt/extension/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/doc/gexslt/extension/index.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gexslt/index.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gexslt/index_wrapper.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gexslt/index_wrapper_2.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gexslt/options.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gexslt/options_wrapper.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/gexslt/options_wrapper_2.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geyacc/actions.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geyacc/algorithm.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geyacc/context.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geyacc/declarations.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geyacc/description.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geyacc/error.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geyacc/examples.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geyacc/index.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geyacc/introduction.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geyacc/limitations.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geyacc/options.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geyacc/parser.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geyacc/precedence.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geyacc/rules.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geyacc/see_also.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geyacc/skeleton.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geyacc/stages.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/geyacc/symbols.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/guidelines/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/doc/guidelines/class_layout.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/guidelines/compilers.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/guidelines/documentation.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/guidelines/examples.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/guidelines/git.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/guidelines/index.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/guidelines/installation.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/guidelines/language.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/guidelines/license.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/guidelines/naming_conventions.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/guidelines/programming_style.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/guidelines/test.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/doc/image/book/bison.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/image/book/compiler_design.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/image/book/compilers.gif -text svneol=unset#image/gif
@@ -4142,7 +4130,7 @@ gobosoft.com/gobo/current/doc/image/book/data_structures_and_algorithms.gif -tex
 gobosoft.com/gobo/current/doc/image/book/design_patterns.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/image/book/empty.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/image/book/flex.gif -text svneol=unset#image/gif
-gobosoft.com/gobo/current/doc/image/book/index.html -text
+gobosoft.com/gobo/current/doc/image/book/index.html -text svneol=unset#text/xml
 gobosoft.com/gobo/current/doc/image/book/ise.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/image/book/lex_yacc.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/image/book/object_structures.gif -text svneol=unset#image/gif
@@ -4153,150 +4141,148 @@ gobosoft.com/gobo/current/doc/image/book/xp.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/image/construction.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/image/download.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/image/home.gif -text svneol=unset#image/gif
-gobosoft.com/gobo/current/doc/image/index.html -text
+gobosoft.com/gobo/current/doc/image/index.html -text svneol=unset#text/xml
 gobosoft.com/gobo/current/doc/image/next.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/image/previous.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/image/toc.gif -text svneol=unset#image/gif
-gobosoft.com/gobo/current/doc/index.html -text
-gobosoft.com/gobo/current/doc/license.html -text
-gobosoft.com/gobo/current/doc/math/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/doc/math/decimal/dachange.html -text
-gobosoft.com/gobo/current/doc/math/decimal/daconcep.html -text
-gobosoft.com/gobo/current/doc/math/decimal/daconvs.html -text
-gobosoft.com/gobo/current/doc/math/decimal/daexcep.html -text
-gobosoft.com/gobo/current/doc/math/decimal/daintro.html -text
-gobosoft.com/gobo/current/doc/math/decimal/damodel.html -text
-gobosoft.com/gobo/current/doc/math/decimal/daops.html -text
-gobosoft.com/gobo/current/doc/math/decimal/dascope.html -text
-gobosoft.com/gobo/current/doc/math/decimal/dax3274.html -text
-gobosoft.com/gobo/current/doc/math/decimal/decarith.html -text
-gobosoft.com/gobo/current/doc/math/decimal/dectest.html -text
+gobosoft.com/gobo/current/doc/index.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/license.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/math/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/doc/math/decimal/dachange.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/math/decimal/daconcep.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/math/decimal/daconvs.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/math/decimal/daexcep.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/math/decimal/daintro.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/math/decimal/damodel.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/math/decimal/daops.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/math/decimal/dascope.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/math/decimal/dax3274.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/math/decimal/decarith.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/math/decimal/dectest.html -text svneol=unset#text/xml
 gobosoft.com/gobo/current/doc/math/decimal/default.css -text
-gobosoft.com/gobo/current/doc/math/decimal/dtchange.html -text
-gobosoft.com/gobo/current/doc/math/decimal/dtfile.html -text
-gobosoft.com/gobo/current/doc/math/decimal/dtintro.html -text
-gobosoft.com/gobo/current/doc/math/decimal/dtnotes.html -text
-gobosoft.com/gobo/current/doc/math/decimal/index.html -text
-gobosoft.com/gobo/current/doc/math/index.xml -text svneol=unset#application/xml
+gobosoft.com/gobo/current/doc/math/decimal/dtchange.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/math/decimal/dtfile.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/math/decimal/dtintro.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/math/decimal/dtnotes.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/math/decimal/index.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/math/index.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/doc/misc/gobo.rng -text svneol=unset#application/xml
 gobosoft.com/gobo/current/doc/misc/gobo2db.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/doc/misc/gobo2html.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/doc/misc/gobo2html2.xsl -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/portability/Readme.txt -text
-gobosoft.com/gobo/current/doc/portability/client.html -text
-gobosoft.com/gobo/current/doc/portability/gepp.html -text
-gobosoft.com/gobo/current/doc/portability/index.html -text
-gobosoft.com/gobo/current/doc/portability/inheritance.html -text
-gobosoft.com/gobo/current/doc/portability/portability.html -text
-gobosoft.com/gobo/current/doc/string/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/doc/string/formatter/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/doc/string/formatter/correctness.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/string/formatter/examples.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/string/formatter/index.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/string/formatter/quick_start.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/string/formatter/scientific_format.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/string/formatter/see_also.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/string/index.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/string/unicode/about.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/string/unicode/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/doc/string/unicode/case.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/string/unicode/classes.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/string/unicode/index.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/string/unicode/routines.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/string/unicode/see_also.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/structure/Readme.txt -text
-gobosoft.com/gobo/current/doc/structure/base.html -text
-gobosoft.com/gobo/current/doc/structure/container.html -text
-gobosoft.com/gobo/current/doc/structure/container.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/structure/dispenser.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_arrayed_list.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_arrayed_list_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_arrayed_sparse_set.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_arrayed_sparse_set_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_arrayed_sparse_table.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_arrayed_sparse_table_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_arrayed_stack.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_bilinear.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_bilinear_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_bilinkable.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_bilinked_list.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_bilinked_list_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_bubble_sorter.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_cell.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_comparable_comparator.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_comparator.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_container.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_dispenser.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_dynamic_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_equality_tester.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_hash_set.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_hash_set_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_hash_table.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_hash_table_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_indexable.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_indexable_sorter.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_indexed_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_linear.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_linear_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_linkable.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_linked_list.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_linked_list_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_linked_queue.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_linked_stack.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_list.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_list_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_multiarrayed_hash_set.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_multiarrayed_hash_set_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_multiarrayed_hash_table.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_multiarrayed_hash_table_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_multiarrayed_sparse_set.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_multiarrayed_sparse_set_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_multiarrayed_sparse_table.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_multiarrayed_sparse_table_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_pair.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_queue.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_quick_sorter.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_resizable.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_reverse_comparable_comparator.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_reverse_comparator.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_searchable.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_set.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_set_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_shell_sorter.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_sortable.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_sorter.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_sparse_set.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_sparse_set_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_sparse_table.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_sparse_table_cursor.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_stack.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_table.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/ds_traversable.html -text
-gobosoft.com/gobo/current/doc/structure/flatshort/index.html -text
+gobosoft.com/gobo/current/doc/portability/client.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/portability/gepp.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/portability/index.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/portability/inheritance.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/portability/portability.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/string/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/doc/string/formatter/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/doc/string/formatter/correctness.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/string/formatter/examples.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/string/formatter/index.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/string/formatter/quick_start.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/string/formatter/scientific_format.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/string/formatter/see_also.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/string/index.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/string/unicode/about.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/string/unicode/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/doc/string/unicode/case.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/string/unicode/classes.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/string/unicode/index.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/string/unicode/routines.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/string/unicode/see_also.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/base.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/container.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/container.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/dispenser.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_arrayed_list.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_arrayed_list_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_arrayed_sparse_set.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_arrayed_sparse_set_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_arrayed_sparse_table.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_arrayed_sparse_table_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_arrayed_stack.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_bilinear.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_bilinear_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_bilinkable.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_bilinked_list.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_bilinked_list_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_bubble_sorter.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_cell.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_comparable_comparator.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_comparator.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_container.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_dispenser.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_dynamic_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_equality_tester.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_hash_set.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_hash_set_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_hash_table.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_hash_table_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_indexable.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_indexable_sorter.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_indexed_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_linear.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_linear_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_linkable.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_linked_list.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_linked_list_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_linked_queue.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_linked_stack.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_list.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_list_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_multiarrayed_hash_set.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_multiarrayed_hash_set_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_multiarrayed_hash_table.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_multiarrayed_hash_table_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_multiarrayed_sparse_set.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_multiarrayed_sparse_set_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_multiarrayed_sparse_table.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_multiarrayed_sparse_table_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_pair.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_queue.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_quick_sorter.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_resizable.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_reverse_comparable_comparator.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_reverse_comparator.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_searchable.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_set.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_set_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_shell_sorter.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_sortable.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_sorter.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_sparse_set.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_sparse_set_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_sparse_table.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_sparse_table_cursor.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_stack.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_table.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/ds_traversable.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/flatshort/index.html -text svneol=unset#text/xml
 gobosoft.com/gobo/current/doc/structure/image/arrayed_list.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/structure/image/base.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/structure/image/bilinked_list.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/structure/image/container.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/structure/image/dispenser.gif -text svneol=unset#image/gif
-gobosoft.com/gobo/current/doc/structure/image/index.html -text
+gobosoft.com/gobo/current/doc/structure/image/index.html -text svneol=unset#text/xml
 gobosoft.com/gobo/current/doc/structure/image/linked_list.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/structure/image/list.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/structure/image/set.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/structure/image/sort.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/structure/image/table.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/structure/image/traversal.gif -text svneol=unset#image/gif
-gobosoft.com/gobo/current/doc/structure/index.html -text
-gobosoft.com/gobo/current/doc/structure/index.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/structure/list.html -text
-gobosoft.com/gobo/current/doc/structure/see_also.html -text
-gobosoft.com/gobo/current/doc/structure/set.html -text
-gobosoft.com/gobo/current/doc/structure/sort.html -text
-gobosoft.com/gobo/current/doc/structure/table.html -text
-gobosoft.com/gobo/current/doc/structure/terminology.html -text
-gobosoft.com/gobo/current/doc/structure/terminology.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/structure/traversal.html -text
-gobosoft.com/gobo/current/doc/structure/traversal.xml -text svneol=unset#application/xml
+gobosoft.com/gobo/current/doc/structure/index.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/index.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/list.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/see_also.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/set.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/sort.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/table.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/terminology.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/terminology.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/traversal.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/structure/traversal.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/doc/structure/visio/arrayed_list.vsd -text svneol=unset#application/msword
 gobosoft.com/gobo/current/doc/structure/visio/base.vsd -text svneol=unset#application/msword
 gobosoft.com/gobo/current/doc/structure/visio/bilinked_list.vsd -text svneol=unset#application/msword
@@ -4308,282 +4294,261 @@ gobosoft.com/gobo/current/doc/structure/visio/set.vsd -text svneol=unset#applica
 gobosoft.com/gobo/current/doc/structure/visio/sort.vsd -text svneol=unset#application/msword
 gobosoft.com/gobo/current/doc/structure/visio/table.vsd -text svneol=unset#application/msword
 gobosoft.com/gobo/current/doc/structure/visio/traversal.vsd -text svneol=unset#application/msword
-gobosoft.com/gobo/current/doc/time/Readme.txt -text
-gobosoft.com/gobo/current/doc/time/absolute.html -text
-gobosoft.com/gobo/current/doc/time/clock.html -text
-gobosoft.com/gobo/current/doc/time/duration.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_absolute_time.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_clock.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_date.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_date_duration.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_date_handler.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_date_time.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_date_time_duration.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_date_time_handler.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_date_time_value.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_date_value.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_duration.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_gregorian_calendar.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_shared_system_clock.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_system_clock.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_time.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_time_duration.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_time_handler.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_time_value.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_time_zone.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/dt_utc_system_clock.html -text
-gobosoft.com/gobo/current/doc/time/flatshort/index.html -text
+gobosoft.com/gobo/current/doc/time/absolute.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/clock.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/duration.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_absolute_time.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_clock.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_date.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_date_duration.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_date_handler.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_date_time.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_date_time_duration.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_date_time_handler.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_date_time_value.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_date_value.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_duration.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_gregorian_calendar.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_shared_system_clock.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_system_clock.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_time.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_time_duration.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_time_handler.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_time_value.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_time_zone.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/dt_utc_system_clock.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/flatshort/index.html -text svneol=unset#text/xml
 gobosoft.com/gobo/current/doc/time/image/absolute.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/time/image/clock.gif -text svneol=unset#image/gif
 gobosoft.com/gobo/current/doc/time/image/duration.gif -text svneol=unset#image/gif
-gobosoft.com/gobo/current/doc/time/image/index.html -text
-gobosoft.com/gobo/current/doc/time/index.html -text
-gobosoft.com/gobo/current/doc/time/limitations.html -text
-gobosoft.com/gobo/current/doc/time/see_also.html -text
-gobosoft.com/gobo/current/doc/time/stopwatch.html -text
+gobosoft.com/gobo/current/doc/time/image/index.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/index.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/limitations.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/see_also.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/time/stopwatch.html -text svneol=unset#text/xml
 gobosoft.com/gobo/current/doc/time/visio/absolute.vsd -text svneol=unset#application/msword
 gobosoft.com/gobo/current/doc/time/visio/clock.vsd -text svneol=unset#application/msword
 gobosoft.com/gobo/current/doc/time/visio/duration.vsd -text svneol=unset#application/msword
-gobosoft.com/gobo/current/doc/tools/Readme.txt -text
-gobosoft.com/gobo/current/doc/tools/ace.xml -text svneol=native#application/xml
-gobosoft.com/gobo/current/doc/tools/applications.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/tools/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/doc/tools/ecf.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/tools/index.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/tools/limitations.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/tools/new_xace_option.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/tools/see_also.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/tools/xace.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/TODO.txt -text
-gobosoft.com/gobo/current/doc/xml/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/doc/xml/catalogs.xml -text
-gobosoft.com/gobo/current/doc/xml/index.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/resolvers.xml -text
-gobosoft.com/gobo/current/doc/xml/serializers.xml -text
-gobosoft.com/gobo/current/doc/xml/using.xml -text
-gobosoft.com/gobo/current/doc/xml/xpath/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/doc/xml/xpath/collection.xml -text
-gobosoft.com/gobo/current/doc/xml/xpath/data_model_design.html -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xpath/evaluation_process.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xpath/implemented_functions.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xpath/invoking.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xpath/issues.html -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xpath/tiny_tree.html -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xpath/xpointer.xml -text
-gobosoft.com/gobo/current/doc/xml/xpath/xpointer_wrapper.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xpath/xpointer_wrapper_2.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xslt/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/doc/xml/xslt/configuration.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xslt/conformance.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xslt/error_listener.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xslt/examples.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xslt/extension_functions.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xslt/output_extensions.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xslt/output_resolver.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xslt/overview.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xslt/results.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xslt/security_manager.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xslt/tracing.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xslt/transformation_result.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xslt/transformation_source.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xslt/transformer.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xslt/transforming.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/doc/xml/xslt/xslt_serializer.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/example/argument/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/doc/tools/ace.xml svneol=native#text/xml
+gobosoft.com/gobo/current/doc/tools/applications.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/tools/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/doc/tools/ecf.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/tools/index.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/tools/limitations.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/tools/new_xace_option.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/tools/see_also.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/tools/xace.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/doc/xml/catalogs.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/index.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/resolvers.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/serializers.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/using.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xpath/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/doc/xml/xpath/collection.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xpath/data_model_design.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xpath/evaluation_process.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xpath/implemented_functions.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xpath/invoking.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xpath/issues.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xpath/tiny_tree.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xpath/xpointer.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xpath/xpointer_wrapper.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xpath/xpointer_wrapper_2.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xslt/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/doc/xml/xslt/configuration.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xslt/conformance.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xslt/error_listener.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xslt/examples.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xslt/extension_functions.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xslt/output_extensions.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xslt/output_resolver.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xslt/overview.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xslt/results.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xslt/security_manager.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xslt/tracing.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xslt/transformation_result.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xslt/transformation_source.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xslt/transformer.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xslt/transforming.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/doc/xml/xslt/xslt_serializer.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/example/argument/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/argument/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/Readme.txt -text
-gobosoft.com/gobo/current/example/geant/argument/a.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/argument/arguments.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/argument/b.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/argument/client.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/argument/deferred.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/argument/supplier.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/exec/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/exec/dir.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/exec/dir2.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/exec/exec1.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/exec/ls.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/exec/returncode.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/export/a.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/export/b.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/export/c.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/export/readme.txt -text
-gobosoft.com/gobo/current/example/geant/filesystem/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/gepp/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/argument/a.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/argument/arguments.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/argument/b.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/argument/client.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/argument/deferred.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/argument/supplier.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/conditional/if1.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/conditional/if2.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/conditional/if3.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/conditional/if4.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/conditional/if5.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/conditional/unless1.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/depends/depends1.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/depends/depends2.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/depends/depends3.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/exec/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/exec/dir.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/exec/dir2.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/exec/exec1.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/exec/ls.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/exec/returncode.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/export/a.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/export/b.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/export/c.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/filesystem/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/geant/geant1.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/geant/geant2.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/geant/geant3.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/geant/print.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/gepp/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/gexace/hello/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/geant/gexace/hello/hello.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/hello/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/inherit/a.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/inherit/b.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/inherit/buildfile_location/ancestor/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/inherit/buildfile_location/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/inherit/multiple/diamond/a1.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/inherit/multiple/diamond/b1.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/inherit/multiple/diamond/c1.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/inherit/multiple/diamond/d1.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/inherit/multiple/diamond/readme.txt -text
-gobosoft.com/gobo/current/example/geant/inherit/readme.txt -text
-gobosoft.com/gobo/current/example/geant/map/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/map/in/ttt/ttt.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/example/geant/misc/available.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/misc/gedoc.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/misc/mktmpdir.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/misc/obsolete.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/misc/once.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/misc/outofdate.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/misc/xslt.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/variables/variables1.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/variables/variables2.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/variables/variables3.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/variables/variables4.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/variables/variables5.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/geant/variables/variables6.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/lexical/ascii2ps/Readme.txt -text
+gobosoft.com/gobo/current/example/geant/hello/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/inherit/a.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/inherit/b.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/inherit/buildfile_location/ancestor/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/inherit/buildfile_location/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/inherit/multiple/diamond/a1.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/inherit/multiple/diamond/b1.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/inherit/multiple/diamond/c1.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/inherit/multiple/diamond/d1.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/map/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/map/in/ttt/ttt.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/example/geant/misc/available.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/misc/gedoc.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/misc/mktmpdir.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/misc/obsolete.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/misc/once.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/misc/outofdate.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/misc/xslt.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/variables/variables1.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/variables/variables2.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/variables/variables3.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/variables/variables4.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/variables/variables5.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/geant/variables/variables6.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/lexical/ascii2ps/ascii2ps.l -text
-gobosoft.com/gobo/current/example/lexical/ascii2ps/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/lexical/ascii2ps/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/lexical/ascii2ps/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/lexical/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/lexical/eiffel_scanner/Readme.txt -text
-gobosoft.com/gobo/current/example/lexical/eiffel_scanner/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/lexical/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/lexical/eiffel_scanner/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/lexical/eiffel_scanner/eiffel_scanner.l -text
 gobosoft.com/gobo/current/example/lexical/eiffel_scanner/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/lexical/gegrep/Readme.txt -text
-gobosoft.com/gobo/current/example/lexical/gegrep/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/lexical/gegrep/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/lexical/gegrep/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/math/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/math/decimal/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/math/decimal/telco/Readme.txt -text
-gobosoft.com/gobo/current/example/math/decimal/telco/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/math/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/math/decimal/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/math/decimal/telco/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/math/decimal/telco/data/telco.test -text
 gobosoft.com/gobo/current/example/math/decimal/telco/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/parse/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/parse/calc/Readme.txt -text
-gobosoft.com/gobo/current/example/parse/calc/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/parse/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/parse/calc/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/parse/calc/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/parse/eiffel_parser/Readme.txt -text
-gobosoft.com/gobo/current/example/parse/eiffel_parser/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/parse/eiffel_parser/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/parse/eiffel_parser/eiffel_scanner.l -text
 gobosoft.com/gobo/current/example/parse/eiffel_parser/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/parse/mcalc/Readme.txt -text
-gobosoft.com/gobo/current/example/parse/mcalc/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/parse/mcalc/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/parse/mcalc/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/parse/rpcalc/Readme.txt -text
-gobosoft.com/gobo/current/example/parse/rpcalc/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/parse/rpcalc/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/parse/rpcalc/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/pattern/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/pattern/singleton/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/pattern/singleton/do_nothing/Readme.txt -text
-gobosoft.com/gobo/current/example/pattern/singleton/do_nothing/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/pattern/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/pattern/singleton/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/pattern/singleton/do_nothing/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/pattern/singleton/do_nothing/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/regexp/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/regexp/pcre/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/regexp/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/regexp/pcre/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/regexp/pcre/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/test/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/test/concat1/Readme.txt -text
-gobosoft.com/gobo/current/example/test/concat1/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/test/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/test/concat1/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/test/concat1/getest.cfg -text
 gobosoft.com/gobo/current/example/test/concat1/getest.ise -text
 gobosoft.com/gobo/current/example/test/concat1/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/test/concat2/Readme.txt -text
-gobosoft.com/gobo/current/example/test/concat2/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/test/concat2/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/test/concat2/getest.cfg -text
 gobosoft.com/gobo/current/example/test/concat2/getest.ise -text
 gobosoft.com/gobo/current/example/test/concat2/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/time/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/time/clock/Readme.txt -text
-gobosoft.com/gobo/current/example/time/clock/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/time/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/time/clock/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/time/clock/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/tools/bang2create/Readme.txt -text
-gobosoft.com/gobo/current/example/tools/bang2create/bang2create.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/tools/bang2create/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/tools/bang2create/bang2create.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/tools/bang2create/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/tools/bang2create/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/tools/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/tools/pretty_printer/Readme.txt -text
-gobosoft.com/gobo/current/example/tools/pretty_printer/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/tools/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/tools/pretty_printer/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/tools/pretty_printer/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/xml/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/xml/event/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/xml/event/print/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/xml/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/xml/event/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/xml/event/print/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/xml/event/print/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/xml/event/tagcount/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/xml/event/tagcount/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/xml/event/tagcount/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/xml/tree/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/xml/tree/formatter/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/xml/tree/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/xml/tree/formatter/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/xml/tree/formatter/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/xml/tree/namespaces/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/xml/tree/namespaces/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/xml/tree/namespaces/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/xml/xslt/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/xml/xslt/schematron/Readme.txt -text
-gobosoft.com/gobo/current/example/xml/xslt/schematron/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/xml/xslt/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/example/xml/xslt/schematron/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/xml/xslt/schematron/data/conformance1-5.xsl -text svneol=unset#application/xml
-gobosoft.com/gobo/current/example/xml/xslt/schematron/data/evil_wai.xml -text
-gobosoft.com/gobo/current/example/xml/xslt/schematron/data/report.txt -text
+gobosoft.com/gobo/current/example/xml/xslt/schematron/data/evil_wai.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/example/xml/xslt/schematron/data/schematron-basic.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/example/xml/xslt/schematron/data/schematron-report.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/example/xml/xslt/schematron/data/skeleton1-5.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/example/xml/xslt/schematron/data/verbid.xsl -text
-gobosoft.com/gobo/current/example/xml/xslt/schematron/data/wai.xml -text svneol=unset#application/xml
+gobosoft.com/gobo/current/example/xml/xslt/schematron/data/wai.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/example/xml/xslt/schematron/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/example/xml/xslt/serializer/Readme.txt -text
-gobosoft.com/gobo/current/example/xml/xslt/serializer/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/example/xml/xslt/serializer/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/example/xml/xslt/serializer/system.xace -text svneol=native#application/xml
 gobosoft.com/gobo/current/library/argument/library.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/library/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/library/free_elks/Readme.txt -text
-gobosoft.com/gobo/current/library/free_elks/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/library/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/library/free_elks/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/library/free_elks/library.xace -text svneol=native#application/xml
 gobosoft.com/gobo/current/library/kernel.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/library/kernel/Readme.txt -text
-gobosoft.com/gobo/current/library/kernel/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/library/kernel/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/library/kernel/library.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/library/lexical/Readme.txt -text
-gobosoft.com/gobo/current/library/lexical/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/library/lexical/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/library/lexical/lex/lx_lex_scanner.l -text
 gobosoft.com/gobo/current/library/lexical/library.xace -text svneol=native#application/xml
 gobosoft.com/gobo/current/library/lexical/library_skl.xace -text svneol=native#application/xml
 gobosoft.com/gobo/current/library/lexical/regexp/lx_regexp_scanner.l -text
 gobosoft.com/gobo/current/library/lexical/regexp/lx_wildcard_scanner.l -text
 gobosoft.com/gobo/current/library/library.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/library/math/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/library/math/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/library/math/library.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/library/parse/Readme.txt -text
-gobosoft.com/gobo/current/library/parse/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/library/parse/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/library/parse/library.xace -text svneol=native#application/xml
 gobosoft.com/gobo/current/library/parse/library_skl.xace -text svneol=native#application/xml
 gobosoft.com/gobo/current/library/parse/yacc/pr_yacc_scanner.l -text
-gobosoft.com/gobo/current/library/pattern/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/library/pattern/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/library/pattern/library.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/library/pattern/singleton/Readme.txt -text
-gobosoft.com/gobo/current/library/regexp/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/library/regexp/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/library/regexp/library.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/library/string/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/library/string/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/library/string/library.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/library/structure/Readme.txt -text
-gobosoft.com/gobo/current/library/structure/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/library/structure/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/library/structure/library.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/library/test/Readme.txt -text
-gobosoft.com/gobo/current/library/test/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/library/test/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/library/test/config/getest.cfg -text
 gobosoft.com/gobo/current/library/test/config/getest.ise -text
 gobosoft.com/gobo/current/library/test/generation/ts_config_scanner.l -text
 gobosoft.com/gobo/current/library/test/library.xace -text svneol=native#application/xml
 gobosoft.com/gobo/current/library/test/library_skl.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/library/time/Readme.txt -text
-gobosoft.com/gobo/current/library/time/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/library/time/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/library/time/library.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/library/tools/Readme.txt -text
-gobosoft.com/gobo/current/library/tools/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/library/tools/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/library/tools/eiffel/parser/et_eiffel_preparser.l -text
 gobosoft.com/gobo/current/library/tools/eiffel/parser/et_eiffel_scanner.l -text
 gobosoft.com/gobo/current/library/tools/lace/parser/et_lace_scanner.l -text
 gobosoft.com/gobo/current/library/tools/library.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/library/utility/Readme.txt -text
-gobosoft.com/gobo/current/library/utility/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/library/utility/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/library/utility/config/ut_config_scanner.l -text
 gobosoft.com/gobo/current/library/utility/library.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/library/xml/Readme.txt -text
-gobosoft.com/gobo/current/library/xml/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/library/xml/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/library/xml/library.xace -text svneol=native#application/xml
 gobosoft.com/gobo/current/library/xml/library_core.xace -text svneol=native#application/xml
 gobosoft.com/gobo/current/library/xml/parser/eiffel/xm_eiffel_scanner.l -text
@@ -4592,73 +4557,57 @@ gobosoft.com/gobo/current/library/xml/xslt/library.xace -text svneol=native#appl
 gobosoft.com/gobo/current/misc/catalog.dtd -text
 gobosoft.com/gobo/current/misc/catalog.rng -text svneol=unset#application/xml
 gobosoft.com/gobo/current/misc/catalog.xsd -text svneol=unset#application/xml
-gobosoft.com/gobo/current/misc/eiffel.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/misc/ge2e.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/misc/test.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/misc/todo.txt -text
-gobosoft.com/gobo/current/src/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/src/geant/Readme.txt -text
-gobosoft.com/gobo/current/src/geant/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/misc/eiffel.eant svneol=native#text/xml
+gobosoft.com/gobo/current/misc/ge2e.eant svneol=native#text/xml
+gobosoft.com/gobo/current/misc/test.eant svneol=native#text/xml
+gobosoft.com/gobo/current/src/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/src/geant/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/src/geant/library.xace -text svneol=native#application/xml
 gobosoft.com/gobo/current/src/geant/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/src/gec/Readme.txt -text
-gobosoft.com/gobo/current/src/gec/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/src/gec/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/src/gec/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/src/gelex/Readme.txt -text
-gobosoft.com/gobo/current/src/gelex/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/src/gelex/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/src/gelex/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/src/gelint/Readme.txt -text
-gobosoft.com/gobo/current/src/gelint/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/src/gelint/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/src/gelint/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/src/gepp/Readme.txt -text
-gobosoft.com/gobo/current/src/gepp/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/src/gepp/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/src/gepp/gepp_scanner.l -text
 gobosoft.com/gobo/current/src/gepp/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/src/getest/Readme.txt -text
-gobosoft.com/gobo/current/src/getest/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/src/getest/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/src/getest/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/src/gexace/Readme.txt -text
-gobosoft.com/gobo/current/src/gexace/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/src/gexace/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/src/gexace/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/src/gexslt/Readme.txt -text
-gobosoft.com/gobo/current/src/gexslt/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/src/gexslt/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/src/gexslt/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/src/geyacc/Readme.txt -text
-gobosoft.com/gobo/current/src/geyacc/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/src/geyacc/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/src/geyacc/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/argument/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/argument/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/argument/getest.cfg -text
 gobosoft.com/gobo/current/test/argument/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/common/data/freeise.txt -text
-gobosoft.com/gobo/current/test/common/data/geeraise.txt -text
-gobosoft.com/gobo/current/test/example/argument/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/example/argument/data/output1.txt -text
-gobosoft.com/gobo/current/test/example/argument/data/output2.txt -text
+gobosoft.com/gobo/current/test/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/test/example/argument/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/example/argument/getest.cfg -text
 gobosoft.com/gobo/current/test/example/argument/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/example/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/example/lexical/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/example/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/test/example/lexical/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/example/lexical/data/sample.ps -text svneol=unset#application/postscript
 gobosoft.com/gobo/current/test/example/lexical/getest.cfg -text
 gobosoft.com/gobo/current/test/example/lexical/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/example/math/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/example/math/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/example/math/data/telco.outc -text
-gobosoft.com/gobo/current/test/example/math/data/telco.txt -text
 gobosoft.com/gobo/current/test/example/math/getest.cfg -text
 gobosoft.com/gobo/current/test/example/math/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/example/parse/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/example/parse/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/example/parse/getest.cfg -text
 gobosoft.com/gobo/current/test/example/parse/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/example/pattern/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/example/pattern/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/example/pattern/data/do_nothing.log -text
 gobosoft.com/gobo/current/test/example/pattern/getest.cfg -text
 gobosoft.com/gobo/current/test/example/pattern/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/example/regexp/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/example/regexp/data/pcre.txt -text
+gobosoft.com/gobo/current/test/example/regexp/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/example/regexp/getest.cfg -text
 gobosoft.com/gobo/current/test/example/regexp/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/example/test/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/example/test/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/example/test/data/concat1a.log -text
 gobosoft.com/gobo/current/test/example/test/data/concat1b.log -text
 gobosoft.com/gobo/current/test/example/test/data/concat1c.log -text
@@ -4667,20 +4616,20 @@ gobosoft.com/gobo/current/test/example/test/data/concat2b.log -text
 gobosoft.com/gobo/current/test/example/test/data/concat2c.log -text
 gobosoft.com/gobo/current/test/example/test/getest.cfg -text
 gobosoft.com/gobo/current/test/example/test/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/example/time/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/example/time/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/example/time/getest.cfg -text
 gobosoft.com/gobo/current/test/example/time/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/example/tools/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/example/tools/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/example/tools/getest.cfg -text
 gobosoft.com/gobo/current/test/example/tools/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/example/xml/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/example/xml/data/doc.xml -text
+gobosoft.com/gobo/current/test/example/xml/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/test/example/xml/data/doc.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/example/xml/getest.cfg -text
 gobosoft.com/gobo/current/test/example/xml/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/free_elks/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/free_elks/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/free_elks/getest.cfg -text
 gobosoft.com/gobo/current/test/free_elks/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/ecf/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/ecf/eaaa/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/ecf/eaaa/getest.cfg -text
@@ -4709,27 +4658,27 @@ gobosoft.com/gobo/current/test/gelint/ecf/eabo/test1/system.ecf svneol=native#te
 gobosoft.com/gobo/current/test/gelint/semantics/across_iteration/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/semantics/across_iteration/getest.cfg -text
 gobosoft.com/gobo/current/test/gelint/semantics/across_iteration/system.xace svneol=native#text/xml
-gobosoft.com/gobo/current/test/gelint/semantics/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/semantics/equality/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/semantics/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/test/gelint/semantics/equality/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/semantics/equality/ge.xace -text svneol=native#application/xml
 gobosoft.com/gobo/current/test/gelint/semantics/equality/getest.cfg -text
 gobosoft.com/gobo/current/test/gelint/semantics/equality/ise.ecf -text svneol=native#application/xml
 gobosoft.com/gobo/current/test/gelint/semantics/equality/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/semantics/integer_constant/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/semantics/integer_constant/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/semantics/integer_constant/getest.cfg -text
 gobosoft.com/gobo/current/test/gelint/semantics/integer_constant/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/semantics/object_equality/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/semantics/object_equality/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/semantics/object_equality/ge.xace -text svneol=native#application/xml
 gobosoft.com/gobo/current/test/gelint/semantics/object_equality/getest.cfg -text
 gobosoft.com/gobo/current/test/gelint/semantics/object_equality/ise.ecf -text svneol=native#application/xml
 gobosoft.com/gobo/current/test/gelint/semantics/object_equality/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/semantics/object_test/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/semantics/object_test/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/semantics/object_test/getest.cfg -text
 gobosoft.com/gobo/current/test/gelint/semantics/object_test/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/semantics/once/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/semantics/once/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/semantics/once/getest.cfg -text
 gobosoft.com/gobo/current/test/gelint/semantics/once/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/semantics/precursor/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/semantics/precursor/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/semantics/precursor/getest.cfg -text
 gobosoft.com/gobo/current/test/gelint/semantics/precursor/system.xace -text svneol=native#application/xml
 gobosoft.com/gobo/current/test/gelint/syntax/s/ssel_test1/successful.se -text
@@ -4740,7 +4689,7 @@ gobosoft.com/gobo/current/test/gelint/syntax/s/ssel_test3/successful.se -text
 gobosoft.com/gobo/current/test/gelint/syntax/s/ssel_test3/ve.esd -text
 gobosoft.com/gobo/current/test/gelint/syntax/s/ssel_test4/successful.se -text
 gobosoft.com/gobo/current/test/gelint/syntax/s/ssel_test4/ve.esd -text
-gobosoft.com/gobo/current/test/gelint/validity/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvtcg5/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvtcg5/getest.cfg -text
 gobosoft.com/gobo/current/test/gelint/validity/gvtcg5/system.xace svneol=native#text/xml
@@ -4754,189 +4703,174 @@ gobosoft.com/gobo/current/test/gelint/validity/gvtcg5/test2/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/gvtcg5/test2/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/gvtcg5/test2/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvtcg5/test2/system.xace svneol=native#text/xml
-gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/getest.cfg -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test1/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test1/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test1/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test1/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test1/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test1/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test10/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test10/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test10/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test10/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test10/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test10/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test11/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test11/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test11/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test11/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test11/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test11/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test12/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test12/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test12/failed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test12/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test12/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test12/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test12/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test13/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test13/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test13/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test13/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test13/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test13/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test14/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test14/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test14/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test14/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test14/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test14/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test15/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test15/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test15/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test15/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test15/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test15/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test16/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test16/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test16/failed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test16/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test16/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test16/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test16/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test17/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test17/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test17/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test17/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test17/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test17/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test18/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test18/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test18/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test18/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test18/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test18/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test2/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test2/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test2/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test2/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test2/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test2/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test3/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test3/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test3/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test3/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test3/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test3/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test4/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test4/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test4/failed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test4/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test4/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test4/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test4/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test5/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test5/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test5/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test5/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test5/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test5/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test6/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test6/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test6/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test6/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test6/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test6/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test7/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test7/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test7/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test7/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test7/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test7/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test8/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test8/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test8/failed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test8/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test8/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test8/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test8/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test9/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test9/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test9/failed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test9/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test9/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/gvwmc2/test9/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/vcfg1/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg1/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg1/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg1/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg1/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg1/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vcfg2/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg2/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg2/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg2/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg2/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg2/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test10/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test10/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test10/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test10/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test10/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test10/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test11/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test11/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test11/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test11/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test11/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test11/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test12/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test12/failed.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test12/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test12/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test12/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test12/output.ise -text
-gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test13/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test13/failed.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test13/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test13/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test13/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test13/output.ise -text
-gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test2/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test2/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test2/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test2/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test2/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test2/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test3/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test3/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test3/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test3/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test3/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test3/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test4/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test4/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test4/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test4/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test4/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test4/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test5/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test5/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test5/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test5/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test5/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test5/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test6/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test6/failed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test6/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test6/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test6/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test6/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test6/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test7/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test7/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test7/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test7/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test7/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test7/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test8/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test8/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test8/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test8/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test8/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test8/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test9/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test9/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test9/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vcfg3/test9/output.hact -text
@@ -4956,130 +4890,110 @@ gobosoft.com/gobo/current/test/gelint/validity/vdrd2/test1/lib2/lib2.ecf svneol=
 gobosoft.com/gobo/current/test/gelint/validity/vdrd2/test1/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd2/test1/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd2/test1/system.ecf svneol=native#text/xml
-gobosoft.com/gobo/current/test/gelint/validity/vdrd4/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd4/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd4/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd4/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd4/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd4/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vdrd4/test2/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd4/test2/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd4/test2/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd4/test2/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd4/test2/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd4/test2/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vdrd4/test3/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd4/test3/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd4/test3/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd4/test3/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd4/test3/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd4/test3/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vdrd5/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd5/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd5/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd5/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd5/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrd5/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vdrs1/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs1/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs1/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs1/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs1/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs1/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vdrs2/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs2/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs2/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs2/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs2/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs2/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vdrs2/test2/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs2/test2/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs2/test2/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs2/test2/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs2/test2/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs2/test2/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vdrs2/test3/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs2/test3/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs2/test3/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs2/test3/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs2/test3/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs2/test3/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vdrs3/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs3/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs3/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs3/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs3/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs3/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vdrs3/test2/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs3/test2/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs3/test2/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs3/test2/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs3/test2/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs3/test2/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vdrs4/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs4/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs4/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs4/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs4/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs4/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vdrs4/test2/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs4/test2/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs4/test2/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs4/test2/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs4/test2/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdrs4/test2/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vdus1/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus1/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus1/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus1/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus1/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus1/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vdus2/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vdus2/test2/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test2/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test2/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test2/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test2/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test2/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vdus2/test3/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test3/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test3/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test3/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test3/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test3/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vdus2/test4/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test4/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test4/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test4/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test4/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus2/test4/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vdus3/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus3/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus3/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus3/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus3/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus3/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vdus4/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus4/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus4/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus4/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus4/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus4/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vdus4/test2/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus4/test2/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus4/test2/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus4/test2/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus4/test2/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vdus4/test2/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/veen8/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/veen8/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/veen8/getest.cfg -text
 gobosoft.com/gobo/current/test/gelint/validity/veen8/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/veen8/test1/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/veen8/test1/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/veen8/test1/failed_finalized.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/veen8/test1/failed_workbench1.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/veen8/test1/failed_workbench2.ise -text
@@ -5203,220 +5117,185 @@ gobosoft.com/gobo/current/test/gelint/validity/vfac3/test4/failed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vfac3/test4/failed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vfac3/test4/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vfac3/test4/system.ecf svneol=native#text/xml
-gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test2/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test2/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test2/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test2/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test2/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test2/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test3/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test3/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test3/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test3/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test3/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test3/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test4/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test4/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test4/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test4/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test4/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr1/test4/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test10/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test10/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test10/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test10/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test10/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test10/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test11/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test11/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test11/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test11/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test11/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test11/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test12/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test12/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test12/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test12/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test12/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test12/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test13/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test13/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test13/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test13/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test13/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test13/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test14/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test14/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test14/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test14/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test14/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test14/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test15/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test15/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test15/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test15/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test15/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test15/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test16/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test16/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test16/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test16/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test16/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test16/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test17/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test17/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test17/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test17/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test17/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test17/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test18/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test18/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test18/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test18/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test18/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test18/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test19/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test19/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test19/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test19/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test19/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test19/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test2/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test2/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test2/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test2/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test2/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test2/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test3/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test3/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test3/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test3/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test3/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test3/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test4/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test4/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test4/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test4/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test4/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test4/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test5/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test5/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test5/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test5/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test5/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test5/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test6/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test6/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test6/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test6/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test6/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test6/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test7/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test7/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test7/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test7/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test7/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test7/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test8/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test8/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test8/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test8/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test8/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test8/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test9/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test9/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test9/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test9/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test9/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhpr3/test9/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhrc1/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc1/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc1/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc1/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc1/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc1/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhrc1/test2/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc1/test2/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc1/test2/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc1/test2/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc1/test2/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc1/test2/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhrc1/test3/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc1/test3/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc1/test3/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc1/test3/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc1/test3/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc1/test3/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhrc2/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc2/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc2/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc2/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc2/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc2/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhrc2/test2/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc2/test2/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc2/test2/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc2/test2/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc2/test2/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc2/test2/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhrc2/test3/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc2/test3/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc2/test3/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc2/test3/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc2/test3/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc2/test3/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhrc4/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc4/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc4/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc4/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc4/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc4/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhrc4/test2/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc4/test2/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc4/test2/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc4/test2/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc4/test2/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc4/test2/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhrc4/test3/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc4/test3/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc4/test3/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc4/test3/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc4/test3/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc4/test3/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhrc5/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc5/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc5/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc5/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc5/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc5/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhrc5/test2/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc5/test2/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc5/test2/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc5/test2/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc5/test2/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc5/test2/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vhrc5/test3/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc5/test3/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc5/test3/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc5/test3/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc5/test3/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vhrc5/test3/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vjar/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vjar/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vjar/getest.cfg -text
 gobosoft.com/gobo/current/test/gelint/validity/vjar/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/vjar/test1/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vjar/test1/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vjar/test1/failed_finalized1.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vjar/test1/failed_finalized2.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vjar/test1/failed_finalized3.ise -text
@@ -5436,61 +5315,51 @@ gobosoft.com/gobo/current/test/gelint/validity/vjar/test3/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/vjar/test3/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vjar/test3/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vjar/test3/system.ecf svneol=native#text/xml
-gobosoft.com/gobo/current/test/gelint/validity/vmfn/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vmfn/test2/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test2/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test2/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test2/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test2/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test2/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vmfn/test3/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test3/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test3/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test3/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test3/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test3/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vmfn/test4/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test4/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test4/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test4/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test4/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vmfn/test4/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vmrc2/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vmrc2/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vmrc2/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vmrc2/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vmrc2/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vmrc2/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vmrc2/test2/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vmrc2/test2/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vmrc2/test2/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vmrc2/test2/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vmrc2/test2/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vmrc2/test2/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vmss1/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vmss1/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vmss1/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vmss1/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vmss1/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vmss1/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vmss2/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vmss2/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vmss2/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vmss2/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vmss2/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vmss2/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vmss3/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vmss3/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vmss3/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vmss3/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vmss3/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vmss3/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vmss3/test2/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vmss3/test2/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vmss3/test2/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vmss3/test2/output.hact -text
@@ -5552,43 +5421,43 @@ gobosoft.com/gobo/current/test/gelint/validity/voit2/test7/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/voit2/test7/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/voit2/test7/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/voit2/test7/system.xace svneol=native#text/xml
-gobosoft.com/gobo/current/test/gelint/validity/vpir1/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vpir1/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vpir1/getest.cfg -text
 gobosoft.com/gobo/current/test/gelint/validity/vpir1/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/vpir1/test1/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vpir1/test1/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vpir1/test1/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/vpir1/test1/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vpir1/test1/passed1.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vpir1/test1/passed2.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vpir1/test1/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/vpir1/test2/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vpir1/test2/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vpir1/test2/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/vpir1/test2/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vpir1/test2/passed1.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vpir1/test2/passed2.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vpir1/test2/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/vqmc3/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vqmc3/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/getest.cfg -text
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test1/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test1/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test1/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test1/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test1/passed1.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test1/passed2.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test1/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test2/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test2/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test2/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test2/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test2/passed1.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test2/passed2.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test2/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test3/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test3/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test3/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test3/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test3/passed1.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test3/passed2.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test3/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test4/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test4/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test4/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test4/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vqmc3/test4/passed1.ise -text
@@ -5603,83 +5472,71 @@ gobosoft.com/gobo/current/test/gelint/validity/vtat2/test1/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vtat2/test1/passed1.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtat2/test1/passed2.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtat2/test1/system.xace svneol=native#text/xml
-gobosoft.com/gobo/current/test/gelint/validity/vtbt/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vtbt/test2/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test2/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test2/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test2/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test2/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test2/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vtbt/test3/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test3/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test3/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test3/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test3/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test3/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vtbt/test4/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test4/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test4/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test4/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test4/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test4/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vtbt/test5/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test5/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test5/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test5/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test5/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test5/output.se -text svneol=unset#application/octet-stream
-gobosoft.com/gobo/current/test/gelint/validity/vtbt/test6/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test6/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test6/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test6/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test6/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test6/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vtbt/test7/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test7/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test7/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test7/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test7/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test7/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vtbt/test8/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test8/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test8/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test8/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test8/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtbt/test8/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vtcg/test1/Readme.txt -text
-gobosoft.com/gobo/current/test/gelint/validity/vtcg/test1/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vtcg/test1/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vtcg/test1/output1.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vtcg/test1/output1.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vtcg/test1/output1.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtcg/test1/output1.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vtcg/test1/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/vtct/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vtct/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vtct/getest.cfg -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/vtct/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vtct/test2/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test2/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test2/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test2/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test2/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test2/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vtct/test3/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test3/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test3/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test3/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test3/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test3/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vtct/test4/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vtct/test4/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test4/failed_wrong_error.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test4/failed_wrong_error.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test4/passed.gec -text
@@ -5688,47 +5545,43 @@ gobosoft.com/gobo/current/test/gelint/validity/vtct/test4/passed1.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test4/passed2.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test4/passed3.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtct/test4/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/vtug1/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug1/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug1/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug1/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug1/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug1/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vtug2/test1/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug2/test1/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug2/test1/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug2/test1/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug2/test1/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug2/test1/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vtug2/test2/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug2/test2/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug2/test2/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug2/test2/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug2/test2/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug2/test2/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vtug2/test3/Readme.txt -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug2/test3/loadpath.se -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug2/test3/output.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug2/test3/output.hact -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug2/test3/output.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vtug2/test3/output.se -text
-gobosoft.com/gobo/current/test/gelint/validity/vuex1/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vuex1/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vuex1/getest.cfg -text
 gobosoft.com/gobo/current/test/gelint/validity/vuex1/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/vuex1/test1/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vuex1/test1/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vuex1/test1/failed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/vuex1/test1/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/vuex1/test1/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vuex1/test1/passed_veen_code1.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vuex1/test1/passed_veen_code2.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vuex1/test1/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/vuex1/test2/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vuex1/test2/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vuex1/test2/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/vuex1/test2/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vuex1/test2/passed_veen_code1.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vuex1/test2/passed_veen_code2.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vuex1/test2/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/vuex1/test3/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vuex1/test3/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vuex1/test3/failed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/vuex1/test3/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/vuex1/test3/passed.gelint -text
@@ -5737,15 +5590,15 @@ gobosoft.com/gobo/current/test/gelint/validity/vuex1/test3/passed_veen8_code.gel
 gobosoft.com/gobo/current/test/gelint/validity/vuex1/test3/passed_veen_code1.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vuex1/test3/passed_veen_code2.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vuex1/test3/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/vuot1/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vuot1/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vuot1/getest.cfg -text
 gobosoft.com/gobo/current/test/gelint/validity/vuot1/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/vuot1/test1/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vuot1/test1/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vuot1/test1/failed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/vuot1/test1/failed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vuot1/test1/failed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vuot1/test1/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/gelint/validity/vuot1/test2/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/gelint/validity/vuot1/test2/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/gelint/validity/vuot1/test2/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/vuot1/test2/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vuot1/test2/passed.ise -text
@@ -5816,20 +5669,14 @@ gobosoft.com/gobo/current/test/gelint/validity/vuta2/test6/passed.gec -text
 gobosoft.com/gobo/current/test/gelint/validity/vuta2/test6/passed.gelint -text
 gobosoft.com/gobo/current/test/gelint/validity/vuta2/test6/passed.ise -text
 gobosoft.com/gobo/current/test/gelint/validity/vuta2/test6/system.ecf svneol=native#text/xml
-gobosoft.com/gobo/current/test/kernel/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/kernel/data/booleans.txt -text
-gobosoft.com/gobo/current/test/kernel/data/empty.txt -text
-gobosoft.com/gobo/current/test/kernel/data/gobo.txt -text
-gobosoft.com/gobo/current/test/kernel/data/hello.txt -text
-gobosoft.com/gobo/current/test/kernel/data/integers.txt -text
+gobosoft.com/gobo/current/test/kernel/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/kernel/getest.cfg -text
 gobosoft.com/gobo/current/test/kernel/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/lexical/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/lexical/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/lexical/getest.cfg -text
 gobosoft.com/gobo/current/test/lexical/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/math/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/math/decimal/acceptance/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/math/decimal/acceptance/data/Readme.txt -text
+gobosoft.com/gobo/current/test/math/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/test/math/decimal/acceptance/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/math/decimal/acceptance/data/abs.decTest -text
 gobosoft.com/gobo/current/test/math/decimal/acceptance/data/add.decTest -text
 gobosoft.com/gobo/current/test/math/decimal/acceptance/data/base.decTest -text
@@ -5863,17 +5710,17 @@ gobosoft.com/gobo/current/test/math/decimal/acceptance/data/testall.decTest -tex
 gobosoft.com/gobo/current/test/math/decimal/acceptance/data/trim.decTest -text
 gobosoft.com/gobo/current/test/math/decimal/acceptance/getest.cfg -text
 gobosoft.com/gobo/current/test/math/decimal/acceptance/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/math/decimal/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/pattern/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/math/decimal/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/test/pattern/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/pattern/getest.cfg -text
 gobosoft.com/gobo/current/test/pattern/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/precomp/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/precomp/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/precomp/getest.cfg -text
 gobosoft.com/gobo/current/test/precomp/precomp.xace -text svneol=native#application/xml
 gobosoft.com/gobo/current/test/precomp/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/regexp/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/regexp/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/regexp/getest.cfg -text
-gobosoft.com/gobo/current/test/regexp/pcretest/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/regexp/pcretest/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/regexp/pcretest/data/testinput1 -text
 gobosoft.com/gobo/current/test/regexp/pcretest/data/testinput2 -text
 gobosoft.com/gobo/current/test/regexp/pcretest/data/testinput3 -text
@@ -5888,23 +5735,23 @@ gobosoft.com/gobo/current/test/regexp/pcretest/data/testoutput5 -text
 gobosoft.com/gobo/current/test/regexp/pcretest/data/testoutput6 -text
 gobosoft.com/gobo/current/test/regexp/pcretest/system.xace -text svneol=native#application/xml
 gobosoft.com/gobo/current/test/regexp/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/src/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/src/geant/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/src/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/test/src/geant/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/src/geant/getest.cfg -text
 gobosoft.com/gobo/current/test/src/geant/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/src/gec/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/src/gec/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/src/gec/getest.cfg -text
 gobosoft.com/gobo/current/test/src/gec/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/src/gelex/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/src/gelex/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/src/gelex/getest.cfg -text
 gobosoft.com/gobo/current/test/src/gelex/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/src/gepp/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/src/gepp/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/src/gepp/getest.cfg -text
 gobosoft.com/gobo/current/test/src/gepp/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/src/getest/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/src/getest/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/src/getest/getest.cfg -text
 gobosoft.com/gobo/current/test/src/getest/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/src/gexace/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/src/gexace/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/src/gexace/data/ge2.xace -text svneol=native#application/xml
 gobosoft.com/gobo/current/test/src/gexace/data/ise3.ecf -text svneol=native#application/xml
 gobosoft.com/gobo/current/test/src/gexace/data/system1.xace -text svneol=native#application/xml
@@ -5912,83 +5759,82 @@ gobosoft.com/gobo/current/test/src/gexace/data/system2.xace -text svneol=native#
 gobosoft.com/gobo/current/test/src/gexace/data/system3.xace -text svneol=native#application/xml
 gobosoft.com/gobo/current/test/src/gexace/getest.cfg -text
 gobosoft.com/gobo/current/test/src/gexace/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/src/geyacc/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/src/geyacc/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/src/geyacc/getest.cfg -text
 gobosoft.com/gobo/current/test/src/geyacc/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/string/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/string/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/string/getest.cfg -text
 gobosoft.com/gobo/current/test/string/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/structure/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/structure/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/structure/getest.cfg -text
 gobosoft.com/gobo/current/test/structure/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/time/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/time/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/time/getest.cfg -text
 gobosoft.com/gobo/current/test/time/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/tools/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/tools/data/pretty_printed1.txt -text
+gobosoft.com/gobo/current/test/tools/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/tools/data/system.xace -text svneol=native#application/xml
 gobosoft.com/gobo/current/test/tools/getest.cfg -text
 gobosoft.com/gobo/current/test/tools/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/utility/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/utility/transcoder/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/utility/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/test/utility/transcoder/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/utility/transcoder/getest.cfg -text
 gobosoft.com/gobo/current/test/utility/transcoder/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/utility/uri/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/utility/uri/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/utility/uri/getest.cfg -text
 gobosoft.com/gobo/current/test/utility/uri/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/xml/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/xml/eiffel/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/xml/eiffel/data/test-catalog-1.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/eiffel/data/test-catalog-2.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/eiffel/data/test-catalog-3.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/eiffel/data/test-catalog-4.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/eiffel/data/utf8bom.xml -text
+gobosoft.com/gobo/current/test/xml/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/test/xml/eiffel/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/test/xml/eiffel/data/test-catalog-1.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/eiffel/data/test-catalog-2.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/eiffel/data/test-catalog-3.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/eiffel/data/test-catalog-4.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/eiffel/data/utf8bom.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/eiffel/getest.cfg -text
 gobosoft.com/gobo/current/test/xml/eiffel/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/xml/expat/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/xml/expat/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/xml/expat/getest.cfg -text
 gobosoft.com/gobo/current/test/xml/expat/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/xml/expat/test.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/general/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/xml/general/data/broken.xml -text
-gobosoft.com/gobo/current/test/xml/general/data/brokensub.xml -text
-gobosoft.com/gobo/current/test/xml/general/data/relative.xml -text
-gobosoft.com/gobo/current/test/xml/general/data/relative/1.xml -text
-gobosoft.com/gobo/current/test/xml/general/data/relative/2.xml -text
-gobosoft.com/gobo/current/test/xml/general/data/relative1.xml -text
-gobosoft.com/gobo/current/test/xml/general/data/relative2.xml -text
-gobosoft.com/gobo/current/test/xml/general/data/test-catalog-1.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/general/data/test-catalog-2.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/general/data/test-catalog-3.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/general/data/test-catalog-4.xml -text svneol=unset#application/xml
+gobosoft.com/gobo/current/test/xml/expat/test.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/general/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/test/xml/general/data/broken.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/general/data/brokensub.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/general/data/relative.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/general/data/relative/1.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/general/data/relative/2.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/general/data/relative1.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/general/data/relative2.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/general/data/test-catalog-1.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/general/data/test-catalog-2.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/general/data/test-catalog-3.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/general/data/test-catalog-4.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/general/getest.cfg -text
 gobosoft.com/gobo/current/test/xml/general/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/xml/oasis/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/test/xml/oasis/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/test/xml/oasis/getest.cfg -text
 gobosoft.com/gobo/current/test/xml/oasis/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/xml/xpath/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/xml/xpath/data/base_uri_a.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xpath/data/base_uri_master.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xpath/data/booklist.xml -text svneol=unset#application/xml
+gobosoft.com/gobo/current/test/xml/xpath/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/test/xml/xpath/data/base_uri_a.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/xpath/data/base_uri_master.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/xpath/data/booklist.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xpath/data/books.dtd -text
-gobosoft.com/gobo/current/test/xml/xpath/data/books.xml -text svneol=unset#application/xml
+gobosoft.com/gobo/current/test/xml/xpath/data/books.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xpath/data/books.xsl -text
-gobosoft.com/gobo/current/test/xml/xpath/data/books2.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xpath/data/books3.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xpath/data/categories.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xpath/data/chinese.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xpath/data/idrefs.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xpath/data/languages.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xpath/data/poem.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xpath/data/qnames.xml -text svneol=unset#application/xml
+gobosoft.com/gobo/current/test/xml/xpath/data/books2.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/xpath/data/books3.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/xpath/data/categories.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/xpath/data/chinese.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/xpath/data/idrefs.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/xpath/data/languages.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/xpath/data/poem.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/xpath/data/qnames.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xpath/getest.cfg -text
 gobosoft.com/gobo/current/test/xml/xpath/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/xml/xpointer/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/xml/xpointer/data/test_event.xml -text svneol=unset#application/xml
+gobosoft.com/gobo/current/test/xml/xpointer/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/test/xml/xpointer/data/test_event.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xpointer/getest.cfg -text
 gobosoft.com/gobo/current/test/xml/xpointer/system.xace -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/xml/xslt/build.eant -text svneol=native#application/xml
-gobosoft.com/gobo/current/test/xml/xslt/data/abstract.xml -text
+gobosoft.com/gobo/current/test/xml/xslt/build.eant svneol=native#text/xml
+gobosoft.com/gobo/current/test/xml/xslt/data/abstract.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/abstract.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/books1.xsl -text
 gobosoft.com/gobo/current/test/xml/xslt/data/character_map.xsl -text svneol=unset#application/xml
@@ -6001,16 +5847,16 @@ gobosoft.com/gobo/current/test/xml/xslt/data/character_map5.out -text
 gobosoft.com/gobo/current/test/xml/xslt/data/character_map5.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/character_map6.out -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/character_map6.xsl -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xslt/data/cite.xml -text
+gobosoft.com/gobo/current/test/xml/xslt/data/cite.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/cite.xsl -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xslt/data/cities.xml -text svneol=unset#application/xml
+gobosoft.com/gobo/current/test/xml/xslt/data/cities.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/collations.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/conformance1-5.xsl -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xslt/data/continued.xml -text
+gobosoft.com/gobo/current/test/xml/xslt/data/continued.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/current.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/current2.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/current_group.xsl -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xslt/data/dates.xml -text
+gobosoft.com/gobo/current/test/xml/xslt/data/dates.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/dates.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/doc.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/document.xhtml -text svneol=unset#application/xml
@@ -6019,12 +5865,11 @@ gobosoft.com/gobo/current/test/xml/xslt/data/document2.xsl -text
 gobosoft.com/gobo/current/test/xml/xslt/data/document3.xsl -text
 gobosoft.com/gobo/current/test/xml/xslt/data/document4.xsl -text
 gobosoft.com/gobo/current/test/xml/xslt/data/document5.xsl -text
-gobosoft.com/gobo/current/test/xml/xslt/data/embedded.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xslt/data/evil_wai.xml -text
-gobosoft.com/gobo/current/test/xml/xslt/data/example.xml -text svneol=unset#application/xml
+gobosoft.com/gobo/current/test/xml/xslt/data/embedded.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/xslt/data/evil_wai.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/xslt/data/example.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/example.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/example0.xsl -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xslt/data/expected_report.txt -text
 gobosoft.com/gobo/current/test/xml/xslt/data/fallback.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/format1.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/format2.xsl -text svneol=unset#application/xml
@@ -6039,8 +5884,8 @@ gobosoft.com/gobo/current/test/xml/xslt/data/format_time1.xsl -text svneol=unset
 gobosoft.com/gobo/current/test/xml/xslt/data/format_time2.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/format_time3.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/format_time4.xsl -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xslt/data/from-saxon.html -text
-gobosoft.com/gobo/current/test/xml/xslt/data/from-saxon.xml -text svneol=unset#application/xml
+gobosoft.com/gobo/current/test/xml/xslt/data/from-saxon.html -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/xslt/data/from-saxon.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/gobo2html.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/gobo2xhtml.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/gobo2xml.xsl -text svneol=unset#application/xml
@@ -6048,17 +5893,16 @@ gobosoft.com/gobo/current/test/xml/xslt/data/group_adjacent.xsl -text svneol=uns
 gobosoft.com/gobo/current/test/xml/xslt/data/group_by_one.xsl -text
 gobosoft.com/gobo/current/test/xml/xslt/data/group_ending_with.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/group_starting_with.xsl -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xslt/data/iago.txt -text
 gobosoft.com/gobo/current/test/xml/xslt/data/iago_16.txt -text
 gobosoft.com/gobo/current/test/xml/xslt/data/identity.xsl -text
 gobosoft.com/gobo/current/test/xml/xslt/data/infoset.xsl -text
-gobosoft.com/gobo/current/test/xml/xslt/data/mobile.xml -text
+gobosoft.com/gobo/current/test/xml/xslt/data/mobile.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/namespace.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/namespace2.xsl -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xslt/data/next_match.xml -text svneol=unset#application/xml
+gobosoft.com/gobo/current/test/xml/xslt/data/next_match.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/next_match.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/no_fallback.xsl -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xslt/data/processing_instructions.xml -text svneol=unset#application/xml
+gobosoft.com/gobo/current/test/xml/xslt/data/processing_instructions.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/qname_output.out -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/qname_output.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/reverse.xsl -text
@@ -6067,12 +5911,12 @@ gobosoft.com/gobo/current/test/xml/xslt/data/reverse3.xsl -text
 gobosoft.com/gobo/current/test/xml/xslt/data/schematron-basic.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/skeleton1-5.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/strip.out -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xslt/data/strip.xml -text
+gobosoft.com/gobo/current/test/xml/xslt/data/strip.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/strip.xsl -text
 gobosoft.com/gobo/current/test/xml/xslt/data/structure-index.xhtml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xslt/data/structure-index.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xslt/data/test1.xml -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xslt/data/titles.xml -text
+gobosoft.com/gobo/current/test/xml/xslt/data/structure-index.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/xslt/data/test1.xml -text svneol=unset#text/xml
+gobosoft.com/gobo/current/test/xml/xslt/data/titles.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/two-outputs.xsl -text
 gobosoft.com/gobo/current/test/xml/xslt/data/unparsed_text.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/unparsed_text2.xsl -text svneol=unset#application/xml
@@ -6081,12 +5925,12 @@ gobosoft.com/gobo/current/test/xml/xslt/data/use_when.xsl -text svneol=unset#app
 gobosoft.com/gobo/current/test/xml/xslt/data/var15.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/var16.xsl -text
 gobosoft.com/gobo/current/test/xml/xslt/data/var17.xsl -text
-gobosoft.com/gobo/current/test/xml/xslt/data/var20.xml -text svneol=unset#application/xml
+gobosoft.com/gobo/current/test/xml/xslt/data/var20.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/var20.xsl -text
 gobosoft.com/gobo/current/test/xml/xslt/data/var21.xsl -text
 gobosoft.com/gobo/current/test/xml/xslt/data/var22.xsl -text
 gobosoft.com/gobo/current/test/xml/xslt/data/var23.xsl -text
-gobosoft.com/gobo/current/test/xml/xslt/data/var25.xml -text svneol=unset#application/xml
+gobosoft.com/gobo/current/test/xml/xslt/data/var25.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/var25.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/var26.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/var27.xsl -text svneol=unset#application/xml
@@ -6099,9 +5943,9 @@ gobosoft.com/gobo/current/test/xml/xslt/data/var906err.xsl -text
 gobosoft.com/gobo/current/test/xml/xslt/data/var907err.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/var908err.xsl -text svneol=unset#application/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/var909err.xsl -text svneol=unset#application/xml
-gobosoft.com/gobo/current/test/xml/xslt/data/wai.xml -text svneol=unset#application/xml
+gobosoft.com/gobo/current/test/xml/xslt/data/wai.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/xhtml-splitter.xsl -text
-gobosoft.com/gobo/current/test/xml/xslt/data/xslt_intro.xml -text
+gobosoft.com/gobo/current/test/xml/xslt/data/xslt_intro.xml -text svneol=unset#text/xml
 gobosoft.com/gobo/current/test/xml/xslt/data/xt1490-2.xsl -text
 gobosoft.com/gobo/current/test/xml/xslt/data/xt1490.xsl -text
 gobosoft.com/gobo/current/test/xml/xslt/getest.cfg -text
@@ -6113,8 +5957,6 @@ gobosoft.com/gobo/current/tool/gec/config/c/lcc-win32.cfg -text
 gobosoft.com/gobo/current/tool/gec/config/c/mingw.cfg -text
 gobosoft.com/gobo/current/tool/gec/config/c/msc.cfg -text
 gobosoft.com/gobo/current/tool/gec/config/c/tcc.cfg -text
-gobosoft.com/gobo/current/work/bootstrap/Readme.txt -text
-gobosoft.com/gobo/current/work/geuc/Readme.txt -text
-gobosoft.com/gobo/current/work/geuc/build.eant -text svneol=native#application/xml
+gobosoft.com/gobo/current/work/geuc/build.eant svneol=native#text/xml
 gobosoft.com/gobo/current/work/geuc/system.xace -text svneol=native#application/xml
 /readme.html -text
