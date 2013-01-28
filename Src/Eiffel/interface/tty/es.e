@@ -57,6 +57,8 @@ inherit
 			reset as reset_compiler_profile
 		end
 
+	PREFERENCES_VERSIONS
+
 create
 	make
 
@@ -96,8 +98,8 @@ feature -- Initialization
 
 				-- Initialization of compiler resources.
 
-			create l_preference_access.make_with_defaults_and_location (
-				<<eiffel_layout.general_preferences.name, eiffel_layout.platform_preferences.name>>, eiffel_layout.eiffel_preferences)
+			create l_preference_access.make_with_defaults_and_location_and_version (
+				<<eiffel_layout.general_preferences.name, eiffel_layout.platform_preferences.name>>, eiffel_layout.eiffel_preferences, version_2_0)
 			create l_ec_preferences.make (l_preference_access)
 			create l_compiler_setting
 			l_compiler_setting.set_preferences (l_ec_preferences)

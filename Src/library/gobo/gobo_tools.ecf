@@ -19,6 +19,7 @@
 		</option>
 		<setting name="dotnet_naming_convention" value="true"/>
 		<library name="eiffelbase" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="gobo_gelex" location="gobo_gelex.ecf"/>
 		<library name="gobo_kernel" location="gobo_kernel.ecf"/>
 		<library name="gobo_lexical" location="gobo_lexical.ecf"/>
 		<library name="gobo_parse" location="gobo_parse.ecf"/>

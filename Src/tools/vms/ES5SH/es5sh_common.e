@@ -79,7 +79,7 @@ feature -- Access
 	value_eiffel: STRING
 			-- value of $ISE_EIFFEL (`symbol_eiffel')
 	value_eiffel_string: STRING
-			-- symbol_eiffel + value_eiffel + value_eifel_native
+			-- symbol_eiffel + value_eiffel + value_eiffel_native
 
 	value_platform: STRING
 		-- value of $ISE_PLATFORM
@@ -571,7 +571,7 @@ feature -- filename primitives
 
 	is_vms_filespec (filespec : STRING) : BOOLEAN is
 			-- does string look like a VMS filespec?
-			-- if it has no unix filespec delimiters and doesnt begin with a symbol $(x),
+			-- if it has no Unix filespec delimiters and doesnt begin with a symbol $(x),
 			-- then assume it is a VMS filespec
 		require
 			filespec_exists:	filespec /= Void

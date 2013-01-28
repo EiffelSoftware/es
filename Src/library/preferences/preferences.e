@@ -59,6 +59,8 @@ class
 inherit
 	ANY
 
+	PREFERENCES_VERSIONS
+
 	XML_CALLBACKS_FILTER_FACTORY
 		export
 			{NONE} all
@@ -69,7 +71,9 @@ create
 	make_with_defaults_and_storage,
 	make,
 	make_with_location,
-	make_with_defaults_and_location
+	make_with_location_and_version,
+	make_with_defaults_and_location,
+	make_with_defaults_and_location_and_version
 
 feature {NONE} -- Initialization
 
@@ -135,6 +139,24 @@ feature {NONE} -- Initialization
 			make_with_storage (create {PREFERENCES_STORAGE_DEFAULT}.make_with_location (a_location))
 		end
 
+	make_with_location_and_version (a_location: READABLE_STRING_32; a_version: like version)
+			-- Create preferences and store them in the location `a_location' between sessions.
+			-- -- `a_location' is the path to either:
+			--		* the root registry key where preferences will be stored,
+			--		* or the file where preferences will be stored,
+			-- depending on which implementation is chosen (registry or xml).
+		require
+			location_not_void: a_location /= Void
+			location_not_empty: not a_location.is_empty
+			a_version_not_void: a_version /= Void
+			a_version_valid: valid_version (a_version)
+		local
+			l_storage: PREFERENCES_STORAGE_DEFAULT
+		do
+			create l_storage.make_with_location_and_version (a_location, a_version)
+			make_with_storage (l_storage)
+		end
+
 	make_with_defaults_and_location (a_defaults: ARRAY [READABLE_STRING_GENERAL]; a_location: READABLE_STRING_32)
 			-- Create preferences and initialize values from those in `a_defaults',
 			-- which is the path of one or more files that contain the default values.
@@ -149,6 +171,25 @@ feature {NONE} -- Initialization
 			location_not_empty: not a_location.is_empty
 		do
 			make_with_location (a_location)
+			load_defaults (a_defaults)
+		end
+
+	make_with_defaults_and_location_and_version (a_defaults: ARRAY [READABLE_STRING_GENERAL]; a_location: READABLE_STRING_32; a_version: like version)
+			-- Create preferences and initialize values from those in `a_defaults',
+			-- which is the path of one or more files that contain the default values.
+			-- Preferences will be stored in `a_location' between sessions, which is the
+			-- path to either:
+			--		* the root registry key where preferences are stored,
+			--		* or the file where preferences are stored,
+			-- depending on which implementation is chosen (registry or xml).
+		require
+			default_not_void: a_defaults /= Void
+			location_not_void: a_location /= Void
+			location_not_empty: not a_location.is_empty
+			a_version_not_void: a_version /= Void
+			a_version_valid: valid_version (a_version)
+		do
+			make_with_location_and_version (a_location, a_version)
 			load_defaults (a_defaults)
 		end
 
@@ -239,6 +280,16 @@ feature -- Access
 			-- Storage's location
 		do
 			Result := preferences_storage.location
+		end
+
+	version: IMMUTABLE_STRING_32
+			-- Version format used by storage.
+		do
+			if attached preferences_storage.version as l_version then
+				Result := l_version
+			else
+				Result := version_1_0
+			end
 		end
 
 feature -- Change
@@ -560,7 +611,7 @@ feature {NONE} -- Implementation
 								-- Found preference
 							l_attribute := node.attribute_by_name (once "NAME")
 							if l_attribute /= Void then
-								-- TODO [2012-oct]: add unicode support for preference name
+								-- TODO [2012-oct]: add Unicode support for preference name
 								pref_name := l_attribute.value
 								if pref_name.is_valid_as_string_8 then
 

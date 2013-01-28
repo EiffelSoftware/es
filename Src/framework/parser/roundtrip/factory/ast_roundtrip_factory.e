@@ -94,8 +94,8 @@ feature -- Match list maintaining
 	extend_match_list (a_match: LEAF_AS)
 			-- Extend `match_list' with `a_match'.
 		do
-			if is_match_list_extension_enabled then
-				match_list.extend (a_match)
+			if attached match_list as l_list and is_match_list_extension_enabled then
+				l_list.extend (a_match)
 			end
 		end
 
@@ -103,9 +103,9 @@ feature -- Match list maintaining
 			-- Extend `match_list' with stub `a_stub',
 			-- and set index in `a_match'.
 		do
-			if is_match_list_extension_enabled then
+			if attached match_list as l_list and is_match_list_extension_enabled then
 				a_stub.set_index (match_list_count)
-				match_list.extend (a_stub)
+				l_list.extend (a_stub)
 			end
 		end
 
@@ -136,7 +136,7 @@ feature -- Leaf Nodes
 			end
 		end
 
-	new_integer_as (t: detachable TYPE_AS; s: BOOLEAN; v: detachable STRING; buf: detachable STRING; s_as: detachable SYMBOL_AS; l, c, p, n: INTEGER): detachable INTEGER_AS
+	new_integer_as (t: detachable TYPE_AS; s: BOOLEAN; v: detachable STRING; buf: STRING; s_as: detachable SYMBOL_AS; l, c, p, n: INTEGER): detachable INTEGER_AS
 			-- New INTEGER_AS node
 		do
 			Result := Precursor (t, s, v, buf, s_as, l, c, p, n)

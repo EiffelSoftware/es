@@ -146,7 +146,7 @@ feature -- Access
 feature -- Access: Error handling
 
 	last_exception: detachable SQLITE_EXCEPTION
-			-- Last occuring error, set during compilation.
+			-- Last occurring error, set during compilation.
 
 feature -- Access: Cursor
 
@@ -276,7 +276,7 @@ feature -- Status report
 		end
 
 	has_error: BOOLEAN
-			-- Indicates if an error occured during the last operation.
+			-- Indicates if an error occurred during the last operation.
 		do
 			Result := last_exception /= Void
 		ensure

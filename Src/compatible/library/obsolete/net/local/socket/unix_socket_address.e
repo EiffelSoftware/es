@@ -41,14 +41,14 @@ create
 feature -- Initialization
 
 	make
-			-- Create an unix socket address.
+			-- Create a Unix socket address.
 		do
 			socket_address_make;
 			set_family (af_unix)
 		end;
 
 	make_from_path (a_path: like path)
-			-- Create an unix socket address from a path.
+			-- Create a Unix socket address from a path.
 		do
 			make;
 			set_path (a_path)
@@ -77,7 +77,7 @@ feature -- Status settings
 feature {NONE} -- External
 
 	address_size: INTEGER
-			-- Size of unix socket address
+			-- Size of Unix socket address
 		external
 			"C"
 		alias

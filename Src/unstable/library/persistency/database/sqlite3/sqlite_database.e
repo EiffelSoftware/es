@@ -156,7 +156,7 @@ feature -- Access: Actions
 feature -- Access: Error reporting
 
 	last_exception: detachable SQLITE_EXCEPTION
-			-- Last occuring error, set from a previous interaction with the database.
+			-- Last occurring error, set from a previous interaction with the database.
 			--
 			-- Note: In multi-threaded modes, be sure to obtain a DB lock when performing an
 			--       operation and then retrieving the error
@@ -398,7 +398,7 @@ feature -- Status report
 		end
 
 	has_error: BOOLEAN
-			-- Indicates if an error occured during the last operation on an open database.
+			-- Indicates if an error occurred during the last operation on an open database.
 		require
 			is_sqlite_available: is_sqlite_available
 			is_interface_usable: is_interface_usable

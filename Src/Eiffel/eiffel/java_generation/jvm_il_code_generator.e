@@ -637,7 +637,7 @@ feature -- Features info
 					current_feature := wf
 				else
 					-- did not find alias. this means that the deferred
-					-- external has a non deferred Precursor somwhere
+					-- external has a non deferred Precursor somewhere
 					create rf.make
 					rf.set_written_type_id (written_type_id)
 								-- TODO: I need this information !!!
@@ -701,9 +701,7 @@ feature -- Features info
 		local
 			p: PAIR [INTEGER, STRING]
 		do
-			create p
-			p.set_first (type_id)
-			p.set_second (name)
+			create p.make (type_id, name)
 			current_parameters.force (p)
 			debug ("JVM_GEN2")
 				print ("; ")

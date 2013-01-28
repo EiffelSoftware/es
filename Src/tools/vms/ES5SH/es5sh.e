@@ -144,7 +144,7 @@ feature -- Initialization
 					--print ("debug: base_directory set to default: " + base_directory + "%N")
 				elseif base_directory = Void then
 					-- UNREACHABLE: save this code temporarily until I figure out what to do
-					print_error_message ("UNREACHABLE exeucted!%N")
+					print_error_message ("UNREACHABLE executed!%N")
 					l_val := execution_environment_.current_working_directory
 					create base_directory.make_from_string (l_val)
 					if value_platform.substring_index ("VMS", 1) > 0 and then not is_vms_filespec (base_directory) then
@@ -1424,7 +1424,7 @@ feature -- Process elements of Makefile.SH
 	process_target_prerequisites (a_dependents : STRING; initial_pos : INTEGER) is
 			-- process prerequisites (dependents) of a target:
 			--  replace macro references with their values;
-			--  for each "word", translate filespec to VMS syntax if it is a unix filespec and
+			--  for each "word", translate filespec to VMS syntax if it is a Unix filespec and
 			--    append to application dependencies
 			-- ***FIXME*** return a value, don't update application_dependencies
 		require
@@ -2329,7 +2329,7 @@ feature -- Process macro definitions
 					elseif l_word.is_equal (".") then
 						do_nothing
 					else --not l_word.is_empty and then not l_word.is_equal (".") then
-						--***FIXME*** check for VMS filespec, don't assume unix
+						--***FIXME*** check for VMS filespec, don't assume Unix
 						if not is_vms_filespec (l_word) then
 							-- ensure it looks like a path (ends in '/')
 							if l_word.item (l_word.count) /= '/' then
@@ -3058,7 +3058,7 @@ feature -- platform specific file names
 
 	subdirectory_make_command (a_subdir, a_target: STRING): STRING is
 			-- command string to perform make in subdirectory of (optional) target `a_target'
-			-- eg. <tab>-@ISE_EIFEL:[studio.spec.$(ISE_PLATFORM).bin]make.vms subidr target
+			-- eg. <tab>-@ISE_EIFFEL:[studio.spec.$(ISE_PLATFORM).bin]make.vms subidr target
 		require
 			subdirectory_exists: a_subdir /= Void
 		local
@@ -3230,7 +3230,7 @@ feature -- platform specific file names
 
 
 	as_vms_filespec (a_filespec : STRING) : STRING is
-			-- a new string transformed from a unix filespec to vms syntax
+			-- a new string transformed from a Unix filespec to vms syntax
 			-- enclosing quotes are removed
 			-- Rules:
 			--   a ==> a	     $(a) ==> a:        a/b ==> [.a]b	      $(a)/b ==> a:b	   a/b/c ==> [.a.b]c	
@@ -3275,7 +3275,7 @@ feature -- platform specific file names
 				-- if filespec starts with escaped $, remove the escape
 				--if l_filespec @ 1 = '$' then l_filespec.remove(1) end
 
---				-- if it has no unix filespec delimiters and doesnt begin with a symbol $(x),
+--				-- if it has no Unix filespec delimiters and doesnt begin with a symbol $(x),
 --				-- then assume it is a VMS filespec
 --				if not l_filespec.has ('/') and then l_filespec.substring_index ("$(", 1) /= 1
 --				then -- assume it is already a vms filespec

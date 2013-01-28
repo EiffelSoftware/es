@@ -11,14 +11,12 @@ class
 
 feature -- Percent encoding
 
-	append_percent_encoded_string_to (a_string: READABLE_STRING_GENERAL; a_result: STRING_GENERAL)
+	append_percent_encoded_string_to (s: READABLE_STRING_GENERAL; a_result: STRING_GENERAL)
 			-- Append `a_string' as percent-encoded value to `a_result'
 		local
-			s: READABLE_STRING_GENERAL
 			c: NATURAL_32
 			i,n: INTEGER
 		do
-			s := a_string
 			from
 				i := 1
 				n := s.count
@@ -74,7 +72,7 @@ feature -- Percent encoding: character
 			appended: a_result.count > old a_result.count
 		end
 
-feature {NONE} -- Percent encoding: character				
+feature {NONE} -- Implementation: character encoding
 
 	append_percent_encoded_ascii_character_code_to (a_code: NATURAL_32; a_result: STRING_GENERAL)
 			-- Append extended ascii character code `a_code' as percent-encoded content into `a_result'
@@ -99,8 +97,8 @@ feature {NONE} -- Percent encoding: character
 		end
 
 	append_percent_encoded_unicode_character_code_to (a_code: NATURAL_32; a_result: STRING_GENERAL)
-			-- Append unicode character code `a_code' as UTF-8 and percent-encoded content into `a_result'
-			-- Note: it does include UTF-8 conversion of extended ASCII and unicode.
+			-- Append Unicode character code `a_code' as UTF-8 and percent-encoded content into `a_result'
+			-- Note: it does include UTF-8 conversion of extended ASCII and Unicode.
 		do
 			if a_code <= 0x7F then
 					-- 0xxxxxxx
@@ -130,7 +128,7 @@ feature -- Percent decoding
 
 	append_percent_decoded_string_to (v: READABLE_STRING_GENERAL; a_result: STRING_GENERAL)
 			-- Append to `a_result' a string equivalent to the percent-encoded string `v'
-			--| Note that is `a_result' is a STRING_8, any unicode character will be kept as UTF-8
+			--| Note that is `a_result' is a STRING_8, any Unicode character will be kept as UTF-8
 		local
 			i,n: INTEGER
 			c: NATURAL_32
@@ -184,7 +182,7 @@ feature -- Percent decoding
 			end
 		end
 
-feature {NONE} -- Percent decoding		
+feature {NONE} -- Implementation: decoding
 
 	next_percent_decoded_character_code (v: READABLE_STRING_GENERAL; a_position: CELL [INTEGER]): NATURAL_32
 			-- Character decoded from string `v' starting from index `a_position.item'
@@ -436,7 +434,8 @@ feature -- RFC and characters
 
 feature {NONE} -- Implementation
 
- 	hex_digit: SPECIAL [NATURAL_32] -- Hexadecimal digits.
+ 	hex_digit: SPECIAL [NATURAL_32]
+ 			-- Hexadecimal digits.
  		once
  			create Result.make_filled (0, 16)
  			Result [0] := {NATURAL_32} 48 -- 48 '0'
@@ -480,7 +479,7 @@ feature {NONE} -- Implementation
 		end
 
 	ctoi_convertor: HEXADECIMAL_STRING_TO_INTEGER_CONVERTER
-			-- Convertor used to convert string to integer or natural.
+			-- Converter used to convert string to integer or natural.
 		once
 			create Result.make
 			Result.set_leading_separators_acceptable (False)

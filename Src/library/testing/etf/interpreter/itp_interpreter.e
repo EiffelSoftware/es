@@ -187,7 +187,7 @@ feature {NONE} -- Initialization
 feature -- Status report
 
 	has_error: BOOLEAN
-			-- Has an error occured while parsing?
+			-- Has an error occurred while parsing?
 
 	is_last_protected_execution_successful: BOOLEAN
 			-- Was the last protected execution successful?

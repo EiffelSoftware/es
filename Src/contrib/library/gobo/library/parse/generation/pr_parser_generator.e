@@ -5,7 +5,7 @@ note
 		"Parser generators"
 
 	library: "Gobo Eiffel Parse Library"
-	copyright: "Copyright (c) 1999-2011, Eric Bezault and others"
+	copyright: "Copyright (c) 1999-2012, Eric Bezault and others"
 	license: "MIT License"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -129,6 +129,8 @@ feature -- Generation
 				print_pop_last_value (a_file)
 				a_file.put_new_line
 			end
+			print_dummy_feature (a_file)
+			a_file.put_new_line
 			a_file.put_string ("feature {NONE} -- Semantic actions%N%N")
 			if actions_separated then
 				print_separated_actions (a_file)
@@ -418,21 +420,6 @@ feature {NONE} -- Generation
 			a_file.put_line ("%Tyy_clear_value_stacks")
 			a_file.put_line ("%T%T%T-- Clear objects in semantic value stacks so that")
 			a_file.put_line ("%T%T%T-- they can be collected by the garbage collector.")
-			if nb > 0 then
-				a_file.put_line ("%T%Tlocal")
-				from
-					i := 1
-				until
-					i > nb
-				loop
-					a_type := types.item (i)
-					a_file.put_string ("%T%T%Tl_yyvs")
-					a_file.put_integer (a_type.id)
-					a_file.put_string ("_default_item: ")
-					a_file.put_line (a_type.name)
-					i := i + 1
-				end
-			end
 			a_file.put_line ("%T%Tdo")
 			from
 				i := 1
@@ -967,6 +954,7 @@ feature {NONE} -- Generation
 				a_file.put_string (input_filename)
 				a_file.put_line ("%"")
 				a_type := a_rule.lhs.type
+				a_rule.print_precondition (2, a_file)
 				if not old_typing or not a_type.name.is_equal ("ANY") then
 					a_file.put_line ("%T%Tlocal")
 					a_type.print_dollar_dollar_declaration (a_file)
@@ -1318,6 +1306,18 @@ feature {NONE} -- Generation
 			a_file.put_integer (yyNsyms)
 			a_file.put_string ("%N%T%T%T-- Number of symbols%
 				%%N%T%T%T-- (terminal and nonterminal)%N")
+		end
+
+	print_dummy_feature (a_file: KI_TEXT_OUTPUT_STREAM)
+			-- Print code for `yy_run_geyacc' to `a_file'.
+		require
+			a_file_not_void: a_file /= Void
+			a_file_open_write: a_file.is_open_write
+		do
+			a_file.put_line ("%Tyy_run_geyacc")
+			a_file.put_line ("%T%T%T-- You must run geyacc to regenerate this class.")
+			a_file.put_line ("%T%Tdo")
+			a_file.put_line ("%T%Tend")
 		end
 
 feature {NONE} -- Building

@@ -16,9 +16,6 @@ inherit
 	AUT_SHARED_FILE_SYSTEM_ROUTINES
 		export {NONE} all end
 
-	UT_SHARED_TEMPLATE_EXPANDER
-		export {NONE} all end
-
 	KL_SHARED_FILE_SYSTEM
 		export {NONE} all end
 
@@ -163,7 +160,7 @@ invariant
 	prefix_not_void: prefix_ /= Void
 
 note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
