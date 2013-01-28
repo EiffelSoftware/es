@@ -4903,6 +4903,7 @@ eweasel/tests/store034/data -text
 eweasel/tests/store036/file.store -text
 eweasel/tests/store037/Ace svneol=native#text/xml
 eweasel/tests/store037/Ace_safe svneol=native#text/xml
+eweasel/tests/string003/Ace svneol=native#text/xml
 eweasel/tests/syntax001/notes -text
 eweasel/tests/syntax002/notes -text
 eweasel/tests/syntax003/notes -text
