@@ -19,9 +19,9 @@ feature -- Access
 			type_attached: a_type /= Void
 			type_resolved: a_type.has_associated_class
 		do
-			Result := a_type.associated_class.name ~ once "ROUTINE"
+			Result := a_type.associated_class.name.same_string (once "ROUTINE")
 		ensure
-			result_set: Result = a_type.associated_class.name ~ "ROUTINE"
+			result_set: Result = a_type.associated_class.name.same_string ("ROUTINE")
 		end
 
 	is_procedure (a_type: TYPE_A): BOOLEAN
@@ -30,9 +30,9 @@ feature -- Access
 			type_attached: a_type /= Void
 			type_resolved: a_type.has_associated_class
 		do
-			Result := a_type.associated_class.name ~ once "PROCEDURE"
+			Result := a_type.associated_class.name.same_string (once "PROCEDURE")
 		ensure
-			result_set: Result = a_type.associated_class.name ~ "PROCEDURE"
+			result_set: Result = a_type.associated_class.name.same_string ("PROCEDURE")
 		end
 
 	is_function (a_type: TYPE_A): BOOLEAN
@@ -41,9 +41,9 @@ feature -- Access
 			type_attached: a_type /= Void
 			type_resolved: a_type.has_associated_class
 		do
-			Result := a_type.associated_class.name ~ once "FUNCTION"
+			Result := a_type.associated_class.name.same_string (once "FUNCTION")
 		ensure
-			result_set: Result = a_type.associated_class.name ~ "FUNCTION"
+			result_set: Result = a_type.associated_class.name.same_string ("FUNCTION")
 		end
 
 	is_predicate (a_type: TYPE_A): BOOLEAN
@@ -52,9 +52,9 @@ feature -- Access
 			type_attached: a_type /= Void
 			type_resolved: a_type.has_associated_class
 		do
-			Result := a_type.associated_class.name ~ once "PREDICATE"
+			Result := a_type.associated_class.name.same_string (once "PREDICATE")
 		ensure
-			result_set: Result = a_type.associated_class.name ~ "PREDICATE"
+			result_set: Result = a_type.associated_class.name.same_string ("PREDICATE")
 		end
 
 	is_agent_type (a_type: TYPE_A): BOOLEAN
@@ -92,7 +92,7 @@ feature -- Access
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
