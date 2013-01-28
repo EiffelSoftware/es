@@ -963,11 +963,11 @@ feature{NONE} -- Initialization
 			is_executing_normal_features_enabled := True
 
 			if not error_handler.has_error and then l_agents_option.was_found then
-				if l_agents_option.parameter ~ "only" then
+				if l_agents_option.parameter.same_string ("only") then
 					is_executing_normal_features_enabled := False
-				elseif l_agents_option.parameter ~ "none" then
+				elseif l_agents_option.parameter.same_string ("none") then
 					is_executing_agent_features_enabled := False
-				elseif l_agents_option.parameter ~ "all" then
+				elseif l_agents_option.parameter.same_string ("all") then
 					-- Do nothing
 				else
 					error_handler.report_statistics_format_error (l_agents_option.parameter)
