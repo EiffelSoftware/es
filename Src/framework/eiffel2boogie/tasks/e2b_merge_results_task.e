@@ -1,7 +1,5 @@
 note
-	description: "[
-		Task to merge results from two-step verification.
-	]"
+	description: "Task to merge results from two-step verification."
 	date: "$Date$"
 	revision: "$Revision$"
 

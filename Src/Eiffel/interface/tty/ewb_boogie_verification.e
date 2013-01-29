@@ -125,6 +125,16 @@ feature {NONE} -- Implementation
 			else
 					-- Two-step verification result
 				output_window.add ("Successfully verified after inlining.%N")
+				output_window.add ("Original errors:%N")
+				across a_success.original_errors as i loop
+					if i.cursor_index = 1 then
+						output_window.add_new_line
+					else
+						output_window.add ("--------------------------------------%N")
+					end
+					i.item.multi_line_message (output_window)
+					output_window.add_new_line
+				end
 			end
 		end
 
@@ -271,7 +281,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

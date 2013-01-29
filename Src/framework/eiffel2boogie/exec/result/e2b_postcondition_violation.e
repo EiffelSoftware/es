@@ -51,7 +51,7 @@ feature -- Display
 			if is_attached_check then
 				if attached tag then
 					a_formatter.add ("Possible Void call in postcondition ")
-					a_formatter.add_comment_text (tag)
+					a_formatter.add_manifest_string (tag)
 					a_formatter.add (".")
 				else
 					a_formatter.add ("Possible Void call in postcondition (unnamed assertion).")
@@ -59,7 +59,7 @@ feature -- Display
 			elseif is_overflow_check then
 				if attached tag then
 					a_formatter.add ("Possible overflow in postcondition ")
-					a_formatter.add_comment_text (tag)
+					a_formatter.add_manifest_string (tag)
 					a_formatter.add (".")
 				else
 					a_formatter.add ("Possible overflow in postcondition (unnamed assertion).")
@@ -67,7 +67,7 @@ feature -- Display
 			else
 				if attached tag then
 					a_formatter.add ("Postcondition ")
-					a_formatter.add_comment_text (tag)
+					a_formatter.add_manifest_string (tag)
 					a_formatter.add (" may fail.")
 				else
 					a_formatter.add ("Postcondition may fail (unnamed assertion).")
@@ -81,7 +81,7 @@ feature -- Display
 			if is_attached_check then
 				if attached tag then
 					a_formatter.add ("Possible Void call in postcondition ")
-					a_formatter.add_comment_text (tag)
+					a_formatter.add_manifest_string (tag)
 					a_formatter.add (".")
 				else
 					a_formatter.add ("Possible Void call in postcondition (unnamed assertion).")
@@ -89,7 +89,7 @@ feature -- Display
 			elseif is_overflow_check then
 				if attached tag then
 					a_formatter.add ("Possible overflow in postcondition ")
-					a_formatter.add_comment_text (tag)
+					a_formatter.add_manifest_string (tag)
 					a_formatter.add (".")
 				else
 					a_formatter.add ("Possible overflow in postcondition (unnamed assertion).")
@@ -97,7 +97,7 @@ feature -- Display
 			else
 				if attached tag then
 					a_formatter.add ("Postcondition ")
-					a_formatter.add_comment_text (tag)
+					a_formatter.add_manifest_string (tag)
 					a_formatter.add (" may fail.")
 				else
 					a_formatter.add ("Postcondition may fail (unnamed assertion).")

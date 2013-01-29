@@ -1,5 +1,5 @@
 note
-	description: "Task to translate a chunk of Eiffel to Boogie."
+	description: "Task to translate a chunk of Eiffel to an IV AST."
 	date: "$Date$"
 	revision: "$Revision$"
 

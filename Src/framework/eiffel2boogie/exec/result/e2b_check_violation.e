@@ -22,7 +22,7 @@ feature -- Display
 		do
 			if attached tag then
 				a_formatter.add ("Check of tag ")
-				a_formatter.add_comment_text (tag)
+				a_formatter.add_manifest_string (tag)
 				a_formatter.add (" may fail.")
 			else
 				a_formatter.add ("Check instruction may fail (unnamed assertion).")

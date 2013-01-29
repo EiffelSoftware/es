@@ -39,8 +39,15 @@ feature {NONE} -- Initialization
 
 	on_before_initialize
 			-- <Precursor>
+		local
+			l_shared_writer: EB_SHARED_WRITER
 		do
 			Precursor
+
+			create l_shared_writer
+			l_shared_writer.label_font_table.item (0).set_height (16)
+			l_shared_writer.label_font_table.item (1).set_height (16)
+			l_shared_writer.label_font_table.item (2).set_height (16)
 
 				-- We want the tool to synchronize with the event list, when first initialized.
 			is_event_list_synchronized_on_initialized := True
@@ -94,7 +101,7 @@ feature {NONE} -- Initialization
 			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 			Result.extend (successful_button)
 			Result.extend (failed_button)
-			Result.extend (skipped_button)
+--			Result.extend (skipped_button)
 		end
 
 	create_right_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
@@ -531,6 +538,7 @@ feature {NONE} -- Basic operations
 					create l_message_gen.make
 					l_result.single_line_message (l_message_gen)
 					l_editor_item := create_clickable_grid_item (l_message_gen.last_line, True)
+					a_row.set_height (l_editor_item.required_height_for_text_and_component)
 					a_row.set_item (info_column, l_editor_item)
 
 						-- Display
@@ -557,6 +565,7 @@ feature {NONE} -- Basic operations
 					create l_message_gen.make
 					l_result.single_line_message (l_message_gen)
 					l_editor_item := create_clickable_grid_item (l_message_gen.last_line, True)
+					a_row.set_height (l_editor_item.required_height_for_text_and_component)
 					a_row.set_item (info_column, l_editor_item)
 
 						-- Display

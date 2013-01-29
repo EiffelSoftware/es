@@ -67,21 +67,21 @@ feature -- Display
 			if is_attached_check then
 				if attached tag then
 					a_formatter.add ("Possible Void call in precondition ")
-					a_formatter.add_comment_text (tag)
+					a_formatter.add_manifest_string (tag)
 				else
 					a_formatter.add ("Possible Void call in precondition (unnamed assertion)")
 				end
 			elseif is_overflow_check then
 				if attached tag then
 					a_formatter.add ("Possible overflow in precondition ")
-					a_formatter.add_comment_text (tag)
+					a_formatter.add_manifest_string (tag)
 				else
 					a_formatter.add ("Possible overflow in precondition (unnamed assertion)")
 				end
 			else
 				if attached tag then
 					a_formatter.add ("Precondition ")
-					a_formatter.add_comment_text (tag)
+					a_formatter.add_manifest_string (tag)
 					a_formatter.add (" may fail")
 				else
 					a_formatter.add ("Precondition may fail (unnamed assertion)")
@@ -118,7 +118,7 @@ feature -- Display
 			end
 			a_formatter.add ("Tag: ")
 			if attached tag then
-				a_formatter.add_comment (tag)
+				a_formatter.add_manifest_string (tag)
 			else
 				a_formatter.add ("unnamed assertion")
 			end

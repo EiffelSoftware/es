@@ -1,6 +1,6 @@
 note
 	description: "[
-		TODO
+		Interface to launch AutoProof.
 	]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -27,7 +27,7 @@ feature -- Access
 	last_result: detachable E2B_RESULT
 			-- Result of last verification.
 		do
-			if verify_task /= Void and verify_task.verifier_result /= Void then
+			if verify_task /= Void then
 				Result := verify_task.verifier_result
 			end
 		end
@@ -72,12 +72,17 @@ feature -- Basic operations
 
 	reset
 			-- Reset AutoProof.
+		local
+			l_context: E2B_SHARED_CONTEXT
 		do
 			create input.make
 			create notification_agents.make
 			verify_task := Void
+			create l_context
+			l_context.options.routines_to_inline.wipe_out
 		ensure
 			not_running: not is_running
+			no_result: last_result = Void
 		end
 
 	verify

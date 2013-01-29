@@ -1,7 +1,5 @@
 note
-	description: "[
-		TODO
-	]"
+	description: "Task notifying observers when verification is finished."
 	date: "$Date$"
 	revision: "$Revision$"
 

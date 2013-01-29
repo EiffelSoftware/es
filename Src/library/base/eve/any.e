@@ -407,22 +407,22 @@ feature -- Verification
 		do
 		end
 
-	frozen owns: ANY assign set_owns
+	frozen owns: SET [ANY] assign set_owns
 			-- Owns set of this object.
 		do
 		end
 
-	frozen set_owns (a: ANY)
+	frozen set_owns (a: SET [ANY])
 			-- Set owns set of this object.
 		do
 		end
 
-	frozen depends: ANY assign set_depends
+	frozen depends: SET [ANY] assign set_depends
 			-- Depends set of this object.
 		do
 		end
 
-	frozen set_depends (a: ANY)
+	frozen set_depends (a: SET [ANY])
 			-- Set depends set of this object.
 		do
 		end

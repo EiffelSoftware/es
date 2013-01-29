@@ -1,6 +1,5 @@
 note
-	description: "Summary description for {E2B_VERIFY_WITH_INLINING_TASK}."
-	author: ""
+	description: "Task to re-verify with inlining."
 	date: "$Date$"
 	revision: "$Revision$"
 
