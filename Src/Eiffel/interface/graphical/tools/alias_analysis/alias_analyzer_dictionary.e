@@ -26,8 +26,6 @@ feature {NONE} -- Creation
 			non_void_index := last_added
 			add (-3, -1)
 			current_index := last_added
-			add (-4, -1)
-			any_index := last_added
 		end
 
 feature -- Access
@@ -37,6 +35,9 @@ feature -- Access
 
 	is_new: BOOLEAN
 			-- Is last added element new?
+
+	is_overqualified: BOOLEAN
+			-- Does last added element have too many qualifiers?
 
 	suffix (p, c: like last_added): like last_added
 			-- Suffix s of a chain `c' == `p'.s
@@ -172,9 +173,6 @@ feature -- Special indexes
 	non_void_index: like last_added
 			-- Index of a special entity "non_void".
 
-	any_index: like last_added
-			-- Index that matches any other index.
-
 feature {NONE} -- Special indexes
 
 	current_index: like last_added
@@ -251,15 +249,18 @@ feature -- Modification
 
 	add_qualification (q: like last_added; v: like last_added)
 			-- Add qualification `q' for the item `v'.
+			-- Updates `is_overqualified' to signify that the elements has too many qualifiers.
 		require
 			v_is_registered: has_index (v)
 			v_not_reversed: not is_reversed (v)
 		local
 			t: like entry
 			p: like last_added
+			n: like qualification.i_th
 		do
+			is_overqualified := False
 				-- Check if `v' represents a special value.
-			if v = any_index or else v = non_void_index or else v = void_index then
+			if v = non_void_index or else v = void_index then
 					-- Arbitrary value, non-void or void value have no qualification.
 				last_added := v
 			elseif q = current_index then
@@ -285,13 +286,12 @@ feature -- Modification
 							-- Add qualification to the current qualifier and use it instead.
 						add_qualification (q, t.qualifier)
 						p := last_added
-						if p /= any_index then
-							add (t.tail, p)
-							if is_new then
-								qualification.put_i_th (qualification.i_th (p) + 1, last_added)
-								if qualification.i_th (last_added) >= 20 then
-									last_added := any_index
-								end
+						add (t.tail, p)
+						if is_new then
+							n := qualification.i_th (p) + 1
+							qualification.put_i_th (n, last_added)
+							if n >= 20 then
+								is_overqualified := True
 							end
 						end
 					end
@@ -317,8 +317,6 @@ feature -- Output
 				Result := once "NonVoid"
 			elseif index = current_index then
 				Result := once "Current"
-			elseif index = any_index then
-				Result := once "Any"
 			else
 				if index < 0 then
 						-- Negative expression.
@@ -416,7 +414,7 @@ feature {NONE} -- Modification
 			added_values: values [last_added] ~ entry (tail, qualifier)
 		end
 
-feature {NONE} -- Measurement
+feature -- Measurement
 
 	count: like last_added
 			-- Current number of registered indexes.

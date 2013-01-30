@@ -59,35 +59,44 @@ feature {NONE} -- Creation
 			-- Initialize analyser.
 		do
 			create dictionary.make
-			create keeper.make (0)
+			create keeper.make (any_aliases)
 			create ast_type.make (0)
 			create ast_alias_after.make (0)
 			create ast_alias_before.make (0)
 			create {ARRAYED_STACK [INTEGER_32]} bodies.make (0)
+			create modified_attributes.make (0)
+			create start_time.make_now_utc
+			create finish_time.make_now_utc
 		end
 
 feature -- Basic operations
 
-	process_class (c: CLASS_C)
+	process_class (c: CLASS_C; output: like output_agent)
 			-- Perform analysis on the class `c'.
 		do
-			prepare_analysis (c)
 			if attached c.feature_table as t then
+				progress_total := t.count
+				output_agent := output
+				prepare_analysis (c)
+				progress_total := t.count
 				from
 					t.start
 				until
 					t.after
 				loop
 					analyze_feature (t.item_for_iteration, c)
+					progress_current := progress_current + 1
 					t.forth
 				end
+				report_result
 			end
-			report_result
 		end
 
-	process_feature (f: FEATURE_I; c: CLASS_C)
+	process_feature (f: FEATURE_I; c: CLASS_C; output: like output_agent)
 			-- Perform analysis on the feature `f' from the class `c'.
 		do
+			progress_total := 0
+			output_agent := output
 			prepare_analysis (c)
 			analyze_feature (f, c)
 			report_result
@@ -97,6 +106,18 @@ feature -- Status report
 
 	is_inherited_assertion_included: BOOLEAN
 			-- Does the analysis include inherited assertions?
+
+	is_frame_check: BOOLEAN
+			-- Does the analysis check frame rule?
+
+	is_done: BOOLEAN
+			-- Is analysis over?
+
+	is_update_required: BOOLEAN
+			-- Should the client get an update on the current status?
+
+	analysed_features: NATURAL_32
+			-- Total number of the features analysed so far.
 
 feature -- Status setting
 
@@ -108,6 +129,14 @@ feature -- Status setting
 			is_inherited_assertion_included_set: is_inherited_assertion_included = v
 		end
 
+	set_is_frame_check  (v: BOOLEAN)
+			-- Set `is_frame_check' to `v'.
+		do
+			is_frame_check := v
+		ensure
+			is_frame_check_set: is_frame_check = v
+		end
+
 feature {NONE} -- Analysis
 
 	prepare_analysis (c: CLASS_C)
@@ -116,7 +145,7 @@ feature {NONE} -- Analysis
 			s: GENERIC_SKELETON
 			i: like {GENERIC_SKELETON}.count
 		do
-			-- init (shared_context)
+			start_time.make_now_utc
 			context.initialize (c, c.actual_type)
 			create dictionary.make
 			error_handler.wipe_out
@@ -131,9 +160,10 @@ feature {NONE} -- Analysis
 			type_checker.init (context)
 			type_checker.set_type_recorder (agent record_node_type)
 				-- Initialize relation information.
-			create keeper.make (0)
+			create keeper.make (any_aliases)
 			-- context.add_keeper (keeper)
 				-- Initialize attribute information.
+			modified_attributes.wipe_out
 			from
 				s := c.skeleton
 				i := s.count
@@ -142,18 +172,35 @@ feature {NONE} -- Analysis
 			loop
 				if attached c.feature_of_feature_id (s [i].feature_id) as a then
 						-- Register an attribute `a' in a dictionary.
-					register_attribute (a, target, c)
+					register_attribute (a, c)
+						-- Assume that the attribute can be aliased to anything
+					keeper.relation.add_any (last_item)
 				end
 				i := i - 1
 			end
 			dictionary.add_current
 			target := dictionary.last_added
+			is_done := False
+			is_update_required := True
+			analysed_features := 0
+			progress_current := 0
+			(create {WORKER_THREAD}.make (
+				agent (e: EXECUTION_ENVIRONMENT)
+					do
+						from
+						until
+							is_done
+						loop
+							is_update_required := True
+							e.sleep (100_000_000)
+						end
+					end
+				(create {EXECUTION_ENVIRONMENT})
+			)).launch
 		end
 
 	analyze_feature (f: FEATURE_I; c: CLASS_C)
 			-- Perform analysis on the feature `f' from the class `c'.
-		require
-			f_not_processed: not bodies.has (f.body_index)
 		local
 			q: BOOLEAN
 			old_current_class: CLASS_C
@@ -161,6 +208,7 @@ feature {NONE} -- Analysis
 			old_written_class: CLASS_C
 			old_locals: like {AST_CONTEXT}.locals
 		do
+			update
 			old_current_class := context.current_class
 			old_current_feature := context.current_feature
 			old_written_class := context.written_class
@@ -170,7 +218,7 @@ feature {NONE} -- Analysis
 			context.set_current_feature (f)
 			context.set_written_class (f.written_class)
 			bodies.put (f.body_index)
-			type_checker.type_check_only (f, is_inherited_assertion_included, f.written_in /= c.class_id, f.is_replicated)
+			type_checker.type_check_only (f, True, f.written_in /= c.class_id, f.is_replicated)
 			add_locals
 			q := is_qualified
 			is_qualified := False
@@ -182,13 +230,13 @@ feature {NONE} -- Analysis
 			context.set_current_feature (old_current_feature)
 			context.set_written_class (old_written_class)
 			context.set_locals (old_locals)
-		ensure
-			f_not_processed: not bodies.has (f.body_index)
+			analysed_features := analysed_features + 1
 		end
 
 	report_result
 			-- Report results of the analysis.
 		do
+			is_done := True
 			if attached {ES_ERROR_DISPLAYER} eiffel_project.error_displayer as d then
 				if error_handler.has_error then
 					d.trace_errors ({ENVIRONMENT_CATEGORIES}.compilation, uuid, error_handler)
@@ -196,6 +244,19 @@ feature {NONE} -- Analysis
 				if error_handler.has_warning then
 					d.trace_warnings ({ENVIRONMENT_CATEGORIES}.compilation, uuid, error_handler)
 				end
+			end
+		end
+
+	update
+			-- Report current analysis status.
+		do
+			if is_update_required then
+					-- Record current time.
+				finish_time.make_now_utc
+					-- Update client about current results.
+				output_agent.call (Void)
+					-- Postpone update for a while.
+				is_update_required := False
 			end
 		end
 
@@ -215,7 +276,7 @@ feature {NONE} -- Visitor
 				then
 					register_local (i)
 				else
-					last_item := dictionary.any_index
+					last_item := dictionary.non_void_index
 				end
 			elseif a.is_argument then
 					-- Feature argument.
@@ -225,8 +286,11 @@ feature {NONE} -- Visitor
 				then
 					register_argument (a.argument_position)
 				else
-					last_item := dictionary.any_index
+					last_item := dictionary.non_void_index
 				end
+			elseif a.is_object_test_local then
+					-- Object test local.
+				last_item := dictionary.non_void_index
 			else
 					-- Feature call.
 				if not is_qualified then
@@ -235,23 +299,34 @@ feature {NONE} -- Visitor
 						if f.is_attribute then
 								-- Attribute.
 							if not f.type.is_expanded then
-								register_attribute (f, target, context.current_class)
+								register_attribute (f, context.current_class)
+							else
+								last_item := dictionary.non_void_index
 							end
 						elseif f.is_routine then
 								-- Routine.
 								-- TODO: use AST index and context class to detect recursive calls.
 							if
-								bodies.has (f.body_index) and then
-								attached node_alias_before (a, context.written_class, context.current_feature, context.current_class) as r and then
-								r.is_equal (keeper.relation)
+--								bodies.has (f.body_index)
+--								and then
+								attached node_alias_before (a, context.written_class, context.current_feature, context.current_class) as r
+--								and then
+--								r.is_equal (keeper.relation)
 							then
+									-- TODO: handle recursive calls.
 									-- Retrieve recorded relation.
-								if attached node_alias_after (a, context.written_class, context.current_feature, context.current_class) as o then
+								if
+									r.is_equal (keeper.relation) and then
+									attached node_alias_after (a, context.written_class, context.current_feature, context.current_class) as o
+ 								then
 										-- Use previously recorded relation.
 									keeper.relation.copy (o)
-								else
-										-- Remove all the pairs.
-									keeper.relation.wipe_out
+--								else
+--										-- Remove all the pairs.
+--									keeper.relation.wipe_out
+--										-- Add predefined entries.
+--									keeper.relation.add_any (dictionary.void_index)
+--									keeper.relation.add_any (dictionary.non_void_index)
 								end
 							else
 									-- This feature has not been processed yet or has been processed but the aliases before the call are different from the previous call.
@@ -268,9 +343,11 @@ feature {NONE} -- Visitor
 								dictionary.add_result (f, context.current_class)
 								last_item := dictionary.last_added
 							else
-								last_item :=dictionary.any_index
+								last_item :=dictionary.non_void_index
 							end
 						end
+					else
+						last_item := dictionary.non_void_index
 					end
 				else
 					if
@@ -280,9 +357,12 @@ feature {NONE} -- Visitor
 					then
 						if f.is_attribute then
 								-- Attribute.
-							register_attribute (f, target, c)
-							dictionary.add_qualification (target, dictionary.last_added)
+							register_attribute (f, c)
+							dictionary.add_qualification (target, last_item)
 							last_item := dictionary.last_added
+							if dictionary.is_overqualified then
+								keeper.relation.add_any (last_item)
+							end
 						elseif f.is_routine then
 								-- Routine.
 								-- TODO: handle recursive calls.
@@ -305,6 +385,8 @@ feature {NONE} -- Visitor
 							dictionary.add_result (f, context.current_class)
 							last_item := dictionary.last_added
 						end
+					else
+						last_item := dictionary.non_void_index
 					end
 				end
 			end
@@ -326,7 +408,8 @@ feature {NONE} -- Visitor
 					if s = dictionary.non_void_index then
 							-- The source is a new object that cannot have any aliases.
 						keeper.relation.add_pair (s, t)
-					else
+					elseif t /= dictionary.non_void_index then
+							-- TODO: remove protection when all targets are processed correctly.
 							-- The source may have aliases.
 						attach (s, t)
 					end
@@ -438,25 +521,47 @@ feature {NONE} -- Visitor
 			-- <Precursor>
 		local
 			t: TYPE_A
-			r: like last_item
+			r: like keeper.relation
+			s: like {CLASS_C}.skeleton
+			i:  like {CLASS_C}.skeleton.count
+			l: like modified_attributes.item_for_iteration
+			k: like modified_attributes.key_for_iteration
 		do
 				-- Register "Result".
-			dictionary.add_result (context.current_feature, context.current_class)
-			r := dictionary.last_added
 			t := context.current_feature.type
 			if not t.is_void then
-					-- Register query result.
-				if not t.is_reference then
-						-- Add a pair "[result, NonVoid]".
-					keeper.relation.add_pair (dictionary.non_void_index, r)
-				end
-				if not t.is_attached then
-						-- Attach "Void" to "result".
-					attach (dictionary.void_index, r)
-				end
+				register_attribute (context.current_feature, context.current_class)
+				set_default_aliases (t)
 			end
 			safe_process (a.precondition)
+			if is_frame_check then
+				r := keeper.relation.twin
+			end
 			a.routine_body.process (Current)
+			if attached r and then attached context.current_class as c then
+				from
+					s := c.skeleton
+					i := s.count
+				until
+					i <= 0
+				loop
+					if attached c.feature_of_feature_id (s [i].feature_id) as f then
+							-- Register an attribute `a' in a dictionary.
+						register_attribute (f, c)
+							-- Compare old and new aliases of the attribute.
+						if r.table [last_item] /~ keeper.relation.table [last_item] then
+							k := [context.current_feature.rout_id_set.first, context.current_class.class_id]
+							l := modified_attributes [k]
+							if not attached l then
+								create l.make (1)
+								modified_attributes [k] := l
+							end
+							l.force (f.feature_name_32)
+						end
+					end
+					i := i - 1
+				end
+			end
 			safe_process (a.postcondition)
 				-- TODO: Handle rescue clause.
 			process_compound (a.rescue_clause)
@@ -555,6 +660,7 @@ feature {AST_EIFFEL} -- Visitor: compound
 			invariant_as: like {LOOP_AS}.invariant_part
 			variant_as: like {LOOP_AS}.variant_part
 			exit_as: like {LOOP_AS}.stop
+			i: INTEGER
 		do
 			safe_process (a.iteration)
 			safe_process (a.from_part)
@@ -568,9 +674,12 @@ feature {AST_EIFFEL} -- Visitor: compound
 				check
 					has_at_least_one_iteration: not keeper.is_sibling_dominating
 				end
+				i := 3
 			until
-				keeper.is_sibling_dominating
+				keeper.is_sibling_dominating or else i <= 0
 			loop
+					-- TODO: remove iteration limit.
+				i := i - 1
 					-- Record most recent scope information before the loop, so that
 					-- it can be compared with the information after the loop on next iteration.
 				keeper.update_sibling
@@ -601,10 +710,12 @@ feature {AST_EIFFEL} -- Visitor: nested call
 		local
 			q: BOOLEAN
 		do
+			a.type.process (Current)
 			q := is_qualified
 			is_qualified := True
-			Precursor (a)
+			safe_process (a.call)
 			is_qualified := q
+				-- TODO: add a temporary local for the new object
 		end
 
 	process_nested_expr_as (a: NESTED_EXPR_AS)
@@ -614,12 +725,15 @@ feature {AST_EIFFEL} -- Visitor: nested call
 		do
 			q := is_qualified
 			a.target.process (Current)
-			is_qualified := True
-			old_target := target
-			target := last_item
-			a.message.process (Current)
-			target := old_target
-			is_qualified := q
+			if dictionary.has_index (last_item) and then dictionary.non_void_index /= last_item then
+					-- TODO: get rid of all the cases that do not compute the target.
+				is_qualified := True
+				old_target := target
+				target := last_item
+				a.message.process (Current)
+				target := old_target
+				is_qualified := q
+			end
 		end
 
 	process_nested_as (a: NESTED_AS)
@@ -629,12 +743,15 @@ feature {AST_EIFFEL} -- Visitor: nested call
 		do
 			q := is_qualified
 			a.target.process (Current)
-			is_qualified := True
-			old_target := target
-			target := last_item
-			a.message.process (Current)
-			target := old_target
-			is_qualified := q
+			if dictionary.has_index (last_item) and then dictionary.non_void_index /= last_item then
+					-- TODO: get rid of all the cases that do not compute the target.
+				is_qualified := True
+				old_target := target
+				target := last_item
+				a.message.process (Current)
+				target := old_target
+				is_qualified := q
+			end
 		end
 
 	process_eiffel_list (a: EIFFEL_LIST [AST_EIFFEL])
@@ -651,9 +768,6 @@ feature {NONE} -- Entity access
 
 	add_locals
 			-- Record which locals are initialized to void and non-void values.
-		local
-			t: TYPE_A
-			n: like last_item
 		do
 			if attached context.locals as l then
 				across
@@ -661,17 +775,8 @@ feature {NONE} -- Entity access
 				loop
 						-- Register a local in a dictionary.
 					register_local (i.item)
-					n := last_item
-						-- Check if the local is void or non-void by default.
-					t := i.item.actual_type
-					if not t.is_reference then
-							-- Add a pair "[variable, NonVoid]".
-						keeper.relation.add_pair (dictionary.non_void_index, n)
-					end
-					if not t.is_expanded then
-							-- Attach "Void" to "variable".
-						attach (dictionary.void_index, n)
-					end
+						-- Associate it with the default values.
+					set_default_aliases (i.item.actual_type)
 				end
 			end
 			if attached context.current_feature.arguments as a then
@@ -680,19 +785,9 @@ feature {NONE} -- Entity access
 				loop
 						-- Register an argument in a dictionary.
 					register_argument (i.cursor_index)
-					n := last_item
-						-- Check if the local is void or non-void by default.
-					t := i.item
-					if not t.is_reference then
-							-- Add a pair "[variable, NonVoid]".
-						keeper.relation.add_pair (dictionary.non_void_index, n)
-					end
-					if not t.is_expanded then
-							-- Attach "Void" to "variable".
-						attach (dictionary.void_index, n)
-					end
+					set_default_aliases (i.item)
 						-- Assume that an argument can have an arbitrary value.
-					keeper.relation.add_pair (dictionary.any_index, n)
+					keeper.relation.add_any (last_item)
 				end
 			end
 		end
@@ -707,7 +802,7 @@ feature {NONE} -- Entity access
 						-- Get an entry for the local in the dictionary.
 					register_local (i.item)
 						-- Remove it from the relation.
-					keeper.relation.remove (last_item)
+					remove_prefixed (last_item)
 				end
 			end
 			if attached context.current_feature.arguments as a then
@@ -717,7 +812,7 @@ feature {NONE} -- Entity access
 						-- Get an entry for the argument in the dictionary.
 					register_argument (i.cursor_index)
 						-- Remove it from the relation.
-					keeper.relation.remove (last_item)
+					remove_prefixed (last_item)
 				end
 			end
 		end
@@ -741,25 +836,25 @@ feature {NONE} -- Entity access
 			last_item := dictionary.last_added
 		end
 
-	register_attribute (a: FEATURE_I; t: like last_item; c: CLASS_C)
-			-- Register attribute identified by `a' with target `t' in class `c'
+	register_attribute (a: FEATURE_I; c: CLASS_C)
+			-- Register attribute identified by `a' in class `c'
 			-- and set `lst_item' to the corresopnding dictionary entry.
-		local
-			n: like last_item
-			r: TYPE_A
 		do
-			dictionary.add_feature (a, t, c)
-			n := dictionary.last_added
-			last_item := n
-				-- Check if the attribute is void or non-void by default.
-			r := a.type.actual_type
-			if not r.is_reference then
+			dictionary.add_feature (a, c)
+			last_item := dictionary.last_added
+		end
+
+	set_default_aliases (t: TYPE_A)
+			-- Associate `last_item' with the default aliases according to its type `t'.
+		do
+				-- Check if the element is void or non-void by default.
+			if not t.is_reference then
 					-- Add a pair "[variable, NonVoid]".
-				keeper.relation.add_pair (dictionary.non_void_index, n)
+				keeper.relation.add_pair (dictionary.non_void_index, last_item)
 			end
-			if not r.is_attached then
+			if not t.is_attached then
 					-- Attach "Void" to "variable".
-				attach (dictionary.void_index, n)
+				attach (dictionary.void_index, last_item)
 			end
 		end
 
@@ -772,6 +867,71 @@ feature {NONE} -- Access
 			-- Current target of a call.
 
 feature {ES_ALIAS_ANALYSIS_TOOL_PANEL} -- Output
+
+	report: STRING_32
+			-- Results of the analysis.
+		do
+			create Result.make_empty
+			report_to (Result)
+		end
+
+	report_to (o: STRING_32)
+			-- Report results of the analysis to `o'.
+		local
+			d: STRING_32
+		do
+			if is_frame_check then
+				across
+					modified_attributes as f
+				loop
+					if attached system.class_of_id (f.key.class_id) as c then
+						o.append_character ('{')
+						o.append_string (c.name)
+						o.append_character ('}')
+						o.append_character ('.')
+						o.append_string (c.feature_of_rout_id (f.key.routine_id).feature_name_32)
+						d := {STRING_32} ": "
+						across
+							f.item as a
+						loop
+							o.append_string (d)
+							d := once {STRING_32} ", "
+							o.append_string (a.item)
+						end
+						o.append_character ('%N')
+					end
+				end
+			else
+				o.append_string (debug_output)
+			end
+		end
+
+	report_statistics_to (o: STRING_32)
+			-- Report statistics of the analysis to `o'.
+		do
+			o.append_string ({STRING_32} "Total processed features: ")
+			o.append_natural_32 (analysed_features)
+			o.append_string ({STRING_32} "%NNumber of different expressions: ")
+			o.append_integer (dictionary.count)
+			o.append_string ({STRING_32} "%NElapsed time (seconds): ")
+			o.append_integer_64 (finish_time.relative_duration (start_time).seconds_count)
+		end
+
+feature {NONE} -- Statistics
+
+	start_time: DATE_TIME
+			-- Moment of analysis start.
+
+	finish_time: DATE_TIME
+			-- Moment of analysis finish.
+
+	progress_total: like {CLASS_C}.feature_table.count
+			-- Total number of features to process.
+
+	progress_current: like progress_total
+			-- Number of features having been processed.
+
+feature {NONE} -- Output
 
 	debug_output: STRING
 			-- <Precursor>
@@ -791,16 +951,21 @@ feature {ES_ALIAS_ANALYSIS_TOOL_PANEL} -- Output
 					Result.append_string (t)
 					Result.append_string (dictionary.name (i.key))
 					s := ": "
-					from
-						a := i.item
-						a.start
-					until
-						a.after
-					loop
+					a := i.item
+					if a.is_empty then
 						Result.append_string (s)
-						Result.append_string (dictionary.name (a.item_for_iteration))
-						s := ", "
-						a.forth
+						Result.append_string ("any")
+					else
+						from
+							a.start
+						until
+							a.after
+						loop
+							Result.append_string (s)
+							Result.append_string (dictionary.name (a.item_for_iteration))
+							s := ", "
+							a.forth
+						end
 					end
 						-- Set delimiter for next items.
 					t := "%N"
@@ -820,10 +985,19 @@ feature {NONE} -- Storage
 	dictionary2: ALIAS_ANALYZER_DICTIONARY_NATURAL_64
 			-- Dictionaries for faster recompilation.
 
-			-- Dictionary of used entities.
-
 	keeper: ALIAS_ANALYZER_RELATION_KEEPER
 			-- Keeper of alias relations.
+
+	any_aliases: ARRAY [INTEGER_32]
+			-- Predefined entries that are known to be aliased to anything.
+		once
+			Result := <<dictionary.void_index, dictionary.non_void_index>>
+		end
+
+	modified_attributes: HASH_TABLE
+		[SEARCH_TABLE [STRING_32],
+		TUPLE [routine_id: like {FEATURE_I}.rout_id_set.first; class_id: like {CLASS_C}.class_id]]
+				-- List of attributes modified by a particular feature.
 
 feature {NONE} -- Alias relation update
 
@@ -838,13 +1012,20 @@ feature {NONE} -- Alias relation update
 			table: like keeper.relation.table
 		do
 			d := dictionary
+			r := keeper.relation
+			table := r.table
 			if s = t then
 					-- Nothing changes.
 					-- TODO: Report useless reattachment.
+			elseif attached table [s] as a and then a.is_empty then
+					-- Any items may be attached to a source.
+					-- Remove `t' from all the associations.
+				r.remove (t)
+					-- `table [t]' is now Void.
+					-- Set it to "any item" table.
+				table [t] := a
 			elseif not d.has_prefix (t, s) then
 					-- Simple case: target has no relation to source.
-				r := keeper.relation
-				table := r.table
 					-- Remove all occurences of target.
 					-- r' := r \- {target}
 				r.remove (t)
@@ -859,7 +1040,10 @@ feature {NONE} -- Alias relation update
 					until
 						a.after
 					loop
-						table [a.item_for_iteration].put (t)
+						p := table [a.item_for_iteration]
+						if not p.is_empty then
+							p.put (t)
+						end
 						a.forth
 					end
 				end
@@ -867,8 +1051,6 @@ feature {NONE} -- Alias relation update
 					-- r' := r' ∪ [t, s]
 				r.add_pair (s, t)
 			else
-				r := keeper.relation
-				table := r.table
 					-- r' = (r \- {t}) ∪ ((((r / s)  ∪ {s}) \- {t}) × {t})
 					-- Apply dot completeness rules to r to be ready for removal of `t':
 					-- Expand aliases that start with `t':
@@ -876,7 +1058,7 @@ feature {NONE} -- Alias relation update
 					-- 2) for every [t, x] and [x.a, u] add [t.a, u]
 					-- 3) for every [t, x] when s = t.a.u add [t.a, x.a]
 				if attached table [t] as ta then
-					create q.make
+					create q.make (any_aliases)
 					 -- For every [t, x] and...
 					across
 						ta as x
@@ -890,6 +1072,9 @@ feature {NONE} -- Alias relation update
 									tpa as u
 								loop
 									d.add_qualification (x.item, d.suffix (t, tp.item))
+									if dictionary.is_overqualified then
+										q.add_any (d.last_added)
+									end
 									q.add_pair (d.last_added, u.item)
 								end
 							end
@@ -903,6 +1088,9 @@ feature {NONE} -- Alias relation update
 									xpa as u
 								loop
 									d.add_qualification (t, d.suffix (x.item, xp.item))
+									if dictionary.is_overqualified then
+										q.add_any (d.last_added)
+									end
 									q.add_pair (d.last_added, u.item)
 								end
 							end
@@ -911,6 +1099,9 @@ feature {NONE} -- Alias relation update
 						n := d.next_prefix (t, s)
 						if d.has_index (n) then
 							d.add_qualification (x.item, d.suffix (t, n))
+							if dictionary.is_overqualified then
+								q.add_any (d.last_added)
+							end
 							q.add_pair (n, d.last_added)
 						end
 					end
@@ -931,18 +1122,28 @@ feature {NONE} -- Alias relation update
 					p.force (s)
 				end
 					-- Update r with r \- {t}
-				r.remove (t)
-				across
-					d.prefixed (t) as tp
-				loop
-					r.remove (tp.item)
-				end
+				remove_prefixed (t)
 					-- Add all the pairs (((r / s) ∪ {s}) \- {t}) × {t}
 				across
 					p as pc
 				loop
 					r.add_pair (pc.item, t)
 				end
+			end
+		end
+
+	remove_prefixed (t: like last_item)
+			-- Remove `t' and all the elements prefixed with `t' from the current relation,
+			-- i.e. update r with r \- {t}, where r is `keeper.relation'.
+		local
+			r: like keeper.relation
+		do
+			r := keeper.relation
+			r.remove (t)
+			across
+				dictionary.prefixed (t) as tp
+			loop
+				r.remove (tp.item)
 			end
 		end
 
@@ -953,6 +1154,9 @@ feature {NONE} -- Mapping
 		do
 			dictionary.add_qualification (q, v)
 			Result := dictionary.last_added
+			if dictionary.is_overqualified then
+				keeper.relation.add_any (Result)
+			end
 		end
 
 feature {NONE} -- Alias recording
@@ -1020,6 +1224,9 @@ feature {NONE} -- Type recording
 		end
 
 feature {NONE} -- Output
+
+	output_agent: PROCEDURE [ANY , TUPLE]
+			-- Procedure to update current status.
 
 	error_handler: ERROR_HANDLER
 			-- Handler to record reports from the analyzer.

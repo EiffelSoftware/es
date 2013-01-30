@@ -45,6 +45,10 @@ feature
 			inherited_assertions_toggle.set_text ("Inherited asserions")
 			inherited_assertions_toggle.set_tooltip ("Process inherited assertions.")
 			Result.extend (inherited_assertions_toggle)
+			create frame_check_toggle.make
+			frame_check_toggle.set_text ("Frame")
+			frame_check_toggle.set_tooltip ("Detect modified attributes.")
+			Result.extend (frame_check_toggle)
 		end
 
 feature {NONE}
@@ -77,10 +81,10 @@ feature {NONE}
 			has_performed_stone_change_notification := False
 		rescue
 			e := (create {EXCEPTION_MANAGER}).last_exception
-			if attached e.message as m then
+			if attached e.description as m then
 				create l_error_prompt.make_standard (m)
 			else
-				create l_error_prompt.make_standard (e.meaning)
+				create l_error_prompt.make_standard (e.tag)
 			end
 			l_error_prompt.set_title ("Error while computing aliases")
 			l_error_prompt.show_on_active_window
@@ -98,6 +102,9 @@ feature {NONE} -- Toolbar
 
 	inherited_assertions_toggle: SD_TOOL_BAR_TOGGLE_BUTTON
 			-- Toggle to enable/disable inherited assertion processing.
+
+	frame_check_toggle: SD_TOOL_BAR_TOGGLE_BUTTON
+			-- Toggle to enable/disable frame check.
 
 feature {NONE} -- Message
 
@@ -135,19 +142,68 @@ feature {NONE} -- Analyzer
 
 	run_analyzer
 			-- Run the analysis with associated reports if possible.
+		local
+			is_frame_check: BOOLEAN
+			s: STRING_32
 		do
 			if attached current_class as c then
 				analyzer.set_is_inherited_assertion_included (inherited_assertions_toggle.is_selected)
+				is_frame_check := frame_check_toggle.is_selected
+				analyzer.set_is_frame_check (is_frame_check)
 				if attached current_feature as f then
-					user_widget.set_text ({STRING_32} "Processing {" + c.name + "}." + f.feature_name_32 + "...")
-					analyzer.process_feature (f, c)
-					user_widget.set_text ({STRING_32} "Processed {" + c.name + "}." + f.feature_name_32 + ".%R%N%R%N" +
-						analyzer.debug_output + "%R%N")
+					analyzer.process_feature (f, c,
+						agent (ff: FEATURE_I; cc: CLASS_C)
+							local
+								m: STRING_32
+							do
+								m := {STRING_32} "Processing {"
+								m.append_string (cc.name)
+								m.append_character ('}')
+								m.append_character ('.')
+								m.append_string (ff.feature_name_32)
+								m.append_string ({STRING_32} "...%N")
+								analyzer.report_statistics_to (m)
+								user_widget.set_text (m)
+								ev_application.process_events
+							end
+						(f, c))
+					s := {STRING_32} "Processed {"
+					s.append_string (c.name)
+					s.append_character ('}')
+					s.append_character ('.')
+					s.append_string (f.feature_name_32)
+					s.append_character ('%N')
+					s.append_character ('%N')
+					analyzer.report_to (s)
 				else
 					user_widget.set_text ({STRING_32} "Processing " + c.name + "...")
-					analyzer.process_class (c)
-					user_widget.set_text ({STRING_32} "Processed " + c.name + ".")
+					analyzer.process_class (c,
+						agent (cc: CLASS_C)
+							local
+								m: STRING_32
+							do
+								m := {STRING_32} "Processing "
+								m.append_string (cc.name)
+								m.append_string ({STRING_32} "...%N")
+								analyzer.report_statistics_to (m)
+								user_widget.set_text (m)
+								ev_application.process_events
+							end
+						(c)
+					)
+					s := {STRING_32} "Processed "
+					s.append_string (c.name)
+					s.append_character ('.')
+					if is_frame_check then
+						s.append_character ('%N')
+						s.append_character ('%N')
+						analyzer.report_to (s)
+					end
 				end
+				s.append_character ('%N')
+				s.append_character ('%N')
+				analyzer.report_statistics_to (s)
+				user_widget.set_text (s)
 			end
 		end
 
@@ -155,7 +211,7 @@ feature {NONE} -- Analyzer
 			-- The engine to perform alias analysis.
 
 ;note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

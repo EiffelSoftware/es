@@ -11,6 +11,7 @@ class
 inherit
 	AST_STACKED_SCOPE_KEEPER [ALIAS_ANALYZER_RELATION [INTEGER_32]]
 		rename
+			make as make_stacked,
 			scope as relation
 		export {ALIAS_ANALYZER}
 			enter_realm,
@@ -25,6 +26,20 @@ inherit
 
 create
 	make
+
+feature {NONE} -- Creation
+
+	make (any_aliases: ARRAY [INTEGER_32])
+			-- Initialize storage to keep alias relation
+			-- with special entries `any_aliases' that can be aliased to anything.
+		do
+			make_stacked (0)
+			across
+				any_aliases as c
+			loop
+				relation.add_any (c.item)
+			end
+		end
 
 feature {NONE} -- Modification: nesting
 
@@ -45,7 +60,9 @@ feature {NONE} -- Initialization
 	new_scope (n: like count): like relation
 			-- New alias relation.
 		do
-			create Result.make
+				-- Pass an empty list of predefined entries here.
+				-- They are added by the creation procedure.
+			create Result.make (<<>>)
 		end
 
 feature {NONE} -- Status report
@@ -68,8 +85,7 @@ feature {NONE} -- Unused
 	max_count: INTEGER_32
 			-- <Precursor>
 		do
-		ensure then
-			False
+			Result := Result.max_value
 		end
 
 	start_scope (index: like count)
@@ -94,7 +110,7 @@ feature {NONE} -- Unused
 		end
 
 note
-	copyright: "Copyright (c) 2012, Eiffel Software"
+	copyright: "Copyright (c) 2012-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

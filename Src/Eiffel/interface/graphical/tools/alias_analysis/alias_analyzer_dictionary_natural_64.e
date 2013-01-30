@@ -19,14 +19,13 @@ feature {NONE} -- Creation
 			create indexes.make (0)
 			create values.make (0)
 			create qualification.make (0)
+				-- Add special entities.
 			add (-1, -1)
 			void_index := last_added
 			add (-2, -1)
 			non_void_index := last_added
 			add (-3, -1)
 			current_index := last_added
-			add (-4, -1)
-			any_index := last_added
 		end
 
 feature -- Access
@@ -36,6 +35,9 @@ feature -- Access
 
 	is_new: BOOLEAN
 			-- Is last added element new?
+
+	is_overqualified: BOOLEAN
+			-- Does last added element have too many qualifiers?
 
 	suffix (p, c: like last_added): like last_added
 			-- Suffix s of a chain `c' == `p'.s
@@ -180,9 +182,6 @@ feature -- Special indexes
 	non_void_index: like last_added
 			-- Index of a special entity "non_void".
 
-	any_index: like last_added
-			-- Index that matches any other index.
-
 feature {NONE} -- Special indexes
 
 	current_index: like last_added
@@ -192,7 +191,7 @@ feature -- Modification
 
 	add_argument (n: INTEGER_32; f: FEATURE_I; c: CLASS_C)
 			-- Add an argument `n' declared in feature `f' in class `c'.
-			-- Set last_added to the index of the item.
+			-- Set `last_added' to the index of the item.
 		require
 			valid_n: n >= 1
 			f_attached: attached f
@@ -205,7 +204,7 @@ feature -- Modification
 
 	add_local (n: INTEGER_32; f: FEATURE_I; c: CLASS_C)
 			-- Add a local `n' declared in feature `f' in class `c'.
-			-- Set last_added to the index of the item.
+			-- Set `last_added' to the index of the item.
 		require
 			valid_n: n >= 1
 			f_attached: attached f
@@ -218,7 +217,7 @@ feature -- Modification
 
 	add_result (f: FEATURE_I; c: CLASS_C)
 			-- Add a result of the feature `f' in the class `c'.
-			-- Set last_added to the index of the item.
+			-- Set `last_added' to the index of the item.
 		require
 			f_attached: attached f
 			c_attached: attached c
@@ -228,9 +227,9 @@ feature -- Modification
 			result_added: indexes.has_key (entry (f.rout_id_set.first, 0))
 		end
 
-	add_feature (f: FEATURE_I; t: like last_added; c: CLASS_C)
+	add_feature (f: FEATURE_I; c: CLASS_C)
 			-- Add a feature `f' in the class `c'.
-			-- Set last_added to the index of the item.
+			-- Set `last_added' to the index of the item.
 		require
 			f_attached: attached f
 			c_attached: attached c
@@ -242,14 +241,14 @@ feature -- Modification
 
 	add_current
 			-- Add current.
-			-- Set last_added to the index of the item.
+			-- Set `last_added' to the index of the item.
 		do
 			last_added := current_index
 		end
 
 	add_reverse (v: like last_added)
 			-- Add a new item which is the reverse of `v'.
-			-- Set last_added to the index of the item.
+			-- Set `last_added' to the index of the item.
 		do
 			last_added := - v
 		ensure
@@ -258,14 +257,20 @@ feature -- Modification
 
 	add_qualification (q: like last_added; v: like last_added)
 			-- Add qualification `q' for the item `v'.
+			-- Updates `is_overqualified' to signify that the elements has too many qualifiers.
 		require
 			v_is_registered: has_index (v)
 			v_not_reversed: not is_reversed (v)
+			v_is_nested:
+--				q > 0 and then not is_unqualified (v) and then entry_qualifier (values [v]) < 0 implies
+--				entry_qualifier (values [v]) = - q
 		local
 			t: like entry
 			p: like last_added
+			n: like qualification.i_th
 		do
-			if v = any_index or else v = non_void_index or else v = void_index then
+			is_overqualified := False
+			if v = non_void_index or else v = void_index then
 				last_added := v
 			elseif q = current_index then
 				last_added := v
@@ -280,24 +285,27 @@ feature -- Modification
 				else
 					t := values [v]
 					if entry_qualifier (t) < 0 then
+							-- We should be removing the qualifier.
+						check
+							from_precondition: entry_qualifier (t) = - q
+						end
 						last_added := entry_tail (t)
 					else
-						if v > 0 then
-							add (- v, q)
-						else
-							add (v, q)
-						end
---						add_qualification (q, entry_qualifier (t))
-						p := last_added
---						if p /= any_index then
---							add (entry_tail (t), p)
-							if is_new then
-								qualification.put_i_th (qualification.i_th (p) + 1, last_added)
-								if qualification.i_th (last_added) >= 20 then
-									last_added := any_index
-								end
-							end
+--						if v > 0 then
+--							add (- v, q)
+--						else
+--							add (v, q)
 --						end
+						add_qualification (q, entry_qualifier (t))
+						p := last_added
+						add (entry_tail (t), p)
+						if is_new then
+							n := qualification.i_th (p) + 1
+							qualification.put_i_th (n, last_added)
+							if n >= 20 then
+								is_overqualified := True
+							end
+						end
 					end
 				end
 			else
@@ -319,8 +327,6 @@ feature -- Output
 				Result := once "NonVoid"
 			elseif index = current_index then
 				Result := once "Current"
-			elseif index = any_index then
-				Result := once "Any"
 			else
 				if index < 0 then
 					Result := "-" + name (- index)
@@ -354,7 +360,7 @@ feature {NONE} -- Entry encoding
 	entry (tail: INTEGER_32; qualifier: INTEGER_32): NATURAL_64
 			-- Entry value corresponding to `tail' and `qualifier'.
 		do
-			Result := tail.as_natural_64 |<< 32 + qualifier.as_natural_64
+			Result := tail.as_natural_64 |<< 32 + (qualifier.as_natural_64 & 0xFFFFFFFF)
 		ensure
 			entry_tail (Result) = tail
 			entry_qualifier (Result) = qualifier
@@ -401,7 +407,7 @@ feature {NONE} -- Modification
 			added_values: values [last_added] ~ entry (tail, qualifier)
 		end
 
-feature {NONE} -- Measurement
+feature -- Measurement
 
 	count: like last_added
 			-- Current number of registered indexes.
@@ -425,6 +431,12 @@ feature {NONE} -- Storage
 
 invariant
 	same_count: indexes.count = values.count and indexes.count = qualification.count
+	has_current_index: has_index (current_index)
+	has_non_void_index: has_index (non_void_index)
+	has_void_index: has_index (void_index)
+	is_unqualified_current_index: is_unqualified (current_index)
+	is_unqualified_non_void_index: is_unqualified (non_void_index)
+	is_unqualified_void_index: is_unqualified (void_index)
 
 note
 	copyright: "Copyright (c) 2012-2013, Eiffel Software"
