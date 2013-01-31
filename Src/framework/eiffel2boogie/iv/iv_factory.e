@@ -60,6 +60,25 @@ feature -- Values
 			create Result.make (name_translator.boogie_name_for_type (a_value), types.type)
 		end
 
+	default_value (a_type: TYPE_A): IV_VALUE
+			-- Default value for type `a_type'.
+		require
+			not_like_type: not a_type.is_like
+		local
+			l_type: TYPE_A
+		do
+			l_type := a_type.deep_actual_type
+			if l_type.is_integer or l_type.is_natural or l_type.is_character or l_type.is_character_32 then
+				Result := int_value (0)
+			elseif l_type.is_boolean then
+				Result := false_
+			elseif l_type.is_expanded then
+				create {IV_VALUE} Result.make ("Unknown", types.generic_type)
+			else
+				Result := void_
+			end
+		end
+
 feature -- Boolean operators
 
 	or_ (a_left, a_right: IV_EXPRESSION): IV_BINARY_OPERATION
@@ -132,6 +151,50 @@ feature -- Functions
 		do
 			create Result.make ("old", a_arg.type)
 			Result.add_argument (a_arg)
+		end
+
+	function_call (a_function_name: STRING; a_arguments: ARRAY [ANY]; a_result_type: IV_TYPE): IV_FUNCTION_CALL
+			-- Function call to `a_function_name' with arguments `a_arguments'.
+		do
+			create Result.make (a_function_name, a_result_type)
+			across a_arguments as i loop
+				if attached {STRING} i.item as s then
+					Result.add_argument (create {IV_ENTITY}.make (s, types.generic_type))
+				elseif attached {IV_EXPRESSION} i.item as e then
+					Result.add_argument (e)
+				else
+					check False end
+				end
+			end
+		end
+
+feature -- Heap access
+
+	heap_current_allocated (a_mapping: E2B_ENTITY_MAPPING): IV_HEAP_ACCESS
+			-- Heap access to `allocated' on `Current'.
+		do
+			create Result.make (
+				a_mapping.heap.name,
+				a_mapping.current_entity,
+				create {IV_ENTITY}.make ("allocated", types.field (types.bool)))
+		end
+
+	heap_current_initialized (a_mapping: E2B_ENTITY_MAPPING): IV_HEAP_ACCESS
+			-- Heap access to `allocated' on `Current'.
+		do
+			create Result.make (
+				a_mapping.heap.name,
+				a_mapping.current_entity,
+				create {IV_ENTITY}.make ("initialized", types.field (types.bool)))
+		end
+
+	heap_current_access (a_mapping: E2B_ENTITY_MAPPING; a_name: STRING): IV_HEAP_ACCESS
+			-- Heap access to `a_feature' on `Current'.
+		do
+			create Result.make (
+				a_mapping.heap.name,
+				a_mapping.current_entity,
+				create {IV_ENTITY}.make (a_name, types.field (types.generic_type)))
 		end
 
 feature -- Miscellaneous

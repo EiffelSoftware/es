@@ -50,4 +50,9 @@ feature -- Visitor
 		deferred
 		end
 
+	process_set_type (a_type: IV_SET_TYPE)
+			-- Process type type.
+		deferred
+		end
+
 end

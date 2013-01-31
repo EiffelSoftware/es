@@ -67,7 +67,7 @@ feature -- Element change
 	set_body (a_expression: like body)
 			-- Set `body' to `a_expression'.
 		require
-			valid_expression: attached a_expression implies a_expression.type = type
+			valid_expression: attached a_expression implies a_expression.type.is_same_type (type)
 		do
 			body := a_expression
 		ensure
@@ -88,6 +88,6 @@ invariant
 	arguments_attached: attached arguments
 	arguments_valid: across arguments as i all i.item.property = Void end
 	type_attached: attached type
-	valid_body: attached body implies body.type = type
+	valid_body: attached body implies body.type.is_same_type (type)
 
 end

@@ -46,6 +46,7 @@ feature -- Basic operations
 			l_translator: E2B_ROUTINE_TRANSLATOR
 		do
 			create l_translator.make
+			l_translator.translate_creator_signature (routine, type)
 		end
 
 end

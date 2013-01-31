@@ -33,31 +33,26 @@ feature -- Access
 	current_boogie_procedure: IV_PROCEDURE
 			-- Currently generated Boogie procedure.
 
-feature -- Status report
-
-	is_generating_implementation: BOOLEAN
-			-- Is implementation generated?
-
-feature -- Status setting
-
-	set_generating_implementation (a_value: BOOLEAN)
-			-- Set `is_generating_implementation' to `a_value'.
-		do
-			is_generating_implementation := a_value
-		ensure
-			value_set: is_generating_implementation = a_value
-		end
-
 feature -- Basic operations
 
-	translate_signature (a_feature: FEATURE_I; a_type: TYPE_A)
+	translate_routine_signature (a_feature: FEATURE_I; a_type: TYPE_A)
+			-- Translate signature of feature `a_feature' of type `a_type'.
+		do
+			translate_signature (a_feature, a_type, False)
+		end
+
+	translate_creator_signature (a_feature: FEATURE_I; a_type: TYPE_A)
+			-- Translate signature of feature `a_feature' of type `a_type'.
+		do
+			translate_signature (a_feature, a_type, True)
+		end
+
+	translate_signature (a_feature: FEATURE_I; a_type: TYPE_A; a_for_creator: BOOLEAN)
 			-- Translate signature of feature `a_feature' of type `a_type'.
 		require
 			routine: a_feature.is_routine
 		local
-			l_boogie_type: IV_TYPE
-			l_pre: IV_PRECONDITION
-			l_expression: IV_EXPRESSION
+			l_proc_name: STRING
 			i: INTEGER
 			l_contracts: TUPLE [pre: LIST [ASSERT_B]; post: LIST [ASSERT_B]]
 			l_fields: LINKED_LIST [TUPLE [o: IV_EXPRESSION; f: IV_ENTITY]]
@@ -66,26 +61,22 @@ feature -- Basic operations
 		do
 			set_context (a_feature, a_type)
 
+				-- Set up name
+			if a_for_creator then
+				l_proc_name := name_translator.boogie_name_for_creation_routine (current_feature, current_type)
+			else
+				l_proc_name := name_translator.boogie_name_for_feature (current_feature, current_type)
+			end
+
 				-- Initialize procedure
-			create current_boogie_procedure.make (name_translator.boogie_name_for_feature (current_feature, current_type))
+			create current_boogie_procedure.make (l_proc_name)
 			boogie_universe.add_declaration (current_boogie_procedure)
 
 				-- Arguments
-			translation_pool.add_type (current_type)
 			add_argument ("Current", current_type)
 			from i := 1 until i > current_feature.argument_count loop
 				l_type := current_feature.arguments.i_th (i).deep_actual_type.instantiated_in (current_type)
-				translation_pool.add_type (l_type)
-				l_boogie_type := types.for_type_a (l_type)
-				l_expression := argument_property (current_feature.arguments.item_name (i), l_type)
-				if l_expression /= Void then
-					create l_pre.make (l_expression)
-					l_pre.set_free
-					l_pre.set_assertion_type ("argument property")
-					current_boogie_procedure.add_contract (l_pre)
-				end
-				current_boogie_procedure.add_argument (current_feature.arguments.item_name (i), l_boogie_type)
---				current_boogie_procedure.add_argument_with_property (current_feature.arguments.item_name (i), l_boogie_type, l_expression)
+				add_argument (current_feature.arguments.item_name (i), l_type)
 				i := i + 1
 			end
 
@@ -93,9 +84,26 @@ feature -- Basic operations
 			if current_feature.has_return_value then
 				l_type := current_feature.type.deep_actual_type.instantiated_in (current_type)
 				translation_pool.add_type (l_type)
-				l_boogie_type := types.for_type_a (l_type)
-				l_expression := argument_property ("Result", l_type)
-				current_boogie_procedure.add_result_with_property ("Result", l_boogie_type, l_expression)
+				current_boogie_procedure.add_result_with_property (
+					"Result",
+					types.for_type_a (l_type),
+					argument_property ("Result", l_type))
+			end
+
+				-- Modifies
+			create l_modifies.make ("Heap")
+			l_modifies.add_name ("Writes")
+			current_boogie_procedure.add_contract (l_modifies)
+
+				-- Ownership default
+			add_ownership_conditions
+
+			if a_for_creator then
+					-- Creator
+				add_ownership_conditions_for_creator
+			elseif a_feature.is_exported_for (system.any_class.compiled_class) then
+					-- Public routine
+				add_ownership_conditions_for_public
 			end
 
 				-- Pre- and postconditions
@@ -115,79 +123,205 @@ feature -- Basic operations
 			end
 
 				-- Frame condition
-			create l_modifies.make ("Heap")
-			l_modifies.add_name ("Writes")
-			current_boogie_procedure.add_contract (l_modifies)
 
-			if helper.feature_note_values (current_feature, "framing").has ("False") then
-					-- No frame condition
-			elseif helper.feature_note_values (current_feature, "pure").has ("True") then
-					-- Pure feature
-				add_pure_frame_condition
-			else
-					-- Normal frame condition
-				process_fields_list (l_fields)
-			end
+--			if helper.feature_note_values (current_feature, "framing").has ("False") then
+--					-- No frame condition
+--			elseif helper.feature_note_values (current_feature, "pure").has ("True") then
+--					-- Pure feature
+--				add_pure_frame_condition
+--			else
+--					-- Normal frame condition
+--				process_fields_list (l_fields)
+--			end
+
+				-- Ownership conditions
+--			add_ownership_conditions (a_for_creator)
 
 		end
 
-	translate_implementation (a_feature: FEATURE_I; a_type: TYPE_A)
+	add_ownership_conditions
+		local
+			l_fcall: IV_FUNCTION_CALL
+			l_pre: IV_PRECONDITION
+			l_post: IV_POSTCONDITION
+		do
+			create l_pre.make (factory.function_call ("global", << "Heap", "Writes" >>, types.bool))
+			l_pre.set_free
+			current_boogie_procedure.add_contract (l_pre)
+
+			create l_pre.make (factory.function_call (
+				"Set#Subset",
+				<<
+					factory.function_call (
+						name_translator.boogie_name_for_writes_set_function (current_feature, current_type),
+						<<
+							"Heap",
+							"Current"
+						>>,
+						types.set (types.ref)),
+					"Writes"
+				>>,
+				types.bool))
+			current_boogie_procedure.add_contract (l_pre)
+
+			create l_post.make (factory.function_call ("global", << "Heap", "Writes" >>, types.bool))
+			l_post.set_free
+			current_boogie_procedure.add_contract (l_post)
+
+			create l_post.make (factory.function_call (
+				"writes_changed",
+				<<
+					factory.old_ (create {IV_ENTITY}.make ("Heap", types.heap_type)),
+					create {IV_ENTITY}.make ("Heap", types.heap_type),
+					factory.old_ (create {IV_ENTITY}.make ("Writes", types.set (types.ref))),
+					create {IV_ENTITY}.make ("Writes", types.set (types.ref))
+				>>,
+				types.bool))
+			l_post.set_free
+			current_boogie_procedure.add_contract (l_post)
+
+			create l_post.make (factory.function_call (
+				"writes",
+				<<
+					factory.old_ (create {IV_ENTITY}.make ("Heap", types.heap_type)),
+					create {IV_ENTITY}.make ("Heap", types.heap_type),
+					factory.function_call (
+						name_translator.boogie_name_for_writes_set_function (current_feature, current_type),
+						<<
+							factory.old_ (create {IV_ENTITY}.make ("Heap", types.heap_type)),
+							create {IV_ENTITY}.make ("Current", types.ref)
+						>>,
+						types.set (types.ref))
+				>>,
+				types.bool))
+			l_post.set_free
+			current_boogie_procedure.add_contract (l_post)
+			translation_pool.add_writes_function (current_feature, current_type)
+		end
+
+	add_ownership_conditions_for_creator
+		local
+			l_pre: IV_PRECONDITION
+			l_post: IV_POSTCONDITION
+			l_heap_access: IV_HEAP_ACCESS
+		do
+			create l_pre.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
+			current_boogie_procedure.add_contract (l_pre)
+
+			create l_heap_access.make ("Heap", create {IV_ENTITY}.make ("Current", types.ref), create {IV_ENTITY}.make ("dependents", types.set (types.ref)))
+			create l_pre.make (factory.equal (
+				l_heap_access,
+				factory.function_call ("Set#Empty", <<>>, types.set (types.ref))))
+			current_boogie_procedure.add_contract (l_pre)
+
+			create l_post.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
+			l_post.set_assertion_type ("post")
+			current_boogie_procedure.add_contract (l_post)
+		end
+
+	add_ownership_conditions_for_public
+		do
+
+		end
+
+
+
+	translate_routine_implementation (a_feature: FEATURE_I; a_type: TYPE_A)
 			-- Translate implementation of feature `a_feature' of type `a_type'.
 		require
 			routine: a_feature.is_routine
+		do
+			translate_implementation (a_feature, a_type, False)
+		end
+
+	translate_creator_implementation (a_feature: FEATURE_I; a_type: TYPE_A)
+			-- Translate implementation of feature `a_feature' of type `a_type'.
+		do
+			translate_implementation (a_feature, a_type, True)
+		end
+
+	translate_implementation (a_feature: FEATURE_I; a_type: TYPE_A; a_for_creator: BOOLEAN)
+			-- Translate implementation of feature `a_feature' of type `a_type'.
 		local
 			l_procedure: IV_PROCEDURE
 			l_implementation: IV_IMPLEMENTATION
 			l_translator: E2B_INSTRUCTION_TRANSLATOR
 			l_type: TYPE_A
-			l_name: STRING
+			l_proc_name, l_local_name: STRING
 			l_values: ARRAYED_LIST [STRING_32]
+			l_assign: IV_ASSIGNMENT
+			l_attribute: FEATURE_I
 		do
 			set_context (a_feature, a_type)
+			set_inlining_options_for_feature (a_feature)
 
-				-- Set inlining options
-			options.set_inlining_depth (0)
-			if options.is_inlining_enabled then
-				if helper.boolean_feature_note_value (a_feature, "inline") then
-					options.set_inlining_depth (1)
-				elseif helper.integer_feature_note_value (a_feature, "inline") > 0 then
-					options.set_inlining_depth (helper.integer_feature_note_value (a_feature, "inline"))
-				elseif options.routines_to_inline.has (a_feature.body_index) then
-					options.set_inlining_depth (1)
-				else
-					options.set_inlining_depth (0)
-				end
+			if a_for_creator then
+				l_proc_name := name_translator.boogie_name_for_creation_routine (current_feature, current_type)
+			else
+				l_proc_name := name_translator.boogie_name_for_feature (current_feature, current_type)
 			end
 
-			l_procedure := boogie_universe.procedure_named (name_translator.boogie_name_for_feature (current_feature, current_type))
+			l_procedure := boogie_universe.procedure_named (l_proc_name)
 			check l_procedure /= Void end
 			current_boogie_procedure := l_procedure
 
 			create l_implementation.make (l_procedure)
 			boogie_universe.add_declaration (l_implementation)
 
-				-- Add initial tracing information
-			l_implementation.body.add_statement (factory.trace (name_translator.boogie_name_for_feature (current_feature, current_type)))
-
-				-- Process statements (byte node tree)
 			create l_translator.make
 			l_translator.set_context (l_implementation, current_feature, current_type)
 
+				-- Add initial tracing information
+			l_implementation.body.add_statement (factory.trace (l_proc_name))
+
+			if a_for_creator then
+					-- Add creator initialization for ownership
+				create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "owns"), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
+				l_implementation.body.add_statement (l_assign)
+				create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "depends"), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
+				l_implementation.body.add_statement (l_assign)
+					-- Add creator initialization for attributes
+				from
+					current_type.base_class.feature_table.start
+				until
+					current_type.base_class.feature_table.after
+				loop
+					l_attribute := current_type.base_class.feature_table.item_for_iteration
+					if l_attribute.is_attribute then
+						translation_pool.add_referenced_feature (l_attribute, current_type)
+						l_local_name := name_translator.boogie_name_for_feature (l_attribute, current_type)
+						create l_assign.make (
+							factory.heap_current_access (l_translator.entity_mapping, l_local_name),
+							factory.default_value (l_attribute.type))
+						l_implementation.body.add_statement (l_assign)
+					end
+					current_type.base_class.feature_table.forth
+				end
+			end
+
+				-- Process statements (byte node tree)
 			helper.set_up_byte_context (current_feature, current_type)
 			if attached Context.byte_code as l_byte_code then
 				if l_byte_code.compound /= Void and then not l_byte_code.compound.is_empty then
 					if l_byte_code.locals /= Void then
 						across l_byte_code.locals as i loop
 							l_type := i.item.deep_actual_type.instantiated_in (current_type)
-							l_name := name_translator.boogie_name_for_local (i.cursor_index)
-							l_translator.entity_mapping.set_local (i.cursor_index, create {IV_ENTITY}.make (l_name, types.for_type_a (l_type)))
-							l_implementation.add_local (l_name, types.for_type_a (l_type))
+							l_local_name := name_translator.boogie_name_for_local (i.cursor_index)
+							l_translator.entity_mapping.set_local (i.cursor_index, create {IV_ENTITY}.make (l_local_name, types.for_type_a (l_type)))
+							l_implementation.add_local (l_local_name, types.for_type_a (l_type))
 						end
 					end
 					l_translator.process_compound (l_byte_code.compound)
 				end
 			end
+
+			if a_for_creator then
+					-- Creator finalizer: set "initialized" to true
+				create l_assign.make (factory.heap_current_initialized (l_translator.entity_mapping), factory.true_)
+				l_implementation.body.add_statement (l_assign)
+			end
 		end
+
 
 	translate_functional_representation (a_feature: FEATURE_I; a_type: TYPE_A)
 			-- Translate implementation of feature `a_feature' of type `a_type'.
@@ -221,6 +355,41 @@ feature -- Basic operations
 
 				-- Axiom
 			generate_functional_axiom (l_function)
+
+		end
+
+	translate_writes_function (a_feature: FEATURE_I; a_type: TYPE_A)
+			-- Translate implementation of feature `a_feature' of type `a_type'.
+		local
+			l_function: IV_FUNCTION
+			l_boogie_type: IV_TYPE
+			l_type: TYPE_A
+			i: INTEGER
+		do
+			set_context (a_feature, a_type)
+			helper.set_up_byte_context (current_feature, current_type)
+
+				-- Function
+			create l_function.make (
+				name_translator.boogie_name_for_writes_set_function (current_feature, current_type),
+				types.set (types.ref)
+			)
+			boogie_universe.add_declaration (l_function)
+
+				-- Arguments
+			translation_pool.add_type (current_type)
+			l_function.add_argument ("heap", types.heap_type)
+			l_function.add_argument ("current", types.ref)
+			from i := 1 until i > current_feature.argument_count loop
+				l_type := current_feature.arguments.i_th (i).deep_actual_type.instantiated_in (current_type)
+				translation_pool.add_type (l_type)
+				l_boogie_type := types.for_type_a (l_type)
+				l_function.add_argument (current_feature.arguments.item_name (i), l_boogie_type)
+				i := i + 1
+			end
+
+				-- Expression
+			l_function.set_body (factory.function_call ("Set#Singleton", << "current" >>, types.set (types.ref)))
 
 		end
 
@@ -398,6 +567,23 @@ feature -- Basic operations
 		end
 
 feature {NONE} -- Implementation
+
+	set_inlining_options_for_feature (a_feature: FEATURE_I)
+			-- Set inlining options for feature `a_feature'.
+		do
+			options.set_inlining_depth (0)
+			if options.is_inlining_enabled then
+				if helper.boolean_feature_note_value (a_feature, "inline") then
+					options.set_inlining_depth (1)
+				elseif helper.integer_feature_note_value (a_feature, "inline") > 0 then
+					options.set_inlining_depth (helper.integer_feature_note_value (a_feature, "inline"))
+				elseif options.routines_to_inline.has (a_feature.body_index) then
+					options.set_inlining_depth (1)
+				else
+					options.set_inlining_depth (0)
+				end
+			end
+		end
 
 	contracts (a_feature: FEATURE_I; a_type: TYPE_A): TUPLE [pre: LIST [ASSERT_B]; post: LIST [ASSERT_B]]
 			-- Contracts for feature `a_feature' of type `a_type'.
@@ -713,56 +899,22 @@ feature {NONE} -- Implementation
 
 	add_argument (a_name: STRING; a_type: TYPE_A)
 			-- Add argument named `a_name' of type `a_type' to `current_boogie_procedure'.
-		do
-			if a_type.is_reference then
-				add_reference_argument (a_name, a_type)
-			elseif a_type.is_boolean then
-				current_boogie_procedure.add_argument (a_name, types.bool)
-			elseif a_type.is_integer or a_type.is_natural then
-				add_integer_argument (a_name, a_type)
-			else
-				check False end
-			end
-		end
-
-	add_reference_argument (a_name: STRING; a_type: TYPE_A)
-			-- Add argument named `a_name' of type `a_type' to `current_boogie_procedure'.
+		require
+			a_name_not_empty: not a_name.is_empty
+			not_like_type: not a_type.is_like
 		local
-			l_heap, l_ref, l_type: IV_ENTITY
-			l_expr: IV_FUNCTION_CALL
+			l_expr: IV_EXPRESSION
+			l_pre: IV_PRECONDITION
 		do
-			create l_heap.make ("Heap", types.heap_type)
-			create l_ref.make (a_name, types.ref)
-			create l_type.make (name_translator.boogie_name_for_type (a_type), types.type)
-			if a_type.is_attached then
-				create l_expr.make ("attached", types.bool)
-			else
-				create l_expr.make ("detachable", types.bool)
+			translation_pool.add_type (a_type)
+			current_boogie_procedure.add_argument (a_name, types.for_type_a (a_type))
+			l_expr := argument_property (a_name, a_type)
+			if l_expr /= Void then
+				create l_pre.make (l_expr)
+				l_pre.set_free
+				l_pre.set_assertion_type ("argument property for " + a_name)
+				current_boogie_procedure.add_contract (l_pre)
 			end
-			l_expr.add_argument (l_heap)
-			l_expr.add_argument (l_ref)
-			l_expr.add_argument (l_type)
-			current_boogie_procedure.add_argument_with_property (a_name, types.ref, l_expr)
-		end
-
-	add_integer_argument (a_name: STRING; a_type: TYPE_A)
-			-- Add argument named `a_name' of type `a_type' to `current_boogie_procedure'.
-		local
-			l_value: IV_ENTITY
-			l_expr: IV_FUNCTION_CALL
-			l_f_name: STRING
-		do
-			create l_value.make (a_name, types.int)
-			if attached {INTEGER_A} a_type as l_int_type then
-				l_f_name := "is_integer_" + l_int_type.size.out
-			elseif attached {NATURAL_A} a_type as l_nat_type then
-				l_f_name := "is_integer_" + l_nat_type.size.out
-			else
-				check False end
-			end
-			create l_expr.make (l_f_name, types.bool)
-			l_expr.add_argument (l_value)
-			current_boogie_procedure.add_argument_with_property (a_name, types.int, l_expr)
 		end
 
 end

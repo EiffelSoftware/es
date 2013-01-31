@@ -63,6 +63,22 @@ feature -- Access
 			result_attached: attached Result
 		end
 
+	boogie_name_for_writes_set_function (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
+			-- Name for feature `a_feature'.
+		require
+			a_feature_attached: attached a_feature
+			a_context_type_attached: attached a_context_type
+		local
+			l_type_name: STRING
+			l_feature_name: STRING
+		do
+			l_type_name := boogie_name_for_type (a_context_type)
+			l_feature_name := a_feature.feature_name_32.as_lower
+			Result := "writes." + l_type_name + "." + l_feature_name
+		ensure
+			result_attached: attached Result
+		end
+
 	feature_for_boogie_name (a_name: STRING): FEATURE_I
 			-- Feature named `a_name' in Boogie code.
 		require

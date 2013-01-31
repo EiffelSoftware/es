@@ -580,6 +580,13 @@ feature -- Type Visitor
 			a_type.content_type.process (Current)
 		end
 
+	process_set_type (a_type: IV_SET_TYPE)
+			-- <Precursor>
+		do
+			output.put ("Set ")
+			a_type.content_type.process (Current)
+		end
+
 feature -- Other
 
 	process_entity_declaration (a_declaration: IV_ENTITY_DECLARATION)

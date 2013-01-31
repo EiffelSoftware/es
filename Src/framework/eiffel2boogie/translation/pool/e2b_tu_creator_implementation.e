@@ -42,8 +42,11 @@ feature -- Basic operations
 
 	translate
 			-- <Precursor>
+		local
+			l_translator: E2B_ROUTINE_TRANSLATOR
 		do
-
+			create l_translator.make
+			l_translator.translate_creator_implementation (routine, type)
 		end
 
 end

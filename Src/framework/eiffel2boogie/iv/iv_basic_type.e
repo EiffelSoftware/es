@@ -92,6 +92,28 @@ feature -- Visitor
 			end
 		end
 
+feature -- Equality
+
+	is_same_type (a_other: IV_TYPE): BOOLEAN
+			-- Is `a_other' same type as this?
+		do
+			if is_boolean then
+				Result := a_other.is_boolean
+			elseif is_integer then
+				Result := a_other.is_integer
+			elseif is_real then
+				Result := a_other.is_real
+			elseif is_reference then
+				Result := a_other.is_reference
+			elseif is_type then
+				Result := a_other.is_type
+			elseif is_heap then
+				Result := a_other.is_heap
+			else
+				Result := False
+			end
+		end
+
 invariant
 --	exclusive_type: is_boolean xor is_integer xor is_real xor is_reference xor is_type
 

@@ -38,4 +38,11 @@ feature -- Visitor
 		deferred
 		end
 
+feature -- Equality
+
+	is_same_type (a_other: IV_TYPE): BOOLEAN
+			-- Is `a_other' same type as this?
+		deferred
+		end
+
 end

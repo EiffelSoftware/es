@@ -6,7 +6,7 @@ note
 	revision: "$Revision$"
 
 class
-	E2B_TU_ROUTINE_IMPLEMENTATION
+	E2B_TU_WRITES_FUNCTION
 
 inherit
 
@@ -24,7 +24,7 @@ feature {NONE} -- Implementation
 		do
 			routine := a_feature
 			type := a_context_type
-			id := "impl/" + type_id (a_context_type) + "/" + feature_id (a_feature)
+			id := "writes/" + type_id (a_context_type) + "/" + feature_id (a_feature)
 		end
 
 feature -- Access
@@ -46,7 +46,7 @@ feature -- Basic operations
 			l_translator: E2B_ROUTINE_TRANSLATOR
 		do
 			create l_translator.make
-			l_translator.translate_routine_implementation (routine, type)
+			l_translator.translate_writes_function (routine, type)
 		end
 
 end

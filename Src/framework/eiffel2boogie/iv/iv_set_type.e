@@ -6,7 +6,7 @@ note
 	revision: "$Revision$"
 
 class
-	IV_FIELD_TYPE
+	IV_SET_TYPE
 
 inherit
 
@@ -37,7 +37,7 @@ feature -- Visitor
 	process (a_visitor: IV_TYPE_VISITOR)
 			-- <Precursor>
 		do
-			a_visitor.process_field_type (Current)
+			a_visitor.process_set_type (Current)
 		end
 
 feature -- Equality
@@ -45,7 +45,7 @@ feature -- Equality
 	is_same_type (a_other: IV_TYPE): BOOLEAN
 			-- Is `a_other' same type as this?
 		do
-			if attached {IV_FIELD_TYPE} a_other as t then
+			if attached {IV_SET_TYPE} a_other as t then
 				Result := content_type.is_same_type (t.content_type)
 			end
 		end

@@ -116,6 +116,9 @@ feature -- Convenience functions
 				create l_attribute.make (a_feature, a_context_type)
 				add_translation_unit (l_attribute)
 			elseif a_feature.is_routine then
+				if a_context_type.base_class.has_creator_of_name_id (a_feature.feature_name_id) then
+					add_creator (a_feature, a_context_type)
+				end
 				create l_signature.make (a_feature, a_context_type)
 				add_translation_unit (l_signature)
 				create l_implementation.make (a_feature, a_context_type)
@@ -170,6 +173,15 @@ feature -- Convenience functions
 		do
 			create l_functional.make (a_feature, a_context_type)
 			add_translation_unit (l_functional)
+		end
+
+	add_writes_function (a_feature: FEATURE_I; a_context_type: TYPE_A)
+			-- Add writes function of feature `a_feature' of `a_context_type'.
+		local
+			l_writes: E2B_TU_WRITES_FUNCTION
+		do
+			create l_writes.make (a_feature, a_context_type)
+			add_translation_unit (l_writes)
 		end
 
 	add_precondition_predicate (a_feature: FEATURE_I; a_context_type: TYPE_A)

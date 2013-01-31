@@ -73,15 +73,17 @@ const Void: ref; // Constant for Void references
 // Heap and allocation
 
 type Field _; // Type of a field (with open subtype)
-type HeapType = <beta>[ref, Field beta]beta; // Type of a heap (with generic field subtype and generic content type)
+type HeapType = <alpha>[ref, Field alpha]alpha; // Type of a heap (with generic field subtype and generic content type)
+const unique allocated: Field bool; // Ghost field for allocation status of objects
+const unique initialized: Field bool; // Ghost field for initialization status of objects
 
-// Function which defines a heap
-function IsHeap(heap: HeapType) returns (bool);
+// Function which defines basic properties of a heap
+function IsHeap(heap: HeapType): bool {
+	true
+}
 
 // The global heap (which is always a heap)
 var Heap: HeapType where IsHeap(Heap);
-
-const unique allocated: Field bool; // Ghost field for allocation status of objects
 
 // ----------------------------------------------------------------------
 // Typing
@@ -156,6 +158,63 @@ function writes(h: HeapType, h': HeapType, mods: Set ref): bool {
 	(forall <T> o: ref, f: Field T :: (forall o': ref :: mods[o'] ==> !in_domain(h, o', o)) ==> h'[o, f] == h[o, f])
 }
 
+// Objects that:
+// 1. were in the writes set and have not been captured by the routine
+// 2. have been released by the routine
+// 3. newly allocated and not captured
+// are still writable 
+function writes_changed(h: HeapType, h': HeapType, wr: Set ref, wr': Set ref): bool
+{
+	(forall o: ref ::
+		(wr[o] && is_free(h', o)) ||
+		(!is_free(h, o) && is_free(h', o)) ||
+		(!h[o, allocated] && h'[o, allocated] && is_free(h', o))
+			==> 
+		wr'[o])
+}
+
+// Is invariant of object o satisifed?
+function user_inv(h: HeapType, o: ref): bool;
+
+// Is object o closed or the invariant satisfied?
+function inv(h: HeapType, o: ref): bool {
+	h[o, closed] ==> user_inv(h, o)
+}
+
+// Invariant of None is false
+axiom (forall h: HeapType, o: ref :: type_of(o) == NONE ==> !user_inv(h, o));
+
+// Global heap invariants
+function {:inine true} global_heap(h: HeapType): bool
+{
+	is_open(h, Void) && // G1
+	(forall o: ref :: h[o, allocated] && is_open(h, h[o, owner]) ==> is_free(h, o)) && // G2
+	(forall o: ref :: h[o, allocated] && is_open(h, o) ==> is_free(h, o)) && // G3
+	(forall o: ref, o': ref :: h[o, allocated] && h[o', allocated] && h[o, closed] && h[o, owns][o'] ==> h[o', closed] && h[o', owner] == o) && // G4
+	(forall o: ref :: h[o, allocated] ==> inv(h, o)) // G5
+}
+
+// Global invariants
+function global(h: HeapType, wr: Set ref): bool
+{
+  global_heap(h) &&
+  (forall o: ref :: wr[o] ==> h[o, allocated] && is_free(h, o))
+}
+
+// Allocate fresh object
+procedure allocate(t: Type) returns (result: ref);
+	modifies Heap, Writes;
+	ensures !old(Heap[result, allocated]);
+	ensures Heap[result, allocated];
+	ensures !Heap[result, initialized];
+	ensures result != Void;
+	ensures type_of(result) == t;
+	ensures is_open(Heap, result);
+	ensures Heap[result, owner] == Void;
+	ensures Set#Equal(Heap[result, dependents], Set#Empty());
+	ensures Writes == old(Set#UnionOne(Writes, result));
+	ensures (forall <T> o: ref, f: Field T :: o != result ==> Heap[o, f] == old(Heap[o, f]));
+
 // Update Heap position Current.field with value.
 procedure update_heap<T>(Current: ref, field: Field T, value: T);
 	requires is_open(Heap, Current); // pre tag:UP1
@@ -167,89 +226,58 @@ procedure update_heap<T>(Current: ref, field: Field T, value: T);
 
 // Unwrap o
 procedure unwrap(o: ref);
-//  free requires inv(Heap, o);
-  requires is_wrapped(Heap, o); // pre tag:UW1
-  requires Writes[o]; // pre tag:UW2
-  modifies Heap, Writes;
-  ensures is_open(Heap, o);
-//  ensures user_inv(Heap, o);
-  ensures (forall o': ref :: old(Heap[o, owns][o']) ==> is_wrapped(Heap, o'));
-  ensures (forall <T> o': ref, f: Field T :: !(o' == o && f == closed) && !(old(Heap[o, owns][o']) && f == owner) ==> Heap[o', f] == old(Heap[o', f]));
-  ensures Set#Equal(Writes, old(Set#Union(Writes, Heap[o, owns])));
-
+	free requires inv(Heap, o);
+	requires is_wrapped(Heap, o); // pre tag:UW1
+	requires Writes[o]; // pre tag:UW2
+	modifies Heap, Writes;
+	ensures is_open(Heap, o);
+	ensures user_inv(Heap, o);
+	ensures (forall o': ref :: old(Heap[o, owns][o']) ==> is_wrapped(Heap, o'));
+	ensures (forall <T> o': ref, f: Field T :: !(o' == o && f == closed) && !(old(Heap[o, owns][o']) && f == owner) ==> Heap[o', f] == old(Heap[o', f]));
+	ensures Set#Equal(Writes, old(Set#Union(Writes, Heap[o, owns])));
 
 // Wrap o
 procedure wrap(o: ref);
-  requires is_open(Heap, o); // pre tag:W1
-//  requires user_inv(Heap, o); // pre tag:W2
-  requires (forall o': ref :: Heap[o, owns][o'] ==> is_wrapped(Heap, o') && Writes[o']); // pre tag:W3
-  requires Writes[o]; // pre tag:W4
-  modifies Heap, Writes;
-  ensures is_wrapped(Heap, o);
-  ensures (forall o': ref :: old(Heap[o, owns][o']) ==> Heap[o', owner] == o);
-  ensures (forall <T> o': ref, f: Field T :: !(o' == o && f == closed) && !(old(Heap[o, owns][o']) && f == owner) ==> Heap[o', f] == old(Heap[o', f]));
-  ensures Set#Equal(Writes, old(Set#Difference(Writes, Heap[o, owns])));
-
-
+	requires is_open(Heap, o); // pre tag:W1
+	requires user_inv(Heap, o); // pre tag:W2
+	requires (forall o': ref :: Heap[o, owns][o'] ==> is_wrapped(Heap, o') && Writes[o']); // pre tag:W3
+	requires Writes[o]; // pre tag:W4
+	modifies Heap, Writes;
+	ensures is_wrapped(Heap, o);
+	ensures (forall o': ref :: old(Heap[o, owns][o']) ==> Heap[o', owner] == o);
+	ensures (forall <T> o': ref, f: Field T :: !(o' == o && f == closed) && !(old(Heap[o, owns][o']) && f == owner) ==> Heap[o', f] == old(Heap[o', f]));
+	ensures Set#Equal(Writes, old(Set#Difference(Writes, Heap[o, owns])));
 
 // ----------------------------------------------------------------------
-// Features and argument types
-
-// Type for feature constants.
-type Feature;
-
-// Argument type of argument `i' of feature `f' of type `t'.
-function argument_type(t: Type, f: Feature, i: int) returns (Type);
-
-// ----------------------------------------------------------------------
-// Helper functions
+// Attached/Detachable functions
 
 // Property that reference `o' is attached to an object of type `t' on heap `heap'.
-function attached(heap: HeapType, o: ref, t: Type) returns (bool) {
-	(o != Void) && (heap[o, allocated]) && (type_of(o) == t)
+function attached_exact(heap: HeapType, o: ref, t: Type) returns (bool) {
+	(o != Void) && (heap[o, allocated]) && (heap[o, initialized]) && (type_of(o) == t)
 }
 
 // Property that reference `o' is attached and conforms to type `t' on heap `heap'.
-function attached_conform(heap: HeapType, o: ref, t: Type) returns (bool) {
-	(o != Void) && (heap[o, allocated]) && (type_of(o) <: t)
+function attached(heap: HeapType, o: ref, t: Type) returns (bool) {
+	(o != Void) && (heap[o, allocated]) && (heap[o, initialized]) && (type_of(o) <: t)
 }
 
 // Property that reference `o' is either Void or attached and conforms to `t' on heap `heap'.
 function detachable(heap: HeapType, o: ref, t: Type) returns (bool) {
-	(o == Void) || (attached_conform(heap, o, t))
+	(o == Void) || (attached(heap, o, t))
 }
 
 // Property that field `f' is of attached type `t'.
 function attached_attribute(heap: HeapType, o: ref, f: Field ref, t: Type) returns (bool) {
-	true
-//	((o != Void) && (heap[o, allocated]) && (heap[o, $initialized])) ==> (attached(heap, heap[o, f], t))
+	(o != Void) && (heap[o, allocated]) && (heap[o, initialized]) ==> attached(heap, heap[o, f], t)
 }
 
 // Property that field `f' is of detachable type `t'.
 function detachable_attribute(heap: HeapType, o: ref, f: Field ref, t: Type) returns (bool) {
-	true
-//	((o != Void) && (heap[o, allocated]) && (heap[o, $initialized])) ==> (detachable(heap, heap[o, f], t))
+	(o != Void) && (heap[o, allocated]) && (heap[o, initialized]) ==> detachable(heap, heap[o, f], t)
 }
 
-
-
-procedure allocate(t: Type) returns (result: ref);
-	modifies Heap, Writes;
-	ensures !old(Heap[result, allocated]);
-	ensures Heap[result, allocated];
-	ensures result != Void;
-	ensures type_of(result) == t;
-	ensures is_open(Heap, result);
-	ensures Heap[result, owner] == Void;
-	ensures Set#Equal(Heap[result, dependents], Set#Empty());
-	ensures Writes == old(Set#UnionOne(Writes, result));
-	ensures (forall <T> o: ref, f: Field T :: o != result ==> Heap[o, f] == old(Heap[o, f]));
-
-
-
-
-
-
+// ----------------------------------------------------------------------
+// Basic types
 
 // Integer boxing
 

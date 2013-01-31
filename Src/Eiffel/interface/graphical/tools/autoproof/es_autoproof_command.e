@@ -1,6 +1,9 @@
 note
 	description: "[
-		TODO
+		Command to launch AutoProof.
+		
+		Can be added to toolbars and menus.
+		Can be executed using stones.
 	]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -193,7 +196,6 @@ feature {NONE} -- Basic operations
 		do
 			l_tool := proof_tool
 			if l_tool /= Void and then not l_tool.is_recycled then
-						-- Force tool to be shown
 				l_tool.show (True)
 			end
 		end
@@ -429,8 +431,6 @@ feature {NONE} -- Implementation
 
 	drop_down_menu: EV_MENU is
 			-- Drop down menu for `new_sd_toolbar_item'.
-		local
-			l_item: EV_CHECK_MENU_ITEM
 		once
 			create Result
 			Result.extend (proof_current_item_item)
@@ -484,7 +484,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

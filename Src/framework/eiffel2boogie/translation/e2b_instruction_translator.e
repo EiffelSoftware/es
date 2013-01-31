@@ -174,8 +174,7 @@ feature -- Processing
 				create {IV_HEAP_ACCESS} l_target.make (
 					entity_mapping.heap.name,
 					entity_mapping.current_entity,
-					create {IV_ENTITY}.make (name_translator.boogie_name_for_feature (l_feature, current_type),
-					types.generic_type)
+					create {IV_ENTITY}.make (name_translator.boogie_name_for_feature (l_feature, current_type), types.generic_type)
 				)
 			else
 				check should_never_happen: False end

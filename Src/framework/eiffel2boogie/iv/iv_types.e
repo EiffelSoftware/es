@@ -52,6 +52,12 @@ feature -- Access: default types
 			create {IV_FIELD_TYPE} Result.make (a_content_type)
 		end
 
+	set (a_content_type: IV_TYPE): IV_TYPE
+			-- Set type that has content of type `a_content_type'.
+		do
+			create {IV_SET_TYPE} Result.make (a_content_type)
+		end
+
 	generic_type: IV_TYPE
 			-- Generic type.
 		once
