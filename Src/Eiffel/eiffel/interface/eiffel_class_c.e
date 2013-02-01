@@ -276,7 +276,7 @@ feature -- Action
 
 				-- Check if the file to parse is readable
 			if not file.is_open_read then
-					-- Need to check for existance for the quick melt operation
+					-- Need to check for existence for the quick melt operation
 					-- since it doesn't remove unused classes.
 				create vd21
 				vd21.set_cluster (cluster)
@@ -710,7 +710,7 @@ feature -- Third pass: byte code production and type check
 										not feature_i.is_attribute and then
 										not feature_i.is_constant
 									then
-											-- Make it dependant on `default_rescue'
+											-- Make it dependent on `default_rescue'
 										create def_resc_depend.make (class_id, def_resc)
 										f_suppliers.extend (def_resc_depend)
 									end

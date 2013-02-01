@@ -103,7 +103,7 @@ feature {EV_ANY_I} -- Access
 	is_homogeneous: BOOLEAN
 			-- Are all the cells equal in size ?
 			--| Gtk does not allow you to set the homogenuity of the
-			--| Columns seperately from that of the rows.
+			--| Columns separately from that of the rows.
 			--| We provide the same behaviour for this implementation.
 
 	border_width: INTEGER
@@ -1110,7 +1110,7 @@ feature {NONE} -- Implementation
 			if Result = Void and is_sensitive then
 					-- Otherwise iterate through children and search each but only if
 					-- we are sensitive. In the case of a non-sensitive container, no
-					-- children should recieve the tab stop.
+					-- children should receive the tab stop.
 				l_item_list := item_list
 				from
 					l_item_list.go_i_th (search_pos)

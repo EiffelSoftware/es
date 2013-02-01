@@ -43,6 +43,32 @@ feature -- Initialization
 			set_fixed_width (15)
 		end
 
+feature -- Minimum size
+
+   	set_default_minimum_size
+   			-- Platform dependent initializations.
+   		do
+			internal_set_minimum_width ({NS_SCROLLER}.scroller_width)
+ 		end
+
+	cocoa_set_size (a_x_position, a_y_position, a_width, a_height: INTEGER_32)
+			-- Make sure the width of the scrollbar stays the same - just center it in the available space.
+		local
+			l_x_position: INTEGER
+			l_width: INTEGER
+			l_scroller_width: INTEGER
+		do
+			l_scroller_width := {NS_SCROLLER}.scroller_width
+			if a_width <= l_scroller_width then
+				l_x_position := a_x_position
+				l_width := a_width
+			else
+				l_x_position := a_x_position + ((a_width - l_scroller_width) // 2)
+				l_width := l_scroller_width
+			end
+			Precursor {EV_SCROLL_BAR_IMP} (l_x_position, a_y_position, l_width, a_height)
+		end
+
 feature {EV_ANY, EV_ANY_I} -- Implementation
 
 	interface: detachable EV_VERTICAL_SCROLL_BAR note option: stable attribute end;

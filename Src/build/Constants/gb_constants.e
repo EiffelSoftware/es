@@ -188,7 +188,7 @@ feature -- Generation constants
 
 	build_tag: STRING
 			-- `Result' is tag used in templates
-			-- for building of the widget heirarchy.
+			-- for building of the widget hierarchy.
 		once
 			Result := "<BUILD>"
 		end
@@ -590,12 +590,6 @@ feature -- Miscellaneous
 
 	Directory_string: STRING = "Directory"
 		-- XML tag used to represent a directory.
-
-	Directory_seperator: CHARACTER
-			-- Seperator used for directories on current platform.
-		once
-			Result := (create {OPERATING_ENVIRONMENT}).directory_separator
-		end
 
 	maximum_supported_ascii_value: INTEGER = 127
 		-- Maximum ascii character permitted in EiffelBuild save files.

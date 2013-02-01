@@ -554,15 +554,17 @@ feature {NONE} -- Implementation
 					append_text (" value=%"")
 				end
 				from
-						-- The first item is not preceeded with any delimiter.
-						-- The second and next ones are preceeded with a space
+						-- The first item is not preceded with any delimiter.
+						-- The second and next ones are preceded with a space
 						-- that is assigned to `space_delimiter' in the loop.
 					space_delimiter := ""
 					v.start
 				until
 					v.after
 				loop
-					append_text (space_delimiter)
+					if not space_delimiter.is_empty then
+						append_text (space_delimiter)
+					end
 					append_text_escaped (get_name.item ([v.item]).as_lower)
 					space_delimiter := once " "
 					v.forth
@@ -1209,7 +1211,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

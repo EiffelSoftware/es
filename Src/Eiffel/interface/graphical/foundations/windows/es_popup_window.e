@@ -6,7 +6,7 @@ note
 		`is_focus_sensitive' and `is_pointer_sensitive'. Support actions such as `execute_unfocusing_action' can be used to prevent
 		lose of focus senstivity for focus sensitive windows.
 		
-		Also supported is the notion of window-commit and window-cancel operations. A commited window is one that is commited using `hide_commit'
+		Also supported is the notion of window-commit and window-cancel operations. A committed window is one that is committed using `hide_commit'
 		or via a widget calling `hide_commit'. `is_committed_on_close' is set based on `hide_cancel' and `hide_commit'. By default pressing CTRL+ENTER
 		will perform a commit hide. Pressing ESC or hiding due to sensitivity behavior will perform a cancel hide.
 	]"
@@ -110,7 +110,7 @@ feature {NONE} -- User interface initialization
 
 			build_window_interface (l_container)
 
-				-- Register the enter event, to ensure all contain recieve an enter action.
+				-- Register the enter event, to ensure all contain receive an enter action.
 			propagate_register_action (l_container, agent {EV_WIDGET}.pointer_enter_actions, agent
 				do
 					if not has_mouse_pointer then
@@ -675,7 +675,7 @@ feature {NONE} -- Action handlers
 		end
 
 	on_handle_key (a_key: EV_KEY; a_alt: BOOLEAN; a_ctrl: BOOLEAN; a_shift: BOOLEAN; a_released: BOOLEAN): BOOLEAN
-			-- Called when the popup window recieve a key event
+			-- Called when the popup window receive a key event
 			--
 			-- `a_key': The key pressed.
 			-- `a_alt': True if the ALT key was pressed; False otherwise
@@ -756,7 +756,7 @@ feature {NONE} -- Action handlers
 feature {NONE} -- Internal action handlers
 
 	frozen internal_on_pointer_enter
-			-- Called by the propagated action when every widget recieves a enter actions
+			-- Called by the propagated action when every widget receives a enter actions
 		require
 			is_interface_usable: is_interface_usable
 			is_initialized: is_initialized

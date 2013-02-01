@@ -803,13 +803,13 @@ feature {NONE}-- Initialization
 			find.set_text (b_find)
 			find.set_tooltip (b_find_tip_by_instance_name)
 			find.set_minimum_width (30)
-			l_ev_vertical_separator_2.set_minimum_width (seperator_width)
+			l_ev_vertical_separator_2.set_minimum_width (separator_width)
 			l_ev_label_43.set_text (lb_typ_name)
 			l_ev_label_43.align_text_left
 			type_name.set_minimum_width (140)
 			l_ev_button_1.set_text (b_find)
 			l_ev_button_1.set_tooltip (b_find_tip_by_type)
-			l_ev_vertical_separator_3.set_minimum_width (seperator_width)
+			l_ev_vertical_separator_3.set_minimum_width (separator_width)
 			find_refers.set_text (b_find_referers)
 			l_ev_horizontal_box_9.set_minimum_height (27)
 			l_ev_horizontal_box_9.set_padding_width (padding_width)
@@ -827,7 +827,7 @@ feature {NONE}-- Initialization
 			zoom.set_value (50)
 			l_ev_vertical_separator_4.set_minimum_width (10)
 			arrange_circle.set_text (b_arrange_circle)
-			l_ev_vertical_separator_5.set_minimum_width (seperator_width)
+			l_ev_vertical_separator_5.set_minimum_width (separator_width)
 			clear_graph.set_text (b_clear_graph)
 			set_title (wnd_memory_analyzer)
 
@@ -862,7 +862,7 @@ feature {NONE}-- Initialization
 			arrange_circle.select_actions.extend (agent arrange_circle_clicked)
 			clear_graph.select_actions.extend (agent clear_graph_clicked)
 				-- Close the application when an interface close
-				-- request is recieved on `Current'. i.e. the cross is clicked.
+				-- request is received on `Current'. i.e. the cross is clicked.
 
 				-- Call `user_initialization'.
 
