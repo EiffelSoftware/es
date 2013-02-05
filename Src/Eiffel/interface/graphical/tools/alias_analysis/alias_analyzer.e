@@ -39,6 +39,8 @@ inherit
 
 	DEBUG_OUTPUT
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 	SHARED_AST_CONTEXT
 
 	SHARED_EIFFEL_PROJECT
@@ -84,7 +86,7 @@ feature -- Basic operations
 				until
 					t.after
 				loop
-					analyze_feature (t.item_for_iteration, c)
+					analyze_feature (True, t.item_for_iteration, c)
 					progress_current := progress_current + 1
 					t.forth
 				end
@@ -98,7 +100,7 @@ feature -- Basic operations
 			progress_total := 0
 			output_agent := output
 			prepare_analysis (c)
-			analyze_feature (f, c)
+			analyze_feature (True, f, c)
 			report_result
 		end
 
@@ -141,9 +143,6 @@ feature {NONE} -- Analysis
 
 	prepare_analysis (c: CLASS_C)
 			-- Prepare analyzer to process `c'.
-		local
-			s: GENERIC_SKELETON
-			i: like {GENERIC_SKELETON}.count
 		do
 			start_time.make_now_utc
 			context.initialize (c, c.actual_type)
@@ -164,20 +163,6 @@ feature {NONE} -- Analysis
 			-- context.add_keeper (keeper)
 				-- Initialize attribute information.
 			modified_attributes.wipe_out
-			from
-				s := c.skeleton
-				i := s.count
-			until
-				i <= 0
-			loop
-				if attached c.feature_of_feature_id (s [i].feature_id) as a then
-						-- Register an attribute `a' in a dictionary.
-					register_attribute (a, c)
-						-- Assume that the attribute can be aliased to anything
-					keeper.relation.add_any (last_item)
-				end
-				i := i - 1
-			end
 			dictionary.add_current
 			target := dictionary.last_added
 			is_done := False
@@ -199,7 +184,7 @@ feature {NONE} -- Analysis
 			)).launch
 		end
 
-	analyze_feature (f: FEATURE_I; c: CLASS_C)
+	analyze_feature (is_root: BOOLEAN; f: FEATURE_I; c: CLASS_C)
 			-- Perform analysis on the feature `f' from the class `c'.
 		local
 			q: BOOLEAN
@@ -207,6 +192,8 @@ feature {NONE} -- Analysis
 			old_current_feature: FEATURE_I
 			old_written_class: CLASS_C
 			old_locals: like {AST_CONTEXT}.locals
+			s: GENERIC_SKELETON
+			i: like {GENERIC_SKELETON}.count
 		do
 			update
 			old_current_class := context.current_class
@@ -219,6 +206,33 @@ feature {NONE} -- Analysis
 			context.set_written_class (f.written_class)
 			bodies.put (f.body_index)
 			type_checker.type_check_only (f, True, f.written_in /= c.class_id, f.is_replicated)
+				-- Check if attributes need to be initialized.
+			if is_root then
+					-- Check if the current feature is a creation procedure.
+				if
+	--				is_creation_checked and then
+					attached c.creators as creators and then creators.has (f.feature_name) or else
+					c.creation_feature /= Void and then c.creation_feature.feature_id = f.feature_id
+				then
+						-- Attributes are set to the default values.
+				else
+						-- Attributes can be set to anything.
+					from
+						s := c.skeleton
+						i := s.count
+					until
+						i <= 0
+					loop
+						if attached c.feature_of_feature_id (s [i].feature_id) as a then
+								-- Register an attribute `a' in a dictionary.
+							register_attribute (a, c)
+								-- Assume that the attribute can be aliased to anything
+							keeper.relation.add_any (last_item)
+						end
+						i := i - 1
+					end
+				end
+			end
 			add_locals
 			q := is_qualified
 			is_qualified := False
@@ -299,6 +313,9 @@ feature {NONE} -- Visitor
 						if f.is_attribute then
 								-- Attribute.
 							if not f.type.is_expanded then
+								if f.type.is_initialization_required and then attached {ATTRIBUTE_I} f as r and then r.has_body and then not bodies.has (r.body_index) then
+									analyze_feature (False, f, context.current_class)
+								end
 								register_attribute (f, context.current_class)
 							else
 								last_item := dictionary.non_void_index
@@ -334,7 +351,7 @@ feature {NONE} -- Visitor
 								record_node_alias_before (keeper.relation, a, context.written_class, context.current_feature, context.current_class)
 									-- TODO: process arguments.
 									-- Recurse only when alias relation before the call is different from already evaluated one.
-								analyze_feature (f, context.current_class)
+								analyze_feature (False, f, context.current_class)
 									-- Record  alias relation after the call.
 								record_node_alias_after (keeper.relation, a, context.written_class, context.current_feature, context.current_class)
 							end
@@ -376,7 +393,7 @@ feature {NONE} -- Visitor
 									-- Replace current relation "A" with "t'.A".
 								keeper.relation.copy (keeper.relation.mapped (agent qualified (dictionary.last_added, ?)))
 									-- TODO: process arguments.
-								analyze_feature (f, c)
+								analyze_feature (False, f, c)
 									-- Replace current relation "A" with "t.A".
 								keeper.relation.copy (keeper.relation.mapped (agent qualified (t, ?)))
 								target := old_target
@@ -1063,46 +1080,49 @@ feature {NONE} -- Alias relation update
 					across
 						ta as x
 					loop
-							-- 1) ... for every [t.a, u] add [x.a, u]
-						across
-							d.prefixed (t) as tp
-						loop
-							if attached table [tp.item] as tpa then
-								across
-									tpa as u
-								loop
-									d.add_qualification (x.item, d.suffix (t, tp.item))
-									if dictionary.is_overqualified then
-										q.add_any (d.last_added)
+							-- ... except for [t, Void] and [t, NonVoid] and ...
+						if x.item /= d.non_void_index and then x.item /= d.void_index then
+								-- 1) ... for every [t.a, u] add [x.a, u]
+							across
+								d.prefixed (t) as tp
+							loop
+								if attached table [tp.item] as tpa then
+									across
+										tpa as u
+									loop
+										d.add_qualification (x.item, d.suffix (t, tp.item))
+										if dictionary.is_overqualified then
+											q.add_any (d.last_added)
+										end
+										q.add_pair (d.last_added, u.item)
 									end
-									q.add_pair (d.last_added, u.item)
 								end
 							end
-						end
-							-- 2) ... [x.a, u] add [t.a, u]
-						across
-							d.prefixed (x.item) as xp
-						loop
-							if attached table [xp.item] as xpa then
-								across
-									xpa as u
-								loop
-									d.add_qualification (t, d.suffix (x.item, xp.item))
-									if dictionary.is_overqualified then
-										q.add_any (d.last_added)
+								-- 2) ... [x.a, u] add [t.a, u]
+							across
+								d.prefixed (x.item) as xp
+							loop
+								if attached table [xp.item] as xpa then
+									across
+										xpa as u
+									loop
+										d.add_qualification (t, d.suffix (x.item, xp.item))
+										if dictionary.is_overqualified then
+											q.add_any (d.last_added)
+										end
+										q.add_pair (d.last_added, u.item)
 									end
-									q.add_pair (d.last_added, u.item)
 								end
 							end
-						end
-							-- 3) ... when s = t.a.u add [t.a, x.a]
-						n := d.next_prefix (t, s)
-						if d.has_index (n) then
-							d.add_qualification (x.item, d.suffix (t, n))
-							if dictionary.is_overqualified then
-								q.add_any (d.last_added)
+								-- 3) ... when s = t.a.u add [t.a, x.a]
+							n := d.next_prefix (t, s)
+							if d.has_index (n) then
+								d.add_qualification (x.item, d.suffix (t, n))
+								if dictionary.is_overqualified then
+									q.add_any (d.last_added)
+								end
+								q.add_pair (n, d.last_added)
 							end
-							q.add_pair (n, d.last_added)
 						end
 					end
 					r.add_relation (q)
