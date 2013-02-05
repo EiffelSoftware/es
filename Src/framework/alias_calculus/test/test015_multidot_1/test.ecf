@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-10-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-10-0 http://www.eiffel.com/developers/xml/configuration-1-10-0.xsd" name="test">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-10-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-10-0 http://www.eiffel.com/developers/xml/configuration-1-10-0.xsd" name="test" uuid="2279FA3B-2376-4350-9DAE-8891892910EF">
 	<target name="test">
 		<root class="TEST" feature="make"/>
-		<option warning="true" is_attached_by_default="true" void_safety="all" is_void_safe="true"/>
+		<option warning="true" full_class_checking="true" is_attached_by_default="true" void_safety="all" is_void_safe="true">
+		</option>
 		<setting name="console_application" value="true"/>
 		<precompile name="base_pre" location="$ISE_PRECOMP\base-safe.ecf"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
+		<cluster name="test" location=".\"/>
+	</target>
+	<target name="test_no_pre">
+		<root class="TEST" feature="make"/>
+		<option warning="true" full_class_checking="true" void_safety="all">
+		</option>
+		<setting name="console_application" value="true"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
 		<cluster name="test" location=".\"/>
 	</target>

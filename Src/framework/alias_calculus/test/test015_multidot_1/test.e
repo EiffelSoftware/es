@@ -12,6 +12,8 @@ feature {NONE} -- Creation
 			a := b
 			z := x.a
 			x := x.a
+			x := x
+			y := y
 		end
 
 feature -- State
