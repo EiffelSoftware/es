@@ -624,7 +624,9 @@ feature -- Visitors
 			l_feature: FEATURE_B
 			l_call: IV_FUNCTION_CALL
 			l_info: IV_ASSERTION_INFORMATION
+			l_handler: E2B_CUSTOM_NESTED_HANDLER
 		do
+			l_handler := translation_mapping.handler_for_nested (a_node)
 			l_object_test_local ?= a_node.target
 			if l_object_test_local /= Void and then across_handler_map.has (l_object_test_local.position) then
 					-- Special mapping of object test local in across loop
@@ -637,6 +639,17 @@ feature -- Visitors
 				elseif l_feature.feature_name.is_case_insensitive_equal ("after") then
 					l_across_handler.handle_call_after (Void)
 				else
+					last_expression := dummy_node (a_node.type)
+				end
+			elseif l_handler /= Void then
+				if attached {E2B_BODY_EXPRESSION_TRANSLATOR} Current as t then
+					l_handler.handle_nested_in_body (t, a_node)
+				elseif attached {E2B_CONTRACT_EXPRESSION_TRANSLATOR} Current as t then
+					l_handler.handle_nested_in_contract (t, a_node)
+				else
+					check False end
+				end
+				if last_expression = Void then
 					last_expression := dummy_node (a_node.type)
 				end
 			else
@@ -714,10 +727,23 @@ feature -- Visitors
 				last_expression := factory.not_equal (l_expr, factory.void_)
 			else
 				check attached a_node.info end
-				l_type_check := factory.sub_type (factory.type_of (l_expr), factory.type_value (a_node.info.type_to_create))
+					-- Normalize integer types
+				if a_node.info.type_to_create.is_integer or a_node.info.type_to_create.is_natural then
+					l_type_check := factory.sub_type (factory.type_of (l_expr), create {IV_ENTITY}.make ("INTEGER", types.type))
+				else
+					l_type_check := factory.sub_type (factory.type_of (l_expr), factory.type_value (a_node.info.type_to_create))
+				end
 				last_expression := factory.and_ (factory.not_equal (l_expr, factory.void_), l_type_check)
 			end
 			if attached a_node.target then
+					-- Check for possible unboxing of basic types
+				if a_node.expression.type.is_reference then
+					if a_node.target.type.is_boolean then
+						l_expr := factory.function_call ("unboxed_bool", << l_expr >>, types.bool)
+					elseif a_node.target.type.is_integer or a_node.target.type.is_natural then
+						l_expr := factory.function_call ("unboxed_int", << l_expr >>, types.int)
+					end
+				end
 				locals_map.force (l_expr, a_node.target.position)
 			end
 		end
@@ -938,27 +964,6 @@ feature {E2B_ACROSS_HANDLER} -- Implementation
 				create {IV_VALUE} Result.make ("Unknown", types.generic_type)
 			else
 				create {IV_VALUE} Result.make ("Void", types.ref)
-			end
-		end
-
-feature {NONE} -- Special mapping: ARRAY
-
-	process_array_routine (a_translator: E2B_EXPRESSION_TRANSLATOR; a_type: TYPE_A; a_feature: FEATURE_I; a_params: BYTE_LIST [PARAMETER_B])
-			-- Processing for array routines.
-		local
-			l_name: STRING
-		do
-			l_name := a_feature.feature_name
-			if l_name ~ "make" then
-
-			elseif l_name ~ "put" then
-
-			elseif l_name ~ "item" then
-
-			elseif l_name ~ "count" then
-
-			elseif l_name ~ "is_empty" then
-
 			end
 		end
 

@@ -20,6 +20,8 @@ feature {NONE} -- Initialization
 			call_handlers.extend (create {E2B_CUSTOM_OWNERSHIP_HANDLER})
 			call_handlers.extend (create {E2B_CUSTOM_ARRAY_CALL_HANDLER})
 			call_handlers.extend (create {E2B_CUSTOM_INTEGER_CALL_HANDLER})
+			create {LINKED_LIST [E2B_CUSTOM_NESTED_HANDLER]} nested_handlers.make
+			nested_handlers.extend (create {E2B_CUSTOM_OWNERSHIP_HANDLER})
 		end
 
 feature -- Access
@@ -39,6 +41,24 @@ feature -- Access
 					Result := call_handlers.item
 				end
 				call_handlers.forth
+			end
+		end
+
+	nested_handlers: LIST [E2B_CUSTOM_NESTED_HANDLER]
+			-- List of custom nested handlers.
+
+	handler_for_nested (a_nested: NESTED_B): detachable E2B_CUSTOM_NESTED_HANDLER
+			-- Custom handler for `a_nested' (if any).
+		do
+			from
+				nested_handlers.start
+			until
+				nested_handlers.after or attached Result
+			loop
+				if nested_handlers.item.is_handling_nested (a_nested) then
+					Result := nested_handlers.item
+				end
+				nested_handlers.forth
 			end
 		end
 

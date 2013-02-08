@@ -54,6 +54,16 @@ feature -- Basic operations
 			end
 		end
 
+	translate_invariant_function (a_type: TYPE_A)
+			-- Translate `a_type' to Boogie.
+		require
+			valid_type: a_type.is_class_valid
+			no_like_type: not a_type.is_like
+		local
+		do
+
+		end
+
 feature {NONE} -- Implementation
 
 	generate_inheritance_relations (a_type: TYPE_A)

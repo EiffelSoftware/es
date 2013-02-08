@@ -149,51 +149,53 @@ feature -- Basic operations
 			l_pre.set_free
 			current_boogie_procedure.add_contract (l_pre)
 
-			create l_pre.make (factory.function_call (
-				"Set#Subset",
-				<<
-					factory.function_call (
-						name_translator.boogie_name_for_writes_set_function (current_feature, current_type),
-						<<
-							"Heap",
-							"Current"
-						>>,
-						types.set (types.ref)),
-					"Writes"
-				>>,
-				types.bool))
+			create l_fcall.make (name_translator.boogie_name_for_writes_set_function (current_feature, current_type), types.set (types.ref))
+			l_fcall.add_argument (create {IV_ENTITY}.make ("Heap", types.heap_type))
+			across current_boogie_procedure.arguments as i loop
+				l_fcall.add_argument (i.item.entity)
+			end
+			create l_pre.make (
+				factory.function_call (
+					"Set#Subset",
+					<<
+						l_fcall,
+						"Writes"
+					>>,
+					types.bool))
+			l_pre.set_assertion_type ("pre")
 			current_boogie_procedure.add_contract (l_pre)
 
 			create l_post.make (factory.function_call ("global", << "Heap", "Writes" >>, types.bool))
 			l_post.set_free
 			current_boogie_procedure.add_contract (l_post)
 
-			create l_post.make (factory.function_call (
-				"writes_changed",
-				<<
-					factory.old_ (create {IV_ENTITY}.make ("Heap", types.heap_type)),
-					create {IV_ENTITY}.make ("Heap", types.heap_type),
-					factory.old_ (create {IV_ENTITY}.make ("Writes", types.set (types.ref))),
-					create {IV_ENTITY}.make ("Writes", types.set (types.ref))
-				>>,
-				types.bool))
+			create l_post.make (
+				factory.function_call (
+					"writes_changed",
+					<<
+						factory.old_ (create {IV_ENTITY}.make ("Heap", types.heap_type)),
+						create {IV_ENTITY}.make ("Heap", types.heap_type),
+						factory.old_ (create {IV_ENTITY}.make ("Writes", types.set (types.ref))),
+						create {IV_ENTITY}.make ("Writes", types.set (types.ref))
+					>>,
+					types.bool))
 			l_post.set_free
 			current_boogie_procedure.add_contract (l_post)
 
-			create l_post.make (factory.function_call (
-				"writes",
-				<<
-					factory.old_ (create {IV_ENTITY}.make ("Heap", types.heap_type)),
-					create {IV_ENTITY}.make ("Heap", types.heap_type),
-					factory.function_call (
-						name_translator.boogie_name_for_writes_set_function (current_feature, current_type),
-						<<
-							factory.old_ (create {IV_ENTITY}.make ("Heap", types.heap_type)),
-							create {IV_ENTITY}.make ("Current", types.ref)
-						>>,
-						types.set (types.ref))
-				>>,
-				types.bool))
+			create l_fcall.make (name_translator.boogie_name_for_writes_set_function (current_feature, current_type), types.set (types.ref))
+			l_fcall.add_argument (factory.old_ (create {IV_ENTITY}.make ("Heap", types.heap_type)))
+			across current_boogie_procedure.arguments as i loop
+				l_fcall.add_argument (i.item.entity)
+			end
+			create l_post.make (
+				factory.function_call (
+					"writes",
+					<<
+						factory.old_ (create {IV_ENTITY}.make ("Heap", types.heap_type)),
+						create {IV_ENTITY}.make ("Heap", types.heap_type),
+						l_fcall
+					>>,
+					types.bool))
 			l_post.set_free
 			current_boogie_procedure.add_contract (l_post)
 			translation_pool.add_writes_function (current_feature, current_type)
@@ -211,7 +213,7 @@ feature -- Basic operations
 			create l_heap_access.make ("Heap", create {IV_ENTITY}.make ("Current", types.ref), create {IV_ENTITY}.make ("dependents", types.set (types.ref)))
 			create l_pre.make (factory.equal (
 				l_heap_access,
-				factory.function_call ("Set#Empty", <<>>, types.set (types.ref))))
+				factory.function_call ("Set#Empty", Void, types.set (types.ref))))
 			current_boogie_procedure.add_contract (l_pre)
 
 			create l_post.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
@@ -220,11 +222,18 @@ feature -- Basic operations
 		end
 
 	add_ownership_conditions_for_public
+		local
+			l_pre: IV_PRECONDITION
+			l_post: IV_POSTCONDITION
 		do
+			create l_pre.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
+			l_pre.set_assertion_type ("pre")
+			current_boogie_procedure.add_contract (l_pre)
 
+			create l_post.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
+			l_post.set_assertion_type ("post")
+			current_boogie_procedure.add_contract (l_post)
 		end
-
-
 
 	translate_routine_implementation (a_feature: FEATURE_I; a_type: TYPE_A)
 			-- Translate implementation of feature `a_feature' of type `a_type'.

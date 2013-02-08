@@ -157,13 +157,15 @@ feature -- Functions
 			-- Function call to `a_function_name' with arguments `a_arguments'.
 		do
 			create Result.make (a_function_name, a_result_type)
-			across a_arguments as i loop
-				if attached {STRING} i.item as s then
-					Result.add_argument (create {IV_ENTITY}.make (s, types.generic_type))
-				elseif attached {IV_EXPRESSION} i.item as e then
-					Result.add_argument (e)
-				else
-					check False end
+			if attached a_arguments then
+				across a_arguments as i loop
+					if attached {STRING} i.item as s then
+						Result.add_argument (create {IV_ENTITY}.make (s, types.generic_type))
+					elseif attached {IV_EXPRESSION} i.item as e then
+						Result.add_argument (e)
+					else
+						check False end
+					end
 				end
 			end
 		end

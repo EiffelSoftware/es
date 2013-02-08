@@ -174,7 +174,7 @@ feature -- Processing
 				create {IV_HEAP_ACCESS} l_target.make (
 					entity_mapping.heap.name,
 					entity_mapping.current_entity,
-					create {IV_ENTITY}.make (name_translator.boogie_name_for_feature (l_feature, current_type), types.generic_type)
+					create {IV_ENTITY}.make (name_translator.boogie_name_for_feature (l_feature, current_type), types.field (types.for_type_a (l_feature.type)))
 				)
 			else
 				check should_never_happen: False end
@@ -183,6 +183,15 @@ feature -- Processing
 				-- Create source node
 			process_expression (a_node.source)
 			l_source := last_expression
+
+				-- Check for possible boxing of basic types
+			if a_node.target.type.is_reference then
+				if a_node.source.type.is_boolean then
+					l_source := factory.function_call ("boxed_bool", << l_source >>, types.ref)
+				elseif a_node.source.type.is_integer or a_node.source.type.is_natural then
+					l_source := factory.function_call ("boxed_int", << l_source >>, types.ref)
+				end
+			end
 
 				-- Create assignment node
 			create l_assignment.make (l_target, l_source)

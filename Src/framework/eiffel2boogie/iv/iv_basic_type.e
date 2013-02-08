@@ -66,8 +66,10 @@ feature {NONE} -- Initialization
 			-- Make this a heap type.
 		do
 			is_heap := True
+			is_map := True
 		ensure
 			is_heap: is_heap
+			is_map: is_map
 		end
 
 feature -- Visitor

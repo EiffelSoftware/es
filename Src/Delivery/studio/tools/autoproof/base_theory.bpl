@@ -75,7 +75,6 @@ const Void: ref; // Constant for Void references
 type Field _; // Type of a field (with open subtype)
 type HeapType = <alpha>[ref, Field alpha]alpha; // Type of a heap (with generic field subtype and generic content type)
 const unique allocated: Field bool; // Ghost field for allocation status of objects
-const unique initialized: Field bool; // Ghost field for initialization status of objects
 
 // Function which defines basic properties of a heap
 function IsHeap(heap: HeapType): bool {
@@ -206,7 +205,6 @@ procedure allocate(t: Type) returns (result: ref);
 	modifies Heap, Writes;
 	ensures !old(Heap[result, allocated]);
 	ensures Heap[result, allocated];
-	ensures !Heap[result, initialized];
 	ensures result != Void;
 	ensures type_of(result) == t;
 	ensures is_open(Heap, result);
@@ -253,12 +251,12 @@ procedure wrap(o: ref);
 
 // Property that reference `o' is attached to an object of type `t' on heap `heap'.
 function attached_exact(heap: HeapType, o: ref, t: Type) returns (bool) {
-	(o != Void) && (heap[o, allocated]) && (heap[o, initialized]) && (type_of(o) == t)
+	(o != Void) && (heap[o, allocated]) && (type_of(o) == t)
 }
 
 // Property that reference `o' is attached and conforms to type `t' on heap `heap'.
 function attached(heap: HeapType, o: ref, t: Type) returns (bool) {
-	(o != Void) && (heap[o, allocated]) && (heap[o, initialized]) && (type_of(o) <: t)
+	(o != Void) && (heap[o, allocated]) && (type_of(o) <: t)
 }
 
 // Property that reference `o' is either Void or attached and conforms to `t' on heap `heap'.
@@ -268,12 +266,12 @@ function detachable(heap: HeapType, o: ref, t: Type) returns (bool) {
 
 // Property that field `f' is of attached type `t'.
 function attached_attribute(heap: HeapType, o: ref, f: Field ref, t: Type) returns (bool) {
-	(o != Void) && (heap[o, allocated]) && (heap[o, initialized]) ==> attached(heap, heap[o, f], t)
+	(o != Void) && (heap[o, allocated]) ==> attached(heap, heap[o, f], t)
 }
 
 // Property that field `f' is of detachable type `t'.
 function detachable_attribute(heap: HeapType, o: ref, f: Field ref, t: Type) returns (bool) {
-	(o != Void) && (heap[o, allocated]) && (heap[o, initialized]) ==> detachable(heap, heap[o, f], t)
+	(o != Void) && (heap[o, allocated]) ==> detachable(heap, heap[o, f], t)
 }
 
 // ----------------------------------------------------------------------
@@ -288,9 +286,9 @@ function unboxed_int(r: ref) returns (int);
 
 axiom (forall i: int :: unboxed_int(boxed_int(i)) == i);
 axiom (forall i1, i2: int :: (i1 == i2) ==> (boxed_int(i1) == boxed_int(i2)));
-axiom (forall heap: HeapType, i: int, r: ref :: (r == boxed_int(i)) ==> attached(heap, r, INTEGER));
-axiom (forall heap: HeapType, r: ref :: attached(heap, r, INTEGER) ==> boxed_int(unboxed_int(r)) == r);
-axiom (forall heap: HeapType, r1, r2: ref :: (attached(heap, r1, INTEGER) && attached(heap, r2, INTEGER)) ==> (unboxed_int(r1) == unboxed_int(r2) ==> (r1 == r2)));
+axiom (forall i: int :: boxed_int(i) != Void && type_of(boxed_int(i)) == INTEGER);
+axiom (forall heap: HeapType, i: int :: heap[boxed_int(i), allocated]);
+
 
 // Boolean boxing
 
@@ -306,9 +304,10 @@ axiom (boxed_bool(false) == boxed_false);
 axiom (unboxed_bool(boxed_true) == true);
 axiom (unboxed_bool(boxed_false) == false);
 axiom (boxed_true != boxed_false);
-axiom (forall heap: HeapType :: attached(heap, boxed_true, BOOLEAN));
-axiom (forall heap: HeapType :: attached(heap, boxed_false, BOOLEAN));
-axiom (forall heap: HeapType, r: ref :: attached(heap, r, BOOLEAN) <==> (r == boxed_true || r == boxed_false));
+axiom (boxed_true != Void && type_of(boxed_true) == BOOLEAN);
+axiom (boxed_false != Void && type_of(boxed_false) == BOOLEAN);
+axiom (forall heap: HeapType :: heap[boxed_true, allocated]);
+axiom (forall heap: HeapType :: heap[boxed_false, allocated]);
 
 // Bounded integers
 
@@ -340,7 +339,39 @@ function is_natural_64(i: int) returns (bool) {
 	(0 <= i) && (i <= 18446744073709551615)
 }
 
-// Conversion from real to bounded integers
+// Numeric conversions
+
+function int_to_integer_8(i: int) returns (int);
+axiom (forall i: int :: { int_to_integer_8(i) } is_integer_8(i) ==> int_to_integer_8(i) == i);
+axiom (forall i: int :: { int_to_integer_8(i) } is_integer_8(int_to_integer_8(i)));
+
+function int_to_integer_16(i: int) returns (int);
+axiom (forall i: int :: { int_to_integer_16(i) } is_integer_16(i) ==> int_to_integer_16(i) == i);
+axiom (forall i: int :: { int_to_integer_16(i) } is_integer_16(int_to_integer_16(i)));
+
+function int_to_integer_32(i: int) returns (int);
+axiom (forall i: int :: { int_to_integer_32(i) } is_integer_32(i) ==> int_to_integer_32(i) == i);
+axiom (forall i: int :: { int_to_integer_32(i) } is_integer_32(int_to_integer_32(i)));
+
+function int_to_integer_64(i: int) returns (int);
+axiom (forall i: int :: { int_to_integer_64(i) } is_integer_64(i) ==> int_to_integer_64(i) == i);
+axiom (forall i: int :: { int_to_integer_64(i) } is_integer_64(int_to_integer_64(i)));
+
+function int_to_natural_8(i: int) returns (int);
+axiom (forall i: int :: { int_to_natural_8(i) } is_natural_8(i) ==> int_to_natural_8(i) == i);
+axiom (forall i: int :: { int_to_natural_8(i) } is_natural_8(int_to_natural_8(i)));
+
+function int_to_natural_16(i: int) returns (int);
+axiom (forall i: int :: { int_to_natural_16(i) } is_natural_16(i) ==> int_to_natural_16(i) == i);
+axiom (forall i: int :: { int_to_natural_16(i) } is_natural_16(int_to_natural_16(i)));
+
+function int_to_natural_32(i: int) returns (int);
+axiom (forall i: int :: { int_to_natural_32(i) } is_natural_32(i) ==> int_to_natural_32(i) == i);
+axiom (forall i: int :: { int_to_natural_32(i) } is_natural_32(int_to_natural_32(i)));
+
+function int_to_natural_64(i: int) returns (int);
+axiom (forall i: int :: { int_to_natural_64(i) } is_natural_64(i) ==> int_to_natural_64(i) == i);
+axiom (forall i: int :: { int_to_natural_64(i) } is_natural_64(int_to_natural_64(i)));
 
 function real_to_integer_32(r: real) returns (int);
 axiom (forall r: real :: { real_to_integer_32(r) } is_integer_32(int(r)) ==> real_to_integer_32(r) == int(r));
@@ -351,35 +382,6 @@ function real_to_integer_64(r: real) returns (int);
 axiom (forall r: real :: { real_to_integer_64(r) } is_integer_64(int(r)) ==> real_to_integer_64(r) == int(r));
 axiom (forall r: real :: { real_to_integer_64(r) } (!is_integer_64(int(r)) && r < 0.0) ==> real_to_integer_64(r) == -9223372036854775808);
 axiom (forall r: real :: { real_to_integer_64(r) } (!is_integer_64(int(r)) && r > 0.0) ==> real_to_integer_64(r) ==  9223372036854775807);
-
-procedure REAL_32.truncated_to_integer_32(arg: real) returns (result: int);
-	ensures result == real_to_integer_32(arg);
-
-procedure REAL_32.truncated_to_integer_64(arg: real) returns (result: int);
-	ensures result == real_to_integer_64(arg);
-
-procedure REAL_64.truncated_to_integer_32(arg: real) returns (result: int);
-	ensures result == real_to_integer_32(arg);
-
-procedure REAL_64.truncated_to_integer_64(arg: real) returns (result: int);
-	ensures result == real_to_integer_64(arg);
-
-// Conversion from integers to reals
-
-procedure INTEGER_32.to_double(arg: int) returns (result: real);
-	ensures result == real(arg);
-
-procedure INTEGER_64.to_double(arg: int) returns (result: real);
-	ensures result == real(arg);
-
-// Strings
-
-const unique STRING_8: Type;
-
-procedure create_manifest_string(size: int) returns (result: ref);
-	requires size >= 0;
-	ensures result != Void;
-	ensures attached(Heap, result, STRING_8);
 
 // Expanded types
 

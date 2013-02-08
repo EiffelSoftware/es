@@ -13,6 +13,8 @@ inherit
 	IV_MAP_ACCESS
 		rename
 			make as make_map
+		redefine
+			type
 		end
 
 create
@@ -25,9 +27,20 @@ feature {NONE} -- Initialization
 		local
 			l_entity: IV_ENTITY
 		do
-				-- TODO: correct type
-			create l_entity.make (a_heap_name, create {IV_GENERIC_TYPE}.make)
+			create l_entity.make (a_heap_name, types.heap_type)
 			make_two (l_entity, a_object, a_field)
+		end
+
+feature -- Access
+
+	type: IV_TYPE
+			-- <Precursor>.
+		do
+			if attached {IV_FIELD_TYPE} indexes.i_th (2) as l_field then
+				Result := l_field.content_type
+			else
+				Result := types.generic_type
+			end
 		end
 
 end

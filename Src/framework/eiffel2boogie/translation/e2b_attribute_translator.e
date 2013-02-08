@@ -42,6 +42,7 @@ feature -- Basic operations
 				create l_op.make (l_value1, "==", l_value2, types.bool)
 				create l_axiom.make (l_op)
 				boogie_universe.add_declaration (l_axiom)
+				translation_pool.add_referenced_feature (a_feature, a_feature.written_class.actual_type)
 			end
 
 			if a_feature.type.is_reference then

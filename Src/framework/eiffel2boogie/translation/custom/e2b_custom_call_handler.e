@@ -19,24 +19,11 @@ inherit
 
 	INTERNAL_COMPILER_STRING_EXPORTER
 
-feature -- Access
-
-	expression_translator: E2B_EXPRESSION_TRANSLATOR
-			-- Expression translator for this handler.
-
 feature -- Status report
 
 	is_handling_call (a_target_type: TYPE_A; a_feature: FEATURE_I): BOOLEAN
 			-- Is this handler handling the call?
 		deferred
-		end
-
-feature -- Element change
-
-	set_translator (a_translator: E2B_EXPRESSION_TRANSLATOR)
-			-- Initialize this handler.
-		do
-			expression_translator := a_translator
 		end
 
 feature -- Basic operations

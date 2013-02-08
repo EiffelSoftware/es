@@ -59,8 +59,6 @@ feature -- Access
 			-- Type of map.
 		do
 			Result := types.generic_type
-				-- TODO: look at map type and extract content type
---			check False end
 		end
 
 	target: IV_EXPRESSION
