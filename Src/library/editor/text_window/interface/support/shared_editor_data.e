@@ -18,37 +18,33 @@ feature -- Resources
 
 	editor_preferences: EDITOR_DATA
 			-- Editor preferences
-		require
-			initialized: initialized
-		local
-			l_result : detachable EDITOR_DATA
 		do
 			if attached editor_preferences_cell.item as l_item then
-				l_result := l_item
+				Result := l_item
 			else
-				check l_result /= Void end -- Implied by precondition
+					-- No preferences set, we create default ones
+				create Result.make (create {PREFERENCES}.make)
 			end
-			Result := l_result
 		end
 
 feature -- Query
 
 	initialized: BOOLEAN
-			--
+			-- Have preferences been set and ready to be used?
 		do
-			Result := initialized_cell.item = True and then editor_preferences_cell.item /= Void
+			Result := initialized_cell.item and then editor_preferences_cell.item /= Void
 		end
 
 feature {NONE} -- Implementation		
 
 	editor_preferences_cell: CELL [detachable EDITOR_DATA]
-			--
+			-- Storage for `editor_preferences'.
 		once
 			create Result.put (Void)
 		end
 
 	initialized_cell: CELL [BOOLEAN]
-			--
+			-- Storage for `initialized'
 		once
 			create Result.put (False)
 		end
@@ -60,14 +56,14 @@ feature {NONE} -- Implementation
 	    end
 
 note
-	copyright:	"Copyright (c) 1984-2008, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class SHARED_EDITOR_DATA

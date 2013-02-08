@@ -1728,6 +1728,7 @@ test	none-and-attachement			exec349	tcf pass execution conformance
 test	wrong-type-in-tuple				exec350	tcf pass execution tuple
 test	nested-expanded-copy-2			exec351 tcf pass execution expanded
 test	integer-is-greater-equal-seg	exec352 tcf pass execution
+test	equality-operator-semantics	exec353 tcf pass execution equality attached_types
 
 -- Once specific
 
@@ -1997,6 +1998,7 @@ test	config-4kb-config-file			config032 tcf fail config
 test	config-multiple-system-elements		config033 tcf fail config
 test	config-custom-tags-of-the-same-name			config034 tcf fail config
 test	config-variables-with-same-name			config035 tcf pass config
+test	config-library-with-uppercase	config036 tcf pass config
 
 -- Lace
 

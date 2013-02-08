@@ -117,6 +117,7 @@ feature -- Status Report
 			-- `Result' is a snapshot of `Current', and does not remain consistent as the contents
 			-- are subsequently changed.
 		do
+			check False then end
 		end
 
 	internal_character_format_range_information (start_index, end_index: INTEGER; abort_on_change: BOOLEAN; change_index: INTEGER_REF): EV_CHARACTER_FORMAT_RANGE_INFORMATION
@@ -126,7 +127,7 @@ feature -- Status Report
 			-- `Result' is a snapshot of `Current', and does not remain consistent as the contents
 			-- are subsequently changed.
 		do
-
+			check False then end
 		end
 
 	paragraph_format_range_information (start_index, end_index: INTEGER): EV_PARAGRAPH_FORMAT_RANGE_INFORMATION
@@ -136,7 +137,7 @@ feature -- Status Report
 			-- `Result' is a snapshot of `Current', and does not remain consistent as the contents
 			-- are subsequently changed.
 		do
-
+			check False then end
 		end
 
 	paragraph_format_contiguous, internal_paragraph_format_contiguous (start_position, end_position: INTEGER): BOOLEAN
@@ -164,7 +165,7 @@ feature -- Status Report
 			-- If more than one format is contained in the selection, `Result'
 			-- is the first of these formats.
 		do
-
+			check False then end
 		end
 
 	modify_region (start_position, end_position: INTEGER; format: EV_CHARACTER_FORMAT; applicable_attributes: EV_CHARACTER_FORMAT_RANGE_INFORMATION)
@@ -184,13 +185,14 @@ feature -- Status Report
 	paragraph_format, internal_paragraph_format (caret_index: INTEGER): EV_PARAGRAPH_FORMAT
 			-- `Result' is paragraph_format at caret position `caret_index'.
 		do
-
+			check False then end
 		end
 
 	selected_character_format: EV_CHARACTER_FORMAT
 			-- Format of the character which starts the selection
 		do
-
+			check False then
+			end
 		end
 
 	index_from_position (an_x_position, a_y_position: INTEGER): INTEGER
@@ -202,7 +204,7 @@ feature -- Status Report
 	position_from_index (an_index: INTEGER): EV_COORDINATE
 			-- Position of character at index `an_index'.
 		do
-
+			check False then end
 		end
 
 	character_displayed (an_index: INTEGER): BOOLEAN
@@ -224,7 +226,7 @@ feature -- Status report
 	internal_character_format (character_index: INTEGER): EV_CHARACTER_FORMAT_IMP
 			-- `Result' is character format of character `character_index'.
 		do
-
+			check False then end
 		end
 
 feature -- Status setting
@@ -329,14 +331,14 @@ feature {EV_ANY, EV_ANY_I} -- Implementation
 	interface: EV_RICH_TEXT;
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 

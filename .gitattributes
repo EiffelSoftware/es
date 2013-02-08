@@ -2936,12 +2936,6 @@ Src/examples/obsolete/editor/bitmaps/cut_selection.png -text
 Src/examples/obsolete/editor/bitmaps/icon_close_color.png -text
 Src/examples/obsolete/editor/bitmaps/left_scroll_arrow.png -text
 Src/examples/obsolete/editor/bitmaps/right_scroll_arrow.png -text
-Src/examples/obsolete/old_com/Analyzer/Client/application.ico svneol=native#unset
-Src/examples/obsolete/old_com/Analyzer/Client/toolbar.bmp svneol=native#unset
-Src/examples/obsolete/old_com/Analyzer/Server/application.ico svneol=native#unset
-Src/examples/obsolete/old_com/Compound/child.ico svneol=native#unset
-Src/examples/obsolete/old_com/Compound/compound.ico svneol=native#unset
-Src/examples/obsolete/old_com/Wordbasic/wordbasic.ico svneol=native#unset
 Src/examples/obsolete/vision2/drawing_area/car.png -text
 Src/examples/obsolete/vision2/figure/logo.png -text
 Src/examples/obsolete/vision2/grid/icon_bpdisabled.png -text
@@ -4822,6 +4816,8 @@ eweasel/tests/ccomp050/notes -text
 eweasel/tests/ccomp051/notes -text
 eweasel/tests/ccomp052/notes -text
 eweasel/tests/ccomp074/Ace -text
+eweasel/tests/config036/Ace svneol=native#text/xml
+eweasel/tests/config036/eweasel.ecf svneol=native#text/xml
 eweasel/tests/conform007/Ace -text
 eweasel/tests/dotnet018/cas.cs -text
 eweasel/tests/dotnet018/cas.dll -text
