@@ -31,6 +31,9 @@ feature -- Status report
 	is_map: BOOLEAN
 			-- Is this a map type?
 
+	is_set: BOOLEAN
+			-- Is this a set type?
+
 feature -- Visitor
 
 	process (a_visitor: IV_TYPE_VISITOR)

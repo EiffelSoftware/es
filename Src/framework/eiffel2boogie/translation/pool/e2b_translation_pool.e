@@ -100,6 +100,8 @@ feature -- Convenience functions
 		do
 			if a_type.is_formal then
 					-- Ignore formals
+			elseif a_type.is_basic then
+					-- Ignore basic types
 			else
 				add_translation_unit (create {E2B_TU_TYPE}.make (a_type))
 			end

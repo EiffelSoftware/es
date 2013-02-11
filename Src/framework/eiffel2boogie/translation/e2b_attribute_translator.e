@@ -45,34 +45,34 @@ feature -- Basic operations
 				translation_pool.add_referenced_feature (a_feature, a_feature.written_class.actual_type)
 			end
 
-			if a_feature.type.is_reference then
-				if a_feature.type.is_attached then
-					create l_call.make ("attached_attribute", types.bool)
-				else
-					create l_call.make ("detachable_attribute", types.bool)
-				end
+--			if a_feature.type.is_reference then
+--				if a_feature.type.is_attached then
+--					create l_call.make ("attached_attribute", types.bool)
+--				else
+--					create l_call.make ("detachable_attribute", types.bool)
+--				end
 
-				l_call.add_argument (create {IV_ENTITY}.make ("heap", types.heap_type))
-				l_call.add_argument (create {IV_ENTITY}.make ("o", types.ref))
-				l_call.add_argument (create {IV_ENTITY}.make (l_boogie_name, l_constant.type))
-				l_call.add_argument (factory.type_value (a_feature.type))
+--				l_call.add_argument (create {IV_ENTITY}.make ("heap", types.heap_type))
+--				l_call.add_argument (create {IV_ENTITY}.make ("o", types.ref))
+--				l_call.add_argument (create {IV_ENTITY}.make (l_boogie_name, l_constant.type))
+--				l_call.add_argument (factory.type_value (a_feature.type))
 
-				create l_forall.make (l_call)
-				l_forall.add_bound_variable ("heap", types.heap_type)
-				l_forall.add_bound_variable ("o", types.ref)
+--				create l_forall.make (l_call)
+--				l_forall.add_bound_variable ("heap", types.heap_type)
+--				l_forall.add_bound_variable ("o", types.ref)
 
-				create l_axiom.make (l_forall)
-				boogie_universe.add_declaration (l_axiom)
-			elseif a_feature.type.is_integer or a_feature.type.is_natural then
-				create l_heap_access.make ("heap", create {IV_ENTITY}.make ("o", types.ref), create {IV_ENTITY}.make (l_boogie_name, l_constant.type))
-				create l_call.make ("is_" + a_feature.type.associated_class.name.as_lower, types.bool)
-				l_call.add_argument (l_heap_access)
-				create l_forall.make (l_call)
-				l_forall.add_bound_variable ("heap", types.heap_type)
-				l_forall.add_bound_variable ("o", types.ref)
-				create l_axiom.make (l_forall)
-				boogie_universe.add_declaration (l_axiom)
-			end
+--				create l_axiom.make (l_forall)
+--				boogie_universe.add_declaration (l_axiom)
+--			elseif a_feature.type.is_integer or a_feature.type.is_natural then
+--				create l_heap_access.make ("heap", create {IV_ENTITY}.make ("o", types.ref), create {IV_ENTITY}.make (l_boogie_name, l_constant.type))
+--				create l_call.make ("is_" + a_feature.type.associated_class.name.as_lower, types.bool)
+--				l_call.add_argument (l_heap_access)
+--				create l_forall.make (l_call)
+--				l_forall.add_bound_variable ("heap", types.heap_type)
+--				l_forall.add_bound_variable ("o", types.ref)
+--				create l_axiom.make (l_forall)
+--				boogie_universe.add_declaration (l_axiom)
+--			end
 		end
 
 end

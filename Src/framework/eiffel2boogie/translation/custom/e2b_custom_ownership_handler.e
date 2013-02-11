@@ -52,7 +52,7 @@ feature -- Basic operations
 			if builtin_any_features.has (l_name) then
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
 			elseif set_access.has (l_name) then
-				a_translator.set_last_expression (factory.heap_current_access (a_translator.entity_mapping, l_name))
+				a_translator.set_last_expression (factory.heap_current_access (a_translator.entity_mapping, l_name, types.set (types.ref)))
 			else
 				check set_setter.has (l_name) end
 				l_name := l_name.substring (5, l_name.count)
@@ -61,7 +61,7 @@ feature -- Basic operations
 				a_translator.side_effect.finish
 				a_translator.side_effect.remove
 				create l_assign.make (
-					factory.heap_current_access (a_translator.entity_mapping, l_name),
+					factory.heap_current_access (a_translator.entity_mapping, l_name, types.set (types.ref)),
 					l_call.arguments.i_th (2))
 				a_translator.set_last_expression (Void)
 				a_translator.side_effect.extend (l_assign)
@@ -77,7 +77,7 @@ feature -- Basic operations
 			if builtin_any_features.has (l_name) then
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
 			elseif set_access.has (l_name) then
-				a_translator.set_last_expression (factory.heap_current_access (a_translator.entity_mapping, l_name))
+				a_translator.set_last_expression (factory.heap_current_access (a_translator.entity_mapping, l_name, types.set (types.ref)))
 			else
 					-- cannot happen
 				check False end
@@ -154,7 +154,7 @@ feature -- Basic operations
 				"owner",
 				"owns",
 				"depends",
-				"dependants"
+				"dependents"
 			>>
 			Result.compare_objects
 		end
@@ -166,7 +166,7 @@ feature -- Basic operations
 				"set_owner",
 				"set_owns",
 				"set_depends",
-				"set_dependants"
+				"set_dependents"
 			>>
 			Result.compare_objects
 		end

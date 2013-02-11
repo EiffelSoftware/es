@@ -256,7 +256,11 @@ function attached_exact(heap: HeapType, o: ref, t: Type) returns (bool) {
 
 // Property that reference `o' is attached and conforms to type `t' on heap `heap'.
 function attached(heap: HeapType, o: ref, t: Type) returns (bool) {
-	(o != Void) && (heap[o, allocated]) && (type_of(o) <: t)
+	(o != Void) && (heap[o, allocated]) && (type_of(o) == t)
+
+// ******************* reenable when ownership and inheritance are combined *******************
+//	(o != Void) && (heap[o, allocated]) && (type_of(o) <: t)
+
 }
 
 // Property that reference `o' is either Void or attached and conforms to `t' on heap `heap'.

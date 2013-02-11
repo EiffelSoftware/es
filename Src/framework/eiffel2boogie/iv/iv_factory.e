@@ -190,13 +190,13 @@ feature -- Heap access
 				create {IV_ENTITY}.make ("initialized", types.field (types.bool)))
 		end
 
-	heap_current_access (a_mapping: E2B_ENTITY_MAPPING; a_name: STRING): IV_HEAP_ACCESS
+	heap_current_access (a_mapping: E2B_ENTITY_MAPPING; a_name: STRING; a_content_type: IV_TYPE): IV_HEAP_ACCESS
 			-- Heap access to `a_feature' on `Current'.
 		do
 			create Result.make (
 				a_mapping.heap.name,
 				a_mapping.current_entity,
-				create {IV_ENTITY}.make (a_name, types.field (types.generic_type)))
+				create {IV_ENTITY}.make (a_name, types.field (a_content_type)))
 		end
 
 feature -- Miscellaneous

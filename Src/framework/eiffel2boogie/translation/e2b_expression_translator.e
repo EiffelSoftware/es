@@ -129,14 +129,14 @@ feature -- Basic operations
 	set_context (a_feature: FEATURE_I; a_type: TYPE_A)
 			-- Set context of expression to `a_feature' in type `a_type'.
 		require
-			a_feature_attached: attached a_feature
+--			a_feature_attached: attached a_feature
 			a_type_attached: attached a_type
 		do
 			context_feature := a_feature
 			context_type := a_type
 			current_target_type := a_type
 			current_target := entity_mapping.current_entity
-			if a_feature.has_return_value then
+			if a_feature /= Void and then a_feature.has_return_value then
 				entity_mapping.set_default_result (a_feature.type.instantiated_in (current_target_type))
 			end
 		end
@@ -208,18 +208,24 @@ feature -- Visitors
 			safe_process (a_node.right)
 			l_right := last_expression
 			l_type := types.for_type_a (a_node.type)
-			create {IV_BINARY_OPERATION} last_expression.make (l_left, a_operator, l_right, l_type)
 
-			if
-				options.is_checking_overflow and then
-				(a_node.left.type.is_integer or a_node.left.type.is_natural) and then
-				(a_operator ~ "+" or a_operator ~ "-")
-			then
-					-- Arithmetic operation
-				l_fname := "is_" + a_node.left.type.associated_class.name.as_lower
-				create l_fcall.make (l_fname, types.bool)
-				l_fcall.add_argument (last_expression)
-				add_safety_check (l_fcall, "overflow")
+				-- TODO: REFACTOR
+			if l_left.type.is_set then
+				check l_right.type.is_set end
+				last_expression := factory.function_call ("Set#Equal", << l_left, l_right >>, l_type)
+			else
+				create {IV_BINARY_OPERATION} last_expression.make (l_left, a_operator, l_right, l_type)
+				if
+					options.is_checking_overflow and then
+					(a_node.left.type.is_integer or a_node.left.type.is_natural) and then
+					(a_operator ~ "+" or a_operator ~ "-")
+				then
+						-- Arithmetic operation
+					l_fname := "is_" + a_node.left.type.associated_class.name.as_lower
+					create l_fcall.make (l_fname, types.bool)
+					l_fcall.add_argument (last_expression)
+					add_safety_check (l_fcall, "overflow")
+				end
 			end
 		end
 

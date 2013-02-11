@@ -36,7 +36,7 @@ feature -- Access
 	type: IV_TYPE
 			-- <Precursor>.
 		do
-			if attached {IV_FIELD_TYPE} indexes.i_th (2) as l_field then
+			if attached {IV_FIELD_TYPE} indexes.i_th (2).type as l_field then
 				Result := l_field.content_type
 			else
 				Result := types.generic_type

@@ -285,9 +285,9 @@ feature -- Basic operations
 
 			if a_for_creator then
 					-- Add creator initialization for ownership
-				create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "owns"), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
+				create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "owns", types.set (types.ref)), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
 				l_implementation.body.add_statement (l_assign)
-				create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "depends"), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
+				create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "depends", types.set (types.ref)), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
 				l_implementation.body.add_statement (l_assign)
 					-- Add creator initialization for attributes
 				from
@@ -300,7 +300,7 @@ feature -- Basic operations
 						translation_pool.add_referenced_feature (l_attribute, current_type)
 						l_local_name := name_translator.boogie_name_for_feature (l_attribute, current_type)
 						create l_assign.make (
-							factory.heap_current_access (l_translator.entity_mapping, l_local_name),
+							factory.heap_current_access (l_translator.entity_mapping, l_local_name, types.for_type_a (l_attribute.type)),
 							factory.default_value (l_attribute.type))
 						l_implementation.body.add_statement (l_assign)
 					end
@@ -325,9 +325,9 @@ feature -- Basic operations
 			end
 
 			if a_for_creator then
-					-- Creator finalizer: set "initialized" to true
-				create l_assign.make (factory.heap_current_initialized (l_translator.entity_mapping), factory.true_)
-				l_implementation.body.add_statement (l_assign)
+--					-- Creator finalizer: set "initialized" to true
+--				create l_assign.make (factory.heap_current_initialized (l_translator.entity_mapping), factory.true_)
+--				l_implementation.body.add_statement (l_assign)
 			end
 		end
 

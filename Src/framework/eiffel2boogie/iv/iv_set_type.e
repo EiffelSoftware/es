@@ -23,6 +23,7 @@ feature {NONE} -- Initialization
 			a_content_type_attached: attached a_content_type
 		do
 			content_type := a_content_type
+			is_set := True
 		ensure
 			content_type_set: content_type = a_content_type
 		end

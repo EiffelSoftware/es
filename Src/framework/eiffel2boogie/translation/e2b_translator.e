@@ -27,8 +27,8 @@ feature {NONE} -- Initialization
 			translation_pool.reset
 			translation_pool.add_type (system.any_type)
 			translation_pool.mark_translated (translation_pool.next_untranslated_element)
-			translation_pool.add_type (system.boolean_class.compiled_class.actual_type)
-			translation_pool.mark_translated (translation_pool.next_untranslated_element)
+--			translation_pool.add_type (system.boolean_class.compiled_class.actual_type)
+--			translation_pool.mark_translated (translation_pool.next_untranslated_element)
 		end
 
 	mark_feature_translated (a_class: CLASS_I; a_feature: STRING)
