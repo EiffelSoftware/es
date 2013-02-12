@@ -95,17 +95,6 @@ feature -- Basic operations
 			l_modifies.add_name ("Writes")
 			current_boogie_procedure.add_contract (l_modifies)
 
-				-- Ownership default
-			add_ownership_conditions
-
-			if a_for_creator then
-					-- Creator
-				add_ownership_conditions_for_creator
-			elseif a_feature.is_exported_for (system.any_class.compiled_class) then
-					-- Public routine
-				add_ownership_conditions_for_public
-			end
-
 				-- Pre- and postconditions
 			if options.is_precondition_predicate_enabled then
 				add_precondition_predicate
@@ -122,20 +111,29 @@ feature -- Basic operations
 				process_postcondition (j.item, l_fields)
 			end
 
-				-- Frame condition
+				-- Framing
+			if options.is_using_ownership then
+					-- Ownership default
+				add_ownership_conditions
 
---			if helper.feature_note_values (current_feature, "framing").has ("False") then
---					-- No frame condition
---			elseif helper.feature_note_values (current_feature, "pure").has ("True") then
---					-- Pure feature
---				add_pure_frame_condition
---			else
---					-- Normal frame condition
---				process_fields_list (l_fields)
---			end
-
-				-- Ownership conditions
---			add_ownership_conditions (a_for_creator)
+				if a_for_creator then
+						-- Creator
+					add_ownership_conditions_for_creator
+				elseif a_feature.is_exported_for (system.any_class.compiled_class) then
+						-- Public routine
+					add_ownership_conditions_for_public
+				end
+			else
+				if helper.feature_note_values (current_feature, "framing").has ("False") then
+						-- No frame condition
+				elseif helper.feature_note_values (current_feature, "pure").has ("True") then
+						-- Pure feature
+					add_pure_frame_condition
+				else
+						-- Normal frame condition
+					process_fields_list (l_fields)
+				end
+			end
 
 		end
 
@@ -871,7 +869,7 @@ feature {NONE} -- Implementation
 			Result := l_expr
 				-- TODO: refactor
 			if a_type.base_class.name_in_upper ~ "ARRAY" then
-				create l_fcall.make ("ARRAY.$inv", types.bool)
+				create l_fcall.make ("ARRAY.inv", types.bool)
 				l_fcall.add_argument (l_heap)
 				l_fcall.add_argument (l_ref)
 				Result := factory.and_ (Result, l_fcall)

@@ -25,6 +25,7 @@ feature {NONE} -- Initialization
 			is_postcondition_predicate_enabled := False
 			is_checking_overflow := False
 			is_checking_frame := True
+			is_using_ownership := False
 		end
 
 feature -- Inlining verification step
@@ -133,6 +134,15 @@ feature -- Framing
 			-- Set `is_checking_frame' to `a_value'.
 		do
 			is_checking_frame := a_value
+		end
+
+	is_using_ownership: BOOLEAN
+			-- Is ownership translation used?
+
+	set_using_ownership (a_value: BOOLEAN)
+			-- Set `is_using_ownership' to `a_value'.
+		do
+			is_using_ownership := a_value
 		end
 
 end

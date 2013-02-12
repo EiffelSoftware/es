@@ -24,38 +24,80 @@ feature -- Basic operations
 
 	handle_routine_call_in_body (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR; a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
 			-- <Precursor>
+		local
+			l_array_type: STRING
+			l_fname: STRING
 		do
-			if a_feature.feature_name ~ "make" then
-				a_translator.process_builtin_routine_call (a_feature, a_parameters, "ARRAY#int#.make")
-			elseif a_feature.feature_name ~ "put" then
-				a_translator.process_builtin_routine_call (a_feature, a_parameters, "ARRAY#int#.put")
-			elseif a_feature.feature_name ~ "item" then
-				a_translator.process_builtin_routine_call (a_feature, a_parameters, "ARRAY#int#.item")
-			elseif a_feature.feature_name ~ "count" then
-				a_translator.process_builtin_routine_call (a_feature, a_parameters, "ARRAY#int#.count")
-			elseif a_feature.feature_name ~ "has" then
-				a_translator.process_builtin_routine_call (a_feature, a_parameters, "ARRAY#int#.has")
-			elseif a_feature.feature_name ~ "subarray" then
-				a_translator.process_builtin_routine_call (a_feature, a_parameters, "ARRAY#int#.subarray")
+			l_array_type := array_type_string (a_translator.current_target_type)
+			l_array_type := "ARRAY"
+			if array_procedures.has (a_feature.feature_name) then
+				l_fname := l_array_type + "." + a_feature.feature_name
+				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_fname)
+			elseif array_functions.has (a_feature.feature_name) then
+				l_fname := "fun." + l_array_type + "." + a_feature.feature_name
+				a_translator.process_builtin_function_call (a_feature, a_parameters, l_fname)
+			else
+				check False end
 			end
 		end
 
 	handle_routine_call_in_contract (a_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR; a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
 			-- <Precursor>
+		local
+			l_array_type: STRING
+			l_fname: STRING
 		do
-			if a_feature.feature_name ~ "make" then
-				a_translator.process_builtin_routine_call (a_feature, a_parameters, "fun.ARRAY#int#.make")
-			elseif a_feature.feature_name ~ "put" then
-				a_translator.process_builtin_routine_call (a_feature, a_parameters, "fun.ARRAY#int#.put")
-			elseif a_feature.feature_name ~ "item" then
-				a_translator.process_builtin_routine_call (a_feature, a_parameters, "ARRAY.$item")
-			elseif a_feature.feature_name ~ "has" then
-				a_translator.process_builtin_routine_call (a_feature, a_parameters, "fun.ARRAY#int#.has")
-			elseif a_feature.feature_name ~ "count" then
-				a_translator.process_builtin_routine_call (a_feature, a_parameters, "fun.ARRAY#int#.count")
-			elseif a_feature.feature_name ~ "subarray" then
-				a_translator.process_builtin_routine_call (a_feature, a_parameters, "fun.ARRAY#int#.subarray")
+			l_array_type := array_type_string (a_translator.current_target_type)
+			l_array_type := "ARRAY"
+			if array_functions.has (a_feature.feature_name) then
+				l_fname := "fun." + l_array_type + "." + a_feature.feature_name
+				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_fname)
+			else
+				check False end
 			end
+		end
+
+	array_type_string (a_array_type: TYPE_A): STRING
+		local
+			l_type: TYPE_A
+		do
+			check a_array_type.base_class.name_in_upper.same_string ("ARRAY") end
+			check a_array_type.has_generics end
+			check a_array_type.generics.count = 1 end
+			l_type := a_array_type.generics.item (1).deep_actual_type
+			if l_type.is_boolean then
+				Result := "ARRAY#bool#"
+			elseif l_type.is_integer or l_type.is_natural then
+				Result := "ARRAY#int#"
+			elseif l_type.is_real_32 or l_type.is_real_64 then
+				Result := "ARRAY#real#"
+			else
+				Result := "ARRAY#ref#"
+			end
+		end
+
+	array_procedures: ARRAY [STRING]
+			-- List of builtin array procedures.
+		once
+			Result := <<
+				"make",
+				"item",
+				"put",
+				"subarray"
+			>>
+			Result.compare_objects
+		end
+
+	array_functions: ARRAY [STRING]
+			-- List of builtin array functions.
+		once
+			Result := <<
+				"item",
+				"has",
+				"count",
+				"subarray"
+			>>
+			Result.compare_objects
 		end
 
 end

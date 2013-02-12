@@ -279,6 +279,42 @@ feature -- Translation
 			side_effect.extend (l_call)
 		end
 
+	process_builtin_function_call (a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B]; a_builtin_name: STRING)
+			-- Process feature call.
+		require
+			a_feature.has_return_value
+		local
+			l_target: IV_EXPRESSION
+			l_target_type: TYPE_A
+			l_call: IV_FUNCTION_CALL
+			l_pcall: IV_PROCEDURE_CALL
+		do
+			create l_call.make (a_builtin_name, types.for_type_a (a_feature.type))
+			l_call.add_argument (entity_mapping.heap)
+			l_call.add_argument (current_target)
+
+				-- Process arguments in context of feature
+			l_target := current_target
+			l_target_type := current_target_type
+			last_expression := Void
+
+			current_target := entity_mapping.current_entity
+			current_target_type := context_type
+
+			create l_pcall.make ("dummy")
+			procedure_calls.extend (l_pcall)
+			safe_process (a_parameters)
+			procedure_calls.remove
+			across l_pcall.arguments as i loop
+				l_call.add_argument (i.item)
+			end
+
+			current_target := l_target
+			current_target_type := l_target_type
+
+			last_expression := l_call
+		end
+
 	process_special_routine_call (a_handler: E2B_CUSTOM_CALL_HANDLER; a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
 			-- <Precursor>
 		do

@@ -175,6 +175,9 @@ feature -- Access
 			if a_name.has ('^') then
 				l_class_name := a_name.substring (1, a_name.index_of ('^', 1)-1)
 					-- TODO: handle generic parameters
+			elseif a_name.has ('#') then
+				l_class_name := a_name.substring (1, a_name.index_of ('#', 1)-1)
+					-- TODO: handle generic parameters
 			else
 				l_class_name := a_name
 			end

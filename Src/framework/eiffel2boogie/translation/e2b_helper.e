@@ -171,7 +171,7 @@ feature -- Eiffel helpers
 					-- Renamed
 				Result := a_target_type.associated_class.feature_of_rout_id (a_node.routine_id)
 			end
---			Result := Result.instantiated (a_target_type)
+			Result := Result.instantiated (a_target_type)
 			check Result /= Void end
 		end
 

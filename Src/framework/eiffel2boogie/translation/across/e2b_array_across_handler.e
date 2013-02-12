@@ -61,7 +61,7 @@ feature -- Basic operations
 			l_expression := expression_translator.last_expression
 			expression_translator.locals_map.remove (object_test_local.position)
 
-			create l_call.make ("ARRAY.$is_index", types.bool)
+			create l_call.make ("fun.ARRAY.is_index", types.bool)
 			l_call.add_argument (expression_translator.entity_mapping.heap)
 			l_call.add_argument (l_array)
 			l_call.add_argument (l_counter)
@@ -80,7 +80,7 @@ feature -- Basic operations
 		local
 			l_call: IV_FUNCTION_CALL
 		do
-			create l_call.make ("ARRAY.$item", types.generic_type)
+			create l_call.make ("fun.ARRAY.item", types.generic_type)
 			l_call.add_argument (expression_translator.entity_mapping.heap)
 			l_call.add_argument (array_expr)
 			l_call.add_argument (expression_translator.locals_map.item (object_test_local.position))
