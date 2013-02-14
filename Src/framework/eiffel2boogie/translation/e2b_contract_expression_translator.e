@@ -14,7 +14,6 @@ inherit
 		redefine
 			reset,
 			process_creation_expr_b,
-			process_parameter_b,
 			process_un_old_b,
 			process_attribute_call
 		end
@@ -56,16 +55,6 @@ feature -- Visitors
 			translation_pool.add_referenced_feature (l_feature, l_type)
 
 			last_expression := dummy_node (a_node.type)
-		end
-
-	process_parameter_b (a_node: PARAMETER_B)
-			-- <Precursor>
-		local
-			l_signature_type: TYPE_A
-		do
-			check not calls.is_empty end
-			safe_process (a_node.expression)
-			calls.item.add_argument (last_expression)
 		end
 
 	process_un_old_b (a_node: UN_OLD_B)
@@ -125,21 +114,8 @@ feature -- Translation
 			l_call.add_argument (entity_mapping.heap)
 			l_call.add_argument (current_target)
 
-				-- Process arguments in context of feature
-			l_target := current_target
-			l_target_type := current_target_type
-			last_expression := Void
-				-- TODO: Set up byte context
-
-			current_target := entity_mapping.current_entity
-			current_target_type := context_type
-
-			calls.extend (l_call)
-			safe_process (a_parameters)
-			calls.remove
-
-			current_target := l_target
-			current_target_type := l_target_type
+			process_parameters (a_parameters)
+			l_call.arguments.append (last_parameters)
 
 			last_expression := l_call
 		end
@@ -158,18 +134,8 @@ feature -- Translation
 			l_call.add_argument (entity_mapping.heap)
 			l_call.add_argument (current_target)
 
-				-- Process arguments in context of feature
-			l_target := current_target
-			l_target_type := current_target_type
-			last_expression := Void
-				-- TODO: Set up byte context
-
-			current_target := entity_mapping.current_entity
-			current_target_type := context_type
-
-			calls.extend (l_call)
-			safe_process (a_parameters)
-			calls.remove
+			process_parameters (a_parameters)
+			l_call.arguments.append (last_parameters)
 
 			current_target := l_target
 			current_target_type := l_target_type

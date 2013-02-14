@@ -14,7 +14,6 @@ inherit
 		redefine
 			reset,
 			process_creation_expr_b,
-			process_parameter_b,
 			process_tuple_access_b,
 			process_tuple_const_b
 		end
@@ -102,16 +101,6 @@ feature -- Visitors
 			current_target_type := l_target_type
 
 			last_expression := l_local
-		end
-
-	process_parameter_b (a_node: PARAMETER_B)
-			-- <Precursor>
-		local
-			l_signature_type: TYPE_A
-		do
-			check not procedure_calls.is_empty end
-			safe_process (a_node.expression)
-			procedure_calls.item.add_argument (last_expression)
 		end
 
 	process_tuple_access_b (a_node: TUPLE_ACCESS_B)
@@ -215,20 +204,8 @@ feature -- Translation
 			create l_call.make (name_translator.boogie_name_for_feature (a_feature, current_target_type))
 			l_call.add_argument (current_target)
 
-				-- Process arguments in context of feature
-			l_target := current_target
-			l_target_type := current_target_type
-			last_expression := Void
-
-			current_target := entity_mapping.current_entity
-			current_target_type := context_type
-
-			procedure_calls.extend (l_call)
-			safe_process (a_parameters)
-			procedure_calls.remove
-
-			current_target := l_target
-			current_target_type := l_target_type
+			process_parameters (a_parameters)
+			l_call.arguments.append (last_parameters)
 
 				-- Process call
 			if a_feature.has_return_value then
@@ -252,20 +229,8 @@ feature -- Translation
 			create l_call.make (a_builtin_name)
 			l_call.add_argument (current_target)
 
-				-- Process arguments in context of feature
-			l_target := current_target
-			l_target_type := current_target_type
-			last_expression := Void
-
-			current_target := entity_mapping.current_entity
-			current_target_type := context_type
-
-			procedure_calls.extend (l_call)
-			safe_process (a_parameters)
-			procedure_calls.remove
-
-			current_target := l_target
-			current_target_type := l_target_type
+			process_parameters (a_parameters)
+			l_call.arguments.append (last_parameters)
 
 				-- Process call
 			if a_feature.has_return_value then
@@ -293,21 +258,8 @@ feature -- Translation
 			l_call.add_argument (entity_mapping.heap)
 			l_call.add_argument (current_target)
 
-				-- Process arguments in context of feature
-			l_target := current_target
-			l_target_type := current_target_type
-			last_expression := Void
-
-			current_target := entity_mapping.current_entity
-			current_target_type := context_type
-
-			create l_pcall.make ("dummy")
-			procedure_calls.extend (l_pcall)
-			safe_process (a_parameters)
-			procedure_calls.remove
-			across l_pcall.arguments as i loop
-				l_call.add_argument (i.item)
-			end
+			process_parameters (a_parameters)
+			l_call.arguments.append (last_parameters)
 
 			current_target := l_target
 			current_target_type := l_target_type
@@ -358,21 +310,7 @@ feature -- Translation
 			end
 
 
-				-- Process arguments in context of feature
-			l_target := current_target
-			l_target_type := current_target_type
-			last_expression := Void
-
-			current_target := entity_mapping.current_entity
-			current_target_type := context_type
-
-			create l_call.make ("dummy")
-			procedure_calls.extend (l_call)
-			safe_process (a_parameters)
-			procedure_calls.remove
-
-			current_target := l_target
-			current_target_type := l_target_type
+			process_parameters (a_parameters)
 
 				-- Set up entity mapping
 			create l_entity_mapping.make_copy (entity_mapping)
@@ -381,7 +319,7 @@ feature -- Translation
 				-- Map `Current'
 			l_entity_mapping.set_current (current_target)
 				-- Map arguments
-			across l_call.arguments as l_args loop
+			across last_parameters as l_args loop
 				l_entity_mapping.set_argument (l_args.cursor_index, l_args.item)
 			end
 				-- Map `Result'

@@ -178,7 +178,7 @@ feature {NONE} -- Implementation
 				-- Prepare command line arguments
 			create l_arguments.make
 			l_arguments.extend ("/trace")
-			l_arguments.extend ("/mv:" + safe_file_name (model_file_name))
+--			l_arguments.extend ("/mv:" + safe_file_name (model_file_name))
 			l_arguments.extend (safe_file_name (boogie_file_name))
 
 				-- Launch Boogie

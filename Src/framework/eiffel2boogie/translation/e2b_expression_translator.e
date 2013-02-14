@@ -160,6 +160,7 @@ feature -- Basic operations
 			create locals_map.make (10)
 			create across_handler_map.make (10)
 			create safety_check_condition.make
+			create parameters_stack.make
 		end
 
 feature -- Visitors
@@ -769,11 +770,27 @@ feature -- Visitors
 			-- <Precursor>
 		local
 			l_context_type: CL_TYPE_A
+			l_target: IV_EXPRESSION
+			l_target_type: TYPE_A
+			l_last_expression: IV_EXPRESSION
 		do
-			l_context_type := context.context_cl_type
-			helper.set_up_byte_context (Void, context_type)
+			check not parameters_stack.is_empty end
+
+				-- Process arguments in context of feature
+			l_target := current_target
+			l_target_type := current_target_type
+			l_last_expression := last_expression
+
+			current_target := entity_mapping.current_entity
+			current_target_type := context_type
+			last_expression := Void
+
 			safe_process (a_node.expression)
-			helper.set_up_byte_context (Void, l_context_type)
+			parameters_stack.item.extend (last_expression)
+
+			last_expression := l_last_expression
+			current_target := l_target
+			current_target_type := l_target_type
 		end
 
 	process_paran_b (a_node: PARAN_B)
@@ -943,7 +960,25 @@ feature -- Translation
 			end
 		end
 
-feature {E2B_ACROSS_HANDLER} -- Implementation
+	process_parameters (a_parameters: BYTE_LIST [PARAMETER_B])
+			-- Process parameter list `a_parameters'.
+		local
+			l_list: LINKED_LIST [IV_EXPRESSION]
+		do
+			create l_list.make
+			parameters_stack.extend (l_list)
+			safe_process (a_parameters)
+			last_parameters := parameters_stack.item
+			parameters_stack.remove
+		end
+
+feature {E2B_ACROSS_HANDLER, E2B_CUSTOM_CALL_HANDLER, E2B_CUSTOM_NESTED_HANDLER} -- Implementation
+
+	parameters_stack: LINKED_STACK [LINKED_LIST [IV_EXPRESSION]]
+			-- Stack of procedure calls.
+
+	last_parameters: LINKED_LIST [IV_EXPRESSION]
+			-- List of last processed parameters.
 
 	last_local: IV_ENTITY
 			-- Last created local.

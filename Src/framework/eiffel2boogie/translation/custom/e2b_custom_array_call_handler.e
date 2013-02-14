@@ -28,17 +28,23 @@ feature -- Basic operations
 			l_array_type: STRING
 			l_fname: STRING
 		do
-			l_array_type := array_type_string (a_translator.current_target_type)
-			l_array_type := "ARRAY"
-			if array_procedures.has (a_feature.feature_name) then
-				l_fname := l_array_type + "." + a_feature.feature_name
-				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_fname)
-			elseif array_functions.has (a_feature.feature_name) then
-				l_fname := "fun." + l_array_type + "." + a_feature.feature_name
-				a_translator.process_builtin_function_call (a_feature, a_parameters, l_fname)
-			else
-				check False end
-			end
+--			if a_feature.feature_name.same_string ("item") then
+--				a_translator.process_parameters (a_parameters)
+--				check a_translator.last_parameters.count = 1 end
+--				a_translator.add_safety_check (factory.function_call ("fun.ARRAY.is_index", << a_translator.entity_mapping.heap, a_translator.current_target, a_translator.last_parameters.first >>, types.bool), "bounds")
+--				a_translator.set_last_expression (factory.array_access (a_translator.entity_mapping.heap, a_translator.current_target, a_translator.last_parameters.first))
+--			else
+				l_array_type := "ARRAY"
+				if array_procedures.has (a_feature.feature_name) then
+					l_fname := l_array_type + "." + a_feature.feature_name
+					a_translator.process_builtin_routine_call (a_feature, a_parameters, l_fname)
+				elseif array_functions.has (a_feature.feature_name) then
+					l_fname := "fun." + l_array_type + "." + a_feature.feature_name
+					a_translator.process_builtin_function_call (a_feature, a_parameters, l_fname)
+				else
+					check False end
+				end
+--			end
 		end
 
 	handle_routine_call_in_contract (a_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR; a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
@@ -81,6 +87,7 @@ feature -- Basic operations
 		once
 			Result := <<
 				"make",
+				"make_filled",
 				"item",
 				"put",
 				"subarray"

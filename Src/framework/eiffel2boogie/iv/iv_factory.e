@@ -170,7 +170,7 @@ feature -- Functions
 			end
 		end
 
-feature -- Heap access
+feature -- Heap and map access
 
 	heap_current_allocated (a_mapping: E2B_ENTITY_MAPPING): IV_HEAP_ACCESS
 			-- Heap access to `allocated' on `Current'.
@@ -197,6 +197,17 @@ feature -- Heap access
 				a_mapping.heap.name,
 				a_mapping.current_entity,
 				create {IV_ENTITY}.make (a_name, types.field (a_content_type)))
+		end
+
+	array_access (a_heap: IV_ENTITY; a_array, a_index: IV_EXPRESSION): IV_MAP_ACCESS
+			-- Array access to `a_array'[`a_index'].
+		do
+			create Result.make (
+				create {IV_HEAP_ACCESS}.make (
+					a_heap.name,
+					a_array,
+					create {IV_ENTITY}.make ("area", types.field (types.generic_type))),
+				a_index)
 		end
 
 feature -- Miscellaneous

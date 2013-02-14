@@ -46,9 +46,36 @@ procedure ARRAY.make(
 	modifies Heap;
 	ensures (forall<beta> o: ref, f: Field beta :: ((o != c) || (f == allocated)) ==> (Heap[o, f] == old(Heap)[o, f]));
 
+procedure ARRAY.make_filled<alpha>(
+			c: ref where (c != Void && Heap[c, allocated]),
+			d: alpha,
+			l: int where is_integer_32(l),
+			u: int where is_integer_32(u)
+		);
+	requires l == 1; // pre tag:lower_equals_1
+	requires u >= 0; // pre
+	ensures Heap[c, ARRAY.count] == u;
+	ensures ARRAY.inv(Heap, c);
+	modifies Heap;
+	ensures (forall<beta> o: ref, f: Field beta :: ((o != c) || (f == allocated)) ==> (Heap[o, f] == old(Heap)[o, f]));
+
 function fun.ARRAY.has<alpha>(h: HeapType, c: ref, val: alpha) returns (bool) {
 	(exists i: int :: (fun.ARRAY.is_index(h, c, i) && (fun.ARRAY.item(h, c, i) == val)))
 }
+
+procedure ARRAY.subarray(a: ref, l: int, u: int) returns (result: ref);
+	requires fun.ARRAY.is_index(Heap, a, l);
+	requires (l-1) <= u && u <= fun.ARRAY.count(Heap, a);
+	// requires (forall i_46: int :: (((1) <= (i_46)) && ((i_46) <= ((fun.ARRAY.count(Heap, a)) - (1)))) ==> ((fun.ARRAY.item(Heap, a, i_46)) <= (fun.ARRAY.item(Heap, a, (i_46) + (1)))));
+	// ensures !old(Heap)[result, allocated];
+	// ensures Heap[result, ARRAY.count] == u-l+1;
+	// ensures attached(Heap, result, type_of(a));
+	// modifies Heap;
+	// ensures result != a;
+	// ensures (forall i: int :: {fun.ARRAY.has(Heap, a, i)} {fun.ARRAY.has(Heap, result, i)}fun.ARRAY.has(Heap, a, i) == fun.ARRAY.has(Heap, result, i));
+	// ensures (forall i_46: int :: (((1) <= (i_46)) && ((i_46) <= ((fun.ARRAY.count(Heap, result)) - (1)))) ==> ((fun.ARRAY.item(Heap, result, i_46)) <= (fun.ARRAY.item(Heap, result, (i_46) + (1)))));
+	// ensures (forall i: int :: (1 <= i && i <= (u-l+1)) ==> (fun.ARRAY.item(Heap, result, i) == fun.ARRAY.item(Heap, a, l+i-1)));
+  // ensures (forall<beta> o: ref, f: Field beta :: (old(Heap[o, allocated])) ==> (Heap[o, f] == old(Heap[o, f])));
 
 // Array invariants
 function ARRAY.inv(h: HeapType, a: ref) returns (bool) {
