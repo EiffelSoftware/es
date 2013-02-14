@@ -254,6 +254,7 @@
 		<library name="semantic_search" location="$EIFFEL_SRC\framework\semantic_search\semantic_search.ecf" readonly="false"/>
 		<library name="serializer" location="$EIFFEL_SRC\library\schema_evolution\serializer_lib\serializer.ecf"/>
 		<library name="snippet_extraction" location="$EIFFEL_SRC\framework\snippet_extraction\snippet_extraction.ecf" readonly="false"/>
+		<library name="spell_checker" location="$EIFFEL_SRC\library\spelling\spell_checker.ecf" readonly="false"/>
 		<library name="tagging" location="$EIFFEL_SRC\framework\tagging\tagging.ecf" readonly="false"/>
 		<library name="tagging-ev" location="$EIFFEL_SRC\framework\tagging\ev\tagging-ev.ecf" readonly="false"/>
 		<library name="testing_engine" location="$EIFFEL_SRC\framework\testing\testing.ecf" readonly="false"/>

@@ -4400,6 +4400,14 @@ Src/library/runtime/logging/doc/Arch_Design_and_Impl.docx -text
 Src/library/runtime/logging/doc/Arch_Design_and_Impl.pdf -text svneol=unset#application/pdf
 Src/library/runtime/logging/doc/Arch_Design_and_Impl.vsd -text
 Src/library/runtime/logging/doc/Readme.1st -text
+Src/library/spelling/UnicodeLetter.hs -text
+Src/library/spelling/en_ignore_dictionary.xml -text
+Src/library/spelling/tests/word_set/empty_word.xml -text
+Src/library/spelling/tests/word_set/no_root.xml -text
+Src/library/spelling/tests/word_set/not_well-formed.xml -text
+Src/library/spelling/tests/word_set/unexpected_element.xml -text
+Src/library/spelling/tests/word_set/unknown_root_element.xml -text
+Src/library/spelling/tests/word_set/valid.xml -text
 Src/library/store/dbms/rdbms/mysql/Readme -text
 Src/library/text/parser/xml/README.txt -text
 Src/library/text/parser/xml/parser/callbacks/README.TXT -text

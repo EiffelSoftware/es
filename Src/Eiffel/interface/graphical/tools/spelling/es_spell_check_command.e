@@ -26,6 +26,11 @@ inherit
 
 	COMPILER_EXPORTER
 
+	SC_LANGUAGE_UTILITY
+		export
+			{NONE} all
+		end
+
 create
 	make
 
@@ -35,6 +40,9 @@ feature {NONE} -- Initialization
 			-- Creation method.
 		do
 			enable_sensitive
+			create spell_checker
+				-- TODO. spell_checker.set_language (Default_source_code_language)
+			create visitor.make
 		end
 
 feature -- Execution
@@ -67,8 +75,8 @@ feature -- Execution
 					create l_classes.make_default
 					window_manager.all_modified_classes.do_all (agent l_classes.force_last)
 					create l_save_confirm.make (l_classes)
-					l_save_confirm.set_button_action (l_save_confirm.dialog_buttons.yes_button, agent save_compile_and_check (a_stone))
-					l_save_confirm.set_button_action (l_save_confirm.dialog_buttons.no_button, agent compile_and_check (a_stone))
+					l_save_confirm.set_button_action (l_save_confirm.dialog_buttons.yes_button, agent save_compile_and_check(a_stone))
+					l_save_confirm.set_button_action (l_save_confirm.dialog_buttons.no_button, agent compile_and_check(a_stone))
 					l_save_confirm.show_on_active_window
 				else
 					compile_and_check (a_stone)
@@ -87,9 +95,6 @@ feature {NONE} -- Basic operations
 
 	compile_and_check (a_stone: STONE)
 			-- Compile project and start spell checker.
-		local
-			l_helper: ES_AUTOPROOF_BENCH_HELPER
-			l_dialog: ES_INFORMATION_PROMPT
 		do
 			eiffel_project.quick_melt (True, True, True)
 			if eiffel_project.successful then
@@ -100,22 +105,38 @@ feature {NONE} -- Basic operations
 	do_spell_check (a_stone: STONE)
 			-- Spell check `a_stone'.
 		local
-			l_visitor: ES_SPELL_CHECK_AST_VISITOR
+			maybe_node: detachable AST_EIFFEL
+			failure_information: STRING_32
 		do
-			create l_visitor.make
+				-- Reset visitor and find out AST node to check.
 			if attached {FEATURE_STONE} a_stone as s then
 					-- Check `s.e_feature'.
-				s.e_feature.ast.process (l_visitor)
+				visitor.reset_with_root (s.e_feature.associated_class.ast)
+				maybe_node := s.e_feature.ast
 			elseif attached {CLASSI_STONE} a_stone as s then
-					-- Check `s.class_i'
+					-- Check `s.class_i'.
 				if s.class_i.is_compiled then
-					s.class_i.compiled_class.ast.process (l_visitor)
+					visitor.reset_with_root (s.class_i.compiled_class.ast)
+					maybe_node := s.class_i.compiled_class.ast
 				end
 			else
-					-- Should not happen
-				check False end
+					-- This should not happen.
+				check
+					False
+				end
 			end
-			show_result (Void)
+			if attached maybe_node as node then
+				visitor.process_ast_node (node)
+				spell_checker.check_words (visitor.words)
+				if spell_checker.are_words_checked then
+					show_result (generate_text)
+				else
+					failure_information := "Sorry, the spell checker failed with the following message."
+					failure_information.append (Default_newline)
+					failure_information.append (spell_checker.failure_message)
+					show_result (failure_information)
+				end
+			end
 		end
 
 	spelling_tool: detachable ES_SPELLING_TOOL
@@ -130,13 +151,15 @@ feature {NONE} -- Basic operations
 				if attached {ES_SPELLING_TOOL} l_tool as l_spelling_tool then
 					Result := l_spelling_tool
 				else
-					check False end
+					check
+						False
+					end
 				end
 			end
 		end
 
 	show_spelling_tool
-			-- Shows the proof tool
+			-- Show spelling tool.
 		local
 			l_tool: ES_SPELLING_TOOL
 		do
@@ -146,7 +169,7 @@ feature {NONE} -- Basic operations
 			end
 		end
 
-	show_result (x: ANY)
+	show_result (results: ANY)
 			-- Show results in spelling tool.
 		local
 			l_tool: ES_SPELLING_TOOL
@@ -154,7 +177,7 @@ feature {NONE} -- Basic operations
 			l_tool := spelling_tool
 			if l_tool /= Void and then not l_tool.is_recycled then
 				show_spelling_tool
-				l_tool.show_result (x)
+				l_tool.show_result (results)
 			end
 		end
 
@@ -183,21 +206,67 @@ feature -- Status report
 	droppable (a_pebble: ANY): BOOLEAN
 			-- Can user drop `a_pebble' on `Current'?
 		do
-			Result :=
-				(attached {FEATURE_STONE} a_pebble) or else
-				(attached {CLASSI_STONE} a_pebble as s and then s.class_i.is_compiled)
+			Result := (attached {FEATURE_STONE} a_pebble) or else (attached {CLASSI_STONE} a_pebble as s and then s.class_i.is_compiled)
+		end
+
+feature {NONE} -- Spell checking
+
+	spell_checker: SC_SPELL_CHECKER
+			-- Spell checker functionality.
+
+	visitor: ES_SPELL_CHECK_AST_VISITOR
+			-- Visitor for source code to collect text.
+
+	generate_text: STRING_32
+			-- Generate textual results for completed spell check.
+		require
+			words_checked: spell_checker.are_words_checked
+			counts_equal: spell_checker.last_words_corrections.count = visitor.count
+		local
+			all_correct: BOOLEAN
+		do
+			Result := ""
+			all_correct := True
+			visitor.words.start
+			visitor.bases.start
+			across
+				spell_checker.last_words_corrections as correction
+			loop
+				if not correction.item.is_correct then
+					all_correct := False
+					Result.append (visitor.bases.item.line.out + ":" + visitor.bases.item.column.out + " ")
+					Result.append ("Misspelled word: " + visitor.words.item + ". ")
+					inspect correction.item.suggestions.count
+					when 0 then
+						Result.append ("No suggestions")
+					when 1 then
+						Result.append ("Suggestion: ")
+					else
+						Result.append ("Suggestions: ")
+					end
+					Result.append (concatenate_texts (correction.item.suggestions, Default_separator))
+					Result.append ("." + Default_newline + Default_newline)
+				end
+				visitor.words.forth
+				visitor.bases.forth
+			end
+			if all_correct then
+				Result := "No spelling mistakes found." + Default_newline
+			end
+		ensure
+			exists: Result /= Void and then not Result.is_empty
 		end
 
 feature {NONE} -- Implementation
 
 	pixmap: EV_PIXMAP
-			-- Pixmap representing the command.
+			-- Pixmap representing command.
 		do
 			Result := pixmaps.icon_pixmaps.general_tick_icon
 		end
 
 	pixel_buffer: EV_PIXEL_BUFFER
-			-- Pixel buffer representing the command.
+			-- Pixel buffer representing command.
 		do
 			Result := pixmaps.icon_pixmaps.general_tick_icon_buffer
 		end
@@ -205,7 +274,7 @@ feature {NONE} -- Implementation
 feature {NONE} -- Implementation
 
 	frozen service_consumer: SERVICE_CONSUMER [EVENT_LIST_S]
-			-- Access to an event list service {EVENT_LIST_S} consumer.
+			-- Access to event list service {EVENT_LIST_S} consumer.
 		once
 			create Result
 		ensure
@@ -213,26 +282,28 @@ feature {NONE} -- Implementation
 		end
 
 	frozen event_list: EVENT_LIST_S
-			-- Access to an event list service.
+			-- Access to event list service.
 		do
-			check service_consumer.is_service_available end
+			check
+				service_consumer.is_service_available
+			end
 			Result := service_consumer.service
 		end
 
 	menu_name: STRING_GENERAL
-			-- Name as it appears in the menu (with & symbol).
+			-- Name as it appears in menu (with & symbol).
 		do
 			Result := "Check spelling"
 		end
 
 	tooltip: STRING_GENERAL
-			-- Tooltip for the toolbar button.
+			-- Tooltip for toolbar button.
 		do
 			Result := "Check spelling in current class"
 		end
 
 	tooltext: STRING_GENERAL
-			-- Text for the toolbar button.
+			-- Text for toolbar button.
 		do
 			Result := "Check spelling"
 		end
@@ -244,8 +315,7 @@ feature {NONE} -- Implementation
 		end
 
 	name: STRING_GENERAL
-			-- Name of the command. Used to store the command in the
-			-- preferences.
+			-- Name of command. Used to store command in preferences.
 		do
 			Result := "SpellCheck"
 		end
@@ -281,4 +351,5 @@ note
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
+
 end

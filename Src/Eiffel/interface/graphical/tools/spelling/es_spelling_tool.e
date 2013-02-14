@@ -3,9 +3,11 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-frozen class ES_SPELLING_TOOL
+frozen class
+	ES_SPELLING_TOOL
 
 inherit
+
 	ES_TOOL [ES_SPELLING_TOOL_PANEL]
 
 create {NONE}
@@ -13,12 +15,13 @@ create {NONE}
 
 feature -- Basic operation
 
-	show_result (x: ANY)
+	show_result (results: ANY)
 			-- Show results of spell checker.
 		require
 			is_tool_instantiated: is_tool_instantiated
+			results_exist: results /= Void
 		do
-			-- internal_panel.xyz
+			internal_panel.panel.set_text (results.out)
 		end
 
 feature -- Access
@@ -26,7 +29,7 @@ feature -- Access
 	title: STRING_32
 			-- <Precursor>
 		do
-			Result :=  locale_formatter.translation (t_title)
+			Result := locale_formatter.translation (t_title)
 		end
 
 	icon: EV_PIXEL_BUFFER
@@ -84,4 +87,5 @@ note
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
+
 end

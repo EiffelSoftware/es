@@ -1,5 +1,5 @@
 note
-	description: "Iterate over AST node and check spelling."
+	description: "Iterate over AST to collect strings for spell check."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -8,9 +8,28 @@ class
 
 inherit
 
-	AST_ITERATOR
+	AST_ROUNDTRIP_ITERATOR
 		redefine
-			process_string_as
+			process_break_as,
+			process_string_as,
+			process_verbatim_string_as,
+			process_class_as,
+			process_rename_as,
+			process_feature_as,
+			process_type_dec_as,
+			process_iteration_as,
+			process_indexing_clause_as,
+			process_tagged_as
+		end
+
+	SC_LANGUAGE_UTILITY
+		export
+			{NONE} all
+		end
+
+	SHARED_SERVER
+		export
+			{NONE} all
 		end
 
 create
@@ -19,19 +38,199 @@ create
 feature {NONE} -- Initialization
 
 	make
-			-- Initialize object.
+			-- Create empty collection.
 		do
-
+			create {LINKED_LIST [STRING_32]} words.make
+			create {LINKED_LIST [LOCATION_AS]} bases.make
+		ensure
+			empty: words.is_empty and bases.is_empty
 		end
 
-feature -- Processing
+feature -- Collection
 
-	process_string_as (a_node: STRING_AS)
+	reset_with_root (root: CLASS_AS)
+			-- Prepare for another visit with class `root' as context
+			-- and reset all collected information.
+		do
+				-- Information not in AST like comments needed.
+			setup (root, match_list_server.item (root.class_id), True, True)
+			words.wipe_out
+			bases.wipe_out
+		ensure
+			empty: words.is_empty and bases.is_empty
+		end
+
+	count: INTEGER
+			-- Number of collected words. They do not need to be unique.
+		do
+			Result := words.count
+		ensure
+			correct: Result = words.count
+		end
+
+	words: LIST [READABLE_STRING_32]
+			-- Collection of words so far.
+
+	bases: LIST [LOCATION_AS]
+			-- Places in source code corresponding to words.
+
+feature {NONE} -- Implementation
+
+	Word_length_limit: INTEGER = 3
+			-- Words shorter than this are not collected.
+
+	collect_text (text: READABLE_STRING_32; origin: LOCATION_AS)
+			-- Remember words of `text' rooted at `origin'.
+		require
+			text_exists: text /= Void
+			origin_exists: origin /= Void
+		local
+			length, base: INTEGER
+			word: STRING_32
+			word_base: LOCATION_AS
+		do
+			across
+				words_of_text (text) as limit
+			loop
+				length := limit.item.length
+				if length >= Word_length_limit then
+					base := limit.item.base
+					word := text.substring (base, base + length - 1)
+					words.extend (word)
+						-- Assuming on one line only. TODO.
+					create word_base.make (origin.line, origin.column + base - 1, origin.position + base - 1, length)
+					bases.extend (word_base)
+				end
+			end
+		ensure
+			count_monotone: count >= old count
+		end
+
+	collect_identifier (identifier: READABLE_STRING_32; origin: LOCATION_AS)
+			-- Remember language `identifier' rooted at `origin'.
+		require
+			identifier_exists: identifier /= Void
+			origin_exists: origin /= Void
+		do
+				-- Assuming recommended Eiffel style for identifiers
+				-- with underscore separating parts.
+			collect_text (identifier, origin)
+		ensure
+			count_monotone: count >= old count
+		end
+
+feature {NONE} -- Collecting
+
+	process_break_as (node: BREAK_AS)
+			-- <Precursor>
+		local
+			comment: EIFFEL_COMMENT_LINE
+			origin: LOCATION_AS
+		do
+				-- Collect comments. Hence roundtrip.
+			across
+				node.extract_comment as comment_line
+			loop
+				comment := comment_line.item
+				create origin.make (comment.line, comment.column, comment.position, comment.content_32.count)
+				collect_text (comment.content_32, origin)
+			end
+			Precursor (node)
+		end
+
+	process_string_as (node: STRING_AS)
+			-- <Precursor>
+		local
+			origin: LOCATION_AS
+		do
+			origin := node.start_location
+				-- Skip string delimiter.
+			create origin.make (origin.line, origin.column + 1, origin.position, origin.location_count)
+			collect_text (node.value_32, origin)
+			Precursor (node)
+		end
+
+	process_verbatim_string_as (node: VERBATIM_STRING_AS)
+			-- <Precursor>
+		local
+			origin: LOCATION_AS
+		do
+			origin := node.start_location
+				-- Again, skip string delimiter.
+			create origin.make (origin.line, origin.column + 2, origin.position, origin.location_count)
+			collect_text (node.value_32, origin)
+			Precursor (node)
+		end
+
+	process_class_as (node: CLASS_AS)
 			-- <Precursor>
 		do
-			-- TODO: check a_node.value_32
-			print (a_node.value_32)
+			collect_identifier (node.class_name.name_32, node.class_name.start_location)
+			Precursor (node)
 		end
+
+	process_rename_as (node: RENAME_AS)
+			-- <Precursor>
+		do
+				-- Check introduced name.
+			collect_identifier (node.new_name.visual_name_32, node.new_name.start_location)
+			Precursor (node)
+		end
+
+	process_feature_as (node: FEATURE_AS)
+			-- <Precursor>
+		do
+				-- Find all synomyms.
+			across
+				node.feature_names as name
+			loop
+				collect_identifier (name.item.visual_name_32, name.item.start_location)
+			end
+			Precursor (node)
+		end
+
+	process_type_dec_as (node: TYPE_DEC_AS)
+			-- <Precursor>
+		do
+			across
+				node.id_list as identity
+			loop
+					-- TODO: find exact place of each individual name.
+				collect_identifier (node.names_heap.item_32 (identity.item), node.start_location)
+			end
+			Precursor (node)
+		end
+
+	process_iteration_as (node: ITERATION_AS)
+			-- <Precursor>
+		do
+				-- Check identifier introduced by across loop in Eiffel.
+				-- Both expression and instruction kind of loop is visited.
+			collect_identifier (node.identifier.name_32, node.identifier.start_location)
+			Precursor (node)
+		end
+
+	process_indexing_clause_as (node: INDEXING_CLAUSE_AS)
+			-- <Precursor>
+		do
+			across
+				node as index
+			loop
+				collect_identifier (index.item.tag.name_32, index.item.tag.start_location)
+			end
+			Precursor (node)
+		end
+
+	process_tagged_as (node: TAGGED_AS)
+			-- <Precursor>
+		do
+			collect_identifier (node.tag.name_32, node.tag.start_location)
+			Precursor (node)
+		end
+
+invariant
+	counts_equal: words.count = bases.count
+	word_limit_satisfied: across words as word all word.item.count >= Word_length_limit end
 
 note
 	copyright: "Copyright (c) 1984-2013, Eiffel Software"
@@ -64,4 +263,5 @@ note
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
+
 end

@@ -1,12 +1,13 @@
 note
-	description:
-		"Graphical panel for Spelling tool"
+	description: "Graphical panel for spelling tool"
 	date: "$Date$"
 	revision: "$Revision$"
 
-class ES_SPELLING_TOOL_PANEL
+class
+	ES_SPELLING_TOOL_PANEL
 
 inherit
+
 	ES_DOCKABLE_TOOL_PANEL [EV_HORIZONTAL_BOX]
 		redefine
 			on_after_initialized
@@ -17,15 +18,13 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_EIFFEL_PROJECT
-
 create
 	make
 
 feature {NONE} -- Initialization
 
-    build_tool_interface (a_widget: like user_widget)
-            -- <Precursor>
+	build_tool_interface (a_widget: like user_widget)
+			-- <Precursor>
 		do
 			create panel
 			a_widget.extend (panel)
@@ -44,14 +43,14 @@ feature -- Access
 
 feature {NONE} -- Factory
 
-    create_widget: EV_HORIZONTAL_BOX
-            -- <Precursor>
+	create_widget: EV_HORIZONTAL_BOX
+			-- <Precursor>
 		do
 			create Result
 		end
 
-    create_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
-            -- <Precursor>
+	create_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+			-- <Precursor>
 		do
 			create Result.make (1)
 			Result.extend ((create {ES_SPELL_CHECK_COMMAND}.make).new_sd_toolbar_item (True))
@@ -88,4 +87,5 @@ note
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
+
 end
