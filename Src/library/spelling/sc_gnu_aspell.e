@@ -170,23 +170,15 @@ feature -- Operations
 					-- Ignore very last empty line.
 				communicate_with_program (input_lines, checks * 2)
 				if is_successful then
-						-- Remove every second line.
 					output_lines.start
-					from
-					invariant
-						partitioned: output_lines.index - 1 + output_lines.count = checks * 2
-					until
-						output_lines.off
-					loop
-						output_lines.remove
+						-- If all words are ignored, there are no lines.
+					if not output_lines.off then
+							-- Skip version identification.
 						output_lines.forth
-					variant
-						checks - output_lines.index + 1
 					end
 						-- Create correction for every word.
 					corrections.wipe_out
 					words.start
-					output_lines.start
 					from
 					until
 						not is_successful or words.off
@@ -194,6 +186,20 @@ feature -- Operations
 						if checked_words [words.index] then
 							process_correction (words.item, output_lines.item)
 							output_lines.forth
+								-- It can happen that there are multiple answer lines,
+								-- since program can have another definition of word
+								-- and thus take it for multiple words.
+								-- So find next empty line.
+							from
+							until
+								output_lines.off or else output_lines.item.is_empty
+							loop
+								output_lines.forth
+							end
+							if not output_lines.off then
+									-- Skip empty line.
+								output_lines.forth
+							end
 						else
 							corrections.extend (create {SC_CORRECTION}.make_from_correct_word (words.item))
 						end

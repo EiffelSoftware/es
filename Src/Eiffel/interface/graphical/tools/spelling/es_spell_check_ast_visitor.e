@@ -14,12 +14,14 @@ inherit
 			process_string_as,
 			process_verbatim_string_as,
 			process_class_as,
+			process_formal_dec_as,
 			process_rename_as,
 			process_feature_as,
 			process_type_dec_as,
-			process_iteration_as,
 			process_indexing_clause_as,
-			process_tagged_as
+			process_tagged_as,
+			process_iteration_as,
+			process_object_test_as
 		end
 
 	SC_LANGUAGE_UTILITY
@@ -51,6 +53,8 @@ feature -- Collection
 	reset_with_root (root: CLASS_AS)
 			-- Prepare for another visit with class `root' as context
 			-- and reset all collected information.
+		require
+			root_exists: root /= Void
 		do
 				-- Information not in AST like comments needed.
 			setup (root, match_list_server.item (root.class_id), True, True)
@@ -124,16 +128,16 @@ feature {NONE} -- Collecting
 	process_break_as (node: BREAK_AS)
 			-- <Precursor>
 		local
-			comment: EIFFEL_COMMENT_LINE
 			origin: LOCATION_AS
 		do
 				-- Collect comments. Hence roundtrip.
 			across
 				node.extract_comment as comment_line
 			loop
-				comment := comment_line.item
-				create origin.make (comment.line, comment.column, comment.position, comment.content_32.count)
-				collect_text (comment.content_32, origin)
+				if attached comment_line.item as comment and then attached comment.content_32 as string then
+					create origin.make (comment.line, comment.column, comment.position, string.count)
+					collect_text (string, origin)
+				end
 			end
 			Precursor (node)
 		end
@@ -165,15 +169,29 @@ feature {NONE} -- Collecting
 	process_class_as (node: CLASS_AS)
 			-- <Precursor>
 		do
-			collect_identifier (node.class_name.name_32, node.class_name.start_location)
+			if attached node.class_name as name then
+				collect_identifier (name.name_32, name.start_location)
+			end
+			Precursor (node)
+		end
+
+	process_formal_dec_as (node: FORMAL_DEC_AS)
+			-- <Precursor>
+		do
+				-- Check name of formal generic type.
+			if attached node.name as name then
+				collect_identifier (name.name_32, name.start_location)
+			end
 			Precursor (node)
 		end
 
 	process_rename_as (node: RENAME_AS)
 			-- <Precursor>
 		do
-				-- Check introduced name.
-			collect_identifier (node.new_name.visual_name_32, node.new_name.start_location)
+				-- Check renamed feature.
+			if attached node.new_name as name then
+				collect_identifier (name.visual_name_32, name.start_location)
+			end
 			Precursor (node)
 		end
 
@@ -201,6 +219,28 @@ feature {NONE} -- Collecting
 			Precursor (node)
 		end
 
+	process_indexing_clause_as (node: INDEXING_CLAUSE_AS)
+			-- <Precursor>
+		do
+			across
+				node as index
+			loop
+				if attached index.item.tag as tag then
+					collect_identifier (tag.name_32, tag.start_location)
+				end
+			end
+			Precursor (node)
+		end
+
+	process_tagged_as (node: TAGGED_AS)
+			-- <Precursor>
+		do
+			if attached node.tag as tag then
+				collect_identifier (tag.name_32, tag.start_location)
+			end
+			Precursor (node)
+		end
+
 	process_iteration_as (node: ITERATION_AS)
 			-- <Precursor>
 		do
@@ -210,21 +250,13 @@ feature {NONE} -- Collecting
 			Precursor (node)
 		end
 
-	process_indexing_clause_as (node: INDEXING_CLAUSE_AS)
+	process_object_test_as (node: OBJECT_TEST_AS)
 			-- <Precursor>
 		do
-			across
-				node as index
-			loop
-				collect_identifier (index.item.tag.name_32, index.item.tag.start_location)
+				-- Check identifier introduced by test for attached.
+			if attached node.name as name then
+				collect_identifier (name.name_32, name.start_location)
 			end
-			Precursor (node)
-		end
-
-	process_tagged_as (node: TAGGED_AS)
-			-- <Precursor>
-		do
-			collect_identifier (node.tag.name_32, node.tag.start_location)
 			Precursor (node)
 		end
 

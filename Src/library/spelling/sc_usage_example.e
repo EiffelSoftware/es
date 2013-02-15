@@ -198,7 +198,7 @@ feature {NONE} -- Implementation
 			else
 				inspect correction.suggestions.count
 				when 0 then
-					print ("No suggestions found. Is it misspelled?")
+					print ("No suggestions found. Is it misspelled?%N")
 				when 1 then
 					print ("One suggestion found: ")
 				else
