@@ -1,0 +1,46 @@
+\ProvidesPackage{basis}
+
+% Typesetting language.
+\usepackage{polyglossia}
+\setdefaultlanguage[variant=british]{english}
+
+% More sophisticated mathematical formulas, numbers and units.
+\usepackage{amsmath, amssymb, amsthm, mathtools, siunitx}
+
+% References with numbers in square brackets. Example: \cite{Unicode}.
+\usepackage{biblatex}
+
+% Graphics.
+\usepackage{graphicx}
+
+% Algorithms.
+\usepackage{algpseudocode} % Environment for algorithm pseudocode.
+\usepackage{algorithm} % Floating, numbering and referencing algorithms.
+
+% Links in document.
+\usepackage[pdfusetitle]{hyperref}
+% Use \hypersetup{hidelinks} to avoid highlighting of links.
+
+% Source code listings.
+\usepackage{listings}
+\lstset{language=Eiffel, basicstyle=\ttfamily, tabsize=4}
+
+% Make KOMA-Script use same font for sectional unit titles as for normal text.
+\setkomafont{disposition}{\normalfont\bfseries}
+% Font for mathematics: like Palatino. Order first.
+\usepackage[sc]{mathpazo}
+
+% Choice of glyphs.
+\usepackage{fontspec}
+% Default fonts.
+\setmainfont{TeXGyrePagella} % Font like Palatino.
+\setmonofont[Scale=MatchLowercase]{DejaVu Sans Mono}
+\linespread{1.05} % Recommended for fonts like Palatino.
+
+% Possibly nested quotation marks.
+\newcommand{\Code}[1]{\lstinline!#1!}
+\newcommand{\EvenQuote}[1]{“#1”}
+\newcommand{\OddQuote}[1]{‘#1’}
+\newcommand{\Path}[1]{\texttt{#1}}
+\newcommand{\Word}[1]{\EvenQuote{#1}}
+\newcommand{\Work}[1]{\OddQuote{#1}}

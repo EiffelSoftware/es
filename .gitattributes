@@ -4401,6 +4401,9 @@ Src/library/runtime/logging/doc/Arch_Design_and_Impl.pdf -text svneol=unset#appl
 Src/library/runtime/logging/doc/Arch_Design_and_Impl.vsd -text
 Src/library/runtime/logging/doc/Readme.1st -text
 Src/library/spelling/UnicodeLetter.hs -text
+Src/library/spelling/documentation/basis.sty -text
+Src/library/spelling/documentation/object_model.png -text
+Src/library/spelling/documentation/report.tex -text
 Src/library/spelling/en_ignore_dictionary.xml -text
 Src/library/spelling/tests/word_set/empty_word.xml -text
 Src/library/spelling/tests/word_set/no_root.xml -text
