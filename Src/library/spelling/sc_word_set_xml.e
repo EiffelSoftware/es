@@ -8,6 +8,11 @@ inherit
 
 	SC_WORD_SET
 
+	SC_LANGUAGE_UTILITY
+		export
+			{NONE} all
+		end
+
 create
 	make_with_file
 
@@ -188,10 +193,6 @@ feature {NONE} -- Implementation
 
 	words_cache: SET [READABLE_STRING_32]
 			-- Current set of words. This may differ from file unless synchronized.
-		attribute
-		ensure
-			all_words: Result.linear_representation.for_all (agent is_word)
-		end
 
 	is_loaded: BOOLEAN
 			-- Is word set loaded from persistent storage?

@@ -4,13 +4,6 @@ note
 class
 	SC_CORRECTION
 
-inherit
-
-	SC_LANGUAGE_UTILITY
-		export
-			{SC_CORRECTION} all
-		end
-
 create
 	make_from_correct_word, make_from_incorrect_word, make_from_word_without_suggestions, make_from_correct_text_part, make_from_incorrect_text_part, make_from_text_part_without_suggestions
 
@@ -18,8 +11,6 @@ feature {NONE} -- Initialization
 
 	make_from_correct_word (word: READABLE_STRING_32)
 			-- Create from correct `word'.
-		require
-			word_valid: is_word (word)
 		do
 			make_from_correct_text_part (1, word.count)
 		ensure
@@ -32,7 +23,6 @@ feature {NONE} -- Initialization
 	make_from_incorrect_word (word: READABLE_STRING_32; some_suggestions: LIST [READABLE_STRING_32])
 			-- Create from incorrect `word' with `some_suggestions'.
 		require
-			word_valid: is_word (word)
 			suggestions_nonempty: not some_suggestions.is_empty
 		do
 			make_from_incorrect_text_part (1, word.count, some_suggestions)
@@ -45,8 +35,6 @@ feature {NONE} -- Initialization
 
 	make_from_word_without_suggestions (word: READABLE_STRING_32)
 			-- Create from `word' without any suggestions.
-		require
-			word_valid: is_word (word)
 		do
 			make_from_text_part_without_suggestions (1, word.count)
 		ensure

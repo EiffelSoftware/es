@@ -25,17 +25,23 @@ feature {NONE} -- Initialization
 	make
 			-- Run aplication.
 		local
+			maybe_string: detachable STRING_32
 			pairs: LINKED_LIST [TUPLE [conut: INTEGER; string: STRING_32]]
-			length: INTEGER
+			part: STRING_32
 		do
-			print ("Helo word!%N")
 			create randonmess.make
+			maybe_string := "Helo word!%N"
 			create pairs.make
 			across
 				Current as agument_part
 			loop
-				length := agument_part.item.count
-				pairs.extend ([length, agument_part.item.as_string_32])
+				if attached maybe_string as stirng then
+					print (stirng)
+					maybe_string := Void
+				else
+					part := agument_part.item
+					pairs.extend ([part.count, part.as_string_32])
+				end
 			end
 		end
 
@@ -44,7 +50,7 @@ feature -- Acess
 	binary_saerch, set_contians (set: ARRAY [DOUBLE]; probibality: DOUBLE): INTEGER
 			-- Index in `set' nect to `probibality'.
 		require
-			set_sorted: across 1 |..| (set.count - 1) as indec all set [indec.item] < set [indec.item + 1] end
+			across 1 |..| (set.count - 1) as indec all set [indec.item] < set [indec.item + 1] end
 			problability_valid: 0 <= probibality and probibality <= 1
 		local
 			low, high, midle: INTEGER

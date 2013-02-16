@@ -26,8 +26,36 @@ feature -- Access
 			create Result.make_with_region ("en", "US")
 		end
 
-	words_of_text (text: READABLE_STRING_32): LIST [TUPLE [base, length: INTEGER]]
-			-- Find word limits of Unicode `text' for spell checking.
+	Default_punctuation: STRING_32
+			-- Standard definition of punctuation in words.
+		once
+			create Result.make_empty
+			across
+				Middle_letter as punctuation
+			loop
+				Result.append_character (punctuation.item)
+			end
+			across
+				Middle_number_letter as punctuation
+			loop
+				Result.append_character (punctuation.item)
+			end
+		end
+
+	default_words_of_text (text: READABLE_STRING_32): LIST [TUPLE [base, length: INTEGER]]
+			-- Find default word limits of Unicode `text' for spell checking.
+		do
+			Result := words_of_text_with_punctuation (text, Default_punctuation)
+		ensure
+			bases_positive: across Result as word all word.item.base >= 1 end
+			lengths_positive: across Result as word all word.item.length >= 1 end
+			intervals_sorted_and_disjoint: across 1 |..| (Result.count - 1) as index all Result [index.item].base + Result [index.item].length <= Result [index.item + 1].base end
+			all_words: across Result as word all is_default_word (text.substring (word.item.base, word.item.base + word.item.length - 1)) end
+		end
+
+	words_of_text_with_punctuation (text, punctuation: READABLE_STRING_32): LIST [TUPLE [base, length: INTEGER]]
+			-- Find word limits of Unicode `text' for spell checking
+			-- with characters of `punctuation' valid between letters.
 		local
 			left, right: TUPLE [base, length: INTEGER]
 		do
@@ -49,7 +77,7 @@ feature -- Access
 					right := Result.item
 					if left.base + left.length + 1 = right.base then
 							-- There is exactly one character between `left' and `right' substring.
-						if is_word_punctuation (text [right.base - 1]) then
+						if punctuation.has (text [right.base - 1]) then
 								-- Character belongs to word punctuation, thus merge words.
 							Result.remove
 							Result.back
@@ -61,15 +89,26 @@ feature -- Access
 				Result.count - Result.index + 1
 			end
 		ensure
-			bases_positve: across Result as word all word.item.base >= 1 end
+			bases_positive: across Result as word all word.item.base >= 1 end
 			lengths_positive: across Result as word all word.item.length >= 1 end
 			intervals_sorted_and_disjoint: across 1 |..| (Result.count - 1) as index all Result [index.item].base + Result [index.item].length <= Result [index.item + 1].base end
-			all_words: across Result as word all is_word (text.substring (word.item.base, word.item.base + word.item.length - 1)) end
+			all_words: across Result as word all is_word_with_punctuation (text.substring (word.item.base, word.item.base + word.item.length - 1), punctuation) end
 		end
 
-	is_word (text: READABLE_STRING_32): BOOLEAN
+	is_default_word (text: READABLE_STRING_32): BOOLEAN
+			-- Is given `text' single word using default punctuation?
+		do
+			Result := is_word_with_punctuation (text, Default_punctuation)
+		ensure
+			not_empty_word: text.is_empty implies not Result
+			has_letter: Result implies across text as character some is_letter (character.item) end
+		end
+
+	is_word_with_punctuation (text, punctuation: READABLE_STRING_32): BOOLEAN
 			-- Is given `text' single word?
+			-- Characters from `punctuation' are valid between letters.
 		local
+			last_letter, now_letter: BOOLEAN
 			index: INTEGER
 		do
 			if not text.is_empty then
@@ -80,14 +119,18 @@ feature -- Access
 					not Result or index = text.count
 				loop
 					index := index + 1
-					if not is_letter (text [index]) then
-						if 1 < index and index < text.count and is_word_punctuation (text [index]) then
-								-- Word punctuation has to be between two letters.
-							Result := is_letter (text [index - 1]) and is_letter (text [index + 1])
+					now_letter := is_letter (text [index])
+					if index = 1 or index = text.count then
+						Result := now_letter
+					elseif not now_letter then
+							-- Word punctuation has to be between two letters.
+						if punctuation.has (text [index]) then
+							Result := last_letter
 						else
 							Result := False
 						end
 					end
+					last_letter := now_letter
 				variant
 					text.count - index
 				end
@@ -199,7 +242,7 @@ feature {NONE} -- Implementation
 				last_in_word := current_in_word
 			end
 		ensure
-			bases_positve: across Result as substring all substring.item.base >= 1 end
+			bases_positive: across Result as substring all substring.item.base >= 1 end
 			lengths_positive: across Result as substring all substring.item.length >= 1 end
 			substrings_sorted_disjoint_and_fewest_possible: across 1 |..| (Result.count - 1) as index all Result [index.item].base + Result [index.item].length < Result [index.item + 1].base end
 			only_letters: across Result as substring all across substring.item.base |..| (substring.item.base + substring.item.length - 1) as index all is_letter (text [index.item]) end end
@@ -247,12 +290,6 @@ feature {NONE} -- Implementation
 				end
 				Result := element < set [low].base + set [low].length
 			end
-		end
-
-	is_word_punctuation (character: CHARACTER_32): BOOLEAN
-			-- Is `character' punctuation of same word like apostrophe in "can't"?
-		do
-			Result := Middle_letter.has (character) or Middle_number_letter.has (character)
 		end
 
 invariant

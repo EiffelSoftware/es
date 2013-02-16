@@ -1,5 +1,8 @@
 note
-	description: "Iterate over AST to collect strings for spell check."
+	description: "[
+		Iterate over AST to collect strings,
+		for example for spell check.
+	]"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -24,11 +27,6 @@ inherit
 			process_object_test_as
 		end
 
-	SC_LANGUAGE_UTILITY
-		export
-			{NONE} all
-		end
-
 	SHARED_SERVER
 		export
 			{NONE} all
@@ -39,13 +37,16 @@ create
 
 feature {NONE} -- Initialization
 
-	make
-			-- Create empty collection.
+	make (segment_text: FUNCTION [ANY, TUPLE [text: READABLE_STRING_32], LIST [TUPLE [base, length: INTEGER]]])
+			-- Create empty collection and remember given function
+			-- `segment_text' to break up text into desired parts.
+			-- These parts could be words for spell checking.
 		do
-			create {LINKED_LIST [STRING_32]} words.make
+			create {LINKED_LIST [STRING_32]} segments.make
 			create {LINKED_LIST [LOCATION_AS]} bases.make
+			text_segmentation_function := segment_text
 		ensure
-			empty: words.is_empty and bases.is_empty
+			empty: segments.is_empty and bases.is_empty
 		end
 
 feature -- Collection
@@ -58,52 +59,55 @@ feature -- Collection
 		do
 				-- Information not in AST like comments needed.
 			setup (root, match_list_server.item (root.class_id), True, True)
-			words.wipe_out
+			segments.wipe_out
 			bases.wipe_out
 		ensure
-			empty: words.is_empty and bases.is_empty
+			empty: segments.is_empty and bases.is_empty
 		end
 
 	count: INTEGER
-			-- Number of collected words. They do not need to be unique.
+			-- Number of collected segments. They do not need to be unique.
 		do
-			Result := words.count
+			Result := segments.count
 		ensure
-			correct: Result = words.count
+			correct: Result = segments.count
 		end
 
-	words: LIST [READABLE_STRING_32]
-			-- Collection of words so far.
+	segments: LIST [READABLE_STRING_32]
+			-- Collection of text segments so far.
 
 	bases: LIST [LOCATION_AS]
-			-- Places in source code corresponding to words.
+			-- Places in source code corresponding to segments.
 
 feature {NONE} -- Implementation
 
-	Word_length_limit: INTEGER = 3
-			-- Words shorter than this are not collected.
+	Segment_length_limit: INTEGER = 3
+			-- Segments shorter than this are not collected.
+
+	text_segmentation_function: FUNCTION [ANY, TUPLE [text: READABLE_STRING_32], LIST [TUPLE [base, length: INTEGER]]]
+			-- Function to find segment limits in text.
 
 	collect_text (text: READABLE_STRING_32; origin: LOCATION_AS)
-			-- Remember words of `text' rooted at `origin'.
+			-- Remember segments of `text' rooted at `origin'.
 		require
 			text_exists: text /= Void
 			origin_exists: origin /= Void
 		local
 			length, base: INTEGER
-			word: STRING_32
-			word_base: LOCATION_AS
+			segment: STRING_32
+			segment_base: LOCATION_AS
 		do
 			across
-				words_of_text (text) as limit
+				text_segmentation_function.item ([text]) as limit
 			loop
 				length := limit.item.length
-				if length >= Word_length_limit then
+				if length >= Segment_length_limit then
 					base := limit.item.base
-					word := text.substring (base, base + length - 1)
-					words.extend (word)
+					segment := text.substring (base, base + length - 1)
+					segments.extend (segment)
 						-- Assuming on one line only. TODO.
-					create word_base.make (origin.line, origin.column + base - 1, origin.position + base - 1, length)
-					bases.extend (word_base)
+					create segment_base.make (origin.line, origin.column + base - 1, origin.position + base - 1, length)
+					bases.extend (segment_base)
 				end
 			end
 		ensure
@@ -198,7 +202,7 @@ feature {NONE} -- Collecting
 	process_feature_as (node: FEATURE_AS)
 			-- <Precursor>
 		do
-				-- Find all synomyms.
+				-- Find all synonyms.
 			across
 				node.feature_names as name
 			loop
@@ -261,8 +265,8 @@ feature {NONE} -- Collecting
 		end
 
 invariant
-	counts_equal: words.count = bases.count
-	word_limit_satisfied: across words as word all word.item.count >= Word_length_limit end
+	counts_equal: segments.count = bases.count
+	segment_limit_satisfied: across segments as segment all segment.item.count >= Segment_length_limit end
 
 note
 	copyright: "Copyright (c) 1984-2013, Eiffel Software"

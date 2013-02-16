@@ -6,10 +6,7 @@ class
 
 inherit
 
-	SC_LANGUAGE_UTILITY
-		export
-			{SC_SPELL_CHECKER} all
-			{ANY} is_word
+	ANY
 		redefine
 			default_create
 		end
@@ -66,6 +63,23 @@ feature -- Status
 			back_end := a_back_end
 		ensure
 			back_end_set: back_end = a_back_end
+		end
+
+	is_word (text: READABLE_STRING_32): BOOLEAN
+			-- Is given `text' single word?
+		do
+			Result := back_end.is_word (text)
+		end
+
+	words_of_text (text: READABLE_STRING_32): LIST [TUPLE [base, length: INTEGER]]
+			-- Find word limits of `text' for spell checking.
+		do
+			Result := back_end.words_of_text (text)
+		ensure
+			bases_positive: across Result as word all word.item.base >= 1 end
+			lengths_positive: across Result as word all word.item.length >= 1 end
+			intervals_sorted_and_disjoint: across 1 |..| (Result.count - 1) as index all Result [index.item].base + Result [index.item].length <= Result [index.item + 1].base end
+			all_words: across Result as word all is_word (text.substring (word.item.base, word.item.base + word.item.length - 1)) end
 		end
 
 	is_successful: BOOLEAN

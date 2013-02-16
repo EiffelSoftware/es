@@ -24,7 +24,7 @@ feature {NONE} -- Initialization
 			print ('%N')
 				-- Finally, run usage example. External system.
 			create usage_example
-			print ('%N')
+			print ("%NAll tests completed.%N%N")
 		end
 
 feature {NONE} -- Language utility
@@ -73,7 +73,7 @@ feature {NONE} -- Language utility
 			across
 				tests as test
 			loop
-				words := words_of_text (test.item.text)
+				words := default_words_of_text (test.item.text)
 				check
 					counts_equal: words.count = test.item.words.count
 				end
@@ -102,13 +102,19 @@ feature {NONE} -- Language utility
 			tests.extend ([{STRING_32} "dog", True])
 			tests.extend ([{STRING_32} "dog ", False])
 			tests.extend ([{STRING_32} "can't", True])
+			tests.extend ([{STRING_32} "'", False])
+			tests.extend ([{STRING_32} "n'", False])
+			tests.extend ([{STRING_32} "'t", False])
+			tests.extend ([{STRING_32} "n't", True])
+			tests.extend ([{STRING_32} "can.t", True])
+			tests.extend ([{STRING_32} "can:t", True])
 			tests.extend ([{STRING_32} "32.3", False])
 			tests.extend ([{STRING_32} "priority_queue", False])
 			across
 				tests as test
 			loop
 				check
-					word_as_expected: is_word (test.item.text) = test.item.word
+					word_as_expected: is_default_word (test.item.text) = test.item.word
 				end
 			end
 		end

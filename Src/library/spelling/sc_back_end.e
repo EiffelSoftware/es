@@ -13,7 +13,6 @@ inherit
 	SC_LANGUAGE_UTILITY
 		export
 			{SC_BACK_END} all
-			{ANY} is_word
 		end
 
 feature {NONE} -- Initialization
@@ -50,6 +49,23 @@ feature -- Status
 		deferred
 		ensure
 			language_set: language.is_equal (a_language)
+		end
+
+	is_word (text: READABLE_STRING_32): BOOLEAN
+			-- Is given `text' single word according to back end?
+		do
+			Result := is_default_word (text)
+		end
+
+	words_of_text (text: READABLE_STRING_32): LIST [TUPLE [base, length: INTEGER]]
+			-- Find word limits of `text' according to back end.
+		do
+			Result := default_words_of_text (text)
+		ensure
+			bases_positive: across Result as word all word.item.base >= 1 end
+			lengths_positive: across Result as word all word.item.length >= 1 end
+			intervals_sorted_and_disjoint: across 1 |..| (Result.count - 1) as index all Result [index.item].base + Result [index.item].length <= Result [index.item + 1].base end
+			all_words: across Result as word all is_word (text.substring (word.item.base, word.item.base + word.item.length - 1)) end
 		end
 
 	is_successful: BOOLEAN

@@ -9,6 +9,8 @@ inherit
 	SC_BACK_END
 		redefine
 			default_create,
+			is_word,
+			words_of_text,
 			check_words
 		end
 
@@ -25,7 +27,7 @@ create
 feature {NONE} -- Initialization
 
 	default_create
-			-- Create with default program name and lanuage.
+			-- Create with default program name and language.
 		do
 			make_with_program_name (Default_program_name)
 		end
@@ -131,6 +133,21 @@ feature -- Status
 		ensure then
 			language_set: attached maybe_language as just_language and then just_language.is_equal (a_language)
 			volatile_user_dictionary_empty: volatile_user_dictionary.is_empty
+		end
+
+	is_word (text: READABLE_STRING_32): BOOLEAN
+			-- <Precursor>
+		do
+			Result := is_word_with_punctuation (text, Punctuation)
+		ensure then
+			not_empty_word: text.is_empty implies not Result
+			has_letter: Result implies across text as character some is_letter (character.item) end
+		end
+
+	words_of_text (text: READABLE_STRING_32): LIST [TUPLE [base, length: INTEGER]]
+			-- <Precursor>
+		do
+			Result := words_of_text_with_punctuation (text, Punctuation)
 		end
 
 feature -- Operations
@@ -292,6 +309,9 @@ feature -- Operations
 		end
 
 feature {NONE} -- Implementation
+
+	Punctuation: STRING_32 = "'"
+			-- Possible punctuation in words between letters.
 
 	maybe_language: detachable SC_LANGUAGE
 			-- Language if given by user, otherwise Void for default.

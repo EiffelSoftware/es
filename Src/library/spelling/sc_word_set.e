@@ -4,14 +4,6 @@ note
 deferred class
 	SC_WORD_SET
 
-inherit
-
-	SC_LANGUAGE_UTILITY
-		export
-			{SC_WORD_SET} all
-			{ANY} is_word
-		end
-
 feature {NONE} -- Initialization
 
 	make
@@ -29,14 +21,10 @@ feature -- Access
 		deferred
 		ensure
 			object_comparison: is_successful implies Result.object_comparison
-				-- All strings in set are words. This causes catcall:
-				-- Result.linear_representation.for_all (agent is_word)
 		end
 
 	has (word: READABLE_STRING_32): BOOLEAN
 			-- Is `word' part of set?
-		require
-			word_valid: is_word (word)
 		do
 			Result := words.has (word)
 		ensure
@@ -68,8 +56,6 @@ feature -- Element change
 
 	extend (word: READABLE_STRING_32)
 			-- Add `word' to set. Changes are only made persistent with `store'.
-		require
-			word_valid: is_word (word)
 		deferred
 		ensure
 			extended: is_successful implies words.has (word)
@@ -77,8 +63,6 @@ feature -- Element change
 
 	prune (word: READABLE_STRING_32)
 			-- Remove `word' from set. Changes are only made persistent with `store'.
-		require
-			word_valid: is_word (word)
 		deferred
 		ensure
 			pruned: is_successful implies not words.has (word)

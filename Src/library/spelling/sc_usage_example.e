@@ -6,7 +6,7 @@ class
 
 inherit
 
-	SC_LANGUAGE_UTILITY
+	ANY
 		redefine
 			default_create
 		end
@@ -16,10 +16,12 @@ feature {NONE} -- Initialization
 	default_create
 			-- Run parts of usage example.
 		do
+			use_basics
 			create checker
 			check
 				successful: checker.is_successful
 			end
+			create utility
 			check_words
 			check_texts
 			check_available_languages
@@ -28,6 +30,42 @@ feature {NONE} -- Initialization
 		end
 
 feature {NONE} -- Examples
+
+	use_basics
+			-- Independent example for basic usage of spell checker.
+		local
+			spell_checker: SC_SPELL_CHECKER
+			language: SC_LANGUAGE
+			correction: SC_CORRECTION
+		do
+			create spell_checker
+			create language.make_with_region ("en", "GB")
+			spell_checker.set_language (language)
+			spell_checker.check_word ("inexistent")
+			if spell_checker.is_word_checked then
+				correction := spell_checker.last_word_correction
+				if correction.is_correct then
+					print ("Spelling is correct.%N")
+				else
+					print ("Spelling is incorrect")
+					across
+						correction.suggestions as suggestion
+					loop
+						if suggestion.is_first then
+							print (". What about: ")
+						else
+							print (", ")
+						end
+						print (suggestion.item)
+					end
+					print ("?%N")
+				end
+			else
+				print ("Spell checker failed: ")
+				print (spell_checker.failure_message)
+				print ('%N')
+			end
+		end
 
 	check_words
 			-- Check single words.
@@ -64,6 +102,7 @@ feature {NONE} -- Examples
 			texts.extend ("Let's recurse in any subtree.")
 			texts.extend ("The quick (%"brown%") fox can't jump 32.3 feet, right?")
 			texts.extend ("Thus fulness of exposition is necessary for accuracy.")
+			texts.extend ("Result.linear_representation.for_all (agent is_word)")
 			across
 				texts as text
 			loop
@@ -89,7 +128,7 @@ feature {NONE} -- Examples
 			print ("Checking availability of languages%N")
 			create languages.make
 			languages.extend (create {SC_LANGUAGE}.make_with_region ("en", "GB"))
-			languages.extend (Default_source_code_language)
+			languages.extend (utility.Default_source_code_language)
 			languages.extend (create {SC_LANGUAGE}.make_with_region ("nan", "TW"))
 			languages.extend (create {SC_LANGUAGE}.make ("en"))
 			languages.extend (create {SC_LANGUAGE}.make_with_region ("pt", "BR"))
@@ -168,12 +207,12 @@ feature {NONE} -- Examples
 			back_end: SC_GNU_ASPELL
 		do
 			print ("Checking change of language%N")
-			checker.set_language (Default_source_code_language)
+			checker.set_language (utility.Default_source_code_language)
 			check
 				checker_successful: checker.is_successful
 			end
 			check_words
-			create back_end.make_with_language (Default_source_code_language)
+			create back_end.make_with_language (utility.Default_source_code_language)
 			check
 				back_end_successful: back_end.is_successful
 			end
@@ -188,6 +227,9 @@ feature {NONE} -- Implementation
 
 	checker: SC_SPELL_CHECKER
 			-- Spell checker in use.
+
+	utility: SC_LANGUAGE_UTILITY
+			-- Helpers related to text processing.
 
 	comment_correction (correction: SC_CORRECTION)
 			-- Give comment based on `correction' in natural language.
@@ -206,7 +248,7 @@ feature {NONE} -- Implementation
 					print (" suggestions found: ")
 				end
 				if not correction.suggestions.is_empty then
-					print (concatenate_texts (correction.suggestions, Default_separator))
+					print (utility.concatenate_texts (correction.suggestions, utility.Default_separator))
 					print (".%N")
 				end
 			end

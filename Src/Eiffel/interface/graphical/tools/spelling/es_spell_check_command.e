@@ -42,7 +42,7 @@ feature {NONE} -- Initialization
 			enable_sensitive
 			create spell_checker
 				-- TODO. spell_checker.set_language (Default_source_code_language)
-			create visitor.make
+			create visitor.make (agent spell_checker.words_of_text)
 		end
 
 feature -- Execution
@@ -127,7 +127,7 @@ feature {NONE} -- Basic operations
 			end
 			if attached maybe_node as node then
 				visitor.process_ast_node (node)
-				spell_checker.check_words (visitor.words)
+				spell_checker.check_words (visitor.segments)
 				if spell_checker.are_words_checked then
 					show_result (generate_text)
 				else
@@ -227,7 +227,7 @@ feature {NONE} -- Spell checking
 		do
 			Result := ""
 			all_correct := True
-			visitor.words.start
+			visitor.segments.start
 			visitor.bases.start
 			across
 				spell_checker.last_words_corrections as correction
@@ -235,7 +235,7 @@ feature {NONE} -- Spell checking
 				if not correction.item.is_correct then
 					all_correct := False
 					Result.append (visitor.bases.item.line.out + ":" + visitor.bases.item.column.out + " ")
-					Result.append ("Misspelled word: " + visitor.words.item + ". ")
+					Result.append ("Misspelled word: " + visitor.segments.item + ". ")
 					inspect correction.item.suggestions.count
 					when 0 then
 						Result.append ("No suggestions")
@@ -247,7 +247,7 @@ feature {NONE} -- Spell checking
 					Result.append (concatenate_texts (correction.item.suggestions, Default_separator))
 					Result.append ("." + Default_newline + Default_newline)
 				end
-				visitor.words.forth
+				visitor.segments.forth
 				visitor.bases.forth
 			end
 			if all_correct then
