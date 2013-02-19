@@ -1,11 +1,14 @@
 class
 	APPLICATION
 
+inherit
+  ARGUMENTS
+
 create
 	make
 
 feature {NONE}
-	num_workers: INTEGER = 4
+	num_workers: INTEGER
 
 	make
 		local
@@ -13,6 +16,8 @@ feature {NONE}
 			workers: ARRAYED_LIST [separate WORKER]
 			i: INTEGER
 		do
+      num_workers := argument (1).to_integer_32
+
 			create workers.make (10)
 			from i := 1
 			until i > num_workers

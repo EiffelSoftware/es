@@ -14,8 +14,8 @@ create
 
 feature {NONE} -- Initialization
 
-	num_workers: INTEGER = 32
-	array_size: INTEGER = 5000
+	num_workers: INTEGER
+	array_size: INTEGER
 
 	make
 		local
@@ -24,6 +24,9 @@ feature {NONE} -- Initialization
 			array: separate ARRAYED_LIST [INTEGER]
 			i: INTEGER
 		do
+      array_size := argument(1).to_integer_32
+      num_workers := argument (2).to_integer_32
+      
 			create workers.make (10)
 			create array.make_filled (array_size)
 

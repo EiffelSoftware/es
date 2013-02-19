@@ -6,12 +6,14 @@ note
 class
 	APPLICATION
 
+inherit
+  ARGUMENTS
+  
 create
 	make
 
 feature {NONE} -- Initialization
-  max_producers: INTEGER = 50
-  max_consumers: INTEGER = 50
+  max_workers: INTEGER
 
 	make
 		local
@@ -21,13 +23,17 @@ feature {NONE} -- Initialization
 			consumers: LINKED_LIST [separate CONSUMER]
 		  shared: separate SHARED_QUEUE [INTEGER]
 			i: INTEGER
+      max: INTEGER
 		do
+      max := argument(1).to_integer_32
+      max_workers := argument (2).to_integer_32
+      
 			create shared.make
       create producers.make
 			from i := 1
-			until i > max_producers
+			until i > max_workers
 			loop
-				create producer.make (shared)
+				create producer.make (shared, max)
         run_producer (producer)
 				producers.extend (producer)
 				i := i + 1
@@ -35,9 +41,9 @@ feature {NONE} -- Initialization
 
       create consumers.make
 			from i := 1
-			until i > max_consumers
+			until i > max_workers
 			loop
-				create consumer.make (shared)
+				create consumer.make (shared, max)
         run_consumer (consumer)
 				consumers.extend (consumer)
 				i := i + 1

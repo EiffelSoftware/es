@@ -11,13 +11,14 @@ create
 	make
 
 feature {NONE}
-	make (sh: separate SHARED_QUEUE [INTEGER])
+	make (sh: separate SHARED_QUEUE [INTEGER]; max: INTEGER)
 		do
 			shared := sh
+      max_iterations := max
 		end
 
 feature
-	max_iterations: INTEGER = 20000
+	max_iterations: INTEGER
 
 	shared: separate SHARED_QUEUE [INTEGER]
 

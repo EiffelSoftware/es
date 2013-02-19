@@ -11,13 +11,14 @@ create
 	make
 
 feature {NONE}
-	make (sh: separate VAR)
+	make (sh: separate VAR; max: INTEGER)
 		do
 			shared := sh
+      max_iterations := max
 		end
 
 feature
-	max_iterations: INTEGER = 20000
+	max_iterations: INTEGER
 
 	shared: separate VAR
 

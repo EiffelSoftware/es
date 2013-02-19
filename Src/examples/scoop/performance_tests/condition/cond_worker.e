@@ -11,12 +11,13 @@ create
 	make
 
 feature
-	num_iterations: INTEGER = 1000
+	num_iterations: INTEGER
 
 	-- Each worker shares a separate VAR.
-	make (v: separate VAR)
+	make (v: separate VAR; max: INTEGER)
 		do
 			var := v
+      num_iterations := max
 		end
 
 	var: separate VAR

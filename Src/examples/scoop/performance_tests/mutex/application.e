@@ -6,11 +6,14 @@ note
 class
 	APPLICATION
 
+inherit
+  ARGUMENTS
+
 create
 	make
 
 feature {NONE} -- Initialization
-	max_workers: INTEGER = 50
+	max_workers: INTEGER
 
 	make
 		local
@@ -18,13 +21,17 @@ feature {NONE} -- Initialization
 			workers: LINKED_LIST [separate MUTEX_WORKER]
 			shared: separate VAR
 			i: INTEGER
+      max: INTEGER
 		do
+      max := argument (1).to_integer_32
+      max_workers := argument (2).to_integer_32
+
 			create shared
       create workers.make
 			from i := 1
 			until i > max_workers
 			loop
-				create worker.make (shared)
+				create worker.make (shared, max)
 				workers.extend (worker)
 				i := i + 1
 			end

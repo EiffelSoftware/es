@@ -13,7 +13,7 @@ create
 	make
 
 feature {NONE} -- Initialization
-	workers: INTEGER = 32
+	max_workers: INTEGER
 
 	make
 		local
@@ -21,24 +21,28 @@ feature {NONE} -- Initialization
 			var: separate VAR
 			worker: separate COND_WORKER
 			prod_workers, cons_workers: LINKED_LIST [separate COND_WORKER]
+      max: INTEGER
 		do
 			create var
 			create prod_workers.make
 			create cons_workers.make
 
+      max := argument(1).to_integer_32
+      max_workers := argument (2).to_integer_32
+      
 			-- Make equal numbers of "producers" and "consumers, storing each
 			-- in a separate list. Depending on what they are intended for,
 			-- they are asynchronously run using different procedure calls.
 			from
 				i := 1
 			until
-				i > workers
+				i > max_workers
 			loop
-				create worker.make (var)
+				create worker.make (var, max)
 				prod_workers.extend (worker)
 				run_prod (worker)
 
-				create worker.make (var)
+				create worker.make (var, max)
 				cons_workers.extend (worker)
 				run_cons (worker)
 
@@ -49,7 +53,7 @@ feature {NONE} -- Initialization
 			from
 				i := 1
 			until
-				i > workers
+				i > max_workers
 			loop
 				wait (prod_workers [i])
 				wait (cons_workers [i])
