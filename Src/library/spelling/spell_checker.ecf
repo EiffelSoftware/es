@@ -17,6 +17,8 @@
 				<exclude>/EIFGENs$</exclude>
 				<exclude>/CVS$</exclude>
 				<exclude>/.svn$</exclude>
+				<exclude>/documentation$</exclude>
+				<exclude>/tests$</exclude>
 			</file_rule>
 		</cluster>
 	</target>
