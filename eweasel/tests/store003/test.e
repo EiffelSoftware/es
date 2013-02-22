@@ -5,27 +5,29 @@
 --| Public License version 2.
 
 class TEST
+inherit
+	SERIALIZATION_HELPER
 
 create
 	make
 
 feature -- Initialization
 
-	make is
+	make
 		local
-			file : RAW_FILE
 			manu: MANU [STRING]
+			l_objects: like retrieved_objects
 		do
 			create manu.make ("Fdsfds", 123, 1)
-			create file.make_open_write ("stored")
-			file.independent_store (manu)
-			file.close
-			
-			create file.make_open_read ("stored")
-			manu := Void
-			manu ?= file.retrieved
-			file.close
-			print (manu = Void); io.new_line
+			store_object (manu, "stored")
+			l_objects := retrieved_objects ("stored")
+			if l_objects.count /= storable_types.count then
+				across l_objects as l_item loop
+					io.put_string ("Retrieved " + l_item.key + "%N")
+				end
+			elseif not across l_objects as l_item all deep_equal (l_item.item, manu) end then
+				io.put_string ("Some objects are not equal!%N")
+			end
 		end 
 		
 	a: ARRAY [expanded A]

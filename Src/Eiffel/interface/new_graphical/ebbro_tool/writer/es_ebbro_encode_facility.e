@@ -77,7 +77,6 @@ feature -- basic operations
 				if a_format = binary_format_id and then attached {BINARY_DECODED} a_displayable.original_decoded as l_bin_dec then
 			--	if a_format = binary_format_id and then {l_bin_dec:BINARY_DECODED} a_displayable.original_decoded then
 					-- object that was displayed is attached as a `BINARY_DECODED' object, use the `TYPE_INDEPENDENT_SERIALIZER'
-					l_type_ind_ser.set_is_for_fast_retrieval (false)
 
 					l_writer.write_header
 					l_writer.write_natural_32 ({SED_STORABLE_FACILITIES}.eiffel_independent_store)
@@ -109,7 +108,7 @@ feature -- Actions for Controller
 		end
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -66,13 +66,10 @@ feature {NONE} -- Initialization
 
 				-- Handling of keybord/mouse events.
 			grid.pointer_double_press_actions.extend (agent mouse_selection)
+			grid.row_select_actions.extend (agent update_selection)
 
 				-- Handling of mousewheel
 			grid.mouse_wheel_actions.extend (agent on_mouse_wheel)
-
-				-- Ensures that items are drawn dynamically to speed up rendering.
-			grid.enable_partial_dynamic_content
-			grid.set_dynamic_content_function (agent associated_grid_item)
 
 				-- No need for headers
 			grid.hide_header
@@ -97,34 +94,6 @@ feature -- Access
 			"Do not use"
 		do
 			create Result.make (0)
-		end
-
-feature -- Status Setting
-
-	set_is_list_recomputation_required (v: like is_list_recomputation_required)
-			-- Set `is_list_recomputation_required' with `v'.
-		do
-			is_list_recomputation_required := v
-		ensure
-			is_list_recomputation_required_set: is_list_recomputation_required = v
-		end
-
-feature -- Update
-
-	show
-			-- Show
-		do
-				-- Initialize the current suggest list with what has been entered in `field'.
-			build_suggestion_list (field.searched_text, True)
-		end
-
-	show_content
-		do
-				-- Select the entry that match what has been entered in `field'.
-			select_closest_match
-			position_suggestion_choice_window
-			resize_column_to_window_width
-			show_window
 		end
 
 feature -- Query
@@ -180,11 +149,22 @@ feature {EV_ABSTRACT_SUGGESTION_FIELD} -- Events handling
 			end
 		end
 
+feature {NONE} -- Event handling
+
 	mouse_selection (x_pos, y_pos, button: INTEGER; unused1,unused2,unused3: DOUBLE; unused4,unused5:INTEGER)
 			-- process mouse click in the list
 		do
 			if button = 1 and not grid.selected_items.is_empty then
 				suggest_and_close
+			end
+		end
+
+	update_selection (a_row: EV_GRID_ROW)
+			-- Update selection when it changes.
+		do
+			if attached {like row_data_type} a_row.data as l_data then
+					-- Let `field' know about the selection change.
+				field.set_selected_suggestion (l_data)
 			end
 		end
 
@@ -354,12 +334,12 @@ feature {EV_ABSTRACT_SUGGESTION_FIELD} -- Navigation
 
 feature {EV_ABSTRACT_SUGGESTION_FIELD} -- Completion
 
-	build_suggestion_list (a_name: READABLE_STRING_GENERAL; a_is_first: BOOLEAN)
-			-- Build the list based on matches with `name'. If `a_is_first' it is
-			-- the first time that the list will be shown and a new query to the
-			-- suggestion provider is issued. If `is_list_recomputation_required'
-			-- a new query to the suggestion provider will be issued even if not
-			-- otherwise required.
+	show_suggestion_list (a_name: READABLE_STRING_GENERAL; a_is_first: BOOLEAN)
+			-- Build the list based on matches with `name' and show it on screen.
+			-- If `a_is_first' it is the first time that the list will be shown and
+			-- a new query to the- suggestion provider is issued.
+			-- If `is_list_recomputation_required' a new query to the suggestion
+			-- provider will be issued even if not otherwise required.
 		require
 			not_destroyed: not is_destroyed
 		local
@@ -377,15 +357,14 @@ feature {EV_ABSTRACT_SUGGESTION_FIELD} -- Completion
 
 			l_grid := grid
 
-			if a_is_first then
-					-- The first time we need to show the list of suggestions
-					-- when it has fully been computed.
-				l_post_action := agent show_content
-			end
 				-- If this is the first time we are showing the list or if
 				-- settings dictate that it has to be recomputed, we get the
 				-- results from the associated suggestion provider of `field'.
-			if a_is_first or else is_list_recomputation_required then
+			if a_is_first or else settings.is_list_recomputed_when_typing then
+					-- The first time we need to show the list of suggestions
+					-- when it has fully been computed.
+				l_post_action := agent show_content (a_is_first)
+
 				l_grid.wipe_out
 					-- Set the minimum number of column.
 				l_grid.set_column_count_to (1)
@@ -397,18 +376,18 @@ feature {EV_ABSTRACT_SUGGESTION_FIELD} -- Completion
 							grid.insert_new_row (grid.row_count + 1)
 							l_row := grid.row (grid.row_count)
 							l_row.set_data (a_item)
+							settings.update_row (l_row, a_item)
 						end, settings.query_cancel_request)
+			else
+					-- Let's refresh the content of the grid accordingly.
+				show_content (a_is_first)
 			end
-				-- We need to unset `is_list_recomputation_required'
-			is_list_recomputation_required := False
 
 				-- Let's unlock the window to refresh its content with the newly
 				-- build content.
 			if l_is_displayed then
 				unlock_update
 			end
-		ensure
-			is_list_recomputation_required_unset: not is_list_recomputation_required
 		end
 
 	select_closest_match
@@ -445,6 +424,7 @@ feature {EV_ABSTRACT_SUGGESTION_FIELD} -- Completion
 							l_row.show
 							if not l_row_selected then
 								l_row_selected := True
+								field.set_selected_suggestion (l_data)
 								grid.select_row (i)
 							end
 						else
@@ -455,7 +435,6 @@ feature {EV_ABSTRACT_SUGGESTION_FIELD} -- Completion
 					end
 					i := i + 1
 				end
-				resize_column_to_window_width
 			end
 		end
 
@@ -469,23 +448,17 @@ feature {EV_ABSTRACT_SUGGESTION_FIELD} -- Completion
 			l_rows := l_grid.selected_rows
 			if not l_rows.is_empty and then attached {like row_data_type} l_rows.first.data as l_data then
 				field.insert_suggestion (l_data)
+				field.close_actions.call ([l_data])
 			end
 			close
 		end
 
-	close
-			-- Close window without performing the suggestion.
+	cancel_and_close
+			-- Suggestion was cancelled so no suggestion is available
 		do
-			if not is_destroyed and not is_closing then
-				is_closing := True
-				if has_capture then
-					disable_capture
-				end
-				save_window_position
-				hide
-				field.terminate_suggestion
-				is_closing := False
-			end
+			field.set_selected_suggestion (Void)
+			field.close_actions.call ([Void])
+			close
 		end
 
 	save_window_position
@@ -543,7 +516,7 @@ feature {EV_ABSTRACT_SUGGESTION_FIELD} -- Completion
 		end
 
 	is_list_recomputation_required: BOOLEAN
-			-- If True, next call to `build_suggestion_list' would query
+			-- If True, next call to `show_suggestion_list' would query
 			-- the associated suggestion provider to gather some new results.
 
 	row_data_type: SUGGESTION_ITEM
@@ -592,35 +565,53 @@ feature {EV_ABSTRACT_SUGGESTION_FIELD} -- Completion
 			suggestion_timeout.set_interval (settings.timeout)
 		end
 
-	associated_grid_item (a_column, a_row: INTEGER): EV_GRID_ITEM
-			-- Item associated to `grid' at position (`a_column', `a_row').
+feature {NONE} -- Positionning
+
+	required_grid_width: INTEGER
+			-- Required width of grid to see all the text without truncation.
 		local
-			l_row: EV_GRID_ROW
-			l_item: detachable EV_GRID_ITEM
+			l_grid: like grid
+			l_column: EV_GRID_COLUMN
+			i, l_column_count: INTEGER
 		do
-			l_row := grid.row (a_row)
-			if attached {like row_data_type} l_row.data as l_data then
-				settings.update_row (l_row, l_data)
-				l_item := l_row.item (a_column)
-			end
-			if l_item /= Void then
-				Result := l_item
-			else
-				create {EV_GRID_LABEL_ITEM} Result.make_with_text ("")
-				Result.set_background_color (create {EV_COLOR}.make_with_rgb (1.0, 0.0, 0.0))
+			l_grid := grid
+			l_column_count := l_grid.column_count
+			if l_column_count > 0 and then l_grid.visible_row_count > 0 then
+					-- Iterate through all columns and calculate their maximum width to see
+					-- text without truncation.
+				from
+					i := 1
+				until
+					i > l_column_count
+				loop
+					l_column := l_grid.column (l_column_count)
+						-- We add +1 to `required_width_if_item_span' to have some room on the right.
+					Result := Result.max (l_column.required_width_of_item_span (1, l_grid.row_count) + 1)
+					i := i + 1
+				end
 			end
 		end
 
-feature {NONE} -- Positionning
+	required_grid_height: INTEGER
+			-- Required height of grid to see all the items without truncation.
+		local
+			l_grid: like grid
+		do
+			l_grid := grid
+			if l_grid.column_count > 0 then
+					-- Only compute something if there is at least one column.
+				Result := l_grid.row_height * l_grid.visible_row_count
+			end
+		end
 
-	position_suggestion_choice_window
+	position_suggestion_choice_window (a_is_first: BOOLEAN)
 			-- Reposition the suggestion choice window
 		local
 			l_helpers: EVS_HELPERS
 			l_origin: TUPLE [x, y: INTEGER]
-			l_pos: like suggestion_list_coordinates
+			l_pos: like suggestion_choice_window_coordinates
 		do
-			l_pos := suggestion_list_coordinates
+			l_pos := suggestion_choice_window_coordinates (a_is_first)
 			if attached field.parent_window as l_parent_window and then not l_parent_window.is_destroyed and then l_parent_window.is_show_requested then
 					-- Reposition based on screen coords
 				create l_helpers
@@ -634,11 +625,13 @@ feature {NONE} -- Positionning
 				end
 			end
 
-			set_size (l_pos.width, l_pos.height)
+				-- `l_pos' does not take into account the border width we have so we need to add it
+				-- to avoid the grid's scrollbar from appearing.
+			set_size (l_pos.width + 2 * border_width, l_pos.height + 2 * border_width)
 			set_position (l_pos.x, l_pos.y)
 		end
 
-	suggestion_list_coordinates: TUPLE [x, y, width, height: INTEGER]
+	suggestion_choice_window_coordinates (a_is_first: BOOLEAN): TUPLE [x, y, width, height: INTEGER]
 			-- Position of suggestion list
 		local
 			l_right_space: INTEGER
@@ -648,6 +641,7 @@ feature {NONE} -- Positionning
 			l_monitor: EV_RECTANGLE
 			l_upper_space, l_lower_space: INTEGER
 			l_is_show_below: BOOLEAN
+			l_required_width, l_required_height: INTEGER
 		do
 				-- We get the monitor on which the underlying field is positioned. We will do our best to
 				-- have the suggestion list appearing on that monitor only.
@@ -655,7 +649,20 @@ feature {NONE} -- Positionning
 				field.screen_x, field.screen_y)
 
 			l_grid := grid
-			Result := [0, 0, 0, 0]
+				-- We start by getting the size we would need if all the items should be shown
+			if a_is_first or settings.is_fit_list_window_to_content then
+				l_required_width := required_grid_width
+				l_required_height := required_grid_height
+			else
+					-- We can only grow never shrink when the completion is already visible.
+				if grid.vertical_scroll_bar.is_show_requested then
+					l_required_width := required_grid_width.max (grid.width - grid.vertical_scroll_bar.width)
+				else
+					l_required_width := required_grid_width.max (grid.width)
+				end
+				l_required_height := required_grid_height.max (grid.height)
+			end
+			Result := [0, 0, l_required_width, l_required_height]
 
 				-- Compute the X coordinate of the suggestion list.
 			Result.x := field.screen_x
@@ -681,10 +688,7 @@ feature {NONE} -- Positionning
 			l_upper_space := Result.y
 			l_lower_space := l_monitor.bottom - Result.y - field.height
 
-				-- Estimated height of the suggestion list is the number of rows
-				-- visible present multiplied by the row_height.
-			Result.height := grid.visible_row_count * grid.row_height
-
+				-- Check if we have enough space belowe or above to show the whole list.
 			if l_is_show_below and then Result.height > l_lower_space and then Result.height <= l_upper_space then
 					-- Not enough room to show below, but is enough room to show above, so we will show above
 				l_is_show_below := False
@@ -707,6 +711,13 @@ feature {NONE} -- Positionning
 				Result.y := Result.y + field.height
 			else
 				Result.y := Result.y - Result.height
+			end
+
+			if Result.height < l_required_height then
+					-- We won't have enough space to show all items, so a vertical scrollbar will appear,
+					-- thus we need to make sure the width is large enough to display all items without
+					-- as scrollbar if possible.
+				Result.width := Result.width + grid.vertical_scroll_bar.width
 			end
 
 				-- Ensure it is at least as big as the underlying field.
@@ -832,7 +843,7 @@ feature {NONE} -- Grid helpers
 			end
 		end
 
-feature {NONE} -- Implementation
+feature {NONE} -- Implementation: Access
 
 	grid: EV_GRID
 			-- Grid displaying result of search.
@@ -840,10 +851,45 @@ feature {NONE} -- Implementation
 	border_width: INTEGER = 1
 			-- Number of pixels for the border surrounding the suggestion window.
 
+feature {NONE} -- Implementation
+
+	show_content (a_is_first: BOOLEAN)
+			-- Show content for the first time if `a_is_first', otherwise update what is already shown.
+		do
+				-- Select the entry that match what has been entered in `field'.
+			select_closest_match
+			position_suggestion_choice_window (a_is_first)
+			if a_is_first then
+				resize_column_to_window_width
+				show_window
+			else
+				resize_column_to_window_width
+			end
+				-- Call field's `show_actions' if this is the first time the choice window is shown.
+			if a_is_first then
+				field.show_actions.call (Void)
+			end
+		end
+
+	close
+			-- Close window without performing the suggestion.
+		do
+			if not is_destroyed and not is_closing then
+				is_closing := True
+				if has_capture then
+					disable_capture
+				end
+				save_window_position
+				hide
+				field.terminate_suggestion
+				is_closing := False
+			end
+		end
+
 invariant
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

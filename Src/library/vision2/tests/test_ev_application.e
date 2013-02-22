@@ -25,20 +25,20 @@ feature {NONE} -- Actual Test
 
 	idle_action_called
 		local
-			flag: BOOLEAN_REF
+			flag: CELL [BOOLEAN]
 		do
-			flag := (False).to_reference
-			application.add_idle_action_kamikaze (agent (a_flag: BOOLEAN_REF) do
-				a_flag.set_item (True)
-			end (flag))
-
-			application.process_events
-
-			assert ("Idle actions called", flag.item)
+			if attached application as l_appl then
+				create flag.put (False)
+				l_appl.add_idle_action_kamikaze (agent flag.put (True))
+				l_appl.process_events
+				assert ("Idle actions called", flag.item)
+			else
+				assert ("Application not initialized.", False)
+			end
 		end
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

@@ -293,7 +293,6 @@ feature{NONE} -- Implementation
 			l_new_obj:BINARY_DECODED
 		do
 			if deserializer.read_boolean then
-				is_for_fast_retrieval := True
 				is_unknown_type := false
 				l_mem := memory
 				l_is_collecting := l_mem.collecting
@@ -372,7 +371,8 @@ feature{NONE} -- Implementation
 					l_mem.collection_on
 				end
 			else
-				is_for_fast_retrieval := False
+				check False end
+				--is_for_fast_retrieval := False
 			end
 		end
 
@@ -579,114 +579,41 @@ feature{NONE} -- Implementation
 			l_int := internal
 			l_spec_mapping := special_type_mapping
 
+				-- Read reference ID.
+			l_nat32 := l_deser.read_compressed_natural_32
+			check
+				l_nat32_valid: l_nat32 < {INTEGER}.max_value.as_natural_32
+			end
+			l_index := l_nat32.to_integer_32
 
-			if is_for_fast_retrieval then
-					-- Read reference ID.
-				l_nat32 := l_deser.read_compressed_natural_32
-				check
-					l_nat32_valid: l_nat32 < {INTEGER}.max_value.as_natural_32
-				end
-				l_index := l_nat32.to_integer_32
+			l_obj := object_references.item (l_index)
+			l_dtype := l_int.dynamic_type (l_obj)
 
-				l_obj := object_references.item (l_index)
-				l_dtype := l_int.dynamic_type (l_obj)
-
-				l_new_obj ?= l_obj
-				if l_new_obj /= void then
-					--type unknown
-					if l_new_obj.is_tuple then
-						decode_unknown_tuple (l_new_obj)
-					elseif l_new_obj.is_special  then
-						decode_special_unknown (l_new_obj)
-					else
-						decode_object_unknown_type(l_new_obj)
-					end
+			l_new_obj ?= l_obj
+			if l_new_obj /= void then
+				--type unknown
+				if l_new_obj.is_tuple then
+					decode_unknown_tuple (l_new_obj)
+				elseif l_new_obj.is_special  then
+					decode_special_unknown (l_new_obj)
 				else
-					if l_int.is_special (l_obj) then
-						-- Get the abstract element type of the SPECIAL.
-						l_spec_mapping.search (l_int.generic_dynamic_type_of_type (l_dtype, 1))
-						if l_spec_mapping.found then
-							l_spec_type := l_spec_mapping.found_item
-						else
-							l_spec_type := {INTERNAL}.reference_type
-						end
-
-						decode_special (l_obj, l_index, l_spec_type)
-					elseif l_int.is_tuple (l_obj) then
-						decode_tuple (l_obj, l_dtype, l_index)
-					else
-						decode_normal_object (l_obj, l_dtype, l_index)
-					end
+					decode_object_unknown_type(l_new_obj)
 				end
 			else
-					-- Read object dynamic type
-				l_old_dtype := l_deser.read_compressed_natural_32.to_integer_32
-				if unknown_types.has (l_old_dtype) then
-					-- Read reference ID.
-					l_nat32 := l_deser.read_compressed_natural_32
-					check
-						l_nat32_valid: l_nat32 < {INTEGER}.max_value.as_natural_32
-					end
-					l_index := l_nat32.to_integer_32
-
-						-- Read object flags.
-					l_flags := l_deser.read_natural_8
-
-					--create display object
-					create l_new_obj.make (l_old_dtype,get_next_object_id,generic_types.item (l_old_dtype).name)
-					decoded_object_storage.put (l_new_obj, l_new_obj.dtype)
-
-					-- parse object
-					inspect l_flags
-					when is_special_flag then
-						l_spec_type := l_deser.read_compressed_integer_32
-						l_spec_count := l_deser.read_compressed_integer_32
-						l_new_obj.set_is_special
-						l_new_obj.set_special_count(l_spec_count)
-						l_new_obj.set_special_type (l_spec_type)
-						decode_special_unknown(l_new_obj)
-					when is_tuple_flag then
-						l_new_obj.set_is_tuple
-						decode_unknown_tuple (l_new_obj)
+				if l_int.is_special (l_obj) then
+					-- Get the abstract element type of the SPECIAL.
+					l_spec_mapping.search (l_int.generic_dynamic_type_of_type (l_dtype, 1))
+					if l_spec_mapping.found then
+						l_spec_type := l_spec_mapping.found_item
 					else
-						decode_object_unknown_type(l_new_obj)
+						l_spec_type := {INTERNAL}.reference_type
 					end
-					l_obj := l_new_obj
-					object_references.put (l_obj, l_index)
+
+					decode_special (l_obj, l_index, l_spec_type)
+				elseif l_int.is_tuple (l_obj) then
+					decode_tuple (l_obj, l_dtype, l_index)
 				else
-					l_dtype := new_dynamic_type_id (l_old_dtype)
-						-- Read reference ID.
-					l_nat32 := l_deser.read_compressed_natural_32
-					check
-						l_nat32_valid: l_nat32 < {INTEGER}.max_value.as_natural_32
-					end
-					l_index := l_nat32.to_integer_32
-
-						-- Read object flags.
-					l_flags := l_deser.read_natural_8
-
-					inspect l_flags
-					when is_special_flag then
-						l_spec_type := l_deser.read_compressed_integer_32
-						l_spec_count := l_deser.read_compressed_integer_32
-						l_obj := new_special_instance (l_dtype, l_spec_type, l_spec_count)
-						object_references.put (l_obj, l_index)
-							-- Reconnect un-connected object to `l_obj' we found so far.
-						reconnect_object (l_index)
-						decode_special (l_obj, l_index, l_spec_type)
-					when is_tuple_flag then
-						l_obj := l_int.new_instance_of (l_dtype)
-						object_references.put (l_obj, l_index)
-							-- Reconnect un-connected object to `l_obj' we found so far.
-						reconnect_object (l_index)
-						decode_tuple (l_obj, l_dtype, l_index)
-					else
-						l_obj := l_int.new_instance_of (l_dtype)
-						object_references.put (l_obj, l_index)
-							-- Reconnect un-connected object to `l_obj' we found so far.
-						reconnect_object (l_index)
-						decode_normal_object (l_obj, l_dtype, l_index)
-					end
+					decode_normal_object (l_obj, l_dtype, l_index)
 				end
 			end
 			if is_root then
@@ -695,7 +622,7 @@ feature{NONE} -- Implementation
 			end
 		end
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

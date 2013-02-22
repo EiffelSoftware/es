@@ -277,7 +277,6 @@ feature -- Access
 			l_ser: like serializer
 			l_spec_mapping: like special_type_mapping
 			l_object_indexes: like object_indexes
-			l_is_for_slow_retrieval: BOOLEAN
 			l_dtype, l_spec_item_type: INTEGER
 			l_obj: ANY
 			i, nb: INTEGER
@@ -289,7 +288,6 @@ feature -- Access
 			l_ser := serializer
 			l_object_indexes := object_indexes
 			l_spec_mapping := special_type_mapping
-			l_is_for_slow_retrieval := not is_for_fast_retrieval
 
 
 			from
@@ -309,41 +307,18 @@ feature -- Access
 				if l_dec /= Void then
 					-- encode an object wrapped in a DECODED object
 
-					if l_is_for_slow_retrieval then
-						-- Write object dtype
-						l_ser.write_compressed_natural_32 (l_dec.generic_type.to_natural_32)
-					end
-
 						-- Write object reference ID.
 					l_ser.write_compressed_natural_32 (l_object_indexes.index (l_obj))
 
 
 
 					if l_dec.is_special then
-						if l_is_for_slow_retrieval then
-								-- Store the fact it is a SPECIAL
-							l_ser.write_natural_8 (is_special_flag)
-
-
-							l_spec_item_type := l_dec.attribute_generic_types.i_th (1).dtype
-							l_ser.write_compressed_integer_32 (l_spec_item_type)
-
-							--l_ser.write_compressed_integer_32 (INTERNAL.reference_type)
-
-							l_ser.write_compressed_integer_32 (l_dec.special_count)
-						end
 
 						encode_special_decoded (l_dec)
 
 					elseif l_dec.is_tuple then
-						if l_is_for_slow_retrieval then
-							l_ser.write_natural_8 (is_tuple_flag)
-						end
 						encode_tuple_decoded (l_dec)
 					else
-						if l_is_for_slow_retrieval then
-							l_ser.write_natural_8 (0)
-						end
 						encode_normal_decoded (l_dec)
 					end
 
@@ -352,11 +327,6 @@ feature -- Access
 
 						-- Get object data.
 					l_dtype := l_int.dynamic_type (l_obj)
-
-					if l_is_for_slow_retrieval then
-							-- Write object dtype
-						l_ser.write_compressed_natural_32 (l_dtype.to_natural_32)
-					end
 
 						-- Write object reference ID.
 					l_ser.write_compressed_natural_32 (l_object_indexes.index (l_obj))
@@ -371,26 +341,8 @@ feature -- Access
 							l_spec_item_type := {INTERNAL}.reference_type
 						end
 
-						if l_is_for_slow_retrieval then
-								-- Store the fact it is a SPECIAL
-							l_ser.write_natural_8 (is_special_flag)
-
-								-- Store the type of special
-							l_ser.write_compressed_integer_32 (l_spec_item_type)
-
-								-- Store count of special
-						--	if {l_abstract_spec: ABSTRACT_SPECIAL} l_obj then
-							if attached {ABSTRACT_SPECIAL} l_obj as l_abstract_spec then
-								l_ser.write_compressed_integer_32 (l_abstract_spec.count)
-							else
-								check l_abstract_spec_attached: False end
-							end
-						end
 						encode_special (l_obj, l_dtype, l_spec_item_type)
 					elseif l_int.is_tuple (l_obj) then
-						if l_is_for_slow_retrieval then
-							l_ser.write_natural_8 (is_tuple_flag)
-						end
 					--	if {l_tuple: TUPLE} l_obj then
 						if attached {TUPLE} l_obj as l_tuple then
 							encode_tuple_object (l_tuple)
@@ -400,9 +352,6 @@ feature -- Access
 							end
 						end
 					else
-						if l_is_for_slow_retrieval then
-							l_ser.write_natural_8 (0)
-						end
 						encode_normal_object (l_obj, l_dtype)
 					end
 				end
@@ -426,104 +375,99 @@ feature -- Access
 			l_array: detachable ARRAY [ANY]
 			l_dec: BINARY_DECODED
 		do
-			if is_for_fast_retrieval then
-					-- Mark data with information that shows we have a mapping
-					-- between reference IDs and objects.
-				serializer.write_boolean (True)
-				l_int := internal
-				l_ser := serializer
-				l_object_indexes := object_indexes
-				l_spec_mapping := special_type_mapping
+				-- Mark data with information that shows we have a mapping
+				-- between reference IDs and objects.
+			serializer.write_boolean (True)
+			l_int := internal
+			l_ser := serializer
+			l_object_indexes := object_indexes
+			l_spec_mapping := special_type_mapping
 
-				from
-					l_array := a_list.to_array
-					l_area := l_array.area
-					l_array := Void
-					i := 0
-					nb := a_list.count
-				until
-					i = nb
-				loop
-					l_obj := l_area.item (i)
-					i := i + 1
+			from
+				l_array := a_list.to_array
+				l_area := l_array.area
+				l_array := Void
+				i := 0
+				nb := a_list.count
+			until
+				i = nb
+			loop
+				l_obj := l_area.item (i)
+				i := i + 1
 
 
-					l_dec ?= l_obj
-					if l_dec /= Void then
-						-- for DECODED object
-							--write object dtype
-						l_ser.write_compressed_natural_32 (l_dec.generic_type.to_natural_32)
+				l_dec ?= l_obj
+				if l_dec /= Void then
+					-- for DECODED object
+						--write object dtype
+					l_ser.write_compressed_natural_32 (l_dec.generic_type.to_natural_32)
 
-							--write object reference ID
-							--TODO: check if working correctl
-						l_ser.write_compressed_natural_32 (l_object_indexes.index (l_obj))
+						--write object reference ID
+						--TODO: check if working correctl
+					l_ser.write_compressed_natural_32 (l_object_indexes.index (l_obj))
 
-						--write object flags, then data
-						if l_dec.is_special then
-							l_ser.write_natural_8 (is_special_flag)
+					--write object flags, then data
+					if l_dec.is_special then
+						l_ser.write_natural_8 (is_special_flag)
 
-								-- get the abstract element type of the SPECIAL and write it
+							-- get the abstract element type of the SPECIAL and write it
 
-							l_spec_item_type := l_dec.special_type
-							l_ser.write_compressed_integer_32 (l_spec_item_type)
+						l_spec_item_type := l_dec.special_type
+						l_ser.write_compressed_integer_32 (l_spec_item_type)
+
+						-- Write number of elements in SPECIAL
+						l_ser.write_compressed_integer_32 (l_dec.special_count)
+
+					elseif l_dec.is_tuple then
+						l_ser.write_natural_8 (is_tuple_flag)
+					else
+						l_ser.write_natural_8 (0)
+					end
+
+				else
+						-- for non-DECODED objects
+
+						-- Get object data.
+					l_dtype := l_int.dynamic_type (l_obj)
+
+						-- Write object dtype.
+					l_ser.write_compressed_natural_32 (l_dtype.to_natural_32)
+
+						-- Write object reference ID.
+					l_ser.write_compressed_natural_32 (l_object_indexes.index (l_obj))
+
+
+						-- Write object flags, then data.
+					if l_int.is_special (l_obj) then
+							-- Write special flag.
+						l_ser.write_natural_8 (is_special_flag)
+
+							-- Get the abstract element type of the SPECIAL and write it.
+						l_spec_mapping.search (l_int.generic_dynamic_type_of_type (l_dtype, 1))
+						if l_spec_mapping.found then
+							l_spec_item_type := l_spec_mapping.found_item
+						else
+							l_spec_item_type := {INTERNAL}.reference_type
+						end
+						l_ser.write_compressed_integer_32 (l_spec_item_type)
 
 							-- Write number of elements in SPECIAL
-							l_ser.write_compressed_integer_32 (l_dec.special_count)
-
-						elseif l_dec.is_tuple then
-							l_ser.write_natural_8 (is_tuple_flag)
+					--	if {l_abstract_spec: ABSTRACT_SPECIAL} l_obj then
+						if attached {ABSTRACT_SPECIAL} l_obj as l_abstract_spec then
+							l_ser.write_compressed_integer_32 (l_abstract_spec.count)
 						else
-							l_ser.write_natural_8 (0)
+							check
+								l_abstract_spec_attached: False
+							end
 						end
 
+					elseif l_int.is_tuple (l_obj) then
+						l_ser.write_natural_8 (is_tuple_flag)
 					else
-							-- for non-DECODED objects
-
-							-- Get object data.
-						l_dtype := l_int.dynamic_type (l_obj)
-
-							-- Write object dtype.
-						l_ser.write_compressed_natural_32 (l_dtype.to_natural_32)
-
-							-- Write object reference ID.
-						l_ser.write_compressed_natural_32 (l_object_indexes.index (l_obj))
-
-
-							-- Write object flags, then data.
-						if l_int.is_special (l_obj) then
-								-- Write special flag.
-							l_ser.write_natural_8 (is_special_flag)
-
-								-- Get the abstract element type of the SPECIAL and write it.
-							l_spec_mapping.search (l_int.generic_dynamic_type_of_type (l_dtype, 1))
-							if l_spec_mapping.found then
-								l_spec_item_type := l_spec_mapping.found_item
-							else
-								l_spec_item_type := {INTERNAL}.reference_type
-							end
-							l_ser.write_compressed_integer_32 (l_spec_item_type)
-
-								-- Write number of elements in SPECIAL
-						--	if {l_abstract_spec: ABSTRACT_SPECIAL} l_obj then
-							if attached {ABSTRACT_SPECIAL} l_obj as l_abstract_spec then
-								l_ser.write_compressed_integer_32 (l_abstract_spec.count)
-							else
-								check
-									l_abstract_spec_attached: False
-								end
-							end
-
-						elseif l_int.is_tuple (l_obj) then
-							l_ser.write_natural_8 (is_tuple_flag)
-						else
-							l_ser.write_natural_8 (0)
-						end
+						l_ser.write_natural_8 (0)
 					end
-				--i := 0 + 1
 				end
-			else
-					-- No mapping here.
-				serializer.write_boolean (False)
+			--i := 0 + 1
 			end
 		end
 
@@ -838,7 +782,7 @@ feature -- Access
 
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

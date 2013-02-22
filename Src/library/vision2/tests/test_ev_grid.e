@@ -18,41 +18,26 @@ feature -- Test routines
 		note
 			testing: "execution/isolated"
 		do
-			run_test (agent hide_row)
-		end
+			run_test (agent
+				local
+					l_grid: EV_GRID
+					window: EV_WINDOW
+				do
+					create window
 
-feature {NONE} -- Actual Test
+					create l_grid
+					l_grid.set_row_count_to (10)
+					l_grid.row (5).hide
+					l_grid.row (5).show
 
-	hide_row
-		local
-			l_grid: EV_GRID
-			window: EV_WINDOW
-			l_except: DEVELOPER_EXCEPTION
-			is_retried: BOOLEAN
-		do
-			if not is_retried then
-				create window
-
-				create l_grid
-				l_grid.set_row_count_to (10)
-				l_grid.row (5).hide
-				l_grid.row (5).show
-
-				window.extend (l_grid)
-				window.show
-
-				application.process_events
-			else
-				create l_except
-				first_recorded_exception := l_except
-			end
-		rescue
-			is_retried := True
-			retry
+					window.extend (l_grid)
+					window.show
+				end
+			)
 		end
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
