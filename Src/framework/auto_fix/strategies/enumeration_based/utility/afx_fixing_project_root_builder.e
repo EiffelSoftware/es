@@ -198,8 +198,7 @@ feature{NONE} -- Auxiliary operation
 				end
 				l_file.close
 			else
-				create Result.make (1)
-				Result.set_equality_tester (String_equality_tester)
+				create Result.make_equal (1)
 			end
 		ensure
 			result_not_empty: Result /= Void and then Result.count /= 0
@@ -223,8 +222,7 @@ feature{NONE} -- Auxiliary operation
 			l_dec.prune_all (' ')
 			l_vars := l_dec.split ('$')
 
-			create Result.make (l_vars.count)
-			Result.set_equality_tester (String_equality_tester)
+			create Result.make_equal (l_vars.count)
 
 			from l_vars.start
 			until l_vars.after
@@ -282,7 +280,7 @@ feature{NONE} -- Auxiliary operation
 				Result.append ("%T%T%Ttest_cases.extend (agent ")
 				Result.append (a_test_cases.item_for_iteration.agent_name)
 				Result.append (", %"")
-				Result.append (a_test_cases.item_for_iteration.uuid)
+				Result.append (a_test_cases.item_for_iteration.uuid.to_string_8)
 				Result.append ("%")%N")
 				a_test_cases.forth
 			end
@@ -341,6 +339,8 @@ class
 inherit
 	AFX_INTERPRETER
 	
+	EXCEPTIONS
+
 create
 	make
 		
@@ -378,6 +378,9 @@ end
 					l_tc.generated_test_1
 				end
 			rescue
+				log_message ("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<%N")
+				log_message (exception_manager.last_exception.original.trace)
+				log_message (">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%N")
 				exception_count := exception_count + 1
 				l_retried := True
 				retry

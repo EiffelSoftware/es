@@ -36,7 +36,7 @@ feature -- Basic operations
 			collect_single_change_expressions
 			generate_equality_candidates
 			log_candidate_properties (candidate_properties, "Found the following constant-change properties:")
-			validate_candiate_properties (candidate_properties, operand_map_table, "Start validating constant-change properties.")
+			validate_candidate_properties (False, candidate_properties, operand_map_table, "Start validating constant-change properties.")
 			log_candidate_properties (candidate_properties, "Found the following valid constant-change properties:")
 			create function_to_postcondition_mapping.make (20)
 			function_to_postcondition_mapping.set_key_equality_tester (function_equality_tester)

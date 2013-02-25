@@ -240,15 +240,14 @@ feature -- Execution
 
 				l_generator.set_recursive (l_ap.is_recursive)
 
-				l_generator.set_data_input (l_ap.data_input.out)
-				l_generator.set_data_output (l_ap.data_output.out)
+				l_generator.set_data_input (l_ap.data_input)
+				l_generator.set_data_output (l_ap.data_output)
 
 				l_generator.set_is_interpreter_log_enabled (l_ap.is_interpreter_log_enabled)
 				l_generator.set_is_console_output_enabled (l_ap.is_console_log_enabled)
 
 					-- Use STRING_8 internally
-				l_generator.set_proxy_log_options (create {HASH_TABLE [BOOLEAN, STRING_8]}.make(l_ap.log_types.count))
-				l_generator.proxy_log_options.compare_objects
+				l_generator.set_proxy_log_options (create {HASH_TABLE [BOOLEAN, STRING]}.make_equal (l_ap.log_types.count))
 				from l_ap.log_types.start
 				until l_ap.log_types.after
 				loop

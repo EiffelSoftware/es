@@ -121,7 +121,7 @@ feature -- Output
 	out: STRING
 			-- <Precursor>
 		do
-			Result := context_class.name_in_upper + "." + feature_.feature_name_32
+			Result := context_class.name_in_upper + "." + feature_.feature_name
 		end
 
 feature{NONE} -- Implementation

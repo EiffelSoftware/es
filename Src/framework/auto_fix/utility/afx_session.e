@@ -130,12 +130,29 @@ feature -- Timing in MILLISECONDS.
 			has_started: has_started
 		do
 			if has_limited_length then
-				Result := maximum_length.to_integer_32 - length.to_integer_32
-				if Result = 0 then
+				if maximum_length <= length then
 					Result := -1
+				else
+					Result := maximum_length.as_integer_32 - length.as_integer_32
 				end
 			else
 				Result := 0
+			end
+		end
+
+	time_left_combined (a_time_left: INTEGER): INTEGER
+			-- Combined time left for the session, given another time left `a_time_left'.
+			-- The convention for `a_time_left' and the result is the same as that for `time_left'.
+		local
+			l_time_left_for_session: INTEGER
+		do
+			l_time_left_for_session := time_left
+			if l_time_left_for_session < 0 or else a_time_left < 0 then
+				Result := -1
+			elseif l_time_left_for_session = 0 or else a_time_left = 0 then
+				Result := l_time_left_for_session.max (a_time_left)
+			else
+				Result := l_time_left_for_session.min (a_time_left)
 			end
 		end
 

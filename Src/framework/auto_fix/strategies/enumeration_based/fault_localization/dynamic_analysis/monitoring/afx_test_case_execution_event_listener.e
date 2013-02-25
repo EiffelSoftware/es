@@ -33,9 +33,9 @@ feature -- Event handler
 			current_test_case_set: current_test_case = a_tc
 		end
 
-	on_breakpoint_hit (a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
+	on_breakpoint_hit (a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_location: AFX_PROGRAM_LOCATION)
 			-- Action to take when `a_bpslot' is hit in test case `a_tc'.
-			-- `a_state' is the retrieved system state at `a_bpslot'.
+			-- `a_state' is the retrieved system state at `a_location'.
 		require
 			test_case_attached: a_tc /= Void
 			about_current_test_case: current_test_case ~ a_tc

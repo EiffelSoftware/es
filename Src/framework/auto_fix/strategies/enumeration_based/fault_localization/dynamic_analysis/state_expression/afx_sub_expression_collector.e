@@ -224,12 +224,13 @@ feature{NONE} -- Auxiliary
 		local
 			l_expr: EPA_AST_EXPRESSION
 		do
-			if attached {EXPR_AS} a_ast as lt_expr then
-				create l_expr.make_with_feature (context_feature.context_class, context_feature.feature_, lt_expr, context_feature.written_class)
-				if not l_expr.has_syntax_error and then not l_expr.has_type_error and then l_expr.type /= Void and then not l_expr.type.is_void then
-					last_sub_expressions.force (l_expr)
-				end
-			end
+			add_expression_from_text (text_from_ast (a_ast))
+--			if attached {EXPR_AS} a_ast as lt_expr then
+--				create l_expr.make_with_feature (context_feature.context_class, context_feature.feature_, lt_expr, context_feature.written_class)
+--				if not l_expr.has_syntax_error and then not l_expr.has_type_error and then l_expr.type /= Void and then not l_expr.type.is_void then
+--					last_sub_expressions.force (l_expr)
+--				end
+--			end
 		end
 
 feature --  Visitor routine
@@ -405,7 +406,7 @@ feature{NONE} -- Implementation
 				l_list.back
 			end
 
-			if not l_aggregate.is_empty and then l_aggregate /~ "." then
+			if not l_aggregate.is_empty and then not l_aggregate.same_string (".") then
 				l_aggregate.remove_tail (1)
 				add_expression_from_text (l_aggregate)
 			end

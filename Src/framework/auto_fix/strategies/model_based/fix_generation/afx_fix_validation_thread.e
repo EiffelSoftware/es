@@ -163,7 +163,7 @@ feature{NONE} -- Impelmentation
 				l_response := socket.retrieved
 				if attached {HASH_TABLE [HASH_TABLE [STRING, STRING], INTEGER]} l_response as l_post_state then
 					set_last_post_execution_state (l_post_state, a_test_case, a_fix)
-				elseif attached {STRING} l_response as l_str and then l_str ~ void_state then
+				elseif attached {STRING} l_response as l_str and then l_str.same_string (void_state) then
 					set_last_post_execution_state (Void, a_test_case, a_fix)
 				end
 			end

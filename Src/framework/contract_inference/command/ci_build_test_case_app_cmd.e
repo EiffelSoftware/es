@@ -282,9 +282,9 @@ feature{NONE} -- Initialization
 	make
 			-- Initialize Current.
 		local
-			l_referencer: CLASS_REFERENCER
+--			l_referencer: CLASS_REFERENCER
 		do
-			create l_referencer
+--			create l_referencer
 			create memory
 			create test_cases.make (100)
 			test_cases.compare_objects

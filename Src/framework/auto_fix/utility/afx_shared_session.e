@@ -61,6 +61,12 @@ feature -- Status report
 			Result := session_cell.item /= Void
 		end
 
+	is_session_time_up: BOOLEAN
+			-- Is the shared session out of time?
+		do
+			Result := session.time_left < 0
+		end
+
 feature -- Status set
 
 	set_session (a_session: AFX_SESSION)

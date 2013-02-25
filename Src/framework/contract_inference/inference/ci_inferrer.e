@@ -545,9 +545,11 @@ feature{NONE} -- Candidate validation
 	candidate_property (a_clauses: DS_HASH_SET [STRING]; a_connector: STRING; a_operand_string_table: HASH_TABLE [STRING, INTEGER]): TUPLE [function: EPA_FUNCTION; operand_map: HASH_TABLE [INTEGER, INTEGER]]
 			-- Candidate property cosisting all clauses in `a_clauses'
 			-- `a_connector' is the operator to connect different `a_clauses', can be either "or" or "and".
-			-- `a_operand_string_table' is a table from 0-based operand index to curly brace surrounded indexes, for example 0 -> {0}.
+			-- `a_operand_string_table' is a table from 0-based operand indexes to their place holder strings in the text, i.e. curly brace surrounded indexes.
+			-- 				For example 0 -> {0}.
+			--
 			-- `function' is the function representation for the returned candidate property.
-			-- `operand_map' is 1-based argument index in the function to 0-based operand index in the feature call.
+			-- `operand_map' maps (1-based argument indexes in the function) to (0-based operand indexes in the call to feature-under-test).
 		local
 			l_func_text: STRING
 			l_cursor: DS_HASH_SET_CURSOR [STRING]
@@ -591,7 +593,8 @@ feature{NONE} -- Candidate validation
 				i := i + 1
 			end
 
-				-- Calculate the number of arguments of the result property.
+				-- Update the place holders in the text so that the indexes are w.r.t. the function arguments (1-based).
+				-- Maintain a table to map the function argument indexes to feature-under-text operand indexes.
 			l_opd_types := operand_types_with_feature (feature_under_test, class_under_test)
 			create l_operand_map.make (l_opd_types.count)
 			create l_arg_type_list.make
@@ -603,15 +606,19 @@ feature{NONE} -- Candidate validation
 				l_old_holder := a_operand_string_table.item (l_opd_index)
 				if l_func_text.has_substring (l_old_holder) then
 					l_arg_type_list.extend (l_opd_types.item (l_opd_index))
+						-- Update the mapping from (1-based argument indexes in the function) to (0-based operand indexes in the feature call)
 					l_operand_map.put (l_opd_index, i)
+						-- In function text, replace the old place holder with a temporary place holder;
+						-- 		keep track of which final place holders should be used in the end.
 					l_arg_index_holder := curly_brace_surrounded_integer (i)
 					l_new_holder := double_square_surrounded_integer (i)
 					l_place_holder_tbl.extend (l_arg_index_holder, l_new_holder)
 					l_func_text.replace_substring_all (l_old_holder, l_new_holder)
+
 					i := i + 1
 				end
 			end
-
+				-- Replace temporal place holders with final place holders.
 			across l_place_holder_tbl as l_holders loop
 				l_func_text.replace_substring_all (l_holders.key, l_holders.item)
 			end
@@ -628,8 +635,9 @@ feature{NONE} -- Candidate validation
 			Result := [create {EPA_FUNCTION}.make (l_arg_types, l_arg_domains, boolean_type, l_func_text), l_operand_map]
 		end
 
-	validate_candiate_properties (a_candidates: EPA_HASH_SET [EPA_FUNCTION]; a_operand_map_table: DS_HASH_TABLE [HASH_TABLE [INTEGER_32, INTEGER_32], EPA_FUNCTION]; a_message: STRING)
+	validate_candidate_properties (a_pre: BOOLEAN; a_candidates: EPA_HASH_SET [EPA_FUNCTION]; a_operand_map_table: DS_HASH_TABLE [HASH_TABLE [INTEGER_32, INTEGER_32], EPA_FUNCTION]; a_message: STRING)
 			-- Validate `a_candidates', and remove all invaild ones.
+			-- The candidates are for pre conditions if `a_pre', and for postconditions otherwise.
 		local
 			l_test_case: CI_TEST_CASE_TRANSITION_INFO
 			l_candidates: DS_HASH_SET_CURSOR [EPA_FUNCTION]
@@ -650,6 +658,7 @@ feature{NONE} -- Candidate validation
 			l_candidate_properties := a_candidates
 			create l_evaluator
 			l_evaluator.set_is_ternary_logic_enabled (True)
+			l_evaluator.set_evaluating_pre_expressions (a_pre)
 			across transition_data as l_test_cases loop
 				l_test_case := l_test_cases.item
 				logger.put_line ("%TTest case " + l_test_case.test_case_info.test_case_class.name_in_upper)
@@ -733,6 +742,34 @@ feature{NONE} -- Candidate validation
 			loop
 				l_property := expression_from_function (l_candidates.item, Void, a_operand_map_table.item (l_candidates.item), l_class, l_feature)
 				l_postconditions.force_last (l_property)
+				if a_mapping_agent /= Void then
+					a_mapping_agent.call ([l_property, l_candidates.item])
+				end
+				l_candidates.forth
+			end
+		end
+
+	setup_inferred_contracts_in_last_preconditions (a_candidates: DS_HASH_SET [EPA_FUNCTION]; a_operand_map_table: DS_HASH_TABLE [HASH_TABLE [INTEGER_32, INTEGER_32], EPA_FUNCTION]; a_mapping_agent: detachable PROCEDURE [ANY, TUPLE [a_expr: EPA_EXPRESSION; a_func: EPA_FUNCTION]])
+			-- Generate final inferred contracts from `candidate_properties' and
+			-- store result in `last_preconditions'.
+		local
+			l_candidates: DS_HASH_SET_CURSOR [EPA_FUNCTION]
+			l_preconditions: like last_preconditions
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+			l_property: EPA_EXPRESSION
+		do
+			l_preconditions := last_preconditions
+			l_class := class_under_test
+			l_feature := feature_under_test
+			from
+				l_candidates := a_candidates.new_cursor
+				l_candidates.start
+			until
+				l_candidates.after
+			loop
+				l_property := expression_from_function (l_candidates.item, Void, a_operand_map_table.item (l_candidates.item), l_class, l_feature)
+				l_preconditions.force_last (l_property)
 				if a_mapping_agent /= Void then
 					a_mapping_agent.call ([l_property, l_candidates.item])
 				end

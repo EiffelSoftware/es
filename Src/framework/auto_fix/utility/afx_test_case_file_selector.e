@@ -97,7 +97,7 @@ feature -- Basic operation
 					until l_file.after
 					loop
 						l_line := l_file.last_string.twin
-						if not l_line.starts_with ("--") and l_line.ends_with (".e") then
+						if not l_line.starts_with_general ("--") and l_line.ends_with_general (".e") then
 							l_file_names.extend (create {PATH}.make_from_string (l_line))
 						end
 						l_file.read_line

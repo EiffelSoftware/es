@@ -26,7 +26,7 @@ feature -- Basic operations
 				fixing_locations.do_if (
 					agent generate_wrapping_fixes,
 						-- Only generate fix if the wrapped ast is not empty.
-					agent (data: TUPLE [scope_level: INTEGER_32; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]): BOOLEAN
+					agent (data: TUPLE [scope_level: INTEGER_32; instructions: LINKED_LIST [EPA_AST_STRUCTURE_NODE]]): BOOLEAN
 						do
 							Result := not data.instructions.is_empty
 						end)
@@ -35,7 +35,7 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	generate_afore_fixes (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]])
+	generate_afore_fixes (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [EPA_AST_STRUCTURE_NODE]])
 			-- Generate afore fixes for `a_fixing_location' and
 			-- store results in fixes'.
 		local
@@ -133,7 +133,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	generate_wrapping_fixes (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]])
+	generate_wrapping_fixes (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [EPA_AST_STRUCTURE_NODE]])
 			-- Generate wrapping fixes for `a_fixing_location' and
 			-- store results in fixes'.
 		local

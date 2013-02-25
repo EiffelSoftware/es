@@ -112,6 +112,7 @@ feature{NONE} -- Initialization
 			l_online_statistics_frequency: AP_INTEGER_OPTION
 			l_retrieve_serialization_on_line_option: AP_FLAG
 			l_output_test_case_on_line_option: AP_FLAG
+			l_cursor: DS_LIST_CURSOR[STRING]
 
 			l_dir: DIRECTORY
 			l_file_name: FILE_NAME
@@ -479,7 +480,6 @@ feature{NONE} -- Initialization
 					else
 						error_handler.report_invalid_minimization_algorithm (minimize_option.parameter)
 						--Exceptions.die (1)
-
 					end
 				else
 					is_slicing_enabled := True -- Default
@@ -493,7 +493,7 @@ feature{NONE} -- Initialization
 
 			if not error_handler.has_error then
 				if output_dir_option.was_found then
-					create output_dirname.make_from_string (output_dir_option.parameter)
+					create output_dirname.make_from_string (output_dir_option.parameter.out)
 				end
 
 				if time_out_option.was_found and then time_out_option.parameter >= 0 then
@@ -522,7 +522,7 @@ feature{NONE} -- Initialization
 					elseif statistics_format_op.parameter.same_string_general ("html") then
 						is_html_statistics_format_enabled := True
 					else
-						error_handler.report_statistics_format_error (statistics_format_op.parameter)
+						error_handler.report_statistics_format_error (statistics_format_op.parameter.out)
 					end
 				else
 					is_html_statistics_format_enabled := False
@@ -544,7 +544,7 @@ feature{NONE} -- Initialization
 
 				if l_log_to_replay.was_found then
 					is_replay_enabled := True
-					log_to_replay := l_log_to_replay.parameter.twin
+					log_to_replay := l_log_to_replay.parameter.out
 				end
 
 				should_display_help_message := l_help_option.was_found
@@ -557,7 +557,7 @@ feature{NONE} -- Initialization
 			if not error_handler.has_error then
 				if l_load_log_option.was_found then
 					is_load_log_enabled := True
-					log_file_path := l_load_log_option.parameter
+					log_file_path := l_load_log_option.parameter.out
 
 						-- When we are in load log mode, we disable
 						-- automatic testing.
@@ -567,7 +567,7 @@ feature{NONE} -- Initialization
 
 			if not error_handler.has_error then
 				if l_state_option.was_found then
-					create object_state_config.make_with_string (l_state_option.parameter)
+					create object_state_config.make_with_string (l_state_option.parameter.out)
 				else
 					create object_state_config.make
 				end
@@ -583,25 +583,25 @@ feature{NONE} -- Initialization
 
 			if not error_handler.has_error then
 				if l_log_processor_op.was_found then
-					log_processor := l_log_processor_op.parameter
+					log_processor := l_log_processor_op.parameter.out
 				end
 			end
 
 			if not error_handler.has_error then
 				if l_log_processor_output_op.was_found then
-					log_processor_output := l_log_processor_output_op.parameter
+					log_processor_output := l_log_processor_output_op.parameter.out
 				end
 			end
 
 			if not error_handler.has_error then
 				if l_data_input_op.was_found then
-					data_input := l_data_input_op.parameter
+					data_input := l_data_input_op.parameter.out
 				end
 			end
 
 			if not error_handler.has_error then
 				if l_data_output_op.was_found then
-					data_output := l_data_output_op.parameter
+					data_output := l_data_output_op.parameter.out
 				end
 			end
 
@@ -651,7 +651,7 @@ feature{NONE} -- Initialization
 				is_lpsolve_contraint_linear_solver_enabled := False
 				if l_linear_constraint_solver_option.was_found then
 					if l_precondition_option.was_found then
-						l_strs := l_linear_constraint_solver_option.parameter.as_lower.split (',')
+						l_strs := l_linear_constraint_solver_option.parameter.out.as_lower.split (',')
 						l_strs.compare_objects
 						if l_strs.has ("smt") then
 							is_smt_linear_constraint_solver_enabled := True
@@ -714,22 +714,22 @@ feature{NONE} -- Initialization
 				is_passing_test_cases_serialization_enabled := False
 				is_failing_test_cases_serialization_enabled := False
 				if l_test_case_serialization_option.was_found then
-					l_strs := l_test_case_serialization_option.parameter.as_lower.split (',')
+					l_strs := l_test_case_serialization_option.parameter.out.as_lower.split (',')
 					from
 						l_strs.start
 					until
 						l_strs.after
 					loop
-						if l_strs.item_for_iteration.same_string_general ("passing") then
+						if l_strs.item_for_iteration ~ "passing" then
 							is_passing_test_cases_serialization_enabled := True
-						elseif l_strs.item_for_iteration.same_string_general ("failing") then
+						elseif l_strs.item_for_iteration ~ "failing" then
 							is_failing_test_cases_serialization_enabled := True
 						end
 						l_strs.forth
 					end
 				end
 				if l_test_case_serialization_file_option.was_found then
-					test_case_serialization_file := l_test_case_serialization_file_option.parameter
+					test_case_serialization_file := l_test_case_serialization_file_option.parameter.out
 
 --					l_is_ok := False
 --					create l_file_name.make_from_string (test_case_serialization_file)
@@ -755,15 +755,15 @@ feature{NONE} -- Initialization
 				is_passing_test_cases_deserialization_enabled := False
 				is_failing_test_cases_deserialization_enabled := False
 				if l_test_case_deserialization_option.was_found then
-					l_strs := l_test_case_deserialization_option.parameter.as_lower.split (',')
+					l_strs := l_test_case_deserialization_option.parameter.out.as_lower.split (',')
 					from
 						l_strs.start
 					until
 						l_strs.after
 					loop
-						if l_strs.item_for_iteration.same_string_general ("passing") then
+						if l_strs.item_for_iteration ~ "passing" then
 							is_passing_test_cases_deserialization_enabled := True
-						elseif l_strs.item_for_iteration.same_string_general ("failing") then
+						elseif l_strs.item_for_iteration ~ "failing" then
 							is_failing_test_cases_deserialization_enabled := True
 						end
 						l_strs.forth
@@ -774,7 +774,7 @@ feature{NONE} -- Initialization
 
 			if not error_handler.has_error then
 				if l_test_case_deserialization_by_feature_under_test_option.was_found then
-					l_strs := l_test_case_deserialization_by_feature_under_test_option.parameter.split (',')
+					l_strs := l_test_case_deserialization_by_feature_under_test_option.parameter.out.split (',')
 					create features_under_test_to_deserialize.make_equal (l_strs.count + 1)
 					from l_strs.start
 					until l_strs.after
@@ -790,7 +790,7 @@ feature{NONE} -- Initialization
 			if not error_handler.has_error then
 				if l_build_behavioral_model_option.was_found then
 						-- Check if the parameter designates a valid directory.
-					create l_file_name.make_from_string (l_build_behavioral_model_option.parameter)
+					create l_file_name.make_from_string (l_build_behavioral_model_option.parameter.out)
 					if l_file_name.is_valid then
 						is_building_behavioral_model := True
 						model_dir := l_file_name
@@ -800,7 +800,7 @@ feature{NONE} -- Initialization
 				end
 
 				if l_build_faulty_feature_list_option.was_found then
-					create l_file_name.make_from_string (l_build_faulty_feature_list_option.parameter)
+					create l_file_name.make_from_string (l_build_faulty_feature_list_option.parameter.out)
 					if l_file_name.is_valid then
 						is_building_faulty_feature_list := True
 						faulty_feature_list_file_name := l_file_name
@@ -815,7 +815,7 @@ feature{NONE} -- Initialization
 			if not error_handler.has_error then
 				if l_validate_serialization.was_found then
 						-- Check if the parameter designates a valid directory.
-					create l_file_name.make_from_string (l_validate_serialization.parameter)
+					create l_file_name.make_from_string (l_validate_serialization.parameter.out)
 					if l_file_name.is_valid then
 						serialization_validity_log := l_file_name
 					else
@@ -827,56 +827,56 @@ feature{NONE} -- Initialization
 			if not error_handler.has_error then
 				is_interpreter_log_enabled := False
 				if l_interpreter_log_enabled.was_found then
-					is_interpreter_log_enabled := l_interpreter_log_enabled.parameter.is_case_insensitive_equal_general ("on")
+					is_interpreter_log_enabled := l_interpreter_log_enabled.parameter.out ~ "on"
 				end
 			end
 
 			if not error_handler.has_error then
 				is_console_log_enabled := True
 				if l_console_log_option.was_found then
-					is_console_log_enabled := l_console_log_option.parameter.is_case_insensitive_equal_general ("on")
+					is_console_log_enabled := l_console_log_option.parameter.out ~ "on"
 				end
 			end
 
 			if not error_handler.has_error then
 				l_log_has_basic := False
 				if l_proxy_log_option.was_found then
-					l_strs := l_proxy_log_option.parameter.as_lower.split (',')
+					l_strs := l_proxy_log_option.parameter.out.as_lower.split (',')
 					from
 						l_strs.start
 					until
 						l_strs.after
 					loop
 						l_word := l_strs.item_for_iteration
-						if l_word.same_string_general ("off") then
+						if l_word ~ "off" then
 							-- Do nothing.
-						elseif l_word.is_case_insensitive_equal_general ("passing") then
+						elseif l_word ~ "passing" then
 							log_types.put (True, "passing")
-						elseif l_word.is_case_insensitive_equal_general ("failing") then
+						elseif l_word ~ "failing" then
 							log_types.put (True, "failing")
-						elseif l_word.is_case_insensitive_equal_general ("invalid") then
+						elseif l_word ~ "invalid" then
 							log_types.put (True, "invalid")
-						elseif l_word.is_case_insensitive_equal_general ("bad") then
+						elseif l_word ~ "bad" then
 							log_types.put (True, "bad")
-						elseif l_word.is_case_insensitive_equal_general ("error") then
+						elseif l_word ~ "error" then
 							log_types.put (True, "error")
-						elseif l_word.is_case_insensitive_equal_general ("state") then
+						elseif l_word ~ "state" then
 							log_types.put (True, "state")
-						elseif l_word.is_case_insensitive_equal_general ("operand-type") then
+						elseif l_word ~ "operand-type" then
 							log_types.put (True, "operand-type")
-						elseif l_word.is_case_insensitive_equal_general ("expr-assign") then
+						elseif l_word ~ "expr-assign" then
 							log_types.put (True, "expr-assign")
-						elseif l_word.is_case_insensitive_equal_general ("type") then
+						elseif l_word ~ "type" then
 							log_types.put (True, "type")
-						elseif l_word.is_case_insensitive_equal_general ("precondition") then
+						elseif l_word ~ "precondition" then
 							log_types.put (True, "precondition")
-						elseif l_word.is_case_insensitive_equal_general ("statistics") then
+						elseif l_word ~ "statistics" then
 							log_types.put (True, "statistics")
-						elseif l_word.is_case_insensitive_equal ("batch-assign") then
+						elseif l_word ~ "batch-assign" then
 							log_types.put (True, "batch-assign")
-						elseif l_word.is_case_insensitive_equal_general ("basic") then
+						elseif l_word ~ "basic" then
 							l_log_has_basic := True
-						elseif l_word.is_case_insensitive_equal_general ("all") then
+						elseif l_word ~ "all" then
 							log_types.put (True, "passing")
 							log_types.put (True, "failing")
 							log_types.put (True, "invalid")
@@ -915,7 +915,7 @@ feature{NONE} -- Initialization
 
 			create excluded_features.make
 			if not error_handler.has_error and then l_exclude_option.was_found then
-				setup_excluded_features (l_exclude_option.parameter)
+				setup_excluded_features (l_exclude_option.parameter.out)
 			end
 
 			if not error_handler.has_error then
@@ -924,35 +924,35 @@ feature{NONE} -- Initialization
 
 			create popular_features.make
 			if not error_handler.has_error and then l_2times_option.was_found then
-				setup_popular_features (l_2times_option.parameter, 2)
+				setup_popular_features (l_2times_option.parameter.out, 2)
 			end
 
 			if not error_handler.has_error and then l_3times_option.was_found then
-				setup_popular_features (l_3times_option.parameter, 3)
+				setup_popular_features (l_3times_option.parameter.out, 3)
 			end
 
 			if not error_handler.has_error and then l_4times_option.was_found then
-				setup_popular_features (l_4times_option.parameter, 4)
+				setup_popular_features (l_4times_option.parameter.out, 4)
 			end
 
 			if not error_handler.has_error and then l_5times_option.was_found then
-				setup_popular_features (l_5times_option.parameter, 5)
+				setup_popular_features (l_5times_option.parameter.out, 5)
 			end
 
 			if not error_handler.has_error and then l_6times_option.was_found then
-				setup_popular_features (l_6times_option.parameter, 6)
+				setup_popular_features (l_6times_option.parameter.out, 6)
 			end
 
 			if not error_handler.has_error and then l_7times_option.was_found then
-				setup_popular_features (l_7times_option.parameter, 7)
+				setup_popular_features (l_7times_option.parameter.out, 7)
 			end
 
 			if not error_handler.has_error and then l_8times_option.was_found then
-				setup_popular_features (l_8times_option.parameter, 8)
+				setup_popular_features (l_8times_option.parameter.out, 8)
 			end
 
 			if not error_handler.has_error and then l_9times_option.was_found then
-				setup_popular_features (l_9times_option.parameter, 9)
+				setup_popular_features (l_9times_option.parameter.out, 9)
 			end
 
 			if not error_handler.has_error and then l_freeze_flag.was_found then
@@ -963,11 +963,11 @@ feature{NONE} -- Initialization
 			is_executing_normal_features_enabled := True
 
 			if not error_handler.has_error and then l_agents_option.was_found then
-				if l_agents_option.parameter.same_string ("only") then
+				if l_agents_option.parameter.out ~ "only" then
 					is_executing_normal_features_enabled := False
-				elseif l_agents_option.parameter.same_string ("none") then
+				elseif l_agents_option.parameter.out ~ "none" then
 					is_executing_agent_features_enabled := False
-				elseif l_agents_option.parameter.same_string ("all") then
+				elseif l_agents_option.parameter.out ~ "all" then
 					-- Do nothing
 				else
 					error_handler.report_statistics_format_error (l_agents_option.parameter)
@@ -978,28 +978,28 @@ feature{NONE} -- Initialization
 				if semantic_data_base_config = Void then
 					create semantic_data_base_config.make
 				end
-				semantic_data_base_config.set_host (l_sem_host_option.parameter)
+				semantic_data_base_config.set_host (l_sem_host_option.parameter.out)
 			end
 
 			if l_sem_schema_option.was_found then
 				if semantic_data_base_config = Void then
 					create semantic_data_base_config.make
 				end
-				semantic_data_base_config.set_schema (l_sem_schema_option.parameter)
+				semantic_data_base_config.set_schema (l_sem_schema_option.parameter.out)
 			end
 
 			if l_sem_user_option.was_found then
 				if semantic_data_base_config = Void then
 					create semantic_data_base_config.make
 				end
-				semantic_data_base_config.set_user (l_sem_user_option.parameter)
+				semantic_data_base_config.set_user (l_sem_user_option.parameter.out)
 			end
 
 			if l_sem_password_option.was_found then
 				if semantic_data_base_config = Void then
 					create semantic_data_base_config.make
 				end
-				semantic_data_base_config.set_password (l_sem_password_option.parameter)
+				semantic_data_base_config.set_password (l_sem_password_option.parameter.out)
 			end
 
 			if l_sem_port_option.was_found then
@@ -1010,7 +1010,7 @@ feature{NONE} -- Initialization
 			end
 
 			if l_precondition_reduction_file_option.was_found then
-				precondition_reduction_file := l_precondition_reduction_file_option.parameter.twin
+				precondition_reduction_file := l_precondition_reduction_file_option.parameter.out
 				is_automatic_testing_enabled := False
 			end
 
@@ -1023,7 +1023,7 @@ feature{NONE} -- Initialization
 			end
 
 			if l_arff_directory_option.was_found then
-				arff_directory := l_arff_directory_option.parameter.twin
+				arff_directory := l_arff_directory_option.parameter.out
 			end
 
 			if l_online_statistics_frequency.was_found then
@@ -1040,26 +1040,16 @@ feature{NONE} -- Initialization
 				is_output_test_case_on_line := True
 			end
 
---			if parser.parameters.count = 0 then
---				error_handler.report_missing_ecf_filename_error
---				-- TODO: Display usage_instruction (currently not exported, find better way to do it.)
---				-- error_handler.report_info_message (parser.help_option.usage_instruction (parser))
---				Exceptions.die (1)
---			else
---				ecf_filename := parser.parameters.first
-				class_names := parser.parameters.twin
---				create {DS_ARRAYED_LIST []} class_names.make
---				from
---					cs := parser.parameters.new_cursor
---					cs.start
-----					cs.forth
---				until
---					cs.off
---				loop
---					class_names.force_last (cs.item)
---					cs.forth
---				end
---			end
+			create {DS_ARRAYED_LIST [STRING]} class_names.make(parser.parameters.count)
+			from
+				l_cursor := parser.parameters.new_cursor
+				l_cursor.start
+			until
+				l_cursor.off
+			loop
+				class_names.force_last (l_cursor.item.out)
+				l_cursor.forth
+			end
 		ensure
 			help_message_set_when_required: should_display_help_message implies help_message /= Void
 		end

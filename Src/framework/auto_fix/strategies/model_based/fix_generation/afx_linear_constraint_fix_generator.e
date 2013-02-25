@@ -209,13 +209,13 @@ feature{NONE} -- Implementation
 				if config.is_wrapping_fix_enabled then
 						-- Generate wrapping fixes according to solved numeric constraints.
 					fixing_locations.do_if (
-						agent (a_location: TUPLE [scope_level: INTEGER; instrus: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_sol: like type_anchor; a_solved_expr: EPA_EXPRESSION)
+						agent (a_location: TUPLE [scope_level: INTEGER; instrus: LINKED_LIST [EPA_AST_STRUCTURE_NODE]]; a_sol: like type_anchor; a_solved_expr: EPA_EXPRESSION)
 							do
 								generate_fixes_for_precondition_violation (a_location, a_sol, a_solved_expr)
 --								generate_wraping_fixes_for_precondition_violation (a_location, a_sol, a_solved_expr)
 							end (?, a_solution, l_solution_expr),
 
-						agent (a_location: TUPLE [scope_level: INTEGER; instrus: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]): BOOLEAN
+						agent (a_location: TUPLE [scope_level: INTEGER; instrus: LINKED_LIST [EPA_AST_STRUCTURE_NODE]]): BOOLEAN
 							do
 								Result := a_location.scope_level = 1 and a_location.instrus.count = 1
 							end)
@@ -227,12 +227,12 @@ feature{NONE} -- Implementation
 			then
 				if config.is_afore_fix_enabled then
 					fixing_locations.do_if (
-						agent (a_location: TUPLE [scope_level: INTEGER; instrus: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_sol: like type_anchor; a_solved_expr: EPA_EXPRESSION)
+						agent (a_location: TUPLE [scope_level: INTEGER; instrus: LINKED_LIST [EPA_AST_STRUCTURE_NODE]]; a_sol: like type_anchor; a_solved_expr: EPA_EXPRESSION)
 							do
 								generate_afore_fixes_for_precondition_violation (a_location, a_sol, a_solved_expr)
 							end (?, a_solution, l_solution_expr),
 
-						agent (a_location: TUPLE [scope_level: INTEGER; instrus: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]): BOOLEAN
+						agent (a_location: TUPLE [scope_level: INTEGER; instrus: LINKED_LIST [EPA_AST_STRUCTURE_NODE]]): BOOLEAN
 							do
 								Result := a_location.scope_level = 1 and a_location.instrus.count <=1
 							end)
@@ -242,7 +242,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	generate_afore_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: EPA_EXPRESSION)
+	generate_afore_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [EPA_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: EPA_EXPRESSION)
 			-- Generate afore fixes for precondition violation for `a_fixing_location'.
 		require
 			scope_level_valid: a_fixing_location.scope_level = 1
@@ -290,7 +290,7 @@ feature{NONE} -- Implementation
 			fixes.extend (l_fix_skeleton)
 		end
 
-	generate_blind_wrapping_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: EPA_EXPRESSION)
+	generate_blind_wrapping_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [EPA_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: EPA_EXPRESSION)
 			-- Generate blindly wrapping fixes for precondition violation for `a_fixing_location'.
 		require
 			scope_level_valid: a_fixing_location.scope_level = 1
@@ -336,7 +336,7 @@ feature{NONE} -- Implementation
 			fixes.extend (l_fix_skeleton)
 		end
 
-	generate_wraping_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: EPA_EXPRESSION)
+	generate_wraping_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [EPA_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: EPA_EXPRESSION)
 			-- Generate wrapping fixes for precondition violation for `a_fixing_location'.
 		require
 			scope_level_valid: a_fixing_location.scope_level = 1
@@ -383,7 +383,7 @@ feature{NONE} -- Implementation
 			fixes.extend (l_fix_skeleton)
 		end
 
-	generate_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: EPA_EXPRESSION)
+	generate_fixes_for_precondition_violation (a_fixing_location: TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [EPA_AST_STRUCTURE_NODE]]; a_solution: like type_anchor; a_solved_expression: EPA_EXPRESSION)
 			-- Generate fix candidates for precondition violation.
 		do
 			generate_wraping_fixes_for_precondition_violation (a_fixing_location, a_solution, a_solved_expression)

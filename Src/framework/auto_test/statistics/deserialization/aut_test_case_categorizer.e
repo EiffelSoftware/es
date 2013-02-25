@@ -112,6 +112,9 @@ feature{NONE} -- Implementation
 				if l_file.is_open_write then
 					l_file.put_string (a_data.test_case_text)
 					l_file.close
+				else
+					Io.put_string ("Error writing to file " + l_dir_name)
+					Io.put_new_line
 				end
 			end
 		rescue
@@ -179,7 +182,7 @@ feature{NONE} -- Implementation
 
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -130,17 +130,29 @@ feature{NONE} -- Implementation
 			l_big_file.close
 		end
 
+	trace_collector: AFX_TRACE_COLLECTOR
+			-- Collector to collect traces.
+		do
+			if trace_collector_cache = Void then
+				if config.is_fixing_contracts_enabled then
+					create {AFX_INTER_FEATURE_TRACE_COLLECTOR} trace_collector_cache.make
+				else
+					create {AFX_INTRA_FEATURE_TRACE_COLLECTOR} trace_collector_cache.make
+				end
+			end
+			Result := trace_collector_cache
+		end
+
 	analyze_test_cases
 			-- Analyze the execution of test cases.
 		local
-			l_intra_feature_trace_collector: AFX_INTRA_FEATURE_TRACE_COLLECTOR
+			l_trace_collector: AFX_TRACE_COLLECTOR
 			l_trace_repository: AFX_PROGRAM_EXECUTION_TRACE_REPOSITORY
 			l_trace_analyzer: AFX_EXECUTION_TRACE_ANALYZER
 			l_ranker: AFX_PROGRAM_STATE_RANKER
 			l_invariant_detecter: AFX_PROGRAM_EXECUTION_INVARIANT_DETECTER
 		do
-			create l_intra_feature_trace_collector.make
-			l_intra_feature_trace_collector.collect_trace
+			trace_collector.collect
 			l_trace_repository := trace_repository
 			progression_monitor.set_progression (progression_monitor.progression_test_case_analysis_execution_end)
 
@@ -204,15 +216,15 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	validate_fixes
-			-- Validate `fix_skeletons'.
-		local
-			l_validator: AFX_FIX_VALIDATOR
-		do
-			check exception_signature /= Void end
-			create l_validator.make (fixes)
-			l_validator.validate
-		end
+--	validate_fixes
+--			-- Validate `fix_skeletons'.
+--		local
+--			l_validator: AFX_FIX_VALIDATOR
+--		do
+--			check exception_signature /= Void end
+--			create l_validator.make (fixes)
+--			l_validator.validate
+--		end
 
 feature{NONE} -- Auxiliary
 
@@ -254,6 +266,9 @@ feature{NONE} -- Auxiliary
 		end
 
 feature{NONE} -- Cache
+
+	trace_collector_cache: AFX_TRACE_COLLECTOR
+			-- Cache for `trace_collector'.
 
 	valid_fixes_cache: DS_LINKED_LIST [AFX_FIX]
 			-- Cache for `valid_fixes'.

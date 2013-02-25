@@ -64,7 +64,7 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	fixing_locations: LINKED_LIST [TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]]
+	fixing_locations: LINKED_LIST [TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [EPA_AST_STRUCTURE_NODE]]]
 			-- List of ASTs which will be involved in a fix.
 			-- Item in the inner list `instructions' is a list of ASTs, they represent the ASTs whilch will be involved in a fix.
 			-- `scope_level' is the scope level difference from `instructions' to the failing point. If `instructions' are in
@@ -93,8 +93,8 @@ feature{NONE} -- Implementation
 		local
 			l_signature: like exception_signature
 			l_recipient: like exception_recipient_feature
-			l_node: detachable AFX_AST_STRUCTURE_NODE
-			l_nlist: LINKED_LIST [AFX_AST_STRUCTURE_NODE]
+			l_node: detachable EPA_AST_STRUCTURE_NODE
+			l_nlist: LINKED_LIST [EPA_AST_STRUCTURE_NODE]
 			l_scope_level: INTEGER
 		do
 			create fixing_locations.make
@@ -115,7 +115,7 @@ feature{NONE} -- Implementation
 
 						-- The fixing locations containing all the instructions which appear
 						-- in the same basic block as the instruction in trouble.						
-					if attached {LINKED_LIST [AFX_AST_STRUCTURE_NODE]} l_recipient.ast_structure.instructions_in_block_as (l_node) as l_list and then l_list.count > 1 then
+					if attached {LINKED_LIST [EPA_AST_STRUCTURE_NODE]} l_recipient.ast_structure.instructions_in_block_as (l_node) as l_list and then l_list.count > 1 then
 						create l_nlist.make
 						l_nlist.append (l_list)
 						fixing_locations.extend ([l_scope_level, l_nlist])
@@ -125,7 +125,7 @@ feature{NONE} -- Implementation
 				end
 			elseif l_signature.is_postcondition_violation or l_signature.is_class_invariant_violation then
 					-- The only fix location is right before the end of the feature body.
-				fixing_locations.extend ([1, create {LINKED_LIST [AFX_AST_STRUCTURE_NODE]}.make])
+				fixing_locations.extend ([1, create {LINKED_LIST [EPA_AST_STRUCTURE_NODE]}.make])
 			else
 				check not_supported: False end
 			end

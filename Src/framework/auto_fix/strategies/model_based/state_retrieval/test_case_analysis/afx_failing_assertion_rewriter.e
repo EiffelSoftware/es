@@ -56,7 +56,7 @@ feature -- Access
 
 feature -- Basic operations
 
-	rewrite (a_tc: EPA_TEST_CASE_SIGNATURE; a_structure: AFX_FEATURE_AST_STRUCTURE_NODE; a_trace: STRING)
+	rewrite (a_tc: EPA_TEST_CASE_SIGNATURE; a_structure: EPA_FEATURE_AST_STRUCTURE_NODE; a_trace: STRING)
 			-- Generate the rewritten failing assertion.
 			-- The generated assertion should appear in the context of `a_tc'.recipient_'.
 			-- `a_structure' stores the AST sturcture of `a_tc'.recipient_'.
@@ -100,11 +100,11 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	analyze_void_call_target (a_tc: EPA_TEST_CASE_SIGNATURE; a_structure: AFX_FEATURE_AST_STRUCTURE_NODE; a_trace: STRING)
+	analyze_void_call_target (a_tc: EPA_TEST_CASE_SIGNATURE; a_structure: EPA_FEATURE_AST_STRUCTURE_NODE; a_trace: STRING)
 			-- Analyze void-call-target violation in `a_tc'.
 		local
 			l_feature_of_void_target: STRING
-			l_culprit_ast: AFX_AST_STRUCTURE_NODE
+			l_culprit_ast: EPA_AST_STRUCTURE_NODE
 			l_sub_expression_collector: AFX_SUB_EXPRESSION_COLLECTOR
 			l_sub_expressions: EPA_HASH_SET [EPA_EXPRESSION]
 			l_expression_ast_text_table: DS_HASH_TABLE [EPA_EXPRESSION, STRING]
@@ -190,10 +190,10 @@ feature{NONE} -- Implementation
 			assertion := original_assertion
 		end
 
-	analyze_precondtion_violation (a_tc: EPA_TEST_CASE_SIGNATURE; a_structure: AFX_FEATURE_AST_STRUCTURE_NODE; a_trace: STRING)
+	analyze_precondtion_violation (a_tc: EPA_TEST_CASE_SIGNATURE; a_structure: EPA_FEATURE_AST_STRUCTURE_NODE; a_trace: STRING)
 			-- Analyze precondition violation in `a_tc'.
 		local
-			l_culprit_ast: AFX_AST_STRUCTURE_NODE
+			l_culprit_ast: EPA_AST_STRUCTURE_NODE
 			l_sub_expression_collector: AFX_SUB_EXPRESSION_COLLECTOR
 			l_sub_expressions: EPA_HASH_SET [EPA_EXPRESSION]
 			l_expression_ast_text_table: DS_HASH_TABLE [EPA_EXPRESSION, STRING]

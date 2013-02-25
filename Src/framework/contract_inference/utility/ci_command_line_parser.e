@@ -269,15 +269,15 @@ feature -- Basic operations
 			l_parser.parse_list (l_args)
 			if l_build_project_option.was_found then
 				config.set_should_build_project (True)
-				config.set_test_case_directory (l_build_project_option.parameter)
+				config.set_test_case_directory (l_build_project_option.parameter.out)
 			end
 
 			if l_feature_name_option.was_found then
-				config.set_feature_name_for_test_cases (l_feature_name_option.parameter)
+				config.set_feature_name_for_test_cases (l_feature_name_option.parameter.out)
 			end
 
 			if l_class_name_option.was_found then
-				config.set_class_name (l_class_name_option.parameter)
+				config.set_class_name (l_class_name_option.parameter.out)
 			end
 
 			config.set_should_infer_contracts (l_infer_option.was_found)
@@ -291,61 +291,61 @@ feature -- Basic operations
 			end
 
 			if l_premise_number_option.was_found then
-				setup_composite_premise_number (config, l_premise_number_option.parameter)
+				setup_composite_premise_number (config, l_premise_number_option.parameter.out)
 			else
 				setup_composite_premise_number (config, Void)
 			end
 
 			if l_composite_property_option.was_found then
-				setup_composite_property (config, l_composite_property_option.parameter)
+				setup_composite_property (config, l_composite_property_option.parameter.out)
 			else
 				setup_composite_property (config, Void)
 			end
 
 			if l_composite_boolean_connector_option.was_found then
-				setup_composite_boolean_connectors (config, l_composite_boolean_connector_option.parameter)
+				setup_composite_boolean_connectors (config, l_composite_boolean_connector_option.parameter.out)
 			else
 				setup_composite_boolean_connectors (config, Void)
 			end
 
 			if l_composite_integer_connector_option.was_found then
-				setup_composite_integer_connectors (config, l_composite_integer_connector_option.parameter)
+				setup_composite_integer_connectors (config, l_composite_integer_connector_option.parameter.out)
 			else
 				setup_composite_integer_connectors (config, Void)
 			end
 
 			if l_composite_boolean_premise_connector_option.was_found then
-				setup_composite_boolean_premise_connectors (config, l_composite_boolean_premise_connector_option.parameter)
+				setup_composite_boolean_premise_connectors (config, l_composite_boolean_premise_connector_option.parameter.out)
 			else
 				setup_composite_boolean_premise_connectors (config, Void)
 			end
 
 			if l_composite_integer_premise_connector_option.was_found then
-				setup_composite_integer_premise_connectors (config, l_composite_integer_premise_connector_option.parameter)
+				setup_composite_integer_premise_connectors (config, l_composite_integer_premise_connector_option.parameter.out)
 			else
 				setup_composite_integer_premise_connectors (config, Void)
 			end
 
 			if l_sequence_property_option.was_found then
-				setup_sequence_property (config, l_sequence_property_option.parameter)
+				setup_sequence_property (config, l_sequence_property_option.parameter.out)
 			else
 				setup_sequence_property (config, Void)
 			end
 
 			if l_simple_property_option.was_found then
-				setup_simple_property (config, l_simple_property_option.parameter)
+				setup_simple_property (config, l_simple_property_option.parameter.out)
 			else
 				setup_simple_property (config, Void)
 			end
 
 			if l_daikon_option.was_found then
-				setup_daikon_property (config, l_daikon_option.parameter)
+				setup_daikon_property (config, l_daikon_option.parameter.out)
 			else
 				setup_daikon_property (config, Void)
 			end
 
 			if l_dnf_option.was_found then
-				setup_dnf_property (config, l_dnf_option.parameter)
+				setup_dnf_property (config, l_dnf_option.parameter.out)
 			else
 				setup_dnf_property (config, Void)
 			end
@@ -357,19 +357,19 @@ feature -- Basic operations
 			end
 
 			if l_implication_flag.was_found then
-				setup_implication_property (config, l_implication_flag.parameter)
+				setup_implication_property (config, l_implication_flag.parameter.out)
 			else
 				setup_implication_property (config, Void)
 			end
 
 			if l_linear_flag.was_found then
-				setup_linear_property (config, l_linear_flag.parameter)
+				setup_linear_property (config, l_linear_flag.parameter.out)
 			else
 				setup_linear_property (config, Void)
 			end
 
 			if l_simple_equality_flag.was_found then
-				setup_simple_equality_property (config, l_simple_equality_flag.parameter)
+				setup_simple_equality_property (config, l_simple_equality_flag.parameter.out)
 			else
 				setup_simple_equality_property (config, Void)
 			end
@@ -381,19 +381,19 @@ feature -- Basic operations
 			end
 
 			if l_verbose_option.was_found then
-				setup_verbose_level (config, l_verbose_option.parameter)
+				setup_verbose_level (config, l_verbose_option.parameter.out)
 			else
 				setup_verbose_level (config, Void)
 			end
 
 			if l_solr_option.was_found then
-				setup_generate_solr_property (config, l_solr_option.parameter)
+				setup_generate_solr_property (config, l_solr_option.parameter.out)
 			else
 				setup_generate_solr_property (config, Void)
 			end
 
 			if l_sql_option.was_found then
-				setup_generate_sql_property (config, l_sql_option.parameter)
+				setup_generate_sql_property (config, l_sql_option.parameter.out)
 			else
 				setup_generate_sql_property (config, Void)
 			end
@@ -405,7 +405,7 @@ feature -- Basic operations
 			config.set_should_use_mocking (l_use_mock_option.was_found)
 			config.set_should_use_ssql (l_use_ssql_option.was_found)
 			if l_use_ssql_option.was_found then
-				config.set_ssql_directory (l_use_ssql_option.parameter)
+				config.set_ssql_directory (l_use_ssql_option.parameter.out)
 			end
 			config.set_should_generate_mocking (l_generate_mock_option.was_found)
 
@@ -419,13 +419,13 @@ feature -- Basic operations
 			end
 
 			if l_test_case_range.was_found then
-				setup_test_case_range (config, l_test_case_range.parameter)
+				setup_test_case_range (config, l_test_case_range.parameter.out)
 			else
 				setup_test_case_range (config, "0,0")
 			end
 
 			if l_arff_type_option.was_found then
-				if l_arff_type_option.parameter ~ "object" then
+				if l_arff_type_option.parameter.out ~ "object" then
 					config.set_should_generate_arff_for_transitions (False)
 				else
 					config.set_should_generate_arff_for_transitions (True)
@@ -435,13 +435,13 @@ feature -- Basic operations
 			end
 
 			if l_input_option.was_found then
-				config.set_input_location (l_input_option.parameter)
+				config.set_input_location (l_input_option.parameter.out)
 			else
 				config.set_input_location (Void)
 			end
 
 			if l_output_option.was_found then
-				config.set_output_location (l_output_option.parameter)
+				config.set_output_location (l_output_option.parameter.out)
 			else
 				config.set_output_location (Void)
 			end
@@ -451,7 +451,7 @@ feature -- Basic operations
 			end
 
 			if l_tc_inclusion_option.was_found then
-				setup_test_case_types (config, l_tc_inclusion_option.parameter)
+				setup_test_case_types (config, l_tc_inclusion_option.parameter.out)
 			end
 
 			config.set_should_generate_arff (l_generate_arff_option.was_found)

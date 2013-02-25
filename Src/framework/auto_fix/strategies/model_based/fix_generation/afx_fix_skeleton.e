@@ -46,7 +46,7 @@ feature -- Access
 			-- If False, generate fix like:
 			--     snippet
 
-	relevant_ast: LINKED_LIST [AFX_AST_STRUCTURE_NODE]
+	relevant_ast: LINKED_LIST [EPA_AST_STRUCTURE_NODE]
 			-- Relevant AST nodes, that may be modified by current fix.
 			-- The order of the nodes in the list is important.
 			-- If the list is empty, the fix is to be generated at the end of the recipient.			
@@ -490,8 +490,7 @@ feature{NONE} -- Implementation
 			l_cursor: CURSOR
 		do
 			fixme ("To be removed. 18.12.2009 Jasonw")
-			create Result.make (a_hash_table.count)
-			Result.set_key_equality_tester (string_equality_tester)
+			create Result.make_equal (a_hash_table.count)
 			l_cursor := a_hash_table.cursor
 			from
 				a_hash_table.start

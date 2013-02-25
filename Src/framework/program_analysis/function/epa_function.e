@@ -360,7 +360,8 @@ feature -- Partial evaluation
 					l_arguments.extend (argument_type (l_position))
 					l_domains.extend (argument_domain (l_position))
 					l_new_args.extend (curly_brace_surrounded_integer (l_arg_index))
---					l_new_args.extend (curly_brace_surrounded_integer (l_position))
+						-- Remaining place holders should be updated too.								Max @ Feb-14-2013
+					body.replace_substring_all (curly_brace_surrounded_integer (l_position), curly_brace_surrounded_integer (l_arg_index))
 					l_arg_index := l_arg_index + 1
 				end
 				l_position := l_position + 1

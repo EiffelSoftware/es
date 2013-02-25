@@ -47,6 +47,9 @@ feature -- Access
 			Result := last_trace_cache
 		end
 
+	current_state_skeleton: EPA_STATE_SKELETON assign set_state_skeleton
+			-- State skeleton to generate program points.
+
 feature -- Basic operation
 
 	print_trace_repository (a_repository: DS_HASH_TABLE [AFX_PROGRAM_EXECUTION_TRACE, EPA_TEST_CASE_INFO])
@@ -56,6 +59,12 @@ feature -- Basic operation
 		do
 			reset_printer
 			a_repository.do_all (agent print_trace)
+		end
+
+	set_state_skeleton (a_skeleton: EPA_STATE_SKELETON)
+			-- Set `current_state_skeleton'.
+		do
+			current_state_skeleton := a_skeleton
 		end
 
 feature{NONE} -- Implementation
@@ -154,7 +163,7 @@ feature{NONE} -- Implementation
 			l_var_type: TYPE_A
 		do
 			l_state := a_state.state
-			l_bp_index := a_state.breakpoint_slot_index
+			l_bp_index := a_state.location.breakpoint_index
 
 			l_context_class := l_state.class_
 			l_written_class := l_state.feature_.written_class
@@ -164,7 +173,8 @@ feature{NONE} -- Implementation
 			create Result.make_with_type (l_ppt_name, Point_program_point)
 
 			-- Variables declared at this program point.
-			l_skeleton := exception_recipient_feature.state_skeleton
+			l_skeleton := current_state_skeleton
+--			l_skeleton := exception_recipient_feature.state_skeleton
 			from l_skeleton.start
 			until l_skeleton.after
 			loop

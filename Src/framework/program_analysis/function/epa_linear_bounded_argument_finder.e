@@ -86,16 +86,16 @@ feature -- Basic operations
 
 				-- Check if there is a precondition which bounds the integer argument.
 			if not l_done then
-				check_bouding_assertions (l_expr, l_preconditions, a_context_class, a_feature)
+				check_bounding_assertions (l_expr, l_preconditions, a_context_class, a_feature)
 				if not is_bound_found then
 						-- Check if there is a precondition which is query over the integer argument,
 						-- if so, check if we can learn from the postcondition of that precondition query,
 						-- to see if the integer argument is bounded.
 					l_pre_feat := single_query_over_argument (l_expr, a_context_class, a_feature, l_preconditions)
-					if l_pre_feat /= Void then
+					if l_pre_feat /= Void and then not l_pre_feat.is_empty then
 						l_postconditions := postconditions_as_preconditions (l_expr, l_pre_feat, a_context_class, a_feature)
-						if l_postconditions /= Void then
-							check_bouding_assertions (l_expr, l_postconditions, a_context_class, a_feature)
+						if l_postconditions /= Void and then not l_postconditions.is_empty then
+							check_bounding_assertions (l_expr, l_postconditions, a_context_class, a_feature)
 						end
 					end
 				end
@@ -104,7 +104,7 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation
 
-	check_bouding_assertions (a_argument: EPA_EXPRESSION; a_assertions: LIST [EPA_EXPRESSION]; a_context_class: CLASS_C; a_feature: FEATURE_I)
+	check_bounding_assertions (a_argument: EPA_EXPRESSION; a_assertions: LIST [EPA_EXPRESSION]; a_context_class: CLASS_C; a_feature: FEATURE_I)
 			-- Check if there is an assertion in `a_assertions' which bounds the single integer argument.
 			-- `a_argument' is the integer argument which should be bounded in both ends.
 		local
@@ -276,7 +276,8 @@ feature{NONE} -- Implementation
 				a_precondition_features.after
 			loop
 				l_feat := a_precondition_features.item_for_iteration.feature_
-				l_finder.find (a_context_class, l_feat, l_extractor.precondition_of_feature (l_feat, a_context_class))
+					-- Changed from: l_extractor.precondition_of_feature	2.6.2013 Max
+				l_finder.find (a_context_class, l_feat, l_extractor.postcondition_of_feature (l_feat, a_context_class))
 				l_asserts := l_finder.last_expressions
 				if not l_asserts.is_empty then
 					from

@@ -64,6 +64,7 @@ feature{NONE} -- Implementation
 					create Result.make_equal (1)
 				else
 						-- Prepare input file for Daikon.
+					daikon_printer.set_state_skeleton (exception_recipient_feature.state_skeleton)
 					daikon_printer.print_trace_repository (a_repository)
 					create l_declaration_file.make_with_path (declaration_file_name)
 					l_declaration_file.create_read_write

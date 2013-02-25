@@ -51,16 +51,38 @@ inherit
 
 	CI_SEQUENCE_OPERATOR_NAMES
 
-feature -- Access
+feature{NONE} -- Access for implementation
 
-	prestate: EPA_STATE
-			-- Values in pre-state
+--	old_state: detachable EPA_STATE
+--			-- State where 'old' expressions are evaluated.
+--			-- Evaluation of 'old' fails if `old_state' is Void.
+--			-- When `is_evaluating_pre_expressions' is True, `old_state' is set to Void;
+--			-- When it is False, `old_state' is equal to `prestate'.
+--			--
+--			-- See `working_state'.
+--		do
+--			if is_evaluating_pre_expressions then
+--				Result := Void
+--			else
+--				Result := prestate
+--			end
+--		end
 
-	poststate: EPA_STATE
-			-- Values in post-state
+--	working_state: EPA_STATE
+--			-- State where non-old expressions are evaluated.
+--			-- When `is_evaluating_pre_expressions' is True, `working_state' is equal to `prestate';
+--			-- When it is False, `working_state' is equal to `poststate'.
+--			--
+--			-- See `old_state'.
+--		do
+--			if is_evaluating_pre_expressions then
+--				Result := prestate
+--			else
+--				Result := poststate
+--			end
+--		end
 
-	context_class: CLASS_C
-			-- Context class for expression evaluation
+feature -- Access evaluation result
 
 	missing_expressions: DS_HASH_SET [EPA_EXPRESSION]
 			-- Set of expressions that were needed to by the last
@@ -71,17 +93,16 @@ feature -- Access
 	last_value: EPA_EXPRESSION_VALUE
 			-- Value of the last evaluated expression by `evaluate'
 
-	pre_state_values: EPA_STATE
-			-- Expressions values from pre-execution state
-		do
-			Result := prestate
-		end
+feature -- Access initial evaluation context
 
-	post_state_values: EPA_STATE
-			-- Expressions values from pre-execution state
-		do
-			Result := poststate
-		end
+	context_class: CLASS_C
+			-- Context class for expression evaluation
+
+	prestate: EPA_STATE
+			-- Values in pre-state
+
+	poststate: EPA_STATE
+			-- Values in post-state
 
 	extra_pre_state_values: detachable EPA_STATE
 			-- Extra pre-state values
@@ -89,44 +110,101 @@ feature -- Access
 	extra_post_state_values: detachable EPA_STATE
 			-- Extra post-state values			
 
-	state_values (a_pre_state: BOOLEAN): EPA_STATE
-			-- State values from pre-execution if `a_pre_state' is True,
-			-- otherwise, from post-execution.
+feature -- Access derived evaluation context
+
+	state_values (a_old_state: BOOLEAN): EPA_STATE
+			-- Return `old_state_values' if `a_old_state';
+			-- Return `working_state_values' otherwise.
 		do
-			if a_pre_state then
-				Result := pre_state_values
+			if a_old_state then
+				Result := old_state_values
 			else
-				Result := post_state_values
+				Result := working_state_values
 			end
 		end
 
-	extra_state_values (a_pre_state: BOOLEAN): detachable EPA_STATE
-			-- Extra state values from pre-execution if `a_pre_state' is True,
-			-- otherwise, from post-execution.
+	extra_state_values (a_old_state: BOOLEAN): detachable EPA_STATE
+			-- Return `extra_old_state_values' if `a_old_state';
+			-- Return `extra_working_state_values' otherwise.
 		do
-			if a_pre_state then
+			if a_old_state then
+				Result := extra_old_state_values
+			else
+				Result := extra_working_state_values
+			end
+		end
+
+feature{NONE} -- Derived evaluation context implementation
+
+	old_state_values: EPA_STATE
+			-- State values for evaluating 'old' expressions.
+			-- Evaluation of an 'old' expression fails if both `old_state_values' and `old_extra_state_values' are Void.
+			-- Return Void if `is_evaluating_pre_expressions';
+			-- Return `prestate' otherwise.
+			--
+			-- See `working_state_values'.
+		do
+			if is_evaluating_pre_expressions then
+				Result := Void
+			else
+				Result := prestate
+			end
+		end
+
+	working_state_values: EPA_STATE
+			-- State values for evaluating non-old expressions.
+			-- Return `prestate' if `is_evaluating_pre_expressions';
+			-- Return `poststate' otherwise.
+			--
+			-- See `old_state_values'.
+		do
+			if is_evaluating_pre_expressions then
+				Result := prestate
+			else
+				Result := poststate
+			end
+		end
+
+	extra_old_state_values: EPA_STATE
+			-- Extra state values for evaluating 'old' expressions.
+			-- Evaluation of an 'old' expression fails if both `old_state_values' and `old_extra_state_values' are Void.
+			-- Return Void if `is_evaluating_pre_expressions';
+			-- Return `extra_pre_state_values' otherwise.
+			--
+			-- See `extra_working_state_values'.
+		do
+			if is_evaluating_pre_expressions then
+				Result := Void
+			else
+				Result := extra_pre_state_values
+			end
+		end
+
+	extra_working_state_values: EPA_STATE
+			-- Extra state values for evaluating non-old expressions.
+			-- Return `extra_pre_state_values' if `is_evaluating_pre_expressions';
+			-- Return `extra_post_state_values' otherwise.
+			--
+			-- See `extra_old_state_values'.
+		do
+			if is_evaluating_pre_expressions then
 				Result := extra_pre_state_values
 			else
 				Result := extra_post_state_values
 			end
 		end
 
-	sequence_value (a_value: EPA_EXPRESSION_VALUE): detachable ANY
-			-- Sequence value out of `a_value', if not possible, return the original `a_value'
-		do
-			if attached {EPA_ANY_VALUE} a_value as l_value then
-				if attached {CI_SEQUENCE [EPA_EXPRESSION_VALUE]} a_value.item as l_sequence then
-					Result := l_sequence.content
-				elseif attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} a_value.item as l_sequence then
-					Result := l_sequence
-				end
-			end
-			if Result = Void then
-				Result := a_value
-			end
-		end
-
 feature -- Status report
+
+	is_evaluating_pre_expressions: BOOLEAN assign set_evaluating_pre_expressions
+			-- Is the evaluator for evaluating pre-expressions?
+			-- If True, `pre_state' is the context, and 'old' expressions will trigger error;
+			-- Otherwise, `post_state' is the context and 'old' expressions are allowed.
+
+	is_ternary_logic_enabled: BOOLEAN
+			-- Is ternary logic enabled?
+			-- So nonsensical values can be used in boolean algebra?
+			-- Default: False
 
 	has_error: BOOLEAN
 			-- Was an error during last expression evaluation?
@@ -134,22 +212,16 @@ feature -- Status report
 	error_reason: detachable STRING
 			-- Reason for the last error
 
-	is_ternary_logic_enabled: BOOLEAN
-			-- Is ternary logic enabled?
-			-- So nonsensical values can be used in boolean algebra?
-			-- Default: False
-
 feature -- Basic operations
 
 	evaluate (a_expr: AST_EIFFEL)
-			-- Evaluate `a_expr' in the context of `transition_context',
-			-- make result available in `last_value'.
+			-- Evaluate `a_expr' in the current evaluation context, and make result available in `last_value'.
 			-- Store missing expressions (if any) in `missing_expressions'.
-			-- Old expressions will be evaluated in pre-execution state, and
-			-- normal expressions will be evaluated in post-execution state.
+			-- Old expressions will be evaluated in `old_state_values' and `extra_old_state_values';
+			-- Non-old expressions will be evaluated in `working_state_values' and `extra_working_state_values'.
 			-- For example: in "old o.has (v) implies o.has (v)", sub-expression
-			-- "old o.has (v)" will be evaluated in pre-execution state, and sub-expression
-			-- "o.has (v)" will be evaluated in post-execution state.
+			-- "old o.has (v)" will be evaluated in `*old_state_values' state, and sub-expression
+			-- "o.has (v)" will be evaluated in `*working_state_values' state.
 		require
 			a_expr_attached: a_expr /= Void
 		do
@@ -178,6 +250,12 @@ feature -- Setting
 			prestate := a_prestate
 			poststate := a_poststate
 			context_class := a_context_class
+		end
+
+	set_evaluating_pre_expressions (a_flag: BOOLEAN)
+			-- Set `is_evaluating_pre_expressions' with `a_flag'.
+		do
+			is_evaluating_pre_expressions := a_flag
 		end
 
 	set_extra_pre_state_values (a_values: like extra_pre_state_values)
@@ -227,38 +305,59 @@ feature{NONE} -- Implementation
 			has_error_set: has_error = b
 		end
 
-	equation_by_expression_ast (a_expr_as: AST_EIFFEL; a_pre_state: BOOLEAN): detachable EPA_EQUATION
-			-- Equation whose expression is equal to `a_expr_as'
-			-- in pre-execution state if `a_pre_state' is True, otherwise,
-			-- in post-execution state.
-			-- Void if no such equation is found.
+	sequence_value (a_value: EPA_EXPRESSION_VALUE): detachable ANY
+			-- Sequence value out of `a_value', if not possible, return the original `a_value'
 		do
-			Result := equation_by_expression (text_from_ast (a_expr_as), a_pre_state)
-		end
-
-	equation_by_expression (a_expr: STRING; a_pre_state: BOOLEAN): detachable EPA_EQUATION
-			-- Equation whose expression is equal to `a_expr'
-			-- in pre-execution state if `a_pre_state' is True, otherwise,
-			-- in post-execution state.
-			-- Void if no such equation is found.
-		do
-			Result := state_values (a_pre_state).item_with_expression_text (a_expr)
-			if Result = Void then
-				if attached {EPA_STATE} extra_state_values (a_pre_state) as l_state then
-					Result := l_state.item_with_expression_text (a_expr)
---					if Result /= Void and then attached {EPA_ANY_VALUE} Result.value as l_any then
---						if attached {CI_SEQUENCE [EPA_EXPRESSION_VALUE]} l_any.item as l_sequence then
---							if log_manager /= Void then
---								log_manager.put_line_at_info_level ("%T" + a_expr + " == " + l_sequence.out + "%N")
---							end
---						elseif attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} l_any.item as l_sequence then
---							if log_manager /= Void then
---								log_manager.put_line_at_info_level ("%T" + a_expr + " == " + l_sequence.out + "%N")
---							end
---						end
---					end
+			if attached {EPA_ANY_VALUE} a_value as l_value then
+				if attached {CI_SEQUENCE [EPA_EXPRESSION_VALUE]} a_value.item as l_sequence then
+					Result := l_sequence.content
+				elseif attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} a_value.item as l_sequence then
+					Result := l_sequence
 				end
 			end
+			if Result = Void then
+				Result := a_value
+			end
+		end
+
+	equation_by_expression_ast (a_expr_as: AST_EIFFEL; a_old_state: BOOLEAN): detachable EPA_EQUATION
+			-- Equation whose expression is equal to `a_expr_as'
+			-- use old state values if `a_old_state' is True, otherwise,
+			-- use working state values.
+			-- Void if no such equation is found.
+		do
+			Result := equation_by_expression (text_from_ast (a_expr_as), a_old_state)
+		end
+
+	equation_by_expression (a_expr: STRING; a_old_state: BOOLEAN): detachable EPA_EQUATION
+			-- Equation whose expression is equal to `a_expr'
+			-- use old state values if `a_old_state' is True, otherwise,
+			-- use working state values.
+			-- Void if no such equation is found.
+		do
+			if attached state_values (a_old_state) as lt_state_values then
+				Result := lt_state_values.item_with_expression_text (a_expr)
+				if Result = Void and then attached extra_state_values (a_old_state) as lt_extra_state_values then
+					Result := lt_extra_state_values.item_with_expression_text (a_expr)
+				end
+			end
+--			Result := state_values (a_old_state).item_with_expression_text (a_expr)
+--			if Result = Void then
+--				if attached {EPA_STATE} extra_state_values (a_pre_state) as l_state then
+--					Result := l_state.item_with_expression_text (a_expr)
+----					if Result /= Void and then attached {EPA_ANY_VALUE} Result.value as l_any then
+----						if attached {CI_SEQUENCE [EPA_EXPRESSION_VALUE]} l_any.item as l_sequence then
+----							if log_manager /= Void then
+----								log_manager.put_line_at_info_level ("%T" + a_expr + " == " + l_sequence.out + "%N")
+----							end
+----						elseif attached {MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]} l_any.item as l_sequence then
+----							if log_manager /= Void then
+----								log_manager.put_line_at_info_level ("%T" + a_expr + " == " + l_sequence.out + "%N")
+----							end
+----						end
+----					end
+--				end
+--			end
 		end
 
 	evalute_unary_sequence_operator (a_sequence: MML_FINITE_SEQUENCE [EPA_EXPRESSION_VALUE]; a_operator_name: STRING)
@@ -804,14 +903,14 @@ feature{NONE} -- Implementation
 		end
 feature -- Error messages
 
-	msg_missing_expression (a_expr_as: AST_EIFFEL; a_pre_state: BOOLEAN): STRING
+	msg_missing_expression (a_expr_as: AST_EIFFEL; a_old_state: BOOLEAN): STRING
 			-- Message reporting that expressions `a_expr_as' is mising in state values.
 		do
 			create Result.make (64)
 			Result.append (once "Expression missing: %"")
 			Result.append (text_from_ast (a_expr_as))
 			Result.append (once "%" is missing in ")
-			Result.append (state_phase_name (a_pre_state))
+			Result.append (state_phase_name (a_old_state))
 		end
 
 	msg_type_error (a_expr_as: EXPR_AS; a_expected_type: STRING; a_actual_type: STRING): STRING
@@ -862,14 +961,14 @@ feature -- Error messages
 
 	msg_type_error_boolean_value_expected: STRING = "A boolean value is expected."
 
-	state_phase_name (a_pre_state: BOOLEAN): STRING
+	state_phase_name (a_old_state: BOOLEAN): STRING
 			-- State phase name
 		do
-			create Result.make (11)
-			if a_pre_state then
-				Result.append (once "pre-state")
+			create Result.make (14)
+			if a_old_state then
+				Result.append (once "old-state")
 			else
-				Result.append (once "post_state")
+				Result.append (once "working_state")
 			end
 		end
 

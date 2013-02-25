@@ -80,7 +80,7 @@ feature -- Access
 	context_type: TYPE_A
 			-- Context type in which types are resolved
 
-	inferrers: LINKED_LIST [CI_INFERRER]
+	inferrers: ARRAYED_LIST [CI_INFERRER]
 			-- List of inferrers
 
 	log_file: PLAIN_TEXT_FILE
@@ -443,10 +443,10 @@ feature{NONE} -- Implementation
 					l_resolved_uppers.sort
 					l_constant_uppers.sort
 					l_constant_lowers.sort
-					if l_resolved_lowers.is_empty then
+					if l_resolved_lowers.is_empty and then not l_constant_lowers.is_empty then
 						l_final_lower := l_constant_lowers.first
 						l_final_lower_expr := l_constant_lower_map.item (l_final_lower)
-					elseif l_constant_lowers.is_empty then
+					elseif l_constant_lowers.is_empty and then not l_resolved_lowers.is_empty then
 						l_final_lower := l_resolved_lowers.first
 						l_final_lower_expr := l_resolved_lower_map.item (l_final_lower)
 					else
@@ -713,7 +713,9 @@ feature{NONE} -- Actions
 						if config.is_breakpoint_monitoring_enabled then
 							on_right_after_test_hit (Void, Void)
 						end
-						if not a_dm.application_status.exception_meaning.as_lower.has_substring ("mismatch") then
+							-- Due to API change?            						Max @ Feb-7-2013
+							-- if not a_dm.application_status.exception_meaning.as_lower.has_substring ("mismatch") then
+						if not a_dm.application_status.exception_type_name.as_lower.has_substring ("mismatch") then
 							if config.max_test_case_to_execute > 0 and then test_case_count > config.max_test_case_to_execute then
 							else
 								if last_test_case_info /= Void then
@@ -968,7 +970,7 @@ feature{NONE} -- Implementation
 			l_solr_inferrer: CI_SOLR_INFERRER
 			l_sql_inferrer: CI_SQL_INFERRER
 		do
-			create inferrers.make
+			create inferrers.make (20)
 
 			if config.is_simple_property_enabled then
 				create l_simple_inferrer
@@ -1154,6 +1156,8 @@ feature{NONE} -- Implementation
 
 	setup_object_equivalent_classes (a_state: EPA_STATE)
 			-- Setup object equivalent classes in `a_state'.
+			-- Set `object_equivalent_class_id' of the expressions belonging to an object equivalent class.
+			-- Remove `~' equations from `a_state'.
 		local
 			l_equiv_sets: LINKED_LIST [DS_HASH_SET [EPA_EXPRESSION]]
 			l_set: DS_HASH_SET [EPA_EXPRESSION]
@@ -1261,6 +1265,17 @@ feature{NONE} -- Implementation
 				-- Logging.
 			create l_printer.make
 			log_manager.push_level ({ELOG_CONSTANTS}.info_level)
+			log_manager.put_line_with_time ("Found the following final preconditions for: " + class_.name_in_upper + "." + feature_.feature_name)
+			from
+				l_cursor := last_preconditions.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				log_manager.put_line (once "%T" + l_printer.printed_expression (l_cursor.item))
+				l_cursor.forth
+			end
+
 			log_manager.put_line_with_time ("Found the following final postconditions for: " + class_.name_in_upper + "." + feature_.feature_name)
 			from
 				l_cursor := last_postconditions.new_cursor
@@ -1681,7 +1696,9 @@ feature{NONE} -- Expressions
 		end
 
 	extra_expressions (a_tc_info: CI_TEST_CASE_INFO; a_precondition: BOOLEAN): DS_HASH_SET [EPA_EXPRESSION]
-			-- Extra expressions to evaluate
+			-- Extra expressions to evaluate,
+			-- 		including qualified feature calls that involve operands and appear in path conditions.
+			-- Appearances of formal arguments or Current are replaced with the actual arguments and the target variable.
 			-- `a_precondition' indicates if those expressions should be evaluated in pre-state.
 		local
 			l_exprs: DS_HASH_SET [EPA_EXPRESSION]

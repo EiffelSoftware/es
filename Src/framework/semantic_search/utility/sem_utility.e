@@ -78,11 +78,13 @@ feature -- Access
 		a_selection_function: detachable FUNCTION [ANY, TUPLE [equation: EPA_EQUATION; transition: SEM_TRANSITION; pre_state: BOOLEAN], BOOLEAN]): HASH_TABLE [TYPE_A, STRING]
 			-- expression table from `a_transitions'
 			-- `a_pre_state' indicates if the expressions come from pre-state or post-state.
-			-- If `a_union_mode' is True, an expressions is in the result table if and only if it appears in all transitions from `a_transitions',
-			-- otherwise, that expressions will be in the result table if it appears in at least one transition from `a_transitions'.
+			-- If `a_union_mode' is True, an expressions is in the result table if it appears in ONE of the transitions from `a_transitions';
+			-- otherwise, an expression will be in the result table if it appears in ALL transitions from `a_transitions'.
 			-- `a_selection_function' also decides if an expression will be selected or not: If it returns True, an expression will be selected.
 			-- If `a_selection_function' is Void, all candidate expression is selected.
 			-- Key of the result table is anonymous text of an expression, value of the result table is the type of that expression.
+			--
+			-- Here expressions involving variables are also included.
 		local
 			l_frequence_tbl: DS_HASH_TABLE [INTEGER, STRING]
 			l_type_tbl: DS_HASH_TABLE [TYPE_A, STRING]

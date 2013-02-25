@@ -1109,6 +1109,10 @@ feature {AST_EIFFEL} -- Roundtrip: Access
 
 	process_access_id_as (l_as: ACCESS_ID_AS)
 		do
+				-- This is dangerous.
+				-- If a descendant class don't redefine `process_access_feat_as' and `process_access_id_as' at the same time,
+				-- it may end up having different ways of handling {ACCESS_ID_AS} AND {ACCESS_FEAT_AS}.
+				-- Maybe we should change this to 'process_access_feat_as (l_as)'.							-- 2.7.2013  Max
 			processing_access_feat_as (l_as)
 		end
 
@@ -1653,7 +1657,7 @@ feature -- Quantifications
 		end
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

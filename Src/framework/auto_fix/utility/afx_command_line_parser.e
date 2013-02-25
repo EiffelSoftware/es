@@ -165,7 +165,7 @@ feature -- Basic operations
 			l_daikon_option.set_description ("Enable Daikon to infer invariants on system states. Default: False")
 			l_parser.options.force_last (l_daikon_option)
 
-			create l_enable_fixing_contracts.make_with_long_form ("enable_fixing_contract")
+			create l_enable_fixing_contracts.make_with_long_form ("enable-fixing-contract")
 			l_enable_fixing_contracts.set_description ("Enable fixing faults in contract.")
 			l_parser.options.force_last (l_enable_fixing_contracts)
 

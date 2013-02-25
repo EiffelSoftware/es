@@ -13,6 +13,8 @@ inherit
 	EXCEPTIONS
 
 	AFX_INTERPRETER_CONSTANTS
+	
+	EQA_EXTERNALS
 
 	EXECUTION_ENVIRONMENT
 		rename
@@ -41,16 +43,16 @@ feature{NONE} -- Implementation
 
 			if argument_count >= 3 then
 				create_log_file (argument (2), argument (3).to_boolean)
-				if argument (1).is_case_insensitive_equal ("--analyze-tc") then
+				if argument (1).is_case_insensitive_equal_general ("--analyze-tc") then
 						-- Analyze test cases to construct fixes.										
 					execute_test_cases
-				elseif argument (1).is_case_insensitive_equal ("--validate-fix") then
+				elseif argument (1).is_case_insensitive_equal_general ("--validate-fix") then
 						-- Validate fix candidates.
 					port := argument (4).to_integer
 					exception_count := 0
 					is_validating_fixes := True
 					validate_fixes
-				elseif argument (1).is_case_insensitive_equal ("--check-fault") then
+				elseif argument (1).is_case_insensitive_equal_general ("--check-fault") then
 					if attached {PROCEDURE [ANY, TUPLE]} test_cases.item (first_failing_test_case_uuid) as l_test_case_agent then
 						l_test_case_agent.call (Void)
 					end
@@ -256,15 +258,31 @@ feature{NONE} -- Implementation
 
 	execute_melting_request
 			-- Execute melting request.
+		local
+			l_cstring: C_STRING
 		do
 			if attached {AFX_MELT_FEATURE_REQUEST} last_request as l_request then
+				create l_cstring.make (l_request.byte_code)
+				override_byte_code_of_body (l_request.body_id, l_request.pattern_id, l_cstring.item, l_request.byte_code.count)
+				-- eif_override_byte_code_of_body (l_request.body_id, l_request.pattern_id, l_cstring.item, l_request.byte_code.count)
+				-- eif_override_byte_code_of_body (l_request.body_id, l_request.pattern_id, pointer_for_byte_code (l_request.byte_code), l_request.byte_code.count)
 				log_message ("-- Melt feature with body_id = " + l_request.body_id.out + ", pattern_id = " + l_request.pattern_id.out + ", byte_code length = " + l_request.byte_code.count.out + " Fix: " + l_request.fix_signature  + "%N")
-				eif_override_byte_code_of_body (l_request.body_id, l_request.pattern_id, pointer_for_byte_code (l_request.byte_code), l_request.byte_code.count)
 			else
 				log_message ("-- Cannot interpreter melt feature request.%N")
 			end
 			socket.put_natural_32 (0)
 		end
+		
+	--frozen override_byte_code_of_body (a_body_id: INTEGER; a_pattern_id: INTEGER; a_byte_code: POINTER; a_length: INTEGER)
+	--		-- Store `a_byte_code' of `a_length' byte long for feature with `a_body_id'.
+	--		-- From EQA_EXTERNALS.
+	--	require
+	--		a_body_id_not_negative: a_body_id >= 0
+	--		a_byte_code_attached: a_byte_code /= default_pointer
+	--		a_length_positive: a_length > 0
+	--	external
+	--		"built_in static"
+	--	end
 
 	exit_validation
 			-- Exit validation

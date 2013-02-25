@@ -34,6 +34,24 @@ feature -- Access
 			Result := intermediate_variables_internal
 		end
 
+	interface_irrelevant_variables (a_is_pre: BOOLEAN): EPA_HASH_SET [EPA_EXPRESSION]
+			-- Set of variables that are irrelevant to transition interface.
+			-- Precondition is considered when `a_is_pre' is True;
+			-- Postcondition is considered otherwise.
+		do
+			if interface_irrelevant_variables_table = Void then
+				create interface_irrelevant_variables_table.make (2)
+				interface_irrelevant_variables_table.force (variables.subtraction (inputs), True)
+				interface_irrelevant_variables_table.force (variables.subtraction (outputs),False)
+			end
+			Result := interface_irrelevant_variables_table.item (a_is_pre)
+		end
+
+	interface_irrelevant_variables_table: DS_HASH_TABLE [EPA_HASH_SET [EPA_EXPRESSION], BOOLEAN]
+			-- Table containing sets of variables that are irrelevant to transition interface.
+			-- Key is a boolean value: True for preconditions and False for postconditions.
+			-- Val is the corresponding set of variables.
+
 	preconditions: EPA_STATE assign set_preconditions
 			-- Precondition of Current transition
 			-- Assertions may mention variables other than feature operands.
@@ -82,14 +100,14 @@ feature -- Access
 			-- Precondition assertions from `preconditions' which only mention feature operands
 			-- Note: Recalculation per query, so it is expensive.
 		do
-			Result := interface_assertions_internal (preconditions)
+			Result := interface_assertions_internal (preconditions, True)
 		end
 
 	interface_postconditions: EPA_STATE
 			-- Postcondition assertions from `postconditions' which only mention feature operands (including result)
 			-- Note: Recalculation per query, so it is expensive.
 		do
-			Result := interface_assertions_internal (postconditions)
+			Result := interface_assertions_internal (postconditions, False)
 		end
 
 	interface_assertions (a_precondition: BOOLEAN): like interface_preconditions
@@ -260,7 +278,7 @@ feature -- Status report
 	is_interface_expression (a_expression: EPA_EXPRESSION): BOOLEAN
 			-- Is `a_expression' an interface expression?
 		do
-			Result := not expression_rewriter.expression_text (a_expression, interface_variable_replacements).has_substring (dummy_var_name)
+			Result := not expression_rewriter.expression_text (a_expression, interface_irrelevant_variable_replacements_intersected).has_substring (dummy_var_name)
 		end
 
 feature -- Setting
@@ -315,8 +333,9 @@ feature{NONE} -- Implementation
 			outputs.set_equality_tester (expression_equality_tester)
 		end
 
-	interface_assertions_internal (a_state: EPA_STATE): EPA_STATE
-			-- Assertions from `a_state' which only mention feature operands (including result)
+	interface_assertions_internal (a_state: EPA_STATE; a_is_pre: BOOLEAN): EPA_STATE
+			-- Assertions from `a_state' which only mention feature interface operands
+			-- regarding preconditions (`a_is_pre' is True) or postconditions (`a_is_pre' is False).
 		local
 			l_expr_rewriter: like  expression_rewriter
 			l_replacements: HASH_TABLE [STRING, STRING]
@@ -327,7 +346,7 @@ feature{NONE} -- Implementation
 			l_dummy_var_name: STRING
 		do
 			l_dummy_var_name := dummy_var_name
-			l_replacements := interface_variable_replacements
+			l_replacements := interface_irrelevant_variable_replacements (a_is_pre)
 			l_expr_rewriter := expression_rewriter
 			Result := a_state.cloned_object
 			from
@@ -360,30 +379,46 @@ feature{NONE} -- Implementation
 	intermediate_variables_internal: detachable like intermediate_variables
 			-- Cache for `intermediate_variables'
 
-	interface_variable_replacements: HASH_TABLE [STRING, STRING]
-			-- Variable replacements used to detect if an expression
-			-- only mentions interface variables.
+	interface_irrelevant_variable_replacements_intersected: HASH_TABLE [STRING, STRING]
+			-- Table mapping variables irrelevant to both pre- and postconditions to their replacements.
+		local
+			l_pre, l_post: HASH_TABLE [STRING, STRING]
+		do
+			create Result.make (10)
+			l_pre := interface_irrelevant_variable_replacements (True)
+			l_post:= interface_irrelevant_variable_replacements (False)
+			across l_pre as l_replacement loop
+				if l_post.has (l_replacement.key) then
+					Result.put (l_replacement.item, l_replacement.key)
+				end
+			end
+		end
+	interface_irrelevant_variable_replacements (a_is_pre: BOOLEAN): HASH_TABLE [STRING, STRING]
+			-- Table mapping interface irrelevant variables to their replacements.
+			-- The irrelevance of variables is w.r.t. preconditions when `a_is_pre' is True, and w.r.t. postconditions otherwise.
 		local
 			l_expr_rewriter: like  expression_rewriter
 			l_replacements: HASH_TABLE [STRING, STRING]
 			l_dummy_var_name: STRING
 		do
-			if interface_variable_replacements_internal = Void then
-					-- Collect the set of intermediate variables.
+			if interface_irrelevant_variable_replacements_internal = Void then
 				l_dummy_var_name := dummy_var_name
-				create interface_variable_replacements_internal.make (5)
-				interface_variable_replacements_internal.compare_objects
-				intermediate_variables.do_all (
-					agent (a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [STRING, STRING]; a_dummy_var_name: STRING)
-						do
-							a_tbl.put (a_dummy_var_name, a_expr.text)
-						end (?, interface_variable_replacements_internal, l_dummy_var_name))
+				create interface_irrelevant_variable_replacements_internal.make (2)
+				across <<True, False>> as l_type loop
+					create l_replacements.make_equal (10)
+					interface_irrelevant_variable_replacements_internal.put (l_replacements, l_type.item)
+					interface_irrelevant_variables (l_type.item).do_all (
+						agent (a_expr: EPA_EXPRESSION; a_tbl: HASH_TABLE [STRING, STRING]; a_dummy_var_name: STRING)
+							do
+								a_tbl.put (a_dummy_var_name, a_expr.text)
+							end (?, l_replacements, l_dummy_var_name))
+				end
 			end
-			Result := interface_variable_replacements_internal
+			Result := interface_irrelevant_variable_replacements_internal.item (a_is_pre)
 		end
 
-	interface_variable_replacements_internal: detachable like interface_variable_replacements
-			-- Cache for `interface_variable_replacements'
+	interface_irrelevant_variable_replacements_internal: DS_HASH_TABLE [HASH_TABLE [STRING, STRING], BOOLEAN]
+			-- Cache for `interface_irrelevant_variable_replacements'
 
 	dummy_var_name: STRING = "{_}"
 

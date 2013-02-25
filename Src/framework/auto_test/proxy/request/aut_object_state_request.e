@@ -57,7 +57,7 @@ feature{NONE} -- Implementation
 			-- Key is 0-based operand index.
 			-- Value is object id (used in the object pool) for that operand.
 		local
-			l_map: HASH_TABLE [STRING, STRING]
+			l_map: STRING_TABLE [STRING]
 			l_obj_index: STRING
 		do
 			create Result.make_from_string (a_text)
@@ -73,12 +73,12 @@ feature{NONE} -- Implementation
 
 				-- Change `l_text' to mention real object ids.
 			across l_map as l_maps loop
-				Result.replace_substring_all (l_maps.key, l_maps.item)
+				Result.replace_substring_all (l_maps.key.as_string_8, l_maps.item)
 			end
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

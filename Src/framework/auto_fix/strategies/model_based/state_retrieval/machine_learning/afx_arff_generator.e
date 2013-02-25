@@ -39,7 +39,7 @@ feature -- Event handler
 			-- Do nothing.
 		end
 
-	on_breakpoint_hit (a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_bpslot: INTEGER)
+	on_breakpoint_hit (a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_location: AFX_PROGRAM_LOCATION)
 			-- <Precursor>
 		local
 			l_file_name: STRING
@@ -50,7 +50,7 @@ feature -- Event handler
 			l_tbl.compare_objects
 
 				-- Decide the file to store `a_state'.
-			l_file_name := output_file_name (a_tc, a_bpslot)
+			l_file_name := output_file_name (a_tc, a_location.breakpoint_index)
 			if last_file_name = Void or else not (last_file_name ~ l_file_name) then
 				last_file_name := l_file_name
 				close_output_file
@@ -62,7 +62,7 @@ feature -- Event handler
 			end
 
 				-- Store data.			
-			put_data (output_file, a_bpslot, a_state)
+			put_data (output_file, a_location.breakpoint_index, a_state)
 		end
 
 	on_application_exit

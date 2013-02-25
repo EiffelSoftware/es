@@ -18,6 +18,7 @@ inherit
 			process_id_as,
 			process_expr_call_as,
 			process_creation_as,
+			process_access_id_as,
 			process_access_feat_as,
 			process_nested_as,
 			process_nested_expr_as,
@@ -148,6 +149,11 @@ feature {AST_EIFFEL} -- Processing
 				process_child (l_as.call, l_as, 3)
 			end
 			output.append_string(ti_New_line)
+		end
+
+	process_access_id_as (l_as: ACCESS_ID_AS)
+		do
+			process_access_feat_as (l_as)
 		end
 
 	process_access_feat_as (l_as: ACCESS_FEAT_AS)
@@ -344,7 +350,9 @@ feature -- Process
 	process_reference_value (a_value: EPA_REFERENCE_VALUE)
 			-- Process `a_value'.
 		do
-			check should_not_be_here: False end
+			output.append_string (once "$")
+			output.append_string (a_value.item)
+--			check should_not_be_here: False end
 		end
 
 	process_ast_expression_value (a_value: EPA_AST_EXPRESSION_VALUE)

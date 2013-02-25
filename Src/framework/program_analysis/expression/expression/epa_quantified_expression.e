@@ -150,6 +150,31 @@ feature{NONE} -- Implementation
 		deferred
 		end
 
+	type_in_text_from_a_type (a_type: TYPE_A): STRING
+			-- Type in text from `a_type' object.
+			-- Adapted from {LIKE_FEATURE} and {FORMAL_A}.
+		local
+		do
+			if attached {LIKE_FEATURE} a_type as lt_like then
+				create Result.make (20)
+--				Result.append_character ('[')
+				if lt_like.has_attached_mark then
+					Result.append_character ('!')
+				elseif lt_like.has_detachable_mark then
+					Result.append_character ('?')
+				end
+				if lt_like.has_separate_mark then
+					Result.append ({SHARED_TEXT_ITEMS}.ti_separate_keyword)
+					Result.append_character (' ')
+				end
+				Result.append ("like " + lt_like.feature_name)
+			elseif attached {FORMAL_A} a_type as lt_formal then
+				Result := class_.generics [lt_formal.position].name.name
+			else
+				Result := a_type.name
+			end
+		end
+
 	build_ast_internal (a_variable_name: STRING; a_type: TYPE_A; a_expression: EXPR_AS; a_universal: BOOLEAN)
 			-- Build `ast' from `a_variable_name' and `a_expression'
 		local
@@ -162,7 +187,7 @@ feature{NONE} -- Implementation
 			l_text.append_character ('%N')
 			l_text.append (a_variable_name)
 			l_text.append_character (':')
-			l_text.append (a_type.name)
+			l_text.append (type_in_text_from_a_type (a_type))
 
 			l_parser := entity_declaration_parser
 			l_parser.set_syntax_version (l_parser.transitional_syntax)

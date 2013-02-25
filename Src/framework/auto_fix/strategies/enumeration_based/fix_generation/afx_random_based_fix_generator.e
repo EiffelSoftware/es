@@ -75,11 +75,11 @@ feature -- Basic operations
 			target_attached: a_target /= Void
 		local
 			l_guard_conditions: DS_ARRAYED_LIST [EPA_EXPRESSION]
-			l_relevant_asts: LINKED_LIST [TUPLE [scope_level: INTEGER_32; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]]
+			l_relevant_asts: LINKED_LIST [TUPLE [scope_level: INTEGER_32; instructions: LINKED_LIST [EPA_AST_STRUCTURE_NODE]]]
 			l_requirements: DS_ARRAYED_LIST [AFX_STATE_CHANGE_REQUIREMENT]
 			l_condition: EPA_EXPRESSION
 			l_requirement: AFX_STATE_CHANGE_REQUIREMENT
-			l_instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]
+			l_instructions: LINKED_LIST [EPA_AST_STRUCTURE_NODE]
 		do
 			l_guard_conditions := guard_conditions_for_target (a_target)
 			l_relevant_asts := relevant_asts_for_a_target (a_target)
@@ -111,7 +111,7 @@ feature -- Basic operations
 			end
 		end
 
-	generate_one_fix (a_target: AFX_FIXING_TARGET; a_condition: EPA_EXPRESSION; a_requirement: AFX_STATE_CHANGE_REQUIREMENT; a_instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE])
+	generate_one_fix (a_target: AFX_FIXING_TARGET; a_condition: EPA_EXPRESSION; a_requirement: AFX_STATE_CHANGE_REQUIREMENT; a_instructions: LINKED_LIST [EPA_AST_STRUCTURE_NODE])
 			-- Generate one fix using `a_condition', `a_requirement' around `a_instructions'.
 			-- Put the generated fix into `fixes'.
 		local
@@ -123,7 +123,7 @@ feature -- Basic operations
 			l_assignment_operations: DS_ARRAYED_LIST [STRING]
 			l_substitution_operations: DS_ARRAYED_LIST [STRING]
 			l_operation: STRING
-			l_instr: AFX_AST_STRUCTURE_NODE
+			l_instr: EPA_AST_STRUCTURE_NODE
 			l_if_instruction: STRING
 			l_feature_body_with_fix: STRING
 			l_feature_text_with_fix: STRING
@@ -289,7 +289,7 @@ feature -- Basic operations
 
 feature{NONE} -- Implementation operations
 
-	relevant_asts_for_a_target (a_target: AFX_FIXING_TARGET): LINKED_LIST [TUPLE [scope_level: INTEGER_32; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]]
+	relevant_asts_for_a_target (a_target: AFX_FIXING_TARGET): LINKED_LIST [TUPLE [scope_level: INTEGER_32; instructions: LINKED_LIST [EPA_AST_STRUCTURE_NODE]]]
 			-- Relevant asts regarding the breakpoint position of `a_target'.
 			-- For the moment, we only try to generate fixes before `a_target' or surrounding the single node or all the following nodes in the
 			--	current instruction list.
@@ -297,13 +297,13 @@ feature{NONE} -- Implementation operations
 			target_attached: a_target /= Void
 			valid_position: a_target.bp_index > 0
 		local
-			l_list: LINKED_LIST [TUPLE [scope_level: INTEGER_32; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]]
-			l_tuple: TUPLE [scope_level: INTEGER_32; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]
+			l_list: LINKED_LIST [TUPLE [scope_level: INTEGER_32; instructions: LINKED_LIST [EPA_AST_STRUCTURE_NODE]]]
+			l_tuple: TUPLE [scope_level: INTEGER_32; instructions: LINKED_LIST [EPA_AST_STRUCTURE_NODE]]
 			l_bp_index, l_scope_level: INTEGER
 			l_signature: like exception_signature
 			l_recipient: like exception_recipient_feature
-			l_node: AFX_AST_STRUCTURE_NODE
-			l_node_list: LINKED_LIST [AFX_AST_STRUCTURE_NODE]
+			l_node: EPA_AST_STRUCTURE_NODE
+			l_node_list: LINKED_LIST [EPA_AST_STRUCTURE_NODE]
 		do
 			create Result.make
 
@@ -324,7 +324,7 @@ feature{NONE} -- Implementation operations
 				Result.force ([l_scope_level, l_node_list])
 
 					-- Node list containing all instructions after `a_target', but within the same instruction list.
-				if attached {LINKED_LIST [AFX_AST_STRUCTURE_NODE]} l_recipient.ast_structure.instructions_in_block_as (l_node) as lt_list and then lt_list.count > 1 then
+				if attached {LINKED_LIST [EPA_AST_STRUCTURE_NODE]} l_recipient.ast_structure.instructions_in_block_as (l_node) as lt_list and then lt_list.count > 1 then
 					create l_node_list.make
 					from lt_list.start
 					until lt_list.after
@@ -347,7 +347,7 @@ feature{NONE} -- Implementation operations
 
 feature{NONE} -- Implementation attributes
 
-	fixing_locations: LINKED_LIST [TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]]
+	fixing_locations: LINKED_LIST [TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [EPA_AST_STRUCTURE_NODE]]]
 			-- List of ASTs which will be involved in a fix.
 			-- Item in the inner list `instructions' is a list of ASTs, they represent the ASTs whilch will be involved in a fix.
 			-- `scope_level' is the scope level difference from `instructions' to the failing point. If `instructions' are in

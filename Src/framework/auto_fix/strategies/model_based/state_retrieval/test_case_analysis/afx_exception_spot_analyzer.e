@@ -180,7 +180,7 @@ feature{NONE} -- Implementation
 --			a_spot.set_recipient_ast_structure (l_structure_gen.structure)
 --		end
 
-	analyze_failing_assertion (a_tc: EPA_TEST_CASE_SIGNATURE; a_dm: DEBUGGER_MANAGER; a_ast_structure: AFX_FEATURE_AST_STRUCTURE_NODE; a_spot: like last_spot)
+	analyze_failing_assertion (a_tc: EPA_TEST_CASE_SIGNATURE; a_dm: DEBUGGER_MANAGER; a_ast_structure: EPA_FEATURE_AST_STRUCTURE_NODE; a_spot: like last_spot)
 			-- Analyze failing assertion of the exception, and
 			-- set the information into `a_spot'.
 			-- `a_tc' includes basic information of the current exception.

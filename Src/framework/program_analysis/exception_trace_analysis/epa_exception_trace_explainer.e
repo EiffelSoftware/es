@@ -137,7 +137,7 @@ feature{NONE} -- Implementation
 			last_failing_feature_name := l_frame.routine_name
 			check name_invariant: last_failing_feature_name ~ "_invariant" end
 			last_failing_position_breakpoint_index := l_frame.breakpoint_slot_index
-			check index_zero: last_failing_position_breakpoint_index = 0 end
+--			check index_zero: last_failing_position_breakpoint_index = 0 end
 			last_failing_assertion_tag := l_frame.tag
 			last_failing_written_class_name := l_frame.written_class_name
 

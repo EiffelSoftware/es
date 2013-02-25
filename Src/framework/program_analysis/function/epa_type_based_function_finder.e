@@ -276,7 +276,7 @@ feature{NONE} -- Implementation
 
 	operand_static_type_table: DS_HASH_TABLE [TYPE_A, INTEGER]
 			-- Table of static types for operands of `feature_'
-			-- Key is operand name, value is the static type of that operand.
+			-- Key is 0-based operand index, value is the static type of that operand.
 
 	operand_name_table: HASH_TABLE [STRING, INTEGER]
 			-- Table from 0-based operand index to the name of that operand
@@ -288,14 +288,15 @@ feature{NONE} -- Implementation
 		end
 
 	variable_type_table: DS_HASH_TABLE [TYPE_A, STRING]
-			-- Type table for `variables'.
+			-- Table mapping names from `variables' to their types.
 			-- For arguments and result of `feature_', static type is considered,
 			-- for other variables, dynamic type is considered.
 
 feature{NONE} -- Implementation
 
 	build_variable_functions
-			-- Build `variables' as functions and add those functions in `quasi_constant_functions'.
+			-- Add functions built from variables to `quasi_constant_functions' and `variable_functions'.
+			-- If a variable is also an operand, add the function to `operand_function' too.
 		local
 			l_cursor: CURSOR
 			l_variables: like variables
@@ -348,7 +349,9 @@ feature{NONE} -- Implementation
 		end
 
 	build_composed_functions
-			-- Build `composed_functions' from `quasi_constant_functions'.
+			-- Add composed_functions to `quasi_constant_functions'.
+			-- Composed functions are those in the form of 'operand.feature (variable)',
+			-- 		where 'operand' is from `operand_names' and 'variable' is from `variable_functions'.
 		local
 			l_operand_cur: DS_HASH_SET_CURSOR [STRING]
 			l_operand_name: STRING
@@ -402,7 +405,7 @@ feature{NONE} -- Implementation
 									-- 3. For each such query, iterate through all functions in `variable_functions', select those
 									--    whose type conforms to the type of that query,
 								l_feature := l_features.item_for_iteration
-								fixme ("We don't handle is_equal for the moment because between any two given variables, because there are too many cases. 9.5.2010 Jasonw")
+								fixme ("We don't handle is_equal for the moment because between any two given variables, there are too many cases. 9.5.2010 Jasonw")
 								if is_single_argument_query_valid (l_feature, l_operand_type) then
 									l_funcs := argumentable_functions (variable_functions, l_feature, l_operand_class, l_operand_type)
 
@@ -432,7 +435,8 @@ feature{NONE} -- Implementation
 		end
 
 	build_operand_argumentless_query_table
-			-- Search for argumentless queries for variables.
+			-- Fill `quasi_constant_functions' and `argumentless_functions' with argumentless-queries on operands.
+			-- The functions have been rewritten, when necessary, to be valid in `context' (rather than `feature_').
 		local
 			l_expr_gen: EPA_NESTED_EXPRESSION_GENERATOR
 			l_operand_cursor: DS_HASH_SET_CURSOR [STRING]
@@ -462,7 +466,7 @@ feature{NONE} -- Implementation
 		end
 
 	build_single_integer_argument_query_table
-			-- Build `quasi_constant_functions'.
+			-- Adding functions with a single integer argument (ranging between a lower and an upper bound) to `quasi_constant_functions'.
 		local
 			l_expr_gen: EPA_NESTED_EXPRESSION_GENERATOR
 			l_operand_cursor: DS_HASH_SET_CURSOR [STRING]
@@ -578,6 +582,11 @@ feature{NONE} -- Implementation
 
 	build_type_tables
 			-- Build type related tables from `feature_' in `context_class' and `context'.
+			--
+			-- `operand_static_type_table': mapping 0-based operand indexes to operand types;
+			-- `operand_name_table': mapping 0-based operand indexes to operand names;
+			-- `variable_names': set of variable names
+			-- `variable_type_table': mapping variable names to variable types;
 		local
 			l_opernd_types: like operand_types_with_feature
 			l_type: TYPE_A
@@ -629,7 +638,7 @@ feature{NONE} -- Implementation
 				end
 			end
 
-				-- Add types of variables other than operand of `feature_' into `static_type_table'.			
+				-- Add types of variables other than operands of `feature_' into `variable_type_table'.			
 			l_variables := context.variables
 			create variable_names.make (l_variables.count)
 			l_variable_names := variable_names
@@ -653,8 +662,10 @@ feature{NONE} -- Implementation
 
 	build_operand_and_expression_comparisons
 			-- Build expressions consisting of an equality comparison between
-			-- two operands, one operand and an argument-less query or
-			-- two argument-less queries.
+			-- 1. two variables;
+			-- 2. (x) one operand and an argument-less query or
+			-- 3. (x) two argument-less queries.
+			-- (x): commented out.
 		local
 			l_cursor, l_cursor2: DS_HASH_SET_CURSOR [EPA_FUNCTION]
 			l_var_funcs: like variable_functions
@@ -856,6 +867,7 @@ feature{NONE} -- Implementations
 
 	expression_from_access (a_access: EPA_ACCESS): EPA_EXPRESSION
 			-- Expression in `context' derived from `a_access'
+			-- Rewrite the expressions if `context' is different from `context_class'.`feature_'.
 		local
 			l_text: STRING
 			l_new_text: STRING

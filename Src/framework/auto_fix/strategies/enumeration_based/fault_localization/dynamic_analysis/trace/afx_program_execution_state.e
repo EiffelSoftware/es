@@ -8,15 +8,15 @@ class
 	AFX_PROGRAM_EXECUTION_STATE
 
 create
-	make_with_state_and_bp_index
+	make_with_state_and_location
 
 feature -- Initialization
 
-	make_with_state_and_bp_index (a_state: EPA_STATE; a_index: INTEGER)
+	make_with_state_and_location (a_state: EPA_STATE; a_location: AFX_PROGRAM_LOCATION)
 			-- Initialization.
 		do
 			set_state (a_state)
-			set_breakpoint_slot_index (a_index)
+			set_location (a_location)
 		end
 
 feature -- Access
@@ -24,8 +24,8 @@ feature -- Access
 	state: EPA_STATE assign set_state
 			-- State.
 
-	breakpoint_slot_index: INTEGER assign set_breakpoint_slot_index
-			-- Breakpoint slot index where the state is observed.
+	location: AFX_PROGRAM_LOCATION assign set_location
+			-- Location in the program where the state is observed.
 
 feature -- Derived state
 
@@ -50,7 +50,7 @@ feature -- Derived state
 				end
 				a_derived_skeleton.forth
 			end
-			create Result.make_with_state_and_bp_index (l_state, breakpoint_slot_index)
+			create Result.make_with_state_and_location (l_state, location)
 		end
 
 feature -- Statistic
@@ -58,19 +58,19 @@ feature -- Statistic
 	statistics: AFX_EXECUTION_TRACE_STATISTICS
 			-- Statistic from current execution state.
 		local
-			l_bp_index: INTEGER
+			l_location: AFX_PROGRAM_LOCATION
 			l_set: EPA_HASH_SET [AFX_FIXING_TARGET]
 			l_target: AFX_FIXING_TARGET
 			l_equation: EPA_EQUATION
 			l_value: EPA_EXPRESSION_VALUE
 		do
 			if statistics_cache = Void then
-				l_bp_index := breakpoint_slot_index
+				l_location := location
 
 				create l_set.make_equal (state.count + 1)
 
 				create statistics_cache.make_trace_unspecific (1)
-				statistics_cache.force (l_set, l_bp_index)
+				statistics_cache.force (l_set, l_location)
 
 				from
 					state.start
@@ -83,7 +83,7 @@ feature -- Statistic
 							-- Update statistics if, and only if, the value is "True".
 						l_value := l_equation.value
 						if l_value.is_boolean and then l_value.as_boolean.item then
-							create l_target.make (lt_expression, l_bp_index, 1.0)
+							create l_target.make (lt_expression, l_location.breakpoint_index, 1.0)
 							l_set.force (l_target)
 						end
 					end
@@ -109,10 +109,10 @@ feature{NONE} -- Status set
 			reset_statistics
 		end
 
-	set_breakpoint_slot_index (a_index: INTEGER)
-			-- Set `breakpoint_slot_index'.
+	set_location (a_location: AFX_PROGRAM_LOCATION)
+			-- Set `location'.
 		do
-			breakpoint_slot_index := a_index
+			location := a_location
 			reset_statistics
 		end
 
@@ -123,6 +123,6 @@ feature{NONE} -- Cache
 
 invariant
 	state_attached: state /= Void
-	valid_index: breakpoint_slot_index > 0 and then breakpoint_slot_index <= state.feature_.number_of_breakpoint_slots
+	location_attached: location /= Void
 
 end

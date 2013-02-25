@@ -38,14 +38,14 @@ feature -- Access
 			l_passing_bpslot: INTEGER
 			l_failing_bpslot: INTEGER
 			l_last_wrapped_bpslot: INTEGER
-			l_last_node: detachable AFX_AST_STRUCTURE_NODE
+			l_last_node: detachable EPA_AST_STRUCTURE_NODE
 		do
 				-- Decide the break point slot at which states in passing and failing runs should be compared.
 			if relevant_ast.is_empty then
 				check should_not_happen: False end
 			else
 				l_failing_bpslot := exception_recipient_feature.ast_structure.first_node_with_break_point (relevant_ast.first).breakpoint_slot
-				if attached {AFX_AST_STRUCTURE_NODE} exception_recipient_feature.ast_structure.last_node_with_break_point (relevant_ast.last) as l_node then
+				if attached {EPA_AST_STRUCTURE_NODE} exception_recipient_feature.ast_structure.last_node_with_break_point (relevant_ast.last) as l_node then
 					l_passing_bpslot := exception_recipient_feature.ast_structure.next_break_point (l_node.breakpoint_slot)
 					if l_passing_bpslot = 0 then
 						l_passing_bpslot := exception_recipient_feature.feature_.number_of_breakpoint_slots

@@ -34,6 +34,7 @@ feature -- Initialization
 			expression := a_expression
 			bp_index := a_bp_index
 			suspiciousness_value := a_rank
+			create program_location.make (create {EPA_FEATURE_WITH_CONTEXT_CLASS}.make (expression.feature_, expression.class_), bp_index)
 		end
 
 feature -- Access
@@ -55,6 +56,9 @@ feature -- Access
 		do
 			Result := expression.written_class
 		end
+
+	program_location: AFX_PROGRAM_LOCATION
+			-- Program location the target is aiming for.
 
 	expression: EPA_EXPRESSION
 			-- Expression as the target of fixing.

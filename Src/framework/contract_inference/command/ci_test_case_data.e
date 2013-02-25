@@ -87,6 +87,8 @@ feature -- Basic operations
 
 	initialize_interface_expressions
 			-- Initialize `interface_expressions'.
+			-- Collect pre- and post- expressions that are common to all `interface_transitions'.
+			-- Put the expressions in `interface_expressions'.
 		local
 			l_utility: SEM_UTILITY
 			l_state: BOOLEAN
@@ -117,7 +119,9 @@ feature -- Basic operations
 		end
 
 	initialize_interface_expression_value_mapping
-			-- Initialize `interface_expression_values'.
+			-- Initialize `interface_expression_values',
+			-- 		with all the observed values for each anonymous expression, from pre- or post-interface expressions.
+			-- Initialize `interface_expression_changes'.
 		local
 			l_state: BOOLEAN
 			l_transition: SEM_TRANSITION
@@ -139,15 +143,16 @@ feature -- Basic operations
 			interface_expression_values.put (interface_pre_expression_values, True)
 			interface_expression_values.put (interface_post_expression_values, False)
 
+			create interface_expression_changes.make (interface_post_expressions.count)
+			l_changes := interface_expression_changes
+			l_changes.compare_objects
+
 			across interface_pre_expressions as l_exprs loop
 				create l_value_set.make (10)
 				l_value_set.set_equality_tester (expression_value_equality_tester)
 				interface_pre_expression_values.force (l_value_set, l_exprs.key)
 			end
 
-			create interface_expression_changes.make (interface_post_expressions.count)
-			l_changes := interface_expression_changes
-			l_changes.compare_objects
 			across interface_post_expressions as l_exprs loop
 				create l_value_set.make (10)
 				l_value_set.set_equality_tester (expression_value_equality_tester)

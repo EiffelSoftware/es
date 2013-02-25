@@ -348,7 +348,8 @@ feature -- Access
 		end
 
 	setup_variables (a_test_case_class: CLASS_C)
-			-- Setup `variables' by analyzing the `generated_test_1' feature in `a_test_case_class'.
+			-- Setup `variables' with name and type information on the attributes that are defined in the test case class and are accessible in the `generated_test_1' feature.
+			-- Such attributes all have names starting with `variable_name_prefix'.
 		local
 			l_feature_context: ETR_FEATURE_CONTEXT
 			l_locals: HASH_TABLE [ETR_TYPED_VAR, STRING]

@@ -119,12 +119,12 @@ feature -- Execution event listener
 			start_trace (a_tc)
 		end
 
-	on_breakpoint_hit (a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_index: INTEGER)
+	on_breakpoint_hit (a_tc: EPA_TEST_CASE_INFO; a_state: EPA_STATE; a_location: AFX_PROGRAM_LOCATION)
 			-- <Precursor>
 		local
 			l_execution_state: AFX_PROGRAM_EXECUTION_STATE
 		do
-			create l_execution_state.make_with_state_and_bp_index (a_state, a_index)
+			create l_execution_state.make_with_state_and_location (a_state, a_location)
 			current_trace.extend (l_execution_state)
 		end
 

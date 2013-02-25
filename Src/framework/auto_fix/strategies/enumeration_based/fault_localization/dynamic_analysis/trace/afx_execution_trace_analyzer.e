@@ -118,9 +118,9 @@ feature{NONE} -- Implementation
 		require
 			statistics_attached: a_statistics /= Void
 		local
-			l_set: DS_HASH_SET [INTEGER]
-			l_table_cursor: DS_HASH_TABLE_CURSOR [EPA_HASH_SET [AFX_FIXING_TARGET], INTEGER_32]
-			l_key: INTEGER
+			l_set: DS_HASH_SET [AFX_PROGRAM_LOCATION]
+			l_table_cursor: DS_HASH_TABLE_CURSOR [EPA_HASH_SET [AFX_FIXING_TARGET], AFX_PROGRAM_LOCATION]
+			l_key: AFX_PROGRAM_LOCATION
 		do
 			if is_breakpoint_index_range_valid then
 				create l_set.make (a_statistics.count)
@@ -131,7 +131,7 @@ feature{NONE} -- Implementation
 					l_table_cursor.after
 				loop
 					l_key := l_table_cursor.key
-					if not is_breakpoint_within_range (l_key) then
+					if not is_breakpoint_within_range (l_key.breakpoint_index) then
 						l_set.force (l_key)
 					end
 					l_table_cursor.forth

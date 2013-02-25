@@ -271,7 +271,7 @@ feature -- Access
 			written_postconditions.do_all (agent extend_equation_into_hash_set (?, False, True, Result))
 		end
 
-	all_precondition_equations: DS_HASH_SEt [SEM_EQUATION]
+	all_precondition_equations: DS_HASH_SET [SEM_EQUATION]
 			-- Equations including `preconditions' and `written_preconditions'.
 			-- Note: create a new result set every time, may be slow.
 		do
@@ -587,7 +587,8 @@ feature{NONE} -- Implementation
 				l_expr := variable_expression_from_context (a_operands.item_for_iteration, l_context)
 				l_operand_set.force_last (l_expr)
 				extend_variable (l_expr, a_operands.key_for_iteration)
-				if (l_index = 0 implies not is_creation) and then not (l_index = l_operand_count and then l_is_query) and then l_index < l_operand_count then
+					-- `l_operand_count' includes already the `result', if applicable. So the query result corresponds to index 'l_operand_count - 1'.  Feb-12 2013 Max
+				if (l_index = 0 implies not is_creation) and then not (l_index = l_operand_count - 1 and then l_is_query) and then l_index < l_operand_count then
 					inputs.force_last (l_expr)
 				end
 				if l_index < l_operand_count then

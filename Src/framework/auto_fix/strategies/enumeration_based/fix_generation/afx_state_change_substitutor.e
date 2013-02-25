@@ -33,7 +33,7 @@ feature{NONE} -- Cache
 
 feature -- Basic operation
 
-	perform (a_requirement: AFX_STATE_CHANGE_REQUIREMENT; a_instruction: AFX_AST_STRUCTURE_NODE)
+	perform (a_requirement: AFX_STATE_CHANGE_REQUIREMENT; a_instruction: EPA_AST_STRUCTURE_NODE)
 			-- Modify `a_instruction' according to the substitution defined by `a_requirement'.
 		local
 			l_src: EPA_EXPRESSION

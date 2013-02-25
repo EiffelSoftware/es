@@ -127,7 +127,8 @@ feature{NONE} -- Implementation
 			l_value_set := l_relation.value_set
 
 			from
-				l_cursor := consequent_attributes.new_cursor
+					-- Should use nominalized consequent_attributes here. 			Max @ Feb-13-2013
+				l_cursor := l_cons_attrs.new_cursor
 				l_cursor.start
 			until
 				l_cursor.after

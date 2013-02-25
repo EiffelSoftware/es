@@ -37,7 +37,7 @@ feature -- Access
 --	exception_spot: AFX_EXCEPTION_SPOT
 --			-- Exception spot containing information of the failing
 
-	fixing_locations: LINKED_LIST [TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [AFX_AST_STRUCTURE_NODE]]]
+	fixing_locations: LINKED_LIST [TUPLE [scope_level: INTEGER; instructions: LINKED_LIST [EPA_AST_STRUCTURE_NODE]]]
 			-- List of fixing locations
 
 --	config: AFX_CONFIG
@@ -66,7 +66,7 @@ feature -- Basic operations
 feature{NONE} -- Implementation
 
 	new_afore_fix_skeleton (
-			a_fixing_location: LINKED_LIST [AFX_AST_STRUCTURE_NODE];
+			a_fixing_location: LINKED_LIST [EPA_AST_STRUCTURE_NODE];
 			a_guard: detachable EPA_EXPRESSION;
 			a_precondition: detachable EPA_STATE;
 			a_postcondition: detachable EPA_STATE;
@@ -89,7 +89,7 @@ feature{NONE} -- Implementation
 		end
 
 	new_wrapping_fix_skeleton (
-			a_fixing_location: LINKED_LIST [AFX_AST_STRUCTURE_NODE];
+			a_fixing_location: LINKED_LIST [EPA_AST_STRUCTURE_NODE];
 			a_guard: detachable EPA_EXPRESSION;
 			a_precondition: detachable EPA_STATE;
 			a_postcondition: detachable EPA_STATE;

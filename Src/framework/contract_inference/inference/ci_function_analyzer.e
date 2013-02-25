@@ -210,6 +210,11 @@ feature{NONE} -- Implementation
 
 	function_maps_from_equation (a_equation: EPA_EQUATION): LINKED_LIST [EPA_FUNCTION_VALUATIONS]
 			-- Function maps from `a_equation'
+			-- Turning expressions into functions which are essentially feature calls on typed placeholder-operands.
+			-- The variables initially in the expression become arguments to the function.
+			-- One expression may correspond to multiple functions, if the target object corresponds to several operands in the current test case,
+			--		and therefore corresponds to multiple static types.
+			-- Assuming all the expressions are of forms "o1.feat (o2)" or "o1.feat"
 		local
 			l_expr: EPA_EXPRESSION
 			l_value: EPA_EXPRESSION_VALUE

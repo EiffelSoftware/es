@@ -88,7 +88,7 @@ feature{NONE} -- Parsing
 	recipient_feature_with_context: EPA_FEATURE_WITH_CONTEXT_CLASS
 			-- Recipient feature.
 
-	recipient_feature_ast_structure_node: AFX_FEATURE_AST_STRUCTURE_NODE
+	recipient_feature_ast_structure_node: EPA_FEATURE_AST_STRUCTURE_NODE
 			-- Structure node for the recipient feature.
 
 	parse_file_name
@@ -196,7 +196,7 @@ feature{NONE} -- Analysis
 			l_written_class: CLASS_C
 			l_match_list: LEAF_AS_LIST
 			l_new_text: STRING
-			l_original_structure, l_fixed_structure: AFX_FEATURE_AST_STRUCTURE_NODE
+			l_original_structure, l_fixed_structure: EPA_FEATURE_AST_STRUCTURE_NODE
 			l_fixed_feature_as: FEATURE_AS
 			l_retried: BOOLEAN
 			l_routine_body_as: ROUT_BODY_AS
@@ -247,7 +247,7 @@ feature{NONE} -- Analysis
 			retry
 		end
 
-	summary_string_for_structure_node (a_node: AFX_AST_STRUCTURE_NODE): STRING
+	summary_string_for_structure_node (a_node: EPA_AST_STRUCTURE_NODE): STRING
 			-- Concise string capturing the high level summay of `a_node'.
 		do
 			if a_node.is_check then
@@ -319,12 +319,12 @@ feature{NONE} -- Analysis
 			Result.force(3, "HE_MULTI_CHOICE_QUESTION__make__3__3__REC_HE_MULTI_CHOICE_QUESTION__make")
 		end
 
-	node_difference (a_original, a_fixed: AFX_AST_STRUCTURE_NODE): AFX_POSTMORTEM_ANALYSIS_RECORD
+	node_difference (a_original, a_fixed: EPA_AST_STRUCTURE_NODE): AFX_POSTMORTEM_ANALYSIS_RECORD
 			-- Difference between the two nodes `a_original' and `a_fixed'.
 		local
 			l_children_count: INTEGER
-			l_then_trunk, l_else_trunk: LINKED_LIST[AFX_AST_STRUCTURE_NODE]
-			l_old_start_node, l_then_start_node, l_else_start_node, l_failing_node: AFX_AST_STRUCTURE_NODE
+			l_then_trunk, l_else_trunk: LINKED_LIST[EPA_AST_STRUCTURE_NODE]
+			l_old_start_node, l_then_start_node, l_else_start_node, l_failing_node: EPA_AST_STRUCTURE_NODE
 			l_original_string, l_fixed_string, l_then_start_string, l_else_start_string: STRING
 			l_nbr_old_statements, l_size_snippet, l_branching_factor, l_failing_node_depth: INTEGER
 			l_old_start_breakpoint, l_old_end_breakpoint: INTEGER
@@ -401,11 +401,11 @@ feature{NONE} -- Analysis
 			create Result.make (recipient_feature_with_context, base_name, fix_under_analysis.starting_ln.out, fix_under_analysis.is_proper, fix_under_analysis.text.twin, l_schema_type, l_nbr_old_statements, l_size_snippet, l_branching_factor)
 		end
 
-	compare_structure_node (a_original, a_fixed: AFX_AST_STRUCTURE_NODE)
+	compare_structure_node (a_original, a_fixed: EPA_AST_STRUCTURE_NODE)
 			-- Compare the structure nodes `a_original' and `a_fixed'.
 		local
-			l_original_children, l_fixed_children: LINKED_LIST[LINKED_LIST[AFX_AST_STRUCTURE_NODE]]
-			l_original_trunk, l_fixed_trunk: LINKED_LIST[AFX_AST_STRUCTURE_NODE]
+			l_original_children, l_fixed_children: LINKED_LIST[LINKED_LIST[EPA_AST_STRUCTURE_NODE]]
+			l_original_trunk, l_fixed_trunk: LINKED_LIST[EPA_AST_STRUCTURE_NODE]
 			l_index, l_count: INTEGER
 		do
 			if not has_found_difference then
@@ -433,10 +433,10 @@ feature{NONE} -- Analysis
 			end
 		end
 
-	compare_structure_node_trunk (a_original_trunk, a_fixed_trunk: LINKED_LIST[AFX_AST_STRUCTURE_NODE])
+	compare_structure_node_trunk (a_original_trunk, a_fixed_trunk: LINKED_LIST[EPA_AST_STRUCTURE_NODE])
 		local
 			l_original_count, l_fixed_count, l_index, l_min_count: INTEGER
-			l_original_node, l_fixed_node: AFX_AST_STRUCTURE_NODE
+			l_original_node, l_fixed_node: EPA_AST_STRUCTURE_NODE
 			l_nbr_old_statements, l_size_snippet, l_branching_factor: INTEGER
 			l_schema_type: INTEGER
 			l_record: AFX_POSTMORTEM_ANALYSIS_RECORD
@@ -472,7 +472,7 @@ feature{NONE} -- Analysis
 			end
 		end
 
-	structure_generator: AFX_AST_STRUCTURE_NODE_GENERATOR
+	structure_generator: EPA_AST_STRUCTURE_NODE_GENERATOR
 			-- Structure generator.
 		once
 			create Result

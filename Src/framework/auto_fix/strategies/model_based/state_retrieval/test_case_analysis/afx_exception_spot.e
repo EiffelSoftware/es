@@ -118,12 +118,12 @@ feature -- Access
 	trace: STRING
 			-- Trace of the exception
 
-	recipient_ast_structure: AFX_FEATURE_AST_STRUCTURE_NODE
+	recipient_ast_structure: EPA_FEATURE_AST_STRUCTURE_NODE
 			-- AST structure of `recipient_'.
 		require
 			test_case_info_attached: test_case_info /= Void
 		local
-			l_structure_gen: AFX_AST_STRUCTURE_NODE_GENERATOR
+			l_structure_gen: EPA_AST_STRUCTURE_NODE_GENERATOR
 		do
 			if recipient_ast_structure_cache = Void then
 				create l_structure_gen

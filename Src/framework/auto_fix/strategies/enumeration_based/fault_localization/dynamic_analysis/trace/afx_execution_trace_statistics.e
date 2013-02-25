@@ -10,7 +10,7 @@ class
 	AFX_EXECUTION_TRACE_STATISTICS
 
 inherit
-	DS_HASH_TABLE [EPA_HASH_SET [AFX_FIXING_TARGET], INTEGER]
+	DS_HASH_TABLE [EPA_HASH_SET [AFX_FIXING_TARGET], AFX_PROGRAM_LOCATION]
 
 	AFX_EXECUTION_TRACE_STATISTICS_UPDATE_MODE
 
@@ -80,14 +80,14 @@ feature -- Basic operation
 			-- Statistic value regarding the fixing target `a_target'.
 			-- If no data available, return 0.
 		local
-			l_bp_index: INTEGER
+			l_location: AFX_PROGRAM_LOCATION
 			l_set: EPA_HASH_SET [AFX_FIXING_TARGET]
 			l_target: AFX_FIXING_TARGET
 			l_found: BOOLEAN
 		do
-			l_bp_index := a_target.bp_index
-			if has (l_bp_index) then
-				l_set := item (l_bp_index)
+			l_location := a_target.program_location
+			if has (l_location) then
+				l_set := item (l_location)
 				from l_set.start
 				until l_found or else l_set.after
 				loop
@@ -109,16 +109,16 @@ feature -- Basic operation
 		require
 			valid_mode: is_valid_update_mode (a_update_mode)
 		local
-			l_bp_index: INTEGER
+			l_location: AFX_PROGRAM_LOCATION
 			l_set: EPA_HASH_SET [AFX_FIXING_TARGET]
 			l_found: BOOLEAN
 			l_target: AFX_FIXING_TARGET
 			l_table: DS_HASH_TABLE [REAL_32, AFX_PROGRAM_STATE_EXPRESSION]
 			l_number: REAL
 		do
-			l_bp_index := a_target.bp_index
-			if has (l_bp_index) then
-				l_set := item (l_bp_index)
+			l_location := a_target.program_location
+			if has (l_location) then
+				l_set := item (l_location)
 				from l_set.start
 				until l_set.after or else l_found
 				loop
@@ -133,11 +133,11 @@ feature -- Basic operation
 				end
 			else
 				create l_set.make_equal (10)
-				force (l_set, l_bp_index)
+				force (l_set, l_location)
 			end
 
 			if not l_found then
-				create l_target.make (a_target.expression, l_bp_index, statistic_value_after_update (0, a_change, a_update_mode))
+				create l_target.make (a_target.expression, l_location.breakpoint_index, statistic_value_after_update (0, a_change, a_update_mode))
 				l_set.force (l_target)
 			end
 		end
