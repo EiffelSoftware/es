@@ -44,10 +44,10 @@ feature {NONE} -- Initialization
 		do
 			Precursor
 
-			create l_shared_writer
-			l_shared_writer.label_font_table.item (0).set_height (16)
-			l_shared_writer.label_font_table.item (1).set_height (16)
-			l_shared_writer.label_font_table.item (2).set_height (16)
+--			create l_shared_writer
+--			l_shared_writer.label_font_table.item (0).set_height (16)
+--			l_shared_writer.label_font_table.item (1).set_height (16)
+--			l_shared_writer.label_font_table.item (2).set_height (16)
 
 				-- We want the tool to synchronize with the event list, when first initialized.
 			is_event_list_synchronized_on_initialized := True

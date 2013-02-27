@@ -324,6 +324,7 @@ feature {NONE} -- Implementation
 			l_is_pre, l_is_post, l_is_assert: BOOLEAN
 			l_is_loop_inv_on_entry, l_is_loop_inv_maintained: BOOLEAN
 			l_boogie_line: STRING
+			l_loop_inv_violation: E2B_LOOP_INVARIANT_VIOLATION
 		do
 			check attached boogie_file_lines end
 
@@ -362,9 +363,19 @@ feature {NONE} -- Implementation
 				Result.set_tag (assert_regexp_tag (assert_regexp))
 				Result.set_eiffel_line_number (assert_regexp_line (assert_regexp))
 			elseif l_is_loop_inv_on_entry then
-				create {E2B_VIOLATION} Result.make_with_description (a_code, a_message, "Loop invariant may not hold on entry.")
+				assert_regexp.match (l_boogie_line)
+				create l_loop_inv_violation.make (a_code, a_message)
+				l_loop_inv_violation.set_on_entry
+				l_loop_inv_violation.set_tag (assert_regexp_tag (assert_regexp))
+				l_loop_inv_violation.set_eiffel_line_number (assert_regexp_line (assert_regexp))
+				Result := l_loop_inv_violation
 			elseif l_is_loop_inv_maintained then
-				create {E2B_VIOLATION} Result.make_with_description (a_code, a_message, "Loop invariant might not be maintained.")
+				assert_regexp.match (l_boogie_line)
+				create l_loop_inv_violation.make (a_code, a_message)
+				l_loop_inv_violation.set_on_iteration
+				l_loop_inv_violation.set_tag (assert_regexp_tag (assert_regexp))
+				l_loop_inv_violation.set_eiffel_line_number (assert_regexp_line (assert_regexp))
+				Result := l_loop_inv_violation
 			else
 				check False end
 			end

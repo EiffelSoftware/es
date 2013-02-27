@@ -129,12 +129,38 @@ feature -- Basic operations
 				elseif helper.feature_note_values (current_feature, "pure").has ("True") then
 						-- Pure feature
 					add_pure_frame_condition
+				elseif helper.feature_note_values (current_feature, "pure_fresh").has ("True") then
+					add_pure_fresh_frame_condition
 				else
 						-- Normal frame condition
 					process_fields_list (l_fields)
 				end
 			end
 
+			add_invariant_conditions
+
+		end
+
+	add_invariant_conditions
+		local
+			l_fcall: IV_FUNCTION_CALL
+			l_pre: IV_PRECONDITION
+			l_post: IV_POSTCONDITION
+			l_info: IV_ASSERTION_INFORMATION
+		do
+			l_fcall := factory.function_call (
+				name_translator.boogie_name_for_invariant_function (current_type),
+				<< "Heap", "Current" >>,
+				types.bool)
+			create l_pre.make (l_fcall)
+			l_pre.set_free
+			current_boogie_procedure.add_contract (l_pre)
+			create l_post.make (l_fcall)
+--			create l_info.make ("post")
+--			l_info.set_tag ("invariant")
+--			l_post.set_information (l_info)
+			l_post.set_assertion_type ("post")
+			current_boogie_procedure.add_contract (l_post)
 		end
 
 	add_ownership_conditions
@@ -811,6 +837,35 @@ feature {NONE} -- Implementation
 			create l_postcondition.make (l_equal)
 			create l_info.make ("frame")
 			l_postcondition.set_information (l_info)
+			current_boogie_procedure.add_contract (l_postcondition)
+		end
+
+	add_pure_fresh_frame_condition
+			-- Add pure frame condition to current feature.
+		local
+			l_postcondition: IV_POSTCONDITION
+			l_forall: IV_FORALL
+			l_or: IV_BINARY_OPERATION
+			l_expr: IV_EXPRESSION
+			l_fcall: IV_FUNCTION_CALL
+			l_access, l_old_access, l_old_allocated: IV_HEAP_ACCESS
+			o, f: IV_ENTITY
+			l_info: IV_ASSERTION_INFORMATION
+		do
+			create o.make ("$o", types.ref)
+			create f.make ("$f", types.field (types.generic_type))
+			create l_access.make ("Heap", o, f)
+			create l_old_access.make ("old(Heap)", o, f)
+			create l_old_allocated.make ("old(Heap)", o, create {IV_ENTITY}.make ("allocated", types.field (types.bool)))
+			create l_forall.make (factory.implies_ (l_old_allocated, factory.equal (l_access, l_old_access)))
+			l_forall.add_bound_variable ("$o", types.ref)
+			l_forall.add_bound_variable ("$f", types.field (types.generic_type))
+			create l_postcondition.make (l_forall)
+			create l_info.make ("frame")
+			l_postcondition.set_information (l_info)
+			if not options.is_checking_frame then
+				l_postcondition.set_free
+			end
 			current_boogie_procedure.add_contract (l_postcondition)
 		end
 

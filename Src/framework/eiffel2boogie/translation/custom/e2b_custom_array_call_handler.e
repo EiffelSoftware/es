@@ -102,7 +102,8 @@ feature -- Basic operations
 				"item",
 				"has",
 				"count",
-				"subarray"
+				"subarray",
+				"occurrences"
 			>>
 			Result.compare_objects
 		end

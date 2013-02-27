@@ -263,6 +263,7 @@ feature -- Processing
 			l_nested_if: IV_CONDITIONAL
 			l_elseif: ELSIF_B
 			l_temp_block: IV_BLOCK
+			i: INTEGER
 		do
 			set_current_origin_information (a_node)
 
@@ -281,11 +282,11 @@ feature -- Processing
 			current_block := l_if.else_block
 			if a_node.elsif_list /= Void then
 				from
-					a_node.elsif_list.start
+					i := a_node.elsif_list.lower
 				until
-					a_node.elsif_list.after
+					i > a_node.elsif_list.upper
 				loop
-					l_elseif ?= a_node.elsif_list.item
+					l_elseif ?= a_node.elsif_list.i_th (i)
 					check l_elseif /= Void end
 					set_current_origin_information (l_elseif)
 
@@ -300,8 +301,8 @@ feature -- Processing
 
 						-- else block
 					current_block := l_nested_if.else_block
-
-					a_node.elsif_list.forth
+					
+					i := i + 1
 				end
 			end
 
