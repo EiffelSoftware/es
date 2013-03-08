@@ -2105,6 +2105,7 @@ test	large-real-constant-c-compile-failure		ccomp084 tcf fail c_compilation
 test	c-header-sequence				ccomp085 tcf fail c_compilation
 test	finalize-without-then-with-assertions		ccomp086 tcf fail c_compilation
 test	finalize-expanded-generic-c-error	ccomp087 tcf fail c_compilation
+test	finalize-inline-with-dollar-operator	ccomp088 tcf pass c_compilation
 
 -- Storable tests
 
@@ -2830,6 +2831,8 @@ test	scoop-multi-dot-call-chain			scoop024 tcf pass scoop execution
 test	scoop-expanded-separate				scoop025 tcf pass scoop expanded execution
 test	scoop-unnested-logging				scoop026 tcf pass scoop execution
 test	scoop-lock-passing-on-separate-creation		scoop027 tcf pass scoop execution
+test	scoop-sequential-processor-creation		scoop028 tcf pass scoop execution
+test	scoop-recursive-processor-creation		scoop029 tcf pass scoop execution
 
 -- Prettify
 test	pretty-smoke-test			pretty001 tcf pass pretty

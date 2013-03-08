@@ -9,10 +9,12 @@ note
 	revision: "$Revision$"
 
 class
-	INTERNAL
+	DOTNET_REFLECTOR
 
 inherit
-	INTERNAL_HELPER
+	REFLECTOR_HELPER
+
+	REFLECTOR_CONSTANTS
 
 	REFACTORING_HELPER
 
@@ -64,7 +66,6 @@ feature -- Conformance
 			fixme ("Take into account attachment marks")
 			Result := type_conforms_to (a_source_type, a_field_type)
 		end
-
 
 feature -- Creation
 
@@ -234,7 +235,7 @@ feature -- Status report
 		require
 			object_not_void: obj /= Void
 		do
-			Result := marked_objects.contains (obj)
+			Result := {ISE_RUNTIME}.is_object_marked (obj)
 		end
 
 	is_attached_type (a_type_id: INTEGER): BOOLEAN
@@ -245,17 +246,6 @@ feature -- Status report
 				-- Currently .NET does not support attachment.
 			fixme ("Take into account attachment marks")
 			Result := False
-		end
-
-	is_field_transient (i: INTEGER; object: ANY): BOOLEAN
-			-- Is `i'-th field of `object' a transient attribute?
-			-- I.e. an attribute that does not need to be stored?
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-		do
-			Result := is_field_transient_of_type (i, dynamic_type (object))
 		end
 
 	is_field_transient_of_type (i: INTEGER; a_type_id: INTEGER): BOOLEAN
@@ -304,16 +294,6 @@ feature -- Status report
 			end
 		end
 
-	is_field_expanded (i: INTEGER; object: ANY): BOOLEAN
-			-- Is `i'-th field of `object' a user-defined expanded attribute?
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-		do
-			Result := is_field_expanded_of_type (i, dynamic_type (object))
-		end
-
 	is_field_expanded_of_type (i: INTEGER; a_type_id: INTEGER): BOOLEAN
 			-- Is `i'-th field of type `a_type_id' a user-defined expanded attribute?
 		require
@@ -325,47 +305,6 @@ feature -- Status report
 		end
 
 feature -- Access
-
-	none_type: INTEGER = -2
-			-- Type ID representation for NONE.
-
-	Pointer_type: INTEGER = 0
-
-	Reference_type: INTEGER = 1
-
-	character_8_type, character_type: INTEGER = 2
-
-	Boolean_type: INTEGER = 3
-
-	Integer_type, integer_32_type: INTEGER = 4
-
-	Real_type, real_32_type: INTEGER = 5
-
-	Double_type, real_64_type: INTEGER = 6
-
-	Expanded_type: INTEGER = 7
-
-	Bit_type: INTEGER = 8
-
-	Integer_8_type: INTEGER = 9
-
-	Integer_16_type: INTEGER = 10
-
-	Integer_64_type: INTEGER = 11
-
-	character_32_type, wide_character_type: INTEGER = 12
-
-	natural_8_type: INTEGER = 13
-
-	natural_16_type: INTEGER = 14
-
-	natural_32_type: INTEGER = 15
-
-	natural_64_type: INTEGER = 16
-
-	min_predefined_type: INTEGER = -2
-	max_predefined_type: INTEGER = 17
-			-- See non-exported definition of `object_type' below.
 
 	class_name (object: ANY): STRING
 			-- Name of the class associated with `object'
@@ -570,137 +509,39 @@ feature -- Access
 			end
 		end
 
-	field (i: INTEGER; object: ANY): detachable ANY
-			-- Object attached to the `i'-th field of `object'
-			-- (directly or through a reference)
+	field_count_of_type (type_id: INTEGER): INTEGER
+			-- Number of logical fields in dynamic type `type_id'.
 		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			not_special: not is_special (object)
-		local
-			l_obj: detachable SYSTEM_OBJECT
-			l_dtype: INTEGER
+			type_id_nonnegative: type_id >= 0
 		do
-			l_dtype := dynamic_type (object)
-			l_obj := internal_field (i, object, l_dtype)
-			inspect
-				field_type_of_type (i, l_dtype)
-			when Pointer_type then
-				check
-					expected_type: attached {POINTER} l_obj as p
-				then
-					Result := p
-				end
-
-			when character_8_type then
-				check
-					expected_type: attached {CHARACTER_8} l_obj as c
-				then
-					Result := c
-				end
-
-			when character_32_type then
-				check
-					expected_type: attached {CHARACTER_32} l_obj as c
-				then
-					Result := c
-				end
-
-			when Boolean_type then
-				check
-					expected_type: attached {BOOLEAN} l_obj as b
-				then
-					Result := b
-				end
-
-			when natural_8_type then
-				check
-					expected_type: attached {NATURAL_8} l_obj as n
-				then
-					Result := n
-				end
-
-			when natural_16_type then
-				check
-					expected_type: attached {NATURAL_16} l_obj as n
-				then
-					Result := n
-				end
-
-			when natural_32_type then
-				check
-					expected_type: attached {NATURAL_32} l_obj as n
-				then
-					Result := n
-				end
-
-			when natural_64_type then
-				check
-					expected_type: attached {NATURAL_64} l_obj as n
-				then
-					Result := n
-				end
-
-			when Integer_8_type then
-				check
-					expected_type: attached {INTEGER_8} l_obj as v
-				then
-					Result := v
-				end
-
-			when Integer_16_type then
-				check
-					expected_type: attached {INTEGER_16} l_obj as v
-				then
-					Result := v
-				end
-
-			when Integer_32_type then
-				check
-					expected_type: attached {INTEGER_32} l_obj as v
-				then
-					Result := v
-				end
-
-			when Integer_64_type then
-				check
-					expected_type: attached {INTEGER_64} l_obj as v
-				then
-					Result := v
-				end
-
-			when real_32_type then
-				check
-					expected_type: attached {REAL_32} l_obj as r
-				then
-					Result := r
-				end
-
-			when real_64_type then
-				check
-					expected_type: attached {REAL_64} l_obj as r
-				then
-					Result := r
-				end
-
-			else
-					-- A reference, so nothing to be done
-				Result := l_obj
-			end
+			Result := get_members (type_id).count
 		end
 
-	field_name (i: INTEGER; object: ANY): STRING
-			-- Name of `i'-th field of `object'
+	persistent_field_count_of_type (a_type_id: INTEGER): INTEGER
+			-- Number of logical fields in dynamic type `type_id' that are not transient.
 		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			not_special: not is_special (object)
+			a_type_non_negative: a_type_id >= 0
+		local
+			i, nb: INTEGER
 		do
-			Result := field_name_of_type (i, dynamic_type (object))
+			Result := persistent_field_counts.item (a_type_id)
+			if Result = -1 then
+				from
+					i := 1
+					nb := field_count_of_type (a_type_id)
+					Result := 0
+				until
+					i > nb
+				loop
+					if not is_field_transient_of_type (i, a_type_id) then
+						Result := Result + 1
+					end
+					i := i + 1
+				end
+				persistent_field_counts.put (Result, a_type_id)
+			end
 		ensure
-			Result_exists: Result /= Void
+			count_positive: Result >= 0
 		end
 
 	field_name_of_type (i: INTEGER; type_id: INTEGER): STRING
@@ -756,29 +597,6 @@ feature -- Access
 			end
 		ensure
 			field_name_of_type_not_void: Result /= Void
-		end
-
-	field_offset (i: INTEGER; object: ANY): INTEGER
-			-- Offset of `i'-th field of `object'
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			not_special: not is_special (object)
-		do
-			Result := 4 * i
-		end
-
-	field_type (i: INTEGER; object: ANY): INTEGER
-			-- Abstract type of `i'-th field of `object'
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-		do
-			Result := field_type_of_type (i, dynamic_type (object))
-		ensure
-			field_type_nonnegative: Result >= 0
 		end
 
 	field_type_of_type (i: INTEGER; type_id: INTEGER): INTEGER
@@ -936,584 +754,6 @@ feature -- Access
 			field_type_nonnegative: Result >= 0
 		end
 
-	expanded_field_type (i: INTEGER; object: ANY): STRING
-			-- Class name associated with the `i'-th
-			-- expanded field of `object'
-		obsolete
-			"Use `class_name_of_type (field_static_type_of_type (i, dynamic_type (object)))' instead."
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			is_expanded: field_type (i, object) = expanded_type
-		do
-			Result := class_name_of_type (field_static_type_of_type (i, dynamic_type (object)))
-		ensure
-			Result_exists: Result /= Void
-		end
-
-	character_8_field, character_field (i: INTEGER; object: ANY): CHARACTER_8
-			-- Character value of `i'-th field of `object'
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			character_8_field: field_type (i, object) = character_8_type
-		do
-			check
-				from_precondition:
-					attached {CHARACTER_8} internal_field (i, object, dynamic_type (object)) as c
-			then
-				Result := c
-			end
-		end
-
-	character_32_field (i: INTEGER; object: ANY): CHARACTER_32
-			-- Character value of `i'-th field of `object'
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			character_32_field: field_type (i, object) = character_32_type
-		do
-			check
-				from_precondition:
-					attached {CHARACTER_32} internal_field (i, object, dynamic_type (object)) as c
-			then
-				Result := c
-			end
-		end
-
-	boolean_field (i: INTEGER; object: ANY): BOOLEAN
-			-- Boolean value of `i'-th field of `object'
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			boolean_field: field_type (i, object) = Boolean_type
-		do
-			check
-				from_precondition:
-					attached {BOOLEAN} internal_field (i, object, dynamic_type (object)) as b
-			then
-				Result := b
-			end
-		end
-
-	natural_8_field (i: INTEGER; object: ANY): NATURAL_8
-			-- NATURAL_8 value of `i'-th field of `object'
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			natural_8_field: field_type (i, object) = natural_8_type
-		do
-			check
-				from_precondition:
-					attached {NATURAL_8} internal_field (i, object, dynamic_type (object)) as n
-			then
-				Result := n
-			end
-		end
-
-	natural_16_field (i: INTEGER; object: ANY): NATURAL_16
-			-- NATURAL_16 value of `i'-th field of `object'
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			natural_16_field: field_type (i, object) = natural_16_type
-		do
-			check
-				from_precondition:
-					attached {NATURAL_16} internal_field (i, object, dynamic_type (object)) as n
-			then
-				Result := n
-			end
-		end
-
-	natural_32_field (i: INTEGER; object: ANY): NATURAL_32
-			-- NATURAL_32 value of `i'-th field of `object'
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			natural_field: field_type (i, object) = natural_32_type
-		do
-			check
-				from_precondition:
-					attached {NATURAL_32} internal_field (i, object, dynamic_type (object)) as n
-			then
-				Result := n
-			end
-		end
-
-	natural_64_field (i: INTEGER; object: ANY): NATURAL_64
-			-- NATURAL_64 value of `i'-th field of `object'
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			natural_64_field: field_type (i, object) = natural_64_type
-		do
-			check
-				from_precondition:
-					attached {NATURAL_64} internal_field (i, object, dynamic_type (object)) as n
-			then
-				Result := n
-			end
-		end
-
-	integer_8_field (i: INTEGER; object: ANY): INTEGER_8
-			-- Integer value of `i'-th field of `object'
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			integer_8_field: field_type (i, object) = Integer_8_type
-		do
-			check
-				from_precondition:
-					attached {INTEGER_8} internal_field (i, object, dynamic_type (object)) as v
-			then
-				Result := v
-			end
-		end
-
-	integer_16_field (i: INTEGER; object: ANY): INTEGER_16
-			-- Integer value of `i'-th field of `object'
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			integer_16_field: field_type (i, object) = Integer_16_type
-		do
-			check
-				from_precondition:
-					attached {INTEGER_16} internal_field (i, object, dynamic_type (object)) as v
-			then
-				Result := v
-			end
-		end
-
-	integer_field, integer_32_field (i: INTEGER; object: ANY): INTEGER
-			-- Integer value of `i'-th field of `object'
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			integer_32_field: field_type (i, object) = Integer_32_type
-		do
-			check
-				from_precondition:
-					attached {INTEGER_32} internal_field (i, object, dynamic_type (object)) as v
-			then
-				Result := v
-			end
-		end
-
-	integer_64_field (i: INTEGER; object: ANY): INTEGER_64
-			-- Integer value of `i'-th field of `object'
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			integer_64_field: field_type (i, object) = Integer_64_type
-		do
-			check
-				from_precondition:
-					attached {INTEGER_64} internal_field (i, object, dynamic_type (object)) as v
-			then
-				Result := v
-			end
-		end
-
-	real_32_field, real_field (i: INTEGER; object: ANY): REAL
-			-- Real value of `i'-th field of `object'
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			real_32_field: field_type (i, object) = real_32_type
-		do
-			check
-				from_precondition:
-					attached {REAL} internal_field (i, object, dynamic_type (object)) as r
-			then
-				Result := r
-			end
-		end
-
-	pointer_field (i: INTEGER; object: ANY): POINTER
-			-- Pointer value of `i'-th field of `object'
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			pointer_field: field_type (i, object) = Pointer_type
-		do
-			check
-				from_precondition:
-					attached {POINTER} internal_field (i, object, dynamic_type (object)) as p
-			then
-				Result := p
-			end
-		end
-
-	real_64_field, double_field (i: INTEGER; object: ANY): DOUBLE
-			-- Double precision value of `i'-th field of `object'
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			real_64_field: field_type (i, object) = real_64_type
-		do
-			check
-				from_precondition:
-					attached {DOUBLE} internal_field (i, object, dynamic_type (object)) as r
-			then
-				Result := r
-			end
-		end
-
-feature -- Version
-
-	compiler_version: INTEGER
-		do
-			-- Built-in.
-		end
-
-feature -- Element change
-
-	set_reference_field (i: INTEGER; object: ANY; value: detachable ANY)
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			reference_field: field_type (i, object) = Reference_type
-			valid_value: is_attached_type (field_static_type_of_type (i, dynamic_type (object))) implies value /= Void
-			value_conforms_to_field_static_type:
-				value /= Void implies field_conforms_to (dynamic_type (value), field_static_type_of_type (i, dynamic_type (object)))
-		do
-			internal_set_reference_field (i, object, value)
-		end
-
-	set_real_64_field, set_double_field (i: INTEGER; object: ANY; value: DOUBLE)
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			real_64_field: field_type (i, object) = real_64_type
-		do
-			internal_set_reference_field (i, object, value)
-		end
-
-	set_character_8_field, set_character_field (i: INTEGER; object: ANY; value: CHARACTER_8)
-			-- Set character value of `i'-th field of `object' to `value'
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			character_8_field: field_type (i, object) = character_8_type
-		do
-			internal_set_reference_field (i, object, value)
-		end
-
-	set_character_32_field (i: INTEGER; object: ANY; value: CHARACTER_32)
-			-- Set character value of `i'-th field of `object' to `value'
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			character_32_field: field_type (i, object) = character_32_type
-		do
-			internal_set_reference_field (i, object, value)
-		end
-
-	set_boolean_field (i: INTEGER; object: ANY; value: BOOLEAN)
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			boolean_field: field_type (i, object) = Boolean_type
-		do
-			internal_set_reference_field (i, object, value)
-		end
-
-	set_natural_8_field (i: INTEGER; object: ANY; value: NATURAL_8)
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			natural_8_field: field_type (i, object) = natural_8_type
-		do
-			internal_set_reference_field (i, object, value)
-		end
-
-	set_natural_16_field (i: INTEGER; object: ANY; value: NATURAL_16)
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			natural_16_field: field_type (i, object) = natural_16_type
-		do
-			internal_set_reference_field (i, object, value)
-		end
-
-	set_natural_32_field (i: INTEGER; object: ANY; value: NATURAL_32)
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			natural_32_field: field_type (i, object) = natural_32_type
-		do
-			internal_set_reference_field (i, object, value)
-		end
-
-	set_natural_64_field (i: INTEGER; object: ANY; value: NATURAL_64)
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			natural_64_field: field_type (i, object) = natural_64_type
-		do
-			internal_set_reference_field (i, object, value)
-		end
-
-	set_integer_8_field (i: INTEGER; object: ANY; value: INTEGER_8)
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			integer_8_field: field_type (i, object) = Integer_8_type
-		do
-			internal_set_reference_field (i, object, value)
-		end
-
-	set_integer_16_field (i: INTEGER; object: ANY; value: INTEGER_16)
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			integer_16_field: field_type (i, object) = Integer_16_type
-		do
-			internal_set_reference_field (i, object, value)
-		end
-
-	set_integer_field, set_integer_32_field (i: INTEGER; object: ANY; value: INTEGER)
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			integer_32_field: field_type (i, object) = Integer_32_type
-		do
-			internal_set_reference_field (i, object, value)
-		end
-
-	set_integer_64_field (i: INTEGER; object: ANY; value: INTEGER_64)
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			integer_64_field: field_type (i, object) = Integer_64_type
-		do
-			internal_set_reference_field (i, object, value)
-		end
-
-	set_real_32_field, set_real_field (i: INTEGER; object: ANY; value: REAL)
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			real_32_field: field_type (i, object) = real_32_type
-		do
-			internal_set_reference_field (i, object, value)
-		end
-
-	set_pointer_field (i: INTEGER; object: ANY; value: POINTER)
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			pointer_field: field_type (i, object) = Pointer_type
-		do
-			internal_set_reference_field (i, object, value)
-		end
-
-feature -- Measurement
-
-	field_count (object: ANY): INTEGER
-			-- Number of logical fields in `object'
-		require
-			object_not_void: object /= Void
-		do
-			Result := get_members (dynamic_type (object)).count
-		end
-
-	field_count_of_type (type_id: INTEGER): INTEGER
-			-- Number of logical fields in dynamic type `type_id'.
-		require
-			type_id_nonnegative: type_id >= 0
-		do
-			Result := get_members (type_id).count
-		end
-
-	persistent_field_count (object: ANY): INTEGER
-			-- Number of logical fields in `object' that are not transient.
-		require
-			object_not_void: object /= Void
-		do
-			Result := persistent_field_count_of_type (dynamic_type (object))
-		ensure
-			count_positive: Result >= 0
-		end
-
-	persistent_field_count_of_type (a_type_id: INTEGER): INTEGER
-			-- Number of logical fields in dynamic type `type_id' that are not transient.
-		require
-			a_type_non_negative: a_type_id >= 0
-		local
-			i, nb: INTEGER
-		do
-			Result := persistent_field_counts.item (a_type_id)
-			if Result = -1 then
-				from
-					i := 1
-					nb := field_count_of_type (a_type_id)
-					Result := 0
-				until
-					i > nb
-				loop
-					if not is_field_transient_of_type (i, a_type_id) then
-						Result := Result + 1
-					end
-					i := i + 1
-				end
-				persistent_field_counts.put (Result, a_type_id)
-			end
-		ensure
-			count_positive: Result >= 0
-		end
-
-	bit_size (i: INTEGER; object: ANY): INTEGER
-			-- Size (in bit) of the `i'-th bit field of `object'
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			is_bit: field_type (i, object) = Bit_type
-		do
-			Result := 4
-		ensure
-			positive_result: Result > 0
-		end
-
-	physical_size (object: ANY): INTEGER
-			-- Space occupied by `object' in bytes
-			--| In .NET, it is an approximation since .NET has not facility that returns the size
-			--| of an object. For example, we do not take into account layout/packing nor the
-			--| presence of an object header.
-		require
-			object_not_void: object /= Void
-		local
-			i, nb: INTEGER
-			l_type_id: INTEGER
-		do
-			l_type_id := dynamic_type (object)
-			from
-				i := 1
-				nb := field_count_of_type (l_type_id)
-			until
-				i > nb
-			loop
-				inspect
-					field_type_of_type (i, l_type_id)
-				when pointer_type then Result := Result + {PLATFORM}.pointer_bytes
-				when character_8_type then Result := Result + {PLATFORM}.character_8_bytes
-				when character_32_type then Result := Result + {PLATFORM}.character_32_bytes
-				when boolean_type then Result := Result + {PLATFORM}.boolean_bytes
-				when real_32_type then Result := Result + {PLATFORM}.real_32_bytes
-				when real_64_type then Result := Result + {PLATFORM}.real_64_bytes
-				when natural_8_type then Result := Result + {PLATFORM}.natural_8_bytes
-				when natural_16_type then Result := Result + {PLATFORM}.natural_16_bytes
-				when natural_32_type then Result := Result + {PLATFORM}.natural_32_bytes
-				when natural_64_type then Result := Result + {PLATFORM}.natural_64_bytes
-				when integer_8_type then Result := Result + {PLATFORM}.integer_8_bytes
-				when integer_16_type then Result := Result + {PLATFORM}.integer_16_bytes
-				when integer_32_type then Result := Result + {PLATFORM}.integer_32_bytes
-				when integer_64_type then Result := Result + {PLATFORM}.integer_64_bytes
-				else
-						-- It is a reference, which we assume to be the same as a pointer
-					Result := Result + {PLATFORM}.pointer_bytes
-				end
-				i := i + 1
-			end
-		end
-
-	deep_physical_size (object: ANY): INTEGER
-			-- Space occupied by `object' and its children in bytes
-		require
-			object_not_void: object /= Void
-		local
-			l_traverse: OBJECT_GRAPH_BREADTH_FIRST_TRAVERSABLE
-		do
-			create l_traverse
-			l_traverse.set_root_object (object)
-			l_traverse.traverse
-			if attached {ARRAYED_LIST [ANY]} l_traverse.visited_objects as l_objects then
-				from
-					l_objects.start
-				until
-					l_objects.after
-				loop
-					Result := Result + physical_size (l_objects.item)
-					l_objects.forth
-				end
-			end
-		end
-
-feature -- Marking
-
-	mark (obj: ANY)
-			-- Mark object `obj'.
-			-- To be thread safe, make sure to call this feature when you
-			-- have the marking lock that you acquire using `lock_marking'.
-		require
-			object_not_void: obj /= Void
-			object_not_marked: not is_marked (obj)
-		do
-			marked_objects.add (obj, obj)
-		ensure
-			marked: is_marked (obj)
-		end
-
-	unmark (obj: ANY)
-			-- Unmark object `obj'.
-			-- To be thread safe, make sure to call this feature when you
-			-- have the marking lock that you acquire using `lock_marking'.
-		require
-			object_not_void: obj /= Void
-			object_marked: is_marked (obj)
-		do
-			marked_objects.remove (obj)
-		ensure
-			not_marked: not is_marked (obj)
-		end
-
-	lock_marking
-			-- Get a lock on `mark' and `unmark' routine so that 2 threads cannot `mark' and
-			-- `unmark' at the same time.
-		do
-			-- Nothing to be done, because `marked_objects' is per thread.
-		end
-
-	unlock_marking
-			-- Release a lock on `mark' and `unmark', so that another thread can
-			-- use `mark' and `unmark'.
-		do
-			-- Nothing to be done, because `marked_objects' is per thread.
-		end
-
 feature {NONE} -- Cached data
 
 	internal_dynamic_type_string_table: STRING_TABLE [INTEGER]
@@ -1524,10 +764,7 @@ feature {NONE} -- Cached data
 			internal_dynamic_type_string_table_not_void: Result /= Void
 		end
 
-feature {TYPE, INTERNAL} -- Implementation
-
-	object_type: INTEGER = 17
-			-- System.Object type ID
+feature {TYPE, INTERNAL, REFLECTOR, REFLECTED_OBJECT} -- Implementation
 
 	private_type_field_name: SYSTEM_STRING = "$$____type"
 			-- .NET name for fields that stores generic types if any.
@@ -1743,20 +980,6 @@ feature {TYPE, INTERNAL} -- Implementation
 			dynamic_type_from_rt_class_type: Result = -1 or Result = none_type or Result >= 0
 		end
 
-	internal_field (i: INTEGER; object: ANY; type_id: INTEGER): detachable SYSTEM_OBJECT
-			-- Object attached to the `i'-th field of `object'
-			-- (directly or through a reference)
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-			not_special: not is_special (object)
-			type_id_nonnegative: type_id >= 0
-			valid_type: dynamic_type (object) = type_id
-		do
-			Result := get_members (type_id).i_th (i).get_value (object)
-		end
-
 	eiffel_type_from_string (class_type: READABLE_STRING_GENERAL): detachable RT_CLASS_TYPE
 			-- Eiffel .NET type corresponding to `class_type'.
 			-- If no dynamic type available, returns Void.
@@ -1808,9 +1031,9 @@ feature {TYPE, INTERNAL} -- Implementation
 					-- Or possibly a basic type with its various associated referenced types.
 					-- Nevertheless the check fails for CHARACTER_32 because it is mapped to a NATURAL_32, this
 					-- is why it is commented out for the meantime.
-				check
-					only_one_element: l_found_list.count = 1 or else attached {RT_BASIC_TYPE} l_found_list.first
-				end
+--				check
+--					only_one_element: l_found_list.count = 1 or else attached {RT_BASIC_TYPE} l_found_list.first
+--				end
 				Result := l_found_list.first
 			else
 					-- Let's see if it is a partially well-formed Eiffel generic class:
@@ -2339,15 +1562,6 @@ feature {TYPE, INTERNAL} -- Implementation
 			end
 		end
 
-	internal_set_reference_field (i: INTEGER; object: ANY; value: detachable SYSTEM_OBJECT)
-		require
-			object_not_void: object /= Void
-			index_large_enough: i >= 1
-			index_small_enough: i <= field_count (object)
-		do
-			get_members (dynamic_type (object)).i_th (i).set_value (object, value)
-		end
-
 	resize_arrays (max_type_id: INTEGER)
 			-- Resize all arrays indexed by type_id so that they can accommodate
 			-- `max_type_id'.
@@ -2508,7 +1722,7 @@ feature {TYPE, INTERNAL} -- Implementation
 
 note
 	library:	"EiffelBase: Library of reusable components for Eiffel."
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

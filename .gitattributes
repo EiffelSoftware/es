@@ -3615,6 +3615,9 @@ Src/library/abel/resources/documentation/tutorial/abel_tutorial.tex -text
 Src/library/abel/resources/documentation/tutorial/lstlang0.sty -text
 Src/library/api_wrapper/implementation/unix/Clib/dl-config -text
 Src/library/api_wrapper/license.lic -text
+Src/library/base/elks_eve/forum.txt -text
+Src/library/base/elks_eve/roadmap.txt -text
+Src/library/base/elks_eve/style.txt -text
 Src/library/cURL/readme.txt -text
 Src/library/dadle/openEHR/ref_impl_eiffel/components/.DS_Store -text
 Src/library/dadle/openEHR/ref_impl_eiffel/components/._.DS_Store -text

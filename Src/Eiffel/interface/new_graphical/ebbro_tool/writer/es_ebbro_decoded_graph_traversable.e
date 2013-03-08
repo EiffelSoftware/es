@@ -15,7 +15,7 @@ inherit
 
 feature -- implementation
 
-	internal_traverse
+	internal_traverse (a_root_object: ANY)
 
 	local
 		i, nb: INTEGER
@@ -36,7 +36,7 @@ feature -- implementation
 			create l_int
 			create l_visited.make (default_size)
 			l_objects_to_visit := new_dispenser
-			r := root_object
+			r := a_root_object
 			if r /= Void then
 				l_objects_to_visit.put (r)
 				l_int.mark (r)
@@ -178,7 +178,7 @@ feature -- implementation
 
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

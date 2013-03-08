@@ -15,7 +15,7 @@ inherit
 
 feature{NONE} -- Implementation
 
-	internal_traverse
+	internal_traverse (a_root_object: ANY)
 			-- Traverse object structure starting at 'root_object' and call object_action
 			-- on every object in the graph.
 		local
@@ -34,7 +34,7 @@ feature{NONE} -- Implementation
 				create l_int
 				create l_visited.make (default_size)
 				l_objects_to_visit := new_dispenser
-				r := root_object
+				r := a_root_object
 				if r /= Void then
 					l_objects_to_visit.put (r)
 					l_int.mark (r)
@@ -248,7 +248,7 @@ feature{NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

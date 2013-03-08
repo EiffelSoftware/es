@@ -27,6 +27,7 @@ feature -- creation
 		do
 			PRECURSOR(a_deserializer)
 			next_object_id := 1
+			create internal
 		end
 
 feature -- Access
@@ -34,6 +35,8 @@ feature -- Access
 	last_header_tuple:HASH_TABLE[STRING,INTEGER]
 
 	first_header_part_offset:INTEGER
+
+	internal: INTERNAL
 
 feature -- basic operations
 
@@ -492,23 +495,23 @@ feature{NONE} -- Implementation
 				i = nb
 			loop
 				inspect l_deser.read_natural_8
-				when {TUPLE}.boolean_code then a_new_obj.insert_actual_attribute (i.out,  l_deser.read_boolean, internal.boolean_type)
+				when {TUPLE}.boolean_code then a_new_obj.insert_actual_attribute (i.out,  l_deser.read_boolean, reflector.boolean_type)
 
-				when {TUPLE}.character_8_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_character_8, internal.character_8_type)
-				when {TUPLE}.character_32_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_character_32, internal.character_32_type)
+				when {TUPLE}.character_8_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_character_8, reflector.character_8_type)
+				when {TUPLE}.character_32_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_character_32, reflector.character_32_type)
 
-				when {TUPLE}.natural_8_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_natural_8, internal.natural_8_type)
-				when {TUPLE}.natural_16_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_natural_16, internal.natural_16_type)
-				when {TUPLE}.natural_32_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_natural_32, internal.natural_32_type)
-				when {TUPLE}.natural_64_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_natural_64, internal.natural_64_type)
+				when {TUPLE}.natural_8_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_natural_8, reflector.natural_8_type)
+				when {TUPLE}.natural_16_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_natural_16, reflector.natural_16_type)
+				when {TUPLE}.natural_32_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_natural_32, reflector.natural_32_type)
+				when {TUPLE}.natural_64_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_natural_64, reflector.natural_64_type)
 
-				when {TUPLE}.integer_8_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_integer_8, internal.integer_8_type)
-				when {TUPLE}.integer_16_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_integer_16, internal.integer_16_type)
-				when {TUPLE}.integer_32_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_integer_32, internal.integer_32_type)
-				when {TUPLE}.integer_64_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_integer_64, internal.integer_64_type)
+				when {TUPLE}.integer_8_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_integer_8, reflector.integer_8_type)
+				when {TUPLE}.integer_16_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_integer_16, reflector.integer_16_type)
+				when {TUPLE}.integer_32_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_integer_32, reflector.integer_32_type)
+				when {TUPLE}.integer_64_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_integer_64, reflector.integer_64_type)
 
-				when {TUPLE}.real_32_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_real_32, internal.real_32_type)
-				when {TUPLE}.real_64_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_real_64, internal.real_64_type)
+				when {TUPLE}.real_32_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_real_32, reflector.real_32_type)
+				when {TUPLE}.real_64_code then a_new_obj.insert_actual_attribute (i.out,l_deser.read_real_64, reflector.real_64_type)
 
 				--when {TUPLE}.pointer_code then l_tuple.put_pointer (l_deser.read_pointer, i)
 
@@ -519,7 +522,7 @@ feature{NONE} -- Implementation
 					l_ref_tuple.put_integer (l_ref_index, 1)
 					l_ref_tuple.put_integer (a_new_obj.dtype,2)
 					l_ref_tuple.put (i.out, 3)
-					l_ref_tuple.put (internal.reference_type, 4)
+					l_ref_tuple.put (reflector.reference_type, 4)
 					attribute_references.put_front(l_ref_tuple)
 				else
 					check
@@ -574,6 +577,7 @@ feature{NONE} -- Implementation
 			l_flags: NATURAL_8
 			l_spec_type, l_spec_count,l_old_dtype: INTEGER
 			l_new_obj: BINARY_DECODED
+			l_refl_obj: REFLECTED_OBJECT
 		do
 			l_deser := deserializer
 			l_int := internal
@@ -609,11 +613,12 @@ feature{NONE} -- Implementation
 						l_spec_type := {INTERNAL}.reference_type
 					end
 
-					decode_special (l_obj, l_index, l_spec_type)
+					decode_special (l_obj, l_spec_type)
 				elseif l_int.is_tuple (l_obj) then
-					decode_tuple (l_obj, l_dtype, l_index)
+					decode_tuple (l_obj)
 				else
-					decode_normal_object (l_obj, l_dtype, l_index)
+					create l_refl_obj.make (l_obj)
+					decode_normal_object (l_refl_obj)
 				end
 			end
 			if is_root then

@@ -37,6 +37,8 @@ feature --Creation
 
 feature {NONE} -- Implementation
 
+	internal: INTERNAL
+
 	--root_object: DECODED
 	dynamic_type_count: INTEGER_32
 	visited_objects: LINKED_LIST[ANY] --visited objects for 'object_count'
@@ -341,7 +343,7 @@ feature -- Access
 							l_spec_item_type := {INTERNAL}.reference_type
 						end
 
-						encode_special (l_obj, l_dtype, l_spec_item_type)
+						encode_special (l_obj, l_spec_item_type)
 					elseif l_int.is_tuple (l_obj) then
 					--	if {l_tuple: TUPLE} l_obj then
 						if attached {TUPLE} l_obj as l_tuple then
@@ -352,7 +354,7 @@ feature -- Access
 							end
 						end
 					else
-						encode_normal_object (l_obj, l_dtype)
+						encode_normal_object (l_obj)
 					end
 				end
 			end

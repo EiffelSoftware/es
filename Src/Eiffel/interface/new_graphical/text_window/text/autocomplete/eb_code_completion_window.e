@@ -797,7 +797,7 @@ feature {NONE} -- Action handlers
 			end
 		end
 
-	on_window_resize
+	on_window_resize (a_x, a_y, a_width, a_height: INTEGER)
 			-- Window resized
 		do
 			if is_displayed and then attached tooltip_window as l_w and then l_w.is_shown and then not l_w.is_recycled then
@@ -903,6 +903,7 @@ feature {NONE} -- Implementation
 				l_viewer.set_context (l_c, l_f)
 				l_viewer.set_auto_check_visible (False)
 				l_viewer.set_is_showing_comments (False)
+				l_viewer.set_is_showing_edit_contract_button (False)
 				l_widget := l_viewer.widget
 				l_v.extend (l_widget)
 				color_propogator.propagate_colors (l_widget, Void, contract_background_color, Void)

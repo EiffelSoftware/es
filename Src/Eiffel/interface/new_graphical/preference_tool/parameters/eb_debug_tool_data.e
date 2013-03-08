@@ -139,6 +139,37 @@ feature {EB_SHARED_PREFERENCES, ES_DOCKABLE_TOOL_PANEL} -- Value
 			Result := always_show_callstack_tool_when_stopping_preference.value
 		end
 
+	show_debug_tooltip: BOOLEAN
+		do
+			Result := show_debug_tooltip_preference.value
+		end
+
+	show_debug_tooltip_delay: INTEGER
+			-- Show debug tooltip delay in milliseconds
+		do
+			Result := show_debug_tooltip_delay_preference.value
+		end
+
+	new_edit_selected_shortcut: ES_KEY_SHORTCUT
+		do
+			Result := new_shortcut ({EV_KEY_CONSTANTS}.key_f2, False, False, False)
+		end
+
+	new_open_viewer_shortcut: ES_KEY_SHORTCUT
+		do
+			Result := new_shortcut ({EV_KEY_CONSTANTS}.key_e, True, False, False)
+		end
+
+	new_goto_home_shortcut: ES_KEY_SHORTCUT
+		do
+			Result := new_shortcut ({EV_KEY_CONSTANTS}.key_home, True, False, True)
+		end
+
+	new_goto_end_shortcut: ES_KEY_SHORTCUT
+		do
+			Result := new_shortcut ({EV_KEY_CONSTANTS}.key_end, True, False, False)
+		end
+
 feature -- Preference
 
 	edit_bp_here_shortcut_preference: SHORTCUT_PREFERENCE
@@ -172,6 +203,8 @@ feature {EB_SHARED_PREFERENCES, ES_DOCKABLE_TOOL_PANEL} -- Preference
 	watch_tools_layout_preference: ARRAY_PREFERENCE
 	move_up_watch_expression_shortcut_preference: SHORTCUT_PREFERENCE
 	move_down_watch_expression_shortcut_preference: SHORTCUT_PREFERENCE
+	show_debug_tooltip_preference: BOOLEAN_PREFERENCE
+	show_debug_tooltip_delay_preference: INTEGER_PREFERENCE
 
 	objects_tool_layout_preference: ARRAY_PREFERENCE
 
@@ -252,6 +285,8 @@ feature -- Preference Strings
 	show_text_in_project_toolbar_string: STRING = "debugger.show_text_in_project_toolbar"
 	show_all_text_in_project_toolbar_string: STRING = "debugger.show_all_text_in_project_toolbar"
 	always_show_callstack_tool_when_stopping_string: STRING = "debugger.always_show_callstack_tool_when_stopping"
+	show_debug_tooltip_string: STRING = "debugger.show_debug_tooltip"
+	show_debug_tooltip_delay_string: STRING = "debugger.show_debug_tooltip_delay"
 	default_expanded_view_size_string: STRING = "debugger.default_expanded_view_size"
 	move_up_watch_expression_shortcut_string: STRING = "debugger.shortcuts.move_up_watch_expression"
 	move_down_watch_expression_shortcut_string: STRING = "debugger.shortcuts.move_down_watch_expression"
@@ -294,6 +329,16 @@ feature {NONE} -- Implementation
 			objects_tool_layout_preference := l_manager.new_array_preference_value (l_manager, objects_tool_layout_string, <<>>)
 			watch_tools_layout_preference := l_manager.new_array_preference_value (l_manager, watch_tools_layout_string, <<>>)
 			always_show_callstack_tool_when_stopping_preference := l_manager.new_boolean_preference_value (l_manager, always_show_callstack_tool_when_stopping_string, True)
+			show_debug_tooltip_preference := l_manager.new_boolean_preference_value (l_manager, show_debug_tooltip_string, True)
+			show_debug_tooltip_delay_preference := l_manager.new_integer_preference_value (l_manager, show_debug_tooltip_delay_string, 500)
+			show_debug_tooltip_delay_preference.set_validation_agent (
+					agent (a_str: READABLE_STRING_GENERAL): BOOLEAN
+						do
+							if a_str /= Void then
+								Result := a_str.is_integer and then a_str.to_integer >= 0
+							end
+						end
+				)
 
 			move_up_watch_expression_shortcut_preference := l_manager.new_shortcut_preference_value (l_manager, move_up_watch_expression_shortcut_string, [True, False, True, "up"])
 			move_down_watch_expression_shortcut_preference := l_manager.new_shortcut_preference_value (l_manager, move_down_watch_expression_shortcut_string,  [True, False, True, "down"])
@@ -302,6 +347,12 @@ feature {NONE} -- Implementation
 			enable_remove_bp_here_shortcut_preference := l_manager.new_shortcut_preference_value (l_manager, enable_remove_here_shortcut_string,  [False, False, False, "F9"])
 			enable_disable_bp_here_shortcut_preference := l_manager.new_shortcut_preference_value (l_manager, enable_disable_bp_here_shortcut_string,  [False, False, True, "F9"])
 			run_to_this_point_shortcut_preference := l_manager.new_shortcut_preference_value (l_manager, run_to_this_point_shortcut_string,  [False, True, False, "F10"])
+		end
+
+	new_shortcut (a_key: INTEGER; a_ctrl, a_alt, a_shift: BOOLEAN): ES_KEY_SHORTCUT
+			-- Create new shortcut from arguments
+		do
+			create Result.make_with_key_combination (create {EV_KEY}.make_with_code (a_key), a_ctrl, a_alt, a_shift)
 		end
 
 	preferences: PREFERENCES
@@ -336,7 +387,7 @@ invariant
 	always_show_callstack_tool_when_stopping_preference_not_void: always_show_callstack_tool_when_stopping_preference /= Void
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
