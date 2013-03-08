@@ -12,6 +12,8 @@ inherit
 
 	E2B_TRANSLATION_UNIT
 
+	E2B_HELPER
+
 create
 	make
 
@@ -45,8 +47,10 @@ feature -- Basic operations
 		local
 			l_translator: E2B_ROUTINE_TRANSLATOR
 		do
-			create l_translator.make
-			l_translator.translate_routine_implementation (routine, type)
+			if boolean_feature_note_value (routine, "skip") = False then
+				create l_translator.make
+				l_translator.translate_routine_implementation (routine, type)
+			end
 		end
 
 end

@@ -387,6 +387,14 @@ axiom (forall r: real :: { real_to_integer_64(r) } is_integer_64(int(r)) ==> rea
 axiom (forall r: real :: { real_to_integer_64(r) } (!is_integer_64(int(r)) && r < 0.0) ==> real_to_integer_64(r) == -9223372036854775808);
 axiom (forall r: real :: { real_to_integer_64(r) } (!is_integer_64(int(r)) && r > 0.0) ==> real_to_integer_64(r) ==  9223372036854775807);
 
+// Arithmetic functions
+
+function add(a, b: int): int { a + b }
+function subtract(a, b: int): int { a - b }
+function multiply(a, b: int): int { a * b }
+function modulo(a, b: int): int { a mod b }
+function divide(a, b: int): int { a div b }
+
 // Expanded types
 
 type unknown;

@@ -18,8 +18,8 @@ feature {NONE} -- Initialization
 		do
 			is_reverification_with_inlining_enabled := False
 			is_inlining_enabled := True
-			is_automatic_inlining_enabled := False
-			is_automatic_loop_unrolling_enabled := False
+			is_automatic_inlining_enabled := True
+			is_automatic_loop_unrolling_enabled := True
 			is_sound_loop_unrolling_enabled := True
 			is_precondition_predicate_enabled := False
 			is_postcondition_predicate_enabled := True
@@ -47,7 +47,7 @@ feature -- Inlining options
 	inlining_depth: INTEGER
 			-- Current inlining depth.
 
-	max_recursive_inlining_depth: INTEGER = 3
+	max_recursive_inlining_depth: INTEGER = 4
 			-- Maximum inlining depth for inlining recursive features.
 
 	set_inlining_depth (a_value: INTEGER)

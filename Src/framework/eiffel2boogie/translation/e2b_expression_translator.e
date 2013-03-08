@@ -182,7 +182,25 @@ feature -- Visitors
 
 	process_array_const_b (a_node: ARRAY_CONST_B)
 			-- <Precursor>
+		local
+			i, n: INTEGER
+			l_expr: EXPR_B
 		do
+				-- Create array
+
+				-- Put all elements into array
+			if a_node.expressions /= Void then
+				n := a_node.expressions.count
+			end
+			from
+				i := 1
+			until
+				i > n
+			loop
+				l_expr ?= a_node.expressions.i_th (i)
+				check l_expr /= Void end
+				i := i + 1
+			end
 			last_expression := dummy_node (a_node.type)
 		end
 
@@ -215,7 +233,12 @@ feature -- Visitors
 				check l_right.type.is_set end
 				last_expression := factory.function_call ("Set#Equal", << l_left, l_right >>, l_type)
 			else
-				create {IV_BINARY_OPERATION} last_expression.make (l_left, a_operator, l_right, l_type)
+					-- TODO: REFACTOR
+				if a_operator ~ "+" then
+					last_expression := factory.function_call ("add", << l_left, l_right >>, types.int)
+				else
+					create {IV_BINARY_OPERATION} last_expression.make (l_left, a_operator, l_right, l_type)
+				end
 				if
 					options.is_checking_overflow and then
 					(a_node.left.type.is_integer or a_node.left.type.is_natural) and then

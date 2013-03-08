@@ -31,8 +31,8 @@ procedure ARRAY.put<alpha>(a: ref, item: alpha, pos: int);
 	ensures fun.ARRAY.item(Heap, a, pos) == item;
 	ensures Heap[a, area][pos] == item;
 	modifies Heap;
-	ensures (forall<beta> o: ref, f: Field beta :: (o != a || f != area) ==> (Heap[o, f] == old(Heap)[o, f]));
-	ensures (forall i: int :: (fun.ARRAY.is_index(Heap, a, i) && i != pos) ==> fun.ARRAY.item(Heap, a, i) == old(fun.ARRAY.item(Heap, a, i)));
+	ensures (forall<beta> o: ref, f: Field beta :: { Heap[o, f] } (o != a || f != area) ==> (Heap[o, f] == old(Heap)[o, f]));
+	ensures (forall i: int :: { fun.ARRAY.item(Heap, a, i) } { Heap[a, area][i] } (fun.ARRAY.is_index(Heap, a, i) && i != pos) ==> fun.ARRAY.item(Heap, a, i) == old(fun.ARRAY.item(Heap, a, i)));
 
 procedure ARRAY.make(
 			c: ref where (c != Void && Heap[c, allocated]),
@@ -56,6 +56,8 @@ procedure ARRAY.make_filled<alpha>(
 	requires u >= 0; // pre tag:upper_not_negative
 	ensures Heap[c, ARRAY.count] == u;
 	ensures ARRAY.inv(Heap, c);
+	ensures (forall i: int :: { Heap[c, area][i] } { fun.ARRAY.item(Heap, c, i) } Heap[c, area][i] == d);
+	ensures (forall i: int :: { Heap[c, area][i] } { fun.ARRAY.item(Heap, c, i) } fun.ARRAY.item(Heap, c, i) == d);
 	modifies Heap;
 	ensures (forall<beta> o: ref, f: Field beta :: ((o != c) || (f == allocated)) ==> (Heap[o, f] == old(Heap)[o, f]));
 

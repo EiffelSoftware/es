@@ -611,7 +611,8 @@ feature {NONE} -- Implementation
 				elseif helper.integer_feature_note_value (a_feature, "inline") > 0 then
 					options.set_inlining_depth (helper.integer_feature_note_value (a_feature, "inline"))
 				elseif options.routines_to_inline.has (a_feature.body_index) then
-					options.set_inlining_depth (1)
+-- TODO: set back to 1
+					options.set_inlining_depth (2)
 				else
 					options.set_inlining_depth (0)
 				end

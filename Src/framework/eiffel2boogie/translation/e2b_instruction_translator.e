@@ -203,9 +203,6 @@ feature -- Processing
 			-- <Precursor>
 		local
 			l_assert: ASSERT_B
-			l_statement: IV_ASSERT
-			l_assume: IV_ASSUME
-			l_info: IV_ASSERTION_INFORMATION
 		do
 			if a_node.check_list /= Void then
 				from
@@ -215,24 +212,55 @@ feature -- Processing
 				loop
 					l_assert ?= a_node.check_list.item
 					check l_assert /= Void end
-					set_current_origin_information (l_assert)
-
-					process_expression (l_assert.expr)
-					if attached l_assert.tag and then l_assert.tag.is_case_insensitive_equal ("assume") then
-						create l_assume.make (last_expression)
-						add_statement (l_assume)
-					else
-						create l_statement.make (last_expression)
-						create l_info.make ("check")
-						l_info.set_tag (l_assert.tag)
-						l_info.set_line (l_assert.line_number)
-						l_statement.set_information (l_info)
-						add_statement (l_statement)
-					end
-
+					process_single_check (l_assert)
 					a_node.check_list.forth
 				end
 			end
+		end
+
+	process_single_check (a_assert: ASSERT_B)
+			-- Process single check statement.
+		local
+			l_statement: IV_ASSERT
+			l_assume: IV_ASSUME
+			l_info: IV_ASSERTION_INFORMATION
+			l_array: ARRAY_CONST_B
+			l_other: EXPR_B
+		do
+			if attached {BIN_TILDE_B} a_assert.expr as l_tilde then
+				if attached {ARRAY_CONST_B} l_tilde.left as i then
+					l_array := i
+					l_other := l_tilde.right
+				elseif attached {ARRAY_CONST_B} l_tilde.right then
+					l_array := i
+					l_other := l_tilde.left
+				end
+			end
+			if l_array /= Void then
+				check l_other.type.base_class.name.same_string ("ARRAY") end
+				process_array_content_check (a_assert, l_array, l_other)
+			else
+				set_current_origin_information (a_assert)
+				process_contract_expression (a_assert.expr)
+--				process_expression (a_assert.expr)
+				if attached a_assert.tag and then a_assert.tag.is_case_insensitive_equal ("assume") then
+					create l_assume.make (last_expression)
+					add_statement (l_assume)
+				else
+					create l_statement.make (last_expression)
+					create l_info.make ("check")
+					l_info.set_tag (a_assert.tag)
+					l_info.set_line (a_assert.line_number)
+					l_statement.set_information (l_info)
+					add_statement (l_statement)
+				end
+			end
+		end
+
+	process_array_content_check (a_assert: ASSERT_B; a_array: ARRAY_CONST_B; a_other: EXPR_B)
+			-- Process a check instruction comparing array contents.
+		do
+
 		end
 
 	process_debug_b (a_node: DEBUG_B)
@@ -301,7 +329,7 @@ feature -- Processing
 
 						-- else block
 					current_block := l_nested_if.else_block
-					
+
 					i := i + 1
 				end
 			end

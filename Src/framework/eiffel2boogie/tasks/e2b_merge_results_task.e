@@ -61,6 +61,9 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 								elseif attached {E2B_FAILED_VERIFICATION} l_primary_result as l_primary_failed then
 									across l_primary_failed.errors as l_errors loop
 										l_second_success.add_original_error (l_errors.item)
+										if attached {E2B_PRECONDITION_VIOLATION} l_errors.item then
+											l_second_success.set_suggestion ("You might need to weaken the precondition.")
+										end
 									end
 									primary_verifier.last_result.procedure_results.remove
 								else

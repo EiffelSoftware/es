@@ -20,6 +20,9 @@ feature -- Access
 	original_errors: detachable LINKED_LIST [E2B_VERIFICATION_ERROR]
 			-- Original errors (if any)
 
+	suggestion: STRING
+			-- Suggestion for user.
+
 feature {E2B_MERGE_RESULTS_TASK} -- Element change
 
 	add_original_error (a_error: E2B_VERIFICATION_ERROR)
@@ -29,6 +32,12 @@ feature {E2B_MERGE_RESULTS_TASK} -- Element change
 				create original_errors.make
 			end
 			original_errors.extend (a_error)
+		end
+
+	set_suggestion (a_string: STRING)
+			-- Set `suggestion' to `a_string'.
+		do
+			suggestion := a_string.twin
 		end
 
 feature -- Display

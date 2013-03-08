@@ -545,6 +545,9 @@ feature {NONE} -- Basic operations
 					a_row.set_background_color (successful_color)
 
 					if attached {E2B_SUCCESSFUL_VERIFICATION} a_event_item.data as l_success then
+						if attached l_success.suggestion and then not l_success.suggestion.is_empty then
+							insert_subrow_for_suggestion (a_row, l_success.suggestion)
+						end
 						if attached l_success.original_errors then
 							across l_success.original_errors as l_errors loop
 								insert_subrow_for_error (a_row, l_errors.item)
@@ -629,6 +632,29 @@ feature {NONE} -- Basic operations
 			else
 				l_row.set_background_color (even_failed_sub_color)
 			end
+
+		end
+
+	insert_subrow_for_suggestion (a_parent: EV_GRID_ROW; a_suggestion: STRING)
+			-- Insert a new subrow into `a_parent' for `a_error'.
+		local
+			l_index: INTEGER
+			l_row: EV_GRID_ROW
+			l_text_gen: EB_EDITOR_TOKEN_GENERATOR
+			l_editor_item: EB_GRID_EDITOR_TOKEN_ITEM
+		do
+			l_index := a_parent.subrow_count + 1
+
+			a_parent.insert_subrow (l_index)
+			l_row := a_parent.subrow (l_index)
+			l_row.set_data (a_suggestion)
+
+			l_row.set_item (icon_column, create {EV_GRID_LABEL_ITEM})
+			l_row.set_item (class_column, create {EV_GRID_LABEL_ITEM})
+			l_row.set_item (feature_column, create {EV_GRID_LABEL_ITEM})
+			l_row.set_item (info_column, create {EV_GRID_LABEL_ITEM}.make_with_text (a_suggestion))
+
+			l_row.set_background_color (partial_color)
 
 		end
 
