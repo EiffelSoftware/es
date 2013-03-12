@@ -73,6 +73,7 @@ Documentation/tools/web/trunk/misc/patches/eiffel.php -text
 Documentation/tools/web/trunk/misc/patches/htaccess -text
 Documentation/tools/web/trunk/misc/patches/trash.module -text
 Documentation/tools/xmldoc2wiki/README.txt -text
+/README -text
 Src/.git-svn/readme.txt -text
 Src/.git-svn/scm -text
 Src/.git-svn/users.txt -text
