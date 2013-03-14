@@ -4911,7 +4911,6 @@ eweasel/tests/syntax008/notes -text
 eweasel/tests/syntax009/notes -text
 eweasel/tests/syntax010/notes -text
 eweasel/tests/syntax011/notes -text
-eweasel/tests/syntax012/notes -text
 eweasel/tests/syntax013/notes -text
 eweasel/tests/syntax014/notes -text
 eweasel/tests/syntax015/notes -text
@@ -5087,7 +5086,6 @@ eweasel/tests/valid005/notes -text
 eweasel/tests/valid006/notes -text
 eweasel/tests/valid007/notes -text
 eweasel/tests/valid008/notes -text
-eweasel/tests/valid009/notes -text
 eweasel/tests/valid010/notes -text
 eweasel/tests/valid011/notes -text
 eweasel/tests/valid012/notes -text
@@ -5122,16 +5120,13 @@ eweasel/tests/valid040/notes -text
 eweasel/tests/valid041/notes -text
 eweasel/tests/valid042/notes -text
 eweasel/tests/valid043/notes -text
-eweasel/tests/valid044/notes -text
 eweasel/tests/valid045/notes -text
 eweasel/tests/valid046/notes -text
 eweasel/tests/valid047/notes -text
 eweasel/tests/valid048/notes -text
 eweasel/tests/valid049/notes -text
 eweasel/tests/valid050/notes -text
-eweasel/tests/valid051/notes -text
 eweasel/tests/valid052/notes -text
-eweasel/tests/valid053/notes -text
 eweasel/tests/valid054/notes -text
 eweasel/tests/valid055/notes -text
 eweasel/tests/valid056/notes -text
@@ -5211,8 +5206,6 @@ eweasel/tests/valid131/notes -text
 eweasel/tests/valid132/notes -text
 eweasel/tests/valid133/notes -text
 eweasel/tests/valid134/notes -text
-eweasel/tests/valid135/notes -text
-eweasel/tests/valid136/notes -text
 eweasel/tests/valid137/notes -text
 eweasel/tests/valid138/notes -text
 eweasel/tests/valid139/notes -text
