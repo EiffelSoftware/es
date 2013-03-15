@@ -47,9 +47,6 @@ inherit
 			process_bin_tilde_as,
 			process_bin_xor_as,
 			process_binary_as,
-			process_bit_const_as,
-			process_bits_as,
-			process_bits_symbol_as,
 			process_body_as,
 			process_bool_as,
 			process_bracket_as,
@@ -344,13 +341,6 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 			post_process_bool_as (l_as)
 		end
 
-	process_bit_const_as (l_as: BIT_CONST_AS)
-		do
-			pre_process_bit_const_as (l_as)
-			Precursor (l_as)
-			post_process_bit_const_as (l_as)
-		end
-
 	process_array_as (l_as: ARRAY_AS)
 		do
 			pre_process_array_as (l_as)
@@ -608,20 +598,6 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 			pre_process_none_type_as (l_as)
 			Precursor (l_as)
 			post_process_none_type_as (l_as)
-		end
-
-	process_bits_as (l_as: BITS_AS)
-		do
-			pre_process_bits_as (l_as)
-			Precursor (l_as)
-			post_process_bits_as (l_as)
-		end
-
-	process_bits_symbol_as (l_as: BITS_SYMBOL_AS)
-		do
-			pre_process_bits_symbol_as (l_as)
-			Precursor (l_as)
-			post_process_bits_symbol_as (l_as)
 		end
 
 	process_rename_as (l_as: RENAME_AS)

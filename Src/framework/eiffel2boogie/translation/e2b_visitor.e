@@ -202,12 +202,6 @@ feature {BYTE_NODE} -- Visitors
 			safe_process (a_node.right)
 		end
 
-	process_bit_const_b (a_node: BIT_CONST_B)
-			-- Process `a_node'.
-		do
-			-- No subnode
-		end
-
 	process_bool_const_b (a_node: BOOL_CONST_B)
 			-- Process `a_node'.
 		do

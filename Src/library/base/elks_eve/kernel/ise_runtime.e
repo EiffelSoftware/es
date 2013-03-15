@@ -114,7 +114,7 @@ feature -- Internal C routines
 	frozen attached_type (a_type_id: INTEGER): INTEGER
 			-- Attached version of `a_type'
 		external
-			"C inline  use %"eif_gen_conf.h%""
+			"C inline use %"eif_gen_conf.h%""
 		alias
 			"return eif_attached_type((EIF_TYPE_INDEX) $a_type_id)"
 		end
@@ -161,16 +161,12 @@ feature -- Internal support
 
 	frozen reference_field_at_offset (a_enclosing: ANY; a_physical_offset: INTEGER): ANY
 			-- Retrieve the reference field of `a_enclosing' located at `a_physical_offset' bytes.
-			--| Partial precondition because `a_physical_offset' should be at least a proper value
-			--| with respect to alignment.
 		external
 			"built_in static"
 		end
 
 	frozen dynamic_type_at_offset (a_enclosing: ANY; a_physical_offset: INTEGER): INTEGER_32
 			-- Dynamic type of the field at `a_physical_offset' bytes from `a_enclosing'.
-			--| Partial precondition because `a_physical_offset' should be at least a proper value
-			--| with respect to alignment.
 		external
 			"built_in static"
 		end
@@ -221,181 +217,181 @@ feature -- Internal support
 			"built_in static"
 		end
 
-	frozen reference_field (i: INTEGER; a_object: ANY; a_physical_offset: INTEGER): detachable ANY
+	frozen reference_field (i: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): detachable ANY
 			-- Reference value of `i'-th field of `object + a_physical_offset'
 		external
 			"built_in static"
 		end
 
-	frozen character_8_field (i: INTEGER; a_object: ANY; a_physical_offset: INTEGER): CHARACTER_8
+	frozen character_8_field (i: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): CHARACTER_8
 			-- Character value of `i'-th field of `object + a_physical_offset'
 		external
 			"built_in static"
 		end
 
-	frozen character_32_field (i: INTEGER; a_object: ANY; a_physical_offset: INTEGER): CHARACTER_32
+	frozen character_32_field (i: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): CHARACTER_32
 			-- Character value of `i'-th field of `object + a_physical_offset'
 		external
 			"built_in static"
 		end
 
-	frozen boolean_field (i: INTEGER; a_object: ANY; a_physical_offset: INTEGER): BOOLEAN
+	frozen boolean_field (i: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): BOOLEAN
 			-- Boolean value of `i'-th field of `object + a_physical_offset'
 		external
 			"built_in static"
 		end
 
-	frozen natural_8_field (i: INTEGER; a_object: ANY; a_physical_offset: INTEGER): NATURAL_8
+	frozen natural_8_field (i: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): NATURAL_8
 			-- NATURAL_8 value of `i'-th field of `object + a_physical_offset'
 		external
 			"built_in static"
 		end
 
-	frozen natural_16_field (i: INTEGER; a_object: ANY; a_physical_offset: INTEGER): NATURAL_16
+	frozen natural_16_field (i: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): NATURAL_16
 			-- NATURAL_16 value of `i'-th field of `object + a_physical_offset'
 		external
 			"built_in static"
 		end
 
-	frozen natural_32_field (i: INTEGER; a_object: ANY; a_physical_offset: INTEGER): NATURAL_32
+	frozen natural_32_field (i: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): NATURAL_32
 			-- NATURAL_32 value of `i'-th field of `object + a_physical_offset'
 		external
 			"built_in static"
 		end
 
-	frozen natural_64_field (i: INTEGER; a_object: ANY; a_physical_offset: INTEGER): NATURAL_64
+	frozen natural_64_field (i: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): NATURAL_64
 			-- NATURAL_64 value of `i'-th field of `object + a_physical_offset'
 		external
 			"built_in static"
 		end
 
-	frozen integer_8_field (i: INTEGER; a_object: ANY; a_physical_offset: INTEGER): INTEGER_8
+	frozen integer_8_field (i: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): INTEGER_8
 			-- Integer value of `i'-th field of `object + a_physical_offset'
 		external
 			"built_in static"
 		end
 
-	frozen integer_16_field (i: INTEGER; a_object: ANY; a_physical_offset: INTEGER): INTEGER_16
+	frozen integer_16_field (i: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): INTEGER_16
 			-- Integer value of `i'-th field of `object + a_physical_offset'
 		external
 			"built_in static"
 		end
 
-	frozen integer_32_field (i: INTEGER; a_object: ANY; a_physical_offset: INTEGER): INTEGER
+	frozen integer_32_field (i: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): INTEGER
 			-- Integer value of `i'-th field of `object + a_physical_offset'
 		external
 			"built_in static"
 		end
 
-	frozen integer_64_field (i: INTEGER; a_object: ANY; a_physical_offset: INTEGER): INTEGER_64
+	frozen integer_64_field (i: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): INTEGER_64
 			-- Integer value of `i'-th field of `object + a_physical_offset'
 		external
 			"built_in static"
 		end
 
-	frozen real_32_field (i: INTEGER; a_object: ANY; a_physical_offset: INTEGER): REAL
+	frozen real_32_field (i: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): REAL
 			-- Real value of `i'-th field of `object + a_physical_offset'
 		external
 			"built_in static"
 		end
 
-	frozen pointer_field (i: INTEGER; a_object: ANY; a_physical_offset: INTEGER): POINTER
+	frozen pointer_field (i: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): POINTER
 			-- Pointer value of `i'-th field of `object + a_physical_offset'
 		external
 			"built_in static"
 		end
 
-	frozen real_64_field (i: INTEGER; a_object: ANY; a_physical_offset: INTEGER): REAL_64
+	frozen real_64_field (i: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): REAL_64
 			-- Double precision value of `i'-th field of `object + a_physical_offset'
 		external
 			"built_in static"
 		end
 
-	frozen reference_field_at (field_offset: INTEGER; a_object: ANY; a_physical_offset: INTEGER): detachable ANY
+	frozen reference_field_at (field_offset: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): detachable ANY
 			-- Reference value of the field at `field_offset' in object `a_object + a_physical_offset'.
 		external
 			"built_in static"
 		end
 
-	frozen character_8_field_at (field_offset: INTEGER; a_object: ANY; a_physical_offset: INTEGER): CHARACTER_8
+	frozen character_8_field_at (field_offset: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): CHARACTER_8
 			-- Character value of the field at `field_offset' in object `a_object + a_physical_offset'.
 		external
 			"built_in static"
 		end
 
-	frozen character_32_field_at (field_offset: INTEGER; a_object: ANY; a_physical_offset: INTEGER): CHARACTER_32
+	frozen character_32_field_at (field_offset: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): CHARACTER_32
 			-- Character value of the field at `field_offset' in object `a_object + a_physical_offset'.
 		external
 			"built_in static"
 		end
 
-	frozen boolean_field_at (field_offset: INTEGER; a_object: ANY; a_physical_offset: INTEGER): BOOLEAN
+	frozen boolean_field_at (field_offset: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): BOOLEAN
 			-- Boolean value of the field at `field_offset' in object `a_object + a_physical_offset'.
 		external
 			"built_in static"
 		end
 
-	frozen natural_8_field_at (field_offset: INTEGER; a_object: ANY; a_physical_offset: INTEGER): NATURAL_8
+	frozen natural_8_field_at (field_offset: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): NATURAL_8
 			-- NATURAL_8 value of the field at `field_offset' in object `a_object + a_physical_offset'.
 		external
 			"built_in static"
 		end
 
-	frozen natural_16_field_at (field_offset: INTEGER; a_object: ANY; a_physical_offset: INTEGER): NATURAL_16
+	frozen natural_16_field_at (field_offset: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): NATURAL_16
 			-- NATURAL_16 value of the field at `field_offset' in object `a_object + a_physical_offset'.
 		external
 			"built_in static"
 		end
 
-	frozen natural_32_field_at (field_offset: INTEGER; a_object: ANY; a_physical_offset: INTEGER): NATURAL_32
+	frozen natural_32_field_at (field_offset: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): NATURAL_32
 			-- NATURAL_32 value of the field at `field_offset' in object `a_object + a_physical_offset'.
 		external
 			"built_in static"
 		end
 
-	frozen natural_64_field_at (field_offset: INTEGER; a_object: ANY; a_physical_offset: INTEGER): NATURAL_64
+	frozen natural_64_field_at (field_offset: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): NATURAL_64
 			-- NATURAL_64 value of the field at `field_offset' in object `a_object + a_physical_offset'.
 		external
 			"built_in static"
 		end
 
-	frozen integer_8_field_at (field_offset: INTEGER; a_object: ANY; a_physical_offset: INTEGER): INTEGER_8
+	frozen integer_8_field_at (field_offset: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): INTEGER_8
 			-- Integer value of the field at `field_offset' in object `a_object + a_physical_offset'.
 		external
 			"built_in static"
 		end
 
-	frozen integer_16_field_at (field_offset: INTEGER; a_object: ANY; a_physical_offset: INTEGER): INTEGER_16
+	frozen integer_16_field_at (field_offset: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): INTEGER_16
 			-- Integer value of the field at `field_offset' in object `a_object + a_physical_offset'.
 		external
 			"built_in static"
 		end
 
-	frozen integer_32_field_at (field_offset: INTEGER; a_object: ANY; a_physical_offset: INTEGER): INTEGER
+	frozen integer_32_field_at (field_offset: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): INTEGER
 			-- Integer value of the field at `field_offset' in object `a_object + a_physical_offset'.
 		external
 			"built_in static"
 		end
 
-	frozen integer_64_field_at (field_offset: INTEGER; a_object: ANY; a_physical_offset: INTEGER): INTEGER_64
+	frozen integer_64_field_at (field_offset: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): INTEGER_64
 			-- Integer value of the field at `field_offset' in object `a_object + a_physical_offset'.
 		external
 			"built_in static"
 		end
 
-	frozen real_32_field_at (field_offset: INTEGER; a_object: ANY; a_physical_offset: INTEGER): REAL
+	frozen real_32_field_at (field_offset: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): REAL
 			-- Real value of the field at `field_offset' in object `a_object + a_physical_offset'.
 		external
 			"built_in static"
 		end
 
-	frozen pointer_field_at (field_offset: INTEGER; a_object: ANY; a_physical_offset: INTEGER): POINTER
+	frozen pointer_field_at (field_offset: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): POINTER
 			-- Pointer value of the field at `field_offset' in object `a_object + a_physical_offset'.
 		external
 			"built_in static"
 		end
 
-	frozen real_64_field_at (field_offset: INTEGER; a_object: ANY; a_physical_offset: INTEGER): REAL_64
+	frozen real_64_field_at (field_offset: INTEGER; a_object: POINTER; a_physical_offset: INTEGER): REAL_64
 			-- Double precision value of the field at `field_offset' in object `a_object + a_physical_offset'.
 		external
 			"built_in static"

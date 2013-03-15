@@ -13,7 +13,6 @@ inherit
 			process_integer_as,
 			process_real_as,
 			process_char_as,
-			process_bit_const_as,
 			process_bool_as,
 			process_feature_as,
 			process_routine_as
@@ -84,11 +83,6 @@ feature {AST_EIFFEL} -- Roundtrip
 			process_constant (l_as)
 		end
 
-	process_bit_const_as (l_as: BIT_CONST_AS)
-		do
-			process_constant (l_as)
-		end
-
 	process_integer_as (l_as: INTEGER_AS)
 		do
 			process_constant (l_as)
@@ -115,7 +109,7 @@ feature {AST_EIFFEL} -- Roundtrip
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

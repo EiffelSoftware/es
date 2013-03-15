@@ -231,7 +231,7 @@ feature -- Processing
 				if attached {ARRAY_CONST_B} l_tilde.left as i then
 					l_array := i
 					l_other := l_tilde.right
-				elseif attached {ARRAY_CONST_B} l_tilde.right then
+				elseif attached {ARRAY_CONST_B} l_tilde.right as i then
 					l_array := i
 					l_other := l_tilde.left
 				end

@@ -738,7 +738,6 @@ feature {TBON_CLASS} -- Expression handling
 			l_constant: TBON_CONSTANT_EXPRESSION
 			l_string_value: STRING_32
 			-- Assignment attempts
-			l_bit_const: BIT_CONST_AS
 			l_bool: BOOL_AS
 			l_char: CHAR_AS
 			l_id: ID_AS
@@ -748,7 +747,6 @@ feature {TBON_CLASS} -- Expression handling
 			l_string: STRING_AS
 			l_unique: UNIQUE_AS
 		do
-			l_bit_const ?= l_atomic_as
 			l_bool ?= l_atomic_as
 			l_char ?= l_atomic_as
 			l_id ?= l_atomic_as
@@ -760,9 +758,7 @@ feature {TBON_CLASS} -- Expression handling
 
 			l_string_value := ""
 
-			if l_bit_const /= Void then
-				l_string_value := l_bit_const.value.string_value_32
-			elseif l_bool /= Void then
+			if l_bool /= Void then
 				if l_bool.value then
 					l_string_value := "True" -- ITUFIXME42 shouldn't this come from ti or bti?
 				else
@@ -1149,7 +1145,7 @@ invariant
 
 
 ;note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -70,7 +70,6 @@ inherit
 			process_export_item_as,
 			process_all_as,
 			process_feature_name_alias_as,
-			process_bits_as,
 			process_class_type_as,
 			process_generic_class_type_as,
 			process_formal_as,
@@ -92,7 +91,6 @@ inherit
 			process_agent_routine_creation_as,
 			process_attribute_as,
 			process_index_as,
-			process_bit_const_as,
 			process_array_as,
 			process_nested_expr_as,
 			process_precursor_as,
@@ -291,12 +289,6 @@ feature -- Output
 		end
 
 feature {AST_EIFFEL} -- Roundtrip: Atomic
-
-	process_bit_const_as (l_as: BIT_CONST_AS)
-		do
-			output.append_string (l_as.value.name)
-			output.append_string ("b")
-		end
 
 	process_bool_as (l_as: BOOL_AS)
 		do
@@ -747,12 +739,6 @@ feature {AST_EIFFEL} -- Roundtrip: Contracts
 		end
 
 feature {AST_EIFFEL} -- Roundtrip: Types
-
-	process_bits_as (l_as: BITS_AS)
-		do
-			output.append_string (ti_Bit_class+ti_Space)
-			process(l_as.bits_value, l_as, 1)
-		end
 
 	process_none_type_as (l_as: NONE_TYPE_AS)
 		do

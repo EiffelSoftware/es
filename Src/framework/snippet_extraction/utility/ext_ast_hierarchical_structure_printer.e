@@ -47,9 +47,6 @@ inherit
 			pre_process_bin_tilde_as,
 			pre_process_bin_xor_as,
 			pre_process_binary_as,
-			pre_process_bit_const_as,
-			pre_process_bits_as,
-			pre_process_bits_symbol_as,
 			pre_process_body_as,
 			pre_process_bool_as,
 			pre_process_bracket_as,
@@ -358,13 +355,6 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 			log.put_string ("%N")
 		end
 
-	pre_process_bit_const_as (l_as: BIT_CONST_AS)
-		do
-			safe_print_ast_path_prefix (l_as)
-			log.put_string ("bit_const_as")
-			log.put_string ("%N")
-		end
-
 	pre_process_array_as (l_as: ARRAY_AS)
 		do
 			safe_print_ast_path_prefix (l_as)
@@ -621,20 +611,6 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		do
 			safe_print_ast_path_prefix (l_as)
 			log.put_string ("none_type_as")
-			log.put_string ("%N")
-		end
-
-	pre_process_bits_as (l_as: BITS_AS)
-		do
-			safe_print_ast_path_prefix (l_as)
-			log.put_string ("bits_as")
-			log.put_string ("%N")
-		end
-
-	pre_process_bits_symbol_as (l_as: BITS_SYMBOL_AS)
-		do
-			safe_print_ast_path_prefix (l_as)
-			log.put_string ("bits_symbol_as")
 			log.put_string ("%N")
 		end
 

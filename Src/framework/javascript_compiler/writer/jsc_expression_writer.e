@@ -35,7 +35,6 @@ inherit
 			process_bin_slash_b,
 			process_bin_star_b,
 			process_bin_xor_b,
-			process_bit_const_b,
 			process_bool_const_b,
 			process_char_const_b,
 			process_constant_b,
@@ -422,13 +421,6 @@ feature {BYTE_NODE} -- Visitors
 			safe_process (a_node.left)
 			output.put (" ^ ")
 			safe_process (a_node.right)
-		end
-
-	process_bit_const_b (a_node: BIT_CONST_B)
-			-- Process `a_node'.
-		do
-				-- TODO: Raise error
-			io.put_string ("JSC_EXPRESSION_WRITER:: process_bit_const_b not supported %N")
 		end
 
 	process_bool_const_b (a_node: BOOL_CONST_B)

@@ -47,9 +47,6 @@ inherit
 			process_bin_tilde_as,
 			process_bin_xor_as,
 			process_binary_as,
-			process_bit_const_as,
-			process_bits_as,
-			process_bits_symbol_as,
 			process_body_as,
 			process_bool_as,
 			process_bracket_as,
@@ -339,11 +336,6 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 			if deny_set.has (node_bool_as) then passed_check := False else Precursor (l_as) end
 		end
 
-	process_bit_const_as (l_as: BIT_CONST_AS)
-		do
-			if deny_set.has (node_bit_const_as) then passed_check := False else Precursor (l_as) end
-		end
-
 	process_array_as (l_as: ARRAY_AS)
 		do
 			if deny_set.has (node_array_as) then passed_check := False else Precursor (l_as) end
@@ -527,16 +519,6 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 	process_none_type_as (l_as: NONE_TYPE_AS)
 		do
 			if deny_set.has (node_none_type_as) then passed_check := False else Precursor (l_as) end
-		end
-
-	process_bits_as (l_as: BITS_AS)
-		do
-			if deny_set.has (node_bits_as) then passed_check := False else Precursor (l_as) end
-		end
-
-	process_bits_symbol_as (l_as: BITS_SYMBOL_AS)
-		do
-			if deny_set.has (node_bits_symbol_as) then passed_check := False else Precursor (l_as) end
 		end
 
 	process_rename_as (l_as: RENAME_AS)

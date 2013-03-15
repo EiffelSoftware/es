@@ -47,9 +47,6 @@ inherit
 			process_bin_tilde_as,
 			process_bin_xor_as,
 			process_binary_as,
-			process_bit_const_as,
-			process_bits_as,
-			process_bits_symbol_as,
 			process_body_as,
 			process_bool_as,
 			process_bracket_as,
@@ -435,15 +432,6 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 			end
 		end
 
-	process_bit_const_as (l_as: BIT_CONST_AS)
-		do
-			if attached l_as.path as l_path and then holes_by_location.has (l_path) then
-				output.append_string (holes_by_location.at (l_path).hole_name)
-			else
-				Precursor (l_as)
-			end
-		end
-
 	process_array_as (l_as: ARRAY_AS)
 		do
 			if attached l_as.path as l_path and then holes_by_location.has (l_path) then
@@ -769,24 +757,6 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		end
 
 	process_none_type_as (l_as: NONE_TYPE_AS)
-		do
-			if attached l_as.path as l_path and then holes_by_location.has (l_path) then
-				output.append_string (holes_by_location.at (l_path).hole_name)
-			else
-				Precursor (l_as)
-			end
-		end
-
-	process_bits_as (l_as: BITS_AS)
-		do
-			if attached l_as.path as l_path and then holes_by_location.has (l_path) then
-				output.append_string (holes_by_location.at (l_path).hole_name)
-			else
-				Precursor (l_as)
-			end
-		end
-
-	process_bits_symbol_as (l_as: BITS_SYMBOL_AS)
 		do
 			if attached l_as.path as l_path and then holes_by_location.has (l_path) then
 				output.append_string (holes_by_location.at (l_path).hole_name)

@@ -133,8 +133,6 @@ feature {NONE} -- Implementation
 				Result := "BOOLEAN"
 			elseif attached {STRING_AS}a_ast or attached {VERBATIM_STRING_AS}a_ast then
 				Result := "STRING"
-			elseif attached {BIT_CONST_AS}a_ast as b then
-				Result := "BIT " + b.value.name.count.out
 			end
 		end
 
@@ -305,7 +303,7 @@ feature -- Operations
 			logger.log_info ("extract_constant complete")
 		end
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -40,7 +40,7 @@ feature {NONE} -- Initialization
 	make_for_expanded_field (a_enclosing_object: REFLECTED_OBJECT; i: INTEGER)
 			-- Setup a proxy to expanded field located at the `i'-th field of `a_enclosing_object'.
 		require
-			i_th_field_is_expanded: a_enclosing_object.is_field_expanded (i)
+			i_th_field_is_expanded: a_enclosing_object.is_field_statically_expanded (i)
 		do
 			enclosing_object := a_enclosing_object.enclosing_object
 				-- To compute the type ID of the object at the `i'-th field.
@@ -120,7 +120,7 @@ feature -- Status report
 			Result := {ISE_RUNTIME}.is_field_transient_of_type (i, dynamic_type)
 		end
 
-	is_field_expanded (i: INTEGER): BOOLEAN
+	is_field_statically_expanded (i: INTEGER): BOOLEAN
 			-- Is `i'-th field of `object' a user-defined expanded attribute?
 		require
 			index_large_enough: i >= 1
@@ -237,15 +237,18 @@ feature -- Access
 			not_special: not is_special
 			reference_field: field_type (i) = reference_type or field_type (i) = expanded_type
 		do
-			Result := {ISE_RUNTIME}.reference_field (i, enclosing_object, physical_offset)
+			Result := {ISE_RUNTIME}.reference_field (i, $enclosing_object, physical_offset)
 		end
 
-	meta_field (i: INTEGER): REFLECTED_OBJECT
-			-- Meta object representation of the `i'-th field of `object'
-			-- (directly or through a reference)
+	expanded_field (i: INTEGER): REFLECTED_OBJECT
+			-- Object representation of the `i'-th field of `object'
+			-- which is expanded. We provide a wrapper that enables
+			-- direct editing of the field without duplicating
+			-- the expanded object.
 		require
 			index_large_enough: i >= 1
 			index_small_enough: i <= field_count
+			expanded_field: field_type (i) = expanded_type
 			not_special: not is_special
 		do
 			create Result.make_for_expanded_field (Current, i)
@@ -302,7 +305,7 @@ feature -- Access
 			index_small_enough: i <= field_count
 			character_8_field: field_type (i) = Character_8_type
 		do
-			Result := {ISE_RUNTIME}.character_8_field (i, enclosing_object, physical_offset)
+			Result := {ISE_RUNTIME}.character_8_field (i, $enclosing_object, physical_offset)
 		end
 
 	character_32_field (i: INTEGER): CHARACTER_32
@@ -312,7 +315,7 @@ feature -- Access
 			index_small_enough: i <= field_count
 			character_32_field: field_type (i) = Character_32_type
 		do
-			Result := {ISE_RUNTIME}.character_32_field (i, enclosing_object, physical_offset)
+			Result := {ISE_RUNTIME}.character_32_field (i, $enclosing_object, physical_offset)
 		end
 
 	boolean_field (i: INTEGER): BOOLEAN
@@ -322,7 +325,7 @@ feature -- Access
 			index_small_enough: i <= field_count
 			boolean_field: field_type (i) = Boolean_type
 		do
-			Result := {ISE_RUNTIME}.boolean_field (i, enclosing_object, physical_offset)
+			Result := {ISE_RUNTIME}.boolean_field (i, $enclosing_object, physical_offset)
 		end
 
 	natural_8_field (i: INTEGER): NATURAL_8
@@ -332,7 +335,7 @@ feature -- Access
 			index_small_enough: i <= field_count
 			natural_8_field: field_type (i) = natural_8_type
 		do
-			Result := {ISE_RUNTIME}.natural_8_field (i, enclosing_object, physical_offset)
+			Result := {ISE_RUNTIME}.natural_8_field (i, $enclosing_object, physical_offset)
 		end
 
 	natural_16_field (i: INTEGER): NATURAL_16
@@ -342,7 +345,7 @@ feature -- Access
 			index_small_enough: i <= field_count
 			natural_16_field: field_type (i) = natural_16_type
 		do
-			Result := {ISE_RUNTIME}.natural_16_field (i, enclosing_object, physical_offset)
+			Result := {ISE_RUNTIME}.natural_16_field (i, $enclosing_object, physical_offset)
 		end
 
 	natural_32_field (i: INTEGER): NATURAL_32
@@ -352,7 +355,7 @@ feature -- Access
 			index_small_enough: i <= field_count
 			natural_32_field: field_type (i) = natural_32_type
 		do
-			Result := {ISE_RUNTIME}.natural_32_field (i, enclosing_object, physical_offset)
+			Result := {ISE_RUNTIME}.natural_32_field (i, $enclosing_object, physical_offset)
 		end
 
 	natural_64_field (i: INTEGER): NATURAL_64
@@ -362,7 +365,7 @@ feature -- Access
 			index_small_enough: i <= field_count
 			natural_64_field: field_type (i) = natural_64_type
 		do
-			Result := {ISE_RUNTIME}.natural_64_field (i, enclosing_object, physical_offset)
+			Result := {ISE_RUNTIME}.natural_64_field (i, $enclosing_object, physical_offset)
 		end
 
 	integer_8_field (i: INTEGER): INTEGER_8
@@ -372,7 +375,7 @@ feature -- Access
 			index_small_enough: i <= field_count
 			integer_8_field: field_type (i) = Integer_8_type
 		do
-			Result := {ISE_RUNTIME}.integer_8_field (i, enclosing_object, physical_offset)
+			Result := {ISE_RUNTIME}.integer_8_field (i, $enclosing_object, physical_offset)
 		end
 
 	integer_16_field (i: INTEGER): INTEGER_16
@@ -382,7 +385,7 @@ feature -- Access
 			index_small_enough: i <= field_count
 			integer_16_field: field_type (i) = Integer_16_type
 		do
-			Result := {ISE_RUNTIME}.integer_16_field (i, enclosing_object, physical_offset)
+			Result := {ISE_RUNTIME}.integer_16_field (i, $enclosing_object, physical_offset)
 		end
 
 	integer_32_field (i: INTEGER): INTEGER
@@ -392,7 +395,7 @@ feature -- Access
 			index_small_enough: i <= field_count
 			integer_32_field: field_type (i) = Integer_32_type
 		do
-			Result := {ISE_RUNTIME}.integer_32_field (i, enclosing_object, physical_offset)
+			Result := {ISE_RUNTIME}.integer_32_field (i, $enclosing_object, physical_offset)
 		end
 
 	integer_64_field (i: INTEGER): INTEGER_64
@@ -402,7 +405,7 @@ feature -- Access
 			index_small_enough: i <= field_count
 			integer_64_field: field_type (i) = Integer_64_type
 		do
-			Result := {ISE_RUNTIME}.integer_64_field (i, enclosing_object, physical_offset)
+			Result := {ISE_RUNTIME}.integer_64_field (i, $enclosing_object, physical_offset)
 		end
 
 	real_32_field (i: INTEGER): REAL
@@ -412,7 +415,7 @@ feature -- Access
 			index_small_enough: i <= field_count
 			real_32_field: field_type (i) = real_32_type
 		do
-			Result := {ISE_RUNTIME}.real_32_field (i, enclosing_object, physical_offset)
+			Result := {ISE_RUNTIME}.real_32_field (i, $enclosing_object, physical_offset)
 		end
 
 	pointer_field (i: INTEGER): POINTER
@@ -422,7 +425,7 @@ feature -- Access
 			index_small_enough: i <= field_count
 			pointer_field: field_type (i) = Pointer_type
 		do
-			Result := {ISE_RUNTIME}.pointer_field_at ({ISE_RUNTIME}.field_offset_of_type (i, dynamic_type), enclosing_object, physical_offset)
+			Result := {ISE_RUNTIME}.pointer_field (i, $enclosing_object, physical_offset)
 		end
 
 	real_64_field (i: INTEGER): REAL_64
@@ -432,7 +435,7 @@ feature -- Access
 			index_small_enough: i <= field_count
 			real_64_field: field_type (i) = real_64_type
 		do
-			Result := {ISE_RUNTIME}.real_64_field (i, enclosing_object, physical_offset)
+			Result := {ISE_RUNTIME}.real_64_field (i, $enclosing_object, physical_offset)
 		end
 
 feature -- Element change

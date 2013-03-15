@@ -107,10 +107,6 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		do
 		end
 
-	post_process_bit_const_as (l_as: BIT_CONST_AS)
-		do
-		end
-
 	post_process_array_as (l_as: ARRAY_AS)
 		do
 		end
@@ -256,14 +252,6 @@ feature {AST_EIFFEL} -- Skeleton Visitors
 		end
 
 	post_process_none_type_as (l_as: NONE_TYPE_AS)
-		do
-		end
-
-	post_process_bits_as (l_as: BITS_AS)
-		do
-		end
-
-	post_process_bits_symbol_as (l_as: BITS_SYMBOL_AS)
 		do
 		end
 
