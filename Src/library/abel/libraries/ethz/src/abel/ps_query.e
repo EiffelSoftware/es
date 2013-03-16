@@ -1,5 +1,8 @@
 note
-	description: "Represents a general query on objects of type G to a repository."
+	description:"[
+	Represents a general query on objects of type G to a repository.
+	To reuse a query object, invoke feature reset first.
+	]"
 	author: "Marco Piccioni"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -58,7 +61,7 @@ feature -- Basic operations
 		end
 
 	reset
-			-- Reset the query result, do not change criteron or projection.
+			-- Reset the query result, do not change criterion or projection.
 		do
 			transaction_impl := Void
 			create_result_cursor
