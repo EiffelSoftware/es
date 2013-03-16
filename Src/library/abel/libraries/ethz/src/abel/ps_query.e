@@ -62,6 +62,7 @@ feature -- Basic operations
 
 	reset
 			-- Reset the query result, do not change criterion or projection.
+			-- Invoke if you want to reuse current query.
 		do
 			transaction_impl := Void
 			create_result_cursor
