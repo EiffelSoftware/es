@@ -8034,7 +8034,6 @@ free_add_ons/gcc/win64/msys/1.0/bin/md5sum.exe -text
 free_add_ons/gcc/win64/msys/1.0/bin/mkdir.exe -text
 free_add_ons/gcc/win64/msys/1.0/bin/mount.exe -text
 free_add_ons/gcc/win64/msys/1.0/bin/msys-1.0.dll -text
-free_add_ons/gcc/win64/msys/1.0/bin/msysinfo -text
 free_add_ons/gcc/win64/msys/1.0/bin/mv.exe -text
 free_add_ons/gcc/win64/msys/1.0/bin/od.exe -text
 free_add_ons/gcc/win64/msys/1.0/bin/patch.exe -text
@@ -9030,7 +9029,6 @@ free_add_ons/gcc/windows/msys/1.0/bin/md5sum.exe -text
 free_add_ons/gcc/windows/msys/1.0/bin/mkdir.exe -text
 free_add_ons/gcc/windows/msys/1.0/bin/mount.exe -text
 free_add_ons/gcc/windows/msys/1.0/bin/msys-1.0.dll -text
-free_add_ons/gcc/windows/msys/1.0/bin/msysinfo -text
 free_add_ons/gcc/windows/msys/1.0/bin/mv.exe -text
 free_add_ons/gcc/windows/msys/1.0/bin/od.exe -text
 free_add_ons/gcc/windows/msys/1.0/bin/patch.exe -text
