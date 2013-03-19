@@ -24,6 +24,7 @@ feature {NONE} -- Initialization
 		do
 			expression := a_expression
 			create bound_variables.make
+			create triggers.make
 		end
 
 feature -- Access
@@ -33,6 +34,9 @@ feature -- Access
 
 	bound_variables: LINKED_LIST [IV_ENTITY_DECLARATION]
 			-- List of bound variables.
+
+	triggers: LINKED_LIST [IV_EXPRESSION]
+			-- List of triggers.
 
 	type: IV_TYPE
 			-- <Precursor>
@@ -46,6 +50,14 @@ feature -- Element change
 			-- Add a bound variable with name `a_name' and type `a_type'.
 		do
 			bound_variables.extend (create {IV_ENTITY_DECLARATION}.make (a_name, a_type))
+		end
+
+	add_trigger (a_expr: IV_EXPRESSION)
+			-- Add `a_expr' to triggers for this quantifier.
+		require
+			a_expr_attached: attached a_expr
+		do
+			triggers.extend (a_expr)
 		end
 
 invariant

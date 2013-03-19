@@ -182,25 +182,7 @@ feature -- Visitors
 
 	process_array_const_b (a_node: ARRAY_CONST_B)
 			-- <Precursor>
-		local
-			i, n: INTEGER
-			l_expr: EXPR_B
 		do
-				-- Create array
-
-				-- Put all elements into array
-			if a_node.expressions /= Void then
-				n := a_node.expressions.count
-			end
-			from
-				i := 1
-			until
-				i > n
-			loop
-				l_expr ?= a_node.expressions.i_th (i)
-				check l_expr /= Void end
-				i := i + 1
-			end
 			last_expression := dummy_node (a_node.type)
 		end
 
@@ -993,6 +975,30 @@ feature -- Translation
 			safe_process (a_parameters)
 			last_parameters := parameters_stack.item
 			parameters_stack.remove
+		end
+
+	process_argument_expression (a_expr: EXPR_B): IV_EXPRESSION
+			-- Process `a_expr' in the context of the routine.
+		local
+			l_context_type: CL_TYPE_A
+			l_target: IV_EXPRESSION
+			l_target_type: TYPE_A
+			l_last_expression: IV_EXPRESSION
+		do
+			l_target := current_target
+			l_target_type := current_target_type
+			l_last_expression := last_expression
+
+			current_target := entity_mapping.current_entity
+			current_target_type := context_type
+			last_expression := Void
+
+			safe_process (a_expr)
+			Result := last_expression
+
+			last_expression := l_last_expression
+			current_target := l_target
+			current_target_type := l_target_type
 		end
 
 feature {E2B_ACROSS_HANDLER, E2B_CUSTOM_CALL_HANDLER, E2B_CUSTOM_NESTED_HANDLER} -- Implementation

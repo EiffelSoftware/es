@@ -626,6 +626,11 @@ feature -- Other
 				process_entity_declaration (i.item)
 			end
 			output.put (" :: ")
+			across a_quantifier.triggers as i loop
+				output.put ("{ ")
+				i.item.process (Current)
+				output.put (" } ")
+			end
 			a_quantifier.expression.process (Current)
 			output.put (")")
 		end

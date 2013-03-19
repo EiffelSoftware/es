@@ -13,6 +13,7 @@ inherit
 	E2B_EXPRESSION_TRANSLATOR
 		redefine
 			reset,
+			process_array_const_b,
 			process_creation_expr_b,
 			process_tuple_access_b,
 			process_tuple_const_b
@@ -47,6 +48,54 @@ feature -- Basic operations
 		end
 
 feature -- Visitors
+
+	process_array_const_b (a_node: ARRAY_CONST_B)
+			-- <Precursor>
+		local
+			i, n: INTEGER
+			l_expr: EXPR_B
+			l_target: IV_EXPRESSION
+			l_pcall: IV_PROCEDURE_CALL
+			l_assign: IV_ASSIGNMENT
+		do
+			if a_node.expressions /= Void then
+				n := a_node.expressions.count
+			else
+				n := 0
+			end
+
+			create_local (a_node.type)
+			l_target := last_local
+
+				-- Create array
+			create l_pcall.make ("allocate")
+			l_pcall.add_argument (factory.type_value (a_node.type))
+			l_pcall.set_target (l_target)
+			side_effect.extend (l_pcall)
+
+			create l_pcall.make ("ARRAY.make")
+			l_pcall.add_argument (l_target)
+			l_pcall.add_argument (factory.int_value (1))
+			l_pcall.add_argument (factory.int_value (n))
+			side_effect.extend (l_pcall)
+
+				-- Put all elements into array
+			from
+				i := 1
+			until
+				i > n
+			loop
+				l_expr ?= a_node.expressions.i_th (i)
+				check l_expr /= Void end
+				create l_assign.make (
+					factory.array_access (entity_mapping.heap, l_target, factory.int_value (i)),
+					process_argument_expression (l_expr))
+				side_effect.extend (l_assign)
+
+				i := i + 1
+			end
+			last_expression := l_target
+		end
 
 	process_creation_expr_b (a_node: CREATION_EXPR_B)
 			-- <Precursor>

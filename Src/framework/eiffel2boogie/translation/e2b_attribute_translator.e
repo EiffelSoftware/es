@@ -62,6 +62,9 @@ feature -- Basic operations
 				l_forall.add_bound_variable ("heap", types.heap_type)
 				l_forall.add_bound_variable ("o", types.ref)
 
+				create l_heap_access.make ("heap", create {IV_ENTITY}.make ("o", types.ref), create {IV_ENTITY}.make (l_boogie_name, l_constant.type))
+				l_forall.add_trigger (l_heap_access)
+
 				create l_axiom.make (l_forall)
 				boogie_universe.add_declaration (l_axiom)
 			end
