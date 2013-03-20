@@ -11,6 +11,11 @@ inherit
 
 	PS_ERROR
 
+	redefine
+		description
+	end
+
+
 feature
 
 	description: STRING = "Internal error"

@@ -11,21 +11,29 @@ inherit
 
 	DEVELOPER_EXCEPTION
 		redefine
-			meaning
+			tag
 		end
 
 feature
 
-	meaning: STRING
-			-- A message in English describing what current exception is
+	tag: IMMUTABLE_STRING_32
+			-- A short description of the current exception.
+			-- TODO: Redefine in a meaningful way.
 		do
-			Result := description
+			if attached description as desc then
+				Result := desc.as_string_32
+			else
+				create Result.make_from_string ("An error occurred. No description is available.")
+
+			end
+
+
 		end
 
-	description: STRING
-			-- A human-readable string containing an error description
-		deferred
-		end
+--	description: STRING
+			-- A detailed description of the current exception.
+--		deferred
+--		end
 
 	accept (a_visitor: PS_ERROR_VISITOR)
 			-- `accept' function of the visitor pattern

@@ -10,6 +10,9 @@ class
 inherit
 
 	PS_ERROR
+	redefine
+		description
+	end
 
 feature
 
