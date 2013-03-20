@@ -1,0 +1,6 @@
+* text=auto !eol
+Eiffel_60/library/kernel/predicate.e -text
+Eiffel_60/library/kernel/string_32.e -text
+Eiffel_60/library/kernel/string_general.e -text
+Eiffel_60/library/kernel/system_string_factory.e -text
+Eiffel_60/library/support/file_comparer.e -text
