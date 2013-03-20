@@ -96,8 +96,8 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	executor: PS_CRUD_EXECUTOR
-		-- The CRUD executor used throughout the tutorial.
+	executor: PS_EXECUTOR
+		-- The executor of database operations used throughout the tutorial.
 
 	factory: PS_CRITERION_FACTORY
 		-- Criterion factory.
