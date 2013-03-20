@@ -2004,6 +2004,11 @@ Src/help/wizards/eweb/pixmaps/database_small.bmp -text
 Src/help/wizards/wizard.ico -text
 Src/library/Eiffel2Java/README.txt -text
 Src/library/GIF/Clib/gd_lib/gd.lib svneol=native#unset
+Src/library/base/elks/kernel/predicate.e -text
+Src/library/base/elks/kernel/string_32.e -text
+Src/library/base/elks/kernel/string_general.e -text
+Src/library/base/elks/kernel/system_string_factory.e -text
+Src/library/base/elks/support/file_comparer.e -text
 Src/library/base_extension/base_extension.ecf -text
 Src/library/diff/diff.e -text
 Src/library/diff/diff_index_link.e -text
