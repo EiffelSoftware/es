@@ -31,22 +31,22 @@ feature 	-- Tutorial exploration features
 			io.new_line
 			create p1.make ("Albo", "Bitossi")
 			p1.celebrate_birthday
-			executor.insert (p1)
+			executor.execute_insert (p1)
 			create p2.make ("Berno", "Citrini")
 			p2.celebrate_birthday
 			p2.celebrate_birthday
 			p2.celebrate_birthday
-			executor.insert (p2)
+			executor.execute_insert (p2)
 			create p3.make ("Dumbo", "Ermini")
-			executor.insert (p3)
+			executor.execute_insert (p3)
 			print ("Query the database for persons and print result")
 			print_result (simple_query)
 			print ("Update an existing person in the database and print result")
 			p2.celebrate_birthday
-			executor.update (p2)
+			executor.execute_update (p2)
 			print_result (simple_query)
 			print ("Delete Dumbo Ermini from the database and print result")
-			executor.delete (p3)
+			executor.execute_delete (p3)
 			print_result (simple_query)
 --			-- Uncomment the following 2 lines to have a failing update of an object not known to ABEL
 --			--print ("A failing update...")
@@ -65,18 +65,18 @@ feature 	-- Tutorial exploration features
 			create c3.make ("Grandpa", "Doe")
 			c1.set_father (c2)
 			c2.set_father (c3)
-			executor.insert (c1)
+			executor.execute_insert (c1)
 			io.new_line
 			print ("Query the database for children and print result")
 			print_children_result (query_for_children)
 			print ("Inserting John Doe has no effect")
-			executor.insert (c2)
+			executor.execute_insert (c2)
 			print_children_result (query_for_children)
 			print ("Updating John Doe has no effect")
 			if attached {CHILD} c1.father as dad then
 				dad.celebrate_birthday
 			end
-			executor.update (c1)
+			executor.execute_update(c1)
 			print_children_result (query_for_children)
 			print ("Celebrating the birthday for all PERSON objects in the repository")
 			update_ages
@@ -164,7 +164,7 @@ feature -- Failing write operations
 			a_person: PERSON
 		do
 			create a_person.make ("Bob", "Barath")
-			executor.update (a_person)
+			executor.execute_update (a_person)
 				-- Results in a precondition violation.
 		end
 
@@ -174,7 +174,7 @@ feature -- Failing write operations
 			a_person: PERSON
 		do
 			create a_person.make ("Cersei", "Lannis")
-			executor.delete (a_person)
+			executor.execute_delete (a_person)
 				-- Results in a precondition violation.
 		end
 
@@ -234,7 +234,7 @@ feature -- Transaction handling
 			across query as query_result
 			loop
 				query_result.item.celebrate_birthday
-				executor.update_within_transaction
+				executor.execute_update_within_transaction
 					(query_result.item, transaction)
 			end
 
