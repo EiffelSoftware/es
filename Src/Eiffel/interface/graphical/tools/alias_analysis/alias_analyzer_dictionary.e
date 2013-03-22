@@ -150,6 +150,49 @@ feature -- Status report
 			end
 		end
 
+	is_attribute_chain (index: like last_added): BOOLEAN
+			-- Does `index' denote a chain that contains only attributes?
+		require
+			has_index (index)
+		local
+			t: like entry
+			w: SHARED_WORKBENCH
+		do
+			if index = void_index then
+					-- Result := False
+			elseif index = non_void_index then
+					-- Result := False
+			elseif index = current_index then
+					-- Result := False
+			else
+				if index < 0 then
+						-- Negative expression.
+					Result := is_attribute_chain (- index)
+				else
+					t := values.i_th (index)
+					if t.qualifier = 0 then
+							-- 	[n, 0] - feature of routine id "n"
+						create w
+						if
+							attached w.system.rout_info_table.origin (t.tail) as c and then
+							attached c.feature_of_rout_id (t.tail) as f
+						then
+							Result := f.is_attribute
+						end
+					elseif t.tail >= 0 and then t.qualifier >= 0 then
+							-- 	[m, n] - local variable "m" of a feature of routine id "n"
+							-- Result := False
+					elseif t.tail >= 0 and then t.qualifier < 0 then
+							-- [m, -n] - expression "m" qualified by a negative expression "-n"
+						Result := is_attribute_chain (- t.qualifier) and then is_attribute_chain (t.tail)
+					elseif t.tail < 0 and then t.qualifier >= 0 then
+							-- [-m, n] - expression "m" qualified by an expression "n"
+						Result := is_attribute_chain (t.qualifier) and then is_attribute_chain (- t.tail)
+					end
+				end
+			end
+		end
+
 feature {NONE} -- Status report
 
 	is_unqualified (v: like last_added): BOOLEAN
