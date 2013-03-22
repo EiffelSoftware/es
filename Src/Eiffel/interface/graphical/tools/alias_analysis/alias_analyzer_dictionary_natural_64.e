@@ -114,6 +114,74 @@ feature -- Access
 			invalid_prefix_for_c: not has_prefix (Result, c) implies not has_index (Result)
 		end
 
+	index_qualifier (index: like last_added): like last_added
+			-- Qualifier of the item corresponding to `index' or 0 if none.
+		require
+			has_index (index)
+		local
+			t: like entry
+		do
+			if index = void_index then
+					-- Result := False
+			elseif index = non_void_index then
+					-- Result := False
+			elseif index = current_index then
+					-- Result := False
+			else
+				if index < 0 then
+						-- Negative expression.
+					Result := - index_qualifier (- index)
+				else
+					t := values.i_th (index)
+					if entry_qualifier (t) = 0 then
+							-- 	[n, 0] - feature of routine id "n"
+					elseif entry_tail (t) >= 0 and then entry_qualifier (t) >= 0 then
+							-- 	[m, n] - local variable "m" of a feature of routine id "n"
+					elseif entry_tail (t) >= 0 and then entry_qualifier (t) < 0 then
+							-- [m, -n] - expression "m" qualified by a negative expression "-n"
+						Result := - entry_qualifier (t)
+					elseif entry_tail (t) < 0 and then entry_qualifier (t) >= 0 then
+							-- [-m, n] - expression "m" qualified by an expression "n"
+						Result := entry_qualifier (t)
+					end
+				end
+			end
+		end
+
+	index_tail (index: like last_added): like last_added
+			-- Tail of the item corresponding to `index' or 0 if none.
+		require
+			has_index (index)
+		local
+			t: like entry
+		do
+			if index = void_index then
+					-- Result := False
+			elseif index = non_void_index then
+					-- Result := False
+			elseif index = current_index then
+					-- Result := False
+			else
+				if index < 0 then
+						-- Negative expression.
+--					Result := - qualifier (- index)
+				else
+					t := values.i_th (index)
+					if entry_qualifier (t) = 0 then
+							-- 	[n, 0] - feature of routine id "n"
+					elseif entry_tail (t) >= 0 and then entry_qualifier (t) >= 0 then
+							-- 	[m, n] - local variable "m" of a feature of routine id "n"
+					elseif entry_tail (t) >= 0 and then entry_qualifier (t) < 0 then
+							-- [m, -n] - expression "m" qualified by a negative expression "-n"
+						Result := entry_tail (t)
+					elseif entry_tail (t) < 0 and then entry_qualifier (t) >= 0 then
+							-- [-m, n] - expression "m" qualified by an expression "n"
+						Result := - entry_tail (t)
+					end
+				end
+			end
+		end
+
 feature -- Status report
 
 	has_index (v: like last_added): BOOLEAN
@@ -161,7 +229,108 @@ feature -- Status report
 			end
 		end
 
+	is_attribute_chain (index: like last_added; q: like last_added): BOOLEAN
+			-- Does `index' denote a chain that contains only attributes
+			-- except possibly the first item that corresponds to an argument
+			-- of the feature corresponding to its index `q'?
+		require
+			has_index (index)
+			q /= 0 implies has_index (q)
+		local
+			t: like entry
+			w: SHARED_WORKBENCH
+		do
+			if index = void_index then
+					-- Result := False
+			elseif index = non_void_index then
+					-- Result := False
+			elseif index = current_index then
+					-- Result := False
+			else
+				if index < 0 then
+						-- Negative expression.
+					Result := is_attribute_chain (- index, q)
+				else
+					t := values.i_th (index)
+					if entry_qualifier (t) = 0 then
+							-- 	[n, 0] - feature of routine id "n"
+						create w
+						if
+							attached w.system.rout_info_table.origin (entry_tail (t)) as c and then
+							attached c.feature_of_rout_id (entry_tail (t)) as f
+						then
+							Result := f.is_attribute
+						end
+					elseif entry_tail (t) >= 0 and then entry_qualifier (t) >= 0 then
+							-- 	[m, n] - local variable "m" of a feature of routine id "n"
+						if qualification.i_th (index) = 0 then
+							create w
+							if
+								attached w.system.rout_info_table.origin (entry_qualifier (t)) as c and then
+								attached c.feature_of_rout_id (entry_qualifier (t)) as f
+							then
+								if q = 0 then
+									Result := True
+								elseif entry_qualifier (t) = entry_tail (values.i_th (q)) then
+									Result := entry_tail (t) <= f.argument_count
+								end
+							end
+						end
+					elseif entry_tail (t) >= 0 and then entry_qualifier (t) < 0 then
+							-- [m, -n] - expression "m" qualified by a negative expression "-n"
+						Result := is_attribute_chain (- entry_qualifier (t), q) and then is_strong_attribute_chain (entry_tail (t))
+					elseif entry_tail (t) < 0 and then entry_qualifier (t) >= 0 then
+							-- [-m, n] - expression "m" qualified by an expression "n"
+						Result := is_attribute_chain (entry_qualifier (t), q) and then is_strong_attribute_chain (- entry_tail (t))
+					end
+				end
+			end
+		end
+
 feature {NONE} -- Status report
+
+	is_strong_attribute_chain (index: like last_added): BOOLEAN
+			-- Does `index' denote a chain that contains only attributes?
+		require
+			has_index (index)
+		local
+			t: like entry
+			w: SHARED_WORKBENCH
+		do
+			if index = void_index then
+					-- Result := False
+			elseif index = non_void_index then
+					-- Result := False
+			elseif index = current_index then
+					-- Result := False
+			else
+				if index < 0 then
+						-- Negative expression.
+					Result := is_strong_attribute_chain (- index)
+				else
+					t := values.i_th (index)
+					if entry_qualifier (t) = 0 then
+							-- 	[n, 0] - feature of routine id "n"
+						create w
+						if
+							attached w.system.rout_info_table.origin (entry_tail (t)) as c and then
+							attached c.feature_of_rout_id (entry_tail (t)) as f
+						then
+							Result := f.is_attribute
+						end
+					elseif entry_tail (t) >= 0 and then entry_qualifier (t) >= 0 then
+							-- 	[m, n] - local variable "m" of a feature of routine id "n"
+						-- Result := False
+					elseif entry_tail (t) >= 0 and then entry_qualifier (t) < 0 then
+							-- [m, -n] - expression "m" qualified by a negative expression "-n"
+						Result := is_strong_attribute_chain (- entry_qualifier (t)) and then is_strong_attribute_chain (entry_tail (t))
+					elseif entry_tail (t) < 0 and then entry_qualifier (t) >= 0 then
+							-- [-m, n] - expression "m" qualified by an expression "n"
+						Result := is_strong_attribute_chain (entry_qualifier (t)) and then is_strong_attribute_chain (- entry_tail (t))
+					end
+				end
+			end
+		end
 
 	is_unqualified (v: like last_added): BOOLEAN
 			-- Does `v' denote an unqualified entity?
