@@ -317,6 +317,18 @@ feature -- Comparison
 			Result := is_subset (other) and then other.is_subset (Current)
 		end
 
+feature -- Iteration
+
+	aliases (x: G): ITERABLE [G]
+			-- Enumeration of aliases of `x'.
+		do
+			if attached table [x] as a then
+				Result := a
+			else
+				create {SPECIAL [G]} Result.make_empty (0)
+			end
+		end
+
 feature -- Output
 
 	debug_output: STRING
