@@ -73,7 +73,6 @@ Documentation/tools/web/trunk/misc/patches/eiffel.php -text
 Documentation/tools/web/trunk/misc/patches/htaccess -text
 Documentation/tools/web/trunk/misc/patches/trash.module -text
 Documentation/tools/xmldoc2wiki/README.txt -text
-/README -text
 Src/.git-svn/readme.txt -text
 Src/.git-svn/scm -text
 Src/.git-svn/users.txt -text
@@ -4435,6 +4434,12 @@ Src/library/vision2/implementation/carbon/widgets/dialogs/.DS_Store -text
 Src/library/vision2/implementation/carbon/wrapper/config.ewg -text
 Src/library/vision2/implementation/carbon/wrapper/generated_wrapper/eiffel/abstraction/.DS_Store -text
 Src/library/vision2/implementation/cocoa/Readme.txt -text
+Src/library/vision2/tests/graphics/01bpp.bmp -text
+Src/library/vision2/tests/graphics/04bpp.bmp -text
+Src/library/vision2/tests/graphics/08bpp.bmp -text
+Src/library/vision2/tests/graphics/16bpp.bmp -text
+Src/library/vision2/tests/graphics/24bpp.bmp -text
+Src/library/vision2/tests/graphics/32bpp.bmp -text
 Src/library/vision2/tests/graphics/Lenna.png -text
 Src/library/wel/extra/h2e.ico svneol=native#unset
 Src/library/wel/extra/h2e1.ico svneol=native#unset
@@ -4445,7 +4450,6 @@ Src/library/wel/tests/graphics/08bpp.bmp -text
 Src/library/wel/tests/graphics/16bpp.bmp -text
 Src/library/wel/tests/graphics/24bpp.bmp -text
 Src/library/wel/tests/graphics/32bpp.bmp -text
-Src/library/wel/tests/license.lic -text
 Src/library/wizard/help/Clib/htmlhelp.lib -text
 Src/scripts/check_setup.eant -text
 Src/scripts/check_trunk_head_compilation_validity -text
@@ -8773,7 +8777,6 @@ free_add_ons/gcc/win64/msys/1.0/bin/md5sum.exe -text
 free_add_ons/gcc/win64/msys/1.0/bin/mkdir.exe -text
 free_add_ons/gcc/win64/msys/1.0/bin/mount.exe -text
 free_add_ons/gcc/win64/msys/1.0/bin/msys-1.0.dll -text
-free_add_ons/gcc/win64/msys/1.0/bin/msysinfo -text
 free_add_ons/gcc/win64/msys/1.0/bin/mv.exe -text
 free_add_ons/gcc/win64/msys/1.0/bin/od.exe -text
 free_add_ons/gcc/win64/msys/1.0/bin/patch.exe -text
@@ -9768,7 +9771,6 @@ free_add_ons/gcc/windows/msys/1.0/bin/md5sum.exe -text
 free_add_ons/gcc/windows/msys/1.0/bin/mkdir.exe -text
 free_add_ons/gcc/windows/msys/1.0/bin/mount.exe -text
 free_add_ons/gcc/windows/msys/1.0/bin/msys-1.0.dll -text
-free_add_ons/gcc/windows/msys/1.0/bin/msysinfo -text
 free_add_ons/gcc/windows/msys/1.0/bin/mv.exe -text
 free_add_ons/gcc/windows/msys/1.0/bin/od.exe -text
 free_add_ons/gcc/windows/msys/1.0/bin/patch.exe -text
