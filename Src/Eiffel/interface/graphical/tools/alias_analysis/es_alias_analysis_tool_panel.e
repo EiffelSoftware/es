@@ -41,6 +41,14 @@ feature
 			analyze_button.select_actions.extend (agent user_widget.append_text (guide_drop_message))
 			analyze_button.disable_sensitive
 			Result.extend (analyze_button)
+			create stop_button.make
+			stop_button.set_text ("Stop")
+			stop_button.set_tooltip ("Stop current analysis.")
+			stop_button.set_pixmap (stock_pixmaps.debug_stop_icon)
+			stop_button.set_pixel_buffer (stock_pixmaps.debug_stop_icon_buffer)
+			stop_button.select_actions.extend (agent stop_analyzer)
+			stop_button.disable_sensitive
+			Result.extend (stop_button)
 			create inherited_assertions_toggle.make
 			inherited_assertions_toggle.set_text ("Inherited asserions")
 			inherited_assertions_toggle.set_tooltip ("Process inherited assertions.")
@@ -100,6 +108,9 @@ feature {NONE} -- Toolbar
 	analyze_button: SD_TOOL_BAR_BUTTON
 			-- Button to trigger analyzer.
 
+	stop_button: SD_TOOL_BAR_BUTTON
+			-- Button to stop analyzer.
+
 	inherited_assertions_toggle: SD_TOOL_BAR_TOGGLE_BUTTON
 			-- Toggle to enable/disable inherited assertion processing.
 
@@ -146,6 +157,7 @@ feature {NONE} -- Analyzer
 			is_frame_check: BOOLEAN
 			s: STRING_32
 		do
+			stop_button.enable_sensitive
 			if attached current_class as c then
 				analyzer.set_is_inherited_assertion_included (inherited_assertions_toggle.is_selected)
 				is_frame_check := frame_check_toggle.is_selected
@@ -205,6 +217,13 @@ feature {NONE} -- Analyzer
 				analyzer.report_statistics_to (s)
 				user_widget.set_text (s)
 			end
+			stop_button.disable_sensitive
+		end
+
+	stop_analyzer
+			-- Request the analysis to stop.
+		do
+			analyzer.stop
 		end
 
 	analyzer: ALIAS_ANALYZER

@@ -61,7 +61,6 @@ feature {NONE} -- Creation
 			-- Initialize analyser.
 		do
 			create dictionary.make
-			create keeper.make (any_aliases)
 			create ast_type.make (0)
 			create ast_alias_after.make (0)
 			create ast_alias_before.make (0)
@@ -69,35 +68,76 @@ feature {NONE} -- Creation
 			create modified_attributes.make (0)
 			create start_time.make_now_utc
 			create finish_time.make_now_utc
+			create_keepers
+		end
+
+feature {NONE} -- Initialization
+
+	create_keepers
+			-- Create objects to track nested data.
+		do
+			create alias_keeper.make (any_aliases)
+			create change_keeper.make
+			create keeper.make_from_array (<<alias_keeper, change_keeper>>)
 		end
 
 feature -- Basic operations
 
 	process_class (c: CLASS_C; output: like output_agent)
 			-- Perform analysis on the class `c'.
+		local
+			f: FEATURE_I
+			n: STRING_32
+			s: STRING_32
 		do
 			if attached c.feature_table as t then
 				progress_total := t.count
 				output_agent := output
 				prepare_analysis (c)
 				progress_total := t.count
+				is_original_class := True
 				from
+					s := {STRING_32} ""
+					n := {STRING_32} ""
 					t.start
 				until
 					t.after
 				loop
-					analyze_feature (True, t.item_for_iteration, c)
+					f := t.item_for_iteration
+					if is_change_check then
+						if f.export_status.is_all then
+							process_feature (f, c, output)
+							progress_total := t.count
+							if not change_keeper.set.is_empty then
+								s.append_string (n)
+								n := once {STRING_32} "%N"
+								s.append_string (f.feature_name_32)
+								s.append_string ({STRING_32} ": ")
+								report_to (s)
+							end
+						end
+					else
+						analyze_feature (True, f, c)
+					end
 					progress_current := progress_current + 1
 					t.forth
 				end
+				collected_output := s
 				report_result
 			end
 		end
 
+	last_class: CLASS_C
+	last_feature: FEATURE_I
+
 	process_feature (f: FEATURE_I; c: CLASS_C; output: like output_agent)
 			-- Perform analysis on the feature `f' from the class `c'.
 		do
+			last_feature := f
+			last_class := c
+			collected_output := ""
 			progress_total := 0
+			is_original_class := False
 			output_agent := output
 			prepare_analysis (c)
 			analyze_feature (True, f, c)
@@ -112,11 +152,26 @@ feature -- Status report
 	is_frame_check: BOOLEAN
 			-- Does the analysis check frame rule?
 
+	is_change_check: BOOLEAN
+			-- Does the analysis check changed attributes?
+
+	is_original_class: BOOLEAN
+			-- Are only features of the original class analysed?
+
 	is_done: BOOLEAN
 			-- Is analysis over?
 
 	is_update_required: BOOLEAN
 			-- Should the client get an update on the current status?
+
+	is_stop_requested: BOOLEAN
+			-- Should the analysis be stopped?
+
+	timeout: like {DATE_TIME_DURATION}.seconds_count = 60
+			-- Number of seconds after which the analysis times out.
+
+	is_timeout: BOOLEAN
+			-- Has analysis timed out?
 
 	analysed_features: NATURAL_32
 			-- Total number of the features analysed so far.
@@ -134,9 +189,17 @@ feature -- Status setting
 	set_is_frame_check  (v: BOOLEAN)
 			-- Set `is_frame_check' to `v'.
 		do
-			is_frame_check := v
-		ensure
-			is_frame_check_set: is_frame_check = v
+			is_frame_check := False
+			is_change_check := v
+--		ensure
+--			is_frame_check_set: is_frame_check = v
+		end
+
+	stop
+			-- Stop analysis.
+		do
+			is_stop_requested := True
+			is_done := True
 		end
 
 feature {NONE} -- Analysis
@@ -145,6 +208,8 @@ feature {NONE} -- Analysis
 			-- Prepare analyzer to process `c'.
 		do
 			start_time.make_now_utc
+			is_stop_requested := False
+			original_class := c
 			context.initialize (c, c.actual_type)
 			create dictionary.make
 			error_handler.wipe_out
@@ -159,7 +224,7 @@ feature {NONE} -- Analysis
 			type_checker.init (context)
 			type_checker.set_type_recorder (agent record_node_type)
 				-- Initialize relation information.
-			create keeper.make (any_aliases)
+			create_keepers
 			-- context.add_keeper (keeper)
 				-- Initialize attribute information.
 			modified_attributes.wipe_out
@@ -167,6 +232,7 @@ feature {NONE} -- Analysis
 			target := dictionary.last_added
 			is_done := False
 			is_update_required := True
+			is_timeout := False
 			analysed_features := 0
 			progress_current := 0
 			(create {WORKER_THREAD}.make (
@@ -196,55 +262,57 @@ feature {NONE} -- Analysis
 			i: like {GENERIC_SKELETON}.count
 		do
 			update
-			old_current_class := context.current_class
-			old_current_feature := context.current_feature
-			old_written_class := context.written_class
-			old_locals := context.locals.twin
-			context.clear_feature_context
-			context.initialize (c, c.actual_type)
-			context.set_current_feature (f)
-			context.set_written_class (f.written_class)
-			bodies.put (f.body_index)
-			type_checker.type_check_only (f, True, f.written_in /= c.class_id, f.is_replicated)
-				-- Check if attributes need to be initialized.
-			if is_root then
-					-- Check if the current feature is a creation procedure.
-				if
-	--				is_creation_checked and then
-					attached c.creators as creators and then creators.has (f.feature_name) or else
-					c.creation_feature /= Void and then c.creation_feature.feature_id = f.feature_id
-				then
-						-- Attributes are set to the default values.
-				else
-						-- Attributes can be set to anything.
-					from
-						s := c.skeleton
-						i := s.count
-					until
-						i <= 0
-					loop
-						if attached c.feature_of_feature_id (s [i].feature_id) as a then
-								-- Register an attribute `a' in a dictionary.
-							register_attribute (a, c)
-								-- Assume that the attribute can be aliased to anything
-							keeper.relation.add_any (last_item)
+			if not is_done then
+				old_current_class := context.current_class
+				old_current_feature := context.current_feature
+				old_written_class := context.written_class
+				old_locals := context.locals.twin
+				context.clear_feature_context
+				context.initialize (c, c.actual_type)
+				context.set_current_feature (f)
+				context.set_written_class (f.written_class)
+				bodies.put (f.body_index)
+				type_checker.type_check_only (f, True, f.written_in /= c.class_id, f.is_replicated)
+					-- Check if attributes need to be initialized.
+				if is_root then
+						-- Check if the current feature is a creation procedure.
+					if
+		--				is_creation_checked and then
+						attached c.creators as creators and then creators.has (f.feature_name) or else
+						c.creation_feature /= Void and then c.creation_feature.feature_id = f.feature_id
+					then
+							-- Attributes are set to the default values.
+					else
+							-- Attributes can be set to anything.
+						from
+							s := c.skeleton
+							i := s.count
+						until
+							i <= 0
+						loop
+							if attached c.feature_of_feature_id (s [i].feature_id) as a then
+									-- Register an attribute `a' in a dictionary.
+								register_attribute (a, c)
+									-- Assume that the attribute can be aliased to anything
+								alias_keeper.relation.add_any (last_item)
+							end
+							i := i - 1
 						end
-						i := i - 1
 					end
 				end
+				add_locals
+				q := is_qualified
+				is_qualified := False
+				f.body.process (Current)
+				is_qualified := q
+				remove_locals
+				bodies.remove
+				context.initialize (old_current_class, old_current_class.actual_type)
+				context.set_current_feature (old_current_feature)
+				context.set_written_class (old_written_class)
+				context.set_locals (old_locals)
+				analysed_features := analysed_features + 1
 			end
-			add_locals
-			q := is_qualified
-			is_qualified := False
-			f.body.process (Current)
-			is_qualified := q
-			remove_locals
-			bodies.remove
-			context.initialize (old_current_class, old_current_class.actual_type)
-			context.set_current_feature (old_current_feature)
-			context.set_written_class (old_written_class)
-			context.set_locals (old_locals)
-			analysed_features := analysed_features + 1
 		end
 
 	report_result
@@ -263,6 +331,8 @@ feature {NONE} -- Analysis
 
 	update
 			-- Report current analysis status.
+		local
+			t: like timeout
 		do
 			if is_update_required then
 					-- Record current time.
@@ -271,6 +341,12 @@ feature {NONE} -- Analysis
 				output_agent.call (Void)
 					-- Postpone update for a while.
 				is_update_required := False
+					-- Check for timeout.
+				t := timeout
+				if t > 0 and then finish_time.relative_duration (start_time).seconds_count > t then
+					is_timeout := True
+					is_done := True
+				end
 			end
 		end
 
@@ -281,6 +357,7 @@ feature {NONE} -- Visitor
 		local
 			old_target: like target
 			t: like target
+			q: like target
 		do
 			if a.is_local then
 					-- Local variable.
@@ -312,6 +389,11 @@ feature {NONE} -- Visitor
 							-- Feature.
 						if f.is_attribute then
 								-- Attribute.
+							if is_attachment then
+									-- Record that the target is changed.
+								register_attribute (f, context.current_class)
+								record_change (dictionary.last_added)
+							end
 							if not f.type.is_expanded then
 								if f.type.is_initialization_required and then attached {ATTRIBUTE_I} f as r and then r.has_body and then not bodies.has (r.body_index) then
 									analyze_feature (False, f, context.current_class)
@@ -328,32 +410,32 @@ feature {NONE} -- Visitor
 --								and then
 								attached node_alias_before (a, context.written_class, context.current_feature, context.current_class) as r
 --								and then
---								r.is_equal (keeper.relation)
+--								r.is_equal (alias_keeper.relation)
 							then
 									-- TODO: handle recursive calls.
 									-- Retrieve recorded relation.
 								if
-									r.is_equal (keeper.relation) and then
+									r.is_equal (alias_keeper.relation) and then
 									attached node_alias_after (a, context.written_class, context.current_feature, context.current_class) as o
  								then
 										-- Use previously recorded relation.
-									keeper.relation.copy (o)
+									alias_keeper.relation.copy (o)
 --								else
 --										-- Remove all the pairs.
---									keeper.relation.wipe_out
+--									alias_keeper.relation.wipe_out
 --										-- Add predefined entries.
---									keeper.relation.add_any (dictionary.void_index)
---									keeper.relation.add_any (dictionary.non_void_index)
+--									alias_keeper.relation.add_any (dictionary.void_index)
+--									alias_keeper.relation.add_any (dictionary.non_void_index)
 								end
 							else
 									-- This feature has not been processed yet or has been processed but the aliases before the call are different from the previous call.
 									-- Record  alias relation before the call.
-								record_node_alias_before (keeper.relation, a, context.written_class, context.current_feature, context.current_class)
+								record_node_alias_before (alias_keeper.relation, a, context.written_class, context.current_feature, context.current_class)
 									-- TODO: process arguments.
 									-- Recurse only when alias relation before the call is different from already evaluated one.
 								analyze_feature (False, f, context.current_class)
 									-- Record  alias relation after the call.
-								record_node_alias_after (keeper.relation, a, context.written_class, context.current_feature, context.current_class)
+								record_node_alias_after (alias_keeper.relation, a, context.written_class, context.current_feature, context.current_class)
 							end
 							if not f.type.is_expanded and then not f.type.is_void then
 									-- Set `last_item' to the feature result.
@@ -378,7 +460,7 @@ feature {NONE} -- Visitor
 							dictionary.add_qualification (target, last_item)
 							last_item := dictionary.last_added
 							if dictionary.is_overqualified then
-								keeper.relation.add_any (last_item)
+								alias_keeper.relation.add_any (last_item)
 							end
 						elseif f.is_routine then
 								-- Routine.
@@ -391,11 +473,34 @@ feature {NONE} -- Visitor
 								target := t
 								dictionary.add_reverse (t)
 									-- Replace current relation "A" with "t'.A".
-								keeper.relation.copy (keeper.relation.mapped (agent qualified (dictionary.last_added, ?)))
+								q := dictionary.last_added
+								alias_keeper.relation.copy (alias_keeper.relation.mapped (agent qualified (q, ?)))
+--								if dictionary.is_attribute_chain (q) then
+									change_keeper.set.copy (change_keeper.set.mapped (agent qualified (q, ?)))
+--								else
+--										-- Do not record changes not visible outside.
+--									change_keeper.enter_realm
+--								end
 									-- TODO: process arguments.
 								analyze_feature (False, f, c)
 									-- Replace current relation "A" with "t.A".
-								keeper.relation.copy (keeper.relation.mapped (agent qualified (t, ?)))
+								alias_keeper.relation.copy (alias_keeper.relation.mapped (agent qualified (t, ?)))
+--								if dictionary.is_attribute_chain (q) then
+									if attached change_keeper.set.mapped (agent qualified (t, ?)) as s then
+										change_keeper.set.wipe_out
+										across
+											s as x
+										loop
+											record_change (x.item)
+--											if dictionary.is_attribute_chain (x.item) then
+--												change_keeper.set.put (x.item)
+--											end
+										end
+									end
+--								else
+--										-- Do not record changes not visible outside.
+--									change_keeper.leave_optional_realm
+--								end
 								target := old_target
 							end
 								-- Set `last_item' to the feature result.
@@ -414,7 +519,9 @@ feature {NONE} -- Visitor
 			s: like last_item
 			t: like last_item
 		do
+			is_attachment := True
 			a.target.process (Current)
+			is_attachment := False
 			t := last_item
 			if t > 0 then
 					-- Found the target of the assignment.
@@ -424,7 +531,7 @@ feature {NONE} -- Visitor
 						-- Found the source of the assignment.
 					if s = dictionary.non_void_index then
 							-- The source is a new object that cannot have any aliases.
-						keeper.relation.add_pair (s, t)
+						alias_keeper.relation.add_pair (s, t)
 					elseif t /= dictionary.non_void_index then
 							-- TODO: remove protection when all targets are processed correctly.
 							-- The source may have aliases.
@@ -453,10 +560,10 @@ feature {NONE} -- Visitor
 					a.right.process (Current)
 					r := last_item
 					if r > 0 and then l /= r then
-						if keeper.relation.has_pair (l, r) then
+						if alias_keeper.relation.has_pair (l, r) then
 							if attached {BIN_NE_AS} a then
 									-- This is a case of "cut" instruction.
-								keeper.relation.remove_pair (l, r)
+								alias_keeper.relation.remove_pair (l, r)
 							else
 									-- This is a case of "bind" instruction.
 							end
@@ -490,7 +597,9 @@ feature {NONE} -- Visitor
 			old_target := target
 				-- Compute the target.
 			last_item := 0
+			is_attachment := True
 			a.target.process (Current)
+			is_attachment := False
 			t := last_item
 				-- Process the call.
 			q := is_qualified
@@ -502,9 +611,9 @@ feature {NONE} -- Visitor
 				-- Adjust aliasing for the target.
 			if t > 0 then
 					-- Remove all relations for `t'.
-				keeper.relation.remove (t)
+				alias_keeper.relation.remove (t)
 					-- Add a pair to indicate that it is now attached to a non-void value.
-				keeper.relation.add_pair (t, dictionary.non_void_index)
+				alias_keeper.relation.add_pair (t, dictionary.non_void_index)
 			end
 		end
 
@@ -538,7 +647,7 @@ feature {NONE} -- Visitor
 			-- <Precursor>
 		local
 			t: TYPE_A
-			r: like keeper.relation
+			r: like alias_keeper.relation
 			s: like {CLASS_C}.skeleton
 			i:  like {CLASS_C}.skeleton.count
 			l: like modified_attributes.item_for_iteration
@@ -551,8 +660,11 @@ feature {NONE} -- Visitor
 				set_default_aliases (t)
 			end
 			safe_process (a.precondition)
-			if is_frame_check then
-				r := keeper.relation.twin
+			if
+				is_frame_check and then
+				(not is_original_class or else attached context.current_class as c and then original_class = c)
+			then
+				r := alias_keeper.relation.twin
 			end
 			a.routine_body.process (Current)
 			if attached r and then attached context.current_class as c then
@@ -566,7 +678,7 @@ feature {NONE} -- Visitor
 							-- Register an attribute `a' in a dictionary.
 						register_attribute (f, c)
 							-- Compare old and new aliases of the attribute.
-						if r.table [last_item] /~ keeper.relation.table [last_item] then
+						if r.table [last_item] /~ alias_keeper.relation.table [last_item] then
 							k := [context.current_feature.rout_id_set.first, context.current_class.class_id]
 							l := modified_attributes [k]
 							if not attached l then
@@ -689,11 +801,11 @@ feature {AST_EIFFEL} -- Visitor: compound
 				variant_as := a.variant_part
 				exit_as := a.stop
 				check
-					has_at_least_one_iteration: not keeper.is_sibling_dominating
+					has_at_least_one_iteration: not alias_keeper.is_sibling_dominating
 				end
 				i := 3
 			until
-				keeper.is_sibling_dominating or else i <= 0
+				alias_keeper.is_sibling_dominating or else i <= 0
 			loop
 					-- TODO: remove iteration limit.
 				i := i - 1
@@ -804,7 +916,7 @@ feature {NONE} -- Entity access
 					register_argument (i.cursor_index)
 					set_default_aliases (i.item)
 						-- Assume that an argument can have an arbitrary value.
-					keeper.relation.add_any (last_item)
+--					alias_keeper.relation.add_any (last_item)
 				end
 			end
 		end
@@ -867,15 +979,42 @@ feature {NONE} -- Entity access
 				-- Check if the element is void or non-void by default.
 			if not t.is_reference then
 					-- Add a pair "[variable, NonVoid]".
-				keeper.relation.add_pair (dictionary.non_void_index, last_item)
+				alias_keeper.relation.add_pair (dictionary.non_void_index, last_item)
 			end
 			if not t.is_attached then
 					-- Attach "Void" to "variable".
-				attach (dictionary.void_index, last_item)
+--				attach (dictionary.void_index, last_item)
+				alias_keeper.relation.add_pair (dictionary.non_void_index, last_item)
+			end
+		end
+
+	record_change (t: like target)
+			-- Record that the target `t' is changed.
+		local
+			q: like last_item
+			v: like last_item
+		do
+--			if dictionary.is_attribute_chain (t, 0) then
+				change_keeper.set.put (t)
+--			end
+			q := dictionary.index_qualifier (t)
+			if q /= 0 then
+				v := dictionary.index_tail (t)
+				across
+					alias_keeper.relation.aliases (q) as c
+				loop
+					dictionary.add_qualification (c.item, v)
+--					if dictionary.is_attribute_chain (dictionary.last_added, 0) then
+						change_keeper.set.put (dictionary.last_added)
+--					end
+				end
 			end
 		end
 
 feature {NONE} -- Access
+
+	original_class: CLASS_C
+			-- Class for which analysis is initiated.
 
 	last_item: like dictionary.last_added
 			-- Last found item.
@@ -892,10 +1031,14 @@ feature {ES_ALIAS_ANALYSIS_TOOL_PANEL} -- Output
 			report_to (Result)
 		end
 
+	collected_output: STRING_32
+			-- Output collected from several iterations.
+
 	report_to (o: STRING_32)
 			-- Report results of the analysis to `o'.
 		local
-			d: STRING_32
+			s: STRING_32
+			v: like last_item
 		do
 			if is_frame_check then
 				across
@@ -907,15 +1050,32 @@ feature {ES_ALIAS_ANALYSIS_TOOL_PANEL} -- Output
 						o.append_character ('}')
 						o.append_character ('.')
 						o.append_string (c.feature_of_rout_id (f.key.routine_id).feature_name_32)
-						d := {STRING_32} ": "
+						s := {STRING_32} ": "
 						across
 							f.item as a
 						loop
-							o.append_string (d)
-							d := once {STRING_32} ", "
+							o.append_string (s)
+							s := once {STRING_32} ", "
 							o.append_string (a.item)
 						end
 						o.append_character ('%N')
+					end
+				end
+			elseif is_change_check then
+				if not collected_output.is_empty then
+					o.append_string (collected_output)
+				else
+					dictionary.add_feature (last_feature, last_class)
+					v := dictionary.last_added
+					s := {STRING_32} ""
+					across
+						change_keeper.set as c
+					loop
+						if dictionary.is_attribute_chain (c.item, v) then
+							o.append_string (s)
+							s := once {STRING_32} ", "
+							o.append_string (dictionary.name (c.item))
+						end
 					end
 				end
 			else
@@ -926,8 +1086,17 @@ feature {ES_ALIAS_ANALYSIS_TOOL_PANEL} -- Output
 	report_statistics_to (o: STRING_32)
 			-- Report statistics of the analysis to `o'.
 		do
+			if is_timeout then
+				o.append_string ({STRING_32} "Analysis timed out.%N")
+			elseif is_stop_requested then
+				o.append_string ({STRING_32} "Analysis terminated by user.%N")
+			end
 			o.append_string ({STRING_32} "Total processed features: ")
 			o.append_natural_32 (analysed_features)
+			if progress_total > 0 then
+				o.append_string ({STRING_32} "%NBatch processing progress: ")
+				o.append_integer ((progress_current * 100) // progress_total)
+			end
 			o.append_string ({STRING_32} "%NNumber of different expressions: ")
 			o.append_integer (dictionary.count)
 			o.append_string ({STRING_32} "%NElapsed time (seconds): ")
@@ -962,7 +1131,7 @@ feature {NONE} -- Output
 					-- First item is not delimited with anything.
 				t := ""
 				across
-					keeper.relation.table as i
+					alias_keeper.relation.table as i
 				loop
 						-- Output alias for `i.key' in a format "x: a, b, c".
 					Result.append_string (t)
@@ -1002,8 +1171,14 @@ feature {NONE} -- Storage
 	dictionary2: ALIAS_ANALYZER_DICTIONARY_NATURAL_64
 			-- Dictionaries for faster recompilation.
 
-	keeper: ALIAS_ANALYZER_RELATION_KEEPER
+	alias_keeper: ALIAS_ANALYZER_RELATION_KEEPER
 			-- Keeper of alias relations.
+
+	change_keeper: ALIAS_ANALYZER_CHANGE_SET_KEEPER
+			-- Keeper of change sets.
+
+	keeper: AST_COLLECTION_KEEPER
+			-- Collection of keepers.
 
 	any_aliases: ARRAY [INTEGER_32]
 			-- Predefined entries that are known to be aliased to anything.
@@ -1023,13 +1198,13 @@ feature {NONE} -- Alias relation update
 		local
 			d: like dictionary
 			n: like last_item
-			p: like keeper.relation.table.item
-			r: like keeper.relation
-			q: like keeper.relation
-			table: like keeper.relation.table
+			p: like alias_keeper.relation.table.item
+			r: like alias_keeper.relation
+			q: like alias_keeper.relation
+			table: like alias_keeper.relation.table
 		do
 			d := dictionary
-			r := keeper.relation
+			r := alias_keeper.relation
 			table := r.table
 			if s = t then
 					-- Nothing changes.
@@ -1058,7 +1233,7 @@ feature {NONE} -- Alias relation update
 						a.after
 					loop
 						p := table [a.item_for_iteration]
-						if not p.is_empty then
+						if attached p and then not p.is_empty then
 							p.put (t)
 						end
 						a.forth
@@ -1154,11 +1329,11 @@ feature {NONE} -- Alias relation update
 
 	remove_prefixed (t: like last_item)
 			-- Remove `t' and all the elements prefixed with `t' from the current relation,
-			-- i.e. update r with r \- {t}, where r is `keeper.relation'.
+			-- i.e. update r with r \- {t}, where r is `alias_keeper.relation'.
 		local
-			r: like keeper.relation
+			r: like alias_keeper.relation
 		do
-			r := keeper.relation
+			r := alias_keeper.relation
 			r.remove (t)
 			across
 				dictionary.prefixed (t) as tp
@@ -1175,21 +1350,21 @@ feature {NONE} -- Mapping
 			dictionary.add_qualification (q, v)
 			Result := dictionary.last_added
 			if dictionary.is_overqualified then
-				keeper.relation.add_any (Result)
+				alias_keeper.relation.add_any (Result)
 			end
 		end
 
 feature {NONE} -- Alias recording
 
-	ast_alias_after: HASH_TABLE [like keeper.relation, TUPLE [a: INTEGER; w: INTEGER; f: INTEGER; c: INTEGER]]
+	ast_alias_after: HASH_TABLE [like alias_keeper.relation, TUPLE [a: INTEGER; w: INTEGER; f: INTEGER; c: INTEGER]]
 			-- Aliases after AST node `a' written in class `w'
 			-- when evaluated in a feature `f' of class `c'.
 
-	ast_alias_before: HASH_TABLE [like keeper.relation, TUPLE [a: INTEGER; w: INTEGER; f: INTEGER; c: INTEGER]]
+	ast_alias_before: HASH_TABLE [like alias_keeper.relation, TUPLE [a: INTEGER; w: INTEGER; f: INTEGER; c: INTEGER]]
 			-- Aliases before AST node `a' written in class `w'
 			-- when evaluated in a feature `f' of class `c'.
 
-	record_node_alias_after (t: like keeper.relation; a: AST_EIFFEL; w: CLASS_C; f: FEATURE_I; c: CLASS_C)
+	record_node_alias_after (t: like alias_keeper.relation; a: AST_EIFFEL; w: CLASS_C; f: FEATURE_I; c: CLASS_C)
 			-- Record aliases `t' after AST node `a' written in class `w'
 			-- when evaluated in a feature `f' of class `c'.
 		do
@@ -1198,7 +1373,7 @@ feature {NONE} -- Alias recording
 			end
 		end
 
-	record_node_alias_before (t: like keeper.relation; a: AST_EIFFEL; w: CLASS_C; f: FEATURE_I; c: CLASS_C)
+	record_node_alias_before (t: like alias_keeper.relation; a: AST_EIFFEL; w: CLASS_C; f: FEATURE_I; c: CLASS_C)
 			-- Record aliases `t' before AST node `a' written in class `w'
 			-- when evaluated in a feature `f' of class `c'.
 		do
@@ -1207,14 +1382,14 @@ feature {NONE} -- Alias recording
 			end
 		end
 
-	node_alias_after (a: AST_EIFFEL; w: CLASS_C; f: FEATURE_I; c: CLASS_C): detachable like keeper.relation
+	node_alias_after (a: AST_EIFFEL; w: CLASS_C; f: FEATURE_I; c: CLASS_C): detachable like alias_keeper.relation
 			-- Aliases after AST node `a' written in class `w'
 			-- when evaluated in a feature `f' of class `c'.
 		do
 			Result := ast_alias_after [[a.index, w.class_id, f.rout_id_set.first, c.class_id]]
 		end
 
-	node_alias_before (a: AST_EIFFEL; w: CLASS_C; f: FEATURE_I; c: CLASS_C): detachable like keeper.relation
+	node_alias_before (a: AST_EIFFEL; w: CLASS_C; f: FEATURE_I; c: CLASS_C): detachable like alias_keeper.relation
 			-- Aliases before AST node `a' written in class `w'
 			-- when evaluated in a feature `f' of class `c'.
 		do
@@ -1271,6 +1446,11 @@ feature {NONE} -- Output
 		once
 			create Result.make_from_string ("E1FFE10F-1401-47E2-9CD7-2A492C969376")
 		end
+
+feature {NONE} -- Status report
+
+	is_attachment: BOOLEAN
+			-- Is attachment being performed?
 
 feature {NONE} -- Recursion
 
