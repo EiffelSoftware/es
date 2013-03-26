@@ -745,8 +745,48 @@ feature -- Comparison
 
 	is_processor_attachable_to (other: TYPE_A): BOOLEAN
 			-- May processor of current type be used as a processor of type `other'?
+		local
+			a_feature: FEATURE_I
+			a_tag: STRING_32
+			notes: ARRAYED_LIST [STRING_32]
+			a_indexing_clause: INDEXING_CLAUSE_AS
+			l_values: EIFFEL_LIST [ATOMIC_AS]
+			ignore_scoop_check: BOOLEAN
 		do
-			Result := is_separate implies other.is_separate
+			-- Ignore features explicitly skipping scoop checks
+			a_tag := "ignore_scoop_check"
+			a_feature := context.current_feature
+			if a_feature /= Void and then a_feature.body /= Void and then a_feature.body.indexes /= Void then
+				a_indexing_clause := a_feature.body.indexes
+				create notes.make (3)
+				notes.compare_objects
+				from
+					a_indexing_clause.start
+				until
+					a_indexing_clause.after
+				loop
+					if a_indexing_clause.item.tag.name_32.is_equal (a_tag) then
+						l_values := a_indexing_clause.item.index_list
+						from
+							l_values.start
+						until
+							l_values.after
+						loop
+							notes.extend (l_values.item.string_value_32)
+							l_values.forth
+						end
+					end
+					a_indexing_clause.forth
+				end
+			else
+				create notes.make (0)
+			end
+
+			if not notes.is_empty and then notes.has ("True") then
+				Result := True
+			else
+				Result := is_separate implies other.is_separate
+			end
 		end
 
 feature {CL_TYPE_A} -- Comparison
