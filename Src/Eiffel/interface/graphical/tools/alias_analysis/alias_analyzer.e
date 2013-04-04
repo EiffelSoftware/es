@@ -66,6 +66,7 @@ feature {NONE} -- Creation
 			create ast_alias_before.make (0)
 			create {ARRAYED_STACK [INTEGER_32]} bodies.make (0)
 			create modified_attributes.make (0)
+			create is_specification_feature_map.make (0)
 			create start_time.make_now_utc
 			create finish_time.make_now_utc
 			create_keepers
@@ -104,20 +105,20 @@ feature -- Basic operations
 					t.after
 				loop
 					f := t.item_for_iteration
-					if is_change_check then
-						if f.export_status.is_all then
-							process_feature (f, c, output)
-							progress_total := t.count
-							if not change_keeper.set.is_empty then
+					if is_all_features or else f.written_in /= system.any_id then
+						if is_change_check then
+							if f.export_status.is_all and then not is_specification_feature (f) then
+								process_feature (f, c, output)
+								progress_total := t.count
 								s.append_string (n)
 								n := once {STRING_32} "%N"
 								s.append_string (f.feature_name_32)
 								s.append_string ({STRING_32} ": ")
 								report_to (s)
 							end
+						else
+							analyze_feature (True, f, c)
 						end
-					else
-						analyze_feature (True, f, c)
 					end
 					progress_current := progress_current + 1
 					t.forth
@@ -148,6 +149,9 @@ feature -- Status report
 
 	is_inherited_assertion_included: BOOLEAN
 			-- Does the analysis include inherited assertions?
+
+	is_all_features: BOOLEAN
+			-- Does the analysis include all features, including non-redeclared ones inherited from class ANY?
 
 	is_frame_check: BOOLEAN
 			-- Does the analysis check frame rule?
@@ -184,6 +188,14 @@ feature -- Status setting
 			is_inherited_assertion_included := v
 		ensure
 			is_inherited_assertion_included_set: is_inherited_assertion_included = v
+		end
+
+	set_is_all_features (v: BOOLEAN)
+			-- Set `is_all_features' to `v'.
+		do
+			is_all_features := v
+		ensure
+			is_all_features_set: is_all_features = v
 		end
 
 	set_is_frame_check  (v: BOOLEAN)
@@ -228,6 +240,7 @@ feature {NONE} -- Analysis
 			-- context.add_keeper (keeper)
 				-- Initialize attribute information.
 			modified_attributes.wipe_out
+			is_specification_feature_map.wipe_out
 			dictionary.add_current
 			target := dictionary.last_added
 			is_done := False
@@ -277,9 +290,10 @@ feature {NONE} -- Analysis
 				if is_root then
 						-- Check if the current feature is a creation procedure.
 					if
+						True
 		--				is_creation_checked and then
-						attached c.creators as creators and then creators.has (f.feature_name) or else
-						c.creation_feature /= Void and then c.creation_feature.feature_id = f.feature_id
+--						attached c.creators as creators and then creators.has (f.feature_name) or else
+--						c.creation_feature /= Void and then c.creation_feature.feature_id = f.feature_id
 					then
 							-- Attributes are set to the default values.
 					else
@@ -391,8 +405,7 @@ feature {NONE} -- Visitor
 								-- Attribute.
 							if is_attachment then
 									-- Record that the target is changed.
-								register_attribute (f, context.current_class)
-								record_change (dictionary.last_added)
+								record_attribute_change (f)
 							end
 							if not f.type.is_expanded then
 								if f.type.is_initialization_required and then attached {ATTRIBUTE_I} f as r and then r.has_body and then not bodies.has (r.body_index) then
@@ -403,46 +416,60 @@ feature {NONE} -- Visitor
 								last_item := dictionary.non_void_index
 							end
 						elseif f.is_routine then
-								-- Routine.
-								-- TODO: use AST index and context class to detect recursive calls.
-							if
---								bodies.has (f.body_index)
---								and then
-								attached node_alias_before (a, context.written_class, context.current_feature, context.current_class) as r
---								and then
---								r.is_equal (alias_keeper.relation)
-							then
-									-- TODO: handle recursive calls.
-									-- Retrieve recorded relation.
-								if
-									r.is_equal (alias_keeper.relation) and then
-									attached node_alias_after (a, context.written_class, context.current_feature, context.current_class) as o
- 								then
-										-- Use previously recorded relation.
-									alias_keeper.relation.copy (o)
---								else
---										-- Remove all the pairs.
---									alias_keeper.relation.wipe_out
---										-- Add predefined entries.
---									alias_keeper.relation.add_any (dictionary.void_index)
---									alias_keeper.relation.add_any (dictionary.non_void_index)
+							if f.rout_id_set.first = system.any_copy_id or else f.rout_id_set.first = standard_copy_id then
+									-- All the attributes of the current object may change.
+								across
+									context.current_class.skeleton as s
+								loop
+										-- Record that an attribute is changed.
+									record_attribute_change (context.current_class.feature_of_feature_id (s.item.feature_id))
 								end
+							elseif is_special_routine (f.rout_id_set.first) then
+									-- A feature that modifies SPECIAL is called.
+								dictionary.add_current
+								record_change (dictionary.last_added)
 							else
-									-- This feature has not been processed yet or has been processed but the aliases before the call are different from the previous call.
-									-- Record  alias relation before the call.
-								record_node_alias_before (alias_keeper.relation, a, context.written_class, context.current_feature, context.current_class)
-									-- TODO: process arguments.
-									-- Recurse only when alias relation before the call is different from already evaluated one.
-								analyze_feature (False, f, context.current_class)
-									-- Record  alias relation after the call.
-								record_node_alias_after (alias_keeper.relation, a, context.written_class, context.current_feature, context.current_class)
-							end
-							if not f.type.is_expanded and then not f.type.is_void then
-									-- Set `last_item' to the feature result.
-								dictionary.add_result (f, context.current_class)
-								last_item := dictionary.last_added
-							else
-								last_item :=dictionary.non_void_index
+									-- Routine.
+									-- TODO: use AST index and context class to detect recursive calls.
+								if
+	--								bodies.has (f.body_index)
+	--								and then
+									attached node_alias_before (a, context.written_class, context.current_feature, context.current_class) as r
+	--								and then
+	--								r.is_equal (alias_keeper.relation)
+								then
+										-- TODO: handle recursive calls.
+										-- Retrieve recorded relation.
+									if
+										r.is_equal (alias_keeper.relation) and then
+										attached node_alias_after (a, context.written_class, context.current_feature, context.current_class) as o
+	 								then
+											-- Use previously recorded relation.
+										alias_keeper.relation.copy (o)
+	--								else
+	--										-- Remove all the pairs.
+	--									alias_keeper.relation.wipe_out
+	--										-- Add predefined entries.
+	--									alias_keeper.relation.add_any (dictionary.void_index)
+	--									alias_keeper.relation.add_any (dictionary.non_void_index)
+									end
+								else
+										-- This feature has not been processed yet or has been processed but the aliases before the call are different from the previous call.
+										-- Record  alias relation before the call.
+									record_node_alias_before (alias_keeper.relation, a, context.written_class, context.current_feature, context.current_class)
+										-- TODO: process arguments.
+										-- Recurse only when alias relation before the call is different from already evaluated one.
+									analyze_feature (False, f, context.current_class)
+										-- Record  alias relation after the call.
+									record_node_alias_after (alias_keeper.relation, a, context.written_class, context.current_feature, context.current_class)
+								end
+								if not f.type.is_expanded and then not f.type.is_void then
+										-- Set `last_item' to the feature result.
+									dictionary.add_result (f, context.current_class)
+									last_item := dictionary.last_added
+								else
+									last_item :=dictionary.non_void_index
+								end
 							end
 						end
 					else
@@ -464,44 +491,49 @@ feature {NONE} -- Visitor
 							end
 						elseif f.is_routine then
 								-- Routine.
-								-- TODO: handle recursive calls.
-							if not bodies.has (f.body_index) then
-									-- This feature has not been processed yet.
-									-- Evaluate routine body.
-								old_target := target
-								t := last_item
-								target := t
-								dictionary.add_reverse (t)
-									-- Replace current relation "A" with "t'.A".
-								q := dictionary.last_added
-								alias_keeper.relation.copy (alias_keeper.relation.mapped (agent qualified (q, ?)))
---								if dictionary.is_attribute_chain (q) then
-									change_keeper.set.copy (change_keeper.set.mapped (agent qualified (q, ?)))
---								else
---										-- Do not record changes not visible outside.
---									change_keeper.enter_realm
---								end
-									-- TODO: process arguments.
-								analyze_feature (False, f, c)
-									-- Replace current relation "A" with "t.A".
-								alias_keeper.relation.copy (alias_keeper.relation.mapped (agent qualified (t, ?)))
---								if dictionary.is_attribute_chain (q) then
-									if attached change_keeper.set.mapped (agent qualified (t, ?)) as s then
-										change_keeper.set.wipe_out
-										across
-											s as x
-										loop
-											record_change (x.item)
---											if dictionary.is_attribute_chain (x.item) then
---												change_keeper.set.put (x.item)
---											end
+							if is_special_routine (f.rout_id_set.first) then
+									-- A feature that modifies SPECIAL is called.
+								record_change (target)
+							else
+									-- TODO: handle recursive calls.
+								if not bodies.has (f.body_index) then
+										-- This feature has not been processed yet.
+										-- Evaluate routine body.
+									old_target := target
+									t := last_item
+									target := t
+									dictionary.add_reverse (t)
+										-- Replace current relation "A" with "t'.A".
+									q := dictionary.last_added
+									alias_keeper.relation.copy (alias_keeper.relation.mapped (agent qualified (q, ?)))
+	--								if dictionary.is_attribute_chain (q) then
+										change_keeper.set.copy (change_keeper.set.mapped (agent qualified (q, ?)))
+	--								else
+	--										-- Do not record changes not visible outside.
+	--									change_keeper.enter_realm
+	--								end
+										-- TODO: process arguments.
+									analyze_feature (False, f, c)
+										-- Replace current relation "A" with "t.A".
+									alias_keeper.relation.copy (alias_keeper.relation.mapped (agent qualified (t, ?)))
+	--								if dictionary.is_attribute_chain (q) then
+										if attached change_keeper.set.mapped (agent qualified (t, ?)) as s then
+											change_keeper.set.wipe_out
+											across
+												s as x
+											loop
+												record_change (x.item)
+	--											if dictionary.is_attribute_chain (x.item) then
+	--												change_keeper.set.put (x.item)
+	--											end
+											end
 										end
-									end
---								else
---										-- Do not record changes not visible outside.
---									change_keeper.leave_optional_realm
---								end
-								target := old_target
+	--								else
+	--										-- Do not record changes not visible outside.
+	--									change_keeper.leave_optional_realm
+	--								end
+									target := old_target
+								end
 							end
 								-- Set `last_item' to the feature result.
 							dictionary.add_result (f, context.current_class)
@@ -830,6 +862,7 @@ feature {AST_EIFFEL} -- Visitor: compound
 					process_compound (c)
 				end
 			end
+			keeper.update_sibling
 			keeper.leave_realm
 		end
 
@@ -988,6 +1021,8 @@ feature {NONE} -- Entity access
 			end
 		end
 
+feature {NONE} -- Change analysis
+
 	record_change (t: like target)
 			-- Record that the target `t' is changed.
 		local
@@ -1010,6 +1045,45 @@ feature {NONE} -- Entity access
 				end
 			end
 		end
+
+	record_attribute_change (a: FEATURE_I)
+			-- Record that an attribute `a' of class `context.current_class' is changed.
+		do
+			register_attribute (a, context.current_class)
+				-- Do not record change for specification feature.
+			if not is_specification_feature (a) then
+				record_change (last_item)
+			end
+		end
+
+	is_specification_feature (f: FEATURE_I): BOOLEAN
+			-- Is `f' a specification feature that is not executable?
+		local
+			r: like {ROUT_ID_SET}.first
+		do
+			r := f.rout_id_set.first
+			is_specification_feature_map.search (r)
+			if is_specification_feature_map.found then
+				Result := is_specification_feature_map.found_item
+			else
+				if
+					attached f.body as b and then
+					attached b.indexes as i and then
+					attached i.index_as_of_tag_name ("status") as t and then
+					attached t.index_list as l and then
+					across l as n some
+						attached {STRING_AS} n.item as s and then s.value.is_case_insensitive_equal ("specification") or else
+						attached {ID_AS} n.item as id and then id.name.is_case_insensitive_equal ("specification")
+					end
+				then
+					Result := True
+				end
+				is_specification_feature_map.force (Result, r)
+			end
+		end
+
+	is_specification_feature_map: HASH_TABLE [BOOLEAN, like {ROUT_ID_SET}.first]
+			-- Map of specification features.
 
 feature {NONE} -- Access
 
@@ -1466,6 +1540,50 @@ feature {NONE} -- Type checking
 			-- Type checker.
 		once
 			create Result
+		end
+
+feature {NONE} -- Information about standard features
+
+	routine_id (feature_name_id: like system.names.id_of; class_descriptor: CLASS_I): INTEGER
+			-- Routine id of a feature named `feature_name_id' in a class specified by `class_descriptor'.
+		do
+			if
+				attached class_descriptor as c and then
+				c.is_compiled and then
+				attached c.compiled_class.feature_table.item_id (feature_name_id) as f
+			then
+				Result := f.rout_id_set.first
+			end
+		end
+
+	standard_copy_id: INTEGER
+			-- Routine id of  "{ANY}.standard_copy".
+		once
+			Result := routine_id (system.names.standard_copy_name_id, system.any_class)
+		end
+
+	is_special_routine (r: INTEGER): BOOLEAN
+			-- Does a routine of routine id `r' correspond to a routine from the class SPECIAL that changes object state?
+		do
+			Result := r = put_id or else r = extend_id or else r = set_count_id or else r = standard_copy_id or else r = system.any_copy_id
+		end
+
+	put_id: INTEGER
+			-- Routine id of  "{SPECIAL}.put".
+		once
+			Result := routine_id (system.names.put_name_id, system.special_class)
+		end
+
+	extend_id: INTEGER
+			-- Routine id of  "{SPECIAL}.extend".
+		once
+			Result := routine_id (system.names.extend_name_id, system.special_class)
+		end
+
+	set_count_id: INTEGER
+			-- Routine id of  "{SPECIAL}.set_count".
+		once
+			Result := routine_id (system.names.set_count_name_id, system.special_class)
 		end
 
 note

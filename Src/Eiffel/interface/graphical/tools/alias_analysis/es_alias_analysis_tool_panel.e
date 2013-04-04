@@ -53,6 +53,10 @@ feature
 			inherited_assertions_toggle.set_text ("Inherited asserions")
 			inherited_assertions_toggle.set_tooltip ("Process inherited assertions.")
 			Result.extend (inherited_assertions_toggle)
+			create feature_from_any_toggle.make
+			feature_from_any_toggle.set_text ("Any")
+			feature_from_any_toggle.set_tooltip ("Process all features, including non-redeclared ones  inherited from ANY.")
+			Result.extend (feature_from_any_toggle)
 			create frame_check_toggle.make
 			frame_check_toggle.set_text ("Frame")
 			frame_check_toggle.set_tooltip ("Detect modified attributes.")
@@ -114,6 +118,9 @@ feature {NONE} -- Toolbar
 	inherited_assertions_toggle: SD_TOOL_BAR_TOGGLE_BUTTON
 			-- Toggle to enable/disable inherited assertion processing.
 
+	feature_from_any_toggle: SD_TOOL_BAR_TOGGLE_BUTTON
+			-- Toggle to enable/disable processing of features declared in class ANY.
+
 	frame_check_toggle: SD_TOOL_BAR_TOGGLE_BUTTON
 			-- Toggle to enable/disable frame check.
 
@@ -162,6 +169,7 @@ feature {NONE} -- Analyzer
 				analyzer.set_is_inherited_assertion_included (inherited_assertions_toggle.is_selected)
 				is_frame_check := frame_check_toggle.is_selected
 				analyzer.set_is_frame_check (is_frame_check)
+				analyzer.set_is_all_features (feature_from_any_toggle.is_selected)
 				if attached current_feature as f then
 					analyzer.process_feature (f, c,
 						agent (ff: FEATURE_I; cc: CLASS_C)
