@@ -295,7 +295,7 @@ feature -- Modification
 			-- Updates `is_overqualified' to signify that the elements has too many qualifiers.
 		require
 			v_is_registered: has_index (v)
-			v_not_reversed: not is_reversed (v)
+			v_not_reversed: is_reversed (v) implies q = - v
 		local
 			t: like entry
 			p: like last_added
@@ -312,6 +312,9 @@ feature -- Modification
 			elseif v = current_index then
 					-- foo.Current == foo.
 				last_added := q
+			elseif q = - v then
+					-- q.q' == Current.
+				last_added := current_index
 			elseif q > 0 then
 					-- Add real qualification.
 				if is_unqualified (v) then

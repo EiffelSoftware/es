@@ -429,7 +429,7 @@ feature -- Modification
 			-- Updates `is_overqualified' to signify that the elements has too many qualifiers.
 		require
 			v_is_registered: has_index (v)
-			v_not_reversed: not is_reversed (v)
+			v_not_reversed: is_reversed (v) implies q = - v
 			v_is_nested:
 --				q > 0 and then not is_unqualified (v) and then entry_qualifier (values [v]) < 0 implies
 --				entry_qualifier (values [v]) = - q
@@ -445,6 +445,8 @@ feature -- Modification
 				last_added := v
 			elseif v = current_index then
 				last_added := q
+			elseif q = - v then
+				last_added := current_index
 			elseif q > 0 then
 				if is_unqualified (v) then
 					add (- v, q)
