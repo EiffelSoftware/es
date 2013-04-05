@@ -42,6 +42,7 @@ feature -- Button texts
 	b_refactoring_create_setter: STRING_32		do Result := locale.translation("Create setter")	end
 
 	b_Abort: STRING_32							do Result := locale.translation("Abort")	end
+	b_acknowledge: STRING_32					do Result := locale.translation ("Acknowledge") end
 	b_Add: STRING_32 							do Result := locale.translation("Add")	end
 	b_Add_details: STRING_32					do Result := locale.translation("Add...") end
 	b_Add_text: STRING_32 						do Result := locale.translation("Add ->")	end
@@ -385,6 +386,8 @@ feature -- Accelerator, focus label and menu name
 	l_all_classes: STRING_32						do Result := locale.translation("All Classes")	end
 	l_all_tags: STRING_32						do Result := locale.translation ("All tags") end
 	l_affected_items: STRING_32					do Result := locale.translation ("Affected items") end
+	l_affected_source: STRING_32					do Result := locale.translation ("Affected source") end
+	l_affected_target: STRING_32					do Result := locale.translation ("Affected target") end
 	m_Breakpoints_tool: STRING_32				do Result := locale.translation("Breakpoints")	end
 	m_Breakpoint_index: STRING_32				do Result := locale.translation("Breakpoint index:")	end
 	m_enable_remove_breakpoint_here: STRING_32				do Result := locale.translation("Enable/Remove Breakpoint Here")	end
@@ -1201,6 +1204,7 @@ feature -- Label texts
 	l_Compile_first: STRING_32			do Result := locale.translation("Compile to have information")	end
 	l_Compile_project: STRING_32			do Result := locale.translation("Compile project")	end
 	l_Condition: STRING_32				do Result := locale.translation("Condition")	end
+	l_confirm_acknowledge_selected_items: STRING_32	do Result := locale.translation ("Acknowledgement is not reversible. Are you sure you want to acknowledge selected items?") end
 	l_Confirm_kill: STRING_32			do Result := locale.translation("Are you sure you want to stop the execution?")	end
 	l_Confirm_kill_and_restart: STRING_32			do Result := locale.translation("Are you sure you want to stop and restart the execution?")	end
 	l_dbg_confirm_detach: STRING_32		do Result := locale.translation("Are you sure you want to detach the execution?")	end
@@ -2175,6 +2179,7 @@ feature -- Label texts
 	l_go_to_next_warning: STRING_32 			do Result := locale.translation ("Go to next warning") end
 	l_go_to_previous_warning: STRING_32 		do Result := locale.translation ("Go to previous warning") end
 
+	l_always_acknowledge_without_asking: STRING	do Result := locale.translation ("always acknowledge without asking.") end
 	l_always_compile_before_debug:STRING_32 	do Result := locale.translation ("always compile before executing.") end
 	l_always_delete_without_asking:STRING_32 do Result := locale.translation ("always delete without asking.") end
 
@@ -2233,6 +2238,7 @@ feature -- Title part
 		once
 			Result := locale.formatted_string (locale.translation ("About $1"), [workbench_name])
 		end
+	t_acknowledge_change: STRING_32				do Result := locale.translation("Acknowledge selected affected items.") end
 	t_Add_eis_entry: STRING_32					do Result := locale.translation("Add a new entry in the list.")	end
 	t_Add_search_scope: STRING_32				do Result := locale.translation("Add Search Scope")	end
 	t_Alias: STRING_32							do Result := locale.translation("Alias")	end

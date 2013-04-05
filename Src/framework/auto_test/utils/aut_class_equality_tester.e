@@ -12,6 +12,10 @@ note
 class AUT_CLASS_EQUALITY_TESTER
 
 inherit
+	EQUALITY_TESTER [CLASS_C]
+		redefine
+			test
+		end
 
 	KL_EQUALITY_TESTER [CLASS_C]
 		redefine
@@ -23,7 +27,7 @@ create
 
 feature -- Status report
 
-	test (v, u: CLASS_C): BOOLEAN
+	test (v, u: detachable CLASS_C): BOOLEAN
 		do
 			if v = u then
 				Result := True
@@ -37,7 +41,7 @@ feature -- Status report
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

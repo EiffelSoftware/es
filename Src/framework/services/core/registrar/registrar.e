@@ -4,8 +4,7 @@ note
 		registration/unregisteration of modular/extension objects.
 		
 		Objects registered are automatically adopted by the registrar and will be disposed
-		of when removed. If this is not the desired functionality then seek the functions
-		of {ACTIVE_DICTIONARY_I}/{ACTIVE_DICTIONARY}.
+		of when removed.
 		
 		Objects registered will be automatically sited with the registrar object, if the
 		object implemented {SITE}[{REGISTRAR_I}[G, K]], when registration takes place or
@@ -36,7 +35,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialize a new registrar.
 		do
-			create table.make_default
+			create table.make (10)
 		end
 
 feature {NONE} -- Clean up
@@ -49,17 +48,10 @@ feature {NONE} -- Clean up
 			l_automation: like automation
 		do
 			if a_explicit then
-				l_keys := table.keys
-				if not l_keys.is_empty then
-					l_automation := automation
-					from until l_keys.is_empty loop
-						l_keys.start
-						l_key := l_keys.item_for_iteration
-						check
-							l_key_attached: l_key /= Void
-						end
-						unregister (l_key)
-					end
+				l_automation := automation
+				from until table.is_empty loop
+					table.start
+					unregister (table.key_for_iteration)
 				end
 			end
 		ensure then
@@ -72,7 +64,6 @@ feature -- Access
 			-- <Precursor>
 		local
 			l_list: DS_ARRAYED_LIST [G]
-			l_cursor: DS_LINEAR_CURSOR [CONCEALER_I [G]]
 			l_concealer: detachable CONCEALER_I [G]
 			l_object: detachable G
 		do
@@ -80,8 +71,7 @@ feature -- Access
 				Result := l_result
 			else
 				create l_list.make_default
-				l_cursor := registrations.new_cursor
-				from l_cursor.start until l_cursor.after loop
+				across registrations as l_cursor loop
 					l_concealer := l_cursor.item
 					check l_concealer_attached: l_concealer /= Void end
 					if l_concealer.is_revealed then
@@ -92,22 +82,21 @@ feature -- Access
 							end
 						end
 					end
-					l_cursor.forth
 				end
 				Result := l_list
 				internal_active_registrations := Result
 			end
 		end
 
-	registrations: DS_LINEAR [CONCEALER_I [G]]
+	registrations: HASH_TABLE [CONCEALER_I [G], K]
 			-- <Precursor>
 		do
-			Result := table.as_attached
+			Result := table
 		end
 
 feature {NONE} -- Access
 
-	table: DS_HASH_TABLE [CONCEALER_I [G], K]
+	table: HASH_TABLE [CONCEALER_I [G], K]
 			-- Actual table used to store active dictionary items.
 
 feature -- Status report
@@ -458,7 +447,7 @@ invariant
 	table_attached: table /= Void
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

@@ -34,8 +34,7 @@ feature {NONE} -- Initialization
 		do
 			create name_generator.make_with_string_stream (variable_name_prefix)
 			create tester.make
-			create variable_type_table.make_default
-			variable_type_table.set_key_equality_tester (tester)
+			create variable_type_table.make_with_key_tester (10, tester)
 			system := a_system
 			create invalid_objects.make (default_invalid_objects_size)
 		ensure
@@ -109,23 +108,22 @@ feature -- Access
 		local
 			i: INTEGER
 			j: INTEGER
-			cs: DS_HASH_TABLE_CURSOR [TYPE_A, ITP_VARIABLE]
+			l_variable_type_table: like variable_type_table
 		do
+			l_variable_type_table := variable_type_table
 			if variable_type_table.count > 0 then
 				random.forth
 				i := (random.item  \\ variable_type_table.count) + 1
 				from
 					j := 1
-					cs := variable_type_table.new_cursor
-					cs.start
+					l_variable_type_table.start
 				until
 					i = j
 				loop
-					cs.forth
+					l_variable_type_table.forth
 					j := j + 1
 				end
-				Result := cs.key
-				cs.go_after
+				Result := l_variable_type_table.key_for_iteration
 			end
 		ensure
 			variable_defined: Result /= Void implies is_variable_defined (Result)
@@ -172,24 +170,17 @@ feature -- Access
 			a_context_class_valid: a_context_class.is_valid
 			a_type_not_void: a_type /= Void
 		local
-			cs: DS_HASH_TABLE_CURSOR [TYPE_A, ITP_VARIABLE]
 			l_type: TYPE_A
 			l_invalid_objects: like invalid_objects
 		do
 			create {DS_ARRAYED_LIST [ITP_VARIABLE]} Result.make (variable_type_table.count)
 			l_invalid_objects := invalid_objects
-			from
-				cs := variable_type_table.new_cursor
-				cs.start
-			until
-				cs.off
-			loop
+			across variable_type_table as cs loop
 				l_type := cs.item.actual_type
 					-- We only allow Void conforms to a non expanded type.
 				if l_type.is_conformant_to (a_context_class, a_type) and then not (a_type.is_expanded and then l_type.is_none) and then not l_invalid_objects.has (cs.key.index) then
 					Result.force_last (cs.key)
 				end
-				cs.forth
 			end
 		ensure
 			variables_not_void: Result /= Void
@@ -249,7 +240,7 @@ feature -- Removal
 	name_generator: AUT_UNIQUE_NAME_GENERATOR
 			-- Name generator for variable names
 
-	variable_type_table: DS_HASH_TABLE [TYPE_A, ITP_VARIABLE]
+	variable_type_table: HASH_TABLE_EX [TYPE_A, ITP_VARIABLE]
 			-- Table mapping interprteter variables to their type
 
 feature -- Class invariant violation management
@@ -320,7 +311,7 @@ invariant
 	all_variables_have_type: not variable_type_table.has (Void)
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

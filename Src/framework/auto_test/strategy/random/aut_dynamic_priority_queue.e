@@ -37,10 +37,9 @@ feature {NONE} -- Initialization
 			tester: AUT_FEATURE_OF_TYPE_EQUALITY_TESTER
 		do
 			system := a_system
-			create feature_list_table.make_map_default
-			create priority_table.make_default
+			create feature_list_table.make (10)
 			create tester.make
-			priority_table.set_key_equality_tester (tester)
+			create priority_table.make_with_key_tester (10, tester)
 			create excluded_features.make (10)
 			excluded_features.set_equality_tester (string_equality_tester)
 
@@ -148,7 +147,7 @@ feature -- Changing Priority
 			a_feature_is_not_infix_or_prefix: not a_feature.feature_.is_prefix and not a_feature.feature_.is_infix
 			a_priority_valid: a_priority >= 0
 		local
-			pair: DS_PAIR [INTEGER, INTEGER]
+			pair: PAIR [INTEGER, INTEGER]
 			list: DS_LINKED_LIST [AUT_FEATURE_OF_TYPE]
 			l_feat_name: STRING
 			l_class_feat_name: STRING
@@ -158,7 +157,7 @@ feature -- Changing Priority
 			if not excluded_features.has (l_feat_name) and then not excluded_features.has (l_class_feat_name) then
 				priority_table.search (a_feature)
 				if priority_table.found then
-					priority_table.found_item.put_first (a_priority)
+					priority_table.found_item.set_first (a_priority)
 				else
 					create pair.make (a_priority, a_priority)
 					if highest_dynamic_priority < a_priority then
@@ -322,7 +321,7 @@ feature -- Basic routines
 					if new_priority < 0 then
 						new_priority := 0
 					end
-					priority_table.found_item.put_second (new_priority)
+					priority_table.found_item.set_second (new_priority)
 					feature_list_table.search (old_priority)
 					check
 						found: feature_list_table.found
@@ -353,32 +352,26 @@ feature -- Basic routines
 
 feature {NONE} -- Implementation
 
-	feature_list_table: DS_HASH_TABLE [DS_LINKED_LIST [AUT_FEATURE_OF_TYPE], INTEGER]
+	feature_list_table: HASH_TABLE [DS_LINKED_LIST [AUT_FEATURE_OF_TYPE], INTEGER]
 			-- Table that maps dynamic priorities to lists of features
 
-	priority_table: DS_HASH_TABLE [DS_PAIR [INTEGER, INTEGER], AUT_FEATURE_OF_TYPE]
+	priority_table: HASH_TABLE_EX [PAIR [INTEGER, INTEGER], AUT_FEATURE_OF_TYPE]
 			-- Table that maps features to their priorities (static, dynamic)
 
 	reset_dynamic_priorities
 			-- Reset the dynamic priorities of all
 			-- features to their static value.
 		local
-			cs: DS_HASH_TABLE_CURSOR [DS_PAIR [INTEGER, INTEGER], AUT_FEATURE_OF_TYPE]
 			old_priority: INTEGER
 			new_priority: INTEGER
 			feature_: AUT_FEATURE_OF_TYPE
 			list: DS_LINKED_LIST [AUT_FEATURE_OF_TYPE]
 		do
-			from
-				cs := priority_table.new_cursor
-				cs.start
-			until
-				cs.off
-			loop
+			across priority_table as cs loop
 				new_priority := cs.item.first
 				old_priority := cs.item.second
 				feature_ := cs.key
-				cs.item.put_second (new_priority)
+				cs.item.set_second (new_priority)
 				feature_list_table.search (old_priority)
 				check
 					found: feature_list_table.found
@@ -397,7 +390,6 @@ feature {NONE} -- Implementation
 					list.force_last (feature_)
 					feature_list_table.force (list, new_priority)
 				end
-				cs.forth
 			end
 			set_highest_priority
 		end
@@ -405,20 +397,12 @@ feature {NONE} -- Implementation
 	set_highest_priority
 			-- Set `highest_dynamic_priority' to the highest priority value
 			-- found in `feature_list_table'.
-		local
-			cs: DS_HASH_TABLE_CURSOR [DS_LINKED_LIST [AUT_FEATURE_OF_TYPE], INTEGER]
 		do
-			from
-				highest_dynamic_priority := 0
-				cs := feature_list_table.new_cursor
-				cs.start
-			until
-				cs.off
-			loop
+			highest_dynamic_priority := 0
+			across feature_list_table as cs loop
 				if cs.key > highest_dynamic_priority then
 					highest_dynamic_priority := cs.key
 				end
-				cs.forth
 			end
 		end
 
@@ -484,38 +468,23 @@ feature {NONE} -- Assertion helpers
 	is_highest_priority_valid: BOOLEAN
 			-- Is `highest_dynamic_priority' set to the highest priority found
 			-- in `feature_list_table'.
-		local
-			cs: DS_HASH_TABLE_CURSOR [DS_LINKED_LIST [AUT_FEATURE_OF_TYPE], INTEGER]
 		do
-			from
-				Result := True
-				cs := feature_list_table.new_cursor
-				cs.start
-			until
-				cs.off or not Result
-			loop
+			Result := True
+			across feature_list_table as cs until not Result loop
 				if cs.key > highest_dynamic_priority then
 					Result := False
 				end
-				cs.forth
 			end
-			cs.go_after
 		end
 
 	are_tables_valid: BOOLEAN
 			-- Are the tables `feature_list_table' and `priority_table'
 			-- synchronized?
 		local
-			table_cs: DS_HASH_TABLE_CURSOR [DS_LINKED_LIST [AUT_FEATURE_OF_TYPE], INTEGER]
 			list_cs: DS_LINKED_LIST_CURSOR [AUT_FEATURE_OF_TYPE]
 		do
-			from
-				Result := True
-				table_cs := feature_list_table.new_cursor
-				table_cs.start
-			until
-				table_cs.off or not Result
-			loop
+			Result := True
+			across feature_list_table as table_cs until not Result loop
 				from
 					list_cs := table_cs.item.new_cursor
 					list_cs.start
@@ -536,9 +505,7 @@ feature {NONE} -- Assertion helpers
 					list_cs.forth
 				end
 				list_cs.go_after
-				table_cs.forth
 			end
-			table_cs.go_after
 		end
 
 invariant
@@ -550,7 +517,7 @@ invariant
 	tables_valid: are_tables_valid
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

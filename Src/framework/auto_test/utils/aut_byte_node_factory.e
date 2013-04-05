@@ -199,7 +199,7 @@ feature -- Byte node generation
 			l_oargtypes, l_cargtypes: ARRAY [TYPE_A]
 			l_closed_count: INTEGER
 			l_tuple_type: TUPLE_TYPE_A
-			l_expressions: BYTE_LIST [BYTE_NODE]
+			l_expressions: BYTE_LIST [EXPR_B]
 			l_expr: EXPR_B
 			l_operand_node: OPERAND_B
 			l_tuple_node: TUPLE_CONST_B
@@ -320,7 +320,7 @@ feature -- Byte node generation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

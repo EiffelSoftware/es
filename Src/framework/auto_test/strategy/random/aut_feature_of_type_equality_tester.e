@@ -13,6 +13,10 @@ note
 class AUT_FEATURE_OF_TYPE_EQUALITY_TESTER
 
 inherit
+	EQUALITY_TESTER [AUT_FEATURE_OF_TYPE]
+		redefine
+			test
+		end
 
 	KL_EQUALITY_TESTER [AUT_FEATURE_OF_TYPE]
 		redefine
@@ -20,7 +24,6 @@ inherit
 		end
 
 create
-
 	make,
 	make_with_creator_flag
 
@@ -44,7 +47,7 @@ feature {NONE} -- Initialization
 
 feature -- Status report
 
-	test (v, u: AUT_FEATURE_OF_TYPE): BOOLEAN
+	test (v, u: detachable AUT_FEATURE_OF_TYPE): BOOLEAN
 		do
 			if v = u then
 				Result := True
@@ -66,7 +69,7 @@ feature -- Status report
 			-- Default: True
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -32,10 +32,10 @@ feature -- Basic operations
 			l_cont: BOOLEAN
 			l_escape: BOOLEAN
 			l_match_para: BOOLEAN
-			l_id_table: DS_HASH_TABLE [CODE_TOKEN_ID, STRING_32]
+			l_id_table: HASH_TABLE [CODE_TOKEN_ID, STRING_32]
 		do
 			create Result.make_default
-			create l_id_table.make_default
+			create l_id_table.make (10)
 
 			create l_buffer.make (128)
 			from
@@ -106,7 +106,7 @@ feature -- Basic operations
 									end
 
 									Result.force_last (l_token_id)
-									l_id_table.put (l_token_id, l_id)
+									l_id_table.force (l_token_id, l_id)
 								end
 								l_buffer.wipe_out
 							end
@@ -161,7 +161,7 @@ feature {NONE} -- Constants
 			-- Escape character prefix, use when escaping `id_specifier_char'
 
 ;note
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

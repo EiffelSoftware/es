@@ -3907,7 +3907,7 @@ feature {NONE} -- Implementation
 			l_unsupported: NOT_SUPPORTED
 			l_target_type: TYPE_A
 			l_return_type: TYPE_A
-			l_target_node: BYTE_NODE
+			l_target_node: EXPR_B
 			l_needs_byte_node: BOOLEAN
 			l_feature_name: ID_AS
 			l_access: ACCESS_B
@@ -3935,8 +3935,18 @@ feature {NONE} -- Implementation
 				l_as.target.process (Current)
 				current_target_type := l_old_current_target_type
 				l_target_type := last_type
-				if l_target_type /= Void and then l_needs_byte_node then
-  					l_target_node := last_byte_node
+				if l_target_type /= Void then
+					if l_needs_byte_node then
+						check
+							is_expression_byte_code: attached {EXPR_B} last_byte_node as e
+						then
+	  						l_target_node := e
+						end
+  					end
+						-- Check the target of a separate feature call.
+					if l_target_type.is_separate then
+						validate_separate_target (l_as.target)
+					end
   				end
 			end
 
@@ -8026,9 +8036,13 @@ feature {NONE} -- Implementation
 			l_old_written_class: CLASS_C
 			l_written_class: CLASS_C
 			t: TYPE_A
+			old_locals: like empty_locals
 		do
 			assert_id_set := a_feature.assert_id_set
 			if assert_id_set /= Void then
+					-- Save locals to make them usable after type checking completes.
+				old_locals := context.locals
+				context.set_locals (empty_locals)
 				context.clear_local_context
 				set_is_inherited (True)
 				if context.local_scope = Void then
@@ -8091,6 +8105,8 @@ feature {NONE} -- Implementation
 					context.remove_result_scope
 				end
 				set_is_inherited (False)
+					-- Restore previously computed locals in case they are used by later analysis.
+				context.set_locals (old_locals)
 			end
 		end
 
@@ -9121,7 +9137,6 @@ feature {NONE} -- Agents
 	compute_routine (
 			a_table: FEATURE_TABLE; a_feature: FEATURE_I; a_is_query, a_has_args: BOOLEAN; cid : INTEGER; a_target_type: TYPE_A;
 			a_feat_type: TYPE_A; an_agent: ROUTINE_CREATION_AS; an_access: ACCESS_B; a_target_node: BYTE_NODE)
-
 			-- Type of routine object.
 		require
 			valid_table: a_table /= Void
@@ -9137,11 +9152,11 @@ feature {NONE} -- Agents
 			l_arg_count, l_open_count, l_closed_count, l_idx, l_cidx, l_oidx: INTEGER
 			l_operand: OPERAND_AS
 			l_is_open, l_target_closed: BOOLEAN
-			l_result_type: GEN_TYPE_A
+			l_result_type: TYPE_A
 			l_last_open_positions: ARRAYED_LIST [INTEGER]
 			l_routine_creation: ROUTINE_CREATION_B
 			l_tuple_node: TUPLE_CONST_B
-			l_expressions: BYTE_LIST [BYTE_NODE]
+			l_expressions: BYTE_LIST [EXPR_B]
 			l_parameters_node: BYTE_LIST [PARAMETER_B]
 			l_expr: EXPR_B
 			l_array_of_opens: ARRAY_CONST_B
@@ -9164,23 +9179,18 @@ feature {NONE} -- Agents
 				if l_type.actual_type.is_boolean then
 						-- generics are: base_type, open_types
 					create l_generics.make (1, 2)
-					create l_result_type.make (System.predicate_class_id, l_generics)
+					create {GEN_TYPE_A} l_result_type.make (System.predicate_class_id, l_generics)
 				else
 						-- generics are: base_type, open_types, result_type
 					create l_generics.make (1, 3)
 					l_generics.put (l_type, 3)
-					create l_result_type.make (System.function_class_id, l_generics)
+					create {GEN_TYPE_A} l_result_type.make (System.function_class_id, l_generics)
 				end
 			else
 					-- generics are: base_type, open_types
 				create l_generics.make (1, 2)
-				create l_result_type.make (System.procedure_class_id, l_generics)
+				create {GEN_TYPE_A} l_result_type.make (System.procedure_class_id, l_generics)
 			end
-
-				-- Type of the first actual generic parameter of the routine type
-				-- should always be attached.
-			l_type := a_target_type.as_attached_in (context.current_class)
-			l_generics.put (l_type, 1)
 
 			if a_has_args then
 				l_feat_args := a_feature.arguments
@@ -9327,8 +9337,20 @@ feature {NONE} -- Agents
 				-- Insert it as second generic parameter of ROUTINE.
 			l_generics.put (l_tuple_type, 2)
 
+				-- Type of the first actual generic parameter of the routine type
+				-- should always be attached.
+			l_type := a_target_type.as_attached_in (context.current_class)
+				-- The target type is not separate, because an agent object is created on a target processor.
+			l_type := l_type.to_other_separateness (l_tuple_type)
+			l_generics.put (l_type, 1)
+
+
 				-- Type of an agent is always attached.
 			l_result_type := l_result_type.as_attached_in (context.current_class)
+
+				-- If a target type is separate, a type of the agent is separate.
+			adapt_type_to_target (l_result_type, a_target_type, True, an_agent)
+			l_result_type := last_type
 
 			if is_byte_node_enabled then
 				create l_routine_creation
@@ -9424,7 +9446,7 @@ feature {NONE} -- Agents
 			create Result.make (System.array_id, generics)
 		end
 
-	compute_feature_fake_inline_agent (a_rc: ROUTINE_CREATION_AS; a_feature: FEATURE_I; a_target: BYTE_NODE;
+	compute_feature_fake_inline_agent (a_rc: ROUTINE_CREATION_AS; a_feature: FEATURE_I; a_target: EXPR_B;
 								a_target_type: TYPE_A; a_agent_type: TYPE_A)
 		local
 			l_result_type: TYPE_A
@@ -9439,7 +9461,7 @@ feature {NONE} -- Agents
 		end
 
 	compute_named_tuple_fake_inline_agent (a_rc: ROUTINE_CREATION_AS; a_named_tuple: NAMED_TUPLE_TYPE_A; a_label_pos: INTEGER;
-										a_target: BYTE_NODE; a_target_type: TYPE_A; a_agent_type: TYPE_A)
+										a_target: EXPR_B; a_target_type: TYPE_A; a_agent_type: TYPE_A)
 		local
 			l_tuple_access_b: TUPLE_ACCESS_B
 		do
@@ -9451,7 +9473,7 @@ feature {NONE} -- Agents
 			a_rc: ROUTINE_CREATION_AS
 			a_feature: CALL_B
 			a_feature_type: TYPE_A
-			a_target: BYTE_NODE
+			a_target: EXPR_B
 			a_target_type: TYPE_A
 			a_agent_type: TYPE_A
 			a_for_feature: FEATURE_I)
@@ -9471,10 +9493,10 @@ feature {NONE} -- Agents
 			l_argument: ARGUMENT_B
 			l_assign: ASSIGN_B
 			l_tuple_node: TUPLE_CONST_B
-			l_closed_args: BYTE_LIST [BYTE_NODE]
+			l_closed_args: BYTE_LIST [EXPR_B]
 			l_agent_type: GEN_TYPE_A
 			l_operand: OPERAND_B
-			l_target: BYTE_NODE
+			l_target: EXPR_B
 			l_cur_class: EIFFEL_CLASS_C
 			l_enclosing_feature: FEATURE_I
 			l_tuple_type: TUPLE_TYPE_A
@@ -10142,6 +10164,12 @@ feature {NONE} -- Implementation: checking locals
 			if l_warning /= Void then
 				error_handler.insert_warning (l_warning)
 			end
+		end
+
+	empty_locals: like {AST_CONTEXT}.locals
+			-- Empty locals that are used when processing inherited assertions.
+		once
+			create Result.make (10)
 		end
 
 feature {NONE} -- Variable initialization
