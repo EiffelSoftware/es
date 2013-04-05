@@ -250,6 +250,8 @@ feature {NONE} -- Steps
 			-- Arbitrary creatable descendant of `a_type; Void if none exists.
 			-- TODO: Always takes the first one. Pick an random one.
 			-- TODO: Cache results.
+			--
+			-- Affects directly {TEST_INTERPRETER_SOURCE_WRITER}.put_type_assignment
 		require
 			a_type_not_void: a_type /= Void
 		local
@@ -300,7 +302,7 @@ invariant
 	has_error_implies_over: has_error implies not has_next_step
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

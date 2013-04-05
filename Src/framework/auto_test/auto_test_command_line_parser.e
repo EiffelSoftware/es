@@ -293,7 +293,7 @@ feature{NONE} -- Initialization
 			parser.options.force_last (l_test_case_deserialization_option)
 
 			create l_test_case_deserialization_by_feature_under_test_option.make_with_long_form ("deserialization-by-feature-under-test")
-			l_test_case_deserialization_by_feature_under_test_option.set_description ("Select the test cases to deserialize by feature under test.")
+			l_test_case_deserialization_by_feature_under_test_option.set_description ("Select the test cases to deserialize by feature under test. If the argument is an empty list, denoted by a single comma ',', deserialize all features.")
 			parser.options.force_last (l_test_case_deserialization_by_feature_under_test_option)
 
 			create l_build_behavioral_model_option.make_with_long_form ("build-model")
@@ -779,7 +779,9 @@ feature{NONE} -- Initialization
 					from l_strs.start
 					until l_strs.after
 					loop
-						features_under_test_to_deserialize.force (l_strs.item_for_iteration)
+						if not l_strs.item_for_iteration.is_empty then
+							features_under_test_to_deserialize.force (l_strs.item_for_iteration)
+						end
 						l_strs.forth
 					end
 				else

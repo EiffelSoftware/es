@@ -15,6 +15,9 @@ inherit
 			ancestor_names
 		end
 
+	ERL_G_TYPE_ROUTINES
+		export {NONE} all end
+
 	SHARED_EIFFEL_PARSER
 		export
 			{NONE} all
@@ -26,6 +29,21 @@ inherit
 		end
 
 	SHARED_ERROR_HANDLER
+		export
+			{NONE} all
+		end
+
+	SHARED_WORKBENCH
+		export
+			{NONE} all
+		end
+
+	REFACTORING_HELPER
+		export
+			{NONE} all
+		end
+
+	AUT_SHARED_INTERPRETER_INFO
 		export
 			{NONE} all
 		end
@@ -178,49 +196,122 @@ feature {NONE} -- Implementation
 			root_class_attached: root_class /= Void
 			root_feature_attached: root_feature /= Void
 		local
-			l_type_a, l_gtype: TYPE_A
+			l_type_a, l_creatable_type, t, l_gtype: TYPE_A
 			l_class: CLASS_C
 			l_type: detachable STRING
 			i: INTEGER
+			l_types: DS_HASH_SET [TYPE_A]
 		do
 			type_parser.parse_from_string_32 ("type " + a_type, root_class)
 			error_handler.wipe_out
 			if attached {CLASS_TYPE_AS} type_parser.type_node as l_type_as then
 				l_type_a := type_a_generator.evaluate_type (l_type_as, root_class)
 				if l_type_a /= Void then
-					create l_type.make (20)
-					l_type.append (l_type_a.name)
-					if l_type_a.generics = Void then
-						l_class := l_type_a.associated_class
-						check l_class /= Void end
-						if l_class.is_generic then
-								-- In this case we try to insert constrains to receive a valid type
-							l_type.append (" [")
-							from
-								i := 1
-							until
-								not l_class.is_valid_formal_position (i)
-							loop
-								if i > 1 then
-									l_type.append (", ")
-								end
-								if l_class.generics [i].is_multi_constrained (l_class.generics) then
-									l_type.append ("NONE")
-								else
-									l_gtype := l_class.constrained_type (i)
-									append_type (l_type, l_gtype)
-								end
-								i := i + 1
-							end
-							l_type.append ("]")
+					create l_types.make_equal (2)
+					l_types.put (l_type_a)
+
+					-- If the type's base class doesn't have public creation procedure,
+					--		AutoTest will try to use a creatable descendant class to instantiate objects.
+					-- Such a descendant class should also be declared, otherwise AutoTest will fail.
+					-- See {AUT_RANDOM_INPUT_CREATOR}.random_creatable_descendant		
+					--																	April 5, 2013 Max
+					if not l_type_a.is_expanded and then creation_procedure_count (l_type_a, system) = 0 then
+						l_creatable_type := creatable_descendant (l_type_a)
+						if l_creatable_type /= Void then
+							l_types.put (l_creatable_type)
 						end
 					end
-					stream.put_string ("l_type := {")
-					stream.put_string (l_type)
-					stream.put_line ("}")
+
+					from l_types.start
+					until l_types.after
+					loop
+						t := l_types.item_for_iteration
+
+						if t.base_class.is_generic then
+							t := generic_derivation (t.base_class, system)
+						else
+							t := t.base_class.actual_type
+						end
+						stream.put_string ("l_type := {")
+						stream.put_string (t.name)
+						stream.put_string ("}%N")
+
+						l_types.forth
+					end
 				end
 			end
 		end
+
+	creatable_descendant (a_type: TYPE_A): TYPE_A
+			-- Arbitrary creatable descendant of `a_type; Void if none exists.
+		require
+			a_type_not_void: a_type /= Void
+		local
+			class_: CLASS_C
+			cs: DS_LINEAR_CURSOR [CLASS_C]
+			t: TYPE_A
+			l_interp_classes: like interpreter_related_classes
+		do
+			fixme ("Adapted from {AUT_RANDOM_INPUT_CREATOR}.        -- April 5, 2013. Max")
+			from
+				l_interp_classes := interpreter_related_classes
+				class_ := a_type.base_class
+				cs := descendants (class_).new_cursor
+				cs.start
+			until
+				cs.off or Result /= Void
+			loop
+				if cs.item.is_generic then
+					t := generic_derivation (cs.item, system)
+				else
+					t := cs.item.actual_type
+				end
+				if
+					not l_interp_classes.has (t.name) and then
+					(t.is_expanded or creation_procedure_count (t, system) > 0)
+				 then
+					Result := t
+				end
+				cs.forth
+			end
+			cs.go_after
+		end
+
+	descendants (a_class: CLASS_C): DS_HASH_SET [CLASS_C]
+			-- Descendants of `a_class'.
+		require
+			a_class_attached: a_class /= Void
+		local
+			l_recursive_descendants: DS_HASH_SET [CLASS_C]
+		do
+			fixme ("Adapted from {AUT_RANDOM_INPUT_CREATOR}.        -- April 5, 2013. Max")
+			create l_recursive_descendants.make (20)
+			compute_recursive_descendants (a_class, l_recursive_descendants)
+			Result := l_recursive_descendants
+		ensure
+			result_attached: Result /= Void
+		end
+
+	compute_recursive_descendants (a_class: CLASS_C; a_descendants: DS_HASH_SET [CLASS_C])
+			-- Compute all the recursive descendants for `a_class' and store result in `a_descendants'.
+		require
+			a_class_not_void: a_class /= Void
+		local
+			l_classes: LIST [CLASS_C]
+		do
+			fixme ("Adapted from {AUT_RANDOM_INPUT_CREATOR}.        -- April 5, 2013. Max")
+			a_descendants.force_last (a_class)
+			from
+				l_classes := a_class.direct_descendants
+				l_classes.start
+			until
+				l_classes.after
+			loop
+				compute_recursive_descendants (l_classes.item, a_descendants)
+				l_classes.forth
+			end
+		end
+
 
 	append_type (a_string: STRING; a_type: TYPE_A)
 			-- Append type name for `a_type' to `a_string' without formal parameters.
@@ -262,7 +353,7 @@ feature -- Predicate evaluation
 
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

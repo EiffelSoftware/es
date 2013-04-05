@@ -396,9 +396,9 @@ feature{NONE} -- Implementation
 			l_value_hash_list: LINKED_LIST [INTEGER]
 		do
 			if is_test_case_setup then
+				create l_hash_code.make (64)
 					-- Setup test case hash code, which consists the hash of the states of all operands.
 				if a_pre_state then
-					create l_hash_code.make (64)
 					l_hash_code.append (class_name)
 					l_hash_code.append_character ('.')
 					l_hash_code.append (feature_name)
@@ -904,7 +904,7 @@ invariant
 	interpreter_attached: interpreter /= Void
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software
