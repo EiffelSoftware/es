@@ -182,6 +182,25 @@ feature -- Access
 			end
 		end
 
+	routine_id (index: like last_added): INTEGER
+			-- Routine ID of a feature with index `index'.
+		require
+			has_index (index)
+			is_feature (index)
+		local
+			t: like entry
+		do
+			t := values [index]
+				-- 	[n, 0] - feature of routine id "n"
+			if entry_qualifier (t) = 0 then
+				Result := entry_tail (t)
+					-- Avoid returning negative value.
+				if Result < 0 then
+					Result := 0
+				end
+			end
+		end
+
 feature -- Status report
 
 	has_index (v: like last_added): BOOLEAN
@@ -284,6 +303,25 @@ feature -- Status report
 						Result := is_attribute_chain (entry_qualifier (t), q) and then is_strong_attribute_chain (- entry_tail (t))
 					end
 				end
+			end
+		end
+
+	is_feature (index: like last_added): BOOLEAN
+			-- Does `index' correspond to a feature?
+		require
+			has_index (index)
+		do
+			if index = void_index then
+					-- Result := False
+			elseif index = non_void_index then
+					-- Result := False
+			elseif index = current_index then
+					-- Result := False
+			elseif index < 0 then
+					-- Result := False
+			else
+					-- 	[n, 0] - feature of routine id "n"
+				Result := entry_qualifier (values [index]) = 0
 			end
 		end
 
@@ -429,7 +467,6 @@ feature -- Modification
 			-- Updates `is_overqualified' to signify that the elements has too many qualifiers.
 		require
 			v_is_registered: has_index (v)
-			v_not_reversed: is_reversed (v) implies q = - v
 			v_is_nested:
 --				q > 0 and then not is_unqualified (v) and then entry_qualifier (values [v]) < 0 implies
 --				entry_qualifier (values [v]) = - q
