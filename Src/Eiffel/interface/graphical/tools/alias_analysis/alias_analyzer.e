@@ -66,6 +66,8 @@ feature {NONE} -- Creation
 			create ast_alias_before.make (0)
 			create {ARRAYED_STACK [INTEGER_32]} bodies.make (0)
 			create modified_attributes.make (0)
+			create model_dependency.make (0)
+			create missing_model_dependency.make
 			create is_specification_feature_map.make (0)
 			create start_time.make_now_utc
 			create finish_time.make_now_utc
@@ -142,6 +144,7 @@ feature -- Basic operations
 			output_agent := output
 			prepare_analysis (c)
 			analyze_feature (True, f, c)
+			report_to (collected_output)
 			report_result
 		end
 
@@ -158,6 +161,9 @@ feature -- Status report
 
 	is_change_check: BOOLEAN
 			-- Does the analysis check changed attributes?
+
+	is_model_report: BOOLEAN
+			-- Should change analysis report use model queries rather than attributes?
 
 	is_original_class: BOOLEAN
 			-- Are only features of the original class analysed?
@@ -201,10 +207,25 @@ feature -- Status setting
 	set_is_frame_check  (v: BOOLEAN)
 			-- Set `is_frame_check' to `v'.
 		do
-			is_frame_check := False
+			is_frame_check := v
+		ensure
+			is_frame_check_set: is_frame_check = v
+		end
+
+	set_is_change_check  (v: BOOLEAN)
+			-- Set `is_change_check' to `v'.
+		do
 			is_change_check := v
---		ensure
---			is_frame_check_set: is_frame_check = v
+		ensure
+			is_frame_check_set: is_change_check = v
+		end
+
+	set_is_model_report (v: BOOLEAN)
+			-- Set `is_model_report' to `v'.
+		do
+			is_model_report := v
+		ensure
+			is_model_report_set: is_model_report = v
 		end
 
 	stop
@@ -241,6 +262,10 @@ feature {NONE} -- Analysis
 				-- Initialize attribute information.
 			modified_attributes.wipe_out
 			is_specification_feature_map.wipe_out
+				-- Initialize model information.
+			model_dependency.wipe_out
+			missing_model_dependency.wipe_out
+			collect_model_queries (c)
 			dictionary.add_current
 			target := dictionary.last_added
 			is_done := False
@@ -427,7 +452,7 @@ feature {NONE} -- Visitor
 							elseif is_special_routine (f.rout_id_set.first) then
 									-- A feature that modifies SPECIAL is called.
 								dictionary.add_current
-								record_change (dictionary.last_added)
+								record_immediate_change (dictionary.last_added)
 							else
 									-- Routine.
 									-- TODO: use AST index and context class to detect recursive calls.
@@ -493,7 +518,7 @@ feature {NONE} -- Visitor
 								-- Routine.
 							if is_special_routine (f.rout_id_set.first) then
 									-- A feature that modifies SPECIAL is called.
-								record_change (target)
+								record_immediate_change (target)
 							else
 									-- TODO: handle recursive calls.
 								if not bodies.has (f.body_index) then
@@ -1029,9 +1054,7 @@ feature {NONE} -- Change analysis
 			q: like last_item
 			v: like last_item
 		do
---			if dictionary.is_attribute_chain (t, 0) then
-				change_keeper.set.put (t)
---			end
+			change_keeper.set.put (t)
 			q := dictionary.index_qualifier (t)
 			if q /= 0 then
 				v := dictionary.index_tail (t)
@@ -1039,10 +1062,19 @@ feature {NONE} -- Change analysis
 					alias_keeper.relation.aliases (q) as c
 				loop
 					dictionary.add_qualification (c.item, v)
---					if dictionary.is_attribute_chain (dictionary.last_added, 0) then
-						change_keeper.set.put (dictionary.last_added)
---					end
+					change_keeper.set.put (dictionary.last_added)
 				end
+			end
+		end
+
+	record_immediate_change (t: like target)
+			-- Record that an object for the target `t' is changed.
+		do
+			change_keeper.set.put (t)
+			across
+				alias_keeper.relation.aliases (t) as c
+			loop
+				change_keeper.set.put (c.item)
 			end
 		end
 
@@ -1054,6 +1086,125 @@ feature {NONE} -- Change analysis
 			if not is_specification_feature (a) then
 				record_change (last_item)
 			end
+		end
+
+feature {NONE} -- Model queries
+
+	add_model_queries (t: like last_item; l: COMPARABLE_SET [STRING_32])
+			-- Add model queries corresponding to `t' to `l'.
+		local
+			is_raw: BOOLEAN
+		do
+				-- Report this raw item unless it can be expressed via dependencies.
+			is_raw := True
+				-- Check if this item corresponds to an unqualified feature.
+			if
+				dictionary.is_feature (t) and then
+				attached model_dependency.item (dictionary.routine_id (t)) as s
+			then
+					-- Add model queries that depend on this item.
+				l.merge (s)
+					-- Report this item if dependencies are incomplete.
+				is_raw := not missing_model_dependency.is_empty
+			end
+			if is_raw then
+					-- Report this item itself.
+				l.extend (dictionary.name (t))
+			end
+		end
+
+	model_dependency: HASH_TABLE [COMPARABLE_SET [STRING_32], like {ROUT_ID_SET}.first]
+			-- Names of model queries corresponding to routine IDs of attributes they depend on.
+
+	missing_model_dependency: TWO_WAY_SORTED_SET [STRING_32]
+			-- List of model queries without dependencies.
+
+	collect_model_queries (c: CLASS_C)
+			-- Collect information about model queries.
+		local
+			l: LIST [STRING_32]
+			n: detachable STRING_32
+			has_dependency: BOOLEAN
+		do
+			if is_model_report then
+				create {ARRAYED_LIST [STRING_32]} l.make (0)
+				collect_model_names (c.ast.top_indexes, l)
+				collect_model_names (c.ast.bottom_indexes, l)
+				across
+					l as m
+				loop
+					has_dependency := False
+						-- Check if a listed feature is available in the class.
+					if attached c.feature_named_32 (m.item) as f then
+						if f.is_attribute then
+								-- An attribute depends on itself.
+							add_model_dependency (f.feature_name_32, f.rout_id_set.first)
+							has_dependency := True
+						elseif
+							attached f.body as b and then
+							attached b.indexes as i and then
+							attached i.index_as_of_tag_name ("dependency") as t and then
+							attached t.index_list as q
+						then
+								-- Routine depends on attributes listed in a note clause.
+							across
+								q as p
+							loop
+								if attached {STRING_AS} p.item as s then
+									n := s.value
+								elseif attached {ID_AS} p.item as id then
+									n := id.name
+								else
+									n := Void
+								end
+								if attached n and then attached c.feature_named_32 (n.as_lower) as g then
+									add_model_dependency (f.feature_name_32, g.rout_id_set.first)
+									has_dependency := True
+								end
+							end
+						end
+					end
+					if not has_dependency then
+							-- Add this item to the list of model queries without dependencies.
+						missing_model_dependency.extend (m.item)
+					end
+				end
+			end
+		end
+
+	collect_model_names (notes: detachable INDEXING_CLAUSE_AS; l: LIST [STRING_32])
+			-- Add names of model queries from note clause `notes' to a list `l'.
+		do
+			if
+				attached notes and then
+				attached notes.index_as_of_tag_name ("model") as t and then
+				attached t.index_list as q
+			then
+				across
+					q as n
+				loop
+					if attached {STRING_AS} n.item as s then
+						l.extend (s.value)
+					elseif attached {ID_AS} n.item as id then
+						l.extend (id.name)
+					end
+				end
+			end
+		end
+
+	add_model_dependency (name: STRING_32; r: like {ROUT_ID_SET}.first)
+			-- Add a dependency of model query `name' on feature with routine ID `r'.
+		local
+			s: detachable COMPARABLE_SET [STRING_32]
+		do
+			s := model_dependency.item (r)
+				-- Create a new list if there is none for the given routine ID.
+			if not attached s then
+				create {TWO_WAY_SORTED_SET [STRING_32]} s.make
+				s.compare_objects
+				model_dependency.extend (s, r)
+			end
+			s.extend (name)
 		end
 
 	is_specification_feature (f: FEATURE_I): BOOLEAN
@@ -1113,6 +1264,7 @@ feature {ES_ALIAS_ANALYSIS_TOOL_PANEL} -- Output
 		local
 			s: STRING_32
 			v: like last_item
+			l: TWO_WAY_SORTED_SET [STRING_32]
 		do
 			if is_frame_check then
 				across
@@ -1138,18 +1290,34 @@ feature {ES_ALIAS_ANALYSIS_TOOL_PANEL} -- Output
 			elseif is_change_check then
 				if not collected_output.is_empty then
 					o.append_string (collected_output)
+					if not missing_model_dependency.is_empty then
+						o.append_string ("%N%NMissing model dependencies:")
+						across
+							missing_model_dependency as m
+						loop
+							o.append_character (' ')
+							o.append_string (m.item)
+						end
+					end
 				else
+					create l.make
+					l.compare_objects
 					dictionary.add_feature (last_feature, last_class)
 					v := dictionary.last_added
-					s := {STRING_32} ""
 					across
 						change_keeper.set as c
 					loop
 						if dictionary.is_attribute_chain (c.item, v) then
-							o.append_string (s)
-							s := once {STRING_32} ", "
-							o.append_string (dictionary.name (c.item))
+							add_model_queries (c.item, l)
 						end
+					end
+					s := {STRING_32} ""
+					across
+						l as c
+					loop
+						o.append_string (s)
+						o.append_string (c.item)
+						s := once {STRING_32} ", "
 					end
 				end
 			else

@@ -54,13 +54,33 @@ feature
 			inherited_assertions_toggle.set_tooltip ("Process inherited assertions.")
 			Result.extend (inherited_assertions_toggle)
 			create feature_from_any_toggle.make
-			feature_from_any_toggle.set_text ("Any")
+			feature_from_any_toggle.set_text ("ANY")
 			feature_from_any_toggle.set_tooltip ("Process all features, including non-redeclared ones  inherited from ANY.")
 			Result.extend (feature_from_any_toggle)
 			create frame_check_toggle.make
 			frame_check_toggle.set_text ("Frame")
 			frame_check_toggle.set_tooltip ("Detect modified attributes.")
-			Result.extend (frame_check_toggle)
+			frame_check_toggle.disable_displayed
+			frame_check_toggle.disable_sensitive
+			-- Result.extend (frame_check_toggle)
+			create change_check_toggle.make
+			change_check_toggle.set_text ("Change")
+			change_check_toggle.set_tooltip ("Detect changed attributes.")
+			change_check_toggle.select_actions.extend
+				(agent
+					do
+						if change_check_toggle.is_selected then
+							model_toggle.enable_sensitive
+						else
+							model_toggle.disable_sensitive
+						end
+					end)
+			Result.extend (change_check_toggle)
+			create model_toggle.make
+			model_toggle.set_text ("Model")
+			model_toggle.set_tooltip ("Report affected model queries instead of attribute changes for change analysis.")
+			model_toggle.disable_sensitive
+			Result.extend (model_toggle)
 		end
 
 feature {NONE}
@@ -124,6 +144,12 @@ feature {NONE} -- Toolbar
 	frame_check_toggle: SD_TOOL_BAR_TOGGLE_BUTTON
 			-- Toggle to enable/disable frame check.
 
+	change_check_toggle: SD_TOOL_BAR_TOGGLE_BUTTON
+			-- Toggle to enable/disable change check.
+
+	model_toggle: SD_TOOL_BAR_TOGGLE_BUTTON
+			-- Toggle to enable/disable reporting model queries instead of attribute changes.
+
 feature {NONE} -- Message
 
 	guide_drop_message: STRING_32 = "Drop a class or a feature to perform alias analysis for it."
@@ -161,15 +187,17 @@ feature {NONE} -- Analyzer
 	run_analyzer
 			-- Run the analysis with associated reports if possible.
 		local
-			is_frame_check: BOOLEAN
+			is_explicit_report: BOOLEAN
 			s: STRING_32
 		do
 			stop_button.enable_sensitive
 			if attached current_class as c then
 				analyzer.set_is_inherited_assertion_included (inherited_assertions_toggle.is_selected)
-				is_frame_check := frame_check_toggle.is_selected
-				analyzer.set_is_frame_check (is_frame_check)
+				is_explicit_report := frame_check_toggle.is_selected or else change_check_toggle.is_selected
+				analyzer.set_is_frame_check (frame_check_toggle.is_selected)
+				analyzer.set_is_change_check (change_check_toggle.is_selected)
 				analyzer.set_is_all_features (feature_from_any_toggle.is_selected)
+				analyzer.set_is_model_report (model_toggle.is_selected)
 				if attached current_feature as f then
 					analyzer.process_feature (f, c,
 						agent (ff: FEATURE_I; cc: CLASS_C)
@@ -214,7 +242,7 @@ feature {NONE} -- Analyzer
 					s := {STRING_32} "Processed "
 					s.append_string (c.name)
 					s.append_character ('.')
-					if is_frame_check then
+					if is_explicit_report then
 						s.append_character ('%N')
 						s.append_character ('%N')
 						analyzer.report_to (s)
