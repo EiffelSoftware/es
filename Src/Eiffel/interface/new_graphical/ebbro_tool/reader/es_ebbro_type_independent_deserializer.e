@@ -577,7 +577,7 @@ feature{NONE} -- Implementation
 			l_flags: NATURAL_8
 			l_spec_type, l_spec_count,l_old_dtype: INTEGER
 			l_new_obj: BINARY_DECODED
-			l_refl_obj: REFLECTED_OBJECT
+			l_refl_obj: REFLECTED_REFERENCE_OBJECT
 		do
 			l_deser := deserializer
 			l_int := internal

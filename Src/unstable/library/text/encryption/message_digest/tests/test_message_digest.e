@@ -1,24 +1,17 @@
 note
-	description: "Common ancestor for object inspection."
+	description: "Test for MD5"
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	ABSTRACT_REFLECTED_OBJECT
-
-feature -- Access
-
-	object: ANY
-			-- Associated object for Current.
-			-- It might be a copy if Current is expanded.
-		deferred
-		end
-
-	object_address: POINTER
-			-- Unprotected reference to `object'.
-		note
-			compiler: no_gc
-		deferred
+class
+	TEST_MESSAGE_DIGEST
+	
+create
+	make
+	
+feature
+	make
+		do
 		end
 
 note

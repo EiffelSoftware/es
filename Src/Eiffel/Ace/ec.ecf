@@ -214,7 +214,7 @@
 		<library name="dotnet_assembly_information" location="$EIFFEL_SRC\dotnet\assembly_info\dotnet_assembly_information.ecf" readonly="false" use_application_options="true"/>
 		<library name="dynamic_program_analysis" location="$EIFFEL_SRC\framework\dynamic_program_analysis\dynamic_program_analysis.ecf" readonly="false"/>
 		<library name="editor" location="$ISE_LIBRARY\library\editor\editor.ecf" readonly="false"/>
-		<library name="eel" location="$ISE_LIBRARY\contrib\library\text\encryption\eel\eel.ecf"/>
+		<library name="message_digest" location="$ISE_LIBRARY\unstable\library\text\encryption\message_digest\message_digest.ecf" readonly="false"/>
 		<library name="eiffel2boogie" location="$ISE_LIBRARY\framework\eiffel2boogie\eiffel2boogie.ecf" readonly="false"/>
 		<library name="eve_blackboard" location="$ISE_LIBRARY\framework\eve_blackboard\eve_blackboard.ecf" readonly="false"/>
 		<library name="eve_proofs" location="$ISE_LIBRARY\framework\eve_proofs\eve_proofs.ecf" readonly="false"/>
@@ -303,11 +303,11 @@
 		<cluster name="flat_short_b" location="$EIFFEL_SRC\Eiffel\flat_short\bench\"/>
 		<cluster name="interface" location="$EIFFEL_SRC\Eiffel\interface\" recursive="true">
 			<file_rule>
-				<exclude>^/none$</exclude>
 				<exclude>/overrides$</exclude>
+				<exclude>^/tty$</exclude>
 				<exclude>/lite$</exclude>
 				<exclude>/preferences$</exclude>
-				<exclude>^/tty$</exclude>
+				<exclude>^/none$</exclude>
 			</file_rule>
 			<file_rule>
 				<exclude>/mswin$</exclude>

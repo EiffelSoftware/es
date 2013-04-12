@@ -61,17 +61,8 @@ feature -- Generic conformance
 
 	annotation_flags: NATURAL_16
 			-- Flags for annotations of Current.
-			-- Currently only `!' and `frozen' are supported
-		do
- 				-- Only if a type is not expanded do we need to generate the
-				-- attached annotation since by default expanded implies attached.
-			if is_attached and not is_expanded then
-				Result := {SHARED_GEN_CONF_LEVEL}.attached_type
-			end
--- To uncomment when variant/frozen proposal for generics is supported.
---			if is_frozen then
---				Result := Result | {SHARED_GEN_CONF_LEVEL}.frozen_type
---			end
+			-- Currently only attachment marks are supported.
+		deferred
 		end
 
 	generated_id (final_mode: BOOLEAN; a_context_type: TYPE_A): NATURAL_16
@@ -313,6 +304,11 @@ feature -- IL code generation
 		end
 
 feature -- Properties
+
+	types: ARRAYED_LIST [ABSTRACT_TYPE_INTERVAL_A]
+			-- List of intervals making up Current.
+		deferred
+		end
 
 	has_associated_class: BOOLEAN
 			-- Does Current have an associated class?
@@ -680,11 +676,9 @@ feature -- Comparison
 			--| `deep_equal' cannot be used as for STRINGS, the area
 			--| can have a different size but the STRING is still
 			--| the same (problem detected for LIKE_FEATURE). Xavier
-		require
-			is_valid: is_valid
 		do
 			if other /= Void and then other.same_type (Current) then
-				Result := attached {like Current} other as l_other and then
+				Result := is_valid and then attached {like Current} other as l_other and then
 					l_other.is_valid and then is_equivalent (l_other)
 			end
 		end;
@@ -695,7 +689,7 @@ feature -- Comparison
 			-- but ARRAYs and STRINGs are processed correctly
 			-- (`deep_equal' will compare the size of the `area')
 		require
-			o1_is_valid: o1 /= Void implies o1.is_valid
+			o1_is_valid: o1 /= Void
 		do
 			if o1 = Void then
 				Result := o2 = Void
