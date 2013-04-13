@@ -4833,6 +4833,7 @@ eweasel/tests/store014/data_57 -text
 eweasel/tests/store014/data_60 -text
 eweasel/tests/store014/data_61 -text
 eweasel/tests/store014/data_62 -text
+eweasel/tests/store014/output_bad -text
 eweasel/tests/store016/data54 -text
 eweasel/tests/store018/data -text
 eweasel/tests/store020/data -text
