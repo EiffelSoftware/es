@@ -537,11 +537,6 @@ feature
 			"C signature (GtkWidget*, gboolean) use <ev_gtk.h>"
 		end
 
-	frozen gtk_widget_get_snapshot (a_widget: POINTER; a_rect: POINTER): POINTER
-		external
-			"C signature (GtkWidget*, GdkRectangle*): GdkPixmap* use <ev_gtk.h>"
-		end
-		
 	frozen c_gdk_rectangle_struct_size: INTEGER_32
 		external
 			"C [macro <ev_gtk.h>]"
@@ -1324,6 +1319,11 @@ feature
 	frozen gdk_window_set_transient_for (a_window: POINTER; a_leader: POINTER)
 		external
 			"C (GdkWindow*, GdkWindow*) | <ev_gtk.h>"
+		end
+
+	frozen gtk_window_set_accept_focus (a_window: POINTER; a_accept: BOOLEAN)
+		external
+			"C (GtkWindow*, gboolean) | <ev_gtk.h>"
 		end
 
 	frozen gtk_adjustment_changed (a_adjustment: POINTER)

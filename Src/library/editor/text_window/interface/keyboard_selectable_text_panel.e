@@ -127,17 +127,16 @@ feature -- Query
 	token_at (x, y: INTEGER): detachable EDITOR_TOKEN
 			-- Token at position (x, y)
 		local
-			l_number		: INTEGER
-			pointed_line	: detachable like line_type
+			l_number: INTEGER
 		do
 			if x > 0 and then y > 0 then
 					-- Compute the line number pointed by the mouse cursor
 					-- and adjust it if its over the number of lines in the text.
 				l_number := line_at_position (x, y)
-				pointed_line := text_displayed.line (l_number)
-
-				if pointed_line /= Void then
-					Result := token_in_line (x, pointed_line).token
+				if l_number >= 1 and then l_number <= text_displayed.number_of_lines then
+					if attached text_displayed.line (l_number) as l_pointed_line then
+						Result := token_in_line (x, l_pointed_line).token
+					end
 				end
 			end
 		end
@@ -155,14 +154,16 @@ feature -- Cursor Management
 	position_cursor (a_cursor: like cursor_type; x_pos, y_pos: INTEGER)
 			-- Position `a_cursor' as close as possible from coordinates (x_pos, y_pos).
 		local
-			pointed_line	: detachable like line_type
 			pointed_token	: detachable EDITOR_TOKEN
 			l_token_in_line : like token_in_line
+			l_x_pos			: INTEGER
+			l_line_number	: INTEGER
 		do
+			l_x_pos := x_pos.max (0)
 			if y_pos >= 0 then
-				pointed_line := text_displayed.line (line_at_position (x_pos, y_pos))
-				if pointed_line /= Void then
-					l_token_in_line := token_in_line (x_pos, pointed_line)
+				l_line_number := line_at_position (l_x_pos, y_pos)
+				if l_line_number >= 0 and then l_line_number <= text_displayed.number_of_lines and then attached text_displayed.line (l_line_number) as pointed_line then
+					l_token_in_line := token_in_line (l_x_pos, pointed_line)
 					pointed_token := l_token_in_line.token
 					if pointed_token /= Void then
 						debug ("editor")

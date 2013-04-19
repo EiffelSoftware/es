@@ -1221,7 +1221,6 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 --			insert_show_tool_menu_item (Result, {ES_EVE_PROOFS_TOOL})
 			insert_show_tool_menu_item (Result, {ES_JAVASCRIPT_TOOL})
 			insert_show_tool_menu_item (Result, {ES_SCHEMA_EVOLUTION_TOOL})
-			insert_show_tool_menu_item (Result, {ES_EBBRO_TOOL})
 			insert_show_tool_menu_item (Result, {ES_BLACKBOARD_TOOL})
 			insert_show_tool_menu_item (Result, {ES_EVE_AUTOFIX_TOOL})
 			insert_show_tool_menu_item (Result, {ES_ALIAS_ANALYSIS_TOOL})

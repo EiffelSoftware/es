@@ -41,19 +41,13 @@ feature -- Operations
 			l_file.basic_store (a_obj)
 			l_file.close
 
-				-- 2- C General store
-			create l_file.make_with_path (l_path.appended_with_extension (c_general_extension))
-			l_file.open_write
-			l_file.general_store (a_obj)
-			l_file.close
-
-				-- 3- C Independent store
+				-- 2- C Independent store
 			create l_file.make_with_path (l_path.appended_with_extension (c_independent_extension))
 			l_file.open_write
 			l_file.independent_store (a_obj)
 			l_file.close
 
-				-- 4- SED Session store
+				-- 3- SED Session store
 			create l_file.make_with_path (l_path.appended_with_extension (sed_session_extension))
 			l_file.open_write
 			create l_writer.make_for_writing (l_file)
@@ -61,7 +55,7 @@ feature -- Operations
 			session_store (a_obj, l_writer, True)
 			l_file.close
 
-				-- 5- SED Basic store
+				-- 4- SED Basic store
 			create l_file.make_with_path (l_path.appended_with_extension (sed_basic_extension))
 			l_file.open_write
 			create l_writer.make_for_writing (l_file)
@@ -69,15 +63,7 @@ feature -- Operations
 			basic_store (a_obj, l_writer, True)
 			l_file.close
 
-				-- 6- SED Independent store
-			create l_file.make_with_path (l_path.appended_with_extension (sed_independent_extension))
-			l_file.open_write
-			create l_writer.make_for_writing (l_file)
-			l_writer.set_is_pointer_value_stored (is_pointer_value_stored)
-			sed_independent_store (a_obj, l_writer)
-			l_file.close
-
-				-- 7- SED Recoverable store
+				-- 5- SED Recoverable store
 			create l_file.make_with_path (l_path.appended_with_extension (sed_recoverable_extension))
 			l_file.open_write
 			create l_writer.make_for_writing (l_file)
@@ -87,6 +73,13 @@ feature -- Operations
 		end
 
 	retrieved_objects (a_file_name: STRING): HASH_TABLE [ANY, STRING]
+			-- Using `a_file_name' tries all the possible serialization mechanisms
+			-- and associate the retrieved object with the type of serialization.
+		do
+			Result := retrieved_objects_ex (a_file_name, True)
+		end
+
+	retrieved_objects_ex (a_file_name: STRING; a_append_extension: BOOLEAN): HASH_TABLE [ANY, STRING]
 			-- Using `a_file_name' tries all the possible serialization mechanisms
 			-- and associate the retrieved object with the type of serialization.
 		local
@@ -99,10 +92,14 @@ feature -- Operations
 			create l_path.make_from_string (a_file_name)
 
 			across c_storable_types as l_type loop
-				create l_file.make_with_path (l_path.appended_with_extension (l_type.item))
+				if a_append_extension then
+					create l_file.make_with_path (l_path.appended_with_extension (l_type.item))
+				else
+					create l_file.make_with_path (l_path)
+				end
 				if l_file.exists then
 					l_file.open_read
-					l_obj := l_file.retrieved
+					l_obj := safe_c_retrieved (l_file)
 					if l_obj /= Void then
 						Result.put (l_obj, l_type.item)
 					end
@@ -111,12 +108,16 @@ feature -- Operations
 			end
 
 			across sed_storable_types as l_type loop
-				create l_file.make_with_path (l_path.appended_with_extension (l_type.item))
+				if a_append_extension then
+					create l_file.make_with_path (l_path.appended_with_extension (l_type.item))
+				else
+					create l_file.make_with_path (l_path)
+				end
 				if l_file.exists then
 					l_file.open_read
 					create l_reader.make_for_reading (l_file)
 					retrieved_errors := Void
-					l_obj := retrieved (l_reader, True)
+					l_obj := safe_sed_retrieved (l_reader, True)
 					if l_obj /= Void then
 						Result.put (l_obj, l_type.item)
 					end
@@ -141,7 +142,7 @@ feature -- Operations
 			create l_file.make_with_path (l_path.appended_with_extension (c_independent_extension))
 			if l_file.exists then
 				l_file.open_read
-				l_obj := l_file.retrieved
+				l_obj := safe_c_retrieved (l_file)
 				if l_obj /= Void then
 					Result.put (l_obj, c_independent_extension)
 				end
@@ -153,7 +154,7 @@ feature -- Operations
 				l_file.open_read
 				create l_reader.make_for_reading (l_file)
 				retrieved_errors := Void
-				l_obj := retrieved (l_reader, True)
+				l_obj := safe_sed_retrieved (l_reader, True)
 				if l_obj /= Void then
 					Result.put (l_obj, sed_recoverable_extension)
 				end
@@ -182,6 +183,9 @@ feature -- Access
 	is_pointer_value_stored: BOOLEAN
 			-- Is value of a POINTER stored?
 
+	is_safe_retrieval: BOOLEAN
+			-- Is retrieval protected with rescue clauses?
+
 feature -- Settings
 
 	set_is_pointer_value_stored (v: like is_pointer_value_stored)
@@ -192,25 +196,64 @@ feature -- Settings
 			is_pointer_value_stored_set: is_pointer_value_stored = v
 		end
 
+	set_is_safe_retrieval (v: like is_safe_retrieval)
+			-- Set `is_safe_retrieval' with `v'.
+		do
+			is_safe_retrieval := v
+		ensure
+			is_safe_retrieval_set: is_safe_retrieval = v
+		end
+
 feature -- C serializations
 
 	c_basic_extension: STRING = "c_basic"
-	c_general_extension: STRING = "c_general"
 	c_independent_extension: STRING = "c_independent"
 	c_storable_types: ARRAYED_LIST [STRING]
 			-- List of C serializations
 		once
 			create Result.make (3)
 			Result.extend (c_basic_extension)
-			Result.extend (c_general_extension)
 			Result.extend (c_independent_extension)
+		end
+
+	safe_c_retrieved (a_file: RAW_FILE): detachable ANY
+			-- Ensure C retrieval without a crash if `is_safe_retrieval' is enabled.
+		require
+			a_file_is_open_read: a_file.is_open_read
+		local
+			retried: BOOLEAN
+		do
+			if not retried then
+				Result := a_file.retrieved
+			end
+		rescue
+			if is_safe_retrieval then
+				retried := True
+				retry
+			end
+		end
+
+	safe_sed_retrieved (a_reader: SED_READER_WRITER; a_is_gc_enabled: BOOLEAN): detachable ANY
+			-- Ensure SED retrieval without a crash if `is_safe_retrieval' is enabled.
+		require
+			a_file_is_open_read: a_reader.is_ready_for_reading
+		local
+			retried: BOOLEAN
+		do
+			if not retried then
+				Result := retrieved (a_reader, a_is_gc_enabled)
+			end
+		rescue
+			if is_safe_retrieval then
+				retried := True
+				retry
+			end
 		end
 
 feature -- SED serializations
 
 	sed_session_extension: STRING = "sed_session"
 	sed_basic_extension: STRING = "sed_basic"
-	sed_independent_extension: STRING = "sed_independent"
 	sed_recoverable_extension: STRING = "sed_recoverable"
 	sed_storable_types: ARRAYED_LIST [STRING]
 			-- List of SED serializations
@@ -218,30 +261,7 @@ feature -- SED serializations
 			create Result.make (3)
 			Result.extend (sed_session_extension)
 			Result.extend (sed_basic_extension)
-			Result.extend (sed_independent_extension)
 			Result.extend (sed_recoverable_extension)
 		end
-
-feature {NONE} -- Implementation
-
-	sed_independent_store (an_object: ANY; a_writer: SED_READER_WRITER)
-			-- Serialization of `an_object' using `a_writer' in the independent format.
-			-- Object stored can only be retrieved by programs having the same set of types.
-		require
-			an_object_not_void: an_object /= Void
-			a_writer_not_void: a_writer /= Void
-			a_writer_ready: a_writer.is_ready_for_writing
-		local
-			l_serializer: SED_INDEPENDENT_SERIALIZER
-		do
-			create l_serializer.make (a_writer)
-			a_writer.write_header
-			a_writer.write_natural_32 (eiffel_independent_store)
-			l_serializer.set_root_object (an_object)
-			l_serializer.encode
-			a_writer.write_footer
-		end
-
-
 
 end
