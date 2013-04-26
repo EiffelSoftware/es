@@ -70,7 +70,7 @@ feature -- Basic operations
 			check a_array_type.base_class.name_in_upper.same_string ("ARRAY") end
 			check a_array_type.has_generics end
 			check a_array_type.generics.count = 1 end
-			l_type := a_array_type.generics.item (1).deep_actual_type
+			l_type := a_array_type.generics.i_th (1).deep_actual_type
 			if l_type.is_boolean then
 				Result := "ARRAY#bool#"
 			elseif l_type.is_integer or l_type.is_natural then

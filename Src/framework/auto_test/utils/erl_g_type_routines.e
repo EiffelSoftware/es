@@ -429,7 +429,7 @@ feature -- Types
 						if i > l_class_type.generics.lower then
 							a_string.append (", ")
 						end
-						append_type_in_string (a_string, l_class_type.generics.item (i))
+						append_type_in_string (a_string, l_class_type.generics.i_th (i))
 						i := i + 1
 					end
 					a_string.append ("]")

@@ -190,6 +190,7 @@ feature -- Byte node generation
 			l_is_qualified_call: BOOLEAN
 			l_type: TYPE_A
 			l_generics: ARRAY [TYPE_A]
+			l_generics_list: ARRAYED_LIST [TYPE_A]
 			l_current_class_void_safe: BOOLEAN
 			l_arg_count: INTEGER
 			l_open_count: INTEGER
@@ -197,6 +198,7 @@ feature -- Byte node generation
 			l_cidx: INTEGER
 			l_target_closed: BOOLEAN
 			l_oargtypes, l_cargtypes: ARRAY [TYPE_A]
+			l_oargtypes_list, l_cargtypes_list: ARRAYED_LIST [TYPE_A]
 			l_closed_count: INTEGER
 			l_tuple_type: TUPLE_TYPE_A
 			l_expressions: BYTE_LIST [EXPR_B]
@@ -214,11 +216,13 @@ feature -- Byte node generation
 
 			if l_type.actual_type.is_boolean then
 				create l_generics.make (1, 2)
-				create l_result_type.make (System.predicate_class_id, l_generics)
+				create l_generics_list.make (2)
+				create l_result_type.make (System.predicate_class_id, l_generics_list)
 			else
 				create l_generics.make (1, 3)
+				create l_generics_list.make (3)
 				l_generics.put (l_type, 3)
-				create l_result_type.make (System.function_class_id, l_generics)
+				create l_result_type.make (System.function_class_id, l_generics_list)
 			end
 
 			l_current_class_void_safe := False
@@ -243,14 +247,17 @@ feature -- Byte node generation
 			l_target_closed := True
 
 			create l_oargtypes.make (1, l_open_count)
+			create l_oargtypes_list.make (l_open_count)
 
 			l_closed_count := l_arg_count - l_open_count
 			create l_cargtypes.make (1, l_closed_count)
+			create l_cargtypes_list.make (l_closed_count)
 
 			l_cargtypes.put (a_target_type, 1)
+			l_cargtypes_list.put_i_th (a_target_type, 0)
 			l_cidx := 2
 
-			create l_tuple_type.make (System.tuple_id, l_oargtypes)
+			create l_tuple_type.make (System.tuple_id, l_oargtypes_list)
 			l_current_class_void_safe := interpreter_root_class.lace_class.is_void_safe_call
 
 			if not l_tuple_type.is_attached then
@@ -264,6 +271,10 @@ feature -- Byte node generation
 
 				-- Insert it as second generic parameter of ROUTINE.
 			l_generics.put (l_tuple_type, 2)
+
+			across l_generics as l_generics_cursor loop
+				l_generics_list.force (l_generics_cursor.item)
+			end
 
 				-- Type of an agent is always attached.
 			if l_current_class_void_safe then
@@ -290,7 +301,7 @@ feature -- Byte node generation
 
 				-- Create TUPLE_CONST_B instance which holds all closed arguments.
 			l_expressions.start
-			create l_tuple_type.make (System.tuple_id, l_cargtypes)
+			create l_tuple_type.make (System.tuple_id, l_cargtypes_list)
 			create l_tuple_node.make (l_expressions, l_tuple_type, l_tuple_type.create_info)
 
 				-- We need to instantiate the closed TUPLE type of the agent otherwise it

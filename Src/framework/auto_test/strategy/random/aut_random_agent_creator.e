@@ -124,7 +124,7 @@ feature -- Agent characterisation
 	target_type: TYPE_A
 			-- Target type that the future agent must comply to
 
-	argument_types: ARRAY [TYPE_A]
+	argument_types: ARRAYED_LIST [TYPE_A]
 			-- Argument types that the future agent must comply to
 
 	return_type: TYPE_A
@@ -385,7 +385,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

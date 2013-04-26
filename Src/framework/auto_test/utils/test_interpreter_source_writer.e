@@ -322,17 +322,26 @@ feature {NONE} -- Implementation
 				a_string.append (l_class_type.associated_class.name)
 				if l_class_type.has_generics then
 					a_string.append (" [")
-					from
-						i := l_class_type.generics.lower
-					until
-						i > l_class_type.generics.upper
-					loop
-						if i > l_class_type.generics.lower then
+					across l_class_type.generics as l_generics_cursor loop
+						if i = 0 then
 							a_string.append (", ")
+							i := 1
 						end
-						append_type (a_string, l_class_type.generics.item (i))
-						i := i + 1
+						append_type (a_string, l_generics_cursor.item)
 					end
+
+--					from
+--						i := l_class_type.generics.lower
+--					until
+--						i > l_class_type.generics.upper
+--					loop
+--						if i > l_class_type.generics.lower then
+--							a_string.append (", ")
+--						end
+--						append_type (a_string, l_class_type.generics.item (i))
+--						i := i + 1
+--					end
+
 					a_string.append ("]")
 				end
 			else

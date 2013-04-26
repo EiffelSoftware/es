@@ -148,7 +148,7 @@ feature -- Access
 				until
 					i > l_gen_type.generics.upper
 				loop
-					l_type_name := boogie_name_for_type (l_gen_type.generics.item (i))
+					l_type_name := boogie_name_for_type (l_gen_type.generics.i_th (i))
 					Result.append (l_type_name)
 					if i < l_gen_type.generics.upper then
 						Result.append ("#")

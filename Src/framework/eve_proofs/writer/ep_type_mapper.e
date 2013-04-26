@@ -53,7 +53,7 @@ feature -- Access
 			check not l_type.is_like end
 			if l_type.is_formal then
 				l_formal ?= l_type
-				Result := boogie_type_for_type (a_generic_derivation.generics.item (l_formal.position))
+				Result := boogie_type_for_type (a_generic_derivation.generics.i_th (l_formal.position))
 			else
 				Result := boogie_type_for_type (a_type)
 			end

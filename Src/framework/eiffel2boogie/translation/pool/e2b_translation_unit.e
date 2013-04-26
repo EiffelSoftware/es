@@ -43,7 +43,7 @@ feature {NONE} -- Helper functions
 				until
 					i > l_gen_type.generics.upper
 				loop
-					Result.append (type_id (l_gen_type.generics.item (i)))
+					Result.append (type_id (l_gen_type.generics.i_th (i)))
 					if i < l_gen_type.generics.upper then
 						Result.append ("#")
 					end

@@ -1297,7 +1297,7 @@ feature -- Processing helpers
 	process_generics (a_type: attached TYPE_A): attached JSC_BUFFER_DATA
 			-- Generate the JavaScript object for a type's generics -- It is a list of types.
 		local
-			l_generics: ARRAY [TYPE_A]
+			l_generics: ARRAYED_LIST [TYPE_A]
 			l_generic: TYPE_A
 			generics: LINKED_LIST[attached JSC_BUFFER_DATA]
 			i: INTEGER
