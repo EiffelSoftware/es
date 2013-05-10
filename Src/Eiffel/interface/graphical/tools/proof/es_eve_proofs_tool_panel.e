@@ -506,7 +506,7 @@ feature {NONE} -- Basic operations
 
 				l_lines := l_text_gen.lines
 				if not l_lines.is_empty then
-					l_tip := create_clickable_tooltip (l_lines, l_editor_item, a_row)
+--					l_tip := create_clickable_tooltip (l_lines, l_editor_item, a_row)
 					a_row.select_actions.extend (agent l_tip.restart_tooltip_timer)
 				end
 
@@ -648,7 +648,7 @@ feature {NONE} -- Constants
 		end
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
