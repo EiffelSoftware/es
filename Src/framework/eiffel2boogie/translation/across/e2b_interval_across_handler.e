@@ -45,7 +45,6 @@ feature -- Basic operations
 			l_upper: IV_EXPRESSION
 			l_binop1, l_binop2: IV_BINARY_OPERATION
 			l_and: IV_BINARY_OPERATION
-			l_implies: IV_BINARY_OPERATION
 			l_quantifier: IV_QUANTIFIER
 			l_expression: IV_EXPRESSION
 			l_array: IV_EXPRESSION
@@ -70,11 +69,10 @@ feature -- Basic operations
 			create l_binop1.make (l_lower, "<=", l_counter, types.bool)
 			create l_binop2.make (l_counter, "<=", l_upper, types.bool)
 			create l_and.make (l_binop1, "&&", l_binop2, types.bool)
-			create l_implies.make (l_and, "==>", l_expression, types.bool)
 			if loop_expr.is_all then
-				create {IV_FORALL} l_quantifier.make (l_implies)
+				create {IV_FORALL} l_quantifier.make (factory.implies_ (l_and, l_expression))
 			else
-				create {IV_EXISTS} l_quantifier.make (l_implies)
+				create {IV_EXISTS} l_quantifier.make (factory.and_ (l_and, l_expression))
 			end
 			l_quantifier.add_bound_variable (l_counter.name, l_counter.type)
 			expression_translator.set_last_expression (l_quantifier)

@@ -16,6 +16,7 @@ inherit
 			put_freezing_message,
 			put_start_dead_code_removal_message,
 			put_string,
+			put_message,
 			put_dead_code_removal_message,
 			degree_message,
 			put_system_compiled,
@@ -147,6 +148,18 @@ feature {NONE} -- Basic operations
 			if not output_file.is_closed then
 				output_file.put_string (u.utf_32_string_to_utf_8_string_8 (a_message))
 				output_file.put_new_line
+				close_file
+			end
+		end
+
+	put_message (a_message: READABLE_STRING_GENERAL)
+			-- <Precursor>
+		local
+			u: UTF_CONVERTER
+		do
+			open_file
+			if not output_file.is_closed then
+				output_file.put_string (u.utf_32_string_to_utf_8_string_8 (a_message))
 				close_file
 			end
 		end

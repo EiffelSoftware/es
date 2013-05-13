@@ -191,6 +191,7 @@ feature {NONE} -- Implementation
 			process.redirect_output_to_agent (agent append_output (?, process))
 			process.redirect_error_to_same_as_output
 			process.set_on_fail_launch_handler (agent handle_launch_failed (boogie_executable, l_arguments))
+
 			process.launch
 			if a_wait_for_exit then
 				process.wait_for_exit
@@ -201,6 +202,11 @@ feature {NONE} -- Implementation
 			-- Handle launch of Boogie failed.
 		do
 				-- TODO: error handling
+			io.error.put_string ("Launching Boogie failed%N")
+			io.error.put_string ("Executable: " + a_executable + "%N")
+			across a_arguments as i loop
+				io.error.put_string ("Argument " + i.cursor_index.out + ": " + i.item + "%N")
+			end
 			check False end
 		end
 

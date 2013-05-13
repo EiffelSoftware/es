@@ -216,11 +216,15 @@ feature -- Visitors
 				last_expression := factory.function_call ("Set#Equal", << l_left, l_right >>, l_type)
 			else
 					-- TODO: REFACTOR
-				if a_operator ~ "+" then
-					last_expression := factory.function_call ("add", << l_left, l_right >>, types.int)
-				else
+--				if a_operator ~ "+" then
+--					last_expression := factory.function_call ("add", << l_left, l_right >>, types.int)
+--				elseif a_operator ~ "-" then
+--					last_expression := factory.function_call ("subtract", << l_left, l_right >>, types.int)
+--				elseif a_operator ~ "*" then
+--					last_expression := factory.function_call ("multiply", << l_left, l_right >>, types.int)
+--				else
 					create {IV_BINARY_OPERATION} last_expression.make (l_left, a_operator, l_right, l_type)
-				end
+--				end
 				if
 					options.is_checking_overflow and then
 					(a_node.left.type.is_integer or a_node.left.type.is_natural) and then
@@ -836,18 +840,19 @@ feature -- Visitors
 		local
 			l_call: IV_FUNCTION_CALL
 		do
-			create l_call.make ("$TUPLE.item", types.generic_type)
-			l_call.add_argument (entity_mapping.heap)
-			l_call.add_argument (current_target)
-			l_call.add_argument (create {IV_VALUE}.make (a_node.position.out, types.int))
-			last_expression := l_call
+			last_expression := factory.function_call (
+				"fun.TUPLE.item",
+				<<
+					entity_mapping.heap,
+					current_target,
+					factory.int_value (a_node.position)
+				>>,
+				types.generic_type)
 		end
 
 	process_tuple_const_b (a_node: TUPLE_CONST_B)
 			-- <Precursor>
 		do
-			-- body: create tuple ref
-			-- loop through `expressions' and put elements
 			last_expression := dummy_node (a_node.type)
 		end
 

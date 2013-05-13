@@ -27,6 +27,8 @@ inherit
 
 	COMPILER_EXPORTER
 
+	EB_SHARED_WINDOW_MANAGER
+
 create
 	make
 
@@ -144,9 +146,10 @@ feature {NONE} -- Basic operations
 					end
 				end
 			end
+			disable_tool_button
+			window_manager.display_message ("AutoProof running")
 			autoproof.add_notification (agent process_result)
 			autoproof.verify
-			disable_tool_button
 		end
 
 	process_result (a_result: E2B_RESULT)
@@ -161,6 +164,7 @@ feature {NONE} -- Basic operations
 			end
 			show_proof_tool
 			enable_tool_button
+			window_manager.display_message ("AutoProof finished")
 		end
 
 	event_context_cookie: UUID

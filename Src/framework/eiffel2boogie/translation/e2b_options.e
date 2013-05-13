@@ -26,6 +26,8 @@ feature {NONE} -- Initialization
 			is_checking_overflow := False
 			is_checking_frame := True
 			is_using_ownership := False
+			loop_unrolling_depth := 5
+			max_recursive_inlining_depth := 4
 		end
 
 feature -- Inlining verification step
@@ -47,8 +49,14 @@ feature -- Inlining options
 	inlining_depth: INTEGER
 			-- Current inlining depth.
 
-	max_recursive_inlining_depth: INTEGER = 4
+	max_recursive_inlining_depth: INTEGER
 			-- Maximum inlining depth for inlining recursive features.
+
+	set_max_recursive_inlining_depth (a_value: INTEGER)
+			-- Set `max_recursive_inlining_depth' to `a_value'.
+		do
+			max_recursive_inlining_depth := a_value
+		end
 
 	set_inlining_depth (a_value: INTEGER)
 			-- Set `inlining_depth' to `a_value'.
@@ -73,8 +81,14 @@ feature -- Inlining options
 
 feature -- Loop unrolling
 
-	loop_unrolling_depth: INTEGER = 6
+	loop_unrolling_depth: INTEGER
 			-- Loop unrolling depth.
+
+	set_loop_unrolling_depth (a_value: INTEGER)
+			-- Set `loop_unrolling_depth' to `a_value'.
+		do
+			loop_unrolling_depth := a_value
+		end
 
 	is_automatic_loop_unrolling_enabled: BOOLEAN
 			-- Is automatic unrolling of certain loops enabled?

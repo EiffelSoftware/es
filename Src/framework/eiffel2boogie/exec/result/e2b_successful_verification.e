@@ -32,6 +32,11 @@ feature {E2B_MERGE_RESULTS_TASK} -- Element change
 				create original_errors.make
 			end
 			original_errors.extend (a_error)
+			if attached {E2B_PRECONDITION_VIOLATION} a_error then
+				set_suggestion ("You might need to weaken the precondition.")
+			elseif attached {E2B_CHECK_VIOLATION} a_error or attached {E2B_POSTCONDITION_VIOLATION} a_error then
+				set_suggestion ("You might need to strenghten the loop invariant of postcondition of called features.")
+			end
 		end
 
 	set_suggestion (a_string: STRING)

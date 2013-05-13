@@ -259,8 +259,35 @@ feature -- Processing
 
 	process_array_content_check (a_assert: ASSERT_B; a_array: ARRAY_CONST_B; a_other: EXPR_B)
 			-- Process a check instruction comparing array contents.
+		local
+			l_assert: IV_ASSERT
+			l_array: IV_EXPRESSION
+			l_info: IV_ASSERTION_INFORMATION
 		do
-
+			set_current_origin_information (a_assert)
+			process_contract_expression (a_other)
+			l_array := last_expression
+				-- Check array size
+			create l_assert.make (factory.equal (
+				factory.function_call ("fun.ARRAY.count", << entity_mapping.heap, l_array >>, types.int),
+				factory.int_value (a_array.expressions.count)))
+			create l_info.make ("check")
+			l_info.set_tag ("array_size_equal")
+			l_info.set_line (a_assert.line_number)
+			l_assert.set_information (l_info)
+			add_statement (l_assert)
+				-- Check array contents
+			across a_array.expressions as i loop
+				process_contract_expression (i.item)
+				create l_assert.make (factory.equal (
+					factory.function_call ("fun.ARRAY.item", << entity_mapping.heap, l_array, factory.int_value (i.cursor_index) >>, types.generic_type),
+					last_expression))
+				create l_info.make ("check")
+				l_info.set_tag ("array_item_" + i.cursor_index.out)
+				l_info.set_line (a_assert.line_number)
+				l_assert.set_information (l_info)
+				add_statement (l_assert)
+			end
 		end
 
 	process_debug_b (a_node: DEBUG_B)
@@ -554,7 +581,7 @@ feature -- Processing
 
 				-- Condition
 			set_current_origin_information (a_node.stop)
-			process_expression (a_node.stop)
+			process_contract_expression (a_node.stop)
 			l_condition := last_expression
 			create l_goto.make (l_body_block)
 			l_goto.add_target (l_end_block)

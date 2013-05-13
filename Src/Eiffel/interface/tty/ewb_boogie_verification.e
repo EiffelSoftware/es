@@ -17,6 +17,8 @@ inherit
 
 	INTERNAL_COMPILER_STRING_EXPORTER
 
+	E2B_SHARED_CONTEXT
+
 create
 	make_with_arguments
 
@@ -27,7 +29,8 @@ feature {NONE} -- Initialization
 		require
 			a_arguments_attached: a_arguments /= Void
 		do
-			create options.make
+			create user_options.make
+			user_options.compare_objects
 			create selection.make
 			from
 				a_arguments.start
@@ -35,20 +38,25 @@ feature {NONE} -- Initialization
 				a_arguments.after
 			loop
 				if a_arguments.item.starts_with ("-") then
-					options.extend (a_arguments.item)
+					user_options.extend (a_arguments.item)
+					a_arguments.forth
+					if not a_arguments.after and a_arguments.item.is_integer then
+						user_options.extend (a_arguments.item)
+						a_arguments.forth
+					end
 				else
 					selection.extend (a_arguments.item)
+					a_arguments.forth
 				end
-				a_arguments.forth
 			end
 		end
 
-feature -- Properties
+feature -- Access
 
 	autoproof: E2B_AUTOPROOF
 			-- Autoproof.
 
-	options: LINKED_LIST [STRING]
+	user_options: LINKED_LIST [STRING]
 			-- Option arguments to Boogie command line.
 
 	selection: LINKED_LIST [STRING]
@@ -73,22 +81,67 @@ feature -- Execution
 
 	execute
 			-- <Precursor>
+		local
+			html_writer: E2B_HTML_OUTPUT
 		do
 			create autoproof.make
 				-- Load options
-			if options.has ("-abc") then
-
+			if user_options.has ("-twostep") then
+				options.set_reverification_with_inlining_enabled (True)
+			elseif user_options.has ("-notwostep") then
+				options.set_reverification_with_inlining_enabled (False)
 			end
+			if user_options.has ("-overflow") then
+				options.set_checking_overflow (True)
+			elseif user_options.has ("-nooverflow") then
+				options.set_checking_overflow (False)
+			end
+			if user_options.has ("-autounroll") then
+				options.set_automatic_loop_unrolling_enabled (True)
+			elseif user_options.has ("-autounroll") then
+				options.set_automatic_loop_unrolling_enabled (False)
+			end
+			if user_options.has ("-unrolldepth") then
+				options.set_loop_unrolling_depth (option_argument ("-unrolldepth", options.loop_unrolling_depth))
+			end
+			if user_options.has ("-autoinline") then
+				options.set_automatic_inlining_enabled (True)
+			elseif user_options.has ("-autoinline") then
+				options.set_automatic_inlining_enabled (False)
+			end
+			if user_options.has ("-inlinedepth") then
+				options.set_max_recursive_inlining_depth (option_argument ("-unrolldepth", options.max_recursive_inlining_depth))
+			end
+
 			if selection.is_empty then
 				load_universe
 			else
 				load_selection
 			end
 			autoproof.verify
-			print_result (autoproof.last_result)
+			if user_options.has ("-html") then
+				create html_writer
+				html_writer.print_verification_result (autoproof.last_result)
+			else
+				print_result (autoproof.last_result)
+			end
 		end
 
-feature {NONE} -- Implementation
+	option_argument (a_option: STRING; a_default: INTEGER): INTEGER
+		require
+			user_options.has (a_option)
+		local
+			l_index: INTEGER
+		do
+			l_index := user_options.index_of (a_option, 1)
+			if l_index > 0 and then user_options.i_th (l_index + 1).is_integer then
+				Result := user_options.i_th (l_index + 1).to_integer
+			else
+				Result := a_default
+			end
+		end
+
+feature {NONE} -- Printing console
 
 	print_result (a_result: E2B_RESULT)
 			-- Print results to output.
@@ -162,6 +215,9 @@ feature {NONE} -- Implementation
 			output_window.add_feature (a_proc.eiffel_feature.e_feature, a_proc.eiffel_feature.feature_name_32)
 			output_window.add_new_line
 		end
+
+
+feature {NONE} -- Implementation
 
 	load_universe
 			-- Load all classes from universe.
