@@ -149,12 +149,13 @@ feature -- Translation
 			a_handler.handle_routine_call_in_contract (Current, a_feature, a_parameters)
 		end
 
-	add_safety_check (a_expression: IV_EXPRESSION; a_name: STRING)
+	add_safety_check (a_expression: IV_EXPRESSION; a_name: STRING; a_tag: STRING)
 			-- <Precursor>
 		local
 			l_info: IV_ASSERTION_INFORMATION
 		do
 			create l_info.make (a_name)
+			l_info.set_tag (a_tag)
 			side_effect.extend ([implies_safety_expression (a_expression), l_info])
 		end
 

@@ -98,7 +98,7 @@ feature -- Execution
 			end
 			if user_options.has ("-autounroll") then
 				options.set_automatic_loop_unrolling_enabled (True)
-			elseif user_options.has ("-autounroll") then
+			elseif user_options.has ("-noautounroll") then
 				options.set_automatic_loop_unrolling_enabled (False)
 			end
 			if user_options.has ("-unrolldepth") then
@@ -106,7 +106,7 @@ feature -- Execution
 			end
 			if user_options.has ("-autoinline") then
 				options.set_automatic_inlining_enabled (True)
-			elseif user_options.has ("-autoinline") then
+			elseif user_options.has ("-noautoinline") then
 				options.set_automatic_inlining_enabled (False)
 			end
 			if user_options.has ("-inlinedepth") then

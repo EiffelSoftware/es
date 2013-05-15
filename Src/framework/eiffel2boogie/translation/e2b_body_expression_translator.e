@@ -378,7 +378,7 @@ feature -- Translation
 			inlined_routines.force (inlined_routines.item (a_feature.body_index) - 1, a_feature.body_index)
 		end
 
-	add_safety_check (a_expression: IV_EXPRESSION; a_name: STRING)
+	add_safety_check (a_expression: IV_EXPRESSION; a_name: STRING; a_tag: STRING)
 			-- <Precursor>
 		local
 			l_assert: IV_ASSERT
@@ -386,6 +386,7 @@ feature -- Translation
 		do
 			create l_assert.make (implies_safety_expression (a_expression))
 			create l_info.make (a_name)
+			l_info.set_tag (a_tag)
 			l_assert.set_information (l_info)
 			side_effect.extend (l_assert)
 		end

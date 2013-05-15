@@ -19,7 +19,8 @@ inherit
 			is_event_list_scrolled_automatically,
 			is_appliable_event,
 			on_event_item_added,
-			on_event_item_removed
+			on_event_item_removed,
+			find_event_row
 		end
 
 	SESSION_EVENT_OBSERVER
@@ -664,6 +665,30 @@ feature {NONE} -- Basic operations
 			successful_button.set_text (successful_count.out + " " + ep_names.tool_button_successful)
 			failed_button.set_text (failed_count.out + " " + ep_names.tool_button_failed)
 			skipped_button.set_text (skipped_count.out + " " + ep_names.tool_button_skipped)
+		end
+
+	find_event_row (a_event_item: EVENT_LIST_ITEM_I): EV_GRID_ROW
+			-- <Precursor>
+		local
+			l_grid: like grid_events
+			l_row: EV_GRID_ROW
+			i: INTEGER
+		do
+			l_grid := grid_events
+			from
+					-- Count backwards as it is more optimal for use in item insertion/removal.
+				i := l_grid.row_count
+			until
+				i = 0
+			loop
+				l_row := l_grid.row (i)
+				if l_row.data = a_event_item then
+					Result := l_row
+					i := 0
+				else
+					i := i - 1
+				end
+			end
 		end
 
 feature {NONE} -- Clean up
