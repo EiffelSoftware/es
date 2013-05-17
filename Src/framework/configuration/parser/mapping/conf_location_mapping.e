@@ -1,73 +1,31 @@
 note
-	description: "Fingerprint implemented by MD5 hash"
+	description: "[
+				Mapping between 
+					- a location as specified in Eiffel Configuration File (.ecf)
+					- and another location (could be used for aliasing, ... or other such as iron system)
+			]"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
-	EIS_MD5_FINGERPRINT
-
-inherit
-	EIS_FINGERPRINT
-
-create
-	make_empty,
-	make_with_content
-
-feature {NONE} -- Init
-
-	make_empty
-			-- Make empty
-		do
-			create md5.make_empty
-		end
-
-	make_with_content (a_content: READABLE_STRING_GENERAL)
-			-- Make with `a_content'.
-		do
-			md5 := generate_md5 (a_content)
-		ensure
-			md5_set: md5 /= Void
-		end
-
-	generate_md5 (a_content: READABLE_STRING_GENERAL): STRING
-			-- Generate MD5 from `a_content'
-		require
-			a_content_set: a_content /= Void
-		local
-			u: UTF_CONVERTER
-		do
-			md5_computer.update_from_string (u.utf_32_string_to_utf_8_string_8 (a_content))
-			Result := md5_computer.digest_as_string
-			md5_computer.reset
-		ensure
-			Result_set: Result /= Void
-		end
-
-feature -- Query
-
-	same_fingerprint (a_fingerprint: EIS_FINGERPRINT): BOOLEAN
-			-- Same fingerprint?
-		do
-			if a_fingerprint = Current then
-				Result := True
-			else
-				if attached {EIS_MD5_FINGERPRINT} a_fingerprint as l_f then
-					Result := md5.same_string (l_f.md5)
-				end
-			end
-		end
+deferred class
+	CONF_LOCATION_MAPPING
 
 feature -- Access
 
-	md5: STRING
-			-- MD5 of the content
+	mapped_location (a_location: READABLE_STRING_32): detachable READABLE_STRING_32
+			-- Location mapped with `a_location' if any.
+		deferred
+		ensure
+			Result_ot_empty: Result /= Void implies not Result.is_empty
+		end
 
-feature {NONE} -- Implemetation
+feature -- Basic operation
 
-	md5_computer: MD5
-			-- MD5 computer
-		once
-			create Result.make
+	refresh
+			-- Refresh mapping information
+		deferred
 		end
 
 note

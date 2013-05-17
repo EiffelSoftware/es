@@ -1,73 +1,69 @@
 note
-	description: "Fingerprint implemented by MD5 hash"
+	description: "[
+				Global conf location mapper managing a collection of registered configuration location mappings
+			]"
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	EIS_MD5_FINGERPRINT
+	CONF_LOCATION_MAPPER
 
-inherit
-	EIS_FINGERPRINT
+create {CONF_SETTING}
+	make
 
-create
-	make_empty,
-	make_with_content
+feature {NONE} -- Initialization
 
-feature {NONE} -- Init
-
-	make_empty
-			-- Make empty
+	make
+			-- Initialize `Current'.
 		do
-			create md5.make_empty
-		end
-
-	make_with_content (a_content: READABLE_STRING_GENERAL)
-			-- Make with `a_content'.
-		do
-			md5 := generate_md5 (a_content)
-		ensure
-			md5_set: md5 /= Void
-		end
-
-	generate_md5 (a_content: READABLE_STRING_GENERAL): STRING
-			-- Generate MD5 from `a_content'
-		require
-			a_content_set: a_content /= Void
-		local
-			u: UTF_CONVERTER
-		do
-			md5_computer.update_from_string (u.utf_32_string_to_utf_8_string_8 (a_content))
-			Result := md5_computer.digest_as_string
-			md5_computer.reset
-		ensure
-			Result_set: Result /= Void
-		end
-
-feature -- Query
-
-	same_fingerprint (a_fingerprint: EIS_FINGERPRINT): BOOLEAN
-			-- Same fingerprint?
-		do
-			if a_fingerprint = Current then
-				Result := True
-			else
-				if attached {EIS_MD5_FINGERPRINT} a_fingerprint as l_f then
-					Result := md5.same_string (l_f.md5)
-				end
-			end
+			create mappings.make (0)
 		end
 
 feature -- Access
 
-	md5: STRING
-			-- MD5 of the content
+	mapped_path (a_location: READABLE_STRING_32): detachable READABLE_STRING_32
+			-- Path mapped with `a_location' if any.
+		local
+			loc: READABLE_STRING_32
+		do
+			loc := a_location
+			across
+				mappings as c
+			loop
+				if attached c.item.mapped_location (loc) as s then
+					loc := s
+				end
+			end
+			Result := loc
+		end
 
-feature {NONE} -- Implemetation
+	mappings: ARRAYED_LIST [CONF_LOCATION_MAPPING]
+			-- Registered location mappings.
 
-	md5_computer: MD5
-			-- MD5 computer
-		once
-			create Result.make
+feature -- Change
+
+	refresh
+			-- Refresh mappings.
+		do
+			across
+				mappings as c
+			loop
+				c.item.refresh
+			end
+		end
+
+	register (a_mapping: CONF_LOCATION_MAPPING)
+			-- Register `a_mapping' with Current.
+		do
+			mappings.force (a_mapping)
+		end
+
+	unregister (a_mapping: CONF_LOCATION_MAPPING)
+			-- Un-Register `a_mapping' with Current.
+		do
+			mappings.prune_all (a_mapping)
 		end
 
 note
