@@ -1705,7 +1705,6 @@ Src/Delivery/notes/new_development_period_todo.txt -text
 Src/Delivery/scripts/unix/README.packaging -text
 Src/Delivery/scripts/unix/compile_eweasel -text
 Src/Delivery/scripts/unix/compile_other_libraries -text
-Src/Delivery/scripts/unix/include_ewf -text
 Src/Delivery/scripts/unix/make_debian_package -text
 Src/Delivery/scripts/unix/make_rpm_package -text
 Src/Delivery/scripts/unix/make_svr_package -text
@@ -1716,7 +1715,6 @@ Src/Delivery/scripts/unix/packaging/debian/rules -text
 Src/Delivery/scripts/unix/packaging/description -text
 Src/Delivery/scripts/unix/packaging/license -text
 Src/Delivery/scripts/unix/packaging/logo.png -text
-Src/Delivery/scripts/windows/include_ewf.btm -text
 Src/Delivery/scripts/windows/install/Admin.txt -text
 Src/Delivery/scripts/windows/install/images/Thumbs.db -text
 Src/Delivery/scripts/windows/install/images/app.ico -text
