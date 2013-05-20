@@ -4375,7 +4375,6 @@ Src/tools/finish_freezing/finish_freezing.lic -text
 Src/tools/hallow/hallow.lic -text
 Src/tools/iron/README.md -text
 Src/tools/iron/client/README.md -text
-Src/tools/iron/lib/README.md -text
 Src/tools/iron/server/README.md -text
 Src/tools/iron/server/iron.ini -text
 Src/tools/metaconfig/README.txt -text
