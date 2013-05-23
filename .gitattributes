@@ -1949,6 +1949,8 @@ Src/Delivery/studio/wizards/new_projects/wizard/resources/eiffel_wizard_icon.png
 Src/Delivery/studio/wizards/others/precompile/pixmaps/eiffel_wizard.png -text
 Src/Delivery/studio/wizards/others/precompile/pixmaps/eiffel_wizard_icon.png -text
 Src/Delivery/studio/wizards/others/precompile/pixmaps/wizard.png -text
+Src/Delivery/tools/iron/spec/unix/bin/iron_build_archive -text
+Src/Delivery/tools/iron/spec/unix/bin/iron_extract_archive -text
 Src/Delivery/tools/iron/spec/windows/bin/bunzip2 -text
 Src/Delivery/tools/iron/spec/windows/bin/bzip2.exe -text
 Src/Delivery/tools/iron/spec/windows/bin/msys-1.0.dll -text
