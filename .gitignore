@@ -579,6 +579,9 @@ Src/tools/estudio/*.wb
 Src/tools/estudio/EIFGENs
 Src/tools/estudio/config/EIFGENs
 Src/tools/estudio/estudio.rc
+Src/tools/iron/client/db
+Src/tools/iron/client/iron
+Src/tools/iron/client/iron-new
 Src/tools/quick_finalize/*.wb
 Src/tools/quick_finalize/EIFGENs
 Src/tools/quick_finalize/quick_finalize.rc
