@@ -4346,6 +4346,7 @@ Src/tools/hallow/hallow.lic -text
 Src/tools/iron/README.md -text
 Src/tools/iron/client/README.md -text
 Src/tools/iron/client/license.lic -text
+Src/tools/iron/delivery/README.txt -text
 Src/tools/iron/server/README.md -text
 Src/tools/iron/server/iron.ini -text
 Src/tools/iron/server/license.lic -text
