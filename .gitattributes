@@ -1949,12 +1949,6 @@ Src/Delivery/studio/wizards/new_projects/wizard/resources/eiffel_wizard_icon.png
 Src/Delivery/studio/wizards/others/precompile/pixmaps/eiffel_wizard.png -text
 Src/Delivery/studio/wizards/others/precompile/pixmaps/eiffel_wizard_icon.png -text
 Src/Delivery/studio/wizards/others/precompile/pixmaps/wizard.png -text
-Src/Delivery/tools/iron/spec/unix/bin/iron_build_archive -text
-Src/Delivery/tools/iron/spec/unix/bin/iron_extract_archive -text
-Src/Delivery/tools/iron/spec/windows/bin/bunzip2 -text
-Src/Delivery/tools/iron/spec/windows/bin/bzip2.exe -text
-Src/Delivery/tools/iron/spec/windows/bin/msys-1.0.dll -text
-Src/Delivery/tools/iron/spec/windows/bin/tar.exe -text
 Src/Delivery/vision2_demo/bitmaps/png/documentation.png -text
 Src/Delivery/vision2_demo/bitmaps/png/image1.png -text
 Src/Delivery/vision2_demo/bitmaps/png/image2.png -text
@@ -4347,6 +4341,11 @@ Src/tools/iron/README.md -text
 Src/tools/iron/client/README.md -text
 Src/tools/iron/client/license.lic -text
 Src/tools/iron/delivery/README.txt -text
+Src/tools/iron/delivery/iron/spec/unix/bin/iron_build_archive -text
+Src/tools/iron/delivery/iron/spec/unix/bin/iron_extract_archive -text
+Src/tools/iron/delivery/iron/spec/windows/bin/bzip2.exe -text
+Src/tools/iron/delivery/iron/spec/windows/bin/msys-1.0.dll -text
+Src/tools/iron/delivery/iron/spec/windows/bin/tar.exe -text
 Src/tools/iron/server/README.md -text
 Src/tools/iron/server/iron.ini -text
 Src/tools/iron/server/license.lic -text
