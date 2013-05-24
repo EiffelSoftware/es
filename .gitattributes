@@ -4337,8 +4337,6 @@ Src/tools/finish_freezing/appl.ico -text
 Src/tools/finish_freezing/finish_freezing-safe.lic -text
 Src/tools/finish_freezing/finish_freezing.lic -text
 Src/tools/hallow/hallow.lic -text
-Src/tools/iron/README.md -text
-Src/tools/iron/client/README.md -text
 Src/tools/iron/client/license.lic -text
 Src/tools/iron/delivery/README.txt -text
 Src/tools/iron/delivery/iron/spec/unix/bin/iron_build_archive -text
@@ -4346,8 +4344,6 @@ Src/tools/iron/delivery/iron/spec/unix/bin/iron_extract_archive -text
 Src/tools/iron/delivery/iron/spec/windows/bin/bzip2.exe -text
 Src/tools/iron/delivery/iron/spec/windows/bin/msys-1.0.dll -text
 Src/tools/iron/delivery/iron/spec/windows/bin/tar.exe -text
-Src/tools/iron/server/README.md -text
-Src/tools/iron/server/iron.ini -text
 Src/tools/iron/server/license.lic -text
 Src/tools/metaconfig/README.txt -text
 Src/tools/parse_benchmark/parse_benchmark.lic -text
