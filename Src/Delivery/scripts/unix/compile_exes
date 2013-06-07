@@ -108,6 +108,12 @@ mv $INSTALL_DIR/compatible/precomp/spec/platform $INSTALL_DIR/compatible/precomp
 fullrd $INSTALL_DIR/studio/config/unix
 fullrd $INSTALL_DIR/studio/spec/unix
 
+#iron tool.
+move $INSTALL_DIR/tools/iron/spec/unix $INSTALL_DIR/tools/iron/spec/$ISE_PLATFORM
+chmod a+rx $INSTALL_DIR/tools/iron/spec/$ISE_PLATFORM/bin/iron_extract_archive
+chmod a+rx $INSTALL_DIR/tools/iron/spec/$ISE_PLATFORM/bin/iron_build_archive
+fullrd $INSTALL_DIR/tools/iron/spec/windows
+
 #Creates the tools directory
 safe_md $INSTALL_DIR/tools
 safe_md $INSTALL_DIR/tools/spec
@@ -267,6 +273,11 @@ remtrace Recompile estudio
 cd $EXPORT_DIR/bin
 untgz_ccode estudio
 move estudio $INSTALL_DIR/studio/spec/$ISE_PLATFORM/bin/estudio
+
+remtrace Recompile iron
+cd $EXPORT_DIR/bin
+untgz_ccode iron
+move iron $INSTALL_DIR/tools/spec/$ISE_PLATFORM/bin/iron
 
 remtrace Recompile syntax_updater
 cd $EXPORT_DIR/bin

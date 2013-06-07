@@ -96,10 +96,17 @@ feature {NONE} -- Unused
 			False
 		end
 
+	has_unset: BOOLEAN
+			-- Are there any unset variables?
+		do
+		ensure then
+			False
+		end
+
 note
 	date: "$Date$"
 	revision: "$Revision$"
-	copyright: "Copyright (c) 2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -100,7 +100,7 @@ feature -- Status report
 	has_selected_item: BOOLEAN
 			-- Does current has a selected item?
 		do
-			Result := not projects_list.selected_rows.is_empty
+			Result := projects_list.has_selected_row
 		end
 
 	is_empty: BOOLEAN
@@ -742,7 +742,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-
 	update_targets (a_item: EV_GRID_CHOICE_ITEM)
 			-- Fill `a_item' with targets of `a_config'.
 		require
@@ -1280,8 +1279,6 @@ invariant
 
 note
 	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
-	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
-	copyright:	"Copyright (c) 1984-2010, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

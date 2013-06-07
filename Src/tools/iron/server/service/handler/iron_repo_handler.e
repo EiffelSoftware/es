@@ -75,6 +75,17 @@ feature -- Access
 			end
 		end
 
+	has_permission_to_modify_package (req: WSF_REQUEST; a_package: IRON_REPO_PACKAGE): BOOLEAN
+		do
+			if attached current_user (req) as u then
+				if attached a_package.owner as o then
+					Result := u.same_user (o) or else u.is_administrator
+				else
+					Result := u.is_administrator
+				end
+			end
+		end
+
 feature -- Request: methods
 
 	method_query_parameter: STRING = "_method"
@@ -144,10 +155,7 @@ feature -- Download
 		local
 			cl: LIBCURL_HTTP_CLIENT
 			ctx: HTTP_CLIENT_REQUEST_CONTEXT
-			f: detachable RAW_FILE
-			bp: detachable PATH
-			d: DIRECTORY
-			i: INTEGER
+			f: detachable FILE
 		do
 			if attached current_user (req) as l_user then
 				create cl.make
@@ -155,29 +163,7 @@ feature -- Download
 					create ctx.make
 					l_sess.set_max_redirects (-1)
 					l_sess.set_is_insecure (True)
-					if attached iron.basedir as p_basedir then
-						bp := p_basedir.extended ("tmp")
-					else
-						create bp.make_from_string ("tmp")
-					end
-					create d.make_with_path (bp)
-					if not d.exists then
-						d.recursive_create_dir
-					end
-					bp := bp.extended ("tmp-download-" + l_user.name)
-					from
-						i := 0
-					until
-						f /= Void or i > 100
-					loop
-						i := i + 1
-						create f.make_with_path (bp.appended ("__" + i.out))
-						if f.exists then
-							f := Void
-						else
-							f.open_write
-						end
-					end
+					f := new_temporary_output_file ("tmp-download-" + l_user.name)
 					if f /= Void and then f.is_open_write then
 						ctx.set_output_content_file (f)
 						if attached l_sess.get ("", ctx) as resp then
@@ -187,6 +173,43 @@ feature -- Download
 					end
 				end
 			end
+		end
+
+	new_temporary_output_file (n: detachable READABLE_STRING_8): detachable FILE
+		local
+			bp: detachable PATH
+			d: DIRECTORY
+			i: INTEGER
+		do
+			if attached iron.basedir as p_basedir then
+				bp := p_basedir.extended ("tmp")
+			else
+				create bp.make_from_string ("tmp")
+			end
+			create d.make_with_path (bp)
+			if not d.exists then
+				d.recursive_create_dir
+			end
+			if n /= Void then
+				bp := bp.extended ("tmp-download-" + n)
+			else
+				bp := bp.extended ("tmp")
+			end
+			from
+				i := 0
+			until
+				Result /= Void or i > 100
+			loop
+				i := i + 1
+				create {RAW_FILE} Result.make_with_path (bp.appended ("__" + i.out))
+				if Result.exists then
+					Result := Void
+				else
+					Result.open_write
+				end
+			end
+		ensure
+			Result /= Void implies Result.is_open_write
 		end
 
 feature -- Package
@@ -238,7 +261,7 @@ feature -- Package form
 			f_fieldset.set_legend ("Associated Archive")
 
 			create f_archive.make ("archive")
-			f_archive.set_label ("Upload archive zip file")
+			f_archive.set_label ("Upload archive file")
 			f_fieldset.extend (f_archive)
 
 			create f_archive_url.make ("archive-url")
@@ -362,33 +385,36 @@ feature -- Package form
 						p.set_description (l_description)
 					end
 				end
-				if not fd.has_error then
-					if p.has_id then
-						iron.database.update_package (iron_version (req), p)
-						m.add_normal_message ("Package updated [" + p.id + "]")
-					else
-						iron.database.update_package (iron_version (req), p)
-						m.add_normal_message ("Package created [" + p.id + "]")
-					end
+				if has_permission_to_modify_package (req, p) then
+					if not fd.has_error then
+						if p.has_id then
+							iron.database.update_package (iron_version (req), p)
+							m.add_normal_message ("Package updated [" + p.id + "]")
+						else
+							iron.database.update_package (iron_version (req), p)
+							m.add_normal_message ("Package created [" + p.id + "]")
+						end
 
-					if attached {WSF_UPLOADED_FILE} fd.item ("archive") as l_file then
-						iron.database.save_uploaded_package_archive (iron_version (req), p, l_file)
-					elseif attached {WSF_STRING} fd.item ("archive-url") as l_archive_url then
-						create cl_path.put (Void)
-						download (l_archive_url.url_encoded_value, cl_path, req)
-						if attached cl_path.item as l_downloaded_path then
-							iron.database.save_package_archive (iron_version (req), p, l_downloaded_path, False)
+						if attached {WSF_UPLOADED_FILE} fd.item ("archive") as l_file then
+							iron.database.save_uploaded_package_archive (iron_version (req), p, l_file)
+						elseif attached {WSF_STRING} fd.item ("archive-url") as l_archive_url and then not l_archive_url.is_empty then
+							create cl_path.put (Void)
+							download (l_archive_url.url_encoded_value, cl_path, req)
+							if attached cl_path.item as l_downloaded_path then
+								iron.database.save_package_archive (iron_version (req), p, l_downloaded_path, False)
+							end
 						end
 					end
+					m.set_title ("Package [" + p.id  + "]")
+					s.prepend ("<a href=%"" + req.script_url (iron.package_view_web_page (iron_version (req), p)) + "%">View package</a>")
+
+					m.set_location (req.absolute_script_url (iron.package_view_web_page (iron_version (req), p)))
+
+					m.set_body (s)
+					res.send (m)
+				else
+					res.send (create {IRON_REPO_HTML_RESPONSE}.make_not_permitted (req, iron))
 				end
-
-				m.set_title ("Package [" + p.id  + "]")
-				s.prepend ("<a href=%"" + req.script_url (iron.package_view_web_page (iron_version (req), p)) + "%">View package</a>")
-
-				m.set_location (req.absolute_script_url (iron.package_view_web_page (iron_version (req), p)))
-
-				m.set_body (s)
-				res.send (m)
 			end
 		end
 
@@ -409,4 +435,54 @@ feature -- Factory
 			end
 		end
 
+	new_not_permitted_response_message (req: WSF_REQUEST): IRON_REPO_HTML_RESPONSE
+		do
+			Result := new_response_message (req)
+			Result.set_body ("Operation not permitted.")
+		end
+
+	new_not_found_response_message (req: WSF_REQUEST): IRON_REPO_HTML_RESPONSE
+		do
+			Result := new_response_message (req)
+			Result.set_body ("Resource not found.")
+		end
+
+feature {NONE} -- Implementation
+
+	url_encoder: URL_ENCODER
+		once
+			create Result
+		end
+
+note
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

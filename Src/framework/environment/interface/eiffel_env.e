@@ -89,7 +89,7 @@ feature -- Access
 			not_result_is_empty: not Result.is_empty
 		end
 
-	copyright_year: STRING = "2012"
+	copyright_year: STRING = "2013"
 			-- Copyright year
 
 feature -- Access
@@ -669,7 +669,7 @@ feature -- Directories (top-level)
 		require
 			is_valid_environment: is_valid_environment
 		do
-			Result := shared_path.extended (iron_name)
+			Result := shared_path.extended ("tools").extended (iron_name)
 		ensure
 			not_result_is_empty: not Result.is_empty
 		end
@@ -678,6 +678,8 @@ feature -- Directories (top-level)
 			-- Actual location of the iron installed libraries.
 			-- When ISE_IRON_PATH is defined:
 			--   $ISE_IRON_PATH
+			-- Otherwise if IRON_PATH is defined
+			--	 $IRON_PATH
 			-- Otherwise if `is_user_files_supported':
 			--   On Windows: C:\Users\manus\Documents\Eiffel User Files\7.x\iron
 			--   On Mac: ~/Eiffel User Files/7.x/iron
@@ -690,6 +692,9 @@ feature -- Directories (top-level)
 			l_value: like get_environment_32
 		do
 			l_value := get_environment_32 ({EIFFEL_CONSTANTS}.ise_iron_path_env)
+			if l_value = Void or else l_value.is_empty then
+				l_value := get_environment_32 ({EIFFEL_CONSTANTS}.iron_path_env)
+			end
 			if l_value = Void or else l_value.is_empty then
 				if is_user_files_supported then
 					Result := user_files_path.extended (iron_name)

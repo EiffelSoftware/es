@@ -176,7 +176,7 @@ feature -- Router and Filter
 			h_edit: EDIT_PACKAGE_HANDLER
 			h_package: PACKAGE_HANDLER
 			h_package_map: PACKAGE_MAP_HANDLER
-			h_zip_package: ARCHIVE_PACKAGE_HANDLER
+			h_archive_package: ARCHIVE_PACKAGE_HANDLER
 			h_package_fetcher: FETCH_PACKAGE_HANDLER
 --			h_fs: WSF_FILE_SYSTEM_HANDLER
 		do
@@ -199,7 +199,7 @@ feature -- Router and Filter
 			map_uri_template_with_request_methods ("/access/{version}/", new_auth_uri_template_handler (h_admin), router.methods_get) -- Admin::home
 
 			create h_create.make (iron)
-			create h_zip_package.make (iron)
+			create h_archive_package.make (iron)
 			create h_search.make (iron)
 			create h_package.make (iron)
 			create h_edit.make (iron)
@@ -213,8 +213,8 @@ feature -- Router and Filter
 			map_uri_template_with_request_methods ("/access/{version}/package/", new_auth_uri_template_handler (h_package), router.methods_post) -- Create
 			map_uri_template_with_request_methods ("/access/{version}/package/{id}", h_package, router.methods_get) --  Get package data
 			map_uri_template_with_request_methods ("/access/{version}/package/{id}", new_auth_uri_template_handler (h_package), router.methods_put_post + router.methods_delete) --  Update package
-			map_uri_template_with_request_methods ("/access/{version}/package/{id}/archive", h_zip_package, router.methods_get) --  Get archive package data
-			map_uri_template_with_request_methods ("/access/{version}/package/{id}/archive", new_auth_uri_template_handler (h_zip_package), router.methods_post + router.methods_delete) --  Get archive package data
+			map_uri_template_with_request_methods ("/access/{version}/package/{id}/archive", h_archive_package, router.methods_get) --  Get archive package data
+			map_uri_template_with_request_methods ("/access/{version}/package/{id}/archive", new_auth_uri_template_handler (h_archive_package), router.methods_post + router.methods_put + router.methods_delete) --  Get archive package data
 
 			map_uri_template_with_request_methods ("/access/{version}/package/{id}/map", h_package_map, router.methods_get) --  Get map
 			map_uri_template_with_request_methods ("/access/{version}/package/{id}/map{/map}", h_package_map, router.methods_get) --  Get map and allow ?method= .. hack
@@ -226,7 +226,7 @@ feature -- Router and Filter
 
 				--| Package access			
 			create h_package_fetcher.make (iron)
-			map_uri_template_with_request_methods ("/{version}/{domain}{/vars}", h_package_fetcher, router.methods_get) --  Get package info
+			map_uri_template_with_request_methods ("/{version}{/vars}", h_package_fetcher, router.methods_get) --  Get package info
 
 				--| Misc access
 			router.handle ("/favicon.ico", create {WSF_URI_AGENT_HANDLER}.make (agent handle_favicon))
@@ -323,4 +323,35 @@ feature -- Handler
 			res.send (r)
 		end
 
+note
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

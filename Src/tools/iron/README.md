@@ -1,1 +1,1 @@
-Eiffel Iron project
+Iron: the Eiffel library repository 

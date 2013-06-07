@@ -1493,7 +1493,7 @@ feature -- Status setting
 		end
 
 	set_row_count_to (a_row_count: INTEGER)
-			-- Resize `Current' to have `a_row_count' columns.
+			-- Resize `Current' to have `a_row_count' rows.
 		require
 			not_destroyed: not is_destroyed
 			a_row_count_non_negative: a_row_count >= 0
@@ -2426,17 +2426,13 @@ feature -- Removal
 			valid_lower_index: lower_index >= 1 and lower_index <= row_count
 			valid_upper_index: upper_index >= lower_index and upper_index <= row_count
 			valid_final_row_in_tree_structure: (is_tree_enabled and then
-			highest_parent_row_within_bounds (lower_index, upper_index) /= Void implies
-				upper_index = highest_parent_row_within_bounds (lower_index,
-				upper_index).index + highest_parent_row_within_bounds (lower_index,
-				upper_index).subrow_count_recursive) or
+				attached highest_parent_row_within_bounds (lower_index, upper_index) as l_row implies
+				upper_index = l_row.index + l_row.subrow_count_recursive) or
 				            (is_tree_enabled and then highest_parent_row_within_bounds
 				(lower_index, upper_index) = Void implies row (upper_index).subrow_count = 0)
 			valid_final_row_in_tree_structure: (is_tree_enabled and then
-				highest_parent_row_within_bounds (lower_index, upper_index) /= Void implies
-				upper_index = highest_parent_row_within_bounds (lower_index,
-				upper_index).index + highest_parent_row_within_bounds (lower_index,
-				upper_index).subrow_count_recursive) or
+				attached highest_parent_row_within_bounds (lower_index, upper_index) as l_row implies
+				upper_index = l_row.index + l_row.subrow_count_recursive) or
 				            (is_tree_enabled and then highest_parent_row_within_bounds
 				(lower_index, upper_index) = Void implies row (upper_index).subrow_count = 0)
 		do
@@ -2540,7 +2536,7 @@ feature -- Contract support
 			end
 		end
 
-	highest_parent_row_within_bounds (lower_index, upper_index: INTEGER): EV_GRID_ROW
+	highest_parent_row_within_bounds (lower_index, upper_index: INTEGER): detachable EV_GRID_ROW
 			-- Return the highest level `parent_row' recursively of row `upper_index'
 			-- that has an index greater or equal to `lower_index'.
 		require
@@ -2550,7 +2546,6 @@ feature -- Contract support
 			valid_upper_index: upper_index >= lower_index and upper_index <= row_count
 		local
 			l_row: EV_GRID_ROW
-			l_result: detachable EV_GRID_ROW
 		do
 			l_row := row (upper_index)
 			from
@@ -2560,14 +2555,10 @@ feature -- Contract support
 				if attached l_row.parent_row as l_parent_row then
 					l_row := l_parent_row
 					if l_row.index > lower_index then
-						l_result := l_row
+						Result := l_row
 					end
 				end
 			end
-			check l_result /= Void end
-			Result := l_result
-		ensure
-			result_not_void: Result /= Void
 		end
 
 	rows_may_be_moved (a_first_row_index, a_row_count: INTEGER): BOOLEAN

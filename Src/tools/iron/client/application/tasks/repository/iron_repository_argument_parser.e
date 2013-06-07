@@ -2,9 +2,7 @@ note
 	description: "[
 			Summary description for {IRON_REPOSITORY_ARGUMENT_PARSER}.
 						
-				iron list 						: List of available packages, i.e. packages that have been installed
-												: as well as packages available from the Iron server.
-				iron list --installed 			: List of installed packages.
+				iron repository ...
 		]"
 	author: ""
 	date: "$Date$"
@@ -34,6 +32,7 @@ feature {NONE} -- Initialization
 			task := a_task
 			make_parser (False, False)
 			set_argument_source (a_task.argument_source)
+			is_using_builtin_switches := not is_verbose_switch_used
 --			set_is_using_separated_switch_values (False)
 --			set_non_switched_argument_validator (create {ARGUMENT_DIRECTORY_VALIDATOR})
 		end
@@ -115,8 +114,8 @@ feature {NONE} -- Switches
 		once
 			create Result.make (12)
 			Result.extend (create {ARGUMENT_SWITCH}.make (list_switch, "List repositories", True, False))
-			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (add_switch, "Add repository", True, False, "url", "Repository url including the version", False))
-			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (remove_switch, "Remove repository", True, False, "url", "Repository url including the version", False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (add_switch, "Add repository", True, False, "name", "Registration name for associated url", False))
+			Result.extend (create {ARGUMENT_VALUE_SWITCH}.make (remove_switch, "Remove repository", True, False, "name_or_url", "Registered name or repository url including the version", False))
 			add_verbose_switch (Result)
 			add_simulation_switch (Result)
 			add_batch_interactive_switch (Result)
@@ -136,8 +135,8 @@ feature {NONE} -- Switches
 	remove_switch: STRING = "d|remove"
 
 ;note
-	copyright:	"Copyright (c) 1984-2013, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
 			This file is part of Eiffel Software's Eiffel Development Environment.
@@ -149,15 +148,15 @@ feature {NONE} -- Switches
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
 			Eiffel Software

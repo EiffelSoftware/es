@@ -8,7 +8,7 @@ create
 feature {NONE}
 
 	make
-			-- Create expanded objects that need to initialize their attributes.
+			-- Initialize object.
 		local
 			t: TEST
 		do

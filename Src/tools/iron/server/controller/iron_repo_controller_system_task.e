@@ -33,6 +33,7 @@ feature -- Execution
 				if args[1].is_case_insensitive_equal ("initialize") then
 					initialize_database (iron)
 					initialize_css_style (iron)
+					initialize_folders (iron)
 				elseif args[1].is_case_insensitive_equal ("init-db") then
 					initialize_database (iron)
 				elseif args[1].is_case_insensitive_equal ("dump") then
@@ -81,6 +82,18 @@ feature -- Execution
 		do
 			if not a_iron.database.is_available then
 				a_iron.database.initialize
+			end
+		end
+
+	initialize_folders (a_iron: IRON_REPO)
+		local
+			p: PATH
+			d: DIRECTORY
+		do
+			p := a_iron.basedir.extended ("tmp")
+			create d.make_with_path (p)
+			if not d.exists then
+				d.recursive_create_dir
 			end
 		end
 
@@ -203,6 +216,21 @@ feature -- Execution
 					css.add_selector_style ("ul.menu li", "display: inline; border: solid 1px #900; padding: 2px 5px 2px 5px;")
 					css.add_selector_style ("ul.menu li:hover", "background-color: #FF9")
 
+					create css_style.make
+					css_style.put_border (Void, "solid", "1px", "#ddd")
+					css_style.put_padding ("2px", "2px", "2px", "15px")
+					css.add_selector_style (".package-index li", css_style)
+
+					css.add_selector_style (".package-index li .packageid", "display: none")
+
+					create css_style.make
+					css_style.put_border ("left", "solid", "10px", "#ddf")
+					css_style.put_padding ("2px", "2px", "2px", "5px")
+					css_style.put_background_color ("#fafaff")
+					css.add_selector_style (".package-index li.package-folder-inline", css_style)
+
+					css.add_selector_style (".package-index li.package-folder-inline:after", "content: %" ...%"")
+
 					f.open_write
 					f.put_string (css.string)
 					f.close
@@ -210,4 +238,35 @@ feature -- Execution
 			end
 		end
 
+note
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

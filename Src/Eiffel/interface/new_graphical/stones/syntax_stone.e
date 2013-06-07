@@ -48,7 +48,7 @@ feature -- Properties
 
 feature -- Access
 
-	file_name: like {ERROR}.file_name
+	file_name: like {EIFFEL_SCANNER_SKELETON}.filename
 			-- The one from SYNTAX_ERROR: where it happened
 		do
 			Result := syntax_message.file_name.twin

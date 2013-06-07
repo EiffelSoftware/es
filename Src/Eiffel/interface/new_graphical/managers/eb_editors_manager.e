@@ -524,7 +524,7 @@ feature {NONE} -- Action handlers
 
 feature -- Status report
 
-	is_class_editing (a_file_name: like {ERROR}.file_name) : BOOLEAN
+	is_class_editing (a_file_name: like {EIFFEL_SCANNER_SKELETON}.filename) : BOOLEAN
 			-- Editor editing a class with `a_file_name'
 		require
 			a_file_name_attached: a_file_name /= Void

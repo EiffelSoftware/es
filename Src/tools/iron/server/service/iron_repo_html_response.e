@@ -18,7 +18,10 @@ inherit
 		end
 
 create
-	make
+	make,
+	make_with_body,
+	make_not_permitted,
+	make_not_found
 
 feature {NONE} -- Initialization
 
@@ -31,6 +34,24 @@ feature {NONE} -- Initialization
 			make_response
 
 			add_style (req.absolute_script_url (iron.html_page (iron_version, "style.css")), Void)
+		end
+
+	make_with_body (b: READABLE_STRING_8; req: WSF_REQUEST; a_iron: like iron)
+		do
+			make (req, a_iron)
+			set_body (b)
+		end
+
+	make_not_permitted (req: WSF_REQUEST; a_iron: like iron)
+		do
+			make (req, a_iron)
+			set_body ("Operation not permitted.")
+		end
+
+	make_not_found (req: WSF_REQUEST; a_iron: like iron)
+		do
+			make (req, a_iron)
+			set_body ("Resource not found.")
 		end
 
 	iron: IRON_REPO
@@ -201,4 +222,35 @@ feature {NONE} -- HTML Generation
 			set_body (old_body)
 		end
 
+note
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end
