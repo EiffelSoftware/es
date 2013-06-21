@@ -153,8 +153,8 @@ feature -- Basic operations
 			Result := <<
 				"owner",
 				"owns",
-				"depends",
-				"dependents"
+				"subjects",
+				"observers"
 			>>
 			Result.compare_objects
 		end
@@ -165,8 +165,8 @@ feature -- Basic operations
 			Result := <<
 				"set_owner",
 				"set_owns",
-				"set_depends",
-				"set_dependents"
+				"set_subjects",
+				"set_observers"
 			>>
 			Result.compare_objects
 		end

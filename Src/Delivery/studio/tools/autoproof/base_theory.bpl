@@ -121,8 +121,8 @@ var Writes: Set ref; // Set of all currently writable objects
 const unique closed: Field bool; // Ghost field for open/closed status of an object.
 const unique owner: Field ref; // Ghost field for owner of an object.
 const unique owns: Field (Set ref); // Ghost field for owns set of an object.
-const unique dependents: Field (Set ref); // Ghost field for dependents set of an object.
-const unique depends: Field (Set ref); // Ghost field for depends set of an object.
+const unique observers: Field (Set ref); // Ghost field for observers set of an object.
+const unique subjects: Field (Set ref); // Ghost field for subjects set of an object.
 
 // Is o free? (owner is open)
 function is_free(h: HeapType, o: ref): bool {
@@ -209,14 +209,14 @@ procedure allocate(t: Type) returns (result: ref);
 	ensures type_of(result) == t;
 	ensures is_open(Heap, result);
 	ensures Heap[result, owner] == Void;
-	ensures Set#Equal(Heap[result, dependents], Set#Empty());
+	ensures Set#Equal(Heap[result, observers], Set#Empty());
 	ensures Writes == old(Set#UnionOne(Writes, result));
 	ensures (forall <T> o: ref, f: Field T :: o != result ==> Heap[o, f] == old(Heap[o, f]));
 
 // Update Heap position Current.field with value.
 procedure update_heap<T>(Current: ref, field: Field T, value: T);
 	requires is_open(Heap, Current); // pre tag:UP1
-	requires (forall o: ref :: Heap[Current, dependents][o] ==> is_open(Heap, o)); // pre tag:UP2
+	requires (forall o: ref :: Heap[Current, observers][o] ==> is_open(Heap, o)); // pre tag:UP2
 	requires Writes[Current]; // pre tag:UP3
 	modifies Heap;
 	ensures Heap[Current, field] == value;

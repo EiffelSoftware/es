@@ -417,23 +417,23 @@ feature -- Verification
 		do
 		end
 
-	frozen depends: OWNERSHIP_SET assign set_depends
-			-- Depends set of this object.
+	frozen subjects: OWNERSHIP_SET assign set_subjects
+			-- Subjects set of this object.
 		do
 		end
 
-	frozen set_depends (a: OWNERSHIP_SET)
-			-- Set depends set of this object.
+	frozen set_subjects (a: OWNERSHIP_SET)
+			-- Set subjects set of this object.
 		do
 		end
 
-	frozen dependents: OWNERSHIP_SET assign set_dependents
-			-- Dependents set of this object.
+	frozen observers: OWNERSHIP_SET assign set_observers
+			-- Observers set of this object.
 		do
 		end
 
-	frozen set_dependents (a: OWNERSHIP_SET)
-			-- Set dependents set of this object.
+	frozen set_observers (a: OWNERSHIP_SET)
+			-- Set observers set of this object.
 		do
 		end
 

@@ -234,7 +234,7 @@ feature -- Basic operations
 			create l_pre.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
 			current_boogie_procedure.add_contract (l_pre)
 
-			create l_heap_access.make ("Heap", create {IV_ENTITY}.make ("Current", types.ref), create {IV_ENTITY}.make ("dependents", types.set (types.ref)))
+			create l_heap_access.make ("Heap", create {IV_ENTITY}.make ("Current", types.ref), create {IV_ENTITY}.make ("observers", types.set (types.ref)))
 			create l_pre.make (factory.equal (
 				l_heap_access,
 				factory.function_call ("Set#Empty", Void, types.set (types.ref))))
@@ -311,7 +311,7 @@ feature -- Basic operations
 					-- Add creator initialization for ownership
 				create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "owns", types.set (types.ref)), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
 				l_implementation.body.add_statement (l_assign)
-				create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "depends", types.set (types.ref)), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
+				create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "subjects", types.set (types.ref)), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
 				l_implementation.body.add_statement (l_assign)
 					-- Add creator initialization for attributes
 				from
