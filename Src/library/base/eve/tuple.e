@@ -25,7 +25,7 @@ create
 
 convert
 
-	to_ownership_set: {OWNERSHIP_SET}
+	to_mml_set: {MML_SET}
 
 feature -- Creation
 
@@ -1440,9 +1440,9 @@ feature {NONE} -- Externals: Setting
 			"C macro use %"eif_rout_obj.h%""
 		end
 
-feature -- Ownership
+feature -- MML
 
-	to_ownership_set: OWNERSHIP_SET
+	to_mml_set: MML_SET
 		do
 		end
 

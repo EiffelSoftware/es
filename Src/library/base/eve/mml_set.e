@@ -1,4 +1,4 @@
-class OWNERSHIP_SET
+expanded class MML_SET
 
 inherit
 
@@ -23,6 +23,10 @@ feature
 		end
 
 	make_from_array (a_array: ARRAY [ANY])
+		do
+		end
+    
+	has (a_object: ANY): BOOLEAN
 		do
 		end
 

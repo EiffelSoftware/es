@@ -21,8 +21,8 @@ feature -- Status report
 		do
 			Result := a_feature.written_in = system.any_id and
 				(builtin_any_features.has (a_feature.feature_name) or
-				set_access.has (a_feature.feature_name) or
-				set_setter.has (a_feature.feature_name))
+				ghost_access.has (a_feature.feature_name) or
+				ghost_setter.has (a_feature.feature_name))
 		end
 
 	is_handling_nested (a_nested: NESTED_B): BOOLEAN
@@ -34,7 +34,7 @@ feature -- Status report
 				a_nested.target.type.base_class.class_id = system.tuple_id
 			then
 				if attached {FEATURE_B} a_nested.message as f then
-					Result := f.feature_name.same_string ("to_ownership_set")
+					Result := f.feature_name.same_string ("to_mml_set")
 				end
 			end
 		end
@@ -51,10 +51,10 @@ feature -- Basic operations
 			l_name := a_feature.feature_name
 			if builtin_any_features.has (l_name) then
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
-			elseif set_access.has (l_name) then
+			elseif ghost_access.has (l_name) then
 				a_translator.set_last_expression (factory.heap_current_access (a_translator.entity_mapping, l_name, types.set (types.ref)))
 			else
-				check set_setter.has (l_name) end
+				check ghost_setter.has (l_name) end
 				l_name := l_name.substring (5, l_name.count)
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, "xyz")
 				l_call ?= a_translator.side_effect.last
@@ -76,7 +76,7 @@ feature -- Basic operations
 			l_name := a_feature.feature_name
 			if builtin_any_features.has (l_name) then
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
-			elseif set_access.has (l_name) then
+			elseif ghost_access.has (l_name) then
 				a_translator.set_last_expression (factory.heap_current_access (a_translator.entity_mapping, l_name, types.set (types.ref)))
 			else
 					-- cannot happen
@@ -147,7 +147,7 @@ feature -- Basic operations
 			Result.compare_objects
 		end
 
-	set_access: ARRAY [STRING]
+	ghost_access: ARRAY [STRING]
 			-- List of feature names.
 		once
 			Result := <<
@@ -159,7 +159,7 @@ feature -- Basic operations
 			Result.compare_objects
 		end
 
-	set_setter: ARRAY [STRING]
+	ghost_setter: ARRAY [STRING]
 			-- List of feature names.
 		once
 			Result := <<

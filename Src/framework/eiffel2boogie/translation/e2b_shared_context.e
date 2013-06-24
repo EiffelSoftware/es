@@ -30,7 +30,7 @@ feature {NONE} -- Access
 feature -- Access (public)
 
 	options: E2B_OPTIONS
-			-- Sahred translation options.
+			-- Shared translation options.
 		once
 			create Result.make
 		end

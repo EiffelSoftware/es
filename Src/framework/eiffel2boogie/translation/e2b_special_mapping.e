@@ -18,6 +18,7 @@ feature {NONE} -- Initialization
 		do
 			create {LINKED_LIST [E2B_CUSTOM_CALL_HANDLER]} call_handlers.make
 			call_handlers.extend (create {E2B_CUSTOM_OWNERSHIP_HANDLER})
+			call_handlers.extend (create {E2B_CUSTOM_MML_HANDLER})
 			call_handlers.extend (create {E2B_CUSTOM_ARRAY_CALL_HANDLER})
 			call_handlers.extend (create {E2B_CUSTOM_INTEGER_CALL_HANDLER})
 			create {LINKED_LIST [E2B_CUSTOM_NESTED_HANDLER]} nested_handlers.make
