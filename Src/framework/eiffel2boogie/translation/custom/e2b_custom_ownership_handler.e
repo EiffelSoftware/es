@@ -59,7 +59,7 @@ feature -- Basic operations
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, "xyz")
 				l_call ?= a_translator.side_effect.last
 				a_translator.side_effect.finish
-				a_translator.side_effect.remove
+				a_translator.side_effect.remove	-- last side effect is actual call, here to non-existing "xyz"
 				create l_assign.make (
 					factory.heap_current_access (a_translator.entity_mapping, l_name, types.set (types.ref)),
 					l_call.arguments.i_th (2))

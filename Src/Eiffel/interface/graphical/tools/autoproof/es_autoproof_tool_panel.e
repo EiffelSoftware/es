@@ -199,11 +199,22 @@ feature {NONE} -- Initialization
 			end
 			Result.extend (l_item)
 
+			Result.extend (create {EV_MENU_SEPARATOR})
+
 			create l_item.make_with_text_and_action ("Check frame condition",
 				agent do
 					options.set_checking_frame (not options.is_checking_frame)
 				end)
 			if options.is_checking_frame then
+				l_item.toggle
+			end
+			Result.extend (l_item)
+
+			create l_item.make_with_text_and_action ("Enable ownership",
+				agent do
+					options.set_using_ownership (not options.is_using_ownership)
+				end)
+			if options.is_using_ownership then
 				l_item.toggle
 			end
 			Result.extend (l_item)
