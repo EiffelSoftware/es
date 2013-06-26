@@ -113,6 +113,14 @@ axiom (forall h: HeapType, f: Field ref, o: ref :: h[o, allocated] ==> h[h[o, f]
 axiom (forall r: ref :: (r == Void) <==> (type_of(r) == NONE)); // Void is only reference of type NONE.
 axiom (forall a, b: ref :: (type_of(a) != type_of(b)) ==> (a != b)); // Objects that have different dynamic type cannot be aliased.
 
+function ANY.self_inv(heap: HeapType, current: ref) returns (bool) {
+  true
+}
+
+function NONE.self_inv(heap: HeapType, current: ref) returns (bool) {
+  false
+}
+
 // ----------------------------------------------------------------------
 // Ownership
 
@@ -181,7 +189,7 @@ function inv(h: HeapType, o: ref): bool {
 }
 
 // Invariant of None is false
-axiom (forall h: HeapType, o: ref :: type_of(o) == NONE ==> !user_inv(h, o));
+// axiom (forall h: HeapType, o: ref :: type_of(o) == NONE ==> !user_inv(h, o));
 
 // Global heap invariants
 function {:inine true} global_heap(h: HeapType): bool

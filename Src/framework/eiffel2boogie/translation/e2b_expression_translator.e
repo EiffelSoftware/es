@@ -517,7 +517,7 @@ feature -- Visitors
 		do
 			l_feature := helper.feature_for_call_access (a_node, current_target_type)
 			check feature_valid: l_feature /= Void end
-			process_routine_call (l_feature, a_node.parameters)
+			process_routine_call (l_feature, a_node.parameters, False)
 		end
 
 	process_feature_b (a_node: FEATURE_B)
@@ -541,7 +541,7 @@ feature -- Visitors
 				if l_handler /= Void then
 					process_special_routine_call (l_handler, l_feature, a_node.parameters)
 				else
-					process_routine_call (l_feature, a_node.parameters)
+					process_routine_call (l_feature, a_node.parameters, False)
 				end
 			else
 					-- TODO: what else is there?
@@ -689,8 +689,9 @@ feature -- Visitors
 					current_target_type := l_target_type.associated_class.constraint (l_formal.position)
 				end
 
-					-- Check if target is attached
-				if not current_target_type.is_expanded then
+					-- Check if target is attached;
+					-- skip if target is expanded or a mathematical type
+				if not (current_target_type.is_expanded or types.is_mml_type (current_target_type)) then
 					translation_pool.add_type (current_target_type)
 					create l_call.make ("attached", types.bool)
 					l_call.add_argument (entity_mapping.heap)
@@ -937,7 +938,7 @@ feature -- Translation
 			end
 		end
 
-	process_routine_call (a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
+	process_routine_call (a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B]; a_for_creator: BOOLEAN)
 			-- Process feature call.
 		require
 			not_attribute: a_feature.is_routine

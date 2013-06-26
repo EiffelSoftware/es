@@ -69,7 +69,7 @@ feature -- Implementation
 			if l_fname /= Void then
 				a_translator.set_last_expression (factory.function_call (l_fname, << a_translator.current_target >>, types.generic_type))
 			else
-				a_translator.process_routine_call (a_feature, a_parameters)
+				a_translator.process_routine_call (a_feature, a_parameters, False)
 			end
 		end
 

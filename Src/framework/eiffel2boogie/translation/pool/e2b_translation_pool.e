@@ -118,7 +118,8 @@ feature -- Convenience functions
 				create l_attribute.make (a_feature, a_context_type)
 				add_translation_unit (l_attribute)
 			elseif a_feature.is_routine then
-				if a_context_type.base_class.has_creator_of_name_id (a_feature.feature_name_id) then
+				if a_context_type.base_class.has_creator_of_name_id (a_feature.feature_name_id) or
+					a_context_type.base_class.creation_feature.feature_id = a_feature.feature_id then
 					add_creator (a_feature, a_context_type)
 				end
 				create l_signature.make (a_feature, a_context_type)
@@ -140,6 +141,10 @@ feature -- Convenience functions
 				create l_attribute.make (a_feature, a_context_type)
 				add_translation_unit (l_attribute)
 			elseif a_feature.is_routine then
+				if a_context_type.base_class.has_creator_of_name_id (a_feature.feature_name_id) or
+					a_context_type.base_class.creation_feature.feature_id = a_feature.feature_id then
+					add_referenced_creator (a_feature, a_context_type)
+				end
 				create l_signature.make (a_feature, a_context_type)
 				add_translation_unit (l_signature)
 			else

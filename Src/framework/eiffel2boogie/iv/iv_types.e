@@ -64,6 +64,12 @@ feature -- Access: default types
 			create {IV_GENERIC_TYPE} Result.make
 		end
 
+	is_mml_type	(a_type: TYPE_A): BOOLEAN
+			-- Is `a_type' a mathematical collection type?
+		do
+			Result := a_type.base_class.name ~ "MML_SET"
+		end
+
 	for_type_a (a_type: TYPE_A): IV_TYPE
 			-- Boogie type for `a_type'.
 		require
@@ -81,6 +87,8 @@ feature -- Access: default types
 				Result := bool
 			elseif l_type.is_real_32 or else l_type.is_real_64 then
 				Result := real
+			elseif l_type.base_class.name ~ "MML_SET" then
+				Result := set (ref)
 			elseif l_type.is_expanded then
 				Result := generic_type
 			elseif l_type.is_formal then

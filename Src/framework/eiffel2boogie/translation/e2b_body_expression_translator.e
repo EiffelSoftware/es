@@ -145,7 +145,7 @@ feature -- Visitors
 			if l_handler /= Void then
 				l_handler.handle_routine_call_in_body (Current, l_feature, a_node.parameters)
 			else
-				process_routine_call (l_feature, a_node.parameters)
+				process_routine_call (l_feature, a_node.parameters, True)
 			end
 
 			current_target := l_target
@@ -202,7 +202,7 @@ feature -- Visitors
 
 feature -- Translation
 
-	process_routine_call (a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
+	process_routine_call (a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B]; a_for_creator: BOOLEAN)
 			-- Process feature call.
 		local
 			l_inlining_depth: INTEGER
@@ -218,11 +218,11 @@ feature -- Translation
 			then
 				process_inlined_routine_call (a_feature, a_parameters)
 			else
-				process_normal_routine_call (a_feature, a_parameters)
+				process_normal_routine_call (a_feature, a_parameters, a_for_creator)
 			end
 		end
 
-	process_normal_routine_call (a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
+	process_normal_routine_call (a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B]; a_for_creator: BOOLEAN)
 			-- Process feature call.
 		local
 			l_target: IV_EXPRESSION
@@ -231,7 +231,11 @@ feature -- Translation
 		do
 			translation_pool.add_referenced_feature (a_feature, current_target_type)
 
-			create l_call.make (name_translator.boogie_name_for_feature (a_feature, current_target_type))
+			if a_for_creator then
+				create l_call.make (name_translator.boogie_name_for_creation_routine (a_feature, current_target_type))
+			else
+				create l_call.make (name_translator.boogie_name_for_feature (a_feature, current_target_type))
+			end
 			l_call.add_argument (current_target)
 
 			process_parameters (a_parameters)

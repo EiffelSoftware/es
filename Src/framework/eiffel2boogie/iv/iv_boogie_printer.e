@@ -644,6 +644,8 @@ feature -- Other
 				Result := "0"
 			elseif a_type.is_real then
 				Result := "0.0"
+			elseif a_type.is_set then
+				Result := "Set#Empty()"
 			elseif a_type.is_reference then
 				Result := "Void"
 			else

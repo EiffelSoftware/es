@@ -96,7 +96,7 @@ feature -- Translation
 			field_accesses.extend ([current_target, l_field])
 		end
 
-	process_routine_call (a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])
+	process_routine_call (a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B]; a_for_creator: BOOLEAN)
 			-- Process feature call.
 		local
 			l_target: IV_EXPRESSION
