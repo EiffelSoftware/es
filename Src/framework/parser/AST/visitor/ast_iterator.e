@@ -704,6 +704,12 @@ feature {NONE} -- Implementation
 				-- Nothing to be done
 		end
 
+	process_feature_id_as (l_as: FEATURE_ID_AS)
+			-- <Precursor>
+		do
+				-- Nothing to be done
+		end
+
 	process_formal_as (l_as: FORMAL_AS)
 		do
 				-- Nothing to be done

@@ -1745,7 +1745,7 @@ feature {NONE} -- Implementation
 					l_text_formatter_decorator.set_without_tabs
 					l_text_formatter_decorator.process_symbol_text (ti_dollar)
 					if l_feat /= Void then
-						l_text_formatter_decorator.process_feature_text (l_as.feature_name.internal_name.name_32, l_feat, False)
+						format_feature_name (l_as.feature_name.internal_name.name_32, l_feat, False)
 					else
 						format_local_with_name (l_as.feature_name.internal_name.name_8)
 					end
@@ -3564,6 +3564,12 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	process_feature_id_as (l_as: FEATURE_ID_AS)
+			-- <Precursor>
+		do
+			l_as.name.process (Current)
+		end
+
 	process_formal_as (l_as: FORMAL_AS)
 		do
 			process_type_as (l_as)
@@ -5082,6 +5088,12 @@ feature {NONE} -- Implementation: helpers
 			create l_id.initialize (a_name)
 			l_id.process (Current)
 			is_local_id := False
+		end
+
+	format_feature_name (text: READABLE_STRING_GENERAL; a_feature: E_FEATURE; a_quote: BOOLEAN)
+			-- Process feature text
+		do
+			text_formatter_decorator.process_feature_text (text, a_feature, a_quote)
 		end
 
 	is_local_id: BOOLEAN
