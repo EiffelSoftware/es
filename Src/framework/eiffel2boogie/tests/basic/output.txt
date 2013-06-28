@@ -1,0 +1,16 @@
+======================================
+BASIC.empty
+Successfully verified.
+======================================
+BASIC.check_false
+Verification failed.
+
+Check of tag has_to_fail may fail.
+======================================
+BASIC.default_value_for_locals
+Successfully verified.
+======================================
+BASIC.boxing
+Verification failed.
+
+Check of tag has_to_fail may fail.

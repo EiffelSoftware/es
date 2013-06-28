@@ -3666,6 +3666,10 @@ Src/framework/configuration/versioning/configuration-1-0-0.xsd -text
 Src/framework/configuration/versioning/configuration-1-2-0.xsd -text
 Src/framework/configuration/versioning/configuration-1-3-0.xsd -text
 Src/framework/dotnet_loader/dotnet_loader.lic -text
+Src/framework/eiffel2boogie/tests/assignment/output.txt -text
+Src/framework/eiffel2boogie/tests/basic/output.txt -text
+Src/framework/eiffel2boogie/tests/template/output.txt_ -text
+Src/framework/eiffel2boogie/tests/template/template.e_ -text
 Src/framework/eiffel_identifier/eiffel_identifier.lic -text
 Src/framework/eiffel_transform/Demo/printer_test.ee -text
 Src/framework/eiffel_transform/Demo/target.ee -text

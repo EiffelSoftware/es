@@ -32,7 +32,11 @@
 				<platform excluded_value="windows"/>
 			</condition>
 		</library>
-		<cluster name="eiffel2boogie" location=".\" recursive="true"/>
+		<cluster name="eiffel2boogie" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/tests$</exclude>
+			</file_rule>
+		</cluster>        
 	</target>
 </system>
 

@@ -1,0 +1,9 @@
+======================================
+ASSIGNMENT.locals_assignment
+Successfully verified.
+======================================
+ASSIGNMENT.argument_assignment
+Successfully verified.
+======================================
+ASSIGNMENT.assignment_to_attribute
+Successfully verified.
