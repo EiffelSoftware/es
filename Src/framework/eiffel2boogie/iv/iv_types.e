@@ -77,6 +77,7 @@ feature -- Access: default types
 			a_type_valid: not a_type.deep_actual_type.is_like
 		local
 			l_type: TYPE_A
+			l_elem_type: IV_TYPE
 		do
 			l_type := a_type.deep_actual_type
 			check not l_type.is_like end
@@ -88,7 +89,8 @@ feature -- Access: default types
 			elseif l_type.is_real_32 or else l_type.is_real_64 then
 				Result := real
 			elseif l_type.base_class.name ~ "MML_SET" then
-				Result := set (ref)
+				l_elem_type := for_type_a (l_type.generics.first)
+				Result := set (l_elem_type)
 			elseif l_type.is_expanded then
 				Result := generic_type
 			elseif l_type.is_formal then

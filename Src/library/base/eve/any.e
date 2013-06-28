@@ -407,32 +407,32 @@ feature -- Verification
 		do
 		end
 
-	frozen owns: MML_SET assign set_owns
+	frozen owns: MML_SET [ANY] assign set_owns
 			-- Owns set of this object.
 		do
 		end
 
-	frozen set_owns (a: MML_SET)
+	frozen set_owns (a: MML_SET [ANY])
 			-- Set owns set of this object.
 		do
 		end
 
-	frozen subjects: MML_SET assign set_subjects
+	frozen subjects: MML_SET [ANY] assign set_subjects
 			-- Subjects set of this object.
 		do
 		end
 
-	frozen set_subjects (a: MML_SET)
+	frozen set_subjects (a: MML_SET [ANY])
 			-- Set subjects set of this object.
 		do
 		end
 
-	frozen observers: MML_SET assign set_observers
+	frozen observers: MML_SET [ANY] assign set_observers
 			-- Observers set of this object.
 		do
 		end
 
-	frozen set_observers (a: MML_SET)
+	frozen set_observers (a: MML_SET [ANY])
 			-- Set observers set of this object.
 		do
 		end

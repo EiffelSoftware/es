@@ -25,7 +25,7 @@ create
 
 convert
 
-	to_mml_set: {MML_SET}
+	to_mml_set: {MML_SET [ANY]}
 
 feature -- Creation
 
@@ -1442,7 +1442,7 @@ feature {NONE} -- Externals: Setting
 
 feature -- MML
 
-	to_mml_set: MML_SET
+	to_mml_set: MML_SET [ANY]
 		do
 		end
 

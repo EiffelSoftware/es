@@ -637,6 +637,8 @@ feature -- Other
 
 	default_value (a_type: IV_TYPE): STRING
 			-- Default value for type `a_type'.
+		local
+			l_printer: like Current
 		do
 			if a_type.is_boolean then
 				Result := "false"

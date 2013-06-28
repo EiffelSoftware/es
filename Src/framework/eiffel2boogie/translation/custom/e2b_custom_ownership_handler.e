@@ -102,6 +102,7 @@ feature -- Basic operations
 			l_tuple: TUPLE_CONST_B
 			l_exprs: LINKED_LIST [IV_EXPRESSION]
 			l_expr: IV_EXPRESSION
+			l_elem_type: IV_TYPE
 		do
 			if attached {ACCESS_EXPR_B} a_nested.target as x then
 				l_tuple ?= x.expr
@@ -111,14 +112,20 @@ feature -- Basic operations
 			across l_tuple.expressions as i loop
 				i.item.process (a_translator)
 				l_exprs.extend (a_translator.last_expression)
+				if l_elem_type = Void then
+					l_elem_type := a_translator.last_expression.type
+				elseif l_elem_type /= a_translator.last_expression.type then
+					-- TODO: signal an error
+				end
 			end
 			if l_exprs.is_empty then
+				-- TODO: how to determine elem type here?
 				a_translator.set_last_expression (
 					factory.function_call ("Set#Empty", Void, types.set (types.ref)))
 			else
 				from
 					l_exprs.start
-					l_expr := factory.function_call ("Set#Singleton", << l_exprs.item >>, types.set (types.ref))
+					l_expr := factory.function_call ("Set#Singleton", << l_exprs.item >>, types.set (l_elem_type))
 					l_exprs.forth
 				until
 					l_exprs.after
@@ -126,7 +133,7 @@ feature -- Basic operations
 					l_expr := factory.function_call (
 						"Set#UnionOne",
 						<< l_expr, l_exprs.item >>,
-						types.set (types.ref))
+						types.set (l_elem_type))
 					l_exprs.forth
 				end
 				a_translator.set_last_expression (l_expr)

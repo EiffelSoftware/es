@@ -210,10 +210,8 @@ feature -- Visitors
 			l_right := last_expression
 			l_type := types.for_type_a (a_node.type)
 
-				-- TODO: REFACTOR
 			if l_left.type.is_set then
-				check l_right.type.is_set end
-				last_expression := factory.function_call ("Set#Equal", << l_left, l_right >>, l_type)
+				(create {E2B_CUSTOM_MML_HANDLER}).handle_binary (Current, l_left, l_right, a_operator)
 			else
 					-- TODO: REFACTOR
 --				if a_operator ~ "+" then
@@ -275,7 +273,7 @@ feature -- Visitors
 	process_binary_infix (a_node: BINARY_B)
 			-- Process binary infix node `a_node'.
 		do
-			last_expression := dummy_node (a_node.type)
+			a_node.nested_b.process (Current)
 		end
 
 	process_bin_and_b (a_node: BIN_AND_B)
