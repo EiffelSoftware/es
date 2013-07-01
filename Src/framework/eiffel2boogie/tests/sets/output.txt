@@ -1,0 +1,12 @@
+======================================
+SETS.good
+Successfully verified.
+======================================
+SETS.bad
+Verification failed.
+
+Check of tag bad_disjoint may fail.
+--------------------------------------
+Check of tag bad_empty may fail.
+--------------------------------------
+Check of tag bad_has may fail.

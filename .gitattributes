@@ -3668,6 +3668,7 @@ Src/framework/configuration/versioning/configuration-1-3-0.xsd -text
 Src/framework/dotnet_loader/dotnet_loader.lic -text
 Src/framework/eiffel2boogie/tests/assignment/output.txt -text
 Src/framework/eiffel2boogie/tests/basic/output.txt -text
+Src/framework/eiffel2boogie/tests/sets/output.txt -text
 Src/framework/eiffel2boogie/tests/template/output.txt_ -text
 Src/framework/eiffel2boogie/tests/template/template.e_ -text
 Src/framework/eiffel_identifier/eiffel_identifier.lic -text

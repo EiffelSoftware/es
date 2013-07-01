@@ -911,24 +911,26 @@ feature {NONE} -- Implementation
 			l_expr: IV_FUNCTION_CALL
 			l_fcall: IV_FUNCTION_CALL
 		do
-			create l_heap.make ("Heap", types.heap_type)
-			create l_ref.make (a_name, types.ref)
-			create l_type.make (name_translator.boogie_name_for_type (a_type), types.type)
-			if a_type.is_attached then
-				create l_expr.make ("attached", types.bool)
-			else
-				create l_expr.make ("detachable", types.bool)
-			end
-			l_expr.add_argument (l_heap)
-			l_expr.add_argument (l_ref)
-			l_expr.add_argument (l_type)
-			Result := l_expr
-				-- TODO: refactor
-			if a_type.base_class.name_in_upper ~ "ARRAY" then
-				create l_fcall.make ("ARRAY.inv", types.bool)
-				l_fcall.add_argument (l_heap)
-				l_fcall.add_argument (l_ref)
-				Result := factory.and_ (Result, l_fcall)
+			if not types.is_mml_type (a_type) then
+				create l_heap.make ("Heap", types.heap_type)
+				create l_ref.make (a_name, types.ref)
+				create l_type.make (name_translator.boogie_name_for_type (a_type), types.type)
+				if a_type.is_attached then
+					create l_expr.make ("attached", types.bool)
+				else
+					create l_expr.make ("detachable", types.bool)
+				end
+				l_expr.add_argument (l_heap)
+				l_expr.add_argument (l_ref)
+				l_expr.add_argument (l_type)
+				Result := l_expr
+					-- TODO: refactor
+				if a_type.base_class.name_in_upper ~ "ARRAY" then
+					create l_fcall.make ("ARRAY.inv", types.bool)
+					l_fcall.add_argument (l_heap)
+					l_fcall.add_argument (l_ref)
+					Result := factory.and_ (Result, l_fcall)
+				end
 			end
 		end
 
