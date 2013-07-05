@@ -1942,6 +1942,7 @@ test	config-multiple-system-elements		config033 tcf fail config
 test	config-custom-tags-of-the-same-name			config034 tcf fail config
 test	config-variables-with-same-name			config035 tcf pass config
 test	config-library-with-uppercase	config036 tcf pass config
+test	config-cycled-library-dependency	config037 tcf pass config
 
 -- Lace
 
@@ -2651,6 +2652,7 @@ test	targeted-actual-argument		attach102 tcf pass void_safe targeted validity
 test	vevi-not-detected			attach103 tcf pass void_safe validity attribute
 test	targeted-nested-current-access		attach104 tcf pass void_safe targeted validity
 test	initialization-in-postcondition		attach105 tcf pass attached_types void_safe generic scope validity
+test	object-test-local-use-error		attach106 tcf pass object_test scope validity
 
 -- Tests for conformance in general
 test	basic-conformance		conform001 tcf pass conformance
