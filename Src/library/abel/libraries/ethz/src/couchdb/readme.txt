@@ -1,0 +1,1 @@
+If interested in using CoachDB from within EIffel programs, don't use the code in this dir (ecoachdb). The implementation that is wired into abel is the the one you find in dir CDB.

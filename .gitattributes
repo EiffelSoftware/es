@@ -4036,6 +4036,7 @@ Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/README -text
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/library/couchdb_client.rc -text
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/library/exception_trace.log -text
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/test/test.rc -text
+Src/library/abel/libraries/ethz/src/couchdb/readme.txt -text
 Src/library/abel/libraries/ethz/src/mysql/README -text
 Src/library/abel/libraries/ethz/src/mysql/README_OLD -text
 Src/library/abel/libraries/ethz/src/schema_evolution/serializer_lib/serializer.ecf svneol=native#text/xml
