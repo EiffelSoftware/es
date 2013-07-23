@@ -96,7 +96,7 @@
 ABEL (A Better EiffelStore Library) is an object-oriented persistence library written in Eiffel and aiming at seamlessly integrating various kinds of data stores.
  
 \section{Setting things up}
-We are assuming you have checked out the ABEL code from the EiffelStudio SVN repository\footnote{https://svn.eiffel.com/eiffelstudio/branches/eth/eve/Src/library/abel}, and have EiffelStudio installed. Launch EiffelStudio and in the initial window choose "tutorial\_project". If it is not there just choose "Add project" and navigate to the location where you downloaded ABEL, and look for the \emph{tutorial\_project.ecf} project file in \emph{abel/apps/sample/tutorial/}. As the abel project file referenced by the tutorial project file \footnote{You can find the ABEL project file in \emph{abel/libraries/ethz/src/abel/eiffelstore2.ecf}} includes references to drivers that you might not have installed yet (e.g. MySQL-related drivers), you can comment out these references from the abel project file until your compilation succeeds \footnote{For example if some missing mysql references prevent your compilation from completing without errors you can try commenting out line \emph{$<$library name="mysql" location="../mysqli/mysqli.ecf"/$>$} in \emph{eiffelstore2.ecf}}. You can then load and compile the project. To be able to compile the ABEL tutorial you don't need particular dependencies, because it is using an in-memory database simulating a relational database. If you want to experiment with ABEL's support for full-fledged relational back-ends (like MySQL or SQLite), you need to install the databases and the appropriate drivers first (also check the readme files when they are there).
+We are assuming you have checked out the ABEL code from the EiffelStudio SVN repository\footnote{\url{https://svn.eiffel.com/eiffelstudio/branches/eth/eve/Src/library/abel}}, and have EiffelStudio installed. Launch EiffelStudio and in the initial window choose "tutorial\_project". If it is not there just choose "Add project" and navigate to the location where you downloaded ABEL, and look for the \emph{tutorial\_project.ecf} project file in \emph{abel/apps/sample/tutorial/}. As the abel project file referenced by the tutorial project file \footnote{You can find the ABEL project file in \emph{abel/libraries/ethz/src/abel/eiffelstore2.ecf}} includes references to drivers that you might not have installed yet (e.g. MySQL-related drivers), you can comment out these references from the abel project file until your compilation succeeds \footnote{For example if some missing mysql references prevent your compilation from completing without errors you can try commenting out line \emph{$<$library name="mysql" location="../mysqli/mysqli.ecf"/$>$} in \emph{eiffelstore2.ecf}}. You can then load and compile the project. To be able to compile the ABEL tutorial you don't need particular dependencies, because it is using an in-memory database simulating a relational database. If you want to experiment with ABEL's support for full-fledged relational back-ends (like MySQL or SQLite), you need to install the databases and the appropriate drivers first (also check the readme files when they are there).
 
 \section{Getting started}
 We will be using \lstinline!PERSON! objects to show the usage of the API. 
@@ -1094,14 +1094,14 @@ end
 \end{lstlisting}
 
 
-\chapter{CouchDB}
+\chapter{CouchDB Support}
 
-EiffelStore does not only work with an in-memory database. It is also able to store objects in other database types like CouchDB.
+ABEL does not only work with an in-memory database. It is also able to store objects in other database, both relational (like MySQL and SQLite) and non-relational like CouchDB, always using the same API.
 
 \section{What is CouchDB}
 
-CouchDB is a free, open-source document-oriented database. Unlike the in-memory database that only stores objects at runtime, CouchDB stores objects on a persistent database using JSON documents.
-JSON is similar to xml and will store Eiffel objects like this:
+CouchDB is a free, open-source document-oriented database \footnote{\url{http://couchdb.apache.org}}. CouchDB stores objects on a persistent database using JSON documents.
+JSON is a textual notation similar to XML that stores Eiffel objects like this:
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Sample Eiffel Object in JSON}, label={lst:error_visitor_example}]
 {
 	"firstname": "Albo",
@@ -1110,12 +1110,12 @@ JSON is similar to xml and will store Eiffel objects like this:
 }
 \end{lstlisting}
 
-\section{Setting up a Couch}
+\section{Setting up CouchDB}
 
-Before we can start using CouchDB in Eiffel we have to set up a couch either on a local machine or get hold of a database on the internet. To install CouchDB locally visit \url{www.couchdb.com} and download the appropriate package.
+Before we can start using CouchDB from within Eiffel we have to set it up either on a local machine or get hold of a database on the internet. To install CouchDB locally visit \url{www.couchdb.com} and download the appropriate package.
 
-Once installed CouchDB should be running in the background and is accessible trough a browser by accessing \emph{127.0.0.1:5984/\_utils}
-To work with CouchDB in Eiffel we have compiled another tutorial which you can get at \emph{abel/apps/sample/couchdb-tutorial/}. Look for the \emph{tutorial\_project.ecf} and open it with your Eiffel studio.
+Once installed, CouchDB should be running in the background and is accessible trough a browser by accessing \emph{127.0.0.1:5984/\_utils}
+To work with CouchDB in Eiffel we have created another tutorial which you can get at \emph{abel/apps/sample/tutorial-couchdb/}. Look for the \emph{tutorial\_project.ecf} and open it with EiffelStudio.
 
 \section{Getting started with CouchDB}
 
@@ -1142,17 +1142,18 @@ If you compare the output of this tutorial to the output you got when using the 
 
 \section{Beneath the surface}
 
-Using CouchDB, Eiffel can store objects on a persistent database that can also be accessed by other programs. If not deleted the data will also persist after your program has ended.
-To accomplish this, ABEL will convert Eiffel objects to JSON documents, whereby each attribute will get its own \emph{"name": "value"} pair. The resulting document for a person will look similar to \emph{Listing 7.1}. After running the tutorial the stored objects can also be explored by visiting \emph{127.0.0.1:5984/\_utils}.
+Using CouchDB, Eiffel can store objects on a persistent database that can also be accessed by other programs. If not deleted, the data will persist after your program has ended.
+To accomplish this, ABEL will convert Eiffel objects to JSON documents, whereby each attribute will get its own \emph{"name": "value"} pair. The resulting document for a person will look similar to \emph{Listing 7.1}. After running the tutorial, the stored objects can also be explored by visiting \emph{127.0.0.1:5984/\_utils}.
 
 You will notice that for both person and child a sub-database was created. The person database will only contain person-objects and the child database will only contain child-objects.
-If you don't want your data to remain in the database after the program has ended insert a \emph{couchdb\_repo.wipe\_out} at the end of the feature explore
+If you don't want your data to remain in the database after the program has ended, insert a \emph{couchdb\_repo.wipe\_out} at the end of the feature explore
 
 \section{Limitations}
 
-While CouchDB can nicely store Objects as JSON Documents, it is unable to store relational data like a SQL database could.
+CouchDB is not meant to be a relational database: it can nicely store objects as JSON Documents, that can then be searched by key. 
+CouchDB was mainly developed for the world wide web. For its basic API it uses cURL which is really easy to use but for its more advanced features like map-reduce it uses JavaScript. Map-reduce would come in handy when querying for objects in the database but it is not yet integrated and therefore for queries rather than using the inbuilt map-reduce of CouchDB ABEL uses an Eiffel function to accomplish the same. 
 
-CouchDB was mainly developed for the world wide web. For its basic API it uses cURL which is really easy to use but for its more advanced features like map-reduce it uses JavaScript. Map-reduce would come in handy when querying for objects in the database but it is not yet integrated and therefore for queries rather than using the inbuilt map-reduce of CouchDB ABEL uses an Eiffel function to accomplish the same.
+For more information on CoachDB see the online documentation.
 
 %\chapter{Technical documentation}
 %\input{technical_documentation}
