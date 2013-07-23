@@ -67,7 +67,7 @@
 
 \title {The ABEL Persistence Library Tutorial}
 \author {
-	Roman Schmocker, Marco Piccioni\\\\
+	Roman Schmocker, Pascal Roos, Marco Piccioni\\\\
 	Last updated:
 }
 
@@ -96,7 +96,7 @@
 ABEL (A Better EiffelStore Library) is an object-oriented persistence library written in Eiffel and aiming at seamlessly integrating various kinds of data stores.
  
 \section{Setting things up}
-We are assuming you have checked out the ABEL code from the EiffelStudio SVN repository\footnote{https://svn.eiffel.com/eiffelstudio/branches/eth/eve/Src/library/abel}, and have EiffelStudio installed. Launch it and in the initial window choose "tutorial\_project". If it is not there just push "Add project" and navigate to the location where you downloaded ABEL, and look for the \emph{tutorial\_project.ecf} project file in \emph{abel/apps/sample/tutorial/}. You can then load and compile the project. To be able to compile the ABEL tutorial you don't need particular dependencies, because we are using an in-memory database simulating a relational database. If you want to experiment with ABEL's support for full-fledged relational back-ends (like MySQL or SQLite), you need to install the databases and the appropriate drivers first.
+We are assuming you have checked out the ABEL code from the EiffelStudio SVN repository\footnote{https://svn.eiffel.com/eiffelstudio/branches/eth/eve/Src/library/abel}, and have EiffelStudio installed. Launch EiffelStudio and in the initial window choose "tutorial\_project". If it is not there just choose "Add project" and navigate to the location where you downloaded ABEL, and look for the \emph{tutorial\_project.ecf} project file in \emph{abel/apps/sample/tutorial/}. As the abel project file referenced by the tutorial project file \footnote{You can find the ABEL project file in \emph{abel/libraries/ethz/src/abel/eiffelstore2.ecf}} includes references to drivers that you might not have installed yet (e.g. MySQL-related drivers), you can comment out these references from the abel project file until your compilation succeeds \footnote{For example if some missing mysql references prevent your compilation from completing without errors you can try commenting out line \emph{$<$library name="mysql" location="../mysqli/mysqli.ecf"/$>$} in \emph{eiffelstore2.ecf}}. You can then load and compile the project. To be able to compile the ABEL tutorial you don't need particular dependencies, because it is using an in-memory database simulating a relational database. If you want to experiment with ABEL's support for full-fledged relational back-ends (like MySQL or SQLite), you need to install the databases and the appropriate drivers first (also check the readme files when they are there).
 
 \section{Getting started}
 We will be using \lstinline!PERSON! objects to show the usage of the API. 
@@ -157,16 +157,16 @@ end
 There are three very important classes in ABEL:
 \begin{itemize}
  \item The deferred class \lstinline!PS_REPOSITORY! provides an abstraction to the actual storage mechanism.
- \item The \lstinline!PS_CRUD_EXECUTOR! class is, as the name suggests, responsible to execute CRUD (Create Read Update Delete) commands. Every \lstinline!PS_CRUD_EXECUTOR! object works with a \lstinline!PS_REPOSITORY!.
+ \item The \lstinline!PS_EXECUTOR! class is responsible to execute CRUD (Create Read Update Delete) commands. Every \lstinline!PS_EXECUTOR! object works with a \lstinline!PS_REPOSITORY!.
 
- \item The \lstinline!PS_OBJECT_QUERY [G]! class is used to describe a read operation over objects of type \lstinline!G!. You can execute such a query in the \lstinline!PS_CRUD_EXECUTOR!. 
+ \item The \lstinline!PS_OBJECT_QUERY [G]! class is used to describe a read operation over objects of type \lstinline!G!. You can execute such a query in the \lstinline!PS_EXECUTOR!. 
 	The result will be objects of type \lstinline!G!.
 
  
 \end{itemize}
 To start using the library, we first need to create an object of type\\
 \lstinline!PS_REPOSITORY!. In this case we will be using a more specific object of type \lstinline{PS_RELATIONAL_REPOSITORY}, and even more specifically a  \lstinline!PS_IN_MEMORY_REPOSITORY!, which simulates a relational repository while storing the data in memory. ABEL provides support for creating all kinds of \lstinline!PS_REPOSITORY! objects through the factory class \lstinline!PS_REPOSITORY_FACTORY!, so that is what we are going to use.\\
-As a second step, we need to create an object of type  \lstinline{PS_CRUD_EXECUTOR}. To do so, we will pass the previously created repository as an argument to its creation feature.
+As a second step, we need to create an object of type  \lstinline{PS_EXECUTOR}. To do so, we will pass the previously created repository as an argument to its creation feature.
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The TUTORIAL class}, label={lst:tutorial_class}]
 class TUTORIAL
@@ -192,8 +192,8 @@ feature -- Access
 	repo_factory: PS_REPOSITORY_FACTORY
 		-- Repository factory.	
 
-	executor: PS_CRUD_EXECUTOR
-		-- The CRUD executor used throughout the tutorial.
+	executor: PS_EXECUTOR
+		-- The executor of database operations used throughout the tutorial.
 
 end
 \end{lstlisting}
@@ -203,8 +203,8 @@ We encourage you to test the features shown in this tutorial by calling them fro
 
 \section{Inserting}
 
-You insert an object in the repository using feature \lstinline{insert} in class\\ 
-\lstinline{PS_CRUD_EXECUTOR}. Let's add three new persons to the database in feature \lstinline{explore}:
+You insert an object in the repository using feature \lstinline{execute_insert} in class\\ 
+\lstinline{PS_EXECUTOR}. Let's add three new persons to the database in feature \lstinline{explore}:
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Insertion code.}, label={lst:tutorial_insert}]
 	explore
 			-- Tutorial code.
@@ -219,20 +219,20 @@ You insert an object in the repository using feature \lstinline{insert} in class
 			-- Insert 3 new persons in the database
 			create p1.make ("Albo", "Bitossi")
 			p1.celebrate_birthday
-			executor.insert (p1)
+			executor.execute_insert (p1)
 			create p2.make ("Berno", "Citrini")
 			p2.celebrate_birthday
 			p2.celebrate_birthday
 			p2.celebrate_birthday
-			executor.insert (p2)
+			executor.execute_insert (p2)
 			create p3.make ("Dumbo", "Ermini")
-			executor.insert (p3)			
+			executor.execute_insert (p3)			
 		end
 \end{lstlisting}
 
 \section{Querying}
 \label{section:querying}
-A query for objects is done by creating a \lstinline!PS_OBJECT_QUERY [G]! object and executing it using features of \lstinline!PS_CRUD_EXECUTOR!.
+A query for objects is done by creating a \lstinline!PS_OBJECT_QUERY [G]! object and executing it using features of \lstinline!PS_EXECUTOR!.
 The generic parameter \lstinline!G! denotes the type of objects that should be queried.
 
 After a successful execution of the query, you can find the result in the iteration cursor \lstinline{result_cursor} in class \lstinline{PS_OBJECT_QUERY}. The feature \lstinline{simple_query} below shows how to get a list of persons from the repository:
@@ -306,7 +306,7 @@ Please note that ABEL does not enforce any kind of order on a query result.
 
 \section{Updating}
 
-Updating an object is done through feature \lstinline{update} in \lstinline{PS_CRUD_EXECUTOR}. Let's update the \lstinline{age} attribute of Berno Citrini by celebrating his birthday:
+Updating an object is done through feature \lstinline{execute_update} in \lstinline{PS_EXECUTOR}. Let's update the \lstinline{age} attribute of Berno Citrini by celebrating his birthday:
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Printing the query result.}, label={lst:tutorial_print_result}]
 	explore
@@ -318,7 +318,7 @@ Updating an object is done through feature \lstinline{update} in \lstinline{PS_C
 			-- Same code as before
 			-- Update an existing person in the database and print the result again
 			p2.celebrate_birthday
-			executor.update (p2)
+			executor.execute_update (p2)
 			print_result (simple_query)		
 		end
 \end{lstlisting}
@@ -327,7 +327,7 @@ The object to update needs to be previously known to ABEL through an insert or a
 \section{Deleting}
 \label{section:simple_delete}
 
-Deletion is done through feature \lstinline{delete} in \lstinline{PS_CRUD_EXECUTOR}.
+Deletion is done through feature \lstinline{execute_delete} in \lstinline{PS_EXECUTOR}.
 Let's now delete Albo Bitossi from the database:
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Deleting an object.}, label={lst:tutorial_print_result}]
 	explore
@@ -338,7 +338,7 @@ Let's now delete Albo Bitossi from the database:
 		do
 			-- Same code as before
 			-- Delete Dumbo Ermini from the database and print the result again
-			executor.delete (p3)
+			executor.execute_delete (p3)
 			print_result (simple_query)
 		end
 \end{lstlisting}
@@ -359,7 +359,7 @@ As an example, the following two functions will fail:
 			a_person: PERSON
 		do
 			create a_person.make ("Bob", "Barath")
-			executor.update (a_person)
+			executor.execute_update (a_person)
 				-- Results in a precondition violation
 		end
 
@@ -369,21 +369,21 @@ As an example, the following two functions will fail:
 			a_person:PERSON
 		do
 			create a_person.make ("Cersei", "Lannis")
-			executor.delete (a_person) 
+			executor.execute_delete (a_person) 
 				-- Results in a precondition violation
 		end
 \end{lstlisting}
 
 Please note that there's another way to delete objects, described in Section ~\ref{section:deletion_query}, which doesn't have this restriction.
 
-The feature \lstinline{is_persistent} in \lstinline!PS_CRUD_EXECUTOR! can tell you if a specific object is known to ABEL and hence has a link to its entry in the database.
+The feature \lstinline{is_persistent} in \lstinline!PS_EXECUTOR! can tell you if a specific object is known to ABEL and hence has a link to its entry in the database.
 
 \chapter{Advanced Queries}
 \label{sec:advanced_queries}
 
 \section{The query mechanism}
 
-As you already know from Section~\ref{section:querying}, queries to a database are done by creating an object of type  \lstinline!PS_OBJECT_QUERY[G]! and using it from within a \lstinline!PS_CRUD_EXECUTOR!.
+As you already know from Section~\ref{section:querying}, queries to a database are done by creating an object of type  \lstinline!PS_OBJECT_QUERY[G]! and using it from within a \lstinline!PS_EXECUTOR!.
 The actual value of the generic parameter \lstinline!G! determines the type of the objects that will be returned, including any conforming type (e.g. descendants of \lstinline!G!).
 
 ABEL will by default load an object completely, meaning all objects that can be reached by following references will be loaded as well (see also Chapter ~\ref{chapter:references}).
@@ -583,7 +583,7 @@ As you may have noticed, it is very simple to set criteria on a query.
 \label{section:deletion_query}
 
 As mentioned in Section~\ref{section:simple_delete}, there is another way to perform a deletion in the repository from within
-\lstinline!PS_CRUD_EXECUTOR!. By calling \lstinline{execute_deletion_query} instead of \lstinline{delete}, ABEL will delete all objects in the database that would have been retrieved by executing the query normally.
+\lstinline!PS_EXECUTOR!. By calling \lstinline{execute_deletion_query} instead of \lstinline{execute_delete}, ABEL will delete all objects in the database that would have been retrieved by executing the query normally.
 
 \begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Using a deletion query.}, label={lst:deletion_query}]
 	delete_person_with_deletion_query (last_name: STRING)
@@ -619,7 +619,7 @@ Using a deletion query instead of a direct delete command depends upon the situa
 %
 %Consider a scenario in which you just want to have a list of all last names of persons in the database. Loading every attribute of each object of type \lstinline!PERSON! might lead to a very bad performance, especially if there is a big object graph attached to each \lstinline!PERSON! object.
 %
-%To solve this problem, \lstinline{PS_CRUD_EXECUTOR} allows to query data while returning tuples as a result. You can do this by calling feature\\
+%To solve this problem, \lstinline{PS_EXECUTOR} allows to query data while returning tuples as a result. You can do this by calling feature\\
 %
 %\lstinline{execute_tuple_query (a_tuple_query)}, \\
 %
@@ -813,12 +813,12 @@ Here is the code in feature \lstinline{explore} that tests what we have stated a
 			create c3.make ("Grandpa", "Doe")
 			c1.set_father (c2)
 			c2.set_father (c3)
-			executor.insert (c1)
+			executor.execute_insert (c1)
 			io.new_line
 			print ("Query the database for children and print result")
 			print_children_result (query_for_children)
 			print ("Inserting John Doe has no effect")
-			executor.insert (c2)
+			executor.execute_insert (c2)
 			print_children_result (query_for_children)
 		end
 \end{lstlisting}
@@ -840,7 +840,7 @@ ABEL does not follow references during an update by default, so for example the 
 			if attached {CHILD} c1.father as dad then
 				dad.celebrate_birthday
 			end
-			executor.update (c1)
+			executor.execute_update (c1)
 			print_children_result (query_for_children)
 		end
 \end{lstlisting}
@@ -919,8 +919,8 @@ Every CRUD operation in ABEL is by default executed within a transaction.
 Transactions are created and committed implicitly. This is convenient when dealing with complex object graphs, because an object doesn't get inserted halfway in case of an error.
 
 As a user, you also have the possibility to use transactions explicitly. 
-This is done by manually creating an object of type \lstinline!PS_TRANSACTION! and using the \lstinline!*_within_transaction! features in \lstinline!PS_CRUD_EXECUTOR! instead of the normal ones.
-For your convenience there is a factory method \lstinline{new_transaction} in class \lstinline!PS_CRUD_EXECUTOR!.
+This is done by manually creating an object of type \lstinline!PS_TRANSACTION! and using the \lstinline!*_within_transaction! features in \lstinline!PS_EXECUTOR! instead of the normal ones.
+For your convenience there is a factory method \lstinline{new_transaction} in class \lstinline!PS_EXECUTOR!.
 
 Let's consider an example where you want to update the age of every person by one:
 
@@ -1027,7 +1027,7 @@ If not explicitly stated otherwise, the errors in this lists belong to the first
 
 If you want to handle an error, you have to add a \lstinline{rescue} clause somewhere in your code.
 
-You can get the actual error from the feature \lstinline!PS_CRUD_EXECUTOR.error! or \lstinline!PS_TRANSACTION.error! or - due to the fact that the \lstinline!PS_ERROR! class inherits from \lstinline!DEVELOPER_EXCEPTION! -
+You can get the actual error from the feature \lstinline!PS_EXECUTOR.error! or \lstinline!PS_TRANSACTION.error! or - due to the fact that the \lstinline!PS_ERROR! class inherits from \lstinline!DEVELOPER_EXCEPTION! -
 by performing an object test on Eiffel's \lstinline!EXCEPTION_MANAGER.last_exception!.
 
 For your convenience, there is a visitor pattern for all ABEL error types. 
@@ -1071,7 +1071,7 @@ feature
 	my_visitor: MY_PRIVATE_VISITOR
 		-- A user-defined visitor to react to an error.
 
-	executor: PS_CRUD_EXECUTOR
+	executor: PS_EXECUTOR
 		-- The CRUD executor used throughout the tutorial.
 
 
@@ -1090,8 +1090,69 @@ feature
 		end
 end
 
+
 \end{lstlisting}
 
+
+\chapter{CouchDB}
+
+EiffelStore does not only work with an in-memory database. It is also able to store objects in other database types like CouchDB.
+
+\section{What is CouchDB}
+
+CouchDB is a free, open-source document-oriented database. Unlike the in-memory database that only stores objects at runtime, CouchDB stores objects on a persistent database using JSON documents.
+JSON is similar to xml and will store Eiffel objects like this:
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={Sample Eiffel Object in JSON}, label={lst:error_visitor_example}]
+{
+	"firstname": "Albo",
+	"lastname": "Bitossi",
+	"age": 0
+}
+\end{lstlisting}
+
+\section{Setting up a Couch}
+
+Before we can start using CouchDB in Eiffel we have to set up a couch either on a local machine or get hold of a database on the internet. To install CouchDB locally visit \url{www.couchdb.com} and download the appropriate package.
+
+Once installed CouchDB should be running in the background and is accessible trough a browser by accessing \emph{127.0.0.1:5984/\_utils}
+To work with CouchDB in Eiffel we have compiled another tutorial which you can get at \emph{abel/apps/sample/couchdb-tutorial/}. Look for the \emph{tutorial\_project.ecf} and open it with your Eiffel studio.
+
+\section{Getting started with CouchDB}
+
+On the surface there is not much difference between using the in-memory database and CouchDB. You may notice that all we changed in the tutorial is the call to the repo\_factory. 
+\begin{lstlisting}[language=OOSC2Eiffel, captionpos=b, caption={The CouchDB Tutorial}, label={lst:error_visitor_example}]
+	explore
+			-- Tutorial code.
+		local
+			p1, p2, p3: PERSON
+			c1, c2, c3: CHILD
+			couchdb_repo: PS_RELATIONAL_REPOSITORY
+		do
+			print ("---o--- CouchDB Tutorial ---o---")
+			io.new_line
+			couchdb_repo := repo_factory.create_cdb_repository ("127.0.0.1", 5984)
+			create executor.make (couchdb_repo)
+			...
+\end{lstlisting}
+Instead of using \emph{repo\_factory.create\_in\_memory\_repository} we now use \newline
+\emph{repo\_factory.create\_cdb\_repository("127.0.0.1", 5984)}.
+Whereby the first argument of this method denotes the URL where the database is located (In this case we use the localhost) and the second argument is the used port (we use the default CouchDB port which is 5984). If for some reason your couch is not located on your own machine, you might have to adjust these values to point to the correct location.
+
+If you compare the output of this tutorial to the output you got when using the in-memory database you might notice that nothing changed. On the surface both these databases provide the same services. Namely storing Eiffel objects.
+
+\section{Beneath the surface}
+
+Using CouchDB, Eiffel can store objects on a persistent database that can also be accessed by other programs. If not deleted the data will also persist after your program has ended.
+To accomplish this, ABEL will convert Eiffel objects to JSON documents, whereby each attribute will get its own \emph{"name": "value"} pair. The resulting document for a person will look similar to \emph{Listing 7.1}. After running the tutorial the stored objects can also be explored by visiting \emph{127.0.0.1:5984/\_utils}.
+
+You will notice that for both person and child a sub-database was created. The person database will only contain person-objects and the child database will only contain child-objects.
+If you don't want your data to remain in the database after the program has ended insert a \emph{couchdb\_repo.wipe\_out} at the end of the feature explore
+
+\section{Limitations}
+
+While CouchDB can nicely store Objects as JSON Documents, it is unable to store relational data like a SQL database could.
+
+CouchDB was mainly developed for the world wide web. For its basic API it uses cURL which is really easy to use but for its more advanced features like map-reduce it uses JavaScript. Map-reduce would come in handy when querying for objects in the database but it is not yet integrated and therefore for queries rather than using the inbuilt map-reduce of CouchDB ABEL uses an Eiffel function to accomplish the same.
 
 %\chapter{Technical documentation}
 %\input{technical_documentation}
