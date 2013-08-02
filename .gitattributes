@@ -4382,8 +4382,6 @@ Src/tools/syntax_updater/syntax_updater.lic -text
 Src/tools/unicode/character_32_property.template -text
 Src/tools/visitor_factory/visitor_factory.lic -text
 Src/unstable/README.txt -text
-Src/unstable/library/base_extension/license.lic -text
-Src/unstable/library/base_extension/tests/license.lic -text
 Src/unstable/library/persistency/database/sqlite3/README -text
 Src/unstable/library/persistency/database/sqlite3/license.lic -text
 Src/unstable/library/text/encryption/message_digest/message_digest-safe.lic -text
