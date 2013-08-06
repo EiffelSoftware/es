@@ -357,6 +357,8 @@ feature {NONE} -- Implementation
 					create {E2B_VIOLATION} Result.make_with_description (a_code, a_message, "Loop variant might be negative.")
 				elseif assert_regexp.captured_substring (2) ~ "loop_var_decr" then
 					create {E2B_VIOLATION} Result.make_with_description (a_code, a_message, "Loop variant might not decrease.")
+				elseif assert_regexp.captured_substring (2) ~ "loop_inv" then
+					create {E2B_VIOLATION} Result.make_with_description (a_code + "loop_inv", "loop_inv violation: " + a_message, "Loop invariant might not hold all the time.")
 				else
 					check False end
 				end

@@ -218,6 +218,42 @@ feature {NONE} -- Initialization
 				l_item.toggle
 			end
 			Result.extend (l_item)
+
+			create l_item.make_with_text_and_action ("Enable postcondition mutation",
+				agent do
+					options.set_postcondition_mutation_enabled (not options.is_postcondition_mutation_enabled)
+				end)
+			if options.is_postcondition_mutation_enabled then
+				l_item.toggle
+			end
+			Result.extend (l_item)
+
+			create l_item.make_with_text_and_action ("- with coupled mutations",
+				agent do
+					options.set_coupled_mutations_enabled (not options.is_coupled_mutations_enabled)
+				end)
+			if options.is_coupled_mutations_enabled then
+				l_item.toggle
+			end
+			Result.extend (l_item)
+
+			create l_item.make_with_text_and_action ("- with uncoupled mutations",
+				agent do
+					options.set_uncoupled_mutations_enabled (not options.is_uncoupled_mutations_enabled)
+				end)
+			if options.is_uncoupled_mutations_enabled then
+				l_item.toggle
+			end
+			Result.extend (l_item)
+
+			create l_item.make_with_text_and_action ("- with aging",
+				agent do
+					options.set_aging_enabled (not options.is_aging_enabled)
+				end)
+			if options.is_aging_enabled then
+				l_item.toggle
+			end
+			Result.extend (l_item)
 		end
 
 	build_tool_interface (a_widget: ES_GRID)

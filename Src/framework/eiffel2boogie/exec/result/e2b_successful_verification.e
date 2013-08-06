@@ -23,7 +23,7 @@ feature -- Access
 	suggestion: STRING
 			-- Suggestion for user.
 
-feature {E2B_MERGE_RESULTS_TASK} -- Element change
+feature -- Element change
 
 	add_original_error (a_error: E2B_VERIFICATION_ERROR)
 			-- Add `a_error' to `original_errors'.

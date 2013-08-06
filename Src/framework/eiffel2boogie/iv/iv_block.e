@@ -64,6 +64,20 @@ feature -- Element change
 			statements.extend (a_statement)
 		end
 
+	add_statement_before_last (a_statement:IV_STATEMENT)
+			-- Add `a_statement' to `statements', but position it before the last item in `statements'
+		require
+			a_statement_attached: attached a_statement
+			statements_not_empty: not statements.is_empty
+		do
+			statements.finish
+			statements.put_left (a_statement)
+		ensure
+			last_not_removed: statements.has ((old statements).last)
+			last_not_changed: statements.last = (old statements).last
+			a_statment_added: statements.has (a_statement)
+		end
+
 	set_name (a_name: STRING)
 			-- Set `name' to `a_name'.
 		require

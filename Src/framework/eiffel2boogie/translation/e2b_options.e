@@ -28,6 +28,11 @@ feature {NONE} -- Initialization
 			is_using_ownership := True
 			loop_unrolling_depth := 5
 			max_recursive_inlining_depth := 4
+
+			is_postcondition_mutation_enabled := False
+			is_coupled_mutations_enabled := True
+			is_aging_enabled := False
+			is_uncoupled_mutations_enabled := False
 		end
 
 feature -- Inlining verification step
@@ -39,6 +44,46 @@ feature -- Inlining verification step
 			-- Set `is_reverification_with_inlining_enabled' to `a_value'.
 		do
 			is_reverification_with_inlining_enabled := a_value
+		end
+
+
+feature --Postcondition mutation step
+
+	is_postcondition_mutation_enabled: BOOLEAN
+			-- Should postcondition mutation be executed?
+
+	set_postcondition_mutation_enabled (a_value: BOOLEAN)
+			-- Set `is_postcondition_mutation_enabled' to `a_value'.
+		do
+			is_postcondition_mutation_enabled := a_value
+		end
+
+	is_coupled_mutations_enabled : BOOLEAN
+			-- Execute postcondition mutation with coupled mutations?
+			-- This is usually the minimum, but can be turned off if uncoupled is used instead.
+
+	set_coupled_mutations_enabled (a_value: BOOLEAN)
+			-- Set `is_coupled_mutations_enabled' to `a_value'.
+		do
+			is_coupled_mutations_enabled := a_value
+		end
+
+	is_uncoupled_mutations_enabled: BOOLEAN
+			-- Execute postcondition mutation with uncoupled mutations?
+
+	set_uncoupled_mutations_enabled(a_value: BOOLEAN)
+			-- Set `is_uncoupled_mutations_enabled' to `a_value'.
+		do
+			is_uncoupled_mutations_enabled := a_value
+		end
+
+	is_aging_enabled : BOOLEAN
+			-- Execute postcondition mutation with variable aging?
+
+	set_aging_enabled (a_value: BOOLEAN)
+			-- Set `is_aging_enabled' to `a_value'.
+		do
+			is_aging_enabled := a_value
 		end
 
 feature -- Inlining options

@@ -113,6 +113,9 @@ feature -- Access
 				l_list := l_name.split ('.')
 				l_type_name := l_list.i_th (1)
 				l_feature_name := l_list.i_th (2)
+				if l_type_name.starts_with ("$") then
+					l_type_name.remove (1)
+				end
 			else
 					-- Built in features
 				l_type_name := "ANY"
