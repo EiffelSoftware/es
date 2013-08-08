@@ -20,7 +20,8 @@ feature -- Status report
 			-- <Precursor>
 		do
 			Result := a_feature.written_in = system.any_id and
-				(builtin_any_features.has (a_feature.feature_name) or
+				(builtin_any_functions.has (a_feature.feature_name) or
+				builtin_any_procedures.has (a_feature.feature_name) or
 				ghost_access.has (a_feature.feature_name) or
 				ghost_setter.has (a_feature.feature_name))
 		end
@@ -49,7 +50,9 @@ feature -- Basic operations
 			l_call: IV_PROCEDURE_CALL
 		do
 			l_name := a_feature.feature_name
-			if builtin_any_features.has (l_name) then
+			if builtin_any_functions.has (l_name) then
+				a_translator.process_builtin_function_call (a_feature, a_parameters, l_name)
+			elseif builtin_any_procedures.has (l_name) then
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
 			elseif ghost_access.has (l_name) then
 				a_translator.set_last_expression (factory.heap_current_access (a_translator.entity_mapping, l_name, types.set (types.ref)))
@@ -74,7 +77,7 @@ feature -- Basic operations
 			l_name: STRING
 		do
 			l_name := a_feature.feature_name
-			if builtin_any_features.has (l_name) then
+			if builtin_any_functions.has (l_name) then
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
 			elseif ghost_access.has (l_name) then
 				a_translator.set_last_expression (factory.heap_current_access (a_translator.entity_mapping, l_name, types.set (types.ref)))
@@ -140,16 +143,24 @@ feature -- Basic operations
 			end
 		end
 
-	builtin_any_features: ARRAY [STRING]
-			-- List of builtin names.
+	builtin_any_functions: ARRAY [STRING]
+			-- List of builtin function names.
+		once
+			Result := <<
+				"is_wrapped",
+				"is_free",
+				"is_open"
+			>>
+			Result.compare_objects
+		end
+
+	builtin_any_procedures: ARRAY [STRING]
+			-- List of builtin procedure names.
 		once
 			Result := <<
 				"wrap",
 				"multi_wrap",
-				"unwrap",
-				"is_wrapped",
-				"is_free",
-				"is_open"
+				"unwrap"
 			>>
 			Result.compare_objects
 		end
@@ -161,7 +172,8 @@ feature -- Basic operations
 				"owner",
 				"owns",
 				"subjects",
-				"observers"
+				"observers",
+				"is_wrapped"
 			>>
 			Result.compare_objects
 		end

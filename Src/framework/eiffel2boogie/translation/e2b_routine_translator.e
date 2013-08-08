@@ -252,10 +252,12 @@ feature -- Basic operations
 		do
 			create l_pre.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
 			l_pre.set_assertion_type ("pre")
+			l_pre.set_assertion_tag ("target_wrapped")
 			current_boogie_procedure.add_contract (l_pre)
 
 			create l_post.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
 			l_post.set_assertion_type ("post")
+			l_post.set_assertion_tag ("target_wrapped")
 			current_boogie_procedure.add_contract (l_post)
 		end
 
@@ -915,7 +917,10 @@ feature {NONE} -- Implementation
 				create l_heap.make ("Heap", types.heap_type)
 				create l_ref.make (a_name, types.ref)
 				create l_type.make (name_translator.boogie_name_for_type (a_type), types.type)
-				if a_type.is_attached then
+				if a_name ~ "Current" then
+					-- For Current the exact dynamic type is considered known
+					create l_expr.make ("attached_exact", types.bool)
+				elseif a_type.is_attached then
 					create l_expr.make ("attached", types.bool)
 				else
 					create l_expr.make ("detachable", types.bool)

@@ -44,6 +44,16 @@ feature -- Element change
 			type_set: information.type ~ a_string
 		end
 
+	set_assertion_tag (a_string: STRING)
+			-- Add "tag: `a_string'" to an existing `information'.
+		require
+			information_exists: information /= Void
+		do
+			information.set_tag (a_string)
+		ensure
+			tag_set: information.tag ~ a_string
+		end
+
 	set_information (a_information: IV_ASSERTION_INFORMATION)
 			-- Set `information' to `a_information'.
 		do

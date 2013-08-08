@@ -223,9 +223,10 @@ procedure allocate(t: Type) returns (result: ref);
 
 // Update Heap position Current.field with value.
 procedure update_heap<T>(Current: ref, field: Field T, value: T);
-	requires is_open(Heap, Current); // pre tag:UP1
-	requires (forall o: ref :: Heap[Current, observers][o] ==> is_open(Heap, o)); // pre tag:UP2
-	requires Writes[Current]; // pre tag:UP3
+	requires field != closed && field != owner; // update tag:closed_or_owner_not_allowed
+	requires is_open(Heap, Current); // update tag:target_open
+	requires (forall o: ref :: Heap[Current, observers][o] ==> is_open(Heap, o)); // update tag:all_observers_open
+	requires Writes[Current]; // update tag:target_writable
 	modifies Heap;
 	ensures Heap[Current, field] == value;
 	ensures (forall<U> o: ref, f: Field U :: !(o == Current && f == field) ==> Heap[o, f] == old(Heap[o, f]));
@@ -233,8 +234,8 @@ procedure update_heap<T>(Current: ref, field: Field T, value: T);
 // Unwrap o
 procedure unwrap(o: ref);
 	free requires inv(Heap, o);
-	requires is_wrapped(Heap, o); // pre tag:UW1
-	requires Writes[o]; // pre tag:UW2
+	requires is_wrapped(Heap, o); // pre tag:wrapped
+	requires Writes[o]; // pre tag:writable
 	modifies Heap, Writes;
 	ensures is_open(Heap, o);
 	ensures user_inv(Heap, o);
@@ -244,10 +245,10 @@ procedure unwrap(o: ref);
 
 // Wrap o
 procedure wrap(o: ref);
-	requires is_open(Heap, o); // pre tag:W1
-	requires user_inv(Heap, o); // pre tag:W2
-	requires (forall o': ref :: Heap[o, owns][o'] ==> is_wrapped(Heap, o') && Writes[o']); // pre tag:W3
-	requires Writes[o]; // pre tag:W4
+	requires is_open(Heap, o); // pre tag:open
+	requires user_inv(Heap, o); // pre tag:invariant_holds
+	requires (forall o': ref :: Heap[o, owns][o'] ==> is_wrapped(Heap, o') && Writes[o']); // pre tag:owned_objects_wrapped
+	requires Writes[o]; // pre tag:writable
 	modifies Heap, Writes;
 	ensures is_wrapped(Heap, o);
 	ensures (forall o': ref :: old(Heap[o, owns][o']) ==> Heap[o', owner] == o);

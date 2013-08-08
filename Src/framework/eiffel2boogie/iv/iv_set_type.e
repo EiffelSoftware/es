@@ -24,6 +24,7 @@ feature {NONE} -- Initialization
 		do
 			content_type := a_content_type
 			is_set := True
+			is_map := True
 		ensure
 			content_type_set: content_type = a_content_type
 		end

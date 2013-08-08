@@ -51,13 +51,11 @@ feature {NONE} -- Implementation
 			l_current_error: E2B_VERIFICATION_ERROR
 			l_current_error_model: E2B_ERROR_MODEL
 			l_total_time: REAL
-			l_current_errors: LINKED_LIST [E2B_VERIFICATION_ERROR]
 			l_successful_verification: E2B_SUCCESSFUL_VERIFICATION
 			l_failed_verification: E2B_FAILED_VERIFICATION
 			l_has_related_location: BOOLEAN
 			l_error_info: TUPLE [code: STRING; message: STRING; filename: STRING; line: INTEGER; column: INTEGER]
 		do
-			create l_current_errors.make
 			from
 				lines.start
 			until
@@ -96,7 +94,6 @@ feature {NONE} -- Implementation
 						l_error_info := Void
 							-- Create error list without knowing if it actually is an error, but
 							-- successive lines may assume that error object is already created.
-						l_current_errors.wipe_out
 
 					elseif verified_regexp.matches (l_line) then
 						-- time in seconds: verified_regexp.captured_substring (1).to_real
@@ -110,19 +107,12 @@ feature {NONE} -- Implementation
 								verified_regexp.captured_substring (2).starts_with ("error") or
 								verified_regexp.captured_substring (2).starts_with ("inconclusive")
 							end
-							check not l_current_errors.is_empty end
-							if l_current_error_model /= Void then
-								l_current_errors.do_all (agent {E2B_VERIFICATION_ERROR}.set_error_model (l_current_error_model))
-							end
 							create l_failed_verification.make (l_current_procedure)
 							l_failed_verification.set_time (verified_regexp.captured_substring (1).to_real)
-							l_failed_verification.errors.append (l_current_errors)
-							l_current_errors.do_all (agent {E2B_VERIFICATION_ERROR}.set_procedure_result (l_failed_verification))
 							last_result.procedure_results.extend (l_failed_verification)
 						end
 						l_total_time := l_total_time + verified_regexp.captured_substring (1).to_real
 								-- Reset state (safeguard)
-						l_current_errors.wipe_out
 						l_current_error := Void
 						l_current_procedure := Void
 						l_has_related_location := False
@@ -151,7 +141,12 @@ feature {NONE} -- Implementation
 								error_regexp.captured_substring (1),
 								error_regexp.captured_substring (2).to_integer,
 								error_regexp.captured_substring (3).to_integer)
-							l_current_errors.extend (l_current_error)
+							check l_failed_verification /= Void end
+							l_failed_verification.errors.extend (l_current_error)
+							l_current_error.set_procedure_result (l_failed_verification)
+							if l_current_error_model /= Void then
+								l_current_error.set_error_model (l_current_error_model)
+							end
 						end
 
 					elseif related_regexp.matches (l_line) then
@@ -168,7 +163,12 @@ feature {NONE} -- Implementation
 								l_error_info.column,
 								related_regexp.captured_substring (2).to_integer,
 								related_regexp.captured_substring (3).to_integer)
-						l_current_errors.extend (l_current_error)
+						check l_failed_verification /= Void end
+						l_failed_verification.errors.extend (l_current_error)
+						l_current_error.set_procedure_result (l_failed_verification)
+						if l_current_error_model /= Void then
+							l_current_error.set_error_model (l_current_error_model)
+						end
 
 					elseif syntax_error_regexp.matches (l_line) then
 						-- file: syntax_error_regexp.captured_substring (1)
@@ -409,39 +409,50 @@ feature {NONE} -- Implementation
 			l_related_boogie_line := boogie_file_lines [a_related_linenumber]
 
 			if l_is_pre then
-				create l_pre_violation.make (a_code, a_message)
-				Result := l_pre_violation
 					-- Line in Eiffel code
 				l_eiffel_location := eiffel_instruction_location (a_linenumber)
-				if attached l_eiffel_location then
-					l_pre_violation.set_eiffel_file_name (l_eiffel_location.file)
-					l_pre_violation.set_eiffel_line_number (l_eiffel_location.line)
-				end
-					-- Called routine
-				proc_call_regexp.match (l_boogie_line)
-				if proc_call_regexp.has_matched then
-					if proc_call_regexp.match_count = 3 then
-						l_called_feature := proc_call_regexp.captured_substring (2)
-					elseif proc_call_regexp.match_count = 2 then
-						l_called_feature := proc_call_regexp.captured_substring (1)
-					end
-					l_pre_violation.set_called_feature (name_translator.feature_for_boogie_name (l_called_feature))
-				end
-					-- pre
+
 				assert_regexp.match (l_related_boogie_line)
 				check assert_regexp.has_matched end
-				if assert_regexp.captured_substring (2) ~ "pre" then
-				elseif assert_regexp.captured_substring (2) ~ "attached" then
-					l_pre_violation.set_is_attached_check
-				elseif assert_regexp.captured_substring (2) ~ "overflow" then
-					l_pre_violation.set_is_overflow_check
+
+					-- Called routine
+				proc_call_regexp.match (l_boogie_line)
+				check proc_call_regexp.has_matched end
+				if proc_call_regexp.match_count = 3 then
+					l_called_feature := proc_call_regexp.captured_substring (2)
+				elseif proc_call_regexp.match_count = 2 then
+					l_called_feature := proc_call_regexp.captured_substring (1)
+				end
+
+				if fake_procs.has (l_called_feature) then
+					if assert_regexp.captured_substring (2) ~ "update" then
+						create {E2B_VIOLATION} Result.make_with_description (a_code, a_message, "Attribute update condition may fail.")
+					else
+						check False end
+					end
 				else
-					l_related_boogie_line.left_adjust
-					l_related_boogie_line.right_adjust
-					create {E2B_VIOLATION} Result.make_with_description (a_code, a_message, "Precondition may be violated: " + l_related_boogie_line)
---					check False end
+					create l_pre_violation.make (a_code, a_message)
+					Result := l_pre_violation
+					l_pre_violation.set_called_feature (name_translator.feature_for_boogie_name (l_called_feature))
+						-- pre
+					if assert_regexp.captured_substring (2) ~ "pre" then
+					elseif assert_regexp.captured_substring (2) ~ "attached" then
+						l_pre_violation.set_is_attached_check
+					elseif assert_regexp.captured_substring (2) ~ "overflow" then
+						l_pre_violation.set_is_overflow_check
+					else
+						l_related_boogie_line.left_adjust
+						l_related_boogie_line.right_adjust
+						create {E2B_VIOLATION} Result.make_with_description (a_code, a_message, "Precondition may be violated: " + l_related_boogie_line)
+	--					check False end
+					end
+				end
+				if attached l_eiffel_location then
+					Result.set_eiffel_file_name (l_eiffel_location.file)
+					Result.set_eiffel_line_number (l_eiffel_location.line)
 				end
 				Result.set_tag (assert_regexp_tag (assert_regexp))
+
 			elseif l_is_post then
 					-- post, inv, frame
 				assert_regexp.match (l_related_boogie_line)
@@ -465,6 +476,7 @@ feature {NONE} -- Implementation
 					check False end
 				end
 				Result.set_tag (assert_regexp_tag (assert_regexp))
+				-- ToDo: for built-in assertions that don't have an Eiffel line number, this leaves the line number at 0, whcih leads to a crash when you click on it
 				Result.set_eiffel_line_number (assert_regexp_line (assert_regexp))
 			else
 				check False end
@@ -624,7 +636,7 @@ feature {NONE} -- Implementation: regular expressions Boogie code
 	assert_regexp_line (a_regexp: RX_PCRE_REGULAR_EXPRESSION): INTEGER
 			-- Line part of assertion regexp (if any).
 		do
-			if a_regexp.match_count > 5 then
+			if a_regexp.match_count > 6 then
 				Result := a_regexp.captured_substring (8).to_integer
 			elseif a_regexp.match_count > 3 and then a_regexp.captured_substring (4) ~ "line" then
 				Result := a_regexp.captured_substring (5).to_integer
@@ -643,6 +655,17 @@ feature {NONE} -- Implementation: regular expressions Boogie code
 		once
 			create Result.make
 			Result.compile ("^\s*call([^:]+:=)?\s([^(]+).*$")
+		end
+
+feature {NONE} -- Implementation: Boogie procedures that do not correspond to Eiffel procedures
+
+	fake_procs: ARRAY [STRING]
+			-- List of feature names.
+		once
+			Result := <<
+				"update_heap"
+			>>
+			Result.compare_objects
 		end
 
 end
