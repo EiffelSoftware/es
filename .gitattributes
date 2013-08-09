@@ -2874,7 +2874,6 @@ Src/contrib/library/network/server/nino/readme.txt -text
 Src/contrib/library/print/ael_printf/AEL_Printf.pdf -text svneol=unset#unset
 Src/contrib/library/print/ael_printf/Amalasoft[!!-~]Printf.docx -text
 Src/contrib/library/runtime/process/eclop/doc/eclop.pdf -text
-Src/contrib/library/runtime/process/notification_email/license.lic -text
 Src/contrib/library/security/openid/README.md -text
 Src/contrib/library/security/openid/consumer/README.md -text
 Src/contrib/library/svn/svn.lic -text
@@ -2937,18 +2936,7 @@ Src/contrib/library/text/parser/uri_template/doc/rfc6570.txt -text
 Src/contrib/library/text/parser/uri_template/doc/uritemplate-RFC6570 -text
 Src/contrib/library/text/parser/uri_template/license.lic -text
 Src/contrib/library/utility/general/error/license.lic -text
-Src/contrib/library/web/communication/mediatype/collection+json/README -text
 Src/contrib/library/web/communication/mediatype/collection+json/doc/collectionjson.png -text
-Src/contrib/library/web/communication/mediatype/collection+json/library/license.lic -text
-Src/contrib/library/web/communication/mediatype/collection+json/test/collection_representation.json -text
-Src/contrib/library/web/communication/mediatype/collection+json/test/error_representation.json -text
-Src/contrib/library/web/communication/mediatype/collection+json/test/item_representation.json -text
-Src/contrib/library/web/communication/mediatype/collection+json/test/minimal_representation.json -text
-Src/contrib/library/web/communication/mediatype/collection+json/test/queries_representation.json -text
-Src/contrib/library/web/communication/mediatype/collection+json/test/template_representation.json -text
-Src/contrib/library/web/communication/mediatype/collection+json/test/test.rc -text
-Src/contrib/library/web/communication/mediatype/collection+json/test/test_cj_suite.e.pretty -text
-Src/contrib/library/web/communication/mediatype/collection+json/test/write_representation.json -text
 Src/contrib/library/web/framework/ewf/ewsgi/COPYRIGHT -text
 Src/contrib/library/web/framework/ewf/ewsgi/README.md -text
 Src/contrib/library/web/framework/ewf/ewsgi/connectors/cgi/license.lic -text
@@ -4874,8 +4862,6 @@ Src/library/wel/tests/graphics/16bpp.bmp -text
 Src/library/wel/tests/graphics/24bpp.bmp -text
 Src/library/wel/tests/graphics/32bpp.bmp -text
 Src/library/wizard/help/Clib/htmlhelp.lib -text
-Src/library/zeromq/license.lic -text
-Src/scripts/check_setup.eant -text
 Src/scripts/check_trunk_head_compilation_validity -text
 Src/scripts/tools/_inc/_f_code_tpl_ -text
 Src/tools/button_clicker/button_clicker.ico -text
@@ -5062,7 +5048,6 @@ Src/tools/iron/delivery/iron/spec/windows/bin/bzip2.exe -text
 Src/tools/iron/delivery/iron/spec/windows/bin/msys-1.0.dll -text
 Src/tools/iron/delivery/iron/spec/windows/bin/tar.exe -text
 Src/tools/iron/doc/iron.html -text
-Src/tools/iron/doc/iron.wiki -text
 Src/tools/iron/server/license.lic -text
 Src/tools/metaconfig/README.txt -text
 Src/tools/parse_benchmark/parse_benchmark.lic -text
@@ -5114,8 +5099,6 @@ Src/tools/syntax_updater/syntax_updater.lic -text
 Src/tools/unicode/character_32_property.template -text
 Src/tools/visitor_factory/visitor_factory.lic -text
 Src/unstable/README.txt -text
-Src/unstable/library/base_extension/license.lic -text
-Src/unstable/library/base_extension/tests/license.lic -text
 Src/unstable/library/persistency/database/sqlite3/README -text
 Src/unstable/library/persistency/database/sqlite3/license.lic -text
 Src/unstable/library/text/encryption/message_digest/message_digest-safe.lic -text
