@@ -782,7 +782,7 @@ feature{NONE} -- Implementation
 			l_operator: SYMBOL_STUB_AS
 		do
 			if not has_error then
-				create l_operator.make ({EIFFEL_TOKENS}.te_tilde, 0, 0, 0, 0)
+				create l_operator.make ({EIFFEL_TOKENS}.te_tilde, 0, 0, 0, 0, 0, 0, 0)
 				create l_ast.initialize (l_as.left, l_as.right, l_operator)
 				process_bin_tilde_as (l_ast)
 				if attached {EPA_BOOLEAN_VALUE} last_value as l_last_value then

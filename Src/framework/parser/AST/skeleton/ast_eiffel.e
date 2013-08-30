@@ -115,7 +115,7 @@ feature -- Location
 		end
 
 	frozen start_position: INTEGER
-			-- Starting position for current construct.
+			-- Starting position in UTF-8 bytes for current construct.
 		do
 			Result := start_location.position
 		ensure
@@ -123,9 +123,25 @@ feature -- Location
 		end
 
 	frozen end_position: INTEGER
-			-- End position for current construct
+			-- End position in UTF-8 bytes for current construct
 		do
 			Result := end_location.final_position
+		ensure
+			end_position_non_negative: Result >= 0
+		end
+
+	frozen character_start_position: INTEGER
+			-- Starting position in Unicode characters for current construct.
+		do
+			Result := start_location.character_position
+		ensure
+			start_position_non_negative: Result >= 0
+		end
+
+	frozen character_end_position: INTEGER
+			-- End position in Unicode characters for current construct
+		do
+			Result := end_location.final_character_position
 		ensure
 			end_position_non_negative: Result >= 0
 		end
@@ -161,7 +177,7 @@ feature -- Roundtrip/Location
 		end
 
 	frozen complete_start_position (a_list: LEAF_AS_LIST): INTEGER
-			-- Absolute start position for current construct
+			-- Absolute start position in UTF-8 bytes for current construct
 		require
 			a_list_not_void: a_list /= Void
 		do
@@ -169,11 +185,27 @@ feature -- Roundtrip/Location
 		end
 
 	frozen complete_end_position (a_list: LEAF_AS_LIST): INTEGER
-			-- Absolute end position for current construct
+			-- Absolute end position in UTF-8 bytes for current construct
 		require
 			a_list_not_void: a_list /= Void
 		do
 			Result := complete_end_location (a_list).final_position
+		end
+
+	frozen complete_character_start_position (a_list: LEAF_AS_LIST): INTEGER
+			-- Absolute start position in Unicode characters for current construct
+		require
+			a_list_not_void: a_list /= Void
+		do
+			Result := complete_start_location (a_list).character_position
+		end
+
+	frozen complete_character_end_position (a_list: LEAF_AS_LIST): INTEGER
+			-- Absolute end position in Unicode characters for current construct
+		require
+			a_list_not_void: a_list /= Void
+		do
+			Result := complete_end_location (a_list).final_character_position
 		end
 
 feature -- Roundtrip/Token
@@ -490,7 +522,7 @@ feature {NONE} -- Constants
 		end
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

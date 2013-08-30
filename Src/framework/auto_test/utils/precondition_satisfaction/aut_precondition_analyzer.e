@@ -806,10 +806,10 @@ feature{NONE} -- Implmentation
 			create l_pattern_table.make (1)
 			l_pattern_table.put_last (0, 1)
 
-			create l_void.make_with_location (0, 0, 0, 0)
+			create l_void.make_with_location (0, 0, 0, 0, 0, 0, 0)
 			create l_target.initialize ("a__target")
 			create l_ne_binary.initialize (l_target, l_void, l_ne_operator)
-			create l_ne_operator.make ({EIFFEL_TOKENS}.TE_NE, 0, 0, 0, 0)
+			create l_ne_operator.make ({EIFFEL_TOKENS}.TE_NE, 0, 0, 0, 0, 0, 0, 0)
 			create l_assertion.make_with_feature (current_context_class, a_feature, l_ne_binary, current_written_class)
 			create l_access_pattern.make (current_feature, l_predicate, l_pattern_table, l_assertion)
 
@@ -853,7 +853,7 @@ feature -- Status report
 		end
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -26,12 +26,24 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_entry: like entry)
+	make (a_entry: like entry; a_shown_in_es: BOOLEAN)
 			-- Initialization
 		do
 			entry := a_entry
+			is_shown_in_es := a_shown_in_es
 		ensure
 			entry_set: a_entry = entry
+			is_shown_in_es_set: is_shown_in_es = a_shown_in_es
+		end
+
+feature -- Element Change
+
+	set_is_shown_in_es (a_shown_in_es: like is_shown_in_es)
+			-- Set `is_shown_in_es' with `a_shown_in_es'.
+		do
+			is_shown_in_es := a_shown_in_es
+		ensure
+			is_shown_in_es_set: is_shown_in_es = a_shown_in_es
 		end
 
 feature -- Access
@@ -51,11 +63,14 @@ feature -- Access
 	entry: EIS_ENTRY;
 			-- The EIS entry
 
+	is_shown_in_es: BOOLEAN
+			-- Is shown in es?
+
 invariant
 	entry_not_void: entry /= Void
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

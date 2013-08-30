@@ -69,7 +69,7 @@ feature -- Roundtrip: process leaf
 		local
 			l_stub: SYMBOL_STUB_AS
 		do
-			create l_stub.make (l_as.code, 0, 0, 0, 0)
+			create l_stub.make (l_as.code, 0, 0, 0, 0, 0, 0, 0)
 			append_string (l_stub.literal_text (Void))
 		end
 

@@ -106,7 +106,7 @@ feature {NONE} -- Implementation
 					segment := text.substring (base, base + length - 1)
 					segments.extend (segment)
 						-- Assuming on one line only. TODO.
-					create segment_base.make (origin.line, origin.column + base - 1, origin.position + base - 1, length)
+					create segment_base.make (origin.line, origin.column + base - 1, origin.position + base - 1, length, 0, 0, 0)
 					bases.extend (segment_base)
 				end
 			end
@@ -139,7 +139,7 @@ feature {NONE} -- Collecting
 				node.extract_comment as comment_line
 			loop
 				if attached comment_line.item as comment and then attached comment.content_32 as string then
-					create origin.make (comment.line, comment.column, comment.position, string.count)
+					create origin.make (comment.line, comment.column, comment.position, string.count, 0, 0, 0)
 					collect_text (string, origin)
 				end
 			end
@@ -153,7 +153,7 @@ feature {NONE} -- Collecting
 		do
 			origin := node.start_location
 				-- Skip string delimiter.
-			create origin.make (origin.line, origin.column + 1, origin.position, origin.location_count)
+			create origin.make (origin.line, origin.column + 1, origin.position, origin.location_count, 0, 0, 0)
 			collect_text (node.value_32, origin)
 			Precursor (node)
 		end
@@ -165,7 +165,7 @@ feature {NONE} -- Collecting
 		do
 			origin := node.start_location
 				-- Again, skip string delimiter.
-			create origin.make (origin.line, origin.column + 2, origin.position, origin.location_count)
+			create origin.make (origin.line, origin.column + 2, origin.position, origin.location_count, 0, 0, 0)
 			collect_text (node.value_32, origin)
 			Precursor (node)
 		end
