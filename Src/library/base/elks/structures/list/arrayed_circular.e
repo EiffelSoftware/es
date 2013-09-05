@@ -45,7 +45,7 @@ create
 
 	make
 
-feature -- Initialization
+feature{NONE} -- Initialization
 
 	make (n: INTEGER)
 			-- Create a circular chain with `n' items.
