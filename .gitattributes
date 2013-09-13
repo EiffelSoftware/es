@@ -2930,6 +2930,9 @@ Src/contrib/library/text/parser/json/test/getest/ejson_test-win.cfg -text
 Src/contrib/library/text/parser/json/test/getest/ejson_test.cfg -text
 Src/contrib/library/text/parser/json/test/getest/ejson_test.ecf -text svneol=native#application/xml
 Src/contrib/library/text/parser/json/test/getest/readme.txt -text
+Src/contrib/library/text/parser/microdata/README.md -text
+Src/contrib/library/text/parser/microdata/license.lic -text
+Src/contrib/library/text/parser/microdata/testing/schema_org_full_md.html -text
 Src/contrib/library/text/parser/uri_template/README.md -text
 Src/contrib/library/text/parser/uri_template/doc/REAMDE.txt -text
 Src/contrib/library/text/parser/uri_template/doc/rfc6570.txt -text
@@ -5101,9 +5104,8 @@ Src/tools/visitor_factory/visitor_factory.lic -text
 Src/unstable/README.txt -text
 Src/unstable/library/persistency/database/sqlite3/README -text
 Src/unstable/library/persistency/database/sqlite3/license.lic -text
-Src/unstable/library/text/encryption/message_digest/message_digest-safe.lic -text
-Src/unstable/library/text/encryption/message_digest/message_digest.lic -text
-Src/unstable/library/text/encryption/message_digest/tests/tests.lic -text
+Src/unstable/library/text/encryption/crypto/license.lic -text
+Src/unstable/library/text/encryption/crypto/tests/license.lic -text
 Src/unstable/library/text/regexp/pcre/pcre.rc -text
 benchmarks/scoop/Tests1-6.xls -text
 benchmarks/scoop/scoop0001/LogParser.java -text
