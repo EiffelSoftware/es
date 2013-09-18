@@ -4022,12 +4022,15 @@ Src/library/abel/apps/test/dadl_test/src/gui_main/system_interface.xml -text
 Src/library/abel/apps/test/readme.txt -text
 Src/library/abel/apps/test/serialization_test/serialization_test.ecf svneol=native#text/xml
 Src/library/abel/libraries/ethz/src/abel/obsolete/old_disassembler.txt -text
+Src/library/abel/libraries/ethz/src/abel_couchdb_backend/abel_couchdb_backend.ecf svneol=native#text/xml
+Src/library/abel/libraries/ethz/src/abel_rdbms_generic_layout_backend/abel_rdbms_generic_layout_backend.ecf svneol=native#text/xml
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/.DS_Store -text
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/README -text
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/library/couchdb_client.rc -text
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/library/exception_trace.log -text
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/test/test.rc -text
 Src/library/abel/libraries/ethz/src/couchdb/readme.txt -text
+Src/library/abel/libraries/ethz/src/generic_database_wrapper/generic_database_wrapper.ecf svneol=native#text/xml
 Src/library/abel/libraries/ethz/src/mysql/README -text
 Src/library/abel/libraries/ethz/src/mysql/README_OLD -text
 Src/library/abel/libraries/ethz/src/persistence_utils/persistence_utils.ecf svneol=native#text/xml
