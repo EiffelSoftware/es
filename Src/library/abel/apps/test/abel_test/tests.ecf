@@ -19,6 +19,7 @@
 		<library name="eiffelstore2" location="..\..\..\libraries\ethz\src\abel\eiffelstore2.ecf" readonly="false"/>
 		<library name="mysql" location="..\..\..\libraries\ethz\src\mysqli\mysqli.ecf"/>
 		<library name="serializer" location="..\..\..\libraries\ethz\src\schema_evolution\serializer_lib\serializer.ecf"/>
+		<library name="persistence_utils" location="..\..\..\libraries\ethz\src\persistence_utils\persistence_utils.ecf"/>
 		<library name="sqlite" location="$ISE_LIBRARY\unstable\library\persistency\database\sqlite3\sqlite-safe.ecf"/>
 		<library name="testing" location="$ISE_LIBRARY\library\testing\testing-safe.ecf"/>
 		<cluster name="test_classes" location=".\test_classes\" recursive="true"/>

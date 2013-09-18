@@ -7,6 +7,7 @@
 		</option>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
 		<library name="eiffelstore2" location="..\..\..\libraries\ethz\src\abel\eiffelstore2.ecf" readonly="false"/>
+		<library name="persistence_utils" location="..\..\..\libraries\ethz\src\persistence_utils\persistence_utils.ecf"/>
 		<cluster name="project" location=".\" recursive="true">
 			<file_rule>
 				<exclude>/EIFGENs$</exclude>
