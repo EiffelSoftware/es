@@ -9,6 +9,7 @@
 		<library name="persistence_utils" location="..\persistence_utils\persistence_utils.ecf" />
 		<library name="mysql" location="..\mysqli\mysqli.ecf"/>
 		<library name="generic_database_wrapper" location="..\generic_database_wrapper\generic_database_wrapper.ecf"/>
+		<library name="eiffelstore2" location="..\abel\eiffelstore2.ecf"/>
 		<cluster name="mysql_wrapper" location=".\" recursive="true">
 			<file_rule>
 				<exclude>/EIFGENs$</exclude>

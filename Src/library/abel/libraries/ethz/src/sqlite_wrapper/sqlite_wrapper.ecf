@@ -14,6 +14,7 @@
 		<library name="persistence_utils" location="..\persistence_utils\persistence_utils.ecf" />
 		<library name="sqlite" location="$ISE_LIBRARY\unstable\library\persistency\database\sqlite3\sqlite-safe.ecf"/>
 		<library name="generic_database_wrapper" location="..\generic_database_wrapper\generic_database_wrapper.ecf"/>
+		<library name="eiffelstore2" location="..\abel\eiffelstore2.ecf"/>
 		<cluster name="sqlite_wrapper" location=".\" recursive="true">
 			<file_rule>
 				<exclude>/EIFGENs$</exclude>
