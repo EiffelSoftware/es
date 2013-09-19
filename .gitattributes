@@ -4023,6 +4023,7 @@ Src/library/abel/apps/test/readme.txt -text
 Src/library/abel/apps/test/serialization_test/serialization_test.ecf svneol=native#text/xml
 Src/library/abel/libraries/ethz/src/abel/obsolete/old_disassembler.txt -text
 Src/library/abel/libraries/ethz/src/abel_couchdb_backend/abel_couchdb_backend.ecf svneol=native#text/xml
+Src/library/abel/libraries/ethz/src/abel_escher_plugin/abel_escher_plugin.ecf svneol=native#text/xml
 Src/library/abel/libraries/ethz/src/abel_rdbms_generic_layout_backend/abel_rdbms_generic_layout_backend.ecf svneol=native#text/xml
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/.DS_Store -text
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/README -text

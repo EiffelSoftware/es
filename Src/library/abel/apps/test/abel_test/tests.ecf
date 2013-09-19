@@ -22,6 +22,7 @@
 		<library name="persistence_utils" location="..\..\..\libraries\ethz\src\persistence_utils\persistence_utils.ecf"/>
 		<library name="abel_rdbms_generic_layout_backend" location="..\..\..\libraries\ethz\src\abel_rdbms_generic_layout_backend\abel_rdbms_generic_layout_backend.ecf"/>
 		<library name="abel_couchdb_backend" location="..\..\..\libraries\ethz\src\abel_couchdb_backend\abel_couchdb_backend.ecf"/>
+		<library name="abel_escher_plugin" location="..\..\..\libraries\ethz\src\abel_escher_plugin\abel_escher_plugin.ecf"/>
 		<library name="generic_database_wrapper" location="..\..\..\libraries\ethz\src\generic_database_wrapper\generic_database_wrapper.ecf" />
 		<library name="sqlite" location="$ISE_LIBRARY\unstable\library\persistency\database\sqlite3\sqlite-safe.ecf"/>
 		<library name="testing" location="$ISE_LIBRARY\library\testing\testing-safe.ecf"/>
