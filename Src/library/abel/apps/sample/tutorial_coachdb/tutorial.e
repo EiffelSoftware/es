@@ -25,7 +25,8 @@ feature -- Tutorial exploration features
 		do
 			print ("---o--- CouchDB Tutorial ---o---")
 			io.new_line
-			couchdb_repo := repo_factory.create_cdb_repository ("127.0.0.1", 5984)
+--			couchdb_repo := repo_factory.create_cdb_repository ("127.0.0.1", 5984)
+			couchdb_repo := create_cdb_repository ("127.0.0.1", 5984)
 			create executor.make (couchdb_repo)
 			print ("Insert 3 new persons in the database")
 			io.new_line
@@ -89,9 +90,22 @@ feature {NONE} -- Initialization
 			-- Tutorial initialization.
 		do
 			create factory
-			create repo_factory
+--			create repo_factory
 			create my_visitor
 			explore
+		end
+
+	create_cdb_repository(host:STRING; port:INTEGER): PS_RELATIONAL_REPOSITORY
+		-- Create a CouchDB repository
+		local
+			repository: CDB_REPOSITORY
+		do
+			if host.is_empty or port=0 then
+				create repository.make_empty
+			else
+				create repository.make_with_host_and_port(host, port)
+			end
+			Result := repository
 		end
 
 feature -- Access
@@ -102,7 +116,7 @@ feature -- Access
 	factory: PS_CRITERION_FACTORY
 			--		-- Criterion factory.
 
-	repo_factory: PS_REPOSITORY_FACTORY
+--	repo_factory: PS_REPOSITORY_FACTORY
 			--		-- Repository factory.
 
 	my_visitor: MY_PRIVATE_VISITOR
