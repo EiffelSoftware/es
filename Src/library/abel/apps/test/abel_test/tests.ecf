@@ -24,6 +24,8 @@
 		<library name="abel_couchdb_backend" location="..\..\..\libraries\ethz\src\abel_couchdb_backend\abel_couchdb_backend.ecf"/>
 		<library name="abel_escher_plugin" location="..\..\..\libraries\ethz\src\abel_escher_plugin\abel_escher_plugin.ecf"/>
 		<library name="generic_database_wrapper" location="..\..\..\libraries\ethz\src\generic_database_wrapper\generic_database_wrapper.ecf" />
+		<library name="mysql_wrapper" location="..\..\..\libraries\ethz\src\mysql_wrapper\mysql_wrapper.ecf" />
+		<library name="sqlite_wrapper" location="..\..\..\libraries\ethz\src\sqlite_wrapper\sqlite_wrapper.ecf" />
 		<library name="sqlite" location="$ISE_LIBRARY\unstable\library\persistency\database\sqlite3\sqlite-safe.ecf"/>
 		<library name="testing" location="$ISE_LIBRARY\library\testing\testing-safe.ecf"/>
 		<cluster name="test_classes" location=".\test_classes\" recursive="true"/>

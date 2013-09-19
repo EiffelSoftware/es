@@ -7,8 +7,7 @@
 		</option>
 		<library name="base" location="$ISE_LIBRARY/library/base/base-safe.ecf"/>
 		<library name="persistence_utils" location="..\persistence_utils\persistence_utils.ecf" />
-		<library name="mysql" location="..\mysqli\mysqli.ecf"/>
-		<library name="sqlite" location="$ISE_LIBRARY\unstable\library\persistency\database\sqlite3\sqlite-safe.ecf"/>
+<!--		<library name="mysql" location="..\mysqli\mysqli.ecf"/> <library name="sqlite" location="$ISE_LIBRARY\unstable\library\persistency\database\sqlite3\sqlite-safe.ecf"/> -->
 		<cluster name="generic_database_wrapper" location=".\" recursive="true">
 			<file_rule>
 				<exclude>/EIFGENs$</exclude>

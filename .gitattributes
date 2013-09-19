@@ -4034,12 +4034,14 @@ Src/library/abel/libraries/ethz/src/couchdb/readme.txt -text
 Src/library/abel/libraries/ethz/src/generic_database_wrapper/generic_database_wrapper.ecf svneol=native#text/xml
 Src/library/abel/libraries/ethz/src/mysql/README -text
 Src/library/abel/libraries/ethz/src/mysql/README_OLD -text
+Src/library/abel/libraries/ethz/src/mysql_wrapper/mysql_wrapper.ecf svneol=native#text/xml
 Src/library/abel/libraries/ethz/src/persistence_utils/persistence_utils.ecf svneol=native#text/xml
 Src/library/abel/libraries/ethz/src/schema_evolution/serializer_lib/serializer.ecf svneol=native#text/xml
 Src/library/abel/libraries/ethz/src/serialization/serialization.ecf svneol=native#text/xml
 Src/library/abel/libraries/ethz/src/sqlite3/Clib/sqlite3.def -text
 Src/library/abel/libraries/ethz/src/sqlite3/README -text
 Src/library/abel/libraries/ethz/src/sqlite3/license.lic -text
+Src/library/abel/libraries/ethz/src/sqlite_wrapper/sqlite_wrapper.ecf svneol=native#text/xml
 Src/library/abel/libraries/openehr/src/dadl_syntax/parser/dadl_scanner.l -text
 Src/library/abel/libraries/openehr/src/dadl_syntax/parser/dadl_validator.html -text
 Src/library/abel/libraries/openehr/src/dadl_syntax/parser/parser_errs.txt -text
