@@ -4367,6 +4367,10 @@ Src/tools/syntax_updater/syntax_updater.lic -text
 Src/tools/unicode/character_32_property.template -text
 Src/tools/visitor_factory/visitor_factory.lic -text
 Src/unstable/README.txt -text
+Src/unstable/library/persistency/abel/backend_couchdb/abel_couchdb_backend.ecf svneol=native#text/xml
+Src/unstable/library/persistency/abel/connector_mysql/mysql_wrapper.ecf svneol=native#text/xml
+Src/unstable/library/persistency/abel/connector_sqlite/sqlite_wrapper.ecf svneol=native#text/xml
+Src/unstable/library/persistency/abel/plugin_escher/abel_escher_plugin.ecf svneol=native#text/xml
 Src/unstable/library/persistency/database/sqlite3/README -text
 Src/unstable/library/persistency/database/sqlite3/license.lic -text
 Src/unstable/library/text/encryption/crypto/license.lic -text
