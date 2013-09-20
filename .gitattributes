@@ -3998,7 +3998,6 @@ Src/library/abel/apps/test/dadl_test/app/test_files/bad_range.dadl -text
 Src/library/abel/apps/test/dadl_test/app/test_files/openehr_rm_102.dadl -text
 Src/library/abel/apps/test/dadl_test/src/gui_main/build_project.bpr -text
 Src/library/abel/apps/test/dadl_test/src/gui_main/system_interface.xml -text
-Src/library/abel/apps/test/readme.txt -text
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/.DS_Store -text
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/README -text
 Src/library/abel/libraries/ethz/src/couchdb/eCouchDB/library/couchdb_client.rc -text
