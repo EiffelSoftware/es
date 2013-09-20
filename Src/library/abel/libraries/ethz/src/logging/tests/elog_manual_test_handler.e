@@ -29,7 +29,9 @@ feature {NONE} -- Events
 			else
 				log_file.open_append
 			end
-			create file_logger.make (log_file)
+			check attached log_file as f then
+				create file_logger.make (f)
+			end
 		end
 
 	on_clean

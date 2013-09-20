@@ -37,7 +37,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	internal_traverse
+	internal_traverse (a_root_object: ANY)
 			-- Traverse object structure starting at 'root_object' and call object_action
 			-- on every object in the graph.
 		local
@@ -56,7 +56,7 @@ feature {NONE} -- Implementation
 				create l_visited.make (default_size)
 				create visited_objects.make (default_size)
 				l_objects_to_visit := new_dispenser
-				r := root_object
+				r := a_root_object
 				if r /= Void then
 					l_objects_to_visit.put (create {AD_FIELD}.make ("root", 0, 0, r))
 					l_int.mark (r)
