@@ -3991,7 +3991,6 @@ Src/help/wizards/eweb/pixmaps/Eiffel_wizard_new.bmp -text
 Src/help/wizards/eweb/pixmaps/database_small.bmp -text
 Src/help/wizards/wizard.ico -text
 Src/library/GIF/Clib/gd_lib/gd.lib svneol=native#unset
-Src/library/abel/apps/sample/tutorial/tutorial_project.ecf svneol=native#text/xml
 Src/library/abel/apps/test/dadl_test/app/dadl_test.rc -text
 Src/library/abel/apps/test/dadl_test/app/error_db/dadl_error_db.txt -text
 Src/library/abel/apps/test/dadl_test/app/error_db/general_error_db.txt -text
