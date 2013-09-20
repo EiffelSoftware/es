@@ -4013,18 +4013,6 @@ Src/library/abel/libraries/openehr/src/dadl_syntax/parser/dadl_validator.html -t
 Src/library/abel/libraries/openehr/src/dadl_syntax/parser/parser_errs.txt -text
 Src/library/abel/libraries/openehr/src/object_graph/path/og_path_scanner.l -text
 Src/library/abel/libraries/openehr/src/object_graph/path/og_path_validator.html -text
-Src/library/abel/resources/documentation/includes/backend.png -text svneol=unset#image/png
-Src/library/abel/resources/documentation/includes/backend.xml -text
-Src/library/abel/resources/documentation/includes/dataflow.png -text svneol=unset#image/png
-Src/library/abel/resources/documentation/includes/dataflow.xml -text
-Src/library/abel/resources/documentation/includes/frontend.png -text svneol=unset#image/png
-Src/library/abel/resources/documentation/includes/frontend.xml -text
-Src/library/abel/resources/documentation/technical_documentation/abel_documentation.pdf -text
-Src/library/abel/resources/documentation/technical_documentation/abel_documentation.tex -text
-Src/library/abel/resources/documentation/technical_documentation/lstlang0.sty -text
-Src/library/abel/resources/documentation/tutorial/abel_tutorial.pdf -text svneol=unset#unset
-Src/library/abel/resources/documentation/tutorial/abel_tutorial.tex -text
-Src/library/abel/resources/documentation/tutorial/lstlang0.sty -text
 Src/library/api_wrapper/implementation/unix/Clib/dl-config -text
 Src/library/api_wrapper/license.lic -text
 Src/library/cURL/readme.txt -text
