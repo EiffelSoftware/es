@@ -1,0 +1,12 @@
+Note: ABEL has moved to the EiffelStudio unstable branch:
+
+https://svn.eiffel.com/eiffelstudio/trunk/Src/unstable/library/persistency/abel
+
+All libraries and test suites here are either outdated 
+or there is a better library solving the same task 
+within the eth branch or EiffelStudio itself. 
+This whole directory can be safely removed in the future.
+
+If you have any questions regarding its contents,
+please ask either Roman Schmocker (romans@eiffel.com) or
+Marco Piccioni (marco.piccioni@inf.ethz.ch)
