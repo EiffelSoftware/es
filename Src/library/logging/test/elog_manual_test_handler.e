@@ -24,18 +24,22 @@ feature {NONE} -- Events
 		do
 			create console_logger
 			create log_manager.make
-			if log_file = Void then
-				create log_file.make_open_append ("/tmp/elog_log_file.log")
+			if attached log_file as f then
+				f.open_append
 			else
-				log_file.open_append
+				create log_file.make_open_append ("/tmp/elog_log_file.log")
 			end
-			create file_logger.make (log_file)
+			check attached log_file as f then
+				create file_logger.make (f)
+			end
 		end
 
 	on_clean
 			-- <Precursor>
 		do
-			log_file.close
+			if attached log_file as f then
+				f.close
+			end
 		end
 
 feature -- Test attributes
