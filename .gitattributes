@@ -4316,6 +4316,8 @@ Src/tools/iron/delivery/iron/spec/windows/bin/bzip2.exe -text
 Src/tools/iron/delivery/iron/spec/windows/bin/msys-1.0.dll -text
 Src/tools/iron/delivery/iron/spec/windows/bin/tar.exe -text
 Src/tools/iron/doc/iron.html -text
+Src/tools/iron/server/iron-template/html/iron.js -text
+Src/tools/iron/server/iron-template/html/style.css -text
 Src/tools/iron/server/license.lic -text
 Src/tools/metaconfig/README.txt -text
 Src/tools/parse_benchmark/parse_benchmark.lic -text
