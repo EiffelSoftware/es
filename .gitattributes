@@ -5012,6 +5012,8 @@ Src/tools/iron/delivery/iron/spec/windows/bin/bzip2.exe -text
 Src/tools/iron/delivery/iron/spec/windows/bin/msys-1.0.dll -text
 Src/tools/iron/delivery/iron/spec/windows/bin/tar.exe -text
 Src/tools/iron/doc/iron.html -text
+Src/tools/iron/server/iron-template/html/iron.js -text
+Src/tools/iron/server/iron-template/html/style.css -text
 Src/tools/iron/server/license.lic -text
 Src/tools/metaconfig/README.txt -text
 Src/tools/parse_benchmark/parse_benchmark.lic -text
@@ -5063,6 +5065,44 @@ Src/tools/syntax_updater/syntax_updater.lic -text
 Src/tools/unicode/character_32_property.template -text
 Src/tools/visitor_factory/visitor_factory.lic -text
 Src/unstable/README.txt -text
+Src/unstable/library/persistency/abel/backend_couchdb/backend_couchdb.ecf svneol=native#text/xml
+Src/unstable/library/persistency/abel/connector_mysql/connector_mysql.ecf svneol=native#text/xml
+Src/unstable/library/persistency/abel/connector_sqlite/connector_sqlite.ecf svneol=native#text/xml
+Src/unstable/library/persistency/abel/documentation/includes/backend.png -text svneol=unset#image/png
+Src/unstable/library/persistency/abel/documentation/includes/backend.xml -text
+Src/unstable/library/persistency/abel/documentation/includes/dataflow.png -text svneol=unset#image/png
+Src/unstable/library/persistency/abel/documentation/includes/dataflow.xml -text
+Src/unstable/library/persistency/abel/documentation/includes/frontend.png -text svneol=unset#image/png
+Src/unstable/library/persistency/abel/documentation/includes/frontend.xml -text
+Src/unstable/library/persistency/abel/documentation/technical_documentation/abel_documentation.pdf -text
+Src/unstable/library/persistency/abel/documentation/technical_documentation/abel_documentation.tex -text
+Src/unstable/library/persistency/abel/documentation/technical_documentation/lstlang0.sty -text
+Src/unstable/library/persistency/abel/documentation/tutorial/abel_tutorial.pdf -text svneol=unset#unset
+Src/unstable/library/persistency/abel/documentation/tutorial/abel_tutorial.tex -text
+Src/unstable/library/persistency/abel/documentation/tutorial/lstlang0.sty -text
+Src/unstable/library/persistency/abel/plugin_escher/plugin_escher.ecf svneol=native#text/xml
+Src/unstable/library/persistency/abel/sample/tutorial_api/tutorial_api.ecf svneol=native#text/xml
+Src/unstable/library/persistency/abel/test/eweasel/bin/eiffel_execute -text
+Src/unstable/library/persistency/abel/test/eweasel/bin/eiffel_freeze -text
+Src/unstable/library/persistency/abel/test/eweasel/bin/run_eweasel -text
+Src/unstable/library/persistency/abel/test/eweasel/bin/run_eweasel_catalog -text
+Src/unstable/library/persistency/abel/test/eweasel/bin/run_eweasel_filter -text
+Src/unstable/library/persistency/abel/test/eweasel/bin/run_eweasel_keyword -text
+Src/unstable/library/persistency/abel/test/eweasel/control/catalog -text
+Src/unstable/library/persistency/abel/test/eweasel/control/dotnet_platform -text
+Src/unstable/library/persistency/abel/test/eweasel/control/init -text
+Src/unstable/library/persistency/abel/test/eweasel/control/site_specific -text
+Src/unstable/library/persistency/abel/test/eweasel/control/standard -text
+Src/unstable/library/persistency/abel/test/eweasel/control/unix_platform -text
+Src/unstable/library/persistency/abel/test/eweasel/control/windows_platform -text
+Src/unstable/library/persistency/abel/test/eweasel/output/evol001/Ace -text
+Src/unstable/library/persistency/abel/test/eweasel/output/evol001/output/deserialize_output -text
+Src/unstable/library/persistency/abel/test/eweasel/output/evol001/output/e_compile1 -text
+Src/unstable/library/persistency/abel/test/eweasel/output/evol001/output/e_compile2 -text
+Src/unstable/library/persistency/abel/test/eweasel/output/evol001/output/serialize_output -text
+Src/unstable/library/persistency/abel/test/eweasel/tests/evol001/Ace -text
+Src/unstable/library/persistency/abel/test/eweasel/tests/list001/Ace -text
+Src/unstable/library/persistency/abel/test/readme.txt -text
 Src/unstable/library/persistency/database/sqlite3/README -text
 Src/unstable/library/persistency/database/sqlite3/license.lic -text
 Src/unstable/library/text/encryption/crypto/license.lic -text

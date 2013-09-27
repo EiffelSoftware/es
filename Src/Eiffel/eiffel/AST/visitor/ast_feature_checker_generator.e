@@ -6688,6 +6688,91 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	process_if_expression_as (l_as: IF_EXPRESSION_AS)
+			-- <Precursor>
+		local
+			l_vwbe1: VWBE1
+			l_needs_byte_node: BOOLEAN
+			l_if: IF_EXPRESSION_B
+			l_condition: detachable EXPR_B
+			l_then_expression: detachable EXPR_B
+			l_else_expression: detachable EXPR_B
+			l_list: BYTE_LIST [ELSIF_EXPRESSION_B]
+			s: INTEGER
+			scope_matcher: AST_SCOPE_MATCHER
+			l_expression_type: detachable TYPE_A
+			l_error_level: like error_level
+		do
+			l_error_level := error_level
+			l_needs_byte_node := is_byte_node_enabled
+			break_point_slot_count := break_point_slot_count + 1
+
+				-- Type check the test
+			l_as.condition.process (Current)
+			if last_type /= Void then
+				if l_needs_byte_node and then attached {EXPR_B} last_byte_node as c then
+					l_condition := c
+				end
+
+					-- Check conformance to boolean
+				if not last_type.actual_type.is_boolean then
+					create l_vwbe1
+					context.init_error (l_vwbe1)
+					l_vwbe1.set_type (last_type)
+					l_vwbe1.set_location (l_as.condition.end_location)
+					error_handler.insert_error (l_vwbe1)
+				end
+			end
+
+				-- Type check on expression.
+			context.enter_realm
+			create {AST_SCOPE_CONJUNCTIVE_CONDITION} scope_matcher.make (context)
+			s := context.scope
+			scope_matcher.add_scopes (l_as.condition)
+			l_as.then_expression.process (Current)
+			if attached last_type as e and then l_needs_byte_node and then attached {EXPR_B} last_byte_node as t then
+				l_expression_type := e
+				l_then_expression := t
+			end
+			context.set_scope (s)
+			context.save_sibling
+
+			create {AST_SCOPE_DISJUNCTIVE_CONDITION} scope_matcher.make (context)
+			s := context.scope
+			scope_matcher.add_scopes (l_as.condition)
+			context.update_realm
+
+				-- Type check on alternaltives compounds
+			if attached l_expression_type and then attached l_as.elsif_list as l then
+				create l_list.make (l.count)
+				process_eiffel_list_with_matcher (l, Void, l_list)
+			end
+				-- Type check on default expression.
+			l_as.else_expression.process (Current)
+			if attached last_type as t and then l_needs_byte_node and then attached {EXPR_B} last_byte_node as e then
+				if attached l_expression_type and then not l_expression_type .is_safe_equivalent (t) then
+					error_handler.insert_error (create {VWCE}.make (l_expression_type, t, l_as.else_expression.start_location, context))
+				end
+				l_else_expression := e
+			end
+				-- Even though Else part might be empty,
+				-- we record its void safety information.
+			context.save_sibling
+
+			context.set_scope (s)
+			context.leave_realm
+
+			if attached l_condition and then attached l_then_expression and then attached l_else_expression then
+				create l_if.make (l_condition, l_then_expression, l_list, l_else_expression, l_as.end_keyword)
+				l_if.set_line_number (l_as.condition.start_location.line)
+				last_byte_node := l_if
+			end
+
+			if error_level /= l_error_level then
+				reset_types
+			end
+		end
+
 	process_inspect_as (l_as: INSPECT_AS)
 		local
 			l_vomb1: VOMB1
@@ -7662,6 +7747,67 @@ feature {NONE} -- Implementation
 				l_elsif.set_line_number (l_as.expr.start_location.line)
 				last_byte_node := l_elsif
 			end
+		end
+
+	process_elseif_expression_as (l_as: ELSIF_EXPRESSION_AS)
+		local
+			l_vwbe2: VWBE2
+			l_needs_byte_node: BOOLEAN
+			l_condition: EXPR_B
+			l_expression: EXPR_B
+			l_elsif: ELSIF_EXPRESSION_B
+			s: INTEGER
+			scope_matcher: AST_SCOPE_MATCHER
+			l_expression_type: TYPE_A
+		do
+			break_point_slot_count := break_point_slot_count + 1
+
+			l_needs_byte_node := is_byte_node_enabled
+
+			l_expression_type := last_type
+
+				-- Type check test first
+			l_as.condition.process (Current)
+			if attached last_type then
+					-- Check conformance to boolean
+				if not last_type.actual_type.is_boolean then
+					create l_vwbe2
+					context.init_error (l_vwbe2)
+					l_vwbe2.set_type (last_type)
+					l_vwbe2.set_location (l_as.condition.end_location)
+					error_handler.insert_error (l_vwbe2)
+				elseif l_needs_byte_node and then attached {EXPR_B} last_byte_node as c then
+					l_condition := c
+				end
+			end
+
+				-- Type check on compound
+			create {AST_SCOPE_CONJUNCTIVE_CONDITION} scope_matcher.make (context)
+			s := context.scope
+			scope_matcher.add_scopes (l_as.condition)
+			l_as.expression.process (Current)
+			if attached l_condition and then attached {EXPR_B} last_byte_node as e then
+				if attached l_expression_type and then attached last_type as t and then not l_expression_type .is_safe_equivalent (t) then
+					error_handler.insert_error (create {VWCE}.make (l_expression_type, t, l_as.expression.start_location, context))
+				end
+				l_expression := e
+			end
+			context.set_scope (s)
+			context.save_sibling
+
+				-- Add scopes for the parts that follow this one.
+			create {AST_SCOPE_DISJUNCTIVE_CONDITION} scope_matcher.make (context)
+			scope_matcher.add_scopes (l_as.condition)
+			context.update_realm
+
+			if attached l_condition and then attached l_expression then
+				create l_elsif.make (l_condition, l_expression)
+				l_elsif.set_line_number (l_as.condition.start_location.line)
+				last_byte_node := l_elsif
+			end
+
+				-- Restore `last_type' to the type specified in Then_part.
+			last_type := l_expression_type
 		end
 
 	process_create_as (l_as: CREATE_AS)

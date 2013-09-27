@@ -12,21 +12,12 @@ inherit
 
 feature {NONE} -- Initialization
 
---	make
---		do
---			make_with_layout (create {IRON_LAYOUT}.make_default)
---		end
-
-	make_with_layout (a_layout: like layout)
+	make_with_layout (a_layout: like layout; a_urls: like urls)
 		do
+			urls := a_urls
 			layout := a_layout
 			initialize
 		end
-
---	make_with_path (a_path: PATH)
---		do
---			make_with_layout (create {IRON_LAYOUT}.make_with_path (a_path))
---		end
 
 	initialize
 		do
@@ -35,6 +26,8 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	layout: IRON_LAYOUT
+
+	urls: IRON_URL_BUILDER
 
 feature {NONE} -- Implementation
 
@@ -89,4 +82,5 @@ note
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
+
 end

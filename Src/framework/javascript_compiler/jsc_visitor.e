@@ -286,6 +286,13 @@ feature {BYTE_NODE} -- Visitors
 			safe_process (a_node.expr)
 		end
 
+	process_elsif_expression_b (a_node: ELSIF_EXPRESSION_B)
+			-- Process `a_node'.
+		do
+			safe_process (a_node.condition)
+			safe_process (a_node.expression)
+		end
+
 	process_expr_address_b (a_node: EXPR_ADDRESS_B)
 			-- Process `a_node'.
 		do
@@ -336,6 +343,15 @@ feature {BYTE_NODE} -- Visitors
 			safe_process (a_node.compound)
 			safe_process (a_node.elsif_list)
 			safe_process (a_node.else_part)
+		end
+
+	process_if_expression_b (a_node: IF_EXPRESSION_B)
+			-- Process `a_node'.
+		do
+			safe_process (a_node.condition)
+			safe_process (a_node.then_expression)
+			safe_process (a_node.elsif_list)
+			safe_process (a_node.else_expression)
 		end
 
 	process_inspect_b (a_node: INSPECT_B)
