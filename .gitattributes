@@ -4520,12 +4520,6 @@ eweasel/LICENSING -text
 eweasel/README -text
 eweasel/bin/run_eweasel_keyword -text
 eweasel/bin/set_eweasel_env -text
-eweasel/compilation/README -text
-eweasel/compilation/fix_permission -text
-eweasel/compilation/install_eweasel -text
-eweasel/compilation/install_eweasel.bat -text
-eweasel/compilation/package_eweasel -text
-eweasel/compilation/unfix_permission -text
 eweasel/control/eweasel_gui_config.xml -text
 eweasel/doc/buglist -text
 eweasel/doc/eweasel.doc -text
