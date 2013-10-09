@@ -4323,6 +4323,7 @@ Src/tools/metaconfig/README.txt -text
 Src/tools/parse_benchmark/parse_benchmark.lic -text
 Src/tools/pmsn/pmsn.lic -text
 Src/tools/po_generation_tool/po_generation_tool.lic -text
+Src/tools/process_all/license.lic -text
 Src/tools/quick_finalize/quick_finalize.lic -text
 Src/tools/reg2wix/reg2wix.lic -text
 Src/tools/repository_tool/ctr.exe.manifest -text
