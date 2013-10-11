@@ -9,7 +9,7 @@ class
 
 inherit
 
-	PS_BACKEND
+	PS_BACKEND_COMPATIBILITY
 
 create
 	make, make_with_host_and_port
@@ -23,12 +23,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Supported collection operations
 			-- Can the current backend handle relational collections?
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status report
-
-	can_handle_type (type: PS_TYPE_METADATA): BOOLEAN
-			-- Can the current backend handle objects of type `type'?
-		do
-			Result := True
-		end
 
 	can_handle_relational_collection (owner_type, collection_item_type: PS_TYPE_METADATA): BOOLEAN
 			-- Can the current backend handle the relational collection between the two classes `owner_type' and `collection_type'?
@@ -44,29 +38,29 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
 feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 
-	retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: LIST [STRING]; transaction: PS_TRANSACTION): ITERATION_CURSOR [PS_RETRIEVED_OBJECT]
+	internal_retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: LIST [STRING]; transaction: PS_TRANSACTION): ITERATION_CURSOR [PS_RETRIEVED_OBJECT]
 			-- Retrieves all objects of class `type' (direct instance - not inherited from) that match the criteria in `criteria' within transaction `transaction'.
 			-- If `attributes' is not empty, it will only retrieve the attributes listed there.
 			-- If an attribute was `Void' during an insert, or it doesn't exist in the database because of a version mismatch, the attribute value during retrieval will be an empty string and its class name `NONE'.
 			-- If `type' has a generic parameter, the retrieve function will return objects of all generic instances of the generating class.
 			-- You can find out about the actual generic parameter by comparing the class name associated to a foreign key value.
 		local
-			temp_list: LINKED_LIST [PS_RETRIEVED_OBJECT]
+--			temp_list: LINKED_LIST [PS_RETRIEVED_OBJECT]
 			result_list: LINKED_LIST [PS_RETRIEVED_OBJECT]
 			highest_id, curr_id: INTEGER
-			curr_obj: PS_RETRIEVED_OBJECT
+			curr_obj: detachable PS_RETRIEVED_OBJECT
 		do
 			create result_list.make
-			create temp_list.make
+--			create temp_list.make
 			highest_id := key_set [type.base_class.name]
 			from
 				curr_id := 1
 			until
 				curr_id > highest_id
 			loop
-				temp_list := retrieve_from_single_key (type, curr_id, transaction)
-				if not temp_list.is_empty then
-					curr_obj := temp_list.first
+				curr_obj := internal_retrieve_by_primary (type, curr_id, attributes, transaction)
+				if attached curr_obj then
+--					curr_obj := temp_list.first
 					if criteria.can_handle_object (curr_obj) then
 						if criteria.is_satisfied_by (curr_obj) then
 							result_list.extend (curr_obj)
@@ -78,7 +72,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			Result := result_list.new_cursor
 		end
 
-	retrieve_from_keys (type: PS_TYPE_METADATA; primary_keys: LIST [INTEGER]; transaction: PS_TRANSACTION): LINKED_LIST [PS_RETRIEVED_OBJECT]
+	internal_retrieve_from_keys (type: PS_TYPE_METADATA; primary_keys: LIST [INTEGER]; transaction: PS_TRANSACTION): LINKED_LIST [PS_RETRIEVED_OBJECT]
 			-- Retrieve all objects of type `type' and with primary key in `primary_keys'.
 		local
 			all_items: ITERATION_CURSOR [PS_RETRIEVED_OBJECT]
@@ -88,7 +82,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			err_in_get: BOOLEAN
 		do
 			create Result.make
-			create current_obj.make (0, type.base_class)
+			create current_obj.make (0, type)
 			err_in_get := false
 			across
 				primary_keys as id
@@ -103,9 +97,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 					elseif not err_in_get then
 						if attr.item.first.is_equal ("_id") then
 							if attr.item.second.is_integer then
-								create current_obj.make (attr.item.second.to_integer, type.base_class)
+								create current_obj.make (attr.item.second.to_integer, type)
 							else
-								create current_obj.make (0, type.base_class)
+								create current_obj.make (0, type)
 							end
 						elseif not attr.item.first.starts_with ("_") then
 							current_obj.add_attribute (attr.item.first, attr.item.second, type.attribute_type (attr.item.first).base_class.name)
@@ -297,7 +291,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			check
 				not_implemented: False
 			end
-			create Result.make (collection_primary_key, collection_type.base_class)
+			create Result.make (collection_primary_key, collection_type)
 		end
 
 	insert_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)

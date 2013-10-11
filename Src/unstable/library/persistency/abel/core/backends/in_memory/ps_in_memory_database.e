@@ -9,7 +9,10 @@ class
 
 inherit
 
-	PS_BACKEND
+	PS_BACKEND_COMPATIBILITY
+		redefine
+			update_object_oriented_collection
+		end
 
 	PS_EIFFELSTORE_EXPORT
 
@@ -30,12 +33,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Supported collection operations
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
-	can_handle_type (type: PS_TYPE_METADATA): BOOLEAN
-			-- Can the current backend handle objects of type `type'?
-		do
-			Result := True
-		end
-
 	can_handle_relational_collection (owner_type, collection_item_type: PS_TYPE_METADATA): BOOLEAN
 			-- Can the current backend handle the relational collection between the two classes `owner_type' and `collection_type'?
 		do
@@ -50,7 +47,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
 feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 
-	retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: LIST [STRING]; transaction: PS_TRANSACTION): ITERATION_CURSOR [PS_RETRIEVED_OBJECT]
+	internal_retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: LIST [STRING]; transaction: PS_TRANSACTION): ITERATION_CURSOR [PS_RETRIEVED_OBJECT]
 			-- Retrieves all objects of class `class_name' that match the criteria in `criteria' within transaction `transaction'.
 			-- If `attributes' is not empty, it will only retrieve the attributes listed there.
 		local
@@ -74,11 +71,11 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			Result := load_objects (type, attr, keys).new_cursor
 		end
 
-	retrieve_from_keys (type: PS_TYPE_METADATA; primary_keys: LIST [INTEGER]; transaction: PS_TRANSACTION): LINKED_LIST [PS_RETRIEVED_OBJECT]
+	internal_retrieve_from_keys (type: PS_TYPE_METADATA; primary_keys: LIST [INTEGER]; transaction: PS_TRANSACTION): LINKED_LIST [PS_RETRIEVED_OBJECT]
 			-- Retrieve all objects of type `type' and with primary key in `primary_keys'.
 		do
 				-- Retrieve all keys in primary_keys and with all attributes
-			Result := load_objects (type, type.attributes, primary_keys)
+			Result := load_objects (type, create{LINKED_LIST[STRING]}.make, primary_keys)
 		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
@@ -136,7 +133,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 		local
 			info: HASH_TABLE [STRING, STRING]
 		do
-			create Result.make (collection_primary_key, collection_type.base_class)
+			create Result.make (collection_primary_key, collection_type)
 			across
 				get_ordered_collection (collection_primary_key) as cursor
 			loop
@@ -177,6 +174,17 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 				item_primary := key_mapper.quick_translate (coll_item.item.object_identifier, a_transaction)
 				add_to_collection (primary, coll_item.item.as_attribute (item_primary), a_collection.index_of (coll_item.item))
 			end
+		end
+
+	update_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
+			-- Update `a_collection' in the database.
+		local
+			primary: INTEGER
+		do
+			primary := key_mapper.primary_key_of ( a_collection.object_wrapper, a_transaction).first
+			attach (collections[primary]).wipe_out
+			collection_info.force (a_collection.additional_information, primary)
+			insert_object_oriented_collection (a_collection, a_transaction)
 		end
 
 	delete_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
@@ -270,7 +278,8 @@ feature {PS_EIFFELSTORE_EXPORT} -- Miscellaneous
 feature {NONE} -- Implementation - Loading and storing objects
 
 	load_objects (type: PS_TYPE_METADATA; attributes: LIST [STRING]; keys: LIST [INTEGER]): LINKED_LIST [PS_RETRIEVED_OBJECT]
-			-- Loads all objects of class `type' whose primary key is listed in `keys'. Only loads the attributes listed in `attributes'.
+			-- Loads all objects of class `type' whose primary key is listed in `keys'.
+			-- Only loads the attributes listed in `attributes',or all attributes if the list is empty.
 		local
 			current_obj: PS_RETRIEVED_OBJECT
 			attr_val: PS_PAIR [STRING, STRING]
@@ -280,7 +289,19 @@ feature {NONE} -- Implementation - Loading and storing objects
 				keys as obj_primary
 			loop
 				if has_object (type.base_class.name, obj_primary.item) then
-					create current_obj.make (obj_primary.item, type.base_class)
+					create current_obj.make (obj_primary.item, type)
+
+					if attributes.is_empty then
+						attributes.fill (get_object_as_strings(type.base_class.name, obj_primary.item).current_keys)
+						across type.attributes as cursor
+						from attributes.compare_objects
+						loop
+							if not attributes.has (cursor.item) then
+								attributes.extend (cursor.item)
+							end
+						end
+					end
+
 					across
 						attributes as cursor
 					loop

@@ -169,6 +169,7 @@ feature {NONE} -- Implementation: Build functions for PS_RETRIEVED_* objects
 			field_value: ANY
 			field_val: detachable ANY
 			field_type: PS_TYPE_METADATA
+			field_type_name: STRING
 			keys: LINKED_LIST [INTEGER]
 			referenced_obj: LIST [PS_RETRIEVED_OBJECT]
 			collection_result: PS_RETRIEVED_OBJECT_COLLECTION
@@ -181,21 +182,37 @@ feature {NONE} -- Implementation: Build functions for PS_RETRIEVED_* objects
 				if identify then
 					bookkeeping.extend (Result, obj.primary_key + obj.class_metadata.name.hash_code)
 					id_manager.identify (Result, transaction)
-					backend.key_mapper.add_entry (id_manager.identifier_wrapper (Result, transaction), obj.primary_key, transaction)
+					internal_add_mapping (id_manager.identifier_wrapper (Result, transaction), obj.primary_key, transaction)
 				end
 				across
 					obj.attributes as attr_cursor
 				loop
-						-- Set all the attributes
-						-- See if it is a basic attribute
-					if not try_basic_attribute (Result, obj.attribute_value (attr_cursor.item).value, type.field_index (attr_cursor.item)) then
-							-- If not it is either a referenced object or a collection. In either case, use the `Current.build' function.
-						field_type := type.attribute_type (attr_cursor.item)
-						field_val := build (field_type, obj.attribute_value (attr_cursor.item), transaction, bookkeeping)
-						if attached field_val then
-								--print (reflection.field_name (type.field_index (attr_cursor.item), Result).out + "%N")
-								--print (type.type.out + field_type.type.out + "%N")
-							reflection.set_reference_field (type.field_index (attr_cursor.item), Result, field_val)
+					-- Sometimes there are attributes in the retrieved data which are not present in the actual object,
+					-- e.g. values inserted by plugins. Be tolerant with that.
+
+					if type.has_attribute (attr_cursor.item) then
+							-- Set all the attributes
+							-- See if it is a basic attribute
+						if not try_basic_attribute (Result, obj.attribute_value (attr_cursor.item), type.field_index (attr_cursor.item)) then
+								-- If not it is either a referenced object or a collection. In either case, use the `Current.build' function.
+
+
+							--field_type := type.attribute_type (attr_cursor.item)
+							-- Important: Use type as stored in the database!
+							field_type_name := obj.attribute_value (attr_cursor.item).attribute_class_name
+							if not field_type_name.is_equal ("NONE") then
+								field_type := metadata_manager.create_metadata_from_type (
+									type.reflection.type_of_type (
+										type.reflection.dynamic_type_from_string (field_type_name)))
+
+
+								field_val := build (field_type, obj.attribute_value (attr_cursor.item), transaction, bookkeeping)
+								if attached field_val then
+										--print (reflection.field_name (type.field_index (attr_cursor.item), Result).out + "%N")
+										--print (type.type.out + field_type.type.out + "%N")
+									reflection.set_reference_field (type.field_index (attr_cursor.item), Result, field_val)
+								end
+							end
 						end
 					end
 				end
@@ -223,8 +240,9 @@ feature {NONE} -- Implementation - Build support functions.
 	build (type: PS_TYPE_METADATA; value: PS_PAIR [STRING, STRING]; transaction: PS_TRANSACTION; bookkeeping: HASH_TABLE [ANY, INTEGER]): detachable ANY
 			-- Build an object based on the type.
 		local
-			object_result: LIST [PS_RETRIEVED_OBJECT]
-			collection_result: PS_RETRIEVED_OBJECT_COLLECTION
+			object_result: detachable PS_RETRIEVED_OBJECT
+			collection_result: detachable PS_RETRIEVED_OBJECT_COLLECTION
+			managed: MANAGED_POINTER
 		do
 			if type.is_basic_type then
 					-- Create a basic type
@@ -249,15 +267,23 @@ feature {NONE} -- Implementation - Build support functions.
 				elseif type.type.name.is_equal ("NATURAL_64") then
 					Result := value.first.to_natural_64
 				elseif type.type.name.is_equal ("REAL_32") then
-					Result := value.first.to_real
+--					Result := value.first.to_real
+					create managed.make ({PLATFORM}.real_32_bytes)
+					managed.put_integer_32_be (value.first.to_integer_32, 0)
+					Result := managed.read_real_32_be (0)
 				elseif type.type.name.is_equal ("REAL_64") then
-					Result := value.first.to_double
+--					Result := value.first.to_double
+					create managed.make ({PLATFORM}.real_64_bytes)
+					managed.put_integer_64_be ( value.first.to_integer_64, 0)
+					Result := managed.read_real_64_be (0)
 				elseif type.type.name.is_equal ("BOOLEAN") then
 					Result := value.first.to_boolean
 				elseif type.type.name.is_equal ("CHARACTER_8") then
 					Result := value.first.to_natural_8.to_character_8
 				elseif type.type.name.is_equal ("CHARACTER_32") then
 					Result := value.first.to_natural_32.to_character_32
+				elseif type.type.name.is_equal ("NONE") then
+					Result := Void
 				else
 					check
 						unknown_basic_type: False
@@ -265,16 +291,22 @@ feature {NONE} -- Implementation - Build support functions.
 					Result := 0
 				end
 			elseif has_handler (type) then
-					-- Build a collection
-				collection_result := backend.retrieve_object_oriented_collection (type, value.first.to_integer, transaction)
-				Result := build_object_collection (type, collection_result, get_handler (type), transaction, bookkeeping)
+				if backend.is_generic_collection_supported then
+						-- Build a collection
+					collection_result := backend.retrieve_collection (type, value.first.to_integer, transaction)
+					if attached collection_result then
+						Result := build_object_collection (type, collection_result, get_handler (type), transaction, bookkeeping)
+					end
+				else
+					fixme ("TODO: error")
+					check not_implemented: false end
+				end
 			else
 					-- Build a new object
 				if not value.first.is_empty then
-					fixme ("Retrieve based on dynamic type, stored in value.second")
-					object_result := backend.retrieve_from_single_key (type, value.first.to_integer, transaction)
-					if not object_result.is_empty then
-						Result := build_object (type, object_result.first, transaction, bookkeeping, true)
+					object_result := backend.retrieve_by_primary (type, value.first.to_integer, type.attributes.deep_twin, transaction)
+					if attached object_result then
+						Result := build_object (type, object_result, transaction, bookkeeping, true)
 					end
 				end
 			end
@@ -297,7 +329,7 @@ feature {NONE} -- Implementation - Build support functions.
 			end
 		end
 
-	try_basic_attribute (obj: ANY; value: STRING; index: INTEGER): BOOLEAN
+	try_basic_attribute (obj: ANY; attr: TUPLE[value: STRING; runtime_type: STRING]; index: INTEGER): BOOLEAN
 			-- See if field at `index' is of basic type, and if so, initialize it.
 		local
 			type: INTEGER
@@ -307,16 +339,17 @@ feature {NONE} -- Implementation - Build support functions.
 			create reflection
 			type := reflection.field_type (index, obj)
 			if type /= reflection.reference_type and type /= reflection.pointer_type then -- check if it is a basic type (except strings)
-				set_expanded_attribute (obj, value, index)
+				set_expanded_attribute (obj, attr.value, index)
 				Result := True
 			else
 					-- check if it's a string
-				type_name := reflection.class_name_of_type (reflection.field_static_type_of_type (index, reflection.dynamic_type (obj)))
+--				type_name := reflection.class_name_of_type (reflection.field_static_type_of_type (index, reflection.dynamic_type (obj)))
+				type_name:= attr.runtime_type
 				if type_name.is_case_insensitive_equal ("STRING_32") then
-					reflection.set_reference_field (index, obj, value.to_string_32)
+					reflection.set_reference_field (index, obj, attr.value.to_string_32)
 					Result := True
 				elseif type_name.is_case_insensitive_equal ("STRING_8") then
-					reflection.set_reference_field (index, obj, value.twin)
+					reflection.set_reference_field (index, obj, attr.value.twin)
 					Result := True
 				else
 						-- Not of a basic type - return false
@@ -330,6 +363,7 @@ feature {NONE} -- Implementation - Build support functions.
 		local
 			type: INTEGER
 			reflection: INTERNAL
+			managed: MANAGED_POINTER
 		do
 			create reflection
 			type := reflection.field_type (index, obj)
@@ -351,11 +385,19 @@ feature {NONE} -- Implementation - Build support functions.
 				reflection.set_natural_32_field (index, obj, value.to_natural_32)
 			elseif type = reflection.natural_64_type and value.is_natural_64 then
 				reflection.set_natural_64_field (index, obj, value.to_natural_64)
+
 					-- Reals
-			elseif type = reflection.real_32_type and value.is_real then
-				reflection.set_real_32_field (index, obj, value.to_real)
-			elseif type = reflection.double_type and value.is_double then
-				reflection.set_double_field (index, obj, value.to_double)
+			elseif type = reflection.real_32_type and value.is_integer_32 then
+
+				create managed.make ({PLATFORM}.real_32_bytes)
+				managed.put_integer_32_be (value.to_integer_32, 0)
+				reflection.set_real_32_field (index, obj, managed.read_real_32_be (0))
+
+			elseif type = reflection.double_type and value.is_integer_64 then
+				create managed.make ({PLATFORM}.real_64_bytes)
+				managed.put_integer_64_be ( value.to_integer_64, 0)
+				reflection.set_double_field (index, obj, managed.read_real_64_be (0))
+
 					-- Characters
 			elseif type = reflection.character_8_type and value.is_natural_8 then
 				reflection.set_character_8_field (index, obj, value.to_natural_8.to_character_8)
@@ -399,18 +441,31 @@ feature {NONE} -- Implementation: Collection handlers
 
 feature {NONE} -- Implementation: Query initialization
 
-	initialize_query (query: PS_QUERY [ANY]; attributes: LIST [STRING]; transaction: PS_TRANSACTION)
+	initialize_query (query: PS_QUERY [ANY]; some_attributes: LIST [STRING]; transaction: PS_TRANSACTION)
 			-- Initialize query - Set an identifier, initialize with bookkeeping manager and execute against backend.
 		local
 			results: ITERATION_CURSOR [ANY]
 			bookkeeping_table: HASH_TABLE [ANY, INTEGER]
 			type: PS_TYPE_METADATA
+			attributes: LIST [STRING]
 		do
 			query.set_identifier (new_query_identifier)
 			query.register_as_executed (transaction)
 			type := metadata_manager.create_metadata_from_type (query.generic_type)
+
+			if some_attributes.is_empty then
+				attributes := type.attributes.twin
+			else
+				attributes := some_attributes
+			end
+
 			if has_handler (type) then
-				results := backend.retrieve_all_collections (type, transaction)
+				if backend.is_generic_collection_supported then
+					results := backend.retrieve_all_collections (type, transaction)
+				else
+					fixme ("TODO: error")
+					check not_implemented:false then results := attributes.new_cursor end
+				end
 			else
 				results := backend.retrieve (type, query.criteria, attributes, transaction)
 			end
@@ -445,7 +500,7 @@ feature {NONE} -- Implementation - Core data structures
 
 feature {NONE} -- Initialization
 
-	make (a_backend: PS_BACKEND; an_id_manager: PS_OBJECT_IDENTIFICATION_MANAGER)
+	make (a_backend: PS_READ_ONLY_BACKEND; an_id_manager: PS_OBJECT_IDENTIFICATION_MANAGER; repo: PS_REPOSITORY)
 			-- Initialize `Current'.
 		do
 			backend := a_backend
@@ -454,9 +509,23 @@ feature {NONE} -- Initialization
 			create bookkeeping_manager.make (100)
 			create collection_handlers.make
 			create metadata_manager.make
+			repository := repo
 		end
 
-	backend: PS_BACKEND
+	internal_add_mapping (obj: PS_OBJECT_IDENTIFIER_WRAPPER; primary: INTEGER; transaction: PS_TRANSACTION)
+		do
+			if attached {PS_BACKEND} backend as old_backend then
+				old_backend.add_mapping (obj, primary, transaction)
+			else
+				check attached {PS_SIMPLE_IN_MEMORY_REPOSITORY} repository as repo then
+					repo.mapper.add_entry (obj, primary, transaction)
+				end
+			end
+		end
+
+	repository: PS_REPOSITORY
+
+	backend: PS_READ_ONLY_BACKEND
 			-- The storage backend.
 
 feature {PS_REPOSITORY} -- Initialization - Collection handlers

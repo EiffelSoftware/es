@@ -16,7 +16,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_backend: PS_BACKEND; an_id_manager: PS_OBJECT_IDENTIFICATION_MANAGER)
+	make (a_backend: PS_BACKEND_COMPATIBILITY; an_id_manager: PS_OBJECT_IDENTIFICATION_MANAGER)
 			-- Initialize `Current'.
 		do
 			backend := a_backend
@@ -34,7 +34,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 				Result := True
 			loop
 				if attached {PS_SINGLE_OBJECT_PART} op_cursor.item as obj then
-					Result := Result and backend.can_handle_type (obj.metadata)
+					Result := Result and backend.is_object_type_supported (obj.metadata)
 				elseif attached {PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]} op_cursor.item as coll then
 					Result := Result and backend.can_handle_object_oriented_collection (coll.metadata)
 				elseif attached {PS_RELATIONAL_COLLECTION_PART [ITERABLE [detachable ANY]]} op_cursor.item as coll then
@@ -91,6 +91,8 @@ feature {NONE} -- Implementation
 			identify_all (object_collection, object_collection.values.new_cursor, transaction)
 			if object_collection.write_operation = object_collection.write_operation.insert then
 				backend.insert_object_oriented_collection (object_collection, transaction)
+			elseif object_collection.write_operation = object_collection.write_operation.update then
+				backend.update_object_oriented_collection (object_collection, transaction)
 			elseif object_collection.write_operation = object_collection.write_operation.delete then
 				backend.delete_object_oriented_collection (object_collection, transaction)
 			else
@@ -141,7 +143,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation
 
-	backend: PS_BACKEND
+	backend: PS_BACKEND_COMPATIBILITY
 			-- The backend to execute the operations on.
 
 	id_manager: PS_OBJECT_IDENTIFICATION_MANAGER

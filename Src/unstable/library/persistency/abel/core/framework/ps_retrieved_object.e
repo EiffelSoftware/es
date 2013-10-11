@@ -16,7 +16,7 @@ inherit
 
 	PS_EIFFELSTORE_EXPORT
 
-create {PS_BACKEND}
+create {PS_EIFFELSTORE_EXPORT}
 	make
 
 feature {PS_EIFFELSTORE_EXPORT} -- Access
@@ -24,8 +24,16 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access
 	primary_key: INTEGER
 			-- The retrieved object's primary key, as used in the database.
 
+	metadata: PS_TYPE_METADATA
+			-- The type of the current object
+
 	class_metadata: PS_CLASS_METADATA
 			-- Metadata information about the object.
+		obsolete
+			"use metadata.base_class"
+		do
+			Result := metadata.base_class
+		end
 
 	attributes: LINKED_LIST [STRING]
 			-- The attributes of the object that have been loaded.
@@ -55,7 +63,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 			Result := values.has (attribute_name)
 		end
 
-feature {PS_BACKEND} -- Element change
+feature {PS_EIFFELSTORE_EXPORT} -- Element change
 
 	add_attribute (attribute_name: STRING; value: STRING; class_name_of_value: STRING)
 			-- Add the attribute `attribute_name' with value tuple <`value', `class_name_of_value'>.
@@ -90,18 +98,18 @@ feature {NONE} -- Initialization
 	values: HASH_TABLE [PS_PAIR [STRING, STRING], STRING]
 			-- Maps attribute names to the corresponding value and runtime types.
 
-	make (key: INTEGER; class_data: PS_CLASS_METADATA)
+	make (key: INTEGER; class_data: PS_TYPE_METADATA)
 			-- Initialization for `Current'.
 		do
 			primary_key := key
-			class_metadata := class_data
+			metadata := class_data
 			create values.make (10)
 			create attributes.make
 			attributes.compare_objects
 		ensure
 			attributes_empty: attributes.is_empty
 			key_set: primary_key = key
-			metadata_set: class_metadata.is_equal (class_data)
+			metadata_set: metadata.is_equal (class_data)
 		end
 
 invariant

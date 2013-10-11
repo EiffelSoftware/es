@@ -92,7 +92,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Utilities
 			-- The value and type of `Current' as an attribute to other objects.
 		do
 			if not is_representing_object then
-				Result := ["0", "NONE"]
+				Result := ["", "NONE"]
 			elseif is_basic_attribute then
 				Result := [basic_attribute_value, metadata.base_class.name]
 			else
@@ -140,6 +140,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access: Cursor
 
 	new_cursor: PS_OBJECT_GRAPH_CURSOR
 			-- Create a new cursor over the current object graph.
+		do
+			create Result.make (Current)
+		end
+
+	new_smart_cursor: PS_SMART_OBJECT_GRAPH_CURSOR
+			-- Create a new cursor returning only objects of type COMPLEX_PART and write_operation other than `no_operation'
 		do
 			create Result.make (Current)
 		end

@@ -14,9 +14,14 @@ inherit
 			on_prepare
 		end
 
+	PS_EIFFELSTORE_EXPORT
+		undefine
+			default_create
+		end
+
 feature
 
-	schema_evolution_test_add_attribute
+	escher_add_attribute
 			-- Test if added attribute is handled correctly
 		local
 			query: PS_OBJECT_QUERY [ESCHER_TEST_CLASS_2]
@@ -31,7 +36,7 @@ feature
 			end
 		end
 
-	schema_evolution_test_change_attribute_type
+	escher_change_attribute_type
 			-- Test if attribute type change is handled correctly
 		local
 			query: PS_OBJECT_QUERY [ESCHER_TEST_CLASS_2]
@@ -46,7 +51,7 @@ feature
 			end
 		end
 
-	schema_evolution_test_change_attribute_name
+	escher_change_attribute_name
 			-- Test if attribute name change is handled correctly
 		local
 			query: PS_OBJECT_QUERY [ESCHER_TEST_CLASS_2]
@@ -61,7 +66,7 @@ feature
 			end
 		end
 
-	schema_evolution_test_remove_attribute
+	escher_remove_attribute
 			-- Test if removed attribute is handled correctly
 		local
 			query: PS_OBJECT_QUERY [ESCHER_TEST_CLASS_2]
@@ -76,7 +81,7 @@ feature
 			end
 		end
 
-	schema_evolution_test_multiple_changes
+	escher_multiple_changes
 			-- Test whether multiple changes are handled correctly
 			-- Uses 'v4_to_v5' from APPLICATION_SCHEMA_EVOLUTION_HANDLER
 		local
@@ -97,7 +102,7 @@ feature
 			end
 		end
 
-	test_normal_operation
+	escher_normal_operation
 			-- Test if no version mismatch gets handled correctly
 		local
 			query: PS_OBJECT_QUERY [ESCHER_TEST_CLASS]
@@ -108,7 +113,7 @@ feature
 			executor.execute_query (query)
 		end
 
---	test_version_mismatch
+--	escher_version_mismatch
 --			-- Test the ESCHER version checking by simulating a version mismatch.
 --		local
 --			query: PS_OBJECT_QUERY [ESCHER_TEST_CLASS]
@@ -132,7 +137,8 @@ feature {NONE}
 
 	test_data: PS_TEST_DATA
 
-	escher_integration: PS_VERSION_HANDLER
+--	escher_integration: PS_VERSION_HANDLER
+	escher_integration: PS_VERSIONING_PLUGIN
 
 	schema_evolution_manager: SCHEMA_EVOLUTION_PROJECT_MANAGER
 
@@ -141,14 +147,21 @@ feature {NONE}
 		local
 			real_backend: PS_IN_MEMORY_DATABASE
 			repo: PS_RELATIONAL_REPOSITORY
+			repo2: PS_SIMPLE_IN_MEMORY_REPOSITORY
 		do
-			create real_backend.make
-			create schema_evolution_manager.make
-			-- create escher_integration.make (real_backend)
-			create escher_integration.make (real_backend, schema_evolution_manager.schema_evolution_handler)
-			create repo.make (escher_integration)
-			create executor.make (repo)
 			create test_data.make
+			create schema_evolution_manager.make
+			create escher_integration.make (schema_evolution_manager.schema_evolution_handler)
+
+--			create real_backend.make
+--			real_backend.add_plug_in (escher_integration)
+--			create {PS_RELATIONAL_REPOSITORY}repo.make (real_backend)
+--			create executor.make (repo)
+
+			create repo2
+			repo2.backend.add_plug_in (escher_integration)
+			create executor.make (repo2)
+
 		end
 
 end

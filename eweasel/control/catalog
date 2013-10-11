@@ -2295,6 +2295,8 @@ test	validity-vuex2-in-multibranch	vuex201  tcf pass validity vuex
 
 test	bracket-expression-on-current	vwbr101  tcf pass validity vwbr anchored_type
 
+test	validity-vwce-basic		vwce001  tcf pass validity vwce conditional expression
+
 test	validity-vwmq-string-conversion	vwmq001  tcf pass vaildity vwmq
 
 -- Systematic Lace validity tests
@@ -2655,6 +2657,9 @@ test	targeted-nested-current-access		attach104 tcf pass void_safe targeted valid
 test	initialization-in-postcondition		attach105 tcf pass attached_types void_safe generic scope validity
 test	object-test-local-use-error		attach106 tcf pass object_test scope validity
 test	uninitialized-without-current		attach107 tcf pass void_safe attribute validity
+test	object-test-local-in-implication	attach108 tcf pass void_safe object_test local scope validity
+test	object-test-local-in-conditional        attach109 tcf pass void_safe object_test local scope conditional expression
+test	initialization-in-conditional		attach110 tcf pass void_safe attached_types attribute scope validity conditional expression
 
 -- Tests for conformance in general
 test	basic-conformance		conform001 tcf pass conformance
@@ -2776,12 +2781,14 @@ test	scoop-expanded-class-constrained-generic	scoop023 tcf fail scoop terminatio
 test	scoop-multi-dot-call-chain			scoop024 tcf pass scoop execution multithreaded
 test	scoop-expanded-separate				scoop025 tcf pass scoop expanded execution multithreaded
 test	scoop-unnested-logging				scoop026 tcf pass scoop execution multithreaded
-test	scoop-lock-passing-on-separate-creation		scoop027 tcf pass scoop execution multithreaded
+test	scoop-lock-passing-on-separate-creation		scoop027 tcf pass scoop lock_passing execution multithreaded
 test	scoop-sequential-processor-creation		scoop028 tcf pass scoop execution multithreaded
 test	scoop-recursive-processor-creation		scoop029 tcf pass scoop execution multithreaded
 test	scoop-agent-validity				scoop030 tcf pass scoop validity expanded agents conformance multithreaded
 test	scoop-agent-call				scoop031 tcf pass scoop agents execution multithreaded
 test	scoop-corrupted-string			scoop032 tcf pass scoop execution multithreaded
+test	scoop-lock-passing-same-target	scoop033 tcf pass scoop lock_passing execution multithreaded
+test	scoop-corrupted-polymorphic-call scoop034 tcf pass scoop execution multithreaded
 
 -- Prettify
 test	pretty-smoke-test			pretty001 tcf pass pretty

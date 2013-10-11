@@ -37,6 +37,8 @@ feature -- Access
 
 	base_class: PS_CLASS_METADATA
 			-- The class of which `Current' type is an instance of.
+		obsolete
+			"Don't use classnames any more for generic types. Instead treat e.g. LINKED_LIST[STRING] and LINKED_LIST[ANY] as completely different classes"
 		once ("OBJECT")
 			create Result.make (Current, factory)
 		end
@@ -53,7 +55,9 @@ feature -- Status report
 	is_basic_type: BOOLEAN
 			-- Is `Current' of an ABEL basic type (STRING or expanded types)?
 		do
-			Result := type.is_expanded or reflection.type_conforms_to (type.type_id, reflection.dynamic_type_from_string ("READABLE_STRING_GENERAL"))
+			Result := type.is_expanded
+				--or reflection.type_conforms_to (type.type_id, reflection.dynamic_type_from_string ("READABLE_STRING_GENERAL"))
+				or type.is_equal ({detachable STRING_8}) or type.is_equal ({detachable STRING_32}) or type.is_conforming_to ({detachable IMMUTABLE_STRING_GENERAL})
 		end
 
 	is_generic_derivation: BOOLEAN

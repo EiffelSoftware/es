@@ -85,9 +85,11 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 		do
 			id_manager.register_transaction (transaction)
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).insert, agent id_manager.is_identified(?, transaction))
-			planner.set_object_graph (disassembler.object_graph)
-			planner.generate_plan
-			executor.perform_operations (planner.operation_plan, transaction)
+			identify_all (disassembler.object_graph, transaction)
+			backend.write (disassembler.object_graph, transaction)
+--			planner.set_object_graph (disassembler.object_graph)
+--			planner.generate_plan
+--			executor.perform_operations (planner.operation_plan, transaction)
 		rescue
 			default_transactional_rescue (transaction)
 		end
@@ -97,9 +99,11 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 		do
 			id_manager.register_transaction (transaction)
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).update, agent id_manager.is_identified(?, transaction))
-			planner.set_object_graph (disassembler.object_graph)
-			planner.generate_plan
-			executor.perform_operations (planner.operation_plan, transaction)
+			identify_all (disassembler.object_graph, transaction)
+			backend.write (disassembler.object_graph, transaction)
+--			planner.set_object_graph (disassembler.object_graph)
+--			planner.generate_plan
+--			executor.perform_operations (planner.operation_plan, transaction)
 		rescue
 			default_transactional_rescue (transaction)
 		end
@@ -109,9 +113,11 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 		do
 			id_manager.register_transaction (transaction)
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).delete, agent id_manager.is_identified(?, transaction))
+			identify_all (disassembler.object_graph, transaction)
+			backend.write (disassembler.object_graph, transaction)
 			planner.set_object_graph (disassembler.object_graph)
 			planner.generate_plan
-			executor.perform_operations (planner.operation_plan, transaction)
+--			executor.perform_operations (planner.operation_plan, transaction)
 			across
 				planner.operation_plan as op
 			loop
@@ -168,12 +174,20 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status Report
 			-- Can `Current' handle the object `object'?
 		local
 			new_transaction: PS_TRANSACTION
+			executor: PS_WRITE_EXECUTOR
 		do
-			create new_transaction.make_readonly (Current)
-			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).insert, agent id_manager.is_identified(?, new_transaction))
-			planner.set_object_graph (disassembler.object_graph)
-			planner.generate_plan
-			Result := executor.can_backend_handle_operations (planner.operation_plan)
+			fixme ("TODO: implement a similar query in new backend interface")
+			if attached {PS_BACKEND_COMPATIBILITY} backend as b then
+				create executor.make (b, id_manager)
+				create new_transaction.make_readonly (Current)
+				disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).insert, agent id_manager.is_identified(?, new_transaction))
+				planner.set_object_graph (disassembler.object_graph)
+				planner.generate_plan
+				Result := executor.can_backend_handle_operations (planner.operation_plan)
+			else
+				Result := True
+			end
+
 		end
 
 feature {NONE} -- Initialization
@@ -188,8 +202,8 @@ feature {NONE} -- Initialization
 			create id_manager.make
 			create planner.make
 			create disassembler.make (id_manager.metadata_manager, default_object_graph)
-			create executor.make (backend, id_manager)
-			create retriever.make (backend, id_manager)
+--			create executor.make (backend, id_manager)
+			create retriever.make (backend, id_manager, Current)
 			create collection_handlers.make
 		end
 
@@ -205,13 +219,39 @@ feature -- Initialization
 
 feature {PS_EIFFELSTORE_EXPORT} -- Implementation
 
+	identify_all (object_graph: PS_OBJECT_GRAPH_ROOT; transaction: PS_TRANSACTION)
+			-- Add an identifier wrapper to all objects in the graph
+		do
+--			across object_graph as cursor
+--			from cursor.ignore_no_operation
+--			loop
+--				if attached {PS_COMPLEX_PART} cursor.item as part and then not part.is_identified then
+--					check part.write_operation /= part.write_operation.no_operation end
+--					if not id_manager.is_identified (part.represented_object, transaction) then
+--						id_manager.identify (part.represented_object, transaction)
+--					end
+--					part.set_object_wrapper (id_manager.identifier_wrapper (part.represented_object, transaction))
+--				end
+--			end
+--			across id_manager.global_set.current_items as cursor loop print (cursor.item.at (2)) print (", ") end print ("%N")
+			across object_graph as cursor
+			loop
+				if attached {PS_COMPLEX_PART} cursor.item as item and then not item.is_identified then
+					if not id_manager.is_identified (item.represented_object, transaction) then
+						id_manager.identify (item.represented_object, transaction)
+					end
+					item.set_object_wrapper (id_manager.identifier_wrapper (item.represented_object, transaction))
+				end
+			end
+		end
+
 	disassembler: PS_OBJECT_GRAPH_BUILDER
 			-- An object graph builder to create explicit object graphs.
 
 	planner: PS_WRITE_PLANNER
 			-- A write planner to generate an operation plan from an object graph.
 
-	executor: PS_WRITE_EXECUTOR
+--	executor: PS_WRITE_EXECUTOR
 			-- An executor to execute operations in an operation plan
 
 	backend: PS_BACKEND

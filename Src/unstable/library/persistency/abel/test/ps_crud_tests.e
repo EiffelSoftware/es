@@ -105,7 +105,8 @@ feature {PS_REPOSITORY_TESTS} -- Flat objects
 			test: PS_GENERIC_CRUD_TEST [FLAT_CLASS_1]
 		do
 			create test.make (repository)
-			test.test_insert_special_equality (test_data.flat_class, agent {FLAT_CLASS_1}.is_almost_equal(?, 0.00001))
+--			test.test_insert_special_equality (test_data.flat_class, agent {FLAT_CLASS_1}.is_almost_equal(?, 0.00001))
+			test.test_insert (test_data.flat_class)
 			repository.clean_db_for_testing
 		end
 
@@ -115,15 +116,17 @@ feature {PS_REPOSITORY_TESTS} -- Flat objects
 			test: PS_GENERIC_CRUD_TEST [FLAT_CLASS_1]
 		do
 			create test.make (repository)
-			test.test_crud_operations_special_equality (test_data.flat_class, agent {FLAT_CLASS_1}.update, agent {FLAT_CLASS_1}.is_almost_equal(?, 0.00001))
+--			test.test_crud_operations_special_equality (test_data.flat_class, agent {FLAT_CLASS_1}.update, agent {FLAT_CLASS_1}.is_almost_equal(?, 0.00001))
+			test.test_crud_operations (test_data.flat_class, agent {FLAT_CLASS_1}.update)
 			repository.clean_db_for_testing
 		end
 
 feature {PS_REPOSITORY_TESTS} -- Collections
 
-	all_collection_tests
+	all_easy_collection_tests
 			-- All collection tests
 		do
+			repository.clean_db_for_testing
 			test_referenced_collection_store
 			test_referenced_collection_update_known_object
 			test_referenced_collection_new_object
@@ -131,8 +134,16 @@ feature {PS_REPOSITORY_TESTS} -- Collections
 			test_direct_collection_update_known_object
 			test_direct_collection_new_object
 			test_collection_basic_type_store
-				--test_data_structures_store
-				--test_update_on_reference
+			test_shared_special
+--			takes too long, but should work.
+--			test_data_structures_store
+--			test_update_on_reference
+		end
+
+	all_tricky_collection_tests
+		do
+			test_tuple
+			test_hash_table
 		end
 
 	test_referenced_collection_store
@@ -227,27 +238,210 @@ feature {PS_REPOSITORY_TESTS} -- Collections
 			query: PS_OBJECT_QUERY [DATA_STRUCTURES_CLASS_1]
 			retrieved: DATA_STRUCTURES_CLASS_1
 			testdata_copy: DATA_STRUCTURES_CLASS_1
+
+			test: PS_GENERIC_CRUD_TEST[DATA_STRUCTURES_CLASS_1]
 		do
 			repository.clean_db_for_testing
+			repository.default_object_graph.set_update_depth (repository.default_object_graph.object_graph_depth_infinite)
+
+			create test.make (repository)
+			test.test_crud_operations (
+				test_data.data_structures_1,
+				agent (retrieved_obj: DATA_STRUCTURES_CLASS_1)
+					do
+						retrieved_obj.array_1[1].update
+					end
+			)
+			repository.default_object_graph.set_update_depth (1)
+
+--			create query.make
+--			executor.execute_insert (test_data.data_structures_1)
+--			executor.execute_query (query)
+--			assert ("The query doesn't return a result", not query.result_cursor.after)
+--			retrieved := query.result_cursor.item
+--			assert ("The results are not equal", retrieved.is_deep_equal (test_data.data_structures_1))
+--				-- perform update
+--			retrieved.array_1 [1].update
+--			executor.execute_update (retrieved.array_1 [1])
+--				-- check if update worked
+--			create query.make
+--			executor.execute_query (query)
+--			assert ("The query doesn't return a result", not query.result_cursor.after)
+--			retrieved := query.result_cursor.item
+--			assert ("The results are equal", not retrieved.is_deep_equal (test_data.data_structures_1))
+--				-- check that only the updated part really is different
+--			testdata_copy := test_data.data_structures_1.deep_twin
+--			testdata_copy.array_1 [1].update
+--			assert ("There was more than just one update", retrieved.is_deep_equal (testdata_copy))
+			repository.clean_db_for_testing
+		end
+
+	test_shared_special
+			-- test if an update on a shared special instance works
+		local
+			a,b: SHARED_SPECIAL
+			special: SPECIAL[INTEGER]
+			query: PS_OBJECT_QUERY[SHARED_SPECIAL]
+			query2: PS_OBJECT_QUERY[SPECIAL[INTEGER]]
+		do
+			repository.clean_db_for_testing
+			create special.make_filled (0, 2)
+			create a.make(special)
+			create b.make(special)
+
+			executor.execute_insert (a)
+			executor.execute_insert (b)
+
+			special[0] := 1
+			executor.execute_update (special)
+
 			create query.make
-			executor.execute_insert (test_data.data_structures_1)
 			executor.execute_query (query)
-			assert ("The query doesn't return a result", not query.result_cursor.after)
-			retrieved := query.result_cursor.item
-			assert ("The results are not equal", retrieved.is_deep_equal (test_data.data_structures_1))
-				-- perform update
-			retrieved.array_1 [1].update
-			executor.execute_update (retrieved.array_1 [1])
-				-- check if update worked
-			create query.make
-			executor.execute_query (query)
-			assert ("The query doesn't return a result", not query.result_cursor.after)
-			retrieved := query.result_cursor.item
-			assert ("The results are equal", not retrieved.is_deep_equal (test_data.data_structures_1))
-				-- check that only the updated part really is different
-			testdata_copy := test_data.data_structures_1.deep_twin
-			testdata_copy.array_1 [1].update
-			assert ("There was more than just one update", retrieved.is_deep_equal (testdata_copy))
+			assert ("no result", not query.result_cursor.after)
+			across query as c loop
+				assert ("not void", attached c.item.special)
+				assert ("equal", c.item.is_deep_equal (a) and c.item.is_deep_equal (b))
+			end
+
+--			create query2.make
+--			executor.execute_query (query2)
+--			assert ("returned_special", not query2.result_cursor.after and then query2.result_cursor.item.is_deep_equal (special))
+--			query2.result_cursor.forth
+--			assert ("too many special objects", query2.result_cursor.after)
+
+		end
+
+		test_tuple
+				-- Test a tuple store
+			local
+				box: ANY_BOX
+				test: PS_GENERIC_CRUD_TEST[ANY_BOX]
+			do
+				repository.clean_db_for_testing
+				create box.set_item ([create {FLAT_CLASS_1}.make, 42, "abc"])
+				create test.make (repository)
+				test.test_crud_operations (box,
+					agent (b: ANY_BOX)
+					do
+						check attached {TUPLE} b.item as t and then attached {FLAT_CLASS_1} t[1] as fc then
+							fc.update
+						end
+					end )
+			end
+
+		test_hash_table
+				-- Test a tuple store
+			local
+				box: ANY_BOX
+				hash: HASH_TABLE[FLAT_CLASS_1, STRING]
+				test: PS_GENERIC_CRUD_TEST[ANY_BOX]
+			do
+				repository.clean_db_for_testing
+				create hash.make (10)
+				hash.extend (test_data.flat_class.twin, "something")
+				create box.set_item (hash)
+				create test.make (repository)
+				test.test_crud_operations (box,
+					agent (b: ANY_BOX)
+					do
+						check attached {HASH_TABLE[FLAT_CLASS_1, STRING]} b.item as h and then attached {FLAT_CLASS_1} h["something"] as fc then
+							fc.update
+						end
+					end )
+			end
+
+
+feature {PS_REPOSITORY_TESTS} -- Polymorphism
+
+	all_polymorphism_tests
+		do
+			test_no_polymorphism
+			test_basic_polymorphism
+			test_expanded_object
+			test_generic_object
+			test_referenced_list
+			test_subtype_of_string
+		end
+
+	test_no_polymorphism
+			-- A normal test with ANY_BOX not involving polymorphism
+		local
+			link: ANY_BOX
+			test: PS_GENERIC_CRUD_TEST[ANY_BOX]
+		do
+			create link.set_item (create {ANY}.default_create)
+			create test.make (repository)
+			test.test_insert (link)
+			repository.clean_db_for_testing
+		end
+
+
+	test_basic_polymorphism
+			-- A test with an ANY_BOX, and a PERSON attached at runtime
+		local
+			link: ANY_BOX
+			test: PS_GENERIC_CRUD_TEST[ANY_BOX]
+		do
+			create link.set_item (test_data.people.first)
+			create test.make (repository)
+			test.test_insert (link) -- BUG: at the moment ANY_BOX.item is Void during retrieval
+			repository.clean_db_for_testing
+		end
+
+	test_expanded_object
+			-- A test with ANY_BOX and an INTEGER attached at runtime
+		local
+			link: ANY_BOX
+			test: PS_GENERIC_CRUD_TEST[ANY_BOX]
+		do
+			create link.set_item (3)
+			create test.make (repository)
+			test.test_insert (link) -- BUG: at the moment ANY_BOX.item is Void during retrieval
+			repository.clean_db_for_testing
+		end
+
+	test_generic_object
+			-- Test a store with a generic object
+		local
+			list: LINKED_LIST[ANY]
+			test: PS_GENERIC_CRUD_TEST[LINKED_LIST[ANY]]
+		do
+			create list.make
+			list.fill (test_data.people)
+			create test.make (repository)
+			test.test_insert (list) -- BUG: the elements don't get loaded.
+			repository.clean_db_for_testing
+		end
+
+	test_referenced_list
+			-- Test when an attribute has declared type LINKED_LIST[ANY] but dynamic type LINKED_LIST[PERSON]
+		local
+			box: ANY_LIST_BOX
+			list: LINKED_LIST[PERSON]
+			test: PS_GENERIC_CRUD_TEST[ANY_LIST_BOX]
+		do
+			create list.make
+			list.fill (test_data.people)
+			create box.set_items (list)
+			create test.make (repository)
+			test.test_insert (box) -- BUG: the list within box gets initialized as LINKED_LIST[ANY], and the list is empty.
+			repository.clean_db_for_testing
+		end
+
+	test_subtype_of_string
+			-- Check if the correct runtime type gets generated
+		local
+			first, last: FILE_NAME
+			person: PERSON
+			test: PS_GENERIC_CRUD_TEST[PERSON]
+		do
+			create first.make_from_string ("some")
+			create last.make_from_string ("string")
+			create person.make (first, last, 0)
+			create test.make (repository)
+
+			test.test_insert (person) -- BUG: instead of creating FILE_NAME objects, a STRING object is created.
+			test.test_crud_operations (person, agent (p:PERSON) do p.add_item end)
 			repository.clean_db_for_testing
 		end
 

@@ -160,6 +160,7 @@ feature {PS_OBJECT_GRAPH_PART} -- Disassembly: Factory methods
 			else
 					-- We found a Void reference - Ignore it.
 				create {PS_IGNORE_PART} Result.default_make (object_graph)
+--				create {PS_NULL_REFERENCE_PART} Result.default_make (object_graph)
 			end
 		end
 
@@ -184,7 +185,10 @@ feature {NONE} -- Internal: Status report
 	is_basic_type (object: ANY): BOOLEAN
 			-- Is `object' of a basic type?
 		do
-			Result := attached {NUMERIC} object or attached {BOOLEAN} object or attached {CHARACTER_8} object or attached {CHARACTER_32} object or attached {READABLE_STRING_GENERAL} object
+			Result := attached {NUMERIC} object or attached {BOOLEAN} object or attached {CHARACTER_8} object or attached {CHARACTER_32} object
+				--or attached {READABLE_STRING_GENERAL} object
+				or object.generating_type.is_equal ({detachable STRING_8}) or object.generating_type.is_equal ({detachable STRING_32})
+				or object.generating_type.is_conforming_to ({detachable IMMUTABLE_STRING_GENERAL})
 		end
 
 feature {NONE} -- Internal: Access

@@ -5019,6 +5019,7 @@ Src/tools/metaconfig/README.txt -text
 Src/tools/parse_benchmark/parse_benchmark.lic -text
 Src/tools/pmsn/pmsn.lic -text
 Src/tools/po_generation_tool/po_generation_tool.lic -text
+Src/tools/process_all/license.lic -text
 Src/tools/quick_finalize/quick_finalize.lic -text
 Src/tools/reg2wix/reg2wix.lic -text
 Src/tools/repository_tool/ctr.exe.manifest -text
@@ -5216,12 +5217,6 @@ eweasel/LICENSING -text
 eweasel/README -text
 eweasel/bin/run_eweasel_keyword -text
 eweasel/bin/set_eweasel_env -text
-eweasel/compilation/README -text
-eweasel/compilation/fix_permission -text
-eweasel/compilation/install_eweasel -text
-eweasel/compilation/install_eweasel.bat -text
-eweasel/compilation/package_eweasel -text
-eweasel/compilation/unfix_permission -text
 eweasel/control/eweasel_gui_config.xml -text
 eweasel/doc/buglist -text
 eweasel/doc/eweasel.doc -text

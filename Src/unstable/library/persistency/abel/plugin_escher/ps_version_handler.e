@@ -9,7 +9,7 @@ class
 
 inherit
 
-	PS_BACKEND
+	PS_BACKEND_COMPATIBILITY
 		redefine
 			key_mapper
 		end
@@ -23,7 +23,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (real: PS_BACKEND; schema_evolution_handlers: HASH_TABLE[SCHEMA_EVOLUTION_HANDLER,STRING])
+	make (real: PS_BACKEND_COMPATIBILITY; schema_evolution_handlers: HASH_TABLE[SCHEMA_EVOLUTION_HANDLER,STRING])
 			-- Initialization for `Current'.
 		local
 			factory: PS_METADATA_FACTORY
@@ -35,7 +35,7 @@ feature {NONE} -- Initialization
 			schema_evolution_handlers_table := schema_evolution_handlers
 		end
 
-	real_backend: PS_BACKEND
+	real_backend: PS_BACKEND_COMPATIBILITY
 			-- The actual backend used for storage
 
 	integer_metadata: PS_TYPE_METADATA
@@ -60,12 +60,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Supported collection operations
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
-	can_handle_type (type: PS_TYPE_METADATA): BOOLEAN
-			-- Can the current backend handle objects of type `type'?
-		do
-			Result := real_backend.can_handle_type (type)
-		end
-
 	can_handle_relational_collection (owner_type, collection_item_type: PS_TYPE_METADATA): BOOLEAN
 			-- Can the current backend handle the relational collection between the two classes `owner_type' and `collection_type'?
 		do
@@ -80,7 +74,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
 feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 
-	retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: LIST [STRING]; transaction: PS_TRANSACTION): ITERATION_CURSOR [PS_RETRIEVED_OBJECT]
+	internal_retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: LIST [STRING]; transaction: PS_TRANSACTION): ITERATION_CURSOR [PS_RETRIEVED_OBJECT]
 			-- Retrieves all objects of class `type' (direct instance - not inherited from) that match the criteria in `criteria' within transaction `transaction'.
 			-- If `attributes' is not empty, it will only retrieve the attributes listed there.
 			-- If an attribute was `Void' during an insert, or it doesn't exist in the database because of a version mismatch, the attribute value during retrieval will be an empty string and its class name `NONE'.
@@ -227,7 +221,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			end
 		end
 
-	retrieve_from_keys (type: PS_TYPE_METADATA; primary_keys: LIST [INTEGER]; transaction: PS_TRANSACTION): LINKED_LIST [PS_RETRIEVED_OBJECT]
+	internal_retrieve_from_keys (type: PS_TYPE_METADATA; primary_keys: LIST [INTEGER]; transaction: PS_TRANSACTION): LINKED_LIST [PS_RETRIEVED_OBJECT]
 			-- Retrieve all objects of type `type' and with primary key in `primary_keys'.
 		local
 			reflection: INTERNAL

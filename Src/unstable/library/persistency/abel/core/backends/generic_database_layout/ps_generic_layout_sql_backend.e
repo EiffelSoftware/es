@@ -9,7 +9,7 @@ class
 
 inherit
 
-	PS_BACKEND
+	PS_BACKEND_COMPATIBILITY
 
 create
 	make
@@ -23,12 +23,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Supported collection operations
 			-- Can the current backend handle relational collections?
 
 feature {PS_EIFFELSTORE_EXPORT} -- Status report
-
-	can_handle_type (type: PS_TYPE_METADATA): BOOLEAN
-			-- Can the current backend handle objects of type `type'?
-		do
-			Result := True
-		end
 
 	can_handle_relational_collection (owner_type, collection_item_type: PS_TYPE_METADATA): BOOLEAN
 			-- Can the current backend handle the relational collection between the two classes `owner_type' and `collection_type'?
@@ -44,7 +38,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
 feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 
-	retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: LIST [STRING]; transaction: PS_TRANSACTION): ITERATION_CURSOR [PS_RETRIEVED_OBJECT]
+	internal_retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: LIST [STRING]; transaction: PS_TRANSACTION): ITERATION_CURSOR [PS_RETRIEVED_OBJECT]
 			-- Retrieves all objects of type `type' (direct instance - not inherited from) that match the criteria in `criteria' within transaction `transaction'.
 			-- If `attributes' is not empty, it will only retrieve the attributes listed there.
 			-- If an attribute was `Void' during an insert, or it doesn't exist in the database because of a version mismatch, the attribute value during retrieval will be an empty string and its class name `NONE'.
@@ -71,7 +65,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 				row_cursor.after
 			loop
 					-- create new object
-				create current_obj.make (row_cursor.item.at (SQL_Strings.Value_table_id_column).to_integer, type.base_class)
+				create current_obj.make (row_cursor.item.at (SQL_Strings.Value_table_id_column).to_integer, type)
 					-- fill all attributes - The result is ordered by the object id, therefore the attributes of a single object are grouped together.
 				from
 				until
@@ -102,7 +96,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			rollback (transaction)
 		end
 
-	retrieve_from_keys (type: PS_TYPE_METADATA; primary_keys: LIST [INTEGER]; transaction: PS_TRANSACTION): LINKED_LIST [PS_RETRIEVED_OBJECT]
+	internal_retrieve_from_keys (type: PS_TYPE_METADATA; primary_keys: LIST [INTEGER]; transaction: PS_TRANSACTION): LINKED_LIST [PS_RETRIEVED_OBJECT]
 			-- Retrieve all objects of type `type' and with primary key in `primary_keys'.
 		local
 			all_items: ITERATION_CURSOR [PS_RETRIEVED_OBJECT]
@@ -191,7 +185,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			check
 				not_implemented: False
 			end
-			create Result.make (collection_primary_key, collection_type.base_class)
+			create Result.make (collection_primary_key, collection_type)
 		end
 
 	insert_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
