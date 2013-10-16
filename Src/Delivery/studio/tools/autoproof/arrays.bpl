@@ -61,12 +61,30 @@ procedure ARRAY.make_filled<alpha>(
 	modifies Heap;
 	ensures (forall<beta> o: ref, f: Field beta :: ((o != c) || (f == allocated)) ==> (Heap[o, f] == old(Heap)[o, f]));
 
+procedure ARRAY.make_from_array(
+			c: ref where (c != Void && Heap[c, allocated]),
+			other: ref
+		);
+	requires other != Void; // pre tag:other_not_void
+	requires other != c; // pre tag:other_not_current
+	ensures Heap[c, ARRAY.count] == Heap[other, ARRAY.count];
+	ensures ARRAY.inv(Heap, c);
+	ensures (forall i: int :: { Heap[c, area][i] } { fun.ARRAY.item(Heap, c, i) } Heap[c, area][i] == Heap[other, area][i]);
+	ensures (forall i: int :: { Heap[c, area][i] } { fun.ARRAY.item(Heap, c, i) } fun.ARRAY.item(Heap, c, i) == fun.ARRAY.item(Heap, other, i));
+	modifies Heap;
+	ensures (forall<beta> o: ref, f: Field beta :: ((o != c) || (f == allocated)) ==> (Heap[o, f] == old(Heap)[o, f]));
+
 function fun.ARRAY.has<alpha>(h: HeapType, c: ref, val: alpha) returns (bool) {
 	(exists i: int :: (fun.ARRAY.is_index(h, c, i) && (fun.ARRAY.item(h, c, i) == val)))
 }
 
 function fun.ARRAY.occurrences<alpha>(heap: HeapType, a: ref, o: alpha) returns (int) {
 	occ(heap, a, o, heap[a, ARRAY.count])
+}
+
+function fun.ARRAY.is_equal(heap: HeapType, a: ref, b: ref) returns (bool) {
+	(fun.ARRAY.count(heap, a) == fun.ARRAY.count(heap, b)) &&
+	(forall i: int :: fun.ARRAY.is_index(heap, a, i) ==> (fun.ARRAY.item(heap, a, i) == fun.ARRAY.item(heap, b, i)))
 }
 
 function occ<alpha>(h: HeapType, a: ref, o: alpha, i: int) returns (int);
@@ -90,6 +108,18 @@ procedure ARRAY.subarray(a: ref, l: int, u: int) returns (result: ref);
 	modifies Heap;
 	ensures (forall i: int :: (1 <= i && i <= (u-l+1)) ==> (fun.ARRAY.item(Heap, result, i) == fun.ARRAY.item(Heap, a, l+i-1)));
 	ensures (forall<beta> o: ref, f: Field beta :: (old(Heap[o, allocated])) ==> (Heap[o, f] == old(Heap[o, f])));
+
+procedure ARRAY.subcopy(c: ref, other: ref, start: int, end: int, index: int);
+	requires other != Void; // pre tag:other_not_void
+	requires other != c; // pre tag:other_not_current
+	requires start >= 1; // pre tag:start_greater_equal_1
+	requires end <= fun.ARRAY.count(Heap, other); // pre tag:end_smaller_equal_count
+	requires start <= end + 1; // pre tag:start_smaller_end_plus_1
+	requires index >= 1; // pre tag:index_greater_equal_1
+	requires fun.ARRAY.count(Heap, c) - index >= end - start; // pre tag:enough_space
+	modifies Heap;
+	ensures (forall i: int :: (start <= i && i <= end) ==> (fun.ARRAY.item(Heap, c, i - start + index) == fun.ARRAY.item(Heap, other, i)));
+	ensures (forall<beta> o: ref, f: Field beta :: (o != c) ==> (Heap[o, f] == old(Heap[o, f])));
 
 // Array invariants
 function ARRAY.inv(h: HeapType, a: ref) returns (bool) {

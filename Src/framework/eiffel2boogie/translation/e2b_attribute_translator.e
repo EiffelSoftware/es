@@ -38,12 +38,12 @@ feature -- Basic operations
 
 				-- Map attribute slot to original attribute slot
 			if a_feature.written_in /= l_type.base_class.class_id then
-				create l_value1.make (l_boogie_name, types.field (types.for_type_a (l_type)))
-				create l_value2.make (name_translator.boogie_name_for_feature (a_feature, a_feature.written_class.actual_type), types.field (types.for_type_a (l_type)))
-				create l_op.make (l_value1, "==", l_value2, types.bool)
-				create l_axiom.make (l_op)
-				boogie_universe.add_declaration (l_axiom)
-				translation_pool.add_referenced_feature (a_feature, a_feature.written_class.actual_type)
+--				create l_value1.make (l_boogie_name, types.field (types.for_type_a (l_type)))
+--				create l_value2.make (name_translator.boogie_name_for_feature (a_feature, a_feature.written_class.actual_type), types.field (types.for_type_a (l_type)))
+--				create l_op.make (l_value1, "==", l_value2, types.bool)
+--				create l_axiom.make (l_op)
+--				boogie_universe.add_declaration (l_axiom)
+--				translation_pool.add_referenced_feature (a_feature, a_feature.written_class.actual_type)
 			end
 
 			if a_feature.type.is_reference then

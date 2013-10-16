@@ -1,9 +1,12 @@
 ======================================
-ASSIGNMENT.locals_assignment
+B_LOCAL.default_values_for_local
 Successfully verified.
 ======================================
-ASSIGNMENT.argument_assignment
+B_LOCAL.local_initialization
 Successfully verified.
 ======================================
-ASSIGNMENT.assignment_to_attribute
+B_LOCAL.local_assignment
+Successfully verified.
+======================================
+B_LOCAL.argument_assignment
 Successfully verified.

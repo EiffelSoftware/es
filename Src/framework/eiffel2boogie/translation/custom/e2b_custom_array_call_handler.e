@@ -88,9 +88,11 @@ feature -- Basic operations
 			Result := <<
 				"make",
 				"make_filled",
+				"make_from_array",
 				"item",
 				"put",
-				"subarray"
+				"subarray",
+				"subcopy"
 			>>
 			Result.compare_objects
 		end
@@ -103,7 +105,8 @@ feature -- Basic operations
 				"has",
 				"count",
 				"subarray",
-				"occurrences"
+				"occurrences",
+				"is_equal"
 			>>
 			Result.compare_objects
 		end

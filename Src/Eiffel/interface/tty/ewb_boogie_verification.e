@@ -110,7 +110,7 @@ feature -- Execution
 				options.set_automatic_inlining_enabled (False)
 			end
 			if user_options.has ("-inlinedepth") then
-				options.set_max_recursive_inlining_depth (option_argument ("-unrolldepth", options.max_recursive_inlining_depth))
+				options.set_max_recursive_inlining_depth (option_argument ("-inlinedepth", options.max_recursive_inlining_depth))
 			end
 
 			if selection.is_empty then

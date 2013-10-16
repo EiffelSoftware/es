@@ -1,16 +1,12 @@
 ======================================
-BASIC.empty
+B_ATTRIBUTES.default_values_for_attribute
 Successfully verified.
 ======================================
-BASIC.check_false
-Verification failed.
-
-Check of tag has_to_fail may fail.
-======================================
-BASIC.default_value_for_locals
+B_ATTRIBUTES.attribute_initialization
 Successfully verified.
 ======================================
-BASIC.boxing
-Verification failed.
-
-Check of tag has_to_fail may fail.
+B_ATTRIBUTES.attribute_assignment
+Successfully verified.
+======================================
+B_ATTRIBUTES.argument_assignment
+Successfully verified.

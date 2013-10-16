@@ -96,7 +96,7 @@ feature {NONE} -- Implementation
 			l_time: TIME
 			l_filename: STRING
 		do
-			create Result.make_from_string ("C:\temp\output.bpl")
+--			create Result.make_from_string ("C:\temp\output.bpl")
 
 --			create l_time.make_now
 --			l_filename := "boogie-"
@@ -114,9 +114,10 @@ feature {NONE} -- Implementation
 --			l_filename.append ((l_time.fractional_second * 100.0).truncated_to_integer.out)
 --			l_filename.append (".bpl")
 
---			create Result.make_from_string (system.eiffel_project.project_directory.target_path)
---			Result.extend ("Proofs")
+			create Result.make_from_string (system.eiffel_project.project_directory.target_path.out)
+			Result.extend ("Proofs")
 --			Result.extend (l_filename)
+			Result.extend ("autoproof.bpl")
 		end
 
 	default_model_file_name: FILE_NAME

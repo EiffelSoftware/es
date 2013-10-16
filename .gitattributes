@@ -3657,9 +3657,15 @@ Src/framework/configuration/versioning/configuration-1-0-0.xsd -text
 Src/framework/configuration/versioning/configuration-1-2-0.xsd -text
 Src/framework/configuration/versioning/configuration-1-3-0.xsd -text
 Src/framework/dotnet_loader/dotnet_loader.lic -text
-Src/framework/eiffel2boogie/tests/assignment/output.txt -text
-Src/framework/eiffel2boogie/tests/basic/output.txt -text
+Src/framework/eiffel2boogie/tests/basic/attributes/output.txt -text
+Src/framework/eiffel2boogie/tests/basic/basic/output.txt -text
+Src/framework/eiffel2boogie/tests/basic/boxing/output.txt -text
+Src/framework/eiffel2boogie/tests/basic/local/output.txt -text
+Src/framework/eiffel2boogie/tests/examples/cost2011/output.txt -text
+Src/framework/eiffel2boogie/tests/examples/vstte2008/output.txt -text
+Src/framework/eiffel2boogie/tests/examples/vstte2010/output.txt -text
 Src/framework/eiffel2boogie/tests/sets/output.txt -text
+Src/framework/eiffel2boogie/tests/template/args.txt_ -text
 Src/framework/eiffel2boogie/tests/template/output.txt_ -text
 Src/framework/eiffel2boogie/tests/template/template.e_ -text
 Src/framework/eiffel_identifier/eiffel_identifier.lic -text

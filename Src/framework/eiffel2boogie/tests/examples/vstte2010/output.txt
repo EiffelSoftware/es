@@ -1,0 +1,3 @@
+======================================
+VSTTE2010.sum_and_max
+Successfully verified.

@@ -16,6 +16,7 @@ import difflib
 base_path = os.path.realpath(os.path.join(os.getenv("EIFFEL_SRC"), "framework", "eiffel2boogie", "tests"))
 eve_exe = os.path.realpath(os.path.join(os.getenv("EIFFEL_SRC"), "Eiffel", "Ace", "EIFGENs", "bench", "W_code", "ec.exe"))
 tests_ecf = os.path.join(base_path, "tests.ecf")
+store_output = False
 
 # ----------------------------------------------------------------------------
 # helper functions: log and printing
@@ -119,21 +120,55 @@ def compile_tests():
 	else:
 		_as_error("ECF file '" + tests_ecf + "' does not exist")
 
-def run_tests():
-	global base_path
-	for test_name in os.listdir(base_path):
-		if os.path.isdir(os.path.join(base_path, test_name)) and os.path.isfile(os.path.join(base_path, test_name, "output.txt")):
-			run_test(test_name)
+def is_test_path(path):
+	if not os.path.isdir(path):
+		return False
+	if not os.path.isfile(os.path.join(path, "output.txt")):
+		return False
+	return True
 
-def run_test(test_name):
-	global base_path, eve_exe, tests_ecf
-	test_path = os.path.join(base_path, test_name)
-	if os.path.isdir(test_path):
+def find_test(test, directory=None):
+	global base_path
+	if directory is None:
+		directory = base_path
+	for name in os.listdir(directory):
+		temp = os.path.join(directory, name)
+		if name == test and is_test_path(temp):
+			return temp
+		elif os.path.isdir(temp):
+			temp2 = find_test(test, temp)
+			if not temp2 is None:
+				return temp2
+	return None
+
+def run_tests(directory=None):
+	global base_path
+	if directory is None:
+		directory = base_path
+	for test_name in os.listdir(directory):
+		path = os.path.join(directory, test_name)
+		if os.path.isdir(path):
+			if is_test_path(path):
+				run_test(path, test_name)
+			elif not path.endswith("EIFGENs"):
+				run_tests(path)
+
+# Run a single test case
+def run_test(path, test_name):
+	global eve_exe, tests_ecf, store_output
+	if not path is None and os.path.isdir(path):
+		_as_info("Running test: " + test_name)
 		args = [eve_exe, "-config", tests_ecf, "-target", "tests", "-boogie"]
-		for filename in os.listdir(test_path):
+		classes = []
+		for filename in os.listdir(path):
 			if filename.endswith(".e"):
 				class_name = os.path.splitext(os.path.basename(filename))[0]
-				args.append(class_name.upper())
+				classes.append(class_name.upper())
+			elif filename.endswith("args.txt"):
+				_as_info("  command line options: " + open(os.path.join(path, filename)).readline())
+				args.extend(open(os.path.join(path, filename)).readline().split(" "))
+		args.extend(classes)
+
 		# clear output file
 		open("autoproof_output.txt", 'w').close()
 		execute(args, "autoproof_output.txt")
@@ -142,7 +177,13 @@ def run_test(test_name):
 		output_content = output_file.read()
 		output_content = output_content.partition("System Recompiled.\n")[2].strip()
 		output_file.close()
-		expected_file = open(os.path.join(base_path, test_name, "output.txt"), 'r')
+		
+		if store_output:
+			output_file = open(os.path.join(path, "output.txt"), 'w')
+			output_file.write(output_content)
+			output_file.close()
+		
+		expected_file = open(os.path.join(path, "output.txt"), 'r')
 		expected_content = expected_file.read().strip()
 		expected_file.close()
 		
@@ -163,14 +204,18 @@ def run_test(test_name):
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--clean', '-c', action='store_true')
+parser.add_argument('--store', '-s', action='store_true')
 parser.add_argument('tests', nargs=argparse.REMAINDER)
 
 arguments = parser.parse_args()
 
 if arguments.clean:
 	compile_tests()
+if arguments.store:
+	store_output = True
+
 if len(arguments.tests) == 0:
 	run_tests()
 else:
 	for t in arguments.tests:
-		run_test(t)
+		run_test(find_test(t), t)

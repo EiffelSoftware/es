@@ -1,0 +1,5 @@
+======================================
+B_BOXING.boxing
+Verification failed.
+
+Check of tag has_to_fail may fail.

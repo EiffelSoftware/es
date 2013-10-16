@@ -520,6 +520,18 @@ feature -- Processing
 
 	process_loop_normal (a_node: LOOP_B)
 			-- Process loop in normal way.
+		do
+			if a_node.stop /= Void then
+				process_from_loop_normal (a_node)
+			else
+--				process_across_loop_normal (a_node)
+			end
+		end
+
+	process_from_loop_normal (a_node: LOOP_B)
+			-- Process from loop in normal way.
+		require
+			from_loop: a_node.stop /= Void and a_node.iteration_exit_condition = Void
 		local
 			l_condition: IV_EXPRESSION
 			l_variant_local: STRING
@@ -591,6 +603,142 @@ feature -- Processing
 				-- Condition
 			set_current_origin_information (a_node.stop)
 			process_contract_expression (a_node.stop)
+			l_condition := last_expression
+			create l_goto.make (l_body_block)
+			l_goto.add_target (l_end_block)
+			add_statement (l_goto)
+			current_block := l_temp_block
+
+				-- Body
+			add_statement (l_body_block)
+			current_block := l_body_block
+
+			create l_assume.make (factory.not_ (l_condition))
+			add_statement (l_assume)
+			process_compound (a_node.compound)
+			if a_node.variant_part /= Void then
+				set_current_origin_information (a_node.variant_part)
+				process_expression (a_node.variant_part.expr)
+				create l_assert.make (factory.less (last_expression, l_variant))
+				l_assert.set_assertion_type ("loop_var_decr")
+				add_statement (l_assert)
+			end
+			create l_goto.make (l_head_block)
+			add_statement (l_goto)
+			current_block := l_temp_block
+
+			add_statement (l_end_block)
+			current_block := l_end_block
+
+			create l_assume.make (l_condition)
+			add_statement (l_assume)
+
+			current_block := l_temp_block
+		end
+
+	process_across_loop_normal (a_node: LOOP_B)
+			-- Process across loop in a normal way.
+		require
+			from_loop: a_node.stop = Void and a_node.iteration_exit_condition /= Void
+		local
+			l_condition: IV_EXPRESSION
+			l_variant_local: STRING
+			l_invariant: ASSERT_B
+			l_goto: IV_GOTO
+			l_temp_block, l_head_block, l_body_block, l_end_block: IV_BLOCK
+			l_assert: IV_ASSERT
+			l_assume: IV_ASSUME
+			l_not: IV_UNARY_OPERATION
+			l_op: IV_BINARY_OPERATION
+			l_variant: IV_ENTITY
+			l_assignment: IV_ASSIGNMENT
+			l_info: IV_ASSERTION_INFORMATION
+
+			l_assign: ASSIGN_B
+			l_across_handler: E2B_ACROSS_HANDLER
+			l_object_test_local: OBJECT_TEST_LOCAL_B
+			l_nested: NESTED_B
+			l_access: ACCESS_EXPR_B
+			l_bin_free: BIN_FREE_B
+			l_name: STRING
+		do
+			set_current_origin_information (a_node.advance_code.first)
+
+			l_assign ?= a_node.iteration_initialization.first
+			check l_assign /= Void end
+			l_object_test_local ?= l_assign.target
+			check l_object_test_local /= Void end
+			l_nested ?= l_assign.source
+			check l_nested /= Void end
+			l_access ?= l_nested.target
+			check l_access /= Void end
+
+			l_name := l_nested.target.type.associated_class.name_in_upper
+			if l_name ~ "ARRAY" then
+--				create {E2B_ARRAY_ACROSS_HANDLER} l_across_handler.make (Current, a_node, l_nested.target, l_object_test_local)
+			elseif l_name ~ "INTEGER_INTERVAL" then
+				l_bin_free ?= l_access.expr
+				check l_bin_free /= Void end
+--				create {E2B_INTERVAL_ACROSS_HANDLER} l_across_handler.make (Current, a_node, l_bin_free, l_object_test_local)
+			else
+				check False end
+			end
+
+			l_temp_block := current_block
+			create l_head_block.make_name (helper.unique_identifier("loop_head"))
+			create l_body_block.make_name (helper.unique_identifier("loop_body"))
+			create l_end_block.make_name (helper.unique_identifier("loop_end"))
+
+				-- From part
+			if a_node.iteration_initialization /= Void then
+				a_node.iteration_initialization.process (Current)
+			end
+			create l_goto.make (l_head_block)
+			add_statement (l_goto)
+			add_statement (l_head_block)
+			current_block := l_head_block
+
+				-- Invariants
+			if a_node.invariant_part /= Void then
+				from
+					a_node.invariant_part.start
+				until
+					a_node.invariant_part.after
+				loop
+					l_invariant ?= a_node.invariant_part.item
+					set_current_origin_information (l_invariant)
+					process_contract_expression (l_invariant.expr)
+					across last_safety_checks as i loop
+						create l_assert.make (i.item.expr)
+						l_assert.set_information (i.item.info)
+						add_statement (l_assert)
+					end
+					create l_assert.make (last_expression)
+					create l_info.make ("loop_inv")
+					l_info.set_tag (l_invariant.tag)
+					l_info.set_line (l_invariant.line_number)
+					l_assert.set_information (l_info)
+					add_statement (l_assert)
+					a_node.invariant_part.forth
+				end
+			end
+
+				-- Variant
+			if a_node.variant_part /= Void then
+				set_current_origin_information (a_node.variant_part)
+				create l_variant.make (helper.unique_identifier ("variant"), types.int)
+				current_implementation.add_local (l_variant.name, types.int)
+				process_expression (a_node.variant_part.expr)
+				create l_assignment.make (l_variant, last_expression)
+				add_statement (l_assignment)
+				create l_assert.make (factory.less_equal (factory.int_value (0), l_variant))
+				l_assert.set_assertion_type ("loop_var_ge")
+				add_statement (l_assert)
+			end
+
+				-- Condition
+			set_current_origin_information (a_node.iteration_exit_condition)
+			process_contract_expression (a_node.iteration_exit_condition)
 			l_condition := last_expression
 			create l_goto.make (l_body_block)
 			l_goto.add_target (l_end_block)

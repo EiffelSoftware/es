@@ -25,8 +25,16 @@ feature {NONE} -- Initialization
 			object_test_local := a_object_test_local
 		end
 
+	make_loop (a_loop: LOOP_B; a_object_test_local: OBJECT_TEST_LOCAL_B)
+			-- Initialize handler from loop.
+		do
+			loop_ := a_loop
+			object_test_local := a_object_test_local
+		end
+
 feature -- Access
 
+	loop_: LOOP_B
 	loop_expr: LOOP_EXPR_B
 	array_access: ACCESS_B
 	object_test_local: OBJECT_TEST_LOCAL_B

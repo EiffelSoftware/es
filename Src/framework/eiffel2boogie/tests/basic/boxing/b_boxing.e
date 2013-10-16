@@ -1,28 +1,6 @@
-class BASIC
+class B_BOXING
 
 feature
-
-	empty
-		do
-		end
-
-	check_false
-		do
-			check has_to_fail: False end
-		end
-
-	default_value_for_locals
-		local
-			a: INTEGER
-			b: NATURAL
-			c: REAL_64
-			d: ANY
-		do
-			check a = 0 end
-			check b = 0 end
-			check c = 0.0 end
-			check d = Void end
-		end
 
 	boxing
 		local
@@ -51,6 +29,7 @@ feature
 			else
 				check unreachable: False end
 			end
+
 			check has_to_fail: False end
 		end
 

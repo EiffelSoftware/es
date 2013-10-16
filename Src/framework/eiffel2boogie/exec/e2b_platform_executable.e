@@ -166,6 +166,37 @@ feature {NONE} -- Implementation
 					-- TODO: error handling
 				check False end
 			end
+
+			if {PLATFORM}.is_windows then
+				create l_output_file.make ("C:\temp\output.bpl")
+				l_output_file.recursive_open_write
+				if l_output_file.is_open_write then
+					append_header (l_output_file)
+					from
+						input.boogie_files.start
+					until
+						input.boogie_files.after
+					loop
+						append_file_content (l_output_file, input.boogie_files.item)
+						input.boogie_files.forth
+					end
+					l_output_file.put_string ("// Custom content")
+					l_output_file.put_new_line
+					l_output_file.put_new_line
+					from
+						input.custom_content.start
+					until
+						input.custom_content.after
+					loop
+						l_output_file.put_string (input.custom_content.item)
+						input.custom_content.forth
+					end
+					l_output_file.close
+				else
+						-- TODO: error handling
+					check False end
+				end
+			end
 		end
 
 	launch_boogie (a_wait_for_exit: BOOLEAN)

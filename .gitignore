@@ -470,6 +470,10 @@ Src/framework/cli_writer/Clib/*.pdb
 Src/framework/cli_writer/spec
 Src/framework/configuration/*.wb
 Src/framework/configuration/EIFGENs
+Src/framework/eiffel2boogie/tests/EIFGENs
+Src/framework/eiffel2boogie/tests/autoproof_output.txt
+Src/framework/eiffel2boogie/tests/exception_trace.log
+Src/framework/eiffel2boogie/tests/log.txt
 Src/framework/parser/parser/output.txt
 Src/framework/program_analysis/behavioral_model
 Src/framework/program_analysis/control_flow_graph/visitor/epa_cfg_block_visitor.e
