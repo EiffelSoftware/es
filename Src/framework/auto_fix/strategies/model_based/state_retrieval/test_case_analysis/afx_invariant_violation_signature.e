@@ -59,11 +59,11 @@ feature{AFX_INVARIANT_VIOLATION_SIGNATURE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	assertion_with_tag (a_assertions: LIST [EPA_EXPRESSION]; a_tag: STRING): EPA_EXPRESSION
+	assertion_with_tag (a_assertions: LIST [EPA_AST_EXPRESSION]; a_tag: STRING): EPA_AST_EXPRESSION
 			-- Assertion from `a_assertions' with tag `a_tag'
 		local
 			l_cursor: CURSOR
-			l_expression: EPA_EXPRESSION
+			l_expression: EPA_AST_EXPRESSION
 			l_done: BOOLEAN
 		do
 			l_cursor := a_assertions.cursor

@@ -109,6 +109,8 @@ feature{NONE} -- Implementation
 		do
 			l_text := a_string.twin
 			l_text.replace_substring_all (once "!=", once "/=")
+			l_text.replace_substring_all ("%%", "\\\\")
+			l_text.replace_substring_all ("**", "^")
 			l_text.replace_substring_all (once " null", once " Void")
 			l_text.replace_substring_all (once "orig(", once "old (")
 

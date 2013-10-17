@@ -44,8 +44,8 @@ feature -- Basic operation
 			l_feature_under_test: AFX_FEATURE_TO_MONITOR
 			l_class: CLASS_C
 			l_feature: FEATURE_I
-			l_contract_expressions: TUPLE [pre, post: EPA_HASH_SET [EPA_EXPRESSION]]
-			l_expressions: LINKED_LIST [EPA_EXPRESSION]
+			l_contract_expressions: TUPLE [pre, post: EPA_HASH_SET [EPA_AST_EXPRESSION]]
+			l_expressions: LINKED_LIST [EPA_AST_EXPRESSION]
 			l_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
 		do
 			l_feature_under_test := feature_to_monitor
@@ -138,13 +138,13 @@ feature -- Expressions to monitor
 	state_skeleton: EPA_STATE_SKELETON
 			-- State skeleton based on `expressions_for_contracts'.
 
-	expressions_for_contracts (a_feature: EPA_FEATURE_WITH_CONTEXT_CLASS): TUPLE [pre, post: EPA_HASH_SET [EPA_EXPRESSION]]
+	expressions_for_contracts (a_feature: EPA_FEATURE_WITH_CONTEXT_CLASS): TUPLE [pre, post: EPA_HASH_SET [EPA_AST_EXPRESSION]]
 			-- Set of expressions that could appear in the pre-/postcondition of `a_feature'.
 		local
 			l_arguments: DS_HASH_TABLE [TYPE_A, STRING]
 			l_operand_names: DS_LINKED_LIST[STRING]
 			l_expression: EPA_AST_EXPRESSION
-			l_expressions, l_precondition_expressions, l_postcondition_expressions: EPA_HASH_SET[EPA_EXPRESSION]
+			l_expressions, l_precondition_expressions, l_postcondition_expressions: EPA_HASH_SET[EPA_AST_EXPRESSION]
 			l_constructor: AFX_BASIC_TYPE_EXPRESSION_CONSTRUCTOR
 		do
 			l_arguments := arguments_from_feature (a_feature.feature_, a_feature.context_class)
@@ -161,11 +161,11 @@ feature -- Expressions to monitor
 			Result := [l_precondition_expressions, l_postcondition_expressions]
 		end
 
-	derived_expressions (a_feature: EPA_FEATURE_WITH_CONTEXT_CLASS; a_expression_texts: DS_LIST [STRING]): EPA_HASH_SET[EPA_EXPRESSION]
+	derived_expressions (a_feature: EPA_FEATURE_WITH_CONTEXT_CLASS; a_expression_texts: DS_LIST [STRING]): EPA_HASH_SET[EPA_AST_EXPRESSION]
 			-- Set of derived expressions from `a_expression_texts', in the context of `a_feature'.
 		local
 			l_expression: EPA_AST_EXPRESSION
-			l_expressions, l_precondition_expressions, l_postcondition_expressions: EPA_HASH_SET[EPA_EXPRESSION]
+			l_expressions, l_precondition_expressions, l_postcondition_expressions: EPA_HASH_SET[EPA_AST_EXPRESSION]
 			l_constructor: AFX_BASIC_TYPE_EXPRESSION_CONSTRUCTOR
 		do
 			create l_expressions.make (a_expression_texts.count)

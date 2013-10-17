@@ -47,6 +47,11 @@ feature{NONE} -- Implementation
 			create l_call_analyzer
 			l_call_analyzer.analyze_feature_call (recipient_class, recipient_feature,
 					recipient_breakpoint, recipient_nested_breakpoint, exception_class, exception_feature.feature_name_32)
+			if l_call_analyzer.last_callee_target = Void then
+					-- HACK: EVE doesn't always report the correct breakpoint position.
+				l_call_analyzer.analyze_feature_call (recipient_class, recipient_feature,
+						recipient_breakpoint + 1, recipient_nested_breakpoint, exception_class, exception_feature.feature_name_32)
+			end
 
 			if l_call_analyzer.is_last_call_precursor then
 					-- FIXME: how to express the exception condition in recipient?

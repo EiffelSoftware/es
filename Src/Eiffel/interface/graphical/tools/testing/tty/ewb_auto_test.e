@@ -81,6 +81,10 @@ feature -- Execution
 			l_root_group: CONF_GROUP
 			l_project: E_PROJECT
 			l_exceptions: EXCEPTIONS
+
+			l_feature_contract_remover: AUT_FEATURE_CONTRACT_REMOVER
+			l_names: LIST [STRING_8]
+
 		do
 			l_args := auto_test_arguments
 			if l_args /= Void then
@@ -239,6 +243,7 @@ feature -- Execution
 				l_generator.set_serialization_validity_log (l_ap.serialization_validity_log)
 
 				l_generator.set_recursive (l_ap.is_recursive)
+				l_generator.set_feature_to_disable_contracts (l_ap.disable_feature_contracts)
 
 				l_generator.set_data_input (l_ap.data_input)
 				l_generator.set_data_output (l_ap.data_output)
@@ -288,6 +293,14 @@ feature -- Execution
 				l_generator.set_should_check_invariant_violating_objects (l_ap.should_check_invariant_violating_objects)
 				l_generator.set_arff_directory (l_ap.arff_directory)
 				l_generator.set_online_statistics_frequency (l_ap.online_statistics_frequency)
+
+				if l_generator.feature_to_disable_contracts /= Void then
+					create l_feature_contract_remover
+					l_names := l_generator.feature_to_disable_contracts.split ('.')
+					l_feature_contract_remover.remove_contracts_by_name (l_names [1], l_names [2])
+					Io.put_string ("Contracts removed from feature: " + l_generator.feature_to_disable_contracts)
+					Io.put_new_line
+				end
 
 				a_test_suite.launch_session (l_generator)
 			else

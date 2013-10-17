@@ -4,7 +4,8 @@ class
 inherit
 	EPA_HASH_CALCULATOR
 		redefine
-			is_equal
+			is_equal,
+			out
 		end
 
 create
@@ -83,6 +84,12 @@ feature			-- Status report
 			-- <Precursor>
 		do
 			Result := context ~ other.context and then breakpoint_index = other.breakpoint_index
+		end
+
+	out: STRING
+		local
+		do
+			Result := breakpoint_index.out + "@" + context.out
 		end
 
 feature			-- Override

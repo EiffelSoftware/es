@@ -85,6 +85,7 @@ feature	-- Basic operation
 
 			test_case_info := Void
 			current_test_case_info := Void
+			is_inside_test_case := False
 			current_test_case_execution_mode := Mode_default
 		end
 
@@ -136,8 +137,10 @@ feature -- Debugger action
 
 				entry_breakpoint_manager.toggle_breakpoints (True)
 			else
-					-- During monitoring, mark the trace as from a FAILED execution.
-				trace_repository.current_trace.set_status_as_failing
+				if is_inside_test_case then
+						-- During monitoring, mark the trace as from a FAILED execution.
+					trace_repository.current_trace.set_status_as_failing
+				end
 			end
 		end
 
@@ -243,6 +246,7 @@ feature -- Test-case-related action
 
 			test_case_starting_time := session.time_now
 			update_timer (time_left_for_test_case)
+			is_inside_test_case := True
 		end
 
 	on_test_case_exit (a_bp: BREAKPOINT; a_dm: DEBUGGER_MANAGER)
@@ -250,6 +254,7 @@ feature -- Test-case-related action
 		do
 			enable_state_monitoring (False)
 			update_timer (session.time_left)
+			is_inside_test_case := False
 		end
 
 	current_program_location_context: EPA_FEATURE_WITH_CONTEXT_CLASS
@@ -461,6 +466,8 @@ feature -- Status report
 			Result := current_test_case_execution_mode = Mode_monitor
 		end
 
+	is_inside_test_case: BOOLEAN
+
 feature -- Helper attribute
 
 	current_test_case_info: detachable EPA_TEST_CASE_SIGNATURE
@@ -500,7 +507,8 @@ feature -- Constant
 	Test_case_setup_feature: FEATURE_I
 			-- Feature for setting up the test cases.
 		once
-			Result := test_case_super_class.feature_named (once "setup_before_test")
+--			Result := test_case_super_class.feature_named (once "setup_before_test")
+			Result := test_case_super_class.feature_named (once "right_before_test")
 		ensure
 			result_attached: Result /= Void
 		end
@@ -508,7 +516,8 @@ feature -- Constant
 	Test_case_exit_feature: FEATURE_I
 			-- Feature for exiting the test cases.
 		once
-			Result := test_case_super_class.feature_named (once "cleanup_after_test")
+--			Result := test_case_super_class.feature_named (once "cleanup_after_test")
+			Result := test_case_super_class.feature_named (once "right_after_test")
 		end
 
 	Test_case_surrounding_feature_name: STRING

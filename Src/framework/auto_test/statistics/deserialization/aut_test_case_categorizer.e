@@ -95,6 +95,7 @@ feature{NONE} -- Implementation
 			l_category: STRING
 			l_class_content: STRING
 			l_file_name: STRING
+			l_max_length: INTEGER
 			l_dir: DIRECTORY
 			l_file: KL_TEXT_OUTPUT_FILE
 			l_length: INTEGER
@@ -105,7 +106,22 @@ feature{NONE} -- Implementation
 				a_categories.do_all (agent l_dir_name.set_subdirectory)
 				recursive_create_directory (l_dir_name.string)
 
-				l_dir_name.set_file_name (a_data.test_case_class_name)
+					-- Truncate the file name when necessary, so that the whole path is no longer than 255 characters.
+					-- This is the restriction of Windows.
+					-- file_path = dir_name + '/' + file_name + '.e'
+				l_max_length := 255 - 3 - l_dir_name.out.count
+				l_file_name := a_data.test_case_class_name
+				if l_max_length < l_file_name.count then
+					l_file_name := l_file_name.substring (1, l_max_length)
+					a_data.set_test_case_class_name (l_file_name.twin)
+
+					Io.put_string ("Warning: class file name truncated.%N")
+					Io.put_string ("%T    Directory: " + l_dir_name + "%N")
+					Io.put_string ("%TOld file name: " + a_data.test_case_class_name + "%N")
+					Io.put_string ("%TNew file name: " + l_file_name + "%N")
+				end
+
+				l_dir_name.set_file_name (l_file_name)
 				l_dir_name.add_extension ("e")
 				create l_file.make (l_dir_name)
 				l_file.recursive_open_write

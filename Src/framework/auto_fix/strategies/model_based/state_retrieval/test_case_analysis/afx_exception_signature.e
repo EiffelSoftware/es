@@ -140,13 +140,13 @@ feature{AFX_EXCEPTION_SIGNATURE} -- Status set
 			recipient_nested_breakpoint := a_breakpoint
 		end
 
-	set_exception_condition (a_condition: EPA_EXPRESSION)
+	set_exception_condition (a_condition: EPA_AST_EXPRESSION)
 			-- Set `exception_condition'.
 		do
 			exception_condition := a_condition
 		end
 
-	set_exception_condition_in_recipient (a_condition: EPA_EXPRESSION)
+	set_exception_condition_in_recipient (a_condition: EPA_AST_EXPRESSION)
 			-- Set `exception_condition_in_recipient'.
 		do
 			exception_condition_in_recipient := a_condition
@@ -193,12 +193,12 @@ feature -- Derived access
 			Result := id_cache
 		end
 
-	exception_condition: EPA_EXPRESSION
+	exception_condition: EPA_AST_EXPRESSION
 			-- Exception condition in `exception_feature'.
 			-- For pre-/post-condition violations and invariant-/check-violations, this is the violated assertion.
 			-- For void-call-target, this is "call_target = Void".
 
-	exception_condition_in_recipient: EPA_EXPRESSION
+	exception_condition_in_recipient: EPA_AST_EXPRESSION
 			-- Exception condition as written in `recipient_feature'.
 			-- For exceptions other than pre-condition violation, this is the same as `exception_condition'.
 			-- For precondition violations, this is the translation of `exception_condition' in `recipient_feature'.

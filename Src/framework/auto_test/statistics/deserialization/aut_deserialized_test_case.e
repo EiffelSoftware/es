@@ -67,6 +67,16 @@ feature -- Access
 	test_case_class_name: STRING
 			-- Name of the test case class from the last build.
 
+	set_test_case_class_name (a_name: STRING)
+			--
+		require
+			name_not_empty: a_name /= Void and then not a_name.is_empty
+		do
+			test_case_class_name := a_name
+				-- Reset the test case text.
+			test_case_text_cache := Void
+		end
+
 	test_case_text: STRING
 			-- The class text for the test case.
 		local
@@ -193,6 +203,15 @@ feature{AUT_TEST_CASE_TEXT_BUILDER} -- Exception related
 			-- Class name of the exception recipient.
 			-- Name of the class under test for passing test cases.
 
+	tc_failing_feature: STRING
+			-- Name of the failing feature.
+			-- This can be different from `tc_exception_recipient' in case of precondition violations,
+			--		but should be the same in other cases.
+
+	tc_failing_context_class: STRING
+			-- Class name of the failing feature.
+
+
 feature{NONE} -- UUID
 
 	update_uuid
@@ -201,6 +220,7 @@ feature{NONE} -- UUID
 		do
 			tc_uuid := uuid_generator.generate_uuid.out
 			tc_uuid.prune_all ('-')
+			tc_uuid := tc_uuid.substring (1, 14)
 		end
 
 feature -- Redefinition
@@ -227,6 +247,7 @@ feature{NONE} -- Implementation
 			trace_attached: trace_str /= Void
 		local
 			l_trace: STRING
+			l_failing_class, l_failing_feature: STRING
 			l_explainer: EPA_EXCEPTION_TRACE_EXPLAINER
 			l_summary: EPA_EXCEPTION_TRACE_SUMMARY
 		do
@@ -236,6 +257,8 @@ feature{NONE} -- Implementation
 			tc_assertion_tag := "noname"
 			tc_exception_recipient := tc_feature_under_test
 			tc_exception_recipient_class := tc_class_under_test
+			l_failing_class := tc_exception_recipient_class.twin
+			l_failing_feature := tc_exception_recipient.twin
 
 			l_trace := trace_str
 			if not l_trace.is_empty then
@@ -250,6 +273,8 @@ feature{NONE} -- Implementation
 					tc_assertion_tag := l_summary.failing_assertion_tag.twin
 					tc_exception_recipient := l_summary.recipient_feature_name.twin
 					tc_exception_recipient_class := l_summary.recipient_context_class_name.twin
+					l_failing_class := l_summary.failing_context_class_name.twin
+					l_failing_feature := l_summary.failing_feature_name.twin
 				else
 					update_summarization_availability (False)
 				end
@@ -257,7 +282,7 @@ feature{NONE} -- Implementation
 
 			if is_summarization_available then
 				exception_signature := tc_exception_recipient_class.twin + "__" + tc_exception_recipient
-							+ "__c" + tc_exception_code.out + "__b" + tc_breakpoint_index.out
+							+ "__c" + tc_exception_code.out + "__b" + tc_breakpoint_index.out + "__" + l_failing_class + "__" + l_failing_feature
 			end
 		end
 
@@ -327,7 +352,7 @@ feature{NONE} -- Constants
 
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

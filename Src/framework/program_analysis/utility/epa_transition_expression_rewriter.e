@@ -102,6 +102,16 @@ feature -- Status report
 			-- If so, those names are put into `encounted_names'.
 			-- Default: False
 
+	should_add_explicit_target: BOOLEAN
+			-- Should implicit calls be transfered to explicit calls?
+			-- E.g. size > 0 ==> Current.size > 0
+
+	set_should_explici_target (a_flag: BOOLEAN)
+			--
+		do
+			should_add_explicit_target := a_flag
+		end
+
 feature -- Setting
 
 	set_should_keep_encountered_names (b: BOOLEAN)
@@ -174,11 +184,11 @@ feature {AST_EIFFEL} -- Processing
 
 	process_id_as (l_as: ID_AS)
 		do
-			if last_was_unqualified then
-				process_access_name (l_as.name)
-			else
+--			if last_was_unqualified then
+--				process_access_name (l_as.name)
+--			else
 				output.append_string (l_as.name)
-			end
+--			end
 		end
 
 	process_nested_expr_as (l_as: NESTED_EXPR_AS)
@@ -223,7 +233,7 @@ feature {AST_EIFFEL} -- Processing
 
 	process_void_as (l_as: VOID_AS)
 		do
-			process_access_name (ti_void)
+			output.append_string (ti_void)
 		end
 
 feature {NONE} -- Implementation
@@ -242,8 +252,45 @@ feature {NONE} -- Implementation
 				end
 				output.append_string (l_new_name)
 			else
+				if should_add_explicit_target and then replacements.has ("Current") and then is_valid_eiffel_feature_access (l_name) then
+					output.append_string (replacements.item ("Current"))
+					output.append_string (".")
+					l_encountered := encountered_names
+					if l_encountered /= Void then
+						l_encountered.extend ("Current")
+					end
+				end
 				output.append_string (a_name)
 			end
+		end
+
+	is_valid_eiffel_feature_access (a_str: STRING): BOOLEAN
+			--
+		local
+			l_index: INTEGER
+			l_char: CHARACTER
+		do
+			if a_str = Void or else a_str.is_empty then
+				Result := False
+			else
+				from
+					l_index := 1
+					Result := True
+				until
+					l_index > a_str.count or else not Result
+				loop
+					l_char := a_str[l_index]
+					if l_index = 1 and then not l_char.is_alpha and then l_char /= '_' then
+						Result := False
+					elseif
+						l_index > 1 and then not l_char.is_alpha_numeric and then l_char /= '_'
+					then
+						Result := False
+					end
+					l_index := l_index + 1
+				end
+			end
+			Result := Result and (a_str.as_lower.same_string_general ("void"))
 		end
 
 	last_was_unqualified: BOOLEAN

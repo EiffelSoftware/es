@@ -106,9 +106,15 @@ feature -- Access
 				until
 					l_creator_tbl.after
 				loop
-					if l_creator_tbl.item_for_iteration.is_exported_to (l_any_class) then
+						-- When a class has no exported creation procedure, e.g. XXX_CURSOR classes,
+						-- test engine may end up in an infinite loop.
+						-- This is a hack to break that loop.
+						-- Although this doesn't seem to harm the testing process,
+						-- a real fix should keep a record of non-instantiable classes,
+						-- and only use objects from the pool for such classes.
+--					if l_creator_tbl.item_for_iteration.is_exported_to (l_any_class) then
 						Result.extend (l_creator_tbl.key_for_iteration)
-					end
+--					end
 					l_creator_tbl.forth
 				end
 			end

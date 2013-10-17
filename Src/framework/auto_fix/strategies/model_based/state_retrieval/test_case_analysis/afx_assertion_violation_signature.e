@@ -23,7 +23,7 @@ feature{AFX_ASSERTION_VIOLATION_SIGNATURE} -- Implementation
 	analyze_exception_condition
 			-- <Precursor>
 		local
-			l_assertion: TUPLE[tag: STRING; assertion: EPA_EXPRESSION]
+			l_assertion: TUPLE[tag: STRING; assertion: EPA_AST_EXPRESSION]
 		do
 			l_assertion := assertion_at (exception_class, exception_feature, exception_breakpoint)
 			set_violated_assertion_tag (l_assertion.tag)

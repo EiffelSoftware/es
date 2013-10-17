@@ -43,7 +43,7 @@ feature -- Basic operation
 
 feature{NONE} -- Implementation
 
-	sub_expression_collector: AFX_SUB_EXPRESSION_COLLECTOR
+	sub_expression_collector: EPA_SUB_EXPRESSION_COLLECTOR
 			-- Shared sub-expression collector.
 		once
 			create Result

@@ -9,7 +9,7 @@ class
 
 inherit
 
-	AFX_SHARED_SERVER_VARIABLES_IN_SCOPE
+	EPA_SHARED_SERVER_VARIABLES_IN_SCOPE
 
 	AFX_SHARED_SESSION
 
@@ -166,7 +166,7 @@ feature{NONE} -- Access
 
 feature{NONE} -- Storage
 
-	expression_collector: AFX_SUB_EXPRESSION_COLLECTOR
+	expression_collector: EPA_SUB_EXPRESSION_COLLECTOR
 			-- Expression collector to collect all sub expressions.
 		once
 			create Result

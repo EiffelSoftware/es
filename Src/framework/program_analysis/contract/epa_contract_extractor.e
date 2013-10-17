@@ -18,7 +18,7 @@ inherit
 
 feature -- Access
 
-	invariant_of_class (a_class: CLASS_C): LINKED_LIST [EPA_EXPRESSION]
+	invariant_of_class (a_class: CLASS_C): LINKED_LIST [EPA_AST_EXPRESSION]
 			-- List of invariant clauses of `a_class'.
 			-- `ast' is the TAGGED_AS for an invariant clause, and `written_class' is the class
 			-- where that invariant clause is written.
@@ -186,7 +186,7 @@ feature -- Contract extraction
 
 feature{NONE} -- Implementation
 
-	tags (a_written_class: CLASS_C; a_written_feature: FEATURE_I; a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_asserts: LIST [TAGGED_AS]; a_require: BOOLEAN; a_require_else: BOOLEAN; a_ensure: BOOLEAN; a_ensure_then: BOOLEAN): LINKED_LIST [EPA_EXPRESSION]
+	tags (a_written_class: CLASS_C; a_written_feature: FEATURE_I; a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_asserts: LIST [TAGGED_AS]; a_require: BOOLEAN; a_require_else: BOOLEAN; a_ensure: BOOLEAN; a_ensure_then: BOOLEAN): LINKED_LIST [EPA_AST_EXPRESSION]
 			-- List of tuples of assert clauses, each associated with its `a_written_class'
 		require
 			a_written_class_attached: a_written_class /= Void
@@ -227,19 +227,22 @@ feature{NONE} -- Implementation
 			l_retried: BOOLEAN
 			l_expr_as: EXPR_AS
 			l_expr: EPA_AST_EXPRESSION
+			l_creator: EPA_AST_EXPRESSION_SAFE_CREATOR
 		do
 			if not l_retried then
 				l_expr_as ?= ast_in_other_context (a_tagged_as.expr, a_source_context, a_target_context)
 				if l_expr_as /= Void then
 					if a_written_feature = Void then
-						create l_expr.make (l_expr_as, a_written_class, a_context_class)
+						l_expr := l_creator.safe_create (l_expr_as, a_written_class, a_context_class)
 					else
-						create l_expr.make_with_feature (a_context_class, a_context_feature, l_expr_as, a_written_class)
+						l_expr := l_creator.safe_create_with_feature (a_context_class, a_context_feature, l_expr_as, a_written_class)
 					end
-					if attached {ID_AS} a_tagged_as.tag as l_tag then
-						l_expr.set_tag (l_tag.name)
-					else
-						l_expr.set_tag (Void)
+					if l_expr /= Void then
+						if attached {ID_AS} a_tagged_as.tag as l_tag then
+							l_expr.set_tag (l_tag.name)
+						else
+							l_expr.set_tag (Void)
+						end
 					end
 					Result := l_expr
 				end

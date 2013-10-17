@@ -34,12 +34,25 @@ inherit
 create
 	make,
 	make_with_text,
+	make_with_expression,
 	make_with_text_and_type,
 	make_with_type,
 	make_with_feature,
 	make_with_standard_text_and_type
 
 feature{NONE} -- Initialization
+
+	make_with_expression (a_expr: EPA_AST_EXPRESSION)
+		require
+			expr_correct: a_expr /= Void and then not a_expr.has_syntax_error and then not a_expr.has_type_error
+		do
+			set_class (a_expr.class_)
+			set_feature (a_expr.feature_)
+			set_written_class (a_expr.written_class)
+			set_type (a_expr.type)
+			set_text (a_expr.text)
+			ast := a_expr.ast
+		end
 
 	make_with_text (a_class: like class_; a_feature: like feature_; a_text: like text; a_written_class: like written_class)
 			-- Initialize Current.

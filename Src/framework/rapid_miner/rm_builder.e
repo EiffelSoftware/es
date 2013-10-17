@@ -153,7 +153,8 @@ feature{RM_BUILDER} -- Implementation
 		do
 			create l_rapid_execute_string.make (128)
 --			l_rapid_execute_string.append (rm_environment.rapidminer_command)
-			l_rapid_execute_string.append ("/home/jasonw/rapidminer/scripts/rapidminer -f ")
+--			l_rapid_execute_string.append ("/home/jasonw/rapidminer/scripts/rapidminer -f ")
+			l_rapid_execute_string.append ("%"C:\Program Files (x86)\Rapid-I\RapidMiner5\scripts\rapidminer%" -f ")
 			--
 			l_rapid_execute_string.append (rm_environment.rapidminer_xml_file_path)
 

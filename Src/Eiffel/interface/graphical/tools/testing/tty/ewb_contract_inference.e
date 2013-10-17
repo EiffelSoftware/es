@@ -59,25 +59,33 @@ feature -- Properties
 			l_build_command: CI_BUILD_TEST_CASE_APP_CMD
 			l_infer_command: CI_INFER_CONTRACT_CMD
 			l_arff_generation_command: CI_ARFF_GENERATION_CMD
+			l_contract_fixer: CI_INFER_CONTRACT_CMD_EXT
 		do
 			create l_parser.make_with_arguments (contract_inference_arguments, system)
 			l_parser.parse
 			l_config := l_parser.config
 			set_contract_inference_config (l_config)
-			if l_config.should_build_project then
-				create l_build_command.make (l_config)
-				l_build_command.execute
-			elseif l_config.should_generate_arff then
+			if l_config.should_generate_arff then
 				create l_arff_generation_command.make (l_config)
 				l_arff_generation_command.execute
-			elseif l_config.should_infer_contracts then
-				create l_infer_command.make (l_config)
-				l_infer_command.execute
+
+			elseif l_config.is_fixing_contracts then
+				create l_contract_fixer.make (l_config)
+				l_contract_fixer.execute
+
+			else
+				if l_config.should_build_project then
+					create l_build_command.make (l_config)
+					l_build_command.execute (True)
+				elseif l_config.should_infer_contracts then
+					create l_infer_command.make (l_config)
+					l_infer_command.execute
+				end
 			end
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

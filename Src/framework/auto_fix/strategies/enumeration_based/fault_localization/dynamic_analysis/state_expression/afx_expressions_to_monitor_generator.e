@@ -16,7 +16,7 @@ inherit
 
 feature -- Access
 
-	last_expressions_to_monitor: DS_HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]
+	last_expressions_to_monitor: DS_HASH_TABLE [AFX_EXPR_RANK, EPA_AST_EXPRESSION]
 			-- Expressions to monitor from last generation.
 		do
 			if last_expressions_to_monitor_cache = Void then
@@ -32,14 +32,14 @@ feature -- Basic operation
 		require
 			feature_attached: a_feature /= VOid
 		local
-			l_ranking: HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]
+			l_ranking: HASH_TABLE [AFX_EXPR_RANK, EPA_AST_EXPRESSION]
 			l_basic_expr_gen: AFX_BASIC_STATE_EXPRESSION_GENERATOR
 			l_implication_gen: AFX_IMPLICATION_GENERATOR
-			l_base_expressions, l_expressions_to_monitor: EPA_HASH_SET [EPA_EXPRESSION]
+			l_base_expressions, l_expressions_to_monitor: EPA_HASH_SET [EPA_AST_EXPRESSION]
 			l_constructor: AFX_BASIC_TYPE_EXPRESSION_CONSTRUCTOR
 			l_rank: AFX_EXPR_RANK
 			l_operands: DS_HASH_TABLE [TYPE_A, STRING_8]
-			l_operand_expression: EPA_EXPRESSION
+			l_operand_expression: EPA_AST_EXPRESSION
 			l_operand_name: STRING
 			l_operand_type: TYPE_A
 		do
@@ -105,7 +105,7 @@ feature{NONE} -- Implementation
 			last_expressions_to_monitor_cache := Void
 		end
 
-	Sub_expression_collector: AFX_SUB_EXPRESSION_COLLECTOR
+	Sub_expression_collector: EPA_SUB_EXPRESSION_COLLECTOR
 			-- Sub-expression collector.
 		once
 			create Result
@@ -116,7 +116,7 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Cache
 
-	last_expressions_to_monitor_cache: DS_HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]
+	last_expressions_to_monitor_cache: DS_HASH_TABLE [AFX_EXPR_RANK, EPA_AST_EXPRESSION]
 			-- Cache for `last_expressions_to_monitor'.
 
 end

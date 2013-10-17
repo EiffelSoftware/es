@@ -37,6 +37,7 @@ feature{NONE} -- Initialization
 --			deep_manual_option: AP_FLAG
 			disable_manual_option: AP_FLAG
 			disable_auto_option: AP_FLAG
+			l_disable_feature_contracts: AP_STRING_OPTION
 			evolutionary_option: AP_FLAG
 			benchmark_option: AP_FLAG
 			disable_minimize_option: AP_FLAG
@@ -231,6 +232,10 @@ feature{NONE} -- Initialization
 			create l_log_processor_output_op.make_with_long_form ("log-processor-output")
 			l_log_processor_output_op.set_description ("Name of the output file from the log processor specified with the " + l_log_processor_op.name + " option.")
 			parser.options.force_last (l_log_processor_output_op)
+
+			create l_disable_feature_contracts.make_with_long_form ("disable-feature-contracts")
+			l_disable_feature_contracts.set_description ("Disable the contract of a specific feature during testing. Argument format: CLASS_NAME.feature_name")
+			parser.options.force_last (l_disable_feature_contracts)
 
 			create l_data_input_op.make_with_long_form ("data-input")
 			l_data_input_op.set_description ("File or directory where input data is available.")
@@ -596,6 +601,12 @@ feature{NONE} -- Initialization
 			if not error_handler.has_error then
 				if l_data_input_op.was_found then
 					data_input := l_data_input_op.parameter.out
+				end
+			end
+
+			if not error_handler.has_error then
+				if l_disable_feature_contracts.was_found then
+					disable_feature_contracts := l_disable_feature_contracts.parameter.out
 				end
 			end
 
@@ -1212,6 +1223,10 @@ feature -- Status report
 
 --	is_deserializing: BOOLEAN
 --			-- Is the task to deserialize the testing history into test cases?
+
+	disable_feature_contracts: detachable STRING
+			-- Feature whose contracts should be disabled during testing.
+			-- Format: CLASS_NAME.feature_name
 
 	data_input: detachable STRING
 			-- File or directory where the input data is available.

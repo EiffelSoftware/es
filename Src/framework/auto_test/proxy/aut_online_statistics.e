@@ -105,7 +105,7 @@ feature -- Basic operations
 			l_feature: AUT_FEATURE_OF_TYPE
 			l_exception: AUT_EXCEPTION
 			l_type: TYPE_A
-			l_feat: FEATURE_I
+--			l_feat: FEATURE_I
 			l_class: CLASS_C
 		do
 			if attached {AUT_CALL_BASED_REQUEST} a_request as l_request then
@@ -122,8 +122,8 @@ feature -- Basic operations
 								l_exception := l_normal_response.exception
 								if not l_exception.is_invariant_violation_on_feature_entry then
 									l_class := workbench.universe.classes_with_name (l_exception.class_name).first.compiled_representation
-									l_feat := l_class.feature_named_32 (l_exception.recipient_name)
-									if l_feat /= Void then
+--									l_feat := l_class.feature_named_32 (l_exception.recipient_name)
+									if l_class /= Void and then attached l_class.feature_named_32 (l_exception.recipient_name) as l_feat then
 										if faults.has (l_exception) then
 												-- We already detected this fault before.
 											faults_with_detected_time.force_last (faults_with_detected_time.item (l_exception) + 1, l_exception)
@@ -252,7 +252,7 @@ feature{NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

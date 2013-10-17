@@ -204,7 +204,7 @@ feature{NONE} -- Implementation
 			last_trace_frames.forth
 			l_frame := last_trace_frames.item_for_iteration
 			check
-				feature_related: l_frame.is_feature_related and then l_frame.is_nature_routine_failure
+				feature_related: l_frame.is_feature_related -- and then l_frame.is_nature_routine_failure
 			end
 
 			last_recipient_context_class_name := l_frame.context_class_name
@@ -240,7 +240,7 @@ feature{NONE} -- Implementation
 --			end
 --		end
 
-feature{NONE} -- Intermediate explanation
+feature -- Intermediate explanation
 
 	last_trace_frames: DS_ARRAYED_LIST [EPA_EXCEPTION_TRACE_FRAME]
 

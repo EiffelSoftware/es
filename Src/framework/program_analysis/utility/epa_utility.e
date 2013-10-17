@@ -442,7 +442,7 @@ feature -- Breakpoint related
 			create Result.make (l_bp_finder.first_bp_slot, l_bp_finder.last_bp_slot)
 		end
 
-	assertion_at (a_class: CLASS_C; a_feature: FEATURE_I; a_breakpoint_index: INTEGER): TUPLE[STRING, EPA_EXPRESSION]
+	assertion_at (a_class: CLASS_C; a_feature: FEATURE_I; a_breakpoint_index: INTEGER): TUPLE[STRING, EPA_AST_EXPRESSION]
 			-- Assertion, consisting of an optional tag and an expression, at `a_breakpoint' of `a_feature' from `a_class'.
 		require
 			is_assertion_at_breakpoint: True -- The arguments indicate an assertion.
@@ -760,11 +760,19 @@ feature -- Class/feature related
 			-- Void if no such class was found.
 		local
 			l_classes: LIST [CLASS_I]
+			l_class_i: CLASS_I
 			l_class_c: CLASS_C
+			l_done: BOOLEAN
 		do
 			l_classes := universe.classes_with_name (a_class_name.as_upper)
 			if not l_classes.is_empty then
-				Result := l_classes.first.compiled_representation
+				across l_classes as lt_cls loop
+					l_class_i := lt_cls.item
+					if not l_done and then not l_class_i.config_class.is_overriden then
+						Result := l_class_i.compiled_representation
+						l_done := True
+					end
+				end
 			end
 		end
 

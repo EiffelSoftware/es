@@ -70,13 +70,13 @@ feature {TYPE_A}
 			create l_derived_generics.make (a_type.generics.count)
 
 			from
-				i := a_type.generics.lower
-				l_upper := a_type.generics.upper
+				i := 1
+				l_upper := a_type.generics.count
 			until
 				i > l_upper
 			loop
 				a_type.generics.i_th (i).process (Current)
-				l_derived_generics.put_i_th (last_type, i)
+				l_derived_generics.force (last_type)
 				i := i + 1
 			end
 			l_type.set_generics (l_derived_generics)

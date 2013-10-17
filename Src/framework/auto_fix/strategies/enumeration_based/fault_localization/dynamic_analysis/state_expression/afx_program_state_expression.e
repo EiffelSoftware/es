@@ -44,7 +44,7 @@ feature -- Access
 	breakpoint_slot: INTEGER
 			-- Index of the breakpoint slot, to which the state expression is associated.
 
-	sub_expression_collector: AFX_SUB_EXPRESSION_COLLECTOR
+	sub_expression_collector: EPA_SUB_EXPRESSION_COLLECTOR
 			-- Shared sub-expression collector.
 		once
 			create Result

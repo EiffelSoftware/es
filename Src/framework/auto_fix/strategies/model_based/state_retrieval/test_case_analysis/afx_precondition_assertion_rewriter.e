@@ -23,7 +23,7 @@ inherit
 
 feature -- Result
 
-	last_rewritten_assertion: EPA_EXPRESSION
+	last_rewritten_assertion: EPA_AST_EXPRESSION
 			-- Assertion written.
 
 feature -- Basic operation

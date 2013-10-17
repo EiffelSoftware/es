@@ -187,7 +187,10 @@ feature{NONE} -- Implementation
 			l_text.append_character ('%N')
 			l_text.append (a_variable_name)
 			l_text.append_character (':')
-			l_text.append (type_in_text_from_a_type (a_type))
+
+			-- Resolve generic parameters if any.
+--			l_text.append (type_in_text_from_a_type (a_type))
+			l_text.append (type_in_text_from_a_type (a_type.instantiated_in(class_.constraint_actual_type)))
 
 			l_parser := entity_declaration_parser
 			l_parser.set_syntax_version (l_parser.transitional_syntax)

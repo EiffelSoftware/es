@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_SERVER_VARIABLES_IN_SCOPE
+	EPA_SERVER_VARIABLES_IN_SCOPE
 
 inherit
 

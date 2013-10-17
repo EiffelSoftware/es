@@ -105,7 +105,7 @@ feature{NONE} -- Implementation
 		local
 			l_feature_of_void_target: STRING
 			l_culprit_ast: EPA_AST_STRUCTURE_NODE
-			l_sub_expression_collector: AFX_SUB_EXPRESSION_COLLECTOR
+			l_sub_expression_collector: EPA_SUB_EXPRESSION_COLLECTOR
 			l_sub_expressions: EPA_HASH_SET [EPA_EXPRESSION]
 			l_expression_ast_text_table: DS_HASH_TABLE [EPA_EXPRESSION, STRING]
 			l_expression_texts: DS_ARRAYED_LIST [STRING]
@@ -194,7 +194,7 @@ feature{NONE} -- Implementation
 			-- Analyze precondition violation in `a_tc'.
 		local
 			l_culprit_ast: EPA_AST_STRUCTURE_NODE
-			l_sub_expression_collector: AFX_SUB_EXPRESSION_COLLECTOR
+			l_sub_expression_collector: EPA_SUB_EXPRESSION_COLLECTOR
 			l_sub_expressions: EPA_HASH_SET [EPA_EXPRESSION]
 			l_expression_ast_text_table: DS_HASH_TABLE [EPA_EXPRESSION, STRING]
 			l_expression_texts: DS_ARRAYED_LIST [STRING]

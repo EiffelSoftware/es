@@ -11,6 +11,8 @@ inherit
 	EPA_HASH_SET [EPA_EQUATION]
 		rename
 			make as make_set
+		redefine
+			key_to_hash
 		end
 
 	HASHABLE
@@ -19,11 +21,11 @@ inherit
 		    is_equal
 		end
 
-	EPA_HASH_CALCULATOR
-		undefine
-		    is_equal,
-		    copy
-		end
+--	EPA_HASH_CALCULATOR
+--		undefine
+--		    is_equal,
+--		    copy
+--		end
 
 	REFACTORING_HELPER
 		undefine

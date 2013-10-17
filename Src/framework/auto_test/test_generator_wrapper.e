@@ -34,7 +34,7 @@ feature {NONE} -- Status setting
 			interpreter_root_class_name_cell.put ("ITP_INTERPRETER_ROOT")
 			random.start
 			prepare
-			compile_project (class_names)
+			compile_project (class_names, Features_under_test)
 		end
 
 	initiate_testing_task
@@ -46,6 +46,8 @@ feature {NONE} -- Status setting
 	remove_task (a_task: like sub_task; a_cancel: BOOLEAN)
 			-- <Precursor>
 		local
+			l_feature_contract_remover: AUT_FEATURE_CONTRACT_REMOVER
+			l_names: LIST[STRING]
 			l_test_task: ETEST_GENERATION_TESTING
 		do
 			if not a_cancel then
@@ -108,8 +110,8 @@ feature {NONE} -- Status setting
 
 feature {NONE} -- Basic operations
 
-	compile_project (a_class_name_list: like class_names)
-			-- Compile `a_project' with new `a_root_class' and `a_root_feature'.
+	compile_project (a_class_name_list: like class_names; a_features_under_test: like Features_under_test)
+			-- Compile `a_project'.
 			--
 			-- TODO: `class_names' should be retrieved from `session'
 		local
@@ -117,11 +119,21 @@ feature {NONE} -- Basic operations
 			l_file: KL_TEXT_OUTPUT_FILE
 			l_file_name: FILE_NAME
 			l_source_writer: TEST_INTERPRETER_SOURCE_WRITER
+			l_related_class_collector: AUT_INTERFACE_RELATED_CLASS_COLLECTOR
 			l_system: SYSTEM_I
 			l_melt: like new_melt_task
+			l_classes: DS_HASH_SET [STRING]
 		do
 			l_system := system
 			check l_system /= Void end
+
+				-- Collect all types that may be necessary during testing, including
+				-- the union of `a_class_name_list' and the set of classes in the signature of `a_features_under_test'.
+			create l_classes.make_equal (a_class_name_list.count + 1)
+			a_class_name_list.do_all (agent l_classes.force)
+			create l_related_class_collector
+			l_related_class_collector.collect_from_features (a_features_under_test)
+			l_classes.append (l_related_class_collector.last_interface_related_classes_from_features)
 
 				-- Create actual root class in EIFGENs cluster
 			l_dir := l_system.project_location
@@ -135,7 +147,7 @@ feature {NONE} -- Basic operations
 			l_file.recursive_open_write
 			create l_source_writer.make (Current)
 			if l_file.is_open_write then
-				l_source_writer.write_class (l_file, a_class_name_list, l_system)
+				l_source_writer.write_class (l_file, l_classes, l_system)
 				l_file.flush
 				l_file.close
 			end
@@ -177,7 +189,7 @@ feature {NONE} -- Factory
 		end
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

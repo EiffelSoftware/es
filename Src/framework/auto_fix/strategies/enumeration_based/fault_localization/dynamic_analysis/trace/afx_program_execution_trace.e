@@ -9,7 +9,9 @@ class
 
 inherit
 	LINKED_LIST [AFX_PROGRAM_EXECUTION_STATE]
-		rename make as make_list end
+		rename make as make_list
+		redefine out
+		end
 
 create
 	make
@@ -36,7 +38,7 @@ feature -- Access
 
 feature -- Trace interpretation
 
-	derived_trace (a_derived_skeleton: EPA_STATE_SKELETON): AFX_PROGRAM_EXECUTION_TRACE
+	derived_trace (a_derived_skeleton: EPA_STATE_SKELETON; a_use_aspect: BOOLEAN): AFX_PROGRAM_EXECUTION_TRACE
 			-- Trace derived from the current, based on `a_derived_skeleton'.
 		do
 			create Result.make (test_case)
@@ -49,7 +51,31 @@ feature -- Trace interpretation
 			from start
 			until after
 			loop
-				Result.force (item_for_iteration.derived_state (a_derived_skeleton))
+				Result.force (item_for_iteration.derived_state (a_derived_skeleton, a_use_aspect))
+				forth
+			end
+		end
+
+	derived_compound_trace (a_feature_to_skeleton_map: DS_HASH_TABLE [EPA_STATE_SKELETON, AFX_FEATURE_TO_MONITOR]; a_use_aspect: BOOLEAN): AFX_PROGRAM_EXECUTION_TRACE
+		local
+			l_state: AFX_PROGRAM_EXECUTION_STATE
+			l_feature: AFX_FEATURE_TO_MONITOR
+		do
+			create Result.make (test_case)
+			if is_passing then
+				Result.set_status_as_passing
+			elseif is_failing then
+				Result.set_status_as_failing
+			end
+
+			from start
+			until after
+			loop
+				l_state := item_for_iteration
+				create l_feature.make (l_state.state.feature_, l_state.state.class_)
+				if a_feature_to_skeleton_map.has (l_feature) then
+					Result.force (l_state.derived_state (a_feature_to_skeleton_map.item (l_feature), a_use_aspect))
+				end
 				forth
 			end
 		end
@@ -88,6 +114,30 @@ feature -- Status report
 		do
 			Result := execution_status = Execution_failing
 		end
+
+	out: STRING
+		local
+		do
+			if out_cache = Void then
+				create out_cache.make (1024)
+				out_cache.append ("================================%N")
+				out_cache.append ("Test case: " + test_case.name + "%N")
+				out_cache.append ("Execution successful: " + (execution_status = Execution_passing).out + "%N")
+				if exception_signature /= Void then
+					out_cache.append ("Exception signature: " + exception_signature.id + "%N")
+				end
+				from start
+				until after
+				loop
+					out_cache.append ("----------------------------%N")
+					out_cache.append (item_for_iteration.out + "%N")
+					forth
+				end
+			end
+			Result := out_cache
+		end
+
+	out_cache: STRING
 
 feature -- Status set
 

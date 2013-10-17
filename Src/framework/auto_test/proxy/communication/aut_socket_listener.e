@@ -39,8 +39,18 @@ feature {NONE} -- Access
 
 	port_cell: CELL [INTEGER]
 			-- Cell to contain port number.
+		local
+			t: TIME
+			l_random: RANDOM
+			l_t: INTEGER
 		once
-			create Result.put (min_port)
+				-- Starting from random port number, so that multiple instances of AutoTest running in parallel won't conflict with each other.
+			create t.make_now
+			l_t := t.milli_second \\ 1000
+--			create l_random.set_seed (t.milli_second)
+--			l_random.forth
+--			l_t := (l_random.double_item * 100).rounded
+			create Result.put (min_port + l_t * 10)
 		ensure
 			result_attached: Result /= Void
 		end
@@ -195,7 +205,7 @@ invariant
 	current_port_not_negative: current_port >= 0
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

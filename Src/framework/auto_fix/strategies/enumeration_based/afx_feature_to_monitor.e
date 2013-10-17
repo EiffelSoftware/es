@@ -16,11 +16,19 @@ inherit
 		end
 
 create
-	make
+	make,
+	make_from_feature_with_context_class
+
+feature -- Initialization
+
+	make_from_feature_with_context_class (a_feature: EPA_FEATURE_WITH_CONTEXT_CLASS)
+		do
+			make (a_feature.feature_, a_feature.context_class)
+		end
 
 feature -- Dynamic state
 
-	expressions_to_monitor: DS_HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]
+	expressions_to_monitor: DS_HASH_TABLE [AFX_EXPR_RANK, EPA_AST_EXPRESSION]
 			-- Expressions to monitor regarding Current.
 		local
 			l_generator: AFX_EXPRESSIONS_TO_MONITOR_GENERATOR
@@ -38,7 +46,7 @@ feature -- Dynamic state
 	state_skeleton: EPA_STATE_SKELETON
 			-- State skeleton based on `expressions_to_monitor'.
 		local
-			l_expr_list: ARRAYED_LIST [EPA_EXPRESSION]
+			l_expr_list: ARRAYED_LIST [EPA_AST_EXPRESSION]
 			l_expressions_to_monitor: like expressions_to_monitor
 		do
 			if state_skeleton_cache = Void then
@@ -54,7 +62,7 @@ feature -- Dynamic state
 			-- State skeleton for `a_feature', derived from `expressions_to_monitor'.
 		local
 			l_expressions_to_monitor: like expressions_to_monitor
-			l_expressions: EPA_HASH_SET [EPA_EXPRESSION]
+			l_expressions: EPA_HASH_SET [EPA_AST_EXPRESSION]
 			l_builder: AFX_DERIVED_STATE_SKELETON_BUILDER
 		do
 			if derived_state_skeleton_cache = Void then
@@ -116,7 +124,7 @@ feature -- Static structure
 
 feature{NONE} -- Cache
 
-	expressions_to_monitor_cache: DS_HASH_TABLE [AFX_EXPR_RANK, EPA_EXPRESSION]
+	expressions_to_monitor_cache: DS_HASH_TABLE [AFX_EXPR_RANK, EPA_AST_EXPRESSION]
 			-- Cache for `expressions_to_monitor'.
 
 	ast_structure_cache: EPA_FEATURE_AST_STRUCTURE_NODE

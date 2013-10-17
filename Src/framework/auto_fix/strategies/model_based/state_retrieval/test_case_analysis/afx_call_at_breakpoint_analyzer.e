@@ -86,11 +86,19 @@ feature -- Basic operation
 			l_breakpoint_info: DBG_BREAKABLE_POINT_INFO
 			l_breakpoint_text: STRING
 			l_ast: AST_EIFFEL
+			l_column_index: INTEGER
 		do
 			reset_analyzer (a_caller_class, a_caller_feature, a_breakpoint, a_nested_breakpoint, a_callee_class, a_callee_feature_name)
 
 			l_breakpoint_info := breakpoint_info_at (caller_class, caller_feature, breakpoint_index)
 			l_breakpoint_text := l_breakpoint_info.text
+
+				-- In case this is a contract clause, remove the optional tag;
+			l_column_index := l_breakpoint_text.index_of (':', 1)
+			if l_column_index > 0 and then l_breakpoint_text[l_column_index + 1] /= '=' then
+				l_breakpoint_text := l_breakpoint_text.substring (l_column_index + 1, l_breakpoint_text.count)
+			end
+
 			l_ast := ast_from_statement_or_expression_text (l_breakpoint_text)
 			l_ast := ast_in_context_class (l_ast, l_breakpoint_info.class_c,
 					l_breakpoint_info.class_c.feature_of_rout_id_set (a_caller_feature.rout_id_set),
@@ -272,14 +280,17 @@ feature{NONE} -- Implementation
 				end
 
 				create l_expr.make_with_text (caller_class, caller_feature, a_target, caller_feature.written_class)
-				l_class := l_expr.type.associated_class
-				if is_feature_call_conforming (current_nested_breakpoint_index, l_class, l_feature_name) then
-					is_last_call_precursor := False
-					if callee_class = Void then
-						callee_class := l_class
+				if l_expr.type /= Void then
+					l_class := l_expr.type.associated_class
+					if is_feature_call_conforming (current_nested_breakpoint_index, l_class, l_feature_name) then
+						is_last_call_precursor := False
+						if callee_class = Void then
+							callee_class := l_class
+						end
+						last_callee_target := l_expr
+						save_feature_call_arguments (l_parameters)
 					end
-					last_callee_target := l_expr
-					save_feature_call_arguments (l_parameters)
+
 				end
 			end
 		end

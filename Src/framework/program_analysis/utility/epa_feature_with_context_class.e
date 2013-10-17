@@ -72,6 +72,11 @@ feature -- Access
 			Result := context_class.class_id = other.context_class.class_id and then feature_.rout_id_set ~ other.feature_.rout_id_set
 		end
 
+	is_about_same_feature (other: EPA_FEATURE_WITH_CONTEXT_CLASS): BOOLEAN
+		do
+			Result := context_class.class_id = other.context_class.class_id and then feature_.rout_id_set ~ other.feature_.rout_id_set
+		end
+
 feature -- Status report
 
 	is_public: BOOLEAN

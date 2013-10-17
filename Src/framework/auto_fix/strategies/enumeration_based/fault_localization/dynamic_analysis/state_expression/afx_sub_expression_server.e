@@ -9,7 +9,7 @@ class
 
 feature -- Basic operation
 
-	sub_expressions (a_feature: EPA_FEATURE_WITH_CONTEXT_CLASS): EPA_HASH_SET [EPA_EXPRESSION]
+	sub_expressions (a_feature: EPA_FEATURE_WITH_CONTEXT_CLASS): EPA_HASH_SET [EPA_AST_EXPRESSION]
 			-- Set of expressions from `a_feature', in its written class.
 		require
 			feature_attached: a_feature /= Void
@@ -23,7 +23,7 @@ feature -- Basic operation
 
 feature -- Shared collector
 
-	sub_expression_collector: AFX_SUB_EXPRESSION_COLLECTOR
+	sub_expression_collector: EPA_SUB_EXPRESSION_COLLECTOR
 			-- Sub-expression collector.
 		once
 			create Result
@@ -34,7 +34,7 @@ feature -- Shared collector
 
 feature -- Shared storage
 
-	sub_expressions_repository: DS_HASH_TABLE [EPA_HASH_SET [EPA_EXPRESSION], EPA_FEATURE_WITH_CONTEXT_CLASS]
+	sub_expressions_repository: DS_HASH_TABLE [EPA_HASH_SET [EPA_AST_EXPRESSION], EPA_FEATURE_WITH_CONTEXT_CLASS]
 			-- Repository for sub-expressions of features.
 		once
 			create Result.make_equal (10)

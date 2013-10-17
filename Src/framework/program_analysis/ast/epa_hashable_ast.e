@@ -44,7 +44,7 @@ feature -- Access
 
 feature -- Access
 
-	hash_code: INTEGER is
+	hash_code: INTEGER
 			-- Hash code for `v'
 		do
 			Result := ast.first_token (match_list_server.item (written_class.class_id)).position

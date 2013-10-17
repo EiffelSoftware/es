@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AFX_SUB_EXPRESSION_COLLECTOR
+	EPA_SUB_EXPRESSION_COLLECTOR
 
 inherit
 
@@ -33,17 +33,17 @@ inherit
 
 	SHARED_TYPES
 
-	AFX_SHARED_SERVER_VARIABLES_IN_SCOPE
+	EPA_SHARED_SERVER_VARIABLES_IN_SCOPE
 
 	EPA_UTILITY
 
-	AFX_SHARED_SESSION
+	-- AFX_SHARED_SESSION
 
 	REFACTORING_HELPER
 
 feature -- Access
 
-	last_sub_expressions: EPA_HASH_SET [EPA_EXPRESSION]
+	last_sub_expressions: EPA_HASH_SET [EPA_AST_EXPRESSION]
 			-- Set of sub- expressions from last collecting.
 		do
 			if last_sub_expressions_cache = Void then
@@ -73,6 +73,7 @@ feature -- Basic operation
 			l_ast := ast_in_context_class (l_ast, a_feature_with_context.written_class, a_feature_with_context.written_feature, a_feature_with_context.context_class)
 
 			collect_from_ast (a_feature_with_context, l_ast)
+			collect_local_entities
 		end
 
 	collect_from_expression_text (a_feature_with_context: EPA_FEATURE_WITH_CONTEXT_CLASS; a_expr_text: STRING)
@@ -96,9 +97,10 @@ feature -- Basic operation
 		do
 			reset_collector
 
-			context_feature := a_feature_with_context
-			a_ast.process (Current)
-			collect_local_entities
+			if a_ast /= Void then
+				context_feature := a_feature_with_context
+				a_ast.process (Current)
+			end
 		end
 
 feature -- Status report
@@ -206,28 +208,24 @@ feature{NONE} -- Auxiliary
 			-- Add the expression from `a_text'.
 		local
 			l_expr: EPA_AST_EXPRESSION
-			l_retried: BOOLEAN
+			l_creator: EPA_AST_EXPRESSION_SAFE_CREATOR
 		do
-			if not l_retried then
-				create l_expr.make_with_text (context_feature.context_class, context_feature.feature_, a_text, context_feature.written_class)
-				if not l_expr.has_syntax_error and then not l_expr.has_type_error and then l_expr.type /= Void and then not l_expr.type.is_void then
-					last_sub_expressions.force (l_expr)
-				end
+			l_expr := l_creator.safe_create_with_text (context_feature.context_class, context_feature.feature_, a_text, context_feature.written_class)
+			if l_expr /= Void and then not l_expr.type.is_void then
+				last_sub_expressions.force (l_expr)
 			end
-		rescue
-			l_retried := True
-			retry
 		end
 
 	add_expression_from_ast (a_ast: AST_EIFFEL)
 			-- Add an expression from `a_ast'.
 		local
 			l_expr: EPA_AST_EXPRESSION
+			l_creator: EPA_AST_EXPRESSION_SAFE_CREATOR
 		do
 			add_expression_from_text (text_from_ast (a_ast))
---			if attached {EXPR_AS} a_ast as lt_expr then
---				create l_expr.make_with_feature (context_feature.context_class, context_feature.feature_, lt_expr, context_feature.written_class)
---				if not l_expr.has_syntax_error and then not l_expr.has_type_error and then l_expr.type /= Void and then not l_expr.type.is_void then
+--			if attached a_ast as lt_expr then
+--				l_expr := l_creator.safe_create_with_feature (context_feature.context_class, context_feature.feature_, lt_expr, context_feature.written_class)
+--				if l_expr /= Void and then not l_expr.type.is_void then
 --					last_sub_expressions.force (l_expr)
 --				end
 --			end

@@ -36,6 +36,7 @@ feature -- Basic operations
 			l_target_context: ETR_FEATURE_CONTEXT
 			l_new_set: like path_conditions
 			l_expr: EPA_AST_EXPRESSION
+			l_creator: EPA_AST_EXPRESSION_SAFE_CREATOR
 		do
 			context_feature := a_feature
 			context_class := a_class
@@ -61,8 +62,10 @@ feature -- Basic operations
 					path_conditions.after
 				loop
 					if attached {EXPR_AS} ast_in_other_context (path_conditions.item_for_iteration.ast, l_source_context, l_target_context) as l_ast then
-						create l_expr.make_with_feature (context_class, context_feature, l_ast, context_class)
-						l_new_set.force_last (l_expr)
+						l_expr := l_creator.safe_create_with_feature (context_class, context_feature, l_ast, context_class)
+						if l_expr /= Void then
+							l_new_set.force_last (l_expr)
+						end
 					end
 					path_conditions.forth
 				end
@@ -127,6 +130,7 @@ feature{NONE} -- Implementation
 			l_exprs: like expression_with_local_replaced_with_definitions
 			l_condition: EPA_AST_EXPRESSION
 			l_data: TUPLE [expr: EPA_EXPRESSION; has_changed: BOOLEAN]
+			l_creator: EPA_AST_EXPRESSION_SAFE_CREATOR
 		do
 			l_should_continue := True
 
@@ -142,23 +146,25 @@ feature{NONE} -- Implementation
 
 			if l_should_continue then
 				calculate_local_definitions (locals, a_assignments)
-				create l_condition.make_with_text (a_condition.class_, a_condition.feature_, a_condition.text, a_condition.written_class)
-				from
-					l_count := 1
-				until
-					l_done or else l_count > 3
-				loop
-					l_exprs := expression_with_local_replaced_with_definitions (l_condition, locals, local_definitions)
-					if not l_exprs.is_empty then
-						l_data := l_exprs.first
-						l_done := not l_data.has_changed
-						l_condition ?= l_data.expr
+				l_condition := l_creator.safe_create_with_text (a_condition.class_, a_condition.feature_, a_condition.text, a_condition.written_class)
+				if l_condition /= Void then
+					from
+						l_count := 1
+					until
+						l_done or else l_count > 3
+					loop
+						l_exprs := expression_with_local_replaced_with_definitions (l_condition, locals, local_definitions)
+						if not l_exprs.is_empty then
+							l_data := l_exprs.first
+							l_done := not l_data.has_changed
+							l_condition ?= l_data.expr
+						end
+						l_count := l_count + 1
 					end
-					l_count := l_count + 1
-				end
 
-				if not is_any_local_mentioned (l_condition, locals) then
-					path_conditions.force_last (l_condition)
+					if not is_any_local_mentioned (l_condition, locals) then
+						path_conditions.force_last (l_condition)
+					end
 				end
 			end
 		end
@@ -178,6 +184,7 @@ feature{NONE} -- Implementation
 			l_rewriter: like expression_rewriter
 			l_replacements: HASH_TABLE [STRING, STRING]
 			l_new_expr: EPA_AST_EXPRESSION
+			l_creator: EPA_AST_EXPRESSION_SAFE_CREATOR
 		do
 			create Result.make
 
@@ -205,8 +212,8 @@ feature{NONE} -- Implementation
 					l_cursor.forth
 				end
 				l_new_text := l_rewriter.ast_text (a_expression.ast, l_replacements)
-				create l_new_expr.make_with_text (a_expression.class_, a_expression.feature_, l_new_text, a_expression.written_class)
-				if not l_new_expr.has_syntax_error and then not l_new_expr.has_type_error and then l_new_expr.type /= Void then
+				l_new_expr := l_creator.safe_create_with_text (a_expression.class_, a_expression.feature_, l_new_text, a_expression.written_class)
+				if l_new_expr /= Void then
 					Result.extend ([l_new_expr, l_new_text /~ l_original_text])
 				end
 			end

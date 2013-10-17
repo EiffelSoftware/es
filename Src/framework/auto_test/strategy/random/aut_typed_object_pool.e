@@ -189,8 +189,8 @@ feature -- Basic operations
 			l_var_tbl := variable_table
 			storage.force_last (a_type, a_variable)
 			set_variable_count (variable_count + 1)
-			if a_type.has_associated_class then
-				if is_agent_type (a_type) then
+			if a_type.has_associated_class or else a_type.is_none then
+				if not a_type.is_none and then is_agent_type (a_type) then
 					if not l_var_tbl.has (a_type) then
 						l_var_tbl.force_last (create {DS_ARRAYED_LIST [ITP_VARIABLE]}.make (1), a_type)
 					end
@@ -422,7 +422,7 @@ feature{NONE} -- Implementation
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

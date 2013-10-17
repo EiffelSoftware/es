@@ -10,6 +10,12 @@ class
 inherit
 	DS_HASH_SET [G]
 
+	EPA_HASH_CALCULATOR
+		undefine
+			is_equal,
+			copy
+		end
+
 	EPA_UTILITY
 		undefine
 			is_equal,
@@ -62,6 +68,27 @@ feature -- Access
 			create l_temp.make (count)
 			l_temp.set_equality_tester (equality_tester)
 			Result := binom (Current, k, l_temp)
+		end
+
+feature
+
+	key_to_hash: DS_LINEAR [INTEGER]
+			-- Array of integers to calculate the hash code.
+		local
+			l_keys: DS_ARRAYED_LIST[INTEGER]
+			l_cursor: DS_HASH_SET_CURSOR[G]
+		do
+			create l_keys.make_equal (count + 1)
+			from
+				l_cursor := new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_keys.force_last (l_cursor.item.hash_code)
+				l_cursor.forth
+			end
+			Result := l_keys
 		end
 
 feature{NONE} -- Implementation

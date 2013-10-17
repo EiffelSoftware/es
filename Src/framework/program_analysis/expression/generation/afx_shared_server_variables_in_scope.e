@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	AFX_SHARED_SERVER_VARIABLES_IN_SCOPE
+	EPA_SHARED_SERVER_VARIABLES_IN_SCOPE
 
 inherit
 	ANY
@@ -16,7 +16,7 @@ inherit
 
 feature -- Access
 
-	server_variables_in_scope: AFX_SERVER_VARIABLES_IN_SCOPE
+	server_variables_in_scope: EPA_SERVER_VARIABLES_IN_SCOPE
 			-- Shared server.
 		do
 			Result := server_variables_in_scope_cell.item
@@ -24,7 +24,7 @@ feature -- Access
 
 feature -- Status set
 
-	set_server_variables_in_scope (a_server: AFX_SERVER_VARIABLES_IN_SCOPE)
+	set_server_variables_in_scope (a_server: EPA_SERVER_VARIABLES_IN_SCOPE)
 			-- Set `server_variables_in_scope'.
 		do
 			server_variables_in_scope_cell.put (a_server)
@@ -32,10 +32,10 @@ feature -- Status set
 
 feature{NONE} -- Storage
 
-	server_variables_in_scope_cell: CELL [AFX_SERVER_VARIABLES_IN_SCOPE]
+	server_variables_in_scope_cell: CELL [EPA_SERVER_VARIABLES_IN_SCOPE]
 			-- Storage for `server_variables_in_scope'.
 		once
-			create Result.put (create {AFX_SERVER_VARIABLES_IN_SCOPE})
+			create Result.put (create {EPA_SERVER_VARIABLES_IN_SCOPE})
 		end
 
 end

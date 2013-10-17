@@ -169,6 +169,9 @@ feature -- Test case analysis
 	test_case_file_list: STRING
 			-- Full path to a file, where test cases to be used to build the fixing project are listed.
 
+	relaxed_test_case_path: STRING
+	relaxed_test_case_file_list: STRING
+
 	max_test_case_number: INTEGER
 			-- Max number of test cases
 			-- Default: 0
@@ -180,6 +183,14 @@ feature -- Test case analysis
 	max_failing_test_case_number: INTEGER
 			-- Max number of failing test cases.
 			-- Default: 0. (All faiing test cases)
+
+	max_relaxed_passing_test_case_number: INTEGER
+			-- Max number of relaxed passing test cases.
+			-- Default: 0. (All relaxed passing test cases)
+
+	max_relaxed_failing_test_case_number: INTEGER
+			-- Max number of relaxed failing test cases.
+			-- Default: 0. (All relaxed faiing test cases)
 
 	is_arff_generation_enabled: BOOLEAN
 			-- Should ARFF file be generated during test case analysis?
@@ -485,6 +496,8 @@ feature -- Status report
 	should_build_test_cases: BOOLEAN
 			-- Should test case be analyzed?
 
+	should_build_relaxed_test_cases: BOOLEAN
+
 	should_analyze_test_cases: BOOLEAN
 			-- Should test cases first be built?
 
@@ -495,6 +508,14 @@ feature -- Setting
 		do
 			is_using_random_based_strategy_cache := b
 			is_using_model_based_strategy_cache := not b
+		end
+
+	set_is_fixing_contracts
+			--
+		do
+			is_fixing_contracts_cache := True
+			is_using_random_based_strategy_cache := False
+			is_using_model_based_strategy_cache := False
 		end
 
 	set_is_using_model_based_strategy (b: BOOLEAN)
@@ -524,6 +545,26 @@ feature -- Setting
 			max_failing_test_case_number_set: max_failing_test_case_number = a_number
 		end
 
+	set_max_relaxed_passing_test_case_number (a_number: INTEGER)
+			-- Set `max_relaxed_passing_test_case_number' with `a_number'.
+		require
+			positive_number: a_number >= 0
+		do
+			max_relaxed_passing_test_case_number := a_number
+		ensure
+			max_relaxed_passing_test_case_number_set: max_relaxed_passing_test_case_number  = a_number
+		end
+
+	set_max_relaxed_failing_test_case_number (a_number: INTEGER)
+			-- Set `max_relaxed_failing_test_case_number' with `a_number'.
+		require
+			positive_number: a_number >= 0
+		do
+			max_relaxed_failing_test_case_number := a_number
+		ensure
+			max_relaxed_failing_test_case_number_set: max_relaxed_failing_test_case_number = a_number
+		end
+
 	set_should_retrieve_state (b: BOOLEAN)
 			-- Set `should_retrieve_state' with `b'.
 		do
@@ -538,6 +579,11 @@ feature -- Setting
 			should_build_test_cases := b
 		ensure
 			should_analyze_test_cases_set: should_build_test_cases = b
+		end
+
+	set_should_build_relaxed_test_cases (b: BOOLEAN)
+		do
+			should_build_relaxed_test_cases := b
 		end
 
 	set_test_case_path (a_path: like test_case_path)
@@ -558,6 +604,24 @@ feature -- Setting
 		ensure
 			file_list_set: test_case_file_list ~ a_path
 		end
+
+	set_relaxed_test_case_path (a_path: like relaxed_test_case_path)
+		do
+			create relaxed_test_case_path.make_from_string (a_path)
+		end
+
+	set_relaxed_test_case_file_list (a_path: STRING)
+		do
+			create relaxed_test_case_file_list.make_from_string (a_path)
+		end
+
+	set_relaxed_feature (a_feature: STRING)
+		do
+			relaxed_feature := a_feature.twin
+		end
+
+	relaxed_feature: STRING
+			-- 
 
 	set_max_test_case_number (b: INTEGER)
 			-- Set `max_test_case_number' with `b'.
@@ -700,5 +764,8 @@ feature{NONE} -- Implementation
 
 	is_using_random_based_strategy_cache: BOOLEAN
 			-- Cache for `is_using_random_based_strategy'.
+
+	is_fixing_contracts_cache: BOOLEAN
+			--
 
 end

@@ -135,7 +135,7 @@ feature{NONE} -- Implementation
 			l_file: PLAIN_TEXT_FILE
 		do
 			create l_file.make_with_name (lpsolve_file_path)
-			l_file.open_read
+			l_file.open_write
 			l_file.put_string (a_content)
 			l_file.close
 		end

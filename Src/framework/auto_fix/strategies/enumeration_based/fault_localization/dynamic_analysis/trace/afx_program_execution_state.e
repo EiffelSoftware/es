@@ -7,6 +7,10 @@ note
 class
 	AFX_PROGRAM_EXECUTION_STATE
 
+inherit
+	ANY
+		redefine out end
+
 create
 	make_with_state_and_location
 
@@ -29,12 +33,14 @@ feature -- Access
 
 feature -- Derived state
 
-	derived_state (a_derived_skeleton: EPA_STATE_SKELETON): AFX_PROGRAM_EXECUTION_STATE
+	derived_state (a_derived_skeleton: EPA_STATE_SKELETON; a_use_aspect: BOOLEAN): AFX_PROGRAM_EXECUTION_STATE
 			-- Derived state from the Current, based on `a_derived_skeleton'.
 		require
 			skeleton_attached: a_derived_skeleton /= Void
 		local
 			l_state: EPA_STATE
+			l_creator: EPA_AST_EXPRESSION_SAFE_CREATOR
+			l_exp: EPA_AST_EXPRESSION
 			l_equation: EPA_EQUATION
 		do
 			from
@@ -45,13 +51,51 @@ feature -- Derived state
 			loop
 				if attached {AFX_PROGRAM_STATE_ASPECT} a_derived_skeleton.item_for_iteration as lv_aspect then
 					lv_aspect.evaluate (state)
-					create l_equation.make (lv_aspect, lv_aspect.last_value)
-					l_state.force (l_equation)
+					if a_use_aspect then
+						create l_equation.make (lv_aspect, lv_aspect.last_value)
+						l_state.force (l_equation)
+					else
+						l_exp := l_creator.safe_create_with_expression (lv_aspect)
+						if l_exp /= Void then
+							create l_equation.make (l_exp, lv_aspect.last_value)
+							l_state.force (l_equation)
+						end
+					end
+
 				end
 				a_derived_skeleton.forth
 			end
 			create Result.make_with_state_and_location (l_state, location)
 		end
+
+--	state_in_expression: AFX_PROGRAM_EXECUTION_STATE
+--		local
+--			l_state: EPA_STATE
+--			l_creator: EPA_AST_EXPRESSION_SAFE_CREATOR
+--			l_exp: EPA_AST_EXPRESSION
+--			l_equation: EPA_EQUATION
+--		do
+--			from
+--				create l_state.make (state.count, state.class_, state.feature_)
+--				a_derived_skeleton.start
+--			until
+--				a_derived_skeleton.after
+--			loop
+--				if attached {AFX_PROGRAM_STATE_ASPECT} a_derived_skeleton.item_for_iteration as lv_aspect then
+--					lv_aspect.evaluate (state)
+--					create l_equation.make (lv_aspect, lv_aspect.last_value)
+--					l_state.force (l_equation)
+
+----					l_exp := l_creator.safe_create_with_expression (lv_aspect)
+----					if l_exp /= Void then
+----						create l_equation.make (l_exp, lv_aspect.last_value)
+----						l_state.force (l_equation)
+----					end
+--				end
+--				a_derived_skeleton.forth
+--			end
+--			create Result.make_with_state_and_location (l_state, location)
+--		end
 
 feature -- Statistic
 
@@ -114,6 +158,14 @@ feature{NONE} -- Status set
 		do
 			location := a_location
 			reset_statistics
+		end
+
+feature
+
+	out: STRING
+		local
+		do
+			Result := location.out + "%N" + state.debug_output
 		end
 
 feature{NONE} -- Cache

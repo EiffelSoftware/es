@@ -92,7 +92,7 @@ feature -- Access
 
 feature -- Derived repository
 
-	derived_repository (a_derived_skeleton: EPA_STATE_SKELETON): AFX_PROGRAM_EXECUTION_TRACE_REPOSITORY
+	derived_repository (a_derived_skeleton: EPA_STATE_SKELETON; a_use_aspect: BOOLEAN): AFX_PROGRAM_EXECUTION_TRACE_REPOSITORY
 			-- Trace reposiroty derived from the Current,
 			-- using the derived skeleton `a_derived_skeleton'.
 		do
@@ -100,7 +100,19 @@ feature -- Derived repository
 			from start
 			until after
 			loop
-				Result.force (item_for_iteration.derived_trace (a_derived_skeleton), key_for_iteration)
+				Result.force (item_for_iteration.derived_trace (a_derived_skeleton, a_use_aspect), key_for_iteration)
+				forth
+			end
+		end
+
+	derived_compound_repository (a_feature_to_skeleton_map: DS_HASH_TABLE [EPA_STATE_SKELETON, AFX_FEATURE_TO_MONITOR]; a_use_aspect: BOOLEAN): like Current
+		local
+		do
+			create Result.make (count)
+			from start
+			until after
+			loop
+				Result.force (item_for_iteration.derived_compound_trace (a_feature_to_skeleton_map, a_use_aspect), key_for_iteration)
 				forth
 			end
 		end

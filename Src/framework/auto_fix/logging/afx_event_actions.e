@@ -28,6 +28,9 @@ feature{NONE} -- Initialization
 			create fix_validation_start_actions
 			create fix_validation_end_actions
 
+			create contract_fixes_generation_end_actions
+			create contract_fixes_validation_end_actions
+
 			create report_generation_start_actions
 			create report_generation_end_actions
 
@@ -55,6 +58,8 @@ feature -- Subscribe
 			test_case_analysis_end_actions.extend (agent a_listener.on_test_case_analysis_ends)
 			fix_generation_start_actions.extend (agent a_listener.on_fix_generation_starts)
 			fix_generation_end_actions.extend (agent a_listener.on_fix_generation_ends)
+			contract_fixes_generation_end_actions.extend (agent a_listener.on_contract_fixes_generation_ends)
+			contract_fixes_validation_end_actions.extend (agent a_listener.on_contract_fixes_validation_ends)
 			fix_validation_start_actions.extend (agent a_listener.on_fix_validation_starts)
 			fix_validation_end_actions.extend (agent a_listener.on_fix_validation_ends)
 			new_test_case_found_actions.extend (agent a_listener.on_new_test_case_found)
@@ -89,6 +94,10 @@ feature -- Access
 	fix_generation_end_actions: ACTION_SEQUENCE [TUPLE [a_fixes: DS_LINKED_LIST [AFX_FIX]]]
 			-- Actions to be performed when fix generation ends
 			-- `a_candidate_count' indidates the number of generated fix candidates
+
+	contract_fixes_generation_end_actions: ACTION_SEQUENCE [TUPLE [a_fixes: DS_LIST [AFX_CONTRACT_FIX_ACROSS_FEATURES]]]
+
+	contract_fixes_validation_end_actions: ACTION_SEQUENCE [TUPLE [a_fixes: DS_LIST [AFX_CONTRACT_FIX_ACROSS_FEATURES]]]
 
 	fix_validation_start_actions: ACTION_SEQUENCE [TUPLE[a_fixes: LINKED_LIST [AFX_MELTED_FIX]]]
 			-- Actions to be performed when fix validation starts
@@ -170,6 +179,17 @@ feature -- actions
 			-- `a_candidate_count' indidates the number of generated fix candidates.
 		do
 			fix_generation_end_actions.call ([a_fixes])
+		end
+
+	notify_on_contract_fixes_generation_ends (a_fixes: DS_LIST [AFX_CONTRACT_FIX_ACROSS_FEATURES])
+		do
+			contract_fixes_generation_end_actions.call ([a_fixes])
+		end
+
+
+	notify_on_contract_fixes_validation_ends (a_fixes: DS_LIST [AFX_CONTRACT_FIX_ACROSS_FEATURES])
+		do
+			contract_fixes_validation_end_actions.call ([a_fixes])
 		end
 
 	notify_on_fix_validation_starts (a_fixes: LINKED_LIST [AFX_MELTED_FIX])

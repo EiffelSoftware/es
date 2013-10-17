@@ -48,6 +48,7 @@ feature -- Basic operations
 	execute (a_bp: BREAKPOINT; a_dm: DEBUGGER_MANAGER)
 		local
 			l_exprs: DS_HASH_SET [EPA_EXPRESSION]
+			l_expr: EPA_EXPRESSION
 			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
 			l_concrete_state: EPA_STATE
 			l_state_value: EPA_EQUATION
@@ -64,7 +65,9 @@ feature -- Basic operations
 				until
 					l_cursor.after
 				loop
-					create l_state_value.make (l_cursor.item, evaluated_value_from_debugger (a_dm, l_cursor.item))
+					l_expr := l_cursor.item
+--					Io.put_string ("Evaluating " + l_expr.text + "%N")
+					create l_state_value.make (l_expr, evaluated_value_from_debugger (a_dm, l_expr))
 					l_concrete_state.force_last (l_state_value)
 					l_cursor.forth
 				end

@@ -21,43 +21,45 @@ inherit
 
 	EXCEPTIONS
 
-create
-	make
-
-feature -- Initialization
-
-	make (a_names: attached DS_HASH_SET [STRING])
-			-- Initialization
-		require
-			a_names_attached: a_names /= Void
-		do
-			create class_names.make (a_names.count)
-			a_names.do_all (agent class_names.force_new)
-		end
-
 feature -- Access
 
-	class_names: attached DS_HASH_SET [STRING]
+	class_names: DS_HASH_SET [STRING]
 			-- Names of basic classes to be processed.
 
-	last_interface_related_classes: attached DS_HASH_TABLE[DS_HASH_SET[STRING], STRING]
-			-- Result of last collection.
+	last_interface_related_classes_from_classes: DS_HASH_TABLE[DS_HASH_SET[STRING], STRING]
+			-- Result of last collection from classes.
 			-- The keys are names of the basic classes, and the values are names of the interface-related classes.
 			-- The basic class names could also appear in the related hash sets.
 		do
-			if last_interface_related_classes_cache = Void then
-				create last_interface_related_classes_cache.make_default
-				last_interface_related_classes_cache.set_key_equality_tester (case_insensitive_string_equality_tester)
+			if last_interface_related_classes_from_classes_cache = Void then
+				create last_interface_related_classes_from_classes_cache.make_default
+				last_interface_related_classes_from_classes_cache.set_key_equality_tester (case_insensitive_string_equality_tester)
 			end
 
-			Result := last_interface_related_classes_cache
+			Result := last_interface_related_classes_from_classes_cache
 		ensure
 			result_attached: Result /= Void
 		end
 
+	features: DS_HASH_SET [AUT_FEATURE_OF_TYPE]
+			-- Features to be processed.
+
+	last_interface_related_classes_from_features: DS_HASH_SET [STRING]
+			-- Result of last collection from `features'.
+		do
+			if last_interface_related_classes_from_features_cache = Void then
+				create last_interface_related_classes_from_features_cache.make_equal (10)
+			end
+
+			Result := last_interface_related_classes_from_features_cache
+		end
+
+	last_interface_related_classes_from_features_cache: like last_interface_related_classes_from_features
+			-- Cache for `last_interface_related_classes_from_features'.
+
 feature -- Operation
 
-	collect
+	collect_from_classes (a_names: attached DS_HASH_SET [STRING])
 			-- Collect interface related classes for a set of basic classes.
 			-- For each basic class from `class_names', all the classes referred to in its interface would be collected.
 			-- The result is available in `last_interface_related_classes'.
@@ -65,6 +67,10 @@ feature -- Operation
 			l_basics: like class_names
 			l_basic: STRING
 		do
+			create class_names.make (a_names.count + 1)
+			a_names.do_all (agent class_names.force_new)
+			last_interface_related_classes_from_classes.wipe_out
+
 			l_basics := class_names
 			from l_basics.start
 			until l_basics.after
@@ -73,9 +79,31 @@ feature -- Operation
 
 				-- Collect from each class.
 				collect_from_single_class (l_basic)
-				check class_in_result: last_interface_related_classes.has (l_basic) end
+				check class_in_result: last_interface_related_classes_from_classes.has (l_basic) end
 
 				l_basics.forth
+			end
+		end
+
+	collect_from_features (a_features: attached DS_HASH_SET [AUT_FEATURE_OF_TYPE])
+			-- Collect interface related classes for a set of features.
+		local
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+		do
+			create features.make_equal (a_features.count + 1)
+			a_features.do_all (agent features.force_last)
+			last_interface_related_classes_from_features.wipe_out
+
+			from features.start
+			until features.after
+			loop
+				l_class := features.item_for_iteration.associated_class
+				l_feature := features.item_for_iteration.feature_
+
+				collect_from_single_routine (l_class, l_feature, last_interface_related_classes_from_features)
+
+				features.forth
 			end
 		end
 
@@ -111,7 +139,7 @@ feature{NONE} -- Implementation
 			-- Add an empty set to the result.
 			create l_related_classes.make_default
 			l_related_classes.set_equality_tester (case_insensitive_string_equality_tester)
-			last_interface_related_classes.force_new (l_related_classes, a_class)
+			last_interface_related_classes_from_classes.force_new (l_related_classes, a_class)
 
 			if attached {CLASS_C}first_class_starts_with_name (a_class) as lt_class
 					and then not lt_class.is_deferred
@@ -193,7 +221,9 @@ feature{NONE} -- Implementation
 			if not a_type.is_formal and then not a_type.is_basic then
 				l_class := a_type.associated_class
 				l_class_name := l_class.name
-				if not l_class.is_deferred and then not l_class.is_class_any and then l_class_name /~ "FUNCTION" and then l_class_name /~ "PROCEDURE" then
+				if -- not l_class.is_deferred and then
+					not l_class.is_class_any and then l_class_name /~ "FUNCTION" and then l_class_name /~ "PROCEDURE"
+				then
 					Result := True
 				end
 			end
@@ -214,8 +244,8 @@ feature{NONE} -- Implementation
 				l_basic_name := l_names.item_for_iteration
 
 				-- Related classes from interface routines.
-				check last_interface_related_classes.has (l_basic_name) end
-				l_related := last_interface_related_classes.item (l_basic_name)
+				check last_interface_related_classes_from_classes.has (l_basic_name) end
+				l_related := last_interface_related_classes_from_classes.item (l_basic_name)
 
 				-- A class should always be related with itself.
 				l_line := l_basic_name.twin
@@ -247,12 +277,12 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	last_interface_related_classes_cache: detachable like last_interface_related_classes
-			-- Cache for `last_interface_related_classes'.
+	last_interface_related_classes_from_classes_cache: detachable like last_interface_related_classes_from_classes
+			-- Cache for `last_interface_related_classes_from_classes'.
 
 
 ;note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

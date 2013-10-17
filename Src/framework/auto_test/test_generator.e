@@ -212,6 +212,11 @@ feature -- Options: basic
 			-- Have effect only if `is_test_case_serialization_retrieved_online' is True.
 			-- Default: False
 
+	feature_to_disable_contracts: STRING
+		do
+			Result := feature_to_disable_contracts_cache
+		end
+		
 feature -- Options: logging
 
 	proxy_log_options: HASH_TABLE[BOOLEAN, STRING]
@@ -993,6 +998,12 @@ feature -- Status setting
 			is_recursive_set: is_recursive = b
 		end
 
+	set_feature_to_disable_contracts (a_feature: detachable STRING)
+			-- Set `feature_to_disable_contracts_cache'.
+		do
+			feature_to_disable_contracts_cache := a_feature
+		end
+
 	set_data_input (a_input: detachable STRING)
 			-- Set `data_input' with 'a_input'.
 		do
@@ -1479,8 +1490,8 @@ feature -- Collect interface related classes
 			l_directory: DIRECTORY
 			l_file_name: FILE_NAME
 		do
-			create l_related_class_collector.make (class_names)
-			l_related_class_collector.collect
+			create l_related_class_collector
+			l_related_class_collector.collect_from_classes (class_names)
 
 			-- Prepare output file name.
 			if data_output /= Void and then not data_output.is_empty then
@@ -1518,6 +1529,9 @@ feature -- Option caches
 
 	log_processor_output_cache: like log_processor_output
 			-- Cache for `log_processor_output'
+
+	feature_to_disable_contracts_cache: like feature_to_disable_contracts
+			-- Cache for `feature_to_disable_contracts'.
 
 	data_input_cache: like data_input
 			-- Cache for `data_input'.

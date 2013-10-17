@@ -17,7 +17,7 @@ inherit
 
 feature -- Access
 
-	last_constructed_expressions: EPA_HASH_SET [EPA_EXPRESSION]
+	last_constructed_expressions: EPA_HASH_SET [EPA_AST_EXPRESSION]
 			-- Constructed expressions.
 		do
 			if last_constructed_expressions_cache = Void then
@@ -28,14 +28,14 @@ feature -- Access
 
 feature -- Basic operation
 
-	construct_from (a_expressions: EPA_HASH_SET [EPA_EXPRESSION])
+	construct_from (a_expressions: EPA_HASH_SET [EPA_AST_EXPRESSION])
 			-- Construct basic-typed expressions, based on `a_expressions', into `last_constructed_expressions'.
 		require
 			expressions_attached: a_expressions /= Void
 		local
-			l_exp: EPA_EXPRESSION
-			l_exp_set: EPA_HASH_SET [EPA_EXPRESSION]
-			l_constant_set: EPA_HASH_SET [EPA_EXPRESSION]
+			l_exp: EPA_AST_EXPRESSION
+			l_exp_set: EPA_HASH_SET [EPA_AST_EXPRESSION]
+			l_constant_set: EPA_HASH_SET [EPA_AST_EXPRESSION]
 		do
 			from
 				create l_exp_set.make_equal (a_expressions.count + 1)
@@ -66,7 +66,7 @@ feature -- Basic operation
 			last_constructed_expressions_cache := l_exp_set
 		end
 
-	construct_from_expression (a_expression: EPA_EXPRESSION)
+	construct_from_expression (a_expression: EPA_AST_EXPRESSION)
 			-- Construct basic-typed expressions, based on `a_expression', into `last_constructed_expressions'.
 		require
 			expression_attached: a_expression /= Void
@@ -76,7 +76,7 @@ feature -- Basic operation
 
 feature{NONE} -- Add result expression
 
-	add_expression (a_expr: EPA_EXPRESSION)
+	add_expression (a_expr: EPA_AST_EXPRESSION)
 			-- Add `a_expr', if basic-typed, into `expressions_to_monitor'.
 		require
 			expr_attached: a_expr /= Void
@@ -86,7 +86,7 @@ feature{NONE} -- Add result expression
 			end
 		end
 
-	add_expression_with_text (a_origin_expr: EPA_EXPRESSION; a_text: STRING)
+	add_expression_with_text (a_origin_expr: EPA_AST_EXPRESSION; a_text: STRING)
 			-- Add a expression derived from `a_origin_expr', if basic-typed, to `expressions_to_monitor'.
 			-- The expression has the text `a_text'.
 		require
@@ -101,7 +101,7 @@ feature{NONE} -- Add result expression
 
 feature{NONE} -- Implementation
 
-	construct_from_expression_internal (a_expression: EPA_EXPRESSION)
+	construct_from_expression_internal (a_expression: EPA_AST_EXPRESSION)
 			-- Construct basic-typed expressions based on `a_expression'.
 		require
 			expression_attached: a_expression /= Void
@@ -123,33 +123,36 @@ feature{NONE} -- Implementation
 			if l_result_type /= Void and then (l_result_type.is_integer or else l_result_type.is_boolean) then
 					-- Basic type, monitor the value of the expression directly.
 				add_expression (a_expression)
-			elseif l_result_type /= Void and then not l_result_type.is_formal
-					and then not l_result_type.is_void and then not l_result_type.is_basic
-			then
+			elseif l_result_type /= Void and then not l_result_type.is_void and then not l_result_type.is_expanded then
 					-- Reference type
 				l_result_class := l_result_type.associated_class
 				l_context_class := a_expression.class_
 				l_written_class := a_expression.written_class
 				l_context_feature := a_expression.feature_
 
-					-- Void-check.
-				add_expression_with_text (a_expression, "("+a_expression.text+")  = Void")
-				add_expression_with_text (a_expression, "("+a_expression.text+") /= Void")
+					-- Void-check and equality to 'Current'.
+				if not a_expression.text.is_case_insensitive_equal ("Current") then
+					add_expression_with_text (a_expression, a_expression.text + " = Void")
+					add_expression_with_text (a_expression, a_expression.text + " = Current")
+				end
 
-					-- Monitor argument-less query calls on this object.
-					-- Feature calls on "Current" object don't need to be qualified.
-				if a_expression.text.is_case_insensitive_equal ("current") then
-					l_exp_text := ""
-				else
-					l_exp_text := "(" + a_expression.text + ")."
+				if not l_result_type.is_formal then
+						-- Monitor argument-less query calls on this object.
+						-- Feature calls on "Current" object don't need to be qualified.
+					if a_expression.text.is_case_insensitive_equal ("Current") then
+						l_exp_text := ""
+					else
+						l_exp_text := a_expression.text + "."
+					end
+					l_interesting_features := interface_argumentless_queries (l_result_class)
+					from l_interesting_features.start
+					until l_interesting_features.after
+					loop
+						add_expression_with_text (a_expression, l_exp_text + l_interesting_features.item_for_iteration.feature_name_32)
+						l_interesting_features.forth
+					end
 				end
-				l_interesting_features := interface_argumentless_queries (l_result_class)
-				from l_interesting_features.start
-				until l_interesting_features.after
-				loop
-					add_expression_with_text (a_expression, l_exp_text + l_interesting_features.item_for_iteration.feature_name_32)
-					l_interesting_features.forth
-				end
+
 			end
 		end
 

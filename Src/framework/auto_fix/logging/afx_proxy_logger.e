@@ -19,6 +19,8 @@ inherit
 			on_fix_generation_ends,
 			on_fix_validation_starts,
 			on_fix_validation_ends,
+			on_contract_fixes_generation_ends,
+			on_contract_fixes_validation_ends,
 			on_new_test_case_found,
 			on_break_point_hits,
 			on_fix_candidate_validation_starts,
@@ -102,6 +104,53 @@ feature -- Actions
 		do
 			log_time_stamp (fix_generation_end_message + a_fixes.count.out + " candidates generated.")
 		end
+
+	on_contract_fixes_generation_ends (a_fixes: DS_LIST [AFX_CONTRACT_FIX_ACROSS_FEATURES])
+		local
+			l_fix_index: INTEGER
+			l_fix: AFX_CONTRACT_FIX_ACROSS_FEATURES
+		do
+			from
+				l_fix_index := 1
+				a_fixes.start
+			until
+				l_fix_index > config.max_valid_fix_number or else a_fixes.after
+			loop
+				l_fix := a_fixes.item_for_iteration
+
+				log ("------------------------- Candidate Fix #")
+				log (l_fix_index.out)
+				log_line (" -------------------------")
+				log (l_fix.out)
+
+				l_fix_index := l_fix_index + 1
+				a_fixes.forth
+			end
+		end
+
+	on_contract_fixes_validation_ends (a_fixes: DS_LIST [AFX_CONTRACT_FIX_ACROSS_FEATURES])
+		local
+			l_fix_index: INTEGER
+			l_fix: AFX_CONTRACT_FIX_ACROSS_FEATURES
+		do
+			from
+				l_fix_index := 1
+				a_fixes.start
+			until
+				l_fix_index > config.max_valid_fix_number or else a_fixes.after
+			loop
+				l_fix := a_fixes.item_for_iteration
+
+				log ("======================= Valid Fix #")
+				log (l_fix_index.out + "@" + l_fix.rank.out)
+				log_line (" =======================")
+				log (l_fix.out)
+
+				l_fix_index := l_fix_index + 1
+				a_fixes.forth
+			end
+		end
+
 
 	on_fix_validation_starts (a_fixes: LINKED_LIST [AFX_MELTED_FIX])
 			-- Action to be performed when fix validation starts
@@ -232,9 +281,6 @@ feature -- Constants
 	test_case_execution_time_out_message: STRING = "Test case execution times out"
 
 feature{NONE} -- Implementation
-
---	start_time: DT_DATE_TIME
---			-- Starting time of current AutoFix session
 
 	break_point_count: INTEGER
 			-- Number of break points that are met in the last found test case

@@ -223,10 +223,11 @@ feature -- Basic operations
 			if not l_retried then
 				l_class ?= a_fix.recipient_written_class
 				l_feat := a_fix.origin_recipient
-				-- l_data := feature_byte_code_with_text (l_class, l_feat, "feature " + a_fix.feature_text, False)
-				l_data := feature_byte_code_with_text (l_class, l_feat, "feature " + "move_item (v: G)%N do%N (create {DEVELOPER_EXCEPTION}).raise %N end%N", False)
+				l_data := feature_byte_code_with_text (l_class, l_feat, "feature " + a_fix.feature_text, False)
+				--l_data := feature_byte_code_with_text (l_class, l_feat, "feature " + "move_item (v: G)%N do%N (create {DEVELOPER_EXCEPTION}).raise %N end%N", False)
 
 				if not l_data.byte_code.is_empty then
+						-- we need " - 1" because the underlying C array is 0-based.
 					l_body_id := l_feat.real_body_id (l_class.types.first) - 1
 					l_pattern_id := l_feat.real_pattern_id (l_class.types.first)
 					create Result.make (a_fix.id, l_body_id, l_pattern_id, l_data.byte_code, l_data.last_bpslot)

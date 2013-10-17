@@ -61,6 +61,11 @@ feature -- Actions
 		do
 		end
 
+	on_contract_fixes_generation_ends (a_fixes: DS_LIST [AFX_CONTRACT_FIX_ACROSS_FEATURES])
+		do
+
+		end
+
 	on_new_test_case_found (a_tc_info: EPA_TEST_CASE_INFO)
 			-- Action to be performed when a new test case indicated by `a_tc_info' is found in test case analysis phase.
 		do
@@ -80,6 +85,11 @@ feature -- Actions
 			-- Action to be performed when `a_candidate' finishes to be validated.
 			-- `a_valid' indicates whether `a_candidate' is valid.
 		do
+		end
+
+	on_contract_fixes_validation_ends (a_fixes: DS_LIST [AFX_CONTRACT_FIX_ACROSS_FEATURES])
+		do
+
 		end
 
 	on_interpreter_starts (a_port: INTEGER)

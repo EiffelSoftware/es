@@ -233,7 +233,9 @@ feature {NONE} -- Implementation
 							t := t.base_class.actual_type
 						end
 						stream.put_string ("l_type := {")
-						stream.put_string (t.name)
+						l_type := t.name
+						l_type.replace_substring_all ("?", "")
+						stream.put_string (l_type)
 						stream.put_string ("}%N")
 
 						l_types.forth

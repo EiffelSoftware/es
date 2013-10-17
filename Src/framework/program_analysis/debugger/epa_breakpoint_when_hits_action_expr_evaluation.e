@@ -55,6 +55,7 @@ feature -- Basic operations
 	execute (a_bp: BREAKPOINT; a_dm: DEBUGGER_MANAGER)
 		local
 			l_exprs: like expressions
+			l_expr: EPA_EXPRESSION
 			l_concrete_state: EPA_STATE
 			l_state_value: EPA_EQUATION
 		do
@@ -67,6 +68,8 @@ feature -- Basic operations
 			until
 				l_exprs.after
 			loop
+				l_expr := l_exprs.item_for_iteration
+--				Io.put_string ("Evaluating " + l_expr.text + "%N")
 				create l_state_value.make (l_exprs.item_for_iteration, evaluated_value_from_debugger (a_dm, l_exprs.item_for_iteration))
 				l_concrete_state.force_last (l_state_value)
 				l_exprs.forth

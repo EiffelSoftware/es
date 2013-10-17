@@ -25,6 +25,8 @@ feature{NONE} -- Implementation
 
 	make
 			-- Initialize.
+		local
+			l_retried: BOOLEAN
 		do
 				-- Command line options:
 				-- In fixing mode: --analyze-tc <log_file_path> <is_append>
@@ -40,25 +42,43 @@ feature{NONE} -- Implementation
 				-- is_append: if true, the existing log file is appended with new data; otherwise, overwrite the original log file
 				-- port_number: port number used for socket communication.
 				-- test_case_uuid: Comma separated universal IDs of test cases to be executed. If not present, the first failing test case will be executed.
-
-			if argument_count >= 3 then
-				create_log_file (argument (2), argument (3).to_boolean)
-				if argument (1).is_case_insensitive_equal_general ("--analyze-tc") then
-						-- Analyze test cases to construct fixes.										
-					execute_test_cases
-				elseif argument (1).is_case_insensitive_equal_general ("--validate-fix") then
-						-- Validate fix candidates.
-					port := argument (4).to_integer
-					exception_count := 0
-					is_validating_fixes := True
-					validate_fixes
-				elseif argument (1).is_case_insensitive_equal_general ("--check-fault") then
-					if attached {PROCEDURE [ANY, TUPLE]} test_cases.item (first_failing_test_case_uuid) as l_test_case_agent then
-						l_test_case_agent.call (Void)
+			if not l_retried then
+				if argument_count >= 3 then
+					create_log_file (argument (2), argument (3).to_boolean)
+					log_message (argument (1) + "%N")
+					log_message (argument (2) + "%N")
+					log_message (argument (3) + "%N")
+					if argument (1).same_string_general ("--analyze-tc") then
+							-- Analyze test cases to construct fixes.
+						log_message (">> Analyzing test cases %N")										
+						execute_test_cases
+					elseif argument (1).same_string_general ("--analyze-relaxed-tc") then
+						log_message (">> Analyzing relaxed test cases %N")
+						execute_relaxed_test_cases
+					elseif argument (1).same_string_general ("--validate_contract_fix") then
+						log_message (">> Validating contract fixes %N")
+						execute_test_cases_for_contract_validation
+					elseif argument (1).same_string_general ("--validate-fix") then
+							-- Validate fix candidates.
+						port := argument (4).to_integer
+						exception_count := 0
+						is_validating_fixes := True
+						validate_fixes
+					elseif argument (1).same_string_general ("--check-fault") then
+						if attached {PROCEDURE [ANY, TUPLE]} test_cases.item (first_failing_test_case_uuid) as l_test_case_agent then
+							l_test_case_agent.call (Void)
+						end
 					end
+					close_log_file
 				end
-				close_log_file
 			end
+		rescue
+			log_message ("%N    == INTERPRETER CRASHED ==    %N")
+			log_message ("+++++++++++++++++++++++++++++++++++%N")
+			log_message (exception_manager.last_exception.original.trace)
+			log_message ("+++++++++++++++++++++++++++++++++++%N")
+			l_retried := True
+			retry
 		end
 
 feature{NONE} -- Implementation
@@ -68,9 +88,22 @@ feature{NONE} -- Implementation
 			-- Key is the universal ID for test cases,
 			-- value is the agent to invoke that test case.
 
+	test_cases_for_contract_validation: HASH_TABLE [PROCEDURE [ANY, TUPLE], STRING]
+
+	relaxed_test_cases: HASH_TABLE [PROCEDURE [ANY, TUPLE], STRING]
+
 	execute_test_cases
 			-- Run test cases and do analysis to support fix generation.
 		deferred
+		end
+
+	execute_test_cases_for_contract_validation
+			-- Run the test cases to validate contract fixes.
+		do
+		end
+
+	execute_relaxed_test_cases
+		do
 		end
 
 

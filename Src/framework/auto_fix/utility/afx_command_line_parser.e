@@ -55,12 +55,18 @@ feature -- Basic operations
 			l_feat_under_test: AP_STRING_OPTION
 			l_test_case_dir: AP_STRING_OPTION
 			l_test_case_file_list: AP_STRING_OPTION
+			l_relaxed_test_case_dir: AP_STRING_OPTION
+			l_relaxed_test_case_file_list: AP_STRING_OPTION
+			l_relaxed_feature: AP_STRING_OPTION
 			l_socket_port_range: AP_STRING_OPTION
 			l_analyze_tc_option: AP_FLAG
 			l_combination_strategy: STRING
 			l_max_test_case_no_option: AP_INTEGER_OPTION
 			l_max_passing_test_case_number_option: AP_INTEGER_OPTION
 			l_max_failing_test_case_number_option: AP_INTEGER_OPTION
+			l_max_relaxed_passing_test_case_number_option: AP_INTEGER_OPTION
+			l_max_relaxed_failing_test_case_number_option: AP_INTEGER_OPTION
+
 			l_arff_option: AP_FLAG
 			l_daikon_option: AP_FLAG
 			l_max_valid_fix_option: AP_INTEGER_OPTION
@@ -86,7 +92,7 @@ feature -- Basic operations
 			arguments.do_all (agent l_args.force_last)
 
 			create l_fix_strategy.make_with_long_form ("strategy")
-			l_fix_strategy.set_description ("Choose the strategy to be used in automatic fixing. Supported strategies include: model and random.")
+			l_fix_strategy.set_description ("Choose the strategy to be used in automatic fixing. Supported strategies include: model, random.")
 			l_parser.options.force_last (l_fix_strategy)
 
 			create l_rank_control_dependance.make_with_long_form ("CFG-usage")
@@ -141,6 +147,18 @@ feature -- Basic operations
 			l_test_case_file_list.set_description ("Build fixing project using the test case files listed in the parameter.")
 			l_parser.options.force_last (l_test_case_file_list)
 
+			create l_relaxed_test_case_dir.make_with_long_form ("relaxed-test-case-dir")
+			l_relaxed_test_case_dir.set_description ("Build fixing project using the relaxed test cases from directory specified by the parameter.")
+			l_parser.options.force_last (l_relaxed_test_case_dir)
+
+			create l_relaxed_test_case_file_list.make_with_long_form ("relaxed-test-case-file-list")
+			l_relaxed_test_case_file_list.set_description ("Build fixing project using the relaxed test case files listed in the parameter.")
+			l_parser.options.force_last (l_relaxed_test_case_file_list)
+
+			create l_relaxed_feature.make_with_long_form ("relaxed-feature")
+			l_relaxed_feature.set_description ("Feature whose interface contracts could be relaxed.")
+			l_parser.options.force_last (l_relaxed_feature)
+
 			create l_max_test_case_no_option.make_with_long_form ("max-tc-number")
 			l_max_test_case_no_option.set_description ("Maximum number of test cases that are used for invariant inference. 0 means no upper bound. Default: 0")
 			l_parser.options.force_last (l_max_test_case_no_option)
@@ -152,6 +170,14 @@ feature -- Basic operations
 			create l_max_failing_test_case_number_option.make_with_long_form ("max-failing-tc-number")
 			l_max_failing_test_case_number_option.set_description ("Maximum number of test cases that are used in fixing. 0 means using all available. Default: 0")
 			l_parser.options.force_last (l_max_failing_test_case_number_option)
+
+			create l_max_relaxed_passing_test_case_number_option.make_with_long_form ("max-relaxed-passing-tc-number")
+			l_max_relaxed_passing_test_case_number_option.set_description ("Maximum number of relaxed test cases that are used in fixing. 0 means using all available. Default: 0")
+			l_parser.options.force_last (l_max_relaxed_passing_test_case_number_option)
+
+			create l_max_relaxed_failing_test_case_number_option.make_with_long_form ("max-relaxed-failing-tc-number")
+			l_max_relaxed_failing_test_case_number_option.set_description ("Maximum number of relaxed test cases that are used in fixing. 0 means using all available. Default: 0")
+			l_parser.options.force_last (l_max_relaxed_failing_test_case_number_option)
 
 			create l_analyze_tc_option.make_with_long_form ("analyze-tc")
 			l_analyze_tc_option.set_description ("Analyze test cases in current project. This assumes that the test cases are already built with the build-tc command.")
@@ -219,6 +245,18 @@ feature -- Basic operations
 				config.set_test_case_file_list (l_test_case_file_list.parameter)
 			end
 
+			config.set_should_build_relaxed_test_cases (l_relaxed_test_case_dir.was_found or else l_relaxed_test_case_file_list.was_found)
+			if l_relaxed_test_case_dir.was_found then
+				config.set_relaxed_test_case_path (l_relaxed_test_case_dir.parameter)
+			end
+			if l_relaxed_test_case_file_list.was_found then
+				config.set_relaxed_test_case_file_list (l_relaxed_test_case_file_list.parameter)
+			end
+
+			if l_relaxed_feature.was_found then
+				config.set_relaxed_feature (l_relaxed_feature.parameter)
+			end
+
 			if l_max_test_case_no_option.was_found then
 				config.set_max_test_case_number (l_max_test_case_no_option.parameter)
 			else
@@ -235,6 +273,18 @@ feature -- Basic operations
 				config.set_max_failing_test_case_number (l_max_failing_test_case_number_option.parameter)
 			else
 				config.set_max_failing_test_case_number (0)
+			end
+
+			if l_max_relaxed_passing_test_case_number_option.was_found then
+				config.set_max_relaxed_passing_test_case_number (l_max_relaxed_passing_test_case_number_option.parameter)
+			else
+				config.set_max_relaxed_passing_test_case_number (0)
+			end
+
+			if l_max_relaxed_failing_test_case_number_option.was_found then
+				config.set_max_relaxed_failing_test_case_number (l_max_relaxed_failing_test_case_number_option.parameter)
+			else
+				config.set_max_relaxed_failing_test_case_number (0)
 			end
 
 			if l_max_valid_fix_option.was_found then

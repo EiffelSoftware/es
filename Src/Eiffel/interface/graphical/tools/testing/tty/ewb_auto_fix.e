@@ -62,9 +62,11 @@ feature -- Properties
 			l_config: AFX_CONFIG
 			l_session: AFX_SESSION
 			l_initializer: AFX_INITIALIZER
-			l_fix_proposer: AFX_FIX_PROPOSER
+			l_fix_proposer: AFX_IMPLEMENTATION_FIXER
 
-			l_fixing_project_builder: AFX_FIXING_PROJECT_BUILDER
+			l_fixing_project_builder1: AFX_PROJECT_FOR_FIXING_IMPLEMENTATION_BUILDER
+			l_fixing_project_builder2: AFX_PROJECT_FOR_FIXING_CONTRACTS_BUILDER
+			l_contract_fixer: AFX_CONTRACT_FIXER
 		do
 			create l_parser.make_with_arguments (autofix_arguments, system)
 			l_parser.parse
@@ -78,16 +80,35 @@ feature -- Properties
 			create l_initializer
 			l_initializer.prepare (config)
 
-			if is_fixing then
+			if is_fixing_contracts then
+				if config.should_build_relaxed_test_cases then
+					create l_fixing_project_builder2
+					l_fixing_project_builder2.execute
+				end
+				if is_fixing_root_available then
+					if not system.is_explicit_root (afx_project_root_class, afx_project_root_feature) then
+						system.add_explicit_root ("project", afx_project_root_class, afx_project_root_feature)
+					end
+
+					create l_contract_fixer.make
+					l_contract_fixer.execute
+
+					system.remove_explicit_root(afx_project_root_class, afx_project_root_feature)
+					system.make_update (False)
+				else
+					Io.put_string ("AutoFixing failed: Missing Project root for fixing.%N")
+				end
+
+			elseif is_fixing_implementation then
 					-- Re-structure the project to include test cases.
 				if config.should_build_test_cases then
-					create l_fixing_project_builder
-					l_fixing_project_builder.execute
+					create l_fixing_project_builder1
+					l_fixing_project_builder1.execute
 				end
 
 				if is_fixing_root_available then
 					if not system.is_explicit_root (afx_project_root_class, afx_project_root_feature) then
-						system.add_explicit_root (system.test_system.eifgens_cluster_name, afx_project_root_class, afx_project_root_feature)
+						system.add_explicit_root ("project", afx_project_root_class, afx_project_root_feature)
 					end
 
 					create l_fix_proposer.make
@@ -103,16 +124,20 @@ feature -- Properties
 			end
 		end
 
-	is_fixing: BOOLEAN
+	is_fixing_implementation: BOOLEAN
 			-- Is the run for fixing?
 		do
-			Result := not session.config.is_for_postmortem_analysis
+			Result := not session.config.is_fixing_contracts_enabled and then not session.config.is_for_postmortem_analysis
+		end
+
+	is_fixing_contracts: BOOLEAN
+			--
+		do
+			Result := session.config.is_fixing_contracts_enabled
 		end
 
 	perform_non_fixing_tasks()
 			-- Perform tasks other than fixing.
-		require
-			not_fixing: not is_fixing
 		local
 			l_postmortem_analyzer: AFX_POSTMORTEM_ANALYZER
 		do
@@ -130,7 +155,7 @@ feature -- Properties
 			l_file: PLAIN_TEXT_FILE
 			l_file_path: PATH
 		do
-			l_file_path := system.project_location.eifgens_cluster_path.extended (afx_project_root_class.as_lower + ".e")
+			l_file_path := system.project_location.location.extended (afx_project_root_class.as_lower + ".e")
 			create l_file.make_with_path (l_file_path)
 			Result := l_file.exists
 		end
