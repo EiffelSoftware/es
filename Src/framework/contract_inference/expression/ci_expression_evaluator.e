@@ -35,7 +35,8 @@ inherit
 			process_bin_not_tilde_as,
 			process_tuple_as,
 			process_un_free_as,
-			process_bin_free_as
+			process_bin_free_as,
+			process_expr_call_as
 		end
 
 	EPA_SHARED_EQUALITY_TESTERS
@@ -464,6 +465,11 @@ feature{NONE} -- Implementation
 					set_has_error (True, msg_missing_expression (a_ast, False))
 				end
 			end
+		end
+
+	process_expr_call_as (l_as: EXPR_CALL_AS)
+		do
+			process_expression (l_as)
 		end
 
 	process_nested_as (l_as: NESTED_AS)

@@ -24,6 +24,7 @@ feature{NONE} -- Initialization
 		do
 			eiffel_system := a_system
 			set_should_include_passing_test_cases_for_building_project (True)
+			set_validation_universal (True)
 		ensure
 			eiffel_system_set: eiffel_system = a_system
 		end
@@ -35,6 +36,12 @@ feature -- Access
 
 	test_case_directory: detachable STRING
 			-- Directory where test cases are stored
+
+	test_case_directory_direct: detachable STRING
+			-- Directory where test cases are stored directly.
+
+	report_path: STRING
+			-- Path where report should be generated.
 
 	class_name: STRING
 			-- Name of class whose contracts are to be inferred
@@ -212,6 +219,10 @@ feature -- Access
 			Result := composite_integer_connectors_cache
 		end
 
+	is_validation_universal: BOOLEAN
+			-- Does validation accept an expression iff it's True everywhere?
+			-- When False, validation accepts an expression as long as it is True somewhere.
+
 	is_composite_negation_boolean_premise_enabled: BOOLEAN
 			-- Is negation enabled for premises in composite frame properties.			
 			-- Default: False.
@@ -354,6 +365,9 @@ feature -- Status report
 	should_infer_contracts: BOOLEAN
 			-- Should contracts be inferred?
 
+	is_fixing_contracts: BOOLEAN
+			-- Is AutoInfer being used to fix contracts?
+
 	should_generate_weka_relations: BOOLEAN
 			-- Should Weka relations be generated?			
 
@@ -371,6 +385,16 @@ feature -- ARFF file generation
 		do
 			Result := not should_generate_arff_for_transitions
 		end
+
+feature -- Fixing contracts
+
+	max_precondition_clauses: INTEGER assign set_max_precondition_clauses
+			-- Maximum number of clauses in proposed preconditions.
+			-- Default: 2
+
+	max_precondition_proposals: INTEGER assign set_max_precondition_proposals
+			-- Maximum number of preconditions to propose.
+			-- Default: 10
 
 feature -- Weka relation generation
 
@@ -416,6 +440,26 @@ feature -- Setting
 			end
 		end
 
+	set_test_case_directory_direct (a_dir: like test_case_directory_direct)
+			-- Set `test_case_directory_direct' with `a_dir'.
+			-- Make a copy of `a_dir'
+		do
+			if a_dir = Void then
+				test_case_directory_direct := Void
+			else
+				test_case_directory_direct := a_dir.twin
+			end
+		end
+
+	set_report_path (a_path: like report_path)
+		do
+			if a_path = Void then
+				report_path := Void
+			else
+				report_path := a_path.twin
+			end
+		end
+
 	set_feature_name_for_test_cases (a_feature_names: STRING)
 			-- Set `feature_name_for_test_cases' with feature names specified in `a_feature_name'.
 			-- `a_feature_names' is a comma-separated string, each part is a feature name.
@@ -440,12 +484,63 @@ feature -- Setting
 			class_name := a_name.twin
 		end
 
+	should_disable_contracts: BOOLEAN
+			-- Should the contracts of the feature under inference be disabled during the session?
+
+	set_should_disable_contracts (a_flag: BOOLEAN)
+		do
+			should_disable_contracts := a_flag
+		end
+
 	set_should_infer_contracts (b: BOOLEAN)
 			-- Set `should_infer_contracts' with `b'.
 		do
 			should_infer_contracts := b
 		ensure
 			should_infer_contracts_set: should_infer_contracts = b
+		end
+
+	set_validation_universal (a_flag: BOOLEAN)
+			-- Set `is_validation_universal' with `a_flag'.
+		do
+			is_validation_universal := a_flag
+		ensure
+			validation_universal_set: is_validation_universal = a_flag
+		end
+
+	set_fixing_contracts (b: BOOLEAN)
+			-- Set `is_fixing_contracts' with `b'.
+		do
+			is_fixing_contracts := b
+		ensure
+			is_fixing_contracts_set: is_fixing_contracts = b
+		end
+
+	is_optimistic_about_nonsensical_values: BOOLEAN
+			-- Should use True for the value, when the evaluation of an expression has failed?
+
+	set_optimistic_about_nonsensical_values (a_flag: BOOLEAN)
+			-- Set `should_ignore_nonsensical_evaluation'.
+		do
+			is_optimistic_about_nonsensical_values := a_flag
+		end
+
+	should_explicitly_reject_failing_tests: BOOLEAN
+			-- Should generate extra precondition clauses to explicitly reject the failing tests with incomplete states?
+
+	set_explicitly_reject_failing_tests (b: BOOLEAN)
+		do
+			should_explicitly_reject_failing_tests := b
+		end
+
+	should_check_existing_contracts: BOOLEAN
+			-- Should existing contracts of feature be checked for the validity?
+			-- When yes, boolean expressions from contracts will be monitored and checked.
+			-- Default: False
+
+	set_check_existing_contracts (b: BOOLEAN)
+		do
+			should_check_existing_contracts := b
 		end
 
 	set_should_generate_weka_relations (b: BOOLEAN)
@@ -464,6 +559,20 @@ feature -- Setting
 			weka_assertion_selection_mode := i
 		ensure
 			weka_assertion_selection_mode_set: weka_assertion_selection_mode = i
+		end
+
+	set_max_precondition_clauses (i: INTEGER)
+		require
+			i_positive: i > 0
+		do
+			max_precondition_clauses := i
+		end
+
+	set_max_precondition_proposals (i: INTEGER)
+		require
+			i_positive: i > 0
+		do
+			max_precondition_proposals := i
 		end
 
 	set_max_test_case_to_execute (i: INTEGER)

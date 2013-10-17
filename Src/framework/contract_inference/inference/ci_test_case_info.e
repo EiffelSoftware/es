@@ -48,6 +48,7 @@ feature{NONE} -- Initialization
 			-- Initialize Current, but don't populate test case related attributes
 		do
 			hash_code := 0
+			is_valid := True
 		end
 
 	make_with_data (a_test_case_class: CLASS_C; a_test_feature: FEATURE_I; a_class_under_test: CLASS_C; a_feature_under_test: FEATURE_I; a_is_query: BOOLEAN; a_is_creation: BOOLEAN; a_operand_variable_indexes: STRING; a_passing: BOOLEAN)
@@ -62,6 +63,7 @@ feature{NONE} -- Initialization
 			is_feature_under_test_query := a_is_query
 			is_feature_under_test_creation := a_is_creation
 			is_passing := a_passing
+			is_valid := True
 
 			calculate_break_point_position
 			operand_variable_indexes := a_operand_variable_indexes.twin
@@ -70,11 +72,7 @@ feature{NONE} -- Initialization
 			hash_code := test_case_class.name_in_upper.hash_code
 
 			l_parts := string_slices (test_case_class.name_in_upper, "__")
-			if l_parts.last.item (1).is_digit then
-				uuid := l_parts.last.twin
-			else
-				uuid := ""
-			end
+			uuid := l_parts.last.twin
 		end
 
 	make_with_transition (a_test_case_class: CLASS_C; a_test_case_feature: FEATURE_I; a_transition: SEM_FEATURE_CALL_TRANSITION)
@@ -92,6 +90,7 @@ feature{NONE} -- Initialization
 			is_feature_under_test_query := a_transition.is_query
 			is_feature_under_test_creation := a_transition.is_creation
 			is_passing := a_transition.is_passing
+			is_valid := True
 
 			create operand_variable_indexes.make (64)
 			l_prefix_count := variable_name_prefix.count
@@ -231,6 +230,11 @@ feature -- Status report
 
 	is_passing: BOOLEAN
 			-- Is Current test case a passing test case?
+
+	is_valid: BOOLEAN
+			-- Is Current test case a valid one?
+			-- A passing test is valid if its execution is successful;
+			-- a failing test is valid if its execution triggers the same exception.
 
 feature -- Access
 
@@ -511,6 +515,11 @@ feature -- Setting
 			is_passing := b
 		ensure
 			is_passing_set: is_passing = b
+		end
+
+	set_is_valid (b: BOOLEAN)
+		do
+			is_valid := b
 		end
 
 feature{NONE} -- Implementation

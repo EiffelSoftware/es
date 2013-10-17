@@ -19,7 +19,7 @@ feature -- Basic operations
 			l_suitable_functions: like suitable_functions
 			l_quantified_expressions: like quantified_expressions
 			l_quantifier_free_exressions: like quantifier_free_expressions
-			l_valid_frame_properties: like valid_frame_properties
+			l_valid_frame_properties_pre, l_valid_frame_properties_post: like valid_frame_properties
 		do
 				-- Initialize.
 			data := a_data
@@ -29,27 +29,40 @@ feature -- Basic operations
 			l_suitable_functions := suitable_functions (True, agent is_function_suitable)
 			l_quantified_expressions := quantified_expressions (l_suitable_functions, True)
 			l_quantifier_free_exressions := quantifier_free_expressions (l_quantified_expressions)
-			l_valid_frame_properties := valid_frame_properties (False, l_quantifier_free_exressions, Void)
+
+			l_valid_frame_properties_pre := valid_frame_properties (False, True,  l_quantifier_free_exressions, Void)
+			l_valid_frame_properties_post:= valid_frame_properties (False, False, l_quantifier_free_exressions, Void)
 
 				-- Setup results.
 			create last_preconditions.make (10)
 			last_preconditions.set_equality_tester (expression_equality_tester)
+			generate_inferred_contracts (l_valid_frame_properties_pre, last_preconditions)
 			create last_postconditions.make (10)
 			last_postconditions.set_equality_tester (expression_equality_tester)
-			generate_inferred_contracts (l_valid_frame_properties)
+			generate_inferred_contracts (l_valid_frame_properties_post, last_postconditions)
 			setup_last_contracts
 
 				-- Logging.
 			logger.push_level ({ELOG_CONSTANTS}.debug_level)
-			logger.put_line (once "Valid frame properties:")
+			logger.put_line (once "Valid frame properties for preconditions:")
 			from
-				l_valid_frame_properties.start
+				l_valid_frame_properties_pre.start
 			until
-				l_valid_frame_properties.after
+				l_valid_frame_properties_pre.after
 			loop
 				logger.put_string (once "%T")
-				logger.put_line (l_valid_frame_properties.item_for_iteration.debug_output)
-				l_valid_frame_properties.forth
+				logger.put_line (l_valid_frame_properties_pre.item_for_iteration.debug_output)
+				l_valid_frame_properties_pre.forth
+			end
+			logger.put_line (once "Valid frame properties for postconditions:")
+			from
+				l_valid_frame_properties_post.start
+			until
+				l_valid_frame_properties_post.after
+			loop
+				logger.put_string (once "%T")
+				logger.put_line (l_valid_frame_properties_post.item_for_iteration.debug_output)
+				l_valid_frame_properties_post.forth
 			end
 			logger.pop_level
 		end
@@ -344,7 +357,7 @@ feature{NONE} -- Implementation
 			Result := ancestors (a_class).there_exists (agent (c: CLASS_C; a_id: INTEGER): BOOLEAN do Result := c.class_id = a_id end (?, l_container_id))
 		end
 
-	generate_inferred_contracts (a_valid_properties: DS_HASH_SET [CI_QUANTIFIED_EXPRESSION])
+	generate_inferred_contracts (a_valid_properties: DS_HASH_SET [CI_QUANTIFIED_EXPRESSION]; a_conditions: like last_preconditions)
 			-- Generate final inferred contracts from `candidate_properties' and
 			-- store result in `last_postconditions'.
 		local
@@ -358,7 +371,9 @@ feature{NONE} -- Implementation
 				l_properties.after
 			loop
 				l_expr := expression_from_quantified_expression (l_properties.item, class_under_test, feature_under_test)
-				last_postconditions.force_last (l_expr)
+				if l_expr /= Void then
+					a_conditions.force_last (l_expr)
+				end
 				l_properties.forth
 			end
 		end

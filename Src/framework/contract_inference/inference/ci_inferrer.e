@@ -50,6 +50,13 @@ feature -- Access
 			-- Key is a boolean indicating precondition or postcondition,
 			-- value is the set of assertions of that kind.
 
+	last_precondition_candidates: DS_HASH_SET [EPA_EXPRESSION]
+			-- Set of expressions as candidates for the precondition.
+		do
+		ensure
+			result_attached: Result /= Void
+		end
+
 feature -- Status report
 
 	is_arff_needed: BOOLEAN
@@ -70,6 +77,14 @@ feature -- Basic operations
 		deferred
 		end
 
+	program_states_at_entry (a_data: like data; a_abstraction: DS_HASH_SET [EPA_EXPRESSION]): HASH_TABLE [TUPLE [true_exprs, false_exprs: DS_HASH_SET [EPA_EXPRESSION]], CI_TEST_CASE_TRANSITION_INFO]
+			-- Collect program states at the entry of feature under question.
+			-- `a_abstraction' defines how to abstract the entry program state.
+			-- `a_data' contains the list of runs of interest.
+		do
+			create Result.make_equal (1)
+		end
+
 feature -- Setting
 
 	set_logger (a_logger: like logger)
@@ -86,6 +101,113 @@ feature -- Setting
 			config := a_config
 		ensure
 			config_set: config = a_config
+		end
+
+feature -- Precondition inference
+
+	feature_entry_state (a_data: like data;
+					a_funcs: EPA_HASH_SET [EPA_FUNCTION];
+					a_operand_map_table: DS_HASH_TABLE [HASH_TABLE [INTEGER_32, INTEGER_32], EPA_FUNCTION])
+				: HASH_TABLE [TUPLE[true_exprs, false_exprs: EPA_HASH_SET[EPA_EXPRESSION]], CI_TEST_CASE_TRANSITION_INFO]
+			-- Program state at the entry of feature, defined on the basis of `a_funcs'.
+			-- Test_case_info --> [expressions_with_true_value, expressions_with_false_value]
+		local
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+			l_interface_transitions: DS_HASH_TABLE [SEM_FEATURE_CALL_TRANSITION, CI_TEST_CASE_TRANSITION_INFO]
+			l_interface_transitions_cursor: DS_HASH_TABLE_CURSOR [SEM_FEATURE_CALL_TRANSITION, CI_TEST_CASE_TRANSITION_INFO]
+			l_operand_map_tables: DS_HASH_TABLE [HASH_TABLE [INTEGER_32, INTEGER_32], EPA_FUNCTION]
+			l_operand_map: HASH_TABLE [INTEGER_32, INTEGER_32]
+			l_test: CI_TEST_CASE_TRANSITION_INFO
+			l_transition: SEM_FEATURE_CALL_TRANSITION
+			l_evaluator: CI_EXPRESSION_EVALUATOR
+			l_funcs_cursor: DS_HASH_SET_CURSOR [EPA_FUNCTION]
+			l_true_expressions, l_false_expressions: EPA_HASH_SET[EPA_EXPRESSION]
+			l_func: EPA_FUNCTION
+			l_expr: EPA_EXPRESSION
+			l_evaluation: TUPLE[is_successful, val: BOOLEAN]
+		do
+			l_interface_transitions := a_data.interface_transitions
+			l_operand_map_tables := a_operand_map_table
+			create Result.make_equal (l_interface_transitions.count + 1)
+
+			l_class := class_under_test
+			l_feature := feature_under_test
+
+			create l_evaluator
+			l_evaluator.set_is_ternary_logic_enabled (True)
+			l_evaluator.set_evaluating_pre_expressions (True)
+
+			l_interface_transitions_cursor := l_interface_transitions.new_cursor
+			from l_interface_transitions_cursor.start
+			until l_interface_transitions_cursor.after
+			loop
+				l_test := l_interface_transitions_cursor.key
+				l_transition := l_interface_transitions_cursor.item
+
+				create l_true_expressions.make_equal (a_funcs.count + 1)
+				create l_false_expressions.make_equal (a_funcs.count + 1)
+				Result.force ([l_true_expressions, l_false_expressions], l_test)
+
+				l_evaluator.set_context (l_test.transition.preconditions, l_test.transition.postconditions, l_test.test_case_info.class_under_test)
+				l_funcs_cursor := a_funcs.new_cursor
+				from l_funcs_cursor.start
+				until l_funcs_cursor.after
+				loop
+					l_func := l_funcs_cursor.item
+
+					l_evaluation := evaluate_function (l_evaluator, l_test, a_operand_map_table, l_func)
+					if l_evaluation.is_successful then
+						l_expr := expression_from_function (l_func, Void, a_operand_map_table.item (l_func), l_class, l_feature)
+						if l_expr /= Void then
+							if l_evaluation.val then
+								l_true_expressions.force (l_expr)
+							else
+								l_false_expressions.force (l_expr)
+							end
+						end
+					end
+
+					l_funcs_cursor.forth
+				end
+
+				l_interface_transitions_cursor.forth
+			end
+		end
+
+	evaluate_function (a_evaluator: CI_EXPRESSION_EVALUATOR; a_test_case: CI_TEST_CASE_TRANSITION_INFO; a_operand_map_table: DS_HASH_TABLE [HASH_TABLE [INTEGER_32, INTEGER_32], EPA_FUNCTION]; a_expr: EPA_FUNCTION): TUPLE[is_successful, val: BOOLEAN]
+			-- Evaluate `a_expr' using `a_evaluator', and return the result.
+		local
+			l_operand_map: HASH_TABLE [INTEGER_32, INTEGER_32]
+			l_resolved_function: EPA_FUNCTION
+			l_successful, l_val: BOOLEAN
+		do
+			a_evaluator.wipe_out_error
+			if a_operand_map_table.has (a_expr) then
+				l_operand_map := a_operand_map_table.item (a_expr)
+				l_resolved_function := a_expr.partially_evaluated_with_arguments (operand_function_table (l_operand_map, a_test_case))
+				a_evaluator.evaluate (ast_from_expression_text (l_resolved_function.body))
+				l_successful := not a_evaluator.has_error and then a_evaluator.last_value /= Void and then a_evaluator.last_value.is_boolean
+				if l_successful then
+					l_val := a_evaluator.last_value.as_boolean.is_true
+				end
+
+					-- Logging.					
+				logger.push_level ({ELOG_LOG_MANAGER}.debug_level)
+				logger.put_string (once "%T%T")
+				logger.put_string (l_resolved_function.body)
+				logger.put_string (once " == ")
+				if not l_successful then
+					logger.put_line ("failed")
+				else
+					logger.put_line (l_val.out)
+				end
+				logger.pop_level
+			else
+				l_successful := False
+			end
+
+			Result := [l_successful, l_val]
 		end
 
 feature{NONE} -- Implementation
@@ -341,6 +463,7 @@ feature{NONE} -- Implementation
 
 	valid_frame_properties (
 		a_ternary_logic: BOOLEAN;
+		a_is_precondition: BOOLEAN;
 		a_expressions: like quantifier_free_expressions;
 		a_bookkeeping_agent: detachable PROCEDURE [ANY, TUPLE [a_quantified_expr: CI_QUANTIFIED_EXPRESSION; a_resolved_expr: STRING; a_evaluator: CI_EXPRESSION_EVALUATOR; a_tc_info: CI_TEST_CASE_TRANSITION_INFO]]): DS_HASH_SET [CI_QUANTIFIED_EXPRESSION]
 			-- Set of valid frame properties from `a_expressions'
@@ -366,6 +489,7 @@ feature{NONE} -- Implementation
 
 			create l_evaluator
 			l_evaluator.set_is_ternary_logic_enabled (a_ternary_logic)
+			l_evaluator.set_evaluating_pre_expressions (a_is_precondition)
 
 				-- Logging.
 			logger.push_level ({ELOG_LOG_MANAGER}.debug_level)
@@ -484,6 +608,7 @@ feature{NONE} -- Implementation
 			l_opd_str: STRING
 			l_body: STRING
 			l_operand_strs: HASH_TABLE [STRING, INTEGER]
+			l_creator: EPA_AST_EXPRESSION_SAFE_CREATOR
 		do
 				-- Translate 1-based argument indexes in `a_function'.`body' into 0-based operand indexes in `a_feature'.
 			l_operand_strs := operand_name_index_with_feature (feature_under_test, class_under_test)
@@ -494,9 +619,9 @@ feature{NONE} -- Implementation
 				l_body.replace_substring_all (l_arg_str, l_operand_strs.item (a_operand_map.item (l_arg_index)))
 			end
 			if a_function_type /= Void then
-				create {EPA_AST_EXPRESSION} Result.make_with_text_and_type (a_class, a_feature, l_body, a_class, a_function_type)
+				Result := l_creator.safe_create_with_text_and_type (a_class, a_feature, l_body, a_class, a_function_type)
 			else
-				create {EPA_AST_EXPRESSION} Result.make_with_text (a_class, a_feature, l_body, a_class)
+				Result := l_creator.safe_create_with_text (a_class, a_feature, l_body, a_class)
 			end
 		end
 
@@ -519,10 +644,11 @@ feature{NONE} -- Implementation
 			create l_new_pred_func.make (l_func.argument_types, l_func.argument_domains, l_func.result_type, l_text)
 			if a_quantified_expr.is_for_all then
 				l_predicate := expression_from_function (l_new_pred_func, l_new_pred_func.result_type, a_quantified_expr.operand_map, a_class, a_feature)
-				create l_forall.make (l_var_name, a_quantified_expr.quantified_variabale_type, l_predicate, a_class, a_feature, a_class)
-				Result := l_forall
-			else
-				check not_supported_yet: False end
+				if l_predicate /= Void then
+					create {EPA_UNIVERSAL_QUANTIFIED_EXPRESSION}Result.make (l_var_name, a_quantified_expr.quantified_variabale_type, l_predicate, a_class, a_feature, a_class)
+				end
+--			else
+--				check not_supported_yet: False end
 			end
 		end
 
@@ -641,13 +767,16 @@ feature{NONE} -- Candidate validation
 		local
 			l_test_case: CI_TEST_CASE_TRANSITION_INFO
 			l_candidates: DS_HASH_SET_CURSOR [EPA_FUNCTION]
+			l_confirmed_candidates, l_candidates_twin: EPA_HASH_SET [EPA_FUNCTION]
 			l_candidate: EPA_FUNCTION
 			l_evaluator: CI_EXPRESSION_EVALUATOR
 			l_operand_map_tables: DS_HASH_TABLE [HASH_TABLE [INTEGER_32, INTEGER_32], EPA_FUNCTION]
 			l_operand_map: HASH_TABLE [INTEGER, INTEGER]
 			l_resolved_function: EPA_FUNCTION
-			l_is_valid: BOOLEAN
+			l_is_valid, l_is_invalid, l_confirmed: BOOLEAN
 			l_candidate_properties: EPA_HASH_SET [EPA_FUNCTION]
+			l_once_true, l_always_true, l_once_false: EPA_HASH_SET [EPA_FUNCTION]
+			l_evaluation_result: like evaluate_function
 		do
 			logger.put_line_with_time (a_message)
 			logger.push_level ({ELOG_CONSTANTS}.debug_level)
@@ -655,7 +784,12 @@ feature{NONE} -- Candidate validation
 				-- Iterate through all test cases, and validate all properties in `candidate_properties'
 				-- in the context text of each test case.
 			l_operand_map_tables := a_operand_map_table
-			l_candidate_properties := a_candidates
+			l_candidate_properties := a_candidates.twin
+			create l_once_true.make (a_candidates.count)
+			l_once_true.set_equality_tester (a_candidates.equality_tester)
+			l_once_false := l_once_true.twin
+			l_always_true := a_candidates.twin
+
 			create l_evaluator
 			l_evaluator.set_is_ternary_logic_enabled (True)
 			l_evaluator.set_evaluating_pre_expressions (a_pre)
@@ -667,39 +801,221 @@ feature{NONE} -- Candidate validation
 					-- Iterate through all candidate properties and validate them
 					-- one by one in the context of `l_test_case'.
 				from
-					l_candidates := a_candidates.new_cursor
+					l_candidates := l_candidate_properties.new_cursor
 					l_candidates.start
 				until
 					l_candidates.after
 				loop
 					l_candidate := l_candidates.item
-					l_operand_map := l_operand_map_tables.item (l_candidate)
-					l_resolved_function := l_candidate.partially_evaluated_with_arguments (operand_function_table (l_operand_map, l_test_case))
 
-					l_evaluator.evaluate (ast_from_expression_text (l_resolved_function.body))
-					l_is_valid := not l_evaluator.has_error and then l_evaluator.last_value.is_boolean and then l_evaluator.last_value.as_boolean.is_true
+					l_evaluation_result := evaluate_function (l_evaluator, l_test_case, a_operand_map_table, l_candidate)
+					l_is_valid := l_evaluation_result.is_successful and then l_evaluation_result.val
+					l_is_invalid := l_evaluation_result.is_successful and then not l_evaluation_result.val
+
 					if l_is_valid then
-						l_candidates.forth
-					else
-						l_candidate_properties.remove (l_candidate)
-						l_operand_map_tables.remove (l_candidate)
+						l_once_true.force (l_candidate)
+					elseif l_is_invalid then
+						l_once_false.force (l_candidate)
+						l_always_true.remove (l_candidate)
+					elseif not l_evaluation_result.is_successful then
+						l_always_true.remove (l_candidate)
 					end
+					l_candidates.forth
 
-						-- Logging.					
-					logger.push_level ({ELOG_LOG_MANAGER}.debug_level)
-					logger.put_string (once "%T%T")
-					logger.put_string (l_resolved_function.body)
-					logger.put_string (once " == ")
-					if l_evaluator.has_error then
-						logger.put_line (l_evaluator.error_reason)
-					else
-						logger.put_line (l_evaluator.last_value.out)
-					end
-					logger.pop_level
+--					l_operand_map := l_operand_map_tables.item (l_candidate)
+--					l_resolved_function := l_candidate.partially_evaluated_with_arguments (operand_function_table (l_operand_map, l_test_case))
+--					l_evaluator.evaluate (ast_from_expression_text (l_resolved_function.body))
+--					l_is_valid := not l_evaluator.has_error and then l_evaluator.last_value.is_boolean and then l_evaluator.last_value.as_boolean.is_true
+
+--					if (config.is_validation_universal and then not l_is_valid)				-- confirmed to exclude
+--						or else (not config.is_validation_universal and then l_is_valid) 	-- confirmed to include
+--					then
+--						l_confirmed_candidates.force (l_candidate)
+--						l_candidate_properties.remove (l_candidate)		-- confirmed properties don't need to validated again
+--					else
+--						l_candidates.forth
+--					end
+
+--					if l_is_valid then
+--						l_candidates.forth
+--					else
+--						l_candidate_properties.remove (l_candidate)
+--						l_operand_map_tables.remove (l_candidate)
+--					end
+
+--						-- Logging.					
+--					logger.push_level ({ELOG_LOG_MANAGER}.debug_level)
+--					logger.put_string (once "%T%T")
+--					logger.put_string (l_resolved_function.body)
+--					logger.put_string (once " == ")
+--					if l_evaluator.has_error then
+--						logger.put_line (l_evaluator.error_reason)
+--					else
+--						logger.put_line (l_evaluator.last_value.out)
+--					end
+--					logger.pop_level
 				end
 			end
 
+			if config.is_optimistic_about_nonsensical_values then
+					-- Take expressions that were at least once True and never False.
+				a_candidates.intersect (l_once_true)
+				a_candidates.subtract (l_once_false)
+			else
+					-- Take only expressions always evaluated to True.
+				a_candidates.intersect (l_always_true)
+			end
+
+--			from
+--				l_candidates := a_candidates.new_cursor
+--				l_candidates.start
+--			until
+--				l_candidates.after
+--			loop
+--				l_candidate := l_candidates.item
+
+--				if config.use_true_for_unknown then
+--					
+--				end
+
+--				l_confirmed := l_confirmed_candidates.has (l_candidate)
+--				if config.is_validation_universal and then l_confirmed
+--					or else not config.is_validation_universal and then not l_confirmed
+--				then
+--					a_candidates.remove (l_candidate)
+--					a_operand_map_table.remove (l_candidate)
+--				else
+--					l_candidates.forth
+--				end
+--			end
+
 			logger.pop_level
+		end
+
+	program_states_at_entry_in_functions (a_functions: DS_HASH_SET [EPA_FUNCTION]; a_abstraction: DS_HASH_SET [EPA_EXPRESSION]; a_operand_map_table: DS_HASH_TABLE [HASH_TABLE [INTEGER_32, INTEGER_32], EPA_FUNCTION])
+				: HASH_TABLE [TUPLE [true_exprs, false_exprs: DS_HASH_SET [EPA_EXPRESSION]], CI_TEST_CASE_TRANSITION_INFO]
+			-- Program states at feature entry abstracted using `a_functions'.
+			-- Only the functions whose corresponding expressions are in `a_abstraction' are used.
+			-- Result contains, for each test case in `data', sets of expressions that evaluate to True or False.
+		local
+			l_pre_result: HASH_TABLE [TUPLE [true_funcs, false_funcs: DS_HASH_SET [EPA_FUNCTION]], CI_TEST_CASE_TRANSITION_INFO]
+			l_evaluator: CI_EXPRESSION_EVALUATOR
+			l_test_case: CI_TEST_CASE_TRANSITION_INFO
+			l_operand_map_table: DS_HASH_TABLE [HASH_TABLE [INTEGER_32, INTEGER_32], EPA_FUNCTION]
+			l_candidates: DS_HASH_SET_CURSOR [EPA_FUNCTION]
+			l_true_funcs, l_false_funcs, l_missing_funcs, l_src: DS_HASH_SET [EPA_FUNCTION]
+			l_true_exprs, l_false_exprs, l_dest: DS_HASH_SET [EPA_EXPRESSION]
+			l_src_exprs, l_dest_exprs, l_exprs_to_remove: DS_HASH_SET [EPA_EXPRESSION]
+			l_candidate: EPA_FUNCTION
+			l_expr, l_neg_expr: EPA_EXPRESSION
+			l_evaluation_result: like evaluate_function
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+			l_couples: ARRAY [TUPLE [src: DS_HASH_SET [EPA_FUNCTION]; dest: DS_HASH_SET [EPA_EXPRESSION]]]
+			l_expression_couples: ARRAY [TUPLE [src, dest: DS_HASH_SET [EPA_EXPRESSION]]]
+		do
+				-- Organize functions into different sets based on their values
+			create l_pre_result.make_equal (data.transitions.count + 1)
+			l_operand_map_table := a_operand_map_table
+			create l_missing_funcs.make_equal (20)
+			create l_evaluator
+			l_evaluator.set_is_ternary_logic_enabled (True)
+			l_evaluator.set_evaluating_pre_expressions (True)
+			across transition_data as l_test_cases loop
+				l_test_case := l_test_cases.item
+				create l_true_funcs.make_equal (20)
+				create l_false_funcs.make_equal (20)
+				l_pre_result.force ([l_true_funcs, l_false_funcs], l_test_case)
+
+				l_evaluator.set_context (l_test_case.transition.preconditions, l_test_case.transition.postconditions, l_test_case.test_case_info.class_under_test)
+				from
+					l_candidates := a_functions.new_cursor
+					l_candidates.start
+				until
+					l_candidates.after
+				loop
+					l_candidate := l_candidates.item
+--					if not l_missing_funcs.has (l_candidate) then
+						l_evaluation_result := evaluate_function (l_evaluator, l_test_case, l_operand_map_table, l_candidate)
+						if l_evaluation_result.is_successful then
+							if l_evaluation_result.val then
+								l_true_funcs.force (l_candidate)
+							else
+								l_false_funcs.force (l_candidate)
+							end
+						else
+							l_missing_funcs.force (l_candidate)
+						end
+--					end
+					l_candidates.forth
+				end
+			end
+
+				-- Organize expressions from `a_abstraction' based on their values at feature entry.
+				-- Remove expressions that don't have a valid value in some runs.
+			create Result.make_equal (data.transitions.count + 1)
+			l_class := class_under_test
+			l_feature := feature_under_test
+			across l_pre_result as l_result_entry loop
+				l_test_case := l_result_entry.key
+				l_true_funcs := l_result_entry.item.true_funcs
+				l_false_funcs := l_result_entry.item.false_funcs
+
+				create l_true_exprs.make_equal (l_true_funcs.count + 1)
+				create l_false_exprs.make_equal (l_false_funcs.count + 1)
+				Result.force ([l_true_exprs, l_false_exprs], l_test_case)
+
+
+
+
+------------------------------------------------
+				l_couples := <<[l_true_funcs, l_true_exprs], [l_false_funcs, l_false_exprs]>>
+				across l_couples as l_couple loop
+					l_src := l_couple.item.src
+					l_dest := l_couple.item.dest
+					from l_src.start
+					until l_src.after
+					loop
+						l_candidate := l_src.item_for_iteration
+						l_expr := expression_from_function (l_candidate, Void, l_operand_map_table.item (l_candidate), l_class, l_feature)
+						if l_expr /= Void then
+							l_dest.force (l_expr)
+						end
+--						if a_abstraction.has (l_expr) then			-- the corresponding expression is interesting.
+--						end
+						l_src.forth
+					end
+				end
+
+				l_expression_couples := <<[l_false_exprs, l_true_exprs], [l_true_exprs, l_false_exprs]>>
+				across l_expression_couples as l_expr_couple loop
+					l_src_exprs := l_expr_couple.item.src
+					l_dest_exprs:= l_expr_couple.item.dest
+					create l_exprs_to_remove.make_equal (l_src_exprs.count)
+
+					from l_src_exprs.start
+					until l_src_exprs.after
+					loop
+						l_expr := l_src_exprs.item_for_iteration
+						if a_abstraction.has (l_expr) then
+							-- Keep the expression as it is
+						else
+							l_exprs_to_remove.force (l_expr)
+
+								-- Is the negation of the expression interesting?
+								-- This is a hack. More systematic checking should be performed here.
+							l_neg_expr := create {EPA_AST_EXPRESSION}.make_with_text (l_expr.class_, l_expr.feature_, "not (" + l_expr.text + ")", l_expr.written_class)
+							if a_abstraction.has (l_neg_expr) then
+								l_dest_exprs.force (l_neg_expr)
+							end
+						end
+						l_src_exprs.forth
+					end
+					l_src_exprs.subtract (l_exprs_to_remove)
+				end
+----------------------------				
+			end
+
 		end
 
 	log_candidate_properties (a_candidates: DS_HASH_SET [EPA_FUNCTION]; a_message: STRING)
@@ -741,9 +1057,11 @@ feature{NONE} -- Candidate validation
 				l_candidates.after
 			loop
 				l_property := expression_from_function (l_candidates.item, Void, a_operand_map_table.item (l_candidates.item), l_class, l_feature)
-				l_postconditions.force_last (l_property)
-				if a_mapping_agent /= Void then
-					a_mapping_agent.call ([l_property, l_candidates.item])
+				if l_property /= Void then
+					l_postconditions.force_last (l_property)
+					if a_mapping_agent /= Void then
+						a_mapping_agent.call ([l_property, l_candidates.item])
+					end
 				end
 				l_candidates.forth
 			end
@@ -769,9 +1087,11 @@ feature{NONE} -- Candidate validation
 				l_candidates.after
 			loop
 				l_property := expression_from_function (l_candidates.item, Void, a_operand_map_table.item (l_candidates.item), l_class, l_feature)
-				l_preconditions.force_last (l_property)
-				if a_mapping_agent /= Void then
-					a_mapping_agent.call ([l_property, l_candidates.item])
+				if l_property /= Void then
+					l_preconditions.force_last (l_property)
+					if a_mapping_agent /= Void then
+						a_mapping_agent.call ([l_property, l_candidates.item])
+					end
 				end
 				l_candidates.forth
 			end

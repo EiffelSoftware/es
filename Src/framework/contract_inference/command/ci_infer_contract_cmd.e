@@ -41,17 +41,19 @@ feature{NONE} -- Initialization
 			-- Initialize Current.
 		local
 			l_file_name: FILE_NAME
+			l_directory: DIRECTORY_NAME
 			l_context: SHARED_AST_CONTEXT
 		do
 			create l_context
 			l_context.context.set_is_ignoring_export (True)
 			config := a_config
-			class_ := first_class_starts_with_name (config.class_name)
-			feature_ := class_.feature_named (config.feature_name_for_test_cases.first)
-			context_type := class_.constraint_actual_type
 			create log_manager.make
-			create l_file_name.make_from_string (config.log_directory)
-			l_file_name.set_file_name (class_.name_in_upper + "__" + feature_.feature_name.as_lower + "__log.txt")
+			if config.report_path = Void then
+				create l_file_name.make_from_string (config.log_directory)
+				l_file_name.set_file_name (config.class_name.as_upper + "__" + config.feature_name_for_test_cases.first.as_lower + "__log.txt")
+			else
+				create l_file_name.make_from_string (config.report_path)
+			end
 			create log_file.make_create_read_write (l_file_name)
 			log_manager.set_time_logging_mode ({ELOG_LOG_MANAGER}.duration_time_logging_mode)
 			log_manager.loggers.extend (create {ELOG_CONSOLE_LOGGER})
@@ -60,7 +62,6 @@ feature{NONE} -- Initialization
 				-- Enable verbose logging (for debugging purpose)
 				-- When the code is ready, use a concise logging level will save some time.
 			log_manager.set_level_threshold (config.verbose_level)
-			setup_inferrers
 		end
 
 feature -- Access
@@ -109,11 +110,31 @@ feature -- Access
 			-- Set of sequence based contracts
 			-- FIXME: This is a walkaround for the problem that we cannot generate Eiffel expressions for sequence-based contracts.
 
+	is_exercising_passing_tests: BOOLEAN assign set_exercising_passing_tests
+			-- Is launching debugger to exercise only passing tests?
+			-- If false, exercise only failing tests.
+
+	miscategoried_test_uuids: DS_ARRAYED_LIST [STRING]
+			-- UUIDs of the tests whose termination state (pass or fail) doesn't conform to their names (__S__ or __F__).
+
+feature -- Setter
+
+	set_exercising_passing_tests (a_flag: BOOLEAN)
+			-- Set `is_exercising_passing_tests' with `a_flag'.
+		do
+			is_exercising_passing_tests := a_flag
+		end
+
 feature -- Basic operations
 
 	execute
 			-- Infer contracts, make results available in `last_preconditions' and `last_postconditions'.
 		do
+			class_ := first_class_starts_with_name (config.class_name)
+			feature_ := class_.feature_named (config.feature_name_for_test_cases.first)
+			context_type := class_.constraint_actual_type
+
+			setup_inferrers
 			initialize_data_structure
 
 			log_manager.put_line_with_time (msg_contract_inference_started)
@@ -130,7 +151,12 @@ feature -- Basic operations
 
 				log_manager.put_line_with_time (msg_test_case_execution_started)
 					-- Debug project
+				set_exercising_passing_tests (True)
 				debug_project
+
+				infer_contracts
+
+				log_final_contracts (last_contracts, last_sequence_based_contracts)
 			end
 
 			log_manager.put_line_with_time (msg_contract_inference_ended)
@@ -138,6 +164,14 @@ feature -- Basic operations
 			if log_file /= Void and then log_file.is_open_write then
 				log_file.close
 			end
+		end
+
+feature{CI_INFER_CONTRACT_CMD}
+
+	launch_debugger
+			-- Launch debugger.
+		do
+			start_debugger (debugger_manager, feature_.feature_name.as_lower + " " + config.start_test_case_number.out + " " + config.end_test_case_number.out, config.working_directory, {EXEC_MODES}.run, False)
 		end
 
 feature{NONE} -- Implementation
@@ -165,7 +199,9 @@ feature{NONE} -- Implementation
 
 				-- Start debugger.
 			create timeout.make_with_action (1000 * config.test_case_execution_timeout, True, agent on_execution_timeout (system.eiffel_system.name))
-			start_debugger (debugger_manager, feature_.feature_name.as_lower + " " + config.start_test_case_number.out + " " + config.end_test_case_number.out, config.working_directory, {EXEC_MODES}.run, False)
+			timeout.start
+			timeout.pause
+			launch_debugger
 
 				-- Clean up debugger.
 			l_test_case_info_bp_manager.toggle_breakpoints (False)
@@ -241,6 +277,98 @@ feature{NONE} -- Implementation
 			end
 		end
 
+--	argument_names_in_decreasing_order: DS_ARRAYED_LIST [STRING]
+--			--
+--		local
+--			l_operands: DS_HASH_TABLE [INTEGER_32, STRING_8]
+--			l_arguments: DS_ARRAYED_LIST [STRING]
+--			l_sorter: DS_QUICK_SORTER[STRING]
+--			l_tester: AGENT_BASED_EQUALITY_TESTER [STRING]
+--		do
+--			l_operands := operands_of_feature (l_feature)
+--			create Result.make_equal (10)
+--			Result.append_last (l_operands.keys)
+--			create l_tester.make (agent(a, b: STRING) do Result := a > b end)
+--			create l_sorter.make (l_tester)
+--			Result.sort (l_arguments)
+--		end
+
+	functions_from_contracts (a_tc_info: CI_TEST_CASE_INFO; a_pre_execution: BOOLEAN): DS_HASH_SET[EPA_FUNCTION]
+			-- This is a hack to
+			--		1) remove expressions involving feature calls, which are handled in `extra_expressions'.
+			--		2) rewrite expressions involving feature arguments to use the variable names.
+		local
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+			l_written_class: CLASS_C
+			l_exprs: DS_HASH_SET [EPA_EXPRESSION]
+			l_expr: EPA_EXPRESSION
+			l_text: STRING
+			l_operands: DS_HASH_TABLE [INTEGER_32, STRING_8]
+			l_argument_names: DS_ARRAYED_LIST [STRING]
+		do
+			l_class := a_tc_info.class_under_test
+			l_feature := a_tc_info.feature_under_test
+			l_written_class := l_feature.written_class
+			create l_exprs.make (20)
+			l_exprs.set_equality_tester (expression_equality_tester)
+			l_exprs.append (sub_expressions_from_contracts (l_class, l_feature, True))
+			l_exprs.append (sub_expressions_from_contracts (l_class, l_feature, False))
+
+			create Result.make_equal (l_exprs.count)
+			from l_exprs.start
+			until l_exprs.after
+			loop
+				l_expr := expression_in_test_context(a_tc_info, l_exprs.item_for_iteration)
+				if l_expr /= Void and then (not a_pre_execution or else (not l_expr.text.has_substring ("Result") and not l_expr.text.has_substring ("old ")))
+				then
+					Result.force_last (create {EPA_FUNCTION}.make_from_expression (l_expr))
+				end
+				l_exprs.forth
+			end
+
+
+--			l_operands := operands_of_feature (l_feature)
+--			l_argument_names := argument_names_in_decreasing_order
+--			from l_exprs.start
+--			until l_exprs.after
+--			loop
+--				l_expr := l_exprs.item_for_iteration
+
+--				l_text := l_expr.text.twin
+--				l_text.replace_substring_all ("Current.", "")
+--				if not l_text.has_substring (".") then
+--					if not a_pre_execution or else not l_expr.text.has_substring ("Result") then
+--						from l_argument_names.start
+--						until l_argument_names.after
+--						loop
+--							l_text.replace_substring_all (l_argument_names.item_for_iteration, l_operands.item (l_argument_names.item_for_iteration))
+--							l_argument_names.forth
+--						end
+--						l_expr := safe_created_expression (l_class, l_feature, l_text, l_written_class)
+--						if l_expr /= Void then
+--							Result.force_last (create {EPA_FUNCTION}.make_from_expression (expression_in_test_context (a_tc_info, l_expr)))
+--						end
+--					end
+--				end
+--				l_exprs.forth
+--			end
+		end
+
+	safe_created_expression (a_class: CLASS_C; a_feat: FEATURE_I; a_written_class: CLASS_C; a_text: STRING): EPA_AST_EXPRESSION
+		local
+			l_retried: BOOLEAN
+		do
+			if not l_retried then
+				create Result.make_with_text (a_class, a_feat, a_text, a_written_class)
+			else
+				Result := Void
+			end
+		rescue
+			l_retried := True
+			retry
+		end
+
 	expressions_to_evaluate (a_tc_info: CI_TEST_CASE_INFO; a_pre_execution: BOOLEAN): DS_HASH_SET [EPA_EXPRESSION]
 			-- Expressions to be evaluated, those expressions are relative to `a_tc_info'
 			-- `a_pre_execution' indicates that the resulting expressions should be evaluated before
@@ -251,6 +379,15 @@ feature{NONE} -- Implementation
 			l_operand_map: DS_HASH_TABLE [STRING_8, INTEGER_32]
 			l_functions: DS_HASH_SET [EPA_FUNCTION]
 			l_extra_expressions: DS_HASH_SET [EPA_EXPRESSION]
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+			l_written_class: CLASS_C
+			l_exprs: DS_HASH_SET [EPA_EXPRESSION]
+			l_expr: EPA_EXPRESSION
+			l_text: STRING
+			l_operands: DS_HASH_TABLE [INTEGER_32, STRING_8]
+			l_argument_names: DS_ARRAYED_LIST [STRING]
+			l_should_extract_contracts: BOOLEAN
 		do
 				-- Setup expressions to be evaluated before and after the test case execution.
 			create l_context.make_with_class_and_feature (a_tc_info.test_case_class, a_tc_info.test_feature, False, True, True)
@@ -260,6 +397,7 @@ feature{NONE} -- Implementation
 			create l_expr_finder.make_for_feature (a_tc_info.class_under_test, a_tc_info.feature_under_test, a_tc_info.operand_map, l_context, config.data_directory, a_tc_info.class_under_test.constraint_actual_type)
 			l_expr_finder.set_is_for_pre_execution (a_pre_execution)
 			l_expr_finder.set_is_creation (a_tc_info.is_feature_under_test_creation)
+			l_expr_finder.set_should_search_for_query_with_arguments (False)
 --			l_expr_finder.set_should_include_tilda_expressions (True)
 			l_expr_finder.set_should_include_operand_and_expression_comparison (True)
 
@@ -268,6 +406,13 @@ feature{NONE} -- Implementation
 			l_expr_finder.set_should_search_for_query_with_precondition (True)
 			l_expr_finder.search (Void)
 			l_functions := nullary_functions (l_expr_finder.functions, l_context, a_pre_execution)
+
+				-- We add subexpressions of the pre- and postconditions of the feature under test.
+			if config.should_check_existing_contracts then
+				l_functions.append_last (functions_from_contracts(a_tc_info, a_pre_execution))
+			end
+
+			l_functions.append_last (extra_equalities(a_tc_info))
 
 				-- We add extra expressions extracted from program text, such as (part of) path conditions.
 			if
@@ -289,6 +434,95 @@ feature{NONE} -- Implementation
 			Result.set_equality_tester (expression_equality_tester)
 			l_functions.do_all (agent (a_function: EPA_FUNCTION; a_set: DS_HASH_SET [EPA_EXPRESSION]; a_ctxt: EPA_CONTEXT) do a_set.force_last (a_function.as_expression (a_ctxt)) end (?, Result, l_context))
 
+		end
+
+	extra_equalities (a_tc_info: CI_TEST_CASE_INFO): DS_HASH_SET [EPA_FUNCTION]
+			-- Extra (in)equalities checking voidness of arguments or the equality between 'Current' and arguments.
+		local
+			l_class, l_written_class: CLASS_C
+			l_feature: FEATURE_I
+			l_args: DS_HASH_TABLE [TYPE_A, STRING_8]
+			l_arg_cursor: DS_HASH_TABLE_CURSOR [TYPE_A, STRING_8]
+			l_current_type, l_arg_type: TYPE_A
+			l_arg_name, l_expr_text: STRING
+			l_expr: EPA_EXPRESSION
+			l_exprs: DS_HASH_SET [EPA_EXPRESSION]
+			l_creator: EPA_AST_EXPRESSION_SAFE_CREATOR
+			l_operand_to_variable_mapping: HASH_TABLE [STRING, STRING]
+			l_variables: HASH_TABLE [TYPE_A, STRING]
+		do
+			l_class := a_tc_info.class_under_test
+			l_feature := a_tc_info.feature_under_test
+			l_written_class := l_feature.written_class
+			l_args := operand_name_types_with_feature (l_feature, l_class)
+			l_operand_to_variable_mapping := a_tc_info.operand_to_variable_mapping
+			l_variables := a_tc_info.variables
+
+			create l_exprs.make_equal (10)
+			l_current_type := l_variables.item (l_operand_to_variable_mapping.item (ti_current))
+			from
+				l_arg_cursor := l_args.new_cursor
+				l_arg_cursor.start
+			until
+				l_arg_cursor.after
+			loop
+				l_arg_name := l_arg_cursor.key
+				l_arg_type := l_variables.item (l_operand_to_variable_mapping.item (l_arg_name))
+
+				if not l_arg_name.same_string (ti_current) then
+					if not l_arg_type.is_expanded then
+						l_exprs.force (l_creator.safe_create_with_text (l_class, l_feature, l_arg_name + " = Void", l_written_class))
+						l_exprs.force (l_creator.safe_create_with_text (l_class, l_feature, l_arg_name + " /= Void", l_written_class))
+
+							-- Always test if the argument is equal to Current.
+						l_exprs.force (l_creator.safe_create_with_text (l_class, l_feature, l_arg_name + " = " + ti_current, l_written_class))
+						l_exprs.force (l_creator.safe_create_with_text (l_class, l_feature, l_arg_name + " /= " + ti_current, l_written_class))
+					end
+				end
+				l_arg_cursor.forth
+			end
+
+--			
+--			
+
+--			create l_exprs.make_equal (10)
+--			l_current_type := l_args.item (Ti_current)
+--			from
+--				l_arg_cursor := l_args.new_cursor
+--				l_arg_cursor.start
+--			until
+--				l_arg_cursor.after
+--			loop
+--				l_arg_name := l_arg_cursor.key
+--				l_arg_type := l_arg_cursor.item
+
+--				if not l_arg_name.same_string (ti_current) then
+--					l_expr := Void
+--					l_arg_type := l_arg_type.instantiated_in (class_type: [detachable] TYPE_A)
+--					if not l_arg_type.is_expanded then
+--						l_exprs.force (l_creator.safe_create_with_text (l_class, l_feature, l_arg_name + " = Void", l_written_class))
+--						l_exprs.force (l_creator.safe_create_with_text (l_class, l_feature, l_arg_name + " /= Void", l_written_class))
+--					end
+--					if l_arg_type.is_conformant_to (a_tc_info.test_case_class, l_current_type) then
+--						l_exprs.force (l_creator.safe_create_with_text (l_class, l_feature, l_arg_name + " = " + ti_current, l_written_class))
+--						l_exprs.force (l_creator.safe_create_with_text (l_class, l_feature, l_arg_name + " /= " + ti_current, l_written_class))
+--					end
+--				end
+--				l_arg_cursor.forth
+--			end
+
+			create Result.make_equal (l_exprs.count)
+			from
+				l_exprs.start
+			until
+				l_exprs.after
+			loop
+				l_expr := expression_in_test_context (a_tc_info, l_exprs.item_for_iteration)
+				if l_expr /= Void then
+					Result.force_last (create {EPA_FUNCTION}.make_from_expression (l_expr))
+				end
+				l_exprs.forth
+			end
 		end
 
 	nullary_functions (a_functions: DS_HASH_SET [EPA_FUNCTION]; a_context: EPA_CONTEXT; a_pre_execution: BOOLEAN): DS_HASH_SET [EPA_FUNCTION]
@@ -566,9 +800,12 @@ feature{NONE} -- Actions
 
 					-- Setup information of the newly found test case.
 				create last_test_case_info.make (a_state)
+				log_manager.push_level ({ELOG_LOG_MANAGER}.Info_level)
+				log_manager.put_line ("Entering test case: " + last_test_case_info.uuid)
+				log_manager.pop_level
 
 					-- Setup exception related data for failing test cases.
-				if not last_test_case_info.is_passing then
+--				if not last_test_case_info.is_passing then
 					 last_test_case_info.set_recipient (debugger_manager.expression_evaluation ("tci_exception_recipient").string_representation)
 					 last_test_case_info.set_recipient_class (debugger_manager.expression_evaluation ("tci_exception_recipient_class").string_representation)
 					 last_test_case_info.set_exception_break_point_slot (debugger_manager.expression_evaluation ("tci_breakpoint_index").output_for_debugger)
@@ -578,7 +815,7 @@ feature{NONE} -- Actions
 					 last_test_case_info.set_exception_trace (debugger_manager.expression_evaluation ("tci_exception_trace").string_representation)
 					 last_test_case_info.set_exception_tag (debugger_manager.expression_evaluation ("tci_assertion_tag").string_representation)
 					 last_test_case_info.calculate_fault_id
-				end
+--				end
 
 				create last_pre_execution_bounded_functions.make (5)
 				last_pre_execution_bounded_functions.set_equality_tester (ci_function_with_integer_domain_partial_equality_tester)
@@ -700,6 +937,9 @@ feature{NONE} -- Actions
 			l_post_state: EPA_STATE
 			l_old_stack: INTEGER
 			l_test_feature_stack_number: INTEGER
+			l_tag: STRING
+			l_breakpoint: INTEGER
+			l_exception_code: INTEGER
 		do
 			if a_dm.application_is_executing or a_dm.application_is_stopped then
 				if a_dm.application_status.reason_is_catcall then
@@ -720,6 +960,16 @@ feature{NONE} -- Actions
 							else
 								if last_test_case_info /= Void then
 									last_test_case_info.set_is_passing (False)
+
+									l_tag := a_dm.application_status.exception.message
+									l_breakpoint := a_dm.application_status.break_index
+									l_exception_code := a_dm.application_status.exception.code
+									last_test_case_info.set_is_valid (l_exception_code.out.same_string (last_test_case_info.exception_code)
+											and then l_tag.is_equal (last_test_case_info.exception_tag)
+											and then l_breakpoint.out.same_string (last_test_case_info.exception_break_point_slot))
+
+--									a_dm.application_status.exception_message
+
 										-- The exception is postcondition violation in the feature under test,
 										-- we try to get some post-state expressions evaluated.										
 									l_old_stack := debugger_manager.application.current_execution_stack_number
@@ -748,20 +998,12 @@ feature{NONE} -- Actions
 			end
 		end
 
-	on_application_exited (a_dm: DEBUGGER_MANAGER)
-			-- Action to be performed when application exited.
+	initialize_contract_storage
+			-- Initialize the storage for inferred contracts.
 		local
 			l_preconditions: DS_HASH_SET [EPA_EXPRESSION]
 			l_postconditions: DS_HASH_SET [EPA_EXPRESSION]
 		do
-			if timeout /= Void then
-				if timeout.has_started and then not timeout.has_terminated then
-					timeout.pause
-					timeout.set_should_terminate (True)
-					timeout.join
-				end
-			end
-				-- Setup results.
 			create l_preconditions.make (100)
 			l_preconditions.set_equality_tester (expression_equality_tester)
 			create l_postconditions.make (100)
@@ -774,6 +1016,16 @@ feature{NONE} -- Actions
 			last_contracts.put (l_preconditions, True)
 			last_contracts.put (l_postconditions, False)
 
+		end
+
+	infer_contracts
+			-- Infer contracts based on `transition_data'.
+		local
+			l_preconditions: DS_HASH_SET [EPA_EXPRESSION]
+			l_postconditions: DS_HASH_SET [EPA_EXPRESSION]
+		do
+			initialize_contract_storage
+
 			if not transition_data.is_empty then
 				setup_data
 
@@ -781,6 +1033,8 @@ feature{NONE} -- Actions
 				inferrers.do_all (agent {CI_INFERRER}.infer (data))
 
 					-- Iterate through all inferrers to collect inferred contracts.
+				l_preconditions := last_contracts.item (True)
+				l_postconditions:= last_contracts.item (False)
 				across inferrers as l_inferrers loop
 					l_preconditions.append_last (l_inferrers.item.last_preconditions)
 					l_postconditions.append_last (l_inferrers.item.last_postconditions)
@@ -791,7 +1045,20 @@ feature{NONE} -- Actions
 					end
 				end
 			end
-			log_final_contracts
+
+--			log_final_contracts
+		end
+
+	on_application_exited (a_dm: DEBUGGER_MANAGER)
+			-- Action to be performed when application exited.
+		do
+			if timeout /= Void then
+				if timeout.has_started and then not timeout.has_terminated then
+					timeout.pause
+					timeout.set_should_terminate (True)
+					timeout.join
+				end
+			end
 		end
 
 	on_breakpoint_in_feature_under_test_hit	(a_breakpoint: BREAKPOINT; a_state: EPA_STATE)
@@ -850,6 +1117,8 @@ feature{NONE} -- Implementation
 			-- Initialize data structures.
 		do
 			create transition_data.make
+			test_case_count := 0
+			create miscategoried_test_uuids.make (10)
 		end
 
 	build_last_transition
@@ -864,93 +1133,113 @@ feature{NONE} -- Implementation
 			l_transition_info: CI_TEST_CASE_TRANSITION_INFO
 			l_sql_generator: CI_SQL_INFERRER
 			l_mock_generator: CI_SEMANTIC_SEARCH_DATA_COLLECTOR_INFERRER
+			l_uuid: STRING
 		do
-			create l_context.make (last_test_case_info.variables)
-			create l_transition.make (
-				last_test_case_info.class_under_test,
-				last_test_case_info.feature_under_test,
-				last_test_case_info.operand_map,
-				l_context,
-				last_test_case_info.is_feature_under_test_creation)
-			l_transition.set_uuid (last_test_case_info.uuid)
-			l_transition.set_is_passing (last_test_case_info.is_passing)
-			l_transition.hit_breakpoints.append (last_hit_breakpoints)
-			if last_pre_execution_evaluations = Void then
-				create last_pre_execution_evaluations.make (0, class_, feature_)
-			end
-			l_transition.set_preconditions_unsafe (last_pre_execution_evaluations)
-			if last_post_execution_evaluations = Void then
-				create last_post_execution_evaluations.make (0, last_pre_execution_evaluations.class_, last_pre_execution_evaluations.feature_)
-			end
-			l_transition.set_postconditions_unsafe (last_post_execution_evaluations)
-
-				-- Analyze functions in pre-execution state.
-			create l_func_analyzer
-			l_func_analyzer.analyze (
-				l_transition.preconditions,
-				l_context,
-				last_test_case_info.operand_map,
-				last_test_case_info.class_under_test,
-				last_test_case_info.feature_under_test,
-				last_test_case_info.class_under_test.constraint_actual_type)
-			l_pre_valuations := l_func_analyzer.valuations
-
-				-- Logging.
-			log_manager.push_level ({ELOG_LOG_MANAGER}.debug_level)
-			log_manager.put_line_with_time ("Function analysis in pre-state:")
-			log_manager.put_line (l_func_analyzer.dumped_result)
-
-				-- Analyze functions in post-execution state.
-			create l_func_analyzer
-			l_func_analyzer.analyze (
-				l_transition.postconditions,
-				l_context,
-				last_test_case_info.operand_map,
-				last_test_case_info.class_under_test,
-				last_test_case_info.feature_under_test,
-				last_test_case_info.class_under_test.constraint_actual_type)
-			l_post_valuations := l_func_analyzer.valuations
-
-			log_manager.put_line_with_time ("Function analysis in post-state:")
-			log_manager.put_line (l_func_analyzer.dumped_result)
-			log_manager.pop_level
-
-				-- Fabricate transition info for the last executed test case.
-			create l_transition_info.make (
-				last_test_case_info,
-				l_transition,
-				l_pre_valuations,
-				l_post_valuations,
-				last_pre_execution_bounded_functions,
-				last_post_execution_bounded_functions)
-
-				-- Setup object serialization information if semantic search support is enabled.
-			if config.should_enable_post_serialization_retrieval then
-				l_transition_info.set_serialization_info (last_serialization_info)
-			else
-				l_transition_info.set_serialization_info (Void)
-			end
-
-			transition_data.extend (l_transition_info)
-			last_feature_under_test_breakpoint_manager := Void
-
-			if config.should_generate_sql or config.should_generate_mocking then
-				if config.should_generate_sql then
-					create l_sql_generator
-					l_sql_generator.set_config (config)
-					l_sql_generator.set_logger (log_manager)
-					create data.make (transition_data)
-					l_sql_generator.infer (data)
+--			if is_exercising_passing_tests and then not last_test_case_info.is_passing
+--					or else not is_exercising_passing_tests and then last_test_case_info.is_passing
+--			then
+--				last_feature_under_test_breakpoint_manager := Void
+--				log_manager.push_level ({ELOG_LOG_MANAGER}.debug_level)
+--				l_uuid := last_test_case_info.uuid.twin
+--				miscategoried_test_uuids.forece_last (l_uuid)
+--				log_manager.put_line_with_time ("Miscategorized test: " + l_uuid)
+--				log_manager.pop_level
+--			else
+				create l_context.make (last_test_case_info.variables)
+				create l_transition.make (
+					last_test_case_info.class_under_test,
+					last_test_case_info.feature_under_test,
+					last_test_case_info.operand_map,
+					l_context,
+					last_test_case_info.is_feature_under_test_creation)
+				l_transition.set_uuid (last_test_case_info.uuid)
+				l_transition.set_is_passing (last_test_case_info.is_passing)
+				l_transition.hit_breakpoints.append (last_hit_breakpoints)
+				if last_pre_execution_evaluations = Void then
+					create last_pre_execution_evaluations.make (0, class_, feature_)
 				end
-				if config.should_generate_mocking then
-					create l_mock_generator
-					l_mock_generator.set_config (config)
-					l_mock_generator.set_logger (log_manager)
-					create data.make (transition_data)
-					l_mock_generator.infer (data)
+				l_transition.set_preconditions_unsafe (last_pre_execution_evaluations)
+				if last_post_execution_evaluations = Void then
+					create last_post_execution_evaluations.make (0, last_pre_execution_evaluations.class_, last_pre_execution_evaluations.feature_)
 				end
-				transition_data.wipe_out
-			end
+				l_transition.set_postconditions_unsafe (last_post_execution_evaluations)
+
+					-- Analyze functions in pre-execution state.
+				create l_func_analyzer
+				l_func_analyzer.analyze (
+					l_transition.preconditions,
+					l_context,
+					last_test_case_info.operand_map,
+					last_test_case_info.class_under_test,
+					last_test_case_info.feature_under_test,
+					last_test_case_info.class_under_test.constraint_actual_type)
+				l_pre_valuations := l_func_analyzer.valuations
+
+					-- Logging.
+				log_manager.push_level ({ELOG_LOG_MANAGER}.debug_level)
+				log_manager.put_line_with_time ("Function analysis in pre-state:")
+				log_manager.put_line (l_func_analyzer.dumped_result)
+
+					-- Analyze functions in post-execution state.
+				create l_func_analyzer
+				l_func_analyzer.analyze (
+					l_transition.postconditions,
+					l_context,
+					last_test_case_info.operand_map,
+					last_test_case_info.class_under_test,
+					last_test_case_info.feature_under_test,
+					last_test_case_info.class_under_test.constraint_actual_type)
+				l_post_valuations := l_func_analyzer.valuations
+
+				log_manager.put_line_with_time ("Function analysis in post-state:")
+				log_manager.put_line (l_func_analyzer.dumped_result)
+				log_manager.pop_level
+
+					-- Fabricate transition info for the last executed test case.
+				create l_transition_info.make (
+					last_test_case_info,
+					l_transition,
+					l_pre_valuations,
+					l_post_valuations,
+					last_pre_execution_bounded_functions,
+					last_post_execution_bounded_functions)
+
+					-- Setup object serialization information if semantic search support is enabled.
+				if config.should_enable_post_serialization_retrieval then
+					l_transition_info.set_serialization_info (last_serialization_info)
+				else
+					l_transition_info.set_serialization_info (Void)
+				end
+
+					-- Exclude miscategorized test cases from the transition data.
+				if last_test_case_info.is_valid and then (is_exercising_passing_tests and then last_test_case_info.is_passing or else not is_exercising_passing_tests and then not last_test_case_info.is_passing) then
+					transition_data.extend (l_transition_info)
+				else
+					l_uuid := last_test_case_info.uuid.twin
+					miscategoried_test_uuids.force_last (l_uuid)
+					log_manager.put_line_with_time ("Miscategorized test: " + l_uuid)
+				end
+				last_feature_under_test_breakpoint_manager := Void
+
+				if config.should_generate_sql or config.should_generate_mocking then
+					if config.should_generate_sql then
+						create l_sql_generator
+						l_sql_generator.set_config (config)
+						l_sql_generator.set_logger (log_manager)
+						create data.make (transition_data)
+						l_sql_generator.infer (data)
+					end
+					if config.should_generate_mocking then
+						create l_mock_generator
+						l_mock_generator.set_config (config)
+						l_mock_generator.set_logger (log_manager)
+						create data.make (transition_data)
+						l_mock_generator.infer (data)
+					end
+					transition_data.wipe_out
+				end
+
+--			end
 		end
 
 	setup_inferrers
@@ -1256,7 +1545,7 @@ feature{NONE} -- Implementation
 	next_object_equivalent_class_id: INTEGER
 			-- Next ID for object equivalent class
 
-	log_final_contracts
+	log_final_contracts (a_contracts: like last_contracts; a_sequence_based_contracts: like last_sequence_based_contracts)
 			-- Log final contracts in `last_postconditions'.
 		local
 			l_cursor: like last_postconditions.new_cursor
@@ -1265,9 +1554,11 @@ feature{NONE} -- Implementation
 				-- Logging.
 			create l_printer.make
 			log_manager.push_level ({ELOG_CONSTANTS}.info_level)
-			log_manager.put_line_with_time ("Found the following final preconditions for: " + class_.name_in_upper + "." + feature_.feature_name)
+
+			log_manager.put_line_with_time (Mark_starting_inferred_preconditions)
+			log_manager.put_line ("%T%T" + class_.name_in_upper + "." + feature_.feature_name)
 			from
-				l_cursor := last_preconditions.new_cursor
+				l_cursor := a_contracts.item (True).new_cursor
 				l_cursor.start
 			until
 				l_cursor.after
@@ -1275,10 +1566,12 @@ feature{NONE} -- Implementation
 				log_manager.put_line (once "%T" + l_printer.printed_expression (l_cursor.item))
 				l_cursor.forth
 			end
+			log_manager.put_line (Mark_ending_inferred_preconditions)
 
-			log_manager.put_line_with_time ("Found the following final postconditions for: " + class_.name_in_upper + "." + feature_.feature_name)
+			log_manager.put_line_with_time (Mark_starting_inferred_postconditions)
+			log_manager.put_line ("%T%T" + class_.name_in_upper + "." + feature_.feature_name)
 			from
-				l_cursor := last_postconditions.new_cursor
+				l_cursor := a_contracts.item (False).new_cursor
 				l_cursor.start
 			until
 				l_cursor.after
@@ -1295,15 +1588,20 @@ feature{NONE} -- Implementation
 				end
 				l_cursor.forth
 			end
+			log_manager.put_line (Mark_ending_inferred_postconditions)
 
+			log_manager.put_line_with_time (Mark_starting_inferred_sequence_properties)
+			log_manager.put_line ("%T%T" + class_.name_in_upper + "." + feature_.feature_name)
 			from
-				last_sequence_based_contracts.start
+				a_sequence_based_contracts.start
 			until
-				last_sequence_based_contracts.after
+				a_sequence_based_contracts.after
 			loop
-				log_manager.put_line (once "%T" + last_sequence_based_contracts.item_for_iteration)
-				last_sequence_based_contracts.forth
+				log_manager.put_line (once "%T" + a_sequence_based_contracts.item_for_iteration)
+				a_sequence_based_contracts.forth
 			end
+			log_manager.put_line (Mark_ending_inferred_sequence_properties)
+
 			log_manager.pop_level
 		end
 
@@ -1349,6 +1647,20 @@ feature{NONE} -- Data
 
 	data: CI_TEST_CASE_DATA
 			-- Data collected from executed test cases
+
+	feature_contracts: DS_HASH_TABLE [TUPLE[pre, post: ARRAYED_SET[STRING]], STRING]
+			-- Cached contracts of features.
+			-- Key: CLASS_NAME.feature_name
+			-- Val: tuple of string sets, each string represents a contract clause.
+		do
+			if feature_contracts_cache = Void then
+				create feature_contracts_cache.make_equal (2)
+			end
+			Result := feature_contracts_cache
+		end
+
+	feature_contracts_cache: like feature_contracts
+			-- Cache for `feature_contracts'.
 
 feature{NONE} -- Implementation
 
@@ -1689,10 +2001,12 @@ feature{NONE} -- Expressions
 		local
 			l_replacements: HASH_TABLE [STRING, STRING]
 			l_text: STRING
+			l_creator: EPA_AST_EXPRESSION_SAFE_CREATOR
 		do
 			l_replacements := a_tc_info.operand_to_variable_mapping
+			expression_rewriter.set_should_explici_target (True)
 			l_text := expression_rewriter.ast_text (a_expression.ast, l_replacements)
-			create {EPA_AST_EXPRESSION} Result.make_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, l_text, a_tc_info.test_case_class)
+			Result := l_creator.safe_create_with_text (a_tc_info.test_case_class, a_tc_info.test_feature, l_text, a_tc_info.test_case_class)
 		end
 
 	extra_expressions (a_tc_info: CI_TEST_CASE_INFO; a_precondition: BOOLEAN): DS_HASH_SET [EPA_EXPRESSION]
@@ -1707,12 +2021,13 @@ feature{NONE} -- Expressions
 			l_class: CLASS_C
 			l_feature: FEATURE_I
 			l_written_class: CLASS_C
-			l_expr: EPA_AST_EXPRESSION
+			l_expr: EPA_EXPRESSION
 			l_rewritten_expr: DS_HASH_SET [EPA_EXPRESSION]
 			l_text: STRING
 			l_target_name: STRING
 			l_first_dot_index: INTEGER
 			l_operands: like operands_of_feature
+			l_creator: EPA_AST_EXPRESSION_SAFE_CREATOR
 		do
 			l_class := a_tc_info.class_under_test
 			l_feature := a_tc_info.feature_under_test
@@ -1724,16 +2039,22 @@ feature{NONE} -- Expressions
 				-- Collect path conditions from `l_feature'.
 			l_exprs.append (path_conditions (l_class, l_feature))
 
+				-- Collect pre/post-condition expressions of `l_feature'.
+			l_exprs.append (sub_expressions_from_contracts (l_class, l_feature, True))
+			l_exprs.append (sub_expressions_from_contracts (l_class, l_feature, False))
+
 				-- Remove expressions mentioning "Result".
-			from
-				l_exprs.start
-			until
-				l_exprs.after
-			loop
-				if l_exprs.item_for_iteration.text.has_substring (once "Result") then
-					l_exprs.remove (l_exprs.item_for_iteration)
-				else
-					l_exprs.forth
+			if a_precondition then
+				from
+					l_exprs.start
+				until
+					l_exprs.after
+				loop
+					if l_exprs.item_for_iteration.text.has_substring (once "Result") then
+						l_exprs.remove (l_exprs.item_for_iteration)
+					else
+						l_exprs.forth
+					end
 				end
 			end
 
@@ -1757,8 +2078,10 @@ feature{NONE} -- Expressions
 						if not l_operands.has (l_target_name) then
 							l_text := ti_current + "." + l_text
 						end
-						create l_expr.make_with_text (l_class, l_feature, l_text, l_written_class)
-						l_qualified.force_last (l_expr)
+						l_expr := l_creator.safe_create_with_text (l_class, l_feature, l_text, l_written_class)
+						if l_expr /= Void then
+							l_qualified.force_last (l_expr)
+						end
 					end
 				end
 				l_exprs.forth
@@ -1772,10 +2095,71 @@ feature{NONE} -- Expressions
 			until
 				l_qualified.after
 			loop
-				l_rewritten_expr.force_last (expression_in_test_context (a_tc_info, l_qualified.item_for_iteration))
+				l_expr := expression_in_test_context (a_tc_info, l_qualified.item_for_iteration)
+				if l_expr /= Void then
+					l_rewritten_expr.force_last (l_expr)
+				end
 				l_qualified.forth
 			end
 			Result := l_rewritten_expr
+		end
+
+	sub_expressions_from_contracts (a_class: CLASS_C; a_feature: FEATURE_I; a_precondition: BOOLEAN): DS_HASH_SET [EPA_EXPRESSION]
+			-- Set of expressions and their sub-expressions from the interface contracts of `a_feature'.
+			-- If `a_precondition', the expressions are from the feature precondition; otherwise from feature postcondition.
+		local
+			l_exps: DS_HASH_SET [EPA_EXPRESSION]
+			l_class_feature_name: STRING
+			l_exprs_as_string: ARRAYED_SET [STRING]
+			l_expr_creator: EPA_AST_EXPRESSION_SAFE_CREATOR
+			l_expr: EPA_EXPRESSION
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
+			l_feat: EPA_FEATURE_WITH_CONTEXT_CLASS
+			l_contract_extractor: EPA_CONTRACT_EXTRACTOR
+			l_sub_expression_collector: EPA_SUB_EXPRESSION_COLLECTOR
+		do
+			create l_exps.make_equal (20)
+
+				-- Interface contracts of the feature.
+			l_class_feature_name := a_class.name_in_upper + "." + a_feature.feature_name
+			if feature_contracts /= Void and then not feature_contracts.is_empty and then feature_contracts.has (l_class_feature_name) then
+					-- Contracts that have been removed are stored here.
+				if a_precondition then
+					l_exprs_as_string := feature_contracts.item (l_class_feature_name).pre
+				else
+					l_exprs_as_string := feature_contracts.item (l_class_feature_name).post
+				end
+				across l_exprs_as_string as l_str loop
+					l_expr := l_expr_creator.safe_create_with_text (a_class, a_feature, l_str.item, a_feature.written_class)
+					if l_expr /= Void then
+						l_exps.force (l_expr)
+					end
+				end
+			else
+					-- Contracts not removed, extract from code.
+				create l_contract_extractor
+				if a_precondition then
+					l_contract_extractor.precondition_of_feature (a_feature, a_class).do_all (agent l_exps.put_last)
+				else
+					l_contract_extractor.postcondition_of_feature (a_feature, a_class).do_all (agent l_exps.put_last)
+				end
+			end
+
+				-- Collect sub expressions from contracts.
+			create Result.make_equal (l_exps.count * 2 + 1)
+			create l_sub_expression_collector
+			create l_feat.make (a_feature, a_class)
+			from
+				l_cursor := l_exps.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_sub_expression_collector.collect_from_ast (l_feat, l_cursor.item.ast)
+				Result.append (l_sub_expression_collector.last_sub_expressions)
+
+				l_cursor.forth
+			end
 		end
 
 	path_conditions (a_class: CLASS_C; a_feature: FEATURE_I): DS_HASH_SET [EPA_EXPRESSION]
@@ -1803,5 +2187,14 @@ feature{NONE} -- Expressions
 
 	path_conditions_internal: HASH_TABLE [DS_HASH_SET [EPA_EXPRESSION], STRING]
 			-- Table from feature (in form CLASS_NAME.feature_name) to the set of path conditions
+
+feature -- Constants
+
+	Mark_starting_inferred_preconditions: STRING = ">>>>>>>>>>>>>>>>>>>>>>>>> Starting inferred preconditions"
+	Mark_ending_inferred_preconditions: STRING = ">>>>>>>>>>>>>>>>>>>>>>>>> Ending inferred preconditions"
+	Mark_starting_inferred_postconditions: STRING = ">>>>>>>>>>>>>>>>>>>>>>>>> Starting inferred postconditions"
+	Mark_ending_inferred_postconditions: STRING = ">>>>>>>>>>>>>>>>>>>>>>>>> Ending inferred postconditions"
+	Mark_starting_inferred_sequence_properties: STRING = ">>>>>>>>>>>>>>>>>>>>>>>>> Starting inferred sequence properties"
+	Mark_ending_inferred_sequence_properties: STRING = ">>>>>>>>>>>>>>>>>>>>>>>>> Ending inferred sequence properties"
 
 end

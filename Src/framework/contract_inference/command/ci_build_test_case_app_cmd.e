@@ -14,6 +14,8 @@ inherit
 
 	EPA_FILE_UTILITY
 
+--	ERL_G_TYPE_ROUTINES
+
 	SHARED_EIFFEL_PROJECT
 
 create
@@ -34,15 +36,27 @@ feature -- Access
 
 feature -- Basic operations
 
-	execute
+	execute (a_should_freeze: BOOLEAN)
 			-- Execute current command
 		do
 			find_test_cases
 			copy_test_cases
 			update_root_class
+			if a_should_freeze then
+				freeze_and_c_compile_project
+			end
 		end
 
-feature{NONE} -- Implementation
+	freeze_and_c_compile_project
+			-- Freeze and C compile current project.
+		do
+			eiffel_project.quick_melt (False, False, True)
+			eiffel_project.freeze
+			eiffel_project.call_finish_freezing_and_wait (True)
+		end
+
+
+feature{CI_BUILD_TEST_CASE_APP_CMD} -- Implementation
 
 	test_cases: HASH_TABLE [HASH_TABLE [LINKED_LIST [STRING], STRING], STRING]
 			-- Test case location information.
@@ -208,21 +222,8 @@ feature{NONE} -- Implementation
 			create l_file.make_create_read_write (config.root_class.file_name)
 			l_file.put_string (l_text)
 			l_file.close
-
-				-- Recompile project.
-			freeze_and_c_compile_project
 		end
 
-	freeze_and_c_compile_project
-			-- Freeze and C compile current project.
-		do
-			eiffel_project.quick_melt (False, False, True)
-			eiffel_project.freeze
-			eiffel_project.call_finish_freezing_and_wait (True)
-		end
-
-
-feature{NONE} -- Root class building
 
 	initialize_test_cases_body: STRING
 			-- Body of the `initialize_test_cases' feature in the root class.
@@ -265,9 +266,11 @@ feature{NONE} -- Root class building
 			end
 		end
 
-feature{NONE} -- Implementation
+feature{CI_BUILD_TEST_CASE_APP_CMD} -- Implementation
 
-	root_class_template: STRING = "[
+	root_class_template: STRING
+		do
+			Result := "[
 class
 	${CLASS_NAME}
 	
@@ -383,4 +386,6 @@ ${INITIALIZE_TEST_CASES_FEATURE_BODY}
 
 end
 	]"
+
+	end
 end

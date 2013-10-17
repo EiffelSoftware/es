@@ -39,18 +39,23 @@ feature -- Basic operations
 			arff_relation := data.arff_relation.cloned_object
 			value_sets := arff_relation.value_set
 
-			logger.put_line_with_time ("Start inferring implications.")
-
-			collect_premise_attributes
-			collect_consequent_attributes
-
 				-- Setup results.
 			create last_preconditions.make (10)
 			last_preconditions.set_equality_tester (expression_equality_tester)
 			create last_postconditions.make (10)
 			last_postconditions.set_equality_tester (expression_equality_tester)
 
-			build_decision_trees
+			logger.put_line_with_time ("Start inferring implications.")
+
+			initialize_data_structure
+			collect_premise_attributes
+			premise_attributes.do_all (agent consequent_attributes.force_last)
+			build_decision_trees (True)
+
+			initialize_data_structure
+			collect_premise_attributes
+			collect_consequent_attributes
+			build_decision_trees (False)
 
 			log_inferred_contracts ("Found the following implications:", last_postconditions)
 
@@ -84,6 +89,19 @@ feature{NONE} -- Implementation
 	premise_attributes: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]
 			-- Set of attributes to be used as premise attributes
 
+	initialize_data_structure
+			--
+		do
+			create consequent_attributes.make (arff_relation.attributes.count)
+			consequent_attributes.set_equality_tester (weka_arff_attribute_equality_tester)
+
+
+			create premise_attributes.make (arff_relation.attributes.count)
+			premise_attributes.set_equality_tester (weka_arff_attribute_equality_tester)
+			create boolean_premise_attributes.make (arff_relation.attributes.count)
+			boolean_premise_attributes.set_equality_tester (weka_arff_attribute_equality_tester)
+		end
+
 feature{NONE} -- Implementation
 
 	adapted_attributes (a_old_attributes: DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]; a_new_relation: WEKA_ARFF_RELATION): DS_HASH_SET [WEKA_ARFF_ATTRIBUTE]
@@ -104,7 +122,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	build_decision_trees
+	build_decision_trees (a_pre: BOOLEAN)
 			-- Build decision trees.
 		local
 			l_cursor: DS_HASH_SET_CURSOR [WEKA_ARFF_ATTRIBUTE]
@@ -161,7 +179,7 @@ feature{NONE} -- Implementation
 							end
 						end
 						if l_done then
-							generate_implications (l_tree)
+							generate_implications (l_tree, a_pre)
 						end
 					end
 				end
@@ -170,17 +188,25 @@ feature{NONE} -- Implementation
 
 		end
 
-	generate_implications (a_tree: RM_DECISION_TREE)
+	generate_implications (a_tree: RM_DECISION_TREE; a_pre: BOOLEAN)
 			-- Generate implications and store them in `last_postconditions'.
+		local
+			l_conditions: like last_postconditions
 		do
+			if a_pre then
+				l_conditions := last_preconditions
+			else
+				l_conditions := last_postconditions
+			end
+
 			across a_tree.paths as l_paths loop
-				if attached {EPA_EXPRESSION} implication_from_path (l_paths.item.nodes) as l_expr then
-					last_postconditions.force_last (l_expr)
+				if attached {EPA_EXPRESSION} implication_from_path (l_paths.item.nodes, a_pre) as l_expr then
+					l_conditions.force_last (l_expr)
 				end
 			end
 		end
 
-	implication_from_path (a_path: LIST [RM_DECISION_TREE_PATH_NODE]): detachable EPA_EXPRESSION
+	implication_from_path (a_path: LIST [RM_DECISION_TREE_PATH_NODE]; a_pre: BOOLEAN): detachable EPA_EXPRESSION
 			-- Implication expression from `a_path'
 		local
 			l_path: LINKED_LIST [RM_DECISION_TREE_PATH_NODE]
@@ -193,6 +219,7 @@ feature{NONE} -- Implementation
 			l_slices: LIST [STRING]
 			l_is_pre: BOOLEAN
 			l_is_bad: BOOLEAN
+			l_creator: EPA_AST_EXPRESSION_SAFE_CREATOR
 		do
 			create l_path.make
 			a_path.do_all (agent l_path.extend)
@@ -239,7 +266,7 @@ feature{NONE} -- Implementation
 							l_operator := ""
 						end
 					else
-						if l_is_pre then
+						if l_is_pre and then not a_pre then
 							l_name.prepend (once "old (")
 							l_name.append_character (')')
 						end
@@ -261,8 +288,8 @@ feature{NONE} -- Implementation
 				l_path.forth
 			end
 			if not l_is_bad then
-				create l_expr.make_with_text_and_type (class_under_test, feature_under_test, l_text, class_under_test, boolean_type)
-				if not l_expr.has_syntax_error and then l_expr.type /= Void then
+				l_expr := l_creator.safe_create_with_text_and_type (class_under_test, feature_under_test, l_text, class_under_test, boolean_type)
+				if l_expr /= Void then
 					Result := l_expr
 				end
 			end
@@ -278,11 +305,6 @@ feature{NONE} -- Implementation
 			l_ok: BOOLEAN
 			l_attr_cursor: DS_HASH_SET_CURSOR [WEKA_ARFF_ATTRIBUTE]
 		do
-			create premise_attributes.make (arff_relation.attributes.count)
-			premise_attributes.set_equality_tester (weka_arff_attribute_equality_tester)
-			create boolean_premise_attributes.make (arff_relation.attributes.count)
-			boolean_premise_attributes.set_equality_tester (weka_arff_attribute_equality_tester)
-
 				-- Collect attributes as consequent attributes.
 			from
 				l_cursor := value_sets.new_cursor
@@ -359,9 +381,6 @@ feature{NONE} -- Implementation
 			l_ok: BOOLEAN
 			l_attr_cursor: DS_HASH_SET_CURSOR [WEKA_ARFF_ATTRIBUTE]
 		do
-			create consequent_attributes.make (arff_relation.attributes.count)
-			consequent_attributes.set_equality_tester (weka_arff_attribute_equality_tester)
-
 				-- Collect attributes as consequent attributes.
 			from
 				l_cursor := value_sets.new_cursor

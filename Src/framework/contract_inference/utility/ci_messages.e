@@ -11,7 +11,15 @@ feature -- Access
 
 	msg_contract_inference_started: STRING = "Contract inference started."
 
+	msg_contract_inference_from_passings_started: STRING = "Contract inference from passings started."
+
+	msg_contract_inference_from_failings_started: STRING = "Contract inference from failings started."
+
 	msg_contract_inference_ended: STRING = "Contract inference ended."
+
+	msg_contract_inference_from_passings_ended: STRING = "Contract inference from passings ended."
+
+	msg_contract_inference_from_failings_ended: STRING = "Contract inference from failings ended."
 
 	msg_test_case_execution_started: STRING = "Test case execution started."
 

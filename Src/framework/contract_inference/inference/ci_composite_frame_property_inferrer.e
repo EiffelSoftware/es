@@ -24,7 +24,7 @@ feature -- Basic operations
 			l_quantified_expressions: like quantified_expressions
 			l_sig_cursor: like base_signatures.new_cursor
 			l_quantifier_free_exressions: like quantifier_free_expressions
-			l_valid_frame_properties: like valid_frame_properties
+			l_valid_frame_properties_pre, l_valid_frame_properties_post: like valid_frame_properties
 			l_valid_prop_cursor: DS_HASH_SET_CURSOR [CI_QUANTIFIED_EXPRESSION]
 		do
 			data := a_data
@@ -46,47 +46,66 @@ feature -- Basic operations
 				l_sig_cursor.forth
 			end
 			log_built_quantified_expressions (l_quantified_expressions)
+			l_quantifier_free_exressions := quantifier_free_expressions (l_quantified_expressions)
 
 				-- Validate quantified frame properties.
 			create evaluation_distribution.make (100)
 			evaluation_distribution.set_key_equality_tester (ci_quantified_expression_equality_tester)
-			l_quantifier_free_exressions := quantifier_free_expressions (l_quantified_expressions)
-			l_valid_frame_properties := valid_frame_properties (False, l_quantifier_free_exressions, agent on_property_evaluated)
+			l_valid_frame_properties_pre := valid_frame_properties (False, True,  l_quantifier_free_exressions, agent on_property_evaluated)
+			fileter_constant_frame_properties (l_valid_frame_properties_pre)
 
-				-- Filter out properties which only evaluated to true or only evaluated to false over all test cases.
-			from
-				l_valid_frame_properties.start
-			until
-				l_valid_frame_properties.after
-			loop
-				evaluation_distribution.search (l_valid_frame_properties.item_for_iteration)
-				if evaluation_distribution.found implies (evaluation_distribution.found_item.true_times > 0 and evaluation_distribution.found_item.false_times > 0) then
-					l_valid_frame_properties.forth
-				else
-					l_valid_frame_properties.remove (l_valid_frame_properties.item_for_iteration)
-				end
-			end
+			create evaluation_distribution.make (100)
+			evaluation_distribution.set_key_equality_tester (ci_quantified_expression_equality_tester)
+			l_valid_frame_properties_post := valid_frame_properties (False, False,  l_quantifier_free_exressions, agent on_property_evaluated)
+			fileter_constant_frame_properties (l_valid_frame_properties_post)
 
 			create last_preconditions.make (10)
 			last_preconditions.set_equality_tester (expression_equality_tester)
+			generate_inferred_contracts (l_valid_frame_properties_pre, last_preconditions)
+
 			create last_postconditions.make (10)
 			last_postconditions.set_equality_tester (expression_equality_tester)
-			generate_inferred_contracts (l_valid_frame_properties)
+			generate_inferred_contracts (l_valid_frame_properties_post, last_postconditions)
+
 			setup_last_contracts
 
 				-- Logging.
+			log_valid_frame_properties (l_valid_frame_properties_pre, "Valid frame properties for preconditions:")
+			log_valid_frame_properties (l_valid_frame_properties_post,"Valid frame properties for postconditions:")
+		end
+
+	log_valid_frame_properties (a_properties: like valid_frame_properties; a_message: STRING)
+			-- Log `l_properties'.
+		do
 			logger.push_level ({ELOG_CONSTANTS}.info_level)
-			logger.put_line (once "Valid frame properties:")
+			logger.put_line (a_message)
 			from
-				l_valid_frame_properties.start
+				a_properties.start
 			until
-				l_valid_frame_properties.after
+				a_properties.after
 			loop
 				logger.put_string (once "%T")
-				logger.put_line (l_valid_frame_properties.item_for_iteration.debug_output)
-				l_valid_frame_properties.forth
+				logger.put_line (a_properties.item_for_iteration.debug_output)
+				a_properties.forth
 			end
 			logger.pop_level
+		end
+
+	fileter_constant_frame_properties (a_properties: like valid_frame_properties)
+			-- Filter out properties which only evaluated to true or only evaluated to false over all test cases.
+		do
+			from
+				a_properties.start
+			until
+				a_properties.after
+			loop
+				evaluation_distribution.search (a_properties.item_for_iteration)
+				if evaluation_distribution.found implies (evaluation_distribution.found_item.true_times > 0 and evaluation_distribution.found_item.false_times > 0) then
+					a_properties.forth
+				else
+					a_properties.remove (a_properties.item_for_iteration)
+				end
+			end
 		end
 
 feature{NONE} -- Implementation
@@ -114,7 +133,7 @@ feature{NONE} -- Implementation
 				end
 
 					-- Only handle the case when premise is of type boolean.
-				if l_premise_as /= Void and then a_tc_info.transition.context.expression_type (l_premise_as).is_boolean then
+				if l_premise_as /= Void and then attached a_tc_info.transition.context.expression_type (l_premise_as) as lt_type and then lt_type.is_boolean then
 					a_evaluator.evaluate (l_premise_as)
 					if not a_evaluator.has_error then
 						if attached {EPA_BOOLEAN_VALUE} a_evaluator.last_value as l_bool_value then
@@ -651,7 +670,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	generate_inferred_contracts (a_valid_properties: DS_HASH_SET [CI_QUANTIFIED_EXPRESSION])
+	generate_inferred_contracts (a_valid_properties: DS_HASH_SET [CI_QUANTIFIED_EXPRESSION]; a_conditions: like last_preconditions)
 			-- Generate final inferred contracts from `candidate_properties' and
 			-- store result in `last_postconditions'.
 		local
@@ -665,7 +684,9 @@ feature{NONE} -- Implementation
 				l_properties.after
 			loop
 				l_expr := expression_from_quantified_expression (l_properties.item, class_under_test, feature_under_test)
-				last_postconditions.force_last (l_expr)
+				if l_expr /= Void then
+					a_conditions.force_last (l_expr)
+				end
 				l_properties.forth
 			end
 		end

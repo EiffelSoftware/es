@@ -87,34 +87,44 @@ feature -- Basic operations
 			l_resolved_function: EPA_FUNCTION
 			l_expression: EPA_EXPRESSION
 			l_operand_string_table: HASH_TABLE [STRING_8, INTEGER_32]
+			l_new_size: INTEGER
 		do
 			if a_pre then
 				l_ppt := variable_declaration.first
 			else
 				l_ppt := variable_declaration.last
 			end
+			create Result.make_equal (16)
+
 			l_daikon_invs := a_results.item (l_ppt)
-			create Result.make_equal (l_daikon_invs.count + 1)
-
-			from
-				l_operand_string_table := operand_string_table_for_feature (feature_under_test)
-				l_daikon_invs_cursor := l_daikon_invs.new_cursor
-				l_daikon_invs_cursor.start
-			until
-				l_daikon_invs_cursor.after
-			loop
-				if attached {DKN_EXPRESSION_INVARIANT} l_daikon_invs_cursor.item as lt_inv then
-						-- Keep only invariants of expression type.
-					l_inv_string := eiffel_string_from_daikon_invariant (lt_inv.text)
-					create l_inv_string_set.make_equal (2)
-					l_inv_string_set.force_last (l_inv_string)
-					l_property := candidate_property (l_inv_string_set, "or", l_operand_string_table)
-					l_expression := expression_from_function (l_property.function, Void, l_property.operand_map, class_under_test, feature_under_test)
-					Result.force_last (l_expression)
+			if l_daikon_invs /= Void then
+				l_new_size := l_daikon_invs.count + 1
+				if l_new_size > Result.capacity then
+					Result.resize (l_new_size)
 				end
+				from
+					l_operand_string_table := operand_string_table_for_feature (feature_under_test)
+					l_daikon_invs_cursor := l_daikon_invs.new_cursor
+					l_daikon_invs_cursor.start
+				until
+					l_daikon_invs_cursor.after
+				loop
+					if attached {DKN_EXPRESSION_INVARIANT} l_daikon_invs_cursor.item as lt_inv then
+							-- Keep only invariants of expression type.
+						l_inv_string := eiffel_string_from_daikon_invariant (lt_inv.text)
+						create l_inv_string_set.make_equal (2)
+						l_inv_string_set.force_last (l_inv_string)
+						l_property := candidate_property (l_inv_string_set, "or", l_operand_string_table)
+						l_expression := expression_from_function (l_property.function, Void, l_property.operand_map, class_under_test, feature_under_test)
+						if l_expression /= Void then
+							Result.force_last (l_expression)
+						end
+					end
 
-				l_daikon_invs_cursor.forth
+					l_daikon_invs_cursor.forth
+				end
 			end
+
 		end
 
 	eiffel_string_from_daikon_invariant (a_inv: STRING): STRING

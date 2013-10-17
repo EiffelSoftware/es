@@ -25,6 +25,8 @@ feature -- Basic operations
 	infer (a_data: like data)
 			-- Infer contracts from `a_data', which is transition data collected from
 			-- executed test cases.
+		local
+			l_pre_candidates, l_post_candidates: like candidate_properties
 		do
 				-- Initialize.
 			data := a_data
@@ -36,18 +38,26 @@ feature -- Basic operations
 			collect_single_change_expressions
 			generate_equality_candidates
 			log_candidate_properties (candidate_properties, "Found the following constant-change properties:")
-			validate_candidate_properties (False, candidate_properties, operand_map_table, "Start validating constant-change properties.")
-			log_candidate_properties (candidate_properties, "Found the following valid constant-change properties:")
-			create function_to_postcondition_mapping.make (20)
-			function_to_postcondition_mapping.set_key_equality_tester (function_equality_tester)
 
+			l_pre_candidates := candidate_properties.twin
+			validate_candidate_properties (True, l_pre_candidates, operand_map_table, "Start validating constant-value preconditions.")
+			log_candidate_properties (l_pre_candidates, "Found the following valid constant-value preconditions:")
+
+			l_post_candidates := candidate_properties.twin
+			validate_candidate_properties (False, l_post_candidates, operand_map_table, "Start validating constant-value postconditions.")
+			log_candidate_properties (l_post_candidates, "Found the following valid constant-value postconditions:")
 
 				-- Setup results.
 			create last_preconditions.make (10)
 			last_preconditions.set_equality_tester (expression_equality_tester)
+			setup_inferred_contracts_in_last_preconditions (l_pre_candidates, operand_map_table, Void)
+
 			create last_postconditions.make (10)
 			last_postconditions.set_equality_tester (expression_equality_tester)
-			setup_inferred_contracts_in_last_postconditions (candidate_properties, operand_map_table, agent function_to_postcondition_mapping.force_last)
+			create function_to_postcondition_mapping.make (20)
+			function_to_postcondition_mapping.set_key_equality_tester (function_equality_tester)
+			setup_inferred_contracts_in_last_postconditions (l_post_candidates, operand_map_table, agent function_to_postcondition_mapping.force_last)
+
 			setup_last_contracts
 		end
 

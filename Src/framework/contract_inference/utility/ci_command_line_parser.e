@@ -38,14 +38,23 @@ feature -- Basic operations
 			l_parser: AP_PARSER
 			l_args: DS_LINKED_LIST [STRING]
 			l_build_project_option: AP_STRING_OPTION
+			l_build_project_directly_option: AP_STRING_OPTION
+			l_report_option: AP_STRING_OPTION
 			l_feature_name_option: AP_STRING_OPTION
 			l_class_name_option: AP_STRING_OPTION
 			l_infer_option: AP_FLAG
+			l_is_fixing_contracts: AP_FLAG
+			l_is_optimistic_about_nonsensical_values: AP_FLAG
+			l_explicitly_reject_failing_tests: AP_FLAG
+			l_check_existing_contracts: AP_FLAG
 --			l_generate_weka_option: AP_FLAG
 --			l_weka_assertion_option: AP_STRING_OPTION
 			l_max_tc_option: AP_INTEGER_OPTION
+			l_max_precondition_clauses: AP_INTEGER_OPTION
+			l_max_precondition_proposals: AP_INTEGER_OPTION
 			l_premise_number_option: AP_STRING_OPTION
 			l_composite_property_option: AP_STRING_OPTION
+			l_disable_feature_contracts: AP_FLAG
 			l_composite_boolean_premise_connector_option: AP_STRING_OPTION
 			l_composite_boolean_connector_option: AP_STRING_OPTION
 			l_composite_integer_premise_connector_option: AP_STRING_OPTION
@@ -86,6 +95,14 @@ feature -- Basic operations
 			l_build_project_option.set_description ("Transform current project into a project containing infrastructure to support contract inference. Format: --build-from <test case directory>. <test case directory> contains test cases from which contract inference should be performed. The directory is recursively searched to find test cases. <test case directory> should contain test cases for only one class.")
 			l_parser.options.force_last (l_build_project_option)
 
+			create l_build_project_directly_option.make_with_long_form ("build-from-directly")
+			l_build_project_directly_option.set_description ("Similar to 'build-from', except using test cases directly from the parameter directory.")
+			l_parser.options.force_last (l_build_project_directly_option)
+
+			create l_report_option.make_with_long_form ("report-path")
+			l_report_option.set_description ("Generate report as specified by the path. The report will be generated in the log directory by default.")
+			l_parser.options.force_last (l_report_option)
+
 			create l_feature_name_option.make_with_long_form ("feature")
 			l_feature_name_option.set_description ("Format: feature <feature_name[,feature_name]+>. Specify that when building project for contract inference, only test cases for <feature_name> is used. When this option is not present, test cases for all features in the class are used. Only have effect when used with option %"build-from%" or %"infer%".")
 			l_parser.options.force_last (l_feature_name_option)
@@ -97,6 +114,22 @@ feature -- Basic operations
 			create l_infer_option.make_with_long_form ("infer")
 			l_infer_option.set_description ("Infer contracts for feature specified with %"feature%" option in class specified in %"class%" option.")
 			l_parser.options.force_last (l_infer_option)
+
+			create l_is_fixing_contracts.make_with_long_form ("fixing-contracts")
+			l_is_fixing_contracts.set_description ("Contrast invariants inferred from passing and failing tests to guide fixing contracts.")
+			l_parser.options.force_last (l_is_fixing_contracts)
+
+			create l_is_optimistic_about_nonsensical_values.make_with_long_form ("optimistic-about-nonsensical-values")
+			l_is_optimistic_about_nonsensical_values.set_description ("Ignore evaluations that returned nonsensical values. This makes the inferrence less sensible to the failures of the evaluator. Default False.")
+			l_parser.options.force_last (l_is_optimistic_about_nonsensical_values)
+
+			create l_explicitly_reject_failing_tests.make_with_long_form ("explicitly-reject-failing-tests")
+			l_explicitly_reject_failing_tests.set_description ("Infer extra precondition clauses to explicitly reject all failing tests, including the ones with incomplete states. Default False.")
+			l_parser.options.force_last (l_explicitly_reject_failing_tests)
+
+			create l_check_existing_contracts.make_with_long_form ("check-existing-contracts")
+			l_check_existing_contracts.set_description ("Check the validity of existing contracts of feature? Default False")
+			l_parser.options.force_last (l_check_existing_contracts)
 
 --			create l_generate_weka_option.make_with_long_form ("generate-weka")
 --			l_generate_weka_option.set_description (
@@ -115,6 +148,14 @@ feature -- Basic operations
 			l_max_tc_option.set_description ("Set the maximal number of test cases to execute. Format --max-tc-number <number>. <number> must be a non-negative integer. Default is 0. 0 means execute all test cases.")
 			l_parser.options.force_last (l_max_tc_option)
 
+			create l_max_precondition_clauses.make_with_long_form ("max-precondition-clauses")
+			l_max_precondition_clauses.set_description ("Set the maximum number of clauses in the proposed preconditions. Format --max-precondition-clauses <number>. <number> should be positive. Default value 2." )
+			l_parser.options.force_last (l_max_precondition_clauses)
+
+			create l_max_precondition_proposals.make_with_long_form ("max-precondition-proposals")
+			l_max_precondition_proposals.set_description ("Set the maximum number of preconditions to propose. Format --max-precondition-proposals <number>. <number> should be positive. Default value 10.")
+			l_parser.options.force_last (l_max_precondition_proposals)
+
 			create l_premise_number_option.make_with_long_form ("composite-premise-number")
 			l_premise_number_option.set_description (
 				"Set the minimal and maximal number of premises in a implication frame property. Format --max-premise-number min_value,max_value%
@@ -125,6 +166,10 @@ feature -- Basic operations
 			create l_composite_property_option.make_with_long_form ("composite-property")
 			l_composite_property_option.set_description ("Should composite frame properties by inferred? Foramt: --composite-property [on|off]%NDefault: on.")
 			l_parser.options.force_last (l_composite_property_option)
+
+			create l_disable_feature_contracts.make_with_long_form ("disable-feature-contracts")
+			l_disable_feature_contracts.set_description ("Should the contracts of the feature under inference be disabled during the session? ")
+			l_parser.options.force_last (l_disable_feature_contracts)
 
 			create l_composite_boolean_connector_option.make_with_long_form ("boolean-composite-connector")
 			l_composite_boolean_connector_option.set_description (
@@ -267,20 +312,40 @@ feature -- Basic operations
 			l_parser.options.force_last (l_tc_inclusion_option)
 
 			l_parser.parse_list (l_args)
-			if l_build_project_option.was_found then
-				config.set_should_build_project (True)
-				config.set_test_case_directory (l_build_project_option.parameter.out)
-			end
 
-			if l_feature_name_option.was_found then
-				config.set_feature_name_for_test_cases (l_feature_name_option.parameter.out)
+			if l_report_option.was_found then
+				config.set_report_path (l_report_option.parameter.out)
 			end
 
 			if l_class_name_option.was_found then
 				config.set_class_name (l_class_name_option.parameter.out)
 			end
 
+			if l_feature_name_option.was_found then
+				config.set_feature_name_for_test_cases (l_feature_name_option.parameter.out)
+			end
+
+			if l_build_project_option.was_found then
+				config.set_should_build_project (True)
+				config.set_test_case_directory (l_build_project_option.parameter.out)
+			end
+
+			if l_build_project_directly_option.was_found then
+					-- When building DIRECTLY from a dir, we are building for a single feature.
+				check config.feature_name_for_test_cases.count = 1 end
+				config.set_should_build_project (True)
+				config.set_test_case_directory_direct (l_build_project_directly_option.parameter.out)
+			end
+
 			config.set_should_infer_contracts (l_infer_option.was_found)
+
+			config.set_fixing_contracts (l_is_fixing_contracts.was_found)
+
+			config.set_optimistic_about_nonsensical_values (l_is_optimistic_about_nonsensical_values.was_found)
+
+			config.set_explicitly_reject_failing_tests (l_explicitly_reject_failing_tests.was_found)
+
+			config.set_check_existing_contracts (l_check_existing_contracts.was_found)
 
 			if l_max_tc_option.was_found then
 				if l_max_tc_option.parameter > 0 then
@@ -290,11 +355,29 @@ feature -- Basic operations
 				end
 			end
 
+			if l_max_precondition_clauses.was_found then
+				if l_max_precondition_clauses.parameter > 0 then
+					config.set_max_precondition_clauses (l_max_precondition_clauses.parameter)
+				else
+					config.set_max_precondition_clauses (2)
+				end
+			end
+
+			if l_max_precondition_proposals.was_found then
+				if l_max_precondition_proposals.parameter > 0 then
+					config.set_max_precondition_proposals (l_max_precondition_proposals.parameter)
+				else
+					config.set_max_precondition_proposals (10)
+				end
+			end
+
 			if l_premise_number_option.was_found then
 				setup_composite_premise_number (config, l_premise_number_option.parameter.out)
 			else
 				setup_composite_premise_number (config, Void)
 			end
+
+			setup_should_disable_contracts (config, l_disable_feature_contracts.was_found)
 
 			if l_composite_property_option.was_found then
 				setup_composite_property (config, l_composite_property_option.parameter.out)
@@ -710,6 +793,12 @@ feature{NONE} -- Implementation
 			else
 				a_config.set_weka_assertion_selection_mode ({CI_CONFIG}.weka_assertion_intersection_selection_mode)
 			end
+		end
+
+	setup_should_disable_contracts (a_config: CI_CONFIG; a_flag: BOOLEAN)
+			-- ...
+		do
+			a_config.set_should_disable_contracts (a_flag)
 		end
 
 	setup_composite_premise_number (a_config: CI_CONFIG; a_bounds: detachable STRING)

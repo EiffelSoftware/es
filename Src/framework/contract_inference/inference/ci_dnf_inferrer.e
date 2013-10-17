@@ -9,6 +9,9 @@ class
 
 inherit
 	CI_INFERRER
+		redefine
+			program_states_at_entry
+		end
 
 feature -- Basic operations
 
@@ -31,7 +34,7 @@ feature -- Basic operations
 			setup_transition_table
 			remove_missing_expressions_in_transition_table
 			remove_duplications_in_anonymous_assertions
-			remove_invariant_expressions_in_transition_table
+--			remove_invariant_expressions_in_transition_table
 			log_found_component_expressions
 
 			generate_candidate_properties
@@ -51,6 +54,37 @@ feature -- Basic operations
 			setup_inferred_contracts_in_last_preconditions  (candidate_properties.item (True),  operand_map_tables.item (True),  Void)
 			setup_inferred_contracts_in_last_postconditions (candidate_properties.item (False), operand_map_tables.item (False), Void)
 			setup_last_contracts
+		end
+
+	program_states_at_entry (a_data: like data; a_abstraction: DS_HASH_SET [EPA_EXPRESSION]): HASH_TABLE [TUPLE [true_exprs, false_exprs: DS_HASH_SET [EPA_EXPRESSION]], CI_TEST_CASE_TRANSITION_INFO]
+			-- <Precursor>
+		local
+			l_pre_result: HASH_TABLE [TUPLE [true_funcs, false_funcs: DS_HASH_SET [EPA_FUNCTION]], CI_TEST_CASE_TRANSITION_INFO]
+			l_evaluator: CI_EXPRESSION_EVALUATOR
+			l_test_case: CI_TEST_CASE_TRANSITION_INFO
+			l_operand_map_table: DS_HASH_TABLE [HASH_TABLE [INTEGER_32, INTEGER_32], EPA_FUNCTION]
+			l_candidates: DS_HASH_SET_CURSOR [EPA_FUNCTION]
+			l_true_funcs, l_false_funcs, l_missing_funcs, l_src: DS_HASH_SET [EPA_FUNCTION]
+			l_true_exprs, l_false_exprs, l_dest: DS_HASH_SET [EPA_EXPRESSION]
+			l_candidate: EPA_FUNCTION
+			l_expr: EPA_EXPRESSION
+			l_evaluation_result: like evaluate_function
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+			l_couples: ARRAY [TUPLE [src: DS_HASH_SET [EPA_FUNCTION]; dest: DS_HASH_SET [EPA_EXPRESSION]]]
+		do
+			data := a_data
+			setup_data_structures
+			operand_string_table := operand_string_table_for_feature (feature_under_test)
+			logger.put_line_with_time_and_level ("Start collecting program states in DNF format.", {ELOG_CONSTANTS}.debug_level)
+
+				-- Re-generate all candidate property functions
+			setup_transition_table
+			remove_missing_expressions_in_transition_table
+			remove_duplications_in_anonymous_assertions
+			generate_candidate_properties
+
+			Result := program_states_at_entry_in_functions (candidate_properties.item (True), a_abstraction, operand_map_tables.item(True))
 		end
 
 feature{NONE} -- Implementation
@@ -185,38 +219,33 @@ feature{NONE} -- Implementation
 			l_tran_cursor: like transition_table.new_cursor
 		do
 			create anonymous_assertions.make (2)
---			create l_anony_post_asserts.make_equal (100)
 
 			across <<True, False>> as l_assertion_type_cursor loop
 				l_assertion_type := l_assertion_type_cursor.item
 				create l_anony_asserts.make_equal (100)
 				l_transition := transition_table.first
 				l_state := l_transition.assertions (l_assertion_type)
---				l_post_state := l_transition.postconditions
 
 					-- Collect expressions that appear in assertions of all test cases,
 					-- store the anonymous form of those expressions in `l_anony_post_asserts'.
 				from
 					l_cursor := l_state.new_cursor
---					l_cursor := l_post_state.new_cursor
 					l_cursor.start
 				until
 					l_cursor.after
 				loop
 					l_anony_expr := l_transition.anonymous_expression_text (l_cursor.item.expression)
 					if transition_table.for_all (
-						agent (a_tran: SEM_FEATURE_CALL_TRANSITION; a_anony_expr: STRING): BOOLEAN
+						agent (a_tran: SEM_FEATURE_CALL_TRANSITION; a_anony_expr: STRING; a_assertion_type: BOOLEAN): BOOLEAN
 							do
-								Result := a_tran.assertion_by_anonymouse_expression_text (a_anony_expr, False) /= Void
-							end (?, l_anony_expr))
+								Result := a_tran.assertion_by_anonymouse_expression_text (a_anony_expr, a_assertion_type) /= Void
+							end (?, l_anony_expr, l_assertion_type))
 					then
 						l_anony_asserts.force_last (l_anony_expr)
---						l_anony_post_asserts.force_last (l_anony_expr)
 					end
 					l_cursor.forth
 				end
 				anonymous_assertions.force (l_anony_asserts, l_assertion_type)
---				anonymous_postconditions := l_anony_post_asserts
 
 					-- Remove expressions which do not appear in all test cases.
 				from
@@ -227,19 +256,15 @@ feature{NONE} -- Implementation
 				loop
 					l_transition := l_tran_cursor.item
 					l_state := l_tran_cursor.item.assertions (l_assertion_type)
---					l_post_state := l_tran_cursor.item.postconditions
 					from
 						l_cursor := l_state.new_cursor
---						l_cursor := l_post_state.new_cursor
 						l_cursor.start
 					until
 						l_cursor.after
 					loop
 						l_anony_expr := l_transition.anonymous_expression_text (l_cursor.item.expression)
 						if not l_anony_asserts.has (l_anony_expr) then
---						if not l_anony_post_asserts.has (l_anony_expr) then
 							l_state.remove (l_cursor.item)
---							l_post_state.remove (l_cursor.item)
 						else
 							l_cursor.forth
 						end
@@ -369,7 +394,9 @@ feature{NONE} -- Implementation
 	generate_candidate_properties
 			-- Generate candidate properties and store result in `candidate_properties'.
 		local
-			l_candidates: LINKED_LIST [EPA_STRING_HASH_SET]
+			l_candidates, l_raw_candidates, l_candidates_with_negation: LINKED_LIST [EPA_STRING_HASH_SET]
+			l_exprs, l_exprs_with_negation: EPA_STRING_HASH_SET
+			l_exprs_count, l_expr_index, l_expr_index_to_negate: INTEGER
 			l_property: like candidate_property
 			l_assertion_type: BOOLEAN
 			l_candidate_properties: EPA_HASH_SET [EPA_FUNCTION]
@@ -390,8 +417,43 @@ feature{NONE} -- Implementation
 				create l_candidates.make
 
 					-- Generate all combinations.
-				across 2 |..| config.max_dnf_clause as ks loop
-					l_candidates.append (anonymous_assertions.item (l_assertion_type).combinations (ks.item))
+				across 1 |..| config.max_dnf_clause as ks loop
+					l_raw_candidates := anonymous_assertions.item (l_assertion_type).combinations (ks.item)
+
+						-- For each expression set <a, b, c, ...> generate also
+						--  <not a, b, c, ...>, <a, not b, c,...>, <a, b, not c, ...>, ...
+					create l_candidates_with_negation.make
+					across l_raw_candidates as lt_candidate_cursor loop
+						l_exprs := lt_candidate_cursor.item
+						l_exprs_count := l_exprs.count
+							-- Include the original set
+						l_candidates_with_negation.extend (l_exprs)
+							-- Add each variant with negation
+						from l_expr_index_to_negate := 1
+						until l_expr_index_to_negate > l_exprs_count
+						loop
+							from
+								create l_exprs_with_negation.make (l_exprs_count)
+								l_expr_index := 1
+								l_exprs.start
+							until
+								l_exprs.after
+							loop
+								if l_expr_index = l_expr_index_to_negate then
+									l_exprs_with_negation.force ("not (" + l_exprs.item_for_iteration + ")")
+								else
+									l_exprs_with_negation.force (l_exprs.item_for_iteration)
+								end
+
+								l_exprs.forth
+							end
+							l_candidates_with_negation.extend (l_exprs_with_negation)
+
+							l_expr_index_to_negate := l_expr_index_to_negate + 1
+						end
+					end
+
+					l_candidates.append (l_candidates_with_negation)
 				end
 
 					-- Generate a candicate for each combination.

@@ -9,6 +9,9 @@ class
 
 inherit
 	EPA_HASH_SET [G]
+		redefine
+			hash_code
+		end
 
 	HASHABLE
 		undefine

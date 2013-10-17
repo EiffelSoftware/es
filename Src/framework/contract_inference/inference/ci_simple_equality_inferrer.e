@@ -10,7 +10,8 @@ class
 inherit
 	CI_INFERRER
 		redefine
-			is_expression_value_map_needed
+			is_expression_value_map_needed,
+			program_states_at_entry
 		end
 
 	CI_SHARED_EQUALITY_TESTERS
@@ -51,6 +52,28 @@ feature -- Basic operations
 			function_to_postcondition_mapping.set_key_equality_tester (function_equality_tester)
 			setup_inferred_contracts_in_last_postconditions (candidate_post_properties, post_properties_operand_map_table, agent function_to_postcondition_mapping.force_last)
 			setup_last_contracts
+		end
+
+	program_states_at_entry (a_data: like data; a_abstraction: DS_HASH_SET [EPA_EXPRESSION]): HASH_TABLE [TUPLE [true_exprs, false_exprs: DS_HASH_SET [EPA_EXPRESSION]], CI_TEST_CASE_TRANSITION_INFO]
+			-- <Precursor>
+		local
+			l_candidate_properties: like candidate_pre_properties
+			l_operand_map_table: like pre_properties_operand_map_table
+		do
+			data := a_data
+			setup_data_structures
+			operand_string_table := operand_string_table_for_feature (feature_under_test)
+
+			logger.put_line_with_time_and_level ("Start collecting program states in simple equality properties.", {ELOG_CONSTANTS}.debug_level)
+
+			initialize_implementation_data_structures
+			collect_potentially_equal_expressions_for_pre
+			generate_equality_candidates_for_pre
+
+			l_candidate_properties := candidate_pre_properties
+			l_operand_map_table := pre_properties_operand_map_table
+
+			Result := program_states_at_entry_in_functions (l_candidate_properties, a_abstraction, l_operand_map_table)
 		end
 
 feature -- Access

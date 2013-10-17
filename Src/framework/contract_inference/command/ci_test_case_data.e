@@ -164,7 +164,7 @@ feature -- Basic operations
 				-- interface expression.
 			across transitions as l_transitions loop
 				l_transition := l_transitions.item
-				create l_pre_state_values.make (interface_post_expressions.count)
+				create l_pre_state_values.make (interface_pre_expressions.count)
 				create l_post_state_value.make (interface_post_expressions.count)
 				across <<True, False>> as l_states loop
 					l_state := l_states.item
