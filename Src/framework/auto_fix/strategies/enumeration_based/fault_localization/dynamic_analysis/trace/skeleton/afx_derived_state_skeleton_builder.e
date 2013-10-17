@@ -36,8 +36,8 @@ feature -- Basic operation
 			l_boolean_count := l_boolean_expressions.count
 			l_integer_expressions := integer_expressions (a_base_expressions)
 			l_integer_count := l_integer_expressions.count
---			l_reference_expressions := reference_expressions (a_base_expressions)
---			l_reference_count := l_reference_expressions.count
+			l_reference_expressions := reference_expressions (a_base_expressions)
+			l_reference_count := l_reference_expressions.count
 
 			last_derived_skeleton.resize (l_boolean_count * 2 + 3 * l_integer_count * (l_integer_count + 1) + 1)
 			last_derived_skeleton.merge (skeleton_based_on_booleans (l_boolean_expressions))
@@ -156,8 +156,8 @@ feature{NONE} -- Program state aspects
 			l_context_feature: FEATURE_I
 			l_aspect: AFX_PROGRAM_STATE_ASPECT_REFERENCE_COMPARISON
 
---			l_exp: EPA_AST_EXPRESSION
---			l_aspect, l_aspect_neg: AFX_PROGRAM_STATE_ASPECT_VOID_CHECK
+			l_exp: EPA_AST_EXPRESSION
+			l_eq_void, l_neq_void: AFX_PROGRAM_STATE_ASPECT_VOID_CHECK
 		do
 			if a_expressions.count < 2 then
 				create Result.make_basic (context_class, context_feature, 1)
@@ -183,21 +183,21 @@ feature{NONE} -- Program state aspects
 					l_combinations.forth
 				end
 			end
---			from a_expressions.start
---			until a_expressions.after
---			loop
---				l_exp := a_expressions.item_for_iteration
+			from a_expressions.start
+			until a_expressions.after
+			loop
+				l_exp := a_expressions.item_for_iteration
 
---				create l_aspect.make_void_check (context_class, context_feature, written_class,
---						l_exp, {AFX_PROGRAM_STATE_ASPECT_VOID_CHECK}.Operator_void_check_equal)
---				Result.force (l_aspect)
+				create l_eq_void.make_void_check (context_class, context_feature, written_class,
+						l_exp, {AFX_PROGRAM_STATE_ASPECT_VOID_CHECK}.Operator_void_check_equal)
+				Result.force (l_eq_void)
 
---				create l_aspect_neg.make_void_check (context_class, context_feature, written_class,
---						l_exp, {AFX_PROGRAM_STATE_ASPECT_VOID_CHECK}.Operator_void_check_not_equal)
---				Result.force (l_aspect_neg)
+				create l_neq_void.make_void_check (context_class, context_feature, written_class,
+						l_exp, {AFX_PROGRAM_STATE_ASPECT_VOID_CHECK}.Operator_void_check_not_equal)
+				Result.force (l_neq_void)
 
---				a_expressions.forth
---			end
+				a_expressions.forth
+			end
 		end
 
 	skeleton_based_on_booleans (a_booleans: EPA_HASH_SET [EPA_AST_EXPRESSION]): EPA_STATE_SKELETON

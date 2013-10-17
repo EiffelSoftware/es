@@ -40,9 +40,14 @@ feature -- Basic operation
 
 feature -- Access
 
+	features_to_fix: DS_LIST [AFX_FEATURE_TO_MONITOR]
+
 	regular_traces: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]
 
 	relaxed_traces: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]
+
+	written_contracts_of_features: DS_HASH_TABLE [TUPLE[pre, post: EPA_HASH_SET[EPA_AST_EXPRESSION]], AFX_FEATURE_TO_MONITOR]
+			-- Map from features to their written contracts.
 
 	all_traces: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]
 		local
@@ -54,17 +59,12 @@ feature -- Access
 			Result := l_traces
 		end
 
-	features_to_fix: DS_LIST [AFX_FEATURE_TO_MONITOR]
-
 	target_feature: AFX_FEATURE_TO_MONITOR
 		require
 			feature_to_fix_not_empty: not features_to_fix.is_empty
 		do
 			Result := features_to_fix.first
 		end
-
-	written_contracts_of_features: DS_HASH_TABLE [TUPLE[pre, post: EPA_HASH_SET[EPA_AST_EXPRESSION]], AFX_FEATURE_TO_MONITOR]
-			-- Map from features to their written contracts.
 
 feature{NONE} -- Access
 
@@ -73,6 +73,163 @@ feature{NONE} -- Access
 	traces_for_implication_inference: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]
 
 feature{NONE} -- Implementation
+
+	contract_fixes_to_target_feature (a_passing_traces, a_failing_traces: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]): DS_ARRAYED_LIST [AFX_CONTRACT_FIX_PER_FEATURE]
+			--
+		local
+			l_written_contract_expressions, l_written_contracts: EPA_HASH_SET[EPA_AST_EXPRESSION]
+			l_summary: DS_HASH_TABLE [TUPLE [pre: EPA_HASH_SET [EPA_AST_EXPRESSION]; post: EPA_HASH_SET [EPA_AST_EXPRESSION]], AFX_FEATURE_TO_MONITOR]
+			l_summary_from_relaxed_passings, l_summary_from_relaxed_failings: EPA_HASH_SET [EPA_AST_EXPRESSION]
+			l_target_features: DS_ARRAYED_LIST [AFX_FEATURE_TO_MONITOR]
+			l_valid_contracts, l_valid_contract_expressions, l_essential_contracts: EPA_HASH_SET [EPA_AST_EXPRESSION]
+			l_contract_expression: EPA_AST_EXPRESSION
+			l_contracts_to_remove, l_contracts_to_add, l_temp_contracts_to_add: EPA_HASH_SET [EPA_AST_EXPRESSION]
+			l_contracts_to_remove_in_order, l_contracts_to_add_in_order, l_essential_contracts_in_order, l_valid_contracts_in_order: DS_ARRAYED_LIST [EPA_AST_EXPRESSION]
+			l_contract_cursor: DS_LIST_CURSOR [EPA_AST_EXPRESSION]
+			l_all_traces: DS_ARRAYED_LIST [AFX_PROGRAM_EXECUTION_TRACE]
+			l_expressions_to_satisfying_state_hashes: DS_HASH_TABLE [EPA_HASH_SET[STRING], EPA_AST_EXPRESSION]
+			l_written_contract_texts: EPA_HASH_SET [STRING]
+			l_is_precondition_violation: BOOLEAN
+			l_agent: FUNCTION[ANY, TUPLE[AFX_PROGRAM_EXECUTION_STATE], BOOLEAN]
+			l_result, l_result_overall: TUPLE [htable: DS_HASH_TABLE [EPA_HASH_SET[STRING], EPA_AST_EXPRESSION]; invs: EPA_HASH_SET[EPA_AST_EXPRESSION]]
+		do
+			create Result.make_equal (max_weakening_fixes)
+
+				-- Written contract expressions as state aspects.
+			l_is_precondition_violation := session.exception_signature.is_precondition_violation
+			if l_is_precondition_violation then
+				l_written_contract_expressions := written_contracts_of_features.item (target_feature).pre.twin
+			else
+				l_written_contract_expressions := written_contracts_of_features.item (target_feature).post.twin
+			end
+			create l_written_contracts.make_equal (l_written_contract_expressions.count + 1)
+			l_written_contract_expressions.do_all (
+					agent (exp: EPA_AST_EXPRESSION; contracts: EPA_HASH_SET[EPA_AST_EXPRESSION])
+						local
+							l_aspect: AFX_PROGRAM_STATE_ASPECT_BOOLEAN_RELATION
+						do
+							l_aspect := create {AFX_PROGRAM_STATE_ASPECT_BOOLEAN_RELATION}.make_boolean_relation (
+									target_feature.context_class, target_feature.feature_, target_feature.written_class, exp,  Void, {AFX_PROGRAM_STATE_ASPECT_BOOLEAN_RELATION}.operator_boolean_null)
+							contracts.force (l_aspect)
+						end (?, l_written_contracts))
+
+			create l_target_features.make_equal (1)
+			l_target_features.force_last (target_feature)
+
+				-- Contracts that we can keep for the TARGET.
+			l_summary := summary_of_traces (a_passing_traces, l_target_features, False)
+			if l_summary.has (target_feature) then
+				if l_is_precondition_violation then
+					l_summary_from_relaxed_passings := l_summary.item (target_feature).pre
+				else
+					l_summary_from_relaxed_passings := l_summary.item (target_feature).post
+				end
+			end
+			if l_summary_from_relaxed_passings = Void then
+				create l_summary_from_relaxed_passings.make_equal (1)
+			end
+			l_valid_contracts := l_summary_from_relaxed_passings
+				-- All written contracts that are not valid should be removed.
+			l_contracts_to_remove := l_written_contracts.twin
+			l_valid_contracts.do_all (agent l_contracts_to_remove.remove)
+
+				-- Contracts essential for ruling out bad inputs to TARGET
+			l_summary := summary_of_traces (a_failing_traces, l_target_features, True)
+			if l_summary.has (target_feature) then
+				if l_is_precondition_violation then
+					l_summary_from_relaxed_failings := l_summary.item (target_feature).pre
+				else
+					l_summary_from_relaxed_failings := l_summary.item (target_feature).post
+				end
+			end
+			if l_summary_from_relaxed_failings = Void then
+					-- In case of postcondition violation, we don't get any invariants from relaxed failing tests.
+				create l_summary_from_relaxed_failings.make_equal (1)
+			end
+			l_essential_contracts := l_summary_from_relaxed_passings.subtraction (l_summary_from_relaxed_failings)
+
+			l_essential_contracts_in_order := expressions_in_order (l_essential_contracts)
+			prune_disjunctions_of_true_expressions (l_essential_contracts_in_order)
+				-- Remove invariants.
+			l_result := expressions_to_satisfying_state_hashes (l_all_traces, target_feature.context_class, target_feature.feature_, l_essential_contracts_in_order, l_agent)
+			l_result.invs.do_all (agent l_essential_contracts_in_order.delete)
+			if session.exception_signature.is_precondition_violation then
+					-- Keep only the weakest expressions for preconditions
+--				l_expressions_to_satisfying_state_hashes := l_result.htable
+--				l_essential_contracts_in_order := expressions_ordered_by_set_size (l_essential_contracts_in_order, l_expressions_to_satisfying_state_hashes)
+--				prune_stronger_expressions (l_essential_contracts_in_order, l_expressions_to_satisfying_state_hashes)
+			else
+					-- Keep only the strongest expressions for postconditions
+--				l_expressions_to_satisfying_state_hashes := l_result.htable
+--				l_essential_contracts_in_order := expressions_ordered_by_set_size (l_essential_contracts_in_order, l_expressions_to_satisfying_state_hashes)
+--				prune_weaker_expressions (l_essential_contracts_in_order, l_expressions_to_satisfying_state_hashes)
+				prefer_equality_in_postcondition (l_essential_contracts_in_order)
+			end
+
+				-- Use the invs of all interesting states as essential contracts.
+			create l_essential_contracts.make_equal (l_result.invs.count + 1)
+			l_result.invs.do_all (agent l_essential_contracts.force)
+			if session.exception_signature.is_precondition_violation then
+				l_result_overall.invs.do_all (agent l_essential_contracts.remove)
+			end
+			l_essential_contracts_in_order := expressions_in_order (l_essential_contracts)
+			if session.exception_signature.is_postcondition_violation then
+				prefer_equality_in_postcondition (l_essential_contracts_in_order)
+			end
+
+			l_contracts_to_add_in_order := l_essential_contracts_in_order.twin
+			l_written_contracts.do_all (agent l_contracts_to_add_in_order.delete)
+
+			append_fix (target_feature, l_is_precondition_violation, Void, l_contracts_to_remove, Result)
+			from
+				l_contract_cursor := l_contracts_to_add_in_order.new_cursor
+				l_contract_cursor.start
+			until
+				l_contract_cursor.after or else Result.count >= max_weakening_fixes
+			loop
+				create l_temp_contracts_to_add.make_equal (1)
+				l_temp_contracts_to_add.force (l_contract_cursor.item)
+				append_fix (target_feature, l_is_precondition_violation, l_temp_contracts_to_add, l_contracts_to_remove, Result)
+
+				l_contract_cursor.forth
+			end
+		end
+
+--				-- Keep only the weakest ones from valid contracts and essential contracts.
+--			create l_all_traces.make_equal (regular_traces.count + relaxed_traces.count + 1)
+--			regular_traces.do_all (agent l_all_traces.force_last)
+--			relaxed_traces.do_all (agent l_all_traces.force_last)
+
+--			l_agent := agent (a_state: AFX_PROGRAM_EXECUTION_STATE; a_is_entry: BOOLEAN): BOOLEAN
+--						do
+--							Result := a_is_entry and then a_state.location.breakpoint_index = 1 or else not a_is_entry and then a_state.location.breakpoint_index > 1
+--						end (?, session.exception_signature.is_precondition_violation)
+
+--			l_valid_contracts_in_order := expressions_in_order (l_valid_contracts)
+--			prune_disjunctions_of_true_expressions (l_valid_contracts_in_order)
+--			l_result := expressions_to_satisfying_state_hashes (l_all_traces, target_feature.context_class, target_feature.feature_, l_valid_contracts_in_order, l_agent)
+--			l_expressions_to_satisfying_state_hashes := l_result.htable
+--			if session.exception_signature.is_precondition_violation then
+--					-- l_result.invs contains expressions that are invariants across both passing and failing tests (or tautologies).
+--				l_result.invs.do_all (agent l_valid_contracts_in_order.delete)
+--			else
+--					-- Do nothing.
+--					-- In case of postcondition violation, l_result.invs and l_valid_contracts_in_order both contain the invariants from all passing tests, and are equal.
+--			end
+--			l_valid_contracts_in_order := expressions_ordered_by_set_size (l_valid_contracts_in_order, l_expressions_to_satisfying_state_hashes)
+----			prune_stronger_expressions (l_valid_contracts_in_order, l_expressions_to_satisfying_state_hashes)
+
+--			l_expressions_to_satisfying_state_hashes := l_result.htable
+--			l_result.invs.do_all (agent l_essential_contracts_in_order.delete)
+--			l_essential_contracts_in_order := expressions_ordered_by_set_size (l_essential_contracts_in_order, l_expressions_to_satisfying_state_hashes)
+--			prune_stronger_expressions (l_essential_contracts_in_order, l_expressions_to_satisfying_state_hashes)
+
+--			create l_contracts_to_add.make_equal (l_contracts_to_add_in_order.count + 1)
+--			l_contracts_to_add_in_order.do_all (agent l_contracts_to_add.force)
+--			l_contracts_to_add_in_order := expressions_in_order (l_contracts_to_add)
+--			l_result := expressions_to_satisfying_state_hashes (l_all_traces, target_feature.context_class, target_feature.feature_, l_contracts_to_add, l_agent)
+--			l_expressions_to_satisfying_state_hashes := l_result.htable
+--			l_contracts_to_add_in_order := expressions_ordered_by_set_size (l_contracts_to_add, l_expressions_to_satisfying_state_hashes)
 
 	fixes_based_on_those_to_target_features (a_fixes_to_target_feature: DS_ARRAYED_LIST [AFX_CONTRACT_FIX_PER_FEATURE]; a_traces: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]): DS_ARRAYED_LIST [AFX_CONTRACT_FIX_ACROSS_FEATURES]
 		local
@@ -193,148 +350,6 @@ feature{NONE} -- Implementation
 				end
 
 				l_trace_cursor.forth
-			end
-		end
-
-	contract_fixes_to_target_feature (a_passing_traces, a_failing_traces: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]): DS_ARRAYED_LIST [AFX_CONTRACT_FIX_PER_FEATURE]
-			--
-		local
-			l_written_contract_expressions, l_written_contracts: EPA_HASH_SET[EPA_AST_EXPRESSION]
-			l_summary: DS_HASH_TABLE [TUPLE [pre: EPA_HASH_SET [EPA_AST_EXPRESSION]; post: EPA_HASH_SET [EPA_AST_EXPRESSION]], AFX_FEATURE_TO_MONITOR]
-			l_summary_from_relaxed_passings, l_summary_from_relaxed_failings: EPA_HASH_SET [EPA_AST_EXPRESSION]
-			l_target_features: DS_ARRAYED_LIST [AFX_FEATURE_TO_MONITOR]
-			l_valid_contracts, l_valid_contract_expressions, l_essential_contracts: EPA_HASH_SET [EPA_AST_EXPRESSION]
-			l_contract_expression: EPA_AST_EXPRESSION
-			l_contracts_to_remove, l_contracts_to_add, l_temp_contracts_to_add: EPA_HASH_SET [EPA_AST_EXPRESSION]
-			l_contracts_to_remove_in_order, l_contracts_to_add_in_order, l_essential_contracts_in_order, l_valid_contracts_in_order: DS_ARRAYED_LIST [EPA_AST_EXPRESSION]
-			l_contract_cursor: DS_LIST_CURSOR [EPA_AST_EXPRESSION]
-			l_all_traces: DS_ARRAYED_LIST [AFX_PROGRAM_EXECUTION_TRACE]
-			l_expressions_to_satisfying_state_hashes: DS_HASH_TABLE [EPA_HASH_SET[STRING], EPA_AST_EXPRESSION]
-			l_written_contract_texts: EPA_HASH_SET [STRING]
-			l_is_precondition_violation: BOOLEAN
-			l_agent: FUNCTION[ANY, TUPLE[AFX_PROGRAM_EXECUTION_STATE], BOOLEAN]
-			l_result, l_result_overall: TUPLE [htable: DS_HASH_TABLE [EPA_HASH_SET[STRING], EPA_AST_EXPRESSION]; invs: EPA_HASH_SET[EPA_AST_EXPRESSION]]
-		do
-			create Result.make_equal (max_weakening_fixes)
-
-				-- Written contract expressions as state aspects.
-			l_is_precondition_violation := session.exception_signature.is_precondition_violation
-			if l_is_precondition_violation then
-				l_written_contract_expressions := written_contracts_of_features.item (target_feature).pre.twin
-			else
-				l_written_contract_expressions := written_contracts_of_features.item (target_feature).post.twin
-			end
-
-			create l_written_contracts.make_equal (l_written_contract_expressions.count + 1)
-			l_written_contract_expressions.do_all (
-					agent (exp: EPA_AST_EXPRESSION; contracts: EPA_HASH_SET[EPA_AST_EXPRESSION])
-						local
-							l_aspect: AFX_PROGRAM_STATE_ASPECT_BOOLEAN_RELATION
-						do
-							l_aspect := create {AFX_PROGRAM_STATE_ASPECT_BOOLEAN_RELATION}.make_boolean_relation (
-									target_feature.context_class, target_feature.feature_, target_feature.written_class, exp,  Void, {AFX_PROGRAM_STATE_ASPECT_BOOLEAN_RELATION}.operator_boolean_null)
-							contracts.force (l_aspect)
-						end (?, l_written_contracts))
-
-			create l_target_features.make_equal (1)
-			l_target_features.force_last (target_feature)
-
-				-- Contracts that we can keep for the TARGET.
-			l_summary := summary_of_traces (a_passing_traces, l_target_features, False)
-			if l_summary.has (target_feature) then
-				if l_is_precondition_violation then
-					l_summary_from_relaxed_passings := l_summary.item (target_feature).pre
-				else
-					l_summary_from_relaxed_passings := l_summary.item (target_feature).post
-				end
-			end
-			if l_summary_from_relaxed_passings = Void then
-				create l_summary_from_relaxed_passings.make_equal (1)
-			end
-			l_valid_contracts := l_summary_from_relaxed_passings
-
-				-- Contracts essential for ruling out bad inputs to TARGET
-			l_summary := summary_of_traces (a_failing_traces, l_target_features, True)
-			if l_summary.has (target_feature) then
-				if l_is_precondition_violation then
-					l_summary_from_relaxed_failings := l_summary.item (target_feature).pre
-				else
-					l_summary_from_relaxed_failings := l_summary.item (target_feature).post
-				end
-			end
-			if l_summary_from_relaxed_failings = Void then
-				create l_summary_from_relaxed_failings.make_equal (1)
-			end
-			l_essential_contracts := l_summary_from_relaxed_passings.subtraction (l_summary_from_relaxed_failings)
-
-				-- Keep only the weakest ones from valid contracts and essential contracts.
-			create l_all_traces.make_equal (regular_traces.count + relaxed_traces.count + 1)
-			regular_traces.do_all (agent l_all_traces.force_last)
-			relaxed_traces.do_all (agent l_all_traces.force_last)
-
-			l_agent := agent (a_state: AFX_PROGRAM_EXECUTION_STATE; a_is_entry: BOOLEAN): BOOLEAN
-						do
-							Result := a_is_entry and then a_state.location.breakpoint_index = 1 or else not a_is_entry and then a_state.location.breakpoint_index > 1
-						end (?, session.exception_signature.is_precondition_violation)
-
-			l_valid_contracts_in_order := expressions_in_order (l_valid_contracts)
-			prune_disjunctions_of_true_expressions (l_valid_contracts_in_order)
-			l_result := expressions_to_satisfying_state_hashes (l_all_traces, target_feature.context_class, target_feature.feature_, l_valid_contracts_in_order, l_agent)
-			l_expressions_to_satisfying_state_hashes := l_result.htable
-			if not session.exception_signature.is_postcondition_violation then
-					-- l_result.invs and l_valid_contracts_in_order contain the same set of expressions in case of postcondition violations.
-				l_result.invs.do_all (agent l_valid_contracts_in_order.delete)
-			end
-			l_valid_contracts_in_order := expressions_ordered_by_set_size (l_valid_contracts_in_order, l_expressions_to_satisfying_state_hashes)
---			prune_stronger_expressions (l_valid_contracts_in_order, l_expressions_to_satisfying_state_hashes)
-
-			l_essential_contracts_in_order := expressions_in_order (l_essential_contracts)
-			prune_disjunctions_of_true_expressions (l_essential_contracts_in_order)
-
-			l_result := expressions_to_satisfying_state_hashes (l_all_traces, target_feature.context_class, target_feature.feature_, l_essential_contracts_in_order, l_agent)
-			l_result_overall := expressions_to_satisfying_state_hashes (l_all_traces, target_feature.context_class, target_feature.feature_, l_essential_contracts_in_order, Void)
-				-- Use the invs of all interesting states as essential contracts.
-			create l_essential_contracts.make_equal (l_result.invs.count + 1)
-			l_result.invs.do_all (agent l_essential_contracts.force)
-			if not session.exception_signature.is_postcondition_violation then
-				l_result_overall.invs.do_all (agent l_essential_contracts.remove)
-			end
-			l_essential_contracts_in_order := expressions_in_order (l_essential_contracts)
-			if session.exception_signature.is_postcondition_violation then
-				prefer_equality_in_postcondition (l_essential_contracts_in_order)
-			end
-
-
---			l_expressions_to_satisfying_state_hashes := l_result.htable
---			l_result.invs.do_all (agent l_essential_contracts_in_order.delete)
---			l_essential_contracts_in_order := expressions_ordered_by_set_size (l_essential_contracts_in_order, l_expressions_to_satisfying_state_hashes)
---			prune_stronger_expressions (l_essential_contracts_in_order, l_expressions_to_satisfying_state_hashes)
-
-			l_contracts_to_remove := l_written_contracts.twin
-			l_valid_contracts_in_order.do_all (agent l_contracts_to_remove.remove)
-
-			l_contracts_to_add_in_order := l_essential_contracts_in_order.twin
-			l_written_contracts.do_all (agent l_contracts_to_add_in_order.delete)
-			create l_contracts_to_add.make_equal (l_contracts_to_add_in_order.count + 1)
-			l_contracts_to_add_in_order.do_all (agent l_contracts_to_add.force)
---			l_contracts_to_add_in_order := expressions_in_order (l_contracts_to_add)
-
---			l_result := expressions_to_satisfying_state_hashes (l_all_traces, target_feature.context_class, target_feature.feature_, l_contracts_to_add, l_agent)
---			l_expressions_to_satisfying_state_hashes := l_result.htable
---			l_contracts_to_add_in_order := expressions_ordered_by_set_size (l_contracts_to_add, l_expressions_to_satisfying_state_hashes)
-
-			append_fix (target_feature, l_is_precondition_violation, Void, l_contracts_to_remove, Result)
-			from
-				l_contract_cursor := l_contracts_to_add_in_order.new_cursor
-				l_contract_cursor.start
-			until
-				l_contract_cursor.after or else Result.count >= max_weakening_fixes
-			loop
-				create l_temp_contracts_to_add.make_equal (1)
-				l_temp_contracts_to_add.force (l_contract_cursor.item)
-				append_fix (target_feature, l_is_precondition_violation, l_temp_contracts_to_add, l_contracts_to_remove, Result)
-
-				l_contract_cursor.forth
 			end
 		end
 
