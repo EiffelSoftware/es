@@ -262,6 +262,24 @@ feature -- Access
 			end
 		end
 
+	expressions_with_value (a_value: EPA_EXPRESSION_VALUE): EPA_HASH_SET [EPA_EXPRESSION]
+		local
+			l_cursor: DS_HASH_SET_CURSOR [EPA_EQUATION]
+		do
+			create Result.make_equal (count)
+			from
+				l_cursor := new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				if attached l_cursor.item.value.as_boolean as lt_boolean and then lt_boolean ~ a_value then
+					Result.force (l_cursor.item.expression)
+				end
+				l_cursor.forth
+			end
+		end
+
 	to_hash_table: HASH_TABLE [EPA_EXPRESSION_VALUE, STRING]
 			-- Hash table representation of Current
 			-- Key is the text of the equations,

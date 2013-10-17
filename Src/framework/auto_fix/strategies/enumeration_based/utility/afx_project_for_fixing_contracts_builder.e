@@ -43,10 +43,6 @@ create
 
 feature -- Access
 
---	current_fault_signature: EPA_TEST_CASE_SIGNATURE
---			-- Signature of the fault under fix.
-
-
 	current_failing_test_cases: DS_ARRAYED_LIST [STRING]
 			-- List of failing test case files for fixing.
 
@@ -107,7 +103,6 @@ feature -- Basic operation
 			l_tc_dir, l_rtc_dir: DIRECTORY
 		do
 			prepare_test_cases
---			analyse_exception_signature
 			prepare_relaxed_test_cases
 
 				-- Build root class.
@@ -143,8 +138,6 @@ feature -- Basic operation
 			end
 			create l_rtc_dir.make_with_path (l_afx_test_case_path.extended ("rtc"))
 			l_rtc_dir.recursive_create_dir
---			execution_environment.sleep((10^9).truncated_to_integer_64 * 3)
---			wait_till_directory_is_ready (l_rtc_dir)
 
 			copy_test_case_files (current_passing_test_cases, False, l_afx_test_case_path)
 			copy_test_case_files (current_failing_test_cases, False, l_afx_test_case_path)
@@ -152,30 +145,7 @@ feature -- Basic operation
 			copy_test_case_files (current_relaxed_failing_test_cases, True, l_afx_test_case_path)
 		end
 
-	wait_till_directory_is_ready (a_dir: DIRECTORY)
-		local
-			l_maximum_retries, l_retried_times: INTEGER
-			l_exception: DEVELOPER_EXCEPTION
-		do
-			from
-				l_retried_times := 0
-				l_maximum_retries := 3
-			until
-				l_retried_times >= l_maximum_retries
-			loop
-				execution_environment.sleep((10^9).truncated_to_integer_64 * 3)
-				if a_dir.exists then
-					l_retried_times := l_maximum_retries
-				else
-					l_retried_times := l_retried_times + 1
-				end
-			end
-			if not a_dir.exists then
-				create l_exception
-				l_exception.set_description ("Failed to create directory: " + a_dir.path.out)
-				l_exception.raise
-			end
-		end
+feature{NONE} -- Implementation
 
 	prepare_test_cases
 		local
@@ -184,43 +154,6 @@ feature -- Basic operation
 			l_all_test_cases := all_test_cases_from_location (test_case_folder)
 			current_passing_test_cases := select_test_cases_to_use (l_all_test_cases.passings, config.max_passing_test_case_number)
 			current_failing_test_cases := select_test_cases_to_use (l_all_test_cases.failings, config.max_failing_test_case_number)
-		end
-
-	analyse_exception_signature
-		local
-			l_failing_file_name: STRING
-			l_failing_path: PATH
-			l_exception_trace: STRING
-			l_explainer: EPA_EXCEPTION_TRACE_EXPLAINER
-			l_summary: EPA_EXCEPTION_TRACE_SUMMARY
-			l_exception_code: INTEGER_32
-			l_exception_signature: AFX_EXCEPTION_SIGNATURE
-		do
-				-- COllect exception trace
-			l_failing_file_name := current_failing_test_cases.first
-			create l_failing_path.make_from_string (test_case_folder)
-			l_failing_path := l_failing_path.extended (l_failing_file_name)
-			l_exception_trace := exception_trace_from_failing_test_case (l_failing_path)
-			if l_exception_trace /= Void and then not l_exception_trace.is_empty then
-				create l_explainer
-				l_explainer.explain (l_exception_trace)
-				if l_explainer.was_successful then
-					l_summary := l_explainer.last_explanation
-					l_exception_code := l_summary.exception_code
-					if l_exception_code = {EXCEP_CONST}.void_call_target then
-						create {AFX_VOID_CALL_TARGET_VIOLATION_SIGNATURE} l_exception_signature.make (l_summary.failing_assertion_tag, l_summary.failing_context_class, l_summary.failing_feature, l_summary.failing_position_breakpoint_index, 1)
-					elseif l_exception_code = {EXCEP_CONST}.precondition then
-						create {AFX_PRECONDITION_VIOLATION_SIGNATURE} l_exception_signature.make (l_summary.failing_context_class, l_summary.failing_feature, l_summary.failing_position_breakpoint_index, l_summary.recipient_context_class, l_summary.recipient_feature, l_summary.recipient_breakpoint_index, 1)
-					elseif l_exception_code = {EXCEP_CONST}.postcondition then
-						create {AFX_POSTCONDITION_VIOLATION_SIGNATURE} l_exception_signature.make (l_summary.failing_context_class, l_summary.failing_feature, l_summary.failing_position_breakpoint_index)
-					elseif l_exception_code = {EXCEP_CONST}.class_invariant then
-						create {AFX_INVARIANT_VIOLATION_SIGNATURE} l_exception_signature.make (l_summary.failing_assertion_tag, l_summary.recipient_context_class, l_summary.recipient_feature)
-					elseif l_exception_code = {EXCEP_CONST}.check_instruction then
-						create {AFX_CHECK_VIOLATION_SIGNATURE} l_exception_signature.make (l_summary.failing_context_class, l_summary.failing_feature, l_summary.failing_position_breakpoint_index)
-					end
-					session.set_exception_signature (l_exception_signature)
-				end
-			end
 		end
 
 	prepare_relaxed_test_cases
@@ -272,60 +205,6 @@ feature -- Basic operation
 			end
 		end
 
-	exception_trace_from_failing_test_case (a_path: PATH): STRING
-		local
-			l_failing_test: PLAIN_TEXT_FILE
-			l_trace, l_cache, l_line, l_seperator: STRING_8
-			l_trace_started: BOOLEAN
-		do
-			Result := ""
-			create l_failing_test.make_with_path (a_path)
-			l_failing_test.open_read
-			if l_failing_test.is_open_read then
-				from
-					l_cache := ""
-					l_seperator := "-------------------------------------------------------------------------------"
-					l_failing_test.read_line
-				until
-					l_failing_test.end_of_file
-				loop
-					l_line := l_failing_test.last_string
-					if l_line.same_string_general (l_seperator) then
-						if not l_trace_started then
-							l_trace_started := True
-							Result.append_string (l_line + "%N")
-						else
-							Result.append_string (l_cache)
-							Result.append_string (l_line + "%N")
-							l_cache := ""
-						end
-					elseif l_trace_started then
-						l_cache.append (l_line + "%N")
-					end
-					l_failing_test.read_line
-				end
-				l_failing_test.close
-			end
-		end
-
-	select_test_cases_to_use (a_test_cases: DS_ARRAYED_LIST[STRING]; a_maximum_number: INTEGER): like current_passing_test_cases
-		local
-			l_maximum: INTEGER
-		do
-			if a_maximum_number > 0 then
-				l_maximum := a_maximum_number
-			else
-				l_maximum := a_test_cases.count
-			end
-			create Result.make (l_maximum + 1)
-			from a_test_cases.start
-			until a_test_cases.after or else Result.count >= l_maximum
-			loop
-				Result.force_last (a_test_cases.item_for_iteration)
-				a_test_cases.forth
-			end
-		end
-
 	all_test_cases_from_location (a_location: STRING): TUPLE [passings, failings: DS_ARRAYED_LIST[STRING]]
 		local
 			l_passings, l_failings: DS_ARRAYED_LIST[STRING]
@@ -362,7 +241,23 @@ feature -- Basic operation
 			end
 		end
 
-feature {NONE} -- Implementation
+	select_test_cases_to_use (a_test_cases: DS_ARRAYED_LIST[STRING]; a_maximum_number: INTEGER): like current_passing_test_cases
+		local
+			l_maximum: INTEGER
+		do
+			if a_maximum_number > 0 then
+				l_maximum := a_maximum_number
+			else
+				l_maximum := a_test_cases.count
+			end
+			create Result.make (l_maximum + 1)
+			from a_test_cases.start
+			until a_test_cases.after or else Result.count >= l_maximum
+			loop
+				Result.force_last (a_test_cases.item_for_iteration)
+				a_test_cases.forth
+			end
+		end
 
 	copy_test_case_files (a_class_file_names: DS_ARRAYED_LIST [STRING]; a_is_relaxed: BOOLEAN; a_dest_dir: PATH)
 			-- Copy test cases, with names in `a_class_file_names' to `a_dest_dir'.
@@ -396,5 +291,106 @@ feature {NONE} -- Implementation
 				a_class_file_names.forth
 			end
 		end
+
+feature {NONE} -- Implementation
+
+--	wait_till_directory_is_ready (a_dir: DIRECTORY)
+--		local
+--			l_maximum_retries, l_retried_times: INTEGER
+--			l_exception: DEVELOPER_EXCEPTION
+--		do
+--			from
+--				l_retried_times := 0
+--				l_maximum_retries := 3
+--			until
+--				l_retried_times >= l_maximum_retries
+--			loop
+--				execution_environment.sleep((10^9).truncated_to_integer_64 * 3)
+--				if a_dir.exists then
+--					l_retried_times := l_maximum_retries
+--				else
+--					l_retried_times := l_retried_times + 1
+--				end
+--			end
+--			if not a_dir.exists then
+--				create l_exception
+--				l_exception.set_description ("Failed to create directory: " + a_dir.path.out)
+--				l_exception.raise
+--			end
+--		end
+
+--	analyse_exception_signature
+--		local
+--			l_failing_file_name: STRING
+--			l_failing_path: PATH
+--			l_exception_trace: STRING
+--			l_explainer: EPA_EXCEPTION_TRACE_EXPLAINER
+--			l_summary: EPA_EXCEPTION_TRACE_SUMMARY
+--			l_exception_code: INTEGER_32
+--			l_exception_signature: AFX_EXCEPTION_SIGNATURE
+--		do
+--				-- COllect exception trace
+--			l_failing_file_name := current_failing_test_cases.first
+--			create l_failing_path.make_from_string (test_case_folder)
+--			l_failing_path := l_failing_path.extended (l_failing_file_name)
+--			l_exception_trace := exception_trace_from_failing_test_case (l_failing_path)
+--			if l_exception_trace /= Void and then not l_exception_trace.is_empty then
+--				create l_explainer
+--				l_explainer.explain (l_exception_trace)
+--				if l_explainer.was_successful then
+--					l_summary := l_explainer.last_explanation
+--					l_exception_code := l_summary.exception_code
+--					if l_exception_code = {EXCEP_CONST}.void_call_target then
+--						create {AFX_VOID_CALL_TARGET_VIOLATION_SIGNATURE} l_exception_signature.make (l_summary.failing_assertion_tag, l_summary.failing_context_class, l_summary.failing_feature, l_summary.failing_position_breakpoint_index, 1)
+--					elseif l_exception_code = {EXCEP_CONST}.precondition then
+--						create {AFX_PRECONDITION_VIOLATION_SIGNATURE} l_exception_signature.make (l_summary.failing_context_class, l_summary.failing_feature, l_summary.failing_position_breakpoint_index, l_summary.recipient_context_class, l_summary.recipient_feature, l_summary.recipient_breakpoint_index, 1)
+--					elseif l_exception_code = {EXCEP_CONST}.postcondition then
+--						create {AFX_POSTCONDITION_VIOLATION_SIGNATURE} l_exception_signature.make (l_summary.failing_context_class, l_summary.failing_feature, l_summary.failing_position_breakpoint_index)
+--					elseif l_exception_code = {EXCEP_CONST}.class_invariant then
+--						create {AFX_INVARIANT_VIOLATION_SIGNATURE} l_exception_signature.make (l_summary.failing_assertion_tag, l_summary.recipient_context_class, l_summary.recipient_feature)
+--					elseif l_exception_code = {EXCEP_CONST}.check_instruction then
+--						create {AFX_CHECK_VIOLATION_SIGNATURE} l_exception_signature.make (l_summary.failing_context_class, l_summary.failing_feature, l_summary.failing_position_breakpoint_index)
+--					end
+--					session.set_exception_signature (l_exception_signature)
+--				end
+--			end
+--		end
+
+--	exception_trace_from_failing_test_case (a_path: PATH): STRING
+--		local
+--			l_failing_test: PLAIN_TEXT_FILE
+--			l_trace, l_cache, l_line, l_seperator: STRING_8
+--			l_trace_started: BOOLEAN
+--		do
+--			Result := ""
+--			create l_failing_test.make_with_path (a_path)
+--			l_failing_test.open_read
+--			if l_failing_test.is_open_read then
+--				from
+--					l_cache := ""
+--					l_seperator := "-------------------------------------------------------------------------------"
+--					l_failing_test.read_line
+--				until
+--					l_failing_test.end_of_file
+--				loop
+--					l_line := l_failing_test.last_string
+--					if l_line.same_string_general (l_seperator) then
+--						if not l_trace_started then
+--							l_trace_started := True
+--							Result.append_string (l_line + "%N")
+--						else
+--							Result.append_string (l_cache)
+--							Result.append_string (l_line + "%N")
+--							l_cache := ""
+--						end
+--					elseif l_trace_started then
+--						l_cache.append (l_line + "%N")
+--					end
+--					l_failing_test.read_line
+--				end
+--				l_failing_test.close
+--			end
+--		end
+
 
 end

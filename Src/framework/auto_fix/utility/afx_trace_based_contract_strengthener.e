@@ -10,12 +10,6 @@ class
 inherit
 	AFX_TRACE_BASED_CONTRACT_FIXER
 
-feature{NONE} -- Access
-
-	traces_to_keep: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]
-	traces_to_reject: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]
-	traces_for_implication_inference: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]
-
 feature -- Basic operation
 
 	fix_traces (a_traces_to_keep, a_traces_to_reject, a_extra_traces_for_implication_inference: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]; a_features: DS_LIST [AFX_FEATURE_TO_MONITOR])
@@ -49,6 +43,12 @@ feature -- Basic operation
 
 			last_contract_fixes_cache := strengthenings_from_summaries (l_non_target_features, True, l_summary_of_passings, l_summary_of_failings)
 		end
+
+feature{NONE} -- Access
+
+	traces_to_keep: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]
+	traces_to_reject: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]
+	traces_for_implication_inference: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]
 
 feature{NONE} -- Implementation
 

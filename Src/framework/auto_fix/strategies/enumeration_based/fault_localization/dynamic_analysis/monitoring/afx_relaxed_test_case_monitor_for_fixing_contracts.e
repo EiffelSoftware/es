@@ -23,6 +23,8 @@ feature -- Access
 
 	relaxed_feature: AFX_FEATURE_TO_MONITOR assign set_relaxed_feature
 
+feature -- Setter
+
 	set_relaxed_feature (a_feature: like relaxed_feature)
 		require
 			feature_attached: a_feature /= Void
@@ -73,21 +75,22 @@ feature -- Basic operation
 			l_total_breakpoints := l_feature.e_feature.number_of_breakpoint_slots
 			l_nbr_postconditions := l_contract_extractor.postcondition_of_feature (l_feature, l_class).count
 			l_contract_expressions := expressions_for_contracts (l_feature_to_monitor)
-			create l_expressions.make
-			l_contract_expressions.post.do_all (agent l_expressions.force)
-			create state_skeleton_for_relaxed_feature.make_with_expressions (l_class, l_feature, l_expressions)
+
+--			create l_expressions.make
+--			l_contract_expressions.post.do_all (agent l_expressions.force)
+--			create state_skeleton_for_relaxed_feature.make_with_expressions (l_class, l_feature, l_expressions)
 
 			create l_manager.make (l_class, l_feature)
 			l_manager.set_breakpoint_with_expression_and_action (1,
 																 l_contract_expressions.pre, agent on_breakpoint_hit_in_test_case (l_class, l_feature, ?, ?))
-			l_manager.set_breakpoint_with_expression_and_action (l_total_breakpoints - l_nbr_postconditions + 1,   -- l_feature_to_monitor.last_breakpoint_in_body + 1,
+			l_manager.set_breakpoint_with_expression_and_action (l_total_breakpoints - l_nbr_postconditions + 1,
 																 l_contract_expressions.post, agent on_breakpoint_hit_in_test_case (l_class, l_feature, ?, ?))
 			monitored_breakpoint_managers.force_last (l_manager)
 		end
 
-feature -- Expressions to monitor
+--feature -- Expressions to monitor
 
-	state_skeleton_for_relaxed_feature: EPA_STATE_SKELETON
+--	state_skeleton_for_relaxed_feature: EPA_STATE_SKELETON
 
 
 end

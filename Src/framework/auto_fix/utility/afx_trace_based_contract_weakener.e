@@ -10,12 +10,6 @@ class
 inherit
 	AFX_TRACE_BASED_CONTRACT_FIXER
 
-feature{NONE} -- Access
-
-	traces_to_keep: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]
-	traces_to_reject: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]
-	traces_for_implication_inference: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]
-
 feature -- Basic operation
 
 	fix_traces (a_regular_traces, a_relaxed_traces: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]; a_features: DS_LIST [AFX_FEATURE_TO_MONITOR]; a_written_contracts_of_features: like written_contracts_of_features)
@@ -71,6 +65,12 @@ feature -- Access
 
 	written_contracts_of_features: DS_HASH_TABLE [TUPLE[pre, post: EPA_HASH_SET[EPA_AST_EXPRESSION]], AFX_FEATURE_TO_MONITOR]
 			-- Map from features to their written contracts.
+
+feature{NONE} -- Access
+
+	traces_to_keep: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]
+	traces_to_reject: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]
+	traces_for_implication_inference: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]
 
 feature{NONE} -- Implementation
 

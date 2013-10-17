@@ -24,21 +24,12 @@ feature -- Access
 	features_to_monitor: DS_HASH_SET [AFX_FEATURE_TO_MONITOR] assign set_features_to_monitor
 			--
 
+feature -- Setter
 	set_features_to_monitor (a_features: like features_to_monitor)
 			--
 		do
 			features_to_monitor := a_features
 		end
-
---	relaxed_feature: AFX_FEATURE_TO_MONITOR assign set_relaxed_feature
-
---	set_relaxed_feature (a_feature: like relaxed_feature)
---		require
---			feature_attached: a_feature /= Void
---			matching_relaxed_feature: session.config.relaxed_feature /= Void and then session.config.relaxed_feature.same_string_general (a_feature.context_class.name_in_upper + "." + a_feature.feature_.feature_name_32.as_string_8)
---		do
---			relaxed_feature := a_feature
---		end
 
 feature -- Debugger action
 
@@ -100,37 +91,5 @@ feature -- Basic operation
 				l_features_to_monitor.forth
 			end
 		end
-
---	register_program_state_monitoring
---			-- <Precursor>
---		local
---			l_features_on_stack: like features_on_stack
---			l_feature_to_monitor: AFX_FEATURE_TO_MONITOR
---			l_class: CLASS_C
---			l_feature: FEATURE_I
---			l_contract_expressions: TUPLE [pre, post: EPA_HASH_SET [EPA_EXPRESSION]]
---			l_expressions: LINKED_LIST [EPA_EXPRESSION]
---			l_skeleton: EPA_STATE_SKELETON
---			l_manager: EPA_EXPRESSION_EVALUATION_BREAKPOINT_MANAGER
---		do
---			l_feature_to_monitor := relaxed_feature
---			l_class := l_feature_to_monitor.context_class
---			l_feature := l_feature_to_monitor.feature_
---			l_contract_expressions := expressions_for_contracts (l_feature_to_monitor)
---			create l_expressions.make
---			l_contract_expressions.post.do_all (agent l_expressions.force)
---			create state_skeleton_for_relaxed_feature.make_with_expressions (l_class, l_feature, l_expressions)
-
---			create l_manager.make (l_class, l_feature)
---			l_manager.set_breakpoint_with_expression_and_action (1,
---																 l_contract_expressions.pre, agent on_breakpoint_hit_in_test_case (l_class, l_feature, ?, ?))
---			l_manager.set_breakpoint_with_expression_and_action (l_feature_to_monitor.last_breakpoint_in_body + 1,
---																 l_contract_expressions.post, agent on_breakpoint_hit_in_test_case (l_class, l_feature, ?, ?))
---			monitored_breakpoint_managers.force_last (l_manager)
---		end
-
---feature -- Expressions to monitor
-
---	state_skeleton_for_relaxed_feature: EPA_STATE_SKELETON
 
 end

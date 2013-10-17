@@ -19,22 +19,6 @@ inherit
 create
 	make_equal
 
-feature -- Status report
-
---	is_strengthening (a_feature: AFX_FEATURE_TO_MONITOR): BOOLEAN
---		require
---			has_feature: has (a_feature)
---		do
---			Result := item (a_feature).is_strengthening
---		end
-
---	is_weakening (a_feature: AFX_FEATURE_TO_MONITOR): BOOLEAN
---		require
---			has_feature: has (a_feature)
---		do
---			Result := item (a_feature).is_weakening
---		end
-
 feature -- Basic operation
 
 	as_fix_in_ast_expressions: like Current
