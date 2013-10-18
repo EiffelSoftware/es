@@ -193,7 +193,6 @@
 			</condition>
 		</external_object>
 		<variable name="batch_framework" value="false"/>
-		<library name="a_libraries" location="$EIFFEL_SRC\framework\a_libraries\a_libraries.ecf" readonly="false"/>
 		<library name="annotation" location="$EIFFEL_SRC\framework\annotation\annotation.ecf" readonly="false"/>
 		<library name="auto_fix" location="$EIFFEL_SRC\framework\auto_fix\auto_fix.ecf" readonly="false"/>
 		<library name="auto_test" location="$EIFFEL_SRC\framework\auto_test\auto_test.ecf" readonly="false"/>
