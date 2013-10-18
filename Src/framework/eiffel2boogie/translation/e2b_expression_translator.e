@@ -45,6 +45,7 @@ inherit
 			process_current_b,
 			process_external_b,
 			process_feature_b,
+			process_if_expression_b,
 			process_int64_val_b,
 			process_int_val_b,
 			process_integer_constant,
@@ -214,15 +215,19 @@ feature -- Visitors
 				(create {E2B_CUSTOM_MML_HANDLER}).handle_binary (Current, l_left, l_right, a_operator)
 			else
 					-- TODO: REFACTOR
---				if a_operator ~ "+" then
---					last_expression := factory.function_call ("add", << l_left, l_right >>, types.int)
---				elseif a_operator ~ "-" then
---					last_expression := factory.function_call ("subtract", << l_left, l_right >>, types.int)
---				elseif a_operator ~ "*" then
---					last_expression := factory.function_call ("multiply", << l_left, l_right >>, types.int)
---				else
+				if context_type.base_class.name_in_upper ~ "LCP" then
+					if a_operator ~ "+" then
+						last_expression := factory.function_call ("add", << l_left, l_right >>, types.int)
+					elseif a_operator ~ "-" then
+						last_expression := factory.function_call ("subtract", << l_left, l_right >>, types.int)
+					elseif a_operator ~ "*" then
+						last_expression := factory.function_call ("multiply", << l_left, l_right >>, types.int)
+					else
+						create {IV_BINARY_OPERATION} last_expression.make (l_left, a_operator, l_right, l_type)
+					end
+				else
 					create {IV_BINARY_OPERATION} last_expression.make (l_left, a_operator, l_right, l_type)
---				end
+				end
 				if
 					options.is_checking_overflow and then
 					(a_node.left.type.is_integer or a_node.left.type.is_natural) and then
@@ -547,6 +552,22 @@ feature -- Visitors
 			end
 		end
 
+	process_if_expression_b (a_node: IF_EXPRESSION_B)
+			-- <Precursor>
+		local
+			l_cond, l_then, l_else: IV_EXPRESSION
+		do
+			check a_node.elsif_list = Void or else a_node.elsif_list.is_empty end
+
+			safe_process (a_node.condition)
+			l_cond := last_expression
+			safe_process (a_node.then_expression)
+			l_then := last_expression
+			safe_process (a_node.else_expression)
+			l_else := last_expression
+			create {IV_CONDITIONAL_EXPRESSION} last_expression.make_if_then_else (l_cond, l_then, l_else)
+		end
+
 	process_int64_val_b (a_node: INT64_VAL_B)
 			-- <Precursor>
 		do
@@ -653,6 +674,7 @@ feature -- Visitors
 				elseif l_feature.feature_name.is_case_insensitive_equal ("after") then
 					l_across_handler.handle_call_after (Void)
 				else
+					check False end
 					last_expression := dummy_node (a_node.type)
 				end
 			elseif l_handler /= Void then

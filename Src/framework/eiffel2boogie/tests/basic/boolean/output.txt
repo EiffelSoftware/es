@@ -1,0 +1,3 @@
+======================================
+B_BOOLEAN.boolean_operations
+Successfully verified.

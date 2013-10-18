@@ -8,6 +8,7 @@ feature
 			b: BOOLEAN
 			i: INTEGER
 		do
+			b := False
 			a1 := True
 			a2 := b
 
@@ -19,7 +20,6 @@ feature
 			end
 
 			i := 17
-
 			a1 := 4
 			a2 := i
 

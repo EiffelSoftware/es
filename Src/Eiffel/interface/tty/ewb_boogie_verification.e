@@ -118,13 +118,13 @@ feature -- Execution
 			else
 				load_selection
 			end
-			autoproof.verify
 			if user_options.has ("-html") then
 				create html_writer
-				html_writer.print_verification_result (autoproof.last_result)
+				autoproof.add_notification (agent html_writer.print_verification_result (?))
 			else
-				print_result (autoproof.last_result)
+				autoproof.add_notification (agent print_result (?))
 			end
+			autoproof.verify
 		end
 
 	option_argument (a_option: STRING; a_default: INTEGER): INTEGER
@@ -223,7 +223,6 @@ feature {NONE} -- Implementation
 			-- Load all classes from universe.
 		local
 			l_groups: LIST [CONF_GROUP]
-			l_cluster: CLUSTER_I
 		do
 			from
 				l_groups := eiffel_universe.groups
@@ -231,9 +230,8 @@ feature {NONE} -- Implementation
 			until
 				l_groups.after
 			loop
-				l_cluster ?= l_groups.item_for_iteration
 					-- Only load top-level clusters, as they are loaded recursively afterwards
-				if l_cluster /= Void and then l_cluster.parent_cluster = Void then
+				if attached {CLUSTER_I} l_groups.item_for_iteration as l_cluster and then l_cluster.parent_cluster = Void then
 					load_cluster (l_cluster)
 				end
 				l_groups.forth

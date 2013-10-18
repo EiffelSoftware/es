@@ -32,9 +32,6 @@ feature -- VSTTE 2010: Sum & max
 			variant
 				a.count - i + 1
 			end
-				-- Necessary for proof to succeed
-			check (i-1) = a.count end
-			check sum <= a.count * max end
 
 			Result := [sum, max]
 		ensure

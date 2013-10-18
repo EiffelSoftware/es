@@ -703,54 +703,54 @@ feature {NONE} -- Visitor
 	process_routine_as (a: ROUTINE_AS)
 			-- <Precursor>
 		local
-			t: TYPE_A
-			r: like alias_keeper.relation
-			s: like {CLASS_C}.skeleton
-			i:  like {CLASS_C}.skeleton.count
-			l: like modified_attributes.item_for_iteration
-			k: like modified_attributes.key_for_iteration
+--			t: TYPE_A
+--			r: like alias_keeper.relation
+--			s: like {CLASS_C}.skeleton
+--			i:  like {CLASS_C}.skeleton.count
+--			l: like modified_attributes.item_for_iteration
+--			k: like modified_attributes.key_for_iteration
 		do
-				-- Register "Result".
-			t := context.current_feature.type
-			if not t.is_void then
-				register_attribute (context.current_feature, context.current_class)
-				set_default_aliases (t)
-			end
-			safe_process (a.precondition)
-			if
-				is_frame_check and then
-				(not is_original_class or else attached context.current_class as c and then original_class = c)
-			then
-				r := alias_keeper.relation.twin
-			end
-			a.routine_body.process (Current)
-			if attached r and then attached context.current_class as c then
-				from
-					s := c.skeleton
-					i := s.count
-				until
-					i <= 0
-				loop
-					if attached c.feature_of_feature_id (s [i].feature_id) as f then
-							-- Register an attribute `a' in a dictionary.
-						register_attribute (f, c)
-							-- Compare old and new aliases of the attribute.
-						if r.table [last_item] /~ alias_keeper.relation.table [last_item] then
-							k := [context.current_feature.rout_id_set.first, context.current_class.class_id]
-							l := modified_attributes [k]
-							if not attached l then
-								create l.make (1)
-								modified_attributes [k] := l
-							end
-							l.force (f.feature_name_32)
-						end
-					end
-					i := i - 1
-				end
-			end
-			safe_process (a.postcondition)
-				-- TODO: Handle rescue clause.
-			process_compound (a.rescue_clause)
+--				-- Register "Result".
+--			t := context.current_feature.type
+--			if not t.is_void then
+--				register_attribute (context.current_feature, context.current_class)
+--				set_default_aliases (t)
+--			end
+--			safe_process (a.precondition)
+--			if
+--				is_frame_check and then
+--				(not is_original_class or else attached context.current_class as c and then original_class = c)
+--			then
+--				r := alias_keeper.relation.twin
+--			end
+--			a.routine_body.process (Current)
+--			if attached r and then attached context.current_class as c then
+--				from
+--					s := c.skeleton
+--					i := s.count
+--				until
+--					i <= 0
+--				loop
+--					if attached c.feature_of_feature_id (s [i].feature_id) as f then
+--							-- Register an attribute `a' in a dictionary.
+--						register_attribute (f, c)
+--							-- Compare old and new aliases of the attribute.
+--						if r.table [last_item] /~ alias_keeper.relation.table [last_item] then
+--							k := [context.current_feature.rout_id_set.first, context.current_class.class_id]
+--							l := modified_attributes [k]
+--							if not attached l then
+--								create l.make (1)
+--								modified_attributes [k] := l
+--							end
+--							l.force (f.feature_name_32)
+--						end
+--					end
+--					i := i - 1
+--				end
+--			end
+--			safe_process (a.postcondition)
+--				-- TODO: Handle rescue clause.
+--			process_compound (a.rescue_clause)
 		end
 
 	process_void_as (a: VOID_AS)
@@ -1755,7 +1755,7 @@ feature {NONE} -- Information about standard features
 		end
 
 note
-	copyright: "Copyright (c) 2012-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

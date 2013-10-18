@@ -49,6 +49,12 @@ feature -- Visitor
 			print_space
 		end
 
+	process_conditional_expression (a_conditional: IV_CONDITIONAL_EXPRESSION)
+			-- <Precursor>
+		do
+			check False end
+		end
+
 	process_entity (a_entity: IV_ENTITY)
 			-- Process `a_entity'.
 		local

@@ -17,6 +17,13 @@ feature -- Visitor
 		deferred
 		end
 
+	process_conditional_expression (a_value: IV_CONDITIONAL_EXPRESSION)
+			-- Process `a_value'.
+		require
+			a_value_attached: attached a_value
+		deferred
+		end
+
 	process_entity (a_entity: IV_ENTITY)
 			-- Process `a_entity'.
 		require

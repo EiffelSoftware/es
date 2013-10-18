@@ -62,9 +62,9 @@ feature -- Element change
 
 invariant
 	expression_attached: attached expression
-	expression_valid: expression.type = types.bool
+	expression_valid: expression.type.is_same_type (types.bool)
 	bound_variables_attached: attached bound_variables
 	bound_variables_valid: across bound_variables as i all i.item.property = Void end
-	type_valid: type = types.bool
+	type_valid: type.is_same_type (types.bool)
 
 end
