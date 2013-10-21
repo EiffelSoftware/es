@@ -1,6 +1,6 @@
 note
 	description: "[
-		TODO
+		Translation unit for an Eiffel type.
 	]"
 	date: "$Date$"
 	revision: "$Revision$"

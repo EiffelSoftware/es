@@ -125,6 +125,35 @@ feature -- Note helpers
 			end
 		end
 
+	string_feature_note_value (a_feature: FEATURE_I; a_tag: STRING_32): STRING
+			-- Value of an integer feature note tag, empty string if not present.
+		local
+			l_values: ARRAYED_LIST [STRING_32]
+		do
+			Result := ""
+			l_values := feature_note_values (a_feature, a_tag)
+			if not l_values.is_empty then
+				Result := l_values.i_th (1).as_string_8
+			end
+		end
+
+	is_feature_status (a_feature: FEATURE_I; a_value: STRING): BOOLEAN
+			-- Does `a_feature' has a feature note with a tag status that contains the value `a_value'?
+		local
+			l_values: ARRAYED_LIST [STRING_32]
+		do
+			l_values := feature_note_values (a_feature, "status")
+			if not l_values.is_empty then
+				Result := across l_values as i some i.item.as_string_8.is_equal (a_value)  end
+			end
+		end
+
+	is_ghost (a_feature: FEATURE_I): BOOLEAN
+			-- Is `a_feature' a ghost feature?
+		do
+			Result := is_feature_status (a_feature, "ghost")
+		end
+
 feature -- String helpers
 
 	feature_of_type_as_string (a_feature: FEATURE_I; a_type: TYPE_A): STRING

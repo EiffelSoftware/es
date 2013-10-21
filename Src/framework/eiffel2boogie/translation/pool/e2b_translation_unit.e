@@ -1,6 +1,7 @@
 note
 	description: "[
-		TODO
+		The basic unit of translation.
+		Denotes an element that has to be translated to Boogie.
 	]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -59,8 +60,10 @@ feature {NONE} -- Helper functions
 			-- Id for feature `a_feature'.
 		do
 			Result := a_feature.feature_name_32.as_string_8
+
 -- TODO: use body index to account for renaming
 --			Result := "f-body-" + a_feature.body_index.out
+			;(create {REFACTORING_HELPER}).fixme ("use body index to account for renaming")
 		end
 
 invariant

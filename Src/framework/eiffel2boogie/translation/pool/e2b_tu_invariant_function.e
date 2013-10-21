@@ -1,6 +1,7 @@
 note
-	description: "Summary description for {E2B_TU_INVARIANT_FUNCTION}."
-	author: ""
+	description: "[
+		Translation unit for the invariant function of an Eiffel class.
+	]"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,7 +18,7 @@ create
 feature {NONE} -- Implementation
 
 	make (a_type: TYPE_A)
-			-- TODO
+			-- Initialize translation unit for type `a_type'.
 		do
 			type := a_type
 			id := "inv/" + type_id (a_type)
@@ -26,7 +27,7 @@ feature {NONE} -- Implementation
 feature -- Access
 
 	type: TYPE_A
-			-- Context type of routine to be translated.
+			-- Type to be translated.
 
 	id: STRING
 			-- <Precursor>

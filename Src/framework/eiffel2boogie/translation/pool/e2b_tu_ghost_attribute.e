@@ -1,12 +1,12 @@
 note
 	description: "[
-		Translation unit for an Eiffel attribute.
+		Translation unit for a ghost attribute.
 	]"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	E2B_TU_ATTRIBUTE
+	E2B_TU_GHOST_ATTRIBUTE
 
 inherit
 
@@ -17,7 +17,7 @@ create
 
 feature -- Access
 
-	base_id: STRING = "attribute"
+	base_id: STRING = "ghost-attribute"
 			-- <Precursor>
 
 feature -- Basic operations
@@ -25,10 +25,10 @@ feature -- Basic operations
 	translate
 			-- <Precursor>
 		local
-			l_translator: E2B_ATTRIBUTE_TRANSLATOR
+			l_translator: E2B_GHOST_TRANSLATOR
 		do
 			create l_translator
-			l_translator.translate (feat, type)
+			l_translator.translate_ghost_attribute (feat, type)
 		end
 
 end
