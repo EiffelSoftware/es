@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<page:controller class="login_controller" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Xebra Demo Application</title>
+<link href="base.css" rel="stylesheet" type="text/css" />
+<script language="javascript1.2" type="text/javascript" src="Scripts/codethatcalendarstd.js"></script><script language="javascript1.2" type="text/javascript" src="scroller_ex.js"></script>
+</head>
+<body>
+<div id="main">
+<div id="header_title">
+<div class="login_text">
+	<xeb:container render="%=authenticated%"> Welcome
+	          <xeb:display text="%=username%" />
+	          ,<f:form variable="b" class="login_bean">
+			<f:command_link text="Logout" action="logout" variable="b" />
+		</f:form>
+	</xeb:container> 
+	 
+	<xeb:container render="%=not_authenticated%">
+		 <a href="login.xeb">Login</a>
+	</xeb:container>
+	
+</div>
+</div>
+<div id="header_img"></div>
+<div class="column nav">
+<h2>Navigation</h2>
+	<ul>
+        <li><a href="index.xeb">Home</a></li>
+        <li><a href="reservations.xeb">Reservations</a></li>
+	<li><a href="upload.xeb">Upload</a></li>
+        <li><a href="contact.xeb">Contact</a></li>
+     </ul>
+</div>
+<div class="column line"></div>
+<div class="column content">
+	<page:declare_region id="content" />
+</div>
+<div id="footer"></div>
+</div>
+</body>
+</html>

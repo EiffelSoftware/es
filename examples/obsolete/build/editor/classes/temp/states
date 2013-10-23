@@ -1,0 +1,15 @@
+class STATES
+
+feature
+
+	Exit_from_application: INTEGER is -2
+
+	Return_to_previous: INTEGER is -1
+
+	BASIC: INTEGER is 1	-- BASIC
+
+	Editing: INTEGER is 2	-- Editing
+
+	Viewing: INTEGER is 3	-- Viewing
+
+end

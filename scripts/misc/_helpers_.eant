@@ -1,0 +1,196 @@
+<?xml version="1.0"?>
+
+<project name="_HELPERS_" default="do_not_call">
+	<description>
+		description: "helper target"
+		author: "Jocelyn Fiat and others"
+	</description>
+
+	<inherit>
+		<parent location="${_HELPERS_.absdir}/_common_.eant" />
+	</inherit>
+
+	<target name="made_file_executable" unless="${is_windows}" >
+		<argument name="a_filename" />
+		<exec executable="chmod 755 ${a_filename}" accept_errors="true" exit_code_variable="no_return_code" />
+		<unset name="no_return_code" />
+	</target>
+
+	<target name="link_file" unless="${is_windows}" >
+		<argument name="a_from_filename" />
+		<argument name="a_to_filename" />
+		<exec executable="ln -f -s ${a_from_filename} ${a_to_filename}" accept_errors="true" exit_code_variable="no_return_code" />
+		<unset name="no_return_code" />
+	</target>
+
+	<target name="safe_delete" >
+		<!-- Note: arguments can safely use '/' as path_separator -->
+		<argument name="a_from_dir" />
+		<argument name="a_name" />
+
+		<available resource="${a_from_dir}" variable="tmp_available"/>
+		<available dir="${a_from_dir}" resource="${a_name}" variable="tmp_available" if="${tmp_available}=true" />
+		<delete file="${a_name}" dir="$a_from_dir" if="${tmp_available}=true"/>
+	</target>
+
+	<target name="copy_file" >
+		<!-- Note: arguments can safely use '/' as path_separator -->
+		<argument name="a_from_dir" />
+		<argument name="a_to_dir" />
+		<argument name="a_name" />
+		<geant target="copy_file_as" arguments="$a_from_dir,$a_to_dir,$a_name,$a_name,false" />
+	</target>
+	<target name="copy_exec_file" >
+		<!-- Note: arguments can safely use '/' as path_separator -->
+		<argument name="a_from_dir" />
+		<argument name="a_to_dir" />
+		<argument name="a_name" />
+		<geant target="copy_file_as" arguments="$a_from_dir,$a_to_dir,$a_name,$a_name,true" />
+	</target>
+	<target name="copy_exec_file_if_missing" >
+		<!-- Note: arguments can safely use '/' as path_separator -->
+		<argument name="a_from_dir" />
+		<argument name="a_to_dir" />
+		<argument name="a_name" />
+		<available resource="${a_to_dir}${path_separator}${a_name}" variable="tmp_found_target"/>
+		<geant target="copy_file_as" arguments="$a_from_dir,$a_to_dir,$a_name,$a_name,true" if="${tmp_found_target}=false"/>
+		<geant target="_log" arguments="- Copying file ${a_name} to [${a_to_dir}/${a_name}]" if="${tmp_found_target}=false"/>
+		<geant target="_log" arguments="- File already exists [${a_to_dir}/${a_name}]" if="${tmp_found_target}=true"/>
+		<unset name="tmp_found_target" />
+	</target>
+
+	<target name="copy_file_as" >
+		<!-- 
+			Copy file 'a_name' from 'a_from_dir' to 'a_to_dir' as 'a_new_name'
+			create 'a_to_dir' if needed		
+			
+			Note: 	arguments can safely use '/' as path_separator, 
+					since we use only geant's feature 					
+		-->
+		<argument name="a_from_dir" />
+		<argument name="a_to_dir" />
+		<argument name="a_name" />
+		<argument name="a_new_name" />
+		<argument name="a_is_executable" />
+
+		<available resource="${a_from_dir}" variable="tmp_available"/>
+		<available dir="${a_from_dir}" resource="${a_name}" variable="tmp_available" if="${tmp_available}=true" />
+		<geant target="_logv" arguments="- Install file [${a_from_dir}/${a_name}] to [${a_to_dir}/${a_new_name}]" if="${tmp_available}=true"/>
+		<geant target="_logv" arguments="- File not found [${a_from_dir}/${a_name}]" if="${tmp_available}=false"/>
+
+		<!-- create 'a_to_dir' if it does not exist, and if source file is available -->
+		<available resource="${a_to_dir}" variable="tmp_to_dir_available" if="${tmp_available}=true" />
+		<mkdir directory="${a_to_dir}" if="${tmp_to_dir_available}=false" />
+		<unset name="tmp_to_dir_available" />
+
+		<!-- copy source file to target directory -->
+		<copy dir="${a_from_dir}" file="${a_name}" to_file="${a_to_dir}/${a_new_name}" if="${tmp_available}=true"/>
+
+		<!-- ensure executable property -->
+		<set name="tmp_exec_available" value="$tmp_available" if="$a_is_executable" />
+		<geant target="made_file_executable" arguments="${a_new_name}" dir="${a_to_dir}" if="${tmp_exec_available}=true" />
+		<unset name="tmp_exec_available" />
+
+		<unset name="tmp_available" />
+	</target>
+
+	<target name="recursive_remove_file" >
+		<argument name="a_file" />
+		<geant target="_logv" arguments="Recursive remove file: ${a_file} ..." />
+		<exec executable="del /s/q ${a_file}"							if="${is_windows}" 
+				accept_errors="true" exit_code_variable="no_return_code" />
+		<exec executable="find . -name $a_file -print | xargs \rm -f"	unless="${is_windows}"	
+				accept_errors="true" exit_code_variable="no_return_code" />
+		<unset name="no_return_code" />
+	</target>
+
+	<target name="clean_folder" >
+		<argument name="a_folder" />
+		<geant target="_logv" arguments="Cleaning folder: ${a_folder} ..." />
+
+		<available resource="$a_folder" variable="a_folder_available" />
+		<geant target="_logv" arguments=" -> no folder: ${a_folder}" if="$a_folder_available=false"/>
+
+		<set name="clean_folder_cmd" value="rmdir /q/s ${a_folder}" if="${is_windows}" />
+		<set name="clean_folder_cmd" value="\rm -rf ${a_folder}" unless="${is_windows}" />
+
+		<exec executable="$clean_folder_cmd" if="$a_folder_available=true"
+			accept_errors="true" exit_code_variable="no_return_code" />
+
+		<unset name="a_folder_available" />
+		<unset name="clean_folder_cmd" />
+		<unset name="no_return_code" />
+	</target>
+
+	<target name="clean_compile_target" >
+		<argument name="a_folder" />
+		<argument name="a_target" />
+		<geant target="_logv" arguments="Cleaning compilation: ${a_folder}/EIFGENs/$a_target ..." />
+		<exec executable="rmdir /q/s ${a_folder}\EIFGENs\${a_target}"
+			accept_errors="true" exit_code_variable="no_return_code" if="${is_windows}" />
+		<exec executable="\rm -rf ${a_folder}/EIFGENs/${a_target}"
+			accept_errors="true" exit_code_variable="no_return_code" unless="${is_windows}" />
+		<unset name="no_return_code" />
+	</target>
+
+	<target name="uncompress_tar_gz" >
+		<argument name="a_file" />
+		<argument name="a_return_var" />
+		<geant target="_logv" arguments="Uncompressing ${a_file} in ${cwd} ..." />
+		<exec executable="tar xvfz ${a_file}" accept_errors="true" exit_code_variable="${a_return_var}" 
+		/>
+	</target>
+
+	<target name="copy_full_tree">
+		<!-- Tool to copy a full tree without .svn dirs -->
+		<!-- Added, as geant copy does not copy empty directories *sigh* -->
+		<!-- TODO: update, once it is possile to copy empty directories with geant copy -->
+
+		<!--
+		Note: 	arguments should use ${path_separator} since we use <exec /> target
+		-->
+		<argument name="A_source_dir"/>
+		<argument name="A_target_dir"/>
+		
+		<available resource="${A_source_dir}" variable="source_avail" />
+		<echo message="ERROR: ${A_source_dir} missing, copy aborted" unless="${source_avail}=true" />
+		<group if="${source_avail}=true">
+			<!-- recreate the directory structure including empty folders -->
+			<mkdir directory="${A_target_dir}"/>
+			<exec executable="cd ${A_source_dir} ; find . \( -type d \! -name .svn -o \( -name .svn -prune \! -name .svn \) \) -exec 'mkdir' '-p' '${A_target_dir}/{}' ';'" unless="${is_windows}"/>
+			<exec executable="xcopy /Y /T /E ${A_source_dir} ${A_target_dir}" if="${is_windows}"/>
+
+			<!-- copy files -->
+			<copy to_directory="${A_target_dir}" dir="${A_source_dir}">
+				<fileset include="@(**/*)" exclude="@(**/.svn/**/*)" />
+			</copy>		
+
+			<!--
+			<delete>
+				<directoryset directory="." include="@(**/.svn)"/>
+			</delete>
+			-->
+		</group>
+		<!--
+		<exit code="1" unless="${source_avail}=true" />
+		-->
+		<unset name="source_avail" />
+
+	</target>
+
+	<target name="copy_library_to">
+		<!-- Copy library '$EIFFEL_SRC/library/$A_lib_name' to '$A_target_dir/library/$A_lib_name' -->
+		<argument name="A_lib_name"/>
+		<argument name="A_target_dir"/>
+		<geant target="copy_full_tree" arguments="${EIFFEL_SRC}${path_separator}library${path_separator}${A_lib_name},${A_target_dir}${path_separator}library${path_separator}${A_lib_name}"/>
+	</target>
+
+	<target name="get_abs_cwd" >
+		<!-- get absolute path into $$varname            -->
+		<!-- the result is using the good path_separator -->
+		<!-- Require existing directory -->
+		<argument name="varname" />
+		<set name="$varname" value="$cwd" />
+	</target>
+
+</project>

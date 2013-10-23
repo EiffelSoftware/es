@@ -1,0 +1,323 @@
+Solaris 10 x86-64 with dual AMD64 248 (2.2GHz)
+Def:
+HT = HASH_TABLE
+CG = Code Generation
+
+6.2
+===
+
+6.2.7.4113 non-RTEA (2532 classes, exe size: 14833360):
+175.75u 13.36s 3:59.76 78.8%
+176.11u 13.35s 3:42.35 85.2%
+175.38u 13.23s 3:42.22 84.8%
+
+
+6.2
+===
+
+6.2.7.3416 non-RTEA:
+174.93u 13.01s 3:51.08 81.3% (non-multithreaded, exe size: 14633544)
+222.86u 13.55s 4:29.32 87.7% (multithreaded without __thread TLS qualifier, exe size: 15593040)
+194.66u 13.46s 3:57.77 87.5% (multithreaded with __thread TLS qualifier, exe size: 15421648)
+
+6.2.7.3140 non-RTEA with updated generation for polymorphic wrapper:
+177.46u 13.21s 3:49.06 83.2%
+177.21u 13.16s 3:43.44 85.1%
+
+6.2.7.3124 non-RTEA with new code generation for polymorphic wrapper:
+174.01u 13.51s 3:57.06 79.1% (before bootstrap, exe size: 14657384)
+180.91u 12.47s 3:49.99 84.0% (after bootstrap, exe size: 14579192)
+179.58u 12.65s 3:47.60 84.4%  "
+
+6.2.7.2874 non-RTEA with new EiffelBase rewrite for void safety:
+175.23u 12.46s 3:41.89 84.5%
+174.46u 12.50s 3:46.15 82.6%
+
+6.2.7.2839 non-RTEA with removal of object creation at runtime for return value of polymorphic calls:
+172.99u 13.00s 3:43.66 83.1% (before bootstrap, exe size: 14525896)
+169.98u 13.10s 3:37.98 83.9% (after bootstrap, exe size: 14544104)
+
+6.2.7.2839 non-RTEA with removal of object creation at runtime for arguments of polymorphic calls:
+185.64u 13.58s 3:56.49 84.2% (before bootstrap, exe size: 14561528)
+186.66u 13.47s 3:56.63 84.5%  "
+174.19u 13.04s 3:43.32 83.8% (after bootstrap, exe size: 14523944)
+173.33u 12.37s 3:46.86 81.8%  "
+
+6.2.7.2702 non-RTEA with Dead Code Removal optimization:
+189.11u 13.20s 3:30.70 96.0%
+189.14u 12.63s 3:26.08 97.9%
+
+6.2.7.2702 non-RTEA without Dead Code Removal optimization:
+198.67u 13.19s 3:36.35 97.9%
+
+6.2.7.2648 non-RTEA with new code generation for less dynamic calls (exe size: 14874336):
+192.02u 12.55s 4:09.95 81.8% (with old compiler exe size: 15118032)
+198.26u 12.87s 4:14.72 82.8% (before bootstrap)
+193.05u 12.37s 4:07.79 82.9% (after bootstrap)
+
+6.2.7.2560 non-RTEA (always with Kpic unless specified):
+192.02u 12.55s 4:09.95 81.8%
+195.62u 13.41s 4:03.06 85.9%
+190.38u 13.26s 4:04.50 83.2%
+
+6.2.7.2437 non-RTEA without Kpic light AST (exe size: 14621000, EIFGEN 152MB):
+175.04u 12.37s 3:39.79 85.2%
+177.29u 12.43s 3:50.64 82.2%
+179.74u 12.39s 3:23.26 94.5%
+
+6.2.7.2421 non-RTEA without Kpic (exe size: 14645064, EIFGEN 170MB):
+173.88u 12.35s 3:47.15 81.9%
+173.61u 13.33s 3:46.30 82.6%
+173.85u 13.24s 3:14.26 96.3%
+
+6.2.7.2080 non-RTEA without Kpic (exe size: 14509216, EIFGEN 173MB):
+181.24u 12.44s 3:50.30 84.0%
+180.77u 12.42s 3:23.37 94.9%
+
+6.2.7.2080 non-RTEA with Kpic (exe size: ):
+195.63u 13.24s 4:04.70 85.3%
+
+6.2.7.1893 with FILTER_LIST optimization (exe size: 15234936):
+197.47u 12.02s 4:07.97 84.4%
+199.97u 12.12s 4:12.52 83.9%
+
+6.2.7.1893 RTAR as routine (exe size: 15236992):
+207.10u 12.03s 4:14.44 86.1%
+208.67u 12.07s 4:25.59 83.1%
+
+6.2.7.1893 RTAR (exe size: 15821824):
+207.07u 12.17s 4:18.80 84.7%
+208.32u 12.16s 4:16.64 85.9%
+
+6.2.7.1786 dynamic calls cost:
+201.54u 11.97s 4:11.15 85.0%: normal optimization of dynamic to static calls (exe size: 15826368)
+400.24u 13.74s 7:31.35 91.7%: all calls are dynamic (exe size: 21097208)
+
+6.2.7.1695 non-everything with optimized dtype (exe size: 15825048 bytes):
+210.51u 12.49s 4:22.34 85.0%
+210.75u 11.95s 4:26.49 83.5%
+210.34u 12.41s 4:27.66 83.2%
+
+6.2.7.1695 non-everything (exe size: 16218168 bytes):
+218.99u 12.52s 4:14.70 90.8%
+217.59u 12.56s 4:27.36 86.0%
+
+6.2.7.1639 non-RTEA non-multithreaded, no Void check with optimized dtype (exe size: 15838480 bytes):
+204.12u 12.18s 4:13.15 85.4%
+203.47u 11.94s 4:11.78 85.5%
+
+6.2.7.1639 non-RTEA non-multithreaded, no Void check (exe size: 16323376 bytes):
+213.60u 12.57s 4:20.44 86.8%
+213.46u 12.48s 5:50.98 64.3%
+
+6.2.7.1639 non-RTEA non-multithreaded (exe size: 17234824 bytes):
+223.88u 12.71s 4:33.20 86.5% (this time less I/O thus the time improvement)
+222.39u 12.62s 4:30.26 86.9%
+
+6.2.7.1639 non-RTEA non-multithreaded (exe size: 17236408 bytes):
+224.17u 12.21s 5:39.51 69.6% (again I/O seems to slow the all things down.)
+224.41u 12.23s 5:34.00 70.8% (again I/O seems to slow the all things down.)
+
+6.2.7.1639 non-RTEA (exe size: 18026240 bytes):
+274.33u 12.58s 6:19.02 75.6% (uses less CPU time for sure (72s less) but now the burden seems to be I/O?)
+271.49u 12.91s 5:22.24 88.2% (this it shows, so maybe before there was some other things slowing us down)
+
+6.2.7.1639 RTEA (exe size: 20796632 bytes):
+350.89u 12.54s 6:39.73 90.9%
+348.05u 13.26s 6:38.17 90.7%
+348.78u 13.23s 6:41.43 90.1%
+
+6.2.7.1577 RTEA (old compiler, new code generation):
+350.32u 12.33s 6:39.27 90.8%
+359.84u 13.01s 6:50.18 90.8%
+
+6.2.7.1577 RTEA (old compiler):
+339.40u 13.20s 6:42.98 87.4%
+341.17u 13.61s 6:28.65 91.2%
+
+6.2.7.1539 RTEA:
+336.10u 13.10s 6:26.60 90.3%
+339.31u 12.42s 6:25.32 91.2%
+
+6.2.7.1500 RTEA (2454 classes, EIFGEN size: 170MB, exe size: 20555176 bytes): 
+344.83u 12.20s 6:34.70 90.4%
+344.95u 13.02s 6:32.40 91.2%
+
+6.1
+===
+
+6.1.7.2000 RTEA (2454 classes, exe size: 20557592 bytes):
+343.32u 12.05s 6:31.67 90.7%
+347.28u 12.41s 6:59.65 85.7%
+
+6.0
+===
+
+# New expanded generic reattachment:
+6.0.6.8702 RTEA (2440 classes, EIFGEN size: 150MB, exe size: 19307000 bytes):
+297.81u 9.24s 5:38.60 90.6%
+300.50u 9.20s 5:44.74 89.8%
+
+intermediate result:
+277.46u 8.86s 5:22.44 88.7%
+
+6.0.6.8277 RTEA (2440 classes, EIFGEN size: 389MB exe size: 18835016 bytes):
+275.33u 9.15s 5:58.79 79.2%
+275.02u 9.09s 6:01.48 78.5%
+
+6.0.0813 RTEA (2439 classes):
+271.81u 9.13s 5:36.48 83.4%
+271.82u 9.09s 5:29.79 85.1%
+
+#Normal compilation:
+6.0.0527 RTEA (new EiffelBase):
+262.98u 8.02s 5:04.18 89.0%
+244.15u 8.04s 4:44.42 88.6%
+243.70u 7.99s 4:45.62 88.1%
+
+6.0.0527 RTEA (old EiffelBase):
+
+6.0.0318 RTEA (new SPECIAL with copy_data inlined):
+227.43u 8.05s 4:21.09 90.1%
+228.28u 7.53s 4:21.36 90.2%
+
+6.0.0318 RTEA (old SPECIAL without copy_data inlined):
+236.81u 7.39s 4:14.69 95.8%
+
+6.0.0312 RTEA (with new HASH_TABLE):
+224.42u 8.09s 4:23.36 88.2%
+
+6.0.302 RTEA (with less HASH_TABLE creation):
+240.18u 7.84s 4:51.13 85.1%
+239.94u 8.13s 4:33.06 90.8%
+238.65u 8.15s 4:28.87 91.7%
+
+6.0.302 RTEA:
+239.84u 8.56s 4:36.23 89.9%
+244.01u 7.75s 4:36.72 90.9%
+243.92u 8.29s 4:36.66 91.1%
+
+6.0.0221 RTEA (2348 classes, old HT, new CG, COMP size=283412):
+231.90u 7.73s 4:25.28 90.3%
+
+6.0.0221 RTEA (old HT, old CG):
+233.39u 8.16s 4:28.07 90.1%
+
+6.0.64920 RTEA (old HT, COMP size=302802):
+244.23u 8.05s 5:08.34 81.8%
+
+6.0.0221 RTEA (2348 classes, new HT, new CG, COMP size=284250):
+239.85u 7.72s 4:30.45 91.5%
+
+6.0.0221 RTEA (new HT, old CG):
+241.63u 7.66s 4:33.91 91.0%
+
+6.0.64920 RTEA (new HT):
+246.40u 8.80s 4:41.28 90.7%
+
+5.7
+===
+
+5.7.1327 RTEA (2333 classes):
+228.49u 7.91s 4:25.60 89.0%
+237.07u 7.75s 4:28.27 91.2%
+235.77u 8.13s 4:31.85 89.7%
+
+
+5.7.1204 RTEA:
+230.59u 8.09s 4:16.76 92.9%
+221.53u 7.66s 5:05.28 75.0%
+222.92u 7.72s 4:55.60 78.0%
+229.43u 7.56s 5:18.34 74.4%
+238.76u 7.83s 4:22.68 93.8%
+238.40u 7.79s 4:22.69 93.7%
+
+5.7.1128 RTEA:
+223.23u 8.31s 4:54.57 78.6%
+224.56u 7.40s 4:24.61 87.6%
+221.30u 7.90s 4:10.89 91.3%
+
+5.7.1112 RTEA (suppliers as SEARCH_TABLE; 2306 classes):
+204.81u 7.54s 3:49.56 92.5%
+203.46u 7.64s 3:47.12 92.9%
+
+5.7.1101 RTEA (suppliers as TWO_WAY_SORTED_SET; 2306 classes):
+212.63u 8.30s 5:01.85 73.1%
+
+5.7.1101 RTEA (suppliers as SEARCH_TABLE; 2367 classes):
+214.56u 7.07s 3:56.78 93.6%
+210.43u 7.59s 3:54.17 93.1%
+
+5.7.1101 RTEA (suppliers as TWO_WAY_SORTED_SET; 2367 classes):
+217.69u 7.57s 4:00.52 93.6%
+218.47u 7.62s 4:02.24 93.3%
+
+5.7.1031 RTEA graphic:
+204.72u 7.98s 4:39.49 76.1%
+217.75u 8.03s 5:10.05 72.8%
+
+5.7.1031 RTEA with new configuration optimization:
+227.40u 7.86s 4:46.99 81.9%
+225.43u 7.06s 4:14.80 91.2%
+
+5.7.1028 RTEA (2367 classes):
+248.29u 7.62s 5:15.69 81.0%
+256.34u 7.67s 4:46.12 92.2%
+249.02u 7.06s 4:32.94 93.8%
+250.55u 7.04s 4:33.36 94.2%
+
+5.7.1002 RTEA new runtime (2058 classes):
+214.79u 6.19s 3:53.83 94.5%
+214.45u 6.62s 3:54.07 94.4%
+
+5.7.1002 RTEA old runtime:
+227.21u 6.58s 3:57.23 98.5%
+226.85u 6.60s 4:07.43 94.3%
+226.82u 6.61s 4:05.79 94.9%
+226.55u 6.60s 4:05.40 95.0%
+
+5.7.0924 RTEA:
+219.39u 6.12s 4:04.84 92.1%
+218.83u 6.07s 3:52.53 96.7%
+218.65u 6.08s 3:46.33 99.2%
+219.87u 6.62s 4:04.85 92.5%
+219.44u 6.53s 4:05.76 91.9%
+215.41u 6.59s 3:54.84 94.5%
+213.59u 6.01s 3:51.74 94.7%
+216.38u 6.19s 4:20.02 85.5%
+214.06u 6.01s 3:52.63 94.6%
+
+5.7.0814 RTEA (batch version after bootstrap):
+167.31u 5.55s 3:06.49 92.6%
+167.00u 5.62s 3:25.49 84.0%
+171.13u 6.02s 3:10.85 92.8%
+170.39u 6.04s 3:14.75 90.5%
+
+5.7.0814 RTEA (batch version prior to bootstrap from 726):
+186.70u 5.54s 3:25.67 93.4%
+185.89u 5.56s 3:24.47 93.6%
+165.88u 5.99s 3:05.56 92.6%
+166.40u 5.62s 3:08.58 91.2%
+
+5.7.0726 RTEA (GUI version):
+189.89u 6.13s 4:21.47 74.9%
+190.59u 5.68s 3:45.36 87.0%
+189.07u 6.95s 4:20.95 75.1%
+190.65u 5.78s 3:51.82 84.7%
+
+5.7.0625 RTEA:
+184.86u 6.36s 3:23.39 94.0%
+180.43u 6.38s 3:19.49 93.6%
+
+5.7.0522 RTEA with deferred/static implementation:
+186.01u 6.23s 3:22.16 95.0%
+
+5.7.0522 RTEA:
+175.92u 6.12s 3:12.73 94.4%
+
+5.7.0313 non-RTEA:
+169.16u 5.99s 3:07.10 93.6%
+169.74u 6.03s 3:04.54 95.2%
+169.19u 5.95s 3:04.20 95.0%
+169.84u 5.92s 2:59.22 98.0%
+169.70u 6.01s 3:04.20 95.3%

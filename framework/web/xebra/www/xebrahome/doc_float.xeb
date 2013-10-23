@@ -1,0 +1,6 @@
+<xeb:container>
+<p>News</p>
+	<p>Search</p>
+	<p>bliblibla</p>
+	<page:controller class="master_controller" />
+</xeb:container>

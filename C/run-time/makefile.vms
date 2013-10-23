@@ -1,0 +1,679 @@
+########################################################################
+# Makefile.VMS for .../C/run-time
+# $Id$
+# Makefile generated from Makefile.SH on Fri Nov 18 08:54:54 PST 1994
+#
+# makefile for EIFFEL_SRC:[C.RUN-TIME] ($EIFFEL_SRC/C/run-time)
+# drastically modified dss
+#
+
+SHELL = /bin/sh
+JMAKE = jmake
+CURRENT = run-time
+DIR = [C.run-time]
+
+########################################################################
+# Parameters set by Configure -- edit config.sh if changes are needed
+
+AR = libr/create
+CC = cc
+CTAGS = ctags
+JCFLAGS = $(CFLAGS) /jcflag
+# default for vms is optimize turned on
+JLDFLAGS = $(LDFLAGS) 
+L = 1
+LINT = lint
+LN = copy/nolog
+MANSRC = /usr/local/man/man1
+MKDEP = eiffelc : mkdep --
+MV = rename/nolog 
+RANLIB = dir/date			# just do a directory listing
+RM = purge/nolog
+SCRIPTDIR = /usr/local/bin
+SED = edit
+
+########################################################################
+# Automatically generated parameters -- do not edit
+
+#OBJECTS =  \$(MT_LOBJ) \$(MT_WOBJ) \$(LOBJ) \$(WOBJ) x2c.o offset.o runtime_validation.o offset.o
+OBJECTS =  $(VMS_OBJ) $(LOBJ) x2c.obj offset.obj runtime_validation.obj
+LSCRIPTS =  eif_size.h
+SOURCES =  $(VMS_SRC) $(LSRC) $(WADD) x2c.c runtime_validation.c
+
+
+########################################################################
+# Jmake rules for building libraries, programs, scripts, and data files
+# $X-Id : Jmake.rules,v 2.8.1.4 91/11/18 13 : 19 : 07 ram Exp Locker : ram $
+
+########################################################################
+# Force 'make depend' to be performed first -- do not edit
+
+.FORCE_DEPEND :: 
+
+
+all :: .FORCE_DEPEND
+
+########################################################################
+# Start of Jmakefile
+
+#DPFLAGS = $(CINCLUDES)$(CDEFINES)
+DPFLAGS = $(CDEFINES)
+# This macro is used by the specialized .c.xxxobj rules in this file
+# it does not define the include path, because it differs for some files
+#CFLAGS_NOINC = $(DECC_FLAGS)$(DPFLAGS)
+# This macro is provided ONLY for the standard .c.obj rule in Makeinc.VMS
+#CFLAGS = $(CFLAGS_NOINC)$(CINCLUDES)
+
+CINCLUDES = [C.ipc.app],[],[.include],[C.idrs]
+
+# define vms specific symbols for compiling, etc.
+include EIFFEL_SRC:[C]Makeinc.VMS
+
+
+IDRS_OBJ = [C.idrs]idrs.obj
+MTIDRS_OBJ = [C.idrs]mtidrs.obj
+NETWORK_OBJ = [C.ipc.app]network.olb
+#MTNETWORK_OBJ = [C.ipc.app]network.obj_MT
+
+VMS_SRC = eifrtvms.c vms_names.c
+VMS_OBJ = $(patsubst %.c,%.obj,$(VMS_SRC))
+#LISTINGS = $(patsubst %.obj,%.lis,$(VMS_OBJ)) $(patsubst %.obj,%.lis,$(LOBJ)) # $(patsubst %.obj_wk,%.lis_wk,$(WOBJ)) # $(patsubst %.obj,%.lis,$(MT_FOBJ)) $(patsubst %.obj,%.lis,$(MT_WOBJ)) 
+LISTINGS = $(patsubst %.c,%.lis,$(SOURCES))
+
+LSRC = malloc.c garcol.c local.c except.c store.c retrieve.c \
+	hash.c traverse.c hashin.c tools.c internal.c plug.c \
+	copy.c equal.c lmalloc.c out.c timer.c urgent.c sig.c \
+	hector.c cecil.c file.c dir.c misc.c \
+	error.c umain.c memory.c memory_analyzer.c argv.c boolstr.c search.c \
+	run_idr.c path_name.c object_id.c eif_threads.c eif_project.c\
+	posix_threads.c gen_conf.c eif_type_id.c rout_obj.c \
+	option.c compress.c console.c
+
+#OTHER = main.c except.c
+
+# these files need to be compiled with -DWORKBENCH
+WADD = debug.c interp.c update.c wbench.c
+
+
+
+# WOBJ needs work
+WOBJ_EXTRA = \
+	$(IDRS_OBJ) \
+	$(LIB_IPC_ARCH) \
+	$(NETWORK_OBJ) 
+WOBJ =		    \
+	debug.obj_wk \
+	interp.obj_wk \
+	update.obj_wk \
+	wbench.obj_wk \
+	malloc.obj_wk \
+	garcol.obj_wk \
+	local.obj_wk \
+	store.obj_wk \
+	retrieve.obj_wk \
+	hash.obj_wk \
+	traverse.obj_wk \
+	hashin.obj_wk \
+	tools.obj_wk \
+	internal.obj_wk \
+	plug.obj_wk \
+	copy.obj_wk \
+	equal.obj_wk \
+	lmalloc.obj_wk \
+	out.obj_wk \
+	timer.obj_wk \
+	urgent.obj_wk \
+	sig.obj_wk \
+	hector.obj_wk \
+	cecil.obj_wk \
+	file.obj_wk \
+	dir.obj_wk \
+	misc.obj_wk \
+	error.obj_wk \
+	umain.obj_wk \
+	memory.obj_wk \
+	memory_analyzer.obj_wk \
+	argv.obj_wk \
+	boolstr.obj_wk \
+	search.obj_wk \
+	run_idr.obj_wk \
+	path_name.obj_wk \
+	object_id.obj_wk \
+	eif_threads.obj_wk \
+	eif_project.obj_wk \
+	posix_threads.obj_wk \
+	gen_conf.obj_wk \
+	eif_type_id.obj_wk \
+	rout_obj.obj_wk \
+	option.obj_wk \
+	compress.obj_wk \
+	console.obj_wk \
+	offset.obj_wk \
+	main.obj_wk \
+	except.obj_wk
+
+LOBJ_EXTRA = \
+	$(IDRS_OBJ)
+LOBJ = \
+	malloc.obj \
+	garcol.obj \
+	local.obj \
+	store.obj \
+	retrieve.obj \
+	hash.obj \
+	traverse.obj \
+	hashin.obj \
+	tools.obj \
+	internal.obj \
+	plug.obj \
+	copy.obj \
+	equal.obj \
+	lmalloc.obj \
+	out.obj \
+	timer.obj \
+	urgent.obj \
+	sig.obj \
+	hector.obj \
+	cecil.obj \
+	file.obj \
+	dir.obj \
+	misc.obj \
+	error.obj \
+	umain.obj \
+	memory.obj \
+	memory_analyzer.obj \
+	argv.obj \
+	boolstr.obj \
+	search.obj \
+	run_idr.obj \
+	path_name.obj \
+	object_id.obj \
+	eif_threads.obj \
+	eif_project.obj \
+	posix_threads.obj \
+	gen_conf.obj \
+	eif_type_id.obj \
+	rout_obj.obj \
+	option.obj \
+	compress.obj \
+	console.obj \
+	offset.obj \
+	main.obj \
+	except.obj
+
+
+# EOBJ needs work
+EOBJ_EXTRA = \
+	$(IDRS_OBJ) \
+	$(LIB_IPC_ARCH) \
+	$(EWB_PROTO_OBJ)
+EOBJ = \
+	debug.obj \
+	interp.obj \
+	update.obj \
+	wbench.obj \
+	wmalloc.obj \
+	wgarcol.obj \
+	wlocal.obj \
+	wstore.obj \
+	wretrieve.obj \
+	whash.obj \
+	wtraverse.obj \
+	whashin.obj \
+	wtools.obj \
+	winternal.obj \
+	wplug.obj \
+	wcopy.obj \
+	wequal.obj \
+	wlmalloc.obj \
+	wout.obj \
+	wtimer.obj \
+	wurgent.obj \
+	wsig.obj \
+	whector.obj \
+	wcecil.obj \
+	wfile.obj \
+	wdir.obj \
+	wmisc.obj \
+	werror.obj \
+	wumain.obj \
+	wmemory.obj \
+	wmemory_analyzer.obj \
+	wargv.obj \
+	wboolstr.obj \
+	wsearch.obj \
+	wrun_idr.obj \
+	wpath_name.obj \
+	wobject_id.obj \
+	weif_threads.obj \
+	weif_project.obj \
+	wposix_threads.obj \
+	wgen_conf.obj \
+	weif_type_id.obj \
+	wrout_obj.obj \
+	woption.obj \
+	wcompress.obj \
+	wconsole.obj \
+	bmain.obj \
+	bexcept.obj
+
+MT_LOBJ_EXTRA = \
+	$(MTIDRS_OBJ) 
+MT_LOBJ = \
+	MTmalloc.obj \
+	MTgarcol.obj \
+	MTlocal.obj \
+	MTstore.obj \
+	MTretrieve.obj \
+	MThash.obj \
+	MTtraverse.obj \
+	MThashin.obj \
+	MTtools.obj \
+	MTinternal.obj \
+	MTplug.obj \
+	MTcopy.obj \
+	MTequal.obj \
+	MTlmalloc.obj \
+	MTout.obj \
+	MTtimer.obj \
+	MTurgent.obj \
+	MTsig.obj \
+	MThector.obj \
+	MTcecil.obj \
+	MTfile.obj \
+	MTdir.obj \
+	MTmisc.obj \
+	MTerror.obj \
+	MTumain.obj \
+	MTmemory.obj \
+	MTmemory_analyzer.obj \
+	MTargv.obj \
+	MTboolstr.obj \
+	MTsearch.obj \
+	MTrun_idr.obj \
+	MTpath_name.obj \
+	MTobject_id.obj \
+	MTeif_threads.obj \
+	MTeif_project.obj \
+	MTposix_threads.obj \
+	MTgen_conf.obj \
+	MTeif_type_id.obj \
+	MTrout_obj.obj \
+	MToption.obj \
+	MTcompress.obj \
+	MTconsole.obj \
+	MTmain.obj \
+	MTexcept.obj
+
+
+
+
+# convenience targets
+libs : runtime #wkbench
+lib : runtime #wkbench
+runtime : finalized
+finalized : finalized.olb # MTfinalized.olb
+wkbench : wkbench.olb
+#no no no finalized.olb wkbench.olb : $(MAKEFILE_DEPENDENCIES)
+
+
+$(OBJECTS) : $(EXTRA_DEPENDENCIES)
+$(VMS_OBJ) : $(EXTRA_DEPENDENCIES)
+$(LOBJ) $(MT_LOBJ) : $(EXTRA_DEPENDENCIES)
+$(LOBJ_EXTRA) $(MT_LOBJ_EXTRA) : $(EXTRA_DEPENDENCIES)
+
+all ::
+
+# ancillary targets; need to be created before any compilation is done
+LOCAL_ANCILLARY_FILES: eif_size.h ### also in top level makefile
+
+all :: $(LOCAL_ANCILLARY_FILES)
+
+eif_size.h : eif_size_h.vms 
+#	backup $?;0 $@/new/log	# backup preserves dates; we dont want that here
+	$(COPY) $? $@ 
+
+size : eif_size.h
+	$(CC)/obj=$@.obj $? $(DECC_FLAGS) /INCLUDE=($(DECC_INCLUDES)) $(MY_CFLAGS) /DEFINE=(TEST,WORKBENCH)
+	link/exe=$@.exe size.obj
+	-if f$$search("*.dia") .nes. "" then purge/nolog *.dia/log
+
+size.exe : size.obj # eif_size.h $(LOCAL_MAKEFILE)
+	link/exe=$@ size.obj
+size.obj : eif_size.h # eif_size_h.vms # size.vms
+	$(CC)/obj=$@ $? $(DECC_FLAGS) /INCLUDE=($(DECC_INCLUDES)) $(MY_CFLAGS) /DEFINE=(TEST,WORKBENCH)
+    
+eifrtvms_test:
+	CC/debug/noopt/diag $(CFLAGS) eifrtvms/obj=eifrtvms_test.obj /define=(TEST) $(MY_CFLAGS)
+#	LINK/debug $(MY_LINKFLAGS) eifrtvms_test.obj,path_name.obj,[c.ipc.shared]ipc/libr,vms_jackets_root:[lib]vms_jackets_dbg.olb/libr
+	LINK/debug $(LINKFLAGS) eifrtvms_test.obj, [c.ipc.shared]ipc/libr, vms_jackets_root:[lib]vms_jackets_dbg.olb/libr
+
+eifrtvms.lis vms_names.lis : $(EXTRA_DEPENDENCIES)
+
+$(LISTINGS) : $(EXTRA_DEPENDENCIES) 
+listings : $(LISTINGS)
+#	@write sys$$output "listings = $(LISTINGS)"
+#	@write sys$$output "Dependents: $^"
+	@-if f$$search("*.dia") .nes. "" then purge/nolog *.dia
+	
+
+local_realclean :: 
+	$(RM) eif_size.h
+
+
+xxxinstall :: $(LSCRIPTS)
+	@for file in $(SCRIPTS) $(LSCRIPTS); do \
+	case '${MFLAGS}' in *[i]*) set +e;; esac; \
+	(set -x; $(INSTALL) -c -m 555 $$file $(SCRIPTDIR)); \
+	done
+
+deinstall :: 
+	@for file in $(SCRIPTS) $(LSCRIPTS); do \
+	case '${MFLAGS}' in *[i]*) set +e;; esac; \
+	(set -x; $(RM) $(SCRIPTDIR)/$$file); \
+	done
+
+install.man :: size_h.man
+	$(INSTALL) -c -m 444 size_h.man $(MANSRC)/size.h.$(L)
+
+deinstall.man :: 
+	$(RM) $(MANSRC)/size.h.$(L)
+
+EIFLIB = ise_eiffel\:[studio.spec.$(ISE_PLATFORM).lib]
+eiflib : $(EIFLIB)finalized.olb # $(EIFLIB)MTfinalized.olb
+#eiflib_finalized : $(EIFLIB)finalized.olb
+
+$(EIFLIB)finalized.olb : []finalized.olb
+	$(COPY) $^ $(EIFLIB)
+
+$(EIFLIB)MTfinalized.olb : []MTfinalized.olb
+	$(COPY) $^ $(EIFLIB)
+
+
+#all :: finalized.olb
+all :: finalized
+
+local_realclean ::
+	$(RM) finalized.olb;*
+
+finalized.olb : $(VMS_OBJ) $(LOBJ) $(LOBJ_EXTRA)
+	libr/create/insert $@ $^
+	libr/insert $@ [-.ipc.shared]shword.obj,system.obj	! needed by eifrtvms
+##	$(COPY) $@ ise_eiffel:[studio.spec.$(ISE_PLATFORM).lib] ! eiflib: 
+	@purge/nolog *.*obj*
+	@-if f$$search("*.dia") .nes. "" then purge/nolog *.dia
+
+#all :: MTfinalized.olb
+
+#MTfinalized.olb : finalized.olb
+#	$(COPY) $^ $@
+MTfinalized.olb : $(VMS_OBJ) $(MT_LOBJ) $(MT_LOBJ_EXTRA)
+	libr/create/insert $@ $^
+	libr/insert $@ [-.ipc.shared]shword.obj,system.obj	! needed by eifrtvms
+##	$(COPY) $@ ise_eiffel:[studio.spec.$(ISE_PLATFORM).lib] ! eiflib: 
+	@purge/nolog *.*obj*
+	@-if f$$search("*.dia") .nes. "" then purge/nolog *.dia
+
+
+#all :: runtime.olb
+
+local_realclean :: 
+#	$(RM) runtime.olb
+
+#$(ROBJ) $(COMOBJ) : $(MARKER)
+
+runtime.olb : $(ROBJ) $(COMOBJ)
+#	libr/create/insert $@ $^	# doesn't work, line too long ***BUT MAYBE NOW IT DOES?***
+	libr/create/insert $@ $(COMOBJC), *.robj
+	libr/insert $@ [-.ipc.shared]shword.obj,system.obj
+	libr/insert $@ [-.idrs]idrs.obj
+	$(COPY) $@ ise_eiffel:[studio.spec.$(ISE_PLATFORM).lib] 
+
+
+#all :: wkbench.olb
+
+local_realclean :: 
+	$(RM) wkbench.olb
+
+#$(WKOBJ) : $(MARKER)
+
+wkbench.olb : $(WKOBJ) $(COMOBJ) 
+	libr/create/insert $@ $(COMOBJC), *.wkobj,*.wobj
+	libr/insert $@ [-.ipc.app]*.obj,[-.ipc.shared]*.obj,[-.idrs]idrs.obj
+	$(COPY) $@ ise_eiffel:[studio.spec.$(ISE_PLATFORM).lib] 
+
+#all :: ebench.olb
+
+local_realclean :: 
+	$(RM) ebench.olb
+
+#$(EOBJ) : $(MARKER)
+#*.eobj : $(MARKER)
+
+ebench.olb : $(EOBJ)
+#	libr/create/insert $@ $^    # doesn't work, line too long
+	libr/create/insert $@ $(COMOBJC),*.eobj,*.wobj
+
+
+
+all :: x2c.exe
+
+local_realclean :: 
+	$(RM) x2c.exe
+
+
+x2c.obj : x2c.c $(LOCAL_ANCILLARY_FILES) # eif_size.h 
+
+x2c.exe : x2c.obj offset.obj 
+	link /exe=$@$(LINKFLAGS) $^, EIFFEL_SRC:[C_library.VMS.Porting.LIB]VMS_JACKETS.OLB/libr
+
+
+#all :: $(TOP)eif_config.h $(TOP)eif_portable.h $(TOP)eif_confmagic.h
+
+
+local_realclean :: 
+#	$(RM) config.h portable.h confmagic.h
+
+
+#depend :: [-]mkdep
+depend :: [-]mkdep.exe
+
+[-]mkdep.exe : 
+	@echo "You have to run Configure in $(TOP) first."; exit 1
+
+depend :: 
+	($(SED) '/^# DO NOT DELETE/q' Makefile && \
+	$(MKDEP) $(SOURCES) | \
+	$(SED) 's/ : \.\// : /; /\/usr\/include/d' \
+	) > Makefile.new
+	cp Makefile Makefile.bak
+	cp Makefile.new Makefile
+	$(RM) Makefile.new
+
+lint : 
+	$(LINT) $(LINTFLAGS) $(SOURCES) $(LINTLIBS)
+
+
+###
+### Manual dependencies 
+###
+
+vms_names.obj : eif_setup.h
+
+# all listfiles
+
+
+
+#local_clean :: remove
+
+final : runtime.olb
+work : wkbench.olb
+
+.FORCE : 
+
+[-.ipc.app]network.olb ::  .FORCE
+#	@echo "Checking "network.olb" in "[-]ipc/app"..."
+	@echo "Checking network.olb in [-.ipc]app..."
+#	@\@[-.ipc.app]make.com
+	\@[c]make.vms [-.ipc.app]
+	@echo "Continuing in $(CURRENT)..."
+#	@SHOW DEFAULT
+
+network.olb :: [-.ipc.app]network.olb
+
+network.olb :: 
+	directory $(NETWORK_OBJ)
+
+[-.idrs]idrs.olb ::  .FORCE
+	@echo "Checking idrs.olb in [-.idrs]..."
+#	@\@[-.idrs]make.com
+	\@[c]make.vms [-.idrs]
+	@echo "Continuing in $(CURRENT)..."
+	@SHOW DEFAULT
+
+idrs.olb :: [-.idrs]idrs.olb
+
+idrs.olb :: 
+	directory $(IDRS_OBJ)
+
+
+
+
+TESTS = mram gram lram eram sram
+
+test : $(TESTS)
+#	mram >test 2>&1
+#	gram >>test 2>&1
+#	lram >>test 2>&1
+#	eram >>test 2>&1
+#	sram >>test 2>&1
+#	link/debug/map/full/cross/exe=test.exe $! $^
+	link/debug/map/full/cross/exe=test.exe $#
+
+mram : malloc.c
+#	$(CC) $(CFLAGS_NOINC)/DEF=TEST  -o $@ malloc.c
+	$(CC) $</obj=$@ $(CFLAGS_NOINC)/DEF=TEST 
+
+gram : garcol.c
+	$(CC) garcol.c/obj=$@ $(CFLAGS_NOINC)/DEF=TEST 
+
+lram : local.c
+	$(CC) local.c/obj=$@ $(CFLAGS_NOINC)/DEF=TEST 
+
+eram : except.c
+	$(CC) except.c/obj=$@ $(CFLAGS_NOINC)/DEF=TEST
+
+sram : sig.c
+	$(CC) sig.c/obj=$@ $(CFLAGS_NOINC)/DEF=TEST 
+
+local_realclean :: 
+	$(RM) $(TESTS)
+
+local_clobber :: 
+	$(RM) test
+
+show ::
+	@write sys$$output "**********************************************************************"
+	write sys$$output  "$(LOCAL_MAKEFILE) ($(DIR)): show:"
+	write sys$$output  "  $$(SOURCES) = $(SOURCES)"
+	write sys$$output  "  $$(WOBJ) = $(WOBJ)"
+	write sys$$output "  $$(EXTRA_DEPENDENCIES) = $(EXTRA_DEPENDENCIES)"
+	@write sys$$output "**********************************************************************"
+
+
+########################################################################
+# Common rules for all Makefiles -- do not edit
+
+emptyrule :: 
+
+clean : local_clean
+realclean : local_realclean
+clobber : local_clobber
+
+local_clean :: 
+#	$(RM) core *~ *.obj
+	-delete/nolog *.*obj*;*, *.*olb*;*, *.*dia*;*
+
+local_realclean :: local_clean
+
+local_clobber :: local_realclean
+	$(RM) Makefile config.sh
+
+Makefile.SH : Jmakefile
+	-@if test -f $(TOP)/.package; then \
+	if test -f Makefile.SH; then \
+	echo "	$(RM) Makefile.SH~; $(MV) Makefile.SH Makefile.SH~"; \
+	$(RM) Makefile.SH~; $(MV) Makefile.SH Makefile.SH~; \
+	fi; \
+	echo "	$(JMAKE)/DEF=TOPDIR=$(TOP)/DEF=CURDIR=$(CURRENT)" ; \
+	$(JMAKE)/DEF=TOPDIR=$(TOP)/DEF=CURDIR=$(CURRENT) ; \
+	else touch $@; exit 0; fi
+
+#Makefile : Makefile.SH
+#	/bin/sh Makefile.SH
+
+tags :: 
+	$(CTAGS) -w *.[ch]
+	$(CTAGS) -xw *.[ch] > tags
+
+local_clobber :: 
+	$(RM) tags
+
+########################################################################
+# Empty rules for directories with no sub-directories -- do not edit
+
+install :: 
+	@echo "install in $(CURRENT) done."
+
+deinstall :: 
+	@echo "deinstall in $(CURRENT) done."
+
+install.man :: 
+	@echo "install.man in $(CURRENT) done."
+
+deinstall.man :: 
+	@echo "deinstall.man in $(CURRENT) done."
+
+Makefiles :: 
+
+Makefiles.SH :: 
+
+########################################################################
+# manually generated dependencies
+#eifrtvms.obj :: eifrtvms.c $(EXTRA_DEPENDENCIES) 
+#$(ROBJ) :: $(EXTRA_DEPENDENCIES)
+#$(WKOBJ) :: $(EXTRA_DEPENDENCIES)
+#$(EOBJ1) :: $(EXTRA_DEPENDENCIES)
+#eif_threads.obj : eif_threads.h [.include]rt_threads.h $(EXTRA_DEPENDENCIES) 
+
+########################################################################
+# Dependencies generated by make depend
+# DO NOT DELETE THIS LINE -- make depend relies on it
+malloc.obj : malloc.c
+malloc.obj : [-]eif_config.h
+malloc.obj : [-]eif_portable.h
+malloc.obj : [-]eif_confmagic.h
+malloc.obj : eif_eiffel.h
+malloc.obj : eif_out.h
+malloc.obj : eif_file.h
+malloc.obj : eif_macros.h
+malloc.obj : eif_malloc.h
+malloc.obj : eif_garcol.h
+malloc.obj : eif_struct.h
+malloc.obj : eif_plug.h
+malloc.obj : eif_except.h
+malloc.obj : eif_local.h
+malloc.obj : eif_copy.h
+malloc.obj : eif_plug.h
+malloc.obj : eif_hector.h
+malloc.obj : eif_cecil.h
+malloc.obj : eif_plug.h
+malloc.obj : eif_garcol.h
+malloc.obj : eif_size.h
+malloc.obj : eif_dir.h
+malloc.obj : eif_macros.h
+malloc.obj : eif_garcol.h
+malloc.obj : eif_except.h
+malloc.obj : eif_plug.h
+malloc.obj : eif_local.h
+malloc.obj : eif_sig.h

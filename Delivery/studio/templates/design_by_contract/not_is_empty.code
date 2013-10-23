@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<code_template format="1.0.0">
+  <metadata>
+    <title>Not Is Empty</title>
+    <description>Code template contract predicate to ensure a finite entity is not empty</description>
+    <author>Eiffel Software</author>
+    <shortcut>not_is_empty</shortcut>
+      <categories>
+         <category>Eiffel</category>
+         <category>code</category>
+         <category>contract</category>
+		 <category>invariant</category>
+		 <category>precondition</category>
+		 <category>postcondition</category>
+      </categories>
+  </metadata>
+  
+  <declarations>  
+    <object id="var" editable="true" conforms_to="FINITE">
+      <description>An attached variable with access to an `is_empty' status function</description>
+    </object>
+  </declarations>
+  
+  <templates>
+    <template>not_${var}_is_empty: not ${var}.is_empty${end}</template>  
+  </templates>
+</code_template>

@@ -1,0 +1,53 @@
+<page:include template="support_plain">
+<page:controller class="protected_default_controller"/>
+<page:define_region id="main_content">
+	<div id="title_box"><h1>My Support</h1></div>
+	<xeb:display css_class="error" text="error_label"/>
+	<table>
+		<tr>
+			<td>
+				
+			</td>
+			<td>
+				
+			</td>
+		</tr>
+	</table>
+	<div id="reports_div">
+		<table class="filter" id="filter_table">
+			<tr>
+				<td>
+					Category:
+					<!--f:drop_down_list name="a_category_list" /-->
+					&nbsp;&nbsp;Status:
+					<!--f:drop_down_list name="a_status_list" /-->
+					&nbsp;&nbsp;Page size:
+					<f:command_link text="10" action="on_size_change" />
+					<f:command_link text="20" action="on_size_change" />
+					<f:command_link	text="50" action="on_size_change" />
+				</td>
+			</tr>
+		</table>
+		<div id="no_result_div" class="message">
+			<b>The search returned no results.</b><br />
+			Try changing the search text, changing the filters or click the reset button.
+		</div>
+		<div id="no_pr_div" class="message">
+			<b>There are no problem reports corresponding to the current filter settings.</b><br />
+		</div>
+		<div id="no_submit_div" class="message">
+			No problem report has been submitted, you can submit one
+			<a id="A1"  href="~/protected/problem_report_form.aspx">here</a>.
+		</div>
+		<div id="pager_div">
+
+		</div>
+	
+		<table class="top_padding">
+			<tr>				
+			</tr>
+		</table>
+
+	</div>
+</page:define_region>
+</page:include>

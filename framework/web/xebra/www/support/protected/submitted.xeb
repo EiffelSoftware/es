@@ -1,0 +1,66 @@
+<page:include template="support_side">
+<page:define_region id="main_content">
+	<div id="title_box"><h1>Problem Report Submission Confirmation</h1></div>
+
+	<div  id="main_div">
+		<table class="problem_report">
+			<tr>
+				<td>
+					<span class="field_name">Release:</span>
+				</td>
+				<td>
+					<span class="field_name">Severity:</span> 
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<span class="field_name">Class:</span> 
+				</td>
+				<td>
+					<span class="field_name">Priority:</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<span class="field_name">Category:</span> 
+				</td>
+				<td>
+					<span class="field_name">Confidential:</span> 
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<span class="field_name">Environment:</span><br />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<span class="field_name">Synopsis:</span><br />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<span class="field_name">Description:</span><br />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" class="last_row">
+					<span  class="field_name" id="to_reproduce_title">To Reproduce:</span><br />
+				</td>
+			</tr>
+			<tr  id="attachments_row">
+				<td colspan="2" class="last_row">
+					<span class="field_name">Attachments:</span><br />				
+				</td>
+			</tr>
+			<tr>
+				<td class="submit_column" colspan="2">
+					<f:command_link  text="Submit" action="SubmitLink"/>
+					|
+					<f:command_link text="Edit" action="EditLink"/>
+				</td>
+			</tr>
+		</table>
+	</div>
+</page:define_region>
+</page:include>

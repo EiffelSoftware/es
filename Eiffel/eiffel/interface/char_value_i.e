@@ -1,0 +1,198 @@
+note
+	description: "Value of a character constant."
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
+
+class CHAR_VALUE_I
+
+inherit
+	VALUE_I
+		redefine
+			append_signature,
+			generate,
+			inspect_value,
+			is_character,
+			set_real_type,
+			string_value
+		end
+
+	CHARACTER_ROUTINES
+
+	SHARED_TYPES
+		export
+			{NONE} all
+		end
+
+create
+	make_character_8,
+	make_character_32
+
+feature {NONE} -- Initialization
+
+	make_character_8 (v: CHARACTER_8)
+			-- Create current with value `v'.
+		do
+			character_value := v
+			is_character_32 := False
+		ensure
+			character_value_set: character_value = v
+			is_character_8: is_character_8
+		end
+
+	make_character_32 (v: CHARACTER_32)
+			-- Create current with value `v'.
+		do
+			character_value := v
+			is_character_32 := True
+		ensure
+			character_value_set: character_value = v
+			is_character_32: is_character_32
+		end
+
+feature -- Comparison
+
+	is_equivalent (other: like Current): BOOLEAN
+			-- Is `other' equivalent to the current object?
+		do
+			Result := character_value = other.character_value and then
+				is_character_32 = other.is_character_32
+		end
+
+feature -- Modification
+
+	set_real_type (t: TYPE_A)
+			-- <Precursor>
+		do
+			is_character_32 := t.is_character_32
+		end
+
+feature -- Access
+
+	character_value: CHARACTER_32
+			-- Character constant value
+
+feature -- Status report
+
+	is_character: BOOLEAN = True
+			-- Is the current constant a character one?
+
+	is_character_8: BOOLEAN
+			-- Is it CHARACTER_8 constant?
+		do
+			Result := not is_character_32
+		end
+
+	is_character_32: BOOLEAN
+			-- Is it CHARACTER_32 constant?
+
+	valid_type (t: TYPE_A): BOOLEAN
+			-- Is the current value compatible with `t'?
+		do
+			if attached {CHARACTER_A} t as c then
+				Result := is_character_8 or else c.is_character_32
+			end
+		end
+
+feature -- Code generation
+
+	generate (buffer: GENERATION_BUFFER)
+			-- Generate value in `buffer'.
+		do
+			if is_character_32 then
+				wide_char_type.c_type.generate_cast (buffer)
+				buffer.put_natural_32 (character_value.natural_32_code)
+				buffer.put_character ('U')
+			else
+				character_type.c_type.generate_cast (buffer)
+				buffer.put_character_literal (character_value.to_character_8)
+			end
+		end
+
+	generate_il
+			-- Generate IL code for character constant value.
+		do
+			if is_character_8 then
+				il_generator.put_character_constant (character_value.to_character_8)
+			else
+				il_generator.put_natural_32_constant (character_value.natural_32_code)
+			end
+		end
+
+	make_byte_code (ba: BYTE_ARRAY)
+			-- Generate byte code for a character constant value.
+		do
+			if is_character_8 then
+				ba.append (Bc_char)
+				ba.append (character_value.to_character_8)
+			else
+				ba.append (Bc_wchar)
+				ba.append_character_32 (character_value)
+			end
+		end
+
+	dump: STRING
+		do
+			Result := character_value.out
+		end
+
+	append_signature (a_text_formatter: TEXT_FORMATTER)
+		do
+			a_text_formatter.add_char ('%'')
+			a_text_formatter.add_string (wchar_text (character_value))
+			a_text_formatter.add_char ('%'')
+		end
+
+feature {INTERNAL_COMPILER_STRING_EXPORTER} -- Access
+
+	string_value: STRING
+			-- UTF-8 version of the character.
+		local
+			u: UTF_CONVERTER
+		do
+			Result := u.utf_32_string_to_utf_8_string_8 (wchar_text (character_value))
+		end
+
+feature -- Multi-branch instruction processing
+
+	inspect_value (value_type: TYPE_A): CHAR_VAL_B
+			-- Inspect value of the given `value_type'
+		do
+			create Result.make (character_value)
+		end
+
+invariant
+	consistent_type: is_character_8 xor is_character_32
+
+note
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options:	"http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
+
+end

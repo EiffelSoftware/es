@@ -1,0 +1,117 @@
+note
+	description	: "Page in which the user choose where he wants to generate the sources."
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
+	author		: "David Solal"
+	date		: "$Date$"
+	revision	: "$Revision$"
+
+class
+	WIZARD_THIRD_STATE
+
+inherit
+	BENCH_WIZARD_INTERMEDIARY_STATE_WINDOW
+		redefine
+			update_state_information,
+			proceed_with_current_info,
+			build
+		end
+
+	WIZARD_PROJECT_SHARED
+
+create
+	make
+
+feature -- Basic Operation
+
+	build
+			-- Build entries.
+		do
+			create icon_location.make (Current)
+			icon_location.set_textfield_string (wizard_information.icon_location.name)
+			icon_location.set_label_string_and_size (interface_names.l_project_icon, 10)
+			icon_location.enable_file_browse_button ("*.ico")
+			icon_location.generate
+
+			choice_box.set_padding (Default_padding_size)
+			choice_box.extend (icon_location.widget)
+			choice_box.disable_item_expand(icon_location.widget)
+			choice_box.extend (create {EV_CELL}) -- Expandable item
+
+			set_updatable_entries(<<icon_location.change_actions>>)
+		end
+
+	proceed_with_current_info
+		local
+			next_window: WIZARD_STATE_WINDOW
+			existing_target_files: TRAVERSABLE [STRING_GENERAL]
+		do
+			existing_target_files := (create {WIZARD_PROJECT_GENERATOR}.make (wizard_information)).existing_target_files
+			if existing_target_files.is_empty then
+					-- Go to code generation step.
+				create {WIZARD_FINAL_STATE} next_window.make (wizard_information)
+			else
+					-- Warn that there are files to be overwritten.
+				create {WIZARD_WARNING_FILE_PRESENCE} next_window.make_with_names (existing_target_files, wizard_information)
+			end
+			Precursor
+			proceed_with_new_state (next_window)
+		end
+
+	update_state_information
+			-- Check User Entries
+		do
+			if not icon_location.text_32.is_empty then
+				wizard_information.set_icon_location (create {PATH}.make_from_string (icon_location.text_32))
+			else
+				wizard_information.set_icon_location (wizard_resources_path.extended ("eiffel.ico"))
+			end
+			Precursor
+		end
+
+
+feature {NONE} -- Implementation
+
+	display_state_text
+		do
+			title.set_text (interface_names.t_project_icon)
+			subtitle.set_text (interface_names.t_choose_icon_subtitle)
+			message.set_text (interface_names.m_choose_icon)
+		end
+
+	icon_location: WIZARD_SMART_TEXT_FIELD;
+			-- Label and Textfield for the icon location.
+
+note
+	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options:	"http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful,	but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the	GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+		]"
+	source: "[
+			 Eiffel Software
+			 356 Storke Road, Goleta, CA 93117 USA
+			 Telephone 805-685-1006, Fax 805-685-6869
+			 Website http://www.eiffel.com
+			 Customer support http://support.eiffel.com
+		]"
+
+end

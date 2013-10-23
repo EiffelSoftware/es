@@ -1,0 +1,60 @@
+#!/bin/sh
+set -e
+
+if [ $# != 2]; then
+	echo Usage: $0 platform source
+	exit 1
+fi
+
+LOG=`pwd`/rpm.log
+>$LOG
+set -- $1 $2
+. ./packaging/config.sh
+
+
+# Create unix layout in RPM BUILD directory
+set -- $1 $2 $RPM_DIR/eiffelstudio
+. ./make_unix_layout
+
+
+# Determine architecture
+case "x$ISE_PLATFORM" in
+	"xlinux-x86") ARCH=i386;;
+	"xlinux-x86-64") ARCH=x86_64;;
+	"xlinux-ppc") ARCH=ppc;;
+	*) echo "No architecture mapping for ISE_PLATFORM=$ISE_PLATFORM"; exit 1;;
+esac
+
+
+# Set up rpmbuild cmd
+echo $ARCH
+exit;
+RPM_CMD="rpmbuild -bb --target $ARCH"
+if which gpg > /dev/null; then
+	if gpg --list-secret-keys | grep $KEY > /dev/null; then
+		RPM_CMD="echo \"$PASS_PHRASE\" | setsid $RPM_CMD --sign --define '_gpg_name $KEY'"
+	fi
+fi
+
+
+# Prepare spec files
+. $RPM_DIR/eiffelstudio.spec.sh
+mkdir -p $RPM_DIR/eiffelstudio/usr/share/doc/$PRODUCT
+cp $PACKAGING_DIR/license $RPM_DIR/eiffelstudio/usr/share/doc/$PRODUCT/LICENSE
+cp $PACKAGING_DIR/copyright $RPM_DIR/eiffelstudio/usr/share/doc/$PRODUCT/COPYING
+
+
+# Build main package
+echo "Building RPM package for $PRODUCT"
+eval "$RPM_CMD $RPM_DIR/eiffelstudio.spec >>$LOG 2>>$LOG"
+
+
+# Move all generated .rpm files to current directory
+find $RPM_DIR/RPMS -type f | xargs mv -t ./
+
+
+# Clean up RPM directory
+rm $RPM_DIR/eiffelstudio.spec
+rm -r $RPM_DIR/eiffelstudio
+rm -r $RPM_DIR/tmp
+find $RPM_DIR/RPMS/* -type d | xargs rm -rf

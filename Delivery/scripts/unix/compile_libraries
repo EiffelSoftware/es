@@ -1,0 +1,39 @@
+#!/bin/sh
+
+INIT_DIR=`pwd`
+
+if [ $# -le 1 ]; then 
+	echo Usage: compile_libraries platform location
+	exit 1
+fi
+
+ISE_PLATFORM=$1; export ISE_PLATFORM
+
+. $INIT_DIR/set_aliases
+
+remtrace Compile the Eiffel libraries C code for $ISE_PLATFORM in $2
+remtrace with ISE_EIFFEL set to $ISE_EIFFEL
+remtrace with ISE_LIBRARY set to $ISE_LIBRARY
+
+if [ -d $2/library/cURL ]; then
+	remtrace cURL
+	cd $2/library/cURL/Clib
+	default_make
+fi 
+remtrace net
+cd $2/library/net/Clib
+default_make
+mac_ranlib $2/library/net/spec/$ISE_PLATFORM/lib/libnet.a
+remtrace obsolete/net
+cd $2/library/obsolete/net/Clib
+default_make
+mac_ranlib $2/library/obsolete/net/spec/$ISE_PLATFORM/lib/libnet.a
+remtrace vision2
+if [ "$3" = "gtk" ]; then
+	# Compile pixmap loading for GTK 1.2 implementation
+	cd $2/library/vision2/Clib
+	default_make
+fi
+cd $2/library/vision2/implementation/gtk/Clib
+default_make
+cd $2

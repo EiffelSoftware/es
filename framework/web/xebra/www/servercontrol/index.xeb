@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+<head>
+<title>Xebra Server Control</title>
+<page:controller class="MAIN_CONTROLLER" create="default_create" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="base.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="main">
+<div id="header">
+<div id="title">Xebra Server Control</div>
+</div>
+<div id="content">
+<f:form>
+
+<h1>Server Control</h1>
+
+<table class="default">
+	<tr>
+		<th>Name</th>
+		<th>Control</th>
+	</tr>
+		<tr>		
+			<td>Main Server</td>			
+			<td><f:command_link text="shutdown" action="shutdown_server" /> | <f:command_link text="reload config file" action="reload_config"/></td>
+		</tr>		
+
+</table>
+<h1>Modules</h1>
+
+
+<xeb:display text="%=get_modules%" />
+<table class="default">
+	<tr>
+		<th>Name</th>
+		<th>Launched</th>
+		<th>Running</th>
+	</tr>
+	<xeb:iterate list="%=modules%" variable="module" type="XC_SERVER_MODULE_BEAN">
+		<tr>		
+			<td><xeb:display text="#{module.name}" /></td>
+
+			<td><xeb:display text="#{module.is_launched.out}" /></td>
+
+			<td><xeb:display text="#{module.is_running.out}" /> (<f:command_link text="stop" action="shutdown_mod" variable="module.name" /> | <f:command_link text="restart" action="relaunch_mod" variable="module.name"/>)</td>
+		</tr>		
+	</xeb:iterate>
+</table>
+
+<h1>Webapps</h1>
+
+<xeb:display text="%=get_webapps%" />
+<table class="default">
+	<tr>
+		<th>Name</th>
+		<th>Webapp Host </th>
+		<th>Port</th>
+		<th>Interactive</th>
+		<th>Status </th>
+		<th>Sessions </th> 
+		<th>Disabled</th>		
+		<th>Development Mode</th>
+		
+	</tr>
+	<xeb:iterate list="%=webapps%" variable="webapp" type="XC_WEBAPP_BEAN">
+		<tr>
+			<xeb:set_variable variable="wappurl" value="../" type="STRING" />
+			<xeb:concat variable="wappurl" right="#{webapp.app_config.name.value.out}" />
+			<td><a href="#{wappurl}"><xeb:display text="#{webapp.app_config.name.value.out}" /></a></td>
+			<td><xeb:display text="#{webapp.app_config.webapp_host.value.out}" /></td>
+			<td><xeb:display text="#{webapp.app_config.port.value.out}" /></td>
+			<td><xeb:display text="#{webapp.app_config.is_interactive.out}" /></td>
+			<td><xeb:display text="#{webapp.status}" /></td>
+			<td><xeb:display text="#{webapp.sessions.out}" /></td>
+			<td><xeb:display text="#{webapp.is_disabled.out}" /> (<f:command_link text="on" action="disable_webapp" variable="webapp.app_config.name.value.out" /> | <f:command_link text="off" action="enable_webapp" variable="webapp.app_config.name.value.out" />)</td>
+			<td><xeb:display text="#{webapp.dev_mode.out}" /> (<f:command_link text="on" action="dev_mode_on_webapp" variable="webapp.app_config.name.value.out" /> | <f:command_link text="off" action="dev_mode_off_webapp" variable="webapp.app_config.name.value.out" />)</td>
+	
+		</tr>
+	</xeb:iterate>
+</table>
+
+
+</f:form>
+</div>
+<div id="footer">
+<div id="footertext">Xebra Server Control</div>
+</div>
+</div>
+</body>
+</html>
+

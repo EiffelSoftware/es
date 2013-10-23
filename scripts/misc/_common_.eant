@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+
+<project name="_common_" default="do_not_call">
+
+	<description>
+		description: "Common script code"
+		author: "Jocelyn Fiat and others"
+	</description>
+
+	<target name="do_not_call">
+		<echo message="usage:"/>
+		<echo message=" Do not call this script directly" />
+	</target>	
+
+	<!-- 
+	**************************************************************************************
+	*** Check environment  ***************************************************************
+	**************************************************************************************
+	-->
+
+	<target name="check_environment_windows" once="true">
+		<echo message="var ISE_C_COMPILER is not defined" unless="${ISE_C_COMPILER}" />
+		<set name="environment_valid" value="false" unless="${ISE_C_COMPILER}" />
+
+	</target>
+	<target name="check_environment" once="true">
+		<echo message="var ISE_EIFFEL is not defined" unless="${ISE_EIFFEL}" />
+		<set name="environment_valid" value="false" unless="${ISE_EIFFEL}" />
+
+		<echo message="var ISE_PLATFORM is not defined" unless="${ISE_PLATFORM}" />
+		<set name="environment_valid" value="false" unless="${ISE_PLATFORM}" />
+
+		<geant target="check_environment_windows" if="${is_windows}" />
+	</target>
+
+	<!-- 
+	**************************************************************************************
+	*** INIT/Settings      ***************************************************************
+	**************************************************************************************
+	-->
+
+	<target name="init" >
+		<echo message="- Check environment" if="$verbose=true" />
+		<set name="environment_valid" value="true" />
+		<geant target="check_environment" />
+		<exit code="1" if="${environment_valid}=false" />
+		<unset name="environment_valid" />
+	</target>
+
+	<target name="_log" >
+		<argument name="a_msg" />
+		<echo message="$a_msg" />
+	</target>
+	<target name="_logv" if="$verbose=true" >
+		<argument name="a_msg" />
+		<echo message="$a_msg" />
+	</target>
+
+	<target name="_log_to_file">
+		<description>
+			writes the logmessage ${msg} to the file ${to_file}
+			call this target like this: 
+				geant target="logger" arguments="${logfile},${message_string}"
+		</description>
+		
+		<argument name="a_msg" />
+		<argument name="a_file" />
+
+		<!-- unix -->
+		<exec executable="echo &quot;`date +%H:%M` ${a_msg}&quot; >> ${a_file}" accept_errors="true" unless="${is_windows}" />
+		
+		<!-- windows -->
+		<exec executable="time /T HH:SS >> ${a_file}" accept_errors="true" if="${is_windows}" />
+		<echo message="${a_msg}" to_file="${a_file}" append="true" if="${is_windows}" />
+	</target>
+	
+
+
+</project>
