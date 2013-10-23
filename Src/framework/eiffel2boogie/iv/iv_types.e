@@ -88,13 +88,13 @@ feature -- Access: default types
 				Result := bool
 			elseif l_type.is_real_32 or else l_type.is_real_64 then
 				Result := real
+			elseif l_type.is_formal then
+				Result := ref
 			elseif l_type.base_class.name ~ "MML_SET" then
 				l_elem_type := for_type_a (l_type.generics.first)
 				Result := set (l_elem_type)
 			elseif l_type.is_expanded then
 				Result := generic_type
-			elseif l_type.is_formal then
-				Result := ref
 			else
 				Result := ref
 			end

@@ -130,7 +130,6 @@ feature -- Basic operations
 	set_context (a_feature: FEATURE_I; a_type: TYPE_A)
 			-- Set context of expression to `a_feature' in type `a_type'.
 		require
---			a_feature_attached: attached a_feature
 			a_type_attached: attached a_type
 		do
 			context_feature := a_feature
@@ -214,8 +213,7 @@ feature -- Visitors
 			if l_left.type.is_set then
 				(create {E2B_CUSTOM_MML_HANDLER}).handle_binary (Current, l_left, l_right, a_operator)
 			else
-					-- TODO: REFACTOR
-				if context_type.base_class.name_in_upper ~ "LCP" then
+				if is_in_quantifier then
 					if a_operator ~ "+" then
 						last_expression := factory.function_call ("add", << l_left, l_right >>, types.int)
 					elseif a_operator ~ "-" then
@@ -583,7 +581,11 @@ feature -- Visitors
 	process_integer_constant (a_node: INTEGER_CONSTANT)
 			-- <Precursor>
 		do
-			last_expression := factory.int64_value (a_node.integer_64_value)
+			if attached {INTEGER_A} a_node.type then
+				last_expression := factory.int64_value (a_node.integer_64_value)
+			else
+				last_expression := factory.nat64_value (a_node.natural_64_value)
+			end
 		end
 
 	process_local_b (a_node: LOCAL_B)
@@ -626,11 +628,15 @@ feature -- Visitors
 				last_expression := dummy_node (a_node.type)
 			end
 
+			is_in_quantifier := True
+
 			if attached l_across_handler then
 				across_handler_map.put (l_across_handler, l_object_test_local.position)
 				l_across_handler.handle_across_expression (a_node)
 				across_handler_map.remove (l_object_test_local.position)
 			end
+
+			is_in_quantifier := False
 		end
 
 	process_nat64_val_b (a_node: NAT64_VAL_B)
@@ -732,7 +738,7 @@ feature -- Visitors
 --						l_cl_type)
 --				end
 
-				helper.set_up_byte_context (Void, current_target_type)
+--				helper.set_up_byte_context (Void, current_target_type)
 --				helper.set_up_byte_context_type (current_target_type, context_type)
 				last_expression := l_temp_expression
 				safe_process (a_node.message)
@@ -747,7 +753,7 @@ feature -- Visitors
 --				end
 				current_target := l_target
 				current_target_type := l_target_type
-				helper.set_up_byte_context (Void, current_target_type)
+--				helper.set_up_byte_context (Void, current_target_type)
 --				helper.set_up_byte_context_type (current_target_type, context_type)
 			end
 		end
@@ -1045,6 +1051,9 @@ feature {E2B_ACROSS_HANDLER, E2B_CUSTOM_CALL_HANDLER, E2B_CUSTOM_NESTED_HANDLER}
 		do
 			create last_local.make (helper.unique_identifier ("i"), a_type)
 		end
+
+	is_in_quantifier: BOOLEAN
+			-- Is current expression inside a quantifier?
 
 	dummy_node (a_type: TYPE_A): IV_EXPRESSION
 			-- Dummy node for type `a_type'.

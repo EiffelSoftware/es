@@ -16,7 +16,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialize default options.
 		do
-			is_reverification_with_inlining_enabled := False
+			is_two_step_verification_enabled := False
 			is_inlining_enabled := True
 			is_automatic_inlining_enabled := False
 			is_automatic_loop_unrolling_enabled := False
@@ -37,13 +37,13 @@ feature {NONE} -- Initialization
 
 feature -- Inlining verification step
 
-	is_reverification_with_inlining_enabled: BOOLEAN
+	is_two_step_verification_enabled: BOOLEAN
 			-- Is a verification with inlining done in case of failed verifications?
 
-	set_reverification_with_inlining_enabled (a_value: BOOLEAN)
-			-- Set `is_reverification_with_inlining_enabled' to `a_value'.
+	set_two_step_verification_enabled (a_value: BOOLEAN)
+			-- Set `is_two_step_verification_enabled' to `a_value'.
 		do
-			is_reverification_with_inlining_enabled := a_value
+			is_two_step_verification_enabled := a_value
 		end
 
 

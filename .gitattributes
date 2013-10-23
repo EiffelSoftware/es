@@ -3668,6 +3668,8 @@ Src/framework/eiffel2boogie/tests/basic/references/output.txt -text
 Src/framework/eiffel2boogie/tests/examples/cost2011/output.txt -text
 Src/framework/eiffel2boogie/tests/examples/vstte2008/output.txt -text
 Src/framework/eiffel2boogie/tests/examples/vstte2010/output.txt -text
+Src/framework/eiffel2boogie/tests/language/generics/output.txt -text
+Src/framework/eiffel2boogie/tests/language/integer/output.txt -text
 Src/framework/eiffel2boogie/tests/sets/output.txt -text
 Src/framework/eiffel2boogie/tests/template/args.txt_ -text
 Src/framework/eiffel2boogie/tests/template/output.txt_ -text

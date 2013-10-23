@@ -87,9 +87,9 @@ feature -- Execution
 			create autoproof.make
 				-- Load options
 			if user_options.has ("-twostep") then
-				options.set_reverification_with_inlining_enabled (True)
+				options.set_two_step_verification_enabled (True)
 			elseif user_options.has ("-notwostep") then
-				options.set_reverification_with_inlining_enabled (False)
+				options.set_two_step_verification_enabled (False)
 			end
 			if user_options.has ("-overflow") then
 				options.set_checking_overflow (True)

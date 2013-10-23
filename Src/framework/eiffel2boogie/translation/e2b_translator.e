@@ -27,17 +27,6 @@ feature {NONE} -- Initialization
 			translation_pool.reset
 			translation_pool.add_type (system.any_type)
 			translation_pool.mark_translated (translation_pool.next_untranslated_element)
---			translation_pool.add_type (system.boolean_class.compiled_class.actual_type)
---			translation_pool.mark_translated (translation_pool.next_untranslated_element)
-		end
-
-	mark_feature_translated (a_class: CLASS_I; a_feature: STRING)
-			-- Mark feature `a_feature' of class `a_class' as translated.
-		do
-			check a_class.is_compiled end
-			check a_class.compiled_class.feature_named_32 (a_feature) /= Void end
-			translation_pool.add_referenced_feature (a_class.compiled_class.feature_named_32 (a_feature), a_class.compiled_class.actual_type)
-			translation_pool.mark_translated (translation_pool.next_untranslated_element)
 		end
 
 feature -- Status report
@@ -127,8 +116,6 @@ feature -- Basic operations
 			check translation_pool.has_untranslated_elements end
 
 			l_unit := translation_pool.next_untranslated_element
--- TODO: remove
---			print ("translation unit: " + l_unit.id + "%N")
 			l_unit.translate
 			translation_pool.mark_translated (l_unit)
 		end

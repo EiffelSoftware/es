@@ -38,12 +38,8 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 			if not is_started then
 				is_started := True
 				verifier.verify_asynchronous
-				has_next_step := True
-			elseif verifier.is_running then
-				has_next_step := True
-			else
-				has_next_step := False
 			end
+			has_next_step := verifier.is_running
 		end
 
 	cancel

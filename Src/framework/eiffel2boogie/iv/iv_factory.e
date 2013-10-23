@@ -54,6 +54,12 @@ feature -- Values
 			create Result.make (a_value.out, types.int)
 		end
 
+	nat64_value (a_value: NATURAL_64): IV_VALUE
+			-- Value for integer `a_value'.
+		do
+			create Result.make (a_value.out, types.int)
+		end
+
 	type_value (a_value: TYPE_A): IV_VALUE
 			-- Value for integer `a_value'.
 		do

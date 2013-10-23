@@ -97,6 +97,8 @@ feature -- Convenience functions
 
 	add_type (a_type: TYPE_A)
 			-- Add type `a_type'.
+		require
+			not_like_type: not a_type.is_like
 		do
 			if a_type.is_formal then
 					-- Ignore formals
@@ -105,6 +107,20 @@ feature -- Convenience functions
 			else
 				add_translation_unit (create {E2B_TU_TYPE}.make (a_type))
 			end
+		end
+
+	add_type_in_context (a_type: TYPE_A; a_context_type: TYPE_A)
+			-- Add type `a_type' in context of `a_context_type'.
+		local
+			l_type: TYPE_A
+		do
+			if a_type.is_like then
+				l_type := a_type.deep_actual_type
+			else
+				l_type := a_type
+			end
+			l_type := l_type.instantiated_in (a_context_type)
+			add_type (l_type)
 		end
 
 	add_feature (a_feature: FEATURE_I; a_context_type: TYPE_A)

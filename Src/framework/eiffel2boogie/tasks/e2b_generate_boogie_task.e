@@ -1,5 +1,5 @@
 note
-	description: "Task to translate a IV AST tree to Boogie."
+	description: "Task to translate an IV AST tree to Boogie."
 	date: "$Date$"
 	revision: "$Revision$"
 

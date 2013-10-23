@@ -154,11 +154,11 @@ feature {NONE} -- Initialization
 		do
 			create Result
 
-			create l_item.make_with_text_and_action ("Two-step verification using inlining",
+			create l_item.make_with_text_and_action ("Two-step verification",
 				agent do
-					options.set_reverification_with_inlining_enabled (not options.is_reverification_with_inlining_enabled)
+					options.set_two_step_verification_enabled (not options.is_two_step_verification_enabled)
 				end)
-			if options.is_reverification_with_inlining_enabled then
+			if options.is_two_step_verification_enabled then
 				l_item.toggle
 			end
 			Result.extend (l_item)

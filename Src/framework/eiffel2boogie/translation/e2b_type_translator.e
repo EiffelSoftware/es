@@ -58,8 +58,9 @@ feature -- Basic operations
 					-- Inheritance relations
 				if not a_type.has_generics then
 					generate_inheritance_relations (a_type)
-					translate_invariant_function (a_type)
 				end
+				
+				translate_invariant_function (a_type)
 			end
 		end
 

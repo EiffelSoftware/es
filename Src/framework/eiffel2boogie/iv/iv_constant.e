@@ -17,7 +17,8 @@ inherit {NONE}
 	IV_HELPER
 
 create
-	make
+	make,
+	make_unique
 
 feature {NONE} -- Initialization
 
@@ -33,6 +34,21 @@ feature {NONE} -- Initialization
 		ensure
 			name_set: name ~ a_name
 			type_set: type = a_type
+		end
+
+	make_unique (a_name: like name; a_type: like type)
+			-- Initialize entity declaration with name `a_name' and type `a_type' and set it to be unique.
+		require
+			a_name_attached: attached a_name
+			a_name_valid: is_valid_name (a_name)
+			a_type_attached: attached a_type
+		do
+			make (a_name, a_type)
+			set_unique
+		ensure
+			name_set: name ~ a_name
+			type_set: type = a_type
+			is_unique: is_unique
 		end
 
 feature -- Access
