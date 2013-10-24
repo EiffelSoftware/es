@@ -1,0 +1,24 @@
+note
+	description: "Summary description for {CA_HINT}."
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	CA_HINT
+
+inherit
+	CA_RULE_SEVERITY
+
+feature {NONE} -- Initialization
+	is_critical: BOOLEAN
+		once
+			Result := False
+		end
+
+	name: STRING
+		once
+			Result := "Hint"
+		end
+
+end

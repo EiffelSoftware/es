@@ -1355,6 +1355,10 @@ feature -- Update
 				l_at_args := arguments_in_range (current_option + 1, argument_count)
 				current_option := argument_count + 1
 				create {EWB_BOOGIE_VERIFICATION} command.make_with_arguments (l_at_args)
+			elseif option.is_equal ("-code-analysis") then
+				l_at_args := arguments_in_range (current_option + 1, argument_count)
+				current_option := argument_count + 1
+				create {EWB_CODE_ANALYSIS} command.make_with_arguments (l_at_args)
 			elseif option.is_equal ("-js_compile") then
 				create {EWB_JAVASCRIPT_COMPILATION} command
 			elseif option.is_equal ("-dead_plan") then
