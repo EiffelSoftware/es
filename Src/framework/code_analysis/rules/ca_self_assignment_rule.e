@@ -24,6 +24,14 @@ feature {NONE} -- Initialization
 			create {CA_WARNING} severity
 		end
 
+feature -- Activation
+
+	prepare_checking (a_checker: CA_ALL_RULES_CHECKER)
+		do
+			a_checker.add_assign_pre_action (agent pre_assign)
+			create violations.make
+		end
+
 feature -- Properties
 
 	title: STRING
@@ -40,14 +48,29 @@ feature -- Properties
 			               % to a class attribute and used one of the variable names twice."
 		end
 
-	rule_checker: CA_RULE_CHECKER
-		once
-			create {CA_SELF_ASSIGNMENT_RULE_CHECKER} Result.make_with_rule (Current)
-		end
-
 	options: LINKED_LIST[CA_RULE_OPTION]
 		once
 			create Result.make
+		end
+
+feature {NONE} -- Checking the rule
+	pre_assign (a_assign_as: ASSIGN_AS)
+		local
+			l_violation: CA_RULE_VIOLATION
+		do
+			-- TODO: check; it is probably wrong!
+			if attached {EXPR_CALL_AS} a_assign_as.source as l_source then
+				if attached {ACCESS_ID_AS} l_source.call as l_src_access_id then
+					if attached {ACCESS_ID_AS} a_assign_as.target as l_tar
+					and then l_tar.feature_name.is_equal (l_src_access_id.feature_name) then
+						create l_violation.make_with_rule (Current)
+--						l_violation.set_affected_class (current_class)
+						l_violation.set_location (a_assign_as.start_location)
+						l_violation.set_long_description ("Variable '" + l_src_access_id.feature_name.name_8 + "' is assigned to itself...")
+						violations.extend (l_violation)
+					end
+				end
+			end
 		end
 
 end

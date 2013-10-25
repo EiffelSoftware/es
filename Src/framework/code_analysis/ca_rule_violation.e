@@ -7,6 +7,9 @@ note
 class
 	CA_RULE_VIOLATION
 
+inherit
+	COMPARABLE
+
 create
 	make_with_rule
 
@@ -22,7 +25,7 @@ feature
 
 	long_description: STRING
 
-	affected_class: detachable CLASS_AS
+	affected_class: detachable CLASS_C
 
 	location: detachable LOCATION_AS
 			-- location of rule violation, if available
@@ -31,7 +34,26 @@ feature
 			-- fix "strategies"
 			-- Empty if there is no fix available for this rule violation
 
-feature {CA_RULE_CHECKER}
+feature -- Inherited from {COMPARABLE}
+
+	is_less alias "<" (a_other: like Current): BOOLEAN
+		do
+			if attached location as l_location then
+				if attached a_other.location as l_other_location then
+					if l_location.line = l_other_location.line then
+						Result := (l_location.column < l_other_location.column)
+					else
+						Result := (l_location.line < l_other_location.line)
+					end
+				else
+					Result := False
+				end
+			else
+				Result := False
+			end
+		end
+
+feature {CA_RULE}
 
 	set_long_description (a_descr: STRING)
 			-- The long description should contain information that is specific
@@ -42,7 +64,7 @@ feature {CA_RULE_CHECKER}
 			long_description := a_descr
 		end
 
-	set_affected_class (a_class: CLASS_AS)
+	set_affected_class (a_class: CLASS_C)
 		do
 			affected_class := a_class
 		end

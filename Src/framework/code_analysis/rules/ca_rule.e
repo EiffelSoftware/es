@@ -7,8 +7,9 @@ note
 deferred class
 	CA_RULE
 
-feature -- Checking the rule
-	rule_checker: CA_RULE_CHECKER
+feature -- Activation
+
+	prepare_checking (a_checker: CA_ALL_RULES_CHECKER)
 		deferred
 		end
 
@@ -50,6 +51,10 @@ feature -- Properties the user can change
 		do
 			severity := a_severity
 		end
+
+feature -- Results
+
+	violations: LINKED_LIST[CA_RULE_VIOLATION]
 
 invariant
 	title_set: title.count > 3
