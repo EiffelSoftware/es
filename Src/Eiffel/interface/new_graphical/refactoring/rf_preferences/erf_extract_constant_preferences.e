@@ -12,6 +12,9 @@ inherit
 			initialize_preferences
 		end
 
+create
+	make
+
 feature -- Value
 
 	descendants_flag: BOOLEAN
@@ -108,7 +111,7 @@ invariant
 	ancestors_preference_not_void: ancestors_preference /= Void
 	descendants_preference_not_void: descendants_preference /= Void
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

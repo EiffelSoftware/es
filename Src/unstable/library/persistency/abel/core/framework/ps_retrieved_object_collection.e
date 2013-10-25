@@ -12,26 +12,20 @@ class
 
 inherit
 
+	PS_BACKEND_ENTITY
+		redefine
+			make, is_equal
+		end
+
 	PS_RETRIEVED_COLLECTION
+		undefine
+			is_equal
+		end
 
 create {PS_EIFFELSTORE_EXPORT}
-	make
+	make, make_fresh
 
 feature {PS_EIFFELSTORE_EXPORT} -- Access
-
-	primary_key: INTEGER
-			-- The retrieved collection's primary key, as used in the database.
-
-	metadata: PS_TYPE_METADATA
-			-- The type of the current collection.
-
-	class_metadata: PS_CLASS_METADATA
-			-- Some metadata information about the generating class of the collection.
-		obsolete
-			"use metadata.base_class"
-		do
-			Result := metadata.base_class
-		end
 
 	information_descriptions: LIST [STRING]
 			-- Get all descriptions which have an information value.
@@ -56,6 +50,72 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 			Result := additional_information_hash.has (description)
 		end
 
+	is_empty: BOOLEAN
+			-- Is the current collection empty (save for a primary key)?
+		do
+			Result := collection_items.is_empty and information_descriptions.is_empty
+		end
+
+	is_consistent: BOOLEAN
+			-- Does the static type match the retrieved runtime type for all collection items in `Current'?
+		local
+			collection_item_type: INTEGER
+			runtime_type: INTEGER
+			reflection: INTERNAL
+		do
+			Result := True
+			if not attached {TYPE[detachable TUPLE]} metadata.type then
+				across
+					collection_items as cursor
+				from
+					create reflection
+					collection_item_type := metadata.actual_generic_parameter (1).type.type_id
+				loop
+					runtime_type := reflection.dynamic_type_from_string (cursor.item.second)
+
+					if runtime_type >= 0 then
+						-- Check if runtime type conforms to collection type
+						Result := Result and reflection.type_conforms_to (runtime_type, collection_item_type)
+					else
+						-- Item was Void during insert
+						Result := Result
+							and runtime_type = reflection.none_type -- Runtime type set to "NONE"
+							and not reflection.is_attached_type (collection_item_type) -- Collection type allowed to be detachable
+							and cursor.item.first.is_empty -- Value is an empty string
+					end
+				end
+			end
+		end
+
+feature -- Comparison
+
+	is_equal (other: like Current): BOOLEAN
+			-- Is `other' attached to an object considered
+			-- equal to current object?
+		do
+			Result := primary_key.is_equal (other.primary_key) and metadata.is_equal (other.metadata)
+			from
+				collection_items.start
+				other.collection_items.start
+				Result := Result and collection_items.count = other.collection_items.count
+				Result := Result and information_descriptions.count = other.information_descriptions.count and then
+					across information_descriptions as cursor
+					all
+						other.has_information (cursor.item) and then
+						other.get_information (cursor.item).is_equal (get_information(cursor.item))
+					end
+			until
+				collection_items.after or not Result
+			loop
+				Result := Result and collection_items.item.first.is_equal (other.collection_items.item.first)
+								 and collection_items.item.second.is_equal (other.collection_items.item.second)
+				collection_items.forth
+				other.collection_items.forth
+			variant
+				collection_items.count - collection_items.index + 1
+			end
+		end
+
 feature {PS_EIFFELSTORE_EXPORT} -- Element change
 
 	add_information (description: STRING; value: STRING)
@@ -78,14 +138,11 @@ feature {NONE}
 	make (key: INTEGER; meta: PS_TYPE_METADATA)
 			-- Initialize `Current'
 		do
-			primary_key := key
-			metadata := meta
+			Precursor (key, meta)
 			create additional_information_hash.make (10)
 			create {LINKED_LIST [STRING]} information_descriptions.make
 			create collection_items.make
-		ensure
-			primary_key_set: primary_key = key
-			metadata_set: metadata.is_equal (meta)
+		ensure then
 			additional_info_empty: additional_information_hash.is_empty
 			collection_items_empty: collection_items.is_empty
 		end

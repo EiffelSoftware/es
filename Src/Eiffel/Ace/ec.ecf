@@ -147,7 +147,7 @@
 	<target name="bench" extends="common">
 		<description>Eiffel Studio</description>
 		<root class="EB_KERNEL" feature="make"/>
-		<option>
+		<option void_safety="none">
 			<assertions/>
 			<warning name="once_in_generic" enabled="false"/>
 		</option>
@@ -206,6 +206,7 @@
 				<assertions precondition="true" postcondition="true" check="true"/>
 			</option>
 		</library>
+		<library name="crypto" location="$ISE_LIBRARY\unstable\library\text\encryption\crypto\crypto.ecf" readonly="false"/>
 		<library name="curl" location="$ISE_LIBRARY\library\cURL\cURL.ecf" readonly="false"/>
 		<library name="dadle" location="$EIFFEL_SRC\library\dadle\dadle_library.ecf"/>
 		<library name="daikon" location="$EIFFEL_SRC\framework\daikon\daikon.ecf" readonly="false"/>
@@ -215,7 +216,6 @@
 		<library name="dotnet_assembly_information" location="$EIFFEL_SRC\dotnet\assembly_info\dotnet_assembly_information.ecf" readonly="false" use_application_options="true"/>
 		<library name="dynamic_program_analysis" location="$EIFFEL_SRC\framework\dynamic_program_analysis\dynamic_program_analysis.ecf" readonly="false"/>
 		<library name="editor" location="$ISE_LIBRARY\library\editor\editor.ecf" readonly="false"/>
-		<library name="crypto" location="$ISE_LIBRARY\unstable\library\text\encryption\crypto\crypto.ecf" readonly="false"/>
 		<library name="eiffel2boogie" location="$ISE_LIBRARY\framework\eiffel2boogie\eiffel2boogie.ecf" readonly="false"/>
 		<library name="eve_blackboard" location="$ISE_LIBRARY\framework\eve_blackboard\eve_blackboard.ecf" readonly="false"/>
 		<library name="eve_proofs" location="$ISE_LIBRARY\framework\eve_proofs\eve_proofs.ecf" readonly="false"/>
@@ -305,11 +305,11 @@
 		<cluster name="flat_short_b" location="$EIFFEL_SRC\Eiffel\flat_short\bench\"/>
 		<cluster name="interface" location="$EIFFEL_SRC\Eiffel\interface\" recursive="true">
 			<file_rule>
+				<exclude>^/none$</exclude>
 				<exclude>/overrides$</exclude>
-				<exclude>^/tty$</exclude>
 				<exclude>/lite$</exclude>
 				<exclude>/preferences$</exclude>
-				<exclude>^/none$</exclude>
+				<exclude>^/tty$</exclude>
 			</file_rule>
 			<file_rule>
 				<exclude>/mswin$</exclude>

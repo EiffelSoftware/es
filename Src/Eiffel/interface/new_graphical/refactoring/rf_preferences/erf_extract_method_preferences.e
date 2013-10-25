@@ -12,6 +12,9 @@ inherit
 			initialize_preferences
 		end
 
+create
+	make
+
 feature -- Value
 
 	start_line: INTEGER
@@ -92,7 +95,7 @@ invariant
 	end_line_preference_not_void: end_line_preference /= Void
 	extracted_method_name_preference_not_void: extracted_method_name_preference /= void
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

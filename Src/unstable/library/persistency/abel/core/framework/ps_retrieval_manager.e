@@ -11,8 +11,6 @@ inherit
 
 	PS_EIFFELSTORE_EXPORT
 
-inherit {NONE}
-
 	REFACTORING_HELPER
 
 create
@@ -82,7 +80,7 @@ feature {NONE} -- Implementation - Retrieval
 				until
 					found or results.after
 				loop
-					new_object := build_object (type, results.item, transaction, bookkeeping, true)
+					new_object := build_object (type, results.item, transaction, bookkeeping, true, repository.default_object_graph.query_depth)
 					if query.criteria.is_satisfied_by (new_object) then
 						query.result_cursor.set_entry (new_object)
 						found := True
@@ -99,7 +97,7 @@ feature {NONE} -- Implementation - Retrieval
 					if direct_collection.after then
 						query.result_cursor.set_entry (Void)
 					else
-						new_object := build_object_collection (type, direct_collection.item, get_handler (type), transaction, bookkeeping)
+						new_object := build_object_collection (type, direct_collection.item, get_handler (type), transaction, bookkeeping, repository.default_object_graph.query_depth)
 						query.result_cursor.set_entry (new_object)
 					end
 				end
@@ -129,7 +127,7 @@ feature {NONE} -- Implementation - Retrieval
 						found or results.after
 					loop
 						fixme ("don't cheat...")
-						new_object := build_object (type, results.item, transaction, bookkeeping, false)
+						new_object := build_object (type, results.item, transaction, bookkeeping, false, repository.default_object_graph.query_depth)
 						if query.criteria.is_satisfied_by (new_object) then
 							-- extract the required information
 
@@ -160,10 +158,10 @@ feature {NONE} -- Implementation - Retrieval
 
 feature {NONE} -- Implementation: Build functions for PS_RETRIEVED_* objects
 
-	build_object (type: PS_TYPE_METADATA; obj: PS_RETRIEVED_OBJECT; transaction: PS_TRANSACTION; bookkeeping: HASH_TABLE [ANY, INTEGER]; identify:BOOLEAN): ANY
+	build_object (type: PS_TYPE_METADATA; obj: PS_RETRIEVED_OBJECT; transaction: PS_TRANSACTION; bookkeeping: HASH_TABLE [ANY, INTEGER]; identify:BOOLEAN; depth: INTEGER): ANY
 			-- Build the object `obj'.
 		require
-			obj.class_metadata.name.is_equal (type.base_class.name)
+			obj.metadata.base_class.name.is_equal (type.base_class.name)
 		local
 			reflection: INTERNAL
 			field_value: ANY
@@ -174,13 +172,13 @@ feature {NONE} -- Implementation: Build functions for PS_RETRIEVED_* objects
 			referenced_obj: LIST [PS_RETRIEVED_OBJECT]
 			collection_result: PS_RETRIEVED_OBJECT_COLLECTION
 		do
-			if bookkeeping.has (obj.primary_key + obj.class_metadata.name.hash_code) then
-				Result := attach (bookkeeping [obj.primary_key + obj.class_metadata.name.hash_code])
+			if bookkeeping.has (obj.primary_key + obj.metadata.base_class.name.hash_code) then
+				Result := attach (bookkeeping [obj.primary_key + obj.metadata.base_class.name.hash_code])
 			else
 				create reflection
 				Result := reflection.new_instance_of (type.type.type_id)
 				if identify then
-					bookkeeping.extend (Result, obj.primary_key + obj.class_metadata.name.hash_code)
+					bookkeeping.extend (Result, obj.primary_key + obj.metadata.base_class.name.hash_code)
 					id_manager.identify (Result, transaction)
 					internal_add_mapping (id_manager.identifier_wrapper (Result, transaction), obj.primary_key, transaction)
 				end
@@ -196,21 +194,23 @@ feature {NONE} -- Implementation: Build functions for PS_RETRIEVED_* objects
 						if not try_basic_attribute (Result, obj.attribute_value (attr_cursor.item), type.field_index (attr_cursor.item)) then
 								-- If not it is either a referenced object or a collection. In either case, use the `Current.build' function.
 
+							if depth > 1 or depth = repository.default_object_graph.object_graph_depth_infinite then
 
-							--field_type := type.attribute_type (attr_cursor.item)
-							-- Important: Use type as stored in the database!
-							field_type_name := obj.attribute_value (attr_cursor.item).attribute_class_name
-							if not field_type_name.is_equal ("NONE") then
-								field_type := metadata_manager.create_metadata_from_type (
-									type.reflection.type_of_type (
-										type.reflection.dynamic_type_from_string (field_type_name)))
+								--field_type := type.attribute_type (attr_cursor.item)
+								-- Important: Use type as stored in the database!
+								field_type_name := obj.attribute_value (attr_cursor.item).attribute_class_name
+								if not field_type_name.is_equal ("NONE") then
+									field_type := metadata_manager.create_metadata_from_type (
+										type.reflection.type_of_type (
+											type.reflection.dynamic_type_from_string (field_type_name)))
 
 
-								field_val := build (field_type, obj.attribute_value (attr_cursor.item), transaction, bookkeeping)
-								if attached field_val then
-										--print (reflection.field_name (type.field_index (attr_cursor.item), Result).out + "%N")
-										--print (type.type.out + field_type.type.out + "%N")
-									reflection.set_reference_field (type.field_index (attr_cursor.item), Result, field_val)
+									field_val := build (field_type, obj.attribute_value (attr_cursor.item), transaction, bookkeeping, repository.default_object_graph.object_graph_depth_infinite.max (depth -1))
+									if attached field_val then
+											--print (reflection.field_name (type.field_index (attr_cursor.item), Result).out + "%N")
+											--print (type.type.out + field_type.type.out + "%N")
+										reflection.set_reference_field (type.field_index (attr_cursor.item), Result, field_val)
+									end
 								end
 							end
 						end
@@ -221,35 +221,40 @@ feature {NONE} -- Implementation: Build functions for PS_RETRIEVED_* objects
 			type_correct: Result.generating_type.type_id = type.type.type_id
 		end
 
-	build_relational_collection (type: PS_TYPE_METADATA; relational_collection: PS_RETRIEVED_RELATIONAL_COLLECTION; handler: PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]]; transaction: PS_TRANSACTION; bookkeeping: HASH_TABLE [ANY, INTEGER]): ANY
+	build_relational_collection (type: PS_TYPE_METADATA; relational_collection: PS_RETRIEVED_RELATIONAL_COLLECTION; handler: PS_COLLECTION_HANDLER [detachable ANY]; transaction: PS_TRANSACTION; bookkeeping: HASH_TABLE [ANY, INTEGER]; depth:INTEGER): ANY
 			-- Build a new collection object from the retrieved collection `relational_collection'.
 		do
-			Result := handler.build_relational_collection (type, build_collection_items (type, relational_collection, transaction, bookkeeping))
+			Result := handler.build_relational_collection (type, build_collection_items (type, relational_collection, transaction, bookkeeping, depth))
 			id_manager.identify (Result, transaction)
 		end
 
-	build_object_collection (type: PS_TYPE_METADATA; object_collection: PS_RETRIEVED_OBJECT_COLLECTION; handler: PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]]; transaction: PS_TRANSACTION; bookkeeping: HASH_TABLE [ANY, INTEGER]): ANY
+	build_object_collection (type: PS_TYPE_METADATA; object_collection: PS_RETRIEVED_OBJECT_COLLECTION; handler: PS_COLLECTION_HANDLER [detachable ANY]; transaction: PS_TRANSACTION; bookkeeping: HASH_TABLE [ANY, INTEGER]; depth:INTEGER): ANY
 			-- Build a new collection object from the retrieved collection `object_collection'.
 		do
-			Result := handler.build_collection (type, build_collection_items (type, object_collection, transaction, bookkeeping), object_collection)
+			Result := handler.build_collection (type, build_collection_items (type, object_collection, transaction, bookkeeping, depth), object_collection)
 			id_manager.identify (Result, transaction)
 		end
 
 feature {NONE} -- Implementation - Build support functions.
 
-	build (type: PS_TYPE_METADATA; value: PS_PAIR [STRING, STRING]; transaction: PS_TRANSACTION; bookkeeping: HASH_TABLE [ANY, INTEGER]): detachable ANY
+	build (type: PS_TYPE_METADATA; value: PS_PAIR [STRING, STRING]; transaction: PS_TRANSACTION; bookkeeping: HASH_TABLE [ANY, INTEGER]; depth: INTEGER): detachable ANY
 			-- Build an object based on the type.
+		require
+			type.type.name.is_equal (value.second)
 		local
 			object_result: detachable PS_RETRIEVED_OBJECT
 			collection_result: detachable PS_RETRIEVED_OBJECT_COLLECTION
 			managed: MANAGED_POINTER
+			trash: INTEGER
+			conv: UTF_CONVERTER
 		do
 			if type.is_basic_type then
 					-- Create a basic type
 				if type.type.name.is_equal ("STRING_8") then
-					Result := value.first
+					Result := value.first.twin
 				elseif type.type.name.is_equal ("STRING_32") then
-					Result := value.first.as_string_32
+					Result := conv.utf_8_string_8_to_string_32 (value.first)
+--					Result := value.first.as_string_32
 				elseif type.type.name.is_equal ("INTEGER_8") then
 					Result := value.first.to_integer_8
 				elseif type.type.name.is_equal ("INTEGER_16") then
@@ -295,7 +300,7 @@ feature {NONE} -- Implementation - Build support functions.
 						-- Build a collection
 					collection_result := backend.retrieve_collection (type, value.first.to_integer, transaction)
 					if attached collection_result then
-						Result := build_object_collection (type, collection_result, get_handler (type), transaction, bookkeeping)
+						Result := build_object_collection (type, collection_result, get_handler (type), transaction, bookkeeping, depth)
 					end
 				else
 					fixme ("TODO: error")
@@ -304,29 +309,50 @@ feature {NONE} -- Implementation - Build support functions.
 			else
 					-- Build a new object
 				if not value.first.is_empty then
-					object_result := backend.retrieve_by_primary (type, value.first.to_integer, type.attributes.deep_twin, transaction)
+					object_result := backend.retrieve_by_primary (type, value.first.to_integer, type.attributes, transaction)
 					if attached object_result then
-						Result := build_object (type, object_result, transaction, bookkeeping, true)
+						Result := build_object (type, object_result, transaction, bookkeeping, true, depth)
 					end
 				end
 			end
+
+			-- HASH_TABLE fix:
+			-- The internal_hash_code of STRING doesn't get stored , but we can recreate it easily
+			if attached {HASH_TABLE[detachable ANY, READABLE_STRING_GENERAL]} Result as table then
+				across
+					table as cursor
+				loop
+					trash := cursor.key.hash_code
+				end
+			end
+
 		end
 
-	build_collection_items (type: PS_TYPE_METADATA; collection: PS_RETRIEVED_COLLECTION; transaction: PS_TRANSACTION; bookkeeping: HASH_TABLE [ANY, INTEGER]): LINKED_LIST [detachable ANY]
+	build_collection_items (type: PS_TYPE_METADATA; collection: PS_RETRIEVED_COLLECTION; transaction: PS_TRANSACTION; bookkeeping: HASH_TABLE [ANY, INTEGER]; depth: INTEGER): LINKED_LIST [detachable ANY]
 			-- Build a list with all collection items correctly loaded.
 		local
 			collection_items: LINKED_LIST [detachable ANY]
 			retrieved_item: LIST [PS_RETRIEVED_OBJECT]
 			item: detachable ANY
+			new_depth: INTEGER
+			new_type: PS_TYPE_METADATA
+			reflection: INTERNAL
 		do
+			create reflection
 				-- Build every object of the list and store it in collection_items
 			create Result.make
-			across
-				collection.collection_items as items
-			loop
-				item := build (type.actual_generic_parameter (1), items.item, transaction, bookkeeping)
-				Result.extend (item)
+			if depth > 1 or depth = repository.default_object_graph.Object_graph_depth_infinite then
+				across
+					collection.collection_items as items
+				loop
+					new_depth := repository.default_object_graph.Object_graph_depth_infinite.max (depth - 1)
+
+					new_type := metadata_manager.create_metadata_from_type (reflection.type_of_type(reflection.dynamic_type_from_string(items.item.second)))
+--					item := build (type.actual_generic_parameter (1), items.item, transaction, bookkeeping, new_depth)
+					item := build (new_type, items.item, transaction, bookkeeping, new_depth)					Result.extend (item)
+				end
 			end
+
 		end
 
 	try_basic_attribute (obj: ANY; attr: TUPLE[value: STRING; runtime_type: STRING]; index: INTEGER): BOOLEAN
@@ -335,6 +361,9 @@ feature {NONE} -- Implementation - Build support functions.
 			type: INTEGER
 			reflection: INTERNAL
 			type_name: STRING
+
+			conv: UTF_CONVERTER
+			str32: STRING_32
 		do
 			create reflection
 			type := reflection.field_type (index, obj)
@@ -346,7 +375,10 @@ feature {NONE} -- Implementation - Build support functions.
 --				type_name := reflection.class_name_of_type (reflection.field_static_type_of_type (index, reflection.dynamic_type (obj)))
 				type_name:= attr.runtime_type
 				if type_name.is_case_insensitive_equal ("STRING_32") then
-					reflection.set_reference_field (index, obj, attr.value.to_string_32)
+--					print (attr.value)
+					str32 := conv.utf_8_string_8_to_string_32 (attr.value)
+					str32.adapt_size
+					reflection.set_reference_field (index, obj, str32)
 					Result := True
 				elseif type_name.is_case_insensitive_equal ("STRING_8") then
 					reflection.set_reference_field (index, obj, attr.value.twin)
@@ -413,7 +445,7 @@ feature {NONE} -- Implementation - Build support functions.
 
 feature {NONE} -- Implementation: Collection handlers
 
-	collection_handlers: LINKED_LIST [PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]]]
+	collection_handlers: LINKED_LIST [PS_COLLECTION_HANDLER [detachable ANY]]
 			-- All registered collection handlers.
 
 	has_handler (type: PS_TYPE_METADATA): BOOLEAN
@@ -422,12 +454,12 @@ feature {NONE} -- Implementation: Collection handlers
 			Result := across collection_handlers as handler some handler.item.can_handle_type (type) end
 		end
 
-	get_handler (type: PS_TYPE_METADATA): PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]]
+	get_handler (type: PS_TYPE_METADATA): PS_COLLECTION_HANDLER [detachable ANY]
 			-- Get the handler for collections of type `type'.
 		require
 			has_handler (type)
 		local
-			res: detachable PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]]
+			res: detachable PS_COLLECTION_HANDLER [detachable ANY]
 		do
 			across
 				collection_handlers as handler
@@ -514,13 +546,7 @@ feature {NONE} -- Initialization
 
 	internal_add_mapping (obj: PS_OBJECT_IDENTIFIER_WRAPPER; primary: INTEGER; transaction: PS_TRANSACTION)
 		do
-			if attached {PS_BACKEND} backend as old_backend then
-				old_backend.add_mapping (obj, primary, transaction)
-			else
-				check attached {PS_SIMPLE_IN_MEMORY_REPOSITORY} repository as repo then
-					repo.mapper.add_entry (obj, primary, transaction)
-				end
-			end
+			repository.mapper.add_entry (obj, primary, transaction)
 		end
 
 	repository: PS_REPOSITORY
@@ -530,7 +556,7 @@ feature {NONE} -- Initialization
 
 feature {PS_REPOSITORY} -- Initialization - Collection handlers
 
-	add_handler (a_handler: PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]])
+	add_handler (a_handler: PS_COLLECTION_HANDLER [detachable ANY])
 			-- Add a collection handler to `Current'.
 		do
 			collection_handlers.extend (a_handler)

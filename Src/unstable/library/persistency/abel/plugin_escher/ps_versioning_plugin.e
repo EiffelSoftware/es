@@ -9,9 +9,11 @@ class
 
 inherit
 	PS_PLUGIN
+		redefine
+			before_write_compatibility
+		end
 	PS_EIFFELSTORE_EXPORT
 
-inherit{NONE}
 	REFACTORING_HELPER
 
 create
@@ -38,12 +40,13 @@ feature {NONE} -- Initialization
 
 feature
 
-	before_write_new (object: PS_RETRIEVED_OBJECT; op: PS_WRITE_OPERATION; transaction: PS_TRANSACTION)
+	before_write (object: PS_RETRIEVED_OBJECT; transaction: PS_TRANSACTION)
 		local
 			stored_version: INTEGER
 			reflection: INTERNAL
 		do
-			if op = op.insert and object.metadata.type.is_conforming_to({detachable VERSIONED_CLASS}) then
+			-- TODO: check if it's sufficient to only add the version attribute to new objects!
+			if object.is_new and object.metadata.type.is_conforming_to({detachable VERSIONED_CLASS}) then
 				create reflection
 				check attached {VERSIONED_CLASS} reflection.new_instance_of (object.metadata.type.type_id) as versioned_object then
 					stored_version := versioned_object.version
@@ -79,7 +82,7 @@ feature
 			end
 		end
 
-	before_write (an_object: PS_SINGLE_OBJECT_PART; transaction:PS_TRANSACTION)
+	before_write_compatibility (an_object: PS_SINGLE_OBJECT_PART; transaction:PS_TRANSACTION)
 			-- Adds the version attribute.
 		local
 			stored_version: INTEGER
@@ -122,11 +125,18 @@ feature
 			end
 		end
 
-	before_retrieve (type: PS_TYPE_METADATA; criteria: detachable PS_CRITERION; attributes: LIST [STRING]; transaction: PS_TRANSACTION)
+	before_retrieve (args: TUPLE[type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: PS_IMMUTABLE_STRUCTURE [STRING]]; transaction: PS_TRANSACTION): like args
 			-- Add the version attribute, if necessary
+		local
+			attributes: LINKED_LIST[STRING]
 		do
-			if type.type.is_conforming_to ({detachable VERSIONED_CLASS}) then
+			if args.type.type.is_conforming_to ({detachable VERSIONED_CLASS}) then
+				create attributes.make
+				args.attributes.do_all (agent attributes.extend)
 				attributes.extend ("version")
+				Result := [args.type, args.criteria, create {PS_IMMUTABLE_STRUCTURE[STRING]}.make (attributes)]
+			else
+				Result := args
 			end
 		end
 

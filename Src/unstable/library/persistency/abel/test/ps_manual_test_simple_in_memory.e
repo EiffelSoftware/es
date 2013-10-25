@@ -14,10 +14,14 @@ inherit
 
 feature {NONE}
 
-	make_repository: PS_SIMPLE_IN_MEMORY_REPOSITORY
+
+	make_repository: PS_REPOSITORY
 			-- Create the repository for this test
+		local
+			factory: PS_REPOSITORY_FACTORY
 		do
-			create Result
+			create factory
+			Result := factory.create_in_memory_repository
 		end
 
 feature
@@ -37,6 +41,11 @@ feature
 	memory_references
 		do
 			crud_tests.all_references_tests
+		end
+
+	memory_basic_types
+		do
+			crud_tests.all_basic_type_tests
 		end
 
 	memory_collections_easy
@@ -69,14 +78,9 @@ feature
 --			transaction_tests.test_repeatable_read
 --		end
 
-	memory_object_graph_write_settings
+	memory_object_graph_settings
 		do
-			object_graph_tests.test_write_settings
-		end
-
-	memory_object_graph_read_settings
-		do
-			object_graph_tests.test_retrieval_settings
+			object_graph_tests.test_all_settings
 		end
 
 	memory_tuple_queries

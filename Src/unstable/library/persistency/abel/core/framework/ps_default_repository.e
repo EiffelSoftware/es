@@ -1,24 +1,19 @@
 note
-	description: "Summary description for {PS_SIMPLE_IN_MEMORY_REPOSITORY}."
+	description: "Summary description for {PS_DEFAULT_REPOSITORY}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	PS_SIMPLE_IN_MEMORY_REPOSITORY
+	PS_DEFAULT_REPOSITORY
 
 inherit
 	PS_REPOSITORY
-		redefine
-			default_create
-		end
-
-inherit {NONE}
+	
 	REFACTORING_HELPER
-		undefine default_create end
 
 create
-	default_create
+	make
 
 feature {PS_EIFFELSTORE_EXPORT} -- Object query
 
@@ -76,8 +71,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).insert, agent id_manager.is_identified(?, transaction))
 
 			do_write (disassembler.object_graph, transaction)
-
-
 		rescue
 			default_transactional_rescue (transaction)
 		end
@@ -99,17 +92,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 			id_manager.register_transaction (transaction)
 			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).delete, agent id_manager.is_identified(?, transaction))
 
-			do_write (disassembler.object_graph, transaction)
-
-			planner.set_object_graph (disassembler.object_graph)
-			planner.generate_plan
-			across
-				planner.operation_plan as op
-			loop
-				if attached {PS_COMPLEX_PART} op.item as complex and then complex.write_operation = complex.write_operation.delete then
-					id_manager.delete_identification (complex.represented_object, transaction)
-				end
-			end
+			do_delete (disassembler.object_graph, transaction)
 		rescue
 			default_transactional_rescue (transaction)
 		end
@@ -143,7 +126,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing
 	clean_db_for_testing
 			-- Wipe out all data.
 		local
-			handlers: LINKED_LIST[PS_COLLECTION_HANDLER[ITERABLE [detachable ANY]]]
+			handlers: LINKED_LIST[PS_COLLECTION_HANDLER[detachable ANY]]
 		do
 			handlers:= collection_handlers
 			backend.wipe_out
@@ -157,22 +140,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status Report
 
 	can_handle (object: ANY): BOOLEAN
 			-- Can `Current' handle the object `object'?
-		local
-			new_transaction: PS_TRANSACTION
-			executor: PS_WRITE_EXECUTOR
 		do
-			fixme ("TODO: implement a similar query in new backend interface")
-			if attached {PS_BACKEND_COMPATIBILITY} backend as b then
-				create executor.make (b, id_manager)
-				create new_transaction.make_readonly (Current)
-				disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).insert, agent id_manager.is_identified(?, new_transaction))
-				planner.set_object_graph (disassembler.object_graph)
-				planner.generate_plan
-				Result := executor.can_backend_handle_operations (planner.operation_plan)
-			else
-				Result := True
-			end
-
+			fixme ("TODO: implement a query")
+			Result := True
 		end
 
 feature {NONE} -- Initialization
@@ -185,9 +155,7 @@ feature {NONE} -- Initialization
 			set_transaction_isolation_level (transaction_isolation_level.repeatable_read)
 			create default_object_graph.make
 			create id_manager.make
-			create planner.make
 			create disassembler.make (id_manager.metadata_manager, default_object_graph)
---			create executor.make (backend, id_manager)
 			create retriever.make (backend, id_manager, Current)
 			create collection_handlers.make
 			create mapper.make
@@ -195,7 +163,7 @@ feature {NONE} -- Initialization
 
 feature -- Initialization
 
-	add_collection_handler (handler: PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]])
+	add_collection_handler (handler: PS_COLLECTION_HANDLER [detachable ANY])
 			-- Add a handler for a specific type of collections.
 		do
 			retriever.add_handler (handler)
@@ -208,18 +176,6 @@ feature {PS_EIFFELSTORE_EXPORT} -- Implementation
 	identify_all (object_graph: PS_OBJECT_GRAPH_ROOT; transaction: PS_TRANSACTION)
 			-- Add an identifier wrapper to all objects in the graph
 		do
---			across object_graph as cursor
---			from cursor.ignore_no_operation
---			loop
---				if attached {PS_COMPLEX_PART} cursor.item as part and then not part.is_identified then
---					check part.write_operation /= part.write_operation.no_operation end
---					if not id_manager.is_identified (part.represented_object, transaction) then
---						id_manager.identify (part.represented_object, transaction)
---					end
---					part.set_object_wrapper (id_manager.identifier_wrapper (part.represented_object, transaction))
---				end
---			end
---			across id_manager.global_set.current_items as cursor loop print (cursor.item.at (2)) print (", ") end print ("%N")
 			across object_graph as cursor
 			loop
 				if attached {PS_COMPLEX_PART} cursor.item as item and then not item.is_identified then
@@ -234,121 +190,183 @@ feature {PS_EIFFELSTORE_EXPORT} -- Implementation
 	disassembler: PS_OBJECT_GRAPH_BUILDER
 			-- An object graph builder to create explicit object graphs.
 
-	planner: PS_WRITE_PLANNER
-			-- A write planner to generate an operation plan from an object graph.
-
---	executor: PS_WRITE_EXECUTOR
-			-- An executor to execute operations in an operation plan
-
 	backend: PS_READ_WRITE_BACKEND
 			-- A BACKEND implementation
 
 	retriever: PS_RETRIEVAL_MANAGER
 			-- A retrieval manager to build objects.
 
-	collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]]]
+	collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER [detachable ANY]]
 			-- The collection handlers registered with `Current'
 
 
-	do_write (object_graph: PS_OBJECT_GRAPH_ROOT; transaction: PS_TRANSACTION)
+	do_delete (object_graph: PS_OBJECT_GRAPH_ROOT; transaction: PS_TRANSACTION)
 		local
-			table: HASH_TABLE[INTEGER, PS_TYPE_METADATA]
-			primaries: HASH_TABLE[INDEXABLE_ITERATION_CURSOR[INTEGER], PS_TYPE_METADATA]
-
-			objects_to_write: LINKED_LIST[TUPLE[PS_RETRIEVED_OBJECT, PS_WRITE_OPERATION]]
-			objects_to_delete: LINKED_LIST[TUPLE[type: PS_TYPE_METADATA; primary: INTEGER]]
-
-			collections_to_write: LINKED_LIST[TUPLE[PS_RETRIEVED_OBJECT_COLLECTION, PS_WRITE_OPERATION]]
-			collections_to_delete: LINKED_LIST[TUPLE[type: PS_TYPE_METADATA; primary: INTEGER]]
+			entity: PS_BACKEND_ENTITY
+			objects_to_delete: LINKED_LIST[PS_BACKEND_ENTITY]
+			collections_to_delete: LINKED_LIST[PS_BACKEND_ENTITY]
 		do
-
-			identify_all (object_graph, transaction)
-			create table.make (10)
-
-			across object_graph.new_smart_cursor as cursor
-			loop
-				-- TODO: differentiate between object and collection primaries
-				if cursor.item.write_operation = cursor.item.write_operation.insert then
-					table.force (table[cursor.item.metadata] + 1, cursor.item.metadata)
-				end
-			end
-
-			primaries := backend.generate_all_object_primaries (table, transaction)
-
-			across object_graph.new_smart_cursor as cursor
-			loop
-				if cursor.item.write_operation = cursor.item.write_operation.insert then
-					check attached primaries[cursor.item.metadata] as primary_cursor then
-						mapper.add_entry (cursor.item.object_wrapper, primary_cursor.item, transaction)
-						primary_cursor.forth
-					end
-				end
-			end
-
-
 			across object_graph.new_smart_cursor as cursor
 			from
-				create objects_to_write.make
+				identify_all (object_graph, transaction)
 				create objects_to_delete.make
-				create collections_to_write.make
 				create collections_to_delete.make
 			loop
+				check cursor.item.write_operation = cursor.item.write_operation.delete end
+
 				if attached {PS_SINGLE_OBJECT_PART} cursor.item as obj then
-					if cursor.item.write_operation /= cursor.item.write_operation.delete then
-						objects_to_write.extend ([to_retrieved(obj, transaction), cursor.item.write_operation])
-					else
-						objects_to_delete.extend ([cursor.item.metadata, mapper.quick_translate (cursor.item.object_identifier, transaction)])
-						mapper.remove_primary_key (mapper.quick_translate (cursor.item.object_identifier, transaction), cursor.item.metadata, transaction)
-					end
-				elseif attached {PS_OBJECT_COLLECTION_PART[ITERABLE[detachable ANY]]} cursor.item as coll then
-					if coll.write_operation /= coll.write_operation.delete then
-						collections_to_write.extend ([to_retrieved_collection(coll, transaction), coll.write_operation])
-					else
-						collections_to_delete.extend ([coll.metadata, mapper.quick_translate (coll.object_identifier, transaction)])
-						mapper.remove_primary_key (mapper.quick_translate (coll.object_identifier, transaction), coll.metadata, transaction)
-					end
+					create entity.make ( mapper.quick_translate (cursor.item.object_identifier, transaction), cursor.item.metadata)
+					objects_to_delete.extend (entity)
+					mapper.remove_primary_key (mapper.quick_translate (cursor.item.object_identifier, transaction), cursor.item.metadata, transaction)
+					id_manager.delete_identification (obj.represented_object, transaction)
+				elseif attached {PS_OBJECT_COLLECTION_PART} cursor.item as coll then
+					create entity.make (mapper.quick_translate (coll.object_identifier, transaction), coll.metadata)
+					collections_to_delete.extend (entity)
+					mapper.remove_primary_key (mapper.quick_translate (coll.object_identifier, transaction), coll.metadata, transaction)
+					id_manager.delete_identification (coll.represented_object, transaction)
 				else
 					check relations_not_implemented: False end
 				end
 			end
-			backend.write (objects_to_write, transaction)
-			backend.delete (objects_to_delete, transaction)
-			backend.write_collections (collections_to_write, transaction)
-			backend.delete_collections (collections_to_delete, transaction)
 
+
+			if not objects_to_delete.is_empty then
+				backend.delete (objects_to_delete, transaction)
+			end
+			if not collections_to_delete.is_empty then
+				backend.delete_collections (collections_to_delete, transaction)
+			end
+		end
+
+	do_write (object_graph: PS_OBJECT_GRAPH_ROOT; transaction: PS_TRANSACTION)
+		local
+			table: HASH_TABLE[INTEGER, PS_TYPE_METADATA]
+			collection_table: HASH_TABLE[INTEGER, PS_TYPE_METADATA]
+			primaries: HASH_TABLE[LIST[PS_RETRIEVED_OBJECT], PS_TYPE_METADATA]
+			collection_primaries: HASH_TABLE[LIST[PS_RETRIEVED_OBJECT_COLLECTION], PS_TYPE_METADATA]
+
+			objects_to_write: LINKED_LIST[PS_RETRIEVED_OBJECT]
+			collections_to_write: LINKED_LIST[PS_RETRIEVED_OBJECT_COLLECTION]
+		do
+
+			identify_all (object_graph, transaction)
+			create table.make (10)
+			create collection_table.make (10)
+
+			-- Collect all insert operations
+			across object_graph.new_smart_cursor as cursor
+			loop
+				if cursor.item.write_operation = cursor.item.write_operation.insert then
+					if cursor.item.is_collection then
+						collection_table.force (collection_table[cursor.item.metadata] + 1, cursor.item.metadata)
+					else
+						table.force (table[cursor.item.metadata] + 1, cursor.item.metadata)
+					end
+				end
+			end
+
+			-- Get new primary keys for collections and objects in one single call
+			if not table.is_empty then
+				primaries := backend.generate_all_object_primaries (table, transaction)
+			else
+				create primaries.make (0)
+			end
+
+			if not collection_table.is_empty then
+				collection_primaries := backend.generate_collection_primaries (collection_table, transaction)
+			else
+				create collection_primaries.make (0)
+			end
+
+			-- Prepare the cursors
+			across primaries as p loop p.item.start end
+			across collection_primaries as p loop p.item.start end
+
+			-- Update the primary key mapping table
+			across object_graph.new_smart_cursor as cursor
+			loop
+				if cursor.item.write_operation = cursor.item.write_operation.insert then
+
+					if cursor.item.is_collection then
+						check attached collection_primaries[cursor.item.metadata] as primary_cursor then
+							mapper.add_entry (cursor.item.object_wrapper, primary_cursor.item.primary_key, transaction)
+							primary_cursor.remove
+						end
+					else
+						check attached primaries[cursor.item.metadata] as primary_cursor then
+							mapper.add_entry (cursor.item.object_wrapper, primary_cursor.item.primary_key, transaction)
+							primary_cursor.remove
+						end
+					end
+				end
+			end
+
+			-- Prepare the retrieved objects serving as insert/update commands
+			across object_graph.new_smart_cursor as cursor
+			from
+				create objects_to_write.make
+				create collections_to_write.make
+			loop
+				check cursor.item.write_operation /= cursor.item.write_operation.delete end
+				if attached {PS_SINGLE_OBJECT_PART} cursor.item as obj then
+					objects_to_write.extend (to_retrieved(obj, transaction))
+				elseif attached {PS_OBJECT_COLLECTION_PART} cursor.item as coll then
+					collections_to_write.extend (to_retrieved_collection(coll, transaction))
+				else
+					check relations_not_implemented: False end
+				end
+			end
+
+			-- Send the actual commands to the backend
+			if not objects_to_write.is_empty then
+				backend.write (objects_to_write, transaction)
+			end
+			if not collections_to_write.is_empty then
+				backend.write_collections (collections_to_write, transaction)
+			end
 		end
 
 
-	to_retrieved (object: PS_SINGLE_OBJECT_PART; transaction: PS_TRANSACTION): PS_RETRIEVED_OBJECT
+	fill_retrieved (object: PS_SINGLE_OBJECT_PART; retrieved: PS_RETRIEVED_OBJECT; transaction: PS_TRANSACTION)
 		local
 			attr: PS_PAIR[STRING, STRING]
 			id: INTEGER
 		do
-			across object.attributes as cursor
-			from
-				create Result.make (mapper.quick_translate (object.object_identifier, transaction), object.metadata)
+--			retrieved.set_operation (object.write_operation)
+			across
+				object.attributes as cursor
 			loop
 				if attached {PS_COMPLEX_PART} object.attribute_value (cursor.item) as complex_attribute then
 					id := mapper.quick_translate (complex_attribute.object_identifier, transaction)
 				end
 				attr := object.attribute_value (cursor.item).as_attribute (id)
-				Result.add_attribute (cursor.item, attr.first, attr.second)
+				retrieved.add_attribute (cursor.item, attr.first, attr.second)
 			end
 
 			if object.write_operation = object.write_operation.insert then
 				across object.metadata.attributes as cursor
 				loop
-					if not Result.has_attribute(cursor.item) then
-						Result.add_attribute (cursor.item, "", "NONE")
+					if not retrieved.has_attribute(cursor.item) then
+						retrieved.add_attribute (cursor.item, "", "NONE")
 					end
 				end
 			end
-
-
 		end
 
 
-	to_retrieved_collection (coll: PS_OBJECT_COLLECTION_PART[ITERABLE[detachable ANY]]; transaction: PS_TRANSACTION): PS_RETRIEVED_OBJECT_COLLECTION
+	to_retrieved (object: PS_SINGLE_OBJECT_PART; transaction: PS_TRANSACTION): PS_RETRIEVED_OBJECT
+
+		do
+			if object.write_operation = object.write_operation.insert then
+				create Result.make_fresh (mapper.quick_translate (object.object_identifier, transaction), object.metadata)
+			else
+				create Result.make (mapper.quick_translate (object.object_identifier, transaction), object.metadata)
+			end
+			fill_retrieved (object, Result, transaction)
+		end
+
+
+	to_retrieved_collection (coll: PS_OBJECT_COLLECTION_PART; transaction: PS_TRANSACTION): PS_RETRIEVED_OBJECT_COLLECTION
 		local
 			item: PS_PAIR[STRING, STRING]
 			id: INTEGER
@@ -356,7 +374,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Implementation
 			across
 				coll.values as cursor
 			from
-				create Result.make (mapper.quick_translate (coll.object_identifier, transaction), coll.metadata)
+				if coll.write_operation = coll.write_operation.insert then
+					create Result.make_fresh (mapper.quick_translate (coll.object_identifier, transaction), coll.metadata)
+				else
+					create Result.make (mapper.quick_translate (coll.object_identifier, transaction), coll.metadata)
+				end
+--				Result.set_operation (coll.write_operation)
 			loop
 				if attached {PS_COMPLEX_PART} cursor.item as complex_item then
 					id := mapper.quick_translate (complex_item.object_identifier, transaction)
@@ -374,18 +397,4 @@ feature {PS_EIFFELSTORE_EXPORT} -- Implementation
 
 
 	mapper: PS_KEY_POID_TABLE
-
-
-	default_create
-			-- Initialization for `Current'.
-		local
-			simple_in_memory_backend: PS_EVEN_SIMPLER_IN_MEMORY_BACKEND
-			special_handler: PS_SPECIAL_COLLECTION_HANDLER
-		do
-			create simple_in_memory_backend.wipe_out
-			make (simple_in_memory_backend)
-			create special_handler.make
-			add_collection_handler (special_handler)
-		end
-
 end

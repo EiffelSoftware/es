@@ -38,7 +38,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
 feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 
-	internal_retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: LIST [STRING]; transaction: PS_TRANSACTION): ITERATION_CURSOR [PS_RETRIEVED_OBJECT]
+	internal_retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction: PS_TRANSACTION): ITERATION_CURSOR [PS_RETRIEVED_OBJECT]
 			-- Retrieves all objects of class `type' (direct instance - not inherited from) that match the criteria in `criteria' within transaction `transaction'.
 			-- If `attributes' is not empty, it will only retrieve the attributes listed there.
 			-- If an attribute was `Void' during an insert, or it doesn't exist in the database because of a version mismatch, the attribute value during retrieval will be an empty string and its class name `NONE'.
@@ -70,6 +70,19 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 				curr_id := curr_id + 1
 			end
 			Result := result_list.new_cursor
+		end
+
+	internal_retrieve_by_primary (type: PS_TYPE_METADATA; key: INTEGER; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction: PS_TRANSACTION): detachable PS_RETRIEVED_OBJECT
+		local
+			list: LINKED_LIST[INTEGER]
+			res: LIST[PS_RETRIEVED_OBJECT]
+		do
+			create list.make
+			list.extend (key)
+			res := internal_retrieve_from_keys (type, list, transaction)
+			if not res.is_empty then
+				Result := res.first
+			end
 		end
 
 	internal_retrieve_from_keys (type: PS_TYPE_METADATA; primary_keys: LIST [INTEGER]; transaction: PS_TRANSACTION): LINKED_LIST [PS_RETRIEVED_OBJECT]
@@ -294,7 +307,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			create Result.make (collection_primary_key, collection_type)
 		end
 
-	insert_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
+	insert_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART; a_transaction: PS_TRANSACTION)
 			-- Add all entries in `a_collection' to the database. If the order is not conflicting with the items already in the database, it will try to preserve order.
 		do
 			check
@@ -302,7 +315,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			end
 		end
 
-	delete_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
+	delete_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART; a_transaction: PS_TRANSACTION)
 			-- Delete `a_collection' from the database.
 		do
 			check
@@ -321,7 +334,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 			create Result.make (owner_key, owner_type.base_class, owner_attribute_name)
 		end
 
-	insert_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
+	insert_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART; a_transaction: PS_TRANSACTION)
 			-- Add all entries in `a_collection' to the database.
 		do
 			check
@@ -329,7 +342,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 			end
 		end
 
-	delete_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
+	delete_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART; a_transaction: PS_TRANSACTION)
 			-- Delete `a_collection' from the database.
 		do
 			check
@@ -405,6 +418,7 @@ feature {NONE} -- Initialization
 			create key_mapper.make
 			create curl.make
 			create key_set.make (100)
+			create plug_in_list.make
 		end
 
 	make_with_host_and_port (host: STRING; port: INTEGER)
@@ -412,6 +426,7 @@ feature {NONE} -- Initialization
 			create key_mapper.make
 			create curl.make_with_host_and_port (host, port)
 			create key_set.make (100)
+			create plug_in_list.make
 		end
 
 end

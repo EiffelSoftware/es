@@ -16,10 +16,6 @@ inherit
 
 	PS_EIFFELSTORE_EXPORT
 
-inherit {NONE}
-
-	REFACTORING_HELPER
-
 create
 	make
 
@@ -47,12 +43,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status report
 
 feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 
-	internal_retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: LIST [STRING]; transaction: PS_TRANSACTION): ITERATION_CURSOR [PS_RETRIEVED_OBJECT]
+	internal_retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction: PS_TRANSACTION): ITERATION_CURSOR [PS_RETRIEVED_OBJECT]
 			-- Retrieves all objects of class `class_name' that match the criteria in `criteria' within transaction `transaction'.
 			-- If `attributes' is not empty, it will only retrieve the attributes listed there.
 		local
 			keys: ARRAYED_LIST [INTEGER]
-			attr: LIST [STRING]
+			attr: PS_IMMUTABLE_STRUCTURE [STRING]
 		do
 				-- Evaluate which objects to load
 				-- (here: ignore criteria and just return everything from that class)
@@ -71,12 +67,26 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval operations
 			Result := load_objects (type, attr, keys).new_cursor
 		end
 
-	internal_retrieve_from_keys (type: PS_TYPE_METADATA; primary_keys: LIST [INTEGER]; transaction: PS_TRANSACTION): LINKED_LIST [PS_RETRIEVED_OBJECT]
-			-- Retrieve all objects of type `type' and with primary key in `primary_keys'.
+	internal_retrieve_by_primary (type: PS_TYPE_METADATA; key: INTEGER; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction: PS_TRANSACTION): detachable PS_RETRIEVED_OBJECT
+		local
+			list: LINKED_LIST[INTEGER]
+			res: LIST[PS_RETRIEVED_OBJECT]
 		do
-				-- Retrieve all keys in primary_keys and with all attributes
-			Result := load_objects (type, create{LINKED_LIST[STRING]}.make, primary_keys)
+			create list.make
+			list.extend (key)
+--			res := internal_retrieve_from_keys (type, list, transaction)
+			res := load_objects (type, attributes, list)
+			if not res.is_empty then
+				Result := res.first
+			end
 		end
+
+--	internal_retrieve_from_keys (type: PS_TYPE_METADATA; primary_keys: LIST [INTEGER]; transaction: PS_TRANSACTION): LINKED_LIST [PS_RETRIEVED_OBJECT]
+--			-- Retrieve all objects of type `type' and with primary key in `primary_keys'.
+--		do
+--				-- Retrieve all keys in primary_keys and with all attributes
+--			Result := load_objects (type, create{LINKED_LIST[STRING]}.make, primary_keys)
+--		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Object write operations
 
@@ -147,7 +157,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			end
 		end
 
-	insert_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
+	insert_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART; a_transaction: PS_TRANSACTION)
 			-- Add all entries in `a_collection' to the database
 		local
 			id: INTEGER
@@ -176,7 +186,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			end
 		end
 
-	update_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
+	update_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART; a_transaction: PS_TRANSACTION)
 			-- Update `a_collection' in the database.
 		local
 			primary: INTEGER
@@ -187,7 +197,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object-oriented collection operations
 			insert_object_oriented_collection (a_collection, a_transaction)
 		end
 
-	delete_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
+	delete_object_oriented_collection (a_collection: PS_OBJECT_COLLECTION_PART; a_transaction: PS_TRANSACTION)
 			-- Delete `a_collection' from the database.
 		local
 			key: INTEGER
@@ -209,7 +219,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 			create Result.make (owner_key, owner_type.base_class, owner_attribute_name)
 		end
 
-	insert_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
+	insert_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART; a_transaction: PS_TRANSACTION)
 			-- Add all entries in `a_collection' to the database.
 		do
 			check
@@ -217,7 +227,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Relational collection operations
 			end
 		end
 
-	delete_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART [ITERABLE [detachable ANY]]; a_transaction: PS_TRANSACTION)
+	delete_relational_collection (a_collection: PS_RELATIONAL_COLLECTION_PART; a_transaction: PS_TRANSACTION)
 			-- Delete `a_collection' from the database.
 		do
 			check
@@ -277,13 +287,16 @@ feature {PS_EIFFELSTORE_EXPORT} -- Miscellaneous
 
 feature {NONE} -- Implementation - Loading and storing objects
 
-	load_objects (type: PS_TYPE_METADATA; attributes: LIST [STRING]; keys: LIST [INTEGER]): LINKED_LIST [PS_RETRIEVED_OBJECT]
+	load_objects (type: PS_TYPE_METADATA; arg_attributes: PS_IMMUTABLE_STRUCTURE [STRING]; keys: LIST [INTEGER]): LINKED_LIST [PS_RETRIEVED_OBJECT]
 			-- Loads all objects of class `type' whose primary key is listed in `keys'.
 			-- Only loads the attributes listed in `attributes',or all attributes if the list is empty.
 		local
 			current_obj: PS_RETRIEVED_OBJECT
 			attr_val: PS_PAIR [STRING, STRING]
+			attributes: LINKED_LIST[STRING]
 		do
+			create attributes.make
+			arg_attributes.do_all (agent attributes.extend)
 			create Result.make
 			across
 				keys as obj_primary
@@ -482,6 +495,7 @@ feature {NONE} -- Initialization
 			create key_mapper.make
 			create key_set.make (default_class_size)
 			create db.make (default_class_size)
+			create plug_in_list.make
 		end
 
 	default_class_size: INTEGER = 20

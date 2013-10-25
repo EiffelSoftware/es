@@ -16,18 +16,35 @@ feature {PS_METADATA_TABLES_MANAGER} -- Table creation
 	Create_value_table: STRING
 		do
 			Result := "[
-									CREATE TABLE ps_value (
-									objectid INTEGER NOT NULL AUTO_INCREMENT, 
-									attributeid INTEGER,
-									runtimetype INTEGER,
-									value VARCHAR(128),
-				
-									PRIMARY KEY (objectid, attributeid),
-									FOREIGN KEY (attributeid) REFERENCES ps_attribute (attributeid) ON DELETE CASCADE,
-									FOREIGN KEY (runtimetype) REFERENCES ps_class (classid) ON DELETE CASCADE
-									)
+							CREATE TABLE ps_value (
+							objectid INTEGER NOT NULL AUTO_INCREMENT, 
+							attributeid INTEGER,
+							runtimetype INTEGER,
+							value LONGTEXT,
+		
+							PRIMARY KEY (objectid, attributeid),
+							FOREIGN KEY (attributeid) REFERENCES ps_attribute (attributeid) ON DELETE CASCADE,
+							FOREIGN KEY (runtimetype) REFERENCES ps_class (classid) ON DELETE CASCADE
+							)
 			]"
 		end
+
+--	Create_value_table: STRING
+--		do
+--			Result := "[
+--							CREATE TABLE ps_value (
+--							objectid INTEGER NOT NULL AUTO_INCREMENT,
+--							attributeid INTEGER,
+--							runtimetype INTEGER,
+--							islong: BOOLEAN
+--							value VARCHAR(128),
+--		
+--							PRIMARY KEY (objectid, attributeid),
+--							FOREIGN KEY (attributeid) REFERENCES ps_attribute (attributeid) ON DELETE CASCADE,
+--							FOREIGN KEY (runtimetype) REFERENCES ps_class (classid) ON DELETE CASCADE
+--							)
+--			]"
+--		end
 
 	Create_class_table: STRING
 		do
@@ -51,6 +68,48 @@ feature {PS_METADATA_TABLES_MANAGER} -- Table creation
 									FOREIGN KEY (class) REFERENCES ps_class (classid) ON DELETE CASCADE
 								)
 			]"
+		end
+
+	Create_collections_table: STRING
+		do
+			Result := "[
+					CREATE TABLE ps_collection (
+					collectionid INTEGER NOT NULL AUTO_INCREMENT, 
+					collectiontype INTEGER,
+					position INTEGER,
+					runtimetype INTEGER,
+					value VARCHAR(128),
+
+					PRIMARY KEY (collectionid, position),
+					FOREIGN KEY (collectiontype) REFERENCES ps_class (classid) ON DELETE CASCADE,
+					FOREIGN KEY (runtimetype) REFERENCES ps_class (classid) ON DELETE CASCADE
+					)
+				]"
+		end
+
+	Create_collection_info_table: STRING
+		do
+			Result := "[
+					CREATE TABLE ps_collection_info (
+					collectionid INTEGER NOT NULL,
+					info_key VARCHAR(128) NOT NULL,
+					info VARCHAR(128),
+
+					PRIMARY KEY (collectionid, info_key),
+					FOREIGN KEY (collectionid) REFERENCES ps_collection (collectionid) ON DELETE CASCADE
+					)
+				]"
+		end
+
+	Create_longtext_table: STRING
+		do
+			Result := "[
+				CREATE TABLE ps_longtext (
+					textid INTEGER NOT NULL AUTO_INCREMENT,
+					textvalue LONGTEXT,
+					PRIMARY KEY (textid)
+				)
+				]"
 		end
 
 feature {PS_METADATA_TABLES_MANAGER} -- Data querying - Key manager
@@ -79,8 +138,66 @@ feature {PS_GENERIC_LAYOUT_SQL_BACKEND} -- Data modification - Backend
 			Result := "INSERT INTO ps_value (attributeid, runtimetype, value) VALUES (" + attribute_id.out + ", " + runtimetype.out + ", '" + value + "')"
 		end
 
-feature {PS_GENERIC_LAYOUT_SQL_BACKEND}
+	Insert_new_collection (none_key: INTEGER): STRING
+		do
+			Result := "INSERT INTO ps_collection (collectiontype, position, runtimetype, value) VALUES ("
+				+ none_key.out + ", -1, " + none_key.out + ", '')"
+		end
+
+	Assemble_multi_replace (tuples: LIST[STRING]): STRING
+		do
+			across
+				tuples as cursor
+			from
+				Result := "INSERT INTO ps_value VALUES"
+			loop
+				Result.append (" " + cursor.item + ",")
+			end
+
+			-- Remove last comma
+			Result.remove_tail (1)
+			Result.append (" on duplicate key update runtimetype = VALUES(runtimetype), value = VALUES(value);")
+		end
+
+	Assemble_multi_replace_collection (tuples: LIST[STRING]): STRING
+		do
+			across
+				tuples as cursor
+			from
+				Result := "INSERT INTO ps_collection VALUES"
+			loop
+				Result.append (" " + cursor.item + ",")
+			end
+
+			-- Remove last comma
+			Result.remove_tail (1)
+			Result.append (" on duplicate key update collectiontype = VALUES(collectiontype), runtimetype = VALUES(runtimetype), value = VALUES(value)")
+
+		end
+
+	Assemble_multi_replace_collection_info (tuples: LIST[STRING]): STRING
+		do
+			across
+				tuples as cursor
+			from
+				Result := "INSERT INTO ps_collection_info VALUES"
+			loop
+				Result.append (" " + cursor.item + ",")
+			end
+
+			-- Remove last comma
+			Result.remove_tail (1)
+
+			Result.append (" on duplicate key update info = VALUES(info)")
+		end
+
+feature {PS_GENERIC_LAYOUT_SQL_READONLY_BACKEND} -- Data querying - Backend
 
 	For_update_appendix: STRING = " FOR UPDATE "
+
+
+	Query_last_object_autoincrement: STRING = "SELECT LAST_INSERT_ID()"
+
+	Query_last_collection_autoincrement: STRING = "SELECT LAST_INSERT_ID()"
 
 end

@@ -11,8 +11,6 @@ inherit
 
 	PS_EIFFELSTORE_EXPORT
 
-inherit {NONE}
-
 	REFACTORING_HELPER
 
 create
@@ -187,8 +185,8 @@ feature {NONE} -- Internal: Status report
 		do
 			Result := attached {NUMERIC} object or attached {BOOLEAN} object or attached {CHARACTER_8} object or attached {CHARACTER_32} object
 				--or attached {READABLE_STRING_GENERAL} object
-				or object.generating_type.is_equal ({detachable STRING_8}) or object.generating_type.is_equal ({detachable STRING_32})
-				or object.generating_type.is_conforming_to ({detachable IMMUTABLE_STRING_GENERAL})
+				or object.generating_type.type_id = ({detachable STRING_8}).type_id or object.generating_type.type_id = ({detachable STRING_32}).type_id
+				or attached {IMMUTABLE_STRING_GENERAL} object
 		end
 
 feature {NONE} -- Internal: Access
@@ -196,7 +194,7 @@ feature {NONE} -- Internal: Access
 	settings: PS_OBJECT_GRAPH_SETTINGS
 			-- The current object graph settings.
 
-	search_handler (object: ANY): detachable PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]]
+	search_handler (object: ANY): detachable PS_COLLECTION_HANDLER [detachable ANY]
 			-- Search for a collection handler for `object'. Return Void if none present.
 		do
 			across
@@ -208,7 +206,7 @@ feature {NONE} -- Internal: Access
 			end
 		end
 
-	collection_handlers: LINKED_LIST [PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]]]
+	collection_handlers: LINKED_LIST [PS_COLLECTION_HANDLER [detachable ANY]]
 			-- The registered collection handlers.
 
 	metadata_factory: PS_METADATA_FACTORY
@@ -306,7 +304,7 @@ feature {NONE} -- Initialization
 
 feature {PS_EIFFELSTORE_EXPORT} -- Initialization
 
-	add_handler (a_handler: PS_COLLECTION_HANDLER [ITERABLE [detachable ANY]])
+	add_handler (a_handler: PS_COLLECTION_HANDLER [detachable ANY])
 			-- Add `a_handler' to the collection handlers.
 		do
 			collection_handlers.extend (a_handler)

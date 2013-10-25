@@ -21,6 +21,18 @@ feature {PS_METADATA_TABLES_MANAGER} -- Table creation
 		deferred
 		end
 
+	Create_collections_table: STRING
+		deferred
+		end
+
+	Create_collection_info_table: STRING
+		deferred
+		end
+
+	Create_longtext_table: STRING
+		deferred
+		end
+
 feature {PS_METADATA_TABLES_MANAGER} -- Data querying - Key manager
 
 	Show_tables: STRING
@@ -47,17 +59,20 @@ feature {PS_METADATA_TABLES_MANAGER} -- Data querying - Key manager
 			Result := "SELECT attributeid FROM ps_attribute WHERE name = '" + attribute_name + "' AND class = " + class_key.out
 		end
 
-feature {PS_GENERIC_LAYOUT_SQL_BACKEND} -- Data querying - Backend implementation
+
+feature {PS_GENERIC_LAYOUT_SQL_READONLY_BACKEND, PS_LAZY_CURSOR} -- Data querying - Backend implementation
 
 	Query_values_from_class (attributes: STRING): STRING
 		do
 			Result := "[
-				SELECT objectid, attributeid, runtimetype, value
+				SELECT DISTINCT objectid, attributeid, runtimetype, value
 				FROM ps_value
 				WHERE attributeid IN
 			]"
-			Result := Result + attributes + " ORDER BY objectid "
+			Result := Result + attributes
 		end
+
+	Order_by_appendix: STRING = " ORDER BY objectid "
 
 	For_update_appendix: STRING
 		deferred
@@ -87,6 +102,14 @@ feature {PS_GENERIC_LAYOUT_SQL_BACKEND} -- Data querying - Backend implementatio
 			Result := "SELECT attributeid FROM ps_value WHERE objectid = " + primary_key.out
 		end
 
+	Query_last_object_autoincrement: STRING
+		deferred
+		end
+
+	Query_last_collection_autoincrement: STRING
+		deferred
+		end
+
 feature {PS_METADATA_TABLES_MANAGER} -- Data modification - Key manager
 
 	Insert_class_use_autoincrement (class_name: STRING): STRING
@@ -97,9 +120,13 @@ feature {PS_METADATA_TABLES_MANAGER} -- Data modification - Key manager
 		deferred
 		end
 
-feature {PS_GENERIC_LAYOUT_SQL_BACKEND} -- Data modification - Backend
+feature {PS_GENERIC_LAYOUT_SQL_BACKEND, PS_GENERIC_LAYOUT_SQL_READWRITE_BACKEND} -- Data modification - Backend
 
 	Insert_value_use_autoincrement (attribute_id, runtimetype: INTEGER; value: STRING): STRING
+		deferred
+		end
+
+	Insert_new_collection (none_key: INTEGER): STRING
 		deferred
 		end
 
@@ -116,6 +143,18 @@ feature {PS_GENERIC_LAYOUT_SQL_BACKEND} -- Data modification - Backend
 	Update_value (object_primary, attribute_id: INTEGER; new_runtime_type: INTEGER; new_value: STRING): STRING
 		do
 			Result := "UPDATE ps_value SET runtimetype = " + new_runtime_type.out + ", value = '" + new_value + "' WHERE objectid = " + object_primary.out + " AND attributeid = " + attribute_id.out
+		end
+
+	Assemble_multi_replace (tuples: LIST[STRING]): STRING
+		deferred
+		end
+
+	Assemble_multi_replace_collection (tuples: LIST[STRING]): STRING
+		deferred
+		end
+
+	Assemble_multi_replace_collection_info (tuples: LIST[STRING]): STRING
+		deferred
 		end
 
 	Insert_value (object_primary, attribute_id, runtime_type: INTEGER; value: STRING): STRING
@@ -149,6 +188,10 @@ feature {PS_EIFFELSTORE_EXPORT} -- Table and column names
 
 	Value_table_value_column: STRING = "value"
 
+	Collection_table: STRING = "ps_collection"
+
+	Collection_info_table: STRING = "ps_collection_info"
+
 feature {PS_EIFFELSTORE_EXPORT} -- Special attributes and classes
 
 	None_class: STRING = "NONE"
@@ -164,5 +207,40 @@ feature {PS_EIFFELSTORE_EXPORT} -- Management and testing
 	Drop_attribute_table: STRING = "DROP TABLE ps_attribute"
 
 	Drop_class_table: STRING = "DROP TABLE ps_class"
+
+	Drop_collection_table: STRING = "DROP TABLE ps_collection"
+
+	Drop_collection_info_table: STRING = "DROP TABLE ps_collection_info"
+
+feature {PS_EIFFELSTORE_EXPORT} -- Utilities
+
+	to_list_with_braces(args: TUPLE): STRING
+		do
+			Result := "(" + to_list (args) + ")"
+		end
+
+	to_list (args: TUPLE): STRING
+		do
+			across
+				1 |..| args.count as index
+			from
+				Result := ""
+			loop
+				if attached args.item (index.item) as object then
+					if attached {READABLE_STRING_GENERAL} object then
+						Result.append ("'" + object.out + "'")
+					else
+						Result.append (object.out)
+					end
+				else
+					Result.append ("NULL")
+				end
+
+				if index.item < args.count then
+					Result.append (", ")
+				end
+			end
+		end
+
 
 end

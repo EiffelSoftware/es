@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	PS_COLLECTION_HANDLER [COLLECTION_TYPE -> ITERABLE [detachable ANY]]
+	PS_COLLECTION_HANDLER [COLLECTION_TYPE ]--> ITERABLE [detachable ANY]]
 
 inherit
 
@@ -48,33 +48,39 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object graph creation
 				-- Create relational or object collection based on `is_relationally_mapped'
 			if owner.is_representing_object and then is_relationally_mapped (metadata, owner.metadata) then
 				check attached {PS_SINGLE_OBJECT_PART} owner as good_owner then
-					create {PS_RELATIONAL_COLLECTION_PART [COLLECTION_TYPE]} Result.make (collection, metadata, good_owner, persistent, is_mapped_as_1_to_N (metadata, owner.metadata), Current, owner.root)
+					create {PS_RELATIONAL_COLLECTION_PART} Result.make (collection, metadata, good_owner, persistent, is_mapped_as_1_to_N (metadata, owner.metadata), Current, owner.root)
 				end
 			else
-				create {PS_OBJECT_COLLECTION_PART [COLLECTION_TYPE]} Result.make (collection, metadata, persistent, Current, owner.root)
+				create {PS_OBJECT_COLLECTION_PART} Result.make (collection, metadata, persistent, Current, owner.root)
 			end
 		ensure
 			collection_set: Result.represented_object = collection
 			metadata_set: Result.metadata = metadata
 			persitent_set: Result.is_persistent = persistent
-			owner_set: attached {PS_RELATIONAL_COLLECTION_PART [COLLECTION_TYPE]} Result as res implies res.reference_owner = owner
+			owner_set: attached {PS_RELATIONAL_COLLECTION_PART} Result as res implies res.reference_owner = owner
 		end
 
-	add_information (object_collection: PS_OBJECT_COLLECTION_PART [ITERABLE [detachable ANY]])
+	create_items (collection: PS_COLLECTION_PART; object_graph_factory: FUNCTION[ANY, TUPLE[detachable ANY], PS_OBJECT_GRAPH_PART]): LINKED_LIST[PS_OBJECT_GRAPH_PART]
+			-- Iterate over the collection and call `object_graph_factory' on each item
+		deferred
+		end
+
+
+	add_information (object_collection: PS_OBJECT_COLLECTION_PART)
 			-- Add some additional information to `object_collection'.
 		deferred
 		end
 
 feature {PS_EIFFELSTORE_EXPORT} -- Object retrieval
 
-	build_collection (collection_type: PS_TYPE_METADATA; objects: LIST [detachable ANY]; additional_information: PS_RETRIEVED_OBJECT_COLLECTION): COLLECTION_TYPE
+	build_collection (collection_type: PS_TYPE_METADATA; objects: LIST [detachable ANY]; additional_information: PS_RETRIEVED_OBJECT_COLLECTION): ANY
 			-- Build a collection object of type `collection_type' with items `objects', using `additional_information' that contains information generated during the last insert.
 		require
 			can_handle_type: can_handle_type (collection_type)
 		deferred
 		end
 
-	build_relational_collection (collection_type: PS_TYPE_METADATA; objects: LIST [detachable ANY]): COLLECTION_TYPE
+	build_relational_collection (collection_type: PS_TYPE_METADATA; objects: LIST [detachable ANY]): ANY
 			-- Build a collection object of type `collection_type' with items `objects'.
 		require
 			can_handle_type: can_handle_type (collection_type)

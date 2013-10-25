@@ -13,6 +13,109 @@ inherit
 
 feature
 
+
+	experiment_expanded_types
+		local
+			reflection: REFLECTED_REFERENCE_OBJECT
+			reflection2: REFLECTED_REFERENCE_OBJECT
+			container: EXPANDED_PERSON_CONTAINER
+			person: EXPANDED_PERSON
+			internal: INTERNAL
+			traversal: OBJECT_GRAPH_BREADTH_FIRST_TRAVERSABLE
+			box: GENERIC_BOX[PERSON, EXPANDED_PERSON]
+		do
+			create traversal
+			create container.set_item (5)
+			create internal
+			create reflection.make (container)
+			create box.set_item (create {PERSON}.make ("some", "name", 22), create {EXPANDED_PERSON})
+
+			across
+				1 |..| reflection.field_count as i
+			loop
+				print (reflection.field_name (i.item))
+				println
+
+				print (internal.type_name_of_type (reflection.field_static_type (i.item)))
+
+				if reflection.field_type (i.item) = reflection.reference_type then
+					print (" -> reference ")
+					if reflection.is_copy_semantics_field (i.item) then
+						print ("(with copy semantics)")
+					end
+				end
+
+				if reflection.is_field_statically_expanded (i.item) then
+					print (" -> expanded ")
+					print (reflection.field_type (i.item))
+					println
+
+					reflection2 := reflection.expanded_field (i.item)
+
+					across
+						1 |..| reflection2.field_count as i2
+					loop
+						print ("%T")
+						print (reflection2.field (i2.item))
+						println
+					end
+
+--					reflection2.set_integer_32_field (3, 2)
+--					print (container.person.items_owned)
+
+				else
+					println
+					print (reflection.field (i.item))
+				end
+				println
+				println
+
+			end
+
+			traversal.set_root_object (container)
+			traversal.set_object_action (agent (a:ANY) do print (a) end)
+			traversal.traverse
+
+			reflection.set_object (box)
+			print (reflection.field_type (1))
+			println
+			print(reflection.field_type (2))
+			println
+
+
+
+		end
+
+--	experiment_trasient
+--		local
+--			p1, p2: PERSON
+--		do
+--			create p1.make ("Albo", "Bitossi", 3)
+--			create p2.make ("Albo", "Bitossi", 3)
+--			assert ("equal", p1.is_deep_equal(p2))
+--			p1.set (24)
+--			assert ("not equal", not p1.is_deep_equal(p2))
+--		end
+
+	experiment_agent_failure_with_arg (list: LINKED_LIST[detachable ANY])
+		do
+			check list.for_all (agent experiment_agent_failure_test_agent (?, True, create {ANY})) end
+		ensure
+			list.for_all (agent experiment_agent_failure_test_agent (?, True, create {ANY}))
+		end
+
+	experiment_agent_failure_test_agent (any: ANY; bool: BOOLEAN; third_arg: ANY): BOOLEAN
+		do
+			if bool then
+				Result := attached any
+				any.do_nothing
+			end
+		end
+
+	generate_void(any: detachable ANY): detachable ANY
+		do
+		end
+
 	experiment_dynamic_any_type
 			-- What is the dynamic type of ANY and detachable ANY?
 		local
@@ -160,6 +263,7 @@ feature
 			println
 			print (reflection.dynamic_type (string_integer_tuple_2).out + " " + reflection.type_name (string_integer_tuple))
 			println
+--			print (reflection.is_attached_type (reflection.dynamic_type (string_integer_tuple_2)))
 
 			assert ("attached vs detachable", reflection.attached_type (reflection.dynamic_type (string_integer_tuple)) = reflection.dynamic_type (string_integer_tuple_2))
 
