@@ -64,7 +64,6 @@ feature {NONE} -- Checking the rule
 		local
 			l_violation: CA_RULE_VIOLATION
 		do
-			-- TODO: check; it is probably wrong!
 			if attached {EXPR_CALL_AS} a_assign_as.source as l_source then
 				if attached {ACCESS_ID_AS} l_source.call as l_src_access_id then
 					if attached {ACCESS_ID_AS} a_assign_as.target as l_tar

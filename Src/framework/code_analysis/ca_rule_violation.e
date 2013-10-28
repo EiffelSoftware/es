@@ -18,6 +18,7 @@ feature {NONE} -- Initialization
 		do
 			rule := a_rule
 			long_description := ""
+			synchronized_with_source := True
 		end
 
 feature
@@ -26,6 +27,10 @@ feature
 	long_description: STRING
 
 	affected_class: detachable CLASS_C
+
+	synchronized_with_source: BOOLEAN
+			-- 'True' if the rule violation corresponds to the current state of the
+			-- source code; 'False' if the violation might be outdated or is outdated.
 
 	location: detachable LOCATION_AS
 			-- location of rule violation, if available

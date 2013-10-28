@@ -9,24 +9,23 @@ class
 
 inherit
 	AST_ITERATOR
-		export
-			{NONE}
-				process_none_id_as,
-				process_typed_char_as,
-				process_agent_routine_creation_as,
-				process_inline_agent_creation_as,
-				process_create_creation_as,
-				process_bang_creation_as,
-				process_create_creation_expr_as,
-				process_bang_creation_expr_as,
-				process_keyword_as,
-				process_symbol_as,
-				process_break_as,
-				process_leaf_stub_as,
-				process_symbol_stub_as,
-				process_keyword_stub_as,
-				process_there_exists_as,
-				process_for_all_as
+		export {NONE}
+			process_none_id_as,
+			process_typed_char_as,
+			process_agent_routine_creation_as,
+			process_inline_agent_creation_as,
+			process_create_creation_as,
+			process_bang_creation_as,
+			process_create_creation_expr_as,
+			process_bang_creation_expr_as,
+			process_keyword_as,
+			process_symbol_as,
+			process_break_as,
+			process_leaf_stub_as,
+			process_symbol_stub_as,
+			process_keyword_stub_as,
+			process_there_exists_as,
+			process_for_all_as
 		redefine
 			process_access_id_as,
 			process_assign_as,

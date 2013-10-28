@@ -7,4 +7,12 @@ note
 deferred class
 	CA_RULE_OPTION
 
+inherit
+	HASHABLE
+
+feature -- Hash Code
+	hash_code: INTEGER
+		deferred
+		end
+
 end

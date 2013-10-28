@@ -8,28 +8,23 @@ class
 	CA_FIX
 
 create
-	make_with_node_replacement
+	make
 
 feature {NONE} -- Implementation
-	make_with_node_replacement (a_old_node, a_new_node: AST_EIFFEL)
+	make (a_class: CLASS_C)
 		do
-			rule_violating_node := a_old_node
-			corrected_node := a_new_node
+			class_to_change := a_class
 		end
 
 feature -- Commands
+
 	apply
 		do
-			-- TODO: perhaps preliminary operations needed
-			rule_violating_node := corrected_node
-			-- TODO: re-generate the source file,
-			-- perhaps re-parsing or re-compiling
+
 		end
 
 feature -- Properties
 
-	rule_violating_node: AST_EIFFEL
-
-	corrected_node: AST_EIFFEL
+	class_to_change: CLASS_C
 
 end
