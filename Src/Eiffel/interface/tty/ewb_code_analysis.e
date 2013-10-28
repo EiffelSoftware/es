@@ -30,7 +30,7 @@ feature -- Execution (declared in EWB_CMD)
 			-- UNDER TEST
 		local
 			l_code_analyzer: CA_CODE_ANALYZER
-			l_class_name, l_rule_name, l_line, l_col: STRING
+			l_rule_name, l_line, l_col: STRING
 		do
 			output_window.add ("{EWB_CODE_ANALYSIS}.execute was called! (:%N")
 			output_window.add ("Creating a CA_CODE_ANALYZER instance...%N")
@@ -46,14 +46,14 @@ feature -- Execution (declared in EWB_CMD)
 					print ("%NIn class '" + l_vlist.key.name + "':%N")
 
 					-- Sort
-					
+
 
 					across l_vlist.item as l_v loop
 						l_rule_name := l_v.item.rule.title
 						l_line := l_v.item.location.line.out
 						l_col := l_v.item.location.column.out
 
-						print ("  (" + l_line + ":" + l_col + "): " + l_rule_name + ": " + l_v.item.long_description)
+						print ("  (" + l_line + ":" + l_col + "): " + l_rule_name + ": " + "--FORMATTED LONG DESCR.--")
 						print ("%N")
 					end
 				end

@@ -17,14 +17,14 @@ feature {NONE} -- Initialization
 	make_with_rule (a_rule: CA_RULE)
 		do
 			rule := a_rule
-			long_description := ""
 			synchronized_with_source := True
+			create {LINKED_LIST[ANY]} long_description_info.make
 		end
 
 feature
 	rule: CA_RULE
 
-	long_description: STRING
+	long_description_info: LINKED_LIST[ANY]
 
 	affected_class: detachable CLASS_C
 
@@ -59,15 +59,6 @@ feature -- Inherited from {COMPARABLE}
 		end
 
 feature {CA_RULE}
-
-	set_long_description (a_descr: STRING)
-			-- The long description should contain information that is specific
-			-- to the concrete violation. Regarding this concrete violation, it is the
-			-- only text that the user is able to see; it may therefore also embody
-			-- general information on the rule.
-		do
-			long_description := a_descr
-		end
 
 	set_affected_class (a_class: CLASS_C)
 		do

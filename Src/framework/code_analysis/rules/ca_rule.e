@@ -10,6 +10,22 @@ deferred class
 feature -- Activation
 
 	prepare_checking (a_checker: CA_ALL_RULES_CHECKER)
+		do
+			violations.wipe_out
+			register_actions (a_checker)
+		end
+
+feature {NONE} -- Implementation
+
+	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+		deferred
+		end
+
+feature -- formatted rule checking output
+
+	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+		require
+			violation_belongs_to_rule: violations.has (a_violation)
 		deferred
 		end
 
@@ -56,6 +72,15 @@ feature -- Properties the user can change
 		do
 			severity := a_severity
 		end
+
+feature -- Rule checking
+
+	set_checking_class (a_class: CLASS_C)
+		do
+			checking_class := a_class
+		end
+
+	checking_class: detachable CLASS_C
 
 feature -- Results
 

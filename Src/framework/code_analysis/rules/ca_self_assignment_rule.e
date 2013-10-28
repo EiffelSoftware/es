@@ -25,12 +25,11 @@ feature {NONE} -- Initialization
 			create violations.make
 		end
 
-feature -- Activation
+feature {NONE} -- Activation
 
-	prepare_checking (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_assign_pre_action (agent pre_assign)
-			violations.wipe_out
 		end
 
 feature -- Properties
@@ -59,6 +58,20 @@ feature -- Properties
 			Result := False
 		end
 
+	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+		do
+			a_formatter.add_string ("Variable '")
+			if attached {STRING_32} a_violation.long_description_info.first as l_name then
+				a_formatter.add_string (l_name)
+			else
+				a_formatter.add_char ('?')
+			end
+			a_formatter.add_string ("' is assigned to itself. Assigning a variable to %
+			                        %itself is a meaningless statement due to a typing%
+			                        % error. Most probably, one of the two variable %
+			                        %names was misspelled.")
+		end
+
 feature {NONE} -- Checking the rule
 	pre_assign (a_assign_as: ASSIGN_AS)
 		local
@@ -69,9 +82,9 @@ feature {NONE} -- Checking the rule
 					if attached {ACCESS_ID_AS} a_assign_as.target as l_tar
 					and then l_tar.feature_name.is_equal (l_src_access_id.feature_name) then
 						create l_violation.make_with_rule (Current)
---						l_violation.set_affected_class (current_class)
+						l_violation.set_affected_class (checking_class)
 						l_violation.set_location (a_assign_as.start_location)
-						l_violation.set_long_description ("Variable '" + l_src_access_id.feature_name.name_8 + "' is assigned to itself...")
+						l_violation.long_description_info.extend (l_src_access_id.feature_name.name_32)
 						violations.extend (l_violation)
 					end
 				end

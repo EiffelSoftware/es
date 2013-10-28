@@ -21,15 +21,14 @@ feature {NONE} -- Initialization
 			create violations.make
 		end
 
-feature -- Activation
+feature {NONE} -- Activation
 
-	prepare_checking (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_feature_pre_action (agent process_feature)
 			a_checker.add_body_pre_action (agent process_body)
 			a_checker.add_body_post_action (agent post_process_body)
 			a_checker.add_id_pre_action (agent process_id)
-			violations.wipe_out
 		end
 
 feature -- Properties
@@ -56,11 +55,22 @@ feature -- Properties
 			Result := False
 		end
 
+	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+		do
+			a_formatter.add_string ("Routine '")
+			if attached {FEATURE_AS} a_violation.long_description_info.first as l_feature then
+				a_formatter.add_feature_name (l_feature.feature_name.name_32, a_violation.affected_class)
+			else
+				a_formatter.add_char ('?')
+			end
+			a_formatter.add_string ("' has unused arguments.")
+		end
+
 feature {NONE} -- Rule Checking
 
 	process_feature (a_feature_as: FEATURE_AS)
 		do
-			feature_id := a_feature_as.feature_name
+			current_feature := a_feature_as
 		end
 
 	process_body (a_body_as: BODY_AS)
@@ -81,9 +91,9 @@ feature {NONE} -- Rule Checking
 		do
 			if has_arguments and then not arg_ids.is_empty then
 				create l_violation.make_with_rule (Current)
---				l_violation.set_affected_class ()
+				l_violation.set_affected_class (checking_class)
 				l_violation.set_location (routine_body.start_location)
-				l_violation.set_long_description ("Routine '" + feature_id.name_8 + "' has unused arguments.")
+				l_violation.long_description_info.extend (current_feature)
 				violations.extend (l_violation)
 			end
 		end
@@ -106,7 +116,7 @@ feature {NONE} -- Rule Checking
 		end
 
 	has_arguments: BOOLEAN
-	feature_id: ID_AS
+	current_feature: FEATURE_AS
 	routine_body: BODY_AS
 	arg_ids: LINKED_LIST[INTEGER]
 

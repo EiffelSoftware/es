@@ -45,16 +45,20 @@ feature -- Analysis interface
 			end
 
 			across classes_to_analyze as l_classes loop
+
+				-- TODO: more elegant and performant solution?
+				across rules as l_rules loop
+					l_rules.item.set_checking_class (l_classes.item)
+				end
+
 				l_rules_checker.run_on_class (l_classes.item)
 
 				rule_violations.extend (create {SORTED_TWO_WAY_LIST[CA_RULE_VIOLATION]}.make, l_classes.item)
+			end
 
-				-- TODO: perhaps replace by more elegant and performant solution
-				across rules as l_rules loop
-					across l_rules.item.violations as l_v loop
-						rule_violations.at (l_classes.item).extend (l_v.item)
-					end
-					l_rules.item.violations.wipe_out
+			across rules as l_rules loop
+				across l_rules.item.violations as l_v loop
+					rule_violations.at (l_v.item.affected_class).extend (l_v.item)
 				end
 			end
 
