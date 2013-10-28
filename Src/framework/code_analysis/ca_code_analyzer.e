@@ -37,7 +37,10 @@ feature -- Analysis interface
 			create l_rules_checker.make
 			across rules as l_rules loop
 				if l_rules.item.is_enabled then -- important: only add enabled rules
-					l_rules.item.prepare_checking (l_rules_checker)
+					if system_wide_check or else (not l_rules.item.is_system_wide) then
+						-- do not add system wide rules if we check only parts of the system
+						l_rules.item.prepare_checking (l_rules_checker)
+					end
 				end
 			end
 
@@ -54,11 +57,6 @@ feature -- Analysis interface
 					l_rules.item.violations.wipe_out
 				end
 			end
-
---			analysis_successful := l_rules_checker.last_run_successful
---			if analysis_successful then
---				rule_violations := l_rules_checker.last_result
---			end
 
 			clear_classes_to_analyze
 		ensure
@@ -88,6 +86,8 @@ feature -- Analysis interface
 				end
 				l_groups.forth
 			end
+
+			system_wide_check := True
 		end
 
 	add_cluster (a_cluster: CLUSTER_I)
@@ -95,6 +95,8 @@ feature -- Analysis interface
 			l_conf_class: CONF_CLASS
 			l_class_i: CLASS_I
 		do
+			system_wide_check := False
+
 			from
 				a_cluster.classes.start
 			until
@@ -119,6 +121,8 @@ feature -- Analysis interface
 
 	add_classes (a_classes: ITERABLE[CLASS_I])
 		do
+			system_wide_check := False
+
 			across a_classes as l_classes loop
 				add_class (l_classes.item)
 			end
@@ -128,6 +132,8 @@ feature -- Analysis interface
 		local
 			l_class_c: CLASS_C
 		do
+			system_wide_check := False
+
 			if a_class.is_compiled then
 				l_class_c := a_class.compiled_class
 				check l_class_c /= Void end
@@ -150,20 +156,8 @@ feature {NONE} -- Implementation
 
 	settings: CA_SETTINGS
 
---	analyze_class_if_compiled (a_class: CLASS_I)
---		local
---			l_class_c: CLASS_C
---		do
---			if a_class.is_compiled then
---				l_class_c := a_class.compiled_class
---				check l_class_c /= Void end
---				print ("Analyzing class " + a_class.name + "...%N")
---				rules_checker.run_on_class (l_class_c.ast)
---			else
---				print ("Class " + a_class.name + " not compiled (skipped).%N")
---			end
---		end
-
 	classes_to_analyze: LINKED_SET[CLASS_C]
+
+	system_wide_check: BOOLEAN
 
 end

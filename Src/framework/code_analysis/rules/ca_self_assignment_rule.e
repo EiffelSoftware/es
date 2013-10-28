@@ -22,6 +22,7 @@ feature {NONE} -- Initialization
 			-- set the default parameters (subject to be changed by user)
 			is_enabled := True
 			create {CA_WARNING} severity
+			create violations.make
 		end
 
 feature -- Activation
@@ -29,7 +30,7 @@ feature -- Activation
 	prepare_checking (a_checker: CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_assign_pre_action (agent pre_assign)
-			create violations.make
+			violations.wipe_out
 		end
 
 feature -- Properties
@@ -51,6 +52,11 @@ feature -- Properties
 	options: LINKED_LIST[CA_RULE_OPTION]
 		once
 			create Result.make
+		end
+
+	is_system_wide: BOOLEAN
+		once
+			Result := False
 		end
 
 feature {NONE} -- Checking the rule

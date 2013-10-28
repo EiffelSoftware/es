@@ -27,6 +27,11 @@ feature -- Basic properties, usually fix
 		deferred
 		end
 
+	is_system_wide: BOOLEAN
+			-- Only check the rule if a system wide analysis is performed.
+		deferred
+		end
+
 feature -- Properties the user can change
 
 	is_enabled: BOOLEAN
