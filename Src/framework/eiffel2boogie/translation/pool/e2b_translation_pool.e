@@ -143,7 +143,7 @@ feature -- Convenience functions
 		do
 			create l_signature.make (a_feature, a_context_type)
 			add_translation_unit (l_signature)
-			if not a_is_referenced and not helper.boolean_feature_note_value (a_feature, "skip")then
+			if not a_is_referenced and not helper.boolean_feature_note_value (a_feature, "skip") then
 				create l_implementation.make (a_feature, a_context_type)
 				add_translation_unit (l_implementation)
 			end
@@ -166,7 +166,7 @@ feature -- Convenience functions
 		do
 			create l_creator.make (a_feature, a_context_type)
 			add_translation_unit (l_creator)
-			if not a_is_referenced and not helper.boolean_feature_note_value (a_feature, "skip")then
+			if not a_is_referenced and not helper.boolean_feature_note_value (a_feature, "skip") then
 				create l_creator_impl.make (a_feature, a_context_type)
 				add_translation_unit (l_creator_impl)
 			end

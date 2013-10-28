@@ -1,6 +1,6 @@
 note
 	description: "[
-		TODO
+		Access to basic IV types and conversion facilities.
 	]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -34,10 +34,18 @@ feature -- Access: default types
 			create {IV_BASIC_TYPE} Result.make_reference
 		end
 
-	heap_type: IV_TYPE
+	heap: IV_TYPE
 			-- Heap type.
 		once
 			create {IV_BASIC_TYPE} Result.make_heap
+		end
+
+	heap_type: IV_TYPE
+			-- Heap type.
+		obsolete
+			"Use `heap' instead."
+		do
+			Result := heap
 		end
 
 	type: IV_TYPE
@@ -58,10 +66,18 @@ feature -- Access: default types
 			create {IV_SET_TYPE} Result.make (a_content_type)
 		end
 
-	generic_type: IV_TYPE
+	generic: IV_TYPE
 			-- Generic type.
 		once
 			create {IV_GENERIC_TYPE} Result.make
+		end
+
+	generic_type: IV_TYPE
+			-- Generic type.
+		obsolete
+			"Use `generic' instead."
+		do
+			Result := generic
 		end
 
 	is_mml_type	(a_type: TYPE_A): BOOLEAN

@@ -365,7 +365,21 @@ feature -- Basic operations
 			Result := Current
 		end
 
-feature -- Verification
+feature -- Verification: contract clauses
+
+	frozen modify (a: ANY): BOOLEAN
+			-- Helper function for adding modifies clauses in contracts.
+		do
+			Result := True
+		end
+
+	frozen reads (a: ANY): BOOLEAN
+			-- Helper function for adding reads clauses in contracts.
+		do
+			Result := True
+		end
+
+feature -- Verification: ownership operations
 
 	frozen wrap
 			-- Wrap object `a'.
@@ -373,7 +387,7 @@ feature -- Verification
 		end
 
 	frozen wrap_all (a: TUPLE)
-			-- Wrap all objects in `a' simultaniously.
+			-- Wrap all objects in `a' simultaneously.
 		do
 		end
 
@@ -381,6 +395,13 @@ feature -- Verification
 			-- Unwrap object `a'.
 		do
 		end
+
+	frozen unwrap_all (a: TUPLE)
+			-- Unwrap all objects in `a' simultaneously.
+		do
+		end
+
+feature -- Verification: ownership queries
 
 	frozen is_wrapped: BOOLEAN
 			-- Is `a' wrapped?
@@ -396,6 +417,8 @@ feature -- Verification
 			-- Is `a' open?
 		do
 		end
+
+feature -- Verification: ownership fields
 
 	frozen owner: ANY assign set_owner
 			-- Owner of this object.
@@ -436,14 +459,6 @@ feature -- Verification
 			-- Set observers set of this object.
 		do
 		end
-
-feature {NONE} -- Implementation
-
---	ownership_impl_: OWNERSHIP
---			-- Ownership implementation.
---		once
---			create Result.make
---		end
 
 invariant
 --	reflexive_equality: standard_is_equal (Current)

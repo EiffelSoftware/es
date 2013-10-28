@@ -127,6 +127,9 @@ feature -- Translation
 			l_target_type: TYPE_A
 			l_call: IV_FUNCTION_CALL
 		do
+			l_target := current_target
+			l_target_type := current_target_type
+
 			create l_call.make (
 				a_builtin_name,
 				types.for_type_in_context (a_feature.type, current_target_type)

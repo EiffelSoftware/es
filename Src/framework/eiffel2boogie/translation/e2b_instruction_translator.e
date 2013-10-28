@@ -174,7 +174,7 @@ feature -- Processing
 				translation_pool.add_referenced_feature (l_feature, current_type)
 				create {IV_HEAP_ACCESS} l_target.make (
 					entity_mapping.heap.name,
-					entity_mapping.current_entity,
+					entity_mapping.current_expression,
 					create {IV_ENTITY}.make (name_translator.boogie_name_for_feature (l_feature, current_type), types.field (types.for_type_a (l_feature.type)))
 				)
 			else
@@ -197,7 +197,7 @@ feature -- Processing
 				-- Create assignment node
 			if a_node.target.is_attribute then
 				create l_call.make ("update_heap")
-				l_call.add_argument (entity_mapping.current_entity)
+				l_call.add_argument (entity_mapping.current_expression)
 				l_call.add_argument (create {IV_ENTITY}.make (name_translator.boogie_name_for_feature (l_feature, current_type), types.field (types.for_type_a (l_feature.type))))
 				l_call.add_argument (l_source)
 				add_statement (l_call)

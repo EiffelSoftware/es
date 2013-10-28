@@ -104,9 +104,11 @@ feature -- Basic operations
 				"item",
 				"has",
 				"count",
+				"capacity",
 				"subarray",
 				"occurrences",
-				"is_equal"
+				"is_equal",
+				"valid_index_set"
 			>>
 			Result.compare_objects
 		end

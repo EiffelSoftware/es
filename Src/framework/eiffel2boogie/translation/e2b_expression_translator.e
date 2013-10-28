@@ -135,7 +135,7 @@ feature -- Basic operations
 			context_feature := a_feature
 			context_type := a_type
 			current_target_type := a_type
-			current_target := entity_mapping.current_entity
+			current_target := entity_mapping.current_expression
 			if a_feature /= Void and then a_feature.has_return_value then
 				entity_mapping.set_default_result (a_feature.type.instantiated_in (current_target_type))
 			end
@@ -145,7 +145,7 @@ feature -- Basic operations
 			-- Set `entity_mapping' to a copy of `a_entity_mapping'.
 		do
 			create entity_mapping.make_copy (a_entity_mapping)
-			current_target := entity_mapping.current_entity
+			current_target := entity_mapping.current_expression
 		end
 
 	reset
@@ -463,7 +463,7 @@ feature -- Visitors
 		local
 			l_type: LIKE_CURRENT
 		do
-			last_expression := entity_mapping.current_entity
+			last_expression := entity_mapping.current_expression
 		end
 
 	process_char_const_b (a_node: CHAR_CONST_B)
@@ -817,7 +817,7 @@ feature -- Visitors
 			l_target_type := current_target_type
 			l_last_expression := last_expression
 
-			current_target := entity_mapping.current_entity
+			current_target := entity_mapping.current_expression
 			current_target_type := context_type
 			last_expression := Void
 
@@ -1021,7 +1021,7 @@ feature -- Translation
 			l_target_type := current_target_type
 			l_last_expression := last_expression
 
-			current_target := entity_mapping.current_entity
+			current_target := entity_mapping.current_expression
 			current_target_type := context_type
 			last_expression := Void
 

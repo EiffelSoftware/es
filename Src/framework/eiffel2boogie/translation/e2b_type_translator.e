@@ -26,14 +26,8 @@ inherit
 
 feature -- Access
 
-	last_translation: E2B_BOOGIE_TEXT
-			-- Boogie code of last translation.
-		do
-			Result := text
-		end
-
-	text: E2B_BOOGIE_TEXT
-			-- Boogie code of last translation.
+	last_property: detachable IV_EXPRESSION
+			-- Last generated property.
 
 feature -- Basic operations
 
@@ -59,7 +53,7 @@ feature -- Basic operations
 				if not a_type.has_generics then
 					generate_inheritance_relations (a_type)
 				end
-				
+
 				translate_invariant_function (a_type)
 			end
 		end
@@ -73,6 +67,12 @@ feature -- Basic operations
 		do
 			generate_invariant_function (a_type)
 			generate_invariant_axiom (a_type)
+		end
+
+	generate_argument_property (a_type: TYPE_A)
+			-- Generate argument property for `a_type'.
+		do
+			
 		end
 
 feature {NONE} -- Implementation

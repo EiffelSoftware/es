@@ -488,7 +488,7 @@ feature -- Basic operations
 			Result.set_context (current_feature, current_type)
 			create l_function_call.make (a_function.name, a_function.type)
 			l_function_call.add_argument (Result.entity_mapping.heap)
-			l_function_call.add_argument (Result.entity_mapping.current_entity)
+			l_function_call.add_argument (Result.entity_mapping.current_expression)
 			from i := 1 until i > current_feature.argument_count loop
 				l_type := current_feature.arguments.i_th (i).deep_actual_type.instantiated_in (current_type)
 				l_boogie_type := types.for_type_a (l_type)
@@ -613,8 +613,7 @@ feature {NONE} -- Implementation
 				elseif helper.integer_feature_note_value (a_feature, "inline") > 0 then
 					options.set_inlining_depth (helper.integer_feature_note_value (a_feature, "inline"))
 				elseif options.routines_to_inline.has (a_feature.body_index) then
--- TODO: set back to 1
-					options.set_inlining_depth (2)
+					options.set_inlining_depth (1)
 				else
 					options.set_inlining_depth (0)
 				end
