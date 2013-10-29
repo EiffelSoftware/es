@@ -7,6 +7,9 @@ note
 deferred class
 	CA_RULE
 
+inherit
+	CA_SHARED_NAMES
+
 feature -- Activation
 
 	prepare_checking (a_checker: CA_ALL_RULES_CHECKER)

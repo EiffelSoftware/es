@@ -35,8 +35,8 @@ feature {NONE} -- Activation
 feature -- Properties
 
 	title: STRING
-		once
-			Result := "Self-assignment"
+		do
+			Result := ca_names.self_assignment_title
 		end
 
 	description: STRING

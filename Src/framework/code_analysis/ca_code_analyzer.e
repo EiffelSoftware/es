@@ -9,6 +9,7 @@ class
 
 inherit {NONE}
 	SHARED_EIFFEL_PROJECT
+	CA_SHARED_NAMES
 
 create
 	make
@@ -141,7 +142,7 @@ feature -- Analysis interface
 			if a_class.is_compiled then
 				l_class_c := a_class.compiled_class
 				check l_class_c /= Void end
-				print ("Analyzing class " + a_class.name + "...%N")
+				print (ca_messages.analyzing_class (a_class.name))
 				classes_to_analyze.extend (l_class_c)
 			else
 				print ("Class " + a_class.name + " not compiled (skipped).%N")
