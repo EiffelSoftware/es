@@ -41,9 +41,7 @@ create
 feature {NONE} -- Initialization
 	make
 		do
---			create rule_checkers.make
 			last_run_successful := False
---			create last_result.make (100) -- TODO: check initial capacity
 
 			create_action_lists
 		end
@@ -64,21 +62,7 @@ feature {NONE} -- Initialization
 			create id_post_actions.make
 		end
 
-feature -- Options For Execution
-
---	add_rule_checker (a_rule_checker: CA_RULE_CHECKER)
---		do
---			rule_checkers.extend (a_rule_checker)
---		end
-
---	remove_all_rule_checkers
---		do
---			rule_checkers.wipe_out
---		ensure
---			rule_checkers.is_empty
---		end
-
-feature {CA_RULE}
+feature {CA_STANDARD_RULE}
 
 	add_access_id_pre_action (a_action: PROCEDURE[ANY, TUPLE[ACCESS_ID_AS]])
 		do
@@ -161,19 +145,10 @@ feature -- Execution Commands
 		local
 			l_ast: CLASS_AS
 		do
---			across rule_checkers as l_checkers loop
---				l_checkers.item.clear_results
---				l_checkers.item.process_class (a_class_to_check)
---			end
 			l_ast := a_class_to_check.ast
 			across class_pre_actions as l_a loop l_a.item.call ([l_ast]) end
 			process_class_as (l_ast)
 			across class_post_actions as l_a loop l_a.item.call ([l_ast]) end
---			across rule_checkers as l_checkers loop
---				across l_checkers.item.results as l_rule_results loop
---					last_result.extend (l_rule_results.item)
---				end
---			end
 			last_run_successful := True
 		end
 
@@ -181,9 +156,6 @@ feature {NONE} -- Processing
 
 	process_access_id_as (l_as: ACCESS_ID_AS)
 		do
---			across rule_checkers as l_checkers loop
---				l_checkers.item.process_access_id (l_as)
---			end
 			across access_id_pre_actions as l_a loop l_a.item.call ([l_as]) end
 
 			Precursor (l_as)
@@ -193,9 +165,6 @@ feature {NONE} -- Processing
 
 	process_assign_as (l_as: ASSIGN_AS)
 		do
---			across rule_checkers as l_checkers loop
---				l_checkers.item.process_assignment (l_as)
---			end
 			across assign_pre_actions as l_a loop l_a.item.call ([l_as]) end
 
 			Precursor (l_as)
@@ -205,24 +174,15 @@ feature {NONE} -- Processing
 
 	process_body_as (l_as: BODY_AS)
 		do
---			across rule_checkers as l_checkers loop
---				l_checkers.item.process_body (l_as)
---			end
 			across body_pre_actions as l_a loop l_a.item.call ([l_as]) end
 
 			Precursor (l_as)
 
 			across body_post_actions as l_a loop l_a.item.call ([l_as]) end
---			across rule_checkers as l_checkers loop
---				l_checkers.item.process_body_end
---			end
 		end
 
 	process_feature_as (l_as: FEATURE_AS)
 		do
---			across rule_checkers as l_checkers loop
---				l_checkers.item.process_feature (l_as)
---			end
 			across feature_pre_actions as l_a loop l_a.item.call ([l_as]) end
 
 			Precursor (l_as)
@@ -232,9 +192,6 @@ feature {NONE} -- Processing
 
 	process_id_as (l_as: ID_AS)
 		do
---			across rule_checkers as l_checkers loop
---				l_checkers.item.process_id (l_as)
---			end
 			across id_pre_actions as l_a loop l_a.item.call ([l_as]) end
 
 			Precursor (l_as)
@@ -246,12 +203,4 @@ feature -- Results
 
 	last_run_successful: BOOLEAN
 
---	last_result: HASH_TABLE[LINKED_LIST[CA_RULE_VIOLATION], CLASS_C]
-
-feature -- Rule Checkers
-
---	rule_checkers: LINKED_LIST[CA_RULE_CHECKER]
-
---invariant
---	rule_checkers_list_exists: rule_checkers /= Void
 end

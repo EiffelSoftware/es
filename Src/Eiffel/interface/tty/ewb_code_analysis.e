@@ -53,7 +53,8 @@ feature -- Execution (declared in EWB_CMD)
 						l_line := l_v.item.location.line.out
 						l_col := l_v.item.location.column.out
 
-						print ("  (" + l_line + ":" + l_col + "): " + l_rule_name + ": " + "--FORMATTED LONG DESCR.--")
+						print ("  (" + l_line + ":" + l_col + "): " + l_rule_name + ": ")
+						l_v.item.rule.format_violation_description (l_v.item, output_window)
 						print ("%N")
 					end
 				end

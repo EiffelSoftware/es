@@ -14,7 +14,7 @@ create
 	make_with_rule
 
 feature {NONE} -- Initialization
-	make_with_rule (a_rule: CA_RULE)
+	make_with_rule (a_rule: CA_STANDARD_RULE)
 		do
 			rule := a_rule
 			synchronized_with_source := True
@@ -22,7 +22,7 @@ feature {NONE} -- Initialization
 		end
 
 feature
-	rule: CA_RULE
+	rule: CA_STANDARD_RULE
 
 	long_description_info: LINKED_LIST[ANY]
 
@@ -58,7 +58,7 @@ feature -- Inherited from {COMPARABLE}
 			end
 		end
 
-feature {CA_RULE}
+feature {CA_STANDARD_RULE}
 
 	set_affected_class (a_class: CLASS_C)
 		do

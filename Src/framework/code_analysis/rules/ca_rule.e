@@ -10,28 +10,6 @@ deferred class
 inherit
 	CA_SHARED_NAMES
 
-feature -- Activation
-
-	prepare_checking (a_checker: CA_ALL_RULES_CHECKER)
-		do
-			violations.wipe_out
-			register_actions (a_checker)
-		end
-
-feature {NONE} -- Implementation
-
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
-		deferred
-		end
-
-feature -- formatted rule checking output
-
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
-		require
-			violation_belongs_to_rule: violations.has (a_violation)
-		deferred
-		end
-
 feature -- Basic properties, usually fix
 
 	title: STRING
@@ -48,6 +26,14 @@ feature -- Basic properties, usually fix
 
 	is_system_wide: BOOLEAN
 			-- Only check the rule if a system wide analysis is performed.
+		deferred
+		end
+
+feature -- formatted rule checking output
+
+	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+		require
+			violation_belongs_to_rule: violations.has (a_violation)
 		deferred
 		end
 
@@ -88,7 +74,5 @@ feature -- Rule checking
 feature -- Results
 
 	violations: LINKED_LIST[CA_RULE_VIOLATION]
-
-invariant
-	title_set: title.count > 3
+	
 end

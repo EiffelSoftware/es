@@ -4,7 +4,7 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+frozen class
 	CA_NAMES
 
 inherit {NONE}

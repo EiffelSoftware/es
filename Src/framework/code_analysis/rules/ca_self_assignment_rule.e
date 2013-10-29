@@ -8,7 +8,7 @@ class
 	CA_SELF_ASSIGNMENT_RULE
 
 inherit
-	CA_RULE
+	CA_STANDARD_RULE
 		redefine
 			title
 		end

@@ -4,7 +4,7 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+frozen class
 	CA_MESSAGES
 
 inherit {NONE}
@@ -15,6 +15,6 @@ feature -- Code Analyzer
 	analyzing_class (a_class_name: READABLE_STRING_GENERAL): STRING_32
 		do Result := locale.formatted_string (locale.translation ("Analyzing class $1 ...%N"), [a_class_name]) end
 
-	
+
 
 end

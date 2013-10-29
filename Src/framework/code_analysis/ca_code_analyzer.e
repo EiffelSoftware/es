@@ -40,7 +40,11 @@ feature -- Analysis interface
 				if l_rules.item.is_enabled then -- important: only add enabled rules
 					if system_wide_check or else (not l_rules.item.is_system_wide) then
 						-- do not add system wide rules if we check only parts of the system
-						l_rules.item.prepare_checking (l_rules_checker)
+						if attached {CA_STANDARD_RULE} l_rules.item as l_std_rule then
+							l_std_rule.prepare_checking (l_rules_checker)
+						elseif attached {CA_BACKWARD_ITERATION_RULE} l_rules.item as l_back_rule then
+							-- TODO
+						end
 					end
 				end
 			end
@@ -50,6 +54,11 @@ feature -- Analysis interface
 				-- TODO: more elegant and performant solution?
 				across rules as l_rules loop
 					l_rules.item.set_checking_class (l_classes.item)
+					-- If rule is non-standard then it will not be checked by l_rules_checker.
+					-- We will have the rule check the current class here:
+					if attached {CA_BACKWARD_ITERATION_RULE} l_rules.item as l_back_rule then
+						l_back_rule.process_class_as (l_classes.item.ast)
+					end
 				end
 
 				l_rules_checker.run_on_class (l_classes.item)
