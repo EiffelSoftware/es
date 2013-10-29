@@ -29,7 +29,7 @@ feature -- Basic properties, usually fix
 		deferred
 		end
 
-feature -- formatted rule checking output
+feature {CA_RULE_VIOLATION} -- formatted rule checking output
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		require
@@ -74,5 +74,5 @@ feature -- Rule checking
 feature -- Results
 
 	violations: LINKED_LIST[CA_RULE_VIOLATION]
-	
+
 end

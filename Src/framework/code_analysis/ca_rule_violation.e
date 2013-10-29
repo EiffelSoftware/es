@@ -26,6 +26,12 @@ feature
 
 	long_description_info: LINKED_LIST[ANY]
 
+	format_violation_description (a_formatter: TEXT_FORMATTER)
+		do
+			-- Just delegate to rule. The rule knows about its violations.
+			rule.format_violation_description (Current, a_formatter)
+		end
+
 	affected_class: detachable CLASS_C
 
 	synchronized_with_source: BOOLEAN
