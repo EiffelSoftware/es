@@ -80,7 +80,7 @@ feature -- Basic operations
 			if builtin_any_functions.has (l_name) then
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
 			elseif ghost_access.has (l_name) then
-				a_translator.set_last_expression (factory.heap_current_access (a_translator.entity_mapping, l_name, types.set (types.ref)))
+				a_translator.set_last_expression (factory.heap_access (a_translator.entity_mapping.heap.name, a_translator.current_target, l_name, types.set (types.ref)))
 			else
 					-- cannot happen
 				check False end
@@ -159,8 +159,9 @@ feature -- Basic operations
 		once
 			Result := <<
 				"wrap",
-				"multi_wrap",
-				"unwrap"
+				"wrap_all",
+				"unwrap",
+				"unwrap_all"
 			>>
 			Result.compare_objects
 		end

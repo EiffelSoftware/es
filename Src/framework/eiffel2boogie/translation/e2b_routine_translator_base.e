@@ -88,9 +88,19 @@ feature -- Helper functions
 	add_argument_with_property (a_name: STRING; a_type: TYPE_A; a_boogie_type: IV_TYPE)
 		require
 			current_procedure_set: attached current_boogie_procedure
+		local
+			l_type_translator: E2B_TYPE_TRANSLATOR
+			l_pre: IV_PRECONDITION
 		do
 			current_boogie_procedure.add_argument (a_name, a_boogie_type)
-			
+			create l_type_translator
+			l_type_translator.generate_argument_property (create {IV_ENTITY}.make (a_name, a_boogie_type), a_type)
+			if attached l_type_translator.last_property then
+				create l_pre.make (l_type_translator.last_property)
+				l_pre.set_free
+				l_pre.set_assertion_type ("type property for argument " + a_name)
+				current_boogie_procedure.add_contract (l_pre)
+			end
 		end
 
 end

@@ -17,7 +17,7 @@ feature -- Element change
 	update (new_val: INTEGER)
 		require
 			is_wrapped	-- default
-			across observers as o all o.is_wrapped end -- default
+			across observers as oc all oc.item.is_wrapped end -- default
 
 			modify (observer)
 			modify ([Current, "value"])
@@ -35,7 +35,7 @@ feature -- Element change
 		ensure
 			value_set: value = new_val
 			is_wrapped	-- default
-			across observers as o all o.is_wrapped end -- default
+			across observers as oc all oc.item.is_wrapped end -- default
 		end
 
 feature {F_OOO_OBSERVER} -- Element change

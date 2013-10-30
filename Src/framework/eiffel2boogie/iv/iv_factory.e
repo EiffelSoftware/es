@@ -207,6 +207,15 @@ feature -- Heap and map access
 				create {IV_ENTITY}.make (a_name, types.field (a_content_type)))
 		end
 
+	heap_access (a_heap_name: STRING; a_target: IV_EXPRESSION; a_name: STRING; a_content_type: IV_TYPE): IV_HEAP_ACCESS
+			-- Heap access to `a_feature' on `Current'.
+		do
+			create Result.make (
+				a_heap_name,
+				a_target,
+				create {IV_ENTITY}.make (a_name, types.field (a_content_type)))
+		end
+
 	array_access (a_heap: IV_ENTITY; a_array, a_index: IV_EXPRESSION): IV_MAP_ACCESS
 			-- Array access to `a_array'[`a_index'].
 		do

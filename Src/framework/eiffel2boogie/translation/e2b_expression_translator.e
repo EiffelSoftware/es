@@ -624,6 +624,8 @@ feature -- Visitors
 				l_bin_free ?= l_access.expr
 				check l_bin_free /= Void end
 				create {E2B_INTERVAL_ACROSS_HANDLER} l_across_handler.make (Current, a_node, l_bin_free, l_object_test_local)
+			elseif l_name ~ "MML_SET" then
+				create {E2B_SET_ACROSS_HANDLER} l_across_handler.make (Current, a_node, l_nested.target, l_object_test_local)
 			else
 				last_expression := dummy_node (a_node.type)
 			end
@@ -663,6 +665,7 @@ feature -- Visitors
 			l_object_test_local: OBJECT_TEST_LOCAL_B
 			l_across_handler: E2B_ACROSS_HANDLER
 			l_feature: FEATURE_B
+			l_nested: NESTED_B
 			l_call: IV_FUNCTION_CALL
 			l_info: IV_ASSERTION_INFORMATION
 			l_handler: E2B_CUSTOM_NESTED_HANDLER
@@ -672,7 +675,13 @@ feature -- Visitors
 			if l_object_test_local /= Void and then across_handler_map.has (l_object_test_local.position) then
 					-- Special mapping of object test local in across loop
 				l_across_handler := across_handler_map.item (l_object_test_local.position)
-				l_feature ?= a_node.message
+				l_nested ?= a_node.message
+				if l_nested /= Void then
+					l_feature ?= l_nested.target
+				else
+					l_feature ?= a_node.message
+				end
+				check l_feature /= Void end
 				if l_feature.feature_name.is_case_insensitive_equal ("item") then
 					l_across_handler.handle_call_item (Void)
 				elseif l_feature.feature_name.is_case_insensitive_equal ("index") or l_feature.feature_name.is_case_insensitive_equal ("cursor_index") then
@@ -682,6 +691,17 @@ feature -- Visitors
 				else
 					check False end
 					last_expression := dummy_node (a_node.type)
+				end
+				if l_nested /= Void then
+					l_target := current_target
+					l_target_type := current_target_type
+
+					current_target := last_expression
+					l_target_type := l_nested.target.type
+					l_nested.message.process (Current)
+
+					current_target := l_target
+					current_target_type := l_target_type
 				end
 			elseif l_handler /= Void then
 				if attached {E2B_BODY_EXPRESSION_TRANSLATOR} Current as t then

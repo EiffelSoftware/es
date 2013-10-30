@@ -73,6 +73,8 @@ const Void: ref; // Constant for Void references
 // Heap and allocation
 
 type Field _; // Type of a field (with open subtype)
+function IsGhostField<alpha>(field: Field alpha): bool; // Is this field a ghost field?
+
 type HeapType = <alpha>[ref, Field alpha]alpha; // Type of a heap (with generic field subtype and generic content type)
 const unique allocated: Field bool; // Ghost field for allocation status of objects
 
@@ -104,6 +106,7 @@ const unique G9: Type;
 
 // Type function for objects.
 function type_of(o: ref) returns (Type);
+function is_frozen(t: Type) returns (bool);
 
 // Typing axioms
 axiom (forall t: Type :: t <: ANY); // All types inherit from ANY.
@@ -112,6 +115,8 @@ axiom (forall h: HeapType :: h[Void, allocated]); // Void is always allocated.
 axiom (forall h: HeapType, f: Field ref, o: ref :: h[o, allocated] ==> h[h[o, f], allocated]); // All reference fields are allocated.
 axiom (forall r: ref :: (r == Void) <==> (type_of(r) == NONE)); // Void is only reference of type NONE.
 axiom (forall a, b: ref :: (type_of(a) != type_of(b)) ==> (a != b)); // Objects that have different dynamic type cannot be aliased.
+axiom (forall t: Type :: is_frozen(t) ==> (forall t2: Type :: t2 <: t ==> t2 == NONE)); // Only NONE inherits from frozen types.
+axiom (forall t: Type, r: ref :: (r != Void && type_of(r) <: t && is_frozen(t)) ==> (type_of(r) == t)); // Non-void references of a frozen type are exact.
 
 function ANY.self_inv(heap: HeapType, current: ref) returns (bool) {
   true
@@ -265,10 +270,10 @@ function attached_exact(heap: HeapType, o: ref, t: Type) returns (bool) {
 
 // Property that reference `o' is attached and conforms to type `t' on heap `heap'.
 function attached(heap: HeapType, o: ref, t: Type) returns (bool) {
-//	(o != Void) && (heap[o, allocated]) && (type_of(o) == t)
+	(o != Void) && (heap[o, allocated]) && (type_of(o) == t)
 
 // ******************* reenable when ownership and inheritance are combined *******************
-	(o != Void) && (heap[o, allocated]) && (type_of(o) <: t)
+//	(o != Void) && (heap[o, allocated]) && (type_of(o) <: t)
 
 }
 
@@ -407,3 +412,10 @@ function divide(a, b: int): int { a div b }
 // Expanded types
 
 type unknown;
+
+// Address operator
+
+function address(a: ref) returns (int);
+axiom (forall a, b: ref :: (a != b) <==> (address(a) != address(b))); // Different objects have different heap addresses.
+axiom (forall a: ref :: is_integer_64(address(a))); // Addresses are 64 bit integers.
+

@@ -457,14 +457,29 @@ feature -- Expression Visitor
 
 	process_binary_operation (a_operation: IV_BINARY_OPERATION)
 			-- <Precursor>
+		local
+			l_do_left_par, l_do_right_par: BOOLEAN
 		do
-			output.put ("(")
-			a_operation.left.process (Current)
-			output.put (") ")
+			l_do_left_par := not (attached {IV_BINARY_OPERATION} a_operation.left as l_b and then l_b.operator ~ a_operation.operator)
+			l_do_right_par := not (attached {IV_BINARY_OPERATION} a_operation.right as l_b and then l_b.operator ~ a_operation.operator)
+
+			if l_do_left_par then
+				output.put ("(")
+				a_operation.left.process (Current)
+				output.put (")")
+			else
+				a_operation.left.process (Current)
+			end
+			output.put (" ")
 			output.put (a_operation.operator)
-			output.put (" (")
-			a_operation.right.process (Current)
-			output.put (")")
+			output.put (" ")
+			if l_do_right_par then
+				output.put ("(")
+				a_operation.right.process (Current)
+				output.put (")")
+			else
+				a_operation.right.process (Current)
+			end
 		end
 
 	process_conditional_expression (a_conditional: IV_CONDITIONAL_EXPRESSION)

@@ -69,10 +69,10 @@ feature -- Basic operations
 			generate_invariant_axiom (a_type)
 		end
 
-	generate_argument_property (a_type: TYPE_A)
-			-- Generate argument property for `a_type'.
+	generate_argument_property (a_arg: IV_EXPRESSION; a_type: TYPE_A)
+			-- Generate argument property about `a_arg' of `a_type'.
 		do
-			
+
 		end
 
 feature {NONE} -- Implementation
@@ -209,6 +209,85 @@ feature {NONE} -- Implementation
 			l_forall.add_bound_variable (l_current.name, l_current.type)
 
 			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
+		end
+
+	argument_property (a_expr: IV_EXPRESSION; a_type: TYPE_A): detachable IV_EXPRESSION
+			-- Property associated with argument `a_name' of type `a_type'.
+		local
+			l_type: TYPE_A
+		do
+			l_type := a_type.deep_actual_type
+			check not l_type.is_like end
+			if l_type.is_reference then
+				Result := reference_property (a_expr, l_type)
+			elseif l_type.is_boolean then
+				Result := Void
+			elseif l_type.is_integer or l_type.is_natural or l_type.is_character then
+				Result := numeric_property (a_expr, l_type)
+			elseif l_type.is_formal then
+					-- TODO: take constraint type
+			else
+				check False end
+			end
+		end
+
+	reference_property (a_expr: IV_EXPRESSION; a_type: TYPE_A): detachable IV_EXPRESSION
+			-- Property associated with argument `a_name' of type `a_type'.
+		require
+			reference_type: a_type.is_reference
+		local
+			l_heap, l_type: IV_ENTITY
+			l_expr: IV_FUNCTION_CALL
+			l_fcall: IV_FUNCTION_CALL
+		do
+			if not types.is_mml_type (a_type) then
+				create l_heap.make ("Heap", types.heap_type)
+				create l_type.make (name_translator.boogie_name_for_type (a_type), types.type)
+				if attached {IV_ENTITY} a_expr as a_entity and then a_entity.name ~ "Current" then
+					-- For Current the exact dynamic type is considered known
+					create l_expr.make ("attached_exact", types.bool)
+				elseif a_type.is_attached then
+					create l_expr.make ("attached", types.bool)
+				else
+					create l_expr.make ("detachable", types.bool)
+				end
+				l_expr.add_argument (l_heap)
+				l_expr.add_argument (a_expr)
+				l_expr.add_argument (l_type)
+				Result := l_expr
+					-- TODO: refactor
+				if a_type.base_class.name_in_upper ~ "ARRAY" then
+					create l_fcall.make ("ARRAY.inv", types.bool)
+					l_fcall.add_argument (l_heap)
+					l_fcall.add_argument (a_expr)
+					Result := factory.and_ (Result, l_fcall)
+				end
+			end
+		end
+
+	numeric_property (a_expr: IV_EXPRESSION; a_type: TYPE_A): detachable IV_EXPRESSION
+			-- Property associated with argument `a_name' of type `a_type'.
+		require
+			numeric_property: a_type.is_numeric or a_type.is_character
+		local
+			l_expr: IV_FUNCTION_CALL
+			l_f_name: STRING
+		do
+			if attached {INTEGER_A} a_type as l_int_type then
+				l_f_name := "is_integer_" + l_int_type.size.out
+			elseif attached {NATURAL_A} a_type as l_nat_type then
+				l_f_name := "is_natural_" + l_nat_type.size.out
+			elseif attached {CHARACTER_A} a_type as l_char_type then
+				if l_char_type.is_character_32 then
+					l_f_name := "is_natural_32"
+				else
+					l_f_name := "is_natural_8"
+				end
+			else
+				check False end
+			end
+			l_expr.add_argument (a_expr)
+			Result := l_expr
 		end
 
 end
