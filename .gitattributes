@@ -4324,6 +4324,8 @@ Src/tools/iron/doc/iron.html -text
 Src/tools/iron/server/iron-template/html/iron.js -text
 Src/tools/iron/server/iron-template/html/style.css -text
 Src/tools/iron/server/license.lic -text
+Src/tools/library_index/README.txt -text
+Src/tools/library_index/license.lic -text
 Src/tools/metaconfig/README.txt -text
 Src/tools/parse_benchmark/parse_benchmark.lic -text
 Src/tools/pmsn/pmsn.lic -text
