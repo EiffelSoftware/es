@@ -30,6 +30,7 @@ inherit
 			process_access_id_as,
 			process_assign_as,
 			process_body_as,
+			process_eiffel_list,
 			process_feature_as,
 			process_id_as
 			-- ...
@@ -56,6 +57,8 @@ feature {NONE} -- Initialization
 			create body_post_actions.make
 			create class_pre_actions.make
 			create class_post_actions.make
+			create eiffel_list_pre_actions.make
+			create eiffel_list_post_actions.make
 			create feature_pre_actions.make
 			create feature_post_actions.make
 			create id_pre_actions.make
@@ -104,6 +107,16 @@ feature {CA_STANDARD_RULE}
 			class_post_actions.extend (a_action)
 		end
 
+	add_eiffel_list_pre_action (a_action: PROCEDURE[ANY, TUPLE[EIFFEL_LIST[AST_EIFFEL]]])
+		do
+			eiffel_list_pre_actions.extend (a_action)
+		end
+
+	add_eiffel_list_post_action (a_action: PROCEDURE[ANY, TUPLE[EIFFEL_LIST[AST_EIFFEL]]])
+		do
+			eiffel_list_post_actions.extend (a_action)
+		end
+
 	add_feature_pre_action (a_action: PROCEDURE[ANY, TUPLE[FEATURE_AS]])
 		do
 			feature_pre_actions.extend (a_action)
@@ -133,6 +146,8 @@ feature {NONE} -- Agent lists
 	body_pre_actions, body_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[BODY_AS]]]
 
 	class_pre_actions, class_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[CLASS_AS]]]
+
+	eiffel_list_pre_actions, eiffel_list_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[EIFFEL_LIST [AST_EIFFEL]]]]
 
 	feature_pre_actions, feature_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[FEATURE_AS]]]
 
@@ -179,6 +194,15 @@ feature {NONE} -- Processing
 			Precursor (l_as)
 
 			across body_post_actions as l_a loop l_a.item.call ([l_as]) end
+		end
+
+	process_eiffel_list (a_list: EIFFEL_LIST [AST_EIFFEL])
+		do
+			across eiffel_list_pre_actions as l_a loop l_a.item.call ([a_list]) end
+
+			Precursor (a_list)
+
+			across eiffel_list_post_actions as l_a loop l_a.item.call ([a_list]) end
 		end
 
 	process_feature_as (l_as: FEATURE_AS)

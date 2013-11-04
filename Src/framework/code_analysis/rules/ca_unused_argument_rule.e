@@ -28,7 +28,7 @@ feature {NONE} -- Activation
 			a_checker.add_feature_pre_action (agent process_feature)
 			a_checker.add_body_pre_action (agent process_body)
 			a_checker.add_body_post_action (agent post_process_body)
-			a_checker.add_id_pre_action (agent process_id)
+			a_checker.add_access_id_pre_action (agent process_access_id)
 		end
 
 feature -- Properties
@@ -74,13 +74,26 @@ feature {NONE} -- Rule Checking
 		end
 
 	process_body (a_body_as: BODY_AS)
+		local
+			j: INTEGER
 		do
 			has_arguments := (a_body_as.arguments /= Void)
 			if has_arguments then
 				routine_body := a_body_as
-				create arg_ids.make
+				create arg_names.make (0)
+				create args_used.make (0)
+				n_arguments := 0
 				across a_body_as.arguments as l_args loop
-					across l_args.item.id_list as l_ids loop arg_ids.extend (l_ids.item) end
+					from
+						j := 1
+					until
+						j > l_args.item.id_list.count
+					loop
+						arg_names.extend (l_args.item.item_name (j))
+						args_used.extend (False)
+						n_arguments := n_arguments + 1
+						j := j + 1
+					end
 				end
 			end
 		end
@@ -89,7 +102,7 @@ feature {NONE} -- Rule Checking
 		local
 			l_violation: CA_RULE_VIOLATION
 		do
-			if has_arguments and then not arg_ids.is_empty then
+			if has_arguments and then args_used.has (False) then
 				create l_violation.make_with_rule (Current)
 				l_violation.set_affected_class (checking_class)
 				l_violation.set_location (routine_body.start_location)
@@ -98,26 +111,29 @@ feature {NONE} -- Rule Checking
 			end
 		end
 
-	process_id (a_id_as: ID_AS)
+	process_access_id (a_aid: ACCESS_ID_AS)
 		local
 			id, j: INTEGER
 		do
-			-- TODO: ignore IDs from argument declaration!
-			if has_arguments then
-				id := a_id_as.name_id
-				-- Remove the ID from the argument list. Since it has appeared
-				-- this argument does not violate the rule.
-				if arg_ids.has (id) then
-					j := arg_ids.index_of (id, 1)
-					arg_ids.go_i_th (j)
-					arg_ids.remove
+			from
+				j := 1
+			until
+				j > n_arguments
+			loop
+				if args_used.at (j) = False then
+					if arg_names.has (a_aid.feature_name.name_8) then
+						args_used.put_i_th (True, j)
+					end
 				end
+				j := j + 1
 			end
 		end
 
 	has_arguments: BOOLEAN
 	current_feature: FEATURE_AS
 	routine_body: BODY_AS
-	arg_ids: LINKED_LIST[INTEGER]
+	n_arguments: INTEGER
+	arg_names: ARRAYED_LIST[STRING]
+	args_used: ARRAYED_LIST[BOOLEAN]
 
 end
