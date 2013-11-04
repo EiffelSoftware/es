@@ -10,7 +10,7 @@ class
 
 inherit
 
-	E2B_FEATURE_TRANSLATOR
+	E2B_ROUTINE_TRANSLATOR_BASE
 
 create
 	make
@@ -21,17 +21,6 @@ feature {NONE} -- Initialization
 			-- Initialize routine translator.
 		do
 		end
-
-feature -- Access
-
-	current_feature: FEATURE_I
-			-- Currently translated feature.
-
-	current_type: TYPE_A
-			-- Type of currently translated feature.
-
-	current_boogie_procedure: IV_PROCEDURE
-			-- Currently generated Boogie procedure.
 
 feature -- Basic operations
 
@@ -47,14 +36,20 @@ feature -- Basic operations
 			translate_signature (a_feature, a_type, True)
 		end
 
+	translate_default_create_signature (a_feature: FEATURE_I; a_type: TYPE_A)
+			-- Translate signature of feature `a_feature' of type `a_type'.
+		do
+			translate_signature (a_feature, a_type, True)
+			-- TODO: create special signature
+		end
+
 	translate_signature (a_feature: FEATURE_I; a_type: TYPE_A; a_for_creator: BOOLEAN)
 			-- Translate signature of feature `a_feature' of type `a_type'.
 		require
 			routine: a_feature.is_routine
 		local
 			l_proc_name: STRING
-			i: INTEGER
-			l_contracts: TUPLE [pre: LIST [ASSERT_B]; post: LIST [ASSERT_B]]
+			l_contracts: like contracts
 			l_fields: LINKED_LIST [TUPLE [o: IV_EXPRESSION; f: IV_ENTITY]]
 			l_modifies: IV_MODIFIES
 			l_type: TYPE_A
@@ -69,26 +64,16 @@ feature -- Basic operations
 			end
 
 				-- Initialize procedure
-			create current_boogie_procedure.make (l_proc_name)
-			boogie_universe.add_declaration (current_boogie_procedure)
+			set_up_boogie_procedure (l_proc_name)
 
 				-- Arguments
-			add_argument ("Current", current_type)
-			from i := 1 until i > current_feature.argument_count loop
-				l_type := current_feature.arguments.i_th (i).deep_actual_type.instantiated_in (current_type)
-				add_argument (current_feature.arguments.item_name (i), l_type)
-				i := i + 1
+			add_argument_with_property ("Current", current_type, types.ref)
+			across arguments_of_current_feature as i loop
+				add_argument_with_property (i.item.name, i.item.type, i.item.boogie_type)
 			end
 
 				-- Result type
-			if current_feature.has_return_value then
-				l_type := current_feature.type.deep_actual_type.instantiated_in (current_type)
-				translation_pool.add_type (l_type)
-				current_boogie_procedure.add_result_with_property (
-					"Result",
-					types.for_type_a (l_type),
-					argument_property ("Result", l_type))
-			end
+			add_result_with_property
 
 				-- Modifies
 			create l_modifies.make ("Heap")
@@ -110,6 +95,14 @@ feature -- Basic operations
 			across l_contracts.post as j loop
 				process_postcondition (j.item, l_fields)
 			end
+
+			if not l_contracts.modifies.is_empty then
+				check True end
+			end
+			if not l_contracts.reads.is_empty then
+				check True end
+			end
+
 
 				-- Framing
 			if options.is_using_ownership then
@@ -138,7 +131,6 @@ feature -- Basic operations
 			end
 
 			add_invariant_conditions
-
 		end
 
 	add_invariant_conditions
@@ -148,6 +140,7 @@ feature -- Basic operations
 			l_post: IV_POSTCONDITION
 			l_info: IV_ASSERTION_INFORMATION
 		do
+			translation_pool.add_type (current_type)
 			l_fcall := factory.function_call (
 				name_translator.boogie_name_for_invariant_function (current_type),
 				<< "Heap", "Current" >>,
@@ -620,13 +613,15 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	contracts (a_feature: FEATURE_I; a_type: TYPE_A): TUPLE [pre: LIST [ASSERT_B]; post: LIST [ASSERT_B]]
+	contracts (a_feature: FEATURE_I; a_type: TYPE_A): TUPLE [pre: LIST [ASSERT_B]; post: LIST [ASSERT_B]; modifies: LIST [ASSERT_B]; reads: LIST [ASSERT_B]]
 			-- Contracts for feature `a_feature' of type `a_type'.
 		local
-			l_pre, l_post: LINKED_LIST [ASSERT_B]
+			l_pre, l_post, l_modifies, l_reads: LINKED_LIST [ASSERT_B]
 		do
 			create l_pre.make
 			create l_post.make
+			create l_modifies.make
+			create l_reads.make
 
 			helper.set_up_byte_context (a_feature, a_type)
 			if attached Context.byte_code as l_byte_code then
@@ -648,8 +643,27 @@ feature {NONE} -- Implementation
 					end
 				end
 			end
+			from
+				l_pre.start
+			until
+				l_pre.after
+			loop
+				if attached {FEATURE_B} l_pre.item.expr as l_call then
+					if names_heap.item_32 (l_call.feature_name_id) ~ "modify" then
+						l_modifies.extend (l_pre.item)
+						l_pre.remove
+					elseif names_heap.item_32 (l_call.feature_name_id) ~ "reads" then
+						l_reads.extend (l_pre.item)
+						l_pre.remove
+					else
+						l_pre.forth
+					end
+				else
+					l_pre.forth
+				end
+			end
 
-			Result := [l_pre, l_post]
+			Result := [l_pre, l_post, l_modifies, l_reads]
 		end
 
 	contract_expressions (a_feature: FEATURE_I; a_type: TYPE_A; a_mapping: E2B_ENTITY_MAPPING): TUPLE [pre: IV_EXPRESSION; post: IV_EXPRESSION]
@@ -869,18 +883,6 @@ feature {NONE} -- Implementation
 				l_postcondition.set_free
 			end
 			current_boogie_procedure.add_contract (l_postcondition)
-		end
-
-
-	set_context (a_feature: FEATURE_I; a_type: TYPE_A)
-			-- Set context of current translation.
-		do
-			current_feature := a_feature
-			if a_type.is_attached then
-				current_type := a_type
-			else
-				current_type := a_type.as_attached_type
-			end
 		end
 
 	argument_property (a_name: STRING; a_type: TYPE_A): detachable IV_EXPRESSION

@@ -104,8 +104,10 @@ feature -- Basic operations
 				add_argument_with_property (i.item.name, i.item.type, i.item.boogie_type)
 			end
 
-				-- Set up contracts (pre/post)
-				-- Set up framing
+			check not current_feature.has_return_value end
+
+				-- Set up contracts (pre/post/inv)
+				-- Set up framing (modify)
 
 			check False end
 		end

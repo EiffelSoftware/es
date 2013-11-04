@@ -16,15 +16,15 @@ feature
 			modify (s)
 			modify (Current) -- default: creator
 		do
-			set_owns ([]) -- owns := [] -- default: creator
-			set_subjects ([]) -- subjects := [] -- default: creator
-			set_observers ([]) -- observers := [] -- default: creator
+			set_owns ([]) -- default: creator
+			set_subjects ([]) -- default: creator
+			set_observers ([]) -- default: creator
 
 			subject := s
 			s.register (Current)
 			cache := s.value
 
-			set_subjects ([subject]) -- subjects := [subject]
+			set_subjects ([subject])
 			wrap
 		ensure
 			subject = s
