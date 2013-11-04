@@ -56,14 +56,30 @@ feature -- Properties
 		end
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+		local
+			j: INTEGER
 		do
-			a_formatter.add_string ("Routine '")
+			a_formatter.add_string ("Arguments ")
+			from
+				j := 2
+			until
+				j > a_violation.long_description_info.count
+			loop
+				if j > 2 then a_formatter.add_string (", ") end
+				a_formatter.add_char ('%'')
+				if attached {STRING} a_violation.long_description_info.at (j) as l_arg then
+					a_formatter.add_string (l_arg)
+				end
+				a_formatter.add_char('%'')
+				j := j + 1
+			end
+			a_formatter.add_string (" from routine '")
 			if attached {FEATURE_AS} a_violation.long_description_info.first as l_feature then
 				a_formatter.add_feature_name (l_feature.feature_name.name_32, a_violation.affected_class)
 			else
 				a_formatter.add_char ('?')
 			end
-			a_formatter.add_string ("' has unused arguments.")
+			a_formatter.add_string ("' are not used.")
 		end
 
 feature {NONE} -- Rule Checking
@@ -101,12 +117,23 @@ feature {NONE} -- Rule Checking
 	post_process_body (a_body: BODY_AS)
 		local
 			l_violation: CA_RULE_VIOLATION
+			j: INTEGER
 		do
 			if has_arguments and then args_used.has (False) then
 				create l_violation.make_with_rule (Current)
 				l_violation.set_affected_class (checking_class)
 				l_violation.set_location (routine_body.start_location)
 				l_violation.long_description_info.extend (current_feature)
+				from
+					j := 1
+				until
+					j > n_arguments
+				loop
+					if args_used.at (j) = False then
+						l_violation.long_description_info.extend (arg_names.at (j))
+					end
+					j := j + 1
+				end
 				violations.extend (l_violation)
 			end
 		end
@@ -121,7 +148,7 @@ feature {NONE} -- Rule Checking
 				j > n_arguments
 			loop
 				if args_used.at (j) = False then
-					if arg_names.has (a_aid.feature_name.name_8) then
+					if arg_names.at (j).is_equal (a_aid.feature_name.name_8) then
 						args_used.put_i_th (True, j)
 					end
 				end
