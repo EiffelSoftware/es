@@ -49,7 +49,7 @@ feature -- Basic operations
 			routine: a_feature.is_routine
 		local
 			l_proc_name: STRING
-			l_contracts: like contracts
+			l_contracts: like contracts_of
 			l_fields: LINKED_LIST [TUPLE [o: IV_EXPRESSION; f: IV_ENTITY]]
 			l_modifies: IV_MODIFIES
 			l_type: TYPE_A
@@ -87,7 +87,7 @@ feature -- Basic operations
 			if options.is_postcondition_predicate_enabled then
 				add_postcondition_predicate
 			end
-			l_contracts := contracts (current_feature, current_type)
+			l_contracts := contracts_of (current_feature, current_type)
 			across l_contracts.pre as j loop
 				process_precondition (j.item)
 			end
@@ -103,6 +103,7 @@ feature -- Basic operations
 				check True end
 			end
 
+			generate_writes_set_function
 
 				-- Framing
 			if options.is_using_ownership then
@@ -215,7 +216,7 @@ feature -- Basic operations
 					types.bool))
 			l_post.set_free
 			current_boogie_procedure.add_contract (l_post)
-			translation_pool.add_writes_function (current_feature, current_type)
+--			translation_pool.add_writes_function (current_feature, current_type)
 		end
 
 	add_ownership_conditions_for_creator
@@ -433,7 +434,7 @@ feature -- Basic operations
 			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 			l_function_call: IV_FUNCTION_CALL
 		do
-			l_contracts := contracts (current_feature, current_type)
+			l_contracts := contracts_of_current_feature
 			if l_contracts.pre.is_empty then
 				l_pre := create {IV_ENTITY}.make ("true", types.bool)
 			else
@@ -572,7 +573,7 @@ feature -- Basic operations
 				l_mapping.set_result (l_result)
 			end
 
-			l_contracts := contract_expressions (a_feature, a_postcondition_type, l_mapping)
+			l_contracts := contract_expressions_of (a_feature, a_postcondition_type, l_mapping)
 			create l_typeof.make ("type_of", types.type)
 			l_typeof.add_argument (l_current)
 			create l_type_value.make (name_translator.boogie_name_for_type (a_postcondition_type), types.type)
@@ -594,6 +595,68 @@ feature -- Basic operations
 			boogie_universe.add_declaration (l_axiom)
 		end
 
+	generate_writes_set_function
+			-- Generate writes function of current feature.
+		local
+			l_name: STRING
+			l_fdecl: IV_FUNCTION
+			l_contracts: like contracts_of
+		do
+			l_name := name_translator.boogie_name_for_writes_set_function (current_feature, current_type)
+
+			create l_fdecl.make (l_name, types.set (types.ref))
+			boogie_universe.add_declaration (l_fdecl)
+
+			l_fdecl.add_argument ("heap", types.heap)
+			across current_boogie_procedure.arguments as i loop
+				l_fdecl.add_argument (i.item.name, i.item.type)
+			end
+
+			l_contracts := contracts_of_current_feature
+			l_fdecl.set_body (modifies_set (l_contracts.modifies))
+		end
+
+	modifies_set (a_modifies: LIST [ASSERT_B]): IV_EXPRESSION
+		local
+			l_expr: IV_EXPRESSION
+		do
+			across a_modifies as i loop
+				if attached {FEATURE_B} i.item.expr as l_call then
+					if attached {TUPLE_CONST_B} l_call.parameters.first.expression as l_tuple then
+						across l_tuple.expressions as j loop
+							l_expr := factory.function_call ("Set#Singleton", << parse_modifies_expr (j.item) >>, types.set (types.ref))
+							if Result = Void then
+								Result := l_expr
+							else
+								Result := factory.function_call ("Set#Union", << Result, l_expr >>, types.set (types.ref))
+							end
+						end
+					else
+						l_expr := factory.function_call ("Set#Singleton", << parse_modifies_expr (l_call.parameters.first.expression) >>, types.set (types.ref))
+						if Result = Void then
+							Result := l_expr
+						else
+							Result := factory.function_call ("Set#Union", << Result, l_expr >>, types.set (types.ref))
+						end
+					end
+				end
+			end
+		end
+
+	parse_modifies_expr (a_expr: EXPR_B): IV_EXPRESSION
+		local
+			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
+		do
+			create l_translator.make
+			l_translator.set_context (current_feature, current_type)
+			l_translator.entity_mapping.set_heap (create {IV_ENTITY}.make ("heap", types.heap))
+--			l_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.heap))
+
+			a_expr.process (l_translator)
+
+			Result := l_translator.last_expression
+		end
+
 feature {NONE} -- Implementation
 
 	set_inlining_options_for_feature (a_feature: FEATURE_I)
@@ -611,105 +674,6 @@ feature {NONE} -- Implementation
 					options.set_inlining_depth (0)
 				end
 			end
-		end
-
-	contracts (a_feature: FEATURE_I; a_type: TYPE_A): TUPLE [pre: LIST [ASSERT_B]; post: LIST [ASSERT_B]; modifies: LIST [ASSERT_B]; reads: LIST [ASSERT_B]]
-			-- Contracts for feature `a_feature' of type `a_type'.
-		local
-			l_pre, l_post, l_modifies, l_reads: LINKED_LIST [ASSERT_B]
-		do
-			create l_pre.make
-			create l_post.make
-			create l_modifies.make
-			create l_reads.make
-
-			helper.set_up_byte_context (a_feature, a_type)
-			if attached Context.byte_code as l_byte_code then
-					-- Process pre/post-conditions
-				if l_byte_code.precondition /= Void then
-					l_byte_code.precondition.do_all (agent l_pre.extend (?))
-				end
-				if l_byte_code.postcondition /= Void then
-					l_byte_code.postcondition.do_all (agent l_post.extend (?))
-				end
-				if a_feature.assert_id_set /= Void and not a_type.is_basic then
-						-- Feature has inherited assertions
-					l_byte_code.formulate_inherited_assertions (a_feature.assert_id_set)
-					across Context.inherited_assertion.precondition_list as i loop
-						i.item.do_all (agent l_pre.extend (?))
-					end
-					across Context.inherited_assertion.postcondition_list as i loop
-						i.item.do_all (agent l_post.extend (?))
-					end
-				end
-			end
-			from
-				l_pre.start
-			until
-				l_pre.after
-			loop
-				if attached {FEATURE_B} l_pre.item.expr as l_call then
-					if names_heap.item_32 (l_call.feature_name_id) ~ "modify" then
-						l_modifies.extend (l_pre.item)
-						l_pre.remove
-					elseif names_heap.item_32 (l_call.feature_name_id) ~ "reads" then
-						l_reads.extend (l_pre.item)
-						l_pre.remove
-					else
-						l_pre.forth
-					end
-				else
-					l_pre.forth
-				end
-			end
-
-			Result := [l_pre, l_post, l_modifies, l_reads]
-		end
-
-	contract_expressions (a_feature: FEATURE_I; a_type: TYPE_A; a_mapping: E2B_ENTITY_MAPPING): TUPLE [pre: IV_EXPRESSION; post: IV_EXPRESSION]
-			-- Contracts for feature `a_feature' of type `a_type' as expressions.
-		local
-			l_contracts: TUPLE [pre: LIST [ASSERT_B]; post: LIST [ASSERT_B]]
-			l_axiom: IV_AXIOM
-			l_forall: IV_FORALL
-			l_pre: IV_EXPRESSION
-			l_post: IV_EXPRESSION
-			l_and, l_implies: IV_BINARY_OPERATION
-			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
-			l_function_call: IV_FUNCTION_CALL
-		do
-			l_contracts := contracts (a_feature, a_type)
-			if l_contracts.pre.is_empty then
-				l_pre := create {IV_ENTITY}.make ("true", types.bool)
-			else
-				across l_contracts.pre as c loop
-					create l_translator.make
-					l_translator.set_context (a_feature, a_type)
-					l_translator.copy_entity_mapping (a_mapping)
-					c.item.process (l_translator)
-					if attached l_pre then
-						l_pre := create {IV_BINARY_OPERATION}.make (l_pre, "&&", l_translator.last_expression, types.bool)
-					else
-						l_pre := l_translator.last_expression
-					end
-				end
-			end
-			if l_contracts.post.is_empty then
-				l_post := create {IV_ENTITY}.make ("true", types.bool)
-			else
-				across l_contracts.post as c loop
-					create l_translator.make
-					l_translator.set_context (a_feature, a_type)
-					l_translator.copy_entity_mapping (a_mapping)
-					c.item.process (l_translator)
-					if attached l_post then
-						l_post := create {IV_BINARY_OPERATION}.make (l_post, "&&", l_translator.last_expression, types.bool)
-					else
-						l_post := l_translator.last_expression
-					end
-				end
-			end
-			Result := [l_pre, l_post]
 		end
 
 	process_precondition (a_assert: ASSERT_B)
@@ -815,7 +779,7 @@ feature {NONE} -- Implementation
 				l_call.add_argument (i.item.entity)
 			end
 			create l_pre.make (l_call)
-			current_boogie_procedure.add_contract (l_pre)
+			current_boogie_procedure.add_contract (create {IV_PRECONDITION}.make (l_call))
 		end
 
 	add_postcondition_predicate
@@ -883,109 +847,6 @@ feature {NONE} -- Implementation
 				l_postcondition.set_free
 			end
 			current_boogie_procedure.add_contract (l_postcondition)
-		end
-
-	argument_property (a_name: STRING; a_type: TYPE_A): detachable IV_EXPRESSION
-			-- Property associated with argument `a_name' of type `a_type'.
-		local
-			l_type: TYPE_A
-		do
-			l_type := a_type.deep_actual_type
-			check not l_type.is_like end
-			if l_type.is_reference then
-				Result := reference_property (a_name, l_type)
-			elseif l_type.is_boolean then
-				Result := Void
-			elseif l_type.is_integer or l_type.is_natural or l_type.is_character then
-				Result := numeric_property (a_name, l_type)
-			elseif l_type.is_formal then
-				-- TODO: should not happen?
-			else
-				check False end
-			end
-		end
-
-	reference_property (a_name: STRING; a_type: TYPE_A): detachable IV_EXPRESSION
-			-- Property associated with argument `a_name' of type `a_type'.
-		require
-			reference_type: a_type.is_reference
-		local
-			l_heap, l_ref, l_type: IV_ENTITY
-			l_expr: IV_FUNCTION_CALL
-			l_fcall: IV_FUNCTION_CALL
-		do
-			if not types.is_mml_type (a_type) then
-				create l_heap.make ("Heap", types.heap_type)
-				create l_ref.make (a_name, types.ref)
-				create l_type.make (name_translator.boogie_name_for_type (a_type), types.type)
-				if a_name ~ "Current" then
-					-- For Current the exact dynamic type is considered known
-					create l_expr.make ("attached_exact", types.bool)
-				elseif a_type.is_attached then
-					create l_expr.make ("attached", types.bool)
-				else
-					create l_expr.make ("detachable", types.bool)
-				end
-				l_expr.add_argument (l_heap)
-				l_expr.add_argument (l_ref)
-				l_expr.add_argument (l_type)
-				Result := l_expr
-					-- TODO: refactor
-				if a_type.base_class.name_in_upper ~ "ARRAY" then
-					create l_fcall.make ("ARRAY.inv", types.bool)
-					l_fcall.add_argument (l_heap)
-					l_fcall.add_argument (l_ref)
-					Result := factory.and_ (Result, l_fcall)
-				end
-			end
-		end
-
-	numeric_property (a_name: STRING; a_type: TYPE_A): detachable IV_EXPRESSION
-			-- Property associated with argument `a_name' of type `a_type'.
-		require
-			numeric_property: a_type.is_numeric or a_type.is_character
-		local
-			l_value: IV_ENTITY
-			l_expr: IV_FUNCTION_CALL
-			l_f_name: STRING
-		do
-			create l_value.make (a_name, types.int)
-			if attached {INTEGER_A} a_type as l_int_type then
-				l_f_name := "is_integer_" + l_int_type.size.out
-			elseif attached {NATURAL_A} a_type as l_nat_type then
-				l_f_name := "is_natural_" + l_nat_type.size.out
-			elseif attached {CHARACTER_A} a_type as l_char_type then
-				if l_char_type.is_character_32 then
-					l_f_name := "is_natural_32"
-				else
-					l_f_name := "is_natural_8"
-				end
-			else
-				check False end
-			end
-			create l_expr.make (l_f_name, types.bool)
-			l_expr.add_argument (l_value)
-			Result := l_expr
-		end
-
-	add_argument (a_name: STRING; a_type: TYPE_A)
-			-- Add argument named `a_name' of type `a_type' to `current_boogie_procedure'.
-		require
-			a_name_not_empty: not a_name.is_empty
-			not_like_type: not a_type.is_like
-		local
-			l_expr: IV_EXPRESSION
-			l_pre: IV_PRECONDITION
-		do
-			translation_pool.add_type (a_type)
-			current_boogie_procedure.add_argument (a_name, types.for_type_a (a_type))
-			l_expr := argument_property (a_name, a_type)
-			if l_expr /= Void then
-				create l_pre.make (l_expr)
-				l_pre.set_free
-				l_pre.set_assertion_type ("argument property for " + a_name)
-				current_boogie_procedure.add_contract (l_pre)
-			end
 		end
 
 end

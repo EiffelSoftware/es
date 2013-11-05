@@ -50,6 +50,9 @@ feature -- Access
 	body: detachable IV_EXPRESSION
 			-- Function body, if any.
 
+	is_inline: BOOLEAN
+			-- Should this function be inlined?
+
 feature -- Element change
 
 	add_argument (a_name: STRING; a_type: IV_TYPE)
@@ -72,6 +75,12 @@ feature -- Element change
 			body := a_expression
 		ensure
 			body_set: body = a_expression
+		end
+
+	set_inline
+			-- Set this function to be inlined.
+		do
+			is_inline := True
 		end
 
 feature -- Visitor

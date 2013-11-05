@@ -50,6 +50,9 @@ feature -- Universe Visitor
 			-- <Precursor>
 		do
 			output.put ("function ")
+			if a_function.is_inline then
+				output.put ("{ :inline } ")
+			end
 			output.put (a_function.name)
 			output.put ("(")
 			across a_function.arguments as i loop
