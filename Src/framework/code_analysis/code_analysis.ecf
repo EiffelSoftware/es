@@ -35,11 +35,9 @@
 			</condition>
 		</library>
 		<cluster name="code_analysis" location=".\" recursive="true">
-		<!-- unneeded (yet)
 			<file_rule>
 				<exclude>/tests$</exclude>
 			</file_rule>
-		-->
 		</cluster>        
 	</target>
 </system>
