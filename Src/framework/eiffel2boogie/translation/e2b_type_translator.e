@@ -72,7 +72,7 @@ feature -- Basic operations
 	generate_argument_property (a_arg: IV_EXPRESSION; a_type: TYPE_A)
 			-- Generate argument property about `a_arg' of `a_type'.
 		do
-
+			last_property := argument_property (a_arg, a_type)
 		end
 
 feature {NONE} -- Implementation
@@ -286,6 +286,7 @@ feature {NONE} -- Implementation
 			else
 				check False end
 			end
+			create l_expr.make (l_f_name, types.bool)
 			l_expr.add_argument (a_expr)
 			Result := l_expr
 		end

@@ -16,13 +16,14 @@ feature -- Element change
 
 	update (new_val: INTEGER)
 		require
-			is_wrapped	-- default
-			across observers as oc all oc.item.is_wrapped end -- default
+			is_wrapped	-- default: public
+			across observers as oc all oc.item.is_wrapped end -- default: public
 
 			modify (observer)
-			modify ([Current, "value"])
+--			modify ([Current, "value"])
+			modify (Current)
 		do
-			unwrap -- default
+			unwrap -- default: public
 			if attached observer then
 				observer.unwrap
 			end
@@ -31,29 +32,36 @@ feature -- Element change
 				observer.notify
 				observer.wrap
 			end
-			wrap -- default
+			wrap -- default: public
 		ensure
 			value_set: value = new_val
-			is_wrapped	-- default
-			across observers as oc all oc.item.is_wrapped end -- default
+			is_wrapped	-- default: public
+			across observers as oc all oc.item.is_wrapped end -- default: public
 		end
 
 feature {F_OOO_OBSERVER} -- Element change
 
 	register (o: F_OOO_OBSERVER)
 			-- Register `o' as observer.
+		note
+			explicit: contracts
 		require
+			-- is_open: removed due to explicit contracts
 			observer = Void
 			is_wrapped
 			o.is_open
+
+--			modify ([Current, "observer"]) -- default: command
+			modify (Current)
 		do
 			unwrap
 			observer := o
-			-- add_observer_ (o) -- feature from ANY, maintains open_, ensures observers = old observers + { o }
+			set_observers ([o]) -- add_observer_ (o) -- feature from ANY, maintains open_, ensures observers = old observers + { o }
 			wrap
 		ensure
 			observer = o
 			is_wrapped
+			-- is_open: removed due to explicit contracts
 		end
 
 invariant

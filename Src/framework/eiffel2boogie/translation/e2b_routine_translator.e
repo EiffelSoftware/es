@@ -112,10 +112,10 @@ feature -- Basic operations
 
 				if a_for_creator then
 						-- Creator
-					add_ownership_conditions_for_creator
+--					add_ownership_conditions_for_creator
 				elseif a_feature.is_exported_for (system.any_class.compiled_class) then
 						-- Public routine
-					add_ownership_conditions_for_public
+--					add_ownership_conditions_for_public
 				end
 			else
 				if helper.feature_note_values (current_feature, "framing").has ("False") then

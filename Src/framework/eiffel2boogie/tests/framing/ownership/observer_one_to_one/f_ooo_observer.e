@@ -10,8 +10,8 @@ feature
 			status: creator
 		require
 			s.observer = Void
-			s.is_wrapped -- default
-			is_open -- default
+			s.is_wrapped -- default: public
+			is_open -- default: creator
 
 			modify (s)
 			modify (Current) -- default: creator
@@ -25,11 +25,11 @@ feature
 			cache := s.value
 
 			set_subjects ([subject])
-			wrap
+			wrap -- default: public/creator
 		ensure
 			subject = s
-			is_wrapped -- default
-			s.is_wrapped -- default
+			is_wrapped -- default: public/creator
+			s.is_wrapped -- default: public
 		end
 
 feature -- Access
@@ -44,14 +44,16 @@ feature {F_OOO_SUBJECT} -- Element change
 
 	notify
 		require
-			is_open -- default
+			is_open -- default: not public
 			attached subject
+
+			modify (Current) -- default: command
 		do
 			cache := subject.value
 		ensure
 			subject = old subject
 			cache = subject.value
-			is_open -- default
+			is_open -- default: not public
 		end
 
 invariant

@@ -17,20 +17,20 @@ feature {NONE} -- Initialization
 			-- Initialize default options.
 		do
 			is_two_step_verification_enabled := False
-			is_inlining_enabled := True
+			is_inlining_enabled := False
 			is_automatic_inlining_enabled := False
 			is_automatic_loop_unrolling_enabled := False
 			is_sound_loop_unrolling_enabled := True
 			is_precondition_predicate_enabled := False
 			is_postcondition_predicate_enabled := False
 			is_checking_overflow := False
-			is_checking_frame := True
+			is_checking_frame := False
 			is_using_ownership := True
-			loop_unrolling_depth := 5
+			loop_unrolling_depth := 4
 			max_recursive_inlining_depth := 4
 
 			is_postcondition_mutation_enabled := False
-			is_coupled_mutations_enabled := True
+			is_coupled_mutations_enabled := False
 			is_aging_enabled := False
 			is_uncoupled_mutations_enabled := False
 		end

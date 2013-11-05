@@ -620,7 +620,7 @@ feature {NONE} -- Implementation: regular expressions Boogie code
 			-- Regular expression assertion information in Boogie source.
 		once
 			create Result.make
-			Result.compile ("^(.*)// (\w+)\s*((tag):(\w*))?\s*((line):(\w*))?$")
+			Result.compile ("^(.*)// (\w+)\s*((tag):(\w*))?\s*((line):(\w*))?(\s\w+)?$")
 		end
 
 	assert_regexp_tag (a_regexp: RX_PCRE_REGULAR_EXPRESSION): detachable STRING
