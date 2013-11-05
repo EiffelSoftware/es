@@ -131,10 +131,10 @@ feature -- Basic operations
 				end
 			end
 
-			add_invariant_conditions
+			add_invariant_conditions (a_for_creator)
 		end
 
-	add_invariant_conditions
+	add_invariant_conditions (a_is_creator: BOOLEAN)
 		local
 			l_fcall: IV_FUNCTION_CALL
 			l_pre: IV_PRECONDITION
@@ -146,9 +146,11 @@ feature -- Basic operations
 				name_translator.boogie_name_for_invariant_function (current_type),
 				<< "Heap", "Current" >>,
 				types.bool)
-			create l_pre.make (l_fcall)
-			l_pre.set_free
-			current_boogie_procedure.add_contract (l_pre)
+			if not a_is_creator then
+				create l_pre.make (l_fcall)
+				l_pre.set_free
+				current_boogie_procedure.add_contract (l_pre)
+			end
 			create l_post.make (l_fcall)
 --			create l_info.make ("post")
 --			l_info.set_tag ("invariant")
@@ -308,6 +310,8 @@ feature -- Basic operations
 				create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "owns", types.set (types.ref)), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
 				l_implementation.body.add_statement (l_assign)
 				create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "subjects", types.set (types.ref)), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
+				l_implementation.body.add_statement (l_assign)
+				create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "observers", types.set (types.ref)), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
 				l_implementation.body.add_statement (l_assign)
 					-- Add creator initialization for attributes
 				from
@@ -601,6 +605,7 @@ feature -- Basic operations
 			l_name: STRING
 			l_fdecl: IV_FUNCTION
 			l_contracts: like contracts_of
+			l_modif_set: IV_EXPRESSION
 		do
 			l_name := name_translator.boogie_name_for_writes_set_function (current_feature, current_type)
 
@@ -613,32 +618,42 @@ feature -- Basic operations
 			end
 
 			l_contracts := contracts_of_current_feature
-			l_fdecl.set_body (modifies_set (l_contracts.modifies))
+			if l_contracts.modifies.is_empty then
+				if not current_feature.has_return_value then
+					l_fdecl.set_body (factory.function_call ("Set#Singleton", << "Current" >>, types.set (types.ref)))
+				end
+			else
+				l_fdecl.set_body (modifies_set (l_contracts.modifies))
+			end
 		end
 
 	modifies_set (a_modifies: LIST [ASSERT_B]): IV_EXPRESSION
 		local
 			l_expr: IV_EXPRESSION
+			l_expr_list: LINKED_LIST [EXPR_B]
 		do
+			create l_expr_list.make
 			across a_modifies as i loop
 				if attached {FEATURE_B} i.item.expr as l_call then
 					if attached {TUPLE_CONST_B} l_call.parameters.first.expression as l_tuple then
 						across l_tuple.expressions as j loop
-							l_expr := factory.function_call ("Set#Singleton", << parse_modifies_expr (j.item) >>, types.set (types.ref))
-							if Result = Void then
-								Result := l_expr
-							else
-								Result := factory.function_call ("Set#Union", << Result, l_expr >>, types.set (types.ref))
-							end
+							l_expr_list.extend (j.item)
 						end
 					else
-						l_expr := factory.function_call ("Set#Singleton", << parse_modifies_expr (l_call.parameters.first.expression) >>, types.set (types.ref))
-						if Result = Void then
-							Result := l_expr
-						else
-							Result := factory.function_call ("Set#Union", << Result, l_expr >>, types.set (types.ref))
-						end
+						l_expr_list.extend (l_call.parameters.first.expression)
 					end
+				end
+			end
+			across l_expr_list as k loop
+				if k.item.type.has_associated_class and then k.item.type.base_class.name_in_upper ~ "MML_SET" then
+					l_expr := parse_modifies_expr (k.item)
+				else
+					l_expr := factory.function_call ("Set#Singleton", << parse_modifies_expr (k.item) >>, types.set (types.ref))
+				end
+				if Result = Void then
+					Result := l_expr
+				else
+					Result := factory.function_call ("Set#Union", << Result, l_expr >>, types.set (types.ref))
 				end
 			end
 		end

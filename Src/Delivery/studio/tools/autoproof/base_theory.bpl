@@ -138,17 +138,17 @@ const unique observers: Field (Set ref); // Ghost field for observers set of an 
 const unique subjects: Field (Set ref); // Ghost field for subjects set of an object.
 
 // Is o free? (owner is open)
-function is_free(h: HeapType, o: ref): bool {
+function {:inline} is_free(h: HeapType, o: ref): bool {
 	h[o, owner] == Void
 }
 
 // Is o wrapped in h? (closed and free)
-function is_wrapped(h: HeapType, o: ref): bool {
+function {:inline} is_wrapped(h: HeapType, o: ref): bool {
 	h[o, closed] && is_free(h, o)
 }
 
 // Is o open in h? (not closed and free)
-function is_open(h: HeapType, o: ref): bool {
+function {:inline} is_open(h: HeapType, o: ref): bool {
 	!h[o, closed]
 }
 
@@ -163,12 +163,12 @@ function in_domain(h: HeapType, o: ref, o': ref): bool
 	)
 }
 
-axiom (forall h: HeapType, o, o': ref :: h[o, closed] && h[o, owns][o'] ==> in_domain(h, o, o'));
+axiom (forall h: HeapType, o, o': ref :: { in_domain(h, o, o') } h[o, closed] && h[o, owns][o'] ==> in_domain(h, o, o'));
 
 // Objects outside of ownership domains of mods did not change
 function writes(h: HeapType, h': HeapType, mods: Set ref): bool { 
-	(forall <T> o: ref, f: Field T ::
-		(forall o': ref :: mods[o'] ==> !in_domain(h, o', o))
+	(forall <T> o: ref, f: Field T :: { h[o, f] } { h'[o, f] }
+		(forall o': ref :: { mods[o'] } { in_domain(h, o', o) } mods[o'] ==> !in_domain(h, o', o))
 			==>
 		h'[o, f] == h[o, f])
 }

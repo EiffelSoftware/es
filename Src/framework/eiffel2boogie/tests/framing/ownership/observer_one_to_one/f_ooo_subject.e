@@ -1,8 +1,26 @@
 class F_OOO_SUBJECT
 
+inherit
+
+	ANY
+		redefine
+			default_create
+		end
+
 feature {NONE} -- Initialization
 
-	-- TODO: default create
+	default_create
+		note
+			status: creator
+		require else
+			is_open -- default: creator
+		do
+			set_observers([observer])
+			wrap -- default: creator
+		ensure then
+			is_wrapped -- default: creator
+			observer = Void -- default: default_create
+		end
 
 feature -- Access
 
@@ -37,6 +55,9 @@ feature -- Element change
 			value_set: value = new_val
 			is_wrapped	-- default: public
 			across observers as oc all oc.item.is_wrapped end -- default: public
+
+			observer = old observer -- TODO: fine-grained modifies
+			observer.subject = old observer.subject -- TODO: fine-grained modifies
 		end
 
 feature {F_OOO_OBSERVER} -- Element change

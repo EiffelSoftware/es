@@ -55,7 +55,7 @@ feature -- Basic operations
 			elseif builtin_any_procedures.has (l_name) then
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
 			elseif ghost_access.has (l_name) then
-				a_translator.set_last_expression (factory.heap_current_access (a_translator.entity_mapping, l_name, types.set (types.ref)))
+				a_translator.set_last_expression (factory.heap_access (a_translator.entity_mapping.heap.name, a_translator.current_target, l_name, types.set (types.ref)))
 			else
 				check ghost_setter.has (l_name) end
 				l_name := l_name.substring (5, l_name.count)
@@ -64,7 +64,7 @@ feature -- Basic operations
 				a_translator.side_effect.finish
 				a_translator.side_effect.remove	-- last side effect is actual call, here to non-existing "xyz"
 				create l_assign.make (
-					factory.heap_current_access (a_translator.entity_mapping, l_name, types.set (types.ref)),
+					factory.heap_access (a_translator.entity_mapping.heap.name, a_translator.current_target, l_name, types.set (types.ref)),
 					l_call.arguments.i_th (2))
 				a_translator.set_last_expression (Void)
 				a_translator.side_effect.extend (l_assign)

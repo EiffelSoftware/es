@@ -172,6 +172,15 @@ feature -- Convenience functions
 			end
 		end
 
+	add_referenced_creator (a_feature: FEATURE_I; a_context_type: TYPE_A)
+			-- Add signature and implementation of creator `a_feature' of `a_context_type'.
+		local
+			l_creator: E2B_TU_CREATOR_SIGNATURE
+		do
+			create l_creator.make (a_feature, a_context_type)
+			add_translation_unit (l_creator)
+		end
+
 	add_ghost_attribute (a_feature: FEATURE_I; a_context_type: TYPE_A)
 			-- Add ghost function `a_feature' of `a_context_type'.
 		local

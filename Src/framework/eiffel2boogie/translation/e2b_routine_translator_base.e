@@ -115,7 +115,7 @@ feature -- Helper functions: arguments and result
 				l_type := current_feature.type.deep_actual_type.instantiated_in (current_type)
 				l_iv_type := types.for_type_a (l_type)
 				create l_type_translator
-				l_type_translator.generate_argument_property (create {IV_ENTITY}.make ("Result|", l_iv_type), l_type)
+				l_type_translator.generate_argument_property (create {IV_ENTITY}.make ("Result", l_iv_type), l_type)
 				translation_pool.add_type (l_type)
 				current_boogie_procedure.add_result_with_property (
 					"Result",

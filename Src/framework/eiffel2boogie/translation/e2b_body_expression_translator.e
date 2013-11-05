@@ -229,7 +229,12 @@ feature -- Translation
 			l_target_type: TYPE_A
 			l_call: IV_PROCEDURE_CALL
 		do
-			translation_pool.add_referenced_feature (a_feature, current_target_type)
+			if a_for_creator then
+				translation_pool.add_referenced_creator (a_feature, current_target_type)
+			else
+				translation_pool.add_referenced_feature (a_feature, current_target_type)
+			end
+
 
 			if a_for_creator then
 				create l_call.make (name_translator.boogie_name_for_creation_routine (a_feature, current_target_type))

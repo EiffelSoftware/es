@@ -14,8 +14,9 @@ feature {NONE} -- Initialization
 			m.is_wrapped -- default
 			m /= Void
 
-			modify ([Current]) -- default: creator
-			modify ([m, "observers"])
+			modify (Current) -- default: creator
+--			modify ([m, "observers"])
+			modify (m)
 		do
 			set_owns ([]) -- default: creator
 			set_subjects ([]) -- default: creator
@@ -25,10 +26,11 @@ feature {NONE} -- Initialization
 			local_time := master.time
 
 			m.unwrap
-			-- m.observers.add (Current)
+			m.set_observers (m.observers + [Current]) -- m.observers.add (Current)
 			m.wrap
 
 			set_subjects ([m]) -- default
+
 			wrap -- default
 		ensure
 			is_wrapped -- default
@@ -36,6 +38,8 @@ feature {NONE} -- Initialization
 			master = m
 			local_time = m.time
 			m.observers = old m.observers + [Current]
+
+			m.time = old m.time -- TODO: fine-grained modifies
 		end
 
 feature -- Access
@@ -67,7 +71,7 @@ invariant
 	0 <= local_time
 	local_time <= master.time
 	subjects = [master]
-	across subjects as s all s.observers.has (Current) end -- default
+	across subjects as s all s.item.observers.has (Current) end -- default
 	owns = [] -- default
 	observers = [] -- default
 
