@@ -12,6 +12,8 @@ inherit
 
 	E2B_FEATURE_TRANSLATOR
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 feature -- Access
 
 	current_feature: FEATURE_I
@@ -130,6 +132,7 @@ feature -- Helper functions: contracts
 			-- Contracts for feature `a_feature' of type `a_type'.
 		local
 			l_pre, l_post, l_modifies, l_reads: LINKED_LIST [ASSERT_B]
+			l_name: STRING_32
 		do
 			create l_pre.make
 			create l_post.make
@@ -162,10 +165,11 @@ feature -- Helper functions: contracts
 				l_pre.after
 			loop
 				if attached {FEATURE_B} l_pre.item.expr as l_call then
-					if names_heap.item_32 (l_call.feature_name_id) ~ "modify" then
+					l_name := names_heap.item_32 (l_call.feature_name_id)
+					if l_name  ~ "modify" or l_name ~ "modify_field" then
 						l_modifies.extend (l_pre.item)
 						l_pre.remove
-					elseif names_heap.item_32 (l_call.feature_name_id) ~ "reads" then
+					elseif l_name ~ "reads" then
 						l_reads.extend (l_pre.item)
 						l_pre.remove
 					else
@@ -224,6 +228,109 @@ feature -- Helper functions: contracts
 				end
 			end
 			Result := [l_pre, l_post]
+		end
+
+	modifies_expressions_of (a_feature: FEATURE_I; a_type: TYPE_A): TUPLE [modified_objects: LIST [IV_EXPRESSION]; field_restriction: LIST [TUPLE [fields: LIST [IV_ENTITY]; objects: LIST [IV_EXPRESSION]]]]
+			-- Modifies expressions for feature `a_feature' of type `a_type'.
+		local
+			l_contracts: like contracts_of
+			l_modified_objects: LINKED_LIST [IV_EXPRESSION]
+			l_field_restrictions: LINKED_LIST [TUPLE [LINKED_LIST [IV_ENTITY], LINKED_LIST [IV_EXPRESSION]]]
+			l_fieldnames: LINKED_LIST [STRING_32]
+			l_fields: LINKED_LIST [IV_ENTITY]
+			l_objects: LINKED_LIST [IV_EXPRESSION]
+			l_name: STRING_32
+			l_type: TYPE_A
+			l_feature: FEATURE_I
+		do
+			create l_modified_objects.make
+			create l_field_restrictions.make
+			l_contracts := contracts_of (a_feature, a_type)
+
+			across
+				l_contracts.modifies as i
+			loop
+				if attached {FEATURE_B} i.item.expr as l_call then
+					l_name := names_heap.item_32 (l_call.feature_name_id)
+					if l_name ~ "modify" then
+						l_objects := translate_contained_expressions (l_call.parameters.i_th (1).expression)
+						l_modified_objects.append (l_objects)
+					elseif l_name ~ "modify_field" then
+						l_objects := translate_contained_expressions (l_call.parameters.i_th (2).expression)
+						l_modified_objects.append (l_objects)
+
+						if attached {TUPLE_CONST_B} l_call.parameters.i_th (2).expression as l_tuple then
+							l_type := l_tuple.expressions.first.type
+						else
+							l_type := l_call.parameters.i_th (2).expression.type
+						end
+						if l_type.is_like_current then
+							l_type := current_type
+						else
+							l_type := l_type.deep_actual_type
+						end
+
+						create l_fieldnames.make
+						if attached {STRING_B} l_call.parameters.i_th (1).expression as l_string then
+							l_fieldnames.extend (l_string.value)
+						elseif attached {TUPLE_CONST_B} l_call.parameters.i_th (1).expression as l_tuple then
+							across l_tuple.expressions as j loop
+								if attached {STRING_B} j.item as l_string then
+									l_fieldnames.extend (l_string.value)
+								else
+									check False end
+								end
+							end
+						end
+
+						create l_fields.make
+						across l_fieldnames as f loop
+							l_feature := l_type.base_class.feature_named_32 (f.item)
+							l_name := name_translator.boogie_name_for_feature (l_feature, l_type)
+							l_fields.extend (create {IV_ENTITY}.make (l_name, types.field (types.for_type_a (l_feature.type))))
+						end
+
+						l_field_restrictions.extend ([l_fields, l_objects])
+					else
+						check False end
+					end
+				else
+					check False end
+				end
+			end
+
+			Result := [l_modified_objects, l_field_restrictions]
+		end
+
+	translate_contained_expressions (a_expr: EXPR_B): LINKED_LIST [IV_EXPRESSION]
+			-- Translate expressions in `a_expr'.
+		local
+			l_expr_list: LINKED_LIST [EXPR_B]
+		do
+			create l_expr_list.make
+			if attached {TUPLE_CONST_B} a_expr as l_tuple then
+				across l_tuple.expressions as i loop
+					l_expr_list.extend (i.item)
+				end
+			else
+				l_expr_list.extend (a_expr)
+			end
+			create Result.make
+			across l_expr_list as k loop
+				Result.extend (translate_individual_expression (k.item))
+			end
+		end
+
+	translate_individual_expression (a_expr: EXPR_B): IV_EXPRESSION
+		local
+			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
+		do
+			create l_translator.make
+			l_translator.entity_mapping.set_heap (create {IV_ENTITY}.make ("h", types.heap))
+			l_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("c", types.heap))
+			l_translator.set_context (current_feature, current_type)
+			a_expr.process (l_translator)
+			Result := l_translator.last_expression
 		end
 
 end

@@ -55,6 +55,7 @@ feature -- Basic operations
 			l_type: TYPE_A
 		do
 			set_context (a_feature, a_type)
+			translation_pool.add_type (current_type)
 
 				-- Set up name
 			if a_for_creator then
@@ -131,7 +132,7 @@ feature -- Basic operations
 				end
 			end
 
-			add_invariant_conditions (a_for_creator)
+--			add_invariant_conditions (a_for_creator)
 		end
 
 	add_invariant_conditions (a_is_creator: BOOLEAN)
@@ -606,9 +607,30 @@ feature -- Basic operations
 			l_fdecl: IV_FUNCTION
 			l_contracts: like contracts_of
 			l_modif_set: IV_EXPRESSION
-		do
-			l_name := name_translator.boogie_name_for_writes_set_function (current_feature, current_type)
+			l_: like modifies_expressions_of
+			l_expr: IV_EXPRESSION
 
+			l_o, l_f: IV_ENTITY
+			l_objects_expr: IV_EXPRESSION
+			l_fields_expr: IV_EXPRESSION
+			l_forall: IV_FORALL
+		do
+			l_ := modifies_expressions_of (current_feature, current_type)
+
+			across l_.modified_objects as o loop
+				if o.item.type.is_set then
+					l_expr := o.item
+				else
+					l_expr := factory.function_call ("Set#Singleton", << o.item >>, types.set (types.ref))
+				end
+				if l_modif_set = Void then
+					l_modif_set := l_expr
+				else
+					l_modif_set := factory.function_call ("Set#Union", << l_modif_set, l_expr >>, types.set (types.ref))
+				end
+			end
+
+			l_name := name_translator.boogie_name_for_writes_set_function (current_feature, current_type)
 			create l_fdecl.make (l_name, types.set (types.ref))
 			boogie_universe.add_declaration (l_fdecl)
 
@@ -616,15 +638,50 @@ feature -- Basic operations
 			across current_boogie_procedure.arguments as i loop
 				l_fdecl.add_argument (i.item.name, i.item.type)
 			end
+			l_fdecl.set_body (l_modif_set)
 
-			l_contracts := contracts_of_current_feature
-			if l_contracts.modifies.is_empty then
-				if not current_feature.has_return_value then
-					l_fdecl.set_body (factory.function_call ("Set#Singleton", << "Current" >>, types.set (types.ref)))
-				end
-			else
-				l_fdecl.set_body (modifies_set (l_contracts.modifies))
+
+
+
+			create l_fdecl.make ("temp", types.bool)
+			boogie_universe.add_declaration (l_fdecl)
+
+			l_fdecl.add_argument ("heap", types.heap)
+			l_fdecl.add_argument ("heap'", types.heap)
+			across current_boogie_procedure.arguments as i loop
+				l_fdecl.add_argument (i.item.name, i.item.type)
 			end
+
+			create l_o.make ("o", types.ref)
+			create l_f.make ("f", types.field (types.generic))
+			l_expr := factory.true_
+			across l_.field_restriction as j loop
+				l_objects_expr := factory.false_
+				l_fields_expr := factory.true_
+				across j.item.objects as ro loop
+					l_objects_expr := factory.or_ (l_objects_expr, factory.equal (l_o, ro.item))
+				end
+				across j.item.fields as rf loop
+					l_fields_expr := factory.and_ (l_fields_expr, factory.not_equal (l_f, rf.item))
+				end
+				create l_forall.make (factory.implies_ (factory.and_ (l_objects_expr, l_fields_expr), factory.equal (factory.heap_access ("heap", l_o, l_f.name, types.generic), factory.heap_access ("heap'", l_o, l_f.name, types.generic))))
+				l_forall.add_bound_variable (l_o.name, l_o.type)
+				l_forall.add_bound_variable (l_f.name, l_f.type)
+				l_expr := factory.and_ (l_expr, l_forall)
+			end
+
+			l_fdecl.set_body (l_expr)
+
+
+
+--			l_contracts := contracts_of_current_feature
+--			if l_contracts.modifies.is_empty then
+--				if not current_feature.has_return_value then
+--					l_fdecl.set_body (factory.function_call ("Set#Singleton", << "Current" >>, types.set (types.ref)))
+--				end
+--			else
+--				l_fdecl.set_body (modifies_set (l_contracts.modifies))
+--			end
 		end
 
 	modifies_set (a_modifies: LIST [ASSERT_B]): IV_EXPRESSION

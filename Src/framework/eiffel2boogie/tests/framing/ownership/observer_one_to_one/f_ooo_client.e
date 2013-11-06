@@ -12,4 +12,5 @@ feature
 			s.update (5)
 			check o.cache = 5 end
 		end
+
 end

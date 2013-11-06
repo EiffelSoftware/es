@@ -48,6 +48,7 @@ feature -- Basic operations
 			l_name: STRING
 			l_assign: IV_ASSIGNMENT
 			l_call: IV_PROCEDURE_CALL
+			l_type: IV_TYPE
 		do
 			l_name := a_feature.feature_name
 			if builtin_any_functions.has (l_name) then
@@ -55,7 +56,12 @@ feature -- Basic operations
 			elseif builtin_any_procedures.has (l_name) then
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
 			elseif ghost_access.has (l_name) then
-				a_translator.set_last_expression (factory.heap_access (a_translator.entity_mapping.heap.name, a_translator.current_target, l_name, types.set (types.ref)))
+				if l_name ~ "owner" then
+					l_type := types.ref
+				else
+					l_type := types.set (types.ref)
+				end
+				a_translator.set_last_expression (factory.heap_access (a_translator.entity_mapping.heap.name, a_translator.current_target, l_name, l_type))
 			else
 				check ghost_setter.has (l_name) end
 				l_name := l_name.substring (5, l_name.count)
@@ -75,12 +81,18 @@ feature -- Basic operations
 			-- <Precursor>
 		local
 			l_name: STRING
+			l_type: IV_TYPE
 		do
 			l_name := a_feature.feature_name
 			if builtin_any_functions.has (l_name) then
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
 			elseif ghost_access.has (l_name) then
-				a_translator.set_last_expression (factory.heap_access (a_translator.entity_mapping.heap.name, a_translator.current_target, l_name, types.set (types.ref)))
+				if l_name ~ "owner" then
+					l_type := types.ref
+				else
+					l_type := types.set (types.ref)
+				end
+				a_translator.set_last_expression (factory.heap_access (a_translator.entity_mapping.heap.name, a_translator.current_target, l_name, l_type))
 			else
 					-- cannot happen
 				check False end

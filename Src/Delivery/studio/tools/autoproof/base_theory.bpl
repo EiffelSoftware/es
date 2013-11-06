@@ -171,6 +171,14 @@ function writes(h: HeapType, h': HeapType, mods: Set ref): bool {
 		(forall o': ref :: { mods[o'] } { in_domain(h, o', o) } mods[o'] ==> !in_domain(h, o', o))
 			==>
 		h'[o, f] == h[o, f])
+	&&
+	no_garbage(h, h')
+}
+
+// The allocation status of objects does not change
+function no_garbage(old_heap: HeapType, new_heap: HeapType): bool {
+	(forall o: ref :: { new_heap[o, allocated] } { old_heap[o, allocated] }
+		old_heap[o, allocated] ==> new_heap[o, allocated])
 }
 
 // Objects that:
@@ -264,6 +272,17 @@ procedure wrap(o: ref);
 	ensures (forall o': ref :: old(Heap[o, owns][o']) ==> Heap[o', owner] == o); // WE2
 	ensures is_wrapped(Heap, o); // WE3
 	ensures (forall <T> o': ref, f: Field T :: !(o' == o && f == closed) && !(old(Heap[o, owns][o']) && f == owner) ==> Heap[o', f] == old(Heap[o', f]));
+
+procedure wrap_all(s: Set ref);
+	requires (forall o: ref :: s[o] ==> is_open(Heap, o)); // pre tag:open W1
+	requires (forall o: ref :: s[o] ==> user_inv(Heap, o)); // pre tag:invariant_holds W2
+	requires (forall o: ref :: s[o] ==> (forall o': ref :: Heap[o, owns][o'] ==> is_wrapped(Heap, o') && Writes[o'])); // pre tag:owned_objects_wrapped W3
+	requires (forall o: ref :: s[o] ==> Writes[o]); // pre tag:writable W4
+	modifies Heap, Writes;
+//	ensures Set#Equal(Writes, old(Set#Difference(Writes, Heap[o, owns]))); // WE1
+	ensures (forall o: ref :: s[o] ==> (forall o': ref :: old(Heap[o, owns][o']) ==> Heap[o', owner] == o)); // WE2
+	ensures (forall o: ref :: s[o] ==> is_wrapped(Heap, o)); // WE3
+//	ensures (forall <T> o': ref, f: Field T :: !(o' == o && f == closed) && !(old(Heap[o, owns][o']) && f == owner) ==> Heap[o', f] == old(Heap[o', f]));
 
 // ----------------------------------------------------------------------
 // Attached/Detachable functions

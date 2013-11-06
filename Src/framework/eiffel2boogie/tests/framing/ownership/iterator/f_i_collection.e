@@ -27,6 +27,7 @@ feature
 			set_owns ([elements]) -- default: ?
 			wrap -- default: creator
 		ensure
+			is_wrapped -- default: creator
 			capacity = cap
 			count = 0
 			observers.is_empty -- default: explicit class note
