@@ -24,6 +24,8 @@ feature {NONE} -- Initialization
 			-- Adding example rules
 			rules.extend (create {CA_SELF_ASSIGNMENT_RULE}.make)
 			rules.extend (create {CA_UNUSED_ARGUMENT_RULE}.make)
+			rules.extend (create {CA_NPATH_RULE}.make)
+			rules.extend (create {CA_EMPTY_IF_RULE}.make)
 
 			create classes_to_analyze.make
 			create rule_violations.make (100)
@@ -151,7 +153,6 @@ feature -- Analysis interface
 			if a_class.is_compiled then
 				l_class_c := a_class.compiled_class
 				check l_class_c /= Void end
-				print (ca_messages.analyzing_class (a_class.name))
 				classes_to_analyze.extend (l_class_c)
 			else
 				print ("Class " + a_class.name + " not compiled (skipped).%N")

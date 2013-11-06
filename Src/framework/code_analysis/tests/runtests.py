@@ -13,10 +13,13 @@ import difflib
 # paths
 # ----------------------------------------------------------------------------
 
-base_path = os.path.realpath(os.path.join(os.getenv("EIFFEL_SRC"), "framework", "eiffel2boogie", "tests"))
+base_path = os.path.realpath(os.path.join(os.getenv("EIFFEL_SRC"), "framework", "code_analysis", "tests"))
 eve_exe = os.path.realpath(os.path.join(os.getenv("EIFFEL_SRC"), "Eiffel", "Ace", "EIFGENs", "bench", "W_code", "ec.exe"))
 tests_ecf = os.path.join(base_path, "tests.ecf")
 store_output = False
+
+oracle_file = "output_oracle.txt"
+test_output_file = "test_output.txt"
 
 # ----------------------------------------------------------------------------
 # helper functions: log and printing
@@ -43,28 +46,28 @@ def _to_logfile(text):
 	_log_file.flush()
 
 def _as_info(text, pre=''):
-	print pre + text
+	print(pre + text)
 	_to_logfile(pre + text)
 
 def _as_warning(text, pre=''):
 	if _has_colorama:
-		print pre + Back.YELLOW + Fore.YELLOW + Style.BRIGHT + text + Style.RESET_ALL
+		print(pre + Back.YELLOW + Fore.YELLOW + Style.BRIGHT + text + Style.RESET_ALL)
 	else:
-		print pre + text
+		print(pre + text)
 	_to_logfile(pre + text)
 
 def _as_error(text, pre=''):
 	if _has_colorama:
-		print pre + Back.RED + Fore.RED + Style.BRIGHT + text + Style.RESET_ALL
+		print(pre + Back.RED + Fore.RED + Style.BRIGHT + text + Style.RESET_ALL)
 	else:
-		print pre + text
+		print(pre + text)
 	_to_logfile(pre + text)
 
 def _as_success(text, pre=''):
 	if _has_colorama:
-		print pre + Back.GREEN + Fore.GREEN + Style.BRIGHT + text + Style.RESET_ALL
+		(pre + Back.GREEN + Fore.GREEN + Style.BRIGHT + text + Style.RESET_ALL)
 	else:
-		print pre + text
+		print(pre + text)
 	_to_logfile(pre + text)
 
 
@@ -123,7 +126,7 @@ def compile_tests():
 def is_test_path(path):
 	if not os.path.isdir(path):
 		return False
-	if not os.path.isfile(os.path.join(path, "expected_output.txt")):
+	if not os.path.isfile(os.path.join(path, oracle_file)):
 		return False
 	return True
 
@@ -158,7 +161,7 @@ def run_test(path, test_name):
 	global eve_exe, tests_ecf, store_output
 	if not path is None and os.path.isdir(path):
 		_as_info("Running test: " + test_name)
-		args = [eve_exe, "-config", tests_ecf, "-target", "tests", "-boogie"]
+		args = [eve_exe, "-config", tests_ecf, "-target", "tests", "-code-analysis"]
 		classes = []
 		for filename in os.listdir(path):
 			if filename.endswith(".e"):
@@ -170,20 +173,20 @@ def run_test(path, test_name):
 		args.extend(classes)
 
 		# clear output file
-		open("autoproof_output.txt", 'w').close()
-		execute(args, "autoproof_output.txt")
+		open(test_output_file, 'w').close()
+		execute(args, test_output_file)
 		
-		output_file = open("autoproof_output.txt", 'r')
+		output_file = open(test_output_file, 'r')
 		output_content = output_file.read()
 		output_content = output_content.partition("System Recompiled.\n")[2].strip()
 		output_file.close()
 		
 		if store_output:
-			output_file = open(os.path.join(path, "expected_output.txt"), 'w')
+			output_file = open(os.path.join(path, oracle_file), 'w')
 			output_file.write(output_content)
 			output_file.close()
 		
-		expected_file = open(os.path.join(path, "expected_output.txt"), 'r')
+		expected_file = open(os.path.join(path, oracle_file), 'r')
 		expected_content = expected_file.read().strip()
 		expected_file.close()
 		

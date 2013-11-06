@@ -34,17 +34,16 @@ feature {NONE} -- Activation
 feature -- Properties
 
 	title: STRING
-		once
-			Result := "Unused argument"
+		do
+			Result := ca_names.unused_argument_title
 		end
 
 	description: STRING
-		once
-			Result :=  "A feature should only have arguments which are actually %
-			           %needed and used in the computation."
+		do
+			Result :=  ca_names.unused_argument_description
 		end
 
-	options: LINKED_LIST[CA_RULE_OPTION]
+	options: LINKED_LIST[CA_RULE_OPTION[ANY]]
 		once
 			create Result.make
 		end
@@ -59,7 +58,7 @@ feature -- Properties
 		local
 			j: INTEGER
 		do
-			a_formatter.add_string ("Arguments ")
+			a_formatter.add_string (ca_messages.unused_argument_violation_1)
 			from
 				j := 2
 			until
@@ -73,13 +72,11 @@ feature -- Properties
 				a_formatter.add_char('%'')
 				j := j + 1
 			end
-			a_formatter.add_string (" from routine '")
+			a_formatter.add_string (ca_messages.unused_argument_violation_2)
 			if attached {FEATURE_AS} a_violation.long_description_info.first as l_feature then
 				a_formatter.add_feature_name (l_feature.feature_name.name_32, a_violation.affected_class)
-			else
-				a_formatter.add_char ('?')
 			end
-			a_formatter.add_string ("' are not used.")
+			a_formatter.add_string (ca_messages.unused_argument_violation_3)
 		end
 
 feature {NONE} -- Rule Checking
@@ -121,7 +118,6 @@ feature {NONE} -- Rule Checking
 		do
 			if has_arguments and then args_used.has (False) then
 				create l_violation.make_with_rule (Current)
-				l_violation.set_affected_class (checking_class)
 				l_violation.set_location (routine_body.start_location)
 				l_violation.long_description_info.extend (current_feature)
 				from

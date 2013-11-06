@@ -27,22 +27,33 @@ feature {NONE} -- Activation
 
 	register_actions (a_checker: CA_ALL_RULES_CHECKER)
 		do
-			end
+			a_checker.add_feature_pre_action (agent process_feature)
+			a_checker.add_do_pre_action (agent pre_process_do)
+			a_checker.add_do_post_action (agent post_process_do)
+			a_checker.add_once_pre_action (agent pre_process_once)
+			a_checker.add_once_post_action (agent post_process_once)
+			a_checker.add_if_pre_action (agent pre_process_if)
+			a_checker.add_if_post_action (agent post_process_if)
+			a_checker.add_loop_pre_action (agent pre_process_loop)
+			a_checker.add_loop_post_action (agent post_process_loop)
+			a_checker.add_inspect_pre_action (agent pre_process_inspect)
+			a_checker.add_inspect_post_action (agent post_process_inspect)
+		end
 
 
 feature -- Properties
 
 	title: STRING
-		once
-			Result := "---"
+		do
+			Result := ca_names.npath_title
 		end
 
 	description: STRING
-		once
-			Result :=  "---"
+		do
+			Result :=  ca_names.npath_description
 		end
 
-	options: LINKED_LIST[CA_RULE_OPTION]
+	options: LINKED_LIST[CA_RULE_OPTION[ANY]]
 		once
 			create Result.make
 		end
@@ -54,8 +65,23 @@ feature -- Properties
 		end
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+		local
+			l_info: LINKED_LIST[ANY]
 		do
-
+			l_info := a_violation.long_description_info
+			a_formatter.add_string (ca_messages.npath_violation_1)
+			if attached {FEATURE_AS} l_info.first as l_feat then
+				a_formatter.add_feature_name (l_feat.feature_name.name_32, a_violation.affected_class)
+			end
+			a_formatter.add_string (ca_messages.npath_violation_2)
+			if attached {INTEGER} l_info.at (2) as l_npath then
+				a_formatter.add_int (l_npath)
+			end
+			a_formatter.add_string (ca_messages.npath_violation_3)
+			if attached {INTEGER} l_info.at (3) as l_max then
+				a_formatter.add_int (l_max)
+			end
+			a_formatter.add_char ('.')
 		end
 
 feature {NONE} -- Rule Checking
@@ -100,11 +126,11 @@ feature {NONE} -- Rule Checking
 			-- TODO: replace 200 by option
 			if l_npath > 200 then
 				create l_violation.make_with_rule (Current)
-				l_violation.set_affected_class (checking_class)
 				check attached current_feature end
 				l_violation.set_location (current_feature.start_location)
 				l_violation.long_description_info.extend (current_feature)
 				l_violation.long_description_info.extend (l_npath)
+				l_violation.long_description_info.extend (200) -- TODO: replace by option
 			end
 		end
 

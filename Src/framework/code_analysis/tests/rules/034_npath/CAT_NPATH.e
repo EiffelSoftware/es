@@ -16,7 +16,5 @@ feature {NONE} -- Test
 				print ("c = d")
 			end
 		end
-		
-	b: INTEGER
 	
 end

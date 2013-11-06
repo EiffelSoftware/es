@@ -40,15 +40,11 @@ feature -- Properties
 		end
 
 	description: STRING
-		once
-			Result :=  "Assigning a variable to itself is a meaningless statement%
-			               % due to a typing error. Most probably, one of the two%
-			               % variable names was misspelled. One example among many%
-			               % others: the programmer wanted to assign a local variable%
-			               % to a class attribute and used one of the variable names twice."
+		do
+			Result :=  ca_names.self_assignment_description
 		end
 
-	options: LINKED_LIST[CA_RULE_OPTION]
+	options: LINKED_LIST[CA_RULE_OPTION[ANY]]
 		once
 			create Result.make
 		end
@@ -60,16 +56,11 @@ feature -- Properties
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		do
-			a_formatter.add_string ("Variable '")
+			a_formatter.add_string (ca_messages.self_assignment_violation_1)
 			if attached {STRING_32} a_violation.long_description_info.first as l_name then
 				a_formatter.add_string (l_name)
-			else
-				a_formatter.add_char ('?')
 			end
-			a_formatter.add_string ("' is assigned to itself. Assigning a variable to %
-			                        %itself is a meaningless statement due to a typing%
-			                        % error. Most probably, one of the two variable %
-			                        %names was misspelled.")
+			a_formatter.add_string (ca_messages.self_assignment_violation_2)
 		end
 
 feature {NONE} -- Checking the rule
@@ -82,7 +73,6 @@ feature {NONE} -- Checking the rule
 					if attached {ACCESS_ID_AS} a_assign_as.target as l_tar
 					and then l_tar.feature_name.is_equal (l_src_access_id.feature_name) then
 						create l_violation.make_with_rule (Current)
-						l_violation.set_affected_class (checking_class)
 						l_violation.set_location (a_assign_as.start_location)
 						l_violation.long_description_info.extend (l_src_access_id.feature_name.name_32)
 						violations.extend (l_violation)

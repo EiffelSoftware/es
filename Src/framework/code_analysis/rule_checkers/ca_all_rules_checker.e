@@ -30,9 +30,14 @@ inherit
 			process_access_id_as,
 			process_assign_as,
 			process_body_as,
+			process_do_as,
 			process_eiffel_list,
 			process_feature_as,
-			process_id_as
+			process_id_as,
+			process_if_as,
+			process_inspect_as,
+			process_loop_as,
+			process_once_as
 			-- ...
 		end
 
@@ -57,12 +62,22 @@ feature {NONE} -- Initialization
 			create body_post_actions.make
 			create class_pre_actions.make
 			create class_post_actions.make
+			create do_pre_actions.make
+			create do_post_actions.make
 			create eiffel_list_pre_actions.make
 			create eiffel_list_post_actions.make
 			create feature_pre_actions.make
 			create feature_post_actions.make
 			create id_pre_actions.make
 			create id_post_actions.make
+			create inspect_pre_actions.make
+			create inspect_post_actions.make
+			create if_pre_actions.make
+			create if_post_actions.make
+			create loop_pre_actions.make
+			create loop_post_actions.make
+			create once_pre_actions.make
+			create once_post_actions.make
 		end
 
 feature {CA_STANDARD_RULE}
@@ -107,6 +122,16 @@ feature {CA_STANDARD_RULE}
 			class_post_actions.extend (a_action)
 		end
 
+	add_do_pre_action (a_action: PROCEDURE[ANY, TUPLE[DO_AS]])
+		do
+			do_pre_actions.extend (a_action)
+		end
+
+	add_do_post_action (a_action: PROCEDURE[ANY, TUPLE[DO_AS]])
+		do
+			do_post_actions.extend (a_action)
+		end
+
 	add_eiffel_list_pre_action (a_action: PROCEDURE[ANY, TUPLE[EIFFEL_LIST[AST_EIFFEL]]])
 		do
 			eiffel_list_pre_actions.extend (a_action)
@@ -137,6 +162,46 @@ feature {CA_STANDARD_RULE}
 			id_post_actions.extend (a_action)
 		end
 
+	add_if_pre_action (a_action: PROCEDURE[ANY, TUPLE[IF_AS]])
+		do
+			if_pre_actions.extend (a_action)
+		end
+
+	add_if_post_action (a_action: PROCEDURE[ANY, TUPLE[IF_AS]])
+		do
+			if_post_actions.extend (a_action)
+		end
+
+	add_inspect_pre_action (a_action: PROCEDURE[ANY, TUPLE[INSPECT_AS]])
+		do
+			inspect_pre_actions.extend (a_action)
+		end
+
+	add_inspect_post_action (a_action: PROCEDURE[ANY, TUPLE[INSPECT_AS]])
+		do
+			inspect_post_actions.extend (a_action)
+		end
+
+	add_loop_pre_action (a_action: PROCEDURE[ANY, TUPLE[LOOP_AS]])
+		do
+			loop_pre_actions.extend (a_action)
+		end
+
+	add_loop_post_action (a_action: PROCEDURE[ANY, TUPLE[LOOP_AS]])
+		do
+			loop_post_actions.extend (a_action)
+		end
+
+	add_once_pre_action (a_action: PROCEDURE[ANY, TUPLE[ONCE_AS]])
+		do
+			once_pre_actions.extend (a_action)
+		end
+
+	add_once_post_action (a_action: PROCEDURE[ANY, TUPLE[ONCE_AS]])
+		do
+			once_post_actions.extend (a_action)
+		end
+
 feature {NONE} -- Agent lists
 
 	access_id_pre_actions, access_id_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[ACCESS_ID_AS]]]
@@ -147,11 +212,21 @@ feature {NONE} -- Agent lists
 
 	class_pre_actions, class_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[CLASS_AS]]]
 
+	do_pre_actions, do_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[DO_AS]]]
+
 	eiffel_list_pre_actions, eiffel_list_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[EIFFEL_LIST [AST_EIFFEL]]]]
 
 	feature_pre_actions, feature_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[FEATURE_AS]]]
 
 	id_pre_actions, id_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[ID_AS]]]
+
+	if_pre_actions, if_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[IF_AS]]]
+
+	inspect_pre_actions, inspect_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[INSPECT_AS]]]
+
+	loop_pre_actions, loop_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[LOOP_AS]]]
+
+	once_pre_actions, once_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[ONCE_AS]]]
 
 feature -- Execution Commands
 
@@ -169,31 +244,40 @@ feature -- Execution Commands
 
 feature {NONE} -- Processing
 
-	process_access_id_as (l_as: ACCESS_ID_AS)
+	process_access_id_as (a_id: ACCESS_ID_AS)
 		do
-			across access_id_pre_actions as l_a loop l_a.item.call ([l_as]) end
+			across access_id_pre_actions as l_a loop l_a.item.call ([a_id]) end
 
-			Precursor (l_as)
+			Precursor (a_id)
 
-			across access_id_post_actions as l_a loop l_a.item.call ([l_as]) end
+			across access_id_post_actions as l_a loop l_a.item.call ([a_id]) end
 		end
 
-	process_assign_as (l_as: ASSIGN_AS)
+	process_assign_as (a_assign: ASSIGN_AS)
 		do
-			across assign_pre_actions as l_a loop l_a.item.call ([l_as]) end
+			across assign_pre_actions as l_a loop l_a.item.call ([a_assign]) end
 
-			Precursor (l_as)
+			Precursor (a_assign)
 
-			across assign_post_actions as l_a loop l_a.item.call ([l_as]) end
+			across assign_post_actions as l_a loop l_a.item.call ([a_assign]) end
 		end
 
-	process_body_as (l_as: BODY_AS)
+	process_body_as (a_body: BODY_AS)
 		do
-			across body_pre_actions as l_a loop l_a.item.call ([l_as]) end
+			across body_pre_actions as l_a loop l_a.item.call ([a_body]) end
 
-			Precursor (l_as)
+			Precursor (a_body)
 
-			across body_post_actions as l_a loop l_a.item.call ([l_as]) end
+			across body_post_actions as l_a loop l_a.item.call ([a_body]) end
+		end
+
+	process_do_as (a_do: DO_AS)
+		do
+			across do_pre_actions as l_a loop l_a.item.call ([a_do]) end
+
+			Precursor (a_do)
+
+			across do_post_actions as l_a loop l_a.item.call ([a_do]) end
 		end
 
 	process_eiffel_list (a_list: EIFFEL_LIST [AST_EIFFEL])
@@ -205,22 +289,58 @@ feature {NONE} -- Processing
 			across eiffel_list_post_actions as l_a loop l_a.item.call ([a_list]) end
 		end
 
-	process_feature_as (l_as: FEATURE_AS)
+	process_feature_as (a_feature: FEATURE_AS)
 		do
-			across feature_pre_actions as l_a loop l_a.item.call ([l_as]) end
+			across feature_pre_actions as l_a loop l_a.item.call ([a_feature]) end
 
-			Precursor (l_as)
+			Precursor (a_feature)
 
-			across feature_post_actions as l_a loop l_a.item.call ([l_as]) end
+			across feature_post_actions as l_a loop l_a.item.call ([a_feature]) end
 		end
 
-	process_id_as (l_as: ID_AS)
+	process_id_as (a_id: ID_AS)
 		do
-			across id_pre_actions as l_a loop l_a.item.call ([l_as]) end
+			across id_pre_actions as l_a loop l_a.item.call ([a_id]) end
 
-			Precursor (l_as)
+			Precursor (a_id)
 
-			across id_post_actions as l_a loop l_a.item.call ([l_as]) end
+			across id_post_actions as l_a loop l_a.item.call ([a_id]) end
+		end
+
+	process_if_as (a_if: IF_AS)
+		do
+			across if_pre_actions as l_a loop l_a.item.call ([a_if]) end
+
+			Precursor (a_if)
+
+			across if_post_actions as l_a loop l_a.item.call ([a_if]) end
+		end
+
+	process_inspect_as (a_inspect: INSPECT_AS)
+		do
+			across inspect_pre_actions as l_a loop l_a.item.call ([a_inspect]) end
+
+			Precursor (a_inspect)
+
+			across inspect_post_actions as l_a loop l_a.item.call ([a_inspect]) end
+		end
+
+	process_loop_as (a_loop: LOOP_AS)
+		do
+			across loop_pre_actions as l_a loop l_a.item.call ([a_loop]) end
+
+			Precursor (a_loop)
+
+			across loop_post_actions as l_a loop l_a.item.call ([a_loop]) end
+		end
+
+	process_once_as (a_once: ONCE_AS)
+		do
+			across once_pre_actions as l_a loop l_a.item.call ([a_once]) end
+
+			Precursor (a_once)
+
+			across once_post_actions as l_a loop l_a.item.call ([a_once]) end
 		end
 
 feature -- Results

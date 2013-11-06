@@ -17,6 +17,9 @@ feature {NONE} -- Initialization
 	make_with_rule (a_rule: CA_STANDARD_RULE)
 		do
 			rule := a_rule
+			-- This is just the default. The rule may set the affected class otherwise
+			-- if needed.
+			affected_class := a_rule.checking_class
 			synchronized_with_source := True
 			create {LINKED_LIST[ANY]} long_description_info.make
 		end
@@ -67,6 +70,9 @@ feature -- Inherited from {COMPARABLE}
 feature {CA_STANDARD_RULE}
 
 	set_affected_class (a_class: CLASS_C)
+			-- Sets the class that this violations refers to to 'a_class'. This is only
+			-- needed when 'a_class' differs from '{CA_RULE}.checking_class' of the rule at
+			-- the time this violation is created. (See 'make_with_rule'.)
 		do
 			affected_class := a_class
 		end

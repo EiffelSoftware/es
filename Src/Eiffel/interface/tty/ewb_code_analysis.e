@@ -32,13 +32,12 @@ feature -- Execution (declared in EWB_CMD)
 			l_code_analyzer: CA_CODE_ANALYZER
 			l_rule_name, l_line, l_col: STRING
 		do
-			output_window.add ("{EWB_CODE_ANALYSIS}.execute was called! (:%N")
-			output_window.add ("Creating a CA_CODE_ANALYZER instance...%N")
 			create l_code_analyzer.make
-			output_window.add ("Calling analyze_sytem...%N")
 			l_code_analyzer.add_whole_system
 			l_code_analyzer.analyze
-			print ("%N")
+
+			print ("%NEiffel Code Analysis%N")
+			print ("--------------------%N")
 
 			across l_code_analyzer.rule_violations as l_vlist loop
 

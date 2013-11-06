@@ -34,7 +34,7 @@ feature -- Properties
 			Result :=  "---"
 		end
 
-	options: LINKED_LIST[CA_RULE_OPTION]
+	options: LINKED_LIST[CA_RULE_OPTION[ANY]]
 		once
 			create Result.make
 		end

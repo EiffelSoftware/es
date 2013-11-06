@@ -1,0 +1,10 @@
+00:00:00  ---  Running test: 001_self_assignment
+00:00:01  ---  001_self_assignment: successful
+00:00:01  ---  Running test: 002_unused_argument
+00:00:03  ---  002_unused_argument: successful
+00:00:03  ---  Running test: 004_cq_separation
+00:00:04  ---  004_cq_separation: successful
+00:00:04  ---  Running test: 020_variable_not_read
+00:00:06  ---  020_variable_not_read: successful
+00:00:06  ---  Running test: 034_npath
+00:00:08  ---  034_npath: successful

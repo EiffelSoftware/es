@@ -13,7 +13,7 @@ inherit
 
 feature -- Activation
 
-	prepare_checking (a_checker: CA_ALL_RULES_CHECKER)
+	frozen prepare_checking (a_checker: CA_ALL_RULES_CHECKER)
 		do
 			violations.wipe_out
 			register_actions (a_checker)

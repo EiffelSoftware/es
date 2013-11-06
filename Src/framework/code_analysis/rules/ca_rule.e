@@ -20,7 +20,7 @@ feature -- Basic properties, usually fix
 		deferred
 		end
 
-	options: LINKED_LIST[CA_RULE_OPTION]
+	options: LINKED_LIST[CA_RULE_OPTION[ANY]]
 		deferred
 		end
 
