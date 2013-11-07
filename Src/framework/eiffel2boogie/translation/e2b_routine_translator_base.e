@@ -242,6 +242,7 @@ feature -- Helper functions: contracts
 			l_name: STRING_32
 			l_type: TYPE_A
 			l_feature: FEATURE_I
+			l_boogie_type: IV_TYPE
 		do
 			create l_modified_objects.make
 			create l_field_restrictions.make
@@ -286,8 +287,16 @@ feature -- Helper functions: contracts
 						create l_fields.make
 						across l_fieldnames as f loop
 							l_feature := l_type.base_class.feature_named_32 (f.item)
-							l_name := name_translator.boogie_name_for_feature (l_feature, l_type)
-							l_fields.extend (create {IV_ENTITY}.make (l_name, types.field (types.for_type_a (l_feature.type))))
+							if l_feature = Void or else (helper.is_ghost (l_feature) and l_feature.written_in = system.any_id) then
+								l_name := f.item
+								l_boogie_type := types.generic
+							else
+								check l_feature.is_attribute end
+								l_name := name_translator.boogie_name_for_feature (l_feature, l_type)
+								l_boogie_type := types.for_type_a (l_feature.type)
+								translation_pool.add_feature (l_feature, l_type)
+							end
+							l_fields.extend (create {IV_ENTITY}.make (l_name, types.field (l_boogie_type)))
 						end
 
 						l_field_restrictions.extend ([l_fields, l_objects])
@@ -326,8 +335,8 @@ feature -- Helper functions: contracts
 			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 		do
 			create l_translator.make
-			l_translator.entity_mapping.set_heap (create {IV_ENTITY}.make ("h", types.heap))
-			l_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("c", types.heap))
+			l_translator.entity_mapping.set_heap (create {IV_ENTITY}.make ("heap", types.heap))
+			l_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.heap))
 			l_translator.set_context (current_feature, current_type)
 			a_expr.process (l_translator)
 			Result := l_translator.last_expression

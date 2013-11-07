@@ -13,6 +13,7 @@ feature {NONE} -- Initialization
 			status: creator
 		require else
 			is_open -- default: creator
+			modify (Current) -- default: creator
 		do
 			wrap -- default: creator
 		ensure then
@@ -33,8 +34,7 @@ feature
 			is_wrapped
 			across observers as o all o.item.is_open end
 
-			-- modify ([Current, "time"])
-			modify (Current)
+			modify_field ("time", Current)
 		do
 			unwrap -- default
 			time := time + 1
@@ -42,8 +42,6 @@ feature
 		ensure
 			time > old time
 			is_wrapped
-
-			observers = old observers -- TODO: fine-grained modifies
 		end
 
 invariant

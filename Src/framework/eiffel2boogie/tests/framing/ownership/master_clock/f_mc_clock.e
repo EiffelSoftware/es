@@ -15,8 +15,7 @@ feature {NONE} -- Initialization
 			m /= Void
 
 			modify (Current) -- default: creator
---			modify ([m, "observers"])
-			modify (m)
+			modify_field ("observers", m)
 		do
 			set_owns ([]) -- default: creator
 			set_subjects ([]) -- default: creator
@@ -38,8 +37,6 @@ feature {NONE} -- Initialization
 			master = m
 			local_time = m.time
 			m.observers = old m.observers + [Current]
-
-			m.time = old m.time -- TODO: fine-grained modifies
 		end
 
 feature -- Access
@@ -56,7 +53,7 @@ feature -- Access
 			is_wrapped -- default
 			master.is_wrapped
 
-			modify (Current)
+			modify_field ("local_time", Current)
 		do
 			unwrap -- default
 			local_time := master.time

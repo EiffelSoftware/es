@@ -14,6 +14,7 @@ feature {NONE} -- Initialization
 			status: creator
 		require else
 			is_open -- default: creator
+			modify (Current) -- default: creator
 		do
 			set_observers([observer])
 			wrap -- default: creator
@@ -38,8 +39,7 @@ feature -- Element change
 			across observers as oc all oc.item.is_wrapped end -- default: public
 
 			modify (observer)
---			modify ([Current, "value"])
-			modify (Current)
+			modify_field ("value", Current)
 		do
 			unwrap -- default: public
 			if attached observer then

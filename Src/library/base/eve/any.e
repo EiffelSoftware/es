@@ -373,6 +373,12 @@ feature -- Verification: contract clauses
 			Result := True
 		end
 
+	frozen modify_field (a_field: ANY; a_object: ANY): BOOLEAN
+			-- Helper function for adding modifies clauses in contracts.
+		do
+			Result := True
+		end
+
 	frozen reads (a: ANY): BOOLEAN
 			-- Helper function for adding reads clauses in contracts.
 		do
@@ -386,7 +392,7 @@ feature -- Verification: ownership operations
 		do
 		end
 
-	frozen wrap_all (a: TUPLE)
+	frozen wrap_all (a: ANY)
 			-- Wrap all objects in `a' simultaneously.
 		do
 		end
@@ -396,7 +402,7 @@ feature -- Verification: ownership operations
 		do
 		end
 
-	frozen unwrap_all (a: TUPLE)
+	frozen unwrap_all (a: ANY)
 			-- Unwrap all objects in `a' simultaneously.
 		do
 		end
@@ -406,57 +412,76 @@ feature -- Verification: ownership queries
 	frozen is_wrapped: BOOLEAN
 			-- Is `a' wrapped?
 		do
+			Result := True
 		end
 
 	frozen is_free: BOOLEAN
 			-- Is `a' free?
 		do
+			Result := True
 		end
 
 	frozen is_open: BOOLEAN
 			-- Is `a' open?
 		do
+			Result := True
 		end
 
 feature -- Verification: ownership fields
 
 	frozen owner: ANY assign set_owner
 			-- Owner of this object.
+		note
+			status: ghost
 		do
 		end
 
 	frozen set_owner (a: ANY)
 			-- Set owner of this object to `a'.
+		note
+			status: ghost
 		do
 		end
 
 	frozen owns: MML_SET [ANY] assign set_owns
 			-- Owns set of this object.
+		note
+			status: ghost
 		do
 		end
 
 	frozen set_owns (a: MML_SET [ANY])
 			-- Set owns set of this object.
+		note
+			status: ghost
 		do
 		end
 
 	frozen subjects: MML_SET [ANY] assign set_subjects
 			-- Subjects set of this object.
+		note
+			status: ghost
 		do
 		end
 
 	frozen set_subjects (a: MML_SET [ANY])
 			-- Set subjects set of this object.
+		note
+			status: ghost
 		do
 		end
 
 	frozen observers: MML_SET [ANY] assign set_observers
 			-- Observers set of this object.
+		note
+			status: ghost
 		do
 		end
 
 	frozen set_observers (a: MML_SET [ANY])
 			-- Set observers set of this object.
+		note
+			status: ghost
 		do
 		end
 
@@ -464,4 +489,14 @@ invariant
 --	reflexive_equality: standard_is_equal (Current)
 --	reflexive_conformance: conforms_to (Current)
 
+note
+	copyright: "Copyright (c) 1984-2013, Eiffel Software and others"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

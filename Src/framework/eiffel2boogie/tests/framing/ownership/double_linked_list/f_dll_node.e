@@ -12,6 +12,8 @@ feature
 			status: creator
 		require
 			is_open -- default: creator
+
+			modify (Current) -- default: creator
 		do
 			left := Current
 			right := Current
@@ -37,31 +39,27 @@ feature
 			right.is_wrapped
 			right.right.is_wrapped
 
-			modify ([Current, right, n])
-
-			modify (right.right)
-			modify (right.left)
-			modify (left)
+			modify ([Current, left, right, right.right, n])
 		local
 			r: F_DLL_NODE
 		do
 			r := right
 
-			wrap_all ([Current, left, right, right.right, n])
+--			unwrap_all ([Current, left, r, r.right, n])
 --			across << Current, r, n >> as o loop o.item.unwrap end
---			Current.unwrap
---			if r /= Current then
---				r.unwrap
---			end
---			if n /= Current then
---				n.unwrap
---			end
---			if r.right.is_wrapped then
---				r.right.unwrap
---			end
---			if left.is_wrapped then
---				left.unwrap
---			end
+			Current.unwrap
+			if r /= Current then
+				r.unwrap
+			end
+			if n /= Current then
+				n.unwrap
+			end
+			if r.right.is_wrapped then
+				r.right.unwrap
+			end
+			if left.is_wrapped then
+				left.unwrap
+			end
 
 			n.set_right (r)
 			n.set_left (Current)
@@ -93,6 +91,8 @@ feature
 			if not r.right.is_wrapped then
 				r.right.wrap
 			end
+
+--			wrap_all ([Current, left, r, r.right, n])
 		ensure
 			right = n
 			n.right = old right
@@ -177,18 +177,11 @@ feature {F_DLL_NODE}
 			left.is_open
 			across observers as sc all sc.item.is_open end
 			
---			modify ([Current, "left"])
-			modify (Current)
+			modify_field ("left", Current)
 		do
 			left := n -- preserves right
 		ensure
 			left = n
-			
-			right = old right -- TODO: fine-grained modifies
-			observers = old observers
-			subjects = old subjects
-			owns = old owns
-			owner = old owner
 		end
 
 	set_right (n: F_DLL_NODE)
@@ -199,18 +192,11 @@ feature {F_DLL_NODE}
 			right.is_open
 			across observers as sc all sc.item.is_open end
 
---			modify_field ("right", Current)
-			modify (Current)
+			modify_field ("right", Current)
 		do
 			right := n -- preserves left
 		ensure
 			right = n
-			
-			left = old left -- TODO: fine-grained modifies
-			observers = old observers
-			subjects = old subjects
-			owns = old owns
-			owner = old owner
 		end
       
 invariant

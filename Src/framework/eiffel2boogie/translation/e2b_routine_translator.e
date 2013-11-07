@@ -78,16 +78,12 @@ feature -- Basic operations
 
 				-- Modifies
 			create l_modifies.make ("Heap")
-			l_modifies.add_name ("Writes")
+			if options.is_using_ownership then
+				l_modifies.add_name ("Writes")
+			end
 			current_boogie_procedure.add_contract (l_modifies)
 
 				-- Pre- and postconditions
-			if options.is_precondition_predicate_enabled then
-				add_precondition_predicate
-			end
-			if options.is_postcondition_predicate_enabled then
-				add_postcondition_predicate
-			end
 			l_contracts := contracts_of (current_feature, current_type)
 			across l_contracts.pre as j loop
 				process_precondition (j.item)
@@ -104,20 +100,9 @@ feature -- Basic operations
 				check True end
 			end
 
-			generate_writes_set_function
-
 				-- Framing
 			if options.is_using_ownership then
-					-- Ownership default
-				add_ownership_conditions
-
-				if a_for_creator then
-						-- Creator
---					add_ownership_conditions_for_creator
-				elseif a_feature.is_exported_for (system.any_class.compiled_class) then
-						-- Public routine
---					add_ownership_conditions_for_public
-				end
+				add_ownership_contracts (a_for_creator)
 			else
 				if helper.feature_note_values (current_feature, "framing").has ("False") then
 						-- No frame condition
@@ -130,9 +115,15 @@ feature -- Basic operations
 						-- Normal frame condition
 					process_fields_list (l_fields)
 				end
+--			add_invariant_conditions (a_for_creator)
 			end
 
---			add_invariant_conditions (a_for_creator)
+			if options.is_precondition_predicate_enabled then
+				add_precondition_predicate
+			end
+			if options.is_postcondition_predicate_enabled then
+				add_postcondition_predicate
+			end
 		end
 
 	add_invariant_conditions (a_is_creator: BOOLEAN)
@@ -160,16 +151,22 @@ feature -- Basic operations
 			current_boogie_procedure.add_contract (l_post)
 		end
 
-	add_ownership_conditions
+	add_ownership_contracts (a_for_creator: BOOLEAN)
+			-- Add ownership contracts to current feature.
 		local
 			l_fcall: IV_FUNCTION_CALL
 			l_pre: IV_PRECONDITION
 			l_post: IV_POSTCONDITION
 		do
+				-- Preserves global invariant
 			create l_pre.make (factory.function_call ("global", << "Heap", "Writes" >>, types.bool))
 			l_pre.set_free
 			current_boogie_procedure.add_contract (l_pre)
+			create l_post.make (factory.function_call ("global", << "Heap", "Writes" >>, types.bool))
+			l_post.set_free
+			current_boogie_procedure.add_contract (l_post)
 
+				-- Writes set is writable
 			create l_fcall.make (name_translator.boogie_name_for_writes_set_function (current_feature, current_type), types.set (types.ref))
 			l_fcall.add_argument (create {IV_ENTITY}.make ("Heap", types.heap_type))
 			across current_boogie_procedure.arguments as i loop
@@ -186,10 +183,7 @@ feature -- Basic operations
 			l_pre.set_assertion_type ("pre")
 			current_boogie_procedure.add_contract (l_pre)
 
-			create l_post.make (factory.function_call ("global", << "Heap", "Writes" >>, types.bool))
-			l_post.set_free
-			current_boogie_procedure.add_contract (l_post)
-
+				-- How writes set changes
 			create l_post.make (
 				factory.function_call (
 					"writes_changed",
@@ -203,6 +197,7 @@ feature -- Basic operations
 			l_post.set_free
 			current_boogie_procedure.add_contract (l_post)
 
+				-- Only writes set has changed
 			create l_fcall.make (name_translator.boogie_name_for_writes_set_function (current_feature, current_type), types.set (types.ref))
 			l_fcall.add_argument (factory.old_ (create {IV_ENTITY}.make ("Heap", types.heap_type)))
 			across current_boogie_procedure.arguments as i loop
@@ -219,43 +214,23 @@ feature -- Basic operations
 					types.bool))
 			l_post.set_free
 			current_boogie_procedure.add_contract (l_post)
---			translation_pool.add_writes_function (current_feature, current_type)
-		end
 
-	add_ownership_conditions_for_creator
-		local
-			l_pre: IV_PRECONDITION
-			l_post: IV_POSTCONDITION
-			l_heap_access: IV_HEAP_ACCESS
-		do
-			create l_pre.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
-			current_boogie_procedure.add_contract (l_pre)
-
-			create l_heap_access.make ("Heap", create {IV_ENTITY}.make ("Current", types.ref), create {IV_ENTITY}.make ("observers", types.set (types.ref)))
-			create l_pre.make (factory.equal (
-				l_heap_access,
-				factory.function_call ("Set#Empty", Void, types.set (types.ref))))
-			current_boogie_procedure.add_contract (l_pre)
-
-			create l_post.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
+				-- Field preservations
+			create l_fcall.make (name_translator.boogie_name_for_field_preservation_function (current_feature, current_type), types.bool)
+			l_fcall.add_argument (factory.old_ (create {IV_ENTITY}.make ("Heap", types.heap_type)))
+			l_fcall.add_argument (create {IV_ENTITY}.make ("Heap", types.heap_type))
+			across current_boogie_procedure.arguments as i loop
+				l_fcall.add_argument (i.item.entity)
+			end
+			create l_post.make (l_fcall)
 			l_post.set_assertion_type ("post")
+			l_post.set_assertion_tag ("field_preservation")
 			current_boogie_procedure.add_contract (l_post)
-		end
 
-	add_ownership_conditions_for_public
-		local
-			l_pre: IV_PRECONDITION
-			l_post: IV_POSTCONDITION
-		do
-			create l_pre.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
-			l_pre.set_assertion_type ("pre")
-			l_pre.set_assertion_tag ("target_wrapped")
-			current_boogie_procedure.add_contract (l_pre)
+			translation_pool.add_writes_function (current_feature, current_type)
 
-			create l_post.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
-			l_post.set_assertion_type ("post")
-			l_post.set_assertion_tag ("target_wrapped")
-			current_boogie_procedure.add_contract (l_post)
+				-- OWNERSHIP DEFAULTS
+
 		end
 
 	translate_routine_implementation (a_feature: FEATURE_I; a_type: TYPE_A)
@@ -395,37 +370,81 @@ feature -- Basic operations
 	translate_writes_function (a_feature: FEATURE_I; a_type: TYPE_A)
 			-- Translate implementation of feature `a_feature' of type `a_type'.
 		local
+			l_: like modifies_expressions_of
 			l_function: IV_FUNCTION
 			l_boogie_type: IV_TYPE
-			l_type: TYPE_A
-			i: INTEGER
+			l_expr: IV_EXPRESSION
+			l_modif_set: IV_EXPRESSION
+			l_o, l_f: IV_ENTITY
+			l_objects_expr: IV_EXPRESSION
+			l_fields_expr: IV_EXPRESSION
+			l_forall: IV_FORALL
 		do
 			set_context (a_feature, a_type)
 			helper.set_up_byte_context (current_feature, current_type)
 
-				-- Function
-			create l_function.make (
-				name_translator.boogie_name_for_writes_set_function (current_feature, current_type),
-				types.set (types.ref)
-			)
+			l_ := modifies_expressions_of (current_feature, current_type)
+
+				-- Writes function
+			create l_function.make (name_translator.boogie_name_for_writes_set_function (current_feature, current_type), types.set (types.ref))
 			boogie_universe.add_declaration (l_function)
 
 				-- Arguments
 			translation_pool.add_type (current_type)
 			l_function.add_argument ("heap", types.heap_type)
 			l_function.add_argument ("current", types.ref)
-			from i := 1 until i > current_feature.argument_count loop
-				l_type := current_feature.arguments.i_th (i).deep_actual_type.instantiated_in (current_type)
-				translation_pool.add_type (l_type)
-				l_boogie_type := types.for_type_a (l_type)
-				l_function.add_argument (current_feature.arguments.item_name (i), l_boogie_type)
-				i := i + 1
+			across arguments_of_current_feature as i loop
+				l_function.add_argument (i.item.name, i.item.boogie_type)
 			end
 
 				-- Expression
-			l_function.set_body (factory.function_call ("Set#Singleton", << "current" >>, types.set (types.ref)))
+			across l_.modified_objects as o loop
+				if o.item.type.is_set then
+					l_expr := o.item
+				else
+					l_expr := factory.function_call ("Set#Singleton", << o.item >>, types.set (types.ref))
+				end
+				if l_modif_set = Void then
+					l_modif_set := l_expr
+				else
+					l_modif_set := factory.function_call ("Set#Union", << l_modif_set, l_expr >>, types.set (types.ref))
+				end
+			end
+			l_function.set_body (l_modif_set)
 
+				-- Field preservation function
+			create l_function.make (name_translator.boogie_name_for_field_preservation_function (current_feature, current_type), types.bool)
+			boogie_universe.add_declaration (l_function)
+
+				-- Arguments
+			l_function.add_argument ("heap", types.heap)
+			l_function.add_argument ("heap'", types.heap)
+			l_function.add_argument ("current", types.ref)
+			across arguments_of_current_feature as i loop
+				l_function.add_argument (i.item.name, i.item.boogie_type)
+			end
+
+				-- Expression
+			create l_o.make ("o", types.ref)
+			create l_f.make ("f", types.field (types.generic))
+			l_expr := factory.true_
+			across l_.field_restriction as j loop
+				l_objects_expr := factory.false_
+				l_fields_expr := factory.true_
+				across j.item.objects as ro loop
+					l_objects_expr := factory.or_ (l_objects_expr, factory.equal (l_o, ro.item))
+				end
+				across j.item.fields as rf loop
+					l_fields_expr := factory.and_ (l_fields_expr, factory.not_equal (l_f, rf.item))
+				end
+				create l_forall.make (factory.implies_ (factory.and_ (l_objects_expr, l_fields_expr), factory.equal (factory.heap_access ("heap", l_o, l_f.name, types.generic), factory.heap_access ("heap'", l_o, l_f.name, types.generic))))
+				l_forall.add_bound_variable (l_o.name, l_o.type)
+				l_forall.add_bound_variable (l_f.name, l_f.type)
+				l_expr := factory.and_ (l_expr, l_forall)
+			end
+			l_function.set_body (l_expr)
 		end
+
 
 	generate_functional_axiom (a_function: IV_FUNCTION)
 			-- Generate functional axiom for `a_function'.
@@ -600,89 +619,7 @@ feature -- Basic operations
 			boogie_universe.add_declaration (l_axiom)
 		end
 
-	generate_writes_set_function
-			-- Generate writes function of current feature.
-		local
-			l_name: STRING
-			l_fdecl: IV_FUNCTION
-			l_contracts: like contracts_of
-			l_modif_set: IV_EXPRESSION
-			l_: like modifies_expressions_of
-			l_expr: IV_EXPRESSION
 
-			l_o, l_f: IV_ENTITY
-			l_objects_expr: IV_EXPRESSION
-			l_fields_expr: IV_EXPRESSION
-			l_forall: IV_FORALL
-		do
-			l_ := modifies_expressions_of (current_feature, current_type)
-
-			across l_.modified_objects as o loop
-				if o.item.type.is_set then
-					l_expr := o.item
-				else
-					l_expr := factory.function_call ("Set#Singleton", << o.item >>, types.set (types.ref))
-				end
-				if l_modif_set = Void then
-					l_modif_set := l_expr
-				else
-					l_modif_set := factory.function_call ("Set#Union", << l_modif_set, l_expr >>, types.set (types.ref))
-				end
-			end
-
-			l_name := name_translator.boogie_name_for_writes_set_function (current_feature, current_type)
-			create l_fdecl.make (l_name, types.set (types.ref))
-			boogie_universe.add_declaration (l_fdecl)
-
-			l_fdecl.add_argument ("heap", types.heap)
-			across current_boogie_procedure.arguments as i loop
-				l_fdecl.add_argument (i.item.name, i.item.type)
-			end
-			l_fdecl.set_body (l_modif_set)
-
-
-
-
-			create l_fdecl.make ("temp", types.bool)
-			boogie_universe.add_declaration (l_fdecl)
-
-			l_fdecl.add_argument ("heap", types.heap)
-			l_fdecl.add_argument ("heap'", types.heap)
-			across current_boogie_procedure.arguments as i loop
-				l_fdecl.add_argument (i.item.name, i.item.type)
-			end
-
-			create l_o.make ("o", types.ref)
-			create l_f.make ("f", types.field (types.generic))
-			l_expr := factory.true_
-			across l_.field_restriction as j loop
-				l_objects_expr := factory.false_
-				l_fields_expr := factory.true_
-				across j.item.objects as ro loop
-					l_objects_expr := factory.or_ (l_objects_expr, factory.equal (l_o, ro.item))
-				end
-				across j.item.fields as rf loop
-					l_fields_expr := factory.and_ (l_fields_expr, factory.not_equal (l_f, rf.item))
-				end
-				create l_forall.make (factory.implies_ (factory.and_ (l_objects_expr, l_fields_expr), factory.equal (factory.heap_access ("heap", l_o, l_f.name, types.generic), factory.heap_access ("heap'", l_o, l_f.name, types.generic))))
-				l_forall.add_bound_variable (l_o.name, l_o.type)
-				l_forall.add_bound_variable (l_f.name, l_f.type)
-				l_expr := factory.and_ (l_expr, l_forall)
-			end
-
-			l_fdecl.set_body (l_expr)
-
-
-
---			l_contracts := contracts_of_current_feature
---			if l_contracts.modifies.is_empty then
---				if not current_feature.has_return_value then
---					l_fdecl.set_body (factory.function_call ("Set#Singleton", << "Current" >>, types.set (types.ref)))
---				end
---			else
---				l_fdecl.set_body (modifies_set (l_contracts.modifies))
---			end
-		end
 
 	modifies_set (a_modifies: LIST [ASSERT_B]): IV_EXPRESSION
 		local

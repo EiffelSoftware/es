@@ -19,6 +19,9 @@ feature
 
 			c1.sync
 			c2.sync
+
+			check c1.local_time = m.time end
+			check c2.local_time = m.time end
 		end
 
 end

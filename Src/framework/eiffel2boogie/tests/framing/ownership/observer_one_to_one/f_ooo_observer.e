@@ -49,18 +49,12 @@ feature {F_OOO_SUBJECT} -- Element change
 			attached subject
 		
 			modify_field ("cache", Current)
-			modify (Current)
 		do
 			cache := subject.value
 		ensure
 			cache = subject.value
 			is_open -- default: not public
 			across observers as sc all sc.item.is_open end -- default: not public
-
---			subject = old subject -- TODO: fine-grained modifies
---			subjects = old subjects
---			owns = old owns
---			observers = old observers
 		end
 
 invariant
