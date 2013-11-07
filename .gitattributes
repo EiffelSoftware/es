@@ -104,6 +104,11 @@ ejson/v0.4.0/test/getest/ejson_test-win.cfg -text
 ejson/v0.4.0/test/getest/ejson_test.cfg -text
 ejson/v0.4.0/test/getest/ejson_test.ecf -text svneol=native#application/xml
 ejson/v0.4.0/test/getest/readme.txt -text
+ejson/v0.5.0/library/json-safe.ecf -text svneol=native#application/xml
+ejson/v0.5.0/library/json.ecf -text svneol=native#application/xml
+ejson/v0.5.0/library/json_gobo_extension.ecf -text svneol=native#application/xml
+ejson/v0.5.0/test/autotest/test_suite/test_suite-safe.ecf -text svneol=native#application/xml
+ejson/v0.5.0/test/autotest/test_suite/test_suite.ecf -text svneol=native#application/xml
 gobosoft.com/gobo/3.9/History.txt -text
 gobosoft.com/gobo/3.9/License.txt -text
 gobosoft.com/gobo/3.9/Readme.txt -text
