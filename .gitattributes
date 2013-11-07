@@ -1,54 +1,10 @@
 * text=auto !eol
-ejson/current/History.txt -text
-ejson/current/License.txt -text
-ejson/current/Readme.txt -text
 ejson/current/library/json-safe.ecf -text svneol=native#application/xml
 ejson/current/library/json.ecf -text svneol=native#application/xml
-ejson/current/library/json.rc -text
 ejson/current/library/json_gobo_extension.ecf -text svneol=native#application/xml
-ejson/current/test/autotest/test_suite/fail1.json -text
-ejson/current/test/autotest/test_suite/fail10.json -text
-ejson/current/test/autotest/test_suite/fail11.json -text
-ejson/current/test/autotest/test_suite/fail12.json -text
-ejson/current/test/autotest/test_suite/fail13.json -text
-ejson/current/test/autotest/test_suite/fail14.json -text
-ejson/current/test/autotest/test_suite/fail15.json -text
-ejson/current/test/autotest/test_suite/fail16.json -text
-ejson/current/test/autotest/test_suite/fail17.json -text
-ejson/current/test/autotest/test_suite/fail18.json -text
-ejson/current/test/autotest/test_suite/fail19.json -text
-ejson/current/test/autotest/test_suite/fail2.json -text
-ejson/current/test/autotest/test_suite/fail20.json -text
-ejson/current/test/autotest/test_suite/fail21.json -text
-ejson/current/test/autotest/test_suite/fail22.json -text
-ejson/current/test/autotest/test_suite/fail23.json -text
-ejson/current/test/autotest/test_suite/fail24.json -text
-ejson/current/test/autotest/test_suite/fail25.json -text
-ejson/current/test/autotest/test_suite/fail26.json -text
-ejson/current/test/autotest/test_suite/fail27.json -text
-ejson/current/test/autotest/test_suite/fail28.json -text
-ejson/current/test/autotest/test_suite/fail29.json -text
-ejson/current/test/autotest/test_suite/fail3.json -text
-ejson/current/test/autotest/test_suite/fail30.json -text
-ejson/current/test/autotest/test_suite/fail31.json -text
-ejson/current/test/autotest/test_suite/fail32.json -text
-ejson/current/test/autotest/test_suite/fail33.json -text
-ejson/current/test/autotest/test_suite/fail4.json -text
-ejson/current/test/autotest/test_suite/fail5.json -text
-ejson/current/test/autotest/test_suite/fail6.json -text
-ejson/current/test/autotest/test_suite/fail7.json -text
-ejson/current/test/autotest/test_suite/fail8.json -text
-ejson/current/test/autotest/test_suite/fail9.json -text
-ejson/current/test/autotest/test_suite/json_menu_example.txt -text
-ejson/current/test/autotest/test_suite/pass1.json -text
-ejson/current/test/autotest/test_suite/pass2.json -text
-ejson/current/test/autotest/test_suite/pass3.json -text
 ejson/current/test/autotest/test_suite/test_suite-safe.ecf -text svneol=native#application/xml
 ejson/current/test/autotest/test_suite/test_suite.ecf -text svneol=native#application/xml
-ejson/current/test/getest/ejson_test-win.cfg -text
-ejson/current/test/getest/ejson_test.cfg -text
 ejson/current/test/getest/ejson_test.ecf -text svneol=native#application/xml
-ejson/current/test/getest/readme.txt -text
 ejson/v0.3.0/History.txt -text
 ejson/v0.3.0/License.txt -text
 ejson/v0.3.0/Readme.txt -text
