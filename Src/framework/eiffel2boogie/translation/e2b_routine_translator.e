@@ -78,7 +78,7 @@ feature -- Basic operations
 
 				-- Modifies
 			create l_modifies.make ("Heap")
-			if options.is_using_ownership then
+			if options.is_ownership_enabled then
 				l_modifies.add_name ("Writes")
 			end
 			current_boogie_procedure.add_contract (l_modifies)
@@ -101,7 +101,7 @@ feature -- Basic operations
 			end
 
 				-- Framing
-			if options.is_using_ownership then
+			if options.is_ownership_enabled then
 				add_ownership_contracts (a_for_creator)
 			else
 				if helper.feature_note_values (current_feature, "framing").has ("False") then
@@ -258,6 +258,7 @@ feature -- Basic operations
 			l_values: ARRAYED_LIST [STRING_32]
 			l_assign: IV_ASSIGNMENT
 			l_attribute: FEATURE_I
+			l_call: IV_PROCEDURE_CALL
 		do
 			set_context (a_feature, a_type)
 			set_inlining_options_for_feature (a_feature)
@@ -282,13 +283,6 @@ feature -- Basic operations
 			l_implementation.body.add_statement (factory.trace (l_proc_name))
 
 			if a_for_creator then
-					-- Add creator initialization for ownership
-				create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "owns", types.set (types.ref)), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
-				l_implementation.body.add_statement (l_assign)
-				create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "subjects", types.set (types.ref)), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
-				l_implementation.body.add_statement (l_assign)
-				create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "observers", types.set (types.ref)), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
-				l_implementation.body.add_statement (l_assign)
 					-- Add creator initialization for attributes
 				from
 					current_type.base_class.feature_table.start
@@ -305,6 +299,28 @@ feature -- Basic operations
 						l_implementation.body.add_statement (l_assign)
 					end
 					current_type.base_class.feature_table.forth
+				end
+			end
+				-- OWNERSHIP: start of routine body
+			if options.is_ownership_enabled then
+				if a_for_creator then
+						-- Add creator initialization for ownership
+					create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "owns", types.set (types.ref)), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
+					l_implementation.body.add_statement (l_assign)
+					create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "subjects", types.set (types.ref)), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
+					l_implementation.body.add_statement (l_assign)
+					create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "observers", types.set (types.ref)), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
+					l_implementation.body.add_statement (l_assign)
+
+					if options.is_ownership_defaults_enabled then
+
+					end
+				else
+					if options.is_ownership_defaults_enabled then
+						if helper.is_public (current_feature) then
+							l_implementation.body.add_statement (factory.procedure_call ("unwrap", << "Current" >>))
+						end
+					end
 				end
 			end
 
@@ -328,6 +344,17 @@ feature -- Basic operations
 --					-- Creator finalizer: set "initialized" to true
 --				create l_assign.make (factory.heap_current_initialized (l_translator.entity_mapping), factory.true_)
 --				l_implementation.body.add_statement (l_assign)
+			end
+
+				-- OWNERSHIP: end of routine body
+			if options.is_ownership_enabled and options.is_ownership_defaults_enabled then
+				if a_for_creator then
+					l_implementation.body.add_statement (factory.procedure_call ("wrap", << "Current" >>))
+				else
+					if helper.is_public (current_feature) then
+						l_implementation.body.add_statement (factory.procedure_call ("wrap", << "Current" >>))
+					end
+				end
 			end
 		end
 

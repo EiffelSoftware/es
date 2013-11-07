@@ -227,6 +227,25 @@ feature -- Heap and map access
 				a_index)
 		end
 
+feature -- Statements
+
+	procedure_call (a_proc_name: STRING; a_arguments: ARRAY [ANY]): IV_PROCEDURE_CALL
+			-- Procedure call.
+		do
+			create Result.make (a_proc_name)
+			if attached a_arguments then
+				across a_arguments as i loop
+					if attached {STRING} i.item as s then
+						Result.add_argument (create {IV_ENTITY}.make (s, types.generic_type))
+					elseif attached {IV_EXPRESSION} i.item as e then
+						Result.add_argument (e)
+					else
+						check False end
+					end
+				end
+			end
+		end
+
 feature -- Miscellaneous
 
 	trace (a_text: STRING): IV_STATEMENT

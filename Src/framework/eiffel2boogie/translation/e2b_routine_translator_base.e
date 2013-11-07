@@ -179,6 +179,26 @@ feature -- Helper functions: contracts
 					l_pre.forth
 				end
 			end
+			from
+				l_post.start
+			until
+				l_post.after
+			loop
+				if attached {FEATURE_B} l_post.item.expr as l_call then
+					l_name := names_heap.item_32 (l_call.feature_name_id)
+					if l_name  ~ "modify" or l_name ~ "modify_field" then
+						l_modifies.extend (l_post.item)
+						l_post.remove
+					elseif l_name ~ "reads" then
+						l_reads.extend (l_post.item)
+						l_post.remove
+					else
+						l_post.forth
+					end
+				else
+					l_post.forth
+				end
+			end
 			Result := [l_pre, l_post, l_modifies, l_reads]
 		end
 

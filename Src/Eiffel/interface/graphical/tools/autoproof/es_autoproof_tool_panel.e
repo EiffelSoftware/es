@@ -212,9 +212,18 @@ feature {NONE} -- Initialization
 
 			create l_item.make_with_text_and_action ("Enable ownership",
 				agent do
-					options.set_using_ownership (not options.is_using_ownership)
+					options.set_ownership_enabled (not options.is_ownership_enabled)
 				end)
-			if options.is_using_ownership then
+			if options.is_ownership_enabled then
+				l_item.toggle
+			end
+			Result.extend (l_item)
+
+			create l_item.make_with_text_and_action ("- use defaults",
+				agent do
+					options.set_ownership_defaults_enabled (not options.is_ownership_defaults_enabled)
+				end)
+			if options.is_ownership_defaults_enabled then
 				l_item.toggle
 			end
 			Result.extend (l_item)

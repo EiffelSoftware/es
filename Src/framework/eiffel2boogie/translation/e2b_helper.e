@@ -154,6 +154,12 @@ feature -- Note helpers
 			Result := is_feature_status (a_feature, "ghost")
 		end
 
+	is_public (a_feature: FEATURE_I): BOOLEAN
+			-- Is `a_feature' a public feature?
+		do
+			Result := a_feature.is_exported_for (system.any_class.compiled_class)
+		end
+
 feature -- String helpers
 
 	feature_of_type_as_string (a_feature: FEATURE_I; a_type: TYPE_A): STRING

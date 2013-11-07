@@ -1,3 +1,6 @@
+note
+	status: no_ownership_defaults
+
 class F_OOO_SUBJECT
 
 inherit
