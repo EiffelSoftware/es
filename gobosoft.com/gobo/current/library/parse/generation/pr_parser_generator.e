@@ -724,7 +724,6 @@ feature {NONE} -- Generation
 			a_file.put_line ("%Tyy_do_action (yy_act: INTEGER)")
 			a_file.put_line ("%T%T%T-- Execute semantic action.")
 			a_file.put_line ("%T%Tlocal")
-			a_file.put_line ("%T%T%Tyy_retried: BOOLEAN")
 			nb_types := machine.grammar.types.count
 			create types.make (nb_types)
 			rules := machine.grammar.rules
@@ -759,8 +758,7 @@ feature {NONE} -- Generation
 				end
 			end
 			a_file.put_line ("%T%Tdo")
-			a_file.put_line ("%T%T%Tif not yy_retried then")
-			a_file.put_line ("%T%T%T%Tinspect yy_act")
+			a_file.put_line ("%T%T%Tinspect yy_act")
 			from
 				i := 1
 			until
@@ -773,19 +771,13 @@ feature {NONE} -- Generation
 				a_rule.print_action (input_filename, line_pragma, a_file)
 				i := i + 1
 			end
-			a_file.put_line ("%T%T%T%Telse")
-			a_file.put_line ("%T%T%T%T%Tdebug (%"GEYACC%")")
-			a_file.put_line ("%T%T%T%T%T%Tstd.error.put_string (%"Error in parser: unknown rule id: %")")
-			a_file.put_line ("%T%T%T%T%T%Tstd.error.put_integer (yy_act)")
-			a_file.put_line ("%T%T%T%T%T%Tstd.error.put_new_line")
-			a_file.put_line ("%T%T%T%T%Tend")
-			a_file.put_line ("%T%T%T%T%Tabort")
+			a_file.put_line ("%T%T%Telse")
+			a_file.put_line ("%T%T%T%Tdebug (%"GEYACC%")")
+			a_file.put_line ("%T%T%T%T%Tstd.error.put_string (%"Error in parser: unknown rule id: %")")
+			a_file.put_line ("%T%T%T%T%Tstd.error.put_integer (yy_act)")
+			a_file.put_line ("%T%T%T%T%Tstd.error.put_new_line")
 			a_file.put_line ("%T%T%T%Tend")
-			a_file.put_line ("%T%T%Tend")
-			a_file.put_line ("%T%Trescue")
-			a_file.put_line ("%T%T%Tif yy_parsing_status = yyAborted then")
-			a_file.put_line ("%T%T%T%Tyy_retried := True")
-			a_file.put_line ("%T%T%T%Tretry")
+			a_file.put_line ("%T%T%T%Tabort")
 			a_file.put_line ("%T%T%Tend")
 			a_file.put_line ("%T%Tend")
 		end
@@ -952,18 +944,10 @@ feature {NONE} -- Generation
 				a_file.put_line ("%"")
 				a_type := a_rule.lhs.type
 				a_file.put_line ("%T%Tlocal")
-				a_file.put_line ("%T%T%Tyy_retried: BOOLEAN")
 				a_type.print_dollar_dollar_declaration (a_file)
 				a_file.put_new_line
 				a_file.put_line ("%T%Tdo")
-				a_file.put_line ("%T%T%Tif not yy_retried then")
 				a_rule.print_action (input_filename, line_pragma, a_file)
-				a_file.put_line ("%T%T%Tend")
-				a_file.put_line ("%T%Trescue")
-				a_file.put_line ("%T%T%Tif yy_parsing_status = yyAborted then")
-				a_file.put_line ("%T%T%T%Tyy_retried := True")
-				a_file.put_line ("%T%T%T%Tretry")
-				a_file.put_line ("%T%T%Tend")
 				a_file.put_line ("%T%Tend")
 				i := i + 1
 			end
