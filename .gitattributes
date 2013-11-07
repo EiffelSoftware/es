@@ -4,7 +4,6 @@ ejson/current/library/json.ecf -text svneol=native#application/xml
 ejson/current/library/json_gobo_extension.ecf -text svneol=native#application/xml
 ejson/current/test/autotest/test_suite/test_suite-safe.ecf -text svneol=native#application/xml
 ejson/current/test/autotest/test_suite/test_suite.ecf -text svneol=native#application/xml
-ejson/current/test/getest/ejson_test.ecf -text svneol=native#application/xml
 ejson/v0.3.0/History.txt -text
 ejson/v0.3.0/License.txt -text
 ejson/v0.3.0/Readme.txt -text
