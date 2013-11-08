@@ -1,27 +1,38 @@
-class F_OOO_OBSERVER
+note
+	explicit: "all"
+
+class F_OOO_OBSERVER_D
 
 create
 	make
 
 feature
 
-	make (s: F_OOO_SUBJECT)
+	make (s: F_OOO_SUBJECT_D)
 		note
 			status: creator
 		require
 			s.observer = Void
-			across s.observers as sc all sc.item.is_wrapped end -- default: public
+			s.is_wrapped -- default: public
+			is_open -- default: creator
 
 			modify (s)
 			modify (Current) -- default: creator
 		do
+			set_owns ([]) -- default: creator
+			set_subjects ([]) -- default: creator
+			set_observers ([]) -- default: creator
+
 			subject := s
 			s.register (Current)
 			cache := s.value
 
 			set_subjects ([subject])
+			wrap -- default: public/creator
 		ensure
 			subject = s
+			is_wrapped -- default: public/creator
+			s.is_wrapped -- default: public
 		end
 
 feature -- Access
@@ -29,13 +40,15 @@ feature -- Access
 	cache: INTEGER
 			-- Cached value of subject.
 
-	subject: F_OOO_SUBJECT
+	subject: F_OOO_SUBJECT_D
 			-- Subject of this observer.
 
-feature {F_OOO_SUBJECT} -- Element change
+feature {F_OOO_SUBJECT_D} -- Element change
 
 	notify
 		require
+			is_open -- default: not public
+			across observers as sc all sc.item.is_open end -- default: not public
 			attached subject
 
 			modify_field ("cache", Current)
@@ -43,6 +56,8 @@ feature {F_OOO_SUBJECT} -- Element change
 			cache := subject.value
 		ensure
 			cache = subject.value
+			is_open -- default: not public
+			across observers as sc all sc.item.is_open end -- default: not public
 		end
 
 invariant

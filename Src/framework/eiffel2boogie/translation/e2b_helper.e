@@ -1,10 +1,11 @@
 note
-	description: "Summary description for {E2B_HELPER}."
-	author: ""
+	description: "[
+		Helper functions for Eiffel to Boogie translation.
+	]"
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+frozen class
 	E2B_HELPER
 
 inherit
@@ -21,43 +22,19 @@ inherit
 	SHARED_SERVER
 		export {NONE} all end
 
-feature -- Routine types
-
-	is_mml_model_query (a_feature: FEATURE_I): BOOLEAN
-			-- Is `a_feature' a model query?
-		local
-			l_values: ARRAYED_LIST [STRING_32]
-		do
-			if a_feature.has_return_value then
-				l_values := class_note_values (a_feature.written_class, "model")
-				Result := l_values.has (a_feature.feature_name_32)
-				if not Result then
-					l_values := feature_note_values (a_feature, "type")
-					Result := l_values.has ("model")
-				end
-			end
-		end
-
-	is_lemma_routine (a_feature: FEATURE_I): BOOLEAN
-			-- Is `a_feature' a lemma routine?
-		local
-			l_values: ARRAYED_LIST [STRING_32]
-		do
-			if a_feature.is_routine then
-				l_values := feature_note_values (a_feature, "type")
-				Result := l_values.has ("lemma")
-			end
-		end
-
-feature -- Note helpers
+feature -- General note helpers
 
 	class_note_values (a_class: CLASS_C; a_tag: STRING_32): ARRAYED_LIST [STRING_32]
 			-- List of note values of tag `a_tag'.
 		do
-			if a_class.ast /= Void and then a_class.ast.top_indexes /= Void then
-				Result := note_values (a_class.ast.top_indexes, a_tag)
-			else
-				create Result.make (0)
+			create Result.make (5)
+			if attached a_class.ast as l_ast then
+				if l_ast.top_indexes /= Void then
+					Result.append (note_values (l_ast.top_indexes, a_tag))
+				end
+				if l_ast.bottom_indexes /= Void then
+					Result.append (note_values (l_ast.bottom_indexes, a_tag))
+				end
 			end
 		ensure
 			result_attached: attached Result
@@ -94,7 +71,11 @@ feature -- Note helpers
 					until
 						l_values.after
 					loop
-						Result.extend (l_values.item.string_value_32)
+						if attached {STRING_AS} l_values.item as l_string then
+							Result.extend (l_string.value_32)
+						else
+							Result.extend (l_values.item.string_value_32)
+						end
 						l_values.forth
 					end
 				end
@@ -126,7 +107,7 @@ feature -- Note helpers
 		end
 
 	string_feature_note_value (a_feature: FEATURE_I; a_tag: STRING_32): STRING
-			-- Value of an integer feature note tag, empty string if not present.
+			-- Value of an string feature note tag, empty string if not present.
 		local
 			l_values: ARRAYED_LIST [STRING_32]
 		do
@@ -136,6 +117,8 @@ feature -- Note helpers
 				Result := l_values.i_th (1).as_string_8
 			end
 		end
+
+feature -- Feature status helpers
 
 	is_feature_status (a_feature: FEATURE_I; a_value: STRING): BOOLEAN
 			-- Does `a_feature' has a feature note with a tag status that contains the value `a_value'?
@@ -158,6 +141,53 @@ feature -- Note helpers
 			-- Is `a_feature' a public feature?
 		do
 			Result := a_feature.is_exported_for (system.any_class.compiled_class)
+		end
+
+feature -- Ownership helpers
+
+	is_class_explicit (a_class: CLASS_C; a_type: STRING): BOOLEAN
+			-- Does `a_class' list `a_type' as explicit?
+		local
+			l_values: ARRAYED_LIST [STRING_32]
+		do
+			l_values := class_note_values (a_class, "explicit")
+			if not l_values.is_empty then
+				Result := across l_values as i some i.item.as_string_8.is_equal (a_type) end
+			end
+		end
+
+	is_feature_explicit (a_feature: FEATURE_I; a_type: STRING): BOOLEAN
+			-- Does `a_feature' or list `a_type' as explicit?
+		local
+			l_values: ARRAYED_LIST [STRING_32]
+		do
+			l_values := feature_note_values (a_feature, "explicit")
+			if not l_values.is_empty then
+				Result := across l_values as i some i.item.as_string_8.is_equal (a_type) end
+			end
+		end
+
+	is_explicit (a_feature: FEATURE_I; a_type: STRING): BOOLEAN
+			-- Does either of the following hold?
+			-- 1. ownership defaults are disabled
+			-- 2. `a_feature' list `a_type' as explicit
+			-- 3. `a_feature' marks all as explicit
+			-- 4. the class of `a_feature' list `a_type' as explicit
+			-- 5. the class of `a_feature' marks all as explicit
+		do
+			Result := not options.is_ownership_defaults_enabled
+			if not Result then
+				Result := is_feature_explicit (a_feature, a_type)
+			end
+			if not Result then
+				Result := is_feature_explicit (a_feature, "all")
+			end
+			if not Result then
+				Result := is_class_explicit (a_feature.written_class, a_type)
+			end
+			if not Result then
+				Result := is_class_explicit (a_feature.written_class, "all")
+			end
 		end
 
 feature -- String helpers

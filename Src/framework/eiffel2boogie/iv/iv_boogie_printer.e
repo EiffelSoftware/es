@@ -463,8 +463,12 @@ feature -- Expression Visitor
 		local
 			l_do_left_par, l_do_right_par: BOOLEAN
 		do
-			l_do_left_par := not (attached {IV_BINARY_OPERATION} a_operation.left as l_b and then l_b.operator ~ a_operation.operator)
-			l_do_right_par := not (attached {IV_BINARY_OPERATION} a_operation.right as l_b and then l_b.operator ~ a_operation.operator)
+			l_do_left_par :=
+				(a_operation.operator /~ "&&" and a_operation.operator /~ "||") or
+				not (attached {IV_BINARY_OPERATION} a_operation.left as l_b and then l_b.operator ~ a_operation.operator)
+			l_do_right_par :=
+				(a_operation.operator /~ "&&" and a_operation.operator /~ "||") or
+				not (attached {IV_BINARY_OPERATION} a_operation.right as l_b and then l_b.operator ~ a_operation.operator)
 
 			if l_do_left_par then
 				output.put ("(")

@@ -227,6 +227,12 @@ feature -- Heap and map access
 				a_index)
 		end
 
+	map_access (a_map, a_index: IV_EXPRESSION): IV_MAP_ACCESS
+			-- Map access to `a_map'[`a_index'].
+		do
+			create Result.make (a_map, a_index)
+		end
+
 feature -- Statements
 
 	procedure_call (a_proc_name: STRING; a_arguments: ARRAY [ANY]): IV_PROCEDURE_CALL

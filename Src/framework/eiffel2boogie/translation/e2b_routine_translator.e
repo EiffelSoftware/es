@@ -230,7 +230,63 @@ feature -- Basic operations
 			translation_pool.add_writes_function (current_feature, current_type)
 
 				-- OWNERSHIP DEFAULTS
+			if not helper.is_explicit (current_feature, "contracts") then
+				if a_for_creator then
+					create l_pre.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
+					current_boogie_procedure.add_contract (l_pre)
+					create l_post.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
+					current_boogie_procedure.add_contract (l_post)
+					create l_post.make (forall_mml_set_property ("observers", "is_wrapped"))
+					current_boogie_procedure.add_contract (l_post)
+				elseif helper.is_public (current_feature) then
+					create l_pre.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
+					current_boogie_procedure.add_contract (l_pre)
+					create l_pre.make (forall_mml_set_property ("observers", "is_wrapped"))
+					current_boogie_procedure.add_contract (l_pre)
+					create l_post.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
+					current_boogie_procedure.add_contract (l_post)
+					create l_post.make (forall_mml_set_property ("observers", "is_wrapped"))
+					current_boogie_procedure.add_contract (l_post)
+				else
+					create l_pre.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
+					current_boogie_procedure.add_contract (l_pre)
+					create l_pre.make (forall_mml_set_property ("observers", "is_open"))
+					current_boogie_procedure.add_contract (l_pre)
+					create l_post.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
+					current_boogie_procedure.add_contract (l_post)
+					create l_post.make (forall_mml_set_property ("observers", "is_open"))
+					current_boogie_procedure.add_contract (l_post)
+				end
+				across arguments_of_current_feature as i loop
+					if i.item.boogie_type.is_reference then
+						create l_pre.make (factory.function_call ("is_wrapped", << "Heap", i.item.name >>, types.bool))
+						current_boogie_procedure.add_contract (l_pre)
+						create l_post.make (factory.function_call ("is_wrapped", << "Heap", i.item.name >>, types.bool))
+						current_boogie_procedure.add_contract (l_post)
+					end
+				end
+				if a_for_creator or helper.is_public (current_feature) then
+					across arguments_of_current_feature as i loop
+						if i.item.boogie_type.is_reference then
+							create l_pre.make (forall_mml_set_property ("observers", "is_wrapped"))
+						end
+					end
+				end
+			end
+		end
 
+	forall_mml_set_property (a_set_name: STRING; a_function_name: STRING): IV_EXPRESSION
+		local
+			l_forall: IV_FORALL
+			l_i: IV_ENTITY
+		do
+			create l_i.make (helper.unique_identifier ("i"), types.ref)
+			create l_forall.make (
+				factory.implies_ (
+					factory.map_access (factory.heap_access ("Heap", create {IV_ENTITY}.make ("Current", types.ref), a_set_name, types.set (types.ref)), l_i),
+					factory.function_call (a_function_name, << "Heap", l_i >>, types.bool)))
+			l_forall.add_bound_variable (l_i.name, l_i.type)
+			Result := l_forall
 		end
 
 	translate_routine_implementation (a_feature: FEATURE_I; a_type: TYPE_A)
@@ -312,11 +368,8 @@ feature -- Basic operations
 					create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "observers", types.set (types.ref)), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
 					l_implementation.body.add_statement (l_assign)
 
-					if options.is_ownership_defaults_enabled then
-
-					end
 				else
-					if options.is_ownership_defaults_enabled then
+					if not helper.is_explicit (current_feature, "wrapping") then
 						if helper.is_public (current_feature) then
 							l_implementation.body.add_statement (factory.procedure_call ("unwrap", << "Current" >>))
 						end
@@ -347,11 +400,9 @@ feature -- Basic operations
 			end
 
 				-- OWNERSHIP: end of routine body
-			if options.is_ownership_enabled and options.is_ownership_defaults_enabled then
-				if a_for_creator then
-					l_implementation.body.add_statement (factory.procedure_call ("wrap", << "Current" >>))
-				else
-					if helper.is_public (current_feature) then
+			if options.is_ownership_enabled then
+				if not helper.is_explicit (current_feature, "wrapping") then
+					if a_for_creator or helper.is_public (current_feature) then
 						l_implementation.body.add_statement (factory.procedure_call ("wrap", << "Current" >>))
 					end
 				end
@@ -452,8 +503,8 @@ feature -- Basic operations
 			end
 
 				-- Expression
-			create l_o.make ("o", types.ref)
-			create l_f.make ("f", types.field (types.generic))
+			create l_o.make ("$o", types.ref)
+			create l_f.make ("$f", types.field (types.generic))
 			l_expr := factory.true_
 			across l_.field_restriction as j loop
 				l_objects_expr := factory.false_

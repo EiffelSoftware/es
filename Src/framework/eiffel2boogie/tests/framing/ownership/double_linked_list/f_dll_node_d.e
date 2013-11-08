@@ -1,38 +1,50 @@
-class F_DLL_NODE
+note
+	explicit: "all"
+
+class F_DLL_NODE_D
 
 create
 	make
 
 feature
-
-	left: F_DLL_NODE
-	right: F_DLL_NODE
+	left: F_DLL_NODE_D
+	right: F_DLL_NODE_D
 
 	make
 		note
 			status: creator
 		require
+			is_open -- default: creator
+
 			modify (Current) -- default: creator
 		do
 			left := Current
 			right := Current
 			set_subjects ([left, right]) -- default: implicit?
 			set_observers ([left, right]) -- default: implicit?
+			wrap -- default: creator
 		ensure
 			singleton: left = Current
+			is_wrapped -- default: creator
 		end
 
-	insert_right (n: F_DLL_NODE)
+	insert_right (n: F_DLL_NODE_D)
 		note
 			explicit: wrapping
 		require
 			n /= Void
 			n_singleton: n.left = n
+			is_wrapped -- default: ?
+			across observers as o all o.item.is_wrapped end -- default: ?
+			n.is_wrapped -- default: ?
+
+			left.is_wrapped
+			right.is_wrapped
 			right.right.is_wrapped
 
 			modify ([Current, left, right, right.right, n])
 		local
-			r: F_DLL_NODE
+			r: F_DLL_NODE_D
 		do
 			r := right
 
@@ -69,7 +81,6 @@ feature
 			n.set_subjects ([n.left, n.right])
 			n.set_observers ([n.left, n.right])
 
-
 			Current.wrap
 			if not left.is_wrapped then
 				left.wrap
@@ -83,11 +94,15 @@ feature
 			if not r.right.is_wrapped then
 				r.right.wrap
 			end
+
 --			wrap_all ([Current, left, r, r.right, n])
 		ensure
 			right = n
 			n.right = old right
 
+			is_wrapped
+			left.is_wrapped
+			right.is_wrapped
 			right.right.is_wrapped
 		end
 
@@ -97,11 +112,15 @@ feature
 		require
 			not_singleton: right /= Current
 			right.right.is_wrapped
+			is_wrapped -- default: ?
+			across observers as o all o.item.is_wrapped end -- default: ?
 
-			modify ([Current, left, right, right.right])
+			modify ([Current, right, right.right])
+
 			modify (right.right.right)
+			modify (left)
 		local
-			r: F_DLL_NODE
+			r: F_DLL_NODE_D
 		do
 			r := right
 
@@ -146,11 +165,14 @@ feature
 		ensure
 		  right = old right.right
 		  old_right_singleton: (old right).right = old right
+
+		  is_wrapped
+		  right.is_wrapped
 		end
 
-feature {F_DLL_NODE}
+feature {F_DLL_NODE_D}
 
-	set_left (n: F_DLL_NODE)
+	set_left (n: F_DLL_NODE_D)
 		note
 			explicit: contracts
 		require
@@ -165,7 +187,7 @@ feature {F_DLL_NODE}
 			left = n
 		end
 
-	set_right (n: F_DLL_NODE)
+	set_right (n: F_DLL_NODE_D)
 		note
 			explicit: contracts
 		require
