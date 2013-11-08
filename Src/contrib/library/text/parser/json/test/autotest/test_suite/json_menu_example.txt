@@ -1,3 +1,4 @@
+<<<<<<< .working
 {"menu": {
   "id": "file",
   "value": "File",
@@ -8,4 +9,16 @@
       {"value": "Close", "onclick": "CloseDoc()"}
     ]
   }
+=======
+{ "menu": {
+  "id": "file",
+  "value": "File",
+  "popup": {
+    "menuitem": [
+      {"value": "New", "onclick": "CreateNewDoc()"},
+      {"value": "Open", "onclick": "OpenDoc()"},
+      {"value": "Close", "onclick": "CloseDoc()"}
+    ]
+  }
+>>>>>>> .merge-right.r93264
 }}

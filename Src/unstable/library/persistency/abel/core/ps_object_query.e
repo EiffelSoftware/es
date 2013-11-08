@@ -5,7 +5,7 @@ note
 	Example: across my_query as cur
 			 loop 
 				-- do something with cur.item 
-			 end  
+			 end
 	]"
 	author: "Roman Schmocker"
 	date: "$Date$"
@@ -28,15 +28,21 @@ create
 
 feature -- Access
 
-	result_cursor: PS_RESULT_CURSOR [G]
-			-- Iteration cursor containing the result of the query.
+	new_cursor: ITERATION_CURSOR [G]
+			-- Return a fresh cursor over the query result.
+			-- | Note: The result is loaded lazily upon calling `{ITERATION_CURSOR}.forth'.
+			-- | Note: The results are cached interanlly, thus it is possible to iterate over the result
+			-- | many times without performance impact.
+		do
+			create {PS_ITERATION_CURSOR[G]} Result.make (Current)
+		end
 
 feature -- Status report
 
 	is_object_query: BOOLEAN = True
 			-- Is `Current' an instance of PS_OBJECT_QUERY?
 
-feature -- Basic operations
+feature -- Element change
 
 	set_criterion (a_criterion: PS_CRITERION)
 			-- Set the criteria `a_criterion', against which the objects will be selected.
@@ -45,15 +51,6 @@ feature -- Basic operations
 			criterion_can_handle_objects: is_criterion_fitting_generic_type (a_criterion)
 		do
 			criteria := a_criterion
-		end
-
-feature -- Cursor generation
-
-	new_cursor: PS_RESULT_CURSOR [G]
-			-- Return the result_cursor.
-		do
-			--TODO: according to class ITERABLE, this should return a fresh copy of the cursor.
-			Result := result_cursor
 		end
 
 feature {NONE} -- Initialization
@@ -69,5 +66,10 @@ feature {NONE} -- Initialization
 		do
 			create result_cursor.make
 		end
+
+feature {PS_EIFFELSTORE_EXPORT} -- Access
+
+	result_cursor: PS_RESULT_CURSOR [G]
+			-- Iteration cursor containing the result of the query.
 
 end

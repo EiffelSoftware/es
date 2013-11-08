@@ -24,7 +24,15 @@ feature {PS_REPOSITORY_TESTS} -- References
 			test_insert_reference_cycle
 			test_crud_reference_cycle
 			test_crud_update_on_reference
+
+--			test_ref_new
 		end
+
+--	test_ref_new
+--		do
+--			test_read_write_cycle (test_data.reference_cycle, Void)
+--			test_read_write_cycle_with_root (test_data.reference_cycle, Void)
+--		end
 
 	test_insert_void_reference
 			-- Test inserting an object with a Void reference
@@ -74,7 +82,9 @@ feature {PS_REPOSITORY_TESTS} -- References
 			test: PS_GENERIC_CRUD_TEST [REFERENCE_CLASS_1]
 		do
 			create test.make (repository)
+			repository.default_object_graph.set_update_depth (-1)
 			test.test_crud_operations (test_data.reference_to_single_other, agent update_reference)
+			repository.default_object_graph.reset_to_default
 		end
 
 feature {PS_REPOSITORY_TESTS} -- Flat objects
@@ -481,7 +491,8 @@ feature {PS_REPOSITORY_TESTS} -- Polymorphism
 			list.fill (test_data.people)
 			create box.set_items (list)
 			create test.make (repository)
-			test.test_insert (box) -- BUG: the list within box gets initialized as LINKED_LIST[ANY], and the list is empty.
+			-- Regression test: the list within box got initialized as LINKED_LIST[ANY], and the list was empty.
+			test.test_insert (box)
 			repository.clean_db_for_testing
 		end
 
@@ -496,8 +507,9 @@ feature {PS_REPOSITORY_TESTS} -- Polymorphism
 			create last.make_from_string ("string")
 			create person.make (first, last, 0)
 			create test.make (repository)
-
-			test.test_insert (person) -- BUG: instead of creating FILE_NAME objects, a STRING object is created.
+			-- Regression test: instead of creating FILE_NAME objects, a STRING object was created.
+			test.test_insert (person)
+			repository.clean_db_for_testing
 			test.test_crud_operations (person, agent (p:PERSON) do p.add_item end)
 			repository.clean_db_for_testing
 		end
@@ -553,7 +565,7 @@ feature {NONE} -- Update agents
 		do
 			ref_obj := attach (obj.refer)
 			ref_obj.update
-			executor.execute_update (ref_obj)
+--			executor.execute_update (ref_obj)
 		end
 
 end

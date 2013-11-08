@@ -48,7 +48,8 @@ inherit
 			process_class_menu_text,
 			set_context_group,
 			context_group,
-			set_meta_data
+			set_meta_data,
+			search_eis_entry_in_note_clause
 		end
 
 create
@@ -195,6 +196,9 @@ feature -- Status report
 
 	rescued: BOOLEAN
 			-- Was Current format rescued?
+
+	is_in_note_clause: BOOLEAN
+			-- Is in note clause formatting?
 
 feature -- Properties
 
@@ -450,6 +454,12 @@ feature -- Setting
 			Precursor (a_data)
 				-- Propagate into the decorated formatter.
 			text_formatter.set_meta_data (a_data)
+		end
+
+	search_eis_entry_in_note_clause (a_index: detachable INDEX_AS; a_class: detachable CLASS_I; a_feat: detachable FEATURE_I)
+			-- Search EIS entry in the context.
+		do
+			text_formatter.search_eis_entry_in_note_clause (a_index, a_class, a_feat)
 		end
 
 feature -- Setting local format details
@@ -719,6 +729,27 @@ feature -- Output
 			end
 			if in_indexing_clause then
 				text_formatter.add_indexing_string (s)
+			else
+				text_formatter.add_manifest_string (s)
+			end
+		end
+
+	put_string_item_with_as (s: READABLE_STRING_GENERAL; a_as: STRING_AS)
+			-- Append `s' as string text to `text_formatter'. Emit tabs if needed.
+			-- If `in_indexing_clause', we separate string.
+		require
+			s_not_void: s /= Void
+			a_as_not_void: a_as /= Void
+		do
+			if not tabs_emitted then
+				emit_tabs
+			end
+			if in_indexing_clause then
+				if text_formatter.format_eis_entry (a_as) then
+					text_formatter.add_eis_source (s)
+				else
+					text_formatter.add_indexing_string (s)
+				end
 			else
 				text_formatter.add_manifest_string (s)
 			end

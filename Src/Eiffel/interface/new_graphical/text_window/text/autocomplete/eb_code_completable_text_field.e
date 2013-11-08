@@ -318,13 +318,8 @@ feature {EB_CODE_COMPLETION_WINDOW} -- Interact with code completion window.
 
 	cursor_screen_x: INTEGER
 			-- Cursor screen x position
-		local
-			l_font: EV_FONT
-			l_text_before_cursor: STRING_32
 		do
-			l_font := font
-			l_text_before_cursor := text.substring (1, caret_position - 1)
-			Result := screen_x + l_font.string_width (l_text_before_cursor)
+			Result := screen_x
 		end
 
 	cursor_screen_y: INTEGER
@@ -620,13 +615,13 @@ feature {NONE} -- Lexer
 		do
 			if not is_destroyed then
 				if text.is_empty then
-					create Result.make_empty_line
+					create Result.make_unix_style
 				else
 					scanner.execute (text)
 					create Result.make_from_lexer (scanner)
 				end
 			else
-				create Result.make_empty_line
+				create Result.make_unix_style
 			end
 		end
 
@@ -664,4 +659,5 @@ note
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
+
 end

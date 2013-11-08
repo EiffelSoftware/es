@@ -14,6 +14,7 @@ feature -- Access
 
 	locator: IMMUTABLE_STRING_8
 			-- Locator string for the SQLite database source.
+			--| For file source, `locator' is UTF-8 encoded.
 		deferred
 		ensure
 			result_attached: attached Result
@@ -36,7 +37,7 @@ feature -- Status report
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2009, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

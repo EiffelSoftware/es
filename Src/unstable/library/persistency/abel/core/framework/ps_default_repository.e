@@ -9,7 +9,8 @@ class
 
 inherit
 	PS_REPOSITORY
-	
+		redefine is_root end
+
 	REFACTORING_HELPER
 
 create
@@ -17,7 +18,7 @@ create
 
 feature {PS_EIFFELSTORE_EXPORT} -- Object query
 
-	execute_query (query: PS_OBJECT_QUERY [ANY]; transaction: PS_TRANSACTION)
+	internal_execute_query (query: PS_OBJECT_QUERY [ANY]; transaction: PS_TRANSACTION)
 			-- Execute `query' within `transaction'.
 		do
 			id_manager.register_transaction (transaction)
@@ -25,6 +26,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 				retriever.setup_query (obj_query, transaction)
 			end
 		rescue
+			query.reset
 			default_transactional_rescue (transaction)
 		end
 
@@ -37,10 +39,11 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 				retriever.next_entry (obj_query)
 			end
 		rescue
+			query.reset
 			default_transactional_rescue (query.transaction)
 		end
 
-	execute_tuple_query (tuple_query: PS_TUPLE_QUERY [ANY]; transaction: PS_TRANSACTION)
+	internal_execute_tuple_query (tuple_query: PS_TUPLE_QUERY [ANY]; transaction: PS_TRANSACTION)
 			-- Execute the tuple query `tuple_query' within the readonly transaction `transaction'.
 		local
 			exception: PS_INTERNAL_ERROR
@@ -48,6 +51,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 			id_manager.register_transaction (transaction)
 			retriever.setup_tuple_query (tuple_query, transaction)
 		rescue
+			tuple_query.reset
 			default_transactional_rescue (transaction)
 		end
 
@@ -59,6 +63,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 			id_manager.register_transaction (tuple_query.transaction)
 			retriever.next_tuple_entry (tuple_query)
 		rescue
+			tuple_query.reset
 			default_transactional_rescue (tuple_query.transaction)
 		end
 
@@ -126,7 +131,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing
 	clean_db_for_testing
 			-- Wipe out all data.
 		local
-			handlers: LINKED_LIST[PS_COLLECTION_HANDLER[detachable ANY]]
+			handlers: LINKED_LIST[PS_COLLECTION_HANDLER_OLD[detachable ANY]]
 		do
 			handlers:= collection_handlers
 			backend.wipe_out
@@ -142,6 +147,12 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status Report
 			-- Can `Current' handle the object `object'?
 		do
 			fixme ("TODO: implement a query")
+			Result := True
+		end
+
+	is_root (object: ANY; transaction: PS_TRANSACTION): BOOLEAN
+			-- Is `object' a garbage collection root?
+		do
 			Result := True
 		end
 
@@ -163,7 +174,7 @@ feature {NONE} -- Initialization
 
 feature -- Initialization
 
-	add_collection_handler (handler: PS_COLLECTION_HANDLER [detachable ANY])
+	add_collection_handler (handler: PS_COLLECTION_HANDLER_OLD [detachable ANY])
 			-- Add a handler for a specific type of collections.
 		do
 			retriever.add_handler (handler)
@@ -196,7 +207,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Implementation
 	retriever: PS_RETRIEVAL_MANAGER
 			-- A retrieval manager to build objects.
 
-	collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER [detachable ANY]]
+	collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER_OLD [detachable ANY]]
 			-- The collection handlers registered with `Current'
 
 
@@ -242,11 +253,11 @@ feature {PS_EIFFELSTORE_EXPORT} -- Implementation
 		local
 			table: HASH_TABLE[INTEGER, PS_TYPE_METADATA]
 			collection_table: HASH_TABLE[INTEGER, PS_TYPE_METADATA]
-			primaries: HASH_TABLE[LIST[PS_RETRIEVED_OBJECT], PS_TYPE_METADATA]
-			collection_primaries: HASH_TABLE[LIST[PS_RETRIEVED_OBJECT_COLLECTION], PS_TYPE_METADATA]
+			primaries: HASH_TABLE[LIST[PS_BACKEND_OBJECT], PS_TYPE_METADATA]
+			collection_primaries: HASH_TABLE[LIST[PS_BACKEND_COLLECTION], PS_TYPE_METADATA]
 
-			objects_to_write: LINKED_LIST[PS_RETRIEVED_OBJECT]
-			collections_to_write: LINKED_LIST[PS_RETRIEVED_OBJECT_COLLECTION]
+			objects_to_write: LINKED_LIST[PS_BACKEND_OBJECT]
+			collections_to_write: LINKED_LIST[PS_BACKEND_COLLECTION]
 		do
 
 			identify_all (object_graph, transaction)
@@ -327,7 +338,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Implementation
 		end
 
 
-	fill_retrieved (object: PS_SINGLE_OBJECT_PART; retrieved: PS_RETRIEVED_OBJECT; transaction: PS_TRANSACTION)
+	fill_retrieved (object: PS_SINGLE_OBJECT_PART; retrieved: PS_BACKEND_OBJECT; transaction: PS_TRANSACTION)
 		local
 			attr: PS_PAIR[STRING, STRING]
 			id: INTEGER
@@ -354,7 +365,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Implementation
 		end
 
 
-	to_retrieved (object: PS_SINGLE_OBJECT_PART; transaction: PS_TRANSACTION): PS_RETRIEVED_OBJECT
+	to_retrieved (object: PS_SINGLE_OBJECT_PART; transaction: PS_TRANSACTION): PS_BACKEND_OBJECT
 
 		do
 			if object.write_operation = object.write_operation.insert then
@@ -366,7 +377,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Implementation
 		end
 
 
-	to_retrieved_collection (coll: PS_OBJECT_COLLECTION_PART; transaction: PS_TRANSACTION): PS_RETRIEVED_OBJECT_COLLECTION
+	to_retrieved_collection (coll: PS_OBJECT_COLLECTION_PART; transaction: PS_TRANSACTION): PS_BACKEND_COLLECTION
 		local
 			item: PS_PAIR[STRING, STRING]
 			id: INTEGER

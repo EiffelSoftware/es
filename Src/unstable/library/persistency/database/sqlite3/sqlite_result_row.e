@@ -150,11 +150,10 @@ feature -- Query
 			-- returns an unconverted best match based on the information held in the database and
 			-- result information.
 			--
-			-- Note: All results are of the highest bit length (64 bit REAL and INTEGER) and those scalar
-			--       types are wrapped as a {CELL}[...]
+			-- Note: All results are of the highest bit length (64 bit REAL and INTEGER) 
 			--
 			-- `a_column': The column to retrieve the result for.
-			-- `Result': A {CELL} object, actual object or Void if no result data was found for the column.
+			-- `Result': The value object, actual object or Void if no result data was found for the column.
 		require
 			is_interface_usable: is_interface_usable
 			is_connected: is_connected
@@ -165,13 +164,13 @@ feature -- Query
 		do
 			l_type := type (a_column)
 			if l_type /= {SQLITE_TYPE}.null then
-				if l_type /= {SQLITE_TYPE}.blob then
+				if l_type = {SQLITE_TYPE}.blob then
 					Result := blob_value (a_column)
-				elseif l_type /= {SQLITE_TYPE}.float then
-					create {CELL [REAL_64]}Result.put (real_64_value (a_column))
-				elseif l_type /= {SQLITE_TYPE}.integer then
-					create {CELL [INTEGER_64]}Result.put (integer_64_value (a_column))
-				elseif l_type /= {SQLITE_TYPE}.text then
+				elseif l_type = {SQLITE_TYPE}.float then
+					Result := real_64_value (a_column)
+				elseif l_type = {SQLITE_TYPE}.integer then
+					Result := integer_64_value (a_column)
+				elseif l_type = {SQLITE_TYPE}.text then
 					Result := string_value (a_column)
 				else
 					check unknown_type: False end
@@ -302,15 +301,57 @@ feature -- Query: Value affinity
 			a_column_small_enough: a_column <= count
 			not_a_column_is_null: not is_null (a_column)
 		do
-			Result := sqlite3_column_double (sqlite_api, statement.internal_stmt, (a_column + 1).as_integer_32)
+			Result := sqlite3_column_double (sqlite_api, statement.internal_stmt, (a_column - 1).as_integer_32)
 		end
+
+
+	is_boolean_value (a_column: NATURAL): BOOLEAN
+			-- Retrieves a {INTEGER_32} representation of a column result value.
+			--
+			-- `a_column': The column to retrieve the result for.
+		require
+			is_interface_usable: is_interface_usable
+			is_connected: is_connected
+			a_column_positive: a_column > 0
+			a_column_small_enough: a_column <= count
+			not_a_column_is_null: not is_null (a_column)
+		local
+			i: INTEGER
+		do
+			i := sqlite3_column_int (sqlite_api, statement.internal_stmt, (a_column - 1).as_integer_32)
+			Result := i = 0 or i = 1
+		end
+
+	boolean_value (a_column: NATURAL): BOOLEAN
+			-- Retrieves a {INTEGER_32} representation of a column result value.
+			--
+			-- `a_column': The column to retrieve the result for.
+		require
+			is_interface_usable: is_interface_usable
+			is_connected: is_connected
+			a_column_positive: a_column > 0
+			a_column_small_enough: a_column <= count
+			not_a_column_is_null: not is_null (a_column)
+		local
+			i: INTEGER
+		do
+			i := sqlite3_column_int (sqlite_api, statement.internal_stmt, (a_column - 1).as_integer_32)
+			if i = 0 then
+				Result := False
+			elseif i = 1 then
+				Result := True
+			else
+				check is_boolean: False end
+			end
+		end
+
 
 --invariant
 	--statement_mark_positive: statement_mark > 0
 	--statement_mark_small_enough: statement_mark <= statement.mark
 
 ;note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
