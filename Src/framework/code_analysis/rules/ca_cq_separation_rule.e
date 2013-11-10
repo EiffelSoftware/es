@@ -32,12 +32,12 @@ feature {NONE} -- Activation
 feature -- Properties
 
 	title: STRING
-		once
+		do
 			Result := "---"
 		end
 
 	description: STRING
-		once
+		do
 			Result :=  "---"
 		end
 

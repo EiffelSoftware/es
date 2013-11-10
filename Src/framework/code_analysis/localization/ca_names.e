@@ -42,9 +42,12 @@ feature -- Rules
 		do Result := locale.translation ("Empty if statement") end
 
 	empty_if_description: STRING_32
-		do Result := locale.translation ("") end
+		do Result := locale.translation ("An empty if statement is useless and should be removed.") end
 
 	variable_not_read_title: STRING_32
 		do Result := locale.translation ("Variable not read after assignment") end
+
+	feature_never_called_title: STRING_32
+		do Result := locale.translation ("Feature never called") end
 
 end

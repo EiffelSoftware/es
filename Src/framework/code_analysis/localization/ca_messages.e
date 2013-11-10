@@ -42,4 +42,10 @@ feature -- Code Analyzer
 
 	npath_violation_3: STRING_32
 		do Result := locale.translation (", which is greater than the defined maximum of ") end
+
+	feature_never_called_violation_1: STRING_32
+		do Result := locale.translation ("Feature '") end
+
+	feature_never_called_violation_2: STRING_32
+		do Result := locale.translation ("' is never called by any class.") end
 end
