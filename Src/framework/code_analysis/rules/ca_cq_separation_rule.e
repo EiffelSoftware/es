@@ -26,14 +26,61 @@ feature {NONE} -- Activation
 
 	register_actions (a_checker: CA_ALL_RULES_CHECKER)
 		do
-			end
 
+		end
+
+feature {NONE} -- AST Visits
+
+	process_feature (a_feature: FEATURE_AS)
+		do
+			is_function := a_feature.is_function
+		end
+
+	is_function: BOOLEAN
+
+	process_assign (a_assign: ASSIGN_AS)
+		do
+			-- Skip the checks if we are not within a function.
+			if is_function then
+				if attached {ACCESS_ID_AS} a_assign.target as l_access_id then
+					if checking_class.feature_with_id (l_access_id.feature_name) /= Void then
+						-- We have an assignment to an attribute.
+					end
+				end
+			end
+		end
+
+	process_creation (a_creation: CREATION_AS)
+		do
+			-- Skip the checks if we are not within a function.
+			if is_function then
+				if attached {ACCESS_ID_AS} a_creation.target as l_access_id then
+					if checking_class.feature_with_id (l_access_id.feature_name) /= Void then
+						-- We have a creation of an attribute.
+					end
+				end
+			end
+		end
+
+	process_instruction_call (a_call: INSTR_CALL_AS)
+		do
+			-- Skip the checks if we are not within a function.
+			if is_function then
+				if attached {ACCESS_ID_AS} a_call.call as l_access_id then
+					if attached checking_class.feature_with_id (l_access_id.feature_name) as l_feat then
+						if l_feat.is_procedure then
+							-- There is a procedure call within this function.
+						end
+					end
+				end
+			end
+		end
 
 feature -- Properties
 
 	title: STRING
 		do
-			Result := "---"
+			Result := ca_names.cq_separation_title
 		end
 
 	description: STRING
@@ -47,10 +94,7 @@ feature -- Properties
 		end
 
 
-	is_system_wide: BOOLEAN
-		once
-			Result := False
-		end
+	is_system_wide: BOOLEAN = False
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		do

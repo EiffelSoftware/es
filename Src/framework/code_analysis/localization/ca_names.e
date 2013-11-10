@@ -50,4 +50,7 @@ feature -- Rules
 	feature_never_called_title: STRING_32
 		do Result := locale.translation ("Feature never called") end
 
+	cq_separation_title: STRING_32
+		do Result := locale.translation ("No command-query separation (possible function side effect)") end
+
 end
