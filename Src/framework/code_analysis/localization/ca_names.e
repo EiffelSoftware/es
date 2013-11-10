@@ -35,10 +35,16 @@ feature -- Rules
 	npath_description: STRING_32
 		do Result := locale.translation ("The NPATH measure is too high.") end
 
+	npath_threshold_option: STRING_32
+		do Result := locale.translation ("Minimum NPATH threshold") end
+
 	empty_if_title: STRING_32
 		do Result := locale.translation ("Empty if statement") end
 
 	empty_if_description: STRING_32
 		do Result := locale.translation ("") end
+
+	variable_not_read_title: STRING_32
+		do Result := locale.translation ("Variable not read after assignment") end
 
 end

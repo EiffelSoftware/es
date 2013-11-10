@@ -1,3 +1,5 @@
+-- Probably not needed. (See {CA_CFG_RULE}.)
+
 note
 	description: "Summary description for {CA_BACKWARD_FEATURE_ITERATOR}."
 	author: ""

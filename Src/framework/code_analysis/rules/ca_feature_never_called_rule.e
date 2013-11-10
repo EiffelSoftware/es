@@ -1,14 +1,14 @@
 note
-	description: "Summary description for {CA_VARIABLE_NOT_READ_RULE}."
+	description: "Summary description for {CA_FEATURE_NEVER_CALLED_RULE}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	CA_VARIABLE_NOT_READ_RULE
+	CA_FEATURE_NEVER_CALLED_RULE
 
 inherit
-	CA_CFG_RULE
+	CA_STANDARD_RULE
 
 create
 	make
@@ -17,28 +17,23 @@ feature {NONE} -- Initialization
 
 	make
 		do
-			make_backward
 			is_enabled := True
 			create {CA_WARNING} severity
 			create violations.make
 		end
 
-feature {NONE} -- Node Visitor
+feature {NONE} -- Activation
 
-	visit_node (a_start_node, a_end_node: EPA_BASIC_BLOCK; a_edge: EPA_CFG_EDGE; a_new_start: BOOLEAN)
+	register_actions (a_checker: CA_ALL_RULES_CHECKER)
 		do
-			
-		end
+			end
 
-feature {NONE} -- Analysis data
-
-	lv_entry, lv_exit: HASH_TABLE[LINKED_LIST[STRING], INTEGER]
 
 feature -- Properties
 
 	title: STRING
 		once
-			Result := ca_names.variable_not_read_title
+			Result := "---"
 		end
 
 	description: STRING
@@ -54,7 +49,7 @@ feature -- Properties
 
 	is_system_wide: BOOLEAN
 		once
-			Result := True
+			Result := False
 		end
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)

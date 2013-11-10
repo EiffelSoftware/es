@@ -26,6 +26,9 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_UNUSED_ARGUMENT_RULE}.make)
 			rules.extend (create {CA_NPATH_RULE}.make)
 			rules.extend (create {CA_EMPTY_IF_RULE}.make)
+			-- Issues (contract violations, exceptions) with {EPA_CFG_BUILDER} and
+			-- classes from library 'program_analysis' in general.
+--			rules.extend (create {CA_VARIABLE_NOT_READ_RULE}.make)
 
 			create classes_to_analyze.make
 			create rule_violations.make (100)
@@ -44,8 +47,7 @@ feature -- Analysis interface
 						-- do not add system wide rules if we check only parts of the system
 						if attached {CA_STANDARD_RULE} l_rules.item as l_std_rule then
 							l_std_rule.prepare_checking (l_rules_checker)
-						elseif attached {CA_BACKWARD_ITERATION_RULE} l_rules.item as l_back_rule then
-							-- TODO
+						-- TODO: prepare rules of other types?
 						end
 					end
 				end
@@ -58,8 +60,8 @@ feature -- Analysis interface
 					l_rules.item.set_checking_class (l_classes.item)
 					-- If rule is non-standard then it will not be checked by l_rules_checker.
 					-- We will have the rule check the current class here:
-					if attached {CA_BACKWARD_ITERATION_RULE} l_rules.item as l_back_rule then
-						l_back_rule.process_class_as (l_classes.item.ast)
+					if attached {CA_CFG_RULE} l_rules.item as l_cfg_rule then
+						l_cfg_rule.check_class (l_classes.item)
 					end
 				end
 
@@ -174,5 +176,6 @@ feature {NONE} -- Implementation
 	classes_to_analyze: LINKED_SET[CLASS_C]
 
 	system_wide_check: BOOLEAN
+
 
 end

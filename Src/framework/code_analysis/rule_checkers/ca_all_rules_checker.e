@@ -308,8 +308,12 @@ feature {NONE} -- Processing
 		end
 
 	process_if_as (a_if: IF_AS)
+		local
+			l_pre_task, l_post_task: CA_VISIT_NODE_TASK
 		do
 			across if_pre_actions as l_a loop l_a.item.call ([a_if]) end
+--			create l_pre_task.make (a_if, if_pre_actions)
+--			rota.run_task (l_pre_task)
 
 			Precursor (a_if)
 
@@ -346,5 +350,18 @@ feature {NONE} -- Processing
 feature -- Results
 
 	last_run_successful: BOOLEAN
+
+feature {NONE} -- Implementation
+
+	frozen rota: detachable ROTA_S
+			-- Access to rota service
+		local
+			l_service_consumer: SERVICE_CONSUMER [ROTA_S]
+		do
+			create l_service_consumer
+			if l_service_consumer.is_service_available and then l_service_consumer.service.is_interface_usable then
+				Result := l_service_consumer.service
+			end
+		end
 
 end

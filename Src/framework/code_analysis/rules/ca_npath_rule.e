@@ -54,8 +54,14 @@ feature -- Properties
 		end
 
 	options: LINKED_LIST[CA_RULE_OPTION[ANY]]
+		local
+			l_threshold: CA_RULE_OPTION[INTEGER]
 		once
+			create l_threshold.make_with_caption (ca_names.npath_threshold_option)
+			l_threshold.set_valid_choice_agent (agent is_threshold_within_bounds)
+
 			create Result.make
+			Result.extend (l_threshold)
 		end
 
 
@@ -82,6 +88,13 @@ feature -- Properties
 				a_formatter.add_int (l_max)
 			end
 			a_formatter.add_char ('.')
+		end
+
+feature {NONE} -- Options
+
+	is_threshold_within_bounds (a_threshold: INTEGER): BOOLEAN
+		do
+			Result := a_threshold >= 10 and a_threshold <= 10000
 		end
 
 feature {NONE} -- Rule Checking

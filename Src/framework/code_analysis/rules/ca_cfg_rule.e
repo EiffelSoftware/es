@@ -22,20 +22,43 @@ feature {NONE} -- Initialization
 
 	make_forward
 		do
+			make_dfs_visitor
 			backward := False
+			first_visit_node_actions.extend (agent visit_node)
 		end
 
 	make_backward
 		do
+			make_dfs_visitor
 			backward := True
+			first_visit_node_actions.extend (agent visit_node)
 		end
 
 feature -- Rule Checking
 
+	visit_node (a_start_node, a_end_node: EPA_BASIC_BLOCK; a_edge: EPA_CFG_EDGE; a_new_start: BOOLEAN)
+		deferred
+		end
+
 	check_class (a_class: CLASS_C)
+		local
+			l_feature_i: FEATURE_I
 		do
-			across a_class.feature_table.features as l_features loop
-				check_feature (a_class, l_features.item)
+--			across a_class.ast.all_features as l_features loop
+--				check_feature (a_class, l_features.item)
+--			end
+--			from
+--				l_features.start
+--			until
+--				l_features.after
+--			loop
+--				check_feature (a_class, l_features.item.)
+--				l_features.forth
+--			end
+
+			across a_class.written_in_features as l_features loop
+				l_feature_i := l_features.item.associated_feature_i
+				check_feature (a_class, l_feature_i)
 			end
 		end
 
@@ -49,15 +72,19 @@ feature {NONE} -- Implementation
 			create l_cfg_builder
 			l_cfg_builder.build_from_feature (a_class, a_feature)
 			l_cfg := l_cfg_builder.last_control_flow_graph
-			if backward then
+			-- Skip if we were not able to build a control flow graph (e. g. if the
+			-- feature is not a 'do' routine).
+			if l_cfg /= Void then
+				if backward then
 				set_graph (l_cfg.reversed_graph)
-			else
-				set_graph (l_cfg)
-			end
+				else
+					set_graph (l_cfg)
+				end
 
-			-- check the graph
-			checking_feature := a_feature
-			visit_all
+				-- check the graph
+				checking_feature := a_feature
+				visit_all
+			end
 		end
 
 	backward: BOOLEAN
