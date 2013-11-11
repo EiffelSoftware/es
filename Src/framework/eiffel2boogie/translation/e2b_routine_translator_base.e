@@ -290,6 +290,9 @@ feature -- Helper functions: contracts
 						else
 							l_type := l_type.deep_actual_type
 						end
+						if l_type.base_class.name_in_upper ~ "MML_SET" then
+							l_type := l_type.generics.first
+						end
 
 						create l_fieldnames.make
 						if attached {STRING_B} l_call.parameters.i_th (1).expression as l_string then
@@ -356,7 +359,7 @@ feature -- Helper functions: contracts
 		do
 			create l_translator.make
 			l_translator.entity_mapping.set_heap (create {IV_ENTITY}.make ("heap", types.heap))
-			l_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.heap))
+			l_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.ref))
 			l_translator.set_context (current_feature, current_type)
 			a_expr.process (l_translator)
 			Result := l_translator.last_expression

@@ -610,7 +610,13 @@ feature -- Type Visitor
 			-- <Precursor>
 		do
 			output.put ("Field ")
-			a_type.content_type.process (Current)
+			if a_type.content_type.is_map then
+				output.put ("(")
+				a_type.content_type.process (Current)
+				output.put (")")
+			else
+				a_type.content_type.process (Current)
+			end
 		end
 
 	process_set_type (a_type: IV_SET_TYPE)

@@ -510,7 +510,11 @@ feature -- Basic operations
 				l_objects_expr := factory.false_
 				l_fields_expr := factory.true_
 				across j.item.objects as ro loop
-					l_objects_expr := factory.or_ (l_objects_expr, factory.equal (l_o, ro.item))
+					if ro.item.type.is_map then
+						l_objects_expr := factory.or_ (l_objects_expr, factory.map_access (ro.item, l_o))
+					else
+						l_objects_expr := factory.or_ (l_objects_expr, factory.equal (l_o, ro.item))
+					end
 				end
 				across j.item.fields as rf loop
 					l_fields_expr := factory.and_ (l_fields_expr, factory.not_equal (l_f, rf.item))

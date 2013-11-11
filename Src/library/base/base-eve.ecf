@@ -34,6 +34,7 @@
 			<file_rule>
 				<exclude>/kernel/any.e$</exclude>
 				<exclude>/kernel/tuple.e$</exclude>
+				<exclude>/kernel/array.e$</exclude>
 			</file_rule>
 			<file_rule>
 				<exclude>/kernel/bit_ref.e$</exclude>

@@ -165,10 +165,11 @@ function in_domain(h: HeapType, o: ref, o': ref): bool
 
 axiom (forall h: HeapType, o, o': ref :: { in_domain(h, o, o') } h[o, closed] && h[o, owns][o'] ==> in_domain(h, o, o'));
 
-// Objects outside of ownership domains of mods did not change
+// Objects outside of ownership domains of mods did not change, unless they were newly allocated
 function writes(h: HeapType, h': HeapType, mods: Set ref): bool { 
 	(forall <T> o: ref, f: Field T :: { h[o, f] } { h'[o, f] }
-		(forall o': ref :: { mods[o'] } { in_domain(h, o', o) } mods[o'] ==> !in_domain(h, o', o))
+		((forall o': ref :: { mods[o'] } { in_domain(h, o', o) } mods[o'] ==> !in_domain(h, o', o)) &&
+		 h[o, allocated])
 			==>
 		h'[o, f] == h[o, f])
 	&&

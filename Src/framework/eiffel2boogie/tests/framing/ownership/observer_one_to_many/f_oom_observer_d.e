@@ -17,10 +17,10 @@ feature
 			s /= Void
 			s.is_wrapped
 			is_open
-			
+
 			modify ([s, Current])
 		do
-			subject := s      
+			subject := s
 			s.register (Current)
 			cache := s.value
 			set_subjects ([subject]) -- implicit?
@@ -29,9 +29,10 @@ feature
 			subject = s
 			is_wrapped
 			s.is_wrapped
+			s.observers = (old s.observers & Current)
 		end
-    
-feature {F_OOM_SUBJECT_D}    
+
+feature {F_OOM_SUBJECT_D}
 
 	  notify
 		require
@@ -44,13 +45,13 @@ feature {F_OOM_SUBJECT_D}
 			cache = subject.value
 			is_open -- default: non-public
 		end
-  
+
 invariant
 	subject /= Void
 	subject.observers.has (Current)
 	cache = subject.value
 	subjects = [subject]
-	across subjects as s all s.observers.has (Current) end
+	across subjects as s all s.item.observers.has (Current) end
 	owns = []
 	observers = []
 

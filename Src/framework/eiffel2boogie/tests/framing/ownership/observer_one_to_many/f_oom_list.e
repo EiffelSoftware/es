@@ -5,13 +5,13 @@ class F_OOM_LIST [G]
 
 feature -- Specification
 
-	sequence: MML_SEQUENCE [G]
+	sequence: MML_SET [G]
 		note
 			status: specification
 		attribute
 		end
 
-feature -- Access      
+feature -- Access
 
 	is_empty: BOOLEAN
 		do
@@ -22,15 +22,15 @@ feature -- Access
 	count: INTEGER
 		do
 		ensure
-			Result = sequence.count
+--			Result = sequence.count
 		end
 
-	item (i: INTEGER): G
+	item alias "[]" (i: INTEGER): G
 		require
 			1 <= i and i < count
 		do
 		ensure
-			Result = sequence [i]
+--			Result = sequence [i]
 		end
 
 	has (x: G) : BOOLEAN
@@ -44,7 +44,7 @@ feature -- Extension
 	extend_back (v: G)
 		do
 		ensure
---			sequence |=| old (sequence & v)
+			sequence = old (sequence & v)
 		end
 
 end

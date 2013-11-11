@@ -385,6 +385,12 @@ feature -- Verification: contract clauses
 			Result := True
 		end
 
+	frozen inv_without (a: ANY): BOOLEAN
+			-- Helper function for specifying class invariant without certain clauses.
+		do
+			Result := True
+		end
+
 feature -- Verification: ownership operations
 
 	frozen wrap
@@ -431,57 +437,41 @@ feature -- Verification: ownership fields
 
 	frozen owner: ANY assign set_owner
 			-- Owner of this object.
-		note
-			status: ghost
 		do
 		end
 
 	frozen set_owner (a: ANY)
 			-- Set owner of this object to `a'.
-		note
-			status: ghost
 		do
 		end
 
 	frozen owns: MML_SET [ANY] assign set_owns
 			-- Owns set of this object.
-		note
-			status: ghost
 		do
 		end
 
 	frozen set_owns (a: MML_SET [ANY])
 			-- Set owns set of this object.
-		note
-			status: ghost
 		do
 		end
 
 	frozen subjects: MML_SET [ANY] assign set_subjects
 			-- Subjects set of this object.
-		note
-			status: ghost
 		do
 		end
 
 	frozen set_subjects (a: MML_SET [ANY])
 			-- Set subjects set of this object.
-		note
-			status: ghost
 		do
 		end
 
 	frozen observers: MML_SET [ANY] assign set_observers
 			-- Observers set of this object.
-		note
-			status: ghost
 		do
 		end
 
 	frozen set_observers (a: MML_SET [ANY])
 			-- Set observers set of this object.
-		note
-			status: ghost
 		do
 		end
 

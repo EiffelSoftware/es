@@ -14,22 +14,25 @@ feature
 	make
 		require
 			is_open
+
+			modify (Current) -- default: creator
 		do
 			create observers_list
 			set_owns ([observers_list]) -- implicit?
 			wrap
 		ensure
 			observers_list.is_empty
+			observers = [] -- todo: should be implied by previous line
 			is_wrapped
 		end
 
 	update (new_val: INTEGER)
 		require
 			is_wrapped
-			across observers as o all o.is_wrapped end
+			across observers as o all o.item.is_wrapped end
 
 			modify_field ("value", Current)
-			modify (observers_list.sequence) -- modify contents
+			modify_field ("cache", observers_list.sequence)
 		local
 			i: INTEGER
 		do
@@ -44,7 +47,7 @@ feature
 			invariant
 				across 1 |..| (i - 1) as j all observers_list[j.item].cache = new_val end
 			until
-				i > observers.count
+				i > observers_list.count
 			loop
 				observers_list [i].notify
 				i := i + 1
@@ -61,26 +64,29 @@ feature
 
 feature {F_OOM_OBSERVER_D}
 
-  register (o: F_OOM_OBSERVER_D)
-    note explicit: contracts
-    require
-      wrapped_
-      o.open_
-    do
-      -- unwrap_
-      observers.extend_back (o)
-      add_observer_ (o) -- feature from ANY, maintains open_, ensures observers = old observers + { o }
-      -- wrap_
-    ensure
-      observers.has (o)
-      wrapped_
-    end
+	register (o: F_OOM_OBSERVER_D)
+		note
+			explicit: contracts
+		require
+			is_wrapped
+			o.is_open
+
+			modify (Current) -- default: command
+		do
+			unwrap
+			observers_list.extend_back (o)
+			set_observers (observers + [o])
+			wrap
+		ensure
+			observers_list.has (o)
+			is_wrapped
+		end
 
 invariant
 	observers_list /= Void
-	across observers_list.sequence.range as o all o /= Void end
-	observers = observers.sequence.range
-	owns = [observers]
+	across observers_list.sequence as o all o.item /= Void end
+	observers = observers_list.sequence
+	owns = [observers_list]
 	subjects = [] -- default
 
 note

@@ -24,14 +24,16 @@ feature -- Basic operations
 			l_call: IV_FUNCTION_CALL
 			l_forall: IV_FORALL
 			l_heap_access: IV_HEAP_ACCESS
+			l_boogie_type: IV_TYPE
 		do
 			l_attribute_name := name_translator.boogie_name_for_feature (a_feature, a_context_type)
+			l_boogie_type := types.for_type_in_context (a_feature.type, a_context_type)
 
 				-- Add field declaration
 			boogie_universe.add_declaration (
 				create {IV_CONSTANT}.make_unique (
 					l_attribute_name,
-					types.field (types.for_type_in_context (a_feature.type, a_context_type))))
+					types.field (l_boogie_type)))
 
 				-- Mark field as a non-ghost field
 			boogie_universe.add_declaration (
@@ -40,7 +42,7 @@ feature -- Basic operations
 						factory.function_call ("IsGhostField", << l_attribute_name >>, types.bool))))
 
 				-- Add attribute-type specific properties
-			if a_feature.type.is_reference then
+			if a_feature.type.is_reference and not l_boogie_type.is_set then
 				if a_feature.type.is_attached then
 					l_fname := "attached_attribute"
 				else
