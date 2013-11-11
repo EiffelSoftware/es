@@ -30,12 +30,14 @@ inherit
 			process_access_id_as,
 			process_assign_as,
 			process_body_as,
+			process_creation_as,
 			process_do_as,
 			process_eiffel_list,
 			process_feature_as,
 			process_id_as,
 			process_if_as,
 			process_inspect_as,
+			process_instr_call_as,
 			process_loop_as,
 			process_once_as
 			-- ...
@@ -62,6 +64,8 @@ feature {NONE} -- Initialization
 			create body_post_actions.make
 			create class_pre_actions.make
 			create class_post_actions.make
+			create creation_pre_actions.make
+			create creation_post_actions.make
 			create do_pre_actions.make
 			create do_post_actions.make
 			create eiffel_list_pre_actions.make
@@ -70,10 +74,12 @@ feature {NONE} -- Initialization
 			create feature_post_actions.make
 			create id_pre_actions.make
 			create id_post_actions.make
-			create inspect_pre_actions.make
-			create inspect_post_actions.make
 			create if_pre_actions.make
 			create if_post_actions.make
+			create inspect_pre_actions.make
+			create inspect_post_actions.make
+			create instruction_call_pre_actions.make
+			create instruction_call_post_actions.make
 			create loop_pre_actions.make
 			create loop_post_actions.make
 			create once_pre_actions.make
@@ -120,6 +126,16 @@ feature {CA_STANDARD_RULE}
 	add_class_post_action (a_action: PROCEDURE[ANY, TUPLE[CLASS_AS]])
 		do
 			class_post_actions.extend (a_action)
+		end
+
+	add_creation_pre_action (a_action: PROCEDURE [ANY, TUPLE [CREATION_AS] ])
+		do
+			creation_pre_actions.extend (a_action)
+		end
+
+	add_creation_post_action (a_action: PROCEDURE [ANY, TUPLE [CREATION_AS] ])
+		do
+			creation_post_actions.extend (a_action)
 		end
 
 	add_do_pre_action (a_action: PROCEDURE[ANY, TUPLE[DO_AS]])
@@ -182,6 +198,16 @@ feature {CA_STANDARD_RULE}
 			inspect_post_actions.extend (a_action)
 		end
 
+	add_instruction_call_pre_action (a_action: PROCEDURE [ANY, TUPLE [INSTR_CALL_AS] ])
+		do
+			instruction_call_pre_actions.extend (a_action)
+		end
+
+	add_instruction_call_post_action (a_action: PROCEDURE [ANY, TUPLE [INSTR_CALL_AS] ])
+		do
+			instruction_call_post_actions.extend (a_action)
+		end
+
 	add_loop_pre_action (a_action: PROCEDURE[ANY, TUPLE[LOOP_AS]])
 		do
 			loop_pre_actions.extend (a_action)
@@ -212,6 +238,8 @@ feature {NONE} -- Agent lists
 
 	class_pre_actions, class_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[CLASS_AS]]]
 
+	creation_pre_actions, creation_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE[CREATION_AS] ] ]
+
 	do_pre_actions, do_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[DO_AS]]]
 
 	eiffel_list_pre_actions, eiffel_list_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[EIFFEL_LIST [AST_EIFFEL]]]]
@@ -224,6 +252,8 @@ feature {NONE} -- Agent lists
 
 	inspect_pre_actions, inspect_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[INSPECT_AS]]]
 
+	instruction_call_pre_actions, instruction_call_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [INSTR_CALL_AS] ] ]
+
 	loop_pre_actions, loop_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[LOOP_AS]]]
 
 	once_pre_actions, once_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[ONCE_AS]]]
@@ -235,6 +265,7 @@ feature -- Execution Commands
 		local
 			l_ast: CLASS_AS
 		do
+			last_run_successful := False
 			l_ast := a_class_to_check.ast
 			across class_pre_actions as l_a loop l_a.item.call ([l_ast]) end
 			process_class_as (l_ast)
@@ -269,6 +300,15 @@ feature {NONE} -- Processing
 			Precursor (a_body)
 
 			across body_post_actions as l_a loop l_a.item.call ([a_body]) end
+		end
+
+	process_creation_as (a_creation: CREATION_AS)
+		do
+			across creation_pre_actions as l_a loop l_a.item.call ([a_creation]) end
+
+			Precursor (a_creation)
+
+			across creation_post_actions as l_a loop l_a.item.call ([a_creation]) end
 		end
 
 	process_do_as (a_do: DO_AS)
@@ -327,6 +367,15 @@ feature {NONE} -- Processing
 			Precursor (a_inspect)
 
 			across inspect_post_actions as l_a loop l_a.item.call ([a_inspect]) end
+		end
+
+	process_instr_call_as (a_call: INSTR_CALL_AS)
+		do
+			across instruction_call_pre_actions as l_a loop l_a.item.call ([a_call]) end
+
+			Precursor (a_call)
+
+			across instruction_call_post_actions as l_a loop l_a.item.call ([a_call]) end
 		end
 
 	process_loop_as (a_loop: LOOP_AS)

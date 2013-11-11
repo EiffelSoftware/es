@@ -48,4 +48,23 @@ feature -- Code Analyzer
 
 	feature_never_called_violation_2: STRING_32
 		do Result := locale.translation ("' is never called by any class.") end
+
+	cq_separation_violation_1 : STRING_32
+		do Result := locale.translation ("Function '") end
+
+	cq_separation_violation_2: STRING_32
+		do Result := locale.translation ("' contains a procedure call, assigns to an%
+			% attribute, or creates an attribute. This indicates that the function%
+			% changes the state of the object, which is a violation of the %
+			%command-query separation principle.") end
+
+feature -- Command Line
+
+	cmd_class: STRING_32
+		do Result := locale.translation ("%NIn class '") end
+
+	cmd_help_message: STRING_32
+		do Result := locale.translation ("Code Analysis performs static analyses on the source code and %
+			           %outputs a list of issues found according to a set of rules.") end
+
 end

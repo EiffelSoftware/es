@@ -13,6 +13,9 @@ inherit
 	SHARED_SERVER
 		export {NONE} all end
 
+inherit {NONE}
+	CA_SHARED_NAMES
+
 create
 	make_with_arguments
 
@@ -27,7 +30,6 @@ feature {NONE} -- Initialization
 feature -- Execution (declared in EWB_CMD)
 
 	execute
-			-- UNDER TEST
 		local
 			l_code_analyzer: CA_CODE_ANALYZER
 			l_rule_name, l_line, l_col: STRING
@@ -42,10 +44,7 @@ feature -- Execution (declared in EWB_CMD)
 			across l_code_analyzer.rule_violations as l_vlist loop
 
 				if not l_vlist.item.is_empty then
-					print ("%NIn class '" + l_vlist.key.name + "':%N")
-
-					-- Sort
-
+					print (ca_messages.cmd_class + l_vlist.key.name + "':%N")
 
 					across l_vlist.item as l_v loop
 						l_rule_name := l_v.item.rule.title
@@ -62,21 +61,14 @@ feature -- Execution (declared in EWB_CMD)
 
 feature -- Info (declared in EWB_CMD)
 
-	name: STRING
-		do
-			Result := "Code Analysis"
-		end
+	name: STRING = "Code Analysis"
 
 	help_message: STRING_GENERAL
 		do
-			Result := "Code Analysis performs static analyses on the source code and %
-			           %outputs a list of issues found according to a set of rules."
+			Result := ca_messages.cmd_help_message
 		end
 
-	abbreviation: CHARACTER
-		do
-			Result := 'a'
-		end
+	abbreviation: CHARACTER = 'a'
 
 note
 	copyright: "Copyright (c) 1984-2013, Eiffel Software"

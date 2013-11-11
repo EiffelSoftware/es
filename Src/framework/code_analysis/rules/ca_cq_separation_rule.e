@@ -26,17 +26,35 @@ feature {NONE} -- Activation
 
 	register_actions (a_checker: CA_ALL_RULES_CHECKER)
 		do
+			a_checker.add_feature_pre_action (agent pre_process_feature)
+			a_checker.add_feature_post_action (agent post_process_feature)
 
+			a_checker.add_assign_pre_action (agent process_assign)
+			a_checker.add_creation_pre_action (agent process_creation)
+			a_checker.add_instruction_call_pre_action (agent process_instruction_call)
 		end
 
 feature {NONE} -- AST Visits
 
-	process_feature (a_feature: FEATURE_AS)
+	pre_process_feature (a_feature: FEATURE_AS)
 		do
 			is_function := a_feature.is_function
+			rule_violated := False
 		end
 
-	is_function: BOOLEAN
+	post_process_feature (a_feature: FEATURE_AS)
+		local
+			l_violation: CA_RULE_VIOLATION
+		do
+			if rule_violated then
+				create l_violation.make_with_rule (Current)
+				l_violation.set_location (a_feature.start_location)
+				l_violation.long_description_info.extend (a_feature.feature_name.name_32)
+				violations.extend (l_violation)
+			end
+		end
+
+	is_function, rule_violated: BOOLEAN
 
 	process_assign (a_assign: ASSIGN_AS)
 		do
@@ -45,6 +63,7 @@ feature {NONE} -- AST Visits
 				if attached {ACCESS_ID_AS} a_assign.target as l_access_id then
 					if checking_class.feature_with_id (l_access_id.feature_name) /= Void then
 						-- We have an assignment to an attribute.
+						rule_violated := True
 					end
 				end
 			end
@@ -57,6 +76,7 @@ feature {NONE} -- AST Visits
 				if attached {ACCESS_ID_AS} a_creation.target as l_access_id then
 					if checking_class.feature_with_id (l_access_id.feature_name) /= Void then
 						-- We have a creation of an attribute.
+						rule_violated := True
 					end
 				end
 			end
@@ -70,6 +90,7 @@ feature {NONE} -- AST Visits
 					if attached checking_class.feature_with_id (l_access_id.feature_name) as l_feat then
 						if l_feat.is_procedure then
 							-- There is a procedure call within this function.
+							rule_violated := True
 						end
 					end
 				end
@@ -98,6 +119,10 @@ feature -- Properties
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		do
-
+			a_formatter.add_string (ca_messages.cq_separation_violation_1)
+			if attached {STRING_32} a_violation.long_description_info.first as l_feature_name then
+				a_formatter.add_feature_name (l_feature_name, a_violation.affected_class)
+			end
+			a_formatter.add_string (ca_messages.cq_separation_violation_2)
 		end
 end
