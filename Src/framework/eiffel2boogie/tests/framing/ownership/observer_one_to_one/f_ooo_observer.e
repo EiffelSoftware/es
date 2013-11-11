@@ -50,8 +50,5 @@ invariant
 	subject.observer = Current
 	cache = subject.value
 	subjects = [subject]
-	across subjects as sc all sc.item.observers.has (Current) end -- default
-	owns = [] -- default
-	observers = [] -- default
 
 end

@@ -115,13 +115,16 @@ feature {NONE} -- Implementation
 			l_classes: FIXED_LIST [CLASS_C]
 			l_clauses: LINKED_LIST [IV_EXPRESSION]
 			l_expr: IV_EXPRESSION
+			l_ghost_collector: E2B_GHOST_SET_COLLECTOR
 		do
 			create l_decl.make (name_translator.boogie_name_for_invariant_function (a_type), types.bool)
 			l_decl.add_argument ("heap", types.heap_type)
 			l_decl.add_argument ("current", types.ref)
 			boogie_universe.add_declaration (l_decl)
 
-			l_clauses := process_invariants (a_type.base_class, a_type)
+			create l_ghost_collector
+
+			l_clauses := process_invariants (a_type.base_class, a_type, l_ghost_collector)
 			from
 				l_classes := a_type.base_class.parents_classes
 				l_classes.start
@@ -129,10 +132,26 @@ feature {NONE} -- Implementation
 				l_classes.after
 			loop
 				if l_classes.item.class_id /= system.any_id then
-					l_clauses.append (process_invariants (l_classes.item, a_type))
+					l_clauses.append (process_invariants (l_classes.item, a_type, l_ghost_collector))
 				end
 				l_classes.forth
 			end
+
+			if options.is_ownership_enabled then
+				if not helper.is_class_explicit (a_type.base_class, "observers") and not l_ghost_collector.has_observers then
+					l_clauses.extend (empty_set_property ("observers"))
+				end
+				if not helper.is_class_explicit (a_type.base_class, "subjects") and not l_ghost_collector.has_subjects then
+					l_clauses.extend (empty_set_property ("subjects"))
+				end
+				if not helper.is_class_explicit (a_type.base_class, "owns") and not l_ghost_collector.has_owns then
+					l_clauses.extend (empty_set_property ("owns"))
+				end
+				if not helper.is_class_explicit (a_type.base_class, "invariant") then
+					l_clauses.extend (forall_invariant_property)
+				end
+			end
+
 			if l_clauses.count = 0 then
 				l_decl.set_body (factory.true_)
 			else
@@ -150,7 +169,33 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_invariants (a_class: CLASS_C; a_context_type: TYPE_A): LINKED_LIST [IV_EXPRESSION]
+	forall_invariant_property: IV_EXPRESSION
+		local
+			l_forall: IV_FORALL
+			l_i, l_current: IV_ENTITY
+		do
+			create l_i.make (helper.unique_identifier ("i"), types.ref)
+			create l_current.make ("current", types.ref)
+			create l_forall.make (
+				factory.implies_ (
+					factory.map_access (factory.heap_access ("heap", l_current, "subjects", types.set (types.ref)), l_i),
+					factory.map_access (factory.heap_access ("heap", l_i, "observers", types.set (types.ref)), l_current)))
+			l_forall.add_bound_variable (l_i.name, l_i.type)
+			Result := l_forall
+		end
+
+	empty_set_property (a_name: STRING): IV_EXPRESSION
+		do
+			Result := factory.function_call (
+				"Set#Equal",
+				<<
+					factory.heap_access ("heap", create {IV_ENTITY}.make ("current", types.ref), a_name, types.set (types.ref)),
+					factory.function_call ("Set#Empty", << >>, types.set (types.ref))
+				>>,
+				types.bool)
+		end
+
+	process_invariants (a_class: CLASS_C; a_context_type: TYPE_A; a_collector: E2B_GHOST_SET_COLLECTOR): LINKED_LIST [IV_EXPRESSION]
 			-- Process invariants of `a_class'.
 		require
 			a_class_not_void: a_class /= Void
@@ -179,6 +224,9 @@ feature {NONE} -- Implementation
 						Result.extend (i.item.expr)
 					end
 					Result.extend (l_translator.last_expression)
+
+					l_assert.process (a_collector)
+
 					l_list.forth
 				end
 			end

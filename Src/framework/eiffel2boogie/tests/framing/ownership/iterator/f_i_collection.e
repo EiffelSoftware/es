@@ -38,7 +38,7 @@ feature
 			is_wrapped -- default: ?
 			count < capacity
 			across observers as o all o.item.is_wrapped end
-			
+
 			modify (Current)
 			modify (observers)
 		do
@@ -57,7 +57,7 @@ feature
 feature {F_I_ITERATOR}
 
 	elements: ARRAY [INTEGER]
-  
+
 invariant
 	elements /= Void
 	0 <= count and count <= elements.count

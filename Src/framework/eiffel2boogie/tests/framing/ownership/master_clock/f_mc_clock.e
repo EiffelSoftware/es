@@ -54,8 +54,5 @@ invariant
 	0 <= local_time
 	local_time <= master.time
 	subjects = [master]
-	across subjects as s all s.item.observers.has (Current) end -- default
-	owns = [] -- default
-	observers = [] -- default
 
 end

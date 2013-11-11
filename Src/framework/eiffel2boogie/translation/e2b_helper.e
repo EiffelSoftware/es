@@ -152,7 +152,7 @@ feature -- Ownership helpers
 		do
 			l_values := class_note_values (a_class, "explicit")
 			if not l_values.is_empty then
-				Result := across l_values as i some i.item.as_string_8.is_equal (a_type) end
+				Result := across l_values as i some i.item.as_string_8 ~ a_type or i.item.as_string_8 ~ "all" end
 			end
 		end
 
@@ -163,7 +163,7 @@ feature -- Ownership helpers
 		do
 			l_values := feature_note_values (a_feature, "explicit")
 			if not l_values.is_empty then
-				Result := across l_values as i some i.item.as_string_8.is_equal (a_type) end
+				Result := across l_values as i some i.item.as_string_8 ~ a_type or i.item.as_string_8 ~ "all" end
 			end
 		end
 
@@ -180,13 +180,7 @@ feature -- Ownership helpers
 				Result := is_feature_explicit (a_feature, a_type)
 			end
 			if not Result then
-				Result := is_feature_explicit (a_feature, "all")
-			end
-			if not Result then
 				Result := is_class_explicit (a_feature.written_class, a_type)
-			end
-			if not Result then
-				Result := is_class_explicit (a_feature.written_class, "all")
 			end
 		end
 

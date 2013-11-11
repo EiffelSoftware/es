@@ -41,8 +41,6 @@ feature
 
 invariant
 	0 <= time
-	owns = [] -- default
-	subjects = [] -- default
 
 note
 	explicit: observers
