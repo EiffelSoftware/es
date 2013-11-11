@@ -67,4 +67,11 @@ feature -- Command Line
 		do Result := locale.translation ("Code Analysis performs static analyses on the source code and %
 			           %outputs a list of issues found according to a set of rules.") end
 
+	cmd_class_not_found_1: STRING_32
+		do Result := locale.translation ("Warning: class '") end
+
+	cmd_class_not_found_2: STRING_32
+		do Result := locale.translation ("' was not found and will be skipped. Check the spelling %
+			%and make sure the class has been compiled.%N") end
+
 end

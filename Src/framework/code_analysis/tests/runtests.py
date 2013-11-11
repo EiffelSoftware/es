@@ -161,7 +161,7 @@ def run_test(path, test_name):
 	global eve_exe, tests_ecf, store_output
 	if not path is None and os.path.isdir(path):
 		_as_info("Running test: " + test_name)
-		args = [eve_exe, "-config", tests_ecf, "-target", "tests", "-code-analysis"]
+		args = [eve_exe, "-config", tests_ecf, "-target", "tests", "-code-analysis", "-caclasses"]
 		classes = []
 		for filename in os.listdir(path):
 			if filename.endswith(".e"):

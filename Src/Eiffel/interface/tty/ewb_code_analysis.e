@@ -24,8 +24,21 @@ feature {NONE} -- Initialization
 	make_with_arguments (a_arguments: LINKED_LIST [STRING])
 			-- Initialization for `Current'.
 		do
+			create class_name_list.make
 
+			across a_arguments as l_args loop
+				if l_args.item.is_equal ("-caclass") or l_args.item.is_equal ("-caclasses") then
+					from l_args.forth
+					until l_args.after or l_args.item.starts_with ("-")
+					loop class_name_list.extend (l_args.item); l_args.forth
+					end
+				end
+			end
 		end
+
+feature {NONE} -- Options
+
+	class_name_list: LINKED_LIST [STRING]
 
 feature -- Execution (declared in EWB_CMD)
 
@@ -35,7 +48,15 @@ feature -- Execution (declared in EWB_CMD)
 			l_rule_name, l_line, l_col: STRING
 		do
 			create l_code_analyzer.make
-			l_code_analyzer.add_whole_system
+
+			if class_name_list.is_empty then
+				l_code_analyzer.add_whole_system
+			else
+				across class_name_list as l_cn loop
+					try_add_class_with_name (l_code_analyzer, l_cn.item)
+				end
+			end
+
 			l_code_analyzer.analyze
 
 			print ("%NEiffel Code Analysis%N")
@@ -56,6 +77,17 @@ feature -- Execution (declared in EWB_CMD)
 						print ("%N")
 					end
 				end
+			end
+		end
+
+	try_add_class_with_name (a_analyzer: CA_CODE_ANALYZER; a_class_name: STRING)
+		do
+			if attached universe.compiled_classes_with_name (a_class_name) as l_c then
+				across l_c as l_classes loop
+					a_analyzer.add_class (l_classes.item)
+				end
+			else
+				print (ca_messages.cmd_class_not_found_1 + a_class_name + ca_messages.cmd_class_not_found_2)
 			end
 		end
 

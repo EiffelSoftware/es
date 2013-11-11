@@ -53,12 +53,13 @@ feature -- Properties
 			Result :=  ca_names.npath_description
 		end
 
-	options: LINKED_LIST[CA_RULE_OPTION[ANY]]
+	options: LINKED_LIST[CA_RULE_OPTION[INTEGER]]
 		local
 			l_threshold: CA_RULE_OPTION[INTEGER]
 		once
 			create l_threshold.make_with_caption (ca_names.npath_threshold_option)
 			l_threshold.set_valid_choice_agent (agent is_threshold_within_bounds)
+			l_threshold.set_choice (200) -- default option
 
 			create Result.make
 			Result.extend (l_threshold)
@@ -132,18 +133,21 @@ feature {NONE} -- Rule Checking
 	evaluate_routine
 		local
 			l_violation: CA_RULE_VIOLATION
-			l_npath: INTEGER
+			l_npath, l_threshold: INTEGER
 		do
 			check npath_stack.count = 1 end
 			l_npath := npath_stack.item
-			-- TODO: replace 200 by option
-			if l_npath > 200 then
+
+			l_threshold := options.first.choice
+
+			if l_npath > l_threshold then
 				create l_violation.make_with_rule (Current)
 				check attached current_feature end
 				l_violation.set_location (current_feature.start_location)
 				l_violation.long_description_info.extend (current_feature)
 				l_violation.long_description_info.extend (l_npath)
-				l_violation.long_description_info.extend (200) -- TODO: replace by option
+				l_violation.long_description_info.extend (l_threshold)
+				violations.extend (l_violation)
 			end
 		end
 

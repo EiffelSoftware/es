@@ -469,6 +469,8 @@ Src/framework/cli_writer/Clib/*.obj
 Src/framework/cli_writer/Clib/*.pdb
 Src/framework/cli_writer/spec
 Src/framework/code_analysis/tests/EIFGENs
+Src/framework/code_analysis/tests/log.txt
+Src/framework/code_analysis/tests/test_output.txt
 Src/framework/configuration/*.wb
 Src/framework/configuration/EIFGENs
 Src/framework/eiffel2boogie/tests/EIFGENs

@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	CA_VISIT_NODE_TASK
+	CA_VISIT_NODE_TASK [G -> AST_EIFFEL]
 
 inherit
 	ROTA_TIMED_TASK_I
@@ -15,7 +15,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_node: AST_EIFFEL; a_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[AST_EIFFEL]]])
+	make (a_node: G; a_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[G]]])
 		do
 			node := a_node
 			actions := a_actions
@@ -24,9 +24,9 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Implementation
 
-	node: AST_EIFFEL
+	node: G
 
-	actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[AST_EIFFEL]]]
+	actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[G]]]
 
 feature -- From ROTA
 

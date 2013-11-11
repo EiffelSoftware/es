@@ -330,12 +330,23 @@ feature {NONE} -- Processing
 		end
 
 	process_feature_as (a_feature: FEATURE_AS)
+		local
+			l_pre_task, l_post_task: CA_VISIT_NODE_TASK [FEATURE_AS]
+			l_b: BOOLEAN
 		do
-			across feature_pre_actions as l_a loop l_a.item.call ([a_feature]) end
+--			across feature_pre_actions as l_a loop l_a.item.call ([a_feature]) end
+			create l_pre_task.make (a_feature, feature_pre_actions)
+			l_b := False
+			from rota.run_task (l_pre_task) until not rota.has_task (l_pre_task) loop l_b := True end
+			if l_b then print ("Async!%N") end
 
 			Precursor (a_feature)
 
-			across feature_post_actions as l_a loop l_a.item.call ([a_feature]) end
+--			across feature_post_actions as l_a loop l_a.item.call ([a_feature]) end
+			create l_post_task.make (a_feature, feature_post_actions)
+			l_b := False
+			from rota.run_task (l_post_task) until not rota.has_task (l_pre_task) loop l_b := True end
+			if l_b then print ("Async!%N") end
 		end
 
 	process_id_as (a_id: ID_AS)
@@ -349,7 +360,7 @@ feature {NONE} -- Processing
 
 	process_if_as (a_if: IF_AS)
 		local
-			l_pre_task, l_post_task: CA_VISIT_NODE_TASK
+			l_pre_task, l_post_task: CA_VISIT_NODE_TASK [IF_AS]
 		do
 			across if_pre_actions as l_a loop l_a.item.call ([a_if]) end
 --			create l_pre_task.make (a_if, if_pre_actions)
