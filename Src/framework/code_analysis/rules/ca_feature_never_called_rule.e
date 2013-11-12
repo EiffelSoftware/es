@@ -9,6 +9,9 @@ class
 
 inherit
 	CA_STANDARD_RULE
+		redefine
+			checks_library_classes
+		end
 
 create
 	make
@@ -93,10 +96,9 @@ feature -- Properties
 		end
 
 
-	is_system_wide: BOOLEAN
-		once
-			Result := True
-		end
+	is_system_wide: BOOLEAN = True
+
+	checks_library_classes: BOOLEAN = False
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		do

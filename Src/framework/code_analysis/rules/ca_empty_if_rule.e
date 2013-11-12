@@ -39,14 +39,11 @@ feature -- Properties
 			Result := ca_names.empty_if_description
 		end
 
+	is_system_wide: BOOLEAN = False
+
 	options: LINKED_LIST[CA_RULE_OPTION[ANY]]
 		once
 			create Result.make
-		end
-
-	is_system_wide: BOOLEAN
-		once
-			Result := False
 		end
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)

@@ -114,7 +114,6 @@ feature -- Properties
 			create Result.make
 		end
 
-
 	is_system_wide: BOOLEAN = False
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)

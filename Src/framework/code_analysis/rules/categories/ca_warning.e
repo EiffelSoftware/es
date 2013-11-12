@@ -11,14 +11,8 @@ inherit
 	CA_RULE_SEVERITY
 
 feature -- Properties
-	is_critical: BOOLEAN
-		once
-			Result := False
-		end
+	is_critical: BOOLEAN = False
 
-	name: STRING
-		once
-			Result := "Warning"
-		end
+	name: STRING = "Warning"
 
 end

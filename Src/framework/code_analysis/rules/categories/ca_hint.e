@@ -11,14 +11,8 @@ inherit
 	CA_RULE_SEVERITY
 
 feature {NONE} -- Initialization
-	is_critical: BOOLEAN
-		once
-			Result := False
-		end
+	is_critical: BOOLEAN = False
 
-	name: STRING
-		once
-			Result := "Hint"
-		end
+	name: STRING = "Hint"
 
 end

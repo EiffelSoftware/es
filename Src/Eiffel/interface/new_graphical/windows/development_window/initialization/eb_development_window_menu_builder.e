@@ -1225,6 +1225,7 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			insert_show_tool_menu_item (Result, {ES_EVE_AUTOFIX_TOOL})
 			insert_show_tool_menu_item (Result, {ES_ALIAS_ANALYSIS_TOOL})
 			insert_show_tool_menu_item (Result, {ES_AUTOPROOF_TOOL})
+			insert_show_tool_menu_item (Result, {ES_CODE_ANALYSIS_TOOL})
 			insert_show_tool_menu_item (Result, {ES_SPELLING_TOOL})
 		end
 

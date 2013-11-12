@@ -34,14 +34,24 @@ feature {NONE} -- Initialization
 
 			create classes_to_analyze.make
 			create rule_violations.make (100)
+			create completed_actions
 		end
 
 feature -- Analysis interface
 
+	add_completed_action (a_action: PROCEDURE [ANY, TUPLE [BOOLEAN] ])
+		do
+			completed_actions.extend (a_action)
+		end
+
 	analyze
+		require
+			not is_running
 		local
 			l_rules_checker: CA_ALL_RULES_CHECKER
 		do
+			is_running := True
+
 			create l_rules_checker.make
 			across rules as l_rules loop
 				if l_rules.item.is_enabled then -- important: only add enabled rules
@@ -79,8 +89,13 @@ feature -- Analysis interface
 			end
 
 			clear_classes_to_analyze
+
+			is_running := False
+			completed_actions.call ([True])
+			completed_actions.wipe_out
 		ensure
 			violation_list_exists: analysis_successful implies rule_violations /= Void
+			not is_running
 		end
 
 	clear_classes_to_analyze
@@ -139,6 +154,25 @@ feature -- Analysis interface
 			end
 		end
 
+	add_group (a_group: CONF_GROUP)
+		require
+			a_group_not_void: a_group /= Void
+		local
+			l_conf_class: CONF_CLASS
+			l_class_i: CLASS_I
+		do
+			from
+				a_group.classes.start
+			until
+				a_group.classes.after
+			loop
+				l_conf_class := a_group.classes.item_for_iteration
+				l_class_i := eiffel_universe.class_named (l_conf_class.name, a_group)
+				add_class (l_class_i)
+				a_group.classes.forth
+			end
+		end
+
 	add_classes (a_classes: ITERABLE[CLASS_I])
 		do
 			system_wide_check := False
@@ -165,6 +199,8 @@ feature -- Analysis interface
 
 feature -- Properties
 
+	is_running: BOOLEAN
+
 	analysis_successful: BOOLEAN
 
 	rules: LINKED_LIST[CA_RULE]
@@ -179,5 +215,6 @@ feature {NONE} -- Implementation
 
 	system_wide_check: BOOLEAN
 
+	completed_actions: ACTION_SEQUENCE [ TUPLE [BOOLEAN] ]
 
 end

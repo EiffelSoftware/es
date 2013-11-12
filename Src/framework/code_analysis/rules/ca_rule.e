@@ -29,6 +29,16 @@ feature -- Basic properties, usually fix
 		deferred
 		end
 
+	checks_library_classes: BOOLEAN
+		once
+			Result := True
+		end
+
+	checks_nonlibrary_classes: BOOLEAN
+		once
+			Result := True
+		end
+
 feature {CA_RULE_VIOLATION} -- formatted rule checking output
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
@@ -75,4 +85,8 @@ feature -- Results
 
 	violations: LINKED_LIST[CA_RULE_VIOLATION]
 
+feature {NONE} -- Implementation
+
+invariant
+	checks_some_classes: checks_library_classes or checks_nonlibrary_classes
 end
