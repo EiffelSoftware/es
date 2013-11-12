@@ -36,32 +36,13 @@ feature
 		do
 			r := right
 
---			unwrap_all ([Current, left, r, r.right, n])
---			across << Current, r, n >> as o loop o.item.unwrap end
-			Current.unwrap
-			if r /= Current then
-				r.unwrap
-			end
-			if n /= Current then
-				n.unwrap
-			end
-			if r.right.is_wrapped then
-				r.right.unwrap
-			end
-			if left.is_wrapped then
-				left.unwrap
-			end
+			unwrap_all ([Current, left, r, r.right, n])
 
 			n.set_right (r)
 			n.set_left (Current)
 			r.set_left (n)
 			set_right (n)
 
---			across << Current, r, n >> as o loop
---				o.item.set_subjects ([o.item.left, o.item.right]) -- default: implicit?
---				o.item.set_observers ([o.item.left, o.item.right]) -- default: implicit?
---				o.item.wrap
---			end
 			Current.set_subjects ([Current.left, Current.right])
 			Current.set_observers ([Current.left, Current.right])
 			r.set_subjects ([r.left, r.right])
@@ -69,21 +50,7 @@ feature
 			n.set_subjects ([n.left, n.right])
 			n.set_observers ([n.left, n.right])
 
-
-			Current.wrap
-			if not left.is_wrapped then
-				left.wrap
-			end
-			if not n.is_wrapped then
-				n.wrap
-			end
-			if not r.is_wrapped then
-				r.wrap
-			end
-			if not r.right.is_wrapped then
-				r.right.wrap
-			end
---			wrap_all ([Current, left, r, r.right, n])
+			wrap_all ([Current, left, r, r.right, n])
 		ensure
 			right = n
 			n.right = old right
@@ -103,31 +70,15 @@ feature
 		local
 			r: F_DLL_NODE
 		do
-			r := right
+			unwrap_all ([Current, left, right, right.right, right.right.right])
 
---			across << Current, r, r.right >> as o loop o.item.unwrap end
-			Current.unwrap
-			r.unwrap
-			if r.right.is_wrapped then
-				r.right.unwrap
-			end
-			if r.right.right.is_wrapped then
-				r.right.right.unwrap
-			end
-			if left.is_wrapped then
-				left.unwrap
-			end
+			r := right
 
 			set_right (r.right)
 			r.right.set_left (Current)
 			r.set_right (r)
 			r.set_left (r)
 
---			across << Current, r, r.right >> as o loop
---				o.item.set_subjects ([o.item.left, o.item.right]) -- default: implicit subjects
---				o.item.set_observers ([o.item.left, o.item.right]) -- default: implicit observers
---				o.item.wrap
---			end
 			Current.set_subjects ([Current.left, Current.right])
 			Current.set_observers ([Current.left, Current.right])
 			right.set_subjects ([right.left, right.right])
@@ -135,14 +86,7 @@ feature
 			r.set_subjects ([r.left, r.right])
 			r.set_observers ([r.left, r.right])
 
-			Current.wrap
-			if not left.is_wrapped then
-				left.wrap
-			end
-			if not right.is_wrapped then
-				right.wrap
-			end
-			r.wrap
+			wrap_all ([Current, left, right, right.right, r])
 		ensure
 		  right = old right.right
 		  old_right_singleton: (old right).right = old right

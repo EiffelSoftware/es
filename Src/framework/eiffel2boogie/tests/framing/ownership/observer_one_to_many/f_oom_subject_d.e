@@ -12,24 +12,26 @@ feature
 	observers_list: F_OOM_LIST [F_OOM_OBSERVER_D]
 
 	make
+		note
+			status: creator
 		require
 			is_open
 
 			modify (Current) -- default: creator
 		do
-			create observers_list
+			create observers_list.make
 			set_owns ([observers_list]) -- implicit?
-			wrap
+			wrap -- default: creator
 		ensure
 			observers_list.is_empty
 			observers = [] -- todo: should be implied by previous line
-			is_wrapped
+			is_wrapped -- default: creator
 		end
 
 	update (new_val: INTEGER)
 		require
-			is_wrapped
-			across observers as o all o.item.is_wrapped end
+			is_wrapped -- default: public
+			across observers as o all o.item.is_wrapped end -- default: public
 
 			modify_field ("value", Current)
 			modify_field ("cache", observers_list.sequence)
@@ -37,29 +39,25 @@ feature
 			i: INTEGER
 		do
 			unwrap
-			across observers as o loop
-				o.item.unwrap
-			end
+			unwrap_all (observers)
 
 			value := new_val
-			from
-				i := 1
-			invariant
-				across 1 |..| (i - 1) as j all observers_list[j.item].cache = new_val end
-			until
-				i > observers_list.count
-			loop
-				observers_list [i].notify
-				i := i + 1
-			end
-			across observers as o loop
-				o.item.wrap
-			end
+--			from
+--				i := 1
+--			invariant
+--				across 1 |..| (i - 1) as j all observers_list[j.item].cache = new_val end
+--			until
+--				i > observers_list.count
+--			loop
+--				observers_list [i].notify
+--				i := i + 1
+--			end
+			wrap_all (observers)
 			wrap
 		ensure
 			value = new_val
-			is_wrapped
-			across observers as o all o.item.is_wrapped end
+			is_wrapped -- default: public
+			across observers as o all o.item.is_wrapped end -- default: public
 		end
 
 feature {F_OOM_OBSERVER_D}
@@ -78,6 +76,7 @@ feature {F_OOM_OBSERVER_D}
 			set_observers (observers + [o])
 			wrap
 		ensure
+			observers = (old observers & o)
 			observers_list.has (o)
 			is_wrapped
 		end
@@ -88,6 +87,7 @@ invariant
 	observers = observers_list.sequence
 	owns = [observers_list]
 	subjects = [] -- default
+	abc: not observers[Current]
 
 note
 	explicit: observers

@@ -1,3 +1,6 @@
+note
+	explicit: "all"
+
 class F_I_COLLECTION
 
 create
@@ -8,10 +11,10 @@ feature
 	count: INTEGER
 
 	capacity: INTEGER
-		note
-			status: ghost
 		require
-			reads ([Current])
+			reads (Current)
+
+			modify ([]) -- default: query
 		do
 			Result := elements.count
 		end
@@ -30,24 +33,28 @@ feature
 			is_wrapped -- default: creator
 			capacity = cap
 			count = 0
-			observers.is_empty -- default: explicit class note
+			observers = []
 		end
 
 	add (v: INTEGER)
+		note
+			explicit: contracts
 		require
-			is_wrapped -- default: ?
+			is_wrapped -- default: public
+			across observers as o all o.item.is_wrapped end -- default: public
+
 			count < capacity
-			across observers as o all o.item.is_wrapped end
 
 			modify (Current)
 			modify (observers)
 		do
-			unwrap -- default: ?
-			across observers as o loop o.item.unwrap end -- across over ghost
+			unwrap -- default: public
+			unwrap_all (observers)
+
 			set_observers ([])
 			count := count + 1
 			elements.put (v, count)
-			wrap -- default: ?
+			wrap -- default: public
 		ensure
 			count = old count + 1
 			observers.is_empty
@@ -56,14 +63,15 @@ feature
 
 feature {F_I_ITERATOR}
 
-	elements: ARRAY [INTEGER]
+	elements: F_I_ARRAY
 
 invariant
 	elements /= Void
 	0 <= count and count <= elements.count
-	owns = [ elements ]
+	owns = [elements]
 	subjects = [] -- default
 
 note
   explicit: observers
+
 end

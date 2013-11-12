@@ -398,7 +398,7 @@ feature -- Verification: ownership operations
 		do
 		end
 
-	frozen wrap_all (a: ANY)
+	frozen wrap_all (a: MML_SET [ANY])
 			-- Wrap all objects in `a' simultaneously.
 		do
 		end
@@ -408,7 +408,7 @@ feature -- Verification: ownership operations
 		do
 		end
 
-	frozen unwrap_all (a: ANY)
+	frozen unwrap_all (a: MML_SET [ANY])
 			-- Unwrap all objects in `a' simultaneously.
 		do
 		end
@@ -437,6 +437,8 @@ feature -- Verification: ownership fields
 
 	frozen owner: ANY assign set_owner
 			-- Owner of this object.
+		note
+			status: ghost
 		do
 		end
 
@@ -447,6 +449,8 @@ feature -- Verification: ownership fields
 
 	frozen owns: MML_SET [ANY] assign set_owns
 			-- Owns set of this object.
+		note
+			status: ghost
 		do
 		end
 
@@ -457,6 +461,8 @@ feature -- Verification: ownership fields
 
 	frozen subjects: MML_SET [ANY] assign set_subjects
 			-- Subjects set of this object.
+		note
+			status: ghost
 		do
 		end
 
@@ -467,6 +473,8 @@ feature -- Verification: ownership fields
 
 	frozen observers: MML_SET [ANY] assign set_observers
 			-- Observers set of this object.
+		note
+			status: ghost
 		do
 		end
 

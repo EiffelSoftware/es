@@ -17,7 +17,6 @@ feature
 			check n1.right = n2 and n2.right = n1 end
 			n2.remove_right
 			check n1.right = n1 and n2.right = n2 end
-			check false end
 		end
 
 	test_d

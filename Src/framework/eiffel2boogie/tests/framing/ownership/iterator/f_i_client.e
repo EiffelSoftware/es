@@ -1,3 +1,6 @@
+note
+	explicit: "all"
+
 class F_I_CLIENT
 
 feature

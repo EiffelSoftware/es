@@ -13,10 +13,12 @@ feature
 	cache: INTEGER
 
 	make (s: F_OOM_SUBJECT_D)
+		note
+			status: creator
 		require
 			s /= Void
-			s.is_wrapped
-			is_open
+			s.is_wrapped -- default: creator
+			is_open -- default: creator
 
 			modify ([s, Current])
 		do
@@ -24,11 +26,11 @@ feature
 			s.register (Current)
 			cache := s.value
 			set_subjects ([subject]) -- implicit?
-			wrap
+			wrap -- default: creator
 		ensure
 			subject = s
-			is_wrapped
-			s.is_wrapped
+			is_wrapped -- default: creator
+			s.is_wrapped -- default: creator
 			s.observers = (old s.observers & Current)
 		end
 
@@ -36,14 +38,19 @@ feature {F_OOM_SUBJECT_D}
 
 	  notify
 		require
-		  is_open -- default: non-public
-		  subject /= Void
+			is_open -- default: not public
+			across observers as sc all sc.item.is_open end -- default: not public
+
+			subject /= Void
+
+			modify_field ("cache", Current)
 		do
 			cache := subject.value
 		ensure
 			subject = old subject
 			cache = subject.value
-			is_open -- default: non-public
+			is_open -- default: not public
+			across observers as sc all sc.item.is_open end -- default: not public
 		end
 
 invariant
