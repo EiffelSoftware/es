@@ -16,8 +16,8 @@ feature
 		do
 			left := Current
 			right := Current
-			set_subjects ([left, right]) -- default: implicit?
-			set_observers ([left, right]) -- default: implicit?
+			set_subjects ([left, right])
+			set_observers ([left, right])
 		ensure
 			singleton: left = Current
 		end
@@ -34,9 +34,9 @@ feature
 		local
 			r: F_DLL_NODE
 		do
-			r := right
+			unwrap_all ([Current, left, right, right.right, n])
 
-			unwrap_all ([Current, left, r, r.right, n])
+			r := right
 
 			n.set_right (r)
 			n.set_left (Current)
@@ -50,11 +50,10 @@ feature
 			n.set_subjects ([n.left, n.right])
 			n.set_observers ([n.left, n.right])
 
-			wrap_all ([Current, left, r, r.right, n])
+			wrap_all ([Current, left, right, r, r.right])
 		ensure
 			right = n
 			n.right = old right
-
 			right.right.is_wrapped
 		end
 
@@ -64,6 +63,7 @@ feature
 		require
 			not_singleton: right /= Current
 			right.right.is_wrapped
+			right.right.right.is_wrapped
 
 			modify ([Current, left, right, right.right])
 			modify (right.right.right)

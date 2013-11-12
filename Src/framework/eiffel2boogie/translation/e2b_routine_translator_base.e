@@ -344,12 +344,19 @@ feature -- Helper functions: contracts
 				across l_tuple.expressions as i loop
 					l_expr_list.extend (i.item)
 				end
+				if l_tuple.expressions.is_empty then
+					l_expr_list.extend (Void)
+				end
 			else
 				l_expr_list.extend (a_expr)
 			end
 			create Result.make
 			across l_expr_list as k loop
-				Result.extend (translate_individual_expression (k.item))
+				if k.item = Void then
+					Result.extend (Void)
+				else
+					Result.extend (translate_individual_expression (k.item))
+				end
 			end
 		end
 

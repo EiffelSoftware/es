@@ -10,6 +10,8 @@ create
 feature {NONE} -- Initialization
 
 	make
+		note
+			skip: True
 		require
 			is_open -- default: creator
 			modify (Current) -- default: creator
@@ -23,6 +25,7 @@ feature -- Specification
 
 	sequence: MML_SET [G]
 		note
+			skip: True
 			status: specification
 		attribute
 		end
@@ -30,6 +33,8 @@ feature -- Specification
 feature -- Access
 
 	is_empty: BOOLEAN
+		note
+			skip: True
 		require
 			modify ([])
 		do
@@ -38,6 +43,8 @@ feature -- Access
 		end
 
 	count: INTEGER
+		note
+			skip: True
 		require
 			modify ([])
 		do
@@ -46,6 +53,8 @@ feature -- Access
 		end
 
 	item alias "[]" (i: INTEGER): G
+		note
+			skip: True
 		require
 			1 <= i and i < count
 
@@ -56,6 +65,8 @@ feature -- Access
 		end
 
 	has (x: G) : BOOLEAN
+		note
+			skip: True
 		require
 			modify ([])
 		do
@@ -66,6 +77,8 @@ feature -- Access
 feature -- Extension
 
 	extend_back (v: G)
+		note
+			skip: True
 		require
 			is_wrapped
 			modify (Current)

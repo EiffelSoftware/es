@@ -42,6 +42,7 @@ feature
 			unwrap_all (observers)
 
 			value := new_val
+
 --			from
 --				i := 1
 --			invariant

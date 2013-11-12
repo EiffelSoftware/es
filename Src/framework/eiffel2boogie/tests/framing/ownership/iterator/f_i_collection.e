@@ -12,11 +12,19 @@ feature
 
 	capacity: INTEGER
 		require
+			is_wrapped -- default: public
+--			across observers as o all o.item.is_wrapped end -- default: public
+
 			reads (Current)
 
 			modify ([]) -- default: query
 		do
 			Result := elements.count
+		ensure
+			Result = elements.count
+
+			is_wrapped -- default: public
+--			across observers as o all o.item.is_wrapped end -- default: public
 		end
 
 	make (cap: INTEGER)
@@ -25,9 +33,11 @@ feature
 		require
 			is_open -- default: creator
 			cap >= 0
+
+			modify (Current) -- default: creator
 		do
-			create elements.make (1, capacity)
-			set_owns ([elements]) -- default: ?
+			create elements.make (1, cap)
+			set_owns ([elements]) -- default: ???
 			wrap -- default: creator
 		ensure
 			is_wrapped -- default: creator
@@ -40,8 +50,8 @@ feature
 		note
 			explicit: contracts
 		require
-			is_wrapped -- default: public
-			across observers as o all o.item.is_wrapped end -- default: public
+			is_wrapped
+			across observers as o all o.item.is_wrapped end
 
 			count < capacity
 
@@ -57,8 +67,11 @@ feature
 			wrap -- default: public
 		ensure
 			count = old count + 1
-			observers.is_empty
+			observers = []
 			across old observers as o all o.item.is_open end
+			elements.count = old elements.count
+			capacity = old capacity
+			is_wrapped
 		end
 
 feature {F_I_ITERATOR}
@@ -70,6 +83,7 @@ invariant
 	0 <= count and count <= elements.count
 	owns = [elements]
 	subjects = [] -- default
+	not observers[Current] and not observers[elements]
 
 note
   explicit: observers

@@ -7,6 +7,7 @@ create
 	make
 
 feature
+
 	left: F_DLL_NODE_D
 	right: F_DLL_NODE_D
 
@@ -20,8 +21,8 @@ feature
 		do
 			left := Current
 			right := Current
-			set_subjects ([left, right]) -- default: implicit?
-			set_observers ([left, right]) -- default: implicit?
+			set_subjects ([left, right])
+			set_observers ([left, right])
 			wrap -- default: creator
 		ensure
 			singleton: left = Current
@@ -32,15 +33,13 @@ feature
 		note
 			explicit: wrapping
 		require
-			n /= Void
-			n_singleton: n.left = n
 			is_wrapped -- default: public
 			across observers as o all o.item.is_wrapped end -- default: public
 			n.is_wrapped -- default: public
 			across n.observers as o all o.item.is_wrapped end -- default: public
 
-			left.is_wrapped
-			right.is_wrapped
+			n /= Void
+			n_singleton: n.left = n
 			right.right.is_wrapped
 
 			modify ([Current, left, right, right.right, n])
@@ -67,54 +66,36 @@ feature
 		ensure
 			right = n
 			n.right = old right
-
-			is_wrapped -- default: public
-			left.is_wrapped
-			right.is_wrapped
 			right.right.is_wrapped
+			is_wrapped -- default: public
+			across observers as o all o.item.is_wrapped end -- default: public
 		end
 
 	remove_right
 		note
 			explicit: wrapping
 		require
+			is_wrapped -- default: public
+			across observers as o all o.item.is_wrapped end -- default: public
+
 			not_singleton: right /= Current
 			right.right.is_wrapped
-			is_wrapped -- default: ?
-			across observers as o all o.item.is_wrapped end -- default: ?
+			right.right.right.is_wrapped
 
-			modify ([Current, right, right.right])
-
+			modify ([Current, left, right, right.right])
 			modify (right.right.right)
-			modify (left)
 		local
 			r: F_DLL_NODE_D
 		do
-			r := right
+			unwrap_all ([Current, left, right, right.right, right.right.right])
 
---			across << Current, r, r.right >> as o loop o.item.unwrap end
-			Current.unwrap
-			r.unwrap
-			if r.right.is_wrapped then
-				r.right.unwrap
-			end
-			if r.right.right.is_wrapped then
-				r.right.right.unwrap
-			end
-			if left.is_wrapped then
-				left.unwrap
-			end
+			r := right
 
 			set_right (r.right)
 			r.right.set_left (Current)
 			r.set_right (r)
 			r.set_left (r)
 
---			across << Current, r, r.right >> as o loop
---				o.item.set_subjects ([o.item.left, o.item.right]) -- default: implicit subjects
---				o.item.set_observers ([o.item.left, o.item.right]) -- default: implicit observers
---				o.item.wrap
---			end
 			Current.set_subjects ([Current.left, Current.right])
 			Current.set_observers ([Current.left, Current.right])
 			right.set_subjects ([right.left, right.right])
@@ -122,20 +103,13 @@ feature
 			r.set_subjects ([r.left, r.right])
 			r.set_observers ([r.left, r.right])
 
-			Current.wrap
-			if not left.is_wrapped then
-				left.wrap
-			end
-			if not right.is_wrapped then
-				right.wrap
-			end
-			r.wrap
+			wrap_all ([Current, left, right, right.right, r])
 		ensure
-		  right = old right.right
-		  old_right_singleton: (old right).right = old right
+			right = old right.right
+			old_right_singleton: (old right).right = old right
 
-		  is_wrapped
-		  right.is_wrapped
+			is_wrapped -- default: public
+			across observers as o all o.item.is_wrapped end -- default: public
 		end
 
 feature {F_DLL_NODE_D}

@@ -477,7 +477,9 @@ feature -- Basic operations
 
 				-- Expression
 			across l_.modified_objects as o loop
-				if o.item.type.is_set then
+				if o.item = Void then
+					l_expr := factory.function_call ("Set#Empty", << >>, types.set (types.ref))
+				elseif o.item.type.is_set then
 					l_expr := o.item
 				else
 					l_expr := factory.function_call ("Set#Singleton", << o.item >>, types.set (types.ref))

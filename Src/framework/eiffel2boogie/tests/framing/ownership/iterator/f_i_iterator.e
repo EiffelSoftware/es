@@ -3,7 +3,8 @@ note
 
 class F_I_ITERATOR
 
-create make
+create
+	make
 
 feature
 
@@ -31,8 +32,12 @@ feature
 			wrap -- default: creator
 		ensure
 			target = t
+			t.observers = old t.observers & Current
+			t.elements = old t.elements
+			t.elements.count = old t.elements.count
 			before and not after
 			is_wrapped -- default: creator
+			t.is_wrapped
 		end
 
 	item: INTEGER
@@ -41,13 +46,12 @@ feature
 			target.is_wrapped
 			is_wrapped -- default: public
 
-			modify_field ("closed", Current) -- default: query
+			modify ([]) -- default: query
 		do
-			unwrap -- default: public
 			Result := target.elements [index]
-			wrap -- default: public
 		ensure
 			is_wrapped -- default: public
+			target.is_wrapped
 		end
 
 	forth
@@ -66,10 +70,12 @@ feature
 		ensure
 			not before
 			target = old target
+			target.observers = old target.observers
+			index = old index + 1
 			is_wrapped -- default: public
 		end
 
-feature {NONE}
+feature -- Implementation
 
 	index: INTEGER
 
