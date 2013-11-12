@@ -73,36 +73,44 @@ feature {NONE} -- Initialization
     create_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
             -- <Precursor>
 		do
-				-- "toggle successful" button
-			create successful_button.make
-			successful_button.set_pixmap (stock_pixmaps.general_check_document_icon)
-			successful_button.set_pixel_buffer (stock_pixmaps.general_check_document_icon_buffer)
-			successful_button.enable_select
-			successful_button.select_actions.extend (agent on_update_visiblity)
+				-- "toggle errors" button
+			create errors_button.make
+			errors_button.set_pixmap (stock_pixmaps.general_error_icon)
+			errors_button.set_pixel_buffer (stock_pixmaps.general_error_icon_buffer)
+			errors_button.enable_select
+			errors_button.select_actions.extend (agent on_update_visiblity)
 
-				-- "toggle failed" button
-			create failed_button.make
-			failed_button.set_pixmap (stock_pixmaps.debug_exception_handling_icon)
-			failed_button.set_pixel_buffer (stock_pixmaps.debug_exception_handling_icon_buffer)
-			failed_button.enable_select
-			failed_button.select_actions.extend (agent on_update_visiblity)
+				-- "toggle warnings" button
+			create warnings_button.make
+			warnings_button.set_pixmap (stock_pixmaps.general_warning_icon)
+			warnings_button.set_pixel_buffer (stock_pixmaps.general_warning_icon_buffer)
+			warnings_button.enable_select
+			warnings_button.select_actions.extend (agent on_update_visiblity)
 
-				-- "toggle skipped" button
-			create skipped_button.make
-			skipped_button.set_pixmap (stock_pixmaps.general_warning_icon)
-			skipped_button.set_pixel_buffer (stock_pixmaps.general_warning_icon_buffer)
-			skipped_button.enable_select
-			skipped_button.select_actions.extend (agent on_update_visiblity)
+				-- "toggle suggestions" button
+			create suggestions_button.make
+			suggestions_button.set_pixmap (stock_pixmaps.view_editor_icon)
+			suggestions_button.set_pixel_buffer (stock_pixmaps.view_editor_icon_buffer)
+			suggestions_button.enable_select
+			suggestions_button.select_actions.extend (agent on_update_visiblity)
+
+				-- "toggle hints" button
+			create hints_button.make
+			hints_button.set_pixmap (stock_pixmaps.general_information_icon)
+			hints_button.set_pixel_buffer (stock_pixmaps.general_information_icon_buffer)
+			hints_button.enable_select
+			hints_button.select_actions.extend (agent on_update_visiblity)
 
 			update_button_titles
 
 			create Result.make (5)
-			proof_button := (create {ES_CODE_ANALYSIS_COMMAND}.make).new_sd_toolbar_item (True)
-			Result.extend (proof_button)
+			run_analysis_button := (create {ES_CODE_ANALYSIS_COMMAND}.make).new_sd_toolbar_item (True)
+			Result.extend (run_analysis_button)
 			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
-			Result.extend (successful_button)
-			Result.extend (failed_button)
---			Result.extend (skipped_button)
+			Result.extend (errors_button)
+			Result.extend (warnings_button)
+			Result.extend (suggestions_button)
+			Result.extend (hints_button)
 		end
 
 	create_right_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
@@ -313,7 +321,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	proof_button: EB_SD_COMMAND_TOOL_BAR_BUTTON
+	run_analysis_button: EB_SD_COMMAND_TOOL_BAR_BUTTON
 			-- Button to launch AutoProof.
 
 	successful_count: INTEGER
@@ -330,19 +338,19 @@ feature -- Status report
 	show_successful: BOOLEAN
 			-- Indicates if errors should be shown
 		do
-			Result := not is_initialized or else successful_button.is_selected
+			Result := not is_initialized or else errors_button.is_selected
 		end
 
 	show_failed: BOOLEAN
 			-- Indicates if errors should be shown
 		do
-			Result := not is_initialized or else failed_button.is_selected
+			Result := not is_initialized or else warnings_button.is_selected
 		end
 
 	show_skipped: BOOLEAN
 			-- Indicates if errors should be shown
 		do
-			Result := not is_initialized or else skipped_button.is_selected
+			Result := not is_initialized or else hints_button.is_selected
 		end
 
 	is_item_visible (a_item: EV_GRID_ROW): BOOLEAN
@@ -382,14 +390,16 @@ feature -- Status report
 
 feature {NONE} -- User interface items
 
-	successful_button: SD_TOOL_BAR_TOGGLE_BUTTON
-			-- Toogle to show/hide successful proofs
+	errors_button: SD_TOOL_BAR_TOGGLE_BUTTON
+			-- Toogle to show/hide errors
 
-	failed_button: SD_TOOL_BAR_TOGGLE_BUTTON
-			-- Toogle to show/hide failed proofs
+	warnings_button: SD_TOOL_BAR_TOGGLE_BUTTON
+			-- Toogle to show/hide warnings
 
-	skipped_button: SD_TOOL_BAR_TOGGLE_BUTTON
-			-- Toogle to show/hide skipped proofs
+	suggestions_button: SD_TOOL_BAR_TOGGLE_BUTTON
+
+	hints_button: SD_TOOL_BAR_TOGGLE_BUTTON
+			-- Toogle to show/hide hints
 
 	text_filter: EV_TEXT_FIELD
 			-- Text field to enter filter
@@ -718,9 +728,10 @@ feature {NONE} -- Basic operations
 	update_button_titles
 			-- Update button titles with number of events.
 		do
-			successful_button.set_text (successful_count.out + " " + ep_names.tool_button_successful)
-			failed_button.set_text (failed_count.out + " " + ep_names.tool_button_failed)
-			skipped_button.set_text (skipped_count.out + " " + ep_names.tool_button_skipped)
+			errors_button.set_text (successful_count.out + " Errors")
+			warnings_button.set_text (failed_count.out + " Warnings")
+			suggestions_button.set_text ("0 Suggestions")
+			hints_button.set_text (skipped_count.out + " Hints")
 		end
 
 	find_event_row (a_event_item: EVENT_LIST_ITEM_I): EV_GRID_ROW

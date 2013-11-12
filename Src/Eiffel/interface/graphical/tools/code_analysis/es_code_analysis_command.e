@@ -270,7 +270,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 		do
 			l_tool := ca_tool
 			if l_tool /= Void and then l_tool.is_tool_instantiated then
-				ca_tool.panel.proof_button.disable_sensitive
+				ca_tool.panel.run_analysis_button.disable_sensitive
 			end
 		end
 
@@ -281,7 +281,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 		do
 			l_tool := ca_tool
 			if l_tool /= Void and then l_tool.is_tool_instantiated then
-				ca_tool.panel.proof_button.enable_sensitive
+				ca_tool.panel.run_analysis_button.enable_sensitive
 			end
 		end
 
@@ -337,24 +337,24 @@ feature {NONE} -- Implementation
 	pixmap: EV_PIXMAP
 			-- Pixmap representing the command.
 		do
-			Result := pixmaps.icon_pixmaps.general_tick_icon
+			Result := pixmaps.icon_pixmaps.view_flat_icon
 		end
 
 	pixel_buffer: EV_PIXEL_BUFFER
 			-- Pixel buffer representing the command.
 		do
-			Result := pixmaps.icon_pixmaps.general_tick_icon_buffer
+			Result := pixmaps.icon_pixmaps.view_flat_icon_buffer
 		end
 
-	execute_proof_current_item
+	analyze_current_item
 			-- Proof current item
 		local
 			l_window: EB_DEVELOPMENT_WINDOW
 		do
-			last_execution := agent execute_proof_current_item
-			proof_current_item_item.enable_select
-			proof_parent_item_item.disable_select
-			proof_system_item.disable_select
+			last_execution := agent analyze_current_item
+			analyze_current_item_item.enable_select
+			analyze_parent_item_item.disable_select
+			analyze_system_item.disable_select
 
 			l_window := window_manager.last_focused_development_window
 			if droppable (l_window.stone) then
@@ -362,16 +362,16 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	execute_proof_parent_cluster
+	analyze_parent_cluster
 			-- Proof parent cluster of window item.
 		local
 			l_window: EB_DEVELOPMENT_WINDOW
 			l_cluster_stone: CLUSTER_STONE
 		do
-			last_execution := agent execute_proof_parent_cluster
-			proof_current_item_item.disable_select
-			proof_parent_item_item.enable_select
-			proof_system_item.disable_select
+			last_execution := agent analyze_parent_cluster
+			analyze_current_item_item.disable_select
+			analyze_parent_item_item.enable_select
+			analyze_system_item.disable_select
 
 			l_window := window_manager.last_focused_development_window
 			if attached {CLASSC_STONE} l_window.stone as l_stone then
@@ -422,20 +422,21 @@ feature {NONE} -- Implementation
 	set_up_menu_items
 			-- Set up menu items of proof button
 		do
-			last_execution := agent execute_proof_current_item
-			create proof_current_item_item.make_with_text_and_action ("Prove current item", agent execute_proof_current_item)
-			proof_current_item_item.toggle
-			create proof_parent_item_item.make_with_text_and_action ("Prove parent cluster of current item", agent execute_proof_parent_cluster)
-			create proof_system_item.make_with_text_and_action ("Prove system", agent analyze_all)
+			last_execution := agent analyze_current_item
+			create analyze_system_item.make_with_text_and_action ("Analyze whole system", agent analyze_all)
+			analyze_system_item.toggle
+			create analyze_current_item_item.make_with_text_and_action ("Analyze current item", agent analyze_current_item)
+			create analyze_parent_item_item.make_with_text_and_action ("Analyze parent cluster of current item", agent analyze_parent_cluster)
+
 		end
 
 	drop_down_menu: EV_MENU
 			-- Drop down menu for `new_sd_toolbar_item'.
 		once
 			create Result
-			Result.extend (proof_current_item_item)
-			Result.extend (proof_parent_item_item)
-			Result.extend (proof_system_item)
+			Result.extend (analyze_system_item)
+			Result.extend (analyze_current_item_item)
+			Result.extend (analyze_parent_item_item)
 		ensure
 			not_void: Result /= Void
 		end
@@ -443,13 +444,13 @@ feature {NONE} -- Implementation
 	last_execution: PROCEDURE [ANY, TUPLE []]
 			-- Last executed actions
 
-	proof_current_item_item: EV_CHECK_MENU_ITEM
+	analyze_current_item_item: EV_CHECK_MENU_ITEM
 			-- Menu item to proof current item
 
-	proof_parent_item_item: EV_CHECK_MENU_ITEM
+	analyze_parent_item_item: EV_CHECK_MENU_ITEM
 			-- Menu item to proof parent item
 
-	proof_system_item: EV_CHECK_MENU_ITEM
+	analyze_system_item: EV_CHECK_MENU_ITEM
 			-- Menu item to proof system
 
 	menu_name: STRING_GENERAL
@@ -467,7 +468,7 @@ feature {NONE} -- Implementation
 	tooltext: STRING_GENERAL
 			-- Text for the toolbar button.
 		do
-			Result := "Code Analysis"
+			Result := "Run Code Analysis"
 		end
 
 	description: STRING_GENERAL
