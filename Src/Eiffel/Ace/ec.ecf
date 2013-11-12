@@ -50,24 +50,22 @@
 	</target>
 	<target name="batch" extends="common">
 		<root class="ES" feature="make"/>
+		<option void_safety="none">
+			<assertions/>
+			<warning name="once_in_generic" enabled="false"/>
+		</option>
 		<setting name="check_for_void_target" value="false"/>
 		<setting name="exception_trace" value="false"/>
 		<setting name="executable_name" value="ecb"/>
 		<setting name="inlining_size" value="8"/>
 		<setting name="concurrency" value="none"/>
-		<external_object location="$(EIFFEL_SRC)/C/ipc/ewb/libmtwewb.a">
+		<external_object location="$(EIFFEL_SRC)/C/ipc/ewb/libwewb.a">
 			<condition>
 				<platform excluded_value="windows"/>
 				<build value="workbench"/>
 			</condition>
 		</external_object>
-		<external_object location="$(EIFFEL_SRC)/C/ipc/ewb/libmtewb.a">
-			<condition>
-				<platform excluded_value="windows"/>
-				<build value="finalize"/>
-			</condition>
-		</external_object>
-		<external_object location="$(EIFFEL_SRC)/C/ipc/shared/libmtipc.a">
+		<external_object location="$(EIFFEL_SRC)/C/ipc/ewb/libewb.a">
 			<condition>
 				<platform excluded_value="windows"/>
 				<build value="finalize"/>
@@ -94,6 +92,7 @@
 		<variable name="batch_preferences" value="true"/>
 		<variable name="batch_framework" value="true"/>
 		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf" readonly="false" use_application_options="true"/>
+		<library name="code_analysis" location="$EIFFEL_SRC\framework\code_analysis\code_analysis.ecf" readonly="false"/>
 		<library name="dotnet_assembly_information" location="$EIFFEL_SRC\dotnet\assembly_info\dotnet_assembly_information.ecf" readonly="false"/>
 		<library name="eiffel2boogie" location="$ISE_LIBRARY\framework\eiffel2boogie\eiffel2boogie.ecf" readonly="false"/>
 		<library name="eve_blackboard" location="$ISE_LIBRARY\framework\eve_blackboard\eve_blackboard.ecf" readonly="false"/>
@@ -128,6 +127,7 @@
 			<cluster name="tty" location="$|tty\" recursive="true"/>
 			<cluster name="none" location="$|none\" recursive="true"/>
 		</cluster>
+		<cluster name="modules" location="$EIFFEL_SRC\Eiffel\modules\" recursive="true"/>
 	</target>
 	<target name="batch_unix" extends="batch">
 		<description>Compiling UNIX batch compiler on other platforms than Windows</description>
