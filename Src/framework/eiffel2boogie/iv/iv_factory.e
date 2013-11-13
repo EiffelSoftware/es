@@ -66,7 +66,7 @@ feature -- Values
 			create Result.make (name_translator.boogie_name_for_type (a_value), types.type)
 		end
 
-	default_value (a_type: TYPE_A): IV_VALUE
+	default_value (a_type: TYPE_A): IV_EXPRESSION
 			-- Default value for type `a_type'.
 		require
 			not_like_type: not a_type.is_like
@@ -82,6 +82,8 @@ feature -- Values
 				create {IV_VALUE} Result.make ("0.0", types.real)
 			elseif l_type.is_expanded then
 				create {IV_VALUE} Result.make ("Unknown", types.generic_type)
+			elseif l_type.base_class.name_in_upper ~ "MML_SET" then
+				Result := function_call ("Set#Empty", << >>, types.set (types.ref))
 			else
 				Result := void_
 			end

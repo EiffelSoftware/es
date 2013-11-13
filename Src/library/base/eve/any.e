@@ -385,6 +385,12 @@ feature -- Verification: contract clauses
 			Result := True
 		end
 
+	frozen decreases (a: ANY): BOOLEAN
+			-- Helper function for adding decreases clauses in contracts.
+		do
+			Result := True
+		end
+
 	frozen inv_without (a: ANY): BOOLEAN
 			-- Helper function for specifying class invariant without certain clauses.
 		do

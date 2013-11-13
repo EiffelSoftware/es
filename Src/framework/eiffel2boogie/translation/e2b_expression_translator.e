@@ -515,10 +515,22 @@ feature -- Visitors
 			-- <Precursor>
 		local
 			l_feature: FEATURE_I
+			l_current_type: TYPE_A
+			l_handler: E2B_CUSTOM_CALL_HANDLER
 		do
+			l_current_type := current_target_type
+
+			current_target_type := a_node.type
 			l_feature := helper.feature_for_call_access (a_node, current_target_type)
 			check feature_valid: l_feature /= Void end
-			process_routine_call (l_feature, a_node.parameters, False)
+			l_handler := translation_mapping.handler_for_call (current_target_type, l_feature)
+			if l_handler /= Void then
+				process_special_routine_call (l_handler, l_feature, a_node.parameters)
+			else
+				process_routine_call (l_feature, a_node.parameters, False)
+			end
+
+			current_target_type := l_current_type
 		end
 
 	process_feature_b (a_node: FEATURE_B)

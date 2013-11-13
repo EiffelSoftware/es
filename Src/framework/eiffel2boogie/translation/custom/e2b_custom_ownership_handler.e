@@ -19,11 +19,14 @@ feature -- Status report
 	is_handling_call (a_target_type: TYPE_A; a_feature: FEATURE_I): BOOLEAN
 			-- <Precursor>
 		do
-			Result := a_feature.written_in = system.any_id and
+			Result := (a_feature.written_in = system.any_id and
 				(builtin_any_functions.has (a_feature.feature_name) or
 				builtin_any_procedures.has (a_feature.feature_name) or
 				ghost_access.has (a_feature.feature_name) or
-				ghost_setter.has (a_feature.feature_name))
+				ghost_setter.has (a_feature.feature_name))) or
+				(a_target_type.base_class.name_in_upper ~ "MML_SET" and
+				a_feature.feature_name_32 ~ "empty_set")
+
 		end
 
 	is_handling_nested (a_nested: NESTED_B): BOOLEAN
@@ -62,8 +65,7 @@ feature -- Basic operations
 					l_type := types.set (types.ref)
 				end
 				a_translator.set_last_expression (factory.heap_access (a_translator.entity_mapping.heap.name, a_translator.current_target, l_name, l_type))
-			else
-				check ghost_setter.has (l_name) end
+			elseif ghost_setter.has (l_name) then
 				l_name := l_name.substring (5, l_name.count)
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, "xyz")
 				l_call ?= a_translator.side_effect.last
@@ -74,6 +76,9 @@ feature -- Basic operations
 					l_call.arguments.i_th (2))
 				a_translator.set_last_expression (Void)
 				a_translator.side_effect.extend (l_assign)
+			else
+				check l_name ~ "empty_set" end
+				a_translator.set_last_expression (factory.function_call ("Set#Empty", << >>, types.set (types.ref)))
 			end
 		end
 
@@ -93,6 +98,8 @@ feature -- Basic operations
 					l_type := types.set (types.ref)
 				end
 				a_translator.set_last_expression (factory.heap_access (a_translator.entity_mapping.heap.name, a_translator.current_target, l_name, l_type))
+			elseif l_name ~ "empty_set" then
+				a_translator.set_last_expression (factory.function_call ("Set#Emtpy", << >>, types.set (types.ref)))
 			else
 					-- cannot happen
 				check False end

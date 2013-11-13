@@ -235,7 +235,6 @@ feature -- Translation
 				translation_pool.add_referenced_feature (a_feature, current_target_type)
 			end
 
-
 			if a_for_creator then
 				create l_call.make (name_translator.boogie_name_for_creation_routine (a_feature, current_target_type))
 			else

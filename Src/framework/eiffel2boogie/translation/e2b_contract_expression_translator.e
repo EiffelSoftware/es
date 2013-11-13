@@ -102,13 +102,20 @@ feature -- Translation
 			l_target: IV_EXPRESSION
 			l_target_type: TYPE_A
 			l_call: IV_FUNCTION_CALL
+			l_name: STRING
 		do
 			check a_feature.has_return_value end
 
-			translation_pool.add_functional_feature (a_feature, current_target_type)
+			if helper.is_feature_status (a_feature, "ghost") then
+				translation_pool.add_ghost_function (a_feature, current_target_type)
+				l_name := name_translator.boogie_name_for_feature (a_feature, current_target_type)
+			else
+				translation_pool.add_functional_feature (a_feature, current_target_type)
+				l_name := name_translator.boogie_name_for_functional_feature (a_feature, current_target_type)
+			end
 
 			create l_call.make (
-				name_translator.boogie_name_for_functional_feature (a_feature, current_target_type),
+				l_name,
 				types.for_type_in_context (a_feature.type, current_target_type)
 			)
 			l_call.add_argument (entity_mapping.heap)
