@@ -4233,6 +4233,8 @@ Src/tools/doc_builder/resources/templates/header_mainarea.jpg -text
 Src/tools/doc_builder/resources/xml/all_libs.lic -text
 Src/tools/dotnet_reference_builder/dotnet_reference_builder.lic -text
 Src/tools/ecf_builder/doc/howto.txt -text
+Src/tools/ecf_redirection/README.txt -text
+Src/tools/ecf_redirection/licence.lic -text
 Src/tools/ecf_updater/README.md -text
 Src/tools/ecf_updater/license.lic -text
 Src/tools/eiffel_echo/eiffel_echo.lic -text
