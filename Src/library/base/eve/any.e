@@ -397,6 +397,12 @@ feature -- Verification: contract clauses
 			Result := True
 		end
 
+	frozen inv_only (a: ANY): BOOLEAN
+			-- Helper function for specifying class invariant with only certain clauses.
+		do
+			Result := True
+		end
+
 feature -- Verification: ownership operations
 
 	frozen wrap

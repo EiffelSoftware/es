@@ -63,10 +63,22 @@ feature -- Basic operations
 		require
 			valid_type: a_type.is_class_valid
 			no_like_type: not a_type.is_like
-		local
 		do
-			generate_invariant_function (a_type)
+			generate_invariant_function (a_type, create {LINKED_LIST [STRING]}.make, create {LINKED_LIST [STRING]}.make)
 			generate_invariant_axiom (a_type)
+		end
+
+	translate_filtered_invariant_function (a_type: TYPE_A; a_included, a_excluded: LIST [STRING])
+			-- Translate `a_type' to Boogie.
+		require
+			valid_type: a_type.is_class_valid
+			no_like_type: not a_type.is_like
+			included_not_void: a_included /= Void
+			excluded_not_void: a_excluded /= Void
+		do
+			a_included.compare_objects
+			a_excluded.compare_objects
+			generate_invariant_function (a_type, a_included, a_excluded)
 		end
 
 	generate_argument_property (a_arg: IV_EXPRESSION; a_type: TYPE_A)
@@ -108,7 +120,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	generate_invariant_function (a_type: TYPE_A)
+	generate_invariant_function (a_type: TYPE_A; a_included, a_excluded: LIST [STRING])
 			-- Generate invariant function for `a_type'.
 		local
 			l_decl: IV_FUNCTION
@@ -117,14 +129,19 @@ feature {NONE} -- Implementation
 			l_expr: IV_EXPRESSION
 			l_ghost_collector: E2B_GHOST_SET_COLLECTOR
 		do
-			create l_decl.make (name_translator.boogie_name_for_invariant_function (a_type), types.bool)
+			if a_included.is_empty and a_excluded.is_empty then
+				create l_decl.make (name_translator.boogie_name_for_invariant_function (a_type), types.bool)
+			else
+				create l_decl.make (name_translator.boogie_name_for_filtered_invariant_function (a_type, a_included, a_excluded), types.bool)
+			end
+
 			l_decl.add_argument ("heap", types.heap_type)
 			l_decl.add_argument ("current", types.ref)
 			boogie_universe.add_declaration (l_decl)
 
 			create l_ghost_collector
 
-			l_clauses := process_invariants (a_type.base_class, a_type, l_ghost_collector)
+			l_clauses := process_invariants (a_type.base_class, a_type, l_ghost_collector, a_included, a_excluded)
 			from
 				l_classes := a_type.base_class.parents_classes
 				l_classes.start
@@ -132,7 +149,7 @@ feature {NONE} -- Implementation
 				l_classes.after
 			loop
 				if l_classes.item.class_id /= system.any_id then
-					l_clauses.append (process_invariants (l_classes.item, a_type, l_ghost_collector))
+					l_clauses.append (process_invariants (l_classes.item, a_type, l_ghost_collector, a_included, a_excluded))
 				end
 				l_classes.forth
 			end
@@ -195,10 +212,12 @@ feature {NONE} -- Implementation
 				types.bool)
 		end
 
-	process_invariants (a_class: CLASS_C; a_context_type: TYPE_A; a_collector: E2B_GHOST_SET_COLLECTOR): LINKED_LIST [IV_EXPRESSION]
+	process_invariants (a_class: CLASS_C; a_context_type: TYPE_A; a_collector: E2B_GHOST_SET_COLLECTOR; a_included, a_excluded: LIST [STRING]): LINKED_LIST [IV_EXPRESSION]
 			-- Process invariants of `a_class'.
 		require
 			a_class_not_void: a_class /= Void
+			a_included_not_void: a_included /= Void
+			a_iexcluded_not_void: a_excluded /= Void
 		local
 			l_list: BYTE_LIST [BYTE_NODE]
 			l_assert: ASSERT_B
@@ -215,17 +234,23 @@ feature {NONE} -- Implementation
 					l_assert ?= l_list.item
 					check l_assert /= Void end
 
-					create l_translator.make
-					l_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.ref))
-					l_translator.entity_mapping.set_heap (create {IV_ENTITY}.make ("heap", types.heap_type))
-					l_translator.set_context (Void, a_context_type)
-					l_assert.process (l_translator)
-					across l_translator.side_effect as i loop
-						Result.extend (i.item.expr)
-					end
-					Result.extend (l_translator.last_expression)
+					if
+						(a_included.is_empty and a_excluded.is_empty) or else
+						(not a_included.is_empty and then l_assert.tag /= Void and then a_included.has (l_assert.tag)) or else
+						(not a_excluded.is_empty and then (l_assert.tag = Void or else a_excluded.has (l_assert.tag)))
+					then
+						create l_translator.make
+						l_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.ref))
+						l_translator.entity_mapping.set_heap (create {IV_ENTITY}.make ("heap", types.heap_type))
+						l_translator.set_context (Void, a_context_type)
+						l_assert.process (l_translator)
+						across l_translator.side_effect as i loop
+							Result.extend (i.item.expr)
+						end
+						Result.extend (l_translator.last_expression)
 
-					l_assert.process (a_collector)
+						l_assert.process (a_collector)
+					end
 
 					l_list.forth
 				end

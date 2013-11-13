@@ -27,6 +27,7 @@ feature
 		ensure
 			singleton: left = Current
 			is_wrapped -- default: creator
+			across observers as o all o.item.is_wrapped end -- default: creator
 		end
 
 	insert_right (n: F_DLL_NODE_D)
@@ -119,7 +120,6 @@ feature {F_DLL_NODE_D}
 			explicit: contracts
 		require
 			is_open
-			left.is_open
 			across observers as sc all sc.item.is_open end
 
 			modify_field ("left", Current)
@@ -134,7 +134,6 @@ feature {F_DLL_NODE_D}
 			explicit: contracts
 		require
 			is_open
-			right.is_open
 			across observers as sc all sc.item.is_open end
 
 			modify_field ("right", Current)
@@ -151,7 +150,7 @@ invariant
 	right.left = Current
 	subjects = [ left, right ]
 	observers = [ left, right ]
-	owns = [] -- default: ?
-	across subjects as s all s.item.observers.has (Current) end -- default: ?
+	owns = [] -- default
+	across subjects as s all s.item.observers.has (Current) end -- default
 
 end

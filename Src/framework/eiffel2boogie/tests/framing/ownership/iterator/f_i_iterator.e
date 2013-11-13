@@ -18,6 +18,7 @@ feature
 		require
 			is_open -- default: creator
 			t.is_wrapped -- default: creator
+			across t.observers as o all o.item.is_wrapped end -- default: creator
 			t /= Void
 
 			modify (Current)
@@ -33,11 +34,15 @@ feature
 		ensure
 			target = t
 			t.observers = old t.observers & Current
-			t.elements = old t.elements
-			t.elements.count = old t.elements.count
+
+			t.elements = old t.elements -- t modified, t.elements in domain of t
+			t.elements.count = old t.elements.count -- t modified, t.elements in domain of t
+
 			before and not after
 			is_wrapped -- default: creator
-			t.is_wrapped
+			across observers as o all o.item.is_wrapped end -- default: creator
+			t.is_wrapped -- default: creator
+			across t.observers as o all o.item.is_wrapped end -- default: creator
 		end
 
 	item: INTEGER
@@ -45,12 +50,14 @@ feature
 			not (before or after)
 			target.is_wrapped
 			is_wrapped -- default: public
+			across observers as o all o.item.is_wrapped end -- default: public
 
 			modify ([]) -- default: query
 		do
 			Result := target.elements [index]
 		ensure
 			is_wrapped -- default: public
+			across observers as o all o.item.is_wrapped end -- default: public
 			target.is_wrapped
 		end
 
@@ -58,6 +65,8 @@ feature
 		require
 			not after
 			is_wrapped -- default: public
+			across observers as o all o.item.is_wrapped end -- default: public
+
 			modify ([Current]) -- default: command
 		do
 			unwrap -- default: public
@@ -69,10 +78,11 @@ feature
 			wrap -- default: public
 		ensure
 			not before
-			target = old target
-			target.observers = old target.observers
+--			target = old target
+--			target.observers = old target.observers
 			index = old index + 1
 			is_wrapped -- default: public
+			across observers as o all o.item.is_wrapped end -- default: public
 		end
 
 feature -- Implementation

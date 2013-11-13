@@ -99,7 +99,6 @@ feature {F_DLL_NODE}
 			explicit: contracts
 		require
 			is_open
-			left.is_open
 			across observers as sc all sc.item.is_open end
 
 			modify_field ("left", Current)
@@ -114,7 +113,6 @@ feature {F_DLL_NODE}
 			explicit: contracts
 		require
 			is_open
-			right.is_open
 			across observers as sc all sc.item.is_open end
 
 			modify_field ("right", Current)
@@ -131,7 +129,5 @@ invariant
 	right.left = Current
 	subjects = [ left, right ]
 	observers = [ left, right ]
-	owns = [] -- default: ?
-	across subjects as s all s.item.observers.has (Current) end -- default: ?
 
 end

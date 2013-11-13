@@ -13,7 +13,7 @@ feature
 	capacity: INTEGER
 		require
 			is_wrapped -- default: public
---			across observers as o all o.item.is_wrapped end -- default: public
+			across observers as o all o.item.is_wrapped end -- default: public
 
 			reads (Current)
 
@@ -24,7 +24,7 @@ feature
 			Result = elements.count
 
 			is_wrapped -- default: public
---			across observers as o all o.item.is_wrapped end -- default: public
+			across observers as o all o.item.is_wrapped end -- default: public
 		end
 
 	make (cap: INTEGER)
@@ -41,6 +41,7 @@ feature
 			wrap -- default: creator
 		ensure
 			is_wrapped -- default: creator
+			across observers as o all o.item.is_wrapped end -- default: creator
 			capacity = cap
 			count = 0
 			observers = []
@@ -69,6 +70,7 @@ feature
 			count = old count + 1
 			observers = []
 			across old observers as o all o.item.is_open end
+			elements = old elements
 			elements.count = old elements.count
 			capacity = old capacity
 			is_wrapped

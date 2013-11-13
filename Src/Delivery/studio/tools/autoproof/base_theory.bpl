@@ -291,7 +291,8 @@ procedure wrap(o: ref);
 procedure wrap_all(Current: ref, s: Set ref);
 	requires (forall o: ref :: s[o] ==> is_open(Heap, o)); // pre tag:open W1
 	requires (forall o: ref :: s[o] ==> user_inv(Heap, o)); // pre tag:invariant_holds W2
-	requires (forall o: ref :: s[o] ==> (forall o': ref :: Heap[o, owns][o'] ==> is_wrapped(Heap, o') && Writes[o'])); // pre tag:owned_objects_wrapped W3
+	requires (forall o: ref :: s[o] ==> (forall o': ref :: Heap[o, owns][o'] ==> is_wrapped(Heap, o'))); // pre tag:owned_objects_wrapped W3
+	requires (forall o: ref :: s[o] ==> (forall o': ref :: Heap[o, owns][o'] ==> Writes[o'])); // pre tag:owned_objects_writable W3
 	requires (forall o: ref :: s[o] ==> Writes[o]); // pre tag:writable W4
 	modifies Heap, Writes;
 	ensures (forall o, o': ref :: s[o] && Heap[o, owns][o'] ==> !Writes[o']); // ensures Set#Equal(Writes, old(Set#Difference(Writes, Heap[o, owns]))); // WE1

@@ -15,20 +15,17 @@ feature {NONE} -- Initialization
 		require
 			is_open -- default
 			m.is_wrapped -- default
+			across m.observers as o all o.item.is_wrapped end -- default
 			m /= Void
 
 			modify (Current) -- default: creator
 			modify_field ("observers", m)
 		do
-			set_owns ([]) -- default: creator
-			set_subjects ([]) -- default: creator
-			set_observers ([]) -- default: creator
-
 			master := m
 			local_time := master.time
 
 			m.unwrap
-			m.set_observers (m.observers + [Current]) -- m.observers.add (Current)
+			m.set_observers (m.observers + [Current])
 			m.wrap
 
 			set_subjects ([m]) -- default
@@ -36,10 +33,13 @@ feature {NONE} -- Initialization
 			wrap -- default
 		ensure
 			is_wrapped -- default
+			across observers as o all o.item.is_wrapped end -- default
 			m.is_wrapped -- default
+			across m.observers as o all o.item.is_wrapped end -- default
+
 			master = m
 			local_time = m.time
-			m.observers = old m.observers + [Current]
+			m.observers = old m.observers & Current
 		end
 
 feature -- Access
@@ -54,6 +54,7 @@ feature -- Access
 			-- Sync clock to master.
 		require
 			is_wrapped -- default
+			across observers as o all o.item.is_wrapped end -- default
 			master.is_wrapped
 
 			modify_field ("local_time", Current)
@@ -63,6 +64,7 @@ feature -- Access
 			wrap -- default
 		ensure
 			is_wrapped -- default
+			across observers as o all o.item.is_wrapped end -- default
 			local_time = master.time
 		end
 

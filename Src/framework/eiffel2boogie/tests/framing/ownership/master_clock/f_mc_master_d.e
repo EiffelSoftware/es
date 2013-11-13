@@ -51,6 +51,7 @@ invariant
 	0 <= time
 	owns = [] -- default
 	subjects = [] -- default
+	across subjects as s all s.item.observers.has (Current) end -- default
 
 note
 	explicit: observers

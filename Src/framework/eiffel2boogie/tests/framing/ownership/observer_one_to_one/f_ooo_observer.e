@@ -10,9 +10,8 @@ feature
 			status: creator
 		require
 			s.observer = Void
-			across s.observers as sc all sc.item.is_wrapped end -- default: public
 
-			modify (s)
+			modify_field (["observer", "observers"], s)
 			modify (Current) -- default: creator
 		do
 			subject := s

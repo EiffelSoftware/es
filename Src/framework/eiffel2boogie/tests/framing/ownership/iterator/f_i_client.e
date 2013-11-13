@@ -22,20 +22,20 @@ feature
 --			check c.observers.is_empty end
 
 			c.add (2)
---			check c.count = 2 end
---			check c.capacity = 10 end
---			check c.observers.is_empty end
+			check c.count = 2 end
+			check c.capacity = 10 end
+			check c.observers.is_empty end
 
 			create i1.make (c)
---			check c.count = 2 end
---			check c.capacity = 10 end
+			check c.count = 2 end
+			check c.capacity = 10 end
 
---			check c.observers.has (i1) end
---			check i1.before end
---			check not i1.after end
---			check i1.index = 0 end
+			check c.observers = [i1] end
+			check i1.before end
+			check not i1.after end
+			check i1.index = 0 end
 
-			i1.forth
+--			i1.forth
 --			check i1.index = 1 end
 --			check not i1.before end
 --			check not i1.after end
@@ -43,7 +43,7 @@ feature
 --			check c.capacity = 10 end
 --			check c.observers.has (i1) end
 
-			l_i := i1.item
+--			l_i := i1.item
 
 --			check i1.index = 1 end
 --			check not i1.before end
@@ -52,7 +52,7 @@ feature
 --			check c.capacity = 10 end
 --			check c.observers.has (i1) end
 
-			i1.forth
+--			i1.forth
 
 --			check i1.index = 2 end
 --			check not i1.before end
@@ -61,7 +61,7 @@ feature
 --			check c.capacity = 10 end
 --			check c.observers.has (i1) end
 
-			l_i := i1.item
+--			l_i := i1.item
 
 --			check i1.index = 2 end
 --			check not i1.before end
@@ -70,7 +70,7 @@ feature
 --			check c.capacity = 10 end
 --			check c.observers.has (i1) end
 
-			i1.forth
+--			i1.forth
 
 --			check i1.index = 3 end
 --			check not i1.before end
@@ -90,12 +90,12 @@ feature
 --				i1.forth
 --			end
 
-			c.add (3)
-			check i1.is_open end
-			check c.observers.is_empty end
-			create i2.make (c)
+--			c.add (3)
+--			check i1.is_open end
+--			check c.observers.is_empty end
+--			create i2.make (c)
 
-			check false end
+--			check false end
 		end
 
 end

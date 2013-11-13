@@ -67,26 +67,19 @@ feature {F_OOO_OBSERVER_D} -- Element change
 		note
 			explicit: contracts
 		require
-			-- is_open: removed due to explicit contracts
-			-- across observers as sc all sc.item.is_open end: removed due to explicit contracts
-
 			observer = Void
 			is_wrapped
 			o.is_open
 
---			modify ([Current, "observer"]) -- default: command
-			modify (Current)
+			modify_field (["observer", "observers"], Current)
 		do
 			unwrap
 			observer := o
-			set_observers ([o]) -- add_observer_ (o) -- feature from ANY, maintains open_, ensures observers = old observers + { o }
+			set_observers ([o])
 			wrap
 		ensure
 			observer = o
 			is_wrapped
-
-			-- is_open: removed due to explicit contracts
-			-- across observers as sc all sc.item.is_open end: removed due to explicit contracts
 		end
 
 invariant

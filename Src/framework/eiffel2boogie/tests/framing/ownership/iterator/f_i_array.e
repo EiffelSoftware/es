@@ -9,6 +9,8 @@ create
 feature
 
 	make (a_lower, a_upper: INTEGER)
+		note
+			skip: True
 		require
 			is_open
 			a_lower = 1
@@ -23,6 +25,8 @@ feature
 	count: INTEGER
 
 	put (a_value, a_index: INTEGER)
+		note
+			skip: True
 		require
 			is_wrapped
 			a_index > 0
@@ -36,6 +40,8 @@ feature
 		end
 
 	item alias "[]" (a_index: INTEGER): INTEGER
+		note
+			skip: True
 		require
 --			is_wrapped
 

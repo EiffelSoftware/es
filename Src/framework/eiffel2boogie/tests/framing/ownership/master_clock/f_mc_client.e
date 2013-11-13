@@ -16,9 +16,9 @@ feature
 
 			check m.observers = [c1, c2] end
 
-			c1.unwrap ; c2.unwrap -- TODO: unwrap_all ([c1, c2])
+			unwrap_all (c1, c2)
 			m.tick
-			c1.wrap ; c2.wrap -- TODO: wrap_all ([c1, c2])
+			wrap_all (c1, c2)
 
 			c1.sync
 			c2.sync
@@ -38,9 +38,9 @@ feature
 
 			check m.observers = [c1, c2] end
 
-			c1.unwrap ; c2.unwrap -- TODO: unwrap_all ([c1, c2])
+			unwrap_all (c1, c2)
 			m.tick
-			c1.wrap ; c2.wrap -- TODO: wrap_all ([c1, c2])
+			wrap_all (c1, c2)
 
 			c1.sync
 			c2.sync

@@ -23,10 +23,7 @@ feature -- Status report
 				(builtin_any_functions.has (a_feature.feature_name) or
 				builtin_any_procedures.has (a_feature.feature_name) or
 				ghost_access.has (a_feature.feature_name) or
-				ghost_setter.has (a_feature.feature_name))) or
-				(a_target_type.base_class.name_in_upper ~ "MML_SET" and
-				a_feature.feature_name_32 ~ "empty_set")
-
+				ghost_setter.has (a_feature.feature_name)))
 		end
 
 	is_handling_nested (a_nested: NESTED_B): BOOLEAN
@@ -77,8 +74,7 @@ feature -- Basic operations
 				a_translator.set_last_expression (Void)
 				a_translator.side_effect.extend (l_assign)
 			else
-				check l_name ~ "empty_set" end
-				a_translator.set_last_expression (factory.function_call ("Set#Empty", << >>, types.set (types.ref)))
+				check false end
 			end
 		end
 
@@ -87,10 +83,27 @@ feature -- Basic operations
 		local
 			l_name: STRING
 			l_type: IV_TYPE
+			l_tag_filters: LIST [STRING]
 		do
 			l_name := a_feature.feature_name
 			if builtin_any_functions.has (l_name) then
-				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
+				if l_name ~ "inv_without" then
+					l_tag_filters := extract_tags (a_parameters)
+					translation_pool.add_filtered_invariant_function (a_translator.current_target_type, Void, l_tag_filters)
+					a_translator.set_last_expression (
+						factory.function_call (
+							name_translator.boogie_name_for_filtered_invariant_function (a_translator.current_target_type, Void, l_tag_filters),
+							<< a_translator.entity_mapping.heap, a_translator.entity_mapping.current_expression >>, types.bool))
+				elseif l_name ~ "inv_only" then
+					l_tag_filters := extract_tags (a_parameters)
+					translation_pool.add_filtered_invariant_function (a_translator.current_target_type, l_tag_filters, Void)
+					a_translator.set_last_expression (
+						factory.function_call (
+							name_translator.boogie_name_for_filtered_invariant_function (a_translator.current_target_type, l_tag_filters, Void),
+							<< a_translator.entity_mapping.heap, a_translator.entity_mapping.current_expression >>, types.bool))
+				else
+					a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
+				end
 			elseif ghost_access.has (l_name) then
 				if l_name ~ "owner" then
 					l_type := types.ref
@@ -98,8 +111,6 @@ feature -- Basic operations
 					l_type := types.set (types.ref)
 				end
 				a_translator.set_last_expression (factory.heap_access (a_translator.entity_mapping.heap.name, a_translator.current_target, l_name, l_type))
-			elseif l_name ~ "empty_set" then
-				a_translator.set_last_expression (factory.function_call ("Set#Emtpy", << >>, types.set (types.ref)))
 			else
 					-- cannot happen
 				check False end
@@ -168,7 +179,9 @@ feature -- Basic operations
 			Result := <<
 				"is_wrapped",
 				"is_free",
-				"is_open"
+				"is_open",
+				"inv_without",
+				"inv_only"
 			>>
 			Result.compare_objects
 		end
@@ -208,6 +221,26 @@ feature -- Basic operations
 				"set_observers"
 			>>
 			Result.compare_objects
+		end
+
+	extract_tags (a_parameters: BYTE_LIST [PARAMETER_B]): LIST [STRING]
+		do
+			check a_parameters.count = 1 end
+			create {LINKED_LIST [STRING]} Result.make
+			Result.compare_objects
+			if attached {STRING_B} a_parameters.first.expression as l_string then
+				Result.extend (l_string.value)
+			elseif attached {TUPLE_CONST_B} a_parameters.first.expression as l_tuple then
+				across l_tuple.expressions as i loop
+					if attached {STRING_B} i.item as l_string then
+						Result.extend (l_string.value)
+					else
+						check False end
+					end
+				end
+			else
+				check False end
+			end
 		end
 
 end

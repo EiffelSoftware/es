@@ -31,7 +31,7 @@ feature
 		do
 			Result :=
 				across nodes as n all n.item.value <= v end and
-				across nodes as n some n.item.value = v end
+				(nodes.is_empty or across nodes as n some n.item.value = v end)
 		end
 
 	make (v: INTEGER)
@@ -50,6 +50,7 @@ feature
 			wrap -- default: creator
 		ensure
 			is_wrapped -- default: creator
+			across observers as o all o.item.is_wrapped end -- default: creator
 			value = v
 			parent = Void
 			children.is_empty
@@ -66,14 +67,20 @@ feature
 			c /= Current
 			c.parent = Void
 			c.children.is_empty
+			not children_set[c]
+			not up[c]
 			across up as p all p.item.is_wrapped end
 
 			modify ([Current, c])
 			modify_field ("value", up)
+			modify (children_set)
 		do
 			unwrap -- default: public
 			c.unwrap
 			unwrap_all (children_set)
+			if parent /= Void then
+				parent.unwrap
+			end
 
 			children.extend_back  (c) -- preserves parent
 			set_subjects (subjects & c)
@@ -81,10 +88,19 @@ feature
 			c.set_parent (Current)
 			c.set_subjects (c.subjects & Current)
 			c.set_observers (c.observers & Current)
+
+			check across children_set as o all o.item.inv_only ("value_consistent") end end
+			check c.inv_only ("value_consistent") end
 			children_set := children_set & c
+			check assume: across children_set as o all o.item.inv_only ("value_consistent") end end
 
 			wrap_all (children_set)
 			update (c)
+
+			if parent /= Void then
+				parent.wrap
+			end
+
 			wrap -- default: public
 		ensure
 			children.has (c)
@@ -94,6 +110,8 @@ feature
 			across observers as o all o.item.is_wrapped end -- default: public
 			c.is_wrapped -- default: public
 			across c.observers as o all o.item.is_wrapped end -- default: public
+
+			false
 		end
 
 feature {F_COM_COMPOSITE_D}
@@ -125,13 +143,19 @@ feature {F_COM_COMPOSITE_D}
 			explicit: contracts
 		require
 			c /= Void
+			children_set[c]
 			is_open
-			across observers as o all o.item.is_open end
+			owns = [children]
+			children.is_wrapped
+			across children_set as o all o.item.is_wrapped end
+
 			inv_without ("value_consistent") -- All invariant clauses except "value_consistent"
 			across up as p all p.item.is_wrapped end
 			is_max (value, children_set / c)
 
 			modify_field ("value", [Current, up])
+			modify_field ("closed", children_set)
+			modify (children)
 			decreases (up)
 		do
 			if value < c.value then
@@ -140,9 +164,12 @@ feature {F_COM_COMPOSITE_D}
 					check parent.is_wrapped end
 					parent.unwrap
 				end
+				unwrap_all (children_set)
 				value := c.value  -- preserves children
+				check is_max (value, children_set) end
+				wrap_all (children_set)
 				if parent /= Void then
-					update (parent) -- parent.update
+					parent.update (Current)
 				end
 			end
 			wrap
@@ -151,20 +178,21 @@ feature {F_COM_COMPOSITE_D}
 		end
 
 invariant
-	children /= Void
-	children_set = children.sequence
-	across children_set as c all c.item /= Void and then c.item.parent = Current end
-----	parent /= Void implies (parent.left = Current or parent.right = Current)
-	parent /= Void implies (not up[parent] and up = parent.up & parent) -- implies acyclicity
-	parent = Void implies up.is_empty
+	i1: children /= Void
+	i2: children_set = children.sequence
+	i3: not children_set[Current]
+	i4: not children_set[children]
+	i5: parent /= Void implies not (children_set[parent])
+	i6: across children_set as c all c.item /= Void and then c.item.parent = Current end
+	i7: parent /= Void implies (not up[Current] and up = parent.up & parent) -- implies acyclicity
+	i8: parent = Void implies up.is_empty
 	value_consistent: is_max (value, children_set)
-	subjects = children_set & parent  / Void
-	observers = children_set & parent / Void
-	owns = [children]
-	across subjects as s all s.item.observers.has (Current) end -- default
+	i9: subjects = children_set & parent  / Void
+	i10: observers = children_set & parent / Void
+	i11: owns = [children]
+	i12: across subjects as s all s.item.observers.has (Current) end -- default
 
 note
 	explicit: subjects, observers
 
 end
-

@@ -108,6 +108,28 @@ feature -- Access
 			result_attached: attached Result
 		end
 
+	boogie_name_for_filtered_invariant_function (a_type: TYPE_A; a_included, a_excluded: LIST [STRING]): STRING
+			-- Name invariant function of `a_type'.
+		require
+			a_type: attached a_type
+		local
+			l_type_name: STRING
+			l_filter_string: STRING
+		do
+			l_type_name := boogie_name_for_type (a_type)
+			l_filter_string := "#I"
+			if a_included /= Void then
+				across a_included as i loop l_filter_string.append ("#" + i.item) end
+			end
+			l_filter_string.append ("#E")
+			if a_excluded /= Void then
+				across a_excluded as i loop l_filter_string.append ("#" + i.item) end
+			end
+			Result := l_type_name + l_filter_string + ".filtered_inv"
+		ensure
+			result_attached: attached Result
+		end
+
 	feature_for_boogie_name (a_name: STRING): FEATURE_I
 			-- Feature named `a_name' in Boogie code.
 		require

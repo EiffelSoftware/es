@@ -33,7 +33,7 @@ feature {NONE} -- Initialization
 
 feature -- Status report
 
-	has alias "[]" (x: G): BOOLEAN
+	has alias "[]" (x: ANY): BOOLEAN
 			-- Is `x' contained?
 		do
 		end

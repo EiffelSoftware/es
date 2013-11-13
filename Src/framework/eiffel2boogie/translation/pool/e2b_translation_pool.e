@@ -234,6 +234,12 @@ feature -- Convenience functions
 			add_translation_unit (create {E2B_TU_INVARIANT_FUNCTION}.make (a_type))
 		end
 
+	add_filtered_invariant_function (a_type: TYPE_A; a_included, a_excluded: LIST [STRING])
+			-- Add invariant function of type `a_type'.
+		do
+			add_translation_unit (create {E2B_TU_INVARIANT_FUNCTION}.make_filtered (a_type, a_included, a_excluded))
+		end
+
 	add_precondition_predicate (a_feature: FEATURE_I; a_context_type: TYPE_A)
 			-- Add precondition predicate of feature `a_feature' of `a_context_type'.
 		local

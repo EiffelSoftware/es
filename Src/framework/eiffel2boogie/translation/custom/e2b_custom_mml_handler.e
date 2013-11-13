@@ -88,6 +88,8 @@ feature {NONE} -- Implementation
 			elseif l_name ~ "difference" then
 				l_param := a_translator.last_parameters.first
 				a_translator.set_last_expression (factory.function_call ("Set#Difference", <<l_target, l_param>>, l_target.type))
+			elseif l_name ~ "empty_set" then
+				a_translator.set_last_expression (factory.function_call ("Set#Empty", << >>, types.set (types.ref)))
 			else
 					-- cannot happen
 				check False end
