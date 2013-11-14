@@ -61,6 +61,7 @@ feature -- Access
 			modify ([])
 		do
 		ensure
+			sequence.has (Result)
 --			Result = sequence [i]
 		end
 

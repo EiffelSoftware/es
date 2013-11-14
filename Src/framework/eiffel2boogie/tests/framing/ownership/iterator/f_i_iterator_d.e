@@ -49,15 +49,15 @@ feature
 		require
 			not (before or after)
 			target.is_wrapped
-			is_wrapped -- default: public
-			across observers as o all o.item.is_wrapped end -- default: public
+			not is_open -- default: public
+			across observers as o all not o.item.is_open end -- default: public
 
 			modify ([]) -- default: query
 		do
 			Result := target.elements [index]
 		ensure
-			is_wrapped -- default: public
-			across observers as o all o.item.is_wrapped end -- default: public
+			not is_open -- default: public
+			across observers as o all not o.item.is_open end -- default: public
 			target.is_wrapped
 		end
 

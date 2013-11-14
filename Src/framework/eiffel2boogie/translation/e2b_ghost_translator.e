@@ -36,6 +36,9 @@ feature -- Basic operations
 					factory.function_call ("IsGhostField", << l_attribute_name >>, types.bool)))
 
 				-- TODO: global field properties
+			if a_feature.type.base_class ~ "MML_SET" then
+				
+			end
 
 				-- Add translation references
 			translation_pool.add_type_in_context (a_feature.type, a_context_type)

@@ -713,7 +713,7 @@ feature -- Visitors
 					l_target_type := current_target_type
 
 					current_target := last_expression
-					l_target_type := l_nested.target.type
+					current_target_type := l_nested.target.type
 					l_nested.message.process (Current)
 
 					current_target := l_target

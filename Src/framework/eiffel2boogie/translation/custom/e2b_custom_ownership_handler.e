@@ -180,6 +180,7 @@ feature -- Basic operations
 				"is_wrapped",
 				"is_free",
 				"is_open",
+				"is_closed",
 				"inv_without",
 				"inv_only"
 			>>
@@ -205,8 +206,7 @@ feature -- Basic operations
 				"owner",
 				"owns",
 				"subjects",
-				"observers",
-				"is_wrapped"
+				"observers"
 			>>
 			Result.compare_objects
 		end

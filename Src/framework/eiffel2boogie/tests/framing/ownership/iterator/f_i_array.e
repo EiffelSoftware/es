@@ -43,12 +43,12 @@ feature
 		note
 			skip: True
 		require
---			is_wrapped
+			not is_open
 
 			modify ([])
 		do
 		ensure
---			is_wrapped
+			not is_open
 		end
 
 end

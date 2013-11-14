@@ -152,6 +152,11 @@ function {:inline} is_open(h: HeapType, o: ref): bool {
 	!h[o, closed]
 }
 
+// Is o closed in h?
+function {:inline} is_closed(h: HeapType, o: ref): bool {
+	h[o, closed]
+}
+
 // Only allocated references can be in ghost sets
 axiom (forall h: HeapType, o: ref, r: ref :: h[o, observers][r] ==> h[r, allocated]);
 axiom (forall h: HeapType, o: ref, r: ref :: h[o, owns][r] ==> h[r, allocated]);

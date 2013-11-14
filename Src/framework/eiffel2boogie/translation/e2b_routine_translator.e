@@ -239,14 +239,25 @@ feature -- Basic operations
 					create l_post.make (forall_mml_set_property ("observers", "is_wrapped"))
 					current_boogie_procedure.add_contract (l_post)
 				elseif helper.is_public (current_feature) then
-					create l_pre.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
-					current_boogie_procedure.add_contract (l_pre)
-					create l_pre.make (forall_mml_set_property ("observers", "is_wrapped"))
-					current_boogie_procedure.add_contract (l_pre)
-					create l_post.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
-					current_boogie_procedure.add_contract (l_post)
-					create l_post.make (forall_mml_set_property ("observers", "is_wrapped"))
-					current_boogie_procedure.add_contract (l_post)
+					if current_feature.has_return_value then
+						create l_pre.make (factory.function_call ("!is_open", << "Heap", "Current" >>, types.bool))
+						current_boogie_procedure.add_contract (l_pre)
+						create l_pre.make (forall_mml_set_property ("observers", "!is_open"))
+						current_boogie_procedure.add_contract (l_pre)
+						create l_post.make (factory.function_call ("!is_open", << "Heap", "Current" >>, types.bool))
+						current_boogie_procedure.add_contract (l_post)
+						create l_post.make (forall_mml_set_property ("observers", "!is_open"))
+						current_boogie_procedure.add_contract (l_post)
+					else
+						create l_pre.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
+						current_boogie_procedure.add_contract (l_pre)
+						create l_pre.make (forall_mml_set_property ("observers", "is_wrapped"))
+						current_boogie_procedure.add_contract (l_pre)
+						create l_post.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
+						current_boogie_procedure.add_contract (l_post)
+						create l_post.make (forall_mml_set_property ("observers", "is_wrapped"))
+						current_boogie_procedure.add_contract (l_post)
+					end
 				else
 					create l_pre.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
 					current_boogie_procedure.add_contract (l_pre)

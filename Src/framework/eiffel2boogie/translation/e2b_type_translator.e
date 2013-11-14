@@ -237,7 +237,7 @@ feature {NONE} -- Implementation
 					if
 						(a_included.is_empty and a_excluded.is_empty) or else
 						(not a_included.is_empty and then l_assert.tag /= Void and then a_included.has (l_assert.tag)) or else
-						(not a_excluded.is_empty and then (l_assert.tag = Void or else a_excluded.has (l_assert.tag)))
+						(not a_excluded.is_empty and then (l_assert.tag = Void or else not a_excluded.has (l_assert.tag)))
 					then
 						create l_translator.make
 						l_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.ref))

@@ -45,7 +45,7 @@ feature -- Status report
 
 feature -- Comparison
 
-	is_subset_of alias "<=" (a_other: MML_SET [G]): BOOLEAN
+	is_subset_of alias "<=" (a_other: MML_SET [ANY]): BOOLEAN
 			-- Does `a_other' have all elements of `Current'?
 		do
 		end
