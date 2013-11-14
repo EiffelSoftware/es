@@ -29,9 +29,8 @@ inherit
 	SHARED_ERROR_TRACER
 		export {NONE} all end
 
-	--EBB_SHARED_BLACKBOARD
-
-	--E2B_SHARED_CONTEXT
+inherit {NONE}
+	CA_SHARED_NAMES
 
 create {ES_CODE_ANALYSIS_TOOL}
 	make
@@ -108,8 +107,11 @@ feature {NONE} -- Initialization
 			Result.extend (run_analysis_button)
 			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 			Result.extend (errors_button)
+			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 			Result.extend (warnings_button)
+			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 			Result.extend (suggestions_button)
+			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 			Result.extend (hints_button)
 		end
 
@@ -282,40 +284,38 @@ feature {NONE} -- Initialization
 			l_col: EV_GRID_COLUMN
 		do
 			Precursor {ES_CLICKABLE_EVENT_LIST_TOOL_PANEL_BASE} (a_widget)
-			a_widget.set_column_count_to (time_column)
+			a_widget.set_column_count_to (location_column)
 
-				-- Create columns
+	-- Create columns
 			l_col := a_widget.column (1)
 			l_col.set_width (20)
-			l_col := a_widget.column (icon_column)
+			l_col := a_widget.column (category_column)
 			l_col.set_width (20)
-			l_col := a_widget.column (class_column)
-			l_col.set_title (ep_names.tool_header_class)
+
+			l_col := a_widget.column (description_column)
+			l_col.set_title ("Description")
 			l_col.set_width (100)
-			l_col := a_widget.column (feature_column)
-			l_col.set_title (ep_names.tool_header_feature)
-			l_col.set_width (120)
-			l_col := a_widget.column (info_column)
-			l_col.set_title (ep_names.tool_header_information)
-			l_col.set_width (300)
-			l_col := a_widget.column (position_column)
-			l_col.set_title (ep_names.tool_header_position)
-			l_col.set_width (40)
-			l_col := a_widget.column (time_column)
-			l_col.set_title (ep_names.tool_header_time)
-			l_col.set_width (50)
+
+			l_col := a_widget.column (class_column)
+			l_col.set_title ("Class")
+			l_col.set_width (200)
+
+			l_col := a_widget.column (location_column)
+			l_col.set_title ("Location")
+			l_col.set_width (80)
+
 
 			a_widget.enable_tree
 			a_widget.disable_row_height_fixed
-			a_widget.enable_auto_size_best_fit_column (info_column)
+			a_widget.enable_auto_size_best_fit_column (description_column)
 
 				-- Enable sorting
 			enable_sorting_on_columns (
 				<<
-					a_widget.column (icon_column),
+					a_widget.column (category_column),
 					a_widget.column (class_column),
-					a_widget.column (feature_column),
-					a_widget.column (time_column)
+					a_widget.column (location_column),
+					a_widget.column (description_column)
 				>>)
 		end
 
@@ -324,30 +324,38 @@ feature -- Access
 	run_analysis_button: EB_SD_COMMAND_TOOL_BAR_BUTTON
 			-- Button to launch AutoProof.
 
-	successful_count: INTEGER
-			-- Number of successful events
+	error_count: INTEGER
+			-- Number of error events
 
-	failed_count: INTEGER
-			-- Number of successful events
+	warning_count: INTEGER
+			-- Number of warning events
 
-	skipped_count: INTEGER
-			-- Number of successful events
+	suggestion_count: INTEGER
+			-- Number of suggestion events
+
+	hint_count: INTEGER
+			-- Number of hint events
 
 feature -- Status report
 
-	show_successful: BOOLEAN
+	show_errors: BOOLEAN
 			-- Indicates if errors should be shown
 		do
 			Result := not is_initialized or else errors_button.is_selected
 		end
 
-	show_failed: BOOLEAN
+	show_warnings: BOOLEAN
 			-- Indicates if errors should be shown
 		do
 			Result := not is_initialized or else warnings_button.is_selected
 		end
 
-	show_skipped: BOOLEAN
+	show_suggestions: BOOLEAN
+		do
+			Result := not is_initialized or else suggestions_button.is_selected
+		end
+
+	show_hints: BOOLEAN
 			-- Indicates if errors should be shown
 		do
 			Result := not is_initialized or else hints_button.is_selected
@@ -357,27 +365,31 @@ feature -- Status report
 			-- Is `a_item' visible?
 		local
 			l_text: STRING
-			l_item: E2B_VERIFICATION_EVENT
 		do
 			Result := True
-			l_item ?= a_item.data
-			if l_item /= Void then
-				if is_successful_event (l_item) and not show_successful then
+			if attached {CA_RULE_VIOLATION_EVENT} a_item.data as l_viol then
+				if is_error_event (l_viol) and not show_errors then
 					Result := False
-				elseif is_failed_event (l_item) and not show_failed then
+				elseif is_warning_event (l_viol) and not show_warnings then
+					Result := False
+				elseif is_suggestion_event (l_viol) and not show_suggestions then
+					Result := False
+				elseif is_hint_event (l_viol) and not show_hints then
 					Result := False
 				else
-					l_text := text_filter.text.as_lower
-					if not l_text.is_empty then
-						if
-							not l_item.context_class.name.as_lower.has_substring (l_text) and
-							(l_item.context_feature = Void or else
-							 not l_item.context_feature.feature_name_32.as_lower.has_substring (l_text)) and
-							not l_item.description.as_lower.has_substring (l_text)
-						then
-							Result := False
-						end
-					end
+						-- Probably not necessary since every event has to be in one
+						-- of the categories above.
+--					l_text := text_filter.text.as_lower
+--					if not l_text.is_empty then
+--						if
+--							not l_viol.context_class.name.as_lower.has_substring (l_text) and
+--							(l_viol.context_feature = Void or else
+--							 not l_viol.context_feature.feature_name_32.as_lower.has_substring (l_text)) and
+--							not l_viol.description.as_lower.has_substring (l_text)
+--						then
+--							Result := False
+--						end
+--					end
 				end
 			end
 		end
@@ -419,10 +431,14 @@ feature {NONE} -- Events
 				initialize
 			end
 			if l_applicable then
-				if is_successful_event (a_event_item) then
-					successful_count := successful_count + 1
-				elseif is_failed_event (a_event_item) then
-					failed_count := failed_count + 1
+				if is_error_event (a_event_item) then
+					error_count := error_count + 1
+				elseif is_warning_event (a_event_item) then
+					warning_count := warning_count + 1
+				elseif is_suggestion_event (a_event_item) then
+					suggestion_count := suggestion_count + 1
+				elseif is_hint_event (a_event_item) then
+					hint_count := hint_count + 1
 				else
 					check false end
 				end
@@ -448,10 +464,14 @@ feature {NONE} -- Events
 				initialize
 			end
 			if l_applicable then
-				if is_successful_event (a_event_item) then
-					successful_count := successful_count - 1
-				elseif is_failed_event (a_event_item) then
-					failed_count := failed_count - 1
+				if is_error_event (a_event_item) then
+					error_count := error_count - 1
+				elseif is_warning_event (a_event_item) then
+					warning_count := warning_count - 1
+				elseif is_suggestion_event (a_event_item) then
+					suggestion_count := suggestion_count - 1
+				elseif is_hint_event (a_event_item) then
+					hint_count := hint_count - 1
 				else
 					check false end
 				end
@@ -494,30 +514,39 @@ feature {NONE} -- Query
 	is_appliable_event (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
 			-- Determines if event `a_event_item' can be shown with the current event list tool
 		do
-			Result := attached {E2B_VERIFICATION_EVENT} a_event_item or attached {E2B_FAILED_EXECUTION_EVENT} a_event_item
+			Result := attached {CA_RULE_VIOLATION_EVENT} a_event_item
 		end
 
-	is_successful_event (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
-			-- Determines if event `a_event_item' is a successful event
+	is_error_event (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
+			-- Determines if event `a_event_item' corresponds to an error
 		do
 			Result :=
-				attached {E2B_VERIFICATION_EVENT} a_event_item as l_event and then
-				attached {E2B_SUCCESSFUL_VERIFICATION} l_event.data
+				attached {CA_RULE_VIOLATION_EVENT} a_event_item as l_ev
+				and then l_ev.is_error_event
 		end
 
-	is_failed_event (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
-			-- Determines if event `a_event_item' is a failed event
+	is_warning_event (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
+			-- Determines if event `a_event_item' corresponds to a warning
 		do
 			Result :=
-				attached {E2B_VERIFICATION_EVENT} a_event_item as l_event and then
-				attached {E2B_FAILED_VERIFICATION} l_event.data
+				attached {CA_RULE_VIOLATION_EVENT} a_event_item as l_ev
+				and then l_ev.is_warning_event
 		end
 
-	is_failed_execution_event (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
-			-- Determines if event `a_event_item' is a skipped event
+	is_suggestion_event (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
+			-- Determines if event `a_event_item' corresponds to a suggestion
 		do
-			Result := attached {E2B_FAILED_EXECUTION_EVENT} a_event_item
+			Result := attached {CA_RULE_VIOLATION_EVENT} a_event_item as l_ev
+			and then l_ev.is_suggestion_event
 		end
+
+	is_hint_event (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
+			-- Determines if event 'a_event_item' corresponds to a hint
+		do
+			Result := attached {CA_RULE_VIOLATION_EVENT} a_event_item as l_ev
+			and then l_ev.is_hint_event
+		end
+
 
 feature {NONE} -- Basic operations
 
@@ -526,20 +555,22 @@ feature {NONE} -- Basic operations
 		local
 			l_stone: STONE
 		do
-			if attached {E2B_VERIFICATION_EVENT} a_row.parent_row_root.data as l_event_item then
-				if attached {E2B_VERIFICATION_ERROR} a_row.data as l_error then
-					create {COMPILED_LINE_STONE} l_stone.make_with_line (l_event_item.context_class, l_error.eiffel_line_number, False)
-				elseif l_event_item.line_number > 0 then
-					create {COMPILED_LINE_STONE} l_stone.make_with_line (l_event_item.context_class, l_event_item.line_number, False)
-				elseif l_event_item.context_feature /= Void then
-					create {FEATURE_STONE} l_stone.make (l_event_item.context_feature.api_feature (l_event_item.context_class.class_id))
-				else
-					create {CLASSC_STONE} l_stone.make (l_event_item.context_class)
-				end
-			end
-			if l_stone /= Void and then l_stone.is_valid then
-				(create {EB_CONTROL_PICK_HANDLER}).launch_stone (l_stone)
-			end
+				-- TODO: change
+
+--			if attached {E2B_VERIFICATION_EVENT} a_row.parent_row_root.data as l_event_item then
+--				if attached {E2B_VERIFICATION_ERROR} a_row.data as l_error then
+--					create {COMPILED_LINE_STONE} l_stone.make_with_line (l_event_item.context_class, l_error.eiffel_line_number, False)
+--				elseif l_event_item.line_number > 0 then
+--					create {COMPILED_LINE_STONE} l_stone.make_with_line (l_event_item.context_class, l_event_item.line_number, False)
+--				elseif l_event_item.context_feature /= Void then
+--					create {FEATURE_STONE} l_stone.make (l_event_item.context_feature.api_feature (l_event_item.context_class.class_id))
+--				else
+--					create {CLASSC_STONE} l_stone.make (l_event_item.context_class)
+--				end
+--			end
+--			if l_stone /= Void and then l_stone.is_valid then
+--				(create {EB_CONTROL_PICK_HANDLER}).launch_stone (l_stone)
+--			end
 		end
 
 	populate_event_grid_row_items (a_event_item: EVENT_LIST_ITEM_I; a_row: EV_GRID_ROW)
@@ -556,115 +587,79 @@ feature {NONE} -- Basic operations
 			l_error_list: LIST [EP_ERROR]
 			l_error: EP_ERROR
 			l_row: EV_GRID_ROW
-
+			l_pos_token: EDITOR_TOKEN_NUMBER
 		do
 			a_row.set_data (a_event_item)
-			if is_failed_execution_event (a_event_item) then
-					-- Icon
+--			if is_failed_execution_event (a_event_item) then
+--					-- Icon
+--				create l_label
+--				l_label.set_pixmap (stock_pixmaps.general_warning_icon)
+--				l_label.set_data ("warning")
+--				l_label.disable_full_select
+--				a_row.set_item (category_column, l_label)
+
+--					-- Message
+--				create l_label.make_with_text (a_event_item.data.out)
+--				a_row.set_item (category_column, l_label)
+
+--					-- Color
+--				a_row.set_background_color (failed_color)
+
+			if attached {CA_RULE_VIOLATION_EVENT} a_event_item as l_viol then
+
+					-- Severity category
 				create l_label
-				l_label.set_pixmap (stock_pixmaps.general_warning_icon)
-				l_label.set_data ("warning")
 				l_label.disable_full_select
-				a_row.set_item (icon_column, l_label)
+				if is_error_event (l_viol) then
+					l_label.set_pixmap (stock_pixmaps.general_error_icon)
+					l_label.set_data ("Error")
 
-					-- Message
-				create l_label.make_with_text (a_event_item.data.out)
-				a_row.set_item (info_column, l_label)
+					a_row.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 220, 220))
+				elseif is_warning_event (l_viol) then
+					l_label.set_pixmap (stock_pixmaps.general_warning_icon)
+					l_label.set_data ("Warning")
 
-					-- Color
-				a_row.set_background_color (failed_color)
+					a_row.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 188))
+				elseif is_suggestion_event (l_viol) then
+					l_label.set_pixmap (stock_pixmaps.view_editor_icon)
+					l_label.set_data ("Suggestion")
 
-			elseif attached {E2B_VERIFICATION_EVENT} a_event_item as l_result then
-					-- Class location
+				elseif is_hint_event (l_viol) then
+					l_label.set_pixmap (stock_pixmaps.general_information_icon)
+					l_label.set_data ("Hint")
+				end
+
+				a_row.set_item (category_column, l_label)
+
+					-- Info
+				create l_message_gen.make
+				l_message_gen.add_string (l_viol.title)
+				l_editor_item := create_clickable_grid_item (l_message_gen.last_line, True)
+				a_row.set_height (l_editor_item.required_height_for_text_and_component)
+				a_row.set_item (description_column, l_editor_item)
+
+					-- Class
 				create l_gen.make
-				l_result.context_class.append_name (l_gen)
+				l_viol.affected_class.append_name (l_gen)
 				l_editor_item := create_clickable_grid_item (l_gen.last_line, True)
 				a_row.set_item (class_column, l_editor_item)
 
-					-- Feature location
-				if l_result.context_feature /= Void then
-					create l_gen.make
-					l_gen.add_feature_name (l_result.context_feature.feature_name_32, l_result.context_class)
-					l_editor_item := create_clickable_grid_item (l_gen.last_line, True)
-					a_row.set_item (feature_column, l_editor_item)
-				end
+					-- Location
+				create l_pos_token.make (l_viol.location.line.out + ", " + l_viol.location.column.max (1).out)
+				l_pos_token.set_is_clickable (True)
+				l_pos_token.set_pebble (create {COMPILED_LINE_STONE}.make_with_line (l_viol.affected_class, l_viol.location.line, True))
 
-					-- Time information
-				create l_label.make_with_text (l_result.milliseconds_used.out)
-				a_row.set_item (time_column, l_label)
-
-				if is_successful_event (a_event_item) then
-						-- Icon
-					create l_label
-					l_label.set_pixmap (stock_pixmaps.general_tick_icon)
-					l_label.set_data ("successful")
-					l_label.disable_full_select
-					a_row.set_item (icon_column, l_label)
-
-						-- Info
-					create l_message_gen.make
-					l_result.single_line_message (l_message_gen)
-					l_editor_item := create_clickable_grid_item (l_message_gen.last_line, True)
-					a_row.set_height (l_editor_item.required_height_for_text_and_component)
-					a_row.set_item (info_column, l_editor_item)
-
-						-- Display
-					a_row.set_background_color (successful_color)
-
-					if attached {E2B_SUCCESSFUL_VERIFICATION} a_event_item.data as l_success then
-						if attached l_success.suggestion and then not l_success.suggestion.is_empty then
-							insert_subrow_for_suggestion (a_row, l_success.suggestion)
-						end
-						if attached l_success.original_errors then
-							across l_success.original_errors as l_errors loop
-								insert_subrow_for_error (a_row, l_errors.item)
-							end
-							a_row.set_background_color (partial_color)
-						end
-					end
-
-				elseif is_failed_event (a_event_item) then
-						-- Icon
-					create l_label
-					l_label.set_pixmap (stock_pixmaps.general_error_icon)
-					l_label.set_data ("failed")
-					l_label.disable_full_select
-					a_row.set_item (icon_column, l_label)
-
-						-- Info
-					create l_message_gen.make
-					l_result.single_line_message (l_message_gen)
-					l_editor_item := create_clickable_grid_item (l_message_gen.last_line, True)
-					a_row.set_height (l_editor_item.required_height_for_text_and_component)
-					a_row.set_item (info_column, l_editor_item)
-
-						-- Display
-					a_row.set_background_color (failed_color)
-
-					if attached {E2B_FAILED_VERIFICATION} a_event_item.data as l_failure then
-						across
-							l_failure.errors as l_errors
-						loop
-							insert_subrow_for_error (a_row, l_errors.item)
-						end
-					end
-
-						 -- Position
-					if l_result.line_number > 0 then
-						a_row.set_item (position_column, create {EV_GRID_LABEL_ITEM}.make_with_text (l_result.line_number.out))
-					end
-				end
+				insert_subrow (a_row, l_viol)
 			else
 				check False end
 			end
-
 
 			if not is_item_visible (a_row) then
 				a_row.hide
 			end
 		end
 
-	insert_subrow_for_error (a_parent: EV_GRID_ROW; a_error: E2B_VERIFICATION_ERROR)
+	insert_subrow (a_parent: EV_GRID_ROW; a_viol: CA_RULE_VIOLATION_EVENT)
 			-- Insert a new subrow into `a_parent' for `a_error'.
 		local
 			l_index: INTEGER
@@ -676,62 +671,28 @@ feature {NONE} -- Basic operations
 
 			a_parent.insert_subrow (l_index)
 			l_row := a_parent.subrow (l_index)
-			l_row.set_data (a_error)
+			l_row.set_data (a_viol)
 
-			l_row.set_item (icon_column, create {EV_GRID_LABEL_ITEM})
+			l_row.set_item (category_column, create {EV_GRID_LABEL_ITEM})
 			l_row.set_item (class_column, create {EV_GRID_LABEL_ITEM})
-			l_row.set_item (feature_column, create {EV_GRID_LABEL_ITEM})
+			l_row.set_item (location_column, create {EV_GRID_LABEL_ITEM})
 
 			create l_text_gen.make
 			l_text_gen.enable_multiline
-			a_error.multi_line_message (l_text_gen)
+			a_viol.format_description (l_text_gen)
 			l_text_gen.add_new_line
 			l_editor_item := create_multiline_clickable_grid_item (l_text_gen.lines, True, False)
 			l_row.set_height (l_editor_item.required_height_for_text_and_component)
-			l_row.set_item (info_column, l_editor_item)
-
-			if a_error.eiffel_line_number > 0 then
-				l_row.set_item (position_column, create {EV_GRID_LABEL_ITEM}.make_with_text (a_error.eiffel_line_number.out))
-			end
-
-			if l_index \\ 2 = 1 then
-				l_row.set_background_color (odd_failed_sub_color)
-			else
-				l_row.set_background_color (even_failed_sub_color)
-			end
-
-		end
-
-	insert_subrow_for_suggestion (a_parent: EV_GRID_ROW; a_suggestion: STRING)
-			-- Insert a new subrow into `a_parent' for `a_error'.
-		local
-			l_index: INTEGER
-			l_row: EV_GRID_ROW
-			l_text_gen: EB_EDITOR_TOKEN_GENERATOR
-			l_editor_item: EB_GRID_EDITOR_TOKEN_ITEM
-		do
-			l_index := a_parent.subrow_count + 1
-
-			a_parent.insert_subrow (l_index)
-			l_row := a_parent.subrow (l_index)
-			l_row.set_data (a_suggestion)
-
-			l_row.set_item (icon_column, create {EV_GRID_LABEL_ITEM})
-			l_row.set_item (class_column, create {EV_GRID_LABEL_ITEM})
-			l_row.set_item (feature_column, create {EV_GRID_LABEL_ITEM})
-			l_row.set_item (info_column, create {EV_GRID_LABEL_ITEM}.make_with_text (a_suggestion))
-
-			l_row.set_background_color (partial_color)
-
+			l_row.set_item (description_column, l_editor_item)
 		end
 
 	update_button_titles
 			-- Update button titles with number of events.
 		do
-			errors_button.set_text (successful_count.out + " Errors")
-			warnings_button.set_text (failed_count.out + " Warnings")
-			suggestions_button.set_text ("0 Suggestions")
-			hints_button.set_text (skipped_count.out + " Hints")
+			errors_button.set_text (error_count.out + " " + ca_names.tool_errors)
+			warnings_button.set_text (warning_count.out + " " + ca_names.tool_warnings)
+			suggestions_button.set_text (suggestion_count.out + " " + ca_names.tool_suggestions)
+			hints_button.set_text (hint_count.out + " " + ca_names.tool_hints)
 		end
 
 	find_event_row (a_event_item: EVENT_LIST_ITEM_I): EV_GRID_ROW
@@ -775,12 +736,10 @@ feature {NONE} -- Clean up
 
 feature {NONE} -- Constants
 
-	icon_column: INTEGER = 2
-	class_column: INTEGER = 3
-	feature_column: INTEGER = 4
-	info_column: INTEGER = 5
-	position_column: INTEGER = 6
-	time_column: INTEGER = 7
+	category_column: INTEGER = 2
+	description_column: INTEGER = 3
+	class_column: INTEGER = 4
+	location_column: INTEGER = 5
 
 	successful_color: EV_COLOR
 			-- Background color for successful rows

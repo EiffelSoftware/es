@@ -46,6 +46,51 @@ feature -- Access
 			Result := internal_description
 		end
 
+	frozen is_error_event: BOOLEAN
+		do
+			Result := attached {CA_ERROR} data.rule.severity
+		end
+
+	frozen is_warning_event: BOOLEAN
+		do
+			Result := attached {CA_WARNING} data.rule.severity
+		end
+
+	frozen is_suggestion_event: BOOLEAN
+		do
+			Result := attached {CA_SUGGESTION} data.rule.severity
+		end
+
+	frozen is_hint_event: BOOLEAN
+		do
+			Result := attached {CA_HINT} data.rule.severity
+		end
+
+	affected_class: CLASS_C
+		do
+			Result := data.affected_class
+		end
+
+	format_description (a_formatter: TEXT_FORMATTER)
+		do
+			data.format_violation_description (a_formatter)
+		end
+
+	location: LOCATION_AS
+		do
+			Result := data.location
+		end
+
+	title: STRING
+		do
+			Result := data.rule.title
+		end
+
+	violation_description: STRING
+		do
+			Result := data.rule.description
+		end
+
 --	context_class: CLASS_C
 --			-- Class corresponding to event
 --		do

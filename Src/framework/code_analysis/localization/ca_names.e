@@ -53,4 +53,18 @@ feature -- Rules
 	cq_separation_title: STRING_32
 		do Result := locale.translation ("No command-query separation (possible function side effect)") end
 
+feature -- GUI
+
+	tool_errors: STRING_32
+		do Result := locale.translation ("Errors") end
+
+	tool_warnings: STRING_32
+		do Result := locale.translation ("Warnings") end
+
+	tool_suggestions: STRING_32
+		do Result := locale.translation ("Suggestions") end
+
+	tool_hints: STRING_32
+		do Result := locale.translation ("Hints") end
+
 end

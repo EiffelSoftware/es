@@ -28,6 +28,7 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_EMPTY_IF_RULE}.make)
 			rules.extend (create {CA_FEATURE_NEVER_CALLED_RULE}.make)
 			rules.extend (create {CA_CQ_SEPARATION_RULE}.make)
+			
 			-- Issues (contract violations, exceptions) with {EPA_CFG_BUILDER} and
 			-- classes from library 'program_analysis' in general.
 --			rules.extend (create {CA_VARIABLE_NOT_READ_RULE}.make)

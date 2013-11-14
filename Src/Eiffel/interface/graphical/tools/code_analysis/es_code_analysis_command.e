@@ -352,9 +352,9 @@ feature {NONE} -- Implementation
 			l_window: EB_DEVELOPMENT_WINDOW
 		do
 			last_execution := agent analyze_current_item
-			analyze_current_item_item.enable_select
-			analyze_parent_item_item.disable_select
-			analyze_system_item.disable_select
+--			analyze_current_item_item.enable_select
+--			analyze_parent_item_item.disable_select
+--			analyze_system_item.disable_select
 
 			l_window := window_manager.last_focused_development_window
 			if droppable (l_window.stone) then
@@ -369,9 +369,9 @@ feature {NONE} -- Implementation
 			l_cluster_stone: CLUSTER_STONE
 		do
 			last_execution := agent analyze_parent_cluster
-			analyze_current_item_item.disable_select
-			analyze_parent_item_item.enable_select
-			analyze_system_item.disable_select
+--			analyze_current_item_item.disable_select
+--			analyze_parent_item_item.enable_select
+--			analyze_system_item.disable_select
 
 			l_window := window_manager.last_focused_development_window
 			if attached {CLASSC_STONE} l_window.stone as l_stone then
@@ -424,7 +424,7 @@ feature {NONE} -- Implementation
 		do
 			last_execution := agent analyze_current_item
 			create analyze_system_item.make_with_text_and_action ("Analyze whole system", agent analyze_all)
-			analyze_system_item.toggle
+--			analyze_system_item.toggle
 			create analyze_current_item_item.make_with_text_and_action ("Analyze current item", agent analyze_current_item)
 			create analyze_parent_item_item.make_with_text_and_action ("Analyze parent cluster of current item", agent analyze_parent_cluster)
 
@@ -444,14 +444,14 @@ feature {NONE} -- Implementation
 	last_execution: PROCEDURE [ANY, TUPLE []]
 			-- Last executed actions
 
-	analyze_current_item_item: EV_CHECK_MENU_ITEM
-			-- Menu item to proof current item
+	analyze_current_item_item: EV_MENU_ITEM
+			-- Menu item to analyze current item
 
-	analyze_parent_item_item: EV_CHECK_MENU_ITEM
-			-- Menu item to proof parent item
+	analyze_parent_item_item: EV_MENU_ITEM
+			-- Menu item to analyze parent item
 
-	analyze_system_item: EV_CHECK_MENU_ITEM
-			-- Menu item to proof system
+	analyze_system_item: EV_MENU_ITEM
+			-- Menu item to analyze system
 
 	menu_name: STRING_GENERAL
 			-- Name as it appears in the menu (with & symbol).
@@ -462,7 +462,7 @@ feature {NONE} -- Implementation
 	tooltip: STRING_GENERAL
 			-- Tooltip for the toolbar button.
 		do
-			Result := "Run Code Analysis"
+			Result := "Analyze whole system"
 		end
 
 	tooltext: STRING_GENERAL
