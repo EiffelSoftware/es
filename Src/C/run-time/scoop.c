@@ -60,6 +60,15 @@ rt_public EIF_BOOLEAN eif_is_uncontrolled (EIF_SCP_PID c, EIF_SCP_PID s)
 	return EIF_TEST (ou.item.b);
 }
 
+rt_public EIF_BOOLEAN eif_is_passive (EIF_SCP_PID s)
+{
+	EIF_TYPED_VALUE ou; 
+	ou.item.b = EIF_FALSE;
+	ou.type = SK_BOOL;
+	RTS_TCB(scoop_task_is_passive,0,s,&ou);
+	return EIF_TEST (ou.item.b);
+}
+
 #ifdef WORKBENCH
 
 rt_public void eif_log_call (int s, int f, EIF_SCP_PID p, call_data * a)

@@ -1337,6 +1337,10 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define scoop_task_wait_for_processor_redundancy 10
 #define scoop_task_check_uncontrolled 11
 #define scoop_task_update_statistics 12
+#define scoop_task_set_active 13
+#define scoop_task_set_passive 14
+#define scoop_task_is_passive 15
+
 
 #ifdef WORKBENCH
 #define RTS_TCB(t,c,s,a) \
@@ -1373,6 +1377,10 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define EIF_IS_DIFFERENT_PROCESSOR(o1,o2) (RTS_PID (o1) != RTS_PID (o2))
 #define RTS_OS(c,o) (RTS_PID (c) != RTS_PID (o))
 #define RTS_OU(c,o) ((o) && (scp_mnger) && EIF_TEST (eif_is_uncontrolled (RTS_PID (c), RTS_PID (o))))
+
+#define EIF_SET_ACTIVE(o) RTS_TCB(scoop_task_set_active,0,RTS_PID (o),0)
+#define EIF_SET_PASSIVE(o) RTS_TCB(scoop_task_set_passive,0,RTS_PID (o),0)
+#define EIF_IS_PASSIVE(o) (eif_is_passive (RTS_PID (o)) == EIF_TRUE)
 
 /*
  * Processor:

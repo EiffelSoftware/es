@@ -64,6 +64,12 @@ feature {NONE} -- C callback function
 				enumerate_live_processors
 			when update_statistics_task_id then
 				update_statistics
+			when set_active_task_id then
+				set_processor_active (supplier_processor_id)
+			when set_passive_task_id then
+				set_processor_passive (supplier_processor_id)
+			when is_passive_task_id then
+				set_boolean_return_value (a_callback_data, is_processor_passive (supplier_processor_id))
 			else
 				check invalid_task: False end
 			end
@@ -186,6 +192,9 @@ feature {NONE} -- C callback function
 	frozen wait_for_processor_redundancy_task_id: NATURAL_8 = 10
 	frozen check_uncontrolled_call_task_id: NATURAL_8 = 11
 	frozen update_statistics_task_id: NATURAL_8 = 12
+	frozen set_active_task_id: NATURAL_8 = 13
+	frozen set_passive_task_id: NATURAL_8 = 14
+	frozen is_passive_task_id: NATURAL_8 = 15
 		-- SCOOP Task Constants, similies of those defined in <eif_macros.h>
 		--| FIXME: Use external macros when valid in an inspect statement.
 
@@ -1317,6 +1326,7 @@ feature {NONE} -- Resource Initialization
 			(processor_meta_data [a_processor_id]).put (0, processor_dirty_flag_count_index)
 			(processor_meta_data [a_processor_id]).put (0, processor_wait_condition_counter_index)
 			(processor_meta_data [a_processor_id]).put (processor_semaphore_status_running, processor_semaphore_status_index)
+			(processor_meta_data [a_processor_id]).put (processor_active, processor_passiveness_index)
 
 				-- Reset execution index to `0'
 			(processor_meta_data [a_processor_id]).put (0, current_request_node_id_execution_index)
@@ -1726,6 +1736,35 @@ feature {NONE} -- Resource Initialization
 			end
 		end
 
+feature {NONE} -- Passiveness
+	
+	set_processor_active (a_logical_processor_id : like processor_id_type)
+		local
+			l_processor_meta_data: like new_processor_meta_data_entry
+			l_return: INTEGER
+		do
+			--| FIXME Wait until that processor satisfies precondition: see semantics
+			l_processor_meta_data := processor_meta_data [a_logical_processor_id]
+			-- Atomically change the flag. It is possible that another processor changes the flag instead of the current one; this behavior is ok.
+			l_return := {ATOMIC_MEMORY_OPERATIONS}.swap_integer_32 ((processor_meta_data [a_logical_processor_id]).item_address (processor_passiveness_index), processor_active)
+		end
+		
+	set_processor_passive (a_logical_processor_id : like processor_id_type)
+		local
+			l_processor_meta_data: like new_processor_meta_data_entry
+			l_return: INTEGER
+		do
+			--| FIXME Wait until that processor satisfies precondition: see semantics
+			l_processor_meta_data := processor_meta_data [a_logical_processor_id]
+			-- Atomically change the flag. It is possible that another processor changes the flag instead of the current one; this behavior is ok.
+			l_return := {ATOMIC_MEMORY_OPERATIONS}.swap_integer_32 ((processor_meta_data [a_logical_processor_id]).item_address (processor_passiveness_index), processor_passive)
+		end
+		
+	is_processor_passive (a_processor_id : like processor_id_type) : BOOLEAN
+		do
+			Result := (processor_meta_data[a_processor_id]) [processor_passiveness_index] = processor_passive		
+		end
+		
 feature {NONE} -- Processor ID
 
 	processor_id_type: INTEGER_32
@@ -2003,8 +2042,11 @@ feature {NONE} -- Meta Data: indexes of specific information
 
 	processor_semaphore_status_index: INTEGER_32 = 10
 			-- Index of the quick semaphore for the processor.
+			
+	processor_passiveness_index: INTEGER_32 = 11
+			-- Index of the passiveness status for the processor.
 
-	processor_meta_data_index_count: INTEGER_32 = 11
+	processor_meta_data_index_count: INTEGER_32 = 12
 			-- Number of items in the SCOOP Processor Meta Data structure.
 
 	next_free_processor_index: INTEGER_32 = 1
@@ -2028,6 +2070,15 @@ feature {NONE} -- Meta Data: processor status (at index `processor_status_index'
 	processor_status_idle: INTEGER_32 = 3
 			-- Processor is idle waiting for any calls to be logged on it.
 
+feature {NONE} -- Meta Data: processor passivness (at index `processor_passiveness_index')
+	
+	processor_active: INTEGER_32 = 0
+		-- Processor is active.
+
+	processor_passive: INTEGER_32 = 1
+		-- Processor is passive.
+
+		
 feature {NONE} -- Meta Data: special values
 
 	invalid_request_chain_id: INTEGER_32 = -1

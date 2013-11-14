@@ -365,6 +365,23 @@ feature -- Basic operations
 			Result := Current
 		end
 
+feature -- SCOOP
+	frozen set_handler_active (a_obj: separate ANY)
+			--
+		external
+			"C inline use %"eif_macros.h%""
+		alias
+			"EIF_SET_ACTIVE(eif_access($a_obj))"
+		end
+
+	frozen set_handler_passive (a_obj: separate ANY)
+			--
+		external
+			"C inline use %"eif_macros.h%""
+		alias
+			"EIF_SET_PASSIVE(eif_access($a_obj))"
+		end
+	
 invariant
 	reflexive_equality: standard_is_equal (Current)
 	reflexive_conformance: conforms_to (Current)

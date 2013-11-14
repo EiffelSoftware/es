@@ -419,18 +419,20 @@ feature -- C generation
 			buf := buffer
 			if attached s then
 					-- Generate a call on a separate target as follows:
-					--    if (EIF_IS_DIFFERENT_PROCESSOR (Current, target)) {
+					--    if ((EIF_IS_DIFFERENT_PROCESSOR (Current, target)) && !(EIF_IS_PASSIVE (target))) {
 					--        ... // Prepare arguments to pass in args.
 					--        RTS_Cxy (feature_data, target, arguments, result);
 					--    } else {
 					--        ... // Make non-separate call.
 					--    }
 				if not is_exactly_separate then
-						-- The call may be non-separate, this is determined at tun-time.
+						-- The call may be non-separate, this is determined at tun-time.					
 					buf.put_new_line
-					buf.put_string ("if (EIF_IS_DIFFERENT_PROCESSOR (Current, ")
+					buf.put_string ("if ((EIF_IS_DIFFERENT_PROCESSOR (Current, ")
 					t.print_register
-					buf.put_four_character (')', ')', ' ', '{')
+					buf.put_string (")) && !(EIF_IS_PASSIVE (")
+					t.print_register
+					buf.put_string ("))) {")
 					buf.indent
 				end
 					-- Allocate a container to pass arguments to a scheduler.
