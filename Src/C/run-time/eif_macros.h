@@ -1357,6 +1357,11 @@ RT_LNK void eif_exit_eiffel_code(void);
 #endif
 #define RTS_PID(o) HEADER(o)->ov_pid
 
+/* 
+ * SCOOP processor ID swapping
+ */
+#define RTS_IMPERSONATE(o) eif_thr_impersonate(o);
+
 /*
  * Object status:
  * EIF_IS_DIFFERENT_PROCESSOR (o1, o2) - tells if o1 and o2 run on different processors
