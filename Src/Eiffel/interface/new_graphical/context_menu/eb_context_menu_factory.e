@@ -598,6 +598,7 @@ feature {NONE} -- Menu section, Granularity 2.
 				extend_add_to_menu (a_menu, l_stonec)
 			    (create {ES_BLACKBOARD_BENCH_HELPER}).build_context_menu_for_class_stone (a_menu, l_stonec)
 			    (create {ES_AUTOPROOF_BENCH_HELPER}).build_context_menu_for_class_stone (a_menu, l_stonec)
+			    (create {ES_CODE_ANALYSIS_BENCH_HELPER}).build_context_menu_for_class_stone (a_menu, l_stonec)
 			elseif attached {CLASSI_STONE} a_pebble as l_stonei then
 				extend_basic_opening_menus (a_menu, l_stonei, True)
 				extend_separator (a_menu)

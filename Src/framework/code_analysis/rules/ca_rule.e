@@ -83,6 +83,11 @@ feature -- Rule checking
 
 feature -- Results
 
+	frozen clear_violations
+		do
+			violations.wipe_out
+		end
+
 	violations: LINKED_LIST[CA_RULE_VIOLATION]
 
 feature {NONE} -- Implementation

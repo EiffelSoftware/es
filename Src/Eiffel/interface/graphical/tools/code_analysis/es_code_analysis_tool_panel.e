@@ -284,7 +284,7 @@ feature {NONE} -- Initialization
 			l_col: EV_GRID_COLUMN
 		do
 			Precursor {ES_CLICKABLE_EVENT_LIST_TOOL_PANEL_BASE} (a_widget)
-			a_widget.set_column_count_to (location_column)
+			a_widget.set_column_count_to (last_column)
 
 	-- Create columns
 			l_col := a_widget.column (1)
@@ -294,11 +294,11 @@ feature {NONE} -- Initialization
 
 			l_col := a_widget.column (description_column)
 			l_col.set_title ("Description")
-			l_col.set_width (100)
+			l_col.set_width (500)
 
 			l_col := a_widget.column (class_column)
 			l_col.set_title ("Class")
-			l_col.set_width (200)
+			l_col.set_width (120)
 
 			l_col := a_widget.column (location_column)
 			l_col.set_title ("Location")
@@ -588,6 +588,7 @@ feature {NONE} -- Basic operations
 			l_error: EP_ERROR
 			l_row: EV_GRID_ROW
 			l_pos_token: EDITOR_TOKEN_NUMBER
+			l_line: EIFFEL_EDITOR_LINE
 		do
 			a_row.set_data (a_event_item)
 --			if is_failed_execution_event (a_event_item) then
@@ -648,6 +649,13 @@ feature {NONE} -- Basic operations
 				create l_pos_token.make (l_viol.location.line.out + ", " + l_viol.location.column.max (1).out)
 				l_pos_token.set_is_clickable (True)
 				l_pos_token.set_pebble (create {COMPILED_LINE_STONE}.make_with_line (l_viol.affected_class, l_viol.location.line, True))
+--										-- Create editor item
+				create l_line.make_unix_style
+				l_line.append_token (l_pos_token)
+				l_editor_item := create_clickable_grid_item (l_line, False)
+					-- No extra initialization needed so update `l_editor_item' to reflect settings.
+				l_editor_item.try_call_setting_change_actions
+				a_row.set_item (location_column, l_editor_item)
 
 				insert_subrow (a_row, l_viol)
 			else
@@ -660,7 +668,7 @@ feature {NONE} -- Basic operations
 		end
 
 	insert_subrow (a_parent: EV_GRID_ROW; a_viol: CA_RULE_VIOLATION_EVENT)
-			-- Insert a new subrow into `a_parent' for `a_error'.
+			-- Insert a new subrow into `a_parent' for `a_viol'.
 		local
 			l_index: INTEGER
 			l_row: EV_GRID_ROW
@@ -671,7 +679,7 @@ feature {NONE} -- Basic operations
 
 			a_parent.insert_subrow (l_index)
 			l_row := a_parent.subrow (l_index)
-			l_row.set_data (a_viol)
+--			l_row.set_data (a_viol)
 
 			l_row.set_item (category_column, create {EV_GRID_LABEL_ITEM})
 			l_row.set_item (class_column, create {EV_GRID_LABEL_ITEM})
@@ -684,6 +692,8 @@ feature {NONE} -- Basic operations
 			l_editor_item := create_multiline_clickable_grid_item (l_text_gen.lines, True, False)
 			l_row.set_height (l_editor_item.required_height_for_text_and_component)
 			l_row.set_item (description_column, l_editor_item)
+			l_row.set_height (l_row.height + 2)
+			grid_events.grid_row_fill_empty_cells (l_row)
 		end
 
 	update_button_titles
@@ -737,9 +747,10 @@ feature {NONE} -- Clean up
 feature {NONE} -- Constants
 
 	category_column: INTEGER = 2
-	description_column: INTEGER = 3
-	class_column: INTEGER = 4
-	location_column: INTEGER = 5
+	class_column: INTEGER = 3
+	location_column: INTEGER = 4
+	description_column: INTEGER = 5
+	last_column: INTEGER = 5
 
 	successful_color: EV_COLOR
 			-- Background color for successful rows

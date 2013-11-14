@@ -28,7 +28,7 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_EMPTY_IF_RULE}.make)
 			rules.extend (create {CA_FEATURE_NEVER_CALLED_RULE}.make)
 			rules.extend (create {CA_CQ_SEPARATION_RULE}.make)
-			
+
 			-- Issues (contract violations, exceptions) with {EPA_CFG_BUILDER} and
 			-- classes from library 'program_analysis' in general.
 --			rules.extend (create {CA_VARIABLE_NOT_READ_RULE}.make)
@@ -52,15 +52,18 @@ feature -- Analysis interface
 			l_rules_checker: CA_ALL_RULES_CHECKER
 		do
 			is_running := True
+				-- TODO: caching
+			rule_violations.wipe_out
 
 			create l_rules_checker.make
 			across rules as l_rules loop
+				l_rules.item.clear_violations
 				if l_rules.item.is_enabled then -- important: only add enabled rules
 					if system_wide_check or else (not l_rules.item.is_system_wide) then
-						-- do not add system wide rules if we check only parts of the system
+							-- do not add system wide rules if we check only parts of the system
 						if attached {CA_STANDARD_RULE} l_rules.item as l_std_rule then
 							l_std_rule.prepare_checking (l_rules_checker)
-						-- TODO: prepare rules of other types?
+								-- TODO: prepare rules of other types?
 						end
 					end
 				end

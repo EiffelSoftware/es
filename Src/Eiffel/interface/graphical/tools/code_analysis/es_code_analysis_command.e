@@ -292,7 +292,7 @@ feature -- Items
 		do
 			create Result.make (Current)
 			initialize_sd_toolbar_item (Result, display_text)
-			Result.select_actions.extend (agent execute_last_action)
+			Result.select_actions.extend (agent execute)
 
 			Result.drop_actions.extend (agent execute_with_stone)
 			Result.drop_actions.set_veto_pebble_function (agent droppable)
