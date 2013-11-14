@@ -18,6 +18,7 @@ feature
 		require
 			s /= Void
 			s.is_wrapped -- default: creator
+			across s.observers as o all o.item.is_wrapped end -- default: creator
 			is_open -- default: creator
 
 			modify ([s, Current])
@@ -30,7 +31,9 @@ feature
 		ensure
 			subject = s
 			is_wrapped -- default: creator
+			across observers as o all o.item.is_wrapped end -- default: creator
 			s.is_wrapped -- default: creator
+			across s.observers as o all o.item.is_wrapped end -- default: creator
 			s.observers = (old s.observers & Current)
 		end
 
@@ -58,8 +61,8 @@ invariant
 	subject.observers.has (Current)
 	cache = subject.value
 	subjects = [subject]
-	across subjects as s all s.item.observers.has (Current) end
-	owns = []
-	observers = []
+	across subjects as s all s.item.observers.has (Current) end -- default
+	owns = [] -- default
+	observers = [] -- default
 
 end

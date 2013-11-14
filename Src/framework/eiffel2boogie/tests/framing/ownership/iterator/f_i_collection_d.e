@@ -1,4 +1,7 @@
-class F_I_COLLECTION
+note
+	explicit: "all"
+
+class F_I_COLLECTION_D
 
 create
 	make
@@ -9,22 +12,36 @@ feature
 
 	capacity: INTEGER
 		require
+			is_wrapped -- default: public
+			across observers as o all o.item.is_wrapped end -- default: public
+
 			reads (Current)
+
+			modify ([]) -- default: query
 		do
 			Result := elements.count
 		ensure
 			Result = elements.count
+
+			is_wrapped -- default: public
+			across observers as o all o.item.is_wrapped end -- default: public
 		end
 
 	make (cap: INTEGER)
 		note
 			status: creator
 		require
+			is_open -- default: creator
 			cap >= 0
+
+			modify (Current) -- default: creator
 		do
 			create elements.make (1, cap)
-			set_owns ([elements])
+			set_owns ([elements]) -- default: ???
+			wrap -- default: creator
 		ensure
+			is_wrapped -- default: creator
+			across observers as o all o.item.is_wrapped end -- default: creator
 			capacity = cap
 			count = 0
 			observers = []
@@ -40,13 +57,15 @@ feature
 			count < capacity
 
 			modify (Current)
-			modify_field ("closed", observers)
+			modify (observers)
 		do
+			unwrap -- default: public
 			unwrap_all (observers)
 
 			set_observers ([])
 			count := count + 1
 			elements.put (v, count)
+			wrap -- default: public
 		ensure
 			count = old count + 1
 			observers = []
@@ -56,7 +75,7 @@ feature
 			is_wrapped
 		end
 
-feature {F_I_ITERATOR}
+feature {F_I_ITERATOR_D}
 
 	elements: F_I_ARRAY
 
@@ -64,6 +83,8 @@ invariant
 	elements /= Void
 	0 <= count and count <= elements.count
 	owns = [elements]
+	subjects = [] -- default
+	across subjects as s all s.item.observers.has (Current) end -- default
 	not observers[Current] and not observers[elements]
 
 note

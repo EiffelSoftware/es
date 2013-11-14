@@ -370,7 +370,7 @@ feature -- Basic operations
 
 				else
 					if not helper.is_explicit (current_feature, "wrapping") then
-						if helper.is_public (current_feature) then
+						if helper.is_public (current_feature) and not a_feature.has_return_value then
 							l_implementation.body.add_statement (factory.procedure_call ("unwrap", << "Current" >>))
 						end
 					end
@@ -402,7 +402,7 @@ feature -- Basic operations
 				-- OWNERSHIP: end of routine body
 			if options.is_ownership_enabled then
 				if not helper.is_explicit (current_feature, "wrapping") then
-					if a_for_creator or helper.is_public (current_feature) then
+					if a_for_creator or helper.is_public (current_feature) and not a_feature.has_return_value then
 						l_implementation.body.add_statement (factory.procedure_call ("wrap", << "Current" >>))
 					end
 				end
@@ -488,6 +488,13 @@ feature -- Basic operations
 					l_modif_set := l_expr
 				else
 					l_modif_set := factory.function_call ("Set#Union", << l_modif_set, l_expr >>, types.set (types.ref))
+				end
+			end
+			if l_.modified_objects.is_empty and not helper.is_explicit (a_feature, "modifies") then
+				if a_feature.has_return_value then
+					l_modif_set := factory.function_call ("Set#Empty", << >>, types.set (types.ref))
+				else
+					l_modif_set := factory.function_call ("Set#Singleton", << "current" >>, types.set (types.ref))
 				end
 			end
 			l_function.set_body (l_modif_set)

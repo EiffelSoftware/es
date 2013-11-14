@@ -12,8 +12,6 @@ feature {NONE} -- Initialization
 	default_create
 		note
 			status: creator
-		require else
-			modify (Current) -- default: creator
 		do
 		ensure then
 			observer = Void -- default: default_create

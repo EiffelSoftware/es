@@ -1,7 +1,4 @@
-note
-	explicit: "all"
-
-class F_OOM_SUBJECT_D
+class F_OOM_SUBJECT
 
 create
 	make
@@ -9,38 +6,29 @@ create
 feature
 
 	value: INTEGER
-	observers_list: F_OOM_LIST [F_OOM_OBSERVER_D]
+	observers_list: F_OOM_LIST [F_OOM_OBSERVER]
 
 	make
 		note
 			status: creator
 		require
 			is_open
-
-			modify (Current) -- default: creator
 		do
 			create observers_list.make
-			set_owns ([observers_list]) -- implicit?
-			wrap -- default: creator
+			set_owns ([observers_list])
 		ensure
 			observers_list.is_empty
 			observers = [] -- todo: should be implied by previous line
-			is_wrapped -- default: creator
-			across observers as o all o.item.is_wrapped end -- default: creator
 		end
 
 	update (new_val: INTEGER)
 		require
-			is_wrapped -- default: public
-			across observers as o all o.item.is_wrapped end -- default: public
-
 			modify_field ("value", Current)
 			modify_field ("cache", observers_list.sequence)
 		local
 			i: INTEGER
-			l_old_sequence: MML_SET [F_OOM_OBSERVER_D]
+			l_old_sequence: MML_SET [F_OOM_OBSERVER]
 		do
-			unwrap -- default: public
 			unwrap_all (observers)
 
 			value := new_val
@@ -56,23 +44,18 @@ feature
 			end
 
 			wrap_all (observers)
-			wrap -- default: public
 		ensure
 			value = new_val
-			is_wrapped -- default: public
-			across observers as o all o.item.is_wrapped end -- default: public
 		end
 
-feature {F_OOM_OBSERVER_D}
+feature {F_OOM_OBSERVER}
 
-	register (o: F_OOM_OBSERVER_D)
+	register (o: F_OOM_OBSERVER)
 		note
 			explicit: contracts
 		require
 			is_wrapped
 			o.is_open
-
-			modify (Current) -- default: command
 		do
 			unwrap
 			observers_list.extend_back (o)
@@ -89,8 +72,6 @@ invariant
 	across observers_list.sequence as o all o.item /= Void end
 	observers = observers_list.sequence
 	owns = [observers_list]
-	subjects = [] -- default
-	across subjects as s all s.item.observers.has (Current) end -- default
 	not observers[Current]
 
 note

@@ -74,6 +74,12 @@ feature -- Basic operations
 				create {IV_EXISTS} l_quantifier.make (factory.and_ (l_map, l_expression))
 			end
 			l_quantifier.add_bound_variable (l_counter.name, l_counter.type)
+			l_quantifier.add_trigger (l_map)
+			if attached {IV_FUNCTION_CALL} l_expression as l_fcall then
+				if across l_fcall.arguments as i some attached {IV_ENTITY} i.item as j and then j.name ~ l_counter.name end then
+					l_quantifier.add_trigger (l_expression)
+				end
+			end
 			expression_translator.set_last_expression (l_quantifier)
 		end
 

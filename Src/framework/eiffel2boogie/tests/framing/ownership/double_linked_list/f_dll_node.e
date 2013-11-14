@@ -11,8 +11,6 @@ feature
 	make
 		note
 			status: creator
-		require
-			modify (Current) -- default: creator
 		do
 			left := Current
 			right := Current

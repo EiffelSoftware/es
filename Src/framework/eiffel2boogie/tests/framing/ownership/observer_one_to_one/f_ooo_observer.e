@@ -11,8 +11,8 @@ feature
 		require
 			s.observer = Void
 
+			modify (Current)
 			modify_field (["observer", "observers"], s)
-			modify (Current) -- default: creator
 		do
 			subject := s
 			s.register (Current)

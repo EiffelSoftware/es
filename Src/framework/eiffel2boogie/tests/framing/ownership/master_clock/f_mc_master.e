@@ -11,8 +11,6 @@ feature {NONE} -- Initialization
 	default_create
 		note
 			status: creator
-		require else
-			modify (Current) -- default: creator
 		do
 		ensure then
 			time = 0 -- default: default_create

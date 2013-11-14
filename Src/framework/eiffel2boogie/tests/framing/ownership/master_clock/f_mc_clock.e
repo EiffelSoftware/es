@@ -12,7 +12,7 @@ feature {NONE} -- Initialization
 		require
 			m /= Void
 
-			modify (Current) -- default: creator
+			modify (Current)
 			modify_field ("observers", m)
 		do
 			master := m
@@ -22,7 +22,7 @@ feature {NONE} -- Initialization
 			m.set_observers (m.observers + [Current])
 			m.wrap
 
-			set_subjects ([m]) -- default
+			set_subjects ([m])
 		ensure
 			master = m
 			local_time = m.time

@@ -49,6 +49,7 @@ feature -- Access
 			modify ([])
 		do
 		ensure
+			Result >= 0
 --			Result = sequence.count
 		end
 
@@ -56,12 +57,12 @@ feature -- Access
 		note
 			skip: True
 		require
-			1 <= i and i < count
+			1 <= i and i <= count
 
 			modify ([])
 		do
 		ensure
---			Result = sequence [i]
+			sequence[Result]
 		end
 
 	has (x: G) : BOOLEAN
