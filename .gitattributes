@@ -1967,7 +1967,6 @@ Src/Eiffel/doc/runtime/typing/TYPE_A_encodings.dia -text
 Src/Eiffel/doc/runtime/typing/TYPE_A_encodings.png -text
 Src/README.txt -text
 Src/build/build.ico -text
-Src/compatible/library/Eiffel2Java/Eiffel2Java.lic -text
 Src/compatible/library/api_wrapper/api_wrapper.lic -text
 Src/compatible/library/cURL/cURL.lic -text
 Src/compatible/library/diff/diff_index_link.e -text
@@ -2178,7 +2177,6 @@ Src/compatible/library/i18n/tests/test_files/mo/ar.mo -text
 Src/compatible/library/i18n/tests/test_files/mo/zh_CN.mo -text
 Src/compatible/library/i18n/tests/zh_CN.mo -text
 Src/compatible/library/memory_analyzer/memory_analyzer_icon_matrix.png -text
-Src/compatible/library/preferences/preferences_reg.lic -text
 Src/compatible/library/process/classic/unix/process_thread_timer.e -text
 Src/compatible/library/process/classic/windows/wel_process_id_pair.e -text
 Src/compatible/library/process/classic/windows/wel_process_toolhelp_constants.e -text
