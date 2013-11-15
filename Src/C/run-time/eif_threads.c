@@ -565,12 +565,11 @@ rt_public int eif_thr_is_initialized(void)
  * Switch the current rt_globals and eif_globals with those mapped
  * to the RTS_PID of the argument o.
  */
-rt_public void eif_thr_impersonate(EIF_REFERENCE o) {
-	EIF_GET_CONTEXT
-	RT_GET_CONTEXT
+rt_public void *eif_thr_impersonate(EIF_REFERENCE o) {
 	rt_global_context_t *tmp_rt_ctx = global_ctxs [RTS_PID(o)];
-	rt_globals = tmp_rt_ctx;
-	eif_globals = tmp_rt_ctx->eif_globals;
+	EIF_TSD_SET(rt_global_key, tmp_rt_ctx, "Couldn't bind private context to TSD.");
+	EIF_TSD_SET(eif_global_key, tmp_rt_ctx->eif_globals, "Couldn't bind global context to TSD.");
+	return tmp_rt_ctx->eif_globals;
 }
 
 rt_private rt_global_context_t *eif_new_context (void)

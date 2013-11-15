@@ -1362,9 +1362,14 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTS_PID(o) HEADER(o)->ov_pid
 
 /* 
- * SCOOP processor ID swapping
+ * SCOOP processor ID swapping.
+ *
+ * `eif_globals' should be reloaded after the restoration.
  */
-#define RTS_IMPERSONATE(o) eif_thr_impersonate(o);
+#define RTS_IMPERSONATE(o)                                              \
+  {                                                                     \
+    eif_globals = (eif_global_context_t*) eif_thr_impersonate(o);       \
+  }
 
 /*
  * Object status:
