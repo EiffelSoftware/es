@@ -3195,8 +3195,6 @@ Src/examples/wel/xcell/xcell.bmp -text
 Src/examples/wel/xcell/xcell_demo.ico -text
 Src/experimental/library/GIF/Clib/gd_lib/gd.lib svneol=native#unset
 Src/experimental/library/api_wrapper/implementation/unix/Clib/dl-config -text
-Src/experimental/library/api_wrapper/license.lic -text
-Src/experimental/library/cURL/readme.txt -text
 Src/experimental/library/editor/bitmaps/copy_selection.png -text
 Src/experimental/library/editor/bitmaps/cut_selection.png -text
 Src/experimental/library/editor/bitmaps/icon_close_color.png -text
@@ -3205,7 +3203,6 @@ Src/experimental/library/editor/bitmaps/right_scroll_arrow.png -text
 Src/experimental/library/edk/include/edk.lib -text
 Src/experimental/library/edk/spec/msc/windows/lib/edk.lib -text
 Src/experimental/library/encoding/implementation/unix/Clib/iconv-config -text
-Src/experimental/library/graph/license.lic -text
 Src/experimental/library/i18n/README -text
 Src/experimental/library/i18n/TODO -text
 Src/experimental/library/i18n/doc/css/commonPrint.css -text
@@ -3432,7 +3429,6 @@ Src/experimental/library/i18n/tests/test_files/locale/results/windows/zh_TW -tex
 Src/experimental/library/i18n/tests/test_files/locale/results/windows/zu_ZA -text
 Src/experimental/library/i18n/tests/test_files/mo/ar.mo -text
 Src/experimental/library/i18n/tests/test_files/mo/zh_CN.mo -text
-Src/experimental/library/i18n/tests/test_results/result_Win7 -text
 Src/experimental/library/i18n/tests/zh_CN.mo -text
 Src/experimental/library/libevent/Clib/libevent/ChangeLog -text
 Src/experimental/library/libevent/Clib/libevent/Doxyfile -text
@@ -3440,11 +3436,6 @@ Src/experimental/library/libevent/Clib/libevent/Makefile.am -text
 Src/experimental/library/libevent/Clib/libevent/Makefile.in -text
 Src/experimental/library/libevent/Clib/libevent/Makefile.nmake -text
 Src/experimental/library/libevent/Clib/libevent/README -text
-Src/experimental/library/libevent/Clib/libevent/WIN32-Prj/event_test/event_test.dsp -text
-Src/experimental/library/libevent/Clib/libevent/WIN32-Prj/libevent.dsp -text
-Src/experimental/library/libevent/Clib/libevent/WIN32-Prj/libevent.dsw -text
-Src/experimental/library/libevent/Clib/libevent/WIN32-Prj/signal_test/signal_test.dsp -text
-Src/experimental/library/libevent/Clib/libevent/WIN32-Prj/time_test/time_test.dsp -text
 Src/experimental/library/libevent/Clib/libevent/aclocal.m4 -text
 Src/experimental/library/libevent/Clib/libevent/config.guess -text
 Src/experimental/library/libevent/Clib/libevent/config.h.in -text
@@ -3471,10 +3462,7 @@ Src/experimental/library/libevent/Clib/libevent/test/Makefile.nmake -text
 Src/experimental/library/libevent/Clib/libevent/test/regress.rpc -text
 Src/experimental/library/memory_analyzer/memory_analyzer_icon_matrix.png -text
 Src/experimental/library/obsolete/xml/parser/callbacks/README.TXT -text
-Src/experimental/library/obsolete/xml/parser/license.lic -text
 Src/experimental/library/obsolete/xml/tree/README.TXT -text
-Src/experimental/library/obsolete/xml/tree/license.lic -text
-Src/experimental/library/preferences/license.lic -text
 Src/experimental/library/ribbon/test/src/eiffel_ribbon_1.dll -text
 Src/experimental/library/ribbon/test/src/eiffelribbon1.res -text
 Src/experimental/library/ribbon/test/src/ribbon_1.bml -text
@@ -3482,24 +3470,9 @@ Src/experimental/library/ribbon/test/src/ribbon_project.er -text
 Src/experimental/library/runtime/logging/doc/Arch_Design_and_Impl.docx -text
 Src/experimental/library/runtime/logging/doc/Arch_Design_and_Impl.pdf -text svneol=unset#application/pdf
 Src/experimental/library/runtime/logging/doc/Arch_Design_and_Impl.vsd -text
-Src/experimental/library/runtime/logging/doc/Readme.1st -text
-Src/experimental/library/store/dbms/rdbms/mysql/Readme -text
-Src/experimental/library/text/parser/xml/README.txt -text
 Src/experimental/library/text/parser/xml/parser/callbacks/README.TXT -text
-Src/experimental/library/text/parser/xml/parser/license.lic -text
 Src/experimental/library/text/parser/xml/tree/README.TXT -text
-Src/experimental/library/text/parser/xml/tree/license.lic -text
-Src/experimental/library/text/uri/license.lic -text
 Src/experimental/library/vision2/Clib/default_vision2_icon.ico -text
-Src/experimental/library/vision2/implementation/carbon/Readme.txt -text
-Src/experimental/library/vision2/implementation/carbon/kernel/.DS_Store -text
-Src/experimental/library/vision2/implementation/carbon/testing/HRidges.png -text
-Src/experimental/library/vision2/implementation/carbon/testing/HSplitter.png -text
-Src/experimental/library/vision2/implementation/carbon/testing/VRidges.png -text
-Src/experimental/library/vision2/implementation/carbon/testing/VSplitter.png -text
-Src/experimental/library/vision2/implementation/carbon/widgets/dialogs/.DS_Store -text
-Src/experimental/library/vision2/implementation/carbon/wrapper/config.ewg -text
-Src/experimental/library/vision2/implementation/carbon/wrapper/generated_wrapper/eiffel/abstraction/.DS_Store -text
 Src/experimental/library/vision2/implementation/cocoa/Readme.txt -text
 Src/experimental/library/vision2/tests/graphics/01bpp.bmp -text
 Src/experimental/library/vision2/tests/graphics/04bpp.bmp -text
