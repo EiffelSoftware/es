@@ -2183,7 +2183,6 @@ Src/compatible/library/wel/extra/h2e.ico svneol=native#unset
 Src/compatible/library/wel/extra/h2e1.ico svneol=native#unset
 Src/compatible/library/wel/extra/h2e2.ico svneol=native#unset
 Src/compatible/library/wizard/help/Clib/htmlhelp.lib -text
-Src/contrib/README.txt -text
 Src/contrib/examples/web/ewf/filter/license.lic -text
 Src/contrib/examples/web/ewf/filter/readme.md -text
 Src/contrib/examples/web/ewf/readme.txt -text
