@@ -91,21 +91,23 @@ feature {NONE} -- Rule Checking
 			j: INTEGER
 		do
 			has_arguments := (a_body_as.arguments /= Void)
-			if has_arguments then
-				routine_body := a_body_as
-				create arg_names.make (0)
-				create args_used.make (0)
-				n_arguments := 0
-				across a_body_as.arguments as l_args loop
-					from
-						j := 1
-					until
-						j > l_args.item.id_list.count
-					loop
-						arg_names.extend (l_args.item.item_name (j))
-						args_used.extend (False)
-						n_arguments := n_arguments + 1
-						j := j + 1
+			if attached a_body_as.as_routine as l_rout then
+				if has_arguments and (not l_rout.is_external) then
+					routine_body := a_body_as
+					create arg_names.make (0)
+					create args_used.make (0)
+					n_arguments := 0
+					across a_body_as.arguments as l_args loop
+						from
+							j := 1
+						until
+							j > l_args.item.id_list.count
+						loop
+							arg_names.extend (l_args.item.item_name (j))
+							args_used.extend (False)
+							n_arguments := n_arguments + 1
+							j := j + 1
+						end
 					end
 				end
 			end

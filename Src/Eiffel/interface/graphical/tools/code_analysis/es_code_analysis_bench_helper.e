@@ -25,7 +25,7 @@ feature -- Basic operations
 			if a_stone.class_i.is_compiled then
 				create l_item.make_with_text_and_action ("Run Code Analysis of Class '" + a_stone.class_name + "'"
 					, agent ca_command.execute_with_stone (a_stone))
-				l_item.set_pixmap (icon_pixmaps.view_editor_icon)
+				l_item.set_pixmap (icon_pixmaps.view_flat_icon)
 
 				if code_analyzer.is_running then
 					l_item.disable_sensitive

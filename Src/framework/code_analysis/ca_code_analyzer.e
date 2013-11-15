@@ -50,6 +50,7 @@ feature -- Analysis interface
 			not is_running
 		local
 			l_rules_checker: CA_ALL_RULES_CHECKER
+			l_task: CA_RULE_CHECKING_TASK
 		do
 			is_running := True
 				-- TODO: caching
@@ -69,37 +70,9 @@ feature -- Analysis interface
 				end
 			end
 
-			across classes_to_analyze as l_classes loop
-
-				-- TODO: more elegant and performant solution?
-				across rules as l_rules loop
-					l_rules.item.set_checking_class (l_classes.item)
-					-- If rule is non-standard then it will not be checked by l_rules_checker.
-					-- We will have the rule check the current class here:
-					if attached {CA_CFG_RULE} l_rules.item as l_cfg_rule then
-						l_cfg_rule.check_class (l_classes.item)
-					end
-				end
-
-				l_rules_checker.run_on_class (l_classes.item)
-
-				rule_violations.extend (create {SORTED_TWO_WAY_LIST[CA_RULE_VIOLATION]}.make, l_classes.item)
-			end
-
-			across rules as l_rules loop
-				across l_rules.item.violations as l_v loop
-					rule_violations.at (l_v.item.affected_class).extend (l_v.item)
-				end
-			end
-
-			clear_classes_to_analyze
-
-			is_running := False
-			completed_actions.call ([True])
-			completed_actions.wipe_out
-		ensure
-			violation_list_exists: analysis_successful implies rule_violations /= Void
-			not is_running
+				-- TODO: call rule checker
+			create l_task.make (l_rules_checker, rules, classes_to_analyze, agent analysis_completed)
+			rota.run_task (l_task)
 		end
 
 	clear_classes_to_analyze
@@ -213,12 +186,42 @@ feature -- Properties
 
 feature {NONE} -- Implementation
 
+	analysis_completed
+		do
+			across classes_to_analyze as l_classes loop
+				rule_violations.extend (create {SORTED_TWO_WAY_LIST[CA_RULE_VIOLATION]}.make, l_classes.item)
+			end
+
+			across rules as l_rules loop
+				across l_rules.item.violations as l_v loop
+					rule_violations.at (l_v.item.affected_class).extend (l_v.item)
+				end
+			end
+
+			clear_classes_to_analyze
+
+			is_running := False
+			completed_actions.call ([True])
+			completed_actions.wipe_out
+		end
+
 	settings: CA_SETTINGS
 
-	classes_to_analyze: LINKED_SET[CLASS_C]
+	classes_to_analyze: LINKED_SET [CLASS_C]
 
 	system_wide_check: BOOLEAN
 
-	completed_actions: ACTION_SEQUENCE [ TUPLE [BOOLEAN] ]
+	completed_actions: ACTION_SEQUENCE [TUPLE [BOOLEAN]]
+
+	frozen rota: detachable ROTA_S
+			-- Access to rota service
+		local
+			l_service_consumer: SERVICE_CONSUMER [ROTA_S]
+		do
+			create l_service_consumer
+			if l_service_consumer.is_service_available and then l_service_consumer.service.is_interface_usable then
+				Result := l_service_consumer.service
+			end
+		end
 
 end

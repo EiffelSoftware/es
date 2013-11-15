@@ -145,6 +145,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 		local
 			l_cluster: CLUSTER_I
 			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
+			l_scope_label: EV_LABEL
 		do
 			create l_helper
 			code_analyzer := l_helper.code_analyzer
@@ -155,26 +156,45 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 			window_manager.display_message ("Code analysis running...")
 			code_analyzer.add_completed_action (agent analysis_completed)
 			code_analyzer.analyze
+			l_scope_label := ca_tool.panel.scope_label
+			l_scope_label.set_text ("System")
+			l_scope_label.set_tooltip ("The whole system was analyzed recently.")
+			l_scope_label.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (30, 30, 30))
 		end
+
+	last_scope_label: EV_LABEL
 
 	perform_analysis (a_stone: STONE)
 			-- Analyze `a_stone' only.
 		local
 			l_cluster: CLUSTER_I
 			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
+			l_scope_label: EV_LABEL
 		do
 			create l_helper
 			code_analyzer := l_helper.code_analyzer
 			code_analyzer.clear_classes_to_analyze
 
+			l_scope_label := ca_tool.panel.scope_label
+
 			if attached {CLASSC_STONE} a_stone as s then
 				code_analyzer.add_class (s.class_i)
+				l_scope_label.set_text (s.class_name)
+				l_scope_label.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (140, 140, 255))
+				l_scope_label.set_pebble (s)
+				l_scope_label.set_pick_and_drop_mode
+				l_scope_label.set_tooltip ("Class that has been analyzed recently.")
 			elseif attached {CLUSTER_STONE} a_stone as s then
 				if s.is_cluster then
 					code_analyzer.add_cluster (s.cluster_i)
 				else
 					code_analyzer.add_group (s.group)
 				end
+				l_scope_label.set_text (s.stone_name)
+				l_scope_label.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 140, 140))
+				l_scope_label.set_pebble (s)
+				l_scope_label.set_pick_and_drop_mode
+				l_scope_label.set_tooltip ("Cluster that has been analyzed recently.")
 			elseif attached {DATA_STONE} a_stone as s then
 				if attached {LIST [CONF_GROUP]} s.data as g then
 					from
@@ -187,6 +207,11 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 						end
 						g.forth
 					end
+					l_scope_label.set_text (s.stone_name)
+					l_scope_label.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (140, 255, 140))
+					l_scope_label.set_pebble (s)
+					l_scope_label.set_pick_and_drop_mode
+					l_scope_label.set_tooltip ("Configuration group that has been analyzed recently.")
 				end
 			end
 
@@ -197,16 +222,24 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 		end
 
 	analysis_completed (a_success: BOOLEAN)
+		local
+			l_violation_exists: BOOLEAN
 		do
 			event_list.prune_event_items (event_context_cookie)
 
 			across code_analyzer.rule_violations as l_viol_list loop
 				across l_viol_list.item as l_viol loop
 					event_list.put_event_item (event_context_cookie, create {CA_RULE_VIOLATION_EVENT}.make (l_viol.item))
+					l_violation_exists := True
 				end
 			end
 
+			if not l_violation_exists then
+				event_list.put_event_item (event_context_cookie, create {CA_NO_ISSUES_EVENT}.make)
+			end
+
 			show_ca_tool
+
 			enable_tool_button
 			window_manager.display_message ("Code Analysis has terminated.")
 		end

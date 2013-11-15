@@ -71,6 +71,9 @@ feature {NONE} -- Initialization
 
     create_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
             -- <Precursor>
+        local
+        	l_label: EV_LABEL
+			l_box: EV_HORIZONTAL_BOX
 		do
 				-- "toggle errors" button
 			create errors_button.make
@@ -102,6 +105,12 @@ feature {NONE} -- Initialization
 
 			update_button_titles
 
+				-- Scope label
+			create l_label.make_with_text ("Scope: ")
+			l_label.set_tooltip ("Scope of Last Analysis")
+			create scope_label.make_with_text ("(Analysis has not run yet.)")
+			scope_label.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (100, 100, 100))
+
 			create Result.make (5)
 			run_analysis_button := (create {ES_CODE_ANALYSIS_COMMAND}.make).new_sd_toolbar_item (True)
 			Result.extend (run_analysis_button)
@@ -113,6 +122,9 @@ feature {NONE} -- Initialization
 			Result.extend (suggestions_button)
 			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 			Result.extend (hints_button)
+			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
+			Result.extend (create {SD_TOOL_BAR_WIDGET_ITEM}.make (l_label))
+			Result.extend (create {SD_TOOL_BAR_WIDGET_ITEM}.make (scope_label))
 		end
 
 	create_right_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
@@ -121,9 +133,11 @@ feature {NONE} -- Initialization
 			l_box: EV_HORIZONTAL_BOX
 			l_button: SD_TOOL_BAR_BUTTON
 			l_popup_button: SD_TOOL_BAR_POPUP_BUTTON
+			l_label: EV_LABEL
 		do
 				-- live text filter
 			create l_box
+
 			l_box.extend (create {EV_LABEL}.make_with_text (ep_names.tool_text_filter + ": "))
 			l_box.disable_item_expand (l_box.last)
 			create text_filter
@@ -416,6 +430,10 @@ feature {NONE} -- User interface items
 	text_filter: EV_TEXT_FIELD
 			-- Text field to enter filter
 
+feature {ES_CODE_ANALYSIS_COMMAND} -- UI Items
+
+	scope_label: EV_LABEL
+
 feature {NONE} -- Events
 
 	on_event_item_added (a_service: EVENT_LIST_S; a_event_item: EVENT_LIST_ITEM_I)
@@ -515,6 +533,7 @@ feature {NONE} -- Query
 			-- Determines if event `a_event_item' can be shown with the current event list tool
 		do
 			Result := attached {CA_RULE_VIOLATION_EVENT} a_event_item
+						or attached {CA_NO_ISSUES_EVENT} a_event_item
 		end
 
 	is_error_event (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
@@ -605,8 +624,16 @@ feature {NONE} -- Basic operations
 
 --					-- Color
 --				a_row.set_background_color (failed_color)
+			if attached {CA_NO_ISSUES_EVENT} a_event_item as l_noissues then
+				create l_label
+				l_label.disable_full_select
+				l_label.set_pixmap (stock_pixmaps.general_tick_icon)
+				a_row.set_item (category_column, l_label)
 
-			if attached {CA_RULE_VIOLATION_EVENT} a_event_item as l_viol then
+				create l_label.make_with_text ("Code analysis found no issues!")
+				a_row.set_item (description_column, l_label)
+
+			elseif attached {CA_RULE_VIOLATION_EVENT} a_event_item as l_viol then
 
 					-- Severity category
 				create l_label
