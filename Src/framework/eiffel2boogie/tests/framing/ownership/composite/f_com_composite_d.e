@@ -67,54 +67,53 @@ feature
 			c /= Current
 			c.parent = Void
 			c.children.is_empty
-			not children_set[c]
 			not up[c]
 			across up as p all p.item.is_wrapped end
 
 			modify ([Current, c])
-			modify_field ("value", up)
+			modify_field (["value", "closed"], up)
 			modify (children_set)
 		do
 			unwrap -- default: public
 			c.unwrap
-			unwrap_all (children_set)
 			if parent /= Void then
 				parent.unwrap
 			end
 
-			check across children_set as o all not o.item.children_set.has (c) end end
-			check across children_set as o all across children_set as v all o.item /= v.item implies o.item.children_set.is_disjoint (v.item.children_set) end end end
-
+			check across children_set as o all o.item.is_wrapped end end
 			children.extend_back  (c) -- preserves parent
 			set_subjects (subjects & c)
 			set_observers (observers & c)
 			c.set_parent (Current)
 			c.set_subjects (c.subjects & Current)
 			c.set_observers (c.observers & Current)
-
-			check across children_set as o all o.item.inv_only ("value_consistent") end end
-			check c.inv_only ("value_consistent") end
+			check across children_set as o all o.item.is_wrapped end end
+			check false end
+			unwrap_all (children_set)
 			children_set := children_set & c
-			check across children_set as o all o.item.inv_only ("value_consistent") end end
+
+			check across children_set as o all o.item.inv_only ("i1", "i2") end end
+			check false end
 
 			wrap_all (children_set)
-			update (c)
-
 			if parent /= Void then
 				parent.wrap
 			end
+
+			update (c)
 
 			wrap -- default: public
 		ensure
 			children.has (c)
 			c.value = old c.value
+			children_set = old children_set & c
+			up = old up
+			across up as p all p.item.is_wrapped end
 
 			is_wrapped -- default: public
 			across observers as o all o.item.is_wrapped end -- default: public
 			c.is_wrapped -- default: public
 			across c.observers as o all o.item.is_wrapped end -- default: public
-
-			false
 		end
 
 feature {F_COM_COMPOSITE_D}
@@ -128,6 +127,7 @@ feature {F_COM_COMPOSITE_D}
 			children_set.is_empty
 			p /= Void
 
+			modify (Current)
 			modify_field (["parent", "up"], Current)
 		do
 			parent := p
@@ -148,94 +148,79 @@ feature {F_COM_COMPOSITE_D}
 			c /= Void
 			children_set[c]
 			is_open
-			owns = [children]
 			children.is_wrapped
-			across children_set as o all o.item.is_wrapped end
-
-			inv_without ("value_consistent") -- All invariant clauses except "value_consistent"
 			across up as p all p.item.is_wrapped end
-			is_max (value, children_set / c)
 
-			modify_field ("value", [Current, up])
-			modify_field ("closed", children_set)
-			modify (children)
+			inv_without ("value_consistent")
+
+--			not (children_set / c).is_empty implies is_max (value, children_set / c)
+--			is_max (value, children_set / c) or is_max (c.value, children_set)
+
+			modify_field (["value", "closed"], [Current, up])
 			decreases (up)
 		do
-			if value < c.value then
+			if
+				((children_set / c).is_empty and value /= c.value) or
+				value < c.value
+			then
 				if parent /= Void then
-					check up [parent] end
-					check parent.is_wrapped end
 					parent.unwrap
 				end
-				unwrap_all (children_set)
-				lemma1 (children_set, value, c)
-				check is_max (value, children_set / c) end
-				value := c.value  -- preserves children
-				check is_max (value, children_set) end
-
---				check across children_set as x all x.item.inv_only ("value_consistent") end end
---				check across children_set as x all x.item.inv_without ("value_consistent") end end
---				check across children_set as x all x.item.inv_only ("i1", "i2", "i3", "i4") end end
---				check across children_set as x all x.item.inv_only ("i5", "i6", "i7", "i8") end end
---				check across children_set as x all x.item.inv_only ("i9", "i10") end end
---				check across children_set as x all x.item.inv_only ("i11", "i12") end end
---				check across children_set as x all x.item.inv_only ("i13") end end
-				wrap_all (children_set)
+				value := c.value
+				wrap
 				if parent /= Void then
 					parent.update (Current)
 				end
+			else
+				check value >= c.value end
+				check is_max (value, children_set) end
+				wrap
 			end
+--			check assume: false end
 
-check
-	i1: children /= Void
-	i2: children_set = children.sequence
-	i3: not children_set[Current]
-	i3: not children_set[children]
-	i4: parent /= Current
-	i5: parent /= Void implies not (children_set[parent])
-	i6: across children_set as x all x.item /= Void and then x.item.parent = Current end
-	i7: parent /= Void implies (not up[Current] and up = parent.up & parent) -- implies acyclicity
-	i8: parent = Void implies up.is_empty
-	value_consistent: is_max (value, children_set)
-	i9: parent = Void implies subjects = children_set
-	i9: parent /= Void implies subjects = children_set & parent
-	i10: parent = Void implies observers = children_set
-	i10: parent /= Void implies observers = children_set & parent
-	i11: owns = [children]
-	i12: across subjects as s all s.item.observers.has (Current) end -- default
-	i13: not children_set[Void]
-end
-			wrap
+
+--			if value < c.value then
+--				check assume: false end
+--				if parent /= Void then
+--					parent.unwrap
+--				end
+--				value := c.value  -- preserves children
+--				wrap
+--				if parent /= Void then
+--					parent.update (Current)
+--				end
+--			elseif (children_set / c).is_empty then
+--				if parent /= Void then
+--					parent.unwrap
+--				end
+--				value := c.value
+--				check is_max (value, children_set) end
+--				wrap
+--				if parent /= Void then
+--					parent.update (Current)
+--				end
+--			else
+--				check assume: false end
+--			end
 		ensure
 			is_wrapped
-		end
-
-
-	lemma1 (set: MML_SET [F_COM_COMPOSITE_D]; v: INTEGER; c: F_COM_COMPOSITE_D)
-		note
---			status: ghost
-		require
-			set[c]
-			is_max (v, set / c)
-			c.value > v
-
-			modify ([])
-		do
-		ensure
-			is_max (c.value, set)
+			across up as p all p.item.is_wrapped end
+--			across children_set as o all o.item.is_wrapped end
+--			has_to_fail: false
 		end
 
 invariant
+	value_consistent: is_max (value, children_set)
+
 	i1: children /= Void
 	i2: children_set = children.sequence
 	i3: not children_set[Current]
-	i3: not children_set[children]
+	i3: not children_set[children] and not up[children]
 	i4: parent /= Current
 	i5: parent /= Void implies not (children_set[parent])
 	i6: across children_set as ic all ic.item /= Void and then ic.item.parent = Current end
 	i7: parent /= Void implies (not up[Current] and up = parent.up & parent) -- implies acyclicity
 	i8: parent = Void implies up.is_empty
-	value_consistent: is_max (value, children_set)
 	i9: parent = Void implies subjects = children_set
 	i9: parent /= Void implies subjects = children_set & parent
 	i10: parent = Void implies observers = children_set
@@ -243,7 +228,7 @@ invariant
 	i11: owns = [children]
 	i12: across subjects as s all s.item.observers.has (Current) end -- default
 	i13: not children_set[Void]
-	i14: across children_set as ic all attached {F_COM_COMPOSITE_D} ic.item end
+	i14: across children_set as ic all ic.item.generating_type = {F_COM_COMPOSITE_D} end
 
 note
 	explicit: subjects, observers

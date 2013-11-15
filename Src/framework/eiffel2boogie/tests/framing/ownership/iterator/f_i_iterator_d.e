@@ -79,7 +79,6 @@ feature
 		ensure
 			not before
 			target = old target
---			target.observers = old target.observers
 			index = old index + 1
 			is_wrapped -- default: public
 			across observers as o all o.item.is_wrapped end -- default: public

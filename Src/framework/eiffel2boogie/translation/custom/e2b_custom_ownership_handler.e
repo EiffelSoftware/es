@@ -93,14 +93,14 @@ feature -- Basic operations
 					a_translator.set_last_expression (
 						factory.function_call (
 							name_translator.boogie_name_for_filtered_invariant_function (a_translator.current_target_type, Void, l_tag_filters),
-							<< a_translator.entity_mapping.heap, a_translator.entity_mapping.current_expression >>, types.bool))
+							<< a_translator.entity_mapping.heap, a_translator.current_target >>, types.bool))
 				elseif l_name ~ "inv_only" then
 					l_tag_filters := extract_tags (a_parameters)
 					translation_pool.add_filtered_invariant_function (a_translator.current_target_type, l_tag_filters, Void)
 					a_translator.set_last_expression (
 						factory.function_call (
 							name_translator.boogie_name_for_filtered_invariant_function (a_translator.current_target_type, l_tag_filters, Void),
-							<< a_translator.entity_mapping.heap, a_translator.entity_mapping.current_expression >>, types.bool))
+							<< a_translator.entity_mapping.heap, a_translator.current_target >>, types.bool))
 				else
 					a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
 				end
