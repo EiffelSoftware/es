@@ -4054,7 +4054,6 @@ Src/scripts/check_trunk_head_compilation_validity -text
 Src/scripts/tools/_inc/_f_code_tpl_ -text
 Src/tools/button_clicker/button_clicker.ico -text
 Src/tools/button_clicker/button_clicker.lic -text
-Src/tools/button_clicker/button_clicker.rc -text
 Src/tools/bytecode_tool/README.TXT -text
 Src/tools/bytecode_tool/bytecode_tool.lic -text
 Src/tools/com_wizard/launcher/com_wizard_launcher.lic -text
@@ -4064,7 +4063,6 @@ Src/tools/com_wizard/root/resources/help.png -text
 Src/tools/com_wizard/root/resources/output.png -text
 Src/tools/com_wizard/root/resources/settings.png -text
 Src/tools/com_wizard/root/resources/wizard.ico -text
-Src/tools/compile_all/README.txt -text
 Src/tools/compile_all/baseline/results_unix.txt -text
 Src/tools/compile_all/compile_all.lic -text
 Src/tools/compliance_checker/ace/ecchecker.lic -text
@@ -4083,7 +4081,6 @@ Src/tools/compliance_checker/resources/save.ico -text
 Src/tools/compliance_checker/resources/settings.ico -text
 Src/tools/copyright_tool/eiffel_copyright.ico -text
 Src/tools/copyright_tool/eiffel_copyright.lic -text
-Src/tools/copyright_tool/eiffel_copyright.rc -text
 Src/tools/copyright_tool/eiffel_icon.png -text
 Src/tools/doc_builder/Assemblies_10/AxShDocVw.dll -text
 Src/tools/doc_builder/Assemblies_10/SHDocVw.dll -text
@@ -4196,11 +4193,8 @@ Src/tools/doc_builder/resources/syntax_definitions/xml.syn_bin svneol=native#uns
 Src/tools/doc_builder/resources/templates/header_mainarea.jpg -text
 Src/tools/doc_builder/resources/xml/all_libs.lic -text
 Src/tools/dotnet_reference_builder/dotnet_reference_builder.lic -text
-Src/tools/ecf_builder/doc/howto.txt -text
 Src/tools/ecf_redirection/README.txt -text
 Src/tools/ecf_redirection/licence.lic -text
-Src/tools/ecf_updater/README.md -text
-Src/tools/ecf_updater/license.lic -text
 Src/tools/eiffel_echo/eiffel_echo.lic -text
 Src/tools/eiffel_image_embedder/eimgemb.lic -text
 Src/tools/eiffel_make/emake.lic -text
@@ -4231,18 +4225,13 @@ Src/tools/finish_freezing/finish_freezing-safe.lic -text
 Src/tools/finish_freezing/finish_freezing.lic -text
 Src/tools/hallow/hallow.lic -text
 Src/tools/iron/client/license.lic -text
-Src/tools/iron/delivery/README.txt -text
 Src/tools/iron/delivery/iron/spec/unix/bin/iron_build_archive -text
 Src/tools/iron/delivery/iron/spec/unix/bin/iron_extract_archive -text
 Src/tools/iron/delivery/iron/spec/windows/bin/bzip2.exe -text
 Src/tools/iron/delivery/iron/spec/windows/bin/msys-1.0.dll -text
 Src/tools/iron/delivery/iron/spec/windows/bin/tar.exe -text
 Src/tools/iron/doc/iron.html -text
-Src/tools/iron/server/iron-template/html/iron.js -text
-Src/tools/iron/server/iron-template/html/style.css -text
 Src/tools/iron/server/license.lic -text
-Src/tools/library_index/README.txt -text
-Src/tools/library_index/license.lic -text
 Src/tools/metaconfig/README.txt -text
 Src/tools/parse_benchmark/parse_benchmark.lic -text
 Src/tools/pmsn/pmsn.lic -text
@@ -4252,8 +4241,6 @@ Src/tools/quick_finalize/quick_finalize.lic -text
 Src/tools/reg2wix/reg2wix.lic -text
 Src/tools/repository_tool/ctr.exe.manifest -text
 Src/tools/repository_tool/ctr.ico -text
-Src/tools/repository_tool/ctr.rc -text
-Src/tools/repository_tool/data/catalog.ini -text
 Src/tools/repository_tool/server/drupal/modules/ise_ctr/ise_ctr.inc -text
 Src/tools/repository_tool/server/drupal/modules/ise_ctr/ise_ctr.info -text
 Src/tools/repository_tool/server/drupal/modules/ise_ctr/ise_ctr.module -text
@@ -4291,7 +4278,6 @@ Src/tools/resource_bench/rb.ico svneol=native#unset
 Src/tools/resource_bench/rb.lic -text
 Src/tools/resource_bench/toolbar.bmp svneol=native#unset
 Src/tools/syntax_updater/syntax_updater.lic -text
-Src/tools/unicode/character_32_property.template -text
 Src/tools/visitor_factory/visitor_factory.lic -text
 Src/unstable/README.txt -text
 Src/unstable/library/persistency/abel/backend_couchdb/backend_couchdb.ecf svneol=native#text/xml
