@@ -1574,7 +1574,6 @@ Src/Delivery/codedom_provider/files/ecdp.ico -text
 Src/Delivery/codedom_provider/files/ecdpman.ico -text
 Src/Delivery/codedom_provider/files/eiffel_for_asp_net_left.bmp -text
 Src/Delivery/codedom_provider/files/eiffel_for_asp_net_top.bmp -text
-Src/Delivery/codedom_provider/samples/default.htm -text
 Src/Delivery/codedom_provider/samples/images/bot_lef.gif -text
 Src/Delivery/codedom_provider/samples/images/bot_mid.gif -text
 Src/Delivery/codedom_provider/samples/images/bot_rig.gif -text
@@ -1701,7 +1700,6 @@ Src/Delivery/esbuilder/bitmaps/png/widgets.png -text
 Src/Delivery/esbuilder/pixmaps/eiffel_wizard.png -text
 Src/Delivery/esbuilder/pixmaps/eiffel_wizard_icon.png -text
 Src/Delivery/esbuilder/pixmaps/wizard.png -text
-Src/Delivery/notes/new_development_period_todo.txt -text
 Src/Delivery/scripts/unix/README.packaging -text
 Src/Delivery/scripts/unix/compile_eweasel -text
 Src/Delivery/scripts/unix/compile_other_libraries -text
@@ -1715,7 +1713,6 @@ Src/Delivery/scripts/unix/packaging/debian/rules -text
 Src/Delivery/scripts/unix/packaging/description -text
 Src/Delivery/scripts/unix/packaging/license -text
 Src/Delivery/scripts/unix/packaging/logo.png -text
-Src/Delivery/scripts/windows/install/Admin.txt -text
 Src/Delivery/scripts/windows/install/images/Thumbs.db -text
 Src/Delivery/scripts/windows/install/images/app.ico -text
 Src/Delivery/scripts/windows/install/images/eiffelenvision/backdrop.bmp -text
@@ -1760,9 +1757,6 @@ Src/Delivery/studio/bitmaps/png/splash_shadow.png -text
 Src/Delivery/studio/config/windows/msc/appl.ico -text
 Src/Delivery/studio/eifinit/libraries.cfg -text
 Src/Delivery/studio/eifinit/precompile.cfg -text
-Src/Delivery/studio/help/defaults/eiffel_unit_test_tcf_template.txt -text
-Src/Delivery/studio/help/errors/VRVA -text
-Src/Delivery/studio/help/errors/short/VFAV4 -text
 Src/Delivery/studio/lang/mo_files/de_DE.mo -text
 Src/Delivery/studio/lang/mo_files/en_US.mo -text
 Src/Delivery/studio/lang/mo_files/fr_FR.mo -text
@@ -1789,7 +1783,6 @@ Src/Delivery/studio/templates/design_by_contract/assigned.code -text
 Src/Delivery/studio/templates/design_by_contract/assigned_same_object.code -text
 Src/Delivery/studio/templates/design_by_contract/attached.code -text
 Src/Delivery/studio/templates/design_by_contract/changed.code -text
-Src/Delivery/studio/templates/design_by_contract/count_is_positive.code -text
 Src/Delivery/studio/templates/design_by_contract/cursor_unmoved.code -text
 Src/Delivery/studio/templates/design_by_contract/deatached.code -text
 Src/Delivery/studio/templates/design_by_contract/directory_exists.code -text
@@ -1813,11 +1806,6 @@ Src/Delivery/studio/templates/design_by_contract/not_is_positive.code -text
 Src/Delivery/studio/templates/design_by_contract/unchanged.code -text
 Src/Delivery/studio/templates/design_by_contract/value_big_enough.code -text
 Src/Delivery/studio/templates/design_by_contract/value_small_enough.code -text
-Src/Delivery/studio/templates/eiffel/check.code -text
-Src/Delivery/studio/templates/eiffel/ensure.code -text
-Src/Delivery/studio/templates/eiffel/invariant.code -text
-Src/Delivery/studio/templates/eiffel/loop.code -text
-Src/Delivery/studio/templates/eiffel/require.code -text
 Src/Delivery/studio/templates/licenses/README -text
 Src/Delivery/studio/templates/licenses/default.lic -text
 Src/Delivery/studio/templates/licenses/eiffelsoftware.lic -text
@@ -1863,7 +1851,6 @@ Src/Delivery/studio/tools/testing/auto_test/image/ftv2vertline.gif -text
 Src/Delivery/studio/tools/testing/auto_test/image/o_logo.png -text
 Src/Delivery/studio/tools/testing/auto_test/image/spacer.png -text
 Src/Delivery/studio/tools/testing/auto_test/misc/html/explain.js -text
-Src/Delivery/studio/tools/testing/auto_test/misc/html/ftiens4.js -text
 Src/Delivery/studio/tools/testing/auto_test/misc/html/index.html -text
 Src/Delivery/studio/tools/testing/auto_test/misc/html/menu.html -text
 Src/Delivery/studio/tools/testing/auto_test/misc/html/stylesheet.css -text
@@ -1876,7 +1863,6 @@ Src/Delivery/studio/tools/testing/auto_test/misc/html/test_case_set_fail.html -t
 Src/Delivery/studio/tools/testing/auto_test/misc/html/test_case_set_invalid.html -text
 Src/Delivery/studio/tools/testing/auto_test/misc/html/test_case_set_pass.html -text
 Src/Delivery/studio/tools/testing/auto_test/misc/html/test_case_set_untested.html -text
-Src/Delivery/studio/tools/testing/auto_test/misc/html/ua.js -text
 Src/Delivery/studio/tools/testing/icons.ini -text
 Src/Delivery/studio/tools/testing/icons.png -text
 Src/Delivery/studio/tools/twitter_feed/bird.png -text
