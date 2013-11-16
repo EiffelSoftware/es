@@ -1,27 +1,26 @@
 note
 	description: "Composite with no-orphans and acyclicity invariants, and optimized update."
-	explicit: "all"
 
-class F_COM_COMPOSITE_D
+class F_COM_COMPOSITE
 
 create
 	make
 
 feature
 
-	children: F_COM_LIST [F_COM_COMPOSITE_D]
-	parent: F_COM_COMPOSITE_D
+	children: F_COM_LIST [F_COM_COMPOSITE]
+	parent: F_COM_COMPOSITE
 	value: INTEGER
 	init_value: INTEGER
 
-	up, children_set: MML_SET [F_COM_COMPOSITE_D]
+	up, children_set: MML_SET [F_COM_COMPOSITE]
 			-- Set of transitive parents and non-transitive children
 		note
 			status: ghost
 		attribute
 		end
 
-	is_max (v: INTEGER; init_v: INTEGER; nodes: MML_SET [F_COM_COMPOSITE_D]): BOOLEAN
+	is_max (v: INTEGER; init_v: INTEGER; nodes: MML_SET [F_COM_COMPOSITE]): BOOLEAN
 		note
 			status: ghost
 		require
@@ -37,36 +36,24 @@ feature
 	make (v: INTEGER)
 		note
 			status: creator
-		require
-			is_open -- default: creator
-
-			modify (Current) -- default: creator
 		do
-			up := {MML_SET [F_COM_COMPOSITE_D]}.empty_set
-			children_set := {MML_SET [F_COM_COMPOSITE_D]}.empty_set
+			up := {MML_SET [F_COM_COMPOSITE]}.empty_set
+			children_set := {MML_SET [F_COM_COMPOSITE]}.empty_set
 			create children.make
 			set_owns ([children])
 			value := v
 			init_value := v
-			wrap -- default: creator
 		ensure
-			is_wrapped -- default: creator
-			across observers as o all o.item.is_wrapped end -- default: creator
 			value = v
 			init_value = v
 			parent = Void
 			children.is_empty
 		end
 
-	add_child (c: F_COM_COMPOSITE_D)
+	add_child (c: F_COM_COMPOSITE)
 		note
 			explicit: wrapping
 		require
-			is_wrapped -- default: public
-			across observers as o all o.item.is_wrapped end -- default: public
-			c.is_wrapped -- default: public
-			across c.observers as o all o.item.is_wrapped end -- default: public
-
 			c /= Void
 			c /= Current
 			c.parent = Void
@@ -97,20 +84,12 @@ feature
 			children_set = old children_set & c
 			up = old up
 			across up as p all p.item.is_wrapped end
-
-			is_wrapped -- default: public
-			across observers as o all o.item.is_wrapped end -- default: public
-			c.is_wrapped -- default: public
-			across c.observers as o all o.item.is_wrapped end -- default: public
 		end
 
-feature {F_COM_COMPOSITE_D}
+feature {F_COM_COMPOSITE}
 
-	set_parent (p: F_COM_COMPOSITE_D)
+	set_parent (p: F_COM_COMPOSITE)
 		require
-			is_open -- default: not public
-			across observers as o all o.item.is_open end -- default: not public
-
 			parent = Void
 			children_set.is_empty
 			p /= Void
@@ -123,12 +102,9 @@ feature {F_COM_COMPOSITE_D}
 		ensure
 			parent = p
 			up = p.up & p
-
-			is_open -- default: not public
-			across observers as o all o.item.is_open end -- default: not public
 		end
 
-	update (c: F_COM_COMPOSITE_D)
+	update (c: F_COM_COMPOSITE)
 			-- Update values of Current and transitive parents taking into account new child `c'.
 		note
 			explicit: contracts
@@ -177,8 +153,7 @@ invariant
 	i10: parent = Void implies observers = children_set
 	i10: parent /= Void implies observers = children_set & parent
 	i11: owns = [children]
-	i12: across subjects as s all s.item.observers.has (Current) end -- default
-	i14: across children_set as ic all ic.item.generating_type = {F_COM_COMPOSITE_D} end
+	i14: across children_set as ic all ic.item.generating_type = {F_COM_COMPOSITE} end
 
 note
 	explicit: subjects, observers

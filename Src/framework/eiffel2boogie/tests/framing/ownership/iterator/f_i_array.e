@@ -51,4 +51,10 @@ feature
 			not is_open
 		end
 
+invariant
+	owns = [] -- default
+	observers = [] -- default
+	subjects = [] -- default
+	across subjects as sc all sc.item.observers.has (Current) end -- default
+
 end
