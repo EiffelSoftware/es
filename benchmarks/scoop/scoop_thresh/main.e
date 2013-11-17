@@ -23,18 +23,16 @@ feature
       file_name := separate_character_option_value ('i')
       is_bench := index_of_word_option ("bench") > 0
 
-      create in.make_open_read (file_name)      
+      create in.make_open_read (file_name)
       in.read_integer
       nrows := in.last_integer
 
       in.read_integer
       ncols := in.last_integer
 
-      create matrix.make_filled (0, nrows, ncols)
+      create matrix.make_with_content (nrows, ncols, is_bench)
       create histogram.make_filled(0, 0, 100)
       create accum.make_filled (0, 1, 1)
-
-      read_matrix (nrows, ncols, matrix, in)
 
       in.read_integer
       percent := in.last_integer
@@ -106,7 +104,7 @@ feature
       -- join workers
       workers_reduce_join (workers)
     end
-  
+
   calculate_threshold (nrows, ncols, percent: INTEGER;
                        a_accum: separate ARRAY [INTEGER];
                        a_histogram: separate ARRAY [INTEGER]): INTEGER
@@ -207,7 +205,7 @@ feature
       end
     end
 
-  
+
   fetch_matrix (nrows, ncols: INTEGER;
                 a_array: separate ARRAY2[INTEGER]): ARRAY2 [INTEGER]
     local
@@ -228,39 +226,10 @@ feature
       end
     end
 
-  read_matrix(nrows, ncols: INTEGER;
-              a_matrix: separate ARRAY2[INTEGER];
-              in: PLAIN_TEXT_FILE)
-    require
-      a_matrix.generator /= Void
-    local
-      i, j: INTEGER
-      v: INTEGER
-    do
-      from i := 1
-      until i > nrows
-      loop
-        from j := 1
-        until j > ncols
-        loop
-          if is_bench then
-            v := (i * j) \\ 100
-          else
-            in.read_integer
-            v := in.last_integer            
-          end
-          a_matrix.put (v, i, j)
-          j := j + 1
-        end
-        i := i + 1
-      end
-    end
-
-
 feature {NONE}
   is_bench: BOOLEAN
-  
-  matrix: separate ARRAY2[INTEGER]
+
+  matrix: separate MATRIX_ARRAY
   shared: separate ARRAY2[INTEGER]
   accum: separate ARRAY [INTEGER]
   histogram: separate ARRAY[INTEGER]
@@ -329,5 +298,5 @@ feature {NONE}
         workers.forth
       end
     end
-  
+
   end -- class MAIN

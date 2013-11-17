@@ -26,13 +26,16 @@ feature
 
 
   fetch_array (a_sep_array: separate ARRAY2[INTEGER]): ARRAY2 [INTEGER]
-    require
-      a_sep_array.generator /= Void
+  	require
+  	  a_sep_array.generator /= Void
     local
       i, j: INTEGER
       e: INTEGER
+      stopwatch: DT_STOPWATCH
     do
       create Result.make_filled (0, final - start + 1, ncols)
+			create stopwatch.make
+			stopwatch.start
 
       from i := start
       until i > final
@@ -46,20 +49,27 @@ feature
         end
         i := i + 1
       end
+
+      stopwatch.stop
+
+      print ("fetching array: " + stopwatch.elapsed_time.precise_time_out + "%N")
     end
-  
-  
+
+
   to_local_row (i: INTEGER): INTEGER
     do
       Result := i - start + 1
     end
-  
+
   get_result(a_matrix, a_mask: ARRAY2[INTEGER])
     local
       i, j: INTEGER
       count: INTEGER
       val: VALUE3
+      stopwatch: DT_STOPWATCH
     do
+      create stopwatch.make
+      stopwatch.start
       create vector.make (10)
 
       from
@@ -80,6 +90,8 @@ feature
         end
         i := i + 1
       end
+      stopwatch.stop
+      print (stopwatch.elapsed_time.precise_time_out + "%N")
     end
 
   values_count: INTEGER
@@ -101,15 +113,15 @@ feature
     do
       Result := vector [i].y
     end
-  
-  
+
+
 feature {NONE}
   vector: ARRAYED_LIST [VALUE3]
 
   start, final: INTEGER
   nelts: INTEGER
   ncols: INTEGER
-  matrix_array, mask_array: separate ARRAY2[INTEGER]
+  matrix_array, mask_array: separate ARRAY2[INTEGER];
   v_vector, x_vector, y_vector: separate ARRAY [INTEGER]
 
 end

@@ -19,26 +19,24 @@ feature
       nrows, ncols, nelts: INTEGER
       points: ARRAY[VALUE3]
       k: INTEGER
+      filename: STRING
     do
       create in.make_open_read(separate_character_option_value('i'))
 
       is_bench := index_of_word_option ("bench") > 0
-      
+
       nrows := read_integer
       ncols := read_integer
-      
+
       create v_vector.make_empty
       create x_vector.make_empty
       create y_vector.make_empty
-      
-      create matrix.make (nrows, ncols)
-      read_matrix(nrows, ncols, matrix)
-      
-      create mask.make (nrows, ncols)
-      read_mask(nrows, ncols, mask)
-      
+
+      create matrix.make_with_content (nrows, ncols, is_bench)
+      create mask.make_with_content (nrows, ncols, is_bench)
+
       nelts := read_integer
-      
+
       points := winnow(nrows, ncols, nelts)
 
       if not is_bench then
@@ -52,64 +50,64 @@ feature
         print("%N")
       end
     end
-  
+
   read_integer: INTEGER
     do
       in.read_integer
       Result := in.last_integer
     end
 
-  read_matrix(nrows, ncols: INTEGER; a_matrix: separate ARRAY2[INTEGER])
-    local
-      i, j: INTEGER
-      v: INTEGER
-    do
-      from i := 1
-      until i > nrows
-      loop
-        from j := 1
-        until j > ncols
-        loop
-          if is_bench then
-            v := 0
-          else
-            v := read_integer
-          end
-          a_matrix [i, j] := v
-          j := j + 1
-        end
-        i := i + 1
-      end
-    end
+--  read_matrix(nrows, ncols: INTEGER; a_matrix: separate ARRAY2[INTEGER])
+--    local
+--      i, j: INTEGER
+--      v: INTEGER
+--    do
+--      from i := 1
+--      until i > nrows
+--      loop
+--        from j := 1
+--        until j > ncols
+--        loop
+--          if is_bench then
+--            v := 0
+--          else
+--            v := read_integer
+--          end
+--          a_matrix [i, j] := v
+--          j := j + 1
+--        end
+--        i := i + 1
+--      end
+--    end
 
-  read_mask(nrows, ncols: INTEGER; a_matrix: separate ARRAY2[INTEGER])
-    local
-      i, j: INTEGER
-      v: INTEGER
-    do
-      from i := 1
-      until i > nrows
-      loop
-        from j := 1
-        until j > ncols
-        loop
-          if is_bench then
-            if ((i * j) \\ (ncols + 1)) = 1 then
-              v := 1
-            else
-              v := 0
-            end
-          else
-            v := read_integer
-          end
-          
-          a_matrix [i, j] := v
-          j := j + 1
-        end
-        i := i + 1
-      end
-    end
-  
+--  read_mask(nrows, ncols: INTEGER; a_matrix: separate ARRAY2[INTEGER])
+--    local
+--      i, j: INTEGER
+--      v: INTEGER
+--    do
+--      from i := 1
+--      until i > nrows
+--      loop
+--        from j := 1
+--        until j > ncols
+--        loop
+--          if is_bench then
+--            if ((i * j) \\ (ncols + 1)) = 1 then
+--              v := 1
+--            else
+--              v := 0
+--            end
+--          else
+--            v := read_integer
+--          end
+
+--          a_matrix [i, j] := v
+--          j := j + 1
+--        end
+--        i := i + 1
+--      end
+--    end
+
   winnow(nrows, ncols: INTEGER; nelts: INTEGER): ARRAY[VALUE3]
     local
       points: ARRAY[VALUE3]
@@ -117,16 +115,23 @@ feature
       sorter: QUICK_SORTER[VALUE3]
       i: INTEGER
       n, chunk, index: INTEGER
+      stopwatch: DT_STOPWATCH
     do
       -- parallel for on matrix
       values := parfor (nelts, nrows, ncols);
-      
+
+			create stopwatch.make
+
+			stopwatch.start
       create sorter.make(create {VALUE3_COMPARATOR})
       sorter.sort(values)
-      
+      stopwatch.stop
+
+      print ("sorting: " + stopwatch.elapsed_time.precise_time_out + "%N")
+
       n := values.count
       chunk := n // nelts
-      
+
       create points.make_filled(create {VALUE3}.make (0, 0, 0), 1, nelts);
       -- this should also be a parallel for
       from i := 1
@@ -136,7 +141,7 @@ feature
         points [i] := values [index]
         i := i + 1
       end
-      
+
       Result := points
     end
 
@@ -172,10 +177,10 @@ feature
       end
     end
 
-  
-  num_workers: INTEGER = 32
+
+  num_workers: INTEGER = 4
   workers: LINKED_LIST [separate PARFOR_WORKER]
-  
+
   parfor (nelts, nrows, ncols: INTEGER): ARRAYED_LIST [VALUE3]
     local
       worker: separate PARFOR_WORKER
@@ -237,7 +242,7 @@ feature {NONE}
         a_workers.forth
       end
     end
-  
+
   worker_live (worker: separate PARFOR_WORKER)
     do
       worker.live
@@ -249,18 +254,19 @@ feature {NONE}
     do
     end
 
-  
+
   launch_parfor_worker(worker: separate PARFOR_WORKER)
     do
       worker.live
     end
 
-  
+
 feature {NONE}
   in: PLAIN_TEXT_FILE
   is_bench: BOOLEAN
-  
-  matrix, mask: separate ARRAY2[INTEGER]
+
+  matrix: separate MATRIX_ARRAY
+  mask: separate MASK_ARRAY
   v_vector, x_vector, y_vector: separate ARRAY [INTEGER]
-  
-end -- class MAIN 
+
+end -- class MAIN

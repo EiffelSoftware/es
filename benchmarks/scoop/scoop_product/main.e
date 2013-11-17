@@ -86,7 +86,7 @@ feature
       Result := in.last_double
     end
 
-  num_workers: INTEGER = 32
+  num_workers: INTEGER = 4
   
   product (nelts: INTEGER): ARRAY[REAL_64]
     local
@@ -109,8 +109,7 @@ feature
                       , start + height
                       , nelts
                       , matrix
-                      , vector
-                      , result_vector)
+                      , vector)
 
           workers.extend(worker)
         end
@@ -119,9 +118,11 @@ feature
         i := i + 1
       end
       -- parallel for on rows
+      print ("Living workers%N")
       workers_live (workers)
 
       -- join workers
+      print ("Joining workers%N")
       workers_join (workers)
 
       Result := to_local (nelts, result_vector)
@@ -168,6 +169,7 @@ feature {NONE}
       from workers.start
       until workers.after
       loop
+        print ("Joining%N")
         worker_join (workers.item)
         workers.forth
       end
@@ -179,9 +181,17 @@ feature {NONE}
     end
 
   worker_join(worker: separate PARFOR_WORKER)
-    require
-      worker.generator /= Void
+    local
+      i: INTEGER
     do
+      from
+        i := worker.start
+      until
+        i >= worker.final
+      loop
+        result_vector [i] := worker.get_res(i)
+        i := i + 1
+      end
     end
 
 
@@ -190,7 +200,7 @@ feature {NONE}
   is_bench: BOOLEAN
   matrix: separate ARRAY2[REAL_64]
   vector: separate ARRAY[REAL_64]
-  result_vector: separate ARRAY[REAL_64]
+  result_vector: ARRAY[REAL_64]
 
   
 end -- class MAIN 

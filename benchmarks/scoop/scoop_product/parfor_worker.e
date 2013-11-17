@@ -3,15 +3,14 @@ create make
 feature
   make (start_, final_, nelts_: INTEGER;
         matrix_: separate ARRAY2[DOUBLE];
-        vector_: separate ARRAY[DOUBLE];
-        result_vector_: separate ARRAY[DOUBLE])
+        vector_: separate ARRAY[DOUBLE])
     do
       start := start_
       final := final_
       nelts := nelts_
       matrix := matrix_
       vector := vector_
-      result_vector := result_vector_
+      create res.make_filled (0, 1, final - start)
     end
 
 feature
@@ -20,16 +19,20 @@ feature
       get_result(fetch_array(matrix), fetch_vector (vector))
     end
 
-  
+  get_res (i: INTEGER): REAL_64
+    do
+      Result := res[to_local(i - start)]
+    end
+
   fetch_array (a_sep_array: separate ARRAY2[DOUBLE]): ARRAY2 [DOUBLE]
-    require
-      a_sep_array.generator /= Void
+--     require
+--       a_sep_array.generator /= Void
     local
       i, j: INTEGER
       e: DOUBLE
     do
+      print ("Fetching array start%N")
       create Result.make_filled (0, final - start + 1, nelts)
-
       from i := start
       until i > final
       loop
@@ -42,11 +45,12 @@ feature
         end
         i := i + 1
       end
+      print ("Fetching array end%N")
     end
-  
+
   fetch_vector (a_sep_vector: separate ARRAY [DOUBLE]): ARRAY [DOUBLE]
-    require
-      a_sep_vector.generator /= Void
+--    require
+--      a_sep_vector.generator /= Void
     local
       i: INTEGER
       e: DOUBLE
@@ -61,22 +65,22 @@ feature
         i := i + 1
       end
     end
-  
-  
+
+
   to_local (i: INTEGER): INTEGER
     do
       Result := i - start + 1
     end
-  
+
   get_result(a_matrix: ARRAY2[DOUBLE];
              a_vector: ARRAY[DOUBLE])
     local
       i, j: INTEGER
       sum: DOUBLE
-      res: ARRAY [DOUBLE]
     do
+      print ("Calculation start%N")
       create res.make_filled (0, 1, final - start + 1)
-      
+
       from i := start
       until i > final
       loop
@@ -90,26 +94,12 @@ feature
         res [to_local (i)] := sum
         i := i + 1
       end
-
-      send_result (res, result_vector)
+      print ("Calculation end%N")
     end
 
-  send_result (a_vector: ARRAY [DOUBLE];
-               a_result_vector: separate ARRAY[DOUBLE])
-    local
-      i: INTEGER
-    do
-      from i := start
-      until i > final
-      loop
-        a_result_vector [i] := a_vector [to_local (i)]
-        i := i + 1
-      end
-    end
-
-feature {NONE}
+feature
   nelts, start, final: INTEGER
   matrix: separate ARRAY2[DOUBLE]
-  vector, result_vector: separate ARRAY[DOUBLE]
-
+  vector: separate ARRAY[DOUBLE]
+  res: ARRAY[DOUBLE]
 end
