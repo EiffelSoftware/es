@@ -1340,6 +1340,9 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define scoop_task_set_active 13
 #define scoop_task_set_passive 14
 #define scoop_task_is_passive 15
+#define scoop_task_is_synced_on 16
+#define scoop_task_set_synced_on 17
+#define scoop_task_set_not_synced_on 18
 
 
 #ifdef WORKBENCH
@@ -1826,4 +1829,12 @@ RT_LNK void eif_exit_eiffel_code(void);
 #endif
 
 
+
+EIF_BOOLEAN eif_is_synced_on (EIF_SCP_PID c, EIF_SCP_PID );
+#define EIF_IS_SYNCED_ON(c,s) \
+	(eif_is_synced_on (RTS_PID (c), RTS_PID(s)) == EIF_TRUE)
+#define EIF_SET_SYNCED_ON(c,s) \
+	RTS_TCB(scoop_task_set_synced_on, RTS_PID(c), RTS_PID(s), 0)
+#define EIF_SET_NOT_SYNCED_ON(c,s) \
+	RTS_TCB(scoop_task_set_not_synced_on, RTS_PID(c), RTS_PID(s), 0)
 

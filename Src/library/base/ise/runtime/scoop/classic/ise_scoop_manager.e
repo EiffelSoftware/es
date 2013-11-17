@@ -70,6 +70,12 @@ feature {NONE} -- C callback function
 				set_processor_passive (supplier_processor_id)
 			when is_passive_task_id then
 				set_boolean_return_value (a_callback_data, is_processor_passive (supplier_processor_id))
+			when is_synced_on_id then
+				set_boolean_return_value (a_callback_data, is_synced_on (client_processor_id, supplier_processor_id))
+			when set_synced_on_id then
+				set_synced_on (client_processor_id, supplier_processor_id, True)
+			when set_not_synced_on_id then
+				set_synced_on (client_processor_id, supplier_processor_id, False)
 			else
 				check invalid_task: False end
 			end
@@ -195,6 +201,9 @@ feature {NONE} -- C callback function
 	frozen set_active_task_id: NATURAL_8 = 13
 	frozen set_passive_task_id: NATURAL_8 = 14
 	frozen is_passive_task_id: NATURAL_8 = 15
+	frozen is_synced_on_id: NATURAL_8 = 16
+	frozen set_synced_on_id: NATURAL_8 = 17
+	frozen set_not_synced_on_id: NATURAL_8 = 18
 		-- SCOOP Task Constants, similies of those defined in <eif_macros.h>
 		--| FIXME: Use external macros when valid in an inspect statement.
 
@@ -660,6 +669,7 @@ feature -- Request Chain Handling
 				i = l_container_count
 			loop
 				l_pid := l_request_chain_meta_data [i]
+				set_synced_on (a_client_processor_id, l_pid, False)
 				l_request_chain_node_id := l_request_chain_meta_data [i + l_pid_count + l_previous_pid_count]
 
 					-- Set meta data for the request node of `l_pid'
@@ -766,6 +776,23 @@ feature -- Command/Query Handling
 				end
 				relinquish_processor_resource (a_processor_id)
 			end
+		end
+
+	set_synced_on (a_client_id, a_supplier_id: INTEGER_32; a_was_sync: BOOLEAN)
+		local
+			l_sync_val: INTEGER_32
+		do
+			if a_was_sync then
+				l_sync_val := 1
+			else
+				l_sync_val := 0
+			end
+			sync_matrix [a_client_id * 1024 + a_supplier_id] := l_sync_val
+		end
+
+	is_synced_on (a_client_id, a_supplier_id: like processor_id_type): BOOLEAN
+		do
+			Result := sync_matrix [a_client_id * 1024  + a_supplier_id] = 1
 		end
 
 	log_call_on_processor (a_client_processor_id, a_supplier_processor_id: like processor_id_type; a_call_data: like call_data)
@@ -955,6 +982,8 @@ feature -- Command/Query Handling
 					raise_scoop_exception (scoop_dirty_processor_exception_message)
 				end
 			end
+
+			set_synced_on (a_client_processor_id, a_supplier_processor_id, l_is_synchronous)
 		end
 
 	scoop_lock_passing_application_loop (
@@ -1264,6 +1293,9 @@ feature {NONE} -- Resource Initialization
 
 				-- Create processor synchronization primitive storage for mutex and condition variable.
 			create processor_synchronization_list.make_filled ([default_pointer, default_pointer, default_pointer], max_scoop_processors_instantiable)
+
+				-- Create processor-processor synchronization matrix
+			create sync_matrix.make_filled (0, 1024*1024)
 
 				-- Set up root processor and initial chain meta data.
 			root_processor_id := assign_free_processor_id
@@ -1765,6 +1797,12 @@ feature {NONE} -- Passiveness
 			Result := (processor_meta_data[a_processor_id]) [processor_passiveness_index] = processor_passive		
 		end
 		
+
+
+
+feature {NONE} -- Processor-processor sync status
+	sync_matrix: SPECIAL [INTEGER_32]
+
 feature {NONE} -- Processor ID
 
 	processor_id_type: INTEGER_32

@@ -69,6 +69,19 @@ rt_public EIF_BOOLEAN eif_is_passive (EIF_SCP_PID s)
 	return EIF_TEST (ou.item.b);
 }
 
+
+rt_public EIF_BOOLEAN eif_is_synced_on (EIF_SCP_PID c, EIF_SCP_PID s)
+{
+	EIF_BOOLEAN res;
+	EIF_TYPED_VALUE ou;
+	ou.item.b = EIF_FALSE;
+	ou.type = SK_BOOL;
+	RTS_TCB(scoop_task_is_synced_on,c,s,&ou);
+	res = EIF_TEST (ou.item.b);
+	return res;
+}
+
+
 #ifdef WORKBENCH
 
 rt_public void eif_log_call (int s, int f, EIF_SCP_PID p, call_data * a)
