@@ -528,7 +528,7 @@ feature -- Basic operations
 			l_expr := factory.true_
 			across l_.field_restriction as j loop
 				l_objects_expr := factory.false_
-				l_fields_expr := factory.true_
+				l_fields_expr := factory.true_ --not_equal (l_f, create {IV_ENTITY}.make ("owner", types.field (types.ref)))
 				across j.item.objects as ro loop
 					if ro.item.type.is_map then
 						l_objects_expr := factory.or_ (l_objects_expr, factory.map_access (ro.item, l_o))

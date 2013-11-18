@@ -77,9 +77,7 @@ feature
 			modify ([Current, c])
 			modify_field (["value", "closed"], up)
 		do
-			check assume: false end
 			unwrap
-
 			c.unwrap
 			c.set_parent (Current)
 			c.set_subjects (c.subjects & Current)
@@ -89,7 +87,6 @@ feature
 			children_set := children_set & c
 			children.extend_back (c)
 			c.wrap
-
 			update (c)
 		ensure
 			children.has (c)
@@ -97,7 +94,6 @@ feature
 			children_set = old children_set & c
 			up = old up
 			across up as p all p.item.is_wrapped end
-
 			is_wrapped -- default: public
 			across observers as o all o.item.is_wrapped end -- default: public
 			c.is_wrapped -- default: public
@@ -143,6 +139,7 @@ feature {F_COM_COMPOSITE_D}
 			is_max (value, init_value, children_set / c) or (c.value > value and across children_set as ic all ic.item.value <= c.value end)
 
 			modify_field (["value", "closed"], [Current, up])
+			modify (owns)
 			decreases (up)
 		do
 			if value < c.value then
