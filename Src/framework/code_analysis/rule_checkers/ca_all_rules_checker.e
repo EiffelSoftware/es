@@ -409,5 +409,4 @@ feature {NONE} -- Implementation
 				Result := l_service_consumer.service
 			end
 		end
-
 end

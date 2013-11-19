@@ -8,6 +8,9 @@ class
 	CA_UNUSED_ARGUMENT_RULE
 inherit
 	CA_STANDARD_RULE
+		redefine
+			id
+		end
 
 create
 	make
@@ -37,6 +40,9 @@ feature -- Properties
 		do
 			Result := ca_names.unused_argument_title
 		end
+
+	id: STRING = "CA002T"
+			-- "T" stands for 'under test'.
 
 	description: STRING
 		do
@@ -138,7 +144,7 @@ feature {NONE} -- Rule Checking
 
 	process_access_id (a_aid: ACCESS_ID_AS)
 		local
-			id, j: INTEGER
+			j: INTEGER
 		do
 			from
 				j := 1

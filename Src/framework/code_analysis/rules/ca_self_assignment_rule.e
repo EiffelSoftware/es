@@ -10,7 +10,7 @@ class
 inherit
 	CA_STANDARD_RULE
 		redefine
-			title
+			id
 		end
 
 create
@@ -38,6 +38,9 @@ feature -- Properties
 		do
 			Result := ca_names.self_assignment_title
 		end
+
+	id: STRING = "CA001T"
+			-- "T" stands for 'under test'.
 
 	description: STRING
 		do

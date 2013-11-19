@@ -9,6 +9,9 @@ class
 
 inherit
 	CA_STANDARD_RULE
+		redefine
+			id
+		end
 
 create
 	make
@@ -104,6 +107,9 @@ feature -- Properties
 			Result := ca_names.cq_separation_title
 		end
 
+	id: STRING = "CA004T"
+			-- "T" stands for 'under test'.
+			
 	description: STRING
 		do
 			Result :=  "---"

@@ -10,7 +10,7 @@ class
 inherit
 	CA_STANDARD_RULE
 		redefine
-			checks_library_classes
+			checks_library_classes, id
 		end
 
 create
@@ -84,6 +84,9 @@ feature -- Properties
 		do
 			Result := ca_names.feature_never_called_title
 		end
+
+	id: STRING = "CA003T"
+			-- "T" stands for 'under test'.
 
 	description: STRING
 		do

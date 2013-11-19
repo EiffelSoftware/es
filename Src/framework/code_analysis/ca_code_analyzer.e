@@ -36,6 +36,10 @@ feature {NONE} -- Initialization
 			create classes_to_analyze.make
 			create rule_violations.make (100)
 			create completed_actions
+
+			create ignoredby.make (25)
+			create library_class.make (25)
+			create nonlibrary_class.make (25)
 		end
 
 feature -- Analysis interface
@@ -63,6 +67,7 @@ feature -- Analysis interface
 					if system_wide_check or else (not l_rules.item.is_system_wide) then
 							-- do not add system wide rules if we check only parts of the system
 						if attached {CA_STANDARD_RULE} l_rules.item as l_std_rule then
+
 							l_std_rule.prepare_checking (l_rules_checker)
 								-- TODO: prepare rules of other types?
 						end
@@ -70,7 +75,6 @@ feature -- Analysis interface
 				end
 			end
 
-				-- TODO: call rule checker
 			create l_task.make (l_rules_checker, rules, classes_to_analyze, agent analysis_completed)
 			rota.run_task (l_task)
 		end
@@ -169,6 +173,8 @@ feature -- Analysis interface
 				l_class_c := a_class.compiled_class
 				check l_class_c /= Void end
 				classes_to_analyze.extend (l_class_c)
+
+				extract_indexes (l_class_c)
 			else
 				print ("Class " + a_class.name + " not compiled (skipped).%N")
 			end
@@ -194,7 +200,10 @@ feature {NONE} -- Implementation
 
 			across rules as l_rules loop
 				across l_rules.item.violations as l_v loop
-					rule_violations.at (l_v.item.affected_class).extend (l_v.item)
+						-- check the ignore list
+					if is_violation_valid (l_v.item) then
+						rule_violations.at (l_v.item.affected_class).extend (l_v.item)
+					end
 				end
 			end
 
@@ -203,6 +212,30 @@ feature {NONE} -- Implementation
 			is_running := False
 			completed_actions.call ([True])
 			completed_actions.wipe_out
+		end
+
+	is_violation_valid (a_viol: CA_RULE_VIOLATION): BOOLEAN
+		local
+			l_affected_class: CLASS_C
+			l_rule: CA_RULE
+		do
+			l_affected_class := a_viol.affected_class
+			l_rule := a_viol.rule
+
+			Result := True
+
+			if (ignoredby.has (l_affected_class))
+							and then (ignoredby.at (l_affected_class)).has (l_rule.id) then
+				Result := False
+			end
+
+			if (not l_rule.checks_library_classes) and then library_class.at (l_affected_class) = True then
+				Result := False
+			end
+
+			if (not l_rule.checks_nonlibrary_classes) and then nonlibrary_class.at (l_affected_class) = True then
+				Result := False
+			end
 		end
 
 	settings: CA_SETTINGS
@@ -223,5 +256,52 @@ feature {NONE} -- Implementation
 				Result := l_service_consumer.service
 			end
 		end
+
+
+feature {NONE} -- Class-wide Options (From Indexing Clauses)
+
+	extract_indexes (a_class: CLASS_C)
+		local
+			l_ast: CLASS_AS
+			l_item: STRING
+			l_ignoredby: LINKED_LIST [STRING]
+		do
+			create l_ignoredby.make
+			l_ignoredby.compare_objects
+			library_class.force (False, a_class)
+			nonlibrary_class.force (False, a_class)
+			l_ast := a_class.ast
+
+			across l_ast.internal_top_indexes as l_indexes loop
+
+				if l_indexes.item.tag.name_8.is_equal ("ca_ignoredby") then
+					across l_indexes.item.index_list as l_list loop
+						l_item := l_list.item.string_value_32
+						l_item.prune_all ('%"')
+						l_ignoredby.extend (l_item)
+					end
+				elseif l_indexes.item.tag.name_8.is_equal ("ca_library") then
+					if not l_indexes.item.index_list.is_empty then
+						l_item := l_indexes.item.index_list.first.string_value_32
+						l_item.to_lower
+						l_item.prune_all ('%"')
+						if l_item.is_equal ("true") then
+							library_class.force (True, a_class)
+						elseif l_item.is_equal ("false") then
+							nonlibrary_class.force (True, a_class)
+						end
+					end
+				end
+			end
+
+			ignoredby.force (l_ignoredby, a_class)
+		end
+
+	ignoredby: HASH_TABLE [LINKED_LIST [STRING], CLASS_C]
+
+	library_class, nonlibrary_class: HASH_TABLE [BOOLEAN, CLASS_C]
+
+invariant
+--	law_of_non_contradiction: one class must not be both a library_class and a nonlibrary_class
 
 end

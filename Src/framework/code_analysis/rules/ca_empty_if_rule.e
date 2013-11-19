@@ -6,8 +6,11 @@ note
 
 class
 	CA_EMPTY_IF_RULE
+
 inherit
 	CA_STANDARD_RULE
+		redefine id end
+
 create
 	make
 
@@ -33,6 +36,9 @@ feature -- Properties
 		do
 			Result := ca_names.empty_if_title
 		end
+
+	id: STRING = "CA017T"
+			-- "T" stands for 'under test'.
 
 	description: STRING
 		do

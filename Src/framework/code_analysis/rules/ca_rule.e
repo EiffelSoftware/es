@@ -16,6 +16,12 @@ feature -- Basic properties, usually fix
 		deferred
 		end
 
+	id: detachable STRING
+			-- A preferrably unique identifier for the rule. It should start with "CA".
+		once
+			Result := Void
+		end
+
 	description: STRING
 		deferred
 		end

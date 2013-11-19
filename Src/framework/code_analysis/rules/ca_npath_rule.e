@@ -9,6 +9,7 @@ class
 
 inherit
 	CA_STANDARD_RULE
+		redefine id end
 
 create
 	make
@@ -47,6 +48,9 @@ feature -- Properties
 		do
 			Result := ca_names.npath_title
 		end
+
+	id: STRING = "CA034T"
+			-- "T" stands for 'under test'.
 
 	description: STRING
 		do
