@@ -25,6 +25,8 @@ feature {NONE} -- Initialization
 			make_dfs_visitor
 			backward := False
 			first_visit_node_actions.extend (agent visit_node)
+			create {EGX_GRAPH_UNORDERED_VISITOR_NODE_STATUS [EPA_BASIC_BLOCK, EPA_CFG_EDGE]} visited_node_status
+			visited_node_status.set_visitor (Current)
 		end
 
 	make_backward
@@ -32,6 +34,8 @@ feature {NONE} -- Initialization
 			make_dfs_visitor
 			backward := True
 			first_visit_node_actions.extend (agent visit_node)
+			create {EGX_GRAPH_UNORDERED_VISITOR_NODE_STATUS [EPA_BASIC_BLOCK, EPA_CFG_EDGE]} visited_node_status
+			visited_node_status.set_visitor (Current)
 		end
 
 feature -- Rule Checking

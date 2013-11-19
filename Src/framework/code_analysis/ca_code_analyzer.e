@@ -265,8 +265,8 @@ feature {NONE} -- Class-wide Options (From Indexing Clauses)
 	extract_indexes (a_class: CLASS_C)
 		local
 			l_ast: CLASS_AS
-			l_item: STRING
-			l_ignoredby: LINKED_LIST [STRING]
+			l_item: STRING_32
+			l_ignoredby: LINKED_LIST [STRING_32]
 		do
 			create l_ignoredby.make
 			l_ignoredby.compare_objects
@@ -276,13 +276,13 @@ feature {NONE} -- Class-wide Options (From Indexing Clauses)
 
 			across l_ast.internal_top_indexes as l_indexes loop
 
-				if l_indexes.item.tag.name_8.is_equal ("ca_ignoredby") then
+				if l_indexes.item.tag.name_32.is_equal ("ca_ignoredby") then
 					across l_indexes.item.index_list as l_list loop
 						l_item := l_list.item.string_value_32
 						l_item.prune_all ('%"')
 						l_ignoredby.extend (l_item)
 					end
-				elseif l_indexes.item.tag.name_8.is_equal ("ca_library") then
+				elseif l_indexes.item.tag.name_32.is_equal ("ca_library") then
 					if not l_indexes.item.index_list.is_empty then
 						l_item := l_indexes.item.index_list.first.string_value_32
 						l_item.to_lower
@@ -299,7 +299,7 @@ feature {NONE} -- Class-wide Options (From Indexing Clauses)
 			ignoredby.force (l_ignoredby, a_class)
 		end
 
-	ignoredby: HASH_TABLE [LINKED_LIST [STRING], CLASS_C]
+	ignoredby: HASH_TABLE [LINKED_LIST [STRING_32], CLASS_C]
 
 	library_class, nonlibrary_class: HASH_TABLE [BOOLEAN, CLASS_C]
 

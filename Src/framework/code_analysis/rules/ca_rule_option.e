@@ -14,7 +14,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_caption (a_caption: STRING)
+	make_with_caption (a_caption: STRING_32)
 		do
 			caption := a_caption
 			has_predefined_choice := False
@@ -31,13 +31,13 @@ feature -- Hash Code
 
 feature -- Properties
 
-	caption: STRING
+	caption: STRING_32
 
 	has_predefined_choice: BOOLEAN
 
 	predefined_choice: detachable ARRAYED_LIST[G]
 
-	predefined_choice_names: detachable ARRAYED_LIST[STRING]
+	predefined_choice_names: detachable ARRAYED_LIST[STRING_32]
 
 	default_choice_index: INTEGER
 
@@ -71,7 +71,7 @@ feature {CA_RULE} -- Properties
 			valid_choice_agent := Void
 		end
 
-	add_choice (a_choice: G; a_name: STRING)
+	add_choice (a_choice: G; a_name: STRING_32)
 		require
 			has_predefined_choice
 		do

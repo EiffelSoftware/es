@@ -81,12 +81,12 @@ feature -- Access
 			Result := data.location
 		end
 
-	title: STRING
+	title: STRING_32
 		do
 			Result := data.rule.title
 		end
 
-	violation_description: STRING
+	violation_description: STRING_32
 		do
 			Result := data.rule.description
 		end

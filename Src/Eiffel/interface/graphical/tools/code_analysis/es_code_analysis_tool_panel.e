@@ -661,7 +661,7 @@ feature {NONE} -- Basic operations
 
 					-- Info
 				create l_message_gen.make
-				l_message_gen.add_string (l_viol.title)
+				l_message_gen.add (l_viol.title)
 				l_editor_item := create_clickable_grid_item (l_message_gen.last_line, True)
 				a_row.set_height (l_editor_item.required_height_for_text_and_component)
 				a_row.set_item (description_column, l_editor_item)

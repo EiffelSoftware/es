@@ -16,7 +16,7 @@ feature {NONE} -- Initialization
 			Result := False
 		end
 
-	name: STRING
+	name: STRING_32
 		once
 			Result := "Suggestion"
 		end

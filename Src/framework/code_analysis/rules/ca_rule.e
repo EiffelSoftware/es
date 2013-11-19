@@ -12,17 +12,17 @@ inherit
 
 feature -- Basic properties, usually fix
 
-	title: STRING
+	title: STRING_32
 		deferred
 		end
 
-	id: detachable STRING
+	id: detachable STRING_32
 			-- A preferrably unique identifier for the rule. It should start with "CA".
 		once
 			Result := Void
 		end
 
-	description: STRING
+	description: STRING_32
 		deferred
 		end
 

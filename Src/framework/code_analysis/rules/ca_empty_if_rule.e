@@ -32,15 +32,15 @@ feature {NONE} -- Activation
 
 feature -- Properties
 
-	title: STRING
+	title: STRING_32
 		do
 			Result := ca_names.empty_if_title
 		end
 
-	id: STRING = "CA017T"
+	id: STRING_32 = "CA017T"
 			-- "T" stands for 'under test'.
 
-	description: STRING
+	description: STRING_32
 		do
 			Result := ca_names.empty_if_description
 		end
@@ -54,7 +54,7 @@ feature -- Properties
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		do
-			-- TODO
+			a_formatter.add (ca_messages.empty_if_violation_1)
 		end
 
 feature {NONE} -- Rule Checking

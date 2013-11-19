@@ -80,15 +80,15 @@ feature {NONE} -- Feature Visitor for Violation Check
 
 feature -- Properties
 
-	title: STRING
+	title: STRING_32
 		do
 			Result := ca_names.feature_never_called_title
 		end
 
-	id: STRING = "CA003T"
+	id: STRING_32 = "CA003T"
 			-- "T" stands for 'under test'.
 
-	description: STRING
+	description: STRING_32
 		do
 			Result :=  "---"
 		end
@@ -105,11 +105,11 @@ feature -- Properties
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		do
-			a_formatter.add_string (ca_messages.feature_never_called_violation_1)
+			a_formatter.add (ca_messages.feature_never_called_violation_1)
 			if attached {STRING_32} a_violation.long_description_info.first as l_feat_name then
 				a_formatter.add_feature_name (l_feat_name, a_violation.affected_class)
 			end
-			a_formatter.add_string (ca_messages.feature_never_called_violation_2)
+			a_formatter.add (ca_messages.feature_never_called_violation_2)
 		end
 
 end

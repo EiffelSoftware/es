@@ -12,7 +12,7 @@ feature -- Properties
 		deferred
 		end
 
-	name: STRING
+	name: STRING_32
 			-- What the severity is called; what is shown to the user.
 		deferred
 		end

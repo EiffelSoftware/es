@@ -32,15 +32,15 @@ feature {NONE} -- Activation
 
 feature -- Properties
 
-	title: STRING
+	title: STRING_32
 		do
 			Result := ca_names.unneeded_object_test_title
 		end
 
-	id: STRING = "CA006T"
+	id: STRING_32 = "CA006T"
 			-- "T" stands for 'under test'.
 
-	description: STRING
+	description: STRING_32
 		do
 			Result :=  ca_names.unneeded_object_test_description
 		end

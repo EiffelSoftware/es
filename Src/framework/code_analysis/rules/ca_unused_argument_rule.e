@@ -36,15 +36,15 @@ feature {NONE} -- Activation
 
 feature -- Properties
 
-	title: STRING
+	title: STRING_32
 		do
 			Result := ca_names.unused_argument_title
 		end
 
-	id: STRING = "CA002T"
+	id: STRING_32 = "CA002T"
 			-- "T" stands for 'under test'.
 
-	description: STRING
+	description: STRING_32
 		do
 			Result :=  ca_names.unused_argument_description
 		end
@@ -64,25 +64,25 @@ feature -- Properties
 		local
 			j: INTEGER
 		do
-			a_formatter.add_string (ca_messages.unused_argument_violation_1)
+			a_formatter.add (ca_messages.unused_argument_violation_1)
 			from
 				j := 2
 			until
 				j > a_violation.long_description_info.count
 			loop
-				if j > 2 then a_formatter.add_string (", ") end
-				a_formatter.add_char ('%'')
-				if attached {STRING} a_violation.long_description_info.at (j) as l_arg then
-					a_formatter.add_string (l_arg)
+				if j > 2 then a_formatter.add (", ") end
+				a_formatter.add ("'")
+				if attached {STRING_32} a_violation.long_description_info.at (j) as l_arg then
+					a_formatter.add_local (l_arg)
 				end
-				a_formatter.add_char('%'')
+				a_formatter.add ("'")
 				j := j + 1
 			end
-			a_formatter.add_string (ca_messages.unused_argument_violation_2)
+			a_formatter.add (ca_messages.unused_argument_violation_2)
 			if attached {FEATURE_AS} a_violation.long_description_info.first as l_feature then
 				a_formatter.add_feature_name (l_feature.feature_name.name_32, a_violation.affected_class)
 			end
-			a_formatter.add_string (ca_messages.unused_argument_violation_3)
+			a_formatter.add (ca_messages.unused_argument_violation_3)
 		end
 
 feature {NONE} -- Rule Checking
@@ -152,7 +152,7 @@ feature {NONE} -- Rule Checking
 				j > n_arguments
 			loop
 				if args_used.at (j) = False then
-					if arg_names.at (j).is_equal (a_aid.feature_name.name_8) then
+					if arg_names.at (j).is_equal (a_aid.feature_name.name_32) then
 						args_used.put_i_th (True, j)
 					end
 				end
@@ -164,7 +164,7 @@ feature {NONE} -- Rule Checking
 	current_feature: FEATURE_AS
 	routine_body: BODY_AS
 	n_arguments: INTEGER
-	arg_names: ARRAYED_LIST[STRING]
+	arg_names: ARRAYED_LIST[STRING_32]
 	args_used: ARRAYED_LIST[BOOLEAN]
 
 end

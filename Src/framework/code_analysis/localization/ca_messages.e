@@ -120,7 +120,12 @@ feature -- Code Analyzer
 			%command-query separation principle.") end
 
 	unneeded_ot_local_violation_1: STRING_32
-		do Result := locale.translation ("' is either a local variable, a feature argument, or an%Nobject test local. Thus the object test is not in need of the object test local%N'") end
+		do Result := locale.translation ("' is either a local variable, a feature%
+			% argument, or an%Nobject test local. Thus the object test is not in %
+			%need of the object test%Nlocal '") end
+
+	empty_if_violation_1: STRING_32
+		do Result := locale.translation ("An empty if statement is useless and should be removed.") end
 
 feature -- Command Line
 

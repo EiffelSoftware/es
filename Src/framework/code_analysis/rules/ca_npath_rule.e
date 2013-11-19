@@ -44,15 +44,15 @@ feature {NONE} -- Activation
 
 feature -- Properties
 
-	title: STRING
+	title: STRING_32
 		do
 			Result := ca_names.npath_title
 		end
 
-	id: STRING = "CA034T"
+	id: STRING_32 = "CA034T"
 			-- "T" stands for 'under test'.
 
-	description: STRING
+	description: STRING_32
 		do
 			Result :=  ca_names.npath_description
 		end
@@ -80,19 +80,19 @@ feature -- Properties
 			l_info: LINKED_LIST[ANY]
 		do
 			l_info := a_violation.long_description_info
-			a_formatter.add_string (ca_messages.npath_violation_1)
+			a_formatter.add (ca_messages.npath_violation_1)
 			if attached {FEATURE_AS} l_info.first as l_feat then
 				a_formatter.add_feature_name (l_feat.feature_name.name_32, a_violation.affected_class)
 			end
-			a_formatter.add_string (ca_messages.npath_violation_2)
+			a_formatter.add (ca_messages.npath_violation_2)
 			if attached {INTEGER} l_info.at (2) as l_npath then
 				a_formatter.add_int (l_npath)
 			end
-			a_formatter.add_string (ca_messages.npath_violation_3)
+			a_formatter.add (ca_messages.npath_violation_3)
 			if attached {INTEGER} l_info.at (3) as l_max then
 				a_formatter.add_int (l_max)
 			end
-			a_formatter.add_char ('.')
+			a_formatter.add (".")
 		end
 
 feature {NONE} -- Options

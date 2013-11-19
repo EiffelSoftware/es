@@ -13,6 +13,6 @@ inherit
 feature {NONE} -- Initialization
 	is_critical: BOOLEAN = False
 
-	name: STRING = "Hint"
+	name: STRING_32 = "Hint"
 
 end

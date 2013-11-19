@@ -13,6 +13,6 @@ inherit
 feature -- Properties
 	is_critical: BOOLEAN = True
 
-	name: STRING = "Error"
-	
+	name: STRING_32 = "Error"
+
 end
