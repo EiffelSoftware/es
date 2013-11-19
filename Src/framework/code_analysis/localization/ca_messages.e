@@ -119,7 +119,7 @@ feature -- Code Analyzer
 			% changes the state of the%Nobject, which is a violation of the %
 			%command-query separation principle.") end
 
-	unneeded_object_test_violation_1: STRING_32
+	unneeded_ot_local_violation_1: STRING_32
 		do Result := locale.translation ("' is either a local variable, a feature argument, or an%Nobject test local. Thus the object test is not in need of the object test local%N'") end
 
 feature -- Command Line
