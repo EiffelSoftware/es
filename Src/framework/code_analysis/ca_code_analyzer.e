@@ -30,6 +30,7 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_CQ_SEPARATION_RULE}.make)
 			rules.extend (create {CA_UNNEEDED_OT_LOCAL_RULE}.make)
 			rules.extend (create {CA_UNNEEDED_OBJECT_TEST_RULE}.make)
+			rules.extend (create {CA_NESTED_COMPLEXITY_RULE}.make)
 
 			-- Issues (contract violations, exceptions) with {EPA_CFG_BUILDER} and
 			-- classes from library 'program_analysis' in general.

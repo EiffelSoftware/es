@@ -127,6 +127,16 @@ feature -- Code Analyzer
 	empty_if_violation_1: STRING_32
 		do Result := locale.translation ("An empty if statement is useless and should be removed.") end
 
+	nested_complexity_violation_1: STRING_32
+		do Result := locale.translation ("In routine '") end
+
+	nested_complexity_violation_2: STRING_32
+		do Result := locale.translation ("' there are ") end
+
+	nested_complexity_violation_3: STRING_32
+		do Result := locale.translation (" nested branches%Nor loops, which is %
+			%greater than or equal the defined threshold of ") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32

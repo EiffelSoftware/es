@@ -274,7 +274,7 @@ feature {NONE} -- Agent lists
 
 	once_pre_actions, once_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[ONCE_AS]]]
 
-feature -- Execution Commands
+feature {CA_RULE_CHECKING_TASK} -- Execution Commands
 
 	run_on_class (a_class_to_check: CLASS_C)
 			-- Check all rules that have been added

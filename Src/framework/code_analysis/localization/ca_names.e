@@ -67,6 +67,15 @@ feature -- Rules
 	unneeded_object_test_description: STRING_32
 		do Result := locale.translation ("---") end
 
+	nested_complexity_title: STRING_32
+		do Result := locale.translation ("Too high complexity of nested branches and loops") end
+
+	nested_complexity_description: STRING_32
+		do Result := locale.translation ("---") end
+
+	nested_complexity_threshold_option: STRING_32
+		do Result := locale.translation ("Minimum nested branches and loops threshold") end
+
 feature -- GUI
 
 	tool_errors: STRING_32
