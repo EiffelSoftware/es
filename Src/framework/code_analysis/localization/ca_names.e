@@ -53,6 +53,14 @@ feature -- Rules
 	cq_separation_title: STRING_32
 		do Result := locale.translation ("No command-query separation (possible function side effect)") end
 
+	unneeded_object_test_title: STRING_32
+		do Result := locale.translation ("Unneeded object test local") end
+
+	unneeded_object_test_description: STRING_32
+		do Result := locale.translation ("For local variables, feature arguments, %
+			%and object test locals it is unnecessary to let the attached keyword %
+			%create a new and safe local reference.") end
+
 feature -- GUI
 
 	tool_errors: STRING_32

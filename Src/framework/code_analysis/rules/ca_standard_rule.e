@@ -9,7 +9,6 @@ deferred class
 
 inherit
 	CA_RULE
-	CA_SHARED_NAMES
 
 feature -- Activation
 

@@ -40,6 +40,7 @@ inherit
 			process_inspect_as,
 			process_instr_call_as,
 			process_loop_as,
+			process_object_test_as,
 			process_once_as
 			-- ...
 		end
@@ -83,6 +84,8 @@ feature {NONE} -- Initialization
 			create instruction_call_post_actions.make
 			create loop_pre_actions.make
 			create loop_post_actions.make
+			create object_test_pre_actions.make
+			create object_test_post_actions.make
 			create once_pre_actions.make
 			create once_post_actions.make
 		end
@@ -209,22 +212,32 @@ feature {CA_STANDARD_RULE}
 			instruction_call_post_actions.extend (a_action)
 		end
 
-	add_loop_pre_action (a_action: PROCEDURE[ANY, TUPLE[LOOP_AS]])
+	add_loop_pre_action (a_action: PROCEDURE [ANY, TUPLE [LOOP_AS]])
 		do
 			loop_pre_actions.extend (a_action)
 		end
 
-	add_loop_post_action (a_action: PROCEDURE[ANY, TUPLE[LOOP_AS]])
+	add_loop_post_action (a_action: PROCEDURE [ANY, TUPLE [LOOP_AS]])
 		do
 			loop_post_actions.extend (a_action)
 		end
 
-	add_once_pre_action (a_action: PROCEDURE[ANY, TUPLE[ONCE_AS]])
+	add_object_test_pre_action (a_action: PROCEDURE [ANY, TUPLE [OBJECT_TEST_AS]])
+		do
+			object_test_pre_actions.extend (a_action)
+		end
+
+	add_object_test_post_action (a_action: PROCEDURE [ANY, TUPLE [OBJECT_TEST_AS]])
+		do
+			object_test_post_actions.extend (a_action)
+		end
+
+	add_once_pre_action (a_action: PROCEDURE [ANY, TUPLE [ONCE_AS]])
 		do
 			once_pre_actions.extend (a_action)
 		end
 
-	add_once_post_action (a_action: PROCEDURE[ANY, TUPLE[ONCE_AS]])
+	add_once_post_action (a_action: PROCEDURE [ANY, TUPLE [ONCE_AS]])
 		do
 			once_post_actions.extend (a_action)
 		end
@@ -256,6 +269,8 @@ feature {NONE} -- Agent lists
 	instruction_call_pre_actions, instruction_call_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [INSTR_CALL_AS] ] ]
 
 	loop_pre_actions, loop_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[LOOP_AS]]]
+
+	object_test_pre_actions, object_test_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [OBJECT_TEST_AS]]]
 
 	once_pre_actions, once_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[ONCE_AS]]]
 
@@ -382,6 +397,13 @@ feature {NONE} -- Processing
 			Precursor (a_loop)
 
 			across loop_post_actions as l_a loop l_a.item.call ([a_loop]) end
+		end
+
+	process_object_test_as (a_ot: OBJECT_TEST_AS)
+		do
+			across object_test_pre_actions as l_a loop l_a.item.call ([a_ot]) end
+			Precursor (a_ot)
+			across object_test_post_actions as l_a loop l_a.item.call ([a_ot]) end
 		end
 
 	process_once_as (a_once: ONCE_AS)
