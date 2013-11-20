@@ -27,7 +27,7 @@ feature {NONE} -- Node Visitor
 
 	visit_node (a_start_node, a_end_node: EPA_BASIC_BLOCK; a_edge: EPA_CFG_EDGE; a_new_start: BOOLEAN)
 		do
-			
+
 		end
 
 feature {NONE} -- Analysis data
@@ -36,12 +36,12 @@ feature {NONE} -- Analysis data
 
 feature -- Properties
 
-	title: STRING
+	title: STRING_32
 		once
 			Result := ca_names.variable_not_read_title
 		end
 
-	description: STRING
+	description: STRING_32
 		once
 			Result :=  "---"
 		end
