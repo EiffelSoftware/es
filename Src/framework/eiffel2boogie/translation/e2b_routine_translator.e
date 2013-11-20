@@ -233,60 +233,92 @@ feature -- Basic operations
 			if not helper.is_explicit (current_feature, "contracts") then
 				if a_for_creator then
 					create l_pre.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
+					l_pre.set_assertion_type ("pre")
+					l_pre.set_assertion_tag ("default_is_open")
 					current_boogie_procedure.add_contract (l_pre)
 					create l_post.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
+					l_post.set_assertion_type ("post")
+					l_post.set_assertion_tag ("deafult_is_wrapped")
 					current_boogie_procedure.add_contract (l_post)
-					create l_post.make (forall_mml_set_property ("observers", "is_wrapped"))
+					create l_post.make (forall_mml_set_property ("Current", "observers", "is_wrapped"))
+					l_post.set_assertion_type ("post")
+					l_post.set_assertion_tag ("defaults_observers_are_wrapped")
 					current_boogie_procedure.add_contract (l_post)
 				elseif helper.is_public (current_feature) then
 					if current_feature.has_return_value then
 						create l_pre.make (factory.function_call ("!is_open", << "Heap", "Current" >>, types.bool))
+						l_pre.set_assertion_type ("pre")
+						l_pre.set_assertion_tag ("default_is_closed")
 						current_boogie_procedure.add_contract (l_pre)
-						create l_pre.make (forall_mml_set_property ("observers", "!is_open"))
-						current_boogie_procedure.add_contract (l_pre)
+						-- Nadia: don't think that's useful here
+--						create l_pre.make (forall_mml_set_property ("observers", "!is_open"))
+--						l_pre.set_assertion_type ("pre")
 						create l_post.make (factory.function_call ("!is_open", << "Heap", "Current" >>, types.bool))
+						l_post.set_assertion_type ("post")
+						l_post.set_assertion_tag ("default_is_closed")
 						current_boogie_procedure.add_contract (l_post)
-						create l_post.make (forall_mml_set_property ("observers", "!is_open"))
-						current_boogie_procedure.add_contract (l_post)
+--						create l_post.make (forall_mml_set_property ("observers", "!is_open"))
+--						current_boogie_procedure.add_contract (l_post)
 					else
 						create l_pre.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
+						l_pre.set_assertion_type ("pre")
+						l_pre.set_assertion_tag ("default_is_wrapped")
 						current_boogie_procedure.add_contract (l_pre)
-						create l_pre.make (forall_mml_set_property ("observers", "is_wrapped"))
+						create l_pre.make (forall_mml_set_property ("Current", "observers", "is_wrapped"))
+						l_pre.set_assertion_type ("pre")
+						l_pre.set_assertion_tag ("default_observers_are_wrapped")
 						current_boogie_procedure.add_contract (l_pre)
 						create l_post.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
+						l_post.set_assertion_type ("post")
+						l_post.set_assertion_tag ("default_is_wrapped")
 						current_boogie_procedure.add_contract (l_post)
-						create l_post.make (forall_mml_set_property ("observers", "is_wrapped"))
+						create l_post.make (forall_mml_set_property ("Current", "observers", "is_wrapped"))
+						l_post.set_assertion_type ("post")
+						l_post.set_assertion_tag ("default_observers_are_wrapped")
 						current_boogie_procedure.add_contract (l_post)
 					end
 				else
 					create l_pre.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
+					l_pre.set_assertion_type ("pre")
+					l_pre.set_assertion_tag ("default_is_open")
 					current_boogie_procedure.add_contract (l_pre)
-					create l_pre.make (forall_mml_set_property ("observers", "is_open"))
+					create l_pre.make (forall_mml_set_property ("Current", "observers", "is_open"))
+					l_pre.set_assertion_type ("pre")
+					l_pre.set_assertion_tag ("default_observers_are_open")
 					current_boogie_procedure.add_contract (l_pre)
 					create l_post.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
+					l_post.set_assertion_type ("post")
+					l_post.set_assertion_tag ("default_is_open")
 					current_boogie_procedure.add_contract (l_post)
-					create l_post.make (forall_mml_set_property ("observers", "is_open"))
+					create l_post.make (forall_mml_set_property ("Current", "observers", "is_open"))
+					l_post.set_assertion_type ("post")
+					l_post.set_assertion_tag ("default_observers_are_open")
 					current_boogie_procedure.add_contract (l_post)
 				end
 				across arguments_of_current_feature as i loop
 					if i.item.boogie_type.is_reference then
 						create l_pre.make (factory.function_call ("is_wrapped", << "Heap", i.item.name >>, types.bool))
+						l_pre.set_assertion_type ("pre")
+						l_pre.set_assertion_tag ("arg_" + i.item.name + "_is_wrapped")
 						current_boogie_procedure.add_contract (l_pre)
 						create l_post.make (factory.function_call ("is_wrapped", << "Heap", i.item.name >>, types.bool))
+						l_post.set_assertion_type ("post")
+						l_post.set_assertion_tag ("arg_" + i.item.name + "_is_wrapped")
 						current_boogie_procedure.add_contract (l_post)
 					end
 				end
 				if a_for_creator or helper.is_public (current_feature) then
 					across arguments_of_current_feature as i loop
 						if i.item.boogie_type.is_reference then
-							create l_pre.make (forall_mml_set_property ("observers", "is_wrapped"))
+							create l_pre.make (forall_mml_set_property (i.item.name, "observers", "is_wrapped"))
+							-- ToDo: add?
 						end
 					end
 				end
 			end
 		end
 
-	forall_mml_set_property (a_set_name: STRING; a_function_name: STRING): IV_EXPRESSION
+	forall_mml_set_property (a_target_name: STRING; a_set_name: STRING; a_function_name: STRING): IV_EXPRESSION
 		local
 			l_forall: IV_FORALL
 			l_i: IV_ENTITY
@@ -294,7 +326,7 @@ feature -- Basic operations
 			create l_i.make (helper.unique_identifier ("i"), types.ref)
 			create l_forall.make (
 				factory.implies_ (
-					factory.map_access (factory.heap_access ("Heap", create {IV_ENTITY}.make ("Current", types.ref), a_set_name, types.set (types.ref)), l_i),
+					factory.map_access (factory.heap_access ("Heap", create {IV_ENTITY}.make (a_target_name, types.ref), a_set_name, types.set (types.ref)), l_i),
 					factory.function_call (a_function_name, << "Heap", l_i >>, types.bool)))
 			l_forall.add_bound_variable (l_i.name, l_i.type)
 			Result := l_forall
