@@ -13,8 +13,11 @@ feature -- Status report
 
 	is_handling_call (a_target_type: TYPE_A; a_feature: FEATURE_I): BOOLEAN
 			-- <Precursor>
+		local
+			l_name: STRING
 		do
-			Result := a_feature.written_class.name ~ "MML_SET"
+			l_name := a_feature.written_class.name_in_upper + "." + a_feature.feature_name
+			Result := mapping.has (l_name)
 		end
 
 feature -- Basic operations
@@ -54,46 +57,132 @@ feature {NONE} -- Implementation
 			l_name: STRING
 			l_target: IV_EXPRESSION
 			l_param: IV_EXPRESSION
+			l_expr: IV_EXPRESSION
 		do
-			l_name := a_feature.feature_name
-			l_target := a_translator.current_target
+			l_name := a_feature.written_class.name_in_upper + "." + a_feature.feature_name
+			check mapping.has (l_name) end
+
 			a_translator.process_parameters (a_parameters)
-			if l_name ~ "has" then
-				l_param := a_translator.last_parameters.first
-				a_translator.set_last_expression (create {IV_MAP_ACCESS}.make (l_target, l_param))
-			elseif l_name ~ "is_empty" then
-				a_translator.set_last_expression (factory.function_call ("Set#Equal", <<l_target, "Set#Empty()">>, types.bool))
-			elseif l_name ~ "is_subset_of" then
-				l_param := a_translator.last_parameters.first
-				a_translator.set_last_expression (factory.function_call ("Set#Subset", <<l_target, l_param>>, types.bool))
-			elseif l_name ~ "is_superset_of" then
-				l_param := a_translator.last_parameters.first
-				a_translator.set_last_expression (factory.function_call ("Set#Subset", <<l_param, l_target>>, types.bool))
-			elseif l_name ~ "is_disjoint" then
-				l_param := a_translator.last_parameters.first
-				a_translator.set_last_expression (factory.function_call ("Set#Disjoint", <<l_target, l_param>>, types.bool))
-			elseif l_name ~ "extended" then
-				l_param := a_translator.last_parameters.first
-				a_translator.set_last_expression (factory.function_call ("Set#UnionOne", <<l_target, l_param>>, l_target.type))
-			elseif l_name ~ "removed" then
-				l_param := a_translator.last_parameters.first
-				a_translator.set_last_expression (factory.function_call ("Set#Difference",
-					<<l_target, factory.function_call ("Set#Singleton", <<l_param>>, l_target.type)>>, l_target.type))
-			elseif l_name ~ "union" then
-				l_param := a_translator.last_parameters.first
-				a_translator.set_last_expression (factory.function_call ("Set#Union", <<l_target, l_param>>, l_target.type))
-			elseif l_name ~ "intersection" then
-				l_param := a_translator.last_parameters.first
-				a_translator.set_last_expression (factory.function_call ("Set#Intersection", <<l_target, l_param>>, l_target.type))
-			elseif l_name ~ "difference" then
-				l_param := a_translator.last_parameters.first
-				a_translator.set_last_expression (factory.function_call ("Set#Difference", <<l_target, l_param>>, l_target.type))
-			elseif l_name ~ "empty_set" then
-				a_translator.set_last_expression (factory.function_call ("Set#Empty", << >>, types.set (types.ref)))
-			else
-					-- cannot happen
-				check False end
-			end
+			l_expr := mapping.item (l_name).item ([a_translator.current_target, a_translator.last_parameters])
+			a_translator.set_last_expression (l_expr)
 		end
+
+
+	mapping: STRING_TABLE [FUNCTION [ANY, TUPLE [IV_EXPRESSION, LIST [IV_EXPRESSION]], IV_EXPRESSION]]
+			-- Mapping
+		once
+			create Result.make (50)
+
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := create {IV_MAP_ACCESS}.make (a_target, a_params.first)
+					end,
+				"MML_SET.has")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Set#Equal", <<a_target, "Set#Empty()">>, types.bool)
+					end,
+				"MML_SET.is_empty")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Set#Subset", <<a_target, a_params.first>>, types.bool)
+					end,
+				"MML_SET.is_subset_of")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Set#Subset", <<a_params.first, a_target>>, types.bool)
+					end,
+				"MML_SET.is_superset_of")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Set#Disjoint", <<a_target, a_params.first>>, types.bool)
+					end,
+				"MML_SET.is_disjoint")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Set#UnionOne", <<a_target, a_params.first>>, a_target.type)
+					end,
+				"MML_SET.extended")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call (
+							"Set#Difference",
+							<<
+								a_target,
+								factory.function_call ("Set#Singleton", <<a_params.first>>, a_target.type)
+							>>,
+							a_target.type)
+					end,
+				"MML_SET.removed")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Set#Union", <<a_target, a_params.first>>, a_target.type)
+					end,
+				"MML_SET.union")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Set#Intersection", <<a_target, a_params.first>>, a_target.type)
+					end,
+				"MML_SET.intersection")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Set#Difference", <<a_target, a_params.first>>, a_target.type)
+					end,
+				"MML_SET.difference")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Set#Empty", << >>, types.set (types.ref))
+					end,
+				"MML_SET.empty_set")
+
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Contains", << a_target, a_params.first >>, types.bool)
+					end,
+				"MML_SEQUENCE.has")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Equal", << a_target, "Seq#Empty()" >>, types.bool)
+					end,
+				"MML_SEQUENCE.is_empty")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Index", << a_target, a_params.first >>, types.generic)
+					end,
+				"MML_SEQUENCE.item")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Length", << a_target >>, types.int)
+					end,
+				"MML_SEQUENCE.count")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Build", << a_target, a_params.first >>, a_target.type)
+					end,
+				"MML_SEQUENCE.extended")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Set#FromSeq", << a_target >>, types.set (types.generic))
+					end,
+				"MML_SEQUENCE.as_set")
+		end
+
 
 end

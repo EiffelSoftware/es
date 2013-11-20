@@ -610,7 +610,7 @@ feature -- Type Visitor
 			-- <Precursor>
 		do
 			output.put ("Field ")
-			if a_type.content_type.is_map then
+			if a_type.content_type.is_map or a_type.content_type.is_seq then
 				output.put ("(")
 				a_type.content_type.process (Current)
 				output.put (")")
@@ -623,6 +623,13 @@ feature -- Type Visitor
 			-- <Precursor>
 		do
 			output.put ("Set ")
+			a_type.content_type.process (Current)
+		end
+
+	process_seq_type (a_type: IV_SEQ_TYPE)
+			-- <Precursor>
+		do
+			output.put ("Seq ")
 			a_type.content_type.process (Current)
 		end
 

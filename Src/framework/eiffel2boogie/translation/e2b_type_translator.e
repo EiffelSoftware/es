@@ -54,7 +54,10 @@ feature -- Basic operations
 					generate_inheritance_relations (a_type)
 				end
 
-				translate_invariant_function (a_type)
+					-- TODO: refactor
+				if a_type.base_class.name_in_upper /~ "ARRAY" then
+					translate_invariant_function (a_type)
+				end
 			end
 		end
 

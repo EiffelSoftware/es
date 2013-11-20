@@ -55,4 +55,9 @@ feature -- Visitor
 		deferred
 		end
 
+	process_seq_type (a_type: IV_SEQ_TYPE)
+			-- Process type type.
+		deferred
+		end
+
 end

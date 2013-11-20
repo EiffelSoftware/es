@@ -1,12 +1,10 @@
 note
-	description: "[
-		TODO
-	]"
+	description: "TODO"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	E2B_SET_ACROSS_HANDLER
+	E2B_SEQUENCE_ACROSS_HANDLER
 
 inherit
 	E2B_ACROSS_HANDLER
@@ -21,7 +19,7 @@ feature {NONE} -- Initialization
 		do
 			expression_translator := a_translator
 			loop_expr := a_loop_expr
-			set_access := a_set_access
+			seq_access := a_set_access
 			object_test_local := a_object_test_local
 		end
 
@@ -36,8 +34,9 @@ feature -- Access
 
 	loop_: LOOP_B
 	loop_expr: LOOP_EXPR_B
-	set_access: ACCESS_B
+	seq_access: ACCESS_B
 	object_test_local: OBJECT_TEST_LOCAL_B
+	sequence_expression: IV_EXPRESSION
 
 feature -- Basic operations
 
@@ -51,30 +50,32 @@ feature -- Basic operations
 			l_and: IV_BINARY_OPERATION
 			l_quantifier: IV_QUANTIFIER
 			l_expression: IV_EXPRESSION
-			l_set: IV_EXPRESSION
-			l_map: IV_MAP_ACCESS
+			l_seq: IV_EXPRESSION
+			l_bounds: IV_EXPRESSION
 		do
-				-- Set expression
-			set_access.process (expression_translator)
-			l_set := expression_translator.last_expression
+				-- Sequence expression
+			seq_access.process (expression_translator)
+			l_seq := expression_translator.last_expression
+			sequence_expression := l_seq
 
 				-- Loop content
-			expression_translator.create_iterator (types.ref)
+			expression_translator.create_iterator (types.int)
 			l_counter := expression_translator.last_local
 			expression_translator.locals_map.put (l_counter, object_test_local.position)
 			loop_expr.expression_code.process (expression_translator)
 			l_expression := expression_translator.last_expression
 			expression_translator.locals_map.remove (object_test_local.position)
 
+			l_bounds := factory.and_ (
+				factory.less_equal (factory.int_value (0), l_counter),
+				factory.less (l_counter, factory.function_call ("Seq#Length", << l_seq >>, types.int)))
 
-			create l_map.make (l_set, l_counter)
 			if loop_expr.is_all then
-				create {IV_FORALL} l_quantifier.make (factory.implies_ (l_map, l_expression))
+				create {IV_FORALL} l_quantifier.make (factory.implies_ (l_bounds, l_expression))
 			else
-				create {IV_EXISTS} l_quantifier.make (factory.and_ (l_map, l_expression))
+				create {IV_EXISTS} l_quantifier.make (factory.and_ (l_bounds, l_expression))
 			end
 			l_quantifier.add_bound_variable (l_counter.name, l_counter.type)
-			l_quantifier.add_trigger (l_map)
 			if attached {IV_FUNCTION_CALL} l_expression as l_fcall then
 				if across l_fcall.arguments as i some attached {IV_ENTITY} i.item as j and then j.name ~ l_counter.name end then
 					l_quantifier.add_trigger (l_expression)
@@ -86,7 +87,10 @@ feature -- Basic operations
 	handle_call_item (a_feature: FEATURE_I)
 			-- <Precursor>
 		do
-			expression_translator.set_last_expression (expression_translator.locals_map.item (object_test_local.position))
+			expression_translator.set_last_expression (
+				factory.function_call ("Seq#Index",
+					<< sequence_expression, expression_translator.locals_map.item (object_test_local.position) >>,
+					types.generic))
 		end
 
 	handle_call_cursor_index (a_feature: FEATURE_I)
@@ -105,4 +109,3 @@ feature -- Basic operations
 		end
 
 end
-

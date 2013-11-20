@@ -1824,6 +1824,9 @@ Src/Delivery/studio/templates/licenses/mssdk.lic -text
 Src/Delivery/studio/tools/autoproof/agents.bpl -text
 Src/Delivery/studio/tools/autoproof/arrays.bpl -text
 Src/Delivery/studio/tools/autoproof/base_theory.bpl -text
+Src/Delivery/studio/tools/autoproof/map.bpl -text
+Src/Delivery/studio/tools/autoproof/sequence.bpl -text
+Src/Delivery/studio/tools/autoproof/set.bpl -text
 Src/Delivery/studio/tools/autoproof/special.bpl -text
 Src/Delivery/studio/tools/autoproof/tuples.bpl -text
 Src/Delivery/studio/tools/boogie.txt -text

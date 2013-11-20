@@ -638,6 +638,8 @@ feature -- Visitors
 				create {E2B_INTERVAL_ACROSS_HANDLER} l_across_handler.make (Current, a_node, l_bin_free, l_object_test_local)
 			elseif l_name ~ "MML_SET" then
 				create {E2B_SET_ACROSS_HANDLER} l_across_handler.make (Current, a_node, l_nested.target, l_object_test_local)
+			elseif l_name ~ "MML_SEQUENCE" then
+				create {E2B_SEQUENCE_ACROSS_HANDLER} l_across_handler.make (Current, a_node, l_nested.target, l_object_test_local)
 			else
 				last_expression := dummy_node (a_node.type)
 			end

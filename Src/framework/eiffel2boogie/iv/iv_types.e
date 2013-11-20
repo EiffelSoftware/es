@@ -66,6 +66,12 @@ feature -- Access: default types
 			create {IV_SET_TYPE} Result.make (a_content_type)
 		end
 
+	seq (a_content_type: IV_TYPE): IV_TYPE
+			-- Set type that has content of type `a_content_type'.
+		do
+			create {IV_SEQ_TYPE} Result.make (a_content_type)
+		end
+
 	generic: IV_TYPE
 			-- Generic type.
 		once
@@ -83,7 +89,7 @@ feature -- Access: default types
 	is_mml_type	(a_type: TYPE_A): BOOLEAN
 			-- Is `a_type' a mathematical collection type?
 		do
-			Result := a_type.base_class.name ~ "MML_SET"
+			Result := a_type.base_class.name ~ "MML_SET" or a_type.base_class.name ~ "MML_SEQUENCE"
 		end
 
 	for_type_a (a_type: TYPE_A): IV_TYPE
@@ -109,6 +115,9 @@ feature -- Access: default types
 			elseif l_type.base_class.name ~ "MML_SET" then
 				l_elem_type := for_type_a (l_type.generics.first)
 				Result := set (l_elem_type)
+			elseif l_type.base_class.name ~ "MML_SEQUENCE" then
+				l_elem_type := for_type_a (l_type.generics.first)
+				Result := seq (l_elem_type)
 			elseif l_type.is_expanded then
 				Result := generic_type
 			else

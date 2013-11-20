@@ -42,7 +42,7 @@ feature -- Basic operations
 						factory.function_call ("IsGhostField", << l_attribute_name >>, types.bool))))
 
 				-- Add attribute-type specific properties
-			if a_feature.type.is_reference and not l_boogie_type.is_set then
+			if a_feature.type.is_reference and not l_boogie_type.is_set and not l_boogie_type.is_seq then
 				if a_feature.type.is_attached then
 					l_fname := "attached_attribute"
 				else

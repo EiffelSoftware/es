@@ -34,6 +34,9 @@ feature -- Status report
 	is_set: BOOLEAN
 			-- Is this a set type?
 
+	is_seq: BOOLEAN
+			-- Is this a set type?
+
 feature -- Visitor
 
 	process (a_visitor: IV_TYPE_VISITOR)
