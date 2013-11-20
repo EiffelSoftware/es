@@ -164,7 +164,11 @@ feature {NONE} -- Initialization
 			l_popup_button.set_tooltip ("Code analysis options")
 --			l_popup_button.set_menu_function (agent build_options_menu)
 
+			show_preferences_button := (create {ES_CA_SHOW_PREFERENCES_COMMAND}.make).new_sd_toolbar_item (True)
+
 			create Result.make (4)
+			Result.extend (show_preferences_button)
+			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 			Result.extend (create {SD_TOOL_BAR_RESIZABLE_ITEM}.make (l_box))
 			Result.extend (l_button)
 			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
@@ -336,7 +340,10 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	run_analysis_button: EB_SD_COMMAND_TOOL_BAR_BUTTON
-			-- Button to launch AutoProof.
+			-- Button to execute Code Analysis.
+
+	show_preferences_button: EB_SD_COMMAND_TOOL_BAR_BUTTON
+			-- Button to display preferences dialog.
 
 	error_count: INTEGER
 			-- Number of error events

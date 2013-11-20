@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization for `Current'.
 		do
-			create settings
+			create settings.make
 			create rules.make
 			-- Adding example rules
 			rules.extend (create {CA_SELF_ASSIGNMENT_RULE}.make)
@@ -192,6 +192,9 @@ feature -- Properties
 	rules: LINKED_LIST[CA_RULE]
 
 	rule_violations: detachable HASH_TABLE[SORTED_TWO_WAY_LIST[CA_RULE_VIOLATION], CLASS_C]
+
+	preferences: PREFERENCES
+		do Result := settings.preferences end
 
 feature {NONE} -- Implementation
 

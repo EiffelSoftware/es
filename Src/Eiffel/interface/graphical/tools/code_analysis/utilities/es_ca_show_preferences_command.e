@@ -1,52 +1,77 @@
 note
-	description: "[
-		Helper class to minimize changes of proper EiffelStudio for the integration of AutoProof.
-	]"
+	description: "Summary description for {ES_CA_SHOW_PREFERENCES_COMMAND}."
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
+	ES_CA_SHOW_PREFERENCES_COMMAND
+
+inherit
+	EB_TOOLBARABLE_AND_MENUABLE_COMMAND
+		redefine tooltext end
+
 	ES_CODE_ANALYSIS_BENCH_HELPER
-inherit {NONE}
-	EB_SHARED_PIXMAPS
 
-feature -- Basic operations
+create
+	make
 
-	build_context_menu_for_class_stone (a_menu: EV_MENU; a_stone: CLASSC_STONE)
-			-- Build context menu for class stone `a_stone' and add it to `a_menu'.
-			--
-			-- Added to {EB_CONTEXT_MENU_FACTORY}.extend_standard_compiler_item_menu
-		require
-			a_menu_not_void: a_menu /= Void
-			a_stone_not_void: a_stone /= Void
-		local
-			l_item: EV_MENU_ITEM
+feature {NONE} -- Initialization
+
+	make
 		do
-			if a_stone.class_i.is_compiled then
-				create l_item.make_with_text_and_action ("Run Code Analysis of Class '" + a_stone.class_name + "'"
-					, agent ca_command.execute_with_stone (a_stone))
-				l_item.set_pixmap (icon_pixmaps.view_flat_icon)
+			enable_sensitive
+		end
 
-				if code_analyzer.is_running then
-					l_item.disable_sensitive
-					l_item.set_text (l_item.text + " (already running)")
-				end
-				a_menu.extend (l_item)
+feature -- Execution
+
+	execute
+		do
+			if preference_window = Void or else preference_window.is_destroyed then
+				create preference_window.make (code_analyzer.preferences, window_manager.last_focused_development_window.window)
+--				preference_window.set_size (800, 600)
+				preference_window.raise
 			end
+
+			preference_window.show
 		end
 
-feature -- Verification
+feature {NONE} -- Implementation
 
-	code_analyzer: CA_CODE_ANALYZER
-			-- Shared Code Analyzer instance.
-		once
-			create Result.make
+	preference_window: EB_PREFERENCES_WINDOW
+
+feature -- Properties
+
+	name: STRING_32 = "Code Analysis Preferences"
+
+	menu_name: STRING_32
+		do
+			Result := "Code Analysis Preferences..."
 		end
 
-	ca_command: ES_CODE_ANALYSIS_COMMAND
-			-- Shared Code Analysis command.
+	tooltext: STRING_32
+		do
+			Result := "Preferences..."
+		end
+
+	description: STRING_32
+		do
+			Result := ""
+		end
+
+	tooltip: STRING_32
+		do
+			Result := "Show Dialog for Code Analysis Preferences"
+		end
+
+	pixmap: EV_PIXMAP
 		once
-			create Result.make
+			Result := pixmaps.icon_pixmaps.project_settings_advanced_icon
+		end
+
+	pixel_buffer: EV_PIXEL_BUFFER
+		once
+			Result := pixmaps.icon_pixmaps.project_settings_advanced_icon_buffer
 		end
 
 note

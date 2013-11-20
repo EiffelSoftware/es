@@ -18,6 +18,12 @@ feature {NONE} -- Initialization
 
 	make
 		do
+			build_interface
+		end
+
+	build_interface
+		do
+
 		end
 
 feature {NONE} -- Implementation
