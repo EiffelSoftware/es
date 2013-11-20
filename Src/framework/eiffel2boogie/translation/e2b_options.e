@@ -17,9 +17,9 @@ feature {NONE} -- Initialization
 			-- Initialize default options.
 		do
 			is_two_step_verification_enabled := False
-			is_inlining_enabled := False
+			is_inlining_enabled := True
 			is_automatic_inlining_enabled := False
-			is_automatic_loop_unrolling_enabled := False
+			is_automatic_loop_unrolling_enabled := True
 			is_sound_loop_unrolling_enabled := True
 			is_precondition_predicate_enabled := False
 			is_postcondition_predicate_enabled := False
@@ -27,7 +27,7 @@ feature {NONE} -- Initialization
 			is_checking_frame := False
 			is_ownership_enabled := True
 			is_ownership_defaults_enabled := True
-			loop_unrolling_depth := 4
+			loop_unrolling_depth := 7
 			max_recursive_inlining_depth := 4
 
 			is_postcondition_mutation_enabled := False

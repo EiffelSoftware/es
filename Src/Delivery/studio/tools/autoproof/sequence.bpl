@@ -141,8 +141,11 @@ axiom Seq#Take(Seq#Empty(), 0) == Seq#Empty();  // [][..0] == []
 axiom Seq#Drop(Seq#Empty(), 0) == Seq#Empty();  // [][0..] == []
 
 
+// CUSTOM ADDITIONS
 // Conversion to set
 
 function Set#FromSeq<T>(Seq T): Set T;
 axiom (forall<T> q: Seq T, o: T :: { Set#FromSeq(q)[o] } Seq#Contains(q, o) <==> Set#FromSeq(q)[o]);
+
+axiom (forall h: HeapType, s: Seq ref, i: int :: 0 <= i && i <= Seq#Length(s) ==> h[Seq#Index(s, i), allocated]);
 

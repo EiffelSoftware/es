@@ -78,7 +78,7 @@ feature -- Visitor
 				-- for running variables e.g. across  ..  as ij all ij.item end
 				across bound_variabls as bs
 				loop
-					if bound_variabls.item.is_equal (a_entity.name) then
+					if bs.item.is_equal (a_entity.name) then
 						is_bound_variable := True
 					end
 				end

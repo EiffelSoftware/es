@@ -78,9 +78,9 @@ feature -- Basic operations
 
 				-- Modifies
 			create l_modifies.make ("Heap")
-			if options.is_ownership_enabled then
+--			if options.is_ownership_enabled then
 				l_modifies.add_name ("Writes")
-			end
+--			end
 			current_boogie_procedure.add_contract (l_modifies)
 
 				-- Pre- and postconditions
@@ -115,7 +115,6 @@ feature -- Basic operations
 						-- Normal frame condition
 					process_fields_list (l_fields)
 				end
---			add_invariant_conditions (a_for_creator)
 			end
 
 			if options.is_precondition_predicate_enabled then
@@ -124,31 +123,6 @@ feature -- Basic operations
 			if options.is_postcondition_predicate_enabled then
 				add_postcondition_predicate
 			end
-		end
-
-	add_invariant_conditions (a_is_creator: BOOLEAN)
-		local
-			l_fcall: IV_FUNCTION_CALL
-			l_pre: IV_PRECONDITION
-			l_post: IV_POSTCONDITION
-			l_info: IV_ASSERTION_INFORMATION
-		do
-			translation_pool.add_type (current_type)
-			l_fcall := factory.function_call (
-				name_translator.boogie_name_for_invariant_function (current_type),
-				<< "Heap", "Current" >>,
-				types.bool)
-			if not a_is_creator then
-				create l_pre.make (l_fcall)
-				l_pre.set_free
-				current_boogie_procedure.add_contract (l_pre)
-			end
-			create l_post.make (l_fcall)
---			create l_info.make ("post")
---			l_info.set_tag ("invariant")
---			l_post.set_information (l_info)
-			l_post.set_assertion_type ("post")
-			current_boogie_procedure.add_contract (l_post)
 		end
 
 	add_ownership_contracts (a_for_creator: BOOLEAN)
