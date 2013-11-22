@@ -20,8 +20,9 @@ inherit
 		redefine
 			interface,
 			make,
-			insert,
-			set_background_color
+			compute_minimum_height,
+			compute_minimum_width,
+			compute_minimum_size
 		end
 
 	EV_FONTABLE_IMP
@@ -46,16 +47,11 @@ feature {NONE} -- Initialization
 			-- Initialize `Current'.
 		local
 			a_font: EV_FONT
+			l_box: NS_BOX
 		do
-			create box.make
-			create content_view.make
-			box.set_translates_autoresizing_mask_into_constraints_ (False)
-			box.set_content_view_ (content_view)
-			create color_utils
-			-- NSNoTitle = 0
-			box.set_title_position_ (0)
-
-			cocoa_view := box
+			create l_box.make
+			l_box.set_title_position ({NS_BOX}.no_title)
+			cocoa_view := l_box
 
 			align_text_left
 			create a_font.default_create
@@ -73,42 +69,13 @@ feature -- Access
 
 feature -- Element change
 
-	insert (v: like item)
-			-- Assign `v' to `item'.
-		require else
-			v_not_void: v /= Void
-			has_no_item: item = Void
-		do
-			v.implementation.on_parented
-			check attached {EV_WIDGET_IMP} v.implementation as v_imp then
-				v_imp.set_parent_imp (Current)
-				item := v
-				new_item_actions.call ([v])
-				content_view.add_subview_ (v_imp.attached_view)
-				v_imp.set_padding_constraints (0)
-			end
-		end
-
-	set_background_color (a_color: EV_COLOR)
-			-- Assign `a_color' to `background_color'
-		local
-			color: NS_COLOR
-		do
-			-- Note: works only if box.box_type = NSBoxCustom (4) and box.border_type = NSLineBorder (1)
-			Precursor {EV_CELL_IMP} (a_color)
-			color := color_utils.color_with_calibrated_red__green__blue__alpha_ (a_color.red.to_double, a_color.green.to_double, a_color.blue.to_double, 1.0)
-			box.set_fill_color_ (color)
-		end
-
 	set_style (a_style: INTEGER)
 			-- Assign `a_style' to `style'.
 		do
 			if a_style = {EV_FRAME_CONSTANTS}.Ev_frame_lowered or a_style = {EV_FRAME_CONSTANTS}.Ev_frame_etched_in then
-				-- NSBezelBorder = 2
-				box.set_border_type_ (2)
+				box.set_border_type ({NS_BOX}.bezel_border)
 			else
-				-- NSGrooveBorder = 3
-				box.set_border_type_ (3)
+				box.set_border_type ({NS_BOX}.groove_border)
 			end
 			style := a_style
 		end
@@ -116,13 +83,11 @@ feature -- Element change
 	set_text (a_text: READABLE_STRING_GENERAL)
 		do
 			Precursor {EV_TEXTABLE_IMP} (a_text)
-			if a_text /= Void and then not a_text.is_empty then
-				-- NSAtTop = 2
-				box.set_title_position_ (2)
-				box.set_title_ (create {NS_STRING}.make_with_eiffel_string (a_text.as_string_8))
+			if a_text /= void and then not a_text.is_empty then
+				box.set_title_position ({NS_BOX}.at_top)
+				box.set_title (a_text)
 			else
-				-- NSNoTitle = 0
-				box.set_title_position_ (0)
+				box.set_title_position ({NS_BOX}.no_title)
 			end
 		end
 
@@ -134,23 +99,64 @@ feature -- Element change
 
 feature -- Layout
 
+	compute_minimum_width
+			-- Recompute the minimum_width of `Current'.
+		local
+			mw: INTEGER
+		do
+			if attached item_imp as l_item_imp and then l_item_imp.is_show_requested then
+				mw := l_item_imp.minimum_width
+			end
+			mw := mw + client_x --+ border_width
+			--mw := mw.max (text_width + 2 * Text_padding)			
+			internal_set_minimum_width (mw)
+		end
+
+	compute_minimum_height
+			-- Recompute the minimum_width of `Current'.
+		local
+			mh: INTEGER
+		do
+			if attached item_imp as l_item_imp and then l_item_imp.is_show_requested then
+				mh := l_item_imp.minimum_height
+			end
+			mh := mh + client_y
+			internal_set_minimum_height (mh)
+		end
+
+	compute_minimum_size
+			-- Recompute both the minimum_width the
+			-- minimum_height of `Current'.
+		local
+			mw, mh: INTEGER
+		do
+			if attached item_imp as l_item_imp and then l_item_imp.is_show_requested then
+				mw := l_item_imp.minimum_width
+				mh := l_item_imp.minimum_height
+			end
+			mh := mh + client_y
+			mw := mw + client_x --+ border_width
+			--mw := mw.max (text_width + 2 * Text_padding)
+			internal_set_minimum_size (mw, mh)
+		end
+
 	client_x: INTEGER = 14;
 
 	client_y: INTEGER
 		do
-			-- NSNoTitle = 0
-			if box.title_position = 0 then
+			if box.title_position = {NS_BOX}.no_title then
 				Result := 14
 			else
 				Result := 18
 			end
 		end
 
-feature {NONE} -- Implementation
-
 	box: NS_BOX
-
-	content_view: EV_FLIPPED_VIEW
+		do
+			check attached {NS_BOX} cocoa_view as l_result then
+				Result := l_result
+			end
+		end
 
 feature {EV_ANY, EV_ANY_I} -- Implementation
 
@@ -158,4 +164,14 @@ feature {EV_ANY, EV_ANY_I} -- Implementation
 			-- Provides a common user interface to possibly platform
 			-- dependent functionality implemented by `Current'
 
+note
+	copyright: "Copyright (c) 1984-2013, Eiffel Software and others"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end -- class EV_FRAME_IMP

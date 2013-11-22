@@ -1,10 +1,10 @@
 note
-	description	: "Token that describe the end of a line."
+	description: "Token that describe the end of a line."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
-	author		: "Arnaud PICHERY [ aranud@mail.dotcom.fr ]"
-	date		: "$Date$"
-	revision	: "$Revision$"
+	author: "Arnaud PICHERY [ aranud@mail.dotcom.fr ]"
+	date: "$Date$"
+	revision: "$Revision$"
 
 class
 	EDITOR_TOKEN_EOL
@@ -159,8 +159,13 @@ feature -- Visitor
 feature {NONE} -- Private Constants
 
 	eol_symbol: STRING_32
-		once
-			Result := ""
+			-- EOL symbol to be displayed
+		do
+			if character_length = 1 then
+				Result := once {STRING_32} "¯"
+			else
+				Result := once {STRING_32} "¬"
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -233,6 +238,7 @@ feature -- Color
 
 invariant
 	wide_image_is_set: not wide_image.is_empty
+	character_length_restricted: character_length = 1 or character_length = 2
 
 note
 	copyright:	"Copyright (c) 1984-2013, Eiffel Software and others"

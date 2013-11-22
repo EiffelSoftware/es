@@ -25,14 +25,14 @@ feature {PS_REPOSITORY_TESTS} -- References
 			test_crud_reference_cycle
 			test_crud_update_on_reference
 
---			test_ref_new
+			--test_ref_new
 		end
 
---	test_ref_new
---		do
---			test_read_write_cycle (test_data.reference_cycle, Void)
---			test_read_write_cycle_with_root (test_data.reference_cycle, Void)
---		end
+	test_ref_new
+		do
+			test_read_write_cycle (test_data.reference_cycle, Void)
+			test_read_write_cycle_with_root (test_data.reference_cycle, Void)
+		end
 
 	test_insert_void_reference
 			-- Test inserting an object with a Void reference
@@ -82,9 +82,7 @@ feature {PS_REPOSITORY_TESTS} -- References
 			test: PS_GENERIC_CRUD_TEST [REFERENCE_CLASS_1]
 		do
 			create test.make (repository)
-			repository.default_object_graph.set_update_depth (-1)
 			test.test_crud_operations (test_data.reference_to_single_other, agent update_reference)
-			repository.default_object_graph.reset_to_default
 		end
 
 feature {PS_REPOSITORY_TESTS} -- Flat objects
@@ -238,7 +236,7 @@ feature {PS_REPOSITORY_TESTS} -- Collections
 	test_referenced_collection_store
 			-- Test if a SPECIAL collection, that is referenced by an ARRAY object, gets stored correctly
 		local
-			test: PS_GENERIC_CRUD_TEST [ARRAY [PERSON]]
+			test: PS_GENERIC_CRUD_TEST [ARRAY [TEST_PERSON]]
 		do
 			create test.make (repository)
 			test.test_insert (test_data.array_of_persons)
@@ -248,29 +246,29 @@ feature {PS_REPOSITORY_TESTS} -- Collections
 	test_referenced_collection_update_known_object
 			-- Test if a reference change to a known object is correctly adjusted.
 		local
-			test: PS_GENERIC_CRUD_TEST [ARRAY [PERSON]]
+			test: PS_GENERIC_CRUD_TEST [ARRAY [TEST_PERSON]]
 		do
 			create test.make (repository)
-			test.test_crud_operations (test_data.array_of_persons, agent {ARRAY [PERSON]}.put(test_data.array_of_persons.item (1), 2))
+			test.test_crud_operations (test_data.array_of_persons, agent {ARRAY [TEST_PERSON]}.put(test_data.array_of_persons.item (1), 2))
 			repository.clean_db_for_testing
 		end
 
 	test_referenced_collection_new_object
 			-- Test if a newly inserted collection item gets correctly inserted
 		local
-			test: PS_GENERIC_CRUD_TEST [ARRAY [PERSON]]
-			new: PERSON
+			test: PS_GENERIC_CRUD_TEST [ARRAY [TEST_PERSON]]
+			new: TEST_PERSON
 		do
 			create new.make ("some", "new_guy", 20)
 			create test.make (repository)
-			test.test_crud_operations (test_data.array_of_persons, agent {ARRAY [PERSON]}.force(new, 5))
+			test.test_crud_operations (test_data.array_of_persons, agent {ARRAY [TEST_PERSON]}.force(new, 5))
 			repository.clean_db_for_testing
 		end
 
 	test_direct_collection_store
 			-- Test if a direct collection store is supported
 		local
-			test: PS_GENERIC_CRUD_TEST [SPECIAL [PERSON]]
+			test: PS_GENERIC_CRUD_TEST [SPECIAL [TEST_PERSON]]
 		do
 			create test.make (repository)
 			test.test_insert (test_data.special_of_persons)
@@ -280,22 +278,22 @@ feature {PS_REPOSITORY_TESTS} -- Collections
 	test_direct_collection_update_known_object
 			-- Test if a reference change to a known object is correctly adjusted.
 		local
-			test: PS_GENERIC_CRUD_TEST [SPECIAL [PERSON]]
+			test: PS_GENERIC_CRUD_TEST [SPECIAL [TEST_PERSON]]
 		do
 			create test.make (repository)
-			test.test_crud_operations (test_data.special_of_persons, agent {SPECIAL [PERSON]}.put(test_data.special_of_persons.item (0), 1))
+			test.test_crud_operations (test_data.special_of_persons, agent {SPECIAL [TEST_PERSON]}.put(test_data.special_of_persons.item (0), 1))
 			repository.clean_db_for_testing
 		end
 
 	test_direct_collection_new_object
 			-- Test if a newly inserted collection item gets correctly inserted
 		local
-			test: PS_GENERIC_CRUD_TEST [SPECIAL [PERSON]]
-			new: PERSON
+			test: PS_GENERIC_CRUD_TEST [SPECIAL [TEST_PERSON]]
+			new: TEST_PERSON
 		do
 			create new.make ("some", "new_guy", 20)
 			create test.make (repository)
-			test.test_crud_operations (test_data.special_of_persons, agent {SPECIAL [PERSON]}.extend(new))
+			test.test_crud_operations (test_data.special_of_persons, agent {SPECIAL [TEST_PERSON]}.extend(new))
 			repository.clean_db_for_testing
 		end
 
@@ -324,14 +322,13 @@ feature {PS_REPOSITORY_TESTS} -- Collections
 	test_update_on_reference
 			-- test if an update on a referenced object works
 		local
-			query: PS_OBJECT_QUERY [DATA_STRUCTURES_CLASS_1]
+			query: PS_QUERY [DATA_STRUCTURES_CLASS_1]
 			retrieved: DATA_STRUCTURES_CLASS_1
 			testdata_copy: DATA_STRUCTURES_CLASS_1
 
 			test: PS_GENERIC_CRUD_TEST[DATA_STRUCTURES_CLASS_1]
 		do
 			repository.clean_db_for_testing
-			repository.default_object_graph.set_update_depth (repository.default_object_graph.object_graph_depth_infinite)
 
 			create test.make (repository)
 			test.test_crud_operations (
@@ -341,7 +338,6 @@ feature {PS_REPOSITORY_TESTS} -- Collections
 						retrieved_obj.array_1[1].update
 					end
 			)
-			repository.default_object_graph.set_update_depth (1)
 			repository.clean_db_for_testing
 		end
 
@@ -350,27 +346,40 @@ feature {PS_REPOSITORY_TESTS} -- Collections
 		local
 			a,b: SHARED_SPECIAL
 			special: SPECIAL[INTEGER]
-			query: PS_OBJECT_QUERY[SHARED_SPECIAL]
-			query2: PS_OBJECT_QUERY[SPECIAL[INTEGER]]
+			query: PS_QUERY[SHARED_SPECIAL]
+			query2: PS_QUERY[SPECIAL[INTEGER]]
+			transaction: PS_TRANSACTION
 		do
 			repository.clean_db_for_testing
 			create special.make_filled (0, 2)
 			create a.make(special)
 			create b.make(special)
 
-			executor.execute_insert (a)
-			executor.execute_insert (b)
+			transaction := repository.new_transaction
+
+			transaction.insert (a)
+			transaction.insert (b)
+			--executor.execute_insert (a)
+			--executor.execute_insert (b)
 
 			special[0] := 1
-			executor.execute_update (special)
+
+			transaction.update (special)
+--			executor.execute_update (special)
 
 			create query.make
-			executor.execute_query (query)
+
+			--executor.execute_query (query)
+			transaction.execute_query (query)
+
 			assert ("no result", not query.result_cursor.after)
 			across query as c loop
 				assert ("not void", attached c.item.special)
 				assert ("equal", c.item.is_deep_equal (a) and c.item.is_deep_equal (b))
 			end
+
+			query.close
+			transaction.commit
 		end
 
 		test_tuple
@@ -382,7 +391,6 @@ feature {PS_REPOSITORY_TESTS} -- Collections
 				repository.clean_db_for_testing
 				create box.set_item ([create {FLAT_CLASS_1}.make, 42, "abc"])
 				create test.make (repository)
-				repository.default_object_graph.set_update_depth (repository.default_object_graph.object_graph_depth_infinite)
 				test.test_crud_operations (box,
 					agent (b: ANY_BOX)
 					do
@@ -390,7 +398,6 @@ feature {PS_REPOSITORY_TESTS} -- Collections
 							fc.update
 						end
 					end )
-				repository.default_object_graph.reset_to_default
 			end
 
 		test_hash_table
@@ -405,7 +412,6 @@ feature {PS_REPOSITORY_TESTS} -- Collections
 				hash.extend (test_data.flat_class.twin, "something")
 				create box.set_item (hash)
 				create test.make (repository)
-				repository.default_object_graph.set_update_depth (repository.default_object_graph.object_graph_depth_infinite)
 				test.test_crud_operations (box,
 					agent (b: ANY_BOX)
 					do
@@ -413,7 +419,6 @@ feature {PS_REPOSITORY_TESTS} -- Collections
 							fc.update
 						end
 					end )
-				repository.default_object_graph.reset_to_default
 			end
 
 
@@ -484,7 +489,7 @@ feature {PS_REPOSITORY_TESTS} -- Polymorphism
 			-- Test when an attribute has declared type LINKED_LIST[ANY] but dynamic type LINKED_LIST[PERSON]
 		local
 			box: ANY_LIST_BOX
-			list: LINKED_LIST[PERSON]
+			list: LINKED_LIST[TEST_PERSON]
 			test: PS_GENERIC_CRUD_TEST[ANY_LIST_BOX]
 		do
 			create list.make
@@ -500,8 +505,8 @@ feature {PS_REPOSITORY_TESTS} -- Polymorphism
 			-- Check if the correct runtime type gets generated
 		local
 			first, last: FILE_NAME
-			person: PERSON
-			test: PS_GENERIC_CRUD_TEST[PERSON]
+			person: TEST_PERSON
+			test: PS_GENERIC_CRUD_TEST[TEST_PERSON]
 		do
 			create first.make_from_string ("some")
 			create last.make_from_string ("string")
@@ -510,7 +515,7 @@ feature {PS_REPOSITORY_TESTS} -- Polymorphism
 			-- Regression test: instead of creating FILE_NAME objects, a STRING object was created.
 			test.test_insert (person)
 			repository.clean_db_for_testing
-			test.test_crud_operations (person, agent (p:PERSON) do p.add_item end)
+			test.test_crud_operations (person, agent (p:TEST_PERSON) do p.add_item end)
 			repository.clean_db_for_testing
 		end
 

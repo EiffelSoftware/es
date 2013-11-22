@@ -70,6 +70,8 @@ feature {NONE} -- Initialization
 	make
 			-- Initialize `Current'
 		do
+			create_implementation_objects
+
 			create focused_selection_color.make_with_rgb (1, 0, 0)
 			create non_focused_selection_color.make_with_rgb (0.266667, 0.592157, 0.874510)
 
@@ -156,7 +158,7 @@ feature {EV_GRID_ITEM_I} -- Implementation
 				tuple.put_integer (0, 2)
 			else
 				l_font_imp ?= a_font.implementation
-				check l_font_imp /= void end
+				check l_font_imp /= void then end
 				create l_string.make_with_eiffel_string (a_string.as_string_8)
 				create l_attributes.make
 				l_attributes.set_object__for_key_ (l_font_imp.font, create {NS_STRING}.make_with_eiffel_string ("NSFont"))
@@ -187,4 +189,14 @@ feature {EV_ANY, EV_ANY_I} -- Implementation
 			-- Provides a common user interface to platform dependent
 			-- functionality implemented by `Current'.
 
+note
+	copyright: "Copyright (c) 1984-2013, Eiffel Software and others"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

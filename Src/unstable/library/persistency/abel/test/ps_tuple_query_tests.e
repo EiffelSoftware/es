@@ -18,14 +18,21 @@ create
 
 feature
 
-
 	test_simple_query
 			-- Test a simple tuple query with no criteria and standard projection
 		local
-			query:PS_TUPLE_QUERY[PERSON]
+			query:PS_TUPLE_QUERY[TEST_PERSON]
 			res: LINKED_LIST[TUPLE[STRING, STRING, INTEGER]]
+			transaction: PS_TRANSACTION
 		do
-			across test_data.people as p loop executor.execute_insert(p.item) end
+			repository.clean_db_for_testing
+			transaction := repository.new_transaction
+			across
+				test_data.people as person
+			loop
+				transaction.insert (person.item)
+			end
+
 			create query.make
 			create res.make
 			assert ("Query projection array is less than 3", query.projection.count >=3)
@@ -34,7 +41,7 @@ feature
 				and  query.projection[2].is_equal ("last_name")
 				and  query.projection[3].is_equal ("items_owned"))
 
-			executor.execute_tuple_query (query)
+			transaction.execute_tuple_query (query)
 
 			assert ("Query result is empty", not query.result_cursor.after)
 
@@ -59,18 +66,28 @@ feature
 					end
 				end
 				)
+			query.close
+			transaction.commit
 		end
 
 
 	test_query_with_criteria
 				-- Test a simple query with default projection and some criteria
 		local
-			query:PS_TUPLE_QUERY[PERSON]
+			query:PS_TUPLE_QUERY[TEST_PERSON]
+			transaction: PS_TRANSACTION
 		do
-			across test_data.people as p loop executor.execute_insert(p.item) end
-			create query.make_with_criterion (factory.create_predefined ("last_name", factory.equals, test_data.people.first.last_name))
+			repository.clean_db_for_testing
+			transaction := repository.new_transaction
+			across
+				test_data.people as person
+			loop
+				transaction.insert (person.item)
+			end
 
-			executor.execute_tuple_query (query)
+			create query.make_with_criterion (factory.new_predefined ("last_name", factory.equals, test_data.people.first.last_name))
+
+			transaction.execute_tuple_query (query)
 
 			assert ("Result is empty", not query.result_cursor.after)
 			assert ("Tuple type is wrong", attached {TUPLE[STRING, STRING, INTEGER]} query.result_cursor.item)
@@ -86,19 +103,31 @@ feature
 
 			query.result_cursor.forth
 			assert ("Too many items", query.result_cursor.after)
+			query.close
+			transaction.commit
 		end
 
 
 	test_query_projection
 			-- Test a simple query with a custom projection and some criteria
 		local
-			query:PS_TUPLE_QUERY[PERSON]
+			query:PS_TUPLE_QUERY[TEST_PERSON]
+			projection: ARRAYED_LIST [STRING]
+			transaction: PS_TRANSACTION
 		do
-			across test_data.people as p loop executor.execute_insert(p.item) end
-			create query.make_with_criterion (factory.create_predefined ("last_name", factory.equals, test_data.people.first.last_name))
-			query.set_projection (<<"last_name">>)
+			repository.clean_db_for_testing
+			transaction := repository.new_transaction
+			across
+				test_data.people as person
+			loop
+				transaction.insert (person.item)
+			end
 
-			executor.execute_tuple_query (query)
+			create query.make_with_criterion (factory.new_predefined ("last_name", factory.equals, test_data.people.first.last_name))
+			create projection.make_from_array (<<"last_name">>)
+			query.set_projection (projection)
+
+			transaction.execute_tuple_query (query)
 
 			assert ("Result is empty", not query.result_cursor.after)
 			assert ("Tuple type is wrong", attached {TUPLE[STRING]} query.result_cursor.item
@@ -115,13 +144,23 @@ feature
 	test_query_criteria_not_in_projection
 			-- Test a query which has a criterion on an attribute not included in the projection array
 		local
-			query:PS_TUPLE_QUERY[PERSON]
+			query:PS_TUPLE_QUERY[TEST_PERSON]
+			projection: ARRAYED_LIST [STRING]
+			transaction: PS_TRANSACTION
 		do
-			across test_data.people as p loop executor.execute_insert(p.item) end
-			create query.make_with_criterion (factory.create_predefined ("last_name", factory.equals, test_data.people.first.last_name))
-			query.set_projection (<<"first_name">>)
+			repository.clean_db_for_testing
+			transaction := repository.new_transaction
+			across
+				test_data.people as person
+			loop
+				transaction.insert (person.item)
+			end
 
-			executor.execute_tuple_query (query)
+			create query.make_with_criterion (factory.new_predefined ("last_name", factory.equals, test_data.people.first.last_name))
+			create projection.make_from_array (<<"first_name">>)
+			query.set_projection (projection)
+
+			transaction.execute_tuple_query (query)
 
 			assert ("Result is empty", not query.result_cursor.after)
 			assert ("Tuple type is wrong", attached {TUPLE[STRING]} query.result_cursor.item
@@ -133,6 +172,8 @@ feature
 
 			query.result_cursor.forth
 			assert ("Too many items", query.result_cursor.after)
+			query.close
+			transaction.commit
 		end
 
 
@@ -141,14 +182,18 @@ feature
 		local
 			query: PS_TUPLE_QUERY[REFERENCE_CLASS_1]
 			res: LINKED_LIST[TUPLE[INTEGER]]
+			transaction: PS_TRANSACTION
 		do
 			repository.clean_db_for_testing
-			executor.execute_insert (test_data.reference_to_single_other)
+			transaction := repository.new_transaction
+
+			transaction.insert (test_data.reference_to_single_other)
+
 			create query.make
 			create res.make
 			assert ("Wrong default projection", query.projection.count = 1 and then	query.projection[1].is_equal ("ref_class_id"))
 
-			executor.execute_tuple_query (query)
+			transaction.execute_tuple_query (query)
 
 			assert ("Result is empty", not query.result_cursor.after)
 
@@ -171,6 +216,8 @@ feature
 					end
 				end
 			)
+			query.close
+			transaction.commit
 		end
 
 	test_query_objects_in_projection
@@ -178,14 +225,18 @@ feature
 		local
 			query: PS_TUPLE_QUERY[REFERENCE_CLASS_1]
 			res: LINKED_LIST[TUPLE[INTEGER, detachable REFERENCE_CLASS_1]]
+			projection: ARRAYED_LIST [STRING]
+			transaction: PS_TRANSACTION
 		do
 			repository.clean_db_for_testing
-			executor.execute_insert (test_data.reference_to_single_other)
+			transaction := repository.new_transaction
+			transaction.insert (test_data.reference_to_single_other)
 			create query.make
 			create res.make
-			query.set_projection (<<"ref_class_id", "refer">>)
+			create projection.make_from_array (<<"ref_class_id", "refer">>)
+			query.set_projection (projection)
 
-			executor.execute_tuple_query (query)
+			transaction.execute_tuple_query (query)
 
 			assert ("Result is empty", not query.result_cursor.after)
 
@@ -210,19 +261,25 @@ feature
 					assert ("Error: Object with wrong ref_class_id loaded", false)
 				end
 			end
+			query.close
+			transaction.commit
 		end
 
 	test_query_reference_cycle
 			-- Test loading an object that is part of a reference cycle in a tuple query
 		local
-			query: PS_TUPLE_QUERY[REFERENCE_CLASS_1]
+			query: PS_TUPLE_QUERY [REFERENCE_CLASS_1]
+			projection: ARRAYED_LIST [STRING]
+			transaction: PS_TRANSACTION
 		do
 			repository.clean_db_for_testing
-			executor.execute_insert (test_data.reference_cycle)
-			create query.make_with_criterion (factory.create_predefined ("ref_class_id", factory.equals, test_data.reference_cycle.ref_class_id))
-			query.set_projection (<<"ref_class_id", "refer">>)
+			transaction := repository.new_transaction
+			transaction.insert (test_data.reference_cycle)
+			create query.make_with_criterion (factory.new_predefined ("ref_class_id", factory.equals, test_data.reference_cycle.ref_class_id))
+			create projection.make_from_array (<<"ref_class_id", "refer">>)
+			query.set_projection (projection)
 
-			executor.execute_tuple_query (query)
+			transaction.execute_tuple_query (query)
 
 			assert ("Result is empty", not query.result_cursor.after)
 
@@ -236,6 +293,8 @@ feature
 
 			query.result_cursor.forth
 			assert ("Too many items", query.result_cursor.after)
+			query.close
+			transaction.commit
 		end
 
 feature {NONE} -- Initialization

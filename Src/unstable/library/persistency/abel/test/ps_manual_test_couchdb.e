@@ -13,10 +13,15 @@ inherit
 
 feature {NONE}
 
-	make_repository: CDB_REPOSITORY
+	make_repository: PS_REPOSITORY
 			-- Create the repository for this test
+		local
+			factory: CDB_REPOSITORY_FACTORY
 		do
-			create Result.make_empty
+			create factory.make
+			Result := factory.new_repository
+			Result.clean_db_for_testing
+--			create Result.make_empty
 		end
 
 feature
@@ -55,7 +60,7 @@ feature
 
 	cdb_transaction_dirty
 		do
-			transaction_tests.test_no_dirty_reads
+			transaction_tests.test_no_dirty_read
 		end
 
 	cdb_transaction_repeatable_read

@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PS_AGENT_CRITERION_ELIMINATOR_PLUGIN}."
-	author: ""
+	description: "Removes all agent criteria from a composite criterion tree."
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -12,11 +12,11 @@ inherit
 
 feature
 
-	before_write (object: PS_BACKEND_OBJECT; transaction: PS_TRANSACTION)
+	before_write (object: PS_BACKEND_OBJECT; transaction: PS_INTERNAL_TRANSACTION)
 		do
 		end
 
-	before_retrieve (args: TUPLE[type: PS_TYPE_METADATA; criterion: detachable PS_CRITERION; attributes: PS_IMMUTABLE_STRUCTURE [STRING]]; transaction: PS_TRANSACTION): like args
+	before_retrieve (args: TUPLE[type: PS_TYPE_METADATA; criterion: detachable PS_CRITERION; attributes: PS_IMMUTABLE_STRUCTURE [STRING]]; transaction: PS_INTERNAL_TRANSACTION): like args
 		local
 			eliminator: PS_AGENT_CRITERION_ELIMINATOR
 --			printer: PS_CRITERION_PRINTER
@@ -32,7 +32,7 @@ feature
 			end
 		end
 
-	after_retrieve (object: PS_BACKEND_OBJECT; criterion: detachable PS_CRITERION; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction:PS_TRANSACTION)
+	after_retrieve (object: PS_BACKEND_OBJECT; criterion: detachable PS_CRITERION; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction:PS_INTERNAL_TRANSACTION)
 		do
 		end
 

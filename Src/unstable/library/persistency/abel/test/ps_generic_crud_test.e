@@ -31,7 +31,7 @@ feature {PS_CRUD_TESTS}
 
 			internal_check_equality (object, equality_function)
 			repo_access.commit
-			repo_access.start
+			repo_access.prepare
 		end
 
 	test_crud_operations (object: G; update_operation: PROCEDURE [ANY, TUPLE [G]])
@@ -68,15 +68,15 @@ feature {PS_CRUD_TESTS}
 				-- Test successful delete
 
 			repo_access.commit
-			repo_access.start
+			repo_access.prepare
 
-			executor.execute_delete (object)
-			third_count := count_results
-				-- In a successful delete, all we can guarantee is that the third count is smaller than the second
-			assert ("The object still exists in the database", second_count > third_count)
+--			executor.execute_delete (object)
+--			third_count := count_results
+--				-- In a successful delete, all we can guarantee is that the third count is smaller than the second
+--			assert ("The object still exists in the database", second_count > third_count)
 
-			repo_access.commit
-			repo_access.start
+--			repo_access.commit
+--			repo_access.start
 
 		end
 
@@ -88,7 +88,7 @@ feature {PS_CRUD_TESTS}
 	count_results: INTEGER
 			-- Count the number of results of objects of type G
 		local
-			query: PS_OBJECT_QUERY [G]
+			query: PS_QUERY [G]
 		do
 			create query.make
 
@@ -109,7 +109,7 @@ feature {NONE}
 			-- See if any retrieved object from the database is equal to `object'
 			-- Use `equality_test' to test on equality.
 		local
-			query: PS_OBJECT_QUERY [G]
+			query: PS_QUERY [G]
 			ref_list: LINKED_LIST [G]
 			one_equal: BOOLEAN
 		do

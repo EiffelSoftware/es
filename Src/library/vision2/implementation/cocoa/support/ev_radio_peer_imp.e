@@ -4,6 +4,8 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
+-- TODO: Refactor radio_group to be attached??
+
 deferred class
 	EV_RADIO_PEER_IMP
 
@@ -18,9 +20,42 @@ feature -- Initialization
 		do
 			create radio_group.make
 			l_radio_group := radio_group
-			check l_radio_group /= Void end
+			check l_radio_group /= Void then end
 			l_radio_group.put_front (current)
 			set_is_initialized (True)
+		end
+
+feature -- Status setting
+
+	enable_select
+			-- Select `Current'.
+		local
+			button_imp: detachable like Current
+			l_radio_group: like radio_group
+		do
+			l_radio_group := radio_group
+			check l_radio_group /= Void then end
+			if not l_radio_group.is_empty then
+				button_imp ?= peers.first.implementation
+				check button_imp /= Void then end
+				button_imp.disable_select
+				l_radio_group.start
+				l_radio_group.prune (current)
+				l_radio_group.put_front (current)
+				-- First element of 'radio_group' is the one that is selected
+			end
+		end
+
+	disable_select
+			-- Unselect 'Current'
+		local
+			l_radio_group: like radio_group
+		do
+			l_radio_group := radio_group
+			check l_radio_group /= Void then end
+			l_radio_group.start
+			l_radio_group.prune (current)
+			l_radio_group.extend (current)
 		end
 
 feature -- Status report
@@ -81,7 +116,7 @@ feature -- Status report
 				end
 				l_result := interface
 			end
-			check l_result /= Void end
+			check l_result /= Void then end
 			Result := l_result
 		end
 
@@ -106,7 +141,7 @@ feature {EV_ANY_I} -- Implementation
 			end
 			internal_set_radio_group (a_list)
 			l_radio_group := radio_group
-			check l_radio_group /= Void end
+			check l_radio_group /= Void then end
 			if l_radio_group.is_empty then
 				enable_select
 			end
@@ -125,7 +160,7 @@ feature {EV_ANY_I} -- Implementation
 			l_radio_group: like radio_group
 		do
 			l_radio_group := radio_group
-			check l_radio_group /= Void end
+			check l_radio_group /= Void then end
 			l_radio_group.start
 			l_radio_group.prune (Current)
 			check
@@ -154,7 +189,7 @@ feature {EV_CONTAINER_IMP} -- Implementation
 			l_cur: LINKED_LIST_CURSOR [like Current]
 		do
 			l_radio_group := radio_group
-			check l_radio_group /= Void end
+			check l_radio_group /= Void then end
 			l_cur := l_radio_group.cursor
 			from
 				l_radio_group.start
@@ -172,13 +207,13 @@ feature {EV_CONTAINER_IMP} -- Implementation
 invariant
 	is_usable implies not has_duplicated_items
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end -- class EV_RADIO_PEER

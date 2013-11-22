@@ -43,24 +43,16 @@ inherit
 
 	EV_PND_DEFERRED_ITEM_PARENT
 
-	NS_OUTLINE_VIEW_DATA_SOURCE_PROTOCOL -- [EV_MULTI_COLUMN_LIST_ROW] -- TODO: should probably be TABLE_VIEW
+	NS_OUTLINE_VIEW_DATA_SOURCE [EV_MULTI_COLUMN_LIST_ROW] -- TODO: should probably be TABLE_VIEW
 		rename
+			make as create_data_source,
 			item as data_source
-		undefine
-			copy,
-			is_equal,
-			dispose
 		end
 
-	NS_OUTLINE_VIEW_DELEGATE_PROTOCOL
+	NS_OUTLINE_VIEW_DELEGATE
 		rename
+			make as create_delegate,
 			item as delegate
-		undefine
-			copy,
-			is_equal,
-			dispose
-		select
-			delegate
 		end
 
 create
@@ -80,35 +72,32 @@ feature {NONE} -- Initialization
 			Precursor {EV_MULTI_COLUMN_LIST_I}
 
 			create scroll_view.make
-			scroll_view.set_translates_autoresizing_mask_into_constraints_ (False)
 			cocoa_view := scroll_view
 			create outline_view.make
-			scroll_view.set_document_view_ (outline_view)
-			scroll_view.set_has_horizontal_scroller_ (True)
-			scroll_view.set_has_vertical_scroller_ (True)
-			scroll_view.set_autohides_scrollers_ (True)
+			scroll_view.set_document_view (outline_view)
+			scroll_view.set_has_horizontal_scroller (True)
+			scroll_view.set_has_vertical_scroller (True)
+			scroll_view.set_autohides_scrollers (True)
 			create table_column.make
-			table_column.set_editable_ (False)
-			table_column.set_data_cell_ (create {NS_IMAGE_CELL}.make)
-			table_column.set_width_ ({REAL_32}20.0)
-			outline_view.add_table_column_ (table_column)
+			table_column.set_editable (False)
+			table_column.set_data_cell (create {NS_IMAGE_CELL}.make)
+			table_column.set_width ({REAL_32}20.0)
+			outline_view.add_table_column (table_column)
 			create table_column.make
-			table_column.set_editable_ (False)
-			table_column.set_width_ ({REAL_32}1000.0)
-			outline_view.add_table_column_ (table_column)
+			table_column.set_editable (False)
+			table_column.set_width ({REAL_32}1000.0)
+			outline_view.add_table_column (table_column)
 
---			outline_view.set_header_view_ (default_pointer)
+			outline_view.set_header_view (default_pointer)
 
 			initialize_item_list
 			Precursor {EV_PRIMITIVE_IMP}
 
-			-- TODO: set up data source and delegate
+			create_data_source
+			outline_view.set_data_source (current)
 
---			create_data_source
---			outline_view.set_data_source_ (Current)
-
---			create_delegate
---			outline_view.set_delegate_ (Current)
+			create_delegate
+			outline_view.set_delegate (current)
 
 			-- FIXME: Change to TableView
 			enable_tabable_to
@@ -160,15 +149,15 @@ feature -- DataSource
 			l_pixmap_imp: detachable EV_PIXMAP_IMP
 		do
 			-- FIXME: do proper reverse mapping from the a_table_column pointer to the eiffel object
-			if attached outline_view.table_columns.item as l_item and then l_item.item = a_table_column then
+			if attached outline_view.table_columns.item (0) as l_item and then l_item.item = a_table_column then
 				if attached a_node.pixmap as l_pixmap then
 					l_pixmap_imp ?= l_pixmap.implementation
-					check l_pixmap_imp /= Void end
+					check l_pixmap_imp /= Void then end
 					Result := l_pixmap_imp.image.item
 				end
 			else
 				l_column := a_node.i_th (1)
-				Result := (create {NS_STRING}.make_with_eiffel_string (l_column.as_string_8)).item
+				Result := (create {NS_STRING}.make_with_string (l_column)).item
 			end
 		end
 
@@ -252,11 +241,11 @@ feature -- Access
 	selected_item: detachable EV_MULTI_COLUMN_LIST_ROW
 			-- Item which is currently selected
 		local
-			l_row: INTEGER_64
+			l_row: INTEGER
 		do
 			l_row := outline_view.selected_row
 			if l_row /= -1 then
-				Result ?= outline_view.item_at_row_ (l_row)
+				Result ?= outline_view.item_at_row (l_row)
 			end
 		end
 
@@ -396,14 +385,14 @@ feature -- Implementation
 			-- Insert `item_imp' at `an_index'.
 		do
 			-- TODO: optimization potential?
---			outline_view.reload_item__reload_children_ (default_pointer, True)
+			outline_view.reload_item_reload_children (default_pointer, True)
 		end
 
 	remove_item (item_imp: EV_MULTI_COLUMN_LIST_ROW_IMP)
 			-- Remove `item' from the list
 		do
 			-- TODO: optimization potential?
---			outline_view.reload_item__reload_children_ (default_pointer, True)
+			outline_view.reload_item_reload_children (default_pointer, True)
 		end
 
 	set_to_drag_and_drop: BOOLEAN
@@ -555,11 +544,14 @@ feature {EV_ANY, EV_ANY_I} -- Implementation
 
 	interface: detachable EV_MULTI_COLUMN_LIST note option: stable attribute end;
 
-feature {NONE} -- Implementation
-
-	wrapper_objc_class_name: STRING
-		do
-			Result := "NSTableView"
-		end
-
+note
+	copyright: "Copyright (c) 1984-2013, Eiffel Software and others"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end -- class EV_MULTI_COLUMN_LIST_IMP

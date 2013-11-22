@@ -21,8 +21,11 @@ inherit
 			interface,
 			make,
 			replace,
-			on_size,
-			set_background_color
+			compute_minimum_width,
+			compute_minimum_height,
+			compute_minimum_size,
+			ev_apply_new_size,
+			on_size
 		end
 
 create
@@ -32,13 +35,12 @@ feature {NONE} -- Initialization
 
 	make
 		do
-			create clip_view.make
-			clip_view.set_translates_autoresizing_mask_into_constraints_ (False)
-			clip_view.set_draws_background_ (False)
-			cocoa_view := clip_view
-
+			create scroll_view.make
+			scroll_view.set_has_horizontal_scroller (False)
+			scroll_view.set_has_vertical_scroller (False)
+			scroll_view.set_draws_background (False)
+			cocoa_view := scroll_view
 			initialize
-			create color_utils
 			set_is_initialized (True)
 		end
 
@@ -46,9 +48,15 @@ feature -- Access
 
 	x_offset: INTEGER
 			-- Horizontal position of viewport relative to `item'.
+--		do
+--			Result := scroll_view.bounds.origin.x
+--		end
 
 	y_offset: INTEGER
 			-- Vertical position of viewport relative to `item'.
+--		do
+--			Result := scroll_view.bounds.origin.y
+--		end
 
 feature -- Element change
 
@@ -57,63 +65,64 @@ feature -- Element change
 		do
 			if attached item_imp as l_item_imp then
 				l_item_imp.set_parent_imp (Void)
+				notify_change (Nc_minsize, Current)
 			end
 			if attached v and then attached {like item_imp} v.implementation as v_imp then
+				v_imp.set_parent_imp (current)
+				item := v
+				scroll_view.set_document_view (v_imp.attached_view)
+				v_imp.ev_apply_new_size (0, 0, width, height, True)
 				v_imp.set_parent_imp (Current)
-				clip_view.remove_constraints_ (clip_view.constraints)
-				clip_view.set_document_view_ (v_imp.attached_view)
-
-				v_imp.set_parent_imp (Current)
+				notify_change (Nc_minsize, Current)
 			end
 			item := v
+			ev_apply_new_size (x_position, y_position, width, height, False)
 		end
 
 	set_x_offset (a_x: INTEGER)
 			-- Set `x_offset' to `a_x'.
-		local
-			l_point: NS_POINT
 		do
-			create l_point.make
-			l_point.set_x (a_x)
-			l_point.set_y (y_offset)
---			clip_view.scroll_to_point_ (l_point)
+			scroll_view.content_view.scroll_to_point (create {NS_POINT}.make_point (a_x, y_offset))
 			x_offset := a_x
 		end
 
 	set_y_offset (a_y: INTEGER)
 			-- Set `y_offset' to `a_y'.
-		local
-			l_point: NS_POINT
 		do
-			create l_point.make
-			l_point.set_x (x_offset)
-			l_point.set_y (a_y)
---			clip_view.scroll_to_point_ (l_point)
+			scroll_view.content_view.scroll_to_point (create {NS_POINT}.make_point (x_offset, a_y))
 			y_offset := a_y
 		end
 
 	set_item_size (a_width, a_height: INTEGER)
 			-- Set `a_widget.width' to `a_width'.
 			-- Set `a_widget.height' to `a_height'.
-		do
-			check item /= Void end
-			item.set_minimum_size (a_width, a_height)
-		end
-
-	set_background_color (a_color: EV_COLOR)
 		local
-			l_color: NS_COLOR
+			l_item_imp: like item_imp
 		do
-			Precursor {EV_CELL_IMP} (a_color)
-			l_color := color_utils.color_with_calibrated_red__green__blue__alpha_ (a_color.red.to_double, a_color.green.to_double, a_color.blue.to_double, 1.0)
-			if attached {NS_CLIP_VIEW} attached_view as l_clip_view then
-				l_clip_view.set_background_color_ (l_color)
-			elseif attached {NS_SCROLL_VIEW} attached_view as l_scroll_view then
-				l_scroll_view.set_background_color_ (l_color)
-			end
+			l_item_imp := item_imp
+			check l_item_imp /= Void then end
+			l_item_imp.parent_ask_resize (a_width, a_height)
 		end
 
 feature -- Layout
+
+	compute_minimum_width, compute_minimum_height, compute_minimum_size
+			-- Recompute both minimum_width and minimum_height of `Current'.
+			-- Does nothing since it does not have a sense to compute it,
+			-- it is only what the user set it to.
+		do
+			internal_set_minimum_size (minimum_width, minimum_height)
+		end
+
+	ev_apply_new_size (a_x_position, a_y_position, a_width, a_height: INTEGER; repaint: BOOLEAN)
+		do
+			ev_move_and_resize (a_x_position, a_y_position, a_width, a_height, repaint)
+			if attached item_imp as l_item_imp then
+				scroll_view.set_document_view (l_item_imp.attached_view)
+
+				l_item_imp.ev_apply_new_size (0, 0, width, height, True)
+			end
+		end
 
 	on_size (a_width, a_height: INTEGER)
 		do
@@ -122,12 +131,22 @@ feature -- Layout
 			end
 		end
 
-feature -- Implementation
+feature {EV_ANY_I} -- Implementation
 
-	clip_view: NS_CLIP_VIEW;
+	scroll_view: NS_SCROLL_VIEW;
 
 feature {EV_ANY, EV_ANY_I} -- Implementation
 
 	interface: detachable EV_VIEWPORT note option: stable attribute end;
 
+note
+	copyright: "Copyright (c) 1984-2013, Eiffel Software and others"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end -- class EV_VIEWPORT_IMP

@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PS_AGENT_CRITERION_ELIMINATOR}."
-	author: ""
+	description: "A visitor to remove agent criteria from a composite criterion."
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -11,7 +11,7 @@ inherit
 
 	PS_CRITERION_VISITOR [PS_CRITERION]
 
-	PS_EIFFELSTORE_EXPORT
+	PS_ABEL_EXPORT
 
 feature {PS_CRITERION} -- Visitor functions
 

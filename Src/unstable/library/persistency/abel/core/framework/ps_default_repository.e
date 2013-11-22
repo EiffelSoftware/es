@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PS_DEFAULT_REPOSITORY}."
-	author: ""
+	description: "A default repository that does the object-relational mapping, but relies on a PS_BACKEND for the stoage mechanism."
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -9,47 +9,76 @@ class
 
 inherit
 	PS_REPOSITORY
-		redefine is_root end
+		redefine
+			set_root_status
+		end
 
 	REFACTORING_HELPER
 
 create
-	make
+	make_from_factory
 
-feature {PS_EIFFELSTORE_EXPORT} -- Object query
 
-	internal_execute_query (query: PS_OBJECT_QUERY [ANY]; transaction: PS_TRANSACTION)
+feature -- Access.
+
+	batch_retrieval_size: INTEGER
+			-- Define the number of objects to be retrieved in one batch for query operations.
+			-- Set to `infinite_batch_size' to retrieve all objects at once (and disable lazy loading).
+		do
+			Result := backend.lazy_loading_batch_size
+		end
+
+feature -- Element change
+
+	set_batch_retrieval_size (size: INTEGER)
+			-- Set `batch_retrieval_size' to `size'.
+		do
+			backend.set_lazy_loading_batch_size (size)
+		end
+
+feature -- Disposal
+
+	close
+			-- Close the current repository.
+		do
+			backend.close
+		end
+
+feature {PS_ABEL_EXPORT} -- Object query
+
+	internal_execute_query (query: PS_QUERY [ANY]; transaction: PS_INTERNAL_TRANSACTION)
 			-- Execute `query' within `transaction'.
 		do
 			id_manager.register_transaction (transaction)
-			if attached {PS_OBJECT_QUERY [ANY]} query as obj_query then
-				retriever.setup_query (obj_query, transaction)
-			end
+			initialize_query (query, transaction)
+--			attach (read_manager_cache[query.backend_identifier]).execute (query, transaction, default_object_graph.query_depth)
+			attach (read_manager_cache[query.backend_identifier]).execute (query, transaction, query.object_initialization_depth)
 		rescue
 			query.reset
 			default_transactional_rescue (transaction)
 		end
 
-	next_entry (query: PS_OBJECT_QUERY [ANY])
+	next_entry (query: PS_QUERY [ANY])
 			-- Retrieves the next object. Stores item directly into result_set.
 			-- In case of an error it is written into the transaction connected to the query.
 		do
-			id_manager.register_transaction (query.transaction)
-			if attached {PS_OBJECT_QUERY [ANY]} query as obj_query then
-				retriever.next_entry (obj_query)
-			end
+			id_manager.register_transaction (query.internal_transaction)
+			attach (read_manager_cache[query.backend_identifier]).next_entry (query)
 		rescue
+			fixme ("What to do in such a case (i.e. exception during lazy loading)?")
 			query.reset
-			default_transactional_rescue (query.transaction)
+			default_transactional_rescue (query.internal_transaction)
 		end
 
-	internal_execute_tuple_query (tuple_query: PS_TUPLE_QUERY [ANY]; transaction: PS_TRANSACTION)
+	internal_execute_tuple_query (tuple_query: PS_TUPLE_QUERY [ANY]; transaction: PS_INTERNAL_TRANSACTION)
 			-- Execute the tuple query `tuple_query' within the readonly transaction `transaction'.
 		local
 			exception: PS_INTERNAL_ERROR
 		do
 			id_manager.register_transaction (transaction)
-			retriever.setup_tuple_query (tuple_query, transaction)
+			initialize_query (tuple_query, transaction)
+--			attach (read_manager_cache[tuple_query.backend_identifier]).execute_tuple (tuple_query, transaction, default_object_graph.query_depth)
+			attach (read_manager_cache[tuple_query.backend_identifier]).execute_tuple (tuple_query, transaction, tuple_query.object_initialization_depth)
 		rescue
 			tuple_query.reset
 			default_transactional_rescue (transaction)
@@ -60,51 +89,86 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 		local
 			exception: PS_INTERNAL_ERROR
 		do
-			id_manager.register_transaction (tuple_query.transaction)
-			retriever.next_tuple_entry (tuple_query)
+			id_manager.register_transaction (tuple_query.internal_transaction)
+			attach (read_manager_cache[tuple_query.backend_identifier]).next_tuple_entry (tuple_query)
 		rescue
+			fixme ("What to do in such a case (i.e. exception during lazy loading)?")
 			tuple_query.reset
-			default_transactional_rescue (tuple_query.transaction)
+			default_transactional_rescue (tuple_query.internal_transaction)
 		end
 
-feature {PS_EIFFELSTORE_EXPORT} -- Modification
+feature {PS_ABEL_EXPORT} -- Modification
 
-	insert (object: ANY; transaction: PS_TRANSACTION)
+	insert (object: ANY; transaction: PS_INTERNAL_TRANSACTION)
 			-- Insert `object' within `transaction' into `Current'.
 		do
 			id_manager.register_transaction (transaction)
-			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).insert, agent id_manager.is_identified(?, transaction))
-
-			do_write (disassembler.object_graph, transaction)
+			write_manager.write (object, transaction)
 		rescue
 			default_transactional_rescue (transaction)
 		end
 
-	update (object: ANY; transaction: PS_TRANSACTION)
+	update (object: ANY; transaction: PS_INTERNAL_TRANSACTION)
 			-- Update `object' within `transaction'.
 		do
 			id_manager.register_transaction (transaction)
-			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).update, agent id_manager.is_identified(?, transaction))
-
-			do_write (disassembler.object_graph, transaction)
+			write_manager.write (object, transaction)
 		rescue
 			default_transactional_rescue (transaction)
 		end
 
-	delete (object: ANY; transaction: PS_TRANSACTION)
-			-- Delete `object' within `transaction' from `Current'.
+	direct_update (object: ANY; transaction: PS_INTERNAL_TRANSACTION)
+			-- Update `object' only and none of its referenced objects.
 		do
 			id_manager.register_transaction (transaction)
-			disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).delete, agent id_manager.is_identified(?, transaction))
+			write_manager.direct_update (object, transaction)
+		end
 
-			do_delete (disassembler.object_graph, transaction)
+	delete (object: ANY; transaction: PS_INTERNAL_TRANSACTION)
+			-- Delete `object' within `transaction' from `Current'.
+		local
+			id: PS_OBJECT_IDENTIFIER_WRAPPER
+			primary: INTEGER
+			to_delete: LINKED_LIST[PS_BACKEND_ENTITY]
+			found: BOOLEAN
+		do
+			id_manager.register_transaction (transaction)
+
+			id := id_manager.identifier_wrapper (object, transaction)
+			primary := mapper.quick_translate (id.object_identifier, transaction)
+
+			create to_delete.make
+			to_delete.extend (create {PS_BACKEND_OBJECT}.make (primary, id.metadata))
+
+			across
+				all_handlers as h_cursor
+			until
+				found
+			loop
+				if h_cursor.item.can_handle_type (id.metadata) then
+					found := True
+					if h_cursor.item.is_mapping_to_collection then
+						backend.delete_collections (to_delete, transaction)
+					else
+						backend.delete (to_delete, transaction)
+					end
+				end
+			end
+			mapper.remove_primary_key (primary, id.metadata, transaction)
+			id_manager.delete_identification (object, transaction)
 		rescue
 			default_transactional_rescue (transaction)
 		end
 
-feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
+	set_root_status (object: ANY; value: BOOLEAN; transaction: PS_INTERNAL_TRANSACTION)
+			-- Set the root status of `object' to `value'.
+		do
+			write_manager.update_root (object, value, transaction)
+		end
 
-	commit_transaction (transaction: PS_TRANSACTION)
+feature {PS_ABEL_EXPORT} -- Transaction handling
+
+	commit_transaction (transaction: PS_INTERNAL_TRANSACTION)
 			-- Explicitly commit the transaction.
 		do
 			if id_manager.can_commit (transaction) then
@@ -118,7 +182,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 			default_transactional_rescue (transaction)
 		end
 
-	rollback_transaction (transaction: PS_TRANSACTION; manual_rollback: BOOLEAN)
+	rollback_transaction (transaction: PS_INTERNAL_TRANSACTION; manual_rollback: BOOLEAN)
 			-- Rollback the transaction.
 		do
 			backend.rollback (transaction)
@@ -126,22 +190,29 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 			transaction.declare_as_aborted
 		end
 
-feature {PS_EIFFELSTORE_EXPORT} -- Testing
+feature {PS_ABEL_EXPORT} -- Testing
 
 	clean_db_for_testing
 			-- Wipe out all data.
 		local
-			handlers: LINKED_LIST[PS_COLLECTION_HANDLER_OLD[detachable ANY]]
+			batch_size: INTEGER
 		do
-			handlers:= collection_handlers
+			batch_size := batch_retrieval_size
 			backend.wipe_out
-			make (backend)
-			across handlers as handler_cursor loop
-				add_collection_handler (handler_cursor.item)
-			end
+
+			create id_manager.make
+			create mapper.make
+			create read_manager_cache.make (100)
+
+			create write_manager.make (id_manager.metadata_manager, id_manager, mapper, backend)
+
+			all_handlers.do_all (agent {PS_HANDLER}.set_write_manager (write_manager))
+			all_handlers.do_all (agent write_manager.add_handler)
+
+			set_batch_retrieval_size (batch_size)
 		end
 
-feature {PS_EIFFELSTORE_EXPORT} -- Status Report
+feature {PS_ABEL_EXPORT} -- Status Report
 
 	can_handle (object: ANY): BOOLEAN
 			-- Can `Current' handle the object `object'?
@@ -150,262 +221,74 @@ feature {PS_EIFFELSTORE_EXPORT} -- Status Report
 			Result := True
 		end
 
-	is_root (object: ANY; transaction: PS_TRANSACTION): BOOLEAN
-			-- Is `object' a garbage collection root?
-		do
-			Result := True
-		end
-
 feature {NONE} -- Initialization
 
-	make (a_backend: PS_READ_WRITE_BACKEND)
-			-- Initialize `Current'.
+	make_from_factory (
+			a_backend: PS_BACKEND;
+			an_id_manager: PS_OBJECT_IDENTIFICATION_MANAGER;
+			a_mapper: PS_KEY_POID_TABLE;
+			a_write_manager: PS_WRITE_MANAGER;
+			handler_list: LINKED_LIST [PS_HANDLER];
+			transaction_settings: PS_TRANSACTION_SETTINGS
+			)
 		do
 			backend := a_backend
+			id_manager := an_id_manager
+			mapper := a_mapper
+			write_manager := a_write_manager
+			all_handlers := handler_list
+			transaction_isolation := transaction_settings
+
+			create read_manager_cache.make (100)
 			create transaction_isolation_level
 			set_transaction_isolation_level (transaction_isolation_level.repeatable_read)
-			create default_object_graph.make
-			create id_manager.make
-			create disassembler.make (id_manager.metadata_manager, default_object_graph)
-			create retriever.make (backend, id_manager, Current)
-			create collection_handlers.make
-			create mapper.make
+
+			retry_count := default_retry_count
+			set_batch_retrieval_size (infinite_batch_size)
 		end
 
-feature -- Initialization
+feature {PS_ABEL_EXPORT} -- Implementation
 
-	add_collection_handler (handler: PS_COLLECTION_HANDLER_OLD [detachable ANY])
-			-- Add a handler for a specific type of collections.
-		do
-			retriever.add_handler (handler)
-			disassembler.add_handler (handler)
-			collection_handlers.extend (handler)
-		end
-
-feature {PS_EIFFELSTORE_EXPORT} -- Implementation
-
-	identify_all (object_graph: PS_OBJECT_GRAPH_ROOT; transaction: PS_TRANSACTION)
-			-- Add an identifier wrapper to all objects in the graph
-		do
-			across object_graph as cursor
-			loop
-				if attached {PS_COMPLEX_PART} cursor.item as item and then not item.is_identified then
-					if not id_manager.is_identified (item.represented_object, transaction) then
-						id_manager.identify (item.represented_object, transaction)
-					end
-					item.set_object_wrapper (id_manager.identifier_wrapper (item.represented_object, transaction))
-				end
-			end
-		end
-
-	disassembler: PS_OBJECT_GRAPH_BUILDER
-			-- An object graph builder to create explicit object graphs.
-
-	backend: PS_READ_WRITE_BACKEND
+	backend: PS_BACKEND
 			-- A BACKEND implementation
 
-	retriever: PS_RETRIEVAL_MANAGER
-			-- A retrieval manager to build objects.
-
-	collection_handlers: LINKED_LIST[PS_COLLECTION_HANDLER_OLD [detachable ANY]]
-			-- The collection handlers registered with `Current'
-
-
-	do_delete (object_graph: PS_OBJECT_GRAPH_ROOT; transaction: PS_TRANSACTION)
-		local
-			entity: PS_BACKEND_ENTITY
-			objects_to_delete: LINKED_LIST[PS_BACKEND_ENTITY]
-			collections_to_delete: LINKED_LIST[PS_BACKEND_ENTITY]
-		do
-			across object_graph.new_smart_cursor as cursor
-			from
-				identify_all (object_graph, transaction)
-				create objects_to_delete.make
-				create collections_to_delete.make
-			loop
-				check cursor.item.write_operation = cursor.item.write_operation.delete end
-
-				if attached {PS_SINGLE_OBJECT_PART} cursor.item as obj then
-					create entity.make ( mapper.quick_translate (cursor.item.object_identifier, transaction), cursor.item.metadata)
-					objects_to_delete.extend (entity)
-					mapper.remove_primary_key (mapper.quick_translate (cursor.item.object_identifier, transaction), cursor.item.metadata, transaction)
-					id_manager.delete_identification (obj.represented_object, transaction)
-				elseif attached {PS_OBJECT_COLLECTION_PART} cursor.item as coll then
-					create entity.make (mapper.quick_translate (coll.object_identifier, transaction), coll.metadata)
-					collections_to_delete.extend (entity)
-					mapper.remove_primary_key (mapper.quick_translate (coll.object_identifier, transaction), coll.metadata, transaction)
-					id_manager.delete_identification (coll.represented_object, transaction)
-				else
-					check relations_not_implemented: False end
-				end
-			end
-
-
-			if not objects_to_delete.is_empty then
-				backend.delete (objects_to_delete, transaction)
-			end
-			if not collections_to_delete.is_empty then
-				backend.delete_collections (collections_to_delete, transaction)
-			end
-		end
-
-	do_write (object_graph: PS_OBJECT_GRAPH_ROOT; transaction: PS_TRANSACTION)
-		local
-			table: HASH_TABLE[INTEGER, PS_TYPE_METADATA]
-			collection_table: HASH_TABLE[INTEGER, PS_TYPE_METADATA]
-			primaries: HASH_TABLE[LIST[PS_BACKEND_OBJECT], PS_TYPE_METADATA]
-			collection_primaries: HASH_TABLE[LIST[PS_BACKEND_COLLECTION], PS_TYPE_METADATA]
-
-			objects_to_write: LINKED_LIST[PS_BACKEND_OBJECT]
-			collections_to_write: LINKED_LIST[PS_BACKEND_COLLECTION]
-		do
-
-			identify_all (object_graph, transaction)
-			create table.make (10)
-			create collection_table.make (10)
-
-			-- Collect all insert operations
-			across object_graph.new_smart_cursor as cursor
-			loop
-				if cursor.item.write_operation = cursor.item.write_operation.insert then
-					if cursor.item.is_collection then
-						collection_table.force (collection_table[cursor.item.metadata] + 1, cursor.item.metadata)
-					else
-						table.force (table[cursor.item.metadata] + 1, cursor.item.metadata)
-					end
-				end
-			end
-
-			-- Get new primary keys for collections and objects in one single call
-			if not table.is_empty then
-				primaries := backend.generate_all_object_primaries (table, transaction)
-			else
-				create primaries.make (0)
-			end
-
-			if not collection_table.is_empty then
-				collection_primaries := backend.generate_collection_primaries (collection_table, transaction)
-			else
-				create collection_primaries.make (0)
-			end
-
-			-- Prepare the cursors
-			across primaries as p loop p.item.start end
-			across collection_primaries as p loop p.item.start end
-
-			-- Update the primary key mapping table
-			across object_graph.new_smart_cursor as cursor
-			loop
-				if cursor.item.write_operation = cursor.item.write_operation.insert then
-
-					if cursor.item.is_collection then
-						check attached collection_primaries[cursor.item.metadata] as primary_cursor then
-							mapper.add_entry (cursor.item.object_wrapper, primary_cursor.item.primary_key, transaction)
-							primary_cursor.remove
-						end
-					else
-						check attached primaries[cursor.item.metadata] as primary_cursor then
-							mapper.add_entry (cursor.item.object_wrapper, primary_cursor.item.primary_key, transaction)
-							primary_cursor.remove
-						end
-					end
-				end
-			end
-
-			-- Prepare the retrieved objects serving as insert/update commands
-			across object_graph.new_smart_cursor as cursor
-			from
-				create objects_to_write.make
-				create collections_to_write.make
-			loop
-				check cursor.item.write_operation /= cursor.item.write_operation.delete end
-				if attached {PS_SINGLE_OBJECT_PART} cursor.item as obj then
-					objects_to_write.extend (to_retrieved(obj, transaction))
-				elseif attached {PS_OBJECT_COLLECTION_PART} cursor.item as coll then
-					collections_to_write.extend (to_retrieved_collection(coll, transaction))
-				else
-					check relations_not_implemented: False end
-				end
-			end
-
-			-- Send the actual commands to the backend
-			if not objects_to_write.is_empty then
-				backend.write (objects_to_write, transaction)
-			end
-			if not collections_to_write.is_empty then
-				backend.write_collections (collections_to_write, transaction)
-			end
-		end
-
-
-	fill_retrieved (object: PS_SINGLE_OBJECT_PART; retrieved: PS_BACKEND_OBJECT; transaction: PS_TRANSACTION)
-		local
-			attr: PS_PAIR[STRING, STRING]
-			id: INTEGER
-		do
---			retrieved.set_operation (object.write_operation)
-			across
-				object.attributes as cursor
-			loop
-				if attached {PS_COMPLEX_PART} object.attribute_value (cursor.item) as complex_attribute then
-					id := mapper.quick_translate (complex_attribute.object_identifier, transaction)
-				end
-				attr := object.attribute_value (cursor.item).as_attribute (id)
-				retrieved.add_attribute (cursor.item, attr.first, attr.second)
-			end
-
-			if object.write_operation = object.write_operation.insert then
-				across object.metadata.attributes as cursor
-				loop
-					if not retrieved.has_attribute(cursor.item) then
-						retrieved.add_attribute (cursor.item, "", "NONE")
-					end
-				end
-			end
-		end
-
-
-	to_retrieved (object: PS_SINGLE_OBJECT_PART; transaction: PS_TRANSACTION): PS_BACKEND_OBJECT
-
-		do
-			if object.write_operation = object.write_operation.insert then
-				create Result.make_fresh (mapper.quick_translate (object.object_identifier, transaction), object.metadata)
-			else
-				create Result.make (mapper.quick_translate (object.object_identifier, transaction), object.metadata)
-			end
-			fill_retrieved (object, Result, transaction)
-		end
-
-
-	to_retrieved_collection (coll: PS_OBJECT_COLLECTION_PART; transaction: PS_TRANSACTION): PS_BACKEND_COLLECTION
-		local
-			item: PS_PAIR[STRING, STRING]
-			id: INTEGER
-		do
-			across
-				coll.values as cursor
-			from
-				if coll.write_operation = coll.write_operation.insert then
-					create Result.make_fresh (mapper.quick_translate (coll.object_identifier, transaction), coll.metadata)
-				else
-					create Result.make (mapper.quick_translate (coll.object_identifier, transaction), coll.metadata)
-				end
---				Result.set_operation (coll.write_operation)
-			loop
-				if attached {PS_COMPLEX_PART} cursor.item as complex_item then
-					id := mapper.quick_translate (complex_item.object_identifier, transaction)
-				end
-				item := cursor.item.as_attribute (id)
-				Result.collection_items.extend (item)
-			end
-
-			across
-				coll.additional_information as cursor
-			loop
-				Result.add_information (cursor.key, cursor.item)
-			end
-		end
-
-
 	mapper: PS_KEY_POID_TABLE
+			-- An ABEL identifier -> primary key mapper.
+
+	write_manager: PS_WRITE_MANAGER
+			-- The write manager.
+
+	read_manager_cache: HASH_TABLE[PS_READ_MANAGER, INTEGER]
+			-- The read managers, as associated to queries.
+
+
+	all_handlers: LINKED_LIST[PS_HANDLER]
+			-- All object handlers known to `Current'
+
+
+feature {NONE} -- Implementation
+
+
+	initialize_query (query: PS_ABSTRACT_QUERY[ANY, ANY]; transaction: PS_INTERNAL_TRANSACTION)
+		local
+			new_read_manager: PS_READ_MANAGER
+		do
+			query.set_identifier (new_query_identifier)
+			create new_read_manager.make (id_manager.metadata_manager, id_manager, mapper, backend)
+			all_handlers.do_all (agent new_read_manager.add_handler)
+			read_manager_cache.extend (new_read_manager, query.backend_identifier)
+		end
+
+
+	new_query_identifier: INTEGER
+			-- Get a new identifier for a query.
+		do
+			Result := next_query_identifier
+			next_query_identifier := next_query_identifier + 1
+		end
+
+	next_query_identifier: INTEGER
+			-- The next identifier number
+
 end
+

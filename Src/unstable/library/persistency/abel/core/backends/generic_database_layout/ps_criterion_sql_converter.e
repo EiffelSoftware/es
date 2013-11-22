@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PS_CRITERION_SQL_CONVERTER}."
-	author: ""
+	description: "Converts a predefined criterion to an SQL `WHERE' clause."
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -59,7 +59,7 @@ feature {PS_CRITERION} -- Visitor functions
 				value.replace_substring_all ("?", "_")
 			end
 
-			attribute_key := metadata.primary_key_of_attribute (predef_crit.attribute_name, metadata.primary_key_of_class (type.base_class.name))
+			attribute_key := metadata.primary_key_of_attribute (predef_crit.attribute_name, metadata.primary_key_of_class (type.name))
 			Result := "SELECT objectid FROM ps_value WHERE attributeid = " + attribute_key.out
 				+ " AND value " + predef_crit.operator + " '" + value + "'"
 		end

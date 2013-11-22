@@ -1,5 +1,53 @@
 note
-	description: "Class to group different database operations into a single unit. Also responsible to propagate errors."
+	description: "[
+		Represents a transaction context for read and write operations.
+
+		Insert and update operation always treat the whole object
+		graph, meaning the object given as an argument and all
+		objects transitively reachable from it. Similarly, a query
+		operation will always load the whole object graph from the
+		database.
+		
+		Whenever an object in an object graph gets inserted or 
+		retrieved from the database, ABEL will mark it as "persistent", 
+		meaning the object has a counterpart in the database. 
+		The persistent status is only valid within a transaction
+		context and can be queried with feature `is_persistent'.
+		
+		The persistent mark allows ABEL to distinguish between
+		an update and an insert operation. Update only works on
+		persistent objects, whereas insert only works on
+		non-persistent objects. 
+		Note that this is only relevant for the root of an object 
+		graph, and ABEL is able to handle object graphs with objects 
+		of mixed export status. The distinction in the API is
+		enforced mainly to avoid unpleasant surprises.
+		
+		ABEL introduces another object state: Root objects.
+		The root state is used mainly for garbage collection, i.e.
+		root objects and any objects transitively referenced by a 
+		root object cannot be deleted. However, it can also be used
+		as a filtering criterion for queries.
+		By default the object given as an argument to the insert 
+		function is a root object. It is possible to set the root
+		status manually using `declare_root' or `declare_non_root'
+		or change the defaults using `set_root_declaration_strategy'.
+		
+		
+		In case of an error in the backend, ABEL will do some cleanup
+		and raise an exception. Clients can expect the following 
+		conditions to hold:
+		
+			*) `has_error' is True.
+			*) `last_error' is attached and contains a 
+				PS_ERROR describing the error that occurred.
+			*) The transaction is rolled back.
+			*) The exception propagates to the client.
+			
+		The PS_ERROR class hierarchy has a visitor pattern which can
+		be used for error handling.
+		]"
+
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -8,124 +56,293 @@ class
 	PS_TRANSACTION
 
 inherit
+	PS_ABEL_EXPORT
 
-	PS_EIFFELSTORE_EXPORT
-
-create
+create {PS_REPOSITORY}
 	make
-
-create {PS_EIFFELSTORE_EXPORT}
-	make_readonly
 
 feature {NONE} -- Initialization
 
-	make (a_repository: PS_REPOSITORY)
-			-- Initialize `Current'.
+	make (a_repository: like repository)
+			-- Initialization for `Current'
 		do
 			repository := a_repository
-			create {PS_NO_ERROR} error
-			create root_flags.make (100)
-			is_readonly := False
-			is_active := True
+			last_error := Void
+			create internal_active_queries.make
+			create root_declaration_strategy.make_argument_of_insert
+			create transaction.make (repository)
+			repository.id_manager.register_transaction (attach (transaction))
+		ensure
+			default_strategy: root_declaration_strategy.is_argument_of_insert
+			active: is_active
+			repository_set: repository = a_repository
+			empty_queries: active_queries.is_empty
+			no_error: not has_error
 		end
 
-	make_readonly (a_repository: PS_REPOSITORY)
-			-- Initialize `Current', mark transaction as readonly.
-		do
-			repository := a_repository
-			create {PS_NO_ERROR} error
-			create root_flags.make (100)
-			is_readonly := True
-			is_active := True
-		end
-
-feature {PS_EIFFELSTORE_EXPORT} -- Access
-
-	error: PS_ERROR
-			-- Error description of the last error.
+feature -- Access
 
 	repository: PS_REPOSITORY
-			-- The repository this `Current' is bound to.
+			-- The data repository.
 
-	root_flags: HASH_TABLE[BOOLEAN, INTEGER]
-			-- Mapping for ABEL identifier -> root status of every object.
+	root_declaration_strategy: PS_ROOT_OBJECT_STRATEGY
+			-- The default behaviour for root declaration on write functions.
 
-feature {PS_EIFFELSTORE_EXPORT} -- Status report
+	active_queries: CONTAINER [PS_ABSTRACT_QUERY [ANY, ANY]]
+			-- The currently active queries.
+		do
+			Result := internal_active_queries
+		end
+
+	last_error: detachable PS_ERROR
+			-- The last encountered error.
+
+feature -- Status report
+
+	is_supported (object: ANY): BOOLEAN
+			-- Can the current repository handle `object'?
+		do
+			Result := repository.can_handle (object)
+		end
 
 	is_active: BOOLEAN
-			-- Is the current transaction still active, or has it been commited or rolled back at some point?
+			-- Is the current transaction active?
+		do
+			Result := attached transaction as t and then t.is_active
+		end
 
-	is_successful_commit: BOOLEAN
-			-- Was the last commit operation successful?
+	is_persistent (object: ANY): BOOLEAN
+			-- Is `object' stored in the database?
 		require
-			not_active: not is_active
-		attribute
+			in_transaction: is_active
+			supported: is_supported (object)
+			no_error: not has_error
+		do
+			Result := repository.is_identified (object, attach(transaction))
+		end
+
+	is_root (object: ANY): BOOLEAN
+			-- Is `object' a root object?
+		require
+			in_transaction: is_active
+			supported: is_supported (object)
+			persistent: is_persistent (object)
+			no_error: not has_error
+		do
+			Result := repository.is_root (object, attach (transaction))
 		end
 
 	has_error: BOOLEAN
-			-- Has there been an error in any of the operations or the final commit?
+			-- Did the last operation produce an error?
 		do
-			Result := not attached {PS_NO_ERROR} error
+			Result := attached last_error and not attached {PS_NO_ERROR} last_error
 		end
 
-	is_readonly: BOOLEAN
-			-- Is this a readonly transaction?
+feature -- Element change
 
-feature {PS_EIFFELSTORE_EXPORT} -- Basic operations
+	set_root_declaration_strategy (a_strategy: like root_declaration_strategy)
+			-- Set the new root declaration strategy
+		do
+			fixme ("Implement this setting in the backend")
+			-- root_declaration_strategy := a_strategy
+		ensure
+			correct: root_declaration_strategy = a_strategy
+		end
+
+feature -- Data retrieval
+
+	execute_query (query: PS_QUERY [ANY])
+			-- Execute `query' and store the result in `query.result_cursor'.
+		require
+			in_transaction: is_active
+			no_error: not has_error
+		do
+			repository.internal_execute_query (query, attach(transaction))
+			internal_active_queries.extend (query)
+			query.set_transaction_context (Current)
+		ensure
+			active: active_queries.has (query)
+			executed: query.is_executed
+			in_transaction: is_active
+		rescue
+			set_error
+		end
+
+	execute_tuple_query (query: PS_TUPLE_QUERY [ANY])
+			-- Execute `query' and store the result in `query.result_cursor'.
+		require
+			in_transaction: is_active
+			no_error: not has_error
+		do
+			repository.internal_execute_tuple_query (query, attach(transaction))
+			internal_active_queries.extend (query)
+			query.set_transaction_context (Current)
+		ensure
+			active: active_queries.has (query)
+			executed: query.is_executed
+			in_transaction: is_active
+		rescue
+			set_error
+		end
+
+feature -- Data modification
+
+	insert (object: ANY)
+			-- Insert `object' and all transitively referenced objects into the repository.
+		require
+			in_transaction: is_active
+			no_error: not has_error
+			supported: is_supported (object)
+			not_persistent: not is_persistent (object)
+		do
+			repository.insert (object, attach(transaction))
+		ensure
+			in_transaction: is_active
+			persistent: is_persistent (object)
+			root_set: root_declaration_strategy > root_declaration_strategy.new_preserve implies is_root (object)
+		rescue
+			set_error
+		end
+
+	update (object: ANY)
+			-- Update `object' and all transitively referenced objects in the repository.
+		require
+			in_transaction: is_active
+			no_error: not has_error
+			supported: is_supported (object)
+			persistent: is_persistent (object)
+		do
+			repository.update (object, attach(transaction))
+		ensure
+			in_transaction: is_active
+			persistent: is_persistent (object)
+			root_set: root_declaration_strategy > root_declaration_strategy.new_argument_of_insert implies is_root (object)
+		rescue
+			set_error
+		end
+
+	direct_update (object: ANY)
+			-- Update `object' only, do not follow references.
+		require
+			in_transaction: is_active
+			no_error: not has_error
+			supported: is_supported (object)
+			persistent: is_persistent (object)
+			valid_direct_update: to_implement_assertion ("check that all referenced objects are persistent")
+		do
+			repository.direct_update (object, attach(transaction))
+		ensure
+			in_transaction: is_active
+			persistent: is_persistent (object)
+			root_set: root_declaration_strategy > root_declaration_strategy.new_argument_of_insert implies is_root (object)
+		rescue
+			set_error
+		end
+
+feature -- Root status modification
+
+	mark_root (object: ANY)
+			-- Mark `object' as a root object.
+			-- Do not change the status of any referenced object.
+		require
+			in_transaction: is_active
+			no_error: not has_error
+			supported: is_supported (object)
+			persistent: is_persistent (object)
+			not_root: not is_root (object)
+		do
+			repository.set_root_status (object, True, attach (transaction))
+		ensure
+			in_transaction: is_active
+			persistent: is_persistent (object)
+			root: is_root (object)
+		rescue
+			set_error
+		end
+
+	unmark_root (object: ANY)
+			-- Remove the root status from `object'.
+			-- Do not change the status of any referenced object.
+		require
+			in_transaction: is_active
+			no_error: not has_error
+			supported: is_supported (object)
+			persistent: is_persistent (object)
+			not_root: is_root (object)
+		do
+			repository.set_root_status (object, False, attach (transaction))
+		ensure
+			in_transaction: is_active
+			persistent: is_persistent (object)
+			root: not is_root (object)
+		rescue
+			set_error
+		end
+
+
+feature -- Transaction operations
 
 	commit
-			-- Try to commit the transaction.
-			--The result of the commit operation is set in the `is_successful_commit' attribute.
+			-- Commit the active transaction.
+			-- If the transaction fails, `has_error' is True and an exception is raised.
+		require
+			is_active: is_active
+			no_active_queries: active_queries.is_empty
+			no_error: not has_error
 		do
-			if is_active then
-				repository.commit_transaction (Current)
-			end
+			repository.commit_transaction (attach (transaction))
+			transaction := Void
 		ensure
-			transaction_terminted: not is_active
+			not_active: not is_active
 		rescue
-				-- Catch any exception if the commit failed
-			check
-				ensure_correct_rollback: not is_active and not is_successful_commit
-			end
-			retry -- Do nothing, but terminate normally.
+			set_error
 		end
 
 	rollback
-			-- Rollback all operations within this transaction.
+			-- Rollback the active transaction.
 		require
-			transaction_alive: is_active
+			is_active: is_active
+			no_active_queries: active_queries.is_empty
+			no_error: not has_error
 		do
-			repository.rollback_transaction (Current, True)
+			repository.rollback_transaction (attach (transaction), True)
+			transaction := Void
 		ensure
-			transaction_terminated: not is_active
-			no_success: not is_successful_commit
+			not_active: not is_active
+		rescue
+			set_error
 		end
 
-feature {PS_EIFFELSTORE_EXPORT} -- Internals
-
-	set_error (an_error: PS_ERROR)
-			-- Set the error field if an error occurred.
+	prepare
+			-- Prepare `Current' to be reused as a new transaction.
+		require
+			not_active: not is_active
 		do
-			error := an_error
+			-- create {PS_NO_ERROR} last_error
+			last_error := Void
+			create transaction.make (repository)
+			repository.id_manager.register_transaction (attach (transaction))
 		ensure
-			error_set: error = an_error
+			active: is_active
+			no_error: not has_error
 		end
 
-	declare_as_aborted
-			-- Declare `Current' as aborted.
+feature {PS_ABEL_EXPORT} -- Implementation
+
+	internal_active_queries: LINKED_LIST [PS_ABSTRACT_QUERY [ANY, ANY]]
+			-- The internal storage for `active_queries'.
+
+feature {NONE} -- Implementation
+
+
+	transaction: detachable PS_INTERNAL_TRANSACTION
+			-- The currently active transaction.
+
+	set_error
+			-- Set the `last_error' field.
 		do
-			is_active := False
-			is_successful_commit := False
+			if attached transaction as tr and then not attached {PS_NO_ERROR} tr.error then
+				last_error := tr.error
+			end
 		end
-
-	declare_as_successful
-			-- Declare `Current' as successfully committed.
-		do
-			is_active := False
-			is_successful_commit := True
-		end
-
-invariant
-	error_implies_no_success: not is_active and has_error implies not is_successful_commit
-
 end

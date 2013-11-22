@@ -210,7 +210,7 @@ feature -- Clearing operations
 		do
 			prepare_drawing
 			color ?= background_color.implementation
-			check color /= void end
+			check color /= void then end
 			color.color.set
 			create path.make
 			create path_utils
@@ -273,9 +273,9 @@ feature -- Drawing operations
 			create l_string.make_with_eiffel_string (a_text.as_string_8)
 			create l_string_drawing
 			l_font ?= font.implementation
-			check l_font /= Void end
+			check l_font /= Void then end
 			l_color ?= foreground_color.implementation
-			check l_color /= Void end
+			check l_color /= Void then end
 
 			create l_attributes.make_with_capacity_ (2)
 			l_attributes.set_object__for_key_ (l_font.font, create {NS_STRING}.make_with_eiffel_string ("NSFont"))
@@ -343,7 +343,7 @@ feature -- Drawing operations
 		do
 			prepare_drawing
 			pixel_buffer_imp ?= a_pixel_buffer.implementation
-			check pixel_buffer_imp /= void end
+			check pixel_buffer_imp /= void then end
 
 			create trans.make
 			trans.translate_x_by__y_by_ (x, y + a_area.height)
@@ -371,7 +371,7 @@ feature -- Drawing operations
 			l_point: NS_POINT
 		do
 			pixmap_imp ?= a_pixmap.implementation
-			check pixmap_imp /= Void end
+			check pixmap_imp /= Void then end
 
 			prepare_drawing
 
@@ -398,7 +398,7 @@ feature -- Drawing operations
 		do
 			create Result.make_with_size (a_area.width, a_area.height)
 			l_pixmap_imp ?= Result.implementation
-			check l_pixmap_imp /= Void end
+			check l_pixmap_imp /= Void then end
 			l_pixmap_imp.image.lock_focus
 			-- NSCompositeSourceOver = 2
 			image.draw_in_rect__from_rect__operation__fraction_ (
@@ -419,7 +419,7 @@ feature -- Drawing operations
 			l_point: NS_POINT
 		do
 			pixmap_imp ?= a_pixmap.implementation
-			check pixmap_imp /= void end
+			check pixmap_imp /= void then end
 
 			prepare_drawing
 
@@ -672,7 +672,7 @@ feature {EV_ANY_HANDLER} -- Implementation
 					gc.set_compositing_operation_ (10)
 			end
 			l_color ?= foreground_color.implementation
-			check l_color /= void end
+			check l_color /= void then end
 			l_color.color.set
 		end
 
@@ -710,4 +710,14 @@ feature {EV_ANY, EV_ANY_I} -- Implementation
 
 	interface: detachable EV_DRAWABLE note option: stable attribute end;
 
+note
+	copyright: "Copyright (c) 1984-2013, Eiffel Software and others"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end -- class EV_DRAWABLE_IMP

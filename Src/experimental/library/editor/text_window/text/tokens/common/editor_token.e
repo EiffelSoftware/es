@@ -1,10 +1,10 @@
 note
-	description	: "Objects that represents a general text token."
+	description: "Objects that represents a general text token."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
-	author		: "Arnaud PICHERY [ aranud@mail.dotcom.fr ]"
-	date		: "$Date$"
-	revision	: "$Revision$"
+	author: "Arnaud PICHERY [ aranud@mail.dotcom.fr ]"
+	date: "$Date$"
+	revision: "$Revision$"
 
 deferred class
 	EDITOR_TOKEN
@@ -35,7 +35,15 @@ feature -- Access
 		end
 
 	length: INTEGER
-			-- Number of characters represented by the token.
+			-- Operational number of characters represented by the token.
+			-- i.e. EOL of %R%N is 1 which is treated as one character when
+			-- placing cursor, with character length 2.
+
+	character_length: INTEGER
+			-- Number characters represented by the token.
+		do
+			Result := length
+		end
 
 	position: INTEGER
 			-- position in pixels of the first character of

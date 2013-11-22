@@ -10,9 +10,9 @@ class
 inherit
 	PS_PLUGIN
 		redefine
-			before_write_compatibility
+--			before_write_compatibility
 		end
-	PS_EIFFELSTORE_EXPORT
+	PS_ABEL_EXPORT
 
 	REFACTORING_HELPER
 
@@ -40,7 +40,7 @@ feature {NONE} -- Initialization
 
 feature
 
-	before_write (object: PS_BACKEND_OBJECT; transaction: PS_TRANSACTION)
+	before_write (object: PS_BACKEND_OBJECT; transaction: PS_INTERNAL_TRANSACTION)
 		local
 			stored_version: INTEGER
 			reflection: INTERNAL
@@ -78,54 +78,54 @@ feature
 				end
 				-- Testing-related code end
 
-				object.add_attribute ("version", stored_version.out,integer_metadata.base_class.name)
+				object.add_attribute ("version", stored_version.out, integer_metadata.name)
 			end
 		end
 
-	before_write_compatibility (an_object: PS_SINGLE_OBJECT_PART; transaction:PS_TRANSACTION)
-			-- Adds the version attribute.
-		local
-			stored_version: INTEGER
-			version_attribute: PS_BASIC_ATTRIBUTE_PART
-			test_int_attribute: PS_BASIC_ATTRIBUTE_PART
-		do
-			if an_object.write_operation = an_object.write_operation.insert and
-					attached {VERSIONED_CLASS} an_object.represented_object as versioned_object then
-				stored_version := versioned_object.version
+--	before_write_compatibility (an_object: PS_SINGLE_OBJECT_PART; transaction:PS_INTERNAL_TRANSACTION)
+--			-- Adds the version attribute.
+--		local
+--			stored_version: INTEGER
+--			version_attribute: PS_BASIC_ATTRIBUTE_PART
+--			test_int_attribute: PS_BASIC_ATTRIBUTE_PART
+--		do
+--			if an_object.write_operation = an_object.write_operation.insert and
+--					attached {VERSIONED_CLASS} an_object.represented_object as versioned_object then
+--				stored_version := versioned_object.version
 
-				-- Testing-related code start
-				if simulate_version_mismatch then
-					fixme ("Remove testing-related code")
-					stored_version := stored_version - 1
-					if simulate_added_attribute then
-						-- 'stored_version' has to be set to 1 such that 'v1_to_v2' from APPLICATION_SCHEMA_EVOLUTION_HANDLER is used
-						stored_version := 1
-					end
-					if simulate_attribute_type_changed then
-						-- 'stored_version' has to be set to 2 such that 'v2_to_v3' from APPLICATION_SCHEMA_EVOLUTION_HANDLER is used
-						stored_version := 2
-					end
-					if simulate_attribute_name_changed then
-						-- 'stored_version' has to be set to 3 such that 'v3_to_v4' from APPLICATION_SCHEMA_EVOLUTION_HANDLER is used
-						stored_version := 3
-					end
-					if simulate_removed_attribute then
-						-- 'stored_version' has to be set to 5 such that no conversion function is used ('v5_to_v6' not available in APPLICATION_SCHEMA_EVOLUTION_HANDLER)
-						stored_version := 5
-					end
-					if simulate_multiple_changes then
-						-- 'stored_version' has to be set to 4 such that that 'v4_to_v5' from APPLICATION_SCHEMA_EVOLUTION_HANDLER is used
-						stored_version := 4
-					end
-				end
-				-- Testing-related code end
+--				-- Testing-related code start
+--				if simulate_version_mismatch then
+--					fixme ("Remove testing-related code")
+--					stored_version := stored_version - 1
+--					if simulate_added_attribute then
+--						-- 'stored_version' has to be set to 1 such that 'v1_to_v2' from APPLICATION_SCHEMA_EVOLUTION_HANDLER is used
+--						stored_version := 1
+--					end
+--					if simulate_attribute_type_changed then
+--						-- 'stored_version' has to be set to 2 such that 'v2_to_v3' from APPLICATION_SCHEMA_EVOLUTION_HANDLER is used
+--						stored_version := 2
+--					end
+--					if simulate_attribute_name_changed then
+--						-- 'stored_version' has to be set to 3 such that 'v3_to_v4' from APPLICATION_SCHEMA_EVOLUTION_HANDLER is used
+--						stored_version := 3
+--					end
+--					if simulate_removed_attribute then
+--						-- 'stored_version' has to be set to 5 such that no conversion function is used ('v5_to_v6' not available in APPLICATION_SCHEMA_EVOLUTION_HANDLER)
+--						stored_version := 5
+--					end
+--					if simulate_multiple_changes then
+--						-- 'stored_version' has to be set to 4 such that that 'v4_to_v5' from APPLICATION_SCHEMA_EVOLUTION_HANDLER is used
+--						stored_version := 4
+--					end
+--				end
+--				-- Testing-related code end
 
-				create version_attribute.make (stored_version, integer_metadata, an_object.root)
-				an_object.add_attribute ("version", version_attribute)
-			end
-		end
+--				create version_attribute.make (stored_version, integer_metadata, an_object.root)
+--				an_object.add_attribute ("version", version_attribute)
+--			end
+--		end
 
-	before_retrieve (args: TUPLE[type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: PS_IMMUTABLE_STRUCTURE [STRING]]; transaction: PS_TRANSACTION): like args
+	before_retrieve (args: TUPLE[type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: PS_IMMUTABLE_STRUCTURE [STRING]]; transaction: PS_INTERNAL_TRANSACTION): like args
 			-- Add the version attribute, if necessary
 		local
 			attributes: LINKED_LIST[STRING]
@@ -140,7 +140,7 @@ feature
 			end
 		end
 
-	after_retrieve (object: PS_BACKEND_OBJECT; criterion: detachable PS_CRITERION; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction:PS_TRANSACTION)
+	after_retrieve (object: PS_BACKEND_OBJECT; criterion: detachable PS_CRITERION; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction:PS_INTERNAL_TRANSACTION)
 			-- Check the version of the retrieved object and apply conversion functions if necessary
 		local
 			reflection: INTERNAL
@@ -148,12 +148,12 @@ feature
 			current_version, stored_version, no_of_attr, i: INTEGER
 			result_list: LINKED_LIST [PS_BACKEND_OBJECT]
 			stored_object: PS_BACKEND_OBJECT
-			stored_obj_attr_values: HASH_TABLE [TUPLE [STRING, STRING], STRING]
+			stored_obj_attr_values: HASH_TABLE [TUPLE [STRING, STRING_8], STRING]
 			set: BOOLEAN
 			current_class_name, attr_name, attr_type_as_string: STRING
 			exception: EXCEPTIONS
 
-			test_var: TUPLE[STRING,STRING]
+			test_var: TUPLE[STRING, IMMUTABLE_STRING_8]
 				-- Used for testing purposes
 		do
 			create reflection
@@ -205,7 +205,7 @@ feature
 							object.remove_attribute ("name_changed")
 							object.attributes.start
 							if attached {STRING} test_var.item (1) as attr_value then
-								if attached {STRING} test_var.item (2) as attr_type then
+								if attached {IMMUTABLE_STRING_8} test_var.item (2) as attr_type then
 									object.add_attribute ("old_name", attr_value, attr_type)
 								end
 							end
@@ -240,6 +240,7 @@ feature
 						-- This values could be needed to calculate functions returned by the schema evolution handler
 						stored_obj_attr_values := get_attribute_values(stored_object)
 						clean_stored_obj(stored_object)
+						stored_object.remove_attribute ("version")
 						stored_object.add_attribute ("version", current_version.out, "INTEGER_32")
 						if attached {SCHEMA_EVOLUTION_HANDLER} schema_evolution_handlers_table.item (current_class_name) as current_schema_evolution_handler then
 							-- Create a fresh instance of the current class
@@ -287,10 +288,11 @@ feature
 
 feature {NONE} -- Schema Evolution helper functions
 
-	get_attribute_values (stored_obj: PS_BACKEND_OBJECT): HASH_TABLE [TUPLE [STRING, STRING], STRING]
+	get_attribute_values (stored_obj: PS_BACKEND_OBJECT): HASH_TABLE [TUPLE [STRING, STRING_8], STRING]
 			-- Fill hashtable with a tuple containing attribute value and class name of generating class for each attribute in 'stored_obj'
 		local
 			current_attr_name: STRING
+			tuple: TUPLE [val: STRING; type: IMMUTABLE_STRING_8]
 		do
 			create Result.make (10)
 			from
@@ -299,7 +301,8 @@ feature {NONE} -- Schema Evolution helper functions
 				stored_obj.attributes.after
 			loop
 				current_attr_name := stored_obj.attributes.item
-				Result.extend (stored_obj.attribute_value (current_attr_name), current_attr_name)
+				tuple := stored_obj.attribute_value (current_attr_name)
+				Result.extend ([tuple.val, tuple.type.to_string_8], current_attr_name)
 				stored_obj.attributes.forth
 			end
 		end
@@ -552,7 +555,7 @@ feature {NONE} -- Schema Evolution helper functions
 			end
 		end
 
-feature {PS_EIFFELSTORE_EXPORT} -- Testing
+feature {PS_ABEL_EXPORT} -- Testing
 
 feature -- Testing
 

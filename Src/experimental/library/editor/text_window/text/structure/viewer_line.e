@@ -1,10 +1,10 @@
 note
-	description	: "Objects that represent a line in the editor."
+	description: "Objects that represent a line in the editor."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
-	author		: "Christophe Bonnard / Arnaud PICHERY [ aranud@mail.dotcom.fr] "
-	date		: "$Date$"
-	revision	: "$Revision$"
+	author: "Christophe Bonnard / Arnaud PICHERY [ aranud@mail.dotcom.fr] "
+	date: "$Date$"
+	revision: "$Revision$"
 
 class
 	VIEWER_LINE
@@ -13,17 +13,28 @@ inherit
 	TREE_ITEM
 
 create
-	make_empty_line
+	make_empty_line,
+	make,
+	make_windows_style,
+	make_unix_style
 
 feature -- Initialisation
 
 	make_empty_line
 			-- Create an empty line.
+		obsolete
+			"Use `make' instead."
+		do
+			make_unix_style
+		end
+
+	make (a_windows_style: BOOLEAN)
+			-- Create an empty line.
 		local
 			t_eol: EDITOR_TOKEN_EOL
 			t_begin: EDITOR_TOKEN_LINE_NUMBER
 		do
-			create t_eol.make
+			create t_eol.make_with_style (a_windows_style)
 			create t_begin.make
 
 			t_begin.set_next_token (t_eol)
@@ -33,6 +44,18 @@ feature -- Initialisation
 			real_first_token := t_begin
 
 			update_token_information
+		end
+
+	make_windows_style
+			-- Create an empty line in Windows style.
+		do
+			make (True)
+		end
+
+	make_unix_style
+			-- Create an empty line in Unix style.
+		do
+			make (False)
 		end
 
 feature -- Access
@@ -274,6 +297,21 @@ feature -- Element change
 
 feature -- Status Report
 
+	character_length: INTEGER
+			-- Character length of current line including the EOL character.
+		local
+			t: detachable EDITOR_TOKEN
+		do
+			from
+				t := first_token
+			until
+				t = Void
+			loop
+				Result := Result + t.character_length
+				t := t.next
+			end
+		end
+
 	wide_image: STRING_32
 			-- string representation of the line.
 		local
@@ -302,8 +340,8 @@ feature -- Status Report
 		require
 			text_cursor.line = Current
 		local
-			local_token		: detachable EDITOR_TOKEN
-			cursor_token	: EDITOR_TOKEN
+			local_token: detachable EDITOR_TOKEN
+			cursor_token: EDITOR_TOKEN
 			l_string_32		: STRING_32
 		do
 			cursor_token := text_cursor.token
@@ -337,8 +375,8 @@ feature -- Status Report
 		require
 			text_cursor.line = Current
 		local
-			local_token		: detachable EDITOR_TOKEN
-			cursor_token	: EDITOR_TOKEN
+			local_token: detachable EDITOR_TOKEN
+			cursor_token: EDITOR_TOKEN
 			l_string_32		: STRING_32
 		do
 			cursor_token := text_cursor.token
@@ -367,11 +405,11 @@ feature -- Status Report
 			-- Substring of the line starting at `start_char' and
 			-- ending at `end_char' - included
 		local
-			local_token		: detachable EDITOR_TOKEN
+			local_token: detachable EDITOR_TOKEN
 			local_char 		: INTEGER
-			next_local_char	: INTEGER
+			next_local_char: INTEGER
 			token_start_char: INTEGER
-			token_end_char	: INTEGER
+			token_end_char: INTEGER
 			l_string_32		: STRING_32
 		do
 			if start_char <= end_char then

@@ -31,6 +31,11 @@ feature -- Access
 
 	catalog_api: IRON_CATALOG_API
 
+	api_version: IMMUTABLE_STRING_8
+		once
+			Result := (create {IRON_API_CONSTANTS}).version
+		end
+
 ;note
 	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

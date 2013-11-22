@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PS_CURSOR_WRAPPER}."
-	author: ""
+	description: "A wrapper to the cursor provided by the backend. Used to apply plugins on retrieved objects."
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -11,7 +11,7 @@ inherit
 
 	ITERATION_CURSOR [PS_BACKEND_OBJECT]
 
-	PS_EIFFELSTORE_EXPORT
+	PS_ABEL_EXPORT
 
 create {PS_READ_ONLY_BACKEND}
 	make
@@ -61,7 +61,7 @@ feature {NONE} -- Impementation
 
 	attributes: PS_IMMUTABLE_STRUCTURE [STRING]
 
-	transaction: PS_TRANSACTION
+	transaction: PS_INTERNAL_TRANSACTION
 
 feature {NONE} -- Initialization
 

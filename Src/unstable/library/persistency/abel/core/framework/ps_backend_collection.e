@@ -1,8 +1,5 @@
 note
-	description: "[
-		Represents a freshly retrieved object-oriented collection.
-		See also description of PS_RETRIEVED_COLLECTION.
-	]"
+	description: "Represents a collection in the database."
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -14,19 +11,17 @@ inherit
 
 	PS_BACKEND_ENTITY
 		redefine
-			is_root, set_is_root,
 			make, is_equal
 		end
 
-	PS_RETRIEVED_COLLECTION
-		undefine
-			is_equal
-		end
-
-create {PS_EIFFELSTORE_EXPORT}
+create {PS_ABEL_EXPORT}
 	make, make_fresh
 
-feature {PS_EIFFELSTORE_EXPORT} -- Access
+feature {PS_ABEL_EXPORT} -- Access
+
+	collection_items: LINKED_LIST [PS_PAIR [STRING, IMMUTABLE_STRING_8]]
+			-- All objects that are stored inside this collection.
+			-- The first item in the PS_PAIR is the actual value of the item (foreign key or basic value), and the second item is the class name of the generating class of the first item.
 
 	information_descriptions: LIST [STRING]
 			-- Get all descriptions which have an information value.
@@ -41,7 +36,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Access
 			Result := attach (additional_information_hash [description])
 		end
 
-feature {PS_EIFFELSTORE_EXPORT} -- Status report
+feature {PS_ABEL_EXPORT} -- Status report
 
 	is_root: BOOLEAN
 			-- Is the current entity a garbage collection root?
@@ -123,7 +118,19 @@ feature -- Comparison
 			end
 		end
 
-feature {PS_EIFFELSTORE_EXPORT} -- Element change
+feature {PS_ABEL_EXPORT} -- Element change
+
+	add_item (item_value, class_name_of_item_value: STRING)
+			-- Add the value `item_value' and its `class_name_of_item_value' to the end of the `collection_items' list.
+		require
+			class_name_not_empty: not class_name_of_item_value.is_empty
+			void_value_means_none_type: item_value.is_empty implies class_name_of_item_value.is_equal ("NONE")
+		do
+			collection_items.extend (create {PS_PAIR [STRING, IMMUTABLE_STRING_8]}.make (item_value, class_name_of_item_value))
+		ensure
+			item_inserted: collection_items.last.first.is_equal (item_value)
+			class_name_inserted: collection_items.last.second.is_equal (class_name_of_item_value)
+		end
 
 	add_information (description: STRING; value: STRING)
 			-- Add the information `value' with its description `description' to the retrieved collection.
@@ -162,6 +169,14 @@ feature {NONE}
 		ensure then
 			additional_info_empty: additional_information_hash.is_empty
 			collection_items_empty: collection_items.is_empty
+		end
+
+feature {NONE} -- Consistency checks
+
+	check_void_types: BOOLEAN
+			-- Check that all Void items have `NONE' as the generating class.
+		do
+			Result := across collection_items as item_cursor all item_cursor.item.first.is_empty implies item_cursor.item.second.is_equal ("NONE") end
 		end
 
 invariant

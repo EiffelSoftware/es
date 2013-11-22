@@ -1,9 +1,9 @@
 note
-	description	: "Facilities for accessing default pixmaps."
-	author		: "Daniel Furrer"
+	description: "Facilities for accessing default pixmaps."
+	author: "Daniel Furrer"
 	keywords	: "pixmap, default"
-	date		: "$Date$"
-	revision	: "$Revision$"
+	date: "$Date$"
+	revision: "$Revision$"
 
 class
 	EV_STOCK_PIXMAPS_IMP

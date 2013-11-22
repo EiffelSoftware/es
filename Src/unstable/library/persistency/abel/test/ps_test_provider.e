@@ -16,7 +16,7 @@ deferred class
 
 inherit
 
-	PS_EIFFELSTORE_EXPORT
+	PS_ABEL_EXPORT
 		undefine
 			default_create
 		end
@@ -31,10 +31,10 @@ feature {PS_TEST_PROVIDER}
 	repository: PS_REPOSITORY
 			-- The repository to operate on
 
-	executor: PS_EXECUTOR
+--	executor: PS_EXECUTOR
 			-- An executor for `repository'
 
-	repo_access: PS_TRANSACTION_CONTEXT
+	repo_access: PS_TRANSACTION
 
 	test_data: PS_TEST_DATA
 			-- Some useful test data
@@ -44,8 +44,8 @@ feature {PS_TEST_PROVIDER}
 		do
 			default_create
 			repository := a_repository
-			create executor.make (repository)
-			repo_access := repository.new_transaction_context
+--			create executor.make (repository)
+			repo_access := repository.new_transaction
 --			create {PS_REPOSITORY_ACCESS_IMPL} repo_access.make (repository)
 			create test_data.make
 			initialize
@@ -60,13 +60,13 @@ feature {PS_TEST_PROVIDER}
 	test_read_write_cycle (object: ANY; update_operation: detachable PROCEDURE [ANY, TUPLE [ANY]])
 			-- Perform a write-read test on `object' with a possible `update_operation'.
 		local
-			context: PS_TRANSACTION_CONTEXT
-			query: PS_OBJECT_QUERY [ANY]
+			context: PS_TRANSACTION
+			query: PS_QUERY [ANY]
 			first_count: INTEGER
 			second_count: INTEGER
 		do
 			repository.clean_db_for_testing
-			context := repository.new_transaction_context
+			context := repository.new_transaction
 			context.insert (object)
 
 			create query.make
@@ -106,8 +106,8 @@ feature {PS_TEST_PROVIDER}
 			-- Use root object status.
 		local
 			object: ANY
-			context: PS_TRANSACTION_CONTEXT
-			query: PS_OBJECT_QUERY [ANY]
+			context: PS_TRANSACTION
+			query: PS_QUERY [ANY]
 			first_count: INTEGER
 			second_count: INTEGER
 
@@ -116,7 +116,7 @@ feature {PS_TEST_PROVIDER}
 			object := an_object
 
 			repository.clean_db_for_testing
-			context := repository.new_transaction_context
+			context := repository.new_transaction
 			context.insert (object)
 
 			assert ("Object is not persistent", context.is_persistent (object))
@@ -160,7 +160,7 @@ feature {PS_TEST_PROVIDER}
 				assert ("More than one result.", cursor.after)
 			end
 
-			context.declare_non_root (object)
+			context.unmark_root (object)
 			assert ("Object is still root", not context.is_root (object))
 
 			query.close
@@ -173,7 +173,7 @@ feature {PS_TEST_PROVIDER}
 
 			assert ("Query is not empty", cursor.after)
 
-			context.declare_root (object)
+			context.mark_root (object)
 			assert ("Object not declared as root", context.is_root (object))
 
 			query.close

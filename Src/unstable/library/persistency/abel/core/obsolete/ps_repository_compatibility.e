@@ -19,9 +19,19 @@ inherit
 create
 	make
 
-feature {PS_EIFFELSTORE_EXPORT} -- Object query
+feature {PS_ABEL_EXPORT} -- Obsolete
 
-	internal_execute_query (query: PS_OBJECT_QUERY [ANY]; transaction: PS_TRANSACTION)
+
+	default_object_graph: PS_OBJECT_GRAPH_SETTINGS
+			-- Default object graph settings.
+		obsolete "Not supported any more"
+		attribute
+		end
+
+
+feature {PS_ABEL_EXPORT} -- Object query
+
+	internal_execute_query (query: PS_OBJECT_QUERY [ANY]; transaction: PS_INTERNAL_TRANSACTION)
 			-- Execute `query' within `transaction'.
 		do
 			id_manager.register_transaction (transaction)
@@ -44,7 +54,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 			default_transactional_rescue (query.transaction)
 		end
 
-	internal_execute_tuple_query (tuple_query: PS_TUPLE_QUERY [ANY]; transaction: PS_TRANSACTION)
+	internal_execute_tuple_query (tuple_query: PS_TUPLE_QUERY [ANY]; transaction: PS_INTERNAL_TRANSACTION)
 			-- Execute the tuple query `tuple_query' within the readonly transaction `transaction'.
 		local
 			exception: PS_INTERNAL_ERROR
@@ -76,9 +86,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Object query
 			default_transactional_rescue (tuple_query.transaction)
 		end
 
-feature {PS_EIFFELSTORE_EXPORT} -- Modification
+feature {PS_ABEL_EXPORT} -- Modification
 
-	insert (object: ANY; transaction: PS_TRANSACTION)
+	insert (object: ANY; transaction: PS_INTERNAL_TRANSACTION)
 			-- Insert `object' within `transaction' into `Current'.
 		do
 			id_manager.register_transaction (transaction)
@@ -92,7 +102,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 			default_transactional_rescue (transaction)
 		end
 
-	update (object: ANY; transaction: PS_TRANSACTION)
+	update (object: ANY; transaction: PS_INTERNAL_TRANSACTION)
 			-- Update `object' within `transaction'.
 		do
 			id_manager.register_transaction (transaction)
@@ -106,7 +116,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 			default_transactional_rescue (transaction)
 		end
 
-	delete (object: ANY; transaction: PS_TRANSACTION)
+	delete (object: ANY; transaction: PS_INTERNAL_TRANSACTION)
 			-- Delete `object' within `transaction' from `Current'.
 		do
 			id_manager.register_transaction (transaction)
@@ -127,9 +137,9 @@ feature {PS_EIFFELSTORE_EXPORT} -- Modification
 			default_transactional_rescue (transaction)
 		end
 
-feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
+feature {PS_ABEL_EXPORT} -- Transaction handling
 
-	commit_transaction (transaction: PS_TRANSACTION)
+	commit_transaction (transaction: PS_INTERNAL_TRANSACTION)
 			-- Explicitly commit the transaction.
 		do
 			if id_manager.can_commit (transaction) then
@@ -143,7 +153,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 			default_transactional_rescue (transaction)
 		end
 
-	rollback_transaction (transaction: PS_TRANSACTION; manual_rollback: BOOLEAN)
+	rollback_transaction (transaction: PS_INTERNAL_TRANSACTION; manual_rollback: BOOLEAN)
 			-- Rollback the transaction.
 		do
 			backend.rollback (transaction)
@@ -151,7 +161,7 @@ feature {PS_EIFFELSTORE_EXPORT} -- Transaction handling
 			transaction.declare_as_aborted
 		end
 
-feature {PS_EIFFELSTORE_EXPORT} -- Testing
+feature {PS_ABEL_EXPORT} -- Testing
 
 	clean_db_for_testing
 			-- Wipe out all data.
@@ -166,19 +176,19 @@ feature {PS_EIFFELSTORE_EXPORT} -- Testing
 			end
 		end
 
-feature {PS_EIFFELSTORE_EXPORT} -- Status Report
+feature {PS_ABEL_EXPORT} -- Status Report
 
 	can_handle (object: ANY): BOOLEAN
 			-- Can `Current' handle the object `object'?
 		local
-			new_transaction: PS_TRANSACTION
+			tx: PS_INTERNAL_TRANSACTION
 			executor: PS_WRITE_EXECUTOR
 		do
 			fixme ("TODO: implement a similar query in new backend interface")
 			if attached {PS_BACKEND_COMPATIBILITY} backend as b then
 				create executor.make (b, id_manager)
-				create new_transaction.make_readonly (Current)
-				disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).insert, agent id_manager.is_identified(?, new_transaction))
+				create tx.make_readonly (Current)
+				disassembler.execute_disassembly (object, (create {PS_WRITE_OPERATION}).insert, agent id_manager.is_identified(?, tx))
 				planner.set_object_graph (disassembler.object_graph)
 				planner.generate_plan
 				Result := executor.can_backend_handle_operations (planner.operation_plan)
@@ -196,6 +206,7 @@ feature {NONE} -- Initialization
 			backend := a_backend
 			create transaction_isolation_level
 			set_transaction_isolation_level (transaction_isolation_level.repeatable_read)
+			create transaction_isolation
 			create default_object_graph.make
 			create id_manager.make
 			create planner.make
@@ -203,6 +214,8 @@ feature {NONE} -- Initialization
 --			create executor.make (backend, id_manager)
 			create retriever.make (backend, id_manager, Current)
 			create collection_handlers.make
+
+			retry_count := default_retry_count
 		end
 
 feature -- Initialization
@@ -215,9 +228,9 @@ feature -- Initialization
 			collection_handlers.extend (handler)
 		end
 
-feature {PS_EIFFELSTORE_EXPORT} -- Implementation
+feature {PS_ABEL_EXPORT} -- Implementation
 
-	identify_all (object_graph: PS_OBJECT_GRAPH_ROOT; transaction: PS_TRANSACTION)
+	identify_all (object_graph: PS_OBJECT_GRAPH_ROOT; transaction: PS_INTERNAL_TRANSACTION)
 			-- Add an identifier wrapper to all objects in the graph
 		do
 --			across object_graph as cursor

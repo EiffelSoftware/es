@@ -1,107 +1,175 @@
 note
-	description: "[
-	A factory class to create repositories with a database backend.
-	Use this class as an entry point to the framework to get a repository object
-	and then use it to create an executor.
-	]"
-	author: "Roman Schmocker, Marco Piccioni"
+	description: "A factory for repository objects. Every ABEL backend should ship with its own factory."
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	PS_REPOSITORY_FACTORY
 
-feature -- Factory methods
+inherit
+	PS_ABEL_EXPORT
 
---	create_mysql_repository (username, password, db_name, db_host: STRING; db_port: INTEGER): PS_RELATIONAL_REPOSITORY
---		-- Create a MySQL repository providing all the necessary information.
---		require
---			username_not_empty: not username.is_empty
---			db_name_not_empty: not db_name.is_empty
---			db_host_not_empty: not db_host.is_empty
---			db_port_legal: db_port > 1024 and db_port < 65535
---		local
---			database: PS_MYSQL_DATABASE
---			mysql_strings: PS_MYSQL_STRINGS
---			backend: PS_GENERIC_LAYOUT_SQL_BACKEND
---		do
---			create database.make (username, password, db_name, db_host, db_port)
---			create mysql_strings
---			create backend.make (database, mysql_strings)
---			create Result.make (backend)
---		end
+feature {NONE} -- Initialization
 
---	create_mysql_repository_with_default_host_port (username, password, db_name: STRING): PS_RELATIONAL_REPOSITORY
---		-- Create a MySQL repository relying on the default host 127.0.0.1 and port 3306.
---		require
---			username_not_empty: not username.is_empty
---			db_name_not_empty: not db_name.is_empty
---		local
---			database: PS_MYSQL_DATABASE
---			mysql_strings: PS_MYSQL_STRINGS
---			backend: PS_GENERIC_LAYOUT_SQL_BACKEND
---		do
---			create database.make (username, password, db_name, "127.0.0.1", 3306)
---			create mysql_strings
---			create backend.make (database, mysql_strings)
---			create Result.make (backend)
---		end
-
---	create_sqlite_repository (db_file_name: STRING): PS_RELATIONAL_REPOSITORY
---		-- Create an SQLite repository named `db_file_name'.
---		-- If passing an empty string, then a private, temporary on-disk database is created.
---		local
---			database: PS_SQLITE_DATABASE
---			sqlite_strings: PS_SQLITE_STRINGS
---			backend: PS_GENERIC_LAYOUT_SQL_BACKEND
---		do
---			create database.make (db_file_name)
---			create sqlite_strings
---			create backend.make (database, sqlite_strings)
---			create Result.make (backend)
---		end
-
-	create_obsolete_in_memory_repository: PS_REPOSITORY_COMPATIBILITY
-		-- Create an in-memory repository that can be queried in a relational style.
-		local
-			repository: PS_REPOSITORY_COMPATIBILITY
-			in_memory_database: PS_IN_MEMORY_DATABASE
-			special_handler: PS_SPECIAL_COLLECTION_HANDLER
+	make
+			-- Initialize with default handlers and plugins.
 		do
-			create in_memory_database.make
-			create repository.make (in_memory_database)
-			create special_handler.make
-			repository.add_collection_handler (special_handler)
-			Result := repository
+			make_uninitialized
+
+			internal_handler.extend (create {PS_STRING_HANDLER})
+			internal_handler.extend (create {PS_TUPLE_HANDLER})
+			internal_handler.extend (create {PS_SPECIAL_HANDLER})
+			internal_handler.extend (create {PS_DEFAULT_OBJECT_HANDLER})
+
+			internal_plugins.extend (create {PS_AGENT_CRITERION_ELIMINATOR_PLUGIN})
 		end
 
-	create_in_memory_repository: PS_DEFAULT_REPOSITORY
-		-- Create a simple in memory repository
-		local
-			repository: PS_DEFAULT_REPOSITORY
-			backend: PS_EVEN_SIMPLER_IN_MEMORY_BACKEND
-			special_handler: PS_SPECIAL_COLLECTION_HANDLER
-			tuple_handler: PS_TUPLE_COLLECTION_HANDLER
+	make_uninitialized
+			-- Do not initialize any defaults.
 		do
-			create backend.wipe_out
-			create repository.make (backend)
-			create special_handler.make
-			create tuple_handler
-			repository.add_collection_handler (special_handler)
-			repository.add_collection_handler (tuple_handler)
-			Result := repository
+			create internal_handler.make
+			create internal_plugins.make
+			create id_manager.make
+			create key_mapper.make
+			create anomaly_settings
 		end
 
---	create_cdb_repository(host:STRING; port:INTEGER): PS_RELATIONAL_REPOSITORY
---		-- Create a CouchDB repository
---		local
---			repository: CDB_REPOSITORY
---		do
---			if host.is_empty or port=0 then
---				create repository.make_empty
---			else
---				create repository.make_with_host_and_port(host, port)
---			end
---			Result := repository
---		end
+feature -- Access
+
+	handler: CONTAINER [PS_HANDLER]
+			-- The handler for different object types.
+		do
+			Result := internal_handler
+		end
+
+	plugins: CONTAINER [PS_PLUGIN]
+			-- The defined plugins
+		do
+			Result := internal_plugins
+		end
+
+	anomaly_settings: PS_TRANSACTION_SETTINGS
+			-- The transaction isolation settings for new repositories.
+
+feature -- Status report
+
+	is_buildable: BOOLEAN
+			-- Does `Current' have enough information to build a repository?
+		deferred
+		end
+
+feature -- Element change
+
+	add_handler (a_handler: PS_HANDLER)
+			-- Add `a_handler' to the handlers.
+			-- The new handler has precedence over any previously added handlers.
+		do
+			internal_handler.put_front (a_handler)
+		end
+
+	add_plugin (a_plugin: PS_PLUGIN)
+			-- Add `a_plugin' to the plugin list.
+		do
+			internal_plugins.put_front (a_plugin)
+		end
+
+feature -- Element change: Anomaly Settings
+
+	set_is_dirty_read_allowed (value: BOOLEAN)
+			-- Set `anomaly_settings.is_dirty_read_allowed' to `value'
+		do
+			anomaly_settings.set_is_dirty_read_allowed (value)
+		ensure
+			correct: anomaly_settings.is_dirty_read_allowed = value
+		end
+
+
+	set_is_lost_update_allowed (value: BOOLEAN)
+			-- Set `anomaly_settings.is_lost_update_allowed' to `value'
+		do
+			anomaly_settings.set_is_lost_update_allowed (value)
+		ensure
+			correct: anomaly_settings.is_lost_update_allowed = value
+		end
+
+
+	set_is_fuzzy_read_allowed (value: BOOLEAN)
+			-- Set `anomaly_settings.is_fuzzy_read_allowed' to `value'
+		do
+			anomaly_settings.set_is_fuzzy_read_allowed (value)
+		ensure
+			correct: anomaly_settings.is_fuzzy_read_allowed = value
+		end
+
+	set_is_phantom_allowed (value: BOOLEAN)
+			-- Set `anomaly_settings.is_phantom_allowed' to `value'
+		do
+			anomaly_settings.set_is_phantom_allowed (value)
+		ensure
+			correct: anomaly_settings.is_phantom_allowed = value
+		end
+
+	set_is_read_skew_allowed (value: BOOLEAN)
+			-- Set `anomaly_settings.is_read_skew_allowed' to `value'
+		do
+			anomaly_settings.set_is_read_skew_allowed (value)
+		ensure
+			correct: anomaly_settings.is_read_skew_allowed = value
+		end
+
+	set_is_write_skew_allowed (value: BOOLEAN)
+			-- Set `anomaly_settings.is_write_skew_allowed' to `value'
+		do
+			anomaly_settings.set_is_write_skew_allowed (value)
+		ensure
+			correct: anomaly_settings.is_write_skew_allowed = value
+		end
+
+feature -- Factory function
+
+	new_repository: PS_REPOSITORY
+			-- Create a new repository.
+		require
+			buildable: is_buildable
+		local
+			backend: PS_BACKEND
+			write_manager: PS_WRITE_MANAGER
+		do
+			backend := new_backend
+
+			internal_plugins.do_all (agent backend.add_plug_in)
+
+			create write_manager.make (id_manager.metadata_manager, id_manager, key_mapper, backend)
+
+			internal_handler.do_all (agent {PS_HANDLER}.set_write_manager (write_manager))
+			internal_handler.do_all (agent write_manager.add_handler)
+
+			create {PS_DEFAULT_REPOSITORY} Result.make_from_factory (
+				backend,
+				id_manager,
+				key_mapper,
+				write_manager,
+				internal_handler,
+				anomaly_settings.twin)
+		end
+
+feature {NONE} -- Implementation
+
+	new_backend: PS_BACKEND
+			-- Create a backend.
+		require
+			buildable: is_buildable
+		deferred
+		end
+
+
+	id_manager: PS_OBJECT_IDENTIFICATION_MANAGER
+
+	key_mapper: PS_KEY_POID_TABLE
+
+	internal_handler: LINKED_LIST [PS_HANDLER]
+
+	internal_plugins: LINKED_LIST [PS_PLUGIN]
+
 end

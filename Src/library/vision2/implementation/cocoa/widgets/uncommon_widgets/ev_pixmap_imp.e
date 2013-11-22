@@ -58,13 +58,9 @@ feature {NONE} -- Initialization
 			internal_width := 10
 			Precursor {EV_DRAWABLE_IMP}
 			create image_view.make
-			image_view.set_translates_autoresizing_mask_into_constraints_ (False)
-			image_view.set_image_ (image)
+			image_view.set_image (image)
 			cocoa_view := image_view
-			-- NSImageScaleNone = 2
-			image_view.set_image_scaling_ (2)
-			-- NSImageFramePhoto = 1
-			image_view.set_image_frame_style_ (1)
+			image_view.set_image_scaling ({NS_IMAGE_VIEW}.image_scaling_none)
 
 			Precursor {EV_PRIMITIVE_IMP}
 			disable_tabable_from
@@ -79,7 +75,7 @@ feature {NONE} -- Initialization
 			make
 
 			pointer_style_imp ?= a_pointer_style.implementation
-			check pointer_style_imp /= Void end
+			check pointer_style_imp /= Void then end
 			if attached pointer_style_imp.cursor.image as l_image then
 				image := l_image
 			else
@@ -97,7 +93,7 @@ feature {NONE} -- Initialization
 			make
 
 			pixel_buffer_imp ?= a_pixel_buffer.implementation
-			check pixel_buffer_imp /= Void end
+			check pixel_buffer_imp /= Void then end
 			image := pixel_buffer_imp.image
 			internal_width := pixel_buffer_imp.width
 			internal_height := pixel_buffer_imp.height
@@ -108,13 +104,11 @@ feature -- Drawing operations
 	redraw
 			-- Force `Current' to redraw itself.
 		do
-			update_if_needed
 		end
 
 	update_if_needed
 			-- Update `Current' if needed.
 		do
-			image_view.set_needs_display_ (True)
 		end
 
 feature -- Measurement
@@ -133,12 +127,20 @@ feature -- Measurement
 
 	minimum_height: INTEGER
 		do
-			Result := height
+			if is_user_min_height_set then
+				Result := internal_minimum_height
+			else
+				Result := height
+			end
 		end
 
 	minimum_width: INTEGER
 		do
-			Result := width
+			if is_user_min_width_set then
+				Result := internal_minimum_width
+			else
+				Result := width
+			end
 		end
 
 feature -- Element change
@@ -147,16 +149,16 @@ feature -- Element change
 			-- Attempt to load pixmap data from a file specified by `file_name'.
 		local
 			l_image: NS_IMAGE
+			l_image_rep: detachable NS_IMAGE_REP
 		do
 			create l_image.make_with_referencing_file_path (a_path)
 			image_view.set_image (l_image)
 			if l_image.representations.count > 0 then
 				-- File found, representation loaded
-				if attached {NS_IMAGE_REP} l_image.representations.object_at_index_ (0) as l_image_rep then
-					internal_width := l_image_rep.pixels_wide.to_integer_32
-					internal_height := l_image_rep.pixels_high.to_integer_32
-					set_minimum_size (internal_width, internal_height)
-				end
+				l_image_rep := l_image.representations.item (0)
+				check l_image_rep /= void then end
+				internal_width := l_image_rep.pixels_wide
+				internal_height := l_image_rep.pixels_high
 				image := l_image
 			else
 				(create {EXCEPTIONS}).raise ("Could not load image file.")
@@ -166,20 +168,16 @@ feature -- Element change
 	load_system_image (a_name: READABLE_STRING_GENERAL)
 			-- Load a OS X default system image
 		local
-			l_obj: NS_OBJECT
-			l_image_utils: NS_IMAGE_UTILS
+			l_image: NS_IMAGE
+			l_image_rep: detachable NS_IMAGE_REP
 		do
-			create l_obj.make
-			create l_image_utils
-			l_obj := l_image_utils.image_named_ (create {NS_STRING}.make_with_eiffel_string (a_name.as_string_8))
-			if attached {NS_IMAGE} l_obj as l_image then
-				image_view.set_image_ (l_image)
-				if attached {NS_IMAGE_REP} l_image.representations.object_at_index_ (0) as l_image_rep then
-					internal_width := l_image_rep.pixels_wide.to_integer_32
-					internal_height := l_image_rep.pixels_high.to_integer_32
-				end
-				image := l_image
-			end
+			create l_image.make_named (a_name)
+			image_view.set_image (l_image)
+			l_image_rep := l_image.representations.item (0)
+			check l_image_rep /= void then end
+			internal_width := l_image_rep.pixels_wide
+			internal_height := l_image_rep.pixels_high
+			image := l_image
 		end
 
 	set_with_default
@@ -196,15 +194,10 @@ feature -- Element change
 
 	set_size (a_width, a_height: INTEGER)
 			-- Set the size of the pixmap to `a_width' by `a_height'.
-		local
-			l_size: NS_SIZE
 		do
 			internal_width := a_width
 			internal_height := a_height
-			create l_size.make
-			l_size.set_width (a_width)
-			l_size.set_height (a_height)
-			image.set_size_ (l_size)
+			image.set_size (create {NS_SIZE}.make_size (a_width, a_height))
 		end
 
 	reset_for_buffering (a_width, a_height: INTEGER)
@@ -227,16 +220,15 @@ feature -- Access
 
 	raw_image_data: EV_RAW_IMAGE_DATA
 		local
-			l_image_rep: NS_BITMAP_IMAGE_REP
-			l_data: NS_DATA
+--			l_image_rep: NS_BITMAP_IMAGE_REP
+--			l_data: NS_DATA
 		do
 			create Result.make_with_alpha_zero (width, height)
 			Result.set_originating_pixmap (attached_interface)
 
-			create l_image_rep.make_with_data_ (image.tiff_representation)
-				-- NSBMPFileType = 1
-			l_data := l_image_rep.representation_using_type__properties_ (1, Void)
-			-- TODO: read bitmap values and write in Result
+--			create l_image_rep.make_with_data (image.tiff_representation)
+--			l_data := l_image_rep.representation_using_type ({NS_BITMAP_IMAGE_REP}.BMP_file_type, Void)
+			-- TODO: image -> bitmap, read bitmap values and write in Result
 		end
 
 feature -- Duplication
@@ -248,15 +240,15 @@ feature -- Duplication
 			other_imp: detachable EV_PIXMAP_IMP
 		do
 			other_imp ?= other.implementation
-			check other_imp /= void end
+			check other_imp /= void then end
 
 --			if other_imp.pixmap_filename /= Void then
 --				pixmap_filename := other_imp.pixmap_filename.twin
 --			end
 			internal_width := other_imp.internal_width
 			internal_height := other_imp.internal_height
-			create image.make_with_data_ (other_imp.image.tiff_representation)
-			image_view.set_image_ (image)
+			image := other_imp.image.twin
+			image_view.set_image (image)
 
 --			private_mask_bitmap := other_simple_imp.private_mask_bitmap
 --			private_palette := other_simple_imp.private_palette
@@ -329,7 +321,7 @@ feature {EV_ANY, EV_ANY_I} -- Implementation
 	interface: detachable EV_PIXMAP note option: stable attribute end;
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

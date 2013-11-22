@@ -22,7 +22,7 @@ feature --
 			create l_color_utils
 			l_color := l_color_utils.light_gray_color
 			l_color := l_color.color_using_color_space_name_ (create {NS_STRING}.make_with_string_ ("NSDeviceRGBColorSpace"))
-			check l_color /= Void end
+			check l_color /= Void  then end
 			create Result.make_with_rgb (l_color.red_component.truncated_to_real, l_color.green_component.truncated_to_real, l_color.blue_component.truncated_to_real)
 		end
 
@@ -35,7 +35,7 @@ feature --
 			create l_color_utils
 			l_color := l_color_utils.control_background_color
 			l_color := l_color.color_using_color_space_name_ (create {NS_STRING}.make_with_string_ ("NSDeviceRGBColorSpace"))
-			check l_color /= Void end
+			check l_color /= Void then end
 			create Result.make_with_rgb (l_color.red_component.truncated_to_real, l_color.green_component.truncated_to_real, l_color.blue_component.truncated_to_real)
 		end
 
@@ -49,7 +49,7 @@ feature --
 			create l_color_utils
 			l_color := l_color_utils.highlight_color
 			l_color := l_color.color_using_color_space_name_ (create {NS_STRING}.make_with_string_ ("NSDeviceRGBColorSpace"))
-			check l_color /= Void end
+			check l_color /= Void then end
 			create Result.make_with_rgb (l_color.red_component.truncated_to_real, l_color.green_component.truncated_to_real, l_color.blue_component.truncated_to_real)
 		end
 
@@ -63,7 +63,7 @@ feature --
 			create l_color_utils
 			l_color := l_color_utils.shadow_color
 			l_color := l_color.color_using_color_space_name_ (create {NS_STRING}.make_with_string_ ("NSDeviceRGBColorSpace"))
-			check l_color /= Void end
+			check l_color /= Void then end
 			create Result.make_with_rgb (l_color.red_component.truncated_to_real, l_color.green_component.truncated_to_real, l_color.blue_component.truncated_to_real)
 		end
 
@@ -113,4 +113,14 @@ feature --
 			end
 		end
 
+note
+	copyright: "Copyright (c) 1984-2013, Eiffel Software and others"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end -- class EV_STOCK_COLORS_IMP

@@ -1,14 +1,21 @@
 note
 	description: "[
-	Factory class to create criteria. Three kinds of criteria are possible:
-	1. Predefined criteria, using tuples of values of type [STRING, STRING, ANY], 
-	the first element representing an attribute name, the second representing predefined string operators
-	(see class PREDEFINED_OPERATORS), and the third representing any value to be checked on the attribute.
-	2.Agents criteria, in particular predicates used for selection.
-	3. A combination of the previous two criteria can be composed with loical operators and represented in a uniform tuple notation.
-	Example of a combination of criteria with the overloaded [] notation: 
-	[[ "first_name", equals, "Paco" ]] and [[ agent age_more_than (?, 20) ]]
-	]"
+		Factory class to create criteria. 
+		
+		Example usage:
+			
+			criterion_1 := factory.new_predefined ("first_name", factory.equals, "John")
+			criterion_2 := factory.new_agent (agent last_name_equal (?, "Doe"))
+		
+		Combining criteria using logical operators:
+		
+			criterion_3 := criterion_1 and criterion_2
+		
+		Alternative bracked syntax:
+		
+			criterion_3 := factory [["first_name", factory.equals, "John"]]
+							and factory [[agent last_name_equal (?, "Doe") ]]
+		]"
 	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -25,7 +32,7 @@ create
 
 feature -- Creating a criterion
 
-	create_uniform alias "[]" (tuple: TUPLE [ANY]): PS_CRITERION
+	new_uniform alias "[]" (tuple: TUPLE [ANY]): PS_CRITERION
 			-- Creates an agent, a predefined criterion or a combination of both
 			-- using an uniform notation. `tuple' containes either a single agent PREDICATE
 			-- or three values of type [STRING, STRING, ANY].
@@ -35,24 +42,24 @@ feature -- Creating a criterion
 		do
 			if is_agent (tuple) then
 				check attached {PREDICATE [ANY, TUPLE [ANY]]} tuple [1] as predicate then
-					Result := create_agent (predicate)
+					Result := new_agent (predicate)
 				end
 			else
 					-- is_predefined = True, otherwise there would be a contract violation
 					-- however, we need to do all these checks again because of void safety-.-
 				check attached {STRING} tuple [1] as attr and attached {STRING} tuple [2] as operator and attached tuple [3] as value then
-					Result := create_predefined (attr, operator, value)
+					Result := new_predefined (attr, operator, value)
 				end
 			end
 		end
 
-	create_agent (a_predicate: PREDICATE [ANY, TUPLE [ANY]]): PS_CRITERION
+	new_agent (a_predicate: PREDICATE [ANY, TUPLE [ANY]]): PS_CRITERION
 			-- Creates a criterion with a predicate acting as a filter.
 		do
 			create {PS_AGENT_CRITERION} Result.make (a_predicate)
 		end
 
-	create_predefined (object_attribute_name: STRING; operator: STRING; value: ANY): PS_CRITERION
+	new_predefined (object_attribute_name: STRING; operator: STRING; value: ANY): PS_CRITERION
 			-- Creates a predefined selection criterion given
 			-- an object attribute name,
 			-- an operator (see 'PS_PREDEFINED_OPERATORS'),

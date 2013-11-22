@@ -15,11 +15,13 @@ inherit
 
 	EV_PRIMITIVE_IMP
 		undefine
-			update_for_pick_and_drop
+			update_for_pick_and_drop, minimum_width, minimum_height,
+			internal_set_minimum_height, internal_set_minimum_width, internal_set_minimum_size
 		redefine
 			interface,
 			make,
-			set_parent_imp
+			set_parent_imp,
+			ev_apply_new_size
 		end
 
 	EV_ITEM_LIST_IMP [EV_TOOL_BAR_ITEM, EV_ITEM_IMP]
@@ -28,6 +30,11 @@ inherit
 		redefine
 			interface,
 			make
+		end
+
+	EV_SIZEABLE_CONTAINER_IMP
+		redefine
+			interface
 		end
 
 create
@@ -40,9 +47,13 @@ feature {NONE} -- Initialization
 		do
 			initialize_item_list
 			create radio_group.make
-			create tool_bar.make
-			tool_bar.set_translates_autoresizing_mask_into_constraints_ (False)
-			cocoa_view := tool_bar
+
+			create box.make
+			box.set_title_position ({NS_BOX}.no_title)
+			box.set_box_type ({NS_BOX}.box_custom)
+			box.set_border_type ({NS_BOX}.no_border)
+			box.set_content_view_margins (0, 0)
+			cocoa_view := box
 
 			Precursor {EV_PRIMITIVE_IMP}
 			disable_tabable_from
@@ -99,48 +110,84 @@ feature -- Access
 	insert_item (v: EV_ITEM_IMP; i: INTEGER_32)
 		local
 			l_view: detachable NS_VIEW
-			l_ev_view: detachable EV_NS_VIEW
 		do
 			l_view ?= v.cocoa_view
-			check l_view /= void end
-			l_ev_view ?= v
-			check l_ev_view /= Void end
-			tool_bar.add_subview_ (l_view)
-
-			l_ev_view.set_top_padding (0)
-			l_ev_view.set_bottom_padding (0)
-
-			if i - 1 >= 1 then
-				check attached {EV_NS_VIEW} i_th (i-1).implementation as l_prev then
-					attached_view.remove_constraint_ (l_prev.right_constraint)
-					-- If one of the widgets is a separator, leave 4 pixels of padding
-					if attached {EV_TOOL_BAR_SEPARATOR_IMP} v or attached {EV_TOOL_BAR_SEPARATOR_IMP} l_prev then
-						set_horizontal_padding_constraints (l_prev.cocoa_view, v.cocoa_view, 4)
-					else
-						set_horizontal_padding_constraints (l_prev.cocoa_view, v.cocoa_view, 0)
-					end
-				end
-			end
-			if i + 1 <= count then
-				check attached {EV_NS_VIEW} i_th (i+1).implementation as l_next then
-					attached_view.remove_constraint_ (l_next.left_constraint)
-					set_horizontal_padding_constraints (v.cocoa_view, l_next.cocoa_view, 0)
-				end
-
-			end
-
-			if i = 1 then
-				l_ev_view.set_left_padding (0)
-			end
-			if i = count then
-				set_minimum_right_padding_constraint (l_ev_view, 2)
-			end
+			check l_view /= void then end
+			box.add_subview (l_view)
+			notify_change (nc_minsize, Current)
 		end
 
 	remove_item (button: EV_ITEM_IMP)
 			-- Remove `button' from `current'.
 		do
 			-- TODO remove
+			notify_change (nc_minsize, Current)
+		end
+
+feature -- Implementation
+
+	compute_minimum_width
+			-- Update the minimum-size of `Current'.
+		local
+			l_width: INTEGER
+		do
+			from
+				ev_children.start
+			until
+				ev_children.after
+			loop
+				l_width := l_width + ev_children.item.minimum_width
+				ev_children.forth
+			end
+			internal_set_minimum_width (l_width)
+		end
+
+	compute_minimum_height
+			-- Update the minimum-size of `Current'.
+		local
+			l_height: INTEGER
+		do
+			from
+				ev_children.start
+			until
+				ev_children.after
+			loop
+				l_height := l_height.max (ev_children.item.minimum_height)
+				ev_children.forth
+			end
+			internal_set_minimum_height (l_height)
+		end
+
+	compute_minimum_size
+			-- Recompute both the minimum_width and then
+			-- minimum_height of `Current'.
+		do
+			compute_minimum_height
+			compute_minimum_width
+		end
+
+	ev_apply_new_size (a_x_position, a_y_position, a_width, a_height: INTEGER_32; repaint: BOOLEAN)
+			-- Precursor		
+		local
+			litem: detachable EV_NS_VIEW
+			x: INTEGER
+			item_width, item_height: INTEGER
+		do
+			ev_move_and_resize (a_x_position, a_y_position, a_width, a_height, repaint)
+			item_height := box.content_view.bounds.size.height.rounded
+			from
+				ev_children.start
+				x := 0
+			until
+				ev_children.after
+			loop
+				litem ?= ev_children.item
+				check litem /= Void then end
+				item_width := litem.minimum_width
+				litem.cocoa_set_size (x, 0, item_width, item_height)
+				x := x + item_width
+				ev_children.forth
+			end
 		end
 
 feature {EV_DOCKABLE_SOURCE_I} -- Implementation (obsolete?)
@@ -174,7 +221,7 @@ feature {EV_TOOL_BAR_IMP} -- Implementation
 			t_imp: detachable EV_TOOL_BAR_IMP
 		do
 			t_imp ?= other.implementation
-			check t_imp /= Void end
+			check t_imp /= Void then end
 			Result := t_imp.radio_group = radio_group
 		end
 
@@ -211,7 +258,7 @@ feature {EV_TOOL_BAR_IMP} -- Implementation
 		do
 			button_imp ?= w.implementation
 			check
-				implementation_not_void: button_imp /= Void
+				implementation_not_void: button_imp /= Void then
 			end
 			if not button_imp.is_sensitive then
 				--disable_button (button_imp.id)
@@ -235,10 +282,20 @@ feature {EV_TOOL_BAR_IMP} -- Implementation
 
 feature {EV_ANY_I} -- Interface
 
-	tool_bar: EV_FLIPPED_VIEW
+	box: NS_BOX
 
 feature {EV_ANY, EV_ANY_I} -- Interface
 
 	interface: detachable EV_TOOL_BAR note option: stable attribute end;
 
+note
+	copyright: "Copyright (c) 1984-2013, Eiffel Software and others"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end -- class EV_TOOL_BAR_IMP

@@ -22,13 +22,13 @@ feature
 			person: EXPANDED_PERSON
 			internal: INTERNAL
 			traversal: OBJECT_GRAPH_BREADTH_FIRST_TRAVERSABLE
-			box: GENERIC_BOX[PERSON, EXPANDED_PERSON]
+			box: GENERIC_BOX[TEST_PERSON, EXPANDED_PERSON]
 		do
 			create traversal
 			create container.set_item (5)
 			create internal
 			create reflection.make (container)
-			create box.set_item (create {PERSON}.make ("some", "name", 22), create {EXPANDED_PERSON})
+			create box.set_item (create {TEST_PERSON}.make ("some", "name", 22), create {EXPANDED_PERSON})
 
 			across
 				1 |..| reflection.field_count as i
@@ -200,7 +200,7 @@ feature
 
 	experiment_internal_special
 		local
-			person_special: SPECIAL [PERSON]
+			person_special: SPECIAL [TEST_PERSON]
 			ref_special: SPECIAL [REFERENCE_CLASS_1]
 			detached_ref_special: SPECIAL [detachable REFERENCE_CLASS_1]
 			generated_special: ANY
@@ -228,9 +228,9 @@ feature
 			list: LIST [ANY]
 		do
 			create {LINKED_LIST [ANY]} list.make
-			print (attached {LIST [PERSON]} list)
-			list.extend (create {PERSON}.make ("a", "b", 0))
-			print (attached {LIST [PERSON]} list)
+			print (attached {LIST [TEST_PERSON]} list)
+			list.extend (create {TEST_PERSON}.make ("a", "b", 0))
+			print (attached {LIST [TEST_PERSON]} list)
 		end
 
 	experiment_sqlite_failure_for_multiple_open_connections
@@ -347,14 +347,14 @@ feature
 		local
 			factory: PS_METADATA_FACTORY
 			type: PS_TYPE_METADATA
-			p:PERSON
+			p:TEST_PERSON
 			id: INTEGER
 		do
 			create factory.make
 			create p.make ("a", "b", 0)
 			type := factory.create_metadata_from_object (p)
 
-			id := factory.generate_tuple_type (type.type, <<"first_name", "items_owned">>)
+			id := factory.generate_tuple_type (type.type, create {ARRAYED_LIST [STRING]}.make_from_array (<<"first_name", "items_owned">>))
 			print (id.out + " ")
 			print (type.reflection.type_name_of_type (id))
 			println

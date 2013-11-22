@@ -23,11 +23,11 @@ feature {NONE} -- Initialization
 		require
 			a_id_not_void: a_id /= Void
 			id_valid: valid_attribute (a_id)
-			name_valid: attached a_name as l_n implies valid_attribute (l_n)
-			protocol_valid: attached a_protocol as l_p implies valid_attribute (l_p)
-			source_valid: attached a_source as l_s implies valid_attribute (l_s)
-			tags_valid: attached a_tags as l_t implies valid_tags (l_t)
-			parameters_valid: attached a_parameters as l_p implies valid_parameters (l_p)
+			name_valid: a_name /= Void implies valid_attribute (a_name)
+			protocol_valid: a_protocol /= Void implies valid_attribute (a_protocol)
+			source_valid: a_source /= Void implies valid_attribute (a_source)
+			tags_valid: a_tags /= Void implies valid_tags (a_tags)
+			parameters_valid: a_parameters /= Void implies valid_parameters (a_parameters)
 		do
 			name := a_name
 			protocol := a_protocol
@@ -45,74 +45,78 @@ feature {NONE} -- Initialization
 		end
 
 feature {ES_EIS_COMPONENT_VIEW} -- Element change
-								-- Be careful to change entry that has been registered in storage.
 
 	set_name (a_name: like name)
-			-- Set `name' with `a_name'
+			-- Set `name' with `a_name'.
+			-- Be careful to change entry that has been registered in storage.
 		require
-			name_valid: attached a_name as l_n implies valid_attribute (l_n)
+			name_valid: a_name /= Void implies valid_attribute (a_name)
 		local
 			l_name: like name
 		do
 			l_name := name
 			name := a_name
 			if not same_string_attribute (l_name, a_name) then
-				update_fingerprint
+				reset_fingerprint
 			end
 		ensure
 			name_set: name = a_name
 		end
 
 	set_protocol (a_protocol: like protocol)
-			-- Set `protocol' with `a_protocol'
+			-- Set `protocol' with `a_protocol'.
+			-- Be careful to change entry that has been registered in storage.
 		require
-			protocol_valid: attached a_protocol as l_p implies valid_attribute (l_p)
+			protocol_valid: a_protocol /= Void implies valid_attribute (a_protocol)
 		local
 			l_protocol: like protocol
 		do
 			l_protocol := protocol
 			protocol := a_protocol
 			if not same_string_attribute (l_protocol, a_protocol) then
-				update_fingerprint
+				reset_fingerprint
 			end
 		ensure
 			protocol_set: protocol = a_protocol
 		end
 
 	set_source (a_source: like source)
-			-- Set `source' with `a_source'
+			-- Set `source' with `a_source'.
+			-- Be careful to change entry that has been registered in storage.
 		require
-			source_valid: attached a_source as l_s implies valid_attribute (l_s)
+			source_valid: a_source /= Void implies valid_attribute (a_source)
 		local
 			l_source: like source
 		do
 			l_source := source
 			source := a_source
 			if not same_string_attribute (l_source, a_source) then
-				update_fingerprint
+				reset_fingerprint
 			end
 		ensure
 			source_set: source = a_source
 		end
 
 	set_tags (a_tags: like tags)
-			-- Set `tags' with `a_tags'
+			-- Set `tags' with `a_tags'.
+			-- Be careful to change entry that has been registered in storage.
 		require
-			tags_valid: attached a_tags as l_t implies valid_tags (l_t)
+			tags_valid: a_tags /= Void implies valid_tags (a_tags)
 		local
 			l_tags: like tags
 		do
 			l_tags := tags
 			tags := a_tags
 			if l_tags /= a_tags then
-				update_fingerprint
+				reset_fingerprint
 			end
 		ensure
 			tags_set: tags = a_tags
 		end
 
 	set_id (a_id: like target_id)
-			-- Set `id' with `a_id'
+			-- Set `id' with `a_id'.
+			-- Be careful to change entry that has been registered in storage.
 		require
 			a_id_not_void: a_id /= Void
 			id_valid: valid_attribute (a_id)
@@ -123,16 +127,17 @@ feature {ES_EIS_COMPONENT_VIEW} -- Element change
 		end
 
 	set_parameters (a_parameters: like parameters)
-			-- Set `parameters' with `a_parameters'
+			-- Set `parameters' with `a_parameters'.
+			-- Be careful to change entry that has been registered in storage.
 		require
-			parameters_valid: attached a_parameters as l_p implies valid_parameters (l_p)
+			parameters_valid: a_parameters /= Void implies valid_parameters (a_parameters)
 		local
 			l_parameters: like parameters
 		do
 			l_parameters := parameters
 			parameters := a_parameters
 			if l_parameters /= a_parameters then
-				update_fingerprint
+				reset_fingerprint
 			end
 		ensure
 			parameters_set: parameters = a_parameters
@@ -161,7 +166,8 @@ feature -- Query
 feature {ES_EIS_NOTE_PICKER} -- Element change
 
 	set_override (a_v: like override)
-			-- Set `override' with `a_v'
+			-- Set `override' with `a_v'.
+			-- Be careful to change entry that has been registered in storage.
 		do
 			override := a_v
 		ensure
@@ -170,6 +176,7 @@ feature {ES_EIS_NOTE_PICKER} -- Element change
 
 	set_source_pos (a_pos: like source_pos)
 			-- Set `source_pos' with `a_pos'.
+			-- Be careful to change entry that has been registered in storage.
 		do
 			source_pos := a_pos
 		ensure
@@ -178,29 +185,28 @@ feature {ES_EIS_NOTE_PICKER} -- Element change
 
 feature -- Access
 
-	name: detachable STRING_32
+	name: detachable STRING_32 assign set_name
 			-- Name of the entry
 
-	protocol: detachable STRING_32
+	protocol: detachable STRING_32 assign set_protocol
 			-- Protocol of the entry
 
-	source: detachable STRING_32
+	source: detachable STRING_32 assign set_source
 			-- Source of the entry
 
-	tags: detachable ARRAYED_LIST [STRING_32]
+	tags: detachable ARRAYED_LIST [STRING_32] assign set_tags
 			-- Tags of the entry
 
 	target_id: STRING
 			-- Id of the entry (from EB_SHARED_ID_SOLUTION)
-			--
 
-	parameters: detachable STRING_TABLE [STRING_32]
+	parameters: detachable STRING_TABLE [STRING_32] assign set_parameters
 			-- Parameters of the entry
 
-	override: BOOLEAN
+	override: BOOLEAN assign set_override
 			-- Overriding entry over auto entry?
 
-	source_pos: TUPLE [pos, len: INTEGER]
+	source_pos: TUPLE [pos, len: INTEGER] assign set_source_pos
 			-- Source character position in orignal file.
 
 	entry_id: STRING
@@ -217,7 +223,7 @@ feature -- Access
 
 	tags_as_string: detachable STRING_32
 			-- Tags as a string
-			-- Simple combination, not for display popose
+			-- Simple combination, not for display purpose.
 		do
 			if attached tags as lt_tags then
 				create Result.make (10)
@@ -237,7 +243,7 @@ feature -- Access
 
 	parameters_as_string: detachable STRING_32
 			-- Parameters as string
-			-- Simple combination, not for display popose
+			-- Simple combination, not for display purpose.
 		do
 			if attached parameters as lt_parameters then
 				create Result.make (10)
@@ -331,24 +337,30 @@ feature {NONE} -- Implementation
 		end
 
 	update_fingerprint
-			-- Update fingerprint
+			-- Update fingerprint.
 		do
 			internal_fingerprint := updated_fingerprint
 		ensure
 			fingerprint_set: internal_fingerprint /= Void
 		end
 
-	internal_fingerprint: EIS_MD5_FINGERPRINT
+	reset_fingerprint
+			-- Reset `fingerprint'.
+		do
+			internal_fingerprint := Void
+			internal_hash_code := 0
+		end
+
+	internal_fingerprint: detachable EIS_MD5_FINGERPRINT
 			-- Cache for md5
 
 feature {NONE} -- Hash code
 
 	internal_hash_code: like hash_code;
-			-- Catched hash code
+			-- Cached hash code
 
 invariant
 	id_not_void: target_id /= Void
-	fingerprint_not_void: fingerprint /= Void
 
 note
 	copyright: "Copyright (c) 1984-2013, Eiffel Software"

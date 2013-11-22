@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PS_LAZY_CURSOR}."
-	author: ""
+	description: "A query result cursor which loads items in batches, using SQL `LIMIT' keyword."
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -10,7 +10,7 @@ class
 inherit
 	ITERATION_CURSOR [PS_BACKEND_OBJECT]
 
-	PS_EIFFELSTORE_EXPORT
+	PS_ABEL_EXPORT
 
 create
 	make
@@ -58,7 +58,7 @@ feature {NONE} -- Implementation
 
 	attributes: PS_IMMUTABLE_STRUCTURE [STRING]
 
-	transaction: PS_TRANSACTION
+	transaction: PS_INTERNAL_TRANSACTION
 
 	backend: PS_GENERIC_LAYOUT_SQL_READONLY_BACKEND
 
@@ -103,9 +103,9 @@ feature {NONE} -- Implementation
 			create conv.make (backend.db_metadata_manager, type)
 
 
-			if backend.db_metadata_manager.has_primary_key_of_class (type.base_class.name) then
+			if backend.db_metadata_manager.has_primary_key_of_class (type.name) then
 
-				attribute_keys := backend.db_metadata_manager.attribute_keys_of_class (backend.db_metadata_manager.primary_key_of_class (type.base_class.name))
+				attribute_keys := backend.db_metadata_manager.attribute_keys_of_class (backend.db_metadata_manager.primary_key_of_class (type.name))
 				sql_string := backend.sql_strings.query_values_from_class (backend.sql_strings.convert_to_sql (attribute_keys))
 
 				if not criteria.is_empty_criterion then
@@ -152,7 +152,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Initialization
 
-	make (t: PS_TYPE_METADATA; cr: PS_CRITERION; att: PS_IMMUTABLE_STRUCTURE [STRING]; tr: PS_TRANSACTION; b: PS_GENERIC_LAYOUT_SQL_READONLY_BACKEND)
+	make (t: PS_TYPE_METADATA; cr: PS_CRITERION; att: PS_IMMUTABLE_STRUCTURE [STRING]; tr: PS_INTERNAL_TRANSACTION; b: PS_GENERIC_LAYOUT_SQL_READONLY_BACKEND)
 		do
 			type := t
 			criteria := cr
