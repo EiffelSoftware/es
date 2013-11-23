@@ -694,6 +694,8 @@ feature -- Other
 				Result := "0.0"
 			elseif a_type.is_set then
 				Result := "Set#Empty()"
+			elseif a_type.is_seq then
+				Result := "Seq#Empty()"
 			elseif a_type.is_reference then
 				Result := "Void"
 			else

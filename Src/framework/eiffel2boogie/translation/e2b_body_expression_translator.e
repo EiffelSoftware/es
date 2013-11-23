@@ -129,29 +129,40 @@ feature -- Visitors
 			create_local (l_type)
 			l_local := last_local
 
-			create l_proc_call.make ("allocate")
-			l_proc_call.add_argument (factory.type_value (l_type))
-			l_proc_call.set_target (l_local)
-			side_effect.extend (l_proc_call)
+				-- Is this a normal reference type?
+			if l_local.type.is_reference then
+				create l_proc_call.make ("allocate")
+				l_proc_call.add_argument (factory.type_value (l_type))
+				l_proc_call.set_target (l_local)
+				side_effect.extend (l_proc_call)
 
-				-- Call to creation procedure
-			l_target := current_target
-			l_target_type := current_target_type
+					-- Call to creation procedure
+				l_target := current_target
+				l_target_type := current_target_type
 
-			current_target := l_local
-			current_target_type := l_type
+				current_target := l_local
+				current_target_type := l_type
 
-			l_handler := translation_mapping.handler_for_call (current_target_type, l_feature)
-			if l_handler /= Void then
-				l_handler.handle_routine_call_in_body (Current, l_feature, a_node.parameters)
+				l_handler := translation_mapping.handler_for_call (current_target_type, l_feature)
+				if l_handler /= Void then
+					l_handler.handle_routine_call_in_body (Current, l_feature, a_node.parameters)
+				else
+					process_routine_call (l_feature, a_node.parameters, True)
+				end
+
+				current_target := l_target
+				current_target_type := l_target_type
+
+				last_expression := l_local
 			else
-				process_routine_call (l_feature, a_node.parameters, True)
+					-- Or something special?
+				check l_local.type.is_set or l_local.type.is_seq end
+
+				l_handler := translation_mapping.handler_for_call (current_target_type, l_feature)
+				check l_handler /= Void end
+				l_handler.handle_routine_call_in_body (Current, l_feature, a_node.parameters)
 			end
 
-			current_target := l_target
-			current_target_type := l_target_type
-
-			last_expression := l_local
 		end
 
 	process_tuple_access_b (a_node: TUPLE_ACCESS_B)

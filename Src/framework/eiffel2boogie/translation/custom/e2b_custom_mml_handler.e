@@ -76,6 +76,12 @@ feature {NONE} -- Implementation
 			Result.extend (
 				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
 					do
+						Result := factory.function_call ("Set#Empty", << >>, types.bool)
+					end,
+				"MML_SET.default_create")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
 						Result := create {IV_MAP_ACCESS}.make (a_target, a_params.first)
 					end,
 				"MML_SET.has")
@@ -146,6 +152,19 @@ feature {NONE} -- Implementation
 					end,
 				"MML_SET.empty_set")
 
+
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Empty", << >>, types.bool)
+					end,
+				"MML_SEQUENCE.default_create")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Singleton", << a_params.first >>, types.bool)
+					end,
+				"MML_SEQUENCE.singleton")
 			Result.extend (
 				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
 					do
