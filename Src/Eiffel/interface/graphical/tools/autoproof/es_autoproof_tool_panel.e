@@ -526,6 +526,12 @@ feature {NONE} -- Basic operations
 				else
 					create {CLASSC_STONE} l_stone.make (l_event_item.context_class)
 				end
+			elseif attached {E2B_FAILED_EXECUTION_EVENT} a_row.parent_row_root.data as l_event_item then
+				if l_event_item.data.eiffel_feature /= Void then
+					create {FEATURE_STONE} l_stone.make (l_event_item.data.eiffel_feature.api_feature (l_event_item.data.eiffel_class.class_id))
+				elseif l_event_item.data.eiffel_class /= Void then
+					create {CLASSC_STONE} l_stone.make (l_event_item.data.eiffel_class)
+				end
 			end
 			if l_stone /= Void and then l_stone.is_valid then
 				(create {EB_CONTROL_PICK_HANDLER}).launch_stone (l_stone)
@@ -549,20 +555,41 @@ feature {NONE} -- Basic operations
 
 		do
 			a_row.set_data (a_event_item)
-			if is_failed_execution_event (a_event_item) then
+			if attached {E2B_FAILED_EXECUTION_EVENT} a_event_item as l_result then
+
+				if l_result.data.eiffel_class /= Void then
+						-- Class location
+					create l_gen.make
+					l_result.data.eiffel_class.append_name (l_gen)
+					l_editor_item := create_clickable_grid_item (l_gen.last_line, True)
+					a_row.set_item (class_column, l_editor_item)
+				end
+				if l_result.data.eiffel_feature /= Void then
+					create l_gen.make
+					l_gen.add_feature_name (l_result.data.eiffel_feature.feature_name_32, l_result.data.eiffel_class)
+					l_editor_item := create_clickable_grid_item (l_gen.last_line, True)
+					a_row.set_item (feature_column, l_editor_item)
+				end
+
 					-- Icon
 				create l_label
-				l_label.set_pixmap (stock_pixmaps.general_warning_icon)
-				l_label.set_data ("warning")
+				l_label.set_pixmap (stock_pixmaps.general_error_icon)
+				l_label.set_data ("failed")
 				l_label.disable_full_select
 				a_row.set_item (icon_column, l_label)
 
 					-- Message
-				create l_label.make_with_text (a_event_item.data.out)
+				create l_label.make_with_text (l_result.data.type + ": " + l_result.data.single_line_message)
 				a_row.set_item (info_column, l_label)
 
 					-- Color
 				a_row.set_background_color (failed_color)
+
+					-- Multi-line message
+				if l_result.data.multi_line_message /= Void and then not l_result.data.multi_line_message.is_empty then
+					insert_subrow_for_suggestion (a_row, l_result.data.multi_line_message)
+				end
+
 
 			elseif attached {E2B_VERIFICATION_EVENT} a_event_item as l_result then
 					-- Class location

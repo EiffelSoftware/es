@@ -93,3 +93,11 @@ axiom(forall<T> a: Set T, b: Set T :: { Set#Equal(a,b) }  // extensionality axio
 function Set#Disjoint<T>(Set T, Set T): bool;
 axiom (forall<T> a: Set T, b: Set T :: { Set#Disjoint(a,b) }
   Set#Disjoint(a,b) <==> (forall o: T :: {a[o]} {b[o]} !a[o] || !b[o]));
+
+
+// ---------------------------------------------------------------
+// CUSTOM ADDITIONS
+
+// Removing an element from a set and adding it again gives the same set.
+axiom(forall<T> a: Set T, o: T :: { Set#Difference(a, Set#Singleton(o)) }
+  Set#Equal(Set#UnionOne(Set#Difference(a, Set#Singleton(o)), o), a));

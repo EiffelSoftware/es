@@ -155,6 +155,7 @@ feature -- Basic operations
 					>>,
 					types.bool))
 			l_pre.set_assertion_type ("pre")
+			l_pre.set_assertion_tag ("modifies_set_writable")
 			current_boogie_procedure.add_contract (l_pre)
 
 				-- How writes set changes

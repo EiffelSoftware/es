@@ -183,6 +183,7 @@ feature -- Visitors
 	process_array_const_b (a_node: ARRAY_CONST_B)
 			-- <Precursor>
 		do
+			helper.add_unsupported_error (Void, context_feature, "Manifest array in contract not supported.")
 			last_expression := dummy_node (a_node.type)
 		end
 
@@ -508,6 +509,7 @@ feature -- Visitors
 	process_creation_expr_b (a_node: CREATION_EXPR_B)
 			-- <Precursor>
 		do
+			helper.add_unsupported_error (Void, context_feature, "Creation expression in contract not supported.")
 			last_expression := dummy_node (a_node.type)
 		end
 
@@ -897,6 +899,7 @@ feature -- Visitors
 	process_string_b (a_node: STRING_B)
 			-- <Precursor>
 		do
+			helper.add_unsupported_error (Void, context_feature, "Manifest string not supported.")
 			last_expression := dummy_node (a_node.type)
 		end
 
@@ -918,6 +921,7 @@ feature -- Visitors
 	process_tuple_const_b (a_node: TUPLE_CONST_B)
 			-- <Precursor>
 		do
+			helper.add_unsupported_error (Void, context_feature, "Manifest tuple in contract not supported.")
 			last_expression := dummy_node (a_node.type)
 		end
 
@@ -1098,16 +1102,7 @@ feature {E2B_ACROSS_HANDLER, E2B_CUSTOM_CALL_HANDLER, E2B_CUSTOM_NESTED_HANDLER}
 		local
 			l_type: TYPE_A
 		do
-			l_type := a_type.deep_actual_type
-			if l_type.is_integer or l_type.is_natural or l_type.is_character or l_type.is_character_32 then
-				create {IV_VALUE} Result.make ("0", types.int)
-			elseif l_type.is_boolean then
-				create {IV_VALUE} Result.make ("false", types.bool)
-			elseif l_type.is_expanded then
-				create {IV_VALUE} Result.make ("Unknown", types.generic_type)
-			else
-				create {IV_VALUE} Result.make ("Void", types.ref)
-			end
+			Result := factory.function_call ("unsupported", << >>, types.for_type_a (a_type.deep_actual_type))
 		end
 
 end

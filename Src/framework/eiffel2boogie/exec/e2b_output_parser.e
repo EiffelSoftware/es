@@ -36,6 +36,7 @@ feature -- Basic operations
 			-- Process `a_boogie_output'.
 		do
 			create last_result.make
+			last_result.autoproof_errors.append (autoproof_errors)
 			lines := a_boogie_output.split ('%N')
 			boogie_file_lines := Void
 			parse
@@ -175,14 +176,14 @@ feature {NONE} -- Implementation
 						-- line: syntax_error_regexp.captured_substring (2).to_integer
 						-- column: syntax_error_regexp.captured_substring (3).to_integer
 						-- message: syntax_error_regexp.captured_substring (4)
-						last_result.execution_errors.extend (["Syntax error", l_line])
+						last_result.autoproof_errors.extend (create_syntax_error (l_line))
 
 					elseif semantic_error_regexp.matches (l_line) then
 						-- file: semantic_error_regexp.captured_substring (1)
 						-- line: semantic_error_regexp.captured_substring (2).to_integer
 						-- column: semantic_error_regexp.captured_substring (3).to_integer
 						-- message: semantic_error_regexp.captured_substring (4)
-						last_result.execution_errors.extend (["Semantic error", l_line])
+						last_result.autoproof_errors.extend (create_semantic_error (l_line))
 
 					elseif execution_trace_regexp.matches (l_line) then
 						-- file: execution_trace_regexp.captured_substring (1)
@@ -485,6 +486,23 @@ feature {NONE} -- Implementation
 			result_attached: attached Result
 		end
 
+	create_syntax_error (a_line: STRING): E2B_AUTOPROOF_ERROR
+			-- Create syntax error.
+		do
+			create Result
+			Result.set_type ("Boogie Syntax Error")
+			Result.set_single_line_message ("The generated Boogie file contains a syntax error.")
+			Result.set_multi_line_message ("The generated Boogie file contains a syntax error.%NPlease report this to the developers of AutoProof.%NThe following error occured:%N" + a_line)
+		end
+
+	create_semantic_error (a_line: STRING): E2B_AUTOPROOF_ERROR
+			-- Create semantic error.
+		do
+			create Result
+			Result.set_type ("Boogie Semantic Error")
+			Result.set_single_line_message ("The generated Boogie file contains a semantic error.")
+			Result.set_multi_line_message ("The generated Boogie file contains a semantic error.%NPlease report this to the developers of AutoProof.%NThe following error occured:%N" + a_line)
+		end
 
 feature {NONE} -- Implementation: regular expressions Boogie output
 

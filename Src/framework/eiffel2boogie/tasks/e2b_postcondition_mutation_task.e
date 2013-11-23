@@ -17,18 +17,14 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_boogie_universe: IV_UNIVERSE; a_verifier: E2B_VERIFIER)
+	make (a_verifier: E2B_VERIFIER)
 			-- Initialize task.
 		do
 			has_next_step := True
-			boogie_universe := a_boogie_universe
 			verifier := a_verifier
 		end
 
 feature -- Access
-
-	boogie_universe: IV_UNIVERSE
-			-- Boogie universe to operate on.
 
 	verifier: E2B_VERIFIER
 			-- Verifier used for verification.

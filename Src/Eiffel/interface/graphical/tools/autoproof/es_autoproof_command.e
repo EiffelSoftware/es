@@ -156,8 +156,8 @@ feature {NONE} -- Basic operations
 			-- Process verification result.
 		do
 			event_list.prune_event_items (event_context_cookie)
-			across a_result.execution_errors as i loop
-				event_list.put_event_item (event_context_cookie, create {E2B_FAILED_EXECUTION_EVENT}.make (i.item.title + ": " + i.item.message))
+			across a_result.autoproof_errors as i loop
+				event_list.put_event_item (event_context_cookie, create {E2B_FAILED_EXECUTION_EVENT}.make (i.item))
 			end
 			across a_result.procedure_results as i loop
 				event_list.put_event_item (event_context_cookie, create {E2B_VERIFICATION_EVENT}.make (i.item))

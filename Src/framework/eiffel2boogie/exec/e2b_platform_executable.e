@@ -205,11 +205,17 @@ feature {NONE} -- Implementation
 			l_ee: EXECUTION_ENVIRONMENT
 			l_arguments: LINKED_LIST [STRING]
 			l_process_factory: PROCESS_FACTORY
+			l_context: E2B_SHARED_CONTEXT
 		do
+			create l_context
+
 				-- Prepare command line arguments
 			create l_arguments.make
 			l_arguments.extend ("/trace")
-			l_arguments.extend ("/errorLimit:1")
+			if l_context.options.is_enforcing_timeout then
+				l_arguments.extend ("/z3opt:/T:" + l_context.options.timeout.out)
+			end
+--			l_arguments.extend ("/errorLimit:1")
 --			l_arguments.extend ("/mv:" + safe_file_name (model_file_name))
 			l_arguments.extend (safe_file_name (boogie_file_name))
 

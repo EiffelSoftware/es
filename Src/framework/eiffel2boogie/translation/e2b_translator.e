@@ -12,8 +12,6 @@ inherit
 
 	E2B_SHARED_CONTEXT
 
-	E2B_SHARED_BOOGIE_UNIVERSE
-
 create
 	make
 
@@ -22,8 +20,6 @@ feature {NONE} -- Initialization
 	make (a_boogie_universe: IV_UNIVERSE)
 			-- Initialize translator.
 		do
-			boogie_universe_cell.put (a_boogie_universe)
-
 			translation_pool.reset
 			translation_pool.add_type (system.any_type)
 			translation_pool.mark_translated (translation_pool.next_untranslated_element)

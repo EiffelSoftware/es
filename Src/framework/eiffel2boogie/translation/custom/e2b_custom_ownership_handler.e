@@ -68,11 +68,8 @@ feature -- Basic operations
 				l_call ?= a_translator.side_effect.last
 				a_translator.side_effect.finish
 				a_translator.side_effect.remove	-- last side effect is actual call, here to non-existing "xyz"
-				create l_assign.make (
-					factory.heap_access (a_translator.entity_mapping.heap.name, a_translator.current_target, l_name, types.set (types.ref)),
-					l_call.arguments.i_th (2))
 				a_translator.set_last_expression (Void)
-				a_translator.side_effect.extend (l_assign)
+				a_translator.side_effect.extend (factory.procedure_call ("update_heap", << a_translator.current_target, l_name, l_call.arguments.i_th (2)>>))
 			else
 				check false end
 			end

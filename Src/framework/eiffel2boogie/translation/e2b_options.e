@@ -5,7 +5,7 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+frozen class
 	E2B_OPTIONS
 
 create
@@ -34,6 +34,9 @@ feature {NONE} -- Initialization
 			is_coupled_mutations_enabled := False
 			is_aging_enabled := False
 			is_uncoupled_mutations_enabled := False
+
+			is_enforcing_timeout := False
+			timeout := 60
 		end
 
 feature -- Inlining verification step
@@ -212,6 +215,25 @@ feature -- Framing
 			-- Set `is_ownership_defaults_enabled' to `a_value'.
 		do
 			is_ownership_defaults_enabled := a_value
+		end
+
+feature -- Boogie/Z3
+
+	is_enforcing_timeout: BOOLEAN
+			-- Is timeout enforced?
+
+	set_is_enforcing_timeout (a_value: BOOLEAN)
+			-- Set `is_enforcing_timeout' to `a_value'.
+		do
+			is_enforcing_timeout := a_value
+		end
+
+	timeout: INTEGER
+
+	set_timeout (a_value: INTEGER)
+			-- Set `timeout' to `a_value'.
+		do
+			timeout := a_value
 		end
 
 end

@@ -30,13 +30,13 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	data: STRING
+	data: E2B_AUTOPROOF_ERROR
 			-- <Precursor>
 
 	description: STRING_32
 			-- <Precursor>
 		do
-			Result := data
+			Result := data.type + ": " + data.single_line_message
 		end
 
 	frozen type: NATURAL_8

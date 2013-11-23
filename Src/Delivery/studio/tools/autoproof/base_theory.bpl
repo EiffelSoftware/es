@@ -409,3 +409,7 @@ function address(a: ref) returns (int);
 axiom (forall a, b: ref :: (a != b) <==> (address(a) != address(b))); // Different objects have different heap addresses.
 axiom (forall a: ref :: is_integer_64(address(a))); // Addresses are 64 bit integers.
 
+// Unsupported
+
+function unsupported<T>() returns (T);
+

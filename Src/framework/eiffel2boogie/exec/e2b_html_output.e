@@ -20,47 +20,41 @@ feature
 	print_verification_result (r: E2B_RESULT)
 			-- Print `r' in HTML format.
 		do
-			if r.has_execution_errors then
-				add ("Boogie verification failed!")
-				add_new_line
-				add_new_line
-				across r.execution_errors as i loop
-					add (i.item.title)
-					add (": ")
-					add (i.item.message)
-				end
-			else
-				open_style ("table", table_style)
-				open ("thead")
-				open_style ("tr", tr_header_style)
-				open ("th")
-				add ("Feature")
-				close ("th")
-				open ("th")
-				add ("Result")
-				close ("th")
+			open_style ("table", table_style)
+			open ("thead")
+			open_style ("tr", tr_header_style)
+			open ("th")
+			add ("Feature")
+			close ("th")
+			open ("th")
+			add ("Result")
+			close ("th")
+			close ("tr")
+			close ("thead")
+			open ("tbody")
+			across r.autoproof_errors as i loop
+				open_style ("tr", tr_failed_style)
+				print_autoproof_error (i.item)
 				close ("tr")
-				close ("thead")
-				open ("tbody")
-				across r.procedure_results as i loop
-					if attached {E2B_SUCCESSFUL_VERIFICATION} i.item as l_success then
-						if l_success.original_errors /= Void and then not l_success.original_errors.is_empty then
-							open_style ("tr", tr_twostep_style)
-						else
-							open_style ("tr", tr_success_style)
-						end
-						print_successful_verification (l_success)
-					elseif attached {E2B_FAILED_VERIFICATION} i.item as l_failure then
-						open_style ("tr", tr_failed_style)
-						print_failed_verification (l_failure)
-					else
-						check False end
-					end
-					close ("tr")
-				end
-				close ("tbody")
-				close ("table")
 			end
+			across r.procedure_results as i loop
+				if attached {E2B_SUCCESSFUL_VERIFICATION} i.item as l_success then
+					if l_success.original_errors /= Void and then not l_success.original_errors.is_empty then
+						open_style ("tr", tr_twostep_style)
+					else
+						open_style ("tr", tr_success_style)
+					end
+					print_successful_verification (l_success)
+				elseif attached {E2B_FAILED_VERIFICATION} i.item as l_failure then
+					open_style ("tr", tr_failed_style)
+					print_failed_verification (l_failure)
+				else
+					check False end
+				end
+				close ("tr")
+			end
+			close ("tbody")
+			close ("table")
 		end
 
 	print_successful_verification (a_success: E2B_SUCCESSFUL_VERIFICATION)
@@ -112,6 +106,28 @@ feature
 			close ("td")
 		end
 
+	print_autoproof_error (a_error: E2B_AUTOPROOF_ERROR)
+			-- Print failed verifcation information.
+		do
+			open_style ("td", td_name_style)
+			open ("strong")
+			if a_error.eiffel_class /= Void then
+				add_class (a_error.eiffel_class.original_class)
+			end
+			if a_error.eiffel_feature /= Void then
+				add (".")
+				add_feature (a_error.eiffel_feature.e_feature, a_error.eiffel_feature.feature_name_32)
+			end
+			close ("strong")
+			close ("td")
+
+			open_style ("td", td_info_style)
+			add (a_error.type)
+			add_new_line
+			add (a_error.multi_line_message)
+			close ("td")
+		end
+
 	print_feature_information (a_proc: E2B_PROCEDURE_RESULT)
 			-- Print feature information.
 		do
@@ -141,6 +157,7 @@ feature
 			s8.replace_substring_all ("<", "&lt;")
 			s8.replace_substring_all (">", "&gt;")
 			s8.replace_substring_all ("%"", "&quot;")
+			s8.replace_substring_all ("%N", "<br/>")
 			io.put_string (s8)
 		end
 

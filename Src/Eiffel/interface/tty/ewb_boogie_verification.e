@@ -146,25 +146,20 @@ feature {NONE} -- Printing console
 	print_result (a_result: E2B_RESULT)
 			-- Print results to output.
 		do
-			if a_result.has_execution_errors then
-				output_window.add ("Boogie verification failed!")
+			across a_result.autoproof_errors as i loop
+				output_window.add ("AutoProof Error: " + i.item.type)
 				output_window.add_new_line
+				output_window.add (i.item.multi_line_message)
 				output_window.add_new_line
-				across a_result.execution_errors as i loop
-					output_window.add (i.item.title)
-					output_window.add (": ")
-					output_window.add (i.item.message)
-				end
-			else
-				across a_result.procedure_results as i loop
-					output_window.add ("======================================%N")
-					if attached {E2B_SUCCESSFUL_VERIFICATION} i.item as l_success then
-						print_successful_verification (l_success)
-					elseif attached {E2B_FAILED_VERIFICATION} i.item as l_failure then
-						print_failed_verification (l_failure)
-					else
-						check False end
-					end
+			end
+			across a_result.procedure_results as i loop
+				output_window.add ("======================================%N")
+				if attached {E2B_SUCCESSFUL_VERIFICATION} i.item as l_success then
+					print_successful_verification (l_success)
+				elseif attached {E2B_FAILED_VERIFICATION} i.item as l_failure then
+					print_failed_verification (l_failure)
+				else
+					check False end
 				end
 			end
 		end

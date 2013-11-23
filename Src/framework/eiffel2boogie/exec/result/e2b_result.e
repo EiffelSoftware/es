@@ -15,7 +15,7 @@ feature {NONE} -- Initialization
 			-- Initialize Boogie result.
 		do
 			create procedure_results.make
-			create execution_errors.make
+			create autoproof_errors.make
 		end
 
 feature -- Access
@@ -57,8 +57,8 @@ feature -- Access
 			end
 		end
 
-	execution_errors: LINKED_LIST [TUPLE [title: STRING; message: STRING]]
-			-- List of errors running the verification.
+	autoproof_errors: LINKED_LIST [E2B_AUTOPROOF_ERROR]
+			-- List of AutoProof translation and execution errors.
 
 	boogie_file_lines: LIST [STRING]
 			-- List of lines in Boogie file.
@@ -68,7 +68,7 @@ feature -- Status report
 	has_execution_errors: BOOLEAN
 			-- Did syntax errors occur?
 		do
-			Result := not execution_errors.is_empty
+			Result := not autoproof_errors.is_empty
 		end
 
 	has_verification_errors: BOOLEAN

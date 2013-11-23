@@ -48,11 +48,11 @@ feature -- Visitors
 			l_type: CL_TYPE_A
 			l_feature: FEATURE_I
 		do
-			l_type ?= a_node.type.deep_actual_type
-			check l_type /= Void end
-			l_feature := a_node.type.associated_class.feature_of_rout_id (a_node.call.routine_id)
-			check feature_valid: l_feature /= Void end
-			translation_pool.add_referenced_feature (l_feature, l_type)
+--			l_type ?= a_node.type.deep_actual_type
+--			check l_type /= Void end
+--			l_feature := a_node.type.associated_class.feature_of_rout_id (a_node.call.routine_id)
+--			check feature_valid: l_feature /= Void end
+--			translation_pool.add_referenced_feature (l_feature, l_type)
 
 			last_expression := dummy_node (a_node.type)
 		end
