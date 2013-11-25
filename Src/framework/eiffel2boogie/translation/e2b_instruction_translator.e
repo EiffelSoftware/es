@@ -195,7 +195,8 @@ feature -- Processing
 			end
 
 				-- Create assignment node
-			if a_node.target.is_attribute then
+			if a_node.target.is_attribute and options.is_ownership_enabled then
+					-- OWNERSHIP: call update heap instead of direct heap assignment
 				create l_call.make ("update_heap")
 				l_call.add_argument (entity_mapping.current_expression)
 				l_call.add_argument (create {IV_ENTITY}.make (name_translator.boogie_name_for_feature (l_feature, current_type), types.field (types.for_type_a (l_feature.type))))

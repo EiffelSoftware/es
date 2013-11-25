@@ -64,7 +64,6 @@ feature
 			modify ([Current, c])
 			modify_field (["value", "closed"], up)
 		do
-			check assume: false end
 			unwrap
 
 			c.unwrap

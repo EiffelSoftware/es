@@ -100,4 +100,4 @@ axiom (forall<T> a: Set T, b: Set T :: { Set#Disjoint(a,b) }
 
 // Removing an element from a set and adding it again gives the same set.
 axiom(forall<T> a: Set T, o: T :: { Set#Difference(a, Set#Singleton(o)) }
-  Set#Equal(Set#UnionOne(Set#Difference(a, Set#Singleton(o)), o), a));
+  a[o] ==> Set#Equal(Set#UnionOne(Set#Difference(a, Set#Singleton(o)), o), a));

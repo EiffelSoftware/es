@@ -72,12 +72,18 @@ feature
 		do
 			unwrap
 			n.unwrap
+
 			children := children & n -- preserves parent, children
-			set_subjects (subjects + [n]) ; set_observers (observers + [n])
+			set_subjects (subjects + [n])
+			set_observers (observers + [n])
+
 			n.set_parent (Current)
-			n.set_subjects (n.subjects + [Current]) ; n.set_observers (n.observers + [Current])
+			n.set_subjects (n.subjects + [Current])
+			n.set_observers (n.observers + [Current])
+check false end
 			n.update_up (Current, <<n>>, {MML_SET [NODE]}.empty_set)
 			update_down (n, n, <<Current>>, {MML_SET [NODE]}.empty_set)
+
 			if n.value > value then
 				update_value (n, {MML_SET [NODE]}.empty_set)
 			end
@@ -264,10 +270,13 @@ invariant
 	up_consistent: up [Current] and (parent /= Void implies parent.up <= up)
 	down_consistent: down [Current] and across children as c all c.item.down <= down end
 	value_consistent: is_max (value, init_value, children)
-	subjects = children & parent / Void
-	observers = children & parent / Void
+	parent /= Void implies subjects = children & parent
+	parent = Void implies subjects = children
+	parent /= Void implies observers = children & parent
+	parent = Void implies observers = children
 	across subjects as s all s.item.observers.has (Current) end -- default
 	owns = [] -- default
+	i14: across children as ic all ic.item.generating_type = {NODE} end
 
 note
 	explicit: subjects, observers

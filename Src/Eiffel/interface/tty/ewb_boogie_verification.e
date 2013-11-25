@@ -112,6 +112,11 @@ feature -- Execution
 			if user_options.has ("-inlinedepth") then
 				options.set_max_recursive_inlining_depth (option_argument ("-inlinedepth", options.max_recursive_inlining_depth))
 			end
+			if user_options.has ("-ownership") then
+				options.set_ownership_enabled (True)
+			elseif user_options.has ("-noownership") then
+				options.set_ownership_enabled (False)
+			end
 
 			if selection.is_empty then
 				load_universe
