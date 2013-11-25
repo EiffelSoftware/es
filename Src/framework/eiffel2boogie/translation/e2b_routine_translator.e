@@ -201,7 +201,7 @@ feature -- Basic operations
 					current_boogie_procedure.add_contract (l_pre)
 					create l_post.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
 					l_post.set_assertion_type ("post")
-					l_post.set_assertion_tag ("deafult_is_wrapped")
+					l_post.set_assertion_tag ("default_is_wrapped")
 					current_boogie_procedure.add_contract (l_post)
 					create l_post.make (forall_mml_set_property ("Current", "observers", "is_wrapped"))
 					l_post.set_assertion_type ("post")
@@ -213,15 +213,6 @@ feature -- Basic operations
 						l_pre.set_assertion_type ("pre")
 						l_pre.set_assertion_tag ("default_is_closed")
 						current_boogie_procedure.add_contract (l_pre)
-						-- Nadia: don't think that's useful here
---						create l_pre.make (forall_mml_set_property ("observers", "!is_open"))
---						l_pre.set_assertion_type ("pre")
-						create l_post.make (factory.function_call ("!is_open", << "Heap", "Current" >>, types.bool))
-						l_post.set_assertion_type ("post")
-						l_post.set_assertion_tag ("default_is_closed")
-						current_boogie_procedure.add_contract (l_post)
---						create l_post.make (forall_mml_set_property ("observers", "!is_open"))
---						current_boogie_procedure.add_contract (l_post)
 					else
 						create l_pre.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
 						l_pre.set_assertion_type ("pre")
@@ -240,44 +231,38 @@ feature -- Basic operations
 						l_post.set_assertion_tag ("default_observers_are_wrapped")
 						current_boogie_procedure.add_contract (l_post)
 					end
-				else
+				elseif helper.is_private (current_feature) then
 					create l_pre.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
 					l_pre.set_assertion_type ("pre")
 					l_pre.set_assertion_tag ("default_is_open")
-					current_boogie_procedure.add_contract (l_pre)
-					create l_pre.make (forall_mml_set_property ("Current", "observers", "is_open"))
-					l_pre.set_assertion_type ("pre")
-					l_pre.set_assertion_tag ("default_observers_are_open")
 					current_boogie_procedure.add_contract (l_pre)
 					create l_post.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
 					l_post.set_assertion_type ("post")
 					l_post.set_assertion_tag ("default_is_open")
 					current_boogie_procedure.add_contract (l_post)
-					create l_post.make (forall_mml_set_property ("Current", "observers", "is_open"))
-					l_post.set_assertion_type ("post")
-					l_post.set_assertion_tag ("default_observers_are_open")
-					current_boogie_procedure.add_contract (l_post)
 				end
-				across arguments_of_current_feature as i loop
-					if i.item.boogie_type.is_reference then
-						create l_pre.make (factory.function_call ("is_wrapped", << "Heap", i.item.name >>, types.bool))
-						l_pre.set_assertion_type ("pre")
-						l_pre.set_assertion_tag ("arg_" + i.item.name + "_is_wrapped")
-						current_boogie_procedure.add_contract (l_pre)
-						create l_post.make (factory.function_call ("is_wrapped", << "Heap", i.item.name >>, types.bool))
-						l_post.set_assertion_type ("post")
-						l_post.set_assertion_tag ("arg_" + i.item.name + "_is_wrapped")
-						current_boogie_procedure.add_contract (l_post)
-					end
-				end
-				if a_for_creator or helper.is_public (current_feature) then
+				if a_for_creator or (helper.is_public (current_feature) and not current_feature.has_return_value) then
 					across arguments_of_current_feature as i loop
 						if i.item.boogie_type.is_reference then
-							create l_pre.make (forall_mml_set_property (i.item.name, "observers", "is_wrapped"))
-							-- ToDo: add?
+							create l_pre.make (factory.function_call ("is_wrapped", << "Heap", i.item.name >>, types.bool))
+							l_pre.set_assertion_type ("pre")
+							l_pre.set_assertion_tag ("arg_" + i.item.name + "_is_wrapped")
+							current_boogie_procedure.add_contract (l_pre)
+							create l_post.make (factory.function_call ("is_wrapped", << "Heap", i.item.name >>, types.bool))
+							l_post.set_assertion_type ("post")
+							l_post.set_assertion_tag ("arg_" + i.item.name + "_is_wrapped")
+							current_boogie_procedure.add_contract (l_post)
 						end
 					end
 				end
+--				if a_for_creator or helper.is_public (current_feature) then
+--					across arguments_of_current_feature as i loop
+--						if i.item.boogie_type.is_reference then
+--							create l_pre.make (forall_mml_set_property (i.item.name, "observers", "is_wrapped"))
+--							-- ToDo: add?
+--						end
+--					end
+--				end
 			end
 		end
 

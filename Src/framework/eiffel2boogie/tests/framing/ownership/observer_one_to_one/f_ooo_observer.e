@@ -35,19 +35,20 @@ feature {F_OOO_SUBJECT} -- Element change
 
 	notify
 		require
-			attached subject
+			is_open
+			inv_without ("cache_synchrinized")
 
 			modify_field ("cache", Current)
 		do
 			cache := subject.value
 		ensure
-			cache = subject.value
+			inv
 		end
 
 invariant
 	attached subject
 	subject.observer = Current
-	cache = subject.value
+	cache_synchrinized: cache = subject.value
 	subjects = [subject]
 
 end

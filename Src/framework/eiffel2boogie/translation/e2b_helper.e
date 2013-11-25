@@ -143,6 +143,12 @@ feature -- Feature status helpers
 			Result := a_feature.is_exported_for (system.any_class.compiled_class)
 		end
 
+	is_private (a_feature: FEATURE_I): BOOLEAN
+			-- Is `a_feature' a public feature?
+		do
+			Result := a_feature.export_status.is_none
+		end
+
 feature -- Ownership helpers
 
 	is_class_explicit (a_class: CLASS_C; a_type: STRING): BOOLEAN

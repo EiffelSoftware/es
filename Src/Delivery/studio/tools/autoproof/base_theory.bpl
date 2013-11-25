@@ -91,8 +91,7 @@ function {:inline} is_closed(h: HeapType, o: ref): bool {
 }
 
 // Only allocated references can be in ghost sets
-// TODO: h[o, allocated] ==> ?
-axiom (forall h: HeapType, o: ref, r: ref, f: Field (Set ref) :: h[o, f][r] ==> h[r, allocated]);
+axiom (forall h: HeapType, o: ref, r: ref, f: Field (Set ref) :: h[o, allocated] && h[o, f][r] ==> h[r, allocated]);
 //axiom (forall h: HeapType, o: ref, r: ref :: h[o, observers][r] ==> h[r, allocated]);
 //axiom (forall h: HeapType, o: ref, r: ref :: h[o, owns][r] ==> h[r, allocated]);
 //axiom (forall h: HeapType, o: ref, r: ref :: h[o, subjects][r] ==> h[r, allocated]);

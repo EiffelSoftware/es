@@ -48,8 +48,6 @@ feature {F_OOO_OBSERVER} -- Element change
 
 	register (o: F_OOO_OBSERVER)
 			-- Register `o' as observer.
-		note
-			explicit: contracts
 		require
 			observer = Void
 			is_wrapped
@@ -63,7 +61,6 @@ feature {F_OOO_OBSERVER} -- Element change
 			wrap
 		ensure
 			observer = o
-			is_wrapped
 		end
 
 invariant

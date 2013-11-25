@@ -408,6 +408,12 @@ feature -- Verification: contract clauses
 			Result := True
 		end
 
+	frozen inv: BOOLEAN
+			-- Helper function for specifying class invariant without certain clauses.
+		do
+			Result := True
+		end
+
 	frozen inv_without (a: ANY): BOOLEAN
 			-- Helper function for specifying class invariant without certain clauses.
 		do

@@ -89,11 +89,12 @@ feature {F_COM_COMPOSITE}
 
 	set_parent (p: F_COM_COMPOSITE)
 		require
+			is_open
+			observers.is_empty
 			parent = Void
 			children_set.is_empty
 			p /= Void
 
-			modify (Current)
 			modify_field (["parent", "up"], Current)
 		do
 			parent := p
@@ -105,8 +106,6 @@ feature {F_COM_COMPOSITE}
 
 	update (c: F_COM_COMPOSITE)
 			-- Update values of Current and transitive parents taking into account new child `c'.
-		note
-			explicit: contracts
 		require
 			c /= Void
 			children_set[c]
@@ -118,6 +117,7 @@ feature {F_COM_COMPOSITE}
 			is_max (value, init_value, children_set / c) or (c.value > value and across children_set as ic all ic.item.value <= c.value end)
 
 			modify_field (["value", "closed"], [Current, up])
+			modify_field (["owner"], children)
 			decreases (up)
 		do
 			if value < c.value then

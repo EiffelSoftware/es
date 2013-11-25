@@ -86,11 +86,15 @@ feature -- Basic operations
 			if builtin_any_functions.has (l_name) then
 				if l_name ~ "inv_without" then
 					l_tag_filters := extract_tags (a_parameters)
-					translation_pool.add_filtered_invariant_function (a_translator.current_target_type, Void, l_tag_filters)
-					a_translator.set_last_expression (
-						factory.function_call (
-							name_translator.boogie_name_for_filtered_invariant_function (a_translator.current_target_type, Void, l_tag_filters),
-							<< a_translator.entity_mapping.heap, a_translator.current_target >>, types.bool))
+					if l_tag_filters.is_empty then
+						a_translator.process_builtin_routine_call (a_feature, a_parameters, "user_inv")
+					else
+						translation_pool.add_filtered_invariant_function (a_translator.current_target_type, Void, l_tag_filters)
+						a_translator.set_last_expression (
+							factory.function_call (
+								name_translator.boogie_name_for_filtered_invariant_function (a_translator.current_target_type, Void, l_tag_filters),
+								<< a_translator.entity_mapping.heap, a_translator.current_target >>, types.bool))
+					end
 				elseif l_name ~ "inv_only" then
 					l_tag_filters := extract_tags (a_parameters)
 					translation_pool.add_filtered_invariant_function (a_translator.current_target_type, l_tag_filters, Void)
@@ -98,6 +102,8 @@ feature -- Basic operations
 						factory.function_call (
 							name_translator.boogie_name_for_filtered_invariant_function (a_translator.current_target_type, l_tag_filters, Void),
 							<< a_translator.entity_mapping.heap, a_translator.current_target >>, types.bool))
+				elseif l_name ~ "inv" then
+					a_translator.process_builtin_routine_call (a_feature, a_parameters, "user_inv")
 				else
 					a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
 				end
@@ -193,6 +199,7 @@ feature -- Basic operations
 				"is_free",
 				"is_open",
 				"is_closed",
+				"inv",
 				"inv_without",
 				"inv_only"
 			>>

@@ -93,8 +93,6 @@ feature
 feature {F_DLL_NODE}
 
 	set_left (n: F_DLL_NODE)
-		note
-			explicit: contracts
 		require
 			is_open
 			across observers as sc all sc.item.is_open end
@@ -107,8 +105,6 @@ feature {F_DLL_NODE}
 		end
 
 	set_right (n: F_DLL_NODE)
-		note
-			explicit: contracts
 		require
 			is_open
 			across observers as sc all sc.item.is_open end
