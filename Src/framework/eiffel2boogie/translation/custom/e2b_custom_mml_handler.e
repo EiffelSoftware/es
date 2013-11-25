@@ -67,7 +67,6 @@ feature {NONE} -- Implementation
 			a_translator.set_last_expression (l_expr)
 		end
 
-
 	mapping: STRING_TABLE [FUNCTION [ANY, TUPLE [IV_EXPRESSION, LIST [IV_EXPRESSION]], IV_EXPRESSION]]
 			-- Mapping
 		once

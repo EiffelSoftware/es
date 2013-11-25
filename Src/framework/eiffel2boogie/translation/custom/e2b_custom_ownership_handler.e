@@ -32,7 +32,7 @@ feature -- Status report
 			if
 				not a_nested.target.type.is_like and then
 				a_nested.target.type.base_class /= Void and then
-				a_nested.target.type.base_class.class_id = system.tuple_id
+				(a_nested.target.type.base_class.class_id = system.tuple_id or a_nested.target.type.base_class.class_id = system.array_id)
 			then
 				if attached {FEATURE_B} a_nested.message as f then
 					Result := f.feature_name.same_string ("to_mml_set")
@@ -130,22 +130,37 @@ feature -- Basic operations
 			-- Handle `a_nested'.
 		local
 			l_tuple: TUPLE_CONST_B
+			l_array: ARRAY_CONST_B
 			l_exprs: LINKED_LIST [IV_EXPRESSION]
 			l_expr: IV_EXPRESSION
 			l_elem_type: IV_TYPE
 		do
 			if attached {ACCESS_EXPR_B} a_nested.target as x then
 				l_tuple ?= x.expr
+				l_array ?= x.expr
 			end
-			check l_tuple /= Void end
+			check l_tuple /= Void or l_array /= Void end
 			create l_exprs.make
-			across l_tuple.expressions as i loop
-				i.item.process (a_translator)
-				l_exprs.extend (a_translator.last_expression)
-				if l_elem_type = Void then
-					l_elem_type := a_translator.last_expression.type
-				elseif l_elem_type /= a_translator.last_expression.type then
-					-- TODO: signal an error
+			if l_tuple /= Void then
+				across l_tuple.expressions as i loop
+					i.item.process (a_translator)
+					l_exprs.extend (a_translator.last_expression)
+					if l_elem_type = Void then
+						l_elem_type := a_translator.last_expression.type
+					elseif l_elem_type /= a_translator.last_expression.type then
+						-- TODO: signal an error
+					end
+				end
+			else
+				check l_array /= Void end
+				across l_array.expressions as i loop
+					i.item.process (a_translator)
+					l_exprs.extend (a_translator.last_expression)
+					if l_elem_type = Void then
+						l_elem_type := a_translator.last_expression.type
+					elseif l_elem_type /= a_translator.last_expression.type then
+						-- TODO: signal an error
+					end
 				end
 			end
 			if l_exprs.is_empty then
