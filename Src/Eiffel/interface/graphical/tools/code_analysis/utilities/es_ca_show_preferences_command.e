@@ -13,6 +13,8 @@ inherit
 
 	ES_CODE_ANALYSIS_BENCH_HELPER
 
+	CA_SHARED_NAMES
+
 create
 	make
 
@@ -30,6 +32,7 @@ feature -- Execution
 			if preference_window = Void or else preference_window.is_destroyed then
 				create preference_window.make (code_analyzer.preferences, window_manager.last_focused_development_window.window)
 --				preference_window.set_size (800, 600)
+				preference_window.set_title (ca_names.preferences_window_title)
 				preference_window.raise
 			end
 
@@ -51,7 +54,7 @@ feature -- Properties
 
 	tooltext: STRING_32
 		do
-			Result := "Preferences..."
+			Result := "Preferences"
 		end
 
 	description: STRING_32

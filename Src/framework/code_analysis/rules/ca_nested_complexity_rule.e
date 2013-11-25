@@ -16,11 +16,22 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (a_pref_manager: PREFERENCE_MANAGER)
 		do
-			is_enabled := True
+			is_enabled_by_default := True
 			create {CA_WARNING} severity
 			create violations.make
+			initialize_options (a_pref_manager)
+		end
+
+	initialize_options (a_pref_manager: PREFERENCE_MANAGER)
+		local
+			l_factory: BASIC_PREFERENCE_FACTORY
+		do
+			create l_factory
+			threshold := l_factory.new_integer_preference_value (a_pref_manager,
+				preference_namespace + ca_names.nested_complexity_threshold_option, 5)
+			threshold.set_validation_agent (agent is_integer_string_within_bounds (?, 2, 100))
 		end
 
 feature {NONE} -- Activation
@@ -50,18 +61,6 @@ feature -- Properties
 			Result :=  ca_names.nested_complexity_description
 		end
 
-	options: LINKED_LIST [CA_RULE_OPTION [INTEGER]]
-		local
-			l_threshold: CA_RULE_OPTION [INTEGER]
-		once
-			create l_threshold.make_with_caption (ca_names.nested_complexity_threshold_option)
-			l_threshold.set_valid_choice_agent (agent is_threshold_within_bounds)
-			l_threshold.set_choice (5) -- default option
-
-			create Result.make
-			Result.extend (l_threshold)
-		end
-
 	is_system_wide: BOOLEAN = False
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
@@ -86,10 +85,7 @@ feature -- Properties
 
 feature {NONE} -- Options
 
-	is_threshold_within_bounds (a_threshold: INTEGER): BOOLEAN
-		do
-			Result := a_threshold >= 2 and a_threshold <= 100
-		end
+	threshold: INTEGER_PREFERENCE
 
 feature {NONE} -- AST Visits
 
@@ -116,7 +112,7 @@ feature {NONE} -- AST Visits
 				l_violation.set_location (current_feature.start_location)
 				l_violation.long_description_info.extend (current_feature.feature_name.name_32)
 				l_violation.long_description_info.extend (maximum_depth)
-				l_violation.long_description_info.extend (options.first.choice)
+				l_violation.long_description_info.extend (threshold.value)
 				violations.extend (l_violation)
 			end
 		end
@@ -150,7 +146,7 @@ feature {NONE} -- AST Visits
 			end
 
 			if not current_violation_exists then
-				if current_depth >= options.first.choice then
+				if current_depth >= threshold.value then
 					current_violation_exists := True
 				end
 			end

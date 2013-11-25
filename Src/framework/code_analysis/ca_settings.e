@@ -7,6 +7,9 @@ note
 class
 	CA_SETTINGS
 
+inherit {NONE}
+	CA_SHARED_NAMES
+
 create
 	make
 
@@ -14,10 +17,10 @@ feature {NONE} -- Initialization
 
 	make
 		do
-			initialize
+			initialize_preferences
 		end
 
-	initialize
+	initialize_preferences
 			-- Initialize preference values.
 		local
 			l_factory: BASIC_PREFERENCE_FACTORY
@@ -25,18 +28,73 @@ feature {NONE} -- Initialization
 		do
 			create l_factory
 			create preferences.make
-			l_manager := preferences.new_manager ("tools.code_analysis")
+			l_manager := preferences.new_manager (code_analysis_namespace)
 
-			are_hints_enabled := l_factory.new_boolean_preference_value (l_manager, "Enable Hints", True)
+			are_errors_enabled := l_factory.new_boolean_preference_value (l_manager,
+				ca_names.general_category + "." + ca_names.are_errors_enabled, True)
+			are_warnings_enabled := l_factory.new_boolean_preference_value (l_manager,
+				ca_names.general_category + "." + ca_names.are_warnings_enabled, True)
+			are_hints_enabled := l_factory.new_boolean_preference_value (l_manager,
+				ca_names.general_category + "." + ca_names.are_suggestions_enabled, True)
+			are_hints_enabled := l_factory.new_boolean_preference_value (l_manager,
+				ca_names.general_category + "." + ca_names.are_hints_enabled, True)
+		end
 
+feature {CA_CODE_ANALYZER} -- Initialization
+
+	initialize_rule_settings (a_rules: ITERABLE [CA_RULE])
+		local
+			l_factory: BASIC_PREFERENCE_FACTORY
+			l_manager: PREFERENCE_MANAGER
+			l_enabled: BOOLEAN_PREFERENCE
+			l_score: INTEGER_PREFERENCE
+		do
+			create l_factory
+			l_manager := preferences.manager (code_analysis_namespace)
+
+			across a_rules as l_rules loop
+				l_enabled := l_factory.new_boolean_preference_value (l_manager,
+					ca_names.rules_category + "." + l_rules.item.title + "." + ca_names.enable_rule,
+					l_rules.item.is_enabled_by_default)
+				l_enabled.set_description (l_rules.item.description)
+				l_rules.item.set_is_enabled_preference (l_enabled)
+
+				l_score := l_factory.new_integer_preference_value (l_manager,
+					ca_names.rules_category + "." + l_rules.item.title + "." + ca_names.severity_score,
+					l_rules.item.default_severity_score)
+				l_score.set_validation_agent (agent validate_severity_score)
+				l_score.set_description (ca_messages.severity_score_description)
+				l_rules.item.set_severity_score_preference (l_score)
+			end
 		end
 
 feature -- Settings
 
 	preferences: PREFERENCES
 
+	preference_manager: PREFERENCE_MANAGER
+		do
+			Result := preferences.manager (code_analysis_namespace)
+		end
+
+	are_errors_enabled,
+	are_warnings_enabled,
+	are_suggestions_enabled,
 	are_hints_enabled: BOOLEAN_PREFERENCE
 
 feature {NONE} -- Implementation
+
+	code_analysis_namespace: STRING = "tools.code_analysis"
+
+	validate_severity_score (a_value: READABLE_STRING_GENERAL): BOOLEAN
+		local
+			int: INTEGER
+		do
+			int := a_value.to_integer
+			Result := False
+			if int > 0 and int < 10_000 then
+				Result := True
+			end
+		end
 
 end

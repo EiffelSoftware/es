@@ -71,11 +71,17 @@ feature -- Utility functions
 --			length_preserved: (not a_force_wrap) implies (a_input.count = Result.count) -- Make sure 'LF CR' new lines count as 1.
 --		end
 
+feature -- GUI
+
+	severity_score_description: STRING_32
+		do Result := locale.translation ("The importance score of a rule is used to %
+			%enable sorting of rule violations. Within rule violations that belong to the same %
+			%category, you can sort by importance.") end
+
 feature -- Code Analyzer
 
 	analyzing_class (a_class_name: READABLE_STRING_GENERAL): STRING_32
 		do Result := locale.formatted_string (locale.translation ("Analyzing class $1 ...%N"), [a_class_name]) end
-
 
 	self_assignment_violation_1: STRING_32
 		do Result := locale.translation ("Variable '") end

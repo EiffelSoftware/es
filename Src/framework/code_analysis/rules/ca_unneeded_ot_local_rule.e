@@ -18,7 +18,7 @@ feature {NONE} -- Initialization
 
 	make
 		do
-			is_enabled := True
+			is_enabled_by_default := True
 			create {CA_SUGGESTION} severity
 			create violations.make
 		end
@@ -43,11 +43,6 @@ feature -- Properties
 	description: STRING_32
 		do
 			Result :=  ca_names.unneeded_ot_local_description
-		end
-
-	options: LINKED_LIST[CA_RULE_OPTION[ANY]]
-		once
-			create Result.make
 		end
 
 	is_system_wide: BOOLEAN = False
@@ -77,14 +72,17 @@ feature {NONE} -- AST Visits
 				if attached {ACCESS_ID_AS} l_call.call as l_access then
 						-- Testing if an object test local is used.
 					if attached a_ot.name as l_ot_local then
-							-- Now we have to check whether the tested expression is a local,
-							-- an argument, or an object test local.
-						if l_access.is_local or l_access.is_argument or l_access.is_object_test_local then
-							create l_violation.make_with_rule (Current)
-							l_violation.set_location (a_ot.start_location)
-							l_violation.long_description_info.extend (l_access.access_name_32)
-							l_violation.long_description_info.extend (l_ot_local.name_32)
-							violations.extend (l_violation)
+							-- There must be no dynamic type check.
+						if a_ot.type = Void then
+								-- Now we have to check whether the tested expression is a local,
+								-- an argument, or an object test local.
+							if l_access.is_local or l_access.is_argument or l_access.is_object_test_local then
+								create l_violation.make_with_rule (Current)
+								l_violation.set_location (a_ot.start_location)
+								l_violation.long_description_info.extend (l_access.access_name_32)
+								l_violation.long_description_info.extend (l_ot_local.name_32)
+								violations.extend (l_violation)
+							end
 						end
 					end
 				end

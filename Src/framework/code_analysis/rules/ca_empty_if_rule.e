@@ -18,7 +18,7 @@ feature {NONE} -- Initialization
 
 	make
 		do
-			is_enabled := True
+			is_enabled_by_default := True
 			create {CA_WARNING} severity
 			create violations.make
 		end
@@ -46,11 +46,6 @@ feature -- Properties
 		end
 
 	is_system_wide: BOOLEAN = False
-
-	options: LINKED_LIST[CA_RULE_OPTION[ANY]]
-		once
-			create Result.make
-		end
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		do

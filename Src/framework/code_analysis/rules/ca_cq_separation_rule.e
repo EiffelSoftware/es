@@ -20,7 +20,7 @@ feature {NONE} -- Initialization
 
 	make
 		do
-			is_enabled := True
+			is_enabled_by_default := True
 			create {CA_WARNING} severity
 			create violations.make
 		end
@@ -113,11 +113,6 @@ feature -- Properties
 	description: STRING_32
 		do
 			Result :=  "---"
-		end
-
-	options: LINKED_LIST[CA_RULE_OPTION[ANY]]
-		once
-			create Result.make
 		end
 
 	is_system_wide: BOOLEAN = False

@@ -16,12 +16,23 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (a_pref_manager: PREFERENCE_MANAGER)
 		do
-			is_enabled := True
+			is_enabled_by_default := True
 			create {CA_WARNING} severity
 			create violations.make
 			create {LINKED_STACK[INTEGER]} npath_stack.make
+			initialize_options (a_pref_manager)
+		end
+
+	initialize_options (a_pref_manager: PREFERENCE_MANAGER)
+		local
+			l_factory: BASIC_PREFERENCE_FACTORY
+		do
+			create l_factory
+			threshold := l_factory.new_integer_preference_value (a_pref_manager,
+				preference_namespace + ca_names.npath_threshold_option, 200)
+			threshold.set_validation_agent (agent is_integer_string_within_bounds (?, 10, 1_000_000))
 		end
 
 feature {NONE} -- Activation
@@ -57,19 +68,6 @@ feature -- Properties
 			Result :=  ca_names.npath_description
 		end
 
-	options: LINKED_LIST[CA_RULE_OPTION[INTEGER]]
-		local
-			l_threshold: CA_RULE_OPTION[INTEGER]
-		once
-			create l_threshold.make_with_caption (ca_names.npath_threshold_option)
-			l_threshold.set_valid_choice_agent (agent is_threshold_within_bounds)
-			l_threshold.set_choice (200) -- default option
-
-			create Result.make
-			Result.extend (l_threshold)
-		end
-
-
 	is_system_wide: BOOLEAN
 		once
 			Result := False
@@ -97,10 +95,7 @@ feature -- Properties
 
 feature {NONE} -- Options
 
-	is_threshold_within_bounds (a_threshold: INTEGER): BOOLEAN
-		do
-			Result := a_threshold >= 10 and a_threshold <= 10000
-		end
+	threshold: INTEGER_PREFERENCE
 
 feature {NONE} -- Rule Checking
 
@@ -142,7 +137,7 @@ feature {NONE} -- Rule Checking
 			check npath_stack.count = 1 end
 			l_npath := npath_stack.item
 
-			l_threshold := options.first.choice
+			l_threshold := threshold.value
 
 			if l_npath > l_threshold then
 				create l_violation.make_with_rule (Current)

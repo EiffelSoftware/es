@@ -24,17 +24,19 @@ feature {NONE} -- Initialization
 			-- Adding example rules
 			rules.extend (create {CA_SELF_ASSIGNMENT_RULE}.make)
 			rules.extend (create {CA_UNUSED_ARGUMENT_RULE}.make)
-			rules.extend (create {CA_NPATH_RULE}.make)
+			rules.extend (create {CA_NPATH_RULE}.make (settings.preference_manager))
 			rules.extend (create {CA_EMPTY_IF_RULE}.make)
 			rules.extend (create {CA_FEATURE_NEVER_CALLED_RULE}.make)
 			rules.extend (create {CA_CQ_SEPARATION_RULE}.make)
 			rules.extend (create {CA_UNNEEDED_OT_LOCAL_RULE}.make)
 			rules.extend (create {CA_UNNEEDED_OBJECT_TEST_RULE}.make)
-			rules.extend (create {CA_NESTED_COMPLEXITY_RULE}.make)
+			rules.extend (create {CA_NESTED_COMPLEXITY_RULE}.make (settings.preference_manager))
 
 			-- Issues (contract violations, exceptions) with {EPA_CFG_BUILDER} and
 			-- classes from library 'program_analysis' in general.
 --			rules.extend (create {CA_VARIABLE_NOT_READ_RULE}.make)
+
+			settings.initialize_rule_settings (rules)
 
 			create classes_to_analyze.make
 			create rule_violations.make (100)
@@ -66,7 +68,7 @@ feature -- Analysis interface
 			create l_rules_checker.make
 			across rules as l_rules loop
 				l_rules.item.clear_violations
-				if l_rules.item.is_enabled then -- important: only add enabled rules
+				if l_rules.item.is_enabled.value then -- important: only add enabled rules
 					if system_wide_check or else (not l_rules.item.is_system_wide) then
 							-- do not add system wide rules if we check only parts of the system
 						if attached {CA_STANDARD_RULE} l_rules.item as l_std_rule then

@@ -30,10 +30,10 @@ feature -- Rules
 			           %needed and used in the computation.") end
 
 	npath_title: STRING_32
-		do Result := locale.translation ("NPATH too high") end
+		do Result := locale.translation ("High NPATH") end
 
 	npath_description: STRING_32
-		do Result := locale.translation ("The NPATH measure is too high.") end
+		do Result := locale.translation ("The NPATH measure is high.") end
 
 	npath_threshold_option: STRING_32
 		do Result := locale.translation ("Minimum NPATH threshold") end
@@ -68,13 +68,42 @@ feature -- Rules
 		do Result := locale.translation ("---") end
 
 	nested_complexity_title: STRING_32
-		do Result := locale.translation ("Too high complexity of nested branches and loops") end
+		do Result := locale.translation ("High complexity of nested branches and loops") end
 
 	nested_complexity_description: STRING_32
 		do Result := locale.translation ("---") end
 
 	nested_complexity_threshold_option: STRING_32
 		do Result := locale.translation ("Minimum nested branches and loops threshold") end
+
+feature -- Preferences
+
+	preferences_window_title: STRING_32
+		do Result := locale.translation ("Code Analysis Preferences") end
+
+	general_category: STRING_32
+		do Result := locale.translation ("General") end
+
+	rules_category: STRING_32
+		do Result := locale.translation ("Rules") end
+
+	are_errors_enabled: STRING_32
+		do Result := locale.translation ("Enable errors") end
+
+	are_warnings_enabled: STRING_32
+		do Result := locale.translation ("Enable warnings") end
+
+	are_suggestions_enabled: STRING_32
+		do Result := locale.translation ("Enable suggestions") end
+
+	are_hints_enabled: STRING_32
+		do Result := locale.translation ("Enable hints") end
+
+	enable_rule: STRING_32
+		do Result := locale.translation ("Enable rule") end
+
+	severity_score: STRING_32
+		do Result := locale.translation ("Importance score") end
 
 feature -- GUI
 
