@@ -11,6 +11,7 @@ feature {NONE} -- Initialization
 			status: creator
 		require
 			m /= Void
+			across m.observers as ic all ic.item.generating_type = {F_MC_CLOCK} end
 
 			modify (Current)
 			modify_field ("observers", m)

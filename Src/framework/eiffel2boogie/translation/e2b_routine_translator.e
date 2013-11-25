@@ -78,9 +78,6 @@ feature -- Basic operations
 
 				-- Modifies
 			create l_modifies.make ("Heap")
---			if options.is_ownership_enabled then
-				l_modifies.add_name ("Writes")
---			end
 			current_boogie_procedure.add_contract (l_modifies)
 
 				-- Pre- and postconditions
@@ -133,14 +130,14 @@ feature -- Basic operations
 			l_post: IV_POSTCONDITION
 		do
 				-- Preserves global invariant
-			create l_pre.make (factory.function_call ("global", << "Heap", "Writes" >>, types.bool))
+			create l_pre.make (factory.function_call ("global", << "Heap" >>, types.bool))
 			l_pre.set_free
 			current_boogie_procedure.add_contract (l_pre)
-			create l_post.make (factory.function_call ("global", << "Heap", "Writes" >>, types.bool))
+			create l_post.make (factory.function_call ("global", << "Heap" >>, types.bool))
 			l_post.set_free
 			current_boogie_procedure.add_contract (l_post)
 
-				-- Writes set is writable
+				-- Modify set is writable
 			create l_fcall.make (name_translator.boogie_name_for_writes_set_function (current_feature, current_type), types.set (types.ref))
 			l_fcall.add_argument (create {IV_ENTITY}.make ("Heap", types.heap_type))
 			across current_boogie_procedure.arguments as i loop
@@ -151,26 +148,17 @@ feature -- Basic operations
 					"Set#Subset",
 					<<
 						l_fcall,
-						"Writes"
+						"writable"
 					>>,
 					types.bool))
 			l_pre.set_assertion_type ("pre")
-			l_pre.set_assertion_tag ("modifies_set_writable")
+			l_pre.set_assertion_tag ("modify_set_writable")
 			current_boogie_procedure.add_contract (l_pre)
 
-				-- How writes set changes
-			create l_post.make (
-				factory.function_call (
-					"writes_changed",
-					<<
-						factory.old_ (create {IV_ENTITY}.make ("Heap", types.heap_type)),
-						create {IV_ENTITY}.make ("Heap", types.heap_type),
-						factory.old_ (create {IV_ENTITY}.make ("Writes", types.set (types.ref))),
-						create {IV_ENTITY}.make ("Writes", types.set (types.ref))
-					>>,
-					types.bool))
-			l_post.set_free
-			current_boogie_procedure.add_contract (l_post)
+				-- Everything in the domains of writable objects is writable
+			create l_pre.make (factory.function_call ("writable_domains", <<"Heap">>, types.bool))
+			l_pre.set_free
+			current_boogie_procedure.add_contract (l_pre)
 
 				-- Only writes set has changed
 			create l_fcall.make (name_translator.boogie_name_for_writes_set_function (current_feature, current_type), types.set (types.ref))

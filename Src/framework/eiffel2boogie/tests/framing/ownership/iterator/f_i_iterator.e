@@ -14,6 +14,7 @@ feature
 			status: creator
 		require
 			t /= Void
+			across t.observers as ic all ic.item.generating_type = {F_I_ITERATOR} end
 
 			modify (Current)
 			modify_field ("observers", t)

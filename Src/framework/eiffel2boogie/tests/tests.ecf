@@ -9,9 +9,7 @@
 		<library name="base-eve" location="$ISE_LIBRARY\library\base\base-eve.ecf" readonly="false"/>
 <!--		<library name="base2-eve" location="$EIFFEL_SRC\unstable\library\base2\base2-eve.ecf" readonly="false"/>-->
 		<cluster name="autoproof_tests" location=".\">
-			<cluster name="advanced" location=".\advanced" recursive="true"/>
 			<cluster name="basic" location=".\basic" recursive="true"/>
-			<cluster name="cmdline" location=".\cmdline" recursive="true"/>
 			<cluster name="examples" location=".\examples" recursive="true"/>
 			<cluster name="framing" location=".\framing">
 				<cluster name="observer_one_to_one" location=".\framing\ownership\observer_one_to_one" recursive="true"/>

@@ -17,6 +17,7 @@ feature {NONE} -- Initialization
 			m.is_wrapped -- default
 			across m.observers as o all o.item.is_wrapped end -- default
 			m /= Void
+			across m.observers as ic all ic.item.generating_type = {F_MC_CLOCK_D} end
 
 			modify (Current) -- default: creator
 			modify_field ("observers", m)
