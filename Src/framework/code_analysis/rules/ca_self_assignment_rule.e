@@ -23,6 +23,7 @@ feature {NONE} -- Initialization
 			is_enabled_by_default := True
 			create {CA_WARNING} severity
 			create violations.make
+			default_severity_score := 50
 		end
 
 feature {NONE} -- Activation

@@ -141,7 +141,7 @@ feature -- Code Analyzer
 
 	nested_complexity_violation_3: STRING_32
 		do Result := locale.translation (" nested branches%Nor loops, which is %
-			%greater than or equal the defined threshold of ") end
+			%greater than or equal to the defined threshold of ") end
 
 feature -- Command Line
 

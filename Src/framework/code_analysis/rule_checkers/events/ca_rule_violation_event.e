@@ -86,6 +86,16 @@ feature -- Access
 			Result := data.rule.title
 		end
 
+	rule_id: STRING_32
+		do
+			Result := data.rule.id
+		end
+
+	severity_score: INTEGER
+		do
+			Result := data.rule.severity_score.value
+		end
+
 	violation_description: STRING_32
 		do
 			Result := data.rule.description

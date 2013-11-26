@@ -45,7 +45,7 @@ feature -- Execution (declared in EWB_CMD)
 	execute
 		local
 			l_code_analyzer: CA_CODE_ANALYZER
-			l_rule_name, l_line, l_col: STRING
+			l_rule_name, l_rule_id, l_line, l_col: STRING
 		do
 			create l_code_analyzer.make
 
@@ -69,10 +69,12 @@ feature -- Execution (declared in EWB_CMD)
 
 					across l_vlist.item as l_v loop
 						l_rule_name := l_v.item.rule.title
+						l_rule_id := l_v.item.rule.id
 						l_line := l_v.item.location.line.out
 						l_col := l_v.item.location.column.out
 
-						print ("  (" + l_line + ":" + l_col + "): " + l_rule_name + ": ")
+						print ("  (" + l_line + ":" + l_col + "): "
+							+ l_rule_name + " (" + l_rule_id + "): ")
 						l_v.item.format_violation_description (output_window)
 						print ("%N")
 					end

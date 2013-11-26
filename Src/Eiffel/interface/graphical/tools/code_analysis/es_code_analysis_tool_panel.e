@@ -336,6 +336,13 @@ feature {NONE} -- Initialization
 			l_col.set_title ("Location")
 			l_col.set_width (80)
 
+			l_col := a_widget.column (rule_id_column)
+			l_col.set_title ("Rule ID")
+			l_col.set_width (120)
+
+			l_col := a_widget.column (severity_score_column)
+			l_col.set_title ("Severity Score")
+			l_col.set_width (50)
 
 			a_widget.enable_tree
 			a_widget.disable_row_height_fixed
@@ -345,9 +352,11 @@ feature {NONE} -- Initialization
 			enable_sorting_on_columns (
 				<<
 					a_widget.column (category_column),
+					a_widget.column (severity_score_column),
 					a_widget.column (class_column),
 					a_widget.column (location_column),
-					a_widget.column (description_column)
+					a_widget.column (description_column),
+					a_widget.column (rule_id_column)
 				>>)
 		end
 
@@ -677,6 +686,12 @@ feature {NONE} -- Basic operations
 				a_row.set_height (l_editor_item.required_height_for_text_and_component)
 				a_row.set_item (description_column, l_editor_item)
 
+				create l_label.make_with_text (l_viol.rule_id)
+				a_row.set_item (rule_id_column, l_label)
+
+				create l_label.make_with_text (l_viol.severity_score.out)
+				a_row.set_item (severity_score_column, l_label)
+
 					-- Class
 				create l_gen.make
 				l_viol.affected_class.append_name (l_gen)
@@ -804,7 +819,9 @@ feature {NONE} -- Constants
 	class_column: INTEGER = 3
 	location_column: INTEGER = 4
 	description_column: INTEGER = 5
-	last_column: INTEGER = 5
+	rule_id_column: INTEGER = 6
+	severity_score_column: INTEGER = 7
+	last_column: INTEGER = 7
 
 	successful_color: EV_COLOR
 			-- Background color for successful rows

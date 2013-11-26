@@ -21,6 +21,7 @@ feature {NONE} -- Initialization
 			is_enabled_by_default := True
 			create {CA_SUGGESTION} severity
 			create violations.make
+			default_severity_score := 70
 		end
 
 feature {NONE} -- Activation

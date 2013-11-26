@@ -92,7 +92,7 @@ feature {NONE} -- Implementation
 		do
 			int := a_value.to_integer
 			Result := False
-			if int > 0 and int < 10_000 then
+			if int >= 0 and int < 10_000 then
 				Result := True
 			end
 		end
