@@ -32,6 +32,7 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_UNNEEDED_OBJECT_TEST_RULE}.make)
 			rules.extend (create {CA_NESTED_COMPLEXITY_RULE}.make (settings.preference_manager))
 			rules.extend (create {CA_MANY_ARGUMENTS_RULE}.make (settings.preference_manager))
+			rules.extend (create {CA_CREATION_PROC_EXPORTED_RULE}.make)
 
 			-- Issues (contract violations, exceptions) with {EPA_CFG_BUILDER} and
 			-- classes from library 'program_analysis' in general.

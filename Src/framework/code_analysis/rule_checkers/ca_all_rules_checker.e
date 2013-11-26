@@ -31,6 +31,7 @@ inherit
 			process_access_id_as,
 			process_assign_as,
 			process_body_as,
+			process_create_as,
 			process_creation_as,
 			process_do_as,
 			process_eiffel_list,
@@ -67,6 +68,8 @@ feature {NONE} -- Initialization
 			create body_post_actions.make
 			create class_pre_actions.make
 			create class_post_actions.make
+			create create_pre_actions.make
+			create create_post_actions.make
 			create creation_pre_actions.make
 			create creation_post_actions.make
 			create do_pre_actions.make
@@ -135,12 +138,22 @@ feature {CA_STANDARD_RULE}
 			class_post_actions.extend (a_action)
 		end
 
-	add_creation_pre_action (a_action: PROCEDURE [ANY, TUPLE [CREATION_AS] ])
+	add_create_pre_action (a_action: PROCEDURE [ANY, TUPLE [CREATE_AS]])
+		do
+			create_pre_actions.extend (a_action)
+		end
+
+	add_create_post_action (a_action: PROCEDURE [ANY, TUPLE [CREATE_AS]])
+		do
+			create_post_actions.extend (a_action)
+		end
+
+	add_creation_pre_action (a_action: PROCEDURE [ANY, TUPLE [CREATION_AS]])
 		do
 			creation_pre_actions.extend (a_action)
 		end
 
-	add_creation_post_action (a_action: PROCEDURE [ANY, TUPLE [CREATION_AS] ])
+	add_creation_post_action (a_action: PROCEDURE [ANY, TUPLE [CREATION_AS]])
 		do
 			creation_post_actions.extend (a_action)
 		end
@@ -265,19 +278,21 @@ feature {NONE} -- Agent lists
 
 	class_pre_actions, class_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[CLASS_AS]]]
 
-	creation_pre_actions, creation_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE[CREATION_AS] ] ]
+	create_pre_actions, create_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [CREATE_AS]]]
 
-	do_pre_actions, do_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[DO_AS]]]
+	creation_pre_actions, creation_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [CREATION_AS]]]
 
-	eiffel_list_pre_actions, eiffel_list_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[EIFFEL_LIST [AST_EIFFEL]]]]
+	do_pre_actions, do_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [DO_AS]]]
+
+	eiffel_list_pre_actions, eiffel_list_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [EIFFEL_LIST [AST_EIFFEL]]]]
 
 	feature_pre_actions, feature_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [FEATURE_AS]]]
 
 	feature_clause_pre_actions, feature_clause_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [FEATURE_CLAUSE_AS]]]
 
-	id_pre_actions, id_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[ID_AS]]]
+	id_pre_actions, id_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [ID_AS]]]
 
-	if_pre_actions, if_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[IF_AS]]]
+	if_pre_actions, if_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [IF_AS]]]
 
 	inspect_pre_actions, inspect_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[INSPECT_AS]]]
 
@@ -331,6 +346,13 @@ feature {NONE} -- Processing
 			Precursor (a_body)
 
 			across body_post_actions as l_a loop l_a.item.call ([a_body]) end
+		end
+
+	process_create_as (a_create: CREATE_AS)
+		do
+			across create_pre_actions as l_a loop l_a.item.call ([a_create]) end
+			Precursor (a_create)
+			across create_post_actions as l_a loop l_a.item.call ([a_create]) end
 		end
 
 	process_creation_as (a_creation: CREATION_AS)

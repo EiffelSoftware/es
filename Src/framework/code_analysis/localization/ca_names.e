@@ -98,6 +98,16 @@ feature -- Rules
 	arguments_threshold_option: STRING_32
 		do Result := locale.translation ("Minimum arguments threshold") end
 
+	creation_proc_exported_title: STRING_32
+		do Result := locale.translation ("Creation procedure is exported") end
+
+	creation_proc_exported_description: STRING_32
+		do Result := locale.translation ("If the creation procedure is exported then%
+			% it may still be called by clients after the object has been created.%
+			% Ususally, this is not intended and ought to be changed. A client might,%
+			% for example, by accident call 'x.make' instead of 'create x.make',%
+			% causing the class invariant or postconditions of make to not hold anymore.") end
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32

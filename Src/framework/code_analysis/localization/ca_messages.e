@@ -147,10 +147,16 @@ feature -- Code Analyzer
 		do Result := locale.translation ("Feature '") end
 
 	many_arguments_violation_2: STRING_32
-		do Result := locale.translation ("' has many arguments. The number of arguments of ") end
+		do Result := locale.translation ("' has many arguments. The number of arguments of%N") end
 
 	many_arguments_violation_3: STRING_32
 		do Result := locale.translation (" is greater than or equal to the defined threshold of ") end
+
+	creation_proc_exported_violation_1: STRING_32
+		do Result := locale.translation ("The creation procedure '") end
+
+	creation_proc_exported_violation_2: STRING_32
+		do Result := locale.translation ("' is exported and may still be%Ncalled after the object has been created.") end
 
 feature -- Command Line
 
