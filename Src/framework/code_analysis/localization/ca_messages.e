@@ -143,6 +143,15 @@ feature -- Code Analyzer
 		do Result := locale.translation (" nested branches%Nor loops, which is %
 			%greater than or equal to the defined threshold of ") end
 
+	many_arguments_violation_1: STRING_32
+		do Result := locale.translation ("Feature '") end
+
+	many_arguments_violation_2: STRING_32
+		do Result := locale.translation ("' has many arguments. The number of arguments of ") end
+
+	many_arguments_violation_3: STRING_32
+		do Result := locale.translation (" is greater than or equal to the defined threshold of ") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32

@@ -76,6 +76,28 @@ feature -- Rules
 	nested_complexity_threshold_option: STRING_32
 		do Result := locale.translation ("Minimum nested branches and loops threshold") end
 
+	many_arguments_title: STRING_32
+		do Result := locale.translation ("Many feature arguments") end
+
+	many_arguments_description: STRING_32
+		do Result := locale.translation ("A feature that has many arguments should be%
+			% avoided since it makes the class interface complicated and it is not%
+			% easy to use. The feature arguments may include options, which should be%
+			% considered to be moved to separate features. Interfaces of features with%
+			% a large number of arguments are complicated, in the sense for example%
+			% that they are hard to remember for the programmer. Often many arguments%
+			% are of the same type (such as INTEGER). So, in a call, the passed%
+			% arguments are likely to get mixed up, too, without the compiler detecting%
+			% it. Arguments where in most of the cases the same value is passed--the%
+			% default value--are called options. As opposed to operands, which are%
+			% necessary in each feature call, each option should be moved to a separate%
+			% feature. The features for options can then be called before the operational%
+			% feature call in order to set (or unset) certain options. If a feature for%
+			% an option is not called then the class assumes the default value for this option.") end
+
+	arguments_threshold_option: STRING_32
+		do Result := locale.translation ("Minimum arguments threshold") end
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32
