@@ -35,6 +35,7 @@ inherit
 			process_do_as,
 			process_eiffel_list,
 			process_feature_as,
+			process_feature_clause_as,
 			process_id_as,
 			process_if_as,
 			process_inspect_as,
@@ -74,6 +75,8 @@ feature {NONE} -- Initialization
 			create eiffel_list_post_actions.make
 			create feature_pre_actions.make
 			create feature_post_actions.make
+			create feature_clause_pre_actions.make
+			create feature_clause_post_actions.make
 			create id_pre_actions.make
 			create id_post_actions.make
 			create if_pre_actions.make
@@ -152,24 +155,34 @@ feature {CA_STANDARD_RULE}
 			do_post_actions.extend (a_action)
 		end
 
-	add_eiffel_list_pre_action (a_action: PROCEDURE[ANY, TUPLE[EIFFEL_LIST[AST_EIFFEL]]])
+	add_eiffel_list_pre_action (a_action: PROCEDURE [ANY, TUPLE [EIFFEL_LIST[AST_EIFFEL]]])
 		do
 			eiffel_list_pre_actions.extend (a_action)
 		end
 
-	add_eiffel_list_post_action (a_action: PROCEDURE[ANY, TUPLE[EIFFEL_LIST[AST_EIFFEL]]])
+	add_eiffel_list_post_action (a_action: PROCEDURE [ANY, TUPLE [EIFFEL_LIST[AST_EIFFEL]]])
 		do
 			eiffel_list_post_actions.extend (a_action)
 		end
 
-	add_feature_pre_action (a_action: PROCEDURE[ANY, TUPLE[FEATURE_AS]])
+	add_feature_pre_action (a_action: PROCEDURE [ANY, TUPLE [FEATURE_AS]])
 		do
 			feature_pre_actions.extend (a_action)
 		end
 
-	add_feature_post_action (a_action: PROCEDURE[ANY, TUPLE[FEATURE_AS]])
+	add_feature_post_action (a_action: PROCEDURE [ANY, TUPLE [FEATURE_AS]])
 		do
 			feature_post_actions.extend (a_action)
+		end
+
+	add_feature_clause_pre_action (a_action: PROCEDURE [ANY, TUPLE [FEATURE_CLAUSE_AS]])
+		do
+			feature_clause_pre_actions.extend (a_action)
+		end
+
+	add_feature_clause_post_action (a_action: PROCEDURE [ANY, TUPLE [FEATURE_CLAUSE_AS]])
+		do
+			feature_clause_post_actions.extend (a_action)
 		end
 
 	add_id_pre_action (a_action: PROCEDURE[ANY, TUPLE[ID_AS]])
@@ -258,7 +271,9 @@ feature {NONE} -- Agent lists
 
 	eiffel_list_pre_actions, eiffel_list_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[EIFFEL_LIST [AST_EIFFEL]]]]
 
-	feature_pre_actions, feature_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[FEATURE_AS]]]
+	feature_pre_actions, feature_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [FEATURE_AS]]]
+
+	feature_clause_pre_actions, feature_clause_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [FEATURE_CLAUSE_AS]]]
 
 	id_pre_actions, id_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[ID_AS]]]
 
@@ -346,12 +361,17 @@ feature {NONE} -- Processing
 		end
 
 	process_feature_as (a_feature: FEATURE_AS)
-		local
-			l_b: BOOLEAN
 		do
 			across feature_pre_actions as l_a loop l_a.item.call ([a_feature]) end
 			Precursor (a_feature)
 			across feature_post_actions as l_a loop l_a.item.call ([a_feature]) end
+		end
+
+	process_feature_clause_as (a_clause: FEATURE_CLAUSE_AS)
+		do
+			across feature_clause_pre_actions as l_a loop l_a.item.call ([a_clause]) end
+			Precursor (a_clause)
+			across feature_clause_post_actions as l_a loop l_a.item.call ([a_clause]) end
 		end
 
 	process_id_as (a_id: ID_AS)
