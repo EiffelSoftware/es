@@ -4049,6 +4049,11 @@ Src/tools/finish_freezing/finish_freezing-safe.lic -text
 Src/tools/finish_freezing/finish_freezing.lic -text
 Src/tools/hallow/hallow.lic -text
 Src/tools/iron/client/license.lic -text
+Src/tools/iron/delivery/VERSIONS/13.11/packages/api_wrapper.info -text
+Src/tools/iron/delivery/VERSIONS/13.11/packages/base.info -text
+Src/tools/iron/delivery/VERSIONS/13.11/packages/base_extension.info -text
+Src/tools/iron/delivery/VERSIONS/13.11/packages/old_argument_parser.info -text
+Src/tools/iron/delivery/credential.py-template -text
 Src/tools/iron/delivery/iron/spec/unix/bin/iron_build_archive -text
 Src/tools/iron/delivery/iron/spec/unix/bin/iron_extract_archive -text
 Src/tools/iron/delivery/iron/spec/windows/bin/bzip2.exe -text
