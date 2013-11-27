@@ -360,7 +360,7 @@ feature -- Access: Proof tool strings
 	tool_header_time: STRING_32
 			-- Header for time column
 		do
-			Result := locale.translation ("Time [ms]")
+			Result := locale.translation ("Time [s]")
 		end
 
 	tool_button_successful: STRING_32

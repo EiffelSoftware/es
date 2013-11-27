@@ -66,8 +66,11 @@ feature -- Access
 			end
 		end
 
-	milliseconds_used: NATURAL
+	milliseconds_used: REAL_32
 			-- Milliseconds used for proof
+		do
+			Result := data.time
+		end
 
 	frozen type: NATURAL_8
 			-- <Precursor>
@@ -94,13 +97,13 @@ feature -- Status report
 
 feature -- Element change
 
-	set_milliseconds_used (a_value: NATURAL)
-			-- Set `milliseconds_used' to `a_value'.
-		do
-			milliseconds_used := a_value
-		ensure
-			milliseconds_used_set: milliseconds_used = a_value
-		end
+--	set_milliseconds_used (a_value: NATURAL)
+--			-- Set `milliseconds_used' to `a_value'.
+--		do
+--			milliseconds_used := a_value
+--		ensure
+--			milliseconds_used_set: milliseconds_used = a_value
+--		end
 
 	set_category (a_category: like category)
 			-- <Precursor>

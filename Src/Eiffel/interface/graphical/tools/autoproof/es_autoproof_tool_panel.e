@@ -552,7 +552,7 @@ feature {NONE} -- Basic operations
 			l_error_list: LIST [EP_ERROR]
 			l_error: EP_ERROR
 			l_row: EV_GRID_ROW
-
+			l_format: FORMAT_DOUBLE
 		do
 			a_row.set_data (a_event_item)
 			if attached {E2B_FAILED_EXECUTION_EVENT} a_event_item as l_result then
@@ -607,7 +607,8 @@ feature {NONE} -- Basic operations
 				end
 
 					-- Time information
-				create l_label.make_with_text (l_result.milliseconds_used.out)
+				create l_format.make (4, 2)
+				create l_label.make_with_text (l_format.formatted (l_result.milliseconds_used))
 				a_row.set_item (time_column, l_label)
 
 				if is_successful_event (a_event_item) then
