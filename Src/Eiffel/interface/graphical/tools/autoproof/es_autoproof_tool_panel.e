@@ -517,7 +517,7 @@ feature {NONE} -- Basic operations
 			l_stone: STONE
 		do
 			if attached {E2B_VERIFICATION_EVENT} a_row.parent_row_root.data as l_event_item then
-				if attached {E2B_VERIFICATION_ERROR} a_row.data as l_error then
+				if attached {E2B_VERIFICATION_ERROR} a_row.data as l_error and then l_error.eiffel_line_number > 0 then
 					create {COMPILED_LINE_STONE} l_stone.make_with_line (l_event_item.context_class, l_error.eiffel_line_number, False)
 				elseif l_event_item.line_number > 0 then
 					create {COMPILED_LINE_STONE} l_stone.make_with_line (l_event_item.context_class, l_event_item.line_number, False)

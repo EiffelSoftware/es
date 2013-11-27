@@ -26,6 +26,7 @@ feature {NONE} -- Implementation
 			-- Initialize Windows executable.
 		do
 			boogie_file_name := default_boogie_code_file_name
+			boogie_output_file_name := default_boogie_output_file_name
 			model_file_name := default_model_file_name
 			create input.make
 		end
@@ -33,6 +34,9 @@ feature {NONE} -- Implementation
 feature {NONE} -- Implementation
 
 	boogie_file_name: attached STRING
+			-- <Precursor>
+
+	boogie_output_file_name: attached STRING
 			-- <Precursor>
 
 	model_file_name: attached STRING
@@ -96,28 +100,20 @@ feature {NONE} -- Implementation
 			l_time: TIME
 			l_filename: STRING
 		do
---			create Result.make_from_string ("C:\temp\output.bpl")
-
---			create l_time.make_now
---			l_filename := "boogie-"
---			if l_time.minute < 10 then
---				l_filename.append ("0")
---			end
---			l_filename.append (l_time.minute.out)
---			if l_time.second < 10 then
---				l_filename.append ("0")
---			end
---			l_filename.append (l_time.second.out)
---			if (l_time.fractional_second * 100.0) < 10 then
---				l_filename.append ("0")
---			end
---			l_filename.append ((l_time.fractional_second * 100.0).truncated_to_integer.out)
---			l_filename.append (".bpl")
-
 			create Result.make_from_string (system.eiffel_project.project_directory.target_path.out)
 			Result.extend ("Proofs")
---			Result.extend (l_filename)
 			Result.extend ("autoproof.bpl")
+		end
+
+	default_boogie_output_file_name: FILE_NAME
+			-- File name for Boogie output file
+		local
+			l_time: TIME
+			l_filename: STRING
+		do
+			create Result.make_from_string (system.eiffel_project.project_directory.target_path.out)
+			Result.extend ("Proofs")
+			Result.extend ("output.txt")
 		end
 
 	default_model_file_name: FILE_NAME

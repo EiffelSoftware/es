@@ -117,6 +117,11 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
+	boogie_output_file_name: attached STRING
+			-- File name used to generate Boogie file.
+		deferred
+		end
+
 	model_file_name: attached STRING
 			-- File name used to generate Model file.
 		deferred
@@ -168,7 +173,7 @@ feature {NONE} -- Implementation
 			end
 
 			if {PLATFORM}.is_windows then
-				create l_output_file.make ("C:\temp\output.bpl")
+				create l_output_file.make ("C:\temp\autoproof.bpl")
 				l_output_file.recursive_open_write
 				if l_output_file.is_open_write then
 					append_header (l_output_file)
@@ -229,6 +234,8 @@ feature {NONE} -- Implementation
 			process.redirect_output_to_agent (agent append_output (?, process))
 			process.redirect_error_to_same_as_output
 			process.set_on_fail_launch_handler (agent handle_launch_failed (boogie_executable, l_arguments))
+			process.set_on_terminate_handler (agent handle_terminated (process))
+			process.set_on_exit_handler (agent handle_terminated (process))
 
 			process.launch
 			if a_wait_for_exit then
@@ -246,6 +253,38 @@ feature {NONE} -- Implementation
 				io.error.put_string ("Argument " + i.cursor_index.out + ": " + i.item + "%N")
 			end
 			check False end
+		end
+
+	handle_terminated (a_process: PROCESS)
+			-- Handle terminated.
+		local
+			l_output: STRING
+			l_output_file: KL_TEXT_OUTPUT_FILE
+		do
+			if outputs.has_key (a_process.id) then
+				l_output := outputs.item (a_process.id)
+				l_output.replace_substring_all ("%R", "")
+				create l_output_file.make (boogie_output_file_name)
+				l_output_file.recursive_open_write
+				if l_output_file.is_open_write then
+					l_output_file.put_string (l_output)
+					l_output_file.close
+				else
+						-- TODO: error handling
+					check False end
+				end
+				if {PLATFORM}.is_windows then
+					create l_output_file.make ("C:\temp\ap_output.txt")
+					l_output_file.recursive_open_write
+					if l_output_file.is_open_write then
+						l_output_file.put_string (l_output)
+						l_output_file.close
+					else
+							-- TODO: error handling
+						check False end
+					end
+				end
+			end
 		end
 
 	append_header (a_file: KL_TEXT_OUTPUT_FILE)

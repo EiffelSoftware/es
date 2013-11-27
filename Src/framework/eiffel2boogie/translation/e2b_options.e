@@ -39,6 +39,7 @@ feature {NONE} -- Initialization
 
 			is_enforcing_timeout := False
 			timeout := 120
+			is_trace_enabled := False
 		end
 
 feature -- Inlining verification step
@@ -231,11 +232,21 @@ feature -- Boogie/Z3
 		end
 
 	timeout: INTEGER
+			-- Timeout of z3 in seconds.
 
 	set_timeout (a_value: INTEGER)
 			-- Set `timeout' to `a_value'.
 		do
 			timeout := a_value
+		end
+
+	is_trace_enabled: BOOLEAN
+			-- Are trace statements printed?
+
+	set_is_trace_enabled (a_value: BOOLEAN)
+			-- Set `is_trace_enabled' to `a_value'.
+		do
+			is_trace_enabled := a_value
 		end
 
 end
