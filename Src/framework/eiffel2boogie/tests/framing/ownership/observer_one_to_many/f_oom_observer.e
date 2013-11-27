@@ -30,20 +30,19 @@ feature {F_OOM_SUBJECT}
 
 	  notify
 		require
-			subject /= Void
+			is_open
+			inv_without ("cache_synchronized")
 
 			modify_field ("cache", Current)
 		do
 			cache := subject.value
 		ensure
-			subject = old subject
-			cache = subject.value
+			inv
 		end
 
 invariant
 	subject /= Void
 	subject.observers.has (Current)
-	cache = subject.value
+	cache_synchronized: cache = subject.value
 	subjects = [subject]
-
 end

@@ -47,11 +47,17 @@ feature
 			from
 				i := 1
 			invariant
---				across 1 |..| (i - 1) as j all observers_list[j.item].cache = new_val end
+--				across 1 |..| (i - 1) as j all observers_list[j.item].cache = new_val end				
+				attached {F_OOM_LIST [F_OOM_OBSERVER_D]} observers_list
+				across observers_list.sequence as o all attached {F_OOM_OBSERVER_D} o.item end
 			until
 				i > observers_list.count
 			loop
+				check attached {F_OOM_LIST [F_OOM_OBSERVER_D]} observers_list end
+				check attached {F_OOM_OBSERVER_D} observers_list [i] end
 				observers_list [i].notify
+				check attached {F_OOM_LIST [F_OOM_OBSERVER_D]} observers_list end
+				check attached {F_OOM_OBSERVER_D} observers_list [i] end
 				i := i + 1
 			end
 
@@ -66,8 +72,6 @@ feature
 feature {F_OOM_OBSERVER_D}
 
 	register (o: F_OOM_OBSERVER_D)
-		note
-			explicit: contracts
 		require
 			is_wrapped
 			o.is_open
@@ -88,6 +92,7 @@ invariant
 	observers_list /= Void
 	across observers_list.sequence as o all o.item /= Void end
 	observers = observers_list.sequence
+	across observers as c all c.item.generating_type = {F_OOM_OBSERVER_D} end
 	owns = [observers_list]
 	subjects = [] -- default
 	across subjects as s all s.item.observers.has (Current) end -- default

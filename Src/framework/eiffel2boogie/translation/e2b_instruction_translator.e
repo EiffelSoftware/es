@@ -587,6 +587,9 @@ feature -- Processing
 					a_node.invariant_part.forth
 				end
 			end
+				-- Default invariants (free)			
+			create l_assume.make (factory.function_call ("HeapSucc", <<"old(Heap)", "Heap">>, types.bool))
+			add_statement (l_assume)
 
 				-- Variant
 			if a_node.variant_part /= Void then

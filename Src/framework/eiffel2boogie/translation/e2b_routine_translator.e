@@ -192,6 +192,11 @@ feature -- Basic operations
 
 			translation_pool.add_writes_function (current_feature, current_type)
 
+				-- HeapSucc
+			create l_post.make (factory.function_call ("HeapSucc", <<"old(Heap)", "Heap">>, types.bool))
+			l_post.set_free
+			current_boogie_procedure.add_contract (l_post)
+
 				-- OWNERSHIP DEFAULTS
 			if not helper.is_explicit (current_feature, "contracts") then
 				if a_for_creator then

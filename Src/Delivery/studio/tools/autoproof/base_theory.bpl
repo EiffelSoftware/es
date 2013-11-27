@@ -14,12 +14,26 @@ type HeapType = <alpha>[ref, Field alpha]alpha; // Type of a heap (with generic 
 const unique allocated: Field bool; // Ghost field for allocation status of objects
 
 // Function which defines basic properties of a heap
-function IsHeap(heap: HeapType): bool {
-	true
-}
+function IsHeap(heap: HeapType): bool;
 
 // The global heap (which is always a heap)
 var Heap: HeapType where IsHeap(Heap);
+
+// Function that defines properties of two (transitively) successive heaps
+function HeapSucc(HeapType, HeapType): bool;
+// axiom (forall<alpha> h: HeapType, r: ref, f: Field alpha, x: alpha :: { update(h, r, f, x) }
+  // IsHeap(update(h, r, f, x)) ==>
+  // HeapSucc(h, update(h, r, f, x)));
+axiom (forall<alpha> h: HeapType, r: ref, f: Field alpha, x: alpha :: { h[r, f := x] }
+  IsHeap(h[r, f := x]) ==>
+  HeapSucc(h, h[r, f := x]));  
+axiom (forall a,b,c: HeapType :: { HeapSucc(a,b), HeapSucc(b,c) }
+  HeapSucc(a,b) && HeapSucc(b,c) ==> HeapSucc(a,c));
+// axiom (forall h: HeapType, k: HeapType :: { HeapSucc(h,k) }
+  // HeapSucc(h,k) ==> (forall o: ref :: { read(k, o, allocated) } read(h, o, allocated) ==> read(k, o, allocated)));
+axiom (forall h: HeapType, k: HeapType :: { HeapSucc(h,k) }
+  HeapSucc(h,k) ==> (forall o: ref :: { k[o, allocated] } h[o, allocated] ==> k[o, allocated]));  
+
 
 // ----------------------------------------------------------------------
 // Typing
@@ -170,6 +184,7 @@ procedure allocate(t: Type) returns (result: ref);
 	ensures Set#Equal(Heap[result, subjects], Set#Empty());
   ensures writable[result];
 	ensures (forall <T> o: ref, f: Field T :: o != result ==> Heap[o, f] == old(Heap[o, f]));
+  free ensures HeapSucc(old(Heap), Heap);
 
 // Update Heap position Current.field with value.
 procedure update_heap<T>(Current: ref, field: Field T, value: T);
@@ -180,6 +195,7 @@ procedure update_heap<T>(Current: ref, field: Field T, value: T);
 	modifies Heap;
 	ensures global(Heap);
 	ensures Heap == old(Heap[Current, field := value]);
+  free ensures HeapSucc(old(Heap), Heap);
 
 // Unwrap o
 procedure unwrap(o: ref);
@@ -191,6 +207,7 @@ procedure unwrap(o: ref);
 	ensures (forall o': ref :: old(Heap[o, owns][o']) ==> is_wrapped(Heap, o')); // UWE2
 	ensures (forall <T> o': ref, f: Field T :: !(o' == o && f == closed) && !(old(Heap[o, owns][o']) && f == owner) ==> Heap[o', f] == old(Heap[o', f]));
 	ensures user_inv(Heap, o);
+  free ensures HeapSucc(old(Heap), Heap);
 
 procedure unwrap_all (Current: ref, s: Set ref);
 	requires (forall o: ref :: s[o] ==> is_wrapped(Heap, o)); // pre tag:wrapped UW1
@@ -201,6 +218,7 @@ procedure unwrap_all (Current: ref, s: Set ref);
 	ensures (forall o: ref :: s[o] ==> (forall o': ref :: old(Heap[o, owns][o']) ==> is_wrapped(Heap, o'))); // UWE2
 	ensures (forall <T> o: ref, f: Field T :: !(s[o] && f == closed) && !((exists o': ref :: s[o'] && old(Heap[o', owns][o])) && f == owner) ==> Heap[o, f] == old(Heap[o, f]));
 	ensures (forall o: ref :: s[o] ==> user_inv(Heap, o));
+  free ensures HeapSucc(old(Heap), Heap);
 
 // Wrap o
 procedure wrap(o: ref);
@@ -214,6 +232,7 @@ procedure wrap(o: ref);
 	ensures (forall o': ref :: old(Heap[o, owns][o']) ==> Heap[o', owner] == o); // WE2
 	ensures is_wrapped(Heap, o); // WE3
 	ensures (forall <T> o': ref, f: Field T :: !(o' == o && f == closed) && !(old(Heap[o, owns][o']) && f == owner) ==> Heap[o', f] == old(Heap[o', f]));
+  free ensures HeapSucc(old(Heap), Heap);
 
 procedure wrap_all(Current: ref, s: Set ref);
 	requires (forall o: ref :: s[o] ==> is_open(Heap, o)); // pre tag:open W1
@@ -226,6 +245,7 @@ procedure wrap_all(Current: ref, s: Set ref);
 	ensures (forall o: ref :: s[o] ==> (forall o': ref :: old(Heap[o, owns][o']) ==> Heap[o', owner] == o)); // WE2
 	ensures (forall o: ref :: s[o] ==> is_wrapped(Heap, o)); // WE3
 	ensures (forall <T> o: ref, f: Field T :: !(s[o] && f == closed) && !((exists o': ref :: s[o'] && old(Heap[o', owns][o])) && f == owner) ==> Heap[o, f] == old(Heap[o, f]));
+  free ensures HeapSucc(old(Heap), Heap);
 
 // ----------------------------------------------------------------------
 // Attached/Detachable functions

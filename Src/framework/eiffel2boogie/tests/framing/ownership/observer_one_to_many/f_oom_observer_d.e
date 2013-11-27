@@ -41,25 +41,20 @@ feature {F_OOM_SUBJECT_D}
 
 	  notify
 		require
-			is_open -- default: not public
-			across observers as sc all sc.item.is_open end -- default: not public
-
-			subject /= Void
+			is_open
+			inv_without ("cache_synchronized")
 
 			modify_field ("cache", Current)
 		do
 			cache := subject.value
 		ensure
-			subject = old subject
-			cache = subject.value
-			is_open -- default: not public
-			across observers as sc all sc.item.is_open end -- default: not public
+			inv
 		end
 
 invariant
 	subject /= Void
 	subject.observers.has (Current)
-	cache = subject.value
+	cache_synchronized: cache = subject.value
 	subjects = [subject]
 	across subjects as s all s.item.observers.has (Current) end -- default
 	owns = [] -- default

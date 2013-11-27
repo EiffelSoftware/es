@@ -36,7 +36,7 @@ feature {F_OOO_SUBJECT} -- Element change
 	notify
 		require
 			is_open
-			inv_without ("cache_synchrinized")
+			inv_without ("cache_synchronized")
 
 			modify_field ("cache", Current)
 		do
@@ -48,7 +48,7 @@ feature {F_OOO_SUBJECT} -- Element change
 invariant
 	attached subject
 	subject.observer = Current
-	cache_synchrinized: cache = subject.value
+	cache_synchronized: cache = subject.value
 	subjects = [subject]
 
 end

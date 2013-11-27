@@ -807,6 +807,7 @@ feature -- Visitors
 	process_object_test_b (a_node: OBJECT_TEST_B)
 			-- <Precursor>
 		local
+			l_type: IV_EXPRESSION
 			l_type_check: IV_BINARY_OPERATION
 			l_expr: IV_EXPRESSION
 		do
@@ -818,11 +819,11 @@ feature -- Visitors
 				check attached a_node.info end
 					-- Normalize integer types
 				if a_node.info.type_to_create.is_integer or a_node.info.type_to_create.is_natural then
-					l_type_check := factory.sub_type (factory.type_of (l_expr), create {IV_ENTITY}.make ("INTEGER", types.type))
+					create {IV_ENTITY} l_type.make ("INTEGER", types.type)
 				else
-					l_type_check := factory.sub_type (factory.type_of (l_expr), factory.type_value (a_node.info.type_to_create))
+					l_type := factory.type_value (a_node.info.type_to_create)
 				end
-				last_expression := factory.and_ (factory.not_equal (l_expr, factory.void_), l_type_check)
+				last_expression := factory.function_call ("attached", <<"Heap", l_expr, l_type>>, types.bool)
 			end
 			if attached a_node.target then
 					-- Check for possible unboxing of basic types
