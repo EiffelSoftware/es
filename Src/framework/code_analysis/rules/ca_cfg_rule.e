@@ -9,6 +9,8 @@ deferred class
 
 inherit
 	CA_RULE
+		rename node_type as ast_node_type
+		end
 
 	EGX_GRAPH_DFS_VISITOR [EPA_BASIC_BLOCK, EPA_CFG_EDGE]
 		rename

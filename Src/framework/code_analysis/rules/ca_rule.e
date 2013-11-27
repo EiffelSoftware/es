@@ -87,6 +87,27 @@ feature -- Rule checking
 
 	checking_class: detachable CLASS_C
 
+	set_node_types (a_types: HASH_TABLE [TYPE_A, TUPLE [node: INTEGER; written_class: INTEGER; feat: INTEGER; cl: INTEGER]])
+		do
+			node_types := a_types
+		end
+
+feature {NONE} -- Rule checking
+
+	node_types: HASH_TABLE [TYPE_A, TUPLE [node: INTEGER; written_class: INTEGER; feat: INTEGER; cl: INTEGER]]
+			-- Type of the AST node `node' written in class
+			-- `written_class' when evaluated in a feature `feature' of class
+			-- `class'.
+
+	node_type (a_node: AST_EIFFEL; a_feature: FEATURE_I): TYPE_A
+			-- Type of the AST node `a_node' from feature `a_feature'.
+		local
+			l_class_id: INTEGER
+		do
+			l_class_id := a_feature.written_class.class_id
+			Result := node_types [[a_node.index, l_class_id, a_feature.rout_id_set.first, l_class_id]]
+		end
+
 feature -- Results
 
 	frozen clear_violations

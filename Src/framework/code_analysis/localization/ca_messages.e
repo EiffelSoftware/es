@@ -158,6 +158,12 @@ feature -- Code Analyzer
 	creation_proc_exported_violation_2: STRING_32
 		do Result := locale.translation ("' is exported and may still be%Ncalled after the object has been created.") end
 
+	unneeded_object_test_violation_1: STRING_32
+		do Result := locale.translation ("This object test is redundant because the tested variable '") end
+
+	unneeded_object_test_violation_2: STRING_32
+		do Result := locale.translation ("' is already of the static type '") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32

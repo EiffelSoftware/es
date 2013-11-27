@@ -24,11 +24,15 @@ feature {NONE} -- Initialization
 			classes.start
 
 			has_next_step := not classes.is_empty
+
+			create type_recorder.make
 		end
 
 feature {NONE} -- Implementation
 
 	rules_checker: CA_ALL_RULES_CHECKER
+
+	type_recorder: CA_AST_TYPE_RECORDER
 
 	rules: LINKED_LIST [CA_RULE]
 
@@ -46,8 +50,13 @@ feature -- From ROTA
 
 	step
 		do
-			-- TODO: more elegant and performant solution?
+				-- Gather type information
+			type_recorder.clear
+			type_recorder.analyze_class (classes.item)
+
+				-- TODO: more elegant and performant solution?
 			across rules as l_rules loop
+				l_rules.item.set_node_types (type_recorder.node_types)
 				l_rules.item.set_checking_class (classes.item)
 					-- If rule is non-standard then it will not be checked by l_rules_checker.
 					-- We will have the rule check the current class here:
