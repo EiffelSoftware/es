@@ -14,6 +14,8 @@ inherit
 
 	SHARED_WORKBENCH
 
+	SHARED_SERVER
+
 feature -- Status report
 
 	is_handling_call (a_target_type: TYPE_A; a_feature: FEATURE_I): BOOLEAN
@@ -89,6 +91,7 @@ feature -- Basic operations
 					if l_tag_filters.is_empty then
 						a_translator.process_builtin_routine_call (a_feature, a_parameters, "user_inv")
 					else
+						check_valid_class_inv_tags (a_translator.current_target_type.base_class, a_translator.context_feature, l_tag_filters)
 						translation_pool.add_filtered_invariant_function (a_translator.current_target_type, Void, l_tag_filters)
 						a_translator.set_last_expression (
 							factory.function_call (
@@ -97,6 +100,7 @@ feature -- Basic operations
 					end
 				elseif l_name ~ "inv_only" then
 					l_tag_filters := extract_tags (a_parameters)
+					check_valid_class_inv_tags (a_translator.current_target_type.base_class, a_translator.context_feature, l_tag_filters)
 					translation_pool.add_filtered_invariant_function (a_translator.current_target_type, l_tag_filters, Void)
 					a_translator.set_last_expression (
 						factory.function_call (
@@ -259,6 +263,44 @@ feature -- Basic operations
 				end
 			else
 				check False end
+			end
+		end
+
+	check_valid_class_inv_tags (a_class: CLASS_C; a_context_feature: FEATURE_I; a_tags: LIST [STRING])
+			-- Check if `a_tags' only lists valid class invariant of `a_class'.
+			-- Otherwise report error in feature `a_context_featur'.
+		local
+			l_asserts: BYTE_LIST [BYTE_NODE]
+			l_assert: ASSERT_B
+			l_tags_copy: LINKED_LIST [STRING]
+			l_string: STRING
+		do
+			create l_tags_copy.make
+			l_tags_copy.append (a_tags)
+			l_tags_copy.compare_objects
+			if inv_byte_server.has (a_class.class_id) then
+				from
+					l_asserts := inv_byte_server.item (a_class.class_id).byte_list
+					l_asserts.start
+				until
+					l_asserts.after
+				loop
+					l_assert ?= l_asserts.item_for_iteration
+					check l_assert /= Void end
+					if l_assert.tag /= Void then
+						l_tags_copy.prune_all (l_assert.tag)
+					end
+					l_asserts.forth
+				end
+			end
+			if not l_tags_copy.is_empty then
+				l_string := ""
+				across l_tags_copy as i loop
+					l_string.append (i.item)
+					l_string.append (", ")
+				end
+				l_string.remove_tail (2)
+				helper.add_semantic_error (Void, a_context_feature, "Filtered invariant of class '" + a_class.name_in_upper + "' lists invalid tag: " + l_string)
 			end
 		end
 

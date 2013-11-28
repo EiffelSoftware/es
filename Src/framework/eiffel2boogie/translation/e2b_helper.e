@@ -336,11 +336,17 @@ feature -- Other
 			-- Unique identifier with base name `a_name'.
 		do
 			internal_counter.put (internal_counter.item + 1)
+			check internal_counter.item >= 0 end
 			Result := a_name + "_" + internal_counter.item.out
 		end
 
 	add_unsupported_error (a_class: CLASS_C; a_feature: FEATURE_I; a_message: STRING)
 			-- Add AutoProof error about unsupported construct.
+			-- If `a_class' is set, the error will be associated with the class.
+			-- If `a_feature' is set, the error will be associated with the feature and its written class.
+		require
+			not_class_and_feature: a_class = Void or a_feature = Void
+			message_set: a_message /= Void and then not a_message.is_empty
 		local
 			l_error: E2B_AUTOPROOF_ERROR
 		do
@@ -357,6 +363,11 @@ feature -- Other
 
 	add_semantic_error (a_class: CLASS_C; a_feature: FEATURE_I; a_message: STRING)
 			-- Add AutoProof error about unsupported construct.
+			-- If `a_class' is set, the error will be associated with the class.
+			-- If `a_feature' is set, the error will be associated with the feature and its written class.
+		require
+			not_class_and_feature: a_class = Void or a_feature = Void
+			message_set: a_message /= Void and then not a_message.is_empty
 		local
 			l_error: E2B_AUTOPROOF_ERROR
 		do
