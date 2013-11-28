@@ -37,14 +37,36 @@ feature -- Basic operations
 	handle_binary (a_translator: E2B_EXPRESSION_TRANSLATOR; a_left, a_right: IV_EXPRESSION; a_operator: STRING)
 			-- Handle built-in (non alias) binary expression where `a_left' is a set.
 		require
-			is_set: a_left.type.is_set
+			left_is_set_or_seq: a_left.type.is_set or a_left.type.is_seq
+			right_is_set_or_seq: a_right.type.is_set or a_right.type.is_seq
+		local
+			l_left, l_right: IV_EXPRESSION
 		do
-			if a_operator ~ "==" then
-				check a_right.type.is_set end
-				a_translator.set_last_expression (factory.function_call ("Set#Equal", << a_left, a_right >>, types.bool))
-			elseif a_operator ~ "!=" then
-				check a_right.type.is_set end
-				a_translator.set_last_expression (factory.not_ (factory.function_call ("Set#Equal", << a_left, a_right >>, types.bool)))
+			if a_left.type.is_set or a_right.type.is_set then
+					-- At least one set is involved
+				if a_left.type.is_set then
+					l_left := a_left
+				elseif a_left.type.is_seq then
+					l_left := factory.function_call ("Set#FromSeq", << a_left >>, a_right.type)
+				end
+				if a_right.type.is_set then
+					l_right := a_right
+				else
+					l_right := factory.function_call ("Set#FromSeq", << a_right >>, a_left.type)
+				end
+
+				if a_operator ~ "==" then
+					a_translator.set_last_expression (factory.function_call ("Set#Equal", << l_left, l_right >>, types.bool))
+				elseif a_operator ~ "!=" then
+					a_translator.set_last_expression (factory.not_ (factory.function_call ("Set#Equal", << l_left, l_right >>, types.bool)))
+				end
+			else
+					-- Two sequences
+				if a_operator ~ "==" then
+					a_translator.set_last_expression (factory.function_call ("Seq#Equal", << a_left, a_right >>, types.bool))
+				elseif a_operator ~ "!=" then
+					a_translator.set_last_expression (factory.not_ (factory.function_call ("Seq#Equal", << a_left, a_right >>, types.bool)))
+				end
 			end
 
 		end

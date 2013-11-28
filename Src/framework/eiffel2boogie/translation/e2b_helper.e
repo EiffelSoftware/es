@@ -355,4 +355,20 @@ feature -- Other
 			autoproof_errors.extend (l_error)
 		end
 
+	add_semantic_error (a_class: CLASS_C; a_feature: FEATURE_I; a_message: STRING)
+			-- Add AutoProof error about unsupported construct.
+		local
+			l_error: E2B_AUTOPROOF_ERROR
+		do
+			create l_error
+			l_error.set_type ("Error")
+			l_error.set_single_line_message (a_message)
+			if a_feature /= Void then
+				l_error.set_eiffel_feature (a_feature)
+			elseif a_class /= Void then
+				l_error.set_eiffel_class (a_class)
+			end
+			autoproof_errors.extend (l_error)
+		end
+
 end

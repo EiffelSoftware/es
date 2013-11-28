@@ -211,8 +211,13 @@ feature -- Visitors
 			l_right := last_expression
 			l_type := types.for_type_a (a_node.type)
 
-			if l_left.type.is_set then
-				(create {E2B_CUSTOM_MML_HANDLER}).handle_binary (Current, l_left, l_right, a_operator)
+			if l_left.type.is_set or l_left.type.is_seq then
+				if l_right.type.is_set or l_right.type.is_seq then
+					(create {E2B_CUSTOM_MML_HANDLER}).handle_binary (Current, l_left, l_right, a_operator)
+				else
+					helper.add_semantic_error (context_type.base_class, context_feature, "Sets and sequences can only be compared with other sets or sequences")
+					last_expression := dummy_node (a_node.type)
+				end
 			else
 				if is_in_quantifier then
 					if a_operator ~ "+" then

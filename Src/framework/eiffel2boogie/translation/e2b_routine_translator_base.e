@@ -297,7 +297,7 @@ feature -- Helper functions: contracts
 						else
 							l_type := l_type.deep_actual_type
 						end
-						if l_type.base_class.name_in_upper ~ "MML_SET" then
+						if l_type.base_class.name_in_upper ~ "MML_SET" or l_type.base_class.name_in_upper ~ "MML_SEQUENCE" then
 							l_type := l_type.generics.first
 						end
 
@@ -309,11 +309,11 @@ feature -- Helper functions: contracts
 								if attached {STRING_B} j.item as l_string then
 									l_fieldnames.extend (l_string.value)
 								else
-									helper.add_unsupported_error (Void, a_feature, "The tuple in the first argument of 'modify_field' needs to consist only of manifest strings.")
+									helper.add_semantic_error (Void, a_feature, "The tuple in the first argument of 'modify_field' needs to consist only of manifest strings.")
 								end
 							end
 						else
-							helper.add_unsupported_error (Void, a_feature, "First argument of 'modify_field' has to be a manifest string or a tuple of manifest strings.")
+							helper.add_semantic_error (Void, a_feature, "First argument of 'modify_field' has to be a manifest string or a tuple of manifest strings.")
 						end
 
 						create l_fields.make
@@ -325,7 +325,7 @@ feature -- Helper functions: contracts
 									l_boogie_type := types.bool
 								else
 									l_name := Void
-									helper.add_unsupported_error (Void, a_feature, "Feature '" + f.item + "' mentioned in 'modify_field' does not exist in class '" + l_type.base_class.name_in_upper + "'")
+									helper.add_semantic_error (Void, a_feature, "Feature '" + f.item + "' mentioned in 'modify_field' does not exist in class '" + l_type.base_class.name_in_upper + "'")
 								end
 							else
 								if l_feature.is_attribute then
@@ -334,7 +334,7 @@ feature -- Helper functions: contracts
 									translation_pool.add_feature (l_feature, l_type)
 								else
 									l_name := Void
-									helper.add_unsupported_error (Void, a_feature, "Feature '" + f.item + "' mentioned in 'modify_field' is not an attribute")
+									helper.add_semantic_error (Void, a_feature, "Feature '" + f.item + "' mentioned in 'modify_field' is not an attribute")
 								end
 							end
 							if l_name /= Void then

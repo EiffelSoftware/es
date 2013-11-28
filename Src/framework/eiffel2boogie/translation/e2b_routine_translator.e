@@ -515,10 +515,12 @@ feature -- Basic operations
 			l_expr := factory.true_
 			across l_.field_restriction as j loop
 				l_objects_expr := factory.false_
-				l_fields_expr := factory.true_ --not_equal (l_f, create {IV_ENTITY}.make ("owner", types.field (types.ref)))
+				l_fields_expr := factory.true_
 				across j.item.objects as ro loop
-					if ro.item.type.is_map then
+					if ro.item.type.is_set then
 						l_objects_expr := factory.or_ (l_objects_expr, factory.map_access (ro.item, l_o))
+					elseif ro.item.type.is_seq then
+						l_objects_expr := factory.or_ (l_objects_expr, factory.map_access (factory.function_call ("Set#FromSeq", << ro.item >>, types.set (types.ref)), l_o))
 					else
 						l_objects_expr := factory.or_ (l_objects_expr, factory.equal (l_o, ro.item))
 					end
