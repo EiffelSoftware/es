@@ -316,18 +316,17 @@ feature -- Helper functions: contracts
 						end
 
 						create l_fields.make
+						l_fields.compare_objects
 						across l_fieldnames as f loop
 							l_feature := l_type.base_class.feature_named_32 (f.item)
 							if l_feature = Void then
-								if f.item ~ "closed" then
-									l_name := "closed"
-									l_boogie_type := types.bool
-								else
-									l_name := Void
-									helper.add_semantic_error (Void, a_feature, "Feature '" + f.item + "' mentioned in 'modify_field' does not exist in class '" + l_type.base_class.name_in_upper + "'")
-								end
+								l_name := Void
+								helper.add_semantic_error (Void, a_feature, "Feature '" + f.item + "' mentioned in 'modify_field' does not exist in class '" + l_type.base_class.name_in_upper + "'")
 							else
-								if l_feature.is_attribute then
+								if translation_mapping.ghost_access.has (f.item) then
+									l_name := f.item
+									l_boogie_type := translation_mapping.ghost_access_type (f.item)
+								elseif l_feature.is_attribute then
 									l_name := name_translator.boogie_name_for_feature (l_feature, l_type)
 									l_boogie_type := types.for_type_a (l_feature.type)
 									translation_pool.add_feature (l_feature, l_type)

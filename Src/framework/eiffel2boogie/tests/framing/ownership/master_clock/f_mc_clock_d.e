@@ -20,7 +20,7 @@ feature {NONE} -- Initialization
 			across m.observers as ic all ic.item.generating_type = {F_MC_CLOCK_D} end
 
 			modify (Current) -- default: creator
-			modify_field ("observers", m)
+			modify_field (["observers", "closed"], m)
 		do
 			master := m
 			local_time := master.time
@@ -58,7 +58,7 @@ feature -- Access
 			across observers as o all o.item.is_wrapped end -- default
 			master.is_wrapped
 
-			modify_field ("local_time", Current)
+			modify_field (["local_time", "closed"], Current)
 		do
 			unwrap -- default
 			local_time := master.time

@@ -22,10 +22,10 @@ feature -- Status report
 			-- <Precursor>
 		do
 			Result := (a_feature.written_in = system.any_id and
-				(builtin_any_functions.has (a_feature.feature_name) or
-				builtin_any_procedures.has (a_feature.feature_name) or
-				ghost_access.has (a_feature.feature_name) or
-				ghost_setter.has (a_feature.feature_name)))
+				(translation_mapping.builtin_any_functions.has (a_feature.feature_name) or
+				translation_mapping.builtin_any_procedures.has (a_feature.feature_name) or
+				translation_mapping.ghost_access.has (a_feature.feature_name) or
+				translation_mapping.ghost_setter.has (a_feature.feature_name)))
 		end
 
 	is_handling_nested (a_nested: NESTED_B): BOOLEAN
@@ -53,18 +53,14 @@ feature -- Basic operations
 			l_type: IV_TYPE
 		do
 			l_name := a_feature.feature_name
-			if builtin_any_functions.has (l_name) then
+			if translation_mapping.builtin_any_functions.has (l_name) then
 				a_translator.process_builtin_function_call (a_feature, a_parameters, l_name)
-			elseif builtin_any_procedures.has (l_name) then
+			elseif translation_mapping.builtin_any_procedures.has (l_name) then
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
-			elseif ghost_access.has (l_name) then
-				if l_name ~ "owner" then
-					l_type := types.ref
-				else
-					l_type := types.set (types.ref)
-				end
+			elseif translation_mapping.ghost_access.has (l_name) then
+				l_type := translation_mapping.ghost_access_type (l_name)
 				a_translator.set_last_expression (factory.heap_access (a_translator.entity_mapping.heap.name, a_translator.current_target, l_name, l_type))
-			elseif ghost_setter.has (l_name) then
+			elseif translation_mapping.ghost_setter.has (l_name) then
 				l_name := l_name.substring (5, l_name.count)
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, "xyz")
 				l_call ?= a_translator.side_effect.last
@@ -85,7 +81,7 @@ feature -- Basic operations
 			l_tag_filters: LIST [STRING]
 		do
 			l_name := a_feature.feature_name
-			if builtin_any_functions.has (l_name) then
+			if translation_mapping.builtin_any_functions.has (l_name) then
 				if l_name ~ "inv_without" then
 					l_tag_filters := extract_tags (a_parameters)
 					if l_tag_filters.is_empty then
@@ -111,7 +107,7 @@ feature -- Basic operations
 				else
 					a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
 				end
-			elseif ghost_access.has (l_name) then
+			elseif translation_mapping.ghost_access.has (l_name) then
 				if l_name ~ "owner" then
 					l_type := types.ref
 				else
@@ -193,57 +189,6 @@ feature -- Basic operations
 				end
 				a_translator.set_last_expression (l_expr)
 			end
-		end
-
-	builtin_any_functions: ARRAY [STRING]
-			-- List of builtin function names.
-		once
-			Result := <<
-				"is_wrapped",
-				"is_free",
-				"is_open",
-				"is_closed",
-				"inv",
-				"inv_without",
-				"inv_only"
-			>>
-			Result.compare_objects
-		end
-
-	builtin_any_procedures: ARRAY [STRING]
-			-- List of builtin procedure names.
-		once
-			Result := <<
-				"wrap",
-				"wrap_all",
-				"unwrap",
-				"unwrap_all"
-			>>
-			Result.compare_objects
-		end
-
-	ghost_access: ARRAY [STRING]
-			-- List of feature names.
-		once
-			Result := <<
-				"owner",
-				"owns",
-				"subjects",
-				"observers"
-			>>
-			Result.compare_objects
-		end
-
-	ghost_setter: ARRAY [STRING]
-			-- List of feature names.
-		once
-			Result := <<
-				"set_owner",
-				"set_owns",
-				"set_subjects",
-				"set_observers"
-			>>
-			Result.compare_objects
 		end
 
 	extract_tags (a_parameters: BYTE_LIST [PARAMETER_B]): LIST [STRING]

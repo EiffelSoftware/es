@@ -470,6 +470,13 @@ feature -- Verification: ownership queries
 
 feature -- Verification: ownership fields
 
+	frozen closed: BOOLEAN
+			-- Is this object in a consistent state.
+		note
+			status: ghost
+		do
+		end
+
 	frozen owner: ANY assign set_owner
 			-- Owner of this object.
 		note

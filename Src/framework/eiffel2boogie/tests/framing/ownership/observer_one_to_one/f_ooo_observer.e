@@ -12,7 +12,7 @@ feature
 			s.observer = Void
 
 			modify (Current)
-			modify_field (["observer", "observers"], s)
+			modify_field (["observer", "observers", "closed"], s)
 		do
 			subject := s
 			s.register (Current)

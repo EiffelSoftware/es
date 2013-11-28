@@ -8,6 +8,9 @@ note
 class
 	E2B_SPECIAL_MAPPING
 
+inherit {NONE}
+	IV_SHARED_TYPES
+
 create
 	make
 
@@ -62,6 +65,88 @@ feature -- Access
 				end
 				nested_handlers.forth
 			end
+		end
+
+feature -- Access (built-ins)
+
+	builtin_any_functions: ARRAY [STRING]
+			-- List of builtin function names.
+		once
+			Result := <<
+				"is_wrapped",
+				"is_free",
+				"is_open",
+				"inv",
+				"inv_without",
+				"inv_only"
+			>>
+			Result.compare_objects
+		end
+
+	builtin_any_procedures: ARRAY [STRING]
+			-- List of builtin procedure names.
+		once
+			Result := <<
+				"wrap",
+				"wrap_all",
+				"unwrap",
+				"unwrap_all"
+			>>
+			Result.compare_objects
+		end
+
+	ghost_access: ARRAY [STRING]
+			-- List of built-in ghost attributes.
+		once
+			Result := <<
+				"closed",
+				"owner",
+				"owns",
+				"subjects",
+				"observers"
+			>>
+			Result.compare_objects
+		end
+
+	ghost_access_types: ARRAY [IV_TYPE]
+			-- List of types of built-in ghost attributes.
+		once
+			Result := <<
+				types.bool,
+				types.ref,
+				types.set (types.ref),
+				types.set (types.ref),
+				types.set (types.ref)
+			>>
+		end
+
+	ghost_access_type (name: STRING): IV_TYPE
+			-- Boogie types of a built-in attribute with name `name'.
+		require
+			is_ghost_access: ghost_access.has (name)
+		local
+			i: INTEGER
+		do
+			from
+				i := ghost_access.lower
+			until
+				ghost_access [i] ~ name
+			loop
+				i := i + 1
+			end
+			Result := ghost_access_types [i]
+		end
+
+	ghost_setter: ARRAY [STRING]
+			-- List of feature names.
+		once
+			Result := <<
+				"set_owner",
+				"set_owns",
+				"set_subjects",
+				"set_observers"
+			>>
+			Result.compare_objects
 		end
 
 end

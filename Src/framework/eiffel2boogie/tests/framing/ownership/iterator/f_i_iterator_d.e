@@ -23,7 +23,7 @@ feature
 			across t.observers as ic all ic.item.generating_type = {F_I_ITERATOR_D} end
 
 			modify (Current)
-			modify_field ("observers", t)
+			modify_field (["observers", "closed"], t)
 		do
 			target := t
 			before := True

@@ -14,7 +14,7 @@ feature {NONE} -- Initialization
 			across m.observers as ic all ic.item.generating_type = {F_MC_CLOCK} end
 
 			modify (Current)
-			modify_field ("observers", m)
+			modify_field (["observers", "closed"], m)
 		do
 			master := m
 			local_time := master.time
@@ -43,7 +43,7 @@ feature -- Access
 		require
 			master.is_wrapped
 
-			modify_field ("local_time", Current)
+			modify_field (["local_time", "closed"], Current)
 		do
 			local_time := master.time
 		ensure

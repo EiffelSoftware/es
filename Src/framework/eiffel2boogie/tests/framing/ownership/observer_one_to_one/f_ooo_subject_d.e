@@ -41,8 +41,8 @@ feature -- Element change
 			is_wrapped	-- default: public
 			across observers as oc all oc.item.is_wrapped end -- default: public
 
-			modify_field ("cache", observer)
-			modify_field ("value", Current)
+			modify_field (["cache", "closed"], observer)
+			modify_field (["value", "closed"], Current)
 		do
 			unwrap -- default: public
 			if attached observer then
@@ -71,7 +71,7 @@ feature {F_OOO_OBSERVER_D} -- Element change
 			is_wrapped
 			o.is_open
 
-			modify_field (["observer", "observers"], Current)
+			modify_field (["observer", "observers", "closed"], Current)
 		do
 			unwrap
 			observer := o

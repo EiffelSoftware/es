@@ -29,7 +29,7 @@ feature
 			is_wrapped
 			across observers as o all o.item.is_open end
 
-			modify_field ("time", Current)
+			modify_field (["time", "closed"], Current)
 		do
 			time := time + 1
 		ensure
