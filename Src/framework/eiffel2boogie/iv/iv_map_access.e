@@ -21,7 +21,7 @@ inherit
 		end
 
 create
-	make
+	make, make_two
 
 feature {NONE} -- Implementation
 

@@ -76,7 +76,7 @@ function NONE.self_inv(heap: HeapType, current: ref) returns (bool) {
 }
 
 // ----------------------------------------------------------------------
-// Ownership
+// Ghosts
 
 const unique closed: Field bool; // Ghost field for open/closed status of an object.
 const unique owner: Field ref; // Ghost field for owner of an object.
@@ -124,14 +124,46 @@ function in_domain(h: HeapType, o: ref, o': ref): bool
 axiom (forall h: HeapType, o, o': ref :: { in_domain(h, o, o') } h[o, closed] && h[o, owns][o'] ==> in_domain(h, o, o'));
 axiom (forall h: HeapType, o, o': ref :: { in_domain(h, o, o') } o != o' && Set#Equal(Set#Empty(), h[o, owns]) ==> !in_domain(h, o, o'));
 
+// ----------------------------------------------------------------------
+// Frames
+
+// Set of object-field pairs
+type Frame = <alpha>[ref, Field alpha]bool;
+
+function Frame#Subset(Frame, Frame): bool;
+axiom(forall a: Frame, b: Frame :: { Frame#Subset(a,b) }
+  Frame#Subset(a,b) <==> (forall <alpha> o: ref, f: Field alpha :: {a[o, f]} {b[o, f]} a[o, f] ==> b[o, f]));
+
+// Set of all writable objects
+const writable: Frame;
+
+function fully_writable(o: ref): bool
+{ (forall <alpha> f: Field alpha :: writable[o, f]) }
+
+// Everything in the domain of a writable object is writable
+function {:inline true} writable_domains(h: HeapType): bool
+{ 
+  (forall <alpha> o, o': ref, f: Field alpha :: {writable[o, closed], writable[o', f]}{fully_writable(o), writable[o', f]} 
+    writable[o, closed] && in_domain(h, o, o') ==> writable[o', f]) 
+}
+
 // Objects outside of ownership domains of mods did not change, unless they were newly allocated
-function writes(h: HeapType, h': HeapType, mods: Set ref): bool { 
+// function writes(h: HeapType, h': HeapType, mods: Set ref): bool { 
+	// (forall <T> o: ref, f: Field T :: { h[o, f] } { h'[o, f] }
+		// ((forall o': ref :: { mods[o'] } { in_domain(h, o', o) } mods[o'] ==> !in_domain(h, o', o)) &&
+		 // h[o, allocated])
+			// ==>
+		// h'[o, f] == h[o, f])
+	// &&
+	// no_garbage(h, h')
+// }
+function writes(h: HeapType, h': HeapType, mods: Frame): bool { 
 	(forall <T> o: ref, f: Field T :: { h[o, f] } { h'[o, f] }
-		((forall o': ref :: { mods[o'] } { in_domain(h, o', o) } mods[o'] ==> !in_domain(h, o', o)) &&
-		 h[o, allocated])
-			==>
-		h'[o, f] == h[o, f])
-	&&
+    h[o, allocated] ==>      
+      h'[o, f] == h[o, f] ||
+      mods[o, f] ||
+      (exists o': ref :: {mods[o', closed]}{in_domain(h, o', o)} o' != o && mods[o', closed] && in_domain(h, o', o))
+  ) &&
 	no_garbage(h, h')
 }
 
@@ -141,12 +173,8 @@ function no_garbage(old_heap: HeapType, new_heap: HeapType): bool {
 		old_heap[o, allocated] ==> new_heap[o, allocated])
 }
 
-// Set of all writable objects
-const writable: [ref] bool;
-
-// Everything in the domain of a writable object is writable
-function {:inline true} writable_domains(h: HeapType): bool
-{ (forall o, o': ref :: {writable[o], writable[o']} writable[o] && in_domain(h, o, o') ==> writable[o']) }
+// ----------------------------------------------------------------------
+// Invariants
 
 // Is invariant of object o satisifed?
 function user_inv(h: HeapType, o: ref): bool;
@@ -182,7 +210,7 @@ procedure allocate(t: Type) returns (result: ref);
 	ensures Set#Equal(Heap[result, owns], Set#Empty());
 	ensures Set#Equal(Heap[result, observers], Set#Empty());
 	ensures Set#Equal(Heap[result, subjects], Set#Empty());
-  ensures writable[result];
+  ensures fully_writable(result);
 	ensures (forall <T> o: ref, f: Field T :: o != result ==> Heap[o, f] == old(Heap[o, f]));
   free ensures HeapSucc(old(Heap), Heap);
 
@@ -191,7 +219,7 @@ procedure update_heap<T>(Current: ref, field: Field T, value: T);
 	requires field != closed && field != owner; // update tag:closed_or_owner_not_allowed UP4
 	requires is_open(Heap, Current); // update tag:target_open UP1
 	requires (forall o: ref :: Heap[Current, observers][o] ==> (is_open(Heap, o) || (user_inv(Heap, o) ==> user_inv(Heap[Current, field := value], o)))); // update tag:observers_open_or_inv_preserved UP2
-  requires writable[Current]; // update tag:target_writable UP3
+  requires writable[Current, field]; // update tag:target_writable UP3
 	modifies Heap;
 	ensures global(Heap);
 	ensures Heap == old(Heap[Current, field := value]);
@@ -200,7 +228,7 @@ procedure update_heap<T>(Current: ref, field: Field T, value: T);
 // Unwrap o
 procedure unwrap(o: ref);
 	requires is_wrapped(Heap, o); // pre tag:wrapped UW1
-  requires writable[o]; // pre tag:writable UW2
+  requires writable[o, closed]; // pre tag:writable UW2
   modifies Heap;
   ensures global(Heap);  
 	ensures is_open(Heap, o); // UWE1
@@ -211,7 +239,7 @@ procedure unwrap(o: ref);
 
 procedure unwrap_all (Current: ref, s: Set ref);
 	requires (forall o: ref :: s[o] ==> is_wrapped(Heap, o)); // pre tag:wrapped UW1
-  requires (forall o: ref :: s[o] ==> writable[o]); // pre tag:writable UW2
+  requires (forall o: ref :: s[o] ==> writable[o, closed]); // pre tag:writable UW2
   modifies Heap;
   ensures global(Heap);
 	ensures (forall o: ref :: s[o] ==> is_open(Heap, o)); // UWE1
@@ -225,8 +253,8 @@ procedure wrap(o: ref);
 	requires is_open(Heap, o); // pre tag:open W1
 	requires user_inv(Heap, o); // pre tag:invariant_holds W2
 	requires (forall o': ref :: Heap[o, owns][o'] ==> is_wrapped(Heap, o')); // pre tag:owned_objects_wrapped W3
-  requires writable[o]; // pre tag:writable W4
-  requires (forall o': ref :: Heap[o, owns][o'] ==> writable[o']); // pre tag:owned_objects_writable W3
+  requires writable[o, closed]; // pre tag:writable W4
+  requires (forall o': ref :: Heap[o, owns][o'] ==> writable[o', owner]); // pre tag:owned_objects_writable W3
   modifies Heap;
   ensures global(Heap);  
 	ensures (forall o': ref :: old(Heap[o, owns][o']) ==> Heap[o', owner] == o); // WE2
@@ -238,8 +266,8 @@ procedure wrap_all(Current: ref, s: Set ref);
 	requires (forall o: ref :: s[o] ==> is_open(Heap, o)); // pre tag:open W1
 	requires (forall o: ref :: s[o] ==> user_inv(Heap, o)); // pre tag:invariant_holds W2
 	requires (forall o: ref :: s[o] ==> (forall o': ref :: Heap[o, owns][o'] ==> is_wrapped(Heap, o'))); // pre tag:owned_objects_wrapped W3
-	requires (forall o: ref :: s[o] ==> (forall o': ref :: Heap[o, owns][o'] ==> writable[o'])); // pre tag:owned_objects_writable W3
-	requires (forall o: ref :: s[o] ==> writable[o]); // pre tag:writable W4  
+	requires (forall o: ref :: s[o] ==> (forall o': ref :: Heap[o, owns][o'] ==> writable[o', owner])); // pre tag:owned_objects_writable W3
+	requires (forall o: ref :: s[o] ==> writable[o, closed]); // pre tag:writable W4  
   modifies Heap;
   ensures global(Heap);  
 	ensures (forall o: ref :: s[o] ==> (forall o': ref :: old(Heap[o, owns][o']) ==> Heap[o', owner] == o)); // WE2

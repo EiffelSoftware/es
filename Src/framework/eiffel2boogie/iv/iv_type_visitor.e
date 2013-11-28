@@ -41,7 +41,12 @@ feature -- Visitor
 		end
 
 	process_heap_type (a_type: IV_BASIC_TYPE)
-			-- Process type type.
+			-- Process heap type.
+		deferred
+		end
+
+	process_frame_type (a_type: IV_BASIC_TYPE)
+			-- Process frame type.
 		deferred
 		end
 

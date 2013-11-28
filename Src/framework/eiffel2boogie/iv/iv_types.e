@@ -48,6 +48,12 @@ feature -- Access: default types
 			Result := heap
 		end
 
+	frame: IV_TYPE
+			-- Heap type.
+		once
+			create {IV_BASIC_TYPE} Result.make_frame
+		end
+
 	type: IV_TYPE
 			-- Type type.
 		once

@@ -109,6 +109,12 @@ feature -- Boolean operators
 			create Result.make (a_left, "==>", a_right, types.bool)
 		end
 
+	equiv (a_left, a_right: IV_EXPRESSION): IV_BINARY_OPERATION
+			-- Equivalence operator `==>'.
+		do
+			create Result.make (a_left, "<==>", a_right, types.bool)
+		end
+
 	not_ (a_expr: IV_EXPRESSION): IV_UNARY_OPERATION
 			-- Not operator `!'.
 		do

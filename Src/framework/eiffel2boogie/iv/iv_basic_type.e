@@ -18,7 +18,8 @@ create
 	make_real,
 	make_reference,
 	make_type,
-	make_heap
+	make_heap,
+	make_frame
 
 feature {NONE} -- Initialization
 
@@ -72,6 +73,16 @@ feature {NONE} -- Initialization
 			is_map: is_map
 		end
 
+	make_frame
+			-- Make this a frame type.
+		do
+			is_frame := True
+			is_map := True
+		ensure
+			is_frame: is_frame
+			is_map: is_map
+		end
+
 feature -- Visitor
 
 	process (a_visitor: IV_TYPE_VISITOR)
@@ -89,6 +100,8 @@ feature -- Visitor
 				a_visitor.process_type_type (Current)
 			elseif is_heap then
 				a_visitor.process_heap_type (Current)
+			elseif is_frame then
+				a_visitor.process_frame_type (Current)
 			else
 				check False end
 			end

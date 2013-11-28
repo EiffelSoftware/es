@@ -35,7 +35,10 @@ feature -- Status report
 			-- Is this a set type?
 
 	is_seq: BOOLEAN
-			-- Is this a set type?
+			-- Is this a set type?	
+
+	is_frame: BOOLEAN
+			-- Is this a frame type?
 
 feature -- Visitor
 

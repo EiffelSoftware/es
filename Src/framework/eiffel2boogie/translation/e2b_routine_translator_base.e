@@ -257,12 +257,12 @@ feature -- Helper functions: contracts
 			Result := [l_pre, l_post]
 		end
 
-	modifies_expressions_of (a_feature: FEATURE_I; a_type: TYPE_A): TUPLE [modified_objects: LIST [IV_EXPRESSION]; field_restriction: LIST [TUPLE [fields: LIST [IV_ENTITY]; objects: LIST [IV_EXPRESSION]]]]
+	modifies_expressions_of (a_feature: FEATURE_I; a_type: TYPE_A): TUPLE [fully_modified: LIST [IV_EXPRESSION]; part_modified: LIST [TUPLE [fields: LIST [IV_ENTITY]; objects: LIST [IV_EXPRESSION]]]]
 			-- Modifies expressions for feature `a_feature' of type `a_type'.
 		local
 			l_contracts: like contracts_of
-			l_modified_objects: LINKED_LIST [IV_EXPRESSION]
-			l_field_restrictions: LINKED_LIST [TUPLE [LINKED_LIST [IV_ENTITY], LINKED_LIST [IV_EXPRESSION]]]
+			l_fully_modified: LINKED_LIST [IV_EXPRESSION]
+			l_part_modified: LINKED_LIST [TUPLE [LINKED_LIST [IV_ENTITY], LINKED_LIST [IV_EXPRESSION]]]
 			l_fieldnames: LINKED_LIST [STRING_32]
 			l_fields: LINKED_LIST [IV_ENTITY]
 			l_objects: LINKED_LIST [IV_EXPRESSION]
@@ -271,8 +271,8 @@ feature -- Helper functions: contracts
 			l_feature: FEATURE_I
 			l_boogie_type: IV_TYPE
 		do
-			create l_modified_objects.make
-			create l_field_restrictions.make
+			create l_fully_modified.make
+			create l_part_modified.make
 			l_contracts := contracts_of (a_feature, a_type)
 
 			across
@@ -282,10 +282,9 @@ feature -- Helper functions: contracts
 					l_name := names_heap.item_32 (l_call.feature_name_id)
 					if l_name ~ "modify" then
 						l_objects := translate_contained_expressions (l_call.parameters.i_th (1).expression)
-						l_modified_objects.append (l_objects)
+						l_fully_modified.append (l_objects)
 					elseif l_name ~ "modify_field" then
 						l_objects := translate_contained_expressions (l_call.parameters.i_th (2).expression)
-						l_modified_objects.append (l_objects)
 
 						if attached {TUPLE_CONST_B} l_call.parameters.i_th (2).expression as l_tuple then
 							l_type := l_tuple.expressions.first.type
@@ -342,7 +341,7 @@ feature -- Helper functions: contracts
 							end
 						end
 
-						l_field_restrictions.extend ([l_fields, l_objects])
+						l_part_modified.extend ([l_fields, l_objects])
 					else
 						check internal_error: False end
 					end
@@ -351,7 +350,7 @@ feature -- Helper functions: contracts
 				end
 			end
 
-			Result := [l_modified_objects, l_field_restrictions]
+			Result := [l_fully_modified, l_part_modified]
 		end
 
 	translate_contained_expressions (a_expr: EXPR_B): LINKED_LIST [IV_EXPRESSION]

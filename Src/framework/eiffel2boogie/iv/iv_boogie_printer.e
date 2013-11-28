@@ -609,6 +609,12 @@ feature -- Type Visitor
 			output.put ("HeapType")
 		end
 
+	process_frame_type (a_type: IV_BASIC_TYPE)
+			-- Process frame type.
+		do
+			output.put ("Frame")
+		end
+
 	process_field_type (a_type: IV_FIELD_TYPE)
 			-- <Precursor>
 		do
