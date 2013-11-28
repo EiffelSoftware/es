@@ -309,32 +309,45 @@ feature -- Helper functions: contracts
 								if attached {STRING_B} j.item as l_string then
 									l_fieldnames.extend (l_string.value)
 								else
-									check False end
+									helper.add_unsupported_error (Void, a_feature, "The tuple in the first argument of 'modify_field' needs to consist only of manifest strings.")
 								end
 							end
+						else
+							helper.add_unsupported_error (Void, a_feature, "First argument of 'modify_field' has to be a manifest string or a tuple of manifest strings.")
 						end
 
 						create l_fields.make
 						across l_fieldnames as f loop
 							l_feature := l_type.base_class.feature_named_32 (f.item)
-							if l_feature = Void or else (helper.is_ghost (l_feature) and l_feature.written_in = system.any_id) then
-								l_name := f.item
-								l_boogie_type := types.generic
+							if l_feature = Void then
+								if f.item ~ "closed" then
+									l_name := "closed"
+									l_boogie_type := types.bool
+								else
+									l_name := Void
+									helper.add_unsupported_error (Void, a_feature, "Feature '" + f.item + "' mentioned in 'modify_field' does not exist in class '" + l_type.base_class.name_in_upper + "'")
+								end
 							else
-								check l_feature.is_attribute end
-								l_name := name_translator.boogie_name_for_feature (l_feature, l_type)
-								l_boogie_type := types.for_type_a (l_feature.type)
-								translation_pool.add_feature (l_feature, l_type)
+								if l_feature.is_attribute then
+									l_name := name_translator.boogie_name_for_feature (l_feature, l_type)
+									l_boogie_type := types.for_type_a (l_feature.type)
+									translation_pool.add_feature (l_feature, l_type)
+								else
+									l_name := Void
+									helper.add_unsupported_error (Void, a_feature, "Feature '" + f.item + "' mentioned in 'modify_field' is not an attribute")
+								end
 							end
-							l_fields.extend (create {IV_ENTITY}.make (l_name, types.field (l_boogie_type)))
+							if l_name /= Void then
+								l_fields.extend (create {IV_ENTITY}.make (l_name, types.field (l_boogie_type)))
+							end
 						end
 
 						l_field_restrictions.extend ([l_fields, l_objects])
 					else
-						check False end
+						check internal_error: False end
 					end
 				else
-					check False end
+					check internal_error: False end
 				end
 			end
 

@@ -477,6 +477,8 @@ feature -- Basic operations
 					l_expr := factory.function_call ("Set#Empty", << >>, types.set (types.ref))
 				elseif o.item.type.is_set then
 					l_expr := o.item
+				elseif o.item.type.is_seq then
+					l_expr := factory.function_call ("Set#FromSeq", << o.item >>, types.set (types.ref))
 				else
 					l_expr := factory.function_call ("Set#Singleton", << o.item >>, types.set (types.ref))
 				end

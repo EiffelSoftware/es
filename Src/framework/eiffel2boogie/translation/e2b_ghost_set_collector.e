@@ -48,7 +48,7 @@ feature -- Processing
 	process_nested_b (a_node: NESTED_B)
 			-- <Precursor>
 		do
-			if {CURRENT_B} a_node.target then
+			if attached {CURRENT_B} a_node.target then
 				a_node.message.process (Current)
 			else
 				a_node.target.process (Current)
