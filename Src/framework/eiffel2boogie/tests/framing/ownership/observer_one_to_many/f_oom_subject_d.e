@@ -42,22 +42,21 @@ feature
 		do
 			unwrap -- default: public
 			unwrap_all (observers)
+			check across observers as o all o.item.inv end end
 
 			value := new_val
+			check across observers as o all o.item.inv_without ("cache_synchronized") end end
 			from
 				i := 1
 			invariant
 --				across 1 |..| (i - 1) as j all observers_list[j.item].cache = new_val end				
 				attached {F_OOM_LIST [F_OOM_OBSERVER_D]} observers_list
 				across observers_list.sequence as o all attached {F_OOM_OBSERVER_D} o.item end
+				across observers as o all o.item.is_open and o.item.inv_without ("cache_synchronized") end
 			until
 				i > observers_list.count
 			loop
-				check attached {F_OOM_LIST [F_OOM_OBSERVER_D]} observers_list end
-				check attached {F_OOM_OBSERVER_D} observers_list [i] end
 				observers_list [i].notify
-				check attached {F_OOM_LIST [F_OOM_OBSERVER_D]} observers_list end
-				check attached {F_OOM_OBSERVER_D} observers_list [i] end
 				i := i + 1
 			end
 

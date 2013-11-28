@@ -534,6 +534,7 @@ feature -- Processing
 		require
 			from_loop: a_node.stop /= Void and a_node.iteration_exit_condition = Void
 		local
+			l_pre_heap: IV_ENTITY
 			l_condition: IV_EXPRESSION
 			l_variant_local: STRING
 			l_invariant: ASSERT_B
@@ -553,6 +554,12 @@ feature -- Processing
 			create l_head_block.make_name (helper.unique_identifier("loop_head"))
 			create l_body_block.make_name (helper.unique_identifier("loop_body"))
 			create l_end_block.make_name (helper.unique_identifier("loop_end"))
+
+				-- Save pre-loop state
+			create l_pre_heap.make (helper.unique_identifier ("PreLoopHeap"), types.heap)
+			current_implementation.add_local (l_pre_heap.name, l_pre_heap.type)
+			create l_assignment.make (l_pre_heap, entity_mapping.heap)
+			add_statement (l_assignment)
 
 				-- From part
 			if a_node.from_part /= Void then
@@ -588,8 +595,12 @@ feature -- Processing
 				end
 			end
 				-- Default invariants (free)			
-			create l_assume.make (factory.function_call ("HeapSucc", <<"old(Heap)", "Heap">>, types.bool))
+			create l_assume.make (factory.function_call ("HeapSucc", <<l_pre_heap, "Heap">>, types.bool))
 			add_statement (l_assume)
+			if options.is_ownership_enabled then
+				create l_assume.make (factory.writes_frame (current_feature, current_type, current_implementation.procedure, l_pre_heap))
+				add_statement (l_assume)
+			end
 
 				-- Variant
 			if a_node.variant_part /= Void then

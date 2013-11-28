@@ -197,12 +197,15 @@ feature -- Universe Visitor
 				output.put_new_line
 				output.put_line ("init_locals:")
 				across a_implementation.locals as i loop
-					output.put_indentation
-					output.put (i.item.name)
-					output.put (" := ")
-					output.put (default_value (i.item.type))
-					output.put (";")
-					output.put_new_line
+					-- No defaults needed for auxiliary locals of Boogie types, like HeapType:
+					if default_value (i.item.type) /= Void then
+						output.put_indentation
+						output.put (i.item.name)
+						output.put (" := ")
+						output.put (default_value (i.item.type))
+						output.put (";")
+						output.put_new_line
+					end
 				end
 				across a_implementation.procedure.results as i loop
 					output.put_indentation

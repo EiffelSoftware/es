@@ -161,20 +161,12 @@ feature -- Basic operations
 			current_boogie_procedure.add_contract (l_pre)
 
 				-- Only writes set has changed
-			create l_fcall.make (name_translator.boogie_name_for_writes_set_function (current_feature, current_type), types.set (types.ref))
-			l_fcall.add_argument (factory.old_ (create {IV_ENTITY}.make ("Heap", types.heap_type)))
-			across current_boogie_procedure.arguments as i loop
-				l_fcall.add_argument (i.item.entity)
-			end
-			create l_post.make (
-				factory.function_call (
-					"writes",
-					<<
-						factory.old_ (create {IV_ENTITY}.make ("Heap", types.heap_type)),
-						create {IV_ENTITY}.make ("Heap", types.heap_type),
-						l_fcall
-					>>,
-					types.bool))
+			create l_post.make (factory.writes_frame (
+				current_feature,
+				current_type,
+				current_boogie_procedure,
+				factory.old_ (create {IV_ENTITY}.make ("Heap", types.heap_type)))
+				)
 			l_post.set_free
 			current_boogie_procedure.add_contract (l_post)
 
