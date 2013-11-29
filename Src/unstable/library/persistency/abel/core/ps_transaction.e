@@ -198,8 +198,9 @@ feature -- Data modification
 			repository.insert (object, attach(transaction))
 		ensure
 			in_transaction: is_active
-			persistent: is_persistent (object)
-			root_set: root_declaration_strategy > root_declaration_strategy.new_preserve implies is_root (object)
+			persistent: is_persistent (object) xor object.generating_type.is_expanded
+			root_set: object.generating_type.is_expanded xor
+				(root_declaration_strategy > root_declaration_strategy.new_preserve implies is_root (object))
 		rescue
 			set_error
 		end

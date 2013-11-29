@@ -39,6 +39,7 @@ feature -- Initialization
 			t1.set_person ("New")
 			l_spec.put (t1, 1)
 			full_collect
+			print (l_spec.item (1).person)
 		end
 
 end
