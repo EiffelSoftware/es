@@ -23,11 +23,10 @@ feature
 
 	update (new_val: INTEGER)
 		require
-			modify_field ("value", Current)
-			modify_field ("cache", observers_list.sequence)
+			modify_field (["value", "closed"], Current)
+			modify_field (["cache", "closed"], observers_list.sequence)
 		local
 			i: INTEGER
-			l_old_sequence: MML_SET [F_OOM_OBSERVER]
 		do
 			unwrap_all (observers)
 
@@ -35,7 +34,13 @@ feature
 			from
 				i := 1
 			invariant
---				across 1 |..| (i - 1) as j all observers_list[j.item].cache = new_val end
+				observers_list.is_wrapped
+				across observers_list.sequence as o all
+					o.item.is_open and o.item.inv_without ("cache_synchronized")
+				end
+				across 1 |..| (i - 1) as j all observers_list.sequence [j.item].inv end
+				inv
+				value = new_val
 			until
 				i > observers_list.count
 			loop
@@ -69,10 +74,9 @@ feature {F_OOM_OBSERVER}
 
 invariant
 	observers_list /= Void
-	across observers_list.sequence as o all o.item /= Void end
-	observers = observers_list.sequence
+	across observers_list.sequence as o all attached {F_OOM_OBSERVER} o.item end
+	observers = observers_list.sequence.range
 	owns = [observers_list]
-	not observers[Current]
 
 note
 	explicit: observers

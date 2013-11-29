@@ -46,10 +46,12 @@ feature
 			from
 				i := 1
 			invariant
+				observers_list.is_wrapped
 				across observers_list.sequence as o all
 					o.item.is_open and o.item.inv_without ("cache_synchronized")
 				end
-				is_open and inv
+				across 1 |..| (i - 1) as j all observers_list.sequence [j.item].inv end
+				inv
 				value = new_val
 			until
 				i > observers_list.count
@@ -57,7 +59,6 @@ feature
 				observers_list [i].notify
 				i := i + 1
 			end
-
 			wrap_all (observers)
 			wrap -- default: public
 		ensure
@@ -87,15 +88,10 @@ feature {F_OOM_OBSERVER_D}
 
 invariant
 	observers_list /= Void
-	across observers_list.sequence as o all o.item /= Void end
-	observers = observers_list.sequence
-	across observers as c all c.item.generating_type = {F_OOM_OBSERVER_D} end
+	across observers_list.sequence as o all attached {F_OOM_OBSERVER_D} o.item end
+	observers = observers_list.sequence.range
 	owns = [observers_list]
 	subjects = [] -- default
 	across subjects as s all s.item.observers.has (Current) end -- default
-	not observers[Current]
-
-note
-	explicit: observers
 
 end

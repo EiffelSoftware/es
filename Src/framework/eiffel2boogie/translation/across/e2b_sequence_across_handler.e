@@ -67,8 +67,8 @@ feature -- Basic operations
 			expression_translator.locals_map.remove (object_test_local.position)
 
 			l_bounds := factory.and_ (
-				factory.less_equal (factory.int_value (0), l_counter),
-				factory.less (l_counter, factory.function_call ("Seq#Length", << l_seq >>, types.int)))
+				factory.less_equal (factory.int_value (1), l_counter),
+				factory.less_equal (l_counter, factory.function_call ("Seq#Length", << l_seq >>, types.int)))
 
 			if loop_expr.is_all then
 				create {IV_FORALL} l_quantifier.make (factory.implies_ (l_bounds, l_expression))

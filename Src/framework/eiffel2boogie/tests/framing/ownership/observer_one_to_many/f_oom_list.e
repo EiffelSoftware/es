@@ -23,7 +23,7 @@ feature {NONE} -- Initialization
 
 feature -- Specification
 
-	sequence: MML_SET [G]
+	sequence: MML_SEQUENCE [G]
 		note
 			skip: True
 			status: specification
@@ -49,8 +49,7 @@ feature -- Access
 			modify ([])
 		do
 		ensure
-			Result >= 0
---			Result = sequence.count
+			Result = sequence.count
 		end
 
 	item alias "[]" (i: INTEGER): G
@@ -62,7 +61,7 @@ feature -- Access
 			modify ([])
 		do
 		ensure
-			sequence[Result]
+			Result = sequence [i]
 		end
 
 	has (x: G) : BOOLEAN

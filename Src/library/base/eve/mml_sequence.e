@@ -76,7 +76,7 @@ feature -- Iterable implementation
 		do
 		end
 
-	as_set: MML_SET [G]
+	range: MML_SET [G]
 		do
 		end
 

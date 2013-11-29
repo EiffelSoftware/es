@@ -828,7 +828,7 @@ feature -- Visitors
 				else
 					l_type := factory.type_value (a_node.info.type_to_create)
 				end
-				last_expression := factory.function_call ("attached", <<"Heap", l_expr, l_type>>, types.bool)
+				last_expression := factory.function_call ("attached", <<entity_mapping.heap, l_expr, l_type>>, types.bool)
 			end
 			if attached a_node.target then
 					-- Check for possible unboxing of basic types

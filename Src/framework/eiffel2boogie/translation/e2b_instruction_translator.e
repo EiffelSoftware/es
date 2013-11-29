@@ -598,7 +598,10 @@ feature -- Processing
 			create l_assume.make (factory.function_call ("HeapSucc", <<l_pre_heap, "Heap">>, types.bool))
 			add_statement (l_assume)
 			if options.is_ownership_enabled then
-				create l_assume.make (factory.writes_frame (current_feature, current_type, current_implementation.procedure, l_pre_heap))
+				create l_assume.make (factory.writes_frame (current_feature, current_type, current_implementation.procedure,
+					factory.old_ (create {IV_ENTITY}.make ("Heap", types.heap_type))))
+				add_statement (l_assume)
+				create l_assume.make (factory.function_call ("global", << "Heap" >>, types.bool))
 				add_statement (l_assume)
 			end
 

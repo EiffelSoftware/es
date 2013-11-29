@@ -47,12 +47,12 @@ feature -- Basic operations
 				if a_left.type.is_set then
 					l_left := a_left
 				elseif a_left.type.is_seq then
-					l_left := factory.function_call ("Set#FromSeq", << a_left >>, a_right.type)
+					l_left := factory.function_call ("Seq#Range", << a_left >>, a_right.type)
 				end
 				if a_right.type.is_set then
 					l_right := a_right
 				else
-					l_right := factory.function_call ("Set#FromSeq", << a_right >>, a_left.type)
+					l_right := factory.function_call ("Seq#Range", << a_right >>, a_left.type)
 				end
 
 				if a_operator ~ "==" then
@@ -219,9 +219,9 @@ feature {NONE} -- Implementation
 			Result.extend (
 				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
 					do
-						Result := factory.function_call ("Set#FromSeq", << a_target >>, types.set (types.generic))
+						Result := factory.function_call ("Seq#Range", << a_target >>, types.set (types.generic))
 					end,
-				"MML_SEQUENCE.as_set")
+				"MML_SEQUENCE.range")
 		end
 
 

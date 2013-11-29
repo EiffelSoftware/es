@@ -470,7 +470,7 @@ feature -- Basic operations
 					elseif o.item.type.is_set then
 						l_disjunct := factory.map_access (o.item, l_o)
 					elseif o.item.type.is_seq then
-						l_disjunct := factory.map_access (factory.function_call ("Set#FromSeq", << o.item >>, types.set (types.ref)), l_o)
+						l_disjunct := factory.map_access (factory.function_call ("Seq#Range", << o.item >>, types.set (types.ref)), l_o)
 					else
 						l_disjunct := factory.equal (l_o, o.item)
 					end
@@ -501,7 +501,7 @@ feature -- Basic operations
 				elseif o.item.type.is_set then
 					l_disjunct := factory.map_access (o.item, l_o)
 				elseif o.item.type.is_seq then
-					l_disjunct := factory.map_access (factory.function_call ("Set#FromSeq", << o.item >>, types.set (types.ref)), l_o)
+					l_disjunct := factory.map_access (factory.function_call ("Seq#Range", << o.item >>, types.set (types.ref)), l_o)
 				else
 					l_disjunct := factory.equal (l_o, o.item)
 				end
