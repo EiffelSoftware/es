@@ -97,7 +97,12 @@ feature -- Basic operations
 			-- Parse `last_output' and fill `last_result'.
 		require
 			last_output_set: attached last_output
+		local
+			l_boogie_parser: E2B_BOOGIE_OUTPUT_PARSER
 		do
+			create l_boogie_parser.make
+			l_boogie_parser.parse (last_output)
+
 			output_parser.process (last_output)
 			internal_last_result := output_parser.last_result
 		ensure
