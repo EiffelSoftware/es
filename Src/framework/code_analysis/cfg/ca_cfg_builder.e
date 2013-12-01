@@ -59,12 +59,14 @@ feature {NONE} -- Implementation
 		local
 			l_cfg, l_subgraph: CA_CFG
 			l_last_block, l_current_block, l_temp_block: CA_CFG_BASIC_BLOCK
+			l_intervals: LINKED_LIST [EIFFEL_LIST [INTERVAL_AS]]
+			l_empty: BOOLEAN
 		do
 			create l_cfg.make
 
 			l_last_block := l_cfg.start_node
 
-				-- Lets build an ordinary CFG.
+					-- Lets build an ordinary CFG.
 				from
 					a_compound.start
 				until
@@ -76,12 +78,7 @@ feature {NONE} -- Implementation
 
 						add_edge (l_last_block, l_current_block)
 
-						if a_compound.index = a_compound.count then
-							-- Last element.
-							add_edge (l_current_block, l_cfg.end_node)
-						else
-							l_last_block := l_current_block
-						end
+						l_last_block := l_current_block
 
 						if a_compound.index = 1 then
 							-- First element.
@@ -132,10 +129,37 @@ feature {NONE} -- Implementation
 						else
 							add_false_edge (l_current_block, l_last_block)
 						end
+					elseif attached {INSPECT_AS} a_compound.item as l_inspect then
+						create {CA_CFG_SKIP} l_last_block.make
 
-						if a_compound.index = a_compound.count then
-							add_edge (l_last_block, l_cfg.end_node)
+						create l_intervals.make
+						across l_inspect.case_list as l_cases loop
+							l_intervals.extend (l_cases.item.interval)
 						end
+						create {CA_CFG_INSPECT} l_current_block.make_complete (l_inspect.switch,
+									l_intervals, attached l_inspect.else_part, current_label)
+						current_label := current_label + 1
+
+						add_edge (l_last_block, l_current_block)
+
+						l_empty := True
+
+						across l_inspect.case_list as l_cases loop
+							if attached l_cases.item.compound as l_comp then
+								l_subgraph := process_compound (l_comp)
+								add_when_edge (l_current_block, l_subgraph.start_node, l_cases.item.index)
+								add_edge (l_subgraph.end_node, l_last_block)
+								l_empty := False
+							end
+						end
+						if attached l_inspect.else_part as l_else then
+							l_subgraph := process_compound (l_else)
+							add_else_edge (l_current_block, l_subgraph.start_node)
+							add_edge (l_subgraph.end_node, l_last_block)
+							l_empty := False
+						end
+							-- TODO: If there is nothing in the `inspect'?
+
 					elseif attached {LOOP_AS} a_compound.item as l_loop then
 
 						if attached l_loop.from_part as l_init then
@@ -155,9 +179,10 @@ feature {NONE} -- Implementation
 							add_loop_edge (l_current_block, l_subgraph.start_node)
 							add_edge (l_subgraph.end_node, l_current_block)
 						end
+					end
 
-					elseif attached {INSPECT_AS} a_compound.item as l_inspect then
-						-- TODO: translate to {CA_CFG_IF}'s
+					if a_compound.index = a_compound.count then
+						add_edge (l_last_block, l_cfg.end_node)
 					end
 
 					a_compound.forth
@@ -190,6 +215,22 @@ feature {NONE} -- Implementation
 		do
 			if attached {CA_CFG_IF} a_from as a_if then
 				a_if.set_false_branch (a_to)
+				a_to.add_in_edge (a_from)
+			end
+		end
+
+	add_when_edge (a_from, a_to: CA_CFG_BASIC_BLOCK; a_index: INTEGER)
+		do
+			if attached {CA_CFG_INSPECT} a_from as a_inspect then
+				a_inspect.set_when_branch (a_inspect, a_index)
+				a_to.add_in_edge (a_from)
+			end
+		end
+
+	add_else_edge (a_from, a_to: CA_CFG_BASIC_BLOCK)
+		do
+			if attached {CA_CFG_INSPECT} a_from as a_inspect then
+				a_inspect.set_else_branch (a_to)
 				a_to.add_in_edge (a_from)
 			end
 		end

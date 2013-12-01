@@ -19,7 +19,7 @@ feature -- Iteration
 
 feature {CA_CFG_BASIC_BLOCK} -- Iteration
 
-	bb_process_instr (a_instr: CA_CFG_INSTRUCTION)
+	frozen bb_process_instr (a_instr: CA_CFG_INSTRUCTION)
 		do
 			process_instruction (a_instr)
 			across a_instr.in_edges as l_in loop
@@ -27,7 +27,7 @@ feature {CA_CFG_BASIC_BLOCK} -- Iteration
 			end
 		end
 
-	bb_process_loop (a_loop: CA_CFG_LOOP)
+	frozen bb_process_loop (a_loop: CA_CFG_LOOP)
 		do
 			if process_loop (a_loop) then
 					-- Keep iterating through the loop.
@@ -40,7 +40,7 @@ feature {CA_CFG_BASIC_BLOCK} -- Iteration
 			end
 		end
 
-	bb_process_if (a_if: CA_CFG_IF)
+	frozen bb_process_if (a_if: CA_CFG_IF)
 		do
 			process_if (a_if)
 			across a_if.in_edges as l_in loop
@@ -48,9 +48,17 @@ feature {CA_CFG_BASIC_BLOCK} -- Iteration
 			end
 		end
 
-	bb_process_skip (a_skip: CA_CFG_SKIP)
+	frozen bb_process_skip (a_skip: CA_CFG_SKIP)
 		do
 			across a_skip.in_edges as l_in loop
+				l_in.item.process (Current)
+			end
+		end
+
+	frozen bb_process_inspect (a_inspect: CA_CFG_INSPECT)
+		do
+			process_inspect (a_inspect)
+			across a_inspect.in_edges as l_in loop
 				l_in.item.process (Current)
 			end
 		end
