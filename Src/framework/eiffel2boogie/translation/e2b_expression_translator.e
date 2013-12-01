@@ -823,6 +823,7 @@ feature -- Visitors
 			else
 				check attached a_node.info end
 					-- Normalize integer types
+				translation_pool.add_type (a_node.info.type_to_create.deep_actual_type)
 				if a_node.info.type_to_create.is_integer or a_node.info.type_to_create.is_natural then
 					create {IV_ENTITY} l_type.make ("INTEGER", types.type)
 				else
