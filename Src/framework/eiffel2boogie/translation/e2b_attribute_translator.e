@@ -25,6 +25,7 @@ feature -- Basic operations
 			l_forall: IV_FORALL
 			l_heap_access: IV_HEAP_ACCESS
 			l_boogie_type: IV_TYPE
+			l_content_type: TYPE_A
 		do
 			l_attribute_name := name_translator.boogie_name_for_feature (a_feature, a_context_type)
 			l_boogie_type := types.for_type_in_context (a_feature.type, a_context_type)
@@ -43,12 +44,29 @@ feature -- Basic operations
 
 				-- Add attribute-type specific properties
 			if a_feature.type.is_reference and not l_boogie_type.is_set and not l_boogie_type.is_seq then
-				if a_feature.type.is_attached then
+				l_content_type := a_feature.type
+				if l_content_type.is_attached then
 					l_fname := "attached_attribute"
 				else
 					l_fname := "detachable_attribute"
 				end
-				l_call := factory.function_call (l_fname, << "heap", "o", l_attribute_name, factory.type_value (a_feature.type) >>, types.bool)
+			elseif l_boogie_type.is_set then
+				l_content_type := a_feature.type.generics.first
+				if l_content_type.is_attached then
+					l_fname := "set_attached_attribute"
+				else
+					l_fname := "set_detachable_attribute"
+				end
+			elseif l_boogie_type.is_seq then
+				l_content_type := a_feature.type.generics.first
+				if l_content_type.is_attached then
+					l_fname := "sequence_attached_attribute"
+				else
+					l_fname := "sequence_detachable_attribute"
+				end
+			end
+			if l_fname /= Void then
+				l_call := factory.function_call (l_fname, << "heap", "o", l_attribute_name, factory.type_value (l_content_type) >>, types.bool)
 				create l_forall.make (l_call)
 				l_forall.add_bound_variable ("heap", types.heap_type)
 				l_forall.add_bound_variable ("o", types.ref)

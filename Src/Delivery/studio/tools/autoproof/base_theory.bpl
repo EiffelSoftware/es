@@ -104,11 +104,6 @@ function {:inline} is_wrapped(h: HeapType, o: ref): bool {
 	h[o, closed] && is_free(h, o)
 }
 
-// Only allocated references can be in ghost sets
-axiom (forall h: HeapType, o: ref, r: ref, f: Field (Set ref) :: h[o, allocated] && h[o, f][r] ==> h[r, allocated]);
-// Only allocated references can be in ghost sequences
-axiom (forall h: HeapType, o: ref, r: ref, f: Field (Seq ref) :: h[o, allocated] && Seq#Contains(h[o, f], r) ==> h[r, allocated]);
-
 // Is o' in the ownership domain of o? Yes if they are equal, or both closed and o' is transitively owned by o
 function in_domain(h: HeapType, o: ref, o': ref): bool
 {
@@ -202,7 +197,7 @@ procedure update_heap<T>(Current: ref, field: Field T, value: T);
 	requires field != closed && field != owner; // update tag:closed_or_owner_not_allowed UP4
 	requires is_open(Heap, Current); // update tag:target_open UP1
 	requires (forall o: ref :: Heap[Current, observers][o] ==> (is_open(Heap, o) || (user_inv(Heap, o) ==> user_inv(Heap[Current, field := value], o)))); // update tag:observers_open_or_inv_preserved UP2
-  requires writable[Current, field]; // update tag:target_writable UP3
+  requires writable[Current, field]; // update tag:attribute_writable UP3
 	modifies Heap;
 	ensures global(Heap);
 	ensures Heap == old(Heap[Current, field := value]);
@@ -292,6 +287,26 @@ function attached_attribute(heap: HeapType, o: ref, f: Field ref, t: Type) retur
 // Property that field `f' is of detachable type `t'.
 function detachable_attribute(heap: HeapType, o: ref, f: Field ref, t: Type) returns (bool) {
 	(o != Void) && (heap[o, allocated]) ==> detachable(heap, heap[o, f], t)
+}
+
+// Property that field `f' is a set of objects of detachable type `t'.
+function set_attached_attribute(heap: HeapType, o: ref, f: Field (Set ref), t: Type) returns (bool) {
+	(o != Void) && (heap[o, allocated]) ==> (forall o': ref :: heap[o, f][o'] ==> attached(heap, o', t))
+}
+
+// Property that field `f' is a set of objects of detachable type `t'.
+function set_detachable_attribute(heap: HeapType, o: ref, f: Field (Set ref), t: Type) returns (bool) {
+	(o != Void) && (heap[o, allocated]) ==> (forall o': ref :: heap[o, f][o'] ==> detachable(heap, o', t))
+}
+
+// Property that field `f' is a sequence of objects of detachable type `t'.
+function sequence_attached_attribute(heap: HeapType, o: ref, f: Field (Seq ref), t: Type) returns (bool) {
+	(o != Void) && (heap[o, allocated]) ==> (forall o': ref :: Seq#Range(heap[o, f])[o'] ==> attached(heap, o', t))
+}
+
+// Property that field `f' is a sequence of objects of detachable type `t'.
+function sequence_detachable_attribute(heap: HeapType, o: ref, f: Field (Seq ref), t: Type) returns (bool) {
+	(o != Void) && (heap[o, allocated]) ==> (forall o': ref :: Seq#Range(heap[o, f])[o'] ==> detachable(heap, o', t))
 }
 
 // ----------------------------------------------------------------------
