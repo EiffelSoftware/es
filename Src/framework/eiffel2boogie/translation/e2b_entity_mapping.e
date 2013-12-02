@@ -49,28 +49,8 @@ feature -- Access
 	current_expression: IV_EXPRESSION
 			-- Expression for `Current'.
 
-	current_entity: IV_ENTITY
-			-- Entity for `Current'.
-		do
-			if attached {IV_ENTITY} current_expression as c then
-				Result := c
-			else
-				check False end
-			end
-		end
-
 	result_expression: IV_EXPRESSION
 			-- Expression for `Result'.
-
-	result_entity: IV_ENTITY
-			-- Entity for `Result'.
-		do
-			if attached {IV_ENTITY} result_expression as r then
-				Result := r
-			else
-				check False end
-			end
-		end
 
 	argument (a_feature: FEATURE_I; a_type: TYPE_A; a_position: INTEGER): IV_EXPRESSION
 			-- Argument of feature `a_feature' at position `a_position'.

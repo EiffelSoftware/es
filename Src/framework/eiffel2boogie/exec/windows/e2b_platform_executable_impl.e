@@ -48,9 +48,10 @@ feature {NONE} -- Implementation
 			l_ee: EXECUTION_ENVIRONMENT
 --			l_registry: WEL_REGISTRY
 --			l_registry_value: WEL_REGISTRY_KEY_VALUE
-			l_possible_paths: LINKED_LIST [STRING]
+			l_possible_paths: LINKED_LIST [PATH]
 			l_ise_eiffel, l_eiffel_src: STRING
 			l_file: RAW_FILE
+			l_path: PATH
 		once
 			create Result.make_empty
 			create l_possible_paths.make
@@ -59,31 +60,26 @@ feature {NONE} -- Implementation
 				-- 1. Delivery of installation
 			l_ise_eiffel := l_ee.get ("ISE_EIFFEL")
 			if l_ise_eiffel /= Void then
-				l_possible_paths.extend (l_ise_eiffel + "studio/tools/boogie/Boogie.exe")
+				create l_path.make_from_string (l_ise_eiffel)
+				l_possible_paths.extend (l_path.extended ("studio").extended ("tools").extended ("boogie").extended ("Boogie.exe"))
 			end
 
 				-- 2. Delivery of development version
 			l_eiffel_src := l_ee.get ("EIFFEL_SRC")
 			if l_eiffel_src /= Void then
-				l_possible_paths.extend (l_eiffel_src + "/Delivery/studio/tools/boogie/bin/Boogie.exe")
-				l_possible_paths.extend (l_eiffel_src + "/../Delivery/studio/tools/boogie/bin/Boogie.exe")
+				create l_path.make_from_string (l_eiffel_src)
+				l_possible_paths.extend (l_path.extended ("Delivery").extended ("studio").extended ("tools").extended ("boogie").extended ("Boogie.exe"))
+				l_possible_paths.extend (l_path.extended ("..").extended ("Delivery").extended ("studio").extended ("tools").extended ("boogie").extended ("Boogie.exe"))
 			end
-
-				-- 3. Registry entry of Spec# installation
---			create l_registry
---			l_registry_value := l_registry.open_key_value ("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\SpecSharp", "InstallDir")
---			if l_registry_value /= Void then
---				l_possible_paths.extend (l_registry_value.string_value + "Boogie.exe")
---			end
 
 			from
 				l_possible_paths.start
 			until
 				l_possible_paths.after or else not Result.is_empty
 			loop
-				create l_file.make (l_possible_paths.item)
+				create l_file.make_with_path (l_possible_paths.item)
 				if l_file.exists then
-					Result := l_possible_paths.item
+					Result := l_possible_paths.item.out
 				end
 				l_possible_paths.forth
 			end
