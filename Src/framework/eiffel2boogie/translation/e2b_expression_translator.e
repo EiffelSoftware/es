@@ -256,10 +256,7 @@ feature -- Visitors
 		local
 			l_left, l_right: IV_EXPRESSION
 			l_type: IV_TYPE
-			l_fcall: IV_FUNCTION_CALL
-			l_fname: STRING
 			l_safety_check_condition: IV_EXPRESSION
-			l_not: IV_UNARY_OPERATION
 		do
 			safe_process (a_node.left)
 			l_left := last_expression
@@ -269,17 +266,11 @@ feature -- Visitors
 			else
 				l_safety_check_condition := factory.not_ (l_left)
 			end
-			if not safety_check_condition.is_empty then
-				l_safety_check_condition := factory.and_ (safety_check_condition.item, l_safety_check_condition)
-			end
-			safety_check_condition.extend (l_safety_check_condition)
-
-			safe_process (a_node.right)
+			process_semistrict (l_safety_check_condition, a_node.right)
 			l_right := last_expression
 			l_type := types.for_type_a (a_node.type)
-			create {IV_BINARY_OPERATION} last_expression.make (l_left, a_operator, l_right, l_type)
 
-			safety_check_condition.remove
+			create {IV_BINARY_OPERATION} last_expression.make (l_left, a_operator, l_right, l_type)
 		end
 
 	process_binary_infix (a_node: BINARY_B)
@@ -581,10 +572,13 @@ feature -- Visitors
 
 			safe_process (a_node.condition)
 			l_cond := last_expression
-			safe_process (a_node.then_expression)
+
+			process_semistrict (l_cond, a_node.then_expression)
 			l_then := last_expression
-			safe_process (a_node.else_expression)
+
+			process_semistrict (factory.not_ (l_cond), a_node.else_expression)
 			l_else := last_expression
+
 			create {IV_CONDITIONAL_EXPRESSION} last_expression.make_if_then_else (l_cond, l_then, l_else)
 		end
 
@@ -1116,6 +1110,21 @@ feature {E2B_ACROSS_HANDLER, E2B_CUSTOM_CALL_HANDLER, E2B_CUSTOM_NESTED_HANDLER}
 			l_type: TYPE_A
 		do
 			Result := factory.function_call ("unsupported", << >>, types.for_type_a (a_type.deep_actual_type))
+		end
+
+	process_semistrict (a_condition: IV_EXPRESSION; a_expr: EXPR_B)
+			-- Add `a_condition' to the safety check, then process `a_expr'.
+		local
+			l_fcall: IV_FUNCTION_CALL
+			l_fname: STRING
+		do
+			if not safety_check_condition.is_empty then
+				safety_check_condition.extend (factory.and_ (safety_check_condition.item, a_condition))
+			else
+				safety_check_condition.extend (a_condition)
+			end
+			safe_process (a_expr)
+			safety_check_condition.remove
 		end
 
 end
