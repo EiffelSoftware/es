@@ -97,7 +97,11 @@ feature -- Iterable implementation
 feature -- Convenience
 
 	empty_set: MML_SET [G]
-		external "built_in"
+		external "C inline"
+		alias
+			"[
+				return NULL;
+			]"
 		end
 
 note

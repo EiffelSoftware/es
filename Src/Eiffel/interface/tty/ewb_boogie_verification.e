@@ -118,6 +118,11 @@ feature -- Execution
 				options.set_ownership_enabled (False)
 			end
 
+			if user_options.has ("-timeout") then
+				options.set_is_enforcing_timeout (True)
+				options.set_timeout (option_argument ("-timeout", options.timeout))
+			end
+
 			if selection.is_empty then
 				load_universe
 			else
