@@ -23,9 +23,9 @@ feature {NONE} -- Initialization
 				n_when_branches := a_intervals.count
 			end
 			if a_has_else then
-				out_edges.resize (n_when_branches + 1)
+				create out_edges.make_filled (n_when_branches + 1)
 			else
-				out_edges.resize (n_when_branches)
+				create out_edges.make_filled (n_when_branches)
 			end
 			create intervals.make (n_when_branches)
 			across a_intervals as l_intervals loop
@@ -86,7 +86,7 @@ feature -- Visitor
 
 	process (a_it: CA_CFG_ITERATOR)
 		do
-			a_it.bb_process_inspect (Current)
+			
 		end
 
 invariant

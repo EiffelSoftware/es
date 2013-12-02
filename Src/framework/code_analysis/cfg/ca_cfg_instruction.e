@@ -36,7 +36,7 @@ feature -- Visitor
 
 	process (a_it: CA_CFG_ITERATOR)
 		do
-			a_it.bb_process_instr (Current)
+
 		end
 
 invariant

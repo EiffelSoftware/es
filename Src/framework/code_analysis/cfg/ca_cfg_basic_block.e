@@ -7,6 +7,9 @@ note
 deferred class
 	CA_CFG_BASIC_BLOCK
 
+inherit
+	HASHABLE
+
 feature {NONE} -- Initialization
 
 	initialize
@@ -48,6 +51,11 @@ feature -- Properties
 	set_label (a_label: INTEGER)
 		do
 			label := a_label
+		end
+
+	hash_code: INTEGER
+		do
+			Result := label.abs
 		end
 
 feature -- Visitor

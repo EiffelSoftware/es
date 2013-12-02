@@ -15,16 +15,17 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (a_label: INTEGER)
 		do
-
+			initialize
+			label := a_label
 		end
 
 feature -- Visitor
 
 	process (a_it: CA_CFG_ITERATOR)
 		do
-			a_it.bb_process_skip (Current)
+
 		end
 
 

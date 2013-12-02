@@ -13,54 +13,55 @@ inherit
 feature -- Iteration
 
 	process_cfg (a_cfg: CA_CFG)
+		local
+			l_label: INTEGER
+			l_bfs_nodes: LINKED_QUEUE [CA_CFG_BASIC_BLOCK]
+			l_current_node: CA_CFG_BASIC_BLOCK
+			l_visited: BINARY_SEARCH_TREE_SET [INTEGER]
 		do
-			a_cfg.end_node.process (Current)
-		end
+				-- Create edge list using BFS.
+			from
+				create worklist.make
+				create l_visited.make
+				create l_bfs_nodes.make
+				l_bfs_nodes.extend (a_cfg.end_node)
+			until
+				l_bfs_nodes.is_empty
+			loop
+				across l_bfs_nodes.item.in_edges as l_ins loop
+					l_label := l_ins.item.label
 
-feature {CA_CFG_BASIC_BLOCK} -- Iteration
+					worklist.put ([l_ins.item, l_bfs_nodes.item])
 
-	frozen bb_process_instr (a_instr: CA_CFG_INSTRUCTION)
-		do
-			process_instruction (a_instr)
-			across a_instr.in_edges as l_in loop
-				l_in.item.process (Current)
-			end
-		end
-
-	frozen bb_process_loop (a_loop: CA_CFG_LOOP)
-		do
-			if process_loop (a_loop) then
-					-- Keep iterating through the loop.
-				a_loop.loop_in.process (Current)
-			else
-					-- Exit the loop.
-				across a_loop.in_edges as l_in loop
-					l_in.item.process (Current)
+					if not l_visited.has (l_label) then
+						l_visited.extend (l_label)
+						l_bfs_nodes.extend (l_ins.item)
+					end
 				end
+				l_bfs_nodes.remove
+			end
+
+			from
+				initialize_processing (a_cfg)
+			until
+				worklist.is_empty
+			loop
+				l_current_node := worklist.item.fr
+				if visit_edge (l_current_node, worklist.item.to) then
+					across l_current_node.in_edges as l_ins loop
+						worklist.put ([l_ins.item, l_current_node])
+					end
+				end
+				worklist.remove
 			end
 		end
 
-	frozen bb_process_if (a_if: CA_CFG_IF)
-		do
-			process_if (a_if)
-			across a_if.in_edges as l_in loop
-				l_in.item.process (Current)
-			end
+	initialize_processing (a_cfg: CA_CFG)
+		deferred
 		end
 
-	frozen bb_process_skip (a_skip: CA_CFG_SKIP)
-		do
-			across a_skip.in_edges as l_in loop
-				l_in.item.process (Current)
-			end
-		end
+feature {NONE} -- Implementation
 
-	frozen bb_process_inspect (a_inspect: CA_CFG_INSPECT)
-		do
-			process_inspect (a_inspect)
-			across a_inspect.in_edges as l_in loop
-				l_in.item.process (Current)
-			end
-		end
+	worklist: LINKED_QUEUE [TUPLE [fr, to: CA_CFG_BASIC_BLOCK]]
 
 end

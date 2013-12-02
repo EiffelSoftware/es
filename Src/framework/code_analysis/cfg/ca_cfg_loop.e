@@ -19,8 +19,8 @@ feature {NONE} -- Initialization
 	make_with_stop_condition (a_condition: EXPR_AS)
 		do
 			initialize
-			out_edges.resize (2)
-			in_edges.resize (1)
+			create out_edges.make_filled (2)
+			create in_edges.make_filled (1)
 			stop_condition := a_condition
 		end
 
@@ -69,7 +69,7 @@ feature -- Visitor
 
 	process (a_it: CA_CFG_ITERATOR)
 		do
-			a_it.bb_process_loop (Current)
+			
 		end
 
 invariant

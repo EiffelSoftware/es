@@ -41,6 +41,9 @@ feature -- Actions
 				if attached l_body.compound as l_compound then
 					current_label := 1
 					cfg := process_compound (l_compound)
+					cfg.set_max_label (current_label)
+				else
+					create cfg.make (1, 2)
 				end
 			end
 		end
@@ -62,52 +65,44 @@ feature {NONE} -- Implementation
 			l_intervals: LINKED_LIST [EIFFEL_LIST [INTERVAL_AS]]
 			l_empty: BOOLEAN
 		do
-			create l_cfg.make
+			create l_cfg.make (current_label, current_label + 1)
+			current_label := current_label + 2
 
 			l_last_block := l_cfg.start_node
 
-					-- Lets build an ordinary CFG.
-				from
-					a_compound.start
-				until
-					a_compound.after
-				loop
-					if is_sequential (a_compound.item) then
-						create {CA_CFG_INSTRUCTION} l_current_block.make_complete (a_compound.item, current_label)
-						current_label := current_label + 1
+			from
+				a_compound.start
+			until
+				a_compound.after
+			loop
+				if is_sequential (a_compound.item) then
+					create {CA_CFG_INSTRUCTION} l_current_block.make_complete (a_compound.item, current_label)
+					current_label := current_label + 1
 
-						add_edge (l_last_block, l_current_block)
+					add_edge (l_last_block, l_current_block)
 
-						l_last_block := l_current_block
+					l_last_block := l_current_block
 
-						if a_compound.index = 1 then
-							-- First element.
-							add_edge (l_cfg.start_node, l_current_block)
-						end
+				elseif attached {IF_AS} a_compound.item as l_if then
+					create {CA_CFG_IF} l_current_block.make_complete (l_if.condition, current_label)
+					current_label := current_label + 1
 
-					elseif attached {IF_AS} a_compound.item as l_if then
-						create {CA_CFG_IF} l_current_block.make_complete (l_if.condition, current_label)
-						current_label := current_label + 1
+					add_edge (l_last_block, l_current_block)
 
-						add_edge (l_last_block, l_current_block)
+					create {CA_CFG_SKIP} l_last_block.make (current_label)
+					current_label := current_label + 1
 
-						create {CA_CFG_SKIP} l_last_block.make
+					if attached l_if.compound as l_if_block then
+						l_subgraph := process_compound (l_if_block)
+						add_true_edge (l_current_block, l_subgraph.start_node)
+						add_edge (l_subgraph.end_node, l_last_block)
+					else
+							-- If block is empty, therefore we have to add the condition itself to
+							-- the predecessors of the next node.
+						add_true_edge (l_current_block, l_last_block)
+					end
 
-						if attached l_if.compound as l_if_block then
-							l_subgraph := process_compound (l_if_block)
-							add_true_edge (l_current_block, l_subgraph.start_node)
-							add_edge (l_subgraph.end_node, l_last_block)
-						else
-								-- If block is empty, therefore we have to add the condition itself to
-								-- the predecessors of the next node.
-							add_true_edge (l_current_block, l_last_block)
-						end
-
-						if a_compound.index = 1 then
-							-- First element.
-							add_edge (l_cfg.start_node, l_current_block)
-						end
-
+					if attached l_if.elsif_list then
 						across l_if.elsif_list as l_elseifs loop
 							l_temp_block := l_current_block
 							create {CA_CFG_IF} l_current_block.make_complete (l_elseifs.item.expr, current_label)
@@ -122,28 +117,34 @@ feature {NONE} -- Implementation
 								add_true_edge (l_current_block, l_last_block)
 							end
 						end
-						if attached l_if.else_part as l_else_block then
-							l_subgraph := process_compound (l_else_block)
-							add_false_edge (l_current_block, l_subgraph.start_node)
-							add_edge (l_subgraph.end_node, l_last_block)
-						else
-							add_false_edge (l_current_block, l_last_block)
-						end
-					elseif attached {INSPECT_AS} a_compound.item as l_inspect then
-						create {CA_CFG_SKIP} l_last_block.make
+					end
 
-						create l_intervals.make
+					if attached l_if.else_part as l_else_block then
+						l_subgraph := process_compound (l_else_block)
+						add_false_edge (l_current_block, l_subgraph.start_node)
+						add_edge (l_subgraph.end_node, l_last_block)
+					else
+						add_false_edge (l_current_block, l_last_block)
+					end
+				elseif attached {INSPECT_AS} a_compound.item as l_inspect then
+					create {CA_CFG_SKIP} l_last_block.make (current_label)
+					current_label := current_label + 1
+
+					create l_intervals.make
+					if attached l_inspect.case_list then
 						across l_inspect.case_list as l_cases loop
 							l_intervals.extend (l_cases.item.interval)
 						end
-						create {CA_CFG_INSPECT} l_current_block.make_complete (l_inspect.switch,
-									l_intervals, attached l_inspect.else_part, current_label)
-						current_label := current_label + 1
+					end
+					create {CA_CFG_INSPECT} l_current_block.make_complete (l_inspect.switch,
+								l_intervals, attached l_inspect.else_part, current_label)
+					current_label := current_label + 1
 
-						add_edge (l_last_block, l_current_block)
+					add_edge (l_last_block, l_current_block)
 
-						l_empty := True
+					l_empty := True
 
+					if attached l_inspect.case_list then
 						across l_inspect.case_list as l_cases loop
 							if attached l_cases.item.compound as l_comp then
 								l_subgraph := process_compound (l_comp)
@@ -152,41 +153,48 @@ feature {NONE} -- Implementation
 								l_empty := False
 							end
 						end
-						if attached l_inspect.else_part as l_else then
-							l_subgraph := process_compound (l_else)
-							add_else_edge (l_current_block, l_subgraph.start_node)
-							add_edge (l_subgraph.end_node, l_last_block)
-							l_empty := False
-						end
-							-- TODO: If there is nothing in the `inspect'?
+					end
+					if attached l_inspect.else_part as l_else then
+						l_subgraph := process_compound (l_else)
+						add_else_edge (l_current_block, l_subgraph.start_node)
+						add_edge (l_subgraph.end_node, l_last_block)
+						l_empty := False
+					end
+						-- TODO: If there is nothing in the `inspect'?
 
-					elseif attached {LOOP_AS} a_compound.item as l_loop then
+				elseif attached {LOOP_AS} a_compound.item as l_loop then
 
-						if attached l_loop.from_part as l_init then
-							l_subgraph := process_compound (l_init)
-							add_edge (l_last_block, l_subgraph.start_node)
-							l_last_block := l_subgraph.end_node
-						end
-
-						create {CA_CFG_LOOP} l_current_block.make_complete (l_loop.stop, current_label)
-						current_label := current_label + 1
-						add_edge (l_last_block, l_current_block)
-						create {CA_CFG_SKIP} l_last_block.make
-						add_exit_edge (l_current_block, l_last_block)
-
-						if attached l_loop.compound as l_loop_body then
-							l_subgraph := process_compound (l_loop_body)
-							add_loop_edge (l_current_block, l_subgraph.start_node)
-							add_edge (l_subgraph.end_node, l_current_block)
-						end
+					if attached l_loop.from_part as l_init then
+						l_subgraph := process_compound (l_init)
+						add_edge (l_last_block, l_subgraph.start_node)
+						l_last_block := l_subgraph.end_node
 					end
 
-					if a_compound.index = a_compound.count then
-						add_edge (l_last_block, l_cfg.end_node)
-					end
+					create {CA_CFG_LOOP} l_current_block.make_complete (l_loop.stop, current_label)
+					current_label := current_label + 1
+					add_edge (l_last_block, l_current_block)
+					create {CA_CFG_SKIP} l_last_block.make (current_label)
+					current_label := current_label + 1
+					add_exit_edge (l_current_block, l_last_block)
 
-					a_compound.forth
+					if attached l_loop.compound as l_loop_body then
+						l_subgraph := process_compound (l_loop_body)
+						add_loop_edge (l_current_block, l_subgraph.start_node)
+						add_loop_in_edge (l_subgraph.end_node, l_current_block)
+					else
+							-- Add self-edge because for analysis, the loop-in edge must be set.
+						add_loop_in_edge (l_current_block, l_current_block)
+					end
 				end
+
+				if a_compound.index = a_compound.count then
+					add_edge (l_last_block, l_cfg.end_node)
+				end
+
+				a_compound.forth
+			end
+
+			Result := l_cfg
 		end
 
 	is_sequential (a_instruction: INSTRUCTION_AS): BOOLEAN
@@ -248,6 +256,14 @@ feature {NONE} -- Implementation
 			if attached {CA_CFG_LOOP} a_from as a_loop then
 				a_loop.set_exit_branch (a_to)
 				a_to.add_in_edge (a_from)
+			end
+		end
+
+	add_loop_in_edge (a_from, a_to: CA_CFG_BASIC_BLOCK)
+		do
+			if attached {CA_CFG_LOOP} a_to as a_loop then
+				a_from.add_out_edge (a_to)
+				a_loop.set_loop_in (a_from)
 			end
 		end
 
