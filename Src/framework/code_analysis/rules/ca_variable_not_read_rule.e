@@ -65,51 +65,75 @@ feature {NONE} -- Implementation
 
 	node_union (a_from, a_to: INTEGER): BOOLEAN
 		local
-			old_count: INTEGER
+			l_old_count: INTEGER
 		do
-			old_count := lv_exit.at (a_from).count
+			l_old_count := lv_exit.at (a_from).count
 			lv_exit.at (a_from).merge (lv_entry.at (a_to))
-			Result := (old_count /= lv_exit.at (a_from).count)
+			Result := (l_old_count /= lv_exit.at (a_from).count)
 		end
 
 	process_assignment (a_from: CA_CFG_INSTRUCTION): BOOLEAN
+		local
+			l_old_count: INTEGER
+			l_lv: LINKED_SET [INTEGER]
 		do
-				-- TODO: If it is an assignment: Add to lv_entry (a_from):
-				--       lv_exit (a_from), with kill's removed, then gen's added.
-				--       If something could be added then set Result := True.
+			l_old_count := lv_entry.at (a_from.label).count
+
+			create l_lv.make
+			l_lv.copy (lv_exit.at (a_from.label))
+			if attached {ASSIGN_AS} a_from.instruction as l_assign then
+				l_lv.subtract (extract_assigned (l_assign))
+				l_lv.merge (extract_generated (l_assign.source))
+			elseif attached {ASSIGNER_CALL_AS} a_from.instruction as l_assign then
+				l_lv.subtract (extract_assigned (l_assign))
+				l_lv.merge (extract_generated (l_assign.source))
+			end
+			lv_entry.at (a_from.label).merge (l_lv)
+
+			Result := (l_old_count /= lv_entry.at (a_from.label).count)
 		end
 
 	process_if (a_from: CA_CFG_IF): BOOLEAN
 			-- Adds to lv_entry (`a_from'): lv_exit (`a_from') with gen's added.
 			-- If something could be added then Result = True, otherwise False.
 		local
-			old_count: INTEGER
+			l_old_count: INTEGER
 		do
-			old_count := lv_entry.at (a_from.label).count
+			l_old_count := lv_entry.at (a_from.label).count
 			lv_entry.at (a_from.label).copy (lv_exit.at (a_from.label))
 			lv_entry.at (a_from.label).merge (extract_generated (a_from.condition))
-			Result := (old_count /= lv_entry.at (a_from.label).count)
+			Result := (l_old_count /= lv_entry.at (a_from.label).count)
 		end
 
 	process_loop (a_from: CA_CFG_LOOP): BOOLEAN
+		local
+			l_old_count: INTEGER
 		do
-				-- TODO: Add to lv_entry (a_from): lv_exit (a_from) with gen's added.
-				--       If something could be added then set Result := True.
-
+			l_old_count := lv_entry.at (a_from.label).count
+			lv_entry.at (a_from.label).copy (lv_exit.at (a_from.label))
+			lv_entry.at (a_from.label).merge (extract_generated (a_from.stop_condition))
+			Result := (l_old_count /= lv_entry.at (a_from.label).count)
 		end
 
 	process_inspect (a_from: CA_CFG_INSPECT): BOOLEAN
+		local
+			l_old_count: INTEGER
 		do
-				-- TODO: Add to lv_entry (a_from): lv_exit (a_from) with gen's added.
-				--       If something could be added then set Result := True.
-
+			l_old_count := lv_entry.at (a_from.label).count
+			lv_entry.at (a_from.label).copy (lv_exit.at (a_from.label))
+			lv_entry.at (a_from.label).merge (extract_generated (a_from.expression))
+			Result := (l_old_count /= lv_entry.at (a_from.label).count)
 		end
 
-	extract_generated (a_condition: EXPR_AS): LINKED_LIST [INTEGER]
+	extract_generated (a_condition: EXPR_AS): LINKED_SET [INTEGER]
 		do
 			create Result.make
 		end
 
+	extract_assigned (a_assign: INSTRUCTION_AS): LINKED_SET [INTEGER]
+		do
+			create Result.make
+		end
 
 feature {NONE} -- Analysis data
 

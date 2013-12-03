@@ -32,6 +32,7 @@ feature {NONE} -- Initialization
 			create l_factory
 			threshold := l_factory.new_integer_preference_value (a_pref_manager,
 				preference_namespace + ca_names.npath_threshold_option, 200)
+			threshold.set_default_value ("200")
 			threshold.set_validation_agent (agent is_integer_string_within_bounds (?, 10, 1_000_000))
 		end
 

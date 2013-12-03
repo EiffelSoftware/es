@@ -31,6 +31,7 @@ feature {NONE} -- Initialization
 			create l_factory
 			threshold := l_factory.new_integer_preference_value (a_pref_manager,
 				preference_namespace + ca_names.nested_complexity_threshold_option, 5)
+			threshold.set_default_value ("5")
 			threshold.set_validation_agent (agent is_integer_string_within_bounds (?, 2, 100))
 		end
 

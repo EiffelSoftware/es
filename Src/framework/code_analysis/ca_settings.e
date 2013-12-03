@@ -32,12 +32,16 @@ feature {NONE} -- Initialization
 
 			are_errors_enabled := l_factory.new_boolean_preference_value (l_manager,
 				ca_names.general_category + "." + ca_names.are_errors_enabled, True)
+			are_errors_enabled.set_default_value ("True")
 			are_warnings_enabled := l_factory.new_boolean_preference_value (l_manager,
 				ca_names.general_category + "." + ca_names.are_warnings_enabled, True)
+			are_warnings_enabled.set_default_value ("True")
 			are_hints_enabled := l_factory.new_boolean_preference_value (l_manager,
 				ca_names.general_category + "." + ca_names.are_suggestions_enabled, True)
+			are_hints_enabled.set_default_value ("True")
 			are_hints_enabled := l_factory.new_boolean_preference_value (l_manager,
 				ca_names.general_category + "." + ca_names.are_hints_enabled, True)
+			are_hints_enabled.set_default_value ("True")
 		end
 
 feature {CA_CODE_ANALYZER} -- Initialization
@@ -56,12 +60,14 @@ feature {CA_CODE_ANALYZER} -- Initialization
 				l_enabled := l_factory.new_boolean_preference_value (l_manager,
 					ca_names.rules_category + "." + l_rules.item.title + "." + ca_names.enable_rule,
 					l_rules.item.is_enabled_by_default)
+				l_enabled.set_default_value (l_rules.item.is_enabled_by_default.out)
 				l_enabled.set_description (l_rules.item.description)
 				l_rules.item.set_is_enabled_preference (l_enabled)
 
 				l_score := l_factory.new_integer_preference_value (l_manager,
 					ca_names.rules_category + "." + l_rules.item.title + "." + ca_names.severity_score,
 					l_rules.item.default_severity_score)
+				l_score.set_default_value (l_rules.item.is_enabled_by_default.out)
 				l_score.set_validation_agent (agent validate_severity_score)
 				l_score.set_description (ca_messages.severity_score_description)
 				l_rules.item.set_severity_score_preference (l_score)

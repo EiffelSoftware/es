@@ -32,6 +32,7 @@ feature {NONE} -- Initialization
 			create l_factory
 			n_arguments_threshold := l_factory.new_integer_preference_value (a_pref_manager,
 				preference_namespace + ca_names.arguments_threshold_option, 4)
+			n_arguments_threshold.set_default_value ("4")
 			n_arguments_threshold.set_validation_agent (agent is_integer_string_within_bounds (?, 2, 20))
 		end
 

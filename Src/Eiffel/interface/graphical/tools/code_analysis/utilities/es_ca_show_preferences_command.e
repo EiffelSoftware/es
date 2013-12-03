@@ -34,6 +34,7 @@ feature -- Execution
 --				preference_window.set_size (800, 600)
 				preference_window.set_title (ca_names.preferences_window_title)
 				preference_window.raise
+				
 			end
 
 			preference_window.show
