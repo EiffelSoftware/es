@@ -48,7 +48,7 @@ feature -- Properties
 		do
 			Result :=  ca_names.unused_argument_description
 		end
-		
+
 	is_system_wide: BOOLEAN
 		once
 			Result := False
@@ -91,12 +91,12 @@ feature {NONE} -- Rule Checking
 			j: INTEGER
 		do
 			has_arguments := (a_body_as.arguments /= Void)
+			create args_used.make (0)
+			n_arguments := 0
 			if attached a_body_as.as_routine as l_rout then
 				if has_arguments and (not l_rout.is_external) then
 					routine_body := a_body_as
 					create arg_names.make (0)
-					create args_used.make (0)
-					n_arguments := 0
 					across a_body_as.arguments as l_args loop
 						from
 							j := 1

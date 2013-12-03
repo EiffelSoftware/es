@@ -10,6 +10,8 @@ class
 inherit
 	SHARED_AST_CONTEXT
 
+	SHARED_STATELESS_VISITOR
+
 create
 	make
 
@@ -18,7 +20,6 @@ feature {NONE} -- Initialization
 	make
 		do
 			create node_types.make (100)
-			create fcg
 		end
 
 feature -- AST Type Analysis
@@ -64,8 +65,8 @@ feature {NONE} -- Implementation
 	prepare_for_class (a_class: CLASS_C)
 		do
 			context.initialize (a_class, a_class.actual_type)
-			fcg.init (context)
-			fcg.set_type_recorder (agent record_node_type)
+			feature_checker.init (context)
+			feature_checker.set_type_recorder (agent record_node_type)
 		end
 
 	internal_analyze_feature (a_feature: FEATURE_I)
@@ -84,7 +85,7 @@ feature {NONE} -- Implementation
 			context.initialize (a_feature.written_class, a_feature.written_class.actual_type)
 			context.set_current_feature (a_feature)
 			context.set_written_class (a_feature.written_class)
-			fcg.type_check_only (a_feature, True, False, a_feature.is_replicated)
+			feature_checker.type_check_only (a_feature, True, False, a_feature.is_replicated)
 
 			context.initialize (old_current_class, old_current_class.actual_type)
 			context.set_current_feature (old_current_feature)
@@ -102,9 +103,5 @@ feature {NONE} -- Implementation: Data Structures
 				node_types [[a_node.index, a_written_class.class_id, a_feature.rout_id_set.first, a_class.class_id]] := a_type
 			end
 		end
-
-feature {NONE} -- Implementation: Tools
-
-	fcg: AST_FEATURE_CHECKER_GENERATOR
 
 end

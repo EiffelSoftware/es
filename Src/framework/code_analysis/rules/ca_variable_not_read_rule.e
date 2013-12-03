@@ -9,7 +9,7 @@ class
 
 inherit
 	CA_CFG_RULE
-		redefine check_feature end
+		redefine check_feature, id end
 
 	AST_ITERATOR
 		redefine
@@ -215,6 +215,9 @@ feature -- Properties
 		do
 			Result :=  "---"
 		end
+
+	id: STRING_32 = "CA020T"
+			-- "T" stands for 'under test'.
 
 	is_system_wide: BOOLEAN = False
 
