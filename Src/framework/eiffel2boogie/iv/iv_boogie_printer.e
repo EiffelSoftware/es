@@ -708,7 +708,7 @@ feature -- Other
 			elseif a_type.is_reference then
 				Result := "Void"
 			else
-				check False end
+				Result := Void
 			end
 		end
 

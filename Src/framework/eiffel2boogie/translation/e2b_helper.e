@@ -137,6 +137,18 @@ feature -- Feature status helpers
 			Result := is_feature_status (a_feature, "ghost")
 		end
 
+	is_functional (a_feature: FEATURE_I): BOOLEAN
+			-- Is `a_feature' a ghost feature?
+		do
+			Result := is_feature_status (a_feature, "functional")
+		end
+
+	is_lemma (a_feature: FEATURE_I): BOOLEAN
+			-- Is `a_feature' a ghost feature?
+		do
+			Result := is_feature_status (a_feature, "lemma")
+		end
+
 	is_public (a_feature: FEATURE_I): BOOLEAN
 			-- Is `a_feature' a public feature?
 		do
@@ -361,12 +373,12 @@ feature -- Other
 			autoproof_errors.extend (l_error)
 		end
 
-	add_semantic_error (a_class: CLASS_C; a_feature: FEATURE_I; a_message: STRING)
+	add_semantic_error (a_class_or_feature: ANY; a_message: STRING)
 			-- Add AutoProof error about unsupported construct.
 			-- If `a_class' is set, the error will be associated with the class.
 			-- If `a_feature' is set, the error will be associated with the feature and its written class.
 		require
-			not_class_and_feature: a_class = Void or a_feature = Void
+			class_or_feature_or_void: a_class_or_feature = Void or else (attached {CLASS_C} a_class_or_feature or attached {FEATURE_I} a_class_or_feature)
 			message_set: a_message /= Void and then not a_message.is_empty
 		local
 			l_error: E2B_AUTOPROOF_ERROR
@@ -374,10 +386,10 @@ feature -- Other
 			create l_error
 			l_error.set_type ("Error")
 			l_error.set_single_line_message (a_message)
-			if a_feature /= Void then
-				l_error.set_eiffel_feature (a_feature)
-			elseif a_class /= Void then
-				l_error.set_eiffel_class (a_class)
+			if attached {FEATURE_I} a_class_or_feature as x then
+				l_error.set_eiffel_feature (x)
+			elseif attached {CLASS_C} a_class_or_feature as x then
+				l_error.set_eiffel_class (x)
 			end
 			autoproof_errors.extend (l_error)
 		end

@@ -1,4 +1,4 @@
-class SETS
+class A_SETS
 
 feature
 

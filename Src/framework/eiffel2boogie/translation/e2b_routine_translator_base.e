@@ -308,11 +308,11 @@ feature -- Helper functions: contracts
 								if attached {STRING_B} j.item as l_string then
 									l_fieldnames.extend (l_string.value)
 								else
-									helper.add_semantic_error (Void, a_feature, "The tuple in the first argument of 'modify_field' needs to consist only of manifest strings.")
+									helper.add_semantic_error (a_feature, messages.modify_field_first_argument_only_manifeststrings)
 								end
 							end
 						else
-							helper.add_semantic_error (Void, a_feature, "First argument of 'modify_field' has to be a manifest string or a tuple of manifest strings.")
+							helper.add_semantic_error (a_feature, messages.modify_field_first_argument_string_or_tuple)
 						end
 
 						create l_fields.make
@@ -320,8 +320,13 @@ feature -- Helper functions: contracts
 						across l_fieldnames as f loop
 							l_feature := l_type.base_class.feature_named_32 (f.item)
 							if l_feature = Void then
-								l_name := Void
-								helper.add_semantic_error (Void, a_feature, "Feature '" + f.item + "' mentioned in 'modify_field' does not exist in class '" + l_type.base_class.name_in_upper + "'")
+								if f.item ~ "closed" then
+									l_name :=  "closed"
+									l_boogie_type := types.bool
+								else
+									l_name := Void
+									helper.add_semantic_error (a_feature, messages.modify_field_field_does_not_exist (f.item, l_type.base_class.name_in_upper))
+								end
 							else
 								if translation_mapping.ghost_access.has (f.item) then
 									l_name := f.item
@@ -332,7 +337,7 @@ feature -- Helper functions: contracts
 									translation_pool.add_feature (l_feature, l_type)
 								else
 									l_name := Void
-									helper.add_semantic_error (Void, a_feature, "Feature '" + f.item + "' mentioned in 'modify_field' is not an attribute")
+									helper.add_semantic_error (a_feature, messages.modify_field_field_not_attribute (f.item))
 								end
 							end
 							if l_name /= Void then

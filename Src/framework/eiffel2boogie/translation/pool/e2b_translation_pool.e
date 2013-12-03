@@ -181,45 +181,17 @@ feature -- Convenience functions
 			add_translation_unit (l_creator)
 		end
 
-	add_ghost_attribute (a_feature: FEATURE_I; a_context_type: TYPE_A)
-			-- Add ghost function `a_feature' of `a_context_type'.
-		local
-			l_ghost_attr: E2B_TU_GHOST_ATTRIBUTE
-		do
-			create l_ghost_attr.make (a_feature, a_context_type)
-			add_translation_unit (l_ghost_attr)
-		end
-
-	add_ghost_function (a_feature: FEATURE_I; a_context_type: TYPE_A)
-			-- Add ghost function `a_feature' of `a_context_type'.
-		local
-			l_ghost_function: E2B_TU_GHOST_FUNCTION
-		do
-			create l_ghost_function.make (a_feature, a_context_type)
-			add_translation_unit (l_ghost_function)
-		end
-
-	add_ghost_routine (a_feature: FEATURE_I; a_context_type: TYPE_A; a_is_referenced: BOOLEAN)
-			-- Add ghost routine `a_feature' of `a_context_type'.
-		local
-			l_signature: E2B_TU_GHOST_ROUTINE_SIGNATURE
-			l_implementation: E2B_TU_GHOST_ROUTINE_IMPLEMENTATION
-		do
-			create l_signature.make (a_feature, a_context_type)
-			add_translation_unit (l_signature)
-			if not a_is_referenced and not helper.boolean_feature_note_value (a_feature, "skip")then
-				create l_implementation.make (a_feature, a_context_type)
-				add_translation_unit (l_implementation)
-			end
-		end
-
 	add_functional_feature (a_feature: FEATURE_I; a_context_type: TYPE_A)
 			-- Add functional representation of feature `a_feature' of `a_context_type'.
 		local
 			l_functional: E2B_TU_ROUTINE_FUNCTIONAL
 		do
-			create l_functional.make (a_feature, a_context_type)
-			add_translation_unit (l_functional)
+			if helper.is_functional (a_feature) then
+				internal_add_feature (a_feature, a_context_type, True)
+			else
+				create l_functional.make (a_feature, a_context_type)
+				add_translation_unit (l_functional)
+			end
 		end
 
 	add_writes_function (a_feature: FEATURE_I; a_context_type: TYPE_A)
@@ -267,40 +239,27 @@ feature {NONE} -- Implementation
 			-- Add signature and implementation of feature `a_feature' of `a_context_type'.
 			-- If `a_referenced' is true, then only the signature will be created.
 		do
-			if helper.is_ghost (a_feature) then
-				if a_feature.is_attribute then
-					add_ghost_attribute (a_feature, a_context_type)
-				elseif a_feature.is_routine then
-					if a_feature.has_return_value then
-						add_ghost_function (a_feature, a_context_type)
-					else
-						add_ghost_routine (a_feature, a_context_type, a_is_referenced)
-					end
-				else
-					check False end
-				end
-			else
-				if a_feature.is_attribute then
-					add_attribute (a_feature, a_context_type)
-				elseif a_feature.is_routine then
-					if
-						a_context_type.base_class.has_creator_of_name_id (a_feature.feature_name_id) or
-						(a_context_type.base_class.creation_feature /= Void and then a_context_type.base_class.creation_feature.feature_id = a_feature.feature_id)
-					then
-							-- This is a creation routine
-						add_creator (a_feature, a_context_type, a_is_referenced)
-						if not helper.is_feature_status (a_feature, "creator") then
-							add_basic_routine (a_feature, a_context_type, a_is_referenced)
-						end
-					else
-							-- This is a normal routine
+			if a_feature.is_attribute then
+				add_attribute (a_feature, a_context_type)
+			elseif a_feature.is_routine then
+				if
+					a_context_type.base_class.has_creator_of_name_id (a_feature.feature_name_id) or
+					(a_context_type.base_class.creation_feature /= Void and then a_context_type.base_class.creation_feature.feature_id = a_feature.feature_id)
+				then
+						-- This is a creation routine
+					add_creator (a_feature, a_context_type, a_is_referenced)
+					if not helper.is_feature_status (a_feature, "creator") then
+							-- Routine can be used as normal routine
 						add_basic_routine (a_feature, a_context_type, a_is_referenced)
 					end
-				elseif a_feature.is_constant then
-						-- Ignore constants / nothing to verify
 				else
-					check False end
+						-- This is a normal routine
+					add_basic_routine (a_feature, a_context_type, a_is_referenced)
 				end
+			elseif a_feature.is_constant then
+					-- Ignore constants / nothing to verify
+			else
+				check internal_error: False end
 			end
 		end
 

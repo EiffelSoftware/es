@@ -36,11 +36,17 @@ feature -- Basic operations
 					l_attribute_name,
 					types.field (l_boogie_type)))
 
-				-- Mark field as a non-ghost field
-			boogie_universe.add_declaration (
-				create {IV_AXIOM}.make (
-					factory.not_ (
-						factory.function_call ("IsGhostField", << l_attribute_name >>, types.bool))))
+				-- Mark field as a ghost or non-ghost
+			if helper.is_ghost (a_feature) then
+				boogie_universe.add_declaration (
+					create {IV_AXIOM}.make (
+						factory.function_call ("IsGhostField", << l_attribute_name >>, types.bool)))
+			else
+				boogie_universe.add_declaration (
+					create {IV_AXIOM}.make (
+						factory.not_ (
+							factory.function_call ("IsGhostField", << l_attribute_name >>, types.bool))))
+			end
 
 				-- Add attribute-type specific properties
 			if a_feature.type.is_reference and not l_boogie_type.is_set and not l_boogie_type.is_seq then

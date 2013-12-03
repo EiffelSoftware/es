@@ -215,7 +215,11 @@ feature -- Visitors
 				if l_right.type.is_set or l_right.type.is_seq then
 					(create {E2B_CUSTOM_MML_HANDLER}).handle_binary (Current, l_left, l_right, a_operator)
 				else
-					helper.add_semantic_error (context_type.base_class, context_feature, "Sets and sequences can only be compared with other sets or sequences")
+					if context_feature = Void then
+						helper.add_semantic_error (context_type.base_class, "Sets and sequences can only be compared with other sets or sequences")
+					else
+						helper.add_semantic_error (context_feature, "Sets and sequences can only be compared with other sets or sequences")
+					end
 					last_expression := dummy_node (a_node.type)
 				end
 			else
@@ -630,13 +634,13 @@ feature -- Visitors
 			check l_object_test_local /= Void end
 			l_nested ?= l_assign.source
 			check l_nested /= Void end
-			l_access ?= l_nested.target
-			check l_access /= Void end
 
 			l_name := l_nested.target.type.associated_class.name_in_upper
 			if l_name ~ "ARRAY" then
 				create {E2B_ARRAY_ACROSS_HANDLER} l_across_handler.make (Current, a_node, l_nested.target, l_object_test_local)
 			elseif l_name ~ "INTEGER_INTERVAL" then
+				l_access ?= l_nested.target
+				check l_access /= Void end
 				l_bin_free ?= l_access.expr
 				check l_bin_free /= Void end
 				create {E2B_INTERVAL_ACROSS_HANDLER} l_across_handler.make (Current, a_node, l_bin_free, l_object_test_local)

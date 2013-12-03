@@ -238,34 +238,49 @@ feature -- Translation
 		local
 			l_target: IV_EXPRESSION
 			l_target_type: TYPE_A
-			l_call: IV_PROCEDURE_CALL
+			l_pcall: IV_PROCEDURE_CALL
+			l_fcall: IV_FUNCTION_CALL
 		do
-			if a_for_creator then
-				translation_pool.add_referenced_creator (a_feature, current_target_type)
-			else
+			if helper.is_functional (a_feature) then
+				check not a_for_creator end
 				translation_pool.add_referenced_feature (a_feature, current_target_type)
-			end
+				if a_feature.has_return_value then
 
-			if a_for_creator then
-				create l_call.make (name_translator.boogie_name_for_creation_routine (a_feature, current_target_type))
+					create l_fcall.make (name_translator.boogie_name_for_functional_feature (a_feature, current_target_type), types.for_type_a (a_feature.type))
+					l_fcall.add_argument (entity_mapping.heap)
+					l_fcall.add_argument (current_target)
+					process_parameters (a_parameters)
+					l_fcall.arguments.append (last_parameters)
+
+					last_expression := l_fcall
+				else
+						-- It's a procedure call, nothing to generate
+						-- There should be an error being reported for this feature
+					last_expression := Void
+				end
 			else
-				create l_call.make (name_translator.boogie_name_for_feature (a_feature, current_target_type))
-			end
-			l_call.add_argument (current_target)
+				if a_for_creator then
+					translation_pool.add_referenced_creator (a_feature, current_target_type)
+					create l_pcall.make (name_translator.boogie_name_for_creation_routine (a_feature, current_target_type))
+				else
+					translation_pool.add_referenced_feature (a_feature, current_target_type)
+					create l_pcall.make (name_translator.boogie_name_for_feature (a_feature, current_target_type))
+				end
+				l_pcall.add_argument (current_target)
+				process_parameters (a_parameters)
+				l_pcall.arguments.append (last_parameters)
 
-			process_parameters (a_parameters)
-			l_call.arguments.append (last_parameters)
-
-				-- Process call
-			if a_feature.has_return_value then
-				create_local (a_feature.type.instantiated_in (current_target_type))
-				l_call.set_target (last_local)
-				last_expression := last_local
-			else
-					-- No expression generated, this has to be a call statement
-				last_expression := Void
+					-- Process call
+				if a_feature.has_return_value then
+					create_local (a_feature.type.instantiated_in (current_target_type))
+					l_pcall.set_target (last_local)
+					last_expression := last_local
+				else
+						-- No expression generated, this has to be a call statement
+					last_expression := Void
+				end
+				side_effect.extend (l_pcall)
 			end
-			side_effect.extend (l_call)
 		end
 
 	process_builtin_routine_call (a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B]; a_builtin_name: STRING)

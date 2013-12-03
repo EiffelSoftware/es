@@ -9,6 +9,8 @@ class
 
 inherit
 	ES_CLICKABLE_EVENT_LIST_TOOL_PANEL_BASE
+		rename
+			messages as es_messages
 		redefine
 			build_tool_interface,
 			on_before_initialize,

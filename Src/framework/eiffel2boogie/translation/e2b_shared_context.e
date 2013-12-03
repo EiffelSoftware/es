@@ -41,6 +41,12 @@ feature {NONE} -- Access: stateless
 			create Result.make
 		end
 
+	messages: E2B_MESSAGES
+			-- Messages used in AutoProof.
+		once
+			create Result
+		end
+
 feature -- Access (public)
 
 	options: E2B_OPTIONS

@@ -22,12 +22,18 @@ feature {NONE} -- Initialization
 		do
 		end
 
-feature -- Basic operations
+feature -- Translation: Signature
 
 	translate_routine_signature (a_feature: FEATURE_I; a_type: TYPE_A)
 			-- Translate signature of feature `a_feature' of type `a_type'.
+		require
+			not_attribute: not a_feature.is_attribute
 		do
-			translate_signature (a_feature, a_type, False)
+			if helper.is_functional (a_feature) then
+				translate_functional_feature (a_feature, a_type)
+			else
+				translate_signature (a_feature, a_type, False)
+			end
 		end
 
 	translate_creator_signature (a_feature: FEATURE_I; a_type: TYPE_A)
@@ -77,8 +83,12 @@ feature -- Basic operations
 			add_result_with_property
 
 				-- Modifies
-			create l_modifies.make ("Heap")
-			current_boogie_procedure.add_contract (l_modifies)
+			if helper.is_lemma (a_feature) then
+					-- Lemmas do not modify the heap
+			else
+				create l_modifies.make ("Heap")
+				current_boogie_procedure.add_contract (l_modifies)
+			end
 
 				-- Pre- and postconditions
 			l_contracts := contracts_of (current_feature, current_type)
@@ -99,7 +109,9 @@ feature -- Basic operations
 
 				-- Framing
 			if options.is_ownership_enabled then
-				add_ownership_contracts (a_for_creator)
+				if not helper.is_lemma (a_feature) then
+					add_ownership_contracts (a_for_creator)
+				end
 			else
 				if helper.feature_note_values (current_feature, "framing").has ("False") then
 						-- No frame condition
@@ -265,12 +277,69 @@ feature -- Basic operations
 			Result := l_forall
 		end
 
+	translate_functional_feature (a_feature: FEATURE_I; a_context_type: TYPE_A)
+			-- Translate feature `a_feature' of `a_context_type' as a functional feature.
+		require
+			is_functional: helper.is_functional (a_feature)
+		local
+			l_function: IV_FUNCTION
+			l_expr_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
+		do
+			set_context (a_feature, a_context_type)
+			helper.set_up_byte_context (a_feature, a_context_type)
+
+			if a_feature.has_return_value then
+					-- Create IV_FUNCTION
+				create l_function.make (
+					name_translator.boogie_name_for_functional_feature (a_feature, a_context_type),
+					types.for_type_in_context (a_feature.type, a_context_type))
+				boogie_universe.add_declaration (l_function)
+
+					-- Set up arguments
+				l_function.add_argument ("heap", types.heap_type)
+				l_function.add_argument ("current", types.ref)
+				across arguments_of_current_feature as i loop
+					l_function.add_argument (i.item.name, i.item.boogie_type)
+				end
+			end
+
+			if
+				not a_feature.has_return_value or else
+				not a_feature.is_routine or else
+				not attached Context.byte_code or else
+				not attached Context.byte_code.compound or else
+				not attached Context.byte_code.compound.count = 1 or else
+				not attached {ASSIGN_B} Context.byte_code.compound.first as l_assign_b or else
+				not attached {RESULT_B} l_assign_b.target
+			then
+				if not a_feature.is_function or not a_feature.is_routine then
+					helper.add_semantic_error (current_feature, messages.functional_feature_not_function)
+				else
+					helper.add_semantic_error (current_feature, messages.functional_feature_not_single_assignment)
+				end
+			else
+					-- Translate expression
+				create l_expr_translator.make
+				l_expr_translator.entity_mapping.set_heap (create {IV_ENTITY}.make ("heap", types.heap))
+				l_expr_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.ref))
+				l_expr_translator.set_context (a_feature, a_context_type)
+				l_assign_b.source.process (l_expr_translator)
+				l_function.set_body (l_expr_translator.last_expression)
+			end
+		end
+
+feature -- Translation: Implementation
+
 	translate_routine_implementation (a_feature: FEATURE_I; a_type: TYPE_A)
 			-- Translate implementation of feature `a_feature' of type `a_type'.
 		require
 			routine: a_feature.is_routine
 		do
-			translate_implementation (a_feature, a_type, False)
+			if helper.is_functional (a_feature) then
+				translate_functional_check (a_feature, a_type)
+			else
+				translate_implementation (a_feature, a_type, False)
+			end
 		end
 
 	translate_creator_implementation (a_feature: FEATURE_I; a_type: TYPE_A)
@@ -281,6 +350,8 @@ feature -- Basic operations
 
 	translate_implementation (a_feature: FEATURE_I; a_type: TYPE_A; a_for_creator: BOOLEAN)
 			-- Translate implementation of feature `a_feature' of type `a_type'.
+		require
+			not_functional: not helper.is_functional (a_feature)
 		local
 			l_procedure: IV_PROCEDURE
 			l_implementation: IV_IMPLEMENTATION
@@ -334,7 +405,7 @@ feature -- Basic operations
 				end
 			end
 				-- OWNERSHIP: start of routine body
-			if options.is_ownership_enabled then
+			if options.is_ownership_enabled and not helper.is_lemma (a_feature) then
 				if a_for_creator then
 						-- Add creator initialization for ownership
 					create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "owns", types.set (types.ref)), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
@@ -369,14 +440,8 @@ feature -- Basic operations
 				end
 			end
 
-			if a_for_creator then
---					-- Creator finalizer: set "initialized" to true
---				create l_assign.make (factory.heap_current_initialized (l_translator.entity_mapping), factory.true_)
---				l_implementation.body.add_statement (l_assign)
-			end
-
 				-- OWNERSHIP: end of routine body
-			if options.is_ownership_enabled then
+			if options.is_ownership_enabled and not helper.is_lemma (a_feature) then
 				if not helper.is_explicit (current_feature, "wrapping") then
 					if a_for_creator or helper.is_public (current_feature) and not a_feature.has_return_value then
 						l_implementation.body.add_statement (factory.procedure_call ("wrap", << "Current" >>))
@@ -385,6 +450,16 @@ feature -- Basic operations
 			end
 		end
 
+	translate_functional_check (a_feature: FEATURE_I; a_type: TYPE_A)
+			-- Trnslate check that functional feature `a_feature' is well-formed.
+		require
+			is_functional: helper.is_functional (a_feature)
+		do
+				-- TODO: implement
+			check True end
+		end
+
+feature -- Translation: Other
 
 	translate_functional_representation (a_feature: FEATURE_I; a_type: TYPE_A)
 			-- Translate implementation of feature `a_feature' of type `a_type'.

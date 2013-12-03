@@ -106,13 +106,8 @@ feature -- Translation
 		do
 			check a_feature.has_return_value end
 
-			if helper.is_feature_status (a_feature, "ghost") then
-				translation_pool.add_ghost_function (a_feature, current_target_type)
-				l_name := name_translator.boogie_name_for_feature (a_feature, current_target_type)
-			else
-				translation_pool.add_functional_feature (a_feature, current_target_type)
-				l_name := name_translator.boogie_name_for_functional_feature (a_feature, current_target_type)
-			end
+			translation_pool.add_functional_feature (a_feature, current_target_type)
+			l_name := name_translator.boogie_name_for_functional_feature (a_feature, current_target_type)
 
 			create l_call.make (
 				l_name,

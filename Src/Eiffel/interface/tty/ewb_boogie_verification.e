@@ -9,6 +9,9 @@ class
 inherit
 
 	EWB_CMD
+		rename
+			messages as ewb_messages
+		end
 
 	SHARED_ERROR_HANDLER
 		export {NONE} all end
