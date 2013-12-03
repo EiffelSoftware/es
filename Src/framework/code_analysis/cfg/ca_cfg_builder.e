@@ -148,7 +148,7 @@ feature {NONE} -- Implementation
 						across l_inspect.case_list as l_cases loop
 							if attached l_cases.item.compound as l_comp then
 								l_subgraph := process_compound (l_comp)
-								add_when_edge (l_current_block, l_subgraph.start_node, l_cases.item.index)
+								add_when_edge (l_current_block, l_subgraph.start_node, l_cases.cursor_index)
 								add_edge (l_subgraph.end_node, l_last_block)
 								l_empty := False
 							end

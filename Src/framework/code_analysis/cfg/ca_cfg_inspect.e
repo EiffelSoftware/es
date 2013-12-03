@@ -27,9 +27,9 @@ feature {NONE} -- Initialization
 			else
 				create out_edges.make_filled (n_when_branches)
 			end
-			create intervals.make (n_when_branches)
+			create intervals.make_filled (n_when_branches)
 			across a_intervals as l_intervals loop
-				intervals.put_i_th (l_intervals.item, l_intervals.item.index)
+				intervals.put_i_th (l_intervals.item, l_intervals.cursor_index)
 			end
 			expression := a_expr
 			label := a_label
@@ -86,7 +86,7 @@ feature -- Visitor
 
 	process (a_it: CA_CFG_ITERATOR)
 		do
-			
+
 		end
 
 invariant
