@@ -164,6 +164,12 @@ feature -- Code Analyzer
 	unneeded_object_test_violation_2: STRING_32
 		do Result := locale.translation ("' is already of the static type '") end
 
+	variable_not_read_violation_1: STRING_32
+		do Result := locale.translation ("The local variable '") end
+		
+	variable_not_read_violation_2: STRING_32
+		do Result := locale.translation ("' is not read / used before it gets reassigned or out of scope.") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32

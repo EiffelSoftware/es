@@ -11,11 +11,6 @@ inherit
 	CA_CFG_RULE
 		redefine check_feature, id end
 
-	AST_ITERATOR
-		redefine
-			process_assign_as
-		end
-
 create
 	make
 
@@ -31,20 +26,24 @@ feature {NONE} -- Initialization
 feature {NONE} -- From {CA_CFG_RULE}
 
 	check_feature (a_class: CLASS_C; a_feature: E_FEATURE)
+		local
+			l_assigned_id: INTEGER
+			l_viol: CA_RULE_VIOLATION
 		do
 			Precursor (a_class, a_feature)
 
-				-- After we have done the fixed point iteration on the Control Flow Graph
-				-- we iterate again through the AST in order to search for dead
-				-- assignments.
-			process_feature_as (a_feature.ast)
-		end
-
-feature {NONE} -- From {AST_ITERATOR}
-
-	process_assign_as (a_assign: ASSIGN_AS)
-		do
-
+				-- Iterate through all assignment in search for dead assignments.
+			across assignment_nodes as l_assigns loop
+				if attached {ASSIGN_AS} l_assigns.item.instruction as l_assign then
+					l_assigned_id := extract_assigned (l_assign.target)
+					if not lv_exit.at (l_assigns.item.label).has (l_assigned_id) then
+						create l_viol.make_with_rule (Current)
+						l_viol.set_location (l_assign.start_location)
+						l_viol.long_description_info.extend (l_assign.target.access_name_32)
+						violations.extend (l_viol)
+					end
+				end
+			end
 		end
 
 feature -- Node Visitor
@@ -57,6 +56,7 @@ feature -- Node Visitor
 
 			create lv_entry.make (n)
 			create lv_exit.make (n)
+			create assignment_nodes.make
 
 			from j := 1
 			until j > n
@@ -84,6 +84,8 @@ feature -- Node Visitor
 				Result := process_loop (l_loop) or Result
 			elseif attached {CA_CFG_INSPECT} a_from as l_inspect then
 				Result := process_inspect (l_inspect) or Result
+			else
+				Result := process_default (a_from.label) or Result
 			end
 		end
 
@@ -98,9 +100,18 @@ feature {NONE} -- Implementation
 			Result := (l_old_count /= lv_exit.at (a_from).count)
 		end
 
-	process_assignment (a_from: CA_CFG_INSTRUCTION): BOOLEAN
+	process_default (a_from: INTEGER): BOOLEAN
 		local
 			l_old_count: INTEGER
+		do
+			l_old_count := lv_entry.at (a_from).count
+			lv_entry.at (a_from).copy (lv_exit.at (a_from))
+			Result := (l_old_count /= lv_entry.at (a_from).count)
+		end
+
+	process_assignment (a_from: CA_CFG_INSTRUCTION): BOOLEAN
+		local
+			l_old_count, l_assigned_id: INTEGER
 			l_lv: LINKED_SET [INTEGER]
 		do
 			l_old_count := lv_entry.at (a_from.label).count
@@ -108,8 +119,13 @@ feature {NONE} -- Implementation
 			create l_lv.make
 			l_lv.copy (lv_exit.at (a_from.label))
 			if attached {ASSIGN_AS} a_from.instruction as l_assign then
-				l_lv.subtract (extract_assigned (l_assign.target))
+				l_assigned_id := extract_assigned (l_assign.target)
+				l_lv.prune (l_assigned_id)
 				l_lv.merge (extract_generated (l_assign.source))
+					-- Make sure the node is stored for later lookup:
+				if l_assigned_id /= -1 then
+					assignment_nodes.extend (a_from)
+				end
 			end
 			lv_entry.at (a_from.label).merge (l_lv)
 
@@ -169,7 +185,7 @@ feature {NONE} -- Implementation
 			elseif attached {CONVERTED_EXPR_AS} a_condition as l_c then
 				Result.merge (extract_generated (l_c.expr))
 			elseif attached {EXPR_CALL_AS} a_condition as l_expr_call then
-				if attached {ACCESS_ID_AS} l_expr_call.call as l_aid then
+				if attached {ACCESS_ID_AS} l_expr_call.call as l_aid and then l_aid.is_local then
 					Result.extend (l_aid.feature_name.name_id)
 				end
 			elseif attached {OBJECT_TEST_AS} a_condition as l_ot then
@@ -186,15 +202,18 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	extract_assigned (a_assign: ACCESS_AS): LINKED_SET [INTEGER]
+	extract_assigned (a_assign: ACCESS_AS): INTEGER
+			-- Extracts the variable ID of the target `a_assign' of an
+			-- assignment if a local variable gets assigned. If no local
+			-- variable gets assigned then Result = -1.
 		require
 			is_assignment: (attached {ASSIGN_AS} a_assign)
 		do
-			create Result.make
+			Result := -1
 
 			if attached {ACCESS_ID_AS} a_assign as l_id and then l_id.is_local then
 					-- Something is assigned to a local variable.
-				Result.extend (l_id.feature_name.name_id)
+				Result := l_id.feature_name.name_id
 					-- TODO: Result?
 			end
 		end
@@ -203,6 +222,8 @@ feature {NONE} -- Analysis data
 
 	lv_entry, lv_exit: ARRAYED_LIST [LINKED_SET [INTEGER]]
 			-- Hash table containing a list of name IDs (live variables) for the CFG labels.
+
+	assignment_nodes: LINKED_SET [CA_CFG_INSTRUCTION]
 
 feature -- Properties
 
@@ -213,7 +234,7 @@ feature -- Properties
 
 	description: STRING_32
 		do
-			Result :=  "---"
+			Result :=  ca_names.variable_not_read_description
 		end
 
 	id: STRING_32 = "CA020T"
@@ -223,7 +244,13 @@ feature -- Properties
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		do
+			a_formatter.add (ca_messages.variable_not_read_violation_1)
 
+			if attached {STRING_32} a_violation.long_description_info.first as l_local then
+				a_formatter.add_local (l_local)
+			end
+
+			a_formatter.add (ca_messages.variable_not_read_violation_2)
 		end
 
 end

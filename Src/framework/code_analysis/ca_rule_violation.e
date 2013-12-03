@@ -14,7 +14,7 @@ create
 	make_with_rule
 
 feature {NONE} -- Initialization
-	make_with_rule (a_rule: CA_STANDARD_RULE)
+	make_with_rule (a_rule: CA_RULE)
 		do
 			rule := a_rule
 			-- This is just the default. The rule may set the affected class otherwise
@@ -25,7 +25,7 @@ feature {NONE} -- Initialization
 		end
 
 feature
-	rule: CA_STANDARD_RULE
+	rule: CA_RULE
 
 	long_description_info: LINKED_LIST[ANY]
 
@@ -67,7 +67,7 @@ feature -- Inherited from {COMPARABLE}
 			end
 		end
 
-feature {CA_STANDARD_RULE}
+feature {CA_RULE}
 
 	set_affected_class (a_class: CLASS_C)
 			-- Sets the class that this violations refers to to 'a_class'. This is only

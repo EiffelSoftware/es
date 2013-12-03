@@ -47,6 +47,11 @@ feature -- Rules
 	variable_not_read_title: STRING_32
 		do Result := locale.translation ("Variable not read after assignment") end
 
+	variable_not_read_description: STRING_32
+		do Result := locale.translation ("An assignment to a local variable has no %
+			%effect at all if the variable is not read after the assignment, and %
+			%before it is reassigned or out of scope.") end
+
 	feature_never_called_title: STRING_32
 		do Result := locale.translation ("Feature never called") end
 
