@@ -71,21 +71,26 @@ feature -- Values
 		require
 			not_like_type: not a_type.is_like
 		local
-			l_type: TYPE_A
+			l_boogie_type: IV_TYPE
 		do
-			l_type := a_type.deep_actual_type
-			if l_type.is_integer or l_type.is_natural or l_type.is_character or l_type.is_character_32 then
-				Result := int_value (0)
-			elseif l_type.is_boolean then
-				Result := false_
-			elseif l_type.is_real_32 or l_type.is_real_64 then
-				create {IV_VALUE} Result.make ("0.0", types.real)
-			elseif l_type.is_expanded then
+			l_boogie_type := types.for_type_a (a_type.deep_actual_type)
+			if l_boogie_type.is_integer and l_boogie_type.is_boolean then
+				-- Generic type
 				create {IV_VALUE} Result.make ("Unknown", types.generic_type)
-			elseif l_type.base_class.name_in_upper ~ "MML_SET" then
-				Result := function_call ("Set#Empty", << >>, types.set (types.ref))
-			else
+			elseif l_boogie_type.is_integer then
+				Result := int_value (0)
+			elseif l_boogie_type.is_boolean then
+				Result := false_
+			elseif l_boogie_type.is_real then
+				create {IV_VALUE} Result.make ("0.0", l_boogie_type)
+			elseif l_boogie_type.is_reference then
 				Result := void_
+			elseif l_boogie_type.is_set then
+				Result := function_call ("Set#Empty", << >>, l_boogie_type)
+			elseif l_boogie_type.is_seq then
+				Result := function_call ("Seq#Empty", << >>, l_boogie_type)
+			else
+				check no_eiffel_type_for_this_boogie_type: False end
 			end
 		end
 
