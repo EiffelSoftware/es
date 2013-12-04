@@ -4,7 +4,6 @@ from subprocess import call
 
 # environment variables
 os.environ['ISE_PLATFORM'] = 'win64'
-os.environ['ISE_C_COMPILER'] = 'msc'
 os.environ['ISE_EIFFEL'] = os.getcwd()
 os.environ['ISE_LIBRARY'] = os.getenv("ISE_EIFFEL")
 os.environ['ISE_PRECOMP'] = os.path.join(os.getenv("ISE_EIFFEL"), 'precomp', 'spec', 'win64')

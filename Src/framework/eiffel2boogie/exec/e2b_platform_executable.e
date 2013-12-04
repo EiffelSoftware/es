@@ -10,19 +10,18 @@ inherit
 
 	E2B_EXECUTABLE
 
-	DISPOSABLE
-
 feature -- Access
 
 	last_output: detachable STRING
 			-- <Precursor>
+		local
+			l_file: PLAIN_TEXT_FILE
 		do
 			if attached internal_last_output then
 				Result := internal_last_output
 			else
 				if attached process as l_process and then not l_process.is_running then
-					internal_last_output := outputs.item (l_process.id)
-					clear_output (l_process.id)
+					read_output
 					Result := internal_last_output
 				end
 			end
@@ -43,24 +42,16 @@ feature -- Basic operations
 	run
 			-- <Precursor>
 		do
-			if attached process as l_process then
-				clear_output (l_process.id)
-			end
-
+			internal_last_output := Void
 			generate_boogie_file
 			launch_boogie (True)
-			internal_last_output := outputs.item (process.id)
-			clear_output (process.id)
+			read_output
 			process := Void
 		end
 
 	run_asynchronous
 			-- <Precursor>
 		do
-			if attached process as l_process then
-				clear_output (l_process.id)
-			end
-
 			internal_last_output := Void
 			generate_boogie_file
 			launch_boogie (False)
@@ -79,29 +70,6 @@ feature -- Basic operations
 					process := Void
 				end
 			end
-			if l_id > 0 then
-				clear_output (l_id)
-			end
-		end
-
-feature -- Removal
-
-	dispose
-			-- <Precursor>
-		local
-			l_retry: BOOLEAN
-		do
-			if not l_retry and not is_disposed and not is_in_final_collect then
-				if attached process as l_process then
-					if attached outputs as l_outputs then
-						l_outputs.remove (l_process.id)
-					end
-				end
-			end
-			is_disposed := True
-		rescue
-			l_retry := True
-			retry
 		end
 
 feature {NONE} -- Implementation
@@ -211,6 +179,7 @@ feature {NONE} -- Implementation
 			l_arguments: LINKED_LIST [STRING]
 			l_process_factory: PROCESS_FACTORY
 			l_context: E2B_SHARED_CONTEXT
+			l_plain_text_file: PLAIN_TEXT_FILE
 		do
 			create l_context
 
@@ -228,14 +197,15 @@ feature {NONE} -- Implementation
 			create l_ee
 			create l_process_factory
 			process := l_process_factory.process_launcher (boogie_executable, l_arguments, l_ee.current_working_directory)
-			check not outputs.has_key (process.id) end
 
 			process.enable_launch_in_new_process_group
-			process.redirect_output_to_agent (agent append_output (?, process))
+			create l_plain_text_file.make_open_write (boogie_output_file_name)
+			l_plain_text_file.close
+			process.redirect_output_to_file (boogie_output_file_name)
 			process.redirect_error_to_same_as_output
 			process.set_on_fail_launch_handler (agent handle_launch_failed (boogie_executable, l_arguments))
-			process.set_on_terminate_handler (agent handle_terminated (process))
-			process.set_on_exit_handler (agent handle_terminated (process))
+			process.set_on_terminate_handler (agent handle_terminated)
+			process.set_on_exit_handler (agent handle_terminated)
 
 			process.launch
 			if a_wait_for_exit then
@@ -255,35 +225,25 @@ feature {NONE} -- Implementation
 			check False end
 		end
 
-	handle_terminated (a_process: PROCESS)
-			-- Handle terminated.
+	handle_terminated
+			-- Handle process finished.
 		local
-			l_output: STRING
-			l_output_file: KL_TEXT_OUTPUT_FILE
+			l_f1, l_f2: PLAIN_TEXT_FILE
 		do
-			if outputs.has_key (a_process.id) then
-				l_output := outputs.item (a_process.id)
-				l_output.replace_substring_all ("%R", "")
-				create l_output_file.make (boogie_output_file_name)
-				l_output_file.recursive_open_write
-				if l_output_file.is_open_write then
-					l_output_file.put_string (l_output)
-					l_output_file.close
-				else
-						-- TODO: error handling
-					check False end
+			if {PLATFORM}.is_windows then
+				create l_f1.make_open_read (boogie_output_file_name)
+				create l_f2.make_open_write ("C:\temp\ap_output.txt")
+				from
+					l_f1.start
+				until
+					l_f1.after
+				loop
+					l_f1.read_line
+					l_f2.put_string (l_f1.last_string)
+					l_f2.put_character ('%N')
 				end
-				if {PLATFORM}.is_windows then
-					create l_output_file.make ("C:\temp\ap_output.txt")
-					l_output_file.recursive_open_write
-					if l_output_file.is_open_write then
-						l_output_file.put_string (l_output)
-						l_output_file.close
-					else
-							-- TODO: error handling
-						check False end
-					end
-				end
+				l_f1.close
+				l_f2.close
 			end
 		end
 
@@ -339,32 +299,23 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Output capture
 
-	outputs: HASH_TABLE [STRING, INTEGER]
-			-- Output indexed by process id.
-		note
-			once_status: global
-		once
-			create Result.make (10)
-		end
-
-	append_output (a_text: STRING; a_process: PROCESS)
-			-- Append `a_text' to output of process with id `a_process_id'.
+	read_output
+			-- Read generated output.
 		local
-			l_new_string: STRING
+			l_file: PLAIN_TEXT_FILE
 		do
-			if outputs.has_key (a_process.id) then
-				outputs.item (a_process.id).append (a_text)
-			else
-				create l_new_string.make (1024)
-				l_new_string.append (a_text)
-				outputs.put (l_new_string, a_process.id)
+			create internal_last_output.make (1024)
+			create l_file.make_open_read (boogie_output_file_name)
+			from
+				l_file.start
+			until
+				l_file.after
+			loop
+				l_file.read_line
+				internal_last_output.append (l_file.last_string)
+				internal_last_output.append_character ('%N')
 			end
-		end
-
-	clear_output (a_process_id: INTEGER)
-			-- Clear output generated by process with id `a_process_id'.
-		do
-			outputs.remove (a_process_id)
+			l_file.close
 		end
 
 end
