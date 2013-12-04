@@ -51,7 +51,8 @@ feature {CA_RULE_VIOLATION} -- formatted rule checking output
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		require
-			violation_belongs_to_rule: violations.has (a_violation)
+			violation_added: violations.has (a_violation)
+			violation_correct: a_violation.rule = Current
 		deferred
 		end
 

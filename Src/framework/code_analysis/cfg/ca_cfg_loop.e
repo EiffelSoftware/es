@@ -32,7 +32,7 @@ feature {NONE} -- Initialization
 
 feature -- Properties
 
-	stop_condition: EXPR_AS
+	stop_condition: detachable EXPR_AS
 
 	loop_branch: CA_CFG_BASIC_BLOCK
 		do
@@ -69,7 +69,7 @@ feature -- Visitor
 
 	process (a_it: CA_CFG_ITERATOR)
 		do
-			
+
 		end
 
 invariant

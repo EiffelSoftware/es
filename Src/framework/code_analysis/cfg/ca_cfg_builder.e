@@ -127,8 +127,6 @@ feature {NONE} -- Implementation
 						add_false_edge (l_current_block, l_last_block)
 					end
 				elseif attached {INSPECT_AS} a_compound.item as l_inspect then
-					create {CA_CFG_SKIP} l_last_block.make (current_label)
-					current_label := current_label + 1
 
 					create l_intervals.make
 					if attached l_inspect.case_list then
@@ -141,6 +139,9 @@ feature {NONE} -- Implementation
 					current_label := current_label + 1
 
 					add_edge (l_last_block, l_current_block)
+
+					create {CA_CFG_SKIP} l_last_block.make (current_label)
+					current_label := current_label + 1
 
 					l_empty := True
 

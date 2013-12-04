@@ -9,7 +9,16 @@ class
 
 inherit
 	CA_CFG_RULE
-		redefine check_feature, id end
+		redefine
+			check_feature,
+			id
+		end
+
+	AST_ITERATOR
+		redefine
+			process_access_id_as,
+			process_converted_expr_as
+		end
 
 create
 	make
@@ -17,6 +26,7 @@ create
 feature {NONE} -- Initialization
 
 	make
+			-- Creates the rule and initializes it for checking.
 		do
 			is_enabled_by_default := True
 			create {CA_WARNING} severity
@@ -26,13 +36,14 @@ feature {NONE} -- Initialization
 feature {NONE} -- From {CA_CFG_RULE}
 
 	check_feature (a_class: CLASS_C; a_feature: E_FEATURE)
+			-- Checks `a_feature' from `a_class' for dead assignments.
 		local
 			l_assigned_id: INTEGER
 			l_viol: CA_RULE_VIOLATION
 		do
 			Precursor (a_class, a_feature)
 
-				-- Iterate through all assignment in search for dead assignments.
+				-- Iterate through all assignments in search for dead assignments.
 			across assignment_nodes as l_assigns loop
 				if attached {ASSIGN_AS} l_assigns.item.instruction as l_assign then
 					l_assigned_id := extract_assigned (l_assign.target)
@@ -42,6 +53,14 @@ feature {NONE} -- From {CA_CFG_RULE}
 						l_viol.long_description_info.extend (l_assign.target.access_name_32)
 						violations.extend (l_viol)
 					end
+				elseif attached {CREATION_AS} l_assigns.item.instruction as l_creation then
+					l_assigned_id := extract_assigned (l_creation.target)
+					if not lv_exit.at (l_assigns.item.label).has (l_assigned_id) then
+						create l_viol.make_with_rule (Current)
+						l_viol.set_location (l_creation.start_location)
+						l_viol.long_description_info.extend (l_creation.target.access_name_32)
+						violations.extend (l_viol)
+					end
 				end
 			end
 		end
@@ -49,6 +68,8 @@ feature {NONE} -- From {CA_CFG_RULE}
 feature -- Node Visitor
 
 	initialize_processing (a_cfg: CA_CFG)
+			-- Prepares data structures for the worklist algorithm on
+			-- the CFG `a_cfg'.
 		local
 			n, j: INTEGER
 		do
@@ -68,6 +89,8 @@ feature -- Node Visitor
 		end
 
 	visit_edge (a_from, a_to: CA_CFG_BASIC_BLOCK): BOOLEAN
+			-- Is called when a CFG edge from `a_from' to `a_to' is being visited. Here, the data
+			-- about live variables at the nodes will be updated.
 		local
 			l_from, l_to: INTEGER
 		do
@@ -77,7 +100,7 @@ feature -- Node Visitor
 			Result := node_union (l_from, l_to)
 
 			if attached {CA_CFG_INSTRUCTION} a_from as l_instr then
-				Result := process_assignment (l_instr) or Result
+				Result := process_instr (l_instr) or Result
 			elseif attached {CA_CFG_IF} a_from as l_if then
 				Result := process_if (l_if) or Result
 			elseif attached {CA_CFG_LOOP} a_from as l_loop then
@@ -92,6 +115,8 @@ feature -- Node Visitor
 feature {NONE} -- Implementation
 
 	node_union (a_from, a_to: INTEGER): BOOLEAN
+			-- Merges the live variables at the entry `a_to' into those
+			-- at the exit of `a_from'.
 		local
 			l_old_count: INTEGER
 		do
@@ -101,6 +126,8 @@ feature {NONE} -- Implementation
 		end
 
 	process_default (a_from: INTEGER): BOOLEAN
+			-- Copies the live variables from the exit of `a_from' to
+			-- the entry of `a_from'.
 		local
 			l_old_count: INTEGER
 		do
@@ -109,7 +136,11 @@ feature {NONE} -- Implementation
 			Result := (l_old_count /= lv_entry.at (a_from).count)
 		end
 
-	process_assignment (a_from: CA_CFG_INSTRUCTION): BOOLEAN
+	process_instr (a_from: CA_CFG_INSTRUCTION): BOOLEAN
+			-- Processes the instruction node `a_from'. If the instruction
+			-- is an assignment or a creation then the live variables will be
+			-- pruned. All other free variables will be added to the live variables.
+			-- If anything has changed then Result = True, otherwise False.
 		local
 			l_old_count, l_assigned_id: INTEGER
 			l_lv: LINKED_SET [INTEGER]
@@ -126,6 +157,18 @@ feature {NONE} -- Implementation
 				if l_assigned_id /= -1 then
 					assignment_nodes.extend (a_from)
 				end
+			elseif attached {CREATION_AS} a_from.instruction as l_creation then
+				l_assigned_id := extract_assigned (l_creation.target)
+				l_lv.prune (l_assigned_id)
+				if attached l_creation.call as l_call then
+					l_lv.merge (extract_generated (l_creation.call))
+				end
+				if l_assigned_id /= -1 then
+					assignment_nodes.extend (a_from)
+				end
+				l_lv.prune (l_assigned_id)
+			else
+				l_lv.merge (extract_generated (a_from.instruction))
 			end
 			lv_entry.at (a_from.label).merge (l_lv)
 
@@ -145,16 +188,22 @@ feature {NONE} -- Implementation
 		end
 
 	process_loop (a_from: CA_CFG_LOOP): BOOLEAN
+			-- Adds to lv_entry (`a_from'): lv_exit (`a_from') with gen's added.
+			-- If something could be added then Result = True, otherwise False.
 		local
 			l_old_count: INTEGER
 		do
 			l_old_count := lv_entry.at (a_from.label).count
 			lv_entry.at (a_from.label).copy (lv_exit.at (a_from.label))
-			lv_entry.at (a_from.label).merge (extract_generated (a_from.stop_condition))
+			if attached a_from.stop_condition as l_stop then
+				lv_entry.at (a_from.label).merge (extract_generated (l_stop))
+			end
 			Result := (l_old_count /= lv_entry.at (a_from.label).count)
 		end
 
 	process_inspect (a_from: CA_CFG_INSPECT): BOOLEAN
+			-- Adds to lv_entry (`a_from'): lv_exit (`a_from') with gen's added.
+			-- If something could be added then Result = True, otherwise False.
 		local
 			l_old_count: INTEGER
 		do
@@ -164,54 +213,56 @@ feature {NONE} -- Implementation
 			Result := (l_old_count /= lv_entry.at (a_from.label).count)
 		end
 
-	extract_generated (a_condition: EXPR_AS): LINKED_SET [INTEGER]
-		do
-			create Result.make
+feature {NONE} -- Extracting Used Variables
 
-			if attached {ID_AS} a_condition as l_id then
-				Result.extend (l_id.name_id)
-			elseif attached {BINARY_AS} a_condition as l_bin then
-				Result.merge (extract_generated (l_bin.left))
-				Result.merge (extract_generated (l_bin.right))
-			elseif attached {ARRAY_AS} a_condition as l_array then
-				across l_array.expressions as l_e loop
-					Result.merge (extract_generated (l_e.item))
-				end
-			elseif attached {BRACKET_AS} a_condition as l_bracket then
-				Result.merge (extract_generated (l_bracket.target))
-				across l_bracket.operands as l_op loop
-					Result.merge (extract_generated (l_op.item))
-				end
-			elseif attached {CONVERTED_EXPR_AS} a_condition as l_c then
-				Result.merge (extract_generated (l_c.expr))
-			elseif attached {EXPR_CALL_AS} a_condition as l_expr_call then
-				if attached {ACCESS_ID_AS} l_expr_call.call as l_aid and then l_aid.is_local then
-					Result.extend (l_aid.feature_name.name_id)
-				end
-			elseif attached {OBJECT_TEST_AS} a_condition as l_ot then
-				Result.merge (extract_generated (l_ot.expression))
-			elseif attached {OPERAND_AS} a_condition as l_op then
-				if attached l_op.expression then
-					Result.merge (extract_generated (l_op.expression))
-				end
-			elseif attached {PARAN_AS} a_condition as l_paran then
-				Result.merge (extract_generated (l_paran.expr))
-			elseif attached {UNARY_AS} a_condition as l_unary then
-				Result.merge (extract_generated (l_unary.expr))
-				-- TODO: Other types of expressions.
+	generated: detachable LINKED_SET [INTEGER]
+		-- Set of generated variables, used by `extract_generated'.
+
+	extract_generated (a_ast: AST_EIFFEL): LINKED_SET [INTEGER]
+			-- Extracts all free (and local) variables from `a_ast'.
+		do
+			create generated.make
+
+				-- Delegate to AST visitor. We will only look at Access IDs
+				-- that occur in `a_ast'.
+			a_ast.process (Current)
+
+			Result := generated
+		end
+
+	process_access_id_as (a_access_id: ACCESS_ID_AS)
+			-- Adds a free variable from `a_access_id', if available.
+		do
+			Precursor (a_access_id)
+
+			if a_access_id.is_local then
+				generated.extend (a_access_id.feature_name.name_id)
 			end
 		end
 
-	extract_assigned (a_assign: ACCESS_AS): INTEGER
+	process_converted_expr_as (a_conv: CONVERTED_EXPR_AS)
+			-- Needed for expressions like "$foo". Adds a free variable from
+			-- `l_as', if available.
+		do
+			Precursor (a_conv)
+
+			if attached {ADDRESS_AS} a_conv.expr as l_address then
+				if attached {FEAT_NAME_ID_AS} l_address.feature_name as l_id then
+					generated.extend (l_id.feature_name.name_id)
+				end
+			end
+		end
+
+feature {NONE} -- Extracting Assignments
+
+	extract_assigned (a_target: ACCESS_AS): INTEGER
 			-- Extracts the variable ID of the target `a_assign' of an
 			-- assignment if a local variable gets assigned. If no local
 			-- variable gets assigned then Result = -1.
-		require
-			is_assignment: (attached {ASSIGN_AS} a_assign)
 		do
 			Result := -1
 
-			if attached {ACCESS_ID_AS} a_assign as l_id and then l_id.is_local then
+			if attached {ACCESS_ID_AS} a_target as l_id and then l_id.is_local then
 					-- Something is assigned to a local variable.
 				Result := l_id.feature_name.name_id
 					-- TODO: Result?
@@ -224,15 +275,18 @@ feature {NONE} -- Analysis data
 			-- Hash table containing a list of name IDs (live variables) for the CFG labels.
 
 	assignment_nodes: LINKED_SET [CA_CFG_INSTRUCTION]
+			-- Set of CFG nodes that represent an assignment or a creation.
 
 feature -- Properties
 
 	title: STRING_32
+			-- Rule title.
 		do
 			Result := ca_names.variable_not_read_title
 		end
 
 	description: STRING_32
+			-- Rule description.
 		do
 			Result :=  ca_names.variable_not_read_description
 		end
@@ -243,6 +297,7 @@ feature -- Properties
 	is_system_wide: BOOLEAN = False
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+			-- Generates a formatted rule violation description for `a_formatter' based on `a_violation'.
 		do
 			a_formatter.add (ca_messages.variable_not_read_violation_1)
 
