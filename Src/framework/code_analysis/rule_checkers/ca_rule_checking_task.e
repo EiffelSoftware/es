@@ -56,12 +56,14 @@ feature -- From ROTA
 
 				-- TODO: more elegant and performant solution?
 			across rules as l_rules loop
-				l_rules.item.set_node_types (type_recorder.node_types)
-				l_rules.item.set_checking_class (classes.item)
-					-- If rule is non-standard then it will not be checked by l_rules_checker.
-					-- We will have the rule check the current class here:
-				if attached {CA_CFG_RULE} l_rules.item as l_cfg_rule then
-					l_cfg_rule.check_class (classes.item)
+				if l_rules.item.is_enabled.value then
+					l_rules.item.set_node_types (type_recorder.node_types)
+					l_rules.item.set_checking_class (classes.item)
+						-- If rule is non-standard then it will not be checked by l_rules_checker.
+						-- We will have the rule check the current class here:
+					if attached {CA_CFG_RULE} l_rules.item as l_cfg_rule then
+						l_cfg_rule.check_class (classes.item)
+					end
 				end
 			end
 
