@@ -236,7 +236,7 @@ feature -- Contract visitor
 			output.put ("requires ")
 			a_precondition.expression.process (Current)
 			output.put (";")
-			print_assertion_information (a_precondition)
+			print_node_info (a_precondition.node_info)
 			output.put_new_line
 		end
 
@@ -250,7 +250,7 @@ feature -- Contract visitor
 			output.put ("ensures ")
 			a_postcondition.expression.process (Current)
 			output.put (";")
-			print_assertion_information (a_postcondition)
+			print_node_info (a_postcondition.node_info)
 			output.put_new_line
 		end
 
@@ -278,7 +278,7 @@ feature -- Statement Visitor
 			output.put ("assert ")
 			a_assert.expression.process (Current)
 			output.put (";")
-			print_assertion_information (a_assert)
+			print_node_info (a_assert.node_info)
 			output.put_new_line
 		end
 
@@ -420,6 +420,7 @@ feature -- Statement Visitor
 				i.item.process (Current)
 			end
 			output.put (");")
+			print_node_info (a_call.node_info)
 			output.put_new_line
 		end
 
@@ -435,26 +436,30 @@ feature -- Statement Visitor
 			-- Print origin information of `a_statement'.
 		do
 			if attached a_statement.origin_information as l_origin then
-				output.put_comment_line (l_origin.file + ":" + l_origin.line.out)
-				if l_origin.line > 0 then
-					output.put_comment_line (l_origin.text_of_line)
+				if attached l_origin.file then
+					output.put_comment_line (l_origin.file + ":" + l_origin.line.out)
+					if l_origin.line > 0 then
+						output.put_comment_line (l_origin.text_of_line)
+					end
 				end
 			end
 		end
 
-	print_assertion_information (a_assertion: IV_ASSERTION)
-			-- Print assertion information of `a_assertion'.
+	print_node_info (a_info: IV_NODE_INFO)
+			-- Print node info `a_info'.
 		do
-			if attached a_assertion.information as l_info then
-				output.put (" // ")
-				output.put (l_info.type)
-				if attached l_info.tag as l_tag then
-					output.put (" tag:")
-					output.put (l_tag)
-				end
-				if attached l_info.line as l_line then
-					output.put (" line:")
-					output.put (l_line)
+			if attached a_info and then attached a_info.attributes as l_attributes then
+				output.put (" //")
+				from
+					l_attributes.start
+				until
+					l_attributes.after
+				loop
+					output.put (" ")
+					output.put (l_attributes.key_for_iteration.out)
+					output.put (":")
+					output.put (l_attributes.item_for_iteration)
+					l_attributes.forth
 				end
 			end
 		end

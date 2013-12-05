@@ -14,6 +14,8 @@ inherit
 
 	IV_ASSERTION
 
+	IV_INFO_NODE
+
 create
 	make
 

@@ -1,3 +1,6 @@
+note
+	AutoProof: ownership, ownserhip_defaults, overflow
+
 class B_MESSAGES
 
 feature -- Successful verification
@@ -221,8 +224,6 @@ feature -- Loop variant violation
 			end
 		end
 
-feature -- Class invariant
-feature -- Frame violation
 feature -- Void-call
 
 	void_call_on_local: ANY
@@ -230,6 +231,36 @@ feature -- Void-call
 			x: ANY
 		do
 			x.do_nothing
+		end
+
+	void_call_in_check: ANY
+		local
+			x: B_MESSAGES
+		do
+			check x.any_attribute = Void or True end
+		end
+
+	void_call_in_pre_helper (a: B_MESSAGES)
+		note
+			skip: True
+		require
+			a.any_attribute = Void
+		do
+		end
+
+	void_call_in_pre: ANY
+		do
+			void_call_in_pre_helper (Void)
+		end
+
+	void_call_in_loop_inv
+		do
+			-- TODO
+		end
+
+	void_call_in_loop_var
+		do
+			-- TODO
 		end
 
 	any_attribute: ANY
@@ -244,7 +275,77 @@ feature -- Void-call
 			void_call_on_local.do_nothing
 		end
 
-feature -- Overflow
+feature {NONE} -- Overflow
 
+	overflow_in_body (a, b: INTEGER): INTEGER
+		do
+			Result := a + b
+		end
+
+	overflow_in_check (a, b: INTEGER): INTEGER
+		require
+			a > 0 and b > 0
+		do
+			check a + b > 0 end
+		end
+
+	overflow_in_post (a, b: INTEGER): INTEGER
+		require
+			a > 0 and b > 0
+		do
+		ensure
+			a + b > 0
+		end
+
+	overflow_in_pre_helper (a, b: INTEGER)
+		note
+			skip: True
+		require
+			a + b > 0
+		do
+		end
+
+	overflow_in_pre (a, b: INTEGER)
+		require
+			a > 0 and b > 0
+		do
+			overflow_in_pre_helper (a, b)
+		end
+
+feature -- Ownership
+
+	ownership_assignment_current_not_open
+		note
+			explicit: "all"
+		require
+			observers = []
+			modify (Current)
+		do
+			any_attribute := Void
+		end
+
+	ownership_assignment_heap_not_writable
+		note
+			explicit: "all"
+		require
+			observers = []
+			is_open
+			modify ([])
+		do
+			any_attribute := Void
+		end
+
+	ownership_assignment_observers_open_or_preserved
+		note
+			explicit: "all"
+		require
+			is_open
+			modify (Current)
+		do
+			any_attribute := Void
+		end
+
+feature -- Frame violation
+feature -- Class invariant
 
 end

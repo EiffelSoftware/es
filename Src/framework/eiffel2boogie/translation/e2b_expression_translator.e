@@ -247,7 +247,7 @@ feature -- Visitors
 					l_fcall.add_argument (last_expression)
 						-- TODO: refactor
 					if not is_in_quantifier then
-						add_safety_check (l_fcall, "overflow", Void)
+						add_safety_check (l_fcall, "overflow", Void, a_node.line_number)
 					end
 				end
 			end
@@ -768,10 +768,10 @@ feature -- Visitors
 					create l_call.make ("attached", types.bool)
 					l_call.add_argument (entity_mapping.heap)
 					l_call.add_argument (current_target)
-					l_call.add_argument (create {IV_VALUE}.make (name_translator.boogie_name_for_type (current_target_type), types.type))
+					l_call.add_argument (factory.type_value (current_target_type))
 						-- TODO: refactor
 					if not is_in_quantifier then
-						add_safety_check (l_call, "attached", "implicit_attachment")
+						add_safety_check (l_call, "attached", Void, a_node.target.line_number)
 					end
 				end
 
@@ -1031,7 +1031,7 @@ feature -- Translation
 		deferred
 		end
 
-	add_safety_check (a_expression: IV_EXPRESSION; a_name: STRING; a_tag: STRING)
+	add_safety_check (a_expression: IV_EXPRESSION; a_name: STRING; a_tag: STRING; a_line: INTEGER)
 			-- Add safety check `a_expression' of type `a_name'.
 		require
 			boolean_expression: a_expression.type.is_boolean

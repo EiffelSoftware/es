@@ -11,10 +11,11 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_name: STRING)
+	make (a_name: STRING; a_context: E2B_BOOGIE_RESULT)
 			-- Initialize procedure result
 		do
 			name := a_name.twin
+			context := a_context
 			create errors.make
 		end
 
@@ -28,6 +29,9 @@ feature -- Access
 
 	errors: LINKED_LIST [E2B_BOOGIE_PROCEDURE_ERROR]
 			-- List of verification errors.
+
+	context: E2B_BOOGIE_RESULT
+			-- Context of this result.
 
 feature -- Status report
 

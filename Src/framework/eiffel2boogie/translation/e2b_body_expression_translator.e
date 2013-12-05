@@ -132,6 +132,7 @@ feature -- Visitors
 				-- Is this a normal reference type?
 			if l_local.type.is_reference then
 				create l_proc_call.make ("allocate")
+				l_proc_call.node_info.set_line (a_node.call.line_number)
 				l_proc_call.add_argument (factory.type_value (l_type))
 				l_proc_call.set_target (l_local)
 				side_effect.extend (l_proc_call)
@@ -266,6 +267,10 @@ feature -- Translation
 					translation_pool.add_referenced_feature (a_feature, current_target_type)
 					create l_pcall.make (name_translator.boogie_name_for_feature (a_feature, current_target_type))
 				end
+
+				l_pcall.node_info.set_attribute ("cid", a_feature.written_class.class_id.out)
+				l_pcall.node_info.set_attribute ("rid", a_feature.rout_id_set.first.out)
+
 				l_pcall.add_argument (current_target)
 				process_parameters (a_parameters)
 				l_pcall.arguments.append (last_parameters)
@@ -412,16 +417,16 @@ feature -- Translation
 			inlined_routines.force (inlined_routines.item (a_feature.body_index) - 1, a_feature.body_index)
 		end
 
-	add_safety_check (a_expression: IV_EXPRESSION; a_name: STRING; a_tag: STRING)
+	add_safety_check (a_expression: IV_EXPRESSION; a_name: STRING; a_tag: STRING; a_line: INTEGER)
 			-- <Precursor>
 		local
 			l_assert: IV_ASSERT
 			l_info: IV_ASSERTION_INFORMATION
 		do
 			create l_assert.make (implies_safety_expression (a_expression))
-			create l_info.make (a_name)
-			l_info.set_tag (a_tag)
-			l_assert.set_information (l_info)
+			l_assert.node_info.set_type (a_name)
+			l_assert.node_info.set_tag (a_tag)
+			l_assert.node_info.set_line (a_line)
 			side_effect.extend (l_assert)
 		end
 

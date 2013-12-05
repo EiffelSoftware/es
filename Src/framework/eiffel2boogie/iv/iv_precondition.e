@@ -4,6 +4,7 @@ note
 	]"
 	date: "$Date$"
 	revision: "$Revision$"
+
 class
 	IV_PRECONDITION
 
@@ -12,6 +13,8 @@ inherit
 	IV_CONTRACT
 
 	IV_ASSERTION
+
+	IV_INFO_NODE
 
 create
 	make

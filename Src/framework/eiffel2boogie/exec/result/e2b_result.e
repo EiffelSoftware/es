@@ -1,5 +1,5 @@
 note
-	description: "Result of a Boogie run."
+	description: "Result of an AutoProof run."
 	date: "$Date$"
 	revision: "$Revision$"
 

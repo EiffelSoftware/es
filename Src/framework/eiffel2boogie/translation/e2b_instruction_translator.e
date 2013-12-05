@@ -198,6 +198,7 @@ feature -- Processing
 			if a_node.target.is_attribute and options.is_ownership_enabled then
 					-- OWNERSHIP: call update heap instead of direct heap assignment
 				create l_call.make ("update_heap")
+				l_call.node_info.set_line (a_node.line_number)
 				l_call.add_argument (entity_mapping.current_expression)
 				l_call.add_argument (create {IV_ENTITY}.make (name_translator.boogie_name_for_feature (l_feature, current_type), types.field (types.for_type_a (l_feature.type))))
 				l_call.add_argument (l_source)
@@ -252,16 +253,14 @@ feature -- Processing
 			else
 				set_current_origin_information (a_assert)
 				process_contract_expression (a_assert.expr)
---				process_expression (a_assert.expr)
 				if attached a_assert.tag and then a_assert.tag.is_case_insensitive_equal ("assume") then
 					create l_assume.make (last_expression)
 					add_statement (l_assume)
 				else
 					create l_statement.make (last_expression)
-					create l_info.make ("check")
-					l_info.set_tag (a_assert.tag)
-					l_info.set_line (a_assert.line_number)
-					l_statement.set_information (l_info)
+					l_statement.node_info.set_type ("check")
+					l_statement.node_info.set_tag (a_assert.tag)
+					l_statement.node_info.set_line (a_assert.line_number)
 					add_statement (l_statement)
 				end
 			end
@@ -582,14 +581,13 @@ feature -- Processing
 					process_contract_expression (l_invariant.expr)
 					across last_safety_checks as i loop
 						create l_assert.make (i.item.expr)
-						l_assert.set_information (i.item.info)
+						l_assert.node_info.load (i.item.info)
 						add_statement (l_assert)
 					end
 					create l_assert.make (last_expression)
-					create l_info.make ("loop_inv")
-					l_info.set_tag (l_invariant.tag)
-					l_info.set_line (l_invariant.line_number)
-					l_assert.set_information (l_info)
+					l_assert.node_info.set_type ("loop_inv")
+					l_assert.node_info.set_tag (l_invariant.tag)
+					l_assert.node_info.set_line (l_invariant.line_number)
 					add_statement (l_assert)
 					a_node.invariant_part.forth
 				end
@@ -614,7 +612,9 @@ feature -- Processing
 				create l_assignment.make (l_variant, last_expression)
 				add_statement (l_assignment)
 				create l_assert.make (factory.less_equal (factory.int_value (0), l_variant))
-				l_assert.set_assertion_type ("loop_var_ge")
+				l_assert.node_info.set_type ("loop_var_ge_zero")
+				l_assert.node_info.set_tag (a_node.variant_part.tag)
+				l_assert.node_info.set_line (a_node.variant_part.line_number)
 				add_statement (l_assert)
 			end
 
@@ -638,7 +638,9 @@ feature -- Processing
 				set_current_origin_information (a_node.variant_part)
 				process_expression (a_node.variant_part.expr)
 				create l_assert.make (factory.less (last_expression, l_variant))
-				l_assert.set_assertion_type ("loop_var_decr")
+				l_assert.node_info.set_type ("loop_var_decr")
+				l_assert.node_info.set_tag (a_node.variant_part.tag)
+				l_assert.node_info.set_line (a_node.variant_part.line_number)
 				add_statement (l_assert)
 			end
 			create l_goto.make (l_head_block)
@@ -728,7 +730,7 @@ feature -- Processing
 					process_contract_expression (l_invariant.expr)
 					across last_safety_checks as i loop
 						create l_assert.make (i.item.expr)
-						l_assert.set_information (i.item.info)
+						l_assert.node_info.load (i.item.info)
 						add_statement (l_assert)
 					end
 					create l_assert.make (last_expression)
@@ -1082,7 +1084,7 @@ feature {NONE} -- Implementation
 	last_expression: IV_EXPRESSION
 			-- Last generated expression.
 
-	last_safety_checks: LINKED_LIST [TUPLE [expr: IV_EXPRESSION; info: IV_ASSERTION_INFORMATION]]
+	last_safety_checks: LINKED_LIST [TUPLE [expr: IV_EXPRESSION; info: IV_NODE_INFO]]
 			-- List of last generated safety checks.
 
 	locals_map: HASH_TABLE [IV_EXPRESSION, INTEGER]

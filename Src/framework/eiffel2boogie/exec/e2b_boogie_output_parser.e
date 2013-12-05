@@ -81,7 +81,7 @@ feature {NONE} -- Implementation
 				-- name of procedure: verifying_regexp.captured_substring (1)
 				check current_procedure_error = Void end
 				check current_procedure_result = Void or else current_procedure_result.is_error end
-				create current_procedure_result.make (verifying_regexp.captured_substring (1))
+				create current_procedure_result.make (verifying_regexp.captured_substring (1), last_result)
 
 			elseif verified_regexp.matches (a_line) then
 				-- time in seconds: verified_regexp.captured_substring (1).to_real

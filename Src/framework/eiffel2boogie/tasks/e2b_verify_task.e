@@ -34,20 +34,22 @@ feature {NONE} -- Implementation
 			boogie_universe_cell.put (universe)
 			translation_pool.reset
 			autoproof_errors.wipe_out
+			result_handlers.wipe_out
 
 			create verifier.make
+			create result_generator.make
 
 			create remaining_tasks.make
 			remaining_tasks.extend (create {E2B_TRANSLATE_CHUNK_TASK}.make (a_translator_input, boogie_universe))
 			remaining_tasks.extend (create {E2B_GENERATE_BOOGIE_TASK}.make (boogie_universe, verifier))
 			remaining_tasks.extend (create {E2B_EXECUTE_BOOGIE_TASK}.make (verifier))
-			remaining_tasks.extend (create {E2B_EVALUATE_BOOGIE_OUTPUT_TASK}.make (verifier))
+			remaining_tasks.extend (create {E2B_EVALUATE_BOOGIE_OUTPUT_TASK}.make (verifier, result_generator))
 			if options.is_two_step_verification_enabled then
-				remaining_tasks.extend (create {E2B_VERIFY_WITH_INLINING_TASK}.make (verifier, remaining_tasks))
+				remaining_tasks.extend (create {E2B_VERIFY_WITH_INLINING_TASK}.make (result_generator, remaining_tasks))
 			end
-			if options.is_postcondition_mutation_enabled then
-				remaining_tasks.extend (create {E2B_POSTCONDITION_MUTATION_TASK}.make (verifier))
-			end
+--			if options.is_postcondition_mutation_enabled then
+--				remaining_tasks.extend (create {E2B_POSTCONDITION_MUTATION_TASK}.make (verifier))
+--			end
 		end
 
 feature -- Access
@@ -66,7 +68,7 @@ feature -- Access
 	verifier_result: detachable E2B_RESULT
 			-- Result of verification.
 		do
-			Result := verifier.last_result
+			Result := result_generator.last_result
 		end
 
 feature -- Status report
@@ -100,6 +102,9 @@ feature {NONE} -- Implementation
 
 	verifier: E2B_VERIFIER
 			-- Boogie verifier.
+
+	result_generator: E2B_RESULT_GENERATOR
+			-- Result generator.
 
 	universe: IV_UNIVERSE
 			-- Boogie universe.

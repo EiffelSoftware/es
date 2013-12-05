@@ -15,10 +15,10 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_primary_verifier, a_secondary_verifier: attached like primary_verifier)
+	make (a_initial_result: attached like initial_result; a_secondary_verifier: attached like secondary_verifier)
 			-- Initialize task.
 		do
-			primary_verifier := a_primary_verifier
+			initial_result := a_initial_result
 			secondary_verifier := a_secondary_verifier
 			has_next_step := True
 		end
@@ -40,18 +40,18 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 			l_primary_result: E2B_PROCEDURE_RESULT
 		do
 			if
-				attached primary_verifier.last_result and then
+				attached initial_result and then
 				attached secondary_verifier.last_result
 			then
 				across secondary_verifier.last_result.procedure_results as l_second_results loop
 					if attached {E2B_SUCCESSFUL_VERIFICATION} l_second_results.item as l_second_success then
 						from
 							l_new_success := True
-							primary_verifier.last_result.procedure_results.start
+							initial_result.procedure_results.start
 						until
-							primary_verifier.last_result.procedure_results.after or not l_new_success
+							initial_result.procedure_results.after or not l_new_success
 						loop
-							l_primary_result := primary_verifier.last_result.procedure_results.item
+							l_primary_result := initial_result.procedure_results.item
 							if
 								l_primary_result.eiffel_class.class_id = l_second_success.eiffel_class.class_id and then
 								l_primary_result.eiffel_feature.body_index = l_second_success.eiffel_feature.body_index
@@ -62,16 +62,16 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 									across l_primary_failed.errors as l_errors loop
 										l_second_success.add_original_error (l_errors.item)
 									end
-									primary_verifier.last_result.procedure_results.remove
+									initial_result.procedure_results.remove
 								else
 									check False end
 								end
 							else
-								primary_verifier.last_result.procedure_results.forth
+								initial_result.procedure_results.forth
 							end
 						end
 						if l_new_success then
-							primary_verifier.last_result.procedure_results.extend (l_second_success)
+							initial_result.procedure_results.extend (l_second_success)
 						end
 					end
 				end
@@ -87,8 +87,8 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 
 feature {NONE} -- Implementation
 
-	primary_verifier: attached E2B_VERIFIER
-			-- Boogie verifier.
+	initial_result: attached E2B_RESULT
+			-- Initial result.
 
 	secondary_verifier: attached E2B_VERIFIER
 			-- Boogie verifier.

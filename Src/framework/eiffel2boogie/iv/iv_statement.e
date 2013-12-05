@@ -8,6 +8,10 @@ note
 deferred class
 	IV_STATEMENT
 
+inherit
+
+	IV_INFO_NODE
+
 feature -- Access
 
 	origin_information: detachable IV_STATEMENT_ORIGIN

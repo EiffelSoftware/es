@@ -15,6 +15,10 @@ note
 class
 	E2B_VERIFIER
 
+inherit
+
+	E2B_SHARED_CONTEXT
+
 create
 	make
 
@@ -24,7 +28,6 @@ feature {NONE} -- Initialization
 			-- Initialize Boogie verifier.
 		do
 			create {E2B_PLATFORM_EXECUTABLE_IMPL} executable
-			create output_parser.make
 			create input.make
 		end
 
@@ -33,7 +36,7 @@ feature -- Access
 	input: E2B_VERIFIER_INPUT
 			-- Input for verifier.
 
-	last_result: detachable E2B_RESULT
+	last_result: detachable E2B_BOOGIE_RESULT
 			-- Result of last run of Boogie.
 		do
 			if not attached internal_last_result and then attached last_output then
@@ -98,12 +101,12 @@ feature -- Basic operations
 			last_output_set: attached last_output
 		local
 			l_boogie_parser: E2B_BOOGIE_OUTPUT_PARSER
+			l_result: E2B_RESULT
+			l_ap_error: E2B_AUTOPROOF_ERROR
 		do
 			create l_boogie_parser.make
 			l_boogie_parser.parse (last_output)
-
-			output_parser.process (last_output)
-			internal_last_result := output_parser.last_result
+			internal_last_result := l_boogie_parser.last_result
 		ensure
 			last_result_set: attached last_result
 		end
@@ -113,10 +116,7 @@ feature {NONE} -- Implementation
 	executable: attached E2B_EXECUTABLE
 			-- Boogie executable.
 
-	output_parser: attached E2B_OUTPUT_PARSER
-			-- Output parser.
-
-	internal_last_result: detachable E2B_RESULT
+	internal_last_result: detachable E2B_BOOGIE_RESULT
 			-- Cached last result.
 
 end

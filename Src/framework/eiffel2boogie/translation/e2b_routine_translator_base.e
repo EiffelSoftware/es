@@ -101,7 +101,7 @@ feature -- Helper functions: arguments and result
 			if attached l_type_translator.last_property then
 				create l_pre.make (l_type_translator.last_property)
 				l_pre.set_free
-				l_pre.set_assertion_type ("type property for argument " + a_name)
+				l_pre.node_info.set_attribute ("info", "type property for argument " + a_name)
 				current_boogie_procedure.add_contract (l_pre)
 			end
 		end

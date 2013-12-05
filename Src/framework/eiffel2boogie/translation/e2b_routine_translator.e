@@ -874,21 +874,19 @@ feature {NONE} -- Implementation
 		local
 			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 			l_contract: IV_PRECONDITION
-			l_info: IV_ASSERTION_INFORMATION
 		do
 			create l_translator.make
 			l_translator.set_context (current_feature, current_type)
 			a_assert.process (l_translator)
 			across l_translator.side_effect as i loop
 				create l_contract.make (i.item.expr)
-				l_contract.set_information (i.item.info)
+				l_contract.node_info.load (i.item.info)
 				current_boogie_procedure.add_contract (l_contract)
 			end
 			create l_contract.make (l_translator.last_expression)
-			create l_info.make ("pre")
-			l_info.set_line (a_assert.line_number)
-			l_info.set_tag (a_assert.tag)
-			l_contract.set_information (l_info)
+			l_contract.node_info.set_type ("pre")
+			l_contract.node_info.set_tag (a_assert.tag)
+			l_contract.node_info.set_line (a_assert.line_number)
 			if options.is_precondition_predicate_enabled then
 				l_contract.set_free
 			end
@@ -908,14 +906,13 @@ feature {NONE} -- Implementation
 			a_fields.append (l_translator.field_accesses)
 			across l_translator.side_effect as i loop
 				create l_contract.make (i.item.expr)
-				l_contract.set_information (i.item.info)
+				l_contract.node_info.load (i.item.info)
 				current_boogie_procedure.add_contract (l_contract)
 			end
 			create l_contract.make (l_translator.last_expression)
-			create l_info.make ("post")
-			l_info.set_line (a_assert.line_number)
-			l_info.set_tag (a_assert.tag)
-			l_contract.set_information (l_info)
+			l_contract.node_info.set_type ("post")
+			l_contract.node_info.set_tag (a_assert.tag)
+			l_contract.node_info.set_line (a_assert.line_number)
 			current_boogie_procedure.add_contract (l_contract)
 		end
 

@@ -30,11 +30,17 @@ feature -- Access
 	line_text: STRING
 			-- Text of line where error occured.
 
+	attributes: STRING_TABLE [STRING]
+			-- Attributes of line.
+
 	related_line: INTEGER
 			-- Line of related location (if any).
 
 	related_line_text: STRING
 			-- Text of line of related location (if any).
+
+	related_attributes: STRING_TABLE [STRING]
+			-- Attributes of related line.
 
 feature -- Status report
 
@@ -81,6 +87,7 @@ feature -- Element change
 		do
 			line := a_line
 			line_text := a_line_text.twin
+			attributes := parsed_attributes (a_line_text)
 		ensure
 			line_set: line = a_line
 			line_text_set: line_text ~ a_line_text
@@ -91,9 +98,41 @@ feature -- Element change
 		do
 			related_line := a_line
 			related_line_text := a_line_text.twin
+			related_attributes := parsed_attributes (a_line_text)
 		ensure
 			related_line_set: related_line = a_line
 			related_line_text_set: related_line_text ~ a_line_text
+		end
+
+feature {NONE} -- Implementation
+
+	parsed_attributes (a_line: STRING): STRING_TABLE [STRING]
+			-- Parse attributes from line `a_line'.
+		local
+			l_index: INTEGER
+			l_comment_text: STRING
+			l_parts: LIST [STRING]
+			l_part: STRING
+		do
+			create Result.make (4)
+			l_index := a_line.substring_index ("//", 1)
+			if l_index > 0 then
+				l_comment_text := a_line.substring (l_index + 2, a_line.count)
+				l_parts := l_comment_text.split (' ')
+				across l_parts as i loop
+					l_part := i.item
+					l_part.left_adjust
+					l_part.right_adjust
+					if not l_part.is_empty then
+						l_index := l_part.index_of (':', 1)
+						if l_index = 0 then
+							Result.force (Void, l_part)
+						else
+							Result.force (l_part.substring (l_index + 1, l_part.count), l_part.substring (1, l_index - 1))
+						end
+					end
+				end
+			end
 		end
 
 end

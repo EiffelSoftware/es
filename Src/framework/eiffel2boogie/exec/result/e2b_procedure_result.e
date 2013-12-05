@@ -29,7 +29,7 @@ feature -- Access
 			end
 		end
 
-feature {E2B_OUTPUT_PARSER} -- Element change
+feature {E2B_OUTPUT_PARSER, E2B_RESULT_GENERATOR} -- Element change
 
 	set_procedure_name (a_name: like procedure_name)
 			-- Set `procedure_name' to `a_name'.
