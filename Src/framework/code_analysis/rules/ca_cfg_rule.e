@@ -9,8 +9,6 @@ deferred class
 
 inherit
 	CA_RULE
-		rename node_type as ast_node_type
-		end
 
 	CA_CFG_BACKWARD_ITERATOR
 

@@ -41,13 +41,15 @@ feature {NONE} -- From {CA_CFG_RULE}
 			l_assigned_id: INTEGER
 			l_viol: CA_RULE_VIOLATION
 		do
+			current_feature := a_feature.associated_feature_i
+
 			Precursor (a_class, a_feature)
 
 				-- Iterate through all assignments in search for dead assignments.
 			across assignment_nodes as l_assigns loop
 				if attached {ASSIGN_AS} l_assigns.item.instruction as l_assign then
 					l_assigned_id := extract_assigned (l_assign.target)
-					if not lv_exit.at (l_assigns.item.label).has (l_assigned_id) then
+					if l_assigned_id /= -1 and then (not lv_exit.at (l_assigns.item.label).has (l_assigned_id)) then
 						create l_viol.make_with_rule (Current)
 						l_viol.set_location (l_assign.start_location)
 						l_viol.long_description_info.extend (l_assign.target.access_name_32)
@@ -55,7 +57,7 @@ feature {NONE} -- From {CA_CFG_RULE}
 					end
 				elseif attached {CREATION_AS} l_assigns.item.instruction as l_creation then
 					l_assigned_id := extract_assigned (l_creation.target)
-					if not lv_exit.at (l_assigns.item.label).has (l_assigned_id) then
+					if l_assigned_id /= -1 and then (not lv_exit.at (l_assigns.item.label).has (l_assigned_id)) then
 						create l_viol.make_with_rule (Current)
 						l_viol.set_location (l_creation.start_location)
 						l_viol.long_description_info.extend (l_creation.target.access_name_32)
@@ -235,7 +237,7 @@ feature {NONE} -- Extracting Used Variables
 		do
 			Precursor (a_access_id)
 
-			if a_access_id.is_local then
+			if is_expanded_local (a_access_id) then
 				generated.extend (a_access_id.feature_name.name_id)
 			end
 		end
@@ -262,10 +264,23 @@ feature {NONE} -- Extracting Assignments
 		do
 			Result := -1
 
-			if attached {ACCESS_ID_AS} a_target as l_id and then l_id.is_local then
+			if attached {ACCESS_ID_AS} a_target as l_id and then is_expanded_local (l_id) then
 					-- Something is assigned to a local variable.
 				Result := l_id.feature_name.name_id
 					-- TODO: Result?
+			end
+		end
+
+feature {NONE} -- Utilities
+
+	current_feature: FEATURE_I
+
+	is_expanded_local (a_id: ACCESS_ID_AS): BOOLEAN
+		do
+			if a_id.is_local then
+				if attached node_type (a_id, current_feature) as l_type then
+					Result := l_type.is_expanded
+				end
 			end
 		end
 
