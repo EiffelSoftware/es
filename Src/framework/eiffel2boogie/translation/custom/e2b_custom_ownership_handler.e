@@ -67,7 +67,9 @@ feature -- Basic operations
 				a_translator.side_effect.finish
 				a_translator.side_effect.remove	-- last side effect is actual call, here to non-existing "xyz"
 				a_translator.set_last_expression (Void)
-				a_translator.side_effect.extend (factory.procedure_call ("update_heap", << a_translator.current_target, l_name, l_call.arguments.i_th (2)>>))
+				l_call := factory.procedure_call ("update_heap", << a_translator.current_target, l_name, l_call.arguments.i_th (2)>>)
+				l_call.node_info.set_line (a_translator.context_line_number)
+				a_translator.side_effect.extend (l_call)
 			else
 				check false end
 			end

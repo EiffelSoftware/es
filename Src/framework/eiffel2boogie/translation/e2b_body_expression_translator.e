@@ -311,6 +311,9 @@ feature -- Translation
 					-- No expression generated, this has to be a call statement
 				last_expression := Void
 			end
+			l_call.node_info.set_line (context_line_number)
+			l_call.node_info.set_attribute ("cid", a_feature.written_in.out)
+			l_call.node_info.set_attribute ("rid", a_feature.rout_id_set.first.out)
 			side_effect.extend (l_call)
 		end
 
