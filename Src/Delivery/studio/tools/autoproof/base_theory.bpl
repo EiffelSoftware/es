@@ -202,6 +202,26 @@ procedure update_heap<T>(Current: ref, field: Field T, value: T);
   ensures global(Heap);
   ensures Heap == old(Heap[Current, field := value]);
   free ensures HeapSucc(old(Heap), Heap);
+  
+procedure update_subjects(Current: ref, value: Set ref);
+  requires (Current != Void) && (Heap[Current, allocated]); // type:assign tag:attached_and_allocated
+  requires is_open(Heap, Current); // type:assign tag:target_open UP1
+  requires writable[Current, subjects]; // type:assign tag:attribute_writable UP3
+  modifies Heap;
+  ensures global(Heap);
+  ensures Heap == old(Heap[Current, subjects := value]);
+  free ensures HeapSucc(old(Heap), Heap);
+
+procedure update_observers(Current: ref, value: Set ref);
+  requires (Current != Void) && (Heap[Current, allocated]); // type:assign tag:attached_and_allocated
+  requires is_open(Heap, Current); // type:assign tag:target_open UP1
+  requires writable[Current, observers]; // type:assign tag:attribute_writable UP3
+  requires Set#Subset(Heap[Current, observers], value) ||
+    (forall o: ref :: Heap[Current, observers][o] ==> (is_open(Heap, o))); // type:assign tag:observers_open_or_set_grows UP2
+  modifies Heap;
+  ensures global(Heap);
+  ensures Heap == old(Heap[Current, observers := value]);
+  free ensures HeapSucc(old(Heap), Heap);  
 
 // Unwrap o
 procedure unwrap(o: ref);

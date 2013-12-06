@@ -430,6 +430,7 @@ feature -- Translation
 			l_assert.node_info.set_type (a_name)
 			l_assert.node_info.set_tag (a_tag)
 			l_assert.node_info.set_line (a_line)
+--			l_assert.node_info.set_attribute ("subsumption", "0")
 			side_effect.extend (l_assert)
 		end
 

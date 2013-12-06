@@ -162,6 +162,7 @@ feature -- Translation
 			create l_info.make_with_type (a_name)
 			l_info.set_tag (a_tag)
 			l_info.set_line (a_line)
+--			l_info.set_attribute ("subsumption", "0")
 			side_effect.extend ([implies_safety_expression (a_expression), l_info])
 		end
 

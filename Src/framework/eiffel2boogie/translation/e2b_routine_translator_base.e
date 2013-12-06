@@ -321,7 +321,7 @@ feature -- Helper functions: contracts
 							l_feature := l_type.base_class.feature_named_32 (f.item)
 							if l_feature = Void then
 								if f.item ~ "closed" then
-									l_name :=  "closed"
+									l_name := "closed"
 									l_boogie_type := types.bool
 								else
 									l_name := Void
