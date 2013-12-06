@@ -105,51 +105,51 @@ feature -- Statement Visitor
 	process_block (a_block: IV_BLOCK)
 			-- Process `a_block'.
 		local
-			ass: IV_ASSERT
-				--the loop invariant to be added.
-			ass_inf: IV_ASSERTION_INFORMATION
-			done: BOOLEAN
+--			ass: IV_ASSERT
+--				--the loop invariant to be added.
+--			ass_inf: IV_ASSERTION_INFORMATION
+--			done: BOOLEAN
 		do
-			--if there already is an invariant, the new one is set to the position before that one,so it is the first statement handling an invariant, otherwise it is set as the first statement overall.
-			if a_block.is_deep_equal(loop_head) then--this should also work if 2 loops are exactly the same in the eiffel code, since they will have different numbering in their names in the AST.
-				done:= False
-				ass:= Void
-				from
-					a_block.statements.start
-				until
-					a_block.statements.after
-				loop
-					if attached {IV_ASSERT} a_block.statements.item as asserti then
-						if asserti.information.type ~ "loop_inv" then
-							if not done then
-								ass_inf := asserti.information
-								create ass.make (the_invariant.twin)
-								ass.set_origin_information (asserti.origin_information)
-								ass.set_information (ass_inf)
-								ass.set_attribute_string (asserti.attribute_string)
-								done:= True
-								a_block.statements.put_left (ass)
-							end
-							if is_debugging_enabled then
-								print("%Nadded as first invariant.")
-							end
-						end
-					end
-					a_block.statements.forth
-				end
-				if ass = void then -- code if there is no previous invariant attached.
-					create ass.make (the_invariant.twin)
-					ass.set_assertion_type ("loop_inv")
---					a_block.add_statement (ass) --this doesn't work since then the statement before this one is a goto, and this one is never called.
---					a_block.add_statement_before_last (ass) --last statement is a goto, anything after this statement is ignored.
-					a_block.statements.put_front (ass) -- seems to be best option to have it in the beginning.
-				end
-				is_attached := True
-			else
-				across a_block.statements as stmtns loop
-					stmtns.item.process (Current)
-				end
-			end
+--			--if there already is an invariant, the new one is set to the position before that one,so it is the first statement handling an invariant, otherwise it is set as the first statement overall.
+--			if a_block.is_deep_equal(loop_head) then--this should also work if 2 loops are exactly the same in the eiffel code, since they will have different numbering in their names in the AST.
+--				done:= False
+--				ass:= Void
+--				from
+--					a_block.statements.start
+--				until
+--					a_block.statements.after
+--				loop
+--					if attached {IV_ASSERT} a_block.statements.item as asserti then
+--						if asserti.information.type ~ "loop_inv" then
+--							if not done then
+--								ass_inf := asserti.information
+--								create ass.make (the_invariant.twin)
+--								ass.set_origin_information (asserti.origin_information)
+--								ass.set_information (ass_inf)
+--								ass.set_attribute_string (asserti.attribute_string)
+--								done:= True
+--								a_block.statements.put_left (ass)
+--							end
+--							if is_debugging_enabled then
+--								print("%Nadded as first invariant.")
+--							end
+--						end
+--					end
+--					a_block.statements.forth
+--				end
+--				if ass = void then -- code if there is no previous invariant attached.
+--					create ass.make (the_invariant.twin)
+--					ass.set_assertion_type ("loop_inv")
+----					a_block.add_statement (ass) --this doesn't work since then the statement before this one is a goto, and this one is never called.
+----					a_block.add_statement_before_last (ass) --last statement is a goto, anything after this statement is ignored.
+--					a_block.statements.put_front (ass) -- seems to be best option to have it in the beginning.
+--				end
+--				is_attached := True
+--			else
+--				across a_block.statements as stmtns loop
+--					stmtns.item.process (Current)
+--				end
+--			end
 		end
 
 	process_conditional (a_conditional: IV_CONDITIONAL)

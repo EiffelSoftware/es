@@ -8,17 +8,16 @@ class
 
 inherit
 
-	E2B_PROCEDURE_RESULT
+	E2B_VERIFICATION_RESULT
 
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (a_procedure_name: STRING)
+	make
 			-- Initialize.
 		do
-			set_procedure_name (a_procedure_name)
 			create errors.make
 		end
 

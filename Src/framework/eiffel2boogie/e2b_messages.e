@@ -10,7 +10,7 @@ inherit
 
 	SHARED_LOCALE
 
-feature -- Validity Error Messages
+feature -- Validity error messages
 
 	functional_feature_not_function: STRING_32
 		do Result := "Functional feature has to be a function" end
@@ -31,7 +31,7 @@ feature -- Validity Error Messages
 	modify_field_field_not_attribute (a_fname: STRING): STRING_32
 		do Result := locale.formatted_string ("Feature '$1' mentioned in 'modify_field' is not an attribute", a_fname) end
 
-feature -- Error Message Builders
+feature -- Verification error messages
 
 	check_violated: STRING_32
 		do Result := "Check may be violated (untagged)." end
@@ -40,10 +40,10 @@ feature -- Error Message Builders
 		do Result := "Check $tag may be violated." end
 
 	precondition_violated: STRING_32
-		do Result := "Precondition may be violated on call to $feature (untagged)." end
+		do Result := "Precondition may be violated on call to $called_feature (untagged)." end
 
 	precondition_with_tag_violated: STRING_32
-		do Result := "Precondition $tag may be violated on call to $feature violated." end
+		do Result := "Precondition $tag may be violated on call to $called_feature." end
 
 	postcondition_violated: STRING_32
 		do Result := "Postcondition may be violated (untagged)." end
@@ -51,13 +51,57 @@ feature -- Error Message Builders
 	postcondition_with_tag_violated: STRING_32
 		do Result := "Postcondition $tag may be violated." end
 
+	void_call: STRING_32
+		do Result := "Possible Void call." end
+
+	void_call_in_precondition: STRING_32
+		do Result := "Possible Void call in precondition on call to $called_feature (untagged)." end
+
+	void_call_in_precondition_with_tag: STRING_32
+		do Result := "Possible Void call in precondition $tag on call to $called_feature." end
+
+	void_call_in_postcondition: STRING_32
+		do Result := "Possible Void call in postcondition (untagged)." end
+
+	void_call_in_postcondition_with_tag: STRING_32
+		do Result := "Possible Void call in postcondition $tag." end
+
 	overflow: STRING_32
 		do Result := "Possible arithmetic overflow." end
 
 	overflow_in_precondition: STRING_32
-		do Result := "Possible arithmetic overflow in precondition." end
+		do Result := "Possible arithmetic overflow in precondition on call to $called_feature (untagged)." end
+
+	overflow_in_precondition_with_tag: STRING_32
+		do Result := "Possible arithmetic overflow in precondition $tag on call to $called_feature." end
 
 	overflow_in_postcondition: STRING_32
-		do Result := "Possible arithmetic overflow in postcondition." end
+		do Result := "Possible arithmetic overflow in postcondition (untagged)." end
+
+	overflow_in_postcondition_with_tag: STRING_32
+		do Result := "Possible arithmetic overflow in postcondition $tag." end
+
+	assignment_attached_and_allocated: STRING_32
+		do Result := "Target of assignment might not be attached or allocated" end
+
+	assignment_closed_or_owner_not_allowed: STRING_32
+		do Result := "The fields `closed' and `owner' cannot be directly assigned." end
+
+	assignment_target_open: STRING_32
+		do Result := "Target of assignment might not be open." end
+
+	assignment_observers_open_or_inv_preserved: STRING_32
+		do Result := "Observers of the assignment target might not be open or do not preserver their invariant." end
+
+	assignment_attribute_writable: STRING_32
+		do Result := "The attribute of the assignment might not be writable." end
+
+feature -- Verificaiton success/inconclusive messages
+
+	successful_verification: STRING_32
+		do Result := "Verification successful." end
+
+	inconclusive_result: STRING_32
+		do Result := "Inconclusive result (verifier timed out)." end
 
 end

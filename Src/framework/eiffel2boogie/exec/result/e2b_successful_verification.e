@@ -10,10 +10,7 @@ class
 
 inherit
 
-	E2B_PROCEDURE_RESULT
-
-create
-	set_procedure_name
+	E2B_VERIFICATION_RESULT
 
 feature -- Access
 
@@ -32,11 +29,11 @@ feature -- Element change
 				create original_errors.make
 			end
 			original_errors.extend (a_error)
-			if attached {E2B_PRECONDITION_VIOLATION} a_error then
-				set_suggestion ("You might need to weaken the precondition.")
-			elseif attached {E2B_CHECK_VIOLATION} a_error or attached {E2B_POSTCONDITION_VIOLATION} a_error then
-				set_suggestion ("You might need to strenghten the loop invariant of postcondition of called features.")
-			end
+--			if attached {E2B_PRECONDITION_VIOLATION} a_error then
+--				set_suggestion ("You might need to weaken the precondition.")
+--			elseif attached {E2B_CHECK_VIOLATION} a_error or attached {E2B_POSTCONDITION_VIOLATION} a_error then
+--				set_suggestion ("You might need to strenghten the loop invariant of postcondition of called features.")
+--			end
 		end
 
 	set_suggestion (a_string: STRING)
@@ -59,7 +56,7 @@ feature -- Display
 					a_formatter.add ("(see original errors)")
 				end
 			else
-				a_formatter.add ("Verification successful.")
+				a_formatter.add (messages.successful_verification)
 			end
 		end
 

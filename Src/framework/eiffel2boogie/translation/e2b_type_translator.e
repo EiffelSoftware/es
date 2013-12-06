@@ -244,6 +244,8 @@ feature {NONE} -- Implementation
 						l_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.ref))
 						l_translator.entity_mapping.set_heap (create {IV_ENTITY}.make ("heap", types.heap_type))
 						l_translator.set_context (Void, a_context_type)
+						l_translator.set_context_line_number (l_assert.line_number)
+						l_translator.set_context_tag (l_assert.tag)
 						l_assert.process (l_translator)
 						across l_translator.side_effect as i loop
 							Result.extend (i.item.expr)

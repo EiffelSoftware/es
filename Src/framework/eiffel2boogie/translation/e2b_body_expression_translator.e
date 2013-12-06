@@ -268,6 +268,7 @@ feature -- Translation
 					create l_pcall.make (name_translator.boogie_name_for_feature (a_feature, current_target_type))
 				end
 
+				l_pcall.node_info.set_line (context_line_number)
 				l_pcall.node_info.set_attribute ("cid", a_feature.written_class.class_id.out)
 				l_pcall.node_info.set_attribute ("rid", a_feature.rout_id_set.first.out)
 
@@ -421,7 +422,6 @@ feature -- Translation
 			-- <Precursor>
 		local
 			l_assert: IV_ASSERT
-			l_info: IV_ASSERTION_INFORMATION
 		do
 			create l_assert.make (implies_safety_expression (a_expression))
 			l_assert.node_info.set_type (a_name)

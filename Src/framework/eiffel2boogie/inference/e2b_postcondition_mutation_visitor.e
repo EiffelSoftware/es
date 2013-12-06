@@ -42,43 +42,43 @@ feature
 	display_invariant(a_implementation: IV_IMPLEMENTATION; a_output: LIST[IV_EXPRESSION])
 			-- This displays the generated invariants on the screen, in autoproofs window. a_implementation is the implementation of the procedure that the inviariant belongs to.
 		local
-			out_inv : E2B_SUCCESSFUL_VERIFICATION
-			--add this if a new invariant was found.
-			vio: E2B_VIOLATION
-			expr_2_eiffel: IV_EXPRESSION_2_EIFFEL_POSTCONDITION
+--			out_inv : E2B_SUCCESSFUL_VERIFICATION
+--			--add this if a new invariant was found.
+--			vio: E2B_VIOLATION
+--			expr_2_eiffel: IV_EXPRESSION_2_EIFFEL_POSTCONDITION
 		do
-			create out_inv.set_procedure_name (a_implementation.procedure.name)
-			if not a_output.is_empty then
-				create expr_2_eiffel.make
-				--display if feature verified without invariant
-				across verifier.last_result.verified_procedures as ver_procs loop
-					if ver_procs.item.procedure_name.is_equal (a_implementation.procedure.name) then
-						--display the suggested invariants.
-						across a_output as outs loop
-							expr_2_eiffel.reset
-							outs.item.process (expr_2_eiffel)
---							ver_procs.item.add_suggested_invarant (expr_2_eiffel.output)
-							create vio.make_with_description ("code", "(message Suggested invariant) ", "Loop invariant: " + expr_2_eiffel.output)
-							ver_procs.item.add_original_error (vio)
-						end
-					end
-				end
-				-- display if feature has other parts which couldn't be verified.
-				across verifier.last_result.verification_errors as failed_procs loop
-					if failed_procs.item.procedure_name.is_equal (a_implementation.procedure.name) then
-						--display the suggested invariants.
-						across a_output as outs loop
-							expr_2_eiffel.reset
-							outs.item.process (expr_2_eiffel)
-							create vio.make_with_description ("code", "(message Suggested invariant) ", "Loop invariant: " + expr_2_eiffel.output)
-							failed_procs.item.errors.force (vio) --add the suggested invariant to errors so it is displayed.
---							failed_procs.item.add_suggested_invarant (expr_2_eiffel.output)
-						end
-					end
-				end
+--			create out_inv.set_procedure_name (a_implementation.procedure.name)
+--			if not a_output.is_empty then
+--				create expr_2_eiffel.make
+--				--display if feature verified without invariant
+--				across verifier.last_result.verified_procedures as ver_procs loop
+--					if ver_procs.item.procedure_name.is_equal (a_implementation.procedure.name) then
+--						--display the suggested invariants.
+--						across a_output as outs loop
+--							expr_2_eiffel.reset
+--							outs.item.process (expr_2_eiffel)
+----							ver_procs.item.add_suggested_invarant (expr_2_eiffel.output)
+--							create vio.make_with_description ("code", "(message Suggested invariant) ", "Loop invariant: " + expr_2_eiffel.output)
+--							ver_procs.item.add_original_error (vio)
+--						end
+--					end
+--				end
+--				-- display if feature has other parts which couldn't be verified.
+--				across verifier.last_result.verification_errors as failed_procs loop
+--					if failed_procs.item.procedure_name.is_equal (a_implementation.procedure.name) then
+--						--display the suggested invariants.
+--						across a_output as outs loop
+--							expr_2_eiffel.reset
+--							outs.item.process (expr_2_eiffel)
+--							create vio.make_with_description ("code", "(message Suggested invariant) ", "Loop invariant: " + expr_2_eiffel.output)
+--							failed_procs.item.errors.force (vio) --add the suggested invariant to errors so it is displayed.
+----							failed_procs.item.add_suggested_invarant (expr_2_eiffel.output)
+--						end
+--					end
+--				end
 
 
-			end
+--			end
 
 		end
 

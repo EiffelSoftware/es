@@ -105,6 +105,12 @@ feature -- Access
 	context_type: TYPE_A
 			-- Context of expression.
 
+	context_line_number: INTEGER
+			-- (approximate) line number of expression.
+
+	context_tag: detachable STRING
+			-- Context tag of expression (if any).
+
 	current_target: IV_EXPRESSION
 			-- Current target.
 
@@ -123,6 +129,18 @@ feature -- Element change
 			-- Set `last_expression' to `a_expression'.
 		do
 			last_expression := a_expression
+		end
+
+	set_context_line_number (a_line: INTEGER)
+			-- Set (approximate) line number of expression.
+		do
+			context_line_number := a_line
+		end
+
+	set_context_tag (a_tag: STRING)
+			-- Set context tag.
+		do
+			context_tag := a_tag
 		end
 
 feature -- Basic operations
@@ -247,7 +265,7 @@ feature -- Visitors
 					l_fcall.add_argument (last_expression)
 						-- TODO: refactor
 					if not is_in_quantifier then
-						add_safety_check (l_fcall, "overflow", Void, a_node.line_number)
+						add_safety_check (l_fcall, "overflow", context_tag, context_line_number)
 					end
 				end
 			end
@@ -689,7 +707,6 @@ feature -- Visitors
 			l_feature: FEATURE_B
 			l_nested: NESTED_B
 			l_call: IV_FUNCTION_CALL
-			l_info: IV_ASSERTION_INFORMATION
 			l_handler: E2B_CUSTOM_NESTED_HANDLER
 			l_name: STRING
 		do
@@ -771,7 +788,7 @@ feature -- Visitors
 					l_call.add_argument (factory.type_value (current_target_type))
 						-- TODO: refactor
 					if not is_in_quantifier then
-						add_safety_check (l_call, "attached", Void, a_node.target.line_number)
+						add_safety_check (l_call, "attached", context_tag, context_line_number)
 					end
 				end
 

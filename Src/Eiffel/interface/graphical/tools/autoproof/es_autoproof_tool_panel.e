@@ -519,8 +519,8 @@ feature {NONE} -- Basic operations
 			l_stone: STONE
 		do
 			if attached {E2B_VERIFICATION_EVENT} a_row.parent_row_root.data as l_event_item then
-				if attached {E2B_VERIFICATION_ERROR} a_row.data as l_error and then l_error.eiffel_line_number > 0 then
-					create {COMPILED_LINE_STONE} l_stone.make_with_line (l_event_item.context_class, l_error.eiffel_line_number, False)
+				if attached {E2B_VERIFICATION_ERROR} a_row.data as l_error and then l_error.context_line_number > 0 then
+					create {COMPILED_LINE_STONE} l_stone.make_with_line (l_event_item.context_class, l_error.context_line_number, False)
 				elseif l_event_item.line_number > 0 then
 					create {COMPILED_LINE_STONE} l_stone.make_with_line (l_event_item.context_class, l_event_item.line_number, False)
 				elseif l_event_item.context_feature /= Void then
@@ -610,7 +610,7 @@ feature {NONE} -- Basic operations
 
 					-- Time information
 				create l_format.make (4, 2)
-				create l_label.make_with_text (l_format.formatted (l_result.milliseconds_used))
+				create l_label.make_with_text (l_format.formatted (l_result.data.time))
 				a_row.set_item (time_column, l_label)
 
 				if is_successful_event (a_event_item) then
@@ -673,6 +673,14 @@ feature {NONE} -- Basic operations
 					if l_result.line_number > 0 then
 						a_row.set_item (position_column, create {EV_GRID_LABEL_ITEM}.make_with_text (l_result.line_number.out))
 					end
+				else
+						-- inconclusive
+						-- Info
+					create l_message_gen.make
+					l_result.single_line_message (l_message_gen)
+					l_editor_item := create_clickable_grid_item (l_message_gen.last_line, True)
+					a_row.set_height (l_editor_item.required_height_for_text_and_component)
+					a_row.set_item (info_column, l_editor_item)
 				end
 			else
 				check False end
@@ -710,8 +718,8 @@ feature {NONE} -- Basic operations
 			l_row.set_height (l_editor_item.required_height_for_text_and_component)
 			l_row.set_item (info_column, l_editor_item)
 
-			if a_error.eiffel_line_number > 0 then
-				l_row.set_item (position_column, create {EV_GRID_LABEL_ITEM}.make_with_text (a_error.eiffel_line_number.out))
+			if a_error.context_line_number > 0 then
+				l_row.set_item (position_column, create {EV_GRID_LABEL_ITEM}.make_with_text (a_error.context_line_number.out))
 			end
 
 			if l_index \\ 2 = 1 then

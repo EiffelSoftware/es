@@ -165,7 +165,7 @@ feature {NONE} -- Printing console
 				output_window.add (i.item.multi_line_message)
 				output_window.add_new_line
 			end
-			across a_result.procedure_results as i loop
+			across a_result.verification_results as i loop
 				output_window.add ("======================================%N")
 				if attached {E2B_SUCCESSFUL_VERIFICATION} i.item as l_success then
 					print_successful_verification (l_success)
@@ -215,12 +215,12 @@ feature {NONE} -- Printing console
 			end
 		end
 
-	print_feature_information (a_proc: E2B_PROCEDURE_RESULT)
+	print_feature_information (a_proc: E2B_VERIFICATION_RESULT)
 			-- Print feature information.
 		do
-			output_window.add_class (a_proc.eiffel_class.original_class)
+			output_window.add_class (a_proc.context_class.original_class)
 			output_window.add (".")
-			output_window.add_feature (a_proc.eiffel_feature.e_feature, a_proc.eiffel_feature.feature_name_32)
+			output_window.add_feature (a_proc.context_feature.e_feature, a_proc.context_feature.feature_name_32)
 			output_window.add_new_line
 		end
 

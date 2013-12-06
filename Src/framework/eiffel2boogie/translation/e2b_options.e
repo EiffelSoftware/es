@@ -37,7 +37,7 @@ feature {NONE} -- Initialization
 			is_aging_enabled := False
 			is_uncoupled_mutations_enabled := False
 
-			is_enforcing_timeout := False
+			is_enforcing_timeout := True
 			timeout := 120
 			is_trace_enabled := False
 		end

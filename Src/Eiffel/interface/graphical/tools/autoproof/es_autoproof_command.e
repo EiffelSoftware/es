@@ -159,7 +159,7 @@ feature {NONE} -- Basic operations
 			across a_result.autoproof_errors as i loop
 				event_list.put_event_item (event_context_cookie, create {E2B_FAILED_EXECUTION_EVENT}.make (i.item))
 			end
-			across a_result.procedure_results as i loop
+			across a_result.verification_results as i loop
 				event_list.put_event_item (event_context_cookie, create {E2B_VERIFICATION_EVENT}.make (i.item))
 			end
 			show_proof_tool

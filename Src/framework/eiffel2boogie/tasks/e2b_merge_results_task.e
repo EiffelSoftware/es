@@ -37,7 +37,7 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 			-- <Precursor>
 		local
 			l_new_success: BOOLEAN
-			l_primary_result: E2B_PROCEDURE_RESULT
+			l_primary_result: E2B_VERIFICATION_RESULT
 		do
 			if
 				attached initial_result and then
@@ -47,14 +47,14 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 					if attached {E2B_SUCCESSFUL_VERIFICATION} l_second_results.item as l_second_success then
 						from
 							l_new_success := True
-							initial_result.procedure_results.start
+							initial_result.verification_results.start
 						until
-							initial_result.procedure_results.after or not l_new_success
+							initial_result.verification_results.after or not l_new_success
 						loop
-							l_primary_result := initial_result.procedure_results.item
+							l_primary_result := initial_result.verification_results.item
 							if
-								l_primary_result.eiffel_class.class_id = l_second_success.eiffel_class.class_id and then
-								l_primary_result.eiffel_feature.body_index = l_second_success.eiffel_feature.body_index
+								l_primary_result.context_class.class_id = l_second_success.context_class.class_id and then
+								l_primary_result.context_feature.body_index = l_second_success.context_feature.body_index
 							then
 								if attached {E2B_SUCCESSFUL_VERIFICATION} l_primary_result then
 									l_new_success := False
@@ -62,16 +62,18 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 									across l_primary_failed.errors as l_errors loop
 										l_second_success.add_original_error (l_errors.item)
 									end
-									initial_result.procedure_results.remove
+									initial_result.verification_results.remove
+								elseif attached {E2B_INCONCLUSIVE_RESULT} l_primary_result then
+										-- Ignore
 								else
-									check False end
+									check internal_error: False end
 								end
 							else
-								initial_result.procedure_results.forth
+								initial_result.verification_results.forth
 							end
 						end
 						if l_new_success then
-							initial_result.procedure_results.extend (l_second_success)
+							initial_result.verification_results.extend (l_second_success)
 						end
 					end
 				end

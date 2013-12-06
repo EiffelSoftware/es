@@ -234,7 +234,6 @@ feature -- Processing
 		local
 			l_statement: IV_ASSERT
 			l_assume: IV_ASSUME
-			l_info: IV_ASSERTION_INFORMATION
 			l_array: ARRAY_CONST_B
 			l_other: EXPR_B
 		do
@@ -271,7 +270,6 @@ feature -- Processing
 		local
 			l_assert: IV_ASSERT
 			l_array: IV_EXPRESSION
-			l_info: IV_ASSERTION_INFORMATION
 		do
 			set_current_origin_information (a_assert)
 			process_contract_expression (a_other)
@@ -280,10 +278,9 @@ feature -- Processing
 			create l_assert.make (factory.equal (
 				factory.function_call ("fun.ARRAY.count", << entity_mapping.heap, l_array >>, types.int),
 				factory.int_value (a_array.expressions.count)))
-			create l_info.make ("check")
-			l_info.set_tag ("array_size_equal")
-			l_info.set_line (a_assert.line_number)
-			l_assert.set_information (l_info)
+			l_assert.node_info.set_type ("check")
+			l_assert.node_info.set_tag ("array_size_equal")
+			l_assert.node_info.set_line (a_assert.line_number)
 			add_statement (l_assert)
 				-- Check array contents
 			across a_array.expressions as i loop
@@ -291,10 +288,9 @@ feature -- Processing
 				create l_assert.make (factory.equal (
 					factory.function_call ("fun.ARRAY.item", << entity_mapping.heap, l_array, factory.int_value (i.cursor_index) >>, types.generic_type),
 					last_expression))
-				create l_info.make ("check")
-				l_info.set_tag ("array_item_" + i.cursor_index.out)
-				l_info.set_line (a_assert.line_number)
-				l_assert.set_information (l_info)
+				l_assert.node_info.set_type ("check")
+				l_assert.node_info.set_tag ("array_item_" + i.cursor_index.out)
+				l_assert.node_info.set_line (a_assert.line_number)
 				add_statement (l_assert)
 			end
 		end
@@ -545,7 +541,6 @@ feature -- Processing
 			l_op: IV_BINARY_OPERATION
 			l_variant: IV_ENTITY
 			l_assignment: IV_ASSIGNMENT
-			l_info: IV_ASSERTION_INFORMATION
 		do
 			set_current_origin_information (a_node)
 
@@ -672,7 +667,6 @@ feature -- Processing
 			l_op: IV_BINARY_OPERATION
 			l_variant: IV_ENTITY
 			l_assignment: IV_ASSIGNMENT
-			l_info: IV_ASSERTION_INFORMATION
 
 			l_assign: ASSIGN_B
 			l_across_handler: E2B_ACROSS_HANDLER
@@ -734,10 +728,9 @@ feature -- Processing
 						add_statement (l_assert)
 					end
 					create l_assert.make (last_expression)
-					create l_info.make ("loop_inv")
-					l_info.set_tag (l_invariant.tag)
-					l_info.set_line (l_invariant.line_number)
-					l_assert.set_information (l_info)
+					l_assert.node_info.set_type ("loop_inv")
+					l_assert.node_info.set_tag (l_invariant.tag)
+					l_assert.node_info.set_line (l_invariant.line_number)
 					add_statement (l_assert)
 					a_node.invariant_part.forth
 				end
@@ -752,7 +745,7 @@ feature -- Processing
 				create l_assignment.make (l_variant, last_expression)
 				add_statement (l_assignment)
 				create l_assert.make (factory.less_equal (factory.int_value (0), l_variant))
-				l_assert.set_assertion_type ("loop_var_ge")
+				l_assert.node_info.set_type ("loop_var_ge_zero")
 				add_statement (l_assert)
 			end
 
@@ -776,7 +769,7 @@ feature -- Processing
 				set_current_origin_information (a_node.variant_part)
 				process_expression (a_node.variant_part.expr)
 				create l_assert.make (factory.less (last_expression, l_variant))
-				l_assert.set_assertion_type ("loop_var_decr")
+				l_assert.node_info.set_type ("loop_var_decr")
 				add_statement (l_assert)
 			end
 			create l_goto.make (l_head_block)
@@ -807,7 +800,6 @@ feature -- Processing
 			l_variant: IV_ENTITY
 			l_assignment: IV_ASSIGNMENT
 			l_unroll_counter: INTEGER
-			l_info: IV_ASSERTION_INFORMATION
 		do
 			l_temp_block := current_block
 
@@ -861,10 +853,9 @@ feature -- Processing
 						set_current_origin_information (l_invariant)
 						process_contract_expression (l_invariant.expr)
 						create l_assert.make (last_expression)
-						create l_info.make ("loop_inv")
-						l_info.set_tag (l_invariant.tag)
-						l_info.set_line (l_invariant.line_number)
-						l_assert.set_information (l_info)
+						l_assert.node_info.set_type ("loop_inv")
+						l_assert.node_info.set_tag (l_invariant.tag)
+						l_assert.node_info.set_line (l_invariant.line_number)
 						add_statement (l_assert)
 						a_node.invariant_part.forth
 					end
@@ -878,7 +869,7 @@ feature -- Processing
 					add_statement (l_assignment)
 					create l_op.make (l_variant, ">=", create {IV_VALUE}.make ("0", types.int), types.bool)
 					create l_assert.make (l_op)
-					l_assert.set_assertion_type ("loop_var_ge")
+					l_assert.node_info.set_type ("loop_var_ge_zero")
 					add_statement (l_assert)
 				end
 
@@ -902,7 +893,7 @@ feature -- Processing
 					process_expression (a_node.variant_part.expr)
 					create l_op.make (last_expression, "<", l_variant, types.bool)
 					create l_assert.make (l_op)
-					l_assert.set_assertion_type ("loop_var_decr")
+					l_assert.node_info.set_type ("loop_var_decr")
 					add_statement (l_assert)
 				end
 
@@ -1048,6 +1039,7 @@ feature {NONE} -- Implementation
 			create l_translator.make
 			l_translator.set_context (current_feature, current_type)
 			l_translator.set_context_implementation (current_implementation)
+			l_translator.set_context_line_number (current_origin_information.line)
 			l_translator.copy_entity_mapping (entity_mapping)
 			l_translator.locals_map.merge (locals_map)
 			a_expr.process (l_translator)

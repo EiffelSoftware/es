@@ -297,11 +297,12 @@ feature {NONE} -- Overflow
 			a + b > 0
 		end
 
-	overflow_in_pre_helper (a, b: INTEGER)
+	overflow_in_pre_helper (a, b, c, d: INTEGER)
 		note
 			skip: True
 		require
-			a + b > 0
+			tag1: a + b > 0
+			c + d > 0
 		do
 		end
 
@@ -309,7 +310,14 @@ feature {NONE} -- Overflow
 		require
 			a > 0 and b > 0
 		do
-			overflow_in_pre_helper (a, b)
+			overflow_in_pre_helper (1, 1, a, b)
+		end
+
+	overflow_in_pre_tagged (a, b: INTEGER)
+		require
+			a > 0 and b > 0
+		do
+			overflow_in_pre_helper (a, b, 1, 1)
 		end
 
 feature -- Ownership

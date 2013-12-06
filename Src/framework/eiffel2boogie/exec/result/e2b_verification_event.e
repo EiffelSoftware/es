@@ -18,7 +18,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_data: E2B_PROCEDURE_RESULT)
+	make (a_data: E2B_VERIFICATION_RESULT)
 			-- Initialize event item.
 		do
 			data := a_data
@@ -30,7 +30,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	data: E2B_PROCEDURE_RESULT
+	data: E2B_VERIFICATION_RESULT
 			-- <Precursor>
 
 	description: STRING_32
@@ -49,20 +49,20 @@ feature -- Access
 	context_class: CLASS_C
 			-- Class corresponding to event
 		do
-			Result := data.eiffel_class
+			Result := data.context_class
 		end
 
 	context_feature: FEATURE_I
 			-- Feature corresponding to event
 		do
-			Result := data.eiffel_feature
+			Result := data.context_feature
 		end
 
 	line_number: INTEGER
 			-- Line number of event (if any)
 		do
 			if attached {E2B_FAILED_VERIFICATION} data as l_failed then
-				Result := l_failed.errors.first.eiffel_line_number
+				Result := l_failed.errors.first.context_line_number
 			end
 		end
 

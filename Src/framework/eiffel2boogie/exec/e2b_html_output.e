@@ -37,7 +37,7 @@ feature
 				print_autoproof_error (i.item)
 				close ("tr")
 			end
-			across r.procedure_results as i loop
+			across r.verification_results as i loop
 				if attached {E2B_SUCCESSFUL_VERIFICATION} i.item as l_success then
 					if l_success.original_errors /= Void and then not l_success.original_errors.is_empty then
 						open_style ("tr", tr_twostep_style)
@@ -48,8 +48,11 @@ feature
 				elseif attached {E2B_FAILED_VERIFICATION} i.item as l_failure then
 					open_style ("tr", tr_failed_style)
 					print_failed_verification (l_failure)
+				elseif attached {E2B_INCONCLUSIVE_RESULT} i.item as l_inconclusive then
+					open_style ("tr", tr_inconclusive_style)
+					print_inconclusive_result (l_inconclusive)
 				else
-					check False end
+					check internal_error: False end
 				end
 				close ("tr")
 			end
@@ -106,6 +109,15 @@ feature
 			close ("td")
 		end
 
+	print_inconclusive_result (a_inconclusive: E2B_INCONCLUSIVE_RESULT)
+			-- Print failed verifcation information.
+		do
+			print_feature_information (a_inconclusive)
+			open_style ("td", td_info_style)
+			add ("Inconclusive result (verifier timed out).")
+			close ("td")
+		end
+
 	print_autoproof_error (a_error: E2B_AUTOPROOF_ERROR)
 			-- Print failed verifcation information.
 		do
@@ -128,14 +140,14 @@ feature
 			close ("td")
 		end
 
-	print_feature_information (a_proc: E2B_PROCEDURE_RESULT)
+	print_feature_information (a_proc: E2B_VERIFICATION_RESULT)
 			-- Print feature information.
 		do
 			open_style ("td", td_name_style)
 			open ("strong")
-			add_class (a_proc.eiffel_class.original_class)
+			add_class (a_proc.context_class.original_class)
 			add (".")
-			add_feature (a_proc.eiffel_feature.e_feature, a_proc.eiffel_feature.feature_name_32)
+			add_feature (a_proc.context_feature.e_feature, a_proc.context_feature.feature_name_32)
 			close ("strong")
 			close ("td")
 		end
@@ -212,8 +224,8 @@ feature -- Styles
 	tr_success_style: STRING = "background-color: #dfd"
 	tr_twostep_style: STRING = "background-color:#fe6"
 	tr_failed_style: STRING = "background-color:#fdd"
+	tr_inconclusive_style: STRING = "background-color:#fff"
 	td_name_style: STRING = "padding: 5px; padding-right:15px"
 	td_info_style: STRING = "width: 100%%"
-
 
 end

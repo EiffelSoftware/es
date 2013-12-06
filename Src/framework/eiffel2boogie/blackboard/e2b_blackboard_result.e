@@ -16,16 +16,16 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_procedure_result: E2B_PROCEDURE_RESULT; a_configuration: EBB_TOOL_CONFIGURATION; a_score: REAL)
+	make (a_procedure_result: E2B_VERIFICATION_RESULT; a_configuration: EBB_TOOL_CONFIGURATION; a_score: REAL)
 			-- Initialize blackboard result.
 		do
-			make_ (a_procedure_result.eiffel_feature, a_configuration, a_score)
+			make_ (a_procedure_result.context_feature, a_configuration, a_score)
 			procedure_result := a_procedure_result
 		end
 
 feature -- Access
 
-	procedure_result: E2B_PROCEDURE_RESULT
+	procedure_result: E2B_VERIFICATION_RESULT
 			-- Result.
 
 	message: STRING
