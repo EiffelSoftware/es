@@ -8,7 +8,13 @@ class
 
 inherit
 
-	E2B_VERIFICATION_RESULT
+	E2B_FAILED_VERIFICATION
+		redefine
+			single_line_message
+		end
+
+create
+	make
 
 feature -- Display
 

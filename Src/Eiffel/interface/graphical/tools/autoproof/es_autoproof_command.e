@@ -94,8 +94,8 @@ feature -- Execution
 
 				create l_error
 				l_error.set_type ("canceled")
-				l_error.set_single_line_message ("Execution canceled by user.")
-				event_list.put_event_item (event_context_cookie, create {E2B_FAILED_EXECUTION_EVENT}.make (l_error))
+				l_error.set_message ("Execution canceled by user.")
+				event_list.put_event_item (event_context_cookie, create {E2B_VERIFICATION_EVENT}.make (l_error))
 			end
 		end
 
@@ -180,9 +180,6 @@ feature {NONE} -- Basic operations
 			-- Process verification result.
 		do
 			event_list.prune_event_items (event_context_cookie)
-			across a_result.autoproof_errors as i loop
-				event_list.put_event_item (event_context_cookie, create {E2B_FAILED_EXECUTION_EVENT}.make (i.item))
-			end
 			across a_result.verification_results as i loop
 				event_list.put_event_item (event_context_cookie, create {E2B_VERIFICATION_EVENT}.make (i.item))
 			end

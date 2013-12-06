@@ -6,6 +6,10 @@ note
 deferred class
 	E2B_EXECUTABLE
 
+inherit
+
+	E2B_SHARED_CONTEXT
+
 feature -- Access
 
 	input: attached E2B_VERIFIER_INPUT

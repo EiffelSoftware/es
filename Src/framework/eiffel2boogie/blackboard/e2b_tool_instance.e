@@ -30,6 +30,10 @@ feature {EBB_TOOL_EXECUTION} -- Basic operations
 			l_input: E2B_TRANSLATOR_INPUT
 			l_update_blackboard_task: E2B_UPDATE_BLACKBOARD_TASK
 		do
+			create autoproof.make
+			across input.classes as c loop autoproof.add_class (c.item) end
+			check False end
+
 			create l_input.make
 			l_input.class_list.append (input.classes)
 			create verify_task.make (l_input)
@@ -46,6 +50,9 @@ feature {EBB_TOOL_EXECUTION} -- Basic operations
 		end
 
 feature {NONE} -- Implementation
+
+	autoproof: E2B_AUTOPROOF
+			-- Verifier
 
 	verify_task: E2B_VERIFY_TASK
 			-- Verification task

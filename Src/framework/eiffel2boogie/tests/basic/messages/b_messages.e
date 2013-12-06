@@ -368,4 +368,44 @@ feature -- Ownership
 feature -- Frame violation
 feature -- Class invariant
 
+feature -- Validity errors
+
+	not_functional1
+		note
+			status: functional
+		do
+		end
+
+	not_functional2: INTEGER
+		note
+			status: functional
+		local
+			a: INTEGER
+		do
+			a := 1
+			Result := a
+		end
+
+	call_not_functional
+		local
+			a: INTEGER
+		do
+			not_functional1
+			a := not_functional2
+		end
+
+	partial_invariant_invalid
+		require
+			inv_only ("abc")
+			inv_without ("abc")
+		do
+		end
+
+	modify_field_invalid
+		require
+			modify_field (1, Current)
+			modify_field (["abc", 1], Current)
+		do
+		end
+
 end

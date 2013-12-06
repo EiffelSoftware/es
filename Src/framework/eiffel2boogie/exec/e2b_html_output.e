@@ -32,11 +32,6 @@ feature
 			close ("tr")
 			close ("thead")
 			open ("tbody")
-			across r.autoproof_errors as i loop
-				open_style ("tr", tr_failed_style)
-				print_autoproof_error (i.item)
-				close ("tr")
-			end
 			across r.verification_results as i loop
 				if attached {E2B_SUCCESSFUL_VERIFICATION} i.item as l_success then
 					if l_success.original_errors /= Void and then not l_success.original_errors.is_empty then
@@ -45,12 +40,15 @@ feature
 						open_style ("tr", tr_success_style)
 					end
 					print_successful_verification (l_success)
+				elseif attached {E2B_INCONCLUSIVE_RESULT} i.item as l_inconclusive then
+					open_style ("tr", tr_failed_style)
+					print_inconclusive_result (l_inconclusive)
 				elseif attached {E2B_FAILED_VERIFICATION} i.item as l_failure then
 					open_style ("tr", tr_failed_style)
 					print_failed_verification (l_failure)
-				elseif attached {E2B_INCONCLUSIVE_RESULT} i.item as l_inconclusive then
-					open_style ("tr", tr_inconclusive_style)
-					print_inconclusive_result (l_inconclusive)
+				elseif attached {E2B_AUTOPROOF_ERROR} i.item as l_error then
+					open_style ("tr", tr_error_style)
+					print_autoproof_error (l_error)
 				else
 					check internal_error: False end
 				end
@@ -121,22 +119,11 @@ feature
 	print_autoproof_error (a_error: E2B_AUTOPROOF_ERROR)
 			-- Print failed verifcation information.
 		do
-			open_style ("td", td_name_style)
-			open ("strong")
-			if a_error.eiffel_class /= Void then
-				add_class (a_error.eiffel_class.original_class)
-			end
-			if a_error.eiffel_feature /= Void then
-				add (".")
-				add_feature (a_error.eiffel_feature.e_feature, a_error.eiffel_feature.feature_name_32)
-			end
-			close ("strong")
-			close ("td")
-
+			print_feature_information (a_error)
 			open_style ("td", td_info_style)
 			add (a_error.type)
-			add_new_line
-			add (a_error.multi_line_message)
+			add (": ")
+			a_error.single_line_message (Current)
 			close ("td")
 		end
 
@@ -224,7 +211,7 @@ feature -- Styles
 	tr_success_style: STRING = "background-color: #dfd"
 	tr_twostep_style: STRING = "background-color:#fe6"
 	tr_failed_style: STRING = "background-color:#fdd"
-	tr_inconclusive_style: STRING = "background-color:#fff"
+	tr_error_style: STRING = "background-color:#ffd"
 	td_name_style: STRING = "padding: 5px; padding-right:15px"
 	td_info_style: STRING = "width: 100%%"
 

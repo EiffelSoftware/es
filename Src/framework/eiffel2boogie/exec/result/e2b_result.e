@@ -15,22 +15,9 @@ feature {NONE} -- Initialization
 			-- Initialize Boogie result.
 		do
 			create verification_results.make
-			create autoproof_errors.make
 		end
 
 feature -- Access
-
-	boogie_version: STRING
-			-- Boogie version of last run.
-
-	verified_count: INTEGER
-			-- Number of verified procedures.
-
-	failed_count: INTEGER
-			-- Number of procedures which produced an error.
-
-	total_time: REAL
-			-- Total time used for verification.
 
 	verification_results: LINKED_LIST [E2B_VERIFICATION_RESULT]
 			-- List of verification results.
@@ -59,9 +46,14 @@ feature -- Access
 
 	autoproof_errors: LINKED_LIST [E2B_AUTOPROOF_ERROR]
 			-- List of AutoProof translation and execution errors.
-
-	boogie_file_lines: LIST [STRING]
-			-- List of lines in Boogie file.
+		do
+			create Result.make
+			across verification_results as i loop
+				if attached {E2B_AUTOPROOF_ERROR} i.item as l_failed then
+					Result.extend (l_failed)
+				end
+			end
+		end
 
 feature -- Status report
 

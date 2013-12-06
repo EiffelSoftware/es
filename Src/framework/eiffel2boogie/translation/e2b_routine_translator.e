@@ -606,10 +606,15 @@ feature -- Translation: Other
 						l_f_conjunct := factory.or_ (l_f_conjunct, l_disjunct)
 					end
 				end
-				if l_expr = Void then
-					l_expr := factory.and_ (l_o_conjunct, l_f_conjunct)
+				if l_f_conjunct = Void then
+						-- There was some validty error
+					check not autoproof_errors.is_empty end
 				else
-					l_expr := factory.or_ (l_expr, factory.and_ (l_o_conjunct, l_f_conjunct))
+					if l_expr = Void then
+						l_expr := factory.and_ (l_o_conjunct, l_f_conjunct)
+					else
+						l_expr := factory.or_ (l_expr, factory.and_ (l_o_conjunct, l_f_conjunct))
+					end
 				end
 			end
 				-- Then go over fully modifiable objects

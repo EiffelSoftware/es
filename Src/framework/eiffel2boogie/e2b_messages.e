@@ -18,6 +18,8 @@ feature -- Validity error messages
 	functional_feature_not_single_assignment: STRING_32
 		do Result := "A functional feature has to consist of exactly one assignment to the Result" end
 
+	functional_invalid_call_to (a_fname: STRING_32): STRING_32
+		do Result := locale.formatted_string ("Call to invalid functional feature '$1'", a_fname) end
 
 	modify_field_first_argument_only_manifeststrings: STRING_32
 		do Result := "The tuple in the first argument of 'modify_field' needs to consist only of manifest strings." end
@@ -130,5 +132,10 @@ feature -- Verificaiton success/inconclusive messages
 
 	inconclusive_result: STRING_32
 		do Result := "Inconclusive result (verifier timed out)." end
+
+feature -- Other
+
+	boogie_launch_failed (a_executable: STRING_32): STRING_32
+		do Result := locale.formatted_string ("Launching Boogie failed (command was '$1').", a_executable) end
 
 end

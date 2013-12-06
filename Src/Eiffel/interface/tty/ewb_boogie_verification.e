@@ -159,18 +159,14 @@ feature {NONE} -- Printing console
 	print_result (a_result: E2B_RESULT)
 			-- Print results to output.
 		do
-			across a_result.autoproof_errors as i loop
-				output_window.add ("AutoProof Error: " + i.item.type)
-				output_window.add_new_line
-				output_window.add (i.item.multi_line_message)
-				output_window.add_new_line
-			end
 			across a_result.verification_results as i loop
 				output_window.add ("======================================%N")
 				if attached {E2B_SUCCESSFUL_VERIFICATION} i.item as l_success then
 					print_successful_verification (l_success)
 				elseif attached {E2B_FAILED_VERIFICATION} i.item as l_failure then
 					print_failed_verification (l_failure)
+				elseif attached {E2B_AUTOPROOF_ERROR} i.item as l_error then
+					print_error (l_error)
 				else
 					check False end
 				end
@@ -213,6 +209,16 @@ feature {NONE} -- Printing console
 				i.item.multi_line_message (output_window)
 				output_window.add_new_line
 			end
+		end
+
+	print_error (a_error: E2B_AUTOPROOF_ERROR)
+			-- Print failed verifcation information.
+		do
+			print_feature_information (a_error)
+			output_window.add ("AutoProof error.%N")
+			output_window.add (a_error.type + ": ")
+			a_error.single_line_message (output_window)
+			output_window.add_new_line
 		end
 
 	print_feature_information (a_proc: E2B_VERIFICATION_RESULT)

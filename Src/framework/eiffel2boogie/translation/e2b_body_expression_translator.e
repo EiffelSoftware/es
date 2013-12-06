@@ -255,8 +255,8 @@ feature -- Translation
 
 					last_expression := l_fcall
 				else
+					helper.add_semantic_error (context_feature, messages.functional_invalid_call_to (a_feature.feature_name_32))
 						-- It's a procedure call, nothing to generate
-						-- There should be an error being reported for this feature
 					last_expression := Void
 				end
 			else

@@ -103,11 +103,11 @@ feature {NONE} -- Implementation
 				end
 
 			elseif boogie_error_regexp.matches (a_line) then
-				-- file: syntax_error_regexp.captured_substring (1)
-				-- line: syntax_error_regexp.captured_substring (2).to_integer
-				-- column: syntax_error_regexp.captured_substring (3).to_integer
-				-- message: syntax_error_regexp.captured_substring (4)
-				last_result.boogie_errors.extend (a_line)
+				-- file: boogie_error_regexp.captured_substring (1)
+				-- line: boogie_error_regexp.captured_substring (2).to_integer
+				-- column: boogie_error_regexp.captured_substring (3).to_integer
+				-- message: boogie_error_regexp.captured_substring (4)
+				last_result.boogie_errors.extend (boogie_error_regexp.captured_substring (4))
 
 			elseif error_regexp.matches (a_line) then
 				-- file: error_regexp.captured_substring (1)

@@ -215,14 +215,13 @@ feature {NONE} -- Implementation
 
 	handle_launch_failed (a_executable: STRING; a_arguments: LINKED_LIST [STRING])
 			-- Handle launch of Boogie failed.
+		local
+			l_error: E2B_AUTOPROOF_ERROR
 		do
-				-- TODO: error handling
-			io.error.put_string ("Launching Boogie failed%N")
-			io.error.put_string ("Executable: " + a_executable + "%N")
-			across a_arguments as i loop
-				io.error.put_string ("Argument " + i.cursor_index.out + ": " + i.item + "%N")
-			end
-			check False end
+			create l_error
+			l_error.set_type ("Boogie")
+			l_error.set_message (messages.boogie_launch_failed (a_executable))
+			autoproof_errors.extend (l_error)
 		end
 
 	handle_terminated

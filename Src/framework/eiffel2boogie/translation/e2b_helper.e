@@ -364,11 +364,11 @@ feature -- Other
 		do
 			create l_error
 			l_error.set_type ("Unsupported")
-			l_error.set_single_line_message (a_message)
+			l_error.set_message (a_message)
 			if a_feature /= Void then
-				l_error.set_eiffel_feature (a_feature)
+				l_error.set_feature (a_feature)
 			elseif a_class /= Void then
-				l_error.set_eiffel_class (a_class)
+				l_error.set_class (a_class)
 			end
 			autoproof_errors.extend (l_error)
 		end
@@ -384,12 +384,12 @@ feature -- Other
 			l_error: E2B_AUTOPROOF_ERROR
 		do
 			create l_error
-			l_error.set_type ("Error")
-			l_error.set_single_line_message (a_message)
+			l_error.set_type ("Validity")
+			l_error.set_message (a_message)
 			if attached {FEATURE_I} a_class_or_feature as x then
-				l_error.set_eiffel_feature (x)
+				l_error.set_feature (x)
 			elseif attached {CLASS_C} a_class_or_feature as x then
-				l_error.set_eiffel_class (x)
+				l_error.set_class (x)
 			end
 			autoproof_errors.extend (l_error)
 		end

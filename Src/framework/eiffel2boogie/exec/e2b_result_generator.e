@@ -37,13 +37,13 @@ feature -- Basic operations
 		do
 			create last_result.make
 				-- Add AutoProof errors
-			last_result.autoproof_errors.append (autoproof_errors)
+			last_result.verification_results.append (autoproof_errors)
 				-- Add Boogie errors
 			across a_boogie_result.boogie_errors as i loop
 				create l_ap_error
-				l_ap_error.set_type ("Boogie error")
-				l_ap_error.set_single_line_message (i.item)
-				last_result.autoproof_errors.extend (l_ap_error)
+				l_ap_error.set_type ("Boogie")
+				l_ap_error.set_message (i.item)
+				last_result.verification_results.extend (l_ap_error)
 			end
 				-- Call result handler for each Boogie procedure
 			across a_boogie_result.procedure_results as i loop
@@ -51,7 +51,7 @@ feature -- Basic operations
 			end
 		end
 
-feature -- Implementation
+feature {NONE} -- Implementation
 
 	process_procedure_result (a_item: E2B_BOOGIE_PROCEDURE_RESULT)
 			-- Process procedure result.
@@ -65,6 +65,31 @@ feature -- Implementation
 			end
 		end
 
+	has_validity_error (a_feature: FEATURE_I): BOOLEAN
+			-- Does `a_item' refer to a feature with a validty error?
+		local
+			l_errors: LIST [E2B_AUTOPROOF_ERROR]
+			l_error: E2B_AUTOPROOF_ERROR
+		do
+			from
+				l_errors := last_result.autoproof_errors
+				l_errors.start
+			until
+				l_errors.after or Result
+			loop
+				l_error := l_errors.item
+				if
+					l_error.context_class /= Void and then
+					l_error.context_class.class_id = a_feature.written_in and then
+					l_error.context_feature /= Void and then
+					l_error.context_feature.rout_id_set.first = a_feature.rout_id_set.first
+				then
+					Result := True
+				end
+				l_errors.forth
+			end
+		end
+
 	process_default_result (a_item: E2B_BOOGIE_PROCEDURE_RESULT)
 			-- Default handler for Boogie procedure results.
 		local
@@ -73,15 +98,17 @@ feature -- Implementation
 			l_inconclusive: E2B_INCONCLUSIVE_RESULT
 			l_failure: E2B_FAILED_VERIFICATION
 		do
-			check name_translator.feature_for_boogie_name (a_item.name) /= Void end
 			l_feature := name_translator.feature_for_boogie_name (a_item.name)
-			if a_item.is_successful then
+			check l_feature /= Void end
+			if has_validity_error (l_feature) then
+					-- Ignore results of features with a validity error
+			elseif a_item.is_successful then
 				create l_success
 				l_success.set_feature (l_feature)
 				l_success.set_time (a_item.time)
 				last_result.verification_results.extend (l_success)
 			elseif a_item.is_inconclusive then
-				create l_inconclusive
+				create l_inconclusive.make
 				l_inconclusive.set_feature (l_feature)
 				last_result.verification_results.extend (l_inconclusive)
 			else
