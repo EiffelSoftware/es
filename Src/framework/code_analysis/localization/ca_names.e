@@ -50,7 +50,8 @@ feature -- Rules
 	variable_not_read_description: STRING_32
 		do Result := locale.translation ("An assignment to a local variable has no %
 			%effect at all if the variable is not read after the assignment, and %
-			%before it is reassigned or out of scope.") end
+			%before it is reassigned or out of scope. This rule is only checked on %
+			%variables of expanded types.") end
 
 	feature_never_called_title: STRING_32
 		do Result := locale.translation ("Feature never called") end
@@ -112,6 +113,13 @@ feature -- Rules
 			% Ususally, this is not intended and ought to be changed. A client might,%
 			% for example, by accident call 'x.make' instead of 'create x.make',%
 			% causing the class invariant or postconditions of make to not hold anymore.") end
+
+	semicolon_arguments_title: STRING_32
+		do Result := locale.translation ("Semicolon to separate arguments") end
+
+	semicolon_arguments_description: STRING_32
+		do Result := locale.translation ("Routine arguments should be separated with%
+			% semicolons. Although this is optional, it is bad style not to put semicolons.") end
 
 feature -- Preferences
 

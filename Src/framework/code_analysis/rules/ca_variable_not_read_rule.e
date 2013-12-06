@@ -237,7 +237,7 @@ feature {NONE} -- Extracting Used Variables
 		do
 			Precursor (a_access_id)
 
-			if is_expanded_local (a_access_id) then
+			if is_local (a_access_id) then
 				generated.extend (a_access_id.feature_name.name_id)
 			end
 		end
@@ -264,7 +264,7 @@ feature {NONE} -- Extracting Assignments
 		do
 			Result := -1
 
-			if attached {ACCESS_ID_AS} a_target as l_id and then is_expanded_local (l_id) then
+			if attached {ACCESS_ID_AS} a_target as l_id and then is_local (l_id) then
 					-- Something is assigned to a local variable.
 				Result := l_id.feature_name.name_id
 					-- TODO: Result?
@@ -275,13 +275,9 @@ feature {NONE} -- Utilities
 
 	current_feature: FEATURE_I
 
-	is_expanded_local (a_id: ACCESS_ID_AS): BOOLEAN
+	is_local (a_id: ACCESS_ID_AS): BOOLEAN
 		do
-			if a_id.is_local then
-				if attached node_type (a_id, current_feature) as l_type then
-					Result := l_type.is_expanded
-				end
-			end
+			Result := a_id.is_local
 		end
 
 feature {NONE} -- Analysis data

@@ -166,9 +166,15 @@ feature -- Code Analyzer
 
 	variable_not_read_violation_1: STRING_32
 		do Result := locale.translation ("The local variable '") end
-		
+
 	variable_not_read_violation_2: STRING_32
 		do Result := locale.translation ("' is not read / used before it gets reassigned or out of scope.") end
+
+	semicolon_arguments_violation_1: STRING_32
+		do Result := locale.translation ("Some arguments of routine '") end
+
+	semicolon_arguments_violation_2: STRING_32
+		do Result := locale.translation ("' are not separated by semicolons. This is considered bad style.") end
 
 feature -- Command Line
 
