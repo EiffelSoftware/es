@@ -276,6 +276,9 @@ feature -- Statement Visitor
 		do
 			output.put_indentation
 			output.put ("assert ")
+			if attached a_assert.attribute_string then
+				output.put ("{" + a_assert.attribute_string + "} ")
+			end
 			a_assert.expression.process (Current)
 			output.put (";")
 			print_node_info (a_assert.node_info)

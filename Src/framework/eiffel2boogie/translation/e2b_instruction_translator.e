@@ -586,6 +586,7 @@ feature -- Processing
 					across last_safety_checks as i loop
 						create l_assert.make (i.item.expr)
 						l_assert.node_info.load (i.item.info)
+						l_assert.set_attribute_string (":subsumption 0")
 						add_statement (l_assert)
 					end
 					if l_invariant.tag /= Void and then l_invariant.tag ~ "assume" then
@@ -740,6 +741,7 @@ feature -- Processing
 					across last_safety_checks as i loop
 						create l_assert.make (i.item.expr)
 						l_assert.node_info.load (i.item.info)
+						l_assert.set_attribute_string (":subsumption 0")
 						add_statement (l_assert)
 					end
 					create l_assert.make (last_expression)
