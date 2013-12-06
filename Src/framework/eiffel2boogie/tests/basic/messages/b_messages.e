@@ -353,6 +353,18 @@ feature -- Ownership
 			any_attribute := Void
 		end
 
+	ownership_default_wrap_fails
+		do
+			wrap
+		end
+
+	ownership_default_is_wrapped_violated
+		note
+			explicit: wrapping
+		do
+			unwrap
+		end
+
 feature -- Frame violation
 feature -- Class invariant
 

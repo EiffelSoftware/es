@@ -115,6 +115,7 @@ feature -- Implementation
 			l_has_tag: BOOLEAN
 		do
 			if a_error.has_related_location then
+					-- It's a pre- or postcondition violation
 				l_type := a_error.related_attributes["type"]
 				l_tag := a_error.related_attributes["tag"]
 				l_has_tag := a_error.related_attributes.has_key ("tag")
@@ -144,6 +145,33 @@ feature -- Implementation
 					Result := messages.postcondition_with_tag_violated
 				else
 					Result := messages.postcondition_violated
+				end
+			elseif l_type ~ "loop_inv" then
+				if a_error.is_loop_inv_violated_on_entry then
+					if l_has_tag then
+						Result := messages.loop_inv_with_tag_violated_on_entry
+					else
+						Result := messages.loop_inv_violated_on_entry
+					end
+				else
+					check a_error.is_loop_inv_not_maintained end
+					if l_has_tag then
+						Result := messages.loop_inv_with_tag_not_maintained
+					else
+						Result := messages.loop_inv_not_maintained
+					end
+				end
+			elseif l_type ~ "loop_var_ge_zero" then
+				if l_has_tag then
+					Result := messages.loop_var_with_tag_negative
+				else
+					Result := messages.loop_var_negative
+				end
+			elseif l_type ~ "loop_var_decr" then
+				if l_has_tag then
+					Result := messages.loop_var_with_tag_not_decreasing
+				else
+					Result := messages.loop_var_not_decreasing
 				end
 			elseif l_type ~ "attached" then
 					-- Possible void call
@@ -206,6 +234,15 @@ feature -- Implementation
 					Result := "$type error with tag $tag."
 				else
 					Result := "$type error."
+				end
+			end
+			if a_error.is_postcondition_violation then
+				if a_error.related_attributes.has_key ("default") then
+					Result := Result + " " + messages.ownership_explicit_note
+				end
+			else
+				if a_error.attributes.has_key ("default") then
+					Result := Result + " " + messages.ownership_explicit_note
 				end
 			end
 		end

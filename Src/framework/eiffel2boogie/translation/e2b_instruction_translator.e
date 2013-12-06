@@ -579,11 +579,17 @@ feature -- Processing
 						l_assert.node_info.load (i.item.info)
 						add_statement (l_assert)
 					end
-					create l_assert.make (last_expression)
-					l_assert.node_info.set_type ("loop_inv")
-					l_assert.node_info.set_tag (l_invariant.tag)
-					l_assert.node_info.set_line (l_invariant.line_number)
-					add_statement (l_assert)
+					if l_invariant.tag /= Void and then l_invariant.tag ~ "assume" then
+							-- Free invariants with tag 'assume'
+						create l_assume.make (last_expression)
+						add_statement (l_assume)
+					else
+						create l_assert.make (last_expression)
+						l_assert.node_info.set_type ("loop_inv")
+						l_assert.node_info.set_tag (l_invariant.tag)
+						l_assert.node_info.set_line (l_invariant.line_number)
+						add_statement (l_assert)
+					end
 					a_node.invariant_part.forth
 				end
 			end

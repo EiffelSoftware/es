@@ -217,47 +217,57 @@ feature -- Translation: Signature
 				create l_pre.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
 				l_pre.node_info.set_type ("pre")
 				l_pre.node_info.set_tag ("default_is_open")
+				l_pre.node_info.set_attribute ("default", "contracts")
 				current_boogie_procedure.add_contract (l_pre)
 				create l_post.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
 				l_post.node_info.set_type ("post")
 				l_post.node_info.set_tag ("default_is_wrapped")
+				l_post.node_info.set_attribute ("default", "contracts")
 				current_boogie_procedure.add_contract (l_post)
 				create l_post.make (forall_mml_set_property ("Current", "observers", "is_wrapped"))
 				l_post.node_info.set_type ("post")
 				l_post.node_info.set_tag ("defaults_observers_are_wrapped")
+				l_post.node_info.set_attribute ("default", "contracts")
 				current_boogie_procedure.add_contract (l_post)
 			elseif helper.is_public (current_feature) then
 				if current_feature.has_return_value then
 					create l_pre.make (factory.function_call ("!is_open", << "Heap", "Current" >>, types.bool))
 					l_pre.node_info.set_type ("pre")
 					l_pre.node_info.set_tag ("default_is_closed")
+					l_pre.node_info.set_attribute ("default", "contracts")
 					current_boogie_procedure.add_contract (l_pre)
 				else
 					create l_pre.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
 					l_pre.node_info.set_type ("pre")
 					l_pre.node_info.set_tag ("default_is_wrapped")
+					l_pre.node_info.set_attribute ("default", "contracts")
 					current_boogie_procedure.add_contract (l_pre)
 					create l_pre.make (forall_mml_set_property ("Current", "observers", "is_wrapped"))
 					l_pre.node_info.set_type ("pre")
 					l_pre.node_info.set_tag ("default_observers_are_wrapped")
+					l_pre.node_info.set_attribute ("default", "contracts")
 					current_boogie_procedure.add_contract (l_pre)
 					create l_post.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
 					l_post.node_info.set_type ("post")
 					l_post.node_info.set_tag ("default_is_wrapped")
+					l_post.node_info.set_attribute ("default", "contracts")
 					current_boogie_procedure.add_contract (l_post)
 					create l_post.make (forall_mml_set_property ("Current", "observers", "is_wrapped"))
 					l_post.node_info.set_type ("post")
 					l_post.node_info.set_tag ("default_observers_are_wrapped")
+					l_post.node_info.set_attribute ("default", "contracts")
 					current_boogie_procedure.add_contract (l_post)
 				end
 			elseif helper.is_private (current_feature) then
 				create l_pre.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
 				l_pre.node_info.set_type ("pre")
 				l_pre.node_info.set_tag ("default_is_open")
+				l_pre.node_info.set_attribute ("default", "contracts")
 				current_boogie_procedure.add_contract (l_pre)
 				create l_post.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
 				l_post.node_info.set_type ("post")
 				l_post.node_info.set_tag ("default_is_open")
+				l_post.node_info.set_attribute ("default", "contracts")
 				current_boogie_procedure.add_contract (l_post)
 			end
 			if a_for_creator or (helper.is_public (current_feature) and not current_feature.has_return_value) then
@@ -266,10 +276,12 @@ feature -- Translation: Signature
 						create l_pre.make (factory.function_call ("is_wrapped", << "Heap", i.item.name >>, types.bool))
 						l_pre.node_info.set_type ("pre")
 						l_pre.node_info.set_tag ("arg_" + i.item.name + "_is_wrapped")
+						l_pre.node_info.set_attribute ("default", "contracts")
 						current_boogie_procedure.add_contract (l_pre)
 						create l_post.make (factory.function_call ("is_wrapped", << "Heap", i.item.name >>, types.bool))
 						l_post.node_info.set_type ("post")
 						l_post.node_info.set_tag ("arg_" + i.item.name + "_is_wrapped")
+						l_post.node_info.set_attribute ("default", "contracts")
 						current_boogie_procedure.add_contract (l_post)
 					end
 				end
@@ -439,7 +451,12 @@ feature -- Translation: Implementation
 				else
 					if not helper.is_explicit (current_feature, "wrapping") then
 						if helper.is_public (current_feature) and not a_feature.has_return_value then
-							l_implementation.body.add_statement (factory.procedure_call ("unwrap", << "Current" >>))
+							l_call := factory.procedure_call ("unwrap", << "Current" >>)
+							l_call.node_info.set_attribute ("default", "wrapping")
+							l_call.node_info.set_attribute ("cid", system.any_id.out)
+							l_call.node_info.set_attribute ("rid", system.any_class.compiled_class.feature_named_32 ("unwrap").rout_id_set.first.out)
+							l_call.node_info.set_line (a_feature.body.start_location.line)
+							l_implementation.body.add_statement (l_call)
 						end
 					end
 				end
@@ -465,7 +482,12 @@ feature -- Translation: Implementation
 			if options.is_ownership_enabled and not helper.is_lemma (a_feature) then
 				if not helper.is_explicit (current_feature, "wrapping") then
 					if a_for_creator or helper.is_public (current_feature) and not a_feature.has_return_value then
-						l_implementation.body.add_statement (factory.procedure_call ("wrap", << "Current" >>))
+						l_call := factory.procedure_call ("wrap", << "Current" >>)
+						l_call.node_info.set_attribute ("default", "wrapping")
+						l_call.node_info.set_attribute ("cid", system.any_id.out)
+						l_call.node_info.set_attribute ("rid", system.any_class.compiled_class.feature_named_32 ("wrap").rout_id_set.first.out)
+						l_call.node_info.set_line (a_feature.body.end_location.line)
+						l_implementation.body.add_statement (l_call)
 					end
 				end
 			end

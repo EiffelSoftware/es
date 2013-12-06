@@ -72,9 +72,23 @@ feature {NONE} -- Initialization
 			Precursor
 		end
 
-    create_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
-            -- <Precursor>
+	create_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
+			-- <Precursor>
+		local
+			ap_command: ES_AUTOPROOF_COMMAND
 		do
+			create ap_command.make
+
+				-- Proof button
+			proof_button := ap_command.new_sd_toolbar_item (True)
+
+				-- Stop button
+			create stop_button.make
+			stop_button.set_pixmap (stock_pixmaps.debug_stop_icon)
+			stop_button.set_pixel_buffer (stock_pixmaps.debug_stop_icon_buffer)
+			stop_button.select_actions.extend (agent ap_command.stop_verification)
+			stop_button.disable_sensitive
+
 				-- "toggle successful" button
 			create successful_button.make
 			successful_button.set_pixmap (stock_pixmaps.general_check_document_icon)
@@ -99,8 +113,8 @@ feature {NONE} -- Initialization
 			update_button_titles
 
 			create Result.make (5)
-			proof_button := (create {ES_AUTOPROOF_COMMAND}.make).new_sd_toolbar_item (True)
 			Result.extend (proof_button)
+			Result.extend (stop_button)
 			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 			Result.extend (successful_button)
 			Result.extend (failed_button)
@@ -317,6 +331,9 @@ feature -- Access
 
 	proof_button: EB_SD_COMMAND_TOOL_BAR_BUTTON
 			-- Button to launch AutoProof.
+
+	stop_button: SD_TOOL_BAR_BUTTON
+			-- Button to stop AutoProof.
 
 	successful_count: INTEGER
 			-- Number of successful events

@@ -120,6 +120,12 @@ feature {NONE} -- Implementation
 				else
 					a_formatter.add_comment ("?called_feature")
 				end
+			elseif a_placeholder ~ "$explicit_value" then
+				if boogie_error.is_postcondition_violation then
+					a_formatter.add_comment (boogie_error.related_attributes["default"])
+				else
+					a_formatter.add_comment (boogie_error.attributes["default"])
+				end
 			elseif a_placeholder ~ "$type" then
 				if boogie_error.has_related_location then
 					a_formatter.add_comment (safe_related_value ("type"))

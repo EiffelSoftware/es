@@ -113,6 +113,14 @@ feature -- Basic operations
 			running_or_finished: is_running or is_finished
 		end
 
+	cancel
+			-- Cancel verification.
+		do
+			if attached verify_task then
+				verify_task.cancel
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	verify_task: detachable E2B_VERIFY_TASK
