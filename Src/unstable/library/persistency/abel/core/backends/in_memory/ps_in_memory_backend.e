@@ -22,6 +22,32 @@ feature {PS_ABEL_EXPORT} -- Backend capabilities
 			Result := True
 		end
 
+feature {PS_ABEL_EXPORT} -- Access
+
+	stored_types: LIST [READABLE_STRING_GENERAL]
+			-- The type string for all objects and collections stored in `Current'.
+		local
+			reflection: REFLECTOR
+		do
+			-- Note to implementors: It is highly recommended to cache the result, and
+			-- refresh it during a `retrieve' operation (or not at all if the result
+			-- is always stable).
+			create {LINKED_LIST [READABLE_STRING_GENERAL]} Result.make
+			create reflection
+
+			across
+				database as cursor
+			loop
+				Result.extend (reflection.type_of_type (cursor.key).name)
+			end
+
+			across
+				collection_database as collection_cursor
+			loop
+				Result.extend (reflection.type_of_type (collection_cursor.key).name)
+			end
+		end
+
 feature {PS_RETRIEVAL_MANAGER} -- Collection retrieval
 
 
@@ -101,6 +127,7 @@ feature {PS_ABEL_EXPORT} -- Testing
 			create plug_in_list.make
 			plug_in_list.extend (create {PS_AGENT_CRITERION_ELIMINATOR_PLUGIN})
 			max_primary := 0
+			batch_retrieval_size := {PS_REPOSITORY}.Infinite_batch_size
 		end
 
 feature {PS_ABEL_EXPORT} -- Primary key generation

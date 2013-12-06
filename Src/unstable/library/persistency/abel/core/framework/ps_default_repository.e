@@ -9,9 +9,6 @@ class
 
 inherit
 	PS_REPOSITORY
-		redefine
-			set_root_status
-		end
 
 	REFACTORING_HELPER
 
@@ -25,7 +22,7 @@ feature -- Access.
 			-- Define the number of objects to be retrieved in one batch for query operations.
 			-- Set to `infinite_batch_size' to retrieve all objects at once (and disable lazy loading).
 		do
-			Result := backend.lazy_loading_batch_size
+			Result := backend.batch_retrieval_size
 		end
 
 feature -- Element change
@@ -33,7 +30,7 @@ feature -- Element change
 	set_batch_retrieval_size (size: INTEGER)
 			-- Set `batch_retrieval_size' to `size'.
 		do
-			backend.set_lazy_loading_batch_size (size)
+			backend.set_batch_retrieval_size (size)
 		end
 
 feature -- Disposal
@@ -48,70 +45,44 @@ feature {PS_ABEL_EXPORT} -- Object query
 
 	internal_execute_query (query: PS_QUERY [ANY]; transaction: PS_INTERNAL_TRANSACTION)
 			-- Execute `query' within `transaction'.
+		local
+			type: PS_TYPE_METADATA
 		do
-			id_manager.register_transaction (transaction)
-			initialize_query (query, transaction)
---			attach (read_manager_cache[query.backend_identifier]).execute (query, transaction, default_object_graph.query_depth)
-			attach (read_manager_cache[query.backend_identifier]).execute (query, transaction, query.object_initialization_depth)
+			type := id_manager.metadata_manager.create_metadata_from_type (query.generic_type)
+			initialize_query (query, transaction, type.attributes)
 		rescue
-			query.reset
 			default_transactional_rescue (transaction)
-		end
-
-	next_entry (query: PS_QUERY [ANY])
-			-- Retrieves the next object. Stores item directly into result_set.
-			-- In case of an error it is written into the transaction connected to the query.
-		do
-			id_manager.register_transaction (query.internal_transaction)
-			attach (read_manager_cache[query.backend_identifier]).next_entry (query)
-		rescue
-			fixme ("What to do in such a case (i.e. exception during lazy loading)?")
-			query.reset
-			default_transactional_rescue (query.internal_transaction)
+			query.close
 		end
 
 	internal_execute_tuple_query (tuple_query: PS_TUPLE_QUERY [ANY]; transaction: PS_INTERNAL_TRANSACTION)
 			-- Execute the tuple query `tuple_query' within the readonly transaction `transaction'.
 		local
-			exception: PS_INTERNAL_ERROR
+			collector: PS_CRITERION_ATTRIBUTE_COLLECTOR
+			trash: INTEGER
 		do
-			id_manager.register_transaction (transaction)
-			initialize_query (tuple_query, transaction)
---			attach (read_manager_cache[tuple_query.backend_identifier]).execute_tuple (tuple_query, transaction, default_object_graph.query_depth)
-			attach (read_manager_cache[tuple_query.backend_identifier]).execute_tuple (tuple_query, transaction, tuple_query.object_initialization_depth)
-		rescue
-			tuple_query.reset
-			default_transactional_rescue (transaction)
-		end
+			create collector.make
+			trash := collector.visit (tuple_query.criterion)
+			collector.attributes.compare_objects
+			across
+				tuple_query.projection as proj
+			loop
+				if not collector.attributes.has (proj.item) then
+					collector.attributes.extend (proj.item)
+				end
+			end
 
-	next_tuple_entry (tuple_query: PS_TUPLE_QUERY [ANY])
-			-- Retrieves the next tuple and stores it in `query.result_cursor'.
-		local
-			exception: PS_INTERNAL_ERROR
-		do
-			id_manager.register_transaction (tuple_query.internal_transaction)
-			attach (read_manager_cache[tuple_query.backend_identifier]).next_tuple_entry (tuple_query)
+			initialize_query (tuple_query, transaction, collector.attributes)
 		rescue
-			fixme ("What to do in such a case (i.e. exception during lazy loading)?")
-			tuple_query.reset
-			default_transactional_rescue (tuple_query.internal_transaction)
+			default_transactional_rescue (transaction)
+			tuple_query.close
 		end
 
 feature {PS_ABEL_EXPORT} -- Modification
 
-	insert (object: ANY; transaction: PS_INTERNAL_TRANSACTION)
+	write (object: ANY; transaction: PS_INTERNAL_TRANSACTION)
 			-- Insert `object' within `transaction' into `Current'.
 		do
-			id_manager.register_transaction (transaction)
-			write_manager.write (object, transaction)
-		rescue
-			default_transactional_rescue (transaction)
-		end
-
-	update (object: ANY; transaction: PS_INTERNAL_TRANSACTION)
-			-- Update `object' within `transaction'.
-		do
-			id_manager.register_transaction (transaction)
 			write_manager.write (object, transaction)
 		rescue
 			default_transactional_rescue (transaction)
@@ -120,42 +91,7 @@ feature {PS_ABEL_EXPORT} -- Modification
 	direct_update (object: ANY; transaction: PS_INTERNAL_TRANSACTION)
 			-- Update `object' only and none of its referenced objects.
 		do
-			id_manager.register_transaction (transaction)
 			write_manager.direct_update (object, transaction)
-		end
-
-	delete (object: ANY; transaction: PS_INTERNAL_TRANSACTION)
-			-- Delete `object' within `transaction' from `Current'.
-		local
-			id: PS_OBJECT_IDENTIFIER_WRAPPER
-			primary: INTEGER
-			to_delete: LINKED_LIST[PS_BACKEND_ENTITY]
-			found: BOOLEAN
-		do
-			id_manager.register_transaction (transaction)
-
-			id := id_manager.identifier_wrapper (object, transaction)
-			primary := mapper.quick_translate (id.object_identifier, transaction)
-
-			create to_delete.make
-			to_delete.extend (create {PS_BACKEND_OBJECT}.make (primary, id.metadata))
-
-			across
-				all_handlers as h_cursor
-			until
-				found
-			loop
-				if h_cursor.item.can_handle_type (id.metadata) then
-					found := True
-					if h_cursor.item.is_mapping_to_collection then
-						backend.delete_collections (to_delete, transaction)
-					else
-						backend.delete (to_delete, transaction)
-					end
-				end
-			end
-			mapper.remove_primary_key (primary, id.metadata, transaction)
-			id_manager.delete_identification (object, transaction)
 		rescue
 			default_transactional_rescue (transaction)
 		end
@@ -164,6 +100,8 @@ feature {PS_ABEL_EXPORT} -- Modification
 			-- Set the root status of `object' to `value'.
 		do
 			write_manager.update_root (object, value, transaction)
+		rescue
+			default_transactional_rescue (transaction)
 		end
 
 feature {PS_ABEL_EXPORT} -- Transaction handling
@@ -202,7 +140,6 @@ feature {PS_ABEL_EXPORT} -- Testing
 
 			create id_manager.make
 			create mapper.make
-			create read_manager_cache.make (100)
 
 			create write_manager.make (id_manager.metadata_manager, id_manager, mapper, backend)
 
@@ -231,6 +168,7 @@ feature {NONE} -- Initialization
 			handler_list: LINKED_LIST [PS_HANDLER];
 			transaction_settings: PS_TRANSACTION_SETTINGS
 			)
+			-- Initialization for `Current'
 		do
 			backend := a_backend
 			id_manager := an_id_manager
@@ -238,10 +176,6 @@ feature {NONE} -- Initialization
 			write_manager := a_write_manager
 			all_handlers := handler_list
 			transaction_isolation := transaction_settings
-
-			create read_manager_cache.make (100)
-			create transaction_isolation_level
-			set_transaction_isolation_level (transaction_isolation_level.repeatable_read)
 
 			retry_count := default_retry_count
 			set_batch_retrieval_size (infinite_batch_size)
@@ -258,10 +192,6 @@ feature {PS_ABEL_EXPORT} -- Implementation
 	write_manager: PS_WRITE_MANAGER
 			-- The write manager.
 
-	read_manager_cache: HASH_TABLE[PS_READ_MANAGER, INTEGER]
-			-- The read managers, as associated to queries.
-
-
 	all_handlers: LINKED_LIST[PS_HANDLER]
 			-- All object handlers known to `Current'
 
@@ -269,26 +199,91 @@ feature {PS_ABEL_EXPORT} -- Implementation
 feature {NONE} -- Implementation
 
 
-	initialize_query (query: PS_ABSTRACT_QUERY[ANY, ANY]; transaction: PS_INTERNAL_TRANSACTION)
+	initialize_query (query: PS_ABSTRACT_QUERY[ANY, ANY]; transaction: PS_INTERNAL_TRANSACTION; filter: READABLE_INDEXABLE [STRING])
+			-- Set up the internal query cursor and retrieve the first result.
 		local
 			new_read_manager: PS_READ_MANAGER
+			query_cursor: PS_QUERY_CURSOR
 		do
-			query.set_identifier (new_query_identifier)
-			create new_read_manager.make (id_manager.metadata_manager, id_manager, mapper, backend)
+			create new_read_manager.make (id_manager.metadata_manager, id_manager, mapper, backend, transaction)
 			all_handlers.do_all (agent new_read_manager.add_handler)
-			read_manager_cache.extend (new_read_manager, query.backend_identifier)
+
+			create query_cursor.make (query, filter, new_read_manager)
+
+			query.prepare_execution (transaction, query_cursor)
+			query.retrieve_next
 		end
 
+feature {NONE} -- Obsolete
 
-	new_query_identifier: INTEGER
-			-- Get a new identifier for a query.
+		-- The two functions are just here to prevent bit-rot in case we need them again.
+
+
+	delete (object: ANY; transaction: PS_INTERNAL_TRANSACTION)
+			-- Delete `object' within `transaction' from `Current'.
+		require
+			transaction_repository_correct: transaction.repository = Current
+			active_transaction: transaction.is_active
+			can_handle_object: can_handle (object)
+			object_known: is_identified (object, transaction)
+		local
+			id: PS_OBJECT_IDENTIFIER_WRAPPER
+			primary: INTEGER
+			to_delete: LINKED_LIST[PS_BACKEND_ENTITY]
+			found: BOOLEAN
 		do
-			Result := next_query_identifier
-			next_query_identifier := next_query_identifier + 1
+			id := id_manager.identifier_wrapper (object, transaction)
+			primary := mapper.quick_translate (id.object_identifier, transaction)
+
+			create to_delete.make
+			to_delete.extend (create {PS_BACKEND_OBJECT}.make (primary, id.metadata))
+
+			across
+				all_handlers as h_cursor
+			until
+				found
+			loop
+				if h_cursor.item.can_handle_type (id.metadata) then
+					found := True
+					if h_cursor.item.is_mapping_to_collection then
+						backend.delete_collections (to_delete, transaction)
+					else
+						backend.delete (to_delete, transaction)
+					end
+				end
+			end
+			mapper.remove_primary_key (primary, id.metadata, transaction)
+			id_manager.delete_identification (object, transaction)
+		ensure
+			transaction_still_alive: transaction.is_active
+			no_error: not transaction.has_error
+			object_not_known: not is_identified (object, transaction)
+			transaction_active_in_id_manager: id_manager.is_registered (transaction)
+		rescue
+			default_transactional_rescue (transaction)
 		end
 
-	next_query_identifier: INTEGER
-			-- The next identifier number
+	delete_query (query: PS_QUERY [ANY]; transaction: PS_INTERNAL_TRANSACTION)
+			-- Delete all objects that match the criteria in `query' from `Current' within `transaction'.
+		require
+			not_executed: not query.is_executed
+			transaction_repository_correct: transaction.repository = Current
+			--active_transaction: query.transaction.is_active
+			active_transaction: transaction.is_active
+		do
+			internal_execute_query (query, transaction)
+			across
+				query as cursor
+			loop
+				delete (cursor.item, transaction)
+			end
+		ensure
+			transaction_still_alive: transaction.is_active
+			no_error: not transaction.has_error
+			transaction_active_in_id_manager: id_manager.is_registered (transaction)
+			query_executed: query.is_executed
+			no_result: query.is_after
+		end
 
 end
 

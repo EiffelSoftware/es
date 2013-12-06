@@ -71,7 +71,7 @@ feature {NONE} -- Initialization
 			create internal_active_queries.make
 			create root_declaration_strategy.make_argument_of_insert
 			create transaction.make (repository)
-			repository.id_manager.register_transaction (attach (transaction))
+--			repository.id_manager.register_transaction (attach (transaction))
 		ensure
 			default_strategy: root_declaration_strategy.is_argument_of_insert
 			active: is_active
@@ -157,9 +157,9 @@ feature -- Data retrieval
 			in_transaction: is_active
 			no_error: not has_error
 		do
-			repository.internal_execute_query (query, attach(transaction))
 			internal_active_queries.extend (query)
-			query.set_transaction_context (Current)
+			query.set_transaction (Current)
+			repository.internal_execute_query (query, attach(transaction))
 		ensure
 			active: active_queries.has (query)
 			executed: query.is_executed
@@ -174,9 +174,9 @@ feature -- Data retrieval
 			in_transaction: is_active
 			no_error: not has_error
 		do
-			repository.internal_execute_tuple_query (query, attach(transaction))
 			internal_active_queries.extend (query)
-			query.set_transaction_context (Current)
+			query.set_transaction (Current)
+			repository.internal_execute_tuple_query (query, attach(transaction))
 		ensure
 			active: active_queries.has (query)
 			executed: query.is_executed
@@ -195,7 +195,7 @@ feature -- Data modification
 			supported: is_supported (object)
 			not_persistent: not is_persistent (object)
 		do
-			repository.insert (object, attach(transaction))
+			repository.write (object, attach(transaction))
 		ensure
 			in_transaction: is_active
 			persistent: is_persistent (object) xor object.generating_type.is_expanded
@@ -213,7 +213,7 @@ feature -- Data modification
 			supported: is_supported (object)
 			persistent: is_persistent (object)
 		do
-			repository.update (object, attach(transaction))
+			repository.write (object, attach(transaction))
 		ensure
 			in_transaction: is_active
 			persistent: is_persistent (object)
@@ -322,7 +322,7 @@ feature -- Transaction operations
 			-- create {PS_NO_ERROR} last_error
 			last_error := Void
 			create transaction.make (repository)
-			repository.id_manager.register_transaction (attach (transaction))
+--			repository.id_manager.register_transaction (attach (transaction))
 		ensure
 			active: is_active
 			no_error: not has_error

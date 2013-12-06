@@ -79,7 +79,7 @@ feature {PS_REPOSITORY_TESTS}
 
 			transaction.execute_query (head_query)
 
-			assert ("The reference of the retrieved object should be Void", head_query.result_cursor.item.tail = Void)
+			assert ("The reference of the retrieved object should be Void", head_query.new_cursor.item.tail = Void)
 
 			head_query.close
 			transaction.commit
@@ -93,6 +93,8 @@ feature {PS_REPOSITORY_TESTS}
 			transaction: PS_TRANSACTION
 			query: PS_QUERY [CHAIN_HEAD]
 			tail_query: PS_QUERY [CHAIN_TAIL]
+
+			old_batch_size: INTEGER
 		do
 			create query.make
 			create tail_query.make
@@ -103,8 +105,13 @@ feature {PS_REPOSITORY_TESTS}
 			query.set_object_initialization_depth (some_depth)
 			transaction.execute_query (query)
 
-			assert ("The reference of the retrieved object should be Void", query.result_cursor.item.tail.next.next.last)
+			assert ("The reference of the retrieved object should be Void", query.new_cursor.item.tail.next.next.last)
 
+				-- The next test only works when loading the objects one-by-one.
+				-- If not ABEL will detect that the other tail items are already loaded
+				-- and establish the links.
+			old_batch_size := repository.batch_retrieval_size
+			repository.set_batch_retrieval_size (1)
 			tail_query.set_object_initialization_depth (1)
 			transaction.execute_query (tail_query)
 
@@ -116,25 +123,27 @@ feature {PS_REPOSITORY_TESTS}
 			end
 			tail_query.close
 
+			repository.set_batch_retrieval_size (old_batch_size)
+
 			query.reset
 			query.set_object_initialization_depth (1)
 			transaction.execute_query (query)
-			assert ("There should be no tail", not attached query.result_cursor.item.tail)
+			assert ("There should be no tail", not attached query.new_cursor.item.tail)
 
 			query.reset
 			query.set_object_initialization_depth (2)
 			transaction.execute_query (query)
-			assert ("There should be only one tail", query.result_cursor.item.tail.last)
+			assert ("There should be only one tail", query.new_cursor.item.tail.last)
 
 			query.reset
 			query.set_object_initialization_depth (3)
 			transaction.execute_query (query)
-			assert ("There should be only two tails", query.result_cursor.item.tail.next.last)
+			assert ("There should be only two tails", query.new_cursor.item.tail.next.last)
 
 			query.reset
 			query.set_object_initialization_depth (4)
 			transaction.execute_query (query)
-			assert ("There should be only three tails", query.result_cursor.item.tail.next.next.last)
+			assert ("There should be only three tails", query.new_cursor.item.tail.next.next.last)
 
 			query.close
 			transaction.commit

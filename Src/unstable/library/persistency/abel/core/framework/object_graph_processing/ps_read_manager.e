@@ -19,11 +19,13 @@ feature {NONE} -- Initialization
 			a_metadata_factory: like metadata_factory;
 			an_id_manager: like id_manager;
 			a_primary_key_mapper: like primary_key_mapper;
-			a_backend: like backend)
+			a_backend: like backend;
+			a_transaction: like transaction)
 			-- Initialization for `Current'
 		do
 			initialize (a_metadata_factory, an_id_manager, a_primary_key_mapper)
 			backend := a_backend
+			internal_transaction := a_transaction
 
 			create object_storage.make (default_size)
 			create cache.make (small_size)
@@ -34,45 +36,70 @@ feature {NONE} -- Initialization
 			to_process_next := new_interval
 			to_process := new_interval
 			to_finalize := new_interval
-			query_result := (create {LINKED_LIST[PS_BACKEND_OBJECT]}.make).new_cursor
 		end
 
-	backend: PS_READ_ONLY_BACKEND
-			-- The database backend.
 
 	cache: HASH_TABLE[HASH_TABLE[INTEGER, INTEGER], PS_TYPE_METADATA]
 			-- A cache to map a [type, primary_key] tuple to an index in `object_storage'.
 
-feature
+
+feature {PS_ABEL_EXPORT} -- Access
+
+	backend: PS_READ_ONLY_BACKEND
+			-- The database backend.
+
 
 	cache_lookup (primary_key: INTEGER; type: PS_TYPE_METADATA):INTEGER
+			-- See if an object of type `type' and with primary key `primary_key' is already loaded.
+			-- The result is 0 if no such object exists.
 		do
 			if attached cache[type] as inner then
 				Result := inner[primary_key]
 			end
 		end
 
+feature {PS_ABEL_EXPORT} -- Element change
 
-	execute (q: PS_QUERY[ANY]; a_transaction: PS_INTERNAL_TRANSACTION; a_max_level: INTEGER)
+	add_object (object: PS_OBJECT_DATA; cached: BOOLEAN)
+			-- Add `object' to the object_storage and register it in cache, if `cached' is True.
+		require
+			correct_index: object.index = count + 1
 		local
-			type: PS_TYPE_METADATA
-			new_obj: PS_OBJECT_DATA
+			new_inner_cache: HASH_TABLE[INTEGER, INTEGER]
+		do
+			object_storage.extend (object)
+
+			-- Add the item to the cache.
+			-- Also add items which have not been found in the database (i.e. backend_representation = Void).
+			-- This avoids a potential problem that a shared object that got deleted may be queried several times.
+			if cached then
+				if attached cache[object.type] as inner_cache then
+					inner_cache.extend (object.index, object.primary_key)
+				else
+					create new_inner_cache.make (small_size)
+					new_inner_cache.extend (object.index, object.primary_key)
+					cache.extend (new_inner_cache, object.type)
+				end
+			end
+		ensure
+			inserted: count - 1 = old count
+			correct_position: item(object.index) = object
+		end
+
+feature {PS_ABEL_EXPORT} -- Smart retrieval
+
+	dispatch_retrieve (type: PS_TYPE_METADATA; criterion: PS_CRITERION; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; a_transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_ENTITY]
+			-- Retrieve a set of collections or objects (based on the handler for `type').
+		local
 			found: BOOLEAN
 		do
-			max_level := a_max_level
-			object_storage.wipe_out
-			cache.wipe_out
-			internal_transaction := a_transaction
-
-			q.register_as_executed (transaction)
-
-			type := metadata_factory.create_metadata_from_type(q.generic_type)
+			Result := (create {LINKED_LIST [PS_BACKEND_ENTITY]}.make).new_cursor
 
 			across
 				value_type_handlers as cursor
 			loop
 				if cursor.item.can_handle_type (type) then
-					query_result := backend.retrieve (type, q.criterion, create {PS_IMMUTABLE_STRUCTURE[STRING]}.make (<<value_type_item>>), transaction)
+					Result := backend.retrieve (type, criterion, create {PS_IMMUTABLE_STRUCTURE[STRING]}.make (<<value_type_item>>), a_transaction)
 					found := True
 				end
 			end
@@ -85,188 +112,30 @@ feature
 				if cursor.item.can_handle_type (type) then
 					found := True
 					if cursor.item.is_mapping_to_object then
-						query_result := backend.retrieve (type, q.criterion, create {PS_IMMUTABLE_STRUCTURE[STRING]}.make (type.attributes), transaction)
+						Result := backend.retrieve (type, criterion, attributes, a_transaction)
 					else
-						query_result := backend.retrieve_all_collections (type, transaction)
+						Result := backend.retrieve_all_collections (type, a_transaction)
 					end
 				end
 			end
-			next_entry (q)
-		end
 
-	execute_tuple (q: PS_TUPLE_QUERY[ANY]; a_transaction: PS_INTERNAL_TRANSACTION; a_max_level: INTEGER)
-		local
-			type: PS_TYPE_METADATA
-			new_obj: PS_OBJECT_DATA
-			found: BOOLEAN
-			collector: PS_CRITERION_ATTRIBUTE_COLLECTOR
-			thrash: INTEGER
-		do
-			max_level := a_max_level
-			object_storage.wipe_out
-			cache.wipe_out
-			internal_transaction := a_transaction
-
-			q.register_as_executed (transaction)
-
-			type := metadata_factory.create_metadata_from_type(q.generic_type)
-
-
-			create collector.make
-			thrash := collector.visit (q.criterion)
-			collector.attributes.compare_objects
-			across q.projection as proj
-			loop
-				if not collector.attributes.has (proj.item) then
-					collector.attributes.extend (proj.item)
-				end
-			end
-
-			across
-				identity_type_handlers as cursor
-			until
-				found
-			loop
-				if cursor.item.can_handle_type (type) then
-					found := True
-					check cursor.item.is_mapping_to_object end
-					query_result := backend.retrieve (type, q.criterion, create {PS_IMMUTABLE_STRUCTURE[STRING]}.make (collector.attributes), transaction)
-				end
-			end
-			next_tuple_entry (q)
-		end
-
-	next_tuple_entry (query: PS_TUPLE_QUERY [ANY])
-			-- Retrieve the next entry of query `query'.
-		local
-			type: PS_TYPE_METADATA
-			new_obj: PS_OBJECT_DATA
-			tuple: TUPLE
-			i, index: INTEGER
-		do
-
-			-- Get the type of objects that the query operates on.
-			type := metadata_factory.create_metadata_from_type (query.generic_type)
-
-			if not query_result.after then
-				new_obj := next_query_result (False)
-				if query.criterion.is_satisfied_by (new_obj.reflector.object) then
-
-						-- extract the required information
-					check attached {TUPLE} type.reflection.new_instance_of (metadata_factory.generate_tuple_type (type.type, query.projection)) as t then
-						tuple := t
-					end
-
-					across query.projection as attr_cursor
-					from i := 1
-					loop
-						index := type.field_index (attr_cursor.item)
-						tuple.put (type.reflection.field (index, new_obj.reflector.object), i)
-						i:= i+1
-					end
-
-					query.result_cursor.set_entry (tuple)
-
-				else
-					next_tuple_entry (query)
-				end
-			else
-				query.result_cursor.set_entry (Void)
-			end
+			check handler_found: found end
 		end
 
 
-	query_item: INTEGER
+feature {PS_ABEL_EXPORT} -- Object building
 
-	next_entry (query: PS_QUERY [ANY])
-			-- Retrieve the next entry of query `query'.
-		local
-			new_obj: PS_OBJECT_DATA
+	build (index_set: INDEXABLE [INTEGER, INTEGER]; a_max_level: INTEGER)
+			-- Build all items in `index_set'.
 		do
-			if not query_result.after then
-				new_obj := next_query_result (True)
-				if
-					query.criterion.is_satisfied_by (new_obj.reflector.object)
-					and (query.is_non_root_ignored
-					implies (transaction.root_flags[new_obj.identifier] or else (attached new_obj.backend_representation as br and then br.is_root)))
-				then
-					query.result_cursor.set_entry (new_obj.reflector.object)
-				else
-					next_entry (query)
-				end
-			else
-				query.result_cursor.set_entry (Void)
-			end
-		end
-
-	max_level: INTEGER
-
-
-	next_query_result (enable_cache: BOOLEAN): PS_OBJECT_DATA
-		do
-			fixme ("Maybe ask the backend for its lazy loading batch size, that way some double loading of objects can be avoided")
-			if
-				attached cache[query_result.item.metadata] as inner_cache
-				and then attached inner_cache[query_result.item.primary_key] as index
-				and then index > 0
-			then
-				Result := item (index)
-
-				fixme ("Make sure the object gets loaded to the correct level")
-				if not Result.is_object_initialized then
-
-					check not_retrieved: not attached Result.backend_representation end
-
-					Result.set_backend_representation (query_result.item)
-					to_finalize := new_interval
-					to_process := new_interval
-					to_process_next :=  create {PS_INTEGER_INTERVAL}.make_new (index, index)
-					build_all
-				end
-			else
-				Result := create {PS_OBJECT_DATA}.make_with_primary_key (count + 1, query_result.item.primary_key, query_result.item.metadata, 0)
-				Result.set_backend_representation (query_result.item)
-
-				if enable_cache then
-					add_object (Result)
-				else
-					object_storage.extend (Result)
-				end
+			from
+				max_level := a_max_level
 
 				to_finalize := new_interval
 				to_process := new_interval
-				to_process_next := create {PS_INTEGER_INTERVAL}.make_new (count, count)
-				build_all
-			end
-
-			query_result.forth
-		end
-
-
-feature {NONE}
-
-	query_result: ITERATION_CURSOR[PS_BACKEND_ENTITY]
-
-
-	new_interval: PS_INTEGER_INTERVAL
-			-- Create a new empty interval with values [count+1, count]
-		do
-			create Result.make_new (count+1, count)
-		end
-
-feature
-
-	build_all
-		do
-			from
---				to_finalize := create {PS_INTEGER_INTERVAL}.make_new (1, 0)
---				to_process := create {PS_INTEGER_INTERVAL}.make_new (1, count)
-
---				to_process_next := new_interval
---				to_process_next := create {PS_INTEGER_INTERVAL}.make_new (1, count)
+				to_process_next := index_set
 
 				current_level := 0
-
 			until
 				to_process_next.is_empty and to_process.is_empty and to_finalize.is_empty
 				or (current_level >= max_level and max_level > 0)
@@ -277,23 +146,33 @@ feature
 
 				process_step
 
-
-
 				current_level := current_level + 1
 			end
 		end
 
+
+feature {NONE}  -- Object building: loop control variables
+
+	max_level: INTEGER
+			-- The maximum object initialization depth.
+
 	current_level: INTEGER
+			-- The current object initialization depth.
 
 	to_process_next: INDEXABLE[INTEGER, INTEGER]
+			-- The objects to retrieve and build in the next iteration.
+
 	to_process: INDEXABLE [INTEGER, INTEGER]
+			-- The objects to retrieve and (partially) build in this iteration.
+
 	to_finalize: INDEXABLE[INTEGER, INTEGER]
+			-- The objects from the last iteration which need to be finalized.
 
-
-
-
-
-
+	new_interval: PS_INTEGER_INTERVAL
+			-- Create a new empty interval with values [count+1, count]
+		do
+			create Result.make_new (count+1, count)
+		end
 
 feature {PS_ABEL_EXPORT} -- Handler support functions
 
@@ -426,8 +305,7 @@ feature {PS_ABEL_EXPORT} -- Handler support functions
 
 			-- Extend the objects list for retrieval
 			if not found then
---				object_storage.extend (create {PS_OBJECT_DATA}.make_with_primary_key (count + 1, primary, type, current_level + 1))
-				add_object (create {PS_OBJECT_DATA}.make_with_primary_key (count + 1, primary, type, current_level + 1))
+				add_object (create {PS_OBJECT_DATA}.make_with_primary_key (count + 1, primary, type, current_level + 1), True)
 				to_process_next.extend (count)
 				-- Update the referers and references tables
 				referer.references.extend (count)
@@ -455,7 +333,7 @@ feature {PS_ABEL_EXPORT} -- Handler support: Batch Retrieval
 			end
 		end
 
-feature {NONE} -- Implementation
+feature {NONE} -- Implementation: Loop body
 
 	process_step
 			-- Retrieve and build all objects in `to_process'.
@@ -512,30 +390,6 @@ feature {NONE} -- Implementation
 
 		end
 
-	add_object (object: PS_OBJECT_DATA)
-			-- Add `object' to the object_storage.
-		require
-			correct_index: object.index = count + 1
-		local
-			new_inner_cache: HASH_TABLE[INTEGER, INTEGER]
-		do
-			object_storage.extend (object)
-
-			-- Add the item to the cache.
-			-- Also add items which have not been found in the database (i.e. backend_representation = Void).
-			-- This avoids a potential problem that a shared object that got deleted may be queried several times.
-			if attached cache[object.type] as inner_cache then
-				inner_cache.extend (object.index, object.primary_key)
-			else
-				create new_inner_cache.make (small_size)
-				new_inner_cache.extend (object.index, object.primary_key)
-				cache.extend (new_inner_cache, object.type)
-			end
-		ensure
-			inserted: count - 1 = old count
-			correct_position: item(object.index) = object
-		end
-
 feature {NONE} -- Implementation: Batch retrieval
 
 	objects_to_retrieve: ARRAYED_LIST[TUPLE[type:PS_TYPE_METADATA; primary:INTEGER; index:INTEGER]]
@@ -548,17 +402,39 @@ feature {NONE} -- Implementation: Batch retrieval
 			-- Retrieve all objects and collections `objects_to_retrieve' and `collections_to_retrieve'.
 			-- If the entity is present in the database, update the reference in the corresponding
 			-- `{PS_OBJECT_DATA}.backend_representation'. Else set `{PS_OBJECT_DATA}.is_ignored' to true.
+		local
+			retrieved_objects: LIST [PS_BACKEND_OBJECT]
 		do
 			fixme ("Implement support for batch retrieval in the backends.")
-			across
-				objects_to_retrieve as cursor
-			loop
-				if attached backend.retrieve_by_primary (cursor.item.type, cursor.item.primary, create {PS_IMMUTABLE_STRUCTURE[STRING]}.make (cursor.item.type.attributes), transaction) as retrieved then
-					item(cursor.item.index).set_backend_representation (retrieved)
-				else
-					item(cursor.item.index).ignore
+
+			if not objects_to_retrieve.is_empty then
+				retrieved_objects := backend.retrieve_by_primaries (objects_to_retrieve, transaction)
+
+				across
+					retrieved_objects as obj
+				loop
+					item (cache_lookup (obj.item.primary_key, obj.item.metadata)).set_backend_representation (obj.item)
 				end
+
+				across
+					objects_to_retrieve as cursor
+				loop
+					if not attached item (cursor.item.index).backend_representation then
+						item (cursor.item.index).ignore
+					end
+				end
+
 			end
+
+--			across
+--				objects_to_retrieve as cursor
+--			loop
+--				if attached backend.retrieve_by_primary (cursor.item.type, cursor.item.primary, create {PS_IMMUTABLE_STRUCTURE[STRING]}.make (cursor.item.type.attributes), transaction) as retrieved then
+--					item(cursor.item.index).set_backend_representation (retrieved)
+--				else
+--					item(cursor.item.index).ignore
+--				end
+--			end
 
 			across
 				collections_to_retrieve as cursor
@@ -575,21 +451,5 @@ feature {NONE} -- Implementation: Batch retrieval
 		ensure
 			cleared_arrays: collections_to_retrieve.is_empty and objects_to_retrieve.is_empty
 		end
-
-invariant
---	unique_objects:
---		enable_expensive_contracts implies
---			across
---				1 |..| count as idx
---			all not (
---				across
---					1 |..| count as idx2
---				some
---					(idx.item /= idx2.item
---					and item(idx.item).primary_key =  item (idx2.item).primary_key
---					and item(idx.item).type.is_equal (item(idx2.item).type))
---				end
---				)
---			end
 
 end

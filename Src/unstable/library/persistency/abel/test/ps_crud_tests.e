@@ -103,7 +103,7 @@ feature {PS_REPOSITORY_TESTS} -- Flat objects
 		do
 			create test.make (repository)
 			create obj
-			test.test_crud_operations (obj, agent test.default_update_operation(?))
+			test.test_crud_operations (obj, agent {ANY}.do_nothing)
 				-- repository is clean after delete...
 		end
 
@@ -372,7 +372,7 @@ feature {PS_REPOSITORY_TESTS} -- Collections
 			--executor.execute_query (query)
 			transaction.execute_query (query)
 
-			assert ("no result", not query.result_cursor.after)
+			assert ("no result", not query.new_cursor.after)
 			across query as c loop
 				assert ("not void", attached c.item.special)
 				assert ("equal", c.item.is_deep_equal (a) and c.item.is_deep_equal (b))
@@ -515,6 +515,7 @@ feature {PS_REPOSITORY_TESTS} -- Polymorphism
 			-- Regression test: instead of creating FILE_NAME objects, a STRING object was created.
 			test.test_insert (person)
 			repository.clean_db_for_testing
+			create test.make (repository)
 			test.test_crud_operations (person, agent (p:TEST_PERSON) do p.add_item end)
 			repository.clean_db_for_testing
 		end

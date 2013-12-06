@@ -196,7 +196,7 @@ mtcppflags="$cppflags -DEIF_THREADS -DEIF_LINUXTHREADS"
 optimize="-O3"
 voidflags='15'
 #Check value for next 1
-warning_level='-Wall -Wno-unused-parameter -pedantic -std=gnu99'
+warning_level='-Wall -Wextra -Wno-unused-parameter -pedantic -std=gnu99'
 wkoptimize="-O0"
 
 #Makefiles
@@ -235,7 +235,7 @@ shared_suffix='.so'
 shared_rt_suffix='.so'
 sharedlibs='-lm'
 mtsharedlibs='-lm -lpthread'
-sharedlibversion='.13.11'
+sharedlibversion='.14.05'
 sharedlink='ld'
 suffix='.a'
 wkeiflib='wkbench'

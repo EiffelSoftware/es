@@ -12,22 +12,59 @@ inherit
 
 	REFACTORING_HELPER
 
+feature {PS_ABEL_EXPORT} -- Access
 
-feature {PS_ABEL_EXPORT}-- Backend capabilities
+	stored_types: LIST [READABLE_STRING_GENERAL]
+			-- The type string for all objects and collections stored in `Current'.
+		deferred
+			-- Note to implementors: It is highly recommended to cache the result, and
+			-- refresh it during a `retrieve' operation (or not at all if the result
+			-- is always stable).
+		ensure
+			no_none_type: across Result as cursor all not cursor.item.is_equal ("NONE") end
+		end
+
+	batch_retrieval_size: INTEGER
+			-- The amount of objects to retrieve in a single batch.
+			-- Set to -1 to retrieve all objects.
+
+feature {PS_ABEL_EXPORT} -- Backend capabilities
 
 	is_object_type_supported (type: PS_TYPE_METADATA): BOOLEAN
 			-- Can the current backend handle objects of type `type'?
 		do
-			-- The attached syntax is used here because the {TYPE}.is_conforming_to will always generate a catcall.
 			Result := not attached {TYPE[detachable SPECIAL[detachable ANY]]} type.type and not attached {TYPE[detachable TUPLE]} type.type
---			Result := not type.type.is_conforming_to ({detachable SPECIAL[detachable ANY]})
---				and not type.type.is_conforming_to ({detachable TUPLE})
 		end
 
 	is_generic_collection_supported: BOOLEAN
 			-- Can the current backend support collections in general,
 			-- i.e. is there a default strategy?
 		deferred
+		end
+
+	is_active: BOOLEAN
+			-- Is the current backend active and ready for operation?
+		do
+			fixme ("TODO")
+			Result := True
+		end
+
+feature {PS_ABEL_EXPORT} -- Element change
+
+	set_batch_retrieval_size (size: INTEGER)
+			-- Set the batch retrieval size.
+		require
+			valid: size > 0 or size = -1
+		do
+			batch_retrieval_size := size
+		ensure
+			correct: size = batch_retrieval_size
+		end
+
+	set_transaction_isolation (settings: PS_TRANSACTION_SETTINGS)
+			-- Set the transaction isolation level such that all values in `settings' are respected.
+		do
+			fixme ("TODO")
 		end
 
 feature {PS_ABEL_EXPORT} -- Object retrieval
@@ -78,6 +115,40 @@ feature {PS_ABEL_EXPORT} -- Object retrieval
 			metadata_set: not Result.after implies Result.item.metadata.is_equal (type)
 			attributes_present: not Result.after implies attributes.for_all (agent (Result.item).has_attribute)
 			consistent: not Result.after implies Result.item.is_consistent
+			transaction_unchanged: transaction.is_active
+		end
+
+	frozen retrieve_by_primaries (order: LIST [TUPLE [type: PS_TYPE_METADATA; primary_key: INTEGER]]; transaction: PS_INTERNAL_TRANSACTION): LIST [PS_BACKEND_OBJECT]
+			-- For each tuple in the list, retrieve the object where the following conditions hold:
+			--		1) The object is a (direct) instance of `type'
+			--		2) The object is visible within the current `transaction' (e.g. not deleted previously)
+			--		3) The object has the unique primary key `primary_key'.
+			-- All attributes defined in `type.attributes' are guaranteed to be present. Additional attributes may be included.
+			-- If an attribute was `Void' during an insert, or it doesn't exist in the database because of a version mismatch,
+			-- the attribute value during retrieval will be an empty string and its class name `NONE'.
+			-- Note: A primary key only has to be unique among the set of objects with type `type'.
+			-- Note: The result does not have to be ordered, and items deleted in the database are not present in the result.
+		require
+			not_empty: not order.is_empty
+			supported: across order as cursor all is_object_type_supported (cursor.item.type) end
+			transaction_active: transaction.is_active
+		local
+			struct: PS_IMMUTABLE_STRUCTURE [STRING]
+		do
+			create {LINKED_LIST [PS_BACKEND_OBJECT]} Result.make
+			across
+				order as cursor
+			loop
+				create struct.make (cursor.item.type.attributes)
+				if attached retrieve_by_primary (cursor.item.type, cursor.item.primary_key, struct, transaction) as retrieved_obj then
+					Result.extend (retrieved_obj)
+				end
+			end
+
+		ensure
+			type_and_primary_correct: across Result as res_cursor all (across order as arg_cursor some res_cursor.item.primary_key = arg_cursor.item.primary_key and res_cursor.item.metadata = arg_cursor.item.type end) end
+			attributes_present: across Result as cursor all cursor.item.metadata.attributes.for_all (agent (cursor.item).has_attribute) end
+			consistent: Result.for_all (agent {PS_BACKEND_OBJECT}.is_consistent)
 			transaction_unchanged: transaction.is_active
 		end
 
@@ -162,18 +233,22 @@ feature {PS_ABEL_EXPORT} -- Transaction handling
 
 	transaction_isolation_level: PS_TRANSACTION_ISOLATION_LEVEL
 			-- The currently active transaction isolation level.
+		obsolete
+			"Remove it."
 		deferred
 		end
 
 	set_transaction_isolation_level (a_level: PS_TRANSACTION_ISOLATION_LEVEL)
 			-- Set the transaction isolation level `a_level' for all future transactions.
+		obsolete
+			"Implement `set_transaction_isolation'."
 		deferred
 		end
 
 	close
 			-- Close the backend.
 		do
-			
+
 		end
 
 feature {PS_ABEL_EXPORT} -- Plugins
@@ -217,20 +292,7 @@ feature {PS_READ_ONLY_BACKEND} -- Implementation
 		deferred
 		end
 
-feature {PS_ABEL_EXPORT} -- Lazy loading
-
-	lazy_loading_batch_size: INTEGER
-			-- The amount of objects to retrieve in a single batch.
-			-- Set to -1 to retrieve all objects.
-
-	set_lazy_loading_batch_size (size: INTEGER)
-			-- Set the batch size.
-		require
-			valid: size > 0 or size = -1
-		do
-			lazy_loading_batch_size := size
-		ensure
-			correct: size = lazy_loading_batch_size
-		end
+invariant
+	valid_batch_retrieval_size: batch_retrieval_size > 0 or batch_retrieval_size = {PS_REPOSITORY}.Infinite_batch_size
 
 end

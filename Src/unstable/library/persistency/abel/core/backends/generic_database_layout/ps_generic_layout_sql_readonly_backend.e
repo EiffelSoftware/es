@@ -20,6 +20,17 @@ feature {PS_ABEL_EXPORT} -- Lazy loading
 
 	Default_batch_size: INTEGER = -1
 
+feature {PS_ABEL_EXPORT} -- Access
+
+	stored_types: LIST [READABLE_STRING_GENERAL]
+			-- The type string for all objects and collections stored in `Current'.
+		do
+			-- Note to implementors: It is highly recommended to cache the result, and
+			-- refresh it during a `retrieve' operation (or not at all if the result
+			-- is always stable).
+			fixme ("This also returns some basic types which are sometimes just present as attributes of other objects.")
+			Result := db_metadata_manager.all_types
+		end
 
 
 feature {PS_ABEL_EXPORT}-- Backend capabilities
@@ -373,7 +384,7 @@ feature {NONE} -- Initialization
 			create db_metadata_manager.make (management_connection, SQL_Strings)
 			create active_connections.make
 
-			lazy_loading_batch_size := Default_batch_size
+			batch_retrieval_size := Default_batch_size
 
 			create plug_in_list.make
 			plug_in_list.extend (create {PS_AGENT_CRITERION_ELIMINATOR_PLUGIN})
@@ -381,6 +392,6 @@ feature {NONE} -- Initialization
 		end
 
 invariant
-	valid_batchsize: lazy_loading_batch_size > 0 or lazy_loading_batch_size = -1
+	valid_batchsize: batch_retrieval_size > 0 or batch_retrieval_size = -1
 
 end
