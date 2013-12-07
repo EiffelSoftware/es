@@ -36,6 +36,7 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_VARIABLE_NOT_READ_RULE}.make)
 			rules.extend (create {CA_SEMICOLON_ARGUMENTS_RULE}.make)
 			rules.extend (create {CA_VERY_LONG_ROUTINE_RULE}.make (settings.preference_manager))
+			rules.extend (create {CA_VERY_BIG_CLASS_RULE}.make (settings.preference_manager))
 
 			settings.initialize_rule_settings (rules)
 

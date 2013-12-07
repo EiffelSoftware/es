@@ -1,0 +1,176 @@
+note
+	description: "Summary description for {CA_VERY_BIG_CLASS_RULE}."
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	CA_VERY_BIG_CLASS_RULE
+
+inherit
+	CA_STANDARD_RULE
+		redefine id end
+
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make (a_pref_manager: PREFERENCE_MANAGER)
+			-- Initialization for `Current'.
+		do
+				-- set the default parameters (subject to be changed by user)
+			is_enabled_by_default := True
+			create {CA_WARNING} severity
+			create violations.make
+			initialize_options (a_pref_manager)
+		end
+
+	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+		do
+			a_checker.add_class_pre_action (agent pre_process_class)
+			a_checker.add_class_post_action (agent post_process_class)
+			a_checker.add_do_pre_action (agent process_do)
+			a_checker.add_once_pre_action (agent process_once)
+			a_checker.add_if_pre_action (agent process_if)
+			a_checker.add_loop_pre_action (agent process_loop)
+			a_checker.add_inspect_pre_action (agent process_inspect)
+		end
+
+	initialize_options (a_pref_manager: PREFERENCE_MANAGER)
+		local
+			l_factory: BASIC_PREFERENCE_FACTORY
+		do
+			create l_factory
+
+			features_threshold := l_factory.new_integer_preference_value (a_pref_manager,
+				preference_namespace + ca_names.very_big_class_features_threshold_option, default_features_threshold)
+			features_threshold.set_default_value (default_features_threshold.out)
+			features_threshold.set_validation_agent (agent is_integer_string_within_bounds (?, 3, 1_000_000))
+
+			instructions_threshold := l_factory.new_integer_preference_value (a_pref_manager,
+				preference_namespace + ca_names.very_big_class_instructions_threshold_option, default_instructions_threshold)
+			instructions_threshold.set_default_value (default_instructions_threshold.out)
+			instructions_threshold.set_validation_agent (agent is_integer_string_within_bounds (?, 3, 1_000_000))
+		end
+
+	default_features_threshold: INTEGER = 20
+	default_instructions_threshold: INTEGER = 300
+
+feature -- Rule checking
+
+	n_features, n_instructions: INTEGER
+
+	pre_process_class (a_class: CLASS_AS)
+		do
+			n_features := 0
+			n_instructions := 0
+		end
+
+	post_process_class (a_class: CLASS_AS)
+		local
+			l_features_threshold, l_instructions_threshold: INTEGER
+			l_viol: CA_RULE_VIOLATION
+		do
+			l_features_threshold := features_threshold.value
+			l_instructions_threshold := instructions_threshold.value
+
+			if n_instructions > l_instructions_threshold or n_features > l_features_threshold then
+				create l_viol.make_with_rule (Current)
+				l_viol.set_location (a_class.start_location)
+				l_viol.long_description_info.extend (n_features)
+				l_viol.long_description_info.extend (n_instructions)
+				l_viol.long_description_info.extend (l_features_threshold)
+				l_viol.long_description_info.extend (l_instructions_threshold)
+				violations.extend (l_viol)
+			end
+		end
+
+	process_do (a_do: DO_AS)
+		do
+			n_features := n_features + 1
+
+			if attached a_do.compound as l_c then
+				n_instructions := n_instructions + l_c.count
+			end
+		end
+
+	process_once (a_once: ONCE_AS)
+		do
+			n_features := n_features + 1
+
+			if attached a_once.compound as l_c then
+				n_instructions := n_instructions + l_c.count
+			end
+		end
+
+	process_if (a_if: IF_AS)
+		do
+			if attached a_if.compound as l_c then
+				n_instructions := n_instructions + l_c.count
+			end
+			if attached a_if.else_part as l_e then
+				n_instructions := n_instructions + l_e.count
+			end
+		end
+
+	process_elseif (a_elseif: ELSIF_AS)
+		do
+			if attached a_elseif.compound as l_c then
+				n_instructions := n_instructions + l_c.count
+			end
+		end
+
+	process_loop (a_loop: LOOP_AS)
+		do
+			if attached a_loop.compound as l_c then
+				n_instructions := n_instructions + l_c.count
+			end
+		end
+
+	process_inspect (a_inspect: INSPECT_AS)
+		do
+			if attached a_inspect.else_part as l_e then
+				n_instructions := n_instructions + l_e.count
+			end
+		end
+
+	process_case (a_case: CASE_AS)
+		do
+			if attached a_case.compound as l_c then
+				n_instructions := n_instructions + l_c.count
+			end
+		end
+
+feature -- Properties
+
+	title: STRING_32
+		do
+			Result := ca_names.very_big_class_title
+		end
+
+	id: STRING_32 = "CA033T"
+			-- "T" stands for 'under test'.
+
+	description: STRING_32
+		do
+			Result :=  ca_names.very_big_class_description
+		end
+
+	is_system_wide: BOOLEAN
+		once
+			Result := False
+		end
+
+	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+		local
+			l_info: LINKED_LIST [ANY]
+		do
+
+		end
+
+feature {NONE} -- Options
+
+	features_threshold, instructions_threshold: INTEGER_PREFERENCE
+
+end

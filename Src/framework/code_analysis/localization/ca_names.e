@@ -133,6 +133,20 @@ feature -- Rules
 	very_long_routine_threshold_option: STRING_32
 		do Result := locale.translation ("Number of instructions threshold") end
 
+	very_big_class_title: STRING_32
+		do Result := locale.translation ("Very big class") end
+
+	very_big_class_description: STRING_32
+		do Result := locale.translation ("A class declaration that is very large%
+			% (that is not including inherited features) may be problematic. The%
+			% class might provide features it is not responsible for.") end
+
+	very_big_class_features_threshold_option: STRING_32
+		do Result := locale.translation ("Number of features limit") end
+
+	very_big_class_instructions_threshold_option: STRING_32
+		do Result := locale.translation ("Number of instructions limit") end
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32
