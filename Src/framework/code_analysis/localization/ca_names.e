@@ -16,7 +16,7 @@ feature -- Rules
 		do Result := locale.translation ("Self-assignment") end
 
 	self_assignment_description: STRING_32
-		do Result := locale.translation ("Assigning a variable to itself is a meaningless statement%
+		do Result := locale.translation ("Assigning a variable to itself is a meaningless instruction%
 			               % due to a typing error. Most probably, one of the two%
 			               % variable names was misspelled. One example among many%
 			               % others: the programmer wanted to assign a local variable%
@@ -39,10 +39,10 @@ feature -- Rules
 		do Result := locale.translation ("Minimum NPATH threshold") end
 
 	empty_if_title: STRING_32
-		do Result := locale.translation ("Empty if statement") end
+		do Result := locale.translation ("Empty if instruction") end
 
 	empty_if_description: STRING_32
-		do Result := locale.translation ("An empty if statement is useless and should be removed.") end
+		do Result := locale.translation ("An empty if instruction is useless and should be removed.") end
 
 	variable_not_read_title: STRING_32
 		do Result := locale.translation ("Variable not read after assignment") end
@@ -120,6 +120,18 @@ feature -- Rules
 	semicolon_arguments_description: STRING_32
 		do Result := locale.translation ("Routine arguments should be separated with%
 			% semicolons. Although this is optional, it is bad style not to put semicolons.") end
+
+	routine_too_long_title: STRING_32
+		do Result := locale.translation ("Very long routine implementation") end
+
+	routine_too_long_description: STRING_32
+		do Result := locale.translation ("A routine implementation that contains%
+			% many instructions should be shortened. It might contain %
+			%copy-and-pasted code, or computations that are not part of what the %
+			%feature should do, or computation that can be moved to separate routines.") end
+
+	very_long_routine_threshold_option: STRING_32
+		do Result := locale.translation ("Number of instructions threshold") end
 
 feature -- Preferences
 

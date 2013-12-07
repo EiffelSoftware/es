@@ -31,10 +31,12 @@ inherit
 			process_access_id_as,
 			process_assign_as,
 			process_body_as,
+			process_case_as,
 			process_create_as,
 			process_creation_as,
 			process_do_as,
 			process_eiffel_list,
+			process_elseif_as,
 			process_feature_as,
 			process_feature_clause_as,
 			process_id_as,
@@ -66,6 +68,8 @@ feature {NONE} -- Initialization
 			create assign_post_actions.make
 			create body_pre_actions.make
 			create body_post_actions.make
+			create case_pre_actions.make
+			create case_post_actions.make
 			create class_pre_actions.make
 			create class_post_actions.make
 			create create_pre_actions.make
@@ -76,6 +80,8 @@ feature {NONE} -- Initialization
 			create do_post_actions.make
 			create eiffel_list_pre_actions.make
 			create eiffel_list_post_actions.make
+			create elseif_pre_actions.make
+			create elseif_post_actions.make
 			create feature_pre_actions.make
 			create feature_post_actions.make
 			create feature_clause_pre_actions.make
@@ -128,6 +134,16 @@ feature {CA_STANDARD_RULE}
 			body_post_actions.extend (a_action)
 		end
 
+	add_case_pre_action (a_action: PROCEDURE [ANY, TUPLE [CASE_AS]])
+		do
+			case_pre_actions.extend (a_action)
+		end
+
+	add_case_post_action (a_action: PROCEDURE [ANY, TUPLE [CASE_AS]])
+		do
+			case_post_actions.extend (a_action)
+		end
+
 	add_class_pre_action (a_action: PROCEDURE[ANY, TUPLE[CLASS_AS]])
 		do
 			class_pre_actions.extend (a_action)
@@ -176,6 +192,16 @@ feature {CA_STANDARD_RULE}
 	add_eiffel_list_post_action (a_action: PROCEDURE [ANY, TUPLE [EIFFEL_LIST[AST_EIFFEL]]])
 		do
 			eiffel_list_post_actions.extend (a_action)
+		end
+
+	add_elseif_pre_action (a_action: PROCEDURE [ANY, TUPLE [ELSIF_AS]])
+		do
+			elseif_pre_actions.extend (a_action)
+		end
+
+	add_elseif_post_action (a_action: PROCEDURE [ANY, TUPLE [ELSIF_AS]])
+		do
+			elseif_post_actions.extend (a_action)
 		end
 
 	add_feature_pre_action (a_action: PROCEDURE [ANY, TUPLE [FEATURE_AS]])
@@ -276,6 +302,8 @@ feature {NONE} -- Agent lists
 
 	body_pre_actions, body_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[BODY_AS]]]
 
+	case_pre_actions, case_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [CASE_AS]]]
+
 	class_pre_actions, class_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[CLASS_AS]]]
 
 	create_pre_actions, create_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [CREATE_AS]]]
@@ -285,6 +313,8 @@ feature {NONE} -- Agent lists
 	do_pre_actions, do_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [DO_AS]]]
 
 	eiffel_list_pre_actions, eiffel_list_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [EIFFEL_LIST [AST_EIFFEL]]]]
+
+	elseif_pre_actions, elseif_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [ELSIF_AS]]]
 
 	feature_pre_actions, feature_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [FEATURE_AS]]]
 
@@ -348,6 +378,13 @@ feature {NONE} -- Processing
 			across body_post_actions as l_a loop l_a.item.call ([a_body]) end
 		end
 
+	process_case_as (a_case: CASE_AS)
+		do
+			across case_pre_actions as l_a loop l_a.item.call ([a_case]) end
+			Precursor (a_case)
+			across case_post_actions as l_a loop l_a.item.call ([a_case]) end
+		end
+
 	process_create_as (a_create: CREATE_AS)
 		do
 			across create_pre_actions as l_a loop l_a.item.call ([a_create]) end
@@ -380,6 +417,13 @@ feature {NONE} -- Processing
 			Precursor (a_list)
 
 			across eiffel_list_post_actions as l_a loop l_a.item.call ([a_list]) end
+		end
+
+	process_elseif_as (a_elseif: ELSIF_AS)
+		do
+			across elseif_pre_actions as l_a loop l_a.item.call ([a_elseif]) end
+			Precursor (a_elseif)
+			across elseif_post_actions as l_a loop l_a.item.call ([a_elseif]) end
 		end
 
 	process_feature_as (a_feature: FEATURE_AS)

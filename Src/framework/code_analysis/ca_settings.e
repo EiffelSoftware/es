@@ -67,7 +67,7 @@ feature {CA_CODE_ANALYZER} -- Initialization
 				l_score := l_factory.new_integer_preference_value (l_manager,
 					ca_names.rules_category + "." + l_rules.item.title + "." + ca_names.severity_score,
 					l_rules.item.default_severity_score)
-				l_score.set_default_value (l_rules.item.is_enabled_by_default.out)
+				l_score.set_default_value (l_rules.item.default_severity_score.out)
 				l_score.set_validation_agent (agent validate_severity_score)
 				l_score.set_description (ca_messages.severity_score_description)
 				l_rules.item.set_severity_score_preference (l_score)

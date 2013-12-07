@@ -88,7 +88,7 @@ feature -- Code Analyzer
 
 	self_assignment_violation_2: STRING_32
 		do Result := locale.translation ("' is assigned to itself. Assigning a variable to %
-			                        %itself is%Na meaningless statement due to a typing%
+			                        %itself is%Na meaningless instruction due to a typing%
 			                        % error. Most probably, one of the two%Nvariable %
 			                        %names was misspelled.") end
 
@@ -131,7 +131,7 @@ feature -- Code Analyzer
 			%need of the object test%Nlocal '") end
 
 	empty_if_violation_1: STRING_32
-		do Result := locale.translation ("An empty if statement is useless and should be removed.") end
+		do Result := locale.translation ("An empty if instruction is useless and should be removed.") end
 
 	nested_complexity_violation_1: STRING_32
 		do Result := locale.translation ("In routine '") end
@@ -175,6 +175,18 @@ feature -- Code Analyzer
 
 	semicolon_arguments_violation_2: STRING_32
 		do Result := locale.translation ("' are not separated by semicolons. This is considered bad style.") end
+
+	very_long_routine_violation_1: STRING_32
+		do Result := locale.translation ("Routine '") end
+
+	very_long_routine_violation_2: STRING_32
+		do Result := locale.translation ("' contains ") end
+
+	very_long_routine_violation_3: STRING_32
+		do Result := locale.translation (" instructions, which is above the%Ndefined threshold of ") end
+
+	very_long_routine_violation_4: STRING_32
+		do Result := locale.translation (". The routine should be shortened.") end
 
 feature -- Command Line
 
