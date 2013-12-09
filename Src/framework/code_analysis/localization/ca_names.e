@@ -147,6 +147,12 @@ feature -- Rules
 	very_big_class_instructions_threshold_option: STRING_32
 		do Result := locale.translation ("Number of instructions limit") end
 
+	feature_section_comment_title: STRING_32
+		do Result := locale.translation ("Feature section not commented") end
+
+	feature_section_comment_description: STRING_32
+		do Result := locale.translation ("") end
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32

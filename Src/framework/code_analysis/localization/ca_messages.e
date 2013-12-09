@@ -206,6 +206,9 @@ feature -- Code Analyzer
 	very_big_class_violation_6: STRING_32
 		do Result := locale.translation (".") end
 
+	feature_section_comment_violation: STRING_32
+		do Result := locale.translation ("A feature section has no comment.") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32

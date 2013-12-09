@@ -80,9 +80,9 @@ feature {NONE} -- Checking the rule
 			l_n_semis: INTEGER
 			l_viol: CA_RULE_VIOLATION
 		do
-			if attached Match_list_server.item (checking_class.class_id) as l_matchlist then
+			if attached matchlist then
 				if attached a_body.arguments as l_a then
-					l_n_semis := l_a.text_32 (l_matchlist).occurrences (';')
+					l_n_semis := l_a.text_32 (matchlist).occurrences (';')
 					if l_n_semis < l_a.count - 1 then
 							-- At least one argument must have no semicolon separator.
 						create l_viol.make_with_rule (Current)

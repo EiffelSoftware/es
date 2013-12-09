@@ -12,6 +12,8 @@ inherit
 
 	CA_SHARED_NAMES
 
+	SHARED_SERVER
+
 feature -- Basic properties, usually fix
 
 	title: STRING_32
@@ -94,6 +96,13 @@ feature -- Rule checking
 		end
 
 feature {NONE} -- Rule checking
+
+	matchlist: detachable LEAF_AS_LIST
+		do
+			if attached checking_class then
+				Result := Match_list_server.item (checking_class.class_id)
+			end
+		end
 
 	node_types: HASH_TABLE [TYPE_A, TUPLE [node: INTEGER; written_class: INTEGER; feat: INTEGER; cl: INTEGER]]
 			-- Type of the AST node `node' written in class
