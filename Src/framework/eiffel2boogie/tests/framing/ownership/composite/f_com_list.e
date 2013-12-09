@@ -1,6 +1,5 @@
 note
-	description: "Subset of the interface of V_LIST needed for the example."
-	explicit: "all"
+	description: "Minimal list interface."
 
 class F_COM_LIST [G]
 
@@ -10,89 +9,77 @@ create
 feature {NONE} -- Initialization
 
 	make
+			-- Create an empty list.
 		note
 			skip: True
-		require
-			is_open -- default: creator
-			modify (Current) -- default: creator
 		do
 		ensure
-			is_wrapped -- default: creator
-			is_empty
+			empty: is_empty
 		end
 
 feature -- Specification
 
-	sequence: MML_SET [G]
+	sequence: MML_SEQUENCE [G]
+			-- Sequence of list's elements.
 		note
 			skip: True
-			status: specification
+			status: ghost
 		attribute
 		end
 
 feature -- Access
 
 	is_empty: BOOLEAN
+			-- Is the list empty?
 		note
 			skip: True
-		require
-			modify ([])
 		do
 		ensure
-			Result = sequence.is_empty
+			definition: Result = sequence.is_empty
 		end
 
 	count: INTEGER
+			-- Number of elements in the list.
 		note
 			skip: True
-		require
-			modify ([])
 		do
 		ensure
---			Result = sequence.count
+			definition: Result = sequence.count
 		end
 
 	item alias "[]" (i: INTEGER): G
+			-- Element at index `i'.
 		note
 			skip: True
 		require
-			1 <= i and i < count
-
-			modify ([])
+			in_bounds: 1 <= i and i <= count
 		do
 		ensure
-			sequence.has (Result)
---			Result = sequence [i]
+			definition: Result = sequence [i]
 		end
 
 	has (x: G) : BOOLEAN
+			-- Is `x' an element of the list?
 		note
 			skip: True
-		require
-			modify ([])
 		do
 		ensure
-			Result = sequence.has (x)
+			definition: Result = sequence.has (x)
 		end
 
 feature -- Extension
 
 	extend_back (v: G)
+			-- Insert `v' at the back.
 		note
 			skip: True
+			explicit: contracts
 		require
-			is_wrapped
-			modify (Current)
+			wrapped: is_wrapped
 		do
 		ensure
-			sequence = old (sequence & v)
-			is_wrapped
+			sequence_effect: sequence = old (sequence & v)
+			wrapped: is_wrapped
 		end
-
-invariant
-	owns = [] -- default
-	observers = [] -- default
-	subjects = [] -- default
-	across subjects as sc all sc.item.observers.has (Current) end -- default
 
 end

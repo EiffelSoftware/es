@@ -1,282 +1,294 @@
 note
-	description: "Uses up set and preservation semantics of updates."
-	explicit: "all"
+	description: "A node in a graph structure that only has a reference to its parent and needs to maintain consistency with its children."
 
-class NODE
+class F_PIP_NODE
 
 create
 	make
 
-feature
+feature {NONE} -- Initialization	
+
+	make (v: INTEGER)
+			-- Create a singleton node with initial value `v'		
+		note
+			status: creator
+		do
+			init_value := v
+			value := v
+			ancestors := <<Current>>
+			descendants := <<Current>>
+		ensure
+			init_value_set: init_value = v
+			value_set: value = v
+			no_parent: parent = Void
+			no_children: children.is_empty
+			descendants_structure: descendants = <<Current>>
+	end
+
+feature -- Access
 
 	value: INTEGER
-	init_value: INTEGER
-	parent: NODE
+			-- Current value.
 
-	children, up, down: MML_SET [NODE]
+	init_value: INTEGER
+			-- Initial value at node creation.
+
+	parent: F_PIP_NODE
+			-- Parent node.
+
+	children: MML_SEQUENCE [F_PIP_NODE]
+			-- Set of nodes whose `parent' is the current node.
 		note
 			status: ghost
 		attribute
 		end
 
-	is_max (v: INTEGER; init_v: INTEGER; nodes: MML_SET [NODE]): BOOLEAN
+	ancestors: MML_SET [F_PIP_NODE]
+			-- Set of reflexive transitive parent nodes.
 		note
 			status: ghost
+		attribute
+		end
+
+	descendants: MML_SET [F_PIP_NODE]
+			-- Set of reflexive transitive child nodes.
+		note
+			status: ghost
+		attribute
+		end
+
+	max_child: F_PIP_NODE
+			-- Node from `children' with the maximum value greater than `init_value'
+			-- or Void if it does not exist.
+		note
+			status: ghost
+		attribute
+		end
+
+	is_max (v: INTEGER; init_v: INTEGER; nodes: MML_SET [F_PIP_NODE]; max_node: F_PIP_NODE): BOOLEAN
+			-- Is `v' the maximum of `init_v' and all values of `nodes'?
+		note
+			status: functional, ghost
 		require
 			reads (nodes)
 		do
 			Result :=
-				(v >= init_v and across nodes as n all n.item.value <= v end) and
-				(v = init_v or across nodes as n some n.item.value = v end)
+				v >= init_v and
+				across nodes as n all n.item.value <= v end and
+				((max_node = Void and v = init_v) or (nodes [max_node] and max_node.value = v))
 		end
 
-	make (init_val: INTEGER)
-		note
-			status: creator
-		require
-			is_open -- default: creator
-
-			modify (Current) -- default: creator
-		do
-			children := {MML_SET [NODE]}.empty_set
-			up := << Current >>
-			down := << Current >>
-			init_value := init_val
-			value := init_val
-			wrap -- default: creator
-		ensure
-			init_value = init_val
-			parent = Void
-			children.is_empty
-			up = << Current >>
-			down = << Current >>
-			is_wrapped -- default: creator
-		end
-
-	acquire (n: NODE)
+	acquire (n: F_PIP_NODE)
+			-- Connect `n' as a child to the current node.
 		note
 			explicit: wrapping
 		require
-			n /= Void
-			n /= Current -- needed to assume that Current's up is consistent; can be relaxed but seems okay
-			n.parent = Void
-			across up as p all p.item.is_wrapped end
-			across down as c all c.item.is_wrapped end
-			is_wrapped -- default
-			n.is_wrapped -- default
-			across n.observers as o all o.item.is_wrapped end
+			n_exists: n /= Void
+			n_different: n /= Current
+			n_orphan: n.parent = Void
+			ancestors_wrapped: across ancestors as p all p.item.is_wrapped end
+			descendants_wrapped: across descendants as c all c.item.is_wrapped end
+			n_descendants_wrapped: across n.descendants as c all c.item.is_wrapped end
 
-			modify ([n, Current])
-			modify_field (["value", "down"], up)
-			modify_field ("up", down)
+			modify (Current, n)
+			modify_field (["value", "max_child", "descendants", "closed"], ancestors)
+			modify_field (["ancestors", "closed"], n.descendants)
 		do
+			-- Todo: this assume is here because we do not have an exact definition of descendants yet:
+			check assume: across n.children as c all not c.item.descendants [n] end end
 			unwrap
 			n.unwrap
 
 			children := children & n -- preserves parent, children
-			set_subjects (subjects + [n])
-			set_observers (observers + [n])
+			set_subjects (subjects & n)
+			set_observers (observers & n)
 
 			n.set_parent (Current)
-			n.set_subjects (n.subjects + [Current])
-			n.set_observers (n.observers + [Current])
-check false end
-			n.update_up (Current, <<n>>, {MML_SET [NODE]}.empty_set)
-			update_down (n, n, <<Current>>, {MML_SET [NODE]}.empty_set)
+			n.set_subjects (n.subjects & Current)
+			n.set_observers (n.observers & Current)
 
+			n.update_ancestors (Current)
+			if not (n.descendants <= descendants) then
+				update_descendants (n, n, {MML_SET [F_PIP_NODE]}.empty_set)
+			end
 			if n.value > value then
-				update_value (n, {MML_SET [NODE]}.empty_set)
-			end
-		ensure
-			is_wrapped -- default
-			n.is_wrapped -- default
-			across n.observers as o all o.item.is_wrapped end
-			n.parent = Current
-		end
-
-feature { NODE }
-
-	set_parent (p: NODE)
-		note
-			explicit: contracts
-		require
-			parent = Void
-			is_open
-			modify_field ("parent", Current)
-		do
-			parent := p -- preserves children?
-		ensure
-			parent = p
-		end
-
-	update_value (child: NODE; visited: MML_SET [NODE])
-		-- Update `value' of the Current node so that it is greater than `value' of `child';
-		-- for all nodes in `visited' their `value' already has been fixed.
-	require
-		is_open -- default: private
-		inv_without ("value_consistent")
-		children [child]
-		child.value > value
-		is_max (value, init_value, children / child)
-
-		across visited as o all o.item.is_wrapped end
-		across visited as o all o.item.value <= child.value end
-
-		across (up - <<Current>>) as o all o.item.is_wrapped end
-
-		modify_field (["value", "closed"], up)
---TODO		variant up - visited
-	do
-		if parent /= Void and parent /= Current then
-			parent.unwrap -- wrapped since (up - { Current })[parent]
-		end
-		value := child.value -- preserves children / parent
-		wrap
-		if parent /= Void then
-			if value > parent.value then
-				check not visited [parent] end -- since all visited have their value <= child.value
-				parent.update_value (Current, visited & Current)
-			elseif parent /= Current then
-				parent.wrap
-			end
-		end
-	ensure
-		across up as o all o.item.is_wrapped end
-	end
-
-	update_up (root: NODE; front, visited: MML_SET [NODE])
-			-- Add `root' to the `up' set of `Current' and all its transitive children;
-			-- `front' is the set of nodes whose `up' set is currently inconsistent with their parent,
-			-- and for all nodes in `visited' their `up' set already has been fixed.
-		note
-			explicit: contracts
---			status: ghost
-		require
-			front [Current]
-			across front as o all
-				o.item.is_open and
-				o.item.inv_without ("up_consistent") and
-				o.item.parent /= Void and
-				root.up <= o.item.parent.up and
-				not o.item.up [root] and
-				o.item.parent.up - root.up <= o.item.up
-			end
-			across visited / root as o all o.item.is_wrapped end
-			across visited as o all o.item.up [root] end
-
-			root.is_open
-			root.inv_without ("down_consistent", "value_consistent") -- so it's up-consistent and not in `front'
-
-			across down - (front & root) as o all o.item.is_wrapped end
-
-			modify_field (["up", "closed"], down)
---TODO			variant down - visited
-		local
-			fixed: MML_SET [NODE]
-		do
-			across children as c loop
-				if not front[c.item] or c.item = root then
-				  c.item.unwrap
-				end
-			end
-			up := up + root.up -- preserves { parent } - children
-			if Current /= root then
-				wrap
-				fixed := <<Current>>
-			end
-			across children as c loop
-				if c.item /= root and c.item /= Current and root.up <= c.item.up then
-					c.item.wrap -- wrap those children that are already fine, to keep the front up-inconsistent
-					fixed := fixed & c.item
-				end
-			end
-			across children as c
-			invariant
-				across fixed as o all o.item.is_wrapped and o.item.up [root] end
-				across front + children - fixed as o all
-					o.item.is_open and
-					o.item.inv_without ("up_consistent") and
-					o.item.parent /= Void and
-					root.up <= o.item.parent.up and
-					not o.item.up [root] and
-					o.item.parent.up - root.up <= o.item.up
-				end
---TODO				across 1 |..| c.cursor_index as i all children [i.item] /= root implies fixed [children [i.item].down] end
-				Current /= root implies fixed [Current]
-			loop
-			if c.item.is_open and c.item /= root then
-				c.item.update_up (root, front + children - fixed, visited + fixed)
-				fixed := fixed + c.item.down / root
-			end
-			end
-		ensure
-			root.is_open
-			root.inv_without ("down_consistent", "value_consistent") -- so it's up-consistent and not in `front'
-			across down / root as o all o.item.is_wrapped end
-			across down as o all o.item.up [root] end
-		end
-
-	update_down (child, root: NODE; new_nodes, visited: MML_SET [NODE])
-			-- Add `new_nodes' to the `down' set of `Current' and all its transitive parents;
-			-- `root' is the node that acquired a new child and for all nodes in `visited' their `down' set already has been fixed.
-		note
---			status: ghost
-		require
-			is_open
-			Current /= root implies inv_without ("down_consistent")
-			Current = root implies inv_without ("down_consistent", "value_consistent")
-			children [child]
-			new_nodes <= child.down
-			not (new_nodes <= down)
-			across children as c all (c.item.down - new_nodes) <= down end -- new_nodes are the only extra nodes in my children's down sets
-
-			root.is_open
-			root /= Current implies root.inv_without ("value_consistent")
-
-			across visited / root as o all o.item.is_wrapped end
-			across visited as o all new_nodes <= o.item.down end
-
-			across up - << Current, root >> as o all o.item.is_wrapped end
-
-			modify_field (["down", "closed"], up)
-
---TODO			variant up - visited
-		do
-			check not visited [Current] end -- since all visited have `new_nodes' in their `down'
-			if not ((<<Void, Current, root>>).to_mml_set [parent]) then
-				parent.unwrap -- wrapped since (up - { Current, root })[parent]
-			end
-			down := down + new_nodes -- preserves `children - { parent }'
-			if Current /= root then
+				update_value (n, n, {MML_SET [F_PIP_NODE]}.empty_set)
+			else
 				wrap
 			end
+		ensure
+			n_parent_set: n.parent = Current
+			children_set: children = old children & n
+			max_child_set: max_child = if old (value >= n.value) then old max_child else n end
+			ancestors_wrapped: across ancestors as p all p.item.is_wrapped end
+			descendants_wrapped: across descendants as c all c.item.is_wrapped end
+			n_value_unchanged: n.value = old n.value
+			init_value_unchanged: init_value = old init_value
+			ancestors_unchanged: ancestors = old ancestors
+			descendants_set: descendants = old descendants + n.descendants
+			n_descendants_unchanged: n.descendants = old n.descendants
+			n_ancestors_set: n.ancestors = old n.ancestors + ancestors
+		end
+
+feature {F_PIP_NODE} -- Implementation
+
+	set_parent (p: F_PIP_NODE)
+			-- Set `parent' to `p'.
+		require
+			open: is_open
+			no_parent: parent = Void
+			p_exists: p /= Void
+			observers = children.range
+			modify_field (["parent"], Current)
+		do
+			parent := p
+		ensure
+			parent_set: parent = p
+		end
+
+	update_value (child, d: F_PIP_NODE; visited: MML_SET [F_PIP_NODE])
+			-- Update `value' of this node and its ancestors taking into account an updated child `child' becuase of its new descendant `d';
+			-- for all nodes in `visited' their `value' already has been fixed.			
+		require
+			open: is_open
+			partially_holds: inv_without ("value_consistent")
+			child_is_child: children.has (child)
+			child_value: child.value = d.value
+			value_consistency_broken: child.value > value
+			c_is_new_max: is_max (child.value, init_value, children.range, child)
+			visited_fixed: across visited as o all o.item.is_wrapped and o.item.value = d.value end
+			direct_ancestors_wrapped: across ancestors as p all p.item /= Current implies p.item.is_wrapped end
+			modify_field (["closed"], ancestors)
+			modify_field (["value", "max_child"], (ancestors - visited) / d)
+			decreases (ancestors - visited)
+		do
 			if parent /= Void then
-				if not (new_nodes <= parent.down) then
-					check not visited [parent] end -- since all visited have `new_nodes' in their `down'
-					parent.update_down (Current, root, new_nodes, visited & Current)
-				elseif parent /= Current and parent /= root then
+				parent.unwrap
+			end
+			value := child.value
+			max_child := child
+			wrap
+			if parent /= Void then
+				if value > parent.value then
+					parent.update_value (Current, d, visited & Current)
+				else
 					parent.wrap
 				end
 			end
 		ensure
-			root.is_open
-			root.inv_without ("value_consistent")
-			across up - << root >> as o all o.item.is_wrapped end
+			value_set: value = d.value
+			max_child_set: max_child = child
+			d_value_unchnaged: d.value = old d.value
+			ancestors_wrapped: across ancestors as p all p.item.is_wrapped end
+		end
+
+	update_ancestors (a: F_PIP_NODE)
+			-- Update `ancestors' of this node and its descendants taking into account the new ancestor `a'.
+			-- Todo: verifying this procedure requires precise definition of descendants.
+		note
+			status: ghost
+			skip: true
+		require
+			open: is_open
+			partially_holds: inv_without ("ancestors_consistent")
+			ancestor_consistency_broken: not ancestors [a]
+			a_open: a.is_open
+			a_partially_holds: a.inv_without ("descendants_big_enough", "value_consistent")
+			direct_descendatns_but_a_wrapped: across children as c all across c.item.descendants as d all d.item /= a implies d.item.is_wrapped end end
+			modify_field (["ancestors", "closed"], descendants)
+			decreases (descendants)
+		local
+			i: INTEGER
+		do
+			unwrap_all (children.range / a)
+			ancestors := ancestors + a.ancestors -- preserves { parent } - children
+			wrap
+			from
+				i := 1
+			until
+				i > children.count
+			loop
+				if children [i] /= a then
+					children [i].update_ancestors (a)
+				end
+				i := i + 1
+			end
+		ensure
+			wrapped: is_wrapped
+			ancestors_set: ancestors = old ancestors + a.ancestors
+			a_open: a.is_open
+			a_partially_holds: a.inv_without ("descendants_big_enough", "value_consistent")
+			a_ancestors_unchanged: a.ancestors = old a.ancestors
+			descendants_but_a_wrapped: across descendants as o all o.item /= a implies o.item.is_wrapped end
+		end
+
+	update_descendants (child, d: F_PIP_NODE; visited: MML_SET [F_PIP_NODE])
+			-- Update `descendants' of this node and its ancestors taking into account the new descendant `d';
+			-- for all nodes in `visited' their `descendants' already has been fixed.
+		note
+			status: ghost
+		require
+			open: is_open
+			partially_holds: inv_without ("descendants_big_enough", "value_consistent")
+			child_wrapped: child.is_wrapped or child = d.parent
+			child_is_child: children.has (child)
+			child_descendants: d.descendants <= child.descendants
+			descendant_consistency_broken: not (d.descendants <= descendants)
+			descendants_almost_consistent_1: across children as c all c.item /= child implies descendants [c.item] and c.item.descendants <= descendants end
+			descendants_almost_consistent_2: child /= d implies descendants [child]
+			descendants_almost_consistent_3: child.descendants - d.descendants <= descendants
+
+			d_wrapped: d.is_wrapped
+			root_open: d.parent.is_open
+			non_root_value_consistent: Current /= d.parent implies inv_without ("descendants_big_enough")
+			root_descendants_consistent: Current /= d.parent implies d.parent.inv_without ("value_consistent")
+
+			visited_but_root_wrapped: across visited as o all o.item /= d.parent implies o.item.is_wrapped end
+			visited_fixed: across visited as o all d.descendants <= o.item.descendants end
+
+			direct_ancestors_wrapped: across ancestors as p all p.item /= Current and p.item /= d.parent implies p.item.is_wrapped end
+			modify_field (["closed"], ancestors)
+			modify_field (["descendants"], (ancestors - visited) / d)
+			decreases (ancestors - visited)
+		do
+			if parent /= Void and parent /= d.parent then
+				parent.unwrap
+			end
+			descendants := descendants + d.descendants -- preserves `children - { parent }'
+			if Current /= d.parent then
+				wrap
+			end
+			if parent /= Void then
+				if not (d.descendants <= parent.descendants) then
+					parent.update_descendants (Current, d, visited & Current)
+				elseif parent /= d.parent then
+					parent.wrap
+				end
+			end
+		ensure
+			root_open: d.parent.is_open
+			root_partially_holds: d.parent.inv_without ("value_consistent")
+			descendants_set: descendants = old descendants + d.descendants
+			d_descendants_unchanged: d.descendants = old d.descendants
+			ancestors_wrapped: across ancestors as p all p.item /= d.parent implies p.item.is_wrapped end
 		end
 
 invariant
-	across children as c all c.item /= Void and then c.item.parent = Current end
-	parent /= Void implies parent.children [Current]
-	up_consistent: up [Current] and (parent /= Void implies parent.up <= up)
-	down_consistent: down [Current] and across children as c all c.item.down <= down end
-	value_consistent: is_max (value, init_value, children)
-	parent /= Void implies subjects = children & parent
-	parent = Void implies subjects = children
-	parent /= Void implies observers = children & parent
-	parent = Void implies observers = children
-	across subjects as s all s.item.observers.has (Current) end -- default
-	owns = [] -- default
-	i14: across children as ic all ic.item.generating_type = {NODE} end
+	value_consistent: is_max (value, init_value, children.range, max_child)
+	parent_consistent: parent /= Void implies parent.children.has (Current)
+	children_consistent: across children as c all c.item /= Void and then c.item.parent = Current end
+	no_duplicates: across 1 |..| children.count as i all across 1 |..| children.count as j all i.item < j.item implies children [i.item] /= children [j.item] end end
+	no_direct_cycles: parent /= Current
+	no_direct_cucles_2: not children.has (Current)
+	ancestors_consistent: ancestors = (if parent = Void then {MML_SET [F_PIP_NODE]}.empty_set else parent.ancestors & parent end) & Current
+	descendants_reflexive: descendants [Current]
+	descendants_big_enough: across children as c all descendants [c.item] and c.item.descendants <= descendants end
+--	Todo: use this or similar invariant to define descendants exactly	
+--	descendants_small_enough: across descendants as d all d.item = Current or children.has (d.item) or
+--		(across children as c some c.item.descendants [d.item] end) end
+	subjects_structure: subjects = if parent = Void then children.range else children.range & parent end
+	observers_structure: observers = subjects
+	subjects_aware: across subjects as s all s.item.observers [Current] end
 
 note
 	explicit: subjects, observers

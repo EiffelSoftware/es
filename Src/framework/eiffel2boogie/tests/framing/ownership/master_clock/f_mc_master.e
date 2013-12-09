@@ -1,44 +1,61 @@
+note
+	description: "Master clock with reset."
+
 class F_MC_MASTER
 
-inherit
-	ANY
-		redefine
-			default_create
-		end
+create
+	make
 
 feature {NONE} -- Initialization
 
-	default_create
+	make
+			-- Create a master clock.
 		note
 			status: creator
 		do
-		ensure then
-			time = 0 -- default: default_create
-			observers.is_empty -- default: default_create
+		ensure
+			time_reset: time = 0
+			no_observers: observers.is_empty
 		end
 
-feature
+feature -- Access
 
 	time: INTEGER
-			-- Clock time.
+			-- Time.
+
+feature -- Update			
 
 	tick
+			-- Increment time.
+		require
+			modify_field (["time", "closed"], Current)
+		do
+			-- This update preserves the invariant of slave clocks:
+			time := time + 1
+		ensure
+			time_increased: time > old time
+		end
+
+	reset
+			-- Reset time to zero.
 		note
 			explicit: contracts
 		require
-			is_wrapped
-			across observers as o all o.item.is_open end
-
+			wrapped: is_wrapped
+			observers_open: across observers as o all o.item.is_open end
 			modify_field (["time", "closed"], Current)
 		do
-			time := time + 1
+			-- This update does not preserve the invariant of slave clocks,
+			-- so the method requires that they be open:
+			time := 0
 		ensure
-			time > old time
-			is_wrapped
+			wrapped: is_wrapped
+			time_reset: time = 0
 		end
 
 invariant
-	0 <= time
+	time_non_negative: 0 <= time
+	all_observers_are_clocks: across observers as o all attached {F_MC_CLOCK} o.item end
 
 note
 	explicit: observers

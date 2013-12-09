@@ -1,44 +1,39 @@
 note
+	description: "Test harness."
 	explicit: "all"
 
 class F_COM_CLIENT
 
-feature
+feature -- Test
 
-	test (c1, c2: F_COM_COMPOSITE)
-		require
-			c1.is_wrapped
-			c2.is_wrapped
-			across c1.up as o all o.item.is_wrapped end
-			across c1.observers as o all o.item.is_wrapped end
-
-			modify ([c1, c2, c1.up, c1.children_set])
+	test
+			-- Using composites.
 		local
-			c_new: F_COM_COMPOSITE
+			c1, c2, c3: F_COM_COMPOSITE
 		do
-			create c_new.make (10)
-			c1.add_child (c_new)
+			create c1.make (1)
+			create c2.make (2)
+			create c3.make (0)
 
-			check c1.is_wrapped and c2.is_wrapped end
-			check c1.value >= c_new.value end
+			c1.add_child (c2)
+			check c1.value >= c2.value end
+			c2.add_child (c3)
+			check c2.value >= c3.value end
 		end
 
-	test_d (c1, c2: F_COM_COMPOSITE_D)
-		require
-			c1.is_wrapped
-			c2.is_wrapped
-			across c1.up as o all o.item.is_wrapped end
-			across c1.observers as o all o.item.is_wrapped end
-
-			modify ([c1, c2, c1.up, c1.children_set])
+	test_d
+			-- Using composites.
 		local
-			c_new: F_COM_COMPOSITE_D
+			c1, c2, c3: F_COM_COMPOSITE_D
 		do
-			create c_new.make (10)
-			c1.add_child (c_new)
+			create c1.make (1)
+			create c2.make (2)
+			create c3.make (0)
 
-			check c1.is_wrapped and c2.is_wrapped end
-			check c1.value >= c_new.value end
+			c1.add_child (c2)
+			check c1.value >= c2.value end
+			c2.add_child (c3)
+			check c2.value >= c3.value end
 		end
 
 end

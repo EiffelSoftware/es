@@ -1,21 +1,19 @@
+note
+	description: "An iterator to traverse collections."
+
 class F_I_ITERATOR
 
 create
 	make
 
-feature
-
-	target: F_I_COLLECTION
-
-	before, after: BOOLEAN
+feature {NONE} -- Initialization
 
 	make (t: F_I_COLLECTION)
+			-- Create an iterator to traverse `t'.
 		note
 			status: creator
 		require
-			t /= Void
-			across t.observers as ic all ic.item.generating_type = {F_I_ITERATOR} end
-
+			target_exists: t /= Void
 			modify (Current)
 			modify_field (["observers", "closed"], t)
 		do
@@ -26,28 +24,39 @@ feature
 			t.wrap
 			set_subjects ([t])
 		ensure
-			target = t
-			t.observers = old t.observers & Current
-
-			t.elements = old t.elements -- t modified, t.elements in domain of t
-			t.elements.count = old t.elements.count -- t modified, t.elements in domain of t
-
-			before and not after
+			target_set: target = t
+			before: before and not after
+			observing_target: t.observers = old t.observers & Current
+			capacity_unchanged: t.capacity = old t.capacity
 		end
+
+feature -- Access
+
+	target: F_I_COLLECTION
+			-- Collection to traverse.
+
+	before: BOOLEAN
+			-- Is the iterator before the first element?
+
+	after: BOOLEAN
+			-- Is the iterator after the last element?
 
 	item: INTEGER
+			-- Collection element at current position.
 		require
-			not (before or after)
-			target.is_wrapped
+			not_off: not (before or after)
+			target_closed: target.closed
 		do
+			check inv and target.inv end
 			Result := target.elements [index]
-		ensure
-			target.is_wrapped
 		end
 
+feature -- State change		
+
 	forth
+			-- Move to the next position.
 		require
-			not after
+			not_after: not after
 		do
 			index := index + 1
 			before := False
@@ -55,20 +64,20 @@ feature
 				after := True
 			end
 		ensure
-			not before
-			target = old target
-			index = old index + 1
+			not_before: not before
+			target_unchanged: target = old target
 		end
 
-feature -- Implementation
+feature {NONE} -- Implementation
 
 	index: INTEGER
+		-- Iterator position.
 
 invariant
-	target /= Void
-	0 <= index and index <= target.count + 1
-	before = (index < 1)
-	after = (index > target.count)
-	subjects = [target]
+	target_exists: target /= Void
+	index_in_bounds: 0 <= index and index <= target.count + 1
+	before_definition: before = (index < 1)
+	after_definition: after = (index > target.count)
+	subjects_structure: subjects = [target]
 
 end

@@ -1,60 +1,53 @@
 note
-	explicit: "all"
+	description: "Minimal array interface (non-generic)."
 
 class F_I_ARRAY
 
 create
 	make
 
-feature
+feature {NONE} -- Initialization
 
-	make (a_lower, a_upper: INTEGER)
+	make (n: INTEGER)
+			-- Create an array of size `n'.
 		note
 			skip: True
 		require
-			is_open
-			a_lower = 1
-			a_upper >= 0
-			modify (Current)
+			size_non_negative: n >= 0
 		do
 		ensure
-			count = a_upper
-			is_wrapped
+			count_set: count = n
 		end
+
+feature -- Access		
 
 	count: INTEGER
+			-- Size of the array.
 
-	put (a_value, a_index: INTEGER)
+	item alias "[]" (i: INTEGER): INTEGER
+			-- Element at position `i'.
 		note
 			skip: True
 		require
-			is_wrapped
-			a_index > 0
-			a_index <= count
-
-			modify (Current)
+			in_bounds: 1 <= i and i <= count
 		do
-		ensure
-			is_wrapped
-			count = old count
 		end
 
-	item alias "[]" (a_index: INTEGER): INTEGER
+feature -- Update	
+
+	put (v, i: INTEGER)
+			-- Replace element at position `i' with `v'.
 		note
 			skip: True
 		require
-			not is_open
-
-			modify ([])
+			in_bounds: 1 <= i and i <= count
 		do
 		ensure
-			not is_open
+			new_item: item (i) = v
+			same_size: count = old count
 		end
 
 invariant
-	owns = [] -- default
-	observers = [] -- default
-	subjects = [] -- default
-	across subjects as sc all sc.item.observers.has (Current) end -- default
+	count_non_negative: count >= 0
 
 end

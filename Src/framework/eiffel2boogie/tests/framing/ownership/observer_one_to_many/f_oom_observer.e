@@ -1,48 +1,55 @@
+note
+	description: "Observer that needs to maintain a cache of its subject's state."
+
 class F_OOM_OBSERVER
 
 create
 	make
 
-feature
-
-	subject: F_OOM_SUBJECT
-
-	cache: INTEGER
+feature {NONE} -- Initialization
 
 	make (s: F_OOM_SUBJECT)
+			-- Create an observer subscribed to `s'.
 		note
 			status: creator
 		require
-			s /= Void
-
-			modify ([s, Current])
+			s_exists: s /= Void
+			modify (s, Current)
 		do
 			subject := s
 			s.register (Current)
 			cache := s.value
 			set_subjects ([subject])
 		ensure
-			subject = s
-			s.observers = (old s.observers & Current)
+			subject_set: subject = s
+			observeing_subject: s.observers = old s.observers & Current
 		end
 
-feature {F_OOM_SUBJECT}
+feature -- Public access
+
+	subject: F_OOM_SUBJECT
+			-- Subject.
+
+	cache: INTEGER
+			-- Copy of subject's state.
+
+feature {F_OOM_SUBJECT} -- Internal communication
 
 	  notify
+	  		-- Update `cache' according to the state `subject'.
 		require
-			is_open
-			inv_without ("cache_synchronized")
-
+			open: is_open
+			partially_holds: inv_without ("cache_synchronized")
 			modify_field ("cache", Current)
 		do
 			cache := subject.value
 		ensure
-			inv
+			invariant_holds: inv
 		end
 
 invariant
-	subject /= Void
-	subject.observers.has (Current)
+	subject_exists: subject /= Void
+	subject_aware: subject.observers.has (Current)
 	cache_synchronized: cache = subject.value
-	subjects = [subject]
+	subjects_structure: subjects = [subject]
 end

@@ -3,21 +3,20 @@ class F_OOO_OBSERVER
 create
 	make
 
-feature
+feature {NONE} -- Initialization
 
 	make (s: F_OOO_SUBJECT)
 		note
 			status: creator
 		require
+			s /= Void
 			s.observer = Void
-
 			modify (Current)
 			modify_field (["observer", "observers", "closed"], s)
 		do
 			subject := s
 			s.register (Current)
 			cache := s.value
-
 			set_subjects ([subject])
 		ensure
 			subject = s

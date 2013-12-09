@@ -1,130 +1,161 @@
 note
-	description: "Composite with no-orphans and acyclicity invariants, and optimized update."
+	description: "Node in a tree structure, which needs to maintain consistency with its child nodes."
 
 class F_COM_COMPOSITE
 
 create
 	make
 
-feature
+feature {NONE} -- Initialization
+
+	make (v: INTEGER)
+			-- Create a singleton node with initial value `v'		
+		note
+			status: creator
+		do
+			create children.make
+			init_value := v
+			value := v
+			set_owns ([children])
+		ensure
+			init_value_set: init_value = v
+			value_set: value = v
+			no_parent: parent = Void
+			no_children: children.is_empty
+		end
+
+feature -- Access
 
 	children: F_COM_LIST [F_COM_COMPOSITE]
-	parent: F_COM_COMPOSITE
-	value: INTEGER
-	init_value: INTEGER
+			-- List of child nodes.
 
-	up, children_set: MML_SET [F_COM_COMPOSITE]
-			-- Set of transitive parents and non-transitive children
+	parent: F_COM_COMPOSITE
+			-- Parent node.
+
+	value: INTEGER
+			-- Current value.
+
+	init_value: INTEGER
+			-- Initial value at node creation.
+
+	ancestors: MML_SET [F_COM_COMPOSITE]
+			-- Set of transitive parent nodes.
 		note
 			status: ghost
 		attribute
 		end
 
-	is_max (v: INTEGER; init_v: INTEGER; nodes: MML_SET [F_COM_COMPOSITE]): BOOLEAN
+	children_set: MML_SET [F_COM_COMPOSITE]
+			-- Set of child nodes.
+		note
+			status: functional, ghost
+		require
+			reads (children)
+		do
+			Result := children.sequence.range
+		end
+
+	max_child: F_COM_COMPOSITE
+			-- Node from `children_set' with the maximum value greater than `init_value'
+			-- or Void if it does not exist.
 		note
 			status: ghost
+		attribute
+		end
+
+	is_max (v: INTEGER; init_v: INTEGER; nodes: MML_SET [F_COM_COMPOSITE]; max_node: F_COM_COMPOSITE): BOOLEAN
+			-- Is `v' the maximum of `init_v' and all values of `nodes'?
+		note
+			status: functional, ghost
 		require
-			reads (nodes)
-			modify ([])
+			reads (nodes, max_node)
 		do
 			Result :=
 				v >= init_v and
 				across nodes as n all n.item.value <= v end and
-				(v = init_v or across nodes as n some n.item.value = v end)
+				((max_node = Void and v = init_v) or (nodes [max_node] and max_node.value = v))
 		end
 
-	make (v: INTEGER)
-		note
-			status: creator
-		do
-			up := {MML_SET [F_COM_COMPOSITE]}.empty_set
-			children_set := {MML_SET [F_COM_COMPOSITE]}.empty_set
-			create children.make
-			set_owns ([children])
-			value := v
-			init_value := v
-		ensure
-			value = v
-			init_value = v
-			parent = Void
-			children.is_empty
-		end
+feature -- Update
 
 	add_child (c: F_COM_COMPOSITE)
+			-- Add `c' to `children'.
 		note
 			explicit: wrapping
 		require
-			c /= Void
-			c /= Current
-			c.parent = Void
-			c.children.is_empty
-			not up[c]
-			across up as p all p.item.is_wrapped end
-
-			modify ([Current, c])
-			modify_field (["value", "closed"], up)
+			c_exists: c /= Void
+			c_different: c /= Current
+			c_singleton_1: c.parent = Void
+			c_singleton_2: c.children.is_empty
+			ancestors_wrapped: across ancestors as p all p.item.is_wrapped end
+			modify (Current, c)
+			modify_field (["value", "max_child", "closed"], ancestors)
 		do
-			unwrap
+			lemma_ancestors_have_children (c)
+			check not ancestors [c] end
 
+			unwrap
 			c.unwrap
+
 			c.set_parent (Current)
 			c.set_subjects (c.subjects & Current)
 			c.set_observers (c.observers & Current)
+
 			set_observers (observers & c)
 			set_subjects (subjects & c)
-			children_set := children_set & c
 			children.extend_back (c)
-			c.wrap
 
+			c.wrap
 			update (c)
 		ensure
-			children.has (c)
-			c.value = old c.value
-			children_set = old children_set & c
-			up = old up
-			across up as p all p.item.is_wrapped end
+			child_added: children.has (c)
+			c_value_unchanged: c.value = old c.value
+			c_children_unchanged: c.children_set = old c.children_set
+			ancestors_unchengd: ancestors = old ancestors
+			ancestors_wrapped: across ancestors as p all p.item.is_wrapped end
 		end
 
-feature {F_COM_COMPOSITE}
+feature {F_COM_COMPOSITE} -- Implementation
 
 	set_parent (p: F_COM_COMPOSITE)
+			-- Set `parent' to `p'.
 		require
-			is_open
-			observers.is_empty
-			parent = Void
-			children_set.is_empty
-			p /= Void
-
-			modify_field (["parent", "up"], Current)
+			open: is_open
+			singleton_1: parent = Void
+			singleton_2: children_set.is_empty
+			p_exists: p /= Void
+			no_observers: observers.is_empty
+			modify_field (["parent", "ancestors"], Current)
 		do
 			parent := p
-			up := p.up & p
+			ancestors := p.ancestors & p
 		ensure
-			parent = p
-			up = p.up & p
+			parent_set: parent = p
+			ancestors_set: ancestors = p.ancestors & p
 		end
 
 	update (c: F_COM_COMPOSITE)
-			-- Update values of Current and transitive parents taking into account new child `c'.
+			-- Update `value' of this node and its ancestors taking into accountan updated child `c'.
 		require
-			c /= Void
-			children_set[c]
-			is_open
-			children.is_wrapped
-			across up as p all p.item.is_wrapped end
-
-			inv_without ("value_consistent")
-			is_max (value, init_value, children_set / c) or (c.value > value and across children_set as ic all ic.item.value <= c.value end)
-
-			modify_field (["value", "closed"], [Current, up])
+			c_exists: c /= Void
+			c_is_child: children_set [c]
+			open: is_open
+			children_list_wrapped: children.is_wrapped
+			ancestors_wrapped: across ancestors as p all p.item.is_wrapped end
+			partially_holds: inv_without ("value_consistent")
+			almost_max: if value >= c.value
+				then is_max (value, init_value, children_set, max_child)
+				else is_max (c.value, init_value, children_set, c) end
+			modify_field (["value", "max_child", "closed"], Current, ancestors)
 			modify_field (["owner"], children)
-			decreases (up)
+			decreases (ancestors)
 		do
 			if value < c.value then
 				if parent /= Void then
 					parent.unwrap
 				end
 				value := c.value
+				max_child := c
 				wrap
 				if parent /= Void then
 					parent.update (Current)
@@ -133,26 +164,42 @@ feature {F_COM_COMPOSITE}
 				wrap
 			end
 		ensure
-			is_wrapped
-			across up as p all p.item.is_wrapped end
+			wrapped: is_wrapped
+			ancestors_wrapped: across ancestors as p all p.item.is_wrapped end
 		end
 
+	lemma_ancestors_have_children (c: F_COM_COMPOSITE)
+			-- Lemma: if `c' is in `ancestors' its `chilren' is not empty.
+		note
+			status: lemma
+		require
+			c_exists: c /= Void
+			wrapped: is_wrapped
+			ancestors_wrapped: across ancestors as a all a.item.is_wrapped  end
+			decreases (ancestors)
+		do
+			check inv end
+			if ancestors [c] then
+				check c.inv end
+				if c /= parent then
+					parent.lemma_ancestors_have_children (c)
+				end
+			end
+		ensure
+			ancestors [c] implies not c.children_set.is_empty
+		end
+
+
 invariant
-	value_consistent: is_max (value, init_value, children_set)
-	init_value_relation: value >= init_value
-	i1: children /= Void
-	i2: children_set = children.sequence
-	i3: not up[children] and not children_set[Current] and not children_set[children]
-	i5: parent /= Void implies not (children_set[parent])
-	i6: across children_set as ic all ic.item /= Void and then ic.item.parent = Current end
-	i7: parent = Void implies up.is_empty
-	i7: parent /= Void implies (not up[Current] and up = parent.up & parent) -- implies acyclicity
-	i9: parent = Void implies subjects = children_set
-	i9: parent /= Void implies subjects = children_set & parent
-	i10: parent = Void implies observers = children_set
-	i10: parent /= Void implies observers = children_set & parent
-	i11: owns = [children]
-	i14: across children_set as ic all ic.item.generating_type = {F_COM_COMPOSITE} end
+	value_consistent: is_max (value, init_value, children_set, max_child)
+	children_exists: children /= Void
+	tree: not ancestors [Current]
+	children_consistent: across children_set as c all c.item /= Void and then c.item.parent = Current end
+	ancestors_structure: ancestors = if parent = Void then {MML_SET [F_COM_COMPOSITE]}.empty_set else parent.ancestors & parent end
+	subjects_structure: subjects = if parent = Void then children_set else children_set & parent end
+	observers_structure: observers = subjects
+	owns_structure: owns = [children]
+	subjects_aware: across subjects as s all s.item.observers [Current] end
 
 note
 	explicit: subjects, observers

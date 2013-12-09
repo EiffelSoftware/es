@@ -1,58 +1,73 @@
 note
+	description: "Master clock with reset."
 	explicit: "all"
 
 class F_MC_MASTER_D
 
-inherit
-	ANY
-		redefine
-			default_create
-		end
+create
+	make
 
 feature {NONE} -- Initialization
 
-	default_create
+	make
+			-- Create a master clock.
 		note
 			status: creator
-		require else
-			is_open -- default: creator
-			modify (Current) -- default: creator
+		require
+			default_open: is_open
+			modify (Current)
 		do
-			wrap -- default: creator
-		ensure then
-			time = 0 -- default: default_create
-			is_wrapped -- default: creator
-			observers.is_empty -- default: default_create
+			wrap
+		ensure
+			time_reset: time = 0
+			no_observers: observers.is_empty
+			default_wrapped: is_wrapped
 		end
 
-feature
+feature -- Access
 
 	time: INTEGER
-			-- Clock time.
+			-- Time.
+
+feature -- Update			
 
 	tick
-		note
-			explicit: contracts
+			-- Increment time.
 		require
-			is_wrapped
-			across observers as o all o.item.is_open end
-
+			default_wrapped: is_wrapped
+			default_observers_wrapped: across observers as o all o.item.is_wrapped end
 			modify_field (["time", "closed"], Current)
 		do
-			unwrap -- default
+			unwrap
+			-- This update preserves the invariant of slave clocks:
 			time := time + 1
-			wrap -- default
+			wrap
 		ensure
-			time > old time
-			is_wrapped
+			time_increased: time > old time
+			default_wrapped: is_wrapped
+		end
+
+	reset
+			-- Reset time to zero.
+		require
+			wrapped: is_wrapped
+			observers_open: across observers as o all o.item.is_open end
+			modify_field (["time", "closed"], Current)
+		do
+			unwrap
+			-- This update does not preserve the invariant of slave clocks,
+			-- so the method requires that they be open:
+			time := 0
+			wrap
+		ensure
+			wrapped: is_wrapped
+			time_reset: time = 0
 		end
 
 invariant
-	0 <= time
-	owns = [] -- default
-	subjects = [] -- default
-	across subjects as s all s.item.observers.has (Current) end -- default
+	time_non_negative: 0 <= time
+	all_observers_are_clocks: across observers as o all attached {F_MC_CLOCK_D} o.item end
+	default_owns: owns = []
+	default_subjects: subjects = []
 
-note
-	explicit: observers
 end

@@ -1,52 +1,67 @@
 note
+	description : "Test harness."
 	explicit: "all"
 
 class F_MC_CLIENT
 
-feature
+feature -- Test
 
 	test
+			-- Use master and slave clocks.
 		local
 			m: F_MC_MASTER
 			c1, c2: F_MC_CLOCK
 		do
-			create m
+			create m.make
 			create c1.make (m)
 			create c2.make (m)
 
-			check m.observers = [c1, c2] end
-
-			unwrap_all (c1, c2)
 			m.tick
-			wrap_all (c1, c2)
+			-- Still weakly synchronized, according to the invariant
+			check c1_in_synch: c1.local_time <= m.time end
+			check c2_in_synch: c2.local_time <= m.time end
 
 			c1.sync
 			c2.sync
 
-			check c1.local_time = m.time end
-			check c2.local_time = m.time end
+			unwrap_all (c1, c2)
+			m.reset
+			-- sync can be called on both wrapped and open clocks:
+			c1.sync
+			c2.sync
+
+			-- Synchronized again, thanks to sync
+			check c1_in_synch: c1.local_time <= m.time end
+			check c2_in_synch: c2.local_time <= m.time end
 		end
 
 	test_d
+			-- Use master and slave clocks.
 		local
 			m: F_MC_MASTER_D
 			c1, c2: F_MC_CLOCK_D
 		do
-			create m
+			create m.make
 			create c1.make (m)
 			create c2.make (m)
 
-			check m.observers = [c1, c2] end
-
-			unwrap_all (c1, c2)
 			m.tick
-			wrap_all (c1, c2)
+			-- Still weakly synchronized, according to the invariant
+			check c1_in_synch: c1.local_time <= m.time end
+			check c2_in_synch: c2.local_time <= m.time end
 
 			c1.sync
 			c2.sync
 
-			check c1.local_time = m.time end
-			check c2.local_time = m.time end
+			unwrap_all (c1, c2)
+			m.reset
+			-- sync can be called on both wrapped and open clocks:
+			c1.sync
+			c2.sync
+
+			-- Synchronized again, thanks to sync
+			check c1_in_synch: c1.local_time <= m.time end
+			check c2_in_synch: c2.local_time <= m.time end
 		end
 
 end

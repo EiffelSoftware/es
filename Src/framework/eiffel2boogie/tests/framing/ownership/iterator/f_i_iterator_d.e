@@ -1,27 +1,22 @@
 note
-	explicit: "all"
+	description: "An iterator to traverse collections."
+	exlipit: "all"
 
 class F_I_ITERATOR_D
 
 create
 	make
 
-feature
-
-	target: F_I_COLLECTION_D
-
-	before, after: BOOLEAN
+feature {NONE} -- Initialization
 
 	make (t: F_I_COLLECTION_D)
+			-- Create an iterator to traverse `t'.
 		note
 			status: creator
 		require
-			is_open -- default: creator
-			t.is_wrapped -- default: creator
-			across t.observers as o all o.item.is_wrapped end -- default: creator
-			t /= Void
-			across t.observers as ic all ic.item.generating_type = {F_I_ITERATOR_D} end
-
+			target_exists: t /= Void
+			default_open: is_open
+			default_arg_wrapped: t.is_wrapped
 			modify (Current)
 			modify_field (["observers", "closed"], t)
 		do
@@ -30,73 +25,71 @@ feature
 			t.unwrap
 			t.set_observers (t.observers & Current)
 			t.wrap
-			set_subjects ([t]) -- default: ?
-			wrap -- default: creator
+			set_subjects ([t])
 		ensure
-			target = t
-			t.observers = old t.observers & Current
-
-			t.elements = old t.elements -- t modified, t.elements in domain of t
-			t.elements.count = old t.elements.count -- t modified, t.elements in domain of t
-
-			before and not after
-			is_wrapped -- default: creator
-			across observers as o all o.item.is_wrapped end -- default: creator
-			t.is_wrapped -- default: creator
-			across t.observers as o all o.item.is_wrapped end -- default: creator
+			target_set: target = t
+			before: before and not after
+			observing_target: t.observers = old t.observers & Current
+			capacity_unchanged: t.capacity = old t.capacity
+			default_wrapped: is_wrapped
+			default_arg_wrapped: t.is_wrapped
 		end
+
+feature -- Access
+
+	target: F_I_COLLECTION_D
+			-- Collection to traverse.
+
+	before: BOOLEAN
+			-- Is the iterator before the first element?
+
+	after: BOOLEAN
+			-- Is the iterator after the last element?
 
 	item: INTEGER
+			-- Collection element at current position.
 		require
-			not (before or after)
-			target.is_wrapped
-			not is_open -- default: public
-			across observers as o all not o.item.is_open end -- default: public
-
-			modify ([]) -- default: query
+			not_off: not (before or after)
+			target_closed: target.closed
+			default_closed: closed
+			modify ([])
 		do
+			check inv and target.inv end
 			Result := target.elements [index]
-		ensure
-			not is_open -- default: public
-			across observers as o all not o.item.is_open end -- default: public
-			target.is_wrapped
 		end
 
-	forth
-		require
-			not after
-			is_wrapped -- default: public
-			across observers as o all o.item.is_wrapped end -- default: public
+feature -- State change		
 
-			modify ([Current]) -- default: command
+	forth
+			-- Move to the next position.
+		require
+			not_after: not after
+			default_wrapped: is_wrapped
+			modify ([Current])
 		do
-			unwrap -- default: public
 			index := index + 1
 			before := False
 			if index > target.count then
 				after := True
 			end
-			wrap -- default: public
 		ensure
-			not before
-			target = old target
-			index = old index + 1
-			is_wrapped -- default: public
-			across observers as o all o.item.is_wrapped end -- default: public
+			not_before: not before
+			target_unchanged: target = old target
+			default_wrapped: is_wrapped
 		end
 
-feature -- Implementation
+feature {NONE} -- Implementation
 
 	index: INTEGER
+		-- Iterator position.
 
 invariant
-	target /= Void
-	0 <= index and index <= target.count + 1
-	before = (index < 1)
-	after = (index > target.count)
-	subjects = [target]
-	across subjects as s all s.item.observers.has (Current) end -- default
-	observers = [] -- default
-	owns = [] -- default
+	target_exists: target /= Void
+	index_in_bounds: 0 <= index and index <= target.count + 1
+	before_definition: before = (index < 1)
+	after_definition: after = (index > target.count)
+	subjects_structure: subjects = [target]
+	default_owns: owns = []
+	default_observers: observers = []
 
 end

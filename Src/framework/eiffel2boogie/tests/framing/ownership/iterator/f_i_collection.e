@@ -1,72 +1,99 @@
+note
+	description: "A collection implemented using an array-based list."
+
 class F_I_COLLECTION
 
 create
 	make
 
-feature
+feature {NONE} -- Initialization
 
-	count: INTEGER
-
-	capacity: INTEGER
-		require
-			reads (Current)
-		do
-			Result := elements.count
-		ensure
-			Result = elements.count
-		end
-
-	make (cap: INTEGER)
+	make (c: INTEGER)
+			-- Create a collection with capacity `c'.
 		note
 			status: creator
 		require
-			cap >= 0
+			capacity_non_negative: c >= 0
 		do
-			create elements.make (1, cap)
+			create elements.make (c)
 			set_owns ([elements])
 		ensure
-			capacity = cap
-			count = 0
-			observers = []
+			capacity_set: capacity = c
+			empty: count = 0
+			no_observers: observers = []
 		end
 
+feature -- Access
+
+	count: INTEGER
+			-- Number of elements in the collection.
+
+	capacity: INTEGER
+			-- Maximum number of elements in the collection.
+		note
+			status: functional
+		do
+			Result := elements.count
+		end
+
+feature -- Element change		
+
 	add (v: INTEGER)
+			-- Add `v' to the collection.
 		note
 			explicit: contracts
 		require
-			is_wrapped
-			across observers as o all o.item.is_wrapped end
-
-			count < capacity
-
+			wrapped: is_wrapped
+			observers_wrapped: across observers as o all o.item.is_wrapped end
+			not_full: count < capacity
 			modify (Current)
 			modify_field ("closed", observers)
 		do
 			unwrap_all (observers)
-
 			set_observers ([])
 			count := count + 1
 			elements.put (v, count)
 		ensure
-			count = old count + 1
-			observers = []
-			across old observers as o all o.item.is_open end
-			elements = old elements
-			capacity = old capacity
-			is_wrapped
+			count_increased: count = old count + 1
+			no_observers: observers = []
+			old_observers_open: across old observers as o all o.item.is_open end
+			elements_unchanged: elements = old elements
+			capacity_unchanged: capacity = old capacity
+			wrapped: is_wrapped
 		end
 
-feature {F_I_ITERATOR}
+	remove_last
+			-- Remove the last added elements from the collection.
+		note
+			explicit: contracts
+		require
+			wrapped: is_wrapped
+			observers_wrapped: across observers as o all o.item.is_wrapped end
+			not_empty: count > 0
+			modify (Current)
+			modify_field ("closed", observers)
+		do
+			unwrap_all (observers)
+			set_observers ([])
+			count := count - 1
+		ensure
+			count_decreased: count = old count - 1
+			no_observers: observers = []
+			old_observers_open: across old observers as o all o.item.is_open end
+			elements_unchanged: elements = old elements
+			capacity_unchanged: capacity = old capacity
+			wrapped: is_wrapped
+		end
+
+feature {F_I_ITERATOR} -- Implementation
 
 	elements: F_I_ARRAY
+			-- Element storage.
 
 invariant
 	elements /= Void
 	0 <= count and count <= elements.count
 	owns = [elements]
-	not observers[Current] and not observers[elements]
-
-note
-  explicit: observers
+	across observers as o all attached {F_I_ITERATOR} o.item end
 
 end

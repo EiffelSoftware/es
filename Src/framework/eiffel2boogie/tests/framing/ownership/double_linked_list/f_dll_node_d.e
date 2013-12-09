@@ -1,4 +1,5 @@
 note
+	description: "Node in a circular doubly-linked list."
 	explicit: "all"
 
 class F_DLL_NODE_D
@@ -6,151 +7,144 @@ class F_DLL_NODE_D
 create
 	make
 
-feature
-
-	left: F_DLL_NODE_D
-	right: F_DLL_NODE_D
+feature {NONE} -- Initialization
 
 	make
+			-- Create a singleton node.
 		note
 			status: creator
 		require
-			is_open -- default: creator
-
-			modify (Current) -- default: creator
+			default_open: is_open
+			modify (Current)
 		do
 			left := Current
 			right := Current
 			set_subjects ([left, right])
 			set_observers ([left, right])
-			wrap -- default: creator
+			wrap
 		ensure
 			singleton: left = Current
-			is_wrapped -- default: creator
-			across observers as o all o.item.is_wrapped end -- default: creator
+			default_wrapped: is_wrapped
 		end
 
+feature -- Access
+
+	left: F_DLL_NODE_D
+			-- Left neighbor.
+
+	right: F_DLL_NODE_D
+			-- Right neighbor.
+
+feature -- Modification
+
 	insert_right (n: F_DLL_NODE_D)
-		note
-			explicit: wrapping
+			-- Insert node `n' to the right of the current node.
 		require
-			is_wrapped -- default: public
-			across observers as o all o.item.is_wrapped end -- default: public
-			n.is_wrapped -- default: public
-			across n.observers as o all o.item.is_wrapped end -- default: public
-
-			n /= Void
+			n_exists: n /= Void
 			n_singleton: n.left = n
-			right.right.is_wrapped
-
-			modify ([Current, left, right, right.right, n])
+			default_wrapped: is_wrapped
+			default_arg_wrapped: n.is_wrapped
+			default_observers_wrapped: across observers as o all o.item.is_wrapped  end
+			modify (Current, right, n)
 		local
 			r: F_DLL_NODE_D
 		do
-			unwrap_all ([Current, left, right, right.right, n])
-
+			check inv end
 			r := right
+			unwrap_all (Current, r, n)
 
 			n.set_right (r)
 			n.set_left (Current)
+
 			r.set_left (n)
 			set_right (n)
 
-			Current.set_subjects ([Current.left, Current.right])
-			Current.set_observers ([Current.left, Current.right])
-			r.set_subjects ([r.left, r.right])
-			r.set_observers ([r.left, r.right])
-			n.set_subjects ([n.left, n.right])
-			n.set_observers ([n.left, n.right])
-
-			wrap_all ([Current, left, right, r, r.right])
+			n.set_subjects ([r, Current])
+			n.set_observers ([r, Current])
+			set_subjects ([left, n])
+			set_observers ([left, n])
+			r.set_subjects ([n, r.right])
+			r.set_observers ([n, r.right])
+			wrap_all (Current, r, n)
 		ensure
-			right = n
-			n.right = old right
-			right.right.is_wrapped
-			is_wrapped -- default: public
-			across observers as o all o.item.is_wrapped end -- default: public
+			n_left_set: right = n
+			n_right_set: n.right = old right
+			default_wrapped: is_wrapped
+			default_arg_wrapped: n.is_wrapped
+			default_observers_wrapped: across observers as o all o.item.is_wrapped  end
 		end
 
-	remove_right
-		note
-			explicit: wrapping
+	remove
+			-- Remove the current node from the list.
 		require
-			is_wrapped -- default: public
-			across observers as o all o.item.is_wrapped end -- default: public
-
-			not_singleton: right /= Current
-			right.right.is_wrapped
-			right.right.right.is_wrapped
-
-			modify ([Current, left, right, right.right])
-			modify (right.right.right)
+			default_wrapped: is_wrapped
+			default_observers_wrapped: across observers as o all o.item.is_wrapped  end
+			modify (Current, left, right)
 		local
-			r: F_DLL_NODE_D
+			l, r: F_DLL_NODE_D
 		do
-			unwrap_all ([Current, left, right, right.right, right.right.right])
-
+			check inv end
+			l := left
 			r := right
+			unwrap_all (Current, l, r)
 
-			set_right (r.right)
-			r.right.set_left (Current)
-			r.set_right (r)
-			r.set_left (r)
+			set_left (Current)
+			set_right (Current)
 
-			Current.set_subjects ([Current.left, Current.right])
-			Current.set_observers ([Current.left, Current.right])
-			right.set_subjects ([right.left, right.right])
-			right.set_observers ([right.left, right.right])
-			r.set_subjects ([r.left, r.right])
-			r.set_observers ([r.left, r.right])
+			l.set_right (r)
+			r.set_left (l)
 
-			wrap_all ([Current, left, right, right.right, r])
+			set_subjects ([Current])
+			set_observers ([Current])
+			l.set_subjects ([l.left, r])
+			l.set_observers ([l.left, r])
+			r.set_subjects ([l, r.right])
+			r.set_observers ([l, r.right])
+			wrap_all (Current, l, r)
 		ensure
-			right = old right.right
-			old_right_singleton: (old right).right = old right
-
-			is_wrapped -- default: public
-			across observers as o all o.item.is_wrapped end -- default: public
+			singleton: right = Current
+			old_left_wrapped: (old left).is_wrapped
+			old_right_wrapped: (old right).is_wrapped
+			neighbors_connected: (old left).right = old right
+			default_wrapped: is_wrapped
+			default_observers_wrapped: across observers as o all o.item.is_wrapped  end
 		end
 
-feature {F_DLL_NODE_D}
+feature {F_DLL_NODE_D} -- Implementation
 
 	set_left (n: F_DLL_NODE_D)
-		note
-			explicit: contracts
+			-- Set left neighbor to `n'.
 		require
-			is_open
-			across observers as sc all sc.item.is_open end
-
+			open: is_open
+			left_open: left.is_open
+			only_closed_observer_is_right: across observers as o all o.item.is_open or o.item = right end
 			modify_field ("left", Current)
 		do
-			left := n -- preserves right
+			left := n -- preserves `right'
 		ensure
 			left = n
 		end
 
 	set_right (n: F_DLL_NODE_D)
-		note
-			explicit: contracts
+			-- Set right neighbor to `n'.
 		require
-			is_open
-			across observers as sc all sc.item.is_open end
-
+			open: is_open
+			right_open: right.is_open
+			only_closed_observer_is_left: across observers as o all o.item.is_open or o.item = left end
 			modify_field ("right", Current)
 		do
-			right := n -- preserves left
+			right := n -- preserves `left'
 		ensure
 			right = n
 		end
 
 invariant
-	left /= Void
-	right /= Void
-	left.right = Current
-	right.left = Current
-	subjects = [ left, right ]
-	observers = [ left, right ]
-	owns = [] -- default
-	across subjects as s all s.item.observers.has (Current) end -- default
+	left_exists: left /= Void
+	right_exists: right /= Void
+	left_consistent: left.right = Current
+	right_consistent: right.left = Current
+	subjects_structure: subjects = [ left, right ]
+	observers_structure: observers = [ left, right ]
+	default_owns: owns = []
 
 end

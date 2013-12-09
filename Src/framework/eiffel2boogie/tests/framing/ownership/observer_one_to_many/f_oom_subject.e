@@ -1,84 +1,89 @@
+note
+	description: "Subject that keeps a list of subscribers and nofifies then of its state changes."
+
 class F_OOM_SUBJECT
 
 create
 	make
 
-feature
+feature {NONE} -- Initialization
 
-	value: INTEGER
-	observers_list: F_OOM_LIST [F_OOM_OBSERVER]
-
-	make
+	make (v: INTEGER)
+			-- Create a subject with state `v' and no subscribers.
 		note
 			status: creator
-		require
-			is_open
 		do
-			create observers_list.make
-			set_owns ([observers_list])
+		        value := v
+			create subscribers.make
+			set_owns ([subscribers])
 		ensure
-			observers_list.is_empty
-			observers = [] -- todo: should be implied by previous line
+			value_set: value = v
+			no_subscribers: subscribers.is_empty
 		end
 
-	update (new_val: INTEGER)
+feature -- Public access
+
+	value: INTEGER
+			-- State.
+
+	subscribers: F_OOM_LIST [F_OOM_OBSERVER]
+			-- List of observers subscribed to the state updates.
+
+feature -- State update
+
+	update (v: INTEGER)
+			-- Update state to `v'.
 		require
 			modify_field (["value", "closed"], Current)
-			modify_field (["cache", "closed"], observers_list.sequence)
+			modify_field (["cache", "closed"], subscribers.sequence)
 		local
 			i: INTEGER
 		do
 			unwrap_all (observers)
+			value := v
 
-			value := new_val
 			from
 				i := 1
 			invariant
-				observers_list.is_wrapped
-				across observers_list.sequence as o all
+				subscribers.is_wrapped
+				across subscribers.sequence as o all
 					o.item.is_open and o.item.inv_without ("cache_synchronized")
 				end
-				across 1 |..| (i - 1) as j all observers_list.sequence [j.item].inv end
+				across 1 |..| (i - 1) as j all subscribers.sequence [j.item].inv end
 				inv
-				value = new_val
+				value = v
 			until
-				i > observers_list.count
+				i > subscribers.count
 			loop
-				observers_list [i].notify
+				subscribers [i].notify
 				i := i + 1
 			end
 
 			wrap_all (observers)
 		ensure
-			value = new_val
+			value_set: value = v
 		end
 
-feature {F_OOM_OBSERVER}
+feature {F_OOM_OBSERVER} -- Internal communication
 
 	register (o: F_OOM_OBSERVER)
-		note
-			explicit: contracts
+			-- Add `o' to `subscribers'.
 		require
-			is_wrapped
-			o.is_open
+			wrapped: is_wrapped
+			o_open: o.is_open
 		do
 			unwrap
-			observers_list.extend_back (o)
+			subscribers.extend_back (o)
 			set_observers (observers + [o])
 			wrap
 		ensure
-			observers = (old observers & o)
-			observers_list.has (o)
-			is_wrapped
+			observers_extended: observers = old observers & o
+			wrapped: is_wrapped
 		end
 
 invariant
-	observers_list /= Void
-	across observers_list.sequence as o all attached {F_OOM_OBSERVER} o.item end
-	observers = observers_list.sequence.range
-	owns = [observers_list]
-
-note
-	explicit: observers
-
+	subscribers_exists: subscribers /= Void
+	all_subscribers_exist: across subscribers.sequence as o all attached {F_OOM_OBSERVER} o.item end
+	observers_structure: observers = subscribers.sequence.range
+	owns_structure: owns = [subscribers]
 end
