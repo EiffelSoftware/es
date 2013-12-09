@@ -168,6 +168,13 @@ feature -- Rules
 			%respectively. One can directly assign the If condition (or its %
 			%negation) to the result.") end
 
+	boolean_comparison_title: STRING_32
+		do Result := locale.translation ("Unneeded comparison of boolean variables or queries") end
+
+	boolean_comparison_description: STRING_32
+		do Result := locale.translation ("In expressions, boolean variables or %
+			%queries need not be compared to True or False.") end
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32

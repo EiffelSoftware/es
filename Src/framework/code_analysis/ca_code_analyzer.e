@@ -40,6 +40,7 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_FEATURE_SECTION_COMMENT_RULE}.make)
 			rules.extend (create {CA_FEATURE_NOT_COMMENTED_RULE}.make)
 			rules.extend (create {CA_BOOLEAN_RESULT_RULE}.make)
+			rules.extend (create {CA_BOOLEAN_COMPARISON_RULE}.make)
 
 			settings.initialize_rule_settings (rules)
 

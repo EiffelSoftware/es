@@ -218,6 +218,9 @@ feature -- Code Analyzer
 	boolean_result_violation: STRING_32
 		do Result := locale.translation ("For the assignment of the boolean result this if-else instruction is not needed.%NYou can directly assign the boolean expression that you are checking to the%Nresult.") end
 
+	boolean_comparison_violation: STRING_32
+		do Result := locale.translation ("This boolean variable or query does not need to be compared to a boolean constant.") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32

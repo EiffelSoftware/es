@@ -30,6 +30,7 @@ inherit
 		redefine
 			process_access_id_as,
 			process_assign_as,
+			process_bin_eq_as,
 			process_body_as,
 			process_case_as,
 			process_create_as,
@@ -66,6 +67,8 @@ feature {NONE} -- Initialization
 			create access_id_post_actions.make
 			create assign_pre_actions.make
 			create assign_post_actions.make
+			create bin_eq_pre_actions.make
+			create bin_eq_post_actions.make
 			create body_pre_actions.make
 			create body_post_actions.make
 			create case_pre_actions.make
@@ -122,6 +125,16 @@ feature {CA_STANDARD_RULE}
 	add_assign_post_action (a_action: PROCEDURE[ANY, TUPLE[ASSIGN_AS]])
 		do
 			assign_post_actions.extend (a_action)
+		end
+
+	add_bin_eq_pre_action (a_action: PROCEDURE [ANY, TUPLE [BIN_EQ_AS]])
+		do
+			bin_eq_pre_actions.extend (a_action)
+		end
+
+	add_bin_eq_post_action (a_action: PROCEDURE [ANY, TUPLE [BIN_EQ_AS]])
+		do
+			bin_eq_post_actions.extend (a_action)
 		end
 
 	add_body_pre_action (a_action: PROCEDURE[ANY, TUPLE[BODY_AS]])
@@ -300,6 +313,8 @@ feature {NONE} -- Agent lists
 
 	assign_pre_actions, assign_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[ASSIGN_AS]]]
 
+	bin_eq_pre_actions, bin_eq_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [BIN_EQ_AS]]]
+
 	body_pre_actions, body_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[BODY_AS]]]
 
 	case_pre_actions, case_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [CASE_AS]]]
@@ -367,6 +382,13 @@ feature {NONE} -- Processing
 			Precursor (a_assign)
 
 			across assign_post_actions as l_a loop l_a.item.call ([a_assign]) end
+		end
+
+	process_bin_eq_as (a_bin_eq: BIN_EQ_AS)
+		do
+			across bin_eq_pre_actions as l_a loop l_a.item.call ([a_bin_eq]) end
+			Precursor (a_bin_eq)
+			across bin_eq_post_actions as l_a loop l_a.item.call ([a_bin_eq]) end
 		end
 
 	process_body_as (a_body: BODY_AS)
