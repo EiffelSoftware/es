@@ -159,6 +159,15 @@ feature -- Rules
 	feature_not_commented_description: STRING_32
 		do Result := locale.translation ("") end
 
+	boolean_result_title: STRING_32
+		do Result := locale.translation ("Boolean result can be returned directly") end
+
+	boolean_result_description: STRING_32
+		do Result := locale.translation ("For a boolean result there is no need for%
+			% an If/Else clause with Result := True and and Result := False, %
+			%respectively. One can directly assign the If condition (or its %
+			%negation) to the result.") end
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32

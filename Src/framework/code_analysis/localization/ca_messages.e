@@ -215,6 +215,9 @@ feature -- Code Analyzer
 	feature_not_commented_violation_2: STRING_32
 		do Result := locale.translation ("' is not commented. A feature comment is strongly%Nrecommended to enable clients to understand what the feature does.") end
 
+	boolean_result_violation: STRING_32
+		do Result := locale.translation ("For the assignment of the boolean result this if-else instruction is not needed.%NYou can directly assign the boolean expression that you are checking to the%Nresult.") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32
