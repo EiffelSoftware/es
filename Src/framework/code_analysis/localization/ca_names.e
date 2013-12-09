@@ -175,6 +175,13 @@ feature -- Rules
 		do Result := locale.translation ("In expressions, boolean variables or %
 			%queries need not be compared to True or False.") end
 
+	very_short_identifier_title: STRING_32
+		do Result := locale.translation ("Very short identifier") end
+
+	very_short_identifier_description: STRING_32
+		do Result := locale.translation ("A name of a feature, an argument, or a %
+			%local variable that is very short is bad for code readability.") end
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32
