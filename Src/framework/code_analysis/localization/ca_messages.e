@@ -209,6 +209,12 @@ feature -- Code Analyzer
 	feature_section_comment_violation: STRING_32
 		do Result := locale.translation ("A feature section has no comment.") end
 
+	feature_not_commented_violation_1: STRING_32
+		do Result := locale.translation ("Feature '") end
+
+	feature_not_commented_violation_2: STRING_32
+		do Result := locale.translation ("' is not commented. A feature comment is strongly%Nrecommended to enable clients to understand what the feature does.") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32

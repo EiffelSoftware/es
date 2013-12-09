@@ -38,6 +38,7 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_VERY_LONG_ROUTINE_RULE}.make (settings.preference_manager))
 			rules.extend (create {CA_VERY_BIG_CLASS_RULE}.make (settings.preference_manager))
 			rules.extend (create {CA_FEATURE_SECTION_COMMENT_RULE}.make)
+			rules.extend (create {CA_FEATURE_NOT_COMMENTED_RULE}.make)
 
 			settings.initialize_rule_settings (rules)
 

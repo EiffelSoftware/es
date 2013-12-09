@@ -153,6 +153,12 @@ feature -- Rules
 	feature_section_comment_description: STRING_32
 		do Result := locale.translation ("") end
 
+	feature_not_commented_title: STRING_32
+		do Result := locale.translation ("Feature not commented") end
+
+	feature_not_commented_description: STRING_32
+		do Result := locale.translation ("") end
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32
