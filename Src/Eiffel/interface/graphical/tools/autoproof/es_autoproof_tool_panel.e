@@ -130,7 +130,7 @@ feature {NONE} -- Initialization
 		do
 				-- live text filter
 			create l_box
-			l_box.extend (create {EV_LABEL}.make_with_text (ep_names.tool_text_filter + ": "))
+			l_box.extend (create {EV_LABEL}.make_with_text (messages.tool_text_filter + ": "))
 			l_box.disable_item_expand (l_box.last)
 			create text_filter
 			text_filter.key_release_actions.force_extend (agent on_update_visiblity)
@@ -298,19 +298,19 @@ feature {NONE} -- Initialization
 			l_col := a_widget.column (icon_column)
 			l_col.set_width (20)
 			l_col := a_widget.column (class_column)
-			l_col.set_title (ep_names.tool_header_class)
+			l_col.set_title (messages.tool_header_class)
 			l_col.set_width (100)
 			l_col := a_widget.column (feature_column)
-			l_col.set_title (ep_names.tool_header_feature)
+			l_col.set_title (messages.tool_header_feature)
 			l_col.set_width (120)
 			l_col := a_widget.column (info_column)
-			l_col.set_title (ep_names.tool_header_information)
+			l_col.set_title (messages.tool_header_information)
 			l_col.set_width (300)
 			l_col := a_widget.column (position_column)
-			l_col.set_title (ep_names.tool_header_position)
+			l_col.set_title (messages.tool_header_position)
 			l_col.set_width (40)
 			l_col := a_widget.column (time_column)
-			l_col.set_title (ep_names.tool_header_time)
+			l_col.set_title (messages.tool_header_time)
 			l_col.set_width (50)
 
 			a_widget.enable_tree
@@ -566,8 +566,6 @@ feature {NONE} -- Basic operations
 			l_lines: LIST [EIFFEL_EDITOR_LINE]
 			l_tip: EB_EDITOR_TOKEN_TOOLTIP
 			l_label: EV_GRID_LABEL_ITEM
-			l_error_list: LIST [EP_ERROR]
-			l_error: EP_ERROR
 			l_row: EV_GRID_ROW
 			l_format: FORMAT_DOUBLE
 		do
@@ -742,9 +740,9 @@ feature {NONE} -- Basic operations
 	update_button_titles
 			-- Update button titles with number of events.
 		do
-			successful_button.set_text (successful_count.out + " " + "Successful")
-			failed_button.set_text (failed_count.out + " " + "Failed")
-			errors_button.set_text (error_count.out + " " + "Errors")
+			successful_button.set_text (messages.tool_successful_button (successful_count))
+			failed_button.set_text (messages.tool_failed_button (failed_count))
+			errors_button.set_text (messages.tool_error_button (error_count))
 		end
 
 	find_event_row (a_event_item: EVENT_LIST_ITEM_I): EV_GRID_ROW
@@ -829,12 +827,6 @@ feature {NONE} -- Constants
 			-- Background color for successful rows
 		once
 			create Result.make_with_rgb (1.0, 1.0, 0.4)
-		end
-
-	ep_names: !EP_NAMES
-			-- Shared access to interface names
-		once
-			create Result
 		end
 
 note

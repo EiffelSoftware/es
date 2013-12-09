@@ -138,7 +138,7 @@ feature {NONE} -- Initialization
 				-- live text filter
 			create l_box
 
-			l_box.extend (create {EV_LABEL}.make_with_text (ep_names.tool_text_filter + ": "))
+			l_box.extend (create {EV_LABEL}.make_with_text (ca_names.tool_text_filter + ": "))
 			l_box.disable_item_expand (l_box.last)
 			create text_filter
 			text_filter.key_release_actions.force_extend (agent on_update_visiblity)
@@ -623,8 +623,6 @@ feature {NONE} -- Basic operations
 			l_lines: LIST [EIFFEL_EDITOR_LINE]
 			l_tip: EB_EDITOR_TOKEN_TOOLTIP
 			l_label: EV_GRID_LABEL_ITEM
-			l_error_list: LIST [EP_ERROR]
-			l_error: EP_ERROR
 			l_row: EV_GRID_ROW
 			l_pos_token: EDITOR_TOKEN_NUMBER
 			l_line: EIFFEL_EDITOR_LINE
@@ -851,12 +849,6 @@ feature {NONE} -- Constants
 			-- Background color for partial success
 		once
 			create Result.make_with_rgb (1.0, 0.9, 0.4)
-		end
-
-	ep_names: EP_NAMES
-			-- Shared access to interface names
-		once
-			create Result
 		end
 
 note

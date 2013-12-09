@@ -202,4 +202,7 @@ feature -- GUI
 	tool_hints: STRING_32
 		do Result := locale.translation ("Hints") end
 
+	tool_text_filter: STRING_32
+		do Result := locale.translation ("Filter") end
+
 end

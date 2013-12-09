@@ -138,4 +138,33 @@ feature -- Other
 	boogie_launch_failed (a_executable: STRING_32): STRING_32
 		do Result := locale.formatted_string ("Launching Boogie failed (command was '$1').", a_executable) end
 
+feature -- GUI
+
+	tool_header_class: STRING_32
+		do Result := "Class" end
+
+	tool_header_feature: STRING_32
+		do Result := "Feature" end
+
+	tool_header_information: STRING_32
+		do Result := "Information" end
+
+	tool_header_position: STRING_32
+		do Result := "Position" end
+
+	tool_header_time: STRING_32
+		do Result := "Time [s]" end
+
+	tool_successful_button (a_value: INTEGER): STRING_32
+		do Result := locale.formatted_string ("$1 Successful", a_value) end
+
+	tool_failed_button (a_value: INTEGER): STRING_32
+		do Result := locale.formatted_string ("$1 Failed", a_value) end
+
+	tool_error_button (a_value: INTEGER): STRING_32
+		do Result := locale.formatted_string (locale.plural_translation ("$1 Error", "$1 Errors", a_value), a_value) end
+
+	tool_text_filter: STRING_32
+		do Result := "Filter" end
+
 end

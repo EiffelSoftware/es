@@ -171,7 +171,6 @@ feature -- Command
 
 			l_edit_contracts_command: ES_EDIT_CONTRACTS_COMMAND
 			l_find_class_or_cluster_command: ES_FIND_CLASS_OR_CLUSTER_CMD
-			l_eve_proofs_command: EB_EVE_PROOFS_COMMAND
 			l_javascript_compile_command: EB_JAVASCRIPT_COMPILE_COMMAND
 
 			l_dev_commands: EB_DEVELOPMENT_WINDOW_COMMANDS
@@ -428,10 +427,6 @@ feature -- Command
 
 			create l_find_class_or_cluster_command.make (develop_window)
 			l_dev_commands.set_find_class_or_cluster_command (l_find_class_or_cluster_command)
-
-				-- EVE Proofs command
-			create l_eve_proofs_command.make
-			l_dev_commands.set_eve_proofs_command (l_eve_proofs_command)
 
 				-- JavaScript compile command
 			create l_javascript_compile_command.make
@@ -1129,7 +1124,7 @@ feature{NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
