@@ -149,6 +149,13 @@ feature -- Translation: Signature
 				l_post.set_free
 				current_boogie_procedure.add_contract (l_post)
 
+					-- Add stronger global invariant
+				if helper.is_public (current_feature) or a_for_creator then
+					create l_post.make (factory.function_call ("global_public", << "Heap" >>, types.bool))
+					l_post.set_free
+					current_boogie_procedure.add_contract (l_post)
+				end
+
 				add_ownership_frame (a_for_creator)
 
 					-- OWNERSHIP DEFAULTS

@@ -16,7 +16,8 @@ feature -- Status report
 	is_handling_call (a_target_type: TYPE_A; a_feature: FEATURE_I): BOOLEAN
 			-- <Precursor>
 		do
-			Result := a_feature.feature_name_32 ~ "generating_type"
+			Result := a_feature.feature_name_32 ~ "generating_type" or
+				a_feature.feature_name_32 ~ "old_"
 		end
 
 feature -- Basic operations
@@ -43,6 +44,8 @@ feature -- Implementation
 			l_name := a_feature.feature_name
 			if l_name.same_string ("generating_type") then
 				a_translator.set_last_expression (factory.function_call ("type_of", << a_translator.current_target >>, types.type))
+			elseif l_name.same_string ("old_") then
+				a_translator.set_last_expression (factory.old_ (a_translator.current_target))
 			else
 				check False end
 			end

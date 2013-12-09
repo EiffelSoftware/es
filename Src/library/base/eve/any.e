@@ -525,6 +525,13 @@ feature -- Verification: ownership fields
 		do
 		end
 
+feature -- Verification: auxiliary
+
+	frozen old_: like Current
+			-- Old expression outside of postconditions.
+		do
+		end
+
 invariant
 --	reflexive_equality: standard_is_equal (Current)
 --	reflexive_conformance: conforms_to (Current)
