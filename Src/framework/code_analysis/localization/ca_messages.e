@@ -188,6 +188,24 @@ feature -- Code Analyzer
 	very_long_routine_violation_4: STRING_32
 		do Result := locale.translation (". The routine should be shortened.") end
 
+	very_big_class_violation_1: STRING_32
+		do Result := locale.translation ("Class '") end
+
+	very_big_class_violation_2: STRING_32
+		do Result := locale.translation ("' contains ") end
+
+	very_big_class_violation_3: STRING_32
+		do Result := locale.translation (" features and ") end
+
+	very_big_class_violation_4: STRING_32
+		do Result := locale.translation (" instructions, at least%None of which is above the defined thresholds of ") end
+
+	very_big_class_violation_5: STRING_32
+		do Result := locale.translation (" and ") end
+
+	very_big_class_violation_6: STRING_32
+		do Result := locale.translation (".") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32

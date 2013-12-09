@@ -54,7 +54,7 @@ feature {NONE} -- Initialization
 			instructions_threshold.set_validation_agent (agent is_integer_string_within_bounds (?, 3, 1_000_000))
 		end
 
-	default_features_threshold: INTEGER = 20
+	default_features_threshold: INTEGER = 60
 	default_instructions_threshold: INTEGER = 300
 
 feature -- Rule checking
@@ -166,7 +166,27 @@ feature -- Properties
 		local
 			l_info: LINKED_LIST [ANY]
 		do
+			l_info := a_violation.long_description_info
 
+			a_formatter.add (ca_messages.very_big_class_violation_1)
+			a_formatter.add_class (a_violation.affected_class.original_class)
+			a_formatter.add (ca_messages.very_big_class_violation_2)
+			if attached {INTEGER} l_info.first as l_n_features then
+				a_formatter.add_int (l_n_features)
+			end
+			a_formatter.add (ca_messages.very_big_class_violation_3)
+			if attached {INTEGER} l_info.at (2) as l_n_instructions then
+				a_formatter.add_int (l_n_instructions)
+			end
+			a_formatter.add (ca_messages.very_big_class_violation_4)
+			if attached {INTEGER} l_info.at (3) as l_features_threshold then
+				a_formatter.add_int (l_features_threshold)
+			end
+			a_formatter.add (ca_messages.very_big_class_violation_5)
+			if attached {INTEGER} l_info.at (4) as l_instructions_threshold then
+				a_formatter.add_int (l_instructions_threshold)
+			end
+			a_formatter.add (ca_messages.very_big_class_violation_6)
 		end
 
 feature {NONE} -- Options
