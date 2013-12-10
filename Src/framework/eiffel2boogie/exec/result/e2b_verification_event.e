@@ -63,6 +63,8 @@ feature -- Access
 		do
 			if attached {E2B_FAILED_VERIFICATION} data as l_failed then
 				Result := l_failed.errors.first.context_line_number
+			elseif attached {E2B_AUTOPROOF_ERROR} data as l_error then
+				Result := l_error.context_line_number
 			end
 		end
 

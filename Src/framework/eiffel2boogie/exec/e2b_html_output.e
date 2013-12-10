@@ -21,16 +21,21 @@ feature
 			-- Print `r' in HTML format.
 		do
 			open_style ("table", table_style)
+
 			open ("thead")
 			open_style ("tr", tr_header_style)
 			open ("th")
 			add ("Feature")
 			close ("th")
 			open ("th")
+			add ("Line")
+			close ("th")
+			open ("th")
 			add ("Result")
 			close ("th")
 			close ("tr")
 			close ("thead")
+
 			open ("tbody")
 			across r.verification_results as i loop
 				if attached {E2B_SUCCESSFUL_VERIFICATION} i.item as l_success then
@@ -55,6 +60,7 @@ feature
 				close ("tr")
 			end
 			close ("tbody")
+
 			close ("table")
 		end
 
@@ -62,6 +68,8 @@ feature
 			-- Print successful verification information.
 		do
 			print_feature_information (a_success)
+			open_style ("td", td_line_style)
+			close ("td")
 			open_style ("td", td_info_style)
 			if a_success.original_errors = Void or else a_success.original_errors.is_empty then
 				add ("Successfully verified.")
@@ -93,24 +101,40 @@ feature
 	print_failed_verification (a_failure: E2B_FAILED_VERIFICATION)
 			-- Print failed verifcation information.
 		do
-			print_feature_information (a_failure)
-			open_style ("td", td_info_style)
-			across a_failure.errors as i loop
-				if i.cursor_index = 1 then
-				else
-					add ("--------------------------------------")
-					add_new_line
+			if a_failure.errors.is_empty then
+				print_feature_information (a_failure)
+				open_style ("td", td_line_style)
+				close ("td")
+				open_style ("td", td_info_style)
+				close ("td")
+			else
+				across a_failure.errors as i loop
+					if i.cursor_index = 1 then
+						print_feature_information (a_failure)
+					else
+						close ("tr")
+						open_style ("tr", tr_failed_style)
+						open_style ("td", td_name_style)
+						close ("td")
+					end
+					open_style ("td", td_line_style)
+					if i.item.context_line_number > 0 then
+						add (i.item.context_line_number.out)
+					end
+					close ("td")
+					open_style ("td", td_info_style)
+					i.item.single_line_message (Current)
+					close ("td")
 				end
-				i.item.multi_line_message (Current)
-				add_new_line
 			end
-			close ("td")
 		end
 
 	print_inconclusive_result (a_inconclusive: E2B_INCONCLUSIVE_RESULT)
 			-- Print failed verifcation information.
 		do
 			print_feature_information (a_inconclusive)
+			open_style ("td", td_line_style)
+			close ("td")
 			open_style ("td", td_info_style)
 			add ("Inconclusive result (verifier timed out).")
 			close ("td")
@@ -120,6 +144,11 @@ feature
 			-- Print failed verifcation information.
 		do
 			print_feature_information (a_error)
+			open_style ("td", td_line_style)
+			if a_error.context_line_number > 0 then
+				add (a_error.context_line_number.out)
+			end
+			close ("td")
 			open_style ("td", td_info_style)
 			add (a_error.type)
 			add (": ")
@@ -213,6 +242,7 @@ feature -- Styles
 	tr_failed_style: STRING = "background-color:#fdd"
 	tr_error_style: STRING = "background-color:#ffd"
 	td_name_style: STRING = "padding: 5px; padding-right:15px"
+	td_line_style: STRING = "padding: 5px"
 	td_info_style: STRING = "width: 100%%"
 
 end

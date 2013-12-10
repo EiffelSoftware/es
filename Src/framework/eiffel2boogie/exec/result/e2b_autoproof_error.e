@@ -23,6 +23,9 @@ feature -- Access
 			a_formatter.add (internal_message)
 		end
 
+	context_line_number: INTEGER
+			-- Line number of error (if any)
+
 feature -- Element change
 
 	set_type (a_string: STRING)
@@ -35,6 +38,12 @@ feature -- Element change
 			-- Set `single_line_message' to `a_string'.
 		do
 			internal_message := a_string
+		end
+
+	set_line_number (a_value: INTEGER)
+			-- Set `context_line_number' to `a_value'.
+		do
+			context_line_number := a_value
 		end
 
 feature {NONE} -- Implementation

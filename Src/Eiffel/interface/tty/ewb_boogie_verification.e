@@ -206,7 +206,10 @@ feature {NONE} -- Printing console
 				else
 					output_window.add ("--------------------------------------%N")
 				end
-				i.item.multi_line_message (output_window)
+				if i.item.context_line_number > 0 then
+					output_window.add ("Line: " + i.item.context_line_number.out + ". ")
+				end
+				i.item.single_line_message (output_window)
 				output_window.add_new_line
 			end
 		end
@@ -216,6 +219,9 @@ feature {NONE} -- Printing console
 		do
 			print_feature_information (a_error)
 			output_window.add ("AutoProof error.%N")
+			if a_error.context_line_number > 0 then
+				output_window.add ("Line: " + a_error.context_line_number.out + ". ")
+			end
 			output_window.add (a_error.type + ": ")
 			a_error.single_line_message (output_window)
 			output_window.add_new_line
