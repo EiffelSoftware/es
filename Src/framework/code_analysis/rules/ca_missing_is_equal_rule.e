@@ -1,0 +1,95 @@
+note
+	description: "Summary description for {CA_MISSING_IS_EQUAL_RULE}."
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	CA_MISSING_IS_EQUAL_RULE
+
+inherit
+	CA_STANDARD_RULE
+		redefine id end
+
+create
+	make
+
+feature {NONE} -- Initialization
+	make
+		do
+			-- set the default parameters (subject to be changed by user)
+			is_enabled_by_default := True
+			create {CA_WARNING} severity
+			create violations.make
+		end
+
+feature {NONE} -- Activation
+
+	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+		do
+			a_checker.add_class_pre_action (agent process_class)
+		end
+
+feature -- Properties
+
+	title: STRING_32
+		do
+			Result := ca_names.missing_is_equal_title
+		end
+
+	id: STRING_32 = "CA082T"
+			-- "T" stands for 'under test'.
+
+	description: STRING_32
+		do
+			Result :=  ca_names.missing_is_equal_description
+		end
+
+	is_system_wide: BOOLEAN
+		once
+			Result := False
+		end
+
+	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+		do
+			a_formatter.add (ca_messages.missing_is_equal_violation_1)
+		end
+
+feature {NONE} -- Checking the rule
+
+	process_class (a_class: CLASS_AS)
+		local
+			l_viol: CA_RULE_VIOLATION
+		do
+			if is_current_hashable and then (not redefines_is_equal) then
+					-- {HASHABLE}.hash_code is implemented ("modulo" renaming) but
+					-- is_equal is not redefined.
+				create l_viol.make_with_rule (Current)
+					-- Add {HASHABLE} to info for formatted output:
+				violations.extend (l_viol)
+			end
+		end
+
+	is_current_hashable: BOOLEAN
+		do
+			Result := False
+
+			across checking_class.parents as l_parents loop
+				if l_parents.item.name.is_equal ("HASHABLE") then
+					Result := True
+				end
+			end
+		end
+
+	redefines_is_equal: BOOLEAN
+		do
+			Result := False
+
+			across checking_class.written_in_features as l_feat loop
+				if l_feat.item.name_32.is_equal ("is_equal") then
+					Result := True
+				end
+			end
+		end
+
+end

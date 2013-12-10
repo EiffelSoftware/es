@@ -218,6 +218,12 @@ feature -- Rules
 	max_local_name_length_option: STRING_32
 		do Result := locale.translation ("Maximum local name length") end
 
+	missing_is_equal_title: STRING_32
+		do Result := locale.translation ("Missing 'is_equal' redefinition") end
+
+	missing_is_equal_description: STRING_32
+		do Result := locale.translation ("The class defines '{HASHABLE}.hash_code', but does not redefine 'is_equal'. 'is_equal' may need to be redefined.") end
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32

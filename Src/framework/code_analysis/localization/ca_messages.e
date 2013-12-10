@@ -239,6 +239,9 @@ feature -- Code Analyzer
 	very_long_identifier_violation_3: STRING_32
 		do Result := locale.translation (" characters, which is above the defined maximum of ") end
 
+	missing_is_equal_violation_1: STRING_32
+		do Result := locale.translation ("This class defines '{HASHABLE}.hash_code', but does not redefine 'is_equal'. 'is_equal' may need to be redefined.") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32

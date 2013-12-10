@@ -605,7 +605,11 @@ feature {NONE} -- Basic operations
 			l_stone: STONE
 		do
 			if attached {CA_RULE_VIOLATION_EVENT} a_row.parent_row_root.data as l_event_item then
-				create {COMPILED_LINE_STONE} l_stone.make_with_line (l_event_item.affected_class, l_event_item.location.line, True)
+				if attached l_event_item.location as l_loc then
+					create {COMPILED_LINE_STONE} l_stone.make_with_line (l_event_item.affected_class, l_loc.line, True)
+				else
+					create {CLASSC_STONE} l_stone.make (l_event_item.affected_class)
+				end
 			end
 			if l_stone /= Void and then l_stone.is_valid then
 				(create {EB_CONTROL_PICK_HANDLER}).launch_stone (l_stone)
@@ -697,10 +701,14 @@ feature {NONE} -- Basic operations
 				a_row.set_item (class_column, l_editor_item)
 
 					-- Location
-				create l_pos_token.make (l_viol.location.line.out + ", " + l_viol.location.column.max (1).out)
-				l_pos_token.set_is_clickable (True)
-				l_pos_token.set_pebble (create {COMPILED_LINE_STONE}.make_with_line (l_viol.affected_class, l_viol.location.line, True))
---										-- Create editor item
+				if attached l_viol.location as l_loc then
+					create l_pos_token.make (l_viol.location.line.out + ", " + l_viol.location.column.max (1).out)
+					l_pos_token.set_is_clickable (True)
+					l_pos_token.set_pebble (create {COMPILED_LINE_STONE}.make_with_line (l_viol.affected_class, l_viol.location.line, True))
+				else -- No location attached.
+					create l_pos_token.make ("")
+				end
+--					-- Create editor item
 				create l_line.make_unix_style
 				l_line.append_token (l_pos_token)
 				l_editor_item := create_clickable_grid_item (l_line, False)

@@ -70,11 +70,15 @@ feature -- Execution (declared in EWB_CMD)
 					across l_vlist.item as l_v loop
 						l_rule_name := l_v.item.rule.title
 						l_rule_id := l_v.item.rule.id
-						l_line := l_v.item.location.line.out
-						l_col := l_v.item.location.column.out
+						if attached l_v.item.location as l_loc then
+							l_line := l_v.item.location.line.out
+							l_col := l_v.item.location.column.out
 
-						print ("  (" + l_line + ":" + l_col + "): "
-							+ l_rule_name + " (" + l_rule_id + "): ")
+							print ("  (" + l_line + ":" + l_col + "): "
+								+ l_rule_name + " (" + l_rule_id + "): ")
+						else -- No location attached. Print without location.
+							print ("  "	+ l_rule_name + " (" + l_rule_id + "): ")
+						end
 						l_v.item.format_violation_description (output_window)
 						print ("%N")
 					end
