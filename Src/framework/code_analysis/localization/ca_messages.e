@@ -240,7 +240,11 @@ feature -- Code Analyzer
 		do Result := locale.translation (" characters, which is above the defined maximum of ") end
 
 	missing_is_equal_violation_1: STRING_32
-		do Result := locale.translation ("This class defines '{HASHABLE}.hash_code', but does not redefine 'is_equal'. 'is_equal' may need to be redefined.") end
+		do Result := locale.translation ("This class defines '{HASHABLE}.hash_code', but does not redefine 'is_equal'.%N'is_equal' may need to be redefined.") end
+
+	simplifiable_boolean_violation: STRING_32
+		do Result := locale.translation ("This negated boolean expression can be%
+			% simplified by removing the negation and%Nusing the inverse comparison operator.") end
 
 feature -- Command Line
 

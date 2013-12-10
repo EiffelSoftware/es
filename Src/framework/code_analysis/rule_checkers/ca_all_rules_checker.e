@@ -47,7 +47,8 @@ inherit
 			process_loop_as,
 			process_object_test_as,
 			process_once_as,
-			process_routine_as
+			process_routine_as,
+			process_un_not_as
 			-- ...
 		end
 
@@ -106,6 +107,8 @@ feature {NONE} -- Initialization
 			create once_post_actions.make
 			create routine_pre_actions.make
 			create routine_post_actions.make
+			create un_not_pre_actions.make
+			create un_not_post_actions.make
 		end
 
 feature {CA_STANDARD_RULE}
@@ -320,6 +323,16 @@ feature {CA_STANDARD_RULE}
 			routine_post_actions.extend (a_action)
 		end
 
+	add_un_not_pre_action (a_action: PROCEDURE [ANY, TUPLE [UN_NOT_AS]])
+		do
+			un_not_pre_actions.extend (a_action)
+		end
+
+	add_un_not_post_action (a_action: PROCEDURE [ANY, TUPLE [UN_NOT_AS]])
+		do
+			un_not_post_actions.extend (a_action)
+		end
+
 feature {NONE} -- Agent lists
 
 	access_id_pre_actions, access_id_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[ACCESS_ID_AS]]]
@@ -363,6 +376,8 @@ feature {NONE} -- Agent lists
 	once_pre_actions, once_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[ONCE_AS]]]
 
 	routine_pre_actions, routine_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [ROUTINE_AS]]]
+
+	un_not_pre_actions, un_not_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [UN_NOT_AS]]]
 
 feature {CA_RULE_CHECKING_TASK} -- Execution Commands
 
@@ -519,6 +534,13 @@ feature {NONE} -- Processing
 			across routine_pre_actions as l_a loop l_a.item.call ([a_routine]) end
 			Precursor (a_routine)
 			across routine_post_actions as l_a loop l_a.item.call ([a_routine]) end
+		end
+
+	process_un_not_as (a_un_not: UN_NOT_AS)
+		do
+			across un_not_pre_actions as l_a loop l_a.item.call ([a_un_not]) end
+			Precursor (a_un_not)
+			across un_not_post_actions as l_a loop l_a.item.call ([a_un_not]) end
 		end
 
 feature -- Results

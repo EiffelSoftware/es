@@ -222,7 +222,15 @@ feature -- Rules
 		do Result := locale.translation ("Missing 'is_equal' redefinition") end
 
 	missing_is_equal_description: STRING_32
-		do Result := locale.translation ("The class defines '{HASHABLE}.hash_code', but does not redefine 'is_equal'. 'is_equal' may need to be redefined.") end
+		do Result := locale.translation ("The class defines '{HASHABLE}.hash_code',%
+			% but does not redefine 'is_equal'. 'is_equal' may need to be redefined.") end
+
+	simplifiable_boolean_title: STRING_32
+		do Result := locale.translation ("Simplifiable boolean expression") end
+
+	simplifiable_boolean_description: STRING_32
+		do Result := locale.translation ("Some negated boolean expressions can be%
+			% simplified using the inverse comparison operator.") end
 
 feature -- Preferences
 
