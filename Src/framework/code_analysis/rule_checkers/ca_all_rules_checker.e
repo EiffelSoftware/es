@@ -46,7 +46,8 @@ inherit
 			process_instr_call_as,
 			process_loop_as,
 			process_object_test_as,
-			process_once_as
+			process_once_as,
+			process_routine_as
 			-- ...
 		end
 
@@ -103,6 +104,8 @@ feature {NONE} -- Initialization
 			create object_test_post_actions.make
 			create once_pre_actions.make
 			create once_post_actions.make
+			create routine_pre_actions.make
+			create routine_post_actions.make
 		end
 
 feature {CA_STANDARD_RULE}
@@ -307,6 +310,16 @@ feature {CA_STANDARD_RULE}
 			once_post_actions.extend (a_action)
 		end
 
+	add_routine_pre_action (a_action: PROCEDURE [ANY, TUPLE [ROUTINE_AS]])
+		do
+			routine_pre_actions.extend (a_action)
+		end
+
+	add_routine_post_action (a_action: PROCEDURE [ANY, TUPLE [ROUTINE_AS]])
+		do
+			routine_post_actions.extend (a_action)
+		end
+
 feature {NONE} -- Agent lists
 
 	access_id_pre_actions, access_id_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[ACCESS_ID_AS]]]
@@ -349,10 +362,12 @@ feature {NONE} -- Agent lists
 
 	once_pre_actions, once_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[ONCE_AS]]]
 
+	routine_pre_actions, routine_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [ROUTINE_AS]]]
+
 feature {CA_RULE_CHECKING_TASK} -- Execution Commands
 
 	run_on_class (a_class_to_check: CLASS_C)
-			-- Check all rules that have been added
+			-- Check all rules that have been added.
 		local
 			l_ast: CLASS_AS
 		do
@@ -369,18 +384,14 @@ feature {NONE} -- Processing
 	process_access_id_as (a_id: ACCESS_ID_AS)
 		do
 			across access_id_pre_actions as l_a loop l_a.item.call ([a_id]) end
-
 			Precursor (a_id)
-
 			across access_id_post_actions as l_a loop l_a.item.call ([a_id]) end
 		end
 
 	process_assign_as (a_assign: ASSIGN_AS)
 		do
 			across assign_pre_actions as l_a loop l_a.item.call ([a_assign]) end
-
 			Precursor (a_assign)
-
 			across assign_post_actions as l_a loop l_a.item.call ([a_assign]) end
 		end
 
@@ -394,9 +405,7 @@ feature {NONE} -- Processing
 	process_body_as (a_body: BODY_AS)
 		do
 			across body_pre_actions as l_a loop l_a.item.call ([a_body]) end
-
 			Precursor (a_body)
-
 			across body_post_actions as l_a loop l_a.item.call ([a_body]) end
 		end
 
@@ -417,27 +426,21 @@ feature {NONE} -- Processing
 	process_creation_as (a_creation: CREATION_AS)
 		do
 			across creation_pre_actions as l_a loop l_a.item.call ([a_creation]) end
-
 			Precursor (a_creation)
-
 			across creation_post_actions as l_a loop l_a.item.call ([a_creation]) end
 		end
 
 	process_do_as (a_do: DO_AS)
 		do
 			across do_pre_actions as l_a loop l_a.item.call ([a_do]) end
-
 			Precursor (a_do)
-
 			across do_post_actions as l_a loop l_a.item.call ([a_do]) end
 		end
 
 	process_eiffel_list (a_list: EIFFEL_LIST [AST_EIFFEL])
 		do
 			across eiffel_list_pre_actions as l_a loop l_a.item.call ([a_list]) end
-
 			Precursor (a_list)
-
 			across eiffel_list_post_actions as l_a loop l_a.item.call ([a_list]) end
 		end
 
@@ -465,45 +468,35 @@ feature {NONE} -- Processing
 	process_id_as (a_id: ID_AS)
 		do
 			across id_pre_actions as l_a loop l_a.item.call ([a_id]) end
-
 			Precursor (a_id)
-
 			across id_post_actions as l_a loop l_a.item.call ([a_id]) end
 		end
 
 	process_if_as (a_if: IF_AS)
 		do
 			across if_pre_actions as l_a loop l_a.item.call ([a_if]) end
-
 			Precursor (a_if)
-
 			across if_post_actions as l_a loop l_a.item.call ([a_if]) end
 		end
 
 	process_inspect_as (a_inspect: INSPECT_AS)
 		do
 			across inspect_pre_actions as l_a loop l_a.item.call ([a_inspect]) end
-
 			Precursor (a_inspect)
-
 			across inspect_post_actions as l_a loop l_a.item.call ([a_inspect]) end
 		end
 
 	process_instr_call_as (a_call: INSTR_CALL_AS)
 		do
 			across instruction_call_pre_actions as l_a loop l_a.item.call ([a_call]) end
-
 			Precursor (a_call)
-
 			across instruction_call_post_actions as l_a loop l_a.item.call ([a_call]) end
 		end
 
 	process_loop_as (a_loop: LOOP_AS)
 		do
 			across loop_pre_actions as l_a loop l_a.item.call ([a_loop]) end
-
 			Precursor (a_loop)
-
 			across loop_post_actions as l_a loop l_a.item.call ([a_loop]) end
 		end
 
@@ -517,10 +510,15 @@ feature {NONE} -- Processing
 	process_once_as (a_once: ONCE_AS)
 		do
 			across once_pre_actions as l_a loop l_a.item.call ([a_once]) end
-
 			Precursor (a_once)
-
 			across once_post_actions as l_a loop l_a.item.call ([a_once]) end
+		end
+
+	process_routine_as (a_routine: ROUTINE_AS)
+		do
+			across routine_pre_actions as l_a loop l_a.item.call ([a_routine]) end
+			Precursor (a_routine)
+			across routine_post_actions as l_a loop l_a.item.call ([a_routine]) end
 		end
 
 feature -- Results

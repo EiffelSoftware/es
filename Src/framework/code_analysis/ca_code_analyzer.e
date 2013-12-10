@@ -41,6 +41,8 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_FEATURE_NOT_COMMENTED_RULE}.make)
 			rules.extend (create {CA_BOOLEAN_RESULT_RULE}.make)
 			rules.extend (create {CA_BOOLEAN_COMPARISON_RULE}.make)
+			rules.extend (create {CA_VERY_SHORT_IDENTIFIER_RULE}.make (settings.preference_manager))
+			rules.extend (create {CA_VERY_LONG_IDENTIFIER_RULE}.make (settings.preference_manager))
 
 			settings.initialize_rule_settings (rules)
 

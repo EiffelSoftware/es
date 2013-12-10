@@ -221,6 +221,24 @@ feature -- Code Analyzer
 	boolean_comparison_violation: STRING_32
 		do Result := locale.translation ("This boolean variable or query does not need to be compared to a boolean constant.") end
 
+	very_short_identifier_violation_1: STRING_32
+		do Result := locale.translation ("The name of identifier '") end
+
+	very_short_identifier_violation_2: STRING_32
+		do Result := locale.translation ("' has ") end
+
+	very_short_identifier_violation_3: STRING_32
+		do Result := locale.translation (" characters, which is below the defined minimum of ") end
+
+	very_long_identifier_violation_1: STRING_32
+		do Result := locale.translation ("The name of identifier '") end
+
+	very_long_identifier_violation_2: STRING_32
+		do Result := locale.translation ("' has ") end
+
+	very_long_identifier_violation_3: STRING_32
+		do Result := locale.translation (" characters, which is above the defined maximum of ") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32

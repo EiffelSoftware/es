@@ -182,6 +182,42 @@ feature -- Rules
 		do Result := locale.translation ("A name of a feature, an argument, or a %
 			%local variable that is very short is bad for code readability.") end
 
+	-- Options for {CA_VERY_SHORT_IDENTIFIER_RULE}:
+
+	min_feature_name_length_option: STRING_32
+		do Result := locale.translation ("Minimum feature name length") end
+
+	min_argument_name_length_option: STRING_32
+		do Result := locale.translation ("Minimum argument name length") end
+
+	min_local_name_length_option: STRING_32
+		do Result := locale.translation ("Minimum local name length") end
+
+	count_argument_prefix_option: STRING_32
+		do Result := locale.translation ("Count argument prefix %"a_%"") end
+
+	count_local_prefix_option: STRING_32
+		do Result := locale.translation ("Count local prefix %"l_%"") end
+
+
+	very_long_identifier_title: STRING_32
+		do Result := locale.translation ("Very long identifier") end
+
+	very_long_identifier_description: STRING_32
+		do Result := locale.translation ("A name of a feature, an argument, or a %
+			%local variable that is very long is bad for code readability.") end
+
+	-- Options for {CA_VERY_LONG_IDENTIFIER_RULE}:	
+
+	max_feature_name_length_option: STRING_32
+		do Result := locale.translation ("Maximum feature name length") end
+
+	max_argument_name_length_option: STRING_32
+		do Result := locale.translation ("Maximum argument name length") end
+
+	max_local_name_length_option: STRING_32
+		do Result := locale.translation ("Maximum local name length") end
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32
