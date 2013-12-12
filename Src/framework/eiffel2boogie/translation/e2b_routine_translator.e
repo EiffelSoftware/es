@@ -501,7 +501,7 @@ feature -- Translation: Implementation
 		end
 
 	translate_functional_check (a_feature: FEATURE_I; a_type: TYPE_A)
-			-- Trnslate check that functional feature `a_feature' is well-formed.
+			-- Translate check that functional feature `a_feature' is well-formed.
 		require
 			is_functional: helper.is_functional (a_feature)
 		do
@@ -547,7 +547,7 @@ feature -- Translation: Other
 		end
 
 	translate_writes_function (a_feature: FEATURE_I; a_type: TYPE_A)
-			-- Translate implementation of feature `a_feature' of type `a_type'.
+			-- Translate the writes function of feature `a_feature' of type `a_type'.
 		local
 			l_: like modifies_expressions_of
 			l_function: IV_FUNCTION
@@ -663,6 +663,41 @@ feature -- Translation: Other
 			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
 		end
 
+	translate_decreases_function (a_feature: FEATURE_I; a_type: TYPE_A)
+			-- Translate the decreases of feature `a_feature' of type `a_type'.
+		local
+			l_decreases_list: like decreases_expressions_of
+			l_function: IV_FUNCTION
+		do
+			set_context (a_feature, a_type)
+			helper.set_up_byte_context (current_feature, current_type)
+
+			l_decreases_list := decreases_expressions_of (current_feature, current_type)
+			if l_decreases_list.is_empty then
+				-- No decreases clause: apply default
+				-- Todo: add appropriate arguments and reads/modifies
+				l_decreases_list.extend (factory.int_value (0))
+			end
+
+				-- Generate a function per variant
+			across
+				l_decreases_list as i
+			loop
+					-- Decreases function
+				create l_function.make (name_translator.boogie_name_for_decreases_function (i.target_index, current_feature, current_type), i.item.type)
+				l_function.set_inline
+				boogie_universe.add_declaration (l_function)
+
+					-- Arguments
+				translation_pool.add_type (current_type)
+				l_function.add_argument ("heap", types.heap_type)
+				l_function.add_argument ("current", types.ref)
+				across arguments_of_current_feature as j loop
+					l_function.add_argument (j.item.name, j.item.boogie_type)
+				end
+				l_function.set_body (i.item)
+			end
+		end
 
 	generate_functional_axiom (a_function: IV_FUNCTION)
 			-- Generate functional axiom for `a_function'.
@@ -835,53 +870,6 @@ feature -- Translation: Other
 			end
 			create l_axiom.make (l_forall)
 			boogie_universe.add_declaration (l_axiom)
-		end
-
-
-
-	modifies_set (a_modifies: LIST [ASSERT_B]): IV_EXPRESSION
-		local
-			l_expr: IV_EXPRESSION
-			l_expr_list: LINKED_LIST [EXPR_B]
-		do
-			create l_expr_list.make
-			across a_modifies as i loop
-				if attached {FEATURE_B} i.item.expr as l_call then
-					if attached {TUPLE_CONST_B} l_call.parameters.first.expression as l_tuple then
-						across l_tuple.expressions as j loop
-							l_expr_list.extend (j.item)
-						end
-					else
-						l_expr_list.extend (l_call.parameters.first.expression)
-					end
-				end
-			end
-			across l_expr_list as k loop
-				if k.item.type.has_associated_class and then k.item.type.base_class.name_in_upper ~ "MML_SET" then
-					l_expr := parse_modifies_expr (k.item)
-				else
-					l_expr := factory.function_call ("Set#Singleton", << parse_modifies_expr (k.item) >>, types.set (types.ref))
-				end
-				if Result = Void then
-					Result := l_expr
-				else
-					Result := factory.function_call ("Set#Union", << Result, l_expr >>, types.set (types.ref))
-				end
-			end
-		end
-
-	parse_modifies_expr (a_expr: EXPR_B): IV_EXPRESSION
-		local
-			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
-		do
-			create l_translator.make
-			l_translator.set_context (current_feature, current_type)
-			l_translator.entity_mapping.set_heap (create {IV_ENTITY}.make ("heap", types.heap))
---			l_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.heap))
-
-			a_expr.process (l_translator)
-
-			Result := l_translator.last_expression
 		end
 
 feature {NONE} -- Implementation

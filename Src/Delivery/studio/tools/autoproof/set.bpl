@@ -82,7 +82,10 @@ axiom(forall<T> a: Set T, b: Set T :: { Set#Subset(a,b) }
 // axiom(forall<T> a: Set T, b: Set T ::
 //   { Set#Subset(a,b), Set#Card(a), Set#Card(b) }  // very restrictive trigger
 //   Set#Subset(a,b) ==> Set#Card(a) <= Set#Card(b));
-  
+
+function Set#ProperSubset<T>(Set T, Set T): bool;
+axiom(forall<T> a: Set T, b: Set T :: { Set#ProperSubset(a, b) }
+  Set#ProperSubset(a, b) <==> Set#Subset(a, b) && !(Set#Subset(b, a)));  
 
 function Set#Equal<T>(Set T, Set T): bool;
 axiom(forall<T> a: Set T, b: Set T :: { Set#Equal(a,b) }

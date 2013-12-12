@@ -15,6 +15,16 @@ feature -- Access
 		deferred
 		end
 
+	is_false: BOOLEAN
+			-- Is this expression literal "false"?
+		do
+		end
+
+	is_true: BOOLEAN
+			-- Is this expression literal "true"?
+		do
+		end
+
 feature -- Visitor
 
 	process (a_visitor: IV_EXPRESSION_VISITOR)

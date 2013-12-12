@@ -102,10 +102,34 @@ feature -- Boolean operators
 			create Result.make (a_left, "||", a_right, types.bool)
 		end
 
+	or_clean (a_left, a_right: IV_EXPRESSION): IV_EXPRESSION
+			-- Or operator `||', removing "false" disjuncts.
+		do
+			if a_left.is_false then
+				Result := a_right
+			elseif a_right.is_false then
+				Result := a_left
+			else
+				create {IV_BINARY_OPERATION} Result.make (a_left, "||", a_right, types.bool)
+			end
+		end
+
 	and_ (a_left, a_right: IV_EXPRESSION): IV_BINARY_OPERATION
 			-- And operator `&&'.
 		do
 			create Result.make (a_left, "&&", a_right, types.bool)
+		end
+
+	and_clean (a_left, a_right: IV_EXPRESSION): IV_EXPRESSION
+			-- Ads operator `&&', removing "true" conjuncts.
+		do
+			if a_left.is_true then
+				Result := a_right
+			elseif a_right.is_true then
+				Result := a_left
+			else
+				create {IV_BINARY_OPERATION} Result.make (a_left, "||", a_right, types.bool)
+			end
 		end
 
 	implies_ (a_left, a_right: IV_EXPRESSION): IV_BINARY_OPERATION

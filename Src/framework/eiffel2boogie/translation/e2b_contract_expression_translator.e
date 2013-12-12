@@ -119,6 +119,8 @@ feature -- Translation
 			process_parameters (a_parameters)
 			l_call.arguments.append (last_parameters)
 
+			add_termination_check (a_feature, last_parameters)
+
 			last_expression := l_call
 		end
 

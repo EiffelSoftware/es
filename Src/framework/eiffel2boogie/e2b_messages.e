@@ -92,6 +92,12 @@ feature -- Verification error messages
 	void_call_in_postcondition_with_tag: STRING_32
 		do Result := "Possible Void call in postcondition $tag." end
 
+	decreases_not_decreasing: STRING_32
+		do Result := "Variant may not decrease at this recursive call" end
+
+	decreases_bounded (index: STRING_32): STRING_32
+		do Result := "Integer variant component at position " + index + " may be negative" end
+
 	overflow: STRING_32
 		do Result := "Possible arithmetic overflow." end
 

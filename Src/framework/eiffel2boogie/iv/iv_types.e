@@ -145,4 +145,12 @@ feature -- Access: default types
 			Result := for_type_a (l_type)
 		end
 
+feature -- Access: type properties
+
+	is_variant_type (a_type: IV_TYPE): BOOLEAN
+			-- Can variant be of `a_type'?
+		do
+			Result := a_type.is_boolean or a_type.is_integer or a_type.is_set or a_type.is_seq or a_type.is_reference
+		end
+
 end

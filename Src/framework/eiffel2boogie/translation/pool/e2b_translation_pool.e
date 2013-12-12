@@ -140,10 +140,16 @@ feature -- Convenience functions
 		local
 			l_signature: E2B_TU_ROUTINE_SIGNATURE
 			l_implementation: E2B_TU_ROUTINE_IMPLEMENTATION
+			l_decreases_function: E2B_TU_DECREASES_FUNCTION
 		do
 			create l_signature.make (a_feature, a_context_type)
 			add_translation_unit (l_signature)
 			if not a_is_referenced and not helper.boolean_feature_note_value (a_feature, "skip") then
+					-- Decreases function is added before the implementation, since its type might be needed while checking the implementation
+				if options.is_ownership_enabled then
+					create l_decreases_function.make (a_feature, a_context_type)
+					add_translation_unit (l_decreases_function)
+				end
 				create l_implementation.make (a_feature, a_context_type)
 				add_translation_unit (l_implementation)
 			end
@@ -198,6 +204,12 @@ feature -- Convenience functions
 			-- Add writes function of feature `a_feature' of `a_context_type'.
 		do
 			add_translation_unit (create {E2B_TU_WRITES_FUNCTION}.make (a_feature, a_context_type))
+		end
+
+	add_decreases_function (a_feature: FEATURE_I; a_context_type: TYPE_A)
+			-- Add decreases function of feature `a_feature' of `a_context_type'.
+		do
+			add_translation_unit (create {E2B_TU_DECREASES_FUNCTION}.make (a_feature, a_context_type))
 		end
 
 	add_invariant_function (a_type: TYPE_A)

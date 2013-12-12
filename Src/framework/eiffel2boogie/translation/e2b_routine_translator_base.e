@@ -357,6 +357,24 @@ feature -- Helper functions: contracts
 			Result := [l_fully_modified, l_part_modified]
 		end
 
+	decreases_expressions_of (a_feature: FEATURE_I; a_type: TYPE_A): LIST [IV_EXPRESSION]
+			-- Decreases clause for feature `a_feature' of type `a_type' as a list of expressions.
+		local
+			l_contracts: like contracts_of
+		do
+			create {LINKED_LIST [IV_EXPRESSION]} Result.make
+			l_contracts := contracts_of (a_feature, a_type)
+			across
+				l_contracts.decreases as i
+			loop
+				if attached {FEATURE_B} i.item.expr as l_call then
+					Result.append (translate_contained_expressions (l_call.parameters.i_th (1).expression))
+				else
+					check internal_error: False end
+				end
+			end
+		end
+
 	translate_contained_expressions (a_expr: EXPR_B): LINKED_LIST [IV_EXPRESSION]
 			-- Translate expressions in `a_expr'.
 		local

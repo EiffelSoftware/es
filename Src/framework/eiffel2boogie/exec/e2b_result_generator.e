@@ -219,6 +219,16 @@ feature {NONE} -- Implementation
 				else
 					Result := messages.void_call
 				end
+			elseif l_type ~ "termination" then
+				check a_error.is_assert_error end
+				check l_has_tag end
+				if l_tag ~ "variant_decreases" then
+					Result := messages.decreases_not_decreasing
+				elseif l_tag.starts_with ("bounded") then
+					Result := messages.decreases_bounded (l_tag.substring (8, l_tag.count))
+				else
+					check internal_error: False end
+				end
 			elseif l_type ~ "overflow" then
 					-- Arithmetic overflow
 				if a_error.is_assert_error then

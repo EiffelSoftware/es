@@ -39,6 +39,20 @@ feature -- Access
 			end
 		end
 
+	function_named (a_name: STRING): detachable IV_FUNCTION
+			-- Boogie function with name `a_name'.
+		do
+			from
+				declarations.start
+			until
+				declarations.after or Result /= Void
+			loop
+				if attached {IV_FUNCTION} declarations.item as l_fun and then l_fun.name ~ a_name then
+					Result := l_fun
+				end
+				declarations.forth
+			end
+		end
 
 feature -- Element change
 

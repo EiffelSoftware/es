@@ -194,7 +194,7 @@ feature {F_COM_COMPOSITE_D} -- Implementation
 		do
 			check inv end
 			if ancestors [c] then
-				check c.inv end
+				check c.inv and parent.inv end
 				if c /= parent then
 					parent.lemma_ancestors_have_children (c)
 				end

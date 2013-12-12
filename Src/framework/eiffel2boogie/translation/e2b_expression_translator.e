@@ -1067,6 +1067,82 @@ feature -- Translation
 			end
 		end
 
+	add_termination_check (a_feature: FEATURE_I; a_parameters: like last_parameters)
+			-- Add termination check for a call to routine `a_feature' with actual arguments `a_parameters' int he current context.
+		local
+			l_eq_less: like eq_and_less
+			l_check_list: ARRAYED_LIST [like eq_and_less]
+			l_caller_variant, l_callee_variant: IV_FUNCTION_CALL
+			l_decreases_fun: IV_FUNCTION
+			l_type: IV_TYPE
+			l_check, l_bounds_check_guard: IV_EXPRESSION
+			i, j: INTEGER
+		do
+			-- If we are inside a routine and calling the same routine (recursive call)
+			if context_feature /= Void and then context_feature.written_in = a_feature.written_in and
+												context_feature.feature_id = a_feature.feature_id then
+				from
+					i := 1
+					create l_check_list.make (3)
+					l_bounds_check_guard := factory.false_
+					l_decreases_fun := boogie_universe.function_named (name_translator.boogie_name_for_decreases_function (i, a_feature, current_target_type))
+				until
+					l_decreases_fun = Void
+				loop
+					create l_callee_variant.make (l_decreases_fun.name, l_decreases_fun.type)
+					l_callee_variant.add_argument (entity_mapping.heap)
+					l_callee_variant.add_argument (current_target)
+					l_callee_variant.arguments.append (a_parameters)
+
+					create l_caller_variant.make (l_decreases_fun.name, l_decreases_fun.type)
+					l_caller_variant.add_argument (entity_mapping.heap)
+					l_caller_variant.add_argument (entity_mapping.current_expression)
+					from
+						j := 1
+					until
+						j > context_feature.argument_count
+					loop
+						l_caller_variant.add_argument (entity_mapping.argument (context_feature, context_type, j))
+						j := j + 1
+					end
+
+					l_type := l_caller_variant.type
+					if types.is_variant_type (l_type) then
+						l_eq_less := eq_and_less (l_callee_variant, l_caller_variant)
+						l_check_list.extend (l_eq_less)
+						if l_type.is_integer then
+							-- Add bounds check, since integers are not already bounded from below;
+							-- more precisely, for variant k check:
+        					-- callee[1] < caller[1] || ... || callee[k-1] < caller[k-1] || callee[k] == caller[k] || 0 <= caller[k]
+							add_safety_check (factory.or_clean (l_bounds_check_guard,
+															factory.or_ (l_eq_less.eq, factory.less_equal (factory.int_value (0), l_caller_variant))),
+								"termination", "bounded" + i.out, context_line_number)
+						end
+						l_bounds_check_guard := factory.or_clean (l_bounds_check_guard, l_eq_less.less)
+					else
+						helper.add_semantic_error (context_feature, "Variant type has no well-founded order.")
+					end
+
+					i := i + 1
+					l_decreases_fun := boogie_universe.function_named (name_translator.boogie_name_for_decreases_function (i, a_feature, current_target_type))
+				end
+
+					-- Go backward through the list and generate "less1 || (eq1 && (less2 || ... eq<n-1> && less<n>))"
+				check at_lest_on_variant: not l_check_list.is_empty end
+				l_check := l_check_list.last.less
+				from
+					i := l_check_list.count - 1
+				until
+					i < 1
+				loop
+					l_check := factory.and_ (l_check_list [i].eq, l_check)
+					l_check := factory.or_ (l_check_list [i].less, l_check)
+					i := i - 1
+				end
+				add_safety_check (l_check, "termination", "variant_decreases", context_line_number)
+			end
+		end
+
 	process_parameters (a_parameters: BYTE_LIST [PARAMETER_B])
 			-- Process parameter list `a_parameters'.
 		local
@@ -1146,6 +1222,40 @@ feature {E2B_ACROSS_HANDLER, E2B_CUSTOM_CALL_HANDLER, E2B_CUSTOM_NESTED_HANDLER}
 			end
 			safe_process (a_expr)
 			safety_check_condition.remove
+		end
+
+feature {NONE} -- Implementation		
+
+	eq_and_less (e1, e2: IV_EXPRESSION): TUPLE [eq: IV_EXPRESSION; less: IV_EXPRESSION]
+			-- Expressions "e1 = e2" and "e1 < e2" accorsing to the type of subexpressions.			
+		require
+			same_types: e1.type.is_same_type (e2.type)
+			proper_type: types.is_variant_type (e1.type)
+		local
+			l_type: IV_TYPE
+			l_eq, l_less: IV_EXPRESSION
+		do
+			l_type := e1.type
+			if l_type.is_boolean then
+				l_eq := factory.equiv (e1, e2)
+				l_less := factory.and_ (factory.not_ (e1), e2) -- false < true
+			elseif l_type.is_integer then
+				l_eq := factory.equal (e1, e2)
+				l_less := factory.less (e1, e2)
+			elseif l_type.is_set then
+				l_eq := factory.function_call ("Set#Equal", <<e1, e2>>, types.bool)
+				l_less := factory.function_call ("Set#ProperSubset", <<e1, e2>>, types.bool)
+			elseif l_type.is_seq then
+				l_eq := factory.function_call ("Seq#Equal", <<e1, e2>>, types.bool)
+				l_less := factory.less (factory.function_call ("Seq#Length", <<e1>>, types.int),
+										factory.function_call ("Seq#Length", <<e2>>, types.int))
+			elseif l_type.is_reference then
+				l_eq := factory.equal (e1, e2)
+				l_less := factory.and_ (factory.equal (e1, factory.void_), factory.not_equal (e2, factory.void_)) -- Void < r
+			else
+				check wrong_type_in_a_decreases_clause: False end
+			end
+			Result := [l_eq, l_less]
 		end
 
 end

@@ -253,6 +253,8 @@ feature -- Translation
 					process_parameters (a_parameters)
 					l_fcall.arguments.append (last_parameters)
 
+					add_termination_check (a_feature, last_parameters)
+
 					last_expression := l_fcall
 				else
 					helper.add_semantic_error (context_feature, messages.functional_invalid_call_to (a_feature.feature_name_32))
@@ -275,6 +277,8 @@ feature -- Translation
 				l_pcall.add_argument (current_target)
 				process_parameters (a_parameters)
 				l_pcall.arguments.append (last_parameters)
+
+				add_termination_check (a_feature, last_parameters)
 
 					-- Process call
 				if a_feature.has_return_value then

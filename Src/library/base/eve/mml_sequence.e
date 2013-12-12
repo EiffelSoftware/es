@@ -54,6 +54,18 @@ feature -- Elements
 			-- Value at position `i'.
 		do
 		end
+		
+feature -- Conversion
+
+	domain: MML_SET [INTEGER]
+			-- Set of indexes.
+		do
+		end
+
+	range: MML_SET [G]
+			-- Set of values.
+		do
+		end				
 
 feature -- Measurement
 
@@ -73,10 +85,6 @@ feature -- Iterable implementation
 
 	new_cursor: ITERATION_CURSOR [G]
 			-- <Precursor>
-		do
-		end
-
-	range: MML_SET [G]
 		do
 		end
 
