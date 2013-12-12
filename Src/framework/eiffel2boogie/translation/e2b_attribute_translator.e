@@ -27,7 +27,7 @@ feature -- Basic operations
 			l_boogie_type: IV_TYPE
 			l_content_type: TYPE_A
 		do
-			l_attribute_name := name_translator.boogie_name_for_feature (a_feature, a_context_type)
+			l_attribute_name := name_translator.boogie_procedure_for_feature (a_feature, a_context_type)
 			l_boogie_type := types.for_type_in_context (a_feature.type, a_context_type)
 
 				-- Add field declaration

@@ -32,6 +32,8 @@ feature -- Access
 			-- Maximum number of elements in the collection.
 		note
 			status: functional
+		require
+			invariant_holds: inv
 		do
 			Result := elements.count
 		end

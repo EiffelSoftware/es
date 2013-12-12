@@ -29,11 +29,7 @@ feature -- Translation: Signature
 		require
 			not_attribute: not a_feature.is_attribute
 		do
-			if helper.is_functional (a_feature) then
-				translate_functional_feature (a_feature, a_type)
-			else
-				translate_signature (a_feature, a_type, False)
-			end
+			translate_signature (a_feature, a_type, False)
 		end
 
 	translate_creator_signature (a_feature: FEATURE_I; a_type: TYPE_A)
@@ -65,9 +61,9 @@ feature -- Translation: Signature
 
 				-- Set up name
 			if a_for_creator then
-				l_proc_name := name_translator.boogie_name_for_creation_routine (current_feature, current_type)
+				l_proc_name := name_translator.boogie_procedure_for_creator (current_feature, current_type)
 			else
-				l_proc_name := name_translator.boogie_name_for_feature (current_feature, current_type)
+				l_proc_name := name_translator.boogie_procedure_for_feature (current_feature, current_type)
 			end
 
 				-- Initialize procedure
@@ -174,7 +170,7 @@ feature -- Translation: Signature
 			l_fcall: IV_FUNCTION_CALL
 		do
 				-- Precondition: Modify set is writable
-			create l_fcall.make (name_translator.boogie_name_for_writes_set_function (current_feature, current_type), types.set (types.ref))
+			create l_fcall.make (name_translator.boogie_function_for_frame (current_feature, current_type), types.set (types.ref))
 			l_fcall.add_argument (create {IV_ENTITY}.make ("Heap", types.heap_type))
 			across current_boogie_procedure.arguments as i loop
 				l_fcall.add_argument (i.item.entity)
@@ -206,7 +202,7 @@ feature -- Translation: Signature
 			l_post.set_free
 			current_boogie_procedure.add_contract (l_post)
 
-			translation_pool.add_writes_function (current_feature, current_type)
+			translation_pool.add_frame_function (current_feature, current_type)
 
 				-- Free postcondition: HeapSucc
 			create l_post.make (factory.function_call ("HeapSucc", <<"old(Heap)", "Heap">>, types.bool))
@@ -303,71 +299,6 @@ feature -- Translation: Signature
 --				end
 		end
 
-	forall_mml_set_property (a_target_name: STRING; a_set_name: STRING; a_function_name: STRING): IV_EXPRESSION
-		local
-			l_forall: IV_FORALL
-			l_i: IV_ENTITY
-		do
-			create l_i.make (helper.unique_identifier ("i"), types.ref)
-			create l_forall.make (
-				factory.implies_ (
-					factory.map_access (factory.heap_access ("Heap", create {IV_ENTITY}.make (a_target_name, types.ref), a_set_name, types.set (types.ref)), l_i),
-					factory.function_call (a_function_name, << "Heap", l_i >>, types.bool)))
-			l_forall.add_bound_variable (l_i.name, l_i.type)
-			Result := l_forall
-		end
-
-	translate_functional_feature (a_feature: FEATURE_I; a_context_type: TYPE_A)
-			-- Translate feature `a_feature' of `a_context_type' as a functional feature.
-		require
-			is_functional: helper.is_functional (a_feature)
-		local
-			l_function: IV_FUNCTION
-			l_expr_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
-		do
-			set_context (a_feature, a_context_type)
-			helper.set_up_byte_context (a_feature, a_context_type)
-
-			if a_feature.has_return_value then
-					-- Create IV_FUNCTION
-				create l_function.make (
-					name_translator.boogie_name_for_functional_feature (a_feature, a_context_type),
-					types.for_type_in_context (a_feature.type, a_context_type))
-				boogie_universe.add_declaration (l_function)
-
-					-- Set up arguments
-				l_function.add_argument ("heap", types.heap_type)
-				l_function.add_argument ("current", types.ref)
-				across arguments_of_current_feature as i loop
-					l_function.add_argument (i.item.name, i.item.boogie_type)
-				end
-			end
-
-			if
-				not a_feature.has_return_value or else
-				not a_feature.is_routine or else
-				not attached Context.byte_code or else
-				not attached Context.byte_code.compound or else
-				not attached Context.byte_code.compound.count = 1 or else
-				not attached {ASSIGN_B} Context.byte_code.compound.first as l_assign_b or else
-				not attached {RESULT_B} l_assign_b.target
-			then
-				if not a_feature.is_function or not a_feature.is_routine then
-					helper.add_semantic_error (current_feature, messages.functional_feature_not_function)
-				else
-					helper.add_semantic_error (current_feature, messages.functional_feature_not_single_assignment)
-				end
-			else
-					-- Translate expression
-				create l_expr_translator.make
-				l_expr_translator.entity_mapping.set_heap (create {IV_ENTITY}.make ("heap", types.heap))
-				l_expr_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.ref))
-				l_expr_translator.set_context (a_feature, a_context_type)
-				l_assign_b.source.process (l_expr_translator)
-				l_function.set_body (l_expr_translator.last_expression)
-			end
-		end
-
 feature -- Translation: Implementation
 
 	translate_routine_implementation (a_feature: FEATURE_I; a_type: TYPE_A)
@@ -375,11 +306,7 @@ feature -- Translation: Implementation
 		require
 			routine: a_feature.is_routine
 		do
-			if helper.is_functional (a_feature) then
-				translate_functional_check (a_feature, a_type)
-			else
-				translate_implementation (a_feature, a_type, False)
-			end
+			translate_implementation (a_feature, a_type, False)
 		end
 
 	translate_creator_implementation (a_feature: FEATURE_I; a_type: TYPE_A)
@@ -390,8 +317,6 @@ feature -- Translation: Implementation
 
 	translate_implementation (a_feature: FEATURE_I; a_type: TYPE_A; a_for_creator: BOOLEAN)
 			-- Translate implementation of feature `a_feature' of type `a_type'.
-		require
-			not_functional: not helper.is_functional (a_feature)
 		local
 			l_procedure: IV_PROCEDURE
 			l_implementation: IV_IMPLEMENTATION
@@ -407,9 +332,9 @@ feature -- Translation: Implementation
 			set_inlining_options_for_feature (a_feature)
 
 			if a_for_creator then
-				l_proc_name := name_translator.boogie_name_for_creation_routine (current_feature, current_type)
+				l_proc_name := name_translator.boogie_procedure_for_creator (current_feature, current_type)
 			else
-				l_proc_name := name_translator.boogie_name_for_feature (current_feature, current_type)
+				l_proc_name := name_translator.boogie_procedure_for_feature (current_feature, current_type)
 			end
 
 			l_procedure := boogie_universe.procedure_named (l_proc_name)
@@ -435,7 +360,7 @@ feature -- Translation: Implementation
 					l_attribute := current_type.base_class.feature_table.item_for_iteration
 					if l_attribute.is_attribute then
 						translation_pool.add_referenced_feature (l_attribute, current_type)
-						l_local_name := name_translator.boogie_name_for_feature (l_attribute, current_type)
+						l_local_name := name_translator.boogie_procedure_for_feature (l_attribute, current_type)
 						create l_assign.make (
 							factory.heap_current_access (l_translator.entity_mapping, l_local_name, types.for_type_a (l_attribute.type)),
 							factory.default_value (l_attribute.type))
@@ -500,19 +425,10 @@ feature -- Translation: Implementation
 			end
 		end
 
-	translate_functional_check (a_feature: FEATURE_I; a_type: TYPE_A)
-			-- Translate check that functional feature `a_feature' is well-formed.
-		require
-			is_functional: helper.is_functional (a_feature)
-		do
-				-- TODO: implement
-			check True end
-		end
-
-feature -- Translation: Other
+feature -- Translation: Functions
 
 	translate_functional_representation (a_feature: FEATURE_I; a_type: TYPE_A)
-			-- Translate implementation of feature `a_feature' of type `a_type'.
+			-- Generate a Boogie function that encodes the result of Eiffel function `a_feature' and its definitional axiom.
 		local
 			l_function: IV_FUNCTION
 			l_boogie_type: IV_TYPE
@@ -524,7 +440,7 @@ feature -- Translation: Other
 
 				-- Function
 			create l_function.make (
-				name_translator.boogie_name_for_functional_feature (current_feature, current_type),
+				name_translator.boogie_function_for_feature (current_feature, current_type),
 				types.for_type_a (a_feature.type.deep_actual_type.instantiated_in (current_type))
 			)
 			boogie_universe.add_declaration (l_function)
@@ -542,8 +458,11 @@ feature -- Translation: Other
 			end
 
 				-- Axiom
-			generate_functional_axiom (l_function)
-
+			if helper.is_functional (a_feature) then
+				generate_definition_from_body (l_function)
+			else
+				generate_definition_from_post (l_function)
+			end
 		end
 
 	translate_writes_function (a_feature: FEATURE_I; a_type: TYPE_A)
@@ -563,7 +482,7 @@ feature -- Translation: Other
 			l_ := modifies_expressions_of (current_feature, current_type)
 
 				-- Writes function
-			create l_function.make (name_translator.boogie_name_for_writes_set_function (current_feature, current_type), types.frame)
+			create l_function.make (name_translator.boogie_function_for_frame (current_feature, current_type), types.frame)
 			boogie_universe.add_declaration (l_function)
 
 				-- Arguments
@@ -684,7 +603,7 @@ feature -- Translation: Other
 				l_decreases_list as i
 			loop
 					-- Decreases function
-				create l_function.make (name_translator.boogie_name_for_decreases_function (i.target_index, current_feature, current_type), i.item.type)
+				create l_function.make (name_translator.boogie_function_for_variant (i.target_index, current_feature, current_type), i.item.type)
 				l_function.set_inline
 				boogie_universe.add_declaration (l_function)
 
@@ -699,54 +618,73 @@ feature -- Translation: Other
 			end
 		end
 
-	generate_functional_axiom (a_function: IV_FUNCTION)
-			-- Generate functional axiom for `a_function'.
+feature {NONE} -- Translation: Functions
+
+	generate_definition_from_body (a_function: IV_FUNCTION)
+			-- Generate a definitional axiom for `a_function' from the body of the current functional feature.
+		require
+			is_functional: helper.is_functional (current_feature)
+		local
+			l_expr_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
+		do
+			if
+				not current_feature.has_return_value or else
+				not current_feature.is_routine or else
+				not attached Context.byte_code or else
+				not attached Context.byte_code.compound or else
+				not attached Context.byte_code.compound.count = 1 or else
+				not attached {ASSIGN_B} Context.byte_code.compound.first as l_assign_b or else
+				not attached {RESULT_B} l_assign_b.target
+			then
+				if not current_feature.is_function or not current_feature.is_routine then
+					-- Todo: I don' think this could ever happen: remove?
+					helper.add_semantic_error (current_feature, messages.functional_feature_not_function)
+				else
+					helper.add_semantic_error (current_feature, messages.functional_feature_not_single_assignment)
+				end
+			else
+					-- Translate expression
+				create l_expr_translator.make
+				l_expr_translator.entity_mapping.set_heap (create {IV_ENTITY}.make ("heap", types.heap))
+				l_expr_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.ref))
+				l_expr_translator.set_context (current_feature, current_type)
+				l_assign_b.source.process (l_expr_translator)
+				a_function.set_body (l_expr_translator.last_expression)
+			end
+		end
+
+	generate_definition_from_post (a_function: IV_FUNCTION)
+			-- Generate a definitional axiom for `a_function' from the postcondition of the current feature.
 		local
 			l_contracts: TUPLE [pre: LIST [ASSERT_B]; post: LIST [ASSERT_B]]
 			l_axiom: IV_AXIOM
 			l_forall: IV_FORALL
 			l_pre: IV_EXPRESSION
 			l_post: IV_EXPRESSION
-			l_and, l_implies: IV_BINARY_OPERATION
 			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 			l_function_call: IV_FUNCTION_CALL
 		do
 			l_contracts := contracts_of_current_feature
-			if l_contracts.pre.is_empty then
-				l_pre := create {IV_ENTITY}.make ("true", types.bool)
-			else
-				across l_contracts.pre as c loop
-					l_translator := translator_for_function (a_function)
-					c.item.process (l_translator)
-					if attached l_pre then
-						l_pre := create {IV_BINARY_OPERATION}.make (l_pre, "&&", l_translator.last_expression, types.bool)
-					else
-						l_pre := l_translator.last_expression
-					end
-				end
+			l_pre := factory.true_
+			across l_contracts.pre as c loop
+				l_translator := translator_for_function (a_function)
+				c.item.process (l_translator)
+				l_pre := factory.and_clean (l_pre, l_translator.last_expression)
 			end
-			if l_contracts.post.is_empty then
-				l_post := create {IV_ENTITY}.make ("true", types.bool)
-			else
-				across l_contracts.post as c loop
-					l_translator := translator_for_function (a_function)
-					c.item.process (l_translator)
-					if attached l_post then
-						l_post := create {IV_BINARY_OPERATION}.make (l_post, "&&", l_translator.last_expression, types.bool)
-					else
-						l_post := l_translator.last_expression
-					end
-				end
+			l_post := factory.true_
+			across l_contracts.post as c loop
+				l_translator := translator_for_function (a_function)
+				c.item.process (l_translator)
+				l_post := factory.and_clean (l_post, l_translator.last_expression)
 			end
-			create l_implies.make (l_pre, "==>", l_post, types.bool)
-			create l_forall.make (l_implies)
+			create l_forall.make (factory.implies_ (l_pre, l_post))
 			l_forall.bound_variables.append (a_function.arguments)
 			create l_axiom.make (l_forall)
 			boogie_universe.add_declaration (l_axiom)
 		end
 
 	translator_for_function (a_function: IV_FUNCTION): E2B_CONTRACT_EXPRESSION_TRANSLATOR
-			-- TODO
+			-- Translator that maps `Result' to the invocation of `a_function'.
 		local
 			i: INTEGER
 			l_function_call: IV_FUNCTION_CALL
@@ -769,6 +707,8 @@ feature -- Translation: Other
 			Result.entity_mapping.set_result (l_function_call)
 		end
 
+feature -- Translation: agents		
+
 	translate_precondition_predicate (a_feature: FEATURE_I; a_type: TYPE_A)
 			-- Translate preconditino predicate of feature `a_feature' of type `a_type'.
 		do
@@ -784,7 +724,7 @@ feature -- Translation: Other
 		do
 			set_context (a_feature, a_type)
 
-			l_procedure := boogie_universe.procedure_named (name_translator.boogie_name_for_feature (current_feature, current_type))
+			l_procedure := boogie_universe.procedure_named (name_translator.boogie_procedure_for_feature (current_feature, current_type))
 			check l_procedure /= Void end
 			current_boogie_procedure := l_procedure
 
@@ -1056,6 +996,21 @@ feature {NONE} -- Implementation
 				l_postcondition.set_free
 			end
 			current_boogie_procedure.add_contract (l_postcondition)
+		end
+
+	forall_mml_set_property (a_target_name: STRING; a_set_name: STRING; a_function_name: STRING): IV_EXPRESSION
+			-- Expression "(forall i :: Heap[a_target_name, a_set_name][i] ==> a_function_name(Heap, i))"
+		local
+			l_forall: IV_FORALL
+			l_i: IV_ENTITY
+		do
+			create l_i.make (helper.unique_identifier ("i"), types.ref)
+			create l_forall.make (
+				factory.implies_ (
+					factory.map_access (factory.heap_access ("Heap", create {IV_ENTITY}.make (a_target_name, types.ref), a_set_name, types.set (types.ref)), l_i),
+					factory.function_call (a_function_name, << "Heap", l_i >>, types.bool)))
+			l_forall.add_bound_variable (l_i.name, l_i.type)
+			Result := l_forall
 		end
 
 end

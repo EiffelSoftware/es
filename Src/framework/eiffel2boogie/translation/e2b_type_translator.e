@@ -131,9 +131,9 @@ feature {NONE} -- Implementation
 			l_ghost_collector: E2B_GHOST_SET_COLLECTOR
 		do
 			if a_included.is_empty and a_excluded.is_empty then
-				create l_decl.make (name_translator.boogie_name_for_invariant_function (a_type), types.bool)
+				create l_decl.make (name_translator.boogie_function_for_invariant (a_type), types.bool)
 			else
-				create l_decl.make (name_translator.boogie_name_for_filtered_invariant_function (a_type, a_included, a_excluded), types.bool)
+				create l_decl.make (name_translator.boogie_function_for_filtered_invariant (a_type, a_included, a_excluded), types.bool)
 			end
 
 			l_decl.add_argument ("heap", types.heap_type)
@@ -268,7 +268,7 @@ feature {NONE} -- Implementation
 			l_heap: IV_ENTITY
 			l_current: IV_ENTITY
 		do
-			l_fname := name_translator.boogie_name_for_invariant_function (a_type)
+			l_fname := name_translator.boogie_function_for_invariant (a_type)
 
 			create l_heap.make ("heap", types.heap_type)
 			create l_current.make ("current", types.ref)

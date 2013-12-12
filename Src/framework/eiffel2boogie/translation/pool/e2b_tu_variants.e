@@ -1,12 +1,12 @@
 note
 	description: "[
-		Translation unit for the decreases function of an Eiffel routine.
+		Translation unit for the variant functions (termination measures) of an Eiffel routine.
 	]"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	E2B_TU_DECREASES_FUNCTION
+	E2B_TU_VARIANTS
 
 inherit
 	E2B_TU_FEATURE

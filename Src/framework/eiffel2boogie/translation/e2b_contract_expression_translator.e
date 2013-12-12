@@ -87,7 +87,7 @@ feature -- Translation
 
 			check current_target /= Void end
 			create l_field.make (
-				name_translator.boogie_name_for_feature (a_feature, current_target_type),
+				name_translator.boogie_procedure_for_feature (a_feature, current_target_type),
 				types.field (types.for_type_in_context (a_feature.type, current_target_type))
 			)
 			create l_heap_access.make (entity_mapping.heap.name, current_target, l_field)
@@ -106,8 +106,8 @@ feature -- Translation
 		do
 			check a_feature.has_return_value end
 
-			translation_pool.add_functional_feature (a_feature, current_target_type)
-			l_name := name_translator.boogie_name_for_functional_feature (a_feature, current_target_type)
+			translation_pool.add_referenced_feature (a_feature, current_target_type)
+			l_name := name_translator.boogie_function_for_feature (a_feature, current_target_type)
 
 			create l_call.make (
 				l_name,
@@ -119,7 +119,9 @@ feature -- Translation
 			process_parameters (a_parameters)
 			l_call.arguments.append (last_parameters)
 
-			add_termination_check (a_feature, last_parameters)
+			-- This would check that a recursive definitional axiom for a non-functional function is well-defined;
+			-- I believe this is not needed, because we have to prove anyway that this postcondition is satisfied by a terminating implementation.
+--			add_termination_check (a_feature, last_parameters)
 
 			last_expression := l_call
 		end

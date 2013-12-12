@@ -242,17 +242,18 @@ feature -- Translation
 			l_pcall: IV_PROCEDURE_CALL
 			l_fcall: IV_FUNCTION_CALL
 		do
+			translation_pool.add_referenced_feature (a_feature, current_target_type)
 			if helper.is_functional (a_feature) then
 				check not a_for_creator end
-				translation_pool.add_referenced_feature (a_feature, current_target_type)
 				if a_feature.has_return_value then
 
-					create l_fcall.make (name_translator.boogie_name_for_functional_feature (a_feature, current_target_type), types.for_type_a (a_feature.type))
+					create l_fcall.make (name_translator.boogie_function_for_feature (a_feature, current_target_type), types.for_type_a (a_feature.type))
 					l_fcall.add_argument (entity_mapping.heap)
 					l_fcall.add_argument (current_target)
 					process_parameters (a_parameters)
 					l_fcall.arguments.append (last_parameters)
 
+					-- This checks that functionals are well-defined, from the corresponding fake procedure
 					add_termination_check (a_feature, last_parameters)
 
 					last_expression := l_fcall
@@ -263,11 +264,9 @@ feature -- Translation
 				end
 			else
 				if a_for_creator then
-					translation_pool.add_referenced_creator (a_feature, current_target_type)
-					create l_pcall.make (name_translator.boogie_name_for_creation_routine (a_feature, current_target_type))
+					create l_pcall.make (name_translator.boogie_procedure_for_creator (a_feature, current_target_type))
 				else
-					translation_pool.add_referenced_feature (a_feature, current_target_type)
-					create l_pcall.make (name_translator.boogie_name_for_feature (a_feature, current_target_type))
+					create l_pcall.make (name_translator.boogie_procedure_for_feature (a_feature, current_target_type))
 				end
 
 				l_pcall.node_info.set_line (context_line_number)
@@ -278,6 +277,7 @@ feature -- Translation
 				process_parameters (a_parameters)
 				l_pcall.arguments.append (last_parameters)
 
+				-- This checks termination of non-functional routines, when they are called from their own implementation
 				add_termination_check (a_feature, last_parameters)
 
 					-- Process call
@@ -436,6 +436,82 @@ feature -- Translation
 			l_assert.node_info.set_line (a_line)
 			l_assert.set_attribute_string (":subsumption 0")
 			side_effect.extend (l_assert)
+		end
+
+	add_termination_check (a_feature: FEATURE_I; a_parameters: like last_parameters)
+			-- Add termination check for a call to routine `a_feature' with actual arguments `a_parameters' int he current context.
+		local
+			l_eq_less: like eq_and_less
+			l_check_list: ARRAYED_LIST [like eq_and_less]
+			l_caller_variant, l_callee_variant: IV_FUNCTION_CALL
+			l_decreases_fun: IV_FUNCTION
+			l_type: IV_TYPE
+			l_check, l_bounds_check_guard: IV_EXPRESSION
+			i, j: INTEGER
+		do
+			-- If we are inside a routine and calling the same routine (recursive call)
+			if context_feature /= Void and then context_feature.written_in = a_feature.written_in and
+												context_feature.feature_id = a_feature.feature_id then
+				from
+					i := 1
+					create l_check_list.make (3)
+					l_bounds_check_guard := factory.false_
+					l_decreases_fun := boogie_universe.function_named (name_translator.boogie_function_for_variant (i, a_feature, current_target_type))
+				until
+					l_decreases_fun = Void
+				loop
+					create l_callee_variant.make (l_decreases_fun.name, l_decreases_fun.type)
+					l_callee_variant.add_argument (entity_mapping.heap)
+					l_callee_variant.add_argument (current_target)
+					l_callee_variant.arguments.append (a_parameters)
+
+					create l_caller_variant.make (l_decreases_fun.name, l_decreases_fun.type)
+					l_caller_variant.add_argument (entity_mapping.heap)
+					l_caller_variant.add_argument (entity_mapping.current_expression)
+					from
+						j := 1
+					until
+						j > context_feature.argument_count
+					loop
+						l_caller_variant.add_argument (entity_mapping.argument (context_feature, context_type, j))
+						j := j + 1
+					end
+
+					l_type := l_caller_variant.type
+					if types.is_variant_type (l_type) then
+						l_eq_less := eq_and_less (l_callee_variant, l_caller_variant)
+						l_check_list.extend (l_eq_less)
+						if l_type.is_integer then
+							-- Add bounds check, since integers are not already bounded from below;
+							-- more precisely, for variant k check:
+        					-- callee[1] < caller[1] || ... || callee[k-1] < caller[k-1] || callee[k] == caller[k] || 0 <= caller[k]
+							add_safety_check (factory.or_clean (l_bounds_check_guard,
+															factory.or_ (l_eq_less.eq, factory.less_equal (factory.int_value (0), l_caller_variant))),
+								"termination", "bounded" + i.out, context_line_number)
+						end
+						l_bounds_check_guard := factory.or_clean (l_bounds_check_guard, l_eq_less.less)
+					else
+						helper.add_semantic_error (context_feature, "Variant type has no well-founded order.")
+					end
+
+					i := i + 1
+					l_decreases_fun := boogie_universe.function_named (name_translator.boogie_function_for_variant (i, a_feature, current_target_type))
+				end
+
+					-- Go backward through the list and generate "less1 || (eq1 && (less2 || ... eq<n-1> && less<n>))"
+				check at_lest_on_variant: not l_check_list.is_empty end
+				l_check := l_check_list.last.less
+				from
+					i := l_check_list.count - 1
+				until
+					i < 1
+				loop
+					l_check := factory.and_ (l_check_list [i].eq, l_check)
+					l_check := factory.or_ (l_check_list [i].less, l_check)
+					i := i - 1
+				end
+				add_safety_check (l_check, "termination", "variant_decreases", context_line_number)
+			end
 		end
 
 feature {NONE} -- Implementation

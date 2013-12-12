@@ -13,8 +13,8 @@ inherit
 
 feature -- Access
 
-	boogie_name_for_feature (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
-			-- Name for feature `a_feature'.
+	boogie_procedure_for_feature (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
+			-- Name of the boogie procedure that encodes `a_feature'.
 		require
 			a_feature_attached: attached a_feature
 			a_context_type_attached: attached a_context_type
@@ -30,8 +30,8 @@ feature -- Access
 			result_valid: is_valid_feature_name (Result)
 		end
 
-	boogie_name_for_creation_routine (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
-			-- Name for feature `a_feature' as a creation routine.
+	boogie_procedure_for_creator (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
+			-- Name of the boogie procedure that encodes `a_feature' used as a creation procedure.
 		require
 			a_feature_attached: attached a_feature
 			a_context_type_attached: attached a_context_type
@@ -47,8 +47,8 @@ feature -- Access
 			result_valid: is_valid_feature_name (Result)
 		end
 
-	boogie_name_for_functional_feature (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
-			-- Name for feature `a_feature'.
+	boogie_function_for_feature (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
+			-- Name of the boogie function that encodes the result of `a_feature'.
 		require
 			a_feature_attached: attached a_feature
 			a_context_type_attached: attached a_context_type
@@ -63,8 +63,8 @@ feature -- Access
 			result_attached: attached Result
 		end
 
-	boogie_name_for_writes_set_function (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
-			-- Name for feature `a_feature'.
+	boogie_function_for_frame (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
+			-- Name of the boogie function that encodes the frame of `a_feature'.
 		require
 			a_feature_attached: attached a_feature
 			a_context_type_attached: attached a_context_type
@@ -74,13 +74,13 @@ feature -- Access
 		do
 			l_type_name := boogie_name_for_type (a_context_type)
 			l_feature_name := a_feature.feature_name_32.as_lower
-			Result := "writes." + l_type_name + "." + l_feature_name
+			Result := "frame." + l_type_name + "." + l_feature_name
 		ensure
 			result_attached: attached Result
 		end
 
-	boogie_name_for_decreases_function (a_index: INTEGER; a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
-			-- Name for the decreases function number `a_index' of `a_feature' in `a_context_type'.
+	boogie_function_for_variant (a_index: INTEGER; a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
+			-- Name of the boogie function that encodes `a_index'-th variant of `a_feature'.
 		require
 			a_feature_attached: attached a_feature
 			a_context_type_attached: attached a_context_type
@@ -90,13 +90,13 @@ feature -- Access
 		do
 			l_type_name := boogie_name_for_type (a_context_type)
 			l_feature_name := a_feature.feature_name_32.as_lower
-			Result := "decreases." + l_type_name + "." + l_feature_name + "." + a_index.out
+			Result := "variant." + l_type_name + "." + l_feature_name + "." + a_index.out
 		ensure
 			result_attached: attached Result
 		end
 
-	boogie_name_for_invariant_function (a_type: TYPE_A): STRING
-			-- Name invariant function of `a_type'.
+	boogie_function_for_invariant (a_type: TYPE_A): STRING
+			-- Name of the boogie function that encodes the class invariant of type `a_type'.
 		require
 			a_type: attached a_type
 		local
@@ -108,8 +108,9 @@ feature -- Access
 			result_attached: attached Result
 		end
 
-	boogie_name_for_filtered_invariant_function (a_type: TYPE_A; a_included, a_excluded: LIST [STRING]): STRING
-			-- Name invariant function of `a_type'.
+	boogie_function_for_filtered_invariant (a_type: TYPE_A; a_included, a_excluded: LIST [STRING]): STRING
+			-- Name of the boogie function that encodes the partial class invariant of type `a_type'
+			-- with `a_included' clauses included and `a_excluded' clauses excluded.
 		require
 			a_type: attached a_type
 		local
@@ -236,7 +237,7 @@ feature -- Access
 			a_feature_attached: attached a_feature
 			a_context_type_attached: attached a_context_type
 		do
-			Result := "pre." + boogie_name_for_feature (a_feature, a_context_type)
+			Result := "pre." + boogie_procedure_for_feature (a_feature, a_context_type)
 		ensure
 			result_attached: attached Result
 		end
@@ -247,7 +248,7 @@ feature -- Access
 			a_feature_attached: attached a_feature
 			a_context_type_attached: attached a_context_type
 		do
-			Result := "post." + boogie_name_for_feature (a_feature, a_context_type)
+			Result := "post." + boogie_procedure_for_feature (a_feature, a_context_type)
 		ensure
 			result_attached: attached Result
 		end

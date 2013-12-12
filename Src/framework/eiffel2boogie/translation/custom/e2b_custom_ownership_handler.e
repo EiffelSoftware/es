@@ -99,7 +99,7 @@ feature -- Basic operations
 						translation_pool.add_filtered_invariant_function (a_translator.current_target_type, Void, l_tag_filters)
 						a_translator.set_last_expression (
 							factory.function_call (
-								name_translator.boogie_name_for_filtered_invariant_function (a_translator.current_target_type, Void, l_tag_filters),
+								name_translator.boogie_function_for_filtered_invariant (a_translator.current_target_type, Void, l_tag_filters),
 								<< a_translator.entity_mapping.heap, a_translator.current_target >>, types.bool))
 					end
 				elseif l_name ~ "inv_only" then
@@ -108,7 +108,7 @@ feature -- Basic operations
 					translation_pool.add_filtered_invariant_function (a_translator.current_target_type, l_tag_filters, Void)
 					a_translator.set_last_expression (
 						factory.function_call (
-							name_translator.boogie_name_for_filtered_invariant_function (a_translator.current_target_type, l_tag_filters, Void),
+							name_translator.boogie_function_for_filtered_invariant (a_translator.current_target_type, l_tag_filters, Void),
 							<< a_translator.entity_mapping.heap, a_translator.current_target >>, types.bool))
 				elseif l_name ~ "inv" then
 					a_translator.process_builtin_routine_call (a_feature, a_parameters, "user_inv")

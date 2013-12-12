@@ -297,7 +297,7 @@ feature -- Framing
 		local
 			l_fcall: IV_FUNCTION_CALL
 		do
-			create l_fcall.make (name_translator.boogie_name_for_writes_set_function (a_feature, a_type), types.set (types.ref))
+			create l_fcall.make (name_translator.boogie_function_for_frame (a_feature, a_type), types.set (types.ref))
 			l_fcall.add_argument (old_ (create {IV_ENTITY}.make ("Heap", types.heap_type)))
 			across a_boogie_procedure.arguments as i loop
 				l_fcall.add_argument (i.item.entity)

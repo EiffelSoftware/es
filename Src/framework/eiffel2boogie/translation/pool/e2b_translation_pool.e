@@ -51,19 +51,6 @@ feature -- Status report
 
 feature -- Element change
 
-	add_translation_unit (a_unit: E2B_TRANSLATION_UNIT)
-			-- Add translation unit `a_unit'.
-		require
-			a_unit_attached: attached a_unit
-		do
-			if not ids.has (a_unit.id) then
-				untranslated_elements.extend (a_unit)
-				ids.put (True, a_unit.id.twin)
-			end
-		ensure
-			ids.has (a_unit.id)
-		end
-
 	mark_translated (a_unit: E2B_TRANSLATION_UNIT)
 			-- Mark `a_unit' as translated.
 		local
@@ -93,7 +80,7 @@ feature -- Element change
 			ids.wipe_out
 		end
 
-feature -- Convenience functions
+feature -- Adding independent units
 
 	add_type (a_type: TYPE_A)
 			-- Add type `a_type'.
@@ -135,87 +122,11 @@ feature -- Convenience functions
 			internal_add_feature (a_feature, a_context_type, True)
 		end
 
-	add_basic_routine (a_feature: FEATURE_I; a_context_type: TYPE_A; a_is_referenced: BOOLEAN)
-			-- Add signature and implementation of creator `a_feature' of `a_context_type'.
-		local
-			l_signature: E2B_TU_ROUTINE_SIGNATURE
-			l_implementation: E2B_TU_ROUTINE_IMPLEMENTATION
-			l_decreases_function: E2B_TU_DECREASES_FUNCTION
-		do
-			create l_signature.make (a_feature, a_context_type)
-			add_translation_unit (l_signature)
-			if not a_is_referenced and not helper.boolean_feature_note_value (a_feature, "skip") then
-					-- Decreases function is added before the implementation, since its type might be needed while checking the implementation
-				if options.is_ownership_enabled then
-					create l_decreases_function.make (a_feature, a_context_type)
-					add_translation_unit (l_decreases_function)
-				end
-				create l_implementation.make (a_feature, a_context_type)
-				add_translation_unit (l_implementation)
-			end
-		end
 
-	add_attribute (a_feature: FEATURE_I; a_context_type: TYPE_A)
-			-- Add attribute `a_feature' of `a_context_type'.
-		local
-			l_attribute: E2B_TU_ATTRIBUTE
+	add_frame_function (a_feature: FEATURE_I; a_context_type: TYPE_A)
+			-- Add frame function of feature `a_feature' of `a_context_type'.
 		do
-			create l_attribute.make (a_feature, a_context_type)
-			add_translation_unit (l_attribute)
-		end
-
-	add_creator (a_feature: FEATURE_I; a_context_type: TYPE_A; a_is_referenced: BOOLEAN)
-			-- Add signature and implementation of creator `a_feature' of `a_context_type'.
-		local
-			l_creator: E2B_TU_CREATOR_SIGNATURE
-			l_creator_impl: E2B_TU_CREATOR_IMPLEMENTATION
-		do
-			create l_creator.make (a_feature, a_context_type)
-			add_translation_unit (l_creator)
-			if not a_is_referenced and not helper.boolean_feature_note_value (a_feature, "skip") then
-				create l_creator_impl.make (a_feature, a_context_type)
-				add_translation_unit (l_creator_impl)
-			end
-		end
-
-	add_referenced_creator (a_feature: FEATURE_I; a_context_type: TYPE_A)
-			-- Add signature and implementation of creator `a_feature' of `a_context_type'.
-		local
-			l_creator: E2B_TU_CREATOR_SIGNATURE
-		do
-			create l_creator.make (a_feature, a_context_type)
-			add_translation_unit (l_creator)
-		end
-
-	add_functional_feature (a_feature: FEATURE_I; a_context_type: TYPE_A)
-			-- Add functional representation of feature `a_feature' of `a_context_type'.
-		local
-			l_functional: E2B_TU_ROUTINE_FUNCTIONAL
-		do
-			if helper.is_functional (a_feature) then
-				internal_add_feature (a_feature, a_context_type, True)
-			else
-				create l_functional.make (a_feature, a_context_type)
-				add_translation_unit (l_functional)
-			end
-		end
-
-	add_writes_function (a_feature: FEATURE_I; a_context_type: TYPE_A)
-			-- Add writes function of feature `a_feature' of `a_context_type'.
-		do
-			add_translation_unit (create {E2B_TU_WRITES_FUNCTION}.make (a_feature, a_context_type))
-		end
-
-	add_decreases_function (a_feature: FEATURE_I; a_context_type: TYPE_A)
-			-- Add decreases function of feature `a_feature' of `a_context_type'.
-		do
-			add_translation_unit (create {E2B_TU_DECREASES_FUNCTION}.make (a_feature, a_context_type))
-		end
-
-	add_invariant_function (a_type: TYPE_A)
-			-- Add invariant function of type `a_type'.
-		do
-			add_translation_unit (create {E2B_TU_INVARIANT_FUNCTION}.make (a_type))
+			add_translation_unit (create {E2B_TU_FRAME}.make (a_feature, a_context_type))
 		end
 
 	add_filtered_invariant_function (a_type: TYPE_A; a_included, a_excluded: LIST [STRING])
@@ -256,6 +167,19 @@ feature {NONE} -- Implementation
 	ids: HASH_TABLE [BOOLEAN, STRING]
 			-- Hash map to store translation unit ids.
 
+	add_translation_unit (a_unit: E2B_TRANSLATION_UNIT)
+			-- Add translation unit `a_unit'.
+		require
+			a_unit_attached: attached a_unit
+		do
+			if not ids.has (a_unit.id) then
+				untranslated_elements.extend (a_unit)
+				ids.put (True, a_unit.id.twin)
+			end
+		ensure
+			ids.has (a_unit.id)
+		end
+
 	internal_add_feature (a_feature: FEATURE_I; a_context_type: TYPE_A; a_is_referenced: BOOLEAN)
 			-- Add signature and implementation of feature `a_feature' of `a_context_type'.
 			-- If `a_referenced' is true, then only the signature will be created.
@@ -271,16 +195,74 @@ feature {NONE} -- Implementation
 					add_creator (a_feature, a_context_type, a_is_referenced)
 					if not helper.is_feature_status (a_feature, "creator") then
 							-- Routine can be used as normal routine
-						add_basic_routine (a_feature, a_context_type, a_is_referenced)
+						add_routine (a_feature, a_context_type, a_is_referenced)
 					end
 				else
 						-- This is a normal routine
-					add_basic_routine (a_feature, a_context_type, a_is_referenced)
+					add_routine (a_feature, a_context_type, a_is_referenced)
 				end
 			elseif a_feature.is_constant then
 					-- Ignore constants / nothing to verify
 			else
 				check internal_error: False end
+			end
+		end
+
+	add_routine (a_feature: FEATURE_I; a_context_type: TYPE_A; a_is_referenced: BOOLEAN)
+			-- Add signature,
+			--     variant functions,
+			--     functional representation (if returns a value)
+			--     and implementation (unless just `a_is_referenced') of `a_feature' of `a_context_type'.
+		local
+			l_signature: E2B_TU_ROUTINE_SIGNATURE
+			l_variants: E2B_TU_VARIANTS
+			l_functional_representation: E2B_TU_ROUTINE_FUNCTIONAL
+			l_implementation: E2B_TU_ROUTINE_IMPLEMENTATION
+		do
+				-- Add signature
+			create l_signature.make (a_feature, a_context_type)
+			add_translation_unit (l_signature)
+
+				-- Add functional representation
+			if a_feature.has_return_value then
+				create l_functional_representation.make (a_feature, a_context_type)
+				add_translation_unit (l_functional_representation)
+			end
+
+				-- Add variant functions
+				-- (has to be processed before the implementation)
+			if options.is_ownership_enabled then
+				create l_variants.make (a_feature, a_context_type)
+				add_translation_unit (l_variants)
+			end
+
+				-- Add implementation
+			if not a_is_referenced and not helper.boolean_feature_note_value (a_feature, "skip") then
+				create l_implementation.make (a_feature, a_context_type)
+				add_translation_unit (l_implementation)
+			end
+		end
+
+	add_attribute (a_feature: FEATURE_I; a_context_type: TYPE_A)
+			-- Add attribute `a_feature' of `a_context_type'.
+		local
+			l_attribute: E2B_TU_ATTRIBUTE
+		do
+			create l_attribute.make (a_feature, a_context_type)
+			add_translation_unit (l_attribute)
+		end
+
+	add_creator (a_feature: FEATURE_I; a_context_type: TYPE_A; a_is_referenced: BOOLEAN)
+			-- Add signature and implementation of creator `a_feature' of `a_context_type'.
+		local
+			l_creator: E2B_TU_CREATOR_SIGNATURE
+			l_creator_impl: E2B_TU_CREATOR_IMPLEMENTATION
+		do
+			create l_creator.make (a_feature, a_context_type)
+			add_translation_unit (l_creator)
+			if not a_is_referenced and not helper.boolean_feature_note_value (a_feature, "skip") then
+				create l_creator_impl.make (a_feature, a_context_type)
+				add_translation_unit (l_creator_impl)
 			end
 		end
 

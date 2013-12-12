@@ -332,9 +332,9 @@ feature -- Helper functions: contracts
 									l_name := f.item
 									l_boogie_type := translation_mapping.ghost_access_type (f.item)
 								elseif l_feature.is_attribute then
-									l_name := name_translator.boogie_name_for_feature (l_feature, l_type)
+									l_name := name_translator.boogie_procedure_for_feature (l_feature, l_type)
 									l_boogie_type := types.for_type_a (l_feature.type)
-									translation_pool.add_feature (l_feature, l_type)
+									translation_pool.add_referenced_feature (l_feature, l_type)
 								else
 									l_name := Void
 									helper.add_semantic_error (a_feature, messages.modify_field_field_not_attribute (f.item))

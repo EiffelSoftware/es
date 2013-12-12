@@ -50,6 +50,7 @@ feature -- Access
 		note
 			status: functional, ghost
 		require
+			invariant_holds: inv
 			reads (children)
 		do
 			Result := children.sequence.range
@@ -68,12 +69,13 @@ feature -- Access
 		note
 			status: functional, ghost
 		require
+			nodes_exist: across nodes as n all n.item /= Void end
 			reads (nodes, max_node)
 		do
 			Result :=
 				v >= init_v and
 				across nodes as n all n.item.value <= v end and
-				((max_node = Void and v = init_v) or (nodes [max_node] and max_node.value = v))
+				((max_node = Void and v = init_v) or (nodes [max_node] and then max_node.value = v))
 		end
 
 feature -- Update

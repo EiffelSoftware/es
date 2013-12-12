@@ -29,19 +29,26 @@ feature
 			n >= 0
 			decreases (n)
 		do
-			Result := if n <= 1 then n else fibonacci_function (n - 1) + fibonacci_function (n - 2)
-			end
+			Result := if n <= 1 then n else fibonacci_function (n - 1) + fibonacci_function (n - 2) end
 		end
 
-	sequence_sum (s: MML_SEQUENCE [INTEGER]): INTEGER
+	fibonacci_function_bad (n: INTEGER): INTEGER
+		note
+			status: functional
+		require
+			decreases (n)
+		do
+			Result := fibonacci_function_bad (n - 1) + fibonacci_function_bad (n - 2)
+		end
+
+	sequence_sum_bad (s: MML_SEQUENCE [INTEGER]): INTEGER
 		require
 			decreases (s)
 		do
 			if s.is_empty then
 				Result := 0
 			else
---				Result := s[1] + sequence_sum (s.but_first)
-				Result := s[1] + sequence_sum (s)
+				Result := s [1] + sequence_sum_bad (s)
 			end
 		end
 

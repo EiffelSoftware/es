@@ -175,7 +175,7 @@ feature -- Processing
 				create {IV_HEAP_ACCESS} l_target.make (
 					entity_mapping.heap.name,
 					entity_mapping.current_expression,
-					create {IV_ENTITY}.make (name_translator.boogie_name_for_feature (l_feature, current_type), types.field (types.for_type_a (l_feature.type)))
+					create {IV_ENTITY}.make (name_translator.boogie_procedure_for_feature (l_feature, current_type), types.field (types.for_type_a (l_feature.type)))
 				)
 			else
 				check should_never_happen: False end
@@ -207,7 +207,7 @@ feature -- Processing
 					-- Regular update_heap
 					create l_call.make ("update_heap")
 					l_call.add_argument (entity_mapping.current_expression)
-					l_call.add_argument (create {IV_ENTITY}.make (name_translator.boogie_name_for_feature (l_feature, current_type), types.field (types.for_type_a (l_feature.type))))
+					l_call.add_argument (create {IV_ENTITY}.make (name_translator.boogie_procedure_for_feature (l_feature, current_type), types.field (types.for_type_a (l_feature.type))))
 				end
 				l_call.add_argument (l_source)
 				l_call.node_info.set_line (a_node.line_number)
@@ -1044,7 +1044,7 @@ feature {NONE} -- Implementation
 			-- Add statement and possibly add origin information.
 		do
 			if options.is_trace_enabled then
-				current_block.add_statement (factory.trace (name_translator.boogie_name_for_feature (current_feature, current_type) + ":" + a_node.line_number.out))
+				current_block.add_statement (factory.trace (name_translator.boogie_procedure_for_feature (current_feature, current_type) + ":" + a_node.line_number.out))
 			end
 		end
 
