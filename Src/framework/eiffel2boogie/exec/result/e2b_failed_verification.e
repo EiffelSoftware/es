@@ -31,13 +31,17 @@ feature -- Display
 	single_line_message (a_formatter: TEXT_FORMATTER)
 			-- <Precursor>
 		do
-			errors.first.single_line_message (a_formatter)
-			if errors.count > 1 then
-				a_formatter.add_space
-				if errors.count = 2 then
-					a_formatter.add ("(+1 more error)")
-				else
-					a_formatter.add ("(+" + (errors.count-1).out + " more errors)")
+			if errors.is_empty then
+				a_formatter.add ("(no message found)")
+			else
+				errors.first.single_line_message (a_formatter)
+				if errors.count > 1 then
+					a_formatter.add_space
+					if errors.count = 2 then
+						a_formatter.add ("(+1 more error)")
+					else
+						a_formatter.add ("(+" + (errors.count-1).out + " more errors)")
+					end
 				end
 			end
 		end

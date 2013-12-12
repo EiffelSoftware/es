@@ -367,4 +367,49 @@ feature {NONE} -- Implementation
 			Result := l_expr
 		end
 
+feature -- TODO: move somewhere else
+
+	generate_invariant_admissability_check (a_class: CLASS_C)
+			-- Generate invariant admissability check for class `a_class'.
+		local
+			l_reads_collector: E2B_READS_COLLECTOR
+			l_proc: IV_PROCEDURE
+			l_impl: IV_IMPLEMENTATION
+			l_name: STRING
+		do
+			l_name := "class." + a_class.name_in_upper + ".validity_check"
+			create l_proc.make (l_name)
+			create l_impl.make (l_proc)
+			boogie_universe.add_declaration (l_proc)
+			boogie_universe.add_declaration (l_impl)
+			result_handlers.extend (agent handle_class_validity_result (a_class, ?, ?), l_name)
+
+				-- A1: reads(o.inv) is subset of domain(o) + o.subjects
+				-- A2: o.inv implies forall x: x in o.subjects implies o in x.observers
+				-- A3: o.inv does not mention closed/owner/is_open/is_closed/is_wrapped
+
+		end
+
+	handle_class_validity_result (a_class: CLASS_C; a_boogie_result: E2B_BOOGIE_PROCEDURE_RESULT; a_result: E2B_RESULT)
+			-- Handle Boogie result `a_boogie_result'.
+		local
+			l_success: E2B_SUCCESSFUL_VERIFICATION
+			l_failure: E2B_FAILED_VERIFICATION
+		do
+			if a_boogie_result.is_successful then
+				create l_success
+				l_success.set_class (a_class)
+				l_success.set_time (a_boogie_result.time)
+				a_result.add_result (l_success)
+
+			elseif a_boogie_result.is_inconclusive then
+					-- TODO
+
+			elseif a_boogie_result.is_error then
+				create l_failure.make
+				l_failure.set_class (a_class)
+				a_result.add_result (l_failure)
+			end
+		end
+
 end

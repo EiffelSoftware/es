@@ -59,6 +59,7 @@ feature {NONE} -- Implementation
 			l_agent: PROCEDURE [ANY, TUPLE [E2B_BOOGIE_PROCEDURE_RESULT, E2B_RESULT]]
 		do
 			if result_handlers.has_key (a_item.name) then
+				l_agent := result_handlers[a_item.name]
 				l_agent.call ([a_item, last_result])
 			else
 				process_default_result (a_item)

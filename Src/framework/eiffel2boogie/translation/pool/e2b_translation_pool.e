@@ -242,6 +242,15 @@ feature -- Convenience functions
 			add_translation_unit (l_pre_post_predicate)
 		end
 
+	add_class_check (a_class: CLASS_C)
+			-- Add validity check for `a_class'.
+		local
+			l_class: E2B_TU_CLASS
+		do
+			create l_class.make (a_class)
+			add_translation_unit (l_class)
+		end
+
 feature {NONE} -- Implementation
 
 	ids: HASH_TABLE [BOOLEAN, STRING]

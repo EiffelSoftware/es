@@ -62,7 +62,9 @@ feature -- Access
 			-- Line number of event (if any)
 		do
 			if attached {E2B_FAILED_VERIFICATION} data as l_failed then
-				Result := l_failed.errors.first.context_line_number
+				if not l_failed.errors.is_empty then
+					Result := l_failed.errors.first.context_line_number
+				end
 			elseif attached {E2B_AUTOPROOF_ERROR} data as l_error then
 				Result := l_error.context_line_number
 			end

@@ -64,6 +64,7 @@ feature -- Element change
 					a_class.feature_table.forth
 				end
 			end
+			translation_pool.add_class_check (a_class)
 		end
 
 	add_feature (a_feature: FEATURE_I)
