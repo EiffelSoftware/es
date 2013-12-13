@@ -258,6 +258,12 @@ feature -- Code Analyzer
 	wrong_loop_iteration_violation_2: STRING_32
 		do Result := locale.translation ("Suspectedly the loop iterates in the wrong direction.") end
 
+	inspect_instructions_violation_1: STRING_32
+		do Result := locale.translation ("This inspect case consists of ") end
+
+	inspect_instructions_violation_2: STRING_32
+		do Result := locale.translation (" instructions, which is above the defined maximum of ") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32

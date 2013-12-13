@@ -134,7 +134,7 @@ feature -- Properties
 
 	title: STRING_32
 		do
-			Result := ca_names.routine_too_long_title
+			Result := ca_names.very_long_routine_title
 		end
 
 	id: STRING_32 = "CA032T"
@@ -142,7 +142,7 @@ feature -- Properties
 
 	description: STRING_32
 		do
-			Result :=  ca_names.routine_too_long_description
+			Result :=  ca_names.very_long_routine_description
 		end
 
 	is_system_wide: BOOLEAN

@@ -121,10 +121,10 @@ feature -- Rules
 		do Result := locale.translation ("Routine arguments should be separated with%
 			% semicolons. Although this is optional, it is bad style not to put semicolons.") end
 
-	routine_too_long_title: STRING_32
+	very_long_routine_title: STRING_32
 		do Result := locale.translation ("Very long routine implementation") end
 
-	routine_too_long_description: STRING_32
+	very_long_routine_description: STRING_32
 		do Result := locale.translation ("A routine implementation that contains%
 			% many instructions should be shortened. It might contain %
 			%copy-and-pasted code, or computations that are not part of what the %
@@ -256,6 +256,18 @@ feature -- Rules
 			%variable for iteration. Initialization, stop condition and the loop %
 			%body follow a simple scheme. A loop following this scheme but violating%
 			% it at some point is an indication for an error.") end
+
+	inspect_instructions_title: STRING_32
+		do Result := locale.translation ("Many instructions in an Inspect case") end
+
+	inspect_instructions_description: STRING_32
+		do Result := locale.translation ("A case of an inspect construct %
+			%containing many instructions decreases code readability. The number%
+			% of instructions should be lowered, for example by moving functionality %
+			%to separate features.") end
+
+	inspect_instructions_max_instructions_option: STRING_32
+		do Result := locale.translation ("Maximum number of instructions per inspect case.") end
 
 feature -- Preferences
 

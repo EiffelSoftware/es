@@ -48,6 +48,7 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_SELF_COMPARISON_RULE}.make)
 			rules.extend (create {CA_TODO_RULE}.make)
 			rules.extend (create {CA_WRONG_LOOP_ITERATION_RULE}.make)
+			rules.extend (create {CA_INSPECT_INSTRUCTIONS_RULE}.make (settings.preference_manager))
 
 			settings.initialize_rule_settings (rules)
 
