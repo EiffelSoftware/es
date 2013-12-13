@@ -749,6 +749,7 @@ feature {NONE} -- Basic operations
 			a_viol.format_description (l_text_gen)
 			l_text_gen.add_new_line
 			l_editor_item := create_multiline_clickable_grid_item (l_text_gen.lines, True, False)
+			l_editor_item.set_tooltip (a_viol.data.rule.description)
 			l_row.set_height (l_editor_item.required_height_for_text_and_component)
 			l_row.set_item (description_column, l_editor_item)
 			l_row.set_height (l_row.height + 2)
