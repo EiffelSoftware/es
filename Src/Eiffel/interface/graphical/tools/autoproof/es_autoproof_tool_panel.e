@@ -585,8 +585,13 @@ feature {NONE} -- Basic operations
 				if l_result.context_feature /= Void then
 					create l_gen.make
 					l_gen.add_feature_name (l_result.context_feature.feature_name_32, l_result.context_class)
+					if l_result.data.verification_context /= Void then
+						l_gen.add (" (" + l_result.data.verification_context + ")")
+					end
 					l_editor_item := create_clickable_grid_item (l_gen.last_line, True)
 					a_row.set_item (feature_column, l_editor_item)
+				elseif l_result.data.verification_context /= Void then
+					a_row.set_item (feature_column, create {EV_GRID_LABEL_ITEM}.make_with_text (l_result.data.verification_context))
 				end
 
 					-- Time information

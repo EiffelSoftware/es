@@ -230,12 +230,20 @@ feature {NONE} -- Printing console
 	print_feature_information (a_proc: E2B_VERIFICATION_RESULT)
 			-- Print feature information.
 		do
-			output_window.add_class (a_proc.context_class.original_class)
-			output_window.add (".")
-			output_window.add_feature (a_proc.context_feature.e_feature, a_proc.context_feature.feature_name_32)
+			if attached a_proc.context_class then
+				output_window.add_class (a_proc.context_class.original_class)
+			end
+			if attached a_proc.context_feature then
+				output_window.add (".")
+				output_window.add_feature (a_proc.context_feature.e_feature, a_proc.context_feature.feature_name_32)
+			end
+			if attached a_proc.verification_context then
+				output_window.add (" (")
+				output_window.add (a_proc.verification_context)
+				output_window.add (")")
+			end
 			output_window.add_new_line
 		end
-
 
 feature {NONE} -- Implementation
 

@@ -161,9 +161,18 @@ feature
 		do
 			open_style ("td", td_name_style)
 			open ("strong")
-			add_class (a_proc.context_class.original_class)
-			add (".")
-			add_feature (a_proc.context_feature.e_feature, a_proc.context_feature.feature_name_32)
+			if attached a_proc.context_class then
+				add_class (a_proc.context_class.original_class)
+			end
+			if attached a_proc.context_feature then
+				add (".")
+				add_feature (a_proc.context_feature.e_feature, a_proc.context_feature.feature_name_32)
+			end
+			if attached a_proc.verification_context then
+				add (" (")
+				add (a_proc.verification_context)
+				add (")")
+			end
 			close ("strong")
 			close ("td")
 		end

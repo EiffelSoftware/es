@@ -95,32 +95,39 @@ feature {NONE} -- Implementation
 			-- Default handler for Boogie procedure results.
 		local
 			l_feature: FEATURE_I
+			l_context: STRING
 			l_success: E2B_SUCCESSFUL_VERIFICATION
 			l_inconclusive: E2B_INCONCLUSIVE_RESULT
 			l_failure: E2B_FAILED_VERIFICATION
 		do
 			l_feature := name_translator.feature_for_boogie_name (a_item.name)
+			if a_item.name.starts_with ("create.") then
+				l_context := "creator"
+			end
 			check l_feature /= Void end
 			if has_validity_error (l_feature) then
 					-- Ignore results of features with a validity error
 			elseif a_item.is_successful then
 				create l_success
 				l_success.set_feature (l_feature)
+				l_success.set_verification_context (l_context)
 				l_success.set_time (a_item.time)
-				last_result.verification_results.extend (l_success)
+				last_result.add_result (l_success)
 			elseif a_item.is_inconclusive then
 				create l_inconclusive.make
 				l_inconclusive.set_feature (l_feature)
-				last_result.verification_results.extend (l_inconclusive)
+				l_inconclusive.set_verification_context (l_context)
+				last_result.add_result (l_inconclusive)
 			else
 				check a_item.is_error end
 				create l_failure.make
 				l_failure.set_feature (l_feature)
+				l_failure.set_verification_context (l_context)
 				l_failure.set_time (a_item.time)
 				across a_item.errors as i loop
 					process_individual_error (i.item, l_failure)
 				end
-				last_result.verification_results.extend (l_failure)
+				last_result.add_result (l_failure)
 			end
 		end
 

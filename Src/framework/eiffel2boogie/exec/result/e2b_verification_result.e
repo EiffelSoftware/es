@@ -15,11 +15,14 @@ feature -- Access
 	time: REAL
 			-- Time used for verification in seconds.
 
-	context_feature: FEATURE_I
+	context_feature: detachable FEATURE_I
 			-- Associated feature (if any).
 
-	context_class: CLASS_C
+	context_class: detachable CLASS_C
 			-- Associated class (if any).
+
+	verification_context: detachable STRING
+			-- Additional context of verification (if any).
 
 feature -- Element change
 
@@ -42,6 +45,16 @@ feature -- Element change
 			-- Set `context_class' to `a_class'.
 		do
 			context_class := a_class
+		end
+
+	set_verification_context (a_context: STRING)
+			-- Set `verification_context' to `a_context'.
+		do
+			if attached a_context then
+				verification_context := a_context.twin
+			else
+				verification_context := Void
+			end
 		end
 
 feature -- Display

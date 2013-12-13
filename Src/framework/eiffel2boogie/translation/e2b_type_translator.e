@@ -379,6 +379,7 @@ feature -- TODO: move somewhere else
 		do
 			l_name := "class." + a_class.name_in_upper + ".validity_check"
 			create l_proc.make (l_name)
+			l_proc.add_argument ("Current", types.ref)
 			create l_impl.make (l_proc)
 			boogie_universe.add_declaration (l_proc)
 			boogie_universe.add_declaration (l_impl)
@@ -400,6 +401,7 @@ feature -- TODO: move somewhere else
 				create l_success
 				l_success.set_class (a_class)
 				l_success.set_time (a_boogie_result.time)
+				l_success.set_verification_context ("invariant admissibility")
 				a_result.add_result (l_success)
 
 			elseif a_boogie_result.is_inconclusive then
@@ -408,6 +410,7 @@ feature -- TODO: move somewhere else
 			elseif a_boogie_result.is_error then
 				create l_failure.make
 				l_failure.set_class (a_class)
+				l_failure.set_verification_context ("invariant admissibility")
 				a_result.add_result (l_failure)
 			end
 		end
