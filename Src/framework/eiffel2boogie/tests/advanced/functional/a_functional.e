@@ -40,6 +40,15 @@ feature
 			Result := a + 4
 		end
 
+	functional3 (a: A_FUNCTIONAL): INTEGER
+		note
+			status: functional
+		do
+			-- Checks are allowed in functional, to help prove validity of their bodies
+			check assume: a /= Void end
+			Result := a.functional1
+		end
+
 	call_functional
 		do
 			check functional1 = 7 end

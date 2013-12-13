@@ -635,22 +635,30 @@ feature {NONE} -- Translation: Functions
 		local
 			l_expr_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 		do
-			if
-				not attached Context.byte_code or else
-				not attached Context.byte_code.compound or else
-				not attached Context.byte_code.compound.count = 1 or else
-				not attached {ASSIGN_B} Context.byte_code.compound.first as l_assign_b or else
-				not attached {RESULT_B} l_assign_b.target
-			then
-				helper.add_semantic_error (current_feature, messages.functional_feature_not_single_assignment)
-			else
+			if attached Context.byte_code and then functional_body (Context.byte_code.compound) /= Void then
 					-- Translate expression
 				create l_expr_translator.make
 				l_expr_translator.entity_mapping.set_heap (create {IV_ENTITY}.make ("heap", types.heap))
 				l_expr_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.ref))
 				l_expr_translator.set_context (current_feature, current_type)
-				l_assign_b.source.process (l_expr_translator)
+				functional_body (Context.byte_code.compound).process (l_expr_translator)
 				a_function.set_body (l_expr_translator.last_expression)
+			else
+				helper.add_semantic_error (current_feature, messages.functional_feature_not_single_assignment)
+			end
+		end
+
+	functional_body (a_body: BYTE_LIST [BYTE_NODE]): detachable EXPR_B
+			-- The expression of a functional feature with body `a_body',
+			-- if it has the right shape, otherwise Void.
+		do
+			if attached a_body and then 													-- body exists
+				not a_body.is_empty and then												-- body has instructions
+				attached {ASSIGN_B} a_body.last as l_assign_b and then						-- last instruction is an assignment...
+				attached {RESULT_B} l_assign_b.target and then								-- ... to Result
+				across a_body as c all not c.is_last implies attached {CHECK_B} c.item end	-- All instructions but last are checks
+			then
+				Result := l_assign_b.source
 			end
 		end
 
