@@ -80,6 +80,7 @@ feature {NONE} -- Implementation
 			loop
 				l_error := l_errors.item
 				if
+					not l_error.is_warning and
 					l_error.context_class /= Void and then
 					l_error.context_class.class_id = a_feature.written_in and then
 					l_error.context_feature /= Void and then

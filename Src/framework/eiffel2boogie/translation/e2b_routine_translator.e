@@ -59,6 +59,14 @@ feature -- Translation: Signature
 			set_context (a_feature, a_type)
 			translation_pool.add_type (current_type)
 
+				-- Check status compatibility
+			if not a_feature.has_return_value and helper.is_functional (a_feature) then
+				helper.add_semantic_warning (a_feature, messages.functional_feature_not_function)
+			end
+			if not a_for_creator and helper.is_feature_status (a_feature, "creator") then
+				helper.add_semantic_warning (a_feature, messages.creator_feature_not_creation_procedure)
+			end
+
 				-- Set up name
 			if a_for_creator then
 				l_proc_name := name_translator.boogie_procedure_for_creator (current_feature, current_type)
@@ -628,20 +636,13 @@ feature {NONE} -- Translation: Functions
 			l_expr_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 		do
 			if
-				not current_feature.has_return_value or else
-				not current_feature.is_routine or else
 				not attached Context.byte_code or else
 				not attached Context.byte_code.compound or else
 				not attached Context.byte_code.compound.count = 1 or else
 				not attached {ASSIGN_B} Context.byte_code.compound.first as l_assign_b or else
 				not attached {RESULT_B} l_assign_b.target
 			then
-				if not current_feature.is_function or not current_feature.is_routine then
-					-- Todo: I don' think this could ever happen: remove?
-					helper.add_semantic_error (current_feature, messages.functional_feature_not_function)
-				else
-					helper.add_semantic_error (current_feature, messages.functional_feature_not_single_assignment)
-				end
+				helper.add_semantic_error (current_feature, messages.functional_feature_not_single_assignment)
 			else
 					-- Translate expression
 				create l_expr_translator.make

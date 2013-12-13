@@ -353,9 +353,8 @@ feature -- Other
 		end
 
 	add_unsupported_error (a_class: CLASS_C; a_feature: FEATURE_I; a_message: STRING)
-			-- Add AutoProof error about unsupported construct.
-			-- If `a_class' is set, the error will be associated with the class.
-			-- If `a_feature' is set, the error will be associated with the feature and its written class.
+			-- Add AutoProof error about unsupported construct concerning `a_class_or_feature' with message `a_message'.
+			-- Verification will not proceed.
 		require
 			not_class_and_feature: a_class = Void or a_feature = Void
 			message_set: a_message /= Void and then not a_message.is_empty
@@ -374,9 +373,8 @@ feature -- Other
 		end
 
 	add_semantic_error (a_class_or_feature: ANY; a_message: STRING)
-			-- Add AutoProof error about unsupported construct.
-			-- If `a_class' is set, the error will be associated with the class.
-			-- If `a_feature' is set, the error will be associated with the feature and its written class.
+			-- Add AutoProof validity error concerning `a_class_or_feature' with message `a_message'.
+			-- Verification will not proceed.
 		require
 			class_or_feature_or_void: a_class_or_feature = Void or else (attached {CLASS_C} a_class_or_feature or attached {FEATURE_I} a_class_or_feature)
 			message_set: a_message /= Void and then not a_message.is_empty
@@ -391,6 +389,27 @@ feature -- Other
 			elseif attached {CLASS_C} a_class_or_feature as x then
 				l_error.set_class (x)
 			end
+			autoproof_errors.extend (l_error)
+		end
+
+	add_semantic_warning (a_class_or_feature: ANY; a_message: STRING)
+			-- Add AutoProof validity warning concerning `a_class_or_feature' with message `a_message'.
+			-- Verification will proceed.
+		require
+			class_or_feature_or_void: a_class_or_feature = Void or else (attached {CLASS_C} a_class_or_feature or attached {FEATURE_I} a_class_or_feature)
+			message_set: a_message /= Void and then not a_message.is_empty
+		local
+			l_error: E2B_AUTOPROOF_ERROR
+		do
+			create l_error
+			l_error.set_type ("Validity")
+			l_error.set_message (a_message)
+			if attached {FEATURE_I} a_class_or_feature as x then
+				l_error.set_feature (x)
+			elseif attached {CLASS_C} a_class_or_feature as x then
+				l_error.set_class (x)
+			end
+			l_error.set_warning (True)
 			autoproof_errors.extend (l_error)
 		end
 

@@ -243,25 +243,18 @@ feature -- Translation
 			l_fcall: IV_FUNCTION_CALL
 		do
 			translation_pool.add_referenced_feature (a_feature, current_target_type)
-			if helper.is_functional (a_feature) then
+			if a_feature.has_return_value and helper.is_functional (a_feature) then
 				check not a_for_creator end
-				if a_feature.has_return_value then
+				create l_fcall.make (name_translator.boogie_function_for_feature (a_feature, current_target_type), types.for_type_a (a_feature.type))
+				l_fcall.add_argument (entity_mapping.heap)
+				l_fcall.add_argument (current_target)
+				process_parameters (a_parameters)
+				l_fcall.arguments.append (last_parameters)
 
-					create l_fcall.make (name_translator.boogie_function_for_feature (a_feature, current_target_type), types.for_type_a (a_feature.type))
-					l_fcall.add_argument (entity_mapping.heap)
-					l_fcall.add_argument (current_target)
-					process_parameters (a_parameters)
-					l_fcall.arguments.append (last_parameters)
+				-- This checks that functionals are well-defined, from the corresponding fake procedure
+				add_termination_check (a_feature, last_parameters)
 
-					-- This checks that functionals are well-defined, from the corresponding fake procedure
-					add_termination_check (a_feature, last_parameters)
-
-					last_expression := l_fcall
-				else
-					helper.add_semantic_error (context_feature, messages.functional_invalid_call_to (a_feature.feature_name_32))
-						-- It's a procedure call, nothing to generate
-					last_expression := Void
-				end
+				last_expression := l_fcall
 			else
 				if a_for_creator then
 					create l_pcall.make (name_translator.boogie_procedure_for_creator (a_feature, current_target_type))

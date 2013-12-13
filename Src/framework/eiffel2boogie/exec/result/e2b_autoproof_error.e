@@ -26,6 +26,9 @@ feature -- Access
 	context_line_number: INTEGER
 			-- Line number of error (if any)
 
+	is_warning: BOOLEAN
+			-- Should verification proceed if this error occurs?
+
 feature -- Element change
 
 	set_type (a_string: STRING)
@@ -44,6 +47,12 @@ feature -- Element change
 			-- Set `context_line_number' to `a_value'.
 		do
 			context_line_number := a_value
+		end
+
+	set_warning (a_flag: BOOLEAN)
+			-- Set `is_warning' to `a_flag'
+		do
+			is_warning := a_flag
 		end
 
 feature {NONE} -- Implementation
