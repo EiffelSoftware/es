@@ -21,6 +21,9 @@ feature -- Validity error messages
 	creator_feature_not_creation_procedure: STRING_32
 		do Result := "Feature is marked as creator but is not a creation procedure" end
 
+	creator_call_as_procedure (a_pname: STRING): STRING_32
+		do Result := locale.formatted_string ("Feature '$1' is a creator but is called as a regular procedure.", a_pname) end
+
 	modify_field_first_argument_only_manifeststrings: STRING_32
 		do Result := "The tuple in the first argument of 'modify_field' needs to consist only of manifest strings." end
 
@@ -95,8 +98,8 @@ feature -- Verification error messages
 	decreases_not_decreasing: STRING_32
 		do Result := "Variant may not decrease at this recursive call" end
 
-	decreases_bounded (index: STRING_32): STRING_32
-		do Result := "Integer variant component at position " + index + " may be negative" end
+	decreases_bounded (index: STRING): STRING_32
+		do Result := locale.formatted_string ("Integer variant component at position $1 may be negative", index) end
 
 	overflow: STRING_32
 		do Result := "Possible arithmetic overflow." end

@@ -260,6 +260,10 @@ feature -- Translation
 					create l_pcall.make (name_translator.boogie_procedure_for_creator (a_feature, current_target_type))
 				else
 					create l_pcall.make (name_translator.boogie_procedure_for_feature (a_feature, current_target_type))
+					if helper.is_feature_status (a_feature, "creator") then
+						-- A feature specified to be creator-only, but called as a regular procedure
+						helper.add_semantic_error (context_feature, messages.creator_call_as_procedure (a_feature.feature_name))
+					end
 				end
 
 				l_pcall.node_info.set_line (context_line_number)
