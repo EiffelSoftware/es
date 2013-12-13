@@ -158,6 +158,8 @@ feature
 
 	print_feature_information (a_proc: E2B_VERIFICATION_RESULT)
 			-- Print feature information.
+		local
+			l_context: STRING
 		do
 			open_style ("td", td_name_style)
 			open ("strong")
@@ -169,8 +171,10 @@ feature
 				add_feature (a_proc.context_feature.e_feature, a_proc.context_feature.feature_name_32)
 			end
 			if attached a_proc.verification_context then
-				add (" (")
-				add (a_proc.verification_context)
+				add ("&nbspl;(")
+				l_context := a_proc.verification_context.twin
+				l_context.replace_substring_all (" ", "&nbsp;")
+				add (l_context)
 				add (")")
 			end
 			close ("strong")

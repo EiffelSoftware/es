@@ -375,19 +375,71 @@ feature -- TODO: move somewhere else
 			l_reads_collector: E2B_READS_COLLECTOR
 			l_proc: IV_PROCEDURE
 			l_impl: IV_IMPLEMENTATION
+			l_pre: IV_PRECONDITION
 			l_name: STRING
+			l_goto: IV_GOTO
+			l_block_a1, l_block_a2, l_block_a3: IV_BLOCK
+			l_assert: IV_ASSERT
+			l_forall: IV_FORALL
+			l_i, l_current: IV_ENTITY
 		do
-			l_name := "class." + a_class.name_in_upper + ".validity_check"
+			l_name := a_class.name_in_upper + ".invariant_admissibility_check"
 			create l_proc.make (l_name)
-			l_proc.add_argument ("Current", types.ref)
 			create l_impl.make (l_proc)
 			boogie_universe.add_declaration (l_proc)
 			boogie_universe.add_declaration (l_impl)
 			result_handlers.extend (agent handle_class_validity_result (a_class, ?, ?), l_name)
 
+				-- Set up procedure with arguments and precondition
+			l_proc.add_argument ("Current", types.ref)
+			create l_pre.make (factory.function_call ("attached_exact", << "Heap", "Current", factory.type_value (a_class.actual_type) >>, types.bool))
+			l_proc.add_contract (l_pre)
+			create l_pre.make (factory.function_call ("global", << "Heap" >>, types.bool))
+			l_proc.add_contract (l_pre)
+			create l_pre.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
+			l_proc.add_contract (l_pre)
+			create l_pre.make (factory.function_call (name_translator.boogie_function_for_invariant (a_class.actual_type), << "Heap", "Current" >>, types.bool))
+			l_proc.add_contract (l_pre)
+
+			create l_block_a1.make_name ("a1")
+			create l_block_a2.make_name ("a2")
+			create l_block_a3.make_name ("a3")
+			create l_goto.make (l_block_a1)
+			l_goto.add_target (l_block_a2)
+			l_goto.add_target (l_block_a3)
+			l_impl.body.add_statement (l_goto)
+
 				-- A1: reads(o.inv) is subset of domain(o) + o.subjects
+
+			l_impl.body.add_statement (l_block_a1)
+			create l_assert.make (factory.true_)
+			l_assert.node_info.set_type ("A1")
+			l_block_a1.add_statement (l_assert)
+			l_block_a1.add_statement (create {IV_RETURN})
+
 				-- A2: o.inv implies forall x: x in o.subjects implies o in x.observers
+
+			l_impl.body.add_statement (l_block_a2)
+
+			create l_i.make (helper.unique_identifier ("i"), types.ref)
+			create l_current.make ("Current", types.ref)
+			create l_forall.make (
+				factory.implies_ (
+					factory.map_access (factory.heap_access ("Heap", l_current, "subjects", types.set (types.ref)), l_i),
+					factory.map_access (factory.heap_access ("Heap", l_i, "observers", types.set (types.ref)), l_current)))
+			l_forall.add_bound_variable (l_i.name, l_i.type)
+			create l_assert.make (l_forall)
+			l_assert.node_info.set_type ("A2")
+			l_block_a2.add_statement (l_assert)
+			l_block_a2.add_statement (create {IV_RETURN})
+
 				-- A3: o.inv does not mention closed/owner/is_open/is_closed/is_wrapped
+
+			l_impl.body.add_statement (l_block_a3)
+			create l_assert.make (factory.true_)
+			l_assert.node_info.set_type ("A3")
+			l_block_a3.add_statement (l_assert)
+			l_block_a3.add_statement (create {IV_RETURN})
 
 		end
 
@@ -396,6 +448,7 @@ feature -- TODO: move somewhere else
 		local
 			l_success: E2B_SUCCESSFUL_VERIFICATION
 			l_failure: E2B_FAILED_VERIFICATION
+			l_error: E2B_DEFAULT_VERIFICATION_ERROR
 		do
 			if a_boogie_result.is_successful then
 				create l_success
@@ -411,6 +464,22 @@ feature -- TODO: move somewhere else
 				create l_failure.make
 				l_failure.set_class (a_class)
 				l_failure.set_verification_context ("invariant admissibility")
+				across a_boogie_result.errors as i loop
+					check i.item.is_assert_error end
+					create l_error.make (l_failure)
+					l_error.set_boogie_error (i.item)
+					if i.item.attributes["type"] ~ "A1" then
+						l_error.set_message ("A1")
+					elseif i.item.attributes["type"] ~ "A2" then
+						l_error.set_message ("A2")
+					elseif i.item.attributes["type"] ~ "A3" then
+						l_error.set_message ("A3")
+					else
+						check internal_error: False end
+					end
+					l_failure.errors.extend (l_error)
+				end
+
 				a_result.add_result (l_failure)
 			end
 		end
