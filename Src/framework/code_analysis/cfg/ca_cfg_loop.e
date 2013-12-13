@@ -11,28 +11,25 @@ inherit
 	CA_CFG_BASIC_BLOCK
 
 create
-	make_with_stop_condition,
-	make_complete
+	make
 
 feature {NONE} -- Initialization
 
-	make_with_stop_condition (a_condition: EXPR_AS)
+	make (a_loop: LOOP_AS; a_label: INTEGER)
 		do
 			initialize
 			create out_edges.make_filled (2)
 			create in_edges.make_filled (1)
-			stop_condition := a_condition
-		end
-
-	make_complete (a_condition: EXPR_AS; a_label: INTEGER)
-		do
-			make_with_stop_condition (a_condition)
+			ast := a_loop
+			stop_condition := a_loop.stop
 			label := a_label
 		end
 
 feature -- Properties
 
 	stop_condition: detachable EXPR_AS
+
+	ast: LOOP_AS
 
 	loop_branch: CA_CFG_BASIC_BLOCK
 		do

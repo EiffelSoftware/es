@@ -11,21 +11,15 @@ inherit
 	CA_CFG_BASIC_BLOCK
 
 create
-	make_with_condition,
 	make_complete
 
 feature {NONE} -- Initialization
 
-	make_with_condition (a_condition: EXPR_AS)
+	make_complete (a_condition: EXPR_AS; a_label: INTEGER)
 		do
 			initialize
 			create out_edges.make_filled (2)
 			condition := a_condition
-		end
-
-	make_complete (a_condition: EXPR_AS; a_label: INTEGER)
-		do
-			make_with_condition (a_condition)
 			label := a_label
 		end
 

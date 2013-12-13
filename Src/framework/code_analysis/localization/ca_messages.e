@@ -246,6 +246,18 @@ feature -- Code Analyzer
 		do Result := locale.translation ("This negated boolean expression can be%
 			% simplified by removing the negation and%Nusing the inverse comparison operator.") end
 
+	self_comparison_violation_1: STRING_32
+		do Result := locale.translation ("' compared to itself always evaluates to the same boolean value.") end
+
+	self_comparison_violation_2: STRING_32
+		do Result := locale.translation (" Here, since it is the loop stop condition the loop will not terminate.") end
+
+	wrong_loop_iteration_violation_1: STRING_32
+		do Result := locale.translation ("Wrong comparison suspected in loop stop condition.") end
+
+	wrong_loop_iteration_violation_2: STRING_32
+		do Result := locale.translation ("Suspectedly the loop iterates in the wrong direction.") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32

@@ -49,7 +49,7 @@ feature -- Properties
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		do
-			
+			a_formatter.add (ca_messages.simplifiable_boolean_violation)
 		end
 
 feature {NONE} -- Rule Checking
@@ -58,7 +58,20 @@ feature {NONE} -- Rule Checking
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
+			if is_comparison (a_un_not.expr) then
+				create l_viol.make_with_rule (Current)
+				l_viol.set_location (a_un_not.start_location)
+				violations.extend (l_viol)
+			end
+		end
 
+	is_comparison (expression: EXPR_AS): BOOLEAN
+		do
+			if attached {PARAN_AS} expression as l_paran then
+				Result := is_comparison (l_paran.expr)
+			else
+				Result := (attached {BIN_EQ_AS} expression) or (attached {COMPARISON_AS} expression)
+			end
 		end
 
 end

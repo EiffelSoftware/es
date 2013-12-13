@@ -283,7 +283,7 @@ feature {NONE} -- Utilities
 feature {NONE} -- Analysis data
 
 	lv_entry, lv_exit: ARRAYED_LIST [LINKED_SET [INTEGER]]
-			-- Hash table containing a list of name IDs (live variables) for the CFG labels.
+			-- List containing a set of name IDs (live variables) for the CFG labels.
 
 	assignment_nodes: LINKED_SET [CA_CFG_INSTRUCTION]
 			-- Set of CFG nodes that represent an assignment or a creation.

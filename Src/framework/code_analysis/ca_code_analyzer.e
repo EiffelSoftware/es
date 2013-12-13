@@ -44,6 +44,10 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_VERY_SHORT_IDENTIFIER_RULE}.make (settings.preference_manager))
 			rules.extend (create {CA_VERY_LONG_IDENTIFIER_RULE}.make (settings.preference_manager))
 			rules.extend (create {CA_MISSING_IS_EQUAL_RULE}.make)
+			rules.extend (create {CA_SIMPLIFIABLE_BOOLEAN_RULE}.make)
+			rules.extend (create {CA_SELF_COMPARISON_RULE}.make)
+			rules.extend (create {CA_TODO_RULE}.make)
+			rules.extend (create {CA_WRONG_LOOP_ITERATION_RULE}.make)
 
 			settings.initialize_rule_settings (rules)
 
@@ -58,7 +62,7 @@ feature {NONE} -- Initialization
 
 feature -- Analysis interface
 
-	add_completed_action (a_action: PROCEDURE [ANY, TUPLE [BOOLEAN] ])
+	add_completed_action (a_action: PROCEDURE [ANY, TUPLE [BOOLEAN]])
 		do
 			completed_actions.extend (a_action)
 		end

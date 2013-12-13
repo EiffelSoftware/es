@@ -107,6 +107,7 @@ feature {NONE} -- Implementation
 							l_temp_block := l_current_block
 							create {CA_CFG_IF} l_current_block.make_complete (l_elseifs.item.expr, current_label)
 							current_label := current_label + 1
+
 							add_false_edge (l_temp_block, l_current_block)
 
 							if attached l_elseifs.item.compound as l_compound then
@@ -171,7 +172,7 @@ feature {NONE} -- Implementation
 						l_last_block := l_subgraph.end_node
 					end
 
-					create {CA_CFG_LOOP} l_current_block.make_complete (l_loop.stop, current_label)
+					create {CA_CFG_LOOP} l_current_block.make (l_loop, current_label)
 					current_label := current_label + 1
 					add_edge (l_last_block, l_current_block)
 					create {CA_CFG_SKIP} l_last_block.make (current_label)

@@ -31,6 +31,10 @@ inherit
 			process_access_id_as,
 			process_assign_as,
 			process_bin_eq_as,
+			process_bin_ge_as,
+			process_bin_gt_as,
+			process_bin_le_as,
+			process_bin_lt_as,
 			process_body_as,
 			process_case_as,
 			process_create_as,
@@ -71,6 +75,14 @@ feature {NONE} -- Initialization
 			create assign_post_actions.make
 			create bin_eq_pre_actions.make
 			create bin_eq_post_actions.make
+			create bin_ge_pre_actions.make
+			create bin_ge_post_actions.make
+			create bin_gt_pre_actions.make
+			create bin_gt_post_actions.make
+			create bin_le_pre_actions.make
+			create bin_le_post_actions.make
+			create bin_lt_pre_actions.make
+			create bin_lt_post_actions.make
 			create body_pre_actions.make
 			create body_post_actions.make
 			create case_pre_actions.make
@@ -141,6 +153,46 @@ feature {CA_STANDARD_RULE}
 	add_bin_eq_post_action (a_action: PROCEDURE [ANY, TUPLE [BIN_EQ_AS]])
 		do
 			bin_eq_post_actions.extend (a_action)
+		end
+
+	add_bin_ge_pre_action (a_action: PROCEDURE [ANY, TUPLE [BIN_GE_AS]])
+		do
+			bin_ge_pre_actions.extend (a_action)
+		end
+
+	add_bin_ge_post_action (a_action: PROCEDURE [ANY, TUPLE [BIN_GE_AS]])
+		do
+			bin_ge_post_actions.extend (a_action)
+		end
+
+	add_bin_gt_pre_action (a_action: PROCEDURE [ANY, TUPLE [BIN_GT_AS]])
+		do
+			bin_gt_pre_actions.extend (a_action)
+		end
+
+	add_bin_gt_post_action (a_action: PROCEDURE [ANY, TUPLE [BIN_GT_AS]])
+		do
+			bin_gt_post_actions.extend (a_action)
+		end
+
+	add_bin_le_pre_action (a_action: PROCEDURE [ANY, TUPLE [BIN_LE_AS]])
+		do
+			bin_le_pre_actions.extend (a_action)
+		end
+
+	add_bin_le_post_action (a_action: PROCEDURE [ANY, TUPLE [BIN_LE_AS]])
+		do
+			bin_le_post_actions.extend (a_action)
+		end
+
+	add_bin_lt_pre_action (a_action: PROCEDURE [ANY, TUPLE [BIN_LT_AS]])
+		do
+			bin_lt_pre_actions.extend (a_action)
+		end
+
+	add_bin_lt_post_action (a_action: PROCEDURE [ANY, TUPLE [BIN_LT_AS]])
+		do
+			bin_lt_post_actions.extend (a_action)
 		end
 
 	add_body_pre_action (a_action: PROCEDURE[ANY, TUPLE[BODY_AS]])
@@ -341,6 +393,14 @@ feature {NONE} -- Agent lists
 
 	bin_eq_pre_actions, bin_eq_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [BIN_EQ_AS]]]
 
+	bin_ge_pre_actions, bin_ge_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [BIN_GE_AS]]]
+
+	bin_gt_pre_actions, bin_gt_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [BIN_GT_AS]]]
+
+	bin_le_pre_actions, bin_le_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [BIN_LE_AS]]]
+
+	bin_lt_pre_actions, bin_lt_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [BIN_LT_AS]]]
+
 	body_pre_actions, body_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[BODY_AS]]]
 
 	case_pre_actions, case_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [CASE_AS]]]
@@ -415,6 +475,34 @@ feature {NONE} -- Processing
 			across bin_eq_pre_actions as l_a loop l_a.item.call ([a_bin_eq]) end
 			Precursor (a_bin_eq)
 			across bin_eq_post_actions as l_a loop l_a.item.call ([a_bin_eq]) end
+		end
+
+	process_bin_ge_as (a_bin_ge: BIN_GE_AS)
+		do
+			across bin_ge_pre_actions as l_a loop l_a.item.call ([a_bin_ge]) end
+			Precursor (a_bin_ge)
+			across bin_ge_pre_actions as l_a loop l_a.item.call ([a_bin_ge]) end
+		end
+
+	process_bin_gt_as (a_bin_gt: BIN_GT_AS)
+		do
+			across bin_gt_pre_actions as l_a loop l_a.item.call ([a_bin_gt]) end
+			Precursor (a_bin_gt)
+			across bin_gt_pre_actions as l_a loop l_a.item.call ([a_bin_gt]) end
+		end
+
+	process_bin_le_as (a_bin_le: BIN_LE_AS)
+		do
+			across bin_le_pre_actions as l_a loop l_a.item.call ([a_bin_le]) end
+			Precursor (a_bin_le)
+			across bin_le_pre_actions as l_a loop l_a.item.call ([a_bin_le]) end
+		end
+
+	process_bin_lt_as (a_bin_lt: BIN_LT_AS)
+		do
+			across bin_lt_pre_actions as l_a loop l_a.item.call ([a_bin_lt]) end
+			Precursor (a_bin_lt)
+			across bin_lt_pre_actions as l_a loop l_a.item.call ([a_bin_lt]) end
 		end
 
 	process_body_as (a_body: BODY_AS)

@@ -232,6 +232,31 @@ feature -- Rules
 		do Result := locale.translation ("Some negated boolean expressions can be%
 			% simplified using the inverse comparison operator.") end
 
+	self_comparison_title: STRING_32
+		do Result := locale.translation ("Self-comparison") end
+
+	self_comparison_description: STRING_32
+		do Result := locale.translation ("An expression comparing a variable to %
+			%itself always evaluates to the same boolean value. The comparison is %
+			%thus redundant. In an Until expression it may lead to non-termination. %
+			%Usually it is a typing error.") end
+
+	todo_title: STRING_32
+		do Result := locale.translation ("TODO") end
+
+	todo_description: STRING_32
+		do Result := locale.translation ("A comment line starting with the string %
+			%'TODO' or 'To do' means remaining work to be done.") end
+
+	wrong_loop_iteration_title: STRING_32
+		do Result := locale.translation ("Wrong loop iteration") end
+
+	wrong_loop_iteration_description: STRING_32
+		do Result := locale.translation ("Often, from-until loops use an integer %
+			%variable for iteration. Initialization, stop condition and the loop %
+			%body follow a simple scheme. A loop following this scheme but violating%
+			% it at some point is an indication for an error.") end
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32
