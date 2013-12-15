@@ -468,6 +468,10 @@ feature -- Translation: Functions
 				-- Axiom
 			if helper.is_functional (a_feature) then
 				generate_definition_from_body (l_function)
+				-- Also add a precondition predicate, which can be checked when the feature is called as a function
+				if a_feature.has_precondition then
+					translation_pool.add_precondition_predicate (a_feature, a_type)
+				end
 			else
 				generate_definition_from_post (l_function)
 			end
@@ -719,9 +723,39 @@ feature {NONE} -- Translation: Functions
 feature -- Translation: agents		
 
 	translate_precondition_predicate (a_feature: FEATURE_I; a_type: TYPE_A)
-			-- Translate preconditino predicate of feature `a_feature' of type `a_type'.
+			-- Translate precondition predicate of feature `a_feature' of type `a_type'.
+		local
+			l_procedure: IV_PROCEDURE
+			l_function: IV_FUNCTION
+			l_mapping: E2B_ENTITY_MAPPING
+			l_entity: IV_ENTITY
+			i: INTEGER
 		do
+			set_context (a_feature, a_type)
 
+			l_procedure := boogie_universe.procedure_named (name_translator.boogie_procedure_for_feature (current_feature, current_type))
+			check l_procedure /= Void end
+			current_boogie_procedure := l_procedure
+
+				-- Function declaration
+			create l_function.make (name_translator.precondition_predicate_name (current_feature, current_type), types.bool)
+			l_function.add_argument ("heap", types.heap_type)
+			across current_boogie_procedure.arguments as arg loop
+				l_function.add_argument (arg.item.name, arg.item.type)
+			end
+			boogie_universe.add_declaration (l_function)
+
+			create l_mapping.make
+			create l_entity.make ("heap", types.heap_type)
+			l_mapping.set_heap (l_entity)
+			create l_entity.make ("current", types.ref)
+			l_mapping.set_current (l_entity)
+			from i := 1 until i > a_feature.argument_count loop
+				create l_entity.make (a_feature.arguments.item_name (i), types.for_type_a (a_feature.arguments.i_th (i)))
+				l_mapping.set_argument (i, l_entity)
+				i := i + 1
+			end
+			l_function.set_body (contract_expressions_of (a_feature, a_type, l_mapping).pre)
 		end
 
 	translate_postcondition_predicate (a_feature: FEATURE_I; a_type: TYPE_A)

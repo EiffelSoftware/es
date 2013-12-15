@@ -56,4 +56,26 @@ feature
 			check functional2 (2) = 6 end
 		end
 
+feature -- Preconditions
+
+	functional4 (x: INTEGER): INTEGER
+		note
+			status: functional
+		require
+			positive: x >= 0
+		do
+			Result := x + 1
+		end
+
+	caller
+		local
+			y: INTEGER
+		do
+			y := functional4 (1)  -- OK
+			y := functional4 (-1) -- Bad
+			y := functional2 (-1) -- OK
+		ensure
+			bad: functional4 (-1) = 0
+		end
+
 end

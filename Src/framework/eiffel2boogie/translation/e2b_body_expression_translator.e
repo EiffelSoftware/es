@@ -237,10 +237,8 @@ feature -- Translation
 	process_normal_routine_call (a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B]; a_for_creator: BOOLEAN)
 			-- Process feature call.
 		local
-			l_target: IV_EXPRESSION
-			l_target_type: TYPE_A
 			l_pcall: IV_PROCEDURE_CALL
-			l_fcall: IV_FUNCTION_CALL
+			l_fcall, l_pre_call: IV_FUNCTION_CALL
 		do
 			translation_pool.add_referenced_feature (a_feature, current_target_type)
 			if a_feature.has_return_value and helper.is_functional (a_feature) then
@@ -250,6 +248,15 @@ feature -- Translation
 				l_fcall.add_argument (current_target)
 				process_parameters (a_parameters)
 				l_fcall.arguments.append (last_parameters)
+
+				-- Add precondition check
+				if a_feature.has_precondition then
+					create l_pre_call.make (name_translator.precondition_predicate_name (a_feature, current_target_type), types.bool)
+					l_pre_call.add_argument (entity_mapping.heap)
+					l_pre_call.add_argument (current_target)
+					l_pre_call.arguments.append (last_parameters)
+					add_safety_check (l_pre_call, "check", "precondition_of_function_" + a_feature.feature_name, context_line_number)
+				end
 
 				-- This checks that functionals are well-defined, from the corresponding fake procedure
 				add_termination_check (a_feature, last_parameters)

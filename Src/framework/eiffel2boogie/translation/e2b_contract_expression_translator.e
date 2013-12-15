@@ -101,7 +101,7 @@ feature -- Translation
 		local
 			l_target: IV_EXPRESSION
 			l_target_type: TYPE_A
-			l_call: IV_FUNCTION_CALL
+			l_call, l_pre_call: IV_FUNCTION_CALL
 			l_name: STRING
 		do
 			check a_feature.has_return_value end
@@ -118,6 +118,15 @@ feature -- Translation
 
 			process_parameters (a_parameters)
 			l_call.arguments.append (last_parameters)
+
+			-- Add precondition check
+			if helper.is_functional (a_feature) and a_feature.has_precondition then
+				create l_pre_call.make (name_translator.precondition_predicate_name (a_feature, current_target_type), types.bool)
+				l_pre_call.add_argument (entity_mapping.heap)
+				l_pre_call.add_argument (current_target)
+				l_pre_call.arguments.append (last_parameters)
+				add_safety_check (l_pre_call, "check", "precondition_of_function_" + a_feature.feature_name, context_line_number)
+			end
 
 			-- This would check that a recursive definitional axiom for a non-functional function is well-defined;
 			-- I believe this is not needed, because we have to prove anyway that this postcondition is satisfied by a terminating implementation.
