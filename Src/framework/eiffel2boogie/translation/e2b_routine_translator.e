@@ -598,6 +598,7 @@ feature -- Translation: Functions
 			-- Translate the decreases of feature `a_feature' of type `a_type'.
 		local
 			l_decreases_list: like decreases_expressions_of
+			l_entity: IV_ENTITY
 			l_function: IV_FUNCTION
 		do
 			set_context (a_feature, a_type)
@@ -606,7 +607,15 @@ feature -- Translation: Functions
 			l_decreases_list := decreases_expressions_of (current_feature, current_type)
 			if l_decreases_list.is_empty then
 				-- No decreases clause: apply default
-				-- Todo: add appropriate arguments and reads/modifies
+				across arguments_of_current_feature as j loop
+					if types.is_variant_type (j.item.boogie_type) then
+						create l_entity.make (j.item.name, j.item.boogie_type)
+						l_decreases_list.extend (l_entity)
+					end
+				end
+			elseif l_decreases_list.first = Void then
+				-- Decreases empty set; interpreted as "do not apply defaults, use a trivial variant".
+				l_decreases_list.wipe_out
 				l_decreases_list.extend (factory.int_value (0))
 			end
 

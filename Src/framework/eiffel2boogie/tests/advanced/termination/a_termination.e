@@ -27,7 +27,6 @@ feature
 			status: functional
 		require
 			n >= 0
-			decreases (n)
 		do
 			Result := if n <= 1 then n else fibonacci_function (n - 1) + fibonacci_function (n - 2) end
 		end
@@ -35,8 +34,6 @@ feature
 	fibonacci_function_bad (n: INTEGER): INTEGER
 		note
 			status: functional
-		require
-			decreases (n)
 		do
 			Result := fibonacci_function_bad (n - 1) + fibonacci_function_bad (n - 2)
 		end
@@ -46,22 +43,32 @@ feature
 			explicit: contracts, wrapping
 		require
 			r1 /= Void
-			decreases (r1, r2)
 		do
 			if r2 /= Void then
-				ref_recursive (r2, Void)
+				ref_recursive (r2, Void) -- OK: decreases r1, r2 by default
 			end
 		end
 
-	ref_recursive_bad (r1, r2: ANY)
+	ref_recursive_bad1 (r1, r2: ANY)
 		note
 			explicit: contracts, wrapping
 		require
 			r1 /= Void
-			decreases (r1, r2)
 		do
 			if r2 /= Void then
-				ref_recursive_bad (r2, r1)
+				ref_recursive_bad1 (r2, r1) -- Bad
+			end
+		end
+
+	ref_recursive_bad2 (r1, r2: ANY)
+		note
+			explicit: contracts, wrapping
+		require
+			r1 /= Void
+			decreases (r1)
+		do
+			if r2 /= Void then
+				ref_recursive_bad2 (r2, Void) -- Bad
 			end
 		end
 
