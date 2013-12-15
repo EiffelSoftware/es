@@ -150,7 +150,7 @@ feature -- Boolean operators
 			create Result.make ("!", a_expr, types.bool)
 		end
 
-feature -- Operators
+feature -- Relational operators
 
 	equal (a_left, a_right: IV_EXPRESSION): IV_BINARY_OPERATION
 			-- Equal operator `=='.
@@ -180,6 +180,32 @@ feature -- Operators
 			-- Less than operator `<:'.
 		do
 			create Result.make (a_left, "<:", a_right, types.bool)
+		end
+
+feature -- Integer operators
+
+	plus (a_left, a_right: IV_EXPRESSION): IV_BINARY_OPERATION
+			-- Plus operator `+'.
+		do
+			create Result.make (a_left, "+", a_right, types.int)
+		end
+
+	plus_one (a_expr: IV_EXPRESSION): IV_BINARY_OPERATION
+			-- `a_expr + 1'.
+		do
+			Result := plus (a_expr, int_value (1))
+		end
+
+	minus (a_left, a_right: IV_EXPRESSION): IV_BINARY_OPERATION
+			-- Plus operator `-'.
+		do
+			create Result.make (a_left, "-", a_right, types.int)
+		end
+
+	minus_one (a_expr: IV_EXPRESSION): IV_BINARY_OPERATION
+			-- `a_expr - 1'.
+		do
+			Result := minus (a_expr, int_value (1))
 		end
 
 feature -- Functions

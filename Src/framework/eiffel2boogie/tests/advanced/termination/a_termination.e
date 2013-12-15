@@ -72,9 +72,36 @@ feature
 			end
 		end
 
+	set_sum (s: MML_SET [INTEGER]): INTEGER
+		local
+			x: INTEGER
+		do
+			if s.is_empty then
+				Result := 0
+			else
+				x := s.any_item
+				Result := x + set_sum (s / x)
+			end
+		end
+
+	set_sum_bad (s: MML_SET [INTEGER]): INTEGER
+		local
+			x: INTEGER
+		do
+			x := s.any_item
+			Result := x + set_sum_bad (s / x)
+		end
+
+	sequence_sum (s: MML_SEQUENCE [INTEGER]): INTEGER
+		do
+			if s.is_empty then
+				Result := 0
+			else
+				Result := s.first + sequence_sum (s.but_first)
+			end
+		end
+
 	sequence_sum_bad (s: MML_SEQUENCE [INTEGER]): INTEGER
-		require
-			decreases (s)
 		do
 			if s.is_empty then
 				Result := 0
@@ -82,6 +109,5 @@ feature
 				Result := s [1] + sequence_sum_bad (s)
 			end
 		end
-
 
 end

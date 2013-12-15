@@ -147,12 +147,14 @@ axiom Seq#Drop(Seq#Empty(), 0) == Seq#Empty();  // [][0..] == []
 // ---------------------------------------------------------------
 // CUSTOM ADDITIONS
 
-// All reference elements in sequences are allocated
-// Replaced by a more sound one in base theory
-// axiom (forall h: HeapType, s: Seq ref, i: int :: 0 <= i && i <= Seq#Length(s) ==> h[Seq#Index(s, i), allocated]);
+// The set of indexes
+function Seq#Domain<T>(Seq T): Set int;
+axiom (forall<T> q: Seq T, i: int :: { Seq#Domain(q)[i] } Seq#Domain(q)[i] <==> 1 <= i && i <= Seq#Length(q));
 
-// Conversion from sequence to set
+// The set of values
 function Seq#Range<T>(Seq T): Set T;
 axiom (forall<T> q: Seq T, o: T :: { Seq#Range(q)[o] }{ Seq#Contains(q, o) } Seq#Contains(q, o) <==> Seq#Range(q)[o]);
 
+function Seq#Prefix<T>(q0, q1: Seq T): bool
+{ Seq#Equal(q0, Seq#Take(q1, Seq#Length(q0))) }
 

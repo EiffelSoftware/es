@@ -83,10 +83,6 @@ axiom(forall<T> a: Set T, b: Set T :: { Set#Subset(a,b) }
 //   { Set#Subset(a,b), Set#Card(a), Set#Card(b) }  // very restrictive trigger
 //   Set#Subset(a,b) ==> Set#Card(a) <= Set#Card(b));
 
-function Set#ProperSubset<T>(Set T, Set T): bool;
-axiom(forall<T> a: Set T, b: Set T :: { Set#ProperSubset(a, b) }
-  Set#ProperSubset(a, b) <==> Set#Subset(a, b) && !(Set#Subset(b, a)));  
-
 function Set#Equal<T>(Set T, Set T): bool;
 axiom(forall<T> a: Set T, b: Set T :: { Set#Equal(a,b) }
   Set#Equal(a,b) <==> (forall o: T :: {a[o]} {b[o]} a[o] <==> b[o]));
@@ -101,6 +97,14 @@ axiom (forall<T> a: Set T, b: Set T :: { Set#Disjoint(a,b) }
 // ---------------------------------------------------------------
 // CUSTOM ADDITIONS
 
+function Set#Item<T>(Set T): T;
+axiom (forall<T> a: Set T :: { Set#Item(a) } 
+  !Set#Equal(a, Set#Empty()) ==> a[Set#Item(a)]);
+
+function Set#ProperSubset<T>(Set T, Set T): bool;
+axiom (forall<T> a: Set T, b: Set T :: { Set#ProperSubset(a, b) }
+  Set#ProperSubset(a, b) <==> Set#Subset(a, b) && !(Set#Subset(b, a)));
+
 // Removing an element from a set and adding it again gives the same set.
-axiom(forall<T> a: Set T, o: T :: { Set#Difference(a, Set#Singleton(o)) }
+axiom (forall<T> a: Set T, o: T :: { Set#Difference(a, Set#Singleton(o)) }
   a[o] ==> Set#Equal(Set#UnionOne(Set#Difference(a, Set#Singleton(o)), o), a));

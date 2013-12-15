@@ -30,6 +30,15 @@ feature {NONE} -- Initialization
 	make_from_array (a_array: ARRAY [G])
 		do
 		end
+		
+feature -- Access
+
+	any_item: G
+			-- Arbitrary element.
+		require
+			not_empty: not is_empty
+		do
+		end		
 
 feature -- Status report
 

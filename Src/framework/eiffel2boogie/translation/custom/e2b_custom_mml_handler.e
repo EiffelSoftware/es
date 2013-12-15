@@ -103,6 +103,12 @@ feature {NONE} -- Implementation
 			Result.extend (
 				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
 					do
+						Result := factory.function_call ("Set#Item", <<a_target>>, types.generic)
+					end,
+				"MML_SET.any_item")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
 						Result := create {IV_MAP_ACCESS}.make (a_target, a_params.first)
 					end,
 				"MML_SET.has")
@@ -207,9 +213,81 @@ feature {NONE} -- Implementation
 			Result.extend (
 				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
 					do
+						Result := factory.function_call ("Seq#Domain", << a_target >>, types.set (types.int))
+					end,
+				"MML_SEQUENCE.domain")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Range", << a_target >>, types.set (types.generic))
+					end,
+				"MML_SEQUENCE.range")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
 						Result := factory.function_call ("Seq#Length", << a_target >>, types.int)
 					end,
 				"MML_SEQUENCE.count")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Prefix", << a_target, a_params.first >>, types.bool)
+					end,
+				"MML_SEQUENCE.is_prefix_of")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Index", << a_target, factory.int_value (1) >>, types.generic)
+					end,
+				"MML_SEQUENCE.first")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Index", << a_target, factory.function_call ("Seq#Length", << a_target >>, types.int) >>, types.generic)
+					end,
+				"MML_SEQUENCE.last")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Drop", << a_target, factory.int_value (1) >>, a_target.type)
+					end,
+				"MML_SEQUENCE.but_first")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Take", << a_target, factory.minus_one (factory.function_call ("Seq#Length", << a_target >>, types.int)) >>, a_target.type)
+					end,
+				"MML_SEQUENCE.but_last")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Take", << a_target, a_params.first >>, a_target.type)
+					end,
+				"MML_SEQUENCE.front")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Drop", << a_target, factory.minus_one (a_params.first) >>, a_target.type)
+					end,
+				"MML_SEQUENCE.tail")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Drop", <<
+								factory.function_call ("Seq#Take", << a_target, a_params [2] >>, a_target.type),
+								factory.minus_one (a_params [1])
+							>>, a_target.type)
+					end,
+				"MML_SEQUENCE.interval")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Append", <<
+								factory.function_call ("Seq#Take", << a_target, factory.minus_one (a_params.first) >>, a_target.type),
+								factory.function_call ("Seq#Drop", << a_target, a_params.first >>, a_target.type)
+							>>, a_target.type)
+					end,
+				"MML_SEQUENCE.removed_at")
 			Result.extend (
 				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
 					do
@@ -219,9 +297,36 @@ feature {NONE} -- Implementation
 			Result.extend (
 				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
 					do
-						Result := factory.function_call ("Seq#Range", << a_target >>, types.set (types.generic))
+						Result := factory.function_call ("Seq#Append", <<
+								factory.function_call ("Seq#Build", <<
+									factory.function_call ("Seq#Take", << a_target, factory.minus_one (a_params.first) >>, a_target.type),
+									a_params [2]
+								>>, a_target.type),
+								factory.function_call ("Seq#Drop", << a_target, factory.minus_one (a_params.first) >>, a_target.type)
+							>>, a_target.type)
 					end,
-				"MML_SEQUENCE.range")
+				"MML_SEQUENCE.extended_at")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Append", <<
+								factory.function_call ("Seq#Singleton", << a_params.first >>, a_target.type),
+								a_target
+							>>, a_target.type)
+					end,
+				"MML_SEQUENCE.prepended")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Append", <<a_target, a_params.first >>, types.seq (types.generic))
+					end,
+				"MML_SEQUENCE.concatenation")
+			Result.extend (
+				agent (a_target: IV_EXPRESSION; a_params: LIST [IV_EXPRESSION]): IV_EXPRESSION
+					do
+						Result := factory.function_call ("Seq#Update", <<a_target, a_params [1], a_params [2]>>, a_target.type)
+					end,
+				"MML_SEQUENCE.replaced_at")
 		end
 
 
