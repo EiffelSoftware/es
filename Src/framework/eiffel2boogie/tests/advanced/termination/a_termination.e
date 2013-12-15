@@ -41,6 +41,30 @@ feature
 			Result := fibonacci_function_bad (n - 1) + fibonacci_function_bad (n - 2)
 		end
 
+	ref_recursive (r1, r2: ANY)
+		note
+			explicit: contracts, wrapping
+		require
+			r1 /= Void
+			decreases (r1, r2)
+		do
+			if r2 /= Void then
+				ref_recursive (r2, Void)
+			end
+		end
+
+	ref_recursive_bad (r1, r2: ANY)
+		note
+			explicit: contracts, wrapping
+		require
+			r1 /= Void
+			decreases (r1, r2)
+		do
+			if r2 /= Void then
+				ref_recursive_bad (r2, r1)
+			end
+		end
+
 	sequence_sum_bad (s: MML_SEQUENCE [INTEGER]): INTEGER
 		require
 			decreases (s)

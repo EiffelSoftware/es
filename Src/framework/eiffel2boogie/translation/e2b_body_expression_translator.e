@@ -530,4 +530,37 @@ feature {NONE} -- Implementation
 			context_implementation.add_local (last_local.name, last_local.type)
 		end
 
+	eq_and_less (e1, e2: IV_EXPRESSION): TUPLE [eq: IV_EXPRESSION; less: IV_EXPRESSION]
+			-- Expressions "e1 = e2" and "e1 < e2" accorsing to the type of subexpressions.			
+		require
+			same_types: e1.type.is_same_type (e2.type)
+			proper_type: types.is_variant_type (e1.type)
+		local
+			l_type: IV_TYPE
+			l_eq, l_less: IV_EXPRESSION
+		do
+			l_type := e1.type
+			if l_type.is_boolean then
+				l_eq := factory.equiv (e1, e2)
+				l_less := factory.and_ (factory.not_ (e1), e2) -- false < true
+			elseif l_type.is_integer then
+				l_eq := factory.equal (e1, e2)
+				l_less := factory.less (e1, e2)
+			elseif l_type.is_set then
+				l_eq := factory.function_call ("Set#Equal", <<e1, e2>>, types.bool)
+				l_less := factory.function_call ("Set#ProperSubset", <<e1, e2>>, types.bool)
+			elseif l_type.is_seq then
+				l_eq := factory.equal (factory.function_call ("Seq#Length", <<e1>>, types.int),
+										factory.function_call ("Seq#Length", <<e2>>, types.int))
+				l_less := factory.less (factory.function_call ("Seq#Length", <<e1>>, types.int),
+										factory.function_call ("Seq#Length", <<e2>>, types.int))
+			elseif l_type.is_reference then
+				l_eq := factory.equiv (factory.equal (e1, factory.void_), factory.equal (e2, factory.void_))
+				l_less := factory.and_ (factory.equal (e1, factory.void_), factory.not_equal (e2, factory.void_)) -- Void < r
+			else
+				check wrong_type_in_a_decreases_clause: False end
+			end
+			Result := [l_eq, l_less]
+		end
+
 end
