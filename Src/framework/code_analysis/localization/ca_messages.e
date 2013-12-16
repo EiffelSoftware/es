@@ -264,6 +264,15 @@ feature -- Code Analyzer
 	inspect_instructions_violation_2: STRING_32
 		do Result := locale.translation (" instructions, which is above the defined maximum of ") end
 
+	attribute_to_local_violation_1: STRING_32
+		do Result := locale.translation ("The attribute '") end
+
+	attribute_to_local_violation_2: STRING_32
+		do Result := locale.translation ("' is used only in%Nfeature'") end
+
+	attribute_to_local_violation_3: STRING_32
+		do Result := locale.translation ("' from the same class. It can be converted into a%Nlocal variable.") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32

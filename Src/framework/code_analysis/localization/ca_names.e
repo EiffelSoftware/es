@@ -269,6 +269,21 @@ feature -- Rules
 	inspect_instructions_max_instructions_option: STRING_32
 		do Result := locale.translation ("Maximum number of instructions per inspect case.") end
 
+	count_equals_zero_title: STRING_32
+		do Result := locale.translation ("Number of elements of a structure is compared to zero") end
+
+	count_equals_zero_description: STRING_32
+		do Result := locale.translation ("In a data structure, comparing the number%
+			% of elements to zero can be transformed into the boolean query 'is_empty'.") end
+
+	attribute_to_local_title: STRING_32
+		do Result := locale.translation ("Attribute is only used inside a single routine") end
+
+	attribute_to_local_description: STRING_32
+		do Result := locale.translation ("An attribute that is only used inside a %
+			%single routine of the class where it is defined (and that is not read %
+			%by any other class) can be transformed into a local variable.") end
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32

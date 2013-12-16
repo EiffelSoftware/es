@@ -49,6 +49,7 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_TODO_RULE}.make)
 			rules.extend (create {CA_WRONG_LOOP_ITERATION_RULE}.make)
 			rules.extend (create {CA_INSPECT_INSTRUCTIONS_RULE}.make (settings.preference_manager))
+			rules.extend (create {CA_ATTRIBUTE_TO_LOCAL_RULE}.make)
 
 			settings.initialize_rule_settings (rules)
 
