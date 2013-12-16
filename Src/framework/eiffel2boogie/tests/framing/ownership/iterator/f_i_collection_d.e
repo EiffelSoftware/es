@@ -15,7 +15,6 @@ feature {NONE} -- Initialization
 			status: creator
 		require
 			capacity_non_negative: c >= 0
-			default: is_open
 			modify (Current)
 		do
 			create elements.make (c)

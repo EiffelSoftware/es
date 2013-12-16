@@ -14,7 +14,7 @@ feature {NONE} -- Initialization
 		note
 			status: creator
 		require
-			default_open: is_open
+			modify (Current)
 		do
 			init_value := v
 			value := v

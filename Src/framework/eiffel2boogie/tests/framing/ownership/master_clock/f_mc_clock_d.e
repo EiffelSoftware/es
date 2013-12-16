@@ -15,7 +15,6 @@ feature {NONE} -- Initialization
 			status: creator
 		require
 			m_exists: m /= Void
-			default_open: is_open
 			default_arg_wrapped: m.is_wrapped
 			modify (Current)
 			modify_field (["observers", "closed"], m)

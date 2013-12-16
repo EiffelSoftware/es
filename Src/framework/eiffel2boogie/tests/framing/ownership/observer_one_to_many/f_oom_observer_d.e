@@ -15,7 +15,6 @@ feature {NONE} -- Initialization
 			status: creator
 		require
 			s_exists: s /= Void
-			default_open: is_open
 			default_arg_wrapped: s.is_wrapped
 			modify (s, Current)
 		do

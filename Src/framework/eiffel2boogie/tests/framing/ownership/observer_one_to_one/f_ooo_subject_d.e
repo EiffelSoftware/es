@@ -16,10 +16,8 @@ feature {NONE} -- Initialization
 		note
 			status: creator
 		require else
-			is_open -- default: creator
 			modify (Current) -- default: creator
 		do
-			set_observers([]) -- defalt: creator
 			wrap -- default: creator
 		ensure then
 			is_wrapped -- default: creator

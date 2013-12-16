@@ -14,8 +14,7 @@ feature {NONE} -- Initialization
 		note
 			status: creator
 		require
-			default_open: is_open
-			modify ([Current])
+			modify (Current)
 		do
 			value := v
 			create subscribers.make

@@ -14,15 +14,10 @@ feature
 		require
 			s.observer = Void
 			s.is_wrapped -- default: public
-			is_open -- default: creator
 
 			modify (s)
 			modify (Current) -- default: creator
 		do
-			set_owns ([]) -- default: creator
-			set_subjects ([]) -- default: creator
-			set_observers ([]) -- default: creator
-
 			subject := s
 			s.register (Current)
 			check s.inv end

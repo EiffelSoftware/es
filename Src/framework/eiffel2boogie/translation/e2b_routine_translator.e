@@ -50,11 +50,14 @@ feature -- Translation: Signature
 		require
 			routine: a_feature.is_routine
 		local
-			l_proc_name: STRING
+			l_proc_name, l_attr_name: STRING
 			l_contracts: like contracts_of
 			l_fields: LINKED_LIST [TUPLE [o: IV_EXPRESSION; f: IV_ENTITY]]
 			l_modifies: IV_MODIFIES
+			l_mapping: E2B_ENTITY_MAPPING
+			l_pre: IV_PRECONDITION
 			l_type: TYPE_A
+			l_attribute: FEATURE_I
 		do
 			set_context (a_feature, a_type)
 			translation_pool.add_type (current_type)
@@ -109,6 +112,61 @@ feature -- Translation: Signature
 			end
 			if not l_contracts.reads.is_empty then
 				check True end
+			end
+
+				-- Creator: add free preconditions that all attributes are initialized to default values
+			if a_for_creator then
+				create l_mapping.make
+				from
+					current_type.base_class.feature_table.start
+				until
+					current_type.base_class.feature_table.after
+				loop
+					l_attribute := current_type.base_class.feature_table.item_for_iteration
+					if l_attribute.is_attribute then
+						translation_pool.add_referenced_feature (l_attribute, current_type)
+						l_attr_name := name_translator.boogie_procedure_for_feature (l_attribute, current_type)
+						create l_pre.make (factory.equal (
+							factory.heap_current_access (l_mapping, l_attr_name, types.for_type_a (l_attribute.type)),
+							factory.default_value (l_attribute.type)))
+						l_pre.set_free
+						current_boogie_procedure.add_contract (l_pre)
+					end
+					current_type.base_class.feature_table.forth
+				end
+					-- Add ownership-realted built-in attribute
+				if options.is_ownership_enabled then
+					-- closed
+					create l_pre.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
+					l_pre.set_free
+					current_boogie_procedure.add_contract (l_pre)
+
+					-- owner
+					create l_pre.make (factory.equal (factory.heap_current_access (l_mapping, "owner", types.ref), factory.void_))
+					l_pre.set_free
+					current_boogie_procedure.add_contract (l_pre)
+
+					-- owns
+					create l_pre.make (factory.equal (
+						factory.heap_current_access (l_mapping, "owns", types.set (types.ref)),
+						factory.function_call ("Set#Empty", << >>, types.set (types.ref))))
+					l_pre.set_free
+					current_boogie_procedure.add_contract (l_pre)
+
+					-- subjects
+					create l_pre.make (factory.equal (
+						factory.heap_current_access (l_mapping, "subjects", types.set (types.ref)),
+						factory.function_call ("Set#Empty", << >>, types.set (types.ref))))
+					l_pre.set_free
+					current_boogie_procedure.add_contract (l_pre)
+
+					-- observers
+					create l_pre.make (factory.equal (
+						factory.heap_current_access (l_mapping, "observers", types.set (types.ref)),
+						factory.function_call ("Set#Empty", << >>, types.set (types.ref))))
+					l_pre.set_free
+					current_boogie_procedure.add_contract (l_pre)
+				end
 			end
 
 				-- Framing
@@ -225,11 +283,6 @@ feature -- Translation: Signature
 			l_post: IV_POSTCONDITION
 		do
 			if a_for_creator then
-				create l_pre.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
-				l_pre.node_info.set_type ("pre")
-				l_pre.node_info.set_tag ("default_is_open")
-				l_pre.node_info.set_attribute ("default", "contracts")
-				current_boogie_procedure.add_contract (l_pre)
 				create l_post.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
 				l_post.node_info.set_type ("post")
 				l_post.node_info.set_tag ("default_is_wrapped")
@@ -333,7 +386,6 @@ feature -- Translation: Implementation
 			l_proc_name, l_local_name: STRING
 			l_values: ARRAYED_LIST [STRING_32]
 			l_assign: IV_ASSIGNMENT
-			l_attribute: FEATURE_I
 			l_call: IV_PROCEDURE_CALL
 		do
 			set_context (a_feature, a_type)
@@ -358,47 +410,17 @@ feature -- Translation: Implementation
 				-- Add initial tracing information
 			l_implementation.body.add_statement (factory.trace (l_proc_name))
 
-			if a_for_creator then
-					-- Add creator initialization for attributes
-				from
-					current_type.base_class.feature_table.start
-				until
-					current_type.base_class.feature_table.after
-				loop
-					l_attribute := current_type.base_class.feature_table.item_for_iteration
-					if l_attribute.is_attribute then
-						translation_pool.add_referenced_feature (l_attribute, current_type)
-						l_local_name := name_translator.boogie_procedure_for_feature (l_attribute, current_type)
-						create l_assign.make (
-							factory.heap_current_access (l_translator.entity_mapping, l_local_name, types.for_type_a (l_attribute.type)),
-							factory.default_value (l_attribute.type))
-						l_implementation.body.add_statement (l_assign)
-					end
-					current_type.base_class.feature_table.forth
-				end
-			end
 				-- OWNERSHIP: start of routine body
-			if options.is_ownership_enabled and not helper.is_lemma (a_feature) then
-				if a_for_creator then
-						-- Add creator initialization for ownership
-					create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "owns", types.set (types.ref)), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
-					l_implementation.body.add_statement (l_assign)
-					create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "subjects", types.set (types.ref)), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
-					l_implementation.body.add_statement (l_assign)
-					create l_assign.make (factory.heap_current_access (l_translator.entity_mapping, "observers", types.set (types.ref)), factory.function_call ("Set#Empty", <<>>, types.set (types.ref)))
-					l_implementation.body.add_statement (l_assign)
-
-				else
-					if not helper.is_explicit (current_feature, "wrapping") then
-						if helper.is_public (current_feature) and not a_feature.has_return_value then
-							l_call := factory.procedure_call ("unwrap", << "Current" >>)
-							l_call.node_info.set_attribute ("default", "wrapping")
-							l_call.node_info.set_attribute ("cid", system.any_id.out)
-							l_call.node_info.set_attribute ("rid", system.any_class.compiled_class.feature_named_32 ("unwrap").rout_id_set.first.out)
-							l_call.node_info.set_line (a_feature.body.start_location.line)
-							l_implementation.body.add_statement (l_call)
-						end
-					end
+			if options.is_ownership_enabled then
+					-- Public procedures unwrap Current in the beginning, unless lemma or marked with explicit wrapping
+				if not a_for_creator and helper.is_public (current_feature) and not a_feature.has_return_value and
+					not helper.is_explicit (current_feature, "wrapping") and not helper.is_lemma (a_feature) then
+					l_call := factory.procedure_call ("unwrap", << "Current" >>)
+					l_call.node_info.set_attribute ("default", "wrapping")
+					l_call.node_info.set_attribute ("cid", system.any_id.out)
+					l_call.node_info.set_attribute ("rid", system.any_class.compiled_class.feature_named_32 ("unwrap").rout_id_set.first.out)
+					l_call.node_info.set_line (a_feature.body.start_location.line)
+					l_implementation.body.add_statement (l_call)
 				end
 			end
 
