@@ -40,7 +40,7 @@ feature {NONE} -- Rule checking
 			if attached a_if.else_part then
 				if attached {BIN_NE_AS} a_if.condition as l_c and then (not attached {VOID_AS} l_c.right) then
 						-- The if condition is of the form 'a /= b' or 'a /~ b'. Comparing to Void, however, is ignored
-						-- for the sake of intuition: "if c /= Void then" is preferrable (note: the attached syntax
+						-- for the sake of intuition: "if c /= Void then" is preferrable (note: the 'attached' syntax
 						-- will not be discussed here and is not part of this rule).
 					create l_viol.make_with_rule (Current)
 					l_viol.set_location (l_c.start_location)

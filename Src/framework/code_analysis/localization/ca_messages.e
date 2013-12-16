@@ -283,6 +283,10 @@ feature -- Code Analyzer
 	if_else_not_equal_violation: STRING_32
 		do Result := locale.translation ("Condition of if-else instruction checks for inequality rather than equality.") end
 
+	short_circuit_if_violation: STRING_32
+		do Result := locale.translation ("These two nested if instructions may be %
+			%combined into a single if instruction%Nusing the short circuit 'and then' operator.") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32

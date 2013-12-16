@@ -302,6 +302,15 @@ feature -- Rules
 			%Instead an equality comparison should be made. Refactoring by negating %
 			%the condition and by switching the instructions solves this issue.") end
 
+	short_circuit_if_title: STRING_32
+		do Result := locale.translation ("Two if instructions can be combined using%
+			% short-circuit operator") end
+
+	short_circuit_if_description: STRING_32
+		do Result := locale.translation ("Two nested if instructions, where the %
+			%inner one does not have an else clause, should be combined into a single%
+			% if instruction using the short circuit 'and then' operator.") end
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32
