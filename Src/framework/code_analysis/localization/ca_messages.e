@@ -273,6 +273,12 @@ feature -- Code Analyzer
 	attribute_to_local_violation_3: STRING_32
 		do Result := locale.translation ("' from the same class. It can be converted into a%Nlocal variable.") end
 
+	empty_effective_routine_violation_1: STRING_32
+		do Result := locale.translation ("Routine '") end
+
+	empty_effective_routine_violation_2: STRING_32
+		do Result := locale.translation ("' has an empty body. Since it is defined within a%Ndeferred class it should be considered to be declared as deferred.") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32

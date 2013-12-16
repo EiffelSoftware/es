@@ -284,6 +284,15 @@ feature -- Rules
 			%single routine of the class where it is defined (and that is not read %
 			%by any other class) can be transformed into a local variable.") end
 
+	empty_effective_routine_title: STRING_32
+		do Result := locale.translation ("Empty routine in deferred class") end
+
+	empty_effective_routine_description: STRING_32
+		do Result := locale.translation ("A routine with an empty body in a deferred%
+			% class should be considered to be declared as deferred. That way it will%
+			% not be forgotten to implement the routine in the descendant classes and %
+			%errors can be avoided.") end
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32
