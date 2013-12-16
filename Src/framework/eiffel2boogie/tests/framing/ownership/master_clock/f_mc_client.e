@@ -64,4 +64,9 @@ feature -- Test
 			check c2_in_synch: c2.local_time <= m.time end
 		end
 
+invariant
+	default_owns: owns.is_empty
+	default_subjects: subjects.is_empty
+	default_observers: observers.is_empty
+
 end

@@ -38,9 +38,10 @@ feature -- Access
 		note
 			status: functional
 		require
-			invariant_holds: inv
+			closed: closed
 			reads (Current)
 		do
+			check inv end
 			Result := elements.count
 		end
 

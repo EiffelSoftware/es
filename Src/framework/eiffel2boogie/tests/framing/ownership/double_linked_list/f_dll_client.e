@@ -45,4 +45,9 @@ feature -- Test
 			check n2_singleton: n2.left = n2 end
 			check n1_singleton: n1.left = n1 end
 		end
+		
+invariant
+	default_owns: owns.is_empty
+	default_subjects: subjects.is_empty
+	default_observers: observers.is_empty
 end

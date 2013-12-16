@@ -25,6 +25,7 @@ feature
 
 			subject := s
 			s.register (Current)
+			check s.inv end
 			cache := s.value
 
 			set_subjects ([subject])

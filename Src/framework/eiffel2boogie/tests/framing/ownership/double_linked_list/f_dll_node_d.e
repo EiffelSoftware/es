@@ -145,6 +145,7 @@ invariant
 	right_consistent: right.left = Current
 	subjects_structure: subjects = [ left, right ]
 	observers_structure: observers = [ left, right ]
+	subjects_aware: left.observers [Current] and right.observers [Current]
 	default_owns: owns = []
 
 end

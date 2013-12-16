@@ -16,6 +16,7 @@ feature {NONE} -- Initialization
 		do
 			subject := s
 			s.register (Current)
+			check s.inv end
 			cache := s.value
 			set_subjects ([subject])
 		ensure
@@ -45,9 +46,9 @@ feature {F_OOO_SUBJECT} -- Element change
 		end
 
 invariant
-	attached subject
-	subject.observer = Current
+	subject_exists: attached subject
+	subject_aware: subject.observer = Current
 	cache_synchronized: cache = subject.value
-	subjects = [subject]
+	subjects_structure: subjects = [subject]
 
 end

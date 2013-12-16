@@ -38,4 +38,9 @@ feature -- Test
 			check o2_synch: o2.cache = 5 end
 		end
 
+invariant
+	default_owns: owns.is_empty
+	default_subjects: subjects.is_empty
+	default_observers: observers.is_empty
+
 end

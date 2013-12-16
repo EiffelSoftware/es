@@ -55,7 +55,7 @@ feature -- Access
 		note
 			status: functional, ghost
 		require
-			invariant_holds: inv
+			children_exists: children /= Void
 			reads (children)
 		do
 			Result := children.sequence.range

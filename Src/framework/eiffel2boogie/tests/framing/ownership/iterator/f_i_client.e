@@ -74,5 +74,8 @@ feature -- Test
 
 		end
 
-
+invariant
+	default_owns: owns.is_empty
+	default_subjects: subjects.is_empty
+	default_observers: observers.is_empty
 end
