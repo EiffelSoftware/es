@@ -287,6 +287,12 @@ feature -- Code Analyzer
 		do Result := locale.translation ("These two nested if instructions may be %
 			%combined into a single if instruction%Nusing the short circuit 'and then' operator.") end
 
+	iterable_loop_violation_1: STRING_32
+		do Result := locale.translation ("Iterating through '") end
+
+	iterable_loop_violation_2: STRING_32
+		do Result := locale.translation ("' may be done using an across loop, which%Nis more recommendable than a from-until loop.") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32

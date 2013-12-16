@@ -311,6 +311,14 @@ feature -- Rules
 			%inner one does not have an else clause, should be combined into a single%
 			% if instruction using the short circuit 'and then' operator.") end
 
+	iterable_loop_title: STRING_32
+		do Result := locale.translation ("From-until loop on ITERABLE can be reduced to across loop") end
+
+	iterable_loop_description: STRING_32
+		do Result := locale.translation ("A from-until loop iterating through an %
+			%{ITERABLE} data structure from beginning to end can be transformed into %
+			%a (more recommendable) across loop.") end
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32

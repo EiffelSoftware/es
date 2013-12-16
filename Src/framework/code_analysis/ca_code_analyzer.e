@@ -53,6 +53,7 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_EMPTY_EFFECTIVE_ROUTINE_RULE}.make)
 			rules.extend (create {CA_IF_ELSE_NOT_EQUAL_RULE}.make)
 			rules.extend (create {CA_SHORT_CIRCUIT_IF_RULE}.make)
+			rules.extend (create {CA_ITERABLE_LOOP_RULE}.make)
 
 			settings.initialize_rule_settings (rules)
 
