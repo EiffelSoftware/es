@@ -94,6 +94,17 @@ feature -- General note helpers
 			end
 		end
 
+	boolean_class_note_value (a_class: CLASS_C; a_tag: STRING_32): BOOLEAN
+			-- Value of a boolean feature note tag, False if not present.
+		local
+			l_values: ARRAYED_LIST [STRING_32]
+		do
+			l_values := class_note_values (a_class, a_tag)
+			if not l_values.is_empty then
+				Result := l_values.i_th (1).is_case_insensitive_equal ("true")
+			end
+		end
+
 	integer_feature_note_value (a_feature: FEATURE_I; a_tag: STRING_32): INTEGER
 			-- Value of an integer feature note tag, -1 if not present.
 		local

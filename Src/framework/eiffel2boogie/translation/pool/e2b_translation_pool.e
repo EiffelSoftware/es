@@ -158,8 +158,10 @@ feature -- Adding independent units
 		local
 			l_class: E2B_TU_CLASS
 		do
-			create l_class.make (a_class)
-			add_translation_unit (l_class)
+			if not helper.boolean_class_note_value (a_class, "skip") then
+				create l_class.make (a_class)
+				add_translation_unit (l_class)
+			end
 		end
 
 feature {NONE} -- Implementation

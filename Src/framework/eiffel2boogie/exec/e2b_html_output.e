@@ -171,7 +171,7 @@ feature
 				add_feature (a_proc.context_feature.e_feature, a_proc.context_feature.feature_name_32)
 			end
 			if attached a_proc.verification_context then
-				add ("&nbspl;(")
+				add ("&nbsp;(")
 				l_context := a_proc.verification_context.twin
 				l_context.replace_substring_all (" ", "&nbsp;")
 				add (l_context)
