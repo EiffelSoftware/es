@@ -293,6 +293,15 @@ feature -- Rules
 			% not be forgotten to implement the routine in the descendant classes and %
 			%errors can be avoided.") end
 
+	if_else_not_equal_title: STRING_32
+		do Result := locale.translation ("Avoid 'not equal' in If-Else instructions") end
+
+	if_else_not_equal_description: STRING_32
+		do Result := locale.translation ("Having an If-Else instruction with a %
+			%condition that checks for inequality is not optimal for readability. %
+			%Instead an equality comparison should be made. Refactoring by negating %
+			%the condition and by switching the instructions solves this issue.") end
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32

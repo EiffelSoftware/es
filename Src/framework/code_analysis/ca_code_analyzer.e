@@ -51,6 +51,7 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_INSPECT_INSTRUCTIONS_RULE}.make (settings.preference_manager))
 			rules.extend (create {CA_ATTRIBUTE_TO_LOCAL_RULE}.make)
 			rules.extend (create {CA_EMPTY_EFFECTIVE_ROUTINE_RULE}.make)
+			rules.extend (create {CA_IF_ELSE_NOT_EQUAL_RULE}.make)
 
 			settings.initialize_rule_settings (rules)
 

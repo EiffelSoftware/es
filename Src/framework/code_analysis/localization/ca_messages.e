@@ -277,7 +277,11 @@ feature -- Code Analyzer
 		do Result := locale.translation ("Routine '") end
 
 	empty_effective_routine_violation_2: STRING_32
-		do Result := locale.translation ("' has an empty body. Since it is defined within a%Ndeferred class it should be considered to be declared as deferred.") end
+		do Result := locale.translation ("' has an empty body. Since it is defined %
+			%within a%Ndeferred class it should be considered to be declared as deferred.") end
+
+	if_else_not_equal_violation: STRING_32
+		do Result := locale.translation ("Condition of if-else instruction checks for inequality rather than equality.") end
 
 feature -- Command Line
 
