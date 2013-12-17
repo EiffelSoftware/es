@@ -55,6 +55,7 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_SHORT_CIRCUIT_IF_RULE}.make)
 			rules.extend (create {CA_ITERABLE_LOOP_RULE}.make)
 			rules.extend (create {CA_COUNT_EQUALS_ZERO_RULE}.make)
+			rules.extend (create {CA_DEEPLY_NESTED_IF_RULE}.make (settings.preference_manager))
 
 			settings.initialize_rule_settings (rules)
 

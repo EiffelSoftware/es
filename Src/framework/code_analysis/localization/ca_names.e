@@ -319,6 +319,17 @@ feature -- Rules
 			%{ITERABLE} data structure from beginning to end can be transformed into %
 			%a (more recommendable) across loop.") end
 
+	deeply_nested_if_title: STRING_32
+		do Result := locale.translation ("Deeply nested If instructions") end
+
+	deeply_nested_if_description: STRING_32
+		do Result := locale.translation ("Deeply nested If instructions make the code%
+			% less readable. They should be avoided; one can refactor the affected %
+			%code by changing the decision logic or by introducing separate routines.") end
+
+	deeply_nested_if_threshold_option: STRING_32
+		do Result := locale.translation ("Depth threshold") end
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32

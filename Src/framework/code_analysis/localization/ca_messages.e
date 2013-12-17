@@ -296,6 +296,12 @@ feature -- Code Analyzer
 	count_equals_zero_violation: STRING_32
 		do Result := locale.translation ("Consider replacing this comparison to zero by a call to '") end
 
+	deeply_nested_if_violation_1: STRING_32
+		do Result := locale.translation ("This if instruction is nested within ") end
+
+	deeply_nested_if_violation_2: STRING_32
+		do Result := locale.translation (" or more outer if instructions, which%Nmakes the code less readable. It should be avoided.") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32
