@@ -502,19 +502,23 @@ feature -- Translation
 					l_decreases_fun := boogie_universe.function_named (name_translator.boogie_function_for_variant (i, a_feature, current_target_type))
 				end
 
+				if not l_check_list.is_empty then
 					-- Go backward through the list and generate "less1 || (eq1 && (less2 || ... eq<n-1> && less<n>))"
-				check at_lest_on_variant: not l_check_list.is_empty end
-				l_check := l_check_list.last.less
-				from
-					i := l_check_list.count - 1
-				until
-					i < 1
-				loop
-					l_check := factory.and_ (l_check_list [i].eq, l_check)
-					l_check := factory.or_ (l_check_list [i].less, l_check)
-					i := i - 1
+					l_check := l_check_list.last.less
+					from
+						i := l_check_list.count - 1
+					until
+						i < 1
+					loop
+						l_check := factory.and_ (l_check_list [i].eq, l_check)
+						l_check := factory.or_ (l_check_list [i].less, l_check)
+						i := i - 1
+					end
+					add_safety_check (l_check, "termination", "variant_decreases", context_line_number)
+				else
+					-- This routine has no variant functions: it was explicitly marked as possibly non-terminating.
+					-- Do not generate any checks
 				end
-				add_safety_check (l_check, "termination", "variant_decreases", context_line_number)
 			end
 		end
 

@@ -110,4 +110,22 @@ feature
 			end
 		end
 
+	no_args_bad
+			-- This used to crash before
+		note
+			explicit: contracts, wrapping
+		do
+			no_args_bad -- Bad
+		end
+
+	no_termination_check
+			-- Explicitly allow non-termination
+		note
+			explicit: contracts, wrapping
+		require
+			decreases ([])
+		do
+			no_termination_check -- OK
+		end
+
 end

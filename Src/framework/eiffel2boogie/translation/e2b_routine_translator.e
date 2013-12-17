@@ -635,10 +635,13 @@ feature -- Translation: Functions
 						l_decreases_list.extend (l_entity)
 					end
 				end
+					-- If still empty, add a trivial variant
+				if l_decreases_list.is_empty then
+					l_decreases_list.extend (factory.int_value (0))
+				end
 			elseif l_decreases_list.first = Void then
-				-- Decreases empty set; interpreted as "do not apply defaults, use a trivial variant".
+				-- Decreases empty set (*): do not check termination
 				l_decreases_list.wipe_out
-				l_decreases_list.extend (factory.int_value (0))
 			end
 
 				-- Generate a function per variant
