@@ -19,6 +19,14 @@ feature
 			check s2.any_item = 1 end
 		end
 
+	good1 (s: MML_SET [A_SETS])
+		require
+			not s.is_empty
+			across s as x all x.item /= Void  end
+		do
+			check attached {A_SETS} s.any_item end
+		end
+
 	bad (s: MML_SET[INTEGER])
 		local
 			s1: MML_SET[INTEGER]

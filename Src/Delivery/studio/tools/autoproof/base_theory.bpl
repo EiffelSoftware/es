@@ -314,24 +314,44 @@ function detachable_attribute(heap: HeapType, o: ref, f: Field ref, t: Type) ret
 	(o != Void) && (heap[o, allocated]) ==> detachable(heap, heap[o, f], t)
 }
 
-// Property that field `f' is a set of objects of detachable type `t'.
+// Property that `s' is a set of objects of attached type `t'.
+function {: inline } set_attached(heap: HeapType, s: Set ref, t: Type) returns (bool) {
+	(forall o: ref :: s[o] ==> attached(heap, o, t))
+}
+
+// Property that field `f' is a set of objects of attached type `t'.
 function set_attached_attribute(heap: HeapType, o: ref, f: Field (Set ref), t: Type) returns (bool) {
-	(o != Void) && (heap[o, allocated]) ==> (forall o': ref :: heap[o, f][o'] ==> attached(heap, o', t))
+	(o != Void) && (heap[o, allocated]) ==> set_attached(heap, heap[o, f], t)
+}
+
+// Property that `s' is a set of objects of attached type `t'.
+function {: inline } set_detachable(heap: HeapType, s: Set ref, t: Type) returns (bool) {
+	(forall o: ref :: s[o] ==> detachable(heap, o, t))
 }
 
 // Property that field `f' is a set of objects of detachable type `t'.
 function set_detachable_attribute(heap: HeapType, o: ref, f: Field (Set ref), t: Type) returns (bool) {
-	(o != Void) && (heap[o, allocated]) ==> (forall o': ref :: heap[o, f][o'] ==> detachable(heap, o', t))
+	(o != Void) && (heap[o, allocated]) ==> set_detachable(heap, heap[o, f], t)
+}
+
+// Property that `s' is a sequence of objects of attached type `t'.
+function {: inline } sequence_attached(heap: HeapType, s: Seq ref, t: Type) returns (bool) {
+	(forall o: ref :: Seq#Range(s)[o] ==> attached(heap, o, t))
 }
 
 // Property that field `f' is a sequence of objects of detachable type `t'.
 function sequence_attached_attribute(heap: HeapType, o: ref, f: Field (Seq ref), t: Type) returns (bool) {
-	(o != Void) && (heap[o, allocated]) ==> (forall o': ref :: Seq#Range(heap[o, f])[o'] ==> attached(heap, o', t))
+	(o != Void) && (heap[o, allocated]) ==> sequence_attached(heap, heap[o, f], t)
+}
+
+// Property that `s' is a sequence of objects of attached type `t'.
+function {: inline } sequence_detachable(heap: HeapType, s: Seq ref, t: Type) returns (bool) {
+	(forall o: ref :: Seq#Range(s)[o] ==> detachable(heap, o, t))
 }
 
 // Property that field `f' is a sequence of objects of detachable type `t'.
 function sequence_detachable_attribute(heap: HeapType, o: ref, f: Field (Seq ref), t: Type) returns (bool) {
-	(o != Void) && (heap[o, allocated]) ==> (forall o': ref :: Seq#Range(heap[o, f])[o'] ==> detachable(heap, o', t))
+	(o != Void) && (heap[o, allocated]) ==> sequence_detachable(heap, heap[o, f], t)
 }
 
 // ----------------------------------------------------------------------

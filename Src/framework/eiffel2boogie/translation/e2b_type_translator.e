@@ -315,9 +315,9 @@ feature {NONE} -- Implementation
 			l_heap, l_type: IV_ENTITY
 			l_expr: IV_FUNCTION_CALL
 			l_fcall: IV_FUNCTION_CALL
+			l_content_type: TYPE_A
 		do
 			if not types.is_mml_type (a_type) then
-				create l_heap.make ("Heap", types.heap_type)
 				create l_type.make (name_translator.boogie_name_for_type (a_type), types.type)
 				if attached {IV_ENTITY} a_expr as a_entity and then a_entity.name ~ "Current" then
 					-- For Current the exact dynamic type is considered known
@@ -327,6 +327,31 @@ feature {NONE} -- Implementation
 				else
 					create l_expr.make ("detachable", types.bool)
 				end
+			elseif a_type.base_class.name ~ "MML_SET" then
+				l_content_type := a_type.generics.first
+				if l_content_type.is_reference then
+					create l_type.make (name_translator.boogie_name_for_type (l_content_type), types.type)
+					if l_content_type.is_attached then
+						create l_expr.make ("set_attached", types.bool)
+					else
+						create l_expr.make ("set_detachable", types.bool)
+					end
+				end
+			elseif a_type.base_class.name ~ "MML_SEQUENCE" then
+				l_content_type := a_type.generics.first
+				if l_content_type.is_reference then
+					create l_type.make (name_translator.boogie_name_for_type (l_content_type), types.type)
+					if l_content_type.is_attached then
+						create l_expr.make ("sequence_attached", types.bool)
+					else
+						create l_expr.make ("sequence_detachable", types.bool)
+					end
+				end
+			else
+				check False end
+			end
+			if l_expr /= Void then
+				create l_heap.make ("Heap", types.heap_type)
 				l_expr.add_argument (l_heap)
 				l_expr.add_argument (a_expr)
 				l_expr.add_argument (l_type)

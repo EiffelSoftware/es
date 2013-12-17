@@ -35,6 +35,14 @@ feature
 			check s1.replaced_at (s.count + 1, 2).tail (s.count + 1).first = 2 end
 		end
 
+	good1 (s: MML_SEQUENCE [A_SETS])
+		require
+			not s.is_empty
+			across s as x all x.item /= Void  end
+		do
+			check attached {A_SETS} s.first end
+		end
+
 	seq_to_set (arg: MML_SEQUENCE[INTEGER])
 		require
 			arg.count >= 3
