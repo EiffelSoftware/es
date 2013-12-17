@@ -49,6 +49,7 @@ inherit
 			process_inspect_as,
 			process_instr_call_as,
 			process_loop_as,
+			process_nested_as,
 			process_object_test_as,
 			process_once_as,
 			process_routine_as,
@@ -113,6 +114,8 @@ feature {NONE} -- Initialization
 			create instruction_call_post_actions.make
 			create loop_pre_actions.make
 			create loop_post_actions.make
+			create nested_pre_actions.make
+			create nested_post_actions.make
 			create object_test_pre_actions.make
 			create object_test_post_actions.make
 			create once_pre_actions.make
@@ -345,6 +348,16 @@ feature {CA_STANDARD_RULE}
 			loop_post_actions.extend (a_action)
 		end
 
+	add_nested_pre_action (a_action: PROCEDURE [ANY, TUPLE [NESTED_AS]])
+		do
+			nested_pre_actions.extend (a_action)
+		end
+
+	add_nested_post_action (a_action: PROCEDURE [ANY, TUPLE [NESTED_AS]])
+		do
+			nested_post_actions.extend (a_action)
+		end
+
 	add_object_test_pre_action (a_action: PROCEDURE [ANY, TUPLE [OBJECT_TEST_AS]])
 		do
 			object_test_pre_actions.extend (a_action)
@@ -430,6 +443,8 @@ feature {NONE} -- Agent lists
 	instruction_call_pre_actions, instruction_call_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [INSTR_CALL_AS] ] ]
 
 	loop_pre_actions, loop_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[LOOP_AS]]]
+
+	nested_pre_actions, nested_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [NESTED_AS]]]
 
 	object_test_pre_actions, object_test_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [OBJECT_TEST_AS]]]
 
@@ -601,6 +616,13 @@ feature {NONE} -- Processing
 			across loop_pre_actions as l_a loop l_a.item.call ([a_loop]) end
 			Precursor (a_loop)
 			across loop_post_actions as l_a loop l_a.item.call ([a_loop]) end
+		end
+
+	process_nested_as (a_nested: NESTED_AS)
+		do
+			across nested_pre_actions as l_a loop l_a.item.call ([a_nested]) end
+			Precursor (a_nested)
+			across nested_post_actions as l_a loop l_a.item.call ([a_nested]) end
 		end
 
 	process_object_test_as (a_ot: OBJECT_TEST_AS)

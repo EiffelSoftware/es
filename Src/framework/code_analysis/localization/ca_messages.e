@@ -293,6 +293,9 @@ feature -- Code Analyzer
 	iterable_loop_violation_2: STRING_32
 		do Result := locale.translation ("' may be done using an across loop, which%Nis more recommendable than a from-until loop.") end
 
+	count_equals_zero_violation: STRING_32
+		do Result := locale.translation ("Consider replacing this comparison to zero by a call to '") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32
