@@ -4175,6 +4175,9 @@ Src/tools/resource_bench/rb.lic -text
 Src/tools/resource_bench/toolbar.bmp svneol=native#unset
 Src/tools/syntax_updater/syntax_updater.lic -text
 Src/tools/visitor_factory/visitor_factory.lic -text
+Src/unstable/library/pattern/criteria/README.txt -text
+Src/unstable/library/pattern/criteria/license.lic -text
+Src/unstable/library/pattern/criteria/testing/criteria_tests.rc -text
 Src/unstable/library/persistency/abel/backend_couchdb/backend_couchdb.ecf svneol=native#text/xml
 Src/unstable/library/persistency/abel/connector_mysql/connector_mysql.ecf svneol=native#text/xml
 Src/unstable/library/persistency/abel/connector_sqlite/connector_sqlite.ecf svneol=native#text/xml
