@@ -302,6 +302,12 @@ feature -- Code Analyzer
 	deeply_nested_if_violation_2: STRING_32
 		do Result := locale.translation (" or more outer if instructions, which%Nmakes the code less readable. It should be avoided.") end
 
+	unneeded_helper_variable_violation_1: STRING_32
+		do Result := locale.translation ("The local variable '") end
+
+	unneeded_helper_variable_violation_2: STRING_32
+		do Result := locale.translation ("' used here can be replaced by the%Nexpression that this variable gets assigned before. Thus the local variable is%Nnot actually needed.") end
+
 feature -- Command Line
 
 	cmd_class: STRING_32

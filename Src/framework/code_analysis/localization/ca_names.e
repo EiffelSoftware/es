@@ -330,6 +330,18 @@ feature -- Rules
 	deeply_nested_if_threshold_option: STRING_32
 		do Result := locale.translation ("Depth threshold") end
 
+	unneeded_helper_variable_title: STRING_32
+		do Result := locale.translation ("Unneeded helper variable") end
+
+	unneeded_helper_variable_description: STRING_32
+		do Result := locale.translation ("A variable that is assigned a value only %
+			%once and is then used only once can be replaced with the expression %
+			%that computes this value. This applies as long as the line where the %
+			%expression is inserted will not have too many characters.") end
+
+	max_line_length_option: STRING_32
+		do Result := locale.translation ("Maximum line length") end
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32

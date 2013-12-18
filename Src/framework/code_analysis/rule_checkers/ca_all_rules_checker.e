@@ -30,6 +30,8 @@ inherit
 		redefine
 			process_access_id_as,
 			process_assign_as,
+			process_assigner_call_as,
+			process_bang_creation_as,
 			process_bin_eq_as,
 			process_bin_ge_as,
 			process_bin_gt_as,
@@ -38,6 +40,7 @@ inherit
 			process_body_as,
 			process_case_as,
 			process_create_as,
+			process_create_creation_as,
 			process_creation_as,
 			process_do_as,
 			process_eiffel_list,
@@ -74,6 +77,10 @@ feature {NONE} -- Initialization
 			create access_id_post_actions.make
 			create assign_pre_actions.make
 			create assign_post_actions.make
+			create assigner_call_pre_actions.make
+			create assigner_call_post_actions.make
+			create bang_creation_pre_actions.make
+			create bang_creation_post_actions.make
 			create bin_eq_pre_actions.make
 			create bin_eq_post_actions.make
 			create bin_ge_pre_actions.make
@@ -92,6 +99,8 @@ feature {NONE} -- Initialization
 			create class_post_actions.make
 			create create_pre_actions.make
 			create create_post_actions.make
+			create create_creation_pre_actions.make
+			create create_creation_post_actions.make
 			create creation_pre_actions.make
 			create creation_post_actions.make
 			create do_pre_actions.make
@@ -146,6 +155,26 @@ feature {CA_STANDARD_RULE}
 	add_assign_post_action (a_action: PROCEDURE[ANY, TUPLE[ASSIGN_AS]])
 		do
 			assign_post_actions.extend (a_action)
+		end
+
+	add_assigner_call_pre_action (a_action: PROCEDURE [ANY, TUPLE [ASSIGNER_CALL_AS]])
+		do
+			assigner_call_pre_actions.extend (a_action)
+		end
+
+	add_assigner_call_post_action (a_action: PROCEDURE [ANY, TUPLE [ASSIGNER_CALL_AS]])
+		do
+			assigner_call_post_actions.extend (a_action)
+		end
+
+	add_bang_creation_pre_action (a_action: PROCEDURE [ANY, TUPLE [BANG_CREATION_AS]])
+		do
+			bang_creation_pre_actions.extend (a_action)
+		end
+
+	add_bang_creation_post_action (a_action: PROCEDURE [ANY, TUPLE [BANG_CREATION_AS]])
+		do
+			bang_creation_post_actions.extend (a_action)
 		end
 
 	add_bin_eq_pre_action (a_action: PROCEDURE [ANY, TUPLE [BIN_EQ_AS]])
@@ -236,6 +265,16 @@ feature {CA_STANDARD_RULE}
 	add_create_post_action (a_action: PROCEDURE [ANY, TUPLE [CREATE_AS]])
 		do
 			create_post_actions.extend (a_action)
+		end
+
+	add_create_creation_pre_action (a_action: PROCEDURE [ANY, TUPLE [CREATE_CREATION_AS]])
+		do
+			create_creation_pre_actions.extend (a_action)
+		end
+
+	add_create_creation_post_action (a_action: PROCEDURE [ANY, TUPLE [CREATE_CREATION_AS]])
+		do
+			create_creation_post_actions.extend (a_action)
 		end
 
 	add_creation_pre_action (a_action: PROCEDURE [ANY, TUPLE [CREATION_AS]])
@@ -404,6 +443,10 @@ feature {NONE} -- Agent lists
 
 	assign_pre_actions, assign_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[ASSIGN_AS]]]
 
+	assigner_call_pre_actions, assigner_call_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [ASSIGNER_CALL_AS]]]
+
+	bang_creation_pre_actions, bang_creation_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [BANG_CREATION_AS]]]
+
 	bin_eq_pre_actions, bin_eq_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [BIN_EQ_AS]]]
 
 	bin_ge_pre_actions, bin_ge_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [BIN_GE_AS]]]
@@ -421,6 +464,8 @@ feature {NONE} -- Agent lists
 	class_pre_actions, class_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[CLASS_AS]]]
 
 	create_pre_actions, create_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [CREATE_AS]]]
+
+	create_creation_pre_actions, create_creation_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [CREATE_CREATION_AS]]]
 
 	creation_pre_actions, creation_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [CREATION_AS]]]
 
@@ -485,6 +530,20 @@ feature {NONE} -- Processing
 			across assign_post_actions as l_a loop l_a.item.call ([a_assign]) end
 		end
 
+	process_assigner_call_as (a_assigner_call: ASSIGNER_CALL_AS)
+		do
+			across assigner_call_pre_actions as l_a loop l_a.item.call ([a_assigner_call]) end
+			Precursor (a_assigner_call)
+			across assigner_call_post_actions as l_a loop l_a.item.call ([a_assigner_call]) end
+		end
+
+	process_bang_creation_as (a_bang_creation: BANG_CREATION_AS)
+		do
+			across bang_creation_pre_actions as l_a loop l_a.item.call ([a_bang_creation]) end
+			Precursor (a_bang_creation)
+			across bang_creation_post_actions as l_a loop l_a.item.call ([a_bang_creation]) end
+		end
+
 	process_bin_eq_as (a_bin_eq: BIN_EQ_AS)
 		do
 			across bin_eq_pre_actions as l_a loop l_a.item.call ([a_bin_eq]) end
@@ -539,6 +598,13 @@ feature {NONE} -- Processing
 			across create_pre_actions as l_a loop l_a.item.call ([a_create]) end
 			Precursor (a_create)
 			across create_post_actions as l_a loop l_a.item.call ([a_create]) end
+		end
+
+	process_create_creation_as (a_create_creation: CREATE_CREATION_AS)
+		do
+			across create_creation_pre_actions as l_a loop l_a.item.call ([a_create_creation]) end
+			Precursor (a_create_creation)
+			across create_creation_post_actions as l_a loop l_a.item.call ([a_create_creation]) end
 		end
 
 	process_creation_as (a_creation: CREATION_AS)
