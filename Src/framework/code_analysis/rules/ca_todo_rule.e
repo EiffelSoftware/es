@@ -11,6 +11,12 @@ inherit
 	CA_STANDARD_RULE
 		redefine id end
 
+	AST_ROUNDTRIP_ITERATOR
+			-- In order to be able to access all the comments.
+		redefine
+			process_break_as
+		end
+
 create
 	make
 
@@ -59,11 +65,29 @@ feature -- Properties
 
 feature {NONE} -- AST Visit
 
+	process_break_as (a_break: BREAK_AS)
+			-- From {AST_ROUNDTRIP_ITERATOR}.
+		do
+			across
+				a_break.extract_comment as l_comment_line
+			loop
+				if attached l_comment_line.item as l_comment and then attached l_comment.content_32 then
+					search_todo (l_comment)
+				end
+			end
+			Precursor (a_break)
+		end
+
 	process_class (a_class: CLASS_AS)
 		local
 			l_comments: EIFFEL_COMMENTS
 		do
+			set_parsed_class (a_class)
+			set_match_list (matchlist)
+			set_will_process_leading_leaves (True)
+			set_will_process_trailing_leaves (True)
 
+			process_ast_node (a_class)
 		end
 
 	search_todo (a_comment: EIFFEL_COMMENT_LINE)
@@ -89,6 +113,11 @@ feature {NONE} -- AST Visit
 				l_todo.left_adjust
 				l_todo.remove_head (l_toremove)
 				l_todo.left_adjust -- Remove leading whitespace again.
+				if l_todo [1].is_equal (':') then
+						-- Remove the leading colon.
+					l_todo.remove (1)
+					l_todo.left_adjust
+				end
 
 				create l_viol.make_with_rule (Current)
 				l_viol.set_location (create {LOCATION_AS}.make (a_comment.line, a_comment.column, 0, 0, 0, 0, 0))
