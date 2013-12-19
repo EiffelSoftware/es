@@ -317,18 +317,32 @@ feature -- Statements
 
 feature -- Framing
 
-	writes_frame (a_feature: FEATURE_I; a_type: TYPE_A; a_boogie_procedure: IV_PROCEDURE; a_pre_heap: IV_EXPRESSION): IV_EXPRESSION
+	global_writable: IV_ENTITY
+			-- Procedure-wide writable frame.
+		do
+			create Result.make ("writable", types.frame)
+		end
+
+	frame_access (a_frame, a_obj, a_field: IV_EXPRESSION): IV_MAP_ACCESS
+			-- Expression `a_frame [a_obj, a_field]'.
+		do
+			create Result.make_two (a_frame, a_obj, a_field)
+		end
+
+	writes_routine_frame (a_feature: FEATURE_I; a_type: TYPE_A; a_boogie_procedure: IV_PROCEDURE): IV_EXPRESSION
 			-- Boolean expression stating that only the modifies set of `a_feature' in `a_type' (translated into `a_boogie_procedure')
-			-- has changed between `a_pre_heap' and the current heap.
+			-- has changed between the old heap and the current heap.
 		local
 			l_fcall: IV_FUNCTION_CALL
+			l_old_heap: IV_EXPRESSION
 		do
+			l_old_heap := old_ (create {IV_ENTITY}.make ("Heap", types.heap_type))
 			create l_fcall.make (name_translator.boogie_function_for_frame (a_feature, a_type), types.set (types.ref))
-			l_fcall.add_argument (old_ (create {IV_ENTITY}.make ("Heap", types.heap_type)))
+			l_fcall.add_argument (l_old_heap)
 			across a_boogie_procedure.arguments as i loop
 				l_fcall.add_argument (i.item.entity)
 			end
-			Result := function_call ("writes", <<a_pre_heap, "Heap", l_fcall>>, types.bool)
+			Result := function_call ("writes", <<l_old_heap, "Heap", l_fcall>>, types.bool)
 		end
 
 feature -- Miscellaneous

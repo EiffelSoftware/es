@@ -131,14 +131,14 @@ axiom(forall a: Frame, b: Frame :: { Frame#Subset(a,b) }
 // Set of all writable objects
 const writable: Frame;
 
-function fully_writable(o: ref): bool
-{ (forall <alpha> f: Field alpha :: writable[o, f]) }
+function fully_writable(wr: Frame, o: ref): bool
+{ (forall <alpha> f: Field alpha :: wr[o, f]) }
 
-// Everything in the domain of a writable object is writable
-function {:inline true} writable_domains(h: HeapType): bool
+// Writable set 'wr' is closed under ownership domains 
+function {:inline true} writable_domains(wr: Frame, h: HeapType): bool
 { 
-  (forall <alpha> o, o': ref, f: Field alpha :: {writable[o, closed], writable[o', f]}{fully_writable(o), writable[o', f]} 
-    writable[o, closed] && in_domain(h, o, o') ==> writable[o', f]) 
+  (forall <alpha> o, o': ref, f: Field alpha :: {wr[o, closed], wr[o', f]}{fully_writable(wr, o), wr[o', f]} 
+    wr[o, closed] && in_domain(h, o, o') && o != o' ==> wr[o', f]) 
 }
 
 // Objects outside of ownership domains of mods did not change, unless they were newly allocated
@@ -193,7 +193,7 @@ procedure allocate(t: Type) returns (result: ref);
   ensures Set#Equal(Heap[result, owns], Set#Empty());
   ensures Set#Equal(Heap[result, observers], Set#Empty());
   ensures Set#Equal(Heap[result, subjects], Set#Empty());
-  ensures fully_writable(result);
+  ensures fully_writable(writable, result);
   ensures (forall <T> o: ref, f: Field T :: o != result ==> Heap[o, f] == old(Heap[o, f]));
   free ensures HeapSucc(old(Heap), Heap);
 

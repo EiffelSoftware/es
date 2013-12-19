@@ -54,13 +54,8 @@ feature -- State update
 			from
 				i := 1
 			invariant
-				subscribers.is_wrapped
-				across subscribers.sequence as o all
-					o.item.is_open and o.item.inv_without ("cache_synchronized")
-				end
 				across 1 |..| (i - 1) as j all subscribers.sequence [j.item].inv end
-				inv
-				value = v
+				modify_field (["cache"], subscribers.sequence)
 			until
 				i > subscribers.count
 			loop

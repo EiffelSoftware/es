@@ -38,6 +38,12 @@ feature -- Basic operations
 			context_implementation := a_implementation
 		end
 
+	set_local_writable (a_writable: IV_EXPRESSION)
+			-- Set `local_writable' to `a_writable'.
+		do
+			local_writable := a_writable
+		end
+
 	reset
 			-- Reset expression translator.
 		do
@@ -45,6 +51,7 @@ feature -- Basic operations
 			context_implementation := Void
 			create side_effect.make
 			create procedure_calls.make
+			local_writable := Void
 		end
 
 feature -- Visitors
@@ -283,6 +290,8 @@ feature -- Translation
 
 				-- This checks termination of non-functional routines, when they are called from their own implementation
 				add_termination_check (a_feature, last_parameters)
+				-- This adds an extra framing check if we are inside a context with a local frame
+				add_loop_frame_check (a_feature, last_parameters)
 
 					-- Process call
 				if a_feature.has_return_value then
@@ -522,10 +531,29 @@ feature -- Translation
 			end
 		end
 
+	add_loop_frame_check (a_feature: FEATURE_I; a_parameters: like last_parameters)
+			-- If there is a local frame, check that `a_feature's frame is a subframe of it.
+		local
+			l_fcall: IV_FUNCTION_CALL
+		do
+			if local_writable /= Void then
+				create l_fcall.make (name_translator.boogie_function_for_frame (a_feature, current_target_type), types.frame)
+				l_fcall.add_argument (entity_mapping.heap)
+				l_fcall.add_argument (current_target)
+				l_fcall.arguments.append (a_parameters)
+				add_safety_check (factory.function_call ("Frame#Subset", <<l_fcall, local_writable>>, types.bool),
+					"check", "frame_writable", context_line_number)
+			end
+		end
+
+
 feature {NONE} -- Implementation
 
 	procedure_calls: LINKED_STACK [IV_PROCEDURE_CALL]
 			-- Stack of procedure calls.
+
+	local_writable: detachable IV_EXPRESSION
+			-- Local writable frame of the enclosing context.
 
 	create_local (a_type: TYPE_A)
 			-- Create new local.

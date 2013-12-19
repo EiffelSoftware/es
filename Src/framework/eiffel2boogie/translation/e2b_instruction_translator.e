@@ -75,7 +75,6 @@ feature -- Element change
 			if a_feature.has_return_value then
 				entity_mapping.set_default_result (a_feature.type)
 			end
-
 		end
 
 	set_entity_mapping (a_entity_mapping: E2B_ENTITY_MAPPING)
@@ -105,6 +104,7 @@ feature -- Basic operations
 			current_block := Void
 			create entity_mapping.make
 			create locals_map.make (5)
+			local_writable := Void
 		end
 
 	process_feature_of_type (a_feature: FEATURE_I; a_type: TYPE_A)
@@ -147,8 +147,11 @@ feature -- Processing
 			l_target_name: STRING
 
 			l_target, l_source: IV_EXPRESSION
+			l_field: IV_ENTITY
 			l_assignment: IV_ASSIGNMENT
 			l_call: IV_PROCEDURE_CALL
+			l_assert: IV_ASSERT
+			l_fcall: IV_FUNCTION_CALL
 		do
 			set_current_origin_information (a_node)
 
@@ -196,7 +199,8 @@ feature -- Processing
 
 				-- Create assignment node
 			if a_node.target.is_attribute and options.is_ownership_enabled then
-					-- OWNERSHIP: call update heap instead of direct heap assignment
+					-- OWNERSHIP: call update heap instead of direct heap assignment				
+				create l_field.make (name_translator.boogie_procedure_for_feature (l_feature, current_type), types.field (types.for_type_a (l_feature.type)))
 				if l_attribute.attribute_name ~ "subjects" then
 					create l_call.make ("update_subjects")
 					l_call.add_argument (entity_mapping.current_expression)
@@ -207,10 +211,21 @@ feature -- Processing
 					-- Regular update_heap
 					create l_call.make ("update_heap")
 					l_call.add_argument (entity_mapping.current_expression)
-					l_call.add_argument (create {IV_ENTITY}.make (name_translator.boogie_procedure_for_feature (l_feature, current_type), types.field (types.for_type_a (l_feature.type))))
+					l_call.add_argument (l_field)
 				end
 				l_call.add_argument (l_source)
 				l_call.node_info.set_line (a_node.line_number)
+
+				if local_writable /= Void then
+						-- There is a local frame: create a framing check
+					create l_assert.make (factory.frame_access (local_writable, entity_mapping.current_expression, l_field))
+					l_assert.node_info.set_type ("assign")
+					l_assert.node_info.set_tag ("attribute_writable")
+					l_assert.node_info.set_line (a_node.line_number)
+					l_assert.set_attribute_string (":subsumption 0")
+					add_statement (l_assert)
+				end
+
 				add_statement (l_call)
 			else
 				create l_assignment.make (l_target, l_source)
@@ -538,7 +553,8 @@ feature -- Processing
 		require
 			from_loop: a_node.stop /= Void and a_node.iteration_exit_condition = Void
 		local
-			l_pre_heap: IV_ENTITY
+			l_pre_heap, l_frame, l_writable: IV_ENTITY
+			l_old_writable: IV_EXPRESSION
 			l_condition: IV_EXPRESSION
 			l_variant_local: STRING
 			l_invariant: ASSERT_B
@@ -550,6 +566,7 @@ feature -- Processing
 			l_op: IV_BINARY_OPERATION
 			l_variant: IV_ENTITY
 			l_assignment: IV_ASSIGNMENT
+			l_modifies: ARRAYED_LIST [ASSERT_B]
 		do
 			set_current_origin_information (a_node)
 
@@ -558,16 +575,75 @@ feature -- Processing
 			create l_body_block.make_name (helper.unique_identifier("loop_body"))
 			create l_end_block.make_name (helper.unique_identifier("loop_end"))
 
+				-- From part
+			if a_node.from_part /= Void then
+				a_node.from_part.process (Current)
+			end
+
 				-- Save pre-loop state
 			create l_pre_heap.make (helper.unique_identifier ("PreLoopHeap"), types.heap)
 			current_implementation.add_local (l_pre_heap.name, l_pre_heap.type)
 			create l_assignment.make (l_pre_heap, entity_mapping.heap)
 			add_statement (l_assignment)
 
-				-- From part
-			if a_node.from_part /= Void then
-				a_node.from_part.process (Current)
+				-- Collect modify clauses
+			create l_modifies.make (3)
+			if a_node.invariant_part /= Void then
+				from
+					a_node.invariant_part.start
+				until
+					a_node.invariant_part.after
+				loop
+					l_invariant ?= a_node.invariant_part.item
+					if attached {FEATURE_B} l_invariant.expr as l_call
+						and then (l_call.feature_name ~ "modify" or l_call.feature_name ~ "modify_field") then
+						l_modifies.extend (l_invariant)
+					end
+					a_node.invariant_part.forth
+				end
 			end
+			if not l_modifies.is_empty then
+				-- The loop has decreases clauses: initialize frame and check that its witin the encloding writable set
+				create l_frame.make (helper.unique_identifier ("LoopFrame"), types.frame)
+				current_implementation.add_local (l_frame.name, l_frame.type)
+				add_statement (create {IV_HAVOC}.make (l_frame.name))
+
+				process_modifies (l_modifies, l_frame)
+				across last_safety_checks as i loop
+					create l_assert.make (i.item.expr)
+					l_assert.node_info.load (i.item.info)
+					l_assert.set_attribute_string (":subsumption 0")
+					add_statement (l_assert)
+				end
+				create l_assume.make (last_frame)
+				add_statement (l_assume)
+
+				if local_writable = Void then
+					create l_assert.make (factory.function_call ("Frame#Subset", <<l_frame, factory.global_writable>>, types.bool))
+				else
+					create l_assert.make (factory.function_call ("Frame#Subset", <<l_frame, local_writable>>, types.bool))
+				end
+				l_assert.node_info.set_type ("check")
+				l_assert.node_info.set_tag ("frame_writable")
+				l_assert.node_info.set_line (l_modifies.first.line_number)
+				l_assert.set_attribute_string (":subsumption 0")
+				add_statement (l_assert)
+
+				-- Initialize the local writable set: superset of the frame and closed under ownership domains
+				create l_writable.make (helper.unique_identifier ("LoopFrame"), types.frame)
+				current_implementation.add_local (l_writable.name, l_writable.type)
+				add_statement (create {IV_HAVOC}.make (l_writable.name))
+				create l_assume.make (factory.function_call ("Frame#Subset", <<l_frame, l_writable>>, types.bool))
+				add_statement (l_assume)
+				create l_assume.make (factory.function_call ("writable_domains", <<l_writable, "Heap">>, types.bool))
+				add_statement (l_assume)
+
+					-- Remember the old writable set and set the new one
+				l_old_writable := local_writable
+				local_writable := l_writable
+			end
+
+				-- Goto head
 			create l_goto.make (l_head_block)
 			add_statement (l_goto)
 			add_statement (l_head_block)
@@ -581,24 +657,29 @@ feature -- Processing
 					a_node.invariant_part.after
 				loop
 					l_invariant ?= a_node.invariant_part.item
-					set_current_origin_information (l_invariant)
-					process_contract_expression (l_invariant.expr)
-					across last_safety_checks as i loop
-						create l_assert.make (i.item.expr)
-						l_assert.node_info.load (i.item.info)
-						l_assert.set_attribute_string (":subsumption 0")
-						add_statement (l_assert)
-					end
-					if l_invariant.tag /= Void and then l_invariant.tag ~ "assume" then
-							-- Free invariants with tag 'assume'
-						create l_assume.make (last_expression)
-						add_statement (l_assume)
-					else
-						create l_assert.make (last_expression)
-						l_assert.node_info.set_type ("loop_inv")
-						l_assert.node_info.set_tag (l_invariant.tag)
-						l_assert.node_info.set_line (l_invariant.line_number)
-						add_statement (l_assert)
+					if not attached {FEATURE_B} l_invariant.expr as l_call
+						or else (l_call.feature_name /~ "modify" and l_call.feature_name /~ "modify_field") then
+
+						set_current_origin_information (l_invariant)
+						process_contract_expression (l_invariant.expr)
+						across last_safety_checks as i loop
+							create l_assert.make (i.item.expr)
+							l_assert.node_info.load (i.item.info)
+							l_assert.set_attribute_string (":subsumption 0")
+							add_statement (l_assert)
+						end
+
+						if l_invariant.tag /= Void and then l_invariant.tag ~ "assume" then
+								-- Free invariants with tag 'assume'
+							create l_assume.make (last_expression)
+							add_statement (l_assume)
+						else
+							create l_assert.make (last_expression)
+							l_assert.node_info.set_type ("loop_inv")
+							l_assert.node_info.set_tag (l_invariant.tag)
+							l_assert.node_info.set_line (l_invariant.line_number)
+							add_statement (l_assert)
+						end
 					end
 					a_node.invariant_part.forth
 				end
@@ -607,8 +688,15 @@ feature -- Processing
 			create l_assume.make (factory.function_call ("HeapSucc", <<l_pre_heap, "Heap">>, types.bool))
 			add_statement (l_assume)
 			if options.is_ownership_enabled then
-				create l_assume.make (factory.writes_frame (current_feature, current_type, current_implementation.procedure,
-					factory.old_ (create {IV_ENTITY}.make ("Heap", types.heap_type))))
+				if l_frame = Void then
+						-- Nothing outside routine's frame has changed compared to old(Heap)
+						-- (here we have to compare to old(Heap) because the routines's frame referes to ownership domains then.
+					create l_assume.make (factory.writes_routine_frame (current_feature, current_type, current_implementation.procedure))
+				else
+						-- Nothing outside loop's frame has changed since before the loop
+						-- (here we have to compare to before the loop because the loop's frame referes to ownership domains then.
+					create l_assume.make (factory.function_call ("writes", <<l_pre_heap, "Heap", l_frame>>, types.bool))
+				end
 				add_statement (l_assume)
 				create l_assume.make (factory.function_call ("global", << "Heap" >>, types.bool))
 				add_statement (l_assume)
@@ -664,6 +752,10 @@ feature -- Processing
 			create l_assume.make (l_condition)
 			add_statement (l_assume)
 
+				-- If the loop had its own writable, revert to the old local writable
+			if l_writable /= Void then
+				local_writable := l_old_writable
+			end
 			current_block := l_temp_block
 		end
 
@@ -1059,6 +1151,7 @@ feature {NONE} -- Implementation
 			l_translator.set_context_line_number (current_origin_information.line)
 			l_translator.copy_entity_mapping (entity_mapping)
 			l_translator.locals_map.merge (locals_map)
+			l_translator.set_local_writable (local_writable)
 			a_expr.process (l_translator)
 			if not l_translator.side_effect.is_empty and attached current_origin_information as coi then
 				l_translator.side_effect.first.set_origin_information (coi)
@@ -1090,13 +1183,37 @@ feature {NONE} -- Implementation
 			locals_map.merge (l_translator.locals_map)
 		end
 
+	process_modifies (a_modifies: LIST [ASSERT_B]; a_lhs: IV_EXPRESSION)
+			-- Generate frame definition of `a_lhs' using `a_modifies' and store it in `last_frame' .
+		local
+			l_routine_translator: E2B_ROUTINE_TRANSLATOR
+			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
+		do
+			create l_routine_translator.make
+			l_routine_translator.set_context (current_feature, current_type)
+
+			create l_translator.make
+			l_translator.set_context (current_feature, current_type)
+			l_translator.copy_entity_mapping (entity_mapping)
+			l_translator.locals_map.merge (locals_map)
+			last_frame := l_routine_translator.frame_definition (l_routine_translator.modifies_expressions_of (a_modifies, l_translator), a_lhs)
+			last_safety_checks := l_translator.side_effect
+			locals_map.merge (l_translator.locals_map)
+		end
+
 	last_expression: IV_EXPRESSION
 			-- Last generated expression.
 
 	last_safety_checks: LINKED_LIST [TUPLE [expr: IV_EXPRESSION; info: IV_NODE_INFO]]
 			-- List of last generated safety checks.
 
+	last_frame: IV_EXPRESSION
+			-- Last generated frame definition.
+
 	locals_map: HASH_TABLE [IV_EXPRESSION, INTEGER]
 			-- Mapping for object test locals.
+
+	local_writable: detachable IV_EXPRESSION
+			-- Writable frame of the current loop.
 
 end

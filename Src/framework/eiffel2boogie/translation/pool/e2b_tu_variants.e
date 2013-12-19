@@ -27,7 +27,7 @@ feature -- Basic operations
 			l_translator: E2B_ROUTINE_TRANSLATOR
 		do
 			create l_translator.make
-			l_translator.translate_decreases_function (feat, type)
+			l_translator.translate_variant_functions (feat, type)
 		end
 
 end

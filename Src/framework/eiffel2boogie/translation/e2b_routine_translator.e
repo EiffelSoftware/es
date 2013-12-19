@@ -236,7 +236,7 @@ feature -- Translation: Signature
 			l_fcall: IV_FUNCTION_CALL
 		do
 				-- Precondition: Modify set is writable
-			create l_fcall.make (name_translator.boogie_function_for_frame (current_feature, current_type), types.set (types.ref))
+			create l_fcall.make (name_translator.boogie_function_for_frame (current_feature, current_type), types.frame)
 			l_fcall.add_argument (create {IV_ENTITY}.make ("Heap", types.heap_type))
 			across current_boogie_procedure.arguments as i loop
 				l_fcall.add_argument (i.item.entity)
@@ -250,21 +250,16 @@ feature -- Translation: Signature
 					>>,
 					types.bool))
 			l_pre.node_info.set_type ("pre")
-			l_pre.node_info.set_tag ("modify_set_writable")
+			l_pre.node_info.set_tag ("frame_writable")
 			current_boogie_procedure.add_contract (l_pre)
 
 				-- Free precondition: Everything in the domains of writable objects is writable
-			create l_pre.make (factory.function_call ("writable_domains", <<"Heap">>, types.bool))
+			create l_pre.make (factory.function_call ("writable_domains", <<"writable", "Heap">>, types.bool))
 			l_pre.set_free
 			current_boogie_procedure.add_contract (l_pre)
 
 				-- Free postcondition: Only writes set has changed
-			create l_post.make (factory.writes_frame (
-				current_feature,
-				current_type,
-				current_boogie_procedure,
-				factory.old_ (create {IV_ENTITY}.make ("Heap", types.heap_type)))
-				)
+			create l_post.make (factory.writes_routine_frame (current_feature, current_type, current_boogie_procedure))
 			l_post.set_free
 			current_boogie_procedure.add_contract (l_post)
 
@@ -499,23 +494,19 @@ feature -- Translation: Functions
 			end
 		end
 
-	translate_writes_function (a_feature: FEATURE_I; a_type: TYPE_A)
-			-- Translate the writes function of feature `a_feature' of type `a_type'.
+	translate_frame_function (a_feature: FEATURE_I; a_type: TYPE_A)
+			-- Translate the frame function of feature `a_feature' of type `a_type'.
 		local
-			l_: like modifies_expressions_of
+			l_mods: like modifies_expressions_of
 			l_function: IV_FUNCTION
-			l_expr, l_disjunct, l_o_conjunct, l_f_conjunct: IV_EXPRESSION
-			l_o, l_f: IV_ENTITY
 			l_forall: IV_FORALL
 			l_fcall: IV_FUNCTION_CALL
-			l_access: IV_MAP_ACCESS
+			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 		do
 			set_context (a_feature, a_type)
 			helper.set_up_byte_context (current_feature, current_type)
 
-			l_ := modifies_expressions_of (current_feature, current_type)
-
-				-- Writes function
+				-- Frame function
 			create l_function.make (name_translator.boogie_function_for_frame (current_feature, current_type), types.frame)
 			boogie_universe.add_declaration (l_function)
 
@@ -527,106 +518,49 @@ feature -- Translation: Functions
 				l_function.add_argument (i.item.name, i.item.boogie_type)
 			end
 
+				-- Get the modified objects and apply defaults
+			create l_translator.make
+			l_translator.entity_mapping.set_heap (create {IV_ENTITY}.make ("heap", types.heap))
+			l_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.ref))
+			l_translator.set_context (current_feature, current_type)
+			l_mods := modifies_expressions_of (contracts_of (current_feature, current_type).modifies, l_translator)
+			if l_mods.fully_modified.is_empty and l_mods.part_modified.is_empty then
+				-- Missing modify clause: apply defaults
+				if not a_feature.has_return_value then
+					l_mods.fully_modified.extend (create {IV_ENTITY}.make ("current", types.ref))
+				end
+			end
+
 				-- Definitional axiom
-				-- Axiom lhs: access on a function application
+				-- (forall args :: frame_defintition (f (args)))
 			create l_fcall.make (l_function.name, types.frame)
 			across l_function.arguments as a loop
 				l_fcall.add_argument (a.item.entity)
 			end
-			create l_o.make ("$o", types.ref)
-			create l_f.make ("$f", types.field (types.generic))
-			create l_access.make_two (l_fcall, l_o, l_f)
-
-				-- Axiom rhs: a big disjunction
-				-- First go over partially modifiable objects
-			across l_.part_modified as restiction loop
-				l_o_conjunct := Void
-				l_f_conjunct := Void
-				across restiction.item.objects as o loop
-					if o.item = Void then
-						l_disjunct := factory.false_
-					elseif o.item.type.is_set then
-						l_disjunct := factory.map_access (o.item, l_o)
-					elseif o.item.type.is_seq then
-						l_disjunct := factory.map_access (factory.function_call ("Seq#Range", << o.item >>, types.set (types.ref)), l_o)
-					else
-						l_disjunct := factory.equal (l_o, o.item)
-					end
-					if l_o_conjunct = Void then
-						l_o_conjunct := l_disjunct
-					else
-						l_o_conjunct := factory.or_ (l_o_conjunct, l_disjunct)
-					end
-				end
-				across restiction.item.fields as f loop
-					l_disjunct := factory.equal (l_f, f.item)
-					if l_f_conjunct = Void then
-						l_f_conjunct := l_disjunct
-					else
-						l_f_conjunct := factory.or_ (l_f_conjunct, l_disjunct)
-					end
-				end
-				if l_f_conjunct = Void then
-						-- There was some validty error
-					check not autoproof_errors.is_empty end
-				else
-					if l_expr = Void then
-						l_expr := factory.and_ (l_o_conjunct, l_f_conjunct)
-					else
-						l_expr := factory.or_ (l_expr, factory.and_ (l_o_conjunct, l_f_conjunct))
-					end
-				end
-			end
-				-- Then go over fully modifiable objects
-			across l_.fully_modified as o loop
-				if o.item = Void then
-					l_disjunct := factory.false_
-				elseif o.item.type.is_set then
-					l_disjunct := factory.map_access (o.item, l_o)
-				elseif o.item.type.is_seq then
-					l_disjunct := factory.map_access (factory.function_call ("Seq#Range", << o.item >>, types.set (types.ref)), l_o)
-				else
-					l_disjunct := factory.equal (l_o, o.item)
-				end
-				if l_expr = Void then
-					l_expr := l_disjunct
-				else
-					l_expr := factory.or_ (l_expr, l_disjunct)
-				end
-			end
-			if l_expr = Void then
-				-- Missing modify clause: apply defaults
-				if a_feature.has_return_value then
-					l_expr := factory.false_
-				else
-					l_expr := factory.equal (l_o, create {IV_ENTITY}.make ("current", types.ref))
-				end
-			end
-				-- Finally create the axiom body:
-				-- (forall args, o, f :: function(args)[o, f] <==> is_partially_modifiable[o, f] || is_fully_modifiable[o])
-			create l_forall.make (factory.equiv (l_access, l_expr))
-			across
-				l_function.arguments as a
+			create l_forall.make (frame_definition (l_mods, l_fcall))
+			across l_function.arguments as a
 			loop
 				l_forall.add_bound_variable (a.item.entity.name, a.item.entity.type)
 			end
-			l_forall.add_bound_variable (l_o.name, l_o.type)
-			l_forall.add_bound_variable (l_f.name, l_f.type)
-			l_forall.add_trigger (l_access)
 			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
 		end
 
-	translate_decreases_function (a_feature: FEATURE_I; a_type: TYPE_A)
+	translate_variant_functions (a_feature: FEATURE_I; a_type: TYPE_A)
 			-- Translate the decreases of feature `a_feature' of type `a_type'.
 		local
 			l_decreases_list: like decreases_expressions_of
 			l_entity: IV_ENTITY
 			l_function: IV_FUNCTION
+			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 		do
 			set_context (a_feature, a_type)
 			helper.set_up_byte_context (current_feature, current_type)
 
-			l_decreases_list := decreases_expressions_of (current_feature, current_type)
+			create l_translator.make
+			l_translator.entity_mapping.set_heap (create {IV_ENTITY}.make ("heap", types.heap))
+			l_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.ref))
+			l_translator.set_context (current_feature, current_type)
+			l_decreases_list := decreases_expressions_of (contracts_of (current_feature, current_type).decreases, l_translator)
 			if l_decreases_list.is_empty then
 				-- No decreases clause: apply default
 				across arguments_of_current_feature as j loop
