@@ -8,11 +8,7 @@ class
 	PS_INTERNAL_TRANSACTION
 
 inherit
-
 	PS_ABEL_EXPORT
-
---create
---	make
 
 create {PS_ABEL_EXPORT}
 	make, make_readonly
@@ -23,8 +19,8 @@ feature {NONE} -- Initialization
 			-- Initialize `Current'.
 		do
 			repository := a_repository
-			create {PS_NO_ERROR} error
-			create root_flags.make (100)
+			create root_flags.make (1)
+			create identifier_set.make
 			is_readonly := False
 			is_active := True
 
@@ -35,24 +31,26 @@ feature {NONE} -- Initialization
 			-- Initialize `Current', mark transaction as readonly.
 		do
 			repository := a_repository
-			create {PS_NO_ERROR} error
-			create root_flags.make (100)
+			create root_flags.make (1)
+			create identifier_set.make
 			is_readonly := True
 			is_active := True
-			
+
 			repository.id_manager.register_transaction (Current)
 		end
 
 feature {PS_ABEL_EXPORT} -- Access
 
-	error: PS_ERROR
+	error: detachable PS_ERROR
 			-- Error description of the last error.
 
 	repository: PS_REPOSITORY
 			-- The repository this `Current' is bound to.
 
-	root_flags: HASH_TABLE[BOOLEAN, INTEGER]
+	root_flags: HASH_TABLE [BOOLEAN, INTEGER]
 			-- Mapping for ABEL identifier -> root status of every object.
+
+	identifier_set: PS_IDENTIFIER_SET
 
 feature {PS_ABEL_EXPORT} -- Status report
 
@@ -69,7 +67,7 @@ feature {PS_ABEL_EXPORT} -- Status report
 	has_error: BOOLEAN
 			-- Has there been an error in any of the operations or the final commit?
 		do
-			Result := not attached {PS_NO_ERROR} error
+			Result := attached error
 		end
 
 	is_readonly: BOOLEAN
@@ -107,7 +105,7 @@ feature {PS_ABEL_EXPORT} -- Basic operations
 
 feature {PS_ABEL_EXPORT} -- Internals
 
-	set_error (an_error: PS_ERROR)
+	set_error (an_error: detachable PS_ERROR)
 			-- Set the error field if an error occurred.
 		do
 			error := an_error

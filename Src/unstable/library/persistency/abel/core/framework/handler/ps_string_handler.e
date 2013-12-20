@@ -11,6 +11,11 @@ inherit
 
 	PS_VALUE_TYPE_HANDLER
 
+	PS_TYPE_TABLE
+		undefine
+			default_create
+		end
+
 create
 	make, default_create
 
@@ -19,10 +24,12 @@ feature {NONE} -- Implementation
 	internal_can_handle_type (type: PS_TYPE_METADATA): BOOLEAN
 			-- Can `Current' handle objects of type `type'?
 		do
+--			Result := string_types.has (type.type.type_id)
+
 			Result :=
 				type.type.type_id = ({detachable STRING_8}).type_id
 				or else type.type.type_id = ({detachable STRING_32}).type_id
-				or else attached {TYPE[detachable IMMUTABLE_STRING_GENERAL]} type.type
+				or else attached {TYPE [detachable IMMUTABLE_STRING_GENERAL]} type.type
 		end
 
 feature {PS_ABEL_EXPORT} -- String pair conversion
@@ -51,7 +58,7 @@ feature {PS_ABEL_EXPORT} -- String pair conversion
 			end
 		end
 
-	as_string_pair (object: PS_OBJECT_DATA): TUPLE[value: STRING; type: IMMUTABLE_STRING_8]
+	as_string_pair (object: PS_OBJECT_DATA): TUPLE [value: STRING; type: IMMUTABLE_STRING_8]
 			-- The `object' converted to a string pair.
 		local
 			conv: UTF_CONVERTER

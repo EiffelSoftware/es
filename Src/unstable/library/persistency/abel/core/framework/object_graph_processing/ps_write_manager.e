@@ -8,7 +8,7 @@ class
 	PS_WRITE_MANAGER
 
 inherit
-	PS_ABSTRACT_MANAGER
+	PS_ABSTRACT_MANAGER [PS_OBJECT_WRITE_DATA]
 
 create
 	make
@@ -33,7 +33,29 @@ feature {NONE} -- Initialization
 			create collections_to_write.make (small_size)
 		end
 
-feature -- Accesss: Static
+	object_storage: ARRAYED_LIST [PS_OBJECT_WRITE_DATA]
+			-- An internal storage for objects.
+
+feature {PS_ABEL_EXPORT} -- Access
+
+	count: INTEGER
+			-- The number of objects known to this manager.
+		do
+			Result := object_storage.count
+		ensure then
+			correct: object_storage.count = Result
+		end
+
+	item (index: INTEGER): PS_OBJECT_WRITE_DATA
+			-- Get the object with index `index'
+		do
+			Result := object_storage [index]
+		ensure then
+			object_correct: object_storage [index] = Result
+			index_set: Result.index = index
+		end
+
+feature {PS_ABEL_EXPORT} -- Accesss: Static
 
 	backend: PS_BACKEND
 			-- An actual backend for the write operations.
@@ -41,32 +63,33 @@ feature -- Accesss: Static
 	traversal: PS_OBJECT_GRAPH_TRAVERSAL
 			-- An object to traverse and generate an object graph.
 
-feature -- Access: Per Write
+feature {PS_ABEL_EXPORT} -- Access: Per Write
 
 
-	object_primary_key_order: HASH_TABLE[INTEGER, PS_TYPE_METADATA]
+	object_primary_key_order: HASH_TABLE [INTEGER, PS_TYPE_METADATA]
 			-- All primary keys for objects to be generated.
 
-	collection_primary_key_order: HASH_TABLE[INTEGER, PS_TYPE_METADATA]
+	collection_primary_key_order: HASH_TABLE [INTEGER, PS_TYPE_METADATA]
 			-- All primary keys for collections to be generated.
 
-	generated_object_primary_keys: HASH_TABLE [LIST[PS_BACKEND_OBJECT], PS_TYPE_METADATA]
+	generated_object_primary_keys: HASH_TABLE [LIST [PS_BACKEND_OBJECT], PS_TYPE_METADATA]
 			-- The generated object primary keys.
 
-	generated_collection_primary_keys: HASH_TABLE [LIST[PS_BACKEND_COLLECTION], PS_TYPE_METADATA]
+	generated_collection_primary_keys: HASH_TABLE [LIST [PS_BACKEND_COLLECTION], PS_TYPE_METADATA]
 			-- The generated collection primary keys.
 
-	objects_to_write: ARRAYED_LIST[PS_BACKEND_OBJECT]
+	objects_to_write: ARRAYED_LIST [PS_BACKEND_OBJECT]
 			-- All objects to be written to the database.
 
-	collections_to_write: ARRAYED_LIST[PS_BACKEND_COLLECTION]
+	collections_to_write: ARRAYED_LIST [PS_BACKEND_COLLECTION]
 			-- All collections to be written to the database.
 
-feature -- Write execution
-
+feature {PS_ABEL_EXPORT} -- Write execution
 
 	write (root_object: ANY; a_transaction: PS_INTERNAL_TRANSACTION)
 			-- Insert or update `root_object' and all objects reachable from it.
+		local
+			object: PS_OBJECT_WRITE_DATA
 		do
 			wipe_out
 			internal_transaction := a_transaction
@@ -76,9 +99,39 @@ feature -- Write execution
 			-- object_storage := traversal.traversed_objects
 
 			assign_handlers (1 |..| count)
-			do_all (agent {PS_HANDLER}.set_is_persistent)
-			do_all (agent {PS_HANDLER}.set_identifier)
-			do_all (agent {PS_HANDLER}.generate_primary_key)
+
+
+--			do_all (agent {PS_HANDLER}.set_is_persistent)
+			across
+				object_storage as cursor
+			loop
+				object := cursor.item
+				if not object.is_ignored then
+					object.handler.set_is_persistent (object)
+				end
+			end
+
+--			do_all (agent {PS_HANDLER}.set_identifier)
+			across
+				object_storage as cursor
+			loop
+				object := cursor.item
+				if not object.is_ignored then
+					object.handler.set_identifier (object)
+				end
+			end
+
+
+--			do_all (agent {PS_HANDLER}.generate_primary_key)
+			across
+				object_storage as cursor
+			loop
+				object := cursor.item
+				if not object.is_ignored then
+					object.handler.generate_primary_key (object)
+				end
+			end
+
 
 			if not object_primary_key_order.is_empty then
 				generated_object_primary_keys := backend.generate_all_object_primaries (object_primary_key_order, transaction)
@@ -90,22 +143,51 @@ feature -- Write execution
 				across generated_collection_primary_keys as cursor2 loop cursor2.item.start end
 			end
 
-			do_all (agent {PS_HANDLER}.generate_backend_representation)
-			do_all (agent {PS_HANDLER}.initialize_backend_representation)
+--			do_all (agent {PS_HANDLER}.generate_backend_representation)
+			across
+				object_storage as cursor
+			loop
+				object := cursor.item
+				if not object.is_ignored then
+					object.handler.generate_backend_representation (object)
+				end
+			end
+
+
+--			do_all (agent {PS_HANDLER}.initialize_backend_representation)
+			across
+				object_storage as cursor
+			loop
+				object := cursor.item
+				if not object.is_ignored then
+					object.handler.initialize_backend_representation (object)
+				end
+			end
+
+
 
 			fixme ("Support the other root object strategies as well")
-			if not item(1).is_persistent then
-				transaction.root_flags.force (True, item(1).identifier)
+			if not item (1).is_persistent then
+				transaction.root_flags.force (True, item (1).identifier)
 			end
 			across
 				1 |..| count as idx
 			loop
-				if attached item(idx.item).backend_representation as br then
-					br.set_is_root (transaction.root_flags[item(idx.item).identifier])
+				if attached item (idx.item).backend_representation as br then
+					br.set_is_root (transaction.root_flags [item (idx.item).identifier])
 				end
 			end
 
-			do_all (agent {PS_HANDLER}.write_backend_representation)
+--			do_all (agent {PS_HANDLER}.write_backend_representation)
+			across
+				object_storage as cursor
+			loop
+				object := cursor.item
+				if not object.is_ignored then
+					object.handler.write_backend_representation (object)
+				end
+			end
+
 
 			if not objects_to_write.is_empty then
 				backend.write (objects_to_write, transaction)
@@ -122,7 +204,7 @@ feature -- Write execution
 		local
 			reflected_object: REFLECTED_REFERENCE_OBJECT
 			type: PS_TYPE_METADATA
-			object_data: PS_OBJECT_DATA
+			object_data: PS_OBJECT_WRITE_DATA
 		do
 				-- Initialize the data structures first.
 			wipe_out
@@ -150,9 +232,9 @@ feature -- Write execution
 			-- Do not initialize... we don't want to perform an actual update...
 
 			-- Set the root status in the backend representation
-			transaction.root_flags.force (value, item(1).identifier)
-			check attached item(1).backend_representation as br then
-				br.set_is_root (transaction.root_flags[item(1).identifier])
+			transaction.root_flags.force (value, item (1).identifier)
+			check attached item (1).backend_representation as br then
+				br.set_is_root (transaction.root_flags [item (1).identifier])
 				br.set_is_update_delta (True)
 			end
 
@@ -198,9 +280,9 @@ feature -- Write execution
 			do_all_in_set (agent {PS_HANDLER}.generate_backend_representation, 1 |..| k)
 			do_all_in_set (agent {PS_HANDLER}.initialize_backend_representation, 1 |..| 1)
 
-			check attached item(1).backend_representation as br then
+			check attached item (1).backend_representation as br then
 				fixme ("Other root declaration strategies")
-				br.set_is_root (transaction.root_flags[item(1).identifier])
+				br.set_is_root (transaction.root_flags [item (1).identifier])
 			end
 
 			do_all_in_set (agent {PS_HANDLER}.write_backend_representation, 1 |..| 1)
@@ -214,6 +296,41 @@ feature -- Write execution
 			end
 		end
 
+feature {PS_ABEL_EXPORT} -- Support
+
+	cascading_ignore (object: PS_OBJECT_DATA)
+			-- Ignore `object' and all objects transitively referenced by it.
+		local
+			stack: LINKED_STACK [INTEGER]
+			i: INTEGER
+		do
+			from
+				create stack.make
+				stack.extend (object.index)
+			until
+				stack.is_empty
+			loop
+				i := stack.item
+				stack.remove
+
+				item (i).ignore
+
+				across
+					item (i).references as ref_cursor
+				loop
+
+--					check
+--						correct_referer: item (ref_cursor.item).referers.count > 0
+--						and (item (ref_cursor.item).referers.count = 1
+--							implies item (ref_cursor.item).referers.first = i)
+--					end
+
+					if item (ref_cursor.item).referer_count = 1 then
+						stack.extend (item (ref_cursor.item).index)
+					end
+				end
+			end
+		end
 
 feature {NONE} -- Implementation
 

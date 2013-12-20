@@ -27,12 +27,8 @@ feature {NONE} -- Creation
 		do
 			save_window_state (a_window_data.is_minimized, a_window_data.is_maximized)
 			save_size (a_window_data.width, a_window_data.height)
-			save_maximized_size (a_window_data.maximized_width, a_window_data.maximized_height)
 			save_position (a_window_data.x_position, a_window_data.y_position)
 			save_maximized_position (a_window_data.maximized_x_position, a_window_data.maximized_y_position)
-			save_force_debug_mode (a_window_data.is_force_debug_mode)
-			general_toolbar_layout := a_window_data.general_toolbar_layout.twin
-			refactoring_toolbar_layout := a_window_data.refactoring_toolbar_layout.twin
 		end
 
 feature {EB_DEVELOPMENT_WINDOW, EB_DEVELOPMENT_WINDOW_DIRECTOR} -- Access
@@ -68,48 +64,6 @@ feature {EB_DEVELOPMENT_WINDOW, EB_DEVELOPMENT_WINDOW_DIRECTOR} -- Access
 
 	show_formatter_marks: BOOLEAN
 			-- Show formatter marks?
-
-	width, height: INTEGER
-			-- Width and height for the development window.
-
-	x_position, y_position: INTEGER
-			-- X and Y position for development window.
-
-	maximized_width, maximized_height: INTEGER
-			-- Width and height for the development window when maximized.
-
-	maximized_x_position, maximized_y_position: INTEGER
-			-- X and Y position for development window when mazimized.
-
-	is_maximized: BOOLEAN
-			-- Is the development window maximized?
-
-	is_minimized: BOOLEAN
-			-- Is the development window minimized?
-
-	is_force_debug_mode: BOOLEAN
-			-- Is the development window force debug mode?
-
-	left_panel_use_explorer_style: BOOLEAN
-			-- Should there be only one tool in the left panel?
-
-	left_panel_width: INTEGER
-			-- Width for the left panel.
-
-	left_panel_layout: ARRAY [STRING]
-			-- Layout of the left panel of the window.
-
-	right_panel_layout: ARRAY [STRING]
-			-- Layout of the left panel of the window.
-
-	context_unified_stone: BOOLEAN
-			-- Is the context tool linked?
-
-	general_toolbar_layout: ARRAY [STRING]
-			-- Toolbar organization
-
-	refactoring_toolbar_layout: ARRAY [STRING]
-			-- Toolbar organization
 
 feature {EB_DEVELOPMENT_WINDOW} -- Element change
 
@@ -181,63 +135,8 @@ feature {EB_DEVELOPMENT_WINDOW} -- Element change
 			editor_position_set: editor_position = a_position
 		end
 
-	save_size (a_width, a_height: INTEGER)
-			-- <Precursor>
-		do
-			width := a_width
-			height := a_height
-		end
-
-	save_maximized_size (a_width, a_height: INTEGER)
-			-- <Precursor>
-		do
-			maximized_width := a_width
-			maximized_height := a_height
-		end
-
-	save_position (a_x, a_y: INTEGER)
-			-- <Precursor>
-		do
-			x_position := a_x
-			y_position := a_y
-		end
-
-	save_maximized_position (a_x, a_y: INTEGER)
-			-- <Precursor>
-		do
-			maximized_x_position := a_x
-			maximized_y_position := a_y
-		end
-
-	save_window_state (a_minimized, a_maximized: BOOLEAN)
-			-- <Precursor>
-		do
-			is_maximized := a_maximized
-			is_minimized := a_minimized
-		end
-
-	save_force_debug_mode (a_bool: BOOLEAN)
-			-- Save if `is_force_debug_mode'
-		do
-			is_force_debug_mode := a_bool
-		end
-
-feature -- Basic operations
-
-	retrieve_general_toolbar (command_pool: LIST [EB_TOOLBARABLE_COMMAND]): ARRAYED_SET [SD_TOOL_BAR_ITEM]
-			-- Retreive the general toolbar using the available commands in `command_pool'
-		do
-			Result := retrieve_toolbar_items (command_pool, general_toolbar_layout)
-		end
-
-	retrieve_refactoring_toolbar (command_pool: LIST [EB_TOOLBARABLE_COMMAND]): ARRAYED_SET [SD_TOOL_BAR_ITEM]
-			-- Retreive the refactoring toolbar using the available commands in `command_pool'
-		do
-			Result := retrieve_toolbar_items (command_pool, refactoring_toolbar_layout)
-		end
-
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

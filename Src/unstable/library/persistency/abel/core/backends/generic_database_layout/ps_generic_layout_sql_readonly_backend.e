@@ -55,59 +55,101 @@ feature {PS_ABEL_EXPORT} -- Object retrieval operations
 			rollback (transaction)
 		end
 
-
-	internal_retrieve_by_primary (type: PS_TYPE_METADATA; key: INTEGER; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction: PS_INTERNAL_TRANSACTION): detachable PS_BACKEND_OBJECT
-			-- See function `retrieve_by_primary'.
-			-- Use `internal_retrieve_by_primary' for contracts and other calls within a backend.
+--	internal_specific_retrieve (order: LIST [TUPLE [type: PS_TYPE_METADATA; primary_key: INTEGER]]; transaction: PS_INTERNAL_TRANSACTION): READABLE_INDEXABLE [PS_BACKEND_OBJECT]
+	internal_specific_retrieve (primaries: ARRAYED_LIST [INTEGER]; types: ARRAYED_LIST [PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): READABLE_INDEXABLE [PS_BACKEND_OBJECT]
+			-- See function `specific_retrieve'.
+			-- Use `internal_specific_retrieve' for contracts and other calls within a backend.
 		local
+			key_type_lookup: HASH_TABLE [PS_TYPE_METADATA, INTEGER]
+
 			connection: PS_SQL_CONNECTION
 			row_cursor: ITERATION_CURSOR [PS_SQL_ROW]
 			sql_string: STRING
-			attribute_name, attribute_value, class_name_of_value: STRING
+
+			primary_key: INTEGER
+			attribute_foreign_key: INTEGER
+			runtime_type_foreign_key: INTEGER
+
+			attribute_name: STRING
+			runtime_type: STRING
+			value: STRING
+
+			current_object: PS_BACKEND_OBJECT
+
+			actual_result: HASH_TABLE [PS_BACKEND_OBJECT, INTEGER]
 		do
-			connection := get_connection (transaction)
-			sql_string := "SELECT * FROM ps_value WHERE objectid = " + key.out + " " + SQL_Strings.for_update_appendix
-			connection.execute_sql (sql_string)
-			row_cursor := connection.last_result
+			create key_type_lookup.make (primaries.count)
+			create actual_result.make (primaries.count)
 
-			if not row_cursor.after then
-				from
-					create Result.make (row_cursor.item.at (SQL_Strings.Value_table_id_column).to_integer, type)
-				until
-					row_cursor.after
-				loop
-					-- fill all attributes - The result is ordered by the object id, therefore the attributes of a single object are grouped together.
-
-					attribute_name := db_metadata_manager.attribute_name_of_key (row_cursor.item.at (SQL_Strings.Value_table_attributeid_column).to_integer)
-					attribute_value := row_cursor.item.at (SQL_Strings.Value_table_value_column)
-					class_name_of_value := db_metadata_manager.class_name_of_key (row_cursor.item.at (SQL_Strings.Value_table_runtimetype_column).to_integer)
---					if not attribute_name.is_equal (SQL_Strings.Existence_attribute) then
---						Result.add_attribute (attribute_name, attribute_value, class_name_of_value)
---					end
-					if not attribute_name.is_equal (SQL_Strings.Existence_attribute) then
---						if attribute_name /~ Result.root_key then
-							Result.add_attribute (attribute_name, attribute_value, class_name_of_value)
---						end
-					else
-						if attribute_value /~ "NULL" then
-							Result.set_is_root (attribute_value.to_boolean)
-						end
-					end
-
-					row_cursor.forth
-				end
+				-- Build the SQL query
+			sql_string := "SELECT * FROM ps_value WHERE objectid IN ("
+			sql_string.grow (sql_string.count + 10 * primaries.count + SQL_Strings.for_update_appendix.count)
+			across
+				1 |..| primaries.count as i
+			loop
+				sql_string.append (primaries [i.item].out + ", ")
+				key_type_lookup.extend (types [i.item], primaries [i.item])
 			end
-		rescue
-			rollback (transaction)
+			sql_string.put (')', sql_string.count - 1)
+			if not transaction.is_readonly then
+				sql_string.append (SQL_Strings.for_update_appendix)
+			end
+
+			from
+					-- Execute the result
+				connection := get_connection (transaction)
+				connection.execute_sql (sql_string)
+				row_cursor := connection.last_result
+			until
+				row_cursor.after
+			loop
+					-- Build the data. Since the result is allowed to be unordered,
+					-- just iterate over the result and create objects or add attributes
+					-- however necessary.
+				primary_key := row_cursor.item.at (SQL_Strings.value_table_id_column).to_integer
+
+				attribute_foreign_key := row_cursor.item.at (SQL_Strings.value_table_attributeid_column).to_integer
+				attribute_name := db_metadata_manager.attribute_name_of_key (attribute_foreign_key)
+
+				value := row_cursor.item.at (SQL_Strings.value_table_value_column)
+
+					-- Check if there is already a (maybe incomplete) object in the result set.
+				if attached actual_result [primary_key] as obj then
+					current_object := obj
+				else
+						-- The check is safe because we did only query for objects where we also have a type.
+					check type_present: attached key_type_lookup [primary_key] as type then
+						create current_object.make (primary_key, type)
+						actual_result.extend (current_object, primary_key)
+					end
+				end
+
+				if not attribute_name.is_equal (SQL_Strings.Existence_attribute) then
+
+						-- Add an attribute. For that we also need the runtime type.
+					runtime_type_foreign_key := row_cursor.item.at (SQL_Strings.value_table_runtimetype_column).to_integer
+					runtime_type := db_metadata_manager.class_name_of_key (runtime_type_foreign_key)
+
+					current_object.add_attribute (attribute_name, value, runtime_type)
+				else
+						-- We are dealing with the artificial `ps_existence' attribute.
+						-- Set the root status if present.
+					if value /~ "NULL" then
+						current_object.set_is_root (value.to_boolean)
+					end
+				end
+				row_cursor.forth
+			end
+
+			Result := actual_result
 		end
 
 feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 
-	retrieve_all_collections (collection_type: PS_TYPE_METADATA; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_COLLECTION]
+	collection_retrieve (collection_type: PS_TYPE_METADATA; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_COLLECTION]
 			-- Retrieves all collections of type `collection_type'.
 		local
-			result_list: LINKED_LIST[PS_BACKEND_COLLECTION]
---			current_item: PS_RETRIEVED_OBJECT_COLLECTION
+			result_list: LINKED_LIST [PS_BACKEND_COLLECTION]
 
 			primary_key: INTEGER
 			position: INTEGER
@@ -168,9 +210,7 @@ feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 					key := row_cursor.item.at ("info_key")
 					info := row_cursor.item.at ("info")
 
---					if key /~ cursor.item.root_key then
-						cursor.item.add_information (key, info)
---					end
+					cursor.item.add_information (key, info)
 
 					row_cursor.forth
 				end
@@ -178,79 +218,106 @@ feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 			Result := result_list.new_cursor
 		end
 
-	retrieve_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER; transaction: PS_INTERNAL_TRANSACTION): detachable PS_BACKEND_COLLECTION
-			-- Retrieves the object-oriented collection of type `collection_type' and with primary key `collection_primary_key'.
+	specific_collection_retrieve (order: LIST [TUPLE [type: PS_TYPE_METADATA; primary_key: INTEGER]]; transaction: PS_INTERNAL_TRANSACTION): READABLE_INDEXABLE [PS_BACKEND_COLLECTION]
+			-- For every item in `order', retrieve the object with the correct `type' and `primary_key'.
+			-- Note: The result does not have to be ordered, and items deleted in the database are not present in the result.
 		local
-			position: INTEGER
+			key_type_lookup: HASH_TABLE [PS_TYPE_METADATA, INTEGER]
+
 			connection: PS_SQL_CONNECTION
 			row_cursor: ITERATION_CURSOR [PS_SQL_ROW]
-			sql_string: STRING
+			sql_get_collection: STRING
+			sql_get_info: STRING
+
+			primary_key: INTEGER
+			position: INTEGER
+			runtime_type_foreign_key: INTEGER
+
 			value: STRING
-			runtime_type: STRING
-			key, info: STRING
+
+			info_key: STRING
+			info_value: STRING
+
+			current_object: PS_BACKEND_COLLECTION
+			actual_result: HASH_TABLE [PS_BACKEND_COLLECTION, INTEGER]
 		do
-			-- Get the collection items
-			connection := get_connection (transaction)
-			sql_string := "SELECT position, runtimetype, value FROM ps_collection WHERE collectionid= "
-				+ collection_primary_key.out + " ORDER BY position " + SQL_Strings.for_update_appendix
-			connection.execute_sql (sql_string)
 
-			row_cursor := connection.last_result
+				-- Prepare the SQL strings and the type lookup table.
+			across
+				order as order_cursor
+			from
+				sql_get_collection := "SELECT collectionid, position, runtimetype, value FROM ps_collection WHERE collectionid IN ("
+				sql_get_info := "SELECT collectionid, info_key, info FROM ps_collection_info WHERE collectionid IN ("
 
-			if not row_cursor.after then
-				from
-					create Result.make (collection_primary_key, collection_type)
-				until
-					row_cursor.after
-				loop
-					position:= row_cursor.item.at ("position").to_integer
-					value := row_cursor.item.at (SQL_Strings.Value_table_value_column)
-					runtime_type := db_metadata_manager.class_name_of_key (row_cursor.item.at ("runtimetype").to_integer)
+				create key_type_lookup.make (order.count)
+				create actual_result.make (order.count)
+			loop
+				sql_get_collection.append (order_cursor.item.primary_key.out + ", ")
+				sql_get_info.append (order_cursor.item.primary_key.out + ", ")
 
-					if position > 0 then
-						Result.add_item (value, runtime_type)
-					else
-						Result.set_is_root (value.to_boolean)
-					end
-					row_cursor.forth
-				end
+				key_type_lookup.extend (order_cursor.item.type, order_cursor.item.primary_key)
+			end
+			sql_get_collection.put (')', sql_get_collection.count - 1)
+			sql_get_info.put (')', sql_get_info.count - 1)
+
+			if transaction.is_readonly then
+				sql_get_collection.append (SQL_Strings.for_update_appendix)
+				sql_get_info.append (SQL_Strings.for_update_appendix)
 			end
 
---			check attached Result then
---				across
---					Result.collection_items as item
---				from
---					print (Result.primary_key.out + " " + Result.metadata.type.name + "%N")
---				loop
---					print ("%T" + item.item.first + " " + item.item.second + "%N")
---				end
---			end
+				-- Execute the statements.
+			connection := get_connection (transaction)
+			connection.execute_sql (sql_get_collection + "; " + sql_get_info)
 
-			-- Get the additional information
-
-			sql_string := "SELECT info_key, info FROM ps_collection_info WHERE collectionid= "
-				+ collection_primary_key.out + SQL_Strings.for_update_appendix
-			connection.execute_sql (sql_string)
-
+				-- Build all collections. As the result is unordered, build the objects
+				-- on the fly and use `actual_result' to store the intermediate results.
 			from
-				row_cursor := connection.last_result
+				row_cursor := connection.last_results.first
 			until
-				row_cursor.after or not attached Result
+				row_cursor.after
 			loop
-				key := row_cursor.item.at ("info_key")
-				info := row_cursor.item.at ("info")
+				primary_key := row_cursor.item.at ("collectionid").to_integer
+				position := row_cursor.item.at ("position").to_integer
+				value := row_cursor.item.at ("value")
 
---				if key /~ Result.root_key then
-					Result.add_information (key, info)
---				end
+				if attached actual_result [primary_key] as obj then
+					current_object := obj
+				else
+						-- The check is safe because we did only query for objects where we also have a type.
+					check type_present: attached key_type_lookup [primary_key] as type then
+						create current_object.make (primary_key, type)
+						actual_result.extend (current_object, primary_key)
+					end
+				end
+
+				if position > 0 then
+					runtime_type_foreign_key := row_cursor.item.at ("runtimetype").to_integer
+					current_object.put_item (value, db_metadata_manager.class_name_of_key (runtime_type_foreign_key), position)
+				else
+					current_object.set_is_root (value.to_boolean)
+				end
+
 				row_cursor.forth
 			end
 
+				-- Now also check the second result to fill in the additional information.
+			from
+				row_cursor := connection.last_results.last
+			until
+				row_cursor.after
+			loop
+				primary_key := row_cursor.item.at ("collectionid").to_integer
+				info_key := row_cursor.item.at ("info_key")
+				info_value := row_cursor.item.at ("info")
 
---			connection.commit
---			check
---				not_implemented: False
---			end
+				if attached actual_result [primary_key] as partial then
+					partial.add_information (info_key, info_value)
+				end
+--				attach (actual_result [primary_key]).add_information (info_key, info_value)
+				row_cursor.forth
+			end
+
+			Result := actual_result
 		end
 
 feature {PS_ABEL_EXPORT} -- Transaction handling
@@ -308,27 +375,28 @@ feature {PS_LAZY_CURSOR} -- Implementation - Connection and Transaction handling
 			-- Acquire a new connection if the transaction is new.
 		local
 			new_connection: PS_PAIR [PS_SQL_CONNECTION, PS_INTERNAL_TRANSACTION]
-			the_actual_result_as_detachable_because_of_stupid_void_safety_rule: detachable PS_SQL_CONNECTION
+			found: detachable PS_SQL_CONNECTION
 		do
 			if transaction.is_readonly then
 				fixme ("remove this hack")
 				Result := management_connection
 			else
+				fixme ("A hash table would be nice.")
 				across
 					active_connections as cursor
 				loop
-					if cursor.item.second.is_equal (transaction) then
-						the_actual_result_as_detachable_because_of_stupid_void_safety_rule := cursor.item.first
-							--					print ("found existing%N")
+					if cursor.item.second ~ transaction then
+						found := cursor.item.first
 					end
 				end
-				if not attached the_actual_result_as_detachable_because_of_stupid_void_safety_rule then
-					the_actual_result_as_detachable_because_of_stupid_void_safety_rule := database.acquire_connection
-					create new_connection.make (the_actual_result_as_detachable_because_of_stupid_void_safety_rule, transaction)
+
+				if attached found then
+					Result := found
+				else
+					Result := database.acquire_connection
+					create new_connection.make (Result, transaction)
 					active_connections.extend (new_connection)
-						--					print ("created new%N")
 				end
-				Result := attach (the_actual_result_as_detachable_because_of_stupid_void_safety_rule)
 			end
 		end
 
@@ -386,8 +454,8 @@ feature {NONE} -- Initialization
 
 			batch_retrieval_size := Default_batch_size
 
-			create plug_in_list.make
-			plug_in_list.extend (create {PS_AGENT_CRITERION_ELIMINATOR_PLUGIN})
+			create plugins.make
+			plugins.extend (create {PS_AGENT_CRITERION_ELIMINATOR_PLUGIN})
 
 		end
 

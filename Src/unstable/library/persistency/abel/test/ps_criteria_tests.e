@@ -24,7 +24,7 @@ feature {PS_REPOSITORY_TESTS} -- Test criteria setting
 		do
 
 			repository.clean_db_for_testing
-			internal_transaction := repository.new_transaction
+			transaction := repository.new_transaction
 			insert_data
 
 			test_query_no_result
@@ -43,7 +43,7 @@ feature {PS_REPOSITORY_TESTS} -- Test criteria setting
 	test_criteria_predefined
 			-- All tests with predefined criteria
 		do
-			internal_transaction := repository.new_transaction
+			transaction := repository.new_transaction
 			insert_data
 
 			test_query_one_result_greater_than
@@ -62,7 +62,7 @@ feature {PS_REPOSITORY_TESTS} -- Test criteria setting
 	test_criteria_agents_and_predefined
 			-- all tests with predefined and agent criteria combined
 		do
-			internal_transaction := repository.new_transaction
+			transaction := repository.new_transaction
 			insert_data
 
 			test_query_many_results_three_mixed_criteria
@@ -79,7 +79,7 @@ feature {NONE} -- Implementation: Agent criteria tests
 			query: PS_QUERY [TEST_PERSON]
 		do
 			create query.make
-			query.set_criterion (factory [[agent p_dao.items_greater_than(?, 7)]])
+			query.set_criterion (factory (agent p_dao.items_greater_than (?, 7)))
 			transaction.execute_query (query)
 			assert ("The result list is not empty, but it should be.", query.stable_cursor.after)
 				-- How to establish the difference between the empty result list because there is no data matching
@@ -95,7 +95,7 @@ feature {NONE} -- Implementation: Agent criteria tests
 			p: TEST_PERSON
 		do
 			create query.make
-			query.set_criterion (factory [[agent p_dao.items_greater_than(?, 3)]])
+			query.set_criterion (factory (agent p_dao.items_greater_than (?, 3)))
 			transaction.execute_query (query)
 
 			assert ("The result list is empty", not query.stable_cursor.after)
@@ -113,7 +113,7 @@ feature {NONE} -- Implementation: Agent criteria tests
 			p: TEST_PERSON
 		do
 			create query.make
-			query.set_criterion (factory [[agent p_dao.items_equal_to(?, 5)]])
+			query.set_criterion (factory (agent p_dao.items_equal_to (?, 5)))
 			transaction.execute_query (query)
 
 			assert ("The result list is empty", not query.stable_cursor.after)
@@ -132,7 +132,7 @@ feature {NONE} -- Implementation: Agent criteria tests
 			p: TEST_PERSON
 		do
 			create query.make
-			query.set_criterion (factory [[agent p_dao.first_name_matches(?, "Crispo")]])
+			query.set_criterion (factory (agent p_dao.first_name_matches (?, "Crispo")))
 			transaction.execute_query (query)
 
 			assert ("The result list is empty", not query.stable_cursor.after)
@@ -150,7 +150,7 @@ feature {NONE} -- Implementation: Agent criteria tests
 			p: TEST_PERSON
 		do
 			create query.make
-			query.set_criterion (factory [[agent p_dao.items_less_than(?, 3)]])
+			query.set_criterion (factory (agent p_dao.items_less_than (?, 3)))
 			transaction.execute_query (query)
 
 			assert ("The result list is empty", not query.stable_cursor.after)
@@ -168,7 +168,7 @@ feature {NONE} -- Implementation: Agent criteria tests
 			p: TEST_PERSON
 		do
 			create query.make
-			query.set_criterion (factory [[agent p_dao.first_name_contains(?, "ris")]])
+			query.set_criterion (factory (agent p_dao.first_name_contains (?, "ris")))
 			transaction.execute_query (query)
 
 			assert ("The result list is empty", not query.stable_cursor.after)
@@ -186,7 +186,7 @@ feature {NONE} -- Implementation: Agent criteria tests
 			p: TEST_PERSON
 		do
 			create query.make
-			query.set_criterion (factory [[agent p_dao.items_greater_than(?, 3)]] and factory [[agent p_dao.first_name_matches(?, "Berno")]])
+			query.set_criterion (factory (agent p_dao.items_greater_than (?, 3)) and factory (agent p_dao.first_name_matches (?, "Berno")))
 			transaction.execute_query (query)
 
 			assert ("The result list is empty", not query.stable_cursor.after)
@@ -205,7 +205,7 @@ feature {NONE} -- Implementation: Agent criteria tests
 			query: PS_QUERY [TEST_PERSON]
 		do
 			create query.make
-			query.set_criterion (factory [[agent p_dao.items_less_than(?, 3)]] or factory [[agent p_dao.items_greater_than(?, 5)]])
+			query.set_criterion (factory (agent p_dao.items_less_than (?, 3)) or factory (agent p_dao.items_greater_than (?, 5)))
 			transaction.execute_query (query)
 
 			assert ("The result list is empty", not query.stable_cursor.after)
@@ -228,7 +228,7 @@ feature {NONE} -- Implementation: Predefined criteria tests
 		do
 			create query.make
 
-			query.set_criterion (factory [["items_owned", factory.greater, 3]])
+			query.set_criterion (factory ("items_owned", factory.greater, 3))
 			transaction.execute_query (query)
 
 			assert ("The result list is empty", not query.stable_cursor.after)
@@ -247,7 +247,7 @@ feature {NONE} -- Implementation: Predefined criteria tests
 		do
 			create query.make
 
-			query.set_criterion (factory [["items_owned", factory.equals, 5]])
+			query.set_criterion (factory ("items_owned", factory.equals, 5))
 			transaction.execute_query (query)
 
 			assert ("The result list is empty", not query.stable_cursor.after)
@@ -264,7 +264,7 @@ feature {NONE} -- Implementation: Predefined criteria tests
 			query: PS_QUERY [TEST_PERSON]
 		do
 			create query.make
-			query.set_criterion (factory [["first_name", factory.like_string, "*lb*"]] and factory [["last_name", factory.like_string, "it*ssi"]])
+			query.set_criterion (factory ("first_name", factory.like_string, "*lb*") and factory ("last_name", factory.like_string, "it*ssi"))
 			transaction.execute_query (query)
 			assert ("The result list is not empty, but it should be.", query.stable_cursor.after)
 			query.close
@@ -277,7 +277,7 @@ feature {NONE} -- Implementation: Predefined criteria tests
 			p: TEST_PERSON
 		do
 			create query.make
-			query.set_criterion (factory [["first_name", factory.like_string, "*lb*"]] and factory [["last_name", factory.like_string, "*?ssi"]])
+			query.set_criterion (factory ("first_name", factory.like_string, "*lb*") and factory ("last_name", factory.like_string, "*?ssi"))
 			transaction.execute_query (query)
 			assert ("The result list is empty", not query.stable_cursor.after)
 			p := query.stable_cursor.item
@@ -298,7 +298,7 @@ feature {NONE} -- Implementation: Predefined criteria tests
 			sum: INTEGER
 		do
 			create query.make
-			query.set_criterion (factory [["last_name", factory.like_string, "*i"]])
+			query.set_criterion (factory ("last_name", factory.like_string, "*i"))
 			transaction.execute_query (query)
 			assert ("The result list is empty", not query.stable_cursor.after)
 			p1 := query.stable_cursor.item
@@ -327,7 +327,7 @@ feature {NONE} -- Implementation: Predefined criteria tests
 		do
 			create query.make
 
-			query.set_criterion (factory [["items_owned", ">", 2]] and factory [["items_owned", factory.less, 5]])
+			query.set_criterion (factory ("items_owned", ">", 2) and factory ("items_owned", factory.less, 5))
 			transaction.execute_query (query)
 
 			assert ("The result list is empty", not query.stable_cursor.after)
@@ -349,7 +349,7 @@ feature {NONE} -- Implementation: Predefined criteria tests
 		do
 			create query.make
 
-			query.set_criterion (factory [["items_owned", ">", 3]] or factory [["items_owned", factory.less, 3]])
+			query.set_criterion (factory ("items_owned", ">", 3) or factory ("items_owned", factory.less, 3))
 			transaction.execute_query (query)
 
 			assert ("The result list is empty", not query.stable_cursor.after)
@@ -372,7 +372,7 @@ feature {NONE} -- Implementation: Mixed criteria tests
 		do
 			create query.make
 				--query.set_projection (<<"last_name", "items_owned">>)
-			query.set_criterion (factory [["items_owned", factory.greater, 3]] or factory [["items_owned", factory.less, 3]] and factory [[agent p_dao.items_equal_to(?, 2)]])
+			query.set_criterion (factory ("items_owned", factory.greater, 3) or factory ("items_owned", factory.less, 3) and factory (agent p_dao.items_equal_to (?, 2)))
 			transaction.execute_query (query)
 				--assert ("The result list has " + query.matched.count.out + " items instead of 2.", query.matched.count = 2)
 			assert ("The result list is empty", not query.stable_cursor.after)
@@ -391,18 +391,16 @@ feature {NONE} -- Initialization
 
 	factory: PS_CRITERION_FACTORY
 
-	internal_transaction: detachable PS_TRANSACTION
+	transaction: PS_TRANSACTION
 
 	initialize
 		do
 			create p_dao
 			create factory
+			transaction := repository.new_transaction
+			transaction.rollback
 		end
 
-	transaction: PS_TRANSACTION
-		do
-			Result := attach (internal_transaction)
-		end
 
 	insert_data
 			-- Insert the data needed for the tests into the repository

@@ -18,90 +18,89 @@ feature {NONE} -- Impementation
 	internal_can_handle_type (type: PS_TYPE_METADATA): BOOLEAN
 			-- Can `Current' handle objects of type `type'?
 		do
-			Result := attached {TYPE[detachable TUPLE]} type.type
+			Result := attached {TYPE [detachable TUPLE]} type.type
 		end
 
 feature {PS_ABEL_EXPORT} -- Read functions
 
-	initialize (object: PS_OBJECT_DATA; read_manager: PS_READ_MANAGER)
+	initialize (object: PS_OBJECT_READ_DATA; read_manager: PS_READ_MANAGER)
 			-- Try to initialize the `object' as much as possible.
 			-- For any referenced object not yet loaded, tell the `read_manager'
 			-- to retrieve it in the next iteration.
 		local
-			index: INTEGER
-			type: PS_TYPE_METADATA
-			new_instance: detachable ANY
-			reflector: REFLECTED_REFERENCE_OBJECT
-
 			retrieved: PS_BACKEND_COLLECTION
-			field_type: INTEGER
+			count: INTEGER
 			i: INTEGER
-			capacity: INTEGER
 
-			field: TUPLE[value: STRING; type:IMMUTABLE_STRING_8]
-			dynamic_field_type: PS_TYPE_METADATA
-			managed: MANAGED_POINTER
+			field: TUPLE [value: STRING; type:IMMUTABLE_STRING_8]
+			l_type: PS_TYPE_METADATA
 		do
-			index := object.index
-			type := object.type
 			retrieved := object.backend_collection
-			new_instance := object.reflector.object
+			count := retrieved.collection_items.count
 
-			check attached {TUPLE} new_instance as tuple then
+			check attached {TUPLE} object.reflector.object as tuple then
 				from
 					i := 1
 				until
-					i > retrieved.collection_items.count
+					i > count
 				loop
-					field := retrieved.collection_items[i]
-
-					if not field.type.is_equal ("NONE") then
-
-						dynamic_field_type := read_manager.metadata_factory.create_metadata_from_type_id (internal_lib.dynamic_type_from_string (field.type))
-
-						if read_manager.is_processable (field.value, dynamic_field_type) then
-							tuple.put (read_manager.processed_object (field.value, dynamic_field_type, object), i)
-						else
-							read_manager.process_next (field.value.to_integer, dynamic_field_type, object)
-							object.uninitialized_attributes.extend (i)
-						end
+					field := retrieved.collection_items [i]
+					l_type := read_manager.metadata_factory.create_metadata_from_string (field.type)
+					if
+						not l_type.is_none and then
+						attached read_manager.try_build_attribute (field.value, l_type, object) as obj
+					then
+						tuple [i] := obj
 					end
 					i := i + 1
+				variant
+					count + 1 - i
 				end
 			end
 		end
 
-
-	finish_initialize (object: PS_OBJECT_DATA; read_manager: PS_READ_MANAGER)
+	finish_initialize (object: PS_OBJECT_READ_DATA; read_manager: PS_READ_MANAGER)
 			-- Finish initialization of `object'.
 		local
-			index: INTEGER
-			reflector: REFLECTED_OBJECT
-			field: TUPLE[value: STRING; type: IMMUTABLE_STRING_8]
-			dynamic_field_type: PS_TYPE_METADATA
-		do
-			index := object.index
-			across
-				object.uninitialized_attributes as field_idx
-			loop
-				field := object.backend_collection.collection_items[field_idx.item]
-				dynamic_field_type := type_from_string (field.type)
+			retrieved: PS_BACKEND_COLLECTION
+			count: INTEGER
+			i: INTEGER
 
-				check attached {TUPLE} object.reflector.object as tuple then
-					tuple.put (read_manager.processed_object (field.value, dynamic_field_type, object), field_idx.item)
+			field: TUPLE [value: STRING; type: IMMUTABLE_STRING_8]
+			l_type: PS_TYPE_METADATA
+		do
+			retrieved := object.backend_collection
+			count := retrieved.collection_items.count
+
+			check attached {TUPLE} object.reflector.object as tuple then
+				from
+					i := 1
+				until
+					i > count
+				loop
+					if not attached tuple [i] then
+						field := retrieved.collection_items [i]
+						l_type := read_manager.metadata_factory.create_metadata_from_string (field.type)
+						if not l_type.is_none then
+							tuple [i] := read_manager.build_attribute (field.value.to_integer, l_type, object)
+						end
+					end
+					i := i + 1
+				variant
+					count + 1 - i
 				end
 			end
 		end
 
 feature {PS_ABEL_EXPORT} -- Write functions
 
-	initialize_backend_representation (object: PS_OBJECT_DATA)
+	initialize_backend_representation (object: PS_OBJECT_WRITE_DATA)
 			-- Initialize all attributes or items in `object.backend_representation'
 		local
-			obj: PS_OBJECT_DATA
+			obj: PS_OBJECT_WRITE_DATA
 			i, k: INTEGER
 			type: PS_TYPE_METADATA
-			tuple: TUPLE[value: STRING; type: IMMUTABLE_STRING_8]
+			tuple: TUPLE [value: STRING; type: IMMUTABLE_STRING_8]
 
 			tuple_to_build: TUPLE
 
@@ -131,7 +130,7 @@ feature {PS_ABEL_EXPORT} -- Write functions
 					from
 						k := 1
 					until
-						k > obj.references.count or write_manager.item(obj.references[k]).reflector.object =  field
+						k > obj.references.count or write_manager.item (obj.references [k]).reflector.object =  field
 					loop
 						k := k + 1
 					end
@@ -139,15 +138,15 @@ feature {PS_ABEL_EXPORT} -- Write functions
 					if k > obj.references.count then
 						tuple := ["", create {IMMUTABLE_STRING_8}.make_from_string ("NONE")]
 					else
-						check attached write_manager.item(obj.references[k]).handler as handler then
-							tuple := handler.as_string_pair (write_manager.item (obj.references[k]))
+						check attached write_manager.item (obj.references [k]).handler as handler then
+							tuple := handler.as_string_pair (write_manager.item (obj.references [k]))
 						end
 					end
 					new_command.collection_items.extend ([tuple.value, tuple.type])
 				else
 					-- Value type
 					if attached tuple_to_build.item (i) as field then
-						new_command.collection_items.extend ([ basic_attribute_value(field), write_manager.metadata_factory.create_metadata_from_object (field).name])
+						new_command.collection_items.extend ([ basic_attribute_value (field), write_manager.metadata_factory.create_metadata_from_object (field).name])
 					end
 				end
 				i := i + 1

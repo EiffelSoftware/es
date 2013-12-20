@@ -1,11 +1,5 @@
-note
-	description:
-		"Abstract description of a type list declaration. %
-		%Version for Bench."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
-	date: "$Date$"
-	revision: "$Revision$"
+﻿note
+	description: "AST node for a sequence of typed variable declarations."
 
 class TYPE_DEC_LIST_AS
 
@@ -46,23 +40,6 @@ feature -- Visitor
 			a_visitor.process_type_dec_list_as (Current)
 		end
 
-feature -- Setting
-
-	set_positions (a_opener, a_closer: SYMBOL_AS)
-			-- Set `start_location' and `end_location' with `a_opener' and `a_closer'
-			-- if not Void, nothing otherwise
-		do
-			if a_opener /= Void then
-				opening_bracket_as_index := a_opener.index
-			end
-			if a_closer /= Void then
-				closing_bracket_as_index := a_closer.index
-			end
-		ensure
-			opening_bracket_as_set: a_opener /= Void implies opening_bracket_as_index = a_opener.index
-			closing_bracket_as_set: a_closer /= Void closing_bracket_as_index = a_closer.index
-		end
-
 feature
 
 	opening_bracket_as_index: INTEGER
@@ -98,7 +75,9 @@ feature
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	date: "$Date$"
+	revision: "$Revision$"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

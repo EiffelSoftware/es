@@ -12,6 +12,8 @@ inherit
 
 	WSF_SELF_DOCUMENTED_HANDLER
 
+	SHARED_HTML_ENCODER
+
 feature -- Change
 
 	set_iron (i: like iron)
@@ -243,10 +245,12 @@ feature -- Package form
 			f_id: WSF_FORM_HIDDEN_INPUT
 			f_name: WSF_FORM_TEXT_INPUT
 			f_desc: WSF_FORM_TEXTAREA
+			f_tags: WSF_FORM_TEXT_INPUT
 			f_archive: WSF_FORM_FILE_INPUT
 			f_archive_url: WSF_FORM_TEXT_INPUT
 			f_submit: WSF_FORM_SUBMIT_INPUT
 			f_fieldset: WSF_FORM_FIELD_SET
+			s: STRING_32
 		do
 			if vp /= Void then
 				create f.make (req.script_url (iron.package_version_update_page (vp)), "edit_package")
@@ -267,6 +271,11 @@ feature -- Package form
 			create f_desc.make ("description")
 			f_desc.set_label ("Description")
 			f.extend (f_desc)
+
+			create f_tags.make ("tags")
+			f_tags.set_label ("Tags")
+			f_tags.set_description ("Comma separated keywords")
+			f.extend (f_tags)
 
 			create f_fieldset.make
 			f_fieldset.set_legend ("Associated Archive")
@@ -311,6 +320,18 @@ feature -- Package form
 				end
 				if attached vp.description as l_description then
 					f_desc.set_text_value (l_description)
+				end
+				if attached vp.tags as l_tags then
+					create s.make_empty
+					across
+						l_tags as ic
+					loop
+						if not s.is_empty then
+							s.append_character (',')
+						end
+						s.append (ic.item)
+					end
+					f_tags.set_text_value (s)
 				end
 			end
 --			if vp /= Void and then vp.has_archive then
@@ -398,7 +419,7 @@ feature -- Package form
 							-- Error
 						create p.make_empty
 						p.set_name (l_name)
-					end					
+					end
 				elseif l_path_id /= Void then
 					fd.report_error ("Missing package id from post!")
 					create p.make (l_path_id)
@@ -426,6 +447,16 @@ feature -- Package form
 					end
 					if attached fd.string_item ("description") as l_description then
 						p.set_description (l_description)
+					end
+					if attached fd.string_item ("tags") as l_tags then
+						if attached p.tags as p_tags then
+							p_tags.wipe_out
+						end
+						across
+							l_tags.split (',') as tic
+						loop
+							p.add_tag (tic.item)
+						end
 					end
 				end
 				if has_permission_to_modify_package (req, p) then
@@ -473,14 +504,14 @@ feature -- Factory
 			Result.set_iron_version (iron_version (req))
 			if attached current_user (req) as u then
 				Result.add_menu ("Home", iron.page (Void, ""))
-				Result.add_menu ("Account (" + u.name + ")", iron.page (Void, "/user"))
+				Result.add_menu ("Account (" + html_encoder.encoded_string (u.name) + ")", iron.page (Void, "/user"))
 			else
 				Result.add_menu ("Home", iron.page (Void, ""))
 				Result.add_menu ("Account", iron.page (Void, "/user"))
 			end
 			if has_iron_version (req) then
-				Result.add_menu ("List of packages", iron.package_version_list_web_page (iron_version (req)))
 				Result.add_menu ("New package", iron.package_version_create_web_page (iron_version (req)))
+				Result.add_menu ("All packages", iron.package_version_list_web_page (iron_version (req)))
 			end
 		end
 

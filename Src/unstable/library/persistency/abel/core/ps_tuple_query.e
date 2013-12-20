@@ -1,6 +1,6 @@
 note
 	description: "[
-		Represents a query for objects of type OBJECT_TYPE.
+		A query for objects of type OBJECT_TYPE.
 		The result is a TUPLE containing attributes of the object.
 		
 		Only the attributes listed in the projection array are loaded.
@@ -28,6 +28,8 @@ inherit
 		redefine
 			make
 		end
+
+	PS_TYPE_TABLE
 
 create
 	make, make_with_criterion
@@ -67,7 +69,7 @@ feature -- Utilities
 		do
 			create reflection
 			type := generic_type.type_id
-			string_type := ({READABLE_STRING_GENERAL}).type_id
+			string_type := ({detachable READABLE_STRING_GENERAL}).type_id
 
 			create Result.make (10)
 			Result.compare_objects
@@ -78,7 +80,7 @@ feature -- Utilities
 
 				field_type := reflection.field_static_type_of_type (idx.item, type)
 
-				if basic_types.has (field_type) or else reflection.type_conforms_to (field_type, string_type) then
+				if basic_expanded_types.has (field_type) or else reflection.type_conforms_to (field_type, string_type) then
 					Result.extend (reflection.field_name_of_type (idx.item, type))
 				end
 			end
@@ -92,16 +94,18 @@ feature {PS_ABEL_EXPORT} -- Implementation: Element change
 			reflector: INTERNAL
 			i: INTEGER
 		do
-			check attached internal_cursor as my_cursor then
+				-- This check is safe because of a combination of the invariant
+				-- and the precondition in ABSTRACT_QUERY.
+			check from_precondition: attached internal_cursor as my_cursor then
 				my_cursor.forth
 
 				if my_cursor.after then
 					is_after := True
 				else
-
 					create reflector
 
-					check attached {TUPLE} reflector.new_instance_of (tuple_type) as new_tuple then
+						-- Safe because of the postcondition of `generate_tuple_type'.
+					check valid_tuple_type: attached {TUPLE} reflector.new_instance_of (tuple_type) as new_tuple then
 
 						across
 							projection as attr_cursor
@@ -129,6 +133,9 @@ feature {NONE} -- Initialization
 			reflector: REFLECTOR
 			field_count: INTEGER
 		do
+			create field_indices.make (0)
+			create projection.make (0)
+
 			Precursor
 
 			create reflector
@@ -153,7 +160,7 @@ feature {NONE} -- Initialization
 
 
 	generate_tuple_type
-			-- Generate a tuple of correct type and size
+			-- Generate a tuple of correct type and size.
 		require
 			 projection_not_empty: projection.count > 0
 		local
@@ -171,10 +178,10 @@ feature {NONE} -- Initialization
 				-- NOTE: We cannot just take the runtime type of the attribute, since those types are (for whatever reason)
 				-- always detachable. Instead the generated tuple needs to have the statically declared types as its generic
 				-- attributes. This way object tests like
-				--		check attached TUPLE[STRING, STING, detachable STRING] generated_tuple end
+				--		check attached TUPLE [STRING, STING, detachable STRING] generated_tuple end
 				--  will succeed for objects having those fields.
 
-				tuple_string := tuple_string + reflection.type_name_of_type (reflection.field_static_type_of_type (field_indices [projection[index]], generic_type.type_id))
+				tuple_string := tuple_string + reflection.type_name_of_type (reflection.field_static_type_of_type (field_indices [projection [index]], generic_type.type_id))
 				index := index + 1
 
 				if index <= projection.count then
@@ -184,6 +191,8 @@ feature {NONE} -- Initialization
 
 			tuple_string := tuple_string + "]"
 			tuple_type := reflection.dynamic_type_from_string (tuple_string)
+		ensure
+			valid_tuple_type: tuple_type > 0 and then attached {TUPLE} (create {REFLECTOR}).new_instance_of (tuple_type)
 		end
 
 

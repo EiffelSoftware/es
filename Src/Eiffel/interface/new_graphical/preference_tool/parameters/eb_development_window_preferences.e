@@ -41,36 +41,6 @@ feature {EB_PREFERENCES} -- Initialization
 feature {EB_SHARED_PREFERENCES, EB_DEVELOPMENT_WINDOW_SESSION_DATA,
 		 EB_DEVELOPMENT_WINDOW_DIRECTOR, EB_DEVELOPMENT_WINDOW_BUILDER} -- Value
 
-	width: INTEGER
-			-- Width for the development window
-
-	height: INTEGER
-			-- Height for the development window
-
-	x_position: INTEGER
-			-- X position for development windows
-
-	y_position: INTEGER
-			-- Y position for development windows
-
-	maximized_width: INTEGER
-			-- Width for the development window when maximized
-
-	maximized_height: INTEGER
-			-- Height for the development window when maximized
-
-	maximized_x_position: INTEGER
-			-- X position for development windows when maximized
-
-	maximized_y_position: INTEGER
-			-- Y position for development windows when maximized
-
-	is_maximized: BOOLEAN
-			-- Is the development window maximized?
-
-	is_minimized: BOOLEAN
-			-- Is the development window minimized?
-
 	is_force_debug_mode: BOOLEAN
 			-- Is the development window force debug mode?
 		do
@@ -152,6 +122,7 @@ feature {EB_SHARED_PREFERENCES, EB_DEVELOPMENT_WINDOW_SESSION_DATA,
 		end
 
 	context_unified_stone: BOOLEAN
+			-- Is the context tool linked?
 		do
 			Result := context_unified_stone_preference.value
 		end
@@ -251,41 +222,6 @@ feature {EB_SHARED_PREFERENCES} -- Preference
 
 feature -- Element change
 
-	save_size (a_width, a_height: INTEGER)
-			-- <Precursor>
-		do
-			width := a_width
-			height := a_height
-		end
-
-	save_maximized_size (a_width, a_height: INTEGER)
-			-- <Precursor>
-		do
-			maximized_width := a_width
-			maximized_height := a_height
-		end
-
-	save_window_state (a_minimized, a_maximized: BOOLEAN)
-			-- Save the window state of the window.
-		do
-			is_minimized := a_minimized
-			is_maximized := a_maximized
-		end
-
-	save_position (a_x, a_y: INTEGER)
-			-- <Precursor>
-		do
-			x_position := a_x
-			y_position := a_y
-		end
-
-	save_maximized_position (a_x, a_y: INTEGER)
-			-- <Precursor>
-		do
-			maximized_x_position := a_x
-			maximized_y_position := a_y
-		end
-
 	save_force_debug_mode (a_bool: BOOLEAN)
 			-- Save if `is_force_debug_mode'
 		do
@@ -314,6 +250,17 @@ feature -- Basic operations
 		do
 			Result := retrieve_toolbar_items (command_pool, refactoring_toolbar_layout)
 		end
+
+feature -- Data Ids for SESSION_MANAGER
+
+	development_window_data_id: STRING_8 = "com.eiffel.develop_window_data"
+			-- Session data id for {EB_DEVELOPMENT_WINDOW_SESSION_DATA}.
+
+	development_window_project_data_id: STRING_8 = "com.eiffel.develop_window_project_data"
+			-- Session data id for {EB_DEVELOPMENT_WINDOW_SESSION_DATA} for one project.		
+
+	development_window_count_id: STRING_8 = "com_eiffel.develop_window_count"
+			-- Session data id for how many {EB_DEVELOPMENT_WINDOW} exists in the session.
 
 feature {NONE} -- Preference Strings
 
@@ -427,7 +374,7 @@ invariant
 	estudio_dbg_menu_enabled_preference_not_void: estudio_dbg_menu_enabled_preference /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

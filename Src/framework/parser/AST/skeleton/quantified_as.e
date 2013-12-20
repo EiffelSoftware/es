@@ -25,7 +25,7 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	variables: EIFFEL_LIST [TYPE_DEC_AS]
+	variables: EIFFEL_LIST [LIST_DEC_AS]
 			-- List of variables of Current quantification
 
 	expression: EXPR_AS
@@ -88,7 +88,7 @@ feature -- Status report
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

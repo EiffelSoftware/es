@@ -41,8 +41,10 @@ feature {PS_ABEL_EXPORT}
 			if internal_connection.has_error then
 				print (statement)
 				print (internal_connection.last_error_message)
-				last_error := get_error
-				last_error.raise
+				if attached get_error as err then
+					last_error := err
+					err.raise
+				end
 			end
 			last_results := compute_last_results
 		end
@@ -54,8 +56,10 @@ feature {PS_ABEL_EXPORT}
 			internal_connection.commit
 			if internal_connection.has_error then
 				print (internal_connection.last_error_message)
-				last_error := get_error
-				last_error.raise
+				if attached get_error as err then
+					last_error := err
+					err.raise
+				end
 			end
 		end
 
@@ -65,29 +69,23 @@ feature {PS_ABEL_EXPORT}
 		do
 			internal_connection.rollback
 			if internal_connection.has_error then
-				last_error := get_error
-				last_error.raise
+				if attached get_error as err then
+					last_error := err
+					err.raise
+				end
 			end
 		end
 
 	last_result: ITERATION_CURSOR [PS_SQL_ROW]
 			-- The result of the last database operation
-		local
-			result_list: LINKED_LIST [PS_SQL_ROW]
 		do
-			create result_list.make
-			across
-				internal_connection.last_result as res
-			loop
-				result_list.extend (create {PS_MYSQL_ROW}.make (res.item))
-			end
-			Result := result_list.new_cursor
+			Result := last_results.last
 		end
 
-	last_results: LINKED_LIST[ITERATION_CURSOR[PS_SQL_ROW]]
+	last_results: LINKED_LIST [ITERATION_CURSOR [PS_SQL_ROW]]
 			-- The results of the last database operations
 
-	last_error: PS_ERROR
+	last_error: detachable PS_ERROR
 			-- The last occured error
 
 feature {PS_MYSQL_DATABASE} -- Access
@@ -101,17 +99,17 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		do
 			internal_connection := a_connection
-			create {PS_NO_ERROR} last_error
+			last_error := Void
 			transaction_isolation_level := isolation_level
 			create last_results.make
 		end
 
 feature {NONE} -- Implementation
 
-	compute_last_results: LINKED_LIST[ITERATION_CURSOR[PS_SQL_ROW]]
+	compute_last_results: LINKED_LIST [ITERATION_CURSOR [PS_SQL_ROW]]
 			-- Get the last results as a linked list.
 		local
-			result_list: LINKED_LIST [PS_SQL_ROW]
+			result_list: ARRAYED_LIST [PS_SQL_ROW]
 		do
 			across
 				internal_connection.last_results as cursor
@@ -121,7 +119,7 @@ feature {NONE} -- Implementation
 				across
 					cursor.item as res
 				from
-					create result_list.make
+					create result_list.make (cursor.item.count)
 				loop
 					result_list.extend (create {PS_MYSQL_ROW}.make (res.item))
 				end
@@ -129,15 +127,15 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	get_error: PS_ERROR
+	get_error: detachable PS_ERROR
 			-- Translate the MySQL specific error code to an ABEL error object.
 		local
 			error_number: INTEGER
 		do
-			-- First try to define the error using SQLState
+				-- First try to define the error using SQLState
 			Result := convert_error (internal_connection.last_sqlstate)
 
-			-- Overwrite default SQLState for some errors
+				-- Overwrite default SQLState for some errors
 			error_number := internal_connection.last_server_error_number
 
 			if error_number = 1205 then -- Lock timeout
@@ -150,8 +148,10 @@ feature {NONE} -- Implementation
 				fixme ("TODO: Check if more errors need manual handling")
 			end
 
-			Result.set_backend_error_message (internal_connection.last_error_message)
-			Result.set_backend_error_code (error_number)
+			if attached Result then
+				Result.set_backend_error_message (internal_connection.last_error_message)
+				Result.set_backend_error_code (error_number)
+			end
 		end
 
 end

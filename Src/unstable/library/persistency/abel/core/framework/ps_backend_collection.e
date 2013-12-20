@@ -19,7 +19,7 @@ create {PS_ABEL_EXPORT}
 
 feature {PS_ABEL_EXPORT} -- Access
 
-	collection_items: LINKED_LIST [PS_PAIR [STRING, IMMUTABLE_STRING_8]]
+	collection_items: LIST [PS_PAIR [STRING, IMMUTABLE_STRING_8]]
 			-- All objects that are stored inside this collection.
 			-- The first item in the PS_PAIR is the actual value of the item (foreign key or basic value), and the second item is the class name of the generating class of the first item.
 
@@ -33,16 +33,12 @@ feature {PS_ABEL_EXPORT} -- Access
 			description_not_empty: not description.is_empty
 			information_present: has_information (description)
 		do
-			Result := attach (additional_information_hash [description])
+			check from_precondition: attached additional_information_hash [description] as res then
+				Result := res
+			end
 		end
 
 feature {PS_ABEL_EXPORT} -- Status report
-
---	is_root: BOOLEAN
---			-- Is the current entity a garbage collection root?
---		do
---			Result := has_information (root_key) and then get_information (root_key).to_boolean
---		end
 
 	has_information (description: STRING): BOOLEAN
 			-- Does the retrieved collection have a information value attached to the `description' key?
@@ -66,7 +62,7 @@ feature {PS_ABEL_EXPORT} -- Status report
 			reflection: INTERNAL
 		do
 			Result := True
-			if not attached {TYPE[detachable TUPLE]} metadata.type then
+			if not attached {TYPE [detachable TUPLE]} metadata.type then
 				across
 					collection_items as cursor
 				from
@@ -95,26 +91,30 @@ feature -- Comparison
 			-- Is `other' attached to an object considered
 			-- equal to current object?
 		do
-			Result := primary_key.is_equal (other.primary_key) and metadata.is_equal (other.metadata)
-			from
-				collection_items.start
-				other.collection_items.start
-				Result := Result and collection_items.count = other.collection_items.count
-				Result := Result and information_descriptions.count = other.information_descriptions.count and then
-					across information_descriptions as cursor
-					all
-						other.has_information (cursor.item) and then
-						other.get_information (cursor.item).is_equal (get_information(cursor.item))
-					end
-			until
-				collection_items.after or not Result
-			loop
-				Result := Result and collection_items.item.first.is_equal (other.collection_items.item.first)
-								 and collection_items.item.second.is_equal (other.collection_items.item.second)
-				collection_items.forth
-				other.collection_items.forth
-			variant
-				collection_items.count - collection_items.index + 1
+			if Current = other then
+				Result := True
+			else
+				Result := primary_key.is_equal (other.primary_key) and metadata.is_equal (other.metadata)
+				from
+					collection_items.start
+					other.collection_items.start
+					Result := Result and collection_items.count = other.collection_items.count
+					Result := Result and information_descriptions.count = other.information_descriptions.count and then
+						across information_descriptions as cursor
+						all
+							other.has_information (cursor.item) and then
+							other.get_information (cursor.item).is_equal (get_information (cursor.item))
+						end
+				until
+					collection_items.after or not Result
+				loop
+					Result := Result and collection_items.item.first.is_equal (other.collection_items.item.first)
+									 and collection_items.item.second.is_equal (other.collection_items.item.second)
+					collection_items.forth
+					other.collection_items.forth
+				variant
+					collection_items.count - collection_items.index + 1
+				end
 			end
 		end
 
@@ -132,6 +132,24 @@ feature {PS_ABEL_EXPORT} -- Element change
 			class_name_inserted: collection_items.last.second.is_equal (class_name_of_item_value)
 		end
 
+	put_item (value: STRING; runtime_type: IMMUTABLE_STRING_8; position: INTEGER)
+			-- Add the tuple [`value', `runtime_type'] at position `position'.
+			-- Fill the list with ["", "NONE"] tuples if necessary.
+		require
+			runtime_type_set: not runtime_type.is_empty
+			none_means_void: runtime_type ~ "NONE" implies value.is_empty
+			position_positive: position > 0
+		do
+			from
+			until
+				collection_items.count >= position
+			loop
+				collection_items.extend (["", create {IMMUTABLE_STRING_8}.make_from_string ("NONE")])
+			end
+
+			collection_items.put_i_th ([value, runtime_type], position)
+		end
+
 	add_information (description: STRING; value: STRING)
 			-- Add the information `value' with its description `description' to the retrieved collection.
 		require
@@ -144,17 +162,6 @@ feature {PS_ABEL_EXPORT} -- Element change
 			information_set: get_information (description).is_equal (value)
 		end
 
---	set_is_root (value: BOOLEAN)
---			-- Set `is_root' to `value'.
---		do
---			is_root := value
---			if has_information (root_key) then
---				additional_information_hash.force (value.out, root_key)
---			else
---				add_information (root_key, value.out)
---			end
---		end
-
 feature {NONE}
 
 	additional_information_hash: HASH_TABLE [STRING, STRING]
@@ -166,7 +173,7 @@ feature {NONE}
 			Precursor (key, meta)
 			create additional_information_hash.make (10)
 			create {LINKED_LIST [STRING]} information_descriptions.make
-			create collection_items.make
+			create {ARRAYED_LIST [PS_PAIR [STRING, IMMUTABLE_STRING_8]]} collection_items.make (25)
 		ensure then
 			additional_info_empty: additional_information_hash.is_empty
 			collection_items_empty: collection_items.is_empty
@@ -183,8 +190,5 @@ feature {NONE} -- Consistency checks
 invariant
 	all_void_values_have_none_type: check_void_types
 	all_descriptions_have_information: information_descriptions.count = additional_information_hash.count and then across information_descriptions as desc all has_information (desc.item) end
-
---	root_correct: has_information (root_key) implies is_root = get_information (root_key).to_boolean
-
 
 end

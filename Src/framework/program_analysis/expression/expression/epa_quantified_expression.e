@@ -178,7 +178,7 @@ feature{NONE} -- Implementation
 	build_ast_internal (a_variable_name: STRING; a_type: TYPE_A; a_expression: EXPR_AS; a_universal: BOOLEAN)
 			-- Build `ast' from `a_variable_name' and `a_expression'
 		local
-			l_vars_def: EIFFEL_LIST [TYPE_DEC_AS]
+			l_vars_def: EIFFEL_LIST [LIST_DEC_AS]
 			l_text: STRING
 			l_parser: like entity_declaration_parser
 		do

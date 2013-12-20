@@ -11,6 +11,8 @@ inherit
 
 	PS_BACKEND
 
+	PS_BACKEND_CONVERTER
+
 create
 	make, make_with_host_and_port
 
@@ -73,8 +75,8 @@ feature {PS_ABEL_EXPORT} -- Object retrieval operations
 
 	internal_retrieve_by_primary (type: PS_TYPE_METADATA; key: INTEGER; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction: PS_INTERNAL_TRANSACTION): detachable PS_BACKEND_OBJECT
 		local
-			list: LINKED_LIST[INTEGER]
-			res: LIST[PS_BACKEND_OBJECT]
+			list: LINKED_LIST [INTEGER]
+			res: LIST [PS_BACKEND_OBJECT]
 		do
 			create list.make
 			list.extend (key)
@@ -141,8 +143,8 @@ feature {PS_ABEL_EXPORT} -- Object retrieval operations
 
 feature {PS_ABEL_EXPORT} -- Primary key generation
 
-	generate_all_object_primaries (order: HASH_TABLE[INTEGER, PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): HASH_TABLE [LIST[PS_BACKEND_OBJECT], PS_TYPE_METADATA]
-			-- For each type `type_key' in `order', generate `order[type_key]' new objects in the database.
+	generate_all_object_primaries (order: HASH_TABLE [INTEGER, PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): HASH_TABLE [LIST [PS_BACKEND_OBJECT], PS_TYPE_METADATA]
+			-- For each type `type_key' in `order', generate `order [type_key]' new objects in the database.
 		local
 			part: LINKED_LIST [PS_BACKEND_OBJECT]
 		do
@@ -162,8 +164,8 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 			end
 		end
 
-	generate_collection_primaries (order: HASH_TABLE[INTEGER, PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): HASH_TABLE [LIST[PS_BACKEND_COLLECTION], PS_TYPE_METADATA]
-			-- For each type `type_key' in the hash table `order', generate `order[type_key]' new collections in the database.
+	generate_collection_primaries (order: HASH_TABLE [INTEGER, PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): HASH_TABLE [LIST [PS_BACKEND_COLLECTION], PS_TYPE_METADATA]
+			-- For each type `type_key' in the hash table `order', generate `order [type_key]' new collections in the database.
 		do
 			check not_implemented: False end
 			create Result.make (10)
@@ -224,7 +226,7 @@ feature {PS_ABEL_EXPORT} -- Object write operations
 --			key_mapper.remove_primary_key (primary.first, an_object.object_wrapper.metadata, a_transaction)
 --		end
 
-	delete (objects: LIST[PS_BACKEND_ENTITY]; transaction: PS_INTERNAL_TRANSACTION)
+	delete (objects: LIST [PS_BACKEND_ENTITY]; transaction: PS_INTERNAL_TRANSACTION)
 			-- Delete every item in `objects' from the database
 		do
 			check not_implemented: False end
@@ -232,7 +234,7 @@ feature {PS_ABEL_EXPORT} -- Object write operations
 
 feature {PS_BACKEND} -- Implementation
 
-	internal_write (objects: LIST[PS_BACKEND_OBJECT]; transaction: PS_INTERNAL_TRANSACTION)
+	internal_write (objects: LIST [PS_BACKEND_OBJECT]; transaction: PS_INTERNAL_TRANSACTION)
 			-- Write all `objects' to the database.
 			-- Only write the attributes present in {PS_BACKEND_OBJECT}.attributes.
 		local
@@ -428,7 +430,7 @@ feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 			end
 		end
 
-	retrieve_all_collections (collection_type: PS_TYPE_METADATA; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_COLLECTION]
+	collection_retrieve (collection_type: PS_TYPE_METADATA; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_COLLECTION]
 			-- Retrieves all collections of type `collection_type'.
 		do
 			check
@@ -437,7 +439,7 @@ feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 			Result := (create {LINKED_LIST [PS_BACKEND_COLLECTION]}.make).new_cursor
 		end
 
-	write_collections (collections: LIST[PS_BACKEND_COLLECTION]; transaction: PS_INTERNAL_TRANSACTION)
+	write_collections (collections: LIST [PS_BACKEND_COLLECTION]; transaction: PS_INTERNAL_TRANSACTION)
 			-- Write every item in `collections' to the database
 		do
 			check
@@ -445,7 +447,7 @@ feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 			end
 		end
 
-	delete_collections (collections: LIST[PS_BACKEND_ENTITY]; transaction: PS_INTERNAL_TRANSACTION)
+	delete_collections (collections: LIST [PS_BACKEND_ENTITY]; transaction: PS_INTERNAL_TRANSACTION)
 			-- Delete every item in `collections' from the database
 		do
 			check
@@ -537,13 +539,13 @@ feature {NONE}
 			until
 				i > Result.count
 			loop
-				if Result.item(i) = '[' then
+				if Result.item (i) = '[' then
 					Result.put ('(', i)
 				end
-				if Result.item(i) = ']' then
+				if Result.item (i) = ']' then
 					Result.put (')', i)
 				end
-				if Result.item(i) = '!' then
+				if Result.item (i) = '!' then
 					Result.put ('$', i)
 				end
 				i := i + 1
@@ -556,7 +558,7 @@ feature {NONE} -- Initialization
 		do
 			create curl.make
 			create key_set.make (100)
-			create plug_in_list.make
+			create plugins.make
 			batch_retrieval_size := {PS_REPOSITORY}.infinite_batch_size
 		end
 
@@ -564,7 +566,7 @@ feature {NONE} -- Initialization
 		do
 			create curl.make_with_host_and_port (host, port)
 			create key_set.make (100)
-			create plug_in_list.make
+			create plugins.make
 			batch_retrieval_size := {PS_REPOSITORY}.infinite_batch_size
 		end
 

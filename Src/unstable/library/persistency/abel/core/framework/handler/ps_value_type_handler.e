@@ -24,38 +24,38 @@ feature {PS_ABEL_EXPORT} -- Status report
 feature {PS_ABEL_EXPORT} -- Read functions
 
 
-	create_object (object: PS_OBJECT_DATA; read_manager: PS_READ_MANAGER)
+	create_object (object: PS_OBJECT_READ_DATA; read_manager: PS_READ_MANAGER)
 			-- Try to initialize the `object' as much as possible.
 			-- For any referenced object not yet loaded, tell the `read_manager'
 			-- to retrieve it in the next iteration.
 		local
-			pair: TUPLE[value: STRING; type: IMMUTABLE_STRING_8]
+			pair: TUPLE [value: STRING; type: IMMUTABLE_STRING_8]
 			type: PS_TYPE_METADATA
 			reflector: REFLECTED_REFERENCE_OBJECT
 		do
-			pair := object.backend_object.attribute_value (value_type_item)
+			pair := object.backend_object.attribute_value ({PS_BACKEND_OBJECT}.value_type_item)
 			type := type_from_string (pair.type)
-			if attached build_from_string(pair.value, type) as obj then
+			if attached build_from_string (pair.value, type) as obj then
 				create reflector.make (obj)
-				object.set_object (reflector)
+				object.set_reflector (reflector)
 			end
 		end
 
-	initialize (object: PS_OBJECT_DATA; read_manager: PS_READ_MANAGER)
+	initialize (object: PS_OBJECT_READ_DATA; read_manager: PS_READ_MANAGER)
 			-- Try to initialize the `object' as much as possible.
 			-- For any referenced object not yet loaded, tell the `read_manager'
 			-- to retrieve it in the next iteration.
 		do
 		end
 
-	finish_initialize (object: PS_OBJECT_DATA; read_manager: PS_READ_MANAGER)
+	finish_initialize (object: PS_OBJECT_READ_DATA; read_manager: PS_READ_MANAGER)
 			-- Finish initialization of `object'.
 		do
 		end
 
 feature {PS_ABEL_EXPORT} -- Write functions
 
-	set_is_persistent (object: PS_OBJECT_DATA)
+	set_is_persistent (object: PS_OBJECT_WRITE_DATA)
 			-- Set the `is_identified' attribute of `object'.
 		local
 			i: INTEGER
@@ -75,18 +75,18 @@ feature {PS_ABEL_EXPORT} -- Write functions
 			end
 		end
 
-	initialize_backend_representation (object: PS_OBJECT_DATA)
+	initialize_backend_representation (object: PS_OBJECT_WRITE_DATA)
 			-- Initialize all attributes or items in `object.backend_representation'
 		local
-			pair: TUPLE[value: STRING; type: IMMUTABLE_STRING_8]
+			pair: TUPLE [value: STRING; type: IMMUTABLE_STRING_8]
 		do
 			pair := as_string_pair (object)
-			object.backend_object.add_attribute (value_type_item, pair.value, pair.type)
+			object.backend_object.add_attribute ({PS_BACKEND_OBJECT}.value_type_item, pair.value, pair.type)
 		end
 
 feature {PS_ABEL_EXPORT} -- String pair conversion
 
-	as_string_pair (object: PS_OBJECT_DATA): TUPLE[value: STRING; type: IMMUTABLE_STRING_8]
+	as_string_pair (object: PS_OBJECT_DATA): TUPLE [value: STRING; type: IMMUTABLE_STRING_8]
 			-- The `object' as a string pair, i.e. when referenced by another object.
 		require else
 			can_handle: can_handle_type (object.type)

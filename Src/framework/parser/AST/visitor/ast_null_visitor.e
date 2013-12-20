@@ -1,7 +1,5 @@
 ﻿note
 	description: "Class that parses an Eiffel class an does nothing"
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
 
 class
 	AST_NULL_VISITOR
@@ -490,6 +488,10 @@ feature -- Implementation
 		do
 		end
 
+	process_list_dec_as (l_as: LIST_DEC_AS)
+		do
+		end
+
 	process_type_dec_as (l_as: TYPE_DEC_AS)
 		do
 		end
@@ -612,6 +614,11 @@ feature -- Implementation
 		do
 		end
 
+	process_list_dec_list_as (l_as: LIST_DEC_LIST_AS)
+			-- Process `l_as'.
+		do
+		end
+
 	process_type_dec_list_as (l_as: TYPE_DEC_LIST_AS)
 			-- Process `l_as'.
 		do
@@ -711,6 +718,8 @@ feature -- Quantification
 		end
 
 note
+	date: "$Date$"
+	revision: "$Revision$"
 	copyright: "Copyright (c) 1984-2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
@@ -742,4 +751,4 @@ note
 			Customer support http://support.eiffel.com
 		]"
 
-end -- class AST_NULL_VISITOR
+end

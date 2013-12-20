@@ -41,21 +41,17 @@ feature -- Access
 			Result := type.name
 		end
 
---	base_class: PS_TYPE_METADATA
---			-- The class of which `Current' type is an instance of.
---		obsolete
---			"Skip function call."
---		do
---			Result := Current
---		end
-
 feature -- Status report
+
+	is_none: BOOLEAN
+			-- Is `Current' the special `NONE' type?
+
 
 	is_equal (other: like Current): BOOLEAN
 			-- Is `other' attached to an object considered
 			-- equal to current object?
 		do
-			Result:= type.type_id = other.type.type_id
+			Result:= hash_code = other.hash_code
 		end
 
 	is_basic_type: BOOLEAN
@@ -65,14 +61,14 @@ feature -- Status report
 				--or reflection.type_conforms_to (type.type_id, reflection.dynamic_type_from_string ("READABLE_STRING_GENERAL"))
 				or type.type_id = ({detachable STRING_8}).type_id or type.type_id = ({detachable STRING_32}).type_id
 				-- The attached syntax is used here because the {TYPE}.is_conforming_to will always generate a catcall.
-				or attached {TYPE[detachable IMMUTABLE_STRING_GENERAL]} type
+				or attached {TYPE [detachable IMMUTABLE_STRING_GENERAL]} type
 				--or type.is_conforming_to ({detachable IMMUTABLE_STRING_GENERAL})
 		end
 
 	is_generic_derivation: BOOLEAN
 			-- Does `Current' type have one or more generic parameters?
 		do
-			Result := reflection.generic_count_of_type (type.type_id) > 0
+			Result := generic_parameter_count > 0
 		end
 
 	is_subtype_of (other: PS_TYPE_METADATA): BOOLEAN
@@ -98,7 +94,11 @@ feature -- Genericity
 	generic_parameter_count: INTEGER
 			-- The number of generic parameters of `Current'.
 		do
-			Result := reflection.generic_count_of_type (type.type_id)
+			if is_none then
+				Result := 0
+			else
+				Result := reflection.generic_count_of_type (type.type_id)
+			end
 		ensure
 			non_negative: Result >= 0
 			positive_if_generic: is_generic_derivation implies Result > 0
@@ -145,11 +145,11 @@ feature -- Attributes
 
 	attribute_count: INTEGER
 			-- The number of attributes in `Current'.
-		do
-			Result := attributes.count
-		ensure
-			correct: Result = reflection.field_count_of_type (type.type_id)
-		end
+--		do
+--			Result := attributes.count
+--		ensure
+--			correct: Result = reflection.field_count_of_type (type.type_id)
+--		end
 
 	attributes: LIST [STRING]
 			-- Names of all attributes in `Current' type.
@@ -166,7 +166,7 @@ feature -- Attributes
 				end
 			end
 		ensure
-			exists: Result.for_all (agent has_attribute(?))
+			exists: Result.for_all (agent has_attribute (?))
 			only_basic: across Result as cursor all attribute_type (cursor.item).is_basic_type end
 			complete: across attributes as cursor all attribute_type (cursor.item).is_basic_type implies Result.has (cursor.item) end
 		end
@@ -183,7 +183,7 @@ feature -- Attributes
 				end
 			end
 		ensure
-			exists: Result.for_all (agent has_attribute(?))
+			exists: Result.for_all (agent has_attribute (?))
 			only_reference: across Result as cursor all not attribute_type (cursor.item).is_basic_type end
 			complete: across attributes as cursor all not attribute_type (cursor.item).is_basic_type implies Result.has (cursor.item) end
 		end
@@ -211,9 +211,9 @@ feature -- Attributes
 
 	hash_code: INTEGER
 			-- Hash code value.
-		do
-			Result := type.type_id
-		end
+
+	builtin_type: ARRAYED_LIST [INTEGER]
+			-- The builtin types of the attributes.
 
 feature -- Utilities
 
@@ -224,14 +224,27 @@ feature {PS_METADATA_FACTORY} -- Initialization
 
 	make (a_type: TYPE [detachable ANY]; a_manager: PS_METADATA_FACTORY)
 			-- Initialize `Current'.
+--		local
+--			count: INTEGER
 		do
 			type := a_type
 			factory := a_manager
-			create attr_name_to_type_hash.make (100)
-			create attr_name_to_index_hash.make (100)
-			create {LINKED_LIST [STRING]} attributes.make
-			attributes.compare_objects
+			hash_code := type.hash_code
 			create reflection
+
+			if a_type.type_id = ({NONE}).type_id or a_type.type_id = ({detachable NONE}).type_id then
+				is_none := True
+				attribute_count := 0
+			else
+				is_none := False
+				attribute_count := reflection.field_count_of_type (type.type_id)
+			end
+
+			create attr_name_to_type_hash.make (attribute_count)
+			create attr_name_to_index_hash.make (attribute_count)
+			create {ARRAYED_LIST [STRING]} attributes.make (attribute_count)
+			create builtin_type.make (attribute_count)
+			attributes.compare_objects
 		end
 
 	initialize
@@ -246,7 +259,7 @@ feature {PS_METADATA_FACTORY} -- Initialization
 			from
 				i := 1
 			until
-				i > reflection.field_count_of_type (type.type_id)
+				i > attribute_count
 			loop
 				attr_name := reflection.field_name_of_type (i, type.type_id)
 					-- Get the attribute type
@@ -257,6 +270,8 @@ feature {PS_METADATA_FACTORY} -- Initialization
 				attr_name_to_index_hash.extend (i, attr_name)
 				attr_name_to_type_hash.extend (attr_type_metadata, attr_name)
 				attributes.extend (attr_name)
+
+				builtin_type.extend (reflection.field_type_of_type (i, type.type_id))
 				i := i + 1
 			end
 		end
@@ -281,7 +296,7 @@ feature {NONE} -- Implementation
 			end
 			create {LINKED_LIST [TYPE [detachable ANY]]} Result.make
 		ensure
-			definition: Result.for_all (agent conforms(?, a_type))
+			definition: Result.for_all (agent conforms (?, a_type))
 		end
 
 	supertypes_internal_wrapper (a_type: TYPE [detachable ANY]): LIST [TYPE [detachable ANY]]
@@ -293,7 +308,7 @@ feature {NONE} -- Implementation
 			end
 			create {LINKED_LIST [TYPE [detachable ANY]]} Result.make
 		ensure
-			definition: Result.for_all (agent conforms(a_type, ?))
+			definition: Result.for_all (agent conforms (a_type, ?))
 		end
 
 	conforms (subtype, supertype: TYPE [detachable ANY]): BOOLEAN
@@ -305,7 +320,7 @@ feature {NONE} -- Implementation
 invariant
 	non_negative_generic_count: generic_parameter_count >= 0
 	correct_genericity: (generic_parameter_count = 0) = not is_generic_derivation
---	class_and_type_generic: is_generic_derivation = base_class.is_generic
 	attributes_splitted_correctly: basic_attributes.count + reference_attributes.count = attributes.count
 
+	hash_correct: hash_code = type.type_id
 end

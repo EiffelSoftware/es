@@ -33,8 +33,9 @@ feature {PS_ABEL_EXPORT} -- Database operations
 		local
 			all_statements: LIST [STRING]
 			stmt: SQLITE_QUERY_STATEMENT
-			result_list: LINKED_LIST [PS_SQLITE_ROW]
+			result_list: ARRAYED_LIST [PS_SQLITE_ROW]
 			res: SQLITE_STATEMENT_ITERATION_CURSOR
+			l_error: PS_ERROR
 		do
 				-- By default we can get multiple SQL statements - SQLite somehow handles them differently, therefore split them.
 			all_statements := statement.split (';')
@@ -56,10 +57,9 @@ feature {PS_ABEL_EXPORT} -- Database operations
 			across
 				all_statements as current_statement
 			from
-				create result_list.make
 				create last_results.make
+				create result_list.make (0)
 			loop
-				create result_list.make
 				create stmt.make (current_statement.item, internal_connection)
 				create res.make (stmt) -- This executes the statement
 					-- Do error handling
@@ -69,11 +69,13 @@ feature {PS_ABEL_EXPORT} -- Database operations
 					if attached stmt.last_exception as ex then
 						print (ex.meaning)
 					end
-					last_error := get_error
-					last_error.raise
+					l_error := get_error
+					last_error := l_error
+					l_error.raise
 				end
 					-- Collect the result (if any)
 				from
+					create result_list.make (100)
 				until
 					res.after
 				loop
@@ -113,10 +115,10 @@ feature {PS_ABEL_EXPORT} -- Database results
 	last_result: ITERATION_CURSOR [PS_SQL_ROW]
 			-- The result of the last database operation
 
-	last_results: LINKED_LIST[ITERATION_CURSOR[PS_SQL_ROW]]
+	last_results: LINKED_LIST [ITERATION_CURSOR [PS_SQL_ROW]]
 			-- The results from the last multi-statement database operations
 
-	last_error: PS_ERROR
+	last_error: detachable PS_ERROR
 			-- The last occured error
 
 feature {PS_SQLITE_DATABASE} -- Initialization
@@ -125,7 +127,7 @@ feature {PS_SQLITE_DATABASE} -- Initialization
 			-- Initialization for `Current'.
 		do
 			internal_connection := connection
-			create {PS_NO_ERROR} last_error
+			last_error := Void
 			last_result := (create {LINKED_LIST [PS_SQL_ROW]}.make).new_cursor
 			create last_results.make
 				-- The default isolation level is Serializable, and it can't be changed to something else

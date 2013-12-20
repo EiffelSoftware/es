@@ -1,10 +1,5 @@
-note
-	description: "Object that represents a list of local decarations"
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+﻿note
+	description: "AST node for a list of local decarations."
 
 class
 	LOCAL_DEC_LIST_AS
@@ -33,8 +28,8 @@ feature{NONE} -- Initialization
 
 feature -- Access
 
-	locals: EIFFEL_LIST [TYPE_DEC_AS]
-			-- Local declarations
+	locals: EIFFEL_LIST [LIST_DEC_AS]
+			-- Local declarations.
 
 feature -- Visitor
 
@@ -90,8 +85,8 @@ feature -- Roundtrip
 			i: INTEGER
 		do
 			i := local_keyword_index
-			if a_list.valid_index (i) then
-				Result ?= a_list.i_th (i)
+			if a_list.valid_index (i) and then attached {KEYWORD_AS} a_list.i_th (i) as r then
+				Result := r
 			end
 		end
 
@@ -102,7 +97,9 @@ feature -- Roundtrip
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	date: "$Date$"
+	revision: "$Revision$"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

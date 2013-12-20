@@ -24,13 +24,7 @@ create {PS_ABEL_EXPORT}
 
 feature {PS_ABEL_EXPORT} -- Access
 
---	is_root: BOOLEAN
---			-- Is the current entity a garbage collection root?
---		do
---			Result := has_attribute (root_key) and then attribute_value (root_key).value.to_boolean
---		end
-
-	attributes: LINKED_LIST [STRING]
+	attributes: ARRAYED_LIST [STRING]
 			-- The attributes of the object that have been loaded.
 
 	attribute_value (attribute_name: STRING): TUPLE [value: STRING; attribute_class_name: IMMUTABLE_STRING_8]
@@ -39,7 +33,15 @@ feature {PS_ABEL_EXPORT} -- Access
 		require
 			attribute_present: has_attribute (attribute_name) and then has_value_for_attribute (attribute_name)
 		do
-			Result := attach (values [attribute_name])
+			check from_precondition: attached values [attribute_name] as res then
+				Result := res
+			end
+		end
+
+	value_lookup (attribute_name: STRING): detachable TUPLE [value: STRING; type: IMMUTABLE_STRING_8]
+			-- The value of the attribute `attribute_name', if present.
+		do
+			Result := values [attribute_name]
 		end
 
 feature {PS_ABEL_EXPORT} -- Status report
@@ -47,7 +49,8 @@ feature {PS_ABEL_EXPORT} -- Status report
 	has_attribute (attribute_name: STRING): BOOLEAN
 			-- Does the `Current' retrieved object have an attribute with name `attribute_name'?
 		do
-			Result := attributes.has (attribute_name)
+--			Result := attributes.has (attribute_name)
+			Result := values.has (attribute_name)
 		end
 
 	has_value_for_attribute (attribute_name: STRING): BOOLEAN
@@ -88,7 +91,7 @@ feature {PS_ABEL_EXPORT} -- Status report
 				-- Ignore additional attributes (e.g. from plugins)
 				if metadata.attributes.has (cursor.key) then
 
-					attr_type := reflection.dynamic_type_from_string (cursor.item.second)
+					attr_type := reflection.dynamic_type_from_string (cursor.item.type)
 
 					-- For expanded types, or when an object was attached, the runtime type must conform to the declared type
 					Result := Result and (attr_type >= 0 implies
@@ -97,7 +100,7 @@ feature {PS_ABEL_EXPORT} -- Status report
 					-- If a reference was Void during write, the runtime type was stored as NONE and the value is 0
 					Result := Result and (attr_type = reflection.none_type implies
 						not metadata.attribute_type (cursor.key).type.is_attached -- Type can be detachable
-						and cursor.item.first.is_empty) -- Value is an empty string
+						and cursor.item.value.is_empty) -- Value is an empty string
 				end
 			end
 		end
@@ -117,7 +120,7 @@ feature -- Comparison
 		do
 			if attached other then
 				Result := primary_key.is_equal (other.primary_key) and metadata.is_equal (other.metadata) and then
-					across attributes as cursor all other.has_attribute (cursor.item) and then is_equal_tuple (other.attribute_value (cursor.item), attribute_value(cursor.item)) end
+					across attributes as cursor all other.has_attribute (cursor.item) and then is_equal_tuple (other.attribute_value (cursor.item), attribute_value (cursor.item)) end
 			else
 				Result := False
 			end
@@ -132,9 +135,9 @@ feature {PS_ABEL_EXPORT} -- Element change
 			class_name_not_empty: not class_name_of_value.is_empty
 			none_means_void_value: class_name_of_value.is_equal ("NONE") implies value.is_empty
 		local
-			pair: PS_PAIR [STRING, IMMUTABLE_STRING_8]
+			pair: TUPLE [STRING, IMMUTABLE_STRING_8]
 		do
-			create pair.make (value, class_name_of_value)
+			pair := [value, class_name_of_value]
 
 			if values.has (attribute_name) then
 				values.force (pair, attribute_name)
@@ -169,7 +172,6 @@ feature {PS_ABEL_EXPORT} -- Element change
 				if attributes_to_keep.has (attributes.item) then
 					attributes.forth
 				else
---					print (attributes.item + "%N")
 					values.remove (attributes.item)
 					attributes.remove
 				end
@@ -193,25 +195,23 @@ feature -- Debugging output
 			loop
 				Result.append ("%T%T")
 				Result.append (cursor.key + ": ")
-				Result.append (cursor.item.second + " = ")
-				Result.append (cursor.item.first)
+				Result.append (cursor.item.type + " = ")
+				Result.append (cursor.item.value)
 				Result.append ("%N")
 			end
 		end
 
 feature {NONE} -- Initialization
 
-	values: HASH_TABLE [PS_PAIR [STRING, IMMUTABLE_STRING_8], STRING]
+	values: HASH_TABLE [TUPLE [value: STRING; type: IMMUTABLE_STRING_8], STRING]
 			-- Maps attribute names to the corresponding value and runtime types.
 
 	make (key: INTEGER; class_data: PS_TYPE_METADATA)
 			-- Initialization for `Current'.
 		do
-			precursor(key, class_data)
---			primary_key := key
---			metadata := class_data
-			create values.make (10)
-			create attributes.make
+			precursor (key, class_data)
+			create values.make (class_data.attribute_count + 1) -- Additional space for plugins.
+			create attributes.make (class_data.attribute_count + 1)
 			attributes.compare_objects
 		ensure then
 			attributes_empty: attributes.is_empty
@@ -219,16 +219,17 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Implementation
 
-	is_equal_tuple (a, b: TUPLE[first: STRING; second:IMMUTABLE_STRING_8]): BOOLEAN
+	is_equal_tuple (a, b: TUPLE [first: STRING; second:IMMUTABLE_STRING_8]): BOOLEAN
 		do
 			Result := a.first.is_equal (b.first) and a.second.is_equal (b.second)
 		end
 
+feature {PS_ABEL_EXPORT} -- Constants
+
+	value_type_item: STRING = "ps_value_item"
+			-- The fake attribute for value type objects.
+
 invariant
 	has_value_for_all_attributes: across attributes as attribute_cursor all has_attribute (attribute_cursor.item) end
---	void_references_have_NONE_type: across values as val all val.item.first.is_empty implies val.item.second.is_equal ("NONE") end
-
---	root_correct: has_attribute (root_key) implies is_root = attribute_value (root_key).value.to_boolean
-
 
 end

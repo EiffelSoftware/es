@@ -98,7 +98,7 @@ feature {NONE}
       end
     end
 
-  locals: LIST [TYPE_DEC_AS]
+  locals: LIST [LIST_DEC_AS]
 
   process_feature_as (l_as: FEATURE_AS)
     -- Process only the selected feature.

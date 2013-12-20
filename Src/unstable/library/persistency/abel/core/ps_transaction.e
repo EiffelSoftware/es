@@ -1,6 +1,6 @@
 note
 	description: "[
-		Represents a transaction context for read and write operations.
+		Transaction context for read and write operations.
 
 		Insert and update operation always treat the whole object
 		graph, meaning the object given as an argument and all
@@ -64,20 +64,22 @@ create {PS_REPOSITORY}
 feature {NONE} -- Initialization
 
 	make (a_repository: like repository)
-			-- Initialization for `Current'
+			-- Initialization for `Current'.
 		do
 			repository := a_repository
 			last_error := Void
 			create internal_active_queries.make
 			create root_declaration_strategy.make_argument_of_insert
 			create transaction.make (repository)
---			repository.id_manager.register_transaction (attach (transaction))
+
+			is_active_control := True
 		ensure
 			default_strategy: root_declaration_strategy.is_argument_of_insert
 			active: is_active
 			repository_set: repository = a_repository
 			empty_queries: active_queries.is_empty
 			no_error: not has_error
+			correct_active: is_active_control
 		end
 
 feature -- Access
@@ -108,7 +110,7 @@ feature -- Status report
 	is_active: BOOLEAN
 			-- Is the current transaction active?
 		do
-			Result := attached transaction as t and then t.is_active
+			Result := transaction.is_active
 		end
 
 	is_persistent (object: ANY): BOOLEAN
@@ -118,7 +120,7 @@ feature -- Status report
 			supported: is_supported (object)
 			no_error: not has_error
 		do
-			Result := repository.is_identified (object, attach(transaction))
+			Result := repository.is_identified (object, transaction)
 		end
 
 	is_root (object: ANY): BOOLEAN
@@ -129,19 +131,19 @@ feature -- Status report
 			persistent: is_persistent (object)
 			no_error: not has_error
 		do
-			Result := repository.is_root (object, attach (transaction))
+			Result := repository.is_root (object, transaction)
 		end
 
 	has_error: BOOLEAN
 			-- Did the last operation produce an error?
 		do
-			Result := attached last_error and not attached {PS_NO_ERROR} last_error
+			Result := attached last_error
 		end
 
 feature -- Element change
 
 	set_root_declaration_strategy (a_strategy: like root_declaration_strategy)
-			-- Set the new root declaration strategy
+			-- Set the new root declaration strategy.
 		do
 			fixme ("Implement this setting in the backend")
 			-- root_declaration_strategy := a_strategy
@@ -159,7 +161,7 @@ feature -- Data retrieval
 		do
 			internal_active_queries.extend (query)
 			query.set_transaction (Current)
-			repository.internal_execute_query (query, attach(transaction))
+			repository.internal_execute_query (query, transaction)
 		ensure
 			active: active_queries.has (query)
 			executed: query.is_executed
@@ -176,7 +178,7 @@ feature -- Data retrieval
 		do
 			internal_active_queries.extend (query)
 			query.set_transaction (Current)
-			repository.internal_execute_tuple_query (query, attach(transaction))
+			repository.internal_execute_tuple_query (query, transaction)
 		ensure
 			active: active_queries.has (query)
 			executed: query.is_executed
@@ -193,11 +195,25 @@ feature -- Data modification
 			in_transaction: is_active
 			no_error: not has_error
 			supported: is_supported (object)
-			not_persistent: not is_persistent (object)
+		local
+			saved: detachable PS_ROOT_OBJECT_STRATEGY
 		do
-			repository.write (object, attach(transaction))
+			fixme ("The commented code is more efficient. Switch the code as soon as set_root_declaration_strategy gets implemented.")
+			if root_declaration_strategy.is_argument_of_insert and then is_persistent (object) then
+--				saved := root_declaration_strategy
+--				set_root_declaration_strategy (saved.new_argument_of_write)
+				mark_root (object)
+			end
+
+			repository.write (object, transaction)
+
+--			if attached saved then
+--				set_root_declaration_strategy (saved)
+--			end
+
 		ensure
 			in_transaction: is_active
+			root_declaration_unchanged: root_declaration_strategy = old root_declaration_strategy
 			persistent: is_persistent (object) xor object.generating_type.is_expanded
 			root_set: object.generating_type.is_expanded xor
 				(root_declaration_strategy > root_declaration_strategy.new_preserve implies is_root (object))
@@ -213,7 +229,7 @@ feature -- Data modification
 			supported: is_supported (object)
 			persistent: is_persistent (object)
 		do
-			repository.write (object, attach(transaction))
+			repository.write (object, transaction)
 		ensure
 			in_transaction: is_active
 			persistent: is_persistent (object)
@@ -231,7 +247,7 @@ feature -- Data modification
 			persistent: is_persistent (object)
 			valid_direct_update: to_implement_assertion ("check that all referenced objects are persistent")
 		do
-			repository.direct_update (object, attach(transaction))
+			repository.direct_update (object, transaction)
 		ensure
 			in_transaction: is_active
 			persistent: is_persistent (object)
@@ -252,7 +268,7 @@ feature -- Root status modification
 			persistent: is_persistent (object)
 			not_root: not is_root (object)
 		do
-			repository.set_root_status (object, True, attach (transaction))
+			repository.set_root_status (object, True, transaction)
 		ensure
 			in_transaction: is_active
 			persistent: is_persistent (object)
@@ -271,7 +287,7 @@ feature -- Root status modification
 			persistent: is_persistent (object)
 			not_root: is_root (object)
 		do
-			repository.set_root_status (object, False, attach (transaction))
+			repository.set_root_status (object, False, transaction)
 		ensure
 			in_transaction: is_active
 			persistent: is_persistent (object)
@@ -291,8 +307,8 @@ feature -- Transaction operations
 			no_active_queries: active_queries.is_empty
 			no_error: not has_error
 		do
-			repository.commit_transaction (attach (transaction))
-			transaction := Void
+			repository.commit_transaction (transaction)
+			is_active_control := False
 		ensure
 			not_active: not is_active
 		rescue
@@ -306,8 +322,8 @@ feature -- Transaction operations
 			no_active_queries: active_queries.is_empty
 			no_error: not has_error
 		do
-			repository.rollback_transaction (attach (transaction), True)
-			transaction := Void
+			repository.rollback_transaction (transaction, True)
+			is_active_control := False
 		ensure
 			not_active: not is_active
 		rescue
@@ -319,10 +335,9 @@ feature -- Transaction operations
 		require
 			not_active: not is_active
 		do
-			-- create {PS_NO_ERROR} last_error
 			last_error := Void
 			create transaction.make (repository)
---			repository.id_manager.register_transaction (attach (transaction))
+			is_active_control := True
 		ensure
 			active: is_active
 			no_error: not has_error
@@ -336,14 +351,22 @@ feature {PS_ABEL_EXPORT} -- Implementation
 feature {NONE} -- Implementation
 
 
-	transaction: detachable PS_INTERNAL_TRANSACTION
+	transaction: PS_INTERNAL_TRANSACTION
 			-- The currently active transaction.
 
 	set_error
 			-- Set the `last_error' field.
 		do
-			if attached transaction as tr and then not attached {PS_NO_ERROR} tr.error then
-				last_error := tr.error
-			end
+			last_error := transaction.error
+			is_active_control := False
+		ensure
+			not_active: not is_active
 		end
+
+	is_active_control: BOOLEAN
+
+invariant
+	correct_active: is_active = is_active_control
+	not_active_when_error: has_error implies not is_active
+
 end

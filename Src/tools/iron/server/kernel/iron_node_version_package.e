@@ -41,6 +41,9 @@ feature -- Access
 	version: IRON_NODE_VERSION
 			-- Associated version.
 
+	download_count: INTEGER assign set_download_count
+			-- Download count.
+
 feature -- Comparison		
 
 	is_equal (other: IRON_NODE_VERSION_PACKAGE): BOOLEAN
@@ -97,9 +100,14 @@ feature -- Access
 
 feature -- Tags
 
-	tags: LIST [READABLE_STRING_32]
+	tags: detachable LIST [READABLE_STRING_32]
 		do
 			Result := package.tags
+		end
+
+	links: detachable STRING_TABLE [IRON_NODE_LINK]
+		do
+			Result := package.links
 		end
 
 feature -- Access: archive
@@ -148,6 +156,11 @@ feature -- Change
 		do
 			archive_path := v
 			get_archive_info
+		end
+
+	set_download_count (a_count: INTEGER)
+		do
+			download_count := a_count
 		end
 
 --	set_last_modified (dt: like last_modified)

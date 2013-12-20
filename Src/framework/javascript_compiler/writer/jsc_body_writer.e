@@ -63,7 +63,7 @@ feature -- Basic Operations
 			l_body1: FEATURE_AS
 			l_body2: BODY_AS
 			l_routine: ROUTINE_AS
-			l_local: TYPE_DEC_AS
+			l_local: LIST_DEC_AS
 			l_id_list: IDENTIFIER_LIST
 			l_names_heap: NAMES_HEAP
 			l_name: STRING_32

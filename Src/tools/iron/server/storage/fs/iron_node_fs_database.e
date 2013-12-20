@@ -277,7 +277,16 @@ feature -- Package
 					across
 						s_tags.split (',') as tags_ic
 					loop
-						Result.tags.force (tags_ic.item)
+						Result.add_tag (tags_ic.item)
+					end
+				end
+				if attached inf.table_item ("links") as s_links then
+					across
+						s_links as links_ic
+					loop
+						if links_ic.item.is_valid_as_string_8 then
+							Result.add_link (links_ic.key, create {IRON_NODE_LINK}.make (links_ic.item.as_string_8, links_ic.key.to_string_32))
+						end
 					end
 				end
 
@@ -459,17 +468,36 @@ feature -- Package: change
 				inf.put (hdate.rfc1123_string, "last-modified")
 			end
 			create s.make_empty
-			across
-				a_package.tags as tags_ic
-			loop
-				if not s.is_empty then
-					s.append_character (',')
+			if attached a_package.tags as l_tags then
+				across
+					l_tags as tags_ic
+				loop
+					if not s.is_empty then
+						s.append_character (',')
+					end
+					s.append (tags_ic.item)
 				end
-				s.append (tags_ic.item)
 			end
 			if not s.is_empty then
 				inf.put (s, "tags")
 			end
+
+			if attached a_package.links as l_links then
+				across
+					l_links as link_ic
+				loop
+					create s.make_empty
+					if attached link_ic.item.title as lnk_title then
+						s.append_character ('%"')
+						s.append (lnk_title)
+						s.append_character ('%"')
+						s.append_character (' ')
+					end
+					s.append (link_ic.item.url)
+					inf.put (s, "links["+ link_ic.key +"]")
+				end
+			end
+
 
 			if attached a_package.owner as o then
 				inf.put (o.name, "owner")
@@ -518,7 +546,39 @@ feature -- Version package
 					if u.file_path_exists (z) then
 						Result.set_archive_path (z.absolute_path)
 					end
+					Result.set_download_count (download_count (Result))
 				end
+			end
+		end
+
+	version_packages_count (v: IRON_NODE_VERSION): INTEGER
+			-- Total number of package for version `v'.
+		local
+			p: PATH
+			d,t: DIRECTORY
+			i: INTEGER
+			l_path: PATH
+		do
+			p := packages_index_path (v)
+			create d.make_with_path (p)
+			if d.exists and then d.is_readable then
+				i := 0
+				create t.make_with_path (p) -- Initialize `t'
+				across
+					d.entries as c
+				loop
+					l_path := c.item
+					if
+						not l_path.is_current_symbol and then
+						not l_path.is_parent_symbol
+					then
+						t.make_with_path (p.extended_path (l_path)) -- reuse `t'
+						if t.exists then
+							i := i + 1
+						end
+					end
+				end
+				Result := i
 			end
 		end
 
@@ -669,6 +729,42 @@ feature -- Version package
 						Result.force (e.item.name)
 					end
 				end
+			end
+		end
+
+	download_count (a_package: IRON_NODE_VERSION_PACKAGE): INTEGER
+		local
+			p: PATH
+			f: RAW_FILE
+			s: READABLE_STRING_8
+		do
+			p := package_version_counter_path (a_package)
+			create f.make_with_path (p)
+			if f.exists and then f.is_access_readable then
+				f.open_read
+				f.read_line_thread_aware
+				s := f.last_string
+				if s.is_integer then
+					Result := a_package.download_count.max (s.to_integer)
+				end
+				f.close
+			end
+			Result := a_package.download_count.max (Result)
+		end
+
+	increment_download_counter (a_package: IRON_NODE_VERSION_PACKAGE)
+		local
+			f: RAW_FILE
+			nb: INTEGER
+		do
+			nb := download_count (a_package)
+			a_package.download_count := nb + 1
+			create f.make_with_path (package_version_counter_path (a_package))
+			if not f.exists or else f.is_access_writable then
+				f.open_write
+				f.put_string (a_package.download_count.out)
+				f.put_new_line
+				f.close
 			end
 		end
 
@@ -1119,6 +1215,13 @@ feature {NONE} -- Initialization
 			valid_id: not a_id.is_empty
 		do
 			Result := packages_index_path (v).extended (a_id)
+		end
+
+	package_version_counter_path (a_package: IRON_NODE_VERSION_PACKAGE): PATH
+		require
+			package_with_id: a_package.has_id
+		do
+			Result := packages_index_path (a_package.version).extended (a_package.id).extended ("downloads")
 		end
 
 	package_archive_path (v: IRON_NODE_VERSION; a_id: READABLE_STRING_GENERAL): PATH

@@ -8,63 +8,30 @@ note
 deferred class
 	EB_DEVELOPMENT_WINDOW_DATA
 
-feature {EB_DEVELOPMENT_WINDOW_DATA, EB_SHARED_PREFERENCES, EB_DEVELOPMENT_WINDOW_BUILDER, EB_DEVELOPMENT_WINDOW_DIRECTOR} -- Value
+feature -- Value
 
-	maximized_width, width: INTEGER
-			-- Width for the development window
-		deferred
-		end
+	width, height: INTEGER
+			-- Width and height for the development window.
 
-	maximized_height, height: INTEGER
-			-- Height for the development window
-		deferred
-		end
+	x_position, y_position: INTEGER
+			-- X and Y position for development window.
 
-	maximized_x_position, x_position: INTEGER
-			-- X position for development windows
-		deferred
-		end
-
-	maximized_y_position, y_position: INTEGER
-			-- Y position for development windows
-		deferred
-		end
+	maximized_x_position, maximized_y_position: INTEGER
+			-- X and Y position for development window when mazimized.
 
 	is_maximized: BOOLEAN
 			-- Is the development window maximized?
-		deferred
-		end
 
 	is_minimized: BOOLEAN
 			-- Is the development window minimized?
-		deferred
-		end
-
-	is_force_debug_mode: BOOLEAN
-			-- Is the development window force debug mode?
-		deferred
-		end
-
-	context_unified_stone: BOOLEAN
-			-- Is the context tool linked?
-		deferred
-		end
-
-	general_toolbar_layout: ARRAY [STRING]
-			-- Toolbar organization
-		deferred
-		end
-
-	refactoring_toolbar_layout: ARRAY [STRING]
-			-- Toolbar organization
-		deferred
-		end
 
 feature -- Element change
 
 	save_size (a_width, a_height: INTEGER)
 			-- Save width and height of window.
-		deferred
+		do
+			width := a_width
+			height := a_height
 		ensure
 			width_set: width = a_width
 			height_set: height = a_height
@@ -72,69 +39,36 @@ feature -- Element change
 
 	save_position (a_x, a_y: INTEGER)
 			-- Save position of window.
-		deferred
+		do
+			x_position := a_x
+			y_position := a_y
 		ensure
 			x_position_set: x_position = a_x
 			y_position_set: y_position = a_y
 		end
 
-	save_maximized_size (a_width, a_height: INTEGER)
-			-- Save width and height of window when maximized.
-		deferred
-		ensure
-			maximized_width_set: maximized_width = a_width
-			maximized_height_set: maximized_height = a_height
-		end
-
 	save_maximized_position (a_x, a_y: INTEGER)
 			-- Save position of window when maximized.
-		deferred
+		do
+			maximized_x_position := a_x
+			maximized_y_position := a_y
 		ensure
 			maximized_x_position_set: maximized_x_position = a_x
 			maximized_y_position_set: maximized_y_position = a_y
 		end
-
 	save_window_state (a_minimized, a_maximized: BOOLEAN)
 			-- Save the window state of the window.
 		require
 			states_valid: (a_minimized or a_maximized) implies a_maximized /= a_minimized
-		deferred
+		do
+			is_maximized := a_maximized
+			is_minimized := a_minimized
 		ensure
 			states_set: is_maximized = a_maximized and is_minimized = a_minimized
 		end
 
-	save_force_debug_mode (a_bool: BOOLEAN)
-			-- Save if `is_force_debug_mode'
-		deferred
-		ensure
-			mode_set: is_force_debug_mode = a_bool
-		end
-
-feature -- Basic operations
-
-	retrieve_general_toolbar (command_pool: LIST [EB_TOOLBARABLE_COMMAND]): ARRAYED_SET [SD_TOOL_BAR_ITEM]
-			-- Retreive the general toolbar using the available commands in `command_pool'
-		deferred
-		end
-
-	retrieve_refactoring_toolbar (command_pool: LIST [EB_TOOLBARABLE_COMMAND]): ARRAYED_SET [SD_TOOL_BAR_ITEM]
-			-- Retreive the refactoring toolbar using the available commands in `command_pool'
-		deferred
-		end
-
-feature -- Data Ids for SESSION_MANAGER
-
-	development_window_data_id: STRING_8 = "com.eiffel.develop_window_data"
-			-- Session data id for {EB_DEVELOPMENT_WINDOW_SESSION_DATA}.
-
-	development_window_project_data_id: STRING_8 = "com.eiffel.develop_window_project_data"
-			-- Session data id for {EB_DEVELOPMENT_WINDOW_SESSION_DATA} for one project.		
-
-	development_window_count_id: STRING_8 = "com_eiffel.develop_window_count"
-			-- Session data id for how many {EB_DEVELOPMENT_WINDOW} exists in the session.
-
 ;note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -147,22 +81,22 @@ feature -- Data Ids for SESSION_MANAGER
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 
 end -- class EB_DEVELOPMENT_WINDOW_DATA

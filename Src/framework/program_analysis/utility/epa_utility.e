@@ -175,7 +175,7 @@ feature -- AST
 			l_variable: STRING
 			l_vars: STRING
 			l_expr: EXPR_AS
-			l_vars_def: EIFFEL_LIST [TYPE_DEC_AS]
+			l_vars_def: EIFFEL_LIST [LIST_DEC_AS]
 			l_parser: like entity_declaration_parser
 			l_var_text: STRING
 		do

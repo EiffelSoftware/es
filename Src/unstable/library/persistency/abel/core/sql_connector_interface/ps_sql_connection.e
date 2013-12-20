@@ -57,12 +57,12 @@ feature {PS_ABEL_EXPORT} -- Database results
 		deferred
 		end
 
-	last_results: LIST[ITERATION_CURSOR[PS_SQL_ROW]]
+	last_results: LIST [ITERATION_CURSOR [PS_SQL_ROW]]
 			-- The results from the last multi-statement database operations
 		deferred
 		end
 
-	last_error: PS_ERROR
+	last_error: detachable PS_ERROR
 			-- The last occurred error
 		deferred
 		end

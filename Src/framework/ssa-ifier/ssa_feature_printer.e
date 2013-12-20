@@ -30,7 +30,7 @@ create
 
 feature
   make (a_doms: ARRAYED_LIST [CLASS_C];
-        a_locals: LIST [TYPE_DEC_AS])
+        a_locals: LIST [LIST_DEC_AS])
     require
       non_void_rely: rely /= Void
       non_void_locals: a_locals /= Void
@@ -40,7 +40,7 @@ feature
       context := ""
     end
 
-  locals: LIST [TYPE_DEC_AS]
+  locals: LIST [LIST_DEC_AS]
   doms: ARRAYED_LIST [CLASS_C]
   in_loop_inv: BOOLEAN
 

@@ -1,6 +1,10 @@
 note
 	description: "[
-		Represents a repository containing persistent objects.
+		An abstract repository with a common interface to 
+		read and manipulate persistent objects.
+		
+		To create a new repository, use the PS_*_REPOSITORY_FACTORY 
+		shipped with each ABEL backend.
 		
 		A repository can be used to execute read-only queries or create
 		a new transaction context for read-write operations.
@@ -8,12 +12,6 @@ note
 		It is possible to change some of the default settings
 		for performance tuning, such as the transaction isolation level
 		or the batch size for lazy loading during query execution.
-		
-		The repository class provides a common interface for all ABEL
-		backends. However, the creation process cannot be abstracted.
-		To hide the (often quite complicated) creation process each
-		backend should ship its own factory class for its repository
-		implementation.
 		]"
 	author: "Marco Piccioni"
 	date: "$Date$"
@@ -66,7 +64,7 @@ feature -- Element change
 		end
 
 	set_retry_count (count: INTEGER)
-			-- Set `retry_count' to `count'
+			-- Set `retry_count' to `count'.
 		require
 			positive: count >= 0
 		do
@@ -180,11 +178,11 @@ feature {PS_ABEL_EXPORT} -- Internal: Querying operations
 			transaction_still_alive: transaction.is_active
 			no_error: not transaction.has_error
 			can_handle_retrieved_object: not query.is_after implies can_handle (query.result_cache.last)
-			not_after_means_known: not query.is_after implies (query.generic_type.is_expanded or is_identified (query.result_cache.last, transaction))
+			not_after_means_known: (not query.is_after and not transaction.is_readonly) implies (query.generic_type.is_expanded or is_identified (query.result_cache.last, transaction))
 		end
 
 	internal_execute_tuple_query (tuple_query: PS_TUPLE_QUERY [ANY]; transaction: PS_INTERNAL_TRANSACTION)
-			-- Execute the tuple query `tuple_query' within the readonly `transaction'.
+			-- Execute the tuple query `tuple_query' within `transaction'.
 		require
 			not_executed: not tuple_query.is_executed
 			transaction_repository_correct: transaction.repository = Current
@@ -251,7 +249,7 @@ feature {PS_ABEL_EXPORT} -- Internal: Transaction handling
 			transaction_failed: not transaction.is_successful_commit
 			transaction_gone_in_id_manager: not id_manager.is_registered (transaction)
 			error_on_implicit_abort: not manual_rollback implies transaction.has_error
-			exception_raised_on_implicit_abort: not manual_rollback implies transaction.error.is_caught
+			exception_raised_on_implicit_abort: not manual_rollback implies attached transaction.error as error and then error.is_caught
 		end
 
 feature {PS_ABEL_EXPORT} -- Testing
@@ -272,6 +270,7 @@ feature {NONE} -- Rescue
 feature {PS_ABEL_EXPORT} -- Implementation
 
 	id_manager: PS_OBJECT_IDENTIFICATION_MANAGER
+			-- The object identifier manager.
 
 feature -- Constants
 

@@ -38,13 +38,14 @@ feature -- Execution
 			it: HTML_IRON_NODE_ITERATOR
 			s: STRING_8
 			l_package: detachable IRON_NODE_VERSION_PACKAGE
+			lnk: IRON_NODE_HTML_LINK
 		do
 			l_package := package_version_from_id_path_parameter (req, "id")
 			if l_package /= Void then
 				create s.make (1024)
 				s.append ("<ul>")
 				create it.make (s, req, iron, iron_version (req))
-				it.set_is_long_version (True)
+				it.set_as_list_item (True)
 				it.set_user (current_user (req))
 				it.visit_package_version (l_package)
 
@@ -53,8 +54,10 @@ feature -- Execution
 				end
 				s.append ("</ul>")
 				r := new_response_message (req)
-				r.add_menu ("Edit", iron.package_version_edit_web_page (l_package))
-				r.add_menu ("Map", iron.package_version_map_web_page (l_package, Void))
+				create lnk.make (iron.package_version_view_web_page (l_package), "Package")
+				r.add_menu_item (lnk)
+				lnk.add_sublink (iron.package_version_edit_web_page (l_package), "Edit")
+				lnk.add_sublink (iron.package_version_map_web_page (l_package, Void), "Map")
 				r.set_title ("Package " + iron.html_encoder.encoded_string (l_package.human_identifier))
 				r.set_body (s)
 				res.send (r)

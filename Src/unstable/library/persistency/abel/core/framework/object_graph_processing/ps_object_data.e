@@ -4,15 +4,19 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	PS_OBJECT_DATA
 
 inherit
 	PS_ABEL_EXPORT
 
-create
-	make_with_object,
-	make_with_primary_key
+	REFLECTED_REFERENCE_OBJECT
+		export
+		{NONE}
+			all
+		{PS_ABEL_EXPORT}
+			set_object, physical_offset
+		end
 
 feature {PS_ABEL_EXPORT} -- Access: General information
 
@@ -20,20 +24,17 @@ feature {PS_ABEL_EXPORT} -- Access: General information
 			-- A reflection wrapper to the actual object.
 		require
 			initialized: is_object_initialized
-		do
-			check attached internal_object as obj then
-				Result := obj
-			end
+		attribute
 		end
 
 	index: INTEGER
 			-- The index of the current object.
 
-	referers: LIST[INTEGER]
-			-- The index set of the objects holding a reference to the current object.
+	referer_count: INTEGER
+			-- The number of referers to this object.
 
-	references: LIST[INTEGER]
-			-- The index set of the objects referred to by the current object.
+	last_referer: INTEGER
+			-- The last referer found during object graph traversal.
 
 	type: PS_TYPE_METADATA
 			-- Some information about the runtime type of the current object.
@@ -63,7 +64,7 @@ feature {PS_ABEL_EXPORT} -- Status report
 	is_object_initialized: BOOLEAN
 			-- Is the actual object set?
 		do
-			Result := attached internal_object
+			Result := reflector.object /= Current
 		end
 
 feature {PS_ABEL_EXPORT} -- Access: ABEL internals
@@ -73,9 +74,6 @@ feature {PS_ABEL_EXPORT} -- Access: ABEL internals
 
 	primary_key: INTEGER
 			-- The primary key of the current object, as used by the backend.
-
-	uninitialized_attributes: LINKED_LIST[INTEGER]
-			-- The fields which have not yet been set during retrieval.
 
 	handler: PS_HANDLER
 			-- The handler for the current object.
@@ -163,13 +161,20 @@ feature {PS_ABEL_EXPORT} -- Element change
 			backend_collection_correct: attached {PS_BACKEND_COLLECTION} a_backend_representation implies backend_collection = a_backend_representation
 		end
 
-	set_object (an_object: like reflector)
+	set_reflector (an_object: like reflector)
 			-- Assign `object' with `an_object'.
 		do
-			internal_object := an_object
+			reflector := an_object
 		ensure
 			initialized: is_object_initialized
 			object_assigned: an_object = reflector
+		end
+
+	set_referer (referer_index: INTEGER)
+			-- Set the referer.
+		do
+			last_referer := referer_index
+			referer_count := referer_count + 1
 		end
 
 feature {NONE} -- Implementation
@@ -180,38 +185,4 @@ feature {NONE} -- Implementation
 			option: stable
 		attribute
 		end
-
-	internal_object: detachable like reflector
-			-- The detachable but stable reference to the reflected object.
-		note
-			option: stable
-		attribute
-		end
-
-feature {NONE} -- Initialization
-
-	make_with_object (idx: INTEGER; an_object: REFLECTED_OBJECT; a_level: INTEGER; a_type: PS_TYPE_METADATA)
-			-- Initialization for `Current'.
-		do
-			index := idx
-			internal_object := an_object
-			level := a_level
-			type := a_type
-			create {LINKED_LIST[INTEGER]} referers.make
-			create {LINKED_LIST[INTEGER]} references.make
-			create uninitialized_attributes.make
-		end
-
-	make_with_primary_key (idx: INTEGER; a_primary_key: INTEGER; a_type: PS_TYPE_METADATA; a_level: INTEGER)
-			-- Initialization for `Current'
-		do
-			index := idx
-			type := a_type
-			level := a_level
-			primary_key := a_primary_key
-			create {LINKED_LIST[INTEGER]} referers.make
-			create {LINKED_LIST[INTEGER]} references.make
-			create uninitialized_attributes.make
-		end
-
 end
