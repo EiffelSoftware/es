@@ -369,7 +369,7 @@ feature -- Output
 			end
 		end
 
-feature {ALIAS_ANALYZER_RELATION, ALIAS_ANALYZER} -- Storage
+feature {ALIAS_ANALYZER_RELATION, ALIAS_ANALYZER_ON_RELATION} -- Storage
 
 	table: HASH_TABLE [SEARCH_TABLE [G], G]
 			-- Expressions, containing a specific item, indexed by this item.

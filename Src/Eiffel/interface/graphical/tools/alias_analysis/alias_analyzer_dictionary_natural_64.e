@@ -135,6 +135,7 @@ feature -- Access
 					t := values.i_th (index)
 					if entry_qualifier (t) = 0 then
 							-- 	[n, 0] - feature of routine id "n"
+						Result := current_index
 					elseif entry_tail (t) >= 0 and then entry_qualifier (t) >= 0 then
 							-- 	[m, n] - local variable "m" of a feature of routine id "n"
 					elseif entry_tail (t) >= 0 and then entry_qualifier (t) < 0 then
@@ -169,6 +170,7 @@ feature -- Access
 					t := values.i_th (index)
 					if entry_qualifier (t) = 0 then
 							-- 	[n, 0] - feature of routine id "n"
+						Result := index
 					elseif entry_tail (t) >= 0 and then entry_qualifier (t) >= 0 then
 							-- 	[m, n] - local variable "m" of a feature of routine id "n"
 					elseif entry_tail (t) >= 0 and then entry_qualifier (t) < 0 then
@@ -378,7 +380,7 @@ feature {NONE} -- Status report
 			t: like entry
 		do
 			t := values [v]
-			Result := entry_tail (t) >= 0 and then entry_qualifier (t) >= 0 or else entry_tail (t) < 0 and then entry_qualifier (t) < 0
+			Result := entry_qualifier (t) >= 0
 		end
 
 feature -- Special indexes
@@ -545,19 +547,21 @@ feature -- Output
 						if attached w.System.rout_info_table.origin (entry_tail (t)) as c and then attached c.feature_of_rout_id (entry_tail (t)) as f then
 							Result := "{" + c.name + "}." + f.feature_name_32
 						end
-					elseif entry_tail (t) >= 0 and then entry_qualifier (t) >= 0 then
-						create w
-						if attached w.System.rout_info_table.origin (entry_qualifier (t)) as c and then attached c.feature_of_rout_id (entry_qualifier (t)) as f then
-							if entry_tail (t) <= f.argument_count then
-								Result := "{" + c.name + "}." + f.feature_name_32 + "(" + entry_tail (t).out + ")"
-							else
-								Result := "{" + c.name + "}." + f.feature_name_32 + "." + (entry_tail (t) - f.argument_count).out
+					elseif entry_qualifier (t) >= 0 then
+						if entry_tail (t) >= 0 then
+							create w
+							if attached w.System.rout_info_table.origin (entry_qualifier (t)) as c and then attached c.feature_of_rout_id (entry_qualifier (t)) as f then
+								if entry_tail (t) <= f.argument_count then
+									Result := "{" + c.name + "}." + f.feature_name_32 + "(" + entry_tail (t).out + ")"
+								else
+									Result := "{" + c.name + "}." + f.feature_name_32 + "." + (entry_tail (t) - f.argument_count).out
+								end
 							end
+						else
+							Result := name (entry_qualifier (t)) + "." + name (- entry_tail (t))
 						end
-					elseif entry_tail (t) >= 0 and then entry_qualifier (t) < 0 then
+					else
 						Result := "-" + name (- entry_qualifier (t)) + "." + name (entry_tail (t))
-					elseif entry_tail (t) < 0 and then entry_qualifier (t) >= 0 then
-						Result := name (entry_qualifier (t)) + "." + name (- entry_tail (t))
 					end
 				end
 			end
@@ -596,7 +600,6 @@ feature {NONE} -- Modification
 			i: like count
 			t: NATURAL_64
 		do
-			t := entry (tail, qualifier)
 			t := entry (tail, qualifier)
 			i := count + 1
 			indexes.put (i, t)

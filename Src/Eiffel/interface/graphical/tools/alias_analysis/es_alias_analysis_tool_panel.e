@@ -24,7 +24,10 @@ feature
 
 	build_tool_interface (root_widget: EV_TEXT)
 		do
-			create analyzer.make
+			create {ALIAS_ANALYZER_ON_RELATION} alias_analyzer.make
+			create {ALIAS_ANALYZER_ON_GRAPH} alias_analyzer.make
+			create {CHANGE_ANALYZER_ON_RELATION} change_analyzer.make
+			analyzer := change_analyzer
 			propagate_drop_actions (Void)
 		end
 
@@ -57,12 +60,6 @@ feature
 			feature_from_any_toggle.set_text ("ANY")
 			feature_from_any_toggle.set_tooltip ("Process all features, including non-redeclared ones  inherited from ANY.")
 			Result.extend (feature_from_any_toggle)
-			create frame_check_toggle.make
-			frame_check_toggle.set_text ("Frame")
-			frame_check_toggle.set_tooltip ("Detect modified attributes.")
-			frame_check_toggle.disable_displayed
-			frame_check_toggle.disable_sensitive
-			-- Result.extend (frame_check_toggle)
 			create change_check_toggle.make
 			change_check_toggle.set_text ("Change")
 			change_check_toggle.set_tooltip ("Detect changed attributes.")
@@ -141,9 +138,6 @@ feature {NONE} -- Toolbar
 	feature_from_any_toggle: SD_TOOL_BAR_TOGGLE_BUTTON
 			-- Toggle to enable/disable processing of features declared in class ANY.
 
-	frame_check_toggle: SD_TOOL_BAR_TOGGLE_BUTTON
-			-- Toggle to enable/disable frame check.
-
 	change_check_toggle: SD_TOOL_BAR_TOGGLE_BUTTON
 			-- Toggle to enable/disable change check.
 
@@ -192,12 +186,15 @@ feature {NONE} -- Analyzer
 		do
 			stop_button.enable_sensitive
 			if attached current_class as c then
+				if change_check_toggle.is_selected then
+					analyzer := change_analyzer
+					change_analyzer.set_is_model_report (model_toggle.is_selected)
+				else
+					analyzer := alias_analyzer
+				end
 				analyzer.set_is_inherited_assertion_included (inherited_assertions_toggle.is_selected)
-				is_explicit_report := frame_check_toggle.is_selected or else change_check_toggle.is_selected
-				analyzer.set_is_frame_check (frame_check_toggle.is_selected)
-				analyzer.set_is_change_check (change_check_toggle.is_selected)
+				is_explicit_report := change_check_toggle.is_selected
 				analyzer.set_is_all_features (feature_from_any_toggle.is_selected)
-				analyzer.set_is_model_report (model_toggle.is_selected)
 				if attached current_feature as f then
 					analyzer.process_feature (f, c,
 						agent (ff: FEATURE_I; cc: CLASS_C)
@@ -263,6 +260,12 @@ feature {NONE} -- Analyzer
 		end
 
 	analyzer: ALIAS_ANALYZER
+			-- The current engine to perform analysis.
+
+	alias_analyzer: ALIAS_ANALYZER
+			-- The engine to perform alias analysis.
+
+	change_analyzer: CHANGE_ANALYZER_ON_RELATION
 			-- The engine to perform alias analysis.
 
 ;note

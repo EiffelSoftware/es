@@ -1,24 +1,20 @@
 ﻿note
-	description: "Keeper for alias relations."
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Keeper for alias graphs."
 
 class
-	ALIAS_ANALYZER_RELATION_KEEPER
+	ALIAS_ANALYZER_GRAPH_KEEPER
 
 inherit
-	AST_STACKED_SCOPE_KEEPER [ALIAS_ANALYZER_RELATION [INTEGER_32]]
+	AST_STACKED_SCOPE_KEEPER [ALIAS_ANALYZER_GRAPH]
 		rename
 			make as make_stacked,
-			scope as relation
-		export {ALIAS_ANALYZER_ON_RELATION}
+			scope as graph
+		export {ALIAS_ANALYZER_ON_GRAPH}
 			enter_realm,
 			is_sibling_dominating,
 			leave_optional_realm,
 			leave_realm,
-			relation,
+			graph,
 			save_sibling,
 			update_realm,
 			update_sibling
@@ -29,40 +25,31 @@ create
 
 feature {NONE} -- Creation
 
-	make (any_aliases: ARRAY [INTEGER_32])
-			-- Initialize storage to keep alias relation
-			-- with special entries `any_aliases' that can be aliased to anything.
+	make
+			-- Initialize storage to keep alias graph.
 		do
 			make_stacked (0)
-			across
-				any_aliases as c
-			loop
-				relation.add_any (c.item)
-			end
 		end
 
 feature {NONE} -- Modification: nesting
 
 	merge_siblings
-			-- Merge sibling scope information from scope
-			-- into `inner_scopes.item'.
+			-- <Precursor>
 		local
-			s: like relation
+			s: like graph
 		do
 			s := inner_scopes.item
-			if s /= relation then
-				s.add_relation (relation)
+			if s /= graph then
+				s.merge (graph)
 			end
 		end
 
 feature {NONE} -- Initialization
 
-	new_scope (n: like count): like relation
-			-- New alias relation.
+	new_scope (n: like count): like graph
+			-- New alias graph.
 		do
-				-- Pass an empty list of predefined entries here.
-				-- They are added by the creation procedure.
-			create Result.make (<<>>)
+			create Result.make
 		end
 
 feature {NONE} -- Status report
@@ -70,7 +57,7 @@ feature {NONE} -- Status report
 	is_dominating: BOOLEAN
 			-- <Precursor>
 		do
-			Result := relation.is_subset (inner_scopes.item)
+			Result := graph.is_equal (inner_scopes.item)
 		end
 
 feature {NONE} -- Unused
@@ -124,7 +111,9 @@ feature {NONE} -- Unused
 		end
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	date: "$Date$"
+	revision: "$Revision$"
+	copyright: "Copyright (c) 2013, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

@@ -9,7 +9,7 @@ inherit
 		rename
 			make as make_stacked,
 			scope as set
-		export {ALIAS_ANALYZER}
+		export {ALIAS_ANALYZER_ON_RELATION}
 			enter_realm,
 			is_sibling_dominating,
 			leave_optional_realm,
