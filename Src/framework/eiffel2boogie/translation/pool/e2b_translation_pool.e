@@ -162,6 +162,7 @@ feature -- Adding independent units
 		do
 			if not helper.boolean_class_note_value (a_class, "skip") then
 				create l_class.make (a_class)
+				add_type (a_class.actual_type)
 				add_translation_unit (l_class)
 			end
 		end

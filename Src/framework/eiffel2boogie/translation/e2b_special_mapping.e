@@ -78,7 +78,10 @@ feature -- Access (built-ins)
 				"is_open",
 				"inv",
 				"inv_without",
-				"inv_only"
+				"inv_only",
+				"is_field_writable",
+				"is_fully_writable",
+				"domain_has"
 			>>
 			Result.compare_objects
 		end

@@ -30,28 +30,12 @@ feature -- Access
 	side_effect: LINKED_LIST [IV_STATEMENT]
 			-- List of side effect statements.
 
-	context_writable: IV_EXPRESSION
-			-- Writable frame of the enclosing context.
-		do
-			if local_writable = Void then
-				Result := factory.global_writable
-			else
-				Result := local_writable
-			end
-		end
-
 feature -- Basic operations
 
 	set_context_implementation (a_implementation: IV_IMPLEMENTATION)
 			-- Set context of expression.
 		do
 			context_implementation := a_implementation
-		end
-
-	set_local_writable (a_writable: IV_EXPRESSION)
-			-- Set `local_writable' to `a_writable'.
-		do
-			local_writable := a_writable
 		end
 
 	reset
@@ -61,7 +45,6 @@ feature -- Basic operations
 			context_implementation := Void
 			create side_effect.make
 			create procedure_calls.make
-			local_writable := Void
 		end
 
 feature -- Visitors
@@ -286,7 +269,7 @@ feature -- Translation
 					create l_pcall.make (name_translator.boogie_procedure_for_feature (a_feature, current_target_type))
 					if helper.is_feature_status (a_feature, "creator") then
 						-- A feature specified to be creator-only, but called as a regular procedure
-						helper.add_semantic_error (context_feature, messages.creator_call_as_procedure (a_feature.feature_name))
+						helper.add_semantic_error (context_feature, messages.creator_call_as_procedure (a_feature.feature_name), context_line_number)
 					end
 				end
 
@@ -514,7 +497,7 @@ feature -- Translation
 						end
 						l_bounds_check_guard := factory.or_clean (l_bounds_check_guard, l_eq_less.less)
 					else
-						helper.add_semantic_error (context_feature, "Variant type has no well-founded order.")
+						helper.add_semantic_error (context_feature, "Type of variant number " + i.out + "has no well-founded order.", -1)
 					end
 
 					i := i + 1
@@ -561,9 +544,6 @@ feature {NONE} -- Implementation
 
 	procedure_calls: LINKED_STACK [IV_PROCEDURE_CALL]
 			-- Stack of procedure calls.
-
-	local_writable: detachable IV_EXPRESSION
-			-- Local writable frame of the enclosing context.			
 
 	create_local (a_type: TYPE_A)
 			-- Create new local.

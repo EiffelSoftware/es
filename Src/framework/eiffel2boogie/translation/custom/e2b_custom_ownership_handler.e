@@ -88,6 +88,8 @@ feature -- Basic operations
 			l_name: STRING
 			l_type: IV_TYPE
 			l_tag_filters: LIST [STRING]
+			l_field: IV_ENTITY
+			l_feature: FEATURE_I
 		do
 			l_name := a_feature.feature_name
 			if translation_mapping.builtin_any_functions.has (l_name) then
@@ -96,7 +98,7 @@ feature -- Basic operations
 					if l_tag_filters.is_empty then
 						a_translator.process_builtin_routine_call (a_feature, a_parameters, "user_inv")
 					else
-						check_valid_class_inv_tags (a_translator.current_target_type.base_class, a_translator.context_feature, l_tag_filters)
+						check_valid_class_inv_tags (a_translator.current_target_type.base_class, a_translator.context_feature, a_translator.context_line_number, l_tag_filters)
 						translation_pool.add_filtered_invariant_function (a_translator.current_target_type, Void, l_tag_filters)
 						a_translator.set_last_expression (
 							factory.function_call (
@@ -105,7 +107,7 @@ feature -- Basic operations
 					end
 				elseif l_name ~ "inv_only" then
 					l_tag_filters := extract_tags (a_parameters)
-					check_valid_class_inv_tags (a_translator.current_target_type.base_class, a_translator.context_feature, l_tag_filters)
+					check_valid_class_inv_tags (a_translator.current_target_type.base_class, a_translator.context_feature, a_translator.context_line_number, l_tag_filters)
 					translation_pool.add_filtered_invariant_function (a_translator.current_target_type, l_tag_filters, Void)
 					a_translator.set_last_expression (
 						factory.function_call (
@@ -113,6 +115,35 @@ feature -- Basic operations
 							<< a_translator.entity_mapping.heap, a_translator.current_target >>, types.bool))
 				elseif l_name ~ "inv" then
 					a_translator.process_builtin_routine_call (a_feature, a_parameters, "user_inv")
+				elseif l_name ~ "is_field_writable" then
+					if attached {STRING_B} a_parameters.first.expression as l_string then
+						l_feature := a_translator.current_target_type.base_class.feature_named_32 (l_string.value_32)
+						if l_feature = Void then
+							helper.add_semantic_error (a_translator.context_feature,
+								messages.field_does_not_exist (l_string.value_32, a_translator.current_target_type.base_class.name_in_upper),
+								a_translator.context_line_number)
+						elseif not l_feature.is_attribute then
+							helper.add_semantic_error (a_translator.context_feature,
+								messages.field_not_attribute (l_string.value_32),
+								a_translator.context_line_number)
+						else
+							translation_pool.add_referenced_feature (l_feature, a_translator.current_target_type)
+							create l_field.make (name_translator.boogie_procedure_for_feature (l_feature, a_translator.current_target_type), types.for_type_a (l_feature.type))
+							a_translator.set_last_expression (factory.frame_access (
+								a_translator.context_writable,
+								a_translator.current_target,
+								l_field))
+						end
+					else
+						helper.add_semantic_error (a_translator.context_feature, messages.first_argument_string, a_translator.context_line_number)
+					end
+				elseif l_name ~ "is_fully_writable" then
+					a_translator.set_last_expression (factory.function_call (
+						"fully_writable",
+						<< a_translator.context_writable, a_translator.current_target>>,
+						types.bool))
+				elseif l_name ~ "domain_has" then
+					a_translator.process_builtin_routine_call (a_feature, a_parameters, "in_domain")
 				else
 					a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
 				end
@@ -220,7 +251,7 @@ feature -- Basic operations
 			end
 		end
 
-	check_valid_class_inv_tags (a_class: CLASS_C; a_context_feature: FEATURE_I; a_tags: LIST [STRING])
+	check_valid_class_inv_tags (a_class: CLASS_C; a_context_feature: FEATURE_I; a_line_number: INTEGER; a_tags: LIST [STRING])
 			-- Check if `a_tags' only lists valid class invariant of `a_class'.
 			-- Otherwise report error in feature `a_context_featur'.
 		local
@@ -254,7 +285,7 @@ feature -- Basic operations
 					l_string.append (", ")
 				end
 				l_string.remove_tail (2)
-				helper.add_semantic_error (a_context_feature, "Filtered invariant of class '" + a_class.name_in_upper + "' lists invalid tag: " + l_string)
+				helper.add_semantic_error (a_context_feature, "Filtered invariant of class '" + a_class.name_in_upper + "' lists invalid tag: " + l_string, a_line_number)
 			end
 		end
 

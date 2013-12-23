@@ -123,6 +123,16 @@ feature -- Access
 	across_handler_map: HASH_TABLE [E2B_ACROSS_HANDLER, INTEGER]
 			-- Mapping of object test locals from across loops to across handlers.
 
+	context_writable: IV_EXPRESSION
+			-- Writable frame of the enclosing context.
+		do
+			if local_writable = Void then
+				Result := factory.global_writable
+			else
+				Result := local_writable
+			end
+		end
+
 feature -- Element change
 
 	set_last_expression (a_expression: IV_EXPRESSION)
@@ -174,11 +184,18 @@ feature -- Basic operations
 			context_type := Void
 			current_target := Void
 			current_target_type := Void
+			local_writable := Void
 			create entity_mapping.make
 			create locals_map.make (10)
 			create across_handler_map.make (10)
 			create safety_check_condition.make
 			create parameters_stack.make
+		end
+
+	set_local_writable (a_writable: IV_EXPRESSION)
+			-- Set `local_writable' to `a_writable'.
+		do
+			local_writable := a_writable
 		end
 
 feature -- Visitors
@@ -234,9 +251,9 @@ feature -- Visitors
 					(create {E2B_CUSTOM_MML_HANDLER}).handle_binary (Current, l_left, l_right, a_operator)
 				else
 					if context_feature = Void then
-						helper.add_semantic_error (context_type.base_class, "Sets and sequences can only be compared with other sets or sequences")
+						helper.add_semantic_error (context_type.base_class, "Sets and sequences can only be compared with other sets or sequences", a_node.line_number)
 					else
-						helper.add_semantic_error (context_feature, "Sets and sequences can only be compared with other sets or sequences")
+						helper.add_semantic_error (context_feature, "Sets and sequences can only be compared with other sets or sequences", a_node.line_number)
 					end
 					last_expression := dummy_node (a_node.type)
 				end
@@ -1113,6 +1130,9 @@ feature {E2B_ACROSS_HANDLER, E2B_CUSTOM_CALL_HANDLER, E2B_CUSTOM_NESTED_HANDLER}
 
 	last_local: IV_ENTITY
 			-- Last created local.
+
+	local_writable: detachable IV_EXPRESSION
+			-- Local writable frame of the enclosing context.			
 
 	create_iterator (a_type: IV_TYPE)
 			-- Create new unbound iterator.

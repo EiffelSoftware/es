@@ -451,19 +451,37 @@ feature -- Verification: ownership operations
 feature -- Verification: ownership queries
 
 	frozen is_wrapped: BOOLEAN
-			-- Is `a' wrapped?
+			-- Is `Current' wrapped?
 		do
 			Result := True
 		end
 
 	frozen is_free: BOOLEAN
-			-- Is `a' free?
+			-- Is `Current' free?
 		do
 			Result := True
 		end
 
 	frozen is_open: BOOLEAN
-			-- Is `a' open?
+			-- Is `Current open?
+		do
+			Result := True
+		end
+
+	frozen is_field_writable (a_field: STRING): BOOLEAN
+			-- Is field `a_field' of `Current' writable?
+		do
+			Result := True
+		end
+
+	frozen is_fully_writable: BOOLEAN
+			-- Are all fields of `Current' writable?
+		do
+			Result := True
+		end
+
+	frozen domain_has (a_obj: ANY): BOOLEAN
+			-- Is `a_obj' in the ownership domain of `Current'?
 		do
 			Result := True
 		end

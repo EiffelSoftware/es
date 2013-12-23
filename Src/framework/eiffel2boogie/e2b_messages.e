@@ -24,17 +24,17 @@ feature -- Validity error messages
 	creator_call_as_procedure (a_pname: STRING): STRING_32
 		do Result := locale.formatted_string ("Feature '$1' is a creator but is called as a regular procedure.", a_pname) end
 
-	modify_field_first_argument_only_manifeststrings: STRING_32
-		do Result := "The tuple in the first argument of 'modify_field' needs to consist only of manifest strings." end
+	first_argument_string: STRING_32
+		do Result := "First argument has to be a manifest string." end
 
-	modify_field_first_argument_string_or_tuple: STRING_32
-		do Result := "First argument of 'modify_field' has to be a manifest string or a tuple of manifest strings." end
+	first_argument_string_or_tuple: STRING_32
+		do Result := "First argument has to be a manifest string or a tuple of manifest strings." end
 
-	modify_field_field_does_not_exist (a_fname, a_cname: STRING): STRING_32
-		do Result := locale.formatted_string ("Feature '$1' mentioned in 'modify_field' does not exist in class '$2'", a_fname, a_cname) end
+	field_does_not_exist (a_fname, a_cname: STRING): STRING_32
+		do Result := locale.formatted_string ("Feature '$1' does not exist in class '$2'", a_fname, a_cname) end
 
-	modify_field_field_not_attribute (a_fname: STRING): STRING_32
-		do Result := locale.formatted_string ("Feature '$1' mentioned in 'modify_field' is not an attribute", a_fname) end
+	field_not_attribute (a_fname: STRING): STRING_32
+		do Result := locale.formatted_string ("Feature '$1' is not an attribute", a_fname) end
 
 feature -- Verification error messages
 

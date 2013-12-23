@@ -383,7 +383,7 @@ feature -- Other
 			autoproof_errors.extend (l_error)
 		end
 
-	add_semantic_error (a_class_or_feature: ANY; a_message: STRING)
+	add_semantic_error (a_class_or_feature: ANY; a_message: STRING; a_line_number: INTEGER)
 			-- Add AutoProof validity error concerning `a_class_or_feature' with message `a_message'.
 			-- Verification will not proceed.
 		require
@@ -400,10 +400,11 @@ feature -- Other
 			elseif attached {CLASS_C} a_class_or_feature as x then
 				l_error.set_class (x)
 			end
+			l_error.set_line_number (a_line_number)
 			autoproof_errors.extend (l_error)
 		end
 
-	add_semantic_warning (a_class_or_feature: ANY; a_message: STRING)
+	add_semantic_warning (a_class_or_feature: ANY; a_message: STRING; a_line_number: INTEGER)
 			-- Add AutoProof validity warning concerning `a_class_or_feature' with message `a_message'.
 			-- Verification will proceed.
 		require
@@ -420,6 +421,7 @@ feature -- Other
 			elseif attached {CLASS_C} a_class_or_feature as x then
 				l_error.set_class (x)
 			end
+			l_error.set_line_number (a_line_number)
 			l_error.set_warning (True)
 			autoproof_errors.extend (l_error)
 		end

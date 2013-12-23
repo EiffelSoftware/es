@@ -1172,8 +1172,10 @@ feature {NONE} -- Implementation
 		do
 			create l_translator.make
 			l_translator.set_context (current_feature, current_type)
+			l_translator.set_context_line_number (current_origin_information.line)
 			l_translator.copy_entity_mapping (entity_mapping)
 			l_translator.locals_map.merge (locals_map)
+			l_translator.set_local_writable (local_writable)
 			a_expr.process (l_translator)
 			last_expression := l_translator.last_expression
 			last_safety_checks := l_translator.side_effect

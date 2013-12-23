@@ -64,10 +64,10 @@ feature -- Translation: Signature
 
 				-- Check status compatibility
 			if not a_feature.has_return_value and helper.is_functional (a_feature) then
-				helper.add_semantic_warning (a_feature, messages.functional_feature_not_function)
+				helper.add_semantic_warning (a_feature, messages.functional_feature_not_function, -1)
 			end
 			if not a_for_creator and helper.is_feature_status (a_feature, "creator") then
-				helper.add_semantic_warning (a_feature, messages.creator_feature_not_creation_procedure)
+				helper.add_semantic_warning (a_feature, messages.creator_feature_not_creation_procedure, -1)
 			end
 
 				-- Set up name
@@ -626,7 +626,7 @@ feature {NONE} -- Translation: Functions
 				functional_body (Context.byte_code.compound).process (l_expr_translator)
 				a_function.set_body (l_expr_translator.last_expression)
 			else
-				helper.add_semantic_error (current_feature, messages.functional_feature_not_single_assignment)
+				helper.add_semantic_error (current_feature, messages.functional_feature_not_single_assignment, -1)
 			end
 		end
 
