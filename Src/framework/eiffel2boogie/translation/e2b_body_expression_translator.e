@@ -30,6 +30,16 @@ feature -- Access
 	side_effect: LINKED_LIST [IV_STATEMENT]
 			-- List of side effect statements.
 
+	context_writable: IV_EXPRESSION
+			-- Writable frame of the enclosing context.
+		do
+			if local_writable = Void then
+				Result := factory.global_writable
+			else
+				Result := local_writable
+			end
+		end
+
 feature -- Basic operations
 
 	set_context_implementation (a_implementation: IV_IMPLEMENTATION)
@@ -553,7 +563,7 @@ feature {NONE} -- Implementation
 			-- Stack of procedure calls.
 
 	local_writable: detachable IV_EXPRESSION
-			-- Local writable frame of the enclosing context.
+			-- Local writable frame of the enclosing context.			
 
 	create_local (a_type: TYPE_A)
 			-- Create new local.

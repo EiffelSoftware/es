@@ -22,7 +22,6 @@ feature {NONE} -- Initialization
 			t.unwrap
 			t.set_observers (t.observers & Current)
 			t.wrap
-			set_subjects ([t])
 		ensure
 			target_set: target = t
 			before: before and not after

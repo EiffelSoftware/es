@@ -16,7 +16,6 @@ feature {NONE} -- Initialization
 			capacity_non_negative: c >= 0
 		do
 			create elements.make (c)
-			set_owns ([elements])
 		ensure
 			capacity_set: capacity = c
 			empty: count = 0

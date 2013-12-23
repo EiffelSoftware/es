@@ -131,6 +131,20 @@ feature -- Access
 			result_attached: attached Result
 		end
 
+	boogie_function_for_ghost_definition (a_type: TYPE_A; a_name: STRING): STRING
+			-- Name of the boogie function that encodes the static definition of the built-in ghost set `a_name' of type `a_type'.
+		require
+			a_type: attached a_type
+			a_name: attached a_name
+		local
+			l_type_name: STRING
+		do
+			l_type_name := boogie_name_for_type (a_type)
+			Result := l_type_name + "." + a_name + ".static"
+		ensure
+			result_attached: attached Result
+		end
+
 	feature_for_boogie_name (a_name: STRING): FEATURE_I
 			-- Feature named `a_name' in Boogie code.
 		require

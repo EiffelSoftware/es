@@ -382,6 +382,8 @@ feature -- Translation: Implementation
 			l_values: ARRAYED_LIST [STRING_32]
 			l_assign: IV_ASSIGNMENT
 			l_call: IV_PROCEDURE_CALL
+			l_ownership_handler: E2B_CUSTOM_OWNERSHIP_HANDLER
+			l_expr_translator: E2B_BODY_EXPRESSION_TRANSLATOR
 		do
 			set_context (a_feature, a_type)
 			set_inlining_options_for_feature (a_feature)
@@ -439,6 +441,14 @@ feature -- Translation: Implementation
 			if options.is_ownership_enabled and not helper.is_lemma (a_feature) then
 				if not helper.is_explicit (current_feature, "wrapping") then
 					if a_for_creator or helper.is_public (current_feature) and not a_feature.has_return_value then
+							-- Set static ghost sets before wrapping
+						create l_ownership_handler
+						create l_expr_translator.make
+						l_expr_translator.set_context (a_feature, a_type)
+						l_expr_translator.set_context_line_number (a_feature.body.end_location.line)
+						l_ownership_handler.set_static_ghost_sets (l_expr_translator, "wrap")
+						l_implementation.body.statements.append (l_expr_translator.side_effect)
+
 						l_call := factory.procedure_call ("wrap", << "Current" >>)
 						l_call.node_info.set_attribute ("default", "wrapping")
 						l_call.node_info.set_attribute ("cid", system.any_id.out)

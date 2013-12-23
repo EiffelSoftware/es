@@ -155,7 +155,8 @@ feature {NONE} -- Implementation
 				l_classes.forth
 			end
 
-			if options.is_ownership_enabled then
+				-- Add ownership defaults unless included clauses are explicitly specified
+			if options.is_ownership_enabled and a_included.is_empty then
 				if not helper.is_class_explicit (a_type.base_class, "observers") and not l_ghost_collector.has_observers then
 					l_clauses.extend (empty_set_property ("observers"))
 				end
@@ -166,7 +167,7 @@ feature {NONE} -- Implementation
 					l_clauses.extend (empty_set_property ("owns"))
 				end
 				if not helper.is_class_explicit (a_type.base_class, "invariant") then
-					l_clauses.extend (forall_invariant_property)
+					l_clauses.extend (subjects_aware_property)
 				end
 			end
 
@@ -187,7 +188,9 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	forall_invariant_property: IV_EXPRESSION
+	subjects_aware_property: IV_EXPRESSION
+			-- A property "forall s :: subjects[s] ==> s.observers [Current]",
+			-- which always implies invariant admissibility clause A2.
 		local
 			l_forall: IV_FORALL
 			l_i, l_current: IV_ENTITY
@@ -251,9 +254,16 @@ feature {NONE} -- Implementation
 							Result.extend (i.item.expr)
 						end
 						Result.extend (l_translator.last_expression)
-
-						l_assert.process (a_collector)
+							-- If ownership is enabled and we are processing the full invariant,
+							-- check if the invariant clause defines one of the built-in ghost sets
+							-- and generate correspoding functions
+						if options.is_ownership_enabled and (a_included.is_empty and a_excluded.is_empty) then
+							generate_ghost_set_definition (l_translator.last_expression, a_context_type, "owns")
+							generate_ghost_set_definition (l_translator.last_expression, a_context_type, "subjects")
+							generate_ghost_set_definition (l_translator.last_expression, a_context_type, "observers")
+						end
 					end
+					l_assert.process (a_collector)
 
 					l_list.forth
 				end
@@ -285,6 +295,46 @@ feature {NONE} -- Implementation
 			l_forall.add_bound_variable (l_current.name, l_current.type)
 
 			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
+		end
+
+	generate_ghost_set_definition (a_expr: IV_EXPRESSION; a_type: TYPE_A; a_name: STRING)
+			-- If `a_expr' has the form `a_name = def', create a Boogie function that defined `a_name' for `a_type' as `def'.
+			-- (Only accespting definitions of this form to avoid cycles).
+		local
+			l_current, l_heap: IV_ENTITY
+			l_def: IV_EXPRESSION
+			l_function: IV_FUNCTION
+		do
+			create l_current.make ("current", types.ref)
+			create l_heap.make ("heap", types.heap_type)
+
+			l_def := definition_of (a_expr, l_heap, l_current, a_name)
+			if attached l_def and not helper.is_class_explicit (a_type.base_class, a_name) then
+				create l_function.make (name_translator.boogie_function_for_ghost_definition (a_type, a_name), types.set (types.ref))
+				l_function.add_argument (l_heap.name, l_heap.type)
+				l_function.add_argument (l_current.name, l_current.type)
+				l_function.set_body (l_def)
+				boogie_universe.add_declaration (l_function)
+			end
+		end
+
+	definition_of (a_expr: IV_EXPRESSION; a_heap, a_current: IV_ENTITY; a_name: STRING): detachable IV_EXPRESSION
+			-- If `a_expr' has the form `a_name = def' return `def', otherwise `Void'.
+		do
+			if attached {IV_FUNCTION_CALL} a_expr as fcall and then fcall.name ~ "Set#Equal" then
+				if is_heap_access (fcall.arguments [1], a_heap, a_current, a_name) then
+					Result := fcall.arguments [2]
+				end
+			end
+		end
+
+	is_heap_access (a_expr: IV_EXPRESSION; a_heap, a_current: IV_ENTITY; a_name: STRING): BOOLEAN
+			-- Does `a_expr' equal `a_heap [a_current, a_name]'?
+		do
+			Result := attached {IV_MAP_ACCESS} a_expr as access and then
+				attached {IV_ENTITY} access.target as h and then h.name ~ a_heap.name and then
+				attached {IV_ENTITY} access.indexes [1] as c and then c.name ~ a_current.name and then
+				attached {IV_ENTITY} access.indexes [2] as field and then field.name ~ a_name
 		end
 
 	argument_property (a_expr: IV_EXPRESSION; a_type: TYPE_A): detachable IV_EXPRESSION

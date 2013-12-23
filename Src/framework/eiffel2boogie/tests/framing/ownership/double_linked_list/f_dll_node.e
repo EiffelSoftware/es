@@ -15,8 +15,6 @@ feature {NONE} -- Initialization
 		do
 			left := Current
 			right := Current
-			set_subjects ([left, right])
-			set_observers ([left, right])
 		ensure
 			singleton: left = Current
 		end

@@ -315,6 +315,13 @@ feature -- Statements
 			end
 		end
 
+	singleton_block (a_statement: IV_STATEMENT): IV_BLOCK
+			-- Block that consists of `a_statement'.
+		do
+			create Result.make
+			Result.add_statement (a_statement)
+		end
+
 feature -- Framing
 
 	global_writable: IV_ENTITY

@@ -13,9 +13,8 @@ feature {NONE} -- Initialization
 		note
 			status: creator
 		do
-		        value := v
+			value := v
 			create subscribers.make
-			set_owns ([subscribers])
 		ensure
 			value_set: value = v
 			no_subscribers: subscribers.is_empty
@@ -69,7 +68,6 @@ feature {F_OOM_OBSERVER} -- Internal communication
 		do
 			unwrap
 			subscribers.extend_back (o)
-			set_observers (observers + [o])
 			wrap
 		ensure
 			observers_extended: observers = old observers & o

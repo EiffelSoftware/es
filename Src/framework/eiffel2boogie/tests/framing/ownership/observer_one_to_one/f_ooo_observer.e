@@ -18,7 +18,6 @@ feature {NONE} -- Initialization
 			s.register (Current)
 			check s.inv end
 			cache := s.value
-			set_subjects ([subject])
 		ensure
 			subject = s
 		end

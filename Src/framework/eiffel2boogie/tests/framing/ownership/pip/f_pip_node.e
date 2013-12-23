@@ -289,7 +289,6 @@ invariant
 --		(across children as c some c.item.descendants [d.item] end) end
 	subjects_structure: subjects = if parent = Void then children.range else children.range & parent end
 	observers_structure: observers = subjects
-	subjects_aware: across subjects as s all s.item.observers [Current] end
 
 note
 	explicit: subjects, observers

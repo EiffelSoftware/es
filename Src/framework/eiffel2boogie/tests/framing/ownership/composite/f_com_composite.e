@@ -16,7 +16,6 @@ feature {NONE} -- Initialization
 			create children.make
 			init_value := v
 			value := v
-			set_owns ([children])
 		ensure
 			init_value_set: init_value = v
 			value_set: value = v
@@ -201,7 +200,6 @@ invariant
 	subjects_structure: subjects = if parent = Void then children_set else children_set & parent end
 	observers_structure: observers = subjects
 	owns_structure: owns = [children]
-	subjects_aware: across subjects as s all s.item.observers [Current] end
 
 note
 	explicit: subjects, observers

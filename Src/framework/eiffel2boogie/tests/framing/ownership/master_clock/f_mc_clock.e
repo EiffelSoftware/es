@@ -19,7 +19,6 @@ feature {NONE} -- Initialization
 		do
 			master := m
 			local_time := master.time
-			set_subjects ([m])
 
 			m.unwrap
 			m.set_observers (m.observers + [Current])

@@ -113,6 +113,9 @@ feature -- Adding independent units
 	add_feature (a_feature: FEATURE_I; a_context_type: TYPE_A)
 			-- Add signature and implementation of feature `a_feature' of `a_context_type'.
 		do
+			-- The enclosing type has to be tranlated before the feature,
+			-- becuase some ownership defaults depend on analysing the invariant
+			add_type (a_context_type)
 			internal_add_feature (a_feature, a_context_type, False)
 		end
 
@@ -121,7 +124,6 @@ feature -- Adding independent units
 		do
 			internal_add_feature (a_feature, a_context_type, True)
 		end
-
 
 	add_frame_function (a_feature: FEATURE_I; a_context_type: TYPE_A)
 			-- Add frame function of feature `a_feature' of `a_context_type'.

@@ -19,7 +19,6 @@ feature {NONE} -- Initialization
 			subject := s
 			s.register (Current)
 			cache := s.value
-			set_subjects ([subject])
 		ensure
 			subject_set: subject = s
 			observeing_subject: s.observers = old s.observers & Current

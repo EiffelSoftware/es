@@ -56,6 +56,7 @@ feature -- Basic operations
 			if translation_mapping.builtin_any_functions.has (l_name) then
 				a_translator.process_builtin_function_call (a_feature, a_parameters, l_name)
 			elseif translation_mapping.builtin_any_procedures.has (l_name) then
+				set_static_ghost_sets (a_translator, l_name)
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
 			elseif translation_mapping.ghost_access.has (l_name) then
 				l_type := translation_mapping.ghost_access_type (l_name)
@@ -257,4 +258,45 @@ feature -- Basic operations
 			end
 		end
 
+	set_static_ghost_sets (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR; a_feature_name: STRING)
+			-- If processing a call to `Current.wrap',
+			-- generate guarded assignments to statically known built-in ghost fields and store them in the side effect of `a_translator'.
+		do
+			if a_feature_name ~ "wrap" and attached {IV_ENTITY} a_translator.current_target as e and then e.name ~ "Current" then
+				set_static_ghost_set (a_translator, "owns", "update_heap", True)
+				set_static_ghost_set (a_translator, "subjects", "update_subjects", False)
+				set_static_ghost_set (a_translator, "observers", "update_observers", False)
+			end
+		end
+
+	set_static_ghost_set (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR; a_field_name, a_update_name: STRING; a_pass_field: BOOLEAN)
+			-- If the definition of `a_field_name' in `current_target_type' is statically known,
+			-- generate a guarded update using Boogie procedure `a_update_name' and store it in the side effect of `a_translator';
+			-- if `a_pass_field' the procedure receives the field as argument.
+		local
+			l_function: IV_FUNCTION
+			l_field: IV_ENTITY
+			l_pcall: IV_PROCEDURE_CALL
+			l_if: IV_CONDITIONAL
+		do
+				-- Get definition of `a_field_name' for `current_target_type';
+				-- if it exists, generate a guarded assignment.
+			l_function := boogie_universe.function_named (name_translator.boogie_function_for_ghost_definition (a_translator.current_target_type, a_field_name))
+			if attached l_function then
+				create l_field.make (a_field_name, types.field (types.set (types.ref)))
+				create l_pcall.make (a_update_name)
+				l_pcall.add_argument (a_translator.entity_mapping.current_expression)
+				if a_pass_field then
+					l_pcall.add_argument (l_field)
+				end
+				l_pcall.add_argument (factory.function_call (l_function.name,
+					<< a_translator.entity_mapping.heap, a_translator.entity_mapping.current_expression >>,
+					types.set (types.ref)))
+				l_pcall.node_info.set_attribute ("default", a_field_name)
+				l_pcall.node_info.set_line (a_translator.context_line_number)
+				create l_if.make_if_then (factory.frame_access (a_translator.context_writable, a_translator.current_target, l_field),
+					factory.singleton_block (l_pcall))
+				a_translator.side_effect.extend (l_if)
+			end
+		end
 end
