@@ -73,6 +73,17 @@ feature -- Access
 	indexes: LINKED_LIST [IV_EXPRESSION]
 			-- List of indexes for map access.
 
+feature -- Comparison
+
+	same_expression (a_other: IV_EXPRESSION): BOOLEAN
+			-- Does this expression equal `a_other' (if considered in the same context)?
+		do
+			Result := attached {IV_MAP_ACCESS} a_other as m and then
+				(target.same_expression (m.target) and
+				indexes.count = m.indexes.count and
+				across 1 |..| indexes.count as i all indexes [i.item].same_expression (m.indexes [i.item]) end)
+		end
+
 feature -- Visitor
 
 	process (a_visitor: IV_EXPRESSION_VISITOR)

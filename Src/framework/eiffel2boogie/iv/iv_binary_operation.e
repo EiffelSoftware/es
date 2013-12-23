@@ -50,6 +50,15 @@ feature -- Access
 	right: IV_EXPRESSION
 			-- Right expression.
 
+feature -- Comparison
+
+	same_expression (a_other: IV_EXPRESSION): BOOLEAN
+			-- Does this expression equal `a_other' (if considered in the same context)?
+		do
+			Result := attached {IV_BINARY_OPERATION} a_other as binop and then
+				(operator ~ binop.operator and left.same_expression (binop.left) and right.same_expression (binop.right))
+		end
+
 feature -- Visitor
 
 	process (a_visitor: IV_EXPRESSION_VISITOR)

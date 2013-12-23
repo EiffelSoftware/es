@@ -25,6 +25,13 @@ feature -- Access
 		do
 		end
 
+feature -- Comparison
+
+	same_expression (a_other: IV_EXPRESSION): BOOLEAN
+			-- Does this expression equal `a_other' (if considered in the same context)?
+		deferred
+		end
+
 feature -- Visitor
 
 	process (a_visitor: IV_EXPRESSION_VISITOR)

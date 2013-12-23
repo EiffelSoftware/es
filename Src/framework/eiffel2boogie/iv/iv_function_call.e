@@ -43,6 +43,16 @@ feature -- Access
 	type: IV_TYPE
 			-- Type of function.
 
+feature -- Comparison
+
+	same_expression (a_other: IV_EXPRESSION): BOOLEAN
+			-- Does this expression equal `a_other' (if considered in the same context)?
+		do
+			Result := attached {IV_FUNCTION_CALL} a_other as c and then
+				(name ~ c.name and arguments.count = c.arguments.count and
+				across 1 |..| arguments.count as i all arguments [i.item].same_expression (c.arguments [i.item]) end)
+		end
+
 feature -- Element change
 
 	add_argument (a_argument: IV_EXPRESSION)

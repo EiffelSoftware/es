@@ -322,19 +322,10 @@ feature {NONE} -- Implementation
 			-- If `a_expr' has the form `a_name = def' return `def', otherwise `Void'.
 		do
 			if attached {IV_FUNCTION_CALL} a_expr as fcall and then fcall.name ~ "Set#Equal" then
-				if is_heap_access (fcall.arguments [1], a_heap, a_current, a_name) then
+				if fcall.arguments [1].same_expression (factory.heap_access (a_heap.name, a_current, a_name, types.set (types.ref))) then
 					Result := fcall.arguments [2]
 				end
 			end
-		end
-
-	is_heap_access (a_expr: IV_EXPRESSION; a_heap, a_current: IV_ENTITY; a_name: STRING): BOOLEAN
-			-- Does `a_expr' equal `a_heap [a_current, a_name]'?
-		do
-			Result := attached {IV_MAP_ACCESS} a_expr as access and then
-				attached {IV_ENTITY} access.target as h and then h.name ~ a_heap.name and then
-				attached {IV_ENTITY} access.indexes [1] as c and then c.name ~ a_current.name and then
-				attached {IV_ENTITY} access.indexes [2] as field and then field.name ~ a_name
 		end
 
 	argument_property (a_expr: IV_EXPRESSION; a_type: TYPE_A): detachable IV_EXPRESSION

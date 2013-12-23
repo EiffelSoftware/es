@@ -262,7 +262,7 @@ feature -- Basic operations
 			-- If processing a call to `Current.wrap',
 			-- generate guarded assignments to statically known built-in ghost fields and store them in the side effect of `a_translator'.
 		do
-			if a_feature_name ~ "wrap" and attached {IV_ENTITY} a_translator.current_target as e and then e.name ~ "Current" then
+			if a_feature_name ~ "wrap" and a_translator.current_target.same_expression (a_translator.entity_mapping.current_expression) then
 				set_static_ghost_set (a_translator, "owns", "update_heap", True)
 				set_static_ghost_set (a_translator, "subjects", "update_subjects", False)
 				set_static_ghost_set (a_translator, "observers", "update_observers", False)

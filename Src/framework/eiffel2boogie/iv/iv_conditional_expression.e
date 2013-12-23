@@ -53,6 +53,17 @@ feature -- Access
 	else_expression: IV_EXPRESSION
 			-- Block for else branch.
 
+feature -- Comparison
+
+	same_expression (a_other: IV_EXPRESSION): BOOLEAN
+			-- Does this expression equal `a_other' (if considered in the same context)?
+		do
+			Result := attached {IV_CONDITIONAL_EXPRESSION} a_other as cond and then
+				(condition.same_expression (cond.condition) and
+				then_expression.same_expression (cond.then_expression) and
+				else_expression.same_expression (cond.else_expression))
+		end
+
 feature -- Visitor
 
 	process (a_visitor: IV_EXPRESSION_VISITOR)

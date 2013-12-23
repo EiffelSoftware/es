@@ -51,6 +51,14 @@ feature -- Access
 			Result := value ~ "true"
 		end
 
+feature -- Comparison
+
+	same_expression (a_other: IV_EXPRESSION): BOOLEAN
+			-- Does this expression equal `a_other' (if considered in the same context)?
+		do
+			Result := attached {IV_VALUE} a_other as val and then value ~ val.value
+		end
+
 feature -- Visitor
 
 	process (a_visitor: IV_EXPRESSION_VISITOR)

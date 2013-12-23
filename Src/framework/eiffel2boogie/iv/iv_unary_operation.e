@@ -43,6 +43,15 @@ feature -- Access
 	expression: IV_EXPRESSION
 			-- Unary expression.
 
+feature -- Comparison
+
+	same_expression (a_other: IV_EXPRESSION): BOOLEAN
+			-- Does this expression equal `a_other' (if considered in the same context)?
+		do
+			Result := attached {IV_UNARY_OPERATION} a_other as unop and then
+				(operator ~ unop.operator and expression.same_expression (unop.expression))
+		end
+
 feature -- Visitor
 
 	process (a_visitor: IV_EXPRESSION_VISITOR)
