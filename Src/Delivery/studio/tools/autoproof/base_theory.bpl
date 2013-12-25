@@ -64,7 +64,7 @@ axiom (forall h: HeapType :: h[Void, allocated]); // Void is always allocated.
 axiom (forall h: HeapType, f: Field ref, o: ref :: h[o, allocated] ==> h[h[o, f], allocated]); // All reference fields are allocated.
 axiom (forall r: ref :: (r == Void) <==> (type_of(r) == NONE)); // Void is only reference of type NONE.
 axiom (forall a, b: ref :: (type_of(a) != type_of(b)) ==> (a != b)); // Objects that have different dynamic type cannot be aliased.
-axiom (forall t: Type :: is_frozen(t) ==> (forall t2: Type :: t2 <: t ==> t2 == NONE)); // Only NONE inherits from frozen types.
+axiom (forall t: Type :: is_frozen(t) ==> (forall t2: Type :: t2 <: t ==> t2 == t || t2 == NONE)); // Only NONE inherits from frozen types.
 axiom (forall t: Type, r: ref :: (r != Void && type_of(r) <: t && is_frozen(t)) ==> (type_of(r) == t)); // Non-void references of a frozen type are exact.
 
 function ANY.self_inv(heap: HeapType, current: ref) returns (bool) {
@@ -83,6 +83,12 @@ const unique owner: Field ref; // Ghost field for owner of an object.
 const unique owns: Field (Set ref); // Ghost field for owns set of an object.
 const unique observers: Field (Set ref); // Ghost field for observers set of an object.
 const unique subjects: Field (Set ref); // Ghost field for subjects set of an object.
+
+// Analogue of `detachable_attribute' ans `set_detachable_attribute' for built-in attributes:
+axiom (forall heap: HeapType, o: ref :: { heap[o, owner] } o != Void && heap[o, allocated] ==> heap[heap[o, owner], allocated]);
+axiom (forall heap: HeapType, o, o': ref :: { heap[o, owns][o'] } o != Void && heap[o, allocated] && heap[o, owns][o'] ==> heap[o', allocated]);
+axiom (forall heap: HeapType, o, o': ref :: { heap[o, subjects][o'] } o != Void && heap[o, allocated] && heap[o, subjects][o'] ==> heap[o', allocated]);
+axiom (forall heap: HeapType, o, o': ref :: { heap[o, observers][o'] } o != Void && heap[o, allocated] && heap[o, observers][o'] ==> heap[o', allocated]);
 
 // Is o open in h? (not closed and free)
 function {:inline} is_open(h: HeapType, o: ref): bool {
@@ -179,6 +185,30 @@ function {:inline true} global_public(h: HeapType): bool
 {
   (forall o: ref :: {is_wrapped(h, o)} h[o, allocated] ==> inv(h, o)) // G1
 }
+
+// All subjects know current for an observer
+function {: inline } admissibility2 (heap: HeapType, current: ref): bool
+{ 
+  (forall s: ref :: heap[current, subjects][s] ==> heap[s, observers][current]) 
+}
+
+// Invariant cannot be invalidated by changing subjects of my subjects (except of myself)
+function {: inline } admissibility4 (heap: HeapType, current: ref): bool
+{
+  (forall heap': HeapType, s: ref :: 
+    heap[current, subjects][s] && s != current && (forall <alpha> o: ref, f: Field alpha :: (o == s && f == subjects) || heap'[o, f] == heap[o, f]) ==>
+    user_inv(heap', current)
+  )
+}
+
+// Invariant cannot be invalidated by adding observers to my subjects (except to myself)
+function {: inline } admissibility5 (heap: HeapType, current: ref): bool
+{
+  (forall heap': HeapType, s: ref :: 
+    heap[current, subjects][s] && s != current && Set#Subset(heap[s, observers], heap'[s, observers]) && (forall <alpha> o: ref, f: Field alpha :: (o == s && f == observers) || heap'[o, f] == heap[o, f]) ==>
+    user_inv(heap', current)
+  )
+} 
 
 // Allocate fresh object
 procedure allocate(t: Type) returns (result: ref);
@@ -293,7 +323,7 @@ function attached_exact(heap: HeapType, o: ref, t: Type) returns (bool) {
 // Property that reference `o' is attached and conforms to type `t' on heap `heap'.
 function attached(heap: HeapType, o: ref, t: Type) returns (bool) {
 	(o != Void) && (heap[o, allocated]) && (type_of(o) == t)
-
+  
 // ******************* reenable when ownership and inheritance are combined *******************
 //	(o != Void) && (heap[o, allocated]) && (type_of(o) <: t)
 

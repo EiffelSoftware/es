@@ -96,6 +96,6 @@ invariant
 	elements /= Void
 	0 <= count and count <= elements.count
 	owns = [elements]
-	across observers as o all attached {F_I_ITERATOR} o.item end
+	across observers as o all attached o.item and o.item /= Current end
 
 end
