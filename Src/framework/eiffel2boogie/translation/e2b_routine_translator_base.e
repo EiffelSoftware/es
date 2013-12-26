@@ -165,20 +165,15 @@ feature -- Helper functions: contracts
 			until
 				l_pre.after
 			loop
-				if attached {FEATURE_B} l_pre.item.expr as l_call then
-					l_name := names_heap.item_32 (l_call.feature_name_id)
-					if l_name  ~ "modify" or l_name ~ "modify_field" then
-						l_modifies.extend (l_pre.item)
-						l_pre.remove
-					elseif l_name ~ "reads" then
-						l_reads.extend (l_pre.item)
-						l_pre.remove
-					elseif l_name ~ "decreases" then
-						l_decreases.extend (l_pre.item)
-						l_pre.remove
-					else
-						l_pre.forth
-					end
+				if helper.is_clause_reads (l_pre.item) then
+					l_reads.extend (l_pre.item)
+					l_pre.remove
+				elseif helper.is_clause_modify (l_pre.item) then
+					l_modifies.extend (l_pre.item)
+					l_pre.remove
+				elseif helper.is_clause_decreases (l_pre.item) then
+					l_decreases.extend (l_pre.item)
+					l_pre.remove
 				else
 					l_pre.forth
 				end

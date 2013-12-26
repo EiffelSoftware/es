@@ -251,9 +251,9 @@ feature -- Visitors
 					(create {E2B_CUSTOM_MML_HANDLER}).handle_binary (Current, l_left, l_right, a_operator)
 				else
 					if context_feature = Void then
-						helper.add_semantic_error (context_type.base_class, "Sets and sequences can only be compared with other sets or sequences", a_node.line_number)
+						helper.add_semantic_error (context_type.base_class, messages.invalid_set_seq_comparison, a_node.line_number)
 					else
-						helper.add_semantic_error (context_feature, "Sets and sequences can only be compared with other sets or sequences", a_node.line_number)
+						helper.add_semantic_error (context_feature,  messages.invalid_set_seq_comparison, a_node.line_number)
 					end
 					last_expression := dummy_node (a_node.type)
 				end

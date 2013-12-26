@@ -75,6 +75,8 @@ axiom (forall<T> a, b: Set T ::
   + Set#Card(Set#Intersection(a, b))
     == Set#Card(Set#Union(a, b)) &&
   Set#Card(Set#Difference(a, b)) == Set#Card(a) - Set#Card(Set#Intersection(a, b)));
+axiom (forall<T> a: Set T :: { Set#Difference(a,Set#Empty()) }
+  Set#Equal(Set#Difference(a,Set#Empty()), a));
 
 function Set#Subset<T>(Set T, Set T): bool;
 axiom(forall<T> a: Set T, b: Set T :: { Set#Subset(a,b) }

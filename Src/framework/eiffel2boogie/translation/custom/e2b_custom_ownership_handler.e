@@ -285,7 +285,7 @@ feature -- Basic operations
 					l_string.append (", ")
 				end
 				l_string.remove_tail (2)
-				helper.add_semantic_error (a_context_feature, "Filtered invariant of class '" + a_class.name_in_upper + "' lists invalid tag: " + l_string, a_line_number)
+				helper.add_semantic_error (a_context_feature, messages.invalid_tag (l_string, a_class.name_in_upper), a_line_number)
 			end
 		end
 

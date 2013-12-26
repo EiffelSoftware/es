@@ -22,6 +22,9 @@ inherit
 	SHARED_SERVER
 		export {NONE} all end
 
+	INTERNAL_COMPILER_STRING_EXPORTER
+		export {NONE} all end
+
 feature -- General note helpers
 
 	class_note_values (a_class: CLASS_C; a_tag: STRING_32): ARRAYED_LIST [STRING_32]
@@ -211,6 +214,24 @@ feature -- Ownership helpers
 			if not Result then
 				Result := is_class_explicit (a_feature.written_class, a_type)
 			end
+		end
+
+	is_clause_reads (a_clause: ASSERT_B): BOOLEAN
+			-- Is contract clause `a_clause' a reads clause?
+		do
+			Result := attached {FEATURE_B} a_clause.expr as l_call and then (l_call.feature_name ~ "reads" or l_call.feature_name ~ "reads_field")
+		end
+
+	is_clause_modify (a_clause: ASSERT_B): BOOLEAN
+			-- Is contract clause `a_clause' a modify clause?
+		do
+			Result := attached {FEATURE_B} a_clause.expr as l_call and then (l_call.feature_name ~ "modify" or l_call.feature_name ~ "modify_field")
+		end
+
+	is_clause_decreases (a_clause: ASSERT_B): BOOLEAN
+			-- Is contract clause `a_clause' a decreases clause?
+		do
+			Result := attached {FEATURE_B} a_clause.expr as l_call and then l_call.feature_name ~ "decreases"
 		end
 
 feature -- String helpers

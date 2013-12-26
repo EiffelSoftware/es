@@ -259,7 +259,7 @@ feature -- Translation
 				end
 
 				-- This checks that functionals are well-defined, from the corresponding fake procedure
-				add_termination_check (a_feature, last_parameters)
+				add_recursion_termination_check (a_feature, last_parameters)
 
 				last_expression := l_fcall
 			else
@@ -282,7 +282,7 @@ feature -- Translation
 				l_pcall.arguments.append (last_parameters)
 
 				-- This checks termination of non-functional routines, when they are called from their own implementation
-				add_termination_check (a_feature, last_parameters)
+				add_recursion_termination_check (a_feature, last_parameters)
 				-- This adds an extra framing check if we are inside a context with a local frame
 				add_loop_frame_check (a_feature, last_parameters)
 
@@ -444,15 +444,65 @@ feature -- Translation
 			side_effect.extend (l_assert)
 		end
 
-	add_termination_check (a_feature: FEATURE_I; a_parameters: like last_parameters)
-			-- Add termination check for a call to routine `a_feature' with actual arguments `a_parameters' int he current context.
+	add_termination_check (l_old_variants, l_new_variants: LIST [IV_EXPRESSION])
+			-- Given expressions for old and new values of variants, add a safety check that the new variants are strinctly less and the order is well-founded.
+		require
+			l_old_variants_exists: l_old_variants /= Void
+			l_new_variants_exists: l_new_variants /= Void
+			same_count: l_old_variants.count = l_new_variants.count
 		local
 			l_eq_less: like eq_and_less
 			l_check_list: ARRAYED_LIST [like eq_and_less]
-			l_caller_variant, l_callee_variant: IV_FUNCTION_CALL
-			l_decreases_fun: IV_FUNCTION
-			l_type: IV_TYPE
 			l_check, l_bounds_check_guard: IV_EXPRESSION
+			i: INTEGER
+		do
+			from
+				i := 1
+				create l_check_list.make (3)
+				l_bounds_check_guard := factory.false_
+			until
+				i > l_old_variants.count
+			loop
+				l_eq_less := eq_and_less (l_new_variants [i], l_old_variants [i])
+				l_check_list.extend (l_eq_less)
+				if l_new_variants [i].type.is_integer then
+					-- Add bounds check, since integers are not already bounded from below;
+					-- more precisely, for variant k check:
+        					-- new[1] < old[1] || ... || new[k-1] < old[k-1] || new[k] == old[k] || 0 <= old[k]
+					add_safety_check (factory.or_clean (l_bounds_check_guard,
+													factory.or_ (l_eq_less.eq, factory.less_equal (factory.int_value (0), l_old_variants [i]))),
+						"termination", "bounded" + i.out, context_line_number)
+				end
+				l_bounds_check_guard := factory.or_clean (l_bounds_check_guard, l_eq_less.less)
+
+				i := i + 1
+			end
+
+			if not l_check_list.is_empty then
+				-- Go backward through the list and generate "less1 || (eq1 && (less2 || ... eq<n-1> && less<n>))"
+				l_check := l_check_list.last.less
+				from
+					i := l_check_list.count - 1
+				until
+					i < 1
+				loop
+					l_check := factory.and_ (l_check_list [i].eq, l_check)
+					l_check := factory.or_ (l_check_list [i].less, l_check)
+					i := i - 1
+				end
+				add_safety_check (l_check, "termination", "variant_decreases", context_line_number)
+			else
+				-- Explicitly marked as possibly non-terminating: do not generate any checks
+			end
+		end
+
+
+	add_recursion_termination_check (a_feature: FEATURE_I; a_parameters: like last_parameters)
+			-- Add termination check for a call to routine `a_feature' with actual arguments `a_parameters' int he current context.
+		local
+			l_caller_variant, l_callee_variant: IV_FUNCTION_CALL
+			l_caller_variants, l_callee_variants: ARRAYED_LIST [IV_EXPRESSION]
+			l_decreases_fun: IV_FUNCTION
 			i, j: INTEGER
 		do
 			-- If we are inside a routine and calling the same routine (recursive call)
@@ -460,9 +510,10 @@ feature -- Translation
 												context_feature.feature_id = a_feature.feature_id then
 				from
 					i := 1
-					create l_check_list.make (3)
-					l_bounds_check_guard := factory.false_
+					create l_caller_variants.make (3)
+					create l_callee_variants.make (3)
 					l_decreases_fun := boogie_universe.function_named (name_translator.boogie_function_for_variant (i, a_feature, current_target_type))
+					check checked_when_creating: types.is_variant_type (l_decreases_fun.type) end
 				until
 					l_decreases_fun = Void
 				loop
@@ -470,6 +521,7 @@ feature -- Translation
 					l_callee_variant.add_argument (entity_mapping.heap)
 					l_callee_variant.add_argument (current_target)
 					l_callee_variant.arguments.append (a_parameters)
+					l_callee_variants.extend (l_callee_variant)
 
 					create l_caller_variant.make (l_decreases_fun.name, l_decreases_fun.type)
 					l_caller_variant.add_argument (entity_mapping.heap)
@@ -482,45 +534,13 @@ feature -- Translation
 						l_caller_variant.add_argument (entity_mapping.argument (context_feature, context_type, j))
 						j := j + 1
 					end
-
-					l_type := l_caller_variant.type
-					if types.is_variant_type (l_type) then
-						l_eq_less := eq_and_less (l_callee_variant, l_caller_variant)
-						l_check_list.extend (l_eq_less)
-						if l_type.is_integer then
-							-- Add bounds check, since integers are not already bounded from below;
-							-- more precisely, for variant k check:
-        					-- callee[1] < caller[1] || ... || callee[k-1] < caller[k-1] || callee[k] == caller[k] || 0 <= caller[k]
-							add_safety_check (factory.or_clean (l_bounds_check_guard,
-															factory.or_ (l_eq_less.eq, factory.less_equal (factory.int_value (0), l_caller_variant))),
-								"termination", "bounded" + i.out, context_line_number)
-						end
-						l_bounds_check_guard := factory.or_clean (l_bounds_check_guard, l_eq_less.less)
-					else
-						helper.add_semantic_error (context_feature, "Type of variant number " + i.out + "has no well-founded order.", -1)
-					end
+					l_caller_variants.extend (l_caller_variant)
 
 					i := i + 1
 					l_decreases_fun := boogie_universe.function_named (name_translator.boogie_function_for_variant (i, a_feature, current_target_type))
+					check checked_when_creating: types.is_variant_type (l_decreases_fun.type) end
 				end
-
-				if not l_check_list.is_empty then
-					-- Go backward through the list and generate "less1 || (eq1 && (less2 || ... eq<n-1> && less<n>))"
-					l_check := l_check_list.last.less
-					from
-						i := l_check_list.count - 1
-					until
-						i < 1
-					loop
-						l_check := factory.and_ (l_check_list [i].eq, l_check)
-						l_check := factory.or_ (l_check_list [i].less, l_check)
-						i := i - 1
-					end
-					add_safety_check (l_check, "termination", "variant_decreases", context_line_number)
-				else
-					-- This routine has no variant functions: it was explicitly marked as possibly non-terminating.
-					-- Do not generate any checks
-				end
+				add_termination_check (l_caller_variants, l_callee_variants)
 			end
 		end
 

@@ -150,6 +150,12 @@ feature -- Boolean operators
 			create Result.make ("!", a_expr, types.bool)
 		end
 
+	conditional (a_cond, a_then, a_else: IV_EXPRESSION): IV_CONDITIONAL_EXPRESSION
+			-- Expression "if a_cond then a_then else a_else"
+		do
+			create Result.make_if_then_else (a_cond, a_then, a_else)
+		end
+
 feature -- Relational operators
 
 	equal (a_left, a_right: IV_EXPRESSION): IV_BINARY_OPERATION

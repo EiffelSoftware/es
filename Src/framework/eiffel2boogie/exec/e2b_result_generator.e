@@ -197,18 +197,6 @@ feature {NONE} -- Implementation
 						Result := messages.loop_inv_not_maintained
 					end
 				end
-			elseif l_type ~ "loop_var_ge_zero" then
-				if l_has_tag then
-					Result := messages.loop_var_with_tag_negative
-				else
-					Result := messages.loop_var_negative
-				end
-			elseif l_type ~ "loop_var_decr" then
-				if l_has_tag then
-					Result := messages.loop_var_with_tag_not_decreasing
-				else
-					Result := messages.loop_var_not_decreasing
-				end
 			elseif l_type ~ "attached" then
 					-- Possible void call
 				if a_error.is_assert_error then

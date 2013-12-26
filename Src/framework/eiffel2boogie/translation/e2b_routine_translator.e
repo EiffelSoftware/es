@@ -592,19 +592,23 @@ feature -- Translation: Functions
 			across
 				l_decreases_list as i
 			loop
-					-- Decreases function
-				create l_function.make (name_translator.boogie_function_for_variant (i.target_index, current_feature, current_type), i.item.type)
-				l_function.set_inline
-				boogie_universe.add_declaration (l_function)
+				if types.is_variant_type (i.item.type) then
+						-- Decreases function
+					create l_function.make (name_translator.boogie_function_for_variant (i.target_index, current_feature, current_type), i.item.type)
+					l_function.set_inline
+					boogie_universe.add_declaration (l_function)
 
-					-- Arguments
-				translation_pool.add_type (current_type)
-				l_function.add_argument ("heap", types.heap_type)
-				l_function.add_argument ("current", types.ref)
-				across arguments_of_current_feature as j loop
-					l_function.add_argument (j.item.name, j.item.boogie_type)
+						-- Arguments
+					translation_pool.add_type (current_type)
+					l_function.add_argument ("heap", types.heap_type)
+					l_function.add_argument ("current", types.ref)
+					across arguments_of_current_feature as j loop
+						l_function.add_argument (j.item.name, j.item.boogie_type)
+					end
+					l_function.set_body (i.item)
+				else
+					helper.add_semantic_error (a_feature, messages.variant_bad_type (i.target_index), -1)
 				end
-				l_function.set_body (i.item)
 			end
 		end
 

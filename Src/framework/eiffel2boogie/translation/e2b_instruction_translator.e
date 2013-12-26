@@ -63,6 +63,16 @@ feature -- Access
 	entity_mapping: E2B_ENTITY_MAPPING
 			-- Name mapping used.
 
+	context_writable: IV_EXPRESSION
+			-- Writable frame of the enclosing context.
+		do
+			if local_writable = Void then
+				Result := factory.global_writable
+			else
+				Result := local_writable
+			end
+		end
+
 feature -- Element change
 
 	set_context (a_implementation: IV_IMPLEMENTATION; a_feature: FEATURE_I; a_type: TYPE_A)
@@ -553,20 +563,19 @@ feature -- Processing
 		require
 			from_loop: a_node.stop /= Void and a_node.iteration_exit_condition = Void
 		local
-			l_pre_heap, l_frame, l_writable: IV_ENTITY
+			l_pre_heap, l_variant: IV_ENTITY
+			l_frame: like process_loop_modifies
 			l_old_writable: IV_EXPRESSION
 			l_condition: IV_EXPRESSION
-			l_variant_local: STRING
 			l_invariant: ASSERT_B
 			l_goto: IV_GOTO
 			l_temp_block, l_head_block, l_body_block, l_end_block: IV_BLOCK
 			l_assert: IV_ASSERT
 			l_assume: IV_ASSUME
-			l_not: IV_UNARY_OPERATION
-			l_op: IV_BINARY_OPERATION
-			l_variant: IV_ENTITY
+			l_variant_locals: ARRAYED_LIST [IV_ENTITY]
+			l_variant_exprs: ARRAYED_LIST [IV_EXPRESSION]
 			l_assignment: IV_ASSIGNMENT
-			l_modifies: ARRAYED_LIST [ASSERT_B]
+			l_modifies, l_decreases: ARRAYED_LIST [ASSERT_B]
 		do
 			set_current_origin_information (a_node)
 
@@ -586,8 +595,9 @@ feature -- Processing
 			create l_assignment.make (l_pre_heap, entity_mapping.heap)
 			add_statement (l_assignment)
 
-				-- Collect modify clauses
+				-- Collect modify and decreases clauses
 			create l_modifies.make (3)
+			create l_decreases.make (3)
 			if a_node.invariant_part /= Void then
 				from
 					a_node.invariant_part.start
@@ -595,52 +605,20 @@ feature -- Processing
 					a_node.invariant_part.after
 				loop
 					l_invariant ?= a_node.invariant_part.item
-					if attached {FEATURE_B} l_invariant.expr as l_call
-						and then (l_call.feature_name ~ "modify" or l_call.feature_name ~ "modify_field") then
+					if helper.is_clause_modify (l_invariant) then
 						l_modifies.extend (l_invariant)
+					elseif helper.is_clause_decreases (l_invariant) then
+						l_decreases.extend (l_invariant)
 					end
 					a_node.invariant_part.forth
 				end
 			end
-			if not l_modifies.is_empty then
-				-- The loop has decreases clauses: initialize frame and check that its witin the encloding writable set
-				create l_frame.make (helper.unique_identifier ("LoopFrame"), types.frame)
-				current_implementation.add_local (l_frame.name, l_frame.type)
-				add_statement (create {IV_HAVOC}.make (l_frame.name))
 
-				process_modifies (l_modifies, l_frame)
-				across last_safety_checks as i loop
-					create l_assert.make (i.item.expr)
-					l_assert.node_info.load (i.item.info)
-					l_assert.set_attribute_string (":subsumption 0")
-					add_statement (l_assert)
-				end
-				create l_assume.make (last_frame)
-				add_statement (l_assume)
-
-				if local_writable = Void then
-					create l_assert.make (factory.function_call ("Frame#Subset", <<l_frame, factory.global_writable>>, types.bool))
-				else
-					create l_assert.make (factory.function_call ("Frame#Subset", <<l_frame, local_writable>>, types.bool))
-				end
-				l_assert.node_info.set_type ("check")
-				l_assert.node_info.set_tag ("frame_writable")
-				l_assert.node_info.set_line (l_modifies.first.line_number)
-				l_assert.set_attribute_string (":subsumption 0")
-				add_statement (l_assert)
-
-				-- Initialize the local writable set: superset of the frame and closed under ownership domains
-				create l_writable.make (helper.unique_identifier ("LoopFrame"), types.frame)
-				current_implementation.add_local (l_writable.name, l_writable.type)
-				add_statement (create {IV_HAVOC}.make (l_writable.name))
-				create l_assume.make (factory.function_call ("Frame#Subset", <<l_frame, l_writable>>, types.bool))
-				add_statement (l_assume)
-				create l_assume.make (factory.function_call ("writable_domains", <<l_writable, "Heap">>, types.bool))
-				add_statement (l_assume)
-
-					-- Remember the old writable set and set the new one
+				-- Process modifies
+			l_frame := process_loop_modifies (l_modifies)
+			if l_frame.writable /= Void then
 				l_old_writable := local_writable
-				local_writable := l_writable
+				local_writable := l_frame.writable
 			end
 
 				-- Goto head
@@ -649,73 +627,8 @@ feature -- Processing
 			add_statement (l_head_block)
 			current_block := l_head_block
 
-				-- Invariants
-			if a_node.invariant_part /= Void then
-				from
-					a_node.invariant_part.start
-				until
-					a_node.invariant_part.after
-				loop
-					l_invariant ?= a_node.invariant_part.item
-					if not attached {FEATURE_B} l_invariant.expr as l_call
-						or else (l_call.feature_name /~ "modify" and l_call.feature_name /~ "modify_field") then
-
-						set_current_origin_information (l_invariant)
-						process_contract_expression (l_invariant.expr)
-						across last_safety_checks as i loop
-							create l_assert.make (i.item.expr)
-							l_assert.node_info.load (i.item.info)
-							l_assert.set_attribute_string (":subsumption 0")
-							add_statement (l_assert)
-						end
-
-						if l_invariant.tag /= Void and then l_invariant.tag ~ "assume" then
-								-- Free invariants with tag 'assume'
-							create l_assume.make (last_expression)
-							add_statement (l_assume)
-						else
-							create l_assert.make (last_expression)
-							l_assert.node_info.set_type ("loop_inv")
-							l_assert.node_info.set_tag (l_invariant.tag)
-							l_assert.node_info.set_line (l_invariant.line_number)
-							add_statement (l_assert)
-						end
-					end
-					a_node.invariant_part.forth
-				end
-			end
-				-- Default invariants (free)			
-			create l_assume.make (factory.function_call ("HeapSucc", <<l_pre_heap, "Heap">>, types.bool))
-			add_statement (l_assume)
-			if options.is_ownership_enabled then
-				if l_frame = Void then
-						-- Nothing outside routine's frame has changed compared to old(Heap)
-						-- (here we have to compare to old(Heap) because the routines's frame referes to ownership domains then.
-					create l_assume.make (factory.writes_routine_frame (current_feature, current_type, current_implementation.procedure))
-				else
-						-- Nothing outside loop's frame has changed since before the loop
-						-- (here we have to compare to before the loop because the loop's frame referes to ownership domains then.
-					create l_assume.make (factory.function_call ("writes", <<l_pre_heap, "Heap", l_frame>>, types.bool))
-				end
-				add_statement (l_assume)
-				create l_assume.make (factory.function_call ("global", << "Heap" >>, types.bool))
-				add_statement (l_assume)
-			end
-
-				-- Variant
-			if a_node.variant_part /= Void then
-				set_current_origin_information (a_node.variant_part)
-				create l_variant.make (helper.unique_identifier ("variant"), types.int)
-				current_implementation.add_local (l_variant.name, types.int)
-				process_expression (a_node.variant_part.expr)
-				create l_assignment.make (l_variant, last_expression)
-				add_statement (l_assignment)
-				create l_assert.make (factory.less_equal (factory.int_value (0), l_variant))
-				l_assert.node_info.set_type ("loop_var_ge_zero")
-				l_assert.node_info.set_tag (a_node.variant_part.tag)
-				l_assert.node_info.set_line (a_node.variant_part.line_number)
-				add_statement (l_assert)
-			end
+				-- Process invariants
+			process_loop_invariants (a_node.invariant_part, l_pre_heap, l_frame.frame)
 
 				-- Condition
 			set_current_origin_information (a_node.stop)
@@ -726,34 +639,43 @@ feature -- Processing
 			add_statement (l_goto)
 			current_block := l_temp_block
 
-				-- Body
+				-- Body block
 			add_statement (l_body_block)
 			current_block := l_body_block
-
 			create l_assume.make (factory.not_ (l_condition))
 			add_statement (l_assume)
+
+				-- Variant initization
+			create l_variant_exprs.make (3)
+			create l_variant_locals.make (3)
+			process_loop_variants (a_node.variant_part, l_decreases, l_condition, l_variant_exprs, l_variant_locals)
+
+				-- Body
 			process_compound (a_node.compound)
-			if a_node.variant_part /= Void then
+
+				-- Variant checks
+			if a_node.variant_part /= Void and l_variant_exprs.count = 1 then
 				set_current_origin_information (a_node.variant_part)
-				process_expression (a_node.variant_part.expr)
-				create l_assert.make (factory.less (last_expression, l_variant))
-				l_assert.node_info.set_type ("loop_var_decr")
-				l_assert.node_info.set_tag (a_node.variant_part.tag)
-				l_assert.node_info.set_line (a_node.variant_part.line_number)
-				add_statement (l_assert)
+			elseif a_node.compound /= Void then
+				set_current_origin_information (a_node.compound)
+			else
+				set_current_origin_information (a_node)
 			end
+			add_termination_check (l_variant_locals, l_variant_exprs)
+
+				-- Goto head
 			create l_goto.make (l_head_block)
 			add_statement (l_goto)
 			current_block := l_temp_block
 
+				-- End
 			add_statement (l_end_block)
 			current_block := l_end_block
-
 			create l_assume.make (l_condition)
 			add_statement (l_assume)
 
 				-- If the loop had its own writable, revert to the old local writable
-			if l_writable /= Void then
+			if l_old_writable /= Void then
 				local_writable := l_old_writable
 			end
 			current_block := l_temp_block
@@ -1092,6 +1014,196 @@ feature -- Processing
 			current_block.add_statement (l_havoc)
 		end
 
+feature {NONE} -- Loop processing
+
+	process_loop_modifies (a_modifies: LIST [ASSERT_B]): TUPLE [frame: IV_ENTITY; writable: IV_ENTITY]
+			-- Process `a_modifies', initialize the loop frame and writable sets and return the correspoding local variables.
+		require
+			modifies_exists: a_modifies /= Void
+		local
+			l_writable, l_frame: IV_ENTITY
+			l_assert: IV_ASSERT
+			l_assume: IV_ASSUME
+		do
+			if not a_modifies.is_empty then
+				create l_frame.make (helper.unique_identifier ("LoopFrame"), types.frame)
+				current_implementation.add_local (l_frame.name, l_frame.type)
+				add_statement (create {IV_HAVOC}.make (l_frame.name))
+
+				process_modifies (a_modifies, l_frame)
+				across last_safety_checks as i loop
+					create l_assert.make (i.item.expr)
+					l_assert.node_info.load (i.item.info)
+					l_assert.set_attribute_string (":subsumption 0")
+					add_statement (l_assert)
+				end
+				create l_assume.make (last_frame)
+				add_statement (l_assume)
+
+				create l_assert.make (factory.function_call ("Frame#Subset", <<l_frame, context_writable>>, types.bool))
+				l_assert.node_info.set_type ("check")
+				l_assert.node_info.set_tag ("frame_writable")
+				l_assert.node_info.set_line (a_modifies.first.line_number)
+				l_assert.set_attribute_string (":subsumption 0")
+				add_statement (l_assert)
+
+					-- Initialize the local writable set: superset of the frame and closed under ownership domains
+				create l_writable.make (helper.unique_identifier ("LoopWritable"), types.frame)
+				current_implementation.add_local (l_writable.name, l_writable.type)
+				add_statement (create {IV_HAVOC}.make (l_writable.name))
+				create l_assume.make (factory.function_call ("Frame#Subset", <<l_frame, l_writable>>, types.bool))
+				add_statement (l_assume)
+				create l_assume.make (factory.function_call ("writable_domains", <<l_writable, "Heap">>, types.bool))
+				add_statement (l_assume)
+			end
+			Result := [l_frame, l_writable]
+		ensure
+			result_exists: Result /= Void
+			exist_together: (Result.frame = Void) = (Result.writable = Void)
+		end
+
+	process_loop_invariants (a_invariants: BYTE_LIST [BYTE_NODE]; a_pre_heap, a_loop_frame: IV_EXPRESSION)
+			-- Process loop invariants `a_invariants' and add default invariants
+			-- with pre-loop heap `a_pre-heap' and the loop frame `a_loop_frame' (if exists, otherwise Void).
+		local
+			l_invariant: ASSERT_B
+			l_assert: IV_ASSERT
+			l_assume: IV_ASSUME
+		do
+			if a_invariants /= Void then
+				from
+					a_invariants.start
+				until
+					a_invariants.after
+				loop
+					l_invariant ?= a_invariants.item
+						-- Ignore modifies and decreases clauses
+					if not helper.is_clause_modify (l_invariant) and not helper.is_clause_decreases (l_invariant) then
+						set_current_origin_information (l_invariant)
+						process_contract_expression (l_invariant.expr)
+						across last_safety_checks as i loop
+							create l_assert.make (i.item.expr)
+							l_assert.node_info.load (i.item.info)
+							l_assert.set_attribute_string (":subsumption 0")
+							add_statement (l_assert)
+						end
+
+						if l_invariant.tag /= Void and then l_invariant.tag ~ "assume" then
+								-- Free invariants with tag 'assume'
+							create l_assume.make (last_expression)
+							add_statement (l_assume)
+						else
+							create l_assert.make (last_expression)
+							l_assert.node_info.set_type ("loop_inv")
+							l_assert.node_info.set_tag (l_invariant.tag)
+							l_assert.node_info.set_line (l_invariant.line_number)
+							add_statement (l_assert)
+						end
+					end
+					a_invariants.forth
+				end
+			end
+				-- Default invariants (free)			
+			create l_assume.make (factory.function_call ("HeapSucc", <<a_pre_heap, "Heap">>, types.bool))
+			add_statement (l_assume)
+			if options.is_ownership_enabled then
+				if a_loop_frame = Void then
+						-- Nothing outside routine's frame has changed compared to old(Heap)
+						-- (here we have to compare to old(Heap) because the routines's frame referes to ownership domains then.
+					create l_assume.make (factory.writes_routine_frame (current_feature, current_type, current_implementation.procedure))
+				else
+						-- Nothing outside loop's frame has changed since before the loop
+						-- (here we have to compare to before the loop because the loop's frame referes to ownership domains then.
+					create l_assume.make (factory.function_call ("writes", <<a_pre_heap, "Heap", a_loop_frame>>, types.bool))
+				end
+				add_statement (l_assume)
+				create l_assume.make (factory.function_call ("global", << "Heap" >>, types.bool))
+				add_statement (l_assume)
+			end
+		end
+
+	process_loop_variants (a_variant: VARIANT_B; a_decreases: LIST [ASSERT_B]; a_exit_condition: IV_EXPRESSION; a_variant_exprs, a_variant_locals: LIST [IV_EXPRESSION])
+			-- Process variant `a_variant' and decreases clauses `a_decreases'
+			-- and fill `a_variant_exprs' and `a_variant_locals' with variant expressions and local variables that store their value at the biginning of the iteration;
+			-- add assignments of expressions to locals.
+		local
+			l_variant: IV_ENTITY
+			l_assignment: IV_ASSIGNMENT
+			l, r: IV_EXPRESSION
+		do
+			if a_variant /= Void then
+				set_current_origin_information (a_variant)
+				process_expression (a_variant.expr)
+				a_variant_exprs.extend (last_expression)
+			end
+			process_decreases (a_decreases)
+			a_variant_exprs.append (last_decreases)
+
+			if a_variant_exprs.is_empty then
+				-- ToDo: Add default variants unless decreases *
+			end
+			if a_variant_exprs.is_empty then
+					-- No decreases clause: apply default
+				if attached {IV_BINARY_OPERATION} a_exit_condition as binop then
+					if binop.operator ~ ">" or binop.operator ~ ">=" then
+						-- for A > B and A >= B, use the decreases B - A
+						a_variant_exprs.extend (factory.minus (binop.right, binop.left))
+					elseif binop.operator ~ "<" or binop.operator ~ "<=" then
+						-- for A < B and A <= B, use the decreases A - B
+						a_variant_exprs.extend (factory.minus (binop.left, binop.right))
+					elseif binop.operator ~ "==" then
+						-- for A = B, use the absolute value of A - B
+						a_variant_exprs.extend (factory.conditional (factory.less_equal (binop.right, binop.left),
+							factory.minus (binop.left, binop.right),
+							factory.minus (binop.right, binop.left)))
+					end
+				elseif attached {IV_FUNCTION_CALL} a_exit_condition as fcall then
+					if fcall.name ~ "Set#Subset" or fcall.name ~ "Set#ProperSubset" then
+						-- for A < B and A <= B, use the decreases A - B
+						l := fcall.arguments [1]
+						r := fcall.arguments [2]
+						a_variant_exprs.extend (factory.function_call ("Set#Difference", << l, r >>, l.type))
+					elseif fcall.name ~ "Set#Equal" then
+						-- for A = B, use the absolute value of A - B
+						l := fcall.arguments [1]
+						r := fcall.arguments [2]
+						a_variant_exprs.extend (factory.conditional (factory.function_call ("Set#Subset", << r, l >>, types.bool),
+							factory.function_call ("Set#Difference", << l, r >>, l.type),
+							factory.function_call ("Set#Difference", << r, l >>, l.type)))
+					elseif fcall.name ~ "Seq#Equal" then
+						-- for A = B, use the absolute value of A - B
+						l := factory.function_call ("Seq#Length", << fcall.arguments [1] >>, types.int)
+						r := factory.function_call ("Seq#Length", << fcall.arguments [2] >>, types.int)
+						a_variant_exprs.extend (factory.conditional (factory.less_equal (r, l), factory.minus (l, r), factory.minus (r, l)))
+					end
+				end
+
+					-- If still empty, add a trivially wrong variant
+				if a_variant_exprs.is_empty then
+					a_variant_exprs.extend (factory.int_value (0))
+				end
+			elseif a_variant_exprs.first = Void then
+				-- Decreases empty set (*): do not check termination
+				a_variant_exprs.wipe_out
+			end
+
+
+			across
+				a_variant_exprs as i
+			loop
+				if types.is_variant_type (i.item.type) then
+					create l_variant.make (helper.unique_identifier ("variant"), i.item.type)
+					current_implementation.add_local (l_variant.name, l_variant.type)
+					a_variant_locals.extend (l_variant)
+
+					create l_assignment.make (l_variant, i.item)
+					add_statement (l_assignment)
+				else
+					helper.add_semantic_error (current_feature, messages.variant_bad_type (i.target_index), -1)
+				end
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	current_origin_information: detachable IV_STATEMENT_ORIGIN
@@ -1148,7 +1260,9 @@ feature {NONE} -- Implementation
 			create l_translator.make
 			l_translator.set_context (current_feature, current_type)
 			l_translator.set_context_implementation (current_implementation)
-			l_translator.set_context_line_number (current_origin_information.line)
+			if attached current_origin_information as coi then
+				l_translator.set_context_line_number (coi.line)
+			end
 			l_translator.copy_entity_mapping (entity_mapping)
 			l_translator.locals_map.merge (locals_map)
 			l_translator.set_local_writable (local_writable)
@@ -1172,7 +1286,9 @@ feature {NONE} -- Implementation
 		do
 			create l_translator.make
 			l_translator.set_context (current_feature, current_type)
-			l_translator.set_context_line_number (current_origin_information.line)
+			if attached current_origin_information as coi then
+				l_translator.set_context_line_number (coi.line)
+			end
 			l_translator.copy_entity_mapping (entity_mapping)
 			l_translator.locals_map.merge (locals_map)
 			l_translator.set_local_writable (local_writable)
@@ -1203,6 +1319,47 @@ feature {NONE} -- Implementation
 			locals_map.merge (l_translator.locals_map)
 		end
 
+	process_decreases (a_decreases: LIST [ASSERT_B])
+			-- Generate frame definition of `a_lhs' using `a_modifies' and store it in `last_frame' .
+		local
+			l_routine_translator: E2B_ROUTINE_TRANSLATOR
+			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
+		do
+			create l_routine_translator.make
+			l_routine_translator.set_context (current_feature, current_type)
+
+			create l_translator.make
+			l_translator.set_context (current_feature, current_type)
+			l_translator.copy_entity_mapping (entity_mapping)
+			l_translator.locals_map.merge (locals_map)
+			last_decreases := l_routine_translator.decreases_expressions_of (a_decreases, l_translator)
+			last_safety_checks := l_translator.side_effect
+			locals_map.merge (l_translator.locals_map)
+		end
+
+	add_termination_check (l_old_variants, l_new_variants: LIST [IV_EXPRESSION])
+			-- Given expressions for old and new values of variants, add statements checking that the new variants are strinctly less and the order is well-founded.
+		local
+			l_translator: E2B_BODY_EXPRESSION_TRANSLATOR
+		do
+			create l_translator.make
+			l_translator.set_context (current_feature, current_type)
+			l_translator.set_context_implementation (current_implementation)
+			if attached current_origin_information as coi then
+				l_translator.set_context_line_number (coi.line)
+			end
+			l_translator.copy_entity_mapping (entity_mapping)
+			l_translator.locals_map.merge (locals_map)
+			l_translator.set_local_writable (local_writable)
+			l_translator.add_termination_check (l_old_variants, l_new_variants)
+			if not l_translator.side_effect.is_empty and attached current_origin_information as coi then
+				l_translator.side_effect.first.set_origin_information (coi)
+				current_origin_information := Void
+			end
+			l_translator.side_effect.do_all (agent current_block.add_statement (?))
+			locals_map.merge (l_translator.locals_map)
+		end
+
 	last_expression: IV_EXPRESSION
 			-- Last generated expression.
 
@@ -1212,10 +1369,13 @@ feature {NONE} -- Implementation
 	last_frame: IV_EXPRESSION
 			-- Last generated frame definition.
 
+	last_decreases: LIST [IV_EXPRESSION]
+			-- Last generated decreases expressions.
+
 	locals_map: HASH_TABLE [IV_EXPRESSION, INTEGER]
 			-- Mapping for object test locals.
 
 	local_writable: detachable IV_EXPRESSION
-			-- Writable frame of the current loop.
+			-- Writable frame of the current loop.			
 
 end
