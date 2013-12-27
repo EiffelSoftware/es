@@ -10,11 +10,6 @@ class
 inherit
 	PS_BACKEND
 
---	PS_BACKEND_CONVERTER
---		redefine
---			internal_specific_retrieve
---		end
-
 create
 	make
 
@@ -53,28 +48,11 @@ feature {PS_ABEL_EXPORT} -- Access
 			end
 		end
 
-	specific_collection_retrieve (order: LIST [TUPLE [type: PS_TYPE_METADATA; primary_key: INTEGER]]; transaction: PS_INTERNAL_TRANSACTION): READABLE_INDEXABLE [PS_BACKEND_COLLECTION]
-			-- For every item in `order', retrieve the object with the correct `type' and `primary_key'.
-			-- Note: The result does not have to be ordered, and items deleted in the database are not present in the result.
-		local
-			list: ARRAYED_LIST [PS_BACKEND_COLLECTION]
-		do
-			across
-				order as cursor
-			from
-				create list.make (order.count)
-				Result := list
-			loop
-				if
-					attached collection_database [cursor.item.type.type.type_id] as inner
-					and then attached inner [cursor.item.primary_key] as res
-				then
-					list.extend (res)
-				end
-			end
-		end
+feature {PS_ABEL_EXPORT} -- Retrieval
 
 	internal_specific_retrieve (primaries: ARRAYED_LIST [INTEGER]; types: ARRAYED_LIST [PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): READABLE_INDEXABLE [PS_BACKEND_OBJECT]
+			-- See function `specific_retrieve'.
+			-- Use `internal_specific_retrieve' for contracts and other calls within a backend.
 		local
 			list: ARRAYED_LIST [PS_BACKEND_OBJECT]
 			i: INTEGER
@@ -95,55 +73,11 @@ feature {PS_ABEL_EXPORT} -- Access
 			end
 		end
 
-feature {PS_RETRIEVAL_MANAGER} -- Collection retrieval
-
-
-	collection_retrieve (collection_type: PS_TYPE_METADATA; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_COLLECTION]
-			-- Retrieves all collections of type `collection_type'.
-		do
-			Result := create_get_inner_collection_database (collection_type).new_cursor
-		end
-
-	retrieve_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER; transaction: PS_INTERNAL_TRANSACTION): detachable PS_BACKEND_COLLECTION
-			-- Retrieves the object-oriented collection of type `collection_type' and with primary key `collection_primary_key'.
-		do
-			if attached collection_database [collection_type.type.type_id] as inner then
-				Result := inner [collection_primary_key]
-					-- Result may be Void when collection is not present.
-			end
-		end
-
-feature {PS_ABEL_EXPORT} -- Transaction handling
-
-	commit (a_transaction: PS_INTERNAL_TRANSACTION)
-			-- Tries to commit `a_transaction'. As with every other error, a failed commit will result in a new exception and the error will be placed inside `a_transaction'.
-		do
-		end
-
-	rollback (a_transaction: PS_INTERNAL_TRANSACTION)
-			-- Aborts `a_transaction' and undoes all changes in the database.
-		do
-		end
-
-	transaction_isolation_level: PS_TRANSACTION_ISOLATION_LEVEL
-			-- The currently active transaction isolation level.
-		do
-			create Result
-			Result := Result.read_uncommitted
-		end
-
-	set_transaction_isolation_level (a_level: PS_TRANSACTION_ISOLATION_LEVEL)
-			-- Set the transaction isolation level `a_level' for all future transactions.
-		do
-		end
-
-feature{PS_READ_ONLY_BACKEND}
-
-	success: BOOLEAN
-
 	internal_retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_OBJECT]
 			-- See function `retrieve'.
 			-- Use `internal_retrieve' for contracts and other calls within a backend.
+		require else
+			supported: is_object_type_supported (type)
 		do
 --			if success then -- Enable transaction conflict simulation
 --				success := False
@@ -161,22 +95,64 @@ feature{PS_READ_ONLY_BACKEND}
 			end
 		end
 
-	internal_retrieve_by_primary (type: PS_TYPE_METADATA; key: INTEGER; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction: PS_INTERNAL_TRANSACTION): detachable PS_BACKEND_OBJECT
-			-- See function `retrieve_by_primary'.
-			-- Use `internal_retrieve_by_primary' for contracts and other calls within a backend.
+feature {PS_ABEL_EXPORT} -- Collection retrieval
+
+
+	collection_retrieve (collection_type: PS_TYPE_METADATA; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_COLLECTION]
+			-- <Precursor>
 		do
-			Result := create_get_inner_database (type).item (key)
+			Result := create_get_inner_collection_database (collection_type).new_cursor
+		end
+
+	specific_collection_retrieve (primary_keys: ARRAYED_LIST [INTEGER]; types: ARRAYED_LIST [PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): READABLE_INDEXABLE [PS_BACKEND_COLLECTION]
+			-- <Precursor>
+		local
+			list: ARRAYED_LIST [PS_BACKEND_COLLECTION]
+		do
+			across
+				1 |..| primary_keys.count as cursor
+			from
+				create list.make (primary_keys.count)
+				Result := list
+			loop
+				if
+					attached collection_database [types [cursor.item].type.type_id] as inner
+					and then attached inner [primary_keys [cursor.item]] as res
+				then
+					list.extend (res)
+				end
+			end
+		end
+
+feature {PS_ABEL_EXPORT} -- Transaction handling
+
+	commit (a_transaction: PS_INTERNAL_TRANSACTION)
+			-- Tries to commit `a_transaction'. As with every other error, a failed commit will result in a new exception and the error will be placed inside `a_transaction'.
+		do
+		end
+
+	rollback (a_transaction: PS_INTERNAL_TRANSACTION)
+			-- Aborts `a_transaction' and undoes all changes in the database.
+		do
+		end
+
+	set_transaction_isolation (settings: PS_TRANSACTION_SETTINGS)
+			-- Set the transaction isolation level such that all values in `settings' are respected.
+		do
+				-- Do nothing. Transactions are not supported for the in-memory backend.
 		end
 
 feature {PS_ABEL_EXPORT} -- Testing
+
+--	success: BOOLEAN
+--			-- If false, simulate a transaction failure during next retrieval.
 
 	wipe_out, make
 			-- Wipe out everything and initialize new.
 		do
 			create database.make (default_size)
 			create collection_database.make (default_size)
-			create plugins.make
---			plugins.extend (create {PS_AGENT_CRITERION_ELIMINATOR_PLUGIN})
+			create plugins.make (1)
 			max_primary := 0
 			batch_retrieval_size := {PS_REPOSITORY}.Infinite_batch_size
 		end
@@ -188,7 +164,7 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 	generate_all_object_primaries (order: HASH_TABLE [INTEGER, PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): HASH_TABLE [LIST [PS_BACKEND_OBJECT], PS_TYPE_METADATA]
 			-- Generates `count' primary keys for each `type'.
 		local
-			list: LINKED_LIST [PS_BACKEND_OBJECT]
+			list: ARRAYED_LIST [PS_BACKEND_OBJECT]
 			index: INTEGER
 		do
 			across
@@ -198,7 +174,7 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 			loop
 				from
 					index := 1
-					create list.make
+					create list.make (cursor.item)
 				until
 					index = cursor.item + 1
 				loop
@@ -215,7 +191,7 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 	generate_collection_primaries (order: HASH_TABLE [INTEGER, PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): HASH_TABLE [LIST [PS_BACKEND_COLLECTION], PS_TYPE_METADATA]
 			-- Generate `count' primary keys for collections.
 		local
-			list: LINKED_LIST [PS_BACKEND_COLLECTION]
+			list: ARRAYED_LIST [PS_BACKEND_COLLECTION]
 			index: INTEGER
 		do
 			across
@@ -225,7 +201,7 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 			loop
 				from
 					index := 1
-					create list.make
+					create list.make (cursor.item)
 				until
 					index = cursor.item + 1
 				loop

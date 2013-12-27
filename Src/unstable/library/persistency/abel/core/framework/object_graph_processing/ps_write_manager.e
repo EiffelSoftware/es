@@ -55,6 +55,23 @@ feature {PS_ABEL_EXPORT} -- Access
 			index_set: Result.index = index
 		end
 
+
+	transaction: PS_INTERNAL_TRANSACTION
+			-- The transaction in which the current operation is running.
+		do
+			check attached internal_transaction as attached_transaction then
+				Result := attached_transaction
+			end
+		end
+
+feature {PS_ABEL_EXPORT} -- Status report
+
+	is_valid_index (index: INTEGER): BOOLEAN
+			-- Is `index' a valid index?
+		do
+			Result := 1 <= index and index <= count
+		end
+
 feature {PS_ABEL_EXPORT} -- Accesss: Static
 
 	backend: PS_BACKEND
@@ -85,6 +102,38 @@ feature {PS_ABEL_EXPORT} -- Access: Per Write
 			-- All collections to be written to the database.
 
 feature {PS_ABEL_EXPORT} -- Write execution
+
+	can_handle (root_object: ANY; a_transaction: PS_INTERNAL_TRANSACTION): BOOLEAN
+			-- Check if `Current' can handle `root_object'.
+		local
+			i: INTEGER
+		do
+			wipe_out
+			internal_transaction := a_transaction
+			traversal.set_root_object (root_object)
+			traversal.traverse
+			assign_handlers (1 |..| count)
+			do_all (agent {PS_HANDLER}.set_is_persistent)
+
+			from
+				Result := True
+				i := 1
+			until
+				i > count or not Result
+			loop
+				if item (i).is_ignored then
+
+				elseif item (i).handler.is_mapping_to_object then
+					Result := Result and backend.is_object_type_supported (item (i).type)
+				elseif item (i).handler.is_mapping_to_collection then
+					Result := Result and backend.is_generic_collection_supported
+
+				end
+				i := i + 1
+			variant
+				count + 1 - i
+			end
+		end
 
 	write (root_object: ANY; a_transaction: PS_INTERNAL_TRANSACTION)
 			-- Insert or update `root_object' and all objects reachable from it.
@@ -164,12 +213,8 @@ feature {PS_ABEL_EXPORT} -- Write execution
 				end
 			end
 
+			set_root_flags (transaction.root_declaration_strategy)
 
-
-			fixme ("Support the other root object strategies as well")
-			if not item (1).is_persistent then
-				transaction.root_flags.force (True, item (1).identifier)
-			end
 			across
 				1 |..| count as idx
 			loop
@@ -224,14 +269,14 @@ feature {PS_ABEL_EXPORT} -- Write execution
 			do_all (agent {PS_HANDLER}.set_identifier)
 			do_all (agent {PS_HANDLER}.generate_primary_key)
 
-			-- No need to generate primary keys in a batch, as the object should be identified already.
+				-- No need to generate primary keys in a batch, as the object should be identified already.
 			check object_persistent: object_primary_key_order.is_empty and collection_primary_key_order.is_empty end
 
 			do_all (agent {PS_HANDLER}.generate_backend_representation)
 
-			-- Do not initialize... we don't want to perform an actual update...
+				-- Do not initialize... we don't want to perform an actual update...
 
-			-- Set the root status in the backend representation
+				-- Set the root status in the backend representation
 			transaction.root_flags.force (value, item (1).identifier)
 			check attached item (1).backend_representation as br then
 				br.set_is_root (transaction.root_flags [item (1).identifier])
@@ -280,8 +325,14 @@ feature {PS_ABEL_EXPORT} -- Write execution
 			do_all_in_set (agent {PS_HANDLER}.generate_backend_representation, 1 |..| k)
 			do_all_in_set (agent {PS_HANDLER}.initialize_backend_representation, 1 |..| 1)
 
+			if
+				not transaction.root_declaration_strategy.is_preserve and
+				(not item (1).is_persistent or transaction.root_declaration_strategy.is_argument_of_write)
+			then
+				transaction.root_flags.force (True, item (1).identifier)
+			end
+
 			check attached item (1).backend_representation as br then
-				fixme ("Other root declaration strategies")
 				br.set_is_root (transaction.root_flags [item (1).identifier])
 			end
 
@@ -294,6 +345,25 @@ feature {PS_ABEL_EXPORT} -- Write execution
 			if not collections_to_write.is_empty then
 				backend.write_collections (collections_to_write, transaction)
 			end
+		end
+
+	set_root_flags (strategy: PS_ROOT_OBJECT_STRATEGY)
+		do
+			if
+				not transaction.root_declaration_strategy.is_preserve and
+				(not item (1).is_persistent or transaction.root_declaration_strategy.is_argument_of_write)
+			then
+				transaction.root_flags.force (True, item (1).identifier)
+			end
+
+			if strategy.is_everything then
+				across
+					1 |..| count as idx
+				loop
+					transaction.root_flags.force (True, item (idx.item).identifier)
+				end
+			end
+
 		end
 
 feature {PS_ABEL_EXPORT} -- Support
@@ -345,4 +415,6 @@ feature {NONE} -- Implementation
 			collections_to_write.wipe_out
 		end
 
+	internal_transaction: detachable like transaction
+			-- The detachable attribute for `transaction'
 end

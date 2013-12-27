@@ -20,10 +20,9 @@ create
 
 feature {PS_GENERIC_LAYOUT_SQL_READONLY_BACKEND, PS_LAZY_CURSOR, PS_CRITERION_SQL_CONVERTER} -- Status report
 
-	has_primary_key_of_class (class_name: STRING): BOOLEAN
+	has_primary_key_of_class (class_name: IMMUTABLE_STRING_8): BOOLEAN
 			-- Does the class `class_name' have a primary key in the database?
 		do
-			fixme ("Use IMMUTABLE_STRING")
 			Result := class_name_to_key_map.has (class_name)
 		end
 
@@ -49,7 +48,7 @@ feature {PS_GENERIC_LAYOUT_SQL_READONLY_BACKEND, PS_LAZY_CURSOR, PS_CRITERION_SQ
 
 feature {PS_GENERIC_LAYOUT_SQL_READONLY_BACKEND, PS_LAZY_CURSOR, PS_CRITERION_SQL_CONVERTER} -- Access - Class
 
-	class_name_of_key (class_key: INTEGER): STRING
+	class_name_of_key (class_key: INTEGER): IMMUTABLE_STRING_8
 			-- Get the class name of the class with primary key `class_key'
 		require
 			class_key_exists: is_valid_class_key (class_key)
@@ -59,22 +58,21 @@ feature {PS_GENERIC_LAYOUT_SQL_READONLY_BACKEND, PS_LAZY_CURSOR, PS_CRITERION_SQ
 			end
 		end
 
-	primary_key_of_class (class_name: STRING): INTEGER
+	primary_key_of_class (class_name: IMMUTABLE_STRING_8): INTEGER
 			-- Get the primary key of class `class_name'
 		require
 			class_present_in_database: has_primary_key_of_class (class_name)
 		do
-			fixme ("Use IMMUTABLE_STRING")
 			Result := class_name_to_key_map [class_name]
 		end
 
-	all_types: LINKED_LIST [READABLE_STRING_GENERAL]
+	all_types: ARRAYED_LIST [READABLE_STRING_GENERAL]
 			-- Get all types in the database.
 		do
 			across
 				class_name_to_key_map as cursor
 			from
-				create Result.make
+				create Result.make (class_name_to_key_map.count)
 			loop
 				if not cursor.key.is_equal ("NONE") then
 					Result.extend (cursor.key)
@@ -105,7 +103,7 @@ feature {PS_GENERIC_LAYOUT_SQL_READONLY_BACKEND, PS_LAZY_CURSOR, PS_CRITERION_SQ
 			end
 		end
 
-	attribute_keys_of_class (class_key: INTEGER): LINKED_LIST [INTEGER]
+	attribute_keys_of_class (class_key: INTEGER): ARRAYED_LIST [INTEGER]
 			-- Get all the primary keys of attributes defined in class `class_id'
 		require
 			class_key_exists: is_valid_class_key (class_key)
@@ -114,7 +112,7 @@ feature {PS_GENERIC_LAYOUT_SQL_READONLY_BACKEND, PS_LAZY_CURSOR, PS_CRITERION_SQ
 				across
 					inner as cursor
 				from
-					create Result.make
+					create Result.make (inner.count)
 				loop
 					Result.extend (cursor.item)
 				end
@@ -123,7 +121,7 @@ feature {PS_GENERIC_LAYOUT_SQL_READONLY_BACKEND, PS_LAZY_CURSOR, PS_CRITERION_SQ
 
 feature {PS_GENERIC_LAYOUT_SQL_READONLY_BACKEND} -- Key creation
 
-	create_get_primary_key_of_class (class_name: STRING): INTEGER
+	create_get_primary_key_of_class (class_name: IMMUTABLE_STRING_8): INTEGER
 			-- Get the primary key of class `class_name'. Create a table entry if not present yet.
 		do
 			if not has_primary_key_of_class (class_name) then
@@ -147,7 +145,7 @@ feature {PS_GENERIC_LAYOUT_SQL_READONLY_BACKEND} -- Key creation
 			present_in_database: has_primary_key_of_attribute (attribute_name, class_key)
 		end
 
-	create_primary_key_of_class (class_name: STRING)
+	create_primary_key_of_class (class_name: IMMUTABLE_STRING_8)
 			-- Insert `class_name' to the database and get the new (auto-incremented) primary key.
 		require
 			not_present_in_database: not has_primary_key_of_class (class_name)
@@ -186,13 +184,13 @@ feature {PS_GENERIC_LAYOUT_SQL_READONLY_BACKEND} -- Key creation
 
 feature {NONE} -- Implementation - Local copy
 
-	class_key_to_name_map: HASH_TABLE [STRING, INTEGER]
+	class_key_to_name_map: HASH_TABLE [IMMUTABLE_STRING_8, INTEGER]
 			-- A hash table that maps class primary keys to their names
 
-	class_name_to_key_map: HASH_TABLE [INTEGER, STRING]
+	class_name_to_key_map: HASH_TABLE [INTEGER, IMMUTABLE_STRING_8]
 			-- A hash table that maps class names to their primary key
 
-	add_class_key (class_name: STRING; new_primary_key: INTEGER)
+	add_class_key (class_name: IMMUTABLE_STRING_8; new_primary_key: INTEGER)
 			-- Add a new mapping from `class_name' to `new_primary_key' and vice-versa.
 		do
 			class_name_to_key_map.extend (new_primary_key, class_name)
@@ -227,7 +225,7 @@ feature {NONE} -- Initialization
 			-- Read existing database entries and initialize local copy with them.
 			-- If necessary, create missing tables.
 		local
-			existing_tables: LINKED_LIST [STRING]
+			existing_tables: ARRAYED_LIST [STRING]
 		do
 			fixme ("As the metadata is basically cached from the database, find a way to avoid inconsistencies.")
 
@@ -240,7 +238,7 @@ feature {NONE} -- Initialization
 			management_connection := a_connection
 				-- Create all tables if they do not yet exist
 			management_connection.execute_sql (SQL_Strings.Show_tables)
-			create existing_tables.make
+			create existing_tables.make (10)
 			across
 				management_connection as cursor
 			loop

@@ -28,7 +28,7 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 			new_primary_key: INTEGER
 			none_class_key: INTEGER
 			existence_attribute_key: INTEGER
-			current_list: LINKED_LIST [PS_BACKEND_OBJECT]
+			current_list: ARRAYED_LIST [PS_BACKEND_OBJECT]
 		do
 			connection := get_connection (transaction)
 
@@ -43,7 +43,7 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 				across
 					1 |..| cursor.item as current_count
 				from
-					create current_list.make
+					create current_list.make (cursor.item)
 					Result.extend (current_list, cursor.key)
 				loop
 					-- Generate a new primary key in the database by inserting the "existence" attribute with the objects object_identifier as a temporary value
@@ -70,7 +70,7 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 			connection: PS_SQL_CONNECTION
 			new_primary_key: INTEGER
 			none_class_key: INTEGER
-			current_list: LINKED_LIST [PS_BACKEND_COLLECTION]
+			current_list: ARRAYED_LIST [PS_BACKEND_COLLECTION]
 		do
 			connection := get_connection (transaction)
 
@@ -84,7 +84,7 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 				across
 					1 |..| cursor.item as current_count
 				from
-					create current_list.make
+					create current_list.make (cursor.item)
 					Result.extend (current_list, cursor.key)
 				loop
 					-- Generate a new primary key in the database by inserting the "existence" attribute with the objects object_identifier as a temporary value
@@ -131,40 +131,49 @@ feature {PS_ABEL_EXPORT} -- Write operations
 	write_collections (collections: LIST [PS_BACKEND_COLLECTION]; transaction: PS_INTERNAL_TRANSACTION)
 			-- Write every item in `collections' to the database
 		local
-			commands: LINKED_LIST [STRING]
-			info_commands: LINKED_LIST [STRING]
+			commands: ARRAYED_LIST [STRING]
+			info_commands: ARRAYED_LIST [STRING]
 			collection_type_key: INTEGER
+
+			delete_command: STRING
+			delete_command_list: STRING
 
 			connection: PS_SQL_CONNECTION
 			stmt: STRING
 		do
-			fixme ("Collections should get deleted first")
+
 			across
 				collections as cursor
 			from
-				create commands.make
-				create info_commands.make
+				delete_command := "DELETE FROM ps_collection WHERE position > 0 AND collectionid IN ("
+				create delete_command_list.make_empty
+
+				create commands.make (5 * collections.count)
+				create info_commands.make (collections.count)
 			loop
-				-- Insert all items
+					-- Insert all items
 				across
 					cursor.item.collection_items as collection_item
 				from
 					collection_type_key := db_metadata_manager.create_get_primary_key_of_class (cursor.item.metadata.name)
 
-					-- Insert a default item at position -1 to acknowledge the existence of the collection.
+						-- Insert a default item at position -1 to acknowledge the existence of the collection.
 					commands.extend (SQL_Strings.to_list_with_braces ([
-						-- Primary key
+							-- Primary key
 						cursor.item.primary_key,
-						-- Type of the collection
+							-- Type of the collection
 						collection_type_key,
-						-- Position of the item
+							-- Position of the item
 						-1,
-						-- Runtime type of the default item (NONE)
+							-- Runtime type of the default item (NONE)
 						db_metadata_manager.create_get_primary_key_of_class (SQL_Strings.None_class),
-						-- Store the root status.
+							-- Store the root status.
 						cursor.item.is_root.out]))
---						-- Some dummy value
---						""]))
+
+						-- Clear database from any previous entry for that collection.
+					if not cursor.item.is_update_delta then
+						delete_command_list.append (cursor.item.primary_key.out + ",")
+					end
 
 				loop
 					commands.extend (SQL_Strings.to_list_with_braces ([
@@ -196,7 +205,14 @@ feature {PS_ABEL_EXPORT} -- Write operations
 
 			end
 
-			stmt := SQL_Strings.assemble_multi_replace_collection (commands)
+				-- Create the final SQL commands from the information gathered previously.
+			if not delete_command_list.is_empty then
+				delete_command_list.put (')', delete_command_list.count)
+				delete_command.append (delete_command_list)
+				stmt := delete_command + ";" + SQL_Strings.assemble_multi_replace_collection (commands)
+			else
+				stmt := SQL_Strings.assemble_multi_replace_collection (commands)
+			end
 
 			if not info_commands.is_empty then
 				stmt.append (";" + SQL_Strings.assemble_multi_replace_collection_info (info_commands))
@@ -204,9 +220,7 @@ feature {PS_ABEL_EXPORT} -- Write operations
 
 			connection := get_connection (transaction)
 			connection.execute_sql (stmt)
---			if not info_commands.is_empty then
---				connection.execute_sql (SQL_Strings.assemble_multi_replace_collection_info (info_commands))
---			end
+
 		rescue
 			rollback (transaction)
 		end
@@ -218,8 +232,8 @@ feature {PS_ABEL_EXPORT} -- Write operations
 			stmt: STRING
 		do
 
-			-- Delete all items in the collection.
-			-- The additional information gets deleted automatically via an integrity constraint.
+				-- Delete all items in the collection.
+				-- The additional information gets deleted automatically via an integrity constraint.
 			across
 				collections as cursor
 			from
@@ -228,7 +242,7 @@ feature {PS_ABEL_EXPORT} -- Write operations
 			loop
 				stmt.append (cursor.item.primary_key.out + ",")
 			end
-			-- conveniently this also removes the last comma
+				-- conveniently this also removes the last comma
 			stmt.put (')', stmt.count)
 
 			connection := get_connection (transaction)
@@ -240,23 +254,22 @@ feature {PS_ABEL_EXPORT} -- Write operations
 	wipe_out
 			-- Wipe out everything and initialize new.
 		do
-			from
-				active_connections.start
-			until
-				active_connections.after
+			across
+				active_connections as cursor
 			loop
-				active_connections.item.first.commit
-				database.release_connection (active_connections.item.first)
-				active_connections.remove
+				cursor.item.commit
+				database.release_connection (cursor.item)
 				print ("found active transaction")
 			end
+			active_connections.wipe_out
+
 			management_connection.execute_sql (SQL_Strings.Drop_value_table)
 			management_connection.execute_sql (SQL_Strings.Drop_collection_info_table)
 			management_connection.execute_sql (SQL_Strings.Drop_collection_table)
 			management_connection.execute_sql (SQL_Strings.Drop_attribute_table)
 			management_connection.execute_sql (SQL_Strings.Drop_class_table)
 			database.release_connection (management_connection)
-				--			database.close_connections
+
 			make (database, SQL_Strings)
 		end
 
@@ -267,12 +280,12 @@ feature {PS_BACKEND} -- Implementation
 			-- Only write the attributes present in {PS_BACKEND_OBJECT}.attributes.
 		local
 			connection: PS_SQL_CONNECTION
-			commands: LINKED_LIST [STRING]
+			commands: ARRAYED_LIST [STRING]
 		do
 			across
 				objects as cursor
 			from
-				create commands.make
+				create commands.make (objects.count + 1)
 			loop
 				across
 					cursor.item.attributes as attribute_cursor
@@ -295,8 +308,6 @@ feature {PS_BACKEND} -- Implementation
 						db_metadata_manager.create_get_primary_key_of_attribute (attribute_cursor.item, db_metadata_manager.create_get_primary_key_of_class (cursor.item.metadata.name)),
 						-- Runtime type
 						db_metadata_manager.create_get_primary_key_of_class (cursor.item.attribute_value (attribute_cursor.item).attribute_class_name),
-						-- Do we need a longtext value?
---						0, -- False
 						-- Value
 						cursor.item.attribute_value (attribute_cursor.item).value
 						]))

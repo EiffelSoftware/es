@@ -10,12 +10,14 @@ class
 inherit
 	PS_ABEL_EXPORT
 
+	HASHABLE
+
 create {PS_ABEL_EXPORT}
 	make, make_readonly
 
 feature {NONE} -- Initialization
 
-	make (a_repository: PS_REPOSITORY)
+	make (a_repository: PS_REPOSITORY; a_strategy: PS_ROOT_OBJECT_STRATEGY; id: INTEGER)
 			-- Initialize `Current'.
 		do
 			repository := a_repository
@@ -23,11 +25,13 @@ feature {NONE} -- Initialization
 			create identifier_set.make
 			is_readonly := False
 			is_active := True
+			root_declaration_strategy := a_strategy
+			transaction_identifier := id
 
 			repository.id_manager.register_transaction (Current)
 		end
 
-	make_readonly (a_repository: PS_REPOSITORY)
+	make_readonly (a_repository: PS_REPOSITORY; id: INTEGER)
 			-- Initialize `Current', mark transaction as readonly.
 		do
 			repository := a_repository
@@ -35,11 +39,16 @@ feature {NONE} -- Initialization
 			create identifier_set.make
 			is_readonly := True
 			is_active := True
+			create root_declaration_strategy.make_preserve
+			transaction_identifier := id
 
 			repository.id_manager.register_transaction (Current)
 		end
 
 feature {PS_ABEL_EXPORT} -- Access
+
+	transaction_identifier: INTEGER
+			-- A unique transaction identifier.
 
 	error: detachable PS_ERROR
 			-- Error description of the last error.
@@ -51,6 +60,17 @@ feature {PS_ABEL_EXPORT} -- Access
 			-- Mapping for ABEL identifier -> root status of every object.
 
 	identifier_set: PS_IDENTIFIER_SET
+
+
+	root_declaration_strategy: PS_ROOT_OBJECT_STRATEGY
+			-- The root object strategy for the current transaction.
+
+	hash_code: INTEGER
+			-- Hash code value
+		do
+			Result := transaction_identifier
+		end
+
 
 feature {PS_ABEL_EXPORT} -- Status report
 
@@ -73,7 +93,13 @@ feature {PS_ABEL_EXPORT} -- Status report
 	is_readonly: BOOLEAN
 			-- Is this a readonly transaction?
 
-feature {PS_ABEL_EXPORT} -- Basic operations
+feature {PS_ABEL_EXPORT} -- Element change
+
+	set_root_declaration_strategy (a_strategy: like root_declaration_strategy)
+			-- Set `root_declaration_strategy' to `a_strategy'.
+		do
+			root_declaration_strategy := a_strategy
+		end
 
 --	commit
 --			-- Try to commit the transaction.

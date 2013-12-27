@@ -44,21 +44,15 @@ feature {PS_ABEL_EXPORT} -- Object retrieval operations
 
 
 	internal_retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_OBJECT]
-			-- Retrieves all objects of type `type' (direct instance - not inherited from) that match the criteria in `criteria' within transaction `transaction'.
-			-- If `attributes' is not empty, it will only retrieve the attributes listed there.
-			-- If an attribute was `Void' during an insert, or it doesn't exist in the database because of a version mismatch, the attribute value during retrieval will be an empty string and its class name `NONE'.
-			-- If `type' has a generic parameter, the retrieve function will return objects of all generic instances of the generating class.
-			-- You can find out about the actual generic parameter by comparing the class name associated to a foreign key value.
+			-- <Precursor>
 		do
 			Result := create {PS_LAZY_CURSOR}.make (type, criteria, attributes, transaction, Current)
 		rescue
 			rollback (transaction)
 		end
 
---	internal_specific_retrieve (order: LIST [TUPLE [type: PS_TYPE_METADATA; primary_key: INTEGER]]; transaction: PS_INTERNAL_TRANSACTION): READABLE_INDEXABLE [PS_BACKEND_OBJECT]
 	internal_specific_retrieve (primaries: ARRAYED_LIST [INTEGER]; types: ARRAYED_LIST [PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): READABLE_INDEXABLE [PS_BACKEND_OBJECT]
-			-- See function `specific_retrieve'.
-			-- Use `internal_specific_retrieve' for contracts and other calls within a backend.
+			-- <Precursor>
 		local
 			key_type_lookup: HASH_TABLE [PS_TYPE_METADATA, INTEGER]
 
@@ -146,10 +140,10 @@ feature {PS_ABEL_EXPORT} -- Object retrieval operations
 
 feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 
-	collection_retrieve (collection_type: PS_TYPE_METADATA; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_COLLECTION]
-			-- Retrieves all collections of type `collection_type'.
+	collection_retrieve (type: PS_TYPE_METADATA; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_COLLECTION]
+			-- <Precursor>
 		local
-			result_list: LINKED_LIST [PS_BACKEND_COLLECTION]
+			result_list: ARRAYED_LIST [PS_BACKEND_COLLECTION]
 
 			primary_key: INTEGER
 			position: INTEGER
@@ -164,7 +158,7 @@ feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 			-- Get the collection items
 			connection := get_connection (transaction)
 			sql_string := "SELECT collectionid, position, runtimetype, value FROM ps_collection WHERE collectiontype = "
-				+ db_metadata_manager.primary_key_of_class (collection_type.name).out
+				+ db_metadata_manager.primary_key_of_class (type.name).out
 				+ " ORDER BY collectionid, position " + SQL_Strings.for_update_appendix
 			connection.execute_sql (sql_string)
 
@@ -173,7 +167,7 @@ feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 
 			-- Get all the content
 			from
-				create result_list.make
+				create result_list.make (1)
 			until
 				row_cursor.after
 			loop
@@ -182,7 +176,7 @@ feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 
 				if position <= 0 then
 					-- new item
-					result_list.extend (create {PS_BACKEND_COLLECTION}.make (primary_key, collection_type))
+					result_list.extend (create {PS_BACKEND_COLLECTION}.make (primary_key, type))
 					result_list.last.set_is_root (row_cursor.item.at ("value").to_boolean)
 				else
 					runtime_type := db_metadata_manager.class_name_of_key (row_cursor.item.at ("runtimetype").to_integer)
@@ -218,9 +212,8 @@ feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 			Result := result_list.new_cursor
 		end
 
-	specific_collection_retrieve (order: LIST [TUPLE [type: PS_TYPE_METADATA; primary_key: INTEGER]]; transaction: PS_INTERNAL_TRANSACTION): READABLE_INDEXABLE [PS_BACKEND_COLLECTION]
-			-- For every item in `order', retrieve the object with the correct `type' and `primary_key'.
-			-- Note: The result does not have to be ordered, and items deleted in the database are not present in the result.
+	specific_collection_retrieve (primary_keys: ARRAYED_LIST [INTEGER]; types: ARRAYED_LIST [PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): READABLE_INDEXABLE [PS_BACKEND_COLLECTION]
+			-- <Precursor>
 		local
 			key_type_lookup: HASH_TABLE [PS_TYPE_METADATA, INTEGER]
 
@@ -240,23 +233,35 @@ feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 
 			current_object: PS_BACKEND_COLLECTION
 			actual_result: HASH_TABLE [PS_BACKEND_COLLECTION, INTEGER]
+
+			i: INTEGER
+			count: INTEGER
 		do
+			count := primary_keys.count
 
 				-- Prepare the SQL strings and the type lookup table.
-			across
-				order as order_cursor
 			from
+				i := 1
+				count := primary_keys.count
+
 				sql_get_collection := "SELECT collectionid, position, runtimetype, value FROM ps_collection WHERE collectionid IN ("
 				sql_get_info := "SELECT collectionid, info_key, info FROM ps_collection_info WHERE collectionid IN ("
 
-				create key_type_lookup.make (order.count)
-				create actual_result.make (order.count)
+				create key_type_lookup.make (count)
+				create actual_result.make (count)
+			until
+				i > count
 			loop
-				sql_get_collection.append (order_cursor.item.primary_key.out + ", ")
-				sql_get_info.append (order_cursor.item.primary_key.out + ", ")
+				sql_get_collection.append (primary_keys [i].out + ", ")
+				sql_get_info.append (primary_keys [i].out + ", ")
 
-				key_type_lookup.extend (order_cursor.item.type, order_cursor.item.primary_key)
+				key_type_lookup.extend (types [i], primary_keys [i])
+
+				i := i + 1
+			variant
+				count + 1 - i
 			end
+
 			sql_get_collection.put (')', sql_get_collection.count - 1)
 			sql_get_info.put (')', sql_get_info.count - 1)
 
@@ -313,7 +318,6 @@ feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 				if attached actual_result [primary_key] as partial then
 					partial.add_information (info_key, info_value)
 				end
---				attach (actual_result [primary_key]).add_information (info_key, info_value)
 				row_cursor.forth
 			end
 
@@ -329,9 +333,7 @@ feature {PS_ABEL_EXPORT} -- Transaction handling
 		do
 			connection := get_connection (a_transaction)
 			connection.commit
---			database.release_connection (connection)
 			release_connection (a_transaction)
---			key_mapper.commit (a_transaction)
 		rescue
 			rollback (a_transaction)
 		end
@@ -346,20 +348,13 @@ feature {PS_ABEL_EXPORT} -- Transaction handling
 				a_transaction.set_error (connection.last_error)
 				connection.rollback
 				release_connection (a_transaction)
---				key_mapper.rollback (a_transaction)
 			end
 		end
 
-	transaction_isolation_level: PS_TRANSACTION_ISOLATION_LEVEL
-			-- The currently active transaction isolation level.
+	set_transaction_isolation (settings: PS_TRANSACTION_SETTINGS)
+			-- Set the transaction isolation level such that all values in `settings' are respected.
 		do
-			Result := database.transaction_isolation_level
-		end
-
-	set_transaction_isolation_level (a_level: PS_TRANSACTION_ISOLATION_LEVEL)
-			-- Set the transaction isolation level `a_level' for all future transactions.
-		do
-			database.set_transaction_isolation_level (a_level)
+			database.set_transaction_isolation (settings)
 		end
 
 	close
@@ -377,47 +372,21 @@ feature {PS_LAZY_CURSOR} -- Implementation - Connection and Transaction handling
 			new_connection: PS_PAIR [PS_SQL_CONNECTION, PS_INTERNAL_TRANSACTION]
 			found: detachable PS_SQL_CONNECTION
 		do
-			if transaction.is_readonly then
-				fixme ("remove this hack")
-				Result := management_connection
+			if attached active_connections [transaction] as res then
+				Result := res
 			else
-				fixme ("A hash table would be nice.")
-				across
-					active_connections as cursor
-				loop
-					if cursor.item.second ~ transaction then
-						found := cursor.item.first
-					end
-				end
-
-				if attached found then
-					Result := found
-				else
-					Result := database.acquire_connection
-					create new_connection.make (Result, transaction)
-					active_connections.extend (new_connection)
-				end
+				Result := database.acquire_connection
+				active_connections.extend (Result, transaction)
 			end
 		end
 
 	release_connection (transaction: PS_INTERNAL_TRANSACTION)
 			-- Release the connection associated with `transaction'.
 		do
-			from
-				active_connections.start
-			until
-				active_connections.after
-			loop
-				if active_connections.item.second.is_equal (transaction) then
-					database.release_connection (active_connections.item.first)
-					active_connections.remove
-				else
-					active_connections.forth
-				end
-			end
+			active_connections.remove (transaction)
 		end
 
-	active_connections: LINKED_LIST [PS_PAIR [PS_SQL_CONNECTION, PS_INTERNAL_TRANSACTION]]
+	active_connections: HASH_TABLE [PS_SQL_CONNECTION, PS_INTERNAL_TRANSACTION]
 			-- These are the normal connections attached to a transaction.
 			-- They do not have auto-commit and they are closed once the transaction is finished.
 			-- They only write and read the ps_value table.
@@ -450,11 +419,12 @@ feature {NONE} -- Initialization
 			management_connection := database.acquire_connection
 			management_connection.set_autocommit (True)
 			create db_metadata_manager.make (management_connection, SQL_Strings)
-			create active_connections.make
+			management_connection.commit
+			create active_connections.make (1)
 
 			batch_retrieval_size := Default_batch_size
 
-			create plugins.make
+			create plugins.make (1)
 			plugins.extend (create {PS_AGENT_CRITERION_ELIMINATOR_PLUGIN})
 
 		end

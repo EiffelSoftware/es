@@ -433,8 +433,8 @@ feature -- Package form
 						pv := database.version_package (iron_version (req), p.id)
 						if pv = Void then
 							create pv.make (p, iron_version (req))
-							iron.database.update_version_package (pv)
 							m.add_normal_message ("Package version created [" + p.id + "] v:" + pv.version.value)
+							iron.database.update_version_package (pv)
 						end
 						if pv /= Void then
 							if attached {WSF_UPLOADED_FILE} fd.item ("archive") as l_file then

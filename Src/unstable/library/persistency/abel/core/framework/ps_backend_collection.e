@@ -118,6 +118,39 @@ feature -- Comparison
 			end
 		end
 
+	is_subset_of (other: PS_BACKEND_COLLECTION): BOOLEAN
+			-- Does `Current' have the same primary key and metadata and a subset of the items and information in `other'?
+		local
+			i: INTEGER
+		do
+			if Current = other then
+				Result := True
+			else
+				Result := primary_key = other.primary_key and metadata ~ other.metadata and then
+					across
+						information_descriptions as cursor
+					all
+						other.has_information (cursor.item)
+						and then other.get_information (cursor.item) ~ get_information (cursor.item)
+					end
+
+				Result := Result and collection_items.count <= other.collection_items.count
+
+				from
+					i := 1
+				until
+					i > collection_items.count or not Result
+				loop
+					Result := Result and collection_items [i].first ~ other.collection_items [i].first
+						and collection_items [i].second ~ other.collection_items [i].second
+
+					i := i + 1
+				variant
+					collection_items.count + 1 - i
+				end
+			end
+		end
+
 feature {PS_ABEL_EXPORT} -- Element change
 
 	add_item (item_value, class_name_of_item_value: STRING)
@@ -171,8 +204,8 @@ feature {NONE}
 			-- Initialize `Current'
 		do
 			Precursor (key, meta)
-			create additional_information_hash.make (10)
-			create {LINKED_LIST [STRING]} information_descriptions.make
+			create additional_information_hash.make (2)
+			create {ARRAYED_LIST [STRING]} information_descriptions.make (2)
 			create {ARRAYED_LIST [PS_PAIR [STRING, IMMUTABLE_STRING_8]]} collection_items.make (25)
 		ensure then
 			additional_info_empty: additional_information_hash.is_empty

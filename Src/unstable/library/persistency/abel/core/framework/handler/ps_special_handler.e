@@ -136,8 +136,11 @@ feature {PS_ABEL_EXPORT} -- Read functions
 
 			field: TUPLE [value: STRING; type: IMMUTABLE_STRING_8]
 			field_type: PS_TYPE_METADATA
+
+			key: INTEGER
 		do
 			retrieved := object.backend_collection
+--			count := retrieved.get_information ("count").to_integer
 			count := retrieved.collection_items.count
 
 			from
@@ -149,7 +152,10 @@ feature {PS_ABEL_EXPORT} -- Read functions
 				field_type := read_manager.metadata_factory.create_metadata_from_string (field.type)
 
 				if not field_type.is_none and then not read_manager.is_attribute_ready (field.value, field_type) then
-					read_manager.process_next (field.value.to_integer, field_type, object)
+					key := field.value.to_integer
+					if read_manager.cache_lookup (key, field_type) = 0 then
+						read_manager.process_next (key, field_type, object)
+					end
 				end
 				i := i + 1
 			end
@@ -163,6 +169,7 @@ feature {PS_ABEL_EXPORT} -- Read functions
 
 			ref: INTEGER
 			i: INTEGER
+			count: INTEGER
 			ref_special: BOOLEAN
 			exp_special: BOOLEAN
 
@@ -180,8 +187,10 @@ feature {PS_ABEL_EXPORT} -- Read functions
 
 			from
 				i := 1
+				count := retrieved.collection_items.count
+--				count := retrieved.get_information ("count").to_integer
 			until
-				i > retrieved.collection_items.count
+				i > count
 			loop
 				field := retrieved.collection_items [i]
 				field_type := read_manager.metadata_factory.create_metadata_from_string (field.type)
@@ -240,15 +249,16 @@ feature {PS_ABEL_EXPORT} -- Write functions
 
 			tuple: TUPLE [value: STRING; type: IMMUTABLE_STRING_8]
 
-			used_refs: LINKED_LIST [INTEGER]
+			used_refs: ARRAYED_LIST [INTEGER]
 
 		do
 			collection := object.backend_collection
-			create used_refs.make
 
 			check attached {SPECIAL [detachable ANY]} object.reflector.object as spec then
 				special := spec
 			end
+			
+			create used_refs.make (special.count)
 
 			across
 				0 |..| (special.count - 1) as idx
@@ -288,6 +298,7 @@ feature {PS_ABEL_EXPORT} -- Write functions
 			end
 
 			collection.add_information ("capacity", special.capacity.out)
+--			collection.add_information ("count", special.count.out)
 		end
 
 

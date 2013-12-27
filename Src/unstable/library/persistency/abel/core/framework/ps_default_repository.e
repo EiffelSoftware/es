@@ -153,9 +153,11 @@ feature {PS_ABEL_EXPORT} -- Status Report
 
 	can_handle (object: ANY): BOOLEAN
 			-- Can `Current' handle the object `object'?
+		local
+			local_transaction: PS_INTERNAL_TRANSACTION
 		do
-			fixme ("TODO: implement a query")
-			Result := True
+			local_transaction := new_internal_transaction (True)
+			Result := write_manager.can_handle (object, local_transaction)
 		end
 
 feature {NONE} -- Initialization
@@ -179,6 +181,9 @@ feature {NONE} -- Initialization
 
 			retry_count := default_retry_count
 			set_batch_retrieval_size (infinite_batch_size)
+
+			create internal_active_queries.make (1)
+			create internal_active_transactions.make (1)
 		end
 
 feature {PS_ABEL_EXPORT} -- Implementation

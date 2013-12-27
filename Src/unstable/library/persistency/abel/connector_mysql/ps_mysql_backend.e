@@ -24,7 +24,7 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 			all_primaries: INTEGER
 			connection: PS_SQL_CONNECTION
 			new_primary_key: INTEGER
-			current_list: LINKED_LIST [PS_BACKEND_OBJECT]
+			current_list: ARRAYED_LIST [PS_BACKEND_OBJECT]
 --			none_class_key: INTEGER
 --			existence_attribute_key: INTEGER
 		do
@@ -50,7 +50,7 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 				across
 					1 |..| cursor.item as current_count
 				from
-					create current_list.make
+					create current_list.make (cursor.item)
 					Result.extend (current_list, cursor.key)
 				loop
 					-- Get a primary key
@@ -74,7 +74,7 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 	generate_collection_primaries (order: HASH_TABLE [INTEGER, PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): HASH_TABLE [LIST [PS_BACKEND_COLLECTION], PS_TYPE_METADATA]
 			-- For each type `type_key' in the hash table `order', generate `order [type_key]' new collections in the database.
 		do
-			fixme ("Use a stored procedure, like generate_all_object_primaries")
+			fixme ("For performance reasons, use a stored procedure, like in generate_all_object_primaries")
 			Result := Precursor (order, transaction)
 		end
 
