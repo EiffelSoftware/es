@@ -95,17 +95,29 @@ feature {NONE} -- Implementation
 	process_default_result (a_item: E2B_BOOGIE_PROCEDURE_RESULT)
 			-- Default handler for Boogie procedure results.
 		local
+			l_temp: like name_translator.feature_for_boogie_name
 			l_feature: FEATURE_I
 			l_context: STRING
 			l_success: E2B_SUCCESSFUL_VERIFICATION
 			l_inconclusive: E2B_INCONCLUSIVE_RESULT
 			l_failure: E2B_FAILED_VERIFICATION
 		do
-			l_feature := name_translator.feature_for_boogie_name (a_item.name)
-			if a_item.name.starts_with ("create.") then
+			l_temp := name_translator.feature_for_boogie_name (a_item.name)
+			l_feature := l_temp.feature_
+			check l_feature /= Void end
+
+			if l_temp.is_creator then
 				l_context := "creator"
 			end
-			check l_feature /= Void end
+			if l_temp.type.base_class.class_id /= l_feature.written_in then
+				if l_context = Void then
+					l_context := ""
+				else
+					l_context.append (", ")
+				end
+				l_context.append ("inherited by " + l_temp.type.base_class.name_in_upper)
+			end
+
 			if has_validity_error (l_feature) then
 					-- Ignore results of features with a validity error
 			elseif a_item.is_successful then
@@ -284,14 +296,8 @@ feature {NONE} -- Implementation
 	line_for_error (a_error: E2B_BOOGIE_PROCEDURE_ERROR): INTEGER
 			-- Select line number for `a_error'.
 		do
-			if a_error.is_postcondition_violation then
-				if a_error.related_attributes.has_key ("line") then
-					Result := a_error.related_attributes["line"].to_integer
-				end
-			else
-				if a_error.attributes.has_key ("line") then
-					Result := a_error.attributes["line"].to_integer
-				end
+			if a_error.attributes.has_key ("line") then
+				Result := a_error.attributes["line"].to_integer
 			end
 		end
 

@@ -108,23 +108,28 @@ feature -- Access
 			result_attached: attached Result
 		end
 
-	boogie_function_for_filtered_invariant (a_type: TYPE_A; a_included, a_excluded: LIST [STRING]): STRING
+	boogie_function_for_filtered_invariant (a_type: TYPE_A; a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C): STRING
 			-- Name of the boogie function that encodes the partial class invariant of type `a_type'
 			-- with `a_included' clauses included and `a_excluded' clauses excluded.
 		require
-			a_type: attached a_type
+			a_type_exists: attached a_type
+			a_ancestor_exists: attached a_ancestor
 		local
 			l_type_name: STRING
 			l_filter_string: STRING
 		do
 			l_type_name := boogie_name_for_type (a_type)
-			l_filter_string := "#I"
+			l_filter_string := ""
 			if a_included /= Void then
+				l_filter_string.append ("#I")
 				across a_included as i loop l_filter_string.append ("#" + i.item) end
 			end
-			l_filter_string.append ("#E")
 			if a_excluded /= Void then
+				l_filter_string.append ("#E")
 				across a_excluded as i loop l_filter_string.append ("#" + i.item) end
+			end
+			if a_ancestor.class_id /= a_type.base_class.class_id then
+				l_filter_string.append ("#A#" + a_ancestor.name_in_upper)
 			end
 			Result := l_type_name + l_filter_string + ".filtered_inv"
 		ensure
@@ -145,8 +150,9 @@ feature -- Access
 			result_attached: attached Result
 		end
 
-	feature_for_boogie_name (a_name: STRING): FEATURE_I
-			-- Feature named `a_name' in Boogie code.
+	feature_for_boogie_name (a_name: STRING): TUPLE [type: TYPE_A; feature_: FEATURE_I; is_creator: BOOLEAN]
+			-- For a feature named `a_name' in Boogie code,
+			-- return its enclosing type (different from where it is defined if inherited), the eiffel feature and whether it is a creator.
 		require
 			valid_feature_name: is_valid_feature_name (a_name)
 		local
@@ -155,8 +161,10 @@ feature -- Access
 			l_type_name: STRING
 			l_feature_name: STRING
 			l_type: TYPE_A
+			l_is_creator: BOOLEAN
 		do
 			if a_name.starts_with ("create.") then
+				l_is_creator := True
 				l_name := a_name.twin
 				l_name.remove_head (7)
 			else
@@ -175,7 +183,7 @@ feature -- Access
 				l_feature_name := l_name
 			end
 			l_type := type_for_boogie_name (l_type_name)
-			Result := l_type.associated_class.feature_named_32 (l_feature_name)
+			Result := [l_type, l_type.associated_class.feature_named_32 (l_feature_name), l_is_creator]
 		ensure
 			result_attached: attached Result
 		end

@@ -90,28 +90,38 @@ feature -- Basic operations
 			l_tag_filters: LIST [STRING]
 			l_field: IV_ENTITY
 			l_feature: FEATURE_I
+			l_partial_inv_class: CLASS_C
 		do
 			l_name := a_feature.feature_name
 			if translation_mapping.builtin_any_functions.has (l_name) then
 				if l_name ~ "inv_without" then
 					l_tag_filters := extract_tags (a_parameters)
-					if l_tag_filters.is_empty then
-						a_translator.process_builtin_routine_call (a_feature, a_parameters, "user_inv")
+						-- Determine the class whose invariant is taken as reference:
+						-- if target is Current, then it is the origin class of the contract clause,
+						-- otherwise, it is the type of the target
+					if a_translator.current_target.same_expression (a_translator.entity_mapping.current_expression) then
+						l_partial_inv_class := a_translator.origin_class
 					else
-						check_valid_class_inv_tags (a_translator.current_target_type.base_class, a_translator.context_feature, a_translator.context_line_number, l_tag_filters)
-						translation_pool.add_filtered_invariant_function (a_translator.current_target_type, Void, l_tag_filters)
-						a_translator.set_last_expression (
-							factory.function_call (
-								name_translator.boogie_function_for_filtered_invariant (a_translator.current_target_type, Void, l_tag_filters),
-								<< a_translator.entity_mapping.heap, a_translator.current_target >>, types.bool))
+						l_partial_inv_class := a_translator.current_target_type.base_class
 					end
-				elseif l_name ~ "inv_only" then
-					l_tag_filters := extract_tags (a_parameters)
-					check_valid_class_inv_tags (a_translator.current_target_type.base_class, a_translator.context_feature, a_translator.context_line_number, l_tag_filters)
-					translation_pool.add_filtered_invariant_function (a_translator.current_target_type, l_tag_filters, Void)
+					check_valid_class_inv_tags (l_partial_inv_class, a_translator.context_feature, a_translator.context_line_number, l_tag_filters)
+					translation_pool.add_filtered_invariant_function (a_translator.current_target_type, Void, l_tag_filters, l_partial_inv_class)
 					a_translator.set_last_expression (
 						factory.function_call (
-							name_translator.boogie_function_for_filtered_invariant (a_translator.current_target_type, l_tag_filters, Void),
+							name_translator.boogie_function_for_filtered_invariant (a_translator.current_target_type, Void, l_tag_filters, l_partial_inv_class),
+							<< a_translator.entity_mapping.heap, a_translator.current_target >>, types.bool))
+				elseif l_name ~ "inv_only" then
+					l_tag_filters := extract_tags (a_parameters)
+					if a_translator.current_target.same_expression (a_translator.entity_mapping.current_expression) then
+						l_partial_inv_class := a_translator.origin_class
+					else
+						l_partial_inv_class := a_translator.current_target_type.base_class
+					end
+					check_valid_class_inv_tags (l_partial_inv_class, a_translator.context_feature, a_translator.context_line_number, l_tag_filters)
+					translation_pool.add_filtered_invariant_function (a_translator.current_target_type, l_tag_filters, Void, l_partial_inv_class)
+					a_translator.set_last_expression (
+						factory.function_call (
+							name_translator.boogie_function_for_filtered_invariant (a_translator.current_target_type, l_tag_filters, Void, l_partial_inv_class),
 							<< a_translator.entity_mapping.heap, a_translator.current_target >>, types.bool))
 				elseif l_name ~ "inv" then
 					a_translator.process_builtin_routine_call (a_feature, a_parameters, "user_inv")
@@ -263,6 +273,25 @@ feature -- Basic operations
 			create l_tags_copy.make
 			l_tags_copy.append (a_tags)
 			l_tags_copy.compare_objects
+			check_flat_inv_tags (a_class, l_tags_copy)
+			if not l_tags_copy.is_empty then
+				l_string := ""
+				across l_tags_copy as i loop
+					l_string.append (i.item)
+					l_string.append (", ")
+				end
+				l_string.remove_tail (2)
+				helper.add_semantic_error (a_context_feature, messages.invalid_tag (l_string, a_class.name_in_upper), a_line_number)
+			end
+		end
+
+	check_flat_inv_tags (a_class: CLASS_C; a_tags: LIST [STRING])
+			-- Remove from `a_tags' all class invariant tags present in `a_class' and its ancestors.
+		local
+			l_asserts: BYTE_LIST [BYTE_NODE]
+			l_assert: ASSERT_B
+			l_classes: FIXED_LIST [CLASS_C]
+		do
 			if inv_byte_server.has (a_class.class_id) then
 				from
 					l_asserts := inv_byte_server.item (a_class.class_id).byte_list
@@ -273,19 +302,21 @@ feature -- Basic operations
 					l_assert ?= l_asserts.item_for_iteration
 					check l_assert /= Void end
 					if l_assert.tag /= Void then
-						l_tags_copy.prune_all (l_assert.tag)
+						a_tags.prune_all (l_assert.tag)
 					end
 					l_asserts.forth
 				end
 			end
-			if not l_tags_copy.is_empty then
-				l_string := ""
-				across l_tags_copy as i loop
-					l_string.append (i.item)
-					l_string.append (", ")
+			from
+				l_classes := a_class.parents_classes
+				l_classes.start
+			until
+				l_classes.after
+			loop
+				if l_classes.item.class_id /= system.any_id then
+					check_flat_inv_tags (l_classes.item, a_tags)
 				end
-				l_string.remove_tail (2)
-				helper.add_semantic_error (a_context_feature, messages.invalid_tag (l_string, a_class.name_in_upper), a_line_number)
+				l_classes.forth
 			end
 		end
 

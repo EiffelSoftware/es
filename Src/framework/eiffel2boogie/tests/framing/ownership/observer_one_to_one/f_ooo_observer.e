@@ -34,14 +34,14 @@ feature {F_OOO_SUBJECT} -- Element change
 
 	notify
 		require
-			is_open
-			inv_without ("cache_synchronized")
+			open: is_open
+			almost_holds: inv_without ("cache_synchronized")
 
 			modify_field ("cache", Current)
 		do
 			cache := subject.value
 		ensure
-			inv
+			invariant_holds: inv
 		end
 
 invariant

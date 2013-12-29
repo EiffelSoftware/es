@@ -128,10 +128,13 @@ feature -- Helper functions: arguments and result
 
 feature -- Helper functions: contracts
 
-	contracts_of (a_feature: FEATURE_I; a_type: TYPE_A): TUPLE [pre, post, modifies, reads, decreases: LIST [ASSERT_B]]
-			-- Contracts for feature `a_feature' of type `a_type'.
+	contracts_of (a_feature: FEATURE_I; a_type: TYPE_A): TUPLE [pre, post, modifies, reads, decreases: LIST [ASSERT_B]; pre_origin, post_origin: LIST [CLASS_C]]
+			-- Contracts for feature `a_feature' of type `a_type' separated into preconditions, postconiditons, modify clauses, read clauses, and decreases clauses;
+			-- For pre and postconditions, also their origin type is recorded.
 		local
 			l_pre, l_post, l_modifies, l_reads, l_decreases: LINKED_LIST [ASSERT_B]
+			l_pre_origin, l_post_origin: LINKED_LIST [CLASS_C]
+			l_class: CLASS_C
 			l_name: STRING_32
 		do
 			create l_pre.make
@@ -139,43 +142,65 @@ feature -- Helper functions: contracts
 			create l_modifies.make
 			create l_reads.make
 			create l_decreases.make
+			create l_pre_origin.make
+			create l_post_origin.make
 
 			helper.set_up_byte_context (a_feature, a_type)
 			if attached Context.byte_code as l_byte_code then
 					-- Process pre/post-conditions
+				l_class := a_feature.written_class
 				if l_byte_code.precondition /= Void then
-					l_byte_code.precondition.do_all (agent l_pre.extend (?))
+					across l_byte_code.precondition as p loop
+						l_pre.extend (p.item)
+						l_pre_origin.extend (l_class)
+					end
 				end
 				if l_byte_code.postcondition /= Void then
-					l_byte_code.postcondition.do_all (agent l_post.extend (?))
+					across l_byte_code.postcondition as p loop
+						l_post.extend (p.item)
+						l_post_origin.extend (l_class)
+					end
 				end
 				if a_feature.assert_id_set /= Void and not a_type.is_basic then
 						-- Feature has inherited assertions
 					l_byte_code.formulate_inherited_assertions (a_feature.assert_id_set)
 					across Context.inherited_assertion.precondition_list as i loop
-						i.item.do_all (agent l_pre.extend (?))
+						l_class := Context.inherited_assertion.precondition_types [i.target_index].type.base_class
+						across i.item as p loop
+							l_pre.extend (p.item)
+							l_pre_origin.extend (l_class)
+						end
 					end
 					across Context.inherited_assertion.postcondition_list as i loop
-						i.item.do_all (agent l_post.extend (?))
+						l_class := Context.inherited_assertion.postcondition_types [i.target_index].type.base_class
+						across i.item as p loop
+							l_post.extend (p.item)
+							l_post_origin.extend (l_class)
+						end
 					end
 				end
 			end
 			from
 				l_pre.start
+				l_pre_origin.start
 			until
 				l_pre.after
 			loop
 				if helper.is_clause_reads (l_pre.item) then
 					l_reads.extend (l_pre.item)
 					l_pre.remove
+					l_pre_origin.remove
 				elseif helper.is_clause_modify (l_pre.item) then
 					l_modifies.extend (l_pre.item)
 					l_pre.remove
+					l_pre_origin.remove
 				elseif helper.is_clause_decreases (l_pre.item) then
 					l_decreases.extend (l_pre.item)
 					l_pre.remove
+					l_pre_origin.remove
 				else
 					l_pre.forth
+					l_pre_origin.forth
 				end
 			end
 			from
@@ -183,25 +208,27 @@ feature -- Helper functions: contracts
 			until
 				l_post.after
 			loop
-				if attached {FEATURE_B} l_post.item.expr as l_call then
-					l_name := names_heap.item_32 (l_call.feature_name_id)
-					if l_name  ~ "modify" or l_name ~ "modify_field" then
-						l_modifies.extend (l_post.item)
-						l_post.remove
-					elseif l_name ~ "reads" then
-						l_reads.extend (l_post.item)
-						l_post.remove
-					elseif l_name ~ "decreases" then
-						l_decreases.extend (l_post.item)
-						l_post.remove
-					else
-						l_post.forth
-					end
+				if helper.is_clause_reads (l_post.item) then
+					helper.add_semantic_warning (a_feature, messages.invalid_context_for_special_predicate ("Read"), l_post.item.line_number)
+					l_post.remove
+					l_post_origin.remove
+				elseif helper.is_clause_modify (l_post.item) then
+					helper.add_semantic_warning (a_feature, messages.invalid_context_for_special_predicate ("Modify"), l_post.item.line_number)
+					l_post.remove
+					l_post_origin.remove
+				elseif helper.is_clause_decreases (l_post.item) then
+					helper.add_semantic_warning (a_feature, messages.invalid_context_for_special_predicate ("Decrease"), l_post.item.line_number)
+					l_post.remove
+					l_post_origin.remove
 				else
 					l_post.forth
+					l_post_origin.forth
 				end
 			end
-			Result := [l_pre, l_post, l_modifies, l_reads, l_decreases]
+			Result := [l_pre, l_post, l_modifies, l_reads, l_decreases, l_pre_origin, l_post_origin]
+		ensure
+			pre_same_count: Result.pre.count = Result.pre_origin.count
+			post_same_count: Result.post.count = Result.post_origin.count
 		end
 
 	contracts_of_current_feature: like contracts_of
@@ -210,7 +237,7 @@ feature -- Helper functions: contracts
 			Result := contracts_of (current_feature, current_type)
 		end
 
-	contract_expressions_of (a_feature: FEATURE_I; a_type: TYPE_A; a_mapping: E2B_ENTITY_MAPPING): TUPLE [pre: IV_EXPRESSION; post: IV_EXPRESSION]
+	pre_post_expressions_of (a_feature: FEATURE_I; a_type: TYPE_A; a_mapping: E2B_ENTITY_MAPPING): TUPLE [pre: IV_EXPRESSION; post: IV_EXPRESSION]
 			-- Contracts for feature `a_feature' of type `a_type' as expressions.
 		local
 			l_contracts: like contracts_of
@@ -219,35 +246,22 @@ feature -- Helper functions: contracts
 			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 		do
 			l_contracts := contracts_of (a_feature, a_type)
-			if l_contracts.pre.is_empty then
-				l_pre := factory.true_
-			else
-				across l_contracts.pre as c loop
-					create l_translator.make
-					l_translator.set_context (a_feature, a_type)
-					l_translator.copy_entity_mapping (a_mapping)
-					c.item.process (l_translator)
-					if attached l_pre then
-						l_pre := factory.and_ (l_pre, l_translator.last_expression)
-					else
-						l_pre := l_translator.last_expression
-					end
-				end
+
+			create l_translator.make
+			l_translator.set_context (a_feature, a_type)
+			l_translator.copy_entity_mapping (a_mapping)
+
+			l_pre := factory.true_
+			across l_contracts.pre as c loop
+				l_translator.set_origin_class (l_contracts.pre_origin [c.target_index])
+				c.item.process (l_translator)
+				l_pre := factory.and_clean (l_pre, l_translator.last_expression)
 			end
-			if l_contracts.post.is_empty then
-				l_post := factory.true_
-			else
-				across l_contracts.post as c loop
-					create l_translator.make
-					l_translator.set_context (a_feature, a_type)
-					l_translator.copy_entity_mapping (a_mapping)
-					c.item.process (l_translator)
-					if attached l_post then
-						l_post := factory.and_ (l_post, l_translator.last_expression)
-					else
-						l_post := l_translator.last_expression
-					end
-				end
+			l_post := factory.true_
+			across l_contracts.post as c loop
+				l_translator.set_origin_class (l_contracts.post_origin [c.target_index])
+				c.item.process (l_translator)
+				l_post := factory.and_clean (l_post, l_translator.last_expression)
 			end
 			Result := [l_pre, l_post]
 		end

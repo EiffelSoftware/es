@@ -13,6 +13,7 @@ inherit
 	E2B_EXPRESSION_TRANSLATOR
 		redefine
 			reset,
+			set_context,
 			process_creation_expr_b,
 			process_un_old_b,
 			process_attribute_call
@@ -23,18 +24,37 @@ create
 
 feature -- Access
 
+	origin_class: CLASS_C
+			-- Context where the expression in inherited from.
+
 	side_effect: LINKED_LIST [TUPLE [expr: IV_EXPRESSION; info: IV_NODE_INFO]]
 			-- List of side effect statements.
 
 	field_accesses: LINKED_LIST [TUPLE [o: IV_EXPRESSION; f: IV_ENTITY]]
 			-- List of field accesses.
 
+feature -- Element change
+
+	set_origin_class (a_class: CLASS_C)
+			-- Set `origin_class' to `a_class'.
+		do
+			origin_class := a_class
+		end
+
 feature -- Basic operations
+
+	set_context (a_feature: FEATURE_I; a_type: TYPE_A)
+			-- Set context of expression to `a_feature' in type `a_type'.
+		do
+			Precursor (a_feature, a_type)
+			origin_class := a_type.base_class
+		end
 
 	reset
 			-- Reset expression translator.
 		do
 			Precursor
+			origin_class := Void
 			create side_effect.make
 			create calls.make
 			create field_accesses.make

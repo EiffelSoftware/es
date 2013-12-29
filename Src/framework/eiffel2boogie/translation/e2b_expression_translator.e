@@ -115,7 +115,7 @@ feature -- Access
 			-- Current target.
 
 	current_target_type: TYPE_A
-			-- Type of current target type.
+			-- Type of current target.
 
 	locals_map: HASH_TABLE [IV_EXPRESSION, INTEGER]
 			-- Mapping of object test locals to entities.

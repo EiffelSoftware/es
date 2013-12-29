@@ -58,7 +58,7 @@ feature -- Element change
 					a_class.feature_table.after
 				loop
 					l_feature := a_class.feature_table.item_for_iteration
-					if l_feature.written_in = a_class.class_id and then l_feature.is_routine then
+					if l_feature.written_in /= system.any_id and then l_feature.is_routine then
 						add_feature_of_type (l_feature, a_class.actual_type)
 					end
 					a_class.feature_table.forth

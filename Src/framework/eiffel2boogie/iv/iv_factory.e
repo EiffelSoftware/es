@@ -128,7 +128,7 @@ feature -- Boolean operators
 			elseif a_right.is_true then
 				Result := a_left
 			else
-				create {IV_BINARY_OPERATION} Result.make (a_left, "||", a_right, types.bool)
+				create {IV_BINARY_OPERATION} Result.make (a_left, "&&", a_right, types.bool)
 			end
 		end
 

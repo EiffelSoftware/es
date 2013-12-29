@@ -100,18 +100,11 @@ feature -- Translation: Signature
 				-- Pre- and postconditions
 			l_contracts := contracts_of (current_feature, current_type)
 			across l_contracts.pre as j loop
-				process_precondition (j.item)
+				process_precondition (j.item, l_contracts.pre_origin [j.target_index])
 			end
 			create l_fields.make
 			across l_contracts.post as j loop
-				process_postcondition (j.item, l_fields)
-			end
-
-			if not l_contracts.modifies.is_empty then
-				check True end
-			end
-			if not l_contracts.reads.is_empty then
-				check True end
+				process_postcondition (j.item, l_contracts.post_origin [j.target_index], l_fields)
 			end
 
 				-- Creator: add free preconditions that all attributes are initialized to default values
@@ -732,7 +725,7 @@ feature -- Translation: agents
 				l_mapping.set_argument (i, l_entity)
 				i := i + 1
 			end
-			l_function.set_body (contract_expressions_of (a_feature, a_type, l_mapping).pre)
+			l_function.set_body (pre_post_expressions_of (a_feature, a_type, l_mapping).pre)
 			boogie_universe.add_declaration (l_function)
 		end
 
@@ -811,7 +804,7 @@ feature -- Translation: agents
 				l_mapping.set_result (l_result)
 			end
 
-			l_contracts := contract_expressions_of (a_feature, a_postcondition_type, l_mapping)
+			l_contracts := pre_post_expressions_of (a_feature, a_postcondition_type, l_mapping)
 			create l_typeof.make ("type_of", types.type)
 			l_typeof.add_argument (l_current)
 			create l_type_value.make (name_translator.boogie_name_for_type (a_postcondition_type), types.type)
@@ -852,14 +845,15 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_precondition (a_assert: ASSERT_B)
-			-- Process `a_assert' as precondition.
+	process_precondition (a_assert: ASSERT_B; a_origin_class: CLASS_C)
+			-- Process `a_assert' as precondition inherited from `a_origin_class'.
 		local
 			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 			l_contract: IV_PRECONDITION
 		do
 			create l_translator.make
 			l_translator.set_context (current_feature, current_type)
+			l_translator.set_origin_class (a_origin_class)
 			l_translator.set_context_line_number (a_assert.line_number)
 			l_translator.set_context_tag (a_assert.tag)
 			a_assert.process (l_translator)
@@ -878,7 +872,7 @@ feature {NONE} -- Implementation
 			current_boogie_procedure.add_contract (l_contract)
 		end
 
-	process_postcondition (a_assert: ASSERT_B; a_fields: LIST [TUPLE [IV_EXPRESSION, IV_ENTITY]])
+	process_postcondition (a_assert: ASSERT_B; a_origin_class: CLASS_C; a_fields: LIST [TUPLE [IV_EXPRESSION, IV_ENTITY]])
 			-- Process `a_assert' as postcondition.
 		local
 			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
@@ -886,6 +880,7 @@ feature {NONE} -- Implementation
 		do
 			create l_translator.make
 			l_translator.set_context (current_feature, current_type)
+			l_translator.set_origin_class (a_origin_class)
 			l_translator.set_context_line_number (a_assert.line_number)
 			l_translator.set_context_tag (a_assert.tag)
 			a_assert.process (l_translator)

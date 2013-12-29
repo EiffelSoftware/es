@@ -19,38 +19,52 @@ create
 feature {NONE} -- Implementation
 
 	make (a_type: TYPE_A)
-			-- Initialize translation unit for type `a_type'.
+			-- Initialize translation unit for the invariant of `a_type'.
 		do
 			type := a_type
 			id := "inv/" + type_id (a_type)
 		end
 
-	make_filtered (a_type: TYPE_A; a_included, a_excluded: LIST [STRING])
-			-- Initialize translation unit for type `a_type' with filtered tags.
-		local
-			l_inc_string, l_exc_string: STRING
+	make_filtered (a_type: TYPE_A; a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C)
+			-- Initialize translation unit for a partial invariant of `a_type'
+			-- that only includes clauses `a_included', or excludes clauses `a_excluded',
+			-- and only includes clauses inherited from `a_ancestor'.
+		require
+			type_exists: a_type /= Void
+			not_both: a_included = Void or a_excluded = Void
 		do
 			type := a_type
+			id := ""
+
 			included := a_included
+			if included /= Void then
+				included.compare_objects
+				across included as i loop id.append ("+" + i.item) end
+			end
 			excluded := a_excluded
-			l_inc_string := ""
-			if a_included /= Void then
-				across a_included as i loop l_inc_string.append ("+" + i.item) end
+			if excluded /= Void then
+				excluded.compare_objects
+				across excluded as i loop id.append ("-" + i.item) end
 			end
-			l_exc_string := ""
-			if a_excluded /= Void then
-				across a_excluded as i loop l_exc_string.append ("-" + i.item) end
+			if a_ancestor /= Void then
+				ancestor := a_ancestor
+				id.append ("*" + ancestor.name_in_upper)
+			else
+				ancestor := type.base_class
 			end
-			id := "inv-filtered/" + l_inc_string + l_exc_string + "/" + type_id (a_type)
+			id := "inv-filtered/" + id + "/" + type_id (a_type)
 		end
 
 feature -- Access
 
 	type: TYPE_A
-			-- Type to be translated.
+			-- Type to which the invariant belongs.
 
 	included, excluded: LIST [STRING]
 			-- List of invariant tags to be filtered.
+
+	ancestor: CLASS_C
+			-- Class to which the invariant clauses will be restricted.
 
 	id: STRING
 			-- <Precursor>
@@ -63,15 +77,11 @@ feature -- Basic operations
 			l_translator: E2B_TYPE_TRANSLATOR
 		do
 			create l_translator
-			if included = Void and excluded = Void then
-				l_translator.translate_invariant_function (type)
-			elseif included = Void then
-				l_translator.translate_filtered_invariant_function (type, create {LINKED_LIST [STRING]}.make, excluded)
-			elseif excluded = Void then
-				l_translator.translate_filtered_invariant_function (type, included, create {LINKED_LIST [STRING]}.make)
-			else
-				l_translator.translate_filtered_invariant_function (type, included, excluded)
-			end
+			l_translator.translate_filtered_invariant_function (type, included, excluded, ancestor)
 		end
+
+invariant
+	ancestor_exists: ancestor /= Void
+	not_both: included = Void or excluded = Void
 
 end

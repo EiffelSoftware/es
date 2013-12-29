@@ -67,5 +67,6 @@ feature {F_OOO_OBSERVER} -- Element change
 invariant
 	observer = Void implies observers = []
 	observer /= Void implies observers = [observer]
-
+	observer /= Current
+	
 end
