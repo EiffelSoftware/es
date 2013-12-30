@@ -2,7 +2,7 @@ note
 	description: "Slave clock whose time must not exceed its master's."
 	explicit: "all"
 
-class F_MC_CLOCK_D
+frozen class F_MC_CLOCK_D
 
 create
 	make

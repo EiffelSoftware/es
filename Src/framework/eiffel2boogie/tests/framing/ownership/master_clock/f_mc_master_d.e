@@ -2,7 +2,7 @@ note
 	description: "Master clock with reset."
 	explicit: "all"
 
-class F_MC_MASTER_D
+frozen class F_MC_MASTER_D
 
 create
 	make

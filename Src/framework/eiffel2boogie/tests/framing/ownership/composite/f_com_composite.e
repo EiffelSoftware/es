@@ -1,7 +1,7 @@
 note
 	description: "Node in a tree structure, which needs to maintain consistency with its child nodes."
 
-class F_COM_COMPOSITE
+frozen class F_COM_COMPOSITE
 
 create
 	make
@@ -93,6 +93,7 @@ feature -- Update
 			modify_field (["value", "max_child", "closed"], ancestors)
 		do
 			lemma_ancestors_have_children (c)
+			check c.inv end
 			check not ancestors [c] end
 
 			unwrap

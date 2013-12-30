@@ -1,7 +1,7 @@
 note
 	description: "Master clock with reset."
 
-class F_MC_MASTER
+frozen class F_MC_MASTER
 
 create
 	make

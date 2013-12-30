@@ -644,28 +644,21 @@ feature {NONE} -- Translation: Functions
 	generate_definition_from_post (a_function: IV_FUNCTION)
 			-- Generate a definitional axiom for `a_function' from the postcondition of the current feature.
 		local
-			l_contracts: TUPLE [pre: LIST [ASSERT_B]; post: LIST [ASSERT_B]]
+			l_contracts: like pre_post_expressions_of
 			l_axiom: IV_AXIOM
 			l_forall: IV_FORALL
 			l_pre: IV_EXPRESSION
-			l_post: IV_EXPRESSION
-			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
-			l_function_call: IV_FUNCTION_CALL
+			l_entity_mapping: E2B_ENTITY_MAPPING
 		do
-			l_contracts := contracts_of_current_feature
-			l_pre := factory.true_
-			across l_contracts.pre as c loop
-				l_translator := translator_for_function (a_function)
-				c.item.process (l_translator)
-				l_pre := factory.and_clean (l_pre, l_translator.last_expression)
+			l_entity_mapping := translator_for_function (a_function).entity_mapping
+			l_contracts := pre_post_expressions_of (current_feature, current_type, l_entity_mapping)
+			if options.is_ownership_enabled and helper.is_public (current_feature) then
+				-- Add ownership default precondition
+				l_pre := factory.and_clean (l_contracts.pre, factory.heap_access (l_entity_mapping.heap.name, l_entity_mapping.current_expression, "closed", types.bool))
+			else
+				l_pre := l_contracts.pre
 			end
-			l_post := factory.true_
-			across l_contracts.post as c loop
-				l_translator := translator_for_function (a_function)
-				c.item.process (l_translator)
-				l_post := factory.and_clean (l_post, l_translator.last_expression)
-			end
-			create l_forall.make (factory.implies_ (l_pre, l_post))
+			create l_forall.make (factory.implies_ (l_pre, l_contracts.post))
 			l_forall.bound_variables.append (a_function.arguments)
 			create l_axiom.make (l_forall)
 			boogie_universe.add_declaration (l_axiom)

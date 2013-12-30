@@ -12,6 +12,7 @@ feature {NONE} -- Initialization
 			-- Create an empty list.
 		note
 			skip: True
+			status: creator
 		do
 		ensure
 			empty: is_empty

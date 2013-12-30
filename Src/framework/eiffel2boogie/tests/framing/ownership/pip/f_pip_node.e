@@ -1,7 +1,7 @@
 note
 	description: "A node in a graph structure that only has a reference to its parent and needs to maintain consistency with its children."
 
-class F_PIP_NODE
+frozen class F_PIP_NODE
 
 create
 	make

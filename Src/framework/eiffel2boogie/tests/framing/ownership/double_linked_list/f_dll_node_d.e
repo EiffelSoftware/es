@@ -2,7 +2,7 @@ note
 	description: "Node in a circular doubly-linked list."
 	explicit: "all"
 
-class F_DLL_NODE_D
+frozen class F_DLL_NODE_D
 
 create
 	make

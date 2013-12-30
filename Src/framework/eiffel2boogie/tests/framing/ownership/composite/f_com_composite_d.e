@@ -2,7 +2,7 @@ note
 	description: "Node in a tree structure, which needs to maintain consistency with its child nodes."
 	explicit: "all"
 
-class F_COM_COMPOSITE_D
+frozen class F_COM_COMPOSITE_D
 
 create
 	make
@@ -100,6 +100,7 @@ feature -- Update
 			modify_field (["value", "max_child", "closed"], ancestors)
 		do
 			lemma_ancestors_have_children (c)
+			check c.inv end
 			check not ancestors [c] end
 
 			unwrap
@@ -151,7 +152,7 @@ feature {F_COM_COMPOSITE_D} -- Implementation
 		end
 
 	update (c: F_COM_COMPOSITE_D)
-			-- Update `value' of this node and its ancestors taking into accountan updated child `c'.
+			-- Update `value' of this node and its ancestors taking into account an updated child `c'.
 		require
 			c_exists: c /= Void
 			c_is_child: children_set [c]

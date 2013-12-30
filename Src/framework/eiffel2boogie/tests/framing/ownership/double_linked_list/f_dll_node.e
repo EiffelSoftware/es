@@ -1,7 +1,7 @@
 note
 	description: "Node in a circular doubly-linked list."
 
-class F_DLL_NODE
+frozen class F_DLL_NODE
 
 create
 	make

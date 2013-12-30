@@ -15,6 +15,7 @@ feature {NONE} -- Initialization
 		do
 			value := v
 			create subscribers.make
+			set_owns ([subscribers])
 		ensure
 			value_set: value = v
 			no_subscribers: subscribers.is_empty
@@ -79,4 +80,7 @@ invariant
 	all_subscribers_exist: across subscribers.sequence as o all attached o.item end
 	observers_structure: observers = subscribers.sequence.range
 	owns_structure: owns = [subscribers]
+
+note
+	explicit: owns
 end

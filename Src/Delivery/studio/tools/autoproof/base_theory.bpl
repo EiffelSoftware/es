@@ -163,6 +163,17 @@ function writes(h: HeapType, h': HeapType, mods: Frame): bool {
 // Is invariant of object o satisifed?
 function user_inv(h: HeapType, o: ref): bool;
 
+// Reads axiom
+axiom (forall h, h': HeapType, x: ref :: {user_inv(h, x), user_inv(h', x), HeapSucc(h, h')} 
+  HeapSucc(h, h') && h[x, allocated] && user_inv(h, x) && 
+  (forall <T> o: ref, f: Field T :: h[o, allocated] ==> // every object's field
+      h'[o, f] == h[o, f] ||                            // is unchanged
+      f == closed || f == owner ||                      // or is outside of the read set of the invariant
+      (!in_domain(h, x, o) && !h[x, subjects][o])       // (allow the invariant to depend on the domain of current, not only the owns, since otherwise it's impossible to use functions in the invariant)
+      // ToDo: add disjuncts for subjects and observers and remove special updates?
+   )
+  ==> user_inv(h', x));
+
 // Is object o closed or the invariant satisfied?
 function {:inline true} inv(h: HeapType, o: ref): bool {
 	h[o, closed] ==> user_inv(h, o)

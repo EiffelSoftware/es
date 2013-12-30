@@ -2,7 +2,7 @@ note
 	description: "A collection implemented using an array-based list."
 	explicit: "all"
 
-class F_I_COLLECTION_D
+frozen class F_I_COLLECTION_D
 
 create
 	make

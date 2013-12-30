@@ -2,7 +2,7 @@ note
 	description: "A node in a graph structure that only has a reference to its parent and needs to maintain consistency with its children."
 	explicit: "all"
 
-class F_PIP_NODE_D
+frozen class F_PIP_NODE_D
 
 create
 	make

@@ -47,6 +47,11 @@ feature -- Basic operations
 				l_constant.set_unique
 				boogie_universe.add_declaration (l_constant)
 
+				if a_type.is_frozen then
+					boogie_universe.add_declaration (create {IV_AXIOM}.make (
+						factory.function_call ("is_frozen", << l_boogie_type_name >>, types.bool)))
+				end
+
 					-- Inheritance relations
 				if not a_type.has_generics then
 					generate_inheritance_relations (a_type)

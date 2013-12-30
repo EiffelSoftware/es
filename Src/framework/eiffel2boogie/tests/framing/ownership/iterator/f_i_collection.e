@@ -1,7 +1,7 @@
 note
 	description: "A collection implemented using an array-based list."
 
-class F_I_COLLECTION
+frozen class F_I_COLLECTION
 
 create
 	make
