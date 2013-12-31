@@ -169,8 +169,9 @@ axiom (forall h, h': HeapType, x: ref :: {user_inv(h, x), user_inv(h', x), HeapS
   (forall <T> o: ref, f: Field T :: h[o, allocated] ==> // every object's field
       h'[o, f] == h[o, f] ||                            // is unchanged
       f == closed || f == owner ||                      // or is outside of the read set of the invariant
-      (!in_domain(h, x, o) && !h[x, subjects][o])       // (allow the invariant to depend on the domain of current, not only the owns, since otherwise it's impossible to use functions in the invariant)
-      // ToDo: add disjuncts for subjects and observers and remove special updates?
+      (!in_domain(h, x, o) && !h[x, subjects][o]) ||    
+      (!in_domain(h, x, o) && f == subjects) ||         // or is the subjects field of one of the subjects
+      (!in_domain(h, x, o) && f == observers && Set#Subset(h[o, observers], h'[o, observers]))  // or is the observers of one of the subjects and it grows
    )
   ==> user_inv(h', x));
 
@@ -219,7 +220,10 @@ function {: inline } admissibility5 (heap: HeapType, current: ref): bool
     heap[current, subjects][s] && s != current && Set#Subset(heap[s, observers], heap'[s, observers]) && (forall <alpha> o: ref, f: Field alpha :: (o == s && f == observers) || heap'[o, f] == heap[o, f]) ==>
     user_inv(heap', current)
   )
-} 
+}
+
+// ----------------------------------------------------------------------
+// Built-in operations
 
 // Allocate fresh object
 procedure allocate(t: Type) returns (result: ref);
@@ -243,13 +247,14 @@ procedure update_heap<T>(Current: ref, field: Field T, value: T);
   requires (Current != Void) && (Heap[Current, allocated]); // type:assign tag:attached_and_allocated
   requires field != closed && field != owner; // type:assign tag:closed_or_owner_not_allowed UP4
   requires is_open(Heap, Current); // type:assign tag:target_open UP1
-  requires (forall o: ref :: Heap[Current, observers][o] ==> (is_open(Heap, o) || (user_inv(Heap, o) ==> user_inv(Heap[Current, field := value], o)))); // type:assign tag:observers_open_or_inv_preserved UP2
+  requires (forall o: ref :: Heap[Current, observers][o] ==> (is_open(Heap, o) || (user_inv(Heap, o) && HeapSucc(Heap, Heap[Current, field := value]) ==> user_inv(Heap[Current, field := value], o)))); // type:assign tag:observers_open_or_inv_preserved UP2
   requires writable[Current, field]; // type:assign tag:attribute_writable UP3
   modifies Heap;
   ensures global(Heap);
   ensures Heap == old(Heap[Current, field := value]);
   free ensures HeapSucc(old(Heap), Heap);
   
+// This is an optimization: we do not have to check the observers (this is faster than using the frame axiom of user_inv directly) 
 procedure update_subjects(Current: ref, value: Set ref);
   requires (Current != Void) && (Heap[Current, allocated]); // type:pre tag:attached_and_allocated
   requires is_open(Heap, Current); // type:pre tag:target_open UP1
@@ -259,6 +264,7 @@ procedure update_subjects(Current: ref, value: Set ref);
   ensures Heap == old(Heap[Current, subjects := value]);
   free ensures HeapSucc(old(Heap), Heap);
 
+// This is an optimization: we can just check that the observer set is growing (this is faster than using the frame axiom of user_inv directly)
 procedure update_observers(Current: ref, value: Set ref);
   requires (Current != Void) && (Heap[Current, allocated]); // type:pre tag:attached_and_allocated
   requires is_open(Heap, Current); // type:pre tag:target_open UP1

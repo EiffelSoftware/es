@@ -211,18 +211,9 @@ feature -- Processing
 			if a_node.target.is_attribute and options.is_ownership_enabled then
 					-- OWNERSHIP: call update heap instead of direct heap assignment				
 				create l_field.make (name_translator.boogie_procedure_for_feature (l_feature, current_type), types.field (types.for_type_a (l_feature.type)))
-				if l_attribute.attribute_name ~ "subjects" then
-					create l_call.make ("update_subjects")
-					l_call.add_argument (entity_mapping.current_expression)
-				elseif l_attribute.attribute_name ~ "observers" then
-					create l_call.make ("update_observers")
-					l_call.add_argument (entity_mapping.current_expression)
-				else
-					-- Regular update_heap
-					create l_call.make ("update_heap")
-					l_call.add_argument (entity_mapping.current_expression)
-					l_call.add_argument (l_field)
-				end
+				create l_call.make ("update_heap")
+				l_call.add_argument (entity_mapping.current_expression)
+				l_call.add_argument (l_field)
 				l_call.add_argument (l_source)
 				l_call.node_info.set_line (a_node.line_number)
 
