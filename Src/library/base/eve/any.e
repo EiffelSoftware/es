@@ -327,6 +327,8 @@ feature {NONE} -- Initialization
 	default_create
 			-- Process instances of classes with no creation clause.
 			-- (Default: do nothing.)
+		note
+			status: creator
 		do
 		end
 

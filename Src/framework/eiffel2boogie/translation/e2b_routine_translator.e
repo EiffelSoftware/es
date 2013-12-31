@@ -66,10 +66,7 @@ feature -- Translation: Signature
 			if not a_feature.has_return_value and helper.is_functional (a_feature) then
 				helper.add_semantic_warning (a_feature, messages.functional_feature_not_function, -1)
 			end
-			if not a_for_creator and helper.is_feature_status (a_feature, "creator") then
-				helper.add_semantic_warning (a_feature, messages.creator_feature_not_creation_procedure, -1)
-			end
-
+			
 				-- Set up name
 			if a_for_creator then
 				l_proc_name := name_translator.boogie_procedure_for_creator (current_feature, current_type)

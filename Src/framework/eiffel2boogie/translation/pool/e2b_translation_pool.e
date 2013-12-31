@@ -198,12 +198,12 @@ feature {NONE} -- Implementation
 				then
 						-- This is a creation routine
 					add_creator (a_feature, a_context_type, a_is_referenced)
-					if not helper.is_feature_status (a_feature, "creator") then
-							-- Routine can be used as normal routine
-						add_routine (a_feature, a_context_type, a_is_referenced)
-					end
-				else
-						-- This is a normal routine
+				end
+				if not helper.is_feature_status (a_feature, "creator") then
+						-- Unless the feature is marked as creator, it can be used as a normal routine;
+						-- Note that a non-creation procedure can be marked as creator
+						-- (e.g. if it's supposed to be used as a creation procedure in descendants),
+						-- in this case it will not be verified at all in the current context type.
 					add_routine (a_feature, a_context_type, a_is_referenced)
 				end
 			elseif a_feature.is_constant then
@@ -234,15 +234,15 @@ feature {NONE} -- Implementation
 				add_translation_unit (l_functional_representation)
 			end
 
-				-- Add variant functions
-				-- (has to be processed before the implementation)
-			if options.is_ownership_enabled then
-				create l_variants.make (a_feature, a_context_type)
-				add_translation_unit (l_variants)
-			end
+			if not a_is_referenced and not a_feature.is_deferred and not helper.boolean_feature_note_value (a_feature, "skip") then
+					-- Add variant functions
+					-- (has to be processed before the implementation)
+				if options.is_ownership_enabled then
+					create l_variants.make (a_feature, a_context_type)
+					add_translation_unit (l_variants)
+				end
 
-				-- Add implementation
-			if not a_is_referenced and not helper.boolean_feature_note_value (a_feature, "skip") then
+					-- Add implementation				
 				create l_implementation.make (a_feature, a_context_type)
 				add_translation_unit (l_implementation)
 			end

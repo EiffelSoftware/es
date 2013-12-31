@@ -1,7 +1,7 @@
 note
 	description: "Subject that keeps a list of subscribers and notifies then of its state changes."
 
-class F_OOM_SUBJECT
+class F_OI_SUBJECT
 
 create
 	make
@@ -26,7 +26,7 @@ feature -- Public access
 	value: INTEGER
 			-- State.
 
-	subscribers: F_OOM_LIST [F_OOM_OBSERVER]
+	subscribers: F_OOM_LIST [F_OI_OBSERVER]
 			-- List of observers subscribed to the state updates.
 
 feature -- State update
@@ -35,7 +35,7 @@ feature -- State update
 			-- Update state to `v'.
 		require
 			modify_field (["value", "closed"], Current)
-			modify_field (["cache", "closed"], subscribers.sequence)
+			modify (subscribers.sequence)
 		local
 			i: INTEGER
 		do
@@ -45,8 +45,11 @@ feature -- State update
 			from
 				i := 1
 			invariant
+				across subscribers.sequence as o all
+					o.item.is_open and o.item.inv_without ("synchronized")
+				end
 				across 1 |..| (i - 1) as j all subscribers.sequence [j.item].inv end
-				modify_field (["cache"], subscribers.sequence)
+				modify (subscribers.sequence)
 			until
 				i > subscribers.count
 			loop
@@ -59,9 +62,9 @@ feature -- State update
 			value_set: value = v
 		end
 
-feature {F_OOM_OBSERVER} -- Internal communication
+feature {F_OI_OBSERVER} -- Internal communication
 
-	register (o: F_OOM_OBSERVER)
+	register (o: F_OI_OBSERVER)
 			-- Add `o' to `subscribers'.
 		require
 			wrapped: is_wrapped
