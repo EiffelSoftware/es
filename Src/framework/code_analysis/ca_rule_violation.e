@@ -44,9 +44,9 @@ feature
 	location: detachable LOCATION_AS
 			-- location of rule violation, if available
 
-	fixes: LINKED_LIST[CA_FIX]
+	fixes: detachable LINKED_LIST [CA_FIX]
 			-- fix "strategies"
-			-- Empty if there is no fix available for this rule violation
+			-- Void if there is no fix available for this rule violation
 
 feature -- Inherited from {COMPARABLE}
 

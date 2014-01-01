@@ -36,6 +36,8 @@ feature {NONE} -- Initialization
 
 	make
 			-- Creation method.
+		local
+			e: ES_CA_FIX_EXECUTOR
 		do
 			enable_sensitive
 			set_up_menu_items
@@ -518,7 +520,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
