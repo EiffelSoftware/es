@@ -30,7 +30,7 @@ feature -- Rules
 			           %needed and used in the computation.") end
 
 	unused_argument_fix: STRING_32
-		do Result := locale.translation ("Remove unused argument") end
+		do Result := locale.translation ("Remove unused argument ") end
 
 	npath_title: STRING_32
 		do Result := locale.translation ("High NPATH") end

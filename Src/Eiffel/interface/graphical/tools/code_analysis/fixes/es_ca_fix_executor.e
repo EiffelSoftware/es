@@ -8,6 +8,10 @@ note
 class
 	ES_CA_FIX_EXECUTOR
 
+inherit
+	PROCEDURE [ANY, TUPLE]
+		redefine call end
+
 create
 	make_with_fix
 
@@ -22,7 +26,7 @@ feature {NONE} -- Implementation
 
 	fix: CA_FIX
 
-    apply
+    apply_fix
             -- Make the changes.
 		local
 			l_class_modifier: ES_CA_CLASS_TEXT_MODIFICATION
@@ -34,6 +38,11 @@ feature {NONE} -- Implementation
 
         	l_class_modifier.commit
         end
+
+    call alias "()" (args: detachable separate TUPLE)
+    	do
+    		apply_fix
+    	end
 
 note
 	copyright:	"Copyright (c) 1984-2014, Eiffel Software"

@@ -117,6 +117,7 @@ feature {NONE} -- Rule Checking
 		local
 			l_violation: CA_RULE_VIOLATION
 			j: INTEGER
+			l_fix: CA_UNUSED_ARGUMENT_FIX
 		do
 			if has_arguments and then args_used.has (False) then
 				create l_violation.make_with_rule (Current)
@@ -129,6 +130,8 @@ feature {NONE} -- Rule Checking
 				loop
 					if args_used.at (j) = False then
 						l_violation.long_description_info.extend (arg_names.at (j))
+						create l_fix.make (checking_class, a_body, arg_names.at (j))
+						l_violation.fixes.extend (l_fix)
 					end
 					j := j + 1
 				end

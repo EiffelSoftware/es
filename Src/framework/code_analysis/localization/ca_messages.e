@@ -78,6 +78,9 @@ feature -- GUI
 			%enable sorting of rule violations. Within rule violations that belong to the same %
 			%category, you can sort by importance.") end
 
+	fix: STRING_32
+		do Result := locale.translation ("Fix: ") end
+
 feature -- Code Analyzer
 
 	analyzing_class (a_class_name: READABLE_STRING_GENERAL): STRING_32

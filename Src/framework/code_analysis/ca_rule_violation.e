@@ -21,13 +21,14 @@ feature {NONE} -- Initialization
 			-- if needed.
 			affected_class := a_rule.checking_class
 			synchronized_with_source := True
-			create {LINKED_LIST[ANY]} long_description_info.make
+			create long_description_info.make
+			create fixes.make
 		end
 
 feature
 	rule: CA_RULE
 
-	long_description_info: LINKED_LIST[ANY]
+	long_description_info: LINKED_LIST [ANY]
 
 	format_violation_description (a_formatter: TEXT_FORMATTER)
 		do
@@ -44,9 +45,9 @@ feature
 	location: detachable LOCATION_AS
 			-- location of rule violation, if available
 
-	fixes: detachable LINKED_LIST [CA_FIX]
+	fixes: LINKED_LIST [CA_FIX]
 			-- fix "strategies"
-			-- Void if there is no fix available for this rule violation
+			-- Empty if there is no fix available for this rule violation
 
 feature -- Inherited from {COMPARABLE}
 

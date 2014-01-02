@@ -12,6 +12,10 @@ inherit
 
 	CA_SHARED_NAMES
 
+	SHARED_SERVER
+
+	INTERNAL_COMPILER_STRING_EXPORTER
+
 create
 	make
 
@@ -20,6 +24,11 @@ feature {NONE} -- Implementation
 		do
 			caption := a_caption
 			class_to_change := a_class
+		end
+
+	matchlist: LEAF_AS_LIST
+		do
+			Result := Match_list_server.item (class_to_change.class_id)
 		end
 
 feature -- Properties
