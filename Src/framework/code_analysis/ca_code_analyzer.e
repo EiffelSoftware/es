@@ -303,23 +303,25 @@ feature {NONE} -- Class-wide Options (From Indexing Clauses)
 			nonlibrary_class.force (False, a_class)
 			l_ast := a_class.ast
 
-			across l_ast.internal_top_indexes as l_indexes loop
+			if attached l_ast.internal_top_indexes then
+				across l_ast.internal_top_indexes as l_indexes loop
 
-				if l_indexes.item.tag.name_32.is_equal ("ca_ignoredby") then
-					across l_indexes.item.index_list as l_list loop
-						l_item := l_list.item.string_value_32
-						l_item.prune_all ('%"')
-						l_ignoredby.extend (l_item)
-					end
-				elseif l_indexes.item.tag.name_32.is_equal ("ca_library") then
-					if not l_indexes.item.index_list.is_empty then
-						l_item := l_indexes.item.index_list.first.string_value_32
-						l_item.to_lower
-						l_item.prune_all ('%"')
-						if l_item.is_equal ("true") then
-							library_class.force (True, a_class)
-						elseif l_item.is_equal ("false") then
-							nonlibrary_class.force (True, a_class)
+					if l_indexes.item.tag.name_32.is_equal ("ca_ignoredby") then
+						across l_indexes.item.index_list as l_list loop
+							l_item := l_list.item.string_value_32
+							l_item.prune_all ('%"')
+							l_ignoredby.extend (l_item)
+						end
+					elseif l_indexes.item.tag.name_32.is_equal ("ca_library") then
+						if not l_indexes.item.index_list.is_empty then
+							l_item := l_indexes.item.index_list.first.string_value_32
+							l_item.to_lower
+							l_item.prune_all ('%"')
+							if l_item.is_equal ("true") then
+								library_class.force (True, a_class)
+							elseif l_item.is_equal ("false") then
+								nonlibrary_class.force (True, a_class)
+							end
 						end
 					end
 				end

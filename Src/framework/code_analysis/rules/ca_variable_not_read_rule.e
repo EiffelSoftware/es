@@ -45,23 +45,25 @@ feature {NONE} -- From {CA_CFG_RULE}
 
 			Precursor (a_class, a_feature)
 
-				-- Iterate through all assignments in search for dead assignments.
-			across assignment_nodes as l_assigns loop
-				if attached {ASSIGN_AS} l_assigns.item.instruction as l_assign then
-					l_assigned_id := extract_assigned (l_assign.target)
-					if l_assigned_id /= -1 and then (not lv_exit.at (l_assigns.item.label).has (l_assigned_id)) then
-						create l_viol.make_with_rule (Current)
-						l_viol.set_location (l_assign.start_location)
-						l_viol.long_description_info.extend (l_assign.target.access_name_32)
-						violations.extend (l_viol)
-					end
-				elseif attached {CREATION_AS} l_assigns.item.instruction as l_creation then
-					l_assigned_id := extract_assigned (l_creation.target)
-					if l_assigned_id /= -1 and then (not lv_exit.at (l_assigns.item.label).has (l_assigned_id)) then
-						create l_viol.make_with_rule (Current)
-						l_viol.set_location (l_creation.start_location)
-						l_viol.long_description_info.extend (l_creation.target.access_name_32)
-						violations.extend (l_viol)
+			if attached assignment_nodes then
+					-- Iterate through all assignments in search for dead assignments.
+				across assignment_nodes as l_assigns loop
+					if attached {ASSIGN_AS} l_assigns.item.instruction as l_assign then
+						l_assigned_id := extract_assigned (l_assign.target)
+						if l_assigned_id /= -1 and then (not lv_exit.at (l_assigns.item.label).has (l_assigned_id)) then
+							create l_viol.make_with_rule (Current)
+							l_viol.set_location (l_assign.start_location)
+							l_viol.long_description_info.extend (l_assign.target.access_name_32)
+							violations.extend (l_viol)
+						end
+					elseif attached {CREATION_AS} l_assigns.item.instruction as l_creation then
+						l_assigned_id := extract_assigned (l_creation.target)
+						if l_assigned_id /= -1 and then (not lv_exit.at (l_assigns.item.label).has (l_assigned_id)) then
+							create l_viol.make_with_rule (Current)
+							l_viol.set_location (l_creation.start_location)
+							l_viol.long_description_info.extend (l_creation.target.access_name_32)
+							violations.extend (l_viol)
+						end
 					end
 				end
 			end
@@ -285,7 +287,7 @@ feature {NONE} -- Analysis data
 	lv_entry, lv_exit: ARRAYED_LIST [LINKED_SET [INTEGER]]
 			-- List containing a set of name IDs (live variables) for the CFG labels.
 
-	assignment_nodes: LINKED_SET [CA_CFG_INSTRUCTION]
+	assignment_nodes: detachable LINKED_SET [CA_CFG_INSTRUCTION]
 			-- Set of CFG nodes that represent an assignment or a creation.
 
 feature -- Properties
