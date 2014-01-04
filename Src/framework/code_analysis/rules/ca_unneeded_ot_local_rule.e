@@ -67,6 +67,7 @@ feature {NONE} -- AST Visits
 	process_object_test (a_ot: OBJECT_TEST_AS)
 		local
 			l_violation: CA_RULE_VIOLATION
+			l_fix: CA_UNNEEDED_OT_LOCAL_FIX
 		do
 				-- The expression to be tested must be a simple call.
 			if attached {EXPR_CALL_AS} a_ot.expression as l_call then
@@ -82,6 +83,11 @@ feature {NONE} -- AST Visits
 								l_violation.set_location (a_ot.start_location)
 								l_violation.long_description_info.extend (l_access.access_name_32)
 								l_violation.long_description_info.extend (l_ot_local.name_32)
+
+									-- Add the fix.
+								create l_fix.make_with_ot (checking_class, a_ot)
+								l_violation.fixes.extend (l_fix)
+
 								violations.extend (l_violation)
 							end
 						end

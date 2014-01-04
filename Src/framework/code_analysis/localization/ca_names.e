@@ -70,6 +70,9 @@ feature -- Rules
 			%and object test locals it is unnecessary to let the attached keyword %
 			%create a new and safe local reference.") end
 
+	unneeded_ot_local_fix: STRING_32
+		do Result := locale.translation ("Remove object test local ") end
+
 	unneeded_object_test_title: STRING_32
 		do Result := locale.translation ("Object test typing not needed") end
 
