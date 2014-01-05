@@ -4,6 +4,7 @@ class
 feature {NONE} -- Test
 
 	self_assignment
+			-- Violates the self-assignment rule.
 		local
 			a: INTEGER
 		do

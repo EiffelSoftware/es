@@ -348,6 +348,13 @@ feature -- Rules
 	max_line_length_option: STRING_32
 		do Result := locale.translation ("Maximum line length") end
 
+	unneeded_parentheses_title: STRING_32
+		do Result := locale.translation ("Unneeded parentheses") end
+
+	unneeded_parentheses_description: STRING_32
+		do Result := locale.translation ("Parentheses that are not needed should be %
+			%removed. This helps enforcing a consistent coding style.") end
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32

@@ -27,14 +27,13 @@ feature {NONE} -- Initialization
 			create class_name_list.make
 
 			across a_arguments as l_args loop
-				if l_args.item.is_equal ("-caclass") or l_args.item.is_equal ("-caclasses") then
+				if l_args.item.is_equal ("-cadefaults") then
+					restore_preferences := True
+				elseif l_args.item.is_equal ("-caclass") or l_args.item.is_equal ("-caclasses") then
 					from l_args.forth
 					until l_args.after or l_args.item.starts_with ("-")
 					loop class_name_list.extend (l_args.item); l_args.forth
 					end
-				end
-				if l_args.item.is_equal ("-cadefaults") then
-					restore_preferences := True
 				end
 			end
 		end

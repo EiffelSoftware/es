@@ -1,6 +1,6 @@
 note
 	description: "Summary description for {CA_ALL_RULES_CHECKER}."
-	author: ""
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -55,6 +55,7 @@ inherit
 			process_nested_as,
 			process_object_test_as,
 			process_once_as,
+			process_paran_as,
 			process_routine_as,
 			process_un_not_as
 			-- ...
@@ -129,6 +130,8 @@ feature {NONE} -- Initialization
 			create object_test_post_actions.make
 			create once_pre_actions.make
 			create once_post_actions.make
+			create paran_pre_actions.make
+			create paran_post_actions.make
 			create routine_pre_actions.make
 			create routine_post_actions.make
 			create un_not_pre_actions.make
@@ -417,6 +420,16 @@ feature {CA_STANDARD_RULE}
 			once_post_actions.extend (a_action)
 		end
 
+	add_paran_pre_action (a_action: PROCEDURE [ANY, TUPLE [PARAN_AS]])
+		do
+			paran_pre_actions.extend (a_action)
+		end
+
+	add_paran_post_action (a_action: PROCEDURE [ANY, TUPLE [PARAN_AS]])
+		do
+			paran_post_actions.extend (a_action)
+		end
+
 	add_routine_pre_action (a_action: PROCEDURE [ANY, TUPLE [ROUTINE_AS]])
 		do
 			routine_pre_actions.extend (a_action)
@@ -493,7 +506,9 @@ feature {NONE} -- Agent lists
 
 	object_test_pre_actions, object_test_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [OBJECT_TEST_AS]]]
 
-	once_pre_actions, once_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[ONCE_AS]]]
+	once_pre_actions, once_post_actions: LINKED_LIST [PROCEDURE[ANY, TUPLE[ONCE_AS]]]
+
+	paran_pre_actions, paran_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [PARAN_AS]]]
 
 	routine_pre_actions, routine_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [ROUTINE_AS]]]
 
@@ -703,6 +718,13 @@ feature {NONE} -- Processing
 			across once_pre_actions as l_a loop l_a.item.call ([a_once]) end
 			Precursor (a_once)
 			across once_post_actions as l_a loop l_a.item.call ([a_once]) end
+		end
+
+	process_paran_as (a_paran: PARAN_AS)
+		do
+			across paran_pre_actions as l_a loop l_a.item.call ([a_paran]) end
+			Precursor (a_paran)
+			across paran_post_actions as l_a loop l_a.item.call ([a_paran]) end
 		end
 
 	process_routine_as (a_routine: ROUTINE_AS)
