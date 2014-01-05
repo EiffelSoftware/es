@@ -33,6 +33,9 @@ feature {NONE} -- Initialization
 					loop class_name_list.extend (l_args.item); l_args.forth
 					end
 				end
+				if l_args.item.is_equal ("-cadefaults") then
+					restore_preferences := True
+				end
 			end
 		end
 
@@ -40,12 +43,15 @@ feature {NONE} -- Options
 
 	class_name_list: LINKED_LIST [STRING]
 
+	restore_preferences: BOOLEAN
+
 feature -- Execution (declared in EWB_CMD)
 
 	execute
 		local
 			l_code_analyzer: CA_CODE_ANALYZER
 			l_rule_name, l_rule_id, l_line, l_col: STRING
+			l_has_violations: BOOLEAN
 		do
 			create l_code_analyzer.make
 
@@ -57,14 +63,18 @@ feature -- Execution (declared in EWB_CMD)
 				end
 			end
 
-			l_code_analyzer.analyze
-
 			print ("%NEiffel Code Analysis%N")
 			print ("--------------------%N")
+
+			if restore_preferences then
+				l_code_analyzer.preferences.restore_defaults
+			end
+			l_code_analyzer.analyze
 
 			across l_code_analyzer.rule_violations as l_vlist loop
 
 				if not l_vlist.item.is_empty then
+					l_has_violations := True
 					print (ca_messages.cmd_class + l_vlist.key.name + "':%N")
 
 					across l_vlist.item as l_v loop
@@ -84,6 +94,8 @@ feature -- Execution (declared in EWB_CMD)
 					end
 				end
 			end
+
+			if not l_has_violations then print ("Code Analysis found no issues!%N") end
 		end
 
 	try_add_class_with_name (a_analyzer: CA_CODE_ANALYZER; a_class_name: STRING)
@@ -109,7 +121,7 @@ feature -- Info (declared in EWB_CMD)
 	abbreviation: CHARACTER = 'a'
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
