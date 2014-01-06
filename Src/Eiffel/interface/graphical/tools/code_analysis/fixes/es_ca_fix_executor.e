@@ -12,6 +12,19 @@ inherit
 	PROCEDURE [ANY, TUPLE]
 		redefine call end
 
+inherit {NONE}
+	SHARED_EIFFEL_PROJECT
+		rename
+			is_equal as shared_eiffel_project_is_equal,
+			copy as shared_eiffel_project_copy
+		end
+
+	EB_SHARED_WINDOW_MANAGER
+		rename
+			is_equal as shared_window_manager_is_equal,
+			copy as shared_window_manager_copy
+		end
+
 create
 	make_with_fix
 
@@ -30,13 +43,27 @@ feature {NONE} -- Implementation
             -- Make the changes.
 		local
 			l_class_modifier: ES_CA_CLASS_TEXT_MODIFICATION
+			l_dialog: ES_INFORMATION_PROMPT
         do
-        	create l_class_modifier.make (fix.class_to_change.original_class)
-			l_class_modifier.prepare
+        		-- Only continue fixing when there are no unsaved files.
+        	if window_manager.has_modified_windows then
+        		create l_dialog.make_standard ("You may not apply a fix when there are unsaved changes.")
+        		l_dialog.show_on_active_window
+        	else
+        		eiffel_project.quick_melt (True, True, True)
+        			-- The compilation must be successful before the fix.
+        		if eiffel_project.successful then
+		        	create l_class_modifier.make (fix.class_to_change.original_class)
+					l_class_modifier.prepare
 
-			l_class_modifier.execute_fix (fix, false)
+					l_class_modifier.execute_fix (fix, false)
 
-        	l_class_modifier.commit
+		        	l_class_modifier.commit
+
+		        		-- Now compile again, which in all cases should succeed.
+		        	eiffel_project.quick_melt (True, True, True)
+		        end
+	        end
         end
 
     call alias "()" (args: detachable separate TUPLE)
