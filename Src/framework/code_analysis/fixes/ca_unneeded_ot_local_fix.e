@@ -22,11 +22,11 @@ feature {NONE} -- Initialization
 
 	make_with_ot (a_class: CLASS_C; a_ot: OBJECT_TEST_AS)
 		do
-			make (ca_names.unneeded_ot_local_fix + a_ot.name.name_32, a_class)
+			make (ca_names.unneeded_ot_local_fix + a_ot.name.name_32 + "'", a_class)
 			ot := a_ot
 		end
 
-feature {NONE} -- Implenentation
+feature {NONE} -- Implementation
 
 	ot: OBJECT_TEST_AS
 

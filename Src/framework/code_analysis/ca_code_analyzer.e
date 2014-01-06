@@ -57,7 +57,7 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_COUNT_EQUALS_ZERO_RULE}.make)
 			rules.extend (create {CA_DEEPLY_NESTED_IF_RULE}.make (settings.preference_manager))
 				-- Not yet correct.
---			rules.extend (create {CA_UNNEEDED_HELPER_VARIABLE_RULE}.make (settings.preference_manager))
+			rules.extend (create {CA_UNNEEDED_HELPER_VARIABLE_RULE}.make (settings.preference_manager))
 			rules.extend (create {CA_UNNEEDED_PARENTHESES_RULE}.make)
 
 			settings.initialize_rule_settings (rules)

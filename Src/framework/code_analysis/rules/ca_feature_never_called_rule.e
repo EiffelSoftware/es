@@ -71,10 +71,15 @@ feature {NONE} -- Feature Visitor for Violation Check
 	create_violation (a_feature: E_FEATURE)
 		local
 			l_violation: CA_RULE_VIOLATION
+			l_fix: CA_FEATURE_NEVER_CALLED_FIX
 		do
 			create l_violation.make_with_rule (Current)
 			l_violation.set_location (a_feature.ast.start_location)
 			l_violation.long_description_info.extend (a_feature.name_32)
+
+			create l_fix.make_with_feature (checking_class, a_feature.ast)
+			l_violation.fixes.extend (l_fix)
+
 			violations.extend (l_violation)
 		end
 
@@ -90,7 +95,7 @@ feature -- Properties
 
 	description: STRING_32
 		do
-			Result :=  "---"
+			Result :=  ca_names.feature_never_called_description
 		end
 
 	is_system_wide: BOOLEAN = True

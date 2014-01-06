@@ -50,6 +50,8 @@ feature {NONE} -- Implementation
         		create l_dialog.make_standard ("You may not apply a fix when there are unsaved changes.")
         		l_dialog.show_on_active_window
         	else
+        		window_manager.display_message ("Fixing rule violation...")
+
         		eiffel_project.quick_melt (True, True, True)
         			-- The compilation must be successful before the fix.
         		if eiffel_project.successful then
@@ -62,6 +64,11 @@ feature {NONE} -- Implementation
 
 		        		-- Now compile again, which in all cases should succeed.
 		        	eiffel_project.quick_melt (True, True, True)
+
+		        	window_manager.display_message ("Fixing rule violation succeeded.")
+		        else
+		        	create l_dialog.make_standard ("Fix could not be applied due to failed compilation.")
+		        	l_dialog.show_on_active_window
 		        end
 	        end
         end

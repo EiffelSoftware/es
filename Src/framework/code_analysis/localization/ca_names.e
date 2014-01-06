@@ -59,6 +59,13 @@ feature -- Rules
 	feature_never_called_title: STRING_32
 		do Result := locale.translation ("Feature never called") end
 
+	feature_never_called_description: STRING_32
+		do Result := locale.translation ("There is no use for a feature that is %
+			%never called by any class (including the one where it is defined).") end
+
+	feature_never_called_fix: STRING_32
+		do Result := locale.translation ("Remove feature '") end
+
 	cq_separation_title: STRING_32
 		do Result := locale.translation ("No command-query separation (possible function side effect)") end
 
@@ -71,7 +78,7 @@ feature -- Rules
 			%create a new and safe local reference.") end
 
 	unneeded_ot_local_fix: STRING_32
-		do Result := locale.translation ("Remove object test local ") end
+		do Result := locale.translation ("Remove object test local '") end
 
 	unneeded_object_test_title: STRING_32
 		do Result := locale.translation ("Object test typing not needed") end
