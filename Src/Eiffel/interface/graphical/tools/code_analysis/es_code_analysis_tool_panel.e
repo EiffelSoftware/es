@@ -74,7 +74,10 @@ feature {NONE} -- Initialization
         local
         	l_label: EV_LABEL
 			l_box: EV_HORIZONTAL_BOX
+			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
 		do
+			create l_helper
+
 				-- "toggle errors" button
 			create errors_button.make
 			errors_button.set_pixmap (stock_pixmaps.general_error_icon)
@@ -112,7 +115,7 @@ feature {NONE} -- Initialization
 			scope_label.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (100, 100, 100))
 
 			create Result.make (5)
-			run_analysis_button := (create {ES_CODE_ANALYSIS_COMMAND}.make).new_sd_toolbar_item (True)
+			run_analysis_button := l_helper.ca_command.new_sd_toolbar_item (True)
 			Result.extend (run_analysis_button)
 			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 			Result.extend (errors_button)

@@ -25,7 +25,11 @@ feature {NONE} -- Initialization
 
 			has_next_step := not classes.is_empty
 
-			create type_recorder.make
+			if classes.is_empty then
+				completed_action.call ([])
+			else
+				create type_recorder.make
+			end
 		end
 
 feature {NONE} -- Implementation

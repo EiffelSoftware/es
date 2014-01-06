@@ -104,18 +104,41 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
 			l_dialog: ES_INFORMATION_PROMPT
 		do
-			-- Compile the project and only analyze if the compilation was successful.
+				-- Make a list of all the changed classes in case we only analyze them.
+			create previously_changed_classes.make
+			across eiffel_universe.all_classes as l_classes loop
+				if l_classes.item.changed then
+					previously_changed_classes.extend (l_classes.item)
+				end
+			end
+				-- Compile the project and only analyze if the compilation was successful.
 			eiffel_project.quick_melt (True, True, True)
 			if eiffel_project.successful then
 				create l_helper
 				if l_helper.code_analyzer.is_running then
-					create l_dialog.make_standard ("Code analysis is already running.%NPlease wait until the current analysis has finished.")
+					create l_dialog.make_standard ("Code analysis is already running.%NPlease%
+						% wait until the current analysis has finished.")
 					l_dialog.show_on_active_window
 				else
-					analyze_all
+						-- Detection of changes 
+
+						-- If we did a system analysis recently then only add modified classes.
+--					if last_was_analyze_all then
+--						create l_dialog.make_standard ("Since you are doing an analysis of the %
+--							%system again, only recently changed classes will be analyzed.")
+--							l_dialog.show_on_active_window
+--						analyze_changed_classes
+--					else
+						analyze_all
+--					end
+					last_was_analyze_all := True
 				end
 			end
 		end
+
+	last_was_analyze_all: BOOLEAN
+
+	previously_changed_classes: LINKED_LIST [CLASS_I]
 
 	save_compile_and_analyze (a_stone: STONE)
 			-- Save modified windows, compile project and perform analysis.
@@ -152,7 +175,32 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 			create l_helper
 			code_analyzer := l_helper.code_analyzer
 			code_analyzer.clear_classes_to_analyze
+			code_analyzer.rule_violations.wipe_out
 			code_analyzer.add_whole_system
+
+			disable_tool_button
+			window_manager.display_message ("Code analysis running...")
+			code_analyzer.add_completed_action (agent analysis_completed)
+			code_analyzer.analyze
+			l_scope_label := ca_tool.panel.scope_label
+			l_scope_label.set_text ("System")
+			l_scope_label.set_tooltip ("The whole system was analyzed recently.")
+			l_scope_label.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (30, 30, 30))
+		end
+
+	analyze_changed_classes
+		local
+			l_cluster: CLUSTER_I
+			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
+			l_scope_label: EV_LABEL
+		do
+			create l_helper
+			code_analyzer := l_helper.code_analyzer
+			code_analyzer.clear_classes_to_analyze
+			code_analyzer.add_classes (previously_changed_classes)
+			across previously_changed_classes as l_changed loop
+				code_analyzer.rule_violations.remove (l_changed.item.compiled_class)
+			end
 
 			disable_tool_button
 			window_manager.display_message ("Code analysis running...")
@@ -173,9 +221,12 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
 			l_scope_label: EV_LABEL
 		do
+			last_was_analyze_all := False
+
 			create l_helper
 			code_analyzer := l_helper.code_analyzer
 			code_analyzer.clear_classes_to_analyze
+			code_analyzer.rule_violations.wipe_out
 
 			l_scope_label := ca_tool.panel.scope_label
 
@@ -245,21 +296,6 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 			enable_tool_button
 			window_manager.display_message ("Code Analysis has terminated.")
 		end
-
---	process_result (a_result: E2B_RESULT)
---			-- Process verification result.
---		do
---			event_list.prune_event_items (event_context_cookie)
---			across a_result.execution_errors as i loop
---				event_list.put_event_item (event_context_cookie, create {E2B_FAILED_EXECUTION_EVENT}.make (i.item.title + ": " + i.item.message))
---			end
---			across a_result.procedure_results as i loop
---				event_list.put_event_item (event_context_cookie, create {E2B_VERIFICATION_EVENT}.make (i.item))
---			end
---			show_proof_tool
---			enable_tool_button
---			window_manager.display_message ("Code Analysis has terminated.")
---		end
 
 	event_context_cookie: UUID
 			-- Context cookie for Code Analysis events.

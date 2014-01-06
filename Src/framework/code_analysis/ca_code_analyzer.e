@@ -21,7 +21,7 @@ feature {NONE} -- Initialization
 		do
 			create settings.make
 			create rules.make
-			-- Adding example rules
+				-- Adding example rules.
 			rules.extend (create {CA_SELF_ASSIGNMENT_RULE}.make)
 			rules.extend (create {CA_UNUSED_ARGUMENT_RULE}.make)
 			rules.extend (create {CA_NPATH_RULE}.make (settings.preference_manager))
@@ -87,14 +87,14 @@ feature -- Analysis interface
 		do
 			is_running := True
 				-- TODO: caching
-			rule_violations.wipe_out
+--			rule_violations.wipe_out
 
 			create l_rules_checker.make
 			across rules as l_rules loop
 				l_rules.item.clear_violations
-				if l_rules.item.is_enabled.value then -- important: only add enabled rules
+				if l_rules.item.is_enabled.value then -- Important: only add enabled rules.
 					if system_wide_check or else (not l_rules.item.is_system_wide) then
-							-- do not add system wide rules if we check only parts of the system
+							-- Do not add system wide rules if we check only parts of the system.
 						if attached {CA_STANDARD_RULE} l_rules.item as l_std_rule then
 
 							l_std_rule.prepare_checking (l_rules_checker)
@@ -125,7 +125,7 @@ feature -- Analysis interface
 				l_groups.after
 			loop
 				l_cluster ?= l_groups.item_for_iteration
-					-- Only load top-level clusters, as they are loaded recursively afterwards
+					-- Only load top-level clusters, as the others will be loaded recursively afterwards.
 				if l_cluster /= Void and then l_cluster.parent_cluster = Void then
 					add_cluster (l_cluster)
 				end
@@ -183,7 +183,7 @@ feature -- Analysis interface
 			end
 		end
 
-	add_classes (a_classes: ITERABLE[CLASS_I])
+	add_classes (a_classes: ITERABLE [CLASS_I])
 		do
 			system_wide_check := False
 
@@ -215,9 +215,9 @@ feature -- Properties
 
 	analysis_successful: BOOLEAN
 
-	rules: LINKED_LIST[CA_RULE]
+	rules: LINKED_LIST [CA_RULE]
 
-	rule_violations: detachable HASH_TABLE[SORTED_TWO_WAY_LIST[CA_RULE_VIOLATION], CLASS_C]
+	rule_violations: detachable HASH_TABLE [SORTED_TWO_WAY_LIST [CA_RULE_VIOLATION], CLASS_C]
 
 	preferences: PREFERENCES
 		do Result := settings.preferences end
@@ -226,14 +226,17 @@ feature {NONE} -- Implementation
 
 	analysis_completed
 		do
-			across classes_to_analyze as l_classes loop
-				rule_violations.extend (create {SORTED_TWO_WAY_LIST[CA_RULE_VIOLATION]}.make, l_classes.item)
-			end
+--			across classes_to_analyze as l_classes loop
+--				rule_violations.extend (create {SORTED_TWO_WAY_LIST [CA_RULE_VIOLATION]}.make, l_classes.item)
+--			end
 
 			across rules as l_rules loop
 				across l_rules.item.violations as l_v loop
-						-- check the ignore list
+						-- Check the ignore list.
 					if is_violation_valid (l_v.item) then
+							-- Make sure a list for this class exists in the hash table:
+						rule_violations.put (create {SORTED_TWO_WAY_LIST [CA_RULE_VIOLATION]}.make, l_v.item.affected_class)
+							-- Add the violation.
 						rule_violations.at (l_v.item.affected_class).extend (l_v.item)
 					end
 				end
@@ -279,7 +282,7 @@ feature {NONE} -- Implementation
 	completed_actions: ACTION_SEQUENCE [TUPLE [BOOLEAN]]
 
 	frozen rota: detachable ROTA_S
-			-- Access to rota service
+			-- Accesses the rota service.
 		local
 			l_service_consumer: SERVICE_CONSUMER [ROTA_S]
 		do
