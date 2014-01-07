@@ -222,6 +222,9 @@ feature -- Properties
 	preferences: PREFERENCES
 		do Result := settings.preferences end
 
+	class_list: ITERABLE [CLASS_C]
+		do Result := classes_to_analyze end
+
 feature {NONE} -- Implementation
 
 	analysis_completed

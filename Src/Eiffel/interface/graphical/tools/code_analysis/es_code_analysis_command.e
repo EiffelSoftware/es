@@ -41,6 +41,13 @@ feature {NONE} -- Initialization
 		do
 			enable_sensitive
 			set_up_menu_items
+
+			create changed_classes.make
+			create analysis_timestamp.make (0)
+
+				-- Register a pre-compile action in order to record which classes
+				-- have been changed. (For caching.)
+			window_manager.compile_start_actions.extend (agent record_changed_classes)
 		end
 
 feature -- Execution
@@ -104,13 +111,6 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
 			l_dialog: ES_INFORMATION_PROMPT
 		do
-				-- Make a list of all the changed classes in case we only analyze them.
-			create previously_changed_classes.make
-			across eiffel_universe.all_classes as l_classes loop
-				if l_classes.item.changed then
-					previously_changed_classes.extend (l_classes.item)
-				end
-			end
 				-- Compile the project and only analyze if the compilation was successful.
 			eiffel_project.quick_melt (True, True, True)
 			if eiffel_project.successful then
@@ -120,17 +120,17 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 						% wait until the current analysis has finished.")
 					l_dialog.show_on_active_window
 				else
-						-- Detection of changes 
+						-- Detection of changes
 
 						-- If we did a system analysis recently then only add modified classes.
---					if last_was_analyze_all then
+					if last_was_analyze_all then
 --						create l_dialog.make_standard ("Since you are doing an analysis of the %
 --							%system again, only recently changed classes will be analyzed.")
---							l_dialog.show_on_active_window
---						analyze_changed_classes
---					else
+--						l_dialog.show_on_active_window
+						analyze_changed_classes
+					else
 						analyze_all
---					end
+					end
 					last_was_analyze_all := True
 				end
 			end
@@ -138,7 +138,11 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 
 	last_was_analyze_all: BOOLEAN
 
-	previously_changed_classes: LINKED_LIST [CLASS_I]
+	analysis_timestamp: HASH_TABLE [INTEGER, CLASS_I]
+		-- Stores the time of the last modification of the class at the point
+		-- of the last analysis.
+
+	changed_classes: LINKED_SET [CLASS_I]
 
 	save_compile_and_analyze (a_stone: STONE)
 			-- Save modified windows, compile project and perform analysis.
@@ -178,6 +182,11 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 			code_analyzer.rule_violations.wipe_out
 			code_analyzer.add_whole_system
 
+				-- Store all found classes.
+			across code_analyzer.class_list as l_classes loop
+				analysis_timestamp.force (l_classes.item.original_class.date, l_classes.item.original_class)
+			end
+
 			disable_tool_button
 			window_manager.display_message ("Code analysis running...")
 			code_analyzer.add_completed_action (agent analysis_completed)
@@ -193,13 +202,26 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 			l_cluster: CLUSTER_I
 			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
 			l_scope_label: EV_LABEL
+			l_analysis_timestamp, l_changed_timestamp: INTEGER
+			l_class: CLASS_I
 		do
 			create l_helper
 			code_analyzer := l_helper.code_analyzer
 			code_analyzer.clear_classes_to_analyze
-			code_analyzer.add_classes (previously_changed_classes)
-			across previously_changed_classes as l_changed loop
-				code_analyzer.rule_violations.remove (l_changed.item.compiled_class)
+
+			from analysis_timestamp.start
+			until analysis_timestamp.after
+			loop
+					-- Check if class has been modified since last analysis.
+				l_analysis_timestamp := analysis_timestamp.item_for_iteration
+				l_class := analysis_timestamp.key_for_iteration
+				l_changed_timestamp := l_class.date
+				if l_changed_timestamp /= l_analysis_timestamp then
+					code_analyzer.rule_violations.remove (l_class.compiled_class)
+					code_analyzer.add_class (l_class)
+				end
+
+				analysis_timestamp.forth
 			end
 
 			disable_tool_button
@@ -278,6 +300,8 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 		local
 			l_violation_exists: BOOLEAN
 		do
+			changed_classes.wipe_out
+
 			event_list.prune_event_items (event_context_cookie)
 
 			across code_analyzer.rule_violations as l_viol_list loop
@@ -423,9 +447,6 @@ feature {NONE} -- Implementation
 			l_window: EB_DEVELOPMENT_WINDOW
 		do
 			last_execution := agent analyze_current_item
---			analyze_current_item_item.enable_select
---			analyze_parent_item_item.disable_select
---			analyze_system_item.disable_select
 
 			l_window := window_manager.last_focused_development_window
 			if droppable (l_window.stone) then
@@ -440,9 +461,6 @@ feature {NONE} -- Implementation
 			l_cluster_stone: CLUSTER_STONE
 		do
 			last_execution := agent analyze_parent_cluster
---			analyze_current_item_item.disable_select
---			analyze_parent_item_item.enable_select
---			analyze_system_item.disable_select
 
 			l_window := window_manager.last_focused_development_window
 			if attached {CLASSC_STONE} l_window.stone as l_stone then
@@ -456,21 +474,19 @@ feature {NONE} -- Implementation
 			end
 		end
 
---	execute_proof_system
---			-- Proof whole system (excluding libraries).
---		do
---			last_execution := agent execute_proof_system
---			proof_current_item_item.disable_select
---			proof_parent_item_item.disable_select
---			proof_system_item.enable_select
-
---			execute_with_stone (Void)
---		end
-
 	execute_last_action
 			-- Execute same action as last time.
 		do
 			last_execution.call ([])
+		end
+
+	record_changed_classes
+		do
+			across eiffel_universe.all_classes as l_classes loop
+				if l_classes.item.changed then
+					changed_classes.put (l_classes.item)
+				end
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -495,7 +511,6 @@ feature {NONE} -- Implementation
 		do
 			last_execution := agent analyze_current_item
 			create analyze_system_item.make_with_text_and_action ("Analyze whole system", agent analyze_all)
---			analyze_system_item.toggle
 			create analyze_current_item_item.make_with_text_and_action ("Analyze current item", agent analyze_current_item)
 			create analyze_parent_item_item.make_with_text_and_action ("Analyze parent cluster of current item", agent analyze_parent_cluster)
 
