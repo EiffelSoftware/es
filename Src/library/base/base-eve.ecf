@@ -28,6 +28,7 @@
 		<assembly name="system_" location="$ISE_DOTNET_FRAMEWORK\System.dll" prefix="SYSTEM_DLL_"/>
 		<assembly name="system_xml" location="$ISE_DOTNET_FRAMEWORK\System.Xml.dll" prefix="XML_"/>
 		<cluster name="eve" location="eve\" recursive="true"/>
+		<cluster name="mml" location="mml\" recursive="true"/>
 		<cluster name="elks" location="elks\" recursive="true">
 			<option namespace="Base">
 			</option>
