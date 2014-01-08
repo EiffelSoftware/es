@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {CA_CFG_BACKWARD_ITERATOR}."
+	description: "Summary description for {CA_CFG_FORWARD_ITERATOR}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 deferred class
-	CA_CFG_BACKWARD_ITERATOR
+	CA_CFG_FORWARD_ITERATOR
 
 inherit
 	CA_CFG_ITERATOR
@@ -24,18 +24,18 @@ feature -- Iteration
 				create worklist.make
 				create l_visited.make
 				create l_bfs_nodes.make
-				l_bfs_nodes.extend (a_cfg.end_node)
+				l_bfs_nodes.extend (a_cfg.start_node)
 			until
 				l_bfs_nodes.is_empty
 			loop
-				across l_bfs_nodes.item.in_edges as l_ins loop
-					l_label := l_ins.item.label
+				across l_bfs_nodes.item.out_edges as l_outs loop
+					l_label := l_outs.item.label
 
-					worklist.put ([l_ins.item, l_bfs_nodes.item])
+					worklist.put ([l_bfs_nodes.item, l_outs.item])
 
 					if not l_visited.has (l_label) then
 						l_visited.extend (l_label)
-						l_bfs_nodes.extend (l_ins.item)
+						l_bfs_nodes.extend (l_outs.item)
 					end
 				end
 				l_bfs_nodes.remove
@@ -48,8 +48,8 @@ feature -- Iteration
 			loop
 				l_current_node := worklist.item.fr
 				if visit_edge (l_current_node, worklist.item.to) then
-					across l_current_node.in_edges as l_ins loop
-						worklist.put ([l_ins.item, l_current_node])
+					across l_current_node.out_edges as l_outs loop
+						worklist.put ([l_current_node, l_outs.item])
 					end
 				end
 				worklist.remove

@@ -8,8 +8,22 @@ class
 	CA_UNNEEDED_HELPER_VARIABLE_RULE
 
 inherit
-	CA_STANDARD_RULE
-		redefine id end
+	CA_RD_ANALYSIS_RULE
+		redefine
+			check_feature,
+			id
+		end
+
+	AST_ITERATOR
+		redefine
+			process_feature_as,
+			process_assign_as,
+			process_access_id_as,
+			process_assigner_call_as,
+			process_bang_creation_as,
+			process_create_creation_as,
+			process_instr_call_as
+		end
 
 create
 	make
@@ -25,19 +39,6 @@ feature {NONE} -- Initialization
 			initialize_preferences (a_pref_manager)
 		end
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
-		do
-			a_checker.add_feature_pre_action (agent pre_process_feature)
-			a_checker.add_feature_post_action (agent post_process_feature)
-			a_checker.add_assign_pre_action (agent process_assign)
-			a_checker.add_access_id_pre_action (agent process_access_id)
-
-			a_checker.add_assigner_call_pre_action (agent pre_process_assigner_call)
-			a_checker.add_bang_creation_pre_action (agent pre_process_bang_creation)
-			a_checker.add_create_creation_pre_action (agent pre_process_create_creation)
-			a_checker.add_instruction_call_pre_action (agent pre_process_instr_call)
-		end
-
 	initialize_preferences (a_pref_manager: PREFERENCE_MANAGER)
 		local
 			l_factory: BASIC_PREFERENCE_FACTORY
@@ -50,16 +51,23 @@ feature {NONE} -- Initialization
 			max_line_length.set_validation_agent (agent is_integer_string_within_bounds (?, 30, 1000))
 		end
 
+feature {NONE} -- From {CA_CFG_RULE}
+
+	check_feature (a_class: CLASS_C; a_feature: E_FEATURE)
+			-- Checks `a_feature' from `a_class' for rule violations.
+		do
+				-- Perform an iteration over the AST in order to gather
+				-- a list of variables that are "suspected" for rule
+				-- violations.
+			process_feature_as (a_feature.ast)
+
+			Precursor (a_class, a_feature)
+		end
+
 feature {NONE} -- Rule checking
 
-	pre_process_feature (a_feature: FEATURE_AS)
-		do
-			create assignments.make (0)
-			create assigned_expression_length.make (0)
-			create usages.make (0)
-			create usage_line_length.make (0)
-			create usage_location.make (0)
-		end
+	suspected_variables: LINKED_LIST [INTEGER]
+			-- List of IDs of all variables that are read only once.
 
 	assignments: HASH_TABLE [INTEGER, ID_AS]
 			-- Set of variable IDs of local variables that are assigned a value only
@@ -85,32 +93,48 @@ feature {NONE} -- Rule checking
 	usage_location: HASH_TABLE [LOCATION_AS, ID_AS]
 			-- Location where variable with a certain ID has been used last.
 
-	pre_process_assigner_call (a_assigner_call: ASSIGNER_CALL_AS)
+	process_assigner_call_as (a_assigner_call: ASSIGNER_CALL_AS)
 		do
 			current_line_length := a_assigner_call.end_position - a_assigner_call.start_position + 1
+
+			Precursor (a_assigner_call)
 		end
 
-	pre_process_bang_creation (a_bang_creation: BANG_CREATION_AS)
+	process_bang_creation_as (a_bang_creation: BANG_CREATION_AS)
 		do
 			current_line_length := a_bang_creation.end_position - a_bang_creation.start_position + 1
+
+			Precursor (a_bang_creation)
 		end
 
-	pre_process_create_creation (a_create_creation: CREATE_CREATION_AS)
+	process_create_creation_as (a_create_creation: CREATE_CREATION_AS)
 		do
 			current_line_length := a_create_creation.end_position - a_create_creation.start_position + 1
+
+			Precursor (a_create_creation)
 		end
 
-	pre_process_instr_call (a_instr_call: INSTR_CALL_AS)
+	process_instr_call_as (a_instr_call: INSTR_CALL_AS)
 		do
 			current_line_length := a_instr_call.end_position - a_instr_call.start_position + 1
+
+			Precursor (a_instr_call)
 		end
 
-	post_process_feature (a_feature: FEATURE_AS)
+	process_feature_as (a_feature: FEATURE_AS)
 		local
 			l_id: ID_AS
 			l_n_usages, l_max: INTEGER
-			l_viol: CA_RULE_VIOLATION
 		do
+			create assignments.make (0)
+			create assigned_expression_length.make (0)
+			create usages.make (0)
+			create usage_line_length.make (0)
+			create usage_location.make (0)
+			create suspected_variables.make
+
+			Precursor (a_feature)
+
 			across assignments as l_a loop
 				if l_a.item = 1 then
 					l_id := l_a.key
@@ -121,17 +145,14 @@ feature {NONE} -- Rule checking
 						l_max := max_line_length.value
 							-- Check if the possible new line is not too long:
 						if usage_line_length [l_id] - l_id.name_8.count + assigned_expression_length [l_id] <= l_max then
-							create l_viol.make_with_rule (Current)
-							l_viol.long_description_info.extend (l_id.name_32)
-							l_viol.set_location (usage_location [l_id])
-							violations.extend (l_viol)
+							suspected_variables.extend (l_id.name_id)
 						end
 					end
 				end
 			end
 		end
 
-	process_assign (a_assign: ASSIGN_AS)
+	process_assign_as (a_assign: ASSIGN_AS)
 		local
 			l_id: ID_AS
 			l_old_count: INTEGER
@@ -152,9 +173,11 @@ feature {NONE} -- Rule checking
 					assignments.force (l_old_count + 1, l_id)
 				end
 			end
+
+			Precursor (a_assign)
 		end
 
-	process_access_id (a_access_id: ACCESS_ID_AS)
+	process_access_id_as (a_access_id: ACCESS_ID_AS)
 		local
 			l_id: ID_AS
 			l_old_count: INTEGER
@@ -175,6 +198,8 @@ feature {NONE} -- Rule checking
 					-- And store location for the use by a possible rule violation.
 				usage_location.force (a_access_id.start_location, l_id)
 			end
+
+			Precursor (a_access_id)
 		end
 
 feature {NONE} -- Preferences

@@ -65,7 +65,7 @@ feature -- From ROTA
 					l_rules.item.set_checking_class (classes.item)
 						-- If rule is non-standard then it will not be checked by l_rules_checker.
 						-- We will have the rule check the current class here:
-					if attached {CA_CFG_RULE} l_rules.item as l_cfg_rule then
+					if attached {CA_CFG_BACKWARD_RULE} l_rules.item as l_cfg_rule then
 						l_cfg_rule.check_class (classes.item)
 					end
 				end

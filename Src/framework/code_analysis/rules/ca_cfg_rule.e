@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {CA_CFG_FORWARD_RULE}."
+	description: "Summary description for {CA_CFG_RULE}."
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -10,7 +10,7 @@ deferred class
 inherit
 	CA_RULE
 
-	CA_CFG_BACKWARD_ITERATOR
+	CA_CFG_ITERATOR
 
 feature -- Rule Checking
 
@@ -29,10 +29,13 @@ feature {NONE} -- Implementation
 		do
 			if a_feature.ast.body.is_routine
 					and then attached {INTERNAL_AS} a_feature.ast.body.as_routine.routine_body then
+				current_feature := a_feature
 				create l_cfg_builder.make_with_feature (a_feature.ast)
 				l_cfg_builder.build_cfg
 				process_cfg (l_cfg_builder.cfg)
 			end
 		end
+
+	current_feature: E_FEATURE
 
 end

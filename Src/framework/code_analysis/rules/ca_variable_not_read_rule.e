@@ -8,7 +8,7 @@ class
 	CA_VARIABLE_NOT_READ_RULE
 
 inherit
-	CA_CFG_RULE
+	CA_CFG_BACKWARD_RULE
 		redefine
 			check_feature,
 			id
@@ -41,8 +41,6 @@ feature {NONE} -- From {CA_CFG_RULE}
 			l_assigned_id: INTEGER
 			l_viol: CA_RULE_VIOLATION
 		do
-			current_feature := a_feature.associated_feature_i
-
 			Precursor (a_class, a_feature)
 
 			if attached assignment_nodes then
@@ -274,8 +272,6 @@ feature {NONE} -- Extracting Assignments
 		end
 
 feature {NONE} -- Utilities
-
-	current_feature: FEATURE_I
 
 	is_local (a_id: ACCESS_ID_AS): BOOLEAN
 		do
