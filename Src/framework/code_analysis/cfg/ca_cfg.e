@@ -25,6 +25,8 @@ feature -- Properties
 
 	max_label: INTEGER
 
+feature {CA_CFG_BUILDER} -- Utilities
+
 	set_max_label (a_max: INTEGER)
 		do
 			max_label := a_max

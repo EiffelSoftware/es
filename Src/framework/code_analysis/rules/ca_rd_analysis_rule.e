@@ -33,11 +33,13 @@ feature -- CFG Node Visitor
 
 				-- Since local expanded variables are initialized to their default values we
 				-- count this as an assignment.
-			across current_feature.locals as l_locals loop
-				across l_locals.item.id_list as l_id_list loop
-					create l_init_set.make
-					l_init_set.extend (0)
-					rd_entry.at (a_cfg.start_node.label).extend (l_init_set, l_id_list.item)
+			if attached current_feature.locals then
+				across current_feature.locals as l_locals loop
+					across l_locals.item.id_list as l_id_list loop
+						create l_init_set.make
+						l_init_set.extend (0)
+						rd_entry.at (a_cfg.start_node.label).extend (l_init_set, l_id_list.item)
+					end
 				end
 			end
 
@@ -105,8 +107,8 @@ feature {NONE} -- Implementation
 		do
 			rd_changed := False
 
-			l_entry_table := rd_entry.at (a_label)
-			l_exit_table := rd_exit.at (a_label)
+			l_entry_table := rd_entry [a_label]
+			l_exit_table := rd_exit [a_label]
 
 			from l_entry_table.start
 			until l_entry_table.after loop
@@ -116,8 +118,8 @@ feature {NONE} -- Implementation
 
 				if l_exit_table.has (l_key) then
 					l_old_count := l_exit_table.at (l_key).count
-					l_exit_table.at (l_key).copy (l_item)
-					rd_changed := (l_old_count /= l_exit_table.at (l_key).count) or rd_changed
+					l_exit_table [l_key].copy (l_item)
+					rd_changed := (l_old_count /= l_exit_table [l_key].count) or rd_changed
 				else
 					create l_new.make
 					l_new.copy (l_item)
@@ -135,7 +137,7 @@ feature {NONE} -- Implementation
 			l_rd: LINKED_SET [INTEGER]
 		do
 			l_label := a_instr.label
-			l_old_count := rd_exit.at (l_label).count
+			l_old_count := rd_exit [l_label].count
 
 			if attached {ASSIGN_AS} a_instr.instruction as l_assign
 			and then attached {ACCESS_ID_AS} l_assign.target as l_id
@@ -143,18 +145,16 @@ feature {NONE} -- Implementation
 				l_var_id := l_id.feature_name.name_id
 
 					-- Remove all previous RD entries.
-				rd_exit.at (l_label).remove (l_var_id)
+				rd_exit [l_label].remove (l_var_id)
 				create l_rd.make
 				l_rd.extend (l_label)
-				rd_exit.at (l_label).extend (l_rd, l_var_id)
-
-				rd_changed := True
+				rd_exit [l_label].extend (l_rd, l_var_id)
 			else
 					-- Just copy from entry to exit.
 				process_default (l_label)
 			end
 
-			rd_changed := (l_old_count /= rd_exit.at (a_instr.label).count) or rd_changed
+			rd_changed := (l_old_count /= rd_exit [l_label].count) or rd_changed
 		end
 
 	rd_entry, rd_exit: ARRAYED_LIST [HASH_TABLE [LINKED_SET [INTEGER], INTEGER]]
