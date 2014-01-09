@@ -110,3 +110,28 @@ axiom (forall<T> a: Set T, b: Set T :: { Set#ProperSubset(a, b) }
 // Removing an element from a set and adding it again gives the same set.
 axiom (forall<T> a: Set T, o: T :: { Set#Difference(a, Set#Singleton(o)) }
   a[o] ==> Set#Equal(Set#UnionOne(Set#Difference(a, Set#Singleton(o)), o), a));
+  
+// ---------------------------------------------------------------
+// ITEM TYPE PROPERTIES
+
+// Property that `s' is a set of objects of attached type `t'.
+function {: inline } set_attached(heap: HeapType, s: Set ref, t: Type) returns (bool) {
+	(forall o: ref :: s[o] ==> attached(heap, o, t))
+}
+
+// Property that `s' is a set of objects of attached type `t'.
+function {: inline } set_detachable(heap: HeapType, s: Set ref, t: Type) returns (bool) {
+	(forall o: ref :: s[o] ==> detachable(heap, o, t))
+}
+
+// Property that field `f' is a set of objects of attached type `t'.
+function set_attached_attribute(heap: HeapType, o: ref, ot: Type, f: Field (Set ref), t: Type) returns (bool) {
+	attached(heap, o, ot) ==> set_attached(heap, heap[o, f], t)
+}
+
+// Property that field `f' is a set of objects of detachable type `t'.
+function set_detachable_attribute(heap: HeapType, o: ref, ot: Type, f: Field (Set ref), t: Type) returns (bool) {
+	attached(heap, o, ot) ==> set_detachable(heap, heap[o, f], t)
+}
+
+ 

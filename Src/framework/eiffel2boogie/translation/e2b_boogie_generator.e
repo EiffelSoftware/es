@@ -37,23 +37,12 @@ feature -- Basic operations
 		do
 			create last_generated_verifier_input.make
 
-				-- Add set axiomatization
-			create l_filename.make
-			l_filename.set_directory (theory_directory)
-			l_filename.set_file_name ("set.bpl")
-			last_generated_verifier_input.add_boogie_file (l_filename)
-
-				-- Add sequence axiomatization
-			create l_filename.make
-			l_filename.set_directory (theory_directory)
-			l_filename.set_file_name ("sequence.bpl")
-			last_generated_verifier_input.add_boogie_file (l_filename)
-
-				-- Add map axiomatization
-			create l_filename.make
-			l_filename.set_directory (theory_directory)
-			l_filename.set_file_name ("map.bpl")
-			last_generated_verifier_input.add_boogie_file (l_filename)
+				-- Add universe dependencies
+			across
+				boogie_universe.dependencies as deps
+			loop
+				last_generated_verifier_input.add_boogie_file (deps.item)
+			end
 
 				-- Add background theory
 			create l_filename.make

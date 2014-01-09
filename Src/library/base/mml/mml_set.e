@@ -1,3 +1,7 @@
+note
+	theory: "set.bpl"
+	maps_to: Set
+
 class MML_SET [G]
 
 inherit

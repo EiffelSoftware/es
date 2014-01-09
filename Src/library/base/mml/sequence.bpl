@@ -158,3 +158,26 @@ axiom (forall<T> q: Seq T, o: T :: { Seq#Range(q)[o] }{ Seq#Contains(q, o) } Seq
 function Seq#Prefix<T>(q0, q1: Seq T): bool
 { Seq#Equal(q0, Seq#Take(q1, Seq#Length(q0))) }
 
+// ---------------------------------------------------------------
+// ITEM TYPE PROPERTIES
+
+// Property that `s' is a sequence of objects of attached type `t'.
+function {: inline } sequence_attached(heap: HeapType, s: Seq ref, t: Type) returns (bool) {
+	(forall o: ref :: Seq#Range(s)[o] ==> attached(heap, o, t))
+}
+
+// Property that `s' is a sequence of objects of attached type `t'.
+function {: inline } sequence_detachable(heap: HeapType, s: Seq ref, t: Type) returns (bool) {
+	(forall o: ref :: Seq#Range(s)[o] ==> detachable(heap, o, t))
+}
+
+// Property that field `f' is a sequence of objects of detachable type `t'.
+function sequence_attached_attribute(heap: HeapType, o: ref, ot: Type, f: Field (Seq ref), t: Type) returns (bool) {
+	attached(heap, o, ot) ==> sequence_attached(heap, heap[o, f], t)
+}
+
+// Property that field `f' is a sequence of objects of detachable type `t'.
+function sequence_detachable_attribute(heap: HeapType, o: ref, ot: Type, f: Field (Seq ref), t: Type) returns (bool) {
+	attached(heap, o, ot) ==> sequence_detachable(heap, heap[o, f], t)
+}
+

@@ -37,8 +37,23 @@ feature -- Basic operations
 		local
 			l_boogie_type_name: STRING
 			l_constant: IV_CONSTANT
+			l_path: PATH
+			l_dep: FILE_NAME
 		do
 			l_boogie_type_name := name_translator.boogie_name_for_type (a_type)
+
+				-- Add dependencies
+			across
+				helper.class_note_values (a_type.base_class, "theory") as deps
+			loop
+				create l_path.make_from_string (deps.item)
+				if l_path.is_absolute then
+					create l_dep.make_from_string (deps.item)
+				else
+					create l_dep.make_from_string (l_path.absolute_path_in (a_type.base_class.lace_class.file_name.parent).canonical_path.out)
+				end
+				boogie_universe.add_dependency (l_dep)
+			end
 
 			-- TODO: refactor
 			if not a_type.is_tuple then

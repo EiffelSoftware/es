@@ -104,6 +104,7 @@ feature -- Helper functions: arguments and result
 				l_pre.node_info.set_attribute ("info", "type property for argument " + a_name)
 				current_boogie_procedure.add_contract (l_pre)
 			end
+			translation_pool.add_type (a_type.deep_actual_type.instantiated_in (current_type))
 		end
 
 	add_result_with_property

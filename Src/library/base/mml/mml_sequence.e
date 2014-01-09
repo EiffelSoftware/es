@@ -1,6 +1,8 @@
 note
 	description: "Finite sequence."
 	author: "Nadia Polikarpova"
+	theory: "sequence.bpl"
+	maps_to: Sequence	
 
 class
 	MML_SEQUENCE [G]

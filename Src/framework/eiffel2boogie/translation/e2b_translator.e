@@ -21,7 +21,9 @@ feature {NONE} -- Initialization
 			-- Initialize translator.
 		do
 			translation_pool.reset
+				-- Add types used by every system
 			translation_pool.add_type (system.any_type)
+			translation_pool.add_type (set_type)
 			translation_pool.mark_translated (translation_pool.next_untranslated_element)
 		end
 
@@ -115,6 +117,14 @@ feature -- Basic operations
 			l_unit := translation_pool.next_untranslated_element
 			l_unit.translate
 			translation_pool.mark_translated (l_unit)
+		end
+
+feature {NONE} -- Implementation
+
+	set_type: TYPE_A
+			-- Type MML_SET [ANY] (supplier of ANY).
+		do
+			Result := system.any_type.base_class.feature_named_32 ("owns").type
 		end
 
 end

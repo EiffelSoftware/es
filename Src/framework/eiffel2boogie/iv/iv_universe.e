@@ -17,12 +17,17 @@ feature {NONE} -- Initialization
 			-- Initialize universe.
 		do
 			create declarations.make
+			create dependencies.make
+			dependencies.compare_objects
 		end
 
 feature -- Access
 
 	declarations: LINKED_LIST [IV_DECLARATION]
 			-- List of top-level declarations.
+
+	dependencies: LINKED_LIST [FILE_NAME]
+			-- List of file dependencies.
 
 	procedure_named (a_name: STRING): detachable IV_PROCEDURE
 			-- Boogie procedure with name `a_name'.
@@ -64,6 +69,18 @@ feature -- Element change
 			declarations.extend (a_declaration)
 		ensure
 			a_declaration_added: declarations.last = a_declaration
+		end
+
+	add_dependency (a_file_name: FILE_NAME)
+			-- Add a file to `dependencies'.
+		require
+			a_file_name_attached: attached a_file_name
+		do
+			if not dependencies.has (a_file_name) then
+				dependencies.extend (a_file_name)
+			end
+		ensure
+			dependency_added: dependencies.last = a_file_name
 		end
 
 feature -- Visitor

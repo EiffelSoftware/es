@@ -175,6 +175,16 @@ feature -- Feature status helpers
 			Result := a_feature.export_status.is_none
 		end
 
+feature -- Class status helpers
+
+	is_class_logical (a_class: CLASS_C): BOOLEAN
+			-- Is `a_class' mapped to a logical type in a Boogie theory?
+		local
+			l_values: ARRAYED_LIST [STRING_32]
+		do
+			Result := not class_note_values (a_class, "maps_to").is_empty
+		end
+
 feature -- Ownership helpers
 
 	is_class_explicit (a_class: CLASS_C; a_type: STRING): BOOLEAN
@@ -283,7 +293,7 @@ feature -- Eiffel helpers
 			Result := Result.instantiated (a_target_type)
 			check Result /= Void end
 		end
-
+		
 feature -- Byte context helpers
 
 	set_up_byte_context (a_feature: FEATURE_I; a_type: TYPE_A)

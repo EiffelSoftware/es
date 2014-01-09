@@ -1805,9 +1805,6 @@ Src/Delivery/studio/templates/licenses/mssdk.lic -text
 Src/Delivery/studio/tools/autoproof/agents.bpl -text
 Src/Delivery/studio/tools/autoproof/arrays.bpl -text
 Src/Delivery/studio/tools/autoproof/base_theory.bpl -text
-Src/Delivery/studio/tools/autoproof/map.bpl -text
-Src/Delivery/studio/tools/autoproof/sequence.bpl -text
-Src/Delivery/studio/tools/autoproof/set.bpl -text
 Src/Delivery/studio/tools/autoproof/special.bpl -text
 Src/Delivery/studio/tools/autoproof/tuples.bpl -text
 Src/Delivery/studio/tools/boogie.txt -text
@@ -3781,6 +3778,9 @@ Src/help/wizards/eweb/pixmaps/database_small.bmp -text
 Src/help/wizards/wizard.ico -text
 Src/library/GIF/Clib/gd_lib/gd.lib svneol=native#unset
 Src/library/api_wrapper/implementation/unix/Clib/dl-config -text
+Src/library/base/mml/map.bpl -text
+Src/library/base/mml/sequence.bpl -text
+Src/library/base/mml/set.bpl -text
 Src/library/dadle/openEHR/ref_impl_eiffel/components/.DS_Store -text
 Src/library/dadle/openEHR/ref_impl_eiffel/components/._.DS_Store -text
 Src/library/dadle/openEHR/ref_impl_eiffel/components/adl_parser/.DS_Store -text
