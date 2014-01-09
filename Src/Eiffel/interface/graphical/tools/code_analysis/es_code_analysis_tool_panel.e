@@ -675,7 +675,7 @@ feature {NONE} -- Basic operations
 				create l_message_gen.make
 				l_message_gen.add (l_viol.title)
 				l_editor_item := create_clickable_grid_item (l_message_gen.last_line, True)
-				l_editor_item.pointer_button_release_actions.extend (agent show_fixes_context_menu (l_viol.data.fixes, ?, ?, ?, ?, ?, ?, ?, ?))
+				l_editor_item.pointer_button_release_actions.extend (agent show_fixes_context_menu (l_viol.data.fixes, a_row, ?, ?, ?, ?, ?, ?, ?, ?))
 				a_row.set_height (l_editor_item.required_height_for_text_and_component)
 				a_row.set_item (description_column, l_editor_item)
 
@@ -717,7 +717,7 @@ feature {NONE} -- Basic operations
 			end
 		end
 
-	show_fixes_context_menu (a_fixes: LINKED_LIST [CA_FIX]; x: INTEGER; y: INTEGER; button: INTEGER; x_tilt: DOUBLE; y_tilt: DOUBLE; pressure: DOUBLE; screen_x: INTEGER; screen_y: INTEGER)
+	show_fixes_context_menu (a_fixes: LINKED_LIST [CA_FIX]; a_row: EV_GRID_ROW; x: INTEGER; y: INTEGER; button: INTEGER; x_tilt: DOUBLE; y_tilt: DOUBLE; pressure: DOUBLE; screen_x: INTEGER; screen_y: INTEGER)
 		local
 			l_menu: EV_MENU
 			l_item: EV_MENU_ITEM
@@ -728,9 +728,12 @@ feature {NONE} -- Basic operations
 				create l_menu
 
 				across a_fixes as l_fixes loop
-					create l_fix_executor.make_with_fix (l_fixes.item)
-					create l_item.make_with_text_and_action (ca_messages.fix + l_fixes.item.caption, l_fix_executor)
-					l_menu.extend (l_item)
+						-- Only make fixes available that have not been applied already.
+					if not l_fixes.item.applied then
+						create l_fix_executor.make_with_fix (l_fixes.item, a_row)
+						create l_item.make_with_text_and_action (ca_messages.fix + l_fixes.item.caption, l_fix_executor)
+						l_menu.extend (l_item)
+					end
 				end
 
 				l_menu.show

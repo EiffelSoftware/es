@@ -20,6 +20,7 @@ create
 	make
 
 feature {NONE} -- Implementation
+
 	make (a_caption: STRING_32; a_class: CLASS_C)
 		do
 			caption := a_caption
@@ -31,10 +32,20 @@ feature {NONE} -- Implementation
 			Result := Match_list_server.item (class_to_change.class_id)
 		end
 
+feature
+
+	set_applied
+		do
+			applied := True
+		end
+
 feature -- Properties
 
 	caption: STRING_32
 
 	class_to_change: CLASS_C
+
+	applied: BOOLEAN
+			-- Has the fix already been applied?
 
 end

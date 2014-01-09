@@ -30,14 +30,17 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_fix (a_fix: CA_FIX)
+	make_with_fix (a_fix: CA_FIX; a_row: EV_GRID_ROW)
 		do
 			fix := a_fix
+			ui_row := a_row
 		end
 
 feature {NONE} -- Implementation
 
 	fix: CA_FIX
+
+	ui_row: EV_GRID_ROW
 
     apply_fix
             -- Make the changes.
@@ -62,6 +65,11 @@ feature {NONE} -- Implementation
 
 		        	l_class_modifier.commit
 
+						-- Mark the fix as applied so that it may not be applied a second time. Then
+						-- color the rule violation entry in the GUI.
+					fix.set_applied
+		        	ui_row.set_background_color (light_green)
+
 		        		-- Now compile again, which in all cases should succeed.
 		        	eiffel_project.quick_melt (True, True, True)
 
@@ -77,6 +85,13 @@ feature {NONE} -- Implementation
     	do
     		apply_fix
     	end
+
+feature {NONE} -- Utilities
+
+	light_green: EV_COLOR
+		once
+			create Result.make_with_8_bit_rgb (181, 230, 29)
+		end
 
 note
 	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
