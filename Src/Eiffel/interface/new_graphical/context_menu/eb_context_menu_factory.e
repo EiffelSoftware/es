@@ -607,6 +607,7 @@ feature {NONE} -- Menu section, Granularity 2.
 			elseif attached {CLUSTER_STONE} a_pebble as l_cluster_stone then
 				extend_basic_opening_menus (a_menu, l_cluster_stone, False)
 				extend_add_to_menu (a_menu, l_cluster_stone)
+			    (create {ES_CODE_ANALYSIS_BENCH_HELPER}).build_context_menu_for_cluster_stone (a_menu, l_cluster_stone)
 			elseif attached {TARGET_STONE} a_pebble as l_target_stone then
 				extend_add_to_menu (a_menu, l_target_stone)
 			end
@@ -2156,7 +2157,7 @@ invariant
 	dev_window_not_void: dev_window /= Void
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
