@@ -34,6 +34,10 @@ feature {NONE} -- Activation
 
 feature {NONE} -- Feature Visitor for Violation Check
 
+	checked_bodies: BINARY_SEARCH_TREE_SET [INTEGER]
+			-- Body IDs of all the feature bodies that have been checked.
+			-- Multiple feature names may share the same body.
+
 	class_check (a_class: CLASS_AS)
 		local
 			l_feat: LIST [E_FEATURE]
@@ -77,7 +81,7 @@ feature {NONE} -- Feature Visitor for Violation Check
 			l_violation.set_location (a_feature.ast.start_location)
 			l_violation.long_description_info.extend (a_feature.name_32)
 
-			create l_fix.make_with_feature (checking_class, a_feature.ast)
+			create l_fix.make_with_feature (checking_class, a_feature.ast, a_feature.name_32)
 			l_violation.fixes.extend (l_fix)
 
 			violations.extend (l_violation)

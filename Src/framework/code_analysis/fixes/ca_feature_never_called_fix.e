@@ -18,22 +18,49 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_feature (a_class: CLASS_C; a_feature: FEATURE_AS)
+	make_with_feature (a_class: CLASS_C; a_feature: FEATURE_AS; a_name: STRING_32)
 		do
-			make (ca_names.feature_never_called_fix + a_feature.feature_name.name_32 + "'", a_class)
+			make (ca_names.feature_never_called_fix + a_name + "'", a_class)
 			feature_to_remove := a_feature
+			feature_name := a_name
 		end
 
 feature {NONE} -- Implementation
 
 	feature_to_remove: FEATURE_AS
 
+	feature_name: STRING_32
+
 feature {NONE} -- Visitor
 
 	process_feature_as (a_feature: FEATURE_AS)
+		local
+			l_exit: BOOLEAN
+			l_new_feature_names: STRING_32
 		do
-			if a_feature.is_equivalent (feature_to_remove) then
-				a_feature.replace_text ("", matchlist)
+			if a_feature.feature_names.count > 1 then
+				create l_new_feature_names.make_empty
+
+				from
+					a_feature.feature_names.start
+				until
+					l_exit or a_feature.feature_names.after
+				loop
+						-- Skip the feature name we are removing.
+					if not a_feature.feature_names.item.visual_name_32.is_equal (feature_name) then
+						l_new_feature_names.append (", " + a_feature.feature_names.item.visual_name_32)
+					end
+
+					a_feature.feature_names.forth
+				end
+
+					-- Remove the first comma.
+				l_new_feature_names.remove_head (2)
+				a_feature.feature_names.replace_text (l_new_feature_names, matchlist)
+			else
+				if a_feature.is_equivalent (feature_to_remove) then
+					a_feature.replace_text ("", matchlist)
+				end
 			end
 		end
 
