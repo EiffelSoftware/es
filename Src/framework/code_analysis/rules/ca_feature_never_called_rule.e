@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_FEATURE_NEVER_CALLED_RULE}."
-	author: ""
+	description: "Rule #3: 'Feature never called'."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 

@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {CA_FIX}."
+	description: "Represents a fix for a rule violation."
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -22,12 +22,15 @@ create
 feature {NONE} -- Implementation
 
 	make (a_caption: STRING_32; a_class: CLASS_C)
+			-- Initializes `Current'. Sets the caption of the fix to `a_caption' (which
+			-- is used in the GUI, e. g.). Set the class the fix will change to `a_class'.
 		do
 			caption := a_caption
 			class_to_change := a_class
 		end
 
 	matchlist: LEAF_AS_LIST
+			-- The matchlist of the class the fix will change.
 		do
 			Result := Match_list_server.item (class_to_change.class_id)
 		end
@@ -35,6 +38,7 @@ feature {NONE} -- Implementation
 feature
 
 	set_applied
+			-- Marks this fix as applied.
 		do
 			applied := True
 		end
@@ -42,8 +46,10 @@ feature
 feature -- Properties
 
 	caption: STRING_32
+			-- Caption of this fix. Used in the GUI, for example.
 
 	class_to_change: CLASS_C
+			-- Class this fix will change.
 
 	applied: BOOLEAN
 			-- Has the fix already been applied?
