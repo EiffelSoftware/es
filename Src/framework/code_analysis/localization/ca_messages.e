@@ -81,6 +81,9 @@ feature -- GUI
 	fix: STRING_32
 		do Result := locale.translation ("Fix: ") end
 
+	no_issues: STRING_32
+		do Result := locale.translation ("Code analysis found no issues!") end
+
 feature -- Code Analyzer
 
 	analyzing_class (a_class_name: READABLE_STRING_GENERAL): STRING_32

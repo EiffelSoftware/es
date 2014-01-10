@@ -15,16 +15,18 @@ feature -- Basic operations
 	build_context_menu_for_class_stone (a_menu: EV_MENU; a_stone: CLASSC_STONE)
 			-- Build context menu for class stone `a_stone' and add it to `a_menu'.
 			--
-			-- Added to {EB_CONTEXT_MENU_FACTORY}.extend_standard_compiler_item_menu
+			-- Added to {EB_CONTEXT_MENU_FACTORY}.extend_standard_compiler_item_menu.
 		require
 			a_menu_not_void: a_menu /= Void
 			a_stone_not_void: a_stone /= Void
 		local
 			l_item: EV_MENU_ITEM
 		do
+				-- The class should be compiled in any case. Make it sure anyway.
 			if a_stone.class_i.is_compiled then
 				create l_item.make_with_text_and_action ("Run Code Analysis of Class '" + a_stone.class_name + "'"
 					, agent ca_command.execute_with_stone (a_stone))
+					-- Although the icon name is not very suitable, the icon itself seems appropriate.
 				l_item.set_pixmap (icon_pixmaps.view_flat_icon)
 
 				if code_analyzer.is_running then
@@ -36,9 +38,9 @@ feature -- Basic operations
 		end
 
 	build_context_menu_for_cluster_stone (a_menu: EV_MENU; a_stone: CLUSTER_STONE)
-			-- Build context menu for class stone `a_stone' and add it to `a_menu'.
-			--
-			-- Added to {EB_CONTEXT_MENU_FACTORY}.extend_standard_compiler_item_menu
+			-- Build context menu for cluster stone `a_stone' and add it to `a_menu'.
+			-- Very similar to `build_context_menu_for_class_stone'.
+			-- Added to {EB_CONTEXT_MENU_FACTORY}.extend_standard_compiler_item_menu.
 		require
 			a_menu_not_void: a_menu /= Void
 			a_stone_not_void: a_stone /= Void

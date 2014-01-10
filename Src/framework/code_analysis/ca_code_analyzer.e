@@ -85,8 +85,6 @@ feature -- Analysis interface
 			l_task: CA_RULE_CHECKING_TASK
 		do
 			is_running := True
-				-- TODO: caching
---			rule_violations.wipe_out
 
 			create l_rules_checker.make
 			across rules as l_rules loop

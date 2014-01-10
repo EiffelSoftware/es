@@ -1,5 +1,5 @@
 note
-	description: "Shim class for proof tool."
+	description: "Shim class for Code Analysis tool."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -23,12 +23,15 @@ feature -- Access
 	icon: EV_PIXEL_BUFFER
 			-- <Precursor>
 		do
+				-- The icon name sounds wrong but the icon itself is
+				-- appropriate
 			Result := stock_pixmaps.view_flat_icon_buffer
 		end
 
 	icon_pixmap: EV_PIXMAP
 			-- <Precursor>
 		do
+				-- (See feature `icon'.)
 			Result := stock_pixmaps.view_flat_icon
 		end
 
@@ -43,9 +46,10 @@ feature {NONE} -- Factory
 feature {NONE} -- Internationalization
 
 	t_title: STRING = "Code Analysis"
+			-- The title of this tool.
 
 ;note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

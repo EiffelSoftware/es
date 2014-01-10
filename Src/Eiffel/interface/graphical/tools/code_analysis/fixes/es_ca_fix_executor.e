@@ -31,6 +31,8 @@ create
 feature {NONE} -- Initialization
 
 	make_with_fix (a_fix: CA_FIX; a_row: EV_GRID_ROW)
+			-- Initializes `Current' with fix `a_fix' to apply and with GUI grid
+			-- row `a_row' (will be painted green when fix has been applied).
 		do
 			fix := a_fix
 			ui_row := a_row
@@ -39,8 +41,10 @@ feature {NONE} -- Initialization
 feature {NONE} -- Implementation
 
 	fix: CA_FIX
+			-- The fix to apply.
 
 	ui_row: EV_GRID_ROW
+			-- The associated grid row of the GUI.
 
     apply_fix
             -- Make the changes.
@@ -82,6 +86,8 @@ feature {NONE} -- Implementation
         end
 
     call alias "()" (args: detachable separate TUPLE)
+    		-- Apply the fix. Thanks to this, this class can be used as an
+    		-- agent. `args' are empty.
     	do
     		apply_fix
     	end
@@ -89,6 +95,7 @@ feature {NONE} -- Implementation
 feature {NONE} -- Utilities
 
 	light_green: EV_COLOR
+			-- The color the data row from the GUI is painted in.
 		once
 			create Result.make_with_8_bit_rgb (181, 230, 29)
 		end

@@ -42,12 +42,7 @@ feature {NONE} -- Initialization
 			enable_sensitive
 			set_up_menu_items
 
-			create changed_classes.make
 			create analysis_timestamp.make (0)
-
-				-- Register a pre-compile action in order to record which classes
-				-- have been changed. (For caching.)
-			window_manager.compile_start_actions.extend (agent record_changed_classes)
 		end
 
 feature -- Execution
@@ -101,12 +96,16 @@ feature -- Execution
 feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 
 	save_compile_and_analyze_all
+			-- Saves and compiles the system. If successful then the whole
+			-- system will be analyzed.
 		do
 			window_manager.save_all_before_compiling
 			compile_and_analyze_all
 		end
 
 	compile_and_analyze_all
+			-- Compiles the system; if successful then the whole system will
+			-- be analyzed.
 		local
 			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
 			l_dialog: ES_INFORMATION_PROMPT
@@ -124,9 +123,6 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 
 						-- If we did a system analysis recently then only add modified classes.
 					if last_was_analyze_all then
---						create l_dialog.make_standard ("Since you are doing an analysis of the %
---							%system again, only recently changed classes will be analyzed.")
---						l_dialog.show_on_active_window
 						analyze_changed_classes
 					else
 						analyze_all
@@ -137,22 +133,21 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 		end
 
 	last_was_analyze_all: BOOLEAN
+			-- Was the last analysis performed on the whole system?
 
 	analysis_timestamp: HASH_TABLE [INTEGER, CLASS_I]
-		-- Stores the time of the last modification of the class at the point
-		-- of the last analysis.
-
-	changed_classes: LINKED_SET [CLASS_I]
+			-- Stores the time of the last modification of the class at the point
+			-- of the last analysis.
 
 	save_compile_and_analyze (a_stone: STONE)
-			-- Save modified windows, compile project and perform analysis.
+			-- Save modified windows, compile project and perform analysis of stone `a_stone'.
 		do
 			window_manager.save_all_before_compiling
 			compile_and_analyze (a_stone)
 		end
 
 	compile_and_analyze (a_stone: STONE)
-			-- Compile project and perform analysis.
+			-- Compile project and perform analysis of stone `a_stone'.
 		local
 			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
 			l_dialog: ES_INFORMATION_PROMPT
@@ -171,6 +166,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 		end
 
 	analyze_all
+			-- Analyzes the whole system.
 		local
 			l_cluster: CLUSTER_I
 			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
@@ -198,6 +194,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 		end
 
 	analyze_changed_classes
+			-- Only analyze the classes that have been modified since the last analysis.
 		local
 			l_cluster: CLUSTER_I
 			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
@@ -224,6 +221,11 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 				analysis_timestamp.forth
 			end
 
+				-- Update the analysis timestamp for all the classes that have been added.
+			across code_analyzer.class_list as l_classes loop
+				analysis_timestamp.force (l_classes.item.original_class.date, l_classes.item.original_class)
+			end
+
 			disable_tool_button
 			window_manager.display_message ("Code analysis running...")
 			code_analyzer.add_completed_action (agent analysis_completed)
@@ -235,6 +237,8 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 		end
 
 	last_scope_label: EV_LABEL
+			-- Shows the scope of the last analysis (system, single class, etc.). A stone
+			-- will be attached, too, depending on the scope.
 
 	perform_analysis (a_stone: STONE)
 			-- Analyze `a_stone' only.
@@ -243,6 +247,8 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
 			l_scope_label: EV_LABEL
 		do
+				-- For simplicity let us assume that `a_stone' does not
+				-- correspond to the system or is equivalent to it.
 			last_was_analyze_all := False
 
 			create l_helper
@@ -297,13 +303,15 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 		end
 
 	analysis_completed (a_success: BOOLEAN)
+			-- Is called when the analysis is completed. `a_success' is ignored (requried
+			-- by {CA_CODE_ANALYZER}, though).
 		local
 			l_violation_exists: BOOLEAN
 		do
-			changed_classes.wipe_out
-
+				-- First off, remove all event items.
 			event_list.prune_event_items (event_context_cookie)
 
+				-- Add an event item for each rule violation.
 			across code_analyzer.rule_violations as l_viol_list loop
 				across l_viol_list.item as l_viol loop
 					event_list.put_event_item (event_context_cookie, create {CA_RULE_VIOLATION_EVENT}.make (l_viol.item))
@@ -311,6 +319,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 				end
 			end
 
+				-- If there are no violations at all then add a pseudo item indicating this very fact.
 			if not l_violation_exists then
 				event_list.put_event_item (event_context_cookie, create {CA_NO_ISSUES_EVENT}.make)
 			end
@@ -318,6 +327,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 			show_ca_tool
 
 			enable_tool_button
+				-- Update status bar.
 			window_manager.display_message ("Code Analysis has terminated.")
 		end
 
@@ -348,7 +358,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 		end
 
 	show_ca_tool
-			-- Shows the proof tool
+			-- Shows the proof tool.
 		local
 			l_tool: ES_CODE_ANALYSIS_TOOL
 		do
@@ -446,8 +456,6 @@ feature {NONE} -- Implementation
 		local
 			l_window: EB_DEVELOPMENT_WINDOW
 		do
-			last_execution := agent analyze_current_item
-
 			l_window := window_manager.last_focused_development_window
 			if droppable (l_window.stone) then
 				execute_with_stone (l_window.stone)
@@ -460,8 +468,6 @@ feature {NONE} -- Implementation
 			l_window: EB_DEVELOPMENT_WINDOW
 			l_cluster_stone: CLUSTER_STONE
 		do
-			last_execution := agent analyze_parent_cluster
-
 			l_window := window_manager.last_focused_development_window
 			if attached {CLASSC_STONE} l_window.stone as l_stone then
 				create l_cluster_stone.make (l_stone.group)
@@ -471,21 +477,6 @@ feature {NONE} -- Implementation
 					create l_cluster_stone.make (l_stone.cluster_i.parent_cluster)
 				end
 				execute_with_stone (l_cluster_stone)
-			end
-		end
-
-	execute_last_action
-			-- Execute same action as last time.
-		do
-			last_execution.call ([])
-		end
-
-	record_changed_classes
-		do
-			across eiffel_universe.all_classes as l_classes loop
-				if l_classes.item.changed then
-					changed_classes.put (l_classes.item)
-				end
 			end
 		end
 
@@ -509,11 +500,9 @@ feature {NONE} -- Implementation
 	set_up_menu_items
 			-- Set up menu items of proof button
 		do
-			last_execution := agent analyze_current_item
 			create analyze_system_item.make_with_text_and_action ("Analyze whole system", agent analyze_all)
 			create analyze_current_item_item.make_with_text_and_action ("Analyze current item", agent analyze_current_item)
 			create analyze_parent_item_item.make_with_text_and_action ("Analyze parent cluster of current item", agent analyze_parent_cluster)
-
 		end
 
 	drop_down_menu: EV_MENU
@@ -526,9 +515,6 @@ feature {NONE} -- Implementation
 		ensure
 			not_void: Result /= Void
 		end
-
-	last_execution: PROCEDURE [ANY, TUPLE []]
-			-- Last executed actions
 
 	analyze_current_item_item: EV_MENU_ITEM
 			-- Menu item to analyze current item

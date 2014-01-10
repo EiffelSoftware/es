@@ -408,4 +408,37 @@ feature -- GUI
 	tool_text_filter: STRING_32
 		do Result := locale.translation ("Filter") end
 
+	scope: STRING_32
+		do Result := locale.translation ("Scope: ") end
+
+	scope_tooltip: STRING_32
+		do Result := locale.translation ("Scope of Last Analysis") end
+
+	analysis_not_run: STRING_32
+		do Result := locale.translation ("(Analysis has not run yet.)") end
+
+	go_to_previous_tooltip: STRING_32
+		do Result := locale.translation ("Go to previous rule violation") end
+
+	go_to_next_tooltip: STRING_32
+		do Result := locale.translation ("Go to next rule violation") end
+
+	options_tooltip: STRING_32
+		do Result := locale.translation ("Code analysis options") end
+
+	description_column: STRING_32
+		do Result := locale.translation ("Description") end
+
+	class_column: STRING_32
+		do Result := locale.translation ("Class") end
+
+	location_column: STRING_32
+		do Result := locale.translation ("Location") end
+
+	rule_id_column: STRING_32
+		do Result := locale.translation ("Rule ID") end
+
+	severity_score_column: STRING_32
+		do Result := locale.translation ("Severity Score") end
+
 end

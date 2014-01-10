@@ -22,7 +22,8 @@ create
 feature {NONE} -- Initialization
 
 	make_with_arguments (a_arguments: LINKED_LIST [STRING])
-			-- Initialization for `Current'.
+			-- Initialization for `Current'. `a_arguments' are the command-line
+			-- arguments that are relevant for the Code Analyzer.
 		do
 			create class_name_list.make
 
@@ -41,12 +42,16 @@ feature {NONE} -- Initialization
 feature {NONE} -- Options
 
 	class_name_list: LINKED_LIST [STRING]
+			-- List of class names for analysis, which have been provided by the user.
 
 	restore_preferences: BOOLEAN
+			-- Does the user want to restore the Code Analysis preferences to their
+			-- default values?
 
 feature -- Execution (declared in EWB_CMD)
 
 	execute
+			-- Execute the Code Analysis command-line tool
 		local
 			l_code_analyzer: CA_CODE_ANALYZER
 			l_rule_name, l_rule_id, l_line, l_col: STRING
@@ -74,8 +79,10 @@ feature -- Execution (declared in EWB_CMD)
 
 				if not l_vlist.item.is_empty then
 					l_has_violations := True
+						-- Always sort the rule violations by the class they are referring to.
 					print (ca_messages.cmd_class + l_vlist.key.name + "':%N")
 
+						-- See `{CA_RULE_VIOLATION}.is_less' for information on the sorting.
 					across l_vlist.item as l_v loop
 						l_rule_name := l_v.item.rule.title
 						l_rule_id := l_v.item.rule.id
@@ -98,6 +105,8 @@ feature -- Execution (declared in EWB_CMD)
 		end
 
 	try_add_class_with_name (a_analyzer: CA_CODE_ANALYZER; a_class_name: STRING)
+			-- Adds class with name `a_class_name' if it is found amongst the compiled
+			-- classes to `a_analyzer'.
 		do
 			if attached universe.compiled_classes_with_name (a_class_name) as l_c then
 				across l_c as l_classes loop
@@ -111,13 +120,16 @@ feature -- Execution (declared in EWB_CMD)
 feature -- Info (declared in EWB_CMD)
 
 	name: STRING = "Code Analysis"
+			-- Name of this command-line tool.
 
 	help_message: STRING_GENERAL
+			-- Help message for this command-line tool.
 		do
 			Result := ca_messages.cmd_help_message
 		end
 
 	abbreviation: CHARACTER = 'a'
+			-- One-character abbreviation for this command-line tool.
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software"

@@ -1,5 +1,5 @@
 note
-	description: "Allows undoable modification of a class text. It is basically the same as {ERF_CLASS_TEXT_MODIFICATION} but it has been adapted to code analysis fixes."
+	description: "Allows undoable modification of a class text. Used by {ES_CA_FIX_EXECUTOR}."
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"

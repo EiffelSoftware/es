@@ -44,11 +44,6 @@ feature {NONE} -- Initialization
 		do
 			Precursor
 
---			create l_shared_writer
---			l_shared_writer.label_font_table.item (0).set_height (16)
---			l_shared_writer.label_font_table.item (1).set_height (16)
---			l_shared_writer.label_font_table.item (2).set_height (16)
-
 				-- We want the tool to synchronize with the event list, when first initialized.
 			is_event_list_synchronized_on_initialized := True
 		end
@@ -109,10 +104,10 @@ feature {NONE} -- Initialization
 			update_button_titles
 
 				-- Scope label
-			create l_label.make_with_text ("Scope: ")
-			l_label.set_tooltip ("Scope of Last Analysis")
-			create scope_label.make_with_text ("(Analysis has not run yet.)")
-			scope_label.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (100, 100, 100))
+			create l_label.make_with_text (ca_names.scope)
+			l_label.set_tooltip (ca_names.scope_tooltip)
+			create scope_label.make_with_text (ca_names.analysis_not_run)
+			scope_label.set_foreground_color (dark_gray)
 
 			create Result.make (5)
 			run_analysis_button := l_helper.ca_command.new_sd_toolbar_item (True)
@@ -163,152 +158,30 @@ feature {NONE} -- Initialization
 				-- Move to previous error button
 			create l_button.make
 			l_button.set_pixmap (stock_pixmaps.view_previous_icon)
-			l_button.set_tooltip ("Go to previous rule violation")
+			l_button.set_tooltip (ca_names.go_to_previous_tooltip)
 			l_button.select_actions.extend (agent go_to_previous_violation)
 
 				-- options button
 			create l_popup_button.make
 			l_popup_button.set_pixmap (stock_pixmaps.metric_filter_icon)
 			l_popup_button.set_pixel_buffer (stock_pixmaps.metric_filter_icon_buffer)
-			l_popup_button.set_tooltip ("Code analysis options")
---			l_popup_button.set_menu_function (agent build_options_menu)
+			l_popup_button.set_tooltip (ca_names.options_tooltip)
 
 			show_preferences_button := (create {ES_CA_SHOW_PREFERENCES_COMMAND}.make).new_sd_toolbar_item (True)
 
 			create Result.make (4)
---			Result.extend (create {SD_TOOL_BAR_RESIZABLE_ITEM}.make (l_box))
 			Result.extend (l_button)
 				-- Move to next error button
 			create l_button.make
 			l_button.set_pixmap (stock_pixmaps.view_next_icon)
-			l_button.set_tooltip ("Go to next rule violation")
+			l_button.set_tooltip (ca_names.go_to_next_tooltip)
 			l_button.select_actions.extend (agent go_to_next_violation)
 
 			Result.extend (l_button)
 
 			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 			Result.extend (show_preferences_button)
---			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
---			Result.extend (l_popup_button)
 		end
-
---	build_options_menu: EV_MENU
---			-- Build options menu.
---		local
---			l_item: EV_CHECK_MENU_ITEM
---		do
---			create Result
-
---			create l_item.make_with_text_and_action ("Two-step verification",
---				agent do
---					options.set_two_step_verification_enabled (not options.is_two_step_verification_enabled)
---				end)
---			if options.is_two_step_verification_enabled then
---				l_item.toggle
---			end
---			Result.extend (l_item)
-
---			create l_item.make_with_text_and_action ("Automatic inlining of routines without postcondition",
---				agent do
---					options.set_automatic_inlining_enabled (not options.is_automatic_inlining_enabled)
---				end)
---			if options.is_automatic_inlining_enabled then
---				l_item.toggle
---			end
---			Result.extend (l_item)
-
---			create l_item.make_with_text_and_action ("Automatic unrolling of loops without invariants",
---				agent do
---					options.set_automatic_loop_unrolling_enabled (not options.is_automatic_loop_unrolling_enabled)
---				end)
---			if options.is_automatic_loop_unrolling_enabled then
---				l_item.toggle
---			end
---			Result.extend (l_item)
-
---			create l_item.make_with_text_and_action ("Use sound loop unrolling",
---				agent do
---					options.set_sound_loop_unrolling_enabled (not options.is_sound_loop_unrolling_enabled)
---				end)
---			if options.is_sound_loop_unrolling_enabled then
---				l_item.toggle
---			end
---			Result.extend (l_item)
-
---			create l_item.make_with_text_and_action ("Check integer overflow",
---				agent do
---					options.set_checking_overflow (not options.is_checking_overflow)
---				end)
---			if options.is_checking_overflow then
---				l_item.toggle
---			end
---			Result.extend (l_item)
-
---			Result.extend (create {EV_MENU_SEPARATOR})
-
---			create l_item.make_with_text_and_action ("Check frame condition",
---				agent do
---					options.set_checking_frame (not options.is_checking_frame)
---				end)
---			if options.is_checking_frame then
---				l_item.toggle
---			end
---			Result.extend (l_item)
-
---			create l_item.make_with_text_and_action ("Enable ownership",
---				agent do
---					options.set_ownership_enabled (not options.is_ownership_enabled)
---				end)
---			if options.is_ownership_enabled then
---				l_item.toggle
---			end
---			Result.extend (l_item)
-
---			create l_item.make_with_text_and_action ("- use defaults",
---				agent do
---					options.set_ownership_defaults_enabled (not options.is_ownership_defaults_enabled)
---				end)
---			if options.is_ownership_defaults_enabled then
---				l_item.toggle
---			end
---			Result.extend (l_item)
-
---			create l_item.make_with_text_and_action ("Enable postcondition mutation",
---				agent do
---					options.set_postcondition_mutation_enabled (not options.is_postcondition_mutation_enabled)
---				end)
---			if options.is_postcondition_mutation_enabled then
---				l_item.toggle
---			end
---			Result.extend (l_item)
-
---			create l_item.make_with_text_and_action ("- with coupled mutations",
---				agent do
---					options.set_coupled_mutations_enabled (not options.is_coupled_mutations_enabled)
---				end)
---			if options.is_coupled_mutations_enabled then
---				l_item.toggle
---			end
---			Result.extend (l_item)
-
---			create l_item.make_with_text_and_action ("- with uncoupled mutations",
---				agent do
---					options.set_uncoupled_mutations_enabled (not options.is_uncoupled_mutations_enabled)
---				end)
---			if options.is_uncoupled_mutations_enabled then
---				l_item.toggle
---			end
---			Result.extend (l_item)
-
---			create l_item.make_with_text_and_action ("- with aging",
---				agent do
---					options.set_aging_enabled (not options.is_aging_enabled)
---				end)
---			if options.is_aging_enabled then
---				l_item.toggle
---			end
---			Result.extend (l_item)
---		end
 
 	build_tool_interface (a_widget: ES_GRID)
 			-- Builds the tools user interface elements.
@@ -321,37 +194,37 @@ feature {NONE} -- Initialization
 			Precursor {ES_CLICKABLE_EVENT_LIST_TOOL_PANEL_BASE} (a_widget)
 			a_widget.set_column_count_to (last_column)
 
-	-- Create columns
+				-- Create columns.
 			l_col := a_widget.column (1)
 			l_col.set_width (20)
 			l_col := a_widget.column (category_column)
 			l_col.set_width (20)
 
 			l_col := a_widget.column (description_column)
-			l_col.set_title ("Description")
+			l_col.set_title (ca_names.description_column)
 			l_col.set_width (500)
 
 			l_col := a_widget.column (class_column)
-			l_col.set_title ("Class")
+			l_col.set_title (ca_names.class_column)
 			l_col.set_width (120)
 
 			l_col := a_widget.column (location_column)
-			l_col.set_title ("Location")
+			l_col.set_title (ca_names.location_column)
 			l_col.set_width (80)
 
 			l_col := a_widget.column (rule_id_column)
-			l_col.set_title ("Rule ID")
+			l_col.set_title (ca_names.rule_id_column)
 			l_col.set_width (120)
 
 			l_col := a_widget.column (severity_score_column)
-			l_col.set_title ("Severity Score")
+			l_col.set_title (ca_names.severity_score_column)
 			l_col.set_width (50)
 
 			a_widget.enable_tree
 			a_widget.disable_row_height_fixed
 			a_widget.enable_auto_size_best_fit_column (description_column)
 
-				-- Enable sorting
+				-- Enable sorting.
 			enable_sorting_on_columns (
 				<<
 					a_widget.column (category_column),
@@ -386,24 +259,25 @@ feature -- Access
 feature -- Status report
 
 	show_errors: BOOLEAN
-			-- Indicates if errors should be shown
+			-- Should errors be shown?
 		do
 			Result := not is_initialized or else errors_button.is_selected
 		end
 
 	show_warnings: BOOLEAN
-			-- Indicates if errors should be shown
+			-- Should warnings be shown?
 		do
 			Result := not is_initialized or else warnings_button.is_selected
 		end
 
 	show_suggestions: BOOLEAN
+			-- Should suggestions be shown?
 		do
 			Result := not is_initialized or else suggestions_button.is_selected
 		end
 
 	show_hints: BOOLEAN
-			-- Indicates if errors should be shown
+			-- Should hints be shown?
 		do
 			Result := not is_initialized or else hints_button.is_selected
 		end
@@ -423,20 +297,6 @@ feature -- Status report
 					Result := False
 				elseif is_hint_event (l_viol) and not show_hints then
 					Result := False
-				else
-						-- Probably not necessary since every event has to be in one
-						-- of the categories above.
---					l_text := text_filter.text.as_lower
---					if not l_text.is_empty then
---						if
---							not l_viol.context_class.name.as_lower.has_substring (l_text) and
---							(l_viol.context_feature = Void or else
---							 not l_viol.context_feature.feature_name_32.as_lower.has_substring (l_text)) and
---							not l_viol.description.as_lower.has_substring (l_text)
---						then
---							Result := False
---						end
---					end
 				end
 			end
 		end
@@ -450,15 +310,16 @@ feature -- Status report
 feature {NONE} -- User interface items
 
 	errors_button: SD_TOOL_BAR_TOGGLE_BUTTON
-			-- Toogle to show/hide errors
+			-- Toogle to show/hide errors.
 
 	warnings_button: SD_TOOL_BAR_TOGGLE_BUTTON
-			-- Toogle to show/hide warnings
+			-- Toogle to show/hide warnings.
 
 	suggestions_button: SD_TOOL_BAR_TOGGLE_BUTTON
+			-- Toogle to show/hide suggestions.
 
 	hints_button: SD_TOOL_BAR_TOGGLE_BUTTON
-			-- Toogle to show/hide hints
+			-- Toogle to show/hide hints.
 
 	text_filter: EV_TEXT_FIELD
 			-- Text field to enter filter
@@ -466,6 +327,7 @@ feature {NONE} -- User interface items
 feature {ES_CODE_ANALYSIS_COMMAND} -- UI Items
 
 	scope_label: EV_LABEL
+			-- Label showing the scope of the last analysis.
 
 feature {NONE} -- Events
 
@@ -570,7 +432,7 @@ feature {NONE} -- Query
 		end
 
 	is_error_event (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
-			-- Determines if event `a_event_item' corresponds to an error
+			-- Does event `a_event_item' correspond to an error?
 		do
 			Result :=
 				attached {CA_RULE_VIOLATION_EVENT} a_event_item as l_ev
@@ -578,7 +440,7 @@ feature {NONE} -- Query
 		end
 
 	is_warning_event (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
-			-- Determines if event `a_event_item' corresponds to a warning
+			-- Does event `a_event_item' correspond to a warning?
 		do
 			Result :=
 				attached {CA_RULE_VIOLATION_EVENT} a_event_item as l_ev
@@ -586,14 +448,14 @@ feature {NONE} -- Query
 		end
 
 	is_suggestion_event (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
-			-- Determines if event `a_event_item' corresponds to a suggestion
+			-- Does event `a_event_item' correspond to a suggestion?
 		do
 			Result := attached {CA_RULE_VIOLATION_EVENT} a_event_item as l_ev
 			and then l_ev.is_suggestion_event
 		end
 
 	is_hint_event (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
-			-- Determines if event 'a_event_item' corresponds to a hint
+			-- Does event `a_event_item' correspond to a hint?
 		do
 			Result := attached {CA_RULE_VIOLATION_EVENT} a_event_item as l_ev
 			and then l_ev.is_hint_event
@@ -642,7 +504,7 @@ feature {NONE} -- Basic operations
 				l_label.set_pixmap (stock_pixmaps.general_tick_icon)
 				a_row.set_item (category_column, l_label)
 
-				create l_label.make_with_text ("Code analysis found no issues!")
+				create l_label.make_with_text (ca_messages.no_issues)
 				a_row.set_item (description_column, l_label)
 
 			elseif attached {CA_RULE_VIOLATION_EVENT} a_event_item as l_viol then
@@ -654,12 +516,12 @@ feature {NONE} -- Basic operations
 					l_label.set_pixmap (stock_pixmaps.general_error_icon)
 					l_label.set_data ("Error")
 
-					a_row.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 220, 220))
+					a_row.set_background_color (error_bg_color)
 				elseif is_warning_event (l_viol) then
 					l_label.set_pixmap (stock_pixmaps.general_warning_icon)
 					l_label.set_data ("Warning")
 
-					a_row.set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 188))
+					a_row.set_background_color (warning_bg_color)
 				elseif is_suggestion_event (l_viol) then
 					l_label.set_pixmap (stock_pixmaps.view_editor_icon)
 					l_label.set_data ("Suggestion")
@@ -718,6 +580,9 @@ feature {NONE} -- Basic operations
 		end
 
 	show_fixes_context_menu (a_fixes: LINKED_LIST [CA_FIX]; a_row: EV_GRID_ROW; x: INTEGER; y: INTEGER; button: INTEGER; x_tilt: DOUBLE; y_tilt: DOUBLE; pressure: DOUBLE; screen_x: INTEGER; screen_y: INTEGER)
+			-- Show a context menu for data row `a_row' where the user can choose from fixes in `a_fixes'.
+			-- If `button' is not set to `3' (right mouse button) then no context menu will be shown. All
+			-- the other arguments are required by the mouse button event and are ignored.
 		local
 			l_menu: EV_MENU
 			l_item: EV_MENU_ITEM
@@ -804,6 +669,7 @@ feature {NONE} -- Basic operations
 		end
 
 	go_to_next_violation
+			-- Navigates to the next rule violation.
 		do
 			move_next (agent (a_item: EVENT_LIST_ITEM_I): BOOLEAN
 						do
@@ -812,6 +678,7 @@ feature {NONE} -- Basic operations
 		end
 
 	go_to_previous_violation
+			-- Navigates to the previous rule violation.
 		do
 			move_previous (agent (a_item: EVENT_LIST_ITEM_I): BOOLEAN
 							do
@@ -834,6 +701,26 @@ feature {NONE} -- Clean up
 			Precursor {ES_CLICKABLE_EVENT_LIST_TOOL_PANEL_BASE}
 		end
 
+feature {NONE} -- Colors
+
+	error_bg_color: EV_COLOR
+			-- Background color for errors.
+		once
+			create Result.make_with_8_bit_rgb (255, 220, 220)
+		end
+
+	warning_bg_color: EV_COLOR
+			-- Background color for warnings.
+		once
+			create Result.make_with_8_bit_rgb (255, 255, 188)
+		end
+
+	dark_gray: EV_COLOR
+			-- Dark gray color (e. g. for font foreground).
+		once
+			create Result.make_with_8_bit_rgb (100, 100, 100)
+		end
+
 feature {NONE} -- Constants
 
 	category_column: INTEGER = 2
@@ -843,36 +730,6 @@ feature {NONE} -- Constants
 	rule_id_column: INTEGER = 6
 	severity_score_column: INTEGER = 7
 	last_column: INTEGER = 7
-
-	successful_color: EV_COLOR
-			-- Background color for successful rows
-		once
-			create Result.make_with_rgb (0.8, 1.0, 0.8)
-		end
-
-	failed_color: EV_COLOR
-			-- Background color for successful rows
-		once
-			create Result.make_with_rgb (1.0, 0.7, 0.7)
-		end
-
-	even_failed_sub_color: EV_COLOR
-			-- Background color for successful rows
-		once
-			create Result.make_with_rgb (1.0, 0.9, 0.9)
-		end
-
-	odd_failed_sub_color: EV_COLOR
-			-- Background color for successful rows
-		once
-			create Result.make_with_rgb (1.0, 0.8, 0.8)
-		end
-
-	partial_color: EV_COLOR
-			-- Background color for partial success
-		once
-			create Result.make_with_rgb (1.0, 0.9, 0.4)
-		end
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software"
