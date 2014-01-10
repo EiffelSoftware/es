@@ -3991,7 +3991,11 @@ Src/library/i18n/example_application/po_files/xx_XX.po -text
 Src/library/i18n/example_application/po_files/zh_CN.po -text
 Src/library/i18n/forum.txt -text
 Src/library/i18n/tests/test_files/locale/results/unix/POSIX -text
+Src/library/i18n/tests/test_files/locale/results/unix/en_AG -text
 Src/library/i18n/tests/test_files/locale/results/unix/en_IN -text
+Src/library/i18n/tests/test_files/locale/results/unix/en_NG -text
+Src/library/i18n/tests/test_files/locale/results/unix/en_ZM -text
+Src/library/i18n/tests/test_files/locale/results/unix/fr_FR -text
 Src/library/i18n/tests/test_files/locale/results/unix/zh_CN -text
 Src/library/i18n/tests/test_files/locale/results/windows/af_ZA -text
 Src/library/i18n/tests/test_files/locale/results/windows/am_ET -text
@@ -4576,6 +4580,7 @@ Src/library/spelling/tests/word_set/not_well-formed.xml -text
 Src/library/spelling/tests/word_set/unexpected_element.xml -text
 Src/library/spelling/tests/word_set/unknown_root_element.xml -text
 Src/library/spelling/tests/word_set/valid.xml -text
+Src/library/store/test/test_results/oracle_results -text
 Src/library/text/parser/xml/parser/callbacks/README.TXT -text
 Src/library/text/parser/xml/tree/README.TXT -text
 Src/library/vision2/Clib/default_vision2_icon.ico -text

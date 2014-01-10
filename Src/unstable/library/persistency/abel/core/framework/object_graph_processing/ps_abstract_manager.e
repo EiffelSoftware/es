@@ -12,12 +12,10 @@ inherit
 
 feature {NONE} -- Initialization
 
-	initialize (meta_mgr: like metadata_factory; id_mgr: like id_manager; key_mapper: like primary_key_mapper)
+	initialize (meta_mgr: like type_factory)
 			-- Initialization for `Current'
 		do
-			metadata_factory := meta_mgr
-			id_manager := id_mgr
-			primary_key_mapper := key_mapper
+			type_factory := meta_mgr
 			create identity_type_handlers.make (tiny_size)
 			create value_type_handlers.make_empty (tiny_size)
 			create type_handler_cache.make (tiny_size)
@@ -55,15 +53,8 @@ feature {PS_ABEL_EXPORT} -- Access
 
 feature {PS_ABEL_EXPORT} -- Access
 
-	metadata_factory: PS_METADATA_FACTORY
+	type_factory: PS_METADATA_FACTORY
 			-- A factory for PS_TYPE_METADATA.
-
-	id_manager: PS_OBJECT_IDENTIFICATION_MANAGER
-			-- The ABEL identifier manager.
-
-	primary_key_mapper: PS_KEY_POID_TABLE
-			-- A table to map an ABEL identifier to a primary key.
-
 
 feature {PS_ABEL_EXPORT} -- Status report
 
@@ -144,6 +135,7 @@ feature {NONE} -- Utilities
 						create not_found_exception
 						not_found_exception.set_description (
 							"Could not find a handler for type: " + object.type.type.name + "%N")
+						transaction.set_error (not_found_exception)
 						not_found_exception.raise
 					end
 
@@ -187,10 +179,10 @@ feature {NONE} -- Utilities
 			do_all_in_set (operation, 1 |..| count)
 		end
 
-	do_all_in_set (operation: PROCEDURE [ANY, TUPLE [PS_HANDLER, G]]; set: INDEXABLE [INTEGER, INTEGER])
+	do_all_in_set (operation: PROCEDURE [ANY, TUPLE [PS_HANDLER, G]]; set: INTEGER_INTERVAL)
 			-- Apply `operation' on all items with an index in `set'.
-			-- Ignore items when {PS_OBJECT_DATA}.handler is void or {PS_OBJECT_DATA}.is_ignored is True.
-			-- Do nothing if `from_index' > `to_index'
+			-- Ignore items when `{PS_OBJECT_DATA}.handler' is Void or `{PS_OBJECT_DATA}.is_ignored' is True.
+			-- Do nothing if `set.is_empty'
 		local
 			index: INTEGER
 		do

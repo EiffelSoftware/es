@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PS_READ_CURSOR}."
-	author: ""
+	description: "An internal query result cursor capable of lazy loading."
+	author: "Roman Schmocker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -25,10 +25,10 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		local
 			reflector: REFLECTOR
-			stored_types: LIST [READABLE_STRING_GENERAL]
+			stored_types: READABLE_INDEXABLE [IMMUTABLE_STRING_8]
 			subtypes_list: ARRAYED_LIST [PS_TYPE_METADATA]
 
-			type, l_type: PS_TYPE_METADATA
+			query_type, l_type: PS_TYPE_METADATA
 
 			empty_result: LINKED_LIST [PS_BACKEND_ENTITY]
 			empty_processed: LINKED_LIST [INTEGER]
@@ -36,26 +36,20 @@ feature {NONE} -- Initialization
 			query := a_query
 			create filter.make (a_filter)
 			read_manager := a_read_manager
-			type := read_manager.metadata_factory.create_metadata_from_type (query.generic_type)
-
-			create filter_lookup.make (filter.count)
-			filter.do_all (agent filter_lookup.extend (True, ?))
-
-
-			create reflector
+			query_type := read_manager.type_factory.create_metadata_from_type (query.generic_type)
 
 			create subtypes_list.make (1)
-			subtypes_list.extend (type)
+			subtypes_list.extend (query_type)
 
 			if query.is_subtype_included then
-
-				stored_types := read_manager.backend.stored_types
+				stored_types := read_manager.connector.stored_types
+				create reflector
 
 				across
 					stored_types as cursor
 				loop
-					l_type := read_manager.metadata_factory.create_metadata_from_type_id (reflector.dynamic_type_from_string (cursor.item))
-					if l_type.type.type_id /= type.type.type_id and reflector.type_conforms_to (l_type.type.type_id, type.type.type_id) then
+					l_type := read_manager.type_factory.create_metadata_from_type_id (reflector.dynamic_type_from_string (cursor.item))
+					if l_type /~ query_type and reflector.type_conforms_to (l_type.type.type_id, query_type.type.type_id) then
 						subtypes_list.extend (l_type)
 					end
 				end
@@ -137,7 +131,7 @@ feature {NONE} -- Implementation: Access
 		do
 			if not type_cursor.after then
 					-- Query the database and initialize the new current_result.
-				retrieved_cursor := read_manager.dispatch_retrieve (type_cursor.item, query.criterion, filter, read_manager.transaction)
+				retrieved_cursor := read_manager.dispatch_retrieve (type_cursor.item, query.criterion, query.is_non_root_ignored, filter, read_manager.transaction)
 				type_cursor.forth
 			end
 		end
@@ -194,7 +188,7 @@ feature {NONE} -- Implementation: Access
 
 			from
 
-				batch_count := read_manager.backend.batch_retrieval_size
+				batch_count := read_manager.connector.batch_retrieval_size
 					-- Some reasonable default to exploit caches.
 				if batch_count < 1 then
 					batch_count := default_batch_size
@@ -217,11 +211,11 @@ feature {NONE} -- Implementation: Access
 				if retrieved_entity.is_root or not query.is_non_root_ignored then
 
 						-- Check if the object has been loaded previously.
-					index := read_manager.cache_lookup (retrieved_entity.primary_key, retrieved_entity.metadata)
+					index := read_manager.cache_lookup (retrieved_entity.primary_key, retrieved_entity.type)
 
 					if index = 0 then
 
-						new_object := read_manager.new_object_data (retrieved_entity.primary_key, retrieved_entity.metadata, 0)
+						new_object := read_manager.new_object_data (retrieved_entity.primary_key, retrieved_entity.type, 0)
 						index := new_object.index
 
 						read_manager.add_object (new_object, not query.is_tuple_query)

@@ -15,12 +15,12 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_metadata_factory: like metadata_factory; an_id_manager: like id_manager; a_primary_key_mapper: like primary_key_mapper;  a_backend: like backend)
+	make (a_metadata_factory: like type_factory; a_connector: like connector)
 			-- Initialization for `Current'.
 		do
-			initialize (a_metadata_factory, an_id_manager, a_primary_key_mapper)
-			backend := a_backend
-			create traversal.make (create {ANY}, metadata_factory)
+			initialize (a_metadata_factory)
+			connector := a_connector
+			create traversal.make (create {ANY}, type_factory)
 
 			-- NOTE: Be aware that object_storage is aliased!
 			object_storage := traversal.traversed_objects
@@ -74,8 +74,8 @@ feature {PS_ABEL_EXPORT} -- Status report
 
 feature {PS_ABEL_EXPORT} -- Accesss: Static
 
-	backend: PS_BACKEND
-			-- An actual backend for the write operations.
+	connector: PS_REPOSITORY_CONNECTOR
+			-- A repository connector for the write operations.
 
 	traversal: PS_OBJECT_GRAPH_TRAVERSAL
 			-- An object to traverse and generate an object graph.
@@ -124,9 +124,9 @@ feature {PS_ABEL_EXPORT} -- Write execution
 				if item (i).is_ignored then
 
 				elseif item (i).handler.is_mapping_to_object then
-					Result := Result and backend.is_object_type_supported (item (i).type)
+					Result := Result and connector.is_object_type_supported (item (i).type)
 				elseif item (i).handler.is_mapping_to_collection then
-					Result := Result and backend.is_generic_collection_supported
+					Result := Result and connector.is_generic_collection_supported
 
 				end
 				i := i + 1
@@ -149,6 +149,7 @@ feature {PS_ABEL_EXPORT} -- Write execution
 
 			assign_handlers (1 |..| count)
 
+			a_transaction.identifier_table.prepare
 
 --			do_all (agent {PS_HANDLER}.set_is_persistent)
 			across
@@ -170,6 +171,8 @@ feature {PS_ABEL_EXPORT} -- Write execution
 				end
 			end
 
+			a_transaction.identifier_table.release
+
 
 --			do_all (agent {PS_HANDLER}.generate_primary_key)
 			across
@@ -183,12 +186,12 @@ feature {PS_ABEL_EXPORT} -- Write execution
 
 
 			if not object_primary_key_order.is_empty then
-				generated_object_primary_keys := backend.generate_all_object_primaries (object_primary_key_order, transaction)
+				generated_object_primary_keys := connector.generate_all_object_primaries (object_primary_key_order, transaction)
 				across generated_object_primary_keys as cursor loop cursor.item.start end
 			end
 
 			if not collection_primary_key_order.is_empty then
-				generated_collection_primary_keys := backend.generate_collection_primaries (collection_primary_key_order, transaction)
+				generated_collection_primary_keys := connector.generate_collection_primaries (collection_primary_key_order, transaction)
 				across generated_collection_primary_keys as cursor2 loop cursor2.item.start end
 			end
 
@@ -235,11 +238,22 @@ feature {PS_ABEL_EXPORT} -- Write execution
 
 
 			if not objects_to_write.is_empty then
-				backend.write (objects_to_write, transaction)
+				connector.write (objects_to_write, transaction)
 			end
 
 			if not collections_to_write.is_empty then
-				backend.write_collections (collections_to_write, transaction)
+				connector.write_collections (collections_to_write, transaction)
+			end
+
+			if attached connector.after_write_action as action then
+				across
+					object_storage as cursor
+				loop
+					object := cursor.item
+					if not object.is_ignored then
+						action (cursor.item)
+					end
+				end
 			end
 		end
 
@@ -265,8 +279,10 @@ feature {PS_ABEL_EXPORT} -- Write execution
 			check count_is_one: count = 1 end
 
 			assign_handlers (1 |..| count)
+			a_transaction.identifier_table.prepare
 			do_all (agent {PS_HANDLER}.set_is_persistent)
 			do_all (agent {PS_HANDLER}.set_identifier)
+			a_transaction.identifier_table.release
 			do_all (agent {PS_HANDLER}.generate_primary_key)
 
 				-- No need to generate primary keys in a batch, as the object should be identified already.
@@ -286,11 +302,21 @@ feature {PS_ABEL_EXPORT} -- Write execution
 			do_all (agent {PS_HANDLER}.write_backend_representation)
 
 			if not objects_to_write.is_empty then
-				backend.write (objects_to_write, transaction)
+				connector.write (objects_to_write, transaction)
 			end
 
 			if not collections_to_write.is_empty then
-				backend.write_collections (collections_to_write, transaction)
+				connector.write_collections (collections_to_write, transaction)
+			end
+
+			if attached connector.after_write_action as action then
+				across
+					object_storage as cursor
+				loop
+					if not cursor.item.is_ignored then
+						action (cursor.item)
+					end
+				end
 			end
 		end
 
@@ -316,8 +342,10 @@ feature {PS_ABEL_EXPORT} -- Write execution
 
 
 			assign_handlers (1 |..| k)
+			a_transaction.identifier_table.prepare
 			do_all_in_set (agent {PS_HANDLER}.set_is_persistent, 1 |..| k)
 			do_all_in_set (agent {PS_HANDLER}.set_identifier, 1 |..| k)
+			a_transaction.identifier_table.release
 			do_all_in_set (agent {PS_HANDLER}.generate_primary_key, 1 |..| k)
 
 			check object_primary_key_order.is_empty and collection_primary_key_order.is_empty end
@@ -339,11 +367,21 @@ feature {PS_ABEL_EXPORT} -- Write execution
 			do_all_in_set (agent {PS_HANDLER}.write_backend_representation, 1 |..| 1)
 
 			if not objects_to_write.is_empty then
-				backend.write (objects_to_write, transaction)
+				connector.write (objects_to_write, transaction)
 			end
 
 			if not collections_to_write.is_empty then
-				backend.write_collections (collections_to_write, transaction)
+				connector.write_collections (collections_to_write, transaction)
+			end
+
+			if attached connector.after_write_action as action then
+				across
+					object_storage as cursor
+				loop
+					if not cursor.item.is_ignored then
+						action (cursor.item)
+					end
+				end
 			end
 		end
 

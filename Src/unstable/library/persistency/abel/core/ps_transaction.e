@@ -34,15 +34,13 @@ note
 		or change the defaults using `set_root_declaration_strategy'.
 		
 		
-		In case of an error in the backend, ABEL will do some cleanup
-		and raise an exception. Clients can expect the following 
-		conditions to hold:
+		In case of an error in the backend, the following conditions
+		will hold:
 		
 			*) `has_error' is True.
 			*) `last_error' is attached and contains a 
 				PS_ERROR describing the error that occurred.
 			*) The transaction is rolled back.
-			*) The exception propagates to the client.
 			
 		The PS_ERROR class hierarchy has a visitor pattern which can
 		be used for error handling.
@@ -69,20 +67,15 @@ feature {NONE} -- Initialization
 			default_strategy: like root_declaration_strategy
 		do
 			repository := a_repository
-			last_error := Void
 			create internal_active_queries.make (0)
---			create default_strategy.make_argument_of_insert
---			create transaction.make (repository, default_strategy)
 			transaction := repository.new_internal_transaction (False)
-			is_active_control := True
-			repository.internal_active_transactions.extend (Current)
+			repository.internal_active_transactions.extend (Current, transaction)
 		ensure
 			default_strategy: root_declaration_strategy.is_argument_of_insert
 			active: is_active
 			repository_set: repository = a_repository
 			empty_queries: active_queries.is_empty
 			no_error: not has_error
-			correct_active: is_active_control
 		end
 
 feature -- Access
@@ -104,6 +97,9 @@ feature -- Access
 
 	last_error: detachable PS_ERROR
 			-- The last encountered error.
+		do
+			Result := transaction.error
+		end
 
 feature -- Status report
 
@@ -122,17 +118,25 @@ feature -- Status report
 	is_persistent (object: ANY): BOOLEAN
 			-- Is `object' stored in the database?
 		require
-			in_transaction: is_active
+			active: is_active
 			supported: is_supported (object)
 			no_error: not has_error
 		do
 			Result := repository.is_identified (object, transaction)
 		end
 
+	is_expanded (type: TYPE [detachable ANY]): BOOLEAN
+			-- Is `type' expanded?
+		do
+			Result := repository.is_expanded (type)
+		ensure
+			correct: type.is_expanded implies Result
+		end
+
 	is_root (object: ANY): BOOLEAN
 			-- Is `object' a root object?
 		require
-			in_transaction: is_active
+			active: is_active
 			supported: is_supported (object)
 			persistent: is_persistent (object)
 			no_error: not has_error
@@ -161,7 +165,7 @@ feature -- Data retrieval
 	execute_query (query: PS_QUERY [ANY])
 			-- Execute `query' and store the result in `query.result_cursor'.
 		require
-			in_transaction: is_active
+			active: is_active
 			no_error: not has_error
 			not_active: not active_queries.has (query)
 			not_executed: not query.is_executed
@@ -169,33 +173,53 @@ feature -- Data retrieval
 		do
 			internal_active_queries.extend (query)
 			query.set_transaction (Current)
+
+				-- The next statement may fail. The exception will be catched
+				-- in {PS_QUERY}.retrieve_next.
 			repository.internal_execute_query (query, transaction)
+
+			check correctly_aliased: query.has_error = has_error and query.has_error = not is_active end
+
+			if query.has_error then
+				internal_active_queries.prune_all (query)
+				repository.internal_active_transactions.remove (transaction)
+			end
 		ensure
-			active: active_queries.has (query)
 			executed: query.is_executed
-			in_transaction: is_active
-		rescue
-			set_error
+			valid_status: has_error xor is_active
+			registered: has_error xor active_queries.has (query)
+			correct_cleanup: has_error implies not repository.active_transactions.has (Current)
 		end
 
 	execute_tuple_query (query: PS_TUPLE_QUERY [ANY])
 			-- Execute `query' and store the result in `query.result_cursor'.
 		require
-			in_transaction: is_active
+			active: is_active
 			no_error: not has_error
 			not_active: not active_queries.has (query)
 			not_executed: not query.is_executed
 			not_closed: not query.is_closed
+		local
+			retried: BOOLEAN
 		do
 			internal_active_queries.extend (query)
 			query.set_transaction (Current)
+
+				-- The next statement may fail. The exception will be catched
+				-- in {PS_TUPLE_QUERY}.retrieve_next.
 			repository.internal_execute_tuple_query (query, transaction)
+
+			check correctly_aliased: query.has_error = has_error and query.has_error = not is_active end
+
+			if query.has_error then
+				internal_active_queries.prune_all (query)
+				repository.internal_active_transactions.remove (transaction)
+			end
 		ensure
-			active: active_queries.has (query)
 			executed: query.is_executed
-			in_transaction: is_active
-		rescue
-			set_error
+			valid_status: has_error xor is_active
+			registered: has_error xor active_queries.has (query)
+			correct_cleanup: has_error implies not repository.active_transactions.has (Current)
 		end
 
 feature -- Data modification
@@ -203,13 +227,12 @@ feature -- Data modification
 	insert (object: ANY)
 			-- Insert `object' and all transitively referenced objects into the repository.
 		require
-			in_transaction: is_active
+			active: is_active
 			no_error: not has_error
 			supported: is_supported (object)
 		local
 			saved: detachable PS_ROOT_OBJECT_STRATEGY
 		do
---			fixme ("The commented code is more efficient. Switch the code as soon as set_root_declaration_strategy gets implemented.")
 			if root_declaration_strategy.is_argument_of_insert and then is_persistent (object) then
 				saved := root_declaration_strategy
 				set_root_declaration_strategy (saved.new_argument_of_write)
@@ -220,50 +243,58 @@ feature -- Data modification
 			if attached saved then
 				set_root_declaration_strategy (saved)
 			end
-
 		ensure
-			in_transaction: is_active
+			valid_status: has_error xor is_active
 			root_declaration_unchanged: root_declaration_strategy = old root_declaration_strategy
-			persistent: is_persistent (object) xor object.generating_type.is_expanded
-			root_set: object.generating_type.is_expanded xor
-				(root_declaration_strategy > root_declaration_strategy.new_preserve implies is_root (object))
-		rescue
-			set_error
+			persistent: not has_error implies is_persistent (object) xor is_expanded (object.generating_type)
+			correct_cleanup: has_error implies not repository.active_transactions.has (Current)
+			root_set: not has_error implies (is_expanded (object.generating_type) xor
+				(root_declaration_strategy > root_declaration_strategy.new_preserve implies is_root (object)))
 		end
 
 	update (object: ANY)
 			-- Update `object' and all transitively referenced objects in the repository.
 		require
-			in_transaction: is_active
+			active: is_active
 			no_error: not has_error
 			supported: is_supported (object)
+			not_expanded: not is_expanded (object.generating_type)
 			persistent: is_persistent (object)
+		local
+			retried: BOOLEAN
 		do
 			repository.write (object, transaction)
 		ensure
-			in_transaction: is_active
-			persistent: is_persistent (object)
-			root_set: root_declaration_strategy > root_declaration_strategy.new_argument_of_insert implies is_root (object)
-		rescue
-			set_error
+			valid_status: has_error xor is_active
+			persistent: not has_error implies is_persistent (object)
+			correct_cleanup: has_error implies not repository.active_transactions.has (Current)
+			root_set: not has_error implies
+				(root_declaration_strategy > root_declaration_strategy.new_argument_of_insert
+				implies is_root (object))
 		end
 
 	direct_update (object: ANY)
 			-- Update `object' only, do not follow references.
 		require
-			in_transaction: is_active
+			active: is_active
 			no_error: not has_error
 			supported: is_supported (object)
+			not_expanded: not is_expanded (object.generating_type)
 			persistent: is_persistent (object)
 			valid_direct_update: to_implement_assertion ("check that all referenced objects are persistent")
+		local
+			retried: BOOLEAN
 		do
-			repository.direct_update (object, transaction)
+			if not retried then
+				repository.direct_update (object, transaction)
+			end
 		ensure
-			in_transaction: is_active
-			persistent: is_persistent (object)
-			root_set: root_declaration_strategy > root_declaration_strategy.new_argument_of_insert implies is_root (object)
-		rescue
-			set_error
+			valid_status: has_error xor is_active
+			persistent: not has_error implies is_persistent (object)
+			correct_cleanup: has_error implies not repository.active_transactions.has (Current)
+			root_set: not has_error implies
+				(root_declaration_strategy > root_declaration_strategy.new_argument_of_insert
+				implies is_root (object))
 		end
 
 feature -- Root status modification
@@ -272,38 +303,38 @@ feature -- Root status modification
 			-- Mark `object' as a root object.
 			-- Do not change the status of any referenced object.
 		require
-			in_transaction: is_active
+			active: is_active
 			no_error: not has_error
 			supported: is_supported (object)
+			not_expanded: not is_expanded (object.generating_type)
 			persistent: is_persistent (object)
 			not_root: not is_root (object)
 		do
 			repository.set_root_status (object, True, transaction)
 		ensure
-			in_transaction: is_active
-			persistent: is_persistent (object)
-			root: is_root (object)
-		rescue
-			set_error
+			valid_status: has_error xor is_active
+			persistent: not has_error implies is_persistent (object)
+			root: not has_error implies is_root (object)
+			correct_cleanup: has_error implies not repository.active_transactions.has (Current)
 		end
 
 	unmark_root (object: ANY)
 			-- Remove the root status from `object'.
 			-- Do not change the status of any referenced object.
 		require
-			in_transaction: is_active
+			active: is_active
 			no_error: not has_error
 			supported: is_supported (object)
+			not_expanded: not is_expanded (object.generating_type)
 			persistent: is_persistent (object)
-			not_root: is_root (object)
+			root: is_root (object)
 		do
 			repository.set_root_status (object, False, transaction)
 		ensure
-			in_transaction: is_active
-			persistent: is_persistent (object)
-			root: not is_root (object)
-		rescue
-			set_error
+			valid_status: has_error xor is_active
+			persistent: not has_error implies is_persistent (object)
+			not_root: not has_error implies not is_root (object)
+			correct_cleanup: has_error implies not repository.active_transactions.has (Current)
 		end
 
 
@@ -311,51 +342,49 @@ feature -- Transaction operations
 
 	commit
 			-- Commit the active transaction.
-			-- If the transaction fails, `has_error' is True and an exception is raised.
+			-- If the transaction fails, `has_error' is True.
 		require
-			is_active: is_active
+			active: is_active
 			no_active_queries: active_queries.is_empty
 			no_error: not has_error
 		do
 			repository.commit_transaction (transaction)
-			is_active_control := False
-			repository.internal_active_transactions.prune_all (Current)
+			repository.internal_active_transactions.remove (transaction)
 		ensure
 			not_active: not is_active
-		rescue
-			set_error
+			correct_cleanup: not repository.active_transactions.has (Current)
 		end
 
 	rollback
 			-- Rollback the active transaction.
 		require
-			is_active: is_active
+			active: is_active
 			no_active_queries: active_queries.is_empty
 			no_error: not has_error
 		do
-			repository.rollback_transaction (transaction, True)
-			is_active_control := False
-			repository.internal_active_transactions.prune_all (Current)
+			repository.rollback_transaction (transaction)
+			repository.internal_active_transactions.remove (transaction)
 		ensure
 			not_active: not is_active
-		rescue
-			set_error
+			correct_cleanup: not repository.active_transactions.has (Current)
 		end
 
 	prepare
 			-- Prepare `Current' to be reused as a new transaction.
 		require
-			not_active: not is_active
+			not_active: not is_active and not repository.active_transactions.has (Current)
+		local
+			l_transaction: like transaction
 		do
-			last_error := Void
-			transaction := repository.new_internal_transaction (False)
-			transaction.set_root_declaration_strategy (root_declaration_strategy)
---			create transaction.make (repository, root_declaration_strategy)
-			repository.internal_active_transactions.extend (Current)
-			is_active_control := True
+			l_transaction := repository.new_internal_transaction (False)
+			l_transaction.set_root_declaration_strategy (root_declaration_strategy)
+			transaction := l_transaction
+			repository.internal_active_transactions.extend (Current, transaction)
 		ensure
 			active: is_active
+			no_active_queries: active_queries.is_empty
 			no_error: not has_error
+			root_declaration_unchanged: root_declaration_strategy = old root_declaration_strategy
 		end
 
 feature {PS_ABEL_EXPORT} -- Implementation
@@ -363,26 +392,10 @@ feature {PS_ABEL_EXPORT} -- Implementation
 	internal_active_queries: ARRAYED_LIST [PS_ABSTRACT_QUERY [ANY, ANY]]
 			-- The internal storage for `active_queries'.
 
-feature {NONE} -- Implementation
-
-
 	transaction: PS_INTERNAL_TRANSACTION
 			-- The currently active transaction.
 
-	set_error
-			-- Set the `last_error' field.
-		do
-			last_error := transaction.error
-			is_active_control := False
-			repository.internal_active_transactions.prune_all (Current)
-		ensure
-			not_active: not is_active
-		end
-
-	is_active_control: BOOLEAN
-
 invariant
-	correct_active: is_active = is_active_control
 	not_active_when_error: has_error implies not is_active
 	in_active_transaction_collection: is_active = repository.active_transactions.has (Current)
 

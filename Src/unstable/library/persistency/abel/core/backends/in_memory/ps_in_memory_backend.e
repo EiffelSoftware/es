@@ -8,55 +8,53 @@ class
 	PS_IN_MEMORY_BACKEND
 
 inherit
-	PS_BACKEND
+	PS_REPOSITORY_CONNECTOR
 
 create
 	make
 
 feature {PS_ABEL_EXPORT} -- Backend capabilities
 
-	is_generic_collection_supported: BOOLEAN
-			-- Can the current backend support collections in general,
-			-- i.e. is there a default strategy?
-		do
-			Result := True
-		end
+	raise_exception: BOOLEAN = False
+			-- For testing: Raise transaction aborted error in every function.
+
+	is_generic_collection_supported: BOOLEAN = True
+			-- <Precursor>
 
 feature {PS_ABEL_EXPORT} -- Access
 
-	stored_types: LIST [READABLE_STRING_GENERAL]
-			-- The type string for all objects and collections stored in `Current'.
-		local
-			reflection: REFLECTOR
+	stored_types: ARRAYED_LIST [IMMUTABLE_STRING_8]
+			-- <Precursor>
 		do
-			-- Note to implementors: It is highly recommended to cache the result, and
-			-- refresh it during a `retrieve' operation (or not at all if the result
-			-- is always stable).
-			create {ARRAYED_LIST [READABLE_STRING_GENERAL]} Result.make (database.count + collection_database.count)
-			create reflection
-
+			create Result.make (database.count + collection_database.count)
 			across
 				database as cursor
 			loop
-				Result.extend (reflection.type_of_type (cursor.key).name)
+				Result.extend (cursor.key.name)
 			end
 
 			across
 				collection_database as collection_cursor
 			loop
-				Result.extend (reflection.type_of_type (collection_cursor.key).name)
+				Result.extend (collection_cursor.key.name)
 			end
 		end
 
 feature {PS_ABEL_EXPORT} -- Retrieval
 
 	internal_specific_retrieve (primaries: ARRAYED_LIST [INTEGER]; types: ARRAYED_LIST [PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): READABLE_INDEXABLE [PS_BACKEND_OBJECT]
-			-- See function `specific_retrieve'.
-			-- Use `internal_specific_retrieve' for contracts and other calls within a backend.
+			-- <Precursor>
 		local
 			list: ARRAYED_LIST [PS_BACKEND_OBJECT]
 			i: INTEGER
 		do
+			if raise_exception then
+				transaction.set_error (create {PS_TRANSACTION_ABORTED_ERROR})
+				check attached transaction.error as err then
+					err.raise
+				end
+			end
+
 			from
 				create list.make (primaries.count)
 				Result := list
@@ -73,9 +71,8 @@ feature {PS_ABEL_EXPORT} -- Retrieval
 			end
 		end
 
-	internal_retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_OBJECT]
-			-- See function `retrieve'.
-			-- Use `internal_retrieve' for contracts and other calls within a backend.
+	internal_retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; is_root_only: BOOLEAN; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_OBJECT]
+			-- <Precursor>
 		require else
 			supported: is_object_type_supported (type)
 		do
@@ -84,8 +81,14 @@ feature {PS_ABEL_EXPORT} -- Retrieval
 --			else
 --				success := True
 --				transaction.set_error (create {PS_TRANSACTION_ABORTED_ERROR})
---				transaction.error.raise
+--				check attached transaction.error as err then err.raise end
 --			end
+			if raise_exception then
+				transaction.set_error (create {PS_TRANSACTION_ABORTED_ERROR})
+				check attached transaction.error as err then
+					err.raise
+				end
+			end
 
 			if attributes.count < type.attribute_count then
 					-- Prevent the QUERY_CURSOR from messing around with our database.
@@ -98,7 +101,7 @@ feature {PS_ABEL_EXPORT} -- Retrieval
 feature {PS_ABEL_EXPORT} -- Collection retrieval
 
 
-	collection_retrieve (collection_type: PS_TYPE_METADATA; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_COLLECTION]
+	collection_retrieve (collection_type: PS_TYPE_METADATA; is_root_only: BOOLEAN; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_COLLECTION]
 			-- <Precursor>
 		do
 			Result := create_get_inner_collection_database (collection_type).new_cursor
@@ -116,7 +119,7 @@ feature {PS_ABEL_EXPORT} -- Collection retrieval
 				Result := list
 			loop
 				if
-					attached collection_database [types [cursor.item].type.type_id] as inner
+					attached collection_database [types [cursor.item]] as inner
 					and then attached inner [primary_keys [cursor.item]] as res
 				then
 					list.extend (res)
@@ -127,25 +130,30 @@ feature {PS_ABEL_EXPORT} -- Collection retrieval
 feature {PS_ABEL_EXPORT} -- Transaction handling
 
 	commit (a_transaction: PS_INTERNAL_TRANSACTION)
-			-- Tries to commit `a_transaction'. As with every other error, a failed commit will result in a new exception and the error will be placed inside `a_transaction'.
+			-- <Precursor>
 		do
 		end
 
 	rollback (a_transaction: PS_INTERNAL_TRANSACTION)
-			-- Aborts `a_transaction' and undoes all changes in the database.
+			-- <Precursor>
 		do
 		end
 
 	set_transaction_isolation (settings: PS_TRANSACTION_SETTINGS)
-			-- Set the transaction isolation level such that all values in `settings' are respected.
+			-- <Precursor>
 		do
 				-- Do nothing. Transactions are not supported for the in-memory backend.
 		end
 
+	close
+			-- <Precursor>
+		do
+		end
+
 feature {PS_ABEL_EXPORT} -- Testing
 
---	success: BOOLEAN
---			-- If false, simulate a transaction failure during next retrieval.
+	success: BOOLEAN
+			-- If false, simulate a transaction failure during next retrieval.
 
 	wipe_out, make
 			-- Wipe out everything and initialize new.
@@ -159,14 +167,19 @@ feature {PS_ABEL_EXPORT} -- Testing
 
 feature {PS_ABEL_EXPORT} -- Primary key generation
 
-	max_primary: INTEGER
-
 	generate_all_object_primaries (order: HASH_TABLE [INTEGER, PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): HASH_TABLE [LIST [PS_BACKEND_OBJECT], PS_TYPE_METADATA]
-			-- Generates `count' primary keys for each `type'.
+			-- <Precursor>
 		local
 			list: ARRAYED_LIST [PS_BACKEND_OBJECT]
 			index: INTEGER
 		do
+			if raise_exception then
+				transaction.set_error (create {PS_TRANSACTION_ABORTED_ERROR})
+				check attached transaction.error as err then
+					err.raise
+				end
+			end
+
 			across
 				order as cursor
 			from
@@ -189,7 +202,7 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 		end
 
 	generate_collection_primaries (order: HASH_TABLE [INTEGER, PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): HASH_TABLE [LIST [PS_BACKEND_COLLECTION], PS_TYPE_METADATA]
-			-- Generate `count' primary keys for collections.
+			-- <Precursor>
 		local
 			list: ARRAYED_LIST [PS_BACKEND_COLLECTION]
 			index: INTEGER
@@ -218,11 +231,12 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 feature {PS_ABEL_EXPORT} -- Write operations
 
 	delete (objects: LIST [PS_BACKEND_ENTITY]; transaction: PS_INTERNAL_TRANSACTION)
+			-- <Precursor>
 		do
 			across
 				objects as cursor
 			loop
-				if attached database [cursor.item.metadata.type.type_id] as inner then
+				if attached database [cursor.item.type] as inner then
 					inner.remove (cursor.item.primary_key)
 				end
 			end
@@ -230,26 +244,27 @@ feature {PS_ABEL_EXPORT} -- Write operations
 
 
 	write_collections (collections: LIST [PS_BACKEND_COLLECTION]; transaction: PS_INTERNAL_TRANSACTION)
+			-- <Precursor>
 		local
 			db: HASH_TABLE [PS_BACKEND_COLLECTION, INTEGER]
 		do
 			across
 				collections as cursor
 			loop
-				db := create_get_inner_collection_database (cursor.item.metadata)
+				db := create_get_inner_collection_database (cursor.item.type)
 
 				if cursor.item.is_update_delta and attached db [cursor.item.primary_key] as old_coll then
 
 					old_coll.set_is_root (cursor.item.is_root)
 					across
-						cursor.item.information_descriptions as key
+						cursor.item.meta_information as info
 					loop
-						old_coll.add_information (key.item, cursor.item.get_information (key.item))
+						old_coll.meta_information.force (info.item, info.key)
 					end
 					across
-						1 |..| cursor.item.collection_items.count as idx
+						1 |..| cursor.item.count as idx
 					loop
-						old_coll.collection_items.put_i_th (cursor.item.collection_items.i_th (idx.item), idx.item)
+						old_coll.put_i_th (cursor.item [idx.item], cursor.item.item_type (idx.item), idx.item)
 					end
 				else
 					db.force (cursor.item, cursor.item.primary_key)
@@ -259,11 +274,12 @@ feature {PS_ABEL_EXPORT} -- Write operations
 		end
 
 	delete_collections (collections: LIST [PS_BACKEND_ENTITY]; transaction: PS_INTERNAL_TRANSACTION)
+			-- <Precursor>
 		do
 			across
 				collections as cursor
 			loop
-				if attached collection_database [cursor.item.metadata.type.type_id] as inner then
+				if attached collection_database [cursor.item.type] as inner then
 					inner.remove (cursor.item.primary_key)
 				end
 			end
@@ -273,22 +289,29 @@ feature {PS_ABEL_EXPORT} -- Write operations
 feature {NONE} -- Implementation
 
 	internal_write (objects: LIST [PS_BACKEND_OBJECT]; transaction: PS_INTERNAL_TRANSACTION)
+			-- <Precursor>
 		local
 			inner: like create_get_inner_database
 		do
-
 --			if success then -- Enable transaction conflict simulation
 --				success := False
 --			else
 --				success := True
 --				transaction.set_error (create {PS_TRANSACTION_ABORTED_ERROR})
---				transaction.error.raise
+--				check attached transaction.error as err then err.raise end
 --			end
+
+			if raise_exception then
+				transaction.set_error (create {PS_TRANSACTION_ABORTED_ERROR})
+				check attached transaction.error as err then
+					err.raise
+				end
+			end
 
 			across
 				objects as cursor
 			loop
-				inner := create_get_inner_database (cursor.item.metadata)
+				inner := create_get_inner_database (cursor.item.type)
 
 				if attached inner [cursor.item.primary_key] as old_obj then
 
@@ -300,7 +323,7 @@ feature {NONE} -- Implementation
 						old_obj.set_is_root (cursor.item.is_root)
 					loop
 						old_obj.remove_attribute (attr.item)
-						old_obj.add_attribute (attr.item, cursor.item.attribute_value (attr.item).value, cursor.item.attribute_value (attr.item).attribute_class_name)
+						old_obj.add_attribute (attr.item, cursor.item.attribute_value (attr.item).value, cursor.item.attribute_value (attr.item).type)
 					end
 
 				else
@@ -311,21 +334,17 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	collection_database: HASH_TABLE [HASH_TABLE [PS_BACKEND_COLLECTION, INTEGER], INTEGER]
-
-	database: HASH_TABLE [HASH_TABLE [PS_BACKEND_OBJECT, INTEGER], INTEGER]
-		-- First key: Type ID
-		-- Second key: unique object identifier
+feature {NONE} -- Implementation
 
 	create_get_inner_database (type: PS_TYPE_METADATA): HASH_TABLE [PS_BACKEND_OBJECT, INTEGER]
 			-- Return `database [type]'.
 			-- If not present, create a new hash table.
 		do
-			if attached database [type.type.type_id] as res then
+			if attached database [type] as res then
 				Result := res
 			else
 				create Result.make (default_size)
-				database.extend (Result, type.type.type_id)
+				database.extend (Result, type)
 			end
 		end
 
@@ -333,13 +352,26 @@ feature {NONE} -- Implementation
 			-- Return `collection_database [type]'.
 			-- If not present, create a new hash table.
 		do
-			if attached collection_database [type.type.type_id] as res then
+			if attached collection_database [type] as res then
 				Result := res
 			else
 				create Result.make (default_size)
-				collection_database.extend (Result, type.type.type_id)
+				collection_database.extend (Result, type)
 			end
 		end
+
+feature {NONE} -- Data structures
+
+	database: HASH_TABLE [HASH_TABLE [PS_BACKEND_OBJECT, INTEGER], PS_TYPE_METADATA]
+		-- First key: Type ID.
+		-- Second key: Primary key.
+
+	collection_database: HASH_TABLE [HASH_TABLE [PS_BACKEND_COLLECTION, INTEGER], PS_TYPE_METADATA]
+		-- First key: Type ID.
+		-- Second key: Primary key.
+
+	max_primary: INTEGER
+		-- The maximum generated primary key.
 
 feature {NONE} -- Constants
 

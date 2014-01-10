@@ -57,6 +57,14 @@ feature -- Access
 		attribute
 		end
 
+	last_error: detachable PS_ERROR
+			-- The last encountered error.
+		require
+			executed: is_executed
+		do
+			Result := internal_transaction.error
+		end
+
 	new_cursor: ITERATION_CURSOR [RESULT_TYPE]
 			-- Return a fresh cursor over the query result.
 			-- If the query is not executed or already closed, the cursor will point to an empty structure.
@@ -84,6 +92,14 @@ feature -- Status report
 
 	is_closed: BOOLEAN
 			-- Has the query been closed?
+
+	has_error: BOOLEAN
+			-- Has an error happened during query execution or lazy loading?
+		do
+			Result := is_executed and then attached last_error
+		ensure
+			correct: Result = attached last_error
+		end
 
 	is_tuple_query: BOOLEAN
 			-- Is `Current' an instance of PS_TUPLE_QUERY?
@@ -193,11 +209,12 @@ feature -- Disposal
 					internal_transaction.repository.commit_transaction (internal_transaction)
 				end
 			end
+			is_after := True
 			is_closed := True
 		ensure
 			closed: is_closed
 			not_active: attached transaction as tr implies not tr.active_queries.has (Current)
-			not_active_in_repository: not attached transaction implies not repository.active_queries.has (Current)
+			not_active_in_repository: is_executed and not attached transaction implies not repository.active_queries.has (Current)
 			criteria_unchanged: criterion = old criterion
 			root_setting_unchanged: is_non_root_ignored = old is_non_root_ignored
 			initialization_depth_unchanged: object_initialization_depth = old object_initialization_depth
@@ -238,7 +255,7 @@ feature {PS_ABEL_EXPORT} -- Implementation : Access
 	generic_type: TYPE [detachable ANY]
 			-- Get the (detachable) generic type of `Current'.
 
-	result_cache: ARRAYED_LIST [ANY]
+	result_cache: ARRAYED_LIST [RESULT_TYPE]
 			-- The cached results.
 
 	internal_transaction: PS_INTERNAL_TRANSACTION
@@ -290,9 +307,38 @@ feature {PS_ABEL_EXPORT} -- Implementation: Element change
 			not_closed: not is_closed
 		deferred
 		ensure
-			active_transaction: internal_transaction.is_active
-			no_error: not internal_transaction.has_error
-			type_correct: not is_after implies attached {RESULT_TYPE}result_cache.last
+			active_or_error: internal_transaction.is_active xor has_error
+			type_correct: not is_after implies attached {RESULT_TYPE} result_cache.last
+		end
+
+	do_rescue
+			-- The rescue action when an error on `retrieve_next' happens.
+		require
+			executed: is_executed
+		do
+			is_after := True
+			is_closed := True
+
+			if not has_error then
+				internal_transaction.set_default_error
+			end
+
+			if internal_transaction.is_active then
+				internal_transaction.repository.rollback_transaction (internal_transaction)
+				internal_transaction.close
+			end
+
+			if attached transaction as tr then
+				internal_transaction.repository.internal_active_transactions.remove (internal_transaction)
+				tr.internal_active_queries.prune_all (Current)
+			else
+				internal_transaction.repository.internal_active_queries.prune_all (Current)
+			end
+
+		ensure
+			has_error: has_error
+			closed: is_closed
+			after: is_after
 		end
 
 feature {NONE} -- Initialization
@@ -335,4 +381,8 @@ invariant
 	valid_initialization_depth: object_initialization_depth > 0 or object_initialization_depth = -1
 	attached_transaction_when_executed: is_executed = attached transaction_impl
 	attached_cursor_when_executed: is_executed = attached internal_cursor
+
+	same_context: (is_executed and then attached transaction as tr) implies internal_transaction = tr.transaction
+
+--	error_implies_after: has_error implies is_after
 end

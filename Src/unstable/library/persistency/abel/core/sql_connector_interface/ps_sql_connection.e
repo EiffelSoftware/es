@@ -9,6 +9,8 @@ deferred class
 
 inherit
 
+	PS_ABEL_EXPORT
+
 	ITERABLE [PS_SQL_ROW]
 
 feature {PS_ABEL_EXPORT} -- Settings
@@ -17,16 +19,16 @@ feature {PS_ABEL_EXPORT} -- Settings
 			-- Enable or disable autocommit on this connection.
 		deferred
 		ensure
-			autocommit_correctly_disabled: not flag implies not autocommit -- We actually can't guarantee it the other way round in all cases
+			autocommit_correctly_disabled: not flag implies not is_auto_commit_enabled -- We actually can't guarantee it the other way round in all cases
 		end
 
-	autocommit: BOOLEAN
+	is_auto_commit_enabled: BOOLEAN
 			-- Is autocommit enabled? Default: no
 
 feature {PS_ABEL_EXPORT} -- Database operations
 
 	execute_sql (statement: STRING)
-			-- Execute the SQL statement `statement', and store the result (if any) in `Current.last_result'
+			-- Execute the SQL statement `statement', and store the result (if any) in `last_result'
 			-- In case of an error, it will report it in `last_error' and raise an exception.
 		deferred
 				-- Remarks when implementing this feature:
@@ -61,6 +63,11 @@ feature {PS_ABEL_EXPORT} -- Database results
 
 	last_error: detachable PS_ERROR
 			-- The last occurred error
+		deferred
+		end
+
+	last_primary_key: INTEGER
+			-- The last automatically generated primary key.
 		deferred
 		end
 

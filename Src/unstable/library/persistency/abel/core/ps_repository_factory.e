@@ -32,8 +32,7 @@ feature {NONE} -- Initialization
 		do
 			create internal_handlers.make
 			create internal_plugins.make
-			create id_manager.make
-			create key_mapper.make
+			create type_factory.make
 			create anomaly_settings
 		end
 
@@ -139,23 +138,22 @@ feature -- Factory function
 		require
 			buildable: is_buildable
 		local
-			backend: PS_BACKEND
+			connector: PS_REPOSITORY_CONNECTOR
 			write_manager: PS_WRITE_MANAGER
 		do
-			backend := new_backend
-			backend.set_transaction_isolation (anomaly_settings)
+			connector := new_connector
+			connector.set_transaction_isolation (anomaly_settings)
 
-			internal_plugins.do_all (agent backend.add_plugin)
+			internal_plugins.do_all (agent connector.add_plugin)
 
-			create write_manager.make (id_manager.metadata_manager, id_manager, key_mapper, backend)
+			create write_manager.make (type_factory, connector)
 
 			internal_handlers.do_all (agent {PS_HANDLER}.set_write_manager (write_manager))
 			internal_handlers.do_all (agent write_manager.add_handler)
 
 			create {PS_DEFAULT_REPOSITORY} Result.make_from_factory (
-				backend,
-				id_manager,
-				key_mapper,
+				connector,
+				type_factory,
 				write_manager,
 				internal_handlers,
 				anomaly_settings.twin)
@@ -163,19 +161,15 @@ feature -- Factory function
 
 feature {NONE} -- Implementation
 
-	new_backend: PS_BACKEND
+	new_connector: PS_REPOSITORY_CONNECTOR
 			-- Create a backend.
 		require
 			buildable: is_buildable
 		deferred
 		end
 
-
-	id_manager: PS_OBJECT_IDENTIFICATION_MANAGER
-			-- The object identifier manager for the new repository.
-
-	key_mapper: PS_KEY_POID_TABLE
-			-- The identifier -> primary_key table for the new repository.
+	type_factory: PS_METADATA_FACTORY
+			-- The type factory for the new repsitory.
 
 	internal_handlers: LINKED_LIST [PS_HANDLER]
 			-- Mutable container for `handlers'.

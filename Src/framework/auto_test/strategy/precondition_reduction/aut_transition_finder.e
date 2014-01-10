@@ -178,7 +178,7 @@ feature -- Basic operations
 				until
 					l_executor.last_results.after
 				loop
-					create l_transition_tuple.make
+					create l_transition_tuple
 					create l_operand_map.make (variables.count)
 					l_transition_tuple.operand_map := l_operand_map
 					-- Feature name is in the first column
@@ -336,7 +336,7 @@ feature -- Some test cases
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

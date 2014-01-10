@@ -1044,10 +1044,12 @@ feature {LOCKABLE_I} -- Event handlers
 		do
 			Precursor (a_sender)
 
-			if not is_initialized then
-				initialize
+			if is_interface_usable then
+				if not is_initialized then
+					initialize
+				end
+				grid_events.lock_update
 			end
-			grid_events.lock_update
 		end
 
 	on_unlocked (a_sender: attached LOCKABLE_I)
@@ -1055,7 +1057,7 @@ feature {LOCKABLE_I} -- Event handlers
 		do
 			Precursor (a_sender)
 
-			if is_initialized then
+			if is_interface_usable and then is_initialized then
 				grid_events.unlock_update
 			end
 		end

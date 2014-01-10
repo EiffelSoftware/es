@@ -38,7 +38,7 @@ feature -- Access
 			-- The default number of objects that should be selected by
 			-- tests involving queries with criteria.
 		do
-			Result := 100
+			Result := 10
 		end
 
 	repository: PS_REPOSITORY

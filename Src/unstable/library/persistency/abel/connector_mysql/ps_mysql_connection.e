@@ -10,11 +10,7 @@ class
 inherit
 
 	PS_SQL_CONNECTION
-	PS_ABEL_EXPORT
 
---inherit {NONE}
-
-	REFACTORING_HELPER
 	PS_SQLSTATE_CONVERTER
 
 create {PS_MYSQL_DATABASE}
@@ -23,19 +19,18 @@ create {PS_MYSQL_DATABASE}
 feature {PS_ABEL_EXPORT} -- Settings
 
 	set_autocommit (flag: BOOLEAN)
-			-- Enable or disable autocommit
+			-- <Precursor>
 		do
 			internal_connection.set_flag_autocommit (flag)
-			autocommit := flag
+			is_auto_commit_enabled := flag
 		ensure then
-			correctly_set: autocommit = flag
+			correctly_set: is_auto_commit_enabled = flag
 		end
 
 feature {PS_ABEL_EXPORT}
 
 	execute_sql (statement: STRING)
-			-- Execute the SQL statement `statement', and store the result (if any) in `Current.last_result'
-			-- In case of an error, it will report it in `last_error' and raise an exception.
+			-- <Precursor>
 		do
 			internal_connection.execute_query (statement)
 			if internal_connection.has_error then
@@ -50,8 +45,7 @@ feature {PS_ABEL_EXPORT}
 		end
 
 	commit
-			-- Commit the currently active transaction.
-			-- In case of an error, including a failed commit, it will report it in `last_error' and raise an exception.
+			-- <Precursor>
 		do
 			internal_connection.commit
 			if internal_connection.has_error then
@@ -64,8 +58,7 @@ feature {PS_ABEL_EXPORT}
 		end
 
 	rollback
-			-- Rollback the currently active transaction.
-			-- In case of an error, it will report it in `last_error' and raise an exception.
+			-- <Precursor>
 		do
 			internal_connection.rollback
 			if internal_connection.has_error then
@@ -77,21 +70,27 @@ feature {PS_ABEL_EXPORT}
 		end
 
 	last_result: ITERATION_CURSOR [PS_SQL_ROW]
-			-- The result of the last database operation
+			-- <Precursor>
 		do
 			Result := last_results.last
 		end
 
 	last_results: LIST [ITERATION_CURSOR [PS_SQL_ROW]]
-			-- The results of the last database operations
+			-- <Precursor>
 
 	last_error: detachable PS_ERROR
-			-- The last occured error
+			-- <Precursor>
+
+	last_primary_key: INTEGER
+			-- <Precursor>
+		do
+			Result := internal_connection.last_result.last_insert_id
+		end
 
 feature {PS_MYSQL_DATABASE} -- Access
 
 	internal_connection: MYSQLI_CLIENT
-			-- The actual connection that gets wrapped here
+			-- The actual connection wrapped by `Current'.
 
 feature {NONE} -- Initialization
 

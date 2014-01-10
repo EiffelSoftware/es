@@ -11,10 +11,7 @@ inherit
 
 	PS_GENERIC_LAYOUT_SQL_READONLY_BACKEND
 
-	PS_BACKEND
-		undefine
-			close
-		end
+	PS_REPOSITORY_CONNECTOR
 
 create
 	make
@@ -22,7 +19,7 @@ create
 feature {PS_ABEL_EXPORT} -- Primary key generation
 
 	generate_all_object_primaries (order: HASH_TABLE [INTEGER, PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): HASH_TABLE [LIST [PS_BACKEND_OBJECT], PS_TYPE_METADATA]
-			-- For each type `type_key' in `order', generate `order [type_key]' new objects in the database.
+			-- <Precursor>
 		local
 			connection: PS_SQL_CONNECTION
 			new_primary_key: INTEGER
@@ -36,7 +33,7 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 				order as cursor
 			from
 				create Result.make (order.count)
-				-- Retrieve some required information
+					-- Retrieve some required information
 				none_class_key := db_metadata_manager.create_get_primary_key_of_class (SQL_Strings.None_class)
 				existence_attribute_key := db_metadata_manager.create_get_primary_key_of_attribute (SQL_Strings.Existence_attribute, db_metadata_manager.create_get_primary_key_of_class (SQL_Strings.none_class))
 			loop
@@ -46,7 +43,8 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 					create current_list.make (cursor.item)
 					Result.extend (current_list, cursor.key)
 				loop
-					-- Generate a new primary key in the database by inserting the "existence" attribute with the objects object_identifier as a temporary value
+						-- Generate a new primary key in the database by inserting the "existence"
+						-- attribute with the objects object_identifier as a temporary value
 					connection.execute_sql (SQL_Strings.Insert_value_use_autoincrement (existence_attribute_key, none_class_key, "''"))
 					connection.execute_sql (SQL_Strings.Query_last_object_autoincrement)
 					new_primary_key := connection.last_result.item.item (1).to_integer
@@ -57,15 +55,14 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 				end
 			end
 
-			-- Cleanup
+				-- Cleanup
 			connection.execute_sql ("DELETE FROM ps_value WHERE attributeid = " + existence_attribute_key.out)
-
 		rescue
 			rollback (transaction)
 		end
 
 	generate_collection_primaries (order: HASH_TABLE [INTEGER, PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): HASH_TABLE [LIST [PS_BACKEND_COLLECTION], PS_TYPE_METADATA]
-			-- For each type `type_key' in the hash table `order', generate `order [type_key]' new collections in the database.
+			-- <Precursor>
 		local
 			connection: PS_SQL_CONNECTION
 			new_primary_key: INTEGER
@@ -78,7 +75,7 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 				order as cursor
 			from
 				create Result.make (order.count)
-				-- Retrieve some required information
+					-- Retrieve some required information
 				none_class_key := db_metadata_manager.create_get_primary_key_of_class (SQL_Strings.None_class)
 			loop
 				across
@@ -87,7 +84,8 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 					create current_list.make (cursor.item)
 					Result.extend (current_list, cursor.key)
 				loop
-					-- Generate a new primary key in the database by inserting the "existence" attribute with the objects object_identifier as a temporary value
+						-- Generate a new primary key in the database by inserting the "existence"
+						-- attribute with the objects object_identifier as a temporary value
 					connection.execute_sql (SQL_Strings.insert_new_collection (none_class_key))
 
 					connection.execute_sql (SQL_Strings.query_last_collection_autoincrement)
@@ -106,7 +104,7 @@ feature {PS_ABEL_EXPORT} -- Write operations
 
 
 	delete (objects: LIST [PS_BACKEND_ENTITY]; transaction: PS_INTERNAL_TRANSACTION)
-			-- Delete every item in `objects' from the database
+			-- <Precursor>
 		local
 			connection: PS_SQL_CONNECTION
 			stmt: STRING
@@ -119,7 +117,7 @@ feature {PS_ABEL_EXPORT} -- Write operations
 			loop
 				stmt.append (cursor.item.primary_key.out + ",")
 			end
-			-- conveniently this also removes the last comma
+				-- Conveniently this also removes the last comma.
 			stmt.put (')', stmt.count)
 
 			connection.execute_sql (stmt)
@@ -129,7 +127,7 @@ feature {PS_ABEL_EXPORT} -- Write operations
 
 
 	write_collections (collections: LIST [PS_BACKEND_COLLECTION]; transaction: PS_INTERNAL_TRANSACTION)
-			-- Write every item in `collections' to the database
+			-- <Precursor>
 		local
 			commands: ARRAYED_LIST [STRING]
 			info_commands: ARRAYED_LIST [STRING]
@@ -153,9 +151,9 @@ feature {PS_ABEL_EXPORT} -- Write operations
 			loop
 					-- Insert all items
 				across
-					cursor.item.collection_items as collection_item
+					cursor.item as item_cursor
 				from
-					collection_type_key := db_metadata_manager.create_get_primary_key_of_class (cursor.item.metadata.name)
+					collection_type_key := db_metadata_manager.create_get_primary_key_of_class (cursor.item.type.name)
 
 						-- Insert a default item at position -1 to acknowledge the existence of the collection.
 					commands.extend (SQL_Strings.to_list_with_braces ([
@@ -177,29 +175,29 @@ feature {PS_ABEL_EXPORT} -- Write operations
 
 				loop
 					commands.extend (SQL_Strings.to_list_with_braces ([
-						-- Primary key
+							-- Primary key
 						cursor.item.primary_key,
-						-- Type of the collection
+							-- Type of the collection
 						collection_type_key,
-						-- Position of the item
-						collection_item.target_index,
-						-- Runtime type
-						db_metadata_manager.create_get_primary_key_of_class (collection_item.item.second),
-						-- Value
-						collection_item.item.first
+							-- Position of the item
+						item_cursor.target_index,
+							-- Runtime type
+						db_metadata_manager.create_get_primary_key_of_class (cursor.item.item_type (item_cursor.target_index)),
+							-- Value
+						item_cursor.item
 						]))
 				end
 
 				across
-					cursor.item.information_descriptions as info_cursor
+					cursor.item.meta_information as info
 				loop
 					info_commands.extend (SQL_Strings.to_list_with_braces ([
-						-- Primary key
+							-- Primary key
 						cursor.item.primary_key,
-						-- Information key
-						info_cursor.item,
-						-- Actual info
-						cursor.item.get_information (info_cursor.item)
+							-- Information key
+						info.key,
+							-- Actual info
+						info.item
 					]))
 				end
 
@@ -226,14 +224,15 @@ feature {PS_ABEL_EXPORT} -- Write operations
 		end
 
 	delete_collections (collections: LIST [PS_BACKEND_ENTITY]; transaction: PS_INTERNAL_TRANSACTION)
-			-- Delete every item in `collections' from the database
+			-- <Precursor>
 		local
 			connection: PS_SQL_CONNECTION
 			stmt: STRING
 		do
 
 				-- Delete all items in the collection.
-				-- The additional information gets deleted automatically via an integrity constraint.
+				-- The additional information gets deleted automatically
+				-- by an integrity constraint in the database.
 			across
 				collections as cursor
 			from
@@ -242,7 +241,7 @@ feature {PS_ABEL_EXPORT} -- Write operations
 			loop
 				stmt.append (cursor.item.primary_key.out + ",")
 			end
-				-- conveniently this also removes the last comma
+				-- Conveniently, this also removes the last comma.
 			stmt.put (')', stmt.count)
 
 			connection := get_connection (transaction)
@@ -252,7 +251,9 @@ feature {PS_ABEL_EXPORT} -- Write operations
 		end
 
 	wipe_out
-			-- Wipe out everything and initialize new.
+			-- <Precursor>
+		local
+			old_plugins: like plugins
 		do
 			across
 				active_connections as cursor
@@ -270,14 +271,16 @@ feature {PS_ABEL_EXPORT} -- Write operations
 			management_connection.execute_sql (SQL_Strings.Drop_class_table)
 			database.release_connection (management_connection)
 
+				-- Re-initialize, but keep the plugins.
+			old_plugins := plugins
 			make (database, SQL_Strings)
+			plugins := old_plugins
 		end
 
-feature {PS_BACKEND} -- Implementation
+feature {PS_REPOSITORY_CONNECTOR} -- Implementation
 
 	internal_write (objects: LIST [PS_BACKEND_OBJECT]; transaction: PS_INTERNAL_TRANSACTION)
-			-- Write all `objects' to the database.
-			-- Only write the attributes present in {PS_BACKEND_OBJECT}.attributes.
+			-- <Precursor>
 		local
 			connection: PS_SQL_CONNECTION
 			commands: ARRAYED_LIST [STRING]
@@ -290,25 +293,26 @@ feature {PS_BACKEND} -- Implementation
 				across
 					cursor.item.attributes as attribute_cursor
 				from
-					-- Insert a default empty attribute to acknowledge the existence of the object.
+						-- Insert a default empty attribute to
+						-- acknowledge the existence of the object.
 					commands.extend (SQL_Strings.to_list_with_braces ([
-						-- Primary key
+							-- Primary key
 						cursor.item.primary_key,
-						-- Attribute key of default attribute ps_existence
-						db_metadata_manager.create_get_primary_key_of_attribute (SQL_Strings.Existence_attribute, db_metadata_manager.create_get_primary_key_of_class (cursor.item.metadata.name)),
-						-- Runtime type of ps_existence (NONE)
+							-- Attribute key of default attribute ps_existence
+						db_metadata_manager.create_get_primary_key_of_attribute (SQL_Strings.Existence_attribute, db_metadata_manager.create_get_primary_key_of_class (cursor.item.type.name)),
+							-- Runtime type of ps_existence (NONE)
 						db_metadata_manager.create_get_primary_key_of_class (SQL_Strings.None_class),
-						-- Store the root status.
+							-- Store the root status.
 						cursor.item.is_root.out]))
 				loop
 					commands.extend (SQL_Strings.to_list_with_braces ([
-						-- Primary key
+							-- Primary key
 						cursor.item.primary_key,
-						-- Attribute key
-						db_metadata_manager.create_get_primary_key_of_attribute (attribute_cursor.item, db_metadata_manager.create_get_primary_key_of_class (cursor.item.metadata.name)),
-						-- Runtime type
-						db_metadata_manager.create_get_primary_key_of_class (cursor.item.attribute_value (attribute_cursor.item).attribute_class_name),
-						-- Value
+							-- Attribute key
+						db_metadata_manager.create_get_primary_key_of_attribute (attribute_cursor.item, db_metadata_manager.create_get_primary_key_of_class (cursor.item.type.name)),
+							-- Runtime type
+						db_metadata_manager.create_get_primary_key_of_class (cursor.item.attribute_value (attribute_cursor.item).type),
+							-- Value
 						cursor.item.attribute_value (attribute_cursor.item).value
 						]))
 				end

@@ -8,44 +8,30 @@ class
 	PS_GENERIC_LAYOUT_SQL_READONLY_BACKEND
 
 inherit
-	PS_READ_ONLY_BACKEND
-		redefine
-			close
-		end
+	PS_RDBMS_CONNECTOR
 
 create
 	make
 
-feature {PS_ABEL_EXPORT} -- Lazy loading
-
-	Default_batch_size: INTEGER = -1
-
 feature {PS_ABEL_EXPORT} -- Access
 
-	stored_types: LIST [READABLE_STRING_GENERAL]
-			-- The type string for all objects and collections stored in `Current'.
+	stored_types: LIST [IMMUTABLE_STRING_8]
+			-- <Precursor>
 		do
-			-- Note to implementors: It is highly recommended to cache the result, and
-			-- refresh it during a `retrieve' operation (or not at all if the result
-			-- is always stable).
-			fixme ("This also returns some basic types which are sometimes just present as attributes of other objects.")
 			Result := db_metadata_manager.all_types
 		end
-
 
 feature {PS_ABEL_EXPORT}-- Backend capabilities
 
 	is_generic_collection_supported: BOOLEAN = True
-			-- Can the current backend support collections in general,
-			-- i.e. is there a default strategy?
+			-- <Precursor>
 
 feature {PS_ABEL_EXPORT} -- Object retrieval operations
 
-
-
-	internal_retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_OBJECT]
+	internal_retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; is_root_only: BOOLEAN; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_OBJECT]
 			-- <Precursor>
 		do
+			fixme ("Implement `is_root_only'.")
 			Result := create {PS_LAZY_CURSOR}.make (type, criteria, attributes, transaction, Current)
 		rescue
 			rollback (transaction)
@@ -140,7 +126,7 @@ feature {PS_ABEL_EXPORT} -- Object retrieval operations
 
 feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 
-	collection_retrieve (type: PS_TYPE_METADATA; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_COLLECTION]
+	collection_retrieve (type: PS_TYPE_METADATA; is_root_only: BOOLEAN; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_COLLECTION]
 			-- <Precursor>
 		local
 			result_list: ARRAYED_LIST [PS_BACKEND_COLLECTION]
@@ -155,7 +141,9 @@ feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 			sql_string: STRING
 			key, info: STRING
 		do
-			-- Get the collection items
+			fixme ("Implement `is_root_only'.")
+
+				-- Get the collection items
 			connection := get_connection (transaction)
 			sql_string := "SELECT collectionid, position, runtimetype, value FROM ps_collection WHERE collectiontype = "
 				+ db_metadata_manager.primary_key_of_class (type.name).out
@@ -165,7 +153,7 @@ feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 
 			row_cursor := connection.last_result
 
-			-- Get all the content
+				-- Get all the content
 			from
 				create result_list.make (1)
 			until
@@ -175,18 +163,18 @@ feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 				position:= row_cursor.item.at ("position").to_integer
 
 				if position <= 0 then
-					-- new item
+						-- We have a new item.
 					result_list.extend (create {PS_BACKEND_COLLECTION}.make (primary_key, type))
 					result_list.last.set_is_root (row_cursor.item.at ("value").to_boolean)
 				else
 					runtime_type := db_metadata_manager.class_name_of_key (row_cursor.item.at ("runtimetype").to_integer)
 					value := row_cursor.item.at ("value")
-					result_list.last.add_item (value, runtime_type)
+					result_list.last.extend (value, runtime_type)
 				end
 				row_cursor.forth
 			end
 
-			-- Get the additional information
+				-- Get the additional information
 			across
 				result_list as cursor
 			loop
@@ -204,7 +192,7 @@ feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 					key := row_cursor.item.at ("info_key")
 					info := row_cursor.item.at ("info")
 
-					cursor.item.add_information (key, info)
+					cursor.item.meta_information [key] := info
 
 					row_cursor.forth
 				end
@@ -297,7 +285,7 @@ feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 
 				if position > 0 then
 					runtime_type_foreign_key := row_cursor.item.at ("runtimetype").to_integer
-					current_object.put_item (value, db_metadata_manager.class_name_of_key (runtime_type_foreign_key), position)
+					current_object.force_i_th (value, db_metadata_manager.class_name_of_key (runtime_type_foreign_key), position)
 				else
 					current_object.set_is_root (value.to_boolean)
 				end
@@ -316,7 +304,7 @@ feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 				info_value := row_cursor.item.at ("info")
 
 				if attached actual_result [primary_key] as partial then
-					partial.add_information (info_key, info_value)
+					partial.meta_information [info_key] := info_value
 				end
 				row_cursor.forth
 			end
@@ -324,82 +312,7 @@ feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 			Result := actual_result
 		end
 
-feature {PS_ABEL_EXPORT} -- Transaction handling
-
-	commit (a_transaction: PS_INTERNAL_TRANSACTION)
-			-- Tries to commit `a_transaction'. As with every other error, a failed commit will result in a new exception and the error will be placed inside `a_transaction'.
-		local
-			connection: PS_SQL_CONNECTION
-		do
-			connection := get_connection (a_transaction)
-			connection.commit
-			release_connection (a_transaction)
-		rescue
-			rollback (a_transaction)
-		end
-
-	rollback (a_transaction: PS_INTERNAL_TRANSACTION)
-			-- Aborts `a_transaction' and undoes all changes in the database.
-		local
-			connection: PS_SQL_CONNECTION
-		do
-			if not a_transaction.has_error then -- Avoid a "double rollback"
-				connection := get_connection (a_transaction)
-				a_transaction.set_error (connection.last_error)
-				connection.rollback
-				release_connection (a_transaction)
-			end
-		end
-
-	set_transaction_isolation (settings: PS_TRANSACTION_SETTINGS)
-			-- Set the transaction isolation level such that all values in `settings' are respected.
-		do
-			database.set_transaction_isolation (settings)
-		end
-
-	close
-			-- Close all connections.
-		do
-			database.close_connections
-		end
-
-feature {PS_LAZY_CURSOR} -- Implementation - Connection and Transaction handling
-
-	get_connection (transaction: PS_INTERNAL_TRANSACTION): PS_SQL_CONNECTION
-			-- Get the connection associated with `transaction'.
-			-- Acquire a new connection if the transaction is new.
-		local
-			new_connection: PS_PAIR [PS_SQL_CONNECTION, PS_INTERNAL_TRANSACTION]
-			found: detachable PS_SQL_CONNECTION
-		do
-			if attached active_connections [transaction] as res then
-				Result := res
-			else
-				Result := database.acquire_connection
-				active_connections.extend (Result, transaction)
-			end
-		end
-
-	release_connection (transaction: PS_INTERNAL_TRANSACTION)
-			-- Release the connection associated with `transaction'.
-		do
-			active_connections.remove (transaction)
-		end
-
-	active_connections: HASH_TABLE [PS_SQL_CONNECTION, PS_INTERNAL_TRANSACTION]
-			-- These are the normal connections attached to a transaction.
-			-- They do not have auto-commit and they are closed once the transaction is finished.
-			-- They only write and read the ps_value table.
-
-	management_connection: PS_SQL_CONNECTION
-			-- This is a special connection used for management and read-only transactions.
-			-- It uses auto-commit, and is always active.
-			-- The connection can only read and write tables ps_attribute and ps_class.
-
-feature {PS_LAZY_CURSOR} -- Implementation: Various fields
-
-	database: PS_SQL_DATABASE
-			-- The actual database.
+feature {PS_LAZY_CURSOR} -- Implementation
 
 	db_metadata_manager: PS_METADATA_TABLES_MANAGER
 			-- The manager for the metadata tables.
@@ -414,22 +327,18 @@ feature {NONE} -- Initialization
 		local
 			initialization_connection: PS_SQL_CONNECTION
 		do
+			initialize (a_database)
+
 			SQL_Strings := strings
-			database := a_database
 			management_connection := database.acquire_connection
 			management_connection.set_autocommit (True)
 			create db_metadata_manager.make (management_connection, SQL_Strings)
 			management_connection.commit
-			create active_connections.make (1)
-
-			batch_retrieval_size := Default_batch_size
-
-			create plugins.make (1)
-			plugins.extend (create {PS_AGENT_CRITERION_ELIMINATOR_PLUGIN})
-
 		end
 
-invariant
-	valid_batchsize: batch_retrieval_size > 0 or batch_retrieval_size = -1
+	management_connection: PS_SQL_CONNECTION
+			-- This is a special connection used for management.
+			-- It uses auto-commit, and is always active.
+			-- The connection can only read and write tables ps_attribute and ps_class.
 
 end

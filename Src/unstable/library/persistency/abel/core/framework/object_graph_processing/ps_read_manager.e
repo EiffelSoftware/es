@@ -23,23 +23,21 @@ create
 feature {NONE} -- Initialization
 
 	make (
-			a_metadata_factory: like metadata_factory;
-			an_id_manager: like id_manager;
-			a_primary_key_mapper: like primary_key_mapper;
-			a_backend: like backend;
+			a_metadata_factory: like type_factory;
+			a_connector: like connector;
 			a_transaction: like transaction)
 			-- Initialization for `Current'
 		local
 			bogus: PS_OBJECT_READ_DATA
 		do
-			initialize (a_metadata_factory, an_id_manager, a_primary_key_mapper)
-			backend := a_backend
+			initialize (a_metadata_factory)
+			connector := a_connector
 			transaction := a_transaction
 
 
 			create storage_array.make_empty (default_size)
 				-- Fill the first position with a bogus result.
-			create bogus.make_with_primary_key (0, -1, metadata_factory.create_metadata_from_type ({NONE}), -1)
+			create bogus.make_with_primary_key (0, -1, type_factory.create_metadata_from_type ({NONE}), -1)
 			storage_array.extend (bogus)
 
 			create cache.make (small_size)
@@ -79,7 +77,7 @@ feature {PS_ABEL_EXPORT} -- Access
 	transaction: PS_INTERNAL_TRANSACTION
 			-- The transaction in which the current operation is running.
 
-	backend: PS_READ_ONLY_BACKEND
+	connector: PS_READ_REPOSITORY_CONNECTOR
 			-- The database backend.
 
 	cache_lookup (primary_key: INTEGER; type: PS_TYPE_METADATA):INTEGER
@@ -176,7 +174,7 @@ feature {PS_ABEL_EXPORT} -- Element change
 
 feature {PS_ABEL_EXPORT} -- Smart retrieval
 
-	dispatch_retrieve (type: PS_TYPE_METADATA; criterion: PS_CRITERION; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; a_transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_ENTITY]
+	dispatch_retrieve (type: PS_TYPE_METADATA; criterion: PS_CRITERION; is_root_only: BOOLEAN; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; a_transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_ENTITY]
 			-- Retrieve a set of collections or objects (based on the handler for `type').
 		local
 			found: BOOLEAN
@@ -186,7 +184,7 @@ feature {PS_ABEL_EXPORT} -- Smart retrieval
 
 				-- First check if a value type handler is responsible for `type'.
 			if attached search_value_type_handler (type) then
-				Result := backend.retrieve (type, criterion, create {PS_IMMUTABLE_STRUCTURE [STRING]}.make (<<{PS_BACKEND_OBJECT}.value_type_item>>), a_transaction)
+				Result := connector.retrieve (type, criterion, is_root_only, create {PS_IMMUTABLE_STRUCTURE [STRING]}.make (<<{PS_BACKEND_OBJECT}.value_type_item>>), a_transaction)
 				found := True
 			end
 
@@ -199,9 +197,9 @@ feature {PS_ABEL_EXPORT} -- Smart retrieval
 				if cursor.item.can_handle_type (type) then
 					found := True
 					if cursor.item.is_mapping_to_object then
-						Result := backend.retrieve (type, criterion, attributes, a_transaction)
+						Result := connector.retrieve (type, criterion, is_root_only, attributes, a_transaction)
 					else
-						Result := backend.collection_retrieve (type, a_transaction)
+						Result := connector.collection_retrieve (type, is_root_only, a_transaction)
 					end
 				end
 			end
@@ -265,7 +263,7 @@ feature {PS_ABEL_EXPORT} -- Object building
 					if object.reflector /= object then
 							-- Expanded type
 						storage_array.put (object.reflector, cursor.item)
-					elseif object.is_object_initialized then
+					elseif object.is_reflector_initialized then
 						storage_array.put (object.reflector.object, cursor.item)
 					else
 						storage_array.put (Void, cursor.item)
@@ -378,7 +376,7 @@ feature {PS_ABEL_EXPORT} -- Handler support functions
 
 				elseif referee_index < to_process_next.lower then
 					referee := item (referee_index)
-					if referee.is_object_initialized then
+					if referee.is_reflector_initialized then
 						referee.set_referer (referer.index)
 						Result := referee.reflector.object
 					end
@@ -418,7 +416,7 @@ feature {PS_ABEL_EXPORT} -- Handler support functions
 				or else attached search_value_type_handler (type)
 				or else (attached cache [type] as second_lvl
 					and then second_lvl [value.to_integer] > 0
-					and then (item (second_lvl [value.to_integer]).is_object_initialized
+					and then (item (second_lvl [value.to_integer]).is_reflector_initialized
 						or item (second_lvl [value.to_integer]).is_ignored))
 		end
 
@@ -472,7 +470,7 @@ feature {NONE} -- Implementation: Loop body
 			cleared_objects: object_primaries_to_retrieve.is_empty and object_types_to_retrieve.is_empty
 		local
 			i: INTEGER
-			identifier: PS_OBJECT_IDENTIFIER_WRAPPER
+			identifier: NATURAL_64
 			object: PS_OBJECT_READ_DATA
 
 			start, stop: INTEGER
@@ -540,19 +538,19 @@ feature {NONE} -- Implementation: Loop body
 				loop
 					object := item (i)
 
-					if not object.is_ignored and not object.type.type.is_expanded then
+					if not object.is_ignored and not transaction.repository.is_expanded (object.type.type) then
 							-- Identify the object with the id_manager
-						id_manager.identify (object.reflector.object, transaction)
+						transaction.identifier_table.extend (object.reflector.object)
 
-						identifier := id_manager.identifier_wrapper (object.reflector.object, transaction)
-						object.set_identifier (identifier.object_identifier)
+						identifier := transaction.identifier_table.last_identifier
+						object.set_identifier (identifier)
 
 							-- Update the ABEL id -> primary key mapping
-						primary_key_mapper.add_entry (identifier, object.primary_key, transaction)
+						transaction.primary_key_table.extend (object.primary_key, identifier)
 
 							-- Update the root status
 						check attached object.backend_representation as br then
-							transaction.root_flags.force (br.is_root, identifier.object_identifier)
+							transaction.root_flags.force (br.is_root, identifier)
 						end
 					end
 					i := i + 1
@@ -623,22 +621,22 @@ feature {NONE} -- Implementation: Batch retrieval
 		do
 
 			if not object_primaries_to_retrieve.is_empty then
-				retrieved_objects := backend.specific_retrieve (object_primaries_to_retrieve, object_types_to_retrieve, transaction)
+				retrieved_objects := connector.specific_retrieve (object_primaries_to_retrieve, object_types_to_retrieve, transaction)
 
 				across
 					retrieved_objects as obj
 				loop
-					item (cache_lookup (obj.item.primary_key, obj.item.metadata)).set_backend_representation (obj.item)
+					item (cache_lookup (obj.item.primary_key, obj.item.type)).set_backend_representation (obj.item)
 				end
 			end
 
 			if not collection_primaries_to_retrieve.is_empty then
-				retrieved_collections := backend.specific_collection_retrieve (collection_primaries_to_retrieve, collection_types_to_retrieve, transaction)
+				retrieved_collections := connector.specific_collection_retrieve (collection_primaries_to_retrieve, collection_types_to_retrieve, transaction)
 
 				across
 					retrieved_collections as coll
 				loop
-					item (cache_lookup (coll.item.primary_key, coll.item.metadata)).set_backend_representation (coll.item)
+					item (cache_lookup (coll.item.primary_key, coll.item.type)).set_backend_representation (coll.item)
 				end
 			end
 

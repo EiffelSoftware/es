@@ -9,23 +9,21 @@ class
 
 inherit
 
-	PS_BACKEND
-
-	PS_BACKEND_CONVERTER
+	PS_REPOSITORY_CONNECTOR
 
 create
 	make, make_with_host_and_port
 
 feature {PS_ABEL_EXPORT} -- Access
 
-	stored_types: LIST [READABLE_STRING_GENERAL]
+	stored_types: LIST [IMMUTABLE_STRING_8]
 			-- The type string for all objects and collections stored in `Current'.
 		do
 			-- Note to implementors: It is highly recommended to cache the result, and
 			-- refresh it during a `retrieve' operation (or not at all if the result
 			-- is always stable).
 			fixme ("TODO")
-			create {LINKED_LIST [READABLE_STRING_GENERAL]} Result.make
+			create {LINKED_LIST [IMMUTABLE_STRING_8]} Result.make
 		end
 
 feature {PS_ABEL_EXPORT} -- Status report
@@ -36,24 +34,17 @@ feature {PS_ABEL_EXPORT} -- Status report
 
 feature {PS_ABEL_EXPORT} -- Object retrieval operations
 
-	internal_retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_OBJECT]
-			-- Retrieves all objects of class `type' (direct instance - not inherited from) that match the criteria in `criteria' within transaction `transaction'.
-			-- If `attributes' is not empty, it will only retrieve the attributes listed there.
-			-- If an attribute was `Void' during an insert, or it doesn't exist in the database because of a version mismatch, the attribute value during retrieval will be an empty string and its class name `NONE'.
-			-- If `type' has a generic parameter, the retrieve function will return objects of all generic instances of the generating class.
-			-- You can find out about the actual generic parameter by comparing the class name associated to a foreign key value.
+	internal_retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; is_root_only: BOOLEAN; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_OBJECT]
+			-- <Precursor>
 		require else
 			True
 		local
---			temp_list: LINKED_LIST [PS_RETRIEVED_OBJECT]
 			result_list: LINKED_LIST [PS_BACKEND_OBJECT]
 			highest_id, curr_id: INTEGER
 			curr_obj: detachable PS_BACKEND_OBJECT
 		do
 			create result_list.make
---			create temp_list.make
 			highest_id := key_set [type.name]
---			highest_id := max_key + 1
 			from
 				curr_id := 1
 			until
@@ -61,16 +52,34 @@ feature {PS_ABEL_EXPORT} -- Object retrieval operations
 			loop
 				curr_obj := internal_retrieve_by_primary (type, curr_id, attributes, transaction)
 				if attached curr_obj then
---					curr_obj := temp_list.first
---					if criteria.can_handle_object (curr_obj) then
---						if criteria.is_satisfied_by (curr_obj) then
-							result_list.extend (curr_obj)
---						end
---					end
+					result_list.extend (curr_obj)
 				end
 				curr_id := curr_id + 1
 			end
 			Result := result_list.new_cursor
+		end
+
+	internal_specific_retrieve (primaries: ARRAYED_LIST [INTEGER]; types: ARRAYED_LIST [PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): READABLE_INDEXABLE [PS_BACKEND_OBJECT]
+		local
+			struct: PS_IMMUTABLE_STRUCTURE [STRING]
+			list: ARRAYED_LIST [PS_BACKEND_OBJECT]
+			i: INTEGER
+		do
+			from
+				create list.make (primaries.count)
+				Result := list
+				i := 1
+			until
+				i > primaries.count
+			loop
+				create struct.make (types [i].attributes)
+				if attached internal_retrieve_by_primary (types [i], primaries [i], struct, transaction) as retrieved_obj then
+					list.extend (retrieved_obj)
+				end
+				i := i + 1
+			variant
+				primaries.count + 1 - i
+			end
 		end
 
 	internal_retrieve_by_primary (type: PS_TYPE_METADATA; key: INTEGER; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction: PS_INTERNAL_TRANSACTION): detachable PS_BACKEND_OBJECT
@@ -232,7 +241,7 @@ feature {PS_ABEL_EXPORT} -- Object write operations
 			check not_implemented: False end
 		end
 
-feature {PS_BACKEND} -- Implementation
+feature {PS_REPOSITORY_CONNECTOR} -- Implementation
 
 	internal_write (objects: LIST [PS_BACKEND_OBJECT]; transaction: PS_INTERNAL_TRANSACTION)
 			-- Write all `objects' to the database.
@@ -250,7 +259,7 @@ feature {PS_BACKEND} -- Implementation
 				doc := make_json_new (cursor.item, cursor.item.primary_key.out, "")
 --				db_name := cursor.item.metadata.base_class.name.twin
 --				db_name.to_lower
-				db_name := convert_type (cursor.item.metadata)
+				db_name := convert_type (cursor.item.type)
 --				print (db_name)
 
 				err := curl.create_document (db_name, doc)
@@ -258,7 +267,7 @@ feature {PS_BACKEND} -- Implementation
 --				print (err)
 
 				-- ??
-				prev_attr_list := make_object (cursor.item.metadata, err, "")
+				prev_attr_list := make_object (cursor.item.type, err, "")
 				across
 					prev_attr_list as attr
 				loop
@@ -409,7 +418,7 @@ feature --json operations
 		do
 			create attr_list.make
 			callback := curl.get_document (db_name, id)
-			attr_list := make_object (object.metadata, callback, id)
+			attr_list := make_object (object.type, callback, id)
 			create Result.make_empty
 			across
 				attr_list as curr_attr
@@ -422,21 +431,25 @@ feature --json operations
 
 feature {PS_ABEL_EXPORT} -- Object-oriented collection operations
 
-	retrieve_collection (collection_type: PS_TYPE_METADATA; collection_primary_key: INTEGER; transaction: PS_INTERNAL_TRANSACTION): detachable PS_BACKEND_COLLECTION
-			-- Retrieves the object-oriented collection of type `collection_type' and with primary key `collection_primary_key'.
-		do
-			check
-				not_implemented: False
-			end
-		end
-
-	collection_retrieve (collection_type: PS_TYPE_METADATA; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_COLLECTION]
-			-- Retrieves all collections of type `collection_type'.
+	collection_retrieve (type: PS_TYPE_METADATA; is_root_only: BOOLEAN; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_COLLECTION]
+			-- <Precursor>
 		do
 			check
 				not_implemented: False
 			end
 			Result := (create {LINKED_LIST [PS_BACKEND_COLLECTION]}.make).new_cursor
+		end
+
+	specific_collection_retrieve (primary_keys: ARRAYED_LIST [INTEGER]; types: ARRAYED_LIST [PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): READABLE_INDEXABLE [PS_BACKEND_COLLECTION]
+			-- For every position `i' in the two lists, retrieve the object
+			-- with `types [i]' and `primary_keys [i]'.
+			-- Note: The result does not have to be ordered, and items deleted in
+			-- the database are not present in the result.
+		do
+			check
+				not_implemented: False
+			end
+			Result := (create {LINKED_LIST [PS_BACKEND_COLLECTION]}.make)
 		end
 
 	write_collections (collections: LIST [PS_BACKEND_COLLECTION]; transaction: PS_INTERNAL_TRANSACTION)
@@ -464,6 +477,11 @@ feature {PS_ABEL_EXPORT} -- Transaction handling
 
 	rollback (a_transaction: PS_INTERNAL_TRANSACTION)
 			-- Aborts `a_transaction' and undoes all changes in the database.
+		do
+		end
+
+	close
+			-- Close the backend.
 		do
 		end
 

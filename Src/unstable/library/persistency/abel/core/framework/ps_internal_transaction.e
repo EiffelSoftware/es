@@ -20,69 +20,69 @@ feature {NONE} -- Initialization
 	make (a_repository: PS_REPOSITORY; a_strategy: PS_ROOT_OBJECT_STRATEGY; id: INTEGER)
 			-- Initialize `Current'.
 		do
-			repository := a_repository
+			create identifier_table.make
+			create primary_key_table.make
 			create root_flags.make (1)
-			create identifier_set.make
-			is_readonly := False
+
 			is_active := True
+			repository := a_repository
 			root_declaration_strategy := a_strategy
 			transaction_identifier := id
-
-			repository.id_manager.register_transaction (Current)
+		ensure
+			read_write: not is_readonly
+			active: is_active
+			repository_correct: repository = a_repository
+			strategy_correct: root_declaration_strategy = a_strategy
+			id_correct: transaction_identifier = id
 		end
 
 	make_readonly (a_repository: PS_REPOSITORY; id: INTEGER)
 			-- Initialize `Current', mark transaction as readonly.
 		do
-			repository := a_repository
-			create root_flags.make (1)
-			create identifier_set.make
+			make (a_repository, create {PS_ROOT_OBJECT_STRATEGY}.make_preserve, id)
 			is_readonly := True
-			is_active := True
-			create root_declaration_strategy.make_preserve
-			transaction_identifier := id
-
-			repository.id_manager.register_transaction (Current)
+		ensure
+			readonly: is_readonly
+			active: is_active
+			repository_correct: repository = a_repository
+			id_correct: transaction_identifier = id
 		end
 
 feature {PS_ABEL_EXPORT} -- Access
 
-	transaction_identifier: INTEGER
-			-- A unique transaction identifier.
-
-	error: detachable PS_ERROR
-			-- Error description of the last error.
-
 	repository: PS_REPOSITORY
 			-- The repository this `Current' is bound to.
-
-	root_flags: HASH_TABLE [BOOLEAN, INTEGER]
-			-- Mapping for ABEL identifier -> root status of every object.
-
-	identifier_set: PS_IDENTIFIER_SET
-
 
 	root_declaration_strategy: PS_ROOT_OBJECT_STRATEGY
 			-- The root object strategy for the current transaction.
 
+	error: detachable PS_ERROR
+			-- Error description of the last error.
+
+	transaction_identifier: INTEGER
+			-- A unique transaction identifier.
+
 	hash_code: INTEGER
-			-- Hash code value
+			-- Hash code value.
 		do
 			Result := transaction_identifier
 		end
 
+feature {PS_ABEL_EXPORT} -- Access: Transaction context
+
+	root_flags: HASH_TABLE [BOOLEAN, NATURAL_64]
+			-- Mapping for ABEL identifier -> root status of every object.
+
+	identifier_table: PS_IDENTIFIER_TABLE
+			-- An object -> identifier lookup table.
+
+	primary_key_table: PS_PRIMARY_KEY_TABLE
+			-- An identifier -> primary key lookup table.
 
 feature {PS_ABEL_EXPORT} -- Status report
 
 	is_active: BOOLEAN
 			-- Is the current transaction still active, or has it been commited or rolled back at some point?
-
-	is_successful_commit: BOOLEAN
-			-- Was the last commit operation successful?
-		require
-			not_active: not is_active
-		attribute
-		end
 
 	has_error: BOOLEAN
 			-- Has there been an error in any of the operations or the final commit?
@@ -93,6 +93,21 @@ feature {PS_ABEL_EXPORT} -- Status report
 	is_readonly: BOOLEAN
 			-- Is this a readonly transaction?
 
+	is_retry_allowed: BOOLEAN
+			-- Should there be a retry?
+			-- Default yes, except for contract violations or other errors
+			-- which happen only during development.
+		require
+			has_error: attached error
+		do
+			check from_precondition: attached error as l_error then
+				Result := not attached {ASSERTION_VIOLATION} l_error.backend_error
+					and not attached {LANGUAGE_EXCEPTION} l_error.backend_error
+					and not attached {OLD_VIOLATION} l_error.backend_error
+			end
+		end
+
+
 feature {PS_ABEL_EXPORT} -- Element change
 
 	set_root_declaration_strategy (a_strategy: like root_declaration_strategy)
@@ -100,36 +115,6 @@ feature {PS_ABEL_EXPORT} -- Element change
 		do
 			root_declaration_strategy := a_strategy
 		end
-
---	commit
---			-- Try to commit the transaction.
---			--The result of the commit operation is set in the `is_successful_commit' attribute.
---		do
---			if is_active then
---				repository.commit_transaction (Current)
---			end
---		ensure
---			transaction_terminted: not is_active
---		rescue
---				-- Catch any exception if the commit failed
---			check
---				ensure_correct_rollback: not is_active and not is_successful_commit
---			end
---			retry -- Do nothing, but terminate normally.
---		end
-
---	rollback
---			-- Rollback all operations within this transaction.
---		require
---			transaction_alive: is_active
---		do
---			repository.rollback_transaction (Current, True)
---		ensure
---			transaction_terminated: not is_active
---			no_success: not is_successful_commit
---		end
-
-feature {PS_ABEL_EXPORT} -- Internals
 
 	set_error (an_error: detachable PS_ERROR)
 			-- Set the error field if an error occurred.
@@ -139,21 +124,24 @@ feature {PS_ABEL_EXPORT} -- Internals
 			error_set: error = an_error
 		end
 
-	declare_as_aborted
-			-- Declare `Current' as aborted.
+	set_default_error
+			-- Set the error field with a default PS_INTERNAL_ERROR.
+		require
+			no_error: not attached error
+		local
+			internal_error: PS_INTERNAL_ERROR
 		do
-			is_active := False
-			is_successful_commit := False
+			create internal_error
+			internal_error.set_backend_error (internal_error.exception_manager.last_exception)
+			set_error (internal_error)
+		ensure
+			has_error: attached error
 		end
 
-	declare_as_successful
-			-- Declare `Current' as successfully committed.
+	close
+			-- Set `is_active' to False.
 		do
 			is_active := False
-			is_successful_commit := True
 		end
-
-invariant
-	error_implies_no_success: not is_active and has_error implies not is_successful_commit
 
 end

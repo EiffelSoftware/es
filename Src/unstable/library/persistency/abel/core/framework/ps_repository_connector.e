@@ -5,15 +5,10 @@ note
 	revision: "$Revision$"
 
 deferred class
-	PS_BACKEND
+	PS_REPOSITORY_CONNECTOR
+
 inherit
-	PS_READ_ONLY_BACKEND
-
-
-feature {PS_ABEL_EXPORT} -- Backend capabilities
-
-
-
+	PS_READ_REPOSITORY_CONNECTOR
 
 feature {PS_ABEL_EXPORT} -- Primary key generation
 
@@ -23,7 +18,7 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 			not_empty: not order.is_empty
 			positive_numbers: across order as cursor all cursor.item > 0 end
 			types_supported: across order as cursor all is_object_type_supported (cursor.key) end
-			active_transaction: transaction.is_active
+			active_transaction: transaction.is_active and not transaction.has_error
 			not_readonly: not transaction.is_readonly
 		deferred
 		ensure
@@ -42,7 +37,7 @@ feature {PS_ABEL_EXPORT} -- Primary key generation
 			not_empty: not order.is_empty
 			positive_numbers: across order as cursor all cursor.item > 0 end
 			collection_supported: is_generic_collection_supported
-			active_transaction: transaction.is_active
+			active_transaction: transaction.is_active and not transaction.has_error
 			not_readonly: not transaction.is_readonly
 		deferred
 		ensure
@@ -61,10 +56,10 @@ feature {PS_ABEL_EXPORT} -- Write operations
 			-- Write every item in `objecs' to the database.
 		require
 			not_empty: not objects.is_empty
-			types_supported: across objects as cursor all is_object_type_supported (cursor.item.metadata)  end
---			no_additional_attributes: across objects as cursor all across cursor.item.attributes as attr all cursor.item.metadata.attributes.has (attr.item) end end
+			types_supported: across objects as cursor all is_object_type_supported (cursor.item.type)  end
+			no_additional_attributes: across objects as cursor all across cursor.item.attributes as attr all attr.item ~ cursor.item.value_type_item or cursor.item.type.attributes.has (attr.item) end end
 			new_attributes_complete: across objects as cursor all cursor.item.is_new implies cursor.item.is_complete end
-			active_transaction: transaction.is_active
+			active_transaction: transaction.is_active and not transaction.has_error
 			not_readonly: not transaction.is_readonly
 		do
 			-- Apply plugins first
@@ -87,8 +82,8 @@ feature {PS_ABEL_EXPORT} -- Write operations
 			-- Delete every item in `objects' from the database
 		require
 			not_empty: not objects.is_empty
-			types_supported: across objects as cursor all is_object_type_supported (cursor.item.metadata)  end
-			active_transaction: transaction.is_active
+			types_supported: across objects as cursor all is_object_type_supported (cursor.item.type)  end
+			active_transaction: transaction.is_active and not transaction.has_error
 			not_readonly: not transaction.is_readonly
 		deferred
 		ensure
@@ -101,7 +96,7 @@ feature {PS_ABEL_EXPORT} -- Write operations
 		require
 			not_empty: not collections.is_empty
 			collection_supported: is_generic_collection_supported
-			active_transaction: transaction.is_active
+			active_transaction: transaction.is_active and not transaction.has_error
 			not_readonly: not transaction.is_readonly
 		deferred
 		ensure
@@ -114,7 +109,7 @@ feature {PS_ABEL_EXPORT} -- Write operations
 		require
 			not_empty: not collections.is_empty
 			collection_supported: is_generic_collection_supported
-			active_transaction: transaction.is_active
+			active_transaction: transaction.is_active and not transaction.has_error
 			not_readonly: not transaction.is_readonly
 		deferred
 		ensure
@@ -127,8 +122,10 @@ feature {PS_ABEL_EXPORT} -- Write operations
 		deferred
 		end
 
+	after_write_action: detachable PROCEDURE [ANY, TUPLE [PS_OBJECT_WRITE_DATA]]
+			-- An action to be performed by `Current' after a write operation.
 
-feature {PS_BACKEND} -- Implementation
+feature {PS_REPOSITORY_CONNECTOR} -- Implementation
 
 	internal_write (objects: LIST [PS_BACKEND_OBJECT]; transaction: PS_INTERNAL_TRANSACTION)
 			-- Write all `objects' to the database.
@@ -154,7 +151,7 @@ feature {NONE} -- Contract support
 			create types.make (1)
 			create primaries.make (1)
 			primaries.extend (object.primary_key)
-			types.extend (object.metadata)
+			types.extend (object.type)
 			retrieved := internal_specific_retrieve (primaries, types, transaction)
 			Result := retrieved.index_set.count = 1 and then object.is_subset_of (retrieved.item (retrieved.index_set.lower))
 		end
@@ -169,7 +166,7 @@ feature {NONE} -- Contract support
 			create types.make (1)
 			create primaries.make (1)
 			primaries.extend (object.primary_key)
-			types.extend (object.metadata)
+			types.extend (object.type)
 
 			retrieved := internal_specific_retrieve (primaries, types, transaction)
 			Result := retrieved.index_set.count = 0
@@ -185,7 +182,7 @@ feature {NONE} -- Contract support
 			create types.make (1)
 			create primaries.make (1)
 			primaries.extend (collection.primary_key)
-			types.extend (collection.metadata)
+			types.extend (collection.type)
 
 			retrieved := specific_collection_retrieve (primaries, types, transaction)
 
@@ -203,7 +200,7 @@ feature {NONE} -- Contract support
 			create types.make (1)
 			create primaries.make (1)
 			primaries.extend (collection.primary_key)
-			types.extend (collection.metadata)
+			types.extend (collection.type)
 
 			retrieved := specific_collection_retrieve (primaries, types, transaction)
 			Result := retrieved.index_set.count = 0

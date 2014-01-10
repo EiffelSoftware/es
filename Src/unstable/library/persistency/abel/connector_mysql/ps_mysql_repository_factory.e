@@ -112,14 +112,13 @@ feature -- Element change
 			port_set: port = value
 		end
 
-feature {NONE}
+feature {NONE} -- Implementation
 
-	new_backend: PS_BACKEND
-			-- Create a new backend.
+	new_internal_database: PS_MYSQL_DATABASE
+			-- Create a MySQL database connection.
 		local
 			l_host: STRING
 			l_port: INTEGER
-			mysql_database: PS_MYSQL_DATABASE
 		do
 			if attached host as h then
 				l_host := h
@@ -138,11 +137,18 @@ feature {NONE}
 				and attached password as l_password
 				and attached database as l_database
 			then
-				create mysql_database.make (l_user, l_password, l_database, l_host, l_port)
-				create {PS_MYSQL_BACKEND} Result.make (mysql_database, create {PS_MYSQL_STRINGS})
+				create Result.make (l_user, l_password, l_database, l_host, l_port)
 			end
+		end
 
---			Result.add_plug_in (create {PS_ATTRIBUTE_REMOVER_PLUGIN})
+
+	new_connector: PS_REPOSITORY_CONNECTOR
+			-- <Precursor>
+		local
+			strings: PS_MYSQL_STRINGS
+		do
+			create strings
+			create {PS_MYSQL_BACKEND} Result.make (new_internal_database, strings)
 		end
 
 end

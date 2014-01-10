@@ -57,14 +57,11 @@ feature {PS_ABEL_EXPORT} -- Access
 			end
 		end
 
---	read_manager: PS_READ_MANAGER
-			-- The read manager.
-
 	internal_lib: INTERNAL
-			-- An INTERNAL library instance.
+			-- An {INTERNAL} library instance.
 
 	none_string: IMMUTABLE_STRING_8
-			-- The type string for "NONE".
+			-- The type string for {NONE}.
 
 feature {PS_ABEL_EXPORT} -- Status report
 
@@ -94,12 +91,11 @@ feature {PS_ABEL_EXPORT} -- Status report
 		end
 
 	is_mapping_to_value_type: BOOLEAN
-			-- Does `Current' map objects to a value type (i.e. STRING)?
+			-- Does `Current' map objects to a value type (i.e. {STRING_8})?
 		deferred
 		end
 
 feature {PS_ABEL_EXPORT} -- Read functions
-
 
 	retrieve (object: PS_OBJECT_READ_DATA; read_manager: PS_READ_MANAGER)
 			-- Retrieve `object' from the database.
@@ -127,7 +123,7 @@ feature {PS_ABEL_EXPORT} -- Read functions
 			new_instance := internal_lib.new_instance_of (object.type.type.type_id)
 			object.set_object (new_instance)
 		ensure
-			built: object.is_object_initialized
+			built: object.is_reflector_initialized
 		end
 
 	initialize (object: PS_OBJECT_READ_DATA; read_manager: PS_READ_MANAGER)
@@ -140,7 +136,7 @@ feature {PS_ABEL_EXPORT} -- Read functions
 			not_value_type_or_first: not is_mapping_to_value_type or object.index = 1
 			object_retrieved: is_mapping_to_object implies attached {PS_BACKEND_OBJECT} object.backend_representation
 			collection_retrieved: is_mapping_to_collection implies attached {PS_BACKEND_COLLECTION} object.backend_representation
-			created: object.is_object_initialized
+			created: object.is_reflector_initialized
 		deferred
 		end
 
@@ -152,7 +148,7 @@ feature {PS_ABEL_EXPORT} -- Read functions
 			not_value_type_or_first: not is_mapping_to_value_type or object.index = 1
 			object_retrieved: is_mapping_to_object implies attached {PS_BACKEND_OBJECT} object.backend_representation
 			collection_retrieved: is_mapping_to_collection implies attached {PS_BACKEND_COLLECTION} object.backend_representation
-			created: object.is_object_initialized
+			created: object.is_reflector_initialized
 		deferred
 		end
 
@@ -164,24 +160,23 @@ feature {PS_ABEL_EXPORT} -- Write functions
 			can_handle: can_handle (object)
 			not_ignored: not object.is_ignored
 		do
-			object.set_is_persistent (write_manager.id_manager.is_identified (object.reflector.object, write_manager.transaction))
+			object.set_is_persistent (write_manager.transaction.identifier_table [object.reflector.object] /= 0)
 		end
 
 	set_identifier (object: PS_OBJECT_WRITE_DATA)
-			-- Set the ABEL `identifier' of `object'.
+			-- Set the {PS_OBJECT_WRITE_DATA}.identifier of `object'.
 		require
 			can_handle: can_handle (object)
 			not_ignored: not object.is_ignored
 			not_value_type_or_first: not is_mapping_to_value_type or object.index = 1
 		do
-			if not object.reflector.is_expanded then
+			if not write_manager.transaction.repository.is_expanded (object.type.type) then
 				if not object.is_persistent then
-					write_manager.id_manager.identify (object.reflector.object, write_manager.transaction)
+					write_manager.transaction.identifier_table.extend (object.reflector.object)
 				end
-
-				object.set_identifier (write_manager.id_manager.identifier_wrapper (object.reflector.object, write_manager.transaction).object_identifier)
+				object.set_identifier (write_manager.transaction.identifier_table [object.reflector.object])
 			else
-				object.set_identifier (write_manager.id_manager.new_id)
+				object.set_identifier (write_manager.transaction.identifier_table.new_identifier)
 			end
 		ensure
 			identifier_set: object.identifier > 0
@@ -210,10 +205,10 @@ feature {PS_ABEL_EXPORT} -- Write functions
 			object_generated: is_mapping_to_object implies attached {PS_BACKEND_OBJECT} object.backend_representation
 			collection_generated: is_mapping_to_collection implies attached {PS_BACKEND_COLLECTION} object.backend_representation
 			attached_anyway: attached object.backend_representation as rep
-			type_set: rep.metadata = object.type
+			type_set: rep.type = object.type
 			primary_key_set: rep.primary_key > 0
 			empty_object: is_mapping_to_object implies object.backend_object.attributes.is_empty
-			empty_collection: is_mapping_to_collection implies object.backend_collection.collection_items.is_empty
+			empty_collection: is_mapping_to_collection implies object.backend_collection.is_empty
 		end
 
 	initialize_backend_representation (object: PS_OBJECT_WRITE_DATA)
@@ -226,10 +221,10 @@ feature {PS_ABEL_EXPORT} -- Write functions
 			object_generated: is_mapping_to_object implies attached {PS_BACKEND_OBJECT} object.backend_representation
 			collection_generated: is_mapping_to_collection implies attached {PS_BACKEND_COLLECTION} object.backend_representation
 			attached_anyway: attached object.backend_representation as rep
-			type_set: rep.metadata = object.type
+			type_set: rep.type = object.type
 			primary_key_set: rep.primary_key > 0
 			empty_object: is_mapping_to_object implies object.backend_object.attributes.is_empty
-			empty_collection: is_mapping_to_collection implies object.backend_collection.collection_items.is_empty
+			empty_collection: is_mapping_to_collection implies object.backend_collection.is_empty
 		deferred
 		end
 
@@ -243,24 +238,24 @@ feature {PS_ABEL_EXPORT} -- Write functions
 			object_generated: is_mapping_to_object implies attached {PS_BACKEND_OBJECT} object.backend_representation
 			collection_generated: is_mapping_to_collection implies attached {PS_BACKEND_COLLECTION} object.backend_representation
 			attached_anyway: attached object.backend_representation as rep
-			type_set: rep.metadata = object.type
+			type_set: rep.type = object.type
 			primary_key_set: rep.primary_key > 0
 		deferred
 		end
 
-feature {PS_ABEL_EXPORT} -- String pair conversion
+feature {PS_ABEL_EXPORT} -- String conversion
 
-	as_string_pair (object: PS_OBJECT_DATA): TUPLE [value: STRING; type: IMMUTABLE_STRING_8]
+	as_string (object: PS_OBJECT_DATA): STRING
 			-- The `object' as a string pair, i.e. when referenced by another object.
 		require
 			can_handle: can_handle (object)
 			not_ignored: not object.is_ignored
 			backend_rep_initialized: attached object.backend_representation as rep
-			type_set: rep.metadata = object.type
+			type_set: rep.type = object.type
 			primary_key_set: rep.primary_key > 0
 		do
-			check attached object.backend_representation as rep then
-				Result := [rep.primary_key.out, rep.metadata.name]
+			check from_precondition: attached object.backend_representation as rep then
+				Result := rep.primary_key.out
 			end
 		end
 
@@ -302,12 +297,12 @@ feature {NONE} -- Implementation
 		end
 
 	type_from_string (type_string: STRING): PS_TYPE_METADATA
-			-- Return a `{PS_TYPE_METADATA}' for the type denoted by `type_string'.
+			-- Return a {PS_TYPE_METADATA} for the type denoted by `type_string'.
 		local
 			type_id: INTEGER
 		do
 			type_id := internal_lib.dynamic_type_from_string (type_string)
-			Result := write_manager.metadata_factory.create_metadata_from_type_id (type_id)
+			Result := write_manager.type_factory.create_metadata_from_type_id (type_id)
 		end
 
 feature {NONE} -- Impementation
