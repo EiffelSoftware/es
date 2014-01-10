@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_CFG_LOOP}."
-	author: ""
+	description: "Represents a loop block in the CFG."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -16,6 +16,7 @@ create
 feature {NONE} -- Initialization
 
 	make (a_loop: LOOP_AS; a_label: INTEGER)
+			-- Initializes `Current' with AST node `a_loop' and label `a_label'.
 		do
 			initialize
 			create out_edges.make_filled (2)
@@ -28,45 +29,47 @@ feature {NONE} -- Initialization
 feature -- Properties
 
 	stop_condition: detachable EXPR_AS
+			-- The stop condition of the loop.
 
 	ast: LOOP_AS
+			-- The AST node associated with `Current'.
 
 	loop_branch: CA_CFG_BASIC_BLOCK
+			-- The branch that is executed when the loop continues
+			-- to iterate.
 		do
 			Result := out_edges.at (1)
 		end
 
 	exit_branch: CA_CFG_BASIC_BLOCK
+			-- The branch that is executed when the loop is exited.
 		do
 			Result := out_edges.at (2)
 		end
 
 	loop_in: CA_CFG_BASIC_BLOCK
+			-- The edge from the end of the loop to `Current'.
 		do
 			Result := in_edges.at (1)
 		end
 
 	set_loop_branch (a_bb: CA_CFG_BASIC_BLOCK)
+			-- Sets the branch that is executed when the loop continues
+			-- to iterate.
 		do
 			out_edges.put_i_th (a_bb, 1)
 		end
 
 	set_exit_branch (a_bb: CA_CFG_BASIC_BLOCK)
+			-- Sets the branch that is executed when the loop is exited.
 		do
 			out_edges.put_i_th (a_bb, 2)
 		end
 
 	set_loop_in (a_in: CA_CFG_BASIC_BLOCK)
+			-- Set the edge from the end of the loop to `Current'.
 		do
 			in_edges.put_i_th (a_in, 1)
-		end
-
-
-feature -- Visitor
-
-	process (a_it: CA_CFG_ITERATOR)
-		do
-
 		end
 
 invariant

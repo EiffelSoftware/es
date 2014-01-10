@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_CFG_BASIC_BLOCK}."
-	author: ""
+	description: "Represents a basic block in the CFG."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -13,8 +13,7 @@ inherit
 feature {NONE} -- Initialization
 
 	initialize
-		local
-			l_to_be_deleted: CA_CFG_BUILDER
+			-- Initialization used by descendants.
 		do
 			create in_edges.make (0)
 			create out_edges.make (0)
@@ -23,23 +22,28 @@ feature {NONE} -- Initialization
 feature -- Edges
 
 	in_edges, out_edges: ARRAYED_LIST [CA_CFG_BASIC_BLOCK]
+			-- List of incoming edges from and outgoing edges to this block.
 
 	add_in_edge (a_edge: CA_CFG_BASIC_BLOCK)
+			-- Adds `a_edge' to the incoming edges.
 		do
 			in_edges.extend (a_edge)
 		end
 
 	add_out_edge (a_edge: CA_CFG_BASIC_BLOCK)
+			-- Adds `a_edge' to the outgoing edges.
 		do
 			out_edges.extend (a_edge)
 		end
 
 	wipe_out_in_edges
+			-- Wipes out all incoming edges.
 		do
 			in_edges.wipe_out
 		end
 
 	wipe_out_out_edges
+			-- Wipes out all outgoing edges.
 		do
 			out_edges.wipe_out
 		end
@@ -47,8 +51,10 @@ feature -- Edges
 feature -- Properties
 
 	label: INTEGER
+			-- Label, preferrably unique in the CFG.
 
 	set_label (a_label: INTEGER)
+			-- Sets the label of `Current' to 'a_label'.
 		do
 			label := a_label
 		end
@@ -56,12 +62,6 @@ feature -- Properties
 	hash_code: INTEGER
 		do
 			Result := label.abs
-		end
-
-feature -- Visitor
-
-	process (a_it: CA_CFG_ITERATOR)
-		deferred
 		end
 
 end

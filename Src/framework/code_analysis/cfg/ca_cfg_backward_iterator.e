@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_CFG_BACKWARD_ITERATOR}."
-	author: ""
+	description: "Performs a fixed point iteration backwards through the CFG."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -41,6 +41,8 @@ feature -- Iteration
 				l_bfs_nodes.remove
 			end
 
+				-- Now process all edges that are in the worklist. If `visit_edge' has a
+				-- positive result then add all incoming edges to the worklist.
 			from
 				initialize_processing (a_cfg)
 			until

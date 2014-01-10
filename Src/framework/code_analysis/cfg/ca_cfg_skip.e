@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_CFG_SKIP}."
-	author: ""
+	description: "Represents a skip block in the CFG. This block contains no other information than incoming and outgoing edges."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -16,17 +16,10 @@ create
 feature {NONE} -- Initialization
 
 	make (a_label: INTEGER)
+			-- Initializes `Current' and sets its label to `a_label'.
 		do
 			initialize
 			label := a_label
 		end
-
-feature -- Visitor
-
-	process (a_it: CA_CFG_ITERATOR)
-		do
-
-		end
-
 
 end

@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_VARIABLE_NOT_READ_RULE}."
-	author: ""
+	description: "Rule #20: 'Variable not read'."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
