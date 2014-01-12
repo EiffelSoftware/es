@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {CA_COUNT_EQUALS_ZERO_RULE}."
+	description: "See `description' below."
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -32,6 +32,8 @@ feature {NONE} -- Initialization
 feature {NONE} -- Rule checking
 
 	process_class (a_class: CLASS_AS)
+			-- Iterates through all the attributes of `a_class' and looks at its
+			-- callers.
 		local
 			l_feat: LIST [E_FEATURE]
 			l_clients: ARRAYED_LIST [CLASS_C]

@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {CA_DEEPLY_NESTED_IF_RULE}."
+	description: "See `description' below."
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -47,13 +47,16 @@ feature {NONE} -- Initialization
 feature {NONE} -- Rule checking
 
 	process_feature (a_feature: FEATURE_AS)
+			-- Resets the if depth.
 		do
 			current_depth := 0
 		end
 
 	current_depth: INTEGER
+			-- The current if depth.
 
 	pre_process_if (a_if: IF_AS)
+			-- Increase the if depth if the necessary conditions are satisfied.
 		do
 			if (not attached a_if.else_part) and (not attached a_if.elsif_list) then
 					-- Only count pure if's.
@@ -62,6 +65,7 @@ feature {NONE} -- Rule checking
 		end
 
 	post_process_if (a_if: IF_AS)
+			-- If the depth is high enough then create a rule violation.
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
@@ -80,8 +84,10 @@ feature {NONE} -- Rule checking
 feature {NONE} -- Preferences
 
 	default_depth_threshold: INTEGER = 3
+			-- The default depth necessary that will trigger a rule violation.
 
 	depth_threshold: INTEGER_PREFERENCE
+			-- The depth necessary that will trigger a rule violation.
 
 feature -- Properties
 

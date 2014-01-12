@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_UNNEEDED_OBJECT_TEST_RULE}."
-	author: ""
+	description: "See `description' below."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,6 +17,7 @@ create
 feature {NONE} -- Initialization
 
 	make
+			-- Initialization.
 		do
 			is_enabled_by_default := True
 			create {CA_SUGGESTION} severity
@@ -65,6 +66,7 @@ feature -- Properties
 feature {NONE} -- AST Visits
 
 	process_object_test (a_ot: OBJECT_TEST_AS)
+			-- Checks `a_ot' for rule violations.
 		local
 			l_violation: CA_RULE_VIOLATION
 			l_fix: CA_UNNEEDED_OT_LOCAL_FIX

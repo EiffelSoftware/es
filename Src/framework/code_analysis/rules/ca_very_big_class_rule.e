@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_VERY_BIG_CLASS_RULE}."
-	author: ""
+	description: "See `description' below."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -38,6 +38,7 @@ feature {NONE} -- Initialization
 		end
 
 	initialize_options (a_pref_manager: PREFERENCE_MANAGER)
+			-- Initializes rule preferences.
 		local
 			l_factory: BASIC_PREFERENCE_FACTORY
 		do
@@ -55,19 +56,23 @@ feature {NONE} -- Initialization
 		end
 
 	default_features_threshold: INTEGER = 60
+
 	default_instructions_threshold: INTEGER = 300
 
 feature -- Rule checking
 
 	n_features, n_instructions: INTEGER
+			-- Counts the number of features and instructions.
 
 	pre_process_class (a_class: CLASS_AS)
+			-- Resets the counters.
 		do
 			n_features := 0
 			n_instructions := 0
 		end
 
 	post_process_class (a_class: CLASS_AS)
+			-- Adds violations if the class violates the rule.
 		local
 			l_features_threshold, l_instructions_threshold: INTEGER
 			l_viol: CA_RULE_VIOLATION
@@ -87,6 +92,7 @@ feature -- Rule checking
 		end
 
 	process_do (a_do: DO_AS)
+			-- Updates the number of features and the number of instructions.
 		do
 			n_features := n_features + 1
 
@@ -96,6 +102,7 @@ feature -- Rule checking
 		end
 
 	process_once (a_once: ONCE_AS)
+			-- Updates the number of features and the number of instructions.
 		do
 			n_features := n_features + 1
 
@@ -105,6 +112,7 @@ feature -- Rule checking
 		end
 
 	process_if (a_if: IF_AS)
+			-- Updates the number of instructions.
 		do
 			if attached a_if.compound as l_c then
 				n_instructions := n_instructions + l_c.count
@@ -115,6 +123,7 @@ feature -- Rule checking
 		end
 
 	process_elseif (a_elseif: ELSIF_AS)
+			-- Updates the number of instructions.
 		do
 			if attached a_elseif.compound as l_c then
 				n_instructions := n_instructions + l_c.count
@@ -122,6 +131,7 @@ feature -- Rule checking
 		end
 
 	process_loop (a_loop: LOOP_AS)
+			-- Updates the number of instructions.
 		do
 			if attached a_loop.compound as l_c then
 				n_instructions := n_instructions + l_c.count
@@ -129,6 +139,7 @@ feature -- Rule checking
 		end
 
 	process_inspect (a_inspect: INSPECT_AS)
+			-- Updates the number of instructions.
 		do
 			if attached a_inspect.else_part as l_e then
 				n_instructions := n_instructions + l_e.count
@@ -136,6 +147,7 @@ feature -- Rule checking
 		end
 
 	process_case (a_case: CASE_AS)
+			-- Updates the number of instructions.
 		do
 			if attached a_case.compound as l_c then
 				n_instructions := n_instructions + l_c.count
@@ -192,5 +204,6 @@ feature -- Properties
 feature {NONE} -- Options
 
 	features_threshold, instructions_threshold: INTEGER_PREFERENCE
+			-- Thresholds where the rule will start triggering.
 
 end

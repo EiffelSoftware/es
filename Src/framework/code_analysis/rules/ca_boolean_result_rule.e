@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_BOOLEAN_RESULT_RULE}."
-	author: ""
+	description: "See `description'."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -55,6 +55,7 @@ feature -- Properties
 feature {NONE} -- Rule Checking
 
 	process_if (a_if: IF_AS)
+			-- Checks whether `a_if' has the structure that will trigger a violation.
 		local
 			l_violation: CA_RULE_VIOLATION
 		do
@@ -73,6 +74,8 @@ feature {NONE} -- Rule Checking
 		end
 
 	is_result_assign (a_instruction: INSTRUCTION_AS): BOOLEAN
+			-- Does instruction `a_instruction' assign a boolean constant
+			-- to "Result"?
 		do
 			if attached {ASSIGN_AS} a_instruction as l_assign then
 				Result := (attached {RESULT_AS} l_assign.target) and (attached {BOOL_AS} l_assign.source)

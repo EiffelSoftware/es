@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_NESTED_COMPLEXITY_RULE}."
-	author: ""
+	description: "See `description' below."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,6 +17,7 @@ create
 feature {NONE} -- Initialization
 
 	make (a_pref_manager: PREFERENCE_MANAGER)
+			-- Initialization.
 		do
 			is_enabled_by_default := True
 			create {CA_WARNING} severity
@@ -25,6 +26,7 @@ feature {NONE} -- Initialization
 		end
 
 	initialize_options (a_pref_manager: PREFERENCE_MANAGER)
+			-- Initializes the rule preferences.
 		local
 			l_factory: BASIC_PREFERENCE_FACTORY
 		do
@@ -87,16 +89,21 @@ feature -- Properties
 feature {NONE} -- Options
 
 	threshold: INTEGER_PREFERENCE
+			-- Minimum nested branches and loops threshold.
 
 feature {NONE} -- AST Visits
 
 	current_feature: detachable FEATURE_AS
+			-- Currently checked feature.
 
 	current_depth, maximum_depth: INTEGER
+			-- Depths in current feature.
 
 	current_violation_exists: BOOLEAN
+			-- Is there a rule violation in the current feature?
 
 	pre_process_feature (a_feature: FEATURE_AS)
+			-- Resetting variables.
 		do
 			current_feature := a_feature
 			current_depth := 0
@@ -105,6 +112,7 @@ feature {NONE} -- AST Visits
 		end
 
 	post_process_feature (a_feature: FEATURE_AS)
+			-- Add rule violation if it exists for `a_feature'.
 		local
 			l_violation: CA_RULE_VIOLATION
 		do
@@ -119,28 +127,33 @@ feature {NONE} -- AST Visits
 		end
 
 	pre_process_if (a_if: IF_AS)
+			-- Increment depth.
 		do
 			current_depth := current_depth + 1
 			evaluate_depth
 		end
 
 	post_process_if (a_if: IF_AS)
+			-- Decrement depth.
 		do
 			current_depth := current_depth - 1
 		end
 
 	pre_process_loop (a_loop: LOOP_AS)
+			-- Increment depth.
 		do
 			current_depth := current_depth + 1
 			evaluate_depth
 		end
 
 	post_process_loop (a_loop: LOOP_AS)
+			-- Decrement depth.
 		do
 			current_depth := current_depth - 1
 		end
 
 	evaluate_depth
+			-- Checks if current depth is too high.
 		do
 			if current_depth > maximum_depth then
 				maximum_depth := current_depth

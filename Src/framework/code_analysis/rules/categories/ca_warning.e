@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_WARNING}."
-	author: ""
+	description: "A warning. Warnings may lead to dangerous, bad, or unwanted program behavior"
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -11,8 +11,11 @@ inherit
 	CA_RULE_SEVERITY
 
 feature -- Properties
+
 	is_critical: BOOLEAN = False
+			-- <Precursor>
 
 	name: STRING_32 = "Warning"
+			-- <Precursor>
 
 end

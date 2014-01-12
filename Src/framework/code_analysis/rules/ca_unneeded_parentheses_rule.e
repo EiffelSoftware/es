@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {CA_UNNEEDED_PARENTHESES_RULE}."
+	description: "See `description' below."
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -108,6 +108,7 @@ feature {NONE} -- Implementation
 	is_within_binary: BOOLEAN
 
 	is_not_nested (a_expr: EXPR_AS): BOOLEAN
+			-- Is `a_expr' not one of unary, binary, or object test expressions?
 		do
 			Result := (not attached {UNARY_AS} a_expr)
 				and (not attached {BINARY_AS} a_expr)

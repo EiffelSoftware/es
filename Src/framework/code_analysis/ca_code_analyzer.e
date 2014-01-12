@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {CA_CODE_ANALYZER}."
+	description: "THE Code Analyzer."
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -21,7 +21,7 @@ feature {NONE} -- Initialization
 		do
 			create settings.make
 			create rules.make
-				-- Adding example rules.
+				-- Adding the rules.
 			rules.extend (create {CA_SELF_ASSIGNMENT_RULE}.make)
 			rules.extend (create {CA_UNUSED_ARGUMENT_RULE}.make)
 			rules.extend (create {CA_NPATH_RULE}.make (settings.preference_manager))
@@ -73,11 +73,14 @@ feature {NONE} -- Initialization
 feature -- Analysis interface
 
 	add_completed_action (a_action: PROCEDURE [ANY, TUPLE [BOOLEAN]])
+			-- Adds `a_action' to the list of procedures that will be
+			-- called when analysis has completed.
 		do
 			completed_actions.extend (a_action)
 		end
 
 	analyze
+			-- Analyze all the classes that have been added.
 		require
 			not is_running
 		local
@@ -106,11 +109,15 @@ feature -- Analysis interface
 		end
 
 	clear_classes_to_analyze
+			-- Remove all classes that have been added to the list of classes
+			-- to analyze.
 		do
 			classes_to_analyze.wipe_out
 		end
 
 	add_whole_system
+			-- Add all the classes that are part of the current system. Classes of references libraries
+			-- will not be added.
 		local
 			l_groups: LIST [CONF_GROUP]
 			l_cluster: CLUSTER_I
@@ -133,6 +140,7 @@ feature -- Analysis interface
 		end
 
 	add_cluster (a_cluster: CLUSTER_I)
+			-- Add all classes of cluster `a_cluster'.
 		local
 			l_conf_class: CONF_CLASS
 			l_class_i: CLASS_I
@@ -162,6 +170,7 @@ feature -- Analysis interface
 		end
 
 	add_group (a_group: CONF_GROUP)
+			-- Add all classes of the configuration group `a_group'.
 		require
 			a_group_not_void: a_group /= Void
 		local
@@ -181,6 +190,7 @@ feature -- Analysis interface
 		end
 
 	add_classes (a_classes: ITERABLE [CLASS_I])
+			-- Add the classes `a_classes'.
 		do
 			system_wide_check := False
 
@@ -190,6 +200,7 @@ feature -- Analysis interface
 		end
 
 	add_class (a_class: CLASS_I)
+			-- Adds class `a_class'.
 		local
 			l_class_c: CLASS_C
 		do
@@ -209,27 +220,27 @@ feature -- Analysis interface
 feature -- Properties
 
 	is_running: BOOLEAN
-
-	analysis_successful: BOOLEAN
+			-- Is code analysis running?
 
 	rules: LINKED_LIST [CA_RULE]
+			-- List of rules that will be used for analysis.
 
 	rule_violations: detachable HASH_TABLE [SORTED_TWO_WAY_LIST [CA_RULE_VIOLATION], CLASS_C]
+			-- All found violations from the last analysis.
 
 	preferences: PREFERENCES
+			-- Code Analysis preferences.
 		do Result := settings.preferences end
 
 	class_list: ITERABLE [CLASS_C]
+			-- List of classes that have been added.
 		do Result := classes_to_analyze end
 
 feature {NONE} -- Implementation
 
 	analysis_completed
+			-- Will be called when the analysis task has finished.
 		do
---			across classes_to_analyze as l_classes loop
---				rule_violations.extend (create {SORTED_TWO_WAY_LIST [CA_RULE_VIOLATION]}.make, l_classes.item)
---			end
-
 			across rules as l_rules loop
 				across l_rules.item.violations as l_v loop
 						-- Check the ignore list.
@@ -250,6 +261,9 @@ feature {NONE} -- Implementation
 		end
 
 	is_violation_valid (a_viol: CA_RULE_VIOLATION): BOOLEAN
+			-- Is the violation `a_viol' valid under the current settings
+			-- such as the rule ignore list of a class, or the library or
+			-- non-library status of a class?
 		local
 			l_affected_class: CLASS_C
 			l_rule: CA_RULE
@@ -274,12 +288,16 @@ feature {NONE} -- Implementation
 		end
 
 	settings: CA_SETTINGS
+			-- The settings manager for Code Analysis.
 
 	classes_to_analyze: LINKED_SET [CLASS_C]
+			-- List of classes that shall be analyzed.
 
 	system_wide_check: BOOLEAN
+			-- Shall the whole system be analyzed?
 
 	completed_actions: ACTION_SEQUENCE [TUPLE [BOOLEAN]]
+			-- List of procedure to call when analysis has completed.
 
 	frozen rota: detachable ROTA_S
 			-- Accesses the rota service.
@@ -296,13 +314,15 @@ feature {NONE} -- Implementation
 feature {NONE} -- Class-wide Options (From Indexing Clauses)
 
 	extract_indexes (a_class: CLASS_C)
+			-- Extracts options from the indexing clause of class `a_class'.
 		local
 			l_ast: CLASS_AS
 			l_item: STRING_32
 			l_ignoredby: LINKED_LIST [STRING_32]
 		do
 			create l_ignoredby.make
-			l_ignoredby.compare_objects
+			l_ignoredby.compare_objects -- We want to compare the actual strings.
+				-- Reset the class flags.
 			library_class.force (False, a_class)
 			nonlibrary_class.force (False, a_class)
 			l_ast := a_class.ast
@@ -311,12 +331,14 @@ feature {NONE} -- Class-wide Options (From Indexing Clauses)
 				across l_ast.internal_top_indexes as l_indexes loop
 
 					if l_indexes.item.tag.name_32.is_equal ("ca_ignoredby") then
+							-- Class wants to ignore certain rules.
 						across l_indexes.item.index_list as l_list loop
 							l_item := l_list.item.string_value_32
 							l_item.prune_all ('%"')
 							l_ignoredby.extend (l_item)
 						end
 					elseif l_indexes.item.tag.name_32.is_equal ("ca_library") then
+							-- Class has information on whether it is a library class.
 						if not l_indexes.item.index_list.is_empty then
 							l_item := l_indexes.item.index_list.first.string_value_32
 							l_item.to_lower
@@ -335,8 +357,10 @@ feature {NONE} -- Class-wide Options (From Indexing Clauses)
 		end
 
 	ignoredby: HASH_TABLE [LINKED_LIST [STRING_32], CLASS_C]
+			-- Maps classes to lists of rules (rule IDs) the class wants to be ignored by.
 
 	library_class, nonlibrary_class: HASH_TABLE [BOOLEAN, CLASS_C]
+			-- Stores classes that are marked as library or non-library classes.
 
 invariant
 --	law_of_non_contradiction: one class must not be both a library_class and a nonlibrary_class

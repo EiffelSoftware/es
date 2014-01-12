@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {CA_CFG_FORWARD_RULE}."
+	description: "A rule that uses a forward iterator on the CFG."
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"

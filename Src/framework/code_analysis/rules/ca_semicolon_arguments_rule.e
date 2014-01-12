@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_SEMICOLON_ARGUMENTS_RULE}."
-	author: ""
+	description: "See `description' below."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -69,13 +69,16 @@ feature -- Properties
 feature {NONE} -- Checking the rule
 
 	current_feature_name: STRING_32
+			-- Name of currently checked feature.
 
 	process_feature (a_feature: FEATURE_AS)
+			-- Sets current feature name.
 		do
 			current_feature_name := a_feature.feature_name.name_32
 		end
 
 	process_body (a_body: BODY_AS)
+			-- Checks `a_body' for rule violations.
 		local
 			l_n_semis: INTEGER
 			l_viol: CA_RULE_VIOLATION

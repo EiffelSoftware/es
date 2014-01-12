@@ -274,6 +274,7 @@ feature {NONE} -- Extracting Assignments
 feature {NONE} -- Utilities
 
 	is_local (a_id: ACCESS_ID_AS): BOOLEAN
+			-- Is `a_id' a local?
 		do
 			Result := a_id.is_local
 		end

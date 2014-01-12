@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {CA_RULE_CATEGORY}."
+	description: "Represents the categorization of a rule regarding severity."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -9,6 +9,7 @@ deferred class
 
 feature -- Properties
 	is_critical: BOOLEAN
+			-- Is the severity category critical for program execution?
 		deferred
 		end
 

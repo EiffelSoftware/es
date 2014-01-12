@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_FEATURE_NOT_COMMENTED_RULE}."
-	author: ""
+	description: "See `description' below."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -35,6 +35,7 @@ feature {NONE} -- Activation
 feature {NONE} -- Rule checking
 
 	process_feature (a_feature: FEATURE_AS)
+			-- Checks if `a_feature' has a feature comment or not.
 		local
 			l_viol: CA_RULE_VIOLATION
 			l_comment: STRING_32

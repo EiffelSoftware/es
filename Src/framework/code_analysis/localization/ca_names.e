@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_NAMES}."
-	author: ""
+	description: "Name strings for the Code Analyzer."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 

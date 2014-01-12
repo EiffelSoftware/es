@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_RULE}."
-	author: ""
+	description: "A rule that looks at some AST nodes. The rule will be checked using {CA_ALL_RULES_CHECKER}."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -13,6 +13,7 @@ inherit
 feature -- Activation
 
 	frozen prepare_checking (a_checker: CA_ALL_RULES_CHECKER)
+			-- Prepares this rule for being checked using `a_checker'.
 		do
 			violations.wipe_out
 			register_actions (a_checker)
@@ -21,6 +22,8 @@ feature -- Activation
 feature {NONE} -- Implementation
 
 	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+			-- Registers the agents that will be called during the AST visit with
+			-- `a_checker'.
 		deferred
 		end
 

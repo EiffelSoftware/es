@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_RULE_VIOLATION}."
-	author: ""
+	description: "Represents a rule violation."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -15,10 +15,11 @@ create
 
 feature {NONE} -- Initialization
 	make_with_rule (a_rule: CA_RULE)
+			-- Initializes a violation of rule `a_rule'.
 		do
 			rule := a_rule
-			-- This is just the default. The rule may set the affected class otherwise
-			-- if needed.
+				-- This is just the default. The rule may set the affected class otherwise
+				-- if needed.
 			affected_class := a_rule.checking_class
 			synchronized_with_source := True
 			create long_description_info.make
@@ -27,31 +28,37 @@ feature {NONE} -- Initialization
 
 feature
 	rule: CA_RULE
+			-- The rule that is violated.
 
 	long_description_info: LINKED_LIST [ANY]
+			-- Objects associated with this violation (often used for
+			-- specific information (e. g. affected variable name, etc.).
 
 	format_violation_description (a_formatter: TEXT_FORMATTER)
+			-- Formats a description of `Current'.
 		do
-			-- Just delegate to rule. The rule knows about its violations.
+				-- Just delegate to rule. The rule knows about its violations.
 			rule.format_violation_description (Current, a_formatter)
 		end
 
 	affected_class: detachable CLASS_C
+			-- Affected class.
 
 	synchronized_with_source: BOOLEAN
 			-- 'True' if the rule violation corresponds to the current state of the
 			-- source code; 'False' if the violation might be outdated or is outdated.
 
 	location: detachable LOCATION_AS
-			-- location of rule violation, if available
+			-- Location of rule violation, if available.
 
 	fixes: LINKED_LIST [CA_FIX]
-			-- fix "strategies"
+			-- Fix "strategies".
 			-- Empty if there is no fix available for this rule violation
 
 feature -- Inherited from {COMPARABLE}
 
 	is_less alias "<" (a_other: like Current): BOOLEAN
+			-- Shall `Current' be "before" `a_other'. (For sorting, for example.)
 		do
 			if attached location as l_location then
 				if attached a_other.location as l_other_location then
@@ -79,6 +86,7 @@ feature {CA_RULE}
 		end
 
 	set_location (a_location: LOCATION_AS)
+			-- Sets the location in code to `a_location'.
 		do
 			location := a_location
 		end

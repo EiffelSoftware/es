@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {CA_IF_ELSE_NOT_EQUAL_RULE}."
+	description: "See `description' below."
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -32,6 +32,7 @@ feature {NONE} -- Initialization
 feature {NONE} -- Rule checking	
 
 	process_if (a_if: IF_AS)
+			-- Checks whether `a_if' follows the pattern that leads to a rule violation.
 		local
 			l_viol: CA_RULE_VIOLATION
 		do

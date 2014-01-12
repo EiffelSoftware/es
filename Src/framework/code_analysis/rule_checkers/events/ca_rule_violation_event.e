@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {E2B_VERIFICATION_EVENT}."
+	description: "Event representing a rule violation detected by the Code Analyzer."
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -101,21 +101,6 @@ feature -- Access
 			Result := data.rule.description
 		end
 
---	context_class: CLASS_C
---			-- Class corresponding to event
---		do
---			Result := data.eiffel_class
---		end
-
---	context_feature: FEATURE_I
---			-- Feature corresponding to event
---		do
---			Result := data.eiffel_feature
---		end
-
-	milliseconds_used: NATURAL
-			-- Milliseconds used for proof
-
 	frozen type: NATURAL_8
 			-- <Precursor>
 		once
@@ -141,14 +126,6 @@ feature -- Status report
 
 feature -- Element change
 
-	set_milliseconds_used (a_value: NATURAL)
-			-- Set `milliseconds_used' to `a_value'.
-		do
-			milliseconds_used := a_value
-		ensure
-			milliseconds_used_set: milliseconds_used = a_value
-		end
-
 	set_category (a_category: like category)
 			-- <Precursor>
 		do
@@ -168,12 +145,6 @@ feature -- Basic operations
 		do
 			is_invalidated := True
 		end
-
---	single_line_message (a_formatter: TEXT_FORMATTER)
---			-- Single line description of result.
---		do
---			data.single_line_message (a_formatter)
---		end
 
 feature {NONE} -- Implementation
 

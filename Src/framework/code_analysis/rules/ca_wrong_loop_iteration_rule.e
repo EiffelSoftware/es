@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {CA_WRONG_LOOP_ITERATION_RULE}."
+	description: "See `description' below."
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -32,6 +32,7 @@ feature {NONE} -- Initialization
 feature {NONE} -- Checking Loop For Pattern
 
 	process_loop (a_loop: LOOP_AS)
+			-- Checks `a_loop' for rule violations.
 		do
 			if extract_from (a_loop) then
 				if is_valid_stop_condition (a_loop.stop) then
@@ -43,6 +44,8 @@ feature {NONE} -- Checking Loop For Pattern
 		end
 
 	extract_from (a_loop: LOOP_AS): BOOLEAN
+			-- Does the from part `a_loop' correspond to the pattern we are
+			-- looking for?
 		do
 			Result := False
 
@@ -62,6 +65,8 @@ feature {NONE} -- Checking Loop For Pattern
 		end
 
 	is_valid_stop_condition (a_stop: EXPR_AS): BOOLEAN
+			-- Does the loop stop condition `a_stop' correspond to the pattern
+			-- we are looking for?
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
@@ -100,6 +105,8 @@ feature {NONE} -- Checking Loop For Pattern
 		end
 
 	check_xxcrement (a_instruction: INSTRUCTION_AS)
+			-- Does the loop iteration `a_instruction' correspond to the pattern
+			-- we are looking for?
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
@@ -128,7 +135,10 @@ feature {NONE} -- Checking Loop For Pattern
 		end
 
 	loop_start, loop_end: INTEGER_64
+			-- First and last value the loop counter has during iteration.
+
 	iteration_variable: ID_AS
+			-- The loop iteration variable (often times `i` or `j`).
 
 feature -- Properties
 

@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_TODO_RULE}."
-	author: ""
+	description: "See `description' below."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -22,8 +22,9 @@ create
 
 feature {NONE} -- Initialization
 	make
+			-- Initialization.
 		do
-			-- set the default parameters (subject to be changed by user)
+				-- set the default parameters (subject to be changed by user)
 			is_enabled_by_default := True
 			create {CA_SUGGESTION} severity
 			create violations.make
@@ -66,7 +67,8 @@ feature -- Properties
 feature {NONE} -- AST Visit
 
 	process_break_as (a_break: BREAK_AS)
-			-- From {AST_ROUNDTRIP_ITERATOR}.
+			-- From {AST_ROUNDTRIP_ITERATOR}. Checks comment of `a_break' for
+			-- a "TODO".
 		do
 			across
 				a_break.extract_comment as l_comment_line
@@ -79,6 +81,7 @@ feature {NONE} -- AST Visit
 		end
 
 	process_class (a_class: CLASS_AS)
+			-- Start roundtrip iteration on `a_class'.
 		local
 			l_comments: EIFFEL_COMMENTS
 		do
@@ -91,6 +94,7 @@ feature {NONE} -- AST Visit
 		end
 
 	search_todo (a_comment: EIFFEL_COMMENT_LINE)
+			-- Searches `a_comment' for a "TODO".
 		local
 			l_comment, l_todo: STRING_32
 			l_toremove: INTEGER

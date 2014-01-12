@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_COUNT_EQUALS_ZERO_RULE}."
-	author: ""
+	description: "See `description'."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -35,13 +35,16 @@ feature {NONE} -- Initialization
 feature {NONE} -- Rule checking
 
 	current_feature_i: FEATURE_I
+			-- The current feature the AST visitor is processing.
 
 	process_feature (a_feature: FEATURE_AS)
+			-- Stores `a_feature'.
 		do
 			current_feature_i := checking_class.feature_named_32 (a_feature.feature_name.name_32)
 		end
 
 	process_equality (a_bin_eq: BIN_EQ_AS)
+			-- Checks whether `a_bin_eq' follows the pattern for a rule violation.
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
@@ -54,6 +57,7 @@ feature {NONE} -- Rule checking
 		end
 
 	is_zero (a_expr: EXPR_AS): BOOLEAN
+			-- Is `a_expr' the integer constant 0?
 		do
 			if attached {INTEGER_AS} a_expr as l_int then
 				Result := (l_int.has_integer (32) and then l_int.integer_32_value = 0)
@@ -61,11 +65,13 @@ feature {NONE} -- Rule checking
 		end
 
 	finite: CLASS_C
+			-- The compiled class {FINITE}.
 		once
 			Result := Eiffel_universe.compiled_classes_with_name ("FINITE").first.compiled_class
 		end
 
 	is_finite_count (a_expr: EXPR_AS): BOOLEAN
+			-- Does `a_expr' call `finite' on a {FINITE} (or conforming) instance?
 		local
 			l_type: TYPE_A
 		do

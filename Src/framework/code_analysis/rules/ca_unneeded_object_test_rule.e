@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_UNNEEDED_OBJECT_TEST_RULE}."
-	author: ""
+	description: "See `description' below."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,6 +17,7 @@ create
 feature {NONE} -- Initialization
 
 	make
+			-- Initialization.
 		do
 			is_enabled_by_default := True
 			create {CA_SUGGESTION} severity
@@ -68,13 +69,16 @@ feature -- Properties
 feature {NONE} -- AST Visits
 
 	current_feature_i: FEATURE_I
+			-- Currently checked feature.
 
 	process_feature (a_feature: FEATURE_AS)
+			-- Sets currently checked feature.
 		do
 			current_feature_i := checking_class.feature_named_32 (a_feature.feature_name.name_32)
 		end
 
 	process_object_test (a_ot: OBJECT_TEST_AS)
+			-- Checks `a_ot' for rule violations.
 		local
 			l_violation: CA_RULE_VIOLATION
 			l_static_variable_type: TYPE_A
@@ -85,6 +89,7 @@ feature {NONE} -- AST Visits
 				if attached {ACCESS_FEAT_AS} l_call.call as l_af then
 					l_access := l_af
 				elseif attached {NESTED_AS} l_call.call as l_nested then
+						-- Extract the rightmost feature in the nested call.
 					l_access := find_access_id (l_nested)
 				end
 				if l_access /= Void then
@@ -105,6 +110,7 @@ feature {NONE} -- AST Visits
 feature {NONE} -- Helpers
 
 	find_access_id (a_nested_call: NESTED_AS): ACCESS_FEAT_AS
+			-- Retrieves the rightmost feature in the nested call `a_nested_call'.
 		local
 			l_nested: NESTED_AS
 		do

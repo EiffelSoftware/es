@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {CA_UNNEEDED_HELPER_VARIABLE_RULE}."
+	description: "See `description' below."
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -37,6 +37,7 @@ feature {NONE} -- Initialization
 		end
 
 	initialize_preferences (a_pref_manager: PREFERENCE_MANAGER)
+			-- Initializes preferences for this rule.
 		local
 			l_factory: BASIC_PREFERENCE_FACTORY
 		do
@@ -59,6 +60,7 @@ feature {NONE} -- Initialization
 feature {NONE} -- Rule checking
 
 	pre_process_feature (a_feature: FEATURE_AS)
+			-- Resets the data structures.
 		do
 			locals_usage.wipe_out
 			suspected_variables.wipe_out
@@ -66,6 +68,7 @@ feature {NONE} -- Rule checking
 		end
 
 	post_process_feature (a_feature: FEATURE_AS)
+			-- Adds violations.
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
@@ -81,6 +84,7 @@ feature {NONE} -- Rule checking
 		end
 
 	pre_process_list (a_list: EIFFEL_LIST [AST_EIFFEL])
+			-- Checks `a_list' for patterns that may be rule violations.
 		local
 			l_previous, l_current: INSTRUCTION_AS
 			l_expression_length: INTEGER
@@ -121,9 +125,11 @@ feature {NONE} -- Rule checking
 			Result := var_found
 		end
 
-	var_to_look_for: ID_AS
+	var_to_look_for: detachable ID_AS
+			-- Variable to look for in AST child nodes.
 
 	var_found: BOOLEAN
+			-- Has `var_to_look_for' been found in AST child nodes?
 
 	process_access_id_as (a_access_id: ACCESS_ID_AS)
 			-- Is used only by the feature `is_read' in order to determine if
@@ -135,6 +141,7 @@ feature {NONE} -- Rule checking
 		end
 
 	process_access_id (a_access_id: ACCESS_ID_AS)
+			-- Updates usage information if `a_access_id' represents a local.
 		local
 			l_id: ID_AS
 			l_used: INTEGER
@@ -167,6 +174,7 @@ feature {NONE} -- Rule checking
 		end
 
 	suspected_variables: LINKED_LIST [ID_AS]
+			-- Variables that might violate this rule.
 
 	location: HASH_TABLE [LOCATION_AS, ID_AS]
 			-- Stores the location of a certain suspected variable.
@@ -174,8 +182,10 @@ feature {NONE} -- Rule checking
 feature {NONE} -- Preferences
 
 	default_max_line_length: INTEGER = 80
+			-- Default maximum number of characters a line may have.
 
 	max_line_length: INTEGER_PREFERENCE
+			-- Maximum number of characters a line may have.
 
 feature -- Properties
 

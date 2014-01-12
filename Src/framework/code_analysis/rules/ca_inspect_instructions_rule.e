@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_INSPECT_INSTRUCTIONS_RULE}."
-	author: ""
+	description: "See `description' below."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,14 +17,16 @@ create
 feature {NONE} -- Initialization
 
 	make (a_pref_manager: PREFERENCE_MANAGER)
+			-- Initialization using preference manager `a_pref_manager'.
 		do
 			is_enabled_by_default := True
 			create {CA_WARNING} severity
 			create violations.make
 		initialize_options (a_pref_manager)
-	end
+		end
 
 	initialize_options (a_pref_manager: PREFERENCE_MANAGER)
+			-- Initializes the options for this rule.
 		local
 			l_factory: BASIC_PREFERENCE_FACTORY
 		do
@@ -46,6 +48,7 @@ feature {NONE} -- Activation
 feature {NONE} -- Rule Checking
 
 	process_inspect (a_inspect: INSPECT_AS)
+			-- Checks `a_inspect' for rule violations.
 		local
 			l_count, l_max: INTEGER
 			l_viol: CA_RULE_VIOLATION

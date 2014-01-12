@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_MISSING_IS_EQUAL_RULE}."
-	author: ""
+	description: "See `description' below."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -16,6 +16,7 @@ create
 
 feature {NONE} -- Initialization
 	make
+			-- Initialization.
 		do
 			-- set the default parameters (subject to be changed by user)
 			is_enabled_by_default := True
@@ -58,6 +59,7 @@ feature -- Properties
 feature {NONE} -- Checking the rule
 
 	process_class (a_class: CLASS_AS)
+			-- Checks `a_class' for rule violations.
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
@@ -71,6 +73,7 @@ feature {NONE} -- Checking the rule
 		end
 
 	is_current_hashable: BOOLEAN
+			-- Is currently checked class a descendant of {HASHABLE}?
 		do
 			Result := False
 
@@ -82,6 +85,7 @@ feature {NONE} -- Checking the rule
 		end
 
 	redefines_is_equal: BOOLEAN
+			-- Does current class redefine `is_equal'?
 		do
 			Result := False
 

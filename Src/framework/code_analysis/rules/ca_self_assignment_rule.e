@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_SELF_ASSIGNMENT_RULE}."
-	author: ""
+	description: "See `description' below."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,7 +17,9 @@ create
 	make
 
 feature {NONE} -- Initialization
+
 	make
+			-- Initialization.
 		do
 			-- set the default parameters (subject to be changed by user)
 			is_enabled_by_default := True
@@ -63,7 +65,9 @@ feature -- Properties
 		end
 
 feature {NONE} -- Checking the rule
+
 	pre_assign (a_assign_as: ASSIGN_AS)
+			-- Checks `a_assign_as' for rule violations.
 		local
 			l_violation: CA_RULE_VIOLATION
 		do

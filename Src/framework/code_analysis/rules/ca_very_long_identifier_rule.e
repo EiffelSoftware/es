@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_VERY_LONG_IDENTIFIER_RULE}."
-	author: ""
+	description: "See `description' below."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -27,6 +27,7 @@ feature {NONE} -- Initialization
 		end
 
 	initialize_options (a_pref_manager: PREFERENCE_MANAGER)
+			-- Initializes rule preferences.
 		local
 			l_factory: BASIC_PREFERENCE_FACTORY
 		do
@@ -63,6 +64,7 @@ feature {NONE} -- Activation
 feature {NONE} -- Rule checking
 
 	process_routine (a_routine: ROUTINE_AS)
+			-- Checks if locals of `a_routine' violate this rule.
 		local
 			j, l_max, l_count: INTEGER
 			l_name: STRING
@@ -93,6 +95,7 @@ feature {NONE} -- Rule checking
 		end
 
 	process_body (a_body: BODY_AS)
+			-- Checks if arguments of `a_body' violate this rule.
 		local
 			j, l_max, l_count: INTEGER
 			l_name: STRING
@@ -123,6 +126,7 @@ feature {NONE} -- Rule checking
 		end
 
 	process_feature (a_feature: FEATURE_AS)
+			-- Checks if `a_feature' violates this rule.
 		local
 			l_max: INTEGER
 			l_name: STRING
@@ -141,6 +145,7 @@ feature {NONE} -- Rule checking
 		end
 
 	is_no_counter (a_id: STRING): BOOLEAN
+			-- Is `a_id' not a commonly used counter variable?
 		do
 			if a_id.count = 1 and then a_id.is_equal ("i") or a_id.is_equal ("j") or a_id.is_equal ("k") or a_id.is_equal ("n") then
 				Result := False

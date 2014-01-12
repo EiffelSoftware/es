@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {CA_CFG_RULE}."
+	description: "A rule that operates on the Control Flow Graphs of features."
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -15,6 +15,7 @@ inherit
 feature -- Rule Checking
 
 	check_class (a_class: CLASS_C)
+			-- Checks `a_class'.
 		do
 			across a_class.written_in_features as l_features loop
 				check_feature (a_class, l_features.item)
@@ -24,6 +25,7 @@ feature -- Rule Checking
 feature {NONE} -- Implementation
 
 	check_feature (a_class: CLASS_C; a_feature: E_FEATURE)
+			-- Checks feature `a_feature' of class `a_class'.
 		local
 			l_cfg_builder: CA_CFG_BUILDER
 		do
@@ -37,5 +39,6 @@ feature {NONE} -- Implementation
 		end
 
 	current_feature: E_FEATURE
+			-- The feature that is being checked.
 
 end

@@ -100,6 +100,7 @@ feature {NONE} -- Implementation
 		end
 
 	process_default (a_label: INTEGER)
+			-- Processes a node (with label `a_label') that is not an assignment.
 		local
 			l_entry_table, l_exit_table: HASH_TABLE [LINKED_SET [INTEGER], INTEGER]
 			l_old_count, l_key: INTEGER
@@ -132,6 +133,7 @@ feature {NONE} -- Implementation
 		end
 
 	process_instruction (a_instr: CA_CFG_INSTRUCTION)
+			-- Processes the instruction node `a_instr'.
 		local
 			l_old_count, l_label, l_var_id: INTEGER
 			l_rd: LINKED_SET [INTEGER]

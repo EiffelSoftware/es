@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {CA_SETTINGS}."
+	description: "Manages the settings for Code Analysis."
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -16,6 +16,7 @@ create
 feature {NONE} -- Initialization
 
 	make
+			-- Initializes the settings manager.
 		do
 			initialize_preferences
 		end
@@ -47,6 +48,8 @@ feature {NONE} -- Initialization
 feature {CA_CODE_ANALYZER} -- Initialization
 
 	initialize_rule_settings (a_rules: ITERABLE [CA_RULE])
+			-- Initializes the preferences for all rules in `a_rules' including
+			-- "enabled" and "severity".
 		local
 			l_factory: BASIC_PREFERENCE_FACTORY
 			l_manager: PREFERENCE_MANAGER
@@ -77,8 +80,10 @@ feature {CA_CODE_ANALYZER} -- Initialization
 feature -- Settings
 
 	preferences: PREFERENCES
+			-- The preferences specific to Code Analysis.
 
 	preference_manager: PREFERENCE_MANAGER
+			-- The preference manager.
 		do
 			Result := preferences.manager (code_analysis_namespace)
 		end
@@ -87,12 +92,15 @@ feature -- Settings
 	are_warnings_enabled,
 	are_suggestions_enabled,
 	are_hints_enabled: BOOLEAN_PREFERENCE
+			-- Are certain rule categories enabled?
 
 feature {NONE} -- Implementation
 
 	code_analysis_namespace: STRING = "tools.code_analysis"
+			-- The namespace for the Code Analysis preferences.
 
 	validate_severity_score (a_value: READABLE_STRING_GENERAL): BOOLEAN
+			-- Is `a_value' a valid severity score?
 		local
 			int: INTEGER
 		do

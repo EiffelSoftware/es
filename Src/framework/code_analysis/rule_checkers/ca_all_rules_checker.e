@@ -1,5 +1,8 @@
 note
-	description: "Summary description for {CA_ALL_RULES_CHECKER}."
+	description: "[
+				   Checks a set of (standard) rules (see {CA_STANDARD_RULE}). The rules have to
+				   register their AST visitor agents here.
+		          ]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -73,6 +76,8 @@ feature {NONE} -- Initialization
 		end
 
 	create_action_lists
+			-- Creates all the lists of agents that will be called when visiting
+			-- certain AST nodes.
 		do
 			create access_id_pre_actions.make
 			create access_id_post_actions.make
@@ -517,7 +522,7 @@ feature {NONE} -- Agent lists
 feature {CA_RULE_CHECKING_TASK} -- Execution Commands
 
 	run_on_class (a_class_to_check: CLASS_C)
-			-- Check all rules that have been added.
+			-- Check all rules that have added their agents.
 		local
 			l_ast: CLASS_AS
 		do

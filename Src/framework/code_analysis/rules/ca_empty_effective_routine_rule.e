@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {CA_EMPTY_EFFECTIVE_ROUTINE_RULE}."
+	description: "See `description' below."
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -33,17 +33,20 @@ feature {NONE} -- Initialization
 feature {NONE} -- Rule checking
 
 	process_feature (a_feature: FEATURE_AS)
+			-- Sets the currently processed feature.
 		do
 			current_feature := a_feature
 		end
 
 	current_feature: FEATURE_AS
+			-- The currently processed feature.
 
 	process_do (a_do: DO_AS)
+			-- Checks if body of `a_do' is empty.
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
-				-- Make sure the feature is not a function. For a function, keeping the default
+				-- Check that the feature is not a function. For a function, keeping the default
 				-- value for the Result is some sort of implementation, too.
 			if (checking_class.is_deferred and not current_feature.is_function) and then a_do.compound = Void then
 				create l_viol.make_with_rule (Current)

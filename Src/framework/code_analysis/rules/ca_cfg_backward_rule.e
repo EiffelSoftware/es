@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {CA_CFG_BACKWARD_RULE}."
+	description: "A rule that iterates backwards on the CFG."
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"

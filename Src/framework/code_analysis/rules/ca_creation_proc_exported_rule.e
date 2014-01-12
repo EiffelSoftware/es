@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_CREATION_PROC_EXPORTED_RULE}."
-	author: ""
+	description: "See `description'."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -60,11 +60,13 @@ feature -- Properties
 feature {NONE} -- AST Visitor
 
 	process_create (a_create: CREATE_AS)
+			-- Stores the creation procedures of `a_create'.
 		do
 			creation_procedures := a_create.feature_list
 		end
 
 	process_feature_clause (a_clause: FEATURE_CLAUSE_AS)
+			-- Checks `a_clause' for features that are creation procedures.
 		local
 			l_feature: FEATURE_AS
 			l_exported: BOOLEAN
@@ -96,5 +98,6 @@ feature {NONE} -- AST Visitor
 		end
 
 	creation_procedures: EIFFEL_LIST [FEATURE_NAME]
+			-- List of creation procedures of the current class.
 
 end

@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_EMPTY_IF_RULE}."
-	author: ""
+	description: "See `description' below."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,6 +17,7 @@ create
 feature {NONE} -- Initialization
 
 	make
+			-- Initialization.
 		do
 			is_enabled_by_default := True
 			create {CA_WARNING} severity
@@ -55,6 +56,7 @@ feature -- Properties
 feature {NONE} -- Rule Checking
 
 	process_if (a_if: IF_AS)
+			-- Checks if `a_if' has an empty compound.
 		local
 			l_violation: CA_RULE_VIOLATION
 		do

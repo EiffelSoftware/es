@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_FEATURE_SECTION_COMMENT}."
-	author: ""
+	description: "See `description' below."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -35,6 +35,7 @@ feature {NONE} -- Activation
 feature {NONE} -- Rule checking
 
 	process_feature_clause (a_feature_clause: FEATURE_CLAUSE_AS)
+			-- Checks whether feature section `a_feature_clause' has a comment / caption.
 		local
 			l_viol: CA_RULE_VIOLATION
 			l_comment: STRING_32

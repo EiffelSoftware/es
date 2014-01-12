@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_MANY_ARGUMENTS_RULE}."
-	author: ""
+	description: "See `description' below."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -26,6 +26,7 @@ feature {NONE} -- Initialization
 		end
 
 	initialize_options (a_pref_manager: PREFERENCE_MANAGER)
+			-- Initializes rule preferences.
 		local
 			l_factory: BASIC_PREFERENCE_FACTORY
 		do
@@ -82,12 +83,13 @@ feature -- Properties
 feature {NONE} -- Options
 
 	n_arguments_threshold : INTEGER_PREFERENCE
-		-- The minimum number of arguments a feature body must have in order to
-		-- trigger a rule violation.
+			-- The minimum number of arguments a feature body must have in order to
+			-- trigger a rule violation.
 
 feature -- Visitor
 
 	process_feature (a_feature: FEATURE_AS)
+			-- Checks `a_feature' for rule violations.
 		local
 			n: INTEGER
 			l_viol: CA_RULE_VIOLATION

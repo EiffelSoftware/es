@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_SHORT_CIRCUIT_IF_RULE}."
-	author: ""
+	description: "See `description' below."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -32,6 +32,7 @@ feature {NONE} -- Initialization
 feature {NONE} -- Rule checking
 
 	process_if (a_if: IF_AS)
+			-- Checks `a_if' for rule violations.
 		local
 			l_viol: CA_RULE_VIOLATION
 		do

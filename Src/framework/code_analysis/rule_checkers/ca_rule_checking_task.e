@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_VISIT_NODE_TASK}."
-	author: ""
+	description: "Asynchronous task that checks a set of classes using a list of rules."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -16,18 +16,21 @@ create
 feature {NONE} -- Initialization
 
 	make (a_rules_checker: CA_ALL_RULES_CHECKER; a_rules: LINKED_LIST [CA_RULE]; a_classes: LINKED_SET [CLASS_C]; a_completed_action: PROCEDURE [ANY, TUPLE []])
+			-- Initializes `Current'. `a_rules_checker' will be used for checking standard rules. All classes from `a_classes'
+			-- will be analyzed by all rules from `a_rules'. `a_completed_action' will be called as soon as the analysis is done.
 		do
-			rules_checker := a_rules_checker
-			rules := a_rules
-			classes := a_classes
-			completed_action := a_completed_action
-			classes.start
 
-			has_next_step := not classes.is_empty
-
-			if classes.is_empty then
+			if a_classes.is_empty then
+					-- Make sure `completed_action' is called even when no classes
+					-- have been added.
 				completed_action.call ([])
-			else
+			else -- Initialization.
+				rules_checker := a_rules_checker
+				rules := a_rules
+				classes := a_classes
+				completed_action := a_completed_action
+				classes.start
+				has_next_step := not classes.is_empty
 				create type_recorder.make
 			end
 		end
@@ -35,30 +38,35 @@ feature {NONE} -- Initialization
 feature {NONE} -- Implementation
 
 	rules_checker: CA_ALL_RULES_CHECKER
+			-- The rule checker for standard rules.
 
 	type_recorder: CA_AST_TYPE_RECORDER
+			-- Type recorder for type information.
 
 	rules: LINKED_LIST [CA_RULE]
+			-- Rules that have been set for analysis.
 
 	classes: LINKED_SET [CLASS_C]
+			-- Classes that shall be analyzed.
 
 	completed_action: PROCEDURE [ANY, TUPLE []]
-
-	big_step: INTEGER
+			-- Shall be called when analysis has completed.
 
 feature -- From ROTA
 
 	sleep_time: NATURAL = 10
+			-- <Precursor>
 
 	has_next_step: BOOLEAN
+			-- <Precursor>
 
 	step
+			-- <Precursor>
 		do
 				-- Gather type information
 			type_recorder.clear
 			type_recorder.analyze_class (classes.item)
 
-				-- TODO: more elegant and performant solution?
 			across rules as l_rules loop
 				if l_rules.item.is_enabled.value then
 					l_rules.item.set_node_types (type_recorder.node_types)
@@ -83,10 +91,12 @@ feature -- From ROTA
 		end
 
 	cancel
+			-- <Precursor>
 		do
 			has_next_step := False
 		end
 
 	is_interface_usable: BOOLEAN = True
+			-- <Precursor>
 
 end

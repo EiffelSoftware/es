@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_SELF_COMPARISON_RULE}."
-	author: ""
+	description: "See `description' below."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -15,9 +15,11 @@ create
 	make
 
 feature {NONE} -- Initialization
+
 	make
+			-- Initialization.
 		do
-			-- set the default parameters (subject to be changed by user)
+				-- set the default parameters (subject to be changed by user)
 			is_enabled_by_default := True
 			create {CA_WARNING} severity
 			create violations.make
@@ -77,9 +79,10 @@ feature -- Properties
 feature {NONE} -- Checking the rule
 
 	in_loop: BOOLEAN
+			-- Are we within a loop?
 
 	pre_process_loop (a_loop: LOOP_AS)
-			-- Checking a loop for self-comparisons needs more work. If the until expression
+			-- Checking a loop `a_loop' for self-comparisons needs more work. If the until expression
 			-- is a self-comparison that does not compare for equality then the loop will
 			-- not terminate, which is more severe consequence compared to other self-comparisons.
 		local
@@ -100,6 +103,7 @@ feature {NONE} -- Checking the rule
 		end
 
 	post_process_loop (a_loop: LOOP_AS)
+			-- Reset the within-loop flag.
 		do in_loop := False end
 
 	process_bin_eq (a_bin_eq: BIN_EQ_AS)
@@ -128,6 +132,7 @@ feature {NONE} -- Checking the rule
 		end
 
 	process_comparison (a_comparison: BINARY_AS)
+			-- Checks `a_comparison' for rule violations.
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
@@ -140,6 +145,7 @@ feature {NONE} -- Checking the rule
 		end
 
 	is_self (a_bin: BINARY_AS): BOOLEAN
+			-- Is `a_bin' a self-comparison?
 		do
 			if attached {EXPR_CALL_AS} a_bin.left as l_e1 and then attached {ACCESS_ID_AS} l_e1.call as l_l then
 				if attached {EXPR_CALL_AS} a_bin.right as l_e2 and then attached {ACCESS_ID_AS} l_e2.call as l_r then
@@ -150,5 +156,6 @@ feature {NONE} -- Checking the rule
 		end
 
 	self_name: detachable STRING_32
+			-- Name of the self-compared variable.
 
 end

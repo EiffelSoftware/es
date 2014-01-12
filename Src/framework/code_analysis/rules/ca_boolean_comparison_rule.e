@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_BOOLEAN_COMPARISON_RULE}."
-	author: ""
+	description: "See `description'."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,6 +17,7 @@ create
 feature {NONE} -- Initialization
 
 	make
+			-- Initialization.
 		do
 			is_enabled_by_default := True
 			create {CA_WARNING} severity
@@ -55,6 +56,7 @@ feature -- Properties
 feature {NONE} -- Rule Checking
 
 	process_bin_eq (a_bin_eq: BIN_EQ_AS)
+			-- Checks if `a_bin_eq' compares a boolean constant.
 		local
 			l_viol: CA_RULE_VIOLATION
 		do

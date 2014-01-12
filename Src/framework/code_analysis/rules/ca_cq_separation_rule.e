@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_CQ_SEPARATION_RULE}."
-	author: ""
+	description: "See `description' below."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -19,6 +19,7 @@ create
 feature {NONE} -- Initialization
 
 	make
+			-- Initialization.
 		do
 			is_enabled_by_default := True
 			create {CA_WARNING} severity
@@ -40,12 +41,15 @@ feature {NONE} -- Activation
 feature {NONE} -- AST Visits
 
 	pre_process_feature (a_feature: FEATURE_AS)
+			-- Stores if `a_feature' is a function.
 		do
 			is_function := a_feature.is_function
 			rule_violated := False
 		end
 
 	post_process_feature (a_feature: FEATURE_AS)
+			-- Creates a rule violation regarding `a_feature', if
+			-- necessary.
 		local
 			l_violation: CA_RULE_VIOLATION
 		do
@@ -58,8 +62,10 @@ feature {NONE} -- AST Visits
 		end
 
 	is_function, rule_violated: BOOLEAN
+			-- Properties of current feature.
 
 	process_assign (a_assign: ASSIGN_AS)
+			-- Is something assigned to an attributein `a_assign'?
 		do
 			-- Skip the checks if we are not within a function.
 			if is_function then
@@ -73,6 +79,7 @@ feature {NONE} -- AST Visits
 		end
 
 	process_creation (a_creation: CREATION_AS)
+			-- Is an attribute created in `a_creation'?
 		do
 			-- Skip the checks if we are not within a function.
 			if is_function then
@@ -86,6 +93,7 @@ feature {NONE} -- AST Visits
 		end
 
 	process_instruction_call (a_call: INSTR_CALL_AS)
+			-- Checks whether `a_call' is a procedure call relevant to this rule.
 		do
 			-- Skip the checks if we are not within a function.
 			if is_function then

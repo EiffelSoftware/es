@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_ITERABLE_LOOP_RULE}."
-	author: ""
+	description: "See `description' below."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -35,18 +35,22 @@ feature {NONE} -- Initialization
 feature {NONE} -- Rule checking
 
 	iterable: CLASS_C
+			-- The {ITERABLE} class.
 		once
 			Result := Eiffel_universe.compiled_classes_with_name ("ITERABLE").first.compiled_class
 		end
 
 	current_feature_i: FEATURE_I
+			-- Currently checked feature.
 
 	process_feature (a_feature: FEATURE_AS)
+			-- Sets currently checked feature.
 		do
 			current_feature_i := checking_class.feature_named_32 (a_feature.feature_name.name_32)
 		end
 
 	process_loop (a_loop: LOOP_AS)
+			-- Checks `a_loop' for a rule violation.
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
@@ -87,11 +91,12 @@ feature {NONE} -- Rule checking
 		end
 
 	expected_var: detachable STRING_32
+			-- The expected iteration variable.
 
 	matching_from_part (a_from: detachable EIFFEL_LIST [INSTRUCTION_AS]): BOOLEAN
+			-- Does `a_from' contain an instruction of the form `expected_var'.start?			
 		require
 			expected_variable_set: attached expected_var
-			-- Checks if `a_from' contains an instruction of the form `expected_var'.start.
 		do
 			Result := False
 
@@ -113,6 +118,7 @@ feature {NONE} -- Rule checking
 		end
 
 	matching_last_instruction (a_loop_body: detachable EIFFEL_LIST [INSTRUCTION_AS]): BOOLEAN
+			-- Is the last instruction of `a_loop_body' of the form `expected_var'.start?
 		do
 			Result := False
 

@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_SIMPLIFIABLE_BOOLEAN_RULE}."
-	author: ""
+	description: "See `description' below."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,6 +17,7 @@ create
 feature {NONE} -- Initialization
 
 	make
+			-- Initialization.
 		do
 			is_enabled_by_default := True
 			create {CA_WARNING} severity
@@ -55,6 +56,7 @@ feature -- Properties
 feature {NONE} -- Rule Checking
 
 	process_un_not (a_un_not: UN_NOT_AS)
+			-- Checks `a_un_not' for rule violations.
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
@@ -66,6 +68,7 @@ feature {NONE} -- Rule Checking
 		end
 
 	is_comparison (expression: EXPR_AS): BOOLEAN
+			-- Is `expression' a comparison expression?
 		do
 			if attached {PARAN_AS} expression as l_paran then
 				Result := is_comparison (l_paran.expr)

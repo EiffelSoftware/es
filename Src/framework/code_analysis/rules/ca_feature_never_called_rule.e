@@ -19,6 +19,7 @@ create
 feature {NONE} -- Initialization
 
 	make
+			-- Initialization.
 		do
 			is_enabled_by_default := True
 			create {CA_WARNING} severity
@@ -34,11 +35,8 @@ feature {NONE} -- Activation
 
 feature {NONE} -- Feature Visitor for Violation Check
 
-	checked_bodies: BINARY_SEARCH_TREE_SET [INTEGER]
-			-- Body IDs of all the feature bodies that have been checked.
-			-- Multiple feature names may share the same body.
-
 	class_check (a_class: CLASS_AS)
+			-- Checks `a_class' for features that are never called.
 		local
 			l_feat: LIST [E_FEATURE]
 			l_clients: ARRAYED_LIST [CLASS_C]
@@ -73,6 +71,7 @@ feature {NONE} -- Feature Visitor for Violation Check
 		end
 
 	create_violation (a_feature: E_FEATURE)
+			-- Creates violation regarding `a_feature' never being called.
 		local
 			l_violation: CA_RULE_VIOLATION
 			l_fix: CA_FEATURE_NEVER_CALLED_FIX
