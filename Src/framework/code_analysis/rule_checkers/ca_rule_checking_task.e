@@ -23,7 +23,7 @@ feature {NONE} -- Initialization
 			if a_classes.is_empty then
 					-- Make sure `completed_action' is called even when no classes
 					-- have been added.
-				completed_action.call ([])
+				a_completed_action.call ([])
 			else -- Initialization.
 				rules_checker := a_rules_checker
 				rules := a_rules
