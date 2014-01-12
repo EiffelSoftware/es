@@ -25,7 +25,7 @@ feature {NONE} -- Initialization
 			a_condition_valid: a_condition.type.is_boolean
 			a_then_attached: attached a_then
 			a_else_attached: attached a_else
-			a_then_and_else_compatible: a_then.type.is_same_type (a_else.type)
+			a_then_and_else_compatible: a_then.type ~ a_else.type
 		do
 			condition := a_condition
 			then_expression := a_then
@@ -77,6 +77,6 @@ invariant
 	condition_valid: condition.type.is_boolean
 	then_expression_attached: attached then_expression
 	else_expression_valid: attached else_expression
-	expressions_compatible: then_expression.type.is_same_type (else_expression.type)
+	expressions_compatible: then_expression.type ~ else_expression.type
 
 end

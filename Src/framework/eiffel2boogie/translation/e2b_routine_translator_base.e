@@ -92,18 +92,13 @@ feature -- Helper functions: arguments and result
 		require
 			current_procedure_set: attached current_boogie_procedure
 		local
-			l_type_translator: E2B_TYPE_TRANSLATOR
 			l_pre: IV_PRECONDITION
 		do
 			current_boogie_procedure.add_argument (a_name, a_boogie_type)
-			create l_type_translator
-			l_type_translator.generate_argument_property (create {IV_ENTITY}.make (a_name, a_boogie_type), a_type)
-			if attached l_type_translator.last_property then
-				create l_pre.make (l_type_translator.last_property)
-				l_pre.set_free
-				l_pre.node_info.set_attribute ("info", "type property for argument " + a_name)
-				current_boogie_procedure.add_contract (l_pre)
-			end
+			create l_pre.make (type_property (factory.entity (a_name, a_boogie_type), a_type))
+			l_pre.set_free
+			l_pre.node_info.set_attribute ("info", "type property for argument " + a_name)
+			current_boogie_procedure.add_contract (l_pre)
 			translation_pool.add_type (a_type.deep_actual_type.instantiated_in (current_type))
 		end
 
@@ -112,18 +107,25 @@ feature -- Helper functions: arguments and result
 		local
 			l_type: TYPE_A
 			l_iv_type: IV_TYPE
-			l_type_translator: E2B_TYPE_TRANSLATOR
 		do
 			if current_feature.has_return_value then
 				l_type := current_feature.type.deep_actual_type.instantiated_in (current_type)
 				l_iv_type := types.for_type_a (l_type)
-				create l_type_translator
-				l_type_translator.generate_argument_property (create {IV_ENTITY}.make ("Result", l_iv_type), l_type)
 				translation_pool.add_type (l_type)
 				current_boogie_procedure.add_result_with_property (
 					"Result",
 					l_iv_type,
-					l_type_translator.last_property)
+					type_property (factory.entity ("Result", l_iv_type), l_type))
+			end
+		end
+
+	type_property (a_arg: IV_EXPRESSION; a_type: TYPE_A): IV_EXPRESSION
+			-- Type property about `a_arg' of `a_type'.
+		do
+			if attached {FORMAL_A} a_type as f then
+				Result := types.type_property (f.constraint (current_type.base_class), factory.global_heap, a_arg)
+			else
+				Result := types.type_property (a_type, factory.global_heap, a_arg)
 			end
 		end
 
@@ -277,7 +279,7 @@ feature -- Helper functions: contracts
 			l_objects: LINKED_LIST [IV_EXPRESSION]
 			l_name: STRING_32
 			l_type: TYPE_A
-			l_feature: FEATURE_I
+			l_feature, l_to_set: FEATURE_I
 			l_boogie_type: IV_TYPE
 		do
 			create l_fully_modified.make
@@ -304,7 +306,7 @@ feature -- Helper functions: contracts
 						else
 							l_type := l_type.deep_actual_type
 						end
-						if l_type.base_class.name_in_upper ~ "MML_SET" or l_type.base_class.name_in_upper ~ "MML_SEQUENCE" then
+						if l_type.base_class.class_id = helper.set_class.class_id then
 							l_type := l_type.generics.first
 						end
 
@@ -366,12 +368,14 @@ feature -- Helper functions: contracts
 			-- (forall o, f :: a_lhs[o, f] <==> is_partially_modifiable[o, f] || is_fully_modifiable[o])
 		local
 			l_expr, l_disjunct, l_o_conjunct, l_f_conjunct: IV_EXPRESSION
+			l_type_var: IV_VAR_TYPE
 			l_o, l_f: IV_ENTITY
 			l_access: IV_MAP_ACCESS
 		do
+			create l_type_var.make_fresh
 			create l_o.make ("$o", types.ref)
-			create l_f.make ("$f", types.field (types.generic))
-			create l_access.make_two (a_lhs, l_o, l_f)
+			create l_f.make ("$f", types.field (l_type_var))
+			create l_access.make (a_lhs, << l_o, l_f >>)
 			l_expr := factory.false_
 
 				-- Axiom rhs: a big disjunction
@@ -382,10 +386,8 @@ feature -- Helper functions: contracts
 				across restiction.item.objects as o loop
 					if o.item = Void then
 						l_disjunct := factory.false_
-					elseif o.item.type.is_set then
-						l_disjunct := factory.map_access (o.item, l_o)
-					elseif o.item.type.is_seq then
-						l_disjunct := factory.map_access (factory.function_call ("Seq#Range", << o.item >>, types.set (types.ref)), l_o)
+					elseif types.is_set (o.item.type) then
+						l_disjunct := factory.map_access (o.item, << l_o >>)
 					else
 						l_disjunct := factory.equal (l_o, o.item)
 					end
@@ -414,17 +416,16 @@ feature -- Helper functions: contracts
 			across a_mods.fully_modified as o loop
 				if o.item = Void then
 					l_disjunct := factory.false_
-				elseif o.item.type.is_set then
-					l_disjunct := factory.map_access (o.item, l_o)
-				elseif o.item.type.is_seq then
-					l_disjunct := factory.map_access (factory.function_call ("Seq#Range", << o.item >>, types.set (types.ref)), l_o)
+				elseif types.is_set (o.item.type) then
+					l_disjunct := factory.map_access (o.item, << l_o >>)
 				else
 					l_disjunct := factory.equal (l_o, o.item)
 				end
 				l_expr := factory.or_clean (l_expr, l_disjunct)
 			end
-				-- Finally create the qualifier				
+				-- Finally create the quantifier				
 			create Result.make (factory.equiv (l_access, l_expr))
+			Result.add_type_variable (l_type_var.name)
 			Result.add_bound_variable (l_o.name, l_o.type)
 			Result.add_bound_variable (l_f.name, l_f.type)
 			Result.add_trigger (l_access)

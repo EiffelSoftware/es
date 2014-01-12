@@ -22,13 +22,13 @@ feature -- Basic operations
 			is_attribute: a_feature.is_attribute
 		local
 			l_attribute_name, l_old_name: STRING
-			l_fname: STRING
-			l_call: IV_FUNCTION_CALL
+			l_type_prop: IV_EXPRESSION
 			l_forall: IV_FORALL
-			l_heap_access: IV_HEAP_ACCESS
+			l_heap, l_o: IV_ENTITY
+			l_heap_access: IV_MAP_ACCESS
 			l_boogie_type: IV_TYPE
-			l_content_type: TYPE_A
 			l_prev: like previous_versions
+			l_typed_sets: like helper.class_note_values
 		do
 			l_attribute_name := name_translator.boogie_procedure_for_feature (a_feature, a_context_type)
 			l_boogie_type := types.for_type_in_context (a_feature.type, a_context_type)
@@ -46,12 +46,12 @@ feature -- Basic operations
 				if helper.is_ghost (a_feature) then
 					boogie_universe.add_declaration (
 						create {IV_AXIOM}.make (
-							factory.function_call ("IsGhostField", << l_attribute_name >>, types.bool)))
+							factory.function_call ("IsGhostField", << factory.entity (l_attribute_name, types.field (l_boogie_type)) >>, types.bool)))
 				else
 					boogie_universe.add_declaration (
 						create {IV_AXIOM}.make (
 							factory.not_ (
-								factory.function_call ("IsGhostField", << l_attribute_name >>, types.bool))))
+								factory.function_call ("IsGhostField", << factory.entity (l_attribute_name, types.field (l_boogie_type)) >>, types.bool))))
 				end
 			else
 					-- Inherited or redefined:
@@ -71,38 +71,17 @@ feature -- Basic operations
 				end
 			end
 
-				-- Add attribute-type specific properties
-			if a_feature.type.is_reference and not l_boogie_type.is_set and not l_boogie_type.is_seq then
-				l_content_type := a_feature.type
-				if l_content_type.is_attached then
-					l_fname := "attached_attribute"
-				else
-					l_fname := "detachable_attribute"
-				end
-			elseif l_boogie_type.is_set then
-				l_content_type := a_feature.type.generics.first
-				if l_content_type.is_attached then
-					l_fname := "set_attached_attribute"
-				else
-					l_fname := "set_detachable_attribute"
-				end
-			elseif l_boogie_type.is_seq then
-				l_content_type := a_feature.type.generics.first
-				if l_content_type.is_attached then
-					l_fname := "sequence_attached_attribute"
-				else
-					l_fname := "sequence_detachable_attribute"
-				end
-			end
-			if l_fname /= Void then
-				l_call := factory.function_call (l_fname, <<
-						"heap", "o", factory.type_value (a_context_type),
-						l_attribute_name, factory.type_value (l_content_type)
-					>>, types.bool)
-				create l_forall.make (l_call)
-				l_forall.add_bound_variable ("heap", types.heap_type)
-				l_forall.add_bound_variable ("o", types.ref)
-				create l_heap_access.make ("heap", create {IV_ENTITY}.make ("o", types.ref), create {IV_ENTITY}.make (l_attribute_name, types.generic_type))
+				-- Add type properties
+			l_heap := factory.heap_entity ("heap")
+			l_o := factory.ref_entity ("o")
+			l_heap_access := factory.heap_access (l_heap.name, l_o, l_attribute_name, l_boogie_type)
+			l_type_prop := types.type_property (a_feature.type.deep_actual_type.instantiated_in (a_context_type), l_heap, l_heap_access)
+			if not l_type_prop.is_true then
+				l_type_prop := factory.implies_ (factory.function_call ("attached", << l_heap, l_o, factory.type_value (a_context_type)>>, types.bool),
+					l_type_prop)
+				create l_forall.make (l_type_prop)
+				l_forall.add_bound_variable (l_heap.name, l_heap.type)
+				l_forall.add_bound_variable (l_o.name, l_o.type)
 				l_forall.add_trigger (l_heap_access)
 				boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
 			end

@@ -198,11 +198,11 @@ feature -- Universe Visitor
 				output.put_line ("init_locals:")
 				across a_implementation.locals as i loop
 					-- No defaults needed for auxiliary locals of Boogie types, like HeapType:
-					if default_value (i.item.type) /= Void then
+					if i.item.type.default_value /= Void then
 						output.put_indentation
 						output.put (i.item.name)
 						output.put (" := ")
-						output.put (default_value (i.item.type))
+						i.item.type.default_value.process (Current)
 						output.put (";")
 						output.put_new_line
 					end
@@ -211,7 +211,7 @@ feature -- Universe Visitor
 					output.put_indentation
 					output.put (i.item.name)
 					output.put (" := ")
-					output.put (default_value (i.item.type))
+					i.item.type.default_value.process (Current)
 					output.put (";")
 					output.put_new_line
 				end
@@ -592,62 +592,76 @@ feature -- Type Visitor
 			output.put ("real")
 		end
 
-	process_reference_type (a_type: IV_BASIC_TYPE)
+	process_user_type (a_type: IV_USER_TYPE)
 			-- <Precursor>
+		local
+			old_is_in_type: BOOLEAN
 		do
-			output.put ("ref")
-		end
-
-	process_generic_type (a_type: IV_GENERIC_TYPE)
-			-- <Precursor>
-		do
-			output.put ("beta")
---			check False end
-		end
-
-	process_type_type (a_type: IV_BASIC_TYPE)
-			-- <Precursor>
-		do
-			output.put ("Type")
-		end
-
-	process_heap_type (a_type: IV_BASIC_TYPE)
-			-- <Precursor>
-		do
-			output.put ("HeapType")
-		end
-
-	process_frame_type (a_type: IV_BASIC_TYPE)
-			-- Process frame type.
-		do
-			output.put ("Frame")
-		end
-
-	process_field_type (a_type: IV_FIELD_TYPE)
-			-- <Precursor>
-		do
-			output.put ("Field ")
-			if a_type.content_type.is_map or a_type.content_type.is_seq then
+			if is_in_type then
 				output.put ("(")
-				a_type.content_type.process (Current)
+			end
+			output.put (a_type.constructor)
+			old_is_in_type := is_in_type
+			is_in_type := True
+			across
+				a_type.parameters as params
+			loop
+				output.put (" ")
+				params.item.process (Current)
+			end
+			is_in_type := old_is_in_type
+			if is_in_type then
 				output.put (")")
-			else
-				a_type.content_type.process (Current)
 			end
 		end
 
-	process_set_type (a_type: IV_SET_TYPE)
+	process_variable_type (a_type: IV_VAR_TYPE)
 			-- <Precursor>
 		do
-			output.put ("Set ")
-			a_type.content_type.process (Current)
+			output.put (a_type.name)
 		end
 
-	process_seq_type (a_type: IV_SEQ_TYPE)
+	process_map_type (a_type: IV_MAP_TYPE)
 			-- <Precursor>
+		local
+			old_is_in_type: BOOLEAN
 		do
-			output.put ("Seq ")
-			a_type.content_type.process (Current)
+			if a_type.synonym /= Void then
+				a_type.synonym.process (Current)
+			else
+				if is_in_type then
+					output.put ("(")
+				end
+				if not a_type.type_parameters.is_empty then
+					output.put ("<")
+					across
+						a_type.type_parameters as tps
+					loop
+						output.put (tps.item)
+						if not tps.is_last then
+							output.put (", ")
+						end
+					end
+					output.put (">")
+				end
+				output.put ("[")
+				across
+					a_type.domain_types as ds
+				loop
+					ds.item.process (Current)
+					if not ds.is_last then
+						output.put (", ")
+					end
+				end
+				output.put ("]")
+				old_is_in_type := is_in_type
+				is_in_type := True
+				a_type.range_type.process (Current)
+				is_in_type := old_is_in_type
+				if is_in_type then
+					output.put (")")
+				end
+			end
 		end
 
 feature -- Other
@@ -667,19 +681,20 @@ feature -- Other
 
 	process_quantifier (a_keyword: STRING; a_quantifier: IV_QUANTIFIER)
 			-- Process quantifier `a_quantifier'.
-		local
-			l_generic_printed: BOOLEAN
 		do
-			across a_quantifier.bound_variables as i until l_generic_printed loop
-				if attached {IV_GENERIC_TYPE} i.item.type or attached {IV_FIELD_TYPE} i.item.type then
-					l_generic_printed := True
-				end
-			end
-
 			output.put ("(")
 			output.put (a_keyword)
-			if l_generic_printed then
-				output.put ("<beta>")
+			if not a_quantifier.type_variables.is_empty then
+				output.put (" <")
+				across
+					a_quantifier.type_variables as vars
+				loop
+					if not vars.is_first then
+						output.put (", ")
+					end
+					output.put (vars.item)
+				end
+				output.put (">")
 			end
 			output.put (" ")
 			across a_quantifier.bound_variables as i loop
@@ -698,26 +713,9 @@ feature -- Other
 			output.put (")")
 		end
 
-	default_value (a_type: IV_TYPE): STRING
-			-- Default value for type `a_type'.
-		local
-			l_printer: like Current
-		do
-			if a_type.is_boolean then
-				Result := "false"
-			elseif a_type.is_integer then
-				Result := "0"
-			elseif a_type.is_real then
-				Result := "0.0"
-			elseif a_type.is_set then
-				Result := "Set#Empty()"
-			elseif a_type.is_seq then
-				Result := "Seq#Empty()"
-			elseif a_type.is_reference then
-				Result := "Void"
-			else
-				Result := Void
-			end
-		end
+feature {NONE} -- Implementation
+
+	is_in_type: BOOLEAN
+			-- Is the printer processing a complex type (i.e. a context where other complex types have to be parenthesized)?
 
 end

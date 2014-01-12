@@ -88,11 +88,13 @@ feature -- Basic operations
 		local
 			l_call: IV_FUNCTION_CALL
 		do
-			create l_call.make ("fun.ARRAY.item", types.generic_type)
-			l_call.add_argument (expression_translator.entity_mapping.heap)
-			l_call.add_argument (array_expr)
-			l_call.add_argument (expression_translator.locals_map.item (object_test_local.position))
-			expression_translator.set_last_expression (l_call)
+			check attached {IV_MAP_TYPE} array_expr.type as map_type then
+				create l_call.make ("fun.ARRAY.item", map_type.range_type)
+				l_call.add_argument (expression_translator.entity_mapping.heap)
+				l_call.add_argument (array_expr)
+				l_call.add_argument (expression_translator.locals_map.item (object_test_local.position))
+				expression_translator.set_last_expression (l_call)
+			end
 		end
 
 	handle_call_cursor_index (a_feature: FEATURE_I)

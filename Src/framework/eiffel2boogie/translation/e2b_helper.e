@@ -293,7 +293,19 @@ feature -- Eiffel helpers
 			Result := Result.instantiated (a_target_type)
 			check Result /= Void end
 		end
-		
+
+	set_any_type: TYPE_A
+			-- Type MML_SET [ANY] (supplier of ANY).
+		do
+			Result := system.any_type.base_class.feature_named_32 ("owns").type
+		end
+
+	set_class: CLASS_C
+			-- Class MML_SET.
+		do
+			Result := set_any_type.base_class
+		end
+
 feature -- Byte context helpers
 
 	set_up_byte_context (a_feature: FEATURE_I; a_type: TYPE_A)

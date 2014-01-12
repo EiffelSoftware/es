@@ -2,17 +2,15 @@ note
 	description: "Finite sequence."
 	author: "Nadia Polikarpova"
 	theory: "sequence.bpl"
-	maps_to: Sequence	
+	maps_to: "Seq"
+	equality: "Seq#Equal"	
+	rank: "Seq#LessEqual"
+	typed_sets: "Seq#Range"		
 
 class
 	MML_SEQUENCE [G]
 
 inherit
-	ANY
-		redefine
-			default_create
-		end
-
 	ITERABLE [G]
 		redefine
 			default_create
@@ -25,13 +23,14 @@ create
 convert
 	singleton ({G})
 
-feature
+feature {NONE} -- Initialization
 
 	default_create
+			-- Create an empty sequence.
+		note
+			maps_to: "Seq#Empty"		
 		do
 		end
-
-feature {NONE} -- Initialization
 
 	singleton (x: G)
 			-- Create a sequence with one element `x'.
@@ -54,6 +53,8 @@ feature -- Elements
 
 	item alias "[]" (i: INTEGER): G
 			-- Value at position `i'.
+		require
+			in_domain: domain [i]
 		do
 		end
 		
@@ -67,19 +68,28 @@ feature -- Conversion
 	range: MML_SET [G]
 			-- Set of values.
 		do
-		end				
-
+		end
+		
 feature -- Measurement
 
 	count alias "#": INTEGER
 			-- Number of elements.
+		note
+			maps_to: "Seq#Length"					
 		do
 		end
+
+	occurrences (x: G): INTEGER
+			-- How many times does `x' occur?
+		do
+		end				
 		
 feature -- Comparison
 
 	is_prefix_of alias "<=" (other: MML_SEQUENCE [G]): BOOLEAN
 			-- Is this sequence a prefix of `other'?
+		note
+			maps_to: "Seq#Prefix"		
 		do
 		end
 		
@@ -115,6 +125,8 @@ feature -- Decomposition
 
 	front (upper: INTEGER): MML_SEQUENCE [G]
 			-- Prefix up to `upper'.
+		note
+			maps_to: "Seq#Take"
 		do
 		end
 
@@ -157,11 +169,15 @@ feature -- Modification
 
 	concatenation alias "+" (other: MML_SEQUENCE [G]): MML_SEQUENCE [G]
 			-- The concatenation of the current sequence and `other'.
+		note
+			maps_to: "Seq#Concat"		
 		do
 		end
 
 	replaced_at (i: INTEGER; x: G): MML_SEQUENCE [G]
 			-- Current sequence with `x' at position `i'.
+		note
+			maps_to: "Seq#Update"		
 		require
 			in_domain: domain [i]
 		do
@@ -171,6 +187,8 @@ feature -- Iterable implementation
 
 	new_cursor: ITERATION_CURSOR [G]
 			-- <Precursor>
+		note
+			maps_to: "Seq#Range"
 		do
 		end
 

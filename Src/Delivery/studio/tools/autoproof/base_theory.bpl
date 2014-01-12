@@ -4,6 +4,10 @@
 type ref; // Type definition for reference types
 const Void: ref; // Constant for Void references
 
+// Is r1 <= r2 in the well-founded order?
+function ref_rank_leq(r1, r2: ref): bool
+{ r2 == Void ==> r1 == Void }
+
 // ----------------------------------------------------------------------
 // Heap and allocation
 
@@ -347,14 +351,14 @@ function detachable(heap: HeapType, o: ref, t: Type) returns (bool) {
 	(o == Void) || (attached(heap, o, t))
 }
 
-// Property that field `f' of an object of type `ot' is of attached type `t'.
-function attached_attribute(heap: HeapType, o: ref, ot: Type, f: Field ref, t: Type) returns (bool) {
-	attached(heap, o, ot) ==> attached(heap, heap[o, f], t)
+// Property that `s' is a set of objects of attached type `t'.
+function {: inline } set_attached(heap: HeapType, s: Set ref, t: Type) returns (bool) {
+	(forall o: ref :: s[o] ==> attached(heap, o, t))
 }
 
-// Property that field `f' of an object of type `ot' is of detachable type `t'.
-function detachable_attribute(heap: HeapType, o: ref, ot: Type, f: Field ref, t: Type) returns (bool) {
-	attached(heap, o, ot) ==> detachable(heap, heap[o, f], t)
+// Property that `s' is a set of objects of attached type `t'.
+function {: inline } set_detachable(heap: HeapType, s: Set ref, t: Type) returns (bool) {
+	(forall o: ref :: s[o] ==> detachable(heap, o, t))
 }
 
 // ----------------------------------------------------------------------

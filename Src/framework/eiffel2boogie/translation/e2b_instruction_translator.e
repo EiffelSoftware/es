@@ -185,11 +185,11 @@ feature -- Processing
 					correct_feature: l_feature.feature_name_id = l_attribute.attribute_name_id
 				end
 				translation_pool.add_referenced_feature (l_feature, current_type)
-				create {IV_HEAP_ACCESS} l_target.make (
+				l_target := factory.heap_access (
 					entity_mapping.heap.name,
 					entity_mapping.current_expression,
-					create {IV_ENTITY}.make (name_translator.boogie_procedure_for_feature (l_feature, current_type), types.field (types.for_type_a (l_feature.type)))
-				)
+					name_translator.boogie_procedure_for_feature (l_feature, current_type),
+					types.for_type_a (l_feature.type))
 			else
 				check should_never_happen: False end
 			end
@@ -295,6 +295,7 @@ feature -- Processing
 		local
 			l_assert: IV_ASSERT
 			l_array: IV_EXPRESSION
+			l_content_type: IV_TYPE
 		do
 			set_current_origin_information (a_assert)
 			process_contract_expression (a_other)
@@ -310,8 +311,9 @@ feature -- Processing
 				-- Check array contents
 			across a_array.expressions as i loop
 				process_contract_expression (i.item)
+				l_content_type := types.for_type_a (a_array.type.generics.first)
 				create l_assert.make (factory.equal (
-					factory.function_call ("fun.ARRAY.item", << entity_mapping.heap, l_array, factory.int_value (i.cursor_index) >>, types.generic_type),
+					factory.function_call ("fun.ARRAY.item", << entity_mapping.heap, l_array, factory.int_value (i.cursor_index) >>, l_content_type),
 					last_expression))
 				l_assert.node_info.set_type ("check")
 				l_assert.node_info.set_tag ("array_item_" + i.cursor_index.out)
@@ -1044,7 +1046,7 @@ feature {NONE} -- Loop processing
 				add_statement (create {IV_HAVOC}.make (l_writable.name))
 				create l_assume.make (factory.function_call ("Frame#Subset", <<l_frame, l_writable>>, types.bool))
 				add_statement (l_assume)
-				create l_assume.make (factory.function_call ("writable_domains", <<l_writable, "Heap">>, types.bool))
+				create l_assume.make (factory.function_call ("writable_domains", <<l_writable, factory.global_heap>>, types.bool))
 				add_statement (l_assume)
 			end
 			Result := [l_frame, l_writable]
@@ -1095,7 +1097,7 @@ feature {NONE} -- Loop processing
 				end
 			end
 				-- Default invariants (free)			
-			create l_assume.make (factory.function_call ("HeapSucc", <<a_pre_heap, "Heap">>, types.bool))
+			create l_assume.make (factory.function_call ("HeapSucc", <<a_pre_heap, factory.global_heap>>, types.bool))
 			add_statement (l_assume)
 			if options.is_ownership_enabled then
 				if a_loop_frame = Void then
@@ -1105,10 +1107,10 @@ feature {NONE} -- Loop processing
 				else
 						-- Nothing outside loop's frame has changed since before the loop
 						-- (here we have to compare to before the loop because the loop's frame referes to ownership domains then.
-					create l_assume.make (factory.function_call ("writes", <<a_pre_heap, "Heap", a_loop_frame>>, types.bool))
+					create l_assume.make (factory.function_call ("writes", <<a_pre_heap, factory.global_heap, a_loop_frame>>, types.bool))
 				end
 				add_statement (l_assume)
-				create l_assume.make (factory.function_call ("global", << "Heap" >>, types.bool))
+				create l_assume.make (factory.function_call ("global", << factory.global_heap>>, types.bool))
 				add_statement (l_assume)
 			end
 		end
@@ -1131,9 +1133,6 @@ feature {NONE} -- Loop processing
 			a_variant_exprs.append (last_decreases)
 
 			if a_variant_exprs.is_empty then
-				-- ToDo: Add default variants unless decreases *
-			end
-			if a_variant_exprs.is_empty then
 					-- No decreases clause: apply default
 				if attached {IV_BINARY_OPERATION} a_exit_condition as binop then
 					if binop.operator ~ ">" or binop.operator ~ ">=" then
@@ -1148,25 +1147,7 @@ feature {NONE} -- Loop processing
 							factory.minus (binop.left, binop.right),
 							factory.minus (binop.right, binop.left)))
 					end
-				elseif attached {IV_FUNCTION_CALL} a_exit_condition as fcall then
-					if fcall.name ~ "Set#Subset" or fcall.name ~ "Set#ProperSubset" then
-						-- for A < B and A <= B, use the decreases A - B
-						l := fcall.arguments [1]
-						r := fcall.arguments [2]
-						a_variant_exprs.extend (factory.function_call ("Set#Difference", << l, r >>, l.type))
-					elseif fcall.name ~ "Set#Equal" then
-						-- for A = B, use the absolute value of A - B
-						l := fcall.arguments [1]
-						r := fcall.arguments [2]
-						a_variant_exprs.extend (factory.conditional (factory.function_call ("Set#Subset", << r, l >>, types.bool),
-							factory.function_call ("Set#Difference", << l, r >>, l.type),
-							factory.function_call ("Set#Difference", << r, l >>, l.type)))
-					elseif fcall.name ~ "Seq#Equal" then
-						-- for A = B, use the absolute value of A - B
-						l := factory.function_call ("Seq#Length", << fcall.arguments [1] >>, types.int)
-						r := factory.function_call ("Seq#Length", << fcall.arguments [2] >>, types.int)
-						a_variant_exprs.extend (factory.conditional (factory.less_equal (r, l), factory.minus (l, r), factory.minus (r, l)))
-					end
+					-- ToDo: come up with a way to create default variants for other types
 				end
 
 					-- If still empty, add a trivially wrong variant
@@ -1182,7 +1163,7 @@ feature {NONE} -- Loop processing
 			across
 				a_variant_exprs as i
 			loop
-				if types.is_variant_type (i.item.type) then
+				if i.item.type.has_rank then
 					create l_variant.make (helper.unique_identifier ("variant"), i.item.type)
 					current_implementation.add_local (l_variant.name, l_variant.type)
 					a_variant_locals.extend (l_variant)

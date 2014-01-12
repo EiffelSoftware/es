@@ -527,11 +527,7 @@ feature -- Basic operations
 				end
 			end
 
-			if attached {IV_HEAP_ACCESS} an_expression as heap_acc then
-
-				Result.force (heap_acc)
-
-			elseif attached {IV_MAP_ACCESS} an_expression as map_acc then
+			if attached {IV_MAP_ACCESS} an_expression as map_acc then
 
 				Result.force (map_acc)
 			end

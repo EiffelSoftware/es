@@ -1,6 +1,6 @@
 note
 	description: "[
-		TODO
+		Visitor that processes Boogie types.
 	]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -25,43 +25,18 @@ feature -- Visitor
 		deferred
 		end
 
-	process_reference_type (a_type: IV_BASIC_TYPE)
-			-- Process integer type.
+	process_user_type (a_type: IV_USER_TYPE)
+			-- Process user-defined type.
 		deferred
 		end
 
-	process_generic_type (a_type: IV_GENERIC_TYPE)
-			-- Process generic type.
+	process_variable_type (a_type: IV_VAR_TYPE)
+			-- Process variable type.
 		deferred
 		end
 
-	process_type_type (a_type: IV_BASIC_TYPE)
-			-- Process type type.
-		deferred
-		end
-
-	process_heap_type (a_type: IV_BASIC_TYPE)
-			-- Process heap type.
-		deferred
-		end
-
-	process_frame_type (a_type: IV_BASIC_TYPE)
-			-- Process frame type.
-		deferred
-		end
-
-	process_field_type (a_type: IV_FIELD_TYPE)
-			-- Process type type.
-		deferred
-		end
-
-	process_set_type (a_type: IV_SET_TYPE)
-			-- Process type type.
-		deferred
-		end
-
-	process_seq_type (a_type: IV_SEQ_TYPE)
-			-- Process type type.
+	process_map_type (a_type: IV_MAP_TYPE)
+			-- Process map type.
 		deferred
 		end
 

@@ -64,7 +64,7 @@ feature -- Basic operations
 
 				if a_type.is_frozen then
 					boogie_universe.add_declaration (create {IV_AXIOM}.make (
-						factory.function_call ("is_frozen", << l_boogie_type_name >>, types.bool)))
+						factory.function_call ("is_frozen", << factory.entity (l_boogie_type_name, types.type) >>, types.bool)))
 				end
 
 					-- Inheritance relations
@@ -100,12 +100,6 @@ feature -- Basic operations
 			not_both: a_included = Void or a_excluded = Void
 		do
 			generate_invariant_function (a_type, a_included, a_excluded, a_ancestor)
-		end
-
-	generate_argument_property (a_arg: IV_EXPRESSION; a_type: TYPE_A)
-			-- Generate argument property about `a_arg' of `a_type'.
-		do
-			last_property := argument_property (a_arg, a_type)
 		end
 
 feature {NONE} -- Implementation
@@ -164,7 +158,7 @@ feature {NONE} -- Implementation
 				create l_decl.make (name_translator.boogie_function_for_filtered_invariant (a_type, a_included, a_excluded, a_ancestor), types.bool)
 			end
 
-			l_decl.add_argument ("heap", types.heap_type)
+			l_decl.add_argument ("heap", types.heap)
 			l_decl.add_argument ("current", types.ref)
 			boogie_universe.add_declaration (l_decl)
 
@@ -182,7 +176,7 @@ feature {NONE} -- Implementation
 					l_clauses.extend (empty_set_property ("owns"))
 				end
 				if not helper.is_class_explicit (a_type.base_class, "invariant") then
-					l_clauses.extend (factory.function_call ("admissibility2", << "heap", "current" >>, types.bool))
+					l_clauses.extend (factory.function_call ("admissibility2", << factory.heap_entity ("heap"), factory.ref_entity ("current") >>, types.bool))
 				end
 			end
 
@@ -232,8 +226,6 @@ feature {NONE} -- Implementation
 			-- Process invariants of `a_class'.
 		require
 			a_class_not_void: a_class /= Void
-			a_included_not_void: a_included /= Void
-			a_iexcluded_not_void: a_excluded /= Void
 		local
 			l_list: BYTE_LIST [BYTE_NODE]
 			l_assert: ASSERT_B
@@ -256,7 +248,7 @@ feature {NONE} -- Implementation
 					then
 						create l_translator.make
 						l_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.ref))
-						l_translator.entity_mapping.set_heap (create {IV_ENTITY}.make ("heap", types.heap_type))
+						l_translator.entity_mapping.set_heap (create {IV_ENTITY}.make ("heap", types.heap))
 						l_translator.set_context (Void, a_context_type)
 						l_translator.set_origin_class (a_class)
 						l_translator.set_context_line_number (l_assert.line_number)
@@ -292,7 +284,7 @@ feature {NONE} -- Implementation
 		do
 			l_fname := name_translator.boogie_function_for_invariant (a_type)
 
-			create l_heap.make ("heap", types.heap_type)
+			create l_heap.make ("heap", types.heap)
 			create l_current.make ("current", types.ref)
 
 				-- type_of(current) == a_type  ==>  user_inv(heap, current) == l_fname(heap, current)
@@ -334,7 +326,7 @@ feature {NONE} -- Implementation
 			l_function: IV_FUNCTION
 		do
 			create l_current.make ("current", types.ref)
-			create l_heap.make ("heap", types.heap_type)
+			create l_heap.make ("heap", types.heap)
 
 			l_def := definition_of (a_expr, l_heap, l_current, a_name)
 			if attached l_def and not helper.is_class_explicit (a_type.base_class, a_name) then
@@ -354,111 +346,6 @@ feature {NONE} -- Implementation
 					Result := fcall.arguments [2]
 				end
 			end
-		end
-
-	argument_property (a_expr: IV_EXPRESSION; a_type: TYPE_A): detachable IV_EXPRESSION
-			-- Property associated with argument `a_name' of type `a_type'.
-		local
-			l_type: TYPE_A
-		do
-			l_type := a_type.deep_actual_type
-			check not l_type.is_like end
-			if l_type.is_reference then
-				Result := reference_property (a_expr, l_type)
-			elseif l_type.is_boolean then
-				Result := Void
-			elseif l_type.is_integer or l_type.is_natural or l_type.is_character then
-				Result := numeric_property (a_expr, l_type)
-			elseif l_type.is_formal then
-					-- TODO: take constraint type
-			else
-				check False end
-			end
-		end
-
-	reference_property (a_expr: IV_EXPRESSION; a_type: TYPE_A): detachable IV_EXPRESSION
-			-- Property associated with argument `a_name' of type `a_type'.
-		require
-			reference_type: a_type.is_reference
-		local
-			l_heap, l_type: IV_ENTITY
-			l_expr: IV_FUNCTION_CALL
-			l_fcall: IV_FUNCTION_CALL
-			l_content_type: TYPE_A
-		do
-			if not types.is_mml_type (a_type) then
-				create l_type.make (name_translator.boogie_name_for_type (a_type), types.type)
-				if attached {IV_ENTITY} a_expr as a_entity and then a_entity.name ~ "Current" then
-					-- For Current the exact dynamic type is considered known
-					create l_expr.make ("attached_exact", types.bool)
-				elseif a_type.is_attached then
-					create l_expr.make ("attached", types.bool)
-				else
-					create l_expr.make ("detachable", types.bool)
-				end
-			elseif a_type.base_class.name ~ "MML_SET" then
-				l_content_type := a_type.generics.first
-				if l_content_type.is_reference then
-					create l_type.make (name_translator.boogie_name_for_type (l_content_type), types.type)
-					if l_content_type.is_attached then
-						create l_expr.make ("set_attached", types.bool)
-					else
-						create l_expr.make ("set_detachable", types.bool)
-					end
-				end
-			elseif a_type.base_class.name ~ "MML_SEQUENCE" then
-				l_content_type := a_type.generics.first
-				if l_content_type.is_reference then
-					create l_type.make (name_translator.boogie_name_for_type (l_content_type), types.type)
-					if l_content_type.is_attached then
-						create l_expr.make ("sequence_attached", types.bool)
-					else
-						create l_expr.make ("sequence_detachable", types.bool)
-					end
-				end
-			else
-				check False end
-			end
-			if l_expr /= Void then
-				create l_heap.make ("Heap", types.heap_type)
-				l_expr.add_argument (l_heap)
-				l_expr.add_argument (a_expr)
-				l_expr.add_argument (l_type)
-				Result := l_expr
-					-- TODO: refactor
-				if a_type.base_class.name_in_upper ~ "ARRAY" then
-					create l_fcall.make ("ARRAY.inv", types.bool)
-					l_fcall.add_argument (l_heap)
-					l_fcall.add_argument (a_expr)
-					Result := factory.and_ (Result, l_fcall)
-				end
-			end
-		end
-
-	numeric_property (a_expr: IV_EXPRESSION; a_type: TYPE_A): detachable IV_EXPRESSION
-			-- Property associated with argument `a_name' of type `a_type'.
-		require
-			numeric_property: a_type.is_numeric or a_type.is_character
-		local
-			l_expr: IV_FUNCTION_CALL
-			l_f_name: STRING
-		do
-			if attached {INTEGER_A} a_type as l_int_type then
-				l_f_name := "is_integer_" + l_int_type.size.out
-			elseif attached {NATURAL_A} a_type as l_nat_type then
-				l_f_name := "is_natural_" + l_nat_type.size.out
-			elseif attached {CHARACTER_A} a_type as l_char_type then
-				if l_char_type.is_character_32 then
-					l_f_name := "is_natural_32"
-				else
-					l_f_name := "is_natural_8"
-				end
-			else
-				check False end
-			end
-			create l_expr.make (l_f_name, types.bool)
-			l_expr.add_argument (a_expr)
-			Result := l_expr
 		end
 
 feature -- TODO: move somewhere else
@@ -486,9 +373,9 @@ feature -- TODO: move somewhere else
 
 				-- Set up procedure with arguments and precondition
 			l_proc.add_argument ("Current", types.ref)
-			create l_pre.make (factory.function_call ("attached_exact", << "Heap", "Current", factory.type_value (a_class.actual_type) >>, types.bool))
+			create l_pre.make (factory.function_call ("attached_exact", << factory.global_heap, factory.std_current, factory.type_value (a_class.actual_type) >>, types.bool))
 			l_proc.add_contract (l_pre)
-			create l_pre.make (factory.function_call ("user_inv", << "Heap", "Current" >>, types.bool))
+			create l_pre.make (factory.function_call ("user_inv", << factory.global_heap, factory.std_current >>, types.bool))
 			l_proc.add_contract (l_pre)
 
 			create l_block_a1.make_name ("a1")
@@ -515,7 +402,7 @@ feature -- TODO: move somewhere else
 				-- A2: o.inv implies forall x: x in o.subjects implies o in x.observers
 
 			l_impl.body.add_statement (l_block_a2)
-			create l_assert.make (factory.function_call ("admissibility2", << "Heap", "Current" >>, types.bool))
+			create l_assert.make (factory.function_call ("admissibility2", << factory.global_heap, factory.std_current >>, types.bool))
 			l_assert.node_info.set_type ("A2")
 			l_block_a2.add_statement (l_assert)
 			l_block_a2.add_statement (create {IV_RETURN})
@@ -531,7 +418,7 @@ feature -- TODO: move somewhere else
 				-- A4: o.inv cannot be violated by updating subjects field of a subject
 
 			l_impl.body.add_statement (l_block_a4)
-			create l_assert.make (factory.function_call ("admissibility4", << "Heap", "Current" >>, types.bool))
+			create l_assert.make (factory.function_call ("admissibility4", << factory.global_heap, factory.std_current >>, types.bool))
 			l_assert.node_info.set_type ("A4")
 			l_block_a4.add_statement (l_assert)
 			l_block_a4.add_statement (create {IV_RETURN})
@@ -540,7 +427,7 @@ feature -- TODO: move somewhere else
 				-- A5: o.inv cannot be violated by enlarging observers field of a subject
 
 			l_impl.body.add_statement (l_block_a5)
-			create l_assert.make (factory.function_call ("admissibility5", << "Heap", "Current" >>, types.bool))
+			create l_assert.make (factory.function_call ("admissibility5", << factory.global_heap, factory.std_current >>, types.bool))
 			l_assert.node_info.set_type ("A5")
 			l_block_a5.add_statement (l_assert)
 			l_block_a5.add_statement (create {IV_RETURN})

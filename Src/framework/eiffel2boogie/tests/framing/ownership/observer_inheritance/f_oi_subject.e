@@ -35,7 +35,7 @@ feature -- State update
 			-- Update state to `v'.
 		require
 			modify_field (["value", "closed"], Current)
-			modify (subscribers.sequence)
+			modify (subscribers.sequence.range)
 		local
 			i: INTEGER
 		do
@@ -49,7 +49,7 @@ feature -- State update
 					o.item.is_open and o.item.inv_without ("synchronized")
 				end
 				across 1 |..| (i - 1) as j all subscribers.sequence [j.item].inv end
-				modify (subscribers.sequence)
+				modify (subscribers.sequence.range)
 			until
 				i > subscribers.count
 			loop

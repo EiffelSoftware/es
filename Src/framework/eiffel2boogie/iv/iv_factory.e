@@ -60,38 +60,49 @@ feature -- Values
 			create Result.make (a_value.out, types.int)
 		end
 
+	real_value (a_value: REAL_64): IV_VALUE
+			-- Value for floating point `a_value'.
+		do
+			create Result.make (a_value.out, types.real)
+		end
+
 	type_value (a_value: TYPE_A): IV_VALUE
 			-- Value for integer `a_value'.
 		do
 			create Result.make (name_translator.boogie_name_for_type (a_value), types.type)
 		end
 
-	default_value (a_type: TYPE_A): IV_EXPRESSION
-			-- Default value for type `a_type'.
-		require
-			not_like_type: not a_type.is_like
-		local
-			l_boogie_type: IV_TYPE
+feature -- Entities
+
+	entity (a_name: STRING; a_type: IV_TYPE): IV_ENTITY
+			-- Entity with name `a_name' and type `a_type'.
 		do
-			l_boogie_type := types.for_type_a (a_type.deep_actual_type)
-			if l_boogie_type.is_integer and l_boogie_type.is_boolean then
-				-- Generic type
-				create {IV_VALUE} Result.make ("Unknown", types.generic_type)
-			elseif l_boogie_type.is_integer then
-				Result := int_value (0)
-			elseif l_boogie_type.is_boolean then
-				Result := false_
-			elseif l_boogie_type.is_real then
-				create {IV_VALUE} Result.make ("0.0", l_boogie_type)
-			elseif l_boogie_type.is_reference then
-				Result := void_
-			elseif l_boogie_type.is_set then
-				Result := function_call ("Set#Empty", << >>, l_boogie_type)
-			elseif l_boogie_type.is_seq then
-				Result := function_call ("Seq#Empty", << >>, l_boogie_type)
-			else
-				check no_eiffel_type_for_this_boogie_type: False end
-			end
+			create Result.make (a_name, a_type)
+		end
+
+	heap_entity (a_name: STRING): IV_ENTITY
+		do
+			Result := entity (a_name, types.heap)
+		end
+
+	global_heap: IV_ENTITY
+		once
+			Result := heap_entity ("Heap")
+		end
+
+	old_heap: IV_EXPRESSION
+		once
+			Result := function_call ("old", << global_heap >>, types.heap)
+		end
+
+	ref_entity (a_name: STRING): IV_ENTITY
+		do
+			Result := entity (a_name, types.ref)
+		end
+
+	std_current: IV_ENTITY
+		once
+			Result := ref_entity ("Current")
 		end
 
 feature -- Boolean operators
@@ -230,93 +241,55 @@ feature -- Functions
 			Result.add_argument (a_arg)
 		end
 
-	function_call (a_function_name: STRING; a_arguments: ARRAY [ANY]; a_result_type: IV_TYPE): IV_FUNCTION_CALL
+	function_call (a_function_name: STRING; a_arguments: ARRAY [IV_EXPRESSION]; a_result_type: IV_TYPE): IV_FUNCTION_CALL
 			-- Function call to `a_function_name' with arguments `a_arguments'.
 		do
 			create Result.make (a_function_name, a_result_type)
 			if attached a_arguments then
 				across a_arguments as i loop
-					if attached {STRING} i.item as s then
-						Result.add_argument (create {IV_ENTITY}.make (s, types.generic_type))
-					elseif attached {IV_EXPRESSION} i.item as e then
-						Result.add_argument (e)
-					else
-						check False end
-					end
+					Result.add_argument (i.item)
 				end
 			end
 		end
 
 feature -- Heap and map access
 
-	heap_current_allocated (a_mapping: E2B_ENTITY_MAPPING): IV_HEAP_ACCESS
-			-- Heap access to `allocated' on `Current'.
-		do
-			create Result.make (
-				a_mapping.heap.name,
-				a_mapping.current_expression,
-				create {IV_ENTITY}.make ("allocated", types.field (types.bool)))
-		end
-
-	heap_current_initialized (a_mapping: E2B_ENTITY_MAPPING): IV_HEAP_ACCESS
-			-- Heap access to `allocated' on `Current'.
-		do
-			create Result.make (
-				a_mapping.heap.name,
-				a_mapping.current_expression,
-				create {IV_ENTITY}.make ("initialized", types.field (types.bool)))
-		end
-
-	heap_current_access (a_mapping: E2B_ENTITY_MAPPING; a_name: STRING; a_content_type: IV_TYPE): IV_HEAP_ACCESS
-			-- Heap access to `a_feature' on `Current'.
-		do
-			create Result.make (
-				a_mapping.heap.name,
-				a_mapping.current_expression,
-				create {IV_ENTITY}.make (a_name, types.field (a_content_type)))
-		end
-
-	heap_access (a_heap_name: STRING; a_target: IV_EXPRESSION; a_name: STRING; a_content_type: IV_TYPE): IV_HEAP_ACCESS
-			-- Heap access to `a_feature' on `Current'.
-		do
-			create Result.make (
-				a_heap_name,
-				a_target,
-				create {IV_ENTITY}.make (a_name, types.field (a_content_type)))
-		end
-
-	array_access (a_heap: IV_ENTITY; a_array, a_index: IV_EXPRESSION): IV_MAP_ACCESS
-			-- Array access to `a_array'[`a_index'].
-		do
-			create Result.make (
-				create {IV_HEAP_ACCESS}.make (
-					a_heap.name,
-					a_array,
-					create {IV_ENTITY}.make ("area", types.field (types.generic_type))),
-				a_index)
-		end
-
-	map_access (a_map, a_index: IV_EXPRESSION): IV_MAP_ACCESS
+	map_access (a_map: IV_EXPRESSION; a_indexes: ARRAY [IV_EXPRESSION]): IV_MAP_ACCESS
 			-- Map access to `a_map'[`a_index'].
 		do
-			create Result.make (a_map, a_index)
+			create Result.make (a_map, a_indexes)
+		end
+
+	heap_access (a_heap_name: STRING; a_target: IV_EXPRESSION; a_name: STRING; a_content_type: IV_TYPE): IV_MAP_ACCESS
+			-- Heap access to `a_feature' on `Current'.
+		do
+			Result := map_access (create {IV_ENTITY}.make (a_heap_name, types.heap),
+				<<a_target, create {IV_ENTITY}.make (a_name, types.field (a_content_type)) >>)
+		end
+
+	heap_current_access (a_mapping: E2B_ENTITY_MAPPING; a_name: STRING; a_content_type: IV_TYPE): IV_MAP_ACCESS
+			-- Heap access to `a_feature' on `Current'.
+		do
+			Result := heap_access (a_mapping.heap.name, a_mapping.current_expression, a_name, a_content_type)
+		end
+
+	array_access (a_heap: IV_ENTITY; a_array, a_index: IV_EXPRESSION; a_content_type: IV_TYPE): IV_MAP_ACCESS
+			-- Array access to `a_array'[`a_index'].
+		do
+			Result := map_access (
+				heap_access (a_heap.name, a_array, "area", create {IV_MAP_TYPE}.make (<<>>, << types.int >>, a_content_type)),
+				<< a_index >>)
 		end
 
 feature -- Statements
 
-	procedure_call (a_proc_name: STRING; a_arguments: ARRAY [ANY]): IV_PROCEDURE_CALL
+	procedure_call (a_proc_name: STRING; a_arguments: ARRAY [IV_EXPRESSION]): IV_PROCEDURE_CALL
 			-- Procedure call.
 		do
 			create Result.make (a_proc_name)
 			if attached a_arguments then
 				across a_arguments as i loop
-					if attached {STRING} i.item as s then
-						Result.add_argument (create {IV_ENTITY}.make (s, types.generic_type))
-					elseif attached {IV_EXPRESSION} i.item as e then
-						Result.add_argument (e)
-					else
-						check False end
-					end
+					Result.add_argument (i.item)
 				end
 			end
 		end
@@ -339,7 +312,7 @@ feature -- Framing
 	frame_access (a_frame, a_obj, a_field: IV_EXPRESSION): IV_MAP_ACCESS
 			-- Expression `a_frame [a_obj, a_field]'.
 		do
-			create Result.make_two (a_frame, a_obj, a_field)
+			create Result.make (a_frame, << a_obj, a_field >>)
 		end
 
 	writes_routine_frame (a_feature: FEATURE_I; a_type: TYPE_A; a_boogie_procedure: IV_PROCEDURE): IV_EXPRESSION
@@ -349,13 +322,13 @@ feature -- Framing
 			l_fcall: IV_FUNCTION_CALL
 			l_old_heap: IV_EXPRESSION
 		do
-			l_old_heap := old_ (create {IV_ENTITY}.make ("Heap", types.heap_type))
+			l_old_heap := old_ (create {IV_ENTITY}.make ("Heap", types.heap))
 			create l_fcall.make (name_translator.boogie_function_for_frame (a_feature, a_type), types.set (types.ref))
 			l_fcall.add_argument (l_old_heap)
 			across a_boogie_procedure.arguments as i loop
 				l_fcall.add_argument (i.item.entity)
 			end
-			Result := function_call ("writes", <<l_old_heap, "Heap", l_fcall>>, types.bool)
+			Result := function_call ("writes", <<l_old_heap, global_heap, l_fcall>>, types.bool)
 		end
 
 feature -- Miscellaneous

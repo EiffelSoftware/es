@@ -101,7 +101,6 @@ feature -- Translation
 		local
 			l_current: IV_ENTITY
 			l_field: IV_ENTITY
-			l_heap_access: IV_HEAP_ACCESS
 		do
 			translation_pool.add_referenced_feature (a_feature, current_target_type)
 
@@ -110,8 +109,11 @@ feature -- Translation
 				name_translator.boogie_procedure_for_feature (a_feature, current_target_type),
 				types.field (types.for_type_in_context (a_feature.type, current_target_type))
 			)
-			create l_heap_access.make (entity_mapping.heap.name, current_target, l_field)
-			last_expression := l_heap_access
+			last_expression := factory.heap_access (
+				entity_mapping.heap.name,
+				current_target,
+				l_field.name,
+				types.for_type_in_context (a_feature.type, current_target_type))
 
 			field_accesses.extend ([current_target, l_field])
 		end

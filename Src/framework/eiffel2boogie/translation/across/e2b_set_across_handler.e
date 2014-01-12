@@ -53,13 +53,25 @@ feature -- Basic operations
 			l_expression: IV_EXPRESSION
 			l_set: IV_EXPRESSION
 			l_map: IV_MAP_ACCESS
+			l_content_type: IV_TYPE
+			l_conversions: like helper.feature_note_values
 		do
+			l_content_type := types.for_type_a (object_test_local.type.generics.first)
+
 				-- Set expression
 			set_access.process (expression_translator)
 			l_set := expression_translator.last_expression
 
+			l_conversions := helper.feature_note_values (set_access.type.base_class.feature_named_32 ("new_cursor"), "maps_to")
+			if l_conversions.is_empty then
+				-- ToDo: move message
+				helper.add_semantic_error (set_access.type.base_class, "An iterable logical class must provide a conversion to set in the mapping of new_cursor", -1)
+			elseif not l_conversions.first.is_empty then
+				l_set := factory.function_call (l_conversions.first, << l_set >>, types.set (l_content_type))
+			end
+
 				-- Loop content
-			expression_translator.create_iterator (types.ref)
+			expression_translator.create_iterator (l_content_type)
 			l_counter := expression_translator.last_local
 			expression_translator.locals_map.put (l_counter, object_test_local.position)
 			loop_expr.expression_code.process (expression_translator)
@@ -67,7 +79,7 @@ feature -- Basic operations
 			expression_translator.locals_map.remove (object_test_local.position)
 
 
-			create l_map.make (l_set, l_counter)
+			create l_map.make (l_set, << l_counter >>)
 			if loop_expr.is_all then
 				create {IV_FORALL} l_quantifier.make (factory.implies_ (l_map, l_expression))
 			else

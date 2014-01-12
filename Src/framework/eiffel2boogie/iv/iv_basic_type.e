@@ -1,6 +1,6 @@
 note
 	description: "[
-		TODO
+		Basic Boogie types: bool, int, real.
 	]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -9,17 +9,21 @@ class
 	IV_BASIC_TYPE
 
 inherit
-
 	IV_TYPE
+		redefine
+			default_value,
+			is_boolean,
+			is_integer,
+			is_real,
+			is_equal,
+			has_rank,
+			rank_leq
+		end
 
 create
 	make_boolean,
 	make_integer,
-	make_real,
-	make_reference,
-	make_type,
-	make_heap,
-	make_frame
+	make_real
 
 feature {NONE} -- Initialization
 
@@ -47,41 +51,31 @@ feature {NONE} -- Initialization
 			is_real: is_real
 		end
 
-	make_reference
-			-- Make this a reference type.
+feature -- Access
+
+	default_value: IV_EXPRESSION
+			-- Default value of the type, if defined.
 		do
-			is_reference := True
-		ensure
-			is_reference: is_reference
+			if is_boolean then
+				Result := factory.false_
+			elseif is_integer then
+				Result := factory.int_value (0)
+			else
+				check is_real end
+				Result := factory.real_value (0.0)
+			end
 		end
 
-	make_type
-			-- Make this a type type.
-		do
-			is_type := True
-		ensure
-			is_type: is_type
-		end
+feature -- Status report
 
-	make_heap
-			-- Make this a heap type.
-		do
-			is_heap := True
-			is_map := True
-		ensure
-			is_heap: is_heap
-			is_map: is_map
-		end
+	is_boolean: BOOLEAN
+			-- Is this the boolean type?
 
-	make_frame
-			-- Make this a frame type.
-		do
-			is_frame := True
-			is_map := True
-		ensure
-			is_frame: is_frame
-			is_map: is_map
-		end
+	is_integer: BOOLEAN
+			-- Is this the integer type?
+
+	is_real: BOOLEAN
+			-- Is this the real type?
 
 feature -- Visitor
 
@@ -94,14 +88,6 @@ feature -- Visitor
 				a_visitor.process_integer_type (Current)
 			elseif is_real then
 				a_visitor.process_real_type (Current)
-			elseif is_reference then
-				a_visitor.process_reference_type (Current)
-			elseif is_type then
-				a_visitor.process_type_type (Current)
-			elseif is_heap then
-				a_visitor.process_heap_type (Current)
-			elseif is_frame then
-				a_visitor.process_frame_type (Current)
 			else
 				check False end
 			end
@@ -109,7 +95,7 @@ feature -- Visitor
 
 feature -- Equality
 
-	is_same_type (a_other: IV_TYPE): BOOLEAN
+	is_equal (a_other: like Current): BOOLEAN
 			-- Is `a_other' same type as this?
 		do
 			if is_boolean then
@@ -118,18 +104,28 @@ feature -- Equality
 				Result := a_other.is_integer
 			elseif is_real then
 				Result := a_other.is_real
-			elseif is_reference then
-				Result := a_other.is_reference
-			elseif is_type then
-				Result := a_other.is_type
-			elseif is_heap then
-				Result := a_other.is_heap
 			else
 				Result := False
 			end
 		end
 
-invariant
---	exclusive_type: is_boolean xor is_integer xor is_real xor is_reference xor is_type
+feature -- Termination
+
+	has_rank: BOOLEAN
+			-- <Precursor>
+		do
+			Result := is_boolean or is_integer
+		end
+
+	rank_leq (e1, e2: IV_EXPRESSION): IV_EXPRESSION
+			-- <Precursor>	
+		do
+			if is_boolean then
+				Result := factory.implies_ (e1, e2)
+			else
+				check is_integer end
+				Result := factory.less_equal (e1, e2)
+			end
+		end
 
 end

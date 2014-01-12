@@ -25,7 +25,7 @@ feature {NONE} -- Initialization
 		do
 			create {IV_ENTITY} current_expression.make (default_current_name, types.ref)
 			result_expression := Void
-			create heap.make (global_heap_name, types.heap_type)
+			create heap.make (global_heap_name, types.heap)
 			old_heap := Void
 			create argument_mapping.make (5)
 			create local_mapping.make (5)

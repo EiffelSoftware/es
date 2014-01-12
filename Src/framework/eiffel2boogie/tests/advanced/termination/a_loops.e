@@ -128,22 +128,6 @@ feature
 			loop
 				i := i - 1
 			end
-
-			from
-				ss := s
-			until
-				ss.is_empty
-			loop
-				ss := ss.but_first -- default variant: if |[]| <= |ss| then |ss| - |[]| else |[]| - |ss|
-			end
-
-			from
-				sset := set
-			until
-				sset.is_empty
-			loop
-				sset := sset / sset.any_item -- default variant: if [] <= sset then sset - [] else [] - sset
-			end
 		end
 
 	nonterminating_bad

@@ -1,114 +1,184 @@
-// Taken from Dafny Prelude.
-// Copyright (c) Microsoft.
+// Finite sets.
+// (Originally from Dafny Prelude: Copyright (c) Microsoft)
 
-// ---------------------------------------------------------------
-// -- Axiomatization of sequences --------------------------------
-// ---------------------------------------------------------------
-
+// Sequence type
 type Seq T;
 
+// Sequence length
 function Seq#Length<T>(Seq T): int;
 axiom (forall<T> s: Seq T :: { Seq#Length(s) } 0 <= Seq#Length(s));
 
+// Empty sequence
 function Seq#Empty<T>(): Seq T;
 axiom (forall<T> :: Seq#Length(Seq#Empty(): Seq T) == 0);
 axiom (forall<T> s: Seq T :: { Seq#Length(s) } Seq#Length(s) == 0 ==> s == Seq#Empty());
 
+// Singleton sequence
 function Seq#Singleton<T>(T): Seq T;
 axiom (forall<T> t: T :: { Seq#Length(Seq#Singleton(t)) } Seq#Length(Seq#Singleton(t)) == 1);
 
-function Seq#Build<T>(s: Seq T, val: T): Seq T;
-axiom (forall<T> s: Seq T, v: T :: { Seq#Length(Seq#Build(s,v)) }
-  Seq#Length(Seq#Build(s,v)) == 1 + Seq#Length(s));
-axiom (forall<T> s: Seq T, i: int, v: T :: { Seq#Index(Seq#Build(s,v), i) }
-  (i == Seq#Length(s) + 1 ==> Seq#Index(Seq#Build(s,v), i) == v) &&
-  (i <= Seq#Length(s) ==> Seq#Index(Seq#Build(s,v), i) == Seq#Index(s, i)));
-
-function Seq#Append<T>(Seq T, Seq T): Seq T;
-axiom (forall<T> s0: Seq T, s1: Seq T :: { Seq#Length(Seq#Append(s0,s1)) }
-  Seq#Length(Seq#Append(s0,s1)) == Seq#Length(s0) + Seq#Length(s1));
-
-function Seq#Index<T>(Seq T, int): T;
-axiom (forall<T> t: T :: { Seq#Index(Seq#Singleton(t), 1) } Seq#Index(Seq#Singleton(t), 1) == t);
-axiom (forall<T> s0: Seq T, s1: Seq T, n: int :: { Seq#Index(Seq#Append(s0,s1), n) }
-  (n <= Seq#Length(s0) ==> Seq#Index(Seq#Append(s0,s1), n) == Seq#Index(s0, n)) &&
-  (Seq#Length(s0) < n ==> Seq#Index(Seq#Append(s0,s1), n) == Seq#Index(s1, n - Seq#Length(s0))));
-
-function Seq#Update<T>(Seq T, int, T): Seq T;
-axiom (forall<T> s: Seq T, i: int, v: T :: { Seq#Length(Seq#Update(s,i,v)) }
-  1 <= i && i <= Seq#Length(s) ==> Seq#Length(Seq#Update(s,i,v)) == Seq#Length(s));
-axiom (forall<T> s: Seq T, i: int, v: T, n: int :: { Seq#Index(Seq#Update(s,i,v),n) }
-  1 <= n && n <= Seq#Length(s) ==>
-    (i == n ==> Seq#Index(Seq#Update(s,i,v),n) == v) &&
-    (i != n ==> Seq#Index(Seq#Update(s,i,v),n) == Seq#Index(s,n)));
-
-function Seq#Contains<T>(s: Seq T, x: T): bool;
-axiom (forall<T> s: Seq T, x: T :: { Seq#Contains(s,x) }
-  Seq#Contains(s,x) <==>
-    (exists i: int :: { Seq#Index(s,i) } 1 <= i && i <= Seq#Length(s) && Seq#Index(s,i) == x));
-axiom (forall<T> s: Seq T, i: int :: { Seq#Index(s,i) }
+// Does a sequence contain a given element?
+function Seq#Has<T>(s: Seq T, x: T): bool;
+axiom (forall<T> s: Seq T, x: T :: { Seq#Has(s,x) }
+  Seq#Has(s,x) <==>
+    (exists i: int :: { Seq#Item(s,i) } 1 <= i && i <= Seq#Length(s) && Seq#Item(s,i) == x));
+axiom (forall<T> s: Seq T, i: int :: { Seq#Item(s,i) }
   1 <= i && i <= Seq#Length(s) ==>
-    Seq#Contains(s, Seq#Index(s, i)));    
+    Seq#Has(s, Seq#Item(s, i)));    
 axiom (forall x: ref ::
-  { Seq#Contains(Seq#Empty(), x) }
-  !Seq#Contains(Seq#Empty(), x));
+  { Seq#Has(Seq#Empty(), x) }
+  !Seq#Has(Seq#Empty(), x));
 axiom (forall<T> s0: Seq T, s1: Seq T, x: T ::
-  { Seq#Contains(Seq#Append(s0, s1), x) }
-  Seq#Contains(Seq#Append(s0, s1), x) <==>
-    Seq#Contains(s0, x) || Seq#Contains(s1, x));
-
+  { Seq#Has(Seq#Concat(s0, s1), x) }
+  Seq#Has(Seq#Concat(s0, s1), x) <==>
+    Seq#Has(s0, x) || Seq#Has(s1, x));
 axiom (forall<T> s: Seq T, v: T, x: T ::
-  { Seq#Contains(Seq#Build(s, v), x) }
-    Seq#Contains(Seq#Build(s, v), x) <==> (v == x || Seq#Contains(s, x)));
-
+  { Seq#Has(Seq#Extended(s, v), x) }
+    Seq#Has(Seq#Extended(s, v), x) <==> (v == x || Seq#Has(s, x)));
 axiom (forall<T> s: Seq T, n: int, x: T ::
-  { Seq#Contains(Seq#Take(s, n), x) }
-  Seq#Contains(Seq#Take(s, n), x) <==>
-    (exists i: int :: { Seq#Index(s, i) }
-      1 <= i && i <= n && i <= Seq#Length(s) && Seq#Index(s, i) == x));
+  { Seq#Has(Seq#Take(s, n), x) }
+  Seq#Has(Seq#Take(s, n), x) <==>
+    (exists i: int :: { Seq#Item(s, i) }
+      1 <= i && i <= n && i <= Seq#Length(s) && Seq#Item(s, i) == x));
 axiom (forall<T> s: Seq T, n: int, x: T ::
-  { Seq#Contains(Seq#Drop(s, n), x) }
-  Seq#Contains(Seq#Drop(s, n), x) <==>
-    (exists i: int :: { Seq#Index(s, i) }
-      0 <= n && n + 1 <= i && i <= Seq#Length(s) && Seq#Index(s, i) == x));
+  { Seq#Has(Seq#Drop(s, n), x) }
+  Seq#Has(Seq#Drop(s, n), x) <==>
+    (exists i: int :: { Seq#Item(s, i) }
+      0 <= n && n + 1 <= i && i <= Seq#Length(s) && Seq#Item(s, i) == x));
+      
+// Is a sequence empty?
+function {: inline } Seq#IsEmpty<T>(a: Seq T): bool
+{ Seq#Equal(a, Seq#Empty()) }
 
+// Element at a given index
+function Seq#Item<T>(Seq T, int): T;
+axiom (forall<T> t: T :: { Seq#Item(Seq#Singleton(t), 1) } Seq#Item(Seq#Singleton(t), 1) == t);
+axiom (forall<T> s0: Seq T, s1: Seq T, n: int :: { Seq#Item(Seq#Concat(s0,s1), n) }
+  (n <= Seq#Length(s0) ==> Seq#Item(Seq#Concat(s0,s1), n) == Seq#Item(s0, n)) &&
+  (Seq#Length(s0) < n ==> Seq#Item(Seq#Concat(s0,s1), n) == Seq#Item(s1, n - Seq#Length(s0))));
+  
+// Set of indexes
+function Seq#Domain<T>(Seq T): Set int;
+axiom (forall<T> q: Seq T, i: int :: { Seq#Domain(q)[i] } Seq#Domain(q)[i] <==> 1 <= i && i <= Seq#Length(q));
+
+// Set of values
+function Seq#Range<T>(Seq T): Set T;
+axiom (forall<T> q: Seq T, o: T :: { Seq#Range(q)[o] }{ Seq#Has(q, o) } Seq#Has(q, o) <==> Seq#Range(q)[o]);
+  
+// How many times does x occur in a?
+function Seq#Occurrences<T>(Seq T, T): int;
+axiom (forall<T> x: T :: {Seq#Occurrences(Seq#Empty(), x)} Seq#Occurrences(Seq#Empty(), x) == 0);
+axiom (forall<T> a: Seq T, x: T:: {Seq#Occurrences(Seq#Extended(a, x), x)}
+  Seq#Occurrences(Seq#Extended(a, x), x) == Seq#Occurrences(a, x) + 1);
+axiom (forall<T> a: Seq T, x: T, y: T :: {Seq#Occurrences(Seq#Extended(a, y), x)}
+  x != y ==> Seq#Occurrences(Seq#Extended(a, y), x) == Seq#Occurrences(a, x));
+
+// Are two sequences equal?  
 function Seq#Equal<T>(Seq T, Seq T): bool;
 axiom (forall<T> s0: Seq T, s1: Seq T :: { Seq#Equal(s0,s1) }
   Seq#Equal(s0,s1) <==>
     Seq#Length(s0) == Seq#Length(s1) &&
-    (forall j: int :: { Seq#Index(s0,j) } { Seq#Index(s1,j) }
-        1 <= j && j <= Seq#Length(s0) ==> Seq#Index(s0,j) == Seq#Index(s1,j)));
+    (forall j: int :: { Seq#Item(s0,j) } { Seq#Item(s1,j) }
+        1 <= j && j <= Seq#Length(s0) ==> Seq#Item(s0,j) == Seq#Item(s1,j)));
 axiom (forall<T> a: Seq T, b: Seq T :: { Seq#Equal(a,b) }  // extensionality axiom for sequences
   Seq#Equal(a,b) ==> a == b);
+  
+// Is q0 a prefix of q1?  
+function {: inline } Seq#Prefix<T>(q0: Seq T, q1: Seq T): bool
+{ Seq#Equal(q0, Seq#Take(q1, Seq#Length(q0))) }
 
-function Seq#SameUntil<T>(Seq T, Seq T, int): bool;
-axiom (forall<T> s0: Seq T, s1: Seq T, n: int :: { Seq#SameUntil(s0,s1,n) }
-  Seq#SameUntil(s0,s1,n) <==>
-    (forall j: int :: { Seq#Index(s0,j) } { Seq#Index(s1,j) }
-        1 <= j && j <= n ==> Seq#Index(s0,j) == Seq#Index(s1,j)));
+// Is |q0| <= |q1|?
+function {: inline } Seq#LessEqual<T>(q0: Seq T, q1: Seq T): bool
+{ Seq#Length(q0) <= Seq#Length(q1) }
 
+// Prefix of length how_many
 function Seq#Take<T>(s: Seq T, howMany: int): Seq T;
 axiom (forall<T> s: Seq T, n: int :: { Seq#Length(Seq#Take(s,n)) }
   0 <= n ==>
     (n <= Seq#Length(s) ==> Seq#Length(Seq#Take(s,n)) == n) &&
     (Seq#Length(s) < n ==> Seq#Length(Seq#Take(s,n)) == Seq#Length(s)));
-axiom (forall<T> s: Seq T, n: int, j: int :: { Seq#Index(Seq#Take(s,n), j) } {:weight 25}
+axiom (forall<T> s: Seq T, n: int, j: int :: { Seq#Item(Seq#Take(s,n), j) } {:weight 25}
   1 <= j && j <= n && j <= Seq#Length(s) ==>
-    Seq#Index(Seq#Take(s,n), j) == Seq#Index(s, j));
+    Seq#Item(Seq#Take(s,n), j) == Seq#Item(s, j));
 
+// Sequence without its prefix of length howMany    
 function Seq#Drop<T>(s: Seq T, howMany: int): Seq T;
 axiom (forall<T> s: Seq T, n: int :: { Seq#Length(Seq#Drop(s,n)) }
   0 <= n ==>
     (n <= Seq#Length(s) ==> Seq#Length(Seq#Drop(s,n)) == Seq#Length(s) - n) &&
     (Seq#Length(s) < n ==> Seq#Length(Seq#Drop(s,n)) == 0));
-axiom (forall<T> s: Seq T, n: int, j: int :: { Seq#Index(Seq#Drop(s,n), j) } {:weight 25}
+axiom (forall<T> s: Seq T, n: int, j: int :: { Seq#Item(Seq#Drop(s,n), j) } {:weight 25}
   0 <= n && 1 <= j && j <= Seq#Length(s)-n ==>
-    Seq#Index(Seq#Drop(s,n), j) == Seq#Index(s, j+n));
+    Seq#Item(Seq#Drop(s,n), j) == Seq#Item(s, j+n));
 
+// First element
+function {: inline } Seq#First<T>(q: Seq T): T
+{ Seq#Item(q, 1) } 
+
+// Last element
+function {: inline } Seq#Last<T>(q: Seq T): T
+{ Seq#Item(q, Seq#Length(q)) } 
+
+// Sequence with the first element removed
+function {: inline } Seq#ButFirst<T>(q: Seq T): Seq T
+{ Seq#Drop(q, 1) } 
+
+// Sequence with the last element removed
+function {: inline } Seq#ButLast<T>(q: Seq T): Seq T
+{ Seq#Take(q, Seq#Length(q) - 1) } 
+
+// Suffix from lower
+function {: inline } Seq#Tail<T>(q: Seq T, lower: int): Seq T
+{ Seq#Drop(q, lower - 1) } 
+
+// Subsequence from lower to upper
+function {: inline } Seq#Interval<T>(q: Seq T, lower: int, upper: int): Seq T
+{ Seq#Drop(Seq#Take(q, upper), lower - 1) } 
+
+// Sequence with element at position i removed
+function {: inline } Seq#RemovedAt<T>(q: Seq T, i: int): Seq T
+{ Seq#Concat(Seq#Take(q, i - 1), Seq#Drop(q, i)) } 
+
+// Sequence extended with x at the end
+function Seq#Extended<T>(s: Seq T, val: T): Seq T;
+axiom (forall<T> s: Seq T, v: T :: { Seq#Length(Seq#Extended(s,v)) }
+  Seq#Length(Seq#Extended(s,v)) == 1 + Seq#Length(s));
+axiom (forall<T> s: Seq T, i: int, v: T :: { Seq#Item(Seq#Extended(s,v), i) }
+  (i == Seq#Length(s) + 1 ==> Seq#Item(Seq#Extended(s,v), i) == v) &&
+  (i <= Seq#Length(s) ==> Seq#Item(Seq#Extended(s,v), i) == Seq#Item(s, i)));
+  
+// Sequence with x inserted at position i
+function {: inline } Seq#ExtendedAt<T>(s: Seq T, i: int, val: T): Seq T
+{
+  Seq#Concat (Seq#Extended(Seq#Take(s, i - 1), val), Seq#Drop(s, i -1))
+}
+
+// Sequence prepended with x at the beginning
+function {: inline } Seq#Prepended<T>(s: Seq T, val: T): Seq T
+{
+  Seq#Concat (Seq#Singleton(val), s)
+}
+  
+// Concatenation of two sequences
+function Seq#Concat<T>(Seq T, Seq T): Seq T;
+axiom (forall<T> s0: Seq T, s1: Seq T :: { Seq#Length(Seq#Concat(s0,s1)) }
+  Seq#Length(Seq#Concat(s0,s1)) == Seq#Length(s0) + Seq#Length(s1));
+
+// Sequence with x at position i.
+function Seq#Update<T>(Seq T, int, T): Seq T;
+axiom (forall<T> s: Seq T, i: int, v: T :: { Seq#Length(Seq#Update(s,i,v)) }
+  1 <= i && i <= Seq#Length(s) ==> Seq#Length(Seq#Update(s,i,v)) == Seq#Length(s));
+axiom (forall<T> s: Seq T, i: int, v: T, n: int :: { Seq#Item(Seq#Update(s,i,v),n) }
+  1 <= n && n <= Seq#Length(s) ==>
+    (i == n ==> Seq#Item(Seq#Update(s,i,v),n) == v) &&
+    (i != n ==> Seq#Item(Seq#Update(s,i,v),n) == Seq#Item(s,n)));
+
+// Additional axioms about common things
+    
 axiom (forall<T> s, t: Seq T ::
-  { Seq#Append(s, t) }
-  Seq#Take(Seq#Append(s, t), Seq#Length(s)) == s &&
-  Seq#Drop(Seq#Append(s, t), Seq#Length(s)) == t);
+  { Seq#Concat(s, t) }
+  Seq#Take(Seq#Concat(s, t), Seq#Length(s)) == s &&
+  Seq#Drop(Seq#Concat(s, t), Seq#Length(s)) == t);
 
 // Commutability of Take and Drop with Update.
 axiom (forall<T> s: Seq T, i: int, v: T, n: int ::
@@ -125,59 +195,10 @@ axiom (forall<T> s: Seq T, i: int, v: T, n: int ::
     1 <= i && i <= n && n < Seq#Length(s) ==> Seq#Drop(Seq#Update(s, i, v), n) == Seq#Drop(s, n));
 // drop commutes with build.
 axiom (forall<T> s: Seq T, v: T, n: int ::
-  { Seq#Drop(Seq#Build(s, v), n) }
-    0 <= n && n <= Seq#Length(s) ==> Seq#Drop(Seq#Build(s, v), n) == Seq#Build(Seq#Drop(s, n), v) );
+  { Seq#Drop(Seq#Extended(s, v), n) }
+    0 <= n && n <= Seq#Length(s) ==> Seq#Drop(Seq#Extended(s, v), n) == Seq#Extended(Seq#Drop(s, n), v) );
 
-function Seq#Rank<T>(Seq T): int;
-axiom (forall<T> s: Seq T, i: int ::
-  { Seq#Rank(Seq#Drop(s, i)) }
-  0 < i && i <= Seq#Length(s) ==> Seq#Rank(Seq#Drop(s, i)) < Seq#Rank(s) );
-axiom (forall<T> s: Seq T, i: int ::
-  { Seq#Rank(Seq#Take(s, i)) }
-  0 <= i && i < Seq#Length(s) ==> Seq#Rank(Seq#Take(s, i)) < Seq#Rank(s) );
-axiom (forall<T> s: Seq T, i: int, j: int ::
-  { Seq#Rank(Seq#Append(Seq#Take(s, i), Seq#Drop(s, j))) }
-  0 <= i && i < j && j <= Seq#Length(s) ==> Seq#Rank(Seq#Append(Seq#Take(s, i), Seq#Drop(s, j))) < Seq#Rank(s) );
-
-// Additional axioms about common things
 axiom Seq#Take(Seq#Empty(), 0) == Seq#Empty();  // [][..0] == []
 axiom Seq#Drop(Seq#Empty(), 0) == Seq#Empty();  // [][0..] == []
 
-
-// ---------------------------------------------------------------
-// CUSTOM ADDITIONS
-
-// The set of indexes
-function Seq#Domain<T>(Seq T): Set int;
-axiom (forall<T> q: Seq T, i: int :: { Seq#Domain(q)[i] } Seq#Domain(q)[i] <==> 1 <= i && i <= Seq#Length(q));
-
-// The set of values
-function Seq#Range<T>(Seq T): Set T;
-axiom (forall<T> q: Seq T, o: T :: { Seq#Range(q)[o] }{ Seq#Contains(q, o) } Seq#Contains(q, o) <==> Seq#Range(q)[o]);
-
-function Seq#Prefix<T>(q0, q1: Seq T): bool
-{ Seq#Equal(q0, Seq#Take(q1, Seq#Length(q0))) }
-
-// ---------------------------------------------------------------
-// ITEM TYPE PROPERTIES
-
-// Property that `s' is a sequence of objects of attached type `t'.
-function {: inline } sequence_attached(heap: HeapType, s: Seq ref, t: Type) returns (bool) {
-	(forall o: ref :: Seq#Range(s)[o] ==> attached(heap, o, t))
-}
-
-// Property that `s' is a sequence of objects of attached type `t'.
-function {: inline } sequence_detachable(heap: HeapType, s: Seq ref, t: Type) returns (bool) {
-	(forall o: ref :: Seq#Range(s)[o] ==> detachable(heap, o, t))
-}
-
-// Property that field `f' is a sequence of objects of detachable type `t'.
-function sequence_attached_attribute(heap: HeapType, o: ref, ot: Type, f: Field (Seq ref), t: Type) returns (bool) {
-	attached(heap, o, ot) ==> sequence_attached(heap, heap[o, f], t)
-}
-
-// Property that field `f' is a sequence of objects of detachable type `t'.
-function sequence_detachable_attribute(heap: HeapType, o: ref, ot: Type, f: Field (Seq ref), t: Type) returns (bool) {
-	attached(heap, o, ot) ==> sequence_detachable(heap, heap[o, f], t)
-}
 

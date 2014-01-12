@@ -66,7 +66,7 @@ feature -- Translation: Signature
 			if not a_feature.has_return_value and helper.is_functional (a_feature) then
 				helper.add_semantic_warning (a_feature, messages.functional_feature_not_function, -1)
 			end
-			
+
 				-- Set up name
 			if a_for_creator then
 				l_proc_name := name_translator.boogie_procedure_for_creator (current_feature, current_type)
@@ -118,7 +118,7 @@ feature -- Translation: Signature
 						l_attr_name := name_translator.boogie_procedure_for_feature (l_attribute, current_type)
 						create l_pre.make (factory.equal (
 							factory.heap_current_access (l_mapping, l_attr_name, types.for_type_a (l_attribute.type)),
-							factory.default_value (l_attribute.type)))
+							types.for_type_a (l_attribute.type).default_value))
 						l_pre.set_free
 						current_boogie_procedure.add_contract (l_pre)
 					end
@@ -127,7 +127,7 @@ feature -- Translation: Signature
 					-- Add ownership-realted built-in attribute
 				if options.is_ownership_enabled then
 					-- closed
-					create l_pre.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
+					create l_pre.make (factory.function_call ("is_open", << factory.global_heap, factory.std_current >>, types.bool))
 					l_pre.set_free
 					current_boogie_procedure.add_contract (l_pre)
 
@@ -191,19 +191,19 @@ feature -- Translation: Signature
 			l_post: IV_POSTCONDITION
 		do
 				-- Preserves global invariant
-			create l_pre.make (factory.function_call ("global", << "Heap" >>, types.bool))
+			create l_pre.make (factory.function_call ("global", << factory.global_heap >>, types.bool))
 			l_pre.set_free
 			current_boogie_procedure.add_contract (l_pre)
 
 				-- Only add postconditions and frame properties if the procedure modifies heap
 			if a_modifies_heap then
-				create l_post.make (factory.function_call ("global", << "Heap" >>, types.bool))
+				create l_post.make (factory.function_call ("global", << factory.global_heap >>, types.bool))
 				l_post.set_free
 				current_boogie_procedure.add_contract (l_post)
 
 					-- Add stronger global invariant
 				if helper.is_public (current_feature) or a_for_creator then
-					create l_post.make (factory.function_call ("global_public", << "Heap" >>, types.bool))
+					create l_post.make (factory.function_call ("global_public", << factory.global_heap >>, types.bool))
 					l_post.set_free
 					current_boogie_procedure.add_contract (l_post)
 				end
@@ -227,24 +227,17 @@ feature -- Translation: Signature
 		do
 				-- Precondition: Modify set is writable
 			create l_fcall.make (name_translator.boogie_function_for_frame (current_feature, current_type), types.frame)
-			l_fcall.add_argument (create {IV_ENTITY}.make ("Heap", types.heap_type))
+			l_fcall.add_argument (factory.global_heap)
 			across current_boogie_procedure.arguments as i loop
 				l_fcall.add_argument (i.item.entity)
 			end
-			create l_pre.make (
-				factory.function_call (
-					"Frame#Subset",
-					<<
-						l_fcall,
-						"writable"
-					>>,
-					types.bool))
+			create l_pre.make (factory.function_call ("Frame#Subset", << l_fcall, factory.global_writable>>, types.bool))
 			l_pre.node_info.set_type ("pre")
 			l_pre.node_info.set_tag ("frame_writable")
 			current_boogie_procedure.add_contract (l_pre)
 
 				-- Free precondition: Everything in the domains of writable objects is writable
-			create l_pre.make (factory.function_call ("writable_domains", <<"writable", "Heap">>, types.bool))
+			create l_pre.make (factory.function_call ("writable_domains", <<factory.global_writable, factory.global_heap>>, types.bool))
 			l_pre.set_free
 			current_boogie_procedure.add_contract (l_pre)
 
@@ -256,7 +249,7 @@ feature -- Translation: Signature
 			translation_pool.add_frame_function (current_feature, current_type)
 
 				-- Free postcondition: HeapSucc
-			create l_post.make (factory.function_call ("HeapSucc", <<"old(Heap)", "Heap">>, types.bool))
+			create l_post.make (factory.function_call ("HeapSucc", <<factory.old_heap, factory.global_heap>>, types.bool))
 			l_post.set_free
 			current_boogie_procedure.add_contract (l_post)
 		end
@@ -268,7 +261,7 @@ feature -- Translation: Signature
 			l_post: IV_POSTCONDITION
 		do
 			if a_for_creator then
-				create l_post.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
+				create l_post.make (factory.function_call ("is_wrapped", << factory.global_heap, factory.std_current >>, types.bool))
 				l_post.node_info.set_type ("post")
 				l_post.node_info.set_tag ("default_is_wrapped")
 				l_post.node_info.set_attribute ("default", "contracts")
@@ -280,13 +273,13 @@ feature -- Translation: Signature
 				current_boogie_procedure.add_contract (l_post)
 			elseif helper.is_public (current_feature) then
 				if current_feature.has_return_value then
-					create l_pre.make (factory.function_call ("!is_open", << "Heap", "Current" >>, types.bool))
+					create l_pre.make (factory.function_call ("!is_open", << factory.global_heap, factory.std_current >>, types.bool))
 					l_pre.node_info.set_type ("pre")
 					l_pre.node_info.set_tag ("default_is_closed")
 					l_pre.node_info.set_attribute ("default", "contracts")
 					current_boogie_procedure.add_contract (l_pre)
 				else
-					create l_pre.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
+					create l_pre.make (factory.function_call ("is_wrapped", << factory.global_heap, factory.std_current >>, types.bool))
 					l_pre.node_info.set_type ("pre")
 					l_pre.node_info.set_tag ("default_is_wrapped")
 					l_pre.node_info.set_attribute ("default", "contracts")
@@ -296,7 +289,7 @@ feature -- Translation: Signature
 					l_pre.node_info.set_tag ("default_observers_are_wrapped")
 					l_pre.node_info.set_attribute ("default", "contracts")
 					current_boogie_procedure.add_contract (l_pre)
-					create l_post.make (factory.function_call ("is_wrapped", << "Heap", "Current" >>, types.bool))
+					create l_post.make (factory.function_call ("is_wrapped", << factory.global_heap, factory.std_current >>, types.bool))
 					l_post.node_info.set_type ("post")
 					l_post.node_info.set_tag ("default_is_wrapped")
 					l_post.node_info.set_attribute ("default", "contracts")
@@ -308,12 +301,12 @@ feature -- Translation: Signature
 					current_boogie_procedure.add_contract (l_post)
 				end
 			elseif helper.is_private (current_feature) then
-				create l_pre.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
+				create l_pre.make (factory.function_call ("is_open", << factory.global_heap, factory.std_current >>, types.bool))
 				l_pre.node_info.set_type ("pre")
 				l_pre.node_info.set_tag ("default_is_open")
 				l_pre.node_info.set_attribute ("default", "contracts")
 				current_boogie_procedure.add_contract (l_pre)
-				create l_post.make (factory.function_call ("is_open", << "Heap", "Current" >>, types.bool))
+				create l_post.make (factory.function_call ("is_open", << factory.global_heap, factory.std_current >>, types.bool))
 				l_post.node_info.set_type ("post")
 				l_post.node_info.set_tag ("default_is_open")
 				l_post.node_info.set_attribute ("default", "contracts")
@@ -321,13 +314,13 @@ feature -- Translation: Signature
 			end
 			if a_for_creator or (helper.is_public (current_feature) and not current_feature.has_return_value) then
 				across arguments_of_current_feature as i loop
-					if i.item.boogie_type.is_reference then
-						create l_pre.make (factory.function_call ("is_wrapped", << "Heap", i.item.name >>, types.bool))
+					if i.item.boogie_type ~ types.ref then
+						create l_pre.make (factory.function_call ("is_wrapped", << factory.global_heap, factory.entity (i.item.name, i.item.boogie_type) >>, types.bool))
 						l_pre.node_info.set_type ("pre")
 						l_pre.node_info.set_tag ("arg_" + i.item.name + "_is_wrapped")
 						l_pre.node_info.set_attribute ("default", "contracts")
 						current_boogie_procedure.add_contract (l_pre)
-						create l_post.make (factory.function_call ("is_wrapped", << "Heap", i.item.name >>, types.bool))
+						create l_post.make (factory.function_call ("is_wrapped", << factory.global_heap, factory.entity (i.item.name, i.item.boogie_type) >>, types.bool))
 						l_post.node_info.set_type ("post")
 						l_post.node_info.set_tag ("arg_" + i.item.name + "_is_wrapped")
 						l_post.node_info.set_attribute ("default", "contracts")
@@ -402,7 +395,7 @@ feature -- Translation: Implementation
 					-- Public procedures unwrap Current in the beginning, unless lemma or marked with explicit wrapping
 				if not a_for_creator and helper.is_public (current_feature) and not a_feature.has_return_value and
 					not helper.is_explicit (current_feature, "wrapping") and not helper.is_lemma (a_feature) then
-					l_call := factory.procedure_call ("unwrap", << "Current" >>)
+					l_call := factory.procedure_call ("unwrap", << factory.std_current >>)
 					l_call.node_info.set_attribute ("default", "wrapping")
 					l_call.node_info.set_attribute ("cid", system.any_id.out)
 					l_call.node_info.set_attribute ("rid", system.any_class.compiled_class.feature_named_32 ("unwrap").rout_id_set.first.out)
@@ -418,6 +411,7 @@ feature -- Translation: Implementation
 					if l_byte_code.locals /= Void then
 						across l_byte_code.locals as i loop
 							l_type := i.item.deep_actual_type.instantiated_in (current_type)
+							translation_pool.add_type (l_type)
 							l_local_name := name_translator.boogie_name_for_local (i.cursor_index)
 							l_translator.entity_mapping.set_local (i.cursor_index, create {IV_ENTITY}.make (l_local_name, types.for_type_a (l_type)))
 							l_implementation.add_local (l_local_name, types.for_type_a (l_type))
@@ -439,7 +433,7 @@ feature -- Translation: Implementation
 						l_ownership_handler.set_static_ghost_sets (l_expr_translator, "wrap")
 						l_implementation.body.statements.append (l_expr_translator.side_effect)
 
-						l_call := factory.procedure_call ("wrap", << "Current" >>)
+						l_call := factory.procedure_call ("wrap", << factory.std_current >>)
 						l_call.node_info.set_attribute ("default", "wrapping")
 						l_call.node_info.set_attribute ("cid", system.any_id.out)
 						l_call.node_info.set_attribute ("rid", system.any_class.compiled_class.feature_named_32 ("wrap").rout_id_set.first.out)
@@ -472,7 +466,7 @@ feature -- Translation: Functions
 
 				-- Arguments
 			translation_pool.add_type (current_type)
-			l_function.add_argument ("heap", types.heap_type)
+			l_function.add_argument ("heap", types.heap)
 			l_function.add_argument ("current", types.ref)
 			from i := 1 until i > current_feature.argument_count loop
 				l_type := current_feature.arguments.i_th (i).deep_actual_type.instantiated_in (current_type)
@@ -512,7 +506,7 @@ feature -- Translation: Functions
 
 				-- Arguments
 			translation_pool.add_type (current_type)
-			l_function.add_argument ("heap", types.heap_type)
+			l_function.add_argument ("heap", types.heap)
 			l_function.add_argument ("current", types.ref)
 			across arguments_of_current_feature as i loop
 				l_function.add_argument (i.item.name, i.item.boogie_type)
@@ -564,7 +558,7 @@ feature -- Translation: Functions
 			if l_decreases_list.is_empty then
 				-- No decreases clause: apply default
 				across arguments_of_current_feature as j loop
-					if types.is_variant_type (j.item.boogie_type) then
+					if j.item.boogie_type.has_rank then
 						create l_entity.make (j.item.name, j.item.boogie_type)
 						l_decreases_list.extend (l_entity)
 					end
@@ -582,7 +576,7 @@ feature -- Translation: Functions
 			across
 				l_decreases_list as i
 			loop
-				if types.is_variant_type (i.item.type) then
+				if i.item.type.has_rank then
 						-- Decreases function
 					create l_function.make (name_translator.boogie_function_for_variant (i.target_index, current_feature, current_type), i.item.type)
 					l_function.set_inline
@@ -590,7 +584,7 @@ feature -- Translation: Functions
 
 						-- Arguments
 					translation_pool.add_type (current_type)
-					l_function.add_argument ("heap", types.heap_type)
+					l_function.add_argument ("heap", types.heap)
 					l_function.add_argument ("current", types.ref)
 					across arguments_of_current_feature as j loop
 						l_function.add_argument (j.item.name, j.item.boogie_type)
@@ -671,7 +665,7 @@ feature {NONE} -- Translation: Functions
 		do
 			create Result.make
 			Result.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.ref))
-			Result.entity_mapping.set_heap (create {IV_ENTITY}.make ("heap", types.heap_type))
+			Result.entity_mapping.set_heap (create {IV_ENTITY}.make ("heap", types.heap))
 			Result.set_context (current_feature, current_type)
 			create l_function_call.make (a_function.name, a_function.type)
 			l_function_call.add_argument (Result.entity_mapping.heap)
@@ -701,7 +695,7 @@ feature -- Translation: agents
 			create l_function.make (name_translator.precondition_predicate_name (current_feature, current_type), types.bool)
 			create l_mapping.make
 
-			create l_entity.make ("heap", types.heap_type)
+			l_entity := factory.heap_entity ("heap")
 			l_function.add_argument (l_entity.name, l_entity.type)
 			l_mapping.set_heap (l_entity)
 
@@ -734,8 +728,8 @@ feature -- Translation: agents
 
 				-- Function declaration
 			create l_function.make (name_translator.postcondition_predicate_name (current_feature, current_type), types.bool)
-			l_function.add_argument ("heap", types.heap_type)
-			l_function.add_argument ("old_heap", types.heap_type)
+			l_function.add_argument ("heap", types.heap)
+			l_function.add_argument ("old_heap", types.heap)
 			across current_boogie_procedure.arguments as i loop
 				l_function.add_argument (i.item.name, i.item.type)
 			end
@@ -771,10 +765,10 @@ feature -- Translation: agents
 		do
 			create l_mapping.make
 			create l_fcall.make (name_translator.postcondition_predicate_name (a_feature, a_context_type), types.bool)
-			create l_heap.make ("heap", types.heap_type)
+			l_heap := factory.heap_entity ("heap")
 			l_fcall.add_argument (l_heap)
 			l_mapping.set_heap (l_heap)
-			create l_old_heap.make ("old_heap", types.heap_type)
+			l_old_heap := factory.heap_entity ("old_heap")
 			l_fcall.add_argument (l_old_heap)
 			l_mapping.set_old_heap (l_old_heap)
 			create l_current.make ("current", types.ref)
@@ -890,16 +884,17 @@ feature {NONE} -- Implementation
 	process_fields_list (a_fields: LIST [TUPLE [o: IV_EXPRESSION; f: IV_ENTITY]])
 			-- Process fields list.
 		local
+			l_type_var: IV_VAR_TYPE
 			l_postcondition: IV_POSTCONDITION
 			l_forall: IV_FORALL
 			l_or: IV_BINARY_OPERATION
 			l_expr: IV_EXPRESSION
 			l_fcall: IV_FUNCTION_CALL
-			l_access, l_old_access: IV_HEAP_ACCESS
 			o, f: IV_ENTITY
 		do
+			create l_type_var.make_fresh
 			create o.make ("$o", types.ref)
-			create f.make ("$f", types.field (types.generic_type))
+			create f.make ("$f", types.field (l_type_var))
 			across a_fields as i loop
 				l_or := factory.or_ (factory.not_equal (o, i.item.o), factory.not_equal (f, i.item.f))
 				if l_expr = Void then
@@ -911,11 +906,11 @@ feature {NONE} -- Implementation
 			if l_expr = Void then
 				l_expr := factory.true_
 			end
-			create l_access.make ("Heap", o, f)
-			create l_old_access.make ("old(Heap)", o, f)
-			create l_forall.make (factory.implies_ (l_expr, factory.equal (l_access, l_old_access)))
-			l_forall.add_bound_variable ("$o", types.ref)
-			l_forall.add_bound_variable ("$f", types.field (types.generic_type))
+			create l_forall.make (factory.implies_ (l_expr,
+				factory.equal (factory.heap_access ("Heap", o, f.name, l_type_var), factory.heap_access ("old(Heap)", o, f.name, l_type_var))))
+			l_forall.add_type_variable (l_type_var.name)
+			l_forall.add_bound_variable (o.name, o.type)
+			l_forall.add_bound_variable (f.name, f.type)
 			create l_postcondition.make (l_forall)
 			l_postcondition.node_info.set_type ("frame")
 			if not options.is_checking_frame then
@@ -933,7 +928,7 @@ feature {NONE} -- Implementation
 		do
 			translation_pool.add_precondition_predicate (current_feature, current_type)
 			create l_call.make (name_translator.precondition_predicate_name (current_feature, current_type), types.bool)
-			l_call.add_argument (create {IV_ENTITY}.make ("Heap", types.heap_type))
+			l_call.add_argument (factory.global_heap)
 			across current_boogie_procedure.arguments as i loop
 				l_call.add_argument (i.item.entity)
 			end
@@ -949,8 +944,8 @@ feature {NONE} -- Implementation
 		do
 			translation_pool.add_postcondition_predicate (current_feature, current_type)
 			create l_call.make (name_translator.postcondition_predicate_name (current_feature, current_type), types.bool)
-			l_call.add_argument (create {IV_ENTITY}.make ("Heap", types.heap_type))
-			l_call.add_argument (create {IV_ENTITY}.make ("old(Heap)", types.heap_type))
+			l_call.add_argument (factory.global_heap)
+			l_call.add_argument (factory.old_heap)
 			across current_boogie_procedure.arguments as i loop
 				l_call.add_argument (i.item.entity)
 			end
@@ -967,11 +962,8 @@ feature {NONE} -- Implementation
 		local
 			l_postcondition: IV_POSTCONDITION
 			l_equal: IV_BINARY_OPERATION
-			l_heap, l_old_heap: IV_ENTITY
 		do
-			create l_heap.make ("Heap", types.heap_type)
-			create l_old_heap.make ("old(Heap)", types.heap_type)
-			create l_equal.make (l_heap, "==", l_old_heap, types.bool)
+			create l_equal.make (factory.global_heap, "==", factory.old_heap, types.bool)
 			create l_postcondition.make (l_equal)
 			l_postcondition.node_info.set_type ("frame")
 			current_boogie_procedure.add_contract (l_postcondition)
@@ -980,22 +972,24 @@ feature {NONE} -- Implementation
 	add_pure_fresh_frame_condition
 			-- Add pure frame condition to current feature.
 		local
+			l_type_var: IV_VAR_TYPE
 			l_postcondition: IV_POSTCONDITION
 			l_forall: IV_FORALL
 			l_or: IV_BINARY_OPERATION
 			l_expr: IV_EXPRESSION
 			l_fcall: IV_FUNCTION_CALL
-			l_access, l_old_access, l_old_allocated: IV_HEAP_ACCESS
-			o, f: IV_ENTITY
+			l_access, l_old_access, l_old_allocated: IV_MAP_ACCESS
+			o: IV_ENTITY
 		do
+			create l_type_var.make_fresh
 			create o.make ("$o", types.ref)
-			create f.make ("$f", types.field (types.generic_type))
-			create l_access.make ("Heap", o, f)
-			create l_old_access.make ("old(Heap)", o, f)
-			create l_old_allocated.make ("old(Heap)", o, create {IV_ENTITY}.make ("allocated", types.field (types.bool)))
+			l_access := factory.heap_access ("Heap", o, "$f", l_type_var)
+			l_old_access := factory.heap_access ("old(Heap)", o, "$f", l_type_var)
+			l_old_allocated := factory.heap_access ("old(Heap)", o, "allocated", types.bool)
 			create l_forall.make (factory.implies_ (l_old_allocated, factory.equal (l_access, l_old_access)))
+			l_forall.add_type_variable (l_type_var.name)
 			l_forall.add_bound_variable ("$o", types.ref)
-			l_forall.add_bound_variable ("$f", types.field (types.generic_type))
+			l_forall.add_bound_variable ("$f", types.field (l_type_var))
 			create l_postcondition.make (l_forall)
 			l_postcondition.node_info.set_type ("frame")
 			if not options.is_checking_frame then
@@ -1013,8 +1007,8 @@ feature {NONE} -- Implementation
 			create l_i.make (helper.unique_identifier ("i"), types.ref)
 			create l_forall.make (
 				factory.implies_ (
-					factory.map_access (factory.heap_access ("Heap", create {IV_ENTITY}.make (a_target_name, types.ref), a_set_name, types.set (types.ref)), l_i),
-					factory.function_call (a_function_name, << "Heap", l_i >>, types.bool)))
+					factory.map_access (factory.heap_access ("Heap", create {IV_ENTITY}.make (a_target_name, types.ref), a_set_name, types.set (types.ref)), << l_i >>),
+					factory.function_call (a_function_name, << factory.global_heap, l_i >>, types.bool)))
 			l_forall.add_bound_variable (l_i.name, l_i.type)
 			Result := l_forall
 		end

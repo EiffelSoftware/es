@@ -17,6 +17,10 @@ feature
 			check s1 <= s1 + s2 end
 			s2 := {MML_SET[INTEGER]}.empty_set & 1
 			check s2.any_item = 1 end
+			check s2.count = 1 end
+			create s1.singleton (1)
+			check s1.count = 1 end
+			check across s1 as i all i.item = 1 end end
 		end
 
 	good1 (s: MML_SET [A_SETS])

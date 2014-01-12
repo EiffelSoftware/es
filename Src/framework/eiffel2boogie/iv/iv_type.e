@@ -1,6 +1,6 @@
 note
 	description: "[
-		TODO
+		Boogie types.
 	]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -8,37 +8,36 @@ note
 deferred class
 	IV_TYPE
 
+inherit
+	IV_SHARED_FACTORY
+
+feature -- Access
+
+	default_value: IV_EXPRESSION
+			-- Default value of the type, if defined.
+		do
+			-- Void by default.
+			-- ToDo: figure out issues with synonyms
+--		ensure
+--			correct_type: Result = Void or else Result.type ~ Current
+		end
+
 feature -- Status report
 
 	is_boolean: BOOLEAN
 			-- Is this the boolean type?
+		do
+		end
 
 	is_integer: BOOLEAN
 			-- Is this the integer type?
+		do
+		end
 
 	is_real: BOOLEAN
 			-- Is this the real type?
-
-	is_reference: BOOLEAN
-			-- Is this the reference type?
-
-	is_type: BOOLEAN
-			-- Is this the type type?
-
-	is_heap: BOOLEAN
-			-- Is this the heap type?
-
-	is_map: BOOLEAN
-			-- Is this a map type?
-
-	is_set: BOOLEAN
-			-- Is this a set type?
-
-	is_seq: BOOLEAN
-			-- Is this a set type?	
-
-	is_frame: BOOLEAN
-			-- Is this a frame type?
+		do
+		end
 
 feature -- Visitor
 
@@ -47,11 +46,24 @@ feature -- Visitor
 		deferred
 		end
 
-feature -- Equality
+feature -- Termination
 
-	is_same_type (a_other: IV_TYPE): BOOLEAN
-			-- Is `a_other' same type as this?
-		deferred
+	has_rank: BOOLEAN
+			-- Is a well-founded order defined on this type?
+		do
+			Result := False
+		end
+
+	rank_leq (e1, e2: IV_EXPRESSION): IV_EXPRESSION
+			-- Expression "e1 <= e2" in terms of the well-founded order of this type.
+		require
+			has_rank: has_rank
+--			e1_right_type: e1 /= Void and then e1.type ~ Current
+--			e2_right_type: e2 /= Void and then e2.type ~ Current
+		do
+			-- Void by default
+		ensure
+			result_boolean: Result /= Void and then Result.type.is_boolean
 		end
 
 end

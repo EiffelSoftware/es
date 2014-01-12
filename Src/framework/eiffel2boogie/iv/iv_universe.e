@@ -80,7 +80,7 @@ feature -- Element change
 				dependencies.extend (a_file_name)
 			end
 		ensure
-			dependency_added: dependencies.last = a_file_name
+			dependency_added: dependencies.has (a_file_name)
 		end
 
 feature -- Visitor

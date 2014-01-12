@@ -24,6 +24,7 @@ feature {NONE} -- Initialization
 		do
 			expression := a_expression
 			create bound_variables.make
+			create type_variables.make
 			create triggers.make
 		end
 
@@ -31,6 +32,9 @@ feature -- Access
 
 	expression: IV_EXPRESSION
 			-- Forall expression.
+
+	type_variables: LINKED_LIST [STRING]
+			-- List of bound type variables.
 
 	bound_variables: LINKED_LIST [IV_ENTITY_DECLARATION]
 			-- List of bound variables.
@@ -45,6 +49,12 @@ feature -- Access
 		end
 
 feature -- Element change
+
+	add_type_variable (a_name: STRING)
+			-- Add a type variable with name `a_name'.
+		do
+			type_variables.extend (a_name)
+		end
 
 	add_bound_variable (a_name: STRING; a_type: IV_TYPE)
 			-- Add a bound variable with name `a_name' and type `a_type'.
@@ -62,9 +72,10 @@ feature -- Element change
 
 invariant
 	expression_attached: attached expression
-	expression_valid: expression.type.is_same_type (types.bool)
+	expression_valid: expression.type ~ types.bool
+	type_variables_attached: attached type_variables
 	bound_variables_attached: attached bound_variables
 	bound_variables_valid: across bound_variables as i all i.item.property = Void end
-	type_valid: type.is_same_type (types.bool)
+	type_valid: type ~ types.bool
 
 end

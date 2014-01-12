@@ -53,12 +53,15 @@ feature -- Visitors
 			-- <Precursor>
 		local
 			i, n: INTEGER
+			l_type: TYPE_A
 			l_expr: EXPR_B
 			l_target: IV_EXPRESSION
 			l_pcall: IV_PROCEDURE_CALL
 			l_assign: IV_ASSIGNMENT
+			l_content_type: IV_TYPE
 		do
-			translation_pool.add_type (a_node.type)
+			l_type := a_node.type
+			translation_pool.add_type (l_type)
 
 			if a_node.expressions /= Void then
 				n := a_node.expressions.count
@@ -82,6 +85,7 @@ feature -- Visitors
 			side_effect.extend (l_pcall)
 
 				-- Put all elements into array
+			l_content_type := types.for_type_a (l_type.generics.first)
 			from
 				i := 1
 			until
@@ -90,7 +94,7 @@ feature -- Visitors
 				l_expr ?= a_node.expressions.i_th (i)
 				check l_expr /= Void end
 				create l_assign.make (
-					factory.array_access (entity_mapping.heap, l_target, factory.int_value (i)),
+					factory.array_access (entity_mapping.heap, l_target, factory.int_value (i), l_content_type),
 					process_argument_expression (l_expr))
 				side_effect.extend (l_assign)
 
@@ -113,7 +117,7 @@ feature -- Visitors
 			l_assignment: IV_ASSIGNMENT
 			l_allocated: IV_ENTITY
 			l_binop: IV_BINARY_OPERATION
-			l_heap_access: IV_HEAP_ACCESS
+			l_heap_access: IV_MAP_ACCESS
 			l_call: IV_FUNCTION_CALL
 			l_proc_call: IV_PROCEDURE_CALL
 			l_type_value: IV_VALUE
@@ -125,12 +129,15 @@ feature -- Visitors
 			check feature_valid: l_feature /= Void end
 			translation_pool.add_type (l_type)
 
-				-- Call to `allocate'
 			create_local (l_type)
 			l_local := last_local
 
+			current_target := l_local
+			current_target_type := l_type
+
 				-- Is this a normal reference type?
-			if l_local.type.is_reference then
+			if l_local.type ~ types.ref then
+				-- Call to `allocate'				
 				create l_proc_call.make ("allocate")
 				l_proc_call.node_info.set_line (a_node.call.line_number)
 				l_proc_call.add_argument (factory.type_value (l_type))
@@ -140,9 +147,6 @@ feature -- Visitors
 					-- Call to creation procedure
 				l_target := current_target
 				l_target_type := current_target_type
-
-				current_target := l_local
-				current_target_type := l_type
 
 				l_handler := translation_mapping.handler_for_call (current_target_type, l_feature)
 				if l_handler /= Void then
@@ -157,7 +161,7 @@ feature -- Visitors
 				last_expression := l_local
 			else
 					-- Or something special?
-				check l_local.type.is_set or l_local.type.is_seq end
+				check helper.is_class_logical (current_target_type.base_class) end
 
 				l_handler := translation_mapping.handler_for_call (current_target_type, l_feature)
 				check l_handler /= Void end
@@ -451,9 +455,10 @@ feature -- Translation
 			l_new_variants_exists: l_new_variants /= Void
 			same_count: l_old_variants.count = l_new_variants.count
 		local
-			l_eq_less: like eq_and_less
-			l_check_list: ARRAYED_LIST [like eq_and_less]
-			l_check, l_bounds_check_guard: IV_EXPRESSION
+			l_type: IV_TYPE
+			l_eq_less: TUPLE [eq: IV_EXPRESSION; less: IV_EXPRESSION]
+			l_check_list: ARRAYED_LIST [TUPLE [eq: IV_EXPRESSION; less: IV_EXPRESSION]]
+			l_check, l_bounds_check_guard, e1, e2: IV_EXPRESSION
 			i: INTEGER
 		do
 			from
@@ -463,7 +468,11 @@ feature -- Translation
 			until
 				i > l_old_variants.count
 			loop
-				l_eq_less := eq_and_less (l_new_variants [i], l_old_variants [i])
+				l_type := l_new_variants [i].type
+				e1 := l_new_variants [i]
+				e2 := l_old_variants [i]
+				l_eq_less := [factory.and_ (l_type.rank_leq (e1, e2), l_type.rank_leq (e2, e1)),
+					factory.and_ (l_type.rank_leq (e1, e2), factory.not_ (l_type.rank_leq (e2, e1)))]
 				l_check_list.extend (l_eq_less)
 				if l_new_variants [i].type.is_integer then
 					-- Add bounds check, since integers are not already bounded from below;
@@ -513,10 +522,10 @@ feature -- Translation
 					create l_caller_variants.make (3)
 					create l_callee_variants.make (3)
 					l_decreases_fun := boogie_universe.function_named (name_translator.boogie_function_for_variant (i, a_feature, current_target_type))
-					check checked_when_creating: types.is_variant_type (l_decreases_fun.type) end
 				until
 					l_decreases_fun = Void
 				loop
+					check checked_when_creating: l_decreases_fun.type.has_rank end
 					create l_callee_variant.make (l_decreases_fun.name, l_decreases_fun.type)
 					l_callee_variant.add_argument (entity_mapping.heap)
 					l_callee_variant.add_argument (current_target)
@@ -538,7 +547,6 @@ feature -- Translation
 
 					i := i + 1
 					l_decreases_fun := boogie_universe.function_named (name_translator.boogie_function_for_variant (i, a_feature, current_target_type))
-					check checked_when_creating: types.is_variant_type (l_decreases_fun.type) end
 				end
 				add_termination_check (l_caller_variants, l_callee_variants)
 			end
@@ -570,39 +578,6 @@ feature {NONE} -- Implementation
 		do
 			create last_local.make (helper.unique_identifier ("temp"), types.for_type_a (a_type))
 			context_implementation.add_local (last_local.name, last_local.type)
-		end
-
-	eq_and_less (e1, e2: IV_EXPRESSION): TUPLE [eq: IV_EXPRESSION; less: IV_EXPRESSION]
-			-- Expressions "e1 = e2" and "e1 < e2" accorsing to the type of subexpressions.			
-		require
-			same_types: e1.type.is_same_type (e2.type)
-			proper_type: types.is_variant_type (e1.type)
-		local
-			l_type: IV_TYPE
-			l_eq, l_less: IV_EXPRESSION
-		do
-			l_type := e1.type
-			if l_type.is_boolean then
-				l_eq := factory.equiv (e1, e2)
-				l_less := factory.and_ (factory.not_ (e1), e2) -- false < true
-			elseif l_type.is_integer then
-				l_eq := factory.equal (e1, e2)
-				l_less := factory.less (e1, e2)
-			elseif l_type.is_set then
-				l_eq := factory.function_call ("Set#Equal", <<e1, e2>>, types.bool)
-				l_less := factory.function_call ("Set#ProperSubset", <<e1, e2>>, types.bool)
-			elseif l_type.is_seq then
-				l_eq := factory.equal (factory.function_call ("Seq#Length", <<e1>>, types.int),
-										factory.function_call ("Seq#Length", <<e2>>, types.int))
-				l_less := factory.less (factory.function_call ("Seq#Length", <<e1>>, types.int),
-										factory.function_call ("Seq#Length", <<e2>>, types.int))
-			elseif l_type.is_reference then
-				l_eq := factory.equiv (factory.equal (e1, factory.void_), factory.equal (e2, factory.void_))
-				l_less := factory.and_ (factory.equal (e1, factory.void_), factory.not_equal (e2, factory.void_)) -- Void < r
-			else
-				check wrong_type_in_a_decreases_clause: False end
-			end
-			Result := [l_eq, l_less]
 		end
 
 end

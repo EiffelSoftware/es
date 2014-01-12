@@ -42,9 +42,6 @@ feature -- Validity error messages
 	variant_bad_type (a_index: INTEGER): STRING_32
 		do Result := locale.formatted_string ("Type of variant number $1 has no well-founded order.", a_index.out) end
 
-	invalid_set_seq_comparison: STRING_32
-		do Result := "Sets and sequences can only be compared with other sets or sequences" end
-
 feature -- Verification error messages
 
 	check_violated: STRING_32

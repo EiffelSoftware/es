@@ -48,7 +48,7 @@ feature {NONE} -- Initialization
 		ensure
 			condition_set: condition = a_condition
 			then_block_set: then_block = a_then
-			else_block_void: else_block = Void
+			empty_else: else_block.is_empty
 		end
 
 	make_if_then_else (a_condition: IV_EXPRESSION; a_then: IV_BLOCK; a_else: IV_BLOCK)

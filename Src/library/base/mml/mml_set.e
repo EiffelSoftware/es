@@ -1,15 +1,15 @@
 note
+	description: "Finite sets."
+	author: "Nadia Polikarpova"
 	theory: "set.bpl"
-	maps_to: Set
+	maps_to: "Set"
+	equality: "Set#Equal"
+	rank: "Set#Subset"
+	typed_sets: ""
 
 class MML_SET [G]
 
 inherit
-
-	ANY
-		redefine
-			default_create
-		end
 
 	ITERABLE [G]
 		redefine
@@ -18,36 +18,28 @@ inherit
 
 create
 	default_create,
-	make_from_tuple,
-	make_from_array
+	singleton	
 
 feature {NONE} -- Initialization
 
 	default_create
+			-- Create an empty set.
+		note
+			maps_to: "Set#Empty"
 		do
 		end
 
-	make_from_tuple (a_tuple: TUPLE)
-		do
-		end
-
-	make_from_array (a_array: ARRAY [G])
+	singleton (x: G)
+			-- Create a set that contains only `x'.
 		do
 		end
 		
-feature -- Access
+feature -- Properties
 
-	any_item: G
-			-- Arbitrary element.
-		require
-			not_empty: not is_empty
-		do
-		end		
-
-feature -- Status report
-
-	has alias "[]" (x: ANY): BOOLEAN
+	has alias "[]" (x: G): BOOLEAN
 			-- Is `x' contained?
+		note
+			maps_to: "[]"
 		do
 		end
 
@@ -55,25 +47,50 @@ feature -- Status report
 			-- Is the set empty?
 		do
 		end
+		
+
+feature -- Elements
+
+	any_item: G
+			-- Arbitrary element.
+		require
+			not_empty: not is_empty
+		do
+		end
+		
+feature -- Measurement
+
+	count alias "#": INTEGER
+			-- Cardinality.
+		note
+			maps_to: "Set#Card"
+		do
+		end		
 
 feature -- Comparison
 
 	is_subset_of alias "<=" (a_other: MML_SET [ANY]): BOOLEAN
 			-- Does `a_other' have all elements of `Current'?
+		note
+			maps_to: "Set#Subset"		
 		do
 		end
 
 	is_superset_of alias ">=" (a_other: MML_SET [G]): BOOLEAN
 			-- Does `Current' have all elements of `a_other'?
+		note
+			maps_to: "Set#Superset"		
 		do
 		end
 
 	is_disjoint (a_other: MML_SET [G]): BOOLEAN
 			-- Do no elements of `a_other' occur in `Current'?
+		note
+			maps_to: "Set#Disjoint"		
 		do
 		end
 
-feature -- Basic operations
+feature -- Modification
 
 	extended alias "&" (x: G): MML_SET [G]
 			-- Current set extended with `x' if absent.
@@ -85,31 +102,41 @@ feature -- Basic operations
 		do
 		end
 
-	union alias "+" (a_other: MML_SET [G]): MML_SET [G]
-			-- Set of values contained in either `Current' or `a_other'.
+	union alias "+" (other: MML_SET [G]): MML_SET [G]
+			-- Set of values contained in either `Current' or `other'.
+		do
+		ensure
+		end
+
+	intersection alias "*" (other: MML_SET [G]): MML_SET [G]
+			-- Set of values contained in both `Current' and `other'.
 		do
 		end
 
-	intersection alias "*" (a_other: MML_SET [G]): MML_SET [G]
-			-- Set of values contained in both `Current' and `a_other'.
+	difference alias "-" (other: MML_SET [G]): MML_SET [G]
+			-- Set of values contained in `Current' but not in `other'.
 		do
 		end
 
-	difference alias "-" (a_other: MML_SET [G]): MML_SET [G]
-			-- Set of values contained in `Current' but not in `a_other'.
+	sym_difference alias "^" (other: MML_SET [G]): MML_SET [G]
+			-- Set of values contained in either `Current' or `other', but not in both.
 		do
 		end
-
+		
 feature -- Iterable implementation
 
 	new_cursor: ITERATION_CURSOR [G]
 			-- <Precursor>
+		note
+			maps_to: ""
 		do
 		end
 
 feature -- Convenience
 
 	empty_set: MML_SET [G]
+		note
+			maps_to: "Set#Empty"
 		external "C inline"
 		alias
 			"[

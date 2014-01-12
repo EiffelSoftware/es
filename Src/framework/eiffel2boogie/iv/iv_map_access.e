@@ -21,57 +21,47 @@ inherit
 		end
 
 create
-	make, make_two
+	make
 
 feature {NONE} -- Implementation
 
-	make (a_target, a_index: IV_EXPRESSION)
-			-- Make map access to `a_target' with index `a_index'.
+	make (a_target: IV_EXPRESSION; a_indexes: ARRAY [IV_EXPRESSION])
+			-- Make map access to `a_target' with index `a_indexes'.
 		require
 			a_target_attached: attached a_target
-			a_target_valid: a_target.type.is_map
-			a_index_attached: attached a_index
+			a_target_valid: attached {IV_MAP_TYPE} a_target.type as t and then t.domain_types.count = a_indexes.count
+			a_indexes_attached: attached a_indexes and then across a_indexes as i all attached i.item end
 		do
 			target := a_target
-			create indexes.make
-			indexes.extend (a_index)
+			indexes := a_indexes
 		ensure
 			target_set: target = a_target
-			index_set: indexes.first = a_index
-		end
-
-	make_two (a_target, a_index1, a_index2: IV_EXPRESSION)
-			-- Make map access to `a_target' with two-dimensional indexes
-			-- `a_index1' and `a_index2'.
-		require
-			a_target_attached: attached a_target
-			a_target_valid: a_target.type.is_map
-			a_index1_attached: attached a_index1
-			a_index2_attached: attached a_index2
-		do
-			target := a_target
-			create indexes.make
-			indexes.extend (a_index1)
-			indexes.extend (a_index2)
-		ensure
-			target_set: target = a_target
-			index1_set: indexes.i_th (1) = a_index1
-			index2_set: indexes.i_th (2) = a_index2
+			indexes_set: indexes = a_indexes
 		end
 
 feature -- Access
 
+	target: IV_EXPRESSION
+			-- Target.
+
+	indexes: ARRAY [IV_EXPRESSION]
+			-- Indexes.
+
 	type: IV_TYPE
 			-- Type of map.
 		do
-			Result := types.generic_type
+			check attached {IV_MAP_TYPE} target.type as map_type then
+				-- ToDo: most general unifier, instantiation
+				-- For now a workaround, specific for the heap, because it's the only map type with a polymorphic result we use
+				if types.is_heap (map_type) then
+					check attached {IV_USER_TYPE} indexes [2].type as field_type then
+						Result := field_type.parameters [1]
+					end
+				else
+					Result := map_type.range_type
+				end
+			end
 		end
-
-	target: IV_EXPRESSION
-			-- Target of map access.
-
-	indexes: LINKED_LIST [IV_EXPRESSION]
-			-- List of indexes for map access.
 
 feature -- Comparison
 
@@ -94,7 +84,7 @@ feature -- Visitor
 
 feature -- Comparison
 
-	is_equal (other: IV_HEAP_ACCESS):BOOLEAN
+	is_equal (other: IV_MAP_ACCESS):BOOLEAN
 			-- <Precursor>
 		local
 			i: INTEGER
@@ -108,12 +98,12 @@ feature -- Comparison
 			until
 				i > indexes.count or (not Result)
 			loop
-				if (attached {IV_ENTITY} indexes.i_th (i) as e1) and then (attached {IV_ENTITY} other.indexes.i_th (i) as e2)then
+				if (attached {IV_ENTITY} indexes [i] as e1) and then (attached {IV_ENTITY} other.indexes [i] as e2)then
 					if not e1.name.is_equal (e2.name) then
 						Result := False
 					end
 				else
-					if not indexes.i_th (i).is_deep_equal(other.indexes.i_th (i)) then
+					if not indexes [i].is_deep_equal(other.indexes [i]) then
 						Result := False
 					end
 				end
@@ -123,8 +113,8 @@ feature -- Comparison
 
 invariant
 	target_attached: attached target
-	target_valid: target.type.is_map
 	indexes_attached: attached indexes
-	indexes_valid: not indexes.is_empty
+	target_valid: attached {IV_MAP_TYPE} target.type as t and then t.domain_types.count = indexes.count
+	indexes_nonempty: not indexes.is_empty
 
 end
