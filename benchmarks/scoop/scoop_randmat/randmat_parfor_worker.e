@@ -10,9 +10,8 @@ feature
       ncols := a_ncols
       seed := a_seed.to_natural_32
 
-      create matrix.make (height, ncols)
+      create matrix.make_filled (0, height * ncols)
     end
-
   
 feature
   live
@@ -32,12 +31,12 @@ feature
       from i := start
       until i >= start + height
       loop
-        s := seed + i.to_natural_32 - 1
-        from j := 1
-        until j > ncols
+        s := seed + i.to_natural_32
+        from j := 0
+        until j >= ncols
         loop
           s := lcg_a * s + lcg_c
-          matrix [i - start + 1, j] := (s \\ rand_max).to_integer_32
+          matrix [(i - start) * ncols + j] := (s \\ rand_max).to_integer_32
           j := j + 1
         end
         i := i + 1
@@ -46,10 +45,10 @@ feature
 
   get (i, j: INTEGER): INTEGER
     do
-      Result := matrix [i - start  + 1, j]
+      Result := matrix [(i - start) * ncols + j]
     end
   
-  matrix: ARRAY2 [INTEGER]
+  matrix: SPECIAL [INTEGER]
   height: INTEGER
   start: INTEGER
   

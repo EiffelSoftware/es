@@ -27,20 +27,20 @@ feature
       ncols := read_integer
       s := read_integer
 
-      create matrix.make (nrows,ncols)
+      create matrix.make_filled (0, nrows * ncols)
       workers := randmat(nrows, s)
 
       fetch_workers (workers)
       join_workers (workers)
 
       if not is_bench then
-        from i := 1
-        until i > nrows
+        from i := 0
+        until i >= nrows
         loop
-          from j := 1
-          until j > ncols
+          from j := 0
+          until j >= ncols
           loop
-            print (matrix [i,j].out + " ")
+            print (matrix [i * ncols + j].out + " ")
             j := j + 1
           end
           
@@ -51,7 +51,7 @@ feature
     end
 
   ncols: INTEGER
-  matrix: ARRAY2[INTEGER]
+  matrix: SPECIAL[INTEGER]
   
   read_integer(): INTEGER
     do
@@ -80,7 +80,7 @@ feature
         height := (nrows - start) // (num_workers - i)
 
         if height /= 0 then
-          create worker.make (start + 1, height, ncols, seed)
+          create worker.make (start, height, ncols, seed)
           Result.extend(worker)
         end
           
@@ -123,14 +123,14 @@ feature
       iend: INTEGER
     do
       from
-        i := worker.start
+        i := worker.start 
         iend := i + worker.height
       until i >= iend
       loop
-        from j := 1
-        until j > ncols
+        from j := 0
+        until j >= ncols
         loop
-          matrix [i,j] := worker.get (i, j)
+          matrix [i * ncols + j] := worker.get (i, j)
           j := j + 1
         end
         i := i + 1
