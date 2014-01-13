@@ -51,6 +51,8 @@ doc:<file name="scoop.c" header="eif_scoop.h" version="$Id$" summary="SCOOP supp
 #error "SCOOP is currenly supported only in multithreaded mode."
 #endif
 
+#ifndef SCOOPQS
+
 rt_public EIF_BOOLEAN eif_is_uncontrolled (EIF_SCP_PID c, EIF_SCP_PID s)
 {
 	EIF_TYPED_VALUE ou; 
@@ -192,6 +194,8 @@ void eif_call_const (call_data * a)
 }
 
 #endif /* WORKBENCH */
+#endif
+
 
 rt_public void eif_free_call (call_data * a)
 {

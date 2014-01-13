@@ -428,7 +428,13 @@ feature -- C generation
 				if not is_exactly_separate then
 						-- The call may be non-separate, this is determined at tun-time.					
 					buf.put_new_line
-					buf.put_string ("if ((EIF_IS_DIFFERENT_PROCESSOR (Current, ")
+					buf.put_string ("if ((EIF_IS_DIFFERENT_PROCESSOR")
+					-- If there's a result then we use the query processor check
+					if attached r then
+						buf.put_string ("_FOR_QUERY")
+					end
+
+					buf.put_string (" (Current, ")
 					t.print_register
 					buf.put_string (")) && !(EIF_IS_PASSIVE (")
 					t.print_register
@@ -486,6 +492,10 @@ feature -- C generation
 					buf.put_new_line
 					buf.put_string ("} else {")
 					buf.indent
+
+					buf.put_string ("RTS_IMPERSONATE (")
+					t.print_register
+					buf.put_string (");")
 				end
 			end
 			if not is_exactly_separate then
@@ -494,6 +504,7 @@ feature -- C generation
 					-- has to be stored in a real register, do generate the
 					-- assignment.
 				buf.put_new_line
+
 				if not attached r then
 						-- Call to a procedure.
 					generate_on (t)
@@ -512,7 +523,11 @@ feature -- C generation
 					register.print_register
 				end
 				buf.put_character (';')
+				buf.put_new_line
 				if attached s then
+					buf.put_string ("RTS_IMPERSONATE (Current);")
+					buf.put_new_line
+
 						-- Close else part of a separate conditional.
 					buf.exdent
 					buf.put_new_line

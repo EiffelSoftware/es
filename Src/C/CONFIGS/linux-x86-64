@@ -178,6 +178,12 @@ if [ -n "$CPPFLAGS" ]; then
 else
 	cppflags="$ccflags"
 fi
+
+if [ -n "$SCOOPQS" ]; then
+    ccflags="$ccflags -DSCOOPQS `pkg-config --cflags libeveqs` -rdynamic -g"
+    cppflags="$ccflags"
+fi
+
 cpp_stuff='42'
 defvoidused='15'
 #Check value for next 4
@@ -193,11 +199,18 @@ d_tls='undef'
 objcflags='-ObjC'
 mtccflags="$ccflags -DEIF_THREADS -DEIF_LINUXTHREADS"
 mtcppflags="$cppflags -DEIF_THREADS -DEIF_LINUXTHREADS"
-optimize="-O3"
+optimize="-O3 -g"
 voidflags='15'
 #Check value for next 1
 warning_level='-Wall -Wextra -Wno-unused-parameter -pedantic -std=gnu99'
-wkoptimize="-O0"
+wkoptimize="-O0 -g"
+
+
+if [ -n "$SCOOPQS" ]; then
+    optimize="$optimize -DSCOOPQS `pkg-config --cflags libeveqs` -rdynamic"
+    wkoptimize="$wkoptimize -DSCOOPQS `pkg-config --cflags libeveqs` -rdynamic"
+fi
+
 
 #Makefiles
 ar='ar'
@@ -214,7 +227,13 @@ fi
 lintflags=''
 ldflags="-m elf_x86_64"
 ldsharedflags="$ldflags -shared -o"
+
 libs='-lm'
+
+if [[ -n "$SCOOPQS" && -n "$SCOOPQS_ECQS" ]]; then
+    libs="-static -static-libgcc -static-libstdc++ `pkg-config --libs libeveqs` -lstdc++ $libs"
+fi
+
 ln='/bin/ln'
 if [ -n "$MAKE" ]; then
 	make=$MAKE
@@ -225,7 +244,7 @@ mkdep='\$(EIFFEL_SRC)/C/mkdep'
 mkdir='mkdir'
 mtldflags="$ldflags"
 mtldsharedflags="$ldsharedflags"
-mtlibs="$libs -lpthread"
+mtlibs="$libs -pthread"
 mt_prefix='mt'
 mv='/bin/mv'
 prefix='lib'

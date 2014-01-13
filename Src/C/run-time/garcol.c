@@ -86,6 +86,9 @@ doc:<file name="garcol.c" header="eif_garcol.h" version="$Id$" summary="Garbage 
 #include "rt_interp.h"
 #endif
 
+#ifdef SCOOPQS
+#include "eveqs.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -1513,7 +1516,7 @@ rt_private void full_mark (EIF_CONTEXT_NOARG)
 #ifdef EIF_THREADS
 		/* Initialize list of live indexes for threads. */
 		/* This should be done before any marking. */
-	prepare_live_index ();
+	prepare_live_index (MARK_SWITCH);
 #endif
 
 		/* Perform marking */
@@ -3974,7 +3977,7 @@ rt_private void mark_new_generation(EIF_CONTEXT_NOARG)
 #ifdef EIF_THREADS
 		/* Initialize list of live indexes for threads. */
 		/* This should be done before any marking. */
-	prepare_live_index ();
+	prepare_live_index (GEN_SWITCH);
 #endif
 
 	/* First deal with the root object. If it is not old, then mark it */
