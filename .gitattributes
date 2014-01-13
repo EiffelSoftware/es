@@ -5128,6 +5128,7 @@ eweasel/tests/once004/Ace -text
 eweasel/tests/once005/Ace -text
 eweasel/tests/path001/Ace svneol=native#text/xml
 eweasel/tests/path002/Ace svneol=native#text/xml
+eweasel/tests/pretty029/Ace svneol=native#text/xml
 eweasel/tests/replication002/Ace -text
 eweasel/tests/runtime018/Ace svneol=native#text/xml
 eweasel/tests/scoop010/tcf -text
