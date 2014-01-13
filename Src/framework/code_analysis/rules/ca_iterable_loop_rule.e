@@ -54,8 +54,8 @@ feature {NONE} -- Rule checking
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
-
-			if matching_until_part (a_loop.stop) and then matching_from_part (a_loop.from_part) then
+			check_until_part (a_loop.stop)
+			if matching_until_part and then matching_from_part (a_loop.from_part) then
 				if matching_last_instruction (a_loop.compound) then
 					create l_viol.make_with_rule (Current)
 					l_viol.set_location (a_loop.start_location)
@@ -65,14 +65,17 @@ feature {NONE} -- Rule checking
 			end
 		end
 
-	matching_until_part (a_stop_condition: EXPR_AS): BOOLEAN
+	matching_until_part: BOOLEAN
+			-- Is the until part analyzed in `check_until_part' as expected?
+
+	check_until_part (a_stop_condition: EXPR_AS)
 			-- Checks if `a_stop_condition' is of the form 'list.after', where list is
 			-- a variable of a type that conforms to {ITERABLE}.
 		local
 			l_type: TYPE_A
 			l_target: ACCESS_AS
 		do
-			Result := False
+			matching_until_part := False
 
 			if attached a_stop_condition as l_stop and then attached {EXPR_CALL_AS} l_stop as l_call then
 				if attached {NESTED_AS} l_call.call as l_nested_call then
@@ -80,14 +83,14 @@ feature {NONE} -- Rule checking
 						l_target := l_nested_call.target
 						l_type := node_type (l_target, current_feature_i)
 						if l_type.base_class.conform_to (iterable) then
-							Result := True
+							matching_until_part := True
 							expected_var := l_target.access_name_32
 						end
 					end
 				end
 			end
 		ensure
-			expected_variable_set: Result implies attached expected_var
+			expected_variable_set: matching_until_part implies attached expected_var
 		end
 
 	expected_var: detachable STRING_32

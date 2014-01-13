@@ -101,8 +101,11 @@ feature {NONE} -- Rule checking
 					l_previous := l_current
 					l_current := l_instr.item
 					if attached {ASSIGN_AS} l_previous as l_assign and then attached {ACCESS_ID_AS} l_assign.target as l_aid then
-						if l_aid.is_local and then is_read (l_aid.feature_name, l_current) then
-							if instruction_length (l_current) - l_aid.access_name_32.count + expression_length (l_assign) <= max_line_length.value then
+						if l_aid.is_local and then is_read  then
+							analyze_reads (l_aid.feature_name, l_current)
+							if is_read and then
+									instruction_length (l_current) - l_aid.access_name_32.count + expression_length (l_assign) <= max_line_length.value then
+
 									-- The line with the replaced variable is not too long.
 								suspected_variables.extend (l_aid.feature_name)
 								location.force (l_aid.start_location, l_aid.feature_name)
@@ -114,13 +117,17 @@ feature {NONE} -- Rule checking
 			end
 		end
 
-	is_read (a_var: ID_AS; a_instr: INSTRUCTION_AS): BOOLEAN
-			-- Is variable `a_var' used in instruction `a_instr'?
+	is_read: BOOLEAN
+			-- Is variable analyzed in `analyze_reads' read?
+
+	analyze_reads (a_var: ID_AS; a_instr: INSTRUCTION_AS)
+			-- Checks if variable `a_var' is used in instruction `a_instr'.
 		do
+			is_read := False
 			var_found := False
 			var_to_look_for := a_var
 			a_instr.process (Current)
-			Result := var_found
+			is_read := var_found
 		end
 
 	var_to_look_for: detachable ID_AS

@@ -123,7 +123,10 @@ feature {NONE} -- Rule Checking
 			l_violation: CA_RULE_VIOLATION
 			j: INTEGER
 		do
-			if has_arguments and then args_used.has (False) then
+			if a_body.content /= Void
+			and then not current_feature.is_deferred
+			and then has_arguments
+			and then args_used.has (False) then
 				create l_violation.make_with_rule (Current)
 				l_violation.set_location (routine_body.start_location)
 				l_violation.long_description_info.extend (current_feature)

@@ -154,7 +154,8 @@ feature {NONE} -- Implementation
 			if attached {ASSIGN_AS} a_from.instruction as l_assign then
 				l_assigned_id := extract_assigned (l_assign.target)
 				l_lv.prune (l_assigned_id)
-				l_lv.merge (extract_generated (l_assign.source))
+				extract_generated (l_assign.source)
+				l_lv.merge (generated)
 					-- Make sure the node is stored for later lookup:
 				if l_assigned_id /= -1 then
 					assignment_nodes.extend (a_from)
@@ -163,14 +164,16 @@ feature {NONE} -- Implementation
 				l_assigned_id := extract_assigned (l_creation.target)
 				l_lv.prune (l_assigned_id)
 				if attached l_creation.call as l_call then
-					l_lv.merge (extract_generated (l_creation.call))
+					extract_generated (l_creation.call)
+					l_lv.merge (generated)
 				end
 				if l_assigned_id /= -1 then
 					assignment_nodes.extend (a_from)
 				end
 				l_lv.prune (l_assigned_id)
 			else
-				l_lv.merge (extract_generated (a_from.instruction))
+				extract_generated (a_from.instruction)
+				l_lv.merge (generated)
 			end
 			lv_entry.at (a_from.label).merge (l_lv)
 
@@ -185,7 +188,8 @@ feature {NONE} -- Implementation
 		do
 			l_old_count := lv_entry.at (a_from.label).count
 			lv_entry.at (a_from.label).copy (lv_exit.at (a_from.label))
-			lv_entry.at (a_from.label).merge (extract_generated (a_from.condition))
+			extract_generated (a_from.condition)
+			lv_entry.at (a_from.label).merge (generated)
 			Result := (l_old_count /= lv_entry.at (a_from.label).count)
 		end
 
@@ -198,7 +202,8 @@ feature {NONE} -- Implementation
 			l_old_count := lv_entry.at (a_from.label).count
 			lv_entry.at (a_from.label).copy (lv_exit.at (a_from.label))
 			if attached a_from.stop_condition as l_stop then
-				lv_entry.at (a_from.label).merge (extract_generated (l_stop))
+				extract_generated (l_stop)
+				lv_entry.at (a_from.label).merge (generated)
 			end
 			Result := (l_old_count /= lv_entry.at (a_from.label).count)
 		end
@@ -211,25 +216,25 @@ feature {NONE} -- Implementation
 		do
 			l_old_count := lv_entry.at (a_from.label).count
 			lv_entry.at (a_from.label).copy (lv_exit.at (a_from.label))
-			lv_entry.at (a_from.label).merge (extract_generated (a_from.expression))
+			extract_generated (a_from.expression)
+			lv_entry.at (a_from.label).merge (generated)
 			Result := (l_old_count /= lv_entry.at (a_from.label).count)
 		end
 
 feature {NONE} -- Extracting Used Variables
 
 	generated: detachable LINKED_SET [INTEGER]
-		-- Set of generated variables, used by `extract_generated'.
+		-- Set of generated variables, created by `extract_generated'.
 
-	extract_generated (a_ast: AST_EIFFEL): LINKED_SET [INTEGER]
-			-- Extracts all free (and local) variables from `a_ast'.
+	extract_generated (a_ast: AST_EIFFEL)
+			-- Extracts all free (and local) variables from `a_ast' and stores them
+			-- in `generated'.
 		do
 			create generated.make
 
 				-- Delegate to AST visitor. We will only look at Access IDs
 				-- that occur in `a_ast'.
 			a_ast.process (Current)
-
-			Result := generated
 		end
 
 	process_access_id_as (a_access_id: ACCESS_ID_AS)

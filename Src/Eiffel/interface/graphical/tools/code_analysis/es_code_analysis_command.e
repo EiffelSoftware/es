@@ -53,6 +53,9 @@ feature -- Execution
 			l_save_confirm: ES_DISCARDABLE_COMPILE_SAVE_FILES_PROMPT
 			l_classes: DS_ARRAYED_LIST [CLASS_I]
 		do
+				-- Show the tool right from the start.
+			show_ca_tool
+			
 			if not eiffel_project.is_compiling then
 				if window_manager.has_modified_windows then
 					create l_classes.make_default
@@ -79,6 +82,9 @@ feature -- Execution
 			l_save_confirm: ES_DISCARDABLE_COMPILE_SAVE_FILES_PROMPT
 			l_classes: DS_ARRAYED_LIST [CLASS_I]
 		do
+				-- Show the tool right from the start.
+			show_ca_tool
+
 			if not eiffel_project.is_compiling then
 				if window_manager.has_modified_windows then
 					create l_classes.make_default

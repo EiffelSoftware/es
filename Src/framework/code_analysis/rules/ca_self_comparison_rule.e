@@ -88,17 +88,20 @@ feature {NONE} -- Checking the rule
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
-			if attached {BINARY_AS} a_loop.stop as l_bin and then is_self (l_bin) then
-				create l_viol.make_with_rule (Current)
-				l_viol.set_location (a_loop.stop.start_location)
-				l_viol.long_description_info.extend (self_name)
-				if not attached {BIN_EQ_AS} l_bin then
-						-- It is only a dangerous loop stop condition if we do not have
-						-- an equality comparison.
-					l_viol.long_description_info.extend ("loop_stop")
+			if attached {BINARY_AS} a_loop.stop as l_bin then
+				analyze_self (l_bin)
+				if is_self then
+					create l_viol.make_with_rule (Current)
+					l_viol.set_location (a_loop.stop.start_location)
+					l_viol.long_description_info.extend (self_name)
+					if not attached {BIN_EQ_AS} l_bin then
+							-- It is only a dangerous loop stop condition if we do not have
+							-- an equality comparison.
+						l_viol.long_description_info.extend ("loop_stop")
+					end
+					violations.extend (l_viol)
+					in_loop := True
 				end
-				violations.extend (l_viol)
-				in_loop := True
 			end
 		end
 
@@ -136,24 +139,32 @@ feature {NONE} -- Checking the rule
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
-			if (not in_loop) and then is_self (a_comparison) then
-				create l_viol.make_with_rule (Current)
-				l_viol.set_location (a_comparison.start_location)
-				l_viol.long_description_info.extend (self_name)
-				violations.extend (l_viol)
+			if (not in_loop) then
+				analyze_self (a_comparison)
+				if is_self then
+					create l_viol.make_with_rule (Current)
+					l_viol.set_location (a_comparison.start_location)
+					l_viol.long_description_info.extend (self_name)
+					violations.extend (l_viol)
+				end
 			end
 		end
 
-	is_self (a_bin: BINARY_AS): BOOLEAN
+	analyze_self (a_bin: BINARY_AS)
 			-- Is `a_bin' a self-comparison?
 		do
+			is_self := False
+			
 			if attached {EXPR_CALL_AS} a_bin.left as l_e1 and then attached {ACCESS_ID_AS} l_e1.call as l_l then
 				if attached {EXPR_CALL_AS} a_bin.right as l_e2 and then attached {ACCESS_ID_AS} l_e2.call as l_r then
-					Result := l_l.feature_name.is_equal (l_r.feature_name)
+					is_self := l_l.feature_name.is_equal (l_r.feature_name)
 					self_name := l_l.access_name_32
 				end
 			end
 		end
+
+	is_self: BOOLEAN
+			-- Is `a_bin' from last call to `analyze_self' a self-comparison?
 
 	self_name: detachable STRING_32
 			-- Name of the self-compared variable.
