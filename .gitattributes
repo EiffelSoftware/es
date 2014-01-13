@@ -4180,6 +4180,8 @@ Src/tools/resource_bench/rb.lic -text
 Src/tools/resource_bench/toolbar.bmp svneol=native#unset
 Src/tools/syntax_updater/syntax_updater.lic -text
 Src/tools/visitor_factory/visitor_factory.lic -text
+Src/unstable/library/compression/zlib/Readme.txt -text
+Src/unstable/library/compression/zlib/example/index.html -text
 Src/unstable/library/pattern/criteria/README.txt -text
 Src/unstable/library/pattern/criteria/license.lic -text
 Src/unstable/library/pattern/criteria/testing/criteria_tests.rc -text
