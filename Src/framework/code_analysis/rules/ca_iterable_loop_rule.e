@@ -70,18 +70,18 @@ feature {NONE} -- Rule checking
 			-- a variable of a type that conforms to {ITERABLE}.
 		local
 			l_type: TYPE_A
+			l_target: ACCESS_AS
 		do
 			Result := False
 
 			if attached a_stop_condition as l_stop and then attached {EXPR_CALL_AS} l_stop as l_call then
 				if attached {NESTED_AS} l_call.call as l_nested_call then
-					if attached {ACCESS_AS} l_nested_call.target as l_target then
-						if attached {ACCESS_AS} l_nested_call.message as l_msg and then l_msg.access_name_8.is_equal ("after") then
-							l_type := node_type (l_target, current_feature_i)
-							if l_type.base_class.conform_to (iterable) then
-								Result := True
-								expected_var := l_target.access_name_32
-							end
+					if attached {ACCESS_AS} l_nested_call.message as l_msg and then l_msg.access_name_8.is_equal ("after") then
+						l_target := l_nested_call.target
+						l_type := node_type (l_target, current_feature_i)
+						if l_type.base_class.conform_to (iterable) then
+							Result := True
+							expected_var := l_target.access_name_32
 						end
 					end
 				end
@@ -104,7 +104,7 @@ feature {NONE} -- Rule checking
 				across a_from as l_instr loop
 					if attached {INSTR_CALL_AS} l_instr.item as l_call then
 						if attached {NESTED_AS} l_call.call as l_nested_call then
-							if attached {ACCESS_AS} l_nested_call.target as l_target and then l_target.access_name_32.is_equal (expected_var) then
+							if l_nested_call.target.access_name_32.is_equal (expected_var) then
 								if attached {ACCESS_AS} l_nested_call.message as l_msg and then l_msg.access_name_8.is_equal ("start") then
 										-- We do not have to check the type of `l_target' since we know it is the expected variable
 										-- that has already been checked for conformance to {ITERABLE}.
@@ -124,7 +124,7 @@ feature {NONE} -- Rule checking
 
 			if attached a_loop_body and then attached {INSTR_CALL_AS} a_loop_body.last as l_call then
 				if attached {NESTED_AS} l_call.call as l_nested_call then
-					if attached {ACCESS_AS} l_nested_call.target as l_target and then l_target.access_name_32.is_equal (expected_var) then
+					if l_nested_call.target.access_name_32.is_equal (expected_var) then
 						if attached {ACCESS_AS} l_nested_call.message as l_msg and then l_msg.access_name_8.is_equal ("forth") then
 								-- We do not have to check the type of `l_target' since we know it is the expected variable
 								-- that has already been checked for conformance to {ITERABLE}.

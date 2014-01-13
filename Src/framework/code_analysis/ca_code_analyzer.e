@@ -280,16 +280,16 @@ feature {NONE} -- Implementation
 
 			Result := True
 
-			if (ignoredby.has (l_affected_class))
+			if ignoredby.has (l_affected_class)
 							and then (ignoredby.at (l_affected_class)).has (l_rule.id) then
 				Result := False
 			end
 
-			if (not l_rule.checks_library_classes) and then library_class.at (l_affected_class) = True then
+			if (not l_rule.checks_library_classes) and then library_class.at (l_affected_class) then
 				Result := False
 			end
 
-			if (not l_rule.checks_nonlibrary_classes) and then nonlibrary_class.at (l_affected_class) = True then
+			if (not l_rule.checks_nonlibrary_classes) and then nonlibrary_class.at (l_affected_class) then
 				Result := False
 			end
 		end

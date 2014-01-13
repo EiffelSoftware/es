@@ -143,7 +143,7 @@ feature {NONE} -- Initialization
 			create un_not_post_actions.make
 		end
 
-feature {CA_STANDARD_RULE}
+feature {CA_STANDARD_RULE} -- Adding agents
 
 	add_access_id_pre_action (a_action: PROCEDURE[ANY, TUPLE[ACCESS_ID_AS]])
 		do

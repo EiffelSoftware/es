@@ -25,7 +25,7 @@ feature {NONE} -- Initialization
 			create fixes.make
 		end
 
-feature
+feature -- Properties
 	rule: CA_RULE
 			-- The rule that is violated.
 
@@ -70,7 +70,7 @@ feature -- Inherited from {COMPARABLE}
 			end
 		end
 
-feature {CA_RULE}
+feature {CA_RULE} -- Setting violation properties
 
 	set_affected_class (a_class: CLASS_C)
 			-- Sets the class that this violations refers to to 'a_class'. This is only

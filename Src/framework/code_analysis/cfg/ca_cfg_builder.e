@@ -70,7 +70,6 @@ feature {NONE} -- Implementation
 			l_cfg, l_subgraph: CA_CFG
 			l_last_block, l_current_block, l_temp_block: CA_CFG_BASIC_BLOCK
 			l_intervals: LINKED_LIST [EIFFEL_LIST [INTERVAL_AS]]
-			l_empty: BOOLEAN
 		do
 			create l_cfg.make (current_label, current_label + 1)
 			current_label := current_label + 2
@@ -151,15 +150,12 @@ feature {NONE} -- Implementation
 					create {CA_CFG_SKIP} l_last_block.make (current_label)
 					current_label := current_label + 1
 
-					l_empty := True
-
 					if attached l_inspect.case_list then
 						across l_inspect.case_list as l_cases loop
 							if attached l_cases.item.compound as l_comp then
 								l_subgraph := process_compound (l_comp)
 								add_when_edge (l_current_block, l_subgraph.start_node, l_cases.cursor_index)
 								add_edge (l_subgraph.end_node, l_last_block)
-								l_empty := False
 							end
 						end
 					end
@@ -167,7 +163,6 @@ feature {NONE} -- Implementation
 						l_subgraph := process_compound (l_else)
 						add_else_edge (l_current_block, l_subgraph.start_node)
 						add_edge (l_subgraph.end_node, l_last_block)
-						l_empty := False
 					end
 						-- TODO: If there is nothing in the `inspect'?
 

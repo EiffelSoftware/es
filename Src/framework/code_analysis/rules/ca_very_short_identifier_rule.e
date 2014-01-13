@@ -163,11 +163,7 @@ feature {NONE} -- Rule checking
 	is_no_counter (a_id: STRING): BOOLEAN
 			-- Is `a_id' not a commonly used counter variable?
 		do
-			if a_id.count = 1 and then a_id.is_equal ("i") or a_id.is_equal ("j") or a_id.is_equal ("k") or a_id.is_equal ("n") then
-				Result := False
-			else
-				Result := True
-			end
+			Result := not (a_id.count = 1 and then a_id.is_equal ("i") or a_id.is_equal ("j") or a_id.is_equal ("k") or a_id.is_equal ("n"))
 		end
 
 feature -- Options

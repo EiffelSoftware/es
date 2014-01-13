@@ -132,7 +132,7 @@ feature {NONE} -- Rule Checking
 				until
 					j > n_arguments
 				loop
-					if args_used.at (j) = False then
+					if not args_used.at (j) then
 						l_violation.long_description_info.extend (arg_names.at (j))
 					end
 					j := j + 1
@@ -151,7 +151,7 @@ feature {NONE} -- Rule Checking
 			until
 				j > n_arguments
 			loop
-				if args_used.at (j) = False then
+				if not args_used.at (j) then
 					if arg_names.at (j).is_equal (a_aid.feature_name.name_32) then
 						args_used.put_i_th (True, j)
 					end

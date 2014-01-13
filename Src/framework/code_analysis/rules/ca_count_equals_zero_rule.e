@@ -76,11 +76,9 @@ feature {NONE} -- Rule checking
 			l_type: TYPE_A
 		do
 			if attached {EXPR_CALL_AS} a_expr as l_ec and then attached {NESTED_AS} l_ec.call as l_nested_call then
-				if attached {ACCESS_AS} l_nested_call.target as l_target then
-					if attached {ACCESS_AS} l_nested_call.message as l_msg and then l_msg.access_name_8.is_equal ("count") then
-						l_type := node_type (l_target, current_feature_i)
-						Result := l_type.base_class.conform_to (finite)
-					end
+				if attached {ACCESS_AS} l_nested_call.message as l_msg and then l_msg.access_name_8.is_equal ("count") then
+					l_type := node_type (l_nested_call.target, current_feature_i)
+					Result := l_type.base_class.conform_to (finite)
 				end
 			end
 		end

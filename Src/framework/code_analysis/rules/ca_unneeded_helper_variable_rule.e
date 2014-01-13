@@ -87,7 +87,6 @@ feature {NONE} -- Rule checking
 			-- Checks `a_list' for patterns that may be rule violations.
 		local
 			l_previous, l_current: INSTRUCTION_AS
-			l_expression_length: INTEGER
 		do
 				-- Check if it is an instruction compound and not another kind
 				-- of list such as a type declaration.
@@ -103,7 +102,6 @@ feature {NONE} -- Rule checking
 					l_current := l_instr.item
 					if attached {ASSIGN_AS} l_previous as l_assign and then attached {ACCESS_ID_AS} l_assign.target as l_aid then
 						if l_aid.is_local and then is_read (l_aid.feature_name, l_current) then
-							l_expression_length := expression_length (l_assign)
 							if instruction_length (l_current) - l_aid.access_name_32.count + expression_length (l_assign) <= max_line_length.value then
 									-- The line with the replaced variable is not too long.
 								suspected_variables.extend (l_aid.feature_name)

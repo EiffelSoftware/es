@@ -35,7 +35,7 @@ feature {NONE} -- Implementation
 			Result := Match_list_server.item (class_to_change.class_id)
 		end
 
-feature
+feature -- Setting properties
 
 	set_applied
 			-- Marks this fix as applied.
