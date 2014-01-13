@@ -21,7 +21,6 @@ feature {NONE} -- Initialization
 				-- This is just the default. The rule may set the affected class otherwise
 				-- if needed.
 			affected_class := a_rule.checking_class
-			synchronized_with_source := True
 			create long_description_info.make
 			create fixes.make
 		end
@@ -43,10 +42,6 @@ feature
 
 	affected_class: detachable CLASS_C
 			-- Affected class.
-
-	synchronized_with_source: BOOLEAN
-			-- 'True' if the rule violation corresponds to the current state of the
-			-- source code; 'False' if the violation might be outdated or is outdated.
 
 	location: detachable LOCATION_AS
 			-- Location of rule violation, if available.

@@ -37,9 +37,9 @@ feature {NONE} -- Initialization
 			are_warnings_enabled := l_factory.new_boolean_preference_value (l_manager,
 				ca_names.general_category + "." + ca_names.are_warnings_enabled, True)
 			are_warnings_enabled.set_default_value ("True")
-			are_hints_enabled := l_factory.new_boolean_preference_value (l_manager,
+			are_suggestions_enabled := l_factory.new_boolean_preference_value (l_manager,
 				ca_names.general_category + "." + ca_names.are_suggestions_enabled, True)
-			are_hints_enabled.set_default_value ("True")
+			are_suggestions_enabled.set_default_value ("True")
 			are_hints_enabled := l_factory.new_boolean_preference_value (l_manager,
 				ca_names.general_category + "." + ca_names.are_hints_enabled, True)
 			are_hints_enabled.set_default_value ("True")

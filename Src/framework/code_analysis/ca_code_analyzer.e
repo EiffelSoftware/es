@@ -86,26 +86,33 @@ feature -- Analysis interface
 		local
 			l_rules_checker: CA_ALL_RULES_CHECKER
 			l_task: CA_RULE_CHECKING_TASK
+			l_rules_to_check: LINKED_LIST [CA_RULE]
 		do
 			is_running := True
 
 			create l_rules_checker.make
+			create l_rules_to_check.make
 			across rules as l_rules loop
 				l_rules.item.clear_violations
-				if l_rules.item.is_enabled.value then -- Important: only add enabled rules.
-					if system_wide_check or else (not l_rules.item.is_system_wide) then
-							-- Do not add system wide rules if we check only parts of the system.
-						if attached {CA_STANDARD_RULE} l_rules.item as l_std_rule then
-
-							l_std_rule.prepare_checking (l_rules_checker)
-								-- TODO: prepare rules of other types?
-						end
+				if is_rule_checkable (l_rules.item) then
+					l_rules_to_check.extend (l_rules.item)
+						-- Here we only prepare standard rules. The rule checking task will iterate again
+						-- through the rules and run the analysis on the enabled rules.
+					if attached {CA_STANDARD_RULE} l_rules.item as l_std_rule then
+						l_std_rule.prepare_checking (l_rules_checker)
 					end
 				end
 			end
 
-			create l_task.make (l_rules_checker, rules, classes_to_analyze, agent analysis_completed)
+			create l_task.make (l_rules_checker, l_rules_to_check, classes_to_analyze, agent analysis_completed)
 			rota.run_task (l_task)
+		end
+
+	is_rule_checkable (a_rule: CA_RULE): BOOLEAN
+		do
+			Result := a_rule.is_enabled.value
+						and then (system_wide_check or else (not a_rule.is_system_wide))
+						and then is_severity_enabled (a_rule.severity)
 		end
 
 	clear_classes_to_analyze
@@ -308,6 +315,14 @@ feature {NONE} -- Implementation
 			if l_service_consumer.is_service_available and then l_service_consumer.service.is_interface_usable then
 				Result := l_service_consumer.service
 			end
+		end
+
+	is_severity_enabled (a_severity: CA_RULE_SEVERITY): BOOLEAN
+		do
+			Result := (attached {CA_HINT} a_severity and settings.are_hints_enabled.value)
+				or else (attached {CA_SUGGESTION} a_severity and settings.are_suggestions_enabled.value)
+				or else (attached {CA_WARNING} a_severity and settings.are_warnings_enabled.value)
+				or else (attached {CA_ERROR} a_severity and settings.are_errors_enabled.value)
 		end
 
 
