@@ -64,8 +64,7 @@ feature -- Basic operations
 
 			l_conversions := helper.feature_note_values (set_access.type.base_class.feature_named_32 ("new_cursor"), "maps_to")
 			if l_conversions.is_empty then
-				-- ToDo: move message
-				helper.add_semantic_error (set_access.type.base_class, "An iterable logical class must provide a conversion to set in the mapping of new_cursor", -1)
+				helper.add_semantic_error (set_access.type.base_class, messages.logical_no_across_conversion, -1)
 			elseif not l_conversions.first.is_empty then
 				l_set := factory.function_call (l_conversions.first, << l_set >>, types.set (l_content_type))
 			end

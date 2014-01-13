@@ -221,7 +221,9 @@ feature {NONE} -- Implementation
 			create l_error
 			l_error.set_type ("Boogie")
 			l_error.set_message (messages.boogie_launch_failed (a_executable))
-			autoproof_errors.extend (l_error)
+			if not autoproof_errors.has (l_error) then
+				autoproof_errors.extend (l_error)
+			end
 		end
 
 	handle_terminated

@@ -281,6 +281,7 @@ feature -- Helper functions: contracts
 			l_type: TYPE_A
 			l_feature, l_to_set: FEATURE_I
 			l_boogie_type: IV_TYPE
+			l_field: IV_ENTITY
 		do
 			create l_fully_modified.make
 			create l_part_modified.make
@@ -328,26 +329,9 @@ feature -- Helper functions: contracts
 						create l_fields.make
 						l_fields.compare_objects
 						across l_fieldnames as f loop
-							l_feature := l_type.base_class.feature_named_32 (f.item)
-							if l_feature = Void then
-								l_name := Void
-								helper.add_semantic_error (current_feature, messages.field_does_not_exist (f.item, l_type.base_class.name_in_upper), i.item.line_number)
-							else
-								if translation_mapping.ghost_access.has (f.item) then
-									-- Handle built-in ANY attributes separately, since they are not really attributes
-									l_name := f.item
-									l_boogie_type := translation_mapping.ghost_access_type (f.item)
-								elseif l_feature.is_attribute then
-									l_name := name_translator.boogie_procedure_for_feature (l_feature, l_type)
-									l_boogie_type := types.for_type_a (l_feature.type)
-									translation_pool.add_referenced_feature (l_feature, l_type)
-								else
-									l_name := Void
-									helper.add_semantic_error (current_feature, messages.field_not_attribute (f.item),i.item.line_number)
-								end
-							end
-							if l_name /= Void then
-								l_fields.extend (create {IV_ENTITY}.make (l_name, types.field (l_boogie_type)))
+							l_field := (create {E2B_CUSTOM_OWNERSHIP_HANDLER}).field_from_string (f.item, l_type, current_feature, i.item.line_number)
+							if attached l_field then
+								l_fields.extend (l_field)
 							end
 						end
 

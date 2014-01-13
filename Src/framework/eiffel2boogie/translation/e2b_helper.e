@@ -253,6 +253,20 @@ feature -- String helpers
 
 feature -- Eiffel helpers
 
+	is_same_class (c1, c2: CLASS_C): BOOLEAN
+			-- Are `c1' and `c2' the same class?			
+		do
+			Result := (c1 = Void and c2 = Void) or else
+				c1.class_id = c2.class_id
+		end
+
+	is_same_feature (f1, f2: FEATURE_I): BOOLEAN
+			-- Are `f1' and `f2' the same feature?
+		do
+			Result := (f1 = Void and f2 = Void) or else
+				(f1.written_in = f2.written_in and f1.feature_id = f2.feature_id)
+		end
+
 	is_conforming_or_non_conforming_parent_class (a_child, a_parent: CLASS_C): BOOLEAN
 			-- Does `a_child' inherit conforminlgy or non-conformingly from `a_parent'?
 		do
@@ -444,7 +458,9 @@ feature -- Other
 				l_error.set_class (x)
 			end
 			l_error.set_line_number (a_line_number)
-			autoproof_errors.extend (l_error)
+			if not autoproof_errors.has (l_error) then
+				autoproof_errors.extend (l_error)
+			end
 		end
 
 	add_semantic_warning (a_class_or_feature: ANY; a_message: STRING; a_line_number: INTEGER)
@@ -466,7 +482,9 @@ feature -- Other
 			end
 			l_error.set_line_number (a_line_number)
 			l_error.set_warning (True)
-			autoproof_errors.extend (l_error)
+			if not autoproof_errors.has (l_error) then
+				autoproof_errors.extend (l_error)
+			end
 		end
 
 end

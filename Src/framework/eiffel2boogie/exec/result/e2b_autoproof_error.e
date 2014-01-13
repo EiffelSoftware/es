@@ -11,6 +11,9 @@ class
 inherit
 
 	E2B_VERIFICATION_RESULT
+		redefine
+			is_equal
+		end
 
 feature -- Access
 
@@ -55,7 +58,20 @@ feature -- Element change
 			is_warning := a_flag
 		end
 
-feature {NONE} -- Implementation
+feature -- Comparison
+
+	is_equal (a_other: like Current): BOOLEAN
+			-- Does `a_other' represent the same error in the same context?
+		do
+			Result := type ~ a_other.type and
+				helper.is_same_class (context_class, a_other.context_class) and
+				helper.is_same_feature (context_feature, a_other.context_feature) and
+				context_line_number = a_other.context_line_number and
+				internal_message ~ a_other.internal_message
+		end
+
+
+feature {E2B_AUTOPROOF_ERROR} -- Implementation
 
 	internal_message: STRING
 			-- Message for this error.

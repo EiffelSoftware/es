@@ -114,18 +114,8 @@ feature -- Basic operations
 					a_translator.process_builtin_routine_call (a_feature, a_parameters, "user_inv")
 				elseif l_name ~ "is_field_writable" then
 					if attached {STRING_B} a_parameters.first.expression as l_string then
-						l_feature := a_translator.current_target_type.base_class.feature_named_32 (l_string.value_32)
-						if l_feature = Void then
-							helper.add_semantic_error (a_translator.context_feature,
-								messages.field_does_not_exist (l_string.value_32, a_translator.current_target_type.base_class.name_in_upper),
-								a_translator.context_line_number)
-						elseif not l_feature.is_attribute then
-							helper.add_semantic_error (a_translator.context_feature,
-								messages.field_not_attribute (l_string.value_32),
-								a_translator.context_line_number)
-						else
-							translation_pool.add_referenced_feature (l_feature, a_translator.current_target_type)
-							create l_field.make (name_translator.boogie_procedure_for_feature (l_feature, a_translator.current_target_type), types.for_type_a (l_feature.type))
+						l_field := field_from_string (l_string.value, a_translator.current_target_type, a_translator.context_feature, a_translator.context_line_number)
+						if attached l_field then
 							a_translator.set_last_expression (factory.frame_access (
 								a_translator.context_writable,
 								a_translator.current_target,
@@ -278,5 +268,28 @@ feature -- Basic operations
 					factory.singleton_block (l_pcall))
 				a_translator.side_effect.extend (l_if)
 			end
+		end
+
+	field_from_string (a_name: STRING; a_type: TYPE_A; a_context_feature: FEATURE_I; a_context_line_number: INTEGER): IV_ENTITY
+			-- Boogie field corresponding to an attribute (or built-in ghost access) with name `a_name' in type `a_type'.
+		local
+			l_feature: FEATURE_I
+		do
+			l_feature := a_type.base_class.feature_named_32 (a_name)
+			if l_feature = Void then
+				helper.add_semantic_error (a_context_feature, messages.field_not_attribute (a_name, a_type.base_class.name_in_upper), a_context_line_number)
+			else
+				if translation_mapping.ghost_access.has (a_name) then
+					-- Handle built-in ANY attributes separately, since they are not really attributes
+					Result := factory.entity (a_name, types.field (translation_mapping.ghost_access_type (a_name)))
+				elseif l_feature.is_attribute then
+					Result := factory.entity (name_translator.boogie_procedure_for_feature (l_feature, a_type),
+						types.field (types.for_type_a (l_feature.type)))
+					translation_pool.add_referenced_feature (l_feature, a_type)
+				else
+					helper.add_semantic_error (a_context_feature, messages.field_not_attribute (a_name, a_type.base_class.name_in_upper), a_context_line_number)
+				end
+			end
+
 		end
 end

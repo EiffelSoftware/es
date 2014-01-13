@@ -25,6 +25,7 @@ feature {NONE} -- Access: stateful
 			-- List of autoproof errors.
 		once
 			create Result.make
+			Result.compare_objects
 		end
 
 	result_handlers: HASH_TABLE [PROCEDURE [ANY, TUPLE [E2B_BOOGIE_PROCEDURE_RESULT, E2B_RESULT]], STRING]

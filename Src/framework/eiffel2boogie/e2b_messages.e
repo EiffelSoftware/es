@@ -27,11 +27,8 @@ feature -- Validity error messages
 	first_argument_string_or_tuple: STRING_32
 		do Result := "First argument has to be a manifest string or a tuple of manifest strings." end
 
-	field_does_not_exist (a_fname, a_cname: STRING): STRING_32
-		do Result := locale.formatted_string ("Feature '$1' does not exist in class '$2'.", a_fname, a_cname) end
-
-	field_not_attribute (a_fname: STRING): STRING_32
-		do Result := locale.formatted_string ("Feature '$1' is not an attribute.", a_fname) end
+	field_not_attribute (a_fname, a_cname: STRING): STRING_32
+		do Result := locale.formatted_string ("Feature '$1' is not an attribute of class '$2'.", a_fname, a_cname) end
 
 	invalid_tag (a_tag, a_class_name: STRING): STRING_32
 		do Result := locale.formatted_string ("Filtered invariant of class '$2' lists invalid tag: $1", a_tag, a_class_name) end
@@ -41,6 +38,12 @@ feature -- Validity error messages
 
 	variant_bad_type (a_index: INTEGER): STRING_32
 		do Result := locale.formatted_string ("Type of variant number $1 has no well-founded order.", a_index.out) end
+
+	logical_invalid_typed_sets: STRING_32
+		do Result := "The number of typed sets in the logical class does not correspond to the number of generic parameters." end
+
+	logical_no_across_conversion: STRING_32
+		do Result := "The logical class is used in quantification but does not map its new_cursor feature to a set." end
 
 feature -- Verification error messages
 

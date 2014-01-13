@@ -88,7 +88,7 @@ feature -- Access: default types
 			-- Set type that has content of type `a_content_type'.
 		local
 			l_synonym: IV_USER_TYPE
-		once
+		do
 			create l_synonym.make ("Set", << a_content_type >>)
 			create {IV_MAP_TYPE} Result.make_with_synonym (<<>>, << a_content_type >>, bool, l_synonym)
 			l_synonym.set_default_value (factory.function_call ("Set#Empty", <<>>, Result))
@@ -210,8 +210,7 @@ feature -- Type translation
 				l_typed_sets := helper.class_note_values (a_type.base_class, "typed_sets")
 				if not l_typed_sets.is_empty then
 					if l_typed_sets.count /= a_type.generics.count then
-						-- ToDo: move message
-						helper.add_semantic_error (a_type, "The number of typed sets does not coincide with the number of generic parameters", -1)
+						helper.add_semantic_error (a_type.base_class, messages.logical_invalid_typed_sets, -1)
 					else
 						across
 							l_typed_sets as sets
