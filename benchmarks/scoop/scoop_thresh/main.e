@@ -15,7 +15,7 @@ feature
   make
     local
       nrows, ncols, percent: INTEGER
-      mask: ARRAY2[INTEGER]
+      mask: SPECIAL [INTEGER]
       in: PLAIN_TEXT_FILE
       file_name: STRING
       i, j: INTEGER
@@ -40,13 +40,13 @@ feature
       mask := thresh (nrows, ncols, percent)
 
       if not is_bench then
-        from i := 1
-        until i > nrows
+        from i := 0
+        until i >= nrows
         loop
-          from j := 1
-          until j > ncols
+          from j := 0
+          until j >= ncols
           loop
-            print (mask[i,j].out + " ")
+            print (mask[i * ncols + j].out + " ")
             j := j + 1
           end
           print ("%N")
@@ -56,7 +56,7 @@ feature
     end
 
   thresh(nrows, ncols: INTEGER;
-         percent: INTEGER;):  ARRAY2 [INTEGER]
+         percent: INTEGER;):  SPECIAL [INTEGER]
     local
       threshold: INTEGER
     do
@@ -85,7 +85,7 @@ feature
 
         if height > 0 then
           create worker.make_with_filter
-                     (start + 1
+                     (start
                       , start + height
                       , ncols
                       , matrix
@@ -136,7 +136,7 @@ feature
 
   -- parallel for on matrix
   parfor(nrows, ncols: INTEGER;
-         threshold: INTEGER): ARRAY2 [INTEGER]
+         threshold: INTEGER): SPECIAL [INTEGER]
     local
       worker: separate PARFOR_WORKER
       workers: LINKED_LIST[separate PARFOR_WORKER]
@@ -154,7 +154,7 @@ feature
 
         if height > 0 then
           create worker.make
-                     (start + 1
+                     (start
                      , start + height
                      , ncols
                      , matrix
@@ -178,27 +178,27 @@ feature
     end
 
   get_vector (nrows, ncols: INTEGER;
-              workers: LIST [separate PARFOR_WORKER]): ARRAY2 [INTEGER]
+              workers: LIST [separate PARFOR_WORKER]): SPECIAL [INTEGER]
     do
-      create Result.make (nrows, ncols)
+      create Result.make_empty (nrows * ncols)
       across workers as wc loop
         get_sub_vector (nrows, ncols, Result, wc.item)
       end
     end
 
   get_sub_vector (nrows, ncols: INTEGER;
-                  arr: ARRAY2 [INTEGER];
+                  arr: SPECIAL [INTEGER];
                   worker: separate PARFOR_WORKER)
     local
       i, j: INTEGER
     do
       from i := worker.start
-      until i > worker.final
+      until i >= worker.final
       loop
-        from j := 1
-        until j > ncols
+        from j := 0
+        until j >= ncols
         loop
-          arr [i, j] := worker.get (i, j)
+          arr [i * ncols + j] := worker.get (i, j)
           j := j + 1
         end
         i := i + 1
@@ -207,19 +207,19 @@ feature
 
 
   fetch_matrix (nrows, ncols: INTEGER;
-                a_array: separate ARRAY2[INTEGER]): ARRAY2 [INTEGER]
+                a_array: separate SPECIAL[INTEGER]): SPECIAL [INTEGER]
     local
       i, j: INTEGER
     do
-      create Result.make_filled (0, nrows, ncols)
+      create Result.make_empty (nrows * ncols)
 
-      from i := 1
-      until i > nrows
+      from i := 0
+      until i >= nrows
       loop
-        from j := 1
-        until j > ncols
+        from j := 0
+        until j >= ncols
         loop
-          Result [i, j] := a_array.item (i, j)
+          Result [i * ncols + j] := a_array.item (i * ncols + j)
           j := j + 1
         end
         i := i + 1
