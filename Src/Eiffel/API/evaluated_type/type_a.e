@@ -727,47 +727,30 @@ feature -- Comparison
 
 	is_processor_attachable_to (other: TYPE_A): BOOLEAN
 			-- May processor of current type be used as a processor of type `other'?
-		local
-			a_feature: FEATURE_I
-			a_tag: STRING_32
-			notes: ARRAYED_LIST [STRING_32]
-			a_indexing_clause: INDEXING_CLAUSE_AS
-			l_values: EIFFEL_LIST [ATOMIC_AS]
-			ignore_scoop_check: BOOLEAN
 		do
-			-- Ignore features explicitly skipping scoop checks
-			a_tag := "ignore_scoop_check"
-			a_feature := context.current_feature
-			if a_feature /= Void and then a_feature.body /= Void and then a_feature.body.indexes /= Void then
-				a_indexing_clause := a_feature.body.indexes
-				create notes.make (3)
-				notes.compare_objects
-				from
-					a_indexing_clause.start
-				until
-					a_indexing_clause.after
-				loop
-					if a_indexing_clause.item.tag.name_32.is_equal (a_tag) then
-						l_values := a_indexing_clause.item.index_list
-						from
-							l_values.start
-						until
-							l_values.after
-						loop
-							notes.extend (l_values.item.string_value_32)
-							l_values.forth
-						end
-					end
-					a_indexing_clause.forth
-				end
-			else
-				create notes.make (0)
-			end
-
-			if not notes.is_empty and then notes.has ("True") then
+			if is_separate implies other.is_separate then
+				-- General rule.
 				Result := True
-			else
-				Result := is_separate implies other.is_separate
+			elseif attached context.current_feature as f and then
+					attached f.body as b and then attached b.indexes as l_indexing_clause then
+				-- Handle features explicitly ignoring separate status of types.
+				from
+					l_indexing_clause.start
+				until
+					l_indexing_clause.after
+				loop
+					if l_indexing_clause.item.tag.name_32.is_equal (once "ignore_invalid_separate_reattachment") then
+						if across l_indexing_clause.item.index_list as l
+								some l.item.string_value_32.is_case_insensitive_equal ("True") end then
+							Result := True
+							l_indexing_clause.finish
+						else
+							l_indexing_clause.forth
+						end
+					else
+						l_indexing_clause.forth
+					end
+				end
 			end
 		end
 
@@ -1628,7 +1611,7 @@ invariant
 	generics_not_void_implies_generics_not_empty_or_tuple: (generics /= Void implies (not generics.is_empty or is_tuple))
 
 note
-	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
