@@ -114,9 +114,10 @@ feature -- Type translation
 			l_class: CLASS_C
 			l_user_type: IV_USER_TYPE
 			l_constructor: STRING
-			l_params: ARRAY [IV_TYPE]
+			l_params, l_domain_types: ARRAY [IV_TYPE]
 			l_rank_functions: like helper.class_note_values
 			l_default_function: STRING
+			l_access_feature: FEATURE_I
 		do
 			l_type := a_type.deep_actual_type
 			check not l_type.is_like end
@@ -152,12 +153,24 @@ feature -- Type translation
 				if not l_rank_functions.is_empty then
 					l_user_type.set_rank_function (l_rank_functions.first)
 				end
-				Result := l_user_type
 
-				-- ToDo: extract underlying map type from a feature mapped to "[]"?
-				-- For now treat sets in a special way:
-				if l_constructor ~ "Set" then
-					Result := set (l_params [1])
+					-- Check if the class corresponds to a map type
+				l_access_feature := helper.map_access_feature (l_class)
+				if l_access_feature = Void then
+						-- No: just use the user-defined type
+					Result := l_user_type
+				else
+						-- Yes: extract domain and range types from the access feature and make the user-defined type a synonym
+					create l_domain_types.make (1, l_access_feature.argument_count)
+					across
+						l_access_feature.arguments as args
+					loop
+						l_domain_types [args.target_index] := for_type_a (args.item.instantiated_in (l_type))
+					end
+					create {IV_MAP_TYPE} Result.make_with_synonym (<<>>,
+						l_domain_types,
+						for_type_a (l_access_feature.type.instantiated_in (l_type)),
+						l_user_type)
 				end
 			else
 				Result := ref

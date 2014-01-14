@@ -175,6 +175,26 @@ feature -- Feature status helpers
 			Result := a_feature.export_status.is_none
 		end
 
+	map_access_feature (a_class: CLASS_C): FEATURE_I
+			-- The feature of the logical class `a_class' that maps to map access in Boogie (if any).
+		require
+			logical_class: is_class_logical (a_class)
+		local
+			l_feature: FEATURE_I
+		do
+			from
+				a_class.feature_table.start
+			until
+				Result /= Void or a_class.feature_table.after
+			loop
+				l_feature := a_class.feature_table.item_for_iteration
+				if string_feature_note_value (l_feature, "maps_to") ~ "[]" then
+					Result := l_feature
+				end
+				a_class.feature_table.forth
+			end
+		end
+
 feature -- Class status helpers
 
 	is_class_logical (a_class: CLASS_C): BOOLEAN
