@@ -40,4 +40,9 @@ feature -- Visitor
 		deferred
 		end
 
+	process_map_synonym_type (a_type: IV_MAP_SYNONYM_TYPE)
+			-- Process map type with synonym.
+		deferred
+		end
+
 end

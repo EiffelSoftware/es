@@ -53,7 +53,7 @@ feature -- Access
 			check attached {IV_MAP_TYPE} target.type as map_type then
 				-- ToDo: find most general unifier of domain types with index types and instantiate the range type
 				-- For now a workaround: heap is the only map type with a polymorphic result we use
-				if types.is_heap (map_type) then
+				if map_type ~ types.heap then
 					check attached {IV_USER_TYPE} indexes [2].type as field_type then
 						Result := field_type.parameters [1]
 					end

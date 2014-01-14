@@ -59,14 +59,7 @@ feature -- Access: default types
 			l_param: IV_VAR_TYPE
 		once
 			create l_param.make_fresh
-			create {IV_MAP_TYPE} Result.make_with_synonym (<< l_param.name >>, << ref, field (l_param) >>, l_param, nullary_type ("HeapType"))
-		end
-
-	is_heap (a_type: IV_TYPE): BOOLEAN
-			-- Is `a_type' a set type?
-		do
-			Result := attached {IV_MAP_TYPE} a_type as map_type and then
-						attached map_type.synonym as s and then s.constructor ~ "HeapType"
+			create {IV_MAP_SYNONYM_TYPE} Result.make (<< l_param.name >>, << ref, field (l_param) >>, l_param, "HeapType", <<>>)
 		end
 
 	frame: IV_TYPE
@@ -75,7 +68,7 @@ feature -- Access: default types
 			l_param: IV_VAR_TYPE
 		once
 			create l_param.make_fresh
-			create {IV_MAP_TYPE} Result.make_with_synonym (<< l_param.name >>, << ref, field (l_param) >>, bool, nullary_type ("Frame"))
+			create {IV_MAP_SYNONYM_TYPE} Result.make (<< l_param.name >>, << ref, field (l_param) >>, bool, "Frame", <<>>)
 		end
 
 	type: IV_TYPE
@@ -84,22 +77,18 @@ feature -- Access: default types
 			Result := nullary_type ("Type")
 		end
 
-	set (a_content_type: IV_TYPE): IV_TYPE
+	set (a_content_type: IV_TYPE): IV_MAP_SYNONYM_TYPE
 			-- Set type that has content of type `a_content_type'.
-		local
-			l_synonym: IV_USER_TYPE
 		do
-			create l_synonym.make ("Set", << a_content_type >>)
-			create {IV_MAP_TYPE} Result.make_with_synonym (<<>>, << a_content_type >>, bool, l_synonym)
-			l_synonym.set_default_value (factory.function_call ("Set#Empty", <<>>, Result))
-			l_synonym.set_rank_function ("Set#Subset")
+			create Result.make (<<>>, << a_content_type >>, bool, "Set", << a_content_type >>)
+			Result.set_default_value (factory.function_call ("Set#Empty", <<>>, Result))
+			Result.set_rank_function ("Set#Subset")
 		end
 
 	is_set (a_type: IV_TYPE): BOOLEAN
 			-- Is `a_type' a set type?
 		do
-			Result := attached {IV_MAP_TYPE} a_type as map_type and then
-						attached map_type.synonym as s and then s.constructor ~ "Set"
+			Result := attached {IV_MAP_SYNONYM_TYPE} a_type as ms_type and then ms_type.constructor ~ "Set"
 		end
 
 feature -- Type translation
@@ -140,7 +129,26 @@ feature -- Type translation
 				loop
 					l_params [g.target_index] := for_type_a (g.item)
 				end
-				create l_user_type.make (l_constructor, l_params)
+
+					-- Check if the class corresponds to a map type
+				l_access_feature := helper.map_access_feature (l_class)
+				if l_access_feature = Void then
+						-- No: just use the user-defined type
+					create l_user_type.make (l_constructor, l_params)
+				else
+						-- Yes: extract domain and range types from the access feature and make the user-defined type a synonym
+					create l_domain_types.make (1, l_access_feature.argument_count)
+					across
+						l_access_feature.arguments as args
+					loop
+						l_domain_types [args.target_index] := for_type_a (args.item.instantiated_in (l_type))
+					end
+					create {IV_MAP_SYNONYM_TYPE} l_user_type.make (<<>>,
+						l_domain_types,
+						for_type_a (l_access_feature.type.instantiated_in (l_type)),
+						l_constructor,
+						l_params)
+				end
 
 					-- Check if the type has a default value
 				l_default_function := helper.string_feature_note_value (l_class.feature_named_32 ("default_create"), "maps_to")
@@ -154,24 +162,7 @@ feature -- Type translation
 					l_user_type.set_rank_function (l_rank_functions.first)
 				end
 
-					-- Check if the class corresponds to a map type
-				l_access_feature := helper.map_access_feature (l_class)
-				if l_access_feature = Void then
-						-- No: just use the user-defined type
-					Result := l_user_type
-				else
-						-- Yes: extract domain and range types from the access feature and make the user-defined type a synonym
-					create l_domain_types.make (1, l_access_feature.argument_count)
-					across
-						l_access_feature.arguments as args
-					loop
-						l_domain_types [args.target_index] := for_type_a (args.item.instantiated_in (l_type))
-					end
-					create {IV_MAP_TYPE} Result.make_with_synonym (<<>>,
-						l_domain_types,
-						for_type_a (l_access_feature.type.instantiated_in (l_type)),
-						l_user_type)
-				end
+				Result := l_user_type
 			else
 				Result := ref
 			end

@@ -17,9 +17,8 @@ feature -- Access
 			-- Default value of the type, if defined.
 		do
 			-- Void by default.
-			-- ToDo: figure out issues with synonyms
---		ensure
---			correct_type: Result = Void or else Result.type ~ Current
+		ensure
+			correct_type: Result = Void or else Result.type ~ Current
 		end
 
 feature -- Status report
@@ -58,8 +57,8 @@ feature -- Termination
 			-- Expression "e1 <= e2" in terms of the well-founded order of this type.
 		require
 			has_rank: has_rank
---			e1_right_type: e1 /= Void and then e1.type ~ Current
---			e2_right_type: e2 /= Void and then e2.type ~ Current
+			e1_right_type: e1 /= Void and then e1.type ~ Current
+			e2_right_type: e2 /= Void and then e2.type ~ Current
 		do
 			-- Void by default
 		ensure

@@ -626,42 +626,45 @@ feature -- Type Visitor
 		local
 			old_is_in_type: BOOLEAN
 		do
-			if a_type.synonym /= Void then
-				a_type.synonym.process (Current)
-			else
-				if is_in_type then
-					output.put ("(")
-				end
-				if not a_type.type_parameters.is_empty then
-					output.put ("<")
-					across
-						a_type.type_parameters as tps
-					loop
-						output.put (tps.item)
-						if not tps.is_last then
-							output.put (", ")
-						end
-					end
-					output.put (">")
-				end
-				output.put ("[")
+			if is_in_type then
+				output.put ("(")
+			end
+			if not a_type.type_parameters.is_empty then
+				output.put ("<")
 				across
-					a_type.domain_types as ds
+					a_type.type_parameters as tps
 				loop
-					ds.item.process (Current)
-					if not ds.is_last then
+					output.put (tps.item)
+					if not tps.is_last then
 						output.put (", ")
 					end
 				end
-				output.put ("]")
-				old_is_in_type := is_in_type
-				is_in_type := True
-				a_type.range_type.process (Current)
-				is_in_type := old_is_in_type
-				if is_in_type then
-					output.put (")")
+				output.put (">")
+			end
+			output.put ("[")
+			across
+				a_type.domain_types as ds
+			loop
+				ds.item.process (Current)
+				if not ds.is_last then
+					output.put (", ")
 				end
 			end
+			output.put ("]")
+			old_is_in_type := is_in_type
+			is_in_type := True
+			a_type.range_type.process (Current)
+			is_in_type := old_is_in_type
+			if is_in_type then
+				output.put (")")
+			end
+		end
+
+	process_map_synonym_type (a_type: IV_MAP_SYNONYM_TYPE)
+			-- <Precursor>
+		do
+				-- Treat like user type:
+			process_user_type (a_type)
 		end
 
 feature -- Other
