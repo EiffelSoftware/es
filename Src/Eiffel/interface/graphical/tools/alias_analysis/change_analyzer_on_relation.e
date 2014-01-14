@@ -411,6 +411,50 @@ feature {NONE} -- Output
 			end
 		end
 
+feature {NONE} -- Information about standard features
+
+	routine_id (feature_name_id: like system.names.id_of; class_descriptor: CLASS_I): INTEGER
+			-- Routine id of a feature named `feature_name_id' in a class specified by `class_descriptor'.
+		do
+			if
+				attached class_descriptor as c and then
+				c.is_compiled and then
+				attached c.compiled_class.feature_table.item_id (feature_name_id) as f
+			then
+				Result := f.rout_id_set.first
+			end
+		end
+
+	standard_copy_id: INTEGER
+			-- Routine id of  "{ANY}.standard_copy".
+		once
+			Result := routine_id (system.names.standard_copy_name_id, system.any_class)
+		end
+
+	is_special_routine (r: INTEGER): BOOLEAN
+			-- Does a routine of routine id `r' correspond to a routine from the class SPECIAL that changes object state?
+		do
+			Result := r = put_id or else r = extend_id or else r = set_count_id or else r = standard_copy_id or else r = system.any_copy_id
+		end
+
+	put_id: INTEGER
+			-- Routine id of  "{SPECIAL}.put".
+		once
+			Result := routine_id (system.names.put_name_id, system.special_class)
+		end
+
+	extend_id: INTEGER
+			-- Routine id of  "{SPECIAL}.extend".
+		once
+			Result := routine_id (system.names.extend_name_id, system.special_class)
+		end
+
+	set_count_id: INTEGER
+			-- Routine id of  "{SPECIAL}.set_count".
+		once
+			Result := routine_id (system.names.set_count_name_id, system.special_class)
+		end
+
 note
 	date: "$Date$"
 	revision: "$Revision$"
