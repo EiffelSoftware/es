@@ -101,7 +101,7 @@ feature -- Execution (declared in EWB_CMD)
 				end
 			end
 
-			if not l_has_violations then print ("Code Analysis found no issues!%N") end
+			if not l_has_violations then print (ca_messages.no_issues + "%N") end
 		end
 
 	try_add_class_with_name (a_analyzer: CA_CODE_ANALYZER; a_class_name: STRING)
