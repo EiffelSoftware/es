@@ -1,10 +1,10 @@
 note
-	description: "Summary description for {E2B_CUSTOM_MML_HANDLER}."
+	description: "A handler for calls where target type is a logical class."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	E2B_CUSTOM_MML_HANDLER
+	E2B_CUSTOM_LOGICAL_HANDLER
 
 inherit
 	E2B_CUSTOM_CALL_HANDLER
@@ -87,10 +87,12 @@ feature {NONE} -- Implementation
 			-- <Precursor>
 		local
 			l_fname: STRING
-			l_fcall: IV_FUNCTION_CALL
+			l_fcall, l_pre_call: IV_FUNCTION_CALL
 			l_args: ARRAY [IV_EXPRESSION]
 		do
 			check helper.is_class_logical (a_translator.current_target_type.base_class) end
+			translation_pool.add_referenced_feature (a_feature, a_translator.current_target_type)
+
 			l_fname := helper.string_feature_note_value (a_feature, "maps_to")
 			if l_fname.is_empty then
 					-- Use standard naming scheme
@@ -127,6 +129,18 @@ feature {NONE} -- Implementation
 				end
 				a_translator.set_last_expression (l_fcall)
 			end
+
+				-- Add precondition check
+			if a_feature.has_precondition and not a_translator.is_in_quantifier then
+				create l_pre_call.make (name_translator.precondition_predicate_name (a_feature, a_translator.current_target_type), types.bool)
+				across
+					l_fcall.arguments as args
+				loop
+					l_pre_call.add_argument (args.item)
+				end
+				a_translator.add_safety_check (l_pre_call, "check", "precondition_of_function_" + a_feature.feature_name, a_translator.context_line_number)
+			end
+
 		end
 
 	handle_nested (a_translator: E2B_EXPRESSION_TRANSLATOR; a_nested: NESTED_B)

@@ -21,12 +21,12 @@ feature {NONE} -- Initialization
 		do
 			create {LINKED_LIST [E2B_CUSTOM_CALL_HANDLER]} call_handlers.make
 			call_handlers.extend (create {E2B_CUSTOM_OWNERSHIP_HANDLER})
-			call_handlers.extend (create {E2B_CUSTOM_MML_HANDLER})
+			call_handlers.extend (create {E2B_CUSTOM_LOGICAL_HANDLER})
 			call_handlers.extend (create {E2B_CUSTOM_ARRAY_CALL_HANDLER})
 			call_handlers.extend (create {E2B_CUSTOM_INTEGER_CALL_HANDLER})
 			call_handlers.extend (create {E2B_CUSTOM_ANY_CALL_HANDLER})
 			create {LINKED_LIST [E2B_CUSTOM_NESTED_HANDLER]} nested_handlers.make
-			nested_handlers.extend (create {E2B_CUSTOM_MML_HANDLER})
+			nested_handlers.extend (create {E2B_CUSTOM_LOGICAL_HANDLER})
 		end
 
 feature -- Access
@@ -148,6 +148,16 @@ feature -- Access (built-ins)
 				"set_owns",
 				"set_subjects",
 				"set_observers"
+			>>
+			Result.compare_objects
+		end
+
+	void_ok_features: ARRAY [STRING]
+			-- List of special ANY feature names that can be called on Void.
+		once
+			Result := <<
+				"old_",
+				"generating_type"
 			>>
 			Result.compare_objects
 		end

@@ -250,7 +250,7 @@ feature -- Visitors
 			l_class := a_node.left.type.instantiated_in (context_type).base_class
 			if attached l_class and then helper.is_class_logical (l_class) then
 				check a_operator ~ "==" or a_operator ~ "!=" end
-				(create {E2B_CUSTOM_MML_HANDLER}).handle_binary (Current, l_class, l_left, l_right, a_operator)
+				(create {E2B_CUSTOM_LOGICAL_HANDLER}).handle_binary (Current, l_class, l_left, l_right, a_operator)
 			elseif is_in_quantifier then
 				if a_operator ~ "+" then
 					last_expression := factory.function_call ("add", << l_left, l_right >>, types.int)
@@ -786,8 +786,11 @@ feature -- Visitors
 				end
 
 					-- Check if target is attached;
-					-- skip if target is expanded or a mathematical type
-				if not (current_target_type.is_expanded or helper.is_class_logical (current_target_type.base_class)) then
+					-- skip if target is expanded or a mathematical type, or this is a special any feature
+					-- ToDo: better define a special nested handler in E2B_CUSTOM_ANY_HANDLER
+				if not (current_target_type.is_expanded or
+					helper.is_class_logical (current_target_type.base_class) or
+					(attached {FEATURE_B} a_node.message as f and then translation_mapping.void_ok_features.has (f.feature_name))) then
 					translation_pool.add_type (current_target_type)
 					create l_call.make ("attached", types.bool)
 					l_call.add_argument (entity_mapping.heap)

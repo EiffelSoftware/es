@@ -44,13 +44,13 @@ feature
 			check attached {A_SETS} s.first end
 		end
 
---	ToDo: add this when preconditions are implemented
---	bad (s: MML_SEQUENCE [INTEGER])
---		local
---			x: INTEGER
---		do
---			x := s [1]
---		end
+	bad (s: MML_SEQUENCE [INTEGER])
+		local
+			x: INTEGER
+		do
+			x := s [1]
+			check s.but_last.count >= 0 end
+		end
 
 	seq_to_set (arg: MML_SEQUENCE[INTEGER])
 		require

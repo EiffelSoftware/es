@@ -70,13 +70,13 @@ feature -- Basic operations
 			end
 
 				-- Loop content
+				-- ToDo: save old side effects; add new side effects to the quantifier body; restore side effects
 			expression_translator.create_iterator (l_content_type)
 			l_counter := expression_translator.last_local
 			expression_translator.locals_map.put (l_counter, object_test_local.position)
 			loop_expr.expression_code.process (expression_translator)
 			l_expression := expression_translator.last_expression
 			expression_translator.locals_map.remove (object_test_local.position)
-
 
 			create l_map.make (l_set, << l_counter >>)
 			if loop_expr.is_all then

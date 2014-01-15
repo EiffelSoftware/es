@@ -57,7 +57,7 @@ Line: 39. Precondition invariant_holds may be violated on call to wrap.
 A_B.break
 Verification failed.
 
-Line: 46. Check new_property may be violated.
+Line: 47. Check new_property may be violated.
 ======================================
 A_B (invariant admissibility)
 Successfully verified.

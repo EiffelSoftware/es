@@ -79,6 +79,8 @@ Successfully verified.
 A_TERMINATION.set_sum_bad
 Verification failed.
 
+Line: 91. Check precondition_of_function_any_item may be violated.
+--------------------------------------
 Line: 92. Variant may not decrease at this recursive call / the end of this loop body.
 ======================================
 A_TERMINATION.sequence_sum

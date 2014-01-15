@@ -1,12 +1,12 @@
 note
 	description: "[
-		Translation unit for the pre- and postcondition predicate of an Eiffel routine.
+		Translation unit for the precondition predicate of an Eiffel routine.
 	]"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	E2B_TU_ROUTINE_PRE_POST_PREDICATE
+	E2B_TU_ROUTINE_PRE_PREDICATE
 
 inherit
 
@@ -17,7 +17,7 @@ create
 
 feature -- Access
 
-	base_id: STRING = "pre-post-predicate"
+	base_id: STRING = "pre-predicate"
 			-- <Precursor>
 
 feature -- Basic operations
@@ -29,7 +29,6 @@ feature -- Basic operations
 		do
 			create l_translator.make
 			l_translator.translate_precondition_predicate (feat, type)
-			l_translator.translate_postcondition_predicate (feat, type)
 		end
 
 end

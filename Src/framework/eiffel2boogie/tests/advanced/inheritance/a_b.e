@@ -43,6 +43,7 @@ feature {A_A}
 
 	break
 		do
+			check inv end
 			check new_property: prev.x > 0 end -- Fail
 			unwrap
 			prev := Void

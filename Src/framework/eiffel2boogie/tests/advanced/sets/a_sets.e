@@ -34,8 +34,10 @@ feature
 	bad (s: MML_SET[INTEGER])
 		local
 			s1: MML_SET[INTEGER]
+			x: INTEGER
 		do
-			s1 := s1 & 1;
+			s1 := s1 & 1
+			x := s.any_item
 			check bad_disjoint: s.is_disjoint (s1) end
 			check bad_empty: s.is_empty end
 			check bad_has: s.has (1)  end

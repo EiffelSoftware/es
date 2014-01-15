@@ -11,11 +11,13 @@ Successfully verified.
 A_SETS.bad
 Verification failed.
 
-Line: 39. Check bad_disjoint may be violated.
+Line: 40. Check precondition_of_function_any_item may be violated.
 --------------------------------------
-Line: 40. Check bad_empty may be violated.
+Line: 41. Check bad_disjoint may be violated.
 --------------------------------------
-Line: 41. Check bad_has may be violated.
+Line: 42. Check bad_empty may be violated.
+--------------------------------------
+Line: 43. Check bad_has may be violated.
 ======================================
 A_SETS (invariant admissibility)
 Successfully verified.

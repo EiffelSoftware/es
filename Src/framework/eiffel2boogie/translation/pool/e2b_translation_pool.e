@@ -140,19 +140,19 @@ feature -- Adding independent units
 	add_precondition_predicate (a_feature: FEATURE_I; a_context_type: TYPE_A)
 			-- Add precondition predicate of feature `a_feature' of `a_context_type'.
 		local
-			l_pre_post_predicate: E2B_TU_ROUTINE_PRE_POST_PREDICATE
+			l_pre_predicate: E2B_TU_ROUTINE_PRE_PREDICATE
 		do
-			create l_pre_post_predicate.make (a_feature, a_context_type)
-			add_translation_unit (l_pre_post_predicate)
+			create l_pre_predicate.make (a_feature, a_context_type)
+			add_translation_unit (l_pre_predicate)
 		end
 
 	add_postcondition_predicate (a_feature: FEATURE_I; a_context_type: TYPE_A)
 			-- Add postcondition predicate of feature `a_feature' of `a_context_type'.
 		local
-			l_pre_post_predicate: E2B_TU_ROUTINE_PRE_POST_PREDICATE
+			l_post_predicate: E2B_TU_ROUTINE_POST_PREDICATE
 		do
-			create l_pre_post_predicate.make (a_feature, a_context_type)
-			add_translation_unit (l_pre_post_predicate)
+			create l_post_predicate.make (a_feature, a_context_type)
+			add_translation_unit (l_post_predicate)
 		end
 
 	add_class_check (a_class: CLASS_C)
@@ -192,19 +192,26 @@ feature {NONE} -- Implementation
 			if a_feature.is_attribute then
 				add_attribute (a_feature, a_context_type)
 			elseif a_feature.is_routine then
-				if
-					a_context_type.base_class.has_creator_of_name_id (a_feature.feature_name_id) or
-					(a_context_type.base_class.creation_feature /= Void and then a_context_type.base_class.creation_feature.feature_id = a_feature.feature_id)
-				then
-						-- This is a creation routine
-					add_creator (a_feature, a_context_type, a_is_referenced)
-				end
-				if not helper.is_feature_status (a_feature, "creator") then
-						-- Unless the feature is marked as creator, it can be used as a normal routine;
-						-- Note that a non-creation procedure can be marked as creator
-						-- (e.g. if it's supposed to be used as a creation procedure in descendants),
-						-- in this case it will not be verified at all in the current context type.
-					add_routine (a_feature, a_context_type, a_is_referenced)
+				if helper.is_class_logical (a_context_type.base_class) then
+						-- It is a feature directly mapped to Boogie:
+						-- only translate its precondition (if exists)
+					if a_feature.has_precondition then
+						add_precondition_predicate (a_feature, a_context_type)
+					end
+				else
+					if a_context_type.base_class.has_creator_of_name_id (a_feature.feature_name_id) or
+						(a_context_type.base_class.creation_feature /= Void and then a_context_type.base_class.creation_feature.feature_id = a_feature.feature_id)
+					then
+							-- This is a creation routine
+						add_creator (a_feature, a_context_type, a_is_referenced)
+					end
+					if not helper.is_feature_status (a_feature, "creator") then
+							-- Unless the feature is marked as creator, it can be used as a normal routine;
+							-- Note that a non-creation procedure can be marked as creator
+							-- (e.g. if it's supposed to be used as a creation procedure in descendants),
+							-- in this case it will not be verified at all in the current context type.
+						add_routine (a_feature, a_context_type, a_is_referenced)
+					end
 				end
 			elseif a_feature.is_constant then
 					-- Ignore constants / nothing to verify

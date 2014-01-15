@@ -277,6 +277,12 @@ feature -- Processing
 			else
 				set_current_origin_information (a_assert)
 				process_contract_expression (a_assert.expr)
+				across last_safety_checks as i loop
+					create l_statement.make (i.item.expr)
+					l_statement.node_info.load (i.item.info)
+					l_statement.set_attribute_string (":subsumption 0")
+					add_statement (l_statement)
+				end
 				if attached a_assert.tag and then a_assert.tag.is_case_insensitive_equal ("assume") then
 					create l_assume.make (last_expression)
 					add_statement (l_assume)

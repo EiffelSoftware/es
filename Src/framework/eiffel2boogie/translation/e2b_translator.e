@@ -53,20 +53,22 @@ feature -- Element change
 		local
 			l_feature: FEATURE_I
 		do
-			if a_class.has_feature_table then
-				from
-					a_class.feature_table.start
-				until
-					a_class.feature_table.after
-				loop
-					l_feature := a_class.feature_table.item_for_iteration
-					if l_feature.is_routine and (l_feature.written_in /= system.any_id or l_feature.rout_id_set.has (system.default_create_rout_id)) then
-						add_feature_of_type (l_feature, a_class.actual_type)
+			if not helper.is_class_logical (a_class) then
+				if a_class.has_feature_table then
+					from
+						a_class.feature_table.start
+					until
+						a_class.feature_table.after
+					loop
+						l_feature := a_class.feature_table.item_for_iteration
+						if l_feature.is_routine and (l_feature.written_in /= system.any_id or l_feature.rout_id_set.has (system.default_create_rout_id)) then
+							add_feature_of_type (l_feature, a_class.actual_type)
+						end
+						a_class.feature_table.forth
 					end
-					a_class.feature_table.forth
 				end
+				translation_pool.add_class_check (a_class)
 			end
-			translation_pool.add_class_check (a_class)
 		end
 
 	add_feature (a_feature: FEATURE_I)

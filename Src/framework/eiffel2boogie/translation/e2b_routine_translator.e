@@ -695,11 +695,14 @@ feature -- Translation: agents
 			create l_function.make (name_translator.precondition_predicate_name (current_feature, current_type), types.bool)
 			create l_mapping.make
 
-			l_entity := factory.heap_entity ("heap")
-			l_function.add_argument (l_entity.name, l_entity.type)
-			l_mapping.set_heap (l_entity)
+			if not helper.is_class_logical (a_type.base_class) then
+					-- In logical classes functions do not depend on the heap
+				l_entity := factory.heap_entity ("heap")
+				l_function.add_argument (l_entity.name, l_entity.type)
+				l_mapping.set_heap (l_entity)
+			end
 
-			create l_entity.make ("current", types.ref)
+			create l_entity.make ("current", types.for_type_a (a_type))
 			l_function.add_argument (l_entity.name, l_entity.type)
 			l_mapping.set_current (l_entity)
 

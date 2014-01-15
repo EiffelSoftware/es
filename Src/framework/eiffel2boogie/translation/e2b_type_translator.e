@@ -56,7 +56,7 @@ feature -- Basic operations
 			end
 
 			-- TODO: refactor
-			if not a_type.is_tuple then
+			if not a_type.is_tuple and not helper.is_class_logical (a_type.base_class) then
 					-- Type definition
 				create l_constant.make (l_boogie_type_name, types.type)
 				l_constant.set_unique
