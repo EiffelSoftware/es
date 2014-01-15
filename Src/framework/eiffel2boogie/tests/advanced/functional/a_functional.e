@@ -3,12 +3,14 @@ class A_FUNCTIONAL
 feature
 
 	not_functional1
+			-- Warning: no return type
 		note
 			status: functional
 		do
 		end
 
 	not_functional2: INTEGER
+			-- Error: not a single assignment	
 		note
 			status: functional
 		local
@@ -18,15 +20,8 @@ feature
 			Result := a
 		end
 
-	call_not_functional
-		local
-			a: INTEGER
-		do
-			not_functional1
-			a := not_functional2
-		end
-
 	functional1: INTEGER
+			-- OK
 		note
 			status: functional
 		do
@@ -34,6 +29,7 @@ feature
 		end
 
 	functional2 (a: INTEGER): INTEGER
+			-- OK
 		note
 			status: functional
 		do
@@ -41,6 +37,7 @@ feature
 		end
 
 	functional3 (a: A_FUNCTIONAL): INTEGER
+			-- OK
 		note
 			status: functional
 		do
@@ -50,6 +47,7 @@ feature
 		end
 
 	call_functional
+			-- OK
 		do
 			check functional1 = 7 end
 			check functional2 (1) = 5 end
@@ -59,6 +57,7 @@ feature
 feature -- Preconditions
 
 	functional4 (x: INTEGER): INTEGER
+			-- OK
 		note
 			status: functional
 		require

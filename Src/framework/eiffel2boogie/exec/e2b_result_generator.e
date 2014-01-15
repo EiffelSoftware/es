@@ -299,8 +299,14 @@ feature {NONE} -- Implementation
 	line_for_error (a_error: E2B_BOOGIE_PROCEDURE_ERROR): INTEGER
 			-- Select line number for `a_error'.
 		do
-			if a_error.attributes.has_key ("line") then
-				Result := a_error.attributes["line"].to_integer
+			if a_error.is_postcondition_violation then
+				if a_error.related_attributes.has_key ("line") then
+					Result := a_error.related_attributes["line"].to_integer
+				end
+			else
+				if a_error.attributes.has_key ("line") then
+					Result := a_error.attributes["line"].to_integer
+				end
 			end
 		end
 

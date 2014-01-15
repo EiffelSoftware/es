@@ -37,7 +37,7 @@ feature
 
 --	loop_decreases_bad_type
 --		local
---			x: REAL
+--			x: REAL_64
 --		do
 --			from
 --				x := 1.0
@@ -46,7 +46,7 @@ feature
 --			until
 --				x = 0.0
 --			loop
---				x := x / 2
+--				x := x / 2.0
 --			end
 --		end
 

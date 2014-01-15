@@ -182,11 +182,11 @@ def run_test(path, test_name):
 			output_file = open(os.path.join(path, "output.txt"), 'w')
 			output_file.write(output_content)
 			output_file.close()
-		
+			
 		expected_file = open(os.path.join(path, "output.txt"), 'r')
 		expected_content = expected_file.read().strip()
 		expected_file.close()
-		
+	
 		if output_content == expected_content:
 			_as_success(test_name + ": successful")
 		else:
@@ -205,17 +205,22 @@ def run_test(path, test_name):
 parser = argparse.ArgumentParser()
 parser.add_argument('--clean', '-c', action='store_true')
 parser.add_argument('--store', '-s', action='store_true')
+parser.add_argument('--dir', '-d', default=None)
 parser.add_argument('tests', nargs=argparse.REMAINDER)
 
 arguments = parser.parse_args()
+
+test_dir = None
+if not arguments.dir is None:
+	test_dir = os.path.join(base_path, arguments.dir)
 
 if arguments.clean:
 	compile_tests()
 if arguments.store:
 	store_output = True
-
+	
 if len(arguments.tests) == 0:
-	run_tests()
+	run_tests(test_dir)
 else:
 	for t in arguments.tests:
-		run_test(find_test(t), t)
+		run_test(find_test(t, test_dir), t)

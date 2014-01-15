@@ -3471,8 +3471,12 @@ Src/framework/configuration/versioning/configuration-1-0-0.xsd -text
 Src/framework/configuration/versioning/configuration-1-2-0.xsd -text
 Src/framework/configuration/versioning/configuration-1-3-0.xsd -text
 Src/framework/dotnet_loader/dotnet_loader.lic -text
+Src/framework/eiffel2boogie/tests/advanced/functional/output.txt -text
+Src/framework/eiffel2boogie/tests/advanced/inheritance/output.txt -text
+Src/framework/eiffel2boogie/tests/advanced/lemma/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/sequences/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/sets/output.txt -text
+Src/framework/eiffel2boogie/tests/advanced/termination/output.txt -text
 Src/framework/eiffel2boogie/tests/basic/attributes/output.txt -text
 Src/framework/eiffel2boogie/tests/basic/basic/output.txt -text
 Src/framework/eiffel2boogie/tests/basic/boolean/output.txt -text

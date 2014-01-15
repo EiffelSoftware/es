@@ -1,15 +1,15 @@
 ======================================
-ANY.default_create (creator, inherited by A_SEQUENCES)
+ANY.default_create (creator, inherited by A_LEMMA)
 Successfully verified.
 ======================================
-A_SEQUENCES.good
+A_LEMMA.lemma1
 Successfully verified.
 ======================================
-A_SEQUENCES.good1
+A_LEMMA.lemma2
 Successfully verified.
 ======================================
-A_SEQUENCES.seq_to_set
+A_LEMMA.client
 Successfully verified.
 ======================================
-A_SEQUENCES (invariant admissibility)
+A_LEMMA (invariant admissibility)
 Successfully verified.

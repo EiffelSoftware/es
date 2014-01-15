@@ -33,8 +33,8 @@ feature
 			wrap
 
 			other.break
-			check other.inv_without ("prev_exists") end
-			check other.x > 0 end -- Fail
+			check almost_holds: other.inv_without ("prev_exists") end
+			check new_property: other.x > 0 end -- Fail
 			other.set_prev
 			other.wrap -- Fail: dynamic type unknown
 		end
@@ -43,7 +43,7 @@ feature {A_A}
 
 	break
 		do
-			check prev.x > 0 end -- Fail
+			check new_property: prev.x > 0 end -- Fail
 			unwrap
 			prev := Void
 		ensure then

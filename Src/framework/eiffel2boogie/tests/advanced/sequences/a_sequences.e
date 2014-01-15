@@ -44,6 +44,14 @@ feature
 			check attached {A_SETS} s.first end
 		end
 
+--	ToDo: add this when preconditions are implemented
+--	bad (s: MML_SEQUENCE [INTEGER])
+--		local
+--			x: INTEGER
+--		do
+--			x := s [1]
+--		end
+
 	seq_to_set (arg: MML_SEQUENCE[INTEGER])
 		require
 			arg.count >= 3

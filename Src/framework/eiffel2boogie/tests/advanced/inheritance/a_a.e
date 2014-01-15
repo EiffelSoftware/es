@@ -1,6 +1,19 @@
 class
 	A_A
 
+create
+	make
+
+feature
+	make
+		note
+			status: creator
+		do
+			x := 1
+			next := Current
+			prev := Current
+		end
+
 feature
 	x: INTEGER
 
@@ -42,13 +55,12 @@ feature {A_A}
 			check next.inv end
 			x := next.x
 		ensure
-			inv
+			invariant_holds: inv
 		end
 
 	break
 		require
 			wrapped: is_wrapped
-			almost_holds: prev.inv_without ("next_exists")
 		do
 			unwrap
 			prev := Void

@@ -1,12 +1,21 @@
 ======================================
-SETS.good
+ANY.default_create (creator, inherited by A_SETS)
 Successfully verified.
 ======================================
-SETS.bad
+A_SETS.good
+Successfully verified.
+======================================
+A_SETS.good1
+Successfully verified.
+======================================
+A_SETS.bad
 Verification failed.
 
-Check of tag bad_disjoint may fail.
+Line: 39. Check bad_disjoint may be violated.
 --------------------------------------
-Check of tag bad_empty may fail.
+Line: 40. Check bad_empty may be violated.
 --------------------------------------
-Check of tag bad_has may fail.
+Line: 41. Check bad_has may be violated.
+======================================
+A_SETS (invariant admissibility)
+Successfully verified.
