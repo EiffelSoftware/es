@@ -3113,6 +3113,15 @@ Src/experimental/library/editor/bitmaps/right_scroll_arrow.png -text
 Src/experimental/library/edk/include/edk.lib -text
 Src/experimental/library/edk/spec/msc/windows/lib/edk.lib -text
 Src/experimental/library/encoding/implementation/unix/Clib/iconv-config -text
+Src/experimental/library/gobo/gobo_gelex-safe.ecf svneol=native#text/xml
+Src/experimental/library/gobo/gobo_geyacc-safe.ecf svneol=native#text/xml
+Src/experimental/library/gobo/gobo_math-safe.ecf svneol=native#text/xml
+Src/experimental/library/gobo/gobo_pattern-safe.ecf svneol=native#text/xml
+Src/experimental/library/gobo/gobo_regexp-safe.ecf svneol=native#text/xml
+Src/experimental/library/gobo/gobo_string-safe.ecf svneol=native#text/xml
+Src/experimental/library/gobo/gobo_structure-safe.ecf svneol=native#text/xml
+Src/experimental/library/gobo/gobo_time-safe.ecf svneol=native#text/xml
+Src/experimental/library/gobo/gobo_utility-safe.ecf svneol=native#text/xml
 Src/experimental/library/i18n/README -text
 Src/experimental/library/i18n/TODO -text
 Src/experimental/library/i18n/doc/css/commonPrint.css -text
@@ -3143,7 +3152,11 @@ Src/experimental/library/i18n/example_application/po_files/xx_XX.po -text
 Src/experimental/library/i18n/example_application/po_files/zh_CN.po -text
 Src/experimental/library/i18n/forum.txt -text
 Src/experimental/library/i18n/tests/test_files/locale/results/unix/POSIX -text
+Src/experimental/library/i18n/tests/test_files/locale/results/unix/en_AG -text
 Src/experimental/library/i18n/tests/test_files/locale/results/unix/en_IN -text
+Src/experimental/library/i18n/tests/test_files/locale/results/unix/en_NG -text
+Src/experimental/library/i18n/tests/test_files/locale/results/unix/en_ZM -text
+Src/experimental/library/i18n/tests/test_files/locale/results/unix/fr_FR -text
 Src/experimental/library/i18n/tests/test_files/locale/results/unix/zh_CN -text
 Src/experimental/library/i18n/tests/test_files/locale/results/windows/af_ZA -text
 Src/experimental/library/i18n/tests/test_files/locale/results/windows/am_ET -text
@@ -3380,6 +3393,7 @@ Src/experimental/library/ribbon/test/src/ribbon_project.er -text
 Src/experimental/library/runtime/logging/doc/Arch_Design_and_Impl.docx -text
 Src/experimental/library/runtime/logging/doc/Arch_Design_and_Impl.pdf -text svneol=unset#application/pdf
 Src/experimental/library/runtime/logging/doc/Arch_Design_and_Impl.vsd -text
+Src/experimental/library/store/test/test_results/oracle_results -text
 Src/experimental/library/text/parser/xml/parser/callbacks/README.TXT -text
 Src/experimental/library/text/parser/xml/tree/README.TXT -text
 Src/experimental/library/vision2/Clib/default_vision2_icon.ico -text

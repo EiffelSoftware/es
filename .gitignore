@@ -381,7 +381,6 @@ Src/experimental/library/com/spec/bcb
 Src/experimental/library/com/spec/mingw
 Src/experimental/library/com/spec/msc
 Src/experimental/library/docking/.git
-Src/experimental/library/docking/EIFGENs
 Src/experimental/library/encryption/spec
 Src/experimental/library/event/spec
 Src/experimental/library/gobo
@@ -401,14 +400,12 @@ Src/experimental/library/runtime/logging/spec
 Src/experimental/library/store/spec
 Src/experimental/library/testing/.git
 Src/experimental/library/testing/EIFGENs
-Src/experimental/library/testing_eweasel/compilation/EIFGENs
 Src/experimental/library/vision2/spec/bcb
 Src/experimental/library/vision2/spec/linux-x86-64
 Src/experimental/library/vision2/spec/macosx-x86
 Src/experimental/library/vision2/spec/mingw
 Src/experimental/library/vision2/spec/msc
 Src/experimental/library/vision2/spec/unix
-Src/experimental/library/web_browser/EIFGENs
 Src/experimental/library/web_browser/spec/bsb
 Src/experimental/library/web_browser/spec/mingw
 Src/experimental/library/web_browser/spec/msc
