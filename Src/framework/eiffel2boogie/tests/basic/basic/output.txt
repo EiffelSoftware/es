@@ -16,7 +16,7 @@ Successfully verified.
 B_BASIC.ensure_false
 Verification failed.
 
-Postcondition has_to_fail may be violated.
+Line: 22. Postcondition has_to_fail may be violated.
 ======================================
 B_BASIC.ensure_true
 Successfully verified.

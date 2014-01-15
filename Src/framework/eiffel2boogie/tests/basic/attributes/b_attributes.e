@@ -13,8 +13,7 @@ feature
 
 	default_values_for_attribute
 		note
-			skip: True
-			creation_only: True
+			status: creator
 		do
 			check integer_attribute = 0 end
 			check natural_attribute = 0 end

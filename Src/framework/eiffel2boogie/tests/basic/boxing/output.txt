@@ -1,5 +1,11 @@
 ======================================
+ANY.default_create (creator, inherited by B_BOXING)
+Successfully verified.
+======================================
 B_BOXING.boxing
 Verification failed.
 
-Check of tag has_to_fail may fail.
+Line: 33. Check has_to_fail may be violated.
+======================================
+B_BOXING (invariant admissibility)
+Successfully verified.

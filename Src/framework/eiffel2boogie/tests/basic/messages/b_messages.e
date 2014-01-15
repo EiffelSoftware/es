@@ -1,5 +1,5 @@
 note
-	AutoProof: ownership, ownserhip_defaults, overflow
+	AutoProof: ownership, ownership_defaults, overflow
 
 class B_MESSAGES
 

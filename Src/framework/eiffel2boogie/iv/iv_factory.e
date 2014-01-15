@@ -62,8 +62,14 @@ feature -- Values
 
 	real_value (a_value: REAL_64): IV_VALUE
 			-- Value for floating point `a_value'.
+		local
+			l_temp: STRING
 		do
-			create Result.make (a_value.out, types.real)
+			l_temp := a_value.out
+			if not l_temp.has ('.') then
+				l_temp.append (".0")
+			end
+			create Result.make (l_temp, types.real)
 		end
 
 	type_value (a_value: TYPE_A): IV_VALUE

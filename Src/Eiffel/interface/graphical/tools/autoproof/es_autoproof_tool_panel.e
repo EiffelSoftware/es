@@ -546,7 +546,7 @@ feature {NONE} -- Basic operations
 					create {COMPILED_LINE_STONE} l_stone.make_with_line (l_event_item.context_class, l_event_item.line_number, False)
 				elseif l_event_item.context_feature /= Void then
 					create {FEATURE_STONE} l_stone.make (l_event_item.context_feature.api_feature (l_event_item.context_class.class_id))
-				else
+				elseif l_event_item.context_class /= Void then
 					create {CLASSC_STONE} l_stone.make (l_event_item.context_class)
 				end
 			end
@@ -835,7 +835,7 @@ feature {NONE} -- Constants
 		end
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

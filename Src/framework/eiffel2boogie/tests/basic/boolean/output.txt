@@ -1,3 +1,9 @@
 ======================================
+ANY.default_create (creator, inherited by B_BOOLEAN)
+Successfully verified.
+======================================
 B_BOOLEAN.boolean_operations
+Successfully verified.
+======================================
+B_BOOLEAN (invariant admissibility)
 Successfully verified.
