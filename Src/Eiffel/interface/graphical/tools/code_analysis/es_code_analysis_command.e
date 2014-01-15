@@ -21,6 +21,8 @@ inherit
 			initialize_sd_toolbar_item
 		end
 
+	CA_SHARED_NAMES
+
 	SHARED_EIFFEL_PROJECT
 
 	SHARED_ERROR_HANDLER
@@ -55,7 +57,7 @@ feature -- Execution
 		do
 				-- Show the tool right from the start.
 			show_ca_tool
-			
+
 			if not eiffel_project.is_compiling then
 				if window_manager.has_modified_windows then
 					create l_classes.make_default
@@ -121,8 +123,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 			if eiffel_project.successful then
 				create l_helper
 				if l_helper.code_analyzer.is_running then
-					create l_dialog.make_standard ("Code analysis is already running.%NPlease%
-						% wait until the current analysis has finished.")
+					create l_dialog.make_standard (ca_messages.already_running_long)
 					l_dialog.show_on_active_window
 				else
 						-- Detection of changes
@@ -163,7 +164,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 			if eiffel_project.successful then
 				create l_helper
 				if l_helper.code_analyzer.is_running then
-					create l_dialog.make_standard ("Code analysis is already running.%NPlease wait until the current analysis has finished.")
+					create l_dialog.make_standard (ca_messages.already_running_long)
 					l_dialog.show_on_active_window
 				else
 					perform_analysis (a_stone)
@@ -190,12 +191,12 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 			end
 
 			disable_tool_button
-			window_manager.display_message ("Code analysis running...")
+			window_manager.display_message (ca_messages.status_bar_running)
 			code_analyzer.add_completed_action (agent analysis_completed)
 			code_analyzer.analyze
 			l_scope_label := ca_tool.panel.scope_label
-			l_scope_label.set_text ("System")
-			l_scope_label.set_tooltip ("The whole system was analyzed recently.")
+			l_scope_label.set_text (ca_messages.system_scope)
+			l_scope_label.set_tooltip (ca_messages.system_scope_tooltip)
 			l_scope_label.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (30, 30, 30))
 		end
 
@@ -233,12 +234,12 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 			end
 
 			disable_tool_button
-			window_manager.display_message ("Code analysis running...")
+			window_manager.display_message (ca_messages.status_bar_running)
 			code_analyzer.add_completed_action (agent analysis_completed)
 			code_analyzer.analyze
 			l_scope_label := ca_tool.panel.scope_label
-			l_scope_label.set_text ("System")
-			l_scope_label.set_tooltip ("The whole system was analyzed recently.")
+			l_scope_label.set_text (ca_messages.system_scope)
+			l_scope_label.set_tooltip (ca_messages.system_scope_tooltip)
 			l_scope_label.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (30, 30, 30))
 		end
 
@@ -270,7 +271,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 				l_scope_label.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (140, 140, 255))
 				l_scope_label.set_pebble (s)
 				l_scope_label.set_pick_and_drop_mode
-				l_scope_label.set_tooltip ("Class that has been analyzed recently.")
+				l_scope_label.set_tooltip (ca_messages.class_scope_tooltip)
 			elseif attached {CLUSTER_STONE} a_stone as s then
 				if s.is_cluster then
 					code_analyzer.add_cluster (s.cluster_i)
@@ -281,7 +282,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 				l_scope_label.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (255, 140, 140))
 				l_scope_label.set_pebble (s)
 				l_scope_label.set_pick_and_drop_mode
-				l_scope_label.set_tooltip ("Cluster that has been analyzed recently.")
+				l_scope_label.set_tooltip (ca_messages.cluster_scope_tooltip)
 			elseif attached {DATA_STONE} a_stone as s then
 				if attached {LIST [CONF_GROUP]} s.data as g then
 					from
@@ -298,18 +299,18 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 					l_scope_label.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (140, 255, 140))
 					l_scope_label.set_pebble (s)
 					l_scope_label.set_pick_and_drop_mode
-					l_scope_label.set_tooltip ("Configuration group that has been analyzed recently.")
+					l_scope_label.set_tooltip (ca_messages.conf_group_tooltip)
 				end
 			end
 
 			disable_tool_button
-			window_manager.display_message ("Code analysis running...")
+			window_manager.display_message (ca_messages.status_bar_running)
 			code_analyzer.add_completed_action (agent analysis_completed)
 			code_analyzer.analyze
 		end
 
 	analysis_completed (a_success: BOOLEAN)
-			-- Is called when the analysis is completed. `a_success' is ignored (requried
+			-- Is called when the analysis is completed. `a_success' is ignored (required
 			-- by {CA_CODE_ANALYZER}, though).
 		local
 			l_violation_exists: BOOLEAN
@@ -334,7 +335,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 
 			enable_tool_button
 				-- Update status bar.
-			window_manager.display_message ("Code Analysis has terminated.")
+			window_manager.display_message (ca_messages.status_bar_terminated)
 		end
 
 	event_context_cookie: UUID
@@ -506,9 +507,9 @@ feature {NONE} -- Implementation
 	set_up_menu_items
 			-- Set up menu items of proof button
 		do
-			create analyze_system_item.make_with_text_and_action ("Analyze whole system", agent analyze_all)
-			create analyze_current_item_item.make_with_text_and_action ("Analyze current item", agent analyze_current_item)
-			create analyze_parent_item_item.make_with_text_and_action ("Analyze parent cluster of current item", agent analyze_parent_cluster)
+			create analyze_system_item.make_with_text_and_action (ca_messages.analyze_whole_system, agent analyze_all)
+			create analyze_current_item_item.make_with_text_and_action (ca_messages.analyze_current_item, agent analyze_current_item)
+			create analyze_parent_item_item.make_with_text_and_action (ca_messages.analyze_parent_cluster, agent analyze_parent_cluster)
 		end
 
 	drop_down_menu: EV_MENU
@@ -534,19 +535,19 @@ feature {NONE} -- Implementation
 	menu_name: STRING_GENERAL
 			-- Name as it appears in the menu (with & symbol).
 		do
-			Result := "Run Code Analysis"
+			Result := ca_messages.run_code_analysis
 		end
 
 	tooltip: STRING_GENERAL
 			-- Tooltip for the toolbar button.
 		do
-			Result := "Analyze whole system"
+			Result := ca_messages.analyze_whole_system
 		end
 
 	tooltext: STRING_GENERAL
 			-- Text for the toolbar button.
 		do
-			Result := "Run Code Analysis"
+			Result := ca_messages.run_code_analysis
 		end
 
 	description: STRING_GENERAL

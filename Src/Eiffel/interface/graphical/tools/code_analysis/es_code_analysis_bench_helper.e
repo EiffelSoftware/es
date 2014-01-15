@@ -7,7 +7,11 @@ note
 
 class
 	ES_CODE_ANALYSIS_BENCH_HELPER
+
 inherit {NONE}
+
+	CA_SHARED_NAMES
+
 	EB_SHARED_PIXMAPS
 
 feature -- Basic operations
@@ -24,14 +28,14 @@ feature -- Basic operations
 		do
 				-- The class should be compiled in any case. Make it sure anyway.
 			if a_stone.class_i.is_compiled then
-				create l_item.make_with_text_and_action ("Run Code Analysis of Class '" + a_stone.class_name + "'"
+				create l_item.make_with_text_and_action (ca_messages.class_context_menu_caption (a_stone.class_name)
 					, agent ca_command.execute_with_stone (a_stone))
 					-- Although the icon name is not very suitable, the icon itself seems appropriate.
 				l_item.set_pixmap (icon_pixmaps.view_flat_icon)
 
 				if code_analyzer.is_running then
 					l_item.disable_sensitive
-					l_item.set_text (l_item.text + " (already running)")
+					l_item.set_text (l_item.text + ca_messages.already_running)
 				end
 				a_menu.extend (l_item)
 			end
@@ -47,13 +51,13 @@ feature -- Basic operations
 		local
 			l_item: EV_MENU_ITEM
 		do
-			create l_item.make_with_text_and_action ("Run Code Analysis of cluster"
+			create l_item.make_with_text_and_action (ca_messages.cluster_context_menu_caption
 				, agent ca_command.execute_with_stone (a_stone))
 			l_item.set_pixmap (icon_pixmaps.view_flat_icon)
 
 			if code_analyzer.is_running then
 				l_item.disable_sensitive
-				l_item.set_text (l_item.text + " (already running)")
+				l_item.set_text (l_item.text + ca_messages.already_running)
 			end
 			a_menu.extend (l_item)
 		end

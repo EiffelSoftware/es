@@ -24,7 +24,7 @@ feature -- Access
 			-- <Precursor>
 		do
 				-- The icon name sounds wrong but the icon itself is
-				-- appropriate
+				-- appropriate.
 			Result := stock_pixmaps.view_flat_icon_buffer
 		end
 

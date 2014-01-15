@@ -51,10 +51,10 @@ feature {NONE} -- Initialization
 	on_after_initialized
 			-- <Precursor>
 		do
-				-- Bind redirecting pick and drop actions
+				-- Bind redirecting pick and drop actions.
 			stone_director.bind (grid_events, Current)
 
-				-- Hook up events for session data
+				-- Hook up events for session data.
 			if session_manager.is_service_available then
 				session_data.session_connection.connect_events (Current)
 			end
@@ -73,28 +73,28 @@ feature {NONE} -- Initialization
 		do
 			create l_helper
 
-				-- "toggle errors" button
+				-- "Toggle errors" button.
 			create errors_button.make
 			errors_button.set_pixmap (stock_pixmaps.general_error_icon)
 			errors_button.set_pixel_buffer (stock_pixmaps.general_error_icon_buffer)
 			errors_button.enable_select
 			errors_button.select_actions.extend (agent on_update_visiblity)
 
-				-- "toggle warnings" button
+				-- "Toggle warnings" button.
 			create warnings_button.make
 			warnings_button.set_pixmap (stock_pixmaps.general_warning_icon)
 			warnings_button.set_pixel_buffer (stock_pixmaps.general_warning_icon_buffer)
 			warnings_button.enable_select
 			warnings_button.select_actions.extend (agent on_update_visiblity)
 
-				-- "toggle suggestions" button
+				-- "Toggle suggestions" button.
 			create suggestions_button.make
 			suggestions_button.set_pixmap (stock_pixmaps.view_editor_icon)
 			suggestions_button.set_pixel_buffer (stock_pixmaps.view_editor_icon_buffer)
 			suggestions_button.enable_select
 			suggestions_button.select_actions.extend (agent on_update_visiblity)
 
-				-- "toggle hints" button
+				-- "Toggle hints" button.
 			create hints_button.make
 			hints_button.set_pixmap (stock_pixmaps.general_information_icon)
 			hints_button.set_pixel_buffer (stock_pixmaps.general_information_icon_buffer)
@@ -103,7 +103,7 @@ feature {NONE} -- Initialization
 
 			update_button_titles
 
-				-- Scope label
+				-- Scope label.
 			create l_label.make_with_text (ca_names.scope)
 			l_label.set_tooltip (ca_names.scope_tooltip)
 			create scope_label.make_with_text (ca_names.analysis_not_run)
@@ -133,45 +133,18 @@ feature {NONE} -- Initialization
 			l_popup_button: SD_TOOL_BAR_POPUP_BUTTON
 			l_label: EV_LABEL
 		do
-				-- live text filter
-			create l_box
-
-			l_box.extend (create {EV_LABEL}.make_with_text (ca_names.tool_text_filter + ": "))
-			l_box.disable_item_expand (l_box.last)
-			create text_filter
-			text_filter.key_release_actions.force_extend (agent on_update_visiblity)
-			text_filter.set_minimum_width_in_characters (10)
-			l_box.extend (text_filter)
-			l_box.disable_item_expand (text_filter)
-
-				-- clear button
-			create l_button.make
-			l_button.set_pixmap (stock_mini_pixmaps.general_delete_icon)
-			l_button.pointer_button_press_actions.force_extend (
-				agent
-					do
-						text_filter.set_text ("")
-						on_update_visiblity
-					end
-				)
-
-				-- Move to previous error button
+				-- "Move to previous error" button.
 			create l_button.make
 			l_button.set_pixmap (stock_pixmaps.view_previous_icon)
 			l_button.set_tooltip (ca_names.go_to_previous_tooltip)
 			l_button.select_actions.extend (agent go_to_previous_violation)
 
-				-- options button
-			create l_popup_button.make
-			l_popup_button.set_pixmap (stock_pixmaps.metric_filter_icon)
-			l_popup_button.set_pixel_buffer (stock_pixmaps.metric_filter_icon_buffer)
-			l_popup_button.set_tooltip (ca_names.options_tooltip)
-
 			show_preferences_button := (create {ES_CA_SHOW_PREFERENCES_COMMAND}.make).new_sd_toolbar_item (True)
 
 			create Result.make (4)
 			Result.extend (l_button)
-				-- Move to next error button
+
+				-- "Move to next error" button.
 			create l_button.make
 			l_button.set_pixmap (stock_pixmaps.view_next_icon)
 			l_button.set_tooltip (ca_names.go_to_next_tooltip)
@@ -561,7 +534,7 @@ feature {NONE} -- Basic operations
 				else -- No location attached.
 					create l_pos_token.make ("")
 				end
---					-- Create editor item
+--					-- Create editor item.
 				create l_line.make_unix_style
 				l_line.append_token (l_pos_token)
 				l_editor_item := create_clickable_grid_item (l_line, False)
@@ -588,7 +561,7 @@ feature {NONE} -- Basic operations
 			l_item: EV_MENU_ITEM
 			l_fix_executor: ES_CA_FIX_EXECUTOR
 		do
-				-- Only process right clicks (`button = 3')
+				-- Only process right clicks (`button = 3').
 			if button = 3 and then not a_fixes.is_empty then
 				create l_menu
 
@@ -617,7 +590,6 @@ feature {NONE} -- Basic operations
 
 			a_parent.insert_subrow (l_index)
 			l_row := a_parent.subrow (l_index)
---			l_row.set_data (a_viol)
 
 			l_row.set_item (category_column, create {EV_GRID_LABEL_ITEM})
 			l_row.set_item (class_column, create {EV_GRID_LABEL_ITEM})

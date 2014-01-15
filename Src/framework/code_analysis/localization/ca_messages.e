@@ -23,6 +23,52 @@ feature -- GUI
 	no_issues: STRING_32
 		do Result := locale.translation ("Code analysis found no issues!") end
 
+	class_context_menu_caption (a_class_name: READABLE_STRING_GENERAL): STRING_32
+		do Result := locale.formatted_string (locale.translation ("Run Code Analysis of Class '$1'"), [a_class_name]) end
+
+	cluster_context_menu_caption: STRING_32
+		do Result := locale.translation ("Run Code Analysis of cluster") end
+
+	already_running: STRING_32
+		do Result := locale.translation (" (already running)") end
+
+	already_running_long: STRING_32
+		do Result := locale.translation ("Code analysis is already running.%NPlease%
+						% wait until the current analysis has finished.") end
+
+	status_bar_running: STRING_32
+		do Result := locale.translation ("Code analysis running...") end
+
+	system_scope: STRING_32
+		do Result := locale.translation ("System") end
+
+	system_scope_tooltip: STRING_32
+		do Result := locale.translation ("The whole system was analyzed recently.") end
+
+	class_scope_tooltip: STRING_32
+		do Result := locale.translation ("Class that has been analyzed recently.") end
+
+	cluster_scope_tooltip: STRING_32
+		do Result := locale.translation ("Cluster that has been analyzed recently.") end
+
+	conf_group_tooltip: STRING_32
+		do Result := locale.translation ("Configuration group that has been analyzed recently.") end
+
+	status_bar_terminated: STRING_32
+		do Result := locale.translation ("Code Analysis has terminated.") end
+
+	analyze_whole_system: STRING_32
+		do Result := locale.translation ("Analyze whole system") end
+
+	analyze_current_item: STRING_32
+		do Result := locale.translation ("Analyze current item") end
+
+	analyze_parent_cluster: STRING_32
+		do Result := locale.translation ("Analyze parent cluster of current item") end
+
+	run_code_analysis: STRING_32
+		do Result := locale.translation ("Run Code Analysis") end
+
 feature -- Code Analyzer
 
 	analyzing_class (a_class_name: READABLE_STRING_GENERAL): STRING_32
