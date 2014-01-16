@@ -104,8 +104,7 @@ feature -- Type translation
 			l_user_type: IV_USER_TYPE
 			l_constructor: STRING
 			l_params, l_domain_types: ARRAY [IV_TYPE]
-			l_rank_functions: like helper.class_note_values
-			l_default_function: STRING
+			l_default_function, l_leq_function: STRING
 			l_access_feature: FEATURE_I
 		do
 			l_type := a_type.deep_actual_type
@@ -157,9 +156,9 @@ feature -- Type translation
 				end
 
 					-- Check if the type has a rank function
-				l_rank_functions := helper.class_note_values (l_class, "rank")
-				if not l_rank_functions.is_empty then
-					l_user_type.set_rank_function (l_rank_functions.first)
+				l_leq_function := helper.function_for_logical (l_class.feature_named_32 ("infix %"<=%""))
+				if attached l_leq_function then
+					l_user_type.set_rank_function (l_leq_function)
 				end
 
 				Result := l_user_type

@@ -178,12 +178,10 @@ feature -- Feature status helpers
 	function_for_logical (a_feature: FEATURE_I): STRING
 			-- Boogie function that `a_feature' maps to;
 			-- Void if `a_feature' is not from a logical class.
-		require
-			a_feature_exists: attached a_feature
 		local
 			l_values: ARRAYED_LIST [STRING_32]
 		do
-			if is_class_logical (a_feature.written_class) then
+			if attached a_feature and then is_class_logical (a_feature.written_class) then
 				l_values := feature_note_values (a_feature, "maps_to")
 				if l_values.is_empty then
 						-- Use standard naming scheme
@@ -226,7 +224,9 @@ feature -- Class status helpers
 
 	type_for_logical (a_class: CLASS_C): STRING
 			-- Boogie type that `a_class' maps to;
-			-- Void if `a_class' is not logical.	
+			-- Void if `a_class' is not logical.
+		require
+			a_class_exists: attached a_class
 		local
 			l_values: ARRAYED_LIST [STRING_32]
 		do

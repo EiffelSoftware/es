@@ -3,7 +3,6 @@ note
 	author: "Nadia Polikarpova"
 	theory: "set.bpl"
 	maps_to: "Set"
-	rank: "Set#Subset"
 	typed_sets: ""
 
 class MML_SET [G]

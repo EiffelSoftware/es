@@ -3,7 +3,6 @@ note
 	author: "Nadia Polikarpova"
 	theory: "sequence.bpl"
 	maps_to: "Seq"
-	rank: "Seq#LessEqual"
 	typed_sets: "Seq#Range"		
 
 class
@@ -92,8 +91,15 @@ feature -- Comparison
 			maps_to: "Seq#Equal"
 		do
 		end
+		
+	is_less_equal alias "<=" (a_other: MML_SEQUENCE [G]): BOOLEAN
+			-- If this sequence shorter than or the same length as `a_other'?
+		note
+			maps_to: "Seq#LessEqual"
+		do
+		end
 
-	is_prefix_of alias "<=" (other: MML_SEQUENCE [G]): BOOLEAN
+	is_prefix_of (other: MML_SEQUENCE [G]): BOOLEAN
 			-- Is this sequence a prefix of `other'?
 		note
 			maps_to: "Seq#Prefix"		
