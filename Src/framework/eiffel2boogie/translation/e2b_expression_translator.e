@@ -99,6 +99,9 @@ feature -- Access
 	last_expression: IV_EXPRESSION
 			-- Last generated expression.
 
+	side_effect: LINKED_LIST [IV_STATEMENT]
+			-- List of side effect statements.			
+
 	context_feature: FEATURE_I
 			-- Context of expression.
 
@@ -1058,7 +1061,15 @@ feature -- Translation
 			-- Add safety check `a_expression' of type `a_name'.
 		require
 			boolean_expression: a_expression.type.is_boolean
-		deferred
+		local
+			l_assert: IV_ASSERT
+		do
+			create l_assert.make (implies_safety_expression (a_expression))
+			l_assert.node_info.set_type (a_name)
+			l_assert.node_info.set_tag (a_tag)
+			l_assert.node_info.set_line (a_line)
+			l_assert.set_attribute_string (":subsumption 0")
+			side_effect.extend (l_assert)
 		end
 
 	safety_check_condition: LINKED_STACK [IV_EXPRESSION]

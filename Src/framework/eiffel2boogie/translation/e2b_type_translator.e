@@ -255,7 +255,7 @@ feature {NONE} -- Implementation
 						l_translator.set_context_tag (l_assert.tag)
 						l_assert.process (l_translator)
 						across l_translator.side_effect as i loop
-							Result.extend (i.item.expr)
+							Result.extend (i.item.expression)
 						end
 						Result.extend (l_translator.last_expression)
 							-- If ownership is enabled and we are processing the full invariant,

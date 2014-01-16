@@ -278,10 +278,7 @@ feature -- Processing
 				set_current_origin_information (a_assert)
 				process_contract_expression (a_assert.expr)
 				across last_safety_checks as i loop
-					create l_statement.make (i.item.expr)
-					l_statement.node_info.load (i.item.info)
-					l_statement.set_attribute_string (":subsumption 0")
-					add_statement (l_statement)
+					add_statement (i.item)
 				end
 				if attached a_assert.tag and then a_assert.tag.is_case_insensitive_equal ("assume") then
 					create l_assume.make (last_expression)
@@ -752,10 +749,7 @@ feature -- Processing
 					set_current_origin_information (l_invariant)
 					process_contract_expression (l_invariant.expr)
 					across last_safety_checks as i loop
-						create l_assert.make (i.item.expr)
-						l_assert.node_info.load (i.item.info)
-						l_assert.set_attribute_string (":subsumption 0")
-						add_statement (l_assert)
+						add_statement (i.item)
 					end
 					create l_assert.make (last_expression)
 					l_assert.node_info.set_type ("loop_inv")
@@ -1031,10 +1025,7 @@ feature {NONE} -- Loop processing
 
 				process_modifies (a_modifies, l_frame)
 				across last_safety_checks as i loop
-					create l_assert.make (i.item.expr)
-					l_assert.node_info.load (i.item.info)
-					l_assert.set_attribute_string (":subsumption 0")
-					add_statement (l_assert)
+					add_statement (i.item)
 				end
 				create l_assume.make (last_frame)
 				add_statement (l_assume)
@@ -1081,10 +1072,7 @@ feature {NONE} -- Loop processing
 						set_current_origin_information (l_invariant)
 						process_contract_expression (l_invariant.expr)
 						across last_safety_checks as i loop
-							create l_assert.make (i.item.expr)
-							l_assert.node_info.load (i.item.info)
-							l_assert.set_attribute_string (":subsumption 0")
-							add_statement (l_assert)
+							add_statement (i.item)
 						end
 
 						if l_invariant.tag /= Void and then l_invariant.tag ~ "assume" then
@@ -1245,11 +1233,15 @@ feature {NONE} -- Implementation
 			l_translator.locals_map.merge (locals_map)
 			l_translator.set_local_writable (local_writable)
 			a_expr.process (l_translator)
-			if not l_translator.side_effect.is_empty and attached current_origin_information as coi then
-				l_translator.side_effect.first.set_origin_information (coi)
-				current_origin_information := Void
+			across
+				l_translator.side_effect as stmts
+			loop
+				if stmts.is_first and attached current_origin_information as coi then
+					stmts.item.set_origin_information (coi)
+					current_origin_information := Void
+				end
+				current_block.add_statement (stmts.item)
 			end
-			l_translator.side_effect.do_all (agent current_block.add_statement (?))
 			last_expression := l_translator.last_expression
 			if last_expression = Void then
 				last_expression := factory.false_
@@ -1330,19 +1322,23 @@ feature {NONE} -- Implementation
 			l_translator.locals_map.merge (locals_map)
 			l_translator.set_local_writable (local_writable)
 			l_translator.add_termination_check (l_old_variants, l_new_variants)
-			if not l_translator.side_effect.is_empty and attached current_origin_information as coi then
-				l_translator.side_effect.first.set_origin_information (coi)
-				current_origin_information := Void
+			across
+				l_translator.side_effect as stmts
+			loop
+				if stmts.is_first and attached current_origin_information as coi then
+					stmts.item.set_origin_information (coi)
+					current_origin_information := Void
+				end
+				current_block.add_statement (stmts.item)
 			end
-			l_translator.side_effect.do_all (agent current_block.add_statement (?))
 			locals_map.merge (l_translator.locals_map)
 		end
 
 	last_expression: IV_EXPRESSION
 			-- Last generated expression.
 
-	last_safety_checks: LINKED_LIST [TUPLE [expr: IV_EXPRESSION; info: IV_NODE_INFO]]
-			-- List of last generated safety checks.
+	last_safety_checks: LINKED_LIST [IV_ASSERT]
+			-- List of safety checks generated while processing last contract expression.
 
 	last_frame: IV_EXPRESSION
 			-- Last generated frame definition.

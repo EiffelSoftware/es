@@ -27,9 +27,6 @@ feature -- Access
 	context_implementation: IV_IMPLEMENTATION
 			-- Context of expression.
 
-	side_effect: LINKED_LIST [IV_STATEMENT]
-			-- List of side effect statements.
-
 feature -- Basic operations
 
 	set_context_implementation (a_implementation: IV_IMPLEMENTATION)
@@ -433,19 +430,6 @@ feature -- Translation
 			end
 
 			inlined_routines.force (inlined_routines.item (a_feature.body_index) - 1, a_feature.body_index)
-		end
-
-	add_safety_check (a_expression: IV_EXPRESSION; a_name: STRING; a_tag: STRING; a_line: INTEGER)
-			-- <Precursor>
-		local
-			l_assert: IV_ASSERT
-		do
-			create l_assert.make (implies_safety_expression (a_expression))
-			l_assert.node_info.set_type (a_name)
-			l_assert.node_info.set_tag (a_tag)
-			l_assert.node_info.set_line (a_line)
-			l_assert.set_attribute_string (":subsumption 0")
-			side_effect.extend (l_assert)
 		end
 
 	add_termination_check (l_old_variants, l_new_variants: LIST [IV_EXPRESSION])

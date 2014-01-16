@@ -845,8 +845,8 @@ feature {NONE} -- Implementation
 			l_translator.set_context_tag (a_assert.tag)
 			a_assert.process (l_translator)
 			across l_translator.side_effect as i loop
-				create l_contract.make (i.item.expr)
-				l_contract.node_info.load (i.item.info)
+				create l_contract.make (i.item.expression)
+				l_contract.node_info.load (i.item.node_info)
 				current_boogie_procedure.add_contract (l_contract)
 			end
 			create l_contract.make (l_translator.last_expression)
@@ -873,8 +873,8 @@ feature {NONE} -- Implementation
 			a_assert.process (l_translator)
 			a_fields.append (l_translator.field_accesses)
 			across l_translator.side_effect as i loop
-				create l_contract.make (i.item.expr)
-				l_contract.node_info.load (i.item.info)
+				create l_contract.make (i.item.expression)
+				l_contract.node_info.load (i.item.node_info)
 				current_boogie_procedure.add_contract (l_contract)
 			end
 			create l_contract.make (l_translator.last_expression)
