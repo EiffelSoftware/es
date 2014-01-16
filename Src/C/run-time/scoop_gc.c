@@ -115,7 +115,7 @@ doc:		<thread_safety>Safe</thread_safety>
 doc:		<synchronization>To be done while already pocessing the `eif_gc_mutex' lock. (i.e: encapsulated in eif_synchronize_gc and eif_unsynchronize_gc</synchronization>
 doc:	</routine>
 */
-rt_shared void prepare_live_index (MARKER marker)
+rt_shared void prepare_live_index ()
 {
 	size_t i;
 	size_t count = rt_globals_list.count;
@@ -153,7 +153,6 @@ rt_shared void prepare_live_index (MARKER marker)
 	}
 
 #ifdef SCOOPQS
-	eveqs_mark_all(marker);
 	eveqs_enumerate_live ();
 	if (!live_index_count) {
 		update_live_index ();

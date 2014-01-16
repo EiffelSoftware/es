@@ -1561,6 +1561,14 @@ rt_private void internal_marking(MARKER marking, int moving)
 	size_t i;
 	size_t j;
 	size_t n;
+
+#ifdef SCOOPQS
+	eveqs_mark_all(marking);
+	if (!live_index_count)
+	  {
+	    update_live_index();
+	  }
+#endif
 #endif
 
 #ifndef EIF_THREADS
@@ -5104,7 +5112,6 @@ rt_shared void gfree(register union overhead *zone)
 		zone + 1, dtype);
 	flush;
 #endif
-
 	eif_rt_xfree((EIF_REFERENCE) (zone + 1));		/* Put object back to free-list */
 }
 
