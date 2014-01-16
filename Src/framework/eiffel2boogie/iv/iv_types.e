@@ -122,7 +122,7 @@ feature -- Type translation
 				Result := ref
 			elseif helper.is_class_logical (l_class) then
 					-- The class is mapped to a Boogie type
-				l_constructor := helper.class_note_values (l_class, "maps_to").first
+				l_constructor := helper.type_for_logical (l_class)
 				create l_params.make (1, l_type.generics.count)
 				across
 					l_type.generics as g
@@ -151,8 +151,8 @@ feature -- Type translation
 				end
 
 					-- Check if the type has a default value
-				l_default_function := helper.string_feature_note_value (l_class.feature_named_32 ("default_create"), "maps_to")
-				if not l_default_function.is_empty then
+				l_default_function := helper.function_for_logical (l_class.feature_named_32 ("default_create"))
+				if attached l_default_function then
 					l_user_type.set_default_value (factory.function_call (l_default_function, << >>, l_user_type))
 				end
 

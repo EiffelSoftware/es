@@ -3,7 +3,6 @@ note
 	author: "Nadia Polikarpova"
 	theory: "set.bpl"
 	maps_to: "Set"
-	equality: "Set#Equal"
 	rank: "Set#Subset"
 	typed_sets: ""
 
@@ -13,7 +12,8 @@ inherit
 
 	ITERABLE [G]
 		redefine
-			default_create
+			default_create,
+			is_equal
 		end
 
 create
@@ -68,6 +68,13 @@ feature -- Measurement
 		end		
 
 feature -- Comparison
+
+	is_equal (a_other: like Current): BOOLEAN
+			-- Is `a_other' the same set as `Current'?
+		note
+			maps_to: "Set#Equal"
+		do
+		end
 
 	is_subset_of alias "<=" (a_other: MML_SET [ANY]): BOOLEAN
 			-- Does `a_other' have all elements of `Current'?

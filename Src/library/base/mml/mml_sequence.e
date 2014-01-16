@@ -3,7 +3,6 @@ note
 	author: "Nadia Polikarpova"
 	theory: "sequence.bpl"
 	maps_to: "Seq"
-	equality: "Seq#Equal"	
 	rank: "Seq#LessEqual"
 	typed_sets: "Seq#Range"		
 
@@ -13,7 +12,8 @@ class
 inherit
 	ITERABLE [G]
 		redefine
-			default_create
+			default_create,
+			is_equal
 		end
 
 create
@@ -85,6 +85,13 @@ feature -- Measurement
 		end				
 		
 feature -- Comparison
+
+	is_equal (a_other: like Current): BOOLEAN
+			-- Is `a_other' the same sequence as `Current'?
+		note
+			maps_to: "Seq#Equal"
+		do
+		end
 
 	is_prefix_of alias "<=" (other: MML_SEQUENCE [G]): BOOLEAN
 			-- Is this sequence a prefix of `other'?

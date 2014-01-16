@@ -54,12 +54,12 @@ feature -- Basic operations
 		require
 			eq_or_neq: a_operator ~ "==" or a_operator ~ "!="
 		local
-			l_eqs: like helper.class_note_values
+			l_eq: STRING
 			l_expr: IV_EXPRESSION
 		do
-			l_eqs := helper.class_note_values (a_class, "equality")
-			if not l_eqs.is_empty then
-				l_expr := factory.function_call (l_eqs.first, << a_left, a_right >>, types.bool)
+			l_eq := helper.function_for_logical (a_class.feature_named_32 ("is_equal"))
+			if l_eq /= Void then
+				l_expr := factory.function_call (l_eq, << a_left, a_right >>, types.bool)
 			else
 				l_expr := factory.equal (a_left, a_right)
 			end
@@ -93,15 +93,9 @@ feature {NONE} -- Implementation
 			check helper.is_class_logical (a_translator.current_target_type.base_class) end
 			translation_pool.add_referenced_feature (a_feature, a_translator.current_target_type)
 
-			l_fname := helper.string_feature_note_value (a_feature, "maps_to")
-			if l_fname.is_empty then
-					-- Use standard naming scheme
-				l_fname := helper.class_note_values (a_translator.current_target_type.base_class, "maps_to").first + "#" +
-					to_camel_case (a_feature.feature_name)
-			end
-
 			a_translator.process_parameters (a_parameters)
 
+			l_fname := helper.function_for_logical (a_feature)
 			if l_fname ~ "[]" then
 					-- The feature maps to map access
 				create l_args.make (1, a_translator.last_parameters.count)
@@ -199,25 +193,6 @@ feature {NONE} -- Implementation
 					l_exprs.forth
 				end
 				a_translator.set_last_expression (l_expr)
-			end
-		end
-
-	to_camel_case (a_name: STRING): STRING
-			-- Eiffel-style identifier `a_name' converted to camel case.
-		local
-			i: INTEGER
-		do
-			Result := a_name.string
-			from
-				i := 1
-			until
-				not Result.valid_index (i)
-			loop
-				Result.replace_substring (Result.substring (i, i).as_upper, i, i)
-				i := Result.index_of ('_', i)
-				if Result.valid_index (i) then
-					Result.remove (i)
-				end
 			end
 		end
 

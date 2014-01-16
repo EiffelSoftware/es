@@ -175,6 +175,25 @@ feature -- Feature status helpers
 			Result := a_feature.export_status.is_none
 		end
 
+	function_for_logical (a_feature: FEATURE_I): STRING
+			-- Boogie function that `a_feature' maps to;
+			-- Void if `a_feature' is not from a logical class.
+		require
+			a_feature_exists: attached a_feature
+		local
+			l_values: ARRAYED_LIST [STRING_32]
+		do
+			if is_class_logical (a_feature.written_class) then
+				l_values := feature_note_values (a_feature, "maps_to")
+				if l_values.is_empty then
+						-- Use standard naming scheme
+					Result := type_for_logical (a_feature.written_class) + "#" + to_camel_case (a_feature.feature_name)
+				else
+					Result := l_values.first
+				end
+			end
+		end
+
 	map_access_feature (a_class: CLASS_C): FEATURE_I
 			-- The feature of the logical class `a_class' that maps to map access in Boogie (if any).
 		require
@@ -188,7 +207,7 @@ feature -- Feature status helpers
 				Result /= Void or a_class.feature_table.after
 			loop
 				l_feature := a_class.feature_table.item_for_iteration
-				if string_feature_note_value (l_feature, "maps_to") ~ "[]" then
+				if function_for_logical (l_feature) ~ "[]" then
 					Result := l_feature
 				end
 				a_class.feature_table.forth
@@ -202,7 +221,19 @@ feature -- Class status helpers
 		local
 			l_values: ARRAYED_LIST [STRING_32]
 		do
-			Result := not class_note_values (a_class, "maps_to").is_empty
+			Result := attached type_for_logical (a_class)
+		end
+
+	type_for_logical (a_class: CLASS_C): STRING
+			-- Boogie type that `a_class' maps to;
+			-- Void if `a_class' is not logical.	
+		local
+			l_values: ARRAYED_LIST [STRING_32]
+		do
+			l_values := class_note_values (a_class, "maps_to")
+			if not l_values.is_empty then
+				Result := l_values.first
+			end
 		end
 
 feature -- Ownership helpers
@@ -504,6 +535,27 @@ feature -- Other
 			l_error.set_warning (True)
 			if not autoproof_errors.has (l_error) then
 				autoproof_errors.extend (l_error)
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	to_camel_case (a_name: STRING): STRING
+			-- Eiffel-style identifier `a_name' converted to camel case.
+		local
+			i: INTEGER
+		do
+			Result := a_name.string
+			from
+				i := 1
+			until
+				not Result.valid_index (i)
+			loop
+				Result.replace_substring (Result.substring (i, i).as_upper, i, i)
+				i := Result.index_of ('_', i)
+				if Result.valid_index (i) then
+					Result.remove (i)
+				end
 			end
 		end
 
