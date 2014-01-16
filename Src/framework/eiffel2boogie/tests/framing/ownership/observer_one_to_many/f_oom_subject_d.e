@@ -43,7 +43,7 @@ feature -- State update
 			default_wrapped: is_wrapped
 			default_observers_wrapped: across observers as o all o.item.is_wrapped end
 			modify_field (["value", "closed"], Current)
-			modify_field (["cache", "closed"], subscribers.sequence.range)
+			modify_field (["cache", "closed"], subscribers.sequence)
 		local
 			i: INTEGER
 		do
@@ -55,7 +55,7 @@ feature -- State update
 				i := 1
 			invariant
 				across 1 |..| (i - 1) as j all subscribers.sequence [j.item].inv end
-				modify_field (["cache"], subscribers.sequence.range)
+				modify_field (["cache"], subscribers.sequence)
 			until
 				i > subscribers.count
 			loop

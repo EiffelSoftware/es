@@ -185,6 +185,7 @@ feature -- Basic operations
 			current_target := Void
 			current_target_type := Void
 			local_writable := Void
+			last_set_content_type := Void
 			create entity_mapping.make
 			create locals_map.make (10)
 			create across_handler_map.make (10)
@@ -1106,6 +1107,32 @@ feature -- Translation
 			last_expression := l_last_expression
 			current_target := l_target
 			current_target_type := l_target_type
+		end
+
+	last_set_content_type: TYPE_A
+			-- Type of the set content for the last successful call to `process_as_set'.
+
+	process_as_set (a_expr: EXPR_B; a_content_type: IV_TYPE)
+			-- Process `a_expr' of a logical type and convert it to a set of `a_content_type';
+			-- if not possible issue a validity error.
+		local
+			l_class: CLASS_C
+			l_feature: FEATURE_I
+			l_conversion: STRING
+		do
+			safe_process (a_expr)
+
+			l_class := a_expr.type.instantiated_in (context_type).base_class
+			l_feature := l_class.feature_named_32 ("new_cursor")
+			l_conversion := helper.function_for_logical (l_feature)
+			if l_conversion = Void then
+				helper.add_semantic_error (l_class, messages.logical_no_across_conversion, -1)
+			else
+				last_set_content_type := l_feature.type.instantiated_in (a_expr.type.instantiated_in (context_type)).generics.first
+				if not l_conversion.is_empty then
+					last_expression := factory.function_call (l_conversion, << last_expression >>, types.set (a_content_type))
+				end
+			end
 		end
 
 feature {E2B_ACROSS_HANDLER, E2B_CUSTOM_CALL_HANDLER, E2B_CUSTOM_NESTED_HANDLER} -- Implementation

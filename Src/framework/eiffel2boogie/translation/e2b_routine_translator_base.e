@@ -276,7 +276,7 @@ feature -- Helper functions: contracts
 			l_part_modified: LINKED_LIST [TUPLE [LINKED_LIST [IV_ENTITY], LINKED_LIST [IV_EXPRESSION]]]
 			l_fieldnames: LINKED_LIST [STRING_32]
 			l_fields: LINKED_LIST [IV_ENTITY]
-			l_objects: LINKED_LIST [IV_EXPRESSION]
+			l_objects_type: like translate_contained_expressions
 			l_name: STRING_32
 			l_type: TYPE_A
 			l_feature, l_to_set: FEATURE_I
@@ -292,50 +292,48 @@ feature -- Helper functions: contracts
 				if attached {FEATURE_B} i.item.expr as l_call then
 					l_name := names_heap.item_32 (l_call.feature_name_id)
 					if l_name ~ "modify" then
-						l_objects := translate_contained_expressions (l_call.parameters.i_th (1).expression, a_translator)
-						l_fully_modified.append (l_objects)
+						l_objects_type := translate_contained_expressions (l_call.parameters.i_th (1).expression, a_translator, True)
+						l_fully_modified.append (l_objects_type.expressions)
 					elseif l_name ~ "modify_field" then
-						l_objects := translate_contained_expressions (l_call.parameters.i_th (2).expression, a_translator)
+						l_objects_type := translate_contained_expressions (l_call.parameters.i_th (2).expression, a_translator, True)
 
-						if attached {TUPLE_CONST_B} l_call.parameters.i_th (2).expression as l_tuple then
-							l_type := l_tuple.expressions.first.type
+						if l_objects_type.expressions.first = Void then
+							-- Empty set
+							l_fully_modified.append (l_objects_type.expressions)
 						else
-							l_type := l_call.parameters.i_th (2).expression.type
-						end
-						if l_type.is_like_current then
-							l_type := current_type
-						else
-							l_type := l_type.deep_actual_type
-						end
-						if l_type.base_class.class_id = helper.set_class.class_id then
-							l_type := l_type.generics.first
-						end
+							l_type := l_objects_type.type
+							if l_type.is_like_current then
+								l_type := current_type
+							else
+								l_type := l_type.deep_actual_type
+							end
 
-						create l_fieldnames.make
-						if attached {STRING_B} l_call.parameters.i_th (1).expression as l_string then
-							l_fieldnames.extend (l_string.value)
-						elseif attached {TUPLE_CONST_B} l_call.parameters.i_th (1).expression as l_tuple then
-							across l_tuple.expressions as j loop
-								if attached {STRING_B} j.item as l_string then
-									l_fieldnames.extend (l_string.value)
-								else
-									helper.add_semantic_error (current_feature, messages.first_argument_string_or_tuple, i.item.line_number)
+							create l_fieldnames.make
+							if attached {STRING_B} l_call.parameters.i_th (1).expression as l_string then
+								l_fieldnames.extend (l_string.value)
+							elseif attached {TUPLE_CONST_B} l_call.parameters.i_th (1).expression as l_tuple then
+								across l_tuple.expressions as j loop
+									if attached {STRING_B} j.item as l_string then
+										l_fieldnames.extend (l_string.value)
+									else
+										helper.add_semantic_error (current_feature, messages.first_argument_string_or_tuple, i.item.line_number)
+									end
+								end
+							else
+								helper.add_semantic_error (current_feature, messages.first_argument_string_or_tuple, i.item.line_number)
+							end
+
+							create l_fields.make
+							l_fields.compare_objects
+							across l_fieldnames as f loop
+								l_field := (create {E2B_CUSTOM_OWNERSHIP_HANDLER}).field_from_string (f.item, l_type, current_feature, i.item.line_number)
+								if attached l_field then
+									l_fields.extend (l_field)
 								end
 							end
-						else
-							helper.add_semantic_error (current_feature, messages.first_argument_string_or_tuple, i.item.line_number)
-						end
 
-						create l_fields.make
-						l_fields.compare_objects
-						across l_fieldnames as f loop
-							l_field := (create {E2B_CUSTOM_OWNERSHIP_HANDLER}).field_from_string (f.item, l_type, current_feature, i.item.line_number)
-							if attached l_field then
-								l_fields.extend (l_field)
-							end
+							l_part_modified.extend ([l_fields, l_objects_type.expressions])
 						end
-
-						l_part_modified.extend ([l_fields, l_objects])
 					else
 						check internal_error: False end
 					end
@@ -370,10 +368,11 @@ feature -- Helper functions: contracts
 				across restiction.item.objects as o loop
 					if o.item = Void then
 						l_disjunct := factory.false_
-					elseif types.is_set (o.item.type) then
-						l_disjunct := factory.map_access (o.item, << l_o >>)
-					else
+					elseif o.item.type ~ types.ref then
 						l_disjunct := factory.equal (l_o, o.item)
+					else
+						check o.item.type ~ types.set (types.ref) end
+						l_disjunct := factory.map_access (o.item, << l_o >>)
 					end
 					if l_o_conjunct = Void then
 						l_o_conjunct := l_disjunct
@@ -400,10 +399,11 @@ feature -- Helper functions: contracts
 			across a_mods.fully_modified as o loop
 				if o.item = Void then
 					l_disjunct := factory.false_
-				elseif types.is_set (o.item.type) then
-					l_disjunct := factory.map_access (o.item, << l_o >>)
-				else
+				elseif o.item.type ~ types.ref then
 					l_disjunct := factory.equal (l_o, o.item)
+				else
+					check o.item.type ~ types.set (types.ref) end
+					l_disjunct := factory.map_access (o.item, << l_o >>)
 				end
 				l_expr := factory.or_clean (l_expr, l_disjunct)
 			end
@@ -423,17 +423,19 @@ feature -- Helper functions: contracts
 				a_clauses as i
 			loop
 				if attached {FEATURE_B} i.item.expr as l_call then
-					Result.append (translate_contained_expressions (l_call.parameters.i_th (1).expression, a_translator))
+					Result.append (translate_contained_expressions (l_call.parameters.i_th (1).expression, a_translator, False).expressions)
 				else
 					check internal_error: False end
 				end
 			end
 		end
 
-	translate_contained_expressions (a_expr: EXPR_B; a_translator: E2B_EXPRESSION_TRANSLATOR): LINKED_LIST [IV_EXPRESSION]
-			-- Translate expressions in `a_expr'.
+	translate_contained_expressions (a_expr: EXPR_B; a_translator: E2B_EXPRESSION_TRANSLATOR; convert_to_set: BOOLEAN): TUPLE [expressions: LINKED_LIST [IV_EXPRESSION]; type: TYPE_A]
+			-- Translate expressions in `a_expr' using `a_translator'; if `convert_to_set', convert all expressions of logical types to sets.
 		local
 			l_expr_list: LINKED_LIST [EXPR_B]
+			l_expressions: LINKED_LIST [IV_EXPRESSION]
+			l_type: TYPE_A
 		do
 			create l_expr_list.make
 			if attached {TUPLE_CONST_B} a_expr as l_tuple then
@@ -446,20 +448,21 @@ feature -- Helper functions: contracts
 			else
 				l_expr_list.extend (a_expr)
 			end
-			create Result.make
+			create l_expressions.make
 			across l_expr_list as k loop
 				if k.item = Void then
-					Result.extend (Void)
+					l_expressions.extend (Void)
+				elseif convert_to_set and helper.is_class_logical (k.item.type.instantiated_in (a_translator.context_type).base_class) then
+					a_translator.process_as_set (k.item, types.ref)
+					l_expressions.extend (a_translator.last_expression)
+					l_type := a_translator.last_set_content_type
 				else
-					Result.extend (translate_individual_expression (k.item, a_translator))
+					k.item.process (a_translator)
+					l_expressions.extend (a_translator.last_expression)
+					l_type := k.item.type
 				end
 			end
-		end
-
-	translate_individual_expression (a_expr: EXPR_B; a_translator: E2B_EXPRESSION_TRANSLATOR): IV_EXPRESSION
-		do
-			a_expr.process (a_translator)
-			Result := a_translator.last_expression
+			Result := [l_expressions, l_type]
 		end
 
 end

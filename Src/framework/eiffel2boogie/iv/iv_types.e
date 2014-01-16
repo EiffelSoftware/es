@@ -85,12 +85,6 @@ feature -- Access: default types
 			Result.set_rank_function ("Set#Subset")
 		end
 
-	is_set (a_type: IV_TYPE): BOOLEAN
-			-- Is `a_type' a set type?
-		do
-			Result := attached {IV_MAP_SYNONYM_TYPE} a_type as ms_type and then ms_type.constructor ~ "Set"
-		end
-
 feature -- Type translation
 
 	for_type_a (a_type: TYPE_A): IV_TYPE
