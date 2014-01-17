@@ -21,7 +21,7 @@ feature {PS_ABEL_EXPORT} -- Access
 	stored_types: HASH_TABLE [IMMUTABLE_STRING_8, IMMUTABLE_STRING_8]
 			-- The type string for all objects and collections stored in `Current'.
 
-	primary_key_columns: STRING_TABLE [ARRAYED_LIST [STRING]]
+--	primary_key_columns: STRING_TABLE [ARRAYED_LIST [STRING]]
 			-- The primary key columns for each table, if any.
 			-- Note that the key is stored in upper case.
 
@@ -58,49 +58,10 @@ feature {PS_READ_REPOSITORY_CONNECTOR} -- Implementation
 	internal_retrieve (type: PS_TYPE_METADATA; criteria: PS_CRITERION; is_root_only: BOOLEAN; attributes: PS_IMMUTABLE_STRUCTURE [STRING]; transaction: PS_INTERNAL_TRANSACTION): ITERATION_CURSOR [PS_BACKEND_OBJECT]
 			-- <Precursor>
 		local
-			table: STRING
-			connection: PS_SQL_CONNECTION
-			res_list: ARRAYED_LIST [PS_BACKEND_OBJECT]
-
-			primary: INTEGER
-			object: PS_BACKEND_OBJECT
+			cursor: PS_RELATIONAL_RESULT_CURSOR
 		do
-			table := type.name.as_lower
-
-			connection := get_connection (transaction)
-			connection.execute_sql ("SELECT * FROM " + table)
-
-			across
-				connection as cursor
-			from
-				create res_list.make (1)
-			loop
-				across
-					type.attributes as attribute_cursor
-				from
-
-					if attached database_mapping.primary_key_column (type.name) as id_column then
-						primary := cursor.item.at (id_column).to_integer
-					else
-						bogus_primary := bogus_primary + 1
-						primary := bogus_primary
-					end
-
-					create object.make (primary, type)
-					res_list.extend (object)
-				loop
-					fixme ("What to do about the runtime type?")
-					object.add_attribute (
-							-- Attribute name.
-						attribute_cursor.item,
-							-- Attribute value.
-						cursor.item.at (attribute_cursor.item),
-							-- Runtime type.
-						type.attribute_type (attribute_cursor.item).name)
-
-				end
-			end
-			Result := res_list.new_cursor
+			create cursor.make (type, criteria, attributes, transaction, Current)
+			Result := cursor
 		end
 
 	internal_specific_retrieve (primaries: ARRAYED_LIST [INTEGER]; types: ARRAYED_LIST [PS_TYPE_METADATA]; transaction: PS_INTERNAL_TRANSACTION): READABLE_INDEXABLE [PS_BACKEND_OBJECT]
@@ -119,24 +80,43 @@ feature {PS_READ_REPOSITORY_CONNECTOR} -- Implementation
 			end
 		end
 
+feature {PS_ABEL_EXPORT} -- Primary key handling
+
+	new_primary: INTEGER
+			-- Create a new unique primary key.
+		do
+			Result := bogus_primary + 1
+			bogus_primary := Result
+		end
+
+	managed_type_lookup (type: PS_TYPE_METADATA): detachable STRING
+			-- If `type' is managed, return the primary key column.
+		do
+			Result := managed_types [type]
+		end
+
 feature {NONE} -- Initialization
 
-	make (a_database: like database; mapping: like database_mapping; db_name: STRING)
+	make (a_database: like database; a_managed_types: like managed_types; a_strings: like strings)
 			-- Initialization for `Current'.
 		do
 			initialize (a_database)
-			database_mapping := mapping
-			load_layout (db_name)
+			managed_types := a_managed_types
+			strings := a_strings
+			load_layout
 		end
+
+	managed_types: HASH_TABLE [STRING, PS_TYPE_METADATA]
+			-- The managed types and their primary key column.
+
+	strings: PS_RELATIONAL_SQL_STRINGS
+			-- The SQL strings for `Current'.
 
 	bogus_primary: INTEGER
 
 	last_inserted_object: detachable PS_BACKEND_OBJECT
 
-	database_mapping: PS_DATABASE_MAPPING
-
-
-	load_layout (db_name: STRING)
+	load_layout
 			-- Initialize information about the layout.
 		local
 			connection: PS_SQL_CONNECTION
@@ -151,17 +131,18 @@ feature {NONE} -- Initialization
 			fixme ("Support for SQLite.")
 
 			create stored_types.make (1)
-			create primary_key_columns.make (1)
+--			create primary_key_columns.make (1)
 			create internal
 
 
 			connection := database.acquire_connection
-			sql := "[
-				SELECT table_name, column_name, column_key
-				FROM information_schema.columns
-				WHERE table_schema = '
-				]"
-				+ db_name + "'"
+			sql := strings.show_tables
+--			sql := "[
+--				SELECT table_name, column_name, column_key
+--				FROM information_schema.columns
+--				WHERE table_schema = '
+--				]"
+--				+ db_name + "'"
 
 			connection.execute_sql (sql)
 
@@ -169,8 +150,8 @@ feature {NONE} -- Initialization
 				connection as cursor
 			loop
 				type_name := cursor.item [1].as_upper
-				column_name := cursor.item [2]
-				column_key := cursor.item [3]
+--				column_name := cursor.item [2]
+--				column_key := cursor.item [3]
 
 				if internal.dynamic_type_from_string (type_name) > 0 then
 
@@ -178,15 +159,15 @@ feature {NONE} -- Initialization
 						stored_types.extend (type_name, type_name)
 					end
 
-					if column_key.is_case_insensitive_equal ("PRI") then
-						if attached primary_key_columns [type_name] as inner then
-							inner.extend (column_name)
-						else
-							create list.make (1)
-							list.extend (column_name)
-							primary_key_columns.extend (list, type_name)
-						end
-					end
+--					if column_key.is_case_insensitive_equal ("PRI") then
+--						if attached primary_key_columns [type_name] as inner then
+--							inner.extend (column_name)
+--						else
+--							create list.make (1)
+--							list.extend (column_name)
+--							primary_key_columns.extend (list, type_name)
+--						end
+--					end
 				end
 			end
 

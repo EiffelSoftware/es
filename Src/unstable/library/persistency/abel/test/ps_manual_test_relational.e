@@ -9,14 +9,19 @@ class
 
 inherit
 	PS_REPOSITORY_TESTS
+		redefine
+			on_clean
+		end
+
+feature {NONE} -- Test switch
+
+	mysql: BOOLEAN = True
 
 feature -- Tests
 
 	test_query
 			-- Test a simple query.
 		local
-			transaction: PS_TRANSACTION
-
 			query: PS_QUERY [TEST_PERSON]
 			count: INTEGER
 		do
@@ -41,7 +46,6 @@ feature -- Tests
 	test_expanded_override
 			-- Test if a class without a primary key is treated like an expanded type.
 		local
-			transaction: PS_TRANSACTION
 			query: PS_QUERY [TEST_PERSON]
 		do
 			repository.wipe_out
@@ -192,7 +196,7 @@ feature -- Tests
 			transaction: PS_TRANSACTION
 			object: FLAT_CLASS_3
 		do
-			create object.make (42, "value")
+			create object.make (42.123456789, "value")
 			object.set_id (123)
 
 			repository.wipe_out
@@ -208,10 +212,10 @@ feature -- Tests
 			-- be handled as update.
 		local
 			transaction: PS_TRANSACTION
-			object: FLAT_CLASS_3
+			object: FLAT_CLASS_2
 			i: INTEGER
 
-			query: PS_QUERY [FLAT_CLASS_3]
+			query: PS_QUERY [FLAT_CLASS_2]
 		do
 			from
 				i := 1
@@ -256,7 +260,7 @@ feature -- Tests
 		do
 			from
 				i := 1
-				create object.make (42, "value")
+				create object.make (42.123, "value")
 				repository.wipe_out
 				transaction := repository.new_transaction
 			until
@@ -279,7 +283,7 @@ feature -- Tests
 				create control.make_filled (10)
 			loop
 				assert ("same_string_value", cursor.item.string_value ~ object.string_value)
-				assert ("same_int_value", cursor.item.int_value = object.int_value)
+				assert ("same_real_value", cursor.item.real_value = object.real_value)
 				assert ("in_range", 1 <= cursor.item.id and cursor.item.id <= 10)
 				control [cursor.item.id] := True
 				i := i + 1
@@ -291,6 +295,11 @@ feature -- Tests
 		end
 
 feature {NONE} -- Initialization
+
+	on_clean
+		do
+			repository.close
+		end
 
 	populate
 			-- Add some initial data.
@@ -311,16 +320,24 @@ feature {NONE} -- Initialization
 	make_repository: PS_REPOSITORY
 			-- Create the repository for this test
 		local
-			factory: PS_MYSQL_RELATIONAL_REPOSITORY_FACTORY
+			mysql_factory: PS_MYSQL_RELATIONAL_REPOSITORY_FACTORY
+			sqlite_factory: PS_SQLITE_RELATIONAL_REPOSITORY_FACTORY
 		do
-			create factory.make
-			factory.set_user (username)
-			factory.set_password (password)
-			factory.set_database (db_name)
+			if mysql then
+				create mysql_factory.make
+				mysql_factory.set_user (username)
+				mysql_factory.set_password (password)
+				mysql_factory.set_database (db_name)
+				mysql_factory.manage ({detachable FLAT_CLASS_2}, "id")
+				Result := mysql_factory.new_repository
+			else
+				create sqlite_factory.make
+				sqlite_factory.set_database (sqlite_file)
+				sqlite_factory.manage ({FLAT_CLASS_2}, "id")
+				Result := sqlite_factory.new_repository
+			end
 
-			factory.manage ({detachable FLAT_CLASS_2}, "id")
-
-			Result := factory.new_repository
+			Result.set_batch_retrieval_size (1)
 		end
 
 	username: STRING = "eiffelstoretest"
@@ -328,5 +345,8 @@ feature {NONE} -- Initialization
 	password: STRING = "eiffelstoretest"
 
 	db_name: STRING = "eiffelstoretest"
+
+	sqlite_file: STRING = "abel_sqlite_test.db"
+			-- The SQLite database file
 
 end

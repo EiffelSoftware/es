@@ -1141,6 +1141,7 @@ test	melted-creation-constrained-generic melt100 tcf fail execution melting gene
 test	melted-once-creation-of-generic	melt101 tcf fail execution melting generic
 test	melted-special-creation-crash-2	melt102  tcf pass melting execution special
 test	melted-on-character-32	melt103  tcf pass melting execution
+test	melted-address-expression	melt104  tcf pass melting execution
 
 -- Freezing
 
@@ -1281,7 +1282,7 @@ test	finalize-wrong-generating-type		final104 tcf fail finalizing expanded
 test	inlining-parent-with-less-formals	final105 tcf fail finalizing inlining
 test	inlining-in-parent-with-child-with-less-formals final106 tcf fail finalizing inlining
 test	finalize-argument-anchors-formal	final107 tcf fail finalizing anchored_type
-test	finalize-external-invariant-2kipped	final108 tcf fail finalizing assertions external
+test	finalize-external-invariant-skipped	final108 tcf fail finalizing assertions external
 test	inline-manifest-type			final109 tcf fail finalizing
 test	profile-once-per-process-function	final110 tcf fail finalizing
 test	inline-qat-static-external		final111 tcf fail finalizing inlining anchored_type
@@ -1685,6 +1686,7 @@ test	conditional-expression-smoke-test	exec355 tcf pass execution conditional ex
 test	parenthesis-alias-smoke-test		exec356 tcf pass execution expression parenthesis_alias
 test	parenthesis-alias-tuple-convention	exec357 tcf pass execution expression parenthesis_alias
 test	conditional-expression-constant		exec358 tcf pass execution conditional expression conformance
+test	invalid-conversion-to-tuple		exec359 tcf pass execution parenthesis_alias
 
 -- Once specific
 
@@ -2759,6 +2761,7 @@ test 	qat-with-tuple-labels		anchor067 tcf fail anchored_type tuple
 test 	qat-with-secret-features	anchor068 tcf fail anchored_type
 test 	qat-instantiated-in-crash-4 	anchor069 tcf fail finalizing formal generic anchored_type
 test	qat-nested-qualified-type	anchor070 tcf pass anchored_type
+test	qat-generic-inheritance-2	anchor071 tcf fail anchored_type
 
 -- SCOOP
 test	scoop-access-smoke				scoop001 tcf pass scoop execution multithreaded
@@ -2826,6 +2829,7 @@ test	pretty-routine-comment-indentation	pretty025 tcf pass pretty
 test	pretty-constant-attribute-comment	pretty026 tcf pass pretty
 test	pretty-feature-call-comment		pretty027 tcf pass pretty
 test	pretty-comments-between-features	pretty028 tcf pass pretty
+test	pretty-loop-invariant			pretty029 tcf pass pretty
 
 -- Testing facility
 test	testing-with-error		testing001 tcf pass testing
