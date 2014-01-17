@@ -3803,6 +3803,7 @@ Src/help/wizards/eweb/pixmaps/database_small.bmp -text
 Src/help/wizards/wizard.ico -text
 Src/library/GIF/Clib/gd_lib/gd.lib svneol=native#unset
 Src/library/api_wrapper/implementation/unix/Clib/dl-config -text
+Src/library/base/mml/bag.bpl -text
 Src/library/base/mml/map.bpl -text
 Src/library/base/mml/sequence.bpl -text
 Src/library/base/mml/set.bpl -text

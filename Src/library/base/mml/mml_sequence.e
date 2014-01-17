@@ -69,6 +69,11 @@ feature -- Conversion
 		do
 		end
 		
+	to_bag: MML_BAG [G]
+			-- Bag of sequence values.
+		do
+		end		
+		
 feature -- Measurement
 
 	count alias "#": INTEGER

@@ -1,4 +1,4 @@
-// Finite sets.
+// Finite sequences.
 // (Originally from Dafny Prelude: Copyright (c) Microsoft)
 
 // Sequence type
@@ -172,6 +172,31 @@ axiom (forall<T> s: Seq T, i: int, v: T, n: int :: { Seq#Item(Seq#Update(s,i,v),
   1 <= n && n <= Seq#Length(s) ==>
     (i == n ==> Seq#Item(Seq#Update(s,i,v),n) == v) &&
     (i != n ==> Seq#Item(Seq#Update(s,i,v),n) == Seq#Item(s,n)));
+    
+// Sequence converted to a bag
+function Seq#ToBag<T>(Seq T): Bag T;
+axiom (forall<T> s: Seq T :: { Seq#ToBag(s) } $IsGoodBag(Seq#ToBag(s)));
+// building axiom
+axiom (forall<T> s: Seq T, v: T ::
+  { Seq#ToBag(Seq#Build(s, v)) }
+    Seq#ToBag(Seq#Build(s, v)) == Bag#Extended(Seq#ToBag(s), v)
+  );
+axiom (forall<T> :: Seq#ToBag(Seq#Empty(): Seq T) == Bag#Empty(): Bag T);
+
+// concatenation axiom
+axiom (forall<T> a: Seq T, b: Seq T ::
+  { Seq#ToBag(Seq#Append(a, b)) }
+    Seq#ToBag(Seq#Append(a, b)) == Bag#Union(Seq#ToBag(a), Seq#ToBag(b)) );
+
+// update axiom
+axiom (forall<T> s: Seq T, i: int, v: T, x: T ::
+  { Seq#ToBag(Seq#Update(s, i, v))[x] }
+    0 <= i && i < Seq#Length(s) ==>
+    Seq#ToBag(Seq#Update(s, i, v))[x] ==
+      Bag#Union(Bag#Difference(Seq#ToBag(s), Bag#Singleton(Seq#Index(s,i))), Bag#Singleton(v))[x] );
+  // i.e. MS(Update(s, i, v)) == MS(s) - {{s[i]}} + {{v}}
+axiom (forall<T> s: Seq T, x: T :: { Seq#ToBag(s)[x] }
+  (exists i : int :: { Seq#Index(s,i) } 0 <= i && i < Seq#Length(s) && x == Seq#Index(s,i)) <==> 0 < Seq#ToBag(s)[x] );    
 
 // Additional axioms about common things
     
