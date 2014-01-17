@@ -1,6 +1,6 @@
 note
 	description: "[
-		TODO
+		Translator for across expressions.
 	]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -17,24 +17,76 @@ inherit
 
 	IV_SHARED_FACTORY
 
+feature {NONE} -- Initialization
+
+	make (a_translator: E2B_EXPRESSION_TRANSLATOR; a_bound_var: OBJECT_TEST_LOCAL_B; a_domain: EXPR_B; a_scoped_expr: LOOP_EXPR_B)
+			-- Initialize handler for "across domain as a_bound_var _ a_scoped_expr end", using `a_translator'.
+		do
+			bound_variable := a_bound_var
+			expression_translator := a_translator
+			domain := a_domain
+			scoped_expression := a_scoped_expr
+		end
+
 feature -- Access
 
 	expression_translator: E2B_EXPRESSION_TRANSLATOR
 			-- Expression translator for this handler.
 
-feature -- Element change
+	bound_variable: OBJECT_TEST_LOCAL_B
+			-- The local variable of the across.			
 
-	set_translator (a_translator: E2B_EXPRESSION_TRANSLATOR)
-			-- Initialize this handler.
-		do
-			expression_translator := a_translator
-		end
+	domain: EXPR_B
+			-- The domain of the across.
+
+	scoped_expression: LOOP_EXPR_B
+			-- The inner expression of the across.
 
 feature -- Basic operations
 
-	handle_across_expression (a_expr: LOOP_EXPR_B)
+	handle_across_expression
 			-- Handle across loop expression.
-		deferred
+		local
+			l_expression: IV_EXPRESSION
+			l_bound_var: IV_ENTITY
+			l_quantifier: IV_QUANTIFIER
+			l_old_side_effect, l_new_side_effect: like expression_translator.side_effect
+		do
+				-- Domain
+			translate_domain
+
+				-- Save old side effect
+			l_old_side_effect := expression_translator.side_effect
+			expression_translator.clear_side_effect
+				-- Add bound variable to locals
+			expression_translator.create_iterator (bound_var_type)
+			l_bound_var := expression_translator.last_local
+			expression_translator.locals_map.put (l_bound_var, bound_variable.position)
+				-- Translate scoped expression
+			scoped_expression.expression_code.process (expression_translator)
+			l_expression := expression_translator.last_expression
+				-- Remove bound variable from locals
+			expression_translator.locals_map.remove (bound_variable.position)
+				-- Restore old side effect
+			l_new_side_effect := expression_translator.side_effect
+			expression_translator.restore_side_effect (l_old_side_effect)
+
+				-- Build quantifier
+			if scoped_expression.is_all then
+				create {IV_FORALL} l_quantifier.make (factory.implies_ (guard (l_bound_var), l_expression))
+			else
+				create {IV_EXISTS} l_quantifier.make (factory.and_ (guard (l_bound_var), l_expression))
+			end
+			l_quantifier.add_bound_variable (l_bound_var.name, l_bound_var.type)
+			-- ToDo: triggers?
+--			l_quantifier.add_trigger (guard (l_bound_var))
+--			if attached {IV_FUNCTION_CALL} l_expression as l_fcall then
+--				if across l_fcall.arguments as i some attached {IV_ENTITY} i.item as j and then j.name ~ l_counter.name end then
+--					l_quantifier.add_trigger (l_expression)
+--				end
+--			end
+			-- ToDo: wrap `new_side_effect' in a quantfier and add to `expression_tranlsator'.
+			expression_translator.set_last_expression (l_quantifier)
 		end
 
 	handle_call_item (a_feature: FEATURE_I)
@@ -57,4 +109,20 @@ feature -- Basic operations
 		deferred
 		end
 
+feature {NONE} -- Implementation
+
+	translate_domain
+			-- Translate `domain' and store relevant information.
+		deferred
+		end
+
+	bound_var_type: IV_TYPE
+			-- Type of the bound variable in Boogie.
+		deferred
+		end
+
+	guard (a_bound_var: IV_ENTITY): IV_EXPRESSION
+			-- Antecedent in the resulting quantifier, with bound variable `a_bound_var'.
+		deferred
+		end
 end

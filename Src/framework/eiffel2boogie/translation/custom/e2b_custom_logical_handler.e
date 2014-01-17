@@ -125,7 +125,7 @@ feature {NONE} -- Implementation
 			end
 
 				-- Add precondition check
-			if a_feature.has_precondition and not a_translator.is_in_quantifier then
+			if a_feature.has_precondition then
 				create l_pre_call.make (name_translator.precondition_predicate_name (a_feature, a_translator.current_target_type), types.bool)
 				across
 					l_fcall.arguments as args

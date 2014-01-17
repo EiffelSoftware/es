@@ -668,15 +668,15 @@ feature -- Visitors
 
 			l_class := l_nested.target.type.associated_class
 			if l_class.name_in_upper ~ "ARRAY" then
-				create {E2B_ARRAY_ACROSS_HANDLER} l_across_handler.make (Current, a_node, l_nested.target, l_object_test_local)
+				create {E2B_ARRAY_ACROSS_HANDLER} l_across_handler.make (Current, l_object_test_local, l_nested.target, a_node)
 			elseif l_class.name_in_upper ~ "INTEGER_INTERVAL" then
 				l_access ?= l_nested.target
 				check l_access /= Void end
 				l_bin_free ?= l_access.expr
 				check l_bin_free /= Void end
-				create {E2B_INTERVAL_ACROSS_HANDLER} l_across_handler.make (Current, a_node, l_bin_free, l_object_test_local)
+				create {E2B_INTERVAL_ACROSS_HANDLER} l_across_handler.make (Current, l_object_test_local, l_bin_free, a_node)
 			elseif helper.is_class_logical (l_class) then
-				create {E2B_SET_ACROSS_HANDLER} l_across_handler.make (Current, a_node, l_nested.target, l_object_test_local)
+				create {E2B_SET_ACROSS_HANDLER} l_across_handler.make (Current, l_object_test_local, l_nested.target, a_node)
 			else
 				last_expression := dummy_node (a_node.type)
 			end
@@ -685,7 +685,7 @@ feature -- Visitors
 
 			if attached l_across_handler then
 				across_handler_map.put (l_across_handler, l_object_test_local.position)
-				l_across_handler.handle_across_expression (a_node)
+				l_across_handler.handle_across_expression
 				across_handler_map.remove (l_object_test_local.position)
 			end
 
@@ -1082,6 +1082,18 @@ feature -- Translation
 			else
 				create {IV_BINARY_OPERATION} Result.make (safety_check_condition.item, "==>", a_expr, types.bool)
 			end
+		end
+
+	clear_side_effect
+			-- Empty the list of side effect instructions.
+		do
+			create side_effect.make
+		end
+
+	restore_side_effect (a_side_effect: like side_effect)
+			-- Set `side_effect' to `a_side_effect'.			
+		do
+			side_effect := a_side_effect
 		end
 
 	process_parameters (a_parameters: BYTE_LIST [PARAMETER_B])
