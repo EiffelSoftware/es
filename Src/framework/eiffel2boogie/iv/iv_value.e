@@ -39,6 +39,8 @@ feature -- Access
 	type: IV_TYPE
 			-- Type of value.
 
+feature -- Status report			
+
 	is_false: BOOLEAN
 			-- Is this expression literal "false"?
 		do
@@ -49,6 +51,11 @@ feature -- Access
 			-- Is this expression literal "true"?
 		do
 			Result := value ~ "true"
+		end
+
+	has_free_var_named (a_name: STRING): BOOLEAN
+			-- Does this expression contain a free variable with name `a_name'?
+		do
 		end
 
 feature -- Comparison

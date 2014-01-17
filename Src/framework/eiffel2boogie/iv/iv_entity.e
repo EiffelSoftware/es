@@ -41,6 +41,14 @@ feature -- Access
 	type: IV_TYPE
 			-- Type of entity.
 
+feature -- Status report
+
+	has_free_var_named (a_name: STRING): BOOLEAN
+			-- Does this expression contain a free variable with name `a_name'?
+		do
+			Result := name ~ a_name
+		end
+
 feature -- Comparison
 
 	same_expression (a_other: IV_EXPRESSION): BOOLEAN

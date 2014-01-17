@@ -43,6 +43,14 @@ feature -- Access
 	expression: IV_EXPRESSION
 			-- Unary expression.
 
+feature -- Status report
+
+	has_free_var_named (a_name: STRING): BOOLEAN
+			-- Does this expression contain a free variable with name `a_name'?
+		do
+			Result := expression.has_free_var_named (a_name)
+		end
+
 feature -- Comparison
 
 	same_expression (a_other: IV_EXPRESSION): BOOLEAN

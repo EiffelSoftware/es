@@ -50,6 +50,15 @@ feature
 		do
 			x := s [1]
 			check s.but_last.count >= 0 end
+			check across s.domain & 1 as i all s.but_last.count >= 0 and triv (s [i.item]) end end
+			check across 1 |..| 10 as i all triv (s [i.item]) end end
+		end
+
+	triv (x: INTEGER): BOOLEAN
+		note
+			status: functional
+		do
+			Result := true
 		end
 
 	seq_to_set (arg: MML_SEQUENCE[INTEGER])

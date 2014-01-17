@@ -63,6 +63,15 @@ feature -- Access
 			end
 		end
 
+feature -- Status report
+
+	has_free_var_named (a_name: STRING): BOOLEAN
+			-- Does this expression contain a free variable with name `a_name'?
+		do
+			Result := target.has_free_var_named (a_name) or
+				across indexes as i some i.item.has_free_var_named (a_name) end
+		end
+
 feature -- Comparison
 
 	same_expression (a_other: IV_EXPRESSION): BOOLEAN

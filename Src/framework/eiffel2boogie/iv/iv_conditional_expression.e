@@ -53,6 +53,16 @@ feature -- Access
 	else_expression: IV_EXPRESSION
 			-- Block for else branch.
 
+feature -- Status report
+
+	has_free_var_named (a_name: STRING): BOOLEAN
+			-- Does this expression contain a free variable with name `a_name'?
+		do
+			Result := condition.has_free_var_named (a_name) or
+				then_expression.has_free_var_named (a_name) or
+				else_expression.has_free_var_named (a_name)
+		end
+
 feature -- Comparison
 
 	same_expression (a_other: IV_EXPRESSION): BOOLEAN

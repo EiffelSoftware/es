@@ -800,10 +800,7 @@ feature -- Visitors
 					l_call.add_argument (entity_mapping.heap)
 					l_call.add_argument (current_target)
 					l_call.add_argument (factory.type_value (current_target_type))
-						-- TODO: refactor
-					if not is_in_quantifier then
-						add_safety_check (l_call, "attached", context_tag, context_line_number)
-					end
+					add_safety_check (l_call, "attached", context_tag, context_line_number)
 				end
 
 					-- Evaluate message with original expression
@@ -1182,6 +1179,7 @@ feature {E2B_ACROSS_HANDLER, E2B_CUSTOM_CALL_HANDLER, E2B_CUSTOM_NESTED_HANDLER}
 
 	is_in_quantifier: BOOLEAN
 			-- Is current expression inside a quantifier?
+			-- ToDo: remove?
 
 	dummy_node (a_type: TYPE_A): IV_EXPRESSION
 			-- Dummy node for type `a_type'.

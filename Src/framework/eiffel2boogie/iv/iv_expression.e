@@ -15,6 +15,8 @@ feature -- Access
 		deferred
 		end
 
+feature -- Status report
+
 	is_false: BOOLEAN
 			-- Is this expression literal "false"?
 		do
@@ -23,6 +25,11 @@ feature -- Access
 	is_true: BOOLEAN
 			-- Is this expression literal "true"?
 		do
+		end
+
+	has_free_var_named (a_name: STRING): BOOLEAN
+			-- Does this expression contain a free variable with name `a_name'?
+		deferred
 		end
 
 feature -- Comparison

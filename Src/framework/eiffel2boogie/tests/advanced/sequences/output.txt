@@ -14,6 +14,15 @@ Verification failed.
 Line: 51. Check precondition_of_function_item may be violated.
 --------------------------------------
 Line: 52. Check precondition_of_function_but_last may be violated.
+--------------------------------------
+Line: 53. Check precondition_of_function_but_last may be violated.
+--------------------------------------
+Line: 53. Check precondition_of_function_item may be violated.
+--------------------------------------
+Line: 54. Check precondition_of_function_item may be violated.
+======================================
+A_SEQUENCES.triv
+Successfully verified.
 ======================================
 A_SEQUENCES.seq_to_set
 Successfully verified.
