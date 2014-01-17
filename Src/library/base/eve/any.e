@@ -342,6 +342,10 @@ feature -- Basic operations
 
 	frozen do_nothing
 			-- Execute a null action.
+		note
+			explicit: contracts, wrapping
+		require
+			modify ([])
 		do
 		end
 
@@ -557,7 +561,7 @@ invariant
 --	reflexive_conformance: conforms_to (Current)
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

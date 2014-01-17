@@ -23,16 +23,11 @@ feature -- Basic operations
 
 	handle_call_item (a_feature: FEATURE_I)
 			-- <Precursor>
-		local
-			l_call: IV_FUNCTION_CALL
 		do
-			check attached {IV_MAP_TYPE} array_expr.type as map_type then
-				create l_call.make ("fun.ARRAY.item", map_type.range_type)
-				l_call.add_argument (expression_translator.entity_mapping.heap)
-				l_call.add_argument (array_expr)
-				l_call.add_argument (expression_translator.locals_map.item (bound_variable.position))
-				expression_translator.set_last_expression (l_call)
-			end
+			expression_translator.set_last_expression (factory.function_call (
+				"fun.ARRAY.item",
+				<< expression_translator.entity_mapping.heap, array_expr, expression_translator.locals_map.item (bound_variable.position) >>,
+				types.for_type_a (bound_variable.type.generics.first)))
 		end
 
 	handle_call_cursor_index (a_feature: FEATURE_I)

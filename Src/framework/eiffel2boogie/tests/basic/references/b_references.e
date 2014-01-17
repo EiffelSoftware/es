@@ -18,6 +18,10 @@ feature
 		end
 
 	non_void_call (a: ANY)
+		note
+			explicit: contracts, wrapping
+		require
+			modify ([])
 		do
 			if a /= Void then
 				a.do_nothing

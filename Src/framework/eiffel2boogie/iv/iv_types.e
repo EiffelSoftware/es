@@ -198,7 +198,7 @@ feature -- Type translation
 				end
 				Result := factory.function_call (l_fname, << a_heap, a_expr, factory.type_value (l_content_type) >>, bool)
 				-- ToDo: refactor
-				if a_type.base_class.name_in_upper ~ "ARRAY" then
+				if not a_type.is_formal and then a_type.base_class.name_in_upper ~ "ARRAY" then
 					Result := factory.and_clean (Result, factory.function_call ("ARRAY.inv", << a_heap, a_expr >>, bool))
 				end
 			elseif l_boogie_type ~ int then

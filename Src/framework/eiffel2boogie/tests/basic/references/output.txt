@@ -1,14 +1,20 @@
 ======================================
+ANY.default_create (creator, inherited by B_REFERENCES)
+Successfully verified.
+======================================
 B_REFERENCES.void_check
 Successfully verified.
 ======================================
 B_REFERENCES.void_call
 Verification failed.
 
-Possible void call. (tag: implicit_attachment)
+Line: 17. Possible Void call.
 ======================================
 B_REFERENCES.non_void_call
 Successfully verified.
 ======================================
 B_REFERENCES.non_void_contract
+Successfully verified.
+======================================
+B_REFERENCES (invariant admissibility)
 Successfully verified.
