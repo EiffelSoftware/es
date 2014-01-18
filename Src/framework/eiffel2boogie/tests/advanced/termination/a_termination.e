@@ -110,6 +110,23 @@ feature
 			end
 		end
 
+	bag_sum (b: MML_BAG [INTEGER]): INTEGER
+		local
+			x: INTEGER
+		do
+			if b.is_empty then
+				Result := 0
+			else
+				x := b.domain.any_item
+				Result := x + bag_sum (b / x)
+			end
+		end
+
+	bag_sum_bad (b: MML_BAG [INTEGER]): INTEGER
+		do
+			Result := bag_sum_bad (b)
+		end
+
 	no_args_bad
 			-- This used to crash before
 		note

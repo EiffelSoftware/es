@@ -10,6 +10,7 @@ inherit
 	IV_TYPE
 		redefine
 			default_value,
+			type_inv,
 			is_equal,
 			has_rank,
 			rank_leq
@@ -46,14 +47,28 @@ feature -- Access
 	default_value: IV_EXPRESSION
 			-- <Precursor>
 
+	type_inv (a_expr: IV_EXPRESSION): IV_EXPRESSION
+			-- Invariant of this type applied to `a_expr'.
+		do
+			if attached type_inv_function then
+				Result := factory.function_call (type_inv_function, << a_expr >>, create {IV_BASIC_TYPE}.make_boolean)
+			end
+		end
+
 feature -- Element change
 
 	set_default_value (a_value: IV_EXPRESSION)
 			-- Set `default_value' to `a_value'.
---		require
---			correct_type: a_value /= Void and then a_value.type ~ Current
+		require
+			correct_type: a_value /= Void and then a_value.type ~ Current
 		do
 			default_value := a_value
+		end
+
+	set_type_inv_function (a_name: STRING)
+			-- Set `type_inv_function' to `a_name'.
+		do
+			type_inv_function := a_name
 		end
 
 feature -- Visitor
@@ -77,9 +92,6 @@ feature -- Equality
 
 feature -- Termination
 
-	rank_leq_function: STRING
-			-- Name of the Boogie function that defined the well-founded order on this type.
-
 	set_rank_function (a_function: STRING)
 			-- Set `rank_leq_function' to `a_function'.
 		do
@@ -97,6 +109,14 @@ feature -- Termination
 		do
 			Result := factory.function_call (rank_leq_function, << e1, e2 >>, create {IV_BASIC_TYPE}.make_boolean)
 		end
+
+feature {NONE} -- Implementation		
+
+	rank_leq_function: STRING
+			-- Name of the Boogie function that defines the well-founded order on this type.
+
+	type_inv_function: STRING
+			-- Name of the Boogie function that defines the invariant on this type.
 
 invariant
 	constructor_exists: constructor /= Void

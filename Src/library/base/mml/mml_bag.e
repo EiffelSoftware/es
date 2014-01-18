@@ -1,8 +1,9 @@
 note
 	description: "Finite bags."
 	author: "Nadia Polikarpova"
-	theory: "bag.bpl"
+	theory: "bag.bpl", "set.bpl"
 	maps_to: "Bag"
+	where: "Bag#IsValid"
 	typed_sets: "Bag#Domain"
 
 class
@@ -55,6 +56,11 @@ feature -- Properties
 
 	is_constant (c: INTEGER): BOOLEAN
 			-- Are all values equal to `c'?
+		do
+		end
+		
+	is_valid: BOOLEAN
+			-- Id `Current' a valid bag (are all occurrences non-negative)?
 		do
 		end
 
@@ -164,4 +170,15 @@ feature -- Iterable implementation
 		do
 		end
 
+feature -- Convenience
+
+	empty_bag: MML_BAG [G]
+		note
+			maps_to: "Bag#Empty"
+		external "C inline"
+		alias
+			"[
+				return NULL;
+			]"
+		end		
 end

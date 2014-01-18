@@ -5,10 +5,10 @@
 type Bag T = [T]int;
 
 // Bag invariant
-function $IsGoodBag<T>(b: Bag T): bool;
+function Bag#IsValid<T>(b: Bag T): bool;
 // ints are non-negative, used after havocing, and for conversion from sequences to multisets.
-axiom (forall<T> b: Bag T :: { $IsGoodBag(b) } 
-  $IsGoodBag(b) <==> (forall bx: T :: { b[bx] } 0 <= b[bx]));
+axiom (forall<T> b: Bag T :: { Bag#IsValid(b) } 
+  Bag#IsValid(b) <==> (forall bx: T :: { b[bx] } 0 <= b[bx]));
 
 // Bag size
 function Bag#Card<T>(Bag T): int;
@@ -27,12 +27,13 @@ axiom (forall<T> s: Bag T :: { Bag#Card(s) }
 function Bag#Singleton<T>(T): Bag T;
 axiom (forall<T> r: T, o: T :: { Bag#Singleton(r)[o] } (Bag#Singleton(r)[o] == 1 <==> r == o) &&
                                                             (Bag#Singleton(r)[o] == 0 <==> r != o));
-axiom (forall<T> r: T :: { Bag#Singleton(r) } Bag#Singleton(r) == Bag#Extended(Bag#Empty(), r));
+axiom (forall<T> r: T :: { Bag#Singleton(r) } Bag#Equal(Bag#Singleton(r), Bag#Extended(Bag#Empty(), r)));
 
 // Bag that contains multiple occurrences of the same element
 function Bag#Multiple<T>(T, int): Bag T;
 axiom (forall<T> r: T, n: int, o: T :: { Bag#Multiple(r, n)[o] } (Bag#Multiple(r, n)[o] == n <==> r == o) &&
                                                             (Bag#Multiple(r, n)[o] == 0 <==> r != o));
+axiom (forall<T> r: T, n: int :: { Bag#Multiple(r, n) } Bag#Equal(Bag#Multiple(r, n), Bag#ExtendedMultiple(Bag#Empty(), r, n)));                                                            
             
 // Is x contained in b?            
 function {: inline } Bag#Has<T>(b: Bag T, x: T): bool
@@ -49,6 +50,7 @@ function Bag#IsConstant<T>(b: Bag T, c: T): bool
 // Set of values contained in the bag
 function Bag#Domain<T>(Bag T): Set T;
 axiom (forall <T> b: Bag T, o: T :: { Bag#Domain(b)[o] } Bag#Domain(b)[o] <==> b[o] > 0 );
+axiom (forall <T> b: Bag T :: { Bag#IsEmpty(b), Bag#Domain(b) }{ Set#IsEmpty(Bag#Domain(b)) } Bag#IsEmpty(b) <==> Set#IsEmpty(Bag#Domain(b)) );
 
 // Do two bags contain the same number of the same elements?
 function Bag#Equal<T>(Bag T, Bag T): bool;
@@ -111,9 +113,12 @@ axiom (forall<T> a: Bag T, x: T :: { Bag#Removed(a, x)[x] }
 axiom (forall<T> a: Bag T, x: T :: { Bag#Removed(a, x)[x] }
   a[x] == 0 ==> Bag#Removed(a, x)[x] == 0);  
 axiom (forall<T> a: Bag T, x: T, y: T :: { Bag#Removed(a, x), a[y] }
-  x != y ==> a[y] == Bag#Removed(a, x)[y]);  
+  x != y ==> a[y] == Bag#Removed(a, x)[y]);
+axiom (forall<T> a: Bag T, x: T :: { Bag#Card(Bag#Removed(a, x)) }
+  a[x] > 0 ==> Bag#Card(Bag#Removed(a, x)) == Bag#Card(a) - 1);    
+axiom (forall<T> a: Bag T, x: T :: { Bag#Card(Bag#Removed(a, x)) }
+  a[x] == 0 ==> Bag#Card(Bag#Removed(a, x)) == Bag#Card(a));  
   
-// Bag with multiple occurrences of an element removed
 // Bag with multiple occurrences of an element removed
 function Bag#RemovedMultiple<T>(Bag T, T, int): Bag T;
 axiom (forall<T> a: Bag T, x: T :: { Bag#RemovedMultiple(a, x, 0) }
@@ -124,6 +129,10 @@ axiom (forall<T> a: Bag T, x: T, n: int :: { Bag#RemovedMultiple(a, x, n)[x] }
   a[x] < n ==> Bag#RemovedMultiple(a, x, n)[x] == 0);  
 axiom (forall<T> a: Bag T, x: T, n: int, y: T :: { Bag#RemovedMultiple(a, x, n), a[y] }
   x != y ==> a[y] == Bag#RemovedMultiple(a, x, n)[y]);
+axiom (forall<T> a: Bag T, x: T, n: int :: { Bag#Card(Bag#RemovedMultiple(a, x, n)) }
+  a[x] >= n ==> Bag#Card(Bag#RemovedMultiple(a, x, n)) == Bag#Card(a) - n);    
+axiom (forall<T> a: Bag T, x: T, n: int :: { Bag#Card(Bag#RemovedMultiple(a, x, n)) }
+  a[x] < 0 ==> Bag#Card(Bag#Removed(a, x)) == Bag#Card(a) - a[x]);  
   
 // Bag with all occurrences of an element removed.  
 function Bag#RemovedAll<T>(Bag T, T): Bag T;
@@ -131,11 +140,13 @@ axiom (forall<T> a: Bag T, x: T :: { Bag#RemovedAll(a, x)[x] }
   Bag#RemovedAll(a, x)[x] == 0);  
 axiom (forall<T> a: Bag T, x: T, y: T :: { Bag#RemovedAll(a, x), a[y] }
   x != y ==> a[y] == Bag#RemovedAll(a, x)[y]);  
+axiom (forall<T> a: Bag T, x: T :: {Bag#Card(Bag#RemovedAll(a, x))}
+  Bag#Card(Bag#RemovedAll(a, x)) == Bag#Card(a) - a[x]);
   
 // Bag that consists only of those elements of a that are in s.  
 function Bag#Restricted<T>(Bag T, Set T): Bag T;  
 axiom (forall<T> a: Bag T, s: Set T, x: T :: { Bag#Restricted(a, s)[x] }
-  Bag#Restricted(a, s)[x] == if s[x] then 0 else a[x]);  
+  Bag#Restricted(a, s)[x] == if s[x] then a[x] else 0);  
 
 // Union of two bags  
 function Bag#Union<T>(Bag T, Bag T): Bag T;

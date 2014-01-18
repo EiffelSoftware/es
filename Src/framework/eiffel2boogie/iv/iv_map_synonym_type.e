@@ -13,6 +13,7 @@ inherit
 			make as make_map
 		undefine
 			default_value,
+			type_inv,
 			has_rank,
 			rank_leq,
 			is_equal,

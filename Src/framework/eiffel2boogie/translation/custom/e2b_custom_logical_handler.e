@@ -35,6 +35,12 @@ feature -- Status report
 			end
 		end
 
+	has_arg_current (a_feature: FEATURE_I): BOOLEAN
+			-- Does the translation of `a_feature' take "current" as the first argument?
+		do
+			Result := a_feature.has_return_value and not a_feature.is_external
+		end
+
 feature -- Basic operations
 
 	handle_routine_call_in_body (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR; a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B])

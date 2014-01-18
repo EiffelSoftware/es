@@ -21,6 +21,14 @@ feature -- Access
 			correct_type: Result = Void or else Result.type ~ Current
 		end
 
+	type_inv (a_expr: IV_EXPRESSION): IV_EXPRESSION
+			-- Invariant of this type applied to `a_expr'.
+		require
+			correct_type: attached a_expr and then a_expr.type ~ Current
+		do
+			-- Void by default
+		end
+
 feature -- Status report
 
 	is_boolean: BOOLEAN

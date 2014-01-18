@@ -45,19 +45,38 @@ feature -- Translation: Signature
 			-- TODO: create special signature
 		end
 
+	translate_logical_signature (a_feature: FEATURE_I; a_type: TYPE_A)
+			-- Translate signature of a logical feature `a_feature' of type `a_type'.
+		require
+			class_logical: helper.is_class_logical (a_type.base_class)
+		do
+			set_context (a_feature, a_type)
+
+				-- Add referenced types
+			translation_pool.add_type (current_type)
+			across arguments_of_current_feature as i loop
+				translation_pool.add_type (i.item.type.deep_actual_type.instantiated_in (current_type))
+			end
+			if current_feature.has_return_value then
+				translation_pool.add_type (current_feature.type.deep_actual_type.instantiated_in (current_type))
+			end
+
+				-- Add precondition
+			if a_feature.has_precondition then
+				translation_pool.add_precondition_predicate (current_feature, current_type)
+			end
+		end
+
 	translate_signature (a_feature: FEATURE_I; a_type: TYPE_A; a_for_creator: BOOLEAN)
 			-- Translate signature of feature `a_feature' of type `a_type'.
 		require
 			routine: a_feature.is_routine
 		local
-			l_proc_name, l_attr_name: STRING
+			l_proc_name: STRING
 			l_contracts: like contracts_of
 			l_fields: LINKED_LIST [TUPLE [o: IV_EXPRESSION; f: IV_ENTITY]]
 			l_modifies: IV_MODIFIES
-			l_mapping: E2B_ENTITY_MAPPING
-			l_pre: IV_PRECONDITION
 			l_type: TYPE_A
-			l_attribute: FEATURE_I
 		do
 			set_context (a_feature, a_type)
 			translation_pool.add_type (current_type)
@@ -104,59 +123,9 @@ feature -- Translation: Signature
 				process_postcondition (j.item, l_contracts.post_origin [j.target_index], l_fields)
 			end
 
-				-- Creator: add free preconditions that all attributes are initialized to default values
+				-- Creator: add default field initialization
 			if a_for_creator then
-				create l_mapping.make
-				from
-					current_type.base_class.feature_table.start
-				until
-					current_type.base_class.feature_table.after
-				loop
-					l_attribute := current_type.base_class.feature_table.item_for_iteration
-					if l_attribute.is_attribute then
-						translation_pool.add_referenced_feature (l_attribute, current_type)
-						l_attr_name := name_translator.boogie_procedure_for_feature (l_attribute, current_type)
-						create l_pre.make (factory.equal (
-							factory.heap_current_access (l_mapping, l_attr_name, types.for_type_a (l_attribute.type)),
-							types.for_type_a (l_attribute.type).default_value))
-						l_pre.set_free
-						current_boogie_procedure.add_contract (l_pre)
-					end
-					current_type.base_class.feature_table.forth
-				end
-					-- Add ownership-realted built-in attribute
-				if options.is_ownership_enabled then
-					-- closed
-					create l_pre.make (factory.function_call ("is_open", << factory.global_heap, factory.std_current >>, types.bool))
-					l_pre.set_free
-					current_boogie_procedure.add_contract (l_pre)
-
-					-- owner
-					create l_pre.make (factory.equal (factory.heap_current_access (l_mapping, "owner", types.ref), factory.void_))
-					l_pre.set_free
-					current_boogie_procedure.add_contract (l_pre)
-
-					-- owns
-					create l_pre.make (factory.equal (
-						factory.heap_current_access (l_mapping, "owns", types.set (types.ref)),
-						factory.function_call ("Set#Empty", << >>, types.set (types.ref))))
-					l_pre.set_free
-					current_boogie_procedure.add_contract (l_pre)
-
-					-- subjects
-					create l_pre.make (factory.equal (
-						factory.heap_current_access (l_mapping, "subjects", types.set (types.ref)),
-						factory.function_call ("Set#Empty", << >>, types.set (types.ref))))
-					l_pre.set_free
-					current_boogie_procedure.add_contract (l_pre)
-
-					-- observers
-					create l_pre.make (factory.equal (
-						factory.heap_current_access (l_mapping, "observers", types.set (types.ref)),
-						factory.function_call ("Set#Empty", << >>, types.set (types.ref))))
-					l_pre.set_free
-					current_boogie_procedure.add_contract (l_pre)
-				end
+				add_field_initialization
 			end
 
 				-- Framing
@@ -181,6 +150,67 @@ feature -- Translation: Signature
 			end
 			if options.is_postcondition_predicate_enabled then
 				add_postcondition_predicate
+			end
+		end
+
+	add_field_initialization
+			-- Add free preconditions to `current_boogie_procedure' that all attributes are initialized to default values
+		local
+			l_mapping: E2B_ENTITY_MAPPING
+			l_pre: IV_PRECONDITION
+			l_attr_name: STRING
+			l_attribute: FEATURE_I
+		do
+			create l_mapping.make
+			from
+				current_type.base_class.feature_table.start
+			until
+				current_type.base_class.feature_table.after
+			loop
+				l_attribute := current_type.base_class.feature_table.item_for_iteration
+				if l_attribute.is_attribute then
+					translation_pool.add_referenced_feature (l_attribute, current_type)
+					l_attr_name := name_translator.boogie_procedure_for_feature (l_attribute, current_type)
+					create l_pre.make (factory.equal (
+						factory.heap_current_access (l_mapping, l_attr_name, types.for_type_a (l_attribute.type)),
+						types.for_type_a (l_attribute.type).default_value))
+					l_pre.set_free
+					current_boogie_procedure.add_contract (l_pre)
+				end
+				current_type.base_class.feature_table.forth
+			end
+				-- Add ownership-realted built-in attribute
+			if options.is_ownership_enabled then
+				-- closed
+				create l_pre.make (factory.function_call ("is_open", << factory.global_heap, factory.std_current >>, types.bool))
+				l_pre.set_free
+				current_boogie_procedure.add_contract (l_pre)
+
+				-- owner
+				create l_pre.make (factory.equal (factory.heap_current_access (l_mapping, "owner", types.ref), factory.void_))
+				l_pre.set_free
+				current_boogie_procedure.add_contract (l_pre)
+
+				-- owns
+				create l_pre.make (factory.equal (
+					factory.heap_current_access (l_mapping, "owns", types.set (types.ref)),
+					factory.function_call ("Set#Empty", << >>, types.set (types.ref))))
+				l_pre.set_free
+				current_boogie_procedure.add_contract (l_pre)
+
+				-- subjects
+				create l_pre.make (factory.equal (
+					factory.heap_current_access (l_mapping, "subjects", types.set (types.ref)),
+					factory.function_call ("Set#Empty", << >>, types.set (types.ref))))
+				l_pre.set_free
+				current_boogie_procedure.add_contract (l_pre)
+
+				-- observers
+				create l_pre.make (factory.equal (
+					factory.heap_current_access (l_mapping, "observers", types.set (types.ref)),
+					factory.function_call ("Set#Empty", << >>, types.set (types.ref))))
+				l_pre.set_free
+				current_boogie_procedure.add_contract (l_pre)
 			end
 		end
 
@@ -696,18 +726,21 @@ feature -- Translation: agents
 			create l_mapping.make
 
 			if not helper.is_class_logical (a_type.base_class) then
-					-- In logical classes functions do not depend on the heap
+					-- Only non-logical features depend on the heap
 				l_entity := factory.heap_entity ("heap")
 				l_function.add_argument (l_entity.name, l_entity.type)
 				l_mapping.set_heap (l_entity)
 			end
 
-			create l_entity.make ("current", types.for_type_a (a_type))
-			l_function.add_argument (l_entity.name, l_entity.type)
-			l_mapping.set_current (l_entity)
+			if not helper.is_class_logical (a_type.base_class) or (create {E2B_CUSTOM_LOGICAL_HANDLER}).has_arg_current (a_feature) then
+					-- Non-logical features and some logical once take "current" as the first argument
+				create l_entity.make ("current", types.for_type_a (a_type))
+				l_function.add_argument (l_entity.name, l_entity.type)
+				l_mapping.set_current (l_entity)
+			end
 
 			from i := 1 until i > a_feature.argument_count loop
-				create l_entity.make (a_feature.arguments.item_name (i), types.for_type_a (a_feature.arguments.i_th (i)))
+				create l_entity.make (a_feature.arguments.item_name (i), types.for_type_in_context (a_feature.arguments.i_th (i), current_type))
 				l_function.add_argument (l_entity.name, l_entity.type)
 				l_mapping.set_argument (i, l_entity)
 				i := i + 1

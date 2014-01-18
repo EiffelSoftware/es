@@ -91,6 +91,14 @@ Verification failed.
 
 Line: 109. Variant may not decrease at this recursive call / the end of this loop body.
 ======================================
+A_TERMINATION.bag_sum
+Successfully verified.
+======================================
+A_TERMINATION.bag_sum_bad
+Verification failed.
+
+Line: 127. Variant may not decrease at this recursive call / the end of this loop body.
+======================================
 A_TERMINATION.no_args_bad
 Verification failed.
 

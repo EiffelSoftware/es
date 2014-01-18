@@ -193,11 +193,7 @@ feature {NONE} -- Implementation
 				add_attribute (a_feature, a_context_type)
 			elseif a_feature.is_routine then
 				if helper.is_class_logical (a_context_type.base_class) then
-						-- It is a feature directly mapped to Boogie:
-						-- only translate its precondition (if exists)
-					if a_feature.has_precondition then
-						add_precondition_predicate (a_feature, a_context_type)
-					end
+					add_logical (a_feature, a_context_type)
 				else
 					if a_context_type.base_class.has_creator_of_name_id (a_feature.feature_name_id) or
 						(a_context_type.base_class.creation_feature /= Void and then a_context_type.base_class.creation_feature.feature_id = a_feature.feature_id)
@@ -276,6 +272,15 @@ feature {NONE} -- Implementation
 				create l_creator_impl.make (a_feature, a_context_type)
 				add_translation_unit (l_creator_impl)
 			end
+		end
+
+	add_logical (a_feature: FEATURE_I; a_context_type: TYPE_A)
+			-- Add logical feature `a_feature' of `a_context_type'.
+		local
+			l_logical: E2B_TU_LOGICAL_SIGNATURE
+		do
+			create l_logical.make (a_feature, a_context_type)
+			add_translation_unit (l_logical)
 		end
 
 end

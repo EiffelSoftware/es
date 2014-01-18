@@ -34,6 +34,9 @@ feature
 			check s.prepended (1).but_first = s end
 			check s2.extended_at (s.count + 1, 1) [s.count + 1] = 1 end
 			check s1.replaced_at (s.count + 1, 2).tail (s.count + 1).first = 2 end
+			s2 := (create {MML_SEQUENCE [INTEGER]}) & 1 & 2 & 1
+			check s2.to_bag [1] = 2 end
+			check s2.to_bag [0] = 0 end
 		end
 
 	good1 (s: MML_SEQUENCE [A_SETS])
