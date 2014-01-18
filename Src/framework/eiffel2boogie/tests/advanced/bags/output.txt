@@ -1,0 +1,21 @@
+======================================
+ANY.default_create (creator, inherited by A_BAGS)
+Successfully verified.
+======================================
+A_BAGS.good
+Successfully verified.
+======================================
+A_BAGS.good1
+Successfully verified.
+======================================
+A_BAGS.bad
+Verification failed.
+
+Line: 62. Check precondition_of_function_multiple may be violated.
+--------------------------------------
+Line: 63. Check precondition_of_function_extended_multiple may be violated.
+--------------------------------------
+Line: 64. Check precondition_of_function_removed_multiple may be violated.
+======================================
+A_BAGS (invariant admissibility)
+Successfully verified.
