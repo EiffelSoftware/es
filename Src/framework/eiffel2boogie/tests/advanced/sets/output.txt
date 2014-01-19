@@ -19,5 +19,8 @@ Line: 42. Check bad_empty may be violated.
 --------------------------------------
 Line: 43. Check bad_has may be violated.
 ======================================
+A_SETS.interval
+Successfully verified.
+======================================
 A_SETS (invariant admissibility)
 Successfully verified.

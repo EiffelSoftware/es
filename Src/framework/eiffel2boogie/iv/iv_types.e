@@ -116,11 +116,15 @@ feature -- Type translation
 			elseif helper.is_class_logical (l_class) then
 					-- The class is mapped to a Boogie type
 				l_constructor := helper.type_for_logical (l_class)
-				create l_params.make (1, l_type.generics.count)
-				across
-					l_type.generics as g
-				loop
-					l_params [g.target_index] := for_type_a (g.item)
+				if l_type.generics = Void then
+					create l_params.make_empty
+				else
+					create l_params.make (1, l_type.generics.count)
+					across
+						l_type.generics as g
+					loop
+						l_params [g.target_index] := for_type_a (g.item)
+					end
 				end
 
 					-- Check if the class corresponds to a map type

@@ -123,4 +123,49 @@ axiom (forall<T> a: Set T :: { Set#Difference(a,Set#Empty()) }
 // Symmetric difference of two sets  
 function Set#SymDifference<T>(a: Set T, b: Set T): Set T
 { Set#Union(Set#Difference(a, b), Set#Difference(b, a)) }
-  
+
+
+// Integer intervals
+type Interval = Set int;
+
+// Lower and upper bound
+function Interval#Lower(Interval): int;
+function Interval#Upper(Interval): int;
+
+// Is Current a valid interval?
+function Interval#IsValid(in: Interval): bool
+{ (forall i: int :: in[i] <==> Interval#Lower(in) <= i && i <= Interval#Upper(in)) }
+
+// Singleton is a valid interval
+axiom (forall x: int :: {Interval#Lower(Set#Singleton(x))} 
+  Interval#Lower(Set#Singleton(x)) == x);
+axiom (forall x: int :: {Interval#Upper(Set#Singleton(x))} 
+  Interval#Upper(Set#Singleton(x)) == x);
+axiom (forall x: int :: {Interval#IsValid(Set#Singleton(x))} 
+  Interval#IsValid(Set#Singleton(x)));
+
+// Interval [l, u]
+function Interval#FromRange(int, int): Interval;
+axiom (forall l, u: int :: { Interval#Lower(Interval#FromRange(l, u)) } 
+  Interval#Lower(Interval#FromRange(l, u)) == l);
+axiom (forall l, u: int :: { Interval#Upper(Interval#FromRange(l, u)) } 
+  Interval#Upper(Interval#FromRange(l, u)) == u);
+axiom (forall l, u: int :: { Interval#FromRange(l, u) } 
+  Interval#IsValid(Interval#FromRange(l, u)));
+
+// Interval union  
+function Interval#Union(Interval, Interval): Interval;
+axiom (forall in: Interval :: {Interval#Union(in, Set#Empty())} 
+  Interval#Union(in, Set#Empty()) == in); 
+axiom (forall in: Interval :: {Interval#Union(Set#Empty(), in)} 
+  Interval#Union(Set#Empty(), in) == in);
+axiom (forall in1, in2: Interval :: {Interval#Union(in1, in2)}
+  Interval#IsValid(Interval#Union(in1, in2)));
+axiom (forall in1, in2: Interval :: {Interval#Union(in1, in2)}
+  !Set#IsEmpty(in1) && !Set#IsEmpty(in2) ==>
+    !Set#IsEmpty(Interval#Union(in1, in2)) &&
+    Interval#Lower(Interval#Union(in1, in2)) == if Interval#Lower(in1) <= Interval#Lower(in2) then Interval#Lower(in1) else Interval#Lower(in2));
+axiom (forall in1, in2: Interval :: {Interval#Union(in1, in2)}
+  !Set#IsEmpty(in1) && !Set#IsEmpty(in2) ==>
+    !Set#IsEmpty(Interval#Union(in1, in2)) &&
+    Interval#Upper(Interval#Union(in1, in2)) == if Interval#Upper(in1) >= Interval#Upper(in2) then Interval#Upper(in1) else Interval#Upper(in2));  
