@@ -1,0 +1,21 @@
+======================================
+ANY.default_create (creator, inherited by A_MAPS)
+Successfully verified.
+======================================
+A_MAPS.good
+Successfully verified.
+======================================
+A_MAPS.good1
+Successfully verified.
+======================================
+A_MAPS.bad
+Verification failed.
+
+Line: 87. Check precondition_of_function_item may be violated.
+--------------------------------------
+Line: 89. Check precondition_of_function_image may be violated.
+--------------------------------------
+Line: 92. Check precondition_of_function_sequence_image may be violated.
+======================================
+A_MAPS (invariant admissibility)
+Successfully verified.
