@@ -70,8 +70,8 @@ axiom (forall<T> a: Set T, x: T, o: T :: { Set#Removed(a,x)[o] }
   Set#Removed(a,x)[o] <==> o != x && a[o]);
 axiom (forall<T> a: Set T, x: T :: { Set#Removed(a, x) }
   !Set#Removed(a, x)[x]);
-axiom (forall<T> a: Set T, x: T, y: T :: { Set#Removed(a, x), a[y] }
-  Set#Removed(a, x)[y] ==> a[y]);
+// axiom (forall<T> a: Set T, x: T, y: T :: { Set#Removed(a, x), a[y] }
+  // Set#Removed(a, x)[y] ==> a[y]);
 axiom (forall<T> a: Set T, x: T :: { Set#Card(Set#Removed(a, x)) }
   a[x] ==> Set#Card(Set#Removed(a, x)) == Set#Card(a) - 1);  
 axiom (forall<T> a: Set T, x: T :: { Set#Card(Set#Removed(a, x)) }

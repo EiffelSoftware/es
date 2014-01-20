@@ -3490,6 +3490,7 @@ Src/framework/eiffel2boogie/tests/advanced/functional/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/inheritance/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/lemma/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/maps/output.txt -text
+Src/framework/eiffel2boogie/tests/advanced/relations/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/sequences/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/sets/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/termination/output.txt -text
@@ -3807,6 +3808,7 @@ Src/library/GIF/Clib/gd_lib/gd.lib svneol=native#unset
 Src/library/api_wrapper/implementation/unix/Clib/dl-config -text
 Src/library/base/mml/bag.bpl -text
 Src/library/base/mml/map.bpl -text
+Src/library/base/mml/relation.bpl -text
 Src/library/base/mml/sequence.bpl -text
 Src/library/base/mml/set.bpl -text
 Src/library/dadle/openEHR/ref_impl_eiffel/components/.DS_Store -text
