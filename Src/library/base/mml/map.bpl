@@ -139,5 +139,16 @@ axiom (forall<U, V> a: Map U V, b: Map U V :: { Map#Domain(Map#Override(a, b)) }
 axiom (forall<U, V> a: Map U V, b: Map U V, i: U :: { Map#Elements(Map#Override(a, b))[i] }
   Map#Elements(Map#Override(a, b))[i] == if Map#Domain(b)[i] then Map#Elements(b)[i] else Map#Elements(a)[i]);  
   
+// Inverse
+function Map#Inverse<U, V>(Map U V): Rel V U;
+axiom (forall<U, V> a: Map U V, u: U, v: V :: { Map#Inverse(a)[v, u] }
+  Map#Inverse(a)[v, u] <==> Map#Domain(a)[u] && Map#Elements(a)[u] == v);
+axiom (forall<U, V> a: Map U V :: { Rel#Card(Map#Inverse(a)) }
+  Rel#Card(Map#Inverse(a)) == Map#Card(a));
+axiom (forall<U, V> a: Map U V :: { Rel#Domain(Map#Inverse(a)) }
+  Rel#Domain(Map#Inverse(a)) == Map#Range(a));
+axiom (forall<U, V> a: Map U V :: { Rel#Range(Map#Inverse(a)) }
+  Rel#Range(Map#Inverse(a)) == Map#Domain(a));
+  
   
                

@@ -33,6 +33,9 @@ feature
 			m1 := m1.updated (3, 15)
 			check m1.count = 3 end
 
+			check m1.inverse [15, 3] and not m1.inverse [14, 3] end
+			check m1.count = 3 end
+
 			set := m1.image ({MML_SET [INTEGER]}.empty_set & 3 & 2)
 			check set [15] end
 			check not set [5] end

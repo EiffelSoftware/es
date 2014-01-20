@@ -1,7 +1,7 @@
 note
 	description: "Finite maps."
 	author: "Nadia Polikarpova"
-	theory: "map.bpl", "sequence.bpl", "bag.bpl", "set.bpl"
+	theory: "map.bpl", "sequence.bpl", "bag.bpl", "relation.bpl", "set.bpl"
 	maps_to: "Map"
 	typed_sets: "Map#Domain", "Map#Range"
 
@@ -140,6 +140,11 @@ feature -- Modification
 			-- Map that is equal to `other' on its domain and to `Current' on its domain minus the domain of `other'.
 		do
 		end
+
+	inverse: MML_RELATION [V, K]
+			-- Relation consisting of inverted pairs from `Current'.
+		do
+		end				
 
 feature -- Iterable implementation
 
