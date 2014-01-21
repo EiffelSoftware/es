@@ -68,14 +68,22 @@ feature -- Visitors
 		local
 			l_type: CL_TYPE_A
 			l_feature: FEATURE_I
+			l_handler: E2B_CUSTOM_CALL_HANDLER
 		do
---			l_type ?= a_node.type.deep_actual_type
---			check l_type /= Void end
---			l_feature := a_node.type.associated_class.feature_of_rout_id (a_node.call.routine_id)
---			check feature_valid: l_feature /= Void end
---			translation_pool.add_referenced_feature (l_feature, l_type)
+			l_type ?= a_node.type.deep_actual_type
+			check l_type /= Void end
+			l_feature := a_node.type.associated_class.feature_of_rout_id (a_node.call.routine_id)
+			check feature_valid: l_feature /= Void end
+			translation_pool.add_type (l_type)
+			current_target_type := l_type
 
-			last_expression := dummy_node (a_node.type)
+			if helper.is_class_logical (current_target_type.base_class) then
+				l_handler := translation_mapping.handler_for_call (current_target_type, l_feature)
+				check l_handler /= Void end
+				l_handler.handle_routine_call_in_contract (Current, l_feature, a_node.parameters)
+			else
+				last_expression := dummy_node (a_node.type)
+			end
 		end
 
 	process_un_old_b (a_node: UN_OLD_B)
@@ -131,31 +139,35 @@ feature -- Translation
 
 			translation_pool.add_referenced_feature (a_feature, current_target_type)
 			l_name := name_translator.boogie_function_for_feature (a_feature, current_target_type)
+			if helper.is_feature_status (a_feature, "impure") then
+					-- This is not a pure function
+				helper.add_semantic_error (a_feature, messages.impure_function_in_contract, context_line_number)
+			else
+				create l_call.make (
+					l_name,
+					types.for_type_in_context (a_feature.type, current_target_type)
+				)
+				l_call.add_argument (entity_mapping.heap)
+				l_call.add_argument (current_target)
 
-			create l_call.make (
-				l_name,
-				types.for_type_in_context (a_feature.type, current_target_type)
-			)
-			l_call.add_argument (entity_mapping.heap)
-			l_call.add_argument (current_target)
+				process_parameters (a_parameters)
+				l_call.arguments.append (last_parameters)
 
-			process_parameters (a_parameters)
-			l_call.arguments.append (last_parameters)
+				-- Add precondition check
+				if helper.is_functional (a_feature) and a_feature.has_precondition then
+					create l_pre_call.make (name_translator.precondition_predicate_name (a_feature, current_target_type), types.bool)
+					l_pre_call.add_argument (entity_mapping.heap)
+					l_pre_call.add_argument (current_target)
+					l_pre_call.arguments.append (last_parameters)
+					add_safety_check (l_pre_call, "check", "precondition_of_function_" + a_feature.feature_name, context_line_number)
+				end
 
-			-- Add precondition check
-			if helper.is_functional (a_feature) and a_feature.has_precondition then
-				create l_pre_call.make (name_translator.precondition_predicate_name (a_feature, current_target_type), types.bool)
-				l_pre_call.add_argument (entity_mapping.heap)
-				l_pre_call.add_argument (current_target)
-				l_pre_call.arguments.append (last_parameters)
-				add_safety_check (l_pre_call, "check", "precondition_of_function_" + a_feature.feature_name, context_line_number)
+				-- This would check that a recursive definitional axiom for a non-functional function is well-defined;
+				-- I believe this is not needed, because we have to prove anyway that this postcondition is satisfied by a terminating implementation.
+	--			add_termination_check (a_feature, last_parameters)
+
+				last_expression := l_call
 			end
-
-			-- This would check that a recursive definitional axiom for a non-functional function is well-defined;
-			-- I believe this is not needed, because we have to prove anyway that this postcondition is satisfied by a terminating implementation.
---			add_termination_check (a_feature, last_parameters)
-
-			last_expression := l_call
 		end
 
 	process_builtin_routine_call (a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B]; a_builtin_name: STRING)

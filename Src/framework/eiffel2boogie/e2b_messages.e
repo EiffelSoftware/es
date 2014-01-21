@@ -18,6 +18,12 @@ feature -- Validity error messages
 	functional_feature_not_single_assignment: STRING_32
 		do Result := "A functional feature has to consist of exactly one assignment to the Result." end
 
+	pure_function_has_mods: STRING_32
+		do Result := "Function with a non-empty modify clause has to be declared impure." end
+
+	impure_function_in_contract: STRING_32
+		do Result := "Impure function cannot be used in specifications." end
+
 	creator_call_as_procedure (a_pname: STRING): STRING_32
 		do Result := locale.formatted_string ("Feature '$1' is a creator but is called as a regular procedure.", a_pname) end
 
@@ -123,7 +129,7 @@ feature -- Verification error messages
 		do Result := "Target of assignment may not be open." end
 
 	assignment_observers_open_or_inv_preserved: STRING_32
-		do Result := "Observers of the assignment target may not be open or do not preserver their invariant." end
+		do Result := "Observers of the assignment target may be invalidated." end
 
 	assignment_attribute_writable: STRING_32
 		do Result := "The attribute of the assignment may not be writable." end

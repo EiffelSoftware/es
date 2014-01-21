@@ -68,9 +68,7 @@ feature -- Basic operations
 				end
 
 					-- Inheritance relations
-				if not a_type.has_generics then
-					generate_inheritance_relations (a_type)
-				end
+				generate_inheritance_relations (a_type)
 
 					-- TODO: refactor
 				if a_type.base_class.name_in_upper /~ "ARRAY" then
@@ -106,10 +104,9 @@ feature {NONE} -- Implementation
 
 	generate_inheritance_relations (a_type: TYPE_A)
 			-- Generate inheritance relations for type `a_type'.
-		require
-			not_generic: not a_type.has_generics
 		local
 			l_parents: FIXED_LIST [CL_TYPE_A]
+			l_parent: TYPE_A
 			l_type_name: STRING
 			l_axiom: IV_AXIOM
 			l_operation: IV_BINARY_OPERATION
@@ -123,10 +120,11 @@ feature {NONE} -- Implementation
 			until
 				l_parents.after
 			loop
-				translation_pool.add_type (l_parents.item)
+				l_parent := l_parents.item.instantiated_in (a_type)
+				translation_pool.add_type (l_parent)
 
 				create l_type_value.make (l_type_name, types.type)
-				create l_parent_value.make (name_translator.boogie_name_for_type (l_parents.item), types.type)
+				create l_parent_value.make (name_translator.boogie_name_for_type (l_parent), types.type)
 				create l_operation.make (l_type_value, "<:", l_parent_value, types.bool)
 				create l_axiom.make (l_operation)
 				boogie_universe.add_declaration (l_axiom)
@@ -166,14 +164,18 @@ feature {NONE} -- Implementation
 			l_clauses := process_flat_invariants (a_ancestor, a_type, l_ghost_collector, a_included, a_excluded)
 				-- Add ownership defaults unless included clauses are explicitly specified
 			if options.is_ownership_enabled and a_included = Void then
-				if not helper.is_class_explicit (a_type.base_class, "observers") and not l_ghost_collector.has_observers then
-					l_clauses.extend (empty_set_property ("observers"))
-				end
-				if not helper.is_class_explicit (a_type.base_class, "subjects") and not l_ghost_collector.has_subjects then
-					l_clauses.extend (empty_set_property ("subjects"))
-				end
-				if not helper.is_class_explicit (a_type.base_class, "owns") and not l_ghost_collector.has_owns then
-					l_clauses.extend (empty_set_property ("owns"))
+				if not a_type.base_class.is_deferred then
+						-- For an effective class: built-in ghost sets are empty by default
+						-- (ToDo: the policy seems arbitrary, should it be for all non-frozen classes?)
+					if not helper.is_class_explicit (a_type.base_class, "observers") and not l_ghost_collector.has_observers then
+						l_clauses.extend (empty_set_property ("observers"))
+					end
+					if not helper.is_class_explicit (a_type.base_class, "subjects") and not l_ghost_collector.has_subjects then
+						l_clauses.extend (empty_set_property ("subjects"))
+					end
+					if not helper.is_class_explicit (a_type.base_class, "owns") and not l_ghost_collector.has_owns then
+						l_clauses.extend (empty_set_property ("owns"))
+					end
 				end
 				if not helper.is_class_explicit (a_type.base_class, "invariant") then
 					l_clauses.extend (factory.function_call ("admissibility2", << factory.heap_entity ("heap"), factory.ref_entity ("current") >>, types.bool))
@@ -195,11 +197,8 @@ feature {NONE} -- Implementation
 	empty_set_property (a_name: STRING): IV_EXPRESSION
 		do
 			Result := factory.function_call (
-				"Set#Equal",
-				<<
-					factory.heap_access ("heap", create {IV_ENTITY}.make ("current", types.ref), a_name, types.set (types.ref)),
-					factory.function_call ("Set#Empty", << >>, types.set (types.ref))
-				>>,
+				"Set#IsEmpty",
+				<< factory.heap_access ("heap", create {IV_ENTITY}.make ("current", types.ref), a_name, types.set (types.ref)) >>,
 				types.bool)
 		end
 
@@ -233,6 +232,7 @@ feature {NONE} -- Implementation
 		do
 			create Result.make
 			if inv_byte_server.has (a_class.class_id) then
+				helper.set_up_byte_context_type (a_class.actual_type, a_context_type)
 				from
 					l_list := inv_byte_server.item (a_class.class_id).byte_list
 					l_list.start

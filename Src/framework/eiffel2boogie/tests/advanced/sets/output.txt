@@ -11,13 +11,13 @@ Successfully verified.
 A_SETS.bad
 Verification failed.
 
-Line: 40. Check precondition_of_function_any_item may be violated.
+Line: 44. Check precondition_of_function_any_item may be violated.
 --------------------------------------
-Line: 41. Check bad_disjoint may be violated.
+Line: 45. Check bad_disjoint may be violated.
 --------------------------------------
-Line: 42. Check bad_empty may be violated.
+Line: 46. Check bad_empty may be violated.
 --------------------------------------
-Line: 43. Check bad_has may be violated.
+Line: 47. Check bad_has may be violated.
 ======================================
 A_SETS.interval
 Successfully verified.

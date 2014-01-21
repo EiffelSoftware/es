@@ -480,6 +480,9 @@ feature -- Translation: Functions
 			-- Generate a Boogie function that encodes the result of Eiffel function `a_feature' and its definitional axiom.
 		local
 			l_function: IV_FUNCTION
+			l_proc: IV_PROCEDURE
+			l_post: IV_POSTCONDITION
+			l_fcall: IV_FUNCTION_CALL
 			l_boogie_type: IV_TYPE
 			l_type: TYPE_A
 			i: INTEGER
@@ -493,28 +496,39 @@ feature -- Translation: Functions
 				types.for_type_a (a_feature.type.deep_actual_type.instantiated_in (current_type))
 			)
 			boogie_universe.add_declaration (l_function)
+			create l_fcall.make (l_function.name, l_function.type)
 
 				-- Arguments
 			translation_pool.add_type (current_type)
 			l_function.add_argument ("heap", types.heap)
 			l_function.add_argument ("current", types.ref)
+			l_fcall.add_argument (factory.old_ (factory.global_heap))
+			l_fcall.add_argument (factory.std_current)
 			from i := 1 until i > current_feature.argument_count loop
 				l_type := current_feature.arguments.i_th (i).deep_actual_type.instantiated_in (current_type)
 				translation_pool.add_type (l_type)
 				l_boogie_type := types.for_type_a (l_type)
 				l_function.add_argument (current_feature.arguments.item_name (i), l_boogie_type)
+				l_fcall.add_argument (factory.entity (current_feature.arguments.item_name (i), l_boogie_type))
 				i := i + 1
 			end
 
 				-- Axiom
 			if helper.is_functional (a_feature) then
 				generate_definition_from_body (l_function)
-				-- Also add a precondition predicate, which can be checked when the feature is called as a function
+					-- Also add a precondition predicate, which can be checked when the feature is called as a function
 				if a_feature.has_precondition then
 					translation_pool.add_precondition_predicate (a_feature, a_type)
 				end
 			else
 				generate_definition_from_post (l_function)
+					-- Add a postcondition to the corresponding procedure connecting it to the function
+					-- (so that properties claimed about the function can be traced back to the procedure result).
+				l_proc := boogie_universe.procedure_named (name_translator.boogie_procedure_for_feature (current_feature, current_type))
+				check attached l_proc and then not l_proc.results.is_empty end
+				create l_post.make (factory.equal (l_proc.results.first.entity, l_fcall))
+				l_post.set_free
+				l_proc.add_contract (l_post)
 			end
 		end
 
@@ -548,11 +562,14 @@ feature -- Translation: Functions
 			l_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.ref))
 			l_translator.set_context (current_feature, current_type)
 			l_mods := modifies_expressions_of (contracts_of (current_feature, current_type).modifies, l_translator)
-			if l_mods.fully_modified.is_empty and l_mods.part_modified.is_empty then
+			if is_pure (l_mods) then
 				-- Missing modify clause: apply defaults
 				if not a_feature.has_return_value then
 					l_mods.fully_modified.extend (create {IV_ENTITY}.make ("current", types.ref))
 				end
+			elseif a_feature.has_return_value and not helper.is_feature_status (a_feature, "impure") then
+				-- Only impure functions are allowed to have modify clauses
+				helper.add_semantic_error (a_feature, messages.pure_function_has_mods, -1)
 			end
 
 				-- Definitional axiom

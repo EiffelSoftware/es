@@ -68,9 +68,6 @@ feature -- Comparison
 			other_not_void: other /= Void
 		external
 			"built_in"
-		ensure
-			symmetric: Result implies other ~ Current
-			consistent: standard_is_equal (other) implies Result
 		end
 
 	frozen standard_is_equal (other: like Current): BOOLEAN
@@ -80,9 +77,6 @@ feature -- Comparison
 			other_not_void: other /= Void
 		external
 			"built_in"
-		ensure
-			same_type: Result implies same_type (other)
-			symmetric: Result implies other.standard_is_equal (Current)
 		end
 
 	frozen equal (a: detachable ANY; b: like a): BOOLEAN
@@ -95,10 +89,6 @@ feature -- Comparison
 				Result := b /= Void and then
 							a.is_equal (b)
 			end
-		ensure
-			definition: Result = (a = Void and b = Void) or else
-						((a /= Void and b /= Void) and then
-						a.is_equal (b))
 		end
 
 	frozen standard_equal (a: detachable ANY; b: like a): BOOLEAN
@@ -112,10 +102,6 @@ feature -- Comparison
 				Result := b /= Void and then
 							a.standard_is_equal (b)
 			end
-		ensure
-			definition: Result = (a = Void and b = Void) or else
-						((a /= Void and b /= Void) and then
-						a.standard_is_equal (b))
 		end
 
 	frozen is_deep_equal (other: like Current): BOOLEAN
@@ -124,10 +110,6 @@ feature -- Comparison
 			other_not_void: other /= Void
 		external
 			"built_in"
-		ensure
-			shallow_implies_deep: standard_is_equal (other) implies Result
-			same_type: Result implies same_type (other)
-			symmetric: Result implies other.is_deep_equal (Current)
 		end
 
 	frozen deep_equal (a: detachable ANY; b: like a): BOOLEAN
@@ -139,11 +121,6 @@ feature -- Comparison
 			else
 				Result := b /= Void and then a.is_deep_equal (b)
 			end
-		ensure
-			shallow_implies_deep: standard_equal (a, b) implies Result
-			both_or_none_void: (a = Void) implies (Result = (b = Void))
-			same_type: (Result and (a /= Void)) implies (b /= Void and then a.same_type (b))
-			symmetric: Result implies deep_equal (b, a)
 		end
 
 feature -- Duplication
@@ -555,10 +532,6 @@ feature -- Verification: auxiliary
 			-- Old expression outside of postconditions.
 		do
 		end
-
-invariant
---	reflexive_equality: standard_is_equal (Current)
---	reflexive_conformance: conforms_to (Current)
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

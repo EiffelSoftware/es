@@ -19,7 +19,7 @@ feature -- VSTTE 2010: Sum & max
 				i := 1
 			invariant
 				1 <= i and i <= a.count + 1
-				across 1 |..| (i-1) as ai all a[ai.item] <= max end
+--				across 1 |..| (i-1) as ai all a[ai.item] <= max end
 				sum <= (i-1) * max
 			until
 				i > a.count

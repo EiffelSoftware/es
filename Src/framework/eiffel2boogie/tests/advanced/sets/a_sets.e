@@ -21,6 +21,10 @@ feature
 			create s1.singleton (1)
 			check s1.count = 1 end
 			check across s1 as i all i.item = 1 end end
+
+			s1 := create {MML_SET[INTEGER]}.singleton (5)
+			check s1 ~ create {MML_SET[INTEGER]}.singleton (5) end
+			check not s1.is_empty end
 		end
 
 	good1 (s: MML_SET [A_SETS])

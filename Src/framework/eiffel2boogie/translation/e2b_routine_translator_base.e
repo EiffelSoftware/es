@@ -345,6 +345,12 @@ feature -- Helper functions: contracts
 			Result := [l_fully_modified, l_part_modified]
 		end
 
+	is_pure (a_mods: like modifies_expressions_of): BOOLEAN
+			-- Is `a_mods' an empty frame?
+		do
+			Result := a_mods.fully_modified.is_empty and a_mods.part_modified.is_empty
+		end
+
 	frame_definition (a_mods: like modifies_expressions_of; a_lhs: IV_EXPRESSION): IV_FORALL
 			-- Expression that claims that `a_lhs' is the frame encoded in `a_mods'
 			-- (forall o, f :: a_lhs[o, f] <==> is_partially_modifiable[o, f] || is_fully_modifiable[o])

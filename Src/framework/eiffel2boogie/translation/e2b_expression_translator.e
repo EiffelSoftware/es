@@ -781,7 +781,7 @@ feature -- Visitors
 				if a_node.target.type.is_like_current then
 					current_target_type := l_target_type
 				else
-					current_target_type := a_node.target.type.deep_actual_type
+					current_target_type := a_node.target.type.deep_actual_type.instantiated_in (l_target_type)
 				end
 				check not current_target_type.is_like end
 				if current_target_type.is_formal then
