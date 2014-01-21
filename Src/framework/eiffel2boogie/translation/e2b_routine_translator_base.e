@@ -348,7 +348,8 @@ feature -- Helper functions: contracts
 	is_pure (a_mods: like modifies_expressions_of): BOOLEAN
 			-- Is `a_mods' an empty frame?
 		do
-			Result := a_mods.fully_modified.is_empty and a_mods.part_modified.is_empty
+			Result := (a_mods.fully_modified.is_empty or else a_mods.fully_modified.first = Void) and
+				(a_mods.part_modified.is_empty or else a_mods.part_modified.item.objects.first = Void)
 		end
 
 	frame_definition (a_mods: like modifies_expressions_of; a_lhs: IV_EXPRESSION): IV_FORALL

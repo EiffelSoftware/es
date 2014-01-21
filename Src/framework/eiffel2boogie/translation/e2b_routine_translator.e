@@ -562,12 +562,12 @@ feature -- Translation: Functions
 			l_translator.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.ref))
 			l_translator.set_context (current_feature, current_type)
 			l_mods := modifies_expressions_of (contracts_of (current_feature, current_type).modifies, l_translator)
-			if is_pure (l_mods) then
+			if l_mods.fully_modified.is_empty and l_mods.part_modified.is_empty then
 				-- Missing modify clause: apply defaults
 				if not a_feature.has_return_value then
 					l_mods.fully_modified.extend (create {IV_ENTITY}.make ("current", types.ref))
 				end
-			elseif a_feature.has_return_value and not helper.is_feature_status (a_feature, "impure") then
+			elseif a_feature.has_return_value and not helper.is_feature_status (a_feature, "impure") and not is_pure (l_mods) then
 				-- Only impure functions are allowed to have modify clauses
 				helper.add_semantic_error (a_feature, messages.pure_function_has_mods, -1)
 			end
