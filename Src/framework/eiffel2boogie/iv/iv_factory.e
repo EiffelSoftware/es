@@ -315,6 +315,12 @@ feature -- Framing
 			create Result.make ("writable", types.frame)
 		end
 
+	global_readable: IV_ENTITY
+			-- Procedure-wide readable frame.
+		do
+			create Result.make ("readable", types.frame)
+		end
+
 	frame_access (a_frame, a_obj, a_field: IV_EXPRESSION): IV_MAP_ACCESS
 			-- Expression `a_frame [a_obj, a_field]'.
 		do
@@ -329,12 +335,12 @@ feature -- Framing
 			l_old_heap: IV_EXPRESSION
 		do
 			l_old_heap := old_ (create {IV_ENTITY}.make ("Heap", types.heap))
-			create l_fcall.make (name_translator.boogie_function_for_frame (a_feature, a_type), types.set (types.ref))
+			create l_fcall.make (name_translator.boogie_function_for_write_frame (a_feature, a_type), types.set (types.ref))
 			l_fcall.add_argument (l_old_heap)
 			across a_boogie_procedure.arguments as i loop
 				l_fcall.add_argument (i.item.entity)
 			end
-			Result := function_call ("writes", <<l_old_heap, global_heap, l_fcall>>, types.bool)
+			Result := function_call ("same_outside", <<l_old_heap, global_heap, l_fcall>>, types.bool)
 		end
 
 feature -- Miscellaneous

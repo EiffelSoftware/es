@@ -215,6 +215,29 @@ feature -- Visitors
 
 feature -- Translation
 
+	process_attribute_call (a_feature: FEATURE_I)
+			-- Process call to attribute `a_feature'.
+		local
+			l_content_type: IV_TYPE
+			l_field: IV_ENTITY
+		do
+			translation_pool.add_referenced_feature (a_feature, current_target_type)
+
+			check current_target /= Void end
+			l_content_type := types.for_type_in_context (a_feature.type, current_target_type)
+			l_field := factory.entity (name_translator.boogie_procedure_for_feature (a_feature, current_target_type), types.field (l_content_type))
+
+				-- Add a reads check
+			if context_readable /= Void then
+					-- Using subsumption here, since in a query call chains it can trigger for the followings checks
+				add_safety_check_with_subsumption (factory.frame_access (context_readable, current_target, l_field), "access", "attribute_readable", context_line_number)
+				last_safety_check.node_info.set_attribute ("cid", a_feature.written_class.class_id.out)
+				last_safety_check.node_info.set_attribute ("fid", a_feature.feature_id.out)
+			end
+
+			last_expression := factory.heap_access (entity_mapping.heap.name, current_target, l_field.name, l_content_type)
+		end
+
 	process_routine_call (a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B]; a_for_creator: BOOLEAN)
 			-- Process feature call.
 		local
@@ -250,7 +273,7 @@ feature -- Translation
 				process_parameters (a_parameters)
 				l_fcall.arguments.append (last_parameters)
 
-				-- Add precondition check
+					-- Add precondition check
 				if a_feature.has_precondition then
 					create l_pre_call.make (name_translator.precondition_predicate_name (a_feature, current_target_type), types.bool)
 					l_pre_call.add_argument (entity_mapping.heap)
@@ -259,7 +282,10 @@ feature -- Translation
 					add_safety_check (l_pre_call, "check", "precondition_of_function_" + a_feature.feature_name, context_line_number)
 				end
 
-				-- This checks that functionals are well-defined, from the corresponding fake procedure
+					-- Add read frame check
+				add_read_frame_check (a_feature, last_parameters)
+
+					-- This checks that functionals are well-defined, from the corresponding fake procedure
 				add_recursion_termination_check (a_feature, last_parameters)
 
 				last_expression := l_fcall
@@ -282,9 +308,11 @@ feature -- Translation
 				process_parameters (a_parameters)
 				l_pcall.arguments.append (last_parameters)
 
-				-- This checks termination of non-functional routines, when they are called from their own implementation
+					-- Add read frame check
+				add_read_frame_check (a_feature, last_parameters)
+					-- This checks termination of non-functional routines, when they are called from their own implementation
 				add_recursion_termination_check (a_feature, last_parameters)
-				-- This adds an extra framing check if we are inside a context with a local frame
+					-- This adds an extra framing check if we are inside a context with a local frame
 				add_loop_frame_check (a_feature, last_parameters)
 
 					-- Process call
@@ -464,7 +492,8 @@ feature -- Translation
         					-- new[1] < old[1] || ... || new[k-1] < old[k-1] || new[k] == old[k] || 0 <= old[k]
 					add_safety_check (factory.or_clean (l_bounds_check_guard,
 													factory.or_ (l_eq_less.eq, factory.less_equal (factory.int_value (0), l_old_variants [i]))),
-						"termination", "bounded" + i.out, context_line_number)
+						"termination", "bounded", context_line_number)
+					last_safety_check.node_info.set_attribute ("varid", i.out)
 				end
 				l_bounds_check_guard := factory.or_clean (l_bounds_check_guard, l_eq_less.less)
 
@@ -542,12 +571,30 @@ feature -- Translation
 			l_fcall: IV_FUNCTION_CALL
 		do
 			if local_writable /= Void then
-				create l_fcall.make (name_translator.boogie_function_for_frame (a_feature, current_target_type), types.frame)
+				create l_fcall.make (name_translator.boogie_function_for_write_frame (a_feature, current_target_type), types.frame)
 				l_fcall.add_argument (entity_mapping.heap)
 				l_fcall.add_argument (current_target)
 				l_fcall.arguments.append (a_parameters)
 				add_safety_check (factory.function_call ("Frame#Subset", <<l_fcall, local_writable>>, types.bool),
 					"check", "frame_writable", context_line_number)
+			end
+		end
+
+	add_read_frame_check (a_feature: FEATURE_I; a_parameters: like last_parameters)
+			-- If there is a read frame, check that `a_feature's read frame is a subframe of it.
+		local
+			l_fcall: IV_FUNCTION_CALL
+		do
+			if context_readable /= Void and helper.has_functional_representation (a_feature) then
+				create l_fcall.make (name_translator.boogie_function_for_read_frame (a_feature, current_target_type), types.frame)
+				l_fcall.add_argument (entity_mapping.heap)
+				l_fcall.add_argument (current_target)
+				l_fcall.arguments.append (a_parameters)
+					-- Using subsumption here, since in a query call chains it can trigger for the followings checks
+				add_safety_check_with_subsumption (factory.function_call ("Frame#Subset", <<l_fcall, context_readable>>, types.bool),
+					"access", "frame_readable", context_line_number)
+				last_safety_check.node_info.set_attribute ("cid", a_feature.written_class.class_id.out)
+				last_safety_check.node_info.set_attribute ("rid", a_feature.rout_id_set.first.out)
 			end
 		end
 

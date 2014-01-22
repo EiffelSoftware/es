@@ -45,6 +45,7 @@ feature -- Access
 		require
 			not_off: not (before or after)
 			target_closed: target.closed
+			reads (Current, target)
 		do
 			check inv and target.inv end
 			Result := target.elements [index]

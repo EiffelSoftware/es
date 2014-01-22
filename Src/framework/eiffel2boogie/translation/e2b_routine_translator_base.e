@@ -269,11 +269,24 @@ feature -- Helper functions: contracts
 			Result := [l_pre, l_post]
 		end
 
-	modifies_expressions_of (a_clauses: LIST [ASSERT_B]; a_translator: E2B_EXPRESSION_TRANSLATOR): TUPLE [fully_modified: LIST [IV_EXPRESSION]; part_modified: LIST [TUPLE [fields: LIST [IV_ENTITY]; objects: LIST [IV_EXPRESSION]]]]
+	modify_expressions_of (a_clauses: LIST [ASSERT_B]; a_translator: E2B_EXPRESSION_TRANSLATOR): TUPLE [fully_modified: LIST [IV_EXPRESSION]; part_modified: LIST [TUPLE [fields: LIST [IV_ENTITY]; objects: LIST [IV_EXPRESSION]]]]
 			-- List of fully modified and partially modified objects extracted from modifies clauses `a_clauses'.
+		do
+			Result := frame_expressions_of (a_clauses, "modify", "modify_field", a_translator)
+		end
+
+	read_expressions_of (a_clauses: LIST [ASSERT_B]; a_translator: E2B_EXPRESSION_TRANSLATOR): TUPLE [fully_modified: LIST [IV_EXPRESSION]; part_modified: LIST [TUPLE [fields: LIST [IV_ENTITY]; objects: LIST [IV_EXPRESSION]]]]
+			-- List of fully modified and partially modified objects extracted from modifies clauses `a_clauses'.
+		do
+			Result := frame_expressions_of (a_clauses, "reads", "reads_field", a_translator)
+		end
+
+	frame_expressions_of (a_clauses: LIST [ASSERT_B]; a_full_function, a_part_function: STRING; a_translator: E2B_EXPRESSION_TRANSLATOR): TUPLE [full_objects: LIST [IV_EXPRESSION]; partial_objects: LIST [TUPLE [fields: LIST [IV_ENTITY]; objects: LIST [IV_EXPRESSION]]]]
+			-- Full and partial object descriptions extracted from `a_clauses' and translated with `a_translator',
+			-- where full objects are given as arguments to `a_full_function' and partial objects are given as arguments to `a_part_function'.
 		local
-			l_fully_modified: LINKED_LIST [IV_EXPRESSION]
-			l_part_modified: LINKED_LIST [TUPLE [LINKED_LIST [IV_ENTITY], LINKED_LIST [IV_EXPRESSION]]]
+			l_full_objects: LINKED_LIST [IV_EXPRESSION]
+			l_partial_objects: LINKED_LIST [TUPLE [LINKED_LIST [IV_ENTITY], LINKED_LIST [IV_EXPRESSION]]]
 			l_fieldnames: LINKED_LIST [STRING_32]
 			l_fields: LINKED_LIST [IV_ENTITY]
 			l_objects_type: like translate_contained_expressions
@@ -283,23 +296,23 @@ feature -- Helper functions: contracts
 			l_boogie_type: IV_TYPE
 			l_field: IV_ENTITY
 		do
-			create l_fully_modified.make
-			create l_part_modified.make
+			create l_full_objects.make
+			create l_partial_objects.make
 
 			across
 				a_clauses as i
 			loop
 				if attached {FEATURE_B} i.item.expr as l_call then
 					l_name := names_heap.item_32 (l_call.feature_name_id)
-					if l_name ~ "modify" then
+					if l_name ~ a_full_function then
 						l_objects_type := translate_contained_expressions (l_call.parameters.i_th (1).expression, a_translator, True)
-						l_fully_modified.append (l_objects_type.expressions)
-					elseif l_name ~ "modify_field" then
+						l_full_objects.append (l_objects_type.expressions)
+					elseif l_name ~ a_part_function then
 						l_objects_type := translate_contained_expressions (l_call.parameters.i_th (2).expression, a_translator, True)
 
 						if l_objects_type.expressions.first = Void then
 							-- Empty set
-							l_fully_modified.append (l_objects_type.expressions)
+							l_full_objects.append (l_objects_type.expressions)
 						else
 							l_type := l_objects_type.type
 							if l_type.is_like_current then
@@ -332,7 +345,7 @@ feature -- Helper functions: contracts
 								end
 							end
 
-							l_part_modified.extend ([l_fields, l_objects_type.expressions])
+							l_partial_objects.extend ([l_fields, l_objects_type.expressions])
 						end
 					else
 						check internal_error: False end
@@ -342,17 +355,17 @@ feature -- Helper functions: contracts
 				end
 			end
 
-			Result := [l_fully_modified, l_part_modified]
+			Result := [l_full_objects, l_partial_objects]
 		end
 
-	is_pure (a_mods: like modifies_expressions_of): BOOLEAN
+	is_pure (a_mods: like frame_expressions_of): BOOLEAN
 			-- Is `a_mods' an empty frame?
 		do
-			Result := (a_mods.fully_modified.is_empty or else a_mods.fully_modified.first = Void) and
-				(a_mods.part_modified.is_empty or else a_mods.part_modified.item.objects.first = Void)
+			Result := (a_mods.full_objects.is_empty or else a_mods.full_objects.first = Void) and
+				(a_mods.partial_objects.is_empty or else a_mods.partial_objects.item.objects.first = Void)
 		end
 
-	frame_definition (a_mods: like modifies_expressions_of; a_lhs: IV_EXPRESSION): IV_FORALL
+	frame_definition (a_mods: like frame_expressions_of; a_lhs: IV_EXPRESSION): IV_FORALL
 			-- Expression that claims that `a_lhs' is the frame encoded in `a_mods'
 			-- (forall o, f :: a_lhs[o, f] <==> is_partially_modifiable[o, f] || is_fully_modifiable[o])
 		local
@@ -369,7 +382,7 @@ feature -- Helper functions: contracts
 
 				-- Axiom rhs: a big disjunction
 				-- First go over partially modifiable objects
-			across a_mods.part_modified as restiction loop
+			across a_mods.partial_objects as restiction loop
 				l_o_conjunct := Void
 				l_f_conjunct := Void
 				across restiction.item.objects as o loop
@@ -403,7 +416,7 @@ feature -- Helper functions: contracts
 				end
 			end
 				-- Then go over fully modifiable objects
-			across a_mods.fully_modified as o loop
+			across a_mods.full_objects as o loop
 				if o.item = Void then
 					l_disjunct := factory.false_
 				elseif o.item.type ~ types.ref then

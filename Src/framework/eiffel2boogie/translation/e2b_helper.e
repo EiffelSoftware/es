@@ -224,6 +224,12 @@ feature -- Feature status helpers
 			end
 		end
 
+	has_functional_representation (a_feature: FEATURE_I): BOOLEAN
+			-- Will a Boogie function be generated for `a_feature'?
+		do
+			Result := a_feature.has_return_value and not is_feature_status (a_feature, "impure")
+		end
+
 feature -- Class status helpers
 
 	is_class_logical (a_class: CLASS_C): BOOLEAN

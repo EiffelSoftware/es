@@ -81,6 +81,8 @@ feature -- Access (built-ins)
 				"inv_only",
 				"is_field_writable",
 				"is_fully_writable",
+				"is_field_readable",
+				"is_fully_readable",
 				"domain_has"
 			>>
 			Result.compare_objects

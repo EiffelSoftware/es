@@ -73,6 +73,9 @@ feature -- Access
 			end
 		end
 
+	context_readable: IV_EXPRESSION
+		-- Readable  frame of the enclosing context if defined, otherwise Void.
+
 feature -- Element change
 
 	set_context (a_implementation: IV_IMPLEMENTATION; a_feature: FEATURE_I; a_type: TYPE_A)
@@ -103,6 +106,12 @@ feature -- Element change
 			current_block_set: current_block = a_block
 		end
 
+	set_context_readable (a_readable: IV_EXPRESSION)
+			-- Set `context_readable' to `a_readable'.
+		do
+			context_readable := a_readable
+		end
+
 feature -- Basic operations
 
 	reset
@@ -115,6 +124,7 @@ feature -- Basic operations
 			create entity_mapping.make
 			create locals_map.make (5)
 			local_writable := Void
+			context_readable := Void
 		end
 
 	process_feature_of_type (a_feature: FEATURE_I; a_type: TYPE_A)
@@ -1043,7 +1053,7 @@ feature {NONE} -- Loop processing
 				add_statement (create {IV_HAVOC}.make (l_writable.name))
 				create l_assume.make (factory.function_call ("Frame#Subset", <<l_frame, l_writable>>, types.bool))
 				add_statement (l_assume)
-				create l_assume.make (factory.function_call ("writable_domains", <<l_writable, factory.global_heap>>, types.bool))
+				create l_assume.make (factory.function_call ("closed_under_domains", <<l_writable, factory.global_heap>>, types.bool))
 				add_statement (l_assume)
 			end
 			Result := [l_frame, l_writable]
@@ -1101,7 +1111,7 @@ feature {NONE} -- Loop processing
 				else
 						-- Nothing outside loop's frame has changed since before the loop
 						-- (here we have to compare to before the loop because the loop's frame referes to ownership domains then.
-					create l_assume.make (factory.function_call ("writes", <<a_pre_heap, factory.global_heap, a_loop_frame>>, types.bool))
+					create l_assume.make (factory.function_call ("same_outside", <<a_pre_heap, factory.global_heap, a_loop_frame>>, types.bool))
 				end
 				add_statement (l_assume)
 				create l_assume.make (factory.function_call ("global", << factory.global_heap>>, types.bool))
@@ -1232,6 +1242,7 @@ feature {NONE} -- Implementation
 			l_translator.copy_entity_mapping (entity_mapping)
 			l_translator.locals_map.merge (locals_map)
 			l_translator.set_local_writable (local_writable)
+			l_translator.set_context_readable (context_readable)
 			a_expr.process (l_translator)
 			across
 				l_translator.side_effect as stmts
@@ -1262,6 +1273,7 @@ feature {NONE} -- Implementation
 			l_translator.copy_entity_mapping (entity_mapping)
 			l_translator.locals_map.merge (locals_map)
 			l_translator.set_local_writable (local_writable)
+			l_translator.set_context_readable (context_readable)
 			a_expr.process (l_translator)
 			last_expression := l_translator.last_expression
 			last_safety_checks := l_translator.side_effect
@@ -1284,7 +1296,7 @@ feature {NONE} -- Implementation
 			l_translator.set_context (current_feature, current_type)
 			l_translator.copy_entity_mapping (entity_mapping)
 			l_translator.locals_map.merge (locals_map)
-			last_frame := l_routine_translator.frame_definition (l_routine_translator.modifies_expressions_of (a_modifies, l_translator), a_lhs)
+			last_frame := l_routine_translator.frame_definition (l_routine_translator.modify_expressions_of (a_modifies, l_translator), a_lhs)
 			last_safety_checks := l_translator.side_effect
 			locals_map.merge (l_translator.locals_map)
 		end

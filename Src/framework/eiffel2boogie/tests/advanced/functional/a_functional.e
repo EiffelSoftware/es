@@ -24,6 +24,8 @@ feature
 			-- OK
 		note
 			status: functional
+		require
+			reads ([])
 		do
 			Result := 7
 		end

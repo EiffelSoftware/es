@@ -126,9 +126,36 @@ feature -- Basic operations
 					end
 				elseif l_name ~ "is_fully_writable" then
 					a_translator.set_last_expression (factory.function_call (
-						"fully_writable",
+						"has_whole_object",
 						<< a_translator.context_writable, a_translator.current_target>>,
 						types.bool))
+				elseif l_name ~ "is_field_readable" then
+					if attached a_translator.context_readable then
+						if attached {STRING_B} a_parameters.first.expression as l_string then
+							l_field := field_from_string (l_string.value, a_translator.current_target_type, a_translator.context_feature, a_translator.context_line_number)
+							if attached l_field then
+								a_translator.set_last_expression (factory.frame_access (
+									a_translator.context_readable,
+									a_translator.current_target,
+									l_field))
+							end
+						else
+							helper.add_semantic_error (a_translator.context_feature, messages.first_argument_string, a_translator.context_line_number)
+						end
+					else
+						helper.add_semantic_warning (a_translator.context_feature, messages.invalid_context_for_read_predicate, a_translator.context_line_number)
+						a_translator.set_last_expression (factory.true_)
+					end
+				elseif l_name ~ "is_fully_readable" then
+					if attached a_translator.context_readable then
+						a_translator.set_last_expression (factory.function_call (
+							"has_whole_object",
+							<< a_translator.context_readable, a_translator.current_target>>,
+							types.bool))
+					else
+						helper.add_semantic_warning (a_translator.context_feature, messages.invalid_context_for_read_predicate, a_translator.context_line_number)
+						a_translator.set_last_expression (factory.true_)
+					end
 				elseif l_name ~ "domain_has" then
 					a_translator.process_builtin_routine_call (a_feature, a_parameters, "in_domain")
 				else

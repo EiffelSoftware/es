@@ -236,8 +236,8 @@ feature {NONE} -- Implementation
 				check l_has_tag end
 				if l_tag ~ "variant_decreases" then
 					Result := messages.decreases_not_decreasing
-				elseif l_tag.starts_with ("bounded") then
-					Result := messages.decreases_bounded (l_tag.substring (8, l_tag.count))
+				elseif l_tag ~ "bounded" then
+					Result := messages.decreases_bounded
 				else
 					check internal_error: False end
 				end
@@ -274,6 +274,16 @@ feature {NONE} -- Implementation
 					Result := messages.assignment_observers_open_or_inv_preserved
 				elseif l_tag ~ "attribute_writable" then
 					Result := messages.assignment_attribute_writable
+				else
+					check internal_error: False end
+				end
+			elseif l_type ~ "access" then
+					-- Heap access failed
+				check l_has_tag end
+				if l_tag ~ "attribute_readable" then
+					Result := messages.access_attribute_readable
+				elseif l_tag ~ "frame_readable" then
+					Result := messages.access_frame_readable
 				else
 					check internal_error: False end
 				end

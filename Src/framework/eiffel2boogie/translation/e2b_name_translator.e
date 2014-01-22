@@ -63,7 +63,7 @@ feature -- Access
 			result_attached: attached Result
 		end
 
-	boogie_function_for_frame (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
+	boogie_function_for_write_frame (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
 			-- Name of the boogie function that encodes the frame of `a_feature'.
 		require
 			a_feature_attached: attached a_feature
@@ -74,7 +74,23 @@ feature -- Access
 		do
 			l_type_name := boogie_name_for_type (a_context_type)
 			l_feature_name := a_feature.feature_name_32.as_lower
-			Result := "frame." + l_type_name + "." + l_feature_name
+			Result := "modify." + l_type_name + "." + l_feature_name
+		ensure
+			result_attached: attached Result
+		end
+
+	boogie_function_for_read_frame (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
+			-- Name of the boogie function that encodes the frame of `a_feature'.
+		require
+			a_feature_attached: attached a_feature
+			a_context_type_attached: attached a_context_type
+		local
+			l_type_name: STRING
+			l_feature_name: STRING
+		do
+			l_type_name := boogie_name_for_type (a_context_type)
+			l_feature_name := a_feature.feature_name_32.as_lower
+			Result := "read." + l_type_name + "." + l_feature_name
 		ensure
 			result_attached: attached Result
 		end

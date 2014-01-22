@@ -138,28 +138,56 @@ function Frame#Subset(Frame, Frame): bool;
 axiom(forall a: Frame, b: Frame :: { Frame#Subset(a,b) }
   Frame#Subset(a,b) <==> (forall <alpha> o: ref, f: Field alpha :: {a[o, f]} {b[o, f]} a[o, f] ==> b[o, f]));
 
-// Set of all writable objects
-const writable: Frame;
+function has_whole_object(frame: Frame, o: ref): bool
+{ (forall <alpha> f: Field alpha :: frame[o, f]) }
 
-function fully_writable(wr: Frame, o: ref): bool
-{ (forall <alpha> f: Field alpha :: wr[o, f]) }
-
-// Writable set 'wr' is closed under ownership domains 
-function {:inline true} writable_domains(wr: Frame, h: HeapType): bool
+// // Frame is closed under ownership domains 
+// function {:inline true} closed_under_domains(frame: Frame, h: HeapType): bool
+// { 
+  // (forall <alpha> o, o': ref, f, f': Field alpha :: {frame[o, f], frame[o', f']} 
+    // frame[o, f] && in_domain(h, o, o') && o != o' ==> frame[o', f']) && 
+  // (forall <alpha> o, o': ref, f': Field alpha :: {frame[o, closed], frame[o', f']}{has_whole_object(frame, o), frame[o', f']} 
+    // frame[o, closed] && in_domain(h, o, o') && o != o' ==> frame[o', f'])    
+// }
+// Frame is closed under ownership domains 
+function {:inline true} closed_under_domains(frame: Frame, h: HeapType): bool
 { 
-  (forall <alpha> o, o': ref, f: Field alpha :: {wr[o, closed], wr[o', f]}{fully_writable(wr, o), wr[o', f]} 
-    wr[o, closed] && in_domain(h, o, o') && o != o' ==> wr[o', f]) 
+  // (forall <alpha> o, o': ref, f, f': Field alpha :: frame[o, f] && in_domain(h, o, o') && o != o' ==> frame[o', f'])
+  (forall <U> o': ref, f': Field U :: {frame[o', f']} 
+    (exists <V> o: ref, f: Field V :: frame[o, f] && in_domain(h, o, o') && o != o') ==> frame[o', f'])
 }
 
-// Objects outside of ownership domains of mods did not change, unless they were newly allocated
-function writes(h: HeapType, h': HeapType, mods: Frame): bool { 
+
+// Objects outside of ownership domains of frame did not change, unless they were newly allocated
+// function same_outside(h: HeapType, h': HeapType, frame: Frame): bool { 
+	// (forall <T> o: ref, f: Field T :: { h[o, f] } { h'[o, f] }
+    // h[o, allocated] ==>      
+      // h'[o, f] == h[o, f] ||
+      // frame[o, f] ||
+      // (exists o': ref :: {frame[o', closed]}{in_domain(h, o', o)} o' != o && frame[o', closed] && in_domain(h, o', o))
+  // )
+// }
+function same_outside(h: HeapType, h': HeapType, frame: Frame): bool { 
 	(forall <T> o: ref, f: Field T :: { h[o, f] } { h'[o, f] }
     h[o, allocated] ==>      
       h'[o, f] == h[o, f] ||
-      mods[o, f] ||
-      (exists o': ref :: {mods[o', closed]}{in_domain(h, o', o)} o' != o && mods[o', closed] && in_domain(h, o', o))
+      frame[o, f] ||
+      (exists <U> o': ref, f': Field U :: {frame[o', f']} o' != o && frame[o', f'] && in_domain(h, o', o))
   )
 }
+
+// Objects inside the old ownership domains of frame did not change
+function same_inside(h: HeapType, h': HeapType, frame: Frame): bool { 
+	(forall <T> o: ref, f: Field T :: { h[o, f] } { h'[o, f] }
+    h'[o, f] != h[o, f] ==>
+      !frame [o, f] && (forall<U> o': ref, g: Field U :: frame[o', g] && o != o' ==> !in_domain(h, o', o)))
+}
+
+// Set of all writable objects
+const writable: Frame;
+
+// Set of all readable objects
+const readable: Frame;
 
 // ----------------------------------------------------------------------
 // Invariants
@@ -242,7 +270,7 @@ procedure allocate(t: Type) returns (result: ref);
   ensures Set#Equal(Heap[result, owns], Set#Empty());
   ensures Set#Equal(Heap[result, observers], Set#Empty());
   ensures Set#Equal(Heap[result, subjects], Set#Empty());
-  ensures fully_writable(writable, result);
+  ensures has_whole_object(writable, result);
   ensures (forall <T> o: ref, f: Field T :: o != result ==> Heap[o, f] == old(Heap[o, f]));
   free ensures HeapSucc(old(Heap), Heap);
 

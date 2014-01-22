@@ -50,7 +50,7 @@ feature -- Access
 			status: functional, ghost
 		require
 			children_exists: children /= Void
-			reads (children)
+			reads (Current, children)
 		do
 			Result := children.sequence.range
 		end

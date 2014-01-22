@@ -136,6 +136,9 @@ feature -- Access
 			end
 		end
 
+	context_readable: IV_EXPRESSION
+			-- Readable  frame of the enclosing context if defined, otherwise Void.
+
 feature -- Element change
 
 	set_last_expression (a_expression: IV_EXPRESSION)
@@ -188,6 +191,7 @@ feature -- Basic operations
 			current_target := Void
 			current_target_type := Void
 			local_writable := Void
+			context_readable := Void
 			last_set_content_type := Void
 			create entity_mapping.make
 			create locals_map.make (10)
@@ -200,6 +204,12 @@ feature -- Basic operations
 			-- Set `local_writable' to `a_writable'.
 		do
 			local_writable := a_writable
+		end
+
+	set_context_readable (a_readable: IV_EXPRESSION)
+			-- Set `context_readable' to `a_readable'
+		do
+			context_readable := a_readable
 		end
 
 feature -- Visitors
@@ -1013,15 +1023,7 @@ feature -- Translation
 			-- Process call to attribute `a_feature'.
 		require
 			is_attribute: a_feature.is_attribute
-		do
-			translation_pool.add_referenced_feature (a_feature, current_target_type)
-
-			check current_target /= Void end
-			last_expression := factory.heap_access (
-				entity_mapping.heap.name,
-				current_target,
-				name_translator.boogie_procedure_for_feature (a_feature, current_target_type),
-				types.for_type_in_context (a_feature.type, current_target_type))
+		deferred
 		end
 
 	process_constant_call (a_feature: CONSTANT_I)
@@ -1055,7 +1057,7 @@ feature -- Translation
 		end
 
 	add_safety_check (a_expression: IV_EXPRESSION; a_name: STRING; a_tag: STRING; a_line: INTEGER)
-			-- Add safety check `a_expression' of type `a_name'.
+			-- Add safety check `a_expression' of type `a_name' with tag `a_tag' referring to `a_line'.
 		require
 			boolean_expression: a_expression.type.is_boolean
 		local
@@ -1067,6 +1069,23 @@ feature -- Translation
 			l_assert.node_info.set_line (a_line)
 			l_assert.set_attribute_string (":subsumption 0")
 			side_effect.extend (l_assert)
+		end
+
+	add_safety_check_with_subsumption (a_expression: IV_EXPRESSION; a_name: STRING; a_tag: STRING; a_line: INTEGER)
+			-- Add safety check `a_expression' of type `a_name' with tag `a_tag' referring to `a_line'; do not supress subsumption.
+		require
+			boolean_expression: a_expression.type.is_boolean
+		do
+			add_safety_check (a_expression, a_name, a_tag, a_line)
+			last_safety_check.set_attribute_string (Void)
+		end
+
+	last_safety_check: IV_ASSERT
+			-- Assertion added by the last call to `add_safety_check'.
+		do
+			if attached {IV_ASSERT} side_effect.last as l_assert then
+				Result := l_assert
+			end
 		end
 
 	safety_check_condition: LINKED_STACK [IV_EXPRESSION]

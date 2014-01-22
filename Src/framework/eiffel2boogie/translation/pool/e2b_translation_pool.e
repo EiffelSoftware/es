@@ -125,10 +125,16 @@ feature -- Adding independent units
 			internal_add_feature (a_feature, a_context_type, True)
 		end
 
-	add_frame_function (a_feature: FEATURE_I; a_context_type: TYPE_A)
-			-- Add frame function of feature `a_feature' of `a_context_type'.
+	add_write_frame_function (a_feature: FEATURE_I; a_context_type: TYPE_A)
+			-- Add write frame function of feature `a_feature' of `a_context_type'.
 		do
-			add_translation_unit (create {E2B_TU_FRAME}.make (a_feature, a_context_type))
+			add_translation_unit (create {E2B_TU_WRITE_FRAME}.make (a_feature, a_context_type))
+		end
+
+	add_read_frame_function (a_feature: FEATURE_I; a_context_type: TYPE_A)
+			-- Add read frame function of feature `a_feature' of `a_context_type'.
+		do
+			add_translation_unit (create {E2B_TU_READ_FRAME}.make (a_feature, a_context_type))
 		end
 
 	add_filtered_invariant_function (a_type: TYPE_A; a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C)
@@ -232,7 +238,7 @@ feature {NONE} -- Implementation
 			add_translation_unit (l_signature)
 
 				-- Add functional representation
-			if a_feature.has_return_value then
+			if helper.has_functional_representation (a_feature) then
 				create l_functional_representation.make (a_feature, a_context_type)
 				add_translation_unit (l_functional_representation)
 			end

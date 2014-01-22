@@ -368,19 +368,25 @@ feature -- SCOOP
 feature -- Verification: contract clauses
 
 	frozen modify (a: ANY): BOOLEAN
-			-- Helper function for adding modifies clauses in contracts.
+			-- Helper function for adding modify clauses in contracts.
 		do
 			Result := True
 		end
 
 	frozen modify_field (a_field: ANY; a_object: ANY): BOOLEAN
-			-- Helper function for adding modifies clauses in contracts.
+			-- Helper function for adding modify clauses in contracts.
 		do
 			Result := True
 		end
 
 	frozen reads (a: ANY): BOOLEAN
-			-- Helper function for adding reads clauses in contracts.
+			-- Helper function for adding read clauses in contracts.
+		do
+			Result := True
+		end
+
+	frozen reads_field (a_field: ANY; a_object: ANY): BOOLEAN
+			-- Helper function for adding read clauses in contracts.
 		do
 			Result := True
 		end
@@ -459,6 +465,18 @@ feature -- Verification: ownership queries
 
 	frozen is_fully_writable: BOOLEAN
 			-- Are all fields of `Current' writable?
+		do
+			Result := True
+		end
+
+	frozen is_field_readable (a_field: STRING): BOOLEAN
+			-- Is field `a_field' of `Current' readable?
+		do
+			Result := True
+		end
+
+	frozen is_fully_readable: BOOLEAN
+			-- Are all fields of `Current' readable?
 		do
 			Result := True
 		end

@@ -52,6 +52,7 @@ feature -- Access
 			target_closed: target.closed
 			default_closed: closed
 			modify ([])
+			reads (Current, target)
 		do
 			check inv and target.inv end
 			Result := target.elements [index]
