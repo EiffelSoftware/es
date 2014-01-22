@@ -1411,7 +1411,7 @@ EIF_BOOLEAN eif_is_synced_on (EIF_SCP_PID c, EIF_SCP_PID );
 
 
 #ifdef SCOOPQS
-#define RTS_OU(c,o) ((o) && EIF_TRUE) //  && eveqs_is_uncontrolled (RTS_PID (c), RTS_PID (o)))
+#define RTS_OU(c,o) ((o) && eveqs_is_uncontrolled (RTS_PID (c), RTS_PID (o)))
 #else /* SCOOPQS */
 #define RTS_OU(c,o) ((o) && (scp_mnger) && EIF_TEST (eif_is_uncontrolled (RTS_PID (c), RTS_PID (o))))
 #endif
