@@ -141,38 +141,20 @@ axiom(forall a: Frame, b: Frame :: { Frame#Subset(a,b) }
 function has_whole_object(frame: Frame, o: ref): bool
 { (forall <alpha> f: Field alpha :: frame[o, f]) }
 
-// // Frame is closed under ownership domains 
-// function {:inline true} closed_under_domains(frame: Frame, h: HeapType): bool
-// { 
-  // (forall <alpha> o, o': ref, f, f': Field alpha :: {frame[o, f], frame[o', f']} 
-    // frame[o, f] && in_domain(h, o, o') && o != o' ==> frame[o', f']) && 
-  // (forall <alpha> o, o': ref, f': Field alpha :: {frame[o, closed], frame[o', f']}{has_whole_object(frame, o), frame[o', f']} 
-    // frame[o, closed] && in_domain(h, o, o') && o != o' ==> frame[o', f'])    
-// }
 // Frame is closed under ownership domains 
 function {:inline true} closed_under_domains(frame: Frame, h: HeapType): bool
 { 
-  // (forall <alpha> o, o': ref, f, f': Field alpha :: frame[o, f] && in_domain(h, o, o') && o != o' ==> frame[o', f'])
   (forall <U> o': ref, f': Field U :: {frame[o', f']} 
     (exists <V> o: ref, f: Field V :: frame[o, f] && in_domain(h, o, o') && o != o') ==> frame[o', f'])
 }
 
-
 // Objects outside of ownership domains of frame did not change, unless they were newly allocated
-// function same_outside(h: HeapType, h': HeapType, frame: Frame): bool { 
-	// (forall <T> o: ref, f: Field T :: { h[o, f] } { h'[o, f] }
-    // h[o, allocated] ==>      
-      // h'[o, f] == h[o, f] ||
-      // frame[o, f] ||
-      // (exists o': ref :: {frame[o', closed]}{in_domain(h, o', o)} o' != o && frame[o', closed] && in_domain(h, o', o))
-  // )
-// }
 function same_outside(h: HeapType, h': HeapType, frame: Frame): bool { 
 	(forall <T> o: ref, f: Field T :: { h[o, f] } { h'[o, f] }
     h[o, allocated] ==>      
       h'[o, f] == h[o, f] ||
-      frame[o, f] ||
-      (exists <U> o': ref, f': Field U :: {frame[o', f']} o' != o && frame[o', f'] && in_domain(h, o', o))
+      frame[o, f] ||        
+      (exists o': ref :: {frame[o', closed]} o' != o && frame[o', closed] && in_domain(h, o', o)) // Using extra knowledge here to remove an existential: modifying object's domain requires its closed to be in the frame
   )
 }
 
