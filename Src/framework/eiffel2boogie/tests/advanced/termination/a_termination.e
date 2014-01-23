@@ -88,7 +88,9 @@ feature
 		local
 			x: INTEGER
 		do
-			x := s.any_item
+			if not s.is_empty then
+				x := s.any_item
+			end
 			Result := x + set_sum_bad (s / x)
 		end
 

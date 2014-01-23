@@ -110,7 +110,6 @@ feature -- Visitors
 
 			l_local: IV_ENTITY
 			l_havoc: IV_HAVOC
-			l_assume: IV_ASSUME
 			l_assignment: IV_ASSIGNMENT
 			l_allocated: IV_ENTITY
 			l_binop: IV_BINARY_OPERATION
@@ -262,7 +261,7 @@ feature -- Translation
 			-- Process feature call.
 		local
 			l_pcall: IV_PROCEDURE_CALL
-			l_fcall, l_pre_call: IV_FUNCTION_CALL
+			l_fcall: IV_FUNCTION_CALL
 		do
 			translation_pool.add_referenced_feature (a_feature, current_target_type)
 			if a_feature.has_return_value and helper.is_functional (a_feature) then
@@ -274,19 +273,13 @@ feature -- Translation
 				l_fcall.arguments.append (last_parameters)
 
 					-- Add precondition check
-				if a_feature.has_precondition then
-					create l_pre_call.make (name_translator.precondition_predicate_name (a_feature, current_target_type), types.bool)
-					l_pre_call.add_argument (entity_mapping.heap)
-					l_pre_call.add_argument (current_target)
-					l_pre_call.arguments.append (last_parameters)
-					add_safety_check (l_pre_call, "check", "precondition_of_function_" + a_feature.feature_name, context_line_number)
-				end
+				add_function_precondition_check (a_feature, l_fcall)
 
 					-- Add read frame check
-				add_read_frame_check (a_feature, last_parameters)
+				add_read_frame_check (a_feature)
 
 					-- This checks that functionals are well-defined, from the corresponding fake procedure
-				add_recursion_termination_check (a_feature, last_parameters)
+				add_recursion_termination_check (a_feature)
 
 				last_expression := l_fcall
 			else
@@ -309,11 +302,11 @@ feature -- Translation
 				l_pcall.arguments.append (last_parameters)
 
 					-- Add read frame check
-				add_read_frame_check (a_feature, last_parameters)
+				add_read_frame_check (a_feature)
 					-- This checks termination of non-functional routines, when they are called from their own implementation
-				add_recursion_termination_check (a_feature, last_parameters)
+				add_recursion_termination_check (a_feature)
 					-- This adds an extra framing check if we are inside a context with a local frame
-				add_loop_frame_check (a_feature, last_parameters)
+				add_loop_frame_check (a_feature)
 
 					-- Process call
 				if a_feature.has_return_value then
@@ -519,7 +512,7 @@ feature -- Translation
 		end
 
 
-	add_recursion_termination_check (a_feature: FEATURE_I; a_parameters: like last_parameters)
+	add_recursion_termination_check (a_feature: FEATURE_I)
 			-- Add termination check for a call to routine `a_feature' with actual arguments `a_parameters' int he current context.
 		local
 			l_caller_variant, l_callee_variant: IV_FUNCTION_CALL
@@ -542,7 +535,7 @@ feature -- Translation
 					create l_callee_variant.make (l_decreases_fun.name, l_decreases_fun.type)
 					l_callee_variant.add_argument (entity_mapping.heap)
 					l_callee_variant.add_argument (current_target)
-					l_callee_variant.arguments.append (a_parameters)
+					l_callee_variant.arguments.append (last_parameters)
 					l_callee_variants.extend (l_callee_variant)
 
 					create l_caller_variant.make (l_decreases_fun.name, l_decreases_fun.type)
@@ -565,7 +558,7 @@ feature -- Translation
 			end
 		end
 
-	add_loop_frame_check (a_feature: FEATURE_I; a_parameters: like last_parameters)
+	add_loop_frame_check (a_feature: FEATURE_I)
 			-- If there is a local frame, check that `a_feature's frame is a subframe of it.
 		local
 			l_fcall: IV_FUNCTION_CALL
@@ -574,13 +567,13 @@ feature -- Translation
 				create l_fcall.make (name_translator.boogie_function_for_write_frame (a_feature, current_target_type), types.frame)
 				l_fcall.add_argument (entity_mapping.heap)
 				l_fcall.add_argument (current_target)
-				l_fcall.arguments.append (a_parameters)
+				l_fcall.arguments.append (last_parameters)
 				add_safety_check (factory.function_call ("Frame#Subset", <<l_fcall, local_writable>>, types.bool),
 					"check", "frame_writable", context_line_number)
 			end
 		end
 
-	add_read_frame_check (a_feature: FEATURE_I; a_parameters: like last_parameters)
+	add_read_frame_check (a_feature: FEATURE_I)
 			-- If there is a read frame, check that `a_feature's read frame is a subframe of it.
 		local
 			l_fcall: IV_FUNCTION_CALL
@@ -589,7 +582,7 @@ feature -- Translation
 				create l_fcall.make (name_translator.boogie_function_for_read_frame (a_feature, current_target_type), types.frame)
 				l_fcall.add_argument (entity_mapping.heap)
 				l_fcall.add_argument (current_target)
-				l_fcall.arguments.append (a_parameters)
+				l_fcall.arguments.append (last_parameters)
 					-- Using subsumption here, since in a query call chains it can trigger for the followings checks
 				add_safety_check_with_subsumption (factory.function_call ("Frame#Subset", <<l_fcall, context_readable>>, types.bool),
 					"access", "frame_readable", context_line_number)

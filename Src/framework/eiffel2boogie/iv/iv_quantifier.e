@@ -39,7 +39,7 @@ feature -- Access
 	bound_variables: LINKED_LIST [IV_ENTITY_DECLARATION]
 			-- List of bound variables.
 
-	triggers: LINKED_LIST [IV_EXPRESSION]
+	triggers: LINKED_LIST [ARRAY [IV_EXPRESSION]]
 			-- List of triggers.
 
 	type: IV_TYPE
@@ -75,7 +75,15 @@ feature -- Element change
 		require
 			a_expr_attached: attached a_expr
 		do
-			triggers.extend (a_expr)
+			triggers.extend (<< a_expr >>)
+		end
+
+	add_compound_trigger (a_trigger: ARRAY [IV_EXPRESSION])
+			-- Add `a_trigger' to triggers for this quantifier.
+		require
+			a_expr_attached: attached a_trigger
+		do
+			triggers.extend (a_trigger)
 		end
 
 invariant

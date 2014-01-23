@@ -1,3 +1,6 @@
+note
+	explicit: "all"
+
 class A_SETS
 
 feature
@@ -35,17 +38,23 @@ feature
 			check attached {A_SETS} s.any_item end
 		end
 
-	bad (s: MML_SET[INTEGER])
+	bad (s: MML_SET[INTEGER]; i: INTEGER)
 		local
 			s1: MML_SET[INTEGER]
 			x: INTEGER
 		do
 			s1 := s1 & 1
-			x := s.any_item
-			check bad_disjoint: s.is_disjoint (s1) end
-			check bad_empty: s.is_empty end
-			check bad_has: s.has (1)  end
-			check s1.any_item = 2 end
+			if i = 1 then
+				x := s.any_item
+			elseif i = 2 then
+				check bad_disjoint: s.is_disjoint (s1) end
+			elseif i = 3 then
+				check bad_empty: s.is_empty end
+			elseif i = 4 then
+				check bad_has: s.has (1)  end
+			else
+				check s1.any_item = 2 end
+			end
 		end
 
 	interval
@@ -78,7 +87,9 @@ feature
 
 			create in1
 			check not in1 [1] end
-
 		end
+
+invariant
+	subjects = []
 
 end

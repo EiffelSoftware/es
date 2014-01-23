@@ -285,7 +285,7 @@ feature -- Statement Visitor
 			output.put_new_line
 		end
 
-	process_assume (a_assume: IV_ASSUME)
+	process_assume (a_assume: IV_ASSERT)
 			-- <Precursor>
 		do
 			output.put_indentation
@@ -709,7 +709,12 @@ feature -- Other
 			output.put (" :: ")
 			across a_quantifier.triggers as i loop
 				output.put ("{ ")
-				i.item.process (Current)
+				across i.item as j loop
+					j.item.process (Current)
+					if not j.is_last then
+						output.put (", ")
+					end
+				end
 				output.put (" } ")
 			end
 			a_quantifier.expression.process (Current)

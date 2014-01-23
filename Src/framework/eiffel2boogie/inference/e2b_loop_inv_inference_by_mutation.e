@@ -615,7 +615,7 @@ feature -- Statement visitor
 			--TODO
 		end
 
-	process_assume (a_assume: IV_ASSUME)
+	process_assume (a_assume: IV_ASSERT)
 			-- Process `a_assume'.
 		do
 			--TODO

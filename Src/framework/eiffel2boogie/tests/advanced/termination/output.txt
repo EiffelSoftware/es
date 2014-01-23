@@ -79,9 +79,7 @@ Successfully verified.
 A_TERMINATION.set_sum_bad
 Verification failed.
 
-Line: 91. Check precondition_of_function_any_item may be violated.
---------------------------------------
-Line: 92. Variant may not decrease at this recursive call / the end of this loop body.
+Line: 94. Variant may not decrease at this recursive call / the end of this loop body.
 ======================================
 A_TERMINATION.sequence_sum
 Successfully verified.
@@ -89,7 +87,7 @@ Successfully verified.
 A_TERMINATION.sequence_sum_bad
 Verification failed.
 
-Line: 109. Variant may not decrease at this recursive call / the end of this loop body.
+Line: 111. Variant may not decrease at this recursive call / the end of this loop body.
 ======================================
 A_TERMINATION.bag_sum
 Successfully verified.
@@ -97,12 +95,12 @@ Successfully verified.
 A_TERMINATION.bag_sum_bad
 Verification failed.
 
-Line: 127. Variant may not decrease at this recursive call / the end of this loop body.
+Line: 129. Variant may not decrease at this recursive call / the end of this loop body.
 ======================================
 A_TERMINATION.no_args_bad
 Verification failed.
 
-Line: 135. Variant may not decrease at this recursive call / the end of this loop body.
+Line: 137. Variant may not decrease at this recursive call / the end of this loop body.
 ======================================
 A_TERMINATION.no_termination_check
 Successfully verified.

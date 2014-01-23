@@ -1,3 +1,6 @@
+note
+	explicit: "all"
+
 class
 	A_RELATIONS
 
@@ -52,4 +55,6 @@ feature
 			check across r.image_of (u) as v all attached {A_RELATIONS} v.item end end
 		end
 
+invariant
+	subjects = []
 end

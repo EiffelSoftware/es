@@ -77,7 +77,9 @@ feature -- Basic operations
 			l_heap_access := factory.heap_access (l_heap.name, l_o, l_attribute_name, l_boogie_type)
 			l_type_prop := types.type_property (a_feature.type.deep_actual_type.instantiated_in (a_context_type), l_heap, l_heap_access)
 			if not l_type_prop.is_true then
-				l_type_prop := factory.implies_ (factory.function_call ("attached", << l_heap, l_o, factory.type_value (a_context_type)>>, types.bool),
+				l_type_prop := factory.implies_ (factory.and_ (
+						factory.is_heap (l_heap),
+						factory.function_call ("attached", << l_heap, l_o, factory.type_value (a_context_type)>>, types.bool)),
 					l_type_prop)
 				create l_forall.make (l_type_prop)
 				l_forall.add_bound_variable (l_heap.name, l_heap.type)

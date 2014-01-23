@@ -95,7 +95,7 @@ feature -- Helper functions: arguments and result
 			l_pre: IV_PRECONDITION
 		do
 			current_boogie_procedure.add_argument (a_name, a_boogie_type)
-			create l_pre.make (type_property (factory.entity (a_name, a_boogie_type), a_type))
+			create l_pre.make (type_property (factory.entity (a_name, a_boogie_type), a_type, factory.global_heap))
 			l_pre.set_free
 			l_pre.node_info.set_attribute ("info", "type property for argument " + a_name)
 			current_boogie_procedure.add_contract (l_pre)
@@ -115,17 +115,17 @@ feature -- Helper functions: arguments and result
 				current_boogie_procedure.add_result_with_property (
 					"Result",
 					l_iv_type,
-					type_property (factory.entity ("Result", l_iv_type), l_type))
+					type_property (factory.entity ("Result", l_iv_type), l_type, factory.global_heap))
 			end
 		end
 
-	type_property (a_arg: IV_EXPRESSION; a_type: TYPE_A): IV_EXPRESSION
+	type_property (a_arg: IV_EXPRESSION; a_type: TYPE_A; a_heap: IV_EXPRESSION): IV_EXPRESSION
 			-- Type property about `a_arg' of `a_type'.
 		do
 			if attached {FORMAL_A} a_type as f then
-				Result := types.type_property (f.constraint (current_type.base_class), factory.global_heap, a_arg)
+				Result := types.type_property (f.constraint (current_type.base_class), a_heap, a_arg)
 			else
-				Result := types.type_property (a_type, factory.global_heap, a_arg)
+				Result := types.type_property (a_type, a_heap, a_arg)
 			end
 		end
 

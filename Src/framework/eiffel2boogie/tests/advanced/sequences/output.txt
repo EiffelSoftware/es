@@ -11,15 +11,15 @@ Successfully verified.
 A_SEQUENCES.bad
 Verification failed.
 
-Line: 54. Check precondition_of_function_item may be violated.
+Line: 58. Precondition may be violated on invocation of item.
 --------------------------------------
-Line: 55. Check precondition_of_function_but_last may be violated.
+Line: 60. Precondition may be violated on invocation of but_last.
 --------------------------------------
-Line: 56. Check precondition_of_function_but_last may be violated.
+Line: 62. Precondition may be violated on invocation of but_last.
 --------------------------------------
-Line: 56. Check precondition_of_function_item may be violated.
+Line: 62. Precondition may be violated on invocation of item.
 --------------------------------------
-Line: 57. Check precondition_of_function_item may be violated.
+Line: 64. Precondition may be violated on invocation of item.
 ======================================
 A_SEQUENCES.triv
 Successfully verified.

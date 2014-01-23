@@ -160,7 +160,7 @@ feature -- Statement Visitor: empty processors
 		do
 		end
 
-	process_assume (a_assume: IV_ASSUME)
+	process_assume (a_assume: IV_ASSERT)
 			-- <Precursor>
 		do
 		end

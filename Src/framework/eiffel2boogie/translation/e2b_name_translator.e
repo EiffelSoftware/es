@@ -64,7 +64,7 @@ feature -- Access
 		end
 
 	boogie_function_for_write_frame (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
-			-- Name of the boogie function that encodes the frame of `a_feature'.
+			-- Name of the boogie function that encodes the write frame of `a_feature'.
 		require
 			a_feature_attached: attached a_feature
 			a_context_type_attached: attached a_context_type
@@ -80,7 +80,7 @@ feature -- Access
 		end
 
 	boogie_function_for_read_frame (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
-			-- Name of the boogie function that encodes the frame of `a_feature'.
+			-- Name of the boogie function that encodes the read frame of the functional representation of `a_feature'.
 		require
 			a_feature_attached: attached a_feature
 			a_context_type_attached: attached a_context_type
@@ -90,7 +90,39 @@ feature -- Access
 		do
 			l_type_name := boogie_name_for_type (a_context_type)
 			l_feature_name := a_feature.feature_name_32.as_lower
-			Result := "read." + l_type_name + "." + l_feature_name
+			Result := "read.fun." + l_type_name + "." + l_feature_name
+		ensure
+			result_attached: attached Result
+		end
+
+	boogie_function_precondition (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
+			-- Precondition predicate name for the functional representation of feature `a_feature'.
+		require
+			a_feature_attached: attached a_feature
+			a_context_type_attached: attached a_context_type
+		local
+			l_type_name: STRING
+			l_feature_name: STRING
+		do
+			l_type_name := boogie_name_for_type (a_context_type)
+			l_feature_name := a_feature.feature_name_32.as_lower
+			Result := "pre.fun." + l_type_name + "." + l_feature_name
+		ensure
+			result_attached: attached Result
+		end
+
+	boogie_free_function_precondition (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
+			-- Free precondition predicate name for the functional representation of feature `a_feature'.
+		require
+			a_feature_attached: attached a_feature
+			a_context_type_attached: attached a_context_type
+		local
+			l_type_name: STRING
+			l_feature_name: STRING
+		do
+			l_type_name := boogie_name_for_type (a_context_type)
+			l_feature_name := a_feature.feature_name_32.as_lower
+			Result := "free_pre.fun." + l_type_name + "." + l_feature_name
 		ensure
 			result_attached: attached Result
 		end
@@ -265,17 +297,6 @@ feature -- Access
 			if not l_classes.is_empty then
 				Result := l_classes.first.compiled_class.actual_type
 			end
-		ensure
-			result_attached: attached Result
-		end
-
-	precondition_predicate_name (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
-			-- Precondition predicate name for feature `a_feature'.
-		require
-			a_feature_attached: attached a_feature
-			a_context_type_attached: attached a_context_type
-		do
-			Result := "pre." + boogie_procedure_for_feature (a_feature, a_context_type)
 		ensure
 			result_attached: attached Result
 		end

@@ -11,6 +11,9 @@ class
 inherit
 
 	IV_CONTRACT
+		undefine
+			expression
+		end
 
 	IV_ASSERTION
 

@@ -1080,6 +1080,17 @@ feature -- Translation
 			last_safety_check.set_attribute_string (Void)
 		end
 
+	add_assumption (a_expression: IV_EXPRESSION)
+			-- Add assumption `a_expression'.
+		require
+			boolean_expression: a_expression.type.is_boolean
+		local
+			l_assert: IV_ASSERT
+		do
+			create l_assert.make_assume (implies_safety_expression (a_expression))
+			side_effect.extend (l_assert)
+		end
+
 	last_safety_check: IV_ASSERT
 			-- Assertion added by the last call to `add_safety_check'.
 		do
@@ -1171,6 +1182,32 @@ feature -- Translation
 				if not l_conversion.is_empty then
 					last_expression := factory.function_call (l_conversion, << last_expression >>, types.set (a_content_type))
 				end
+			end
+		end
+
+	add_function_precondition_check (a_feature: FEATURE_I; a_fcall: IV_FUNCTION_CALL)
+			-- Check the precondition of the function call `a_fcall' of `a_feature'.
+		local
+			l_pre_call: IV_FUNCTION_CALL
+		do
+				-- Add check
+			if a_feature.has_precondition then
+				create l_pre_call.make (name_translator.boogie_function_precondition (a_feature, current_target_type), types.bool)
+				across a_fcall.arguments as args loop
+					l_pre_call.add_argument (args.item)
+				end
+				add_safety_check_with_subsumption (l_pre_call, "check", "function_precondition", context_line_number)
+				last_safety_check.node_info.set_attribute ("cid", a_feature.written_class.class_id.out)
+				last_safety_check.node_info.set_attribute ("fid", a_feature.feature_id.out)
+			end
+				-- Assume free precondition to trigger the function definition;
+				-- (definitions of logicals do not have free preconditions)
+			if not helper.is_class_logical (current_target_type.base_class) then
+				create l_pre_call.make (name_translator.boogie_free_function_precondition (a_feature, current_target_type), types.bool)
+				across a_fcall.arguments as args loop
+					l_pre_call.add_argument (args.item)
+				end
+				add_assumption (l_pre_call)
 			end
 		end
 

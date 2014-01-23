@@ -131,16 +131,7 @@ feature {NONE} -- Implementation
 			end
 
 				-- Add precondition check
-			if a_feature.has_precondition then
-				create l_pre_call.make (name_translator.precondition_predicate_name (a_feature, a_translator.current_target_type), types.bool)
-				across
-					l_fcall.arguments as args
-				loop
-					l_pre_call.add_argument (args.item)
-				end
-				a_translator.add_safety_check (l_pre_call, "check", "precondition_of_function_" + a_feature.feature_name, a_translator.context_line_number)
-			end
-
+			a_translator.add_function_precondition_check (a_feature, l_fcall)
 		end
 
 	handle_nested (a_translator: E2B_EXPRESSION_TRANSLATOR; a_nested: NESTED_B)

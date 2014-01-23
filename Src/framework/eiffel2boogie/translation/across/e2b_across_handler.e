@@ -79,7 +79,11 @@ feature -- Basic operations
 				if attached {IV_ASSERT} checks.item as assert then
 						-- It is a check
 					if assert.expression.has_free_var_named (l_bound_var.name) then
-						create l_assert.make (quantifier (l_bound_var, assert.expression))
+						if assert.is_free then
+							create l_assert.make_assume (quantifier (l_bound_var, assert.expression))
+						else
+							create l_assert.make (quantifier (l_bound_var, assert.expression))
+						end
 						l_assert.node_info.load (assert.node_info)
 						expression_translator.side_effect.extend (l_assert)
 					else

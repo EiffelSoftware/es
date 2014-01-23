@@ -62,6 +62,9 @@ feature -- Verification error messages
 	check_with_tag_violated: STRING_32
 		do Result := "Check $tag may be violated." end
 
+	function_precondition_violated: STRING_32
+		do Result := "Precondition may be violated on invocation of $called_feature." end
+
 	precondition_violated: STRING_32
 		do Result := "Precondition may be violated on call to $called_feature (untagged)." end
 

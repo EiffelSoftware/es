@@ -1,12 +1,10 @@
 note
-	description: "[
-		Translation unit for the precondition predicate of an Eiffel routine.
-	]"
+	description: "Translation unit for a precondition predicate of a functional representation of a feature."
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	E2B_TU_ROUTINE_PRE_PREDICATE
+	E2B_TU_FUNCTION_PRE_PREDICATE
 
 inherit
 
@@ -17,7 +15,7 @@ create
 
 feature -- Access
 
-	base_id: STRING = "pre-predicate"
+	base_id: STRING = "fun-pre-predicate"
 			-- <Precursor>
 
 feature -- Basic operations
@@ -28,7 +26,7 @@ feature -- Basic operations
 			l_translator: E2B_ROUTINE_TRANSLATOR
 		do
 			create l_translator.make
-			l_translator.translate_precondition_predicate (feat, type)
+			l_translator.translate_function_precondition_predicate (feat, type)
 		end
 
 end

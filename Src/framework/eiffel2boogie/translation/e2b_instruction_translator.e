@@ -268,7 +268,7 @@ feature -- Processing
 			-- Process single check statement.
 		local
 			l_statement: IV_ASSERT
-			l_assume: IV_ASSUME
+			l_assume: IV_ASSERT
 			l_array: ARRAY_CONST_B
 			l_other: EXPR_B
 		do
@@ -291,7 +291,7 @@ feature -- Processing
 					add_statement (i.item)
 				end
 				if attached a_assert.tag and then a_assert.tag.is_case_insensitive_equal ("assume") then
-					create l_assume.make (last_expression)
+					create l_assume.make_assume (last_expression)
 					add_statement (l_assume)
 				else
 					create l_statement.make (last_expression)
@@ -427,7 +427,7 @@ feature -- Processing
 			l_condition, l_lower, l_upper: IV_EXPRESSION
 			l_binary: IV_BINARY_OPERATION
 			l_assign: IV_ASSIGNMENT
-			l_assume: IV_ASSUME
+			l_assume: IV_ASSERT
 			l_goto: IV_GOTO
 		do
 			set_current_origin_information (a_node)
@@ -492,7 +492,7 @@ feature -- Processing
 
 					l_case_blocks.force (create {IV_BLOCK}.make_name (helper.unique_identifier ("inspect_case")), l_index)
 					set_current_block (l_case_blocks.item (l_index))
-					create l_assume.make (l_condition)
+					create l_assume.make_assume (l_condition)
 					add_statement (l_assume)
 					process_compound (l_case.compound)
 					create l_goto.make (l_end_block)
@@ -507,7 +507,7 @@ feature -- Processing
 				-- Else part
 			set_current_block (l_else_block)
 			across l_case_conditions as i loop
-				create l_assume.make (factory.not_ (i.item))
+				create l_assume.make_assume (factory.not_ (i.item))
 				add_statement (l_assume)
 			end
 			if a_node.else_part /= Void then
@@ -577,7 +577,7 @@ feature -- Processing
 			l_goto: IV_GOTO
 			l_temp_block, l_head_block, l_body_block, l_end_block: IV_BLOCK
 			l_assert: IV_ASSERT
-			l_assume: IV_ASSUME
+			l_assume: IV_ASSERT
 			l_variant_locals: ARRAYED_LIST [IV_ENTITY]
 			l_variant_exprs: ARRAYED_LIST [IV_EXPRESSION]
 			l_assignment: IV_ASSIGNMENT
@@ -648,7 +648,7 @@ feature -- Processing
 				-- Body block
 			add_statement (l_body_block)
 			current_block := l_body_block
-			create l_assume.make (factory.not_ (l_condition))
+			create l_assume.make_assume (factory.not_ (l_condition))
 			add_statement (l_assume)
 
 				-- Variant initization
@@ -677,7 +677,7 @@ feature -- Processing
 				-- End
 			add_statement (l_end_block)
 			current_block := l_end_block
-			create l_assume.make (l_condition)
+			create l_assume.make_assume (l_condition)
 			add_statement (l_assume)
 
 				-- If the loop had its own writable, revert to the old local writable
@@ -698,7 +698,7 @@ feature -- Processing
 			l_goto: IV_GOTO
 			l_temp_block, l_head_block, l_body_block, l_end_block: IV_BLOCK
 			l_assert: IV_ASSERT
-			l_assume: IV_ASSUME
+			l_assume: IV_ASSERT
 			l_not: IV_UNARY_OPERATION
 			l_op: IV_BINARY_OPERATION
 			l_variant: IV_ENTITY
@@ -796,7 +796,7 @@ feature -- Processing
 			add_statement (l_body_block)
 			current_block := l_body_block
 
-			create l_assume.make (factory.not_ (l_condition))
+			create l_assume.make_assume (factory.not_ (l_condition))
 			add_statement (l_assume)
 			process_compound (a_node.compound)
 			if a_node.variant_part /= Void then
@@ -813,7 +813,7 @@ feature -- Processing
 			add_statement (l_end_block)
 			current_block := l_end_block
 
-			create l_assume.make (l_condition)
+			create l_assume.make_assume (l_condition)
 			add_statement (l_assume)
 
 			current_block := l_temp_block
@@ -828,7 +828,7 @@ feature -- Processing
 			l_goto: IV_GOTO
 			l_temp_block, l_head_block, l_body_block, l_end_block, l_force_end_block: IV_BLOCK
 			l_assert: IV_ASSERT
-			l_assume: IV_ASSUME
+			l_assume: IV_ASSERT
 			l_not: IV_UNARY_OPERATION
 			l_op: IV_BINARY_OPERATION
 			l_variant: IV_ENTITY
@@ -918,7 +918,7 @@ feature -- Processing
 				current_block := l_body_block
 
 				create l_not.make ("!", l_condition, types.bool)
-				create l_assume.make (l_not)
+				create l_assume.make_assume (l_not)
 				add_statement (l_assume)
 				process_compound (a_node.compound)
 
@@ -981,7 +981,7 @@ feature -- Processing
 			add_statement (l_end_block)
 			current_block := l_end_block
 
-			create l_assume.make (l_condition)
+			create l_assume.make_assume (l_condition)
 			add_statement (l_assume)
 
 			current_block := l_temp_block
@@ -1026,7 +1026,7 @@ feature {NONE} -- Loop processing
 		local
 			l_writable, l_frame: IV_ENTITY
 			l_assert: IV_ASSERT
-			l_assume: IV_ASSUME
+			l_assume: IV_ASSERT
 		do
 			if not a_modifies.is_empty then
 				create l_frame.make (helper.unique_identifier ("LoopFrame"), types.frame)
@@ -1037,7 +1037,7 @@ feature {NONE} -- Loop processing
 				across last_safety_checks as i loop
 					add_statement (i.item)
 				end
-				create l_assume.make (last_frame)
+				create l_assume.make_assume (last_frame)
 				add_statement (l_assume)
 
 				create l_assert.make (factory.function_call ("Frame#Subset", <<l_frame, context_writable>>, types.bool))
@@ -1051,9 +1051,9 @@ feature {NONE} -- Loop processing
 				create l_writable.make (helper.unique_identifier ("LoopWritable"), types.frame)
 				current_implementation.add_local (l_writable.name, l_writable.type)
 				add_statement (create {IV_HAVOC}.make (l_writable.name))
-				create l_assume.make (factory.function_call ("Frame#Subset", <<l_frame, l_writable>>, types.bool))
+				create l_assume.make_assume (factory.function_call ("Frame#Subset", <<l_frame, l_writable>>, types.bool))
 				add_statement (l_assume)
-				create l_assume.make (factory.function_call ("closed_under_domains", <<l_writable, factory.global_heap>>, types.bool))
+				create l_assume.make_assume (factory.function_call ("closed_under_domains", <<l_writable, factory.global_heap>>, types.bool))
 				add_statement (l_assume)
 			end
 			Result := [l_frame, l_writable]
@@ -1068,7 +1068,7 @@ feature {NONE} -- Loop processing
 		local
 			l_invariant: ASSERT_B
 			l_assert: IV_ASSERT
-			l_assume: IV_ASSUME
+			l_assume: IV_ASSERT
 		do
 			if a_invariants /= Void then
 				from
@@ -1087,7 +1087,7 @@ feature {NONE} -- Loop processing
 
 						if l_invariant.tag /= Void and then l_invariant.tag ~ "assume" then
 								-- Free invariants with tag 'assume'
-							create l_assume.make (last_expression)
+							create l_assume.make_assume (last_expression)
 							add_statement (l_assume)
 						else
 							create l_assert.make (last_expression)
@@ -1101,20 +1101,20 @@ feature {NONE} -- Loop processing
 				end
 			end
 				-- Default invariants (free)			
-			create l_assume.make (factory.function_call ("HeapSucc", <<a_pre_heap, factory.global_heap>>, types.bool))
+			create l_assume.make_assume (factory.function_call ("HeapSucc", <<a_pre_heap, factory.global_heap>>, types.bool))
 			add_statement (l_assume)
 			if options.is_ownership_enabled then
 				if a_loop_frame = Void then
 						-- Nothing outside routine's frame has changed compared to old(Heap)
 						-- (here we have to compare to old(Heap) because the routines's frame referes to ownership domains then.
-					create l_assume.make (factory.writes_routine_frame (current_feature, current_type, current_implementation.procedure))
+					create l_assume.make_assume (factory.writes_routine_frame (current_feature, current_type, current_implementation.procedure))
 				else
 						-- Nothing outside loop's frame has changed since before the loop
 						-- (here we have to compare to before the loop because the loop's frame referes to ownership domains then.
-					create l_assume.make (factory.function_call ("same_outside", <<a_pre_heap, factory.global_heap, a_loop_frame>>, types.bool))
+					create l_assume.make_assume (factory.function_call ("same_outside", <<a_pre_heap, factory.global_heap, a_loop_frame>>, types.bool))
 				end
 				add_statement (l_assume)
-				create l_assume.make (factory.function_call ("global", << factory.global_heap>>, types.bool))
+				create l_assume.make_assume (factory.function_call ("global", << factory.global_heap>>, types.bool))
 				add_statement (l_assume)
 			end
 		end

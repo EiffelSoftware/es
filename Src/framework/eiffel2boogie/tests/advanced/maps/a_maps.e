@@ -1,3 +1,6 @@
+note
+	explicit: "all"
+
 class
 	A_MAPS
 
@@ -79,7 +82,7 @@ feature
 			check attached {A_SETS} m [key] end
 		end
 
-	bad (m: MML_MAP [INTEGER, INTEGER])
+	bad (m: MML_MAP [INTEGER, INTEGER]; i: INTEGER)
 		require
 			m.domain [2]
 		local
@@ -87,13 +90,19 @@ feature
 			set: MML_SET [INTEGER]
 			seq: MML_SEQUENCE [INTEGER]
 		do
-			x := m [1] -- Bad
-			create set.singleton (1)
-			set := m.image (set) -- Bad
-			create seq.singleton (2)
-			seq := seq & 3
-			seq := m.sequence_image (seq) -- Bad
+			if i = 1 then
+				x := m [1] -- Bad
+			elseif i = 2 then
+				create set.singleton (1)
+				set := m.image (set) -- Bad
+			else
+				create seq.singleton (2)
+				seq := seq & 3
+				seq := m.sequence_image (seq) -- Bad
+			end
 		end
 
+invariant
+	subjects = []
 
 end

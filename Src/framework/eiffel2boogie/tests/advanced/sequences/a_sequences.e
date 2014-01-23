@@ -1,3 +1,6 @@
+note
+	explicit: "all"
+
 class A_SEQUENCES
 
 feature
@@ -47,14 +50,19 @@ feature
 			check attached {A_SETS} s.first end
 		end
 
-	bad (s: MML_SEQUENCE [INTEGER])
+	bad (s: MML_SEQUENCE [INTEGER]; k: INTEGER)
 		local
 			x: INTEGER
 		do
-			x := s [1]
-			check s.but_last.count >= 0 end
-			check across s.domain & 1 as i all s.but_last.count >= 0 and triv (s [i.item]) end end
-			check across 1 |..| 10 as i all triv (s [i.item]) end end
+			if k = 1 then
+				x := s [1]
+			elseif k = 2 then
+				check s.but_last.count >= 0 end
+			elseif k = 3 then
+				check across s.domain & 10 as i all triv(s.but_last.count) and triv (s [i.item]) end end
+			else
+				check across 1 |..| 10 as i all triv (s [i.item]) end end
+			end
 		end
 
 	triv (x: INTEGER): BOOLEAN
@@ -87,4 +95,7 @@ feature
 			check set = seq.range end
 		end
 
+invariant
+	subjects = []
+	
 end

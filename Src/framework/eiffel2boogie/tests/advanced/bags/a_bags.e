@@ -1,3 +1,6 @@
+note
+	explicit: "all"
+
 class
 	A_BAGS
 
@@ -57,13 +60,20 @@ feature
 			check attached {A_BAGS} b.domain.any_item end
 		end
 
-	bad
+	bad (i: INTEGER)
 		local
 			b: MML_BAG [INTEGER]
 		do
-			create b.multiple (1, -1)
-			b := b.extended_multiple (2, -1)
-			b := b.removed_multiple (1, -1)
+			if i = 1 then
+				create b.multiple (1, -1)
+			elseif i = 2 then
+				b := {MML_BAG [INTEGER]}.empty_bag.extended_multiple (2, -1)
+			else
+				b := {MML_BAG [INTEGER]}.empty_bag.removed_multiple (1, -1)
+			end
 		end
+
+invariant
+	subjects = []
 
 end

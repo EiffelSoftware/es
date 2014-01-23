@@ -179,7 +179,11 @@ feature {NONE} -- Implementation
 			if l_type ~ "check" then
 					-- Check violation
 				if l_has_tag then
-					Result := messages.check_with_tag_violated
+					if l_tag ~ "function_precondition" then
+						Result := messages.function_precondition_violated
+					else
+						Result := messages.check_with_tag_violated
+					end
 				else
 					Result := messages.check_violated
 				end

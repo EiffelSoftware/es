@@ -137,19 +137,19 @@ feature -- Adding independent units
 			add_translation_unit (create {E2B_TU_READ_FRAME}.make (a_feature, a_context_type))
 		end
 
+	add_function_precondition_predicate (a_feature: FEATURE_I; a_context_type: TYPE_A)
+			-- Add precondition predicate of feature `a_feature' of `a_context_type'.
+		local
+			l_pre_predicate: E2B_TU_FUNCTION_PRE_PREDICATE
+		do
+			create l_pre_predicate.make (a_feature, a_context_type)
+			add_translation_unit (l_pre_predicate)
+		end
+
 	add_filtered_invariant_function (a_type: TYPE_A; a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C)
 			-- Add invariant function of type `a_type'.
 		do
 			add_translation_unit (create {E2B_TU_INVARIANT_FUNCTION}.make_filtered (a_type, a_included, a_excluded, a_ancestor))
-		end
-
-	add_precondition_predicate (a_feature: FEATURE_I; a_context_type: TYPE_A)
-			-- Add precondition predicate of feature `a_feature' of `a_context_type'.
-		local
-			l_pre_predicate: E2B_TU_ROUTINE_PRE_PREDICATE
-		do
-			create l_pre_predicate.make (a_feature, a_context_type)
-			add_translation_unit (l_pre_predicate)
 		end
 
 	add_postcondition_predicate (a_feature: FEATURE_I; a_context_type: TYPE_A)

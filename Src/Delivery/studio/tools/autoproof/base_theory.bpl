@@ -64,8 +64,8 @@ function is_frozen(t: Type) returns (bool);
 // Typing axioms
 axiom (forall t: Type :: t <: ANY); // All types inherit from ANY.
 axiom (forall t: Type :: NONE <: t); // NONE inherits from all types.
-axiom (forall h: HeapType :: h[Void, allocated]); // Void is always allocated.
-axiom (forall h: HeapType, f: Field ref, o: ref :: h[o, allocated] ==> h[h[o, f], allocated]); // All reference fields are allocated.
+axiom (forall h: HeapType :: IsHeap(h) ==> h[Void, allocated]); // Void is always allocated.
+axiom (forall h: HeapType, f: Field ref, o: ref :: IsHeap(h) && h[o, allocated] ==> h[h[o, f], allocated]); // All reference fields are allocated.
 axiom (forall r: ref :: (r == Void) <==> (type_of(r) == NONE)); // Void is only reference of type NONE.
 axiom (forall a, b: ref :: (type_of(a) != type_of(b)) ==> (a != b)); // Objects that have different dynamic type cannot be aliased.
 axiom (forall t: Type :: is_frozen(t) ==> (forall t2: Type :: t2 <: t ==> t2 == t || t2 == NONE)); // Only NONE inherits from frozen types.
@@ -88,11 +88,11 @@ const unique owns: Field (Set ref); // Ghost field for owns set of an object.
 const unique observers: Field (Set ref); // Ghost field for observers set of an object.
 const unique subjects: Field (Set ref); // Ghost field for subjects set of an object.
 
-// Analogue of `detachable_attribute' ans `set_detachable_attribute' for built-in attributes:
-axiom (forall heap: HeapType, o: ref :: { heap[o, owner] } o != Void && heap[o, allocated] ==> heap[heap[o, owner], allocated]);
-axiom (forall heap: HeapType, o, o': ref :: { heap[o, owns][o'] } o != Void && heap[o, allocated] && heap[o, owns][o'] ==> heap[o', allocated]);
-axiom (forall heap: HeapType, o, o': ref :: { heap[o, subjects][o'] } o != Void && heap[o, allocated] && heap[o, subjects][o'] ==> heap[o', allocated]);
-axiom (forall heap: HeapType, o, o': ref :: { heap[o, observers][o'] } o != Void && heap[o, allocated] && heap[o, observers][o'] ==> heap[o', allocated]);
+// Analogue of `detachable_attribute' and `set_detachable_attribute' for built-in attributes:
+axiom (forall heap: HeapType, o: ref :: { heap[o, owner] } IsHeap(heap) && o != Void && heap[o, allocated] ==> heap[heap[o, owner], allocated]);
+axiom (forall heap: HeapType, o, o': ref :: { heap[o, owns][o'] } IsHeap(heap) && o != Void && heap[o, allocated] && heap[o, owns][o'] ==> heap[o', allocated]);
+axiom (forall heap: HeapType, o, o': ref :: { heap[o, subjects][o'] } IsHeap(heap) && o != Void && heap[o, allocated] && heap[o, subjects][o'] ==> heap[o', allocated]);
+axiom (forall heap: HeapType, o, o': ref :: { heap[o, observers][o'] } IsHeap(heap) && o != Void && heap[o, allocated] && heap[o, observers][o'] ==> heap[o', allocated]);
 
 // Is o open in h? (not closed and free)
 function {:inline} is_open(h: HeapType, o: ref): bool {
@@ -179,7 +179,7 @@ function user_inv(h: HeapType, o: ref): bool;
 
 // Reads axiom
 axiom (forall h, h': HeapType, x: ref :: {user_inv(h, x), user_inv(h', x), HeapSucc(h, h')} 
-  HeapSucc(h, h') && h[x, allocated] && user_inv(h, x) && 
+  IsHeap(h) && IsHeap(h') && HeapSucc(h, h') && h[x, allocated] && user_inv(h, x) && 
   (forall <T> o: ref, f: Field T :: h[o, allocated] ==> // every object's field
       h'[o, f] == h[o, f] ||                            // is unchanged
       f == closed || f == owner ||                      // or is outside of the read set of the invariant
@@ -222,8 +222,8 @@ function {: inline } admissibility2 (heap: HeapType, current: ref): bool
 function {: inline } admissibility4 (heap: HeapType, current: ref): bool
 {
   (forall heap': HeapType, s: ref :: 
-    heap[current, subjects][s] && s != current && (forall <alpha> o: ref, f: Field alpha :: (o == s && f == subjects) || heap'[o, f] == heap[o, f]) ==>
-    user_inv(heap', current)
+    HeapSucc(heap, heap') && heap[current, subjects][s] && s != current && (forall <alpha> o: ref, f: Field alpha :: (o == s && f == subjects) || heap'[o, f] == heap[o, f]) ==>
+      user_inv(heap', current)
   )
 }
 
@@ -231,8 +231,9 @@ function {: inline } admissibility4 (heap: HeapType, current: ref): bool
 function {: inline } admissibility5 (heap: HeapType, current: ref): bool
 {
   (forall heap': HeapType, s: ref :: 
-    heap[current, subjects][s] && s != current && Set#Subset(heap[s, observers], heap'[s, observers]) && (forall <alpha> o: ref, f: Field alpha :: (o == s && f == observers) || heap'[o, f] == heap[o, f]) ==>
-    user_inv(heap', current)
+    HeapSucc(heap, heap') && heap[current, subjects][s] && s != current && Set#Subset(heap[s, observers], heap'[s, observers]) && 
+    (forall <alpha> o: ref, f: Field alpha :: (o == s && f == observers) || heap'[o, f] == heap[o, f]) ==>
+      user_inv(heap', current)
   )
 }
 
@@ -384,7 +385,7 @@ function unboxed_int(r: ref) returns (int);
 axiom (forall i: int :: unboxed_int(boxed_int(i)) == i);
 axiom (forall i1, i2: int :: (i1 == i2) ==> (boxed_int(i1) == boxed_int(i2)));
 axiom (forall i: int :: boxed_int(i) != Void && type_of(boxed_int(i)) == INTEGER);
-axiom (forall heap: HeapType, i: int :: heap[boxed_int(i), allocated]);
+axiom (forall heap: HeapType, i: int :: IsHeap(heap) ==> heap[boxed_int(i), allocated]);
 
 
 // Boolean boxing
@@ -403,8 +404,8 @@ axiom (unboxed_bool(boxed_false) == false);
 axiom (boxed_true != boxed_false);
 axiom (boxed_true != Void && type_of(boxed_true) == BOOLEAN);
 axiom (boxed_false != Void && type_of(boxed_false) == BOOLEAN);
-axiom (forall heap: HeapType :: heap[boxed_true, allocated]);
-axiom (forall heap: HeapType :: heap[boxed_false, allocated]);
+axiom (forall heap: HeapType :: IsHeap(heap) ==> heap[boxed_true, allocated]);
+axiom (forall heap: HeapType :: IsHeap(heap) ==> heap[boxed_false, allocated]);
 
 // Bounded integers
 

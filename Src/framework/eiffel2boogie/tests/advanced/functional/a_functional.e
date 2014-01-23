@@ -1,3 +1,6 @@
+note
+	explicit: "all"
+
 class A_FUNCTIONAL
 
 feature
@@ -68,15 +71,22 @@ feature -- Preconditions
 			Result := x + 1
 		end
 
-	caller
+	caller1
 		local
 			y: INTEGER
 		do
 			y := functional4 (1)  -- OK
 			y := functional4 (-1) -- Bad
 			y := functional2 (-1) -- OK
+		end
+
+	caller2
+		do
 		ensure
 			bad: functional4 (-1) = 0
 		end
 
+
+invariant
+	subjects = []
 end

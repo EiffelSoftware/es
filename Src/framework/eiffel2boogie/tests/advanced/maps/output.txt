@@ -11,11 +11,11 @@ Successfully verified.
 A_MAPS.bad
 Verification failed.
 
-Line: 90. Check precondition_of_function_item may be violated.
+Line: 94. Precondition may be violated on invocation of item.
 --------------------------------------
-Line: 92. Check precondition_of_function_image may be violated.
+Line: 97. Precondition may be violated on invocation of image.
 --------------------------------------
-Line: 95. Check precondition_of_function_sequence_image may be violated.
+Line: 101. Precondition may be violated on invocation of sequence_image.
 ======================================
 A_MAPS (invariant admissibility)
 Successfully verified.

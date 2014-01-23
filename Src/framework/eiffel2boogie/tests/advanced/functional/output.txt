@@ -28,12 +28,15 @@ Successfully verified.
 A_FUNCTIONAL.functional4
 Successfully verified.
 ======================================
-A_FUNCTIONAL.caller
+A_FUNCTIONAL.caller1
 Verification failed.
 
-Line: 76. Check precondition_of_function_functional4 may be violated.
---------------------------------------
-Line: 79. Check precondition_of_function_functional4 may be violated.
+Line: 79. Precondition may be violated on invocation of functional4.
+======================================
+A_FUNCTIONAL.caller2
+Verification failed.
+
+Line: 86. Precondition may be violated on invocation of functional4.
 ======================================
 A_FUNCTIONAL (invariant admissibility)
 Successfully verified.

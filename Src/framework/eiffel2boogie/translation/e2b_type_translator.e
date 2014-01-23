@@ -55,6 +55,17 @@ feature -- Basic operations
 				boogie_universe.add_dependency (l_dep)
 			end
 
+				-- Add actual generic parameters
+			if a_type.has_generics then
+				across
+					a_type.generics as params
+				loop
+					if not params.item.is_formal then
+						translation_pool.add_type (params.item)
+					end
+				end
+			end
+
 			-- TODO: refactor
 			if not a_type.is_tuple and not helper.is_class_logical (a_type.base_class) then
 					-- Type definition
