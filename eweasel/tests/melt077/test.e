@@ -16,22 +16,17 @@ feature -- Initialization
 			tp := $l_null
 			tu := [tp]
 			if tu.ptr = l_null then
-				io.put_string ("Not OK%N")
+				io.put_string ("Not OK via local%N")
 			end
 
 			tu := [$l_null]
 			if tu.ptr = l_null then
-				io.put_string ("Not OK%N")
+				io.put_string ("Not OK via manifest tuple%N")
 			end
 
-			tu := [$(default_pointer)]
+			tu.ptr := $l_null
 			if tu.ptr = l_null then
-				io.put_string ("Not OK%N")
-			end
-
-			tu := [$(default_pointer.default_pointer)]
-			if tu.ptr = l_null then
-				io.put_string ("Not OK%N")
+				io.put_string ("Not OK via tuple assignment%N")
 			end
 		end
 

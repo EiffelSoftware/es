@@ -1512,7 +1512,11 @@ feature {NONE} -- Implementation
 								l_actual_count := l_formal_count
 								l_parameters.start
 							end
-							if l_actual_count /= l_formal_count and then not is_agent and then not l_is_in_assignment then
+							if
+								l_actual_count /= l_formal_count and then not is_agent and then not l_is_in_assignment and then
+								l_formal_count > 0 and then
+								l_feature.arguments.i_th (l_formal_count).formal_instantiation_in (l_last_type.as_implicitly_detachable, l_last_constrained.as_implicitly_detachable, l_last_id).actual_type.is_tuple
+							then
 									-- The list of actual arguments may be adapted to the list of formal arguments.
 								if l_actual_count > l_formal_count and then l_formal_count > 0 then
 										-- Additional actual arguments may be converted to a TUPLE.
@@ -1532,10 +1536,7 @@ feature {NONE} -- Implementation
 									l_parameters.put_i_th (create {TUPLE_AS}.initialize (l_wrapped_actuals, Void, Void), l_formal_count)
 										-- Adjust number of actual arguments.
 									l_actual_count := l_formal_count
-								elseif
-									l_actual_count + 1 = l_formal_count and then
-									l_feature.arguments.i_th (l_formal_count).formal_instantiation_in (l_last_type.as_implicitly_detachable, l_last_constrained.as_implicitly_detachable, l_last_id).actual_type.is_tuple
-								then
+								elseif l_actual_count + 1 = l_formal_count then
 										-- Avoid changing original list of arguments.
 									if attached l_parameters then
 										l_parameters := l_parameters.twin
@@ -1606,7 +1607,10 @@ feature {NONE} -- Implementation
 								if error_level = l_error_level then
 										-- Conformance checking of arguments.
 										-- Check if an actual type of the last actual argument is compatible with a formal type of that argument.
-									if attached argument_compatibility_error (a_type, l_last_constrained, l_actual_count, l_arg_types, l_feature, l_parameters [l_actual_count].start_location) then
+									if
+										attached argument_compatibility_error (a_type, l_last_constrained, l_actual_count, l_arg_types, l_feature, l_parameters [l_actual_count].start_location) and then
+										l_feature.arguments.i_th (l_formal_count).formal_instantiation_in (l_last_type.as_implicitly_detachable, l_last_constrained.as_implicitly_detachable, l_last_id).actual_type.is_tuple
+									then
 											-- Actual and formal types of the last argument are not compatible.
 											-- Try to wrap last argument in a tuple.
 										l_arg_type := l_arg_types [l_actual_count]
@@ -3827,16 +3831,16 @@ feature {NONE} -- Visitor
 		end
 
 	process_expr_address_as (l_as: EXPR_ADDRESS_AS)
-		local
-			l_expr: EXPR_B
 		do
 			l_as.expr.process (Current)
-				-- Eventhough there might be an error in `l_as.expr' we can continue
-				-- and do as if there was none.
-			set_type (pointer_type, l_as)
-			if is_byte_node_enabled then
-				l_expr ?= last_byte_node
-				create {EXPR_ADDRESS_B} last_byte_node.make (l_expr)
+			if attached last_type as l_type then
+				create {TYPED_POINTER_A} last_type.make_typed (l_type)
+				instantiator.dispatch (last_type, context.current_class)
+				if is_byte_node_enabled and attached {EXPR_B} last_byte_node as l_expr then
+					create {EXPR_ADDRESS_B} last_byte_node.make (l_expr)
+				end
+			else
+					-- An error occurred.
 			end
 		end
 
@@ -11182,7 +11186,7 @@ feature {NONE} -- Type recording
 note
 	date: "$Date$"
 	revision: "$Revision$"
-	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
