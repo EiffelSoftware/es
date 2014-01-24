@@ -1376,11 +1376,12 @@ RT_LNK void eif_exit_eiffel_code(void);
  *
  * `eif_globals' should be reloaded after the restoration.
  */
-#define RTS_IMPERSONATE(o)                                              \
+#define RTS_IMPERSONATE(pid)						\
   {                                                                     \
     EIF_ENTER_C;							\
-    eif_globals = (eif_global_context_t*) eif_thr_impersonate(o);	\
+    eif_globals = (eif_global_context_t*) eif_thr_impersonate(pid);	\
     EIF_EXIT_C;								\
+    RTGC;								\
   }
 
 /*
