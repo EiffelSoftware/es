@@ -4201,6 +4201,11 @@ Src/tools/syntax_updater/syntax_updater.lic -text
 Src/tools/visitor_factory/visitor_factory.lic -text
 Src/unstable/library/compression/bzip2/Readme.txt -text
 Src/unstable/library/compression/zlib/Readme.txt -text
+Src/unstable/library/compression/zlib/example/compress/compress.rc -text
+Src/unstable/library/compression/zlib/example/compress/index.html -text
+Src/unstable/library/compression/zlib/example/gzutility/gzutility.rc -text
+Src/unstable/library/compression/zlib/example/gzutility/index.html -text
+Src/unstable/library/compression/zlib/example/gzutility/project.rc -text
 Src/unstable/library/compression/zlib/example/index.html -text
 Src/unstable/library/pattern/criteria/README.txt -text
 Src/unstable/library/pattern/criteria/license.lic -text
