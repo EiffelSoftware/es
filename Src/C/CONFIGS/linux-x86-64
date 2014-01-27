@@ -230,8 +230,12 @@ ldsharedflags="$ldflags -shared -o"
 
 libs='-lm'
 
-if [[ -n "$SCOOPQS" && -n "$SCOOPQS_ECQS" ]]; then
-    libs="-static -static-libgcc -static-libstdc++ `pkg-config --libs libeveqs` -lstdc++ $libs"
+if [[ -n "$SCOOPQS" ]]; then
+    libs="`pkg-config --libs libeveqs` -lstdc++ $libs"
+fi
+
+if [[ -n "$SCOOPQS_STATIC" ]]; then
+    libs="-static -static-libgcc -static-libstdc++ $libs"
 fi
 
 ln='/bin/ln'

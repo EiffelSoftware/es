@@ -1371,6 +1371,12 @@ RT_LNK void eif_exit_eiffel_code(void);
 
 #define RTS_PID(o) HEADER(o)->ov_pid
 
+#ifdef SCOOPQS
+#define eif_scoop_access(x) (x)
+#else
+#define eif_scoop_access(x) eif_access(x)
+#endif
+
 /* 
  * SCOOP processor ID swapping.
  *
@@ -1407,7 +1413,7 @@ EIF_BOOLEAN eif_is_synced_on (EIF_SCP_PID c, EIF_SCP_PID );
 #define EIF_IS_DIFFERENT_PROCESSOR_FOR_QUERY(o1,o2) ((RTS_PID (o1) != RTS_PID (o2)))
 #endif
 
-#define RTS_EIF_ACCESS(r) (r ? eif_access (r) : NULL) 
+#define RTS_EIF_ACCESS(r) (r ? eif_scoop_access (r) : NULL) 
 #define RTS_OS(c,o) (RTS_PID (c) != RTS_PID (o))
 
 
