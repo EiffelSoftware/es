@@ -230,10 +230,6 @@ ldsharedflags="$ldflags -shared -o"
 
 libs='-lm'
 
-if [[ -n "$SCOOPQS" ]]; then
-    libs="`pkg-config --libs libeveqs` -lstdc++ $libs"
-fi
-
 if [[ -n "$SCOOPQS_STATIC" ]]; then
     libs="-static -static-libgcc -static-libstdc++ $libs"
 fi
@@ -249,6 +245,11 @@ mkdir='mkdir'
 mtldflags="$ldflags"
 mtldsharedflags="$ldsharedflags"
 mtlibs="$libs -pthread"
+
+if [[ -n "$SCOOPQS" ]]; then
+    mtlibs="`pkg-config --libs libeveqs` -lstdc++ $mtlibs"
+fi
+
 mt_prefix='mt'
 mv='/bin/mv'
 prefix='lib'
