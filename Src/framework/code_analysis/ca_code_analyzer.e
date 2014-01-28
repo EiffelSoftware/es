@@ -247,7 +247,13 @@ feature {NONE} -- Implementation
 
 	analysis_completed
 			-- Will be called when the analysis task has finished.
+		local
+			l_logger: CA_LOGGER
 		do
+			create l_logger.make ("last_analysis_result.csv")
+				-- CSV title column.
+			l_logger.log ("Severity;Class;Location;Title;Description;Rule ID;Severity Score")
+
 			across rules as l_rules loop
 				across l_rules.item.violations as l_v loop
 						-- Check the ignore list.
@@ -256,9 +262,13 @@ feature {NONE} -- Implementation
 						rule_violations.put (create {SORTED_TWO_WAY_LIST [CA_RULE_VIOLATION]}.make, l_v.item.affected_class)
 							-- Add the violation.
 						rule_violations.at (l_v.item.affected_class).extend (l_v.item)
+							-- Log it.
+						l_logger.log (l_v.item.out)
 					end
 				end
 			end
+
+			l_logger.close_log
 
 			clear_classes_to_analyze
 
