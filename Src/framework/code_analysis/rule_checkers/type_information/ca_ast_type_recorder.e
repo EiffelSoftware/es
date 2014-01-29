@@ -35,16 +35,16 @@ feature -- AST Type Analysis
 		do
 			prepare_for_class (a_class)
 			across a_class.written_in_features as l_features loop
-				internal_analyze_feature (l_features.item.associated_feature_i)
+				internal_analyze_feature (l_features.item.associated_feature_i, a_class)
 			end
 		end
 
-	analyze_feature (a_feature: FEATURE_I)
-			-- Analyzes `a_feature' and records the type information of its AST child
+	analyze_feature (a_feature: FEATURE_I; a_class: CLASS_C)
+			-- Analyzes `a_feature' from `a_class' and records the type information of its AST child
 			-- nodes.
 		do
-			prepare_for_class (a_feature.written_class)
-			internal_analyze_feature (a_feature)
+			prepare_for_class (a_class)
+			internal_analyze_feature (a_feature, a_class)
 		end
 
 	type_of_node (a_node: AST_EIFFEL; a_written_class: CLASS_C; a_feature: FEATURE_I; a_class: CLASS_C): TYPE_A
@@ -63,13 +63,15 @@ feature -- AST Type Analysis
 feature {NONE} -- Implementation
 
 	prepare_for_class (a_class: CLASS_C)
+			-- Initializes type check for class `a_class'.
 		do
 			context.initialize (a_class, a_class.actual_type)
 			feature_checker.init (context)
 			feature_checker.set_type_recorder (agent record_node_type)
 		end
 
-	internal_analyze_feature (a_feature: FEATURE_I)
+	internal_analyze_feature (a_feature: FEATURE_I; a_class: CLASS_C)
+			-- Analyzes feature `a_feature' from class `a_class'.
 		local
 			old_current_class: CLASS_C
 			old_current_feature: FEATURE_I
@@ -82,10 +84,10 @@ feature {NONE} -- Implementation
 			old_locals := context.locals.twin
 
 			context.clear_feature_context
-			context.initialize (a_feature.written_class, a_feature.written_class.actual_type)
+			context.initialize (a_class, a_class.actual_type)
 			context.set_current_feature (a_feature)
 			context.set_written_class (a_feature.written_class)
-			feature_checker.type_check_only (a_feature, True, False, a_feature.is_replicated)
+			feature_checker.type_check_only (a_feature, True, a_feature.written_in = a_class.class_id, a_feature.is_replicated)
 
 			context.initialize (old_current_class, old_current_class.actual_type)
 			context.set_current_feature (old_current_feature)

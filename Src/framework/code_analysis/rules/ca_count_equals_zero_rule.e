@@ -72,13 +72,12 @@ feature {NONE} -- Rule checking
 
 	is_finite_count (a_expr: EXPR_AS): BOOLEAN
 			-- Does `a_expr' call `finite' on a {FINITE} (or conforming) instance?
-		local
-			l_type: TYPE_A
 		do
 			if attached {EXPR_CALL_AS} a_expr as l_ec and then attached {NESTED_AS} l_ec.call as l_nested_call then
 				if attached {ACCESS_AS} l_nested_call.message as l_msg and then l_msg.access_name_8.is_equal ("count") then
-					l_type := node_type (l_nested_call.target, current_feature_i)
-					Result := l_type.base_class.conform_to (finite)
+					if attached node_type (l_nested_call.target, current_feature_i) as l_type then
+						Result := l_type.base_class.conform_to (finite)
+					end
 				end
 			end
 		end

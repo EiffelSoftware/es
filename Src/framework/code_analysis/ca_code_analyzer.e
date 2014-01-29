@@ -29,7 +29,7 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_FEATURE_NEVER_CALLED_RULE}.make)
 			rules.extend (create {CA_CQ_SEPARATION_RULE}.make)
 			rules.extend (create {CA_UNNEEDED_OT_LOCAL_RULE}.make)
-			rules.extend (create {CA_UNNEEDED_OBJECT_TEST_RULE}.make)
+			rules.extend (create {CA_UNNEEDED_OBJECT_TEST_RULE}.make) -- Needs type info.
 			rules.extend (create {CA_NESTED_COMPLEXITY_RULE}.make (settings.preference_manager))
 			rules.extend (create {CA_MANY_ARGUMENTS_RULE}.make (settings.preference_manager))
 			rules.extend (create {CA_CREATION_PROC_EXPORTED_RULE}.make)
@@ -53,8 +53,8 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_EMPTY_EFFECTIVE_ROUTINE_RULE}.make)
 			rules.extend (create {CA_IF_ELSE_NOT_EQUAL_RULE}.make)
 			rules.extend (create {CA_SHORT_CIRCUIT_IF_RULE}.make)
-			rules.extend (create {CA_ITERABLE_LOOP_RULE}.make)
-			rules.extend (create {CA_COUNT_EQUALS_ZERO_RULE}.make)
+			rules.extend (create {CA_ITERABLE_LOOP_RULE}.make) -- Needs type info.
+			rules.extend (create {CA_COUNT_EQUALS_ZERO_RULE}.make) -- Needs type info.
 			rules.extend (create {CA_DEEPLY_NESTED_IF_RULE}.make (settings.preference_manager))
 			rules.extend (create {CA_UNNEEDED_HELPER_VARIABLE_RULE}.make (settings.preference_manager))
 			rules.extend (create {CA_UNNEEDED_PARENTHESES_RULE}.make)
