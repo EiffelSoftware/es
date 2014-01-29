@@ -4937,6 +4937,7 @@ Src/tools/visitor_factory/visitor_factory.lic -text
 Src/unstable/library/compression/bzip2/Readme.txt -text
 Src/unstable/library/compression/zlib/Readme.txt -text
 Src/unstable/library/compression/zlib/example/index.html -text
+Src/unstable/library/estring/estring.ecf svneol=native#text/xml
 Src/unstable/library/nspr/nspr.ecf svneol=native#text/xml
 Src/unstable/library/pattern/criteria/README.txt -text
 Src/unstable/library/pattern/criteria/license.lic -text
