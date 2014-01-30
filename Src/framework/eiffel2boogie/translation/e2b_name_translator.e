@@ -95,34 +95,22 @@ feature -- Access
 			result_attached: attached Result
 		end
 
-	boogie_function_precondition (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
-			-- Precondition predicate name for the functional representation of feature `a_feature'.
+	boogie_function_precondition (a_function_name: STRING): STRING
+			-- Precondition predicate name for function named `a_function_name'.
 		require
-			a_feature_attached: attached a_feature
-			a_context_type_attached: attached a_context_type
-		local
-			l_type_name: STRING
-			l_feature_name: STRING
+			a_function_name_attached: attached a_function_name
 		do
-			l_type_name := boogie_name_for_type (a_context_type)
-			l_feature_name := a_feature.feature_name_32.as_lower
-			Result := "pre.fun." + l_type_name + "." + l_feature_name
+			Result := "pre." + a_function_name
 		ensure
 			result_attached: attached Result
 		end
 
-	boogie_free_function_precondition (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
-			-- Free precondition predicate name for the functional representation of feature `a_feature'.
+	boogie_free_function_precondition (a_function_name: STRING): STRING
+			-- Free precondition predicate name for function named `a_function_name'.
 		require
-			a_feature_attached: attached a_feature
-			a_context_type_attached: attached a_context_type
-		local
-			l_type_name: STRING
-			l_feature_name: STRING
+			a_function_name_attached: attached a_function_name
 		do
-			l_type_name := boogie_name_for_type (a_context_type)
-			l_feature_name := a_feature.feature_name_32.as_lower
-			Result := "free_pre.fun." + l_type_name + "." + l_feature_name
+			Result := "free_pre." + a_function_name
 		ensure
 			result_attached: attached Result
 		end
@@ -151,7 +139,7 @@ feature -- Access
 			l_type_name: STRING
 		do
 			l_type_name := boogie_name_for_type (a_type)
-			Result := l_type_name + ".self_inv"
+			Result := l_type_name + ".user_inv"
 		ensure
 			result_attached: attached Result
 		end

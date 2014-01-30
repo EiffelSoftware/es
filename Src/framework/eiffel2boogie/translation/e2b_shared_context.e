@@ -28,7 +28,7 @@ feature {NONE} -- Access: stateful
 			Result.compare_objects
 		end
 
-	result_handlers: HASH_TABLE [PROCEDURE [ANY, TUPLE [E2B_BOOGIE_PROCEDURE_RESULT, E2B_RESULT]], STRING]
+	result_handlers: HASH_TABLE [PROCEDURE [ANY, TUPLE [E2B_BOOGIE_PROCEDURE_RESULT, E2B_RESULT_GENERATOR]], STRING]
 			-- List of Boogie verification result handlers.
 		once
 			create Result.make (100)

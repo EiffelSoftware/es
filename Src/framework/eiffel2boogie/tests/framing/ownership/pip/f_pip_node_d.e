@@ -282,9 +282,9 @@ feature {F_PIP_NODE_D} -- Implementation
 		end
 
 invariant
-	value_consistent: is_max (value, init_value, children.range, max_child)
 	parent_consistent: parent /= Void implies parent.children.has (Current)
 	children_consistent: across children as c all c.item /= Void and then c.item.parent = Current end
+	value_consistent: is_max (value, init_value, children.range, max_child)
 	no_duplicates: across 1 |..| children.count as i all across 1 |..| children.count as j all i.item < j.item implies children [i.item] /= children [j.item] end end
 	no_direct_cycles: parent /= Current
 	no_direct_cucles_2: not children.has (Current)

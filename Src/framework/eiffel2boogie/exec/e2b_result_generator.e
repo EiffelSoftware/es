@@ -54,16 +54,28 @@ feature -- Basic operations
 			end
 		end
 
+	process_individual_error (a_error: E2B_BOOGIE_PROCEDURE_ERROR; a_failure: E2B_FAILED_VERIFICATION)
+			-- Handle individual Boogie procedure error.
+		local
+			l_error: E2B_DEFAULT_VERIFICATION_ERROR
+		do
+			create l_error.make (a_failure)
+			a_failure.errors.extend (l_error)
+			l_error.set_boogie_error (a_error)
+			l_error.set_message (message_for_error (a_error))
+			l_error.set_line_number (line_for_error (a_error))
+		end
+
 feature {NONE} -- Implementation
 
 	process_procedure_result (a_item: E2B_BOOGIE_PROCEDURE_RESULT)
 			-- Process procedure result.
 		local
-			l_agent: PROCEDURE [ANY, TUPLE [E2B_BOOGIE_PROCEDURE_RESULT, E2B_RESULT]]
+			l_agent: PROCEDURE [ANY, TUPLE [E2B_BOOGIE_PROCEDURE_RESULT, E2B_RESULT_GENERATOR]]
 		do
 			if result_handlers.has_key (a_item.name) then
 				l_agent := result_handlers[a_item.name]
-				l_agent.call ([a_item, last_result])
+				l_agent.call ([a_item, Current])
 			else
 				process_default_result (a_item)
 			end
@@ -145,18 +157,6 @@ feature {NONE} -- Implementation
 				end
 				last_result.add_result (l_failure)
 			end
-		end
-
-	process_individual_error (a_error: E2B_BOOGIE_PROCEDURE_ERROR; a_failure: E2B_FAILED_VERIFICATION)
-			-- Handle individual Boogie procedure error.
-		local
-			l_error: E2B_DEFAULT_VERIFICATION_ERROR
-		do
-			create l_error.make (a_failure)
-			a_failure.errors.extend (l_error)
-			l_error.set_boogie_error (a_error)
-			l_error.set_message (message_for_error (a_error))
-			l_error.set_line_number (line_for_error (a_error))
 		end
 
 	message_for_error (a_error: E2B_BOOGIE_PROCEDURE_ERROR): STRING_32

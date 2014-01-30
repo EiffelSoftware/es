@@ -68,5 +68,5 @@ invariant
 	observer = Void implies observers = []
 	observer /= Void implies observers = [observer]
 	observer /= Current
-	
+
 end

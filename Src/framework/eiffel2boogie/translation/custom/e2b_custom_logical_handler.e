@@ -128,10 +128,9 @@ feature {NONE} -- Implementation
 					l_fcall.add_argument (params.item)
 				end
 				a_translator.set_last_expression (l_fcall)
+					-- Add precondition check				
+				a_translator.add_function_precondition_check (a_feature, l_fcall)
 			end
-
-				-- Add precondition check
-			a_translator.add_function_precondition_check (a_feature, l_fcall)
 		end
 
 	handle_nested (a_translator: E2B_EXPRESSION_TRANSLATOR; a_nested: NESTED_B)

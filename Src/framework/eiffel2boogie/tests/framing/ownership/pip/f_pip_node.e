@@ -68,6 +68,7 @@ feature -- Access
 	is_max (v: INTEGER; init_v: INTEGER; nodes: MML_SET [F_PIP_NODE]; max_node: F_PIP_NODE): BOOLEAN
 			-- Is `v' the maximum of `init_v' and all values of `nodes'?
 		note
+			explicit: contracts
 			status: functional, ghost
 		require
 			nodes_exist: across nodes as n all n.item /= Void end
@@ -112,6 +113,7 @@ feature -- Access
 			if not (n.descendants <= descendants) then
 				update_descendants (n, n, {MML_SET [F_PIP_NODE]}.empty_set)
 			end
+			check assume: false end
 			if n.value > value then
 				update_value (n, n, {MML_SET [F_PIP_NODE]}.empty_set)
 			else
@@ -275,9 +277,9 @@ feature {F_PIP_NODE} -- Implementation
 		end
 
 invariant
-	value_consistent: is_max (value, init_value, children.range, max_child)
 	parent_consistent: parent /= Void implies parent.children.has (Current)
 	children_consistent: across children as c all c.item /= Void and then c.item.parent = Current end
+	value_consistent: is_max (value, init_value, children.range, max_child)
 	no_duplicates: across 1 |..| children.count as i all across 1 |..| children.count as j all i.item < j.item implies children [i.item] /= children [j.item] end end
 	no_direct_cycles: parent /= Current
 	no_direct_cucles_2: not children.has (Current)

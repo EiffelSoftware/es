@@ -207,12 +207,12 @@ feature {F_COM_COMPOSITE_D} -- Implementation
 		end
 
 invariant
-	value_consistent: is_max (value, init_value, children_set, max_child)
 	children_exists: children /= Void
 	tree: not ancestors [Current]
 	children_consistent: across children_set as c all c.item /= Void and then c.item.parent = Current end
 	ancestors_structure: ancestors = if parent = Void then {MML_SET [F_COM_COMPOSITE_D]}.empty_set else parent.ancestors & parent end
 	subjects_structure: subjects = if parent = Void then children_set else children_set & parent end
+	value_consistent: is_max (value, init_value, children_set, max_child)
 	observers_structure: observers = subjects
 	owns_structure: owns = [children]
 	default_subjects_aware: across subjects as s all s.item.observers.has (Current) end

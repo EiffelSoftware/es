@@ -268,7 +268,6 @@ feature -- Processing
 			-- Process single check statement.
 		local
 			l_statement: IV_ASSERT
-			l_assume: IV_ASSERT
 			l_array: ARRAY_CONST_B
 			l_other: EXPR_B
 		do
@@ -287,19 +286,27 @@ feature -- Processing
 			else
 				set_current_origin_information (a_assert)
 				process_contract_expression (a_assert.expr)
-				across last_safety_checks as i loop
-					add_statement (i.item)
-				end
+
 				if attached a_assert.tag and then a_assert.tag.is_case_insensitive_equal ("assume") then
-					create l_assume.make_assume (last_expression)
-					add_statement (l_assume)
+						-- This is an assume: translate as
+						--	assume checks; assume free_checks; assume last_expression
+					across last_safety_checks as i loop
+						i.item.set_free (True)
+						add_statement (i.item)
+					end
+					create l_statement.make_assume (last_expression)
 				else
+						-- This is an assert: tranlsate as
+						--	assert checks; assume free_checks; assert last_expression												
+					across last_safety_checks as i loop
+						add_statement (i.item)
+					end
 					create l_statement.make (last_expression)
 					l_statement.node_info.set_type ("check")
 					l_statement.node_info.set_tag (a_assert.tag)
 					l_statement.node_info.set_line (a_assert.line_number)
-					add_statement (l_statement)
 				end
+				add_statement (l_statement)
 			end
 		end
 
@@ -1067,8 +1074,8 @@ feature {NONE} -- Loop processing
 			-- with pre-loop heap `a_pre-heap' and the loop frame `a_loop_frame' (if exists, otherwise Void).
 		local
 			l_invariant: ASSERT_B
-			l_assert: IV_ASSERT
-			l_assume: IV_ASSERT
+			l_inv: IV_ASSERT
+			l_condition: IV_EXPRESSION
 		do
 			if a_invariants /= Void then
 				from
@@ -1081,41 +1088,49 @@ feature {NONE} -- Loop processing
 					if not helper.is_clause_modify (l_invariant) and not helper.is_clause_decreases (l_invariant) then
 						set_current_origin_information (l_invariant)
 						process_contract_expression (l_invariant.expr)
-						across last_safety_checks as i loop
-							add_statement (i.item)
-						end
-
+						l_condition := factory.true_
 						if l_invariant.tag /= Void and then l_invariant.tag ~ "assume" then
-								-- Free invariants with tag 'assume'
-							create l_assume.make_assume (last_expression)
-							add_statement (l_assume)
+								-- Free invariant: translate as
+								--	assume checks; assume free_checks; assume last_expression
+							across last_safety_checks as i loop
+								i.item.set_free (True)
+								add_statement (i.item)
+								l_condition := factory.and_clean (l_condition, i.item.expression)
+							end
+							create l_inv.make (factory.implies_clean (l_condition, last_expression))
 						else
-							create l_assert.make (last_expression)
-							l_assert.node_info.set_type ("loop_inv")
-							l_assert.node_info.set_tag (l_invariant.tag)
-							l_assert.node_info.set_line (l_invariant.line_number)
-							add_statement (l_assert)
+								-- Regular invariant: translate as
+								--	assert checks; assume free_checks; assert last_expression							
+							across last_safety_checks as i loop
+								add_statement (i.item)
+								l_condition := factory.and_clean (l_condition, i.item.expression)
+							end
+							create l_inv.make (factory.implies_clean (l_condition, last_expression))
+							l_inv.node_info.set_type ("loop_inv")
+							l_inv.node_info.set_tag (l_invariant.tag)
+							l_inv.node_info.set_line (l_invariant.line_number)
 						end
+						add_statement (l_inv)
 					end
 					a_invariants.forth
 				end
 			end
 				-- Default invariants (free)			
-			create l_assume.make_assume (factory.function_call ("HeapSucc", <<a_pre_heap, factory.global_heap>>, types.bool))
-			add_statement (l_assume)
+			create l_inv.make_assume (factory.function_call ("HeapSucc", <<a_pre_heap, factory.global_heap>>, types.bool))
+			add_statement (l_inv)
 			if options.is_ownership_enabled then
 				if a_loop_frame = Void then
 						-- Nothing outside routine's frame has changed compared to old(Heap)
 						-- (here we have to compare to old(Heap) because the routines's frame referes to ownership domains then.
-					create l_assume.make_assume (factory.writes_routine_frame (current_feature, current_type, current_implementation.procedure))
+					create l_inv.make_assume (factory.writes_routine_frame (current_feature, current_type, current_implementation.procedure))
 				else
 						-- Nothing outside loop's frame has changed since before the loop
 						-- (here we have to compare to before the loop because the loop's frame referes to ownership domains then.
-					create l_assume.make_assume (factory.function_call ("same_outside", <<a_pre_heap, factory.global_heap, a_loop_frame>>, types.bool))
+					create l_inv.make_assume (factory.function_call ("same_outside", <<a_pre_heap, factory.global_heap, a_loop_frame>>, types.bool))
 				end
-				add_statement (l_assume)
-				create l_assume.make_assume (factory.function_call ("global", << factory.global_heap>>, types.bool))
-				add_statement (l_assume)
+				add_statement (l_inv)
+				create l_inv.make_assume (factory.function_call ("global", << factory.global_heap>>, types.bool))
+				add_statement (l_inv)
 			end
 		end
 

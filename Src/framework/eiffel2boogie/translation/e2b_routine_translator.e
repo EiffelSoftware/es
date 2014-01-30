@@ -576,6 +576,7 @@ feature -- Translation: Functions
 	translate_function_precondition_predicate (a_feature: FEATURE_I; a_type: TYPE_A)
 			-- Translate precondition predicate of feature `a_feature' of type `a_type'.
 		local
+			l_fname: STRING
 			l_pre_function, l_free_pre_function: IV_FUNCTION
 			l_mapping: E2B_ENTITY_MAPPING
 			l_entity: IV_ENTITY
@@ -585,10 +586,11 @@ feature -- Translation: Functions
 		do
 			set_context (a_feature, a_type)
 			l_is_logical := helper.is_class_logical (a_type.base_class)
+			l_fname := name_translator.boogie_function_for_feature (current_feature, current_type)
 
 				-- Function declaration
-			create l_pre_function.make (name_translator.boogie_function_precondition (current_feature, current_type), types.bool)
-			create l_free_pre_function.make (name_translator.boogie_free_function_precondition (current_feature, current_type), types.bool)
+			create l_pre_function.make (name_translator.boogie_function_precondition (l_fname), types.bool)
+			create l_free_pre_function.make (name_translator.boogie_free_function_precondition (l_fname), types.bool)
 			create l_mapping.make
 			l_free_body := factory.true_
 
@@ -784,8 +786,8 @@ feature {NONE} -- Translation: Functions
 			l_pre_call, l_free_pre_call, l_fcall: IV_FUNCTION_CALL
 		do
 			create l_fcall.make (a_function.name, a_function.type)
-			create l_pre_call.make (name_translator.boogie_function_precondition (current_feature, current_type), types.bool)
-			create l_free_pre_call.make (name_translator.boogie_free_function_precondition (current_feature, current_type), types.bool)
+			create l_pre_call.make (name_translator.boogie_function_precondition (a_function.name), types.bool)
+			create l_free_pre_call.make (name_translator.boogie_free_function_precondition (a_function.name), types.bool)
 			across a_function.arguments as args loop
 				l_fcall.add_argument (args.item.entity)
 				l_pre_call.add_argument (args.item.entity)
@@ -872,13 +874,13 @@ feature {NONE} -- Translation: Functions
 			l_old_call.add_argument (l_old_heap)
 			create l_new_call.make (a_function.name, a_function.type)
 			l_new_call.add_argument (l_new_heap)
-			create l_old_pre.make (name_translator.boogie_function_precondition (current_feature, current_type), types.bool)
+			create l_old_pre.make (name_translator.boogie_function_precondition (a_function.name), types.bool)
 			l_old_pre.add_argument (l_old_heap)
-			create l_old_free_pre.make (name_translator.boogie_free_function_precondition (current_feature, current_type), types.bool)
+			create l_old_free_pre.make (name_translator.boogie_free_function_precondition (a_function.name), types.bool)
 			l_old_free_pre.add_argument (l_old_heap)
-			create l_pre.make (name_translator.boogie_function_precondition (current_feature, current_type), types.bool)
+			create l_pre.make (name_translator.boogie_function_precondition (a_function.name), types.bool)
 			l_pre.add_argument (l_new_heap)
-			create l_free_pre.make (name_translator.boogie_free_function_precondition (current_feature, current_type), types.bool)
+			create l_free_pre.make (name_translator.boogie_free_function_precondition (a_function.name), types.bool)
 			l_free_pre.add_argument (l_new_heap)
 
 			l_condition := factory.function_call ("HeapSucc", <<l_old_heap, l_new_heap>>, types.bool)
@@ -1033,9 +1035,14 @@ feature {NONE} -- Implementation
 
 	process_precondition (a_assert: ASSERT_B; a_origin_class: CLASS_C)
 			-- Process `a_assert' as precondition inherited from `a_origin_class'.
+			-- Translate "require expr" as:
+			--	require pre(expr);
+			--	free require free_pre(expr);
+			--	require pree(expr) && free_pre(expr) ==> expr;
 		local
 			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 			l_contract: IV_PRECONDITION
+			l_condition: IV_EXPRESSION
 		do
 			create l_translator.make
 			l_translator.set_context (current_feature, current_type)
@@ -1043,6 +1050,7 @@ feature {NONE} -- Implementation
 			l_translator.set_context_line_number (a_assert.line_number)
 			l_translator.set_context_tag (a_assert.tag)
 			a_assert.process (l_translator)
+			l_condition := factory.true_
 			across l_translator.side_effect as i loop
 				create l_contract.make (i.item.expression)
 				l_contract.node_info.load (i.item.node_info)
@@ -1050,8 +1058,9 @@ feature {NONE} -- Implementation
 					l_contract.set_free
 				end
 				current_boogie_procedure.add_contract (l_contract)
+				l_condition := factory.and_clean (l_condition, i.item.expression)
 			end
-			create l_contract.make (l_translator.last_expression)
+			create l_contract.make (factory.implies_clean (l_condition, l_translator.last_expression))
 			l_contract.node_info.set_type ("pre")
 			l_contract.node_info.set_tag (a_assert.tag)
 			l_contract.node_info.set_line (a_assert.line_number)
@@ -1063,6 +1072,7 @@ feature {NONE} -- Implementation
 		local
 			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 			l_contract: IV_POSTCONDITION
+			l_condition: IV_EXPRESSION
 		do
 			create l_translator.make
 			l_translator.set_context (current_feature, current_type)
@@ -1071,6 +1081,7 @@ feature {NONE} -- Implementation
 			l_translator.set_context_tag (a_assert.tag)
 			a_assert.process (l_translator)
 			a_fields.append (l_translator.field_accesses)
+			l_condition := factory.true_
 			across l_translator.side_effect as i loop
 				create l_contract.make (i.item.expression)
 				l_contract.node_info.load (i.item.node_info)
@@ -1078,8 +1089,9 @@ feature {NONE} -- Implementation
 					l_contract.set_free
 				end
 				current_boogie_procedure.add_contract (l_contract)
+				l_condition := factory.and_clean (l_condition, i.item.expression)
 			end
-			create l_contract.make (l_translator.last_expression)
+			create l_contract.make (factory.implies_clean (l_condition, l_translator.last_expression))
 			l_contract.node_info.set_type ("post")
 			l_contract.node_info.set_tag (a_assert.tag)
 			l_contract.node_info.set_line (a_assert.line_number)

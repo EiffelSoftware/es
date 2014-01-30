@@ -47,6 +47,7 @@ feature -- Access
 	children_set: MML_SET [F_COM_COMPOSITE]
 			-- Set of child nodes.
 		note
+			explicit: contracts
 			status: functional, ghost
 		require
 			children_exists: children /= Void
@@ -66,6 +67,7 @@ feature -- Access
 	is_max (v: INTEGER; init_v: INTEGER; nodes: MML_SET [F_COM_COMPOSITE]; max_node: F_COM_COMPOSITE): BOOLEAN
 			-- Is `v' the maximum of `init_v' and all values of `nodes'?
 		note
+			explicit: contracts
 			status: functional, ghost
 		require
 			nodes_exist: across nodes as n all n.item /= Void end
@@ -193,12 +195,12 @@ feature {F_COM_COMPOSITE} -- Implementation
 
 
 invariant
-	value_consistent: is_max (value, init_value, children_set, max_child)
 	children_exists: children /= Void
 	tree: not ancestors [Current]
 	children_consistent: across children_set as c all c.item /= Void and then c.item.parent = Current end
 	ancestors_structure: ancestors = if parent = Void then {MML_SET [F_COM_COMPOSITE]}.empty_set else parent.ancestors & parent end
 	subjects_structure: subjects = if parent = Void then children_set else children_set & parent end
+	value_consistent: is_max (value, init_value, children_set, max_child)
 	observers_structure: observers = subjects
 	owns_structure: owns = [children]
 

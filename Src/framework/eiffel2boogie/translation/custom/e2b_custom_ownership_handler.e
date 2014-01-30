@@ -78,6 +78,7 @@ feature -- Basic operations
 			l_field: IV_ENTITY
 			l_feature: FEATURE_I
 			l_partial_inv_class: CLASS_C
+			l_call: IV_FUNCTION_CALL
 		do
 			l_name := a_feature.feature_name
 			if translation_mapping.builtin_any_functions.has (l_name) then
@@ -93,10 +94,10 @@ feature -- Basic operations
 					end
 					check_valid_class_inv_tags (l_partial_inv_class, a_translator.context_feature, a_translator.context_line_number, l_tag_filters)
 					translation_pool.add_filtered_invariant_function (a_translator.current_target_type, Void, l_tag_filters, l_partial_inv_class)
-					a_translator.set_last_expression (
-						factory.function_call (
+					l_call := factory.function_call (
 							name_translator.boogie_function_for_filtered_invariant (a_translator.current_target_type, Void, l_tag_filters, l_partial_inv_class),
-							<< a_translator.entity_mapping.heap, a_translator.current_target >>, types.bool))
+							<< a_translator.entity_mapping.heap, a_translator.current_target >>, types.bool)
+					a_translator.set_last_expression (l_call)
 				elseif l_name ~ "inv_only" then
 					l_tag_filters := extract_tags (a_parameters)
 					if a_translator.current_target.same_expression (a_translator.entity_mapping.current_expression) then
@@ -106,10 +107,10 @@ feature -- Basic operations
 					end
 					check_valid_class_inv_tags (l_partial_inv_class, a_translator.context_feature, a_translator.context_line_number, l_tag_filters)
 					translation_pool.add_filtered_invariant_function (a_translator.current_target_type, l_tag_filters, Void, l_partial_inv_class)
-					a_translator.set_last_expression (
-						factory.function_call (
+					l_call := factory.function_call (
 							name_translator.boogie_function_for_filtered_invariant (a_translator.current_target_type, l_tag_filters, Void, l_partial_inv_class),
-							<< a_translator.entity_mapping.heap, a_translator.current_target >>, types.bool))
+							<< a_translator.entity_mapping.heap, a_translator.current_target >>, types.bool)
+					a_translator.set_last_expression (l_call)
 				elseif l_name ~ "inv" then
 					a_translator.process_builtin_routine_call (a_feature, a_parameters, "user_inv")
 				elseif l_name ~ "is_field_writable" then

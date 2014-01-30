@@ -142,11 +142,9 @@ feature -- Translation
 			if helper.is_feature_status (a_feature, "impure") then
 					-- This is not a pure function
 				helper.add_semantic_error (a_feature, messages.impure_function_in_contract, context_line_number)
+				last_expression := dummy_node (a_feature.type)
 			else
-				create l_call.make (
-					l_name,
-					types.for_type_in_context (a_feature.type, current_target_type)
-				)
+				create l_call.make (l_name, types.for_type_in_context (a_feature.type, current_target_type))
 				l_call.add_argument (entity_mapping.heap)
 				l_call.add_argument (current_target)
 

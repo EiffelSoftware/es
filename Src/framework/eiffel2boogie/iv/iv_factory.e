@@ -127,7 +127,7 @@ feature -- Boolean operators
 			elseif a_right.is_false then
 				Result := a_left
 			else
-				create {IV_BINARY_OPERATION} Result.make (a_left, "||", a_right, types.bool)
+				Result := or_ (a_left, a_right)
 			end
 		end
 
@@ -138,14 +138,25 @@ feature -- Boolean operators
 		end
 
 	and_clean (a_left, a_right: IV_EXPRESSION): IV_EXPRESSION
-			-- Ads operator `&&', removing "true" conjuncts.
+			-- And operator `&&', removing "true" conjuncts.
 		do
 			if a_left.is_true then
 				Result := a_right
 			elseif a_right.is_true then
 				Result := a_left
 			else
-				create {IV_BINARY_OPERATION} Result.make (a_left, "&&", a_right, types.bool)
+				Result := and_ (a_left, a_right)
+			end
+		end
+
+	conjunction (a_conjuncts: ITERABLE [IV_EXPRESSION]): IV_EXPRESSION
+			-- Conjunction of all elements of `a_conjuncts'.
+		do
+			Result := true_
+			across
+				a_conjuncts as i
+			loop
+				Result := and_clean (Result, i.item)
 			end
 		end
 
@@ -153,6 +164,16 @@ feature -- Boolean operators
 			-- Implies operator `==>'.
 		do
 			create Result.make (a_left, "==>", a_right, types.bool)
+		end
+
+	implies_clean (a_left, a_right: IV_EXPRESSION): IV_EXPRESSION
+			-- Implies operator `==>', removing "true" antecedents.
+		do
+			if a_left.is_true then
+				Result := a_right
+			else
+				Result := implies_ (a_left, a_right)
+			end
 		end
 
 	equiv (a_left, a_right: IV_EXPRESSION): IV_BINARY_OPERATION
@@ -311,6 +332,12 @@ feature -- Statements
 		do
 			create Result.make
 			Result.add_statement (a_statement)
+		end
+
+	return: IV_RETURN
+			-- Return statement.
+		once
+			create Result
 		end
 
 feature -- Framing

@@ -35,7 +35,15 @@ feature {NONE} -- Initialization
 feature -- Status report
 
 	is_free: BOOLEAN
-			-- Is this assert actually an assume?	
+			-- Is this assert actually an assume?
+
+feature -- Status setting
+
+	set_free (a_is_free: BOOLEAN)
+			-- Set `is_free' to `a_is_free'.
+		do
+			is_free := a_is_free
+		end
 
 feature -- Visitor
 

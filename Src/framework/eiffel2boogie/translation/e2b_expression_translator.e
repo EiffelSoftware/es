@@ -1188,22 +1188,24 @@ feature -- Translation
 	add_function_precondition_check (a_feature: FEATURE_I; a_fcall: IV_FUNCTION_CALL)
 			-- Check the precondition of the function call `a_fcall' of `a_feature'.
 		local
+			l_fname: STRING
 			l_pre_call: IV_FUNCTION_CALL
 		do
+			l_fname := name_translator.boogie_function_for_feature (a_feature, current_target_type)
 				-- Add check
 			if a_feature.has_precondition then
-				create l_pre_call.make (name_translator.boogie_function_precondition (a_feature, current_target_type), types.bool)
+				create l_pre_call.make (name_translator.boogie_function_precondition (l_fname), types.bool)
 				across a_fcall.arguments as args loop
 					l_pre_call.add_argument (args.item)
 				end
 				add_safety_check_with_subsumption (l_pre_call, "check", "function_precondition", context_line_number)
 				last_safety_check.node_info.set_attribute ("cid", a_feature.written_class.class_id.out)
-				last_safety_check.node_info.set_attribute ("fid", a_feature.feature_id.out)
+				last_safety_check.node_info.set_attribute ("rid", a_feature.rout_id_set.first.out)
 			end
 				-- Assume free precondition to trigger the function definition;
 				-- (definitions of logicals do not have free preconditions)
 			if not helper.is_class_logical (current_target_type.base_class) then
-				create l_pre_call.make (name_translator.boogie_free_function_precondition (a_feature, current_target_type), types.bool)
+				create l_pre_call.make (name_translator.boogie_free_function_precondition (l_fname), types.bool)
 				across a_fcall.arguments as args loop
 					l_pre_call.add_argument (args.item)
 				end
@@ -1242,7 +1244,7 @@ feature {E2B_ACROSS_HANDLER, E2B_CUSTOM_CALL_HANDLER, E2B_CUSTOM_NESTED_HANDLER}
 		local
 			l_type: TYPE_A
 		do
-			Result := factory.function_call ("unsupported", << >>, types.for_type_a (a_type.deep_actual_type))
+			Result := factory.function_call ("unsupported", << >>, types.for_type_in_context (a_type.deep_actual_type, context_type))
 		end
 
 	process_semistrict (a_condition: IV_EXPRESSION; a_expr: EXPR_B)

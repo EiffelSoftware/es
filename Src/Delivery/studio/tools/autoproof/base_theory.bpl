@@ -25,16 +25,11 @@ var Heap: HeapType where IsHeap(Heap);
 
 // Function that defines properties of two (transitively) successive heaps
 function HeapSucc(HeapType, HeapType): bool;
-// axiom (forall<alpha> h: HeapType, r: ref, f: Field alpha, x: alpha :: { update(h, r, f, x) }
-  // IsHeap(update(h, r, f, x)) ==>
-  // HeapSucc(h, update(h, r, f, x)));
 axiom (forall<alpha> h: HeapType, r: ref, f: Field alpha, x: alpha :: { h[r, f := x] }
   IsHeap(h[r, f := x]) ==>
   HeapSucc(h, h[r, f := x]));  
 axiom (forall a,b,c: HeapType :: { HeapSucc(a,b), HeapSucc(b,c) }
   HeapSucc(a,b) && HeapSucc(b,c) ==> HeapSucc(a,c));
-// axiom (forall h: HeapType, k: HeapType :: { HeapSucc(h,k) }
-  // HeapSucc(h,k) ==> (forall o: ref :: { read(k, o, allocated) } read(h, o, allocated) ==> read(k, o, allocated)));
 axiom (forall h: HeapType, k: HeapType :: { HeapSucc(h,k) }
   HeapSucc(h,k) ==> (forall o: ref :: { k[o, allocated] } h[o, allocated] ==> k[o, allocated]));  
 
@@ -71,11 +66,11 @@ axiom (forall a, b: ref :: (type_of(a) != type_of(b)) ==> (a != b)); // Objects 
 axiom (forall t: Type :: is_frozen(t) ==> (forall t2: Type :: t2 <: t ==> t2 == t || t2 == NONE)); // Only NONE inherits from frozen types.
 axiom (forall t: Type, r: ref :: (r != Void && type_of(r) <: t && is_frozen(t)) ==> (type_of(r) == t)); // Non-void references of a frozen type are exact.
 
-function ANY.self_inv(heap: HeapType, current: ref) returns (bool) {
+function ANY.user_inv(heap: HeapType, current: ref) returns (bool) {
   true
 }
 
-function NONE.self_inv(heap: HeapType, current: ref) returns (bool) {
+function NONE.user_inv(heap: HeapType, current: ref) returns (bool) {
   false
 }
 
@@ -178,8 +173,10 @@ const readable: Frame;
 function user_inv(h: HeapType, o: ref): bool;
 
 // Reads axiom
-axiom (forall h, h': HeapType, x: ref :: {user_inv(h, x), user_inv(h', x), HeapSucc(h, h')} 
-  IsHeap(h) && IsHeap(h') && HeapSucc(h, h') && h[x, allocated] && user_inv(h, x) && 
+axiom (forall h, h': HeapType, x: ref :: { user_inv(h', x), HeapSucc(h, h') } 
+  IsHeap(h) && IsHeap(h') && HeapSucc(h, h') &&
+  x != Void && h[x, allocated] && h'[x, allocated] &&   
+  user_inv(h, x) && 
   (forall <T> o: ref, f: Field T :: h[o, allocated] ==> // every object's field
       h'[o, f] == h[o, f] ||                            // is unchanged
       f == closed || f == owner ||                      // or is outside of the read set of the invariant
@@ -222,19 +219,18 @@ function {: inline } admissibility2 (heap: HeapType, current: ref): bool
 function {: inline } admissibility4 (heap: HeapType, current: ref): bool
 {
   (forall heap': HeapType, s: ref :: 
-    HeapSucc(heap, heap') && heap[current, subjects][s] && s != current && (forall <alpha> o: ref, f: Field alpha :: (o == s && f == subjects) || heap'[o, f] == heap[o, f]) ==>
-      user_inv(heap', current)
-  )
+    IsHeap(heap') && HeapSucc(heap, heap') && heap[current, subjects][s] && s != current && 
+    (forall <alpha> o: ref, f: Field alpha :: (o == s && f == subjects) || heap'[o, f] == heap[o, f]) ==> 
+      user_inv(heap', current))
 }
 
 // Invariant cannot be invalidated by adding observers to my subjects (except to myself)
 function {: inline } admissibility5 (heap: HeapType, current: ref): bool
 {
   (forall heap': HeapType, s: ref :: 
-    HeapSucc(heap, heap') && heap[current, subjects][s] && s != current && Set#Subset(heap[s, observers], heap'[s, observers]) && 
+    IsHeap(heap') && HeapSucc(heap, heap') && heap[current, subjects][s] && s != current && Set#Subset(heap[s, observers], heap'[s, observers]) && 
     (forall <alpha> o: ref, f: Field alpha :: (o == s && f == observers) || heap'[o, f] == heap[o, f]) ==>
-      user_inv(heap', current)
-  )
+      user_inv(heap', current))
 }
 
 // ----------------------------------------------------------------------
@@ -262,7 +258,7 @@ procedure update_heap<T>(Current: ref, field: Field T, value: T);
   requires (Current != Void) && (Heap[Current, allocated]); // type:assign tag:attached_and_allocated
   requires field != closed && field != owner; // type:assign tag:closed_or_owner_not_allowed UP4
   requires is_open(Heap, Current); // type:assign tag:target_open UP1
-  requires (forall o: ref :: Heap[Current, observers][o] ==> (is_open(Heap, o) || (user_inv(Heap, o) && HeapSucc(Heap, Heap[Current, field := value]) ==> user_inv(Heap[Current, field := value], o)))); // type:assign tag:observers_open_or_inv_preserved UP2
+  requires (forall o: ref :: Heap[Current, observers][o] ==> (is_open(Heap, o) || (user_inv(Heap, o) && IsHeap(Heap[Current, field := value]) ==> user_inv(Heap[Current, field := value], o)))); // type:assign tag:observers_open_or_inv_preserved UP2
   requires writable[Current, field]; // type:assign tag:attribute_writable UP3
   modifies Heap;
   ensures global(Heap);
@@ -284,7 +280,7 @@ procedure update_observers(Current: ref, value: Set ref);
   requires (Current != Void) && (Heap[Current, allocated]); // type:pre tag:attached_and_allocated
   requires is_open(Heap, Current); // type:pre tag:target_open UP1
   requires writable[Current, observers]; // type:pre tag:attribute_writable UP3
-  requires Set#Subset(Heap[Current, observers], value) || (forall o: ref :: Heap[Current, observers][o] ==> (is_open(Heap, o) || (user_inv(Heap, o) ==> user_inv(Heap[Current, observers := value], o)))); // type:pre tag:set_grows_or_observers_open_or_inv_preserved UP2
+  requires Set#Subset(Heap[Current, observers], value) || (forall o: ref :: Heap[Current, observers][o] ==> (is_open(Heap, o) || (user_inv(Heap, o) && IsHeap(Heap[Current, observers := value]) ==> user_inv(Heap[Current, observers := value], o)))); // type:assign tag:set_grows_or_observers_open_or_inv_preserved UP2  
   modifies Heap;
   ensures global(Heap);
   ensures Heap == old(Heap[Current, observers := value]);
