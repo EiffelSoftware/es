@@ -625,7 +625,11 @@ feature -- Translation: Functions
 				i := i + 1
 			end
 
-				-- Body
+				-- Set a dummy result in `l_mapping': we are not using postconditions anyway
+			if a_feature.has_return_value then
+				l_mapping.set_result (factory.entity ("result", types.for_type_in_context (a_feature.type, current_type)))
+			end
+				-- Body			
 			l_body := pre_post_expressions_of (a_feature, a_type, l_mapping).pre
 			if not l_is_logical then
 				across ownership_default (False, l_mapping) as defs loop
@@ -776,8 +780,6 @@ feature {NONE} -- Translation: Functions
 
 	generate_definition (a_function: IV_FUNCTION)
 			-- Generate a definitional axiom for `a_function' from the body of the current functional feature.
-		require
-			is_functional: helper.is_functional (current_feature)
 		local
 			l_expr_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 			l_axiom: IV_AXIOM
@@ -908,7 +910,7 @@ feature {NONE} -- Translation: Functions
 				end
 			end
 			l_forall.add_compound_trigger (<< factory.function_call ("HeapSucc", <<l_old_heap, l_new_heap>>, types.bool),
-				l_new_call >>)
+				l_old_call, l_new_call >>)
 
 			create l_axiom.make (l_forall)
 

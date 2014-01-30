@@ -13,11 +13,19 @@ inherit
 	IV_CONTRACT
 		undefine
 			expression
+		redefine
+			is_equal
 		end
 
 	IV_ASSERTION
+		redefine
+			is_equal
+		end
 
 	IV_INFO_NODE
+		redefine
+			is_equal
+		end
 
 create
 	make
@@ -35,6 +43,14 @@ feature -- Status setting
 			is_free := True
 		ensure
 			free: is_free
+		end
+
+feature -- Comparison
+
+	is_equal (a_other: like Current): BOOLEAN
+			-- Is this clause the same as `a_other'?	
+		do
+			Result := expression.same_expression (a_other.expression)
 		end
 
 feature -- Visitor

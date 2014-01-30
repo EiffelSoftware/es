@@ -11,10 +11,16 @@ class
 inherit
 
 	IV_CONTRACT
+		redefine
+			is_equal
+		end
 
 inherit {NONE}
 
 	IV_HELPER
+		redefine
+			is_equal
+		end
 
 create
 	make
@@ -36,6 +42,15 @@ feature -- Access
 
 	names: LINKED_LIST [STRING]
 			-- Names of entities.
+
+feature -- Comparison
+
+	is_equal (a_other: like Current): BOOLEAN
+			-- Is this clause the same as `a_other'?
+		do
+			Result := names.count = a_other.names.count and
+				across names as i all a_other.names.has (i.item) end
+		end
 
 feature -- Element changed
 

@@ -29,6 +29,7 @@ feature {NONE} -- Initialization
 			create results.make
 			create contracts.make
 			create implementations.make
+			contracts.compare_objects
 		ensure
 			name_set: name ~ a_name
 		end
@@ -113,9 +114,11 @@ feature -- Element change
 		require
 			a_contract_attached: attached a_contract
 		do
-			contracts.extend (a_contract)
+			if not contracts.has (a_contract) then
+				contracts.extend (a_contract)
+			end
 		ensure
-			contract_added: contracts.last = a_contract
+			contract_added: contracts.has (a_contract)
 		end
 
 	add_implementation (a_implementation: IV_IMPLEMENTATION)

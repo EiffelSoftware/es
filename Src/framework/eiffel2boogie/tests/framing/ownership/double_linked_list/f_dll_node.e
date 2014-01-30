@@ -42,7 +42,7 @@ feature -- Modification
 		do
 			check inv end
 			r := right
-			unwrap_all (Current, r, n)
+			unwrap_all ([Current, r, n])
 
 			n.set_right (r)
 			n.set_left (Current)
@@ -56,7 +56,7 @@ feature -- Modification
 			set_observers ([left, n])
 			r.set_subjects ([n, r.right])
 			r.set_observers ([n, r.right])
-			wrap_all (Current, r, n)
+			wrap_all ([Current, r, n])
 		ensure
 			n_left_set: right = n
 			n_right_set: n.right = old right
@@ -74,7 +74,7 @@ feature -- Modification
 			check inv end
 			l := left
 			r := right
-			unwrap_all (Current, l, r)
+			unwrap_all ([Current, l, r])
 
 			set_left (Current)
 			set_right (Current)
@@ -88,7 +88,7 @@ feature -- Modification
 			l.set_observers ([l.left, r])
 			r.set_subjects ([l, r.right])
 			r.set_observers ([l, r.right])
-			wrap_all (Current, l, r)
+			wrap_all ([Current, l, r])
 		ensure
 			singleton: right = Current
 			old_left_wrapped: (old left).is_wrapped

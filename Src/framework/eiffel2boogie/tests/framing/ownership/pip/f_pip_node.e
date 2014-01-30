@@ -113,7 +113,6 @@ feature -- Access
 			if not (n.descendants <= descendants) then
 				update_descendants (n, n, {MML_SET [F_PIP_NODE]}.empty_set)
 			end
-			check assume: false end
 			if n.value > value then
 				update_value (n, n, {MML_SET [F_PIP_NODE]}.empty_set)
 			else

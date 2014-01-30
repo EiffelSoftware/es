@@ -61,6 +61,6 @@ feature -- Visitor
 
 invariant
 	blocks_attached: attached blocks
-	blocks_valid: not blocks.has (Void) and not blocks.is_empty
+	blocks_valid: not blocks.has (Void)
 
 end

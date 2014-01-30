@@ -367,49 +367,49 @@ feature -- SCOOP
 
 feature -- Verification: contract clauses
 
-	frozen modify (a: ANY): BOOLEAN
+	frozen modify (a: TUPLE): BOOLEAN
 			-- Helper function for adding modify clauses in contracts.
 		do
 			Result := True
 		end
 
-	frozen modify_field (a_field: ANY; a_object: ANY): BOOLEAN
+	frozen modify_field (a_field: ANY; a_object: TUPLE): BOOLEAN
 			-- Helper function for adding modify clauses in contracts.
 		do
 			Result := True
 		end
 
-	frozen reads (a: ANY): BOOLEAN
+	frozen reads (a: TUPLE): BOOLEAN
 			-- Helper function for adding read clauses in contracts.
 		do
 			Result := True
 		end
 
-	frozen reads_field (a_field: ANY; a_object: ANY): BOOLEAN
+	frozen reads_field (a_field: ANY; a_object: TUPLE): BOOLEAN
 			-- Helper function for adding read clauses in contracts.
 		do
 			Result := True
 		end
 
-	frozen decreases (a: ANY): BOOLEAN
+	frozen decreases (a: TUPLE): BOOLEAN
 			-- Helper function for adding decreases clauses in contracts.
 		do
 			Result := True
 		end
-		
+
 	frozen inv: BOOLEAN
 			-- Helper function for mentioning the class invariant.
 		do
 			Result := True
 		end
-		
-	frozen inv_without (a: ANY): BOOLEAN
+
+	frozen inv_without (a: TUPLE): BOOLEAN
 			-- Helper function for specifying class invariant without certain clauses.
 		do
 			Result := True
 		end
 
-	frozen inv_only (a: ANY): BOOLEAN
+	frozen inv_only (a: TUPLE): BOOLEAN
 			-- Helper function for specifying class invariant with only certain clauses.
 		do
 			Result := True

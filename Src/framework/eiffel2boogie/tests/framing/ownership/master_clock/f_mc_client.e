@@ -24,7 +24,7 @@ feature -- Test
 			c1.sync
 			c2.sync
 
-			unwrap_all (c1, c2)
+			unwrap_all ([c1, c2])
 			m.reset
 			-- sync can be called on both wrapped and open clocks:
 			c1.sync
@@ -53,7 +53,7 @@ feature -- Test
 			c1.sync
 			c2.sync
 
-			unwrap_all (c1, c2)
+			unwrap_all ([c1, c2])
 			m.reset
 			-- sync can be called on both wrapped and open clocks:
 			c1.sync
