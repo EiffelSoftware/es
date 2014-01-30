@@ -4448,6 +4448,7 @@ eweasel/tests/ccomp052/notes -text
 eweasel/tests/ccomp074/Ace -text
 eweasel/tests/config036/Ace svneol=native#text/xml
 eweasel/tests/config036/eweasel.ecf svneol=native#text/xml
+eweasel/tests/config038/Ace svneol=native#text/xml
 eweasel/tests/conform007/Ace -text
 eweasel/tests/dotnet018/cas.cs -text
 eweasel/tests/dotnet018/cas.dll -text
