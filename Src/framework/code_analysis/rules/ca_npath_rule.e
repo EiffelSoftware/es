@@ -1,6 +1,6 @@
 note
 	description: "Summary description for {CA_NPATH_RULE}."
-	author: ""
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,6 +17,8 @@ create
 feature {NONE} -- Initialization
 
 	make (a_pref_manager: PREFERENCE_MANAGER)
+			-- Initializes `Current' and its preferences (using
+			-- `a_pref_manager'.
 		do
 			is_enabled_by_default := True
 			create {CA_WARNING} severity
@@ -26,6 +28,8 @@ feature {NONE} -- Initialization
 		end
 
 	initialize_options (a_pref_manager: PREFERENCE_MANAGER)
+			-- Initializes the options regarding this rule using
+			-- `a_pref_manager'.
 		local
 			l_factory: BASIC_PREFERENCE_FACTORY
 		do
@@ -39,6 +43,7 @@ feature {NONE} -- Initialization
 feature {NONE} -- Activation
 
 	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+			-- Adds the AST visitor agents to `a_checker'.
 		do
 			a_checker.add_feature_pre_action (agent process_feature)
 			a_checker.add_do_pre_action (agent pre_process_do)
@@ -57,6 +62,7 @@ feature {NONE} -- Activation
 feature -- Properties
 
 	title: STRING_32
+			-- <Precursor>
 		do
 			Result := ca_names.npath_title
 		end
@@ -65,16 +71,19 @@ feature -- Properties
 			-- "T" stands for 'under test'.
 
 	description: STRING_32
+			-- <Precursor>
 		do
 			Result :=  ca_names.npath_description
 		end
 
 	is_system_wide: BOOLEAN
+			-- <Precursor>
 		once
 			Result := False
 		end
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+			-- <Precursor>
 		local
 			l_info: LINKED_LIST[ANY]
 		do
@@ -97,42 +106,52 @@ feature -- Properties
 feature {NONE} -- Options
 
 	default_threshold: INTEGER = 200
+			-- Default value for `threshold'.
 
 	threshold: INTEGER_PREFERENCE
+			-- Maximally allowed NPATH measure for a routine.
 
 feature {NONE} -- Rule Checking
 
-	npath_stack: STACK[INTEGER]
+	npath_stack: STACK [INTEGER]
+			-- NPATH measures of nested inner blocks, such as if...end.
 
 	process_feature (a_feature_as: FEATURE_AS)
+			-- Sets the currently processed feature to `a_feature_as'.
 		do
 			current_feature := a_feature_as
 		end
 
 	pre_process_do (a_do: DO_AS)
+			-- Makes data structure preparations for `a_do'.
 		do
 			prepare_routine
 		end
 	post_process_do (a_do: DO_AS)
+			-- Evaluates routine `a_do'.
 		do
 			evaluate_routine
 		end
 	pre_process_once (a_once: ONCE_AS)
+			-- Makes data structure preparations for `a_once'.
 		do
 			prepare_routine
 		end
 	post_process_once (a_once: ONCE_AS)
+			-- Evaluates routine `a_once'.
 		do
 			evaluate_routine
 		end
 
 	prepare_routine
+			-- Initializes data structures.
 		do
 			npath_stack.wipe_out
 			npath_stack.put (1)
 		end
 
 	evaluate_routine
+			-- Creates a rule violation if NPATH is high enough.
 		local
 			l_violation: CA_RULE_VIOLATION
 			l_npath, l_threshold: INTEGER
@@ -154,11 +173,14 @@ feature {NONE} -- Rule Checking
 		end
 
 	pre_process_if (a_if: IF_AS)
+			-- Adds a new element to the NPATH stack.
 		do
 			npath_stack.put (1)
 		end
 
 	post_process_if (a_if: IF_AS)
+			-- Combines the inner NPATH of `a_if' with the next-outer
+			-- level.
 		local
 			inner_npath, outer_npath: INTEGER
 		do
@@ -169,11 +191,14 @@ feature {NONE} -- Rule Checking
 		end
 
 	pre_process_loop (a_loop: LOOP_AS)
+			-- Adds a new element to the NPATH stack.
 		do
 			npath_stack.put (1)
 		end
 
 	post_process_loop (a_loop: LOOP_AS)
+			-- Combines the inner NPATH of `a_loop' with the next-outer
+			-- level.
 		local
 			inner_npath, outer_npath: INTEGER
 		do
@@ -184,11 +209,14 @@ feature {NONE} -- Rule Checking
 		end
 
 	pre_process_inspect (a_inspect: INSPECT_AS)
+			-- Adds a new element to the NPATH stack.
 		do
 			npath_stack.put (1)
 		end
 
 	post_process_inspect (a_inspect: INSPECT_AS)
+			-- Combines the inner NPATH of `a_inspect' with the next-outer
+			-- level.
 		local
 			inner_npath, outer_npath: INTEGER
 		do
@@ -199,15 +227,20 @@ feature {NONE} -- Rule Checking
 		end
 
 	process_and_then (a_and_then: BIN_AND_THEN_AS)
+			-- Do nothing. It would be possible to raise the NPATH measure
+			-- here, too.
 		do
 
 		end
 
 	process_or_else (a_or_else: BIN_OR_ELSE_AS)
+			-- Do nothing. It would be possible to raise the NPATH measure
+			-- here, too.
 		do
 
 		end
 
 	current_feature: detachable FEATURE_AS
+			-- Currently processed feature.
 
 end

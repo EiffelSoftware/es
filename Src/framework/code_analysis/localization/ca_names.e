@@ -69,6 +69,19 @@ feature -- Rules
 	cq_separation_title: STRING_32
 		do Result := locale.translation ("No command-query separation (possible function side effect)") end
 
+	cq_separation_description: STRING_32
+		do Result := locale.translation ("To the client of a class it is not %
+			%important whether a query is implemented as an attribute or as a %
+			%function. When a class evolves an attribute may be changed into a %
+			%function, for example. A function should never change the state of%
+			% an object. A function containing a procedure call, assigning to an %
+			%attribute, or creating an attribute is a strong indication that this %
+			%principle is violated. This rule applies exactly in these three %
+			%last-mentioned cases. There are rather exceptional but sometimes useful%
+			% class designs in which the externally visible state of an object (i. e.%
+			% the values of exported queries) does not change even though the function%
+			% contains a rule-violating instruction.") end
+
 	unneeded_ot_local_title: STRING_32
 		do Result := locale.translation ("Unneeded object test local") end
 

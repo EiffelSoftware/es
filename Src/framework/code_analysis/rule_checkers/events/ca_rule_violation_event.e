@@ -47,56 +47,68 @@ feature -- Access
 		end
 
 	frozen is_error_event: BOOLEAN
+			-- Does `Current' represent an error?
 		do
 			Result := attached {CA_ERROR} data.rule.severity
 		end
 
 	frozen is_warning_event: BOOLEAN
+			-- Does `Current' represent a warning?	
 		do
 			Result := attached {CA_WARNING} data.rule.severity
 		end
 
 	frozen is_suggestion_event: BOOLEAN
+			-- Does `Current' represent a suggestion?	
 		do
 			Result := attached {CA_SUGGESTION} data.rule.severity
 		end
 
 	frozen is_hint_event: BOOLEAN
+			-- Does `Current' represent a hint?	
 		do
 			Result := attached {CA_HINT} data.rule.severity
 		end
 
 	affected_class: CLASS_C
+			-- Class the rule violation refers to.
 		do
 			Result := data.affected_class
 		end
 
 	format_description (a_formatter: TEXT_FORMATTER)
+			-- Formats a description of the associated rule violation
+			-- using `a_formatter'.
 		do
 			data.format_violation_description (a_formatter)
 		end
 
 	location: LOCATION_AS
+			-- Location of the rule violation.
 		do
 			Result := data.location
 		end
 
 	title: STRING_32
+			-- Title of the rule violation.
 		do
 			Result := data.rule.title
 		end
 
 	rule_id: STRING_32
+			-- Rule ID of the rule violation.
 		do
 			Result := data.rule.id
 		end
 
 	severity_score: INTEGER
+			-- Severity score of the rule violation.
 		do
 			Result := data.rule.severity_score.value
 		end
 
 	violation_description: STRING_32
+			-- General description of the associated rule.
 		do
 			Result := data.rule.description
 		end

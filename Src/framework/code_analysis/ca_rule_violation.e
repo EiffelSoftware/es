@@ -15,6 +15,7 @@ create
 	make_with_rule
 
 feature {NONE} -- Initialization
+
 	make_with_rule (a_rule: CA_RULE)
 			-- Initializes a violation of rule `a_rule'.
 		do
@@ -27,6 +28,7 @@ feature {NONE} -- Initialization
 		end
 
 feature -- Properties
+
 	rule: CA_RULE
 			-- The rule that is violated.
 
@@ -48,8 +50,8 @@ feature -- Properties
 			-- Location of rule violation, if available.
 
 	fixes: LINKED_LIST [CA_FIX]
-			-- Fix "strategies".
-			-- Empty if there is no fix available for this rule violation
+			-- Fix "strategies". Empty if there is no fix available for this rule
+			-- violation.
 
 feature -- Inherited from {COMPARABLE}
 

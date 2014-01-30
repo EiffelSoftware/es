@@ -120,7 +120,7 @@ feature -- Properties
 
 	description: STRING_32
 		do
-			Result :=  "---"
+			Result :=  ca_names.cq_separation_description
 		end
 
 	is_system_wide: BOOLEAN = False
