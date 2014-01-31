@@ -5,7 +5,8 @@ inherit
 	A_A
 		redefine
 			prev,
-			break
+			break,
+			get_x
 		end
 
 feature
@@ -37,6 +38,11 @@ feature
 			check new_property: other.x > 0 end -- Fail
 			other.set_prev
 			other.wrap -- Fail: dynamic type unknown
+		end
+
+	get_x: INTEGER
+		do
+			Result := 0
 		end
 
 feature {A_A}

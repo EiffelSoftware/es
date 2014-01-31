@@ -18,6 +18,9 @@ feature -- Validity error messages
 	functional_feature_not_single_assignment: STRING_32
 		do Result := "A functional feature has to consist of exactly one assignment to the Result." end
 
+	functional_feature_redefined: STRING_32
+		do Result := "Functional feature cannot be redefined." end
+
 	pure_function_has_mods: STRING_32
 		do Result := "Function with a non-empty modify clause has to be declared impure." end
 

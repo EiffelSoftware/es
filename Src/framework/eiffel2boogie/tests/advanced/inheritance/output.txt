@@ -1,4 +1,8 @@
 ======================================
+A_B.get_x
+AutoProof error.
+Validity: Functional feature cannot be redefined.
+======================================
 A_A.make (creator)
 Successfully verified.
 ======================================
@@ -9,6 +13,9 @@ A_A.set_to_next_public
 Successfully verified.
 ======================================
 A_A.set_to_prev_public
+Successfully verified.
+======================================
+A_A.get_x
 Successfully verified.
 ======================================
 A_A.set_to_next

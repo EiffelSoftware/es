@@ -82,8 +82,11 @@ feature -- Translation: Signature
 			translation_pool.add_type (current_type)
 
 				-- Check status compatibility
-			if not helper.has_functional_representation (a_feature) and helper.is_functional (a_feature) then
-				helper.add_semantic_warning (a_feature, messages.functional_feature_not_function, -1)
+			if not helper.has_functional_representation (current_feature) and helper.is_functional (current_feature) then
+				helper.add_semantic_warning (current_feature, messages.functional_feature_not_function, -1)
+			end
+			if a_feature.has_return_value and has_functional_versions then
+				helper.add_semantic_error (current_feature, messages.functional_feature_redefined, -1)
 			end
 
 				-- Set up name
@@ -106,7 +109,7 @@ feature -- Translation: Signature
 			add_result_with_property
 
 				-- Modifies
-			if helper.is_lemma (a_feature) then
+			if helper.is_lemma (current_feature) then
 					-- Lemmas do not modify the heap
 			else
 				create l_modifies.make ("Heap")
@@ -130,7 +133,7 @@ feature -- Translation: Signature
 
 				-- Framing
 			if options.is_ownership_enabled then
-				add_ownership_contracts (a_for_creator, not helper.is_lemma (a_feature))
+				add_ownership_contracts (a_for_creator, not helper.is_lemma (current_feature))
 			else
 				if helper.feature_note_values (current_feature, "framing").has ("False") then
 						-- No frame condition
@@ -1190,6 +1193,23 @@ feature {NONE} -- Implementation
 				l_postcondition.set_free
 			end
 			current_boogie_procedure.add_contract (l_postcondition)
+		end
+
+	has_functional_versions: BOOLEAN
+			-- Are any previous versions of `current_feature' functional?
+		local
+			i: INTEGER
+		do
+			if current_feature.assert_id_set /= Void then
+				from
+					i := 1
+				until
+					Result or i > current_feature.assert_id_set.count
+				loop
+					Result := helper.is_functional (current_feature.assert_id_set [i].written_class.feature_of_body_index (current_feature.assert_id_set [i].body_index))
+					i := i + 1
+				end
+			end
 		end
 
 end
