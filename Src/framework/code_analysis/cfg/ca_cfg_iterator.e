@@ -9,7 +9,7 @@ deferred class
 
 feature -- Iteration
 
-	process_cfg (a_cfg: CA_CFG)
+	process_cfg (a_cfg: CA_CONTROL_FLOW_GRAPH)
 			-- Iterate through `a_cfg'.
 		deferred
 		end
@@ -20,7 +20,7 @@ feature -- Iteration
 		deferred
 		end
 
-	initialize_processing (a_cfg: CA_CFG)
+	initialize_processing (a_cfg: CA_CONTROL_FLOW_GRAPH)
 			-- Perform initialization before running the worklist algorithm.
 		deferred
 		end

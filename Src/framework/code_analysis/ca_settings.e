@@ -7,7 +7,7 @@ note
 class
 	CA_SETTINGS
 
-inherit {NONE}
+inherit
 	CA_SHARED_NAMES
 
 create

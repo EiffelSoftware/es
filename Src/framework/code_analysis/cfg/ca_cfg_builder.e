@@ -51,7 +51,7 @@ feature -- Actions
 			end
 		end
 
-	cfg: detachable CA_CFG
+	cfg: detachable CA_CONTROL_FLOW_GRAPH
 			-- Last CFG that has been built.
 
 	current_feature: detachable FEATURE_AS
@@ -62,12 +62,12 @@ feature {NONE} -- Implementation
 	current_label: INTEGER
 			-- Current label counter.
 
-	process_compound (a_compound: EIFFEL_LIST [INSTRUCTION_AS]): CA_CFG
+	process_compound (a_compound: EIFFEL_LIST [INSTRUCTION_AS]): CA_CONTROL_FLOW_GRAPH
 			-- Creates the CFG for `a_compound'.
 		require
 			a_compound.count >= 1
 		local
-			l_cfg, l_subgraph: CA_CFG
+			l_cfg, l_subgraph: CA_CONTROL_FLOW_GRAPH
 			l_last_block, l_current_block, l_temp_block: CA_CFG_BASIC_BLOCK
 			l_intervals: LINKED_LIST [EIFFEL_LIST [INTERVAL_AS]]
 		do

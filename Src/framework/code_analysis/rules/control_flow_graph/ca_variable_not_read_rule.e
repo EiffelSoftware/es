@@ -69,7 +69,7 @@ feature {NONE} -- From {CA_CFG_RULE}
 
 feature -- Node Visitor
 
-	initialize_processing (a_cfg: CA_CFG)
+	initialize_processing (a_cfg: CA_CONTROL_FLOW_GRAPH)
 			-- Prepares data structures for the worklist algorithm on
 			-- the CFG `a_cfg'.
 		local

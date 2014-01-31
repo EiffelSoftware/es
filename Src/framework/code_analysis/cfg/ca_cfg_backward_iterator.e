@@ -12,7 +12,7 @@ inherit
 
 feature -- Iteration
 
-	process_cfg (a_cfg: CA_CFG)
+	process_cfg (a_cfg: CA_CONTROL_FLOW_GRAPH)
 		local
 			l_label: INTEGER
 			l_bfs_nodes: LINKED_QUEUE [CA_CFG_BASIC_BLOCK]

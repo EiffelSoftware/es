@@ -9,21 +9,14 @@ class
 	ES_CA_FIX_EXECUTOR
 
 inherit
-	PROCEDURE [ANY, TUPLE]
-		redefine call end
-
-inherit {NONE}
-	SHARED_EIFFEL_PROJECT
-		rename
-			is_equal as shared_eiffel_project_is_equal,
-			copy as shared_eiffel_project_copy
-		end
 
 	EB_SHARED_WINDOW_MANAGER
-		rename
-			is_equal as shared_window_manager_is_equal,
-			copy as shared_window_manager_copy
+		undefine
+			is_equal,
+			copy
 		end
+
+	SHARED_EIFFEL_PROJECT
 
 create
 	make_with_fix
@@ -45,6 +38,8 @@ feature {NONE} -- Implementation
 
 	ui_row: EV_GRID_ROW
 			-- The associated grid row of the GUI.
+
+feature -- Fixing
 
     apply_fix
             -- Make the changes.
@@ -84,13 +79,6 @@ feature {NONE} -- Implementation
 		        end
 	        end
         end
-
-    call alias "()" (args: detachable separate TUPLE)
-    		-- Apply the fix. Thanks to this, this class can be used as an
-    		-- agent. `args' are empty.
-    	do
-    		apply_fix
-    	end
 
 feature {NONE} -- Utilities
 

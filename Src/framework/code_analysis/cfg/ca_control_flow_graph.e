@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	CA_CFG
+	CA_CONTROL_FLOW_GRAPH
 
 create {CA_CFG_BUILDER}
 	make

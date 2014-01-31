@@ -12,7 +12,7 @@ inherit
 
 feature -- CFG Node Visitor
 
-	initialize_processing (a_cfg: CA_CFG)
+	initialize_processing (a_cfg: CA_CONTROL_FLOW_GRAPH)
 		local
 			n, j: INTEGER
 			l_init_set: LINKED_SET [INTEGER]

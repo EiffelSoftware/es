@@ -7,8 +7,9 @@ note
 class
 	CA_CODE_ANALYZER
 
-inherit {NONE}
+inherit
 	SHARED_EIFFEL_PROJECT
+
 	CA_SHARED_NAMES
 
 create

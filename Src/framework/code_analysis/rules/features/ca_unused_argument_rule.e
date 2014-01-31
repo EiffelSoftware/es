@@ -6,6 +6,7 @@ note
 
 class
 	CA_UNUSED_ARGUMENT_RULE
+	
 inherit
 	CA_STANDARD_RULE
 		redefine

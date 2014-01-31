@@ -7,7 +7,7 @@ note
 frozen class
 	CA_MESSAGES
 
-inherit {NONE}
+inherit
 	SHARED_LOCALE
 
 feature -- GUI

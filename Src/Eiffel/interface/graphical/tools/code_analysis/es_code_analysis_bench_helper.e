@@ -8,7 +8,7 @@ note
 class
 	ES_CODE_ANALYSIS_BENCH_HELPER
 
-inherit {NONE}
+inherit
 
 	CA_SHARED_NAMES
 

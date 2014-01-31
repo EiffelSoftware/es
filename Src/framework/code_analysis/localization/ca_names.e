@@ -7,7 +7,7 @@ note
 frozen class
 	CA_NAMES
 
-inherit {NONE}
+inherit
 	SHARED_LOCALE
 
 feature -- Rules

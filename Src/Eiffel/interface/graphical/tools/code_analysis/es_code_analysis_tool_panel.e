@@ -29,7 +29,6 @@ inherit
 	SHARED_ERROR_TRACER
 		export {NONE} all end
 
-inherit {NONE}
 	CA_SHARED_NAMES
 
 create {ES_CODE_ANALYSIS_TOOL}
@@ -569,7 +568,8 @@ feature {NONE} -- Basic operations
 						-- Only make fixes available that have not been applied already.
 					if not l_fixes.item.applied then
 						create l_fix_executor.make_with_fix (l_fixes.item, a_row)
-						create l_item.make_with_text_and_action (ca_messages.fix + l_fixes.item.caption, l_fix_executor)
+						create l_item.make_with_text_and_action (ca_messages.fix + l_fixes.item.caption,
+						                                         agent l_fix_executor.apply_fix)
 						l_menu.extend (l_item)
 					end
 				end

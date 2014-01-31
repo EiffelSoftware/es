@@ -13,7 +13,6 @@ inherit
 	SHARED_SERVER
 		export {NONE} all end
 
-inherit {NONE}
 	CA_SHARED_NAMES
 
 create
