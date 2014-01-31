@@ -18,7 +18,7 @@ feature -- Status report
 	is_handling_call (a_target_type: TYPE_A; a_feature: FEATURE_I): BOOLEAN
 			-- <Precursor>
 		do
-			Result := helper.is_class_logical (a_target_type.base_class)
+			Result := helper.is_class_logical (a_feature.written_class)
 		end
 
 	is_handling_nested (a_nested: NESTED_B): BOOLEAN

@@ -11,6 +11,7 @@ feature {NONE} -- Initialization
 	make
 			-- Create an empty list.
 		note
+			status: creator
 			skip: True
 		do
 		ensure
@@ -22,7 +23,6 @@ feature -- Specification
 	sequence: MML_SEQUENCE [G]
 			-- Sequence of list's elements.
 		note
-			skip: True
 			status: ghost
 		attribute
 		end

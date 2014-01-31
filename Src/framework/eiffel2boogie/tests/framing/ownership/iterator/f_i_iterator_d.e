@@ -49,8 +49,8 @@ feature -- Access
 			-- Collection element at current position.
 		require
 			not_off: not (before or after)
+			closed: closed
 			target_closed: target.closed
-			default_closed: closed
 			modify ([])
 			reads (Current, target)
 		do

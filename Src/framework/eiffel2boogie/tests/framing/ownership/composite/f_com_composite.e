@@ -47,7 +47,6 @@ feature -- Access
 	children_set: MML_SET [F_COM_COMPOSITE]
 			-- Set of child nodes.
 		note
-			explicit: contracts
 			status: functional, ghost
 		require
 			children_exists: children /= Void
@@ -67,7 +66,6 @@ feature -- Access
 	is_max (v: INTEGER; init_v: INTEGER; nodes: MML_SET [F_COM_COMPOSITE]; max_node: F_COM_COMPOSITE): BOOLEAN
 			-- Is `v' the maximum of `init_v' and all values of `nodes'?
 		note
-			explicit: contracts
 			status: functional, ghost
 		require
 			nodes_exist: across nodes as n all n.item /= Void end

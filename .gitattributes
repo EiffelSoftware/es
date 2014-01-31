@@ -3491,6 +3491,7 @@ Src/framework/eiffel2boogie/tests/advanced/functional/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/inheritance/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/lemma/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/maps/output.txt -text
+Src/framework/eiffel2boogie/tests/advanced/partial/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/relations/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/sequences/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/sets/output.txt -text
@@ -3510,6 +3511,7 @@ Src/framework/eiffel2boogie/tests/framing/ownership/composite/output.txt -text
 Src/framework/eiffel2boogie/tests/framing/ownership/double_linked_list/output.txt -text
 Src/framework/eiffel2boogie/tests/framing/ownership/iterator/output.txt -text
 Src/framework/eiffel2boogie/tests/framing/ownership/master_clock/output.txt -text
+Src/framework/eiffel2boogie/tests/framing/ownership/observer_inheritance/output.txt -text
 Src/framework/eiffel2boogie/tests/framing/ownership/observer_one_to_many/output.txt -text
 Src/framework/eiffel2boogie/tests/framing/ownership/observer_one_to_one/output.txt -text
 Src/framework/eiffel2boogie/tests/framing/ownership/pip/output.txt -text

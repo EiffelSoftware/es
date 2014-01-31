@@ -68,7 +68,6 @@ feature -- Access
 	is_max (v: INTEGER; init_v: INTEGER; nodes: MML_SET [F_PIP_NODE]; max_node: F_PIP_NODE): BOOLEAN
 			-- Is `v' the maximum of `init_v' and all values of `nodes'?
 		note
-			explicit: contracts
 			status: functional, ghost
 		require
 			nodes_exist: across nodes as n all n.item /= Void end

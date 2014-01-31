@@ -43,6 +43,7 @@ feature {F_OI_SUBJECT} -- Internal communication
 		ensure
 			open: is_open
 			same_subject: subject = old subject
+			same_owns: owns = old owns
 			invariant_holds: inv
 		end
 

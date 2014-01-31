@@ -629,10 +629,8 @@ feature -- Processing
 
 				-- Process modifies
 			l_frame := process_loop_modifies (l_modifies)
-			if l_frame.writable /= Void then
-				l_old_writable := local_writable
-				local_writable := l_frame.writable
-			end
+			l_old_writable := local_writable
+			local_writable := l_frame.writable
 
 				-- Goto head
 			create l_goto.make (l_head_block)
@@ -687,10 +685,9 @@ feature -- Processing
 			create l_assume.make_assume (l_condition)
 			add_statement (l_assume)
 
-				-- If the loop had its own writable, revert to the old local writable
-			if l_old_writable /= Void then
-				local_writable := l_old_writable
-			end
+				-- Revert to the old local writable
+			local_writable := l_old_writable
+
 			current_block := l_temp_block
 		end
 

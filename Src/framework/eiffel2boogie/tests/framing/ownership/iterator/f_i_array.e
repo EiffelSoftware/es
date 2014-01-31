@@ -11,6 +11,7 @@ feature {NONE} -- Initialization
 	make (n: INTEGER)
 			-- Create an array of size `n'.
 		note
+			status: creator
 			skip: True
 		require
 			size_non_negative: n >= 0

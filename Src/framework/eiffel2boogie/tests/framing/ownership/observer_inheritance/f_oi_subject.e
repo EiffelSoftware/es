@@ -46,7 +46,9 @@ feature -- State update
 				i := 1
 			invariant
 				across subscribers.sequence as o all
-					o.item.is_open and o.item.inv_without ("synchronized")
+					o.item.is_open and
+					o.item.inv_without ("synchronized") and
+					o.item.owns = o.item.owns.old_
 				end
 				across 1 |..| (i - 1) as j all subscribers.sequence [j.item].inv end
 				modify (subscribers.sequence.range)
