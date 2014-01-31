@@ -65,6 +65,7 @@ feature {NONE} -- Initialization
 			create classes_to_analyze.make
 			create rule_violations.make (100)
 			create completed_actions
+			create output_actions
 
 			create ignoredby.make (25)
 			create library_class.make (25)
@@ -78,6 +79,11 @@ feature -- Analysis interface
 			-- called when analysis has completed.
 		do
 			completed_actions.extend (a_action)
+		end
+
+	add_output_action (a_action: PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]])
+		do
+			output_actions.extend (a_action)
 		end
 
 	analyze
@@ -106,6 +112,7 @@ feature -- Analysis interface
 			end
 
 			create l_task.make (l_rules_checker, l_rules_to_check, classes_to_analyze, agent analysis_completed)
+			l_task.set_output_actions (output_actions)
 			rota.run_task (l_task)
 		end
 
@@ -221,7 +228,7 @@ feature -- Analysis interface
 
 				extract_indexes (l_class_c)
 			else
-				print ("Class " + a_class.name + " not compiled (skipped).%N")
+				output_actions.call ([ca_messages.class_skipped (a_class.name)])
 			end
 		end
 
@@ -315,7 +322,7 @@ feature {NONE} -- Implementation
 			-- Shall the whole system be analyzed?
 
 	completed_actions: ACTION_SEQUENCE [TUPLE [BOOLEAN]]
-			-- List of procedure to call when analysis has completed.
+			-- List of procedures to call when analysis has completed.
 
 	frozen rota: detachable ROTA_S
 			-- Accesses the rota service.
@@ -336,6 +343,8 @@ feature {NONE} -- Implementation
 				or else (attached {CA_ERROR} a_severity and settings.are_errors_enabled.value)
 		end
 
+	output_actions: ACTION_SEQUENCE [TUPLE [READABLE_STRING_GENERAL]]
+			-- Will be called whenever there is a message to output.
 
 feature {NONE} -- Class-wide Options (From Indexing Clauses)
 

@@ -69,10 +69,17 @@ feature -- GUI
 	run_code_analysis: STRING_32
 		do Result := locale.translation ("Run Code Analysis") end
 
-feature -- Code Analyzer
+feature -- Messages for both GUI and command line mode
+
+		-- Avoid any new lines in the messages of this section!
+
+	class_skipped (a_class_name: READABLE_STRING_GENERAL): STRING_32
+		do Result := locale.formatted_string (locale.translation ("Class $1 not compiled (skipped)."), [a_class_name]) end
 
 	analyzing_class (a_class_name: READABLE_STRING_GENERAL): STRING_32
-		do Result := locale.formatted_string (locale.translation ("Analyzing class $1 ...%N"), [a_class_name]) end
+		do Result := locale.formatted_string (locale.translation ("Analyzing class $1 ..."), [a_class_name]) end
+
+feature -- Rule Violations
 
 	self_assignment_violation_1: STRING_32
 		do Result := locale.translation ("Variable '") end

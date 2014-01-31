@@ -58,18 +58,12 @@ feature -- Inherited from {COMPARABLE}
 	is_less alias "<" (a_other: like Current): BOOLEAN
 			-- Shall `Current' be "before" `a_other'. (For sorting, for example.)
 		do
-			if attached location as l_location then
-				if attached a_other.location as l_other_location then
-					if l_location.line = l_other_location.line then
-						Result := (l_location.column < l_other_location.column)
-					else
-						Result := (l_location.line < l_other_location.line)
-					end
+			if attached location as l_location and then attached a_other.location as l_other_location then
+				if l_location.line = l_other_location.line then
+					Result := (l_location.column < l_other_location.column)
 				else
-					Result := False
+					Result := (l_location.line < l_other_location.line)
 				end
-			else
-				Result := False
 			end
 		end
 

@@ -38,7 +38,10 @@ feature {NONE} -- Rule checking
 		do
 			if attached a_if.compound as l_c and then l_c.count = 1 then
 				if attached {IF_AS} l_c.first as l_inner_if then
-					if (not attached l_inner_if.else_part) and (not attached l_inner_if.elsif_list) then
+					if
+						(not attached a_if.else_part) and (not attached a_if.elsif_list)
+						and (not attached l_inner_if.else_part) and (not attached l_inner_if.elsif_list)
+					then
 							-- The Compound of the (outer) if only contains an (inner) if instruction,
 							-- which is exactly what will trigger this rule.
 						create l_viol.make_with_rule (Current)

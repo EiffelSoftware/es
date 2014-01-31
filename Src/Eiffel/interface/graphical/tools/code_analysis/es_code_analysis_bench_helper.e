@@ -14,6 +14,8 @@ inherit
 
 	EB_SHARED_PIXMAPS
 
+	EB_SHARED_WINDOW_MANAGER
+
 feature -- Basic operations
 
 	build_context_menu_for_class_stone (a_menu: EV_MENU; a_stone: CLASSC_STONE)
@@ -68,6 +70,8 @@ feature -- Verification
 			-- Shared Code Analyzer instance.
 		once
 			create Result.make
+				-- Delegate any output to the status bar.
+			Result.add_output_action (agent window_manager.display_message)
 		end
 
 	ca_command: ES_CODE_ANALYSIS_COMMAND

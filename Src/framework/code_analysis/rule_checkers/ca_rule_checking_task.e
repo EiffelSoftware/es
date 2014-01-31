@@ -10,6 +10,8 @@ class
 inherit
 	ROTA_TIMED_TASK_I
 
+	CA_SHARED_NAMES
+
 create
 	make
 
@@ -35,6 +37,16 @@ feature {NONE} -- Initialization
 			end
 		end
 
+feature -- Initialization
+
+	set_output_actions (a_output_actions: ACTION_SEQUENCE [TUPLE [READABLE_STRING_GENERAL]])
+			-- Sets the output acitons to `a_output_actions'.
+		do
+			output_actions := a_output_actions
+		ensure
+			output_actions = a_output_actions
+		end
+
 feature {NONE} -- Implementation
 
 	rules_checker: CA_ALL_RULES_CHECKER
@@ -51,6 +63,10 @@ feature {NONE} -- Implementation
 
 	completed_action: PROCEDURE [ANY, TUPLE []]
 			-- Shall be called when analysis has completed.
+
+	output_actions: detachable ACTION_SEQUENCE [TUPLE [READABLE_STRING_GENERAL]]
+			-- These procedures will be called whenever something should
+			-- be output.
 
 feature -- From ROTA
 
@@ -77,6 +93,11 @@ feature -- From ROTA
 						l_cfg_rule.check_class (classes.item)
 					end
 				end
+			end
+
+				-- Status output.
+			if output_actions /= Void then
+				output_actions.call ([ca_messages.analyzing_class (classes.item.name)])
 			end
 
 			rules_checker.run_on_class (classes.item)
