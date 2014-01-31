@@ -271,6 +271,8 @@ feature {NONE} -- Implementation
 						l_translator.set_origin_class (a_class)
 						l_translator.set_context_line_number (l_assert.line_number)
 						l_translator.set_context_tag (l_assert.tag)
+						l_translator.set_context_readable (factory.function_call ("user_inv_readable", << factory.global_heap, factory.std_current >>, types.frame))
+--						l_translator.set_restricted_context_readable (factory.function_call ("user_inv_function_readable", << factory.global_heap, factory.std_current >>, types.frame))
 						l_assert.process (l_translator)
 						last_safety_checks.append (l_translator.side_effect)
 						last_safety_checks.extend (create {IV_ASSERT}.make_assume (l_translator.last_expression))
@@ -386,8 +388,6 @@ feature -- Invariant admissibility
 				-- Set up procedure with arguments and precondition
 			l_proc.add_argument ("Current", types.ref)
 			create l_pre.make (factory.function_call ("attached_exact", << factory.global_heap, factory.std_current, factory.type_value (a_class.actual_type) >>, types.bool))
-			l_proc.add_contract (l_pre)
-			create l_pre.make (factory.function_call ("global", << factory.global_heap >>, types.bool))
 			l_proc.add_contract (l_pre)
 			create l_assume.make_assume (factory.function_call ("user_inv", << factory.global_heap, factory.std_current >>, types.bool))
 

@@ -127,9 +127,9 @@ feature {F_DLL_NODE} -- Implementation
 invariant
 	left_exists: left /= Void
 	right_exists: right /= Void
-	left_consistent: left.right = Current
-	right_consistent: right.left = Current
 	subjects_structure: subjects = [ left, right ]
 	observers_structure: observers = [ left, right ]
+	left_consistent: left.right = Current
+	right_consistent: right.left = Current
 
 end

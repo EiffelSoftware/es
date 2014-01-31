@@ -137,7 +137,10 @@ feature -- Access
 		end
 
 	context_readable: IV_EXPRESSION
-			-- Readable  frame of the enclosing context if defined, otherwise Void.
+			-- Readable frame of the enclosing context if defined, otherwise Void.
+
+--	restricted_context_readable: IV_EXPRESSION
+--			-- Special readable frame used for function calls if defined, otherwise Void.
 
 feature -- Element change
 
@@ -211,6 +214,12 @@ feature -- Basic operations
 		do
 			context_readable := a_readable
 		end
+
+--	set_restricted_context_readable (a_readable: IV_EXPRESSION)
+--			-- Set `restricted_context_readable' to `a_readable'
+--		do
+--			restricted_context_readable := a_readable
+--		end
 
 feature -- Visitors
 
@@ -1211,6 +1220,29 @@ feature -- Translation
 					l_pre_call.add_argument (args.item)
 				end
 				add_assumption (l_pre_call)
+			end
+		end
+
+	add_read_frame_check (a_feature: FEATURE_I)
+			-- If there is a read frame, check that `a_feature's read frame is a subframe of it.
+		local
+			l_fcall: IV_FUNCTION_CALL
+		do
+--			if restricted_context_readable /= Void then
+--				l_readable := restricted_context_readable
+--			elseif context_readable /= Void then
+--				l_readable := context_readable
+--			end
+			if context_readable /= Void and helper.has_functional_representation (a_feature) then
+				create l_fcall.make (name_translator.boogie_function_for_read_frame (a_feature, current_target_type), types.frame)
+				l_fcall.add_argument (entity_mapping.heap)
+				l_fcall.add_argument (current_target)
+				l_fcall.arguments.append (last_parameters)
+					-- Using subsumption here, since in a query call chains it can trigger for the followings checks
+				add_safety_check_with_subsumption (factory.function_call ("Frame#Subset", <<l_fcall, context_readable>>, types.bool),
+					"access", "frame_readable", context_line_number)
+				last_safety_check.node_info.set_attribute ("cid", a_feature.written_class.class_id.out)
+				last_safety_check.node_info.set_attribute ("rid", a_feature.rout_id_set.first.out)
 			end
 		end
 

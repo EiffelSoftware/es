@@ -100,8 +100,8 @@ feature {F_I_ITERATOR_D} -- Implementation
 
 invariant
 	elements /= Void
-	0 <= count and count <= elements.count
 	owns = [elements]
+	0 <= count and count <= elements.count
 	across observers as o all attached o.item and o.item /= Current end
 	default_subjects: subjects = []
 end

@@ -75,7 +75,7 @@ feature -- Access
 			status: functional, ghost
 		require
 			nodes_exist: across nodes as n all n.item /= Void end
-			reads (nodes, max_node)
+			reads (nodes)
 		do
 			Result :=
 				v >= init_v and
@@ -208,13 +208,13 @@ feature {F_COM_COMPOSITE_D} -- Implementation
 
 invariant
 	children_exists: children /= Void
+	owns_structure: owns = [children]
+	subjects_structure: subjects = if parent = Void then children_set else children_set & parent end
 	tree: not ancestors [Current]
 	children_consistent: across children_set as c all c.item /= Void and then c.item.parent = Current end
 	ancestors_structure: ancestors = if parent = Void then {MML_SET [F_COM_COMPOSITE_D]}.empty_set else parent.ancestors & parent end
-	subjects_structure: subjects = if parent = Void then children_set else children_set & parent end
 	value_consistent: is_max (value, init_value, children_set, max_child)
 	observers_structure: observers = subjects
-	owns_structure: owns = [children]
 	default_subjects_aware: across subjects as s all s.item.observers.has (Current) end
 
 end

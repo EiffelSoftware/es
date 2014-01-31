@@ -55,9 +55,9 @@ feature {F_OOO_SUBJECT_D} -- Element change
 
 invariant
 	attached subject
+	subjects = [subject]
 	subject.observer = Current
 	cache_synchronized: cache = subject.value
-	subjects = [subject]
 	across subjects as sc all sc.item.observers.has (Current) end -- default
 	owns = [] -- default
 	observers = [] -- default

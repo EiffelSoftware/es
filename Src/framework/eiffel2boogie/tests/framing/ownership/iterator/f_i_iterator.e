@@ -76,9 +76,9 @@ feature {NONE} -- Implementation
 
 invariant
 	target_exists: target /= Void
+	subjects_structure: subjects = [target]
 	index_in_bounds: 0 <= index and index <= target.count + 1
 	before_definition: before = (index < 1)
 	after_definition: after = (index > target.count)
-	subjects_structure: subjects = [target]
 
 end

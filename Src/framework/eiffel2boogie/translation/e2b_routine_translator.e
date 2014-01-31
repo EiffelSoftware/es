@@ -552,7 +552,7 @@ feature -- Translation: Functions
 				i := i + 1
 			end
 
-				-- Axiom
+				-- Definition
 			generate_definition (l_function)
 			if not helper.is_functional (a_feature) then
 					-- Add a postcondition to the corresponding procedure connecting it to the function
@@ -564,6 +564,7 @@ feature -- Translation: Functions
 				l_proc.add_contract (l_post)
 			end
 
+				-- Frame axiom
 			generate_frame_axiom (l_function)
 		end
 

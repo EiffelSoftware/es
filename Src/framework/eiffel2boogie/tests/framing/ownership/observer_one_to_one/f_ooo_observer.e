@@ -46,8 +46,8 @@ feature {F_OOO_SUBJECT} -- Element change
 
 invariant
 	subject_exists: attached subject
+	subjects_structure: subjects = [subject]
 	subject_aware: subject.observer = Current
 	cache_synchronized: cache = subject.value
-	subjects_structure: subjects = [subject]
 
 end

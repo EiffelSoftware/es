@@ -108,22 +108,24 @@ feature -- Translation
 	process_attribute_call (a_feature: FEATURE_I)
 			-- Process call to attribute `a_feature'.
 		local
-			l_current: IV_ENTITY
+			l_content_type: IV_TYPE
 			l_field: IV_ENTITY
 		do
 			translation_pool.add_referenced_feature (a_feature, current_target_type)
 
 			check current_target /= Void end
-			create l_field.make (
-				name_translator.boogie_procedure_for_feature (a_feature, current_target_type),
-				types.field (types.for_type_in_context (a_feature.type, current_target_type))
-			)
-			last_expression := factory.heap_access (
-				entity_mapping.heap.name,
-				current_target,
-				l_field.name,
-				types.for_type_in_context (a_feature.type, current_target_type))
+			l_content_type := types.for_type_in_context (a_feature.type, current_target_type)
+			l_field := factory.entity (name_translator.boogie_procedure_for_feature (a_feature, current_target_type), types.field (l_content_type))
 
+				-- Add a reads check
+			if context_readable /= Void then
+					-- Using subsumption here, since in a query call chains it can trigger for the followings checks
+				add_safety_check_with_subsumption (factory.frame_access (context_readable, current_target, l_field), "access", "attribute_readable", context_line_number)
+				last_safety_check.node_info.set_attribute ("cid", a_feature.written_class.class_id.out)
+				last_safety_check.node_info.set_attribute ("fid", a_feature.feature_id.out)
+			end
+
+			last_expression := factory.heap_access (entity_mapping.heap.name, current_target, l_field.name, l_content_type)
 			field_accesses.extend ([current_target, l_field])
 		end
 
@@ -151,9 +153,10 @@ feature -- Translation
 				process_parameters (a_parameters)
 				l_call.arguments.append (last_parameters)
 
+					-- Add read frame check
+				add_read_frame_check (a_feature)
 					-- Add precondition check
 				add_function_precondition_check (a_feature, l_call)
-
 				-- This would check that a recursive definitional axiom for a non-functional function is well-defined;
 				-- I believe this is not needed, because we have to prove anyway that this postcondition is satisfied by a terminating implementation.
 	--			add_termination_check (a_feature, last_parameters)

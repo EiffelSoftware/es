@@ -48,7 +48,7 @@ feature {F_OOM_SUBJECT} -- Internal communication
 
 invariant
 	subject_exists: subject /= Void
+	subjects_structure: subjects = [subject]
 	subject_aware: subject.observers.has (Current)
 	cache_synchronized: cache = subject.value
-	subjects_structure: subjects = [subject]
 end

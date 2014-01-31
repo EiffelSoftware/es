@@ -62,8 +62,8 @@ feature -- Update
 
 invariant
 	master_exists: attached master
+	subjects_structure: subjects = [master]
 	time_non_negative: 0 <= local_time
 	time_weakly_synchronized: local_time <= master.time
-	subjects_structure: subjects = [master]
 
 end

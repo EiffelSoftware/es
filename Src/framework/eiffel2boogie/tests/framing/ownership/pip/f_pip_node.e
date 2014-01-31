@@ -275,6 +275,7 @@ feature {F_PIP_NODE} -- Implementation
 		end
 
 invariant
+	subjects_structure: subjects = if parent = Void then children.range else children.range & parent end
 	parent_consistent: parent /= Void implies parent.children.has (Current)
 	children_consistent: across children as c all c.item /= Void and then c.item.parent = Current end
 	value_consistent: is_max (value, init_value, children.range, max_child)
@@ -287,7 +288,6 @@ invariant
 --	Todo: use this or similar invariant to define descendants exactly	
 --	descendants_small_enough: across descendants as d all d.item = Current or children.has (d.item) or
 --		(across children as c some c.item.descendants [d.item] end) end
-	subjects_structure: subjects = if parent = Void then children.range else children.range & parent end
 	observers_structure: observers = subjects
 
 note
