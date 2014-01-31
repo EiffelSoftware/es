@@ -35,10 +35,10 @@ feature {NONE} -- Initalization
 
 			create l_shared_project
 			if l_shared_project.eiffel_project.manager.is_project_loaded then
-				data.update_from_universe
+--				data.update_from_universe
 				set_initialized
 			else
-				l_shared_project.eiffel_project.manager.load_agents.extend (agent data.update_from_universe)
+--				l_shared_project.eiffel_project.manager.load_agents.extend (agent data.update_from_universe)
 				l_shared_project.eiffel_project.manager.load_agents.extend (agent set_initialized)
 			end
 
