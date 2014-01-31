@@ -182,21 +182,21 @@ extern struct opstack op_stack;               /* Operational stack */
 #define BC_CAST_REAL_32    	111
 #define BC_CAST_REAL_64  	112
 #define BC_INV_NULL  		113
-#define BC_SEPARATE		114
+#define BC_SEPARATE			114
 #define BC_END_EVAL_OLD		115
 #define BC_START_EVAL_OLD	116
 #define BC_OBJECT_ADDR		117
-#define BC_PFEATURE			118
-#define BC_PFEATURE_INV		119
-#define BC_PEXTERN			120
-#define BC_PEXTERN_INV		121
-#define BC_PARRAY			122
-#define BC_PATTRIBUTE		123
-#define BC_PATTRIBUTE_INV	124
-#define BC_PEXP_ASSIGN		125
-#define BC_PASSIGN			126
-#define BC_PREVERSE			127
-#define BC_PCLIKE			(unsigned char) 128
+#define BC_NOTUSED_118		118
+#define BC_NOTUSED_119		119
+#define BC_NOTUSED_120		120
+#define BC_NOTUSED_121		121
+#define BC_NOTUSED_122		122
+#define BC_NOTUSED_123		123
+#define BC_NOTUSED_124		124
+#define BC_NOTUSED_125		125
+#define BC_NOTUSED_126		126
+#define BC_NOTUSED_127		127
+#define BC_NOTUSED_128		(unsigned char) 128
 #define BC_OBJECT_EXPR_ADDR	(unsigned char) 129
 #define BC_RESERVE			(unsigned char) 130
 #define BC_POP				(unsigned char) 131
@@ -276,10 +276,10 @@ extern struct opstack op_stack;               /* Operational stack */
 #define BC_IS_ATTACHED		(unsigned char) 159
 #define BC_SPECIAL_EXTEND	(unsigned char) 160
 #define BC_QLIKE			(unsigned char) 161
-#define BC_PQLIKE			(unsigned char) 162
+#define BC_NOTUSED_162		(unsigned char) 162
 #define BC_GUARD			(unsigned char) 163
 #define BC_CREATION		(unsigned char) 164
-#define BC_PCREATION		(unsigned char) 165
+#define BC_NOTUSED_165		(unsigned char) 165
 #define BC_WAIT_ARG		(unsigned char) 166
 #define BC_TUPLE_CATCALL	(unsigned char) 167
 
@@ -323,8 +323,8 @@ extern void sync_registers(struct stochunk *stack_cur, EIF_TYPED_VALUE *stack_to
 extern void idump(FILE *fd, char *start);
 extern void opstack_reset(struct opstack *stk);
 
-extern void dynamic_eval(int fid, int stype, int dtype, int is_precompiled, int is_basic_type, int is_static_call, int is_inline_agent, rt_uint_ptr nb_pushed);	/* Dynamic evaluation of a feature */
-extern void dynamic_eval_dbg(int fid_or_offset, int stype_or_origin, int dtype, int is_precompiled, int is_basic_type, int is_static_call, EIF_TYPED_VALUE* previous_otop, rt_uint_ptr nb_pushed, int* exception_occurred, EIF_TYPED_VALUE *result);
+extern void dynamic_eval(int routine_id, int static_dtype, int is_basic_type, rt_uint_ptr nb_pushed);	/* Dynamic evaluation of a feature */
+extern void dynamic_eval_dbg(int routine_id, int static_dtype, int is_basic_type, EIF_TYPED_VALUE* previous_otop, rt_uint_ptr nb_pushed, int* exception_occurred, EIF_TYPED_VALUE *result);
 
 extern EIF_TYPE_INDEX get_compound_id (EIF_REFERENCE);
 

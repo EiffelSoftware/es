@@ -76,8 +76,7 @@ typedef struct call_data {
 } call_data;
 
 #ifdef WORKBENCH
-extern void eif_log_call (int static_type_id, int feature_id, EIF_SCP_PID current_pid, call_data * data);
-extern void eif_log_callp (int origin, int offset, EIF_SCP_PID current_pid, call_data * data);
+extern void eif_log_call (int routine_id, EIF_SCP_PID current_pid, call_data * data);
 extern void eif_try_call (call_data * a);
 #else
 #ifdef SCOOPQS

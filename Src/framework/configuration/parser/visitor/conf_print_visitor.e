@@ -134,6 +134,7 @@ feature -- Visit nodes
 				append_text ("%N")
 			end
 			append_text_indent ("<system")
+			append_text (" xmlns=%"")			
 			if attached namespace as l_namespace then
 				append_text_escaped (l_namespace, False)
 --Alternative:	append_text (utf.string_32_to_utf_8_string_8 (l_namespace)) -- FIXME: maybe add utf-8 BOM ...
@@ -776,9 +777,7 @@ feature {NONE} -- Implementation
 					indent := indent + 1
 					last_count := text.count
 
-					if attached l_ext.description as d and then d.is_empty then
-						append_tag ("description", d, Void, Void)
-					end
+					append_description_tag (l_ext.description)
 					append_conditionals (l_ext.internal_conditions, False)
 					indent := indent - 1
 

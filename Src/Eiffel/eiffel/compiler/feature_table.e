@@ -1361,64 +1361,6 @@ end
 			create Result.make (0)
 		end
 
-	melt
-			-- Melt routine id array associated to the current
-			-- feature table
-		local
-			melted_array: MELTED_ROUTID_ARRAY
-			ba: BYTE_ARRAY
-		do
-			ba := Byte_array
-			ba.clear
-			make_byte_code (ba)
-			melted_array := ba.melted_routid_array
-			melted_array.set_class_id (feat_tbl_id)
-			Tmp_m_rout_id_server.put (melted_array)
-		end
-
-	make_byte_code (ba: BYTE_ARRAY)
-			-- Make routine id array byte code
-		local
-			tab: ARRAY [FEATURE_I]
-			feat: FEATURE_I
-			i, nb: INTEGER
-			rout_id: INTEGER
-			a_class: CLASS_C
-		do
-			a_class := associated_class
-			if a_class.is_precompiled then
-				ba.append_integer (0)
-			else
-				from
-					i := 0
-					tab := routine_id_array
-					nb := tab.upper
-					ba.append_integer (tab.count)
-				until
-					i > nb
-				loop
-					feat := tab.item (i)
-					if feat = Void then
-						ba.append_integer_32 (0)
-					else
-						rout_id := feat.rout_id_set.first
-						ba.append_integer_32 (rout_id)
-					end
-					i := i + 1
-				end
-			end
-				-- Reset `visible_table_size' since size is computed
-				-- during generation.
-			a_class.set_visible_table_size (0)
-			debug ("refactor_fixme")
-				(create {REFACTORING_HELPER}).fixme ("[
-					Remove information about visible features from byte code
-					format as they are supported only in frozen code.
-				]")
-			end
-			ba.append ('%U')
-		end
-
 	generate (buffer: GENERATION_BUFFER)
 			-- Generate routine id array in `buffer'.
 		require
@@ -1645,6 +1587,104 @@ feature -- Server storing
 			tmp_feature_server.flush
 		end
 
+feature -- Code generation
+
+	descriptors (c: CLASS_C): DESC_LIST
+			-- Descriptors of class types associated
+			-- with class `c'
+		require
+			c_not_void: c /= Void
+		local
+			eiffel_class: EIFFEL_CLASS_C
+			l_feature_i: FEATURE_I
+			l_table: COMPUTED_FEATURE_TABLE
+			l_id_set: ROUT_ID_SET
+			i, j, nb, l_count: INTEGER
+			l_inline_agent_table: HASH_TABLE [FEATURE_I, INTEGER_32]
+			l_area: SPECIAL [FEATURE_I]
+			l_features: HASH_TABLE [FEATURE_I, INTEGER_32]
+			l_once_info: OBJECT_RELATIVE_ONCE_INFO
+		do
+			create Result.make (c)
+			if c.has_invariant then
+				Result.put_invariant (c.invariant_feature)
+			end
+
+			from
+				l_table := features
+				l_area := l_table.area
+				l_count := l_table.count
+			until
+				i = l_count
+			loop
+				l_feature_i := l_area [i]
+				l_id_set := l_feature_i.rout_id_set
+				Result.put (l_id_set.first, l_feature_i)
+				nb := l_id_set.count
+				if nb > 1 then
+					from
+						j := 2
+					until
+						j > nb
+					loop
+						Result.put (l_id_set.item (j), l_feature_i)
+						j := j + 1
+					end
+				end
+				i := i + 1
+			end
+
+			eiffel_class ?= c
+			if eiffel_class /= Void and then eiffel_class.has_inline_agents then
+				from
+					l_inline_agent_table := eiffel_class.inline_agent_table
+					l_inline_agent_table.start
+				until
+					l_inline_agent_table.after
+				loop
+					l_feature_i := l_inline_agent_table.item_for_iteration
+					Result.put (l_feature_i.rout_id_set.first, l_feature_i)
+					l_inline_agent_table.forth
+				end
+			end
+
+				-- Added entries for the generic features, holding the data for
+				-- current and inherited formal generic parameters.
+			l_features := c.generic_features
+			if l_features /= Void then
+				from
+					l_features.start
+				until
+					l_features.after
+				loop
+					l_feature_i := l_features.item_for_iteration
+					Result.put (l_feature_i.rout_id_set.first, l_feature_i)
+					l_features.forth
+				end
+			end
+
+				-- Added entries for the object relative onces.
+				-- for current and inherited onces per object.
+			if
+				attached c.object_relative_once_infos as l_once_infos and then
+				attached l_once_infos.new_cursor as l_once_infos_cursor
+			then
+				from
+					l_once_infos_cursor.start
+				until
+					l_once_infos_cursor.after
+				loop
+					l_once_info := l_once_infos_cursor.item
+					Result.put (l_once_info.called_routine_id, l_once_info.called_attribute_i)
+					Result.put (l_once_info.exception_routine_id, l_once_info.exception_attribute_i)
+					if l_once_info.has_result then
+						Result.put (l_once_info.result_routine_id, l_once_info.result_attribute_i)
+					end
+					l_once_infos_cursor.forth
+				end
+			end
+		end
+
 invariant
 	alias_table_not_void: alias_table /= Void
 	body_index_table_not_void: is_computed implies body_index_table /= Void
@@ -1653,7 +1693,7 @@ invariant
 	related_select_table: is_computed implies select_table.feature_table = Current
 
 note
-	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

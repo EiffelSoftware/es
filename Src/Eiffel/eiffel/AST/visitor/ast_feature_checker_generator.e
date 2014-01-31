@@ -5757,7 +5757,11 @@ feature {NONE} -- Visitor
 										assigner_arguments.append (arguments)
 									end
 										-- Evaluate assigner command byte node
-									access_b := target_assigner.access (void_type, True)
+									if external_b /= Void and then external_b.static_class_type /= Void then
+										access_b := target_assigner.access_for_feature (void_type, external_b.static_class_type, True)
+									else
+										access_b := target_assigner.access (void_type, True)
+									end
 									access_b.set_parameters (assigner_arguments)
 
 									if l_multi_constraint_static /= Void then
@@ -5773,6 +5777,9 @@ feature {NONE} -- Visitor
 											-- Set external static assigner
 										check call_b_unattached: call_b = Void end
 										call_b := access_b
+										if external_b.is_static_call and attached {EXTERNAL_B} call_b as l_ext_b then
+											l_ext_b.enable_static_call
+										end
 									end
 									create l_instr.make (call_b, l_as.start_location.line)
 									l_instr.set_line_pragma (l_as.line_pragma)
@@ -9949,10 +9956,9 @@ feature {NONE} -- Agents
 					-- Initialize ROUTINE_CREATION_B instance
 					-- We need to use the conformence_type since it could be a like_current type which would
 					-- be a problem with inherited assertions. See eweasel test execX10
-				l_routine_creation.init (a_target_type.conformance_type, a_target_type.base_class.class_id,
+				l_routine_creation.init (a_target_type.conformance_type,
 					a_feature, l_result_type, l_tuple_node, l_array_of_opens, l_last_open_positions,
-					a_feature.is_inline_agent, l_target_closed, a_target_type.base_class.is_precompiled,
-					a_target_type.base_class.is_basic)
+					a_feature.is_inline_agent, l_target_closed, a_target_type.base_class.is_basic)
 
 				last_byte_node := l_routine_creation
 			end
@@ -10117,7 +10123,6 @@ feature {NONE} -- Agents
 			create l_rout_creation
 			if l_target_closed  then
 				l_rout_creation.init (context.current_class_type,
-					l_cur_class.class_id,
 					l_func,
 					l_agent_type,
 					l_tuple_node,
@@ -10125,18 +10130,15 @@ feature {NONE} -- Agents
 					Void,
 					True,
 					True,
-					False,
 					False)
 			else
 				l_rout_creation.init (context.current_class_type,
-					l_cur_class.class_id,
 					l_func,
 					l_agent_type,
 					l_tuple_node,
 					open_target_omap_bc,
 					open_target_omap,
 					True,
-					False,
 					False,
 					False)
 			end

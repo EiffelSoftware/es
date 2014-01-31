@@ -188,7 +188,7 @@ RT_LNK void eif_exit_eiffel_code(void);
 #define RTLNTS(x,n,a)		tuple_malloc_specific(x,n,a)
 #define RTLNTY(x)			eif_type_malloc(x)
 #define RTLNSMART(x)		smart_emalloc(x)
-#define RTLNRW(a,b,c,d,e,f,g,h,i,j,k,l,m) rout_obj_create_wb((a),(b),(c),(d),(e),(f),(g),(h),(i),(j),(k),(l),(m))
+#define RTLNRW(a,d,e,f,g,h,i,j,k,l,m) rout_obj_create_wb((a),(d),(e),(f),(g),(h),(i),(j),(k),(l),(m))
 #define RTLNRF(a,b,c,d,e,f,g) rout_obj_create_fl((a),(b),(c),(d),(e),(f), (g))
 #define RTLNC(x)			eclone(x)
 #define RTLNSP2(t,f,n,e,b)	special_malloc(f,t,n,e,b)
@@ -1519,48 +1519,40 @@ EIF_BOOLEAN eif_is_synced_on (EIF_SCP_PID c, EIF_SCP_PID );
 	}
 
 /*
- * Separate call (versions ending with P stand for calls to precompiled routines, the first two arguments to them have a different meaning):
- * RTS_CF(s,f,n,t,a,r) - call a function on a static type s with a feature id f and name n on a target t and arguments a and result r
- * RTS_CP(s,f,n,t,a)   - call a procedure on a static type s with a feature id f and name n on a target t and arguments a
- * RTS_CC(s,f,d,a)     - call a creation procedure (asynchronous) on a static type s with a feature id f on a target of dynamic type d and arguments a
+ * Separate call, the first two arguments to them have a different meaning between workbench and finalized mode):
+ * RTS_CF(rid,n,t,a,r) - call a function on a routine ID id and name n on a target t and arguments a and result r
+ * RTS_CP(rid,n,t,a)   - call a procedure on a routine ID id and name n on a target t and arguments a
+ * RTS_CC(rid,d,a)     - call a creation procedure (asynchronous) on a routine ID id on a target of dynamic type d and arguments a
  * RTS_CA(o,p,t,a,r)   - call an attribute at offset o using pattern p on target t with arguments a and result r
  * RTS_CS(t,a)         - call a constant on target t with call structure a
  */
 
 #ifdef WORKBENCH
-#define RTS_CF(s,f,n,t,a,r) \
+#define RTS_CF(rid,n,t,a,r) \
 	{                                                         \
 		((call_data*)(a)) -> result = &(r);               \
 		((call_data*)(a)) -> sync_pid = RTS_PID(Current); \
-		eif_log_call (s, f, RTS_PID(Current), (call_data*) a);         \
+		eif_log_call (rid, RTS_PID(Current), (call_data*) a);         \
 	}
-#define RTS_CFP(s,f,n,t,a,r) \
-	{                                                         \
-		((call_data*)(a)) -> result = &(r);               \
-		((call_data*)(a)) -> sync_pid = RTS_PID(Current); \
-		eif_log_callp (s, f, RTS_PID(Current), a);        \
-	}
-#define RTS_CP(s,f,n,t,a)  eif_log_call  (s, f, RTS_PID(Current), (call_data*) a);
-#define RTS_CPP(s,f,n,t,a) eif_log_callp (s, f, RTS_PID(Current), (call_data*) a);
+#define RTS_CP(rid,n,t,a)  eif_log_call  (rid, RTS_PID(Current), (call_data*) a);
 
-#define RTS_CC(s,f,d,a)  eif_log_call  (s, f, RTS_PID(Current), (call_data*) a);
-#define RTS_CCP(s,f,d,a) eif_log_callp  (s, f, RTS_PID(Current), (call_data*) a);
+#define RTS_CC(rid,d,a)  eif_log_call  (rid, RTS_PID(Current), (call_data*) a);
 #else /* WORKBENCH */
-#define RTS_CF(f,p,t,a,r) \
+#define RTS_CF(fptr,p,t,a,r) \
 	{                                                         \
-		((call_data*)(a)) -> feature.address = (fnptr) f; \
+		((call_data*)(a)) -> feature.address = (fnptr) fptr; \
 		((call_data*)(a)) -> pattern = p;                 \
 		((call_data*)(a)) -> result = &(r);               \
 		((call_data*)(a)) -> sync_pid = RTS_PID(Current); \
 		eif_log_call (((call_data*)(a))->sync_pid, (call_data*) a);    \
 	}
-#define RTS_CP(f,p,t,a) \
+#define RTS_CP(fptr,p,t,a) \
 	{                                                         \
-		((call_data*)(a)) -> feature.address = (fnptr) f; \
+		((call_data*)(a)) -> feature.address = (fnptr) fptr; \
 		((call_data*)(a)) -> pattern = p;                 \
 		eif_log_call (RTS_PID(Current), (call_data*) a);               \
 	}
-#define RTS_CC(f,p,t,a) RTS_CP(f,p,t,a)
+#define RTS_CC(fptr,p,t,a) RTS_CP(fptr,p,t,a)
 #define RTS_CA(o,p,t,a,r) \
 	{                                                         \
 		((call_data*)(a)) -> feature.offset = o;          \
@@ -1708,41 +1700,24 @@ EIF_BOOLEAN eif_is_synced_on (EIF_SCP_PID c, EIF_SCP_PID );
 #ifdef WORKBENCH
 
 /* Macros used for feature call and various accesses to objects.
- *  RTWF(x,y,z) is a feature call
- *  RTWPF(x,y,z) is a precompiled feature call
- *  RTVF(x,y,z,t) is a nested feature call (dot expression)
- *  RTVPF(x,y,z,t) is a nested precompiled feature call (dot expression)
- *  RTWC(x,y,z) is a creation procedure call
- *  RTWPC(x,y,z) is a precompiled creation procedure call
- *  RTWA(x,y,z) is the access to an attribute
- *  RTWPA(x,y,z) is the access to a precompiled attribute
- *  RTVA(x,y,z,t) is a nested access to an attribute (dot expression)
- *  RTVPA(x,y,z,t) is a nested access to a precompiled attribute (dot expr)
- *  RTWT(x,y,z) fetches the creation type
- *  RTWPT(x,y,z) fetches the creation type of a precompiled feature
- *  RTWCT(x,y,z) fetches the creation type of a generic features
- *  RTWPCT(st,x,y,z) fetches the creation type of a precompiled generic feature
- *  RTWCTT(x,y,z) same as RTWCT but takes dftype instead of object
- *  RTWPCTT(x,y,z) same as RTWPCT but takes dftype instead of object
+ *  RTWF(rid,dtype) is a feature call
+ *  RTVF(rid,name,obj) is a nested feature call (dot expression)
+ *  RTWC(rid,dtype) is a creation procedure call
+ *  RTWA(rid,dtype) is the access to an attribute
+ *  RTVA(rid,name,obj) is a nested access to an attribute (dot expression)
+ *  RTWCT(rid,dtype,dftype) fetches the creation type of a generic features
+ *  RTWCTT(rid,dftype) same as RTWCT but takes dftype and dtype is computed from dftype
  *  RTWPP(x) returns the feature address ($ or agent operator) of id x. The ids are assigned int ADDRESS_TABLE.
  *  RTWO(x) stores in a list the body id of the just called once routine
  */
-#define RTWF(x,y,z)			wfeat(x,y,z)
-#define RTWPF(x,y,z)		wpfeat(x,y,z)
-#define RTVF(x,y,z,t)		wfeat_inv(x,y,z,t)
-#define RTVPF(x,y,z,t)		wpfeat_inv(x,y,z,t)
-#define RTWC(x,y,z)		wcreat(x,y,z)
-#define RTWPC(x,y,z)		wpcreat(x,y,z)
-#define RTWA(x,y,z)			wattr(x,y,z)
-#define RTWPA(x,y,z)		wpattr(x,y,z)
-#define RTVA(x,y,z,t)		wattr_inv(x,y,z,t)
-#define RTVPA(x,y,z,t)		wpattr_inv(x,y,z,t)
-#define RTWT(x,y,z)			wtype(x,y,z)
-#define RTWPT(x,y,z)		wptype(x,y,z)
-#define RTWCT(x,y,z)		wtype_gen(x,y,z)
-#define RTWPCT(st,x,y,z)	wptype_gen(st,x,y,z)
-#define RTWCTT(x,y,z)		wttype_gen(x,y,z)
-#define RTWPCTT(st,x,y,z)	wtptype_gen(st,x,y,z)
+
+#define RTWF(rid,dtype)			(nstcall = 0, wfeat(rid,dtype))
+#define RTVF(rid,name,obj)		(nstcall = 1, wfeat_inv(rid,name,obj))
+#define RTWC(rid,dtype)			(nstcall =-1, wfeat(rid,dtype))
+#define RTWA(rid,dtype)			wattr(rid,dtype)
+#define RTVA(rid,name,obj)		wattr_inv(rid,name,obj)
+#define RTWCT(rid,dtype,dftype)	wtype_gen(rid,dtype,dftype)
+#define RTWCTT(rid,dftype)		wtype_gen(rid,To_dtype(dftype),dftype)
 #define RTWPP(x)			(egc_address_table[x])
 #define RTWO(x)
 

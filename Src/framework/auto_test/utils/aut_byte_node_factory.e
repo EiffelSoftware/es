@@ -311,9 +311,9 @@ feature -- Byte node generation
 				-- Initialize ROUTINE_CREATION_B instance
 				-- We need to use the conformence_type since it could be a like_current type which would
 				-- be a problem with inherited assertions. See eweasel test execX10
-			Result.init (a_target_type.conformance_type, a_target_type.associated_class.class_id,
+			Result.init (a_target_type.conformance_type,
 				a_feature, l_result_type, l_tuple_node, l_array_of_opens, l_last_open_positions,
-				a_feature.is_inline_agent, l_target_closed, a_target_type.associated_class.is_precompiled,
+				a_feature.is_inline_agent, l_target_closed,
 				a_target_type.associated_class.is_basic)
 		ensure
 			result_attached: Result /= Void
@@ -331,7 +331,7 @@ feature -- Byte node generation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
