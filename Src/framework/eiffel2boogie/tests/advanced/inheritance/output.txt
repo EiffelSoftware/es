@@ -49,7 +49,7 @@ Successfully verified.
 A_A.set_to_next (inherited by A_B)
 Verification failed.
 
-Line: 58. Postcondition invariant_holds may be violated.
+Line: 65. Postcondition invariant_holds may be violated.
 ======================================
 A_A.set_prev (inherited by A_B)
 Successfully verified.
@@ -57,14 +57,14 @@ Successfully verified.
 A_B.use_break
 Verification failed.
 
-Line: 37. Check new_property may be violated.
+Line: 38. Check new_property may be violated.
 --------------------------------------
-Line: 39. Precondition invariant_holds may be violated on call to wrap.
+Line: 40. Precondition invariant_holds may be violated on call to wrap.
 ======================================
 A_B.break
 Verification failed.
 
-Line: 47. Check new_property may be violated.
+Line: 53. Check new_property may be violated.
 ======================================
 A_B (invariant admissibility)
 Successfully verified.

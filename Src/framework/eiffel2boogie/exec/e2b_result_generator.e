@@ -66,6 +66,29 @@ feature -- Basic operations
 			l_error.set_line_number (line_for_error (a_error))
 		end
 
+	has_validity_error (a_feature: FEATURE_I; a_class: CLASS_C): BOOLEAN
+			-- Does `a_feature' in `a_class' have a validty error (or the whole class if `a_feature' is Void),
+		require
+			a_class_exists: attached a_class
+		local
+			l_errors: LIST [E2B_AUTOPROOF_ERROR]
+			l_error: E2B_AUTOPROOF_ERROR
+		do
+			from
+				l_errors := last_result.autoproof_errors
+				l_errors.start
+			until
+				l_errors.after or Result
+			loop
+				l_error := l_errors.item
+				Result := not l_error.is_warning and
+					helper.is_same_class (l_error.context_class, a_class) and then
+					((l_error.context_feature = Void) or else -- The whole class has an error
+					(a_feature /= Void and then l_error.context_feature.rout_id_set.first = a_feature.rout_id_set.first)) -- or we are asking about a feature and that feature has an error
+				l_errors.forth
+			end
+		end
+
 feature {NONE} -- Implementation
 
 	process_procedure_result (a_item: E2B_BOOGIE_PROCEDURE_RESULT)
@@ -78,32 +101,6 @@ feature {NONE} -- Implementation
 				l_agent.call ([a_item, Current])
 			else
 				process_default_result (a_item)
-			end
-		end
-
-	has_validity_error (a_feature: FEATURE_I): BOOLEAN
-			-- Does `a_item' refer to a feature with a validty error?
-		local
-			l_errors: LIST [E2B_AUTOPROOF_ERROR]
-			l_error: E2B_AUTOPROOF_ERROR
-		do
-			from
-				l_errors := last_result.autoproof_errors
-				l_errors.start
-			until
-				l_errors.after or Result
-			loop
-				l_error := l_errors.item
-				if
-					not l_error.is_warning and
-					l_error.context_class /= Void and then
-					l_error.context_class.class_id = a_feature.written_in and then
-					(l_error.context_feature = Void or else -- Either the whole class has an error
-					l_error.context_feature.rout_id_set.first = a_feature.rout_id_set.first) -- or just htis feature
-				then
-					Result := True
-				end
-				l_errors.forth
 			end
 		end
 
@@ -133,7 +130,7 @@ feature {NONE} -- Implementation
 				l_context.append ("inherited by " + l_temp.type.base_class.name_in_upper)
 			end
 
-			if has_validity_error (l_feature) then
+			if has_validity_error (l_feature, l_temp.type.base_class) then
 					-- Ignore results of features with a validity error
 			elseif a_item.is_successful then
 				create l_success

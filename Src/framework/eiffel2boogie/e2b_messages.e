@@ -27,6 +27,12 @@ feature -- Validity error messages
 	impure_function_in_contract: STRING_32
 		do Result := "Impure function cannot be used in specifications." end
 
+	invalid_call_in_invariant: STRING_32
+		do Result := "Class invariant must not access built-in attributes closed or owner, or functions marked inv_unfriendly." end
+
+	invalid_call_in_friendly_function: STRING_32
+		do Result := "A pure function must not access built-in attributes closed or owner, or functions marked inv_unfriendly, unless it is itself inv_unfriendly." end
+
 	creator_call_as_procedure (a_pname: STRING): STRING_32
 		do Result := locale.formatted_string ("Feature '$1' is a creator but is called as a regular procedure.", a_pname) end
 

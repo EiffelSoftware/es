@@ -432,6 +432,7 @@ feature -- Translation: Implementation
 			l_call: IV_PROCEDURE_CALL
 			l_ownership_handler: E2B_CUSTOM_OWNERSHIP_HANDLER
 			l_expr_translator: E2B_BODY_EXPRESSION_TRANSLATOR
+			l_builtin_collector: E2B_BUILTIN_CALLS_COLLECTOR
 		do
 			set_context (a_feature, a_type)
 			set_inlining_options_for_feature (a_feature)
@@ -453,6 +454,10 @@ feature -- Translation: Implementation
 			l_translator.set_context (l_implementation, current_feature, current_type)
 			if helper.has_functional_representation (a_feature) then
 				l_translator.set_context_readable (factory.global_readable)
+				if not helper.is_feature_status (current_feature, "inv_unfriendly") then
+					create l_builtin_collector
+					l_builtin_collector.set_any_target
+				end
 			end
 
 				-- Add initial tracing information
@@ -486,6 +491,13 @@ feature -- Translation: Implementation
 						end
 					end
 					l_translator.process_compound (l_byte_code.compound)
+
+					if l_builtin_collector /= Void then
+						l_byte_code.compound.process (l_builtin_collector)
+						if l_builtin_collector.is_inv_unfriendly then
+							helper.add_semantic_error (a_feature, messages.invalid_call_in_friendly_function, -1)
+						end
+					end
 				end
 			end
 

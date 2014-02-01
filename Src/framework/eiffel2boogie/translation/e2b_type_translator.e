@@ -30,7 +30,7 @@ feature -- Access
 	last_safety_checks: LINKED_LIST [IV_ASSERT]
 			-- Last generated precondition of the invariant.
 
-	ghost_collector: E2B_GHOST_SET_COLLECTOR
+	builtin_collector: E2B_BUILTIN_CALLS_COLLECTOR
 			-- Visitor that collects information about the usage of built-in ghost fields.
 
 feature -- Basic operations
@@ -181,19 +181,20 @@ feature {NONE} -- Implementation
 			create l_mapping.make
 			l_mapping.set_heap (l_heap)
 			l_mapping.set_current (l_current)
+			create builtin_collector
 			process_invariants (a_ancestor, a_type, a_included, a_excluded, l_mapping)
 				-- Add ownership defaults unless included clauses are explicitly specified
 			if options.is_ownership_enabled and a_included = Void then
 				if not a_type.base_class.is_deferred then
 						-- For an effective class: built-in ghost sets are empty by default
 						-- (ToDo: the policy seems arbitrary, should it be for all non-frozen classes?)
-					if not helper.is_class_explicit (a_type.base_class, "observers") and not ghost_collector.has_observers then
+					if not helper.is_class_explicit (a_type.base_class, "observers") and not builtin_collector.has_observers then
 						last_clauses.extend (empty_set_property ("observers"))
 					end
-					if not helper.is_class_explicit (a_type.base_class, "subjects") and not ghost_collector.has_subjects then
+					if not helper.is_class_explicit (a_type.base_class, "subjects") and not builtin_collector.has_subjects then
 						last_clauses.extend (empty_set_property ("subjects"))
 					end
-					if not helper.is_class_explicit (a_type.base_class, "owns") and not ghost_collector.has_owns then
+					if not helper.is_class_explicit (a_type.base_class, "owns") and not builtin_collector.has_owns then
 						last_clauses.extend (empty_set_property ("owns"))
 					end
 				end
@@ -218,7 +219,6 @@ feature {NONE} -- Implementation
 		do
 			create last_clauses.make
 			create last_safety_checks.make
-			create ghost_collector
 			process_flat_invariants (a_class, a_context_type, a_included, a_excluded, a_mapping)
 		end
 
@@ -286,7 +286,7 @@ feature {NONE} -- Implementation
 							generate_ghost_set_definition (l_translator.last_expression, a_context_type, "observers")
 						end
 					end
-					l_assert.process (ghost_collector)
+					l_assert.process (builtin_collector)
 
 					l_list.forth
 				end
@@ -367,7 +367,6 @@ feature -- Invariant admissibility
 	generate_invariant_admissability_check (a_class: CLASS_C)
 			-- Generate invariant admissability check for class `a_class'.
 		local
-			l_reads_collector: E2B_READS_COLLECTOR
 			l_proc: IV_PROCEDURE
 			l_impl: IV_IMPLEMENTATION
 			l_pre: IV_PRECONDITION
@@ -399,9 +398,16 @@ feature -- Invariant admissibility
 			create l_block.make_name ("pre")
 			l_goto.add_target (l_block)
 			l_impl.body.add_statement (l_block)
+			create builtin_collector
+			builtin_collector.set_any_target
 			process_invariants (a_class, a_class.actual_type, Void, Void, create {E2B_ENTITY_MAPPING}.make)
 			across last_safety_checks as i loop
 				l_block.add_statement (i.item)
+			end
+
+				-- A3: o.inv does not mention closed and owner (static check)
+			if builtin_collector.is_inv_unfriendly then
+				helper.add_semantic_error (a_class, messages.invalid_call_in_invariant, -1)
 			end
 
 				-- A1: reads(o.inv) is subset of domain(o) + o.subjects
@@ -423,17 +429,6 @@ feature -- Invariant admissibility
 			l_block.add_statement (l_assume)
 			create l_assert.make (factory.function_call ("admissibility2", << factory.global_heap, factory.std_current >>, types.bool))
 			l_assert.node_info.set_type ("A2")
-			l_block.add_statement (l_assert)
-			l_block.add_statement (factory.return)
-
-				-- A3: o.inv does not mention closed/owner/is_open/is_closed/is_wrapped
-
-			create l_block.make_name ("a3")
-			l_goto.add_target (l_block)
-			l_impl.body.add_statement (l_block)
-			l_block.add_statement (l_assume)
-			create l_assert.make (factory.true_)
-			l_assert.node_info.set_type ("A3")
 			l_block.add_statement (l_assert)
 			l_block.add_statement (factory.return)
 
@@ -469,7 +464,10 @@ feature -- Invariant admissibility
 			l_failure: E2B_FAILED_VERIFICATION
 			l_error: E2B_DEFAULT_VERIFICATION_ERROR
 		do
-			if a_boogie_result.is_successful then
+			if a_result_generator.has_validity_error (Void, a_class) then
+				-- Ignore results of classes with a validity error
+
+			elseif a_boogie_result.is_successful then
 				create l_success
 				l_success.set_class (a_class)
 				l_success.set_time (a_boogie_result.time)
