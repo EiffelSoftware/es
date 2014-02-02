@@ -66,6 +66,7 @@ feature -- Comparison
 			-- equal to current object?
 		require
 			other_not_void: other /= Void
+			reads (Current, other)
 		external
 			"built_in"
 		end

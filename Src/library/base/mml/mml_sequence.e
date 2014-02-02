@@ -143,8 +143,6 @@ feature -- Decomposition
 
 	front (upper: INTEGER): MML_SEQUENCE [G]
 			-- Prefix up to `upper'.
-		note
-			maps_to: "Seq#Take"
 		do
 		end
 

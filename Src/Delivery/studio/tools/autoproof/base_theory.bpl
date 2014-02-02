@@ -164,7 +164,7 @@ function same_outside(h: HeapType, h': HeapType, frame: Frame): bool {
 // Objects inside the old ownership domains of frame did not change
 function same_inside(h: HeapType, h': HeapType, frame: Frame): bool { 
 	(forall <T> o: ref, f: Field T :: { h[o, f] } { h'[o, f] }
-    h'[o, f] != h[o, f] ==>
+    h[o, allocated] && h'[o, f] != h[o, f] ==>
       !frame [o, f] && (forall<U> o': ref, g: Field U :: frame[o', g] && o != o' ==> !in_domain(h, o', o)))
 }
 
@@ -502,6 +502,8 @@ function subtract(a, b: int): int { a - b }
 function multiply(a, b: int): int { a * b }
 function modulo(a, b: int): int { a mod b }
 function divide(a, b: int): int { a div b }
+function min(a, b: int): int { if a <= b then a else b }
+function max(a, b: int): int { if a >= b then a else b }
 
 // Expanded types
 

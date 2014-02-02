@@ -15,7 +15,7 @@ inherit
 			search as search_forth
 --			satisfy as satisfy_forth
 		redefine
-			is_equal,
+--			is_equal,
 			search_forth
 --			satisfy_forth
 		end
@@ -23,8 +23,8 @@ inherit
 	ITERATION_CURSOR [G]
 		rename
 			after as off
-		redefine
-			is_equal
+--		redefine
+--			is_equal
 		end
 
 feature -- Access
@@ -46,7 +46,7 @@ feature -- Measurement
 		note
 			status: functional
 		require
-			target_closed: target.closed
+			target_exists: target /= Void
 			reads (Current, target)
 		do
 			Result := target.count - index + 1
@@ -57,7 +57,7 @@ feature -- Measurement
 		note
 			status: functional
 		require
-			target_closed: target.closed
+			target_exists: target /= Void
 			reads (Current, target)
 		do
 			Result := 0 <= i and i <= target.count + 1
@@ -67,6 +67,8 @@ feature -- Status report
 
 	before: BOOLEAN
 			-- Is current position before any position in `target'?
+		require
+			closed
 		deferred
 		ensure
 			definition: Result = (index = 0)
@@ -74,6 +76,8 @@ feature -- Status report
 
 	after: BOOLEAN
 			-- Is current position after any position in `target'?
+		require
+			closed
 		deferred
 		ensure
 			definition: Result = (index = sequence.count + 1)
@@ -88,6 +92,8 @@ feature -- Status report
 
 	is_first: BOOLEAN
 			-- Is cursor at the first position?
+		require
+			closed
 		deferred
 		ensure
 			definition: Result = (not sequence.is_empty and index = 1)
@@ -95,35 +101,41 @@ feature -- Status report
 
 	is_last: BOOLEAN
 			-- Is cursor at the last position?
+		require
+			closed
 		deferred
 		ensure
 			definition: Result = (not sequence.is_empty and index = sequence.count)
 		end
 
-feature -- Comparison
+--feature -- Comparison
 
-	is_equal (other: like Current): BOOLEAN
-			-- Is `other' attached to the same container at the same position?
-			-- (Use reference comparison)
-		do
-			if other = Current then
-				Result := True
-			else
-				Result := target = other.target and index = other.index
-			end
-		ensure then
-			definition: Result = (target = other.target and sequence ~ other.sequence and index = other.index)
-		end
+--	is_equal (other: like Current): BOOLEAN
+			-- ToDo: not correct: there could potentially be different sequences for the same target, redefine later
+--			-- Is `other' attached to the same container at the same position?
+--			-- (Use reference comparison)
+--		do
+--			if other = Current then
+--				Result := True
+--			else
+--				Result := target = other.target and index = other.index
+--			end
+--		ensure then
+--			definition: Result = (target = other.target and sequence ~ other.sequence and index = other.index)
+--		end
 
 feature -- Cursor movement
 
 	start
 			-- Go to the first position.
-		note
-			modify: index
 		deferred
 		ensure then
 			index_effect: index = 1
+			target = old target
+			sequence ~ old sequence
+			observers ~ old observers
+			subjects ~ old subjects
+			owns ~ old owns
 		end
 
 	finish
@@ -133,6 +145,11 @@ feature -- Cursor movement
 		deferred
 		ensure
 			index_effect: index = sequence.count
+			target = old target
+			sequence ~ old sequence
+			observers ~ old observers
+			subjects ~ old subjects
+			owns ~ old owns
 		end
 
 	forth
@@ -142,6 +159,8 @@ feature -- Cursor movement
 		deferred
 		ensure then
 			index_effect: index = old index + 1
+			target = old target
+			sequence ~ old sequence
 		end
 
 	back
@@ -153,6 +172,11 @@ feature -- Cursor movement
 		deferred
 		ensure
 			index_effect: index = old index - 1
+			target = old target
+			sequence ~ old sequence
+			observers ~ old observers
+			subjects ~ old subjects
+			owns ~ old owns
 		end
 
 	go_to (i: INTEGER)
@@ -162,28 +186,31 @@ feature -- Cursor movement
 			explicit: wrapping
 		require
 			has_index: valid_index (i)
-			target_closed: target.closed
 		local
 			j: INTEGER
 		do
 			check inv end
 			if i = 0 then
 				go_before
-				check index = i end
 			elseif i = target.count + 1 then
 				go_after
-				check index = i end
 			elseif i = target.count then
 				finish
-				check index = i end
 			else
-				check not sequence.is_empty end
 				from
 					start
 					j := 1
 				invariant
-					1 <= j and j <= sequence.count
+					sequence.domain [i]
+					j_in_bounds: 1 <= j and j <= i
 					index_counter: index = j
+					sequence ~ sequence.old_
+					observers ~ observers.old_
+					subjects ~ subjects.old_
+					owns ~ owns.old_
+					closed = closed.old_
+					owner = owner.old_
+					inv
 				until
 					j = i
 				loop
@@ -193,6 +220,11 @@ feature -- Cursor movement
 			end
 		ensure
 			index_effect: index = i
+			target = old target
+			sequence ~ old sequence
+			observers ~ old observers
+			subjects ~ old subjects
+			owns ~ old owns
 		end
 
 	go_before
@@ -202,6 +234,11 @@ feature -- Cursor movement
 		deferred
 		ensure
 			index_effect: index = 0
+			target = old target
+			sequence ~ old sequence
+			observers ~ old observers
+			subjects ~ old subjects
+			owns ~ old owns
 		end
 
 	go_after
@@ -211,6 +248,11 @@ feature -- Cursor movement
 		deferred
 		ensure
 			index_effect: index = sequence.count + 1
+			target = old target
+			sequence ~ old sequence
+			observers ~ old observers
+			subjects ~ old subjects
+			owns ~ old owns
 		end
 
 	search_forth (v: G)
@@ -218,7 +260,6 @@ feature -- Cursor movement
 			-- If `v' does not occur, move `after'.
 			-- (Use reference equality.)
 		note
-			modify: index
 			explicit: wrapping
 		do
 			check inv end
@@ -226,6 +267,17 @@ feature -- Cursor movement
 				start
 			end
 			from
+			invariant
+				index.old_ <= index
+				not before
+				across index.old_.max (1) |..| (index - 1) as i all sequence [i.item] /= v end
+				sequence ~ sequence.old_
+				observers ~ observers.old_
+				subjects ~ subjects.old_
+				owns ~ owns.old_
+				closed = closed.old_
+				owner = owner.old_
+				inv
 			until
 				after or else item = v
 			loop
@@ -234,9 +286,14 @@ feature -- Cursor movement
 				count_left
 			end
 		ensure then
-			index_effect_not_found: not sequence.tail (old index).has (v) implies index = target.count + 1
+			index_effect_not_found: not sequence.tail (old index).has (v) implies index = sequence.count + 1
 			index_effect_found: sequence.tail (old index).has (v) implies
 				(sequence [index] = v and not sequence.interval (old index, index - 1).has (v))
+			target = old target
+			sequence ~ old sequence
+			observers ~ old observers
+			subjects ~ old subjects
+			owns ~ old owns
 		end
 
 --	satisfy_forth (pred: PREDICATE [ANY, TUPLE [G]])
@@ -272,22 +329,40 @@ feature -- Cursor movement
 			-- If `v' does not occur, move `before'.
 			-- (Use reference equality.)
 		note
-			modify: index
 			explicit: wrapping
 		do
+			check inv end
 			if after then
 				finish
 			end
 			from
+			invariant
+				index <= index.old_
+				not after
+				across (index + 1) |..| index.old_.min (sequence.count) as i all sequence [i.item] /= v end
+				sequence ~ sequence.old_
+				observers ~ observers.old_
+				subjects ~ subjects.old_
+				owns ~ owns.old_
+				closed = closed.old_
+				owner = owner.old_
+				inv
 			until
 				before or else item = v
 			loop
 				back
+			variant
+				index
 			end
 		ensure
 			index_effect_not_found: not sequence.front (old index).has (v) implies index = 0
 			index_effect_found: sequence.front (old index).has (v) implies
 				(sequence [index] = v and not sequence.interval (index + 1, old index).has (v))
+			target = old target
+			sequence ~ old sequence
+			observers ~ old observers
+			subjects ~ old subjects
+			owns ~ old owns
 		end
 
 --	satisfy_back (pred: PREDICATE [ANY, TUPLE [G]])
@@ -329,11 +404,11 @@ feature -- Specification
 
 invariant
 	target_exists: target /= Void
+	subjects_definition: subjects = [target]
 	target_bag_constraint: target.bag ~ sequence.to_bag
 	index_constraint: 0 <= index and index <= sequence.count + 1
 	box_definition_empty: not sequence.domain [index] implies box.is_empty
 	box_definition_non_empty: sequence.domain [index] implies box ~ create {MML_SET [G]}.singleton (sequence [index])
-	subjects_definition: subjects = [target]
 
 note
 	explicit: owns, observers

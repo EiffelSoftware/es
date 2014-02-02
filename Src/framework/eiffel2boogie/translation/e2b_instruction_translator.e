@@ -1142,7 +1142,7 @@ feature {NONE} -- Loop processing
 		do
 			if a_variant /= Void then
 				set_current_origin_information (a_variant)
-				process_expression (a_variant.expr)
+				process_contract_expression (a_variant.expr)
 				a_variant_exprs.extend (last_expression)
 			end
 			process_decreases (a_decreases)

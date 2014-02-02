@@ -159,7 +159,7 @@ axiom (forall<T> a: Bag T, b: Bag T :: { Bag#Card(Bag#Union(a,b)) }
 // Intersection of two bags
 function Bag#Intersection<T>(Bag T, Bag T): Bag T;
 axiom (forall<T> a: Bag T, b: Bag T, o: T :: { Bag#Intersection(a,b)[o] }
-  Bag#Intersection(a,b)[o] == Math#min(a[o],  b[o]));
+  Bag#Intersection(a,b)[o] == min(a[o],  b[o]));
 // left and right pseudo-idempotence
 axiom (forall<T> a, b: Bag T :: { Bag#Intersection(Bag#Intersection(a, b), b) }
   Bag#Intersection(Bag#Intersection(a, b), b) == Bag#Intersection(a, b));
@@ -189,11 +189,6 @@ axiom (forall<T> s: Set T :: { Bag#Card(Bag#FromSet(s)) }
 
 // Auxiliary functions
   
-function Math#min(a: int, b: int): int;
-axiom (forall a: int, b: int :: { Math#min(a, b) } a <= b <==> Math#min(a, b) == a);
-axiom (forall a: int, b: int :: { Math#min(a, b) } b <= a <==> Math#min(a, b) == b);
-axiom (forall a: int, b: int :: { Math#min(a, b) } Math#min(a, b) == a || Math#min(a, b) == b);
-
 function Math#clip(a: int): int;
 axiom (forall a: int :: { Math#clip(a) } 0 <= a ==> Math#clip(a) == a);
 axiom (forall a: int :: { Math#clip(a) } a < 0  ==> Math#clip(a) == 0);

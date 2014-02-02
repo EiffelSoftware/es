@@ -817,6 +817,11 @@ feature {NONE} -- Translation: Functions
 			else
 					-- Take `l_post' from the postcondition
 				l_post := pre_post_expressions_of (current_feature, current_type, l_expr_translator.entity_mapping).post
+					-- Add type property
+				l_post := factory.and_clean (l_post, type_property (
+					l_fcall,
+					current_feature.type.deep_actual_type.instantiated_in (current_type),
+					l_expr_translator.entity_mapping.heap))
 			end
 
 			create l_forall.make (factory.implies_ (l_pre, l_post))

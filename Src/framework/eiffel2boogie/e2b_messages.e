@@ -153,7 +153,7 @@ feature -- Verification error messages
 		do Result := "Attribute $called_feature might not be readable." end
 
 	access_frame_readable: STRING_32
-		do Result := "Some memebers of the read frame of $called_feature might not be readable." end
+		do Result := "Some members of the read frame of $called_feature might not be readable." end
 
 	ownership_explicit_note: STRING_32
 		do Result := "Disable this default by making $explicit_value explicit." end

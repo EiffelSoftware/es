@@ -12,12 +12,15 @@ inherit
 
 	E2B_CUSTOM_CALL_HANDLER
 
+	SHARED_WORKBENCH
+		export {NONE} all end
+
 feature -- Status report
 
 	is_handling_call (a_target_type: TYPE_A; a_feature: FEATURE_I): BOOLEAN
 			-- <Precursor>
 		do
-			Result := a_target_type.is_numeric
+			Result := a_target_type.is_numeric and not (a_feature.written_in = system.any_id)
 		end
 
 feature -- Basic operations
@@ -41,6 +44,7 @@ feature -- Implementation
 		local
 			l_name: STRING
 			l_fname: STRING
+			l_fcall: IV_FUNCTION_CALL
 		do
 			l_name := a_feature.feature_name
 			if l_name.same_string ("truncated_to_integer") then
@@ -63,12 +67,20 @@ feature -- Implementation
 				l_fname := "int_to_integer_32"
 			elseif l_name.same_string ("to_integer_64") or l_name.same_string ("as_integer_64") then
 				l_fname := "int_to_integer_64"
+			elseif l_name.same_string ("min") then
+				l_fname := "min"
+			elseif l_name.same_string ("max") then
+				l_fname := "max"
 			else
 				l_fname := Void
 			end
 			if l_fname /= Void then
 				-- ToDo: is this correct
-				a_translator.set_last_expression (factory.function_call (l_fname, << a_translator.current_target >>, types.int))
+				create l_fcall.make (l_fname, types.int)
+				l_fcall.add_argument (a_translator.current_target)
+				a_translator.process_parameters (a_parameters)
+				l_fcall.arguments.append (a_translator.last_parameters)
+				a_translator.set_last_expression (l_fcall)
 			else
 				a_translator.process_routine_call (a_feature, a_parameters, False)
 			end

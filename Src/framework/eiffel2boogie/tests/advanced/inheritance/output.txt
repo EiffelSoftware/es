@@ -33,7 +33,7 @@ Successfully verified.
 ANY.default_create (creator, inherited by A_B)
 Verification failed.
 
-Line: 310. Precondition invariant_holds may be violated on call to wrap. Disable this default by making wrapping explicit.
+Line: 311. Precondition invariant_holds may be violated on call to wrap. Disable this default by making wrapping explicit.
 ======================================
 A_A.set_x (inherited by A_B)
 Verification failed.
