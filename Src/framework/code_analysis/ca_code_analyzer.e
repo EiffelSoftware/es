@@ -156,30 +156,16 @@ feature -- Analysis interface
 
 	add_cluster (a_cluster: CLUSTER_I)
 			-- Add all classes of cluster `a_cluster'.
-		local
-			l_conf_class: CONF_CLASS
-			l_class_i: CLASS_I
 		do
 			system_wide_check := False
 
-			from
-				a_cluster.classes.start
-			until
-				a_cluster.classes.after
-			loop
-				l_conf_class := a_cluster.classes.item_for_iteration
-				l_class_i := eiffel_universe.class_named (l_conf_class.name, a_cluster)
-				add_class (l_class_i)
-				a_cluster.classes.forth
+			across a_cluster.classes as ic loop
+				add_class (ic.item)
 			end
+
 			if a_cluster.sub_clusters /= Void then
-				from
-					a_cluster.sub_clusters.start
-				until
-					a_cluster.sub_clusters.after
-				loop
-					add_cluster (a_cluster.sub_clusters.item_for_iteration)
-					a_cluster.sub_clusters.forth
+				across a_cluster.sub_clusters as ic loop
+					add_cluster (ic.item)
 				end
 			end
 		end
@@ -188,23 +174,13 @@ feature -- Analysis interface
 			-- Add all classes of the configuration group `a_group'.
 		require
 			a_group_not_void: a_group /= Void
-		local
-			l_conf_class: CONF_CLASS
-			l_class_i: CLASS_I
 		do
-			from
-				a_group.classes.start
-			until
-				a_group.classes.after
-			loop
-				l_conf_class := a_group.classes.item_for_iteration
-				l_class_i := eiffel_universe.class_named (l_conf_class.name, a_group)
-				add_class (l_class_i)
-				a_group.classes.forth
+			across a_group.classes as ic loop
+				add_class (ic.item)
 			end
 		end
 
-	add_classes (a_classes: ITERABLE [CLASS_I])
+	add_classes (a_classes: ITERABLE [CONF_CLASS])
 			-- Add the classes `a_classes'.
 		do
 			system_wide_check := False
@@ -214,19 +190,19 @@ feature -- Analysis interface
 			end
 		end
 
-	add_class (a_class: CLASS_I)
+	add_class (a_class: CONF_CLASS)
 			-- Adds class `a_class'.
 		local
 			l_class_c: CLASS_C
 		do
 			system_wide_check := False
 
-			if a_class.is_compiled then
-				l_class_c := a_class.compiled_class
-				check l_class_c /= Void end
-				classes_to_analyze.extend (l_class_c)
+			if attached {EIFFEL_CLASS_I} a_class as l_eiffel_class
+				and then attached {CLASS_C} l_eiffel_class.compiled_class as l_compiled
+			then
+				classes_to_analyze.extend (l_compiled)
 
-				extract_indexes (l_class_c)
+				extract_indexes (l_compiled)
 			else
 				output_actions.call ([ca_messages.class_skipped (a_class.name)])
 			end

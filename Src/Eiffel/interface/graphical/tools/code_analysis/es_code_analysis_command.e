@@ -222,7 +222,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 				l_changed_timestamp := l_class.date
 				if l_changed_timestamp /= l_analysis_timestamp then
 					code_analyzer.rule_violations.remove (l_class.compiled_class)
-					code_analyzer.add_class (l_class)
+					code_analyzer.add_class (l_class.config_class)
 				end
 
 				analysis_timestamp.forth
@@ -266,7 +266,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 			l_scope_label := ca_tool.panel.scope_label
 
 			if attached {CLASSC_STONE} a_stone as s then
-				code_analyzer.add_class (s.class_i)
+				code_analyzer.add_class (s.class_i.config_class)
 				l_scope_label.set_text (s.class_name)
 				l_scope_label.set_foreground_color (create {EV_COLOR}.make_with_8_bit_rgb (140, 140, 255))
 				l_scope_label.set_pebble (s)

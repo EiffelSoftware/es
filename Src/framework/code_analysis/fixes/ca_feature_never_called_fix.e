@@ -43,26 +43,29 @@ feature {NONE} -- Visitor
 		local
 			l_exit: BOOLEAN
 			l_new_feature_names: STRING_32
+			l_feature_names: EIFFEL_LIST [FEATURE_NAME]
 		do
-			if a_feature.feature_names.count > 1 then
+			l_feature_names := a_feature.feature_names
+
+			if l_feature_names.count > 1 then
 				create l_new_feature_names.make_empty
 
 				from
-					a_feature.feature_names.start
+					l_feature_names.start
 				until
-					l_exit or a_feature.feature_names.after
+					l_exit or l_feature_names.after
 				loop
 						-- Skip the feature name we are removing.
-					if not a_feature.feature_names.item.visual_name_32.is_equal (feature_name) then
-						l_new_feature_names.append (", " + a_feature.feature_names.item.visual_name_32)
+					if not l_feature_names.item.visual_name_32.is_equal (feature_name) then
+						l_new_feature_names.append (", " + l_feature_names.item.visual_name_32)
 					end
 
-					a_feature.feature_names.forth
+					l_feature_names.forth
 				end
 
 					-- Remove the first comma.
 				l_new_feature_names.remove_head (2)
-				a_feature.feature_names.replace_text (l_new_feature_names, matchlist)
+				l_feature_names.replace_text (l_new_feature_names, matchlist)
 			else
 				if a_feature.is_equivalent (feature_to_remove) then
 					a_feature.replace_text ("", matchlist)

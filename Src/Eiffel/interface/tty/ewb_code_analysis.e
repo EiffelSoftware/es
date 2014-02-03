@@ -114,9 +114,9 @@ feature -- Execution (declared in EWB_CMD)
 			-- Adds class with name `a_class_name' if it is found amongst the compiled
 			-- classes to `a_analyzer'.
 		do
-			if attached universe.compiled_classes_with_name (a_class_name) as l_c then
-				across l_c as l_classes loop
-					a_analyzer.add_class (l_classes.item)
+			if attached universe.classes_with_name (a_class_name) as l_c then
+				across l_c as ic loop
+					a_analyzer.add_class (ic.item.config_class)
 				end
 			else
 				output_window.add (ca_messages.cmd_class_not_found_1 + a_class_name + ca_messages.cmd_class_not_found_2)
