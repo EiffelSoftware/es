@@ -72,12 +72,16 @@ feature -- Verification
 			create Result.make
 				-- Delegate any output to the status bar.
 			Result.add_output_action (agent window_manager.display_message)
+		ensure
+			valid_result: Result /= Void
 		end
 
 	ca_command: ES_CODE_ANALYSIS_COMMAND
 			-- Shared Code Analysis command.
 		once
 			create Result.make
+		ensure
+			valid_result: Result /= Void
 		end
 
 note

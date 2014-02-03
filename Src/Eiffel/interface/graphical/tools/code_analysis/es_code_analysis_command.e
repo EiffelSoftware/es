@@ -345,6 +345,8 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 		once
 			create l_generator
 			Result := l_generator.generate_uuid
+		ensure
+			valid_result: Result /= Void
 		end
 
 	ca_tool: detachable ES_CODE_ANALYSIS_TOOL
@@ -408,6 +410,8 @@ feature -- Items
 
 			Result.drop_actions.extend (agent execute_with_stone)
 			Result.drop_actions.set_veto_pebble_function (agent droppable)
+		ensure then
+			valid_result: Result /= Void
 		end
 
 	new_mini_sd_toolbar_item: EB_SD_COMMAND_TOOL_BAR_BUTTON
@@ -416,6 +420,8 @@ feature -- Items
 			Result := Precursor {EB_TOOLBARABLE_AND_MENUABLE_COMMAND}
 			Result.drop_actions.extend (agent execute_with_stone)
 			Result.drop_actions.set_veto_pebble_function (agent droppable)
+		ensure then
+			valid_result: Result /= Void
 		end
 
 	initialize_sd_toolbar_item (a_item: EB_SD_COMMAND_TOOL_BAR_DUAL_POPUP_BUTTON; display_text: BOOLEAN)
@@ -502,6 +508,8 @@ feature {NONE} -- Implementation
 		do
 			check service_consumer.is_service_available end
 			Result := service_consumer.service
+		ensure
+			valid_result: Result /= Void
 		end
 
 	set_up_menu_items

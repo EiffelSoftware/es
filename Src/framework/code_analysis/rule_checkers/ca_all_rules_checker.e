@@ -68,6 +68,7 @@ create
 	make
 
 feature {NONE} -- Initialization
+
 	make
 		do
 			last_run_successful := False

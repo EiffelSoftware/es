@@ -1,5 +1,12 @@
 note
-	description: "Rule #20: 'Variable not read'."
+	description: "[
+			RULE #20: Variable not read after assignment
+	
+			An assignment to a local variable has no
+			effect at all if the variable is not read after the assignment, and
+			before it is reassigned or out of scope. This rule is only checked on
+			variables of expanded types.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -306,8 +313,8 @@ feature -- Properties
 			Result :=  ca_names.variable_not_read_description
 		end
 
-	id: STRING_32 = "CA020T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA020"
+			-- <Precursor>
 
 	is_system_wide: BOOLEAN = False
 

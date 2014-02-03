@@ -13,12 +13,16 @@ feature -- Names
 			-- Name strings for the Code Analyzer.
 		once
 			create Result
+		ensure
+			valid_result: Result /= Void
 		end
 
 	ca_messages: CA_MESSAGES
 			-- Message strings for the Code Analyzer.
 		once
 			create Result
+		ensure
+			valid_result: Result /= Void
 		end
 
 end

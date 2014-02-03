@@ -1,5 +1,10 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #62: Very long identifier
+	
+			A name of a feature, an argument, or a
+			local variable that is very long is bad for code readability.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -167,8 +172,8 @@ feature -- Properties
 			Result := ca_names.very_long_identifier_title
 		end
 
-	id: STRING_32 = "CA062T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA062"
+			-- <Precursor>
 
 	description: STRING_32
 		do

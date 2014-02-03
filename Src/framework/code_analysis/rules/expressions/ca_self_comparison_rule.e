@@ -1,5 +1,12 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #71: Self-comparison
+	
+			An expression comparing a variable to
+			itself always evaluates to the same boolean value. The comparison is
+			thus redundant. In an Until expression it may lead to non-termination.
+			Usually it is a typing error.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -45,8 +52,8 @@ feature -- Properties
 			Result := ca_names.self_comparison_title
 		end
 
-	id: STRING_32 = "CA071T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA071"
+			-- <Precursor>
 
 	description: STRING_32
 		do

@@ -1,5 +1,12 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #46: Avoid 'not equal' in If-Else instructions
+	
+			Having an If-Else instruction with a
+			condition that checks for inequality is not optimal for readability.
+			Instead an equality comparison should be made. Refactoring by negating
+			the condition and by switching the instructions solves this issue.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -64,8 +71,8 @@ feature -- Properties
 			Result :=  ca_names.if_else_not_equal_description
 		end
 
-	id: STRING_32 = "CA046T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA046"
+			-- <Precursor>
 
 	is_system_wide: BOOLEAN = False
 

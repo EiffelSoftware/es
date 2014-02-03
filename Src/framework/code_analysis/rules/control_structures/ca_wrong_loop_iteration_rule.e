@@ -1,5 +1,12 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #92: Wrong loop iteration
+
+			Often, from-until loops use an integer
+			variable for iteration. Initialization, stop condition and the loop
+			body follow a simple scheme. A loop following this scheme but violating
+			it at some point is an indication for an error.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -165,8 +172,8 @@ feature -- Properties
 			Result :=  ca_names.wrong_loop_iteration_description
 		end
 
-	id: STRING_32 = "CA092T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA092"
+			-- <Precursor>
 
 	is_system_wide: BOOLEAN = False
 

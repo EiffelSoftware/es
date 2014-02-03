@@ -1,5 +1,10 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #2: Unused argument
+			
+			A feature should only have arguments which are actually
+			needed and used in the computation.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -44,8 +49,8 @@ feature -- Properties
 			Result := ca_names.unused_argument_title
 		end
 
-	id: STRING_32 = "CA002T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA002"
+			-- <Precursor>
 
 	description: STRING_32
 		do

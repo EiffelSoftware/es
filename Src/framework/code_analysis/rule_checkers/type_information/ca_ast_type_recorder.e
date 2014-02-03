@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CA_AST_TYPE_RECORDER}."
-	author: ""
+	description: "Records type information for classes."
+	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
 

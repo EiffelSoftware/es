@@ -1,5 +1,10 @@
 note
-	description: "See `description'."
+	description: "[
+			RULE #42: Unneeded comparison of boolean variables or queries
+	
+			In expressions, boolean variables or
+			queries need not be compared to True or False.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -38,8 +43,8 @@ feature -- Properties
 			Result := ca_names.boolean_comparison_title
 		end
 
-	id: STRING_32 = "CA042T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA042"
+			-- <Precursor>
 
 	description: STRING_32
 		do

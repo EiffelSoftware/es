@@ -1,5 +1,11 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #6: Object test typing not needed
+	
+			An object test is redundant if the static
+			type of the tested variable is the same as the type (in curly braces)
+			that the variable is tested for.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -39,8 +45,8 @@ feature -- Properties
 			Result := ca_names.unneeded_object_test_title
 		end
 
-	id: STRING_32 = "CA006T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA006"
+			-- <Precursor>
 
 	description: STRING_32
 		do
@@ -109,7 +115,7 @@ feature {NONE} -- AST Visits
 
 feature {NONE} -- Helpers
 
-	find_access_id (a_nested_call: NESTED_AS): ACCESS_FEAT_AS
+	find_access_id (a_nested_call: NESTED_AS): detachable ACCESS_FEAT_AS
 			-- Retrieves the rightmost feature in the nested call `a_nested_call'.
 		local
 			l_nested: NESTED_AS

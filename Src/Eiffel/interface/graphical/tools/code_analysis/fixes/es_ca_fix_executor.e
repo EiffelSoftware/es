@@ -110,6 +110,8 @@ feature {NONE} -- Utilities
 			-- The color the data row from the GUI is painted in.
 		once
 			create Result.make_with_8_bit_rgb (181, 230, 29)
+		ensure
+			valid_result: Result /= Void
 		end
 
 note

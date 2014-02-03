@@ -1,5 +1,11 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #33: Very big class
+	
+			A class declaration that is very large
+			(that is not including inherited features) may be problematic. The
+			class might provide features it is not responsible for.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -161,8 +167,8 @@ feature -- Properties
 			Result := ca_names.very_big_class_title
 		end
 
-	id: STRING_32 = "CA033T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA033"
+			-- <Precursor>
 
 	description: STRING_32
 		do

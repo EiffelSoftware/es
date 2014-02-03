@@ -1,5 +1,12 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #53: Empty routine in deferred class.
+	
+			A routine with an empty body in a deferred
+			class should be considered to be declared as deferred. That way it will
+			not be forgotten to implement the routine in the descendant classes and
+			errors can be avoided.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -70,8 +77,8 @@ feature -- Properties
 			Result :=  ca_names.empty_effective_routine_description
 		end
 
-	id: STRING_32 = "CA053T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA053"
+			-- <Precursor>
 
 	is_system_wide: BOOLEAN = False
 

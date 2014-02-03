@@ -1,5 +1,12 @@
 note
-	description: "Summary description for {CA_NPATH_RULE}."
+	description: "[
+			RULE #34: High NPATH complexity
+	
+			NPATH is the number of acyclic execution
+			paths through a routine. A routine's NPATH complexity should not be too
+			high. In order to reduce the NPATH complexity one can move some
+			functionality to separate routines.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -67,8 +74,8 @@ feature -- Properties
 			Result := ca_names.npath_title
 		end
 
-	id: STRING_32 = "CA034T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA034"
+			-- <Precursor>
 
 	description: STRING_32
 			-- <Precursor>

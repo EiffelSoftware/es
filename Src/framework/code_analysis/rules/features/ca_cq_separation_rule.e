@@ -1,5 +1,19 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #4: No command-query separation (possible function side effect)
+			
+			To the client of a class it is not
+			important whether a query is implemented as an attribute or as a
+			function. When a class evolves an attribute may be changed into a
+			function, for example. A function should never change the state of
+			an object. A function containing a procedure call, assigning to an
+			attribute, or creating an attribute is a strong indication that this
+			principle is violated. This rule applies exactly in these three
+			last-mentioned cases. There are rather exceptional but sometimes useful
+			class designs in which the externally visible state of an object (i. e.
+			the values of exported queries) does not change even though the function
+			contains a rule-violating instruction.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -115,8 +129,8 @@ feature -- Properties
 			Result := ca_names.cq_separation_title
 		end
 
-	id: STRING_32 = "CA004T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA004"
+			-- <Precursor>
 
 	description: STRING_32
 		do

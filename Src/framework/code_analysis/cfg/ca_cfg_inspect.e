@@ -64,7 +64,7 @@ feature -- Properties
 			-- The else branch, if existing.
 		do
 			if has_else then
-				Result := out_edges.at (n_when_branches + 1)
+				Result := out_edges [n_when_branches + 1]
 			else
 				Result := Void
 			end
@@ -81,7 +81,7 @@ feature -- Properties
 		require
 			valid_index: (a_index >= 1) and (a_index <= n_when_branches)
 		do
-			out_edges.put_i_th (a_bb, a_index)
+			out_edges [a_index] := a_bb
 		end
 
 	set_else_branch (a_bb: CA_CFG_BASIC_BLOCK)
@@ -89,7 +89,7 @@ feature -- Properties
 		require
 			has_else
 		do
-			out_edges.put_i_th (a_bb, n_when_branches + 1)
+			out_edges [n_when_branches + 1] := a_bb
 		end
 
 invariant

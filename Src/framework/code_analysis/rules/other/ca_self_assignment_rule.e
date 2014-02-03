@@ -1,5 +1,13 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #1: Self-assignment
+			
+			Assigning a variable to itself is a meaningless instruction
+			due to a typing error. Most probably, one of the two
+			variable names was misspelled. One example among many
+			others: the programmer wanted to assign a local variable
+			to a class attribute and used one of the variable names twice.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -42,8 +50,8 @@ feature -- Properties
 			Result := ca_names.self_assignment_title
 		end
 
-	id: STRING_32 = "CA001T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA001"
+			-- <Precursor>
 
 	description: STRING_32
 		do

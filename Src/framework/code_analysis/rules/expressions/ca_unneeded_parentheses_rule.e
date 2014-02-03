@@ -1,5 +1,10 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #23: Unneeded parentheses
+	
+			Parentheses that are not needed should be
+			removed. This helps enforcing a consistent coding style.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -74,8 +79,8 @@ feature -- Properties
 			Result := ca_names.unneeded_parentheses_title
 		end
 
-	id: STRING_32 = "CA023T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA023"
+			-- <Precursor>
 
 	description: STRING_32
 		do

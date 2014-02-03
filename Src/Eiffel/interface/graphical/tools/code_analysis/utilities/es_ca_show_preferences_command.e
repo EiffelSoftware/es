@@ -31,10 +31,9 @@ feature -- Execution
 		do
 			if preference_window = Void or else preference_window.is_destroyed then
 				create preference_window.make (code_analyzer.preferences, window_manager.last_focused_development_window.window)
---				preference_window.set_size (800, 600)
 				preference_window.set_title (ca_names.preferences_window_title)
 				preference_window.raise
-				
+
 			end
 
 			preference_window.show
@@ -47,39 +46,43 @@ feature {NONE} -- Implementation
 feature -- Properties
 
 	name: STRING_32 = "Code Analysis Preferences"
+			-- <Precursor>
 
 	menu_name: STRING_32
+			-- <Precursor>
 		do
-			Result := "Code Analysis Preferences..."
+			Result := ca_names.pref_menu_name
 		end
 
 	tooltext: STRING_32
+			-- <Precursor>
 		do
-			Result := "Preferences"
+			Result := ca_names.pref_tooltext
 		end
 
-	description: STRING_32
-		do
-			Result := ""
-		end
+	description: STRING_32 = ""
+			-- <Precursor>
 
 	tooltip: STRING_32
+			-- <Precursor>
 		do
-			Result := "Show Dialog for Code Analysis Preferences"
+			Result := ca_names.pref_tooltip
 		end
 
 	pixmap: EV_PIXMAP
+			-- <Precursor>
 		once
 			Result := pixmaps.icon_pixmaps.project_settings_advanced_icon
 		end
 
 	pixel_buffer: EV_PIXEL_BUFFER
+			-- <Precursor>
 		once
 			Result := pixmaps.icon_pixmaps.project_settings_advanced_icon_buffer
 		end
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

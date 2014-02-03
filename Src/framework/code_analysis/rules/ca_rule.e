@@ -19,16 +19,22 @@ feature -- Basic properties, usually fix
 	title: STRING_32
 			-- A short title.
 		deferred
+		ensure
+			valid_result: Result /= Void
 		end
 
 	id: STRING_32
 			-- A preferrably unique identifier for the rule. It should start with "CA".
 		deferred
+		ensure
+			valid_result: Result /= Void
 		end
 
 	description: STRING_32
 			-- A description of what this rule checks.
 		deferred
+		ensure
+			valid_result: Result /= Void
 		end
 
 	is_system_wide: BOOLEAN

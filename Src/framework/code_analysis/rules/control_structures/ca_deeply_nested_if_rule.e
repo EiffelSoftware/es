@@ -1,5 +1,11 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #43: Deeply nested if instructions.
+	
+			Deeply nested If instructions make the code
+			less readable. They should be avoided; one can refactor the affected
+			code by changing the decision logic or by introducing separate routines.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -103,8 +109,8 @@ feature -- Properties
 			Result :=  ca_names.deeply_nested_if_description
 		end
 
-	id: STRING_32 = "CA043T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA043"
+			-- <Precursor>
 
 	is_system_wide: BOOLEAN = False
 

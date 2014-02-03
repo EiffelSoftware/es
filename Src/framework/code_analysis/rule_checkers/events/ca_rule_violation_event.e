@@ -33,18 +33,8 @@ feature -- Access
 	data: CA_RULE_VIOLATION
 			-- <Precursor>
 
-	description: STRING_32
+	description: STRING_32 = "Rule violation event."
 			-- <Precursor>
-		local
-			l_string_formatter: YANK_STRING_WINDOW
-		do
-			if not attached internal_description then
-				create l_string_formatter.make
---				single_line_message (l_string_formatter)
-				internal_description := l_string_formatter.stored_output
-			end
-			Result := internal_description
-		end
 
 	frozen is_error_event: BOOLEAN
 			-- Does `Current' represent an error?
@@ -70,7 +60,7 @@ feature -- Access
 			Result := attached {CA_HINT} data.rule.severity
 		end
 
-	affected_class: CLASS_C
+	affected_class: detachable CLASS_C
 			-- Class the rule violation refers to.
 		do
 			Result := data.affected_class
@@ -83,7 +73,7 @@ feature -- Access
 			data.format_violation_description (a_formatter)
 		end
 
-	location: LOCATION_AS
+	location: detachable LOCATION_AS
 			-- Location of the rule violation.
 		do
 			Result := data.location
@@ -93,12 +83,16 @@ feature -- Access
 			-- Title of the rule violation.
 		do
 			Result := data.rule.title
+		ensure
+			valid_result: Result /= Void
 		end
 
 	rule_id: STRING_32
 			-- Rule ID of the rule violation.
 		do
 			Result := data.rule.id
+		ensure
+			valid_result: Result /= Void
 		end
 
 	severity_score: INTEGER
@@ -111,6 +105,8 @@ feature -- Access
 			-- General description of the associated rule.
 		do
 			Result := data.rule.description
+		ensure
+			valid_result: Result /= Void
 		end
 
 	frozen type: NATURAL_8
@@ -157,10 +153,5 @@ feature -- Basic operations
 		do
 			is_invalidated := True
 		end
-
-feature {NONE} -- Implementation
-
-	internal_description: detachable STRING_32
-			-- Internal buffer for description.
 
 end

@@ -1,5 +1,10 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #82: Missing is_equal redefinition
+	
+			The class defines '{HASHABLE}.hash_code',
+			but does not redefine 'is_equal'. 'is_equal' may need to be redefined.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -15,6 +20,7 @@ create
 	make
 
 feature {NONE} -- Initialization
+
 	make
 			-- Initialization.
 		do
@@ -38,8 +44,8 @@ feature -- Properties
 			Result := ca_names.missing_is_equal_title
 		end
 
-	id: STRING_32 = "CA082T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA082"
+			-- <Precursor>
 
 	description: STRING_32
 		do

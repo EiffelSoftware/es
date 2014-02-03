@@ -1,5 +1,10 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #57: Simplifiable boolean expression
+	
+			Some negated boolean expressions can be
+			simplified using the inverse comparison operator.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -38,8 +43,8 @@ feature -- Properties
 			Result := ca_names.simplifiable_boolean_title
 		end
 
-	id: STRING_32 = "CA057T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA057"
+			-- <Precursor>
 
 	description: STRING_32
 		do

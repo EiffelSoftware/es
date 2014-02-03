@@ -1,5 +1,11 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #5: Object test with object test local on read-only variable (locals, object test locals, arguments)
+	
+			For local variables, feature arguments,
+			and object test locals it is unnecessary to let the attached keyword
+			create a new and safe local reference.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -39,8 +45,8 @@ feature -- Properties
 			Result := ca_names.unneeded_ot_local_title
 		end
 
-	id: STRING_32 = "CA005T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA005"
+			-- <Precursor>
 
 	description: STRING_32
 		do

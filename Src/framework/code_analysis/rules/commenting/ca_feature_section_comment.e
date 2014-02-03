@@ -1,5 +1,10 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #35: Feature section not commented
+	
+			A feature section should have a comment.
+			This comment serves as caption and is used for example by the 'Features' panel.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -70,8 +75,8 @@ feature -- Properties
 			Result := ca_names.feature_section_comment_title
 		end
 
-	id: STRING_32 = "CA035T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA035"
+			-- <Precursor>
 
 	description: STRING_32
 		do

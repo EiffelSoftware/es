@@ -1,5 +1,12 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #85: Unneeded helper variable
+	
+			A variable that is assigned a value only
+			once and is then used only once can be replaced with the expression
+			that computes this value. This applies as long as the line where the
+			expression is inserted will not have too many characters.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -206,8 +213,8 @@ feature -- Properties
 			Result :=  ca_names.unneeded_helper_variable_description
 		end
 
-	id: STRING_32 = "CA085T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA085"
+			-- <Precursor>
 
 	is_system_wide: BOOLEAN = False
 

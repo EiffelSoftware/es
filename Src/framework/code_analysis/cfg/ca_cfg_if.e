@@ -30,28 +30,28 @@ feature -- Properties
 	condition: EXPR_AS
 			-- The if condition.
 
-	true_branch: CA_CFG_BASIC_BLOCK
+	true_branch: detachable CA_CFG_BASIC_BLOCK
 			-- The node of the "true" edge.
 		do
-			Result := out_edges.at (1)
+			Result := out_edges [1]
 		end
 
-	false_branch: CA_CFG_BASIC_BLOCK
+	false_branch: detachable CA_CFG_BASIC_BLOCK
 			-- The node of the "false" edge.
 		do
-			Result := out_edges.at (2)
+			Result := out_edges [2]
 		end
 
 	set_true_branch (a_bb: CA_CFG_BASIC_BLOCK)
 			-- Sets the node of the "true" edge to `a_bb'.
 		do
-			out_edges.put_i_th (a_bb, 1)
+			out_edges [1] := a_bb
 		end
 
 	set_false_branch (a_bb: CA_CFG_BASIC_BLOCK)
 			-- Sets the node of the "false" edge to `a_bb'.
 		do
-			out_edges.put_i_th (a_bb, 2)
+			out_edges [2] := a_bb
 		end
 
 invariant

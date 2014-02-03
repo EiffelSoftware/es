@@ -616,7 +616,7 @@ feature {NONE} -- Basic operations
 			hints_button.set_text (hint_count.out + " " + ca_names.tool_hints)
 		end
 
-	find_event_row (a_event_item: EVENT_LIST_ITEM_I): EV_GRID_ROW
+	find_event_row (a_event_item: EVENT_LIST_ITEM_I): detachable EV_GRID_ROW
 			-- <Precursor>
 		local
 			l_grid: like grid_events
@@ -679,18 +679,24 @@ feature {NONE} -- Colors
 			-- Background color for errors.
 		once
 			create Result.make_with_8_bit_rgb (255, 220, 220)
+		ensure
+			valid_result: Result /= Void
 		end
 
 	warning_bg_color: EV_COLOR
 			-- Background color for warnings.
 		once
 			create Result.make_with_8_bit_rgb (255, 255, 188)
+		ensure
+			valid_result: Result /= Void
 		end
 
 	dark_gray: EV_COLOR
 			-- Dark gray color (e. g. for font foreground).
 		once
 			create Result.make_with_8_bit_rgb (100, 100, 100)
+		ensure
+			valid_result: Result /= Void
 		end
 
 feature {NONE} -- Constants

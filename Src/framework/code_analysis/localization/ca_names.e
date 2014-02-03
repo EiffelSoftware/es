@@ -36,7 +36,10 @@ feature -- Rules
 		do Result := locale.translation ("High NPATH") end
 
 	npath_description: STRING_32
-		do Result := locale.translation ("The NPATH measure is high.") end
+		do Result := locale.translation ("NPATH is the number of acyclic execution%
+			% paths through a routine. A routine's NPATH complexity should not be too%
+			% high. In order to reduce the NPATH complexity one can move some %
+			%functionality to separate routines.") end
 
 	npath_threshold_option: STRING_32
 		do Result := locale.translation ("Minimum NPATH threshold") end
@@ -45,7 +48,7 @@ feature -- Rules
 		do Result := locale.translation ("Empty if instruction") end
 
 	empty_if_description: STRING_32
-		do Result := locale.translation ("An empty if instruction is useless and should be removed.") end
+		do Result := locale.translation ("An empty conditional instruction is useless and should be removed.") end
 
 	variable_not_read_title: STRING_32
 		do Result := locale.translation ("Variable not read after assignment") end
@@ -97,13 +100,18 @@ feature -- Rules
 		do Result := locale.translation ("Object test typing not needed") end
 
 	unneeded_object_test_description: STRING_32
-		do Result := locale.translation ("---") end
+		do Result := locale.translation ("An object test is redundant if the static %
+			%type of the tested variable is the same as the type (in curly braces) %
+			%that the variable is tested for.") end
 
 	nested_complexity_title: STRING_32
 		do Result := locale.translation ("High complexity of nested branches and loops") end
 
 	nested_complexity_description: STRING_32
-		do Result := locale.translation ("---") end
+		do Result := locale.translation ("With the number of nested braches or loops %
+			%increasing the code get less readable. If the branch and loop complexity %
+			%is too high then the code should be refactored in such a way as to reduce%
+			% its complexity.") end
 
 	nested_complexity_threshold_option: STRING_32
 		do Result := locale.translation ("Minimum nested branches and loops threshold") end
@@ -177,13 +185,16 @@ feature -- Rules
 		do Result := locale.translation ("Feature section not commented") end
 
 	feature_section_comment_description: STRING_32
-		do Result := locale.translation ("") end
+		do Result := locale.translation ("A feature section should have a comment.%
+			% This comment serves as caption and is used for example by the 'Features' panel.") end
 
 	feature_not_commented_title: STRING_32
 		do Result := locale.translation ("Feature not commented") end
 
 	feature_not_commented_description: STRING_32
-		do Result := locale.translation ("") end
+		do Result := locale.translation ("A feature should have a comment. Feature %
+			%comments are particularly helpful for writing clients of this class. To%
+			% the programmer, feature comments will appear as tooltip documentation.") end
 
 	boolean_result_title: STRING_32
 		do Result := locale.translation ("Boolean result can be returned directly") end
@@ -453,5 +464,16 @@ feature -- GUI
 
 	severity_score_column: STRING_32
 		do Result := locale.translation ("Severity Score") end
+
+feature -- GUI: Show Preferences Command
+
+	pref_menu_name: STRING_32
+		do Result := locale.translation ("Code Analysis Preferences...") end
+
+	pref_tooltext: STRING_32
+		do Result := locale.translation ("Preferences") end
+
+	pref_tooltip: STRING_32
+		do Result := locale.translation ("Show Dialog for Code Analysis Preferences") end
 
 end

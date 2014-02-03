@@ -1,5 +1,12 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #32: Very long routine implementation
+	
+			A routine implementation that contains
+			many instructions should be shortened. It might contain
+			copy-and-pasted code, or computations that are not part of what the
+			feature should do, or computation that can be moved to separate routines.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -148,8 +155,8 @@ feature -- Properties
 			Result := ca_names.very_long_routine_title
 		end
 
-	id: STRING_32 = "CA032T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA032"
+			-- <Precursor>
 
 	description: STRING_32
 		do

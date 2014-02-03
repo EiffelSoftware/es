@@ -1,5 +1,12 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #44: Many instructions in an Inspect case
+	
+			A case of an inspect construct
+			containing many instructions decreases code readability. The number
+			of instructions should be lowered, for example by moving functionality
+			to separate features.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -83,8 +90,8 @@ feature -- Properties
 			Result := ca_names.inspect_instructions_title
 		end
 
-	id: STRING_32 = "CA044T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA044"
+			-- <Precursor>
 
 	description: STRING_32
 		do

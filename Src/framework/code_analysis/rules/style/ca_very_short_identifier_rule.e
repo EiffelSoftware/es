@@ -1,5 +1,10 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #61: Very short identifier
+	
+			A name of a feature, an argument, or a
+			local variable that is very short is bad for code readability.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -189,8 +194,8 @@ feature -- Properties
 			Result := ca_names.very_short_identifier_title
 		end
 
-	id: STRING_32 = "CA061T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA061"
+			-- <Precursor>
 
 	description: STRING_32
 		do

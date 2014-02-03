@@ -1,5 +1,11 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #36: Feature not commented
+	
+			A feature should have a comment. Feature
+			comments are particularly helpful for writing clients of this class. To
+			the programmer, feature comments will appear as tooltip documentation.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -59,8 +65,8 @@ feature -- Properties
 			Result := ca_names.feature_not_commented_title
 		end
 
-	id: STRING_32 = "CA036T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA036"
+			-- <Precursor>
 
 	description: STRING_32
 		do

@@ -1,5 +1,11 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #28: Two if instructions can be combined using short-circuit operator
+	
+			Two nested if instructions, where the
+			inner one does not have an else clause, should be combined into a single
+			if instruction using the short circuit 'and then' operator.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -66,8 +72,8 @@ feature -- Properties
 			Result :=  ca_names.short_circuit_if_description
 		end
 
-	id: STRING_32 = "CA028T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA028"
+			-- <Precursor>
 
 	is_system_wide: BOOLEAN = False
 

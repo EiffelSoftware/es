@@ -8,6 +8,7 @@ deferred class
 	CA_RULE_SEVERITY
 
 feature -- Properties
+
 	is_critical: BOOLEAN
 			-- Is the severity category critical for program execution?
 		deferred
@@ -16,6 +17,8 @@ feature -- Properties
 	name: STRING_32
 			-- What the severity is called; what is shown to the user.
 		deferred
+		ensure
+			valid_result: Result /= Void
 		end
 
 end

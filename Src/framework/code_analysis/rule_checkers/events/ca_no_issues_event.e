@@ -27,17 +27,8 @@ feature -- Access
 	data: detachable ANY
 			-- Is not needed here so will stay Void.
 
-	description: STRING_32
+	description: STRING_32 = "No issues."
 			-- <Precursor>
-		local
-			l_string_formatter: YANK_STRING_WINDOW
-		do
-			if not attached internal_description then
-				create l_string_formatter.make
-				internal_description := l_string_formatter.stored_output
-			end
-			Result := internal_description
-		end
 
 	frozen type: NATURAL_8
 			-- <Precursor>
@@ -83,10 +74,5 @@ feature -- Basic operations
 		do
 			is_invalidated := True
 		end
-
-feature {NONE} -- Implementation
-
-	internal_description: detachable STRING_32
-			-- Internal buffer for description.
 
 end

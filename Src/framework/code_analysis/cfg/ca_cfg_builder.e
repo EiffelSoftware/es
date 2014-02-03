@@ -199,6 +199,8 @@ feature {NONE} -- Implementation
 			end
 
 			Result := l_cfg
+		ensure
+			valid_result: Result /= Void
 		end
 
 	is_sequential (a_instruction: INSTRUCTION_AS): BOOLEAN

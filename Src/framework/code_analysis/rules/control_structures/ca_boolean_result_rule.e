@@ -1,5 +1,12 @@
 note
-	description: "See `description'."
+	description: "[
+			RULE #41: Boolean result can be returned directly
+	
+			For a boolean result there is no need for
+			an If/Else clause with Result := True and and Result := False,
+			respectively. One can directly assign the If condition (or its
+			negation) to the result.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -37,8 +44,8 @@ feature -- Properties
 			Result := ca_names.boolean_result_title
 		end
 
-	id: STRING_32 = "CA041T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA041"
+			-- <Precursor>
 
 	description: STRING_32
 		do

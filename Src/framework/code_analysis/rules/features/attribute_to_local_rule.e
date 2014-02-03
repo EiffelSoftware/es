@@ -1,5 +1,11 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #54: Attribute is only used inside a single routine
+	
+			An attribute that is only used inside a
+			single routine of the class where it is defined (and that is not read
+			by any other class) can be transformed into a local variable.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -104,8 +110,8 @@ feature -- Properties
 			Result :=  ca_names.attribute_to_local_description
 		end
 
-	id: STRING_32 = "CA054T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA054"
+			-- <Precursor>
 
 	is_system_wide: BOOLEAN = False
 

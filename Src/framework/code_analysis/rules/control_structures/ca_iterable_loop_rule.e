@@ -1,5 +1,11 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #24: From-until loop on ITERABLE can be reduced to across loop
+	
+			A from-until loop iterating through an
+			{ITERABLE} data structure from beginning to end can be transformed into
+			a (more recommendable) across loop.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -148,8 +154,8 @@ feature -- Properties
 			Result :=  ca_names.iterable_loop_description
 		end
 
-	id: STRING_32 = "CA024T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA024"
+			-- <Precursor>
 
 	is_system_wide: BOOLEAN = False
 

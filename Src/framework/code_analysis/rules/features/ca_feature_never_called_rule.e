@@ -1,5 +1,10 @@
 note
-	description: "Rule #3: 'Feature never called'."
+	description: "[
+			RULE #3: Feature never called
+			
+			There is no use for a feature that is
+			never called by any class (including the one where it is defined).
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -93,8 +98,8 @@ feature -- Properties
 			Result := ca_names.feature_never_called_title
 		end
 
-	id: STRING_32 = "CA003T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA003"
+			-- <Precursor>
 
 	description: STRING_32
 		do

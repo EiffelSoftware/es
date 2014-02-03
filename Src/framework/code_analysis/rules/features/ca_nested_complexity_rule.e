@@ -1,5 +1,12 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #10: High complexity of nested branches and loops
+	
+			With the number of nested braches or loops
+			increasing the code get less readable. If the branch and loop complexity
+			is too high then the code should be refactored in such a way as to reduce
+			its complexity.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -56,8 +63,8 @@ feature -- Properties
 			Result := ca_names.nested_complexity_title
 		end
 
-	id: STRING_32 = "CA010T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA010"
+			-- <Precursor>
 
 	description: STRING_32
 		do

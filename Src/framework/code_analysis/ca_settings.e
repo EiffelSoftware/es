@@ -82,7 +82,7 @@ feature -- Settings
 	preferences: PREFERENCES
 			-- The preferences specific to Code Analysis.
 
-	preference_manager: PREFERENCE_MANAGER
+	preference_manager: detachable PREFERENCE_MANAGER
 			-- The preference manager.
 		do
 			Result := preferences.manager (code_analysis_namespace)

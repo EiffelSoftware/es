@@ -1,5 +1,10 @@
 note
-	description: "See `description'."
+	description: "[
+			RULE #52: Number of elements of a structure is compared to zero
+	
+			In a data structure, comparing the number
+			of elements to zero can be transformed into the boolean query 'is_empty'.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -96,8 +101,8 @@ feature -- Properties
 			Result :=  ca_names.count_equals_zero_description
 		end
 
-	id: STRING_32 = "CA052T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA052"
+			-- <Precursor>
 
 	is_system_wide: BOOLEAN = False
 

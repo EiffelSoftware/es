@@ -1,5 +1,9 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #17: Empty conditional instruction
+	
+			An empty conditional instruction is useless and should be removed.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -38,8 +42,8 @@ feature -- Properties
 			Result := ca_names.empty_if_title
 		end
 
-	id: STRING_32 = "CA017T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA017"
+			-- <Precursor>
 
 	description: STRING_32
 		do

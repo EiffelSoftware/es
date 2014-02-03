@@ -1,5 +1,10 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #25: Semicolon to separate arguments
+	
+			Routine arguments should be separated with
+			semicolons. Although this is optional, it is bad style not to put semicolons.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -44,8 +49,8 @@ feature -- Properties
 			Result := ca_names.semicolon_arguments_title
 		end
 
-	id: STRING_32 = "CA025T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA025"
+			-- <Precursor>
 
 	description: STRING_32
 		do

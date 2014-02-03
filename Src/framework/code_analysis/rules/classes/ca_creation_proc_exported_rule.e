@@ -1,5 +1,13 @@
 note
-	description: "See `description'."
+	description: "[
+			RULE #13: Creation procedure is exported and may be called after object creation
+	
+			If the creation procedure is exported then
+			it may still be called by clients after the object has been created.
+			Ususally, this is not intended and ought to be changed. A client might,
+			for example, by accident call 'x.make' instead of 'create x.make',
+			causing the class invariant or postconditions of make to not hold anymore.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -38,8 +46,8 @@ feature -- Properties
 			Result := ca_names.creation_proc_exported_title
 		end
 
-	id: STRING_32 = "CA013T"
-		-- 'T' stands for 'under test'.
+	id: STRING_32 = "CA013"
+		-- <Precursor>
 
 	description: STRING_32
 		do

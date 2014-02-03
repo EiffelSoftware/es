@@ -34,42 +34,42 @@ feature -- Properties
 	ast: LOOP_AS
 			-- The AST node associated with `Current'.
 
-	loop_branch: CA_CFG_BASIC_BLOCK
+	loop_branch: detachable CA_CFG_BASIC_BLOCK
 			-- The branch that is executed when the loop continues
 			-- to iterate.
 		do
-			Result := out_edges.at (1)
+			Result := out_edges [1]
 		end
 
-	exit_branch: CA_CFG_BASIC_BLOCK
+	exit_branch: detachable CA_CFG_BASIC_BLOCK
 			-- The branch that is executed when the loop is exited.
 		do
-			Result := out_edges.at (2)
+			Result := out_edges [2]
 		end
 
-	loop_in: CA_CFG_BASIC_BLOCK
+	loop_in: detachable CA_CFG_BASIC_BLOCK
 			-- The edge from the end of the loop to `Current'.
 		do
-			Result := in_edges.at (1)
+			Result := in_edges [1]
 		end
 
 	set_loop_branch (a_bb: CA_CFG_BASIC_BLOCK)
 			-- Sets the branch that is executed when the loop continues
 			-- to iterate.
 		do
-			out_edges.put_i_th (a_bb, 1)
+			out_edges [1] := a_bb
 		end
 
 	set_exit_branch (a_bb: CA_CFG_BASIC_BLOCK)
 			-- Sets the branch that is executed when the loop is exited.
 		do
-			out_edges.put_i_th (a_bb, 2)
+			out_edges [2] := a_bb
 		end
 
 	set_loop_in (a_in: CA_CFG_BASIC_BLOCK)
 			-- Set the edge from the end of the loop to `Current'.
 		do
-			in_edges.put_i_th (a_in, 1)
+			in_edges [1] := a_in
 		end
 
 invariant

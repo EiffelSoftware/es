@@ -1,5 +1,10 @@
 note
-	description: "See `description' below."
+	description: "[
+			RULE #80: TODO
+
+			A comment line starting with the string
+			'TODO' or 'To do' means remaining work to be done.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -21,6 +26,7 @@ create
 	make
 
 feature {NONE} -- Initialization
+
 	make
 			-- Initialization.
 		do
@@ -44,8 +50,8 @@ feature -- Properties
 			Result := ca_names.todo_title
 		end
 
-	id: STRING_32 = "CA080T"
-			-- "T" stands for 'under test'.
+	id: STRING_32 = "CA080"
+			-- <Precursor>
 
 	description: STRING_32
 		do
