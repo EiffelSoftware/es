@@ -46,10 +46,7 @@ feature -- Properties
 			Result :=  ca_names.missing_is_equal_description
 		end
 
-	is_system_wide: BOOLEAN
-		once
-			Result := False
-		end
+	is_system_wide: BOOLEAN = False
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		do
@@ -75,8 +72,6 @@ feature {NONE} -- Checking the rule
 	is_current_hashable: BOOLEAN
 			-- Is currently checked class a descendant of {HASHABLE}?
 		do
-			Result := False
-
 			across checking_class.parents as l_parents loop
 				if l_parents.item.name.is_equal ("HASHABLE") then
 					Result := True
@@ -87,8 +82,6 @@ feature {NONE} -- Checking the rule
 	redefines_is_equal: BOOLEAN
 			-- Does current class redefine `is_equal'?
 		do
-			Result := False
-
 			across checking_class.written_in_features as l_feat loop
 				if l_feat.item.name_32.is_equal ("is_equal") then
 					Result := True

@@ -50,10 +50,7 @@ feature -- Properties
 			Result :=  ca_names.self_assignment_description
 		end
 
-	is_system_wide: BOOLEAN
-		once
-			Result := False
-		end
+	is_system_wide: BOOLEAN = False
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		do

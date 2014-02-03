@@ -101,8 +101,6 @@ feature {NONE} -- Rule checking
 		require
 			expected_variable_set: attached expected_var
 		do
-			Result := False
-
 			if attached a_from then
 				across a_from as l_instr loop
 					if attached {INSTR_CALL_AS} l_instr.item as l_call then
@@ -123,8 +121,6 @@ feature {NONE} -- Rule checking
 	matching_last_instruction (a_loop_body: detachable EIFFEL_LIST [INSTRUCTION_AS]): BOOLEAN
 			-- Is the last instruction of `a_loop_body' of the form `expected_var'.start?
 		do
-			Result := False
-
 			if attached a_loop_body and then attached {INSTR_CALL_AS} a_loop_body.last as l_call then
 				if attached {NESTED_AS} l_call.call as l_nested_call then
 					if l_nested_call.target.access_name_32.is_equal (expected_var) then

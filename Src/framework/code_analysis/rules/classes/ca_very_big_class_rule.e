@@ -169,10 +169,7 @@ feature -- Properties
 			Result :=  ca_names.very_big_class_description
 		end
 
-	is_system_wide: BOOLEAN
-		once
-			Result := False
-		end
+	is_system_wide: BOOLEAN = False
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		local

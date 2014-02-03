@@ -9,7 +9,9 @@ class
 
 inherit
 	COMPARABLE
-		redefine out end
+		rename
+			out as csv_line
+		redefine csv_line end
 
 create
 	make_with_rule
@@ -85,7 +87,7 @@ feature {CA_RULE} -- Setting violation properties
 
 feature -- String representation
 
-	out: STRING
+	csv_line: STRING
 			-- String representation of `Current' as a CSV line.
 		local
 			l_yankee: YANK_STRING_WINDOW

@@ -21,10 +21,9 @@ feature -- Basic properties, usually fix
 		deferred
 		end
 
-	id: detachable STRING_32
+	id: STRING_32
 			-- A preferrably unique identifier for the rule. It should start with "CA".
-		once
-			Result := Void
+		deferred
 		end
 
 	description: STRING_32
@@ -152,7 +151,7 @@ feature -- Hash Code
 	hash_code: INTEGER
 		do
 				-- Delegate it.
-			Result := title.hash_code
+			Result := id.hash_code
 		end
 
 feature {NONE} -- Preferences
@@ -172,7 +171,6 @@ feature {NONE} -- Preferences
 			int: INTEGER
 		do
 			int := a_value.to_integer
-			Result := False
 			if int >= a_lower and int <= a_upper then
 				Result := True
 			end

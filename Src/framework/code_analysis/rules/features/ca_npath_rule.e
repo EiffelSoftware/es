@@ -76,11 +76,8 @@ feature -- Properties
 			Result :=  ca_names.npath_description
 		end
 
-	is_system_wide: BOOLEAN
+	is_system_wide: BOOLEAN = False
 			-- <Precursor>
-		once
-			Result := False
-		end
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 			-- <Precursor>

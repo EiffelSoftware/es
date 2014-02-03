@@ -253,14 +253,16 @@ feature -- Properties
 
 feature {NONE} -- Implementation
 
+	csv_file_name: STRING = "last_analysis_result.csv"
+
+	csv_header: STRING = "Severity;Class;Location;Title;Description;Rule ID;Severity Score"
+
 	analysis_completed
 			-- Will be called when the analysis task has finished.
 		local
-			l_logger: CA_LOGGER
+			l_csv_writer: CA_CSV_WRITER
 		do
-			create l_logger.make ("last_analysis_result.csv")
-				-- CSV title column.
-			l_logger.log ("Severity;Class;Location;Title;Description;Rule ID;Severity Score")
+			create l_csv_writer.make (csv_file_name, csv_header)
 
 			across rules as l_rules loop
 				across l_rules.item.violations as l_v loop
@@ -271,12 +273,12 @@ feature {NONE} -- Implementation
 							-- Add the violation.
 						rule_violations.at (l_v.item.affected_class).extend (l_v.item)
 							-- Log it.
-						l_logger.log (l_v.item.out)
+						l_csv_writer.add_line (l_v.item.csv_line)
 					end
 				end
 			end
 
-			l_logger.close_log
+			l_csv_writer.close_file
 
 			clear_classes_to_analyze
 
@@ -352,7 +354,6 @@ feature {NONE} -- Class-wide Options (From Indexing Clauses)
 			-- Extracts options from the indexing clause of class `a_class'.
 		local
 			l_ast: CLASS_AS
-			l_item: STRING_32
 			l_ignoredby: LINKED_LIST [STRING_32]
 		do
 			create l_ignoredby.make
@@ -362,33 +363,43 @@ feature {NONE} -- Class-wide Options (From Indexing Clauses)
 			nonlibrary_class.force (False, a_class)
 			l_ast := a_class.ast
 
-			if attached l_ast.internal_top_indexes then
-				across l_ast.internal_top_indexes as l_indexes loop
+			if attached l_ast.internal_top_indexes as l_top then
+				search_indexing_tags (l_top, a_class, l_ignoredby)
+			end
+			if attached l_ast.internal_bottom_indexes as l_bottom then
+				search_indexing_tags (l_bottom, a_class, l_ignoredby)
+			end
 
-					if l_indexes.item.tag.name_32.is_equal ("ca_ignoredby") then
-							-- Class wants to ignore certain rules.
-						across l_indexes.item.index_list as l_list loop
-							l_item := l_list.item.string_value_32
-							l_item.prune_all ('%"')
-							l_ignoredby.extend (l_item)
-						end
-					elseif l_indexes.item.tag.name_32.is_equal ("ca_library") then
-							-- Class has information on whether it is a library class.
-						if not l_indexes.item.index_list.is_empty then
-							l_item := l_indexes.item.index_list.first.string_value_32
-							l_item.to_lower
-							l_item.prune_all ('%"')
-							if l_item.is_equal ("true") then
-								library_class.force (True, a_class)
-							elseif l_item.is_equal ("false") then
-								nonlibrary_class.force (True, a_class)
-							end
+			ignoredby.force (l_ignoredby, a_class)
+		end
+
+	search_indexing_tags (a_clause: INDEXING_CLAUSE_AS; a_class: CLASS_C; a_ignoredby: LINKED_LIST [STRING_32])
+			-- Searches `a_clause' for settings relevant to code analysis.
+		local
+			l_item: STRING_32
+		do
+			across a_clause as ic loop
+				if ic.item.tag.name_32.is_equal ("ca_ignoredby") then
+						-- Class wants to ignore certain rules.
+					across ic.item.index_list as l_list loop
+						l_item := l_list.item.string_value_32
+						l_item.prune_all ('%"')
+						a_ignoredby.extend (l_item)
+					end
+				elseif ic.item.tag.name_32.is_equal ("ca_library") then
+						-- Class has information on whether it is a library class.
+					if not ic.item.index_list.is_empty then
+						l_item := ic.item.index_list.first.string_value_32
+						l_item.to_lower
+						l_item.prune_all ('%"')
+						if l_item.is_equal ("true") then
+							library_class.force (True, a_class)
+						elseif l_item.is_equal ("false") then
+							nonlibrary_class.force (True, a_class)
 						end
 					end
 				end
 			end
-
-			ignoredby.force (l_ignoredby, a_class)
 		end
 
 	ignoredby: HASH_TABLE [LINKED_LIST [STRING_32], CLASS_C]
@@ -398,6 +409,6 @@ feature {NONE} -- Class-wide Options (From Indexing Clauses)
 			-- Stores classes that are marked as library or non-library classes.
 
 invariant
---	law_of_non_contradiction: one class must not be both a library_class and a nonlibrary_class
+	--	law_of_non_contradiction: one class must not be both a library_class and a nonlibrary_class
 
 end
