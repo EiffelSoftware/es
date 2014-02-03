@@ -72,27 +72,12 @@ feature {NONE} -- Implementation
 
 	internal_analyze_feature (a_feature: FEATURE_I; a_class: CLASS_C)
 			-- Analyzes feature `a_feature' from class `a_class'.
-		local
-			old_current_class: CLASS_C
-			old_current_feature: FEATURE_I
-			old_written_class: CLASS_C
-			old_locals: like {AST_CONTEXT}.locals
 		do
-			old_current_class := context.current_class
-			old_current_feature := context.current_feature
-			old_written_class := context.written_class
-			old_locals := context.locals.twin
-
 			context.clear_feature_context
 			context.initialize (a_class, a_class.actual_type)
 			context.set_current_feature (a_feature)
 			context.set_written_class (a_feature.written_class)
 			feature_checker.type_check_only (a_feature, True, a_feature.written_in = a_class.class_id, a_feature.is_replicated)
-
-			context.initialize (old_current_class, old_current_class.actual_type)
-			context.set_current_feature (old_current_feature)
-			context.set_written_class (old_written_class)
-			context.set_locals (old_locals)
 		end
 
 feature {NONE} -- Implementation: Data Structures
