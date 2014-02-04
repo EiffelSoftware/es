@@ -7,6 +7,24 @@ note
 class
 	CA_CFG_BUILDER
 
+inherit
+	AST_ITERATOR
+		redefine
+			process_if_as,
+			process_elseif_as,
+			process_loop_as,
+			process_inspect_as,
+			process_case_as,
+			process_assigner_call_as,
+			process_assign_as,
+			process_check_as,
+			process_creation_as,
+			process_debug_as,
+			process_guard_as,
+			process_instr_call_as,
+			process_retry_as
+		end
+
 create
 	make,
 	make_with_feature
@@ -23,6 +41,8 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current' using feature AST `a_feature'.
 		do
 			current_feature := a_feature
+		ensure
+			feature_set: current_feature = a_feature
 		end
 
 feature -- Actions
@@ -31,6 +51,8 @@ feature -- Actions
 			-- Sets the feature whose CFG shall be built to `a_feature'.
 		do
 			current_feature := a_feature
+		ensure
+			feature_set: current_feature = a_feature
 		end
 
 	build_cfg
@@ -43,10 +65,19 @@ feature -- Actions
 			if attached {INTERNAL_AS} current_feature.body.as_routine.routine_body as l_body then
 				if attached l_body.compound as l_compound then
 					current_label := 1
-					cfg := process_compound (l_compound)
+					create cfg.make (current_label, current_label + 1)
+					current_label := current_label + 2
+					last_block := cfg.start_node
+						-- Iterate through the feature.
+					process_feature_as (current_feature)
+						-- Connect the last processed block to the end node.
+					add_edge (last_block, cfg.end_node)
 					cfg.set_max_label (current_label)
 				else
+						-- Create a dummy control flow graph.
 					create cfg.make (1, 2)
+					add_edge (cfg.start_node, cfg.end_node)
+					cfg.set_max_label (2)
 				end
 			end
 		end
@@ -57,161 +88,233 @@ feature -- Actions
 	current_feature: detachable FEATURE_AS
 			-- Feature whose CFG shall be built.
 
+feature {NONE} -- AST Visitor
+
+	last_block: detachable CA_CFG_BASIC_BLOCK
+
+	jump_back_block: detachable CA_CFG_SKIP
+
+	process_if_as (a_if: IF_AS)
+		local
+			l_old_jump_back, l_skip: CA_CFG_SKIP
+			l_if_block: CA_CFG_IF
+		do
+				-- Save the jump-back of the outer compound.
+			l_old_jump_back := jump_back_block
+
+			create l_if_block.make_complete (a_if.condition, current_label)
+			current_label := current_label + 1
+			add_edge (last_block, l_if_block)
+				-- The following blocks will follow this if block.
+			last_block := l_if_block
+				-- Create a dummy jump-back block.
+			create {CA_CFG_SKIP} jump_back_block.make (current_label)
+			current_label := current_label + 1
+
+				-- Processing the if compound.
+			if a_if.compound = Void then
+					-- Create direct edge to jump-back.
+				add_true_edge (l_if_block, jump_back_block)
+			else
+				safe_process (a_if.compound)
+				add_edge (last_block, jump_back_block)
+			end
+
+				-- Insert an intermediate block.
+			create l_skip.make (current_label)
+			current_label := current_label + 1
+			add_false_edge (l_if_block, l_skip)
+			last_block := l_skip
+
+			safe_process (a_if.elsif_list)
+			safe_process (a_if.else_part)
+				-- The last block must be an instruction.
+			add_edge (last_block, jump_back_block)
+
+			last_block := jump_back_block
+
+				-- Restore the old jump-back.
+			jump_back_block := l_old_jump_back
+		end
+
+	process_elseif_as (a_elseif: ELSIF_AS)
+		require else
+			correct_structure: attached {CA_CFG_IF} last_block
+		local
+			l_elseif_block: CA_CFG_IF
+			l_skip: CA_CFG_SKIP
+		do
+			create l_elseif_block.make_complete (a_elseif.expr, current_label)
+			current_label := current_label + 1
+			add_edge (last_block, l_elseif_block)
+
+			last_block := l_elseif_block
+
+			if a_elseif.compound = Void then
+				add_true_edge (l_elseif_block, jump_back_block)
+			else
+				safe_process (a_elseif.compound)
+				add_edge (last_block, jump_back_block)
+			end
+
+				-- Insert an intermediate block.
+			create l_skip.make (current_label)
+			current_label := current_label + 1
+			add_false_edge (l_elseif_block, l_skip)
+			last_block := l_skip
+		end
+
+	process_loop_as (a_loop: LOOP_AS)
+		local
+			l_after_loop: CA_CFG_SKIP
+			l_loop: CA_CFG_LOOP
+		do
+			safe_process (a_loop.from_part)
+
+			create l_loop.make (a_loop, current_label)
+			current_label := current_label + 1
+
+			add_edge (last_block, l_loop)
+
+			create l_after_loop.make (current_label)
+			current_label := current_label + 1
+
+			last_block := l_loop
+
+			if a_loop.compound = Void then
+				add_self_loop_edge (l_loop)
+			else
+				safe_process (a_loop.compound)
+				add_loop_in_edge (last_block, l_loop)
+			end
+
+			add_exit_edge (l_loop, l_after_loop)
+			last_block := l_after_loop
+		end
+
+	process_inspect_as (a_inspect: INSPECT_AS)
+		local
+			l_inspect_block: CA_CFG_INSPECT
+			l_intervals: LINKED_LIST [EIFFEL_LIST [INTERVAL_AS]]
+			l_old_jump_back, l_skip: CA_CFG_SKIP
+		do
+			l_old_jump_back := jump_back_block
+				-- Create a dummy jump-back block.
+			create {CA_CFG_SKIP} jump_back_block.make (current_label)
+			current_label := current_label + 1
+
+				-- Extract intervals.
+			create l_intervals.make
+			if attached a_inspect.case_list then
+				across a_inspect.case_list as l_cases loop
+					l_intervals.extend (l_cases.item.interval)
+				end
+			end
+			create l_inspect_block.make_complete (a_inspect.switch, l_intervals,
+				a_inspect.else_part /= Void, current_label)
+			current_label := current_label + 1
+			add_edge (last_block, l_inspect_block)
+			last_block := l_inspect_block
+
+			case_number := 1
+			safe_process (a_inspect.case_list)
+			if a_inspect.else_part /= Void then
+					-- Insert intermediate label so that the compound
+					-- will be processed correctly.
+				create l_skip.make (current_label)
+				current_label := current_label + 1
+				add_else_edge (l_inspect_block, l_skip)
+				last_block := l_skip
+				safe_process (a_inspect.else_part)
+				add_edge (last_block, jump_back_block)
+			end
+			last_block := jump_back_block
+
+			jump_back_block := l_old_jump_back
+		end
+
+	case_number: INTEGER
+			-- The index of the current when branch inside an inspect instruction.
+
+	process_case_as (a_case: CASE_AS)
+		local
+			l_inspect_block: CA_CFG_BASIC_BLOCK
+		do
+			l_inspect_block := last_block
+			safe_process (a_case.compound)
+			add_edge (last_block, jump_back_block)
+			last_block := l_inspect_block
+			case_number := case_number + 1
+		end
+
+	process_assigner_call_as (a_assigner_call: ASSIGNER_CALL_AS)
+		do
+			build_instruction_block (a_assigner_call)
+		end
+
+	process_assign_as (a_assign: ASSIGN_AS)
+		do
+			build_instruction_block (a_assign)
+		end
+
+	process_check_as (a_check: CHECK_AS)
+		do
+			build_instruction_block (a_check)
+		end
+
+	process_creation_as (a_creation: CREATION_AS)
+		do
+			build_instruction_block (a_creation)
+		end
+
+	process_debug_as (a_debug: DEBUG_AS)
+		do
+			build_instruction_block (a_debug)
+		end
+
+	process_guard_as (a_guard: GUARD_AS)
+		do
+			build_instruction_block (a_guard)
+		end
+
+	process_instr_call_as (a_instr_call: INSTR_CALL_AS)
+		do
+			build_instruction_block (a_instr_call)
+		end
+
+	process_retry_as (a_retry: RETRY_AS)
+		do
+			build_instruction_block (a_retry)
+		end
+
+feature {NONE} -- (New) Implementation
+
+	build_instruction_block (a_instr: INSTRUCTION_AS)
+			-- Creates an instruction CFG block for `a_instr' and inserts it
+			-- into the graph at the current position.
+		local
+			l_new_instr_block: CA_CFG_INSTRUCTION
+		do
+			create l_new_instr_block.make_complete (a_instr, current_label)
+			current_label := current_label + 1
+
+			if attached {CA_CFG_IF} last_block then
+				add_true_edge (last_block, l_new_instr_block)
+			elseif attached {CA_CFG_LOOP} last_block then
+				add_loop_edge (last_block, l_new_instr_block)
+			elseif attached {CA_CFG_INSPECT} last_block then
+				add_when_edge (last_block, l_new_instr_block, case_number)
+			else
+				add_edge (last_block, l_new_instr_block)
+			end
+
+			last_block := l_new_instr_block
+		end
+
 feature {NONE} -- Implementation
 
 	current_label: INTEGER
 			-- Current label counter.
-
-	process_compound (a_compound: EIFFEL_LIST [INSTRUCTION_AS]): CA_CONTROL_FLOW_GRAPH
-			-- Creates the CFG for `a_compound'.
-		require
-			a_compound.count >= 1
-		local
-			l_cfg, l_subgraph: CA_CONTROL_FLOW_GRAPH
-			l_last_block, l_current_block, l_temp_block: CA_CFG_BASIC_BLOCK
-			l_intervals: LINKED_LIST [EIFFEL_LIST [INTERVAL_AS]]
-		do
-			create l_cfg.make (current_label, current_label + 1)
-			current_label := current_label + 2
-
-			l_last_block := l_cfg.start_node
-
-			from
-				a_compound.start
-			until
-				a_compound.after
-			loop
-				if is_sequential (a_compound.item) then
-					create {CA_CFG_INSTRUCTION} l_current_block.make_complete (a_compound.item, current_label)
-					current_label := current_label + 1
-
-					add_edge (l_last_block, l_current_block)
-
-					l_last_block := l_current_block
-
-				elseif attached {IF_AS} a_compound.item as l_if then
-					create {CA_CFG_IF} l_current_block.make_complete (l_if.condition, current_label)
-					current_label := current_label + 1
-
-					add_edge (l_last_block, l_current_block)
-
-					create {CA_CFG_SKIP} l_last_block.make (current_label)
-					current_label := current_label + 1
-
-					if attached l_if.compound as l_if_block then
-						l_subgraph := process_compound (l_if_block)
-						add_true_edge (l_current_block, l_subgraph.start_node)
-						add_edge (l_subgraph.end_node, l_last_block)
-					else
-							-- If block is empty, therefore we have to add the condition itself to
-							-- the predecessors of the next node.
-						add_true_edge (l_current_block, l_last_block)
-					end
-
-					if attached l_if.elsif_list then
-						across l_if.elsif_list as l_elseifs loop
-							l_temp_block := l_current_block
-							create {CA_CFG_IF} l_current_block.make_complete (l_elseifs.item.expr, current_label)
-							current_label := current_label + 1
-
-							add_false_edge (l_temp_block, l_current_block)
-
-							if attached l_elseifs.item.compound as l_compound then
-								l_subgraph := process_compound (l_compound)
-								add_true_edge (l_current_block, l_subgraph.start_node)
-								add_edge (l_subgraph.end_node, l_last_block)
-							else
-								add_true_edge (l_current_block, l_last_block)
-							end
-						end
-					end
-
-					if attached l_if.else_part as l_else_block then
-						l_subgraph := process_compound (l_else_block)
-						add_false_edge (l_current_block, l_subgraph.start_node)
-						add_edge (l_subgraph.end_node, l_last_block)
-					else
-						add_false_edge (l_current_block, l_last_block)
-					end
-				elseif attached {INSPECT_AS} a_compound.item as l_inspect then
-
-					create l_intervals.make
-					if attached l_inspect.case_list then
-						across l_inspect.case_list as l_cases loop
-							l_intervals.extend (l_cases.item.interval)
-						end
-					end
-					create {CA_CFG_INSPECT} l_current_block.make_complete (l_inspect.switch,
-								l_intervals, attached l_inspect.else_part, current_label)
-					current_label := current_label + 1
-
-					add_edge (l_last_block, l_current_block)
-
-					create {CA_CFG_SKIP} l_last_block.make (current_label)
-					current_label := current_label + 1
-
-					if attached l_inspect.case_list then
-						across l_inspect.case_list as l_cases loop
-							if attached l_cases.item.compound as l_comp then
-								l_subgraph := process_compound (l_comp)
-								add_when_edge (l_current_block, l_subgraph.start_node, l_cases.cursor_index)
-								add_edge (l_subgraph.end_node, l_last_block)
-							end
-						end
-					end
-					if attached l_inspect.else_part as l_else then
-						l_subgraph := process_compound (l_else)
-						add_else_edge (l_current_block, l_subgraph.start_node)
-						add_edge (l_subgraph.end_node, l_last_block)
-					end
-						-- TODO: If there is nothing in the `inspect'?
-
-				elseif attached {LOOP_AS} a_compound.item as l_loop then
-
-					if attached l_loop.from_part as l_init then
-						l_subgraph := process_compound (l_init)
-						add_edge (l_last_block, l_subgraph.start_node)
-						l_last_block := l_subgraph.end_node
-					end
-
-					create {CA_CFG_LOOP} l_current_block.make (l_loop, current_label)
-					current_label := current_label + 1
-					add_edge (l_last_block, l_current_block)
-					create {CA_CFG_SKIP} l_last_block.make (current_label)
-					current_label := current_label + 1
-					add_exit_edge (l_current_block, l_last_block)
-
-					if attached l_loop.compound as l_loop_body then
-						l_subgraph := process_compound (l_loop_body)
-						add_loop_edge (l_current_block, l_subgraph.start_node)
-						add_loop_in_edge (l_subgraph.end_node, l_current_block)
-					else
-							-- Add self-edge because for analysis, the loop-in edge must be set.
-						add_loop_in_edge (l_current_block, l_current_block)
-					end
-				end
-
-				if a_compound.index = a_compound.count then
-					add_edge (l_last_block, l_cfg.end_node)
-				end
-
-				a_compound.forth
-			end
-
-			Result := l_cfg
-		ensure
-			valid_result: Result /= Void
-		end
-
-	is_sequential (a_instruction: INSTRUCTION_AS): BOOLEAN
-			-- Is `a_instruction' a "sequential" instruction, i. e. not
-			-- a branch like if, etc.?
-		do
-			Result := attached {ASSIGNER_CALL_AS} a_instruction
-				or attached {ASSIGN_AS} a_instruction
-				or attached {CREATION_AS} a_instruction
-				or attached {INSTR_CALL_AS} a_instruction
-		end
 
 	add_edge (a_from, a_to: CA_CFG_BASIC_BLOCK)
 			-- Updates `a_from' and `a_to' so that they both have information
@@ -290,12 +393,22 @@ feature {NONE} -- Implementation
 	add_loop_in_edge (a_from, a_to: CA_CFG_BASIC_BLOCK)
 			-- Adds a "loop-in" edge from `a_from' to `a_to'.
 		require
-			attached {CA_CFG_LOOP} a_from
+			attached {CA_CFG_LOOP} a_to
 		do
 			if attached {CA_CFG_LOOP} a_to as a_loop then
 				a_from.add_out_edge (a_to)
 				a_loop.set_loop_in (a_from)
 			end
+		end
+
+	add_self_loop_edge (a_loop: CA_CFG_LOOP)
+			-- Sets edges for `a_loop' representing a loop with an
+			-- empty compound.
+		require
+			empty_compound: a_loop.ast.compound = Void
+		do
+			a_loop.set_loop_branch (a_loop)
+			a_loop.set_loop_in (a_loop)
 		end
 
 end
