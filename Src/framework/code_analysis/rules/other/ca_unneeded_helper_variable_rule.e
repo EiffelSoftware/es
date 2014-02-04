@@ -108,10 +108,21 @@ feature {NONE} -- Rule checking
 					l_previous := l_current
 					l_current := l_instr.item
 					if attached {ASSIGN_AS} l_previous as l_assign and then attached {ACCESS_ID_AS} l_assign.target as l_aid then
-						if l_aid.is_local and then is_read  then
+						if l_aid.is_local then
 							analyze_reads (l_aid.feature_name, l_current)
 							if is_read and then
 									instruction_length (l_current) - l_aid.access_name_32.count + expression_length (l_assign) <= max_line_length.value then
+
+									-- The line with the replaced variable is not too long.
+								suspected_variables.extend (l_aid.feature_name)
+								location.force (l_aid.start_location, l_aid.feature_name)
+							end
+						end
+					elseif attached {CREATION_AS} l_previous as l_creation and then attached {ACCESS_ID_AS} l_creation.target as l_aid then
+						if l_aid.is_local then
+							analyze_reads (l_aid.feature_name, l_current)
+							if is_read and then
+									instruction_length (l_current) - l_aid.access_name_32.count + create_expression_length (l_creation) <= max_line_length.value then
 
 									-- The line with the replaced variable is not too long.
 								suspected_variables.extend (l_aid.feature_name)
@@ -177,6 +188,11 @@ feature {NONE} -- Rule checking
 			-- assignment `a_assign'?
 		do
 			Result := a_assign.source.end_position - a_assign.source.start_position + 1
+		end
+
+	create_expression_length (a_create: CREATION_AS): INTEGER
+		do
+			Result := a_create.end_position - a_create.start_position + 1
 		end
 
 	instruction_length (a_instr: INSTRUCTION_AS): INTEGER
