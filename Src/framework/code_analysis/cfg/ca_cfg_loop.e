@@ -15,7 +15,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_loop: LOOP_AS; a_label: INTEGER)
+	make (a_loop: attached LOOP_AS; a_label: INTEGER)
 			-- Initializes `Current' with AST node `a_loop' and label `a_label'.
 		do
 			initialize
@@ -53,20 +53,20 @@ feature -- Properties
 			Result := in_edges [1]
 		end
 
-	set_loop_branch (a_bb: CA_CFG_BASIC_BLOCK)
+	set_loop_branch (a_bb: attached CA_CFG_BASIC_BLOCK)
 			-- Sets the branch that is executed when the loop continues
 			-- to iterate.
 		do
 			out_edges [1] := a_bb
 		end
 
-	set_exit_branch (a_bb: CA_CFG_BASIC_BLOCK)
+	set_exit_branch (a_bb: attached CA_CFG_BASIC_BLOCK)
 			-- Sets the branch that is executed when the loop is exited.
 		do
 			out_edges [2] := a_bb
 		end
 
-	set_loop_in (a_in: CA_CFG_BASIC_BLOCK)
+	set_loop_in (a_in: attached CA_CFG_BASIC_BLOCK)
 			-- Set the edge from the end of the loop to `Current'.
 		do
 			in_edges [1] := a_in

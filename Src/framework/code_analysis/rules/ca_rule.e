@@ -44,13 +44,13 @@ feature -- Basic properties, usually fix
 
 	checks_library_classes: BOOLEAN
 			-- Does this rule check library classes?
-		once
+		do
 			Result := True
 		end
 
 	checks_nonlibrary_classes: BOOLEAN
 			-- Does this rule check non-library classes?
-		once
+		do
 			Result := True
 		end
 

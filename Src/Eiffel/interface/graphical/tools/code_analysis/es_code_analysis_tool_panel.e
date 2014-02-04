@@ -487,20 +487,19 @@ feature {NONE} -- Basic operations
 				if is_error_event (l_viol) then
 					l_label.set_pixmap (stock_pixmaps.general_error_icon)
 					l_label.set_data ("Error")
-
 					a_row.set_background_color (error_bg_color)
 				elseif is_warning_event (l_viol) then
 					l_label.set_pixmap (stock_pixmaps.general_warning_icon)
 					l_label.set_data ("Warning")
-
 					a_row.set_background_color (warning_bg_color)
 				elseif is_suggestion_event (l_viol) then
 					l_label.set_pixmap (stock_pixmaps.view_editor_icon)
 					l_label.set_data ("Suggestion")
-
+					a_row.set_background_color (suggestion_bg_color)
 				elseif is_hint_event (l_viol) then
 					l_label.set_pixmap (stock_pixmaps.general_information_icon)
 					l_label.set_data ("Hint")
+					a_row.set_background_color (hint_bg_color)
 				end
 
 				a_row.set_item (category_column, l_label)
@@ -551,7 +550,7 @@ feature {NONE} -- Basic operations
 			end
 		end
 
-	show_fixes_context_menu (a_fixes: LINKED_LIST [CA_FIX]; a_row: EV_GRID_ROW; x: INTEGER; y: INTEGER; button: INTEGER; x_tilt: DOUBLE; y_tilt: DOUBLE; pressure: DOUBLE; screen_x: INTEGER; screen_y: INTEGER)
+	show_fixes_context_menu (a_fixes: attached LINKED_LIST [CA_FIX]; a_row: EV_GRID_ROW; x: INTEGER; y: INTEGER; button: INTEGER; x_tilt: DOUBLE; y_tilt: DOUBLE; pressure: DOUBLE; screen_x: INTEGER; screen_y: INTEGER)
 			-- Show a context menu for data row `a_row' where the user can choose from fixes in `a_fixes'.
 			-- If `button' is not set to `3' (right mouse button) then no context menu will be shown. All
 			-- the other arguments are required by the mouse button event and are ignored.
@@ -677,23 +676,51 @@ feature {NONE} -- Colors
 
 	error_bg_color: EV_COLOR
 			-- Background color for errors.
-		once
-			create Result.make_with_8_bit_rgb (255, 220, 220)
+		local
+			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
+		do
+			create l_helper
+			Result := l_helper.ca_command.error_bgcolor.value
 		ensure
 			valid_result: Result /= Void
 		end
 
 	warning_bg_color: EV_COLOR
-			-- Background color for warnings.
-		once
-			create Result.make_with_8_bit_rgb (255, 255, 188)
+			-- Background color for errors.
+		local
+			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
+		do
+			create l_helper
+			Result := l_helper.ca_command.warning_bgcolor.value
+		ensure
+			valid_result: Result /= Void
+		end
+
+	suggestion_bg_color: EV_COLOR
+			-- Background color for errors.
+		local
+			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
+		do
+			create l_helper
+			Result := l_helper.ca_command.suggestion_bgcolor.value
+		ensure
+			valid_result: Result /= Void
+		end
+
+	hint_bg_color: EV_COLOR
+			-- Background color for errors.
+		local
+			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
+		do
+			create l_helper
+			Result := l_helper.ca_command.hint_bgcolor.value
 		ensure
 			valid_result: Result /= Void
 		end
 
 	dark_gray: EV_COLOR
 			-- Dark gray color (e. g. for font foreground).
-		once
+		do
 			create Result.make_with_8_bit_rgb (100, 100, 100)
 		ensure
 			valid_result: Result /= Void

@@ -9,18 +9,18 @@ deferred class
 
 feature -- Iteration
 
-	process_cfg (a_cfg: CA_CONTROL_FLOW_GRAPH)
+	process_cfg (a_cfg: attached CA_CONTROL_FLOW_GRAPH)
 			-- Iterate through `a_cfg'.
 		deferred
 		end
 
-	visit_edge (a_from, a_to: CA_CFG_BASIC_BLOCK): BOOLEAN
+	visit_edge (a_from, a_to: attached CA_CFG_BASIC_BLOCK): BOOLEAN
 			-- Visit edge from `a_from' to `a_to'. Continue iteration iff Result is
 			-- true.
 		deferred
 		end
 
-	initialize_processing (a_cfg: CA_CONTROL_FLOW_GRAPH)
+	initialize_processing (a_cfg: attached CA_CONTROL_FLOW_GRAPH)
 			-- Perform initialization before running the worklist algorithm.
 		deferred
 		end

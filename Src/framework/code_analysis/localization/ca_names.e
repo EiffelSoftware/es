@@ -397,6 +397,9 @@ feature -- Preferences
 	rules_category: STRING_32
 		do Result := locale.translation ("Rules") end
 
+	color_category: STRING_32
+		do Result := locale.translation ("Colors") end
+
 	are_errors_enabled: STRING_32
 		do Result := locale.translation ("Enable errors") end
 
@@ -414,6 +417,21 @@ feature -- Preferences
 
 	severity_score: STRING_32
 		do Result := locale.translation ("Importance score") end
+
+	error_bgcolor: STRING_32
+		do Result := locale.translation ("Error background color") end
+
+	warning_bgcolor: STRING_32
+		do Result := locale.translation ("Warning background color") end
+
+	suggestion_bgcolor: STRING_32
+		do Result := locale.translation ("Suggestion background color") end
+
+	hint_bgcolor: STRING_32
+		do Result := locale.translation ("Hint background color") end
+
+	fixed_violation_bgcolor: STRING_32
+		do Result := locale.translation ("Fixed violation background color") end
 
 feature -- GUI
 

@@ -25,7 +25,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_fix (a_fix: CA_FIX; a_row: EV_GRID_ROW)
+	make_with_fix (a_fix: attached CA_FIX; a_row: attached EV_GRID_ROW)
 			-- Initializes `Current' with fix `a_fix' to apply and with GUI grid
 			-- row `a_row' (will be painted green when fix has been applied).
 		require
@@ -52,7 +52,10 @@ feature -- Fixing
             -- Make the changes.
 		local
 			l_dialog: ES_INFORMATION_PROMPT
+			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
         do
+        	create l_helper
+
         		-- Only continue fixing when there are no unsaved files.
         	if window_manager.has_modified_windows then
         		create l_dialog.make_standard ("You may not apply a fix when there are unsaved changes.")
@@ -72,7 +75,7 @@ feature -- Fixing
 						-- Mark the fix as applied so that it may not be applied a second time. Then
 						-- color the rule violation entry in the GUI.
 					fix.set_applied
-		        	ui_row.set_background_color (light_green)
+		        	ui_row.set_background_color (l_helper.ca_command.fixed_violation_bgcolor.value)
 
 		        		-- Now compile again, which in all cases should succeed.
 		        	eiffel_project.quick_melt (True, True, True)
@@ -102,16 +105,6 @@ feature -- Fixing
 
 			rebuild_text
 			logger.refactoring_class (class_i)
-		end
-
-feature {NONE} -- Utilities
-
-	light_green: EV_COLOR
-			-- The color the data row from the GUI is painted in.
-		once
-			create Result.make_with_8_bit_rgb (181, 230, 29)
-		ensure
-			valid_result: Result /= Void
 		end
 
 note

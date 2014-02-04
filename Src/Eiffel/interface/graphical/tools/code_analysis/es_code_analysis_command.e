@@ -41,6 +41,8 @@ feature {NONE} -- Initialization
 		local
 			e: ES_CA_FIX_EXECUTOR
 		do
+			initialize_preferences
+
 			enable_sensitive
 			set_up_menu_items
 
@@ -350,7 +352,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 		end
 
 	ca_tool: detachable ES_CODE_ANALYSIS_TOOL
-			-- Proof tool (if applicable).
+			-- Analysis tool (if applicable).
 		local
 			l_tool: ES_TOOL [EB_TOOL]
 			l_window: EB_DEVELOPMENT_WINDOW
@@ -367,7 +369,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 		end
 
 	show_ca_tool
-			-- Shows the proof tool.
+			-- Shows the analysis tool.
 		local
 			l_tool: ES_CODE_ANALYSIS_TOOL
 		do
@@ -378,7 +380,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 		end
 
 	disable_tool_button
-			-- Disable proof button on tool.
+			-- Disable analysis button on tool.
 		local
 			l_tool: ES_CODE_ANALYSIS_TOOL
 		do
@@ -389,7 +391,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 		end
 
 	enable_tool_button
-			-- Enable proof button on tool.
+			-- Enable analysis button on tool.
 		local
 			l_tool: ES_CODE_ANALYSIS_TOOL
 		do
@@ -570,6 +572,96 @@ feature {NONE} -- Implementation
 		do
 			Result := "Code Analysis"
 		end
+
+feature -- GUI preferences
+
+	code_analysis_namespace: STRING = "tools.code_analysis"
+			-- The namespace for the Code Analysis preferences.
+
+	initialize_preferences
+			-- Initializes the preferences related to the tool panel.
+		local
+			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
+			l_factory: GRAPHICAL_PREFERENCE_FACTORY
+			l_manager: PREFERENCE_MANAGER
+		do
+			create l_helper
+			code_analyzer := l_helper.code_analyzer
+			create l_factory
+			l_manager := code_analyzer.preferences.new_manager (code_analysis_namespace)
+
+			error_bgcolor := l_factory.new_color_preference_value (l_manager,
+				ca_names.color_category + "." + ca_names.error_bgcolor, default_error_bgcolor)
+			error_bgcolor.set_default_value (color_string (default_error_bgcolor))
+			warning_bgcolor := l_factory.new_color_preference_value (l_manager,
+				ca_names.color_category + "." + ca_names.warning_bgcolor, default_warning_bgcolor)
+			warning_bgcolor.set_default_value (color_string (default_warning_bgcolor))
+			suggestion_bgcolor := l_factory.new_color_preference_value (l_manager,
+				ca_names.color_category + "." + ca_names.suggestion_bgcolor, default_suggestion_bgcolor)
+			suggestion_bgcolor.set_default_value (color_string (default_suggestion_bgcolor))
+			hint_bgcolor := l_factory.new_color_preference_value (l_manager,
+				ca_names.color_category + "." + ca_names.suggestion_bgcolor, default_hint_bgcolor)
+			hint_bgcolor.set_default_value (color_string (default_hint_bgcolor))
+			fixed_violation_bgcolor := l_factory.new_color_preference_value (l_manager,
+				ca_names.color_category + "." + ca_names.fixed_violation_bgcolor, default_fixed_violation_bgcolor)
+			fixed_violation_bgcolor.set_default_value (color_string (default_fixed_violation_bgcolor))
+		end
+
+	color_string (a_color: attached EV_COLOR): STRING
+			-- String representation of `a_color' for use in preferences.
+		do
+			create Result.make_empty
+			Result.append_integer (a_color.red_8_bit)
+			Result.append_character (';')
+			Result.append_integer (a_color.green_8_bit)
+			Result.append_character (';')
+			Result.append_integer (a_color.blue_8_bit)
+		ensure
+			valid_result: Result /= Void
+		end
+
+	error_bgcolor,
+	warning_bgcolor,
+	suggestion_bgcolor,
+	hint_bgcolor,
+	fixed_violation_bgcolor: COLOR_PREFERENCE
+			-- Color preferences
+
+	default_error_bgcolor: EV_COLOR
+		do
+			create Result.make_with_8_bit_rgb (255, 220, 220)
+		ensure
+			valid_result: Result /= Void
+		end
+
+	default_warning_bgcolor: EV_COLOR
+		do
+			create Result.make_with_8_bit_rgb (255, 255, 188)
+		ensure
+			valid_result: Result /= Void
+		end
+
+	default_suggestion_bgcolor: EV_COLOR
+		do
+			create Result.make_with_8_bit_rgb (239, 228, 176)
+		ensure
+			valid_result: Result /= Void
+		end
+
+	default_hint_bgcolor: EV_COLOR
+		do
+			create Result.make_with_8_bit_rgb (188, 226, 193)
+		ensure
+			valid_result: Result /= Void
+		end
+
+	default_fixed_violation_bgcolor: EV_COLOR
+		do
+			create Result.make_with_8_bit_rgb (181, 230, 29)
+		ensure
+			valid_result: Result /= Void
+		end
+
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software"

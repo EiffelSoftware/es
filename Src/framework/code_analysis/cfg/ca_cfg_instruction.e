@@ -16,14 +16,14 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_instruction (a_instruction: INSTRUCTION_AS)
+	make_with_instruction (a_instruction: attached INSTRUCTION_AS)
 			-- Initializes `Current' with AST instruction node `a_instruction'.
 		do
 			initialize
 			instruction := a_instruction
 		end
 
-	make_complete (a_instruction: INSTRUCTION_AS; a_label: INTEGER)
+	make_complete (a_instruction: attached INSTRUCTION_AS; a_label: INTEGER)
 			-- Initializes `Current' with AST instruction node `a_instruction' and label `a_label'.
 		do
 			make_with_instruction (a_instruction)

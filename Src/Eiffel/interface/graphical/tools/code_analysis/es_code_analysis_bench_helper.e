@@ -18,7 +18,7 @@ inherit
 
 feature -- Basic operations
 
-	build_context_menu_for_class_stone (a_menu: EV_MENU; a_stone: CLASSC_STONE)
+	build_context_menu_for_class_stone (a_menu: attached EV_MENU; a_stone: attached CLASSC_STONE)
 			-- Build context menu for class stone `a_stone' and add it to `a_menu'.
 			--
 			-- Added to {EB_CONTEXT_MENU_FACTORY}.extend_standard_compiler_item_menu.
@@ -43,7 +43,7 @@ feature -- Basic operations
 			end
 		end
 
-	build_context_menu_for_cluster_stone (a_menu: EV_MENU; a_stone: CLUSTER_STONE)
+	build_context_menu_for_cluster_stone (a_menu: attached EV_MENU; a_stone: attached CLUSTER_STONE)
 			-- Build context menu for cluster stone `a_stone' and add it to `a_menu'.
 			-- Very similar to `build_context_menu_for_class_stone'.
 			-- Added to {EB_CONTEXT_MENU_FACTORY}.extend_standard_compiler_item_menu.
@@ -64,7 +64,7 @@ feature -- Basic operations
 			a_menu.extend (l_item)
 		end
 
-feature -- Verification
+feature -- Shared instances
 
 	code_analyzer: CA_CODE_ANALYZER
 			-- Shared Code Analyzer instance.
@@ -83,7 +83,6 @@ feature -- Verification
 		ensure
 			valid_result: Result /= Void
 		end
-
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

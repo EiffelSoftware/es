@@ -18,7 +18,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_feature (a_class: CLASS_C; a_feature: FEATURE_AS; a_name: STRING_32)
+	make_with_feature (a_class: attached CLASS_C; a_feature: attached FEATURE_AS; a_name: STRING_32)
 			-- Initializes `Current' with class `a_class'. `a_feature' with name `a_name'
 			-- is the feature that is never called.
 		do

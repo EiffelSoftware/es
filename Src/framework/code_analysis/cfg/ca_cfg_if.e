@@ -15,7 +15,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_complete (a_condition: EXPR_AS; a_label: INTEGER)
+	make_complete (a_condition: attached EXPR_AS; a_label: INTEGER)
 			-- Initializes `Current' with if condition `a_condition' and label
 			-- `a_label'.
 		do

@@ -37,7 +37,7 @@ feature {NONE} -- Initialization
 
 		end
 
-	make_with_feature (a_feature: FEATURE_AS)
+	make_with_feature (a_feature: attached FEATURE_AS)
 			-- Initialization for `Current' using feature AST `a_feature'.
 		do
 			current_feature := a_feature
@@ -47,7 +47,7 @@ feature {NONE} -- Initialization
 
 feature -- Actions
 
-	set_feature (a_feature: FEATURE_AS)
+	set_feature (a_feature: attached FEATURE_AS)
 			-- Sets the feature whose CFG shall be built to `a_feature'.
 		do
 			current_feature := a_feature
@@ -289,7 +289,7 @@ feature {NONE} -- AST Visitor
 
 feature {NONE} -- (New) Implementation
 
-	build_instruction_block (a_instr: INSTRUCTION_AS)
+	build_instruction_block (a_instr: attached INSTRUCTION_AS)
 			-- Creates an instruction CFG block for `a_instr' and inserts it
 			-- into the graph at the current position.
 		local
@@ -316,7 +316,7 @@ feature {NONE} -- Implementation
 	current_label: INTEGER
 			-- Current label counter.
 
-	add_edge (a_from, a_to: CA_CFG_BASIC_BLOCK)
+	add_edge (a_from, a_to: attached CA_CFG_BASIC_BLOCK)
 			-- Updates `a_from' and `a_to' so that they both have information
 			-- about the edge from `a_from' to `a_to'.
 		do
@@ -324,7 +324,7 @@ feature {NONE} -- Implementation
 			a_to.add_in_edge (a_from)
 		end
 
-	add_true_edge (a_from, a_to: CA_CFG_BASIC_BLOCK)
+	add_true_edge (a_from, a_to: attached CA_CFG_BASIC_BLOCK)
 			-- Adds a "true" edge from `a_from' to `a_to'.
 		require
 			attached {CA_CFG_IF} a_from
@@ -335,7 +335,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_false_edge (a_from, a_to: CA_CFG_BASIC_BLOCK)
+	add_false_edge (a_from, a_to: attached CA_CFG_BASIC_BLOCK)
 			-- Adds a "false" edge from `a_from' to `a_to'.
 		require
 			attached {CA_CFG_IF} a_from
@@ -346,7 +346,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_when_edge (a_from, a_to: CA_CFG_BASIC_BLOCK; a_index: INTEGER)
+	add_when_edge (a_from, a_to: attached CA_CFG_BASIC_BLOCK; a_index: INTEGER)
 			-- Adds a "when" edge from `a_from' to `a_to'.
 		require
 			attached {CA_CFG_INSPECT} a_from
@@ -357,7 +357,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_else_edge (a_from, a_to: CA_CFG_BASIC_BLOCK)
+	add_else_edge (a_from, a_to: attached CA_CFG_BASIC_BLOCK)
 			-- Adds an "else" edge from `a_from' to `a_to'.
 		require
 			attached {CA_CFG_INSPECT} a_from
@@ -368,7 +368,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_loop_edge (a_from, a_to: CA_CFG_BASIC_BLOCK)
+	add_loop_edge (a_from, a_to: attached CA_CFG_BASIC_BLOCK)
 			-- Adds a "loop" edge from `a_from' to `a_to'.
 		require
 			attached {CA_CFG_LOOP} a_from
@@ -379,7 +379,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_exit_edge (a_from, a_to: CA_CFG_BASIC_BLOCK)
+	add_exit_edge (a_from, a_to: attached CA_CFG_BASIC_BLOCK)
 			-- Adds an "exit" edge from `a_from' to `a_to'.
 		require
 			attached {CA_CFG_LOOP} a_from
@@ -390,7 +390,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_loop_in_edge (a_from, a_to: CA_CFG_BASIC_BLOCK)
+	add_loop_in_edge (a_from, a_to: attached CA_CFG_BASIC_BLOCK)
 			-- Adds a "loop-in" edge from `a_from' to `a_to'.
 		require
 			attached {CA_CFG_LOOP} a_to
@@ -401,7 +401,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_self_loop_edge (a_loop: CA_CFG_LOOP)
+	add_self_loop_edge (a_loop: attached CA_CFG_LOOP)
 			-- Sets edges for `a_loop' representing a loop with an
 			-- empty compound.
 		require

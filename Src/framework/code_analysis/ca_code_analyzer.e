@@ -219,6 +219,9 @@ feature -- Properties
 	rule_violations: detachable HASH_TABLE [SORTED_TWO_WAY_LIST [CA_RULE_VIOLATION], CLASS_C]
 			-- All found violations from the last analysis.
 
+	settings: CA_SETTINGS
+			-- The settings manager for Code Analysis.
+
 	preferences: PREFERENCES
 			-- Code Analysis preferences.
 		do Result := settings.preferences end
@@ -289,9 +292,6 @@ feature {NONE} -- Implementation
 				Result := False
 			end
 		end
-
-	settings: CA_SETTINGS
-			-- The settings manager for Code Analysis.
 
 	classes_to_analyze: LINKED_SET [CLASS_C]
 			-- List of classes that shall be analyzed.

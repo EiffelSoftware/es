@@ -15,7 +15,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_complete (a_expr: EXPR_AS; a_intervals: detachable LIST [EIFFEL_LIST [INTERVAL_AS]]; a_has_else: BOOLEAN; a_label: INTEGER)
+	make_complete (a_expr: attached EXPR_AS; a_intervals: detachable LIST [EIFFEL_LIST [INTERVAL_AS]]; a_has_else: BOOLEAN; a_label: INTEGER)
 			-- Initializes `Current' with inspect expression `a_expr', inspect intervals `a_intervals', and label `a_label'.
 			-- `a_has_else' is True iff the inspect has an else clause.
 		do
@@ -76,7 +76,7 @@ feature -- Properties
 	has_else: BOOLEAN
 			-- Does the inspect instruction have an else branch?
 
-	set_when_branch (a_bb: CA_CFG_BASIC_BLOCK; a_index: INTEGER)
+	set_when_branch (a_bb: attached CA_CFG_BASIC_BLOCK; a_index: INTEGER)
 			-- Sets the when branch with index `a_index' to `a_bb'.
 		require
 			valid_index: (a_index >= 1) and (a_index <= n_when_branches)
@@ -84,7 +84,7 @@ feature -- Properties
 			out_edges [a_index] := a_bb
 		end
 
-	set_else_branch (a_bb: CA_CFG_BASIC_BLOCK)
+	set_else_branch (a_bb: attached CA_CFG_BASIC_BLOCK)
 			-- Sets the else branch to `a_bb'.
 		require
 			has_else

@@ -24,13 +24,13 @@ feature -- Edges
 	in_edges, out_edges: ARRAYED_LIST [detachable CA_CFG_BASIC_BLOCK]
 			-- List of incoming edges from and outgoing edges to this block.
 
-	add_in_edge (a_edge: CA_CFG_BASIC_BLOCK)
+	add_in_edge (a_edge: attached CA_CFG_BASIC_BLOCK)
 			-- Adds `a_edge' to the incoming edges.
 		do
 			in_edges.extend (a_edge)
 		end
 
-	add_out_edge (a_edge: CA_CFG_BASIC_BLOCK)
+	add_out_edge (a_edge: attached CA_CFG_BASIC_BLOCK)
 			-- Adds `a_edge' to the outgoing edges.
 		do
 			out_edges.extend (a_edge)
