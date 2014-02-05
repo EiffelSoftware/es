@@ -76,8 +76,16 @@ typedef struct call_data {
 } call_data;
 
 #ifdef WORKBENCH
+#ifdef SCOOPQS
+#define eif_log_call(static_type_id, feature_id, current_pid, data)
+#define eif_log_callp(origin, offset, current_pid, data)
+#define eif_try_call(a)
+#else
+void eif_call_const (call_data * a);
 extern void eif_log_call (int routine_id, EIF_SCP_PID current_pid, call_data * data);
+extern void eif_log_callp (int origin, int offset, EIF_SCP_PID current_pid, call_data * data);
 extern void eif_try_call (call_data * a);
+#endif
 #else
 #ifdef SCOOPQS
 #define eif_log_call(p,a)                                               \

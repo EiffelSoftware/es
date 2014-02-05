@@ -1513,6 +1513,13 @@ rt_private void full_mark (EIF_CONTEXT_NOARG)
 		/* Initialize list of live indexes for threads. */
 		/* This should be done before any marking. */
 	prepare_live_index (MARK_SWITCH);
+#ifdef SCOOPQS
+	eveqs_mark_all(MARK_SWITCH);
+	if (!live_index_count)
+	  {
+	    update_live_index();
+	  }
+#endif
 #endif
 
 		/* Perform marking */
@@ -1557,14 +1564,6 @@ rt_private void internal_marking(MARKER marking, int moving)
 	size_t i;
 	size_t j;
 	size_t n;
-
-#ifdef SCOOPQS
-	eveqs_mark_all(marking);
-	if (!live_index_count)
-	  {
-	    update_live_index();
-	  }
-#endif
 #endif
 
 #ifndef EIF_THREADS
@@ -3982,6 +3981,13 @@ rt_private void mark_new_generation(EIF_CONTEXT_NOARG)
 		/* Initialize list of live indexes for threads. */
 		/* This should be done before any marking. */
 	prepare_live_index (GEN_SWITCH);
+#ifdef SCOOPQS
+	eveqs_mark_all(GEN_SWITCH);
+	if (!live_index_count)
+	  {
+	    update_live_index();
+	  }
+#endif
 #endif
 
 	/* First deal with the root object. If it is not old, then mark it */

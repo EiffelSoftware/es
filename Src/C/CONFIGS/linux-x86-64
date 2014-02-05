@@ -179,11 +179,6 @@ else
 	cppflags="$ccflags"
 fi
 
-if [ -n "$SCOOPQS" ]; then
-    ccflags="$ccflags -DSCOOPQS `pkg-config --cflags libeveqs` -rdynamic -g"
-    cppflags="$ccflags"
-fi
-
 cpp_stuff='42'
 defvoidused='15'
 #Check value for next 4
@@ -205,13 +200,6 @@ voidflags='15'
 warning_level='-Wall -Wextra -Wno-unused-parameter -pedantic -std=gnu99'
 wkoptimize="-O0 -g"
 
-
-if [ -n "$SCOOPQS" ]; then
-    optimize="$optimize -DSCOOPQS `pkg-config --cflags libeveqs` -rdynamic"
-    wkoptimize="$wkoptimize -DSCOOPQS `pkg-config --cflags libeveqs` -rdynamic"
-fi
-
-
 #Makefiles
 ar='ar'
 boehmgclib='gc'
@@ -230,10 +218,6 @@ ldsharedflags="$ldflags -shared -o"
 
 libs='-lm'
 
-if [[ -n "$SCOOPQS_STATIC" ]]; then
-    libs="-static -static-libgcc -static-libstdc++ $libs"
-fi
-
 ln='/bin/ln'
 if [ -n "$MAKE" ]; then
 	make=$MAKE
@@ -244,13 +228,10 @@ mkdep='\$(EIFFEL_SRC)/C/mkdep'
 mkdir='mkdir'
 mtldflags="$ldflags"
 mtldsharedflags="$ldsharedflags"
-mtlibs="$libs -pthread"
-
-if [[ -n "$SCOOPQS" ]]; then
-    mtlibs="`pkg-config --libs libeveqs` -lstdc++ $mtlibs"
-fi
+mtlibs="$libs -lstdc++ -pthread"
 
 mt_prefix='mt'
+qs_prefix='mtqs'
 mv='/bin/mv'
 prefix='lib'
 ranlib=':'
@@ -258,7 +239,7 @@ shared_prefix='lib'
 shared_suffix='.so'
 shared_rt_suffix='.so'
 sharedlibs='-lm'
-mtsharedlibs='-lm -lpthread'
+mtsharedlibs='-lm -lstdc++ -lpthread'
 sharedlibversion='.14.05'
 sharedlink='ld'
 suffix='.a'

@@ -344,6 +344,8 @@ feature {NONE} -- Implementation
 			Result.force (s_old_feature_replication)
 			Result.force (s_scoop_profile)
 			Result.force (s_scoop_profile_buffer)
+					-- Add EVE/Qs as a valid setting
+			Result.force (s_eveqs)
 		ensure
 			Result_not_void: Result /= Void
 		end

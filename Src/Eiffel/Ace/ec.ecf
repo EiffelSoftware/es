@@ -167,18 +167,6 @@
 			<assertions/>
 			<warning name="once_in_generic" enabled="false"/>
 		</option>
-		<external_object location="$(EIFFEL_SRC)/C/ipc/shared/libipc.a">
-			<condition>
-				<platform excluded_value="windows"/>
-				<build value="finalize"/>
-			</condition>
-		</external_object>
-		<external_object location="$(EIFFEL_SRC)/C/ipc/shared/libmtipc.a">
-			<condition>
-				<platform excluded_value="windows"/>
-				<build value="finalize"/>
-			</condition>
-		</external_object>
 		<external_object location="$(EIFFEL_SRC)/C/ipc/ewb/libmtwewb.a">
 			<condition>
 				<platform excluded_value="windows"/>
@@ -186,6 +174,18 @@
 			</condition>
 		</external_object>
 		<external_object location="$(EIFFEL_SRC)/C/ipc/ewb/libmtewb.a">
+			<condition>
+				<platform excluded_value="windows"/>
+				<build value="finalize"/>
+			</condition>
+		</external_object>
+		<external_object location="$(EIFFEL_SRC)/C/ipc/shared/libipc.a">
+			<condition>
+				<platform excluded_value="windows"/>
+				<build value="finalize"/>
+			</condition>
+		</external_object>
+		<external_object location="$(EIFFEL_SRC)/C/ipc/shared/libmtipc.a">
 			<condition>
 				<platform excluded_value="windows"/>
 				<build value="finalize"/>
