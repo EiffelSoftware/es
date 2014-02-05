@@ -66,7 +66,6 @@ feature -- Comparison
 			-- equal to current object?
 		require
 			other_not_void: other /= Void
-			reads (Current, other)
 		external
 			"built_in"
 		end
@@ -375,6 +374,12 @@ feature -- Verification: contract clauses
 		end
 
 	frozen modify_field (a_field: ANY; a_object: TUPLE): BOOLEAN
+			-- Helper function for adding modify clauses in contracts.
+		do
+			Result := True
+		end
+
+	frozen modify_model (a_field: ANY; a_object: TUPLE): BOOLEAN
 			-- Helper function for adding modify clauses in contracts.
 		do
 			Result := True

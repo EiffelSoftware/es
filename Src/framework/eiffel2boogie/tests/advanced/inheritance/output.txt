@@ -24,6 +24,9 @@ Successfully verified.
 A_A.break
 Successfully verified.
 ======================================
+A_A.something
+Successfully verified.
+======================================
 A_A.set_prev
 Successfully verified.
 ======================================
@@ -33,7 +36,7 @@ Successfully verified.
 ANY.default_create (creator, inherited by A_B)
 Verification failed.
 
-Line: 311. Precondition invariant_holds may be violated on call to wrap. Disable this default by making wrapping explicit.
+Line: 310. Precondition invariant_holds may be violated on call to wrap. Disable this default by making wrapping explicit.
 ======================================
 A_A.set_x (inherited by A_B)
 Verification failed.
@@ -57,14 +60,23 @@ Successfully verified.
 A_B.use_break
 Verification failed.
 
-Line: 38. Check new_property may be violated.
+Line: 46. Check new_property may be violated.
 --------------------------------------
-Line: 40. Precondition invariant_holds may be violated on call to wrap.
+Line: 48. Precondition invariant_holds may be violated on call to wrap.
 ======================================
 A_B.break
 Verification failed.
 
-Line: 53. Check new_property may be violated.
+Line: 61. Check new_property may be violated.
+======================================
+A_B.something
+Successfully verified.
 ======================================
 A_B (invariant admissibility)
+Successfully verified.
+======================================
+A_C.something
+Successfully verified.
+======================================
+A_C (invariant admissibility)
 Successfully verified.

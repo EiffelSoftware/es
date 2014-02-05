@@ -3491,6 +3491,7 @@ Src/framework/eiffel2boogie/tests/advanced/functional/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/inheritance/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/lemma/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/maps/output.txt -text
+Src/framework/eiffel2boogie/tests/advanced/model/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/partial/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/relations/output.txt -text
 Src/framework/eiffel2boogie/tests/advanced/sequences/output.txt -text

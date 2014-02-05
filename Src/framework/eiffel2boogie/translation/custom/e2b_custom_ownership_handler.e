@@ -115,7 +115,8 @@ feature -- Basic operations
 					a_translator.process_builtin_routine_call (a_feature, a_parameters, "user_inv")
 				elseif l_name ~ "is_field_writable" then
 					if attached {STRING_B} a_parameters.first.expression as l_string then
-						l_field := field_from_string (l_string.value, a_translator.current_target_type, a_translator.context_feature, a_translator.context_line_number)
+						-- ToDo: can origin class be different?
+						l_field := field_from_string (l_string.value, a_translator.current_target_type, a_translator.current_target_type.base_class, a_translator.context_feature, a_translator.context_line_number, False)
 						if attached l_field then
 							a_translator.set_last_expression (factory.frame_access (
 								a_translator.context_writable,
@@ -133,7 +134,7 @@ feature -- Basic operations
 				elseif l_name ~ "is_field_readable" then
 					if attached a_translator.context_readable then
 						if attached {STRING_B} a_parameters.first.expression as l_string then
-							l_field := field_from_string (l_string.value, a_translator.current_target_type, a_translator.context_feature, a_translator.context_line_number)
+							l_field := field_from_string (l_string.value, a_translator.current_target_type, a_translator.current_target_type.base_class, a_translator.context_feature, a_translator.context_line_number, False)
 							if attached l_field then
 								a_translator.set_last_expression (factory.frame_access (
 									a_translator.context_readable,
@@ -298,24 +299,31 @@ feature -- Basic operations
 			end
 		end
 
-	field_from_string (a_name: STRING; a_type: TYPE_A; a_context_feature: FEATURE_I; a_context_line_number: INTEGER): IV_ENTITY
-			-- Boogie field corresponding to an attribute (or built-in ghost access) with name `a_name' in type `a_type'.
+	field_from_string (a_name: STRING; a_type: TYPE_A; a_origin_class: CLASS_C; a_context_feature: FEATURE_I; a_context_line_number: INTEGER; a_check_model: BOOLEAN): IV_ENTITY
+			-- Boogie field corresponding to an attribute (or built-in ghost access) with name `a_name' defined in `a_origin_class' in type `a_type';
+			-- when `a_check_model', check that the field is a model field of `a_origin_class'.
 		local
-			l_feature: FEATURE_I
+			l_old_version, l_new_version: FEATURE_I
 		do
-			l_feature := a_type.base_class.feature_named_32 (a_name)
-			if l_feature = Void then
-				helper.add_semantic_error (a_context_feature, messages.field_not_attribute (a_name, a_type.base_class.name_in_upper), a_context_line_number)
+			l_old_version := a_origin_class.feature_named_32 (a_name)
+			l_new_version := a_type.base_class.feature_of_rout_id_set (l_old_version.rout_id_set)
+			if l_old_version = Void then
+				helper.add_semantic_error (a_context_feature, messages.field_not_attribute (a_name, a_origin_class.name_in_upper), a_context_line_number)
 			else
+				check l_new_version /= Void end
 				if translation_mapping.ghost_access.has (a_name) then
 					-- Handle built-in ANY attributes separately, since they are not really attributes
 					Result := factory.entity (a_name, types.field (translation_mapping.ghost_access_type (a_name)))
-				elseif l_feature.is_attribute then
-					Result := factory.entity (name_translator.boogie_procedure_for_feature (l_feature, a_type),
-						types.field (types.for_type_a (l_feature.type)))
-					translation_pool.add_referenced_feature (l_feature, a_type)
+				elseif l_old_version.is_attribute then
+					if a_check_model and then not helper.model_queries (a_origin_class).has (a_name) then
+						helper.add_semantic_error (a_context_feature, messages.field_not_model (a_name, a_origin_class.name_in_upper), a_context_line_number)
+					else
+						Result := factory.entity (name_translator.boogie_procedure_for_feature (l_new_version, a_type),
+							types.field (types.for_type_a (l_new_version.type)))
+						translation_pool.add_referenced_feature (l_new_version, a_type)
+					end
 				else
-					helper.add_semantic_error (a_context_feature, messages.field_not_attribute (a_name, a_type.base_class.name_in_upper), a_context_line_number)
+					helper.add_semantic_error (a_context_feature, messages.field_not_attribute (a_name, a_origin_class.name_in_upper), a_context_line_number)
 				end
 			end
 

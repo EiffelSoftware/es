@@ -130,6 +130,38 @@ function trans_owns(h: HeapType, o: ref, o': ref): bool
   o == o' || h[o, owns][o'] || (exists x: ref :: h[o, owns][x] && trans_owns(h, x, o'))
 }
 
+// ----------------------------------------------------------------------
+// Models
+
+function IsModelField<alpha>(field: Field alpha, t: Type): bool; // Is this field a model field in class t?
+
+// Does the model field f_new in class t_new represent the model field f_old of class t_old?
+function ModelRepresents<alpha, beta>(f_new: Field beta, t_new: Type, f_old: Field alpha, t_old: Type): bool;
+
+// All model fields represent themselves in their own classes
+axiom (forall<alpha, beta> f: Field alpha, f': Field beta, t: Type :: { ModelRepresents(f', t, f, t) } 
+  IsModelField(f, t) && IsModelField(f', t) ==> (ModelRepresents(f', t, f, t) <==> f' == f));
+  
+// Representation is transitive  
+axiom (forall<alpha, beta, gamma> f: Field alpha, f': Field beta, f'': Field gamma, t: Type, t': Type, t'': Type :: {ModelRepresents(f', t', f, t), ModelRepresents(f'', t'', f', t')} 
+  IsModelField(f, t) && IsModelField(f', t') && IsModelField(f'', t'') &&
+  ModelRepresents(f', t', f, t) && ModelRepresents(f'', t'', f', t') ==> ModelRepresents(f'', t'', f, t));
+
+  
+// Built-in ghost fields are model fields.
+axiom (forall t: Type :: { IsModelField(closed, t) } IsModelField(closed, t));
+axiom (forall t: Type :: { IsModelField(owner, t) } IsModelField(owner, t));
+axiom (forall t: Type :: { IsModelField(owns, t) } IsModelField(owns, t));
+axiom (forall t: Type :: { IsModelField(observers, t) } IsModelField(observers, t));
+axiom (forall t: Type :: { IsModelField(subjects, t) } IsModelField(subjects, t));
+
+// Built-in ghost fields never get redefined.
+axiom (forall<alpha> f: Field alpha, t1: Type, t2: Type :: { ModelRepresents(f, t1, closed, t2) } ModelRepresents(f, t1, closed, t2) <==> f == closed);
+axiom (forall<alpha> f: Field alpha, t1: Type, t2: Type :: { ModelRepresents(f, t1, owner, t2) } ModelRepresents(f, t1, owner, t2) <==> f == owner);
+axiom (forall<alpha> f: Field alpha, t1: Type, t2: Type :: { ModelRepresents(f, t1, owns, t2) } ModelRepresents(f, t1, owns, t2) <==> f == owns);
+axiom (forall<alpha> f: Field alpha, t1: Type, t2: Type :: { ModelRepresents(f, t1, observers, t2) } ModelRepresents(f, t1, observers, t2) <==> f == observers);
+axiom (forall<alpha> f: Field alpha, t1: Type, t2: Type :: { ModelRepresents(f, t1, subjects, t2) } ModelRepresents(f, t1, subjects, t2) <==> f == subjects);
+  
 
 // ----------------------------------------------------------------------
 // Frames

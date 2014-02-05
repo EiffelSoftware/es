@@ -22,7 +22,7 @@ feature -- Basic operations
 			is_attribute: a_feature.is_attribute
 		local
 			l_attribute_name, l_old_name: STRING
-			l_type_prop: IV_EXPRESSION
+			l_type_prop, l_expr: IV_EXPRESSION
 			l_forall: IV_FORALL
 			l_heap, l_o: IV_ENTITY
 			l_heap_access: IV_MAP_ACCESS
@@ -43,15 +43,11 @@ feature -- Basic operations
 						types.field (l_boogie_type)))
 
 					-- Mark field as a ghost or non-ghost
+				l_expr := factory.function_call ("IsGhostField", << factory.entity (l_attribute_name, types.field (l_boogie_type)) >>, types.bool)
 				if helper.is_ghost (a_feature) then
-					boogie_universe.add_declaration (
-						create {IV_AXIOM}.make (
-							factory.function_call ("IsGhostField", << factory.entity (l_attribute_name, types.field (l_boogie_type)) >>, types.bool)))
+					boogie_universe.add_declaration (create {IV_AXIOM}.make (l_expr))
 				else
-					boogie_universe.add_declaration (
-						create {IV_AXIOM}.make (
-							factory.not_ (
-								factory.function_call ("IsGhostField", << factory.entity (l_attribute_name, types.field (l_boogie_type)) >>, types.bool))))
+					boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.not_ (l_expr)))
 				end
 			else
 					-- Inherited or redefined:
@@ -91,6 +87,15 @@ feature -- Basic operations
 				-- Add translation references
 			translation_pool.add_type_in_context (a_feature.type, a_context_type)
 
+				-- Mark field as model or non-model
+			l_expr := factory.function_call ("IsModelField", << factory.entity (l_attribute_name, types.field (l_boogie_type)), factory.type_value (a_context_type) >>, types.bool)
+			if helper.model_queries (a_context_type.base_class).has (a_feature.feature_name_32) then
+				boogie_universe.add_declaration (create {IV_AXIOM}.make (l_expr))
+			else
+				boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.not_ (l_expr)))
+			end
+
+
 --			elseif a_feature.type.is_integer or a_feature.type.is_natural then
 --				create l_heap_access.make ("heap", create {IV_ENTITY}.make ("o", types.ref), create {IV_ENTITY}.make (l_boogie_name, l_constant.type))
 --				create l_call.make ("is_" + a_feature.type.associated_class.name.as_lower, types.bool)
@@ -116,8 +121,9 @@ feature {NONE} -- Implementation
 				if a_feature.written_in /= a_context_type.base_class.class_id then
 						-- Inherited attribute: return the class where it is written in
 					l_written_type := cl_type.parent_type (a_feature.written_class.actual_type)
+					l_written_feature := l_written_type.base_class.feature_of_body_index (a_feature.body_index)
 					create Result.make
-					Result.extend ([a_feature, l_written_type])
+					Result.extend ([l_written_feature, l_written_type])
 				elseif a_feature.assert_id_set /= Void then
 						-- Redefined attribute: return original versions
 					from
@@ -127,7 +133,7 @@ feature {NONE} -- Implementation
 						i > a_feature.assert_id_set.count
 					loop
 						l_written_type := cl_type.parent_type (a_feature.assert_id_set [i].written_class.actual_type)
-						l_written_feature := a_feature.assert_id_set [i].written_class.feature_of_body_index (a_feature.assert_id_set [i].body_index)
+						l_written_feature := l_written_type.base_class.feature_of_body_index (a_feature.assert_id_set [i].body_index)
 						Result.extend ([l_written_feature, l_written_type])
 						i := i + 1
 					end

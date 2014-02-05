@@ -76,6 +76,12 @@ feature {A_A}
 			almost_holds: inv_without ("prev_exists")
 		end
 
+	something
+		require
+			next /= Void
+		do
+		end
+
 	set_prev
 		require
 			open: is_open

@@ -119,11 +119,11 @@ feature -- Translation: Signature
 				-- Pre- and postconditions
 			l_contracts := contracts_of (current_feature, current_type)
 			across l_contracts.pre as j loop
-				process_precondition (j.item, l_contracts.pre_origin [j.target_index])
+				process_precondition (j.item.clause, j.item.origin)
 			end
 			create l_fields.make
 			across l_contracts.post as j loop
-				process_postcondition (j.item, l_contracts.post_origin [j.target_index], l_fields)
+				process_postcondition (j.item.clause, j.item.origin, l_fields)
 			end
 
 				-- Creator: add default field initialization
@@ -657,7 +657,7 @@ feature -- Translation: Functions
 		require
 			read_for_pure_functions: a_read implies helper.has_functional_representation (a_feature)
 		local
-			l_exprs: like frame_expressions_of
+			l_exprs: like modify_expressions_of
 			l_function: IV_FUNCTION
 			l_forall: IV_FORALL
 			l_fcall: IV_FUNCTION_CALL
@@ -691,7 +691,7 @@ feature -- Translation: Functions
 				l_exprs := read_expressions_of (contracts_of (current_feature, current_type).reads, l_translator)
 
 					-- Defaults and validity
-				if l_exprs.full_objects.is_empty and l_exprs.partial_objects.is_empty then
+				if l_exprs.full_objects.is_empty and l_exprs.partial_objects.is_empty and l_exprs.model_objects.is_empty then
 					-- Missing modify clause: apply defaults
 					l_exprs.full_objects.extend (create {IV_ENTITY}.make ("current", types.ref))
 				end
@@ -699,7 +699,7 @@ feature -- Translation: Functions
 				l_exprs := modify_expressions_of (contracts_of (current_feature, current_type).modifies, l_translator)
 
 					-- Defaults and validity
-				if l_exprs.full_objects.is_empty and l_exprs.partial_objects.is_empty then
+				if l_exprs.full_objects.is_empty and l_exprs.partial_objects.is_empty and l_exprs.model_objects.is_empty then
 					-- Missing modify clause: apply defaults
 					if not a_feature.has_return_value then
 						l_exprs.full_objects.extend (create {IV_ENTITY}.make ("current", types.ref))

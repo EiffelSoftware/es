@@ -41,22 +41,24 @@ feature -- Basic operations
 			valid_type: a_type.is_class_valid
 			no_like_type: not a_type.is_like
 		local
+			l_class: CLASS_C
 			l_boogie_type_name: STRING
 			l_constant: IV_CONSTANT
 			l_path: PATH
 			l_dep: FILE_NAME
 		do
+			l_class := a_type.base_class
 			l_boogie_type_name := name_translator.boogie_name_for_type (a_type)
 
 				-- Add dependencies
 			across
-				helper.class_note_values (a_type.base_class, "theory") as deps
+				helper.class_note_values (l_class, "theory") as deps
 			loop
 				create l_path.make_from_string (deps.item)
 				if l_path.is_absolute then
 					create l_dep.make_from_string (deps.item)
 				else
-					create l_dep.make_from_string (l_path.absolute_path_in (a_type.base_class.lace_class.file_name.parent).canonical_path.out)
+					create l_dep.make_from_string (l_path.absolute_path_in (l_class.lace_class.file_name.parent).canonical_path.out)
 				end
 				boogie_universe.add_dependency (l_dep)
 			end
@@ -73,7 +75,7 @@ feature -- Basic operations
 			end
 
 			-- TODO: refactor
-			if not a_type.is_tuple and not helper.is_class_logical (a_type.base_class) then
+			if not a_type.is_tuple and not helper.is_class_logical (l_class) then
 					-- Type definition
 				create l_constant.make (l_boogie_type_name, types.type)
 				l_constant.set_unique
@@ -88,8 +90,17 @@ feature -- Basic operations
 				generate_inheritance_relations (a_type)
 
 					-- TODO: refactor
-				if a_type.base_class.name_in_upper /~ "ARRAY" then
+				if l_class.name_in_upper /~ "ARRAY" then
 					translate_invariant_function (a_type)
+				end
+			end
+
+				-- Check model clause
+			across
+				helper.model_queries (l_class) as m
+			loop
+				if a_type.base_class.feature_named_32 (m.item) = Void then
+					helper.add_semantic_error (l_class, messages.field_not_attribute (m.item, l_class.name_in_upper), -1)
 				end
 			end
 		end
@@ -146,7 +157,49 @@ feature {NONE} -- Implementation
 				create l_axiom.make (l_operation)
 				boogie_universe.add_declaration (l_axiom)
 
+					-- Link model queries
+				link_model_queries (a_type, l_parent)
+
 				l_parents.forth
+			end
+		end
+
+	link_model_queries (a_type: TYPE_A; a_parent_type: TYPE_A)
+			-- Generate axioms that link model queries of `a_parent_type' to model queries of `a_type'.
+		local
+			l_model: FEATURE_I
+			l_type_var: IV_VAR_TYPE
+			l_f, l_old_m, l_new_m: IV_ENTITY
+			l_def: IV_EXPRESSION
+			l_fcall: IV_FUNCTION_CALL
+			l_forall: IV_FORALL
+		do
+			across helper.model_queries (a_parent_type.base_class) as m loop
+				l_model := a_parent_type.base_class.feature_named_32 (m.item)
+				if attached l_model then
+					create l_type_var.make_fresh
+					create l_f.make ("$f", types.field (l_type_var))
+					create l_old_m.make (
+						name_translator.boogie_procedure_for_feature (l_model, a_parent_type),
+						types.field (types.for_type_in_context (l_model.type, a_parent_type)))
+
+					l_def := factory.false_
+					across helper.model_represented (l_model, a_parent_type.base_class, a_type.associated_class) as m1 loop
+						create l_new_m.make (
+							name_translator.boogie_procedure_for_feature (m1.item, a_type),
+							types.field (types.for_type_in_context (m1.item.type, a_type)))
+						l_def := factory.or_clean (l_def, factory.equal (l_f, l_new_m))
+					end
+					l_fcall := factory.function_call ("ModelRepresents", <<
+							l_f, factory.type_value (a_type),
+							l_old_m, factory.type_value (a_parent_type) >>,
+						types.bool)
+					create l_forall.make (factory.equiv (l_fcall, l_def))
+					l_forall.add_type_variable (l_type_var.name)
+					l_forall.add_bound_variable (l_f.name, l_f.type)
+					l_forall.add_trigger (l_fcall)
+					boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
+				end
 			end
 		end
 

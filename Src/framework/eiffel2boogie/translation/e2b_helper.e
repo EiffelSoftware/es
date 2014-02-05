@@ -31,6 +31,7 @@ feature -- General note helpers
 			-- List of note values of tag `a_tag'.
 		do
 			create Result.make (5)
+			Result.compare_objects
 			if attached a_class.ast as l_ast then
 				if l_ast.top_indexes /= Void then
 					Result.append (note_values (l_ast.top_indexes, a_tag))
@@ -298,19 +299,43 @@ feature -- Ownership helpers
 	is_clause_reads (a_clause: ASSERT_B): BOOLEAN
 			-- Is contract clause `a_clause' a reads clause?
 		do
-			Result := attached {FEATURE_B} a_clause.expr as l_call and then (l_call.feature_name ~ "reads" or l_call.feature_name ~ "reads_field")
+			Result := attached {FEATURE_B} a_clause.expr as l_call and then (l_call.feature_name ~ "reads" or l_call.feature_name ~ "reads_field" or l_call.feature_name ~ "reads_model")
 		end
 
 	is_clause_modify (a_clause: ASSERT_B): BOOLEAN
 			-- Is contract clause `a_clause' a modify clause?
 		do
-			Result := attached {FEATURE_B} a_clause.expr as l_call and then (l_call.feature_name ~ "modify" or l_call.feature_name ~ "modify_field")
+			Result := attached {FEATURE_B} a_clause.expr as l_call and then (l_call.feature_name ~ "modify" or l_call.feature_name ~ "modify_field" or l_call.feature_name ~ "modify_model")
 		end
 
 	is_clause_decreases (a_clause: ASSERT_B): BOOLEAN
 			-- Is contract clause `a_clause' a decreases clause?
 		do
 			Result := attached {FEATURE_B} a_clause.expr as l_call and then l_call.feature_name ~ "decreases"
+		end
+
+feature -- Model helpers
+
+	model_queries (a_class: CLASS_C): ARRAYED_LIST [STRING_32]
+			-- Names of model queries of class `a_class'.
+		do
+			Result := class_note_values (a_class, "model")
+		end
+
+	model_represented (a_old_model: FEATURE_I; a_old_class: CLASS_C; a_new_class: CLASS_C): ARRAYED_LIST [FEATURE_I]
+			-- Model queries of class `a_new_class' that represent the model query `a_old_model' of `a_old_class'.
+		local
+			l_feature, l_new_version: FEATURE_I
+		do
+			l_new_version := a_new_class.feature_of_body_index (a_old_model.body_index)
+			create Result.make (3)
+			across model_queries (a_new_class) as m loop
+				l_feature := a_new_class.feature_named (m.item)
+				if attached l_feature and then
+					(is_same_feature (l_feature, a_old_model) or feature_note_values (l_feature, "replaces").has (l_new_version.feature_name)) then
+					Result.extend (l_feature)
+				end
+			end
 		end
 
 feature -- String helpers
@@ -333,7 +358,7 @@ feature -- Eiffel helpers
 			-- Are `f1' and `f2' the same feature?
 		do
 			Result := f1 = f2 or
-				((f1 /= Void and f2 /= Void) and then (f1.written_in = f2.written_in and f1.feature_id = f2.feature_id))
+				((f1 /= Void and f2 /= Void) and then (f1.written_in = f2.written_in and f1.rout_id_set.first = f2.rout_id_set.first))
 		end
 
 	is_conforming_or_non_conforming_parent_class (a_child, a_parent: CLASS_C): BOOLEAN
