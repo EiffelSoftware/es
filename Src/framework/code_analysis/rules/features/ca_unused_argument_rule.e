@@ -14,9 +14,6 @@ class
 
 inherit
 	CA_STANDARD_RULE
-		redefine
-			id
-		end
 
 create
 	make
@@ -26,8 +23,9 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization.
 		do
-				-- Set the default parameters (subject to be changed by user).
-			is_enabled_by_default := True
+			make_with_defaults
+			is_enabled_by_default := False
+			default_severity_score := 40
 			create {CA_WARNING} severity
 			create violations.make
 		end
@@ -40,6 +38,7 @@ feature {NONE} -- Activation
 			a_checker.add_body_pre_action (agent process_body)
 			a_checker.add_body_post_action (agent post_process_body)
 			a_checker.add_access_id_pre_action (agent process_access_id)
+			a_checker.add_converted_expr_pre_action (agent process_converted_expr)
 		end
 
 feature -- Properties
@@ -56,8 +55,6 @@ feature -- Properties
 		do
 			Result :=  ca_names.unused_argument_description
 		end
-
-	is_system_wide: BOOLEAN = False
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		local
@@ -148,6 +145,25 @@ feature {NONE} -- Rule Checking
 		end
 
 	process_access_id (a_aid: ACCESS_ID_AS)
+			-- Checks if `a_aid' is an argument.
+		do
+			check_arguments (a_aid.feature_name.name_32)
+		end
+
+	process_converted_expr (a_conv: CONVERTED_EXPR_AS)
+			-- Checks if `a_conv' is an argument used in the
+			-- form `$arg'.
+		local
+			j: INTEGER
+		do
+			if attached {ADDRESS_AS} a_conv.expr as l_address then
+				if attached {FEAT_NAME_ID_AS} l_address.feature_name as l_id then
+					check_arguments (l_id.feature_name.name_32)
+				end
+			end
+		end
+
+	check_arguments (a_var_name: STRING_32)
 			-- Mark an argument as used if it corresponds to `a_aid'.
 		local
 			j: INTEGER
@@ -157,9 +173,9 @@ feature {NONE} -- Rule Checking
 			until
 				j > n_arguments
 			loop
-				if not args_used.at (j) then
-					if arg_names.at (j).is_equal (a_aid.feature_name.name_32) then
-						args_used.put_i_th (True, j)
+				if not args_used [j] then
+					if arg_names [j].is_equal (a_var_name) then
+						args_used [j] := True
 					end
 				end
 				j := j + 1

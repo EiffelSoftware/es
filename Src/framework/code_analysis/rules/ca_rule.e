@@ -14,6 +14,17 @@ inherit
 
 	SHARED_SERVER
 
+feature {NONE} -- Initialization
+
+	make_with_defaults
+		do
+			is_enabled_by_default := True
+			is_system_wide := False
+			checks_library_classes := True
+			checks_nonlibrary_classes := True
+			default_severity_score := 50
+		end
+
 feature -- Basic properties, usually fix
 
 	title: STRING_32
@@ -38,21 +49,13 @@ feature -- Basic properties, usually fix
 		end
 
 	is_system_wide: BOOLEAN
-			-- Only check the rule if a system wide analysis is performed.
-		deferred
-		end
+			-- Is the rule only checked when a system wide analysis is performed?
 
 	checks_library_classes: BOOLEAN
 			-- Does this rule check library classes?
-		do
-			Result := True
-		end
 
 	checks_nonlibrary_classes: BOOLEAN
 			-- Does this rule check non-library classes?
-		do
-			Result := True
-		end
 
 	is_enabled_by_default: BOOLEAN
 			-- Is this rule enabled by default?
@@ -184,4 +187,5 @@ feature {NONE} -- Preferences
 
 invariant
 	checks_some_classes: checks_library_classes or checks_nonlibrary_classes
+	valid_severity_score: severity_score.value >= 0 and severity_score.value <= 100
 end

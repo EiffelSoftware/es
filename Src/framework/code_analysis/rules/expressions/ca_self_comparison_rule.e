@@ -16,7 +16,6 @@ class
 
 inherit
 	CA_STANDARD_RULE
-		redefine id end
 
 create
 	make
@@ -26,8 +25,8 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization.
 		do
-				-- set the default parameters (subject to be changed by user)
-			is_enabled_by_default := True
+			make_with_defaults
+			default_severity_score := 70
 			create {CA_WARNING} severity
 			create violations.make
 		end
@@ -59,8 +58,6 @@ feature -- Properties
 		do
 			Result :=  ca_names.self_comparison_description
 		end
-
-	is_system_wide: BOOLEAN = False
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		local

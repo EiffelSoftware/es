@@ -16,9 +16,6 @@ class
 
 inherit
 	CA_STANDARD_RULE
-		redefine
-			id
-		end
 
 	AST_ITERATOR
 		redefine
@@ -33,7 +30,8 @@ feature {NONE} -- Initialization
 	make (a_pref_manager: PREFERENCE_MANAGER)
 			-- Initialization for `Current'.
 		do
-			is_enabled_by_default := True
+			make_with_defaults
+			default_severity_score := 40
 			create {CA_SUGGESTION} severity
 			create violations.make
 			initialize_preferences (a_pref_manager)
@@ -161,6 +159,10 @@ feature {NONE} -- Rule checking
 			if a_access_id.feature_name.is_equal (var_to_look_for) then
 				var_found := True
 			end
+
+				-- Very important! Other ACCESS_ID_AS may be reachable from this
+				-- ACCESS_ID_AS in the AST.
+			Precursor (a_access_id)
 		end
 
 	process_access_id (a_access_id: ACCESS_ID_AS)
@@ -231,8 +233,6 @@ feature -- Properties
 
 	id: STRING_32 = "CA085"
 			-- <Precursor>
-
-	is_system_wide: BOOLEAN = False
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 			-- Generates a formatted rule violation description for `a_formatter' based on `a_violation'.

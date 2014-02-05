@@ -42,6 +42,7 @@ inherit
 			process_bin_lt_as,
 			process_body_as,
 			process_case_as,
+			process_converted_expr_as,
 			process_create_as,
 			process_create_creation_as,
 			process_creation_as,
@@ -61,7 +62,6 @@ inherit
 			process_paran_as,
 			process_routine_as,
 			process_un_not_as
-			-- ...
 		end
 
 create
@@ -104,6 +104,8 @@ feature {NONE} -- Initialization
 			create case_post_actions.make
 			create class_pre_actions.make
 			create class_post_actions.make
+			create converted_expr_pre_actions.make
+			create converted_expr_post_actions.make
 			create create_pre_actions.make
 			create create_post_actions.make
 			create create_creation_pre_actions.make
@@ -264,6 +266,16 @@ feature {CA_STANDARD_RULE} -- Adding agents
 	add_class_post_action (a_action: PROCEDURE[ANY, TUPLE[CLASS_AS]])
 		do
 			class_post_actions.extend (a_action)
+		end
+
+	add_converted_expr_pre_action (a_action: PROCEDURE [ANY, TUPLE [CONVERTED_EXPR_AS]])
+		do
+			converted_expr_pre_actions.extend (a_action)
+		end
+
+	add_converted_expr_post_action (a_action: PROCEDURE [ANY, TUPLE [CONVERTED_EXPR_AS]])
+		do
+			converted_expr_post_actions.extend (a_action)
 		end
 
 	add_create_pre_action (a_action: PROCEDURE [ANY, TUPLE [CREATE_AS]])
@@ -482,6 +494,8 @@ feature {NONE} -- Agent lists
 
 	class_pre_actions, class_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[CLASS_AS]]]
 
+	converted_expr_pre_actions, converted_expr_post_actions: ACTION_SEQUENCE [TUPLE [CONVERTED_EXPR_AS]]
+
 	create_pre_actions, create_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [CREATE_AS]]]
 
 	create_creation_pre_actions, create_creation_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [CREATE_CREATION_AS]]]
@@ -612,6 +626,13 @@ feature {NONE} -- Processing
 			across case_pre_actions as l_a loop l_a.item.call ([a_case]) end
 			Precursor (a_case)
 			across case_post_actions as l_a loop l_a.item.call ([a_case]) end
+		end
+
+	process_converted_expr_as (a_conv: CONVERTED_EXPR_AS)
+		do
+			converted_expr_pre_actions.call ([a_conv])
+			Precursor (a_conv)
+			converted_expr_post_actions.call ([a_conv])
 		end
 
 	process_create_as (a_create: CREATE_AS)

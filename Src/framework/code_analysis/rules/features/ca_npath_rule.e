@@ -16,7 +16,6 @@ class
 
 inherit
 	CA_STANDARD_RULE
-		redefine id end
 
 create
 	make
@@ -27,7 +26,8 @@ feature {NONE} -- Initialization
 			-- Initializes `Current' and its preferences (using
 			-- `a_pref_manager'.
 		do
-			is_enabled_by_default := True
+			make_with_defaults
+			default_severity_score := 60
 			create {CA_WARNING} severity
 			create violations.make
 			create {LINKED_STACK[INTEGER]} npath_stack.make
@@ -82,9 +82,6 @@ feature -- Properties
 		do
 			Result :=  ca_names.npath_description
 		end
-
-	is_system_wide: BOOLEAN = False
-			-- <Precursor>
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 			-- <Precursor>

@@ -17,8 +17,7 @@ class
 inherit
 	CA_CFG_BACKWARD_RULE
 		redefine
-			check_feature,
-			id
+			check_feature
 		end
 
 	AST_ITERATOR
@@ -35,7 +34,8 @@ feature {NONE} -- Initialization
 	make
 			-- Creates the rule and initializes it for checking.
 		do
-			is_enabled_by_default := True
+			make_with_defaults
+			default_severity_score := 70
 			create {CA_WARNING} severity
 			create violations.make
 		end
@@ -256,7 +256,7 @@ feature {NONE} -- Extracting Used Variables
 
 	process_converted_expr_as (a_conv: CONVERTED_EXPR_AS)
 			-- Needed for expressions like "$foo". Adds a free variable from
-			-- `l_as', if available.
+			-- `a_conv', if available.
 		do
 			Precursor (a_conv)
 
@@ -270,7 +270,7 @@ feature {NONE} -- Extracting Used Variables
 feature {NONE} -- Extracting Assignments
 
 	extract_assigned (a_target: ACCESS_AS): INTEGER
-			-- Extracts the variable ID of the target `a_assign' of an
+			-- Extracts the variable ID of the target `a_target' of an
 			-- assignment if a local variable gets assigned. If no local
 			-- variable gets assigned then Result = -1.
 		do
@@ -279,7 +279,6 @@ feature {NONE} -- Extracting Assignments
 			if attached {ACCESS_ID_AS} a_target as l_id and then is_local (l_id) then
 					-- Something is assigned to a local variable.
 				Result := l_id.feature_name.name_id
-					-- TODO: Result?
 			end
 		end
 
@@ -315,8 +314,6 @@ feature -- Properties
 
 	id: STRING_32 = "CA020"
 			-- <Precursor>
-
-	is_system_wide: BOOLEAN = False
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 			-- Generates a formatted rule violation description for `a_formatter' based on `a_violation'.

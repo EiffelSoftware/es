@@ -16,7 +16,6 @@ class
 
 inherit
 	CA_STANDARD_RULE
-		redefine id end
 
 create
 	make
@@ -25,8 +24,9 @@ feature {NONE} -- Initialization
 
 	make
 		do
-			is_enabled_by_default := True
-			create {CA_WARNING} severity
+			make_with_defaults
+			default_severity_score := 30
+			create {CA_SUGGESTION} severity
 			create violations.make
 		end
 
@@ -51,8 +51,6 @@ feature -- Properties
 		do
 			Result := ca_names.boolean_result_description
 		end
-
-	is_system_wide: BOOLEAN = False
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		do

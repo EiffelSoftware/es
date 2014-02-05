@@ -14,9 +14,6 @@ class
 
 inherit
 	CA_STANDARD_RULE
-		redefine
-			checks_library_classes, id
-		end
 
 create
 	make
@@ -26,7 +23,10 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization.
 		do
-			is_enabled_by_default := True
+			make_with_defaults
+			is_enabled_by_default := False
+			checks_library_classes := False
+			default_severity_score := 40
 			create {CA_WARNING} severity
 			create violations.make
 		end
@@ -105,10 +105,6 @@ feature -- Properties
 		do
 			Result :=  ca_names.feature_never_called_description
 		end
-
-	is_system_wide: BOOLEAN = True
-
-	checks_library_classes: BOOLEAN = False
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		do

@@ -14,7 +14,6 @@ class
 
 inherit
 	CA_STANDARD_RULE
-		redefine id end
 
 create
 	make
@@ -24,9 +23,10 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization for `Current'.
 		do
-				-- set the default parameters (subject to be changed by user)
-			is_enabled_by_default := True
-			create {CA_WARNING} severity
+			make_with_defaults
+			is_enabled_by_default := False
+			default_severity_score := 30
+			create {CA_SUGGESTION} severity
 			create violations.make
 		end
 
@@ -82,8 +82,6 @@ feature -- Properties
 		do
 			Result :=  ca_names.feature_section_comment_description
 		end
-
-	is_system_wide: BOOLEAN = False
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		do

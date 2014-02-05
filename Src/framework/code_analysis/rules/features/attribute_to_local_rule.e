@@ -15,7 +15,6 @@ class
 
 inherit
 	CA_STANDARD_RULE
-		redefine id end
 
 create
 	make
@@ -25,7 +24,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization for `Current'.
 		do
-			is_enabled_by_default := True
+			make_with_defaults
 			create {CA_SUGGESTION} severity
 			create violations.make
 		end
@@ -112,8 +111,6 @@ feature -- Properties
 
 	id: STRING_32 = "CA054"
 			-- <Precursor>
-
-	is_system_wide: BOOLEAN = False
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 			-- Generates a formatted rule violation description for `a_formatter' based on `a_violation'.

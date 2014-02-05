@@ -17,7 +17,6 @@ class
 
 inherit
 	CA_STANDARD_RULE
-		redefine id end
 
 create
 	make
@@ -27,8 +26,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization for `Current'.
 		do
-			-- set the default parameters (subject to be changed by user)
-			is_enabled_by_default := True
+			make_with_defaults
 			create {CA_WARNING} severity
 			create violations.make
 		end
@@ -54,8 +52,6 @@ feature -- Properties
 			Result := ca_names.creation_proc_exported_description
 		end
 
-	is_system_wide: BOOLEAN = True
-
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		do
 			a_formatter.add (ca_messages.creation_proc_exported_violation_1)
@@ -80,26 +76,28 @@ feature {NONE} -- AST Visitor
 			l_exported: BOOLEAN
 			l_viol: CA_RULE_VIOLATION
 		do
-			across creation_procedures as l_cp loop
-				l_feature := a_clause.feature_with_name (l_cp.item.internal_name.name_id)
-				if l_feature /= Void then
-					if attached a_clause.clients as l_clients then
-						across l_clients.clients as l_class_list loop
-							if not l_class_list.item.name_32.is_equal ("NONE") then
-									-- The feature is exported to something.
-								l_exported := True
+			if creation_procedures /= Void then
+				across creation_procedures as l_cp loop
+					l_feature := a_clause.feature_with_name (l_cp.item.internal_name.name_id)
+					if l_feature /= Void then
+						if attached a_clause.clients as l_clients then
+							across l_clients.clients as l_class_list loop
+								if not l_class_list.item.name_32.is_equal ("NONE") then
+										-- The feature is exported to something.
+									l_exported := True
+								end
 							end
+						else
+								-- No clients are defined. It means that the feature is exported to {ANY}.
+							l_exported := True
 						end
-					else
-							-- No clients are defined. It means that the feature is exported to {ANY}.
-						l_exported := True
-					end
 
-					if l_exported then
-						create l_viol.make_with_rule (Current)
-						l_viol.set_location (a_clause.start_location)
-						l_viol.long_description_info.extend (l_feature.feature_name.name_32)
-						violations.extend (l_viol)
+						if l_exported then
+							create l_viol.make_with_rule (Current)
+							l_viol.set_location (a_clause.start_location)
+							l_viol.long_description_info.extend (l_feature.feature_name.name_32)
+							violations.extend (l_viol)
+						end
 					end
 				end
 			end

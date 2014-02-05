@@ -38,8 +38,6 @@ feature {NONE} -- Initialization
 
 	on_before_initialize
 			-- <Precursor>
-		local
-			l_shared_writer: EB_SHARED_WRITER
 		do
 			Precursor
 
@@ -67,7 +65,6 @@ feature {NONE} -- Initialization
             -- <Precursor>
         local
         	l_label: EV_LABEL
-			l_box: EV_HORIZONTAL_BOX
 			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
 		do
 			create l_helper
@@ -127,10 +124,7 @@ feature {NONE} -- Initialization
 	create_right_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			-- <Precursor>
 		local
-			l_box: EV_HORIZONTAL_BOX
 			l_button: SD_TOOL_BAR_BUTTON
-			l_popup_button: SD_TOOL_BAR_POPUP_BUTTON
-			l_label: EV_LABEL
 		do
 				-- "Move to previous error" button.
 			create l_button.make
@@ -256,8 +250,6 @@ feature -- Status report
 
 	is_item_visible (a_item: EV_GRID_ROW): BOOLEAN
 			-- Is `a_item' visible?
-		local
-			l_text: STRING
 		do
 			Result := True
 			if attached {CA_RULE_VIOLATION_EVENT} a_item.data as l_viol then
@@ -460,11 +452,8 @@ feature {NONE} -- Basic operations
 			-- `a_row': The row to create items on.
 		local
 			l_editor_item: EB_GRID_EDITOR_TOKEN_ITEM
-			l_gen, l_message_gen, l_text_gen: EB_EDITOR_TOKEN_GENERATOR
-			l_lines: LIST [EIFFEL_EDITOR_LINE]
-			l_tip: EB_EDITOR_TOKEN_TOOLTIP
+			l_gen, l_message_gen: EB_EDITOR_TOKEN_GENERATOR
 			l_label: EV_GRID_LABEL_ITEM
-			l_row: EV_GRID_ROW
 			l_pos_token: EDITOR_TOKEN_NUMBER
 			l_line: EIFFEL_EDITOR_LINE
 		do

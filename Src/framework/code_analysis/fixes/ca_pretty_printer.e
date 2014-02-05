@@ -1,5 +1,5 @@
 note
-	description: "Copied from {PRETTY_PRINTER} in order to make available from library. Eiffel Pretty Printer."
+	description: "EXACT COPY from {PRETTY_PRINTER} in order to make available from library. Eiffel Pretty Printer."
 
 class
 	CA_PRETTY_PRINTER

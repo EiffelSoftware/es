@@ -16,7 +16,6 @@ class
 
 inherit
 	CA_STANDARD_RULE
-		redefine id end
 
 create
 	make
@@ -26,10 +25,10 @@ feature {NONE} -- Initialization
 	make (a_pref_manager: PREFERENCE_MANAGER)
 			-- Initialization using preference manager `a_pref_manager'.
 		do
-			is_enabled_by_default := True
-			create {CA_WARNING} severity
+			make_with_defaults
+			create {CA_SUGGESTION} severity
 			create violations.make
-		initialize_options (a_pref_manager)
+			initialize_options (a_pref_manager)
 		end
 
 	initialize_options (a_pref_manager: PREFERENCE_MANAGER)
@@ -97,8 +96,6 @@ feature -- Properties
 		do
 			Result := ca_names.inspect_instructions_description
 		end
-
-	is_system_wide: BOOLEAN = False
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		do

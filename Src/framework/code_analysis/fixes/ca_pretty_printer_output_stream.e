@@ -1,5 +1,5 @@
 note
-	description: "Copied from {PRETTY_PRINTER_OUTPUT_STREAM} in order to make available from library. Output stream to produce prettified text."
+	description: "EXACT COPY from {PRETTY_PRINTER_OUTPUT_STREAM} in order to make available from library. Output stream to produce prettified text."
 
 class
 	CA_PRETTY_PRINTER_OUTPUT_STREAM
