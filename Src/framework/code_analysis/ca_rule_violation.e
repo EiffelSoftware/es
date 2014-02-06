@@ -18,7 +18,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_rule (a_rule: CA_RULE)
+	make_with_rule (a_rule: attached CA_RULE)
 			-- Initializes a violation of rule `a_rule'.
 		do
 			rule := a_rule
@@ -71,7 +71,7 @@ feature -- Inherited from {COMPARABLE}
 
 feature {CA_RULE} -- Setting violation properties
 
-	set_affected_class (a_class: CLASS_C)
+	set_affected_class (a_class: attached CLASS_C)
 			-- Sets the class that this violations refers to to 'a_class'. This is only
 			-- needed when 'a_class' differs from '{CA_RULE}.checking_class' of the rule at
 			-- the time this violation is created. (See 'make_with_rule'.)
@@ -79,7 +79,7 @@ feature {CA_RULE} -- Setting violation properties
 			affected_class := a_class
 		end
 
-	set_location (a_location: LOCATION_AS)
+	set_location (a_location: attached LOCATION_AS)
 			-- Sets the location in code to `a_location'.
 		do
 			location := a_location

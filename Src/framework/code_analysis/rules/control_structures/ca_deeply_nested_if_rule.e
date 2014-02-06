@@ -21,7 +21,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_pref_manager: PREFERENCE_MANAGER)
+	make (a_pref_manager: attached PREFERENCE_MANAGER)
 			-- Initialization for `Current'.
 		do
 			make_with_defaults
@@ -31,14 +31,14 @@ feature {NONE} -- Initialization
 			initialize_preferences (a_pref_manager)
 		end
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_feature_pre_action (agent process_feature)
 			a_checker.add_if_pre_action (agent pre_process_if)
 			a_checker.add_if_post_action (agent post_process_if)
 		end
 
-	initialize_preferences (a_pref_manager: PREFERENCE_MANAGER)
+	initialize_preferences (a_pref_manager: attached PREFERENCE_MANAGER)
 		local
 			l_factory: BASIC_PREFERENCE_FACTORY
 		do
@@ -112,7 +112,7 @@ feature -- Properties
 	id: STRING_32 = "CA043"
 			-- <Precursor>
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 			-- Generates a formatted rule violation description for `a_formatter' based on `a_violation'.
 		do
 			a_formatter.add (ca_messages.deeply_nested_if_violation_1)

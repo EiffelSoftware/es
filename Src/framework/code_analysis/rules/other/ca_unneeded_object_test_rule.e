@@ -32,7 +32,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Activation
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_feature_pre_action (agent process_feature)
 			a_checker.add_object_test_pre_action (agent process_object_test)
@@ -53,7 +53,7 @@ feature -- Properties
 			Result :=  ca_names.unneeded_object_test_description
 		end
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		local
 			l_info: LINKED_LIST [ANY]
 		do
@@ -113,7 +113,7 @@ feature {NONE} -- AST Visits
 
 feature {NONE} -- Helpers
 
-	find_access_id (a_nested_call: NESTED_AS): detachable ACCESS_FEAT_AS
+	find_access_id (a_nested_call: attached NESTED_AS): detachable ACCESS_FEAT_AS
 			-- Retrieves the rightmost feature in the nested call `a_nested_call'.
 		local
 			l_nested: NESTED_AS

@@ -14,7 +14,7 @@ inherit
 
 feature -- Rule Checking
 
-	check_class (a_class: CLASS_C)
+	check_class (a_class: attached CLASS_C)
 			-- Checks `a_class'.
 		do
 			across a_class.written_in_features as l_features loop
@@ -24,7 +24,7 @@ feature -- Rule Checking
 
 feature {NONE} -- Implementation
 
-	check_feature (a_class: CLASS_C; a_feature: E_FEATURE)
+	check_feature (a_class: attached CLASS_C; a_feature: attached E_FEATURE)
 			-- Checks feature `a_feature' of class `a_class'.
 		local
 			l_cfg_builder: CA_CFG_BUILDER

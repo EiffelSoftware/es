@@ -33,7 +33,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Activation
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_bin_eq_pre_action (agent process_bin_eq)
 			a_checker.add_bin_ge_pre_action (agent process_bin_ge)
@@ -59,7 +59,7 @@ feature -- Properties
 			Result :=  ca_names.self_comparison_description
 		end
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		local
 			l_info: LINKED_LIST [ANY]
 		do
@@ -151,7 +151,7 @@ feature {NONE} -- Checking the rule
 			end
 		end
 
-	analyze_self (a_bin: BINARY_AS)
+	analyze_self (a_bin: attached BINARY_AS)
 			-- Is `a_bin' a self-comparison?
 		do
 			is_self := False

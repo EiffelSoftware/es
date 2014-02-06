@@ -17,7 +17,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_rules_checker: CA_ALL_RULES_CHECKER; a_rules: LINKED_LIST [CA_RULE]; a_classes: LINKED_SET [CLASS_C]; a_completed_action: PROCEDURE [ANY, TUPLE []])
+	make (a_rules_checker: attached CA_ALL_RULES_CHECKER; a_rules: attached LINKED_LIST [attached CA_RULE]; a_classes: attached LINKED_SET [CLASS_C]; a_completed_action: attached PROCEDURE [ANY, TUPLE []])
 			-- Initializes `Current'. `a_rules_checker' will be used for checking standard rules. All classes from `a_classes'
 			-- will be analyzed by all rules from `a_rules'. `a_completed_action' will be called as soon as the analysis is done.
 		do
@@ -39,7 +39,7 @@ feature {NONE} -- Initialization
 
 feature -- Initialization
 
-	set_output_actions (a_output_actions: ACTION_SEQUENCE [TUPLE [READABLE_STRING_GENERAL]])
+	set_output_actions (a_output_actions: attached ACTION_SEQUENCE [TUPLE [READABLE_STRING_GENERAL]])
 			-- Sets the output acitons to `a_output_actions'.
 		do
 			output_actions := a_output_actions

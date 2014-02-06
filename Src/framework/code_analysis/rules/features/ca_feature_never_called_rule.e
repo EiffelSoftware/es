@@ -33,7 +33,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Activation
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_class_pre_action (agent class_check)
 		end
@@ -75,7 +75,7 @@ feature {NONE} -- Feature Visitor for Violation Check
 			end
 		end
 
-	create_violation (a_feature: E_FEATURE)
+	create_violation (a_feature: attached E_FEATURE)
 			-- Creates violation regarding `a_feature' never being called.
 		local
 			l_violation: CA_RULE_VIOLATION
@@ -106,7 +106,7 @@ feature -- Properties
 			Result :=  ca_names.feature_never_called_description
 		end
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		do
 			a_formatter.add (ca_messages.feature_never_called_violation_1)
 			if attached {STRING_32} a_violation.long_description_info.first as l_feat_name then

@@ -21,7 +21,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_pref_manager: PREFERENCE_MANAGER)
+	make (a_pref_manager: attached PREFERENCE_MANAGER)
 			-- Initialization for `Current'.
 		do
 			make_with_defaults
@@ -31,7 +31,7 @@ feature {NONE} -- Initialization
 			initialize_options (a_pref_manager)
 		end
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_class_pre_action (agent pre_process_class)
 			a_checker.add_class_post_action (agent post_process_class)
@@ -42,7 +42,7 @@ feature {NONE} -- Initialization
 			a_checker.add_inspect_pre_action (agent process_inspect)
 		end
 
-	initialize_options (a_pref_manager: PREFERENCE_MANAGER)
+	initialize_options (a_pref_manager: attached PREFERENCE_MANAGER)
 			-- Initializes rule preferences.
 		local
 			l_factory: BASIC_PREFERENCE_FACTORY
@@ -174,7 +174,7 @@ feature -- Properties
 			Result :=  ca_names.very_big_class_description
 		end
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		local
 			l_info: LINKED_LIST [ANY]
 		do

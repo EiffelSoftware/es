@@ -32,7 +32,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Activation
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_feature_pre_action (agent process_feature)
 			a_checker.add_body_pre_action (agent process_body)
@@ -56,7 +56,7 @@ feature -- Properties
 			Result :=  ca_names.unused_argument_description
 		end
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		local
 			j: INTEGER
 		do
@@ -163,7 +163,7 @@ feature {NONE} -- Rule Checking
 			end
 		end
 
-	check_arguments (a_var_name: STRING_32)
+	check_arguments (a_var_name: attached STRING_32)
 			-- Mark an argument as used if it corresponds to `a_aid'.
 		local
 			j: INTEGER

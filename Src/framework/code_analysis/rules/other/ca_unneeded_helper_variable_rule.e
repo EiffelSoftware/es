@@ -27,7 +27,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_pref_manager: PREFERENCE_MANAGER)
+	make (a_pref_manager: attached PREFERENCE_MANAGER)
 			-- Initialization for `Current'.
 		do
 			make_with_defaults
@@ -41,7 +41,7 @@ feature {NONE} -- Initialization
 			create location.make (0)
 		end
 
-	initialize_preferences (a_pref_manager: PREFERENCE_MANAGER)
+	initialize_preferences (a_pref_manager: attached PREFERENCE_MANAGER)
 			-- Initializes preferences for this rule.
 		local
 			l_factory: BASIC_PREFERENCE_FACTORY
@@ -54,7 +54,7 @@ feature {NONE} -- Initialization
 			max_line_length.set_validation_agent (agent is_integer_string_within_bounds (?, 30, 1000))
 		end
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_feature_pre_action (agent pre_process_feature)
 			a_checker.add_feature_post_action (agent post_process_feature)
@@ -136,7 +136,7 @@ feature {NONE} -- Rule checking
 	is_read: BOOLEAN
 			-- Is variable analyzed in `analyze_reads' read?
 
-	analyze_reads (a_var: ID_AS; a_instr: INSTRUCTION_AS)
+	analyze_reads (a_var: attached ID_AS; a_instr: attached INSTRUCTION_AS)
 			-- Checks if variable `a_var' is used in instruction `a_instr'.
 		do
 			is_read := False
@@ -185,19 +185,19 @@ feature {NONE} -- Rule checking
 	locals_usage: HASH_TABLE [INTEGER, ID_AS]
 			-- Stores how many times a local variable is used.
 
-	expression_length (a_assign: ASSIGN_AS): INTEGER
+	expression_length (a_assign: attached ASSIGN_AS): INTEGER
 			-- How many characters long is the source expression of the
 			-- assignment `a_assign'?
 		do
 			Result := a_assign.source.end_position - a_assign.source.start_position + 1
 		end
 
-	create_expression_length (a_create: CREATION_AS): INTEGER
+	create_expression_length (a_create: attached CREATION_AS): INTEGER
 		do
 			Result := a_create.end_position - a_create.start_position + 1
 		end
 
-	instruction_length (a_instr: INSTRUCTION_AS): INTEGER
+	instruction_length (a_instr: attached INSTRUCTION_AS): INTEGER
 			-- How many characters long is `a_instr'?
 		do
 			Result := a_instr.end_position - a_instr.start_position + 1
@@ -234,7 +234,7 @@ feature -- Properties
 	id: STRING_32 = "CA085"
 			-- <Precursor>
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 			-- Generates a formatted rule violation description for `a_formatter' based on `a_violation'.
 		do
 			a_formatter.add (ca_messages.unneeded_helper_variable_violation_1)

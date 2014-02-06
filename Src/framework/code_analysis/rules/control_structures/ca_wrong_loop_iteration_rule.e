@@ -31,7 +31,7 @@ feature {NONE} -- Initialization
 			create violations.make
 		end
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_loop_pre_action (agent process_loop)
 		end
@@ -56,7 +56,7 @@ feature {NONE} -- Checking Loop For Pattern
 			-- Does the from part look at last in `analyze_from_part' correspond to the pattern we are
 			-- looking for?
 
-	analyze_from_part (a_loop: LOOP_AS)
+	analyze_from_part (a_loop: attached LOOP_AS)
 			-- Analyzes the from part of `a_loop' in regard to whether it conform to what we
 			-- are looking for.
 		do
@@ -82,7 +82,7 @@ feature {NONE} -- Checking Loop For Pattern
 			-- correspond to the pattern we are looking for?
 
 
-	analyze_stop_condition (a_stop: EXPR_AS)
+	analyze_stop_condition (a_stop: attached EXPR_AS)
 			-- Analyze stop condition `a_stop' with regard to to the pattern
 			-- we are looking for.
 		local
@@ -122,7 +122,7 @@ feature {NONE} -- Checking Loop For Pattern
 			end
 		end
 
-	check_xxcrement (a_instruction: INSTRUCTION_AS)
+	check_xxcrement (a_instruction: attached INSTRUCTION_AS)
 			-- Does the loop iteration `a_instruction' correspond to the pattern
 			-- we are looking for?
 		local
@@ -175,7 +175,7 @@ feature -- Properties
 	id: STRING_32 = "CA092"
 			-- <Precursor>
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 			-- Generates a formatted rule violation description for `a_formatter' based on `a_violation'.
 		do
 			if attached {STRING_32} a_violation.long_description_info.first as l_msg then

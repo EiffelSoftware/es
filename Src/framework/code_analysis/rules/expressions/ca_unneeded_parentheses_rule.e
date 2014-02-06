@@ -65,7 +65,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Activation
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_routine_pre_action (agent check_routine)
 		end
@@ -85,7 +85,7 @@ feature -- Properties
 			Result := ca_names.unneeded_parentheses_description
 		end
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		do
 			a_formatter.add (ca_messages.unneeded_parentheses_violation_1)
 		end
@@ -108,7 +108,7 @@ feature {NONE} -- Implementation
 
 	is_within_binary: BOOLEAN
 
-	is_not_nested (a_expr: EXPR_AS): BOOLEAN
+	is_not_nested (a_expr: attached EXPR_AS): BOOLEAN
 			-- Is `a_expr' not one of unary, binary, or object test expressions?
 		do
 			Result := (not attached {UNARY_AS} a_expr)

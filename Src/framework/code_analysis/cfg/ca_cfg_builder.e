@@ -298,12 +298,12 @@ feature {NONE} -- (New) Implementation
 			create l_new_instr_block.make_complete (a_instr, current_label)
 			current_label := current_label + 1
 
-			if attached {CA_CFG_IF} last_block then
-				add_true_edge (last_block, l_new_instr_block)
-			elseif attached {CA_CFG_LOOP} last_block then
-				add_loop_edge (last_block, l_new_instr_block)
-			elseif attached {CA_CFG_INSPECT} last_block then
-				add_when_edge (last_block, l_new_instr_block, case_number)
+			if attached {CA_CFG_IF} last_block as l_if then
+				add_true_edge (l_if, l_new_instr_block)
+			elseif attached {CA_CFG_LOOP} last_block as l_loop then
+				add_loop_edge (l_loop, l_new_instr_block)
+			elseif attached {CA_CFG_INSPECT} last_block as l_inspect then
+				add_when_edge (l_inspect, l_new_instr_block, case_number)
 			else
 				add_edge (last_block, l_new_instr_block)
 			end
@@ -324,81 +324,53 @@ feature {NONE} -- Implementation
 			a_to.add_in_edge (a_from)
 		end
 
-	add_true_edge (a_from, a_to: attached CA_CFG_BASIC_BLOCK)
+	add_true_edge (a_from: attached CA_CFG_IF; a_to: attached CA_CFG_BASIC_BLOCK)
 			-- Adds a "true" edge from `a_from' to `a_to'.
-		require
-			attached {CA_CFG_IF} a_from
 		do
-			if attached {CA_CFG_IF} a_from as a_if then
-				a_if.set_true_branch (a_to)
-				a_to.add_in_edge (a_from)
-			end
+			a_from.set_true_branch (a_to)
+			a_to.add_in_edge (a_from)
 		end
 
-	add_false_edge (a_from, a_to: attached CA_CFG_BASIC_BLOCK)
+	add_false_edge (a_from: attached CA_CFG_IF; a_to: attached CA_CFG_BASIC_BLOCK)
 			-- Adds a "false" edge from `a_from' to `a_to'.
-		require
-			attached {CA_CFG_IF} a_from
 		do
-			if attached {CA_CFG_IF} a_from as a_if then
-				a_if.set_false_branch (a_to)
-				a_to.add_in_edge (a_from)
-			end
+			a_from.set_false_branch (a_to)
+			a_to.add_in_edge (a_from)
 		end
 
-	add_when_edge (a_from, a_to: attached CA_CFG_BASIC_BLOCK; a_index: INTEGER)
+	add_when_edge (a_from: attached CA_CFG_INSPECT; a_to: attached CA_CFG_BASIC_BLOCK; a_index: INTEGER)
 			-- Adds a "when" edge from `a_from' to `a_to'.
-		require
-			attached {CA_CFG_INSPECT} a_from
 		do
-			if attached {CA_CFG_INSPECT} a_from as a_inspect then
-				a_inspect.set_when_branch (a_inspect, a_index)
-				a_to.add_in_edge (a_from)
-			end
+			a_from.set_when_branch (a_to, a_index)
+			a_to.add_in_edge (a_from)
 		end
 
-	add_else_edge (a_from, a_to: attached CA_CFG_BASIC_BLOCK)
+	add_else_edge (a_from: attached CA_CFG_INSPECT; a_to: attached CA_CFG_BASIC_BLOCK)
 			-- Adds an "else" edge from `a_from' to `a_to'.
-		require
-			attached {CA_CFG_INSPECT} a_from
 		do
-			if attached {CA_CFG_INSPECT} a_from as a_inspect then
-				a_inspect.set_else_branch (a_to)
-				a_to.add_in_edge (a_from)
-			end
+			a_from.set_else_branch (a_to)
+			a_to.add_in_edge (a_from)
 		end
 
-	add_loop_edge (a_from, a_to: attached CA_CFG_BASIC_BLOCK)
+	add_loop_edge (a_from: attached CA_CFG_LOOP; a_to: attached CA_CFG_BASIC_BLOCK)
 			-- Adds a "loop" edge from `a_from' to `a_to'.
-		require
-			attached {CA_CFG_LOOP} a_from
 		do
-			if attached {CA_CFG_LOOP} a_from as a_loop then
-				a_loop.set_loop_branch (a_to)
-				a_to.add_in_edge (a_from)
-			end
+			a_from.set_loop_branch (a_to)
+			a_to.add_in_edge (a_from)
 		end
 
-	add_exit_edge (a_from, a_to: attached CA_CFG_BASIC_BLOCK)
+	add_exit_edge (a_from: attached CA_CFG_LOOP; a_to: attached CA_CFG_BASIC_BLOCK)
 			-- Adds an "exit" edge from `a_from' to `a_to'.
-		require
-			attached {CA_CFG_LOOP} a_from
 		do
-			if attached {CA_CFG_LOOP} a_from as a_loop then
-				a_loop.set_exit_branch (a_to)
-				a_to.add_in_edge (a_from)
-			end
+			a_from.set_exit_branch (a_to)
+			a_to.add_in_edge (a_from)
 		end
 
-	add_loop_in_edge (a_from, a_to: attached CA_CFG_BASIC_BLOCK)
+	add_loop_in_edge (a_from: attached CA_CFG_BASIC_BLOCK; a_to: attached CA_CFG_LOOP)
 			-- Adds a "loop-in" edge from `a_from' to `a_to'.
-		require
-			attached {CA_CFG_LOOP} a_to
 		do
-			if attached {CA_CFG_LOOP} a_to as a_loop then
-				a_from.add_out_edge (a_to)
-				a_loop.set_loop_in (a_from)
-			end
+			a_from.add_out_edge (a_to)
+			a_to.set_loop_in (a_from)
 		end
 
 	add_self_loop_edge (a_loop: attached CA_CFG_LOOP)

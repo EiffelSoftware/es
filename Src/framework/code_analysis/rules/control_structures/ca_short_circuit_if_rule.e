@@ -30,7 +30,7 @@ feature {NONE} -- Initialization
 			create violations.make
 		end
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_if_pre_action (agent process_if)
 		end
@@ -75,7 +75,7 @@ feature -- Properties
 	id: STRING_32 = "CA028"
 			-- <Precursor>
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 			-- Generates a formatted rule violation description for `a_formatter' based on `a_violation'.
 		do
 			a_formatter.add (ca_messages.short_circuit_if_violation)

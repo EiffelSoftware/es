@@ -29,7 +29,7 @@ feature {NONE} -- Initialization
 			create violations.make
 		end
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_class_pre_action (agent process_class)
 		end
@@ -84,7 +84,7 @@ feature {NONE} -- Rule checking
 			end
 		end
 
-	create_violation (a_attribute: E_FEATURE; a_used_in: STRING_32)
+	create_violation (a_attribute: attached E_FEATURE; a_used_in: attached STRING_32)
 		local
 			l_violation: CA_RULE_VIOLATION
 		do
@@ -112,7 +112,7 @@ feature -- Properties
 	id: STRING_32 = "CA054"
 			-- <Precursor>
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 			-- Generates a formatted rule violation description for `a_formatter' based on `a_violation'.
 		local
 			l_info: LINKED_LIST [ANY]

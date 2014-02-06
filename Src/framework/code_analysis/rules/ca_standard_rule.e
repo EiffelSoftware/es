@@ -12,7 +12,7 @@ inherit
 
 feature -- Activation
 
-	frozen prepare_checking (a_checker: CA_ALL_RULES_CHECKER)
+	frozen prepare_checking (a_checker: attached CA_ALL_RULES_CHECKER)
 			-- Prepares this rule for being checked using `a_checker'.
 		do
 			violations.wipe_out
@@ -21,7 +21,7 @@ feature -- Activation
 
 feature {NONE} -- Implementation
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 			-- Registers the agents that will be called during the AST visit with
 			-- `a_checker'.
 		deferred

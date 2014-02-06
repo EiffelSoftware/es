@@ -20,7 +20,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_pref_manager: PREFERENCE_MANAGER)
+	make (a_pref_manager: attached PREFERENCE_MANAGER)
 			-- Initialization for `Current'.
 		do
 			make_with_defaults
@@ -31,7 +31,7 @@ feature {NONE} -- Initialization
 			initialize_options (a_pref_manager)
 		end
 
-	initialize_options (a_pref_manager: PREFERENCE_MANAGER)
+	initialize_options (a_pref_manager: attached PREFERENCE_MANAGER)
 			-- Initializes the rule preferences.
 		local
 			l_factory: BASIC_PREFERENCE_FACTORY
@@ -69,7 +69,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Activation
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_routine_pre_action (agent process_routine)
 			a_checker.add_body_pre_action (agent process_body)
@@ -165,7 +165,7 @@ feature {NONE} -- Rule checking
 			end
 		end
 
-	is_no_counter (a_id: STRING): BOOLEAN
+	is_no_counter (a_id: attached STRING): BOOLEAN
 			-- Is `a_id' not a commonly used counter variable?
 		do
 			Result := not (a_id.count = 1 and then a_id.is_equal ("i") or a_id.is_equal ("j") or a_id.is_equal ("k") or a_id.is_equal ("n"))
@@ -202,7 +202,7 @@ feature -- Properties
 			Result :=  ca_names.very_short_identifier_description
 		end
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		do
 			if attached {STRING} a_violation.long_description_info.first as l_name then
 

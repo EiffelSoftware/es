@@ -32,7 +32,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Activation
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_if_pre_action (agent process_if)
 		end
@@ -52,7 +52,7 @@ feature -- Properties
 			Result := ca_names.boolean_result_description
 		end
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		do
 			a_formatter.add (ca_messages.boolean_result_violation)
 		end
@@ -80,7 +80,7 @@ feature {NONE} -- Rule Checking
 			end
 		end
 
-	is_result_assign (a_instruction: INSTRUCTION_AS): BOOLEAN
+	is_result_assign (a_instruction: attached INSTRUCTION_AS): BOOLEAN
 			-- Does instruction `a_instruction' assign a boolean constant
 			-- to "Result"?
 		do

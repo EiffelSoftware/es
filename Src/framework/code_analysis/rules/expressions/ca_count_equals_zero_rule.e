@@ -30,7 +30,7 @@ feature {NONE} -- Initialization
 			create violations.make
 		end
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_feature_pre_action (agent process_feature)
 			a_checker.add_bin_eq_pre_action (agent process_equality)
@@ -60,7 +60,7 @@ feature {NONE} -- Rule checking
 			end
 		end
 
-	is_zero (a_expr: EXPR_AS): BOOLEAN
+	is_zero (a_expr: attached EXPR_AS): BOOLEAN
 			-- Is `a_expr' the integer constant 0?
 		do
 			if attached {INTEGER_AS} a_expr as l_int then
@@ -74,7 +74,7 @@ feature {NONE} -- Rule checking
 			Result := Eiffel_universe.compiled_classes_with_name ("FINITE").first.compiled_class
 		end
 
-	is_finite_count (a_expr: EXPR_AS): BOOLEAN
+	is_finite_count (a_expr: attached EXPR_AS): BOOLEAN
 			-- Does `a_expr' call `finite' on a {FINITE} (or conforming) instance?
 		do
 			if attached {EXPR_CALL_AS} a_expr as l_ec and then attached {NESTED_AS} l_ec.call as l_nested_call then
@@ -103,7 +103,7 @@ feature -- Properties
 	id: STRING_32 = "CA052"
 			-- <Precursor>
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 			-- Generates a formatted rule violation description for `a_formatter' based on `a_violation'.
 		do
 			a_formatter.add (ca_messages.count_equals_zero_violation)

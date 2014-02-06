@@ -30,7 +30,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Activation
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_un_not_pre_action (agent process_un_not)
 		end
@@ -50,7 +50,7 @@ feature -- Properties
 			Result := ca_names.simplifiable_boolean_description
 		end
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		do
 			a_formatter.add (ca_messages.simplifiable_boolean_violation)
 		end
@@ -69,7 +69,7 @@ feature {NONE} -- Rule Checking
 			end
 		end
 
-	is_comparison (expression: EXPR_AS): BOOLEAN
+	is_comparison (expression: attached EXPR_AS): BOOLEAN
 			-- Is `expression' a comparison expression?
 		do
 			if attached {PARAN_AS} expression as l_paran then

@@ -40,7 +40,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Activation
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_feature_pre_action (agent pre_process_feature)
 			a_checker.add_feature_post_action (agent post_process_feature)
@@ -135,7 +135,7 @@ feature -- Properties
 			Result :=  ca_names.cq_separation_description
 		end
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		do
 			a_formatter.add (ca_messages.cq_separation_violation_1)
 			if attached {STRING_32} a_violation.long_description_info.first as l_feature_name then

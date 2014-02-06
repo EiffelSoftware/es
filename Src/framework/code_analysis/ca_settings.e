@@ -47,7 +47,7 @@ feature {NONE} -- Initialization
 
 feature {CA_CODE_ANALYZER} -- Initialization
 
-	initialize_rule_settings (a_rules: ITERABLE [CA_RULE])
+	initialize_rule_settings (a_rules: attached ITERABLE [attached CA_RULE])
 			-- Initializes the preferences for all rules in `a_rules' including
 			-- "enabled" and "severity".
 		local

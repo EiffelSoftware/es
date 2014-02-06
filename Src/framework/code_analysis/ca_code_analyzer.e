@@ -74,14 +74,14 @@ feature {NONE} -- Initialization
 
 feature -- Analysis interface
 
-	add_completed_action (a_action: PROCEDURE [ANY, TUPLE [BOOLEAN]])
+	add_completed_action (a_action: attached PROCEDURE [ANY, TUPLE [BOOLEAN]])
 			-- Adds `a_action' to the list of procedures that will be
 			-- called when analysis has completed.
 		do
 			completed_actions.extend (a_action)
 		end
 
-	add_output_action (a_action: PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]])
+	add_output_action (a_action: attached PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]])
 		do
 			output_actions.extend (a_action)
 		end
@@ -116,7 +116,7 @@ feature -- Analysis interface
 			rota.run_task (l_task)
 		end
 
-	is_rule_checkable (a_rule: CA_RULE): BOOLEAN
+	is_rule_checkable (a_rule: attached CA_RULE): BOOLEAN
 		do
 			Result := a_rule.is_enabled.value
 						and then (system_wide_check or else (not a_rule.is_system_wide))
@@ -154,7 +154,7 @@ feature -- Analysis interface
 			system_wide_check := True
 		end
 
-	add_cluster (a_cluster: CLUSTER_I)
+	add_cluster (a_cluster: attached CLUSTER_I)
 			-- Add all classes of cluster `a_cluster'.
 		do
 			system_wide_check := False
@@ -170,7 +170,7 @@ feature -- Analysis interface
 			end
 		end
 
-	add_group (a_group: CONF_GROUP)
+	add_group (a_group: attached CONF_GROUP)
 			-- Add all classes of the configuration group `a_group'.
 		require
 			a_group_not_void: a_group /= Void
@@ -180,7 +180,7 @@ feature -- Analysis interface
 			end
 		end
 
-	add_classes (a_classes: ITERABLE [CONF_CLASS])
+	add_classes (a_classes: attached ITERABLE [attached CONF_CLASS])
 			-- Add the classes `a_classes'.
 		do
 			system_wide_check := False
@@ -190,7 +190,7 @@ feature -- Analysis interface
 			end
 		end
 
-	add_class (a_class: CONF_CLASS)
+	add_class (a_class: attached CONF_CLASS)
 			-- Adds class `a_class'.
 		local
 			l_class_c: CLASS_C
@@ -266,7 +266,7 @@ feature {NONE} -- Implementation
 			completed_actions.wipe_out
 		end
 
-	is_violation_valid (a_viol: CA_RULE_VIOLATION): BOOLEAN
+	is_violation_valid (a_viol: attached CA_RULE_VIOLATION): BOOLEAN
 			-- Is the violation `a_viol' valid under the current settings
 			-- such as the rule ignore list of a class, or the library or
 			-- non-library status of a class?
@@ -313,7 +313,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	is_severity_enabled (a_severity: CA_RULE_SEVERITY): BOOLEAN
+	is_severity_enabled (a_severity: attached CA_RULE_SEVERITY): BOOLEAN
 		do
 			Result := (attached {CA_HINT} a_severity and settings.are_hints_enabled.value)
 				or else (attached {CA_SUGGESTION} a_severity and settings.are_suggestions_enabled.value)
@@ -326,7 +326,7 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Class-wide Options (From Indexing Clauses)
 
-	extract_indexes (a_class: CLASS_C)
+	extract_indexes (a_class: attached CLASS_C)
 			-- Extracts options from the indexing clause of class `a_class'.
 		local
 			l_ast: CLASS_AS
@@ -349,7 +349,7 @@ feature {NONE} -- Class-wide Options (From Indexing Clauses)
 			ignoredby.force (l_ignoredby, a_class)
 		end
 
-	search_indexing_tags (a_clause: INDEXING_CLAUSE_AS; a_class: CLASS_C; a_ignoredby: LINKED_LIST [STRING_32])
+	search_indexing_tags (a_clause: attached INDEXING_CLAUSE_AS; a_class: attached CLASS_C; a_ignoredby: attached LINKED_LIST [STRING_32])
 			-- Searches `a_clause' for settings relevant to code analysis.
 		local
 			l_item: STRING_32

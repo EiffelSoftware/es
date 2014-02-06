@@ -65,7 +65,7 @@ feature -- Basic properties, usually fix
 
 feature {CA_RULE_VIOLATION} -- formatted rule checking output
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 			-- Formats a description of a violation of this rule, `a_violation', using `a_formatter'.
 		require
 			violation_added: violations.has (a_violation)
@@ -84,19 +84,19 @@ feature -- Properties the user can change
 	severity_score: INTEGER_PREFERENCE
 			-- The severity score.
 
-	set_severity (a_severity: CA_RULE_SEVERITY)
+	set_severity (a_severity: attached CA_RULE_SEVERITY)
 			-- Sets the severity to `a_severity'.
 		do
 			severity := a_severity
 		end
 
-	set_is_enabled_preference (a_pref: BOOLEAN_PREFERENCE)
+	set_is_enabled_preference (a_pref: attached BOOLEAN_PREFERENCE)
 			-- Sets the "enabled" preference to `a_pref'.
 		do
 			is_enabled := a_pref
 		end
 
-	set_severity_score_preference (a_pref: INTEGER_PREFERENCE)
+	set_severity_score_preference (a_pref: attached INTEGER_PREFERENCE)
 			-- Sets the "severity score" preference to `a_pref'.
 		do
 			severity_score := a_pref
@@ -104,7 +104,7 @@ feature -- Properties the user can change
 
 feature -- Rule checking
 
-	set_checking_class (a_class: CLASS_C)
+	set_checking_class (a_class: attached CLASS_C)
 			-- Sets the class that is being checked to `a_class'.
 			-- (Used for creating violations.)
 		do
@@ -172,7 +172,7 @@ feature {NONE} -- Preferences
 			Result := ca_names.rules_category + "." + title + "."
 		end
 
-	frozen is_integer_string_within_bounds (a_value: READABLE_STRING_GENERAL; a_lower, a_upper: INTEGER): BOOLEAN
+	frozen is_integer_string_within_bounds (a_value: attached READABLE_STRING_GENERAL; a_lower, a_upper: INTEGER): BOOLEAN
 			-- Is the integer string `a_value' within the interval [`a_lower', `a_upper']?
 		require
 			is_integer: a_value.is_integer

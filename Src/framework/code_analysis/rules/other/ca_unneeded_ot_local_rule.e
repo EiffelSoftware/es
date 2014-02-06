@@ -32,7 +32,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Activation
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_object_test_pre_action (agent process_object_test)
 		end
@@ -52,7 +52,7 @@ feature -- Properties
 			Result :=  ca_names.unneeded_ot_local_description
 		end
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 
 		do
 			a_formatter.add ("'")

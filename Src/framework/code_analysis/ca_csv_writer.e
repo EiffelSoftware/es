@@ -12,7 +12,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_file_name, a_header: STRING)
+	make (a_file_name, a_header: attached STRING)
 			-- Initialization for `Current'. The csv writer will write to the file with name
 			-- `a_file_name'. `a_header' is the first line containing the column names.
 		require
@@ -29,7 +29,7 @@ feature {NONE} -- Initialization
 
 feature -- Logging
 
-	add_line (a_line: STRING)
+	add_line (a_line: attached STRING)
 			-- Writes `a_line' to the CSV file. A new line will be
 			-- added automatically afterwards.
 		require

@@ -12,7 +12,7 @@ inherit
 
 feature -- CFG Node Visitor
 
-	initialize_processing (a_cfg: CA_CONTROL_FLOW_GRAPH)
+	initialize_processing (a_cfg: attached CA_CONTROL_FLOW_GRAPH)
 		local
 			n, j: INTEGER
 			l_init_set: LINKED_SET [INTEGER]
@@ -45,7 +45,7 @@ feature -- CFG Node Visitor
 
 		end
 
-	visit_edge (a_from, a_to: CA_CFG_BASIC_BLOCK): BOOLEAN
+	visit_edge (a_from, a_to: attached CA_CFG_BASIC_BLOCK): BOOLEAN
 		do
 			if attached {CA_CFG_INSTRUCTION} a_from as l_instr then
 				process_instruction (l_instr)
@@ -132,7 +132,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	process_instruction (a_instr: CA_CFG_INSTRUCTION)
+	process_instruction (a_instr: attached CA_CFG_INSTRUCTION)
 			-- Processes the instruction node `a_instr'.
 		local
 			l_old_count, l_label, l_var_id: INTEGER

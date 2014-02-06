@@ -37,7 +37,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Activation
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_class_pre_action (agent process_class)
 		end
@@ -57,7 +57,7 @@ feature -- Properties
 			Result :=  ca_names.todo_description
 		end
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		do
 			if attached {STRING_32} a_violation.long_description_info.first as l_comment then
 				a_formatter.add (l_comment)
@@ -93,8 +93,10 @@ feature {NONE} -- AST Visit
 			process_ast_node (a_class)
 		end
 
-	search_todo (a_comment: EIFFEL_COMMENT_LINE)
+	search_todo (a_comment: attached EIFFEL_COMMENT_LINE)
 			-- Searches `a_comment' for a "TODO".
+		require
+			valid_comment: a_comment.content_32 /= Void
 		local
 			l_comment, l_todo: STRING_32
 			l_toremove: INTEGER

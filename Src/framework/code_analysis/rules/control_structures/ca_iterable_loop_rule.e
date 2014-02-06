@@ -32,7 +32,7 @@ feature {NONE} -- Initialization
 			create violations.make
 		end
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_feature_pre_action (agent process_feature)
 			a_checker.add_loop_pre_action (agent process_loop)
@@ -74,7 +74,7 @@ feature {NONE} -- Rule checking
 	matching_until_part: BOOLEAN
 			-- Is the until part analyzed in `check_until_part' as expected?
 
-	check_until_part (a_stop_condition: EXPR_AS)
+	check_until_part (a_stop_condition: detachable EXPR_AS)
 			-- Checks if `a_stop_condition' is of the form 'list.after', where list is
 			-- a variable of a type that conforms to {ITERABLE}.
 		local
@@ -83,7 +83,7 @@ feature {NONE} -- Rule checking
 		do
 			matching_until_part := False
 
-			if attached a_stop_condition as l_stop and then attached {EXPR_CALL_AS} l_stop as l_call then
+			if a_stop_condition /= Void and then attached {EXPR_CALL_AS} a_stop_condition as l_call then
 				if attached {NESTED_AS} l_call.call as l_nested_call then
 					if attached {ACCESS_AS} l_nested_call.message as l_msg and then l_msg.access_name_8.is_equal ("after") then
 						l_target := l_nested_call.target
@@ -157,7 +157,7 @@ feature -- Properties
 	id: STRING_32 = "CA024"
 			-- <Precursor>
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 			-- Generates a formatted rule violation description for `a_formatter' based on `a_violation'.
 		do
 			a_formatter.add (ca_messages.iterable_loop_violation_1)

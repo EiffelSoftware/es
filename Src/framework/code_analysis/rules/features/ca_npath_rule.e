@@ -22,7 +22,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_pref_manager: PREFERENCE_MANAGER)
+	make (a_pref_manager: attached PREFERENCE_MANAGER)
 			-- Initializes `Current' and its preferences (using
 			-- `a_pref_manager'.
 		do
@@ -34,7 +34,7 @@ feature {NONE} -- Initialization
 			initialize_options (a_pref_manager)
 		end
 
-	initialize_options (a_pref_manager: PREFERENCE_MANAGER)
+	initialize_options (a_pref_manager: attached PREFERENCE_MANAGER)
 			-- Initializes the options regarding this rule using
 			-- `a_pref_manager'.
 		local
@@ -49,7 +49,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Activation
 
-	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 			-- Adds the AST visitor agents to `a_checker'.
 		do
 			a_checker.add_feature_pre_action (agent process_feature)
@@ -83,7 +83,7 @@ feature -- Properties
 			Result :=  ca_names.npath_description
 		end
 
-	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 			-- <Precursor>
 		local
 			l_info: LINKED_LIST[ANY]
