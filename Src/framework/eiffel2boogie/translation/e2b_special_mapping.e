@@ -83,7 +83,8 @@ feature -- Access (built-ins)
 				"is_fully_writable",
 				"is_field_readable",
 				"is_fully_readable",
-				"domain_has"
+				"domain_has",
+				"is_fresh"
 			>>
 			Result.compare_objects
 		end

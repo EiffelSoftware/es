@@ -70,7 +70,7 @@ feature -- Basic operations
 				-- Add type properties
 			l_heap := factory.heap_entity ("heap")
 			l_o := factory.ref_entity ("o")
-			l_heap_access := factory.heap_access (l_heap.name, l_o, l_attribute_name, l_boogie_type)
+			l_heap_access := factory.heap_access (l_heap, l_o, l_attribute_name, l_boogie_type)
 			l_type_prop := types.type_property (a_feature.type.deep_actual_type.instantiated_in (a_context_type), l_heap, l_heap_access)
 			if not l_type_prop.is_true then
 				l_type_prop := factory.implies_ (factory.and_ (

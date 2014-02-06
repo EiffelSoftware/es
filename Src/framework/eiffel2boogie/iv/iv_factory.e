@@ -287,17 +287,16 @@ feature -- Heap and map access
 			create Result.make (a_map, a_indexes)
 		end
 
-	heap_access (a_heap_name: STRING; a_target: IV_EXPRESSION; a_name: STRING; a_content_type: IV_TYPE): IV_MAP_ACCESS
+	heap_access (a_heap: IV_EXPRESSION; a_target: IV_EXPRESSION; a_name: STRING; a_content_type: IV_TYPE): IV_MAP_ACCESS
 			-- Heap access to `a_feature' on `Current'.
 		do
-			Result := map_access (create {IV_ENTITY}.make (a_heap_name, types.heap),
-				<<a_target, create {IV_ENTITY}.make (a_name, types.field (a_content_type)) >>)
+			Result := map_access (a_heap, <<a_target, create {IV_ENTITY}.make (a_name, types.field (a_content_type)) >>)
 		end
 
 	heap_current_access (a_mapping: E2B_ENTITY_MAPPING; a_name: STRING; a_content_type: IV_TYPE): IV_MAP_ACCESS
 			-- Heap access to `a_feature' on `Current'.
 		do
-			Result := heap_access (a_mapping.heap.name, a_mapping.current_expression, a_name, a_content_type)
+			Result := heap_access (a_mapping.heap, a_mapping.current_expression, a_name, a_content_type)
 		end
 
 	is_heap (a_entity: IV_ENTITY): IV_EXPRESSION
@@ -310,7 +309,7 @@ feature -- Heap and map access
 			-- Array access to `a_array'[`a_index'].
 		do
 			Result := map_access (
-				heap_access (a_heap.name, a_array, "area", create {IV_MAP_TYPE}.make (<<>>, << types.int >>, a_content_type)),
+				heap_access (a_heap, a_array, "area", create {IV_MAP_TYPE}.make (<<>>, << types.int >>, a_content_type)),
 				<< a_index >>)
 		end
 

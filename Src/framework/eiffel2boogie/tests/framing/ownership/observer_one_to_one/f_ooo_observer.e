@@ -9,7 +9,6 @@ feature {NONE} -- Initialization
 		note
 			status: creator
 		require
-			s /= Void
 			s.observer = Void
 			modify (Current)
 			modify_field (["observer", "observers", "closed"], s)

@@ -31,14 +31,14 @@ feature -- Access
 
 	target: V_CONTAINER [G]
 			-- Container to iterate over.
-		deferred
-		end
 
 feature -- Measurement
 
 	index: INTEGER
 			-- Current position.
-		deferred
+		note
+			replaces: box
+		attribute
 		end
 
 	count_left: INTEGER
@@ -88,6 +88,8 @@ feature -- Status report
 		do
 			check inv end
 			Result := before or after
+		ensure then
+			new_definition: Result = not sequence.domain [index]
 		end
 
 	is_first: BOOLEAN
@@ -128,64 +130,46 @@ feature -- Cursor movement
 
 	start
 			-- Go to the first position.
+		require else
+			modify_model ("index", Current)
 		deferred
 		ensure then
 			index_effect: index = 1
-			target = old target
-			sequence ~ old sequence
-			observers ~ old observers
-			subjects ~ old subjects
-			owns ~ old owns
 		end
 
 	finish
 			-- Go to the last position.
-		note
-			modify: index
+		require
+			modify_model ("index", Current)
 		deferred
 		ensure
 			index_effect: index = sequence.count
-			target = old target
-			sequence ~ old sequence
-			observers ~ old observers
-			subjects ~ old subjects
-			owns ~ old owns
 		end
 
 	forth
 			-- Go one position forward.
-		note
-			modify: index
 		deferred
 		ensure then
 			index_effect: index = old index + 1
-			target = old target
-			sequence ~ old sequence
 		end
 
 	back
 			-- Go one position backward.
-		note
-			modify: index
 		require
 			not_off: not off
+			modify_model ("index", Current)
 		deferred
 		ensure
 			index_effect: index = old index - 1
-			target = old target
-			sequence ~ old sequence
-			observers ~ old observers
-			subjects ~ old subjects
-			owns ~ old owns
 		end
 
 	go_to (i: INTEGER)
 			-- Go to position `i'.
 		note
-			modify: index
 			explicit: wrapping
 		require
 			has_index: valid_index (i)
+			modify_model ("index", Current)
 		local
 			j: INTEGER
 		do
@@ -204,12 +188,6 @@ feature -- Cursor movement
 					sequence.domain [i]
 					j_in_bounds: 1 <= j and j <= i
 					index_counter: index = j
-					sequence ~ sequence.old_
-					observers ~ observers.old_
-					subjects ~ subjects.old_
-					owns ~ owns.old_
-					closed = closed.old_
-					owner = owner.old_
 					inv
 				until
 					j = i
@@ -220,39 +198,24 @@ feature -- Cursor movement
 			end
 		ensure
 			index_effect: index = i
-			target = old target
-			sequence ~ old sequence
-			observers ~ old observers
-			subjects ~ old subjects
-			owns ~ old owns
 		end
 
 	go_before
 			-- Go before any position of `target'.
-		note
-			modify: index
+		require
+			modify_model ("index", Current)
 		deferred
 		ensure
 			index_effect: index = 0
-			target = old target
-			sequence ~ old sequence
-			observers ~ old observers
-			subjects ~ old subjects
-			owns ~ old owns
 		end
 
 	go_after
 			-- Go after any position of `target'.
-		note
-			modify: index
+		require
+			modify_model ("index", Current)
 		deferred
 		ensure
 			index_effect: index = sequence.count + 1
-			target = old target
-			sequence ~ old sequence
-			observers ~ old observers
-			subjects ~ old subjects
-			owns ~ old owns
 		end
 
 	search_forth (v: G)
@@ -271,12 +234,6 @@ feature -- Cursor movement
 				index.old_ <= index
 				not before
 				across index.old_.max (1) |..| (index - 1) as i all sequence [i.item] /= v end
-				sequence ~ sequence.old_
-				observers ~ observers.old_
-				subjects ~ subjects.old_
-				owns ~ owns.old_
-				closed = closed.old_
-				owner = owner.old_
 				inv
 			until
 				after or else item = v
@@ -289,11 +246,6 @@ feature -- Cursor movement
 			index_effect_not_found: not sequence.tail (old index).has (v) implies index = sequence.count + 1
 			index_effect_found: sequence.tail (old index).has (v) implies
 				(sequence [index] = v and not sequence.interval (old index, index - 1).has (v))
-			target = old target
-			sequence ~ old sequence
-			observers ~ old observers
-			subjects ~ old subjects
-			owns ~ old owns
 		end
 
 --	satisfy_forth (pred: PREDICATE [ANY, TUPLE [G]])
@@ -330,6 +282,8 @@ feature -- Cursor movement
 			-- (Use reference equality.)
 		note
 			explicit: wrapping
+		require
+			modify_model ("index", Current)
 		do
 			check inv end
 			if after then
@@ -340,12 +294,6 @@ feature -- Cursor movement
 				index <= index.old_
 				not after
 				across (index + 1) |..| index.old_.min (sequence.count) as i all sequence [i.item] /= v end
-				sequence ~ sequence.old_
-				observers ~ observers.old_
-				subjects ~ subjects.old_
-				owns ~ owns.old_
-				closed = closed.old_
-				owner = owner.old_
 				inv
 			until
 				before or else item = v
@@ -358,11 +306,6 @@ feature -- Cursor movement
 			index_effect_not_found: not sequence.front (old index).has (v) implies index = 0
 			index_effect_found: sequence.front (old index).has (v) implies
 				(sequence [index] = v and not sequence.interval (index + 1, old index).has (v))
-			target = old target
-			sequence ~ old sequence
-			observers ~ old observers
-			subjects ~ old subjects
-			owns ~ old owns
 		end
 
 --	satisfy_back (pred: PREDICATE [ANY, TUPLE [G]])
@@ -411,7 +354,6 @@ invariant
 	box_definition_non_empty: sequence.domain [index] implies box ~ create {MML_SET [G]}.singleton (sequence [index])
 
 note
-	explicit: owns, observers
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

@@ -176,7 +176,7 @@ feature {NONE} -- Implementation
 		do
 			across helper.model_queries (a_parent_type.base_class) as m loop
 				l_model := a_parent_type.base_class.feature_named_32 (m.item)
-				if attached l_model then
+				if attached l_model and not helper.model_queries (system.any_type.base_class).has (m.item) then
 					create l_type_var.make_fresh
 					create l_f.make ("$f", types.field (l_type_var))
 					create l_old_m.make (
@@ -263,7 +263,7 @@ feature {NONE} -- Implementation
 		do
 			Result := factory.function_call (
 				"Set#IsEmpty",
-				<< factory.heap_access ("heap", create {IV_ENTITY}.make ("current", types.ref), a_name, types.set (types.ref)) >>,
+				<< factory.heap_access (factory.entity ("heap", types.heap), factory.entity ("current", types.ref), a_name, types.set (types.ref)) >>,
 				types.bool)
 		end
 
@@ -409,7 +409,7 @@ feature {NONE} -- Implementation
 			-- If `a_expr' has the form `a_name = def' return `def', otherwise `Void'.
 		do
 			if attached {IV_FUNCTION_CALL} a_expr as fcall and then fcall.name ~ "Set#Equal" then
-				if fcall.arguments [1].same_expression (factory.heap_access (a_heap.name, a_current, a_name, types.set (types.ref))) then
+				if fcall.arguments [1].same_expression (factory.heap_access (a_heap, a_current, a_name, types.set (types.ref))) then
 					Result := fcall.arguments [2]
 				end
 			end

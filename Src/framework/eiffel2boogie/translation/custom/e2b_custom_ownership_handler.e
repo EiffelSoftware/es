@@ -44,7 +44,7 @@ feature -- Basic operations
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
 			elseif translation_mapping.ghost_access.has (l_name) then
 				l_type := translation_mapping.ghost_access_type (l_name)
-				a_translator.set_last_expression (factory.heap_access (a_translator.entity_mapping.heap.name, a_translator.current_target, l_name, l_type))
+				a_translator.set_last_expression (factory.heap_access (a_translator.entity_mapping.heap, a_translator.current_target, l_name, l_type))
 			elseif translation_mapping.ghost_setter.has (l_name) then
 				l_name := l_name.substring (5, l_name.count)
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, "xyz")
@@ -160,6 +160,10 @@ feature -- Basic operations
 					end
 				elseif l_name ~ "domain_has" then
 					a_translator.process_builtin_routine_call (a_feature, a_parameters, "in_domain")
+				elseif l_name ~ "is_fresh" then
+					a_translator.set_last_expression (factory.not_ (factory.heap_access (
+						factory.old_ (factory.global_heap),
+						a_translator.current_target, "allocated", types.bool)))
 				else
 					a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
 				end
@@ -171,7 +175,7 @@ feature -- Basic operations
 				else
 					l_type := types.set (types.ref)
 				end
-				a_translator.set_last_expression (factory.heap_access (a_translator.entity_mapping.heap.name, a_translator.current_target, l_name, l_type))
+				a_translator.set_last_expression (factory.heap_access (a_translator.entity_mapping.heap, a_translator.current_target, l_name, l_type))
 			else
 					-- cannot happen
 				check False end
@@ -312,7 +316,8 @@ feature -- Basic operations
 			else
 				check l_new_version /= Void end
 				if translation_mapping.ghost_access.has (a_name) then
-					-- Handle built-in ANY attributes separately, since they are not really attributes
+					-- Handle built-in ANY attributes separately, since they are not really attributes.
+					-- Also they are all model, so nothing to check.
 					Result := factory.entity (a_name, types.field (translation_mapping.ghost_access_type (a_name)))
 				elseif l_old_version.is_attribute then
 					if a_check_model and then not helper.model_queries (a_origin_class).has (a_name) then

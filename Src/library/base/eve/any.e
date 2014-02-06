@@ -367,56 +367,68 @@ feature -- SCOOP
 
 feature -- Verification: contract clauses
 
-	frozen modify (a: TUPLE): BOOLEAN
-			-- Helper function for adding modify clauses in contracts.
+	frozen modify (a_objects: TUPLE): BOOLEAN
+			-- Does this routine modify `a_objects'?
 		do
 			Result := True
 		end
 
-	frozen modify_field (a_field: ANY; a_object: TUPLE): BOOLEAN
-			-- Helper function for adding modify clauses in contracts.
+	frozen modify_field (a_fields: ANY; a_objects: TUPLE): BOOLEAN
+			-- Does this routine modify attributes `a_fields' of objects in `a_objects'?
 		do
 			Result := True
 		end
 
-	frozen modify_model (a_field: ANY; a_object: TUPLE): BOOLEAN
-			-- Helper function for adding modify clauses in contracts.
+	frozen modify_model (a_models: ANY; a_objects: TUPLE): BOOLEAN
+			-- Does this routine modify model queries `a_models' of objects in `a_objects'?
 		do
 			Result := True
 		end
 
-	frozen reads (a: TUPLE): BOOLEAN
-			-- Helper function for adding read clauses in contracts.
+	frozen reads (a_objects: TUPLE): BOOLEAN
+			-- Does this function read `a_objects'?
 		do
 			Result := True
 		end
 
-	frozen reads_field (a_field: ANY; a_object: TUPLE): BOOLEAN
-			-- Helper function for adding read clauses in contracts.
+	frozen reads_field (a_fields: ANY; a_objects: TUPLE): BOOLEAN
+			-- Does this function read attributes `a_fields' of objects in `a_objects'?
 		do
 			Result := True
 		end
 
-	frozen decreases (a: TUPLE): BOOLEAN
-			-- Helper function for adding decreases clauses in contracts.
+	frozen reads_model (a_field: ANY; a_object: TUPLE): BOOLEAN
+			-- Does this function read model queries `a_models' of objects in `a_objects'?
+		do
+			Result := True
+		end
+
+	frozen decreases (a_variants: TUPLE): BOOLEAN
+			-- Does this routine / loop descrease `a_variants'?
 		do
 			Result := True
 		end
 
 	frozen inv: BOOLEAN
-			-- Helper function for mentioning the class invariant.
+			-- Invariant of `Current'.
 		do
 			Result := True
 		end
 
-	frozen inv_without (a: TUPLE): BOOLEAN
-			-- Helper function for specifying class invariant without certain clauses.
+	frozen inv_without (a_clauses: TUPLE): BOOLEAN
+			-- Invariant of `Current' without `a_clauses'.
 		do
 			Result := True
 		end
 
-	frozen inv_only (a: TUPLE): BOOLEAN
-			-- Helper function for specifying class invariant with only certain clauses.
+	frozen inv_only (a_clauses: TUPLE): BOOLEAN
+			-- Invariant of `Current' restricted to `a_clauses'.
+		do
+			Result := True
+		end
+
+	frozen is_fresh: BOOLEAN
+			-- Was Current unallocated in the pre-state?
 		do
 			Result := True
 		end

@@ -320,6 +320,9 @@ feature -- Model helpers
 			-- Names of model queries of class `a_class'.
 		do
 			Result := class_note_values (a_class, "model")
+			across (create {E2B_SPECIAL_MAPPING}.make).ghost_access as f loop
+				Result.extend (f.item)
+			end
 		end
 
 	model_represented (a_old_model: FEATURE_I; a_old_class: CLASS_C; a_new_class: CLASS_C): ARRAYED_LIST [FEATURE_I]

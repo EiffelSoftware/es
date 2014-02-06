@@ -125,7 +125,7 @@ feature -- Translation
 				last_safety_check.node_info.set_attribute ("fid", a_feature.feature_id.out)
 			end
 
-			last_expression := factory.heap_access (entity_mapping.heap.name, current_target, l_field.name, l_content_type)
+			last_expression := factory.heap_access (entity_mapping.heap, current_target, l_field.name, l_content_type)
 			field_accesses.extend ([current_target, l_field])
 		end
 

@@ -146,7 +146,6 @@ axiom (forall<alpha, beta> f: Field alpha, f': Field beta, t: Type :: { ModelRep
 axiom (forall<alpha, beta, gamma> f: Field alpha, f': Field beta, f'': Field gamma, t: Type, t': Type, t'': Type :: {ModelRepresents(f', t', f, t), ModelRepresents(f'', t'', f', t')} 
   IsModelField(f, t) && IsModelField(f', t') && IsModelField(f'', t'') &&
   ModelRepresents(f', t', f, t) && ModelRepresents(f'', t'', f', t') ==> ModelRepresents(f'', t'', f, t));
-
   
 // Built-in ghost fields are model fields.
 axiom (forall t: Type :: { IsModelField(closed, t) } IsModelField(closed, t));
@@ -176,11 +175,11 @@ axiom(forall a: Frame, b: Frame :: { Frame#Subset(a,b) }
 function has_whole_object(frame: Frame, o: ref): bool
 { (forall <alpha> f: Field alpha :: frame[o, f]) }
 
-// Frame is closed under ownership domains 
+// Frame is closed under ownership domains and includes all unallocated objects
 function {:inline true} closed_under_domains(frame: Frame, h: HeapType): bool
 { 
   (forall <U> o': ref, f': Field U :: {frame[o', f']} 
-    (exists <V> o: ref, f: Field V :: frame[o, f] && in_domain(h, o, o') && o != o') ==> frame[o', f'])
+    !h[o', allocated] || (exists <V> o: ref, f: Field V :: frame[o, f] && in_domain(h, o, o') && o != o') ==> frame[o', f'])
 }
 
 // Objects outside of ownership domains of frame did not change, unless they were newly allocated
@@ -274,13 +273,13 @@ function {: inline } admissibility4 (heap: HeapType, current: ref): bool
       user_inv(heap', current))
 }
 
-// Invariant cannot be invalidated by adding observers to my subjects (except to myself)
+// Invariant cannot be invalidated by changing observers to my subjects (except of myself) as long as I am still in there
 function {: inline } admissibility5 (heap: HeapType, current: ref): bool
 {
   (forall heap': HeapType, s: ref :: 
-    IsHeap(heap') && HeapSucc(heap, heap') && heap[current, subjects][s] && s != current && Set#Subset(heap[s, observers], heap'[s, observers]) && 
+    IsHeap(heap') && HeapSucc(heap, heap') && heap[current, subjects][s] && s != current && heap'[s, observers][current] && 
     (forall <alpha> o: ref, f: Field alpha :: (o == s && f == observers) || heap'[o, f] == heap[o, f]) ==>
-      user_inv(heap', current))
+      user_inv(heap', current))      
 }
 
 // ----------------------------------------------------------------------
@@ -330,7 +329,7 @@ procedure update_observers(Current: ref, value: Set ref);
   requires (Current != Void) && (Heap[Current, allocated]); // type:pre tag:attached_and_allocated
   requires is_open(Heap, Current); // type:pre tag:target_open UP1
   requires writable[Current, observers]; // type:pre tag:attribute_writable UP3
-  requires Set#Subset(Heap[Current, observers], value) || (forall o: ref :: Heap[Current, observers][o] ==> (is_open(Heap, o) || (user_inv(Heap, o) && IsHeap(Heap[Current, observers := value]) ==> user_inv(Heap[Current, observers := value], o)))); // type:assign tag:set_grows_or_observers_open_or_inv_preserved UP2  
+  requires (forall o: ref :: Heap[Current, observers][o] ==> is_open(Heap, o) || value[o]); // type:assign tag:observers_open_or_inv_preserved UP2   
   modifies Heap;
   ensures global(Heap);
   ensures Heap == old(Heap[Current, observers := value]);

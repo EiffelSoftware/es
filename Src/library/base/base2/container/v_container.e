@@ -9,11 +9,8 @@ note
 deferred class
 	V_CONTAINER [G]
 
---inherit
---	ITERABLE [G]
---		redefine
---			out
---		end
+inherit
+	ITERABLE [G]
 
 feature -- Measurement
 
@@ -34,35 +31,72 @@ feature -- Status report
 			definition: Result = bag.is_empty
 		end
 
---feature -- Search
+feature -- Search
 
---	has (v: G): BOOLEAN
---			-- Is value `v' contained?
---			-- (Uses reference equality.)
---		local
---			it: V_ITERATOR [G]
---		do
---			it := new_cursor
---			it.search_forth (v)
---			Result := not it.after
---		ensure
---			definition: Result = bag.domain [v]
---		end
+	has (v: G): BOOLEAN
+			-- Is value `v' contained?
+			-- (Uses reference equality.)
+		note
+			status: impure
+			explicit: contracts
+		require
+			is_wrapped: is_wrapped
+			modify_model (["closed", "observers"], Current)
+		local
+			it: V_ITERATOR [G]
+		do
+			it := new_cursor
+			it.search_forth (v)
+			Result := not it.after
+			unwrap; it.unwrap
+			set_observers (observers / it)
+			wrap
+		ensure
+			definition: Result = bag.domain [v]
+			observers_restored: observers = old observers
+			is_wrapped: is_wrapped
+		end
 
---	occurrences (v: G): INTEGER
---			-- How many times is value `v' contained?
---			-- (Uses reference equality.)
---		do
---			across
---				Current as it
---			loop
---				if it.item = v then
---					Result := Result + 1
---				end
---			end
---		ensure
---			definition: Result = bag [v]
---		end
+	occurrences (v: G): INTEGER
+			-- How many times is value `v' contained?
+			-- (Uses reference equality.)
+		note
+			status: impure
+			explicit: contracts
+		require
+			is_wrapped: is_wrapped
+			modify_model (["closed", "observers"], Current)
+		local
+			it: V_ITERATOR [G]
+			s: MML_SEQUENCE [G]
+		do
+			from
+				it := new_cursor
+			invariant
+				1 <= it.index and it.index <= it.sequence.count + 1
+				s = it.sequence.front (it.index - 1)
+				Result = s.occurrences (v)
+				modify_model ("index", it)
+			until
+				it.off
+			loop
+				if it.item = v then
+					Result := Result + 1
+				end
+				s := s & it.item
+				it.forth
+			variant
+				it.sequence.count - it.index
+			end
+			check s = it.sequence end
+			unwrap; it.unwrap
+			set_observers (observers / it)
+			wrap
+		ensure
+			definition: Result = bag [v]
+			observers_restored: observers = old observers
+			is_wrapped: is_wrapped
+		end
 
 --	count_satisfying (pred: PREDICATE [ANY, TUPLE [G]]): INTEGER
 --			-- How many elements satisfy `pred'?
@@ -115,15 +149,18 @@ feature -- Status report
 --			definition: Result = bag.domain.for_all (pred)
 --		end
 
---feature -- Iteration
+feature -- Iteration
 
---	new_cursor: V_ITERATOR [G]
---			-- New iterator pointing to a position in the container, from which it can traverse all elements by going `forth'.
---		deferred
---		ensure then
---			target_definition: Result.target = Current
---			index_definition: Result.index = 1
---		end
+	new_cursor: V_ITERATOR [G]
+			-- New iterator pointing to a position in the container, from which it can traverse all elements by going `forth'.
+		note
+			explicit: contracts
+			status: impure
+		deferred
+		ensure then
+			target_definition: Result.target = Current
+			index_definition: Result.index = 1
+		end
 
 --feature -- Output
 
@@ -148,7 +185,6 @@ feature -- Specification
 		end
 
 note
-	explicit: observers
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

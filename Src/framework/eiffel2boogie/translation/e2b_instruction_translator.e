@@ -196,7 +196,7 @@ feature -- Processing
 				end
 				translation_pool.add_referenced_feature (l_feature, current_type)
 				l_target := factory.heap_access (
-					entity_mapping.heap.name,
+					entity_mapping.heap,
 					entity_mapping.current_expression,
 					name_translator.boogie_procedure_for_feature (l_feature, current_type),
 					types.for_type_a (l_feature.type))

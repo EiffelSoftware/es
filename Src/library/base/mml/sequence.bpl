@@ -201,8 +201,8 @@ axiom (forall<T> s: Seq T, i: int, v: T, x: T ::
     Seq#ToBag(Seq#Update(s, i, v))[x] ==
       Bag#Union(Bag#Difference(Seq#ToBag(s), Bag#Singleton(Seq#Item(s,i))), Bag#Singleton(v))[x] );
   // i.e. MS(Update(s, i, v)) == MS(s) - {{s[i]}} + {{v}}
-axiom (forall<T> s: Seq T, x: T :: { Seq#ToBag(s)[x] }
-  (exists i : int :: { Seq#Item(s,i) } 0 <= i && i < Seq#Length(s) && x == Seq#Item(s,i)) <==> 0 < Seq#ToBag(s)[x] );    
+axiom (forall<T> s: Seq T, x: T :: { Seq#ToBag(s)[x] } Seq#Has(s, x) <==> 0 < Seq#ToBag(s)[x]);
+axiom (forall<T> s: Seq T, x: T :: { Seq#ToBag(s)[x] } Seq#ToBag(s)[x] == Seq#Occurrences(s, x));
 
 // Additional axioms about common things
     

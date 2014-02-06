@@ -34,11 +34,8 @@ feature -- Cursor movement
 			-- Move one position forward.
 		require
 			not_off: not off
+			modify_model ("box", Current)
 		deferred
-		ensure
-			observers ~ old observers
-			subjects ~ old subjects
-			owns ~ old owns
 		end
 
 	search (v: G)
@@ -47,15 +44,12 @@ feature -- Cursor movement
 			-- (Use reference equality.)
 		note
 			explicit: wrapping
+		require
+			modify_model ("box", Current)
 		do
 			from
 			invariant
 				decreases ([])
-				observers ~ observers.old_
-				subjects ~ subjects.old_
-				owns ~ owns.old_
-				closed = closed.old_
-				owner = owner.old_
 				inv
 			until
 				off or else item = v
@@ -64,9 +58,6 @@ feature -- Cursor movement
 			end
 		ensure
 			box_effect: box.is_empty or else box.any_item = v
-			observers ~ old observers
-			subjects ~ old subjects
-			owns ~ old owns
 		end
 
 --	satisfy (pred: PREDICATE [ANY, TUPLE [G]])
@@ -100,10 +91,9 @@ feature -- Specification
 
 invariant
 	box_count_constraint: box.count <= 1
-	observers_empty: observers = []
+	no_observers: observers = []
 
 note
-	explicit: owns, subjects, observers
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

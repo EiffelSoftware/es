@@ -52,6 +52,6 @@ invariant
 	subjects_structure: subjects = [subject]
 	subject_aware: subject.observers.has (Current)
 	synchronized: is_synchronized (subject.value)
-	subject_not_in_domain: not domain_has (subject)
 	observers_structure: observers.is_empty
+	owns_empty: owns = []
 end

@@ -73,13 +73,9 @@ feature -- Extension
 			-- Insert `v' at the back.
 		note
 			skip: True
-			explicit: contracts
-		require
-			wrapped: is_wrapped
 		do
 		ensure
 			sequence_effect: sequence = old (sequence & v)
-			wrapped: is_wrapped
 		end
 
 end

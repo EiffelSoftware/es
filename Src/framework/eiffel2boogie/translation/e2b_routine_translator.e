@@ -327,6 +327,7 @@ feature -- Translation: Signature
 			l_post: IV_POSTCONDITION
 			l_i: IV_ENTITY
 			l_observers_wrapped: IV_FORALL
+			l_written_feature: FEATURE_I
 		do
 			create Result.make
 
@@ -335,7 +336,7 @@ feature -- Translation: Signature
 					-- Observers wrapped
 				create l_i.make (helper.unique_identifier ("i"), types.ref)
 				create l_observers_wrapped.make (factory.implies_ (
-						factory.map_access (factory.heap_access (a_mapping.heap.name, a_mapping.current_expression, "observers", types.set (types.ref)), << l_i >>),
+						factory.map_access (factory.heap_access (a_mapping.heap, a_mapping.current_expression, "observers", types.set (types.ref)), << l_i >>),
 						factory.function_call ("is_wrapped", << a_mapping.heap, l_i >>, types.bool)))
 				l_observers_wrapped.add_bound_variable (l_i.name, l_i.type)
 
@@ -385,8 +386,9 @@ feature -- Translation: Signature
 					Result.extend (l_post)
 				end
 				if a_for_creator or helper.is_public (current_feature) then
+					l_written_feature := current_feature.written_class.feature_of_rout_id_set (current_feature.rout_id_set)
 					across arguments_of_current_feature as i loop
-						if i.item.boogie_type ~ types.ref then
+						if i.item.boogie_type ~ types.ref and not l_written_feature.arguments.i_th (i.target_index).is_formal then
 							create l_pre.make (factory.function_call ("is_wrapped", << a_mapping.heap, factory.entity (i.item.name, i.item.boogie_type) >>, types.bool))
 							l_pre.node_info.set_type ("pre")
 							l_pre.node_info.set_tag ("arg_" + i.item.name + "_is_wrapped")
@@ -1138,7 +1140,7 @@ feature {NONE} -- Implementation
 				l_expr := factory.true_
 			end
 			create l_forall.make (factory.implies_ (l_expr,
-				factory.equal (factory.heap_access ("Heap", o, f.name, l_type_var), factory.heap_access ("old(Heap)", o, f.name, l_type_var))))
+				factory.equal (factory.heap_access (factory.global_heap, o, f.name, l_type_var), factory.heap_access (factory.old_ (factory.global_heap), o, f.name, l_type_var))))
 			l_forall.add_type_variable (l_type_var.name)
 			l_forall.add_bound_variable (o.name, o.type)
 			l_forall.add_bound_variable (f.name, f.type)
@@ -1198,9 +1200,9 @@ feature {NONE} -- Implementation
 		do
 			create l_type_var.make_fresh
 			create o.make ("$o", types.ref)
-			l_access := factory.heap_access ("Heap", o, "$f", l_type_var)
-			l_old_access := factory.heap_access ("old(Heap)", o, "$f", l_type_var)
-			l_old_allocated := factory.heap_access ("old(Heap)", o, "allocated", types.bool)
+			l_access := factory.heap_access (factory.global_heap, o, "$f", l_type_var)
+			l_old_access := factory.heap_access (factory.old_ (factory.global_heap), o, "$f", l_type_var)
+			l_old_allocated := factory.heap_access (factory.old_ (factory.global_heap), o, "allocated", types.bool)
 			create l_forall.make (factory.implies_ (l_old_allocated, factory.equal (l_access, l_old_access)))
 			l_forall.add_type_variable (l_type_var.name)
 			l_forall.add_bound_variable ("$o", types.ref)

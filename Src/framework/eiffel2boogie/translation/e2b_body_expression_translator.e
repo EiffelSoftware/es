@@ -234,7 +234,7 @@ feature -- Translation
 				last_safety_check.node_info.set_attribute ("fid", a_feature.feature_id.out)
 			end
 
-			last_expression := factory.heap_access (entity_mapping.heap.name, current_target, l_field.name, l_content_type)
+			last_expression := factory.heap_access (entity_mapping.heap, current_target, l_field.name, l_content_type)
 		end
 
 	process_routine_call (a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B]; a_for_creator: BOOLEAN)
