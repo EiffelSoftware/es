@@ -1,5 +1,35 @@
 note
-	description: "Represents a Control Flow Graph implemented as a doubly linked graph."
+	description: "[
+			Represents a Control Flow Graph implemented as a doubly linked graph.
+			
+			This class is used for rules of type `CA_CFG_RULE'. These rules make
+			use of `CA_CFG_ITERATOR', that iterates through the graph using a
+			work list algorithm for a fixed point iteration. For example, rule #20,
+			`variable not read', requires such a fixed point iteration.
+			
+			This class is intended to represent a control flow graph of a routine.
+			The control flow goes from `a_start_node' to `a_end_node'. These two
+			nodes are `skip' nodes, i. e. dummy nodes. They do not represent any
+			instruction or condition. (The graph may contain other `skip' nodes.
+			
+			The graph is implicitely given by the paths from `start_node' to
+			`end_node'. Since the control flow graph is directed, each node
+			has information about incoming edges and outgoing edges. These
+			edges are implicitely given; nodes keep lists of other nodes that
+			are direct predecessors or successors. If B is among A's successrs, then
+			A must be also among B's predecessors.
+			
+			The graph must be created by `CA_CFG_BUILDER'.
+			
+			Each node in the graph must have an unique label. For a graph with n
+			nodes, `CA_CFG_BUILDER'	creates the graph in the way that labels are
+			numbered from 1 to n. The numbering order does not imply any graph order.
+			
+			Apart from the `skip' node there exist `if', `loop', and `inspect', and
+			`instruction' nodes. The latter represent any instruction that is neither
+			`if', `loop', nor `inspect'. `elseif' clauses are converted to `if' nodes
+			by the cfg builder.
+		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
 	revision: "$Revision$"

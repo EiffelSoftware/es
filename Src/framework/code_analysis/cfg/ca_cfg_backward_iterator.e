@@ -19,7 +19,8 @@ feature -- Iteration
 			l_current_node: CA_CFG_BASIC_BLOCK
 			l_visited: BINARY_SEARCH_TREE_SET [INTEGER]
 		do
-				-- Create edge list using BFS.
+				-- Create edge list using BFS. Add every graph edge
+				-- to the work list.
 			from
 				create worklist.make
 				create l_visited.make
@@ -50,6 +51,8 @@ feature -- Iteration
 			loop
 				l_current_node := worklist.item.fr
 				if visit_edge (l_current_node, worklist.item.to) then
+						-- The visitor requests another pass on this edge
+						-- so again we will add it to the worklist.
 					across l_current_node.in_edges as l_ins loop
 						worklist.put ([l_ins.item, l_current_node])
 					end
