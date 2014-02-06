@@ -127,27 +127,52 @@ feature {NONE} -- Initialization
 	create_right_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
 			-- <Precursor>
 		local
-			l_button: SD_TOOL_BAR_BUTTON
+			l_prev_button, l_next_button, l_clear_filter: SD_TOOL_BAR_BUTTON
+			l_box: EV_HORIZONTAL_BOX
 		do
 				-- "Move to previous error" button.
-			create l_button.make
-			l_button.set_pixmap (stock_pixmaps.view_previous_icon)
-			l_button.set_tooltip (ca_names.go_to_previous_tooltip)
-			l_button.select_actions.extend (agent go_to_previous_violation)
+			create l_prev_button.make
+			l_prev_button.set_pixmap (stock_pixmaps.view_previous_icon)
+			l_prev_button.set_tooltip (ca_names.go_to_previous_tooltip)
+			l_prev_button.select_actions.extend (agent go_to_previous_violation)
+
+				-- "Move to next error" button.
+			create l_next_button.make
+			l_next_button.set_pixmap (stock_pixmaps.view_next_icon)
+			l_next_button.set_tooltip (ca_names.go_to_next_tooltip)
+			l_next_button.select_actions.extend (agent go_to_next_violation)
+
+				-- Preferences button.
 
 			show_preferences_button := (create {ES_CA_SHOW_PREFERENCES_COMMAND}.make).new_sd_toolbar_item (True)
 
-			create Result.make (4)
-			Result.extend (l_button)
+				-- Text field and button for filter.
 
-				-- "Move to next error" button.
-			create l_button.make
-			l_button.set_pixmap (stock_pixmaps.view_next_icon)
-			l_button.set_tooltip (ca_names.go_to_next_tooltip)
-			l_button.select_actions.extend (agent go_to_next_violation)
+			create l_box
+			l_box.extend (create {EV_LABEL}.make_with_text (ca_names.tool_text_filter))
+			l_box.disable_item_expand (l_box.last)
+			create text_filter
+			text_filter.key_release_actions.force_extend (agent on_update_visiblity)
+			text_filter.set_minimum_width_in_characters (10)
+			l_box.extend (text_filter)
+			l_box.disable_item_expand (text_filter)
+			create l_clear_filter.make
+			l_clear_filter.set_pixmap (stock_mini_pixmaps.general_delete_icon)
+			l_clear_filter.pointer_button_press_actions.force_extend (
+				agent
+					do
+						text_filter.set_text ("")
+						on_update_visiblity
+					end
+				)
 
-			Result.extend (l_button)
-
+				-- Adding the controls to the tool bar.
+			create Result.make (7)
+			Result.extend (create {SD_TOOL_BAR_RESIZABLE_ITEM}.make (l_box))
+			Result.extend (l_clear_filter)
+			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
+			Result.extend (l_prev_button)
+			Result.extend (l_next_button)
 			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 			Result.extend (show_preferences_button)
 		end
@@ -253,6 +278,8 @@ feature -- Status report
 
 	is_item_visible (a_item: EV_GRID_ROW): BOOLEAN
 			-- Is `a_item' visible?
+		local
+			l_text: STRING_32
 		do
 			Result := True
 			if attached {CA_RULE_VIOLATION_EVENT} a_item.data as l_viol then
@@ -264,6 +291,17 @@ feature -- Status report
 					Result := False
 				elseif is_hint_event (l_viol) and not show_hints then
 					Result := False
+				else
+					l_text := text_filter.text.as_lower
+					if
+						not l_text.is_empty and then
+						not l_viol.title.as_lower.has_substring (l_text) and then
+						not l_viol.rule_id.as_lower.has_substring (l_text) and then
+						not l_viol.affected_class.name.as_lower.has_substring (l_text) and then
+						not l_viol.violation_description.as_lower.has_substring (l_text)
+					then
+						Result := False
+					end
 				end
 			end
 		end
