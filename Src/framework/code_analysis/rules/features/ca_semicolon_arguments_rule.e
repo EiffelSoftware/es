@@ -80,16 +80,14 @@ feature {NONE} -- Checking the rule
 			l_n_semis: INTEGER
 			l_viol: CA_RULE_VIOLATION
 		do
-			if matchlist /= Void then
-				if attached a_body.arguments as l_a then
-					l_n_semis := l_a.text_32 (matchlist).occurrences (';')
-					if l_n_semis < l_a.count - 1 then
-							-- At least one argument must have no semicolon separator.
-						create l_viol.make_with_rule (Current)
-						l_viol.set_location (l_a.start_location)
-						l_viol.long_description_info.extend (current_feature_name)
-						violations.extend (l_viol)
-					end
+			if matchlist /= Void and then attached a_body.arguments as l_a then
+				l_n_semis := l_a.text_32 (matchlist).occurrences (';')
+				if l_n_semis < l_a.count - 1 then
+						-- At least one argument must have no semicolon separator.
+					create l_viol.make_with_rule (Current)
+					l_viol.set_location (l_a.start_location)
+					l_viol.long_description_info.extend (current_feature_name)
+					violations.extend (l_viol)
 				end
 			end
 		end

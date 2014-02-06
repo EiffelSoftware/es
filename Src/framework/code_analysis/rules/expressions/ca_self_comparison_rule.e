@@ -156,11 +156,14 @@ feature {NONE} -- Checking the rule
 		do
 			is_self := False
 
-			if attached {EXPR_CALL_AS} a_bin.left as l_e1 and then attached {ACCESS_ID_AS} l_e1.call as l_l then
-				if attached {EXPR_CALL_AS} a_bin.right as l_e2 and then attached {ACCESS_ID_AS} l_e2.call as l_r then
-					is_self := l_l.feature_name.is_equal (l_r.feature_name)
-					self_name := l_l.access_name_32
-				end
+			if
+				attached {EXPR_CALL_AS} a_bin.left as l_e1
+				and then attached {ACCESS_ID_AS} l_e1.call as l_l
+				and then attached {EXPR_CALL_AS} a_bin.right as l_e2
+				and then attached {ACCESS_ID_AS} l_e2.call as l_r
+			then
+				is_self := l_l.feature_name.is_equal (l_r.feature_name)
+				self_name := l_l.access_name_32
 			end
 		end
 

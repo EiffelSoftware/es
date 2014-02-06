@@ -44,10 +44,8 @@ feature {NONE} -- Checking Loop For Pattern
 			analyze_from_part (a_loop)
 			if from_part_conforms then
 				analyze_stop_condition (a_loop.stop)
-				if is_valid_stop_condition then
-					if attached a_loop.compound as l_comp then
-						check_xxcrement (l_comp.last)
-					end
+				if is_valid_stop_condition and then attached a_loop.compound as l_comp then
+					check_xxcrement (l_comp.last)
 				end
 			end
 		end
@@ -62,18 +60,20 @@ feature {NONE} -- Checking Loop For Pattern
 		do
 			from_part_conforms := False
 
-			if attached a_loop.from_part as l_from and then l_from.count = 1 then
-				if attached {ASSIGN_AS} l_from.first as l_assign then
-					if attached {ACCESS_ID_AS} l_assign.target as l_target and then l_target.is_local then
-						if attached {INTEGER_AS} l_assign.source as l_start and then l_start.has_integer (64) then
-								-- We have a from part like "j := 3". Something of the form "x := X", where
-								-- x is a local variable and X is an integer constant.
-							iteration_variable := l_target.feature_name
-							loop_start := l_start.integer_64_value
-							from_part_conforms := True
-						end
-					end
-				end
+			if
+				attached a_loop.from_part as l_from
+				and then l_from.count = 1
+				and then attached {ASSIGN_AS} l_from.first as l_assign
+				and then attached {ACCESS_ID_AS} l_assign.target as l_target
+				and then l_target.is_local
+				and then attached {INTEGER_AS} l_assign.source as l_start
+				and then l_start.has_integer (64)
+			then
+					-- We have a from part like "j := 3". Something of the form "x := X", where
+					-- x is a local variable and X is an integer constant.
+				iteration_variable := l_target.feature_name
+				loop_start := l_start.integer_64_value
+				from_part_conforms := True
 			end
 		end
 
@@ -90,33 +90,34 @@ feature {NONE} -- Checking Loop For Pattern
 		do
 			is_valid_stop_condition := False
 
-			if attached {COMPARISON_AS} a_stop as l_comp then
-				if attached {EXPR_CALL_AS} l_comp.left as l_call and then attached {ACCESS_ID_AS} l_call.call as l_access then
-					if l_access.feature_name.is_equal (iteration_variable) then
-							-- The variable that is used for initialization is compared.
-						if attached {INTEGER_AS} l_comp.right as l_int and then l_int.has_integer (64) then
-							is_valid_stop_condition := True -- The loop structure still follows the pattern.
-							loop_end := l_int.integer_64_value
-							if attached {BIN_GE_AS} l_comp or attached {BIN_GT_AS} l_comp then
-									-- '>' or '>=' comparison.
-									-- Check for wrong comparison symbol.
-								if loop_start > loop_end then
-									create l_viol.make_with_rule (Current)
-									l_viol.set_location (a_stop.start_location)
-									l_viol.long_description_info.extend (ca_messages.wrong_loop_iteration_violation_1)
-									violations.extend (l_viol)
-								end
-							elseif attached {BIN_LE_AS} l_comp or attached {BIN_LT_AS} l_comp then
-									-- '<' or '<=' comparison.
-									-- Check for wrong comparison symbol.
-								if loop_start < loop_end then
-									create l_viol.make_with_rule (Current)
-									l_viol.set_location (a_stop.start_location)
-									l_viol.long_description_info.extend (ca_messages.wrong_loop_iteration_violation_1)
-									violations.extend (l_viol)
-								end
-							end
-						end
+			if
+				attached {COMPARISON_AS} a_stop as l_comp
+				and then attached {EXPR_CALL_AS} l_comp.left as l_call
+				and then attached {ACCESS_ID_AS} l_call.call as l_access
+				and then l_access.feature_name.is_equal (iteration_variable)
+					-- The variable that is used for initialization is compared.
+				and then attached {INTEGER_AS} l_comp.right as l_int
+				and then l_int.has_integer (64)
+			then
+				is_valid_stop_condition := True -- The loop structure still follows the pattern.
+				loop_end := l_int.integer_64_value
+				if attached {BIN_GE_AS} l_comp or attached {BIN_GT_AS} l_comp then
+						-- '>' or '>=' comparison.
+						-- Check for wrong comparison symbol.
+					if loop_start > loop_end then
+						create l_viol.make_with_rule (Current)
+						l_viol.set_location (a_stop.start_location)
+						l_viol.long_description_info.extend (ca_messages.wrong_loop_iteration_violation_1)
+						violations.extend (l_viol)
+					end
+				elseif attached {BIN_LE_AS} l_comp or attached {BIN_LT_AS} l_comp then
+						-- '<' or '<=' comparison.
+						-- Check for wrong comparison symbol.
+					if loop_start < loop_end then
+						create l_viol.make_with_rule (Current)
+						l_viol.set_location (a_stop.start_location)
+						l_viol.long_description_info.extend (ca_messages.wrong_loop_iteration_violation_1)
+						violations.extend (l_viol)
 					end
 				end
 			end
@@ -128,27 +129,25 @@ feature {NONE} -- Checking Loop For Pattern
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
-			if attached {ASSIGN_AS} a_instruction as l_assign then
-				if attached {ACCESS_ID_AS} l_assign.target as l_target and then l_target.feature_name.is_equal (iteration_variable) then
-					if attached {BINARY_AS} l_assign.source as l_bin then
-						if attached {EXPR_CALL_AS} l_bin.left as l_call and then attached {ACCESS_ID_AS} l_call.call as l_left then
-							if l_left.feature_name.is_equal (iteration_variable) then
-								if attached {INTEGER_AS} l_bin.right then
-										-- We have an increment of the form "x := x +/- X", where x is our iteration variable
-										-- and X is an integer constant.
-									if (attached {BIN_PLUS_AS} l_bin and loop_start > loop_end)
-										or (attached {BIN_MINUS_AS} l_bin and loop_start < loop_end) then
-											-- Wrong iteration direction.
-										create l_viol.make_with_rule (Current)
-										l_viol.set_location (a_instruction.start_location)
-										l_viol.long_description_info.extend (ca_messages.wrong_loop_iteration_violation_2)
-										violations.extend (l_viol)
-									end
-								end
-							end
-						end
-					end
-				end
+			if
+				attached {ASSIGN_AS} a_instruction as l_assign
+				and then attached {ACCESS_ID_AS} l_assign.target as l_target
+				and then l_target.feature_name.is_equal (iteration_variable)
+				and then attached {BINARY_AS} l_assign.source as l_bin
+				and then attached {EXPR_CALL_AS} l_bin.left as l_call
+				and then attached {ACCESS_ID_AS} l_call.call as l_left
+				and then l_left.feature_name.is_equal (iteration_variable)
+				and then attached {INTEGER_AS} l_bin.right
+					-- We have an increment of the form "x := x +/- X", where x is our iteration variable
+					-- and X is an integer constant.
+				and then ((attached {BIN_PLUS_AS} l_bin and loop_start > loop_end)
+					or (attached {BIN_MINUS_AS} l_bin and loop_start < loop_end))
+			then
+					-- Wrong iteration direction.
+				create l_viol.make_with_rule (Current)
+				l_viol.set_location (a_instruction.start_location)
+				l_viol.long_description_info.extend (ca_messages.wrong_loop_iteration_violation_2)
+				violations.extend (l_viol)
 			end
 		end
 

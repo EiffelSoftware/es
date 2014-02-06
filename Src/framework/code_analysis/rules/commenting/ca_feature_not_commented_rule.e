@@ -47,14 +47,12 @@ feature {NONE} -- Rule checking
 			l_comment: STRING_32
 			l_empty: BOOLEAN
 		do
-			if matchlist /= Void then
-				if a_feature.comment (matchlist).count = 0 then
-						-- The comments list is empty.
-					create l_viol.make_with_rule (Current)
-					l_viol.set_location (a_feature.start_location)
-					l_viol.long_description_info.extend (a_feature.feature_name.name_32)
-					violations.extend (l_viol)
-				end
+			if matchlist /= Void and then a_feature.comment (matchlist).count = 0 then
+					-- The comments list is empty.
+				create l_viol.make_with_rule (Current)
+				l_viol.set_location (a_feature.start_location)
+				l_viol.long_description_info.extend (a_feature.feature_name.name_32)
+				violations.extend (l_viol)
 			end
 		end
 

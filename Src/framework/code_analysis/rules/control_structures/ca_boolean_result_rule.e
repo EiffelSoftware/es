@@ -67,16 +67,16 @@ feature {NONE} -- Rule Checking
 				-- If-else instructions without any 'elseif':
 			if
 				attached a_if.compound as l_if_branch
-				and attached a_if.else_part as l_else_branch
-				and a_if.elsif_list = Void
+				and then attached a_if.else_part as l_else_branch
+				and then a_if.elsif_list = Void
+				and then l_if_branch.count = 1
+				and then l_else_branch.count = 1
+				and then is_result_assign (l_if_branch.first)
+				and then is_result_assign (l_else_branch.first)
 			then
-				if l_if_branch.count = 1 and l_else_branch.count = 1 then
-					if is_result_assign (l_if_branch.first) and is_result_assign (l_else_branch.first) then
-						create l_violation.make_with_rule (Current)
-						l_violation.set_location (a_if.start_location)
-						violations.extend (l_violation)
-					end
-				end
+				create l_violation.make_with_rule (Current)
+				l_violation.set_location (a_if.start_location)
+				violations.extend (l_violation)
 			end
 		end
 

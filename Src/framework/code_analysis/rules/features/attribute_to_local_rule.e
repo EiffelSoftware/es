@@ -63,20 +63,23 @@ feature {NONE} -- Rule checking
 						l_has_clients or l_clients.after
 					loop
 							-- Only look at external clients.
-						if not l_clients.item.name.is_equal (checking_class.name) then
+						if
+							l_clients.item.name.is_equal (checking_class.name)
 								-- `callers_32' retrieves not only callers but also assigners and creators.
-							if l_feat.item.callers_32 (l_clients.item, 0) /= Void then
-								l_has_clients := True
-							end
+							and then l_feat.item.callers_32 (l_clients.item, 0) /= Void
+						then
+							l_has_clients := True
 						end
 
 						l_clients.forth
 					end
 
-					if not l_has_clients then
-						if attached l_feat.item.callers_32 (checking_class, 0) as l_c and then l_c.count = 1 then
-							create_violation (l_feat.item, l_c.first)
-						end
+					if
+						not l_has_clients
+						and then attached l_feat.item.callers_32 (checking_class, 0) as l_c
+						and then l_c.count = 1
+					then
+						create_violation (l_feat.item, l_c.first)
 					end
 				end
 

@@ -97,21 +97,23 @@ feature {NONE} -- Rule Checking
 			has_arguments := (a_body_as.arguments /= Void)
 			create args_used.make (0)
 			n_arguments := 0
-			if attached a_body_as.as_routine as l_rout then
-				if has_arguments and (not l_rout.is_external) then
-					routine_body := a_body_as
-					create arg_names.make (0)
-					across a_body_as.arguments as l_args loop
-						from
-							j := 1
-						until
-							j > l_args.item.id_list.count
-						loop
-							arg_names.extend (l_args.item.item_name (j))
-							args_used.extend (False)
-							n_arguments := n_arguments + 1
-							j := j + 1
-						end
+			if
+				attached a_body_as.as_routine as l_rout
+				and then has_arguments
+				and then not l_rout.is_external
+			then
+				routine_body := a_body_as
+				create arg_names.make (0)
+				across a_body_as.arguments as l_args loop
+					from
+						j := 1
+					until
+						j > l_args.item.id_list.count
+					loop
+						arg_names.extend (l_args.item.item_name (j))
+						args_used.extend (False)
+						n_arguments := n_arguments + 1
+						j := j + 1
 					end
 				end
 			end
@@ -123,10 +125,12 @@ feature {NONE} -- Rule Checking
 			l_violation: CA_RULE_VIOLATION
 			j: INTEGER
 		do
-			if a_body.content /= Void
-			and then not current_feature.is_deferred
-			and then has_arguments
-			and then args_used.has (False) then
+			if
+				a_body.content /= Void
+				and then not current_feature.is_deferred
+				and then has_arguments
+				and then args_used.has (False)
+			then
 				create l_violation.make_with_rule (Current)
 				l_violation.set_location (routine_body.start_location)
 				l_violation.long_description_info.extend (current_feature)
@@ -156,10 +160,11 @@ feature {NONE} -- Rule Checking
 		local
 			j: INTEGER
 		do
-			if attached {ADDRESS_AS} a_conv.expr as l_address then
-				if attached {FEAT_NAME_ID_AS} l_address.feature_name as l_id then
-					check_arguments (l_id.feature_name.name_32)
-				end
+			if
+				attached {ADDRESS_AS} a_conv.expr as l_address
+				and then attached {FEAT_NAME_ID_AS} l_address.feature_name as l_id
+			then
+				check_arguments (l_id.feature_name.name_32)
 			end
 		end
 
@@ -173,10 +178,8 @@ feature {NONE} -- Rule Checking
 			until
 				j > n_arguments
 			loop
-				if not args_used [j] then
-					if arg_names [j].is_equal (a_var_name) then
-						args_used [j] := True
-					end
+				if not args_used [j] and then arg_names [j].is_equal (a_var_name) then
+					args_used [j] := True
 				end
 				j := j + 1
 			end

@@ -692,13 +692,14 @@ feature {NONE} -- Clean up
 	internal_recycle
 			-- <Precursor>
 		do
-			if is_initialized then
-				if session_manager.is_service_available then
-					if session_data.session_connection.is_connected (Current) then
-						session_data.session_connection.disconnect_events (Current)
-					end
-				end
+			if
+				is_initialized
+				and then session_manager.is_service_available
+				and then session_data.session_connection.is_connected (Current)
+			then
+				session_data.session_connection.disconnect_events (Current)
 			end
+			
 			Precursor {ES_CLICKABLE_EVENT_LIST_TOOL_PANEL_BASE}
 		end
 

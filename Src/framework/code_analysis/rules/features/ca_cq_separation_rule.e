@@ -94,29 +94,28 @@ feature {NONE} -- AST Visits
 			-- Is an attribute created in `a_creation'?
 		do
 			-- Skip the checks if we are not within a function.
-			if is_function then
-				if attached {ACCESS_ID_AS} a_creation.target as l_access_id then
-					if checking_class.feature_with_id (l_access_id.feature_name) /= Void then
-						-- We have a creation of an attribute.
-						rule_violated := True
-					end
-				end
+			if
+				is_function
+				and then attached {ACCESS_ID_AS} a_creation.target as l_access_id
+				and then checking_class.feature_with_id (l_access_id.feature_name) /= Void
+			then
+					-- We have a creation of an attribute.
+				rule_violated := True
 			end
 		end
 
 	process_instruction_call (a_call: INSTR_CALL_AS)
 			-- Checks whether `a_call' is a procedure call relevant to this rule.
 		do
-			-- Skip the checks if we are not within a function.
-			if is_function then
-				if attached {ACCESS_ID_AS} a_call.call as l_access_id then
-					if attached checking_class.feature_with_id (l_access_id.feature_name) as l_feat then
-						if l_feat.is_procedure then
-							-- There is a procedure call within this function.
-							rule_violated := True
-						end
-					end
-				end
+				-- Skip the checks if we are not within a function.
+			if
+				is_function
+				and then attached {ACCESS_ID_AS} a_call.call as l_access_id
+				and then attached checking_class.feature_with_id (l_access_id.feature_name) as l_feat
+				and then l_feat.is_procedure
+			then
+					-- There is a procedure call within this function.
+				rule_violated := True
 			end
 		end
 

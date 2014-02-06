@@ -96,16 +96,14 @@ feature {NONE} -- AST Visits
 						-- Extract the rightmost feature in the nested call.
 					l_access := find_access_id (l_nested)
 				end
-				if l_access /= Void then
-					if attached {CLASS_TYPE_AS} a_ot.type as l_type then
-						l_static_variable_type := node_type (l_access, current_feature_i)
-						if l_type.class_name.name_8.is_equal (l_static_variable_type.name) then
-							create l_violation.make_with_rule (Current)
-							l_violation.set_location (a_ot.start_location)
-							l_violation.long_description_info.extend (l_access.access_name_32)
-							l_violation.long_description_info.extend (l_static_variable_type.base_class)
-							violations.extend (l_violation)
-						end
+				if l_access /= Void and then attached {CLASS_TYPE_AS} a_ot.type as l_type then
+					l_static_variable_type := node_type (l_access, current_feature_i)
+					if l_type.class_name.name_8.is_equal (l_static_variable_type.name) then
+						create l_violation.make_with_rule (Current)
+						l_violation.set_location (a_ot.start_location)
+						l_violation.long_description_info.extend (l_access.access_name_32)
+						l_violation.long_description_info.extend (l_static_variable_type.base_class)
+						violations.extend (l_violation)
 					end
 				end
 			end

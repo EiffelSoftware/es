@@ -29,8 +29,10 @@ feature {NONE} -- Implementation
 		local
 			l_cfg_builder: CA_CFG_BUILDER
 		do
-			if a_feature.ast.body.is_routine
-					and then attached {INTERNAL_AS} a_feature.ast.body.as_routine.routine_body then
+			if
+				a_feature.ast.body.is_routine and then
+				attached {INTERNAL_AS} a_feature.ast.body.as_routine.routine_body
+			then
 				current_feature := a_feature
 				create l_cfg_builder.make_with_feature (a_feature.ast)
 				l_cfg_builder.build_cfg

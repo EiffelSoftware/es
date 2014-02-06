@@ -70,16 +70,16 @@ feature {NONE} -- Checking the rule
 		local
 			l_violation: CA_RULE_VIOLATION
 		do
-			if attached {EXPR_CALL_AS} a_assign_as.source as l_source then
-				if attached {ACCESS_ID_AS} l_source.call as l_src_access_id then
-					if attached {ACCESS_ID_AS} a_assign_as.target as l_tar
-					and then l_tar.feature_name.is_equal (l_src_access_id.feature_name) then
-						create l_violation.make_with_rule (Current)
-						l_violation.set_location (a_assign_as.start_location)
-						l_violation.long_description_info.extend (l_src_access_id.feature_name.name_32)
-						violations.extend (l_violation)
-					end
-				end
+			if
+				attached {EXPR_CALL_AS} a_assign_as.source as l_source
+				and then attached {ACCESS_ID_AS} l_source.call as l_src_access_id
+				and then attached {ACCESS_ID_AS} a_assign_as.target as l_tar
+				and then l_tar.feature_name.is_equal (l_src_access_id.feature_name)
+			then
+				create l_violation.make_with_rule (Current)
+				l_violation.set_location (a_assign_as.start_location)
+				l_violation.long_description_info.extend (l_src_access_id.feature_name.name_32)
+				violations.extend (l_violation)
 			end
 		end
 

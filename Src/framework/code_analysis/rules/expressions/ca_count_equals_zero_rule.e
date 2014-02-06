@@ -52,8 +52,10 @@ feature {NONE} -- Rule checking
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
-			if (is_zero (a_bin_eq.right) and then is_finite_count (a_bin_eq.left))
-				or else (is_zero (a_bin_eq.left) and then is_finite_count (a_bin_eq.right)) then
+			if
+				(is_zero (a_bin_eq.right) and then is_finite_count (a_bin_eq.left))
+				or else (is_zero (a_bin_eq.left) and then is_finite_count (a_bin_eq.right))
+			then
 				create l_viol.make_with_rule (Current)
 				l_viol.set_location (a_bin_eq.start_location)
 				violations.extend (l_viol)
@@ -77,11 +79,14 @@ feature {NONE} -- Rule checking
 	is_finite_count (a_expr: attached EXPR_AS): BOOLEAN
 			-- Does `a_expr' call `finite' on a {FINITE} (or conforming) instance?
 		do
-			if attached {EXPR_CALL_AS} a_expr as l_ec and then attached {NESTED_AS} l_ec.call as l_nested_call then
-				if attached {ACCESS_AS} l_nested_call.message as l_msg and then l_msg.access_name_8.is_equal ("count") then
-					if attached node_type (l_nested_call.target, current_feature_i) as l_type then
-						Result := l_type.base_class.conform_to (finite)
-					end
+			if
+				attached {EXPR_CALL_AS} a_expr as l_ec
+				and then attached {NESTED_AS} l_ec.call as l_nested_call
+				and then attached {ACCESS_AS} l_nested_call.message as l_msg
+				and then l_msg.access_name_8.is_equal ("count")
+			then
+				if attached node_type (l_nested_call.target, current_feature_i) as l_type then
+					Result := l_type.base_class.conform_to (finite)
 				end
 			end
 		end

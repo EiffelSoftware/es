@@ -75,29 +75,27 @@ feature {NONE} -- AST Visits
 			l_fix: CA_UNNEEDED_OT_LOCAL_FIX
 		do
 				-- The expression to be tested must be a simple call.
-			if attached {EXPR_CALL_AS} a_ot.expression as l_call then
-				if attached {ACCESS_ID_AS} l_call.call as l_access then
-						-- Testing if an object test local is used.
-					if attached a_ot.name as l_ot_local then
-							-- There must be no dynamic type check.
-						if a_ot.type = Void then
-								-- Now we have to check whether the tested expression is a local,
-								-- an argument, or an object test local.
-							if l_access.is_local or l_access.is_argument or l_access.is_object_test_local then
-								create l_violation.make_with_rule (Current)
-								l_violation.set_location (a_ot.start_location)
-								l_violation.long_description_info.extend (l_access.access_name_32)
-								l_violation.long_description_info.extend (l_ot_local.name_32)
+			if
+				attached {EXPR_CALL_AS} a_ot.expression as l_call
+				and then attached {ACCESS_ID_AS} l_call.call as l_access
+					-- Testing if an object test local is used.
+				and then attached a_ot.name as l_ot_local
+					-- There must be no dynamic type check.
+				and then a_ot.type = Void
+					-- Now we have to check whether the tested expression is a local,
+					-- an argument, or an object test local.
+				and then (l_access.is_local or l_access.is_argument or l_access.is_object_test_local)
+			then
+				create l_violation.make_with_rule (Current)
+				l_violation.set_location (a_ot.start_location)
+				l_violation.long_description_info.extend (l_access.access_name_32)
+				l_violation.long_description_info.extend (l_ot_local.name_32)
 
-									-- Add the fix.
-								create l_fix.make_with_ot (checking_class, a_ot)
-								l_violation.fixes.extend (l_fix)
+					-- Add the fix.
+				create l_fix.make_with_ot (checking_class, a_ot)
+				l_violation.fixes.extend (l_fix)
 
-								violations.extend (l_violation)
-							end
-						end
-					end
-				end
+				violations.extend (l_violation)
 			end
 		end
 

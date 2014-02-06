@@ -82,11 +82,9 @@ feature {NONE} -- Visitor
 			-- `a_id' by the object test expression if `a_id' is the object
 			-- test local.
 		do
-			if within_ot then
-				if a_id.name_id = ot_local then
-						-- Replace the object test local by the expression from the object test.
-					a_id.replace_text (tested_expression, matchlist)
-				end
+			if within_ot and then a_id.name_id = ot_local then
+					-- Replace the object test local by the expression from the object test.
+				a_id.replace_text (tested_expression, matchlist)
 			end
 		end
 

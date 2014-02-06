@@ -61,13 +61,15 @@ feature {NONE} -- Rule checking
 			l_viol: CA_RULE_VIOLATION
 		do
 			check_until_part (a_loop.stop)
-			if matching_until_part and then matching_from_part (a_loop.from_part) then
-				if matching_last_instruction (a_loop.compound) then
-					create l_viol.make_with_rule (Current)
-					l_viol.set_location (a_loop.start_location)
-					l_viol.long_description_info.extend (expected_var)
-					violations.extend (l_viol)
-				end
+			if
+				matching_until_part
+				and then matching_from_part (a_loop.from_part)
+				and then matching_last_instruction (a_loop.compound)
+			then
+				create l_viol.make_with_rule (Current)
+				l_viol.set_location (a_loop.start_location)
+				l_viol.long_description_info.extend (expected_var)
+				violations.extend (l_viol)
 			end
 		end
 
@@ -83,16 +85,18 @@ feature {NONE} -- Rule checking
 		do
 			matching_until_part := False
 
-			if a_stop_condition /= Void and then attached {EXPR_CALL_AS} a_stop_condition as l_call then
-				if attached {NESTED_AS} l_call.call as l_nested_call then
-					if attached {ACCESS_AS} l_nested_call.message as l_msg and then l_msg.access_name_8.is_equal ("after") then
-						l_target := l_nested_call.target
-						l_type := node_type (l_target, current_feature_i)
-						if l_type.base_class.conform_to (iterable) then
-							matching_until_part := True
-							expected_var := l_target.access_name_32
-						end
-					end
+			if
+				a_stop_condition /= Void
+				and then attached {EXPR_CALL_AS} a_stop_condition as l_call
+				and then attached {NESTED_AS} l_call.call as l_nested_call
+				and then attached {ACCESS_AS} l_nested_call.message as l_msg
+				and then l_msg.access_name_8.is_equal ("after")
+			then
+				l_target := l_nested_call.target
+				l_type := node_type (l_target, current_feature_i)
+				if l_type.base_class.conform_to (iterable) then
+					matching_until_part := True
+					expected_var := l_target.access_name_32
 				end
 			end
 		ensure
@@ -109,16 +113,16 @@ feature {NONE} -- Rule checking
 		do
 			if a_from /= Void then
 				across a_from as l_instr loop
-					if attached {INSTR_CALL_AS} l_instr.item as l_call then
-						if attached {NESTED_AS} l_call.call as l_nested_call then
-							if l_nested_call.target.access_name_32.is_equal (expected_var) then
-								if attached {ACCESS_AS} l_nested_call.message as l_msg and then l_msg.access_name_8.is_equal ("start") then
-										-- We do not have to check the type of `l_target' since we know it is the expected variable
-										-- that has already been checked for conformance to {ITERABLE}.
-									Result := True
-								end
-							end
-						end
+					if
+						attached {INSTR_CALL_AS} l_instr.item as l_call
+						and then attached {NESTED_AS} l_call.call as l_nested_call
+						and then l_nested_call.target.access_name_32.is_equal (expected_var)
+						and then attached {ACCESS_AS} l_nested_call.message as l_msg
+						and then l_msg.access_name_8.is_equal ("start")
+					then
+							-- We do not have to check the type of `l_target' since we know it is the expected variable
+							-- that has already been checked for conformance to {ITERABLE}.
+						Result := True
 					end
 				end
 			end
@@ -127,16 +131,17 @@ feature {NONE} -- Rule checking
 	matching_last_instruction (a_loop_body: detachable EIFFEL_LIST [INSTRUCTION_AS]): BOOLEAN
 			-- Is the last instruction of `a_loop_body' of the form `expected_var'.start?
 		do
-			if a_loop_body /= Void and then attached {INSTR_CALL_AS} a_loop_body.last as l_call then
-				if attached {NESTED_AS} l_call.call as l_nested_call then
-					if l_nested_call.target.access_name_32.is_equal (expected_var) then
-						if attached {ACCESS_AS} l_nested_call.message as l_msg and then l_msg.access_name_8.is_equal ("forth") then
-								-- We do not have to check the type of `l_target' since we know it is the expected variable
-								-- that has already been checked for conformance to {ITERABLE}.
-							Result := True
-						end
-					end
-				end
+			if
+				a_loop_body /= Void
+				and then attached {INSTR_CALL_AS} a_loop_body.last as l_call
+				and then attached {NESTED_AS} l_call.call as l_nested_call
+				and then l_nested_call.target.access_name_32.is_equal (expected_var)
+				and then attached {ACCESS_AS} l_nested_call.message as l_msg
+				and then l_msg.access_name_8.is_equal ("forth")
+			then
+					-- We do not have to check the type of `l_target' since we know it is the expected variable
+					-- that has already been checked for conformance to {ITERABLE}.
+				Result := True
 			end
 		end
 

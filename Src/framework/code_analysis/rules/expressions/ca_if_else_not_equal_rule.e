@@ -45,15 +45,17 @@ feature {NONE} -- Rule checking
 		do
 				-- Only look at if-else instructions. (Whether there exists an 'elseif' is
 				-- not relevant to this rule.)
-			if a_if.else_part /= Void then
-				if attached {BIN_NE_AS} a_if.condition as l_c and then (not attached {VOID_AS} l_c.right) then
-						-- The if condition is of the form 'a /= b' or 'a /~ b'. Comparing to Void, however, is ignored
-						-- for the sake of intuition: "if c /= Void then" is preferrable (note: the 'attached' syntax
-						-- will not be discussed here and is not part of this rule).
-					create l_viol.make_with_rule (Current)
-					l_viol.set_location (l_c.start_location)
-					violations.extend (l_viol)
-				end
+			if
+				a_if.else_part /= Void
+				and then attached {BIN_NE_AS} a_if.condition as l_c
+				and then (not attached {VOID_AS} l_c.right)
+			then
+					-- The if condition is of the form 'a /= b' or 'a /~ b'. Comparing to Void, however, is ignored
+					-- for the sake of intuition: "if c /= Void then" is preferrable (note: the 'attached' syntax
+					-- will not be discussed here and is not part of this rule).
+				create l_viol.make_with_rule (Current)
+				l_viol.set_location (l_c.start_location)
+				violations.extend (l_viol)
 			end
 		end
 

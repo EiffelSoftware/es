@@ -164,10 +164,8 @@ feature {NONE} -- AST Visits
 				maximum_depth := current_depth
 			end
 
-			if not current_violation_exists then
-				if current_depth >= threshold.value then
-					current_violation_exists := True
-				end
+			if not current_violation_exists and then current_depth >= threshold.value then
+				current_violation_exists := True
 			end
 		end
 
