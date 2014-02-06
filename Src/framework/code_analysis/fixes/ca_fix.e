@@ -21,7 +21,7 @@ create
 
 feature {NONE} -- Implementation
 
-	make (a_caption: STRING_32; a_class: CLASS_C)
+	make (a_caption: attached STRING_32; a_class: attached CLASS_C)
 			-- Initializes `Current'. Sets the caption of the fix to `a_caption' (which
 			-- is used in the GUI, e. g.). Set the class the fix will change to `a_class'.
 		do
@@ -29,7 +29,7 @@ feature {NONE} -- Implementation
 			class_to_change := a_class
 		end
 
-	matchlist: LEAF_AS_LIST
+	matchlist: detachable LEAF_AS_LIST
 			-- The matchlist of the class the fix will change.
 		do
 			Result := Match_list_server.item (class_to_change.class_id)

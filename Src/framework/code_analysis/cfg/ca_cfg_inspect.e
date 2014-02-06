@@ -21,7 +21,7 @@ feature {NONE} -- Initialization
 		do
 			initialize
 			has_else := a_has_else
-			if attached a_intervals then
+			if a_intervals /= Void then
 				n_when_branches := a_intervals.count
 			end
 			if a_has_else then

@@ -85,7 +85,7 @@ feature {NONE} -- Rule checking
 			l_name: STRING
 			l_viol: CA_RULE_VIOLATION
 		do
-			if attached a_routine.locals then
+			if a_routine.locals /= Void then
 				l_min := min_local_name_length.value
 
 				across a_routine.locals as l_t loop
@@ -119,7 +119,7 @@ feature {NONE} -- Rule checking
 			l_name: STRING
 			l_viol: CA_RULE_VIOLATION
 		do
-			if attached a_body.arguments then
+			if a_body.arguments /= Void then
 				l_min := min_argument_name_length.value
 
 				across a_body.arguments as l_t loop

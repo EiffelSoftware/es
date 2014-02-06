@@ -50,7 +50,7 @@ feature {NONE} -- From {CA_CFG_RULE}
 		do
 			Precursor (a_class, a_feature)
 
-			if attached assignment_nodes then
+			if assignment_nodes /= Void then
 					-- Iterate through all assignments in search for dead assignments.
 				across assignment_nodes as l_assigns loop
 					if attached {ASSIGN_AS} l_assigns.item.instruction as l_assign then

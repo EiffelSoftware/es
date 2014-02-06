@@ -45,7 +45,7 @@ feature {NONE} -- Rule checking
 		do
 				-- Only look at if-else instructions. (Whether there exists an 'elseif' is
 				-- not relevant to this rule.)
-			if attached a_if.else_part then
+			if a_if.else_part /= Void then
 				if attached {BIN_NE_AS} a_if.condition as l_c and then (not attached {VOID_AS} l_c.right) then
 						-- The if condition is of the form 'a /= b' or 'a /~ b'. Comparing to Void, however, is ignored
 						-- for the sake of intuition: "if c /= Void then" is preferrable (note: the 'attached' syntax

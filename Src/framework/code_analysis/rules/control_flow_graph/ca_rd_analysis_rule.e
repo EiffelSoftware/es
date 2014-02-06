@@ -33,7 +33,7 @@ feature -- CFG Node Visitor
 
 				-- Since local expanded variables are initialized to their default values we
 				-- count this as an assignment.
-			if attached current_feature.locals then
+			if current_feature.locals /= Void then
 				across current_feature.locals as l_locals loop
 					across l_locals.item.id_list as l_id_list loop
 						create l_init_set.make
@@ -141,9 +141,11 @@ feature {NONE} -- Implementation
 			l_label := a_instr.label
 			l_old_count := rd_exit [l_label].count
 
-			if attached {ASSIGN_AS} a_instr.instruction as l_assign
-			and then attached {ACCESS_ID_AS} l_assign.target as l_id
-			and then l_id.is_local then
+			if
+				attached {ASSIGN_AS} a_instr.instruction as l_assign
+				and then attached {ACCESS_ID_AS} l_assign.target as l_id
+				and then l_id.is_local
+			then
 				l_var_id := l_id.feature_name.name_id
 
 					-- Remove all previous RD entries.

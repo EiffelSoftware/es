@@ -61,7 +61,7 @@ feature {NONE} -- Rule Checking
 		local
 			l_violation: CA_RULE_VIOLATION
 		do
-			if not attached a_if.compound then
+			if a_if.compound = Void then
 				create l_violation.make_with_rule (Current)
 				l_violation.set_location (a_if.start_location)
 				violations.extend (l_violation)

@@ -46,7 +46,7 @@ feature {NONE} -- Rule checking
 			l_comment: STRING_32
 			l_empty: BOOLEAN
 		do
-			if attached matchlist then
+			if matchlist /= Void then
 				if a_feature_clause.comment (matchlist).count = 0 then
 						-- The comments list is empty.
 					l_empty := True

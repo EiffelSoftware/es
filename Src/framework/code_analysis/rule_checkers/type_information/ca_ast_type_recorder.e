@@ -30,7 +30,7 @@ feature -- AST Type Analysis
 			node_types.wipe_out
 		end
 
-	analyze_class (a_class: CLASS_C)
+	analyze_class (a_class: attached CLASS_C)
 			-- Analyzes `a_class' and records the type information of its AST nodes.
 		do
 			prepare_for_class (a_class)
@@ -39,7 +39,7 @@ feature -- AST Type Analysis
 			end
 		end
 
-	analyze_feature (a_feature: FEATURE_I; a_class: CLASS_C)
+	analyze_feature (a_feature: attached FEATURE_I; a_class: attached CLASS_C)
 			-- Analyzes `a_feature' from `a_class' and records the type information of its AST child
 			-- nodes.
 		do
@@ -62,7 +62,7 @@ feature -- AST Type Analysis
 
 feature {NONE} -- Implementation
 
-	prepare_for_class (a_class: CLASS_C)
+	prepare_for_class (a_class: attached CLASS_C)
 			-- Initializes type check for class `a_class'.
 		do
 			context.initialize (a_class, a_class.actual_type)
@@ -70,7 +70,7 @@ feature {NONE} -- Implementation
 			feature_checker.set_type_recorder (agent record_node_type)
 		end
 
-	internal_analyze_feature (a_feature: FEATURE_I; a_class: CLASS_C)
+	internal_analyze_feature (a_feature: attached FEATURE_I; a_class: attached CLASS_C)
 			-- Analyzes feature `a_feature' from class `a_class'.
 		do
 			context.clear_feature_context
@@ -82,11 +82,11 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation: Data Structures
 
-	record_node_type (a_type: TYPE_A; a_node: AST_EIFFEL; a_written_class: CLASS_C; a_feature: FEATURE_I; a_class: CLASS_C)
+	record_node_type (a_type: TYPE_A; a_node: detachable AST_EIFFEL; a_written_class: CLASS_C; a_feature: FEATURE_I; a_class: CLASS_C)
 			-- Record type `a_type' of AST node `a_node' written in class `a_written_class'
 			-- when evaluated in a feature `a_feature' of class `a_class'.
 		do
-			if attached a_node then
+			if a_node /= Void then
 				node_types [[a_node.index, a_written_class.class_id, a_feature.rout_id_set.first, a_class.class_id]] := a_type
 			end
 		end

@@ -18,7 +18,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_violation: CA_RULE_VIOLATION)
+	make (a_violation: attached CA_RULE_VIOLATION)
 			-- Initialize event item.
 		do
 			data := a_violation
@@ -66,7 +66,7 @@ feature -- Access
 			Result := data.affected_class
 		end
 
-	format_description (a_formatter: TEXT_FORMATTER)
+	format_description (a_formatter: attached TEXT_FORMATTER)
 			-- Formats a description of the associated rule violation
 			-- using `a_formatter'.
 		do

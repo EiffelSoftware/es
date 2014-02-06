@@ -45,8 +45,8 @@ feature {NONE} -- Rule checking
 			if attached a_if.compound as l_c and then l_c.count = 1 then
 				if attached {IF_AS} l_c.first as l_inner_if then
 					if
-						(not attached a_if.else_part) and (not attached a_if.elsif_list)
-						and (not attached l_inner_if.else_part) and (not attached l_inner_if.elsif_list)
+						(a_if.else_part = Void) and (a_if.elsif_list = Void)
+						and (l_inner_if.else_part = Void) and (l_inner_if.elsif_list = Void)
 					then
 							-- The Compound of the (outer) if only contains an (inner) if instruction,
 							-- which is exactly what will trigger this rule.

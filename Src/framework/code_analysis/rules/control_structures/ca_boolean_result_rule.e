@@ -65,9 +65,11 @@ feature {NONE} -- Rule Checking
 			l_violation: CA_RULE_VIOLATION
 		do
 				-- If-else instructions without any 'elseif':
-			if attached a_if.compound as l_if_branch
-					and attached a_if.else_part as l_else_branch
-					and not attached a_if.elsif_list then
+			if
+				attached a_if.compound as l_if_branch
+				and attached a_if.else_part as l_else_branch
+				and a_if.elsif_list = Void
+			then
 				if l_if_branch.count = 1 and l_else_branch.count = 1 then
 					if is_result_assign (l_if_branch.first) and is_result_assign (l_else_branch.first) then
 						create l_violation.make_with_rule (Current)

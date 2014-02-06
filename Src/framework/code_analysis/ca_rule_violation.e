@@ -96,7 +96,7 @@ feature -- String representation
 			Result.append_character (';')
 			Result.append (affected_class.name)
 			Result.append_character (';')
-			if attached location then
+			if location /= Void then
 				Result.append (location.line.out)
 				Result.append (", ")
 				Result.append (location.column.out)

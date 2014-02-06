@@ -96,7 +96,7 @@ feature {NONE} -- Rule checking
 				end
 			end
 		ensure
-			expected_variable_set: matching_until_part implies attached expected_var
+			expected_variable_set: matching_until_part implies (expected_var /= Void)
 		end
 
 	expected_var: detachable STRING_32
@@ -105,9 +105,9 @@ feature {NONE} -- Rule checking
 	matching_from_part (a_from: detachable EIFFEL_LIST [INSTRUCTION_AS]): BOOLEAN
 			-- Does `a_from' contain an instruction of the form `expected_var'.start?			
 		require
-			expected_variable_set: attached expected_var
+			expected_variable_set: expected_var /= Void
 		do
-			if attached a_from then
+			if a_from /= Void then
 				across a_from as l_instr loop
 					if attached {INSTR_CALL_AS} l_instr.item as l_call then
 						if attached {NESTED_AS} l_call.call as l_nested_call then
@@ -127,7 +127,7 @@ feature {NONE} -- Rule checking
 	matching_last_instruction (a_loop_body: detachable EIFFEL_LIST [INSTRUCTION_AS]): BOOLEAN
 			-- Is the last instruction of `a_loop_body' of the form `expected_var'.start?
 		do
-			if attached a_loop_body and then attached {INSTR_CALL_AS} a_loop_body.last as l_call then
+			if a_loop_body /= Void and then attached {INSTR_CALL_AS} a_loop_body.last as l_call then
 				if attached {NESTED_AS} l_call.call as l_nested_call then
 					if l_nested_call.target.access_name_32.is_equal (expected_var) then
 						if attached {ACCESS_AS} l_nested_call.message as l_msg and then l_msg.access_name_8.is_equal ("forth") then

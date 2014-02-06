@@ -125,7 +125,7 @@ feature {NONE} -- Rule checking
 	matchlist: detachable LEAF_AS_LIST
 			-- The match list of the currently checked class.
 		do
-			if attached checking_class then
+			if checking_class /= Void then
 				Result := Match_list_server.item (checking_class.class_id)
 			end
 		end

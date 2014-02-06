@@ -80,7 +80,7 @@ feature {NONE} -- Checking the rule
 			l_n_semis: INTEGER
 			l_viol: CA_RULE_VIOLATION
 		do
-			if attached matchlist then
+			if matchlist /= Void then
 				if attached a_body.arguments as l_a then
 					l_n_semis := l_a.text_32 (matchlist).occurrences (';')
 					if l_n_semis < l_a.count - 1 then

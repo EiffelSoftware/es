@@ -59,7 +59,7 @@ feature {NONE} -- Rule Checking
 			l_count, l_max: INTEGER
 			l_viol: CA_RULE_VIOLATION
 		do
-			if attached a_inspect.case_list then
+			if a_inspect.case_list /= Void then
 				across a_inspect.case_list as l_cases loop
 					if attached l_cases.item.compound as l_comp then
 						l_count := l_comp.count

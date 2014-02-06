@@ -47,7 +47,7 @@ feature {NONE} -- Rule checking
 			l_comment: STRING_32
 			l_empty: BOOLEAN
 		do
-			if attached matchlist then
+			if matchlist /= Void then
 				if a_feature.comment (matchlist).count = 0 then
 						-- The comments list is empty.
 					create l_viol.make_with_rule (Current)

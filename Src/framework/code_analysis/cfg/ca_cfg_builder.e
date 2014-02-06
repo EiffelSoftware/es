@@ -205,7 +205,7 @@ feature {NONE} -- AST Visitor
 
 				-- Extract intervals.
 			create l_intervals.make
-			if attached a_inspect.case_list then
+			if a_inspect.case_list /= Void then
 				across a_inspect.case_list as l_cases loop
 					l_intervals.extend (l_cases.item.interval)
 				end

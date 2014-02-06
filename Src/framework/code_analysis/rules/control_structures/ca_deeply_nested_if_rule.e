@@ -64,7 +64,7 @@ feature {NONE} -- Rule checking
 	pre_process_if (a_if: IF_AS)
 			-- Increase the if depth if the necessary conditions are satisfied.
 		do
-			if (not attached a_if.else_part) and (not attached a_if.elsif_list) then
+			if (a_if.else_part = Void) and (a_if.elsif_list = Void) then
 					-- Only count pure if's.
 				current_depth := current_depth + 1
 			end
@@ -75,7 +75,7 @@ feature {NONE} -- Rule checking
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
-			if (not attached a_if.else_part) and (not attached a_if.elsif_list) then
+			if (a_if.else_part = Void) and (a_if.elsif_list = Void) then
 					-- Only look at pure if's.
 				if current_depth = depth_threshold.value then
 					create l_viol.make_with_rule (Current)
