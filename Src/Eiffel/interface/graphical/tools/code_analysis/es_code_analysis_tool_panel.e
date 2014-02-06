@@ -64,7 +64,6 @@ feature {NONE} -- Initialization
     create_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
             -- <Precursor>
         local
-        	l_label: EV_LABEL
 			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
 		do
 			create l_helper
@@ -100,14 +99,20 @@ feature {NONE} -- Initialization
 			update_button_titles
 
 				-- Scope label.
-			create l_label.make_with_text (ca_names.scope)
-			l_label.set_tooltip (ca_names.scope_tooltip)
 			create scope_label.make_with_text (ca_names.analysis_not_run)
 			scope_label.set_foreground_color (dark_gray)
+			scope_label.set_minimum_height (26)
 
 			create Result.make (5)
-			run_analysis_button := l_helper.ca_command.new_sd_toolbar_item (True)
-			Result.extend (run_analysis_button)
+				-- Button to analyze whole system.
+			whole_system_button := l_helper.ca_command.new_whole_system_toolbar_item (True)
+			Result.extend (whole_system_button)
+				-- Button to analyze current item or dropped stone.
+			current_item_button := l_helper.ca_command.new_sd_toolbar_item (True)
+			Result.extend (current_item_button)
+			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
+				-- Label to display last analyzed scope.
+			Result.extend (create {SD_TOOL_BAR_WIDGET_ITEM}.make (scope_label))
 			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 			Result.extend (errors_button)
 			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
@@ -117,8 +122,6 @@ feature {NONE} -- Initialization
 			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
 			Result.extend (hints_button)
 			Result.extend (create {SD_TOOL_BAR_SEPARATOR}.make)
-			Result.extend (create {SD_TOOL_BAR_WIDGET_ITEM}.make (l_label))
-			Result.extend (create {SD_TOOL_BAR_WIDGET_ITEM}.make (scope_label))
 		end
 
 	create_right_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
@@ -204,7 +207,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	run_analysis_button: EB_SD_COMMAND_TOOL_BAR_BUTTON
+	whole_system_button, current_item_button: EB_SD_COMMAND_TOOL_BAR_BUTTON
 			-- Button to execute Code Analysis.
 
 	show_preferences_button: EB_SD_COMMAND_TOOL_BAR_BUTTON

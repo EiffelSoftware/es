@@ -17,8 +17,7 @@ inherit
 		redefine
 			tooltext,
 			new_sd_toolbar_item,
-			new_mini_sd_toolbar_item,
-			initialize_sd_toolbar_item
+			new_mini_sd_toolbar_item
 		end
 
 	CA_SHARED_NAMES
@@ -386,7 +385,8 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 		do
 			l_tool := ca_tool
 			if l_tool /= Void and then l_tool.is_tool_instantiated then
-				ca_tool.panel.run_analysis_button.disable_sensitive
+				ca_tool.panel.whole_system_button.disable_sensitive
+				ca_tool.panel.current_item_button.disable_sensitive
 			end
 		end
 
@@ -397,21 +397,35 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 		do
 			l_tool := ca_tool
 			if l_tool /= Void and then l_tool.is_tool_instantiated then
-				ca_tool.panel.run_analysis_button.enable_sensitive
+				ca_tool.panel.whole_system_button.enable_sensitive
+				ca_tool.panel.current_item_button.enable_sensitive
 			end
 		end
 
 feature -- Items
 
-	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_DUAL_POPUP_BUTTON
+	new_sd_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON
 			-- <Precursor>
 		do
 			create Result.make (Current)
 			initialize_sd_toolbar_item (Result, display_text)
-			Result.select_actions.extend (agent execute)
+			Result.set_text ("Analyze item")
+			Result.set_tooltip ("Click to analyze the current item. Drop a stone to analyze any class, cluster, or configuration group.")
+			Result.select_actions.extend (agent analyze_current_item)
 
 			Result.drop_actions.extend (agent execute_with_stone)
 			Result.drop_actions.set_veto_pebble_function (agent droppable)
+		ensure then
+			valid_result: Result /= Void
+		end
+
+	new_whole_system_toolbar_item (display_text: BOOLEAN): EB_SD_COMMAND_TOOL_BAR_BUTTON
+		do
+			create Result.make (Current)
+			initialize_sd_toolbar_item (Result, display_text)
+			Result.set_text ("Analyze system")
+			Result.set_tooltip ("Analyze whole system")
+			Result.select_actions.extend (agent execute)
 		ensure then
 			valid_result: Result /= Void
 		end
@@ -424,13 +438,6 @@ feature -- Items
 			Result.drop_actions.set_veto_pebble_function (agent droppable)
 		ensure then
 			valid_result: Result /= Void
-		end
-
-	initialize_sd_toolbar_item (a_item: EB_SD_COMMAND_TOOL_BAR_DUAL_POPUP_BUTTON; display_text: BOOLEAN)
-			-- <Precursor>
-		do
-			Precursor (a_item, display_text)
-			a_item.set_menu_function (agent drop_down_menu)
 		end
 
 feature -- Status report
