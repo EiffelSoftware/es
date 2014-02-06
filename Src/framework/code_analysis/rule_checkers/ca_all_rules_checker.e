@@ -148,391 +148,391 @@ feature {NONE} -- Initialization
 
 feature {CA_STANDARD_RULE} -- Adding agents
 
-	add_access_id_pre_action (a_action: PROCEDURE[ANY, TUPLE[ACCESS_ID_AS]])
+	add_access_id_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [ACCESS_ID_AS]])
 		do
 			access_id_pre_actions.extend (a_action)
 		end
 
-	add_access_id_post_action (a_action: PROCEDURE[ANY, TUPLE[ACCESS_ID_AS]])
+	add_access_id_post_action (a_action: attached PROCEDURE [ANY, TUPLE [ACCESS_ID_AS]])
 		do
 			access_id_post_actions.extend (a_action)
 		end
 
-	add_assign_pre_action (a_action: PROCEDURE[ANY, TUPLE[ASSIGN_AS]])
+	add_assign_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [ASSIGN_AS]])
 		do
 			assign_pre_actions.extend (a_action)
 		end
 
-	add_assign_post_action (a_action: PROCEDURE[ANY, TUPLE[ASSIGN_AS]])
+	add_assign_post_action (a_action: attached PROCEDURE [ANY, TUPLE [ASSIGN_AS]])
 		do
 			assign_post_actions.extend (a_action)
 		end
 
-	add_assigner_call_pre_action (a_action: PROCEDURE [ANY, TUPLE [ASSIGNER_CALL_AS]])
+	add_assigner_call_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [ASSIGNER_CALL_AS]])
 		do
 			assigner_call_pre_actions.extend (a_action)
 		end
 
-	add_assigner_call_post_action (a_action: PROCEDURE [ANY, TUPLE [ASSIGNER_CALL_AS]])
+	add_assigner_call_post_action (a_action: attached PROCEDURE [ANY, TUPLE [ASSIGNER_CALL_AS]])
 		do
 			assigner_call_post_actions.extend (a_action)
 		end
 
-	add_bang_creation_pre_action (a_action: PROCEDURE [ANY, TUPLE [BANG_CREATION_AS]])
+	add_bang_creation_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [BANG_CREATION_AS]])
 		do
 			bang_creation_pre_actions.extend (a_action)
 		end
 
-	add_bang_creation_post_action (a_action: PROCEDURE [ANY, TUPLE [BANG_CREATION_AS]])
+	add_bang_creation_post_action (a_action: attached PROCEDURE [ANY, TUPLE [BANG_CREATION_AS]])
 		do
 			bang_creation_post_actions.extend (a_action)
 		end
 
-	add_bin_eq_pre_action (a_action: PROCEDURE [ANY, TUPLE [BIN_EQ_AS]])
+	add_bin_eq_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [BIN_EQ_AS]])
 		do
 			bin_eq_pre_actions.extend (a_action)
 		end
 
-	add_bin_eq_post_action (a_action: PROCEDURE [ANY, TUPLE [BIN_EQ_AS]])
+	add_bin_eq_post_action (a_action: attached PROCEDURE [ANY, TUPLE [BIN_EQ_AS]])
 		do
 			bin_eq_post_actions.extend (a_action)
 		end
 
-	add_bin_ge_pre_action (a_action: PROCEDURE [ANY, TUPLE [BIN_GE_AS]])
+	add_bin_ge_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [BIN_GE_AS]])
 		do
 			bin_ge_pre_actions.extend (a_action)
 		end
 
-	add_bin_ge_post_action (a_action: PROCEDURE [ANY, TUPLE [BIN_GE_AS]])
+	add_bin_ge_post_action (a_action: attached PROCEDURE [ANY, TUPLE [BIN_GE_AS]])
 		do
 			bin_ge_post_actions.extend (a_action)
 		end
 
-	add_bin_gt_pre_action (a_action: PROCEDURE [ANY, TUPLE [BIN_GT_AS]])
+	add_bin_gt_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [BIN_GT_AS]])
 		do
 			bin_gt_pre_actions.extend (a_action)
 		end
 
-	add_bin_gt_post_action (a_action: PROCEDURE [ANY, TUPLE [BIN_GT_AS]])
+	add_bin_gt_post_action (a_action: attached PROCEDURE [ANY, TUPLE [BIN_GT_AS]])
 		do
 			bin_gt_post_actions.extend (a_action)
 		end
 
-	add_bin_le_pre_action (a_action: PROCEDURE [ANY, TUPLE [BIN_LE_AS]])
+	add_bin_le_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [BIN_LE_AS]])
 		do
 			bin_le_pre_actions.extend (a_action)
 		end
 
-	add_bin_le_post_action (a_action: PROCEDURE [ANY, TUPLE [BIN_LE_AS]])
+	add_bin_le_post_action (a_action: attached PROCEDURE [ANY, TUPLE [BIN_LE_AS]])
 		do
 			bin_le_post_actions.extend (a_action)
 		end
 
-	add_bin_lt_pre_action (a_action: PROCEDURE [ANY, TUPLE [BIN_LT_AS]])
+	add_bin_lt_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [BIN_LT_AS]])
 		do
 			bin_lt_pre_actions.extend (a_action)
 		end
 
-	add_bin_lt_post_action (a_action: PROCEDURE [ANY, TUPLE [BIN_LT_AS]])
+	add_bin_lt_post_action (a_action: attached PROCEDURE [ANY, TUPLE [BIN_LT_AS]])
 		do
 			bin_lt_post_actions.extend (a_action)
 		end
 
-	add_body_pre_action (a_action: PROCEDURE[ANY, TUPLE[BODY_AS]])
+	add_body_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [BODY_AS]])
 		do
 			body_pre_actions.extend (a_action)
 		end
 
-	add_body_post_action (a_action: PROCEDURE[ANY, TUPLE[BODY_AS]])
+	add_body_post_action (a_action: attached PROCEDURE [ANY, TUPLE [BODY_AS]])
 		do
 			body_post_actions.extend (a_action)
 		end
 
-	add_case_pre_action (a_action: PROCEDURE [ANY, TUPLE [CASE_AS]])
+	add_case_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [CASE_AS]])
 		do
 			case_pre_actions.extend (a_action)
 		end
 
-	add_case_post_action (a_action: PROCEDURE [ANY, TUPLE [CASE_AS]])
+	add_case_post_action (a_action: attached PROCEDURE [ANY, TUPLE [CASE_AS]])
 		do
 			case_post_actions.extend (a_action)
 		end
 
-	add_class_pre_action (a_action: PROCEDURE[ANY, TUPLE[CLASS_AS]])
+	add_class_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [CLASS_AS]])
 		do
 			class_pre_actions.extend (a_action)
 		end
 
-	add_class_post_action (a_action: PROCEDURE[ANY, TUPLE[CLASS_AS]])
+	add_class_post_action (a_action: attached PROCEDURE [ANY, TUPLE [CLASS_AS]])
 		do
 			class_post_actions.extend (a_action)
 		end
 
-	add_converted_expr_pre_action (a_action: PROCEDURE [ANY, TUPLE [CONVERTED_EXPR_AS]])
+	add_converted_expr_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [CONVERTED_EXPR_AS]])
 		do
 			converted_expr_pre_actions.extend (a_action)
 		end
 
-	add_converted_expr_post_action (a_action: PROCEDURE [ANY, TUPLE [CONVERTED_EXPR_AS]])
+	add_converted_expr_post_action (a_action: attached PROCEDURE [ANY, TUPLE [CONVERTED_EXPR_AS]])
 		do
 			converted_expr_post_actions.extend (a_action)
 		end
 
-	add_create_pre_action (a_action: PROCEDURE [ANY, TUPLE [CREATE_AS]])
+	add_create_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [CREATE_AS]])
 		do
 			create_pre_actions.extend (a_action)
 		end
 
-	add_create_post_action (a_action: PROCEDURE [ANY, TUPLE [CREATE_AS]])
+	add_create_post_action (a_action: attached PROCEDURE [ANY, TUPLE [CREATE_AS]])
 		do
 			create_post_actions.extend (a_action)
 		end
 
-	add_create_creation_pre_action (a_action: PROCEDURE [ANY, TUPLE [CREATE_CREATION_AS]])
+	add_create_creation_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [CREATE_CREATION_AS]])
 		do
 			create_creation_pre_actions.extend (a_action)
 		end
 
-	add_create_creation_post_action (a_action: PROCEDURE [ANY, TUPLE [CREATE_CREATION_AS]])
+	add_create_creation_post_action (a_action: attached PROCEDURE [ANY, TUPLE [CREATE_CREATION_AS]])
 		do
 			create_creation_post_actions.extend (a_action)
 		end
 
-	add_creation_pre_action (a_action: PROCEDURE [ANY, TUPLE [CREATION_AS]])
+	add_creation_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [CREATION_AS]])
 		do
 			creation_pre_actions.extend (a_action)
 		end
 
-	add_creation_post_action (a_action: PROCEDURE [ANY, TUPLE [CREATION_AS]])
+	add_creation_post_action (a_action: attached PROCEDURE [ANY, TUPLE [CREATION_AS]])
 		do
 			creation_post_actions.extend (a_action)
 		end
 
-	add_do_pre_action (a_action: PROCEDURE[ANY, TUPLE[DO_AS]])
+	add_do_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [DO_AS]])
 		do
 			do_pre_actions.extend (a_action)
 		end
 
-	add_do_post_action (a_action: PROCEDURE[ANY, TUPLE[DO_AS]])
+	add_do_post_action (a_action: attached PROCEDURE [ANY, TUPLE [DO_AS]])
 		do
 			do_post_actions.extend (a_action)
 		end
 
-	add_eiffel_list_pre_action (a_action: PROCEDURE [ANY, TUPLE [EIFFEL_LIST[AST_EIFFEL]]])
+	add_eiffel_list_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [EIFFEL_LIST [AST_EIFFEL]]])
 		do
 			eiffel_list_pre_actions.extend (a_action)
 		end
 
-	add_eiffel_list_post_action (a_action: PROCEDURE [ANY, TUPLE [EIFFEL_LIST[AST_EIFFEL]]])
+	add_eiffel_list_post_action (a_action: attached PROCEDURE [ANY, TUPLE [EIFFEL_LIST [AST_EIFFEL]]])
 		do
 			eiffel_list_post_actions.extend (a_action)
 		end
 
-	add_elseif_pre_action (a_action: PROCEDURE [ANY, TUPLE [ELSIF_AS]])
+	add_elseif_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [ELSIF_AS]])
 		do
 			elseif_pre_actions.extend (a_action)
 		end
 
-	add_elseif_post_action (a_action: PROCEDURE [ANY, TUPLE [ELSIF_AS]])
+	add_elseif_post_action (a_action: attached PROCEDURE [ANY, TUPLE [ELSIF_AS]])
 		do
 			elseif_post_actions.extend (a_action)
 		end
 
-	add_feature_pre_action (a_action: PROCEDURE [ANY, TUPLE [FEATURE_AS]])
+	add_feature_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [FEATURE_AS]])
 		do
 			feature_pre_actions.extend (a_action)
 		end
 
-	add_feature_post_action (a_action: PROCEDURE [ANY, TUPLE [FEATURE_AS]])
+	add_feature_post_action (a_action: attached PROCEDURE [ANY, TUPLE [FEATURE_AS]])
 		do
 			feature_post_actions.extend (a_action)
 		end
 
-	add_feature_clause_pre_action (a_action: PROCEDURE [ANY, TUPLE [FEATURE_CLAUSE_AS]])
+	add_feature_clause_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [FEATURE_CLAUSE_AS]])
 		do
 			feature_clause_pre_actions.extend (a_action)
 		end
 
-	add_feature_clause_post_action (a_action: PROCEDURE [ANY, TUPLE [FEATURE_CLAUSE_AS]])
+	add_feature_clause_post_action (a_action: attached PROCEDURE [ANY, TUPLE [FEATURE_CLAUSE_AS]])
 		do
 			feature_clause_post_actions.extend (a_action)
 		end
 
-	add_id_pre_action (a_action: PROCEDURE[ANY, TUPLE[ID_AS]])
+	add_id_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [ID_AS]])
 		do
 			id_pre_actions.extend (a_action)
 		end
 
-	add_id_post_action (a_action: PROCEDURE[ANY, TUPLE[ID_AS]])
+	add_id_post_action (a_action: attached PROCEDURE [ANY, TUPLE [ID_AS]])
 		do
 			id_post_actions.extend (a_action)
 		end
 
-	add_if_pre_action (a_action: PROCEDURE[ANY, TUPLE[IF_AS]])
+	add_if_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [IF_AS]])
 		do
 			if_pre_actions.extend (a_action)
 		end
 
-	add_if_post_action (a_action: PROCEDURE[ANY, TUPLE[IF_AS]])
+	add_if_post_action (a_action: attached PROCEDURE [ANY, TUPLE [IF_AS]])
 		do
 			if_post_actions.extend (a_action)
 		end
 
-	add_inspect_pre_action (a_action: PROCEDURE[ANY, TUPLE[INSPECT_AS]])
+	add_inspect_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [INSPECT_AS]])
 		do
 			inspect_pre_actions.extend (a_action)
 		end
 
-	add_inspect_post_action (a_action: PROCEDURE[ANY, TUPLE[INSPECT_AS]])
+	add_inspect_post_action (a_action: attached PROCEDURE [ANY, TUPLE [INSPECT_AS]])
 		do
 			inspect_post_actions.extend (a_action)
 		end
 
-	add_instruction_call_pre_action (a_action: PROCEDURE [ANY, TUPLE [INSTR_CALL_AS] ])
+	add_instruction_call_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [INSTR_CALL_AS] ])
 		do
 			instruction_call_pre_actions.extend (a_action)
 		end
 
-	add_instruction_call_post_action (a_action: PROCEDURE [ANY, TUPLE [INSTR_CALL_AS] ])
+	add_instruction_call_post_action (a_action: attached PROCEDURE [ANY, TUPLE [INSTR_CALL_AS] ])
 		do
 			instruction_call_post_actions.extend (a_action)
 		end
 
-	add_loop_pre_action (a_action: PROCEDURE [ANY, TUPLE [LOOP_AS]])
+	add_loop_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [LOOP_AS]])
 		do
 			loop_pre_actions.extend (a_action)
 		end
 
-	add_loop_post_action (a_action: PROCEDURE [ANY, TUPLE [LOOP_AS]])
+	add_loop_post_action (a_action: attached PROCEDURE [ANY, TUPLE [LOOP_AS]])
 		do
 			loop_post_actions.extend (a_action)
 		end
 
-	add_nested_pre_action (a_action: PROCEDURE [ANY, TUPLE [NESTED_AS]])
+	add_nested_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [NESTED_AS]])
 		do
 			nested_pre_actions.extend (a_action)
 		end
 
-	add_nested_post_action (a_action: PROCEDURE [ANY, TUPLE [NESTED_AS]])
+	add_nested_post_action (a_action: attached PROCEDURE [ANY, TUPLE [NESTED_AS]])
 		do
 			nested_post_actions.extend (a_action)
 		end
 
-	add_object_test_pre_action (a_action: PROCEDURE [ANY, TUPLE [OBJECT_TEST_AS]])
+	add_object_test_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [OBJECT_TEST_AS]])
 		do
 			object_test_pre_actions.extend (a_action)
 		end
 
-	add_object_test_post_action (a_action: PROCEDURE [ANY, TUPLE [OBJECT_TEST_AS]])
+	add_object_test_post_action (a_action: attached PROCEDURE [ANY, TUPLE [OBJECT_TEST_AS]])
 		do
 			object_test_post_actions.extend (a_action)
 		end
 
-	add_once_pre_action (a_action: PROCEDURE [ANY, TUPLE [ONCE_AS]])
+	add_once_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [ONCE_AS]])
 		do
 			once_pre_actions.extend (a_action)
 		end
 
-	add_once_post_action (a_action: PROCEDURE [ANY, TUPLE [ONCE_AS]])
+	add_once_post_action (a_action: attached PROCEDURE [ANY, TUPLE [ONCE_AS]])
 		do
 			once_post_actions.extend (a_action)
 		end
 
-	add_paran_pre_action (a_action: PROCEDURE [ANY, TUPLE [PARAN_AS]])
+	add_paran_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [PARAN_AS]])
 		do
 			paran_pre_actions.extend (a_action)
 		end
 
-	add_paran_post_action (a_action: PROCEDURE [ANY, TUPLE [PARAN_AS]])
+	add_paran_post_action (a_action: attached PROCEDURE [ANY, TUPLE [PARAN_AS]])
 		do
 			paran_post_actions.extend (a_action)
 		end
 
-	add_routine_pre_action (a_action: PROCEDURE [ANY, TUPLE [ROUTINE_AS]])
+	add_routine_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [ROUTINE_AS]])
 		do
 			routine_pre_actions.extend (a_action)
 		end
 
-	add_routine_post_action (a_action: PROCEDURE [ANY, TUPLE [ROUTINE_AS]])
+	add_routine_post_action (a_action: attached PROCEDURE [ANY, TUPLE [ROUTINE_AS]])
 		do
 			routine_post_actions.extend (a_action)
 		end
 
-	add_un_not_pre_action (a_action: PROCEDURE [ANY, TUPLE [UN_NOT_AS]])
+	add_un_not_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [UN_NOT_AS]])
 		do
 			un_not_pre_actions.extend (a_action)
 		end
 
-	add_un_not_post_action (a_action: PROCEDURE [ANY, TUPLE [UN_NOT_AS]])
+	add_un_not_post_action (a_action: attached PROCEDURE [ANY, TUPLE [UN_NOT_AS]])
 		do
 			un_not_post_actions.extend (a_action)
 		end
 
 feature {NONE} -- Agent lists
 
-	access_id_pre_actions, access_id_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[ACCESS_ID_AS]]]
+	access_id_pre_actions, access_id_post_actions: ACTION_SEQUENCE [TUPLE [ACCESS_ID_AS]]
 
-	assign_pre_actions, assign_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[ASSIGN_AS]]]
+	assign_pre_actions, assign_post_actions: ACTION_SEQUENCE [TUPLE [ASSIGN_AS]]
 
-	assigner_call_pre_actions, assigner_call_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [ASSIGNER_CALL_AS]]]
+	assigner_call_pre_actions, assigner_call_post_actions: ACTION_SEQUENCE [TUPLE [ASSIGNER_CALL_AS]]
 
-	bang_creation_pre_actions, bang_creation_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [BANG_CREATION_AS]]]
+	bang_creation_pre_actions, bang_creation_post_actions: ACTION_SEQUENCE [TUPLE [BANG_CREATION_AS]]
 
-	bin_eq_pre_actions, bin_eq_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [BIN_EQ_AS]]]
+	bin_eq_pre_actions, bin_eq_post_actions: ACTION_SEQUENCE [TUPLE [BIN_EQ_AS]]
 
-	bin_ge_pre_actions, bin_ge_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [BIN_GE_AS]]]
+	bin_ge_pre_actions, bin_ge_post_actions: ACTION_SEQUENCE [TUPLE [BIN_GE_AS]]
 
-	bin_gt_pre_actions, bin_gt_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [BIN_GT_AS]]]
+	bin_gt_pre_actions, bin_gt_post_actions: ACTION_SEQUENCE [TUPLE [BIN_GT_AS]]
 
-	bin_le_pre_actions, bin_le_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [BIN_LE_AS]]]
+	bin_le_pre_actions, bin_le_post_actions: ACTION_SEQUENCE [TUPLE [BIN_LE_AS]]
 
-	bin_lt_pre_actions, bin_lt_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [BIN_LT_AS]]]
+	bin_lt_pre_actions, bin_lt_post_actions: ACTION_SEQUENCE [TUPLE [BIN_LT_AS]]
 
-	body_pre_actions, body_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[BODY_AS]]]
+	body_pre_actions, body_post_actions: ACTION_SEQUENCE [TUPLE [BODY_AS]]
 
-	case_pre_actions, case_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [CASE_AS]]]
+	case_pre_actions, case_post_actions: ACTION_SEQUENCE [TUPLE [CASE_AS]]
 
-	class_pre_actions, class_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[CLASS_AS]]]
+	class_pre_actions, class_post_actions: ACTION_SEQUENCE [TUPLE [CLASS_AS]]
 
 	converted_expr_pre_actions, converted_expr_post_actions: ACTION_SEQUENCE [TUPLE [CONVERTED_EXPR_AS]]
 
-	create_pre_actions, create_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [CREATE_AS]]]
+	create_pre_actions, create_post_actions: ACTION_SEQUENCE [TUPLE [CREATE_AS]]
 
-	create_creation_pre_actions, create_creation_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [CREATE_CREATION_AS]]]
+	create_creation_pre_actions, create_creation_post_actions: ACTION_SEQUENCE [TUPLE [CREATE_CREATION_AS]]
 
-	creation_pre_actions, creation_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [CREATION_AS]]]
+	creation_pre_actions, creation_post_actions: ACTION_SEQUENCE [TUPLE [CREATION_AS]]
 
-	do_pre_actions, do_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [DO_AS]]]
+	do_pre_actions, do_post_actions: ACTION_SEQUENCE [TUPLE [DO_AS]]
 
-	eiffel_list_pre_actions, eiffel_list_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [EIFFEL_LIST [AST_EIFFEL]]]]
+	eiffel_list_pre_actions, eiffel_list_post_actions: ACTION_SEQUENCE [TUPLE [EIFFEL_LIST [AST_EIFFEL]]]
 
-	elseif_pre_actions, elseif_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [ELSIF_AS]]]
+	elseif_pre_actions, elseif_post_actions: ACTION_SEQUENCE [TUPLE [ELSIF_AS]]
 
-	feature_pre_actions, feature_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [FEATURE_AS]]]
+	feature_pre_actions, feature_post_actions: ACTION_SEQUENCE [TUPLE [FEATURE_AS]]
 
-	feature_clause_pre_actions, feature_clause_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [FEATURE_CLAUSE_AS]]]
+	feature_clause_pre_actions, feature_clause_post_actions: ACTION_SEQUENCE [TUPLE [FEATURE_CLAUSE_AS]]
 
-	id_pre_actions, id_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [ID_AS]]]
+	id_pre_actions, id_post_actions: ACTION_SEQUENCE [TUPLE [ID_AS]]
 
-	if_pre_actions, if_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [IF_AS]]]
+	if_pre_actions, if_post_actions: ACTION_SEQUENCE [TUPLE [IF_AS]]
 
-	inspect_pre_actions, inspect_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[INSPECT_AS]]]
+	inspect_pre_actions, inspect_post_actions: ACTION_SEQUENCE [TUPLE [INSPECT_AS]]
 
-	instruction_call_pre_actions, instruction_call_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [INSTR_CALL_AS] ] ]
+	instruction_call_pre_actions, instruction_call_post_actions: ACTION_SEQUENCE [TUPLE [INSTR_CALL_AS]]
 
-	loop_pre_actions, loop_post_actions: LINKED_LIST[PROCEDURE[ANY, TUPLE[LOOP_AS]]]
+	loop_pre_actions, loop_post_actions: ACTION_SEQUENCE [TUPLE [LOOP_AS]]
 
-	nested_pre_actions, nested_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [NESTED_AS]]]
+	nested_pre_actions, nested_post_actions: ACTION_SEQUENCE [TUPLE [NESTED_AS]]
 
-	object_test_pre_actions, object_test_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [OBJECT_TEST_AS]]]
+	object_test_pre_actions, object_test_post_actions: ACTION_SEQUENCE [TUPLE [OBJECT_TEST_AS]]
 
-	once_pre_actions, once_post_actions: LINKED_LIST [PROCEDURE[ANY, TUPLE[ONCE_AS]]]
+	once_pre_actions, once_post_actions: ACTION_SEQUENCE [TUPLE [ONCE_AS]]
 
-	paran_pre_actions, paran_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [PARAN_AS]]]
+	paran_pre_actions, paran_post_actions: ACTION_SEQUENCE [TUPLE [PARAN_AS]]
 
-	routine_pre_actions, routine_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [ROUTINE_AS]]]
+	routine_pre_actions, routine_post_actions: ACTION_SEQUENCE [TUPLE [ROUTINE_AS]]
 
-	un_not_pre_actions, un_not_post_actions: LINKED_LIST [PROCEDURE [ANY, TUPLE [UN_NOT_AS]]]
+	un_not_pre_actions, un_not_post_actions: ACTION_SEQUENCE [TUPLE [UN_NOT_AS]]
 
 feature {CA_RULE_CHECKING_TASK} -- Execution Commands
 
@@ -543,9 +543,9 @@ feature {CA_RULE_CHECKING_TASK} -- Execution Commands
 		do
 			last_run_successful := False
 			l_ast := a_class_to_check.ast
-			across class_pre_actions as l_a loop l_a.item.call ([l_ast]) end
+			class_pre_actions.call ([l_ast])
 			process_class_as (l_ast)
-			across class_post_actions as l_a loop l_a.item.call ([l_ast]) end
+			class_post_actions.call ([l_ast])
 			last_run_successful := True
 		end
 
@@ -553,79 +553,79 @@ feature {NONE} -- Processing
 
 	process_access_id_as (a_id: ACCESS_ID_AS)
 		do
-			across access_id_pre_actions as l_a loop l_a.item.call ([a_id]) end
+			access_id_pre_actions.call ([a_id])
 			Precursor (a_id)
-			across access_id_post_actions as l_a loop l_a.item.call ([a_id]) end
+			access_id_post_actions.call ([a_id])
 		end
 
 	process_assign_as (a_assign: ASSIGN_AS)
 		do
-			across assign_pre_actions as l_a loop l_a.item.call ([a_assign]) end
+			assign_pre_actions.call ([a_assign])
 			Precursor (a_assign)
-			across assign_post_actions as l_a loop l_a.item.call ([a_assign]) end
+			assign_post_actions.call ([a_assign])
 		end
 
 	process_assigner_call_as (a_assigner_call: ASSIGNER_CALL_AS)
 		do
-			across assigner_call_pre_actions as l_a loop l_a.item.call ([a_assigner_call]) end
+			assigner_call_pre_actions.call ([a_assigner_call])
 			Precursor (a_assigner_call)
-			across assigner_call_post_actions as l_a loop l_a.item.call ([a_assigner_call]) end
+			assigner_call_post_actions.call ([a_assigner_call])
 		end
 
 	process_bang_creation_as (a_bang_creation: BANG_CREATION_AS)
 		do
-			across bang_creation_pre_actions as l_a loop l_a.item.call ([a_bang_creation]) end
+			bang_creation_pre_actions.call ([a_bang_creation])
 			Precursor (a_bang_creation)
-			across bang_creation_post_actions as l_a loop l_a.item.call ([a_bang_creation]) end
+			bang_creation_post_actions.call ([a_bang_creation])
 		end
 
 	process_bin_eq_as (a_bin_eq: BIN_EQ_AS)
 		do
-			across bin_eq_pre_actions as l_a loop l_a.item.call ([a_bin_eq]) end
+			bin_eq_pre_actions.call ([a_bin_eq])
 			Precursor (a_bin_eq)
-			across bin_eq_post_actions as l_a loop l_a.item.call ([a_bin_eq]) end
+			bin_eq_post_actions.call ([a_bin_eq])
 		end
 
 	process_bin_ge_as (a_bin_ge: BIN_GE_AS)
 		do
-			across bin_ge_pre_actions as l_a loop l_a.item.call ([a_bin_ge]) end
+			bin_ge_pre_actions.call ([a_bin_ge])
 			Precursor (a_bin_ge)
-			across bin_ge_pre_actions as l_a loop l_a.item.call ([a_bin_ge]) end
+			bin_ge_pre_actions.call ([a_bin_ge])
 		end
 
 	process_bin_gt_as (a_bin_gt: BIN_GT_AS)
 		do
-			across bin_gt_pre_actions as l_a loop l_a.item.call ([a_bin_gt]) end
+			bin_gt_pre_actions.call ([a_bin_gt])
 			Precursor (a_bin_gt)
-			across bin_gt_pre_actions as l_a loop l_a.item.call ([a_bin_gt]) end
+			bin_gt_pre_actions.call ([a_bin_gt])
 		end
 
 	process_bin_le_as (a_bin_le: BIN_LE_AS)
 		do
-			across bin_le_pre_actions as l_a loop l_a.item.call ([a_bin_le]) end
+			bin_le_pre_actions.call ([a_bin_le])
 			Precursor (a_bin_le)
-			across bin_le_pre_actions as l_a loop l_a.item.call ([a_bin_le]) end
+			bin_le_pre_actions.call ([a_bin_le])
 		end
 
 	process_bin_lt_as (a_bin_lt: BIN_LT_AS)
 		do
-			across bin_lt_pre_actions as l_a loop l_a.item.call ([a_bin_lt]) end
+			bin_lt_pre_actions.call ([a_bin_lt])
 			Precursor (a_bin_lt)
-			across bin_lt_pre_actions as l_a loop l_a.item.call ([a_bin_lt]) end
+			bin_lt_pre_actions.call ([a_bin_lt])
 		end
 
 	process_body_as (a_body: BODY_AS)
 		do
-			across body_pre_actions as l_a loop l_a.item.call ([a_body]) end
+			body_pre_actions.call ([a_body])
 			Precursor (a_body)
-			across body_post_actions as l_a loop l_a.item.call ([a_body]) end
+			body_post_actions.call ([a_body])
 		end
 
 	process_case_as (a_case: CASE_AS)
 		do
-			across case_pre_actions as l_a loop l_a.item.call ([a_case]) end
+			case_pre_actions.call ([a_case])
 			Precursor (a_case)
-			across case_post_actions as l_a loop l_a.item.call ([a_case]) end
+			case_post_actions.call ([a_case])
 		end
 
 	process_converted_expr_as (a_conv: CONVERTED_EXPR_AS)
@@ -637,135 +637,135 @@ feature {NONE} -- Processing
 
 	process_create_as (a_create: CREATE_AS)
 		do
-			across create_pre_actions as l_a loop l_a.item.call ([a_create]) end
+			create_pre_actions.call ([a_create])
 			Precursor (a_create)
-			across create_post_actions as l_a loop l_a.item.call ([a_create]) end
+			create_post_actions.call ([a_create])
 		end
 
 	process_create_creation_as (a_create_creation: CREATE_CREATION_AS)
 		do
-			across create_creation_pre_actions as l_a loop l_a.item.call ([a_create_creation]) end
+			create_creation_pre_actions.call ([a_create_creation])
 			Precursor (a_create_creation)
-			across create_creation_post_actions as l_a loop l_a.item.call ([a_create_creation]) end
+			create_creation_post_actions.call ([a_create_creation])
 		end
 
 	process_creation_as (a_creation: CREATION_AS)
 		do
-			across creation_pre_actions as l_a loop l_a.item.call ([a_creation]) end
+			creation_pre_actions.call ([a_creation])
 			Precursor (a_creation)
-			across creation_post_actions as l_a loop l_a.item.call ([a_creation]) end
+			creation_post_actions.call ([a_creation])
 		end
 
 	process_do_as (a_do: DO_AS)
 		do
-			across do_pre_actions as l_a loop l_a.item.call ([a_do]) end
+			do_pre_actions.call ([a_do])
 			Precursor (a_do)
-			across do_post_actions as l_a loop l_a.item.call ([a_do]) end
+			do_post_actions.call ([a_do])
 		end
 
 	process_eiffel_list (a_list: EIFFEL_LIST [AST_EIFFEL])
 		do
-			across eiffel_list_pre_actions as l_a loop l_a.item.call ([a_list]) end
+			eiffel_list_pre_actions.call ([a_list])
 			Precursor (a_list)
-			across eiffel_list_post_actions as l_a loop l_a.item.call ([a_list]) end
+			eiffel_list_post_actions.call ([a_list])
 		end
 
 	process_elseif_as (a_elseif: ELSIF_AS)
 		do
-			across elseif_pre_actions as l_a loop l_a.item.call ([a_elseif]) end
+			elseif_pre_actions.call ([a_elseif])
 			Precursor (a_elseif)
-			across elseif_post_actions as l_a loop l_a.item.call ([a_elseif]) end
+			elseif_post_actions.call ([a_elseif])
 		end
 
 	process_feature_as (a_feature: FEATURE_AS)
 		do
-			across feature_pre_actions as l_a loop l_a.item.call ([a_feature]) end
+			feature_pre_actions.call ([a_feature])
 			Precursor (a_feature)
-			across feature_post_actions as l_a loop l_a.item.call ([a_feature]) end
+			feature_post_actions.call ([a_feature])
 		end
 
 	process_feature_clause_as (a_clause: FEATURE_CLAUSE_AS)
 		do
-			across feature_clause_pre_actions as l_a loop l_a.item.call ([a_clause]) end
+			feature_clause_pre_actions.call ([a_clause])
 			Precursor (a_clause)
-			across feature_clause_post_actions as l_a loop l_a.item.call ([a_clause]) end
+			feature_clause_post_actions.call ([a_clause])
 		end
 
 	process_id_as (a_id: ID_AS)
 		do
-			across id_pre_actions as l_a loop l_a.item.call ([a_id]) end
+			id_pre_actions.call ([a_id])
 			Precursor (a_id)
-			across id_post_actions as l_a loop l_a.item.call ([a_id]) end
+			id_post_actions.call ([a_id])
 		end
 
 	process_if_as (a_if: IF_AS)
 		do
-			across if_pre_actions as l_a loop l_a.item.call ([a_if]) end
+			if_pre_actions.call ([a_if])
 			Precursor (a_if)
-			across if_post_actions as l_a loop l_a.item.call ([a_if]) end
+			if_post_actions.call ([a_if])
 		end
 
 	process_inspect_as (a_inspect: INSPECT_AS)
 		do
-			across inspect_pre_actions as l_a loop l_a.item.call ([a_inspect]) end
+			inspect_pre_actions.call ([a_inspect])
 			Precursor (a_inspect)
-			across inspect_post_actions as l_a loop l_a.item.call ([a_inspect]) end
+			inspect_post_actions.call ([a_inspect])
 		end
 
 	process_instr_call_as (a_call: INSTR_CALL_AS)
 		do
-			across instruction_call_pre_actions as l_a loop l_a.item.call ([a_call]) end
+			instruction_call_pre_actions.call ([a_call])
 			Precursor (a_call)
-			across instruction_call_post_actions as l_a loop l_a.item.call ([a_call]) end
+			instruction_call_post_actions.call ([a_call])
 		end
 
 	process_loop_as (a_loop: LOOP_AS)
 		do
-			across loop_pre_actions as l_a loop l_a.item.call ([a_loop]) end
+			loop_pre_actions.call ([a_loop])
 			Precursor (a_loop)
-			across loop_post_actions as l_a loop l_a.item.call ([a_loop]) end
+			loop_post_actions.call ([a_loop])
 		end
 
 	process_nested_as (a_nested: NESTED_AS)
 		do
-			across nested_pre_actions as l_a loop l_a.item.call ([a_nested]) end
+			nested_pre_actions.call ([a_nested])
 			Precursor (a_nested)
-			across nested_post_actions as l_a loop l_a.item.call ([a_nested]) end
+			nested_post_actions.call ([a_nested])
 		end
 
 	process_object_test_as (a_ot: OBJECT_TEST_AS)
 		do
-			across object_test_pre_actions as l_a loop l_a.item.call ([a_ot]) end
+			object_test_pre_actions.call ([a_ot])
 			Precursor (a_ot)
-			across object_test_post_actions as l_a loop l_a.item.call ([a_ot]) end
+			object_test_post_actions.call ([a_ot])
 		end
 
 	process_once_as (a_once: ONCE_AS)
 		do
-			across once_pre_actions as l_a loop l_a.item.call ([a_once]) end
+			once_pre_actions.call ([a_once])
 			Precursor (a_once)
-			across once_post_actions as l_a loop l_a.item.call ([a_once]) end
+			once_post_actions.call ([a_once])
 		end
 
 	process_paran_as (a_paran: PARAN_AS)
 		do
-			across paran_pre_actions as l_a loop l_a.item.call ([a_paran]) end
+			paran_pre_actions.call ([a_paran])
 			Precursor (a_paran)
-			across paran_post_actions as l_a loop l_a.item.call ([a_paran]) end
+			paran_post_actions.call ([a_paran])
 		end
 
 	process_routine_as (a_routine: ROUTINE_AS)
 		do
-			across routine_pre_actions as l_a loop l_a.item.call ([a_routine]) end
+			routine_pre_actions.call ([a_routine])
 			Precursor (a_routine)
-			across routine_post_actions as l_a loop l_a.item.call ([a_routine]) end
+			routine_post_actions.call ([a_routine])
 		end
 
 	process_un_not_as (a_un_not: UN_NOT_AS)
 		do
-			across un_not_pre_actions as l_a loop l_a.item.call ([a_un_not]) end
+			un_not_pre_actions.call ([a_un_not])
 			Precursor (a_un_not)
-			across un_not_post_actions as l_a loop l_a.item.call ([a_un_not]) end
+			un_not_post_actions.call ([a_un_not])
 		end
 
 feature -- Results
