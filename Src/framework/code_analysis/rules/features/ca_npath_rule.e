@@ -51,10 +51,7 @@ feature {NONE} -- Activation
 			-- Adds the AST visitor agents to `a_checker'.
 		do
 			a_checker.add_feature_pre_action (agent process_feature)
-			a_checker.add_do_pre_action (agent pre_process_do)
-			a_checker.add_do_post_action (agent post_process_do)
-			a_checker.add_once_pre_action (agent pre_process_once)
-			a_checker.add_once_post_action (agent post_process_once)
+			a_checker.add_feature_post_action (agent evaluate_feature)
 			a_checker.add_if_pre_action (agent pre_process_if)
 			a_checker.add_if_post_action (agent post_process_if)
 			a_checker.add_loop_pre_action (agent pre_process_loop)
@@ -118,28 +115,22 @@ feature {NONE} -- Rule Checking
 	process_feature (a_feature_as: FEATURE_AS)
 			-- Sets the currently processed feature to `a_feature_as'.
 		do
-			current_feature := a_feature_as
+			if a_feature_as.body /= Void and then a_feature_as.body.is_routine then
+					-- Only look at routines.
+				current_feature := a_feature_as
+				prepare_routine
+			else
+				current_feature := Void
+			end
 		end
 
-	pre_process_do (a_do: DO_AS)
-			-- Makes data structure preparations for `a_do'.
+	evaluate_feature (a_feature_as: FEATURE_AS)
 		do
-			prepare_routine
-		end
-	post_process_do (a_do: DO_AS)
-			-- Evaluates routine `a_do'.
-		do
-			evaluate_routine
-		end
-	pre_process_once (a_once: ONCE_AS)
-			-- Makes data structure preparations for `a_once'.
-		do
-			prepare_routine
-		end
-	post_process_once (a_once: ONCE_AS)
-			-- Evaluates routine `a_once'.
-		do
-			evaluate_routine
+			if current_feature /= Void then
+					-- The feature has been prepared in `process_feature' and
+					-- will therefore be evaluated now.
+				evaluate_routine
+			end
 		end
 
 	prepare_routine
