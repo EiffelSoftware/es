@@ -23,8 +23,6 @@ feature {NONE} -- Initialization
 			-- Initialization.
 		do
 			make_with_defaults
-			create {CA_WARNING} severity
-			create violations.make
 		end
 
 feature {NONE} -- Activation

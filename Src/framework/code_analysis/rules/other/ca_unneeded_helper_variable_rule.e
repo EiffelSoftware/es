@@ -33,7 +33,6 @@ feature {NONE} -- Initialization
 			make_with_defaults
 			default_severity_score := 40
 			create {CA_SUGGESTION} severity
-			create violations.make
 			initialize_preferences (a_pref_manager)
 
 			create locals_usage.make (0)

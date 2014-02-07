@@ -25,7 +25,6 @@ feature {NONE} -- Initialization
 		do
 			make_with_defaults
 			create {CA_SUGGESTION} severity
-			create violations.make
 		end
 
 feature {NONE} -- Activation

@@ -27,8 +27,6 @@ feature {NONE} -- Initialization
 			is_enabled_by_default := False
 			checks_library_classes := False
 			default_severity_score := 40
-			create {CA_WARNING} severity
-			create violations.make
 		end
 
 feature {NONE} -- Activation

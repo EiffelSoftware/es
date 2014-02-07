@@ -27,7 +27,6 @@ feature {NONE} -- Initialization
 		do
 			make_with_defaults
 			create {CA_SUGGESTION} severity
-			create violations.make
 			initialize_options (a_pref_manager)
 		end
 

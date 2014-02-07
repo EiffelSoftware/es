@@ -27,7 +27,6 @@ feature {NONE} -- Initialization
 			make_with_defaults
 			default_severity_score := 40
 			create {CA_SUGGESTION} severity
-			create violations.make
 		end
 
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)

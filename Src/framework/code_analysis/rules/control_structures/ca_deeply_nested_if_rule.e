@@ -26,8 +26,6 @@ feature {NONE} -- Initialization
 		do
 			make_with_defaults
 			default_severity_score := 60
-			create {CA_WARNING} severity
-			create violations.make
 			initialize_preferences (a_pref_manager)
 		end
 

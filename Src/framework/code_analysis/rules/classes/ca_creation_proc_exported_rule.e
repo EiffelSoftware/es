@@ -27,8 +27,6 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		do
 			make_with_defaults
-			create {CA_WARNING} severity
-			create violations.make
 		end
 
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)

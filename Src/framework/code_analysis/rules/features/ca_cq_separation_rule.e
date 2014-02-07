@@ -34,8 +34,6 @@ feature {NONE} -- Initialization
 		do
 			make_with_defaults
 			default_severity_score := 60
-			create {CA_WARNING} severity
-			create violations.make
 		end
 
 feature {NONE} -- Activation

@@ -28,8 +28,6 @@ feature {NONE} -- Initialization
 		do
 			make_with_defaults
 			default_severity_score := 60
-			create {CA_WARNING} severity
-			create violations.make
 			create {LINKED_STACK[INTEGER]} npath_stack.make
 			initialize_options (a_pref_manager)
 		end

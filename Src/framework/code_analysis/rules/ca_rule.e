@@ -23,6 +23,8 @@ feature {NONE} -- Initialization
 			checks_library_classes := True
 			checks_nonlibrary_classes := True
 			default_severity_score := 50
+			create {CA_WARNING} severity
+			create violations.make
 		end
 
 feature -- Basic properties, usually fix

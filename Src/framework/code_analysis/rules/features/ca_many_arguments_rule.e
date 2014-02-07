@@ -36,8 +36,6 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		do
 			make_with_defaults
-			create {CA_WARNING} severity
-			create violations.make
 			initialize_options (a_pref_manager)
 		end
 

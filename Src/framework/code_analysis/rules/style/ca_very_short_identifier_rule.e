@@ -27,7 +27,6 @@ feature {NONE} -- Initialization
 			is_enabled_by_default := False
 			default_severity_score := 40
 			create {CA_SUGGESTION} severity
-			create violations.make
 			initialize_options (a_pref_manager)
 		end
 
