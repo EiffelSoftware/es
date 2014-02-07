@@ -97,7 +97,10 @@ feature {NONE} -- AST Visits
 				end
 				if l_access /= Void and then attached {CLASS_TYPE_AS} a_ot.type as l_type then
 					l_static_variable_type := node_type (l_access, current_feature_i)
-					if l_type.class_name.name_8.is_equal (l_static_variable_type.name) then
+					if
+						l_static_variable_type /= Void and then
+						l_type.class_name.name_8.is_equal (l_static_variable_type.name)
+					then
 						create l_violation.make_with_rule (Current)
 						l_violation.set_location (a_ot.start_location)
 						l_violation.long_description_info.extend (l_access.access_name_32)
