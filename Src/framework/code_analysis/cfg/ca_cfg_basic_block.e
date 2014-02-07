@@ -9,6 +9,7 @@ deferred class
 
 inherit
 	HASHABLE
+		redefine is_equal end
 
 feature {NONE} -- Initialization
 
@@ -62,6 +63,16 @@ feature -- Properties
 	hash_code: INTEGER
 		do
 			Result := label.abs
+		end
+
+	is_equal (other: like Current): BOOLEAN
+		do
+				-- Two blocks from different graphs should not
+				-- be compared anyway. Since the associated control
+				-- flow graph is not stored in the node, it is not possible
+				-- to distingiush two `CA_CFG_BASIC_BLOCK' objects with the
+				-- same label but from different graphs.
+			Result := label = other.label
 		end
 
 end
