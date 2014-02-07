@@ -330,12 +330,12 @@ feature -- Model helpers
 		local
 			l_feature, l_new_version: FEATURE_I
 		do
-			l_new_version := a_new_class.feature_of_body_index (a_old_model.body_index)
+			l_new_version := a_new_class.feature_of_rout_id_set (a_old_model.rout_id_set)
 			create Result.make (3)
 			across model_queries (a_new_class) as m loop
 				l_feature := a_new_class.feature_named (m.item)
 				if attached l_feature and then
-					(is_same_feature (l_feature, a_old_model) or feature_note_values (l_feature, "replaces").has (l_new_version.feature_name)) then
+					(is_same_feature (l_feature, l_new_version) or feature_note_values (l_feature, "replaces").has (l_new_version.feature_name)) then
 					Result.extend (l_feature)
 				end
 			end
