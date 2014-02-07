@@ -18,7 +18,7 @@ feature -- Basic commands
 		require
 			a_added_classes_not_void: a_added_classes /= Void
 		local
-			l_vis: EQUALITY_TUPLE [TUPLE [class_renamed: STRING_32; features: STRING_TABLE [STRING_32]]]
+			l_vis: EQUALITY_TUPLE [TUPLE [class_renamed: STRING_32; features: detachable STRING_TABLE [STRING_32]]]
 			l_class: detachable CONF_CLASS
 			l_error: BOOLEAN
 			l_map: like mapping
@@ -44,9 +44,9 @@ feature -- Basic commands
 					else
 						l_vis := l_visible.item_for_iteration.item
 						l_class.add_visible (l_vis)
-						if l_class.is_error then
+						if attached l_class.last_error as l_class_error then
 							l_error := True
-							set_error (l_class.last_error)
+							set_error (l_class_error)
 						end
 						if not l_class.is_compiled and l_class.is_always_compile then
 							a_added_classes.force (l_class)
@@ -64,7 +64,7 @@ feature -- Status
 
 feature {CONF_ACCESS} -- Access, stored in configuration file
 
-	visible: detachable STRING_TABLE [EQUALITY_TUPLE [TUPLE [class_renamed: STRING_32; features: STRING_TABLE [STRING_32]]]]
+	visible: detachable STRING_TABLE [EQUALITY_TUPLE [TUPLE [class_renamed: STRING_32; features: detachable STRING_TABLE [STRING_32]]]]
 			-- Table of table of features of classes that are visible.
 			-- Mapped to their rename (if any).
 			-- CLASS_NAME => [CLASS_RENAMED, feature_name => feature_renamed]
@@ -89,9 +89,10 @@ feature {CONF_ACCESS} -- Update, stored to configuration file
 			a_feature_rename_ok: a_feature_rename /= Void implies not a_feature_rename.is_empty
 			a_feature_rename_implies_feature: a_feature_rename /= Void implies a_feature /= Void
 		local
-			l_v_cl: STRING_TABLE [STRING_32]
-			l_tpl: detachable EQUALITY_TUPLE [TUPLE [class_renamed: STRING_32; features: STRING_TABLE [STRING_32]]]
-			l_visible_name, l_feature_name,
+			l_v_cl: detachable STRING_TABLE [STRING_32]
+			l_tpl: detachable EQUALITY_TUPLE [TUPLE [class_renamed: STRING_32; features: detachable STRING_TABLE [STRING_32]]]
+			l_visible_name: STRING_32
+			l_feature_name,
 			l_class, l_feature: detachable STRING_32
 			l_visible: like visible
 		do
@@ -109,10 +110,9 @@ feature {CONF_ACCESS} -- Update, stored to configuration file
 			end
 
 			l_tpl := l_visible.item (l_class)
-			if l_tpl = Void then
-				create l_tpl
+			if attached l_tpl then
+				l_v_cl := l_tpl.item.features
 			end
-			l_tpl.item.class_renamed := l_visible_name
 
 			if a_feature /= Void then
 				l_feature := a_feature.as_lower
@@ -122,12 +122,16 @@ feature {CONF_ACCESS} -- Update, stored to configuration file
 					l_feature_name := l_feature
 				end
 
-				l_v_cl := l_tpl.item.features
 				if l_v_cl = Void then
 					create l_v_cl.make_equal (1)
-					l_tpl.item.features := l_v_cl
 				end
 				l_v_cl.force (l_feature_name, l_feature)
+			end
+			if attached l_tpl then
+				l_tpl.item.class_renamed := l_visible_name
+				l_tpl.item.features := l_v_cl
+			else
+				create l_tpl.make ([l_visible_name, l_v_cl])
 			end
 			l_visible.force (l_tpl, l_class)
 		end
@@ -146,8 +150,10 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
-	set_error (an_error: detachable CONF_ERROR)
+	set_error (an_error: CONF_ERROR)
 			-- Set `an_error'.
+		require
+			an_error_attached: an_error /= Void
 		deferred
 		end
 

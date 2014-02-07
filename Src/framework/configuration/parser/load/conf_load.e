@@ -117,7 +117,7 @@ feature {NONE} -- Implementation
 			redir: detachable ARRAYED_LIST [PATH]
 			l_previous: detachable TUPLE [file: READABLE_STRING_32; uuid: UUID]
 		do
-			create l_callback.make_with_factory (factory)
+			create l_callback.make_with_factory (a_file, factory)
 			parse_file (a_file, l_callback)
 			if l_callback.is_error then
 				is_error := True
@@ -235,7 +235,7 @@ feature {NONE} -- Implementation
 			l_err: CONF_ERROR_UUID
 			redir: detachable ARRAYED_LIST [PATH]
 		do
-			create l_callback.make
+			create l_callback.make_with_file (a_file)
 			parse_file (a_file, l_callback)
 			if l_callback.is_error then
 				is_error := True
@@ -381,16 +381,16 @@ feature {NONE} -- Implementation
 						-- In case it is an internal error (Call on Void target, or others...)
 						-- we need to properly handle this.
 					if attached a_callback.last_error as l_cb_error then
-						l_pos := l_parser.error_position
-						if (l_parser.error_occurred or a_callback.is_error) and l_pos /= Void then
-							l_cb_error.set_position (l_pos.source_name, l_pos.row, l_pos.column)
-							l_cb_error.set_xml_parse_mode
+						if attached l_parser.error_position as l_err_pos then
+							l_pos := l_err_pos
 						else
-								-- Since no error was retrieved it means that we had an internal
-								-- failure. Create an internal error instead.
-							a_callback.set_internal_error
+							l_pos := l_parser.position
 						end
+						l_cb_error.set_position (l_pos.source_name, l_pos.row, l_pos.column)
+						l_cb_error.set_xml_parse_mode
 					else
+							-- Since no error was retrieved it means that we had an internal
+							-- failure. Create an internal error instead.
 						a_callback.set_internal_error
 					end
 				else

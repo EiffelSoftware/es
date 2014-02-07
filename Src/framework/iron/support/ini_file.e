@@ -42,6 +42,17 @@ feature -- Access
 			Result := data.item (n)
 		end
 
+	adjusted_item (n: READABLE_STRING_GENERAL): detachable STRING_32
+		require
+			is_valid: is_valid
+		do
+			if attached data.item (n) as r then
+				create Result.make_from_string (r)
+				Result.left_adjust
+				Result.right_adjust
+			end
+		end
+
 	table_item (a_name: READABLE_STRING_GENERAL): detachable STRING_TABLE [READABLE_STRING_32]
 		require
 			is_valid: is_valid
@@ -99,6 +110,7 @@ feature -- Basic operation
 		local
 			f: PLAIN_TEXT_FILE
 			utf: UTF_CONVERTER
+			s8: STRING_8
 		do
 			create f.make_with_path (p)
 			if not f.exists or else f.is_access_writable then
@@ -109,7 +121,9 @@ feature -- Basic operation
 					if attached c.item as v then
 						f.put_string (utf.utf_32_string_to_utf_8_string_8 (c.key))
 						f.put_character (':')
-						f.put_string (utf.utf_32_string_to_utf_8_string_8 (v))
+						s8 := utf.utf_32_string_to_utf_8_string_8 (v)
+						s8.replace_substring_all ("%N", "%N+") -- Support for multi-line value.
+						f.put_string (s8)
 					else
 						f.put_string ("#")
 						f.put_string (utf.utf_32_string_to_utf_8_string_8 (c.key))
@@ -127,8 +141,10 @@ feature {NONE} -- Implementation
 		local
 			f: PLAIN_TEXT_FILE
 			s: STRING_8
+			prev_key: detachable STRING_32
 			i,i2: INTEGER
 			v: READABLE_STRING_8
+			v32: STRING_32
 			utf: UTF_CONVERTER
 		do
 			create f.make_with_path (p)
@@ -143,7 +159,25 @@ feature {NONE} -- Implementation
 					s.left_adjust
 					if s.is_empty then
 					elseif s[1] = '#' then
-						-- skip
+							-- skip
+					elseif s[1] = '+' then
+							-- append to previous value as a new line if any
+						if prev_key /= Void then
+							if attached data.item (prev_key) as l_prev_value then
+								if attached {STRING_32} l_prev_value as s32 then
+									v32 := s32
+								else
+									create v32.make_from_string (l_prev_value)
+								end
+								v32.append_character ('%N')
+								if s.count > 1 then
+									v32.append (utf.utf_8_string_8_to_string_32 (s.tail (s.count - 1))) -- remove first '+' character
+								end
+								data.force (v32, prev_key)
+							end
+						else
+							is_valid := False
+						end
 					else
 						i := s.index_of (':', 1)
 						i2 := s.index_of ('=', 1)
@@ -153,7 +187,8 @@ feature {NONE} -- Implementation
 						if i > 0 then
 							v := s.tail (s.count - i)
 							s := s.head (i - 1)
-							data.force (utf.string_32_to_utf_8_string_8 (v), utf.string_32_to_utf_8_string_8 (s))
+							prev_key := utf.utf_8_string_8_to_string_32 (s)
+							data.force (utf.utf_8_string_8_to_string_32 (v), prev_key)
 						else
 							is_valid := False
 						end
@@ -168,7 +203,7 @@ feature {NONE} -- Implementation
 	data: STRING_TABLE [detachable READABLE_STRING_32]
 
 ;note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

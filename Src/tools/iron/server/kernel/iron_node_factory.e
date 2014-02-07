@@ -12,6 +12,8 @@ class
 inherit
 	SHARED_EXECUTION_ENVIRONMENT
 
+	REFACTORING_HELPER
+
 feature -- Access
 
 	iron_node: IRON_NODE
@@ -23,11 +25,11 @@ feature -- Access
 			lay: IRON_NODE_LAYOUT
 		do
 			if attached execution_environment.item ({IRON_NODE_CONSTANTS}.IRON_REPO_variable_name) as s then
-
 				create lay.make_with_path (create {PATH}.make_from_string (s))
 			else
 				create lay.make_default
 			end
+
 			if {PLATFORM}.is_windows then
 				create ext_mailer.make (lay.binaries_path.extended ("sendmail.bat").name, Void)
 				mailer := ext_mailer
@@ -36,18 +38,25 @@ feature -- Access
 			end
 			create {IRON_NODE_FS_DATABASE} db.make_with_layout (lay)
 			create Result.make (db, lay)
-				-- FIXME: do not hardcode email address.
-			create {IRON_NODE_MAILER_OBSERVER} obs.make_with_mailer (mailer, "jfiat@eiffel.com")
+
+				-- Mail notification
+			if attached Result.config.administrator_email as l_email then
+				create {IRON_NODE_MAILER_OBSERVER} obs.make_with_mailer (mailer, l_email)
+				Result.register_observer (obs)
+			else
+					-- No mail notification
+			end
+
+				-- Logs
+			create {IRON_NODE_LOGGING_OBSERVER} obs.make (agent db.save_log, Result.config.log_level) -- Log level unused for now.
 			Result.register_observer (obs)
 
-			create {IRON_NODE_LOGGING_OBSERVER} obs.make (agent db.save_log, 1)
-			Result.register_observer (obs)
-
+				-- Callbacks
 			db.register_observer (Result)
 		end
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

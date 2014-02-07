@@ -77,7 +77,11 @@ feature -- Logs
 			end
 			dt_text.append_integer (dt.day)
 
-			p := layout.logs_path.extended (dt_text)
+			p := layout.logs_path
+			if attached a_log.type as l_log_type then
+				p := p.extended (l_log_type)
+			end
+			p := p.extended (dt_text)
 
 			create d.make_with_path (p)
 			if not d.exists then
@@ -329,6 +333,7 @@ feature -- Package
 				end
 				create Result.make (a_id.to_string_8)
 				Result.set_name (inf.item ("name"))
+				Result.set_title (inf.item ("title"))
 				Result.set_description (inf.item ("description"))
 				if attached inf.item ("owner") as s_owner then
 					if attached user (s_owner) as o then
@@ -524,6 +529,7 @@ feature -- Package: change
 
 			inf.put (a_package.id, "id")
 			inf.put (a_package.name, "name")
+			inf.put (a_package.title, "title")
 			inf.put (a_package.description, "description")
 			if attached a_package.last_modified as dt then
 				create hdate.make_from_date_time (dt)
@@ -829,6 +835,7 @@ feature -- Version package
 				f.put_new_line
 				f.close
 			end
+			on_version_package_downloaded (a_package)
 		end
 
 feature -- Version Package: change
@@ -1301,7 +1308,7 @@ feature {NONE} -- Initialization
 		end
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

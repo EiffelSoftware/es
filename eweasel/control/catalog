@@ -1041,6 +1041,7 @@ test 	finalization-with-error-crash	incr426	tcf fail incrementality agents final
 test 	create-generic-remove-generic-inheritance incr427 tcf fail incrementality generic
 test	config-remove-library-indirectly	incr428 tcf fail incrementality config
 test	ececil-undefined-symbol-4	incr429	tcf fail incrementality
+test	qat-vwce-sneak			incr430	tcf fail incrementality anchored_type conditional expression
 
 
 -- Melting
@@ -1685,9 +1686,9 @@ test	equality-operator-semantics		exec353 tcf pass execution equality attached_t
 test	agent-target-expanded			exec354 tcf pass execution expanded
 test	conditional-expression-smoke-test	exec355 tcf pass execution conditional expression
 test	parenthesis-alias-smoke-test		exec356 tcf pass execution expression parenthesis_alias
-test	parenthesis-alias-tuple-convention	exec357 tcf pass execution expression parenthesis_alias
+test	parenthesis-alias-tuple-convention	exec357 tcf pass execution expression parenthesis_alias conversion tuple conformance
 test	conditional-expression-constant		exec358 tcf pass execution conditional expression conformance
-test	invalid-conversion-to-tuple		exec359 tcf pass execution parenthesis_alias
+test	invalid-conversion-to-tuple		exec359 tcf pass execution parenthesis_alias conversion tuple conformance
 
 -- Once specific
 
@@ -2057,6 +2058,7 @@ test	finalize-without-then-with-assertions		ccomp086 tcf fail c_compilation
 test	finalize-expanded-generic-c-error	ccomp087 tcf fail c_compilation
 test	finalize-inline-with-dollar-operator	ccomp088 tcf pass c_compilation
 test	real64-constant-zero			ccomp089 tcf fail c_compilation
+test	removing-type-c-compilation-error	ccomp090 tcf fail c_compilation incrementality
 
 -- Storable tests
 
@@ -2764,6 +2766,17 @@ test 	qat-with-secret-features	anchor068 tcf fail anchored_type
 test 	qat-instantiated-in-crash-4 	anchor069 tcf fail finalizing formal generic anchored_type
 test	qat-nested-qualified-type	anchor070 tcf pass anchored_type
 test	qat-generic-inheritance-2	anchor071 tcf fail anchored_type
+test	qat-dotnet-failure			anchor072 tcf fail anchored_type dotnet
+
+-- Type inference
+test	inference-single-lower-bound	inference001 tcf pass inference
+test	inference-multiple-lower-bound	inference002 tcf pass inference
+test	inference-untyped-call-target	inference003 tcf pass inference
+test	inference-direct-dependency	inference004 tcf pass inference
+test	inference-creation-instruction	inference005 tcf pass inference
+test	inference-recursive-tuple	inference006 tcf pass inference
+test	inference-formal-generic	inference007 tcf pass inference formal generic
+test	inference-implicit-typing	inference008 tcf pass inference object_test across iteration
 
 -- SCOOP
 test	scoop-access-smoke				scoop001 tcf pass scoop execution multithreaded

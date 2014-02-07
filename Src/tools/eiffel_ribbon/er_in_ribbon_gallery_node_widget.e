@@ -19,7 +19,6 @@ feature {NONE} -- Initialization
 			-- Initialization for these objects must be performed in `user_initialization'.
 		do
 				-- Create attached types defined in class here, initialize them in `user_initialization'.
-				create checker
 		end
 
 	user_initialization
@@ -27,6 +26,7 @@ feature {NONE} -- Initialization
 			-- and from within current class itself.
 		do
 				-- Initialize types defined in current class
+			common_node.node_type.set_text ("In ribbon gallery")
 		end
 
 feature -- Command
@@ -36,18 +36,7 @@ feature -- Command
 		do
 			tree_node_data := a_data
 			if attached a_data as l_data then
-				if attached a_data.command_name as l_command_name then
-					command_name.set_text (l_command_name)
-				else
-					command_name.remove_text
-				end
-
---				if attached a_data.label_title as l_label_title then
---					label.set_text (l_label_title)
---				else
---					label.remove_text
---				end
-
+				common_node.set_tree_node_data (a_data)
 				max_rows.set_text (l_data.max_rows.out)
 				max_columns.set_text (l_data.max_columns.out)
 			end
@@ -55,31 +44,8 @@ feature -- Command
 
 feature {NONE} -- Implementation
 
-	checker: ER_IDENTIFIER_UNIQUENESS_CHECKER
-			-- Identifier uniqueness checker
-
 	tree_node_data: detachable ER_TREE_NODE_IN_RIBBON_GALLERY_DATA
 			-- In-ribbon gallery tree node data
-
-	on_command_name_change
-			-- Called by `change_actions' of `command_name'.
-		do
-			checker.on_identifier_name_change (command_name, tree_node_data)
-		end
-
-	on_command_name_focus_out
-			-- <Precursor>
-		do
-			checker.on_focus_out (command_name, tree_node_data)
-		end
-
-	on_label_text_change
-			-- <Precursor>
-		do
-			if attached tree_node_data as l_data then
-				l_data.set_label_title (label.text)
-			end
-		end
 
 	on_max_rows_change
 			-- <Precursor>
@@ -101,7 +67,7 @@ feature {NONE} -- Implementation
 			end
 		end
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
