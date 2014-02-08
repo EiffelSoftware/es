@@ -192,7 +192,7 @@ feature -- Processing
 				l_feature := helper.feature_for_call_access (l_attribute, current_type)
 				check
 					valid_feature: l_feature /= Void
-					correct_feature: l_feature.feature_name_id = l_attribute.attribute_name_id
+					correct_feature: l_feature.rout_id_set.first = l_attribute.routine_id
 				end
 				translation_pool.add_referenced_feature (l_feature, current_type)
 				l_target := factory.heap_access (
