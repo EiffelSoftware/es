@@ -41,17 +41,6 @@ type Type; // Type definition for Eiffel types
 const unique ANY: Type; // Type for ANY
 const unique NONE: Type; // Type for NONE
 
-// Type for generics
-const unique G1: Type;
-const unique G2: Type;
-const unique G3: Type;
-const unique G4: Type;
-const unique G5: Type;
-const unique G6: Type;
-const unique G7: Type;
-const unique G8: Type;
-const unique G9: Type;
-
 // Type function for objects.
 function type_of(o: ref) returns (Type);
 function is_frozen(t: Type) returns (bool);

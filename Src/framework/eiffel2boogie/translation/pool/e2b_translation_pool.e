@@ -86,10 +86,9 @@ feature -- Adding independent units
 			-- Add type `a_type'.
 		require
 			not_like_type: not a_type.is_like
+			no_formals: not a_type.has_formal_generic
 		do
-			if a_type.is_formal then
-					-- Ignore formals
-			elseif a_type.is_basic then
+			if a_type.is_basic then
 					-- Ignore basic types
 			else
 				add_translation_unit (create {E2B_TU_TYPE}.make (a_type))
@@ -98,6 +97,8 @@ feature -- Adding independent units
 
 	add_type_in_context (a_type: TYPE_A; a_context_type: TYPE_A)
 			-- Add type `a_type' in context of `a_context_type'.
+		require
+			no_formals: not a_context_type.has_formal_generic
 		local
 			l_type: TYPE_A
 		do
@@ -112,6 +113,8 @@ feature -- Adding independent units
 
 	add_feature (a_feature: FEATURE_I; a_context_type: TYPE_A)
 			-- Add signature and implementation of feature `a_feature' of `a_context_type'.
+		require
+			no_formals: not a_context_type.has_formal_generic
 		do
 			-- The enclosing type has to be tranlated before the feature,
 			-- becuase some ownership defaults depend on analysing the invariant
@@ -121,24 +124,32 @@ feature -- Adding independent units
 
 	add_referenced_feature (a_feature: FEATURE_I; a_context_type: TYPE_A)
 			-- Add feature `a_feature' in of `a_context_type' as referenced feature.
+		require
+			no_formals: not a_context_type.has_formal_generic
 		do
 			internal_add_feature (a_feature, a_context_type, True)
 		end
 
 	add_write_frame_function (a_feature: FEATURE_I; a_context_type: TYPE_A)
 			-- Add write frame function of feature `a_feature' of `a_context_type'.
+		require
+			no_formals: not a_context_type.has_formal_generic
 		do
 			add_translation_unit (create {E2B_TU_WRITE_FRAME}.make (a_feature, a_context_type))
 		end
 
 	add_read_frame_function (a_feature: FEATURE_I; a_context_type: TYPE_A)
 			-- Add read frame function of feature `a_feature' of `a_context_type'.
+		require
+			no_formals: not a_context_type.has_formal_generic
 		do
 			add_translation_unit (create {E2B_TU_READ_FRAME}.make (a_feature, a_context_type))
 		end
 
 	add_function_precondition_predicate (a_feature: FEATURE_I; a_context_type: TYPE_A)
 			-- Add precondition predicate of feature `a_feature' of `a_context_type'.
+		require
+			no_formals: not a_context_type.has_formal_generic
 		local
 			l_pre_predicate: E2B_TU_FUNCTION_PRE_PREDICATE
 		do
@@ -148,12 +159,16 @@ feature -- Adding independent units
 
 	add_filtered_invariant_function (a_type: TYPE_A; a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C)
 			-- Add invariant function of type `a_type'.
+		require
+			no_formals: not a_type.has_formal_generic
 		do
 			add_translation_unit (create {E2B_TU_INVARIANT_FUNCTION}.make_filtered (a_type, a_included, a_excluded, a_ancestor))
 		end
 
 	add_postcondition_predicate (a_feature: FEATURE_I; a_context_type: TYPE_A)
 			-- Add postcondition predicate of feature `a_feature' of `a_context_type'.
+		require
+			no_formals: not a_context_type.has_formal_generic
 		local
 			l_post_predicate: E2B_TU_ROUTINE_POST_PREDICATE
 		do
@@ -161,14 +176,16 @@ feature -- Adding independent units
 			add_translation_unit (l_post_predicate)
 		end
 
-	add_class_check (a_class: CLASS_C)
-			-- Add validity check for `a_class'.
+	add_class_check (a_class_type: CL_TYPE_A)
+			-- Add validity check for `a_class_type'.
+		require
+			no_formals: not a_class_type.has_formal_generic
 		local
 			l_class: E2B_TU_CLASS
 		do
-			if not helper.boolean_class_note_value (a_class, "skip") then
-				create l_class.make (a_class)
-				add_type (a_class.actual_type)
+			if not helper.boolean_class_note_value (a_class_type.base_class, "skip") then
+				create l_class.make (a_class_type)
+				add_type (a_class_type)
 				add_translation_unit (l_class)
 			end
 		end

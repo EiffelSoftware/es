@@ -67,7 +67,7 @@ feature -- Element change
 						a_class.feature_table.forth
 					end
 				end
-				translation_pool.add_class_check (a_class)
+				translation_pool.add_class_check (constraint_type (a_class))
 			end
 		end
 
@@ -90,19 +90,8 @@ feature -- Element change
 		require
 			a_feature_attached: attached a_feature
 			a_context_type_attached: attached a_context_type
-		local
-			l_tuple: TUPLE [FEATURE_I, TYPE_A]
 		do
-			l_tuple := [a_feature, a_context_type]
-			l_tuple.compare_objects
-
-			translation_pool.add_feature (a_feature, a_context_type)
-		end
-
-	add_assertion_tag_filter (a_filter: ANY)
-			-- Add `a_filter' to assertion tag filters.
-		do
-			check False end
+			translation_pool.add_feature (a_feature, constraint_type (a_context_type.base_class))
 		end
 
 feature -- Basic operations
@@ -119,5 +108,14 @@ feature -- Basic operations
 			l_unit := translation_pool.next_untranslated_element
 			l_unit.translate
 			translation_pool.mark_translated (l_unit)
+		end
+
+feature {NONE} -- Implementation
+
+	constraint_type (a_class: CLASS_C): CL_TYPE_A
+			-- Type based on `a_class' without formal generic parameters.
+		do
+			Result := a_class.constraint_actual_type
+			a_class.update_types (Result)
 		end
 end

@@ -368,6 +368,7 @@ feature -- Helper functions: contracts
 			l_o, l_f: IV_ENTITY
 			l_access: IV_MAP_ACCESS
 			l_written_type, l_type: TYPE_A
+			r: E2B_FRAME_ELEMENT
 		do
 			create l_type_var.make_fresh
 			create l_o.make ("$o", types.ref)
@@ -377,25 +378,26 @@ feature -- Helper functions: contracts
 
 				-- Axiom rhs: a big disjunction
 				-- Go over partially modifiable objects
-			across a_mods.partial_objects as restiction loop
+			across a_mods.partial_objects as restriction loop
 				l_f_conjunct := factory.false_
-				across restiction.item.fields as f loop
+				across restriction.item.fields as f loop
 					l_f_conjunct := factory.or_clean (l_f_conjunct, factory.equal (l_f, f.item))
 				end
-				l_expr := factory.or_clean (l_expr, factory.and_ (is_object_in_frame (l_o, restiction.item.objects), l_f_conjunct))
+				l_expr := factory.or_clean (l_expr, factory.and_ (is_object_in_frame (l_o, restriction.item.objects), l_f_conjunct))
 			end
 				-- Go over model-modifiable objects
-			across a_mods.model_objects as restiction loop
+			across a_mods.model_objects as restriction loop
+				r := restriction.item
 					-- The type of the objects as seen where the frame clause was written
-				l_written_type := restiction.item.type.instantiated_in (restiction.item.origin.actual_type)
+				l_written_type := r.type.instantiated_in (r.origin.actual_type.instantiated_in (current_type))
 					-- The type of the objects as seen in the `current_type'
-				l_type := restiction.item.type.instantiated_in (current_type)
+				l_type := r.type.instantiated_in (current_type)
 				l_f_conjunct := factory.not_ (factory.function_call ("IsModelField", << l_f, factory.type_value (l_type) >>, types.bool))
-				across restiction.item.fields as f loop
+				across r.fields as f loop
 					l_f_conjunct := factory.or_ (l_f_conjunct,
 						factory.function_call ("ModelRepresents", << l_f, factory.type_value (l_type), f.item, factory.type_value (l_written_type) >>, types.bool))
 				end
-				l_expr := factory.or_clean (l_expr, factory.and_ (is_object_in_frame (l_o, restiction.item.objects), l_f_conjunct))
+				l_expr := factory.or_clean (l_expr, factory.and_ (is_object_in_frame (l_o, r.objects), l_f_conjunct))
 			end
 				-- Go over fully modifiable objects
 			l_expr := factory.or_clean (l_expr, is_object_in_frame (l_o, a_mods.full_objects))

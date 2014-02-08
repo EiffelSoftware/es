@@ -70,9 +70,9 @@ feature -- Visitors
 			l_feature: FEATURE_I
 			l_handler: E2B_CUSTOM_CALL_HANDLER
 		do
-			l_type ?= a_node.type.deep_actual_type
+			l_type ?= a_node.type.deep_actual_type.instantiated_in (context_type)
 			check l_type /= Void end
-			l_feature := a_node.type.associated_class.feature_of_rout_id (a_node.call.routine_id)
+			l_feature := l_type.base_class.feature_of_rout_id (a_node.call.routine_id)
 			check feature_valid: l_feature /= Void end
 			translation_pool.add_type (l_type)
 			current_target_type := l_type

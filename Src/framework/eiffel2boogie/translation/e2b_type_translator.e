@@ -422,7 +422,7 @@ feature {NONE} -- Implementation
 
 feature -- Invariant admissibility
 
-	generate_invariant_admissability_check (a_class: CLASS_C)
+	generate_invariant_admissability_check (a_class_type: CL_TYPE_A)
 			-- Generate invariant admissability check for class `a_class'.
 		local
 			l_proc: IV_PROCEDURE
@@ -435,16 +435,16 @@ feature -- Invariant admissibility
 			l_forall: IV_FORALL
 			l_i, l_current: IV_ENTITY
 		do
-			l_name := a_class.name_in_upper + ".invariant_admissibility_check"
+			l_name := a_class_type.base_class.name_in_upper + ".invariant_admissibility_check"
 			create l_proc.make (l_name)
 			create l_impl.make (l_proc)
 			boogie_universe.add_declaration (l_proc)
 			boogie_universe.add_declaration (l_impl)
-			result_handlers.extend (agent handle_class_validity_result (a_class, ?, ?), l_name)
+			result_handlers.extend (agent handle_class_validity_result (a_class_type.base_class, ?, ?), l_name)
 
 				-- Set up procedure with arguments and precondition
 			l_proc.add_argument ("Current", types.ref)
-			create l_pre.make (factory.function_call ("attached_exact", << factory.global_heap, factory.std_current, factory.type_value (a_class.actual_type) >>, types.bool))
+			create l_pre.make (factory.function_call ("attached_exact", << factory.global_heap, factory.std_current, factory.type_value (a_class_type) >>, types.bool))
 			l_proc.add_contract (l_pre)
 			create l_assume.make_assume (factory.function_call ("user_inv", << factory.global_heap, factory.std_current >>, types.bool))
 
@@ -456,17 +456,17 @@ feature -- Invariant admissibility
 			create l_block.make_name ("pre")
 			l_goto.add_target (l_block)
 			l_impl.body.add_statement (l_block)
-			type := a_class.actual_type
+			type := a_class_type
 			create builtin_collector
 			builtin_collector.set_any_target
-			process_invariants (a_class, Void, Void, create {E2B_ENTITY_MAPPING}.make)
+			process_invariants (a_class_type.base_class, Void, Void, create {E2B_ENTITY_MAPPING}.make)
 			across last_safety_checks as i loop
 				l_block.add_statement (i.item)
 			end
 
 				-- A3: o.inv does not mention closed and owner (static check)
 			if builtin_collector.is_inv_unfriendly then
-				helper.add_semantic_error (a_class, messages.invalid_call_in_invariant, -1)
+				helper.add_semantic_error (a_class_type.base_class, messages.invalid_call_in_invariant, -1)
 			end
 
 				-- A1: reads(o.inv) is subset of domain(o) + o.subjects
