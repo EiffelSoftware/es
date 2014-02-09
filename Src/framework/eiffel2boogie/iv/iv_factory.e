@@ -72,7 +72,7 @@ feature -- Values
 			create Result.make (l_temp, types.real)
 		end
 
-	type_value (a_value: TYPE_A): IV_VALUE
+	type_value (a_value: CL_TYPE_A): IV_VALUE
 			-- Value for integer `a_value'.
 		do
 			create Result.make (name_translator.boogie_name_for_type (a_value), types.type)
@@ -359,7 +359,7 @@ feature -- Framing
 			create Result.make (a_frame, << a_obj, a_field >>)
 		end
 
-	writes_routine_frame (a_feature: FEATURE_I; a_type: TYPE_A; a_boogie_procedure: IV_PROCEDURE): IV_EXPRESSION
+	writes_routine_frame (a_feature: FEATURE_I; a_type: CL_TYPE_A; a_boogie_procedure: IV_PROCEDURE): IV_EXPRESSION
 			-- Boolean expression stating that only the modifies set of `a_feature' in `a_type' (translated into `a_boogie_procedure')
 			-- has changed between the old heap and the current heap.
 		local

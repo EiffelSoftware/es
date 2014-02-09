@@ -54,7 +54,7 @@ feature {NONE} -- Implementation
 	bound_var_type: IV_TYPE
 			-- <Precursor>
 		do
-			Result := types.for_type_a (bound_variable.type.generics.first)
+			Result := types.for_class_type (expression_translator.class_type_in_current_context (bound_variable.type.generics.first))
 		end
 
 	guard (a_bound_var: IV_ENTITY): IV_EXPRESSION

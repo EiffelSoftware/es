@@ -52,7 +52,7 @@ feature -- Access
 	result_expression: IV_EXPRESSION
 			-- Expression for `Result'.
 
-	argument (a_feature: FEATURE_I; a_type: TYPE_A; a_position: INTEGER): IV_EXPRESSION
+	argument (a_feature: FEATURE_I; a_type: CL_TYPE_A; a_position: INTEGER): IV_EXPRESSION
 			-- Argument of feature `a_feature' at position `a_position'.
 		local
 			l_name: STRING
@@ -62,7 +62,7 @@ feature -- Access
 				Result := argument_mapping.item (a_position)
 			else
 				l_name := a_feature.arguments.item_name (a_position)
-				l_type := types.for_type_in_context (a_feature.arguments.i_th (a_position), a_type)
+				l_type := types.for_class_type (helper.class_type_in_context (a_feature.arguments.i_th (a_position), a_feature.written_class, a_feature, a_type))
 				create {IV_ENTITY} Result.make (l_name, l_type)
 			end
 		end
@@ -114,10 +114,10 @@ feature -- Element change
 			result_expression_set: result_expression = a_result
 		end
 
-	set_default_result (a_type: TYPE_A)
+	set_default_result (a_type: CL_TYPE_A)
 			-- Set `result_expression' to a default result entity fo type `a_type'.
 		do
-			create {IV_ENTITY} result_expression.make (default_result_name, types.for_type_a (a_type))
+			create {IV_ENTITY} result_expression.make (default_result_name, types.for_class_type (a_type))
 		end
 
 	set_argument (a_position: INTEGER; a_expression: IV_EXPRESSION)

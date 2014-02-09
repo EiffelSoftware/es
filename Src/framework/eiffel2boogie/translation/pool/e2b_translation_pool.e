@@ -82,7 +82,7 @@ feature -- Element change
 
 feature -- Adding independent units
 
-	add_type (a_type: TYPE_A)
+	add_type (a_type: CL_TYPE_A)
 			-- Add type `a_type'.
 		require
 			not_like_type: not a_type.is_like
@@ -95,23 +95,7 @@ feature -- Adding independent units
 			end
 		end
 
-	add_type_in_context (a_type: TYPE_A; a_context_type: TYPE_A)
-			-- Add type `a_type' in context of `a_context_type'.
-		require
-			no_formals: not a_context_type.has_formal_generic
-		local
-			l_type: TYPE_A
-		do
-			if a_type.is_like then
-				l_type := a_type.deep_actual_type
-			else
-				l_type := a_type
-			end
-			l_type := l_type.instantiated_in (a_context_type)
-			add_type (l_type)
-		end
-
-	add_feature (a_feature: FEATURE_I; a_context_type: TYPE_A)
+	add_feature (a_feature: FEATURE_I; a_context_type: CL_TYPE_A)
 			-- Add signature and implementation of feature `a_feature' of `a_context_type'.
 		require
 			no_formals: not a_context_type.has_formal_generic
@@ -122,7 +106,7 @@ feature -- Adding independent units
 			internal_add_feature (a_feature, a_context_type, False)
 		end
 
-	add_referenced_feature (a_feature: FEATURE_I; a_context_type: TYPE_A)
+	add_referenced_feature (a_feature: FEATURE_I; a_context_type: CL_TYPE_A)
 			-- Add feature `a_feature' in of `a_context_type' as referenced feature.
 		require
 			no_formals: not a_context_type.has_formal_generic
@@ -130,7 +114,7 @@ feature -- Adding independent units
 			internal_add_feature (a_feature, a_context_type, True)
 		end
 
-	add_write_frame_function (a_feature: FEATURE_I; a_context_type: TYPE_A)
+	add_write_frame_function (a_feature: FEATURE_I; a_context_type: CL_TYPE_A)
 			-- Add write frame function of feature `a_feature' of `a_context_type'.
 		require
 			no_formals: not a_context_type.has_formal_generic
@@ -138,7 +122,7 @@ feature -- Adding independent units
 			add_translation_unit (create {E2B_TU_WRITE_FRAME}.make (a_feature, a_context_type))
 		end
 
-	add_read_frame_function (a_feature: FEATURE_I; a_context_type: TYPE_A)
+	add_read_frame_function (a_feature: FEATURE_I; a_context_type: CL_TYPE_A)
 			-- Add read frame function of feature `a_feature' of `a_context_type'.
 		require
 			no_formals: not a_context_type.has_formal_generic
@@ -146,7 +130,7 @@ feature -- Adding independent units
 			add_translation_unit (create {E2B_TU_READ_FRAME}.make (a_feature, a_context_type))
 		end
 
-	add_function_precondition_predicate (a_feature: FEATURE_I; a_context_type: TYPE_A)
+	add_function_precondition_predicate (a_feature: FEATURE_I; a_context_type: CL_TYPE_A)
 			-- Add precondition predicate of feature `a_feature' of `a_context_type'.
 		require
 			no_formals: not a_context_type.has_formal_generic
@@ -157,7 +141,7 @@ feature -- Adding independent units
 			add_translation_unit (l_pre_predicate)
 		end
 
-	add_filtered_invariant_function (a_type: TYPE_A; a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C)
+	add_filtered_invariant_function (a_type: CL_TYPE_A; a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C)
 			-- Add invariant function of type `a_type'.
 		require
 			no_formals: not a_type.has_formal_generic
@@ -165,7 +149,7 @@ feature -- Adding independent units
 			add_translation_unit (create {E2B_TU_INVARIANT_FUNCTION}.make_filtered (a_type, a_included, a_excluded, a_ancestor))
 		end
 
-	add_postcondition_predicate (a_feature: FEATURE_I; a_context_type: TYPE_A)
+	add_postcondition_predicate (a_feature: FEATURE_I; a_context_type: CL_TYPE_A)
 			-- Add postcondition predicate of feature `a_feature' of `a_context_type'.
 		require
 			no_formals: not a_context_type.has_formal_generic
@@ -208,7 +192,7 @@ feature {NONE} -- Implementation
 			ids.has (a_unit.id)
 		end
 
-	internal_add_feature (a_feature: FEATURE_I; a_context_type: TYPE_A; a_is_referenced: BOOLEAN)
+	internal_add_feature (a_feature: FEATURE_I; a_context_type: CL_TYPE_A; a_is_referenced: BOOLEAN)
 			-- Add signature and implementation of feature `a_feature' of `a_context_type'.
 			-- If `a_referenced' is true, then only the signature will be created.
 		do
@@ -239,7 +223,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_routine (a_feature: FEATURE_I; a_context_type: TYPE_A; a_is_referenced: BOOLEAN)
+	add_routine (a_feature: FEATURE_I; a_context_type: CL_TYPE_A; a_is_referenced: BOOLEAN)
 			-- Add signature,
 			--     variant functions,
 			--     functional representation (if returns a value)
@@ -274,7 +258,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_attribute (a_feature: FEATURE_I; a_context_type: TYPE_A)
+	add_attribute (a_feature: FEATURE_I; a_context_type: CL_TYPE_A)
 			-- Add attribute `a_feature' of `a_context_type'.
 		local
 			l_attribute: E2B_TU_ATTRIBUTE
@@ -283,7 +267,7 @@ feature {NONE} -- Implementation
 			add_translation_unit (l_attribute)
 		end
 
-	add_creator (a_feature: FEATURE_I; a_context_type: TYPE_A; a_is_referenced: BOOLEAN)
+	add_creator (a_feature: FEATURE_I; a_context_type: CL_TYPE_A; a_is_referenced: BOOLEAN)
 			-- Add signature and implementation of creator `a_feature' of `a_context_type'.
 		local
 			l_creator: E2B_TU_CREATOR_SIGNATURE
@@ -297,7 +281,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	add_logical (a_feature: FEATURE_I; a_context_type: TYPE_A)
+	add_logical (a_feature: FEATURE_I; a_context_type: CL_TYPE_A)
 			-- Add logical feature `a_feature' of `a_context_type'.
 		local
 			l_logical: E2B_TU_LOGICAL_SIGNATURE

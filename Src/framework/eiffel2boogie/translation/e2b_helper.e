@@ -314,29 +314,48 @@ feature -- Ownership helpers
 			Result := attached {FEATURE_B} a_clause.expr as l_call and then l_call.feature_name ~ "decreases"
 		end
 
-feature -- Model helpers
-
-	model_queries (a_class: CLASS_C): ARRAYED_LIST [STRING_32]
-			-- Names of model queries of class `a_class'.
+	boogie_name_for_attribute (a_feature: FEATURE_I; a_context_type: CL_TYPE_A): STRING_32
+			-- Name of the boogie tranlsation of `a_feature', taking special translation of built-ins into account.
+		local
+			l_name: STRING_32
 		do
-			Result := class_note_values (a_class, "model")
-			across (create {E2B_SPECIAL_MAPPING}.make).ghost_access as f loop
-				Result.extend (f.item)
+			l_name := a_feature.feature_name_32
+			if translation_mapping.ghost_access.has (l_name) then
+				Result := l_name
+			else
+				Result := name_translator.boogie_procedure_for_feature (a_feature, a_context_type)
 			end
 		end
 
-	model_represented (a_old_model: FEATURE_I; a_old_class: CLASS_C; a_new_class: CLASS_C): ARRAYED_LIST [FEATURE_I]
-			-- Model queries of class `a_new_class' that represent the model query `a_old_model' of `a_old_class'.
-		local
-			l_feature, l_new_version: FEATURE_I
+feature -- Model helpers
+
+	model_queries (a_class: CLASS_C): ARRAYED_LIST [STRING_32]
+			-- Names of model queries declared in class `a_class'.
 		do
-			l_new_version := a_new_class.feature_of_rout_id_set (a_old_model.rout_id_set)
-			create Result.make (3)
-			across model_queries (a_new_class) as m loop
-				l_feature := a_new_class.feature_named (m.item)
-				if attached l_feature and then
-					(is_same_feature (l_feature, l_new_version) or feature_note_values (l_feature, "replaces").has (l_new_version.feature_name)) then
-					Result.extend (l_feature)
+			Result := class_note_values (a_class, "model")
+		end
+
+	flat_model_queries (a_class: CLASS_C): ARRAYED_LIST [FEATURE_I]
+			-- Names of model queries declared in class `a_class' and all its ancestors.
+		local
+			l_new_version: FEATURE_I
+		do
+			create Result.make (5)
+			if a_class.class_id = system.any_id then
+				across translation_mapping.ghost_access as m loop
+					Result.extend (a_class.feature_named_32 (m.item))
+				end
+			else
+				across model_queries (a_class) as m loop
+					Result.extend (a_class.feature_named_32 (m.item))
+				end
+				across a_class.parents_classes as c loop
+					across flat_model_queries (c.item) as q loop
+						l_new_version := a_class.feature_of_rout_id_set (q.item.rout_id_set)
+						if not Result.has (l_new_version) then
+							Result.extend (l_new_version)
+						end
+					end
 				end
 			end
 		end
@@ -405,10 +424,31 @@ feature -- Eiffel helpers
 			check Result /= Void end
 		end
 
-	set_any_type: TYPE_A
+	class_type_in_context (a_type: TYPE_A; a_written_class: CLASS_C; a_feature: FEATURE_I; a_current_type: CL_TYPE_A): CL_TYPE_A
+			-- Class type of `a_type', which is written in `a_written_class' (with optional `a_feature') as seen from `a_current_type'.
+		do
+			if a_type.is_like_current then
+				Result := a_current_type
+			elseif a_type.is_like then
+				-- `evaluated_type_in_descendant' switches to the correct feature in case of LIKE_FEATURE types
+				-- `deep_actual_type' gets rid of like types
+				-- `instantiated_in (a_current_type)' instantiates the generics				
+				check attached {CL_TYPE_A} a_type.evaluated_type_in_descendant (a_written_class, a_current_type.base_class, a_feature).deep_actual_type.instantiated_in (a_current_type) as t then
+					Result := t
+				end
+			else
+				check attached {CL_TYPE_A} a_type.deep_actual_type.instantiated_in (a_current_type) as t then
+					Result := t
+				end
+			end
+		end
+
+	set_any_type: CL_TYPE_A
 			-- Type MML_SET [ANY] (supplier of ANY).
 		do
-			Result := system.any_type.base_class.feature_named_32 ("owns").type
+			check attached {CL_TYPE_A} system.any_type.base_class.feature_named_32 ("owns").type as t then
+				Result := t
+			end
 		end
 
 	set_class: CLASS_C

@@ -25,18 +25,12 @@ feature -- Basic operations
 
 feature {NONE} -- Helper functions
 
-	type_id (a_type: TYPE_A): STRING
+	type_id (a_type: CL_TYPE_A): STRING
 			-- Id for type `a_type'.
 		local
-			l_type: TYPE_A
 			i: INTEGER
 		do
-			l_type := a_type.deep_actual_type
-			check not l_type.is_like end
-
-			if attached {FORMAL_A} l_type as l_formal then
-				Result := "G" + l_formal.position.out
-			elseif attached {GEN_TYPE_A} l_type as l_gen_type then
+			if attached {GEN_TYPE_A} a_type as l_gen_type then
 				Result := l_gen_type.associated_class.name_in_upper.twin
 				Result.append ("^")
 				from
@@ -44,7 +38,9 @@ feature {NONE} -- Helper functions
 				until
 					i > l_gen_type.generics.upper
 				loop
-					Result.append (type_id (l_gen_type.generics.i_th (i)))
+					check attached {CL_TYPE_A} l_gen_type.generics.i_th (i) as t then
+						Result.append (type_id (t))
+					end
 					if i < l_gen_type.generics.upper then
 						Result.append ("#")
 					end
@@ -52,7 +48,7 @@ feature {NONE} -- Helper functions
 				end
 				Result.append ("^")
 			else
-				Result := l_type.associated_class.name_in_upper.twin
+				Result := a_type.base_class.name_in_upper.twin
 			end
 		end
 

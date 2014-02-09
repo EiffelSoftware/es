@@ -14,7 +14,7 @@ inherit
 
 feature {NONE} -- Initialization
 
-	make (a_feature: FEATURE_I; a_context_type: TYPE_A)
+	make (a_feature: FEATURE_I; a_context_type: CL_TYPE_A)
 			-- Initialize this translation unit with feature `a_feature' and context `a_context_type'.
 		do
 			feat := a_feature
@@ -35,7 +35,7 @@ feature -- Access
 	feat: FEATURE_I
 			-- Feature to be translated.
 
-	type: TYPE_A
+	type: CL_TYPE_A
 			-- Context type of feature to be translated.
 
 end

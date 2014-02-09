@@ -9,7 +9,8 @@ inherit
 	A_MODELS
 		rename
 			x as xx,
-			y as yy
+			y as yy,
+			bar_ok as bar_not_so_ok
 		redefine
 			foo
 		end
@@ -25,6 +26,8 @@ feature
 	b: BOOLEAN
 
 	foo
+		require else
+			modify_model ("a", Current)
 		do
 			xx := 1
 			z := 1
@@ -33,9 +36,12 @@ feature
 			b := True -- Bad
 		end
 
+	-- bar still fails as before
+	-- bar_not_so_ok now fails because its supplier foo now has a bigger frame
+
 	bad1
 		require
-			modify_model (["xx", "closed"], Current) -- Bad: xx is not a model
+			modify_model (["z", "closed"], Current) -- Bad: z is not a model
 		do
 		end
 

@@ -63,14 +63,14 @@ feature -- Basic operations
 			end
 		end
 
-	array_type_string (a_array_type: TYPE_A): STRING
+	array_type_string (a_array_type: CL_TYPE_A): STRING
 		local
 			l_type: TYPE_A
 		do
 			check a_array_type.base_class.name_in_upper.same_string ("ARRAY") end
 			check a_array_type.has_generics end
 			check a_array_type.generics.count = 1 end
-			l_type := a_array_type.generics.i_th (1).deep_actual_type
+			l_type := a_array_type.generics.i_th (1)
 			if l_type.is_boolean then
 				Result := "ARRAY#bool#"
 			elseif l_type.is_integer or l_type.is_natural then

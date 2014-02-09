@@ -54,7 +54,7 @@ feature -- Access
 	current_feature: FEATURE_I
 			-- Feature that is currently being processed.
 
-	current_type: TYPE_A
+	current_type: CL_TYPE_A
 			-- Type containing feature that is currently being processed.
 
 	current_block: IV_BLOCK
@@ -78,7 +78,7 @@ feature -- Access
 
 feature -- Element change
 
-	set_context (a_implementation: IV_IMPLEMENTATION; a_feature: FEATURE_I; a_type: TYPE_A)
+	set_context (a_implementation: IV_IMPLEMENTATION; a_feature: FEATURE_I; a_type: CL_TYPE_A)
 			-- Set context.
 		do
 			current_implementation := a_implementation
@@ -86,7 +86,7 @@ feature -- Element change
 			current_type := a_type
 			current_block := current_implementation.body
 			if a_feature.has_return_value then
-				entity_mapping.set_default_result (a_feature.type)
+				entity_mapping.set_default_result (helper.class_type_in_context (a_feature.type, a_feature.written_class, a_feature, a_type))
 			end
 		end
 
@@ -127,10 +127,10 @@ feature -- Basic operations
 			context_readable := Void
 		end
 
-	process_feature_of_type (a_feature: FEATURE_I; a_type: TYPE_A)
+	process_feature_of_type (a_feature: FEATURE_I; a_type: CL_TYPE_A)
 			-- Process body of feature `a_feature' of type `a_type'.
 		local
-			l_type: TYPE_A
+			l_type: CL_TYPE_A
 			l_name: STRING
 		do
 			helper.set_up_byte_context (a_feature, a_type)
@@ -139,9 +139,9 @@ feature -- Basic operations
 					if l_byte_code.locals /= Void then
 						across l_byte_code.locals as i loop
 							l_name := helper.unique_identifier ("local")
-							l_type := i.item.deep_actual_type.instantiated_in (current_type)
-							entity_mapping.set_local (i.cursor_index, create {IV_ENTITY}.make (l_name, types.for_type_a (l_type)))
-							current_implementation.add_local (l_name, types.for_type_a (l_type))
+							l_type := helper.class_type_in_context (i.item, a_feature.written_class, a_feature, current_type)
+							entity_mapping.set_local (i.cursor_index, create {IV_ENTITY}.make (l_name, types.for_class_type (l_type)))
+							current_implementation.add_local (l_name, types.for_class_type (l_type))
 						end
 					end
 					process_compound (l_byte_code.compound)
@@ -164,6 +164,7 @@ feature -- Processing
 			l_result: RESULT_B
 			l_attribute: ATTRIBUTE_B
 			l_feature: FEATURE_I
+			l_type: CL_TYPE_A
 			l_target_name: STRING
 
 			l_target, l_source: IV_EXPRESSION
@@ -194,12 +195,13 @@ feature -- Processing
 					valid_feature: l_feature /= Void
 					correct_feature: l_feature.rout_id_set.first = l_attribute.routine_id
 				end
+				l_type := helper.class_type_in_context (l_feature.type, current_feature.written_class, current_feature, current_type)
 				translation_pool.add_referenced_feature (l_feature, current_type)
 				l_target := factory.heap_access (
 					entity_mapping.heap,
 					entity_mapping.current_expression,
 					name_translator.boogie_procedure_for_feature (l_feature, current_type),
-					types.for_type_a (l_feature.type))
+					types.for_class_type (l_type))
 			else
 				check should_never_happen: False end
 			end
@@ -220,7 +222,7 @@ feature -- Processing
 				-- Create assignment node
 			if a_node.target.is_attribute and options.is_ownership_enabled then
 					-- OWNERSHIP: call update heap instead of direct heap assignment				
-				create l_field.make (name_translator.boogie_procedure_for_feature (l_feature, current_type), types.field (types.for_type_a (l_feature.type)))
+				create l_field.make (name_translator.boogie_procedure_for_feature (l_feature, current_type), types.field (types.for_class_type (l_type)))
 				create l_call.make ("update_heap")
 				l_call.add_argument (entity_mapping.current_expression)
 				l_call.add_argument (l_field)
@@ -331,7 +333,7 @@ feature -- Processing
 				-- Check array contents
 			across a_array.expressions as i loop
 				process_contract_expression (i.item)
-				l_content_type := types.for_type_a (a_array.type.generics.first)
+				l_content_type := types.for_class_type (helper.class_type_in_context (a_array.type.generics.first, current_feature.written_class, current_feature, current_type))
 				create l_assert.make (factory.equal (
 					factory.function_call ("fun.ARRAY.item", << entity_mapping.heap, l_array, factory.int_value (i.cursor_index) >>, l_content_type),
 					last_expression))

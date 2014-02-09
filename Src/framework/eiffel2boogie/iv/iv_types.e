@@ -87,13 +87,11 @@ feature -- Access: default types
 
 feature -- Type translation
 
-	for_type_a (a_type: TYPE_A): IV_TYPE
+	for_class_type (a_type: CL_TYPE_A): IV_TYPE
 			-- Boogie type for `a_type'.
 		require
 			a_type_attached: attached a_type
-			a_type_valid: not a_type.deep_actual_type.is_like
 		local
-			l_type: TYPE_A
 			l_class: CLASS_C
 			l_user_type: IV_USER_TYPE
 			l_constructor: STRING
@@ -101,29 +99,27 @@ feature -- Type translation
 			l_default_function, l_type_inv_function, l_leq_function: STRING
 			l_access_feature: FEATURE_I
 		do
-			l_type := a_type.deep_actual_type
-			check not l_type.is_like end
-			l_class := l_type.base_class
+			l_class := a_type.base_class
 
-			if l_type.is_integer or l_type.is_natural or l_type.is_character or l_type.is_character_32 then
+			if a_type.is_integer or a_type.is_natural or a_type.is_character or a_type.is_character_32 then
 				Result := int
-			elseif l_type.is_boolean then
+			elseif a_type.is_boolean then
 				Result := bool
-			elseif l_type.is_real_32 or else l_type.is_real_64 then
+			elseif a_type.is_real_32 or else a_type.is_real_64 then
 				Result := real
-			elseif l_type.is_formal then
-				Result := ref
 			elseif helper.is_class_logical (l_class) then
 					-- The class is mapped to a Boogie type
 				l_constructor := helper.type_for_logical (l_class)
-				if l_type.generics = Void then
+				if a_type.generics = Void then
 					create l_params.make_empty
 				else
-					create l_params.make (1, l_type.generics.count)
+					create l_params.make (1, a_type.generics.count)
 					across
-						l_type.generics as g
+						a_type.generics as g
 					loop
-						l_params [g.target_index] := for_type_a (g.item)
+						check attached {CL_TYPE_A} g.item as t then
+							l_params [g.target_index] := for_class_type (t)
+						end
 					end
 				end
 
@@ -138,11 +134,11 @@ feature -- Type translation
 					across
 						l_access_feature.arguments as args
 					loop
-						l_domain_types [args.target_index] := for_type_a (args.item.instantiated_in (l_type))
+						l_domain_types [args.target_index] := for_class_type (helper.class_type_in_context (args.item, l_access_feature.written_class, l_access_feature, a_type))
 					end
 					create {IV_MAP_SYNONYM_TYPE} l_user_type.make (<<>>,
 						l_domain_types,
-						for_type_a (l_access_feature.type.instantiated_in (l_type)),
+						for_class_type (helper.class_type_in_context (l_access_feature.type, l_access_feature.written_class, l_access_feature, a_type)),
 						l_constructor,
 						l_params)
 				end
@@ -171,31 +167,17 @@ feature -- Type translation
 			end
 		end
 
-	for_type_in_context (a_type: TYPE_A; a_context_type: TYPE_A): IV_TYPE
-			-- Boogie type for `a_type' in context of `a_context_type'.
-		require
-			a_type_attached: attached a_type
-			a_type_valid: not a_type.deep_actual_type.is_like
-			a_context_type_attached: attached a_context_type
-		local
-			l_type: TYPE_A
-		do
-			l_type := a_type.deep_actual_type
-			l_type := l_type.instantiated_in (a_context_type)
-			Result := for_type_a (l_type)
-		end
-
-	type_property (a_type: TYPE_A; a_heap, a_expr: IV_EXPRESSION): IV_EXPRESSION
+	type_property (a_type: CL_TYPE_A; a_heap, a_expr: IV_EXPRESSION): IV_EXPRESSION
 			-- For an expression `a_expr' originally of Eiffel type `a_type', an expression that states its precise Eiffel type in `a_heap'.
 		local
 			l_boogie_type: IV_TYPE
-			l_content_type: TYPE_A
+			l_content_type: CL_TYPE_A
 			l_fname: STRING
 			l_arg, l_inv: IV_EXPRESSION
 			l_typed_sets: like helper.class_note_values
 		do
 			Result := factory.true_
-			l_boogie_type := for_type_a (a_type)
+			l_boogie_type := for_class_type (a_type)
 			if l_boogie_type ~ ref then
 				l_content_type := a_type
 				if attached {IV_ENTITY} a_expr as a_entity and then a_entity.name ~ "Current" then
@@ -223,8 +205,10 @@ feature -- Type translation
 						across
 							l_typed_sets as sets
 						loop
-							l_content_type := a_type.generics [sets.target_index]
-							if for_type_a (l_content_type) ~ ref then
+							check attached {CL_TYPE_A} a_type.generics [sets.target_index] as t then
+								l_content_type := t
+							end
+							if for_class_type (l_content_type) ~ ref then
 								if l_content_type.is_attached then
 									l_fname := "set_attached"
 								else

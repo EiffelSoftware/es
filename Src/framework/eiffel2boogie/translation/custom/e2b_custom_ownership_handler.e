@@ -303,14 +303,16 @@ feature -- Basic operations
 			end
 		end
 
-	field_from_string (a_name: STRING; a_type: TYPE_A; a_origin_class: CLASS_C; a_context_feature: FEATURE_I; a_context_line_number: INTEGER; a_check_model: BOOLEAN): IV_ENTITY
+	field_from_string (a_name: STRING; a_type: CL_TYPE_A; a_origin_class: CLASS_C; a_context_feature: FEATURE_I; a_context_line_number: INTEGER; a_check_model: BOOLEAN): IV_ENTITY
 			-- Boogie field corresponding to an attribute (or built-in ghost access) with name `a_name' defined in `a_origin_class' in type `a_type';
 			-- when `a_check_model', check that the field is a model field of `a_origin_class'.
 		local
 			l_old_version, l_new_version: FEATURE_I
+			l_new_type: CL_TYPE_A
 		do
 			l_old_version := a_origin_class.feature_named_32 (a_name)
 			l_new_version := a_type.base_class.feature_of_rout_id_set (l_old_version.rout_id_set)
+			l_new_type := helper.class_type_in_context (l_new_version.type, l_new_version.written_class, Void, a_type)
 			if l_old_version = Void then
 				helper.add_semantic_error (a_context_feature, messages.field_not_attribute (a_name, a_origin_class.name_in_upper), a_context_line_number)
 			else
@@ -320,11 +322,11 @@ feature -- Basic operations
 					-- Also they are all model, so nothing to check.
 					Result := factory.entity (a_name, types.field (translation_mapping.ghost_access_type (a_name)))
 				elseif l_old_version.is_attribute then
-					if a_check_model and then not helper.model_queries (a_origin_class).has (a_name) then
+					if a_check_model and then not helper.flat_model_queries (a_origin_class).has (l_old_version) then
 						helper.add_semantic_error (a_context_feature, messages.field_not_model (a_name, a_origin_class.name_in_upper), a_context_line_number)
 					else
 						Result := factory.entity (name_translator.boogie_procedure_for_feature (l_new_version, a_type),
-							types.field (types.for_type_a (l_new_version.type)))
+							types.field (types.for_class_type (l_new_type)))
 						translation_pool.add_referenced_feature (l_new_version, a_type)
 					end
 				else

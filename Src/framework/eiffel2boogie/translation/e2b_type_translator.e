@@ -24,7 +24,7 @@ inherit
 
 feature -- Access
 
-	type: TYPE_A
+	type: CL_TYPE_A
 			-- Type under translation.
 
 	last_clauses: LINKED_LIST [IV_EXPRESSION]
@@ -38,11 +38,10 @@ feature -- Access
 
 feature -- Basic operations
 
-	translate_type (a_type: TYPE_A)
+	translate_type (a_type: CL_TYPE_A)
 			-- Translate `a_type' to Boogie.
 		require
-			valid_type: a_type.is_class_valid
-			no_like_type: not a_type.is_like
+			no_formals: not a_type.has_formal_generic
 		local
 			l_class: CLASS_C
 			l_boogie_type_name: STRING
@@ -69,11 +68,9 @@ feature -- Basic operations
 
 				-- Add actual generic parameters
 			if a_type.has_generics then
-				across
-					a_type.generics as params
-				loop
-					if not params.item.is_formal then
-						translation_pool.add_type_in_context (params.item, type)
+				across a_type.generics as params loop
+					check attached {CL_TYPE_A} params.item as t then
+						translation_pool.add_type (t)
 					end
 				end
 			end
@@ -93,6 +90,9 @@ feature -- Basic operations
 					-- Inheritance relations
 				generate_inheritance_relations
 
+					-- Model
+				generate_model_axiom
+
 					-- TODO: refactor
 				if l_class.name_in_upper /~ "ARRAY" then
 					translate_invariant_function
@@ -109,7 +109,7 @@ feature -- Basic operations
 			end
 		end
 
-	translate_filtered_invariant_function (a_type: TYPE_A; a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C)
+	translate_filtered_invariant_function (a_type: CL_TYPE_A; a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C)
 			-- Translate `a_type' to Boogie.
 		require
 			a_type_exists: a_type /= Void
@@ -139,7 +139,7 @@ feature {NONE} -- Implementation
 			-- Generate inheritance relations for `type'.
 		local
 			l_parents: FIXED_LIST [CL_TYPE_A]
-			l_parent: TYPE_A
+			l_parent: CL_TYPE_A
 			l_type_name: STRING
 			l_axiom: IV_AXIOM
 			l_operation: IV_BINARY_OPERATION
@@ -154,7 +154,7 @@ feature {NONE} -- Implementation
 				l_parents.after
 			loop
 				l_parent := l_parents.item.instantiated_in (type)
-				translation_pool.add_type_in_context (l_parent, type)
+				translation_pool.add_type (l_parent)
 
 				create l_type_value.make (l_type_name, types.type)
 				create l_parent_value.make (name_translator.boogie_name_for_type (l_parent), types.type)
@@ -162,50 +162,35 @@ feature {NONE} -- Implementation
 				create l_axiom.make (l_operation)
 				boogie_universe.add_declaration (l_axiom)
 
-					-- Link model queries
-				link_model_queries (l_parent)
-
 				l_parents.forth
 			end
 		end
 
-	link_model_queries (a_parent_type: TYPE_A)
-			-- Generate axioms that link model queries of `a_parent_type' to model queries of `type'.
+	generate_model_axiom
+			-- Generate an axiom listing all model queries of `type'.
 		local
-			l_model: FEATURE_I
+			l_m_name: STRING
 			l_type_var: IV_VAR_TYPE
-			l_f, l_old_m, l_new_m: IV_ENTITY
+			l_f, l_m: IV_ENTITY
 			l_def: IV_EXPRESSION
 			l_fcall: IV_FUNCTION_CALL
 			l_forall: IV_FORALL
 		do
-			across helper.model_queries (a_parent_type.base_class) as m loop
-				l_model := a_parent_type.base_class.feature_named_32 (m.item)
-				if attached l_model and not helper.model_queries (system.any_type.base_class).has (m.item) then
-					create l_type_var.make_fresh
-					create l_f.make ("$f", types.field (l_type_var))
-					create l_old_m.make (
-						name_translator.boogie_procedure_for_feature (l_model, a_parent_type),
-						types.field (types.for_type_in_context (l_model.type, a_parent_type)))
-
-					l_def := factory.false_
-					across helper.model_represented (l_model, a_parent_type.base_class, type.associated_class) as m1 loop
-						create l_new_m.make (
-							name_translator.boogie_procedure_for_feature (m1.item, type),
-							types.field (types.for_type_in_context (m1.item.type, type)))
-						l_def := factory.or_clean (l_def, factory.equal (l_f, l_new_m))
-					end
-					l_fcall := factory.function_call ("ModelRepresents", <<
-							l_f, factory.type_value (type),
-							l_old_m, factory.type_value (a_parent_type) >>,
-						types.bool)
-					create l_forall.make (factory.equiv (l_fcall, l_def))
-					l_forall.add_type_variable (l_type_var.name)
-					l_forall.add_bound_variable (l_f.name, l_f.type)
-					l_forall.add_trigger (l_fcall)
-					boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
-				end
+			create l_type_var.make_fresh
+			create l_f.make ("$f", types.field (l_type_var))
+			l_def := factory.false_
+			across helper.flat_model_queries (type.base_class) as m loop
+				create l_m.make (
+					helper.boogie_name_for_attribute (m.item, type),
+					types.field (types.for_class_type (helper.class_type_in_context (m.item.type, m.item.written_class, m.item, type))))
+				l_def := factory.or_clean (l_def, factory.equal (l_f, l_m))
 			end
+			l_fcall := factory.function_call ("IsModelField", << l_f, factory.type_value (type) >>, types.bool)
+			create l_forall.make (factory.equiv (l_fcall, l_def))
+			l_forall.add_type_variable (l_type_var.name)
+			l_forall.add_bound_variable (l_f.name, l_f.type)
+			l_forall.add_trigger (l_fcall)
+			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
 		end
 
 	generate_invariant_function (a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C)

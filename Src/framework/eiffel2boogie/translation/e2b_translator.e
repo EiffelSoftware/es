@@ -54,6 +54,7 @@ feature -- Element change
 			l_feature: FEATURE_I
 		do
 			if not helper.is_class_logical (a_class) then
+				translation_pool.add_class_check (constraint_type (a_class))
 				if a_class.has_feature_table then
 					from
 						a_class.feature_table.start
@@ -67,7 +68,6 @@ feature -- Element change
 						a_class.feature_table.forth
 					end
 				end
-				translation_pool.add_class_check (constraint_type (a_class))
 			end
 		end
 
@@ -77,7 +77,7 @@ feature -- Element change
 			a_feature_attached: attached a_feature
 		local
 			l_class: CLASS_C
-			l_context_type: TYPE_A
+			l_context_type: CL_TYPE_A
 		do
 			l_class := system.class_of_id (a_feature.written_in)
 			l_context_type := l_class.actual_type
@@ -85,7 +85,7 @@ feature -- Element change
 			add_feature_of_type (a_feature, l_context_type)
 		end
 
-	add_feature_of_type (a_feature: FEATURE_I; a_context_type: TYPE_A)
+	add_feature_of_type (a_feature: FEATURE_I; a_context_type: CL_TYPE_A)
 			-- Add `a_feature' in context of type `a_context_type' to be translated.
 		require
 			a_feature_attached: attached a_feature

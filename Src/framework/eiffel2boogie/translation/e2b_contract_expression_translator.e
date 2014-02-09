@@ -44,7 +44,7 @@ feature -- Element change
 
 feature -- Basic operations
 
-	set_context (a_feature: FEATURE_I; a_type: TYPE_A)
+	set_context (a_feature: FEATURE_I; a_type: CL_TYPE_A)
 			-- Set context of expression to `a_feature' in type `a_type'.
 		do
 			Precursor (a_feature, a_type)
@@ -70,8 +70,7 @@ feature -- Visitors
 			l_feature: FEATURE_I
 			l_handler: E2B_CUSTOM_CALL_HANDLER
 		do
-			l_type ?= a_node.type.deep_actual_type.instantiated_in (context_type)
-			check l_type /= Void end
+			l_type := class_type_in_current_context (a_node.type)
 			l_feature := l_type.base_class.feature_of_rout_id (a_node.call.routine_id)
 			check feature_valid: l_feature /= Void end
 			translation_pool.add_type (l_type)
@@ -114,7 +113,7 @@ feature -- Translation
 			translation_pool.add_referenced_feature (a_feature, current_target_type)
 
 			check current_target /= Void end
-			l_content_type := types.for_type_in_context (a_feature.type, current_target_type)
+			l_content_type := types.for_class_type (feature_class_type (a_feature))
 			l_field := factory.entity (name_translator.boogie_procedure_for_feature (a_feature, current_target_type), types.field (l_content_type))
 
 				-- Add a reads check
@@ -146,7 +145,7 @@ feature -- Translation
 				helper.add_semantic_error (a_feature, messages.impure_function_in_contract, context_line_number)
 				last_expression := dummy_node (a_feature.type)
 			else
-				create l_call.make (l_name, types.for_type_in_context (a_feature.type, current_target_type))
+				create l_call.make (l_name, types.for_class_type (feature_class_type (a_feature)))
 				l_call.add_argument (entity_mapping.heap)
 				l_call.add_argument (current_target)
 
@@ -169,16 +168,13 @@ feature -- Translation
 			-- Process feature call.
 		local
 			l_target: IV_EXPRESSION
-			l_target_type: TYPE_A
+			l_target_type: CL_TYPE_A
 			l_call: IV_FUNCTION_CALL
 		do
 			l_target := current_target
 			l_target_type := current_target_type
 
-			create l_call.make (
-				a_builtin_name,
-				types.for_type_in_context (a_feature.type, current_target_type)
-			)
+			create l_call.make (a_builtin_name, types.for_class_type (feature_class_type (a_feature)))
 			l_call.add_argument (entity_mapping.heap)
 			l_call.add_argument (current_target)
 

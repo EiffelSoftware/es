@@ -13,7 +13,7 @@ inherit
 
 feature -- Access
 
-	boogie_procedure_for_feature (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
+	boogie_procedure_for_feature (a_feature: FEATURE_I; a_context_type: CL_TYPE_A): STRING
 			-- Name of the boogie procedure that encodes `a_feature'.
 		require
 			a_feature_attached: attached a_feature
@@ -30,7 +30,7 @@ feature -- Access
 			result_valid: is_valid_feature_name (Result)
 		end
 
-	boogie_procedure_for_creator (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
+	boogie_procedure_for_creator (a_feature: FEATURE_I; a_context_type: CL_TYPE_A): STRING
 			-- Name of the boogie procedure that encodes `a_feature' used as a creation procedure.
 		require
 			a_feature_attached: attached a_feature
@@ -47,7 +47,7 @@ feature -- Access
 			result_valid: is_valid_feature_name (Result)
 		end
 
-	boogie_function_for_feature (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
+	boogie_function_for_feature (a_feature: FEATURE_I; a_context_type: CL_TYPE_A): STRING
 			-- Name of the boogie function that encodes the result of `a_feature'.
 		require
 			a_feature_attached: attached a_feature
@@ -63,7 +63,7 @@ feature -- Access
 			result_attached: attached Result
 		end
 
-	boogie_function_for_write_frame (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
+	boogie_function_for_write_frame (a_feature: FEATURE_I; a_context_type: CL_TYPE_A): STRING
 			-- Name of the boogie function that encodes the write frame of `a_feature'.
 		require
 			a_feature_attached: attached a_feature
@@ -79,7 +79,7 @@ feature -- Access
 			result_attached: attached Result
 		end
 
-	boogie_function_for_read_frame (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
+	boogie_function_for_read_frame (a_feature: FEATURE_I; a_context_type: CL_TYPE_A): STRING
 			-- Name of the boogie function that encodes the read frame of the functional representation of `a_feature'.
 		require
 			a_feature_attached: attached a_feature
@@ -115,7 +115,7 @@ feature -- Access
 			result_attached: attached Result
 		end
 
-	boogie_function_for_variant (a_index: INTEGER; a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
+	boogie_function_for_variant (a_index: INTEGER; a_feature: FEATURE_I; a_context_type: CL_TYPE_A): STRING
 			-- Name of the boogie function that encodes `a_index'-th variant of `a_feature'.
 		require
 			a_feature_attached: attached a_feature
@@ -131,7 +131,7 @@ feature -- Access
 			result_attached: attached Result
 		end
 
-	boogie_function_for_invariant (a_type: TYPE_A): STRING
+	boogie_function_for_invariant (a_type: CL_TYPE_A): STRING
 			-- Name of the boogie function that encodes the class invariant of type `a_type'.
 		require
 			a_type: attached a_type
@@ -144,7 +144,7 @@ feature -- Access
 			result_attached: attached Result
 		end
 
-	boogie_function_for_filtered_invariant (a_type: TYPE_A; a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C): STRING
+	boogie_function_for_filtered_invariant (a_type: CL_TYPE_A; a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C): STRING
 			-- Name of the boogie function that encodes the partial class invariant of type `a_type'
 			-- with `a_included' clauses included and `a_excluded' clauses excluded.
 		require
@@ -172,7 +172,7 @@ feature -- Access
 			result_attached: attached Result
 		end
 
-	boogie_function_for_ghost_definition (a_type: TYPE_A; a_name: STRING): STRING
+	boogie_function_for_ghost_definition (a_type: CL_TYPE_A; a_name: STRING): STRING
 			-- Name of the boogie function that encodes the static definition of the built-in ghost set `a_name' of type `a_type'.
 		require
 			a_type: attached a_type
@@ -224,23 +224,17 @@ feature -- Access
 			result_attached: attached Result
 		end
 
-	boogie_name_for_type (a_type: TYPE_A): STRING
+	boogie_name_for_type (a_type: CL_TYPE_A): STRING
 			-- Name for type `a_type'.
 		require
 			a_type_attached: attached a_type
 		local
-			l_type: TYPE_A
 			i: INTEGER
 			l_type_name: STRING
 		do
-			l_type := a_type.deep_actual_type
-			check not l_type.is_like end
-
-			if attached {FORMAL_A} l_type as l_formal then
-				Result := "G" + l_formal.position.out
-			elseif attached {TUPLE_TYPE_A} l_type then
+			if attached {TUPLE_TYPE_A} a_type then
 				Result := "TUPLE"
-			elseif attached {GEN_TYPE_A} l_type as l_gen_type then
+			elseif attached {GEN_TYPE_A} a_type as l_gen_type then
 				Result := l_gen_type.associated_class.name_in_upper.twin
 				Result.append ("^")
 				from
@@ -248,7 +242,9 @@ feature -- Access
 				until
 					i > l_gen_type.generics.upper
 				loop
-					l_type_name := boogie_name_for_type (l_gen_type.generics.i_th (i))
+					check attached {CL_TYPE_A} l_gen_type.generics.i_th (i) as t then
+						l_type_name := boogie_name_for_type (t)
+					end
 					Result.append (l_type_name)
 					if i < l_gen_type.generics.upper then
 						Result.append ("#")
@@ -257,7 +253,7 @@ feature -- Access
 				end
 				Result.append ("^")
 			else
-				Result := l_type.associated_class.name_in_upper.twin
+				Result := a_type.associated_class.name_in_upper.twin
 			end
 		ensure
 			result_attached: attached Result
@@ -289,7 +285,7 @@ feature -- Access
 			result_attached: attached Result
 		end
 
-	postcondition_predicate_name (a_feature: FEATURE_I; a_context_type: TYPE_A): STRING
+	postcondition_predicate_name (a_feature: FEATURE_I; a_context_type: CL_TYPE_A): STRING
 			-- Postcondition predicate name for feature `a_feature'.
 		require
 			a_feature_attached: attached a_feature

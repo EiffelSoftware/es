@@ -24,7 +24,7 @@ feature {NONE} -- Initialization
 
 feature -- Translation: Signature
 
-	translate_routine_signature (a_feature: FEATURE_I; a_type: TYPE_A)
+	translate_routine_signature (a_feature: FEATURE_I; a_type: CL_TYPE_A)
 			-- Translate signature of feature `a_feature' of type `a_type'.
 		require
 			not_attribute: not a_feature.is_attribute
@@ -32,20 +32,20 @@ feature -- Translation: Signature
 			translate_signature (a_feature, a_type, False)
 		end
 
-	translate_creator_signature (a_feature: FEATURE_I; a_type: TYPE_A)
+	translate_creator_signature (a_feature: FEATURE_I; a_type: CL_TYPE_A)
 			-- Translate signature of feature `a_feature' of type `a_type'.
 		do
 			translate_signature (a_feature, a_type, True)
 		end
 
-	translate_default_create_signature (a_feature: FEATURE_I; a_type: TYPE_A)
+	translate_default_create_signature (a_feature: FEATURE_I; a_type: CL_TYPE_A)
 			-- Translate signature of feature `a_feature' of type `a_type'.
 		do
 			translate_signature (a_feature, a_type, True)
 			-- TODO: create special signature
 		end
 
-	translate_logical_signature (a_feature: FEATURE_I; a_type: TYPE_A)
+	translate_logical_signature (a_feature: FEATURE_I; a_type: CL_TYPE_A)
 			-- Translate signature of a logical feature `a_feature' of type `a_type'.
 		require
 			class_logical: helper.is_class_logical (a_type.base_class)
@@ -55,10 +55,10 @@ feature -- Translation: Signature
 				-- Add referenced types
 			translation_pool.add_type (current_type)
 			across arguments_of_current_feature as i loop
-				translation_pool.add_type (i.item.type.deep_actual_type.instantiated_in (current_type))
+				translation_pool.add_type (i.item.type)
 			end
 			if current_feature.has_return_value then
-				translation_pool.add_type (current_feature.type.deep_actual_type.instantiated_in (current_type))
+				translation_pool.add_type (helper.class_type_in_context (current_feature.type, current_feature.written_class, current_feature, current_type))
 			end
 
 				-- Add precondition
@@ -67,7 +67,7 @@ feature -- Translation: Signature
 			end
 		end
 
-	translate_signature (a_feature: FEATURE_I; a_type: TYPE_A; a_for_creator: BOOLEAN)
+	translate_signature (a_feature: FEATURE_I; a_type: CL_TYPE_A; a_for_creator: BOOLEAN)
 			-- Translate signature of feature `a_feature' of type `a_type'.
 		require
 			routine: a_feature.is_routine
@@ -160,6 +160,7 @@ feature -- Translation: Signature
 			l_pre: IV_PRECONDITION
 			l_attr_name: STRING
 			l_attribute: FEATURE_I
+			l_boogie_type: IV_TYPE
 		do
 			create l_mapping.make
 			from
@@ -169,11 +170,10 @@ feature -- Translation: Signature
 			loop
 				l_attribute := current_type.base_class.feature_table.item_for_iteration
 				if l_attribute.is_attribute then
+					l_boogie_type := types.for_class_type (helper.class_type_in_context (l_attribute.type, l_attribute.written_class, Void, current_type))
 					translation_pool.add_referenced_feature (l_attribute, current_type)
 					l_attr_name := name_translator.boogie_procedure_for_feature (l_attribute, current_type)
-					create l_pre.make (factory.equal (
-						factory.heap_current_access (l_mapping, l_attr_name, types.for_type_a (l_attribute.type)),
-						types.for_type_a (l_attribute.type).default_value))
+					create l_pre.make (factory.equal (factory.heap_current_access (l_mapping, l_attr_name, l_boogie_type), l_boogie_type.default_value))
 					l_pre.set_free
 					current_boogie_procedure.add_contract (l_pre)
 				end
@@ -407,7 +407,7 @@ feature -- Translation: Signature
 
 feature -- Translation: Implementation
 
-	translate_routine_implementation (a_feature: FEATURE_I; a_type: TYPE_A)
+	translate_routine_implementation (a_feature: FEATURE_I; a_type: CL_TYPE_A)
 			-- Translate implementation of feature `a_feature' of type `a_type'.
 		require
 			routine: a_feature.is_routine
@@ -415,19 +415,19 @@ feature -- Translation: Implementation
 			translate_implementation (a_feature, a_type, False)
 		end
 
-	translate_creator_implementation (a_feature: FEATURE_I; a_type: TYPE_A)
+	translate_creator_implementation (a_feature: FEATURE_I; a_type: CL_TYPE_A)
 			-- Translate implementation of feature `a_feature' of type `a_type'.
 		do
 			translate_implementation (a_feature, a_type, True)
 		end
 
-	translate_implementation (a_feature: FEATURE_I; a_type: TYPE_A; a_for_creator: BOOLEAN)
+	translate_implementation (a_feature: FEATURE_I; a_type: CL_TYPE_A; a_for_creator: BOOLEAN)
 			-- Translate implementation of feature `a_feature' of type `a_type'.
 		local
 			l_procedure: IV_PROCEDURE
 			l_implementation: IV_IMPLEMENTATION
 			l_translator: E2B_INSTRUCTION_TRANSLATOR
-			l_type: TYPE_A
+			l_type: CL_TYPE_A
 			l_proc_name, l_local_name: STRING
 			l_values: ARRAYED_LIST [STRING_32]
 			l_assign: IV_ASSIGNMENT
@@ -485,11 +485,11 @@ feature -- Translation: Implementation
 				if l_byte_code.compound /= Void and then not l_byte_code.compound.is_empty then
 					if l_byte_code.locals /= Void then
 						across l_byte_code.locals as i loop
-							l_type := i.item.deep_actual_type.instantiated_in (current_type)
+							l_type := helper.class_type_in_context (i.item, current_feature.written_class, current_feature, current_type)
 							translation_pool.add_type (l_type)
 							l_local_name := name_translator.boogie_name_for_local (i.cursor_index)
-							l_translator.entity_mapping.set_local (i.cursor_index, create {IV_ENTITY}.make (l_local_name, types.for_type_a (l_type)))
-							l_implementation.add_local (l_local_name, types.for_type_a (l_type))
+							l_translator.entity_mapping.set_local (i.cursor_index, create {IV_ENTITY}.make (l_local_name, types.for_class_type (l_type)))
+							l_implementation.add_local (l_local_name, types.for_class_type (l_type))
 						end
 					end
 					l_translator.process_compound (l_byte_code.compound)
@@ -528,42 +528,37 @@ feature -- Translation: Implementation
 
 feature -- Translation: Functions
 
-	translate_functional_representation (a_feature: FEATURE_I; a_type: TYPE_A)
+	translate_functional_representation (a_feature: FEATURE_I; a_type: CL_TYPE_A)
 			-- Generate a Boogie function that encodes the result of Eiffel function `a_feature' and its definitional axiom.
 		local
 			l_function: IV_FUNCTION
 			l_proc: IV_PROCEDURE
 			l_post: IV_POSTCONDITION
 			l_fcall: IV_FUNCTION_CALL
-			l_boogie_type: IV_TYPE
-			l_type: TYPE_A
-			i: INTEGER
+			l_type: CL_TYPE_A
 		do
 			set_context (a_feature, a_type)
 			helper.set_up_byte_context (current_feature, current_type)
+			translation_pool.add_type (current_type)
 			translation_pool.add_function_precondition_predicate (current_feature, current_type)
 
 				-- Function
-			create l_function.make (
-				name_translator.boogie_function_for_feature (current_feature, current_type),
-				types.for_type_a (a_feature.type.deep_actual_type.instantiated_in (current_type))
-			)
+			l_type := helper.class_type_in_context (current_feature.type, current_feature.written_class, current_feature, current_type)
+			create l_function.make (name_translator.boogie_function_for_feature (current_feature, current_type), types.for_class_type (l_type))
 			boogie_universe.add_declaration (l_function)
 			create l_fcall.make (l_function.name, l_function.type)
 
 				-- Arguments
-			translation_pool.add_type (current_type)
 			l_function.add_argument ("heap", types.heap)
 			l_function.add_argument ("current", types.ref)
 			l_fcall.add_argument (factory.old_ (factory.global_heap))
 			l_fcall.add_argument (factory.std_current)
-			from i := 1 until i > current_feature.argument_count loop
-				l_type := current_feature.arguments.i_th (i).deep_actual_type.instantiated_in (current_type)
-				translation_pool.add_type (l_type)
-				l_boogie_type := types.for_type_a (l_type)
-				l_function.add_argument (current_feature.arguments.item_name (i), l_boogie_type)
-				l_fcall.add_argument (factory.entity (current_feature.arguments.item_name (i), l_boogie_type))
-				i := i + 1
+			across
+				arguments_of_current_feature as i
+			loop
+				translation_pool.add_type (i.item.type)
+				l_function.add_argument (i.item.name, i.item.boogie_type)
+				l_fcall.add_argument (factory.entity (i.item.name, i.item.boogie_type))
 			end
 
 				-- Definition
@@ -582,7 +577,7 @@ feature -- Translation: Functions
 			generate_frame_axiom (l_function)
 		end
 
-	translate_function_precondition_predicate (a_feature: FEATURE_I; a_type: TYPE_A)
+	translate_function_precondition_predicate (a_feature: FEATURE_I; a_type: CL_TYPE_A)
 			-- Translate precondition predicate of feature `a_feature' of type `a_type'.
 		local
 			l_fname: STRING
@@ -591,7 +586,6 @@ feature -- Translation: Functions
 			l_entity: IV_ENTITY
 			l_body, l_free_body: IV_EXPRESSION
 			l_is_logical: BOOLEAN
-			i: INTEGER
 		do
 			set_context (a_feature, a_type)
 			l_is_logical := helper.is_class_logical (a_type.base_class)
@@ -615,28 +609,30 @@ feature -- Translation: Functions
 			end
 			if not l_is_logical or (create {E2B_CUSTOM_LOGICAL_HANDLER}).has_arg_current (a_feature) then
 					-- Non-logical features and some logical once take "current" as the first argument
-				create l_entity.make ("current", types.for_type_a (a_type))
+				create l_entity.make ("current", types.for_class_type (a_type))
 				l_pre_function.add_argument (l_entity.name, l_entity.type)
 				l_free_pre_function.add_argument (l_entity.name, l_entity.type)
 				l_mapping.set_current (l_entity)
 				if not l_is_logical then
-					l_free_body := factory.and_clean (l_free_body, type_property (l_entity, current_type, l_mapping.heap))
+					l_free_body := factory.and_clean (l_free_body, types.type_property (current_type, l_mapping.heap, l_entity))
 				end
 			end
-			from i := 1 until i > a_feature.argument_count loop
-				create l_entity.make (a_feature.arguments.item_name (i), types.for_type_in_context (a_feature.arguments.i_th (i), current_type))
+			across arguments_of_current_feature as i loop
+				create l_entity.make (i.item.name, i.item.boogie_type)
 				l_pre_function.add_argument (l_entity.name, l_entity.type)
 				l_free_pre_function.add_argument (l_entity.name, l_entity.type)
-				l_mapping.set_argument (i, l_entity)
+				l_mapping.set_argument (i.target_index, l_entity)
 				if not l_is_logical then
-					l_free_body := factory.and_clean (l_free_body, type_property (l_entity, a_feature.arguments.i_th (i).instantiated_in (current_type), l_mapping.heap))
+					l_free_body := factory.and_clean (
+						l_free_body,
+						types.type_property (i.item.type, l_mapping.heap, l_entity))
 				end
-				i := i + 1
 			end
 
 				-- Set a dummy result in `l_mapping': we are not using postconditions anyway
 			if a_feature.has_return_value then
-				l_mapping.set_result (factory.entity ("result", types.for_type_in_context (a_feature.type, current_type)))
+				l_mapping.set_result (factory.entity ("result",
+					types.for_class_type (helper.class_type_in_context (current_feature.type, current_feature.written_class, current_feature, current_type))))
 			end
 				-- Body			
 			l_body := pre_post_expressions_of (a_feature, a_type, l_mapping).pre
@@ -653,7 +649,7 @@ feature -- Translation: Functions
 			end
 		end
 
-	translate_frame_function (a_feature: FEATURE_I; a_type: TYPE_A; a_read: BOOLEAN)
+	translate_frame_function (a_feature: FEATURE_I; a_type: CL_TYPE_A; a_read: BOOLEAN)
 			-- Translate the frame function of feature `a_feature' of type `a_type';
 			-- (translate the read frame for the functional representation if `a_read' and the write frame otherwise)
 		require
@@ -728,7 +724,7 @@ feature -- Translation: Functions
 			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
 		end
 
-	translate_variant_functions (a_feature: FEATURE_I; a_type: TYPE_A)
+	translate_variant_functions (a_feature: FEATURE_I; a_type: CL_TYPE_A)
 			-- Translate the decreases of feature `a_feature' of type `a_type'.
 		local
 			l_decreases_list: like decreases_expressions_of
@@ -820,10 +816,12 @@ feature {NONE} -- Translation: Functions
 					-- Take `l_post' from the postcondition
 				l_post := pre_post_expressions_of (current_feature, current_type, l_expr_translator.entity_mapping).post
 					-- Add type property
-				l_post := factory.and_clean (l_post, type_property (
-					l_fcall,
-					current_feature.type.deep_actual_type.instantiated_in (current_type),
-					l_expr_translator.entity_mapping.heap))
+				l_post := factory.and_clean (l_post,
+					types.type_property (
+						helper.class_type_in_context (current_feature.type, current_feature.written_class, current_feature, current_type),
+						l_expr_translator.entity_mapping.heap,
+						l_fcall)
+					)
 			end
 
 			create l_forall.make (factory.implies_ (l_pre, l_post))
@@ -850,10 +848,7 @@ feature {NONE} -- Translation: Functions
 	translator_for_function (a_function: IV_FUNCTION): E2B_CONTRACT_EXPRESSION_TRANSLATOR
 			-- Translator that maps `Result' to the invocation of `a_function'.
 		local
-			i: INTEGER
 			l_function_call: IV_FUNCTION_CALL
-			l_boogie_type: IV_TYPE
-			l_type: TYPE_A
 		do
 			create Result.make
 			Result.entity_mapping.set_current (create {IV_ENTITY}.make ("current", types.ref))
@@ -862,11 +857,8 @@ feature {NONE} -- Translation: Functions
 			create l_function_call.make (a_function.name, a_function.type)
 			l_function_call.add_argument (Result.entity_mapping.heap)
 			l_function_call.add_argument (Result.entity_mapping.current_expression)
-			from i := 1 until i > current_feature.argument_count loop
-				l_type := current_feature.arguments.i_th (i).deep_actual_type.instantiated_in (current_type)
-				l_boogie_type := types.for_type_a (l_type)
-				l_function_call.add_argument (create {IV_ENTITY}.make(current_feature.arguments.item_name (i), l_boogie_type))
-				i := i + 1
+			across arguments_of_current_feature as i loop
+				l_function_call.add_argument (create {IV_ENTITY}.make(i.item.name, i.item.boogie_type))
 			end
 			Result.entity_mapping.set_result (l_function_call)
 		end
@@ -933,7 +925,7 @@ feature {NONE} -- Translation: Functions
 
 feature -- Translation: agents		
 
-	translate_postcondition_predicate (a_feature: FEATURE_I; a_type: TYPE_A)
+	translate_postcondition_predicate (a_feature: FEATURE_I; a_type: CL_TYPE_A)
 			-- Translate postconditino predicate of feature `a_feature' of type `a_type'.
 		local
 			l_procedure: IV_PROCEDURE
@@ -954,7 +946,7 @@ feature -- Translation: agents
 				l_function.add_argument (i.item.name, i.item.type)
 			end
 			if a_feature.has_return_value then
-				l_function.add_argument ("result", types.for_type_a (a_feature.type))
+				l_function.add_argument ("result", types.for_class_type (helper.class_type_in_context (a_feature.type, a_feature.written_class, a_feature, a_type)))
 			end
 			boogie_universe.add_declaration (l_function)
 
@@ -969,7 +961,7 @@ feature -- Translation: agents
 --			current_feature.written_class.direct_descendants.item.feature_of_rout_id_set (current_feature.rout_id_set)
 		end
 
-	generate_postcondition_axiom (a_feature: FEATURE_I; a_context_type: TYPE_A; a_postcondition_type: TYPE_A)
+	generate_postcondition_axiom (a_feature: FEATURE_I; a_context_type: CL_TYPE_A; a_postcondition_type: CL_TYPE_A)
 			-- Generate postcondition axiom for `current_feature' of type `a_context_type' for subtype `a_postcondition_type'.
 		local
 			l_contracts: TUPLE [pre: IV_EXPRESSION; post: IV_EXPRESSION]
@@ -981,7 +973,6 @@ feature -- Translation: agents
 			l_fcall, l_typeof: IV_FUNCTION_CALL
 			l_type_value: IV_VALUE
 			l_binop1, l_binop2, l_binop3: IV_BINARY_OPERATION
-			i: INTEGER
 		do
 			create l_mapping.make
 			create l_fcall.make (name_translator.postcondition_predicate_name (a_feature, a_context_type), types.bool)
@@ -995,15 +986,14 @@ feature -- Translation: agents
 			l_fcall.add_argument (l_current)
 			l_mapping.set_current (l_current)
 			create l_args.make
-			from i := 1 until i > a_feature.argument_count loop
-				create l_arg.make (a_feature.arguments.item_name (i), types.for_type_a (a_feature.arguments.i_th (i)))
+			across arguments_of (a_feature, a_context_type) as i loop
+				create l_arg.make (i.item.name, i.item.boogie_type)
 				l_fcall.add_argument (l_arg)
-				l_mapping.set_argument (i, l_arg)
+				l_mapping.set_argument (i.target_index, l_arg)
 				l_args.extend (l_arg)
-				i := i + 1
 			end
 			if a_feature.has_return_value then
-				create l_result.make ("result", types.for_type_a (a_feature.type))
+				create l_result.make ("result", types.for_class_type (helper.class_type_in_context (a_feature.type, a_feature.written_class, a_feature, a_context_type)))
 				l_fcall.add_argument (l_result)
 				l_mapping.set_result (l_result)
 			end
@@ -1167,7 +1157,8 @@ feature {NONE} -- Implementation
 				l_call.add_argument (i.item.entity)
 			end
 			if current_feature.has_return_value then
-				l_call.add_argument (create {IV_ENTITY}.make ("Result", types.for_type_a (current_feature.type)))
+				l_call.add_argument (create {IV_ENTITY}.make ("Result", types.for_class_type (
+					helper.class_type_in_context (current_feature.type, current_feature.written_class, current_feature, current_type))))
 			end
 			create l_post.make (l_call)
 			l_post.set_free

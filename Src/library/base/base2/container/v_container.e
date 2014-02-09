@@ -67,7 +67,7 @@ feature -- Search
 			is_wrapped: is_wrapped
 			modify_model (["closed", "observers"], Current)
 		local
-			it: V_ITERATOR [G]
+			it: like new_cursor
 			s: MML_SEQUENCE [G]
 		do
 			from
@@ -76,7 +76,7 @@ feature -- Search
 				1 <= it.index and it.index <= it.sequence.count + 1
 				s = it.sequence.front (it.index - 1)
 				Result = s.occurrences (v)
-				modify_model ("index", it)
+				modify_model (["index", "box"], it)
 			until
 				it.off
 			loop

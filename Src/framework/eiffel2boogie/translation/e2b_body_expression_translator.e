@@ -50,14 +50,14 @@ feature -- Visitors
 			-- <Precursor>
 		local
 			i, n: INTEGER
-			l_type: TYPE_A
+			l_type: CL_TYPE_A
 			l_expr: EXPR_B
 			l_target: IV_EXPRESSION
 			l_pcall: IV_PROCEDURE_CALL
 			l_assign: IV_ASSIGNMENT
 			l_content_type: IV_TYPE
 		do
-			l_type := a_node.type
+			l_type := class_type_in_current_context (a_node.type)
 			translation_pool.add_type (l_type)
 
 			if a_node.expressions /= Void then
@@ -82,7 +82,9 @@ feature -- Visitors
 			side_effect.extend (l_pcall)
 
 				-- Put all elements into array
-			l_content_type := types.for_type_a (l_type.generics.first)
+			check attached {CL_TYPE_A} l_type.generics.first as t then
+				l_content_type := types.for_class_type (t)
+			end
 			from
 				i := 1
 			until
@@ -106,7 +108,7 @@ feature -- Visitors
 			l_type: CL_TYPE_A
 			l_feature: FEATURE_I
 			l_target: IV_EXPRESSION
-			l_target_type: TYPE_A
+			l_target_type: CL_TYPE_A
 
 			l_local: IV_ENTITY
 			l_havoc: IV_HAVOC
@@ -119,9 +121,8 @@ feature -- Visitors
 			l_type_value: IV_VALUE
 			l_handler: E2B_CUSTOM_CALL_HANDLER
 		do
-			l_type ?= a_node.type.deep_actual_type
-			check l_type /= Void end
-			l_feature := a_node.type.associated_class.feature_of_rout_id (a_node.call.routine_id)
+			l_type := class_type_in_current_context (a_node.type)
+			l_feature := l_type.base_class.feature_of_rout_id (a_node.call.routine_id)
 			check feature_valid: l_feature /= Void end
 			translation_pool.add_type (l_type)
 
@@ -223,7 +224,7 @@ feature -- Translation
 			translation_pool.add_referenced_feature (a_feature, current_target_type)
 
 			check current_target /= Void end
-			l_content_type := types.for_type_in_context (a_feature.type, current_target_type)
+			l_content_type := types.for_class_type (feature_class_type (a_feature))
 			l_field := factory.entity (name_translator.boogie_procedure_for_feature (a_feature, current_target_type), types.field (l_content_type))
 
 				-- Add a reads check
@@ -266,7 +267,7 @@ feature -- Translation
 			translation_pool.add_referenced_feature (a_feature, current_target_type)
 			if a_feature.has_return_value and helper.is_functional (a_feature) then
 				check not a_for_creator end
-				create l_fcall.make (name_translator.boogie_function_for_feature (a_feature, current_target_type), types.for_type_a (a_feature.type))
+				create l_fcall.make (name_translator.boogie_function_for_feature (a_feature, current_target_type), types.for_class_type (feature_class_type (a_feature)))
 				l_fcall.add_argument (entity_mapping.heap)
 				l_fcall.add_argument (current_target)
 				process_parameters (a_parameters)
@@ -310,7 +311,7 @@ feature -- Translation
 
 					-- Process call
 				if a_feature.has_return_value then
-					create_local (a_feature.type.instantiated_in (current_target_type))
+					create_local (feature_class_type (a_feature))
 					l_pcall.set_target (last_local)
 					last_expression := last_local
 				else
@@ -324,8 +325,6 @@ feature -- Translation
 	process_builtin_routine_call (a_feature: FEATURE_I; a_parameters: BYTE_LIST [PARAMETER_B]; a_builtin_name: STRING)
 			-- Process feature call.
 		local
-			l_target: IV_EXPRESSION
-			l_target_type: TYPE_A
 			l_call: IV_PROCEDURE_CALL
 		do
 			create l_call.make (a_builtin_name)
@@ -336,7 +335,7 @@ feature -- Translation
 
 				-- Process call
 			if a_feature.has_return_value then
-				create_local (a_feature.type.instantiated_in (current_target_type))
+				create_local (feature_class_type (a_feature))
 				l_call.set_target (last_local)
 				last_expression := last_local
 			else
@@ -354,20 +353,15 @@ feature -- Translation
 		require
 			a_feature.has_return_value
 		local
-			l_target: IV_EXPRESSION
-			l_target_type: TYPE_A
 			l_call: IV_FUNCTION_CALL
 			l_pcall: IV_PROCEDURE_CALL
 		do
-			create l_call.make (a_builtin_name, types.for_type_a (a_feature.type))
+			create l_call.make (a_builtin_name, types.for_class_type (feature_class_type (a_feature)))
 			l_call.add_argument (entity_mapping.heap)
 			l_call.add_argument (current_target)
 
 			process_parameters (a_parameters)
 			l_call.arguments.append (last_parameters)
-
-			current_target := l_target
-			current_target_type := l_target_type
 
 			last_expression := l_call
 		end
@@ -429,7 +423,7 @@ feature -- Translation
 			end
 				-- Map `Result'
 			if a_feature.has_return_value then
-				create_local (a_feature.type)
+				create_local (feature_class_type (a_feature))
 				l_entity_mapping.set_result (last_local)
 			end
 
@@ -578,10 +572,10 @@ feature {NONE} -- Implementation
 	procedure_calls: LINKED_STACK [IV_PROCEDURE_CALL]
 			-- Stack of procedure calls.
 
-	create_local (a_type: TYPE_A)
+	create_local (a_type: CL_TYPE_A)
 			-- Create new local.
 		do
-			create last_local.make (helper.unique_identifier ("temp"), types.for_type_a (a_type))
+			create last_local.make (helper.unique_identifier ("temp"), types.for_class_type (a_type))
 			context_implementation.add_local (last_local.name, last_local.type)
 		end
 

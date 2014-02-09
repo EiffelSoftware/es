@@ -34,4 +34,20 @@ feature
 			end
 		end
 
+	bar_ok
+		note
+			explicit: wrapping
+		require
+			modify_model (["x", "y", "closed"], Current)
+		do
+			if x > 0 then
+				foo
+			else
+				unwrap
+				y := 1
+				wrap
+			end
+		end
+
+
 end

@@ -131,7 +131,7 @@ feature -- Cursor movement
 	start
 			-- Go to the first position.
 		require else
-			modify_model ("index", Current)
+			modify_model (["index", "box"], Current)
 		deferred
 		ensure then
 			index_effect: index = 1
@@ -140,7 +140,7 @@ feature -- Cursor movement
 	finish
 			-- Go to the last position.
 		require
-			modify_model ("index", Current)
+			modify_model (["index", "box"], Current)
 		deferred
 		ensure
 			index_effect: index = sequence.count
@@ -148,6 +148,8 @@ feature -- Cursor movement
 
 	forth
 			-- Go one position forward.
+		require else
+			modify_model ("index", Current)
 		deferred
 		ensure then
 			index_effect: index = old index + 1
@@ -157,7 +159,7 @@ feature -- Cursor movement
 			-- Go one position backward.
 		require
 			not_off: not off
-			modify_model ("index", Current)
+			modify_model (["index", "box"], Current)
 		deferred
 		ensure
 			index_effect: index = old index - 1
@@ -169,7 +171,7 @@ feature -- Cursor movement
 			explicit: wrapping
 		require
 			has_index: valid_index (i)
-			modify_model ("index", Current)
+			modify_model (["index", "box"], Current)
 		local
 			j: INTEGER
 		do
@@ -203,7 +205,7 @@ feature -- Cursor movement
 	go_before
 			-- Go before any position of `target'.
 		require
-			modify_model ("index", Current)
+			modify_model (["index", "box"], Current)
 		deferred
 		ensure
 			index_effect: index = 0
@@ -212,7 +214,7 @@ feature -- Cursor movement
 	go_after
 			-- Go after any position of `target'.
 		require
-			modify_model ("index", Current)
+			modify_model (["index", "box"], Current)
 		deferred
 		ensure
 			index_effect: index = sequence.count + 1
@@ -224,6 +226,8 @@ feature -- Cursor movement
 			-- (Use reference equality.)
 		note
 			explicit: wrapping
+		require else
+			modify_model (["index"], Current)
 		do
 			check inv end
 			if before then
@@ -231,6 +235,8 @@ feature -- Cursor movement
 			end
 			from
 			invariant
+				target = target.old_
+				sequence ~ sequence.old_
 				index.old_ <= index
 				not before
 				across index.old_.max (1) |..| (index - 1) as i all sequence [i.item] /= v end
@@ -283,7 +289,7 @@ feature -- Cursor movement
 		note
 			explicit: wrapping
 		require
-			modify_model ("index", Current)
+			modify_model (["index", "box"], Current)
 		do
 			check inv end
 			if after then
@@ -291,6 +297,8 @@ feature -- Cursor movement
 			end
 			from
 			invariant
+				target = target.old_
+				sequence ~ sequence.old_
 				index <= index.old_
 				not after
 				across (index + 1) |..| index.old_.min (sequence.count) as i all sequence [i.item] /= v end

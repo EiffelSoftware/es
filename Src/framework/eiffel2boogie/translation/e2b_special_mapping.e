@@ -69,7 +69,7 @@ feature -- Access
 
 feature -- Access (built-ins)
 
-	builtin_any_functions: ARRAY [STRING]
+	builtin_any_functions: ARRAY [STRING_32]
 			-- List of builtin function names.
 		once
 			Result := <<
@@ -89,7 +89,7 @@ feature -- Access (built-ins)
 			Result.compare_objects
 		end
 
-	builtin_any_procedures: ARRAY [STRING]
+	builtin_any_procedures: ARRAY [STRING_32]
 			-- List of builtin procedure names.
 		once
 			Result := <<
@@ -101,7 +101,7 @@ feature -- Access (built-ins)
 			Result.compare_objects
 		end
 
-	ghost_access: ARRAY [STRING]
+	ghost_access: ARRAY [STRING_32]
 			-- List of built-in ghost attributes.
 		once
 			Result := <<
@@ -143,7 +143,7 @@ feature -- Access (built-ins)
 			Result := ghost_access_types [i]
 		end
 
-	ghost_setter: ARRAY [STRING]
+	ghost_setter: ARRAY [STRING_32]
 			-- List of feature names.
 		once
 			Result := <<
@@ -155,7 +155,7 @@ feature -- Access (built-ins)
 			Result.compare_objects
 		end
 
-	void_ok_features: ARRAY [STRING]
+	void_ok_features: ARRAY [STRING_32]
 			-- List of special ANY feature names that can be called on Void.
 		once
 			Result := <<

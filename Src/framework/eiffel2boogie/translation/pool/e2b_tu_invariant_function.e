@@ -18,14 +18,14 @@ create
 
 feature {NONE} -- Implementation
 
-	make (a_type: TYPE_A)
+	make (a_type: CL_TYPE_A)
 			-- Initialize translation unit for the invariant of `a_type'.
 		do
 			type := a_type
 			id := "inv/" + type_id (a_type)
 		end
 
-	make_filtered (a_type: TYPE_A; a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C)
+	make_filtered (a_type: CL_TYPE_A; a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C)
 			-- Initialize translation unit for a partial invariant of `a_type'
 			-- that only includes clauses `a_included', or excludes clauses `a_excluded',
 			-- and only includes clauses inherited from `a_ancestor'.
@@ -57,7 +57,7 @@ feature {NONE} -- Implementation
 
 feature -- Access
 
-	type: TYPE_A
+	type: CL_TYPE_A
 			-- Type to which the invariant belongs.
 
 	included, excluded: LIST [STRING]

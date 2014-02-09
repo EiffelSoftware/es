@@ -16,12 +16,13 @@ inherit
 
 feature -- Basic operations
 
-	translate (a_feature: FEATURE_I; a_context_type: TYPE_A)
+	translate (a_feature: FEATURE_I; a_context_type: CL_TYPE_A)
 			-- Translate feature `a_feature' of type `a_context_type'.
 		require
 			is_attribute: a_feature.is_attribute
 		local
 			l_attribute_name, l_old_name: STRING
+			l_class_type: CL_TYPE_A
 			l_type_prop, l_expr: IV_EXPRESSION
 			l_forall: IV_FORALL
 			l_heap, l_o: IV_ENTITY
@@ -30,8 +31,9 @@ feature -- Basic operations
 			l_prev: like previous_versions
 			l_typed_sets: like helper.class_note_values
 		do
+			l_class_type := helper.class_type_in_context (a_feature.type, a_feature.written_class, Void, a_context_type)
 			l_attribute_name := name_translator.boogie_procedure_for_feature (a_feature, a_context_type)
-			l_boogie_type := types.for_type_in_context (a_feature.type, a_context_type)
+			l_boogie_type := types.for_class_type (l_class_type)
 
 			l_prev := previous_versions (a_feature, a_context_type)
 			if l_prev = Void then
@@ -71,7 +73,7 @@ feature -- Basic operations
 			l_heap := factory.heap_entity ("heap")
 			l_o := factory.ref_entity ("o")
 			l_heap_access := factory.heap_access (l_heap, l_o, l_attribute_name, l_boogie_type)
-			l_type_prop := types.type_property (a_feature.type.deep_actual_type.instantiated_in (a_context_type), l_heap, l_heap_access)
+			l_type_prop := types.type_property (l_class_type, l_heap, l_heap_access)
 			if not l_type_prop.is_true then
 				l_type_prop := factory.implies_ (factory.and_ (
 						factory.is_heap (l_heap),
@@ -85,16 +87,7 @@ feature -- Basic operations
 			end
 
 				-- Add translation references
-			translation_pool.add_type_in_context (a_feature.type, a_context_type)
-
-				-- Mark field as model or non-model
-			l_expr := factory.function_call ("IsModelField", << factory.entity (l_attribute_name, types.field (l_boogie_type)), factory.type_value (a_context_type) >>, types.bool)
-			if helper.model_queries (a_context_type.base_class).has (a_feature.feature_name_32) then
-				boogie_universe.add_declaration (create {IV_AXIOM}.make (l_expr))
-			else
-				boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.not_ (l_expr)))
-			end
-
+			translation_pool.add_type (l_class_type)
 
 --			elseif a_feature.type.is_integer or a_feature.type.is_natural then
 --				create l_heap_access.make ("heap", create {IV_ENTITY}.make ("o", types.ref), create {IV_ENTITY}.make (l_boogie_name, l_constant.type))
@@ -110,33 +103,35 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
-	previous_versions (a_feature: FEATURE_I; a_context_type: TYPE_A): LINKED_LIST [TUPLE [feat: FEATURE_I; typ: TYPE_A]]
-			-- Versions of `a_feature' from ancestors of `a_context_type' if inherited or redefined; Void if it is teh original definition.
+	previous_versions (a_feature: FEATURE_I; a_context_type: CL_TYPE_A): LINKED_LIST [TUPLE [feat: FEATURE_I; typ: CL_TYPE_A]]
+			-- Versions of `a_feature' from ancestors of `a_context_type' if inherited or redefined; Void if it is the original definition.
 		local
-			l_written_type: TYPE_A
+			l_written_type: CL_TYPE_A
 			l_written_feature: FEATURE_I
 			i: INTEGER
 		do
-			check attached {CL_TYPE_A} a_context_type.deep_actual_type as cl_type then
-				if a_feature.written_in /= a_context_type.base_class.class_id then
-						-- Inherited attribute: return the class where it is written in
-					l_written_type := cl_type.parent_type (a_feature.written_class.actual_type)
-					l_written_feature := l_written_type.base_class.feature_of_body_index (a_feature.body_index)
+			if a_feature.written_in /= a_context_type.base_class.class_id then
+					-- Inherited attribute: return the class where it is written in
+				check attached {CL_TYPE_A} a_context_type.parent_type (a_feature.written_class.actual_type) as t then
+					l_written_type := t
+				end
+				l_written_feature := l_written_type.base_class.feature_of_body_index (a_feature.body_index)
+				create Result.make
+				Result.extend ([l_written_feature, l_written_type])
+			elseif a_feature.assert_id_set /= Void then
+					-- Redefined attribute: return original versions
+				from
 					create Result.make
-					Result.extend ([l_written_feature, l_written_type])
-				elseif a_feature.assert_id_set /= Void then
-						-- Redefined attribute: return original versions
-					from
-						create Result.make
-						i := 1
-					until
-						i > a_feature.assert_id_set.count
-					loop
-						l_written_type := cl_type.parent_type (a_feature.assert_id_set [i].written_class.actual_type)
-						l_written_feature := l_written_type.base_class.feature_of_body_index (a_feature.assert_id_set [i].body_index)
-						Result.extend ([l_written_feature, l_written_type])
-						i := i + 1
+					i := 1
+				until
+					i > a_feature.assert_id_set.count
+				loop
+					check attached {CL_TYPE_A} a_context_type.parent_type (a_feature.assert_id_set [i].written_class.actual_type) as t then
+						l_written_type := t
 					end
+					l_written_feature := l_written_type.base_class.feature_of_body_index (a_feature.assert_id_set [i].body_index)
+					Result.extend ([l_written_feature, l_written_type])
+					i := i + 1
 				end
 			end
 		end

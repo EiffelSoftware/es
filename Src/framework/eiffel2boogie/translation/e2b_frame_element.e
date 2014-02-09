@@ -45,12 +45,6 @@ feature -- Access
 	origin: CLASS_C
 			-- Class where the frame clause was written in.
 
-	written_type: TYPE_A
-			-- Eiffel type of each of the `objects' as seen in `origin'.
-		do
-			Result := type.instantiated_in (origin.actual_type)
-		end
-
 invariant
 	objects_exists: attached objects
 	fields_exists: attached fields

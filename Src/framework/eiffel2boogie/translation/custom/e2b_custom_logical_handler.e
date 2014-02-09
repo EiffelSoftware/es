@@ -113,14 +113,14 @@ feature {NONE} -- Implementation
 				a_translator.set_last_expression (factory.map_access (a_translator.current_target, l_args))
 			else
 				if a_feature.has_return_value then
-					create l_fcall.make (l_fname, types.for_type_a (a_feature.type))
+					create l_fcall.make (l_fname, types.for_class_type (a_translator.feature_class_type (a_feature)))
 					if not a_feature.is_external then
 							-- We use external as static, so only add the target if not external
 						l_fcall.add_argument (a_translator.current_target)
 					end
 				else
 						-- Since logical classes are immutable, this must be a creation procedure
-					create l_fcall.make (l_fname, types.for_type_a (a_translator.current_target_type))
+					create l_fcall.make (l_fname, types.for_class_type (a_translator.current_target_type))
 				end
 				across
 					a_translator.last_parameters as params

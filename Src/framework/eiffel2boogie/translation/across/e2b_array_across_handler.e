@@ -27,7 +27,7 @@ feature -- Basic operations
 			expression_translator.set_last_expression (factory.function_call (
 				"fun.ARRAY.item",
 				<< expression_translator.entity_mapping.heap, array_expr, expression_translator.locals_map.item (bound_variable.position) >>,
-				types.for_type_a (bound_variable.type.generics.first)))
+				types.for_class_type (expression_translator.class_type_in_current_context (bound_variable.type.generics.first))))
 		end
 
 	handle_call_cursor_index (a_feature: FEATURE_I)
