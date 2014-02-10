@@ -180,6 +180,9 @@ feature {NONE} -- Implementation
 			create l_f.make ("$f", types.field (l_type_var))
 			l_def := factory.false_
 			across helper.flat_model_queries (type.base_class) as m loop
+				if m.item.written_in /= system.any_id then
+					translation_pool.add_referenced_feature (m.item, type)
+				end
 				create l_m.make (
 					helper.boogie_name_for_attribute (m.item, type),
 					types.field (types.for_class_type (helper.class_type_in_context (m.item.type, m.item.written_class, m.item, type))))

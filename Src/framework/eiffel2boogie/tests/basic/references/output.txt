@@ -1,4 +1,7 @@
 ======================================
+B_REFERENCES (invariant admissibility)
+Successfully verified.
+======================================
 ANY.default_create (creator, inherited by B_REFERENCES)
 Successfully verified.
 ======================================
@@ -14,7 +17,4 @@ B_REFERENCES.non_void_call
 Successfully verified.
 ======================================
 B_REFERENCES.non_void_contract
-Successfully verified.
-======================================
-B_REFERENCES (invariant admissibility)
 Successfully verified.

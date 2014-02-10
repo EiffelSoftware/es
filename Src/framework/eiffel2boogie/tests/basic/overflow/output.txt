@@ -1,4 +1,7 @@
 ======================================
+B_OVERFLOW (invariant admissibility)
+Successfully verified.
+======================================
 ANY.default_create (creator, inherited by B_OVERFLOW)
 Successfully verified.
 ======================================
@@ -32,7 +35,4 @@ Verification failed.
 Line: 43. Possible arithmetic overflow.
 ======================================
 B_OVERFLOW.no_overflow_natural_subtraction
-Successfully verified.
-======================================
-B_OVERFLOW (invariant admissibility)
 Successfully verified.

@@ -1,4 +1,7 @@
 ======================================
+B_ATTRIBUTES (invariant admissibility)
+Successfully verified.
+======================================
 B_ATTRIBUTES.default_values_for_attribute (creator)
 Successfully verified.
 ======================================
@@ -9,7 +12,4 @@ B_ATTRIBUTES.attribute_assignment
 Successfully verified.
 ======================================
 B_ATTRIBUTES.argument_assignment
-Successfully verified.
-======================================
-B_ATTRIBUTES (invariant admissibility)
 Successfully verified.

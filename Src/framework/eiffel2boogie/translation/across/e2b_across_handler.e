@@ -79,10 +79,21 @@ feature -- Basic operations
 				if attached {IV_ASSERT} checks.item as assert then
 						-- It is a check
 					if assert.expression.has_free_var_named (l_bound_var.name) then
-						if assert.is_free then
-							create l_assert.make_assume (quantifier (l_bound_var, assert.expression))
+						if attached {IV_BINARY_OPERATION} assert.expression as binop and then
+							binop.operator ~ "==>"  and then
+							not binop.right.has_free_var_named (l_bound_var.name) then
+								-- It is an implication where the consequent does not contain the bound variable; do not include antecedents that do.
+							if assert.is_free then
+								create l_assert.make_assume (binop.right)
+							else
+								create l_assert.make (binop.right)
+							end
 						else
-							create l_assert.make (quantifier (l_bound_var, assert.expression))
+							if assert.is_free then
+								create l_assert.make_assume (quantifier (l_bound_var, assert.expression))
+							else
+								create l_assert.make (quantifier (l_bound_var, assert.expression))
+							end
 						end
 						l_assert.node_info.load (assert.node_info)
 						expression_translator.side_effect.extend (l_assert)
@@ -127,13 +138,7 @@ feature {NONE} -- Implementation
 				create {IV_EXISTS} Result.make (factory.and_ (l_guard, a_expr))
 			end
 			Result.add_bound_variable (a_bound_var.name, a_bound_var.type)
-			-- ToDo: triggers?
---			l_quantifier.add_trigger (l_guard)
---			if attached {IV_FUNCTION_CALL} l_expression as l_fcall then
---				if across l_fcall.arguments as i some attached {IV_ENTITY} i.item as j and then j.name ~ l_counter.name end then
---					l_quantifier.add_trigger (l_expression)
---				end
---			end			
+			add_triggers (Result)
 		end
 
 	translate_domain
@@ -148,6 +153,13 @@ feature {NONE} -- Implementation
 
 	guard (a_bound_var: IV_ENTITY): IV_EXPRESSION
 			-- Antecedent in the resulting quantifier, with bound variable `a_bound_var'.
+		deferred
+		end
+
+	add_triggers (a_quantifier: IV_QUANTIFIER)
+			-- Add triggers to `a_quantifier' generated from the current across expression.
+		require
+			single_variable: a_quantifier.bound_variables.count = 1
 		deferred
 		end
 end

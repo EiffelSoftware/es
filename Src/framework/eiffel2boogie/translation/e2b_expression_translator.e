@@ -217,6 +217,7 @@ feature -- Basic operations
 			create locals_map.make (10)
 			create across_handler_map.make (10)
 			create safety_check_condition.make
+			safety_check_condition.extend (factory.true_)
 			create parameters_stack.make
 		end
 
@@ -1112,11 +1113,7 @@ feature -- Translation
 
 	implies_safety_expression (a_expr: IV_EXPRESSION): IV_EXPRESSION
 		do
-			if safety_check_condition.is_empty then
-				Result := a_expr
-			else
-				create {IV_BINARY_OPERATION} Result.make (safety_check_condition.item, "==>", a_expr, types.bool)
-			end
+			Result := factory.implies_clean (safety_check_condition.item, a_expr)
 		end
 
 	clear_side_effect
@@ -1287,13 +1284,11 @@ feature {E2B_ACROSS_HANDLER, E2B_CUSTOM_CALL_HANDLER, E2B_CUSTOM_NESTED_HANDLER}
 			l_fcall: IV_FUNCTION_CALL
 			l_fname: STRING
 		do
-			if not safety_check_condition.is_empty then
-				safety_check_condition.extend (factory.and_ (safety_check_condition.item, a_condition))
-			else
-				safety_check_condition.extend (a_condition)
-			end
+			safety_check_condition.extend (factory.and_clean (safety_check_condition.item, a_condition))
 			safe_process (a_expr)
 			safety_check_condition.remove
 		end
 
+invariant
+	has_safety_check_condition: not safety_check_condition.is_empty
 end

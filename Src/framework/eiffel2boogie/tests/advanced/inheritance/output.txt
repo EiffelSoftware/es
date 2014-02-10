@@ -3,6 +3,9 @@ A_B.get_x
 AutoProof error.
 Validity: Functional feature cannot be redefined.
 ======================================
+A_A (invariant admissibility)
+Successfully verified.
+======================================
 A_A.make (creator)
 Successfully verified.
 ======================================
@@ -30,7 +33,7 @@ Successfully verified.
 A_A.set_prev
 Successfully verified.
 ======================================
-A_A (invariant admissibility)
+A_B (invariant admissibility)
 Successfully verified.
 ======================================
 ANY.default_create (creator, inherited by A_B)
@@ -72,11 +75,8 @@ Line: 61. Check new_property may be violated.
 A_B.something
 Successfully verified.
 ======================================
-A_B (invariant admissibility)
+A_C (invariant admissibility)
 Successfully verified.
 ======================================
 A_C.something
-Successfully verified.
-======================================
-A_C (invariant admissibility)
 Successfully verified.

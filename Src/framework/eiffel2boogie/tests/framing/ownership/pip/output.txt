@@ -1,4 +1,7 @@
 ======================================
+F_PIP_CLIENT (invariant admissibility)
+Successfully verified.
+======================================
 ANY.default_create (creator, inherited by F_PIP_CLIENT)
 Successfully verified.
 ======================================
@@ -8,7 +11,7 @@ Successfully verified.
 F_PIP_CLIENT.test_d
 Successfully verified.
 ======================================
-F_PIP_CLIENT (invariant admissibility)
+F_PIP_NODE (invariant admissibility)
 Successfully verified.
 ======================================
 F_PIP_NODE.make (creator)
@@ -29,7 +32,7 @@ Successfully verified.
 F_PIP_NODE.update_descendants
 Successfully verified.
 ======================================
-F_PIP_NODE (invariant admissibility)
+F_PIP_NODE_D (invariant admissibility)
 Successfully verified.
 ======================================
 F_PIP_NODE_D.make (creator)
@@ -48,7 +51,4 @@ F_PIP_NODE_D.update_value
 Successfully verified.
 ======================================
 F_PIP_NODE_D.update_descendants
-Successfully verified.
-======================================
-F_PIP_NODE_D (invariant admissibility)
 Successfully verified.

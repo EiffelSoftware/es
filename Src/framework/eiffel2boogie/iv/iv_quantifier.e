@@ -48,6 +48,12 @@ feature -- Access
 			Result := types.bool
 		end
 
+	triggers_for (a_bound_var: IV_ENTITY): ARRAYED_LIST [IV_EXPRESSION]
+			-- List of subexpressions of `Current' which are valid triggers for a bound variable `a_bound_var'.
+		do
+			Result := expression.triggers_for (a_bound_var)
+		end
+
 feature -- Status report
 
 	has_free_var_named (a_name: STRING): BOOLEAN
@@ -84,6 +90,19 @@ feature -- Element change
 			a_expr_attached: attached a_trigger
 		do
 			triggers.extend (a_trigger)
+		end
+
+	add_restrictive_trigger
+			-- Add a default (relatively restrictive) trigger derived from `expression'.
+		require
+			single_variable: bound_variables.count = 1
+		local
+			l_trigger: ARRAY [IV_EXPRESSION]
+		do
+			l_trigger := expression.triggers_for (bound_variables.first.entity).to_array
+			if not l_trigger.is_empty then
+				triggers.extend (l_trigger)
+			end
 		end
 
 invariant

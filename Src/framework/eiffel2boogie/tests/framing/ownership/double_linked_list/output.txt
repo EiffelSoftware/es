@@ -1,4 +1,7 @@
 ======================================
+F_DLL_CLIENT (invariant admissibility)
+Successfully verified.
+======================================
 ANY.default_create (creator, inherited by F_DLL_CLIENT)
 Successfully verified.
 ======================================
@@ -8,7 +11,7 @@ Successfully verified.
 F_DLL_CLIENT.test_d
 Successfully verified.
 ======================================
-F_DLL_CLIENT (invariant admissibility)
+F_DLL_NODE (invariant admissibility)
 Successfully verified.
 ======================================
 F_DLL_NODE.make (creator)
@@ -26,7 +29,7 @@ Successfully verified.
 F_DLL_NODE.set_right
 Successfully verified.
 ======================================
-F_DLL_NODE (invariant admissibility)
+F_DLL_NODE_D (invariant admissibility)
 Successfully verified.
 ======================================
 F_DLL_NODE_D.make (creator)
@@ -42,7 +45,4 @@ F_DLL_NODE_D.set_left
 Successfully verified.
 ======================================
 F_DLL_NODE_D.set_right
-Successfully verified.
-======================================
-F_DLL_NODE_D (invariant admissibility)
 Successfully verified.

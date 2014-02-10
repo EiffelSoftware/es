@@ -1,4 +1,7 @@
 ======================================
+A_SEQUENCES (invariant admissibility)
+Successfully verified.
+======================================
 ANY.default_create (creator, inherited by A_SEQUENCES)
 Successfully verified.
 ======================================
@@ -25,7 +28,4 @@ A_SEQUENCES.triv
 Successfully verified.
 ======================================
 A_SEQUENCES.seq_to_set
-Successfully verified.
-======================================
-A_SEQUENCES (invariant admissibility)
 Successfully verified.

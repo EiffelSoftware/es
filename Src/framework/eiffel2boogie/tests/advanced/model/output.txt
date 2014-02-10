@@ -3,6 +3,9 @@ A_REMODELS.bad1
 AutoProof error.
 Line: 44. Validity: Feature 'z' is not a model attribute of class 'A_REMODELS'.
 ======================================
+A_MODELS (invariant admissibility)
+Successfully verified.
+======================================
 ANY.default_create (creator, inherited by A_MODELS)
 Successfully verified.
 ======================================
@@ -19,7 +22,7 @@ Line: 32. Target attribute may not be writable.
 A_MODELS.bar_ok
 Successfully verified.
 ======================================
-A_MODELS (invariant admissibility)
+A_REMODELS (invariant admissibility)
 Successfully verified.
 ======================================
 ANY.default_create (creator, inherited by A_REMODELS)
@@ -41,6 +44,3 @@ A_REMODELS.foo
 Verification failed.
 
 Line: 36. Target attribute may not be writable.
-======================================
-A_REMODELS (invariant admissibility)
-Successfully verified.

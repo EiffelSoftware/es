@@ -43,6 +43,12 @@ feature -- Access
 	expression: IV_EXPRESSION
 			-- Unary expression.
 
+	triggers_for (a_bound_var: IV_ENTITY): ARRAYED_LIST [IV_EXPRESSION]
+			-- List of subexpressions of `Current' which are valid triggers for a bound variable `a_bound_var'.
+		do
+			Result := expression.triggers_for (a_bound_var)
+		end
+
 feature -- Status report
 
 	has_free_var_named (a_name: STRING): BOOLEAN

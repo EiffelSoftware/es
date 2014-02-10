@@ -1,4 +1,7 @@
 ======================================
+F_COM_CLIENT (invariant admissibility)
+Successfully verified.
+======================================
 ANY.default_create (creator, inherited by F_COM_CLIENT)
 Successfully verified.
 ======================================
@@ -8,7 +11,7 @@ Successfully verified.
 F_COM_CLIENT.test_d
 Successfully verified.
 ======================================
-F_COM_CLIENT (invariant admissibility)
+F_COM_COMPOSITE (invariant admissibility)
 Successfully verified.
 ======================================
 F_COM_COMPOSITE.make (creator)
@@ -32,7 +35,7 @@ Successfully verified.
 F_COM_COMPOSITE.lemma_ancestors_have_children
 Successfully verified.
 ======================================
-F_COM_COMPOSITE (invariant admissibility)
+F_COM_COMPOSITE_D (invariant admissibility)
 Successfully verified.
 ======================================
 F_COM_COMPOSITE_D.make (creator)
@@ -54,9 +57,6 @@ F_COM_COMPOSITE_D.update
 Successfully verified.
 ======================================
 F_COM_COMPOSITE_D.lemma_ancestors_have_children
-Successfully verified.
-======================================
-F_COM_COMPOSITE_D (invariant admissibility)
 Successfully verified.
 ======================================
 F_COM_LIST (invariant admissibility)

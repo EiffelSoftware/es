@@ -15,6 +15,7 @@ inherit
 			search as search_forth
 --			satisfy as satisfy_forth
 		redefine
+			item,
 --			is_equal,
 			search_forth
 --			satisfy_forth
@@ -23,7 +24,8 @@ inherit
 	ITERATION_CURSOR [G]
 		rename
 			after as off
---		redefine
+		redefine
+			item
 --			is_equal
 		end
 
@@ -31,6 +33,13 @@ feature -- Access
 
 	target: V_CONTAINER [G]
 			-- Container to iterate over.
+
+	item: G
+			-- Item at current position.
+		deferred
+		ensure then
+			definition: Result = sequence [index]
+		end
 
 feature -- Measurement
 
@@ -235,12 +244,9 @@ feature -- Cursor movement
 			end
 			from
 			invariant
-				target = target.old_
-				sequence ~ sequence.old_
-				index.old_ <= index
+				index.old_ <= index and index <= sequence.count + 1
 				not before
 				across index.old_.max (1) |..| (index - 1) as i all sequence [i.item] /= v end
-				inv
 			until
 				after or else item = v
 			loop
@@ -297,12 +303,9 @@ feature -- Cursor movement
 			end
 			from
 			invariant
-				target = target.old_
-				sequence ~ sequence.old_
-				index <= index.old_
+				0 <= index and index <= index.old_
 				not after
 				across (index + 1) |..| index.old_.min (sequence.count) as i all sequence [i.item] /= v end
-				inv
 			until
 				before or else item = v
 			loop

@@ -1,4 +1,7 @@
 ======================================
+A_LEMMA (invariant admissibility)
+Successfully verified.
+======================================
 ANY.default_create (creator, inherited by A_LEMMA)
 Successfully verified.
 ======================================
@@ -9,7 +12,4 @@ A_LEMMA.lemma2
 Successfully verified.
 ======================================
 A_LEMMA.client
-Successfully verified.
-======================================
-A_LEMMA (invariant admissibility)
 Successfully verified.

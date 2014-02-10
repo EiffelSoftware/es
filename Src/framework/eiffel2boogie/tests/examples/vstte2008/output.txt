@@ -1,4 +1,7 @@
 ======================================
+VSTTE2008 (invariant admissibility)
+Successfully verified.
+======================================
 ANY.default_create (creator, inherited by VSTTE2008)
 Successfully verified.
 ======================================
@@ -6,7 +9,4 @@ VSTTE2008.add
 Successfully verified.
 ======================================
 VSTTE2008.multiply
-Successfully verified.
-======================================
-VSTTE2008 (invariant admissibility)
 Successfully verified.

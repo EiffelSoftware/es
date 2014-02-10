@@ -1,4 +1,9 @@
 ======================================
+A_PARTIAL (invariant admissibility)
+Verification failed.
+
+Line: 124. Precondition may be violated on invocation of nasty.
+======================================
 ANY.default_create (creator, inherited by A_PARTIAL)
 Successfully verified.
 ======================================
@@ -42,8 +47,3 @@ Verification failed.
 Line: 116. Check may be violated (untagged).
 --------------------------------------
 Line: 117. Check may be violated (untagged).
-======================================
-A_PARTIAL (invariant admissibility)
-Verification failed.
-
-Line: 124. Precondition may be violated on invocation of nasty.

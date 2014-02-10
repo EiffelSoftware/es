@@ -43,6 +43,19 @@ feature -- Access
 	type: IV_TYPE
 			-- Type of function.
 
+	triggers_for (a_bound_var: IV_ENTITY): ARRAYED_LIST [IV_EXPRESSION]
+			-- List of smallest subexpressions of `Current' with a valid triggers for a bound variable `a_bound_var'.			
+		do
+			create Result.make (3)
+			if across arguments as i some i.item.has_free_var_named (a_bound_var.name) and i.item.triggers_for (a_bound_var).is_empty end then
+				Result.extend (Current)
+			else
+				across arguments as i loop
+					Result.append (i.item.triggers_for (a_bound_var))
+				end
+			end
+		end
+
 feature -- Status report
 
 	has_free_var_named (a_name: STRING): BOOLEAN

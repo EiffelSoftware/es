@@ -7,6 +7,9 @@ A_FUNCTIONAL.not_functional2
 AutoProof error.
 Validity: A functional feature has to consist of exactly one assignment to the Result.
 ======================================
+A_FUNCTIONAL (invariant admissibility)
+Successfully verified.
+======================================
 ANY.default_create (creator, inherited by A_FUNCTIONAL)
 Successfully verified.
 ======================================
@@ -37,6 +40,3 @@ A_FUNCTIONAL.caller2
 Verification failed.
 
 Line: 86. Precondition may be violated on invocation of functional4.
-======================================
-A_FUNCTIONAL (invariant admissibility)
-Successfully verified.

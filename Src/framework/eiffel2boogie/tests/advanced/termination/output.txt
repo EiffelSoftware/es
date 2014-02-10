@@ -1,4 +1,7 @@
 ======================================
+A_LOOPS (invariant admissibility)
+Successfully verified.
+======================================
 ANY.default_create (creator, inherited by A_LOOPS)
 Successfully verified.
 ======================================
@@ -34,7 +37,7 @@ Line: 137. Variant may not decrease at this recursive call / the end of this loo
 A_LOOPS.nonterminating
 Successfully verified.
 ======================================
-A_LOOPS (invariant admissibility)
+A_TERMINATION (invariant admissibility)
 Successfully verified.
 ======================================
 ANY.default_create (creator, inherited by A_TERMINATION)
@@ -103,7 +106,4 @@ Verification failed.
 Line: 137. Variant may not decrease at this recursive call / the end of this loop body.
 ======================================
 A_TERMINATION.no_termination_check
-Successfully verified.
-======================================
-A_TERMINATION (invariant admissibility)
 Successfully verified.

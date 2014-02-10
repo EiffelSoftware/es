@@ -63,5 +63,11 @@ feature {NONE} -- Implementation
 			Result := factory.map_access (set, << a_bound_var >>)
 		end
 
+	add_triggers (a_quantifier: IV_QUANTIFIER)
+			-- Add triggers to `a_quantifier' generated from the current across expression.
+		do
+			a_quantifier.add_trigger (guard (a_quantifier.bound_variables.first.entity))
+		end
+
 end
 

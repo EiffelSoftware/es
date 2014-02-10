@@ -1,4 +1,7 @@
 ======================================
+A_SETS (invariant admissibility)
+Successfully verified.
+======================================
 ANY.default_create (creator, inherited by A_SETS)
 Successfully verified.
 ======================================
@@ -22,7 +25,4 @@ Line: 54. Check bad_has may be violated.
 Line: 56. Check may be violated (untagged).
 ======================================
 A_SETS.interval
-Successfully verified.
-======================================
-A_SETS (invariant admissibility)
 Successfully verified.

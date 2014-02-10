@@ -1,4 +1,7 @@
 ======================================
+B_LOCAL (invariant admissibility)
+Successfully verified.
+======================================
 ANY.default_create (creator, inherited by B_LOCAL)
 Successfully verified.
 ======================================
@@ -12,7 +15,4 @@ B_LOCAL.local_assignment
 Successfully verified.
 ======================================
 B_LOCAL.argument_assignment
-Successfully verified.
-======================================
-B_LOCAL (invariant admissibility)
 Successfully verified.

@@ -1,4 +1,7 @@
 ======================================
+A_MAPS (invariant admissibility)
+Successfully verified.
+======================================
 ANY.default_create (creator, inherited by A_MAPS)
 Successfully verified.
 ======================================
@@ -16,6 +19,3 @@ Line: 94. Precondition may be violated on invocation of item.
 Line: 97. Precondition may be violated on invocation of image.
 --------------------------------------
 Line: 101. Precondition may be violated on invocation of sequence_image.
-======================================
-A_MAPS (invariant admissibility)
-Successfully verified.

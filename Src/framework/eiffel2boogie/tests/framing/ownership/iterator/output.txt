@@ -2,6 +2,9 @@
 F_I_ARRAY (invariant admissibility)
 Successfully verified.
 ======================================
+F_I_CLIENT (invariant admissibility)
+Successfully verified.
+======================================
 ANY.default_create (creator, inherited by F_I_CLIENT)
 Successfully verified.
 ======================================
@@ -11,7 +14,7 @@ Successfully verified.
 F_I_CLIENT.test_d
 Successfully verified.
 ======================================
-F_I_CLIENT (invariant admissibility)
+F_I_COLLECTION (invariant admissibility)
 Successfully verified.
 ======================================
 F_I_COLLECTION.make (creator)
@@ -26,7 +29,7 @@ Successfully verified.
 F_I_COLLECTION.remove_last
 Successfully verified.
 ======================================
-F_I_COLLECTION (invariant admissibility)
+F_I_COLLECTION_D (invariant admissibility)
 Successfully verified.
 ======================================
 F_I_COLLECTION_D.make (creator)
@@ -41,7 +44,7 @@ Successfully verified.
 F_I_COLLECTION_D.remove_last
 Successfully verified.
 ======================================
-F_I_COLLECTION_D (invariant admissibility)
+F_I_ITERATOR (invariant admissibility)
 Successfully verified.
 ======================================
 F_I_ITERATOR.make (creator)
@@ -53,7 +56,7 @@ Successfully verified.
 F_I_ITERATOR.forth
 Successfully verified.
 ======================================
-F_I_ITERATOR (invariant admissibility)
+F_I_ITERATOR_D (invariant admissibility)
 Successfully verified.
 ======================================
 F_I_ITERATOR_D.make (creator)
@@ -63,7 +66,4 @@ F_I_ITERATOR_D.item
 Successfully verified.
 ======================================
 F_I_ITERATOR_D.forth
-Successfully verified.
-======================================
-F_I_ITERATOR_D (invariant admissibility)
 Successfully verified.

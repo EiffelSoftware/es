@@ -39,6 +39,12 @@ feature -- Access
 	type: IV_TYPE
 			-- Type of value.
 
+	triggers_for (a_bound_var: IV_ENTITY): ARRAYED_LIST [IV_EXPRESSION]
+			-- List of subexpressions of `Current' which are valid triggers for a bound variable `a_bound_var'.
+		do
+			create Result.make (3)
+		end
+
 feature -- Status report			
 
 	is_false: BOOLEAN

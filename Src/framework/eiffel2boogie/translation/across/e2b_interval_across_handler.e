@@ -84,4 +84,10 @@ feature {NONE} -- Implementation
 				factory.less_equal (a_bound_var, upper_bound))
 		end
 
+	add_triggers (a_quantifier: IV_QUANTIFIER)
+			-- Add triggers to `a_quantifier' generated from the current across expression.
+		do
+			a_quantifier.add_restrictive_trigger
+		end
+
 end

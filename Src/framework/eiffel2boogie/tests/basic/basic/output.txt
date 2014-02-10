@@ -1,4 +1,7 @@
 ======================================
+B_BASIC (invariant admissibility)
+Successfully verified.
+======================================
 ANY.default_create (creator, inherited by B_BASIC)
 Successfully verified.
 ======================================
@@ -25,7 +28,4 @@ B_BASIC.require_false
 Successfully verified.
 ======================================
 B_BASIC.assume_false
-Successfully verified.
-======================================
-B_BASIC (invariant admissibility)
 Successfully verified.

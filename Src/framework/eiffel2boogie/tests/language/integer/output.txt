@@ -1,4 +1,7 @@
 ======================================
+L_INTEGER (invariant admissibility)
+Successfully verified.
+======================================
 ANY.default_create (creator, inherited by L_INTEGER)
 Successfully verified.
 ======================================
@@ -14,6 +17,3 @@ L_INTEGER.mixed_operations
 Verification failed.
 
 Line: 119. Check may be violated (untagged).
-======================================
-L_INTEGER (invariant admissibility)
-Successfully verified.
