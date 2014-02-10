@@ -57,7 +57,8 @@ feature {NONE} -- Visitor
 				loop
 						-- Skip the feature name we are removing.
 					if not l_feature_names.item.visual_name_32.is_equal (feature_name) then
-						l_new_feature_names.append (", " + l_feature_names.item.visual_name_32)
+						l_new_feature_names.append (", ")
+						l_new_feature_names.append (l_feature_names.item.visual_name_32)
 					end
 
 					l_feature_names.forth
