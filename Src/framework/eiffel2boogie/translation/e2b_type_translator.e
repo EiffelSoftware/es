@@ -185,7 +185,7 @@ feature {NONE} -- Implementation
 				end
 				create l_m.make (
 					helper.boogie_name_for_attribute (m.item, type),
-					types.field (types.for_class_type (helper.class_type_in_context (m.item.type, m.item.written_class, m.item, type))))
+					types.field (types.for_class_type (helper.class_type_in_context (m.item.type, type.base_class, m.item, type))))
 				l_def := factory.or_clean (l_def, factory.equal (l_f, l_m))
 			end
 			l_fcall := factory.function_call ("IsModelField", << l_f, factory.type_value (type) >>, types.bool)
@@ -265,7 +265,6 @@ feature {NONE} -- Implementation
 		do
 			create last_clauses.make
 			create last_safety_checks.make
-			helper.set_up_byte_context (Void, type)
 			process_flat_invariants (a_class, a_included, a_excluded, a_mapping)
 		end
 
@@ -298,6 +297,7 @@ feature {NONE} -- Implementation
 			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 		do
 			if inv_byte_server.has (a_class.class_id) then
+				helper.set_up_byte_context (a_class.invariant_feature, helper.class_type_in_context (a_class.actual_type, a_class, a_class.invariant_feature, type))
 				from
 					l_list := inv_byte_server.item (a_class.class_id).byte_list
 					l_list.start
@@ -313,7 +313,7 @@ feature {NONE} -- Implementation
 					then
 						create l_translator.make
 						l_translator.copy_entity_mapping (a_mapping)
-						l_translator.set_context (Void, type)
+						l_translator.set_context (a_class.invariant_feature, type)
 						l_translator.set_origin_class (a_class)
 						l_translator.set_context_line_number (l_assert.line_number)
 						l_translator.set_context_tag (l_assert.tag)

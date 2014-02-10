@@ -144,19 +144,21 @@ feature -- Access
 
 	class_type_in_current_context (a_type: TYPE_A): CL_TYPE_A
 			-- Class type that correspond to `a_type' in the context of `context_type' and possibly `context_feature'.
+		require
+			a_type_attached: attached a_type
+			context_type_attached: attached context_type
+			context_feature_attached: attached context_feature
 		do
-			-- ToDo: in principle `written_class' can be different!
-			if context_feature = Void then
-				Result := helper.class_type_in_context (a_type, context_type.base_class, Void, context_type)
-			else
-				Result := helper.class_type_in_context (a_type, context_feature.written_class, context_feature, context_type)
-			end
+			Result := helper.class_type_in_context (a_type, context_type.base_class, context_feature, context_type)
 		end
 
 	feature_class_type (a_feature: FEATURE_I): CL_TYPE_A
 			-- Type of `a_feature' in the context of `current_target_type'			
+		require
+			a_feature_attached: attached a_feature
+			current_target_type_attached: attached current_target_type
 		do
-			Result := helper.class_type_in_context (a_feature.type, a_feature.written_class, a_feature, current_target_type)
+			Result := helper.class_type_in_context (a_feature.type, current_target_type.base_class, a_feature, current_target_type)
 		end
 
 feature -- Element change
@@ -184,6 +186,7 @@ feature -- Basic operations
 	set_context (a_feature: FEATURE_I; a_type: CL_TYPE_A)
 			-- Set context of expression to `a_feature' in type `a_type'.
 		require
+			a_feature_attached: attached a_feature
 			a_type_attached: attached a_type
 		do
 			context_feature := a_feature

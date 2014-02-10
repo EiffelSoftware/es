@@ -15,6 +15,7 @@ inherit
 			side_effect,
 			reset,
 			set_context,
+			class_type_in_current_context,
 			process_creation_expr_b,
 			process_un_old_b,
 			process_attribute_call
@@ -33,6 +34,12 @@ feature -- Access
 
 	field_accesses: LINKED_LIST [TUPLE [o: IV_EXPRESSION; f: IV_ENTITY]]
 			-- List of field accesses.
+
+	class_type_in_current_context (a_type: TYPE_A): CL_TYPE_A
+			-- Class type that correspond to `a_type' in the context of `context_type' and possibly `context_feature'.
+		do
+			Result := helper.class_type_in_context (a_type, origin_class, context_feature, context_type)
+		end
 
 feature -- Element change
 

@@ -543,7 +543,7 @@ feature -- Translation: Functions
 			translation_pool.add_function_precondition_predicate (current_feature, current_type)
 
 				-- Function
-			l_type := helper.class_type_in_context (current_feature.type, current_feature.written_class, current_feature, current_type)
+			l_type := helper.class_type_in_context (current_feature.type, current_type.base_class, current_feature, current_type)
 			create l_function.make (name_translator.boogie_function_for_feature (current_feature, current_type), types.for_class_type (l_type))
 			boogie_universe.add_declaration (l_function)
 			create l_fcall.make (l_function.name, l_function.type)
@@ -632,7 +632,7 @@ feature -- Translation: Functions
 				-- Set a dummy result in `l_mapping': we are not using postconditions anyway
 			if a_feature.has_return_value then
 				l_mapping.set_result (factory.entity ("result",
-					types.for_class_type (helper.class_type_in_context (current_feature.type, current_feature.written_class, current_feature, current_type))))
+					types.for_class_type (helper.class_type_in_context (current_feature.type, current_type.base_class, current_feature, current_type))))
 			end
 				-- Body			
 			l_body := pre_post_expressions_of (a_feature, a_type, l_mapping).pre
@@ -818,7 +818,7 @@ feature {NONE} -- Translation: Functions
 					-- Add type property
 				l_post := factory.and_clean (l_post,
 					types.type_property (
-						helper.class_type_in_context (current_feature.type, current_feature.written_class, current_feature, current_type),
+						helper.class_type_in_context (current_feature.type, current_type.base_class, current_feature, current_type),
 						l_expr_translator.entity_mapping.heap,
 						l_fcall)
 					)
@@ -1055,6 +1055,8 @@ feature {NONE} -- Implementation
 			l_translator.set_origin_class (a_origin_class)
 			l_translator.set_context_line_number (a_assert.line_number)
 			l_translator.set_context_tag (a_assert.tag)
+			helper.set_up_byte_context (a_origin_class.feature_of_rout_id (current_feature.rout_id_set.first),
+				helper.class_type_in_context (a_origin_class.actual_type, a_origin_class, Void, current_type))
 			a_assert.process (l_translator)
 			l_condition := factory.true_
 			across l_translator.side_effect as i loop
@@ -1071,6 +1073,7 @@ feature {NONE} -- Implementation
 			l_contract.node_info.set_tag (a_assert.tag)
 			l_contract.node_info.set_line (a_assert.line_number)
 			current_boogie_procedure.add_contract (l_contract)
+			helper.set_up_byte_context (current_feature, current_type)
 		end
 
 	process_postcondition (a_assert: ASSERT_B; a_origin_class: CLASS_C; a_fields: LIST [TUPLE [IV_EXPRESSION, IV_ENTITY]])
@@ -1085,6 +1088,8 @@ feature {NONE} -- Implementation
 			l_translator.set_origin_class (a_origin_class)
 			l_translator.set_context_line_number (a_assert.line_number)
 			l_translator.set_context_tag (a_assert.tag)
+			helper.set_up_byte_context (a_origin_class.feature_of_rout_id (current_feature.rout_id_set.first),
+				helper.class_type_in_context (a_origin_class.actual_type, a_origin_class, Void, current_type))
 			a_assert.process (l_translator)
 			a_fields.append (l_translator.field_accesses)
 			l_condition := factory.true_
@@ -1102,6 +1107,7 @@ feature {NONE} -- Implementation
 			l_contract.node_info.set_tag (a_assert.tag)
 			l_contract.node_info.set_line (a_assert.line_number)
 			current_boogie_procedure.add_contract (l_contract)
+			helper.set_up_byte_context (current_feature, current_type)
 		end
 
 	process_fields_list (a_fields: LIST [TUPLE [o: IV_EXPRESSION; f: IV_ENTITY]])

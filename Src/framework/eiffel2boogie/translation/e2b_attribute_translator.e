@@ -31,7 +31,7 @@ feature -- Basic operations
 			l_prev: like previous_versions
 			l_typed_sets: like helper.class_note_values
 		do
-			l_class_type := helper.class_type_in_context (a_feature.type, a_feature.written_class, Void, a_context_type)
+			l_class_type := helper.class_type_in_context (a_feature.type, a_context_type.base_class, Void, a_context_type)
 			l_attribute_name := name_translator.boogie_procedure_for_feature (a_feature, a_context_type)
 			l_boogie_type := types.for_class_type (l_class_type)
 
@@ -111,10 +111,8 @@ feature {NONE} -- Implementation
 			i: INTEGER
 		do
 			if a_feature.written_in /= a_context_type.base_class.class_id then
-					-- Inherited attribute: return the class where it is written in
-				check attached {CL_TYPE_A} a_context_type.parent_type (a_feature.written_class.actual_type) as t then
-					l_written_type := t
-				end
+					-- Inherited attribute: return the class where it is written in				
+				l_written_type := helper.class_type_from_class (a_feature.written_class, a_context_type)
 				l_written_feature := l_written_type.base_class.feature_of_body_index (a_feature.body_index)
 				create Result.make
 				Result.extend ([l_written_feature, l_written_type])
@@ -126,9 +124,7 @@ feature {NONE} -- Implementation
 				until
 					i > a_feature.assert_id_set.count
 				loop
-					check attached {CL_TYPE_A} a_context_type.parent_type (a_feature.assert_id_set [i].written_class.actual_type) as t then
-						l_written_type := t
-					end
+					l_written_type := helper.class_type_from_class (a_feature.assert_id_set [i].written_class, a_context_type)
 					l_written_feature := l_written_type.base_class.feature_of_body_index (a_feature.assert_id_set [i].body_index)
 					Result.extend ([l_written_feature, l_written_type])
 					i := i + 1

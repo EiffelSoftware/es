@@ -125,6 +125,14 @@ function Set#SymDifference<T>(a: Set T, b: Set T): Set T
 { Set#Union(Set#Difference(a, b), Set#Difference(b, a)) }
 
 
+function Set#Min<T>(Set T): T;
+axiom (forall s: Set int :: { Set#Min(s) } 
+  !Set#IsEmpty(s) ==> s[Set#Min(s)] && (forall x: int :: s[x] ==> x >= Set#Min(s)));
+
+function Set#Max<T>(Set T): T;
+axiom (forall s: Set int :: { Set#Max(s) } 
+  !Set#IsEmpty(s) ==> s[Set#Max(s)] && (forall x: int :: s[x] ==> x <= Set#Max(s)));
+
 // Integer intervals
 type Interval = Set int;
 

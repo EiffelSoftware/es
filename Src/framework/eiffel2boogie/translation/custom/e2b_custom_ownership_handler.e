@@ -312,7 +312,7 @@ feature -- Basic operations
 		do
 			l_old_version := a_origin_class.feature_named_32 (a_name)
 			l_new_version := a_type.base_class.feature_of_rout_id_set (l_old_version.rout_id_set)
-			l_new_type := helper.class_type_in_context (l_new_version.type, l_new_version.written_class, Void, a_type)
+			l_new_type := helper.class_type_in_context (l_new_version.type, a_type.base_class, Void, a_type)
 			if l_old_version = Void then
 				helper.add_semantic_error (a_context_feature, messages.field_not_attribute (a_name, a_origin_class.name_in_upper), a_context_line_number)
 			else

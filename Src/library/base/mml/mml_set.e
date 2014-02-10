@@ -55,8 +55,22 @@ feature -- Elements
 		require
 			not_empty: not is_empty
 		do
+		end		
+
+	min: G
+			-- Least element.
+		require
+			not_empty: not is_empty
+		do
 		end
 		
+	max: G
+			-- Greatest element.
+		require
+			not_empty: not is_empty
+		do
+		end		
+				
 feature -- Measurement
 
 	count alias "#": INTEGER

@@ -80,6 +80,10 @@ feature -- Element change
 
 	set_context (a_implementation: IV_IMPLEMENTATION; a_feature: FEATURE_I; a_type: CL_TYPE_A)
 			-- Set context.
+		require
+			a_type_attached: attached a_type
+			a_feature_attached: attached a_feature
+			a_implementation_attached: attached a_implementation
 		do
 			current_implementation := a_implementation
 			current_feature := a_feature

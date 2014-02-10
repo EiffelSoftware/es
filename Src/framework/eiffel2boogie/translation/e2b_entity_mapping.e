@@ -62,7 +62,7 @@ feature -- Access
 				Result := argument_mapping.item (a_position)
 			else
 				l_name := a_feature.arguments.item_name (a_position)
-				l_type := types.for_class_type (helper.class_type_in_context (a_feature.arguments.i_th (a_position), a_feature.written_class, a_feature, a_type))
+				l_type := types.for_class_type (helper.class_type_in_context (a_feature.arguments.i_th (a_position), a_type.base_class, a_feature, a_type))
 				create {IV_ENTITY} Result.make (l_name, l_type)
 			end
 		end

@@ -68,7 +68,7 @@ feature -- Helper functions: arguments and result
 		do
 			create Result.make (a_feature.argument_count)
 			from i := 1 until i > a_feature.argument_count loop
-				l_type := helper.class_type_in_context (a_feature.arguments.i_th (i), a_feature.written_class, a_feature, a_context)
+				l_type := helper.class_type_in_context (a_feature.arguments.i_th (i), a_context.base_class, a_feature, a_context)
 				Result.extend([
 					a_feature.arguments.item_name (i),
 					l_type,
@@ -109,7 +109,7 @@ feature -- Helper functions: arguments and result
 			l_iv_type: IV_TYPE
 		do
 			if current_feature.has_return_value then
-				l_type := helper.class_type_in_context (current_feature.type, current_feature.written_class, current_feature, current_type)
+				l_type := helper.class_type_in_context (current_feature.type, current_type.base_class, current_feature, current_type)
 				l_iv_type := types.for_class_type (l_type)
 				translation_pool.add_type (l_type)
 				current_boogie_procedure.add_result_with_property (
@@ -229,15 +229,20 @@ feature -- Helper functions: contracts
 			l_pre := factory.true_
 			across l_contracts.pre as c loop
 				l_translator.set_origin_class (c.item.origin)
+				helper.set_up_byte_context (c.item.origin.feature_of_rout_id (a_feature.rout_id_set.first),
+					helper.class_type_in_context (c.item.origin.actual_type, c.item.origin, Void, current_type))
 				c.item.clause.process (l_translator)
 				l_pre := factory.and_clean (l_pre, l_translator.last_expression)
 			end
 			l_post := factory.true_
 			across l_contracts.post as c loop
 				l_translator.set_origin_class (c.item.origin)
+				helper.set_up_byte_context (c.item.origin.feature_of_rout_id (a_feature.rout_id_set.first),
+					helper.class_type_in_context (c.item.origin.actual_type, c.item.origin, Void, current_type))
 				c.item.clause.process (l_translator)
 				l_post := factory.and_clean (l_post, l_translator.last_expression)
 			end
+			helper.set_up_byte_context (a_feature, a_type)
 			Result := [l_pre, l_post]
 		end
 
@@ -325,7 +330,11 @@ feature -- Helper functions: contracts
 								helper.add_semantic_error (current_feature, messages.first_argument_string_or_tuple, i.item.clause.line_number)
 							end
 
-							l_origin := helper.class_type_in_context (l_objects_type.type, i.item.origin, current_feature, i.item.origin.actual_type).base_class
+							l_origin := helper.class_type_in_context (
+								l_objects_type.type,
+								i.item.origin,
+								current_feature,
+								helper.class_type_from_class (i.item.origin, current_type)).base_class
 							across l_fieldnames as f loop
 								l_field := (create {E2B_CUSTOM_OWNERSHIP_HANDLER}).field_from_string (f.item, l_type, l_origin, current_feature, i.item.clause.line_number, a_check_model)
 								if attached l_field then
@@ -379,7 +388,7 @@ feature -- Helper functions: contracts
 			across a_mods.model_objects as restriction loop
 				r := restriction.item
 					-- The type of the objects as seen where the frame clause was written
-				l_written_type := helper.class_type_in_context (r.type, r.origin, current_feature, r.origin.actual_type.instantiated_in (current_type))
+				l_written_type := helper.class_type_in_context (r.type, r.origin, current_feature, helper.class_type_from_class (r.origin, current_type))
 					-- The type of the objects as seen in the `current_type'
 				l_type := helper.class_type_in_context (r.type, r.origin, current_feature, current_type)
 					-- Either `l_f' is not a model query in `l_type'

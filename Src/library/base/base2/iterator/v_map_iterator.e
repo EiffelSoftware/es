@@ -27,8 +27,6 @@ feature -- Access
 
 	target: V_MAP [K, V]
 			-- Map to iterate over.
-		attribute
-		end
 
 feature -- Cursor movement
 

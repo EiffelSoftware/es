@@ -426,21 +426,27 @@ feature -- Eiffel helpers
 
 	class_type_in_context (a_type: TYPE_A; a_written_class: CLASS_C; a_feature: FEATURE_I; a_current_type: CL_TYPE_A): CL_TYPE_A
 			-- Class type of `a_type', which is written in `a_written_class' (with optional `a_feature') as seen from `a_current_type'.
+		require
+			no_formals: not a_current_type.has_formal_generic
 		do
 			if a_type.is_like_current then
 				Result := a_current_type
-			elseif a_type.is_like then
+			else
 				-- `evaluated_type_in_descendant' switches to the correct feature in case of LIKE_FEATURE types
 				-- `deep_actual_type' gets rid of like types
 				-- `instantiated_in (a_current_type)' instantiates the generics				
 				check attached {CL_TYPE_A} a_type.evaluated_type_in_descendant (a_written_class, a_current_type.base_class, a_feature).deep_actual_type.instantiated_in (a_current_type) as t then
 					Result := t
 				end
-			else
-				check attached {CL_TYPE_A} a_type.deep_actual_type.instantiated_in (a_current_type) as t then
-					Result := t
-				end
 			end
+		ensure
+			no_formals: not Result.has_formal_generic
+		end
+
+	class_type_from_class (a_class: CLASS_C; a_context_type: CL_TYPE_A): CL_TYPE_A
+			-- Type of ancetor `a_class' in `a_context_type'.
+		do
+			Result := class_type_in_context (a_class.actual_type, a_class, Void, a_context_type)
 		end
 
 	set_any_type: CL_TYPE_A
