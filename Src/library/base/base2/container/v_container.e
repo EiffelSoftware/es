@@ -67,7 +67,7 @@ feature -- Search
 			is_wrapped: is_wrapped
 			modify_model (["closed", "observers"], Current)
 		local
-			it: like new_cursor
+			it: V_ITERATOR [G]
 			s: MML_SEQUENCE [G]
 		do
 			from
