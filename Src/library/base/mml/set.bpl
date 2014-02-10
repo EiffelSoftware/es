@@ -144,6 +144,10 @@ function Interval#Upper(Interval): int;
 function Interval#IsValid(in: Interval): bool
 { (forall i: int :: in[i] <==> Interval#Lower(in) <= i && i <= Interval#Upper(in)) }
 
+// Length of an interval
+axiom (forall in: Interval :: { Set#Card(in) }
+  Interval#IsValid(in) ==> Set#Card(in) == if Interval#Upper(in) < Interval#Lower(in) then 0 else Interval#Upper(in) - Interval#Lower(in) + 1);
+
 // Singleton is a valid interval
 axiom (forall x: int :: {Interval#Lower(Set#Singleton(x))} 
   Interval#Lower(Set#Singleton(x)) == x);

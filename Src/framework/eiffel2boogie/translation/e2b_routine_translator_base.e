@@ -246,7 +246,7 @@ feature -- Helper functions: contracts
 			Result := [l_pre, l_post]
 		end
 
-	modify_expressions_of (a_clauses: LIST [E2B_ASSERT_ORIGIN]; a_translator: E2B_EXPRESSION_TRANSLATOR): TUPLE [full_objects: LIST [IV_EXPRESSION]; partial_objects: LIST [E2B_FRAME_ELEMENT]; model_objects: LIST [E2B_FRAME_ELEMENT]]
+	modify_expressions_of (a_clauses: LIST [E2B_ASSERT_ORIGIN]; a_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR): TUPLE [full_objects: LIST [IV_EXPRESSION]; partial_objects: LIST [E2B_FRAME_ELEMENT]; model_objects: LIST [E2B_FRAME_ELEMENT]]
 			-- List of fully modified and partially modified objects extracted from modifies clauses `a_clauses'.
 		do
 			Result := [
@@ -256,7 +256,7 @@ feature -- Helper functions: contracts
 				]
 		end
 
-	read_expressions_of (a_clauses: LIST [E2B_ASSERT_ORIGIN]; a_translator: E2B_EXPRESSION_TRANSLATOR): TUPLE [full_objects: LIST [IV_EXPRESSION]; partial_objects: LIST [E2B_FRAME_ELEMENT]; model_objects: LIST [E2B_FRAME_ELEMENT]]
+	read_expressions_of (a_clauses: LIST [E2B_ASSERT_ORIGIN]; a_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR): TUPLE [full_objects: LIST [IV_EXPRESSION]; partial_objects: LIST [E2B_FRAME_ELEMENT]; model_objects: LIST [E2B_FRAME_ELEMENT]]
 			-- List of fully modified and partially modified objects extracted from modifies clauses `a_clauses'.
 		do
 			Result := [
@@ -266,7 +266,7 @@ feature -- Helper functions: contracts
 			]
 		end
 
-	frame_full_objects_of (a_clauses: LIST [E2B_ASSERT_ORIGIN]; a_function: STRING; a_translator: E2B_EXPRESSION_TRANSLATOR): LIST [IV_EXPRESSION]
+	frame_full_objects_of (a_clauses: LIST [E2B_ASSERT_ORIGIN]; a_function: STRING; a_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR): LIST [IV_EXPRESSION]
 			-- Full object descriptions extracted from `a_clauses' and translated with `a_translator', given as arguments to `a_function'.
 		local
 			l_objects_type: like translate_contained_expressions
@@ -280,6 +280,7 @@ feature -- Helper functions: contracts
 				if attached {FEATURE_B} i.item.clause.expr as l_call then
 					l_name := names_heap.item_32 (l_call.feature_name_id)
 					if l_name ~ a_function then
+						a_translator.set_origin_class (i.item.origin)
 						l_objects_type := translate_contained_expressions (l_call.parameters.i_th (1).expression, a_translator, True)
 						Result.append (l_objects_type.expressions)
 					end
@@ -287,7 +288,7 @@ feature -- Helper functions: contracts
 			end
 		end
 
-	frame_partial_objects_of (a_clauses: LIST [E2B_ASSERT_ORIGIN]; a_function: STRING; a_translator: E2B_EXPRESSION_TRANSLATOR; a_check_model: BOOLEAN): LIST [E2B_FRAME_ELEMENT]
+	frame_partial_objects_of (a_clauses: LIST [E2B_ASSERT_ORIGIN]; a_function: STRING; a_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR; a_check_model: BOOLEAN): LIST [E2B_FRAME_ELEMENT]
 			-- Partial object descriptions extracted from `a_clauses' and translated with `a_translator', given as arguments to `a_function'.
 		local
 			l_fieldnames: LINKED_LIST [STRING_32]
@@ -308,6 +309,7 @@ feature -- Helper functions: contracts
 				if attached {FEATURE_B} i.item.clause.expr as l_call then
 					l_name := names_heap.item_32 (l_call.feature_name_id)
 					if l_name ~ a_function then
+						a_translator.set_origin_class (i.item.origin)
 						l_objects_type := translate_contained_expressions (l_call.parameters.i_th (2).expression, a_translator, True)
 						create l_fields.make
 						l_fields.compare_objects
@@ -429,7 +431,7 @@ feature -- Helper functions: contracts
 			end
 		end
 
-	decreases_expressions_of (a_clauses: LIST [E2B_ASSERT_ORIGIN]; a_translator: E2B_EXPRESSION_TRANSLATOR): LIST [IV_EXPRESSION]
+	decreases_expressions_of (a_clauses: LIST [E2B_ASSERT_ORIGIN]; a_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR): LIST [IV_EXPRESSION]
 			-- List of variants extracted from decreases clauses `a_clauses'.
 		do
 			create {LINKED_LIST [IV_EXPRESSION]} Result.make
@@ -437,6 +439,7 @@ feature -- Helper functions: contracts
 				a_clauses as i
 			loop
 				if attached {FEATURE_B} i.item.clause.expr as l_call then
+					a_translator.set_origin_class (i.item.origin)
 					Result.append (translate_contained_expressions (l_call.parameters.i_th (1).expression, a_translator, False).expressions)
 				else
 					check internal_error: False end

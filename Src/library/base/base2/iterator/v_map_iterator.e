@@ -19,7 +19,9 @@ feature -- Access
 	key: K
 			-- Key at current position.
 		require
+			closed: closed
 			not_off: not off
+			reads (Current, target)
 		deferred
 		ensure
 			definition: Result = key_sequence [index]
@@ -36,6 +38,7 @@ feature -- Cursor movement
 			-- (Use reference equality.)
 		require
 			modify_model (["index", "box"], Current)
+			target.is_wrapped
 		deferred
 		ensure
 			index_effect_found: target.has_key (k) implies key_sequence [index] = k
@@ -56,7 +59,7 @@ invariant
 	keys_in_target: key_sequence.range ~ target.map.domain
 	unique_keys: key_sequence.count = target.map.count
 	value_sequence_domain_definition: value_sequence.count = key_sequence.count
-	value_sequence_definition: across 1 |..| key_sequence.count as i all value_sequence [i.item] = target.map [key_sequence [i.item]] end
+	value_sequence_definition: across key_sequence.domain as i all value_sequence [i.item] = target.map [key_sequence [i.item]] end
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
