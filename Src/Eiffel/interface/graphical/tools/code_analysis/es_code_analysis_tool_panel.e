@@ -282,7 +282,9 @@ feature -- Status report
 			l_text: STRING_32
 		do
 			Result := True
-			if attached {CA_RULE_VIOLATION_EVENT} a_item.data as l_viol then
+			if attached {CA_EXCEPTION_EVENT} a_item.data as l_exception then
+				if not show_errors then Result := False end
+			elseif attached {CA_RULE_VIOLATION_EVENT} a_item.data as l_viol then
 				if is_error_event (l_viol) and not show_errors then
 					Result := False
 				elseif is_warning_event (l_viol) and not show_warnings then
@@ -349,7 +351,7 @@ feature {NONE} -- Events
 				initialize
 			end
 			if l_applicable then
-				if is_error_event (a_event_item) then
+				if is_error_event (a_event_item) or attached {CA_EXCEPTION_EVENT} a_event_item then
 					error_count := error_count + 1
 				elseif is_warning_event (a_event_item) then
 					warning_count := warning_count + 1
@@ -382,7 +384,7 @@ feature {NONE} -- Events
 				initialize
 			end
 			if l_applicable then
-				if is_error_event (a_event_item) then
+				if is_error_event (a_event_item) or attached {CA_EXCEPTION_EVENT} a_event_item then
 					error_count := error_count - 1
 				elseif is_warning_event (a_event_item) then
 					warning_count := warning_count - 1
@@ -434,6 +436,7 @@ feature {NONE} -- Query
 		do
 			Result := attached {CA_RULE_VIOLATION_EVENT} a_event_item
 						or attached {CA_NO_ISSUES_EVENT} a_event_item
+						or attached {CA_EXCEPTION_EVENT} a_event_item
 		end
 
 	is_error_event (a_event_item: EVENT_LIST_ITEM_I): BOOLEAN
@@ -474,7 +477,9 @@ feature {NONE} -- Basic operations
 		local
 			l_stone: STONE
 		do
-			if attached {CA_RULE_VIOLATION_EVENT} a_row.parent_row_root.data as l_event_item then
+			if attached {CA_EXCEPTION_EVENT} a_row.parent_row_root.data as l_exception then
+				raise_default_exception_dialog (create {EV_DIALOG}, l_exception.data.ex)
+			elseif attached {CA_RULE_VIOLATION_EVENT} a_row.parent_row_root.data as l_event_item then
 				if attached l_event_item.location as l_loc then
 					create {COMPILED_LINE_STONE} l_stone.make_with_line (l_event_item.affected_class, l_loc.line, True)
 				else
@@ -507,6 +512,26 @@ feature {NONE} -- Basic operations
 				a_row.set_item (category_column, l_label)
 
 				create l_label.make_with_text (ca_messages.no_issues)
+				a_row.set_item (description_column, l_label)
+
+			elseif attached {CA_EXCEPTION_EVENT} a_event_item as l_exception then
+
+					-- Severity is error:
+				create l_label
+				l_label.disable_full_select
+				l_label.set_pixmap (stock_pixmaps.general_error_icon)
+				l_label.set_data ("Error")
+				a_row.set_background_color (error_bg_color)
+				a_row.set_item (category_column, l_label)
+
+					-- Set affected class:
+				create l_gen.make
+				l_exception.data.cl.append_name (l_gen)
+				l_editor_item := create_clickable_grid_item (l_gen.last_line, True)
+				a_row.set_item (class_column, l_editor_item)
+
+					-- Generic description:
+				create l_label.make_with_text (ca_messages.error)
 				a_row.set_item (description_column, l_label)
 
 			elseif attached {CA_RULE_VIOLATION_EVENT} a_event_item as l_viol then
@@ -687,6 +712,92 @@ feature {NONE} -- Basic operations
 							end)
 		end
 
+feature {NONE} -- Exception Info
+
+
+
+	raise_default_exception_dialog (a_empty_dialog: EV_DIALOG; an_exception: EXCEPTION)
+			-- Raise the exception dialog
+		require
+			a_empty_dialog_valid: a_empty_dialog /= Void and then not a_empty_dialog.is_destroyed
+		local
+			l_exception_string: detachable STRING_32
+			l_label: EV_TEXT
+			l_label_box: EV_HORIZONTAL_BOX
+			l_vbox: EV_VERTICAL_BOX
+			l_hbox: EV_HORIZONTAL_BOX
+			l_font: EV_FONT
+			l_ignore, l_quit: EV_BUTTON
+			l_frame: EV_FRAME
+			l_error_box: EV_HORIZONTAL_BOX
+			l_error_label: EV_LABEL
+			l_exception_message: READABLE_STRING_GENERAL
+		do
+			l_exception_string := an_exception.trace
+			if l_exception_string /= Void then
+				l_exception_string := l_exception_string.twin
+				l_exception_string.prune_all ('%R')
+			end
+			create l_label
+			l_label.disable_word_wrapping
+			l_label.disable_edit
+			create l_font
+			l_font.set_family ({EV_FONT_CONSTANTS}.Family_typewriter)
+			l_label.set_font (l_font)
+			if l_exception_string /= Void then
+				l_label.set_text (l_exception_string)
+			else
+				l_label.set_text ("No trace available.")
+			end
+			create l_vbox
+			create l_error_box
+			l_error_box.set_border_width (5)
+			l_error_box.set_padding (5)
+			l_error_box.extend ((create {EV_STOCK_PIXMAPS}).error_pixmap.twin)
+			l_error_box.disable_item_expand (l_error_box.first)
+			l_error_box.first.set_minimum_size (32, 32)
+			create l_error_label
+			l_error_label.align_text_left
+			l_error_label.set_text ("The following exception has occurred during code analysis:")
+			l_error_box.extend (l_error_label)
+			l_vbox.extend (l_error_box)
+			l_vbox.disable_item_expand (l_error_box)
+
+
+			create l_frame
+			create l_label_box
+			l_frame.extend (l_label_box)
+			l_label_box.set_padding (5)
+			l_label_box.set_border_width (5)
+			l_label_box.extend (l_label)
+			l_frame.set_text ("Exception Trace")
+			l_vbox.extend (l_frame)
+			a_empty_dialog.extend (l_vbox)
+			create l_hbox
+			l_vbox.extend (l_hbox)
+			l_vbox.disable_item_expand (l_hbox)
+			create l_ignore.make_with_text ("Close")
+			l_ignore.select_actions.extend (agent a_empty_dialog.destroy)
+			l_hbox.extend (create {EV_CELL})
+			l_hbox.extend (l_ignore)
+			l_hbox.disable_item_expand (l_ignore)
+			l_hbox.set_border_width (5)
+			l_hbox.set_padding (5)
+			if attached an_exception.description as l_message then
+				l_exception_message := l_message
+			else
+				l_exception_message := ""
+			end
+			a_empty_dialog.set_title ({STRING_32} "Code Analysis Exception: " + l_exception_message)
+			a_empty_dialog.set_minimum_height (350)
+			a_empty_dialog.set_size (500, 300)
+			a_empty_dialog.raise
+				--| FIXME Behavior would be better if dialog has full application modality.
+
+				-- Set "Ignore" as the default
+			l_ignore.set_focus
+		end
+
 feature {NONE} -- Clean up
 
 	internal_recycle
@@ -699,7 +810,7 @@ feature {NONE} -- Clean up
 			then
 				session_data.session_connection.disconnect_events (Current)
 			end
-			
+
 			Precursor {ES_CLICKABLE_EVENT_LIST_TOOL_PANEL_BASE}
 		end
 

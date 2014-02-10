@@ -63,8 +63,8 @@ feature -- Execution (declared in EWB_CMD)
 			if class_name_list.is_empty then
 				l_code_analyzer.add_whole_system
 			else
-				across class_name_list as l_cn loop
-					try_add_class_with_name (l_code_analyzer, l_cn.item)
+				across class_name_list as ic loop
+					try_add_class_with_name (l_code_analyzer, ic.item)
 				end
 			end
 
@@ -84,19 +84,19 @@ feature -- Execution (declared in EWB_CMD)
 					output_window.add (ca_messages.cmd_class + l_vlist.key.name + "':%N")
 
 						-- See `{CA_RULE_VIOLATION}.is_less' for information on the sorting.
-					across l_vlist.item as l_v loop
-						l_rule_name := l_v.item.rule.title
-						l_rule_id := l_v.item.rule.id
-						if attached l_v.item.location as l_loc then
-							l_line := l_v.item.location.line.out
-							l_col := l_v.item.location.column.out
+					across l_vlist.item as ic loop
+						l_rule_name := ic.item.rule.title
+						l_rule_id := ic.item.rule.id
+						if attached ic.item.location as l_loc then
+							l_line := ic.item.location.line.out
+							l_col := ic.item.location.column.out
 
 							output_window.add ("  (" + l_line + ":" + l_col + "): "
 								+ l_rule_name + " (" + l_rule_id + "): ")
 						else -- No location attached. Print without location.
 							output_window.add ("  "	+ l_rule_name + " (" + l_rule_id + "): ")
 						end
-						l_v.item.format_violation_description (output_window)
+						ic.item.format_violation_description (output_window)
 						output_window.add ("%N")
 					end
 				end

@@ -73,6 +73,10 @@ feature {NONE} -- AST Visits
 			l_violation: CA_RULE_VIOLATION
 			l_fix: CA_UNNEEDED_OT_LOCAL_FIX
 		do
+				-- Artificial Exception to test exception handling.
+--			l_violation := Void
+--			print (l_violation.csv_line)
+
 				-- The expression to be tested must be a simple call.
 			if
 				attached {EXPR_CALL_AS} a_ot.expression as l_call

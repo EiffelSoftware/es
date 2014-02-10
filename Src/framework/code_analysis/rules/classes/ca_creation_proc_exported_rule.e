@@ -75,8 +75,8 @@ feature {NONE} -- AST Visitor
 			l_viol: CA_RULE_VIOLATION
 		do
 			if creation_procedures /= Void then
-				across creation_procedures as l_cp loop
-					l_feature := a_clause.feature_with_name (l_cp.item.internal_name.name_id)
+				across creation_procedures as ic loop
+					l_feature := a_clause.feature_with_name (ic.item.internal_name.name_id)
 					if l_feature /= Void then
 						if attached a_clause.clients as l_clients then
 							across l_clients.clients as l_class_list loop

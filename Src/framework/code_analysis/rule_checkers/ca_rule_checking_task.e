@@ -12,12 +12,14 @@ inherit
 
 	CA_SHARED_NAMES
 
+	EXCEPTION_MANAGER_FACTORY
+
 create
 	make
 
 feature {NONE} -- Initialization
 
-	make (a_rules_checker: attached CA_ALL_RULES_CHECKER; a_rules: attached LINKED_LIST [attached CA_RULE]; a_classes: attached LINKED_SET [CLASS_C]; a_completed_action: attached PROCEDURE [ANY, TUPLE []])
+	make (a_rules_checker: attached CA_ALL_RULES_CHECKER; a_rules: attached LINKED_LIST [attached CA_RULE]; a_classes: attached LINKED_SET [CLASS_C]; a_completed_action: attached PROCEDURE [ANY, TUPLE [ITERABLE [TUPLE [detachable EXCEPTION, CLASS_C]]]])
 			-- Initializes `Current'. `a_rules_checker' will be used for checking standard rules. All classes from `a_classes'
 			-- will be analyzed by all rules from `a_rules'. `a_completed_action' will be called as soon as the analysis is done.
 		do
@@ -25,7 +27,7 @@ feature {NONE} -- Initialization
 			if a_classes.is_empty then
 					-- Make sure `completed_action' is called even when no classes
 					-- have been added.
-				a_completed_action.call ([])
+				a_completed_action.call ([Void])
 			else -- Initialization.
 				rules_checker := a_rules_checker
 				rules := a_rules
@@ -34,6 +36,7 @@ feature {NONE} -- Initialization
 				classes.start
 				has_next_step := not classes.is_empty
 				create type_recorder.make
+				create exceptions.make
 			end
 		end
 
@@ -61,12 +64,14 @@ feature {NONE} -- Implementation
 	classes: LINKED_SET [CLASS_C]
 			-- Classes that shall be analyzed.
 
-	completed_action: PROCEDURE [ANY, TUPLE []]
+	completed_action: PROCEDURE [ANY, TUPLE [ITERABLE [TUPLE [detachable EXCEPTION, CLASS_C]]]]
 			-- Shall be called when analysis has completed.
 
 	output_actions: detachable ACTION_SEQUENCE [TUPLE [READABLE_STRING_GENERAL]]
 			-- These procedures will be called whenever something should
 			-- be output.
+
+	exceptions: LINKED_SET [TUPLE [detachable EXCEPTION, CLASS_C]]
 
 feature -- From ROTA
 
@@ -79,36 +84,49 @@ feature -- From ROTA
 	step
 			-- <Precursor>
 		do
-				-- Gather type information
-			type_recorder.clear
-			type_recorder.analyze_class (classes.item)
+			if has_next_step then
+					-- Gather type information
+				type_recorder.clear
+				type_recorder.analyze_class (classes.item)
 
-			across rules as l_rules loop
-				if l_rules.item.is_enabled.value then
-					l_rules.item.set_node_types (type_recorder.node_types)
-					l_rules.item.set_checking_class (classes.item)
-						-- If rule is non-standard then it will not be checked by l_rules_checker.
-						-- We will have the rule check the current class here:
-					if attached {CA_CFG_RULE} l_rules.item as l_cfg_rule then
-						l_cfg_rule.check_class (classes.item)
+				across rules as l_rules loop
+					if l_rules.item.is_enabled.value then
+						l_rules.item.set_node_types (type_recorder.node_types)
+						l_rules.item.set_checking_class (classes.item)
+							-- If rule is non-standard then it will not be checked by l_rules_checker.
+							-- We will have the rule check the current class here:
+						if attached {CA_CFG_RULE} l_rules.item as l_cfg_rule then
+							l_cfg_rule.check_class (classes.item)
+						end
 					end
 				end
-			end
 
-				-- Status output.
+					-- Status output.
+				if output_actions /= Void then
+					output_actions.call ([ca_messages.analyzing_class (classes.item.name)])
+				end
+
+				rules_checker.run_on_class (classes.item)
+
+				classes.forth
+				has_next_step := not classes.after
+				if not has_next_step then
+					completed_action.call ([exceptions])
+				end
+			end
+		rescue
+				-- Instant error output.
 			if output_actions /= Void then
-				output_actions.call ([ca_messages.analyzing_class (classes.item.name)])
+				output_actions.call ([ca_messages.error_on_class (classes.item.name)])
 			end
-
-			rules_checker.run_on_class (classes.item)
-
+			exceptions.extend ([exception_manager.last_exception, classes.item])
+				-- Jump to the next class.
 			classes.forth
-
 			has_next_step := not classes.after
-
 			if not has_next_step then
-				completed_action.call ([])
+				completed_action.call ([exceptions])
 			end
+			retry
 		end
 
 	cancel

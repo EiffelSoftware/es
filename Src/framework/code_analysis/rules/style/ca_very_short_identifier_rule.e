@@ -87,20 +87,20 @@ feature {NONE} -- Rule checking
 			if a_routine.locals /= Void then
 				l_min := min_local_name_length.value
 
-				across a_routine.locals as l_t loop
+				across a_routine.locals as ic loop
 					from
 						j := 1
 					until
-						j > l_t.item.id_list.count
+						j > ic.item.id_list.count
 					loop
-						l_name := l_t.item.item_name (j)
+						l_name := ic.item.item_name (j)
 						l_count := l_name.count
 						if (not count_local_prefix.value) and then l_name.starts_with ("l_") then
 							l_count := l_count - 2
 						end
 						if l_count < l_min and then is_no_counter (l_name) then
 							create l_viol.make_with_rule (Current)
-							l_viol.set_location (l_t.item.start_location)
+							l_viol.set_location (ic.item.start_location)
 							l_viol.long_description_info.extend (l_name)
 							l_viol.long_description_info.extend (l_min)
 							violations.extend (l_viol)
@@ -121,20 +121,20 @@ feature {NONE} -- Rule checking
 			if a_body.arguments /= Void then
 				l_min := min_argument_name_length.value
 
-				across a_body.arguments as l_t loop
+				across a_body.arguments as ic loop
 					from
 						j := 1
 					until
-						j > l_t.item.id_list.count
+						j > ic.item.id_list.count
 					loop
-						l_name := l_t.item.item_name (j)
+						l_name := ic.item.item_name (j)
 						l_count := l_name.count
 						if (not count_argument_prefix.value) and then l_name.starts_with ("a_") then
 							l_count := l_count - 2
 						end
 						if l_count < l_min and then is_no_counter (l_name) then
 							create l_viol.make_with_rule (Current)
-							l_viol.set_location (l_t.item.start_location)
+							l_viol.set_location (ic.item.start_location)
 							l_viol.long_description_info.extend (l_name)
 							l_viol.long_description_info.extend (l_min)
 							violations.extend (l_viol)

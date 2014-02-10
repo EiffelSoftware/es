@@ -310,14 +310,21 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 			code_analyzer.analyze
 		end
 
-	analysis_completed (a_success: BOOLEAN)
-			-- Is called when the analysis is completed. `a_success' is ignored (required
-			-- by {CA_CODE_ANALYZER}, though).
+	analysis_completed (a_exceptions: detachable ITERABLE [TUPLE [detachable EXCEPTION, CLASS_C]])
+			-- Is called when the analysis is completed. `a_exceptions' is a list
+			-- of exceptions that occurred during analysis.
 		local
 			l_violation_exists: BOOLEAN
 		do
 				-- First off, remove all event items.
 			event_list.prune_event_items (event_context_cookie)
+
+			if a_exceptions /= Void then
+				across a_exceptions as ic loop
+					event_list.put_event_item (event_context_cookie, create {CA_EXCEPTION_EVENT}.make (ic.item))
+					l_violation_exists := True
+				end
+			end
 
 				-- Add an event item for each rule violation.
 			across code_analyzer.rule_violations as l_viol_list loop

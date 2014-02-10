@@ -79,6 +79,9 @@ feature -- Messages for both GUI and command line mode
 	analyzing_class (a_class_name: attached READABLE_STRING_GENERAL): STRING_32
 		do Result := locale.formatted_string (locale.translation ("Analyzing class $1 ..."), [a_class_name]) end
 
+	error_on_class (a_class_name: attached READABLE_STRING_GENERAL): STRING_32
+		do Result := locale.formatted_string (locale.translation ("An error occurred when analyzing class $1!"), [a_class_name]) end
+
 feature -- Rule Violations
 
 	self_assignment_violation_1: STRING_32
@@ -308,6 +311,9 @@ feature -- Rule Violations
 
 	unneeded_parentheses_violation_1: STRING_32
 		do Result := locale.translation ("These parentheses are not needed and should be removed in order to maintain a consistent coding style.") end
+
+	error: STRING_32
+		do Result := locale.translation ("An error occurred when analyzing this class.") end
 
 feature -- Command Line
 
