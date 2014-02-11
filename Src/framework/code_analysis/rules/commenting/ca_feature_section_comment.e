@@ -45,12 +45,12 @@ feature {NONE} -- Rule checking
 			l_comment: STRING_32
 			l_empty: BOOLEAN
 		do
-			if matchlist /= Void then
-				if a_feature_clause.comment (matchlist).count = 0 then
+			if current_context.matchlist /= Void then
+				if a_feature_clause.comment (current_context.matchlist).count = 0 then
 						-- The comments list is empty.
 					l_empty := True
 				else
-					create l_comment.make_from_string (a_feature_clause.comment (matchlist).first.content_32)
+					create l_comment.make_from_string (a_feature_clause.comment (current_context.matchlist).first.content_32)
 						 -- In case there are whitespaces after "--":
 					l_comment.prune_all (' ')
 					l_comment.prune_all ('%T')

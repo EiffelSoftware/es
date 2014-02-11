@@ -37,6 +37,12 @@ feature {NONE} -- Initialization
 				has_next_step := not classes.is_empty
 				create type_recorder.make
 				create exceptions.make
+				create context
+				across rules as l_rules loop
+						-- Set the context already here. For any further
+						-- class only update the info in the context.
+					l_rules.item.set_current_context (context)
+				end
 			end
 		end
 
@@ -73,6 +79,8 @@ feature {NONE} -- Implementation
 
 	exceptions: LINKED_SET [TUPLE [detachable EXCEPTION, CLASS_C]]
 
+	context: CA_ANALYSIS_CONTEXT
+
 feature -- From ROTA
 
 	sleep_time: NATURAL = 10
@@ -88,11 +96,11 @@ feature -- From ROTA
 					-- Gather type information
 				type_recorder.clear
 				type_recorder.analyze_class (classes.item)
+				context.set_node_types (type_recorder.node_types)
+				context.set_checking_class (classes.item)
 
 				across rules as l_rules loop
 					if l_rules.item.is_enabled.value then
-						l_rules.item.set_node_types (type_recorder.node_types)
-						l_rules.item.set_checking_class (classes.item)
 							-- If rule is non-standard then it will not be checked by l_rules_checker.
 							-- We will have the rule check the current class here:
 						if attached {CA_CFG_RULE} l_rules.item as l_cfg_rule then

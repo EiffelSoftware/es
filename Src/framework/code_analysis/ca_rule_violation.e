@@ -24,7 +24,7 @@ feature {NONE} -- Initialization
 			rule := a_rule
 				-- This is just the default. The rule may set the affected class otherwise
 				-- if needed.
-			affected_class := a_rule.checking_class
+			affected_class := a_rule.current_context.checking_class
 			create long_description_info.make
 			create fixes.make
 		end

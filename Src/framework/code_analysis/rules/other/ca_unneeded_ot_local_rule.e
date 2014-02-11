@@ -95,7 +95,7 @@ feature {NONE} -- AST Visits
 				l_violation.long_description_info.extend (l_ot_local.name_32)
 
 					-- Add the fix.
-				create l_fix.make_with_ot (checking_class, a_ot)
+				create l_fix.make_with_ot (current_context.checking_class, a_ot)
 				l_violation.fixes.extend (l_fix)
 
 				violations.extend (l_violation)

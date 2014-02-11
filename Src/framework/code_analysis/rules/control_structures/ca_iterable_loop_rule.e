@@ -51,7 +51,7 @@ feature {NONE} -- Rule checking
 	process_feature (a_feature: FEATURE_AS)
 			-- Sets currently checked feature.
 		do
-			current_feature_i := checking_class.feature_named_32 (a_feature.feature_name.name_32)
+			current_feature_i := current_context.checking_class.feature_named_32 (a_feature.feature_name.name_32)
 		end
 
 	process_loop (a_loop: LOOP_AS)
@@ -92,7 +92,7 @@ feature {NONE} -- Rule checking
 				and then l_msg.access_name_8.is_equal ("after")
 			then
 				l_target := l_nested_call.target
-				l_type := node_type (l_target, current_feature_i)
+				l_type := current_context.node_type (l_target, current_feature_i)
 				if l_type.base_class.conform_to (iterable) then
 					matching_until_part := True
 					expected_var := l_target.access_name_32

@@ -72,7 +72,7 @@ feature {NONE} -- Checking the rule
 	is_current_hashable: BOOLEAN
 			-- Is currently checked class a descendant of {HASHABLE}?
 		do
-			across checking_class.parents as l_parents loop
+			across current_context.checking_class.parents as l_parents loop
 				if l_parents.item.name.is_equal ("HASHABLE") then
 					Result := True
 				end
@@ -82,7 +82,7 @@ feature {NONE} -- Checking the rule
 	redefines_is_equal: BOOLEAN
 			-- Does current class redefine `is_equal'?
 		do
-			across checking_class.written_in_features as l_feat loop
+			across current_context.checking_class.written_in_features as l_feat loop
 				if l_feat.item.name_32.is_equal ("is_equal") then
 					Result := True
 				end

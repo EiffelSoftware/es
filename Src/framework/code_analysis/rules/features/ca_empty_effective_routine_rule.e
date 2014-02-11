@@ -54,7 +54,7 @@ feature {NONE} -- Rule checking
 		do
 				-- Check that the feature is not a function. For a function, keeping the default
 				-- value for the Result is some sort of implementation, too.
-			if (checking_class.is_deferred and not current_feature.is_function) and then a_do.compound = Void then
+			if (current_context.checking_class.is_deferred and not current_feature.is_function) and then a_do.compound = Void then
 				create l_viol.make_with_rule (Current)
 				l_viol.set_location (current_feature.start_location)
 				l_viol.long_description_info.extend (current_feature.feature_name.name_32)

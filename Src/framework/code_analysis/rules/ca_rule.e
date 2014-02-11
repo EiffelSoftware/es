@@ -106,45 +106,18 @@ feature -- Properties the user can change
 
 feature -- Rule checking
 
-	set_checking_class (a_class: attached CLASS_C)
-			-- Sets the class that is being checked to `a_class'.
-			-- (Used for creating violations.)
+	set_current_context (a_context: attached CA_ANALYSIS_CONTEXT)
+			-- Sets the current rule checking context to `a_context'.
 		do
-			checking_class := a_class
+			current_context := a_context
+		ensure
+			current_context = a_context
 		end
 
-	checking_class: detachable CLASS_C
-			-- The class that is currently being checked.
+feature {CA_RULE_VIOLATION} -- Rule checking
 
-	set_node_types (a_types: HASH_TABLE [TYPE_A, TUPLE [node: INTEGER; written_class: INTEGER; feat: INTEGER; cl: INTEGER]])
-			-- Sets the hash table mapping AST nodes to type information to `a_types'.
-		do
-			node_types := a_types
-		end
-
-feature {NONE} -- Rule checking
-
-	matchlist: detachable LEAF_AS_LIST
-			-- The match list of the currently checked class.
-		do
-			if checking_class /= Void then
-				Result := Match_list_server.item (checking_class.class_id)
-			end
-		end
-
-	node_types: HASH_TABLE [TYPE_A, TUPLE [node: INTEGER; written_class: INTEGER; feat: INTEGER; cl: INTEGER]]
-			-- Type of the AST node `node' written in class
-			-- `written_class' when evaluated in a feature `feature' of class
-			-- `class'.
-
-	node_type (a_node: AST_EIFFEL; a_feature: FEATURE_I): TYPE_A
-			-- Type of the AST node `a_node' from feature `a_feature'.
-		local
-			l_class_id: INTEGER
-		do
-			l_class_id := a_feature.written_class.class_id
-			Result := node_types [[a_node.index, l_class_id, a_feature.rout_id_set.first, l_class_id]]
-		end
+	current_context: detachable CA_ANALYSIS_CONTEXT
+			-- The current rule checking context.
 
 feature -- Results
 

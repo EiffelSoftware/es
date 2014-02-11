@@ -79,8 +79,8 @@ feature {NONE} -- Checking the rule
 			l_n_semis: INTEGER
 			l_viol: CA_RULE_VIOLATION
 		do
-			if matchlist /= Void and then attached a_body.arguments as l_a then
-				l_n_semis := l_a.text_32 (matchlist).occurrences (';')
+			if current_context.matchlist /= Void and then attached a_body.arguments as l_a then
+				l_n_semis := l_a.text_32 (current_context.matchlist).occurrences (';')
 				if l_n_semis < l_a.count - 1 then
 						-- At least one argument must have no semicolon separator.
 					create l_viol.make_with_rule (Current)

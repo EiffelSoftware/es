@@ -43,7 +43,7 @@ feature {NONE} -- Rule checking
 	process_feature (a_feature: FEATURE_AS)
 			-- Stores `a_feature'.
 		do
-			current_feature_i := checking_class.feature_named_32 (a_feature.feature_name.name_32)
+			current_feature_i := current_context.checking_class.feature_named_32 (a_feature.feature_name.name_32)
 		end
 
 	process_equality (a_bin_eq: BIN_EQ_AS)
@@ -84,7 +84,7 @@ feature {NONE} -- Rule checking
 				and then attached {ACCESS_AS} l_nested_call.message as l_msg
 				and then l_msg.access_name_8.is_equal ("count")
 			then
-				if attached node_type (l_nested_call.target, current_feature_i) as l_type then
+				if attached current_context.node_type (l_nested_call.target, current_feature_i) as l_type then
 					Result := l_type.base_class.conform_to (finite)
 				end
 			end

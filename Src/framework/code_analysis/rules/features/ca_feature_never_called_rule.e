@@ -45,8 +45,8 @@ feature {NONE} -- Feature Visitor for Violation Check
 			l_clients: ARRAYED_LIST [CLASS_C]
 			has_callers: BOOLEAN
 		do
-			l_feat := checking_class.written_in_features
-			l_clients := checking_class.clients
+			l_feat := current_context.checking_class.written_in_features
+			l_clients := current_context.checking_class.clients
 
 			from
 				l_feat.start
@@ -83,7 +83,7 @@ feature {NONE} -- Feature Visitor for Violation Check
 			l_violation.set_location (a_feature.ast.start_location)
 			l_violation.long_description_info.extend (a_feature.name_32)
 
-			create l_fix.make_with_feature (checking_class, a_feature.ast, a_feature.name_32)
+			create l_fix.make_with_feature (current_context.checking_class, a_feature.ast, a_feature.name_32)
 			l_violation.fixes.extend (l_fix)
 
 			violations.extend (l_violation)

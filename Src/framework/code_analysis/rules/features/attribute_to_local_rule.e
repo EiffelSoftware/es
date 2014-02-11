@@ -44,8 +44,8 @@ feature {NONE} -- Rule checking
 			l_has_clients: BOOLEAN
 			l_callers: LIST [STRING_32]
 		do
-			l_feat := checking_class.written_in_features
-			l_clients := checking_class.clients
+			l_feat := current_context.checking_class.written_in_features
+			l_clients := current_context.checking_class.clients
 
 			from
 				l_feat.start
@@ -63,7 +63,7 @@ feature {NONE} -- Rule checking
 					loop
 							-- Only look at external clients.
 						if
-							l_clients.item.name.is_equal (checking_class.name)
+							l_clients.item.name.is_equal (current_context.checking_class.name)
 								-- `callers_32' retrieves not only callers but also assigners and creators.
 							and then l_feat.item.callers_32 (l_clients.item, 0) /= Void
 						then
@@ -75,7 +75,7 @@ feature {NONE} -- Rule checking
 
 					if
 						not l_has_clients
-						and then attached l_feat.item.callers_32 (checking_class, 0) as l_c
+						and then attached l_feat.item.callers_32 (current_context.checking_class, 0) as l_c
 						and then l_c.count = 1
 					then
 						create_violation (l_feat.item, l_c.first)

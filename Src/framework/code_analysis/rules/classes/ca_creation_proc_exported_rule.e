@@ -33,6 +33,7 @@ feature {NONE} -- Initialization
 		do
 			a_checker.add_create_pre_action (agent process_create)
 			a_checker.add_feature_clause_pre_action (agent process_feature_clause)
+			a_checker.add_class_post_action (agent do_post_class_cleanup)
 		end
 
 feature -- Properties
@@ -65,6 +66,13 @@ feature {NONE} -- AST Visitor
 			-- Stores the creation procedures of `a_create'.
 		do
 			creation_procedures := a_create.feature_list
+		end
+
+	do_post_class_cleanup (a_class: CLASS_AS)
+		do
+				-- Set the creation procedures to Void. Prevents errors when
+				-- the next class does not have any create clause.
+			creation_procedures := Void
 		end
 
 	process_feature_clause (a_clause: FEATURE_CLAUSE_AS)
