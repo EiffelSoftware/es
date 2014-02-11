@@ -65,7 +65,7 @@ feature {NONE} -- Rule checking
 			-- Is `a_expr' the integer constant 0?
 		do
 			if attached {INTEGER_AS} a_expr as l_int then
-				Result := (l_int.has_integer (32) and then l_int.integer_32_value = 0)
+				Result := l_int.has_integer (32) and then l_int.integer_32_value = 0
 			end
 		end
 

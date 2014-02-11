@@ -62,9 +62,9 @@ feature -- Inherited from {COMPARABLE}
 		do
 			if attached location as l_location and then attached a_other.location as l_other_location then
 				if l_location.line = l_other_location.line then
-					Result := (l_location.column < l_other_location.column)
+					Result := l_location.column < l_other_location.column
 				else
-					Result := (l_location.line < l_other_location.line)
+					Result := l_location.line < l_other_location.line
 				end
 			end
 		end

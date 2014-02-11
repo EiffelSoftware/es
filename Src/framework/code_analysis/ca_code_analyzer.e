@@ -198,7 +198,7 @@ feature -- Analysis interface
 			system_wide_check := False
 
 			if attached {EIFFEL_CLASS_I} a_class as l_eiffel_class
-				and then attached {CLASS_C} l_eiffel_class.compiled_class as l_compiled
+				and then attached l_eiffel_class.compiled_class as l_compiled
 			then
 				classes_to_analyze.extend (l_compiled)
 

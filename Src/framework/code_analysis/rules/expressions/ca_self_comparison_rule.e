@@ -138,7 +138,7 @@ feature {NONE} -- Checking the rule
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
-			if (not in_loop) then
+			if not in_loop then
 				analyze_self (a_comparison)
 				if is_self then
 					create l_viol.make_with_rule (Current)

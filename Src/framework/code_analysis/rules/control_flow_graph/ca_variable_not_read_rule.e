@@ -129,7 +129,7 @@ feature {NONE} -- Implementation
 		do
 			l_old_count := lv_exit.at (a_from).count
 			lv_exit.at (a_from).merge (lv_entry.at (a_to))
-			Result := (l_old_count /= lv_exit.at (a_from).count)
+			Result := l_old_count /= lv_exit.at (a_from).count
 		end
 
 	process_default (a_from: INTEGER): BOOLEAN
@@ -140,7 +140,7 @@ feature {NONE} -- Implementation
 		do
 			l_old_count := lv_entry.at (a_from).count
 			lv_entry.at (a_from).copy (lv_exit.at (a_from))
-			Result := (l_old_count /= lv_entry.at (a_from).count)
+			Result := l_old_count /= lv_entry.at (a_from).count
 		end
 
 	process_instr (a_from: attached CA_CFG_INSTRUCTION): BOOLEAN
@@ -182,7 +182,7 @@ feature {NONE} -- Implementation
 			end
 			lv_entry.at (a_from.label).merge (l_lv)
 
-			Result := (l_old_count /= lv_entry.at (a_from.label).count)
+			Result := l_old_count /= lv_entry.at (a_from.label).count
 		end
 
 	process_if (a_from: attached CA_CFG_IF): BOOLEAN
@@ -195,7 +195,7 @@ feature {NONE} -- Implementation
 			lv_entry.at (a_from.label).copy (lv_exit.at (a_from.label))
 			extract_generated (a_from.condition)
 			lv_entry.at (a_from.label).merge (generated)
-			Result := (l_old_count /= lv_entry.at (a_from.label).count)
+			Result := l_old_count /= lv_entry.at (a_from.label).count
 		end
 
 	process_loop (a_from: attached CA_CFG_LOOP): BOOLEAN
@@ -210,7 +210,7 @@ feature {NONE} -- Implementation
 				extract_generated (l_stop)
 				lv_entry.at (a_from.label).merge (generated)
 			end
-			Result := (l_old_count /= lv_entry.at (a_from.label).count)
+			Result := l_old_count /= lv_entry.at (a_from.label).count
 		end
 
 	process_inspect (a_from: attached CA_CFG_INSPECT): BOOLEAN
@@ -223,7 +223,7 @@ feature {NONE} -- Implementation
 			lv_entry.at (a_from.label).copy (lv_exit.at (a_from.label))
 			extract_generated (a_from.expression)
 			lv_entry.at (a_from.label).merge (generated)
-			Result := (l_old_count /= lv_entry.at (a_from.label).count)
+			Result := l_old_count /= lv_entry.at (a_from.label).count
 		end
 
 feature {NONE} -- Extracting Used Variables
@@ -258,10 +258,11 @@ feature {NONE} -- Extracting Used Variables
 		do
 			Precursor (a_conv)
 
-			if attached {ADDRESS_AS} a_conv.expr as l_address then
-				if attached {FEAT_NAME_ID_AS} l_address.feature_name as l_id then
-					generated.extend (l_id.feature_name.name_id)
-				end
+			if
+				attached {ADDRESS_AS} a_conv.expr as l_address
+				and then attached {FEAT_NAME_ID_AS} l_address.feature_name as l_id
+			then
+				generated.extend (l_id.feature_name.name_id)
 			end
 		end
 
