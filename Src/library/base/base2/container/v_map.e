@@ -18,6 +18,7 @@ feature -- Access
 	item alias "[]" (k: K): V
 			-- Value associated with `k'.
 		require
+			closed: closed
 			has_key: has_key (k)
 		deferred
 		ensure
@@ -28,6 +29,8 @@ feature -- Search
 
 	has_key (k: K): BOOLEAN
 			-- Does `map' contain a key equivalent to `k' according to `key_equivalence'?
+		require
+			closed: closed
 		deferred
 		ensure
 			definition: Result = map.domain [k]

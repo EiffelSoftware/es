@@ -81,7 +81,8 @@ axiom (forall<U, V> m: Map U V, k: U, x: V :: { Map#ToBag(Map#Update(m, k, x)) }
   Map#Domain(m)[k] ==> Map#ToBag(Map#Update(m, k, x)) == Bag#Extended(Bag#Removed(Map#ToBag(m), Map#Elements(m)[k]), x));
 axiom (forall<U, V> m: Map U V, k: U :: { Map#ToBag(Map#Removed(m, k)) }
   Map#Domain(m)[k] ==> Map#ToBag(Map#Removed(m, k)) == Bag#Removed(Map#ToBag(m), Map#Elements(m)[k]));
-  
+axiom (forall<U, V> m: Map U V :: { Bag#Card(Map#ToBag(m)) }
+  Bag#Card(Map#ToBag(m)) == Map#Card(m));  
   
 // Equality
 function Map#Equal<U, V>(Map U V, Map U V): bool;

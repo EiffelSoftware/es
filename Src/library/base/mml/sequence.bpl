@@ -58,8 +58,8 @@ axiom (forall<T> s0: Seq T, s1: Seq T, n: int :: { Seq#Item(Seq#Concat(s0,s1), n
   (Seq#Length(s0) < n ==> Seq#Item(Seq#Concat(s0,s1), n) == Seq#Item(s1, n - Seq#Length(s0))));
   
 // Set of indexes
-function Seq#Domain<T>(Seq T): Set int;
-axiom (forall<T> q: Seq T, i: int :: { Seq#Domain(q)[i] } Seq#Domain(q)[i] <==> 1 <= i && i <= Seq#Length(q));
+function Seq#Domain<T>(q: Seq T): Set int
+{ Interval#FromRange(1, Seq#Length(q)) }
 
 // Set of values
 function Seq#Range<T>(Seq T): Set T;

@@ -16,6 +16,8 @@ feature -- Measurement
 
 	count: INTEGER
 			-- Number of elements.
+		require
+			closed: closed
 		deferred
 		ensure
 			definition: Result = bag.count
@@ -25,6 +27,8 @@ feature -- Status report
 
 	is_empty: BOOLEAN
 			-- Is container empty?
+		require
+			closed: closed
 		do
 			Result := count = 0
 		ensure
@@ -94,7 +98,7 @@ feature -- Search
 			wrap
 		ensure
 			definition: Result = bag [v]
-			observers_restored: observers = old observers
+			observers_restored: observers ~ old observers
 			is_wrapped: is_wrapped
 		end
 

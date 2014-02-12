@@ -41,8 +41,10 @@ feature -- Access
 	first: G
 			-- First element.
 		require
+			closed: closed
 			not_empty: not is_empty
 		do
+			check inv end
 			Result := item (lower)
 		ensure
 			definition: Result = map [lower]
@@ -51,8 +53,10 @@ feature -- Access
 	last: G
 			-- Last element.
 		require
+			closed: closed
 			not_empty: not is_empty
 		do
+			check inv end
 			Result := item (upper)
 		ensure
 			definition: Result = map [upper]
@@ -79,14 +83,16 @@ feature -- Measurement
 	count: INTEGER
 			-- Number of elements.
 		do
+			check inv end
 			Result := upper - lower + 1
 		ensure then
-			definition: Result = map.domain.count
+			definition_sequence: Result = map.domain.count
 		end
 
 	has_index (i: INTEGER): BOOLEAN
 			-- Is any value associated with `i'?
 		do
+			check inv end
 			Result := lower <= i and i <= upper
 		end
 
@@ -95,41 +101,62 @@ feature -- Search
 	index_of (v: G): INTEGER
 			-- Index of the first occurrence of `v';
 			-- out of range, if `v' does not occur.
+		note
+			status: impure
+			explicit: contracts
+		require
+			is_wrapped: is_wrapped
+			modify_model (["closed", "observers"], Current)
 		do
 			if not is_empty then
 				Result := index_of_from (v, lower)
+			else
+				Result := upper + 1
 			end
+			check inv end
 		ensure
 			definition_not_has: not map.has (v) implies not map.domain [Result]
-			definition_has: map.has (v) implies Result = map.inverse.image_of (v).min
+			definition_has: map.has (v) implies map.domain [Result] and map [Result] = v
+			constraint: not map.image (create {MML_INTERVAL}.from_range (lower, Result - 1)) [v]
+			observers_restored: observers ~ old observers
+			is_wrapped: is_wrapped
 		end
 
 	index_of_from (v: G; i: INTEGER): INTEGER
 			-- Index of the first occurrence of `v' starting from position `i';
 			-- out of range, if `v' does not occur.
+		note
+			status: impure
+			explicit: contracts
 		require
+			is_wrapped: is_wrapped
 			has_index: has_index (i)
+			modify_model (["closed", "observers"], Current)
 		local
-			it: V_ITERATOR [G]
-			j: INTEGER
+			it: V_SEQUENCE_ITERATOR [G]
 		do
-			from
-				it := at (i)
-				j := i
+			it := at (i)
+			it.search_forth (v)
+			if it.off then
 				Result := upper + 1
-			until
-				it.after or else it.item = v
-			loop
-				it.forth
-				j := j + 1
+			else
+				Result := it.target_index
 			end
-			if not it.after then
-				Result := j
-			end
+			check it.inv end
+ 			check across it.target_index_sequence.domain as j all it.sequence [j.item] = map [lower + j.item - 1] end end
+			lemma_sequence_map (it.sequence, map, lower, i - lower + 1, it.index - 1, v)
+			lemma_sequence_map (it.sequence, map, lower, i - lower + 1, upper - lower + 1, v)
+
+			unwrap; it.unwrap
+			set_observers (observers / it)
+			wrap
 		ensure
-			definition_not_has: not (map | create {MML_INTERVAL}.from_range (i, upper)).has (v) implies not map.domain [Result]
-			definition_has: (map | create {MML_INTERVAL}.from_range (i, upper)).has (v) implies
-				Result = (map | create {MML_INTERVAL}.from_range (i, upper)).inverse.image_of (v).min
+			definition_not_has: not map.image (create {MML_INTERVAL}.from_range (i, upper)) [v] implies Result = upper + 1
+			definition_has: map.image (create {MML_INTERVAL}.from_range (i, upper)) [v] implies
+				(map.domain [Result] and Result >= i) and then map [Result] = v
+			constraint: not map.image (create {MML_INTERVAL}.from_range (i, Result - 1)) [v]
+			observers_restored: observers ~ old observers
+			is_wrapped: is_wrapped
 		end
 
 --	index_satisfying (pred: PREDICATE [ANY, TUPLE [G]]): INTEGER
@@ -245,7 +272,23 @@ feature -- Iteration
 --			Result.remove_tail (stream.separator.count)
 --		end
 
---feature -- Specification
+feature -- Specification
+
+	lemma_sequence_map (s: MML_SEQUENCE [G]; m: MML_MAP [INTEGER, G]; k, l, u: INTEGER; v: G)
+			-- If `m' is a shifted `s', then the range of any interval of `s' is the `m'-image of a corresponsing shifted interval.
+		note
+			status: lemma
+		require
+			m.domain = create {MML_INTERVAL}.from_range (k, s.count + k - 1)
+			across s.domain as i all s [i.item] = m [i.item + k - 1] end
+			1 <= l and l <= u + 1 and u <= s.count
+		do
+			check across (create {MML_INTERVAL}.from_range (l, u)) as i all s [i.item] = s.interval (l, u) [i.item - l + 1] end end
+			check s.interval (l, u).has (v) = across (create {MML_INTERVAL}.from_range (l, u)) as i some s [i.item] = v end end
+			check across (create {MML_INTERVAL}.from_range (k + l - 1, k + u - 1)) as i all m [i.item] = s [i.item - k + 1] end end
+		ensure
+			s.interval (l, u).has (v) = m.image (create {MML_INTERVAL}.from_range (l + k - 1, u + k - 1))[v]
+		end
 
 --	key (i: INTEGER): INTEGER
 --			-- Identity.

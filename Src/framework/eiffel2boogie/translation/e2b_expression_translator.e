@@ -142,6 +142,11 @@ feature -- Access
 --	restricted_context_readable: IV_EXPRESSION
 --			-- Special readable frame used for function calls if defined, otherwise Void.
 
+	use_triggers: BOOLEAN
+			-- Should triggers be added to generated quntifiers?
+
+feature -- Convenience
+
 	class_type_in_current_context (a_type: TYPE_A): CL_TYPE_A
 			-- Class type that correspond to `a_type' in the context of `context_type' and possibly `context_feature'.
 		require
@@ -222,6 +227,7 @@ feature -- Basic operations
 			create safety_check_condition.make
 			safety_check_condition.extend (factory.true_)
 			create parameters_stack.make
+			use_triggers := True
 		end
 
 	set_local_writable (a_writable: IV_EXPRESSION)
@@ -241,6 +247,12 @@ feature -- Basic operations
 --		do
 --			restricted_context_readable := a_readable
 --		end
+
+	set_use_triggers (b: BOOLEAN)
+			-- Set `use_triggers' to `b'
+		do
+			use_triggers := b
+		end
 
 feature -- Visitors
 
@@ -293,7 +305,7 @@ feature -- Visitors
 			if attached l_class and then helper.is_class_logical (l_class) then
 				check a_operator ~ "==" or a_operator ~ "!=" end
 				(create {E2B_CUSTOM_LOGICAL_HANDLER}).handle_binary (Current, l_class, l_left, l_right, a_operator)
-			elseif is_in_quantifier then
+			elseif is_in_quantifier and use_triggers then
 				if a_operator ~ "+" then
 					last_expression := factory.function_call ("add", << l_left, l_right >>, types.int)
 				elseif a_operator ~ "-" then
@@ -315,10 +327,7 @@ feature -- Visitors
 				l_fname := "is_" + a_node.left.type.associated_class.name.as_lower
 				create l_fcall.make (l_fname, types.bool)
 				l_fcall.add_argument (last_expression)
-					-- TODO: refactor
-				if not is_in_quantifier then
-					add_safety_check (l_fcall, "overflow", context_tag, context_line_number)
-				end
+				add_safety_check (l_fcall, "overflow", context_tag, context_line_number)
 			end
 		end
 
@@ -1273,7 +1282,6 @@ feature {E2B_ACROSS_HANDLER, E2B_CUSTOM_CALL_HANDLER, E2B_CUSTOM_NESTED_HANDLER}
 
 	is_in_quantifier: BOOLEAN
 			-- Is current expression inside a quantifier?
-			-- ToDo: remove?
 
 	dummy_node (a_type: TYPE_A): IV_EXPRESSION
 			-- Dummy node for type `a_type'.

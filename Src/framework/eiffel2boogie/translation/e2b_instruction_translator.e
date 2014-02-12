@@ -291,7 +291,7 @@ feature -- Processing
 				process_array_content_check (a_assert, l_array, l_other)
 			else
 				set_current_origin_information (a_assert)
-				process_contract_expression (a_assert.expr)
+				process_contract_expression (a_assert.expr, False)
 
 				if attached a_assert.tag and then a_assert.tag.is_case_insensitive_equal ("assume") then
 						-- This is an assume: translate as
@@ -324,7 +324,7 @@ feature -- Processing
 			l_content_type: IV_TYPE
 		do
 			set_current_origin_information (a_assert)
-			process_contract_expression (a_other)
+			process_contract_expression (a_other, True)
 			l_array := last_expression
 				-- Check array size
 			create l_assert.make (factory.equal (
@@ -336,7 +336,7 @@ feature -- Processing
 			add_statement (l_assert)
 				-- Check array contents
 			across a_array.expressions as i loop
-				process_contract_expression (i.item)
+				process_contract_expression (i.item, True)
 				l_content_type := types.for_class_type (helper.class_type_in_context (a_array.type.generics.first, current_feature.written_class, current_feature, current_type))
 				create l_assert.make (factory.equal (
 					factory.function_call ("fun.ARRAY.item", << entity_mapping.heap, l_array, factory.int_value (i.cursor_index) >>, l_content_type),
@@ -478,10 +478,10 @@ feature -- Processing
 						until
 							l_case.interval.after
 						loop
-							process_contract_expression (l_case.interval.item.lower)
+							process_contract_expression (l_case.interval.item.lower, True)
 							l_lower := last_expression
 								-- TODO: check side effect
-							process_contract_expression (l_case.interval.item.upper)
+							process_contract_expression (l_case.interval.item.upper, True)
 							l_upper := last_expression
 								-- TODO: check side effect
 
@@ -649,7 +649,7 @@ feature -- Processing
 
 				-- Condition
 			set_current_origin_information (a_node.stop)
-			process_contract_expression (a_node.stop)
+			process_contract_expression (a_node.stop, True)
 			l_condition := last_expression
 			create l_goto.make (l_body_block)
 			l_goto.add_target (l_end_block)
@@ -767,7 +767,7 @@ feature -- Processing
 				loop
 					l_invariant ?= a_node.invariant_part.item
 					set_current_origin_information (l_invariant)
-					process_contract_expression (l_invariant.expr)
+					process_contract_expression (l_invariant.expr, True)
 					across last_safety_checks as i loop
 						add_statement (i.item)
 					end
@@ -795,7 +795,7 @@ feature -- Processing
 
 				-- Condition
 			set_current_origin_information (a_node.iteration_exit_condition)
-			process_contract_expression (a_node.iteration_exit_condition)
+			process_contract_expression (a_node.iteration_exit_condition, True)
 			l_condition := last_expression
 			create l_goto.make (l_body_block)
 			l_goto.add_target (l_end_block)
@@ -895,7 +895,7 @@ feature -- Processing
 					loop
 						l_invariant ?= a_node.invariant_part.item
 						set_current_origin_information (l_invariant)
-						process_contract_expression (l_invariant.expr)
+						process_contract_expression (l_invariant.expr, True)
 						create l_assert.make (last_expression)
 						l_assert.node_info.set_type ("loop_inv")
 						l_assert.node_info.set_tag (l_invariant.tag)
@@ -966,7 +966,7 @@ feature -- Processing
 					loop
 						l_invariant ?= a_node.invariant_part.item
 						set_current_origin_information (l_invariant)
-						process_contract_expression (l_invariant.expr)
+						process_contract_expression (l_invariant.expr, True)
 						create l_assert.make (last_expression)
 						add_statement (l_assert)
 						a_node.invariant_part.forth
@@ -1090,7 +1090,7 @@ feature {NONE} -- Loop processing
 						-- Ignore modifies and decreases clauses
 					if not helper.is_clause_modify (l_invariant) and not helper.is_clause_decreases (l_invariant) then
 						set_current_origin_information (l_invariant)
-						process_contract_expression (l_invariant.expr)
+						process_contract_expression (l_invariant.expr, True)
 						l_condition := factory.true_
 						if l_invariant.tag /= Void and then l_invariant.tag ~ "assume" then
 								-- Free invariant: translate as
@@ -1148,7 +1148,7 @@ feature {NONE} -- Loop processing
 		do
 			if a_variant /= Void then
 				set_current_origin_information (a_variant)
-				process_contract_expression (a_variant.expr)
+				process_contract_expression (a_variant.expr, True)
 				a_variant_exprs.extend (last_expression)
 			end
 			process_decreases (a_decreases)
@@ -1278,7 +1278,7 @@ feature {NONE} -- Implementation
 			locals_map.merge (l_translator.locals_map)
 		end
 
-	process_contract_expression (a_expr: BYTE_NODE)
+	process_contract_expression (a_expr: BYTE_NODE; a_use_triggers: BOOLEAN)
 			-- Process expression `a_expr'.
 		local
 			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
@@ -1292,6 +1292,7 @@ feature {NONE} -- Implementation
 			l_translator.locals_map.merge (locals_map)
 			l_translator.set_local_writable (local_writable)
 			l_translator.set_context_readable (context_readable)
+			l_translator.set_use_triggers (a_use_triggers)
 			a_expr.process (l_translator)
 			last_expression := l_translator.last_expression
 			last_safety_checks := l_translator.side_effect

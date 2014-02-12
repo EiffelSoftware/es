@@ -50,26 +50,26 @@ feature -- Measurement
 		attribute
 		end
 
-	count_left: INTEGER
-			-- Number of elements left to iterate over.
-		note
-			status: functional
-		require
-			target_exists: target /= Void
-			reads (Current, target)
-		do
-			Result := target.count - index + 1
-		end
+--	count_left: INTEGER
+--			-- Number of elements left to iterate over.
+--		note
+--			status: functional
+--		require
+--			target_exists: target /= Void
+--			reads (Current, target)
+--		do
+--			Result := target.count - index + 1
+--		end
 
 	valid_index (i: INTEGER): BOOLEAN
 			-- Is `i' a valid position for a cursor?
 		note
-			status: functional
+			status: functional, ghost
 		require
 			target_exists: target /= Void
 			reads (Current, target)
 		do
-			Result := 0 <= i and i <= target.count + 1
+			Result := 0 <= i and i <= target.bag.count + 1
 		end
 
 feature -- Status report
@@ -180,6 +180,7 @@ feature -- Cursor movement
 			explicit: wrapping
 		require
 			has_index: valid_index (i)
+			target_closed: target.closed
 			modify_model (["index", "box"], Current)
 		local
 			j: INTEGER
@@ -252,12 +253,13 @@ feature -- Cursor movement
 			loop
 				forth
 			variant
-				count_left
+				sequence.count - index
 			end
+			check inv end
 		ensure then
 			index_effect_not_found: not sequence.tail (old index).has (v) implies index = sequence.count + 1
-			index_effect_found: sequence.tail (old index).has (v) implies
-				(sequence [index] = v and not sequence.interval (old index, index - 1).has (v))
+			index_effect_found: sequence.tail (old index).has (v) implies index >= old index and sequence [index] = v
+			index_constraint: not sequence.interval (old index, index - 1).has (v)
 		end
 
 --	satisfy_forth (pred: PREDICATE [ANY, TUPLE [G]])

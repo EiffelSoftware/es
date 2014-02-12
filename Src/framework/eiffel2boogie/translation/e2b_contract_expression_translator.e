@@ -73,7 +73,7 @@ feature -- Visitors
 	process_creation_expr_b (a_node: CREATION_EXPR_B)
 			-- <Precursor>
 		local
-			l_type: CL_TYPE_A
+			l_type, l_target_type: CL_TYPE_A
 			l_feature: FEATURE_I
 			l_handler: E2B_CUSTOM_CALL_HANDLER
 		do
@@ -81,6 +81,7 @@ feature -- Visitors
 			l_feature := l_type.base_class.feature_of_rout_id (a_node.call.routine_id)
 			check feature_valid: l_feature /= Void end
 			translation_pool.add_type (l_type)
+			l_target_type := current_target_type
 			current_target_type := l_type
 
 			if helper.is_class_logical (current_target_type.base_class) then
@@ -90,6 +91,8 @@ feature -- Visitors
 			else
 				last_expression := dummy_node (a_node.type)
 			end
+
+			current_target_type := l_target_type
 		end
 
 	process_un_old_b (a_node: UN_OLD_B)
