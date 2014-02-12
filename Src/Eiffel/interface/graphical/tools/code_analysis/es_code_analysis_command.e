@@ -37,8 +37,6 @@ feature {NONE} -- Initialization
 
 	make
 			-- Creation method.
-		local
-			e: ES_CA_FIX_EXECUTOR
 		do
 			initialize_preferences
 
@@ -176,7 +174,6 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 	analyze_all
 			-- Analyzes the whole system.
 		local
-			l_cluster: CLUSTER_I
 			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
 			l_scope_label: EV_LABEL
 		do
@@ -204,7 +201,6 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 	analyze_changed_classes
 			-- Only analyze the classes that have been modified since the last analysis.
 		local
-			l_cluster: CLUSTER_I
 			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
 			l_scope_label: EV_LABEL
 			l_analysis_timestamp, l_changed_timestamp: INTEGER
@@ -251,7 +247,6 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 	perform_analysis (a_stone: STONE)
 			-- Analyze `a_stone' only.
 		local
-			l_cluster: CLUSTER_I
 			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
 			l_scope_label: EV_LABEL
 		do
@@ -451,11 +446,6 @@ feature -- Status report
 
 	droppable (a_pebble: ANY): BOOLEAN
 			-- Can user drop `a_pebble' on `Current'?
-		local
-			l_class_stone: CLASSI_STONE
-			l_cluster_stone: CLUSTER_STONE
-			l_data_stone: DATA_STONE
-			l_list: LIST [CONF_GROUP]
 		do
 			Result :=
 				(attached {CLASSC_STONE} a_pebble) or else
