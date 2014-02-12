@@ -416,8 +416,8 @@ feature -- Items
 		do
 			create Result.make (Current)
 			initialize_sd_toolbar_item (Result, display_text)
-			Result.set_text ("Analyze item")
-			Result.set_tooltip ("Click to analyze the current item. Drop a stone to analyze any class, cluster, or configuration group.")
+			Result.set_text (ca_names.analyze_item)
+			Result.set_tooltip (ca_names.analyze_item_tooltip)
 			Result.select_actions.extend (agent analyze_current_item)
 
 			Result.drop_actions.extend (agent execute_with_stone)
@@ -430,8 +430,8 @@ feature -- Items
 		do
 			create Result.make (Current)
 			initialize_sd_toolbar_item (Result, display_text)
-			Result.set_text ("Analyze system")
-			Result.set_tooltip ("Analyze whole system")
+			Result.set_text (ca_names.analyze_system)
+			Result.set_tooltip (ca_names.analyze_system_tooltip)
 			Result.select_actions.extend (agent execute)
 		ensure then
 			valid_result: Result /= Void

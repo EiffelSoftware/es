@@ -10,6 +10,12 @@ frozen class
 inherit
 	SHARED_LOCALE
 
+feature -- General
+
+	tool_description: STRING_32
+		do Result := locale.translation ("Performs a static code analysis based on a rule set %
+			%and the current code analysis preferences.") end
+
 feature -- Rules
 
 	self_assignment_title: STRING_32
@@ -146,7 +152,7 @@ feature -- Rules
 			% it may still be called by clients after the object has been created.%
 			% Ususally, this is not intended and ought to be changed. A client might,%
 			% for example, by accident call 'x.make' instead of 'create x.make',%
-			% causing the class invariant or postconditions of make to not hold anymore.") end
+			% causing the class invariant or postconditions of make not to hold anymore.") end
 
 	semicolon_arguments_title: STRING_32
 		do Result := locale.translation ("Semicolon to separate arguments") end
@@ -434,6 +440,18 @@ feature -- Preferences
 		do Result := locale.translation ("Fixed violation background color") end
 
 feature -- GUI
+
+	analyze_item: STRING_32
+		do Result := locale.translation ("Analyze Item") end
+
+	analyze_item_tooltip: STRING_32
+		do Result := locale.translation ("Click to analyze the current item. Drop a stone to analyze any class, cluster, or configuration group.") end
+
+	analyze_system: STRING_32
+		do Result := locale.translation ("Analyze System") end
+
+	analyze_system_tooltip: STRING_32
+		do Result := locale.translation ("Analyze whole system.") end
 
 	tool_errors: STRING_32
 		do Result := locale.translation ("Errors") end

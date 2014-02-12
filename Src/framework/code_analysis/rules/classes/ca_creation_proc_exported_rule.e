@@ -6,7 +6,7 @@ note
 			it may still be called by clients after the object has been created.
 			Ususally, this is not intended and ought to be changed. A client might,
 			for example, by accident call 'x.make' instead of 'create x.make',
-			causing the class invariant or postconditions of make to not hold anymore.
+			causing the class invariant or postconditions of make not to hold anymore.
 		]"
 	author: "Stefan Zurfluh"
 	date: "$Date$"
