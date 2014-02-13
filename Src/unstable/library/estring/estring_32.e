@@ -57,7 +57,7 @@ feature {NONE} -- Initialization
 	make_from_string (a_string: separate READABLE_STRING_GENERAL)
 		local
 			i: INTEGER
-			l_area: SPECIAL[CHARACTER_32]
+			l_area: like area
 		do
 			create l_area.make_empty (a_string.count)
 			separate_area := l_area
@@ -79,7 +79,7 @@ feature {NONE} -- Initialization
 			a_upper <= a_string.count
 		local
 			i: INTEGER
-			l_area: SPECIAL[CHARACTER_32]
+			l_area: like area
 		do
 			create l_area.make_empty (a_upper - a_lower + 1)
 			separate_area := l_area
@@ -101,13 +101,13 @@ feature {NONE} -- Initialization
 
 	make (n: INTEGER)
 		do
-			create {SPECIAL[CHARACTER_32]}separate_area.make_empty (n)
+			create {like area}separate_area.make_empty (n)
 		end
 
 	make_as_lower (a_string: separate READABLE_STRING_GENERAL)
 		local
 			i: INTEGER
-			l_area: SPECIAL[CHARACTER_32]
+			l_area: like area
 		do
 			create l_area.make_empty (a_string.count)
 			separate_area := l_area
@@ -125,7 +125,7 @@ feature {NONE} -- Initialization
 	make_as_upper (a_string: separate READABLE_STRING_GENERAL)
 		local
 			i: INTEGER
-			l_area: SPECIAL[CHARACTER_32]
+			l_area: like area
 		do
 			create l_area.make_empty (a_string.count)
 			separate_area := l_area
@@ -182,7 +182,7 @@ feature -- Status report
 			-- Is `Current' convertible to a sequence of CHARACTER_8 without information loss?
 		local
 			i: INTEGER
-			l_area: SPECIAL[CHARACTER_32]
+			l_area: like area
 		do
 			from
 				l_area := area
@@ -351,9 +351,9 @@ feature -- Conversion
 	out: STRING_8
 		-- Converts into an UTF-8 string.
 		local
-			l_area: SPECIAL[CHARACTER_32]
-			i: like {ESTRING_32}.count
-			n, m: like {ESTRING_32}.count
+			l_area: like area
+			i: like count
+			n, m: like count
 
 			c: NATURAL_32
 		do
@@ -411,7 +411,7 @@ feature -- Conversion
 	to_string_32: STRING_32
 		local
 			i: INTEGER
-			l_area: SPECIAL[CHARACTER_32]
+			l_area: like area
 		do
 			create Result.make (count)
 			l_area := area
@@ -438,7 +438,7 @@ feature -- Element change
 			l_count2 := s.count;
 			create l_area.make_empty (l_count1 + l_count2)
 			l_area.copy_data (area, 0, 0, l_count1)
-			if attached {ESTRING_32} s as es then
+			if attached {like Current} s as es then
 				l_area.copy_data (es.area, 0, l_count1, l_count2)
 			end
 			from
@@ -483,9 +483,9 @@ feature {ESTRING_32, ESTRING_32_SEARCHER} -- Implementation
 			"return eif_access($a);"
 		end
 
-	separate_area: separate SPECIAL[CHARACTER_32]
+	separate_area: separate like area
 		attribute
-			Result := create {SPECIAL[CHARACTER_32]}.make_empty (0)
+			Result := create {like area}.make_empty (0)
 		end
 
 	area: SPECIAL[CHARACTER_32]

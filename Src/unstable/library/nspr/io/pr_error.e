@@ -47,6 +47,6 @@ feature
 			Result := code.out + "(" + tag + "): " + description
 		end
 
-feature {NONE} -- Implementation
 	c: PR_ERROR_C
+
 end

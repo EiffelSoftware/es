@@ -24,7 +24,7 @@ feature {NONE} -- Initialization
 			l_str: C_STRING
 			l_addr: MANAGED_POINTER
 		do
-			create l_str.make (a_ip)
+			create l_str.make (a_ip.to_string_8)
 			l_addr := create_PRNetAddr_pointer
 			if pr_success = c.pr_stringtonetaddr (l_str.item, l_addr.item) then
 				pointer := l_addr.item

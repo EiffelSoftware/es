@@ -33,7 +33,7 @@ feature {NONE} -- Initialization
 		do
 			create l_buf.make (PR_NETDB_BUF_SIZE)
 			create l_hostentry.make (sizeof_PRHostEnt)
-			create l_cstring.make (a_hostname)
+			create l_cstring.make (a_hostname.to_string_8)
 			if pr_success = c.pr_gethostbyname (l_cstring.item, l_buf.item, l_buf.count, l_hostentry.item) then
 				create name.make_from_c (h_name(l_hostentry.item))
 				create l_aliases.make (8)

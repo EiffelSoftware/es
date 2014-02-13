@@ -7,28 +7,40 @@ note
 class
 	NETWORK_CONNECTION
 
-create {SERVER}
-	make_from_socket_pointer
-
 create
 	connect,
-	connect_with_timeout
+	connect_with_timeout,
+	make_endpoint
+
 
 feature {NONE} -- Initialization
-	make_from_socket_pointer (a_ptr: POINTER; a_address_family: NATURAL_16)
+	make_endpoint (a_server: separate SERVER; a_use_separate_input: BOOLEAN)
+		require
+			a_server.is_listening
 		do
-			create socket.make_from_fd (a_ptr, a_address_family)
-			create input.make_from_socket_descriptor (a_ptr, a_address_family)
-			create output.make_from_socket_descriptor (a_ptr, a_address_family)
+			fd := a_server.socket.pr_fd
+			address_family := a_server.socket.address_family
+
+			create socket.open_ipv4
+			if a_use_separate_input then
+				create separate_input.make_from_socket_descriptor (socket.pr_fd, socket.ipv4)
+			else
+				create {like input} separate_input.make_from_socket_descriptor (socket.pr_fd, socket.ipv4)
+			end
+			create output.make_from_socket (socket)
+		ensure
+			use_separate_input = a_use_separate_input
 		end
 
-	connect (a_host: ESTRING_8; a_port: NATURAL_16)
+	connect (a_host: ESTRING_8; a_port: NATURAL_16; a_use_separate_input: BOOLEAN)
 		-- Try to establish a connection, closing it on a timeout or if the host address is invalid.
 		do
-			connect_with_timeout (a_host, a_port, 0)
+			connect_with_timeout (a_host, a_port, 0, a_use_separate_input)
+		ensure
+			use_separate_input = a_use_separate_input
 		end
 
-	connect_with_timeout (a_host: ESTRING_8; a_port: NATURAL_16; a_timeout: NATURAL_32)
+	connect_with_timeout (a_host: ESTRING_8; a_port: NATURAL_16; a_timeout: NATURAL_32; a_use_separate_input: BOOLEAN)
 		-- Try to establish a connection, closing it on a timeout or if the host address is invalid.
 		require
 			a_timeout > 1000 and a_timeout < 100000 or a_timeout = 0
@@ -49,20 +61,36 @@ feature {NONE} -- Initialization
 				create socket.make_from_fd (create {POINTER}, l_addr.ipv4)
 			end
 			socket.connect (l_addr, a_timeout)
-			create input.make_from_socket_descriptor (socket.pr_fd, socket.address_family)
-			create output.make_from_socket_descriptor (socket.pr_fd, socket.address_family)
+			if a_use_separate_input then
+				create separate_input.make_from_socket_descriptor (socket.pr_fd, socket.address_family)
+			else
+				create {like input}separate_input.make_from_socket_descriptor (socket.pr_fd, socket.address_family)
+			end
+			create output.make_from_socket (socket)
+		ensure
+			use_separate_input = a_use_separate_input
 		end
 
 feature -- Access
 	peer_address: detachable NET_ADDRESS
 
+--	as_medium: NETWORK_MEDIUM
+
 	socket: PR_TCP_SOCKET
 
---	medium: NETWORK_MEDIUM
+	separate_input: separate BUFFERED_TCP_INPUT_STREAM
 
-	input: separate TCP_INPUT_STREAM
+	input: detachable BUFFERED_TCP_INPUT_STREAM
+		do
+			if attached {BUFFERED_TCP_INPUT_STREAM} separate_input as i then
+				Result := i
+			end
+		ensure
+			attached Result = attached {BUFFERED_TCP_INPUT_STREAM} separate_input
+			attached Result implies Result = separate_input
+		end
 
-	output: separate TCP_OUTPUT_STREAM
+	output: BUFFERED_TCP_OUTPUT_STREAM
 
 feature -- Status report
 	is_closed: BOOLEAN
@@ -71,21 +99,50 @@ feature -- Status report
 			Result := socket.is_closed
 		end
 
-feature -- Status setting
-	close
-			-- Close medium.
+	is_endpoint: BOOLEAN
 		do
-			close_wrapper (input, output)
+			Result := not fd.is_default_pointer
 		end
 
-feature {NONE} -- Implementation		
-
-	close_wrapper (a_input: separate TCP_INPUT_STREAM; a_output: separate TCP_OUTPUT_STREAM)
+	use_separate_input: BOOLEAN
 		do
-			a_output.flush
-			-- Synchronize on both input and output
-			if a_output.default_pointer = a_input.default_pointer then
+			Result := not attached {BUFFERED_TCP_INPUT_STREAM} separate_input
+		end
+
+feature -- Status setting
+	accept
+		require
+			is_endpoint
+		local
+			l_socket: PR_TCP_SOCKET
+		do
+			if not socket.is_closed then
 				socket.close
 			end
+			create socket.accept (fd, address_family, socket.pr_interval_no_timeout)
+			init_sockets (separate_input)
 		end
+
+	close
+			-- Flushes the output and then closes the connection.
+		do
+			output.flush
+			output.close
+		end
+
+feature {NONE} -- Implementation
+	fd: POINTER
+	address_family: NATURAL_16
+
+	init_sockets (a_in: separate BUFFERED_TCP_INPUT_STREAM)
+		do
+			a_in.clear
+			output.clear
+			a_in.make_from_socket_descriptor (socket.pr_fd, socket.address_family)
+			output.make_from_socket(socket)
+		end
+
+invariant
+	use_separate_input implies attached input
+
 end

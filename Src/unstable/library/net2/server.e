@@ -45,17 +45,17 @@ feature -- Listening
 			not is_closed
 			is_listening
 		do
-			socket.accept (socket.pr_interval_no_timeout)
-			if attached socket.last_accepted_socket as s then
-				create last_connection.make_from_socket_pointer (s.pr_fd, s.address_family)
-				s.detach
-			end
+			create last_connection.make_endpoint (Current, True)
 		ensure
 			attached last_connection
 			last_connection /= old last_connection
 		end
 
 	last_connection: detachable separate NETWORK_CONNECTION
+
+	connected (a_connection: separate NETWORK_CONNECTION)
+		do
+		end
 
 feature -- Status query
 	is_listening: BOOLEAN
