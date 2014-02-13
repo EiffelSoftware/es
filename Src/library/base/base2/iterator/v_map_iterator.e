@@ -37,7 +37,7 @@ feature -- Cursor movement
 			-- If `k' does not appear, go after.
 			-- (Use reference equality.)
 		require
-			modify_model (["index", "box"], Current)
+			modify_model (["index", "box", "closed"], Current)
 			target.is_wrapped
 		deferred
 		ensure

@@ -391,10 +391,12 @@ feature {NONE} -- Implementation
 			l_def := definition_of (a_expr, l_heap, l_current, a_name)
 			if attached l_def and not helper.is_class_explicit (type.base_class, a_name) then
 				create l_function.make (name_translator.boogie_function_for_ghost_definition (type, a_name), types.set (types.ref))
-				l_function.add_argument (l_heap.name, l_heap.type)
-				l_function.add_argument (l_current.name, l_current.type)
-				l_function.set_body (l_def)
-				boogie_universe.add_declaration (l_function)
+				if boogie_universe.function_named (l_function.name) = Void then
+					l_function.add_argument (l_heap.name, l_heap.type)
+					l_function.add_argument (l_current.name, l_current.type)
+					l_function.set_body (l_def)
+					boogie_universe.add_declaration (l_function)
+				end
 			end
 		end
 

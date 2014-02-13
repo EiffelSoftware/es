@@ -80,7 +80,8 @@ feature -- Search
 				1 <= it.index and it.index <= it.sequence.count + 1
 				s = it.sequence.front (it.index - 1)
 				Result = s.occurrences (v)
-				modify_model (["index", "box"], it)
+				it.is_wrapped
+				modify_model (["index", "box", "closed"], it)
 			until
 				it.off
 			loop
