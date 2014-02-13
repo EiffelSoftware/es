@@ -9,15 +9,13 @@
 		<setting name="concurrency" value="scoop"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
 		<library name="estring" location="..\estring\estring.ecf"/>
-		<library name="nspr" location="..\nspr\nspr.ecf"/>
-		<cluster name="io" location=".\">
+		<library name="nspr" location="..\\nspr\nspr.ecf"/>
+		<cluster name="io" location=".\" recursive="true">
 			<file_rule>
 				<exclude>/EIFGENs$</exclude>
 				<exclude>/CVS$</exclude>
 				<exclude>/.svn$</exclude>
 			</file_rule>
-			<cluster name="file" location=".\file\"/>
-			<cluster name="net" location=".\net\"/>
 		</cluster>
 	</target>
 </system>
