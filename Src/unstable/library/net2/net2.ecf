@@ -9,7 +9,7 @@
 		<setting name="concurrency" value="scoop"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
 		<library name="estring" location="..\estring\estring.ecf"/>
-		<library name="nspr" location="..\\nspr\nspr.ecf"/>
+		<library name="nspr" location="..\nspr\nspr.ecf"/>
 		<cluster name="io" location=".\">
 			<file_rule>
 				<exclude>/EIFGENs$</exclude>
@@ -17,7 +17,7 @@
 				<exclude>/.svn$</exclude>
 			</file_rule>
 			<cluster name="file" location=".\file\"/>
-			<cluster name="net" location="\home\mischael\Subversion\EVE\unstable\library\net2\net\"/>
+			<cluster name="net" location=".\net\"/>
 		</cluster>
 	</target>
 </system>
