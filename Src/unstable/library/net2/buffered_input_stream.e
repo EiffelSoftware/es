@@ -236,8 +236,10 @@ feature -- Input
 				else
 					l_string.extend (c)
 				end
-				read_character
-				i := i + 1
+				if not l_eol or not is_readable then
+					read_character
+					i := i + 1
+				end
 			end
 			last_string := l_string
 		end
