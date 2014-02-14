@@ -147,9 +147,7 @@ feature -- Search
 			lemma_sequence_map (it.sequence, map, lower, i - lower + 1, it.index - 1, v)
 			lemma_sequence_map (it.sequence, map, lower, i - lower + 1, upper - lower + 1, v)
 
-			unwrap; it.unwrap
-			set_observers (observers / it)
-			wrap
+			forget_iterator (it)
 		ensure
 			definition_not_has: not map.image (create {MML_INTERVAL}.from_range (i, upper)) [v] implies Result = upper + 1
 			definition_has: map.image (create {MML_INTERVAL}.from_range (i, upper)) [v] implies

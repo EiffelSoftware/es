@@ -356,8 +356,8 @@ feature -- Helper functions: contracts
 			-- Is `a_mods' an empty frame?
 		do
 			Result := (a_mods.full_objects.is_empty or else a_mods.full_objects.first = Void) and
-				(a_mods.partial_objects.is_empty or else a_mods.partial_objects.item.objects.first = Void) and
-				(a_mods.model_objects.is_empty or else a_mods.model_objects.item.objects.first = Void)
+				(a_mods.partial_objects.is_empty or else a_mods.partial_objects.first.objects.first = Void) and
+				(a_mods.model_objects.is_empty or else a_mods.model_objects.first.objects.first = Void)
 		end
 
 	frame_definition (a_mods: like modify_expressions_of; a_lhs: IV_EXPRESSION): IV_FORALL

@@ -27,6 +27,7 @@ feature -- Replacement
 		ensure
 			sequence_effect: sequence ~ old sequence.replaced_at (index, v)
 			target_wrapped: target.is_wrapped
+			target_bag_effect: target.bag ~ old ((target.bag / sequence [index]) & v)
 		end
 
 	output (v: G)

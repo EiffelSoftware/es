@@ -23,6 +23,7 @@ feature {NONE} -- Initialization
 			is_sound_loop_unrolling_enabled := True
 			is_postcondition_predicate_enabled := False
 			is_checking_overflow := False
+			is_triggering_on_arithmetic := True
 			is_checking_frame := False
 
 			is_ownership_enabled := True
@@ -168,7 +169,7 @@ feature -- Precondition and postcondition predicates
 			is_postcondition_predicate_enabled := a_value
 		end
 
-feature -- Overflow checks
+feature -- Arithmetic operations
 
 	is_checking_overflow: BOOLEAN
 			-- Is checking of overflow enabled?
@@ -177,6 +178,16 @@ feature -- Overflow checks
 			-- Set `is_checking_overflow' to `a_value'.
 		do
 			is_checking_overflow := a_value
+		end
+
+	is_triggering_on_arithmetic: BOOLEAN
+			-- Should arithmetic operations inside quantifiers be translated as functions,
+			-- so tha that they can be used in triggers?
+
+	set_triggering_on_arithmetic (a_value: BOOLEAN)
+			-- Set `is_triggering_on_arithmetic' to `a_value'.
+		do
+			is_triggering_on_arithmetic := a_value
 		end
 
 feature -- Framing

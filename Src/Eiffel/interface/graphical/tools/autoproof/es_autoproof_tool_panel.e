@@ -215,6 +215,16 @@ feature {NONE} -- Initialization
 			end
 			Result.extend (l_item)
 
+			create l_item.make_with_text_and_action ("Use arithmetic operations in triggers",
+				agent do
+					options.set_triggering_on_arithmetic (not options.is_triggering_on_arithmetic)
+				end)
+			if options.is_triggering_on_arithmetic then
+				l_item.toggle
+			end
+			Result.extend (l_item)
+
+
 			Result.extend (create {EV_MENU_SEPARATOR})
 
 			create l_item.make_with_text_and_action ("Check frame condition",

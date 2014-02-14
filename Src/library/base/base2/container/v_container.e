@@ -52,9 +52,7 @@ feature -- Search
 			it := new_cursor
 			it.search_forth (v)
 			Result := not it.after
-			unwrap; it.unwrap
-			set_observers (observers / it)
-			wrap
+			forget_iterator (it)
 		ensure
 			definition: Result = bag.domain [v]
 			observers_restored: observers = old observers
@@ -94,9 +92,7 @@ feature -- Search
 				it.sequence.count - it.index
 			end
 			check s = it.sequence end
-			unwrap; it.unwrap
-			set_observers (observers / it)
-			wrap
+			forget_iterator (it)
 		ensure
 			definition: Result = bag [v]
 			observers_restored: observers ~ old observers
@@ -187,6 +183,26 @@ feature -- Specification
 		note
 			status: ghost
 		attribute
+		end
+
+	forget_iterator (it: V_ITERATOR [G])
+			-- Remove `it' from `observers'.
+		note
+			status: ghost
+			explicit: contracts
+		require
+			is_wrapped
+			it.is_wrapped
+			it.target = Current
+			modify_field (["observers", "closed"], Current)
+			modify_field (["closed"], it)
+		do
+			it.unwrap
+			set_observers (observers / it)
+		ensure
+			is_wrapped
+			it.is_open
+			observers = old observers / it
 		end
 
 note

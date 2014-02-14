@@ -305,7 +305,7 @@ feature -- Visitors
 			if attached l_class and then helper.is_class_logical (l_class) then
 				check a_operator ~ "==" or a_operator ~ "!=" end
 				(create {E2B_CUSTOM_LOGICAL_HANDLER}).handle_binary (Current, l_class, l_left, l_right, a_operator)
-			elseif is_in_quantifier and use_triggers then
+			elseif is_in_quantifier and options.is_triggering_on_arithmetic then
 				if a_operator ~ "+" then
 					last_expression := factory.function_call ("add", << l_left, l_right >>, types.int)
 				elseif a_operator ~ "-" then

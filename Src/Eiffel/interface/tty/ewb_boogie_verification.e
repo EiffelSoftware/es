@@ -99,6 +99,11 @@ feature -- Execution
 			elseif user_options.has ("-nooverflow") then
 				options.set_checking_overflow (False)
 			end
+			if user_options.has ("-arithtrigger") then
+				options.set_triggering_on_arithmetic (True)
+			elseif user_options.has ("-noarithtrigger") then
+				options.set_triggering_on_arithmetic (False)
+			end
 			if user_options.has ("-autounroll") then
 				options.set_automatic_loop_unrolling_enabled (True)
 			elseif user_options.has ("-noautounroll") then
@@ -363,7 +368,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
