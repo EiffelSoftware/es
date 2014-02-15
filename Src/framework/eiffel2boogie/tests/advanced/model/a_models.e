@@ -13,7 +13,7 @@ feature
 
 	foo
 		require
-			modify_model (["x", "y", "closed"], Current)
+			modify_model (["x", "y"], Current)
 		do
 			x := 1
 			z := 1 -- OK: z is non-model
@@ -23,7 +23,7 @@ feature
 		note
 			explicit: wrapping
 		require
-			modify_model (["x", "closed"], Current)
+			modify_model (["x"], Current)
 		do
 			if x > 0 then
 				foo		-- Bad
@@ -38,7 +38,7 @@ feature
 		note
 			explicit: wrapping
 		require
-			modify_model (["x", "y", "closed"], Current)
+			modify_model (["x", "y"], Current)
 		do
 			if x > 0 then
 				foo

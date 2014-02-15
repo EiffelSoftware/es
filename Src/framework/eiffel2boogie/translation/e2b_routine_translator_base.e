@@ -254,6 +254,12 @@ feature -- Helper functions: contracts
 				frame_partial_objects_of (a_clauses, "modify_field", a_translator, False),
 				frame_partial_objects_of (a_clauses, "modify_model", a_translator, True)
 				]
+				-- Add `closed' to all model frames
+			across Result.model_objects as m loop
+				if across m.item.fields as f all f.item.name /~ "closed" end then
+					m.item.fields.extend (factory.entity ("closed", types.field (types.bool)))
+				end
+			end
 		end
 
 	read_expressions_of (a_clauses: LIST [E2B_ASSERT_ORIGIN]; a_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR): TUPLE [full_objects: LIST [IV_EXPRESSION]; partial_objects: LIST [E2B_FRAME_ELEMENT]; model_objects: LIST [E2B_FRAME_ELEMENT]]

@@ -21,8 +21,8 @@ feature -- Replacement
 		require
 			not_off: not off
 			target_wrapped: target.is_wrapped
-			modify_model (["sequence", "closed"], Current)
-			modify_model (["bag", "closed"], target)
+			modify_model (["sequence"], Current)
+			modify_model (["bag"], target)
 		deferred
 		ensure
 			sequence_effect: sequence ~ old sequence.replaced_at (index, v)

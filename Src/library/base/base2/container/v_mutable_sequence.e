@@ -37,7 +37,7 @@ feature -- Replacement
 			explicit: wrapping
 		require
 			has_index: has_index (i)
-			modify_model (["map", "bag", "observers", "closed"], Current)
+			modify_model (["map", "bag", "observers"], Current)
 		local
 			it: V_MUTABLE_SEQUENCE_ITERATOR [G]
 		do
@@ -56,7 +56,7 @@ feature -- Replacement
 		require
 			has_index_one: has_index (i1)
 			has_index_two: has_index (i2)
-			modify_model (["map", "bag", "observers", "closed"], Current)
+			modify_model (["map", "bag", "observers"], Current)
 		local
 			v: G
 		do
@@ -76,7 +76,7 @@ feature -- Replacement
 			l_not_too_small: l >= lower
 			u_not_too_large: u <= upper
 			l_not_too_large: l <= u + 1
-			modify_model (["map", "bag", "observers", "closed"], Current)
+			modify_model (["map", "bag", "observers"], Current)
 		local
 			it: V_MUTABLE_SEQUENCE_ITERATOR [G]
 			j: INTEGER
@@ -93,8 +93,8 @@ feature -- Replacement
 				it.is_wrapped
 				it.inv
 				is_wrapped
-				modify_model (["index", "box", "sequence", "closed"], it)
-				modify_model (["map", "bag", "closed"], Current)
+				modify_model (["index", "box", "sequence"], it)
+				modify_model (["map", "bag"], Current)
 			until
 				j > u
 			loop
@@ -120,7 +120,7 @@ feature -- Replacement
 			l_not_too_small: l >= lower
 			u_not_too_large: u <= upper
 			l_not_too_large: l <= u + 1
-			modify_model (["map", "bag", "observers", "closed"], Current)
+			modify_model (["map", "bag", "observers"], Current)
 		do
 			fill (({G}).default, l, u)
 		ensure
@@ -142,8 +142,8 @@ feature -- Replacement
 			other_first_not_too_large: other_first <= other_last + 1
 			index_not_too_small: index >= lower
 			enough_space: upper - index >= other_last - other_first
-			modify_model (["map", "bag", "observers", "closed"], Current)
-			modify_model (["observers", "closed"], other)
+			modify_model (["map", "bag", "observers"], Current)
+			modify_model (["observers"], other)
 		local
 			other_it: V_SEQUENCE_ITERATOR [G]
 			it: V_MUTABLE_SEQUENCE_ITERATOR [G]
@@ -166,9 +166,9 @@ feature -- Replacement
 				is_wrapped and other.is_wrapped
 				it.inv
 				other_it.inv
-				modify_model (["index", "box", "sequence", "closed"], it)
-				modify_model (["index", "box", "closed"], other_it)
-				modify_model (["map", "bag", "closed"], Current)
+				modify_model (["index", "box", "sequence"], it)
+				modify_model (["index", "box"], other_it)
+				modify_model (["map", "bag"], Current)
 			until
 				j > n
 			loop
@@ -217,7 +217,7 @@ feature -- Replacement
 		note
 			explicit: wrapping
 		require
-			modify_model (["map", "bag", "observers", "closed"], Current)
+			modify_model (["map", "bag", "observers"], Current)
 		local
 			j, k: INTEGER
 			l, u: INTEGER

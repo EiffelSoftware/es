@@ -18,7 +18,7 @@ feature -- Access
 			explicit: contracts
 		require
 			is_wrapped: is_wrapped
-			modify_model (["closed", "observers"], Current)
+			modify_model (["observers"], Current)
 		deferred
 		ensure
 			is_wrapped: is_wrapped

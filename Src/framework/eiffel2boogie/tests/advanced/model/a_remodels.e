@@ -41,7 +41,7 @@ feature
 
 	bad1
 		require
-			modify_model (["z", "closed"], Current) -- Bad: z is not a model
+			modify_model (["z"], Current) -- Bad: z is not a model
 		do
 		end
 

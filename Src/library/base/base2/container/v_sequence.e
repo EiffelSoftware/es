@@ -106,7 +106,7 @@ feature -- Search
 			explicit: contracts
 		require
 			is_wrapped: is_wrapped
-			modify_model (["closed", "observers"], Current)
+			modify_model (["observers"], Current)
 		do
 			if not is_empty then
 				Result := index_of_from (v, lower)
@@ -131,7 +131,7 @@ feature -- Search
 		require
 			is_wrapped: is_wrapped
 			has_index: has_index (i)
-			modify_model (["closed", "observers"], Current)
+			modify_model (["observers"], Current)
 		local
 			it: V_SEQUENCE_ITERATOR [G]
 		do
@@ -233,7 +233,7 @@ feature -- Iteration
 			status: impure
 			explicit: contracts
 		require
-			modify_model (["closed", "observers"], Current)
+			modify_model (["observers"], Current)
 		do
 			Result := at (upper)
 		ensure

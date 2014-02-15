@@ -93,7 +93,7 @@ feature -- Iteration
 			status: impure
 			explicit: contracts
 		require
-			modify_model (["closed", "observers"], Current)
+			modify_model (["observers"], Current)
 		deferred
 		ensure
 			is_wrapped: is_wrapped

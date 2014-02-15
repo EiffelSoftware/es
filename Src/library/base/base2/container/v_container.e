@@ -45,7 +45,7 @@ feature -- Search
 			explicit: contracts
 		require
 			is_wrapped: is_wrapped
-			modify_model (["closed", "observers"], Current)
+			modify_model ("observers", Current)
 		local
 			it: V_ITERATOR [G]
 		do
@@ -67,7 +67,7 @@ feature -- Search
 			explicit: contracts
 		require
 			is_wrapped: is_wrapped
-			modify_model (["closed", "observers"], Current)
+			modify_model ("observers", Current)
 		local
 			it: V_ITERATOR [G]
 			s: MML_SEQUENCE [G]
@@ -79,7 +79,7 @@ feature -- Search
 				s = it.sequence.front (it.index - 1)
 				Result = s.occurrences (v)
 				it.is_wrapped
-				modify_model (["index", "box", "closed"], it)
+				modify_model (["index", "box"], it)
 			until
 				it.off
 			loop
@@ -194,8 +194,8 @@ feature -- Specification
 			is_wrapped
 			it.is_wrapped
 			it.target = Current
-			modify_field (["observers", "closed"], Current)
-			modify_field (["closed"], it)
+			modify_model (["observers"], Current)
+			modify_model (["closed"], it)
 		do
 			it.unwrap
 			set_observers (observers / it)

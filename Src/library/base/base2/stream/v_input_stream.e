@@ -34,7 +34,7 @@ feature -- Cursor movement
 			-- Move one position forward.
 		require
 			not_off: not off
-			modify_model (["box", "closed"], Current)
+			modify_model (["box"], Current)
 		deferred
 		end
 
@@ -45,7 +45,7 @@ feature -- Cursor movement
 		note
 			explicit: wrapping
 		require
-			modify_model (["box", "closed"], Current)
+			modify_model (["box"], Current)
 		do
 			from
 			invariant

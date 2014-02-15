@@ -24,7 +24,7 @@ feature -- Replacement
 		require
 			not_off: not off
 			subjects_wrapped: across subjects as s all s.item.is_wrapped end
-			modify_model (["off_", "closed"], Current)
+			modify_model (["off_"], Current)
 			modify (subjects)
 		deferred
 		ensure
@@ -40,7 +40,7 @@ feature -- Replacement
 			input_not_current: input /= Current
 			subjects_wrapped: across subjects as s all s.item.is_wrapped end
 			modify (Current, subjects)
-			modify_model (["box", "closed"], input)
+			modify_model (["box"], input)
 		do
 			from
 			invariant
@@ -69,7 +69,7 @@ feature -- Replacement
 			input_not_current: input /= Current
 			n_non_negative: n >= 0
 			subjects_wrapped: across subjects as s all s.item.is_wrapped end
-			modify_model (["box", "closed"], input)
+			modify_model (["box"], input)
 			modify (Current, subjects)
 		local
 			i: INTEGER
