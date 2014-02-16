@@ -450,6 +450,12 @@ feature --VISITOR
 			end
 		end
 
+	process_map_update (a_map_update: IV_MAP_UPDATE)
+			-- Process `a_map_update'.
+		do
+			check not_implemented: False end
+		end
+
 	process_unary_operation (a_operation: IV_UNARY_OPERATION)
 			-- Process `a_operation'.
 		local
