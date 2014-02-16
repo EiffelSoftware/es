@@ -327,6 +327,12 @@ feature -- Ownership helpers
 			end
 		end
 
+	guard_for_attribute (a_feature: FEATURE_I): STRING_32
+			-- Update guard for attribute `a_feature'.
+		do
+			Result := string_feature_note_value (a_feature, "guard")
+		end
+
 feature -- Model helpers
 
 	model_queries (a_class: CLASS_C): ARRAYED_LIST [STRING_32]

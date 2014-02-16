@@ -42,10 +42,13 @@ feature -- Validity error messages
 	first_argument_string_or_tuple: STRING_32
 		do Result := "First argument has to be a manifest string or a tuple of manifest strings." end
 
-	field_not_attribute (a_fname, a_cname: STRING): STRING_32
+	unknown_feature (a_fname, a_cname: STRING): STRING_32
+		do Result := locale.formatted_string ("Feature '$1' is not found in class '$2'.", a_fname, a_cname) end
+
+	unknown_attribute (a_fname, a_cname: STRING): STRING_32
 		do Result := locale.formatted_string ("Feature '$1' is not an attribute of class '$2'.", a_fname, a_cname) end
 
-	field_not_model (a_fname, a_cname: STRING): STRING_32
+	unknown_model (a_fname, a_cname: STRING): STRING_32
 		do Result := locale.formatted_string ("Feature '$1' is not a model attribute of class '$2'.", a_fname, a_cname) end
 
 	invalid_tag (a_tag, a_class_name: STRING): STRING_32
@@ -65,6 +68,21 @@ feature -- Validity error messages
 
 	logical_no_across_conversion: STRING_32
 		do Result := "The logical class is used in quantification but does not map its new_cursor feature to a set." end
+
+	guard_feature_not_functional: STRING_32
+		do Result := "Update guard has to be functional." end
+
+	guard_feature_not_predicate: STRING_32
+		do Result := "Update guard has to be of type BOOLEAN." end
+
+	guard_feature_arg_count: STRING_32
+		do Result := "Update guard has to have exctly two argument." end
+
+	guard_feature_arg1: STRING_32
+		do Result := "The first argument of an update guard has to be of the same type as the guarded attribute." end
+
+	guard_feature_arg2: STRING_32
+		do Result := "The second argument of an update guard has to be of type ANY." end
 
 feature -- Verification error messages
 
@@ -146,7 +164,7 @@ feature -- Verification error messages
 	assignment_target_open: STRING_32
 		do Result := "Target of assignment may not be open." end
 
-	assignment_observers_open_or_inv_preserved: STRING_32
+	assignment_observers_open_or_guard_holds: STRING_32
 		do Result := "Observers of the assignment target may be invalidated." end
 
 	assignment_attribute_writable: STRING_32

@@ -338,7 +338,7 @@ feature -- Translation: Signature
 				create l_observers_wrapped.make (factory.implies_ (
 						factory.map_access (factory.heap_access (a_mapping.heap, a_mapping.current_expression, "observers", types.set (types.ref)), << l_i >>),
 						factory.function_call ("is_wrapped", << a_mapping.heap, l_i >>, types.bool)))
-				l_observers_wrapped.add_bound_variable (l_i.name, l_i.type)
+				l_observers_wrapped.add_bound_variable (l_i)
 
 				if a_for_creator then
 					create l_post.make (factory.function_call ("is_wrapped", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
@@ -719,7 +719,7 @@ feature -- Translation: Functions
 				frame_definition (l_exprs, l_fcall)))
 			across l_function.arguments as a
 			loop
-				l_forall.add_bound_variable (a.item.entity.name, a.item.entity.type)
+				l_forall.add_bound_variable (a.item.entity)
 			end
 			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
 		end
@@ -898,8 +898,8 @@ feature {NONE} -- Translation: Functions
 			l_condition := factory.and_ (l_condition, l_pre)
 			l_condition := factory.and_ (l_condition, factory.function_call ("same_inside", <<l_old_heap, l_new_heap, l_read_frame>>, types.bool))
 			create l_forall.make (factory.implies_ (l_condition, factory.equal (l_old_call, l_new_call)))
-			l_forall.add_bound_variable (l_old_heap.name, l_old_heap.type)
-			l_forall.add_bound_variable (l_new_heap.name, l_new_heap.type)
+			l_forall.add_bound_variable (l_old_heap)
+			l_forall.add_bound_variable (l_new_heap)
 			across
 				a_function.arguments as args
 			loop
@@ -912,7 +912,7 @@ feature {NONE} -- Translation: Functions
 					l_old_free_pre.add_argument (l_arg)
 					l_pre.add_argument (l_arg)
 					l_free_pre.add_argument (l_arg)
-					l_forall.add_bound_variable (l_arg.name, l_arg.type)
+					l_forall.add_bound_variable (l_arg)
 				end
 			end
 			l_forall.add_compound_trigger (<< factory.function_call ("HeapSucc", <<l_old_heap, l_new_heap>>, types.bool),
@@ -1007,14 +1007,14 @@ feature -- Translation: agents
 			create l_binop3.make (l_binop1, "==>", l_binop2, types.bool)
 
 			create l_forall.make (l_binop3)
-			l_forall.add_bound_variable (l_heap.name, l_heap.type)
-			l_forall.add_bound_variable (l_old_heap.name, l_old_heap.type)
-			l_forall.add_bound_variable (l_current.name, l_current.type)
+			l_forall.add_bound_variable (l_heap)
+			l_forall.add_bound_variable (l_old_heap)
+			l_forall.add_bound_variable (l_current)
 			across l_args as j loop
-				l_forall.add_bound_variable (j.item.name, j.item.type)
+				l_forall.add_bound_variable (j.item)
 			end
 			if a_feature.has_return_value then
-				l_forall.add_bound_variable (l_result.name, l_result.type)
+				l_forall.add_bound_variable (l_result)
 			end
 			create l_axiom.make (l_forall)
 			boogie_universe.add_declaration (l_axiom)
@@ -1138,8 +1138,8 @@ feature {NONE} -- Implementation
 			create l_forall.make (factory.implies_ (l_expr,
 				factory.equal (factory.heap_access (factory.global_heap, o, f.name, l_type_var), factory.heap_access (factory.old_ (factory.global_heap), o, f.name, l_type_var))))
 			l_forall.add_type_variable (l_type_var.name)
-			l_forall.add_bound_variable (o.name, o.type)
-			l_forall.add_bound_variable (f.name, f.type)
+			l_forall.add_bound_variable (o)
+			l_forall.add_bound_variable (f)
 			create l_postcondition.make (l_forall)
 			l_postcondition.node_info.set_type ("frame")
 			if not options.is_checking_frame then
@@ -1202,8 +1202,8 @@ feature {NONE} -- Implementation
 			l_old_allocated := factory.heap_access (factory.old_ (factory.global_heap), o, "allocated", types.bool)
 			create l_forall.make (factory.implies_ (l_old_allocated, factory.equal (l_access, l_old_access)))
 			l_forall.add_type_variable (l_type_var.name)
-			l_forall.add_bound_variable ("$o", types.ref)
-			l_forall.add_bound_variable ("$f", types.field (l_type_var))
+			l_forall.add_bound_variable (o)
+			l_forall.add_bound_variable (factory.entity ("$f", types.field (l_type_var)))
 			create l_postcondition.make (l_forall)
 			l_postcondition.node_info.set_type ("frame")
 			if not options.is_checking_frame then

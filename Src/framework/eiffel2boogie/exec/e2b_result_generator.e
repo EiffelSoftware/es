@@ -271,8 +271,8 @@ feature {NONE} -- Implementation
 					Result := messages.assignment_closed_or_owner_not_allowed
 				elseif l_tag ~ "target_open" then
 					Result := messages.assignment_target_open
-				elseif l_tag ~ "observers_open_or_inv_preserved" then
-					Result := messages.assignment_observers_open_or_inv_preserved
+				elseif l_tag ~ "observers_open_or_guard_holds" then
+					Result := messages.assignment_observers_open_or_guard_holds
 				elseif l_tag ~ "attribute_writable" then
 					Result := messages.assignment_attribute_writable
 				else

@@ -64,7 +64,7 @@ function NONE.user_inv(heap: HeapType, current: ref) returns (bool) {
 }
 
 // ----------------------------------------------------------------------
-// Ghosts
+// Built-in attributes
 
 const unique closed: Field bool; // Ghost field for open/closed status of an object.
 const unique owner: Field ref; // Ghost field for owner of an object.
@@ -77,6 +77,14 @@ axiom (forall heap: HeapType, o: ref :: { heap[o, owner] } IsHeap(heap) && o != 
 axiom (forall heap: HeapType, o, o': ref :: { heap[o, owns][o'] } IsHeap(heap) && o != Void && heap[o, allocated] && heap[o, owns][o'] ==> heap[o', allocated]);
 axiom (forall heap: HeapType, o, o': ref :: { heap[o, subjects][o'] } IsHeap(heap) && o != Void && heap[o, allocated] && heap[o, subjects][o'] ==> heap[o', allocated]);
 axiom (forall heap: HeapType, o, o': ref :: { heap[o, observers][o'] } IsHeap(heap) && o != Void && heap[o, allocated] && heap[o, observers][o'] ==> heap[o', allocated]);
+
+// Guards for built-in attributes
+axiom (forall heap: HeapType, current: ref, v: Set ref, o: ref :: { guard(heap, current, owns, v, o) } 
+  guard(heap, current, owns, v, o)); // no dependence on owns
+axiom (forall heap: HeapType, current: ref, v: Set ref, o: ref :: { guard(heap, current, subjects, v, o) } 
+  guard(heap, current, subjects, v, o)); // no dependence on subjects
+axiom (forall heap: HeapType, current: ref, v: Set ref, o: ref :: { guard(heap, current, observers, v, o) } 
+  guard(heap, current, observers, v, o) <==> v[o]); // o's invariant cannot be violated as long as it is still in its subject's observers
 
 // Is o open in h? (not closed and free)
 function {:inline} is_open(h: HeapType, o: ref): bool {
@@ -223,28 +231,21 @@ function {:inline true} global_public(h: HeapType): bool
   (forall o: ref :: {is_wrapped(h, o)} h[o, allocated] ==> inv(h, o)) // G1
 }
 
+// Condition under which an update heap[current, f] := v is guaranteed to preserve the invariant of o.
+function guard<T>(heap: HeapType, current: ref, f: Field T, v: T, o: ref): bool;
+
 // All subjects know current for an observer
 function {: inline } admissibility2 (heap: HeapType, current: ref): bool
 { 
   (forall s: ref :: heap[current, subjects][s] ==> heap[s, observers][current]) 
 }
 
-// Invariant cannot be invalidated by changing subjects of my subjects (except of myself)
-function {: inline } admissibility4 (heap: HeapType, current: ref): bool
+// Invariant cannot be invalidated by an update that conform to its guard
+function {: inline } admissibility3 (heap: HeapType, current: ref): bool
 {
-  (forall heap': HeapType, s: ref :: 
-    IsHeap(heap') && HeapSucc(heap, heap') && heap[current, subjects][s] && s != current && 
-    (forall <alpha> o: ref, f: Field alpha :: (o == s && f == subjects) || heap'[o, f] == heap[o, f]) ==> 
-      user_inv(heap', current))
-}
-
-// Invariant cannot be invalidated by changing observers to my subjects (except of myself) as long as I am still in there
-function {: inline } admissibility5 (heap: HeapType, current: ref): bool
-{
-  (forall heap': HeapType, s: ref :: 
-    IsHeap(heap') && HeapSucc(heap, heap') && heap[current, subjects][s] && s != current && heap'[s, observers][current] && 
-    (forall <alpha> o: ref, f: Field alpha :: (o == s && f == observers) || heap'[o, f] == heap[o, f]) ==>
-      user_inv(heap', current))      
+  (forall<T> s: ref, f: Field T, v: T ::
+    heap[current, subjects][s] && s != current && IsHeap(heap[s, f := v]) && guard(heap, s, f, v, current) ==>
+      user_inv(heap[s, f := v], current))
 }
 
 // ----------------------------------------------------------------------
@@ -272,34 +273,13 @@ procedure update_heap<T>(Current: ref, field: Field T, value: T);
   requires (Current != Void) && (Heap[Current, allocated]); // type:assign tag:attached_and_allocated
   requires field != closed && field != owner; // type:assign tag:closed_or_owner_not_allowed UP4
   requires is_open(Heap, Current); // type:assign tag:target_open UP1
-  requires (forall o: ref :: Heap[Current, observers][o] ==> (is_open(Heap, o) || (user_inv(Heap, o) && IsHeap(Heap[Current, field := value]) ==> user_inv(Heap[Current, field := value], o)))); // type:assign tag:observers_open_or_inv_preserved UP2
+  requires (forall o: ref :: Heap[Current, observers][o] ==> (is_open(Heap, o) || (user_inv(Heap, o) && IsHeap(Heap[Current, field := value]) ==> guard(Heap, Current, field, value, o)))); // type:assign tag:observers_open_or_guard_holds UP2  
   requires writable[Current, field]; // type:assign tag:attribute_writable UP3
   modifies Heap;
   ensures global(Heap);
   ensures Heap == old(Heap[Current, field := value]);
   free ensures HeapSucc(old(Heap), Heap);
   
-// This is an optimization: we do not have to check the observers (this is faster than using the frame axiom of user_inv directly) 
-procedure update_subjects(Current: ref, value: Set ref);
-  requires (Current != Void) && (Heap[Current, allocated]); // type:pre tag:attached_and_allocated
-  requires is_open(Heap, Current); // type:pre tag:target_open UP1
-  requires writable[Current, subjects]; // type:pre tag:attribute_writable UP3
-  modifies Heap;
-  ensures global(Heap);
-  ensures Heap == old(Heap[Current, subjects := value]);
-  free ensures HeapSucc(old(Heap), Heap);
-
-// This is an optimization: we can just check that the observer set is growing (this is faster than using the frame axiom of user_inv directly)
-procedure update_observers(Current: ref, value: Set ref);
-  requires (Current != Void) && (Heap[Current, allocated]); // type:pre tag:attached_and_allocated
-  requires is_open(Heap, Current); // type:pre tag:target_open UP1
-  requires writable[Current, observers]; // type:pre tag:attribute_writable UP3
-  requires (forall o: ref :: Heap[Current, observers][o] ==> is_open(Heap, o) || value[o]); // type:assign tag:observers_open_or_inv_preserved UP2   
-  modifies Heap;
-  ensures global(Heap);
-  ensures Heap == old(Heap[Current, observers := value]);
-  free ensures HeapSucc(old(Heap), Heap);  
-
 // Unwrap o
 procedure unwrap(o: ref);
   requires (o != Void) && (Heap[o, allocated]); // type:pre tag:attached

@@ -25,4 +25,28 @@ inherit
 
 	IV_SHARED_FACTORY
 
+feature -- Access
+
+	current_feature: FEATURE_I
+			-- Currently translated feature.
+
+	current_type: CL_TYPE_A
+			-- Context type of the currently translated feature.	
+
+feature -- Element change
+
+	set_context (a_feature: FEATURE_I; a_type: CL_TYPE_A)
+			-- Set context of current translation.
+		do
+			current_feature := a_feature
+			if a_type.is_attached then
+				current_type := a_type
+			else
+				current_type := a_type.as_attached_type
+			end
+		ensure
+			current_feature_set: current_feature = a_feature
+			current_type_set: current_type.same_as (a_type.as_attached_type)
+		end
+			
 end

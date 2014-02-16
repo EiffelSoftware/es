@@ -59,6 +59,13 @@ feature -- Visitor
 		deferred
 		end
 
+	process_map_update (a_map_update: IV_MAP_UPDATE)
+			-- Process `a_map_update'.
+		require
+			a_map_update_attached: attached a_map_update
+		deferred
+		end
+
 	process_unary_operation (a_operation: IV_UNARY_OPERATION)
 			-- Process `a_operation'.
 		require

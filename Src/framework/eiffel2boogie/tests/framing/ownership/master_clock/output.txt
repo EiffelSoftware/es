@@ -41,6 +41,9 @@ Successfully verified.
 F_MC_MASTER.reset
 Successfully verified.
 ======================================
+F_MC_MASTER.time_increased
+Successfully verified.
+======================================
 F_MC_MASTER_D (invariant admissibility)
 Successfully verified.
 ======================================
@@ -51,4 +54,7 @@ F_MC_MASTER_D.tick
 Successfully verified.
 ======================================
 F_MC_MASTER_D.reset
+Successfully verified.
+======================================
+F_MC_MASTER_D.time_increased
 Successfully verified.

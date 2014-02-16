@@ -287,6 +287,12 @@ feature -- Heap and map access
 			create Result.make (a_map, a_indexes)
 		end
 
+	map_update (a_map: IV_EXPRESSION; a_indexes: ARRAY [IV_EXPRESSION]; a_value: IV_EXPRESSION): IV_MAP_UPDATE
+			-- Map update `a_map'[`a_index' := `a_value'].
+		do
+			create Result.make (a_map, a_indexes, a_value)
+		end
+
 	heap_access (a_heap: IV_EXPRESSION; a_target: IV_EXPRESSION; a_name: STRING; a_content_type: IV_TYPE): IV_MAP_ACCESS
 			-- Heap access to `a_feature' on `Current'.
 		do

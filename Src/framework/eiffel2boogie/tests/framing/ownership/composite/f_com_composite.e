@@ -123,8 +123,6 @@ feature {F_COM_COMPOSITE} -- Implementation
 			-- Set `parent' to `p'.
 		require
 			open: is_open
-			singleton_1: parent = Void
-			singleton_2: children_set.is_empty
 			p_exists: p /= Void
 			no_observers: observers.is_empty
 			modify_field (["parent", "ancestors"], Current)
@@ -190,7 +188,6 @@ feature {F_COM_COMPOSITE} -- Implementation
 		ensure
 			ancestors [c] implies not c.children_set.is_empty
 		end
-
 
 invariant
 	children_exists: children /= Void

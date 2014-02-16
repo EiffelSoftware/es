@@ -70,10 +70,10 @@ feature -- Element change
 			type_variables.extend (a_name)
 		end
 
-	add_bound_variable (a_name: STRING; a_type: IV_TYPE)
+	add_bound_variable (a_var: IV_ENTITY)
 			-- Add a bound variable with name `a_name' and type `a_type'.
 		do
-			bound_variables.extend (create {IV_ENTITY_DECLARATION}.make (a_name, a_type))
+			bound_variables.extend (create {IV_ENTITY_DECLARATION}.make (a_var.name, a_var.type))
 		end
 
 	add_trigger (a_expr: IV_EXPRESSION)

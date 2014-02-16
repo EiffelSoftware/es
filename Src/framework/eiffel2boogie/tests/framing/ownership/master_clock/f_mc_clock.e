@@ -1,7 +1,7 @@
 note
 	description: "Slave clock whose time must not exceed its master's."
 
-frozen class F_MC_CLOCK
+class F_MC_CLOCK
 
 create
 	make

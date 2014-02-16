@@ -31,11 +31,12 @@ feature -- Basic operations
 			l_prev: like previous_versions
 			l_typed_sets: like helper.class_note_values
 		do
-			l_class_type := helper.class_type_in_context (a_feature.type, a_context_type.base_class, Void, a_context_type)
-			l_attribute_name := name_translator.boogie_procedure_for_feature (a_feature, a_context_type)
+			set_context (a_feature, a_context_type)
+			l_class_type := helper.class_type_in_context (current_feature.type, current_type.base_class, Void, current_type)
+			l_attribute_name := name_translator.boogie_procedure_for_feature (current_feature, current_type)
 			l_boogie_type := types.for_class_type (l_class_type)
 
-			l_prev := previous_versions (a_feature, a_context_type)
+			l_prev := previous_versions
 			if l_prev = Void then
 					-- No previous versions:
 					-- Add unique field declaration
@@ -46,7 +47,7 @@ feature -- Basic operations
 
 					-- Mark field as a ghost or non-ghost
 				l_expr := factory.function_call ("IsGhostField", << factory.entity (l_attribute_name, types.field (l_boogie_type)) >>, types.bool)
-				if helper.is_ghost (a_feature) then
+				if helper.is_ghost (current_feature) then
 					boogie_universe.add_declaration (create {IV_AXIOM}.make (l_expr))
 				else
 					boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.not_ (l_expr)))
@@ -77,14 +78,17 @@ feature -- Basic operations
 			if not l_type_prop.is_true then
 				l_type_prop := factory.implies_ (factory.and_ (
 						factory.is_heap (l_heap),
-						factory.function_call ("attached", << l_heap, l_o, factory.type_value (a_context_type)>>, types.bool)),
+						factory.function_call ("attached", << l_heap, l_o, factory.type_value (current_type)>>, types.bool)),
 					l_type_prop)
 				create l_forall.make (l_type_prop)
-				l_forall.add_bound_variable (l_heap.name, l_heap.type)
-				l_forall.add_bound_variable (l_o.name, l_o.type)
+				l_forall.add_bound_variable (l_heap)
+				l_forall.add_bound_variable (l_o)
 				l_forall.add_trigger (l_heap_access)
 				boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
 			end
+
+				-- Add guard
+			generate_guard (l_class_type, l_attribute_name, l_boogie_type)
 
 				-- Add translation references
 			translation_pool.add_type (l_class_type)
@@ -101,34 +105,106 @@ feature -- Basic operations
 --			end
 		end
 
+	generate_guard (a_type: CL_TYPE_A; a_boogie_name: STRING; a_boogie_type: IV_TYPE)
+			-- Generate update guard for attribute `current_feature' of type `a_type' inside `current_type',
+			-- where the Boogie translation of the attribute has name `a_boogie_name' and type `a_boogie_type'.
+		local
+			l_guard_feature: FEATURE_I
+			l_h, l_cur, l_f, l_v, l_o: IV_ENTITY
+			l_fcall: IV_FUNCTION_CALL
+			l_guard, l_fname: STRING
+			l_def: IV_EXPRESSION
+			l_forall: IV_FORALL
+		do
+			create l_h.make ("heap", types.heap)
+			create l_cur.make ("current", types.ref)
+			create l_f.make (a_boogie_name, types.field (a_boogie_type))
+			create l_v.make ("v", a_boogie_type)
+			create l_o.make ("o", types.ref)
+			l_fcall := factory.function_call ("guard", << l_h, l_cur, l_f, l_v, l_o >>, types.bool)
+
+			l_guard := helper.guard_for_attribute (current_feature)
+			if l_guard.as_lower ~ "true" then
+					-- The guard is trivially true
+				create l_forall.make (l_fcall)
+			elseif l_guard.as_lower ~ "false" then
+					-- The guard is trivially false
+				create l_forall.make (factory.not_ (l_fcall))
+			else
+				l_guard_feature := current_type.base_class.feature_named_32 (l_guard)
+				if not l_guard.is_empty and is_valid_guard_feature (l_guard, l_guard_feature, a_type) then
+					translation_pool.add_referenced_feature (l_guard_feature, current_type)
+						-- Generate guard axiom from `l_guard_feature'
+					l_fname := name_translator.boogie_function_for_feature (l_guard_feature, current_type)
+					l_def := factory.function_call (name_translator.boogie_free_function_precondition (l_fname), << l_h, l_cur, l_v, l_o >>, types.bool)
+					l_def := factory.and_ (l_def,
+						factory.function_call (name_translator.boogie_function_precondition (l_fname), << l_h, l_cur, l_v, l_o >>, types.bool))
+					l_def := factory.and_ (l_def,
+						factory.function_call (l_fname, << l_h, l_cur, l_v, l_o >>, types.bool))
+					create l_forall.make (factory.equiv (l_fcall, l_def))
+				else
+						-- No guard defined: apply default
+					create l_forall.make (factory.equiv (l_fcall,
+						factory.function_call ("user_inv", << factory.map_update (l_h, << l_cur, l_f >>, l_v), l_o >>, types.bool)))
+				end
+			end
+
+			l_forall.add_bound_variable (l_h)
+			l_forall.add_bound_variable (l_cur)
+			l_forall.add_bound_variable (l_v)
+			l_forall.add_bound_variable (l_o)
+			l_forall.add_trigger (l_fcall)
+			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
+		end
+
 feature {NONE} -- Implementation
 
-	previous_versions (a_feature: FEATURE_I; a_context_type: CL_TYPE_A): LINKED_LIST [TUPLE [feat: FEATURE_I; typ: CL_TYPE_A]]
-			-- Versions of `a_feature' from ancestors of `a_context_type' if inherited or redefined; Void if it is the original definition.
+	previous_versions: LINKED_LIST [TUPLE [feat: FEATURE_I; typ: CL_TYPE_A]]
+			-- Versions of `current_feature' from ancestors of `current_type' if inherited or redefined; Void if it is the original definition.
 		local
 			l_written_type: CL_TYPE_A
 			l_written_feature: FEATURE_I
 			i: INTEGER
 		do
-			if a_feature.written_in /= a_context_type.base_class.class_id then
+			if current_feature.written_in /= current_type.base_class.class_id then
 					-- Inherited attribute: return the class where it is written in				
-				l_written_type := helper.class_type_from_class (a_feature.written_class, a_context_type)
-				l_written_feature := l_written_type.base_class.feature_of_body_index (a_feature.body_index)
+				l_written_type := helper.class_type_from_class (current_feature.written_class, current_type)
+				l_written_feature := l_written_type.base_class.feature_of_body_index (current_feature.body_index)
 				create Result.make
 				Result.extend ([l_written_feature, l_written_type])
-			elseif a_feature.assert_id_set /= Void then
+			elseif current_feature.assert_id_set /= Void then
 					-- Redefined attribute: return original versions
 				from
 					create Result.make
 					i := 1
 				until
-					i > a_feature.assert_id_set.count
+					i > current_feature.assert_id_set.count
 				loop
-					l_written_type := helper.class_type_from_class (a_feature.assert_id_set [i].written_class, a_context_type)
-					l_written_feature := l_written_type.base_class.feature_of_body_index (a_feature.assert_id_set [i].body_index)
+					l_written_type := helper.class_type_from_class (current_feature.assert_id_set [i].written_class, current_type)
+					l_written_feature := l_written_type.base_class.feature_of_body_index (current_feature.assert_id_set [i].body_index)
 					Result.extend ([l_written_feature, l_written_type])
 					i := i + 1
 				end
+			end
+		end
+
+	is_valid_guard_feature (a_guard_name: STRING_32; a_guard_feature: FEATURE_I; a_attr_type: CL_TYPE_A): BOOLEAN
+			-- Does `a_guard_feature' have a valid signature for an update guard for an attribute of type `a_attr_type'?
+		do
+			if a_guard_feature = Void then
+				helper.add_semantic_error (current_feature, messages.unknown_feature (a_guard_name, current_type.base_class.name_in_upper), -1)
+			elseif not helper.is_functional (a_guard_feature) then
+				helper.add_semantic_error (a_guard_feature, messages.guard_feature_not_functional, -1)
+			elseif not (a_guard_feature.has_return_value and then a_guard_feature.type.is_boolean) then
+				helper.add_semantic_error (a_guard_feature, messages.guard_feature_not_predicate, -1)
+			elseif a_guard_feature.argument_count /= 2 then
+				helper.add_semantic_error (a_guard_feature, messages.guard_feature_arg_count, -1)
+			elseif not a_guard_feature.arguments [1].same_as (a_attr_type) then
+				helper.add_semantic_error (a_guard_feature, messages.guard_feature_arg1, -1)
+			elseif not a_guard_feature.arguments [2].same_as (system.any_type) then
+				helper.add_semantic_error (a_guard_feature, messages.guard_feature_arg2, -1)
+			else
+				Result := True
 			end
 		end
 

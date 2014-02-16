@@ -90,8 +90,6 @@ feature -- Update
 		require
 			c_exists: c /= Void
 			c_different: c /= Current
-			c_singleton_1: c.parent = Void
-			c_singleton_2: c.children.is_empty
 			ancestors_wrapped: across ancestors as p all p.item.is_wrapped end
 			default_wrapped: is_wrapped
 			default_observers_wrapped: across observers as o all o.item.is_wrapped end

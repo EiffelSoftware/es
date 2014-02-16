@@ -52,16 +52,10 @@ feature -- Basic operations
 				a_translator.side_effect.finish
 				a_translator.side_effect.remove	-- last side effect is actual call, here to non-existing "xyz"
 				a_translator.set_last_expression (Void)
-				if l_name ~ "subjects" then
-					l_call := factory.procedure_call ("update_subjects", << a_translator.current_target, l_call.arguments.i_th (2)>>)
-				elseif l_name ~ "observers" then
-					l_call := factory.procedure_call ("update_observers", << a_translator.current_target, l_call.arguments.i_th (2)>>)
-				else
-					l_call := factory.procedure_call ("update_heap", <<
-						a_translator.current_target,
-						factory.entity (l_name, types.field ((create {E2B_SPECIAL_MAPPING}.make).ghost_access_type (l_name))),
-						l_call.arguments.i_th (2)>>)
-				end
+				l_call := factory.procedure_call ("update_heap", <<
+					a_translator.current_target,
+					factory.entity (l_name, types.field ((create {E2B_SPECIAL_MAPPING}.make).ghost_access_type (l_name))),
+					l_call.arguments.i_th (2)>>)
 				l_call.node_info.set_line (a_translator.context_line_number)
 				a_translator.side_effect.extend (l_call)
 			else
@@ -266,16 +260,15 @@ feature -- Basic operations
 			-- generate guarded assignments to statically known built-in ghost fields and store them in the side effect of `a_translator'.
 		do
 			if a_feature_name ~ "wrap" and a_translator.current_target.same_expression (a_translator.entity_mapping.current_expression) then
-				set_static_ghost_set (a_translator, "owns", "update_heap", True)
-				set_static_ghost_set (a_translator, "subjects", "update_subjects", False)
-				set_static_ghost_set (a_translator, "observers", "update_observers", False)
+				set_static_ghost_set (a_translator, "owns")
+				set_static_ghost_set (a_translator, "subjects")
+				set_static_ghost_set (a_translator, "observers")
 			end
 		end
 
-	set_static_ghost_set (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR; a_field_name, a_update_name: STRING; a_pass_field: BOOLEAN)
+	set_static_ghost_set (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR; a_field_name: STRING)
 			-- If the definition of `a_field_name' in `current_target_type' is statically known,
-			-- generate a guarded update using Boogie procedure `a_update_name' and store it in the side effect of `a_translator';
-			-- if `a_pass_field' the procedure receives the field as argument.
+			-- generate a guarded update and store it in the side effect of `a_translator'.
 		local
 			l_function: IV_FUNCTION
 			l_field: IV_ENTITY
@@ -287,11 +280,9 @@ feature -- Basic operations
 			l_function := boogie_universe.function_named (name_translator.boogie_function_for_ghost_definition (a_translator.current_target_type, a_field_name))
 			if attached l_function then
 				create l_field.make (a_field_name, types.field (types.set (types.ref)))
-				create l_pcall.make (a_update_name)
+				create l_pcall.make ("update_heap")
 				l_pcall.add_argument (a_translator.entity_mapping.current_expression)
-				if a_pass_field then
-					l_pcall.add_argument (l_field)
-				end
+				l_pcall.add_argument (l_field)
 				l_pcall.add_argument (factory.function_call (l_function.name,
 					<< a_translator.entity_mapping.heap, a_translator.entity_mapping.current_expression >>,
 					types.set (types.ref)))
@@ -314,7 +305,7 @@ feature -- Basic operations
 			l_new_version := a_type.base_class.feature_of_rout_id_set (l_old_version.rout_id_set)
 			l_new_type := helper.class_type_in_context (l_new_version.type, a_type.base_class, Void, a_type)
 			if l_old_version = Void then
-				helper.add_semantic_error (a_context_feature, messages.field_not_attribute (a_name, a_origin_class.name_in_upper), a_context_line_number)
+				helper.add_semantic_error (a_context_feature, messages.unknown_attribute (a_name, a_origin_class.name_in_upper), a_context_line_number)
 			else
 				check l_new_version /= Void end
 				if translation_mapping.ghost_access.has (a_name) then
@@ -323,14 +314,14 @@ feature -- Basic operations
 					Result := factory.entity (a_name, types.field (translation_mapping.ghost_access_type (a_name)))
 				elseif l_old_version.is_attribute then
 					if a_check_model and then not helper.flat_model_queries (a_origin_class).has (l_old_version) then
-						helper.add_semantic_error (a_context_feature, messages.field_not_model (a_name, a_origin_class.name_in_upper), a_context_line_number)
+						helper.add_semantic_error (a_context_feature, messages.unknown_model (a_name, a_origin_class.name_in_upper), a_context_line_number)
 					else
 						Result := factory.entity (name_translator.boogie_procedure_for_feature (l_new_version, a_type),
 							types.field (types.for_class_type (l_new_type)))
 						translation_pool.add_referenced_feature (l_new_version, a_type)
 					end
 				else
-					helper.add_semantic_error (a_context_feature, messages.field_not_attribute (a_name, a_origin_class.name_in_upper), a_context_line_number)
+					helper.add_semantic_error (a_context_feature, messages.unknown_attribute (a_name, a_origin_class.name_in_upper), a_context_line_number)
 				end
 			end
 

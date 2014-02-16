@@ -557,6 +557,22 @@ feature -- Expression Visitor
 			output.put ("]")
 		end
 
+	process_map_update (a_map_update: IV_MAP_UPDATE)
+			-- <Precursor>
+		do
+			a_map_update.target.process (Current)
+			output.put ("[")
+			across a_map_update.indexes as i loop
+				if i.cursor_index /= 1 then
+					output.put (", ")
+				end
+				i.item.process (Current)
+			end
+			output.put (" := ")
+			a_map_update.value.process (Current)
+			output.put ("]")
+		end
+
 	process_unary_operation (a_operation: IV_UNARY_OPERATION)
 			-- <Precursor>
 		do

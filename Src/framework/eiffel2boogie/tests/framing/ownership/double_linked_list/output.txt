@@ -29,6 +29,12 @@ Successfully verified.
 F_DLL_NODE.set_right
 Successfully verified.
 ======================================
+F_DLL_NODE.not_left
+Successfully verified.
+======================================
+F_DLL_NODE.not_right
+Successfully verified.
+======================================
 F_DLL_NODE_D (invariant admissibility)
 Successfully verified.
 ======================================
@@ -45,4 +51,10 @@ F_DLL_NODE_D.set_left
 Successfully verified.
 ======================================
 F_DLL_NODE_D.set_right
+Successfully verified.
+======================================
+F_DLL_NODE_D.not_left
+Successfully verified.
+======================================
+F_DLL_NODE_D.not_right
 Successfully verified.

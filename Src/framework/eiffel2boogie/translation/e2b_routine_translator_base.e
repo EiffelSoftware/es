@@ -16,30 +16,10 @@ inherit
 
 feature -- Access
 
-	current_feature: FEATURE_I
-			-- Currently translated feature.
-
-	current_type: CL_TYPE_A
-			-- Context type of the currently translated feature.
-
 	current_boogie_procedure: detachable IV_PROCEDURE
 			-- Currently generated Boogie procedure (if any).
 
 feature -- Element change
-
-	set_context (a_feature: FEATURE_I; a_type: CL_TYPE_A)
-			-- Set context of current translation.
-		do
-			current_feature := a_feature
-			if a_type.is_attached then
-				current_type := a_type
-			else
-				current_type := a_type.as_attached_type
-			end
-		ensure
-			current_feature_set: current_feature = a_feature
-			current_type_set: current_type.same_as (a_type.as_attached_type)
-		end
 
 	set_up_boogie_procedure (a_boogie_name: STRING)
 			-- Set up `current_boogie_procedure'.
@@ -412,8 +392,8 @@ feature -- Helper functions: contracts
 				-- Finally create the quantifier				
 			create Result.make (factory.equiv (l_access, l_expr))
 			Result.add_type_variable (l_type_var.name)
-			Result.add_bound_variable (l_o.name, l_o.type)
-			Result.add_bound_variable (l_f.name, l_f.type)
+			Result.add_bound_variable (l_o)
+			Result.add_bound_variable (l_f)
 			Result.add_trigger (l_access)
 		end
 

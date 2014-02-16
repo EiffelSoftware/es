@@ -104,7 +104,7 @@ feature -- Basic operations
 				helper.model_queries (l_class) as m
 			loop
 				if a_type.base_class.feature_named_32 (m.item) = Void then
-					helper.add_semantic_error (l_class, messages.field_not_attribute (m.item, l_class.name_in_upper), -1)
+					helper.add_semantic_error (l_class, messages.unknown_attribute (m.item, l_class.name_in_upper), -1)
 				end
 			end
 		end
@@ -191,7 +191,7 @@ feature {NONE} -- Implementation
 			l_fcall := factory.function_call ("IsModelField", << l_f, factory.type_value (type) >>, types.bool)
 			create l_forall.make (factory.equiv (l_fcall, l_def))
 			l_forall.add_type_variable (l_type_var.name)
-			l_forall.add_bound_variable (l_f.name, l_f.type)
+			l_forall.add_bound_variable (l_f)
 			l_forall.add_trigger (l_fcall)
 			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
 		end
@@ -357,9 +357,9 @@ feature {NONE} -- Implementation
 						factory.type_of (l_current),
 						factory.type_value (type)),
 					factory.equal (l_generic_call, l_special_call)))
-			l_forall.add_bound_variable (l_heap.name, l_heap.type)
+			l_forall.add_bound_variable (l_heap)
 			l_forall.add_trigger (l_generic_call)
-			l_forall.add_bound_variable (l_current.name, l_current.type)
+			l_forall.add_bound_variable (l_current)
 
 			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
 
@@ -370,9 +370,9 @@ feature {NONE} -- Implementation
 						factory.type_of (l_current),
 						factory.type_value (type)),
 					factory.implies_ (l_generic_call, l_special_call)))
-			l_forall.add_bound_variable (l_heap.name, l_heap.type)
+			l_forall.add_bound_variable (l_heap)
 			l_forall.add_trigger (l_generic_call)
-			l_forall.add_bound_variable (l_current.name, l_current.type)
+			l_forall.add_bound_variable (l_current)
 
 			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
 		end
@@ -454,21 +454,11 @@ feature -- Invariant admissibility
 				l_block.add_statement (i.item)
 			end
 
-				-- A3: o.inv does not mention closed and owner (static check)
+				-- o.inv does not mention closed and owner (static check)
+
 			if builtin_collector.is_inv_unfriendly then
 				helper.add_semantic_error (a_class_type.base_class, messages.invalid_call_in_invariant, -1)
 			end
-
-				-- A1: reads(o.inv) is subset of domain(o) + o.subjects
-
-			create l_block.make_name ("a1")
-			l_goto.add_target (l_block)
-			l_impl.body.add_statement (l_block)
-			l_block.add_statement (l_assume)
-			create l_assert.make (factory.true_)
-			l_assert.node_info.set_type ("A1")
-			l_block.add_statement (l_assert)
-			l_block.add_statement (factory.return)
 
 				-- A2: o.inv implies forall x: x in o.subjects implies o in x.observers
 
@@ -481,26 +471,14 @@ feature -- Invariant admissibility
 			l_block.add_statement (l_assert)
 			l_block.add_statement (factory.return)
 
-				-- A4: o.inv cannot be violated by updating subjects field of a subject
+				-- A3: o.inv cannot be violated by updates that conform to their guards
 
-			create l_block.make_name ("a4")
+			create l_block.make_name ("a3")
 			l_goto.add_target (l_block)
 			l_impl.body.add_statement (l_block)
 			l_block.add_statement (l_assume)
-			create l_assert.make (factory.function_call ("admissibility4", << factory.global_heap, factory.std_current >>, types.bool))
-			l_assert.node_info.set_type ("A4")
-			l_block.add_statement (l_assert)
-			l_block.add_statement (factory.return)
-
-
-				-- A5: o.inv cannot be violated by enlarging observers field of a subject
-
-			create l_block.make_name ("a5")
-			l_goto.add_target (l_block)
-			l_impl.body.add_statement (l_block)
-			l_block.add_statement (l_assume)
-			create l_assert.make (factory.function_call ("admissibility5", << factory.global_heap, factory.std_current >>, types.bool))
-			l_assert.node_info.set_type ("A5")
+			create l_assert.make (factory.function_call ("admissibility3", << factory.global_heap, factory.std_current >>, types.bool))
+			l_assert.node_info.set_type ("A3")
 			l_block.add_statement (l_assert)
 			l_block.add_statement (factory.return)
 
@@ -534,20 +512,11 @@ feature -- Invariant admissibility
 					check i.item.is_assert_error end
 					create l_error.make (l_failure)
 					l_error.set_boogie_error (i.item)
-					if i.item.attributes["type"] ~ "A1" then
-						l_error.set_message ("A1")
-						l_failure.errors.extend (l_error)
-					elseif i.item.attributes["type"] ~ "A2" then
-						l_error.set_message ("Some subjects might not have Current in their observers set")
+					if i.item.attributes["type"] ~ "A2" then
+						l_error.set_message ("Some subjects might not have Current in their observers set.")
 						l_failure.errors.extend (l_error)
 					elseif i.item.attributes["type"] ~ "A3" then
-						l_error.set_message ("A3")
-						l_failure.errors.extend (l_error)
-					elseif i.item.attributes["type"] ~ "A4" then
-						l_error.set_message ("The invariant might be invalidated by changing subjects of one of the subjects")
-						l_failure.errors.extend (l_error)
-					elseif i.item.attributes["type"] ~ "A5" then
-						l_error.set_message ("The invariant might be invalidated by adding observers to one of the subjects")
+						l_error.set_message ("The invariant might be invalidated by a subject update that conforms to its guard.")
 						l_failure.errors.extend (l_error)
 					else
 						a_result_generator.process_individual_error (i.item, l_failure)
