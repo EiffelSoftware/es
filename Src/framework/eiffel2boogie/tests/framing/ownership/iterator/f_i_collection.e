@@ -33,6 +33,7 @@ feature -- Access
 			status: functional
 		require
 			closed: closed
+			reads (ownership_domain)
 		do
 			check inv end
 			Result := elements.count

@@ -120,12 +120,19 @@ function in_domain(h: HeapType, o: ref, o': ref): bool
 axiom (forall h: HeapType, o, o': ref :: { in_domain(h, o, o') } IsHeap(h) && h[o, closed] && h[o, owns][o'] ==> in_domain(h, o, o'));
 axiom (forall h: HeapType, o, o': ref :: { in_domain(h, o, o') } IsHeap(h) && o != o' && Set#Equal(Set#Empty(), h[o, owns]) ==> !in_domain(h, o, o'));
 
+function domain(h: HeapType, o: ref): Set ref
+{ (lambda o': ref :: in_domain(h, o, o')) }
+
 // Is o' in the transitive owns of o?
 // (the same as in_domain if o is closed)
-function trans_owns(h: HeapType, o: ref, o': ref): bool
+function in_trans_owns(h: HeapType, o: ref, o': ref): bool
 {
-  o == o' || h[o, owns][o'] || (exists x: ref :: h[o, owns][x] && trans_owns(h, x, o'))
+  o == o' || h[o, owns][o'] || (exists x: ref :: h[o, owns][x] && in_trans_owns(h, x, o'))
 }
+
+function trans_owns(h: HeapType, o: ref): Set ref
+{ (lambda o': ref :: in_trans_owns(h, o, o')) }
+
 
 // ----------------------------------------------------------------------
 // Models
@@ -165,12 +172,18 @@ function same_outside(h: HeapType, h': HeapType, frame: Frame): bool {
   )
 }
 
-// Objects inside the old ownership domains of frame did not change
+// Objects inside the frame did not change
 function same_inside(h: HeapType, h': HeapType, frame: Frame): bool { 
 	(forall <T> o: ref, f: Field T :: { h[o, f] } { h'[o, f] }
-    h[o, allocated] && h'[o, f] != h[o, f] ==>
-      !frame [o, f] && (forall<U> o': ref, g: Field U :: frame[o', g] && o != o' ==> !in_domain(h, o', o)))
+    h[o, allocated] && h'[o, f] != h[o, f] ==> !frame [o, f])
 }
+// This version corresponds to the old semantics of read clauses:
+// // Objects inside the old ownership domains of frame did not change
+// // function same_inside(h: HeapType, h': HeapType, frame: Frame): bool { 
+	// // (forall <T> o: ref, f: Field T :: { h[o, f] } { h'[o, f] }
+    // // h[o, allocated] && h'[o, f] != h[o, f] ==>
+      // // !frame [o, f] && (forall<U> o': ref, g: Field U :: frame[o', g] && o != o' ==> !in_domain(h, o', o)))
+// // }
 
 // Set of all writable objects
 const writable: Frame;
@@ -187,13 +200,8 @@ function user_inv(h: HeapType, o: ref): bool;
 // Read frame of user_inv
 function user_inv_readable(HeapType, ref): Frame;
 axiom (forall<T> h: HeapType, x: ref, o: ref, f: Field T :: { user_inv_readable(h, x)[o, f] }
-  IsHeap(h) ==> user_inv_readable(h, x)[o, f] == (trans_owns(h, x, o) || h[x, subjects][o]));
+  IsHeap(h) ==> user_inv_readable(h, x)[o, f] == (in_trans_owns(h, x, o) || h[x, subjects][o]));
   
-// // Part of read frame of user_inv closed under domains (used for function calls)
-// function user_inv_function_readable(HeapType, ref): Frame;
-// axiom (forall<T> h: HeapType, x: ref, o: ref, f: Field T :: { user_inv_function_readable(h, x)[o, f] }
-  // IsHeap(h) ==> user_inv_function_readable(h, x)[o, f] == trans_owns(h, x, o));  
-
 // Frame axiom
 axiom (forall h, h': HeapType, x: ref :: { user_inv(h', x), HeapSucc(h, h') } 
   IsHeap(h) && IsHeap(h') && HeapSucc(h, h') &&

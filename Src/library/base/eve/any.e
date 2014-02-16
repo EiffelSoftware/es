@@ -499,12 +499,21 @@ feature -- Verification: ownership queries
 			Result := True
 		end
 
-	frozen domain_has (a_obj: ANY): BOOLEAN
-			-- Is `a_obj' in the ownership domain of `Current'?
+	frozen transitive_owns: MML_SET [ANY]
+			-- Reflexive transitive closure of `owns'.
+		note
+			status: ghost
 		do
-			Result := True
 		end
 
+	frozen ownership_domain: MML_SET [ANY]
+			-- Ownership domain of `Current'
+			-- (coincides with `transitive_owns' when `closed' and contains only `Current' otherwise).
+		note
+			status: ghost
+		do
+		end
+		
 feature -- Verification: ownership fields
 
 	frozen closed: BOOLEAN

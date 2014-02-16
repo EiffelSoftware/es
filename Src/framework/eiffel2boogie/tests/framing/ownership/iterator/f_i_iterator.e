@@ -46,7 +46,7 @@ feature -- Access
 			not_off: not (before or after)
 			closed: closed
 			target_closed: target.closed
-			reads (Current, target)
+			reads (Current, target.ownership_domain)
 		do
 			check inv and target.inv end
 			Result := target.elements [index]

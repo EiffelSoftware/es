@@ -152,8 +152,10 @@ feature -- Basic operations
 						helper.add_semantic_warning (a_translator.context_feature, messages.invalid_context_for_read_predicate, a_translator.context_line_number)
 						a_translator.set_last_expression (factory.true_)
 					end
-				elseif l_name ~ "domain_has" then
-					a_translator.process_builtin_routine_call (a_feature, a_parameters, "in_domain")
+				elseif l_name ~ "transitive_owns" then
+					a_translator.process_builtin_routine_call (a_feature, a_parameters, "trans_owns")
+				elseif l_name ~ "ownership_domain" then
+					a_translator.process_builtin_routine_call (a_feature, a_parameters, "domain")
 				elseif l_name ~ "is_fresh" then
 					a_translator.set_last_expression (factory.not_ (factory.heap_access (
 						factory.old_ (factory.global_heap),

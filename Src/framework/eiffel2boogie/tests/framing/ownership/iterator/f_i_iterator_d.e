@@ -52,7 +52,7 @@ feature -- Access
 			closed: closed
 			target_closed: target.closed
 			modify ([])
-			reads (Current, target)
+			reads (Current, target.ownership_domain)
 		do
 			check inv and target.inv end
 			Result := target.elements [index]

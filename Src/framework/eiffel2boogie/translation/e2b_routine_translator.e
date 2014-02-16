@@ -312,10 +312,11 @@ feature -- Translation: Signature
 			l_pre.set_free
 			Result.extend (l_pre)
 
-				-- Free precondition: Everything in the domains of writable objects is writable
-			create l_pre.make (factory.function_call ("closed_under_domains", << factory.global_readable, factory.global_heap >>, types.bool))
-			l_pre.set_free
-			Result.extend (l_pre)
+				-- Add this to restore the old semantics of read clauses:
+--				-- Free precondition: Everything in the domains of writable objects is writable
+--			create l_pre.make (factory.function_call ("closed_under_domains", << factory.global_readable, factory.global_heap >>, types.bool))
+--			l_pre.set_free
+--			Result.extend (l_pre)
 
 			translation_pool.add_read_frame_function (current_feature, current_type)
 		end

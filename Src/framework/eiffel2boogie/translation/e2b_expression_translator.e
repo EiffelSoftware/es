@@ -139,9 +139,6 @@ feature -- Access
 	context_readable: IV_EXPRESSION
 			-- Readable frame of the enclosing context if defined, otherwise Void.
 
---	restricted_context_readable: IV_EXPRESSION
---			-- Special readable frame used for function calls if defined, otherwise Void.
-
 	use_triggers: BOOLEAN
 			-- Should triggers be added to generated quntifiers?
 
@@ -241,12 +238,6 @@ feature -- Basic operations
 		do
 			context_readable := a_readable
 		end
-
---	set_restricted_context_readable (a_readable: IV_EXPRESSION)
---			-- Set `restricted_context_readable' to `a_readable'
---		do
---			restricted_context_readable := a_readable
---		end
 
 	set_use_triggers (b: BOOLEAN)
 			-- Set `use_triggers' to `b'
@@ -1240,11 +1231,6 @@ feature -- Translation
 		local
 			l_fcall: IV_FUNCTION_CALL
 		do
---			if restricted_context_readable /= Void then
---				l_readable := restricted_context_readable
---			elseif context_readable /= Void then
---				l_readable := context_readable
---			end
 			if context_readable /= Void and helper.has_functional_representation (a_feature) then
 				create l_fcall.make (name_translator.boogie_function_for_read_frame (a_feature, current_target_type), types.frame)
 				l_fcall.add_argument (entity_mapping.heap)
