@@ -453,6 +453,7 @@ feature -- Invariant admissibility
 			across last_safety_checks as i loop
 				l_block.add_statement (i.item)
 			end
+			l_block.add_statement (factory.return)
 
 				-- o.inv does not mention closed and owner (static check)
 

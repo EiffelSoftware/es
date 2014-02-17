@@ -12,7 +12,8 @@ inherit
 			y as yy,
 			bar_ok as bar_not_so_ok
 		redefine
-			foo
+			foo,
+			suspicious
 		end
 
 
@@ -42,6 +43,12 @@ feature
 	bad1
 		require
 			modify_model (["z"], Current) -- Bad: z is not a model
+		do
+		end
+
+	suspicious
+		require else
+			modify_model ("yy", Current) -- Bad: yy is outside of the parent's frame
 		do
 		end
 

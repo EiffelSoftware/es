@@ -49,5 +49,10 @@ feature
 			end
 		end
 
+	suspicious
+		require
+			modify_model ("x", Current)
+		do
+		end
 
 end

@@ -22,6 +22,9 @@ Line: 32. Target attribute may not be writable.
 A_MODELS.bar_ok
 Successfully verified.
 ======================================
+A_MODELS.suspicious
+Successfully verified.
+======================================
 A_REMODELS (invariant admissibility)
 Successfully verified.
 ======================================
@@ -44,3 +47,14 @@ A_REMODELS.foo
 Verification failed.
 
 Line: 36. Target attribute may not be writable.
+======================================
+A_REMODELS.foo (frame)
+Successfully verified.
+======================================
+A_REMODELS.suspicious
+Successfully verified.
+======================================
+A_REMODELS.suspicious (frame)
+Verification failed.
+
+The added write frame might not be a subset of the previous version suspicious.

@@ -406,6 +406,86 @@ feature -- Translation: Signature
 			end
 		end
 
+	generate_frame_check (a_feature: FEATURE_I; a_type: CL_TYPE_A; a_read: BOOLEAN)
+			-- Generate a check of the redefined frame of `a_feature' in `a_type';
+			-- if `a_read' check the read frame, otherwise the write frame.
+		local
+			l_parents: FIXED_LIST [CL_TYPE_A]
+			l_parent: CL_TYPE_A
+			l_old_version: FEATURE_I
+			l_clauses: LIST [E2B_ASSERT_ORIGIN]
+			l_proc: IV_PROCEDURE
+			l_impl: IV_IMPLEMENTATION
+			l_name: STRING
+			l_old_frame, l_new_frame: IV_FUNCTION_CALL
+			l_assert, l_assume: IV_ASSERT
+		do
+			set_context (a_feature, a_type)
+
+			if a_read then
+				l_clauses := contracts_of_current_feature.reads
+			else
+				l_clauses := contracts_of_current_feature.modifies
+			end
+
+				-- If `a_feature' has previous versions and some newly added modify clauses
+			if a_feature.assert_id_set /= Void and
+					across l_clauses as i some i.item.origin.class_id = a_feature.written_in end then
+
+					-- Set up the procedure		
+				l_name := name_translator.boogie_procedure_for_contract_check (current_feature, current_type)
+				create l_proc.make (l_name)
+				create l_impl.make (l_proc)
+				boogie_universe.add_declaration (l_proc)
+				boogie_universe.add_declaration (l_impl)
+				current_boogie_procedure := l_proc
+
+				add_argument_with_property ("Current", current_type, types.ref)
+				across arguments_of_current_feature as i loop
+					add_argument_with_property (i.item.name, i.item.type, i.item.boogie_type)
+				end
+
+				result_handlers.extend (agent handle_contract_validity_result (a_feature, ?, ?), l_name)
+
+					-- Add a check for each parent
+				create l_new_frame.make (name_translator.boogie_function_for_write_frame (current_feature, current_type), types.frame)
+				l_new_frame.add_argument (factory.global_heap)
+				across current_boogie_procedure.arguments as i loop
+					l_new_frame.add_argument (i.item.entity)
+				end
+				l_parents := a_feature.written_class.parents
+				from
+					l_parents.start
+				until
+					l_parents.after
+				loop
+					l_parent := l_parents.item.instantiated_in (current_type)
+					l_old_version := l_parent.base_class.feature_of_rout_id_set (current_feature.rout_id_set)
+					if attached l_old_version then
+						translation_pool.add_referenced_feature (l_old_version, l_parent)
+
+						create l_old_frame.make (name_translator.boogie_function_for_write_frame (l_old_version, l_parent), types.frame)
+						l_old_frame.add_argument (factory.global_heap)
+						across current_boogie_procedure.arguments as i loop
+							l_old_frame.add_argument (i.item.entity)
+						end
+
+						create l_assert.make (factory.function_call ("Frame#Subset", << l_new_frame, l_old_frame >>, types.bool))
+						if a_read then
+							l_assert.node_info.set_type ("read")
+						else
+							l_assert.node_info.set_type ("write")
+						end
+						l_assert.node_info.set_attribute ("rid", l_old_version.rout_id_set.first.out)
+						l_assert.node_info.set_attribute ("cid", l_parent.base_class.class_id.out)
+						l_impl.body.add_statement (l_assert)
+					end
+
+					l_parents.forth
+				end
+			end
+		end
+
 feature -- Translation: Implementation
 
 	translate_routine_implementation (a_feature: FEATURE_I; a_type: CL_TYPE_A)
@@ -1229,5 +1309,48 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
+
+	handle_contract_validity_result (a_feature: FEATURE_I; a_boogie_result: E2B_BOOGIE_PROCEDURE_RESULT; a_result_generator: E2B_RESULT_GENERATOR)
+			-- Handle Boogie result `a_boogie_result'.
+		local
+			l_success: E2B_SUCCESSFUL_VERIFICATION
+			l_failure: E2B_FAILED_VERIFICATION
+			l_error: E2B_DEFAULT_VERIFICATION_ERROR
+		do
+			if a_result_generator.has_validity_error (a_feature, a_feature.written_class) then
+				-- Ignore results of features with a validity error
+			elseif a_boogie_result.is_successful then
+				create l_success
+				l_success.set_class (a_feature.written_class)
+				l_success.set_feature (a_feature)
+				l_success.set_time (a_boogie_result.time)
+				l_success.set_verification_context ("frame")
+				a_result_generator.last_result.add_result (l_success)
+			elseif a_boogie_result.is_inconclusive then
+					-- TODO
+			elseif a_boogie_result.is_error then
+				create l_failure.make
+				l_failure.set_class (a_feature.written_class)
+				l_failure.set_feature (a_feature)
+				l_failure.set_verification_context ("frame")
+				across a_boogie_result.errors as i loop
+					check i.item.is_assert_error end
+					create l_error.make (l_failure)
+					l_error.set_boogie_error (i.item)
+					if i.item.attributes["type"] ~ "write" then
+						l_error.set_message ("The added write frame might not be a subset of the previous version $called_feature.")
+						l_failure.errors.extend (l_error)
+					elseif i.item.attributes["type"] ~ "read" then
+						l_error.set_message ("The read frame might not be a subset of the previous version $called_feature.")
+						l_failure.errors.extend (l_error)
+					else
+						a_result_generator.process_individual_error (i.item, l_failure)
+					end
+				end
+
+				a_result_generator.last_result.add_result (l_failure)
+			end
+		end
+
 
 end

@@ -95,6 +95,22 @@ feature -- Access
 			result_attached: attached Result
 		end
 
+	boogie_procedure_for_contract_check (a_feature: FEATURE_I; a_context_type: CL_TYPE_A): STRING
+			-- Name of the boogie procedure that encodes the consistence check of `a_feature's contracts.
+		require
+			a_feature_attached: attached a_feature
+			a_context_type_attached: attached a_context_type
+		local
+			l_type_name: STRING
+			l_feature_name: STRING
+		do
+			l_type_name := boogie_name_for_type (a_context_type)
+			l_feature_name := a_feature.feature_name_32.as_lower
+			Result := l_type_name + "." + l_feature_name + ".check"
+		ensure
+			result_attached: attached Result
+		end
+
 	boogie_function_precondition (a_function_name: STRING): STRING
 			-- Precondition predicate name for function named `a_function_name'.
 		require

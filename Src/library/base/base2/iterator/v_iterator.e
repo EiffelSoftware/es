@@ -139,7 +139,7 @@ feature -- Cursor movement
 
 	start
 			-- Go to the first position.
-		require else
+		require
 			modify_model (["index", "box"], Current)
 		deferred
 		ensure then
