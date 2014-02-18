@@ -32,6 +32,7 @@ feature {NONE} -- Implementation
 				-- TODO: decide where to initalize global state
 			create universe.make
 			boogie_universe_cell.put (universe)
+			helper.reset
 			translation_pool.reset
 			autoproof_errors.wipe_out
 			result_handlers.wipe_out

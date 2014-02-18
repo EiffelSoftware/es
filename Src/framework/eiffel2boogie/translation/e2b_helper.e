@@ -25,6 +25,14 @@ inherit
 	INTERNAL_COMPILER_STRING_EXPORTER
 		export {NONE} all end
 
+feature -- Cache control
+
+	reset
+			-- Reset cached data.
+		do
+			map_access_feature_cache.wipe_out
+		end
+
 feature -- General note helpers
 
 	class_note_values (a_class: CLASS_C; a_tag: STRING_32): ARRAYED_LIST [STRING_32]
@@ -212,17 +220,27 @@ feature -- Feature status helpers
 		local
 			l_feature: FEATURE_I
 		do
-			from
-				a_class.feature_table.start
-			until
-				Result /= Void or a_class.feature_table.after
-			loop
-				l_feature := a_class.feature_table.item_for_iteration
-				if function_for_logical (l_feature) ~ "[]" then
-					Result := l_feature
+			if map_access_feature_cache.has_key (a_class.class_id) then
+				Result := map_access_feature_cache.item (a_class.class_id)
+			else
+				from
+					a_class.feature_table.start
+				until
+					Result /= Void or a_class.feature_table.after
+				loop
+					l_feature := a_class.feature_table.item_for_iteration
+					if function_for_logical (l_feature) ~ "[]" then
+						Result := l_feature
+					end
+					a_class.feature_table.forth
 				end
-				a_class.feature_table.forth
+				map_access_feature_cache.put (Result, a_class.class_id)
 			end
+		end
+
+	map_access_feature_cache: HASH_TABLE [FEATURE_I, INTEGER]
+		once
+			create Result.make (50)
 		end
 
 	has_functional_representation (a_feature: FEATURE_I): BOOLEAN

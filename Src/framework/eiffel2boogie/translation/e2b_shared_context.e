@@ -76,4 +76,35 @@ feature {NONE} -- Implementation
 			create Result.put (Void)
 		end
 
+	timer: DT_SHARED_SYSTEM_CLOCK
+			-- Timer for debugging.
+		once
+			create Result
+		end
+
+	start_time: ARRAYED_STACK [DT_TIME]
+			-- Start time set by calling 'start'.
+		once
+			create Result.make (5)
+		end
+
+	start
+		local
+			l_time: DT_TIME
+		do
+			l_time := timer.system_clock.time_now
+			start_time.extend (l_time)
+		end
+
+	print_time
+		local
+			l_time: DT_TIME
+		do
+			l_time := start_time.item
+			start_time.remove
+			print (timer.system_clock.time_now.time_duration (l_time).millisecond_count)
+		end
+
+
+
 end
