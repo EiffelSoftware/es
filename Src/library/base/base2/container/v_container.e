@@ -191,9 +191,9 @@ feature -- Specification
 			status: ghost
 			explicit: contracts
 		require
-			is_wrapped
-			it.is_wrapped
-			it.target = Current
+			wrapped: is_wrapped
+			it_wrapped: it.is_wrapped
+			valid_target: it.target = Current
 			modify_model (["observers"], Current)
 			modify_model (["closed"], it)
 		do

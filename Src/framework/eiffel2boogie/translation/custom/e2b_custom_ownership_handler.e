@@ -304,12 +304,12 @@ feature -- Basic operations
 			l_new_type: CL_TYPE_A
 		do
 			l_old_version := a_origin_class.feature_named_32 (a_name)
-			l_new_version := a_type.base_class.feature_of_rout_id_set (l_old_version.rout_id_set)
-			l_new_type := helper.class_type_in_context (l_new_version.type, a_type.base_class, Void, a_type)
 			if l_old_version = Void then
 				helper.add_semantic_error (a_context_feature, messages.unknown_attribute (a_name, a_origin_class.name_in_upper), a_context_line_number)
 			else
-				check l_new_version /= Void end
+				l_new_version := a_type.base_class.feature_of_rout_id_set (l_old_version.rout_id_set)
+				check attached l_new_version end
+				l_new_type := helper.class_type_in_context (l_new_version.type, a_type.base_class, Void, a_type)
 				if translation_mapping.ghost_access.has (a_name) then
 					-- Handle built-in ANY attributes separately, since they are not really attributes.
 					-- Also they are all model, so nothing to check.
@@ -326,6 +326,5 @@ feature -- Basic operations
 					helper.add_semantic_error (a_context_feature, messages.unknown_attribute (a_name, a_origin_class.name_in_upper), a_context_line_number)
 				end
 			end
-
 		end
 end
