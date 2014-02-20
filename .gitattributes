@@ -4259,6 +4259,8 @@ Src/unstable/library/text/encryption/crypto/license.lic -text
 Src/unstable/library/text/encryption/crypto/tests/license.lic -text
 Src/web/support/esa_api/ecf-target-any_connector -text
 Src/web/support/esa_api/ecf-target-connector -text
+Src/web/support/esa_api/www/404.tpl -text
+Src/web/support/esa_api/www/406.tpl -text
 Src/web/support/esa_api/www/cj_items.tpl -text
 Src/web/support/esa_api/www/cj_reports.tpl -text
 Src/web/support/esa_api/www/cj_reports_detail.tpl -text
