@@ -4275,6 +4275,12 @@ Src/web/support/esa_api/www/optional_enhancement_js.tpl -text
 Src/web/support/esa_api/www/optional_styling_css.tpl -text
 Src/web/support/esa_api/www/reports.tpl -text
 Src/web/support/esa_api/www/reports_detail.tpl -text
+Src/web/support/esa_db/scripts/GetProblemReportsGuest.sql -text
+Src/web/support/esa_db/scripts/GetProblemReportsRowCountGuest.sql -text
+Src/web/support/esa_db/scripts/GetReportProblemInteractionsGuest.sql -text
+Src/web/support/esa_db/scripts/IsProblemReportVisubleGuest.sql -text
+Src/web/support/esa_db/scripts/Readme.txt -text
+Src/web/support/esa_db/scripts/TableRowCount.sql -text
 benchmarks/scoop/Tests1-6.xls -text
 benchmarks/scoop/scoop0001/LogParser.java -text
 benchmarks/scoop/scoop0001/compile.cmd -text
