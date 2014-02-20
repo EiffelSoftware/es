@@ -47,6 +47,9 @@ Successfully verified.
 F_OOO_SUBJECT_D.default_create (creator)
 Successfully verified.
 ======================================
+F_OOO_SUBJECT_D.default_create (frame)
+Successfully verified.
+======================================
 F_OOO_SUBJECT_D.update
 Successfully verified.
 ======================================
