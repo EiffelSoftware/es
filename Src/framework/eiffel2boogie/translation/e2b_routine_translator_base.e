@@ -282,7 +282,7 @@ feature -- Helper functions: contracts
 			l_objects_type: like translate_contained_expressions
 			l_name: STRING_32
 			l_type: CL_TYPE_A
-			l_feature, l_to_set: FEATURE_I
+			l_attr, l_to_set: FEATURE_I
 			l_boogie_type: IV_TYPE
 			l_field: IV_ENTITY
 			l_origin: CLASS_C
@@ -298,7 +298,6 @@ feature -- Helper functions: contracts
 						a_translator.set_origin_class (i.item.origin)
 						l_objects_type := translate_contained_expressions (l_call.parameters.i_th (2).expression, a_translator, True)
 						create l_fields.make
-						l_fields.compare_objects
 
 						if l_objects_type.expressions.first /= Void then
 							l_type := helper.class_type_in_context (l_objects_type.type, i.item.origin, current_feature, current_type)
@@ -324,9 +323,29 @@ feature -- Helper functions: contracts
 								current_feature,
 								helper.class_type_from_class (i.item.origin, current_type)).base_class
 							across l_fieldnames as f loop
-								l_field := (create {E2B_CUSTOM_OWNERSHIP_HANDLER}).field_from_string (f.item, l_type, l_origin, current_feature, i.item.clause.line_number, a_check_model)
-								if attached l_field then
-									l_fields.extend (l_field)
+								if a_check_model then
+									l_attr := l_origin.feature_named_32 (f.item)
+									if attached l_attr and then helper.flat_model_queries (l_origin).has (l_attr) then
+										across helper.replaced_model_queries (l_attr, l_origin, l_type.base_class) as m loop
+											l_field := helper.field_from_attribute (m.item, l_type)
+											if across l_fields as fi all not fi.item.same_expression (l_field) end then
+												l_fields.extend (l_field)
+											end
+										end
+										across helper.replacing_model_queries (l_attr, l_origin, l_type.base_class) as m loop
+											l_field := helper.field_from_attribute (m.item, l_type)
+											if across l_fields as fi all not fi.item.same_expression (l_field) end then
+												l_fields.extend (l_field)
+											end
+										end
+									else
+										helper.add_semantic_error (current_feature, messages.unknown_model (f.item, l_origin.name_in_upper), i.item.clause.line_number)
+									end
+								else
+									l_attr := helper.attribute_from_string (f.item, l_type, l_origin, current_feature, i.item.clause.line_number)
+									if attached l_attr then
+										l_fields.extend (helper.field_from_attribute (l_attr, l_type))
+									end
 								end
 							end
 						end

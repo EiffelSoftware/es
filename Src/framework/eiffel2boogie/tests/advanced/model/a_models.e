@@ -19,6 +19,13 @@ feature
 			z := 1 -- OK: z is non-model
 		end
 
+	foo1
+		require
+			modify_model (["x"], Current)
+		do
+			x := 1
+		end
+
 	bar
 		note
 			explicit: wrapping
@@ -47,6 +54,15 @@ feature
 				y := 1
 				wrap
 			end
+		end
+
+	bar_ok1
+		note
+			explicit: wrapping
+		require
+			modify_model (["x"], Current)
+		do
+			foo1
 		end
 
 	suspicious

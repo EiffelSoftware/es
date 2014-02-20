@@ -51,6 +51,9 @@ feature -- Validity error messages
 	unknown_model (a_fname, a_cname: STRING): STRING_32
 		do Result := locale.formatted_string ("Feature '$1' is not a model attribute of class '$2'.", a_fname, a_cname) end
 
+	invalid_model_replacement (a_fname, a_cname: STRING): STRING_32
+		do Result := locale.formatted_string ("Feature '$1' is a model of the parent class '$2' and thus cannot be a replacemnt model.", a_fname, a_cname) end
+
 	invalid_tag (a_tag, a_class_name: STRING): STRING_32
 		do Result := locale.formatted_string ("Filtered invariant of class '$2' lists invalid tag: $1", a_tag, a_class_name) end
 

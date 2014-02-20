@@ -22,6 +22,9 @@ inherit
 	SHARED_SERVER
 		export {NONE} all end
 
+	IV_SHARED_TYPES
+		export {NONE} all end
+
 	INTERNAL_COMPILER_STRING_EXPORTER
 		export {NONE} all end
 
@@ -243,6 +246,24 @@ feature -- Feature status helpers
 			create Result.make (50)
 		end
 
+	feature_with_string_note_value (a_class: CLASS_C; a_tag, a_value: STRING_32): FEATURE_I
+			-- Feature of class `a_class', which has a note where `a_tag' contain `a_value'.
+		local
+			l_feature: FEATURE_I
+		do
+			from
+				a_class.feature_table.start
+			until
+				Result /= Void or a_class.feature_table.after
+			loop
+				l_feature := a_class.feature_table.item_for_iteration
+				if string_feature_note_value (l_feature, a_tag) ~ a_value then
+					Result := l_feature
+				end
+				a_class.feature_table.forth
+			end
+		end
+
 	has_functional_representation (a_feature: FEATURE_I): BOOLEAN
 			-- Will a Boogie function be generated for `a_feature'?
 		do
@@ -351,6 +372,40 @@ feature -- Ownership helpers
 			Result := string_feature_note_value (a_feature, "guard")
 		end
 
+	attribute_from_string (a_name: STRING; a_type: CL_TYPE_A; a_origin_class: CLASS_C; a_context_feature: FEATURE_I; a_context_line_number: INTEGER): FEATURE_I
+			-- Attribute or built-in ghost access with name `a_name' defined in `a_origin_class' in type `a_type'.
+		local
+			l_old_version: FEATURE_I
+		do
+			l_old_version := a_origin_class.feature_named_32 (a_name)
+			if l_old_version = Void then
+				add_semantic_error (a_context_feature, messages.unknown_attribute (a_name, a_origin_class.name_in_upper), a_context_line_number)
+			else
+				Result := a_type.base_class.feature_of_rout_id_set (l_old_version.rout_id_set)
+				check attached Result end
+				if not l_old_version.is_attribute and not translation_mapping.ghost_access.has (a_name) then
+					add_semantic_error (a_context_feature, messages.unknown_attribute (a_name, a_origin_class.name_in_upper), a_context_line_number)
+				end
+			end
+		end
+
+	field_from_attribute (a_feature: FEATURE_I; a_context_type: CL_TYPE_A): IV_ENTITY
+			-- Boogie field entity that corresponds to attribute (or built-in ghost access) `a_feature' in `a_context_type'.
+		local
+			l_type: CL_TYPE_A
+		do
+			if translation_mapping.ghost_access.has (a_feature.feature_name_32) then
+				-- Handle built-in ANY attributes separately, since they are not really attributes.
+				create Result.make (a_feature.feature_name_32, types.field (translation_mapping.ghost_access_type (a_feature.feature_name_32)))
+			else
+				check a_feature.is_attribute end
+				l_type := class_type_in_context (a_feature.type, a_context_type.base_class, Void, a_context_type)
+				create Result.make (name_translator.boogie_procedure_for_feature (a_feature, a_context_type),
+					types.field (types.for_class_type (l_type)))
+				translation_pool.add_referenced_feature (a_feature, a_context_type)
+			end
+		end
+
 feature -- Model helpers
 
 	model_queries (a_class: CLASS_C): ARRAYED_LIST [STRING_32]
@@ -378,6 +433,64 @@ feature -- Model helpers
 						l_new_version := a_class.feature_of_rout_id_set (q.item.rout_id_set)
 						if not Result.has (l_new_version) then
 							Result.extend (l_new_version)
+						end
+					end
+				end
+			end
+		end
+
+	replaced_model_queries (a_feature: FEATURE_I; a_class, a_descendant: CLASS_C): ARRAYED_LIST [FEATURE_I]
+			-- All model queries represented by `a_feature' from `a_class'
+			-- in `a_class' and its ancestors,as seen from `a_descendant'.
+		require
+			attached a_class
+		local
+			l_rep_feature: FEATURE_I
+			l_rep_name: STRING_32
+		do
+			create Result.make (5)
+			if attached a_feature and then model_queries (a_class).has (a_feature.feature_name_32) then
+				Result.extend (a_descendant.feature_of_rout_id_set (a_feature.rout_id_set))
+				l_rep_name := string_feature_note_value (a_feature, "replaces")
+				if l_rep_name.is_empty then
+					l_rep_feature := a_feature
+				else
+					l_rep_feature := a_class.feature_named_32 (l_rep_name)
+				end
+
+				across a_class.parents_classes as c loop
+					across replaced_model_queries (c.item.feature_of_rout_id_set (l_rep_feature.rout_id_set), c.item, a_descendant) as q loop
+						if not Result.has (q.item) then
+							Result.extend (q.item)
+						end
+					end
+				end
+			end
+		end
+
+	replacing_model_queries (a_feature: FEATURE_I; a_class, a_descendant: CLASS_C): ARRAYED_LIST [FEATURE_I]
+			-- All model queries that represent `a_feature' from `a_class'
+			-- in `a_class' and its descendants down to `a_descendant',
+			-- as seen in `a_descendant'.
+		require
+			attached a_class
+			attached a_feature
+			model_queries (a_class).has (a_feature.feature_name_32)
+		local
+			l_rep_feature, l_new_version: FEATURE_I
+		do
+			create Result.make (5)
+			Result.extend (a_descendant.feature_of_rout_id_set (a_feature.rout_id_set))
+			across a_class.direct_descendants as d loop
+				if a_descendant.inherits_from (d.item) then
+					l_new_version := d.item.feature_of_rout_id_set (a_feature.rout_id_set)
+					l_rep_feature := feature_with_string_note_value (d.item, "replaces", l_new_version.feature_name_32)
+					if l_rep_feature = Void then
+						l_rep_feature := l_new_version
+					end
+					across replacing_model_queries (l_rep_feature, d.item, a_descendant) as q loop
+						if not Result.has (q.item) then
+							Result.extend (q.item)
 						end
 					end
 				end

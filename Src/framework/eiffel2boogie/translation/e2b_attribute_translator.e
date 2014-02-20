@@ -87,6 +87,9 @@ feature -- Basic operations
 				boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
 			end
 
+				-- Check if it replaces old models correctly
+			check_model_replacement
+
 				-- Add guard
 			generate_guard (l_class_type, l_attribute_name, l_boogie_type)
 
@@ -205,6 +208,25 @@ feature {NONE} -- Implementation
 				helper.add_semantic_error (a_guard_feature, messages.guard_feature_arg2, -1)
 			else
 				Result := True
+			end
+		end
+
+	check_model_replacement
+			-- For an immediate attribute with a "replaces" clause,
+			-- check that is didn't use to be a model query in any parent.
+		local
+			l_old_version: FEATURE_I
+			found: BOOLEAN
+		do
+			if current_feature.written_in = current_type.base_class.class_id and
+					not helper.string_feature_note_value (current_feature, "replaces").is_empty then
+				across current_type.base_class.parents_classes as c until found loop
+					l_old_version := c.item.feature_of_rout_id_set (current_feature.rout_id_set)
+					if attached l_old_version and then helper.flat_model_queries (c.item).has (l_old_version) then
+						helper.add_semantic_error (current_feature, messages.invalid_model_replacement (current_feature.feature_name_32, c.item.name_in_upper), -1)
+						found := True
+					end
+				end
 			end
 		end
 

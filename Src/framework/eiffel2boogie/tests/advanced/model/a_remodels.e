@@ -10,12 +10,12 @@ inherit
 		rename
 			x as xx,
 			y as yy,
-			bar_ok as bar_not_so_ok
+			bar_ok1 as bar_not_so_ok
 		redefine
 			foo,
+			foo1,
 			suspicious
 		end
-
 
 feature
 	a: BOOLEAN
@@ -37,8 +37,19 @@ feature
 			b := True -- Bad
 		end
 
+	foo1
+		require else
+			modify_model (["b"], Current)
+		do
+			xx := 1
+			z := 1
+			a := True
+			b := True
+		end
+
 	-- bar still fails as before
-	-- bar_not_so_ok now fails because its supplier foo now has a bigger frame
+	-- bar_ok still verifies becuase foo added model a, which replaces x
+	-- bar_not_so_ok now fails because its supplier foo1 now has a bigger frame
 
 	bad1
 		require
@@ -50,6 +61,15 @@ feature
 		require else
 			modify_model ("yy", Current) -- Bad: yy is outside of the parent's frame
 		do
+		end
+
+	new
+		note
+			explicit: wrapping
+		require
+			modify_model (["a", "yy"], Current)
+		do
+			foo
 		end
 
 invariant
