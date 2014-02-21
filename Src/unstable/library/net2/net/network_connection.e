@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {NETWORK_CONNECTION}."
-	author: ""
+	description: "A {NETWORK_CONNECTION} represents a network connection."
+	author: "Mischael Schill"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -12,9 +12,10 @@ create
 	connect_with_timeout,
 	make_endpoint
 
-
 feature {NONE} -- Initialization
 	make_endpoint (a_server: separate SERVER; a_use_separate_input: BOOLEAN)
+			-- Create a network connection that is an endpoint, i. e. it accepts a connection to a {SERVER}
+			-- If `a_use_separate_input' is True, the input stream will reside on a different processor.
 		require
 			a_server.is_listening
 		do
@@ -75,10 +76,12 @@ feature -- Access
 	peer_address: detachable NET_ADDRESS
 
 --	as_medium: NETWORK_MEDIUM
+		-- Use the connection with an {IO_MEDIUM} interface
 
 	socket: PR_TCP_SOCKET
 
 	separate_input: separate TCP_INPUT_STREAM
+		-- The input stream living on a separate processor
 
 	input: detachable TCP_INPUT_STREAM
 		do
@@ -100,17 +103,20 @@ feature -- Status report
 		end
 
 	is_endpoint: BOOLEAN
+			-- True if the connection is an endpoint
 		do
 			Result := not fd.is_default_pointer
 		end
 
 	use_separate_input: BOOLEAN
+			-- True if the input stream resides on a different processor
 		do
 			Result := not attached {INPUT_STREAM} separate_input
 		end
 
 feature -- Status setting
 	accept
+			-- Accept a connection. Endpoints can be reused.
 		require
 			is_endpoint
 		local

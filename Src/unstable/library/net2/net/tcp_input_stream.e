@@ -13,7 +13,7 @@ inherit
 create
 	make_from_socket
 
-create {NETWORK_CONNECTION, BUFFERED_TCP_INPUT_STREAM}
+create {NETWORK_CONNECTION}
 	make_from_socket_descriptor
 
 feature {NETWORK_CONNECTION} -- Initialization

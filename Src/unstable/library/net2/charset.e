@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CHARSET}."
-	author: ""
+	description: "{CHARSET} is an enumerator for character sets."
+	author: "Mischael Schill"
 	date: "$Date$"
 	revision: "$Revision$"
 

@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {NETWORK_MEDIUM}."
-	author: ""
+	description: "A {NETWORK_MEDIUM} provides an {IO_MEDIUM} interface for network connections. Not yet finished."
+	author: "Mischael Schill"
 	date: "$Date$"
 	revision: "$Revision$"
 

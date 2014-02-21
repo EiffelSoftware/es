@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {SERVER}."
-	author: ""
+	description: "{SERVER} represents a server sockets."
+	author: "Mischael Schill"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -38,23 +38,6 @@ feature -- Listening
 			socket.listen (a_backlog)
 		ensure
 			is_listening
-		end
-
-	accept
-		require
-			not is_closed
-			is_listening
-		do
-			create last_connection.make_endpoint (Current, True)
-		ensure
-			attached last_connection
-			last_connection /= old last_connection
-		end
-
-	last_connection: detachable separate NETWORK_CONNECTION
-
-	connected (a_connection: separate NETWORK_CONNECTION)
-		do
 		end
 
 feature -- Status query

@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {NET_ADDRESS}."
-	author: ""
+	description: "A {NET_ADDRESS} is basically an ip address."
+	author: "Mischael Schill"
 	date: "$Date$"
 	revision: "$Revision$"
 
