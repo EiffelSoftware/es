@@ -2103,7 +2103,7 @@ feature{NONE} -- Logging
 	precondition_reduction_message_type: STRING = "precondition_reduction"
 			-- Message type for precondition reduction.
 
-feature -- Objec state retrieval
+feature -- Object state retrieval
 
 	record_operand_states (a_request: AUT_CALL_BASED_REQUEST; a_before_execution: BOOLEAN)
 			-- Record states of operands defined in `a_request'.
@@ -2396,7 +2396,7 @@ invariant
 
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
