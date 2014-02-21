@@ -34,11 +34,10 @@ feature {NETWORK_CONNECTION} -- Initialization
 			socket = a_socket
 		end
 
-
 feature -- Status report
-	is_readable: BOOLEAN
+	is_closed: BOOLEAN
 		do
-			Result := socket.can_receive
+			Result := not socket.can_receive
 		end
 
 feature -- Status setting
@@ -48,7 +47,6 @@ feature -- Status setting
 		end
 
 feature -- Input
-
 	read_to_pointer (p: POINTER; nb_bytes: INTEGER)
 		do
 			socket.receive_to_pointer (p, nb_bytes, socket.pr_interval_no_timeout)

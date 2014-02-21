@@ -9,6 +9,8 @@ class
 
 inherit
 	INPUT_STREAM
+		
+		
 
 create
 	open
@@ -23,9 +25,9 @@ feature -- Access
 	fd: PR_FILE_DESCRIPTOR
 
 feature -- Status report
-	is_readable: BOOLEAN
+	is_closed: BOOLEAN
 		do
-			Result := fd.is_readable
+			Result := not fd.is_readable
 		end
 
 feature -- Status setting
@@ -35,9 +37,13 @@ feature -- Status setting
 		end
 
 feature -- Basic operation
+
 	read_to_pointer (a_ptr: POINTER; a_count: INTEGER)
 		do
 			fd.read_to_pointer (a_ptr, a_count)
 			bytes_read := fd.bytes_read
+			if bytes_read = 0 then
+				close
+			end
 		end
 end

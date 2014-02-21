@@ -9,6 +9,8 @@ class
 
 inherit
 	OUTPUT_STREAM
+		
+		
 
 create
 	open,
@@ -36,9 +38,9 @@ feature -- Access
 
 feature -- Status report
 
-	is_writable: BOOLEAN
+	is_closed: BOOLEAN
 		do
-			Result := fd.is_writable
+			Result := not fd.is_writable
 		end
 
 feature -- Status setting

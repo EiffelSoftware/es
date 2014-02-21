@@ -235,8 +235,6 @@ feature -- Status setting
 		end
 
 	close
-		require
-			not is_closed
 		local
 			l_dummy: INTEGER
 		do
@@ -254,8 +252,6 @@ feature -- Status setting
 
 	detach
 		-- Detach socket from Eiffel, leaving the socket perpetually open.
-		require
-			not is_closed
 		do
 			create pr_fd
 			can_receive := False

@@ -22,9 +22,9 @@ feature {NETWORK_CONNECTION} -- Initialization
 		end
 
 feature -- Status report
-	is_writable: BOOLEAN
+	is_closed: BOOLEAN
 		do
-			Result := socket.can_send
+			Result := not socket.can_send
 		end
 
 feature -- Status setting
@@ -44,11 +44,12 @@ feature -- Output
 				socket.send_from_pointer (p.item, nb_bytes, socket.pr_interval_no_timeout)
 				i := socket.bytes_sent
 			until
-				i = nb_bytes or not is_writable
+				i = nb_bytes or is_closed
 			loop
 				socket.send_from_pointer (p.item + i, nb_bytes - i, socket.pr_interval_no_timeout)
 				i := i + socket.bytes_sent
 			end
+			bytes_written := i
 		end
 
 feature {NONE} -- Implementation		

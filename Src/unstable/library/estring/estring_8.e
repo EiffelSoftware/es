@@ -8,30 +8,28 @@ expanded class
 	ESTRING_8
 
 inherit
-
---	READABLE_STRING_GENERAL
---		rename
---			item as item_32
---		undefine
---			default_create
---		redefine
---			is_immutable,
---			out,
---			--is_equal,
---			to_string_32,
---			to_string_8
---		end
-
-	READABLE_INDEXABLE[CHARACTER_8]
-		undefine
+	READABLE_STRING_GENERAL
+		rename
+			item as item_32
+		export {NONE}
+			make,
+			capacity,
+			new_string
+		redefine
+			valid_index,
+			hash_code,
+			starts_with,
+--			split,
 			default_create,
-			is_equal,
+			is_immutable,
 			out,
-			copy
+			is_equal,
+			to_string_32,
+			to_string_8
 		end
 
-	HASHABLE
-		undefine
+	READABLE_INDEXABLE[CHARACTER_8]
+		redefine
 			default_create,
 			is_equal,
 			out
@@ -49,7 +47,6 @@ create
 	make_from_area
 
 convert
---	make_from_string_general ({READABLE_STRING_GENERAL}),
 	make_from_string_8 ({STRING_8}),
 	make_from_string_32 ({STRING_32}),
 	to_string_8: {STRING_8},
@@ -58,6 +55,12 @@ convert
 feature {NONE} -- Initialization
 	default_create
 		do
+		end
+
+	make (n: INTEGER)
+		-- Not useful, therefore not implemented
+		do
+			check false end
 		end
 
 	make_from_separate (a_string: separate READABLE_STRING_GENERAL)
@@ -199,6 +202,12 @@ feature -- Access
 			($Result).memory_copy (area + (i - 1), 1)
 		end
 
+	code (i: INTEGER): NATURAL_32
+		do
+			Result := item (i).code.as_natural_32
+		end
+
+
 feature -- Status report
 
 	is_immutable: BOOLEAN
@@ -243,9 +252,9 @@ feature -- Status report
 	is_boolean: BOOLEAN
 			-- Does `Current' represent a BOOLEAN?
 		local
-			l: like to_lower
+			l: like as_lower
 		do
-			l := to_lower
+			l := as_lower
 			Result := (l.is_equal("true") or
 				l.is_equal("false"))
 		end
@@ -260,6 +269,11 @@ feature -- Measurement
 
 	count: INTEGER
 
+	capacity: INTEGER
+		do
+			Result := count
+		end
+
 	index_set: INTEGER_INTERVAL
 			-- Range of acceptable indexes
 		do
@@ -268,19 +282,76 @@ feature -- Measurement
 
 	hash_code: INTEGER
 		do
-			Result := calculate_hash (area, count)
+			Result := calculate_hash (area, 4 * count)
 		end
 
 feature -- Comparison
 
---	is_less alias "<" (a_other: like Current): BOOLEAN
---		local
---			l_string1, l_string2: like area
---		do
---			l_string1 := area
---			l_string2 := a_other.area
---			Result := l_string1 < l_string2
---		end
+	substring_index_in_bounds (other: READABLE_STRING_GENERAL; start_pos, end_pos: INTEGER): INTEGER
+			-- Position of first occurrence of `other' at or after `start_pos'
+			-- and to or before `end_pos';
+			-- 0 if none.
+		local
+			l_pos, l_other_pos, l_other_count: INTEGER
+		do
+			l_other_count := other.count
+			from
+				l_pos := start_pos
+				Result := 0
+				l_other_pos := 1
+			until
+				l_pos > end_pos or l_other_pos > l_other_count
+			loop
+				if item(l_pos) = other[l_other_pos] then
+					if Result = 0 then
+						Result := l_pos
+					end
+					l_other_pos := l_other_pos + 1
+				else
+					Result := 0
+					l_other_pos := 1
+				end
+				l_pos := l_pos + 1
+			end
+			if l_other_pos <= l_other_count then
+				Result := 0
+			end
+		end
+
+	substring_index (other: READABLE_STRING_GENERAL; start_index: INTEGER): INTEGER
+			-- Index of first occurrence of other at or after start_index;
+			-- 0 if none
+		do
+			Result := substring_index_in_bounds (other, start_index, count)
+		end
+
+	is_less alias "<" (a_other: like Current): BOOLEAN
+		local
+			i: INTEGER
+			c1, c2: CHARACTER_8
+			break: BOOLEAN
+		do
+			from
+				i := 1
+			until
+				i > count or else i > a_other.count or else
+					item (i) /= a_other.item (i)
+			loop
+				i := i + 1
+			end
+
+			if count = 0 and a_other.count = 0 then
+				Result := False
+			elseif i > count and i > a_other.count then
+				Result := item (i - 1) < a_other.item (i - 1)
+			elseif i > count then
+				Result := True
+			elseif i > a_other.count then
+				Result := False
+			else
+				Result := item (i) < a_other.item (i)
+			end
+		end
 
 	is_equal (a_other: like Current): BOOLEAN
 		local
@@ -294,15 +365,71 @@ feature -- Comparison
 			end
 		end
 
+	starts_with (a_other: READABLE_STRING_GENERAL): BOOLEAN
+		local
+			i: INTEGER
+		do
+			Result := a_other.count <= count
+			from
+				i := 1
+			until
+				i > a_other.count or i > count or not Result
+			loop
+				Result := a_other[i] = item(i)
+				i := i + 1
+			end
+		end
+
+	fuzzy_index (other: READABLE_STRING_GENERAL; start: INTEGER; fuzz: INTEGER): INTEGER
+			-- Position of first occurrence of `other' at or after `start'
+			-- with 0..`fuzz' mismatches between the string and `other'.
+			-- 0 if there are no fuzzy matches
+		local
+			l_outer_pos, l_pos, l_other_pos, l_count, l_fuzz_count, l_other_count: INTEGER
+		do
+			l_other_count := other.count
+			l_count := count
+
+			from
+				l_outer_pos := start
+			until
+				l_outer_pos > l_count + l_other_count or Result > 0
+			loop
+				from
+					l_pos := l_outer_pos
+					Result := l_pos
+					l_other_pos := 1
+					l_fuzz_count := 0
+				until
+					l_pos > l_count or l_other_pos > l_other_count or Result = 0
+				loop
+					if item(l_pos) = other[l_other_pos] then
+						l_other_pos := l_other_pos + 1
+					else
+						l_fuzz_count := l_fuzz_count + 1
+						if l_fuzz_count > fuzz then
+							Result := 0
+						end
+					end
+					l_pos := l_pos + 1
+				end
+
+				if l_other_pos <= l_other_count then
+					Result := 0
+				end
+				l_outer_pos := l_outer_pos + 1
+			end
+		end
+
 feature -- Conversion
 
-	to_lower: like Current
+	as_lower: like Current
 			-- New object with all letters in lower case.
 		do
 			create Result.make_as_lower (Current)
 		end
 
-	to_upper: like Current
+	as_upper: like Current
 			-- New object with all letters in upper case
 		do
 			create Result.make_as_upper (Current)
@@ -343,38 +470,38 @@ feature -- Conversion
 			create Result.make_by_pointer_and_count (area, count)
 		end
 
-	split (a_splitter: CHARACTER_8): ARRAY[ESTRING_8]
-		local
-			i, n, l, j: INTEGER
-		do
-			from
-				i := 1
-				n := 1
-			until
-				i > count
-			loop
-				if item (i) = a_splitter then
-					n := n + 1
-				end
-				i := i + 1
-			end
-			create Result.make_filled (create {ESTRING_8}, 1, n)
-			from
-				i := 1
-				l := 1
-				j := 1
-			until
-				i > count
-			loop
-				if item (i) = a_splitter then
-					Result[j] := substring (l, i-1)
-					l := i + 1
-					j := j + 1
-				end
-				i := i + 1
-			end
-			Result[j] := substring (l, i-1)
-		end
+--	split (a_splitter: CHARACTER_32): LIST[ESTRING_8]
+--		local
+--			i, n, l, j: INTEGER
+--		do
+--			from
+--				i := 1
+--				n := 1
+--			until
+--				i > count
+--			loop
+--				if item (i) = a_splitter then
+--					n := n + 1
+--				end
+--				i := i + 1
+--			end
+--			create {ARRAYED_LIST[ESTRING_8]}Result.make (n)
+--			from
+--				i := 1
+--				l := 1
+--				j := 1
+--			until
+--				i > count
+--			loop
+--				if item (i) = a_splitter then
+--					Result[j] := substring (l, i-1)
+--					l := i + 1
+--					j := j + 1
+--				end
+--				i := i + 1
+--			end
+--			Result[j] := substring (l, i-1)
+--		end
 
 	out: STRING_8
 		do
@@ -397,6 +524,81 @@ feature -- Element change
 			create Result.make_from_area (l_area)
 		end
 
+
+	trim: ESTRING_8
+		-- Returns a substring where all the leading and trailing whitespace is removed
+		local
+			s, e: INTEGER
+			c: CHARACTER_8
+		do
+			if count = 0 then
+				Result := Current
+			elseif count = 1 then
+				c := item (1)
+				if not (c = ' ' or c = '%T' or c = '%N') then
+					Result := Current
+				end
+			else
+				c := item (1)
+				if not (c = ' ' or c = '%T' or c = '%N' or c = '%R') then
+					c := item (count)
+					if not (c = ' ' or c = '%T' or c = '%N') then
+						Result := Current
+					end
+				else
+					from
+						s := 1
+						c := item (s)
+					until
+						s = count or not (c = ' ' or c = '%T' or c = '%N' or c = '%R')
+					loop
+						s := s + 1
+						c := item (s)
+					end
+					from
+						e := count
+						c := item (e)
+					until
+						e = 1 or not (c = ' ' or c = '%T' or c = '%N' or c = '%R')
+					loop
+						e := e - 1
+						c := item (e)
+					end
+					if e >= s then
+						Result := substring (s, e)
+					end
+				end
+
+			end
+		end
+
+	replace (a_char, a_replacement: CHARACTER_8): ESTRING_8
+			-- Replace every occurence of a_char with a_replacement
+		local
+			i: INTEGER
+			l_area: MANAGED_POINTER
+			c: CHARACTER_8
+		do
+			if has (a_char) then
+				from
+					i := 1
+					create l_area.make (count)
+				until
+					i > count
+				loop
+					c := item (i)
+					if c = a_char then
+						l_area.put_character (a_replacement, i - 1)
+					else
+						l_area.put_character (c, i - 1)
+					end
+				end
+				create Result.make_from_area (l_area)
+			else
+				Result := Current
+			end
+		end
+
 feature -- Duplication
 
 	substring (start_index, end_index: INTEGER): like Current
@@ -406,71 +608,17 @@ feature -- Duplication
 			create Result.make_substring(Current, start_index, end_index)
 		end
 
---	copy (a_other: like Current)
---		do
---			count := a_other.count
---			separate_area := a_other.separate_area
---			area := a_other.area
---		end
-
 feature {ESTRING_8} -- Implementation
-	wrapper (a: detachable separate STRING_8): STRING_8
-		external
-			"C inline"
-		alias
-			"return eif_access($a);"
+	new_string (n: INTEGER): like Current
+			-- Not useful, not implemented
+		do
 		end
 
---	fast_copy (a: like Current): STRING_8
---		external
---			"C inline use <string.h>"
---		alias
---			"{
---				EIF_OBJECT separate_area = eif_protect (eif_attribute (eif_access($a), "separate_area", EIF_REFERENCE, 0));
---				EIF_INTEGER count = eif_attribute (eif_access($a), "count", EIF_REFERENCE, 0));
---				EIF_OBJECT area = eif_protect (eif_attribute (eif_access(separate_area), "area", EIF_REFERENCE, 0));
---        		EIF_POINTER addr1 = eif_attribute (eif_access (area), "base_address", EIF_POINTER, 0);
---				EIF_POINTER addr2 = eif_attribute (eif_access ($b), "base_address", EIF_POINTER, 0);
---				memcpy (addr2, addr1, $n);
---				EIF_OBJECT str = eif_protect (eif_string())
---				eif_wean (area);
---				eif_wean (separate_area);
---				return eif_string;
---			}"
---		end
-
-
-	fast_copy (a: like Current; b: SPECIAL[CHARACTER_8]; n: INTEGER)
-		external
-			"C inline use <string.h>, <stdio.h>"
-		alias
-			"{
-				EIF_REFERENCE separate_area_ref = eif_attribute (eif_access($a), "separate_area", EIF_REFERENCE, 0);
-				EIF_OBJECT separate_area = eif_protect (separate_area_ref);
-				memcpy (eif_access($b), eif_access(separate_area), $n);
-				RT_SPECIAL_COUNT(eif_access($b)) = RT_SPECIAL_COUNT(eif_access($a));
-				eif_wean (separate_area);
-			}"
+	string_searcher: ESTRING_SEARCHER
+			-- Facilities to search string in another string.
+		do
+			create Result.make
 		end
-
-
-
---	fast_copy (a: detachable separate SPECIAL[CHARACTER_8]; b: SPECIAL[CHARACTER_8]; n: INTEGER)
---		external
---			"C inline use <string.h>, <stdio.h>"
---		alias
---			"{
---				memcpy (eif_access($b), eif_access($a), $n);
---				RT_SPECIAL_COUNT(eif_access($b)) = RT_SPECIAL_COUNT(eif_access($a));
---			}"
---		end
-
---				EIF_OBJECT area = eif_protect (eif_attribute ($a, "area", EIF_REFERENCE, 0));
---        		EIF_POINTER addr1 = eif_attribute (eif_access (area), "base_address", EIF_POINTER, 0);
---				EIF_POINTER addr2 = eif_attribute (eif_access ($b), "base_address", EIF_POINTER, 0);
---				memcpy (addr2, addr1, $n);
---				eif_wean (area);
-
 
 	separate_area: detachable separate MANAGED_POINTER
 
@@ -483,7 +631,7 @@ feature {ESTRING_8} -- Implementation
 
 	calculate_hash (a_str: POINTER; a_count: INTEGER): INTEGER
 		external
-			"C inline"
+			"C inline use <math.h>"
 		alias
 			"{
 		    	unsigned char *str = $a_str;
@@ -494,8 +642,9 @@ feature {ESTRING_8} -- Implementation
 		        for (i = 0; i < $a_count; i++)
 		            hash = ((hash << 5) + hash) + c;
 
-		        return hash;
+		        return abs(hash);
 			}"
 		end
+
 
 end

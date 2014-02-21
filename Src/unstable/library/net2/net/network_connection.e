@@ -78,19 +78,19 @@ feature -- Access
 
 	socket: PR_TCP_SOCKET
 
-	separate_input: separate BUFFERED_TCP_INPUT_STREAM
+	separate_input: separate TCP_INPUT_STREAM
 
-	input: detachable BUFFERED_TCP_INPUT_STREAM
+	input: detachable TCP_INPUT_STREAM
 		do
-			if attached {BUFFERED_TCP_INPUT_STREAM} separate_input as i then
+			if attached {TCP_INPUT_STREAM} separate_input as i then
 				Result := i
 			end
 		ensure
-			attached Result = attached {BUFFERED_TCP_INPUT_STREAM} separate_input
+			attached Result = attached {TCP_INPUT_STREAM} separate_input
 			attached Result implies Result = separate_input
 		end
 
-	output: BUFFERED_TCP_OUTPUT_STREAM
+	output: TCP_OUTPUT_STREAM
 
 feature -- Status report
 	is_closed: BOOLEAN
@@ -106,7 +106,7 @@ feature -- Status report
 
 	use_separate_input: BOOLEAN
 		do
-			Result := not attached {BUFFERED_TCP_INPUT_STREAM} separate_input
+			Result := not attached {INPUT_STREAM} separate_input
 		end
 
 feature -- Status setting
@@ -126,7 +126,6 @@ feature -- Status setting
 	close
 			-- Flushes the output and then closes the connection.
 		do
-			output.flush
 			output.close
 		end
 
@@ -134,10 +133,8 @@ feature {NONE} -- Implementation
 	fd: POINTER
 	address_family: NATURAL_16
 
-	init_sockets (a_in: separate BUFFERED_TCP_INPUT_STREAM)
+	init_sockets (a_in: separate TCP_INPUT_STREAM)
 		do
-			a_in.clear
-			output.clear
 			a_in.make_from_socket_descriptor (socket.pr_fd, socket.address_family)
 			output.make_from_socket(socket)
 		end

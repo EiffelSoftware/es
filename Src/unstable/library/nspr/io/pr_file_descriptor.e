@@ -187,6 +187,10 @@ feature -- Input
 			else
 				bytes_read := l_amount
 			end
+
+			if l_amount = 0 then
+				close
+			end
 		ensure
 			bytes_read <= a_count
 		end
@@ -226,9 +230,9 @@ feature {NONE} -- Implementation
 			if not fd.is_default_pointer then
 				l_status := c.pr_close (fd)
 				create fd
-				is_readable := False
-				is_writable := False
 			end
+			is_readable := False
+			is_writable := False
 		end
 
 end
