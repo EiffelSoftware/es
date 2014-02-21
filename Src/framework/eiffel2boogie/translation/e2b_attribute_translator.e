@@ -215,16 +215,25 @@ feature {NONE} -- Implementation
 			-- For an immediate attribute with a "replaces" clause,
 			-- check that is didn't use to be a model query in any parent.
 		local
-			l_old_version: FEATURE_I
+			l_old_version, l_replaced: FEATURE_I
 			found: BOOLEAN
 		do
-			if current_feature.written_in = current_type.base_class.class_id and
-					not helper.string_feature_note_value (current_feature, "replaces").is_empty then
-				across current_type.base_class.parents_classes as c until found loop
-					l_old_version := c.item.feature_of_rout_id_set (current_feature.rout_id_set)
-					if attached l_old_version and then helper.flat_model_queries (c.item).has (l_old_version) then
-						helper.add_semantic_error (current_feature, messages.invalid_model_replacement (current_feature.feature_name_32, c.item.name_in_upper), -1)
-						found := True
+			if current_feature.written_in = current_type.base_class.class_id then
+				across helper.feature_note_values (current_feature, "replaces") as f loop
+					l_replaced := current_type.base_class.feature_named_32 (f.item)
+					if attached l_replaced then
+						across current_type.base_class.parents_classes as c until found loop
+							l_old_version := c.item.feature_of_rout_id_set (current_feature.rout_id_set)
+								-- If both `current_feature' and `l_replaced' are model queries of `c.item',
+								-- this will cause child's model frames to be bigger than parent's
+							if attached l_old_version and then
+									(helper.is_model_query (c.item, l_old_version) and helper.is_model_query (c.item, l_replaced)) then
+								helper.add_semantic_error (current_feature, messages.invalid_model_replacement (current_feature.feature_name_32, c.item.name_in_upper), -1)
+								found := True
+							end
+						end
+					else
+						helper.add_semantic_error (current_feature, messages.unknown_model (f.item, current_type.base_class.name_in_upper), -1)
 					end
 				end
 			end

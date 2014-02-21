@@ -325,7 +325,7 @@ feature -- Helper functions: contracts
 							across l_fieldnames as f loop
 								if a_check_model then
 									l_attr := l_origin.feature_named_32 (f.item)
-									if attached l_attr and then helper.flat_model_queries (l_origin).has (l_attr) then
+									if attached l_attr and then helper.is_model_query (l_origin, l_attr) then
 										across helper.replaced_model_queries (l_attr, l_origin, l_type.base_class) as m loop
 											l_field := helper.field_from_attribute (m.item, l_type)
 											if across l_fields as fi all not fi.item.same_expression (l_field) end then

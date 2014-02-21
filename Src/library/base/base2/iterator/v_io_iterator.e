@@ -8,10 +8,22 @@ deferred class
 
 inherit
 	V_ITERATOR [G]
+		redefine
+			index
+		end
 
 	V_OUTPUT_STREAM [G]
 		undefine
 			is_equal
+		end
+
+feature -- Measurement
+
+	index: INTEGER
+			-- Current position.
+		note
+			replaces: off_
+		attribute
 		end
 
 feature -- Replacement
@@ -35,7 +47,7 @@ feature -- Replacement
 		note
 			explicit: wrapping
 		require else
-			modify_model (["sequence", "index", "box"], Current)
+			modify_model (["sequence", "index"], Current)
 		do
 			check inv end
 			put (v)

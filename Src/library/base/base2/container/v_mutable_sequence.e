@@ -37,7 +37,7 @@ feature -- Replacement
 			explicit: wrapping
 		require
 			has_index: has_index (i)
-			modify_model (["map", "bag", "observers"], Current)
+			modify_model (["map", "observers"], Current)
 		local
 			it: V_MUTABLE_SEQUENCE_ITERATOR [G]
 		do
@@ -56,7 +56,7 @@ feature -- Replacement
 		require
 			has_index_one: has_index (i1)
 			has_index_two: has_index (i2)
-			modify_model (["map", "bag", "observers"], Current)
+			modify_model (["map", "observers"], Current)
 		local
 			v: G
 		do
@@ -76,7 +76,7 @@ feature -- Replacement
 			l_not_too_small: l >= lower
 			u_not_too_large: u <= upper
 			l_not_too_large: l <= u + 1
-			modify_model (["map", "bag", "observers"], Current)
+			modify_model (["map", "observers"], Current)
 		local
 			it: V_MUTABLE_SEQUENCE_ITERATOR [G]
 			j: INTEGER
@@ -86,15 +86,15 @@ feature -- Replacement
 				it := at (l)
 				j := l
 			invariant
-				j = lower + it.index - 1
+				j = lower_ + it.index - 1
 				l <= j and j <= u + 1
 				map.domain ~ map.domain.old_
 				across map.domain as i all map [i.item] = if l <= i.item and i.item < j then v else map.old_ [i.item] end end
 				it.is_wrapped
 				it.inv
 				is_wrapped
-				modify_model (["index", "box", "sequence"], it)
-				modify_model (["map", "bag"], Current)
+				modify_model (["index", "sequence"], it)
+				modify_model ("map", Current)
 			until
 				j > u
 			loop
@@ -120,7 +120,7 @@ feature -- Replacement
 			l_not_too_small: l >= lower
 			u_not_too_large: u <= upper
 			l_not_too_large: l <= u + 1
-			modify_model (["map", "bag", "observers"], Current)
+			modify_model (["map", "observers"], Current)
 		do
 			fill (({G}).default, l, u)
 		ensure
@@ -142,8 +142,8 @@ feature -- Replacement
 			other_first_not_too_large: other_first <= other_last + 1
 			index_not_too_small: index >= lower
 			enough_space: upper - index >= other_last - other_first
-			modify_model (["map", "bag", "observers"], Current)
-			modify_model (["observers"], other)
+			modify_model (["map", "observers"], Current)
+			modify_model ("observers", other)
 		local
 			other_it: V_SEQUENCE_ITERATOR [G]
 			it: V_MUTABLE_SEQUENCE_ITERATOR [G]
@@ -155,8 +155,8 @@ feature -- Replacement
 				other_it := other.at (other_first)
 				it := at (index)
 			invariant
-				it.index = j + index - lower
-				other_it.index = j + other_first - other.lower
+				it.index = j + index - lower_
+				other_it.index = j + other_first - other.lower_
 				1 <= j and j <= n + 1
 				map.domain ~ map.domain.old_
 				across map.domain as i all map [i.item] = if index <= i.item and i.item < index + j - 1
@@ -166,9 +166,9 @@ feature -- Replacement
 				is_wrapped and other.is_wrapped
 				it.inv
 				other_it.inv
-				modify_model (["index", "box", "sequence"], it)
-				modify_model (["index", "box"], other_it)
-				modify_model (["map", "bag"], Current)
+				modify_model (["index", "sequence"], it)
+				modify_model ("index", other_it)
+				modify_model ("map", Current)
 			until
 				j > n
 			loop
@@ -190,34 +190,12 @@ feature -- Replacement
 			other_observers_restored: other.observers ~ old other.observers
 		end
 
---	sort (order: PREDICATE [ANY, TUPLE [G, G]])
---			-- Sort elements in `order' left to right.
---		note
---			modify: map
---		require
---			order_exists: order /= Void
---			order_has_two_args: order.open_count = 2
---			--- order_is_total: order.precondition |=| True
---			--- order_is_total_order: is_total_order (order)
---		do
---			quick_sort (lower, upper, order)
---		ensure
---			map_domain_effect: map.domain |=| old map.domain
---			map_effect_short: map.count < 2 implies map |=| old map
---			map_effect_long: map.count >= 2 implies
---				bag |=| old bag and
---				(map.domain / upper).for_all (agent (i: INTEGER; o: PREDICATE [ANY, TUPLE [G, G]]): BOOLEAN
---					do
---						Result := o.item ([map [i], map [i + 1]])
---					end (?, order))
---		end
-
 	reverse
 			-- Reverse the order of elements.
 		note
 			explicit: wrapping
 		require
-			modify_model (["map", "bag", "observers"], Current)
+			modify_model (["map", "observers"], Current)
 		local
 			j, k: INTEGER
 			l, u: INTEGER
@@ -233,12 +211,12 @@ feature -- Replacement
 				l <= j and j <= k + 1 and k <= u
 				k = l + u - j
 				across j |..| k as i all map.domain [i.item] and then map [i.item] = map.old_ [i.item] end
-				across lower |..| (j - 1) as i all map.domain [i.item] and then map [i.item] = map.old_ [l + u - i.item] end
-				across (k + 1) |..| upper as i all map.domain [i.item] and then map [i.item] = map.old_ [l + u - i.item] end
+				across lower_ |..| (j - 1) as i all map.domain [i.item] and then map [i.item] = map.old_ [l + u - i.item] end
+				across (k + 1) |..| upper_ as i all map.domain [i.item] and then map [i.item] = map.old_ [l + u - i.item] end
 				is_wrapped
 				observers ~ observers.old_
-				l = lower
-				u = upper
+				l = lower_
+				u = upper_
 			until
 				j >= k
 			loop
@@ -248,57 +226,10 @@ feature -- Replacement
 			end
 		ensure
 			map_domain_effect: map.domain ~ old map.domain
-			map_effect: across map.domain as i all map [i.item] = (old map) [lower + upper - i.item] end
+			map_effect: across map.domain as i all map [i.item] = (old map) [lower_ + upper_ - i.item] end
 			observers_restored: observers ~ old observers
 		end
 
---feature {NONE} -- Implementation
-
---	quick_sort (left, right: INTEGER; order: PREDICATE [ANY, TUPLE [G, G]])
---			-- Sort element in index range [`left', `right'] in `order' left to right.
---		require
---			in_range: right > left implies has_index (left) and has_index (right)
---			order_exists: order /= Void
---			order_has_two_args: order.open_count = 2
---			--- is_total_order: is_total_order (order)
---		local
---			pivot, l, r: INTEGER
---		do
---			if right > left then
---				from
---					l := left
---					r := right
---					pivot := (left + right) // 2
---				until
---					l > pivot or r < pivot
---				loop
---					from
---					until
---						order.item ([item (pivot), item (l)]) or l > pivot
---					loop
---						l := l + 1
---					end
---					from
---					until
---						order.item ([item (r), item (pivot)]) or r < pivot
---					loop
---						r := r - 1
---					end
---					swap (l, r)
---					l := l + 1
---					r := r - 1
---					if l - 1 = pivot then
---						r := r + 1
---						pivot := r
---					elseif r + 1 = pivot then
---						l := l - 1
---						pivot := l
---					end
---				end
---				quick_sort (left, pivot - 1, order)
---				quick_sort (pivot + 1, right, order)
---			end
---		end
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

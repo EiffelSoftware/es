@@ -241,11 +241,6 @@ feature -- Feature status helpers
 			end
 		end
 
-	map_access_feature_cache: HASH_TABLE [FEATURE_I, INTEGER]
-		once
-			create Result.make (50)
-		end
-
 	feature_with_string_note_value (a_class: CLASS_C; a_tag, a_value: STRING_32): FEATURE_I
 			-- Feature of class `a_class', which has a note where `a_tag' contain `a_value'.
 		local
@@ -257,7 +252,7 @@ feature -- Feature status helpers
 				Result /= Void or a_class.feature_table.after
 			loop
 				l_feature := a_class.feature_table.item_for_iteration
-				if string_feature_note_value (l_feature, a_tag) ~ a_value then
+				if feature_note_values (l_feature, a_tag).has (a_value) then
 					Result := l_feature
 				end
 				a_class.feature_table.forth
@@ -419,49 +414,61 @@ feature -- Model helpers
 		local
 			l_new_version: FEATURE_I
 		do
-			create Result.make (5)
-			if a_class.class_id = system.any_id then
-				across translation_mapping.ghost_access as m loop
-					Result.extend (a_class.feature_named_32 (m.item))
-				end
+			if flat_model_cache.has_key (a_class.class_id) then
+				Result := flat_model_cache [a_class.class_id]
 			else
-				across model_queries (a_class) as m loop
-					Result.extend (a_class.feature_named_32 (m.item))
-				end
-				across a_class.parents_classes as c loop
-					across flat_model_queries (c.item) as q loop
-						l_new_version := a_class.feature_of_rout_id_set (q.item.rout_id_set)
-						if not Result.has (l_new_version) then
-							Result.extend (l_new_version)
+				create Result.make (5)
+				if a_class.class_id = system.any_id then
+					across translation_mapping.ghost_access as m loop
+						Result.extend (a_class.feature_named_32 (m.item))
+					end
+				else
+					across model_queries (a_class) as m loop
+						Result.extend (a_class.feature_named_32 (m.item))
+					end
+					across a_class.parents_classes as c loop
+						across flat_model_queries (c.item) as q loop
+							l_new_version := a_class.feature_of_rout_id_set (q.item.rout_id_set)
+							if not Result.has (l_new_version) then
+								Result.extend (l_new_version)
+							end
 						end
 					end
 				end
+				flat_model_cache.put (Result, a_class.class_id)
 			end
+		end
+
+	is_model_query (a_class: CLASS_C; a_feature: FEATURE_I): BOOLEAN
+			-- Is `a_feature' an immediate or inherited model query of `a_class'?
+		do
+			Result := across flat_model_queries (a_class) as f some is_same_feature (f.item, a_feature)  end
 		end
 
 	replaced_model_queries (a_feature: FEATURE_I; a_class, a_descendant: CLASS_C): ARRAYED_LIST [FEATURE_I]
 			-- All model queries represented by `a_feature' from `a_class'
-			-- in `a_class' and its ancestors,as seen from `a_descendant'.
+			-- in `a_class' and its ancestors, as seen from `a_descendant'.
 		require
 			attached a_class
 		local
+			l_rep_clause: ARRAYED_LIST [STRING_32]
 			l_rep_feature: FEATURE_I
-			l_rep_name: STRING_32
 		do
 			create Result.make (5)
-			if attached a_feature and then model_queries (a_class).has (a_feature.feature_name_32) then
+			if attached a_feature and then is_model_query (a_class, a_feature) then
 				Result.extend (a_descendant.feature_of_rout_id_set (a_feature.rout_id_set))
-				l_rep_name := string_feature_note_value (a_feature, "replaces")
-				if l_rep_name.is_empty then
-					l_rep_feature := a_feature
-				else
-					l_rep_feature := a_class.feature_named_32 (l_rep_name)
-				end
+				l_rep_clause := feature_note_values (a_feature, "replaces")
+				l_rep_clause.extend (a_feature.feature_name_32)
 
-				across a_class.parents_classes as c loop
-					across replaced_model_queries (c.item.feature_of_rout_id_set (l_rep_feature.rout_id_set), c.item, a_descendant) as q loop
-						if not Result.has (q.item) then
-							Result.extend (q.item)
+				across l_rep_clause as f loop
+					l_rep_feature := a_class.feature_named_32 (f.item)
+					if attached l_rep_feature then
+						across a_class.parents_classes as c loop
+							across replaced_model_queries (c.item.feature_of_rout_id_set (l_rep_feature.rout_id_set), c.item, a_descendant) as q loop
+								if not Result.has (q.item) then
+									Result.extend (q.item)
+								end
+							end
 						end
 					end
 				end
@@ -473,9 +480,9 @@ feature -- Model helpers
 			-- in `a_class' and its descendants down to `a_descendant',
 			-- as seen in `a_descendant'.
 		require
-			attached a_class
-			attached a_feature
-			model_queries (a_class).has (a_feature.feature_name_32)
+			class_exists: attached a_class
+			feature_exists: attached a_feature
+			feature_is_model: is_model_query (a_class, a_feature)
 		local
 			l_rep_feature, l_new_version: FEATURE_I
 		do
@@ -484,13 +491,16 @@ feature -- Model helpers
 			across a_class.direct_descendants as d loop
 				if a_descendant.inherits_from (d.item) then
 					l_new_version := d.item.feature_of_rout_id_set (a_feature.rout_id_set)
-					l_rep_feature := feature_with_string_note_value (d.item, "replaces", l_new_version.feature_name_32)
-					if l_rep_feature = Void then
+					if model_queries (d.item).has (l_new_version.feature_name_32) then
 						l_rep_feature := l_new_version
+					else
+						l_rep_feature := feature_with_string_note_value (d.item, "replaces", l_new_version.feature_name_32)
 					end
-					across replacing_model_queries (l_rep_feature, d.item, a_descendant) as q loop
-						if not Result.has (q.item) then
-							Result.extend (q.item)
+					if attached l_rep_feature then
+						across replacing_model_queries (l_rep_feature, d.item, a_descendant) as q loop
+							if not Result.has (q.item) then
+								Result.extend (q.item)
+							end
 						end
 					end
 				end
@@ -786,6 +796,18 @@ feature {NONE} -- Implementation
 					Result.remove (i)
 				end
 			end
+		end
+
+	map_access_feature_cache: HASH_TABLE [FEATURE_I, INTEGER]
+			-- Cache of the feature that translates to map access for each model class.
+		once
+			create Result.make (50)
+		end
+
+	flat_model_cache: HASH_TABLE [ARRAYED_LIST [FEATURE_I], INTEGER]
+			-- Cache of a list of all model queries for each class.
+		once
+			create Result.make (50)
 		end
 
 end

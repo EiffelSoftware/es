@@ -9,12 +9,14 @@ deferred class
 inherit
 	V_SEQUENCE_ITERATOR [G]
 		redefine
-			target
+			target,
+			index
 		end
 
 	V_IO_ITERATOR [G]
 		redefine
 			target,
+			index,
 			put
 		end
 
@@ -22,6 +24,11 @@ feature -- Access
 
 	target: V_MUTABLE_SEQUENCE [G]
 			-- Sequence to iterate over.
+
+feature -- Measurement
+
+	index: INTEGER
+			-- Current position.
 
 feature -- Replacement
 

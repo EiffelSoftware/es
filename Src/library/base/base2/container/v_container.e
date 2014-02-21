@@ -79,7 +79,7 @@ feature -- Search
 				s = it.sequence.front (it.index - 1)
 				Result = s.occurrences (v)
 				it.is_wrapped
-				modify_model (["index", "box"], it)
+				modify_model ("index", it)
 			until
 				it.off
 			loop
@@ -99,57 +99,6 @@ feature -- Search
 			is_wrapped: is_wrapped
 		end
 
---	count_satisfying (pred: PREDICATE [ANY, TUPLE [G]]): INTEGER
---			-- How many elements satisfy `pred'?
---		require
---			pred_exists: pred /= Void
---			pred_has_one_arg: pred.open_count = 1
---			precondition_satisfied: bag.domain.for_all (agent (x: G; p: PREDICATE [ANY, TUPLE [G]]): BOOLEAN
---				do
---					Result := p.precondition ([x])
---				end (?, pred))
---		do
---			across
---				Current as it
---			loop
---				if pred.item ([it.item]) then
---					Result := Result + 1
---				end
---			end
---		ensure
---			definition: Result = (bag | (bag.domain | pred)).count
---		end
-
---	exists (pred: PREDICATE [ANY, TUPLE [G]]): BOOLEAN
---			-- Is there an element that satisfies `pred'?
---		require
---			pred_exists: pred /= Void
---			pred_has_one_arg: pred.open_count = 1
---			precondition_satisfied: bag.domain.for_all (agent (x: G; p: PREDICATE [ANY, TUPLE [G]]): BOOLEAN
---				do
---					Result := p.precondition ([x])
---				end (?, pred))
---		do
---			Result := across Current as it some pred.item ([it.item]) end
---		ensure
---			definition: Result = bag.domain.exists (pred)
---		end
-
---	for_all (pred: PREDICATE [ANY, TUPLE [G]]): BOOLEAN
---			-- Do all elements satisfy `pred'?
---		require
---			pred_exists: pred /= Void
---			pred_has_one_arg: pred.open_count = 1
---			precondition_satisfied: bag.domain.for_all (agent (x: G; p: PREDICATE [ANY, TUPLE [G]]): BOOLEAN
---				do
---					Result := p.precondition ([x])
---				end (?, pred))
---		do
---			Result := across Current as it all pred.item ([it.item]) end
---		ensure
---			definition: Result = bag.domain.for_all (pred)
---		end
-
 feature -- Iteration
 
 	new_cursor: V_ITERATOR [G]
@@ -162,19 +111,6 @@ feature -- Iteration
 			target_definition: Result.target = Current
 			index_definition: Result.index = 1
 		end
-
---feature -- Output
-
---	out: STRING
---			-- String representation of the content.
---		local
---			stream: V_STRING_OUTPUT
---		do
---			create Result.make_empty
---			create stream.make (Result)
---			stream.pipe (new_cursor)
---			Result.remove_tail (stream.separator.count)
---		end
 
 feature -- Specification
 
