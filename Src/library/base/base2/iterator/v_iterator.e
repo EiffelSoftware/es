@@ -152,7 +152,6 @@ feature -- Cursor movement
 		local
 			j: INTEGER
 		do
-			check inv end
 			if i = 0 then
 				go_before
 			elseif i = target.count + 1 then
@@ -168,7 +167,6 @@ feature -- Cursor movement
 					j_in_bounds: 1 <= j and j <= i
 					index_counter: index = j
 					is_wrapped
-					inv
 				until
 					j = i
 				loop
@@ -221,7 +219,7 @@ feature -- Cursor movement
 			variant
 				sequence.count - index
 			end
-			check inv end
+			check inv_only ("box_definition_empty", "box_definition_non_empty") end
 		ensure then
 			index_effect_not_found: not sequence.tail (old index).has (v) implies index = sequence.count + 1
 			index_effect_found: sequence.tail (old index).has (v) implies index >= old index and sequence [index] = v

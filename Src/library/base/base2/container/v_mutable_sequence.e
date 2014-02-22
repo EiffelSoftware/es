@@ -165,7 +165,6 @@ feature -- Replacement
 				it.is_wrapped and other_it.is_wrapped
 				is_wrapped and other.is_wrapped
 				it.inv
-				other_it.inv
 				modify_model (["index", "sequence"], it)
 				modify_model ("index", other_it)
 				modify_model ("map", Current)
@@ -198,25 +197,20 @@ feature -- Replacement
 			modify_model (["map", "observers"], Current)
 		local
 			j, k: INTEGER
-			l, u: INTEGER
 		do
+			check inv end
 			from
-				l := lower
-				u := upper
-				j := l
-				k := u
+				j := lower
+				k := upper
 			invariant
-				inv
-				map.domain ~ create {MML_INTERVAL}.from_range (l, u)
-				l <= j and j <= k + 1 and k <= u
-				k = l + u - j
+				map.domain ~ map.domain.old_
+				lower_ <= j and j <= k + 1 and k <= upper_
+				k = lower_ + upper_ - j
 				across j |..| k as i all map.domain [i.item] and then map [i.item] = map.old_ [i.item] end
-				across lower_ |..| (j - 1) as i all map.domain [i.item] and then map [i.item] = map.old_ [l + u - i.item] end
-				across (k + 1) |..| upper_ as i all map.domain [i.item] and then map [i.item] = map.old_ [l + u - i.item] end
+				across lower_ |..| (j - 1) as i all map.domain [i.item] and then map [i.item] = map.old_ [lower_ + upper_ - i.item] end
+				across (k + 1) |..| upper_ as i all map.domain [i.item] and then map [i.item] = map.old_ [lower_ + upper_ - i.item] end
 				is_wrapped
 				observers ~ observers.old_
-				l = lower_
-				u = upper_
 			until
 				j >= k
 			loop
@@ -229,6 +223,7 @@ feature -- Replacement
 			map_effect: across map.domain as i all map [i.item] = (old map) [lower_ + upper_ - i.item] end
 			observers_restored: observers ~ old observers
 		end
+
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

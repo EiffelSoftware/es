@@ -51,7 +51,6 @@ feature -- Cursor movement
 			invariant
 				decreases ([])
 				is_wrapped
-				inv
 			until
 				off or else item = v
 			loop

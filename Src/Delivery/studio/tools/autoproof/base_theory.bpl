@@ -224,13 +224,16 @@ function {:inline true} inv(h: HeapType, o: ref): bool {
 // Invariant of None is false
 // axiom (forall h: HeapType, o: ref :: type_of(o) == NONE ==> !user_inv(h, o));
 
+// Uninterpreted function used to trigger G1 for partial invariants
+function partial_inv(h: HeapType, o: ref): bool;
+
 // Global heap invariants
 function {:inline true} global(h: HeapType): bool
 {
   is_open(h, Void) &&
   (forall o: ref :: h[o, allocated] && is_open(h, o) ==> is_free(h, o)) &&
   (forall o: ref, o': ref :: {h[o, owns][o']} h[o, allocated] && h[o', allocated] && h[o, closed] && h[o, owns][o'] ==> (h[o', closed] && h[o', owner] == o)) && // G2
-  (forall o: ref :: {user_inv(h, o), h[o, closed]} h[o, allocated] ==> inv(h, o)) // G1
+  (forall o: ref :: {user_inv(h, o)}{partial_inv(h, o)} h[o, allocated] ==> inv(h, o)) // G1
 }
 
 // Global invariant with a more permissive trigger: much slower, so only used in public routines  

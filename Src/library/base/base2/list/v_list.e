@@ -21,7 +21,7 @@ feature -- Measurement
 	lower: INTEGER
 			-- Lower bound of index interval.
 		once
-			check inv end
+			check inv_only ("lower_defintion") end
 			Result := 1
 		end
 
@@ -47,8 +47,7 @@ feature -- Comparison
 		local
 			i, j: V_LIST_ITERATOR [G]
 		do
-			check inv end
-			check other.inv end
+			check inv and other.inv end
 			if other = Current then
 				Result := True
 			elseif count = other.count then
@@ -62,8 +61,6 @@ feature -- Comparison
 					Result implies across create {MML_INTERVAL}.from_range (1, i.index - 1) as k all sequence [k.item] = other.sequence [k.item] end
 					not Result implies sequence [i.index - 1] /= other.sequence [i.index - 1]
 					i.is_wrapped and j.is_wrapped
-					i.inv
-					j.inv
 					modify_model ("index", [i, j])
 				until
 					i.after or not Result
@@ -96,7 +93,6 @@ feature -- Search
 			it: V_LIST_ITERATOR [G]
 		do
 			it := at (i)
-			check it.inv end
 			it.search_forth (v)
 			if it.off then
 				Result := upper + 1
@@ -104,7 +100,6 @@ feature -- Search
 				Result := it.target_index
 			end
 			check across (create {MML_INTERVAL}.from_range (i, Result - 1)) as j all sequence[j.item] = sequence.interval (i, Result - 1)[j.item - i + 1]  end end
-			check inv end
 			forget_iterator (it)
 		end
 
@@ -152,7 +147,7 @@ feature -- Extension
 			from
 			invariant
 				is_wrapped and input.is_wrapped
-				inv and input.inv
+				input.inv
 				input.index.old_ <= input.index
 				input.index <= input.sequence.count + 1
 				sequence ~ sequence.old_ + input.sequence.interval (input.index.old_, input.index - 1)
@@ -269,7 +264,7 @@ feature -- Removal
 				1 <= i.index and i.index <= sequence.count + 1
 				not i.off implies i.item = v
 				is_wrapped and i.is_wrapped
-				inv and i.inv
+				i.inv
 				modify_model ("sequence", Current)
 				modify_model (["index", "sequence"], i)
 			until
