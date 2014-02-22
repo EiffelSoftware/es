@@ -61,8 +61,8 @@ feature -- Iteration
 			result_wrapped: Result.is_wrapped
 			result_in_observers: observers = old observers & Result
 			target_definition: Result.target = Current
-			index_definition_found: has_key (k) implies Result.key_sequence [Result.index] = k
-			index_definition_not_found: not has_key (k) implies not Result.key_sequence.domain [Result.index]
+			index_definition_found: has_key (k) implies Result.key_sequence [Result.index_] = k
+			index_definition_not_found: not has_key (k) implies not Result.key_sequence.domain [Result.index_]
 		end
 
 feature -- Specification

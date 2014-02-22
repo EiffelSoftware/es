@@ -126,7 +126,7 @@ feature -- Search
 			end
 			check it.inv end
  			check across it.target_index_sequence.domain as j all it.sequence [j.item] = map [lower_ + j.item - 1] end end
-			lemma_sequence_map (it.sequence, map, lower_, i - lower_ + 1, it.index - 1, v)
+			lemma_sequence_map (it.sequence, map, lower_, i - lower_ + 1, it.index_ - 1, v)
 			lemma_sequence_map (it.sequence, map, lower_, i - lower_ + 1, upper_ - lower_ + 1, v)
 
 			forget_iterator (it)
@@ -166,7 +166,7 @@ feature -- Iteration
 			result_wrapped: Result.is_wrapped
 			result_in_observers: observers = old observers & Result
 			target_definition: Result.target = Current
-			index_definition: Result.index = map.count
+			index_definition: Result.index_ = map.count
 		end
 
 	at (i: INTEGER): V_SEQUENCE_ITERATOR [G]
@@ -177,8 +177,8 @@ feature -- Iteration
 			explicit: contracts
 		deferred
 		ensure then
-			index_definition_before: i < lower_ implies Result.index = 0
-			index_definition_after: i > upper_ implies Result.index = map.count + 1
+			index_definition_before: i < lower_ implies Result.index_ = 0
+			index_definition_after: i > upper_ implies Result.index_ = map.count + 1
 		end
 
 feature -- Specification

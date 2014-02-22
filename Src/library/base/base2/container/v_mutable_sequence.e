@@ -86,14 +86,14 @@ feature -- Replacement
 				it := at (l)
 				j := l
 			invariant
-				j = lower_ + it.index - 1
+				j = lower_ + it.index_ - 1
 				l <= j and j <= u + 1
 				map.domain ~ map.domain.old_
 				across map.domain as i all map [i.item] = if l <= i.item and i.item < j then v else map.old_ [i.item] end end
 				it.is_wrapped
 				it.inv
 				is_wrapped
-				modify_model (["index", "sequence"], it)
+				modify_model (["index_", "sequence"], it)
 				modify_model ("map", Current)
 			until
 				j > u
@@ -132,7 +132,7 @@ feature -- Replacement
 		end
 
 	copy_range (other: V_SEQUENCE [G]; other_first, other_last, index: INTEGER)
-			-- Copy items of `other' within bounds [`other_first', `other_last'] to current sequence starting at index `index'.
+			-- Copy items of `other' within bounds [`other_first', `other_last'] to current sequence starting at index `index_'.
 		note
 			explicit: wrapping
 		require
@@ -155,8 +155,8 @@ feature -- Replacement
 				other_it := other.at (other_first)
 				it := at (index)
 			invariant
-				it.index = j + index - lower_
-				other_it.index = j + other_first - other.lower_
+				it.index_ = j + index - lower_
+				other_it.index_ = j + other_first - other.lower_
 				1 <= j and j <= n + 1
 				map.domain ~ map.domain.old_
 				across map.domain as i all map [i.item] = if index <= i.item and i.item < index + j - 1
@@ -165,8 +165,8 @@ feature -- Replacement
 				it.is_wrapped and other_it.is_wrapped
 				is_wrapped and other.is_wrapped
 				it.inv
-				modify_model (["index", "sequence"], it)
-				modify_model ("index", other_it)
+				modify_model (["index_", "sequence"], it)
+				modify_model ("index_", other_it)
 				modify_model ("map", Current)
 			until
 				j > n

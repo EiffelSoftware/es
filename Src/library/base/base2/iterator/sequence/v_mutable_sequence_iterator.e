@@ -1,7 +1,7 @@
 note
 	description: "Iterators to read from and update mutable sequences."
 	author: "Nadia Polikarpova"
-	model: target, sequence, index
+	model: target, sequence, index_
 
 deferred class
 	V_MUTABLE_SEQUENCE_ITERATOR [G]
@@ -10,13 +10,13 @@ inherit
 	V_SEQUENCE_ITERATOR [G]
 		redefine
 			target,
-			index
+			index_
 		end
 
 	V_IO_ITERATOR [G]
 		redefine
 			target,
-			index,
+			index_,
 			put
 		end
 
@@ -27,7 +27,7 @@ feature -- Access
 
 feature -- Measurement
 
-	index: INTEGER
+	index_: INTEGER
 			-- Current position.
 
 feature -- Replacement
@@ -38,7 +38,7 @@ feature -- Replacement
 			modify_model (["map"], target)
 		deferred
 		ensure then
-			target_map_effect: target.map ~ old (target.map.updated (target.lower + index - 1, v))
+			target_map_effect: target.map ~ old (target.map.updated (target.lower + index_ - 1, v))
 		end
 
 note

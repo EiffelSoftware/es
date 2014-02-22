@@ -1,7 +1,7 @@
 note
 	description: "Iterators to read and write from/to a container in linear order."
 	author: "Nadia Polikarpova"
-	model: target, sequence, index
+	model: target, sequence, index_
 
 deferred class
 	V_IO_ITERATOR [G]
@@ -9,7 +9,7 @@ deferred class
 inherit
 	V_ITERATOR [G]
 		redefine
-			index
+			index_
 		end
 
 	V_OUTPUT_STREAM [G]
@@ -19,7 +19,7 @@ inherit
 
 feature -- Measurement
 
-	index: INTEGER
+	index_: INTEGER
 			-- Current position.
 		note
 			replaces: off_
@@ -37,9 +37,9 @@ feature -- Replacement
 			modify_model (["bag"], target)
 		deferred
 		ensure
-			sequence_effect: sequence ~ old sequence.replaced_at (index, v)
+			sequence_effect: sequence ~ old sequence.replaced_at (index_, v)
 			target_wrapped: target.is_wrapped
-			target_bag_effect: target.bag ~ old ((target.bag / sequence [index]) & v)
+			target_bag_effect: target.bag ~ old ((target.bag / sequence [index_]) & v)
 		end
 
 	output (v: G)
@@ -47,18 +47,18 @@ feature -- Replacement
 		note
 			explicit: wrapping
 		require else
-			modify_model (["sequence", "index"], Current)
+			modify_model (["sequence", "index_"], Current)
 		do
 			check inv end
 			put (v)
 			forth
 		ensure then
-			sequence_effect: sequence ~ old (sequence.replaced_at (index, v))
-			index_effect: index = old index + 1
+			sequence_effect: sequence ~ old (sequence.replaced_at (index_, v))
+			index_effect: index_ = old index_ + 1
 		end
 
 invariant
-	off_definition: off_ = not sequence.domain [index]
+	off_definition: off_ = not sequence.domain [index_]
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

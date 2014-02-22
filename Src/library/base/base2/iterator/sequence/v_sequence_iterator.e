@@ -1,7 +1,7 @@
 note
 	description: "Itreators to read from sequences."
 	author: "Nadia Polikarpova"
-	model: target, index
+	model: target, index_
 
 deferred class
 	V_SEQUENCE_ITERATOR [G]
@@ -23,8 +23,8 @@ feature -- Access
 			-- Target index at current position.
 		do
 			check inv end
-			Result := target.lower + index - 1
-			check target_index_sequence.domain [index] end
+			Result := target.lower + index_ - 1
+			check target_index_sequence.domain [index_] end
 		end
 
 	target: V_SEQUENCE [G]

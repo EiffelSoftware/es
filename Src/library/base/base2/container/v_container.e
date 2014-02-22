@@ -75,11 +75,11 @@ feature -- Search
 			from
 				it := new_cursor
 			invariant
-				1 <= it.index and it.index <= it.sequence.count + 1
-				s = it.sequence.front (it.index - 1)
+				1 <= it.index_ and it.index_ <= it.sequence.count + 1
+				s = it.sequence.front (it.index_ - 1)
 				Result = s.occurrences (v)
 				it.is_wrapped
-				modify_model ("index", it)
+				modify_model ("index_", it)
 			until
 				it.off
 			loop
@@ -89,7 +89,7 @@ feature -- Search
 				s := s & it.item
 				it.forth
 			variant
-				it.sequence.count - it.index
+				it.sequence.count - it.index_
 			end
 			check s = it.sequence end
 			forget_iterator (it)
@@ -109,7 +109,7 @@ feature -- Iteration
 		deferred
 		ensure then
 			target_definition: Result.target = Current
-			index_definition: Result.index = 1
+			index_definition: Result.index_ = 1
 		end
 
 feature -- Specification

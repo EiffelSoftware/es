@@ -1,7 +1,7 @@
 note
 	description: "Iterators over lists."
 	author: "Nadia Polikarpova"
-	model: target, index
+	model: target, index_
 
 deferred class
 	V_LIST_ITERATOR [G]
@@ -24,12 +24,12 @@ feature -- Extension
 			-- Do not move cursor.
 		require
 			not_off: not off
-			modify_model (["index", "sequence"], Current)
+			modify_model (["index_", "sequence"], Current)
 			modify_model ("sequence", target)
 		deferred
 		ensure
-			target_sequence_effect: target.sequence ~ old target.sequence.extended_at (index, v)
-			index_effect: index = old index + 1
+			target_sequence_effect: target.sequence ~ old target.sequence.extended_at (index_, v)
+			index_effect: index_ = old index_ + 1
 		end
 
 	extend_right (v: G)
@@ -41,7 +41,7 @@ feature -- Extension
 			modify_model ("sequence", target)
 		deferred
 		ensure
-			target_sequence_effect: target.sequence ~ old target.sequence.extended_at (index + 1, v)
+			target_sequence_effect: target.sequence ~ old target.sequence.extended_at (index_ + 1, v)
 		end
 
 	insert_left (other: V_ITERATOR [G])
@@ -52,13 +52,13 @@ feature -- Extension
 			other_exists: other /= Void
 			different_target: target /= other.target
 			other_not_before: not other.before
-			modify_model (["index", "sequence"], Current)
-			modify_model ("index", other)
+			modify_model (["index_", "sequence"], Current)
+			modify_model ("index_", other)
 		deferred
 		ensure
-			taregt_sequence_effect: target.sequence ~ old (target.sequence.front (index - 1) + other.sequence.tail (other.index) + target.sequence.tail (index))
-			index_effect: index = old (index + other.sequence.tail (other.index).count)
-			other_index_effect: other.index = other.sequence.count + 1
+			taregt_sequence_effect: target.sequence ~ old (target.sequence.front (index_ - 1) + other.sequence.tail (other.index_) + target.sequence.tail (index_))
+			index_effect: index_ = old (index_ + other.sequence.tail (other.index_).count)
+			other_index_effect: other.index_ = other.sequence.count + 1
 		end
 
 	insert_right (other: V_ITERATOR [G])
@@ -69,13 +69,13 @@ feature -- Extension
 			other_exists: other /= Void
 			different_target: target /= other.target
 			other_not_before: not other.before
-			modify_model (["index", "sequence"], Current)
-			modify_model ("index", other)
+			modify_model (["index_", "sequence"], Current)
+			modify_model ("index_", other)
 		deferred
 		ensure
-			target_sequence_effect: target.sequence ~ old (target.sequence.front (index) + other.sequence.tail (other.index) + target.sequence.tail (index + 1))
-			index_effect: index = old (index + other.sequence.tail (other.index).count)
-			other_index_effect: other.index = other.sequence.count + 1
+			target_sequence_effect: target.sequence ~ old (target.sequence.front (index_) + other.sequence.tail (other.index_) + target.sequence.tail (index_ + 1))
+			index_effect: index_ = old (index_ + other.sequence.tail (other.index_).count)
+			other_index_effect: other.index_ = other.sequence.count + 1
 		end
 
 feature -- Removal
@@ -90,7 +90,7 @@ feature -- Removal
 			modify_model ("sequence", target)
 		deferred
 		ensure
-			target_sequence_effect: target.sequence ~ old target.sequence.removed_at (index)
+			target_sequence_effect: target.sequence ~ old target.sequence.removed_at (index_)
 		end
 
 	remove_left
@@ -98,12 +98,12 @@ feature -- Removal
 		require
 			not_off: not off
 			not_first: not is_first
-			modify_model (["sequence", "index"], Current)
+			modify_model (["sequence", "index_"], Current)
 			modify_model ("sequence", target)
 		deferred
 		ensure
-			target_sequence_effect: target.sequence ~ old target.sequence.removed_at (index - 1)
-			index_effect: index = old index - 1
+			target_sequence_effect: target.sequence ~ old target.sequence.removed_at (index_ - 1)
+			index_effect: index_ = old index_ - 1
 		end
 
 	remove_right
@@ -111,11 +111,11 @@ feature -- Removal
 		require
 			not_off: not off
 			not_last: not is_last
-			modify_model (["sequence", "index"], Current)
+			modify_model (["sequence", "index_"], Current)
 			modify_model ("sequence", target)
 		deferred
 		ensure
-			sequence_effect: sequence ~ old sequence.removed_at (index + 1)
+			sequence_effect: sequence ~ old sequence.removed_at (index_ + 1)
 		end
 
 

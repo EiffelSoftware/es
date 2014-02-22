@@ -4,7 +4,7 @@ note
 		Indexing starts from 1.
 	]"
 	author: "Nadia Polikarpova"
-	model: target, sequence, index
+	model: target, sequence, index_
 
 deferred class
 	V_ITERATOR [G]
@@ -34,16 +34,14 @@ feature -- Access
 			-- Item at current position.
 		deferred
 		ensure then
-			definition: Result = sequence [index]
+			definition: Result = sequence [index_]
 		end
 
 feature -- Measurement
 
 	index: INTEGER
 			-- Current position.
-		note
-			replaces: box
-		attribute
+		deferred
 		end
 
 	valid_index (i: INTEGER): BOOLEAN
@@ -65,7 +63,7 @@ feature -- Status report
 			closed
 		deferred
 		ensure
-			definition: Result = (index = 0)
+			definition: Result = (index_ = 0)
 		end
 
 	after: BOOLEAN
@@ -74,7 +72,7 @@ feature -- Status report
 			closed
 		deferred
 		ensure
-			definition: Result = (index = sequence.count + 1)
+			definition: Result = (index_ = sequence.count + 1)
 		end
 
 	off: BOOLEAN
@@ -83,7 +81,7 @@ feature -- Status report
 			check inv end
 			Result := before or after
 		ensure then
-			new_definition: Result = not sequence.domain [index]
+			new_definition: Result = not sequence.domain [index_]
 		end
 
 	is_first: BOOLEAN
@@ -92,7 +90,7 @@ feature -- Status report
 			closed
 		deferred
 		ensure
-			definition: Result = (not sequence.is_empty and index = 1)
+			definition: Result = (not sequence.is_empty and index_ = 1)
 		end
 
 	is_last: BOOLEAN
@@ -101,7 +99,7 @@ feature -- Status report
 			closed
 		deferred
 		ensure
-			definition: Result = (not sequence.is_empty and index = sequence.count)
+			definition: Result = (not sequence.is_empty and index_ = sequence.count)
 		end
 
 feature -- Cursor movement
@@ -109,36 +107,36 @@ feature -- Cursor movement
 	start
 			-- Go to the first position.
 		require
-			modify_model ("index", Current)
+			modify_model ("index_", Current)
 		deferred
 		ensure then
-			index_effect: index = 1
+			index_effect: index_ = 1
 		end
 
 	finish
 			-- Go to the last position.
 		require
-			modify_model ("index", Current)
+			modify_model ("index_", Current)
 		deferred
 		ensure
-			index_effect: index = sequence.count
+			index_effect: index_ = sequence.count
 		end
 
 	forth
 			-- Go one position forward.
 		deferred
 		ensure then
-			index_effect: index = old index + 1
+			index_effect: index_ = old index_ + 1
 		end
 
 	back
 			-- Go one position backward.
 		require
 			not_off: not off
-			modify_model ("index", Current)
+			modify_model ("index_", Current)
 		deferred
 		ensure
-			index_effect: index = old index - 1
+			index_effect: index_ = old index_ - 1
 		end
 
 	go_to (i: INTEGER)
@@ -148,7 +146,7 @@ feature -- Cursor movement
 		require
 			has_index: valid_index (i)
 			target_closed: target.closed
-			modify_model ("index", Current)
+			modify_model ("index_", Current)
 		local
 			j: INTEGER
 		do
@@ -165,7 +163,7 @@ feature -- Cursor movement
 				invariant
 					sequence.domain [i]
 					j_in_bounds: 1 <= j and j <= i
-					index_counter: index = j
+					index_counter: index_ = j
 					is_wrapped
 				until
 					j = i
@@ -175,25 +173,25 @@ feature -- Cursor movement
 				end
 			end
 		ensure
-			index_effect: index = i
+			index_effect: index_ = i
 		end
 
 	go_before
 			-- Go before any position of `target'.
 		require
-			modify_model ("index", Current)
+			modify_model ("index_", Current)
 		deferred
 		ensure
-			index_effect: index = 0
+			index_effect: index_ = 0
 		end
 
 	go_after
 			-- Go after any position of `target'.
 		require
-			modify_model ("index", Current)
+			modify_model ("index_", Current)
 		deferred
 		ensure
-			index_effect: index = sequence.count + 1
+			index_effect: index_ = sequence.count + 1
 		end
 
 	search_forth (v: G)
@@ -209,21 +207,21 @@ feature -- Cursor movement
 			end
 			from
 			invariant
-				index.old_ <= index and index <= sequence.count + 1
+				index_.old_ <= index_ and index_ <= sequence.count + 1
 				not before
-				across index.old_.max (1) |..| (index - 1) as i all sequence [i.item] /= v end
+				across index_.old_.max (1) |..| (index_ - 1) as i all sequence [i.item] /= v end
 			until
 				after or else item = v
 			loop
 				forth
 			variant
-				sequence.count - index
+				sequence.count - index_
 			end
 			check inv_only ("box_definition_empty", "box_definition_non_empty") end
 		ensure then
-			index_effect_not_found: not sequence.tail (old index).has (v) implies index = sequence.count + 1
-			index_effect_found: sequence.tail (old index).has (v) implies index >= old index and sequence [index] = v
-			index_constraint: not sequence.interval (old index, index - 1).has (v)
+			index_effect_not_found: not sequence.tail (old index_).has (v) implies index_ = sequence.count + 1
+			index_effect_found: sequence.tail (old index_).has (v) implies index_ >= old index_ and sequence [index_] = v
+			index_constraint: not sequence.interval (old index_, index_ - 1).has (v)
 		end
 
 	search_back (v: G)
@@ -233,7 +231,7 @@ feature -- Cursor movement
 		note
 			explicit: wrapping
 		require
-			modify_model ("index", Current)
+			modify_model ("index_", Current)
 		do
 			check inv end
 			if after then
@@ -241,20 +239,20 @@ feature -- Cursor movement
 			end
 			from
 			invariant
-				0 <= index and index <= index.old_
+				0 <= index_ and index_ <= index_.old_
 				not after
-				across (index + 1) |..| index.old_.min (sequence.count) as i all sequence [i.item] /= v end
+				across (index_ + 1) |..| index_.old_.min (sequence.count) as i all sequence [i.item] /= v end
 			until
 				before or else item = v
 			loop
 				back
 			variant
-				index
+				index_
 			end
 		ensure
-			index_effect_not_found: not sequence.front (old index).has (v) implies index = 0
-			index_effect_found: sequence.front (old index).has (v) implies
-				(sequence [index] = v and not sequence.interval (index + 1, old index).has (v))
+			index_effect_not_found: not sequence.front (old index_).has (v) implies index_ = 0
+			index_effect_found: sequence.front (old index_).has (v) implies
+				(sequence [index_] = v and not sequence.interval (index_ + 1, old index_).has (v))
 		end
 
 feature -- Specification
@@ -266,13 +264,21 @@ feature -- Specification
 		attribute
 		end
 
+	index_: INTEGER
+			-- Current position.
+		note
+			status: ghost
+			replaces: box
+		attribute
+		end
+
 invariant
 	target_exists: target /= Void
 	subjects_definition: subjects = [target]
 	target_bag_constraint: target.bag ~ sequence.to_bag
-	index_constraint: 0 <= index and index <= sequence.count + 1
-	box_definition_empty: not sequence.domain [index] implies box.is_empty
-	box_definition_non_empty: sequence.domain [index] implies box ~ create {MML_SET [G]}.singleton (sequence [index])
+	index_constraint: 0 <= index_ and index_ <= sequence.count + 1
+	box_definition_empty: not sequence.domain [index_] implies box.is_empty
+	box_definition_non_empty: sequence.domain [index_] implies box ~ create {MML_SET [G]}.singleton (sequence [index_])
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

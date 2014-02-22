@@ -1,7 +1,7 @@
 note
 	description: "Iterators to read from maps in linear order."
 	author: "Nadia Polikarpova"
-	model: target, key_sequence, index
+	model: target, key_sequence, index_
 
 deferred class
 	V_MAP_ITERATOR [K, V]
@@ -24,7 +24,7 @@ feature -- Access
 			reads (Current, target)
 		deferred
 		ensure
-			definition: Result = key_sequence [index]
+			definition: Result = key_sequence [index_]
 		end
 
 	target: V_MAP [K, V]
@@ -37,12 +37,12 @@ feature -- Cursor movement
 			-- If `k' does not appear, go after.
 			-- (Use reference equality.)
 		require
-			modify_model ("index", Current)
+			modify_model ("index_", Current)
 			target.is_wrapped
 		deferred
 		ensure
-			index_effect_found: target.has_key (k) implies key_sequence [index] = k
-			index_effect_not_found: not target.has_key (k) implies index = key_sequence.count + 1
+			index_effect_found: target.has_key (k) implies key_sequence [index_] = k
+			index_effect_not_found: not target.has_key (k) implies index_ = key_sequence.count + 1
 		end
 
 feature -- Specification

@@ -34,6 +34,7 @@ feature -- Cache control
 			-- Reset cached data.
 		do
 			map_access_feature_cache.wipe_out
+			flat_model_cache.wipe_out
 		end
 
 feature -- General note helpers

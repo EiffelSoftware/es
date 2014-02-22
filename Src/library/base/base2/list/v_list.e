@@ -56,23 +56,23 @@ feature -- Comparison
 					i := new_cursor
 					j := other.new_cursor
 				invariant
-					1 <= i.index and i.index <= sequence.count + 1
-					i.index = j.index
-					Result implies across create {MML_INTERVAL}.from_range (1, i.index - 1) as k all sequence [k.item] = other.sequence [k.item] end
-					not Result implies sequence [i.index - 1] /= other.sequence [i.index - 1]
+					1 <= i.index_ and i.index_ <= sequence.count + 1
+					i.index_ = j.index_
+					Result implies across create {MML_INTERVAL}.from_range (1, i.index_ - 1) as k all sequence [k.item] = other.sequence [k.item] end
+					not Result implies sequence [i.index_ - 1] /= other.sequence [i.index_ - 1]
 					i.is_wrapped and j.is_wrapped
-					modify_model ("index", [i, j])
+					modify_model ("index_", [i, j])
 				until
 					i.after or not Result
 				loop
-					check across create {MML_INTERVAL}.from_range (1, i.index - 1) as k all sequence [k.item] = other.sequence [k.item] end end
+					check across create {MML_INTERVAL}.from_range (1, i.index_ - 1) as k all sequence [k.item] = other.sequence [k.item] end end
 					Result := i.item = j.item
 					i.forth
 					j.forth
 				variant
-					sequence.count - i.index
+					sequence.count - i.index_
 				end
-				check Result implies across create {MML_INTERVAL}.from_range (1, i.index - 1) as k all sequence [k.item] = other.sequence [k.item] end end
+				check Result implies across create {MML_INTERVAL}.from_range (1, i.index_ - 1) as k all sequence [k.item] = other.sequence [k.item] end end
 				forget_iterator (i)
 				other.forget_iterator (j)
 			end
@@ -142,28 +142,28 @@ feature -- Extension
 			different_target: input.target /= Current
 			not_before: not input.before
 			modify_model ("sequence", Current)
-			modify_model ("index", input)
+			modify_model ("index_", input)
 		do
 			from
 			invariant
 				is_wrapped and input.is_wrapped
 				input.inv
-				input.index.old_ <= input.index
-				input.index <= input.sequence.count + 1
-				sequence ~ sequence.old_ + input.sequence.interval (input.index.old_, input.index - 1)
+				input.index_.old_ <= input.index_
+				input.index_ <= input.sequence.count + 1
+				sequence ~ sequence.old_ + input.sequence.interval (input.index_.old_, input.index_ - 1)
 			until
 				input.after
 			loop
 				extend_back (input.item)
-				check input.sequence.interval (input.index.old_, input.index) =
-					input.sequence.interval (input.index.old_, input.index - 1) & input.item end
+				check input.sequence.interval (input.index_.old_, input.index_) =
+					input.sequence.interval (input.index_.old_, input.index_ - 1) & input.item end
 				input.forth
 			variant
-				input.sequence.count - input.index
+				input.sequence.count - input.index_
 			end
 		ensure
-			sequence_effect: sequence ~ old (sequence + input.sequence.tail (input.index))
-			input_index_effect: input.index = input.sequence.count + 1
+			sequence_effect: sequence ~ old (sequence + input.sequence.tail (input.index_))
+			input_index_effect: input.index_ = input.sequence.count + 1
 		end
 
 	prepend (input: V_ITERATOR [G])
@@ -173,11 +173,11 @@ feature -- Extension
 			different_target: input.target /= Current
 			not_before: not input.before
 			modify_model ("sequence", Current)
-			modify_model ("index", input)
+			modify_model ("index_", input)
 		deferred
 		ensure
-			sequence_effect: sequence ~ old (input.sequence.tail (input.index) + sequence)
-			input_index_effect: input.index = input.sequence.count + 1
+			sequence_effect: sequence ~ old (input.sequence.tail (input.index_) + sequence)
+			input_index_effect: input.index_ = input.sequence.count + 1
 		end
 
 	insert_at (input: V_ITERATOR [G]; i: INTEGER)
@@ -190,11 +190,11 @@ feature -- Extension
 			different_target: input.target /= Current
 			not_before: not input.before
 			modify_model ("sequence", Current)
-			modify_model ("index", input)
+			modify_model ("index_", input)
 		deferred
 		ensure
-			sequence_effect: sequence ~ old (sequence.front (i - 1) + input.sequence.tail (input.index) + sequence.tail (i))
-			input_index_effect: input.index = input.sequence.count + 1
+			sequence_effect: sequence ~ old (sequence.front (i - 1) + input.sequence.tail (input.index_) + sequence.tail (i))
+			input_index_effect: input.index_ = input.sequence.count + 1
 		end
 
 feature -- Removal
@@ -261,12 +261,12 @@ feature -- Removal
 				i := new_cursor
 				i.search_forth (v)
 			invariant
-				1 <= i.index and i.index <= sequence.count + 1
+				1 <= i.index_ and i.index_ <= sequence.count + 1
 				not i.off implies i.item = v
 				is_wrapped and i.is_wrapped
 				i.inv
 				modify_model ("sequence", Current)
-				modify_model (["index", "sequence"], i)
+				modify_model (["index_", "sequence"], i)
 			until
 				i.after
 			loop
