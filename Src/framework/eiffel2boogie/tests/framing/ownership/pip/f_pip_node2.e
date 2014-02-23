@@ -1,8 +1,7 @@
 note
 	description: "A node in a graph structure that only has a reference to its parent and needs to maintain consistency with its children."
-	explicit: "all"
 
-frozen class F_PIP_NODE2_D
+frozen class F_PIP_NODE2
 
 create
 	make
@@ -18,13 +17,11 @@ feature {NONE} -- Initialization
 		do
 			init_value := v
 			value := v
-			wrap
 		ensure
 			init_value_set: init_value = v
 			value_set: value = v
 			no_parent: parent = Void
 			no_children: children.is_empty
-			default_wrapped: is_wrapped
 		end
 
 feature -- Access
@@ -35,17 +32,17 @@ feature -- Access
 	init_value: INTEGER
 			-- Initial value at node creation.
 
-	parent: F_PIP_NODE2_D
+	parent: F_PIP_NODE2
 			-- Parent node.
 
-	children: MML_SEQUENCE [F_PIP_NODE2_D]
+	children: MML_SEQUENCE [F_PIP_NODE2]
 			-- Set of nodes whose `parent' is the current node.
 		note
 			status: ghost
 		attribute
 		end
 
-	max_child: F_PIP_NODE2_D
+	max_child: F_PIP_NODE2
 			-- Node from `children' with the maximum value greater than `init_value'
 			-- or Void if it does not exist.
 		note
@@ -53,7 +50,7 @@ feature -- Access
 		attribute
 		end
 
-	is_max (v: INTEGER; init_v: INTEGER; nodes: MML_SET [F_PIP_NODE2_D]; max_node: F_PIP_NODE2_D): BOOLEAN
+	is_max (v: INTEGER; init_v: INTEGER; nodes: MML_SET [F_PIP_NODE2]; max_node: F_PIP_NODE2): BOOLEAN
 			-- Is `v' the maximum of `init_v' and all values of `nodes'?
 		note
 			status: functional, ghost
@@ -67,11 +64,11 @@ feature -- Access
 				((max_node = Void and v = init_v) or (nodes [max_node] and then max_node.value = v))
 		end
 
-	acquire (n: F_PIP_NODE2_D; ancestors: MML_SET [F_PIP_NODE2_D])
+	acquire (n: F_PIP_NODE2; ancestors: MML_SET [F_PIP_NODE2])
 			-- Connect `n' as a child to the current node, given the `ancestors' set of the Current node.
+		note
+			explicit: wrapping
 		require
-			default_wrapped: is_wrapped
-			default_arg_n_wrapped: n.is_wrapped
 			n_exists: n /= Void
 			n_different: n /= Current
 			n_orphan: n.parent = Void
@@ -96,13 +93,11 @@ feature -- Access
 			n.wrap
 
 			if n.value > value then
-				update_value (n, n, {MML_SET [F_PIP_NODE2_D]}.empty_set, ancestors)
+				update_value (n, n, {MML_SET [F_PIP_NODE2]}.empty_set, ancestors)
 			else
 				wrap
 			end
 		ensure
-			default_wrapped: is_wrapped
-			default_arg_n_wrapped: n.is_wrapped
 			n_parent_set: n.parent = Current
 			current_parent_unchanged: parent = old parent
 			children_set: children = old children & n
@@ -112,9 +107,9 @@ feature -- Access
 			ancestors_wrapped: across ancestors as p all p.item.is_wrapped end
 		end
 
-feature {F_PIP_NODE2_D} -- Implementation
+feature {F_PIP_NODE2} -- Implementation
 
-	set_parent (p: F_PIP_NODE2_D)
+	set_parent (p: F_PIP_NODE2)
 			-- Set `parent' to `p'.
 		require
 			open: is_open
@@ -128,7 +123,7 @@ feature {F_PIP_NODE2_D} -- Implementation
 			parent_set: parent = p
 		end
 
-	update_value (child, d: F_PIP_NODE2_D; visited: MML_SET [F_PIP_NODE2_D]; ancestors: MML_SET [F_PIP_NODE2_D])
+	update_value (child, d: F_PIP_NODE2; visited: MML_SET [F_PIP_NODE2]; ancestors: MML_SET [F_PIP_NODE2])
 			-- Update `value' of this node and its `ancestors' taking into account an updated child `child' becuase of its new descendant `d';
 			-- for all nodes in `visited' their `value' already has been fixed.
 		require
@@ -177,7 +172,8 @@ invariant
 	no_direct_cycles: parent /= Current
 	no_direct_cycles_2: not children.has (Current)
 	observers_structure: observers = subjects
-	subjects_aware: across subjects as s all s.item.observers [Current] end
-	default_owns: owns = []
+
+note
+	explicit: subjects, observers
 
 end
