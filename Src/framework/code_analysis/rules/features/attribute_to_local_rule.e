@@ -39,18 +39,14 @@ feature {NONE} -- Rule checking
 			-- Iterates through all the attributes of `a_class' and looks at its
 			-- callers.
 		local
-			l_feat: LIST [E_FEATURE]
 			l_clients: ARRAYED_LIST [CLASS_C]
 			l_has_clients: BOOLEAN
 			l_callers: LIST [STRING_32]
 		do
-			l_feat := current_context.checking_class.written_in_features
 			l_clients := current_context.checking_class.clients
 
-			from
-				l_feat.start
-			until
-				l_feat.after
+			across
+				current_context.checking_class.written_in_features as l_feat
 			loop
 
 					-- Only look at attributes.
@@ -81,8 +77,6 @@ feature {NONE} -- Rule checking
 						create_violation (l_feat.item, l_c.first)
 					end
 				end
-
-				l_feat.forth
 			end
 		end
 

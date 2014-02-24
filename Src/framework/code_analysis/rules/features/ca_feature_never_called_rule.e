@@ -41,17 +41,13 @@ feature {NONE} -- Feature Visitor for Violation Check
 	class_check (a_class: CLASS_AS)
 			-- Checks `a_class' for features that are never called.
 		local
-			l_feat: LIST [E_FEATURE]
 			l_clients: ARRAYED_LIST [CLASS_C]
 			has_callers: BOOLEAN
 		do
-			l_feat := current_context.checking_class.written_in_features
 			l_clients := current_context.checking_class.clients
 
-			from
-				l_feat.start
-			until
-				l_feat.after
+			across
+				current_context.checking_class.written_in_features as l_feat
 			loop
 				from
 					has_callers := False
@@ -68,8 +64,6 @@ feature {NONE} -- Feature Visitor for Violation Check
 				if not has_callers then
 					create_violation (l_feat.item)
 				end
-
-				l_feat.forth
 			end
 		end
 

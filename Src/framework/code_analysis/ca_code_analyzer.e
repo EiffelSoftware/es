@@ -134,21 +134,16 @@ feature -- Analysis interface
 			-- Add all the classes that are part of the current system. Classes of references libraries
 			-- will not be added.
 		local
-			l_groups: LIST [CONF_GROUP]
 			l_cluster: CLUSTER_I
 		do
-			from
-				l_groups := eiffel_universe.groups
-				l_groups.start
-			until
-				l_groups.after
+			across
+				eiffel_universe.groups as l_groups
 			loop
-				l_cluster ?= l_groups.item_for_iteration
+				l_cluster ?= l_groups.item
 					-- Only load top-level clusters, as the others will be loaded recursively afterwards.
 				if l_cluster /= Void and then l_cluster.parent_cluster = Void then
 					add_cluster (l_cluster)
 				end
-				l_groups.forth
 			end
 
 			system_wide_check := True
