@@ -55,8 +55,15 @@ feature {NONE} -- Implementation
 
 feature -- Access
 
-	sleep_time: NATURAL = 100
+	sleep_time: NATURAL
 			-- <Precursor>
+		do
+			if attached {E2B_TRANSLATE_CHUNK_TASK} sub_task then
+				Result := 0
+			else
+				Result := 100
+			end
+		end
 
 	sub_task: detachable ROTA_TASK_I
 			-- <Precursor>

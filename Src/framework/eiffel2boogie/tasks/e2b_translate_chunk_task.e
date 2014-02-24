@@ -10,6 +10,8 @@ inherit
 
 	ROTA_TASK_I
 
+	E2B_SHARED_CONTEXT
+
 create
 	make
 
@@ -34,12 +36,18 @@ feature -- Status report
 
 feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 
+	started: BOOLEAN
+
 	step
 			-- <Precursor>
 		local
 			l_end_tick: NATURAL
 		do
-				-- Translate features for 100 milliseconds
+--			if not started then
+--				start
+--				started := True
+--			end
+				-- Translate features for some milliseconds
 			from
 				l_end_tick := end_tick_for_duration (100)
 			until
@@ -48,6 +56,12 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 				translator.step
 			end
 			has_next_step := translator.has_next_step
+--			if not has_next_step then
+--				print_time
+--				print ("%Ttotal translation chunk time%N")
+--			end
+
+			set_status ("Translating Eiffel to Boogie (elements remaining: " + translation_pool.untranslated_elements.count.out + ")")
 		end
 
 	cancel

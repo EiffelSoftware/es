@@ -135,6 +135,7 @@ feature {NONE} -- Basic operations
 		local
 			l_cluster: CLUSTER_I
 			l_helper: ES_AUTOPROOF_BENCH_HELPER
+			l_context: E2B_SHARED_CONTEXT
 		do
 			create l_helper
 			autoproof := l_helper.autoproof
@@ -174,6 +175,8 @@ feature {NONE} -- Basic operations
 				end
 			end
 			disable_tool_button
+			create l_context
+			l_context.status_notifier_agent_cell.put (agent window_manager.display_message)
 			window_manager.display_message ("AutoProof running")
 			autoproof.add_notification (agent process_result)
 			autoproof.verify
