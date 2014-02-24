@@ -7,7 +7,7 @@ class F_PIP_CLIENT
 feature -- Test
 
 	test
-			-- Using composites.
+			-- Using PIP nodes.
 		local
 			c1, c2, c3: F_PIP_NODE
 		do
@@ -32,7 +32,7 @@ feature -- Test
 		end
 
 	test_d
-			-- Using composites.
+			-- Using PIP nodes.
 		local
 			c1, c2, c3: F_PIP_NODE_D
 		do
@@ -57,7 +57,7 @@ feature -- Test
 		end
 
 	test2
-			-- Using composites.
+			-- Using PIP nodes.
 		local
 			c1, c2, c3: F_PIP_NODE2
 			a1, a2, a3: MML_SET [F_PIP_NODE2]
@@ -84,7 +84,7 @@ feature -- Test
 		end
 
 	test2_d
-			-- Using composites.
+			-- Using PIP nodes.
 		local
 			c1, c2, c3: F_PIP_NODE2_D
 			a1, a2, a3: MML_SET [F_PIP_NODE2_D]

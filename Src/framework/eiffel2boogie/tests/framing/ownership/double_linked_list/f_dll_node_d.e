@@ -51,7 +51,7 @@ feature -- Modification
 			n_singleton: n.left = n
 			default_wrapped: is_wrapped
 			default_arg_wrapped: n.is_wrapped
-			default_observers_wrapped: across observers as o all o.item.is_wrapped  end
+			default_observers_wrapped: across observers as o all o.item.is_wrapped end
 			modify (Current, right, n)
 		local
 			r: F_DLL_NODE_D

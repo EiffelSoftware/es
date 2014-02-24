@@ -34,6 +34,8 @@ feature -- Access
 			-- Is the list empty?
 		note
 			skip: True
+		require
+			closed: closed
 		do
 		ensure
 			definition: Result = sequence.is_empty
@@ -43,6 +45,8 @@ feature -- Access
 			-- Number of elements in the list.
 		note
 			skip: True
+		require
+			closed: closed
 		do
 		ensure
 			definition: Result = sequence.count
@@ -53,6 +57,7 @@ feature -- Access
 		note
 			skip: True
 		require
+			closed: closed
 			in_bounds: 1 <= i and i <= count
 		do
 		ensure
@@ -63,6 +68,8 @@ feature -- Access
 			-- Is `x' an element of the list?
 		note
 			skip: True
+		require
+			closed: closed
 		do
 		ensure
 			definition: Result = sequence.has (x)
@@ -74,13 +81,9 @@ feature -- Extension
 			-- Insert `v' at the back.
 		note
 			skip: True
-			explicit: contracts
-		require
-			wrapped: is_wrapped
 		do
 		ensure
 			sequence_effect: sequence = old (sequence & v)
-			wrapped: is_wrapped
 		end
 
 end

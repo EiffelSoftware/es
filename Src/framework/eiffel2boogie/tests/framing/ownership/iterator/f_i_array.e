@@ -30,6 +30,7 @@ feature -- Access
 		note
 			skip: True
 		require
+			closed: closed
 			in_bounds: 1 <= i and i <= count
 		do
 		end

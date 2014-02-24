@@ -65,7 +65,7 @@ feature -- State change
 		require
 			not_after: not after
 			default_wrapped: is_wrapped
-			modify ([Current])
+			modify (Current)
 		do
 			index := index + 1
 			before := False

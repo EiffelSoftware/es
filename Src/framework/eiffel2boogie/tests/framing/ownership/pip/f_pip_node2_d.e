@@ -77,11 +77,11 @@ feature -- Access
 			n_orphan: n.parent = Void
 			ancestors_wrapped: across ancestors as p all p.item.is_wrapped end
 			ancestors_has_current: ancestors [Current]
-			ancestors_has_parent: parent /= Void implies ancestors [parent]
 			ancestors_closed: across ancestors as p all p.item.parent /= Void implies ancestors [p.item.parent] end
 
-			modify (Current, n)
 			modify_field (["value", "max_child", "closed"], ancestors)
+			modify_field (["children", "subjects", "observers"], Current)
+			modify_field (["parent", "subjects", "observers", "closed"], n)
 		do
 			unwrap
 			n.unwrap
@@ -104,11 +104,9 @@ feature -- Access
 			default_wrapped: is_wrapped
 			default_arg_n_wrapped: n.is_wrapped
 			n_parent_set: n.parent = Current
-			current_parent_unchanged: parent = old parent
+			n_value_unchanged: n.value = old n.value
 			children_set: children = old children & n
 			max_child_set: max_child = if old (value >= n.value) then old max_child else n end
-			n_value_unchanged: n.value = old n.value
-			init_value_unchanged: init_value = old init_value
 			ancestors_wrapped: across ancestors as p all p.item.is_wrapped end
 		end
 
@@ -141,7 +139,6 @@ feature {F_PIP_NODE2_D} -- Implementation
 			visited_fixed: across visited as o all o.item.is_wrapped and o.item.value = d.value end
 			direct_ancestors_wrapped: across ancestors as p all p.item /= Current implies p.item.is_wrapped end
 			ancestors_has_current: ancestors [Current]
-			ancestors_has_parent: parent /= Void implies ancestors [parent]
 			ancestors_closed: across ancestors as p all p.item.parent /= Void implies ancestors [p.item.parent] end
 
 			modify_field (["closed"], ancestors)
@@ -173,9 +170,7 @@ invariant
 	parent_consistent: parent /= Void implies parent.children.has (Current)
 	children_consistent: across children as c all c.item /= Void and then c.item.parent = Current end
 	value_consistent: is_max (value, init_value, children.range, max_child)
-	no_duplicates: across 1 |..| children.count as i all across 1 |..| children.count as j all i.item < j.item implies children [i.item] /= children [j.item] end end
 	no_direct_cycles: parent /= Current
-	no_direct_cycles_2: not children.has (Current)
 	observers_structure: observers = subjects
 	subjects_aware: across subjects as s all s.item.observers [Current] end
 	default_owns: owns = []
