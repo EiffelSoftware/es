@@ -120,6 +120,7 @@ feature -- Basic operations
 		do
 			type := a_type
 			generate_invariant_function (a_included, a_excluded, a_ancestor)
+			generate_filtered_invariant_axiom (a_included, a_excluded, a_ancestor)
 		end
 
 feature {NONE} -- Implementation
@@ -408,6 +409,29 @@ feature {NONE} -- Implementation
 					Result := fcall.arguments [2]
 				end
 			end
+		end
+
+	generate_filtered_invariant_axiom (a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C)
+			-- Generate axiom (forall o: ref :: {partial_inv(h, o)} IsHeap(h) && h[o, allocated] && h[o, closed] ==> partial_inv(h, o))
+		local
+			l_h, l_o: IV_ENTITY
+			l_fcall: IV_FUNCTION_CALL
+			l_forall: IV_FORALL
+		do
+			create l_h.make ("h", types.heap)
+			create l_o.make ("o", types.ref)
+			l_fcall := factory.function_call (name_translator.boogie_function_for_filtered_invariant (type, a_included, a_excluded, a_ancestor),
+				<< l_h, l_o >>, types.bool)
+			create l_forall.make (factory.implies_ (
+				factory.and_ (factory.function_call ("IsHeap", << l_h >>, types.bool),
+					factory.and_ (
+						factory.heap_access (l_h, l_o, "allocated", types.bool),
+						factory.heap_access (l_h, l_o, "closed", types.bool))),
+				l_fcall))
+			l_forall.add_bound_variable (l_h)
+			l_forall.add_bound_variable (l_o)
+			l_forall.add_trigger (l_fcall)
+			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
 		end
 
 feature -- Invariant admissibility

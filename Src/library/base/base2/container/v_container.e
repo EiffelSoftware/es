@@ -141,6 +141,28 @@ feature -- Specification
 			observers = old observers / it
 		end
 
+	forget_all_iterators (it: V_ITERATOR [G])
+			-- Make `observers' empty.
+		note
+			status: ghost
+			explicit: contracts
+		require
+			wrapped: is_wrapped
+			observers_wrapped: across observers as o all o.item.is_wrapped  end
+			modify_model (["observers"], Current)
+			modify_model (["closed"], observers)
+		do
+			unwrap_all (observers)
+			set_observers ([])
+		ensure
+			is_wrapped
+			across old observers as o all o.item.is_open end
+			observers = []
+		end
+
+invariant
+	not_observer: not observers [Current]
+
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

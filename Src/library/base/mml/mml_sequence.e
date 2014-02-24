@@ -1,9 +1,9 @@
 note
 	description: "Finite sequence."
 	author: "Nadia Polikarpova"
-	theory: "sequence.bpl", "bag.bpl", "set.bpl"
+	theory: "sequence.bpl", "map.bpl", "relation.bpl", "bag.bpl", "set.bpl"
 	maps_to: "Seq"
-	typed_sets: "Seq#Range"		
+	typed_sets: "Seq#Range"
 
 class
 	MML_SEQUENCE [G]
@@ -27,7 +27,7 @@ feature {NONE} -- Initialization
 	default_create
 			-- Create an empty sequence.
 		note
-			maps_to: "Seq#Empty"		
+			maps_to: "Seq#Empty"
 		do
 		end
 
@@ -56,7 +56,7 @@ feature -- Elements
 			in_domain: domain [i]
 		do
 		end
-		
+
 feature -- Conversion
 
 	domain: MML_SET [INTEGER]
@@ -68,26 +68,31 @@ feature -- Conversion
 			-- Set of values.
 		do
 		end
-		
+
+	to_map: MML_MAP [INTEGER, G]
+			-- Sequence viewed as a map from indexes to value.
+		do
+		end
+
 	to_bag: MML_BAG [G]
 			-- Bag of sequence values.
 		do
-		end		
-		
+		end
+
 feature -- Measurement
 
 	count alias "#": INTEGER
 			-- Number of elements.
 		note
-			maps_to: "Seq#Length"					
+			maps_to: "Seq#Length"
 		do
 		end
 
 	occurrences (x: G): INTEGER
 			-- How many times does `x' occur?
 		do
-		end				
-		
+		end
+
 feature -- Comparison
 
 	is_equal (a_other: like Current): BOOLEAN
@@ -96,7 +101,7 @@ feature -- Comparison
 			maps_to: "Seq#Equal"
 		do
 		end
-		
+
 	is_less_equal alias "<=" (a_other: MML_SEQUENCE [G]): BOOLEAN
 			-- If this sequence shorter than or the same length as `a_other'?
 		note
@@ -107,10 +112,10 @@ feature -- Comparison
 	is_prefix_of (other: MML_SEQUENCE [G]): BOOLEAN
 			-- Is this sequence a prefix of `other'?
 		note
-			maps_to: "Seq#Prefix"		
+			maps_to: "Seq#Prefix"
 		do
 		end
-		
+
 feature -- Decomposition
 
 	first: G
@@ -162,7 +167,7 @@ feature -- Decomposition
 			in_domain: domain [i]
 		do
 		end
-		
+
 
 feature -- Modification
 
@@ -186,14 +191,14 @@ feature -- Modification
 	concatenation alias "+" (other: MML_SEQUENCE [G]): MML_SEQUENCE [G]
 			-- The concatenation of the current sequence and `other'.
 		note
-			maps_to: "Seq#Concat"		
+			maps_to: "Seq#Concat"
 		do
 		end
 
 	replaced_at (i: INTEGER; x: G): MML_SEQUENCE [G]
 			-- Current sequence with `x' at position `i'.
 		note
-			maps_to: "Seq#Update"		
+			maps_to: "Seq#Update"
 		require
 			in_domain: domain [i]
 		do
@@ -219,6 +224,6 @@ feature -- Convenience
 				return NULL;
 			]"
 		end
-		
+
 end
 

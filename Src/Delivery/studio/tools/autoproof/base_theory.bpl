@@ -120,6 +120,13 @@ function in_domain(h: HeapType, o: ref, o': ref): bool
 axiom (forall h: HeapType, o, o': ref :: { in_domain(h, o, o') } IsHeap(h) && h[o, closed] && h[o, owns][o'] ==> in_domain(h, o, o'));
 axiom (forall h: HeapType, o, o': ref :: { in_domain(h, o, o') } IsHeap(h) && o != o' && Set#Equal(Set#Empty(), h[o, owns]) ==> !in_domain(h, o, o'));
 
+// Frame axiom: domain frames itself
+axiom (forall h, h': HeapType, x, x': ref :: { in_domain(h', x, x'), HeapSucc(h, h') } 
+  IsHeap(h) && IsHeap(h') && HeapSucc(h, h') &&
+  h[x, allocated] && h'[x, allocated] &&     
+  (forall <T> o: ref, f: Field T :: h[o, allocated] ==> h'[o, f] == h[o, f] || !in_domain(h, x, o))
+  ==> in_domain(h', x, x') == in_domain(h, x, x'));
+
 function domain(h: HeapType, o: ref): Set ref
 { (lambda o': ref :: in_domain(h, o, o')) }
 
@@ -224,16 +231,13 @@ function {:inline true} inv(h: HeapType, o: ref): bool {
 // Invariant of None is false
 // axiom (forall h: HeapType, o: ref :: type_of(o) == NONE ==> !user_inv(h, o));
 
-// Uninterpreted function used to trigger G1 for partial invariants
-function partial_inv(h: HeapType, o: ref): bool;
-
 // Global heap invariants
 function {:inline true} global(h: HeapType): bool
 {
   is_open(h, Void) &&
   (forall o: ref :: h[o, allocated] && is_open(h, o) ==> is_free(h, o)) &&
   (forall o: ref, o': ref :: {h[o, owns][o']} h[o, allocated] && h[o', allocated] && h[o, closed] && h[o, owns][o'] ==> (h[o', closed] && h[o', owner] == o)) && // G2
-  (forall o: ref :: {user_inv(h, o)}{partial_inv(h, o)} h[o, allocated] ==> inv(h, o)) // G1
+  (forall o: ref :: {user_inv(h, o)} h[o, allocated] ==> inv(h, o)) // G1
 }
 
 // Global invariant with a more permissive trigger: much slower, so only used in public routines  

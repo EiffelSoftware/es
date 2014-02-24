@@ -20,6 +20,7 @@ feature -- Access
 		require
 			closed: closed
 			has_key: has_key (k)
+			reads (ownership_domain)
 		deferred
 		ensure
 			definition: Result = map [k]

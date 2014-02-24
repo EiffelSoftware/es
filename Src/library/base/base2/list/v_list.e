@@ -107,8 +107,12 @@ feature -- Extension
 
 	extend_front (v: G)
 			-- Insert `v' at the front.
+		note
+			explicit: contracts
 		require
-			modify_model ("sequence", Current)
+			is_wrapped: is_wrapped
+			observers_open: across observers as o all o.item.is_open end
+			modify_model (["sequence", "owns"], Current)
 		deferred
 		ensure
 			sequence_effect: sequence ~ old sequence.prepended (v)
@@ -116,32 +120,45 @@ feature -- Extension
 
 	extend_back (v: G)
 			-- Insert `v' at the back.
+		note
+			explicit: contracts
 		require
-			modify_model ("sequence", Current)
+			is_wrapped: is_wrapped
+			observers_open: across observers as o all o.item.is_open end
+			modify_model (["sequence"], Current)
 		deferred
 		ensure
+			is_wrapped: is_wrapped
 			sequence_effect: sequence ~ old (sequence & v)
 		end
 
 	extend_at (v: G; i: INTEGER)
 			-- Insert `v' at position `i'.
+		note
+			explicit: contracts
 		require
+			is_wrapped: is_wrapped
 			valid_index: has_index (i) or i = count + 1
-			modify_model ("sequence", Current)
+			observers_open: across observers as o all o.item.is_open end
+			modify_model (["sequence"], Current)
 		deferred
 		ensure
+			is_wrapped: is_wrapped
 			sequence_effect: sequence ~ old sequence.extended_at (i, v)
 		end
 
 	append (input: V_ITERATOR [G])
 			-- Append sequence of values produced by `input'.
 		note
-			explicit: wrapping
+			explicit: contracts, wrapping
 		require
+			is_wrapped: is_wrapped
+			input_wrapped: input.is_wrapped
 			not_current: input /= Current
 			different_target: input.target /= Current
 			not_before: not input.before
-			modify_model ("sequence", Current)
+			observers_open: across observers as o all o.item.is_open end
+			modify_model (["sequence"], Current)
 			modify_model ("index_", input)
 		do
 			from
@@ -162,20 +179,29 @@ feature -- Extension
 				input.sequence.count - input.index_
 			end
 		ensure
+			is_wrapped: is_wrapped
+			input_wrapped: input.is_wrapped
 			sequence_effect: sequence ~ old (sequence + input.sequence.tail (input.index_))
 			input_index_effect: input.index_ = input.sequence.count + 1
 		end
 
 	prepend (input: V_ITERATOR [G])
 			-- Prepend sequence of values produced by `input'.
+		note
+			explicit: contracts
 		require
+			is_wrapped: is_wrapped
+			input_wrapped: input.is_wrapped
 			not_current: input /= Current
 			different_target: input.target /= Current
 			not_before: not input.before
-			modify_model ("sequence", Current)
+			observers_open: across observers as o all o.item.is_open end
+			modify_model (["sequence"], Current)
 			modify_model ("index_", input)
 		deferred
 		ensure
+			is_wrapped: is_wrapped
+			input_wrapped: input.is_wrapped
 			sequence_effect: sequence ~ old (input.sequence.tail (input.index_) + sequence)
 			input_index_effect: input.index_ = input.sequence.count + 1
 		end
@@ -183,16 +209,21 @@ feature -- Extension
 	insert_at (input: V_ITERATOR [G]; i: INTEGER)
 			-- Insert starting at position `i' sequence of values produced by `input'.
 		note
-			modify: sequence, input__index
+			explicit: contracts
 		require
+			is_wrapped: is_wrapped
+			input_wrapped: input.is_wrapped
 			valid_index: has_index (i) or i = count + 1
 			not_current: input /= Current
 			different_target: input.target /= Current
 			not_before: not input.before
-			modify_model ("sequence", Current)
+			observers_open: across observers as o all o.item.is_open end
+			modify_model (["sequence"], Current)
 			modify_model ("index_", input)
 		deferred
 		ensure
+			is_wrapped: is_wrapped
+			input_wrapped: input.is_wrapped
 			sequence_effect: sequence ~ old (sequence.front (i - 1) + input.sequence.tail (input.index_) + sequence.tail (i))
 			input_index_effect: input.index_ = input.sequence.count + 1
 		end
@@ -201,40 +232,57 @@ feature -- Removal
 
 	remove_front
 			-- Remove first element.
+		note
+			explicit: contracts
 		require
+			is_wrapped: is_wrapped
 			not_empty: not is_empty
-			modify_model ("sequence", Current)
+			observers_open: across observers as o all o.item.is_open end
+			modify_model (["sequence"], Current)
 		deferred
 		ensure
+			is_wrapped: is_wrapped
 			sequence_effect: sequence ~ old sequence.but_first
 		end
 
 	remove_back
 			-- Remove last element.
+		note
+			explicit: contracts
 		require
+			is_wrapped: is_wrapped
 			not_empty: not is_empty
-			modify_model ("sequence", Current)
+			observers_open: across observers as o all o.item.is_open end
+			modify_model (["sequence"], Current)
 		deferred
 		ensure
+			is_wrapped: is_wrapped
 			sequence_effect: sequence ~ old sequence.but_last
 		end
 
 	remove_at (i: INTEGER)
 			-- Remove element at position `i'.
+		note
+			explicit: contracts
 		require
+			is_wrapped: is_wrapped
 			has_index: has_index (i)
-			modify_model ("sequence", Current)
+			observers_open: across observers as o all o.item.is_open end
+			modify_model (["sequence"], Current)
 		deferred
 		ensure
+			is_wrapped: is_wrapped
 			sequence_effect: sequence ~ old sequence.removed_at (i)
 		end
 
 	remove (v: G)
 			-- Remove the first occurrence of `v'.
 		note
-			explicit: wrapping
+			explicit: contracts, wrapping
 		require
+			is_wrapped: is_wrapped
 			has: sequence.has (v)
+			observers_open: across observers as o all o.item.is_open end
 			modify_model (["sequence", "observers"], Current)
 		local
 			i: V_LIST_ITERATOR [G]
@@ -244,6 +292,7 @@ feature -- Removal
 			i.remove
 			forget_iterator (i)
 		ensure
+			is_wrapped: is_wrapped
 --			sequence_effect: sequence |=| old (sequence.removed_at (sequence.inverse.image_of (v).extremum (agent less_equal)))
 			observers_restored: observers ~ old observers
 		end
@@ -251,8 +300,10 @@ feature -- Removal
 	remove_all (v: G)
 			-- Remove all occurrences of `v'.
 		note
-			explicit: wrapping
+			explicit: contracts, wrapping
 		require
+			is_wrapped: is_wrapped
+			observers_open: across observers as o all o.item.is_open end
 			modify_model (["sequence", "observers"], Current)
 		local
 			i: V_LIST_ITERATOR [G]
@@ -275,16 +326,22 @@ feature -- Removal
 			end
 			forget_iterator (i)
 		ensure
+			is_wrapped: is_wrapped
 --			sequence_effect: sequence |=| old (sequence.removed (sequence.inverse.image_of (v)))
 			observers_restored: observers ~ old observers
 		end
 
 	wipe_out
 			-- Remove all elements.
+		note
+			explicit: contracts
 		require
-			modify_model ("sequence", Current)
+			is_wrapped: is_wrapped
+			observers_open: across observers as o all o.item.is_open end
+			modify_model (["sequence"], Current)
 		deferred
-		ensure then
+		ensure
+			is_wrapped: is_wrapped
 			sequence_effect: sequence.is_empty
 		end
 
@@ -299,8 +356,7 @@ feature -- Specification
 		end
 
 invariant
-	map_domain_definition: map.domain ~ sequence.domain
-	map_definition: across map.domain as i all map [i.item] = sequence [i.item] end
+	map_definition: map ~ sequence.to_map
 	lower_defintion: lower_ = 1
 	upper_definition: upper_ = sequence.count
 

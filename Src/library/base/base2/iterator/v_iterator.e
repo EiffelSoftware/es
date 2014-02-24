@@ -201,7 +201,7 @@ feature -- Cursor movement
 		note
 			explicit: wrapping
 		do
-			check inv end
+			check inv_only ("index_constraint") end
 			if before then
 				start
 			end

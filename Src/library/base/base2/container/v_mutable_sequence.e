@@ -34,9 +34,11 @@ feature -- Replacement
 	put (v: G; i: INTEGER)
 			-- Replace value at position `i' with `v'.
 		note
-			explicit: wrapping
+			explicit: contracts, wrapping
 		require
+			is_wrapped: is_wrapped
 			has_index: has_index (i)
+			observers_open: across observers as o all o.item.is_open end
 			modify_model (["map", "observers"], Current)
 		local
 			it: V_MUTABLE_SEQUENCE_ITERATOR [G]
@@ -45,6 +47,7 @@ feature -- Replacement
 			it.put (v)
 			forget_iterator (it)
 		ensure
+			is_wrapped: is_wrapped
 			map_effect: map ~ old map.updated (i, v)
 			observers_restored: observers ~ old observers
 		end
@@ -52,10 +55,12 @@ feature -- Replacement
 	swap (i1, i2: INTEGER)
 			-- Swap values at positions `i1' and `i2'.
 		note
-			explicit: wrapping
+			explicit: contracts, wrapping
 		require
+			is_wrapped: is_wrapped
 			has_index_one: has_index (i1)
 			has_index_two: has_index (i2)
+			observers_open: across observers as o all o.item.is_open end
 			modify_model (["map", "observers"], Current)
 		local
 			v: G
@@ -64,6 +69,7 @@ feature -- Replacement
 			put (item (i2), i1)
 			put (v, i2)
 		ensure
+			is_wrapped: is_wrapped
 			map_effect: map ~ old map.updated (i1, map [i2]).updated (i2, map [i1])
 			observers_restored: observers ~ old observers
 		end
@@ -71,11 +77,13 @@ feature -- Replacement
 	fill (v: G; l, u: INTEGER)
 			-- Put `v' at positions [`l', `u'].
 		note
-			explicit: wrapping
+			explicit: contracts, wrapping
 		require
+			is_wrapped: is_wrapped
 			l_not_too_small: l >= lower
 			u_not_too_large: u <= upper
 			l_not_too_large: l <= u + 1
+			observers_open: across observers as o all o.item.is_open end
 			modify_model (["map", "observers"], Current)
 		local
 			it: V_MUTABLE_SEQUENCE_ITERATOR [G]
@@ -105,6 +113,7 @@ feature -- Replacement
 
 			forget_iterator (it)
 		ensure
+			is_wrapped: is_wrapped
 			map_domain_effect: map.domain ~ old map.domain
 			map_changed_effect: (map | (create {MML_INTERVAL}.from_range (l, u))).is_constant (v)
 			map_unchanged_effect: (map | (map.domain - (create {MML_INTERVAL}.from_range (l, u)))) ~
@@ -117,13 +126,16 @@ feature -- Replacement
 		note
 			explicit: wrapping
 		require
+			is_wrapped: is_wrapped
 			l_not_too_small: l >= lower
 			u_not_too_large: u <= upper
 			l_not_too_large: l <= u + 1
+			observers_open: across observers as o all o.item.is_open end
 			modify_model (["map", "observers"], Current)
 		do
 			fill (({G}).default, l, u)
 		ensure
+			is_wrapped: is_wrapped
 			map_domain_effect: map.domain ~ old map.domain
 			map_changed_effect: (map | (create {MML_INTERVAL}.from_range (l, u))).is_constant (({G}).default)
 			map_unchanged_effect: (map | (map.domain - (create {MML_INTERVAL}.from_range (l, u)))) ~
@@ -136,12 +148,15 @@ feature -- Replacement
 		note
 			explicit: wrapping
 		require
+			is_wrapped: is_wrapped
+			other_wrapped: other.is_wrapped
 			other_not_current: other /= Current
 			other_first_not_too_small: other_first >= other.lower
 			other_last_not_too_large: other_last <= other.upper
 			other_first_not_too_large: other_first <= other_last + 1
 			index_not_too_small: index >= lower
 			enough_space: upper - index >= other_last - other_first
+			observers_open: across observers as o all o.item.is_open end
 			modify_model (["map", "observers"], Current)
 			modify_model ("observers", other)
 		local
@@ -180,6 +195,7 @@ feature -- Replacement
 			other.forget_iterator (other_it)
 			forget_iterator (it)
 		ensure
+			is_wrapped: is_wrapped
 			map_domain_effect: map.domain ~ old map.domain
 			map_changed_effect: across create {MML_INTERVAL}.from_range (index, index + other_last - other_first) as i all
 				map [i.item] = other.map [i.item - index + other_first] end
@@ -194,6 +210,8 @@ feature -- Replacement
 		note
 			explicit: wrapping
 		require
+			is_wrapped: is_wrapped
+			observers_open: across observers as o all o.item.is_open end
 			modify_model (["map", "observers"], Current)
 		local
 			j, k: INTEGER
@@ -219,11 +237,11 @@ feature -- Replacement
 				k := k - 1
 			end
 		ensure
+			is_wrapped: is_wrapped
 			map_domain_effect: map.domain ~ old map.domain
 			map_effect: across map.domain as i all map [i.item] = (old map) [lower_ + upper_ - i.item] end
 			observers_restored: observers ~ old observers
 		end
-
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

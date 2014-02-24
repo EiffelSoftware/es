@@ -23,6 +23,7 @@ feature -- Access
 		require
 			closed: closed
 			not_empty: not is_empty
+			reads (ownership_domain)
 		do
 			check inv end
 			Result := item (lower)
@@ -35,6 +36,7 @@ feature -- Access
 		require
 			closed: closed
 			not_empty: not is_empty
+			reads (ownership_domain)
 		do
 			check inv end
 			Result := item (upper)
@@ -76,6 +78,8 @@ feature -- Measurement
 		do
 			check inv end
 			Result := lower <= i and i <= upper
+		ensure then
+			Result = (lower <= i and i <= upper)
 		end
 
 feature -- Search

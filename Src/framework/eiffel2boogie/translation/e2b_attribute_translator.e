@@ -37,7 +37,7 @@ feature -- Basic operations
 			l_boogie_type := types.for_class_type (l_class_type)
 
 			l_prev := previous_versions
-			if l_prev = Void then
+			if l_prev.is_empty then
 					-- No previous versions:
 					-- Add unique field declaration
 				boogie_universe.add_declaration (
@@ -169,23 +169,24 @@ feature {NONE} -- Implementation
 			l_written_feature: FEATURE_I
 			i: INTEGER
 		do
+			create Result.make
 			if current_feature.written_in /= current_type.base_class.class_id then
 					-- Inherited attribute: return the class where it is written in				
 				l_written_type := helper.class_type_from_class (current_feature.written_class, current_type)
 				l_written_feature := l_written_type.base_class.feature_of_body_index (current_feature.body_index)
-				create Result.make
 				Result.extend ([l_written_feature, l_written_type])
 			elseif current_feature.assert_id_set /= Void then
 					-- Redefined attribute: return original versions
 				from
-					create Result.make
 					i := 1
 				until
 					i > current_feature.assert_id_set.count
 				loop
 					l_written_type := helper.class_type_from_class (current_feature.assert_id_set [i].written_class, current_type)
 					l_written_feature := l_written_type.base_class.feature_of_body_index (current_feature.assert_id_set [i].body_index)
-					Result.extend ([l_written_feature, l_written_type])
+					if l_written_feature.is_attribute then
+						Result.extend ([l_written_feature, l_written_type])
+					end
 					i := i + 1
 				end
 			end
