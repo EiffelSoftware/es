@@ -4273,6 +4273,7 @@ Src/web/support/esa_api/ecf-target-any_connector -text
 Src/web/support/esa_api/ecf-target-connector -text
 Src/web/support/esa_api/www/404.tpl -text
 Src/web/support/esa_api/www/406.tpl -text
+Src/web/support/esa_api/www/auth.js -text
 Src/web/support/esa_api/www/cj_items.tpl -text
 Src/web/support/esa_api/www/cj_reports.tpl -text
 Src/web/support/esa_api/www/cj_reports_detail.tpl -text
@@ -4285,6 +4286,7 @@ Src/web/support/esa_api/www/guest_reports.tpl -text
 Src/web/support/esa_api/www/holder.js -text
 Src/web/support/esa_api/www/home.tpl -text
 Src/web/support/esa_api/www/list_reports.tpl -text
+Src/web/support/esa_api/www/login.js -text
 Src/web/support/esa_api/www/optional_enhancement_js.tpl -text
 Src/web/support/esa_api/www/optional_styling_css.tpl -text
 Src/web/support/esa_api/www/reports.tpl -text
@@ -4295,6 +4297,7 @@ Src/web/support/esa_db/scripts/GetReportProblemInteractionsGuest.sql -text
 Src/web/support/esa_db/scripts/IsProblemReportVisubleGuest.sql -text
 Src/web/support/esa_db/scripts/Readme.txt -text
 Src/web/support/esa_db/scripts/TableRowCount.sql -text
+Src/web/support/esa_db/tests/api_password.txt -text
 benchmarks/scoop/Tests1-6.xls -text
 benchmarks/scoop/scoop0001/LogParser.java -text
 benchmarks/scoop/scoop0001/compile.cmd -text
