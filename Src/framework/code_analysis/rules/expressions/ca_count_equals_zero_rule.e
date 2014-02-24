@@ -83,10 +83,9 @@ feature {NONE} -- Rule checking
 				and then attached {NESTED_AS} l_ec.call as l_nested_call
 				and then attached {ACCESS_AS} l_nested_call.message as l_msg
 				and then l_msg.access_name_8.is_equal ("count")
+				and then attached current_context.node_type (l_nested_call.target, current_feature_i) as l_type
 			then
-				if attached current_context.node_type (l_nested_call.target, current_feature_i) as l_type then
-					Result := l_type.base_class.conform_to (finite)
-				end
+				Result := l_type.base_class.conform_to (finite)
 			end
 		end
 

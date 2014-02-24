@@ -158,7 +158,7 @@ feature {ES_CODE_ANALYSIS_BENCH_HELPER} -- Basic operations
 			l_helper: ES_CODE_ANALYSIS_BENCH_HELPER
 			l_dialog: ES_INFORMATION_PROMPT
 		do
-			-- Compile the project and only analyze if the compilation was successful.
+				-- Compile the project and only analyze if the compilation was successful.
 			eiffel_project.quick_melt (True, True, True)
 			if eiffel_project.successful then
 				create l_helper

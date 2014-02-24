@@ -77,14 +77,14 @@ feature {NONE} -- AST Visits
 	process_assign (a_assign: ASSIGN_AS)
 			-- Is something assigned to an attributein `a_assign'?
 		do
-			-- Skip the checks if we are not within a function.
-			if is_function then
-				if attached {ACCESS_ID_AS} a_assign.target as l_access_id then
-					if current_context.checking_class.feature_with_id (l_access_id.feature_name) /= Void then
-						-- We have an assignment to an attribute.
-						rule_violated := True
-					end
-				end
+				-- Skip the checks if we are not within a function.
+			if
+				is_function
+				and then attached {ACCESS_ID_AS} a_assign.target as l_access_id
+				and then current_context.checking_class.feature_with_id (l_access_id.feature_name) /= Void
+			then
+					-- We have an assignment to an attribute.
+				rule_violated := True
 			end
 		end
 
