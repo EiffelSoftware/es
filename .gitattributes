@@ -4271,6 +4271,7 @@ Src/unstable/library/text/encryption/crypto/license.lic -text
 Src/unstable/library/text/encryption/crypto/tests/license.lic -text
 Src/web/support/esa_api/ecf-target-any_connector -text
 Src/web/support/esa_api/ecf-target-connector -text
+Src/web/support/esa_api/esa.ini -text
 Src/web/support/esa_api/www/404.tpl -text
 Src/web/support/esa_api/www/406.tpl -text
 Src/web/support/esa_api/www/auth.js -text
@@ -4291,6 +4292,7 @@ Src/web/support/esa_api/www/optional_enhancement_js.tpl -text
 Src/web/support/esa_api/www/optional_styling_css.tpl -text
 Src/web/support/esa_api/www/reports.tpl -text
 Src/web/support/esa_api/www/reports_detail.tpl -text
+Src/web/support/esa_db/scripts/AddUser2.sql -text
 Src/web/support/esa_db/scripts/GetProblemReportsGuest.sql -text
 Src/web/support/esa_db/scripts/GetProblemReportsRowCountGuest.sql -text
 Src/web/support/esa_db/scripts/GetReportProblemInteractionsGuest.sql -text
