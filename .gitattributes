@@ -4443,6 +4443,7 @@ eweasel/tests/attach064/Ace -text
 eweasel/tests/attach096/Ace -text
 eweasel/tests/attach097/Ace_rev2 -text
 eweasel/tests/attach103/Ace svneol=native#text/xml
+eweasel/tests/catcall013/Ace svneol=native#text/xml
 eweasel/tests/ccomp001/notes -text
 eweasel/tests/ccomp002/notes -text
 eweasel/tests/ccomp003/notes -text
