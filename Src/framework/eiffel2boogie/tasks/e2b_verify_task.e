@@ -60,8 +60,10 @@ feature -- Access
 		do
 			if attached {E2B_TRANSLATE_CHUNK_TASK} sub_task then
 				Result := 0
+			elseif attached {E2B_EXECUTE_BOOGIE_TASK} sub_task then
+				Result := 200
 			else
-				Result := 100
+				Result := 50
 			end
 		end
 

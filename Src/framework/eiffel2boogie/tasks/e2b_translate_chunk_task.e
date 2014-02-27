@@ -42,11 +42,9 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 			-- <Precursor>
 		local
 			l_end_tick: NATURAL
+			l_untranslated: INTEGER
+			l_total: INTEGER
 		do
---			if not started then
---				start
---				started := True
---			end
 				-- Translate features for some milliseconds
 			from
 				l_end_tick := end_tick_for_duration (100)
@@ -56,12 +54,10 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 				translator.step
 			end
 			has_next_step := translator.has_next_step
---			if not has_next_step then
---				print_time
---				print ("%Ttotal translation chunk time%N")
---			end
 
-			set_status ("Translating Eiffel to Boogie (elements remaining: " + translation_pool.untranslated_elements.count.out + ")")
+			l_untranslated := translation_pool.untranslated_elements.count
+			l_total := l_untranslated + translation_pool.translated_elements.count
+			set_status (messages.status_translating (l_untranslated, l_total))
 		end
 
 	cancel

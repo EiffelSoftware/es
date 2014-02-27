@@ -104,7 +104,7 @@ feature {NONE} -- Implementation
 			create Result.make (5)
 		end
 
-	start
+	start_timer
 		local
 			l_time: DT_TIME
 		do
@@ -112,25 +112,14 @@ feature {NONE} -- Implementation
 			start_time.extend (l_time)
 		end
 
-	print_time
+	stop_timer
 		local
 			l_time: DT_TIME
 		do
-			l_time := start_time.item
 			start_time.remove
-			print (timer.system_clock.time_now.time_duration (l_time).millisecond_count)
 		end
 
-	get_time: INTEGER
-		local
-			l_time: DT_TIME
-		do
-			l_time := start_time.item
-			start_time.remove
-			Result := timer.system_clock.time_now.time_duration (l_time).millisecond_count
-		end
-
-	peek_time: INTEGER
+	current_timer: INTEGER
 		local
 			l_time: DT_TIME
 		do

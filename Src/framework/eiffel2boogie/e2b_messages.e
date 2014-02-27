@@ -224,4 +224,14 @@ feature -- GUI
 	tool_text_filter: STRING_32
 		do Result := "Filter" end
 
+	status_translating (a_current, a_total: INTEGER): STRING_32
+		do Result := locale.formatted_string ("Translating Eiffel to Boogie ($1/$2 elements remaining)", a_current, a_total) end
+
+	status_boogie_running (a_milliseconds: INTEGER): STRING_32
+		do Result := locale.formatted_string ("Boogie running: $1 s", a_milliseconds // 1000) end
+
+	status_boogie_finished (a_milliseconds: INTEGER): STRING_32
+		do Result := locale.formatted_string ("Boogie finished: $1 s", a_milliseconds // 1000) end
+
+
 end

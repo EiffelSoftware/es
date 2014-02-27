@@ -8,6 +8,10 @@ note
 class
 	ES_AUTOPROOF_BENCH_HELPER
 
+inherit
+
+	EB_SHARED_PIXMAPS
+
 feature -- Basic operations
 
 	build_context_menu_for_class_stone (a_menu: EV_MENU; a_stone: CLASSC_STONE)
@@ -22,6 +26,7 @@ feature -- Basic operations
 		do
 			if a_stone.class_i.is_compiled then
 				create l_item.make_with_text_and_action ("Verify with AutoProof", agent verify_class (a_stone.e_class))
+				l_item.set_pixmap (icon_pixmaps.general_tick_icon)
 				if autoproof.is_running then
 					l_item.disable_sensitive
 					l_item.set_text (l_item.text + " (running)")
@@ -42,6 +47,7 @@ feature -- Basic operations
 		do
 			if a_stone.e_feature.is_procedure or a_stone.e_feature.is_function then
 				create l_item.make_with_text_and_action ("Verify with AutoProof", agent verify_feature (a_stone.e_feature.associated_feature_i))
+				l_item.set_pixmap (icon_pixmaps.general_tick_icon)
 				if autoproof.is_running then
 					l_item.disable_sensitive
 					l_item.set_text (l_item.text + " (running)")
@@ -89,7 +95,7 @@ feature -- Verification
 		end
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
