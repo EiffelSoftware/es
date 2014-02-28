@@ -4287,6 +4287,8 @@ Src/web/support/esa_api/www/holder.js -text
 Src/web/support/esa_api/www/home.tpl -text
 Src/web/support/esa_api/www/list_reports.tpl -text
 Src/web/support/esa_api/www/login.js -text
+Src/web/support/esa_api/www/logoff.tpl -text
+Src/web/support/esa_api/www/navbar.tpl -text
 Src/web/support/esa_api/www/optional_enhancement_js.tpl -text
 Src/web/support/esa_api/www/optional_styling_css.tpl -text
 Src/web/support/esa_api/www/reports.tpl -text
