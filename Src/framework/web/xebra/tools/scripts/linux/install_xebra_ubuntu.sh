@@ -8,10 +8,10 @@ echo "This script will install Xebra."
 
 #Constants
 
-apache_dir="httpd-2.2.14"
+apache_dir="httpd-2.2.26"
 apache_file="$apache_dir.tar.gz"
 apache_url="http://www.apache.org/dist/httpd/$apache_file" 
-revision=81057
+revision=HEAD
 
 echo "Apache $apache_url will be installed..."
 echo "Xebra revision $revision will be installed..."
@@ -91,27 +91,27 @@ mkdir eiffel_src
 cd eiffel_src
 mkdir framework
 cd framework
-svn export https://svn.origo.ethz.ch/eiffelstudio/trunk/Src/framework/base base
-svn export https://svn.origo.ethz.ch/eiffelstudio/trunk/Src/framework/settable_types settable_types
-svn export https://svn.origo.ethz.ch/eiffelstudio/trunk/Src/framework/string_expander string_expander
-svn export https://svn.origo.ethz.ch/eiffelstudio/trunk/Src/framework/environment environment
-svn export https://svn.origo.ethz.ch/eiffelstudio/trunk/Src/framework/peg peg
+svn export https://svn.eiffel.com/eiffelstudio/trunk/Src/framework/base base
+svn export https://svn.eiffel.com/eiffelstudio/trunk/Src/framework/settable_types settable_types
+svn export https://svn.eiffel.com/eiffelstudio/trunk/Src/framework/string_expander string_expander
+svn export https://svn.eiffel.com/eiffelstudio/trunk/Src/framework/environment environment
+svn export https://svn.eiffel.com/eiffelstudio/trunk/Src/framework/peg peg
 export EIFFEL_SRC=$XEBRA_DEV/eiffel_src
 
 #Checkout eiffel_projects
 echo "=========================Checking out xebra libraries..."
 cd $XEBRA_DEV
-svn export https://svn.origo.ethz.ch/eiffelstudio/trunk/Src/framework/web/xebra/eiffel_projects -r $revision
+svn export https://svn.eiffel.com/eiffelstudio/trunk/Src/framework/web/xebra/eiffel_projects -r $revision
 
 #Checkout ejson
 echo "=========================Checking out ejason..."
 cd $XEBRA_DEV
-svn export https://svn.origo.ethz.ch/ejson/trunk/json eiffel_projects/library/ejson
+svn export https://svn.eiffel.com/ejson/trunk/json eiffel_projects/library/ejson
 
 
 #Compile Precompile
 echo "=========================Compiling precompile..."
-ecb -experiment -config $XEBRA_DEV/eiffel_projects/library/xebra_precompile/xebra_precompile.ecf -target xebra_precompile -c_compile  -precompile -stop -project_path $XEBRA_DEV/eiffel_projects/library/xebra_precompile
+ecb -config $XEBRA_DEV/eiffel_projects/library/xebra_precompile/xebra_precompile.ecf -target xebra_precompile -c_compile  -precompile -stop -project_path $XEBRA_DEV/eiffel_projects/library/xebra_precompile
 if [ ! $? == 0 ]; then
 	echo "Error compiling precompile!"
 	exit
@@ -120,7 +120,7 @@ fi;
 
 #Compile Server
 echo "=========================Compiling server..."
-ecb -experiment -config $XEBRA_DEV/eiffel_projects/xebra_server/xebra_server.ecf  -target xebra_server -c_compile -finalize -stop -project_path $XEBRA_DEV/eiffel_projects/xebra_server
+ecb -config $XEBRA_DEV/eiffel_projects/xebra_server/xebra_server.ecf  -target xebra_server -c_compile -finalize -stop -project_path $XEBRA_DEV/eiffel_projects/xebra_server
 if [ ! $? == 0 ]; then
 	echo "Error compiling server!"
 	exit
@@ -128,7 +128,7 @@ fi;
 
 #Compile Translator
 echo "=========================Compiling translator..."
-ecb -experiment -config $XEBRA_DEV/eiffel_projects/xebra_translator/xebra_translator.ecf  -target xebra_translator -c_compile -finalize -stop -project_path $XEBRA_DEV/eiffel_projects/xebra_translator
+ecb -config $XEBRA_DEV/eiffel_projects/xebra_translator/xebra_translator.ecf  -target xebra_translator -c_compile -finalize -stop -project_path $XEBRA_DEV/eiffel_projects/xebra_translator
 if [ ! $? == 0 ]; then
 	echo "Error compiling translator!"
 	exit
@@ -141,10 +141,10 @@ cp $XEBRA_DEV/eiffel_projects/xebra_translator/EIFGENs/xebra_translator/F_code/x
 #Checkout webapps
 echo "=========================Checking out webapps..."
 cd $XEBRA_DEV/www
-svn export https://svn.origo.ethz.ch/eiffelstudio/trunk/Src/framework/web/xebra/www/helloworld -r $revision helloworld
-svn export https://svn.origo.ethz.ch/eiffelstudio/trunk/Src/framework/web/xebra/www/demoapplication -r $revision demoapplication
-svn export https://svn.origo.ethz.ch/eiffelstudio/trunk/Src/framework/web/xebra/www/servercontrol -r $revision servercontrol
-svn export https://svn.origo.ethz.ch/eiffelstudio/trunk/Src/framework/web/xebra/www/examples -r $revision examples
+svn export https://svn.eiffel.com/eiffelstudio/trunk/Src/framework/web/xebra/www/helloworld -r $revision helloworld
+svn export https://svn.eiffel.com/eiffelstudio/trunk/Src/framework/web/xebra/www/demoapplication -r $revision demoapplication
+svn export https://svn.eiffel.com/eiffelstudio/trunk/Src/framework/web/xebra/www/servercontrol -r $revision servercontrol
+svn export https://svn.eiffel.com/eiffelstudio/trunk/Src/framework/web/xebra/www/examples -r $revision examples
 
 echo "=========================Setting up webapps..."
 #Move xebra libraries
@@ -176,7 +176,7 @@ echo '  "compiler": "$ISE_EIFFEL/studio/spec/$ISE_PLATFORM/bin/ec",' >> $XEBRA_D
 echo '  "translator": "$XEBRA_DEV/bin/xebra_translator",' >> $XEBRA_DEV/conf/config.srv
 echo '  "managed_webapps": "$XEBRA_DEV/www",' >> $XEBRA_DEV/conf/config.srv
 echo '  "library": "$XEBRA_LIBRARY",' >> $XEBRA_DEV/conf/config.srv
-echo ' "compiler_flags": "-experiment",' >> $XEBRA_DEV/conf/config.srv
+echo ' "compiler_flags": "",' >> $XEBRA_DEV/conf/config.srv
 echo '  "unmanaged_webapps":' >> $XEBRA_DEV/conf/config.srv
 echo '  [' >> $XEBRA_DEV/conf/config.srv
 echo '  ]' >> $XEBRA_DEV/conf/config.srv
@@ -213,7 +213,7 @@ rm -Rf $XEBRA_DEV/httpd_tmp
 # Compile and install xebra module
 echo "=========================Installing mod_xebra..."
 cd $XEBRA_DEV
-svn export https://svn.origo.ethz.ch/eiffelstudio/trunk/Src/framework/web/xebra/c_projects -r $revision c_projects
+svn export https://svn.eiffel.com/eiffelstudio/trunk/Src/framework/web/xebra/c_projects -r $revision c_projects
 cd $XEBRA_DEV/c_projects/apache_mod_xebra
 $XEBRA_DEV/apache/bin/apxs -c mod_xebra.c mod_xebra.h
 $XEBRA_DEV/apache/bin/apxs -i mod_xebra.la

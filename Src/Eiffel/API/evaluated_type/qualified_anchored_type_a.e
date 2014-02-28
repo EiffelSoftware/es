@@ -262,7 +262,7 @@ feature {TYPE_A_CHECKER, QUALIFIED_ANCHORED_TYPE_A} -- Modification
 			class_id_set: class_id = c.class_id
 		end
 
-feature {TYPE_A_CHECKER} -- Modification
+feature {TYPE_A_CHECKER, QUALIFIED_ANCHORED_TYPE_A} -- Modification
 
 	set_routine_id (r: like routine_id)
 			-- Set `routine_id' to `r'.
@@ -297,22 +297,19 @@ feature -- IL code generation
 	dispatch_anchors (a_context_class: CLASS_C)
 			-- <Precursor>
 		local
-			c: CLASS_C
-			f: FEATURE_I
+			c: detachable CLASS_C
 			i: INTEGER
+			l_rid: INTEGER
 		do
 			qualifier.dispatch_anchors (a_context_class)
 			from
-				c := qualifier.base_class
 			until
-				i >= chain.count
+				i >= routine_id.count
 			loop
-				if attached c then
-					f := c.feature_table.item_id (chain [i])
-					if attached f then
-						c.extend_type_set (f.rout_id_set.first)
-						c := f.type.base_class
-					end
+				l_rid := routine_id [i]
+				c := system.class_of_id (system.rout_info_table.item (l_rid).origin)
+				if c /= Void then
+					c.extend_type_set (l_rid)
 				end
 				i := i + 1
 			end
@@ -459,7 +456,10 @@ feature {NONE} -- Recomputation in a different context
 				from
 					c := chain
 					q := new_qualifier
+						-- Make a copy of the original qualified anchored type with the new qualifier and class ID.
 					create Result.make (q, c, new_class_id)
+					Result.set_routine_id (routine_id)
+						-- Then traverse the feature chain and update it in the `Result' if required.
 					w := system.class_of_id (new_class_id)
 					n := c.count
 				until

@@ -41,6 +41,7 @@ feature -- Applicability
 	can_apply: BOOLEAN
 		local
 			l_source_parents, l_destination_parents: detachable PARENT_LIST_AS
+			l_last_computed_modifier: LINKED_LIST [ERT_AST_MODIFIER]
 		do
 			l_source_parents := source.parents
 			l_destination_parents := destination.parents
@@ -52,16 +53,18 @@ feature -- Applicability
 			elseif l_destination_parents = Void then
 				Result := destination.class_name.can_append_text (destination_match_list)
 			elseif l_destination_parents.is_empty then
-				Result := destination.parents.inherit_keyword (destination_match_list).can_append_text (destination_match_list)
+				Result := l_destination_parents.inherit_keyword (destination_match_list).can_append_text (destination_match_list)
 			else
-				compute_modification
-				Result := last_computed_modifier.for_all (agent {ERT_AST_MODIFIER}.can_apply)
+				create l_last_computed_modifier.make
+				compute_modification (l_last_computed_modifier)
+				Result := l_last_computed_modifier.for_all (agent {ERT_AST_MODIFIER}.can_apply)
 			end
 		end
 
 	apply
 		local
 			l_source_parents, l_destination_parents: detachable PARENT_LIST_AS
+			l_last_computed_modifier: LINKED_LIST [ERT_AST_MODIFIER]
 		do
 			l_source_parents := source.parents
 			l_destination_parents := destination.parents
@@ -70,26 +73,24 @@ feature -- Applicability
 			 	l_source_parents.is_empty
 			then
 			elseif l_destination_parents = Void then
-				destination.class_name.append_text ("%N"+source.parents.text (source_match_list), destination_match_list)
+				destination.class_name.append_text ("%N" + l_source_parents.text (source_match_list), destination_match_list)
 			elseif l_destination_parents.is_empty then
-				destination.parents.inherit_keyword (destination_match_list).replace_text (source.parents.text (source_match_list), destination_match_list)
+				l_destination_parents.inherit_keyword (destination_match_list).replace_text (l_source_parents.text (source_match_list), destination_match_list)
 			else
-				compute_modification
-				last_computed_modifier.do_all (agent {ERT_AST_MODIFIER}.apply)
+				create l_last_computed_modifier.make
+				compute_modification (l_last_computed_modifier)
+				l_last_computed_modifier.do_all (agent {ERT_AST_MODIFIER}.apply)
 			end
 			applied := True
 		end
 
 feature{NONE} -- Implementation
 
-	last_computed_modifier: LINKED_LIST [ERT_AST_MODIFIER]
-			-- Last computed modifier list
-
-	compute_modification
+	compute_modification (last_computed_modifier: LINKED_LIST [ERT_AST_MODIFIER])
 			-- Compute modification
 		require
-			merge_needed: destination.parents /= Void and then not destination.parents.is_empty
-			source_has_parents: source.parents /= Void and then not source.parents.is_empty
+			merge_needed: attached destination.parents as l_dest_parents and then not l_dest_parents.is_empty
+			source_has_parents: attached source.parents as l_src_parents and then not l_src_parents.is_empty
 		local
 			l_index: INTEGER
 			dest_index: INTEGER
@@ -101,8 +102,7 @@ feature{NONE} -- Implementation
 			l_modifier: ERT_EIFFEL_LIST_MODIFIER
 			l_processed: ARRAY [BOOLEAN]
 		do
-			check attached source.parents as l_source_parents and then attached destination.parents as l_destination_parents then
-				create last_computed_modifier.make
+			if attached source.parents as l_source_parents and then attached destination.parents as l_destination_parents then
 				create l_appended_parents.make (256)
 				create l_processed.make (1, l_destination_parents.count)
 				dest_index := 1
@@ -153,8 +153,6 @@ feature{NONE} -- Implementation
 				l_source_parents.go_i_th (l_index)
 				l_destination_parents.go_i_th (dest_ori_index)
 			end
-		ensure
-			modification_computed: last_computed_modifier /= Void
 		end
 
 feature -- Access
@@ -178,7 +176,7 @@ invariant
 	destination_match_list_not_void: destination_match_list /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2006, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
@@ -191,21 +189,21 @@ note
 			(available at the URL listed under "license" above).
 			
 			Eiffel Software's Eiffel Development Environment is
-			distributed in the hope that it will be useful,	but
+			distributed in the hope that it will be useful, but
 			WITHOUT ANY WARRANTY; without even the implied warranty
 			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-			See the	GNU General Public License for more details.
+			See the GNU General Public License for more details.
 			
 			You should have received a copy of the GNU General Public
 			License along with Eiffel Software's Eiffel Development
 			Environment; if not, write to the Free Software Foundation,
-			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 		]"
 	source: "[
-			 Eiffel Software
-			 356 Storke Road, Goleta, CA 93117 USA
-			 Telephone 805-685-1006, Fax 805-685-6869
-			 Website http://www.eiffel.com
-			 Customer support http://support.eiffel.com
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
 		]"
 end

@@ -25,7 +25,7 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_interpreter: like interpreter; a_post_state_serialized: BOOLEAN) is
+	make (a_interpreter: like interpreter; a_post_state_serialized: BOOLEAN)
 			-- Initialization `interpreter' with `a_interpreter'.
 			-- `a_post_state_serialized' indicates if post-state information should
 			-- be serialized as well.
@@ -229,7 +229,7 @@ feature -- Status report
 
 feature -- Basic operations
 
-	setup_test_case (a_test_case: detachable ANY) is
+	setup_test_case (a_test_case: detachable ANY)
 			-- Setup information about the current test case.
 			-- Set `is_test_case_setup' to True if `a_test_case' contain valid information of a test case,
 			-- otherwise, set `is_test_case_setup' to False'.
@@ -263,7 +263,7 @@ feature -- Basic operations
 			end
 		end
 
-	set_is_test_case_valid (b: BOOLEAN) is
+	set_is_test_case_valid (b: BOOLEAN)
 			-- Set `is_test_case_setup' with `b'.
 		do
 			is_test_case_setup := b
@@ -271,7 +271,7 @@ feature -- Basic operations
 			is_test_case_valid_set: is_test_case_setup = b
 		end
 
-	retrieve_pre_state is
+	retrieve_pre_state
 			-- Retrieve state of objects before test case
 			-- execution.
 		local
@@ -296,7 +296,7 @@ feature -- Basic operations
 			end
 		end
 
-	retrieve_post_state (a_is_failing_test_case: BOOLEAN) is
+	retrieve_post_state (a_is_failing_test_case: BOOLEAN)
 			-- Retrieve post state of the test case.
 			-- `a_is_failing_test_case' indicates if the last test case is failing.
 		local
@@ -447,7 +447,7 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	commented_string (a_string: STRING): STRING is
+	commented_string (a_string: STRING): STRING
 			-- A commented version of `a_string', with every line lead by "--"
 		require
 			a_string_attached: a_string /= Void
@@ -478,7 +478,7 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	objects_as_string (a_objects: SPECIAL [INTEGER]; a_lower: INTEGER; a_upper: INTEGER): TUPLE [serialization: STRING; description: like recursively_referenced_objects] is
+	objects_as_string (a_objects: SPECIAL [INTEGER]; a_lower: INTEGER; a_upper: INTEGER): TUPLE [serialization: STRING; description: like recursively_referenced_objects]
 			-- Serialized version of objects whose ID are specified by `a_objects' starting from
 			-- position `a_lower' and ending at position `a_upper'.
 			-- `serialization' is the serialized stream for those objects.
@@ -904,7 +904,7 @@ invariant
 	interpreter_attached: interpreter /= Void
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

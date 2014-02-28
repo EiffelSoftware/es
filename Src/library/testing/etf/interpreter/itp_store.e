@@ -238,7 +238,7 @@ feature {NONE} -- Implementation
 	internal: INTERNAL
 			-- Internal class used to get type ID of an object
 
-	initial_capacity: INTEGER is 200
+	initial_capacity: INTEGER = 200
 			-- Initial capacity for some storage
 
 invariant
@@ -247,7 +247,7 @@ invariant
 	storage_count_same_as_storage_flag_count: storage.count = storage_flag.count
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

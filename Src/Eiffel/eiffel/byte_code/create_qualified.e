@@ -260,8 +260,6 @@ feature -- IL code generation
 
 	generate_il
 			-- Generate IL code for an anchored creation type.
-		local
-			target_type: TYPE_A
 		do
 				-- Generate call to feature that will give the type we want to create.
 			generate_il_type
@@ -270,26 +268,51 @@ feature -- IL code generation
 			qualifier_creation.generate_il
 			il_generator.create_type
 
-			target_type := context.real_type (qualifier_base_type.base_class.anchored_features.item
-				(routine_id).type)
-			if target_type.is_expanded then
-					-- Load value of a value type object.
-				il_generator.generate_unmetamorphose (target_type)
-			end
+-- FIXME: The following code has been commented because it causes a crash since we
+-- do not always have the proper context to evaluate the type of the anchors, especially
+-- when swapping generics or reducing the number of generics. Since the code is just there to
+-- make the code verifiable, we have commented it out. This fixes a few eweasel tests such
+-- as test#anchor018, test#anchor050, test#anchor054, test#anchor056, test#anchor059, test#anchor063.
+--
+--				-- Save context
+--			context.change_class_type_context (qualifier_class_type, qualifier_base_type, qualifier_class_type, qualifier_base_type)
+--			target_type := context.real_type (qualifier_base_type.base_class.anchored_features.item (routine_id).type)
+--				-- Restore context
+--			context.restore_class_type_context
 
-			il_generator.generate_check_cast (Void, target_type)
+--			if target_type.is_expanded then
+--					-- Load value of a value type object.
+--				il_generator.generate_unmetamorphose (target_type)
+--			end
+
+--			il_generator.generate_check_cast (Void, target_type)
 		end
 
 	generate_il_type
 			-- Generate IL code to load type of anchored creation type.
 		local
 			c: CL_TYPE_A
+			l_old_type: CLASS_TYPE
+			l_old_type_id: INTEGER
 		do
 				-- Create qualifier object.
 			qualifier_creation.generate_il
 			c := qualifier_class_type.type
+
+				-- Save context
+			l_old_type := il_generator.current_class_type
+			l_old_type_id := il_generator.current_type_id
+			il_generator.set_current_class_type (qualifier_class_type)
+			il_generator.set_current_type_id (qualifier_class_type.static_type_id)
+			context.change_class_type_context (qualifier_class_type, qualifier_base_type, qualifier_class_type, qualifier_base_type)
+
 				-- Generate call to feature that will give the type we want to create.
 			il_generator.generate_type_feature_call_on_type (c.base_class.anchored_features.item (routine_id), c)
+
+				-- Restore context
+			il_generator.set_current_class_type (l_old_type)
+			il_generator.set_current_type_id (l_old_type_id)
+			context.restore_class_type_context
 		end
 
 feature -- Byte code generation

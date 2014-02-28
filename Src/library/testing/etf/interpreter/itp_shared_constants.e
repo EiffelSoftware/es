@@ -59,10 +59,10 @@ feature -- AutoTest socket reponse flags
 
 feature -- Index for extra data
 
-	extra_data_index_precondition_satisfaction: INTEGER is 1
+	extra_data_index_precondition_satisfaction: INTEGER = 1
 			-- Index for precondition satisfaction
 
-	extra_data_index_test_case_serialization: INTEGER is 2
+	extra_data_index_test_case_serialization: INTEGER = 2
 			-- Index for test case serialization on the fly
 
 feature -- Strings
@@ -95,7 +95,7 @@ feature -- Strings
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

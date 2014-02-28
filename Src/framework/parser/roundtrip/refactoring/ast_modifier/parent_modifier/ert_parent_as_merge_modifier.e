@@ -58,43 +58,39 @@ feature{NONE} -- Implementation
 feature -- Applicability
 
 	can_apply: BOOLEAN
+		local
+			l_computed_modifier: ERT_PARENT_AS_MODIFIER
 		do
-			compute_modification
-			check
-				last_computed_modifier /= Void
-			end
-			Result := last_computed_modifier.can_apply
+			create l_computed_modifier.make (destination, destination_match_list)
+			compute_modification (l_computed_modifier)
+			Result := l_computed_modifier.can_apply
 		end
 
 	apply
+		local
+			l_computed_modifier: ERT_PARENT_AS_MODIFIER
 		do
-			compute_modification
-			check
-				last_computed_modifier /= Void
-			end
-			last_computed_modifier.apply
+			create l_computed_modifier.make (destination, destination_match_list)
+			compute_modification (l_computed_modifier)
+			l_computed_modifier.apply
 			applied := True
 		end
 
 feature{NONE} -- Modification computation
 
-	last_computed_modifier: ERT_PARENT_AS_MODIFIER
-			-- Last computed modifier with all needed modifications registered
-
-	compute_modification
+	compute_modification (last_computed_modifier: ERT_PARENT_AS_MODIFIER)
 			-- Compute modifications needed to merge text of two PARENT_AS objects.
 		do
-			create last_computed_modifier.make (destination, destination_match_list)
-			compute_renaming_modification
-			compute_export_modification
-			compute_clauses_modification ({ERT_PARENT_AS_MODIFIER}.undefine_clause)
-			compute_clauses_modification ({ERT_PARENT_AS_MODIFIER}.redefine_clause)
-			compute_clauses_modification ({ERT_PARENT_AS_MODIFIER}.select_clause)
+			compute_renaming_modification (last_computed_modifier)
+			compute_export_modification (last_computed_modifier)
+			compute_clauses_modification (last_computed_modifier, {ERT_PARENT_AS_MODIFIER}.undefine_clause)
+			compute_clauses_modification (last_computed_modifier, {ERT_PARENT_AS_MODIFIER}.redefine_clause)
+			compute_clauses_modification (last_computed_modifier, {ERT_PARENT_AS_MODIFIER}.select_clause)
 		ensure
 			last_computed_modifier_set: last_computed_modifier /= Void
 		end
 
-	compute_export_modification
+	compute_export_modification (last_computed_modifier: ERT_PARENT_AS_MODIFIER)
 			-- Compute modifications needed two merge export clauses.
 		local
 			l_index: INTEGER
@@ -102,39 +98,37 @@ feature{NONE} -- Modification computation
 			i: INTEGER
 			done: BOOLEAN
 		do
-			check
-				last_computed_modifier /= Void
-			end
 			if
-				source.internal_exports /= Void and then
-				source.internal_exports.content /= Void and then
-				not source.internal_exports.content.is_empty
+				attached source.internal_exports as l_src_exports and then
+				attached l_src_exports.content as l_src_content and then
+				not l_src_content.is_empty
 			then
 				if
-					destination.internal_exports = Void or else
-					destination.internal_exports.content = Void or else
-					destination.internal_exports.content.is_empty then
+					not attached destination.internal_exports as l_dest_exports or else
+					not attached l_dest_exports.content as l_dest_content or else
+					l_dest_content.is_empty
+				then
 						-- If `destination' doesn't contain export clause or its export clause is empty,
 						-- we just add every export item in `source' into export clause of `destination'.
-					l_index := source.internal_exports.content.index
+					l_index := l_src_content.index
 					from
-						source.internal_exports.content.start
+						l_src_content.start
 					until
-						source.internal_exports.content.after
+						l_src_content.after
 					loop
-						last_computed_modifier.extend ({ERT_PARENT_AS_MODIFIER}.export_clause, source.internal_exports.content.item.text (source_match_list))
-						source.internal_exports.content.forth
+						last_computed_modifier.extend ({ERT_PARENT_AS_MODIFIER}.export_clause, l_src_content.item.text (source_match_list))
+						l_src_content.forth
 					end
-					source.internal_exports.content.go_i_th (l_index)
+					l_src_content.go_i_th (l_index)
 				else
-					l_str_list := new_exported_items
-					l_index := destination.internal_exports.content.index
+					l_str_list := new_exported_items (l_src_content, l_dest_content)
+					l_index := l_dest_content.index
 					from
-						destination.internal_exports.content.start
+						l_dest_content.start
 						i := 1
 						done := False
 					until
-						destination.internal_exports.content.after
+						l_dest_content.after
 					loop
 						if not done then
 							last_computed_modifier.replace ({ERT_PARENT_AS_MODIFIER}.export_clause, i, l_str_list.i_th (i))
@@ -145,9 +139,9 @@ feature{NONE} -- Modification computation
 						else
 							last_computed_modifier.remove ({ERT_PARENT_AS_MODIFIER}.export_clause, i)
 						end
-						destination.internal_exports.content.forth
+						l_dest_content.forth
 					end
-					destination.internal_exports.content.go_i_th (l_index)
+					l_dest_content.go_i_th (l_index)
 					if i <= l_str_list.count then
 						from
 
@@ -162,14 +156,11 @@ feature{NONE} -- Modification computation
 			end
 		end
 
-	compute_renaming_modification
+	compute_renaming_modification (last_computed_modifier: ERT_PARENT_AS_MODIFIER)
 			-- Compute modifications needed two merge rename clauses.
 		local
 			l_index: INTEGER
 		do
-			check
-				last_computed_modifier /= Void
-			end
 			if attached source.internal_renaming as l_renaming and then attached l_renaming.content as l_rename_list then
 				l_index := l_rename_list.index
 				from
@@ -189,7 +180,7 @@ feature{NONE} -- Modification computation
 			end
 		end
 
-	compute_clauses_modification (a_clause: INTEGER)
+	compute_clauses_modification (last_computed_modifier: ERT_PARENT_AS_MODIFIER; a_clause: INTEGER)
 			-- Compute modifications needed two merge undefine, redefine or select clauses.
 			-- Inherit clause to be merged is indicated by `a_clause'.
 		require
@@ -203,42 +194,39 @@ feature{NONE} -- Modification computation
 			l_name_list: LINKED_LIST [STRING]
 			l_name: STRING
 		do
-			check
-				last_computed_modifier /= Void
-			end
 			if a_clause = {ERT_PARENT_AS_MODIFIER}.undefine_clause then
 					-- We are processing undefine clause.
-				if source.internal_undefining /= Void then
-					l_sour_list := source.internal_undefining.content
+				if attached source.internal_undefining as l_src_undefining then
+					l_sour_list := l_src_undefining.content
 				else
 					l_sour_list := Void
 				end
-				if destination.internal_undefining /= Void then
-					l_dest_list := destination.internal_undefining.content
+				if attached destination.internal_undefining as l_dest_undefining then
+					l_dest_list := l_dest_undefining.content
 				else
 					l_dest_list := Void
 				end
 			elseif a_clause = {ERT_PARENT_AS_MODIFIER}.redefine_clause then
 					-- We are processing redefine clause.				
-				if source.internal_redefining /= Void then
-					l_sour_list := source.internal_redefining.content
+				if attached source.internal_redefining as l_src_redefining then
+					l_sour_list := l_src_redefining.content
 				else
 					l_sour_list := Void
 				end
-				if destination.internal_redefining /= Void then
-					l_dest_list := destination.internal_redefining.content
+				if attached destination.internal_redefining as l_dest_redefining then
+					l_dest_list := l_dest_redefining.content
 				else
 					l_dest_list := Void
 				end
 			elseif a_clause = {ERT_PARENT_AS_MODIFIER}.select_clause then
 					-- We are processing select clause.				
-				if source.internal_selecting /= Void then
-					l_sour_list := source.internal_selecting.content
+				if attached source.internal_selecting as l_src_selecting then
+					l_sour_list := l_src_selecting.content
 				else
 					l_sour_list := Void
 				end
-				if destination.internal_selecting /= Void then
-					l_dest_list := destination.internal_selecting.content
+				if attached destination.internal_selecting as l_dest_selecting then
+					l_dest_list := l_dest_selecting.content
 				else
 					l_dest_list := Void
 				end
@@ -305,7 +293,7 @@ feature{NONE} -- Modification computation
 			end
 		end
 
-	new_exported_items: ARRAYED_LIST [STRING]
+	new_exported_items (l_src_content, l_dest_content: EIFFEL_LIST [EXPORT_ITEM_AS]): ARRAYED_LIST [STRING]
 			-- List of string represnets text of merged exported items
 		local
 			l_sour_feature_set: ERT_EXPORT_FEATURE_SET
@@ -314,8 +302,8 @@ feature{NONE} -- Modification computation
 			l_str: STRING
 			l_name: STRING
 		do
-			create l_dest_feature_set.make (destination.internal_exports.content, final_names, destination_match_list)
-			create l_sour_feature_set.make (source.internal_exports.content, final_names, source_match_list)
+			create l_dest_feature_set.make (l_dest_content, final_names, destination_match_list)
+			create l_sour_feature_set.make (l_src_content, final_names, source_match_list)
 			l_dest_feature_set.merge (l_sour_feature_set)
 			l_merged_items := l_dest_feature_set.export_items
 			create Result.make (l_merged_items.count)
@@ -363,17 +351,21 @@ feature{NONE} -- Modification computation
 
 	final_names: HASH_TABLE [STRING, STRING]
 			-- Final names (renamed features) of all renamed features.
+		local
+			l_names: like internal_final_names
 		do
-			if internal_final_names = Void then
-				create internal_final_names.make (10)
-				internal_final_names.compare_objects
-				build_final_names (source.internal_renaming, internal_final_names)
-				build_final_names (destination.internal_renaming, internal_final_names)
+			l_names := internal_final_names
+			if l_names = Void then
+				create l_names.make (10)
+				l_names.compare_objects
+				build_final_names (source.internal_renaming, l_names)
+				build_final_names (destination.internal_renaming, l_names)
+				internal_final_names := l_names
 			end
-			Result := internal_final_names
+			Result := l_names
 		end
 
-	internal_final_names: like final_names
+	internal_final_names: detachable like final_names
 			-- Final names of all renamed features.
 
 	build_final_names (a_rename_clause: detachable RENAME_CLAUSE_AS; a_name_table: like final_names)
@@ -426,7 +418,7 @@ invariant
 	destination_match_list_not_void: destination_match_list /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

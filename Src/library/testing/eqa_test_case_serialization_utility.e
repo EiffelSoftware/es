@@ -9,7 +9,7 @@ class
 
 feature -- Access
 
-	serialized_object (a_object: ANY): STRING is
+	serialized_object (a_object: ANY): STRING
 	        -- Serialize `a_object'.
 			-- Fixme: The STREAM class is used because for the moment,
 			-- the SED related classes do not support expanded types.
@@ -175,7 +175,7 @@ feature{NONE} -- Implementation
 		end
 
 
-    string_from_array (a_array: ARRAY [NATURAL_8]): STRING is
+    string_from_array (a_array: ARRAY [NATURAL_8]): STRING
             -- String from `a_array'.
         local
             l_lower, l_upper: INTEGER
@@ -358,7 +358,7 @@ feature -- Utilities
 		end
 
 note
-	copyright: "Copyright (c) 1984-2011, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

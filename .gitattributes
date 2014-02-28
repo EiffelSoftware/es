@@ -2701,14 +2701,12 @@ Src/contrib/library/gobo/library/kernel/build.eant svneol=native#text/xml
 Src/contrib/library/gobo/library/kernel/library.xace -text svneol=native#application/xml
 Src/contrib/library/gobo/library/lexical/build.eant svneol=native#text/xml
 Src/contrib/library/gobo/library/lexical/library.xace -text svneol=native#application/xml
-Src/contrib/library/gobo/library/lexical/library_skl.ecf svneol=native#text/xml
 Src/contrib/library/gobo/library/lexical/library_skl.xace -text svneol=native#application/xml
 Src/contrib/library/gobo/library/library.xace -text svneol=native#application/xml
 Src/contrib/library/gobo/library/math/build.eant svneol=native#text/xml
 Src/contrib/library/gobo/library/math/library.xace -text svneol=native#application/xml
 Src/contrib/library/gobo/library/parse/build.eant svneol=native#text/xml
 Src/contrib/library/gobo/library/parse/library.xace -text svneol=native#application/xml
-Src/contrib/library/gobo/library/parse/library_skl.ecf svneol=native#text/xml
 Src/contrib/library/gobo/library/parse/library_skl.xace -text svneol=native#application/xml
 Src/contrib/library/gobo/library/pattern/build.eant svneol=native#text/xml
 Src/contrib/library/gobo/library/pattern/library.xace -text svneol=native#application/xml
@@ -2880,6 +2878,10 @@ Src/examples/cURL/upload_and_read_function/eiffel_tower.jpg -text
 Src/examples/cURL/upload_and_read_function/put.php -text
 Src/examples/com/compound/child.ico -text
 Src/examples/com/compound/compound.ico -text
+Src/examples/com/wizard/string_manipulator/generated/Client/string_manipulator_idl.rc -text
+Src/examples/com/wizard/string_manipulator/generated/string_manipulator_idl.tlb -text
+Src/examples/com/wizard/task_scheduler/generated/Client/mstask_modified_idl.rc -text
+Src/examples/com/wizard/task_scheduler/generated/mstask_modified_idl.tlb -text
 Src/examples/cpp/mystring/README -text
 Src/examples/cpp/mystring/test_cpp.ico svneol=native#unset
 Src/examples/docking/docking_control/snapshot.PNG -text
@@ -3390,7 +3392,6 @@ Src/experimental/library/libevent/Clib/libevent/test/Makefile.in -text
 Src/experimental/library/libevent/Clib/libevent/test/Makefile.nmake -text
 Src/experimental/library/libevent/Clib/libevent/test/regress.rpc -text
 Src/experimental/library/memory_analyzer/memory_analyzer_icon_matrix.png -text
-Src/experimental/library/ribbon/test/src/eiffel_ribbon_1.dll -text
 Src/experimental/library/ribbon/test/src/eiffelribbon1.res -text
 Src/experimental/library/ribbon/test/src/ribbon_1.bml -text
 Src/experimental/library/ribbon/test/src/ribbon_project.er -text
@@ -3616,6 +3617,7 @@ Src/framework/jstar_proofs/spec_generation/parsing/generate_lexer_and_parsers.rb
 Src/framework/jstar_proofs/spec_generation/parsing/lexer.l -text
 Src/framework/jstar_proofs/spec_generation/parsing/parser_part1 -text
 Src/framework/jstar_proofs/spec_generation/parsing/parser_part2 -text
+Src/framework/mini_base/license.lic -text
 Src/framework/parser/parser.lic -text
 Src/framework/parser_extension/parser_extension.lic -text
 Src/framework/resources/resources.lic -text
@@ -3726,6 +3728,9 @@ Src/framework/web/xebra/eiffel_projects/xebra_translator/xrpc.taglib -text
 Src/framework/web/xebra/tools/installer/win/XebraBuild.bld -text
 Src/framework/web/xebra/tools/installer/win/innosetup/output/XebraSetup.exe -text
 Src/framework/web/xebra/tools/installer/win/xebra_deployer/xebra_deployer.lic -text
+Src/framework/web/xebra/www/demoapplication/.generated/servlet_gen/servlet_gen.ecf svneol=native#text/xml
+Src/framework/web/xebra/www/demoapplication/.generated/sg_executed_at_time -text
+Src/framework/web/xebra/www/demoapplication/.generated/t_executed_at_time -text
 Src/framework/web/xebra/www/demoapplication/Scripts/codethatcalendarstd.js -text
 Src/framework/web/xebra/www/demoapplication/base.css -text
 Src/framework/web/xebra/www/demoapplication/config.wapp -text
@@ -3741,12 +3746,21 @@ Src/framework/web/xebra/www/demoapplication/img/prev_year.gif -text
 Src/framework/web/xebra/www/demoapplication/reservations.html -text
 Src/framework/web/xebra/www/demoapplication/reservations_files/base.css -text
 Src/framework/web/xebra/www/demoapplication/reservations_files/codethatcalendarstd.js -text
+Src/framework/web/xebra/www/examples/.generated/servlet_gen/servlet_gen.ecf svneol=native#text/xml
+Src/framework/web/xebra/www/examples/.generated/sg_executed_at_time -text
+Src/framework/web/xebra/www/examples/.generated/t_executed_at_time -text
 Src/framework/web/xebra/www/examples/config.wapp -text
 Src/framework/web/xebra/www/examples/examples.lic -text
 Src/framework/web/xebra/www/examples/index.xeb -text
+Src/framework/web/xebra/www/helloworld/.generated/servlet_gen/servlet_gen.ecf svneol=native#text/xml
+Src/framework/web/xebra/www/helloworld/.generated/sg_executed_at_time -text
+Src/framework/web/xebra/www/helloworld/.generated/t_executed_at_time -text
 Src/framework/web/xebra/www/helloworld/config.wapp -text
 Src/framework/web/xebra/www/helloworld/helloworld.lic -text
 Src/framework/web/xebra/www/index.html -text
+Src/framework/web/xebra/www/servercontrol/.generated/servlet_gen/servlet_gen.ecf svneol=native#text/xml
+Src/framework/web/xebra/www/servercontrol/.generated/sg_executed_at_time -text
+Src/framework/web/xebra/www/servercontrol/.generated/t_executed_at_time -text
 Src/framework/web/xebra/www/servercontrol/base.css -text
 Src/framework/web/xebra/www/servercontrol/config.wapp -text
 Src/framework/web/xebra/www/servercontrol/servercontrol.lic -text
@@ -3801,8 +3815,6 @@ Src/framework/web/xebra/www/xebrahome/images/li.gif -text
 Src/framework/web/xebra/www/xebrahome/translation_conf.xml -text
 Src/framework/xml/gobo/license.lic -text
 Src/framework/xml/tests/license.lic -text
-Src/framework/xml/utility/xml_utility.lic -text
-Src/framework/xml_utility/xml_utility.lic -text
 Src/help/wizards/estore1/bmp/essai.bmp -text
 Src/help/wizards/estore1/bmp/essai2.bmp -text
 Src/help/wizards/estore2/bmp/Eiffel_wizard_new.bmp svneol=native#unset
@@ -4599,7 +4611,6 @@ Src/library/obsolete/abel/libraries/openehr/src/object_graph/path/og_path_valida
 Src/library/obsolete/xml/parser/callbacks/README.TXT -text
 Src/library/obsolete/xml/tree/README.TXT -text
 Src/library/plane/soln.plan -text
-Src/library/ribbon/test/src/eiffel_ribbon_1.dll -text
 Src/library/ribbon/test/src/eiffelribbon1.res -text
 Src/library/ribbon/test/src/ribbon_1.bml -text
 Src/library/ribbon/test/src/ribbon_project.er -text
@@ -4943,12 +4954,14 @@ Src/tools/syntax_updater/syntax_updater.lic -text
 Src/tools/visitor_factory/visitor_factory.lic -text
 Src/unstable/library/compression/bzip2/Readme.txt -text
 Src/unstable/library/compression/zlib/Readme.txt -text
-Src/unstable/library/compression/zlib/example/basic_functions/ssleay.txt -text
-Src/unstable/library/compression/zlib/example/compress/compress.rc -text
+Src/unstable/library/compression/zlib/example/basic_functions/file_to_compress.txt -text
 Src/unstable/library/compression/zlib/example/compress/index.html -text
-Src/unstable/library/compression/zlib/example/compress/ssleay.txt -text
+Src/unstable/library/compression/zlib/example/compress/text_to_compress_2.txt -text
+Src/unstable/library/compression/zlib/example/compress/text_to_comrpess.txt -text
 Src/unstable/library/compression/zlib/example/gzutility/index.html -text
-Src/unstable/library/compression/zlib/example/gzutility/project.rc -text
+Src/unstable/library/compression/zlib/example/gzutility/text_to_compress.txt -text
+Src/unstable/library/compression/zlib/spec/win64/lib/msc/zlibstat.lib -text
+Src/unstable/library/compression/zlib/spec/windows/lib/msc/zlibstat.lib -text
 Src/unstable/library/compression/zlib/testing/index.html -text
 Src/unstable/library/estring/estring.ecf svneol=native#text/xml
 Src/unstable/library/net2/net2.ecf svneol=native#text/plain
@@ -5000,6 +5013,37 @@ Src/unstable/library/persistency/database/sqlite3/README -text
 Src/unstable/library/persistency/database/sqlite3/license.lic -text
 Src/unstable/library/text/encryption/crypto/license.lic -text
 Src/unstable/library/text/encryption/crypto/tests/license.lic -text
+Src/web/support/esa_api/ecf-target-any_connector -text
+Src/web/support/esa_api/ecf-target-connector -text
+Src/web/support/esa_api/esa.ini -text
+Src/web/support/esa_api/www/404.tpl -text
+Src/web/support/esa_api/www/406.tpl -text
+Src/web/support/esa_api/www/auth.js -text
+Src/web/support/esa_api/www/cj_items.tpl -text
+Src/web/support/esa_api/www/cj_reports.tpl -text
+Src/web/support/esa_api/www/cj_reports_detail.tpl -text
+Src/web/support/esa_api/www/collection_json.tpl -text
+Src/web/support/esa_api/www/collection_json_error.tpl -text
+Src/web/support/esa_api/www/dashboard.css -text
+Src/web/support/esa_api/www/docs.js -text
+Src/web/support/esa_api/www/guest_report_detail.tpl -text
+Src/web/support/esa_api/www/guest_reports.tpl -text
+Src/web/support/esa_api/www/holder.js -text
+Src/web/support/esa_api/www/home.tpl -text
+Src/web/support/esa_api/www/list_reports.tpl -text
+Src/web/support/esa_api/www/login.js -text
+Src/web/support/esa_api/www/optional_enhancement_js.tpl -text
+Src/web/support/esa_api/www/optional_styling_css.tpl -text
+Src/web/support/esa_api/www/reports.tpl -text
+Src/web/support/esa_api/www/reports_detail.tpl -text
+Src/web/support/esa_db/scripts/AddUser2.sql -text
+Src/web/support/esa_db/scripts/GetProblemReportsGuest.sql -text
+Src/web/support/esa_db/scripts/GetProblemReportsRowCountGuest.sql -text
+Src/web/support/esa_db/scripts/GetReportProblemInteractionsGuest.sql -text
+Src/web/support/esa_db/scripts/IsProblemReportVisubleGuest.sql -text
+Src/web/support/esa_db/scripts/Readme.txt -text
+Src/web/support/esa_db/scripts/TableRowCount.sql -text
+Src/web/support/esa_db/tests/api_password.txt -text
 benchmarks/scoop/Tests1-6.xls -text
 benchmarks/scoop/scoop0001/LogParser.java -text
 benchmarks/scoop/scoop0001/compile.cmd -text
@@ -5144,6 +5188,7 @@ eweasel/tests/attach064/Ace -text
 eweasel/tests/attach096/Ace -text
 eweasel/tests/attach097/Ace_rev2 -text
 eweasel/tests/attach103/Ace svneol=native#text/xml
+eweasel/tests/catcall013/Ace svneol=native#text/xml
 eweasel/tests/ccomp001/notes -text
 eweasel/tests/ccomp002/notes -text
 eweasel/tests/ccomp003/notes -text
@@ -6133,6 +6178,8 @@ eweasel/tests/thread002/Ace -text
 eweasel/tests/thread010/Ace -text
 eweasel/tests/thread024/Ace -text svneol=native#application/xml
 eweasel/tests/time004/Ace -text
+eweasel/tests/time006/Ace svneol=native#text/xml
+eweasel/tests/time007/Ace svneol=native#text/xml
 eweasel/tests/valid001/notes -text
 eweasel/tests/valid002/notes -text
 eweasel/tests/valid003/notes -text

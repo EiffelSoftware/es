@@ -28,6 +28,8 @@ inherit
 
 	CONF_VALIDITY
 
+	SHARED_COMPILER_PROFILE
+
 create {COMPILER_EXPORTER}
 	make
 
@@ -111,21 +113,30 @@ feature -- Properties
 
 	platform: INTEGER
 			-- Universe type of platform.
-		local
-			l_pf: PLATFORM
 		do
-			create l_pf
-			if system.platform /= 0 then
-				Result := system.platform
-			else
-				if l_pf.is_windows then
+				-- If platform is set from the command line, we use this.
+				-- Otherwise we use the one set in the ECF if set,
+				-- otherwise we use the current running platform.
+			if compiler_profile.is_platform_set then
+				if compiler_profile.is_windows_platform then
 					Result := pf_windows
-				elseif l_pf.is_mac then
+				elseif compiler_profile.is_unix_platform then
+					Result := pf_unix
+				elseif compiler_profile.is_mac_platform then
 					Result := pf_mac
-				elseif l_pf.is_vxworks then
+				elseif compiler_profile.is_vxworks_platform then
 					Result := pf_vxworks
 				else
+						-- In the event a new platform is added, we will
+						-- catch the bug if we forget to add it to COMPILER_PROFILE.
+					check known_platform: False end
 					Result := pf_unix
+				end
+			else
+				if system.platform /= 0 then
+					Result := system.platform
+				else
+					Result := current_platform
 				end
 			end
 		end
@@ -692,22 +703,6 @@ feature {COMPILER_EXPORTER} -- Implementation
 			l_exceptions.put ("RT_EXTENSION")
 			l_actions.put (agent l_system.set_rt_extension_class, "RT_EXTENSION")
 
-				-- XX_REF classes
-			l_actions.put (agent l_system.set_boolean_ref_class, "BOOLEAN_REF")
-			l_actions.put (agent l_system.set_character_ref_class (?, 8), "CHARACTER_8_REF")
-			l_actions.put (agent l_system.set_character_ref_class (?, 32), "CHARACTER_32_REF")
-			l_actions.put (agent l_system.set_natural_ref_class (?, 8), "NATURAL_8_REF")
-			l_actions.put (agent l_system.set_natural_ref_class (?, 16), "NATURAL_16_REF")
-			l_actions.put (agent l_system.set_natural_ref_class (?, 32), "NATURAL_32_REF")
-			l_actions.put (agent l_system.set_natural_ref_class (?, 64), "NATURAL_64_REF")
-			l_actions.put (agent l_system.set_integer_ref_class (?, 8), "INTEGER_8_REF")
-			l_actions.put (agent l_system.set_integer_ref_class (?, 16), "INTEGER_16_REF")
-			l_actions.put (agent l_system.set_integer_ref_class (?, 32), "INTEGER_32_REF")
-			l_actions.put (agent l_system.set_integer_ref_class (?, 64), "INTEGER_64_REF")
-			l_actions.put (agent l_system.set_real_ref_class (?, 32), "REAL_32_REF")
-			l_actions.put (agent l_system.set_real_ref_class (?, 64), "REAL_64_REF")
-			l_actions.put (agent l_system.set_pointer_ref_class, "POINTER_REF")
-
 				-- SCOOP Manager
 			if l_system.is_scoop then
 				l_actions.put (agent l_system.set_scoop_manager_class, "ISE_SCOOP_MANAGER")
@@ -932,7 +927,7 @@ invariant
 	target_in_conf_system: (conf_system /= Void and new_target = Void) implies target.system = conf_system
 
 note
-	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

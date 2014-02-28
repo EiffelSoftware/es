@@ -105,7 +105,7 @@ feature -- Update
 				l_groups.after
 			loop
 				l_group := l_groups.item
-				if l_group.is_cluster and not l_group.is_internal then
+				if l_group.is_cluster and not l_group.is_test_cluster then
 					update_cluster (l_group)
 				end
 				l_groups.forth
@@ -214,7 +214,7 @@ feature {NONE} -- Implementation
 			-- Update data from `a_cluster'.
 		require
 			is_cluster: a_cluster.is_cluster
-			not_internal: not a_cluster.is_internal
+			not_internal: not a_cluster.is_test_cluster
 		local
 			l_class: CONF_CLASS
 		do

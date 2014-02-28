@@ -965,7 +965,7 @@ feature{NONE} -- Invariant checking
 
 feature -- Object state checking
 
-	initialize_query_value_holders is
+	initialize_query_value_holders
 			-- Initialize `query_values' and `query_status'.
 		do
 			if query_values = Void then
@@ -977,7 +977,7 @@ feature -- Object state checking
 			end
 		end
 
-	report_object_state_request is
+	report_object_state_request
 			-- Report an object state request.
 		local
 			o: detachable ANY
@@ -1395,7 +1395,7 @@ feature -- Precondition satisfaction
 	argument_arrays: ARRAY [ARRAY [INTEGER]]
 			-- Array for arguments used in predicate evaluation
 
-	arguement_tuple_from_indexes (a_indexes: ARRAY [INTEGER]; a_lower: INTEGER; a_upper: INTEGER): TUPLE is
+	arguement_tuple_from_indexes (a_indexes: ARRAY [INTEGER]; a_lower: INTEGER; a_upper: INTEGER): TUPLE
 			-- Tuple containing objects with `a_indexes'
 		require
 			a_indexes_attached: a_indexes /= Void
@@ -1467,7 +1467,7 @@ feature -- Predicate evaluation
 		do
 		end
 
-	evaluated_predicate_result (a_predicate_id: INTEGER; a_arguments: ARRAY [INTEGER]; a_lower: INTEGER; a_upper: INTEGER): NATURAL_8 is
+	evaluated_predicate_result (a_predicate_id: INTEGER; a_arguments: ARRAY [INTEGER]; a_lower: INTEGER; a_upper: INTEGER): NATURAL_8
 			-- Evaluated result of predicate with id `a_predicate_id' on objects with index `a_arguments'.
 			-- `a_lower' and `a_upper' indicates that only the part between [`a_lower', `a_upper'] of `a_arguments' is to be used
 			-- as arguments during predicate evaluation.
@@ -1486,7 +1486,7 @@ feature -- Predicate evaluation
 			result_valid: Result = 0 or Result = 1 or Result = 2
 		end
 
-	safe_predicate_evaluation_result (a_predicate: FUNCTION [ANY, TUPLE, BOOLEAN]; a_arguments: TUPLE): NATURAL_8 is
+	safe_predicate_evaluation_result (a_predicate: FUNCTION [ANY, TUPLE, BOOLEAN]; a_arguments: TUPLE): NATURAL_8
 			-- Evaluated result of `a_predicate' on `a_arguments'.
 			-- The result can be of one of the following values:
 			-- 0 There was an exception during the evaluation.
@@ -1514,7 +1514,7 @@ feature -- Predicate evaluation
 			retry
 		end
 
-	report_predicate_evaluate_request is
+	report_predicate_evaluate_request
 			-- Report a predicate evaluation request.
 		local
 			l_checking: BOOLEAN
@@ -1601,7 +1601,7 @@ feature -- Predicate evaluation
 			-- Should predicates in `relevant_predicate_table' be evaluated
 			-- after execution of a feature?
 
-	evaluated_predicate_results (a_feature_id: INTEGER; a_operands: SPECIAL [INTEGER]): ARRAY [NATURAL_8] is
+	evaluated_predicate_results (a_feature_id: INTEGER; a_operands: SPECIAL [INTEGER]): ARRAY [NATURAL_8]
 			-- Evaluate relevant predicates from `relevant_predicat_table' for
 			-- feature with `a_feature_id' on operands `a_operands'.
 			-- Result is a list of responses for each predicate in `l_predicates', the order of the result
@@ -1664,7 +1664,7 @@ feature -- Predicate evaluation
 	argument_tuple_cache: ARRAYED_LIST [detachable ANY]
 			-- Cache for arguments used in predicate evaluation.
 
-	value_of_object (a_object: ANY; a_type: STRING): STRING is
+	value_of_object (a_object: ANY; a_type: STRING): STRING
 			-- Value of `a_object', which is of type `a_type'
 		require
 			a_type_attached: a_type /= Void

@@ -20,6 +20,10 @@ feature -- Access: STRING
 
 	string_case_5: STRING = "Class STRING must have an attribute of type integer named `internal_hash_code'"
 
+	string_case_6: STRING = "Class STRING must have an attribute of type integer named `count'"
+
+	string_case_7: STRING = "Class STRING must have a query `to_cil' without arguments of type SYSTEM_STRING."
+
 feature -- Access: ARRAY
 
 	array_case_1: STRING = "Class ARRAY must have exactly one formal generic parameter"
@@ -45,6 +49,10 @@ feature -- Access: SPECIAL
 	special_case_6: STRING = "Class SPECIAL must have a feature `put (G#1, INTEGER)'"
 
 	special_case_7: STRING = "Class SPECIAL must have a feature `to_array: ARRAY [G#1]'"
+
+	special_case_8: STRING = "Class SPECIAL must have an attrbiute `internal_native_array: NATIVE_ARRAY [G#1]'"
+
+	special_case_9: STRING = "Class SPECIAL must have a procedure `extend' with 1 argument."
 
 feature -- Access: Basic types
 
@@ -83,7 +91,7 @@ feature -- Access: TYPE
 	type_case_1: STRING = "Class TYPE must have one formal generic parameter";
 
 note
-	copyright:	"Copyright (c) 1984-2009, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

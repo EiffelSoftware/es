@@ -129,7 +129,7 @@ feature -- Basic operations
 	handle_added_class (a_class: CLASS_I)
 			-- Handle that `a_class' was added.
 		do
-			if not a_class.group.is_internal then
+			if not a_class.group.is_test_cluster then
 				data.add_class (a_class)
 				executions.handle_changed_class (a_class)
 				data_changed_event.publish ([])
