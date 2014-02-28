@@ -54,4 +54,5 @@ feature -- Output
 
 feature {NONE} -- Implementation		
 	socket: PR_TCP_SOCKET
+
 end

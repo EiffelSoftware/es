@@ -368,6 +368,7 @@ feature -- Input
 		local
 			l_error: PR_ERROR
 			l_amount: INTEGER_32
+			l_char: CHARACTER_8
 		do
 			error := Void
 			was_timeout := False
@@ -385,7 +386,6 @@ feature -- Input
 					was_timeout := True
 				else
 					error := l_error
-					close
 					if use_exceptions then
 						(create {PR_EXCEPTION}.make).raise
 					end
@@ -519,6 +519,8 @@ feature -- Timeout constants
 	pr_interval_no_timeout: NATURAL_32 = 0xffffffff
 
 feature {NONE} -- Implementation
+	exception_manager: EXCEPTION_MANAGER once create Result end
+
 	c: PR_IO_C
 
 	receive_special_c (a_fd: POINTER; a_special: separate SPECIAL[ANY]; a_timeout: NATURAL_32): INTEGER

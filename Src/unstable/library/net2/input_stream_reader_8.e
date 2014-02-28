@@ -25,6 +25,7 @@ feature {NONE} -- Initialization
 			drop_cr := a_drop_cr
 			create delimiters.make (4)
 			delimiters.extend (a_delimiter)
+			item := "error"
 		ensure
 			stream = a_stream
 			delimiters.has (a_delimiter)
@@ -97,7 +98,7 @@ feature -- Status setting
 
 	stream: INPUT_STREAM
 
-feature {NONE} -- Initialization
+feature {NONE} -- Implementation
 
 
 end

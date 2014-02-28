@@ -46,6 +46,9 @@ create
 	make_from_c,
 	make_from_area
 
+create {ESTRING_8}
+	make_copy
+
 convert
 	make_from_string_8 ({STRING_8}),
 	make_from_string_32 ({STRING_32}),
@@ -194,6 +197,14 @@ feature {NONE} -- Initialization
 			separate_area := a_area
 			area := a_area.item
 			count := a_area.count
+		end
+
+
+	make_copy (a_area: POINTER; a_separate_area: detachable separate MANAGED_POINTER; a_count: INTEGER)
+		do
+			separate_area := a_separate_area
+			area := a_area
+			count := a_count
 		end
 
 feature -- Access
@@ -607,6 +618,13 @@ feature -- Duplication
 		do
 			create Result.make_substring(Current, start_index, end_index)
 		end
+
+--	copy(a_other: like Current)
+--		do
+--			separate_area := a_other.separate_area
+--			area := a_other.area
+--			count := a_other.count
+--		end
 
 feature {ESTRING_8} -- Implementation
 	new_string (n: INTEGER): like Current

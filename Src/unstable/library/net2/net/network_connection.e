@@ -119,8 +119,6 @@ feature -- Status setting
 			-- Accept a connection. Endpoints can be reused.
 		require
 			is_endpoint
-		local
-			l_socket: PR_TCP_SOCKET
 		do
 			if not socket.is_closed then
 				socket.close
@@ -140,8 +138,12 @@ feature {NONE} -- Implementation
 	address_family: NATURAL_16
 
 	init_sockets (a_in: separate TCP_INPUT_STREAM)
+		local
+			l_fd: POINTER
 		do
-			a_in.make_from_socket_descriptor (socket.pr_fd, socket.address_family)
+			-- Using a local variable to circumvent a strange bug when finalizing
+			l_fd := socket.pr_fd
+			a_in.make_from_socket_descriptor (l_fd, socket.address_family)
 			output.make_from_socket(socket)
 		end
 
