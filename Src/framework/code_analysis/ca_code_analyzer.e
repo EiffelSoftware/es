@@ -119,6 +119,8 @@ feature -- Analysis interface
 		end
 
 	is_rule_checkable (a_rule: attached CA_RULE): BOOLEAN
+			-- Will `a_rule' be checked based on the current preferences and based on the current
+			-- checking scope?
 		do
 			Result := a_rule.is_enabled.value
 						and then (system_wide_check or else (not a_rule.is_system_wide))
