@@ -576,11 +576,10 @@ feature {NONE} -- Initialization
 			is_type_checking_required: BOOLEAN
 		do
 			l_any_tbl := system.any_class.compiled_class.feature_table
-			create any_parent_type
 			if lace_class.is_attached_by_default then
-				any_parent_type.set_actual_type (any_type_attached)
+				create any_parent_type.make (any_type_attached)
 			else
-				any_parent_type.set_actual_type (any_type)
+				create any_parent_type.make (any_type)
 			end
 			check
 				l_any_tbl_not_void: l_any_tbl /= Void
@@ -1261,6 +1260,8 @@ feature {NONE} -- Implementation
 				end
 					-- Because no previous routine could be found, this is an origin.
 				a_feat.set_is_origin (True)
+					-- Insertion into the system routine info table.				
+				System.rout_info_table.put (l_rout_id_set.first, Current);
 			end
 
 				-- Insert the computed routine IDs.

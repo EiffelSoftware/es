@@ -1427,7 +1427,7 @@ feature -- Status setting
 	activate_execution_replay_mode (b: BOOLEAN)
 			-- Activate or Deactivate execution replay mode
 		require
-			valid_exec_recording_context: rt_extension_available and is_classic_project
+			valid_exec_recording_context: b implies rt_extension_available and is_classic_project
 		local
 			levlim: INTEGER
 			status_changed: BOOLEAN
@@ -2694,7 +2694,7 @@ feature {NONE} -- MSIL system implementation
 			-- DLL type constant for MSIL system
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

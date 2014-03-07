@@ -72,39 +72,24 @@ feature -- Roundtrip
 			-- Symbol "->" associated with this structure
 		require
 			a_list_not_void: a_list /= Void
-		local
-			i: INTEGER
 		do
-			i := constrain_symbol_index
-			if a_list.valid_index (i) then
-				Result ?= a_list.i_th (i)
-			end
+			Result := symbol_from_index (a_list,  constrain_symbol_index)
 		end
 
 	create_keyword (a_list: LEAF_AS_LIST): detachable KEYWORD_AS
 			-- Keyword "create" associated with this structure
 		require
 			a_list_not_void: a_list /= Void
-		local
-			i: INTEGER
 		do
-			i := create_keyword_index
-			if a_list.valid_index (i) then
-				Result ?= a_list.i_th (i)
-			end
+			Result := keyword_from_index (a_list, create_keyword_index)
 		end
 
 	end_keyword (a_list: LEAF_AS_LIST): detachable KEYWORD_AS
 			-- Keyword "end" associated with this structure
 		require
 			a_list_not_void: a_list /= Void
-		local
-			i: INTEGER
 		do
-			i := end_keyword_index
-			if a_list.valid_index (i) then
-				Result ?= a_list.i_th (i)
-			end
+			Result := keyword_from_index (a_list, end_keyword_index)
 		end
 
 	index: INTEGER
@@ -129,6 +114,13 @@ feature -- Convenience
 	is_expanded: BOOLEAN
 		do
 			Result := formal.is_expanded
+		end
+
+	is_frozen: BOOLEAN
+		do
+				-- A formal generic parameter is frozen if it is marked frozen
+				-- or if the constraint is marked frozen.
+			Result := formal.has_frozen_mark
 		end
 
 	position: INTEGER
@@ -441,7 +433,7 @@ invariant
 	formal_not_void: formal /= Void
 
 note
-	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

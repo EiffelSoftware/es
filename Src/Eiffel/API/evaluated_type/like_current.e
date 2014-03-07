@@ -29,6 +29,17 @@ inherit
 			set_frozen_mark
 		end
 
+create
+	make
+
+feature {NONE} -- Initialization
+
+	make (a_type: TYPE_A)
+			-- Initialize Current and assign `a_type' to `conformance_type'.
+		do
+			set_actual_type (a_type)
+		end
+
 feature -- Visitor
 
 	process (v: TYPE_A_VISITOR)
@@ -51,8 +62,7 @@ feature -- Properties
 	context_free_type: like Current
 			-- <Precursor>
 		do
-			create Result
-			Result.set_actual_type (conformance_type.context_free_type)
+			create Result.make (conformance_type.context_free_type)
 		end
 
 	conformance_type: TYPE_A
@@ -381,11 +391,11 @@ feature {TYPE_A} -- Helpers
 			if
 				attached {LIKE_CURRENT} other as a and then
 				(a_context_class.lace_class.is_void_safe_conformance implies is_attachable_to (a)) and then
-				is_processor_attachable_to (a) and then not a.has_frozen_mark
+				is_processor_attachable_to (a) and then (a.has_frozen_mark implies has_frozen_mark)
 			then
 					-- Other is like Current that is compatible in terms of attachment status, separate status
 					-- and variance status.
-					--| Note that if other is frozen then we have to use the normal conformance rules.
+					--| Note that if other is frozen and we are not frozen, then we have to use the normal conformance rules.
 				Result := True
 			else
 					-- Other is not `like Current' we apply normal rules of conformance.
@@ -435,6 +445,7 @@ feature {COMPILER_EXPORTER} -- Modification
 			else
 				conformance_type := a.to_other_immediate_attachment (Current)
 			end
+			conformance_type := conformance_type.to_other_variant (Current)
 			actual_type := Current
 		end
 
@@ -598,8 +609,7 @@ feature {COMPILER_EXPORTER} -- Primitives
 					-- We cannot allow aliasing as otherwise we might end up updating
 					-- `like Current' type that should not be updated (Allowing the
 					-- aliasing would break eweasel test#valid218).
-				create l_like
-				l_like.set_actual_type (class_type.conformance_type)
+				create l_like.make (class_type.conformance_type)
 				Result := l_like
 			end
 			Result := Result.to_other_attachment (Current)
@@ -613,8 +623,7 @@ feature {COMPILER_EXPORTER} -- Primitives
 	evaluated_type_in_descendant (a_ancestor, a_descendant: CLASS_C; a_feature: FEATURE_I): LIKE_CURRENT
 		do
 			if a_ancestor /= a_descendant then
-				create Result
-				Result.set_actual_type (a_descendant.actual_type)
+				create Result.make (a_descendant.actual_type)
 				Result := Result.to_other_attachment (Current)
 					-- Promote separateness status if present.
 				if is_separate then
@@ -646,12 +655,11 @@ feature {COMPILER_EXPORTER} -- Primitives
 				-- when processing an inherited routine using `like Current'
 				-- we keep LIKE_CURRENT for the metatype, but simply replace
 				-- its `conformance_type' with its `meta_type'.
-			create Result
-			Result.set_actual_type (conformance_type.meta_type)
+			create Result.make (conformance_type.meta_type)
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

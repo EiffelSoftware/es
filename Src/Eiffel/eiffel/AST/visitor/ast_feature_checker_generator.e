@@ -1,5 +1,9 @@
-﻿note
+note
 	description: "Type checking and code generation of BYTE_NODE tree."
+	legal: "See notice at end of class."
+	status: "See notice at end of class."
+	date: "$Date$"
+	revision: "$Revision$"
 
 class
 	AST_FEATURE_CHECKER_GENERATOR
@@ -1706,6 +1710,9 @@ feature {NONE} -- Implementation
 													l_expr ?= l_arg_nodes.i_th (i)
 													l_arg_nodes.put_i_th (l_conv_info.byte_node (l_expr), i)
 												end
+													-- Update `l_arg_types' with the converted type.
+													-- This fixes eweasel test#freez022.
+												l_arg_types.put_i_th (l_formal_arg_type, i)
 											end
 										elseif l_warning_count /= error_handler.warning_list.count then
 											error_handler.warning_list.last.set_location (l_parameters.i_th (i).start_location)
@@ -1883,7 +1890,7 @@ feature {NONE} -- Implementation
 							if is_qualified_call then
 								set_type (l_result_type.deep_actual_type, a_name)
 							else
-								set_type (l_result_type, a_name)
+  								set_type (l_result_type, a_name)
 							end
 							last_calls_target_type := l_last_constrained
 							last_access_writable := l_feature.is_attribute
@@ -3226,8 +3233,7 @@ feature {NONE} -- Visitor
 						l_parent_type.set_is_implicitly_attached
 					end
 				end
-				create l_instatiation_type
-				l_instatiation_type.set_actual_type (l_parent_type)
+				create l_instatiation_type.make (l_parent_type)
 				l_orig_result_type := l_feature_i.type
 				l_feature_i := l_feature_i.instantiated (l_instatiation_type)
 					-- Now that we have the fully instantiated type, we need to adapt it to
@@ -3321,7 +3327,7 @@ feature {NONE} -- Visitor
 			l_is_qualified_call: BOOLEAN
 			l_error_level: NATURAL_32
 		do
-			check attached last_type as c then
+			if attached last_type as c then
 					-- Mask out assigner call flag for target of the call.
 				l_is_assigner_call := is_assigner_call
 				is_assigner_call := False
@@ -3385,6 +3391,13 @@ feature {NONE} -- Visitor
 					end
 					is_qualified_call := l_is_qualified_call
 				end
+			else
+					-- We should not get there, but just in case we generate an internal
+					-- error message.
+				reset_types
+				error_handler.insert_error (create {INTERNAL_ERROR}.make (
+					"In {AST_FEATURE_CHECKER_GENERATOR}.process_nested_as we could%N%
+					%not find `last_type'."))
 			end
 		end
 
@@ -10708,9 +10721,9 @@ feature {NONE} -- Implementation: type validation
 					Result := a_last_type.actual_type.generics.i_th (l_formal_type.position)
 				end
 			end
-			if l_formal_type /= Void and then attached {ANNOTATED_TYPE_A} a_type as l_attachable_type then
+			if l_formal_type /= Void and then attached {ANNOTATED_TYPE_A} a_type as l_annotated_type then
 					-- Preserve attachment status of the original type.
-				Result := Result.to_other_attachment (l_attachable_type)
+				Result := Result.to_other_attachment (l_annotated_type).to_other_variant (l_annotated_type).to_other_separateness (l_annotated_type)
 			end
 		ensure
 			adapated_type_not_void: Result /= Void
@@ -11036,10 +11049,7 @@ feature {NONE} -- Implementation: catcall check
 								-- Check that `l_arg_type' is compatible to its `like argument'.
 								-- Once this is done, then type checking is done on the real
 								-- type of the routine, not the anchor.
-							if
-								not l_arg_type.conform_to (context.current_class, l_like_arg_type) and then
-								not l_arg_type.convert_to (context.current_class, l_like_arg_type)
-							then
+							if not l_arg_type.conform_to (context.current_class, l_like_arg_type) then
 								insert_vuar2_error (l_descendant_feature, a_parameters, l_desc_class_id, i, l_arg_type,
 									l_like_arg_type)
 							end
@@ -11064,22 +11074,15 @@ feature {NONE} -- Implementation: catcall check
 
 							-- Check if actual parameter conforms to the possible type of the descendant feature if conformance
 							-- was involved in the original call, otherwise nothing to be done.
-							-- We have a workaround for conversion, but it is not perfect.
 						if not l_arg_type.conform_to (context.current_class, l_formal_arg_type) then
-							if
-								not (
-								l_arg_type.convert_to (context.current_class, a_feature.arguments.i_th (i).actual_type) and then
-								a_feature.arguments.i_th (i).actual_type.conform_to (context.current_class, l_formal_arg_type))
-							then
-									-- Conformance is violated. Add notice to warning.
-								if l_tcat = Void then
-									create l_tcat.make (a_location)
-									context.init_error (l_tcat)
-									l_tcat.set_called_feature (a_feature)
-									error_handler.insert_error (l_tcat)
-								end
-								l_tcat.add_covariant_argument_violation (l_descendant_type, l_descendant_feature, a_params.i_th (i), i)
+								-- Conformance is violated. Add notice to warning.
+							if l_tcat = Void then
+								create l_tcat.make (a_location)
+								context.init_error (l_tcat)
+								l_tcat.set_called_feature (a_feature)
+								error_handler.insert_error (l_tcat)
 							end
+							l_tcat.add_covariant_argument_violation (l_descendant_type, l_descendant_feature, a_params.i_th (i), i)
 						end
 						i := i + 1
 					end
@@ -11396,8 +11399,6 @@ feature {NONE} -- Type recording
 		end
 
 note
-	date: "$Date$"
-	revision: "$Revision$"
 	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"

@@ -95,8 +95,7 @@ feature {NONE} -- Visitor implementation
 		local
 			l_cur: LIKE_CURRENT
 		do
-			create l_cur
-			l_cur.set_actual_type (current_class.actual_type)
+			create l_cur.make (current_class.actual_type)
 			if l_as.has_frozen_mark then
 				l_cur.set_frozen_mark
 			elseif l_as.has_variant_mark then
@@ -158,6 +157,7 @@ feature {NONE} -- Visitor implementation
 			i: INTEGER
 			j: INTEGER
 			s: BOOLEAN
+			l_is_frozen: BOOLEAN
 		do
 			create f.make (l_as.is_reference, l_as.is_expanded, l_as.position)
 			last_type := f
@@ -219,6 +219,9 @@ feature {NONE} -- Visitor implementation
 						i <= 0
 					loop
 						t := l [i].type
+						if t.has_frozen_mark then
+							l_is_frozen := True
+						end
 						if
 							attached {CLASS_TYPE_AS} t as ct and then
 							(ct.is_expanded or else
@@ -296,6 +299,9 @@ feature {NONE} -- Visitor implementation
 			end
 			if s then
 				f.set_is_separate
+			end
+			if l_is_frozen then
+				f.set_frozen_mark
 			end
 		end
 
@@ -474,7 +480,7 @@ feature {NONE} -- Type marks
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2013, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[

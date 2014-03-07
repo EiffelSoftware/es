@@ -1,11 +1,11 @@
 note
-	description: "Summary description for {HTML_404_PAGE}."
+	description: "Summary description for {LOGOUT_PAGE}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	HTML_404_PAGE
+	ESA_LOGOUT_PAGE
 
 inherit
 
@@ -26,7 +26,7 @@ feature {NONE} --Initialization
 			create p.make_current
 			p := p.appended ("/www")
 			set_template_folder (p)
-			set_template_file_name ("404.tpl")
+			set_template_file_name ("logoff.tpl")
 			template.add_value (a_host, "host")
 			template_context.enable_verbose
 			template.analyze
@@ -38,3 +38,5 @@ feature {NONE} --Initialization
 		end
 
 end
+
+

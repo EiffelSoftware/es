@@ -52,8 +52,28 @@ feature -- View
 		end
 
 
+	problem_user_reports  (req: WSF_REQUEST; res: WSF_RESPONSE)
+			-- Problem reports representation for a given user
+		deferred
+		end
+
 	not_found_page (req: WSF_REQUEST; res: WSF_RESPONSE)
 			-- Not found page
+		deferred
+		end
+
+	login_page (req: WSF_REQUEST; res: WSF_RESPONSE)
+			-- Login page
+		deferred
+		end
+
+	logout_page (req: WSF_REQUEST; res: WSF_RESPONSE)
+			-- Logout page
+		deferred
+		end
+
+	bad_request_page (req: WSF_REQUEST; res: WSF_RESPONSE)
+			-- Bad request page
 		deferred
 		end
 

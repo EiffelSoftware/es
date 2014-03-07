@@ -3109,6 +3109,12 @@ feature -- Properties
 	computed_parents: PARENT_LIST
 			-- Computed version of parent clauses.
 
+	has_descendants: BOOLEAN
+			-- Does current class have a direct descendant?
+		do
+			Result := not attached direct_descendants_internal as l_desc or else l_desc.is_empty
+		end
+
 	direct_descendants: ARRAYED_LIST [CLASS_C]
 			-- Direct descendants of the current class
 		do
@@ -4379,6 +4385,7 @@ feature -- Genericity
 							create l_rout_id_set.make
 							l_rout_id_set.put (l_formal.new_rout_id)
 							l_formal.set_feature_id (feature_id_counter.next)
+								-- Insertion into the system routine info table.							
 							system.rout_info_table.put (l_rout_id_set.first, Current)
 						end
 						l_formal.set_rout_id_set (l_rout_id_set)
@@ -4542,6 +4549,8 @@ feature -- Anchored types
 						l_anchor.set_origin_feature_id (l_anchor.feature_id)
 						l_anchor_name := {STRING_32} "_" + System.name + "_type_" + l_rout_id.out
 						l_anchor.set_feature_name (u.utf_32_string_to_utf_8_string_8 (l_anchor_name))
+							-- Insertion into the system routine info table.							
+						system.rout_info_table.put (l_rout_id, Current)
 					end
 
 					l_anchored_features.put (l_anchor, l_rout_id)

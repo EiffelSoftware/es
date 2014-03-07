@@ -48,20 +48,38 @@ feature -- execute
 
 feature -- HTTP Methods
 
-
 	do_get (req: WSF_REQUEST; res: WSF_RESPONSE)
+		local
+			media_variants: HTTP_ACCEPT_MEDIA_TYPE_VARIANTS
+			l_rhf: ESA_REPRESENTATION_HANDLER_FACTORY
 		do
+			media_variants := media_type_variants (req)
+			if media_variants.is_acceptable then
+				if attached media_variants.media_type as l_type then
+					create l_rhf
+					l_rhf.new_representation_handler (esa_config, l_type, media_variants).login_page (req, res)
+				end
+			else
+				create l_rhf
+				l_rhf.new_representation_handler (esa_config, "", media_variants).login_page (req, res)
+			end
+		end
+
+
+
+
+	do_get2 (req: WSF_REQUEST; res: WSF_RESPONSE)
+		do
+			to_implement ("Check different browsers!!!")
 			if attached {STRING_32} req.execution_variable ("user") as l_user and then
-			  not l_user.is_equal ("Guest") then
-				-- Valid user
+				api_service.is_active (l_user) then
+			 	-- Valid user
 				to_implement ("Add logic when a registered users logged in, maybe Statistics etc!!!.")
 				compute_response_redirect (req, res)
 			else
 				handle_unauthorized ("Unauthorized",req, res)
 			end
 		end
-
-
 
 
 
