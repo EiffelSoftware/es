@@ -305,13 +305,13 @@ feature -- Heap and map access
 			Result := heap_access (a_mapping.heap, a_mapping.current_expression, a_name, a_content_type)
 		end
 
-	is_heap (a_entity: IV_ENTITY): IV_EXPRESSION
+	is_heap (a_heap: IV_EXPRESSION): IV_EXPRESSION
 			-- Expression "IsHeap(a_entity)".
 		do
-			Result := function_call ("IsHeap", << a_entity >>, types.bool)
+			Result := function_call ("IsHeap", << a_heap >>, types.bool)
 		end
 
-	array_access (a_heap: IV_ENTITY; a_array, a_index: IV_EXPRESSION; a_content_type: IV_TYPE): IV_MAP_ACCESS
+	array_access (a_heap: IV_EXPRESSION; a_array, a_index: IV_EXPRESSION; a_content_type: IV_TYPE): IV_MAP_ACCESS
 			-- Array access to `a_array'[`a_index'].
 		do
 			Result := map_access (

@@ -233,7 +233,7 @@ feature -- Cursor movement
 		require
 			modify_model ("index_", Current)
 		do
-			check inv end
+			check inv_only ("index_constraint") end
 			if after then
 				finish
 			end

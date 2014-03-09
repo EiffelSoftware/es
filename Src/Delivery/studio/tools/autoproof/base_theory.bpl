@@ -217,11 +217,18 @@ axiom (forall h, h': HeapType, x: ref :: { user_inv(h', x), HeapSucc(h, h') }
   (forall <T> o: ref, f: Field T :: h[o, allocated] ==> // every object's field
       h'[o, f] == h[o, f] ||                            // is unchanged
       f == closed || f == owner ||                      // or is outside of the read set of the invariant
-      (!in_domain(h, x, o) && !h[x, subjects][o]) ||    
-      (!in_domain(h, x, o) && f == subjects) ||         // or is the subjects field of one of the subjects
-      (!in_domain(h, x, o) && f == observers && Set#Subset(h[o, observers], h'[o, observers]))  // or is the observers of one of the subjects and it grows
+      !user_inv_readable(h, x)[o, f]
+      // (!in_trans_owns(h, x, o) && guard(h, o, f, h'[o, f], x)) // or changed in a way that conforms to its guard
    )
   ==> user_inv(h', x));
+
+// Old unsound frame axiom:  
+// h'[o, f] == h[o, f] ||                            // is unchanged
+// f == closed || f == owner ||                      // or is outside of the read set of the invariant
+// (!in_domain(h, x, o) && !h[x, subjects][o]) ||    
+// (!in_domain(h, x, o) && f == subjects) ||         // or is the subjects field of one of the subjects
+// (!in_domain(h, x, o) && f == observers && Set#Subset(h[o, observers], h'[o, observers]))  // or is the observers of one of the subjects and it grows
+  
 
 // Is object o closed or the invariant satisfied?
 function {:inline true} inv(h: HeapType, o: ref): bool {

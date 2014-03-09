@@ -125,7 +125,7 @@ feature -- Extension
 		require
 			is_wrapped: is_wrapped
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence"], Current)
+			modify_model (["sequence", "owns"], Current)
 		deferred
 		ensure
 			is_wrapped: is_wrapped

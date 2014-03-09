@@ -23,7 +23,10 @@ feature -- Replacement
 			-- Put `v' into the stream and move to the next position.
 		require
 			not_off: not off
-			subjects_wrapped: across subjects as s all s.item.is_wrapped end
+			subjects_wrapped: across subjects as s all
+					s.item.is_wrapped and
+					across s.observers as o all o.item /= Current implies o.item.is_open end
+				end
 			modify_model (["off_"], Current)
 			modify (subjects)
 		deferred

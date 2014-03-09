@@ -12,6 +12,8 @@ inherit
 
 	IV_SHARED_TYPES
 
+	IV_SHARED_FACTORY
+
 	E2B_SHARED_CONTEXT
 
 create
@@ -25,8 +27,8 @@ feature {NONE} -- Initialization
 		do
 			create {IV_ENTITY} current_expression.make (default_current_name, types.ref)
 			result_expression := Void
-			create heap.make (global_heap_name, types.heap)
-			old_heap := Void
+			create {IV_ENTITY} heap.make (global_heap_name, types.heap)
+			old_heap := factory.old_ (heap)
 			create argument_mapping.make (5)
 			create local_mapping.make (5)
 		end
@@ -74,11 +76,11 @@ feature -- Access
 			Result := local_mapping.item (a_position)
 		end
 
-	heap: IV_ENTITY
-			-- Entity for heap.
+	heap: IV_EXPRESSION
+			-- Expression for heap.
 
-	old_heap: detachable IV_ENTITY
-			-- Entity for old heap.
+	old_heap: IV_EXPRESSION
+			-- Expression for old heap.
 
 	default_result_name: STRING = "Result"
 			-- Default name for `Result'.
@@ -144,32 +146,24 @@ feature -- Element change
 			local_mapping.wipe_out
 		end
 
-	set_heap (a_entity: IV_ENTITY)
-			-- Set `heap' to `a_name'.
+	set_heap (a_expr: IV_EXPRESSION)
+			-- Set `heap' to `a_expr'.
 		require
-			a_entity_attached: attached a_entity
+			a_expr_attached: attached a_expr
 		do
-			heap := a_entity
+			heap := a_expr
 		ensure
-			heap_set: heap = a_entity
+			heap_set: heap = a_expr
 		end
 
-	set_old_heap (a_entity: IV_ENTITY)
-			-- Set `old_heap' to `a_name'.
+	set_old_heap (a_expr: IV_EXPRESSION)
+			-- Set `old_heap' to `a_expr'.
 		require
-			a_entity_attached: attached a_entity
+			a_expr_attached: attached a_expr
 		do
-			old_heap := a_entity
+			old_heap := a_expr
 		ensure
-			old_heap_set: old_heap = a_entity
-		end
-
-	clear_old_heap
-			-- Set `old_heap_name' to Void.
-		do
-			old_heap := Void
-		ensure
-			old_heap_cleared: old_heap = Void
+			old_heap_set: old_heap = a_expr
 		end
 
 feature {E2B_ENTITY_MAPPING} -- Implementation

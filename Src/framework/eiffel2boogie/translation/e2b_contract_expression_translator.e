@@ -99,17 +99,12 @@ feature -- Visitors
 			-- <Precursor>
 		local
 			l_call: IV_FUNCTION_CALL
-			l_temp_heap: IV_ENTITY
+			l_temp_heap: IV_EXPRESSION
 		do
-			if attached entity_mapping.old_heap then
-				l_temp_heap := entity_mapping.heap
-				entity_mapping.set_heap (entity_mapping.old_heap)
-				safe_process (a_node.expr)
-				entity_mapping.set_heap (l_temp_heap)
-			else
-				safe_process (a_node.expr)
-				last_expression := factory.old_ (last_expression)
-			end
+			l_temp_heap := entity_mapping.heap
+			entity_mapping.set_heap (entity_mapping.old_heap)
+			safe_process (a_node.expr)
+			entity_mapping.set_heap (l_temp_heap)
 		end
 
 feature -- Translation

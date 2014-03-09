@@ -1205,7 +1205,7 @@ feature -- Translation
 		do
 			l_fname := name_translator.boogie_function_for_feature (a_feature, current_target_type)
 				-- Add check
-				-- Note: here we assume that there is not default precondition!
+				-- Note: here we assume that there is no default precondition!
 			if a_feature.has_precondition then
 				create l_pre_call.make (name_translator.boogie_function_precondition (l_fname), types.bool)
 				across a_fcall.arguments as args loop

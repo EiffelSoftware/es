@@ -1012,7 +1012,7 @@ feature -- Processing
 		local
 			l_havoc: IV_HAVOC
 		do
-			create l_havoc.make (entity_mapping.heap.name)
+			create l_havoc.make (factory.global_heap.name)
 			l_havoc.set_origin_information (origin_information (a_node))
 			current_block.add_statement (l_havoc)
 		end
@@ -1022,7 +1022,7 @@ feature -- Processing
 		local
 			l_havoc: IV_HAVOC
 		do
-			create l_havoc.make (entity_mapping.heap.name)
+			create l_havoc.make (factory.global_heap.name)
 			l_havoc.set_origin_information (origin_information (a_node))
 			current_block.add_statement (l_havoc)
 		end

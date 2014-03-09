@@ -190,17 +190,15 @@ feature -- Specification
 	lower_: INTEGER
 			-- Lower bound of `map.domain'.
 		note
-			status: ghost, functional
-		do
-			Result := if map.is_empty then 1 else map.domain.min end
+			status: ghost
+		attribute
 		end
 
 	upper_: INTEGER
 			-- Upper bound of `map.domain'.
 		note
 			status: ghost, functional
-		do
-			Result := if map.is_empty then 0 else map.domain.max end
+		attribute
 		end
 
 	lemma_sequence_map (s: MML_SEQUENCE [G]; m: MML_MAP [INTEGER, G]; k, l, u: INTEGER; v: G)

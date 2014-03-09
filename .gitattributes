@@ -3509,6 +3509,7 @@ Src/framework/eiffel2boogie/tests/basic/references/output.txt -text
 Src/framework/eiffel2boogie/tests/examples/cost2011/output.txt -text
 Src/framework/eiffel2boogie/tests/examples/vstte2008/output.txt -text
 Src/framework/eiffel2boogie/tests/examples/vstte2010/output.txt -text
+Src/framework/eiffel2boogie/tests/framing/models/stack/output.txt -text
 Src/framework/eiffel2boogie/tests/framing/ownership/composite/output.txt -text
 Src/framework/eiffel2boogie/tests/framing/ownership/double_linked_list/output.txt -text
 Src/framework/eiffel2boogie/tests/framing/ownership/iterator/output.txt -text
