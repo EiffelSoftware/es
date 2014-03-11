@@ -695,7 +695,7 @@ feature -- Type queries
 			yes_if_empty: (count = 0) implies Result
 		end
 
-	is_uniforme_character_32, is_uniform_wide_character: BOOLEAN
+	is_uniform_character_32, is_uniform_wide_character: BOOLEAN
 			-- Are all items of type CHARACTER_32?
 		do
 			Result := is_tuple_uniform (character_32_code)
@@ -1447,7 +1447,7 @@ feature -- MML
 		end
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license:   "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

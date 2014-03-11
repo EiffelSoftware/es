@@ -33,7 +33,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	owner: like current_thread_id
+	m_owner: like current_thread_id
 			-- Debugging facility to know the THREAD owning Current. The `owner' field might be invalid
 			-- when Current is used with a condition variable.
 
@@ -53,7 +53,7 @@ feature -- Status setting
 			is_set: is_set
 		do
 			eif_thr_mutex_lock (mutex_pointer)
-			owner := current_thread_id
+			m_owner := current_thread_id
 		end
 
 	try_lock: BOOLEAN
@@ -63,7 +63,7 @@ feature -- Status setting
 		do
 			Result := eif_thr_mutex_trylock (mutex_pointer)
 			if Result then
-				owner := current_thread_id
+				m_owner := current_thread_id
 			end
 		end
 
@@ -72,7 +72,7 @@ feature -- Status setting
 		require
 			is_set: is_set
 		do
-			owner := default_pointer
+			m_owner := default_pointer
 			eif_thr_mutex_unlock (mutex_pointer)
 		end
 
@@ -110,7 +110,7 @@ feature {NONE} -- Removal
 			if is_set then
 					-- We can only destroy a mutex that was not locked
 					-- yet, or if locked that we own the lock.
-				if owner = l_null or else owner = current_thread_id then
+				if m_owner = l_null or else m_owner = current_thread_id then
 					destroy
 				end
 			end

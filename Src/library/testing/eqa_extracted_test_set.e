@@ -30,7 +30,7 @@ inherit
 
 feature {NONE} -- Access
 
-	context: ARRAY [TUPLE [type: TYPE [ANY]; attributes: TUPLE; inv: BOOLEAN]]
+	context: ARRAY [TUPLE [type: TYPE [ANY]; attributes: TUPLE; cinv: BOOLEAN]]
 			-- List of objects needed to reconstruct application state as it was when test routines were
 			--     extracted. Once the content is restored (after `prepare' was called), each object can
 			--     be accessed through `object_for_id', where id is is in the form of '#' + index.
@@ -333,7 +333,7 @@ feature {NONE} -- Object initialization
 			until
 				i > l_cache.upper
 			loop
-				if context.item (i).inv then
+				if context.item (i).cinv then
 					l_cache.item (i).do_nothing
 				end
 				i := i + 1

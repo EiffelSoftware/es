@@ -231,7 +231,7 @@ feature {NONE} -- Implementation
 				a_cluster.classes.after
 			loop
 				l_class := a_cluster.classes.item_for_iteration
-				add_class (universe.class_named (l_class.name, a_cluster))
+				add_class (universe.classes_with_name (l_class.name).first)
 				a_cluster.classes.forth
 			end
 		end

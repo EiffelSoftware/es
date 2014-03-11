@@ -912,7 +912,7 @@ feature -- socket options
 	is_blocking: BOOLEAN
 			-- Is the socket blocking?
 
-	set_owner (own: INTEGER)
+	set_socket_owner (own: INTEGER)
 			-- Negative value sets group process id.
 			-- positive value sets process id.
 		require
