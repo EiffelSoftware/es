@@ -100,8 +100,8 @@ feature -- From ROTA
 				context.set_checking_class (classes.item)
 
 				across rules as l_rules loop
-							-- If rule is non-standard then it will not be checked by l_rules_checker.
-							-- We will have the rule check the current class here:
+						-- If rule is non-standard then it will not be checked by l_rules_checker.
+						-- We will have the rule check the current class here:
 					if
 						l_rules.item.is_enabled.value
 						and then attached {CA_CFG_RULE} l_rules.item as l_cfg_rule

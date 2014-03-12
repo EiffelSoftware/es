@@ -93,7 +93,7 @@ feature {NONE} -- Rule checking
 			then
 				l_target := l_nested_call.target
 				l_type := current_context.node_type (l_target, current_feature_i)
-				if l_type.base_class.conform_to (iterable) then
+				if l_type /= Void and then l_type.base_class.conform_to (iterable) then
 					matching_until_part := True
 					expected_var := l_target.access_name_32
 				end
