@@ -86,9 +86,21 @@ feature {NONE} -- Status setting
 
 	clean
 			-- <Precursor>
+		local
+			l_file: PLAIN_TEXT_FILE
 		do
 			Precursor
 			interpreter_root_class_cell.put (Void)
+
+			if file_name_of_new_root_class /= Void then
+				create l_file.make_with_name (file_name_of_new_root_class)
+				if l_file.exists then
+					l_file.delete
+				end
+
+				cluster_name_of_new_root := Void
+				file_name_of_new_root_class := Void
+			end
 		end
 
 	compute_interpreter_root_class
@@ -98,7 +110,7 @@ feature {NONE} -- Status setting
 		do
 			l_uni := system.universe
 			if
-				attached l_uni.cluster_of_name ({TEST_SYSTEM_I}.eifgens_cluster_name) as l_cluster and then
+				attached l_uni.cluster_of_name (cluster_name_of_new_root) as l_cluster and then
 				attached l_uni.class_named (interpreter_root_class_name, l_cluster) as l_class and then
 				attached {EIFFEL_CLASS_C} l_class.compiled_class as l_eclass
 			then
@@ -123,6 +135,7 @@ feature {NONE} -- Basic operations
 			l_system: SYSTEM_I
 			l_melt: like new_melt_task
 			l_classes: DS_HASH_SET [STRING]
+			l_root_cluster_path: PATH
 		do
 			l_system := system
 			check l_system /= Void end
@@ -135,37 +148,41 @@ feature {NONE} -- Basic operations
 			l_related_class_collector.collect_from_features (a_features_under_test)
 			l_classes.append (l_related_class_collector.last_interface_related_classes_from_features)
 
-				-- Create actual root class in EIFGENs cluster
-			l_dir := l_system.project_location
-			create l_file_name.make_from_string (l_dir.eifgens_cluster_path.out)
-			l_file_name.set_file_name (interpreter_root_class_name.as_lower)
-			l_file_name.add_extension ("e")
-			create l_file.make (l_file_name)
-			if not l_file.exists then
-				l_system.force_rebuild
-			end
-			l_file.recursive_open_write
-			create l_source_writer.make (Current)
-			if l_file.is_open_write then
-				l_source_writer.write_class (l_file, l_classes, l_system)
-				l_file.flush
-				l_file.close
+				-- Create actual root class in one of the root clusters
+			check attached {CONF_CLUSTER} system.root_type.base_class.group as lt_cluster then
+				cluster_name_of_new_root := lt_cluster.name
+				create l_root_cluster_path.make_from_string (lt_cluster.location.original_path)
+				create file_name_of_new_root_class.make_from_string (l_root_cluster_path.absolute_path_in (l_system.eiffel_project.project_directory.path).out)
+				file_name_of_new_root_class.set_file_name (interpreter_root_class_name.as_lower)
+				file_name_of_new_root_class.add_extension ("e")
+				create l_file.make (file_name_of_new_root_class)
+				if not l_file.exists then
+					l_system.force_rebuild
+				end
+				l_file.recursive_open_write
+				create l_source_writer.make (Current)
+				if l_file.is_open_write then
+					l_source_writer.write_class (l_file, l_classes, l_system)
+					l_file.flush
+					l_file.close
+				end
+
+				if not l_system.is_explicit_root (interpreter_root_class_name, interpreter_root_feature_name) then
+					l_system.add_explicit_root (Void, interpreter_root_class_name, interpreter_root_feature_name)
+				end
+
+				append_output (
+					agent (a_formatter: TEXT_FORMATTER)
+						do
+							a_formatter.process_basic_text ("Compiling project%N")
+						end, True)
+
+				l_melt := new_melt_task
+				l_melt.set_is_freezing_needed (should_freeze_before_testing)
+				l_melt.start (True)
+				sub_task := l_melt
 			end
 
-			if not l_system.is_explicit_root (interpreter_root_class_name, interpreter_root_feature_name) then
-				l_system.add_explicit_root (Void, interpreter_root_class_name, interpreter_root_feature_name)
-			end
-
-			append_output (
-				agent (a_formatter: TEXT_FORMATTER)
-					do
-						a_formatter.process_basic_text ("Compiling project%N")
-					end, True)
-
-			l_melt := new_melt_task
-			l_melt.set_is_freezing_needed (should_freeze_before_testing)
-			l_melt.start (True)
-			sub_task := l_melt
 		end
 
 	launch_additional_process
@@ -188,8 +205,14 @@ feature {NONE} -- Factory
 			create Result.make (etest_suite)
 		end
 
-note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+feature{NONE} -- Implementation
+
+	cluster_name_of_new_root: STRING
+
+	file_name_of_new_root_class: FILE_NAME
+
+;note
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[
