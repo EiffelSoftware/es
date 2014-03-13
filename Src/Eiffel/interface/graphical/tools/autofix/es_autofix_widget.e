@@ -88,12 +88,12 @@ feature {NONE} -- Implementation
 
 	build_interface
 		local
-			l_left_frame, l_right_frame: EV_FRAME
+			l_left_frame: EV_FRAME
 			l_v_box: EV_VERTICAL_BOX
 			l_h_box: EV_HORIZONTAL_BOX
 			l_label: EV_LABEL
-			l_toolbar: SD_TOOL_BAR
-			l_button: SD_TOOL_BAR_BUTTON
+--			l_toolbar: SD_TOOL_BAR
+--			l_button: SD_TOOL_BAR_BUTTON
 		do
 			create l_v_box
 			l_v_box.set_minimum_size (252, 200)
@@ -154,7 +154,8 @@ feature -- Actions
 			signature_not_empty: a_fault_signature /= Void and then not a_fault_signature.is_empty
 			result_available: autofix_results.has (a_fault_signature)
 		local
-			l_list_item, l_result_item: EV_LIST_ITEM
+--			l_list_item,
+			l_result_item: EV_LIST_ITEM
 			l_result: ES_EVE_AUTOFIX_RESULT
 		do
 			l_result := autofix_results.item (a_fault_signature)
@@ -176,12 +177,12 @@ feature -- Actions
 	refresh_all
 			-- Refresh the view of all faults from `autofix_results'.
 		local
-			l_item_text: STRING
+--			l_item_text: STRING
 			l_list_item: EV_LIST_ITEM
-			l_list_items: ARRAYED_LIST [EV_LIST_ITEM]
-			l_fault, l_first_fault: STRING
+--			l_list_items: ARRAYED_LIST [EV_LIST_ITEM]
+			l_fault: STRING
 			l_result: ES_EVE_AUTOFIX_RESULT
-			l_suggestion: ES_EVE_AUTOFIX_FIXING_SUGGESTION
+--			l_suggestion: ES_EVE_AUTOFIX_FIXING_SUGGESTION
 		do
 			faults_combo.wipe_out
 			fixes_list.wipe_out
@@ -216,9 +217,9 @@ feature -- Actions
 	on_fault_selected (a_result: ES_EVE_AUTOFIX_RESULT)
 			-- Action to perform when a fault is selected from `faults_combo'.
 		local
-			l_result: ES_EVE_AUTOFIX_RESULT
-			l_fault: STRING
-			l_list_item: EV_LIST_ITEM
+--			l_result: ES_EVE_AUTOFIX_RESULT
+--			l_fault: STRING
+--			l_list_item: EV_LIST_ITEM
 			l_suggestion: ES_EVE_AUTOFIX_FIXING_SUGGESTION
 			l_fix_index: INTEGER
 			l_item: EV_GRID_LABEL_ITEM
@@ -291,7 +292,7 @@ feature -- Actions
 			-- Unapply the fix.
 		local
 			l_applied_fix_index, l_selected_row: INTEGER
-			l_applied_fix: ES_EVE_AUTOFIX_FIXING_SUGGESTION
+--			l_applied_fix: ES_EVE_AUTOFIX_FIXING_SUGGESTION
 			l_result: ES_EVE_AUTOFIX_RESULT
 		do
 			l_result ?= faults_combo.selected_item.data
@@ -365,7 +366,7 @@ feature -- Actions
 			-- A colored grid item for showing the ranking `a_ranking'.
 		local
 			r, g, b: INTEGER
-			l_color_range: INTEGER
+--			l_color_range: INTEGER
 		do
 			create Result.make_with_text ("  ")
 			if a_ranking < 0.5 then
@@ -391,8 +392,8 @@ feature{NONE} -- Implementation
 	update_buttons
 			-- Update the show/hide status of buttons.
 		local
-			l_suggestion: ES_EVE_AUTOFIX_FIXING_SUGGESTION
-			l_result: ES_EVE_AUTOFIX_RESULT
+--			l_suggestion: ES_EVE_AUTOFIX_FIXING_SUGGESTION
+--			l_result: ES_EVE_AUTOFIX_RESULT
 		do
 			if attached fixes_list.selected_rows as lt_rows and then lt_rows.count = 1 and then attached {ES_EVE_AUTOFIX_FIXING_SUGGESTION} lt_rows.first.data as lt_fix
 					and then not lt_fix.parent.is_fixed then
@@ -419,7 +420,7 @@ feature {NONE} -- Implementation
 
 
 ;note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

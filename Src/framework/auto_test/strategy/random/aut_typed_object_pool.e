@@ -247,22 +247,24 @@ feature -- Basic operations
 			create l_variable.make (a_index)
 			l_storage := storage
 
-			l_type := l_storage.item (l_variable)
-			if l_type /= Void then
-				from
-					l_var_table_cursor := variable_table.new_cursor
-					l_var_table_cursor.start
-				until
-					l_var_table_cursor.after
-				loop
-					l_list_type := l_var_table_cursor.key
-					if l_type.conform_to (a_context_class, l_list_type) then
-						remove_variable_from_list (l_variable, l_var_table_cursor.item)
+			if l_storage.has (l_variable) then
+				l_type := l_storage.item (l_variable)
+				if l_type /= Void then
+					from
+						l_var_table_cursor := variable_table.new_cursor
+						l_var_table_cursor.start
+					until
+						l_var_table_cursor.after
+					loop
+						l_list_type := l_var_table_cursor.key
+						if l_type.conform_to (a_context_class, l_list_type) then
+							remove_variable_from_list (l_variable, l_var_table_cursor.item)
+						end
+						l_var_table_cursor.forth
 					end
-					l_var_table_cursor.forth
 				end
+				l_storage.remove (l_variable)
 			end
-			l_storage.remove (l_variable)
 		end
 
 	set_variable_count (a_count: INTEGER)
@@ -422,7 +424,7 @@ feature{NONE} -- Implementation
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

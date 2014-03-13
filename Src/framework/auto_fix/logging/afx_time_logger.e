@@ -8,18 +8,18 @@ class
 	AFX_TIME_LOGGER
 
 inherit
-	AFX_EVENT_LISTENER
-		redefine
-			on_session_starts,
-			on_session_ends,
-			on_session_canceled,
-			on_test_case_analysis_starts,
-			on_test_case_analysis_ends,
-			on_fix_generation_starts,
-			on_fix_generation_ends,
-			on_fix_validation_starts,
-			on_fix_validation_ends
-		end
+--	AFX_EVENT_LISTENER
+--		redefine
+--			on_session_starts,
+--			on_session_ends,
+--			on_session_canceled,
+--			on_test_case_analysis_starts,
+--			on_test_case_analysis_ends,
+--			on_implementation_fix_generation_starts,
+--			on_implementation_fix_generation_ends,
+--			on_implementation_fix_validation_starts,
+--			on_implementation_fix_validation_ends
+--		end
 
 	EPA_TIME_UTILITY
 
@@ -145,25 +145,25 @@ feature -- Actions
 			test_case_analysis_end_time := time_now
 		end
 
-	on_fix_generation_starts
+	on_implementation_fix_generation_starts
 			-- <Precursor>
 		do
 			fix_generation_start_time := time_now
 		end
 
-	on_fix_generation_ends (a_fixes: DS_LINKED_LIST [AFX_FIX])
+	on_implementation_fix_generation_ends (a_fixes: DS_ARRAYED_LIST [AFX_CODE_FIX_TO_FAULT])
 			-- <Precursor>
 		do
 			fix_generation_end_time := time_now
 		end
 
-	on_fix_validation_starts (a_fixes: LINKED_LIST [AFX_MELTED_FIX])
+	on_implementation_fix_validation_starts (a_fixes: DS_LIST [AFX_CODE_FIX_TO_FAULT])
 			-- <Precursor>
 		do
 			fix_validation_start_time := time_now
 		end
 
-	on_fix_validation_ends (a_fixes: LINKED_LIST [AFX_FIX])
+	on_implementation_fix_validation_ends (a_fixes: DS_LIST [AFX_CODE_FIX_TO_FAULT])
 			-- <Precursor>
 		do
 			fix_validation_end_time := time_now

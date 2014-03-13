@@ -66,6 +66,21 @@ feature -- Basic operations
 			end
 		end
 
+	set_selected_breakpoint_with_expression_and_action (a_selected_bpts: ARRAY[INTEGER]; a_expressions: DS_HASH_SET [EPA_EXPRESSION]; a_action: PROCEDURE [ANY, TUPLE [a_bp: BREAKPOINT; a_state: EPA_STATE]])
+		require
+			a_selected_bpts /= Void
+			a_expressions_attached: a_expressions /= Void
+		local
+			l_slot_count: INTEGER
+		do
+			l_slot_count := feature_.number_of_breakpoint_slots
+			across a_selected_bpts as l_bpt loop
+				if 1 <= l_bpt.item and then l_bpt.item <= l_slot_count then
+					set_breakpoint_with_expression_and_action (l_bpt.item, a_expressions, a_action)
+				end
+			end
+		end
+
 	set_breakpoint_with_expression_and_action (a_bpslot: INTEGER; a_expressions: DS_HASH_SET [EPA_EXPRESSION]; a_action: PROCEDURE [ANY, TUPLE [a_bp: BREAKPOINT; a_state: EPA_STATE]])
 			-- Set `a_action' to `a_bpslot'-th break point in `a_feature'.
 			-- Every time when the breakpoint is hit, all expressions in `a_expressions' are evaluated and

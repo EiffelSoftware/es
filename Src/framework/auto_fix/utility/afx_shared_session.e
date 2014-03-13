@@ -41,18 +41,6 @@ feature -- Access
 			Result := session.progression_monitor
 		end
 
-	exception_signature: AFX_EXCEPTION_SIGNATURE
-			-- Signature of the exception.
-		do
-			Result := session.exception_signature
-		end
-
-	exception_recipient_feature: AFX_EXCEPTION_RECIPIENT_FEATURE
-			-- Recipient feature of `exception_signature'.
-		do
-			Result := session.exception_recipient_feature
-		end
-
 feature -- Status report
 
 	is_session_attached: BOOLEAN
@@ -61,16 +49,10 @@ feature -- Status report
 			Result := session_cell.item /= Void
 		end
 
-	is_session_time_up: BOOLEAN
-			-- Is the shared session out of time?
-		do
-			Result := session.time_left < 0
-		end
-
 feature -- Status set
 
-	set_session (a_session: AFX_SESSION)
-			-- Set `a_session' as the shared session object.
+	set_current_session (a_session: AFX_SESSION)
+			-- Set `a_session' as the shared current session object.
 		require
 			session_attached: a_session /= Void
 		do

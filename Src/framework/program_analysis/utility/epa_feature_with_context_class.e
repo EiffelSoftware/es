@@ -29,7 +29,7 @@ inherit
 		end
 
 create
-	make
+	make, make_from_names
 
 feature{NONE} -- Initialization
 
@@ -44,6 +44,13 @@ feature{NONE} -- Initialization
 		ensure
 			feature_set: feature_ = a_feature
 			context_class_set: context_class = a_context_class
+		end
+
+	make_from_names (a_feature_name, a_class_name: STRING)
+			--
+		do
+			feature_ := feature_from_class (a_class_name, a_feature_name)
+			context_class := first_class_starts_with_name (a_class_name)
 		end
 
 feature -- Access
@@ -64,6 +71,12 @@ feature -- Access
 			-- Written class.
 		do
 			Result := feature_.written_class
+		end
+
+	qualified_feature_name: STRING
+			-- ClassName.FeatureName
+		do
+			Result := context_class.name_in_upper + "." + feature_.feature_name
 		end
 
 	is_equal(other: like Current): BOOLEAN
@@ -129,6 +142,82 @@ feature -- Output
 			Result := context_class.name_in_upper + "." + feature_.feature_name
 		end
 
+feature -- Static structure
+
+	first_breakpoint_in_body: INTEGER
+			-- First breakpoint in the body of Current.
+		do
+			Result := ast_structure.first_breakpoint_slot_number
+		end
+
+	last_breakpoint_in_body: INTEGER
+			-- Last breakpoint in the body of Current.
+		do
+			Result := ast_structure.last_breakpoint_slot_number
+		end
+
+	breakpoint_to_evaluate_precondition: INTEGER = 1
+			-- Breakpoint where evaluation of precondition happens during monitoring.
+
+	breakpoint_to_evaluate_postcondition: INTEGER
+			-- Breakpoint where evaluation of postcondition happens during monitoring.
+		local
+			l_contract_extractor: EPA_CONTRACT_EXTRACTOR
+		do
+			if breakpoint_to_evaluate_postcondition_cache = 0 then
+				create l_contract_extractor
+				breakpoint_to_evaluate_postcondition_cache := feature_.number_of_breakpoint_slots
+--				breakpoint_to_evaluate_postcondition_cache := feature_.e_feature.number_of_breakpoint_slots - l_contract_extractor.postcondition_of_feature (feature_, context_class).count
+--				breakpoint_to_evaluate_postcondition_cache := feature_.e_feature.number_of_breakpoint_slots - l_contract_extractor.postcondition_of_feature (feature_, context_class).count + 1
+			end
+			Result := breakpoint_to_evaluate_postcondition_cache
+		end
+
+	ast_structure: EPA_FEATURE_AST_STRUCTURE_NODE
+			-- AST structure of Current.
+		local
+			l_structure_gen: EPA_AST_STRUCTURE_NODE_GENERATOR
+		do
+			if ast_structure_cache = Void then
+				create l_structure_gen
+				l_structure_gen.generate (context_class, feature_)
+				ast_structure_cache := l_structure_gen.structure
+			end
+			Result := ast_structure_cache
+		end
+
+	body_compound_ast: EIFFEL_LIST [INSTRUCTION_AS]
+			-- AST node for body of the recipient.
+			-- It is the compound part of a DO_AS.
+		do
+			if attached {BODY_AS} feature_.body.body as l_body then
+				if attached {ROUTINE_AS} l_body.content as l_routine then
+					if attached {DO_AS} l_routine.routine_body as l_do then
+						Result := l_do.compound
+					end
+				end
+			end
+		end
+
+	body_ast: DO_AS
+			-- AST node for body of the recipient.
+			-- It is a DO_AS.
+		do
+			if attached {BODY_AS} feature_.body.body as l_body then
+				if attached {ROUTINE_AS} l_body.content as l_routine then
+					if attached {DO_AS} l_routine.routine_body as l_do then
+						Result := l_do
+					end
+				end
+			end
+		end
+
+	feature_as_ast: FEATURE_AS
+			-- AST for the recipient.
+		do
+			Result := feature_.e_feature.ast
+		end
+
 feature{NONE} -- Implementation
 
 	key_to_hash: DS_LINEAR [INTEGER]
@@ -141,6 +230,14 @@ feature{NONE} -- Implementation
 			l_list.force_last (context_class.class_id)
 			Result := l_list
 		end
+
+feature{NONE} -- Cache
+
+	breakpoint_to_evaluate_postcondition_cache: INTEGER
+			-- Cache for `breakpoint_to_evaluate_postcondition'.
+
+	ast_structure_cache: EPA_FEATURE_AST_STRUCTURE_NODE
+			-- Cache for `ast_structure'.
 
 invariant
 	feature_attached: feature_ /= Void

@@ -17,7 +17,7 @@ inherit
 
 feature -- Access
 
-	last_constructed_expressions: EPA_HASH_SET [EPA_AST_EXPRESSION]
+	last_constructed_expressions: EPA_HASH_SET [EPA_EXPRESSION]
 			-- Constructed expressions.
 		do
 			if last_constructed_expressions_cache = Void then
@@ -28,14 +28,14 @@ feature -- Access
 
 feature -- Basic operation
 
-	construct_from (a_expressions: EPA_HASH_SET [EPA_AST_EXPRESSION])
+	construct_from (a_expressions: EPA_HASH_SET [EPA_EXPRESSION])
 			-- Construct basic-typed expressions, based on `a_expressions', into `last_constructed_expressions'.
 		require
 			expressions_attached: a_expressions /= Void
 		local
-			l_exp: EPA_AST_EXPRESSION
-			l_exp_set: EPA_HASH_SET [EPA_AST_EXPRESSION]
-			l_constant_set: EPA_HASH_SET [EPA_AST_EXPRESSION]
+			l_exp: EPA_EXPRESSION
+			l_exp_set: EPA_HASH_SET [EPA_EXPRESSION]
+			l_constant_set: EPA_HASH_SET [EPA_EXPRESSION]
 		do
 			from
 				create l_exp_set.make_equal (a_expressions.count + 1)
@@ -66,7 +66,7 @@ feature -- Basic operation
 			last_constructed_expressions_cache := l_exp_set
 		end
 
-	construct_from_expression (a_expression: EPA_AST_EXPRESSION)
+	construct_from_expression (a_expression: EPA_EXPRESSION)
 			-- Construct basic-typed expressions, based on `a_expression', into `last_constructed_expressions'.
 		require
 			expression_attached: a_expression /= Void
@@ -76,7 +76,7 @@ feature -- Basic operation
 
 feature{NONE} -- Add result expression
 
-	add_expression (a_expr: EPA_AST_EXPRESSION)
+	add_expression (a_expr: EPA_EXPRESSION)
 			-- Add `a_expr', if basic-typed, into `expressions_to_monitor'.
 		require
 			expr_attached: a_expr /= Void
@@ -86,7 +86,7 @@ feature{NONE} -- Add result expression
 			end
 		end
 
-	add_expression_with_text (a_origin_expr: EPA_AST_EXPRESSION; a_text: STRING)
+	add_expression_with_text (a_origin_expr: EPA_EXPRESSION; a_text: STRING)
 			-- Add a expression derived from `a_origin_expr', if basic-typed, to `expressions_to_monitor'.
 			-- The expression has the text `a_text'.
 		require
@@ -101,7 +101,7 @@ feature{NONE} -- Add result expression
 
 feature{NONE} -- Implementation
 
-	construct_from_expression_internal (a_expression: EPA_AST_EXPRESSION)
+	construct_from_expression_internal (a_expression: EPA_EXPRESSION)
 			-- Construct basic-typed expressions based on `a_expression'.
 		require
 			expression_attached: a_expression /= Void
@@ -114,7 +114,7 @@ feature{NONE} -- Implementation
 			l_feature_type: TYPE_A
 			l_feature_name: STRING_32
 			l_exp_text: STRING
-			l_new_expression: EPA_AST_EXPRESSION
+			l_new_expression: EPA_EXPRESSION
 			l_interesting_features: DS_ARRAYED_LIST[FEATURE_I]
 		do
 			reset_constructor

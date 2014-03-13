@@ -37,13 +37,11 @@ inherit
 
 	EPA_UTILITY
 
-	-- AFX_SHARED_SESSION
-
 	REFACTORING_HELPER
 
 feature -- Access
 
-	last_sub_expressions: EPA_HASH_SET [EPA_AST_EXPRESSION]
+	last_sub_expressions: EPA_HASH_SET [EPA_EXPRESSION]
 			-- Set of sub- expressions from last collecting.
 		do
 			if last_sub_expressions_cache = Void then
@@ -76,31 +74,31 @@ feature -- Basic operation
 			collect_local_entities
 		end
 
-	collect_from_expression_text (a_feature_with_context: EPA_FEATURE_WITH_CONTEXT_CLASS; a_expr_text: STRING)
-			-- Collect all sub-expressions of `a_expr_text', in the context of `a_feature_with_context'.
-			-- `a_expr_text' should be valid in `a_feature_with_context', in terms of renaming.
+	collect_from_expressions (a_feature_with_context: EPA_FEATURE_WITH_CONTEXT_CLASS; a_expressions: DS_LINEAR [EPA_EXPRESSION])
+			-- Collect all sub-expressions from `a_expressions', in the context of `a_feature_with_context'.
 		require
-			text_written_in_context: True
+			a_expressions /= Void
+		local
+			l_cursor: DS_LINEAR_CURSOR [EPA_EXPRESSION]
 		do
 			reset_collector
-
-			collect_from_ast (a_feature_with_context, ast_from_expression_text (a_expr_text))
+			from
+				l_cursor := a_expressions.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				collect_from_ast (a_feature_with_context, ast_from_expression_text (l_cursor.item.text))
+--				collect_from_expression (a_feature_with_context, l_cursor.item)
+				l_cursor.forth
+			end
 		end
 
-	collect_from_ast (a_feature_with_context: EPA_FEATURE_WITH_CONTEXT_CLASS; a_ast: AST_EIFFEL)
-			-- Collect all sub-expressions of `a_ast', in the context of `a_feature'.
-			-- `a_ast' should be valid in `a_feature_with_context', in terms of renaming.
-			--
-			-- Note: only CLASS_AS, FEATURE_AS, INSTRUCTION_AS, EIFFEL_LIST [INSTRUCTION_AS], EXPR_AS, TYPE_AS
-		require
-			ast_in_context: True
+	collect_from_expression (a_feature_with_context: EPA_FEATURE_WITH_CONTEXT_CLASS; a_expr: EPA_EXPRESSION)
+			-- Collect all sub-expressions of `a_expr', in the context of `a_feature_with_context'.
 		do
 			reset_collector
-
-			if a_ast /= Void then
-				context_feature := a_feature_with_context
-				a_ast.process (Current)
-			end
+			collect_from_ast (a_feature_with_context, ast_from_expression_text (a_expr.text))
 		end
 
 feature -- Status report
@@ -162,8 +160,30 @@ feature{NONE} -- Auxiliary
 			-- Reset the state of the collector.
 		do
 			last_sub_expressions_cache := Void
+			internal_reset
+		end
+
+	internal_reset
+			-- Reset the state of the collector.
+		do
 			expression_stack_cache := Void
 			nested_level_stack_cache := Void
+		end
+
+	collect_from_ast (a_feature_with_context: EPA_FEATURE_WITH_CONTEXT_CLASS; a_ast: AST_EIFFEL)
+			-- Collect all sub-expressions of `a_ast', in the context of `a_feature'.
+			-- `a_ast' should be valid in `a_feature_with_context', in terms of renaming.
+			--
+			-- Note: only CLASS_AS, FEATURE_AS, INSTRUCTION_AS, EIFFEL_LIST [INSTRUCTION_AS], EXPR_AS, TYPE_AS
+		require
+			ast_in_context: True
+		do
+			internal_reset
+
+			if a_ast /= Void then
+				context_feature := a_feature_with_context
+				a_ast.process (Current)
+			end
 		end
 
 	collect_local_entities
@@ -220,15 +240,8 @@ feature{NONE} -- Auxiliary
 			-- Add an expression from `a_ast'.
 		local
 			l_expr: EPA_AST_EXPRESSION
-			l_creator: EPA_AST_EXPRESSION_SAFE_CREATOR
 		do
 			add_expression_from_text (text_from_ast (a_ast))
---			if attached a_ast as lt_expr then
---				l_expr := l_creator.safe_create_with_feature (context_feature.context_class, context_feature.feature_, lt_expr, context_feature.written_class)
---				if l_expr /= Void and then not l_expr.type.is_void then
---					last_sub_expressions.force (l_expr)
---				end
---			end
 		end
 
 feature --  Visitor routine

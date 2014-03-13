@@ -50,8 +50,6 @@ feature -- Basic operation
 			parse_file_name
 
 			fixme("Add command line argument to switch on/off this function.")
---			save_ast (recipient_feature_with_context.feature_.body, "original")
---			save_ast (recipient_feature_with_context.written_class.ast, "original")
 			l_fixes := fixes_from_file
 			l_fixes.do_all (agent (a_fix: TUPLE[INTEGER, BOOLEAN, STRING]) do analysis_record_for_fix (a_fix) end)
 		end
@@ -219,27 +217,6 @@ feature{NONE} -- Analysis
 					fix_under_analysis := a_fix
 					compare_structure_node (l_original_structure, l_fixed_structure)
 
-					fixme("-- Add command line argument to switch on/off this function --")
---						-- Output the fix (feature) in XML.
---					save_ast (l_fixed_feature_as, fix_under_analysis.starting_ln.out)
-
---						-- Output the fix (class) in XML.
---					l_new_body_text := text_from_ast (l_fixed_feature_as.body.as_routine.routine_body)
---					l_new_body_text.replace_substring_all ("%N", "%N%T%T")
-
---					l_routine_body_as := recipient_feature_with_context.written_feature.body.body.as_routine.routine_body
---					l_routine_body_as.replace_text (l_new_body_text, l_match_list)
---					l_new_class_content := l_written_class.ast.text (l_match_list)
---					l_match_list.remove_modifications
-
---					Eiffel_parser.set_syntax_version ({EIFFEL_SCANNER_SKELETON}.provisional_syntax)
---					Eiffel_parser.parse_class_from_string (l_new_class_content, Void, Void)
---					save_ast (Eiffel_parser.root_node, fix_under_analysis.starting_ln.out)
-					fixme("-- end --")
-
-----					recipient_feature_with_context.written_feature.body.replace_text (a_fix.text, l_match_list)
-----					l_new_text := text_from_ast (recipient_feature_with_context.written_feature.body)
-----					save_ast (l_written_class.ast, fix_under_analysis.starting_ln.out)
 				end
 			end
 		rescue

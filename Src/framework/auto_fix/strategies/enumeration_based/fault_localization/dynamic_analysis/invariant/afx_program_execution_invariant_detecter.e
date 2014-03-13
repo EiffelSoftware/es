@@ -16,15 +16,15 @@ inherit
 
 	AFX_PROGRAM_EXECUTION_INVARIANT_ACCESS_MODE
 
-	AFX_SHARED_DYNAMIC_ANALYSIS_REPORT
+--	AFX_SHARED_DYNAMIC_ANALYSIS_REPORT
 
 feature -- Basic operation
 
 	reset_detector
 			-- Reset the internal state of the object.
 		do
-			invariants_from_passing_cell.put (Void)
-			invariants_from_failing_cell.put (Void)
+--			invariants_from_passing_cell.put (Void)
+--			invariants_from_failing_cell.put (Void)
 		end
 
 	detect
@@ -33,8 +33,9 @@ feature -- Basic operation
 		do
 			reset_detector
 
-			invariants_from_passing_cell.put (invariants_from_traces (trace_repository.passing_traces))
-			invariants_from_failing_cell.put (invariants_from_traces (trace_repository.failing_traces))
+
+--			invariants_from_passing_cell.put (invariants_from_traces (trace_repository.passing_traces))
+--			invariants_from_failing_cell.put (invariants_from_traces (trace_repository.failing_traces))
 		end
 
 feature{NONE} -- Implementation
@@ -58,13 +59,12 @@ feature{NONE} -- Implementation
 			l_feature: FEATURE_I
 			l_time_left: INTEGER
 		do
-			l_time_left := session.time_left
-			if l_time_left >= 0 and session.should_continue then
+			if session.should_continue then
 				if a_repository.is_empty then
 					create Result.make_equal (1)
 				else
 						-- Prepare input file for Daikon.
-					daikon_printer.set_state_skeleton (exception_recipient_feature.state_skeleton)
+					daikon_printer.set_state_skeleton (session.exception_from_execution.recipient_feature_with_context.state_skeleton_in_body)
 					daikon_printer.print_trace_repository (a_repository)
 					create l_declaration_file.make_with_path (declaration_file_name)
 					l_declaration_file.create_read_write
@@ -206,13 +206,13 @@ feature{NONE} -- Implementation
 	declaration_file_name: PATH
 			-- Declaration file name for Daikon.
 		do
-			Result := config.data_directory.extended ("daikon_input.decls")
+			Result := session.data_directory.extended ("daikon_input.decls")
 		end
 
 	trace_file_name: PATH
 			-- Trace file name.
 		do
-			Result := config.data_directory.extended ("daikon_input.dtrace")
+			Result := session.data_directory.extended ("daikon_input.dtrace")
 		end
 
 	daikon_command: STRING

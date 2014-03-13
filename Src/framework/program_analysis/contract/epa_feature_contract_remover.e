@@ -29,12 +29,37 @@ feature -- Basic operation
 			save_class_texts (l_class_texts)
 		end
 
+	undo_last_removal
+		local
+			l_cursor: DS_ARRAYED_LIST_CURSOR [PATH]
+			l_file: PLAIN_TEXT_FILE
+		do
+			if last_generated_new_class_paths /= Void and then not last_generated_new_class_paths.is_empty then
+				from
+					l_cursor := last_generated_new_class_paths.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					create l_file.make_with_path (l_cursor.item)
+					if l_file.exists then
+						l_file.delete
+					end
+					l_cursor.forth
+				end
+
+				last_generated_new_class_paths := Void
+			end
+		end
+
 feature -- Status report
 
 	is_last_removal_successful: BOOLEAN
 			-- Is last removal successful?
 
 feature{NONE} -- Access
+
+	last_generated_new_class_paths: DS_ARRAYED_LIST [PATH]
 
 	features_with_declarations: DS_HASH_TABLE [DS_HASH_TABLE [DS_HASH_SET [FEATURE_I], BOOLEAN], CLASS_C]
 			-- Features whose contracts are to be removed.
@@ -146,8 +171,8 @@ feature{NONE} -- Implementation
 			l_features: DS_HASH_SET [FEATURE_I]
 			l_feature_cursor: DS_HASH_SET_CURSOR [FEATURE_I]
 			l_feature: FEATURE_I
-			l_asts_to_set_true: DS_ARRAYED_LIST [AST_EIFFEL]
-			l_ast_cursor: DS_ARRAYED_LIST_CURSOR [AST_EIFFEL]
+			l_asts_to_set_true: DS_ARRAYED_LIST [TAGGED_AS]
+			l_ast_cursor: DS_ARRAYED_LIST_CURSOR [TAGGED_AS]
 			l_match_list: LEAF_AS_LIST
 		do
 			create Result.make_equal (10)
@@ -206,7 +231,23 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	contract_asts_from_feature (a_feature: FEATURE_I; a_change_type: BOOLEAN): DS_ARRAYED_LIST [AST_EIFFEL]
+	add_all_tagged_as (a_eiffel_list: EIFFEL_LIST [TAGGED_AS]; a_list_of_as: DS_ARRAYED_LIST [TAGGED_AS])
+			--
+		local
+			l_cursor: INDEXABLE_ITERATION_CURSOR [TAGGED_AS]
+		do
+			from
+				l_cursor := a_eiffel_list.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				a_list_of_as.force_last (l_cursor.item)
+				l_cursor.forth
+			end
+		end
+
+	contract_asts_from_feature (a_feature: FEATURE_I; a_change_type: BOOLEAN): DS_ARRAYED_LIST [TAGGED_AS]
 			-- List of AST nodes from the text of `a_feature' that are contract clauses.
 			--
 			-- At most one node for "require/require else", one node for "ensure/ensure then",
@@ -218,10 +259,10 @@ feature{NONE} -- Implementation
 			create Result.make (4)
 			if attached a_feature.e_feature.ast.body.as_routine as l_rout then
 				if a_change_type and then l_rout.precondition /= Void and then l_rout.precondition.assertions /= Void then
-					Result.force_last (l_rout.precondition.assertions)
+					add_all_tagged_as (l_rout.precondition.assertions, Result)
 				end
 				if not a_change_type and then l_rout.postcondition /= Void and then l_rout.postcondition.assertions /= Void then
-					Result.force_last (l_rout.postcondition.assertions)
+					add_all_tagged_as (l_rout.postcondition.assertions, Result)
 				end
 				collect_checks_from_feature (a_feature)
 				Result.extend_last (check_lists)
@@ -238,6 +279,8 @@ feature{NONE} -- Implementation
 			l_class_file_path: PATH
 			l_class_file: PLAIN_TEXT_FILE
 		do
+			create last_generated_new_class_paths.make_equal (a_class_texts.count + 1)
+
 				-- Store the new class file into OVERRIDE cluster.
 			l_path := system.eiffel_project.project_directory.path.extended ("override")
 			create l_dir.make_with_path (l_path)
@@ -255,6 +298,7 @@ feature{NONE} -- Implementation
 				l_class_text := l_table_cursor.item
 
 				l_class_file_path := l_path.extended (l_class_file_name + ".e")
+				last_generated_new_class_paths.force_last (l_class_file_path)
 				create l_class_file.make_with_path (l_class_file_path)
 				l_class_file.open_write
 				l_class_file.put_string (l_class_text)
@@ -266,7 +310,7 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Collect check assertions
 
-	check_lists: DS_ARRAYED_LIST [EIFFEL_LIST [TAGGED_AS]]
+	check_lists: DS_ARRAYED_LIST [TAGGED_AS]
 
 	collect_checks_from_feature (a_feature: FEATURE_I)
 			-- Collect assertion clauses in CHECK instructions from `a_feature'.
@@ -284,7 +328,7 @@ feature{NONE} -- Collect check assertions
 	process_check_as (l_as: CHECK_AS)
 			-- <Precursor>
 		do
-			check_lists.force_last (l_as.check_list)
+			add_all_tagged_as (l_as.check_list, check_lists)
 		end
 
 feature{NONE} -- Cache

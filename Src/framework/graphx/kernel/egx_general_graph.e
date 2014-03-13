@@ -255,8 +255,10 @@ feature -- Status report
 		local
 			l_node: like node_type
 		do
-			l_node := nodes.item (a_node)
-			Result := l_node /= Void and then actual_node_equality_tester.item ([l_node.data, a_node])
+			if nodes.has (a_node) then
+				l_node := nodes.item (a_node)
+				Result := l_node /= Void and then actual_node_equality_tester.item ([l_node.data, a_node])
+			end
 		end
 
 	has_out_edge (a_start_node: N; a_label: L): BOOLEAN is

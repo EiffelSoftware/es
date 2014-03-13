@@ -7,28 +7,28 @@ note
 deferred class
 	AFX_TRACE_BASED_CONTRACT_FIXER
 
-	inherit
+inherit
 
-		AFX_SHARED_SESSION
+	AFX_SHARED_SESSION
 
 feature -- Access
 
-	last_contract_fixes: DS_LIST [AFX_CONTRACT_FIX_ACROSS_FEATURES]
+	last_contract_fixes: DS_LIST [AFX_CONTRACT_FIX_TO_FAULT]
 
 		do
 			if last_contract_fixes_cache = Void then
-				create {DS_ARRAYED_LIST [AFX_CONTRACT_FIX_ACROSS_FEATURES]}last_contract_fixes_cache.make (10)
+				create {DS_ARRAYED_LIST [AFX_CONTRACT_FIX_TO_FAULT]}last_contract_fixes_cache.make (10)
 			end
 			Result := last_contract_fixes_cache
 		end
 
 feature{NONE} -- Implementation
 
-	prune_stronger_expressions (a_expressions: DS_ARRAYED_LIST [EPA_AST_EXPRESSION]; a_expressions_to_sets: DS_HASH_TABLE [EPA_HASH_SET[STRING], EPA_AST_EXPRESSION])
+	prune_stronger_expressions (a_expressions: DS_ARRAYED_LIST [EPA_EXPRESSION]; a_expressions_to_sets: DS_HASH_TABLE [EPA_HASH_SET[STRING], EPA_EXPRESSION])
 			-- `a_expressions' should be ordered through `expressions_ordered_by_set_size', weaker expressions appear later.
 		local
-			l_expression_cursor: DS_ARRAYED_LIST_CURSOR[EPA_AST_EXPRESSION]
-			l_expression: EPA_AST_EXPRESSION
+			l_expression_cursor: DS_ARRAYED_LIST_CURSOR[EPA_EXPRESSION]
+			l_expression: EPA_EXPRESSION
 			l_observed_hash_sets: EPA_HASH_SET[EPA_HASH_SET[STRING]]
 			l_hash_set: EPA_HASH_SET[STRING]
 			l_is_stronger: BOOLEAN
@@ -69,11 +69,11 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	prune_weaker_expressions (a_expressions: DS_ARRAYED_LIST [EPA_AST_EXPRESSION]; a_expressions_to_sets: DS_HASH_TABLE [EPA_HASH_SET[STRING], EPA_AST_EXPRESSION])
+	prune_weaker_expressions (a_expressions: DS_ARRAYED_LIST [EPA_EXPRESSION]; a_expressions_to_sets: DS_HASH_TABLE [EPA_HASH_SET[STRING], EPA_EXPRESSION])
 			-- `a_expressions' should be ordered through `expressions_ordered_by_set_size', weaker expressions appear later.
 		local
-			l_expression_cursor: DS_ARRAYED_LIST_CURSOR[EPA_AST_EXPRESSION]
-			l_expression: EPA_AST_EXPRESSION
+			l_expression_cursor: DS_ARRAYED_LIST_CURSOR[EPA_EXPRESSION]
+			l_expression: EPA_EXPRESSION
 			l_observed_hash_sets: EPA_HASH_SET[EPA_HASH_SET[STRING]]
 			l_hash_set: EPA_HASH_SET[STRING]
 			l_is_weaker: BOOLEAN
@@ -111,14 +111,14 @@ feature{NONE} -- Implementation
 			end
 		end
 
-	expressions_ordered_by_set_size (a_exprs: DS_LINEAR [EPA_AST_EXPRESSION]; a_expressions_to_sets: DS_HASH_TABLE [EPA_HASH_SET[STRING], EPA_AST_EXPRESSION]): DS_ARRAYED_LIST [EPA_AST_EXPRESSION]
+	expressions_ordered_by_set_size (a_exprs: DS_LINEAR [EPA_EXPRESSION]; a_expressions_to_sets: DS_HASH_TABLE [EPA_HASH_SET[STRING], EPA_EXPRESSION]): DS_ARRAYED_LIST [EPA_EXPRESSION]
 		local
-			l_sorter: DS_QUICK_SORTER[EPA_AST_EXPRESSION]
+			l_sorter: DS_QUICK_SORTER[EPA_EXPRESSION]
 		do
 			create Result.make_equal (a_exprs.count + 1)
 			a_exprs.do_if (agent Result.force_last, agent a_expressions_to_sets.has)
-			create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [EPA_AST_EXPRESSION]}.make (
-					agent (e1, e2: EPA_AST_EXPRESSION; expressions_to_sets: DS_HASH_TABLE [DS_HASH_SET[STRING], EPA_AST_EXPRESSION]): BOOLEAN
+			create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [EPA_EXPRESSION]}.make (
+					agent (e1, e2: EPA_EXPRESSION; expressions_to_sets: DS_HASH_TABLE [DS_HASH_SET[STRING], EPA_EXPRESSION]): BOOLEAN
 						local
 							l_set_size1, l_set_size2: INTEGER
 						do
@@ -134,11 +134,11 @@ feature{NONE} -- Implementation
 		end
 
 
-	expressions_to_satisfying_state_hashes (a_traces: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]; a_class: CLASS_C; a_feature: FEATURE_I; a_expressions: DS_LINEAR [EPA_AST_EXPRESSION]; a_state_criterion: FUNCTION[ANY,TUPLE [AFX_PROGRAM_EXECUTION_STATE], BOOLEAN]): TUPLE [DS_HASH_TABLE [EPA_HASH_SET[STRING], EPA_AST_EXPRESSION], EPA_HASH_SET[EPA_AST_EXPRESSION]]
+	expressions_to_satisfying_state_hashes (a_traces: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]; a_class: CLASS_C; a_feature: FEATURE_I; a_expressions: DS_LINEAR [EPA_EXPRESSION]; a_state_criterion: FUNCTION[ANY,TUPLE [AFX_PROGRAM_EXECUTION_STATE], BOOLEAN]): TUPLE [DS_HASH_TABLE [EPA_HASH_SET[STRING], EPA_EXPRESSION], EPA_HASH_SET[EPA_EXPRESSION]]
 				-- All `expressions' should be defined in `a_class'.`a_feature'.
 		local
-			l_hash_table: DS_HASH_TABLE [EPA_HASH_SET[STRING], EPA_AST_EXPRESSION]
-			l_invariants: EPA_HASH_SET[EPA_AST_EXPRESSION]
+			l_hash_table: DS_HASH_TABLE [EPA_HASH_SET[STRING], EPA_EXPRESSION]
+			l_invariants: EPA_HASH_SET[EPA_EXPRESSION]
 			l_trace_cursor: DS_LIST_CURSOR [AFX_PROGRAM_EXECUTION_TRACE]
 			l_trace: AFX_PROGRAM_EXECUTION_TRACE
 			l_uuid: STRING
@@ -146,9 +146,9 @@ feature{NONE} -- Implementation
 			l_state_hash: INTEGER
 			l_class: CLASS_C
 			l_feature: FEATURE_I
-			l_true_expressions: EPA_HASH_SET [EPA_AST_EXPRESSION]
-			l_expression_cursor: DS_LINEAR_CURSOR [EPA_AST_EXPRESSION]
-			l_expression: EPA_AST_EXPRESSION
+			l_true_expressions: EPA_HASH_SET [EPA_EXPRESSION]
+			l_expression_cursor: DS_LINEAR_CURSOR [EPA_EXPRESSION]
+			l_expression: EPA_EXPRESSION
 			l_hash_set: EPA_HASH_SET[STRING]
 		do
 			create l_hash_table.make_equal (a_expressions.count + 1)
@@ -198,17 +198,17 @@ feature{NONE} -- Implementation
 			Result := [l_hash_table, l_invariants]
 		end
 
-	summary_of_traces (a_traces: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]; a_features: DS_LIST [AFX_FEATURE_TO_MONITOR]; a_use_union: BOOLEAN): DS_HASH_TABLE [TUPLE[pre, post: EPA_HASH_SET[EPA_AST_EXPRESSION]], AFX_FEATURE_TO_MONITOR]
+	summary_of_traces (a_traces: DS_LIST [AFX_PROGRAM_EXECUTION_TRACE]; a_features: DS_LIST [AFX_FEATURE_TO_MONITOR]; a_use_union: BOOLEAN): DS_HASH_TABLE [TUPLE[pre, post: EPA_HASH_SET[EPA_EXPRESSION]], AFX_FEATURE_TO_MONITOR]
 			--
 		local
-			l_summary: EPA_HASH_SET [EPA_AST_EXPRESSION]
+			l_summary: EPA_HASH_SET [EPA_EXPRESSION]
 			l_trace_cursor: DS_LIST_CURSOR [AFX_PROGRAM_EXECUTION_TRACE]
 			l_trace: AFX_PROGRAM_EXECUTION_TRACE
 			l_state: AFX_PROGRAM_EXECUTION_STATE
 			l_feature_with_context: AFX_FEATURE_TO_MONITOR
 			l_feature: FEATURE_I
 			l_class: CLASS_C
-			l_true_expressions, l_old_summary: EPA_HASH_SET [EPA_AST_EXPRESSION]
+			l_true_expressions, l_old_summary: EPA_HASH_SET [EPA_EXPRESSION]
 			l_is_first_occurrence: BOOLEAN
 		do
 			create Result.make_equal (a_features.count + 1)
@@ -263,54 +263,56 @@ feature{NONE} -- Implementation
 				l_trace_cursor.forth
 			end
 		end
-
-	true_expressions_from_state (a_state: EPA_STATE): EPA_HASH_SET [EPA_AST_EXPRESSION]
+	true_expressions_from_state (a_state: EPA_STATE): EPA_HASH_SET [EPA_EXPRESSION]
 		local
 		do
 			create Result.make_equal (a_state.count)
 			from a_state.start
 			until a_state.after
 			loop
-				if a_state.item_for_iteration.value.is_true_boolean and then attached {EPA_AST_EXPRESSION} a_state.item_for_iteration.expression as lt_expr then
+				if a_state.item_for_iteration.value.is_true_boolean and then attached {EPA_EXPRESSION} a_state.item_for_iteration.expression as lt_expr then
 					Result.force (lt_expr)
 				end
 				a_state.forth
 			end
 		end
 
-	expressions_in_order (a_exprs: DS_LINEAR [EPA_AST_EXPRESSION]): DS_ARRAYED_LIST [EPA_AST_EXPRESSION]
+	expressions_in_order (a_exprs: DS_LINEAR [EPA_EXPRESSION]): DS_ARRAYED_LIST [EPA_EXPRESSION]
 		local
-			l_sorter: DS_QUICK_SORTER[EPA_AST_EXPRESSION]
+			l_sorter: DS_QUICK_SORTER[EPA_EXPRESSION]
 		do
 			create Result.make_equal (a_exprs.count + 1)
 			a_exprs.do_all (agent Result.force_last)
-			create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [EPA_AST_EXPRESSION]}.make (agent (e1, e2: EPA_AST_EXPRESSION): BOOLEAN do Result := e1.text.count < e2.text.count end))
+			create l_sorter.make (create {AGENT_BASED_EQUALITY_TESTER [EPA_EXPRESSION]}.make (agent (e1, e2: EPA_EXPRESSION): BOOLEAN do Result := e1.text.count < e2.text.count end))
 			l_sorter.sort (Result)
 		end
 
-	prune_disjunctions_of_true_expressions (a_true_expressions: DS_ARRAYED_LIST [EPA_AST_EXPRESSION])
+	prune_disjunctions_of_true_expressions (a_expressions: EPA_HASH_SET[EPA_EXPRESSION]): DS_ARRAYED_LIST [EPA_EXPRESSION]
 			-- `a_true_expressions' should be ordered by the lengths of expressions.
 		local
+			l_true_expressions: DS_ARRAYED_LIST [EPA_EXPRESSION]
 			l_remaining, l_removing: EPA_HASH_SET[STRING]
 			l_is_redundant: BOOLEAN
 		do
-			create l_remaining.make_equal (a_true_expressions.count + 1)
-			create l_removing.make_equal (a_true_expressions.count + 1)
-			from a_true_expressions.start
-			until a_true_expressions.after
+			Result := expressions_in_order (a_expressions)
+
+			create l_remaining.make_equal (Result.count + 1)
+			create l_removing.make_equal (Result.count + 1)
+			from Result.start
+			until Result.after
 			loop
 				l_is_redundant := False
-				if attached {AFX_PROGRAM_STATE_ASPECT_BOOLEAN_RELATION} a_true_expressions.item_for_iteration as lt_aspect
+				if attached {AFX_PROGRAM_STATE_ASPECT_BOOLEAN_RELATION} Result.item_for_iteration as lt_aspect
 						and then lt_aspect.operator = {AFX_PROGRAM_STATE_ASPECT_BOOLEAN_RELATION}.Operator_boolean_or_else then
 					if l_remaining.has (lt_aspect.left_operand.text) or else l_remaining.has (lt_aspect.right_operand.text) then
 						l_is_redundant := True
 					end
 				end
 				if l_is_redundant then
-					a_true_expressions.remove_at
+					Result.remove_at
 				else
-					l_remaining.force (a_true_expressions.item_for_iteration.text)
-					a_true_expressions.forth
+					l_remaining.force (Result.item_for_iteration.text)
+					Result.forth
 				end
 			end
 		end

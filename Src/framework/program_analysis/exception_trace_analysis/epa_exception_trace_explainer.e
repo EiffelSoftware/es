@@ -240,7 +240,7 @@ feature{NONE} -- Implementation
 --			end
 --		end
 
-feature -- Intermediate explanation
+feature{NONE} -- Intermediate explanation
 
 	last_trace_frames: DS_ARRAYED_LIST [EPA_EXCEPTION_TRACE_FRAME]
 

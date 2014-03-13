@@ -24,6 +24,11 @@ inherit
 			is_equal, copy
 		end
 
+	AFX_UTILITY
+		undefine
+			is_equal, copy
+		end
+
 create
 	make, make_default
 
@@ -40,13 +45,10 @@ feature -- Initialization
 	make_default
 			-- Initialization
 		do
-			make_equal (Default_initial_size)
+			make_equal (Default_repository_capacity)
 		end
 
 feature -- Access
-
---	current_test_case: EPA_TEST_CASE_INFO
---			-- Test case information.
 
 	current_trace: AFX_PROGRAM_EXECUTION_TRACE
 			-- The current trace.
@@ -92,27 +94,18 @@ feature -- Access
 
 feature -- Derived repository
 
-	derived_repository (a_derived_skeleton: EPA_STATE_SKELETON; a_use_aspect: BOOLEAN): AFX_PROGRAM_EXECUTION_TRACE_REPOSITORY
-			-- Trace reposiroty derived from the Current,
-			-- using the derived skeleton `a_derived_skeleton'.
-		do
-			create Result.make (count)
-			from start
-			until after
-			loop
-				Result.force (item_for_iteration.derived_trace (a_derived_skeleton, a_use_aspect), key_for_iteration)
-				forth
-			end
-		end
-
-	derived_compound_repository (a_feature_to_skeleton_map: DS_HASH_TABLE [EPA_STATE_SKELETON, AFX_FEATURE_TO_MONITOR]; a_use_aspect: BOOLEAN): like Current
+	derived_compound_repository (a_features_to_monitor: DS_ARRAYED_LIST [AFX_FEATURE_TO_MONITOR]; a_use_aspect: BOOLEAN): like Current
 		local
+			l_map: DS_HASH_TABLE [AFX_FEATURE_TO_MONITOR, STRING]
 		do
 			create Result.make (count)
+
+			l_map := features_to_monitor_by_names (a_features_to_monitor)
+
 			from start
 			until after
 			loop
-				Result.force (item_for_iteration.derived_compound_trace (a_feature_to_skeleton_map, a_use_aspect), key_for_iteration)
+				Result.force (item_for_iteration.derived_compound_trace (l_map, a_use_aspect), key_for_iteration)
 				forth
 			end
 		end
@@ -211,13 +204,10 @@ feature{NONE} -- Implementation
 
 feature -- Constant
 
-	Default_initial_size: INTEGER = 10
-			-- Default initial size for the repository.
+	Default_repository_capacity: INTEGER = 10
+			-- Default size for the repository.
 
 feature{NONE} -- Cache
-
-	current_test_case_cache: EPA_TEST_CASE_INFO
-			-- Cache for `current_test_case'.
 
 	passing_traces_cache: like passing_traces
 			-- Cache for `passing_traces'.

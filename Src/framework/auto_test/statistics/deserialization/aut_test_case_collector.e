@@ -31,12 +31,12 @@ feature -- Access
 	passing_test_cases: DS_HASH_TABLE [DS_ARRAYED_LIST[PATH], EPA_TEST_CASE_SIGNATURE]
 			-- All passing test cases from `test_case_dir'.
 			-- Key: Test case signautre
-			-- Val: List of paths to the passing test cases, relative to `test_case_dir'.
+			-- Val: List of paths to the passing test cases.
 
 	failing_test_cases: DS_HASH_TABLE [DS_ARRAYED_LIST[PATH], EPA_TEST_CASE_SIGNATURE]
 			-- All failing test cases from `test_case_dir'.
 			-- Key: Test case signautre
-			-- Val: List of paths to the failing test cases, relative to `test_case_dir'.
+			-- Val: List of paths to the failing test cases.
 
 	passing_test_cases_by_feature_under_test: DS_HASH_TABLE [DS_ARRAYED_LIST[PATH], STRING]
 			-- All passing test cases from `test_case_dir', organized by feature under test.
@@ -188,7 +188,7 @@ feature{NONE} -- Access
 
 
 ;note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

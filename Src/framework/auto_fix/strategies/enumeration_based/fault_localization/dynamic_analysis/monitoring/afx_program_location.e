@@ -87,7 +87,7 @@ feature			-- Status report
 		end
 
 	out: STRING
-		local
+			-- <Precursor>
 		do
 			Result := breakpoint_index.out + "@" + context.out
 		end

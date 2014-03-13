@@ -15,14 +15,13 @@ create
 
 feature{NONE} -- Initialization
 
-	make_with_arguments (a_args: LINKED_LIST [STRING]; a_system: SYSTEM_I)
+	make_with_arguments (a_args: LINKED_LIST [STRING])
 			-- Initialize Current with arguments `a_args'.
 		do
-			create config.make (a_system)
+			create config
 			arguments := a_args
 		ensure
 			arguments_set: arguments = a_args
-			options_set: config.eiffel_system = a_system
 		end
 
 feature -- Access
@@ -40,439 +39,219 @@ feature -- Basic operations
 		local
 			l_parser: AP_PARSER
 			l_args: DS_LINKED_LIST [STRING]
-			l_fix_strategy: AP_STRING_OPTION
-			l_rank_control_dependance: AP_STRING_OPTION
-			l_report_file_option: AP_STRING_OPTION
-			l_cutoff_time_option: AP_STRING_OPTION
-			l_fault_localization_strategy: AP_STRING_OPTION
-			l_state_based_test_case_selection_option: AP_FLAG
-			l_breakpoint_specific_option: AP_FLAG
-			l_rank_computation_mean_type: AP_STRING_OPTION
-			l_max_fixing_target: AP_STRING_OPTION
-			l_max_fix_candidate: AP_STRING_OPTION
-			l_retrieve_state_option: AP_FLAG
-			l_recipient: AP_STRING_OPTION
-			l_feat_under_test: AP_STRING_OPTION
-			l_test_case_dir: AP_STRING_OPTION
-			l_test_case_file_list: AP_STRING_OPTION
-			l_relaxed_test_case_dir: AP_STRING_OPTION
-			l_relaxed_test_case_file_list: AP_STRING_OPTION
-			l_relaxed_feature: AP_STRING_OPTION
-			l_socket_port_range: AP_STRING_OPTION
-			l_analyze_tc_option: AP_FLAG
-			l_combination_strategy: STRING
-			l_max_test_case_no_option: AP_INTEGER_OPTION
-			l_max_passing_test_case_number_option: AP_INTEGER_OPTION
-			l_max_failing_test_case_number_option: AP_INTEGER_OPTION
-			l_max_relaxed_passing_test_case_number_option: AP_INTEGER_OPTION
-			l_max_relaxed_failing_test_case_number_option: AP_INTEGER_OPTION
 
-			l_arff_option: AP_FLAG
-			l_daikon_option: AP_FLAG
-			l_max_valid_fix_option: AP_INTEGER_OPTION
-			l_max_tc_time: AP_INTEGER_OPTION
-			l_fix_skeleton: AP_STRING_OPTION
-			l_skeleton_types: LIST [STRING]
-			l_mocking_option: AP_FLAG
-			l_freeze_option: AP_FLAG
-			l_max_fix_postcondition: AP_INTEGER_OPTION
-			l_model_dir_option: AP_STRING_OPTION
-			l_path_name: PATH
+				-- Type of task.
+			l_fixing_implementation_option: AP_FLAG
+			l_fixing_contract_option: AP_FLAG
+			l_not_fixing_option: AP_FLAG
+
+				-- Fix shared
+			l_cutoff_time_option: AP_STRING_OPTION
+			l_test_case_dir: AP_STRING_OPTION
+			l_max_passing_test_case_number_option: AP_STRING_OPTION
+			l_max_failing_test_case_number_option: AP_STRING_OPTION
+			l_state_based_test_case_selection_option: AP_FLAG
+			l_random_test_case_selection_option: AP_FLAG
+			l_max_tc_time: AP_STRING_OPTION
+			l_max_fix_candidate: AP_STRING_OPTION
+			l_max_valid_fix_option: AP_STRING_OPTION
+			l_result_dir_option: AP_STRING_OPTION
+
+				-- Fix implementation
+			l_max_fixing_target: AP_STRING_OPTION
+
+				-- Fix contract
+			l_relaxed_test_case_dir: AP_STRING_OPTION
+			l_max_fix_postcondition: AP_STRING_OPTION
+
+				-- Not fixing
 			l_postmortem_analysis_of_fixes: AP_STRING_OPTION
 			l_postmortem_analysis_output_dir: AP_STRING_OPTION
-			l_enable_fixing_contracts: AP_FLAG
-
-			l_report_file_name_str: PATH
-			l_report_file: PLAIN_TEXT_FILE
-			l_range_borders: LIST[STRING]
 		do
-				-- Setup command line argument parser.
-			create l_parser.make
 			create l_args.make
 			arguments.do_all (agent l_args.force_last)
 
-			create l_fix_strategy.make_with_long_form ("strategy")
-			l_fix_strategy.set_description ("Choose the strategy to be used in automatic fixing. Supported strategies include: model, random.")
-			l_parser.options.force_last (l_fix_strategy)
+				-- Setup command line argument parser.
+			create l_parser.make
 
-			create l_rank_control_dependance.make_with_long_form ("CFG-usage")
-			l_rank_control_dependance.set_description ("Choose how CFG would be used to rank the fixing locations. Options: optimistic|pessimistic.")
-			l_parser.options.force_last (l_rank_control_dependance)
+				-- Type of task.
+			create l_fixing_implementation_option.make_with_long_form ("fix-implementation")
+			l_fixing_implementation_option.set_description ("Generate fixes to implementation.")
+			l_parser.options.force_last (l_fixing_implementation_option)
 
-			create l_fault_localization_strategy.make_with_long_form ("fault-localization-strategy")
-			l_fault_localization_strategy.set_description ("Choose the strategy for fault localization.")
-			l_parser.options.force_last (l_fault_localization_strategy)
+			create l_fixing_contract_option.make_with_long_form ("fix-contract")
+			l_fixing_contract_option.set_description ("Generate fixes to contracts.")
+			l_parser.options.force_last (l_fixing_contract_option)
 
-			create l_report_file_option.make_with_long_form ("report-file")
-			l_report_file_option.set_description ("Full path of the AutoFix report file. Optional argument: name of the file to which the report will be written.")
-			l_parser.options.force_last (l_report_file_option)
+			create l_not_fixing_option.make_with_long_form ("not-fixing")
+			l_not_fixing_option.set_description ("Perform non-fixing task.")
+			l_parser.options.force_last (l_not_fixing_option)
 
+				-- Fix shared.
 			create l_cutoff_time_option.make ('t', "time-out")
-			l_cutoff_time_option.set_description ("Cutoff time, in minutes, for the whole AutoFix session. Argument: session length in minutes.")
+			l_cutoff_time_option.set_description ("Cutoff time in minutes for the whole AutoFix session. %N%TArgument: natural number. 0 means never to cutoff. %N%TOptional. Default: 0")
 			l_parser.options.force_last (l_cutoff_time_option)
 
-			create l_socket_port_range.make_with_long_form ("socket-port-range")
-			l_socket_port_range.set_description ("Range of the socket port. Format: lower,upper.")
-			l_parser.options.force_last (l_socket_port_range)
-
-			create l_rank_computation_mean_type.make_with_long_form ("rank-computation-mean-type")
-			l_rank_computation_mean_type.set_description ("The kind of mean value calculation to use for computing ranking.")
-			l_parser.options.force_last (l_rank_computation_mean_type)
-
-			create l_max_fixing_target.make_with_long_form ("max-fixing-target")
-			l_max_fixing_target.set_description ("Maximum number of fixing targets to be examined.")
-			l_parser.options.force_last (l_max_fixing_target)
-
-			create l_max_fix_candidate.make_with_long_form ("max-fix-candidate")
-			l_max_fix_candidate.set_description ("Maximum number of fix candidates to be evaluated.")
-			l_parser.options.force_last (l_max_fix_candidate)
-
-			create l_retrieve_state_option.make ('s', "retrieve-state")
-			l_retrieve_state_option.set_description ("Retrieve system state at specified break points.")
-			l_parser.options.force_last (l_retrieve_state_option)
-
-			create l_breakpoint_specific_option.make_with_long_form ("breakpoint-specific")
-			l_breakpoint_specific_option.set_description ("Should we differentiate expressions based on their corresponding breakpoints?")
-			l_parser.options.force_last (l_breakpoint_specific_option)
-
-			create l_state_based_test_case_selection_option.make_with_long_form ("state-based-tc-selection")
-			l_state_based_test_case_selection_option.set_description ("Should we select test cases based on states of the objects used in the test case?")
-			l_parser.options.force_last (l_state_based_test_case_selection_option)
-
 			create l_test_case_dir.make_with_long_form ("test-case-dir")
-			l_test_case_dir.set_description ("Build fixing project using the test cases from directory specified by the parameter.")
+			l_test_case_dir.set_description ("Directory containing the test cases to be used in fixing.%N%TCompulsory in fixing.")
 			l_parser.options.force_last (l_test_case_dir)
 
-			create l_test_case_file_list.make_with_long_form ("test-case-file-list")
-			l_test_case_file_list.set_description ("Build fixing project using the test case files listed in the parameter.")
-			l_parser.options.force_last (l_test_case_file_list)
-
-			create l_relaxed_test_case_dir.make_with_long_form ("relaxed-test-case-dir")
-			l_relaxed_test_case_dir.set_description ("Build fixing project using the relaxed test cases from directory specified by the parameter.")
-			l_parser.options.force_last (l_relaxed_test_case_dir)
-
-			create l_relaxed_test_case_file_list.make_with_long_form ("relaxed-test-case-file-list")
-			l_relaxed_test_case_file_list.set_description ("Build fixing project using the relaxed test case files listed in the parameter.")
-			l_parser.options.force_last (l_relaxed_test_case_file_list)
-
-			create l_relaxed_feature.make_with_long_form ("relaxed-feature")
-			l_relaxed_feature.set_description ("Feature whose interface contracts could be relaxed.")
-			l_parser.options.force_last (l_relaxed_feature)
-
-			create l_max_test_case_no_option.make_with_long_form ("max-tc-number")
-			l_max_test_case_no_option.set_description ("Maximum number of test cases that are used for invariant inference. 0 means no upper bound. Default: 0")
-			l_parser.options.force_last (l_max_test_case_no_option)
-
 			create l_max_passing_test_case_number_option.make_with_long_form ("max-passing-tc-number")
-			l_max_passing_test_case_number_option.set_description ("Maximum number of test cases that are used in fixing. 0 means using all available. Default: 0")
+			l_max_passing_test_case_number_option.set_description ("Maximum number of passing test cases to use in fixing. %N%TArgument: natural number. 0 means as many as possible. %N%TOptional. Default: 0")
 			l_parser.options.force_last (l_max_passing_test_case_number_option)
 
 			create l_max_failing_test_case_number_option.make_with_long_form ("max-failing-tc-number")
-			l_max_failing_test_case_number_option.set_description ("Maximum number of test cases that are used in fixing. 0 means using all available. Default: 0")
+			l_max_failing_test_case_number_option.set_description ("Maximum number of failing test cases to use in fixing. %N%TArgument: natural number. 0 means as many as possible. %N%TOptional. Default: 0")
 			l_parser.options.force_last (l_max_failing_test_case_number_option)
 
-			create l_max_relaxed_passing_test_case_number_option.make_with_long_form ("max-relaxed-passing-tc-number")
-			l_max_relaxed_passing_test_case_number_option.set_description ("Maximum number of relaxed test cases that are used in fixing. 0 means using all available. Default: 0")
-			l_parser.options.force_last (l_max_relaxed_passing_test_case_number_option)
+			create l_state_based_test_case_selection_option.make_with_long_form ("state-based-tc-selection")
+			l_state_based_test_case_selection_option.set_description ("Select test cases based on the involved object states? %N%TOptional. ")
+			l_parser.options.force_last (l_state_based_test_case_selection_option)
 
-			create l_max_relaxed_failing_test_case_number_option.make_with_long_form ("max-relaxed-failing-tc-number")
-			l_max_relaxed_failing_test_case_number_option.set_description ("Maximum number of relaxed test cases that are used in fixing. 0 means using all available. Default: 0")
-			l_parser.options.force_last (l_max_relaxed_failing_test_case_number_option)
-
-			create l_analyze_tc_option.make_with_long_form ("analyze-tc")
-			l_analyze_tc_option.set_description ("Analyze test cases in current project. This assumes that the test cases are already built with the build-tc command.")
-			l_parser.options.force_last (l_analyze_tc_option)
-
-			create l_arff_option.make_with_long_form ("arff")
-			l_arff_option.set_description ("Enable ARFF file generation during test case analysis. ARFF is a format used by the Weka machine learning tool. Default: False")
-			l_parser.options.force_last (l_arff_option)
-
-			create l_daikon_option.make_with_long_form ("daikon")
-			l_daikon_option.set_description ("Enable Daikon to infer invariants on system states. Default: False")
-			l_parser.options.force_last (l_daikon_option)
-
-			create l_enable_fixing_contracts.make_with_long_form ("enable-fixing-contract")
-			l_enable_fixing_contracts.set_description ("Enable fixing faults in contract.")
-			l_parser.options.force_last (l_enable_fixing_contracts)
-
-			create l_max_valid_fix_option.make_with_long_form ("max-valid-fix")
-			l_max_test_case_no_option.set_description ("Maximal number of valid fix, stop after found this number of valid fixes. 0 means not bounded. Default: 0.")
-			l_parser.options.force_last (l_max_valid_fix_option)
+			create l_random_test_case_selection_option.make_with_long_form ("random-tc-selection")
+			l_random_test_case_selection_option.set_description ("Select test cases randomly from all the candidates (as opposed to select the first N)? %N%TOptional. ")
+			l_parser.options.force_last (l_random_test_case_selection_option)
 
 			create l_max_tc_time.make_with_long_form ("max-tc-execution-time")
-			l_max_tc_time.set_description ("Maximal time in second to allow a test case to execute. Default: 5")
+			l_max_tc_time.set_description ("Cutoff time in seconds for each test case. %N%TArgument: natural number. 0 means never to cutoff. %N%TOptional. Default: 5")
 			l_parser.options.force_last (l_max_tc_time)
 
-			create l_fix_skeleton.make_with_long_form ("skeleton")
-			l_fix_skeleton.set_description ("Only allow certion type of fix to be generated, value is a comma separated string list, possible types are: %"afore%", %"wrap%". Default: both.")
-			l_parser.options.force_last (l_fix_skeleton)
+			create l_max_fix_candidate.make_with_long_form ("max-fix-candidate")
+			l_max_fix_candidate.set_description ("Maximum number of fix candidates to evaluate. %N%TArgument: natural number. 0 means all fix candidates. %N%TOptional. Default: 200")
+			l_parser.options.force_last (l_max_fix_candidate)
 
-			create l_mocking_option.make ('m', "mocking")
-			l_mocking_option.set_description ("Enable mocking mode. When in mocking mode, the tool will use pregenerated data files instead of doing time-consuming on-the-fly data analysis. Only works if those data files are up to date. Default: False.")
-			l_parser.options.force_last (l_mocking_option)
+			create l_max_valid_fix_option.make_with_long_form ("max-valid-fix")
+			l_max_valid_fix_option.set_description ("Maximum number of valid fixes to report. %N%TArgument: natural number. 0 means all valid fixes. %N%TOptional. Default: 10.")
+			l_parser.options.force_last (l_max_valid_fix_option)
 
-			create l_freeze_option.make ('f', "freeze")
-			l_freeze_option.set_description ("Freeze project before auto-fixing? Default: False")
-			l_parser.options.force_last (l_freeze_option)
+			create l_result_dir_option.make_with_long_form ("result-dir")
+			l_result_dir_option.set_description ("Directory to store the AutoFix result. %N%TOptional. Default: Generate report in %%EIFGENs%%\%%Target%%\AutoFix.")
+			l_parser.options.force_last (l_result_dir_option)
 
-			create l_max_fix_postcondition.make ('p', "max-fix-postcondition-assertion")
+				-- Fix implementation
+			create l_max_fixing_target.make_with_long_form ("max-fixing-target")
+			l_max_fixing_target.set_description ("Maximum number of fixing targets to be examined. %N%TArgument: natural number. 0 means all fixing targets. %N%TOptional. Default: 30.")
+			l_parser.options.force_last (l_max_fixing_target)
+
+				-- Fix contract.
+			create l_relaxed_test_case_dir.make_with_long_form ("relaxed-test-case-dir")
+			l_relaxed_test_case_dir.set_description ("Directory containing the test cases to be used in contract weakening. %N%TCompulsory in contract fixing.")
+			l_parser.options.force_last (l_relaxed_test_case_dir)
+
+			create l_max_fix_postcondition.make_with_long_form ("max-fix-postcondition-assertion")
 			l_max_fix_postcondition.set_description ("Maximal number of assertions that can appear as fix postcondition. If there are too many fix postcondition assertions, the number of possible fixes are very large, the fix generation will be extremely time-consuming. Default: 10.")
 			l_parser.options.force_last (l_max_fix_postcondition)
 
-			create l_model_dir_option.make_with_long_form ("model-dir")
-			l_model_dir_option.set_description ("The directory to find behavior model files. Default: EIFGENs/target/AutoFix/model")
-			l_parser.options.force_last (l_model_dir_option)
-
+				-- Not fixing.
 			create l_postmortem_analysis_of_fixes.make_with_long_form ("postmortem-analysis")
 			l_postmortem_analysis_of_fixes.set_description ("Conduct postmortem analysis on the collection of generated proper fixes.")
 			l_parser.options.force_last (l_postmortem_analysis_of_fixes)
 
 			create l_postmortem_analysis_output_dir.make_with_long_form ("postmortem-analysis-output")
-			l_postmortem_analysis_output_dir.set_description ("Directory to store the results from postmortem analysis.")
+			l_postmortem_analysis_output_dir.set_description ("Directory to store the results from postmortem analysis. %N%TOptional.")
 			l_parser.options.force_last (l_postmortem_analysis_output_dir)
 
-				-- Parse `arguments'.
+				-----------------------------------  Parse `arguments'.  -------------------------------------------
+
 			l_parser.parse_list (l_args)
 
-				-- Setup `config'.
-			config.set_should_retrieve_state (l_retrieve_state_option.was_found)
+				-- Type of task.
+			config.set_fixing_implementation (l_fixing_implementation_option.was_found)
+			config.set_fixing_contract (l_fixing_contract_option.was_found)
+			config.set_not_fixing (l_not_fixing_option.was_found)
 
-			config.set_should_build_test_cases (l_test_case_dir.was_found or else l_test_case_file_list.was_found)
+				-- Fix shared.
+			if l_cutoff_time_option.was_found then
+				if attached l_cutoff_time_option.parameter as lt_cutoff_time and then lt_cutoff_time.is_natural then
+					config.set_maximum_session_length_in_minutes (lt_cutoff_time.to_natural)
+				else
+					Io.put_string ("Missing or invalid maximum session length, setting to 0.")
+				end
+			end
+
 			if l_test_case_dir.was_found then
 				config.set_test_case_path (l_test_case_dir.parameter)
 			end
-			if l_test_case_file_list.was_found then
-				config.set_test_case_file_list (l_test_case_file_list.parameter)
-			end
-
-			config.set_should_build_relaxed_test_cases (l_relaxed_test_case_dir.was_found or else l_relaxed_test_case_file_list.was_found)
-			if l_relaxed_test_case_dir.was_found then
-				config.set_relaxed_test_case_path (l_relaxed_test_case_dir.parameter)
-			end
-			if l_relaxed_test_case_file_list.was_found then
-				config.set_relaxed_test_case_file_list (l_relaxed_test_case_file_list.parameter)
-			end
-
-			if l_relaxed_feature.was_found then
-				config.set_relaxed_feature (l_relaxed_feature.parameter)
-			end
-
-			if l_max_test_case_no_option.was_found then
-				config.set_max_test_case_number (l_max_test_case_no_option.parameter)
-			else
-				config.set_max_test_case_number (0)
-			end
 
 			if l_max_passing_test_case_number_option.was_found then
-				config.set_max_passing_test_case_number (l_max_passing_test_case_number_option.parameter)
-			else
-				config.set_max_passing_test_case_number (0)
+				if attached l_max_passing_test_case_number_option.parameter as lt_max_passing_test_case_number and then lt_max_passing_test_case_number.is_natural  then
+					config.set_max_passing_test_case_number (lt_max_passing_test_case_number.to_natural)
+				else
+					Io.put_string ("Missing or invalid maximum number of passing tests, setting to 0.")
+				end
 			end
 
 			if l_max_failing_test_case_number_option.was_found then
-				config.set_max_failing_test_case_number (l_max_failing_test_case_number_option.parameter)
-			else
-				config.set_max_failing_test_case_number (0)
+				if attached l_max_failing_test_case_number_option.parameter as lt_max_failing_test_case_number and then lt_max_failing_test_case_number.is_natural  then
+					config.set_max_failing_test_case_number (lt_max_failing_test_case_number.to_natural)
+				else
+					Io.put_string ("Missing or invalid maximum number of failing tests, setting to 0.")
+				end
 			end
 
-			if l_max_relaxed_passing_test_case_number_option.was_found then
-				config.set_max_relaxed_passing_test_case_number (l_max_relaxed_passing_test_case_number_option.parameter)
-			else
-				config.set_max_relaxed_passing_test_case_number (0)
+			config.set_state_based_test_case_selection (l_state_based_test_case_selection_option.was_found)
+			config.set_random_test_case_selection (l_random_test_case_selection_option.was_found)
+
+			if l_max_tc_time.was_found then
+				if attached l_max_tc_time.parameter as lt_max_tc_time and then lt_max_tc_time.is_natural then
+					config.set_max_test_case_execution_time (lt_max_tc_time.to_natural)
+				else
+					Io.put_string ("Missing or invalid maximum length of test case execution, setting to 0.")
+				end
 			end
 
-			if l_max_relaxed_failing_test_case_number_option.was_found then
-				config.set_max_relaxed_failing_test_case_number (l_max_relaxed_failing_test_case_number_option.parameter)
-			else
-				config.set_max_relaxed_failing_test_case_number (0)
+			if l_max_fix_candidate.was_found then
+				if attached l_max_fix_candidate.parameter as lt_max_fix_candidate and then lt_max_fix_candidate.is_natural then
+					config.set_max_fix_candidate (lt_max_fix_candidate.to_natural)
+				else
+					Io.put_string ("Missing or invalid maximum number of fix candidate, setting to 0.")
+				end
 			end
 
 			if l_max_valid_fix_option.was_found then
-				config.set_max_valid_fix_number (l_max_valid_fix_option.parameter)
-			else
-				config.set_max_valid_fix_number (0)
-			end
-
-			if l_max_tc_time.was_found then
-				config.set_max_test_case_execution_time (l_max_tc_time.parameter)
-			else
-				config.set_max_test_case_execution_time (5)
-			end
-
-			if l_rank_computation_mean_type.was_found then
-				if attached l_rank_computation_mean_type.parameter as lt_mean_type then
-					lt_mean_type.to_lower
-					if lt_mean_type ~ "arithmetic" then
-						config.set_rank_computation_mean_type ({AFX_CONFIG}.Mean_type_arithmetic)
-					elseif lt_mean_type ~ "geometric" then
-						config.set_rank_computation_mean_type ({AFX_CONFIG}.Mean_type_geometric)
-					elseif lt_mean_type ~ "harmonic" then
-						config.set_rank_computation_mean_type ({AFX_CONFIG}.Mean_type_harmonic)
-					else
-						-- Error: invalid parameter.
-						config.set_rank_computation_mean_type ({AFX_CONFIG}.Default_mean_type)
-					end
+				if attached l_max_valid_fix_option.parameter as lt_max_valid_fix_option and then lt_max_valid_fix_option.is_natural then
+					config.set_max_valid_fix_number (lt_max_valid_fix_option.to_natural)
+				else
+					Io.put_string ("Missing or invalid maximum number of valid fixes, setting to 0.")
 				end
-			else
-				config.set_rank_computation_mean_type ({AFX_CONFIG}.Default_mean_type)
 			end
 
+			if l_result_dir_option.was_found and then attached l_result_dir_option.parameter as lt_result_dir_name and then not lt_result_dir_name.is_empty then
+				config.set_result_dir (lt_result_dir_name)
+			end
+
+				-- Fix implementation
+			if l_max_fixing_target.was_found then
+				if attached l_max_fixing_target.parameter as lt_max_fixing_target and then lt_max_fixing_target.is_natural then
+					config.set_max_fixing_target (lt_max_fixing_target.to_natural)
+				else
+					Io.put_string ("Missing or invalid maximum number of fixing targets, setting to 0.")
+				end
+			end
+
+				-- Fix contract.
+			if l_relaxed_test_case_dir.was_found then
+				config.set_relaxed_test_case_path (l_relaxed_test_case_dir.parameter)
+			end
+
+			if l_max_fix_postcondition.was_found then
+				if attached l_max_fix_postcondition.parameter as lt_max_fix_postcondition and then lt_max_fix_postcondition.is_natural then
+					config.set_max_fix_postcondition_assertion (lt_max_fix_postcondition.to_natural)
+				else
+					Io.put_string ("Missing or invalid maximum fix postcondition, setting to 0.")
+				end
+			end
+
+				-- Not fixing.
 			if l_postmortem_analysis_of_fixes.was_found then
 				if attached {STRING} l_postmortem_analysis_of_fixes.parameter as lt_fixes_file then
 					config.postmortem_analysis_source := lt_fixes_file
-				else
-					config.postmortem_analysis_source := ""
 				end
 			end
 
 			if l_postmortem_analysis_output_dir.was_found then
 				if attached {STRING} l_postmortem_analysis_output_dir.parameter as lt_postmortem_analysis_output_dir then
 					config.postmortem_analysis_output_dir := lt_postmortem_analysis_output_dir
-				else
-					config.postmortem_analysis_output_dir := ""
-				end
-			end
-
-			if l_fault_localization_strategy.was_found then
-				if attached l_fault_localization_strategy.parameter as lt_suspicious then
-					lt_suspicious.to_lower
-					if lt_suspicious ~ "heuristicIII-old" then
-						config.set_type_of_fault_localization_strategy ({AFX_CONFIG}.Fault_localization_strategy_heuristicIII_old)
-					elseif lt_suspicious ~ "heuristicIII-new" then
-						config.set_type_of_fault_localization_strategy ({AFX_CONFIG}.Fault_localization_strategy_heuristicIII_new)
-					else
-						-- Error: invalid parameter.
-						config.set_type_of_fault_localization_strategy ({AFX_CONFIG}.Fault_localization_strategy_heuristicIII_new)
-					end
-				end
-			else
-				config.set_type_of_fault_localization_strategy ({AFX_CONFIG}.Fault_localization_strategy_heuristicIII_new)
-			end
-
-			if l_report_file_option.was_found and then attached l_report_file_option.parameter as lt_report_file_name and then not lt_report_file_name.is_empty then
-				config.set_report_file_path (create {PATH}.make_from_string (lt_report_file_name))
-			else
-				config.set_using_default_report_file_path (True)
-			end
-
-			if l_cutoff_time_option.was_found and then attached l_cutoff_time_option.parameter as lt_cutoff_time and then lt_cutoff_time.is_natural then
-				config.set_maximum_session_length_in_minutes (lt_cutoff_time.to_natural)
-			end
-
-			if l_socket_port_range.was_found and then attached l_socket_port_range.parameter as lt_port_range then
-				l_range_borders := lt_port_range.split(',')
-				check l_range_borders.count = 2 and then l_range_borders.first.is_natural and then l_range_borders.last.is_natural end
-				config.set_socket_port_range (l_range_borders.first.to_natural, l_range_borders.last.to_natural)
-			end
-
-			if l_fix_strategy.was_found then
-				if attached l_fix_strategy.parameter as lt_strategy then
-					lt_strategy.to_lower
-					if lt_strategy ~ "model" then
-						config.set_is_using_model_based_strategy (True)
-					elseif lt_strategy ~ "random" then
-						config.set_is_using_random_based_strategy (True)
-					else
-						-- Use the default strategy: model
-					end
-				end
-			end
-
-			if l_max_fixing_target.was_found then
-				if attached l_max_fixing_target.parameter as lt_max_fixing_target and then lt_max_fixing_target.is_integer then
-					config.set_max_fixing_target (lt_max_fixing_target.to_integer)
-				else
-					-- Ignoring invalid parameter.
-				end
-			end
-
-			if l_max_fix_candidate.was_found then
-				if attached l_max_fix_candidate.parameter as lt_max_fix_candidate and then lt_max_fix_candidate.is_integer then
-					config.set_max_fix_candidate (lt_max_fix_candidate.to_integer)
-				else
-					-- Ignoring invalid parameter.
-				end
-			end
-
-			if l_rank_control_dependance.was_found then
-				if attached l_rank_control_dependance.parameter as lt_cd then
-					lt_cd.to_lower
-					if lt_cd ~ "optimistic" then
-						config.set_CFG_usage_optimistic
-					elseif lt_cd ~ "pessimistic" then
-						config.set_CFG_usage_pessimistic
-					else
-						-- Use CFG in the default way.
-					end
-				end
-			end
-
-			config.set_state_based_test_case_selection (l_state_based_test_case_selection_option.was_found)
-
-			if l_fix_skeleton.was_found then
-				l_skeleton_types := l_fix_skeleton.parameter.split (',')
-				from
-					l_skeleton_types.start
-				until
-					l_skeleton_types.after
-				loop
-					if l_skeleton_types.item_for_iteration.is_case_insensitive_equal ("afore") then
-						config.set_is_afore_fix_enabled (True)
-					elseif l_skeleton_types.item_for_iteration.is_case_insensitive_equal ("wrap") then
-						config.set_is_wrapping_fix_enabled (True)
-					end
-					l_skeleton_types.forth
-				end
-			else
-				config.set_is_afore_fix_enabled (True)
-				config.set_is_wrapping_fix_enabled (True)
-			end
-
-			if l_max_fix_postcondition.was_found then
-				config.set_max_fix_postcondition_assertion (l_max_fix_postcondition.parameter)
-			else
-				config.set_max_fix_postcondition_assertion (10)
-			end
-
-			if l_model_dir_option.was_found then
-				config.set_model_directory (create {PATH}.make_from_string (l_model_dir_option.parameter))
-			else
-				config.set_model_directory (config.output_directory.extended ("model"))
-			end
-
-			config.set_should_freeze (l_freeze_option.was_found)
-
-			config.set_is_mocking_mode_enabled (l_mocking_option.was_found)
-
-			config.set_is_arff_generation_enabled (l_arff_option.was_found)
-
-			config.set_should_analyze_test_cases (l_analyze_tc_option.was_found)
-
-			config.set_is_daikon_enabled (l_daikon_option.was_found)
-
-			config.enable_fixing_contracts (l_enable_fixing_contracts.was_found)
-		end
-
-feature{NONE} -- Implementation
-
-	feature_from_string (a_string: STRING): detachable FEATURE_I
-			-- Feature from string in format "CLASS_NAME.feature_name".
-			-- Void if no such feature exists.
-		local
-			l_dot_index: INTEGER
-			l_class_name: STRING
-			l_feat_name: STRING
-			l_classes: LIST [CLASS_I]
-			l_class_c: CLASS_C
-		do
-			l_dot_index := a_string.index_of ('.', 1)
-			if l_dot_index > 0 then
-				l_class_name := a_string.substring (1, l_dot_index - 1).as_upper
-				l_feat_name := a_string.substring (l_dot_index + 1, a_string.count).as_lower
-				l_classes := universe.classes_with_name (l_class_name)
-				if not l_classes.is_empty then
-					l_class_c := l_classes.first.compiled_representation
-					Result := l_class_c.feature_named (l_feat_name)
 				end
 			end
 		end

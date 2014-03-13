@@ -48,8 +48,7 @@ feature -- Basic operation
 
 			current_expression := a_expr
 			create l_context_feature.make (a_expr.feature_, a_expr.class_)
-			expression_collector.collect_from_expression_text (l_context_feature, a_expr.text)
---			expression_collector.collect_from_text (a_expr.feature_, a_expr.text)
+			expression_collector.collect_from_expression (l_context_feature, a_expr)
 			l_expr_set := expression_collector.last_sub_expressions
 
 			detect_immediate_target_objects (l_expr_set)

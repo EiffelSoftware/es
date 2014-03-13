@@ -60,84 +60,61 @@ feature -- Properties
 		local
 			l_parser: AFX_COMMAND_LINE_PARSER
 			l_config: AFX_CONFIG
-			l_session: AFX_SESSION
-			l_initializer: AFX_INITIALIZER
-			l_fix_proposer: AFX_IMPLEMENTATION_FIXER
-
-			l_fixing_project_builder1: AFX_PROJECT_FOR_FIXING_IMPLEMENTATION_BUILDER
-			l_fixing_project_builder2: AFX_PROJECT_FOR_FIXING_CONTRACTS_BUILDER
-			l_contract_fixer: AFX_CONTRACT_FIXER
+--			l_initializer: AFX_INITIALIZER
+			l_fixing_project_builder: AFX_PROJECT_FOR_FIXING_IMPLEMENTATION_BUILDER
+			l_fixer: AFX_FIXER
+--			l_fix_proposer: AFX_IMPLEMENTATION_FIXER
+--			l_contract_fixer: AFX_CONTRACT_FIXER
 		do
-			create l_parser.make_with_arguments (autofix_arguments, system)
+			create l_parser.make_with_arguments (autofix_arguments)
 			l_parser.parse
+
 			l_config := l_parser.config
+			l_config.check_validity
+			if l_config.is_valid then
+				set_current_session (create {AFX_SESSION}.make (l_config, system))
+				if session.config.is_fixing then
+						-- Build project for fixing.
+					create l_fixing_project_builder
+					l_fixing_project_builder.collect_test_cases
+						-- Directory structure is specific to the exception under consideration.
+					session.set_failure_from_trace (l_fixing_project_builder.current_exception_trace_summary)
+					session.set_number_of_test_cases_for_fixing (l_fixing_project_builder.number_of_test_cases_to_use_for_fixing)
+					session.prepare_directories
+					l_fixing_project_builder.build_project (System)
+--					check fixing_project_root_exists: l_fixing_project_builder.new_root_exists end
+--					if not system.is_explicit_root (afx_project_root_class, afx_project_root_feature) then
+--						system.add_explicit_root (Void, afx_project_root_class, afx_project_root_feature)
+----						system.add_explicit_root (l_fixing_project_builder.cluster_of_new_root, afx_project_root_class, afx_project_root_feature)
+--					end
+--					l_fixing_project_builder.compile_project (l_fixing_project_builder.eiffel_project, True)
 
-				-- Save configuration into the shared session object.
-			create l_session.make (l_config)
-			set_session (l_session)
+					create l_fixer
+					l_fixer.execute
 
-				-- Initialize infrastructure.
-			create l_initializer
-			l_initializer.prepare (config)
-
-			if is_fixing_contracts then
-				if config.should_build_relaxed_test_cases then
-					create l_fixing_project_builder2
-					l_fixing_project_builder2.execute
-				end
-				if is_fixing_root_available then
-					if not system.is_explicit_root (afx_project_root_class, afx_project_root_feature) then
-						system.add_explicit_root ("project", afx_project_root_class, afx_project_root_feature)
-					end
-
-					create l_contract_fixer.make
-					l_contract_fixer.execute
-
-					system.remove_explicit_root(afx_project_root_class, afx_project_root_feature)
-					system.make_update (False)
-				else
-					Io.put_string ("AutoFixing failed: Missing Project root for fixing.%N")
-				end
-
-			elseif is_fixing_implementation then
-					-- Re-structure the project to include test cases.
-				if config.should_build_test_cases then
-					create l_fixing_project_builder1
-					l_fixing_project_builder1.execute
-				end
-
-				if is_fixing_root_available then
-					if not system.is_explicit_root (afx_project_root_class, afx_project_root_feature) then
-						system.add_explicit_root ("project", afx_project_root_class, afx_project_root_feature)
-					end
-
-					create l_fix_proposer.make
-					l_fix_proposer.execute
+--					if session.config.is_fixing_contract then
+--						create l_contract_fixer
+--						l_contract_fixer.execute
+--					else
+--						create l_fix_proposer
+--						l_fix_proposer.execute
+--					end
 
 					system.remove_explicit_root(afx_project_root_class, afx_project_root_feature)
 					system.make_update (False)
-				else
-					Io.put_string ("AutoFixing failed: Missing Project root for fixing.%N")
+				elseif session.config.is_not_fixing then
+					perform_non_fixing_task()
 				end
 			else
-				perform_non_fixing_tasks()
+				Io.put_string ("AutoFix quitting due to incomplete or invalid configuration...")
 			end
+
 		end
 
-	is_fixing_implementation: BOOLEAN
-			-- Is the run for fixing?
-		do
-			Result := not session.config.is_fixing_contracts_enabled and then not session.config.is_for_postmortem_analysis
-		end
-
-	is_fixing_contracts: BOOLEAN
-			--
-		do
-			Result := session.config.is_fixing_contracts_enabled
-		end
-
-	perform_non_fixing_tasks()
+	perform_non_fixing_task()
 			-- Perform tasks other than fixing.
+		require
+			session.config.is_not_fixing
 		local
 			l_postmortem_analyzer: AFX_POSTMORTEM_ANALYZER
 		do
@@ -148,20 +125,8 @@ feature -- Properties
 			end
 		end
 
-	is_fixing_root_available: BOOLEAN
-			-- Is the project root for fixing available in the EIFGENs/Cluster directory?
-		local
-			l_eifgens_dir_path: STRING
-			l_file: PLAIN_TEXT_FILE
-			l_file_path: PATH
-		do
-			l_file_path := system.project_location.location.extended (afx_project_root_class.as_lower + ".e")
-			create l_file.make_with_path (l_file_path)
-			Result := l_file.exists
-		end
-
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

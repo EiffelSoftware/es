@@ -15,17 +15,21 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_uuid: like test_case_uuid; a_retrieve_post_state: BOOLEAN)
+	make (a_fix_id: INTEGER; a_uuid: like test_case_uuid; a_retrieve_post_state: BOOLEAN)
 			-- Initialize Current.
 		require
 			a_uuid_attached: a_uuid /= Void
 			not_a_uuid_is_empty: not a_uuid.is_empty
 		do
+			fix_id := a_fix_id
 			test_case_uuid := a_uuid.twin
 			should_retrieve_post_state := a_retrieve_post_state
 		end
 
 feature -- Access
+
+	fix_id: INTEGER
+			-- Id of the fix to apply when executing the test case.
 
 	test_case_uuid: STRING
 			-- Universal identifier of the test case to be executed

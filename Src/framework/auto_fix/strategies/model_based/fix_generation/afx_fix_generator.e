@@ -10,15 +10,9 @@ deferred class
 inherit
 	AFX_SHARED_SESSION
 
-	AFX_SHARED_DYNAMIC_ANALYSIS_REPORT
-
 feature -- Access
 
-	fix_skeletons: LINKED_LIST [AFX_FIX_SKELETON]
-			-- Fixes generated for `exception_spot' by
-			-- the last `generate'.
-
-	fixes: DS_LINKED_LIST [AFX_FIX]
+	fixes: DS_ARRAYED_LIST [AFX_CODE_FIX_TO_FAULT]
 			-- Fixes that are derived from `fix_skeletons'
 
 feature -- Basic operations

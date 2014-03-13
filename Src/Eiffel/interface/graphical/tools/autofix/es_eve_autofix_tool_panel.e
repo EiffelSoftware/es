@@ -149,14 +149,14 @@ feature {NONE} -- Factory
 
     create_mini_tool_bar_items: ARRAYED_LIST [SD_TOOL_BAR_ITEM]
             -- <Precursor>
-		local
-			l_item: SD_TOOL_BAR_BUTTON
+--		local
+--			l_item: SD_TOOL_BAR_BUTTON
         do
   			create Result.make (10)
         end
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

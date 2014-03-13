@@ -9,26 +9,41 @@ class
 
 inherit
 
-	AFX_SHARED_DYNAMIC_ANALYSIS_REPORT
-
-	AFX_SHARED_SESSION
-
 	AFX_RANK_SORTER
 
 	REFACTORING_HELPER
 
 create
-	default_create
+	make
+
+feature{NONE} -- Initialization
+
+	make (a_exception: AFX_EXCEPTION_SIGNATURE)
+			--
+		do
+			create static_distance_calculator.make (a_exception)
+		end
+
+feature -- Access
+
+	fixing_target_list: DS_ARRAYED_LIST [AFX_FIXING_TARGET]
+			-- List of fixing targets.
+
+	statistics_from_passing: AFX_EXECUTION_TRACE_STATISTICS
+			-- Statistics on occurrences of <exp, val> at each breakpoint from all passing test cases.
+
+	statistics_from_failing: AFX_EXECUTION_TRACE_STATISTICS
+			-- Statistics on occurrences of <exp, val> at each breakpoint from all failing test cases.
 
 feature -- Basic operation
 
-	compute_ranks
+	compute_ranks (a_statistics_from_passing, a_statistics_from_failing: AFX_EXECUTION_TRACE_STATISTICS)
 			-- Compute ranks of program states according to statistics collected from traces.
 			-- Make the result available in `fixing_target_list', sorted.
-		require
-			statistics_from_failing_attached: statistics_from_failing /= Void
-			statistics_from_passing_attached: statistics_from_passing /= Void
 		do
+			statistics_from_passing := a_statistics_from_passing
+			statistics_from_failing := a_statistics_from_failing
+
 			compute_suspiciousness_values_of_targets
 			fixing_target_list.do_all (agent (a_target: AFX_FIXING_TARGET) do a_target.set_rank (a_target.suspiciousness_value) end)
 			compute_ranks_of_state_expressions
@@ -76,7 +91,7 @@ feature -- Basic operation
 		local
 			l_distances: TUPLE [control_relevance: INTEGER; data_relevance: REAL_64]
 		do
-			-- Compute control and data distance.
+				-- Compute control and data distance.
 			static_distance_calculator.calculate_relevance (a_target)
 			l_distances := static_distance_calculator.last_relevances
 			a_target.set_data_distance (l_distances.data_relevance)
@@ -116,36 +131,23 @@ feature -- Basic operation
 					l_control_distance_contribution := 1
 				else
 					l_control_distance_contribution := a_target.control_distance / a_max_control_distance
-					if config.is_cfg_usage_optimistic then
-						l_control_distance_contribution := 1 - l_control_distance_contribution
-					end
+					l_control_distance_contribution := 1 - l_control_distance_contribution
 					l_control_distance_contribution := (l_control_distance_contribution + l_delta) / 8
 				end
---				if l_control_distance_contribution <= 0 then
---					l_control_distance_contribution := 0.0001
---				end
+				if l_control_distance_contribution <= 0 then
+					l_control_distance_contribution := 0.0001
+				end
 			end
 
-			if config.is_using_arithmetic_mean then
-				l_rank := (l_suspiciousness_contribution + l_data_distance_contribution + l_control_distance_contribution) / 3
-			elseif config.is_using_geometric_mean then
-				l_rank := (l_suspiciousness_contribution * l_data_distance_contribution * l_control_distance_contribution)
-				l_rank := l_rank.power (1/3)
-			elseif config.is_using_harmonic_mean then
-				l_rank := 1 / l_suspiciousness_contribution + 1 / l_data_distance_contribution + 1 / l_control_distance_contribution
-				l_rank := 3 / l_rank
-			end
+			l_rank := 1 / l_suspiciousness_contribution + 1 / l_data_distance_contribution + 1 / l_control_distance_contribution
+			l_rank := 3 / l_rank
 
 			a_target.set_rank (l_rank.truncated_to_real)
 		end
 
 
 	static_distance_calculator: AFX_PROGRAM_STATE_STATIC_DISTANCE_CALCULATOR
-			-- Shared static distance calculator.
-		once
-			create Result
-		end
-
+			-- Static distance calculator.
 
 feature{NONE} -- Implementation
 
@@ -185,7 +187,7 @@ feature{NONE} -- Implementation
 				l_failing_statistics_as_list.forth
 			end
 
-			set_fixing_target_list (l_target_list)
+			fixing_target_list := l_target_list
 		end
 
 	suspiciousness_value (a_passing_count, a_failing_count: INTEGER): REAL
@@ -193,26 +195,11 @@ feature{NONE} -- Implementation
 		require
 			valid_counts: a_passing_count >= 0 and then a_failing_count >= 0
 		do
-			if config.is_using_strategy_heuristiciii_old then
-				calculator_heuristicIII_old.set_test_case_numbers (trace_repository.number_of_passing_traces, trace_repository.number_of_failing_traces)
-				calculator_heuristicIII_old.set_state_specific_numbers (a_passing_count, a_failing_count)
-				calculator_heuristicIII_old.calculate_suspiciousness_value
-				Result := calculator_heuristicIII_old.last_suspiciousness_value
-			else
-				check config.is_using_strategy_heuristiciii_new end
-				calculator_heuristicIII_new.set_passing_count (a_passing_count)
-				calculator_heuristicIII_new.set_failing_count (a_failing_count)
-				calculator_heuristicIII_new.calculate_suspiciousness_value
-				Result := calculator_heuristicIII_new.last_suspiciousness_value
-			end
-		end
 
-	calculator_heuristicIII_old: AFX_PROGRAM_STATE_SUSPICIOUSNESS_VALUE_CALCULATOR_HEURISTICIII_OLD
-			-- Suspiciousness value calculator using heuristicIII-old.
-		once
-			create Result
-			-- Using the smallest alpha value from the paper (sec. 3.4.6) for the best result.
-			Result.set_alpha (0.0001)
+			calculator_heuristicIII_new.set_passing_count (a_passing_count)
+			calculator_heuristicIII_new.set_failing_count (a_failing_count)
+			calculator_heuristicIII_new.calculate_suspiciousness_value
+			Result := calculator_heuristicIII_new.last_suspiciousness_value
 		end
 
 	calculator_heuristicIII_new: AFX_PROGRAM_STATE_SUSPICIOUSNESS_VALUE_CALCULATOR_HEURISTICIII_NEW

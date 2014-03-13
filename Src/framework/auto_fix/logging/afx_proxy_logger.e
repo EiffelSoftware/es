@@ -10,24 +10,38 @@ class
 inherit
 	AFX_EVENT_LISTENER
 		redefine
-			on_session_starts,
-			on_session_ends,
+			on_notification_issued,
+
+			on_session_started,
+			on_session_terminated,
 			on_session_canceled,
-			on_test_case_analysis_starts,
-			on_test_case_analysis_ends,
-			on_fix_generation_starts,
-			on_fix_generation_ends,
-			on_fix_validation_starts,
-			on_fix_validation_ends,
-			on_contract_fixes_generation_ends,
-			on_contract_fixes_validation_ends,
-			on_new_test_case_found,
-			on_break_point_hits,
-			on_fix_candidate_validation_starts,
-			on_fix_candidate_validation_ends,
-			on_interpreter_starts,
-			on_interpreter_start_failed,
-			on_test_case_execution_time_out
+
+			on_test_case_analysis_started,
+			on_test_case_entered,
+			on_break_point_hit,
+			on_test_case_exited,
+			on_test_case_analysis_finished,
+			on_test_case_execution_time_out,
+
+			on_implementation_fix_generation_started,
+			on_implementation_fix_generation_finished,
+			on_implementation_fix_validation_started,
+			on_one_implementation_fix_validation_started,
+			on_one_implementation_fix_validation_finished,
+			on_implementation_fix_validation_finished,
+
+			on_weakest_contract_inference_started,
+			on_weakest_contract_inference_finished,
+			on_contract_fix_generation_started,
+			on_contract_fix_generation_finished,
+			on_contract_fix_validation_started,
+			on_contract_fix_validation_finished,
+
+			on_fix_ranking_started,
+			on_fix_ranking_finished,
+
+			on_interpreter_started,
+			on_interpreter_failed_to_start
 		end
 
 	AFX_UTILITY
@@ -39,322 +53,369 @@ create
 
 feature{NONE} -- Initialization
 
-	make (a_log_file: PLAIN_TEXT_FILE; a_verbose: BOOLEAN)
-			-- Initialize Current.
+	make (a_level: INTEGER; a_log_file_path_string: STRING)
+			-- Initialization.
 		require
-			log_file_attached: a_log_file /= Void
+			a_log_file_path_string /= Void
 		do
-			log_file := a_log_file
-			is_verbose := a_verbose
-			if is_verbose then
-				create break_point_hit_statistics.make (50)
-			end
+			set_level (a_level)
+			log_file_path_string := a_log_file_path_string.twin
 		end
 
 feature -- Access
 
-	is_verbose: BOOLEAN
-			-- Is logging verbose?
+	level: INTEGER
+			-- Level of details to log.
 
 	log_file: PLAIN_TEXT_FILE
 			-- File to store logs
 
-feature -- Actions
+	log_file_path_string: STRING
+			-- Path to `log_file'.
 
-	on_session_starts
-			-- Action to be performed when the whole AutoFix session starts
+feature -- Set
+
+	set_level (a_level: INTEGER)
 		do
-			log_time_stamp (session_start_message)
-			finish_validated_fix_candidate_count := 0
-			fix_candidate_count := 0
+			level := a_level
 		end
 
-	on_session_ends
-			-- Action to be performed when the whole AutoFix session ends.
+feature -- Status report
+
+	is_more_verbose_than (a_level: INTEGER): BOOLEAN
+			-- Should the listener react to an action at `a_level'.
 		do
-			log_time_stamp (session_end_message)
+			Result := level >= a_level
+		end
+
+feature{NONE} -- Access
+
+	number_of_test_cases_to_analyze: INTEGER
+
+	number_of_analyzed_test_cases: INTEGER
+
+	number_of_implementation_fixes_to_validate: INTEGER
+
+	number_of_validated_implementation_fixes: INTEGER
+
+	number_of_valid_implementation_fixes: INTEGER
+
+	number_of_contract_fixes_to_validate: INTEGER
+
+feature -- General action
+
+	on_notification_issued (a_msg: STRING; a_level: INTEGER)
+			-- <Precursor>
+		do
+			log_message (False, a_level, a_msg)
+		end
+
+feature -- Actions (session)
+
+	on_session_started
+			-- <Precursor>
+		do
+			log_file := initialize_log_file
+
+			if log_file = Void then
+				log_file := Io.output
+				log_message (False, notification_level_essential, "Error: cannot open file for logging at: " + log_file_path_string)
+				log_message (False, notification_level_essential, "       Using stdout instead.")
+				log_file_path_string := "stdout"
+			end
+			log_message (True, notification_level_general, session_started_message)
+		end
+
+	on_session_terminated
+			-- <Precursor>
+		do
+			log_message (True, notification_level_general, session_terminated_message)
+
+			if log_file /= Io.output and then log_file /= Io.error and then log_file /= Void and then log_file.is_open_write then
+				log_file.close
+			end
 		end
 
 	on_session_canceled
 			-- <Precursor>
 		do
-			log_time_stamp (session_canceled_message)
-		end
+			log_message (True, notification_level_general, session_canceled_message)
 
-	on_test_case_analysis_starts
-			-- Action to be performed when test case analyzing starts
-		do
-			log_time_stamp (test_case_analyzing_start_message)
-		end
-
-	on_test_case_analysis_ends
-			-- Action to be performed when test case analyzing ends
-		do
-			log_time_stamp (test_case_analyzing_end_message)
-		end
-
-	on_fix_generation_starts
-			-- Action to be performed when fix generation starts
-		do
-			log_time_stamp (fix_generation_start_message)
-		end
-
-	on_fix_generation_ends (a_fixes: DS_LINKED_LIST [AFX_FIX])
-			-- Action to be performed when fix generation ends
-		do
-			log_time_stamp (fix_generation_end_message + a_fixes.count.out + " candidates generated.")
-		end
-
-	on_contract_fixes_generation_ends (a_fixes: DS_LIST [AFX_CONTRACT_FIX_ACROSS_FEATURES])
-		local
-			l_fix_index: INTEGER
-			l_fix: AFX_CONTRACT_FIX_ACROSS_FEATURES
-		do
-			from
-				l_fix_index := 1
-				a_fixes.start
-			until
-				l_fix_index > config.max_valid_fix_number or else a_fixes.after
-			loop
-				l_fix := a_fixes.item_for_iteration
-
-				log ("------------------------- Candidate Fix #")
-				log (l_fix_index.out)
-				log_line (" -------------------------")
-				log (l_fix.out)
-
-				l_fix_index := l_fix_index + 1
-				a_fixes.forth
+			if log_file /= Io.output and then log_file /= Io.error and then log_file /= Void and then log_file.is_open_write then
+				log_file.close
 			end
 		end
 
-	on_contract_fixes_validation_ends (a_fixes: DS_LIST [AFX_CONTRACT_FIX_ACROSS_FEATURES])
-		local
-			l_fix_index: INTEGER
-			l_fix: AFX_CONTRACT_FIX_ACROSS_FEATURES
+feature -- Actions (test analysis)
+
+	on_test_case_analysis_started (a_tc_count: INTEGER)
+			-- <Precursor>
 		do
-			from
-				l_fix_index := 1
-				a_fixes.start
-			until
-				l_fix_index > config.max_valid_fix_number or else a_fixes.after
-			loop
-				l_fix := a_fixes.item_for_iteration
+			number_of_test_cases_to_analyze := a_tc_count
+			number_of_analyzed_test_cases := 0
 
-				log ("======================= Valid Fix #")
-				log (l_fix_index.out + "@" + l_fix.rank.out)
-				log_line (" =======================")
-				log (l_fix.out)
-
-				l_fix_index := l_fix_index + 1
-				a_fixes.forth
-			end
+			log_message (True, notification_level_general, test_case_analysis_started_message + section_separator + a_tc_count.out + " test cases.")
 		end
 
-
-	on_fix_validation_starts (a_fixes: LINKED_LIST [AFX_MELTED_FIX])
-			-- Action to be performed when fix validation starts
+	on_test_case_entered (a_tc_info: EPA_TEST_CASE_INFO)
+			-- <Precursor>
 		do
-			log_time_stamp (fix_validation_start_message + a_fixes.count.out + " candidates to validate.")
-			fix_candidate_count := a_fixes.count
-		end
+			number_of_analyzed_test_cases := number_of_analyzed_test_cases + 1
 
-	on_fix_validation_ends  (a_fixes: LINKED_LIST [AFX_FIX])
-			-- Action to be performed when fix validation ends
-		do
-			log_time_stamp (fix_validation_end_message)
-		end
-
-	on_new_test_case_found (a_tc_info: EPA_TEST_CASE_INFO)
-			-- Action to be performed when a new test case indicated by `a_tc_info' is found in test case analysis phase.
-		do
-			if is_verbose and then test_case_count > 0 then
-					-- There are some test cases before.				
-				log_break_point_hit_statistics
-				break_point_count := 0
-				break_point_hit_statistics.wipe_out
-			end
-
-			log_time_stamp (new_test_case_found_message + a_tc_info.id)
-			test_case_count := test_case_count + 1
-		end
-
-	on_break_point_hits (a_tc_info: EPA_TEST_CASE_INFO; a_bpslot: INTEGER)
-			-- Action to be performed when break point `a_bpslot' in `a_tc_info' is hit
-		do
-			if is_verbose then
-				break_point_count := break_point_count + 1
-				break_point_hit_statistics.search (a_bpslot)
-				if break_point_hit_statistics.found then
-					break_point_hit_statistics.replace (break_point_hit_statistics.found_item + 1, a_bpslot)
-				else
-					break_point_hit_statistics.put (1, a_bpslot)
-				end
-			end
-		end
-
-	on_fix_candidate_validation_starts (a_candidate: AFX_FIX)
-			-- Action to be performed when `a_candidate' is about to be validated
-		local
-			l_message: STRING
-		do
-			create l_message.make (128)
-			l_message.append (fix_candidate_validation_start_message)
-			l_message.append (fix_signature (a_candidate, False, True))
-			if fix_candidate_count > 0 then
-				l_message.append ("; progression = ")
-				l_message.append ((finish_validated_fix_candidate_count+1).out)
-				l_message.append (" / ")
-				l_message.append (fix_candidate_count.out)
-			end
-			log_time_stamp (l_message)
-		end
-
-	on_fix_candidate_validation_ends (a_candidate: AFX_FIX; a_valid: BOOLEAN; a_passing_count: INTEGER; a_failing_count: INTEGER)
-			-- Action to be performed when `a_candidate' finishes to be validated.
-			-- `a_valid' indicates whether `a_candidate' is valid.
-		local
-			l_message: STRING
-		do
-			create l_message.make (128)
-			l_message.append ("-- Succeeded: " + a_passing_count.out + "; Failed: " + a_failing_count.out + "; ")
-			l_message.append ("Validity: ")
-			l_message.append (a_valid.out)
-			if a_valid then
-				l_message.append ("; semantics ranking = " + a_candidate.ranking.post_validation_score.out)
-				log_line (l_message)
-				log_line ({AUT_SHARED_CONSTANTS}.multi_line_value_start_tag)
-				lines_with_prefixes (formated_fix (a_candidate), <<"   ">>).do_all (agent log_line)
-				log_line ({AUT_SHARED_CONSTANTS}.multi_line_value_end_tag)
+			if number_of_test_cases_to_analyze /= 0 then
+				log_message (True, notification_level_general, test_case_entered_message + section_separator + a_tc_info.id + " (" + number_of_analyzed_test_cases.out + "/" + number_of_test_cases_to_analyze.out + ")")
 			else
-				log_line (l_message)
+				log_message (True, notification_level_general, test_case_entered_message + section_separator + a_tc_info.id)
 			end
-			finish_validated_fix_candidate_count := finish_validated_fix_candidate_count + 1
 		end
 
-	on_interpreter_starts (a_port: INTEGER)
-			-- Action to be performed when the interpreter starts with port number `a_port'.
+	on_break_point_hit (a_cls: CLASS_C; a_feat: FEATURE_I; a_bpslot: INTEGER)
+			-- <Precursor>
 		do
-			log_time_stamp (interpreter_start_message + a_port.out)
 		end
 
-	on_interpreter_start_failed (a_port: INTEGER)
-			-- Action to be performed when the interpreter start failed with port number `a_port'.
+	on_test_case_exited (a_tc_info: EPA_TEST_CASE_INFO)
+			-- <Precursor>
 		do
-			log_time_stamp (interpreter_start_failed_message + a_port.out)
+			log_message (True, notification_level_general, "%T" + test_case_exited_message)
 		end
 
 	on_test_case_execution_time_out
-			-- Action to be performed when test case execution during validation times out.
+			-- <Precursor>
 		do
-			log_time_stamp (test_case_execution_time_out_message)
+			log_message (True, notification_level_general, "%T" + test_case_execution_time_out_message)
 		end
 
-feature -- Constants
-
-	session_start_message: STRING = "AutoFix session starts"
-
-	session_end_message: STRING = "AutoFix session ends"
-
-	session_canceled_message: STRING = "AutoFix session canceled"
-
-	test_case_analyzing_start_message: STRING = "test case analyzing starts"
-
-	test_case_analyzing_end_message: STRING = "test case analyzing ends"
-
-	fix_generation_start_message: STRING = "fix generation starts"
-
-	fix_generation_end_message: STRING = "fix generation ends. "
-
-	fix_validation_start_message: STRING = "fix validation starts"
-
-	fix_validation_end_message: STRING = "fix validation ends"
-
-	new_test_case_found_message: STRING = "test case found: "
-
-	fix_candidate_validation_start_message: STRING = "fix candidate validation starts; signature = "
-
-	interpreter_start_message: STRING = "Interpreter starts at port "
-
-	interpreter_start_failed_message: STRING = "Interpreter failed to start at port "
-
-	test_case_execution_time_out_message: STRING = "Test case execution times out"
-
-feature{NONE} -- Implementation
-
-	break_point_count: INTEGER
-			-- Number of break points that are met in the last found test case
-
-	test_case_count: INTEGER
-			-- Number of test cases that are found so far
-
-	break_point_hit_statistics: HASH_TABLE [INTEGER, INTEGER]
-			-- Table to store break point hit statistics
-			-- Key is break point slot, value is the number of times that break point is hit.
-
-	fix_candidate_count: INTEGER
-			-- Number of generated fix candidates
-
-	finish_validated_fix_candidate_count: INTEGER
-			-- Number of fix candidated whose validation are finished
-
-	lines_with_prefixes (a_text: STRING; a_prefixes: ARRAY [STRING]): LIST [STRING]
-			-- List of lines in `a_text', each line is prepended with prefixes in `a_prefixes' in order.
-			-- If `a_text' is empty, an empty list will be returned.
-		require
-			a_text_attached: a_text /= Void
-			a_prefixes_attached: a_prefixes /= Void
-			a_prefixes_not_have_void: not a_prefixes.has (Void)
-		local
-			l_prefix: STRING
-			l_lines: LIST [STRING]
+	on_test_case_analysis_finished
+			-- <Precursor>
 		do
-			fixme ("Code copied from AUT_RESPONSE_LOG_PRINTER.")
-			if a_text.is_empty then
-				create {ARRAYED_LIST [STRING]} Result.make (0)
-			else
-				create l_prefix.make (64)
-				a_prefixes.do_all (agent l_prefix.append ({STRING}?))
-				l_lines := a_text.split ('%N')
-				if not l_lines.is_empty then
-					l_lines.finish
-					l_lines.remove
-				end
-				from
-					l_lines.start
-				until
-					l_lines.after
-				loop
-					l_lines.item.prepend (l_prefix)
-					l_lines.forth
-				end
-				Result := l_lines
+			number_of_test_cases_to_analyze := 0
+
+			log_message (True, notification_level_general, test_case_analysis_finished_message)
+		end
+
+feature -- Actions (implementation fix)
+
+	on_implementation_fix_generation_started
+			-- <Precursor>
+		do
+			log_message (True, notification_level_general, implementation_fix_generation_started_message)
+		end
+
+	on_implementation_fix_generation_finished (a_fixes: DS_LIST [AFX_CODE_FIX_TO_FAULT])
+			-- <Precursor>
+		do
+			log_message (True, notification_level_general, implementation_fix_generation_finished_message + section_separator + a_fixes.count.out + " implementation fixes generated.")
+		end
+
+	on_implementation_fix_validation_started (a_fixes: DS_LIST [AFX_CODE_FIX_TO_FAULT])
+			-- <Precursor>
+		do
+			number_of_implementation_fixes_to_validate := a_fixes.count
+			number_of_validated_implementation_fixes := 0
+
+			log_message (True, notification_level_general, implementation_fix_validation_started_message + section_separator + number_of_implementation_fixes_to_validate.out + " implementation fixes to validate.")
+		end
+
+	on_one_implementation_fix_validation_started (a_candidate: AFX_CODE_FIX_TO_FAULT)
+			-- <Precursor>
+		do
+			number_of_validated_implementation_fixes := number_of_validated_implementation_fixes + 1
+
+			log_message (True, notification_level_general, one_implementation_fix_validation_started_message + section_separator + "ID-" + a_candidate.id.out + " (" + number_of_validated_implementation_fixes.out + "/" + number_of_implementation_fixes_to_validate.out + ")")
+		end
+
+	on_one_implementation_fix_validation_finished (a_candidate: AFX_CODE_FIX_TO_FAULT)
+			-- <Precursor>
+		local
+			l_message: STRING
+		do
+			log_message (True, notification_level_general, "%T" + one_implementation_fix_validation_finished_message + section_separator + "ID-" + a_candidate.id.out + " (Validity: " + a_candidate.is_valid.out + ")")
+
+			if a_candidate.is_valid then
+				log_multi_line_message (a_candidate.out)
+				log_line ("")
 			end
-		ensure
-			result_attached: Result /= Void
-			data_correct: not Result.has (Void)
-			result_is_empty_when_a_text_is_empty: a_text.is_empty implies Result.is_empty
 		end
+
+	on_implementation_fix_validation_finished  (a_fixes: DS_LIST [AFX_CODE_FIX_TO_FAULT])
+			-- <Precursor>
+		do
+			number_of_valid_implementation_fixes := a_fixes.count
+
+			log_message (True, notification_level_general, implementation_fix_validation_finished_message + section_separator + number_of_valid_implementation_fixes.out + " valid fixes")
+		end
+
+feature -- Actions (contract fix)
+
+	on_weakest_contract_inference_started (a_feature: AFX_FEATURE_TO_MONITOR)
+			-- <Precursor>
+		do
+			log_message (True, notification_level_general, weakest_contract_inference_started_message + section_separator + a_feature.qualified_feature_name)
+		end
+
+	on_weakest_contract_inference_finished (a_feature: AFX_FEATURE_TO_MONITOR)
+			-- <Precursor>
+		do
+			log_message (True, notification_level_general, weakest_contract_inference_started_message + section_separator + a_feature.qualified_feature_name)
+		end
+
+	on_contract_fix_generation_started
+			-- <Precursor>
+		do
+			log_message (True, notification_level_general, contract_fix_generation_started_message)
+		end
+
+	on_contract_fix_generation_finished (a_fixes: DS_LIST [AFX_CONTRACT_FIX_TO_FAULT])
+			-- <Precursor>
+		local
+			l_cursor: DS_LIST_CURSOR [AFX_CONTRACT_FIX_TO_FAULT]
+			l_fix_index: INTEGER
+			l_fix: AFX_CONTRACT_FIX_TO_FAULT
+		do
+			log_message (True, notification_level_general, contract_fix_generation_finished_message + section_separator + a_fixes.count.out + " contract fixes generated")
+		end
+
+	on_contract_fix_validation_started (a_fixes: DS_LIST [AFX_CONTRACT_FIX_TO_FAULT])
+			-- <Precursor>
+		do
+			log_message (True, notification_level_general, contract_fix_validation_started_message + section_separator + a_fixes.count.out + " contract fixes to validate")
+		end
+
+	on_contract_fix_validation_finished (a_fixes: DS_LIST [AFX_CONTRACT_FIX_TO_FAULT])
+			-- <Precursor>
+		local
+			l_cursor: DS_LIST_CURSOR [AFX_CONTRACT_FIX_TO_FAULT]
+
+			l_fix_index: INTEGER
+			l_fix: AFX_CONTRACT_FIX_TO_FAULT
+		do
+			log_message (True, notification_level_general, contract_fix_validation_finished_message + section_separator + a_fixes.count.out + " valid contract fixes")
+
+			from
+				l_cursor := a_fixes.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				l_fix := l_cursor.item
+				log_multi_line_message (l_fix.out)
+				log_line ("")
+
+				l_cursor.forth
+			end
+		end
+
+feature -- Actions (ranking)
+
+	on_fix_ranking_started (a_fixes: DS_LIST [AFX_FIX_TO_FAULT])
+			-- <Precursor>
+		do
+			log_message (True, notification_level_general, fix_ranking_started_message)
+		end
+
+	on_fix_ranking_finished (a_fixes: DS_LIST [AFX_FIX_TO_FAULT])
+			-- <Precursor>
+		do
+			log_message (True, notification_level_general, fix_ranking_finished_message)
+		end
+
+feature -- Action (interpreter)
+
+	on_interpreter_started (a_port: INTEGER)
+			-- <Precursor>
+		do
+			log_message (True, notification_level_general, interpreter_started_message + section_separator + a_port.out)
+		end
+
+	on_interpreter_failed_to_start (a_port: INTEGER)
+			-- <Precursor>
+		do
+			log_message (True, notification_level_general, interpreter_failed_to_start_message + section_separator + a_port.out)
+		end
+
+feature{NONE} -- Log format
+
+	timestamp_column_width: 	INTEGER = 9
+	level_column_width: 		INTEGER = 5
 
 feature{NONE} -- Implementation
 
-	log_time_stamp (a_tag: STRING)
-			-- Log tag `a_tag' with timing information.
-		require
-			session_started: session.has_started
+	initialize_log_file: PLAIN_TEXT_FILE
+			-- Initialize `log_file' using `log_file_path_string'.
 		local
-			l_time_now: DT_DATE_TIME
-			duration: INTEGER
-			l_length: NATURAL
+			l_retried: BOOLEAN
+		do
+			if not l_retried then
+				if log_file_path_string /= Void then
+					if log_file_path_string.as_lower ~ "stdout" then
+						Result := Io.output
+					elseif log_file_path_string.as_lower ~ "stderr" then
+						Result := Io.error
+					else
+						create Result.make_with_name (log_file_path_string)
+						Result.open_write
+						if not Result.is_open_write then
+							Result := Void
+						end
+					end
+				else
+					Result := Void
+				end
+			else
+				Result := Void
+			end
+		rescue
+			l_retried := True
+			retry
+		end
+
+	level_to_string_map: DS_HASH_TABLE[STRING, INTEGER]
+			--
+		do
+			if level_to_string_map_cache = Void then
+				create level_to_string_map_cache.make_equal (3)
+				level_to_string_map_cache.force ("ESS", Notification_level_essential)
+				level_to_string_map_cache.force ("GEN", Notification_level_general)
+				level_to_string_map_cache.force ("SUP", Notification_level_supplemental)
+			end
+			Result := level_to_string_map_cache
+		end
+
+	log_message (a_timestamp: BOOLEAN; a_level: INTEGER; a_msg: STRING)
+			-- Log `a_msg' as `a_level'-notification and with optional timestamp.
+		local
+			l_total_width: INTEGER
+			l_timestamp_string: STRING
 			l_line: STRING
 		do
-			l_length := session.length
-			create l_line.make (32)
-			l_line.append (once "-- time stamp: ")
-			l_line.append (a_tag)
-			l_line.append ("; ")
-			l_line.append (l_length.out)
-			log_line (l_line)
+			if is_more_verbose_than (a_level) then
+				l_total_width := timestamp_column_width + level_column_width + a_msg.count
+
+				l_timestamp_string := " "
+				l_timestamp_string.multiply (timestamp_column_width)
+				if a_timestamp then
+					l_timestamp_string.prepend ("@" + session.length.out)
+					l_timestamp_string.remove_substring (timestamp_column_width + 1, l_timestamp_string.count)
+				end
+
+				create l_line.make (l_total_width)
+				l_line.append (l_timestamp_string + " " + level_to_string_map.item (a_level) + " " + a_msg)
+				log_line (l_line)
+			end
+		end
+
+	log_multi_line_message (a_msg: STRING)
+			--
+		local
+			l_prefix: STRING
+		do
+			l_prefix := " "
+			l_prefix.multiply (timestamp_column_width + level_column_width)
+
+			log_line (l_prefix + multi_line_value_start_tag)
+			lines_with_prefixes (a_msg, l_prefix).do_all (agent log_line)
+			log_line (l_prefix + multi_line_value_end_tag)
 		end
 
 	log_line (a_string: STRING)
@@ -362,35 +423,23 @@ feature{NONE} -- Implementation
 		require
 			a_string_not_void: a_string /= Void
 		do
-			log (a_string + "%N")
-			log_file.flush
+			log_string (a_string + "%N")
 		end
 
-	log (a_string: STRING)
+	log_string (a_string: STRING)
 			-- Log `a_string' to `log_file'.
 		require
 			a_string_not_void: a_string /= Void
 		do
-			log_file.put_string (a_string)
-		end
-
-	log_break_point_hit_statistics is
-			-- 	Log `break_point_hit_statistics'.
-		require
-			break_point_hit_statistics_attached: break_point_hit_statistics /= Void
-		local
-			l_tbl: like break_point_hit_statistics
-		do
-			log_line ("    Number of break points: " + break_point_count.out)
-			l_tbl := break_point_hit_statistics
-			from
-				l_tbl.start
-			until
-				l_tbl.after
-			loop
-				log_line ("  bp@" + l_tbl.key_for_iteration.out + " : " + l_tbl.item_for_iteration.out)
-				l_tbl.forth
+			if log_file /= Void and then log_file.is_open_write then
+				log_file.put_string (a_string)
+				log_file.flush
 			end
-		end
+	end
+
+feature{NONE} -- Cache
+
+	level_to_string_map_cache: like level_to_string_map
+
 
 end

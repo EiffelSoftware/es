@@ -22,15 +22,39 @@ inherit
 
 	EPA_PROCESS_UTILITY
 
-feature -- Access
+feature -- Formatting
 
-	test_case_info_from_string (a_string: STRING): EPA_TEST_CASE_SIGNATURE
-			-- Test case information analyzed from `a_string'
+	lines_with_prefixes (a_text: STRING; a_prefix: STRING): LIST [STRING]
+			-- List of lines in `a_text', each line is prepended with `a_prefix'.
+		require
+			a_text_attached: a_text /= Void
+			a_prefix_attached: a_prefix /= Void
+		local
+			l_lines: LIST [STRING]
 		do
-			create Result.make_with_string (a_string)
+			if a_text.is_empty then
+				create {ARRAYED_LIST [STRING]} Result.make (0)
+			else
+				l_lines := a_text.split ('%N')
+				if not l_lines.is_empty then
+					l_lines.finish
+					l_lines.remove
+				end
+				from
+					l_lines.start
+				until
+					l_lines.after
+				loop
+					l_lines.item.prepend (a_prefix)
+					l_lines.forth
+				end
+				Result := l_lines
+			end
+		ensure
+			result_attached: Result /= Void
+			data_correct: not Result.has (Void)
+			result_is_empty_when_a_text_is_empty: a_text.is_empty implies Result.is_empty
 		end
-
-feature -- Fix
 
 	formated_feature (a_feature: FEATURE_I): STRING
 			-- Pretty printed feature `a_feature'
@@ -48,7 +72,7 @@ feature -- Fix
 			Result := l_output.string_representation
 		end
 
-	formated_fix (a_fix: AFX_FIX): STRING
+	formated_fix (a_fix: AFX_CODE_FIX_TO_FAULT): STRING
 			-- Pretty printed feature text for `a_fix'
 		local
 			l_printer: ETR_AST_STRUCTURE_PRINTER
@@ -56,12 +80,12 @@ feature -- Fix
 			l_feat_text: STRING
 			l_parser: like entity_feature_parser
 		do
-			if a_fix.feature_text.has_substring ("should not happen") then
-				Result := a_fix.feature_text.twin
+			if a_fix.fixed_body_text.has_substring ("should not happen") then
+				Result := a_fix.fixed_body_text.twin
 			else
 				l_parser := entity_feature_parser
 				l_parser.set_syntax_version (l_parser.transitional_syntax)
-				l_parser.parse_from_utf8_string ("feature " + a_fix.feature_text, Void)
+				l_parser.parse_from_utf8_string ("feature " + a_fix.fixed_feature_text, Void)
 				create l_output.make_with_indentation_string ("%T")
 				create l_printer.make_with_output (l_output)
 				l_printer.print_ast_to_output (l_parser.feature_node)
@@ -69,190 +93,74 @@ feature -- Fix
 			end
 		end
 
-feature -- Logging
+feature -- Operations
 
-	store_fix_in_file (a_directory: PATH; a_fix: AFX_FIX; a_validated: BOOLEAN; a_big_file: detachable PLAIN_TEXT_FILE)
-			-- Store `a_fix' as the `a_id'-th fix into a file in directory `a_directory'
-			-- `a_validated' indicates if `a_fix' has been validated.
-			-- Also append the fix in `a_big_file'.
+	exception_summary_from_trace_file (a_path: PATH): EPA_EXCEPTION_TRACE_SUMMARY
+			--
 		local
+			l_explainer: EPA_EXCEPTION_TRACE_EXPLAINER
+			l_summary: EPA_EXCEPTION_TRACE_SUMMARY
 			l_file: PLAIN_TEXT_FILE
-			l_file_name: FILE_NAME
-			l_lines: LIST [STRING]
-			l_formated_fix: STRING
+			l_content: STRING
+			l_delimiter: STRING
+			l_index, l_start_index, l_end_index: INTEGER
 		do
-			create l_file.make_with_path (a_directory.extended (fix_file_name (a_fix, a_validated)))
-			l_file.create_read_write
+			create l_file.make_with_path (a_path)
+			l_file.open_read
 
-				-- Print patched feature text.
-			l_formated_fix := formated_fix (a_fix)
-			l_file.put_string (l_formated_fix)
-			l_file.put_string (once "%N%N")
-
-			if a_big_file /= Void then
-				a_big_file.put_string (fix_signature (a_fix, False, True) + "%N")
-				a_big_file.put_string (l_formated_fix)
-				a_big_file.put_string (once "%N%N")
-			end
-
-				-- Print information about current fix.
-			l_lines := a_fix.information.split ('%N')
-			from
-				l_lines.start
-			until
-				l_lines.after
-			loop
-				l_file.put_string (once "-- ")
-				l_file.put_string (l_lines.item_for_iteration)
-				l_file.put_string (once "%N")
-				l_lines.forth
-			end
-			l_file.close
-		end
-
-	fix_signature (a_fix: AFX_FIX; a_validated: BOOLEAN; a_id: BOOLEAN): STRING
-			-- Signature of `a_fix'
-			-- `a_validated' indicates if `a_fix' has been validated.
-			-- `a_id' indicates whether the fix ID is included.
-		local
-			l_fdouble: FORMAT_DOUBLE
-			l_rank: STRING
-		do
-			create Result.make (64)
-			Result.append (once "fix_")
-			if a_validated then
-				if a_fix.is_valid then
-					Result.append (once "S_")
-				else
-					Result.append (once "F_")
+				-- Read the whole file.
+			if l_file.is_open_read then
+				from
+					l_content := ""
+					l_file.read_line
+				until
+					l_file.end_of_file
+				loop
+					l_content.append (l_file.last_string + "%N")
+					l_file.read_line
 				end
-			else
-				Result.append (once "U_")
-			end
-			create l_fdouble.make (6, 3)
-			Result.append ("SYN_")
-			l_rank := l_fdouble.formatted (a_fix.ranking.pre_validation_score)
-			l_rank.left_adjust
-			Result.append (l_rank)
-			Result.append (once "__")
-			Result.append ("SEM_")
-			l_rank := l_fdouble.formatted (a_fix.ranking.impact_on_passing_test_cases)
-			l_rank.left_adjust
-			Result.append (l_rank)
-			Result.append (once "__")
-
-			inspect
-				a_fix.skeleton_type
-			when {AFX_FIX}.afore_skeleton_type then
-				Result.append ("AFOR")
-			when {AFX_FIX}.wrapping_skeleton_type then
-				Result.append ("WRAP")
-			else
-				Result.append ("NONE")
 			end
 
-			if a_id then
-				Result.append ("__" + a_fix.id.out)
+				-- Extract only the exception trace into 'l_content'.
+			l_delimiter := {EPA_EXCEPTION_TRACE_PARSER}.dash_line
+			l_start_index := l_content.substring_index (l_delimiter, 1)
+			check l_start_index > 0 end
+			from
+				l_index := l_start_index + 1
+			until
+				l_index = 0
+			loop
+				l_index := l_content.substring_index (l_delimiter, l_index + l_delimiter.count)
+				if l_index > 0 then
+					l_end_index := l_index
+				end
 			end
+			l_end_index := l_end_index + l_delimiter.count - 1
+			l_content := l_content.substring (l_start_index, l_end_index)
+
+				-- Process the exception trace
+			create l_explainer
+			l_explainer.explain (l_content)
+			Result := l_explainer.last_explanation
 		end
 
-	fix_file_name (a_fix: AFX_FIX; a_validated: BOOLEAN): STRING
-			-- File name to store `a_fix'.
-			-- `a_validated' indicates if `a_fix' has been validated.
-		local
-			l_fdouble: FORMAT_DOUBLE
-			l_rank: STRING
-		do
-			create Result.make (64)
-			Result.append (fix_signature (a_fix, a_validated, True))
-			Result.append (".txt")
-		end
-
-feature -- State
-
-	state_shrinker: AFX_STATE_SHRINKER
-			-- State shrinker
-		once
-			create Result
-		end
-
-feature -- Access
-
-	equation_as_state (a_equation: EPA_EQUATION): EPA_STATE
-			-- State representing `a_equation'.
-			-- The returned state only contains Current as the only predicate.
-		do
-			create Result.make (1, a_equation.class_, a_equation.feature_)
-			Result.force_last (a_equation)
-		end
-
-feature -- State related
-
-	state_projected_by_skeleton (a_state: EPA_STATE; a_skeleton: EPA_STATE_SKELETON): EPA_STATE
-			-- Projection of `a_state' only containing expressions in `a_skeleton'
-		local
-			l_removed: LINKED_LIST [EPA_EQUATION]
-			l_equation: EPA_EQUATION
-		do
-			Result := a_state.cloned_object
-			Result.do_if (
-				agent Result.remove,
-				agent (a_equation: EPA_EQUATION; a_ske: EPA_STATE_SKELETON): BOOLEAN
-					do
-						Result := not a_ske.has (a_equation.expression)
-					end (?, a_skeleton))
-		end
-
-	padded_state (a_state: EPA_STATE; a_skeleton: EPA_STATE_SKELETON): EPA_STATE
-			-- State from `a_state' containing all predicates in `a_skeleton'.
-			-- Predicates in `a_skeleton' but not presented in Current
-			-- will be assigned to a random value in the returned state.
+	features_to_monitor_by_names (a_features: DS_LINEAR [AFX_FEATURE_TO_MONITOR]): DS_HASH_TABLE [AFX_FEATURE_TO_MONITOR, STRING]
+			--
 		require
-			current_is_subset: predicate_skeleton (a_state).is_subset (a_skeleton)
-		local
-			l_diff: like a_skeleton
+			a_features /= Void
 		do
-				-- Copy existing equations into Result.
-			create Result.make (a_skeleton.count, a_state.class_, a_state.feature_)
-			a_state.do_all (agent Result.force_last)
-
-				-- Generate random values for expression not appearing in Current.
-			l_diff := a_skeleton.subtraction (predicate_skeleton (Result))
-			if not l_diff.is_empty then
-				l_diff.do_all (
-					agent (a_expr: EPA_EXPRESSION; a_st: EPA_STATE)
+			create Result.make_equal (a_features.count + 1)
+			a_features.do_all (
+					agent (a_feature: AFX_FEATURE_TO_MONITOR; a_map: DS_HASH_TABLE [AFX_FEATURE_TO_MONITOR, STRING])
+						local
+							l_name: STRING
 						do
-							a_st.force_last (equation_with_random_value (a_expr))
-						end (?, Result))
-			end
-		ensure
-			result_is_padded: predicate_skeleton (Result).is_subset (a_skeleton) and a_skeleton.is_subset (predicate_skeleton (Result))
-		end
-
-	predicate_skeleton (a_state: EPA_STATE): EPA_STATE_SKELETON
-			-- Predicate skeleton of `a_state'
-		require
-			all_expressions_boolean: a_state.for_all (agent (a_equation: EPA_EQUATION): BOOLEAN do Result := a_equation.expression.is_predicate end)
-		do
-			create Result.make_basic (a_state.class_, a_state.feature_, a_state.count)
-			a_state.do_all (
-				agent (a_pred: EPA_EQUATION; a_skeleton: EPA_STATE_SKELETON)
-					do
-						a_skeleton.force_last (a_pred.expression)
-					end (?, Result))
-		ensure
-			good_result: Result.count = a_state.count
-		end
-
-	skeleton_with_value (a_state: EPA_STATE): EPA_STATE_SKELETON
-			-- Skeleton from consisting of predicate rewritten as predicates in `a_state'.
-		do
-			create Result.make_basic (a_state.class_, a_state.feature_, a_state.count)
-			a_state.do_all (
-				agent (a_pred: EPA_EQUATION; a_skeleton: EPA_STATE_SKELETON)
-					do
-						a_skeleton.force_last (a_pred.as_predicate)
-					end (?, Result))
+							l_name := a_feature.qualified_feature_name
+							if not a_map.has (l_name) then
+								a_map.force (a_feature, l_name)
+							end
+						end (?, Result)
+					)
 		end
 
 end

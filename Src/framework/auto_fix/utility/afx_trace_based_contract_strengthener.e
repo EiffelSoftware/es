@@ -30,7 +30,7 @@ feature -- Basic operation
 			traces_to_reject.do_all (agent traces_for_implication_inference.force_last)
 
 				-- Do not strengthen the precondition of the failing feature, in case of precondition violation.
-			l_exception_signature := session.exception_signature
+			l_exception_signature := session.exception_from_execution
 			if l_exception_signature.is_precondition_violation and then a_features.first.context_class ~ l_exception_signature.exception_class and then a_features.first.feature_ ~ l_exception_signature.exception_feature then
 				l_non_target_features := a_features.twin
 				l_non_target_features.remove_first
@@ -52,22 +52,22 @@ feature{NONE} -- Access
 
 feature{NONE} -- Implementation
 
-	strengthenings_from_summaries (a_features: DS_LIST [AFX_FEATURE_TO_MONITOR]; a_is_pre: BOOLEAN; a_summary_from_passing, a_summary_from_failing: DS_HASH_TABLE [TUPLE[pre, post: EPA_HASH_SET[EPA_AST_EXPRESSION]], AFX_FEATURE_TO_MONITOR]): DS_ARRAYED_LIST [AFX_CONTRACT_FIX_ACROSS_FEATURES]
+	strengthenings_from_summaries (a_features: DS_LIST [AFX_FEATURE_TO_MONITOR]; a_is_pre: BOOLEAN; a_summary_from_passing, a_summary_from_failing: DS_HASH_TABLE [TUPLE[pre, post: EPA_HASH_SET[EPA_EXPRESSION]], AFX_FEATURE_TO_MONITOR]): DS_ARRAYED_LIST [AFX_CONTRACT_FIX_TO_FAULT]
 			--
 		local
 			l_feature_cursor: DS_LIST_CURSOR [AFX_FEATURE_TO_MONITOR]
 			l_feature: AFX_FEATURE_TO_MONITOR
-			l_features_to_summary_differences: DS_HASH_TABLE [DS_ARRAYED_LIST [EPA_AST_EXPRESSION], AFX_FEATURE_TO_MONITOR]
-			l_difference: EPA_HASH_SET[EPA_AST_EXPRESSION]
-			l_expressions_to_satisfying_state_hashes: DS_HASH_TABLE [EPA_HASH_SET[STRING], EPA_AST_EXPRESSION]
-			l_expressions_in_order: DS_ARRAYED_LIST [EPA_AST_EXPRESSION]
+			l_features_to_summary_differences: DS_HASH_TABLE [DS_ARRAYED_LIST [EPA_EXPRESSION], AFX_FEATURE_TO_MONITOR]
+			l_difference: EPA_HASH_SET[EPA_EXPRESSION]
+			l_expressions_to_satisfying_state_hashes: DS_HASH_TABLE [EPA_HASH_SET[STRING], EPA_EXPRESSION]
+			l_expressions_in_order: DS_ARRAYED_LIST [EPA_EXPRESSION]
 			l_number_of_combinations, l_fix_index: INTEGER
-			l_fix: AFX_CONTRACT_FIX_ACROSS_FEATURES
-			l_local_fix: AFX_CONTRACT_FIX_PER_FEATURE
-			l_contracts_to_add, l_contracts_to_remove: EPA_HASH_SET [EPA_AST_EXPRESSION]
-			l_contract: EPA_AST_EXPRESSION
-			l_summary_difference_cursor: DS_HASH_TABLE_CURSOR [DS_ARRAYED_LIST [EPA_AST_EXPRESSION], AFX_FEATURE_TO_MONITOR]
-			l_result: TUPLE [htable: DS_HASH_TABLE [EPA_HASH_SET[STRING], EPA_AST_EXPRESSION]; invs: EPA_HASH_SET[EPA_AST_EXPRESSION]]
+			l_fix: AFX_CONTRACT_FIX_TO_FAULT
+			l_local_fix: AFX_CONTRACT_FIX_TO_FEATURE
+			l_contracts_to_add, l_contracts_to_remove: EPA_HASH_SET [EPA_EXPRESSION]
+			l_contract: EPA_EXPRESSION
+			l_summary_difference_cursor: DS_HASH_TABLE_CURSOR [DS_ARRAYED_LIST [EPA_EXPRESSION], AFX_FEATURE_TO_MONITOR]
+			l_result: TUPLE [htable: DS_HASH_TABLE [EPA_HASH_SET[STRING], EPA_EXPRESSION]; invs: EPA_HASH_SET[EPA_EXPRESSION]]
 		do
 			create Result.make (max_strengthening_fixes)
 
@@ -84,16 +84,13 @@ feature{NONE} -- Implementation
 
 				l_difference := difference_between_summaries (l_feature, a_is_pre, a_summary_from_passing, a_summary_from_failing)
 				if not l_difference.is_empty then
-					l_expressions_in_order := expressions_in_order (l_difference)
-					prune_disjunctions_of_true_expressions (l_expressions_in_order)
+					l_expressions_in_order := prune_disjunctions_of_true_expressions (l_difference)
 
 					create l_difference.make_equal (l_expressions_in_order.count + 1)
 					l_expressions_in_order.do_all (agent l_difference.force)
 					l_result := expressions_to_satisfying_state_hashes (traces_for_implication_inference, l_feature.context_class, l_feature.feature_, l_difference, Void)
 					l_expressions_to_satisfying_state_hashes := l_result.htable
 					l_expressions_in_order := expressions_ordered_by_set_size (l_difference, l_expressions_to_satisfying_state_hashes)
---					prune_stronger_expressions (l_expressions_in_order, l_expressions_to_satisfying_state_hashes)
---					l_expressions_in_order := expressions_in_order (l_expressions_in_order)
 
 					l_number_of_combinations := l_number_of_combinations * l_expressions_in_order.count
 					l_features_to_summary_differences.force (l_expressions_in_order, l_feature)
@@ -108,7 +105,7 @@ feature{NONE} -- Implementation
 			until
 				l_fix_index >= l_number_of_combinations or else l_fix_index >= max_strengthening_fixes
 			loop
-				create l_fix.make_equal (l_features_to_summary_differences.count + 1)
+				create l_fix.make	-- .make_equal (l_features_to_summary_differences.count + 1)
 
 				from
 					l_summary_difference_cursor := l_features_to_summary_differences.new_cursor
@@ -122,13 +119,17 @@ feature{NONE} -- Implementation
 					l_contract := l_expressions_in_order.item (l_fix_index \\ l_expressions_in_order.count + 1)
 					create l_contracts_to_add.make_equal (1)
 					l_contracts_to_add.force (l_contract)
-					create l_local_fix.make (l_feature, a_is_pre, l_contracts_to_add, Void)
-					l_fix.force ([l_local_fix, Void], l_feature)
+
+					if a_is_pre then
+						create l_local_fix.make (l_feature, l_contracts_to_add, Void, Void, Void)
+					else
+						create l_local_fix.make (l_feature, Void, Void, l_contracts_to_add, Void)
+					end
+					l_fix.add_component (l_local_fix)
 
 					l_summary_difference_cursor.forth
 				end
 				if not l_fix.is_empty then
-					l_fix.rebuild_out
 					Result.force_last (l_fix)
 				end
 
@@ -138,9 +139,9 @@ feature{NONE} -- Implementation
 
 		end
 
-	difference_between_summaries (a_feature: AFX_FEATURE_TO_MONITOR; a_is_pre: BOOLEAN; a_summary_from_passing, a_summary_from_failing: DS_HASH_TABLE [TUPLE[pre, post: EPA_HASH_SET[EPA_AST_EXPRESSION]], AFX_FEATURE_TO_MONITOR]): EPA_HASH_SET[EPA_AST_EXPRESSION]
+	difference_between_summaries (a_feature: AFX_FEATURE_TO_MONITOR; a_is_pre: BOOLEAN; a_summary_from_passing, a_summary_from_failing: DS_HASH_TABLE [TUPLE[pre, post: EPA_HASH_SET[EPA_EXPRESSION]], AFX_FEATURE_TO_MONITOR]): EPA_HASH_SET[EPA_EXPRESSION]
 		local
-			l_passings, l_failings, l_differences: EPA_HASH_SET[EPA_AST_EXPRESSION]
+			l_passings, l_failings, l_differences: EPA_HASH_SET[EPA_EXPRESSION]
 		do
 			if a_summary_from_passing.has (a_feature) then
 				if a_is_pre then

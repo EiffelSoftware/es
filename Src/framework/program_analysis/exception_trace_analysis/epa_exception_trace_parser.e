@@ -421,7 +421,7 @@ feature{NONE} -- Identifier validator
 		    create Result
 		end
 
-feature{NONE} -- Constant
+feature -- Constant
 
 	dash_line: STRING = "-------------------------------------------------------------------------------"
 

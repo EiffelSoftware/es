@@ -20,14 +20,6 @@ feature {NONE} -- Initialization
 		do
 			create mutex.make
 			create condition.make
-
-			if a_config.min_socket_port_number = 0 then
-				min_port := default_min_port
-				max_port := default_max_port
-			else
-				min_port := a_config.min_socket_port_number
-				max_port := a_config.max_socket_port_number
-			end
 		end
 
 feature -- Access
@@ -46,17 +38,13 @@ feature {NONE} -- Access
 	port_cell: CELL [NATURAL]
 			-- Cell to contain port number.
 		once
-			create Result.put (min_port)
+			create Result.put (default_min_port)
 		ensure
 			result_attached: Result /= Void
 		end
 
 	connection: detachable NETWORK_STREAM_SOCKET
 			-- Connection to client once established
-
-	min_port: NATURAL
-
-	max_port: NATURAL
 
 feature -- Status report
 
@@ -130,8 +118,8 @@ feature {NONE} -- Implementation
 					l_attempts > max_attempts
 			loop
 				port_cell.put (port_cell.item + 1)
-				if port_cell.item < min_port or port_cell.item > max_port then
-					port_cell.put (min_port)
+				if port_cell.item < default_min_port or port_cell.item > default_max_port then
+					port_cell.put (default_min_port)
 				end
 				current_port := port_cell.item
 

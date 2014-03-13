@@ -2155,7 +2155,7 @@ feature{NONE} -- Expressions
 			until
 				l_cursor.after
 			loop
-				l_sub_expression_collector.collect_from_ast (l_feat, l_cursor.item.ast)
+				l_sub_expression_collector.collect_from_expression (l_feat, l_cursor.item)
 				Result.append (l_sub_expression_collector.last_sub_expressions)
 
 				l_cursor.forth

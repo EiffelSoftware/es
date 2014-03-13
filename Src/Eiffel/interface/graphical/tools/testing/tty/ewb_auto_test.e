@@ -303,6 +303,10 @@ feature -- Execution
 				end
 
 				a_test_suite.launch_session (l_generator)
+
+				if l_feature_contract_remover /= Void then
+					l_feature_contract_remover.recover_previous_contracts
+				end
 			else
 
 			end
@@ -349,7 +353,7 @@ feature -- Execution
 		end
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

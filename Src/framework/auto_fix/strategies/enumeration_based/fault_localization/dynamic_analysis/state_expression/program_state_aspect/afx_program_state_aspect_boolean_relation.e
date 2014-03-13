@@ -18,7 +18,7 @@ create
 feature{NONE} -- Initialization
 
 	make_boolean_relation (a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_written_class: CLASS_C;
-					a_left_operand, a_right_operand: EPA_AST_EXPRESSION; a_boolean_operator: INTEGER)
+					a_left_operand, a_right_operand: EPA_EXPRESSION; a_boolean_operator: INTEGER)
 			-- Initialization
 		require
 			context_attached: a_context_class /= Void and then a_context_feature /= Void and then a_written_class /= Void
@@ -86,10 +86,10 @@ feature -- Basic operation
 
 feature -- Access
 
-	left_operand: EPA_AST_EXPRESSION
+	left_operand: EPA_EXPRESSION
 			-- Expression appearing to the left of the operator.
 
-	right_operand: EPA_AST_EXPRESSION
+	right_operand: EPA_EXPRESSION
 			-- Expression appearing to the right of the operator.
 
 	operator: INTEGER

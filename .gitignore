@@ -410,7 +410,6 @@ Src/experimental/library/wel/Clib/wel.lib
 Src/experimental/library/wel/spec/bcb
 Src/experimental/library/wel/spec/mingw
 Src/experimental/library/wel/spec/msc
-Src/framework/auto_fix/interpreter/afx_test_case_runner_generator.e
 Src/framework/auto_fix/program_state
 Src/framework/auto_fix/strategies/enumeration_based/afx_execution_trace_analyzer.e
 Src/framework/auto_fix/strategies/enumeration_based/afx_execution_trace_statistic_collection.e
@@ -432,7 +431,6 @@ Src/framework/auto_fix/strategies/enumeration_based/fix_generation/afx_fix_by_su
 Src/framework/auto_fix/strategies/enumeration_based/fix_generation/afx_state_change_requirement_generator.e
 Src/framework/auto_fix/strategies/enumeration_based/fix_generation/fixing_target/afx_shared_fixing_target_equality_tester.e
 Src/framework/auto_fix/strategies/enumeration_based/utility/afx_test_case_app_random_based_analyzer.e
-Src/framework/auto_fix/strategies/model_based/behavior_constructor/afx_behavior_constructor_config_equality_tester.e
 Src/framework/auto_fix/strategies/model_based/boolean_model
 Src/framework/auto_fix/strategies/model_based/command/afx_test_case_app_builder.e
 Src/framework/auto_fix/strategies/model_based/model_transformation

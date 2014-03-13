@@ -33,23 +33,39 @@ feature -- Access
 
 feature -- Derived state
 
-	derived_state (a_derived_skeleton: EPA_STATE_SKELETON; a_use_aspect: BOOLEAN): AFX_PROGRAM_EXECUTION_STATE
+	derived_state (a_map: DS_HASH_TABLE [AFX_FEATURE_TO_MONITOR, STRING]; a_use_aspect: BOOLEAN): AFX_PROGRAM_EXECUTION_STATE
 			-- Derived state from the Current, based on `a_derived_skeleton'.
 		require
-			skeleton_attached: a_derived_skeleton /= Void
+			a_map /= Void
 		local
+			l_qualified_feature_name: STRING
+			l_feature: AFX_FEATURE_TO_MONITOR
+			l_skeletons_at_breakpoints: DS_HASH_TABLE [EPA_STATE_SKELETON, INTEGER_32]
+			l_bpt: INTEGER
+
+			l_skeleton: EPA_STATE_SKELETON
 			l_state: EPA_STATE
 			l_creator: EPA_AST_EXPRESSION_SAFE_CREATOR
 			l_exp: EPA_AST_EXPRESSION
 			l_equation: EPA_EQUATION
 		do
+			l_qualified_feature_name := state.class_.name_in_upper + "." + state.feature_.feature_name_32
+			l_bpt := location.breakpoint_index
+
+				-- Skeleton for the breakpoint of the state
+			check a_map.has (l_qualified_feature_name) end
+			l_feature := a_map.item (l_qualified_feature_name)
+			l_skeletons_at_breakpoints := l_feature.skeletons_at_breakpoints
+			check l_skeletons_at_breakpoints.has (l_bpt) end
+			l_skeleton := l_skeletons_at_breakpoints.item (l_bpt)
+
 			from
 				create l_state.make (state.count, state.class_, state.feature_)
-				a_derived_skeleton.start
+				l_skeleton.start
 			until
-				a_derived_skeleton.after
+				l_skeleton.after
 			loop
-				if attached {AFX_PROGRAM_STATE_ASPECT} a_derived_skeleton.item_for_iteration as lv_aspect then
+				if attached {AFX_PROGRAM_STATE_ASPECT} l_skeleton.item_for_iteration as lv_aspect then
 					lv_aspect.evaluate (state)
 					if a_use_aspect then
 						create l_equation.make (lv_aspect, lv_aspect.last_value)
@@ -63,39 +79,10 @@ feature -- Derived state
 					end
 
 				end
-				a_derived_skeleton.forth
+				l_skeleton.forth
 			end
 			create Result.make_with_state_and_location (l_state, location)
 		end
-
---	state_in_expression: AFX_PROGRAM_EXECUTION_STATE
---		local
---			l_state: EPA_STATE
---			l_creator: EPA_AST_EXPRESSION_SAFE_CREATOR
---			l_exp: EPA_AST_EXPRESSION
---			l_equation: EPA_EQUATION
---		do
---			from
---				create l_state.make (state.count, state.class_, state.feature_)
---				a_derived_skeleton.start
---			until
---				a_derived_skeleton.after
---			loop
---				if attached {AFX_PROGRAM_STATE_ASPECT} a_derived_skeleton.item_for_iteration as lv_aspect then
---					lv_aspect.evaluate (state)
---					create l_equation.make (lv_aspect, lv_aspect.last_value)
---					l_state.force (l_equation)
-
-----					l_exp := l_creator.safe_create_with_expression (lv_aspect)
-----					if l_exp /= Void then
-----						create l_equation.make (l_exp, lv_aspect.last_value)
-----						l_state.force (l_equation)
-----					end
---				end
---				a_derived_skeleton.forth
---			end
---			create Result.make_with_state_and_location (l_state, location)
---		end
 
 feature -- Statistic
 

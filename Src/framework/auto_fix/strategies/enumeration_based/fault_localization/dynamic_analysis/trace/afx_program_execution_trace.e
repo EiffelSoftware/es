@@ -8,6 +8,7 @@ class
 	AFX_PROGRAM_EXECUTION_TRACE
 
 inherit
+
 	LINKED_LIST [AFX_PROGRAM_EXECUTION_STATE]
 		rename make as make_list
 		redefine out
@@ -38,28 +39,11 @@ feature -- Access
 
 feature -- Trace interpretation
 
-	derived_trace (a_derived_skeleton: EPA_STATE_SKELETON; a_use_aspect: BOOLEAN): AFX_PROGRAM_EXECUTION_TRACE
-			-- Trace derived from the current, based on `a_derived_skeleton'.
-		do
-			create Result.make (test_case)
-			if is_passing then
-				Result.set_status_as_passing
-			elseif is_failing then
-				Result.set_status_as_failing
-			end
-
-			from start
-			until after
-			loop
-				Result.force (item_for_iteration.derived_state (a_derived_skeleton, a_use_aspect))
-				forth
-			end
-		end
-
-	derived_compound_trace (a_feature_to_skeleton_map: DS_HASH_TABLE [EPA_STATE_SKELETON, AFX_FEATURE_TO_MONITOR]; a_use_aspect: BOOLEAN): AFX_PROGRAM_EXECUTION_TRACE
+	derived_compound_trace (a_map: DS_HASH_TABLE [AFX_FEATURE_TO_MONITOR, STRING]; a_use_aspect: BOOLEAN): AFX_PROGRAM_EXECUTION_TRACE
 		local
 			l_state: AFX_PROGRAM_EXECUTION_STATE
 			l_feature: AFX_FEATURE_TO_MONITOR
+			l_name: STRING
 		do
 			create Result.make (test_case)
 			if is_passing then
@@ -72,11 +56,76 @@ feature -- Trace interpretation
 			until after
 			loop
 				l_state := item_for_iteration
-				create l_feature.make (l_state.state.feature_, l_state.state.class_)
-				if a_feature_to_skeleton_map.has (l_feature) then
-					Result.force (l_state.derived_state (a_feature_to_skeleton_map.item (l_feature), a_use_aspect))
-				end
+				Result.force (l_state.derived_state (a_map, a_use_aspect))
+
 				forth
+			end
+		end
+
+	update_values_of_old_expressions (a_map: DS_HASH_TABLE [AFX_FEATURE_TO_MONITOR, STRING])
+		local
+			l_state_cursor: LINKED_LIST_ITERATION_CURSOR [AFX_PROGRAM_EXECUTION_STATE]
+			l_state, l_pre_state: AFX_PROGRAM_EXECUTION_STATE
+			l_bp, l_pre_bp: INTEGER
+			l_feature_name, l_pre_feature_name: STRING
+			l_feature: AFX_FEATURE_TO_MONITOR
+			l_stack: DS_ARRAYED_STACK[AFX_PROGRAM_EXECUTION_STATE]
+			l_evaluation, l_pre_evaluation: EPA_STATE
+			l_equation: EPA_EQUATION
+			l_expression_text: STRING
+			l_value: EPA_EXPRESSION_VALUE
+			l_old_expression_evaluator: AFX_OLD_EXPRESSION_EVALUATOR
+		do
+			from
+				create l_stack.make_equal (count)
+				create l_old_expression_evaluator
+				l_state_cursor := new_cursor
+				l_state_cursor.start
+			until
+				l_state_cursor.after
+			loop
+				l_state := l_state_cursor.item
+
+				l_feature_name := l_state.location.context.qualified_feature_name
+				l_feature := a_map.item (l_feature_name)
+				l_bp := l_state.location.breakpoint_index
+				l_evaluation := l_state.state
+
+				if l_feature.should_monitor_contracts then
+					if l_bp = l_feature.breakpoint_to_evaluate_precondition then
+						l_stack.force (l_state)
+					elseif l_bp = l_feature.breakpoint_to_evaluate_postcondition then
+						check not l_stack.is_empty then
+								-- Exit state of feature
+							l_pre_state := l_stack.item
+							l_pre_evaluation := l_pre_state.state
+							l_pre_bp := l_pre_state.location.breakpoint_index
+							l_pre_feature_name := l_pre_state.location.context.qualified_feature_name
+
+							check l_pre_feature_name ~ l_feature_name and l_pre_bp = l_feature.breakpoint_to_evaluate_precondition then
+									-- Matching entry state available
+								from l_evaluation.start
+								until l_evaluation.after
+								loop
+									l_equation := l_evaluation.item_for_iteration
+									l_expression_text := l_equation.expression.text
+									if l_expression_text.has_substring ("old") and then l_equation.value.is_nonsensical then
+										l_old_expression_evaluator.evaluate (l_feature, l_expression_text, l_evaluation, l_pre_evaluation)
+										l_value := l_old_expression_evaluator.last_value
+										if l_value /= Void and then not l_value.is_nonsensical then
+											l_equation.set_value (l_value)
+										end
+									end
+
+									l_evaluation.forth
+								end
+								l_stack.remove
+							end
+						end
+					end
+				end
+
+				l_state_cursor.forth
 			end
 		end
 

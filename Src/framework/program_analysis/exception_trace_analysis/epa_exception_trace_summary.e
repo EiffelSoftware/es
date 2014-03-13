@@ -95,6 +95,21 @@ feature -- Hash
 			Result := l_list
 		end
 
+feature -- ID
+
+	id: STRING
+			-- ID of the summary.
+		do
+			if id_cache = Void then
+				id_cache := "RECI_" + recipient_context_class_name + "__" + recipient_feature_name + "__"
+							+ "b" + recipient_breakpoint_index.out + "__"
+							+ "FAIL_" + failing_context_class_name + "__" + failing_feature_name + "__"
+							+ "b" + failing_position_breakpoint_index.out + "__"
+							+ "c" + exception_code.out
+			end
+			Result := id_cache
+		end
+
 feature -- Access (Failing position)
 
 	exception_code: INTEGER assign set_exception_code
@@ -284,5 +299,10 @@ feature -- Status set
 		do
 			recipient_context_class_name := a_name.twin
 		end
+
+feature{NONE} -- Cache
+
+	id_cache: STRING
+			-- Cache for `id'.
 
 end

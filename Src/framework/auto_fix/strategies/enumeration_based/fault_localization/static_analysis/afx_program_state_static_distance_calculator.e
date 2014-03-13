@@ -7,13 +7,24 @@ note
 class
 	AFX_PROGRAM_STATE_STATIC_DISTANCE_CALCULATOR
 
-inherit
-	AFX_SHARED_SESSION
+--inherit
+--	AFX_SHARED_SESSION
 
 create
-	default_create
+	make
+
+feature{NONE} -- Initialization
+
+	make (a_exception: AFX_EXCEPTION_SIGNATURE)
+			--
+		do
+			exception_signature := a_exception
+		end
 
 feature -- Access
+
+	exception_signature: AFX_EXCEPTION_SIGNATURE
+			-- Exception to which the static relevances are to be computed.
 
 	last_relevances: TUPLE [control_relevance: INTEGER; data_relevance: REAL_64]
 			-- Relevances of a fixing target to the failure under fixing.
@@ -32,14 +43,41 @@ feature -- Basic operation
 			l_data_relevance: REAL_64
 			l_failing_assertion: EPA_EXPRESSION
 		do
-			l_control_relevance := exception_recipient_feature.control_distances_to_exception_point (a_target.bp_index)
+			l_control_relevance := control_distances_to_exception_point (a_target.bp_index)
 
 			l_failing_assertion := exception_signature.exception_condition_in_recipient
---			create l_failing_program_state.make_with_text (exception_spot.recipient_class_, exception_spot.recipient_, l_failing_assertion.text, exception_spot.recipient_written_class, exception_spot.failing_assertion_break_point_slot)
 			l_data_relevance := relevance_to_expression (l_failing_assertion, a_target.expression)
 
 			last_relevances := [l_control_relevance, l_data_relevance]
 		end
+
+feature -- Query
+
+	control_distances_to_exception_point (a_breakpoint: INTEGER): INTEGER
+			-- Control distance of `a_breakpoint' to the exception point.
+			-- If the exception point is not reachable from `a_breakpoint' in the CFG,
+			-- return `Control_distance_infinite'.
+		local
+			l_calculator: EPA_CONTROL_DISTANCE_CALCULATOR
+		do
+			if control_distance_report_regarding_exception_point = Void then
+				create l_calculator.make
+				l_calculator.calculate_within_feature (exception_signature.recipient_class, exception_signature.recipient_feature, exception_signature.recipient_breakpoint)
+				control_distance_report_regarding_exception_point := l_calculator.last_report_concerning_bp_indexes
+			end
+
+			if control_distance_report_regarding_exception_point.has (a_breakpoint) then
+				Result := control_distance_report_regarding_exception_point.item (a_breakpoint)
+			else
+				Result := Infinite_distance
+			end
+		end
+
+
+feature{NONE} -- Access
+
+	control_distance_report_regarding_exception_point: DS_HASH_TABLE [INTEGER, INTEGER]
+			-- Control distance report mapping breakpoint indexes to their distances from the exception point.
 
 feature{NONE} -- Implementation
 
@@ -66,7 +104,7 @@ feature{NONE} -- Implementation
 		do
 			if not sub_expressions_table_cache.has (a_expression) then
 				create l_context_feature.make (a_expression.feature_, a_expression.class_)
-				sub_expression_collector.collect_from_expression_text (l_context_feature, a_expression.text)
+				sub_expression_collector.collect_from_expression (l_context_feature, a_expression)
 				sub_expressions_table_cache.force (sub_expression_collector.last_sub_expressions, a_expression)
 			end
 			Result := sub_expressions_table_cache.item (a_expression)
@@ -89,5 +127,8 @@ feature{NONE} -- Implementation
 			Result := l_sub_expressions1.intersection (l_sub_expressions2).count
 		end
 
+feature -- Constant
 
+	Infinite_distance: INTEGER_32 = 1000000
+			-- Infinite distance for unreachable control positions.
 end

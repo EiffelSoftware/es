@@ -16,20 +16,20 @@ inherit
 			start_debugger
 		end
 
-create
-	make
+--create
+--	default_create
 
-feature -- Access
+--feature -- Access
 
-	features_to_monitor: DS_HASH_SET [AFX_FEATURE_TO_MONITOR] assign set_features_to_monitor
-			--
+--	features_to_monitor: DS_HASH_SET [AFX_FEATURE_TO_MONITOR] assign set_features_to_monitor
+--			--
 
-feature -- Setter
-	set_features_to_monitor (a_features: like features_to_monitor)
-			--
-		do
-			features_to_monitor := a_features
-		end
+--feature -- Setter
+--	set_features_to_monitor (a_features: like features_to_monitor)
+--			--
+--		do
+--			features_to_monitor := a_features
+--		end
 
 feature -- Debugger action
 
@@ -38,7 +38,7 @@ feature -- Debugger action
 		do
 			entry_breakpoint_manager.toggle_breakpoints (True)
 			register_program_state_monitoring
-			start_debugger_general (debugger_manager, " --validate_contract_fix " + config.interpreter_log_path.utf_8_name + " false -eif_root " + afx_project_root_class + "." + afx_project_root_feature, config.working_directory.utf_8_name, {EXEC_MODES}.Run, False)
+			start_debugger_general (debugger_manager, " --validate_contract_fix " + session.interpreter_log_path.utf_8_name + " false -eif_root " + afx_project_root_class + "." + afx_project_root_feature, session.working_directory.utf_8_name, {EXEC_MODES}.Run, False)
 		end
 
 	on_application_exception (a_dm: DEBUGGER_MANAGER)
@@ -79,7 +79,7 @@ feature -- Basic operation
 				l_feature := l_feature_to_monitor.feature_
 				l_total_breakpoints := l_feature.e_feature.number_of_breakpoint_slots
 				l_nbr_postconditions := l_contract_extractor.postcondition_of_feature (l_feature, l_class).count
-				l_contract_expressions := expressions_for_contracts (l_feature_to_monitor)
+				l_contract_expressions := l_feature_to_monitor.expressions_to_monitor_at_entry_and_exit
 				create l_expressions.make
 				l_contract_expressions.post.do_all (agent l_expressions.force)
 				create l_manager.make (l_class, l_feature)

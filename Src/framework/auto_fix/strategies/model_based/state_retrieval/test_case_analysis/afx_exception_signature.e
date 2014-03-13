@@ -172,16 +172,27 @@ feature{AFX_ASSERTION_VIOLATION_SIGNATURE} -- Analyze
 
 feature -- Derived access
 
-	origin_recipient_feature: FEATURE_I
-			-- Ancester of `recipient_feature' in its written class.
+	recipient_feature_with_context: AFX_FEATURE_TO_MONITOR
+			--
+		local
+			l_expressions: DS_ARRAYED_LIST [EPA_EXPRESSION]
 		do
-			Result := recipient_written_class.feature_of_rout_id_set (recipient_feature.rout_id_set)
+			if recipient_feature_with_context_cache = Void then
+				create recipient_feature_with_context_cache.make (recipient_feature, recipient_class)
+				create l_expressions.make_equal (2)
+				l_expressions.force_last (exception_condition_in_recipient)
+				recipient_feature_with_context_cache.add_extra_expressions (l_expressions)
+			end
+			Result := recipient_feature_with_context_cache
 		end
 
-	recipient_written_class: CLASS_C
-			-- Written class of `recipient_feature'.
+	exception_feature_with_context: AFX_FEATURE_TO_MONITOR
+			--
 		do
-			Result := recipient_feature.written_class
+			if exception_feature_with_context_cache = Void then
+				create exception_feature_with_context_cache.make (exception_feature, exception_class)
+			end
+			Result := exception_feature_with_context_cache
 		end
 
 	id: STRING
@@ -280,5 +291,11 @@ feature{NONE} -- Cache
 
 	id_cache: STRING
 			-- Cache for `id'.
+
+	recipient_feature_with_context_cache: like recipient_feature_with_context
+			-- Cache for `recipient_feature_with_context'.
+
+	exception_feature_with_context_cache: like exception_feature_with_context
+			-- Cache for `exception_feature_with_context'.
 
 end
