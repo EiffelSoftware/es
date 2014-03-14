@@ -151,6 +151,7 @@ feature -- Iteration
 			status: impure
 			explicit: contracts
 		do
+			check inv end
 			Result := at (lower)
 		end
 
@@ -163,6 +164,7 @@ feature -- Iteration
 			is_wrapped: is_wrapped
 			modify_model (["observers"], Current)
 		do
+			check inv end
 			Result := at (upper)
 		ensure
 			is_wrapped: is_wrapped
@@ -181,6 +183,7 @@ feature -- Iteration
 			explicit: contracts
 		deferred
 		ensure then
+			index_definition_in_bounds: lower_ - 1 <= i and i <= upper_ + 1 implies Result.index = i - lower_ + 1
 			index_definition_before: i < lower_ implies Result.index_ = 0
 			index_definition_after: i > upper_ implies Result.index_ = map.count + 1
 		end
@@ -197,7 +200,7 @@ feature -- Specification
 	upper_: INTEGER
 			-- Upper bound of `map.domain'.
 		note
-			status: ghost, functional
+			status: ghost
 		attribute
 		end
 
@@ -219,6 +222,9 @@ feature -- Specification
 
 invariant
 	indexes_in_interval: map.domain ~ create {MML_INTERVAL}.from_range (lower_, upper_)
+	lower_when_empty: map.is_empty implies lower_ = 1
+	upper_when_empty: map.is_empty implies upper_ = 0
+
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
