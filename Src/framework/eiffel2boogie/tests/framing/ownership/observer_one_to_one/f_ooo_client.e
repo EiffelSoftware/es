@@ -12,7 +12,9 @@ feature
 		do
 			create s
 			create o.make (s)
+			check o.inv and s.inv end
 			s.update (5)
+			check o.inv end
 			check o.cache = 5 end
 		end
 
@@ -23,7 +25,10 @@ feature
 		do
 			create s
 			create o.make (s)
+			check o.inv and s.inv end
 			s.update (5)
+			check o.inv end
+			check o.inv end
 			check o.cache = 5 end
 		end
 

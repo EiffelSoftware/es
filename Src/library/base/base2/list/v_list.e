@@ -12,8 +12,7 @@ deferred class
 inherit
 	V_MUTABLE_SEQUENCE [G]
 		redefine
-			at,
-			index_of_from
+			at
 		end
 
 feature -- Measurement
@@ -81,28 +80,6 @@ feature -- Comparison
 			observers_restored: observers ~ old observers
 		end
 
-feature -- Search
-
-	index_of_from (v: G; i: INTEGER): INTEGER
-			-- Index of the first occurrence of `v' starting from position `i';
-			-- out of range, if `v' does not occur.
-		note
-			status: impure
-			explicit: contracts
-		local
-			it: V_LIST_ITERATOR [G]
-		do
-			it := at (i)
-			it.search_forth (v)
-			if it.off then
-				Result := upper + 1
-			else
-				Result := it.target_index
-			end
-			check across (create {MML_INTERVAL}.from_range (i, Result - 1)) as j all sequence[j.item] = sequence.interval (i, Result - 1)[j.item - i + 1]  end end
-			forget_iterator (it)
-		end
-
 feature -- Extension
 
 	extend_front (v: G)
@@ -140,7 +117,7 @@ feature -- Extension
 			is_wrapped: is_wrapped
 			valid_index: has_index (i) or i = count + 1
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence"], Current)
+			modify_model (["sequence", "owns"], Current)
 		deferred
 		ensure
 			is_wrapped: is_wrapped
@@ -158,7 +135,7 @@ feature -- Extension
 			different_target: input.target /= Current
 			not_before: not input.before
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence"], Current)
+			modify_model (["sequence", "owns"], Current)
 			modify_model ("index_", input)
 		do
 			from
@@ -196,7 +173,7 @@ feature -- Extension
 			different_target: input.target /= Current
 			not_before: not input.before
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence"], Current)
+			modify_model (["sequence", "owns"], Current)
 			modify_model ("index_", input)
 		deferred
 		ensure
@@ -218,7 +195,7 @@ feature -- Extension
 			different_target: input.target /= Current
 			not_before: not input.before
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence"], Current)
+			modify_model (["sequence", "owns"], Current)
 			modify_model ("index_", input)
 		deferred
 		ensure
@@ -227,6 +204,46 @@ feature -- Extension
 			sequence_effect: sequence ~ old (sequence.front (i - 1) + input.sequence.tail (input.index_) + sequence.tail (i))
 			input_index_effect: input.index_ = input.sequence.count + 1
 		end
+
+--	reverse
+--			-- Reverse the order of elements.
+--		note
+--			explicit: wrapping
+----		require
+----			is_wrapped: is_wrapped
+----			observers_open: across observers as o all o.item.is_open end
+----			modify_model (["map", "observers"], Current)
+--		local
+--			j, k: INTEGER
+--		do
+----			check inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty") end
+--			from
+--				j := lower
+--				k := upper
+--			invariant
+--				inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty")
+--				map.domain ~ map.domain.old_
+--				lower_ <= j and j <= k + 1 and k <= upper_
+--				k = lower_ + upper_ - j
+--				across j |..| k as i all map.domain [i.item] and then map [i.item] = map.old_ [i.item] end
+--				across lower_ |..| (j - 1) as i all map.domain [i.item] and then map [i.item] = map.old_ [lower_ + upper_ - i.item] end
+--				across (k + 1) |..| upper_ as i all map.domain [i.item] and then map [i.item] = map.old_ [lower_ + upper_ - i.item] end
+--				is_wrapped
+----				inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty")
+--				observers ~ observers.old_
+--			until
+--				j >= k
+--			loop
+--				swap (j, k)
+--				j := j + 1
+--				k := k - 1
+--			end
+----		ensure
+----			is_wrapped: is_wrapped
+----			map_domain_effect: map.domain ~ old map.domain
+----			map_effect: across map.domain as i all map [i.item] = (old map) [lower_ + upper_ - i.item] end
+----			observers_restored: observers ~ old observers
+--		end
 
 feature -- Removal
 
@@ -238,7 +255,7 @@ feature -- Removal
 			is_wrapped: is_wrapped
 			not_empty: not is_empty
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence"], Current)
+			modify_model (["sequence", "owns"], Current)
 		deferred
 		ensure
 			is_wrapped: is_wrapped
@@ -253,7 +270,7 @@ feature -- Removal
 			is_wrapped: is_wrapped
 			not_empty: not is_empty
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence"], Current)
+			modify_model (["sequence", "owns"], Current)
 		deferred
 		ensure
 			is_wrapped: is_wrapped
@@ -268,7 +285,7 @@ feature -- Removal
 			is_wrapped: is_wrapped
 			has_index: has_index (i)
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence"], Current)
+			modify_model (["sequence", "owns"], Current)
 		deferred
 		ensure
 			is_wrapped: is_wrapped
@@ -283,7 +300,7 @@ feature -- Removal
 			is_wrapped: is_wrapped
 			has: sequence.has (v)
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "observers"], Current)
+			modify_model (["sequence", "observers", "owns"], Current)
 		local
 			i: V_LIST_ITERATOR [G]
 		do
@@ -304,7 +321,7 @@ feature -- Removal
 		require
 			is_wrapped: is_wrapped
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "observers"], Current)
+			modify_model (["sequence", "observers", "owns"], Current)
 		local
 			i: V_LIST_ITERATOR [G]
 		do
@@ -312,17 +329,21 @@ feature -- Removal
 				i := new_cursor
 				i.search_forth (v)
 			invariant
-				1 <= i.index_ and i.index_ <= sequence.count + 1
-				not i.off implies i.item = v
 				is_wrapped and i.is_wrapped
 				i.inv
+				inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty")
+				1 <= i.index_ and i.index_ <= sequence.count + 1
+				not i.off implies i.item = v
 				modify_model ("sequence", Current)
 				modify_model (["index_", "sequence"], i)
 			until
 				i.after
 			loop
 				i.remove
+				check i.inv end
 				i.search_forth (v)
+			variant
+				i.sequence.count - i.index_
 			end
 			forget_iterator (i)
 		ensure
@@ -338,7 +359,7 @@ feature -- Removal
 		require
 			is_wrapped: is_wrapped
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence"], Current)
+			modify_model (["sequence", "owns"], Current)
 		deferred
 		ensure
 			is_wrapped: is_wrapped

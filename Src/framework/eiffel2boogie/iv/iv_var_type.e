@@ -10,7 +10,8 @@ inherit
 	IV_TYPE
 
 create
-	make_fresh
+	make_fresh,
+	reset
 
 feature {NONE} -- Initialization
 
@@ -19,6 +20,13 @@ feature {NONE} -- Initialization
 		do
 			name := "T" + counter.item.out
 			counter.set_item (counter.item + 1)
+		end
+
+	reset
+			-- Reset counter to zero (do not use as an actual creation procedure).
+		do
+			name := ""
+			counter.set_item (0)
 		end
 
 feature -- Access

@@ -23,7 +23,7 @@ classes = [
   'V_LINKABLE',
   # 'V_LINKED_LIST',  
   'V_CELL_CURSOR',  
-  'V_LINKED_LIST_ITERATOR',    
+  # 'V_LINKED_LIST_ITERATOR',    
 ]
 
 outfile_name = 'base2.out'

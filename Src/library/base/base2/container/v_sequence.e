@@ -94,6 +94,7 @@ feature -- Search
 			is_wrapped: is_wrapped
 			modify_model (["observers"], Current)
 		do
+			check inv end
 			if not is_empty then
 				Result := index_of_from (v, lower)
 			else
@@ -128,12 +129,13 @@ feature -- Search
 			else
 				Result := it.target_index
 			end
-			check it.inv end
+			check inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty") end
  			check across it.target_index_sequence.domain as j all it.sequence [j.item] = map [lower_ + j.item - 1] end end
 			lemma_sequence_map (it.sequence, map, lower_, i - lower_ + 1, it.index_ - 1, v)
 			lemma_sequence_map (it.sequence, map, lower_, i - lower_ + 1, upper_ - lower_ + 1, v)
 
 			forget_iterator (it)
+			check inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty") end
 		ensure
 			definition_not_has: not map.image (create {MML_INTERVAL}.from_range (i, upper_)) [v] implies Result = upper_ + 1
 			definition_has: map.image (create {MML_INTERVAL}.from_range (i, upper_)) [v] implies
@@ -153,6 +155,7 @@ feature -- Iteration
 		do
 			check inv end
 			Result := at (lower)
+			check inv and Result.inv end
 		end
 
 	at_last: like at
@@ -166,10 +169,11 @@ feature -- Iteration
 		do
 			check inv end
 			Result := at (upper)
+			check inv and Result.inv end
 		ensure
 			is_wrapped: is_wrapped
 			result_fresh: Result.is_fresh
-			result_wrapped: Result.is_wrapped
+			result_wrapped: Result.is_wrapped and Result.inv
 			result_in_observers: observers = old observers & Result
 			target_definition: Result.target = Current
 			index_definition: Result.index_ = map.count

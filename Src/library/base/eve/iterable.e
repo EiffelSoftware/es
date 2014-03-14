@@ -23,7 +23,7 @@ feature -- Access
 		ensure
 			is_wrapped: is_wrapped
 			result_fresh: Result.is_fresh
-			result_wrapped: Result.is_wrapped
+			result_wrapped: Result.is_wrapped and Result.inv
 			result_in_observers: observers = old observers & Result
 		end
 

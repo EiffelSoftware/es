@@ -248,12 +248,6 @@ function {:inline true} global(h: HeapType): bool
   (forall o: ref :: {user_inv(h, o)} h[o, allocated] ==> inv(h, o)) // G1
 }
 
-// Global invariant with a more permissive trigger: much slower, so only used in public routines  
-function {:inline true} global_public(h: HeapType): bool
-{
-  (forall o: ref :: {is_wrapped(h, o)} h[o, allocated] ==> inv(h, o)) // G1
-}
-
 // Condition under which an update heap[current, f] := v is guaranteed to preserve the invariant of o.
 function guard<T>(heap: HeapType, current: ref, f: Field T, v: T, o: ref): bool;
 

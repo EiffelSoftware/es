@@ -24,7 +24,6 @@ feature -- Access
 		do
 			check inv end
 			Result := target.lower + index_ - 1
-			check target_index_sequence.domain [index_] end
 		end
 
 	target: V_SEQUENCE [G]
@@ -49,7 +48,7 @@ feature -- Cursor movement
 		end
 
 invariant
-	target_index_sequence_definition: across target_index_sequence.domain as i all target_index_sequence [i.item] = target.lower + i.item - 1 end
+	target_index_sequence_definition: across target_index_sequence.domain as i all target_index_sequence [i.item] = target.lower_ + i.item - 1 end
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

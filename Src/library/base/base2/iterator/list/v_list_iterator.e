@@ -30,6 +30,7 @@ feature -- Extension
 		ensure
 			target_sequence_effect: target.sequence ~ old target.sequence.extended_at (index_, v)
 			index_effect: index_ = old index_ + 1
+			target_wrapped: target.is_wrapped
 		end
 
 	extend_right (v: G)
@@ -42,6 +43,7 @@ feature -- Extension
 		deferred
 		ensure
 			target_sequence_effect: target.sequence ~ old target.sequence.extended_at (index_ + 1, v)
+			target_wrapped: target.is_wrapped
 		end
 
 	insert_left (other: V_ITERATOR [G])
@@ -53,12 +55,14 @@ feature -- Extension
 			different_target: target /= other.target
 			other_not_before: not other.before
 			modify_model (["index_", "sequence"], Current)
+			modify_model ("sequence", target)
 			modify_model ("index_", other)
 		deferred
 		ensure
 			taregt_sequence_effect: target.sequence ~ old (target.sequence.front (index_ - 1) + other.sequence.tail (other.index_) + target.sequence.tail (index_))
 			index_effect: index_ = old (index_ + other.sequence.tail (other.index_).count)
 			other_index_effect: other.index_ = other.sequence.count + 1
+			target_wrapped: target.is_wrapped
 		end
 
 	insert_right (other: V_ITERATOR [G])
@@ -70,12 +74,14 @@ feature -- Extension
 			different_target: target /= other.target
 			other_not_before: not other.before
 			modify_model (["index_", "sequence"], Current)
+			modify_model ("sequence", target)
 			modify_model ("index_", other)
 		deferred
 		ensure
 			target_sequence_effect: target.sequence ~ old (target.sequence.front (index_) + other.sequence.tail (other.index_) + target.sequence.tail (index_ + 1))
 			index_effect: index_ = old (index_ + other.sequence.tail (other.index_).count)
 			other_index_effect: other.index_ = other.sequence.count + 1
+			target_wrapped: target.is_wrapped
 		end
 
 feature -- Removal
@@ -91,6 +97,7 @@ feature -- Removal
 		deferred
 		ensure
 			target_sequence_effect: target.sequence ~ old target.sequence.removed_at (index_)
+			target_wrapped: target.is_wrapped
 		end
 
 	remove_left
@@ -104,6 +111,7 @@ feature -- Removal
 		ensure
 			target_sequence_effect: target.sequence ~ old target.sequence.removed_at (index_ - 1)
 			index_effect: index_ = old index_ - 1
+			target_wrapped: target.is_wrapped
 		end
 
 	remove_right
@@ -116,6 +124,7 @@ feature -- Removal
 		deferred
 		ensure
 			sequence_effect: sequence ~ old sequence.removed_at (index_ + 1)
+			target_wrapped: target.is_wrapped
 		end
 
 

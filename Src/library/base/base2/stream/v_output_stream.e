@@ -25,13 +25,16 @@ feature -- Replacement
 			not_off: not off
 			subjects_wrapped: across subjects as s all
 					s.item.is_wrapped and
-					across s.observers as o all o.item /= Current implies o.item.is_open end
+					across s.item.observers as o all o.item /= Current implies o.item.is_open end
 				end
 			modify_model (["off_"], Current)
 			modify (subjects)
 		deferred
 		ensure
-			subjects_wrapped: across subjects as s all s.item.is_wrapped end
+			subjects_wrapped: across subjects as s all
+					s.item.is_wrapped and
+					across s.item.observers as o all o.item /= Current implies o.item.is_open end
+				end
 		end
 
 	pipe (input: V_INPUT_STREAM [G])
@@ -41,17 +44,22 @@ feature -- Replacement
 		require
 			input_wrapped: input.is_wrapped
 			input_not_current: input /= Current
-			subjects_wrapped: across subjects as s all s.item.is_wrapped end
+			subjects_wrapped: across subjects as s all
+					s.item.is_wrapped and
+					across s.item.observers as o all o.item /= Current implies o.item.is_open end
+				end
 			modify (Current, subjects)
 			modify_model (["box"], input)
 		do
 			from
 			invariant
-				inv
-				is_wrapped
-				input.is_wrapped
+				is_wrapped and input.is_wrapped
+				inv and input.inv
 				subjects ~ subjects.old_
-				across subjects as s all s.item.is_wrapped end
+				subjects_wrapped: across subjects as s all
+					s.item.is_wrapped and
+					across s.item.observers as o all o.item /= Current implies o.item.is_open end
+				end
 				decreases ([])
 			until
 				off or input.off
@@ -71,7 +79,10 @@ feature -- Replacement
 			input_exists: input.is_wrapped
 			input_not_current: input /= Current
 			n_non_negative: n >= 0
-			subjects_wrapped: across subjects as s all s.item.is_wrapped end
+			subjects_wrapped: across subjects as s all
+					s.item.is_wrapped and
+					across s.item.observers as o all o.item /= Current implies o.item.is_open end
+				end
 			modify_model (["box"], input)
 			modify (Current, subjects)
 		local
@@ -80,11 +91,13 @@ feature -- Replacement
 			from
 				i := 1
 			invariant
-				inv
-				is_wrapped
-				input.is_wrapped
+				is_wrapped and input.is_wrapped
+				inv and input.inv
 				subjects ~ subjects.old_
-				across subjects as s all s.item.is_wrapped end
+				subjects_wrapped: across subjects as s all
+					s.item.is_wrapped and
+					across s.item.observers as o all o.item /= Current implies o.item.is_open end
+				end
 			until
 				i > n or off or input.off
 			loop

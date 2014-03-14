@@ -43,6 +43,7 @@ feature -- Replacement
 			modify_model ("box", Current)
 		do
 			active.put (v)
+			box := << v >>
 		ensure
 			box_effect: box.any_item = v
 		end
@@ -51,8 +52,6 @@ feature {V_CELL_CURSOR} -- Implementation
 
 	active: V_CELL [G]
 			-- Cell at current position.
-		deferred
-		end
 
 feature -- Specification
 
@@ -67,9 +66,11 @@ invariant
 	box_count_constraint: box.count <= 1
 	owns = [active]
 	box_defintion_empty: active = Void implies box.is_empty
-	box_defintion_non_empty: active /= Void implies box = (create {MML_SET [G]}.singleton (active.item))
+	box_defintion_non_empty: active /= Void implies box = << active.item >>
+	no_observers: observers = []
 
 note
+	explicit: observers, owns
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

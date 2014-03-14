@@ -13,11 +13,14 @@ feature -- Test
 			o1, o2: F_OOM_OBSERVER
 		do
 			create s.make (1)
+			check s.inv end
 			create o1.make (s)
 			create o2.make (s)
+			check s.inv and o1.inv and o2.inv end
 
 			s.update (5)
 
+			check o1.inv and o2.inv end
 			check o1_synch: o1.cache = 5 end
 			check o2_synch: o2.cache = 5 end
 		end
@@ -29,11 +32,14 @@ feature -- Test
 			o1, o2: F_OOM_OBSERVER_D
 		do
 			create s.make (1)
+			check s.inv end
 			create o1.make (s)
 			create o2.make (s)
+			check s.inv and o1.inv and o2.inv end
 
 			s.update (5)
 
+			check o1.inv and o2.inv end
 			check o1_synch: o1.cache = 5 end
 			check o2_synch: o2.cache = 5 end
 		end

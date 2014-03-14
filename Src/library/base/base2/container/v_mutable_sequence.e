@@ -90,17 +90,17 @@ feature -- Replacement
 			j: INTEGER
 			m: like map
 		do
+			check inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty") end
 			from
 				it := at (l)
 				j := l
 			invariant
+				is_wrapped and it.is_wrapped
+				inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty") and it.inv
 				j = lower_ + it.index_ - 1
 				l <= j and j <= u + 1
 				map.domain ~ map.domain.old_
 				across map.domain as i all map [i.item] = if l <= i.item and i.item < j then v else map.old_ [i.item] end end
-				it.is_wrapped
-				it.inv
-				is_wrapped
 				modify_model (["index_", "sequence"], it)
 				modify_model ("map", Current)
 			until
@@ -165,11 +165,18 @@ feature -- Replacement
 			j, n: INTEGER
 		do
 			n := other_last - other_first + 1
+			check inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty") end
+			check other.inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty") end
 			from
 				j := 1
 				other_it := other.at (other_first)
 				it := at (index)
 			invariant
+				is_wrapped and other.is_wrapped
+				it.is_wrapped and other_it.is_wrapped
+				inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty")
+				other.inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty")
+				it.inv
 				it.index_ = j + index - lower_
 				other_it.index_ = j + other_first - other.lower_
 				1 <= j and j <= n + 1
@@ -177,9 +184,6 @@ feature -- Replacement
 				across map.domain as i all map [i.item] = if index <= i.item and i.item < index + j - 1
 					then other.map [i.item - index + other_first]
 					else map.old_ [i.item] end end
-				it.is_wrapped and other_it.is_wrapped
-				is_wrapped and other.is_wrapped
-				it.inv
 				modify_model (["index_", "sequence"], it)
 				modify_model ("index_", other_it)
 				modify_model ("map", Current)
@@ -216,11 +220,11 @@ feature -- Replacement
 		local
 			j, k: INTEGER
 		do
-			check inv end
 			from
 				j := lower
 				k := upper
 			invariant
+				inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty")
 				map.domain ~ map.domain.old_
 				lower_ <= j and j <= k + 1 and k <= upper_
 				k = lower_ + upper_ - j

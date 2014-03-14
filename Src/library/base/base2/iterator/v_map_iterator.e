@@ -20,6 +20,7 @@ feature -- Access
 			-- Key at current position.
 		require
 			closed: closed
+			target_closed: target.closed
 			not_off: not off
 			reads (Current, target)
 		deferred

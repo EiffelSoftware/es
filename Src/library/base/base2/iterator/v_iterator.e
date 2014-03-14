@@ -150,6 +150,7 @@ feature -- Cursor movement
 		local
 			j: INTEGER
 		do
+			check inv_only ("index_constraint", "target_exists", "target_bag_constraint") end
 			if i = 0 then
 				go_before
 			elseif i = target.count + 1 then
@@ -161,10 +162,10 @@ feature -- Cursor movement
 					start
 					j := 1
 				invariant
+					is_wrapped
 					sequence.domain [i]
 					j_in_bounds: 1 <= j and j <= i
 					index_counter: index_ = j
-					is_wrapped
 				until
 					j = i
 				loop
@@ -278,7 +279,7 @@ invariant
 	target_bag_constraint: target.bag ~ sequence.to_bag
 	index_constraint: 0 <= index_ and index_ <= sequence.count + 1
 	box_definition_empty: not sequence.domain [index_] implies box.is_empty
-	box_definition_non_empty: sequence.domain [index_] implies box ~ create {MML_SET [G]}.singleton (sequence [index_])
+	box_definition_non_empty: sequence.domain [index_] implies box ~ << sequence [index_] >>
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

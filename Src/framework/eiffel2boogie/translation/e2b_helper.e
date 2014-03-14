@@ -35,6 +35,9 @@ feature -- Cache control
 		do
 			map_access_feature_cache.wipe_out
 			flat_model_cache.wipe_out
+			internal_counter.put (0)
+				-- Reset type varibale counter
+			(create {IV_VAR_TYPE}.reset).do_nothing
 		end
 
 feature -- General note helpers

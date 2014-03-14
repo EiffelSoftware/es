@@ -50,7 +50,7 @@ feature -- Replacement
 		require else
 			modify_model (["sequence", "index_"], Current)
 		do
-			check inv_only ("subjects_definition") end
+			check inv_only ("subjects_definition", "subjects_contraint") end
 			put (v)
 			forth
 		ensure then

@@ -231,13 +231,6 @@ feature -- Translation: Signature
 				l_post.set_free
 				current_boogie_procedure.add_contract (l_post)
 
-					-- Add stronger global invariant
-				if helper.is_public (current_feature) or a_for_creator then
-					create l_post.make (factory.function_call ("global_public", << factory.global_heap >>, types.bool))
-					l_post.set_free
-					current_boogie_procedure.add_contract (l_post)
-				end
-
 					-- Framing
 				across write_frame (a_for_creator) as i loop
 					current_boogie_procedure.add_contract (i.item)
