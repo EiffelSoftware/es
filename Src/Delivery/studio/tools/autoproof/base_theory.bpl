@@ -210,9 +210,10 @@ axiom (forall<T> h: HeapType, x: ref, o: ref, f: Field T :: { user_inv_readable(
   IsHeap(h) ==> user_inv_readable(h, x)[o, f] == (in_trans_owns(h, x, o) || h[x, subjects][o]));
   
 // Frame axiom
-axiom (forall h, h': HeapType, x: ref :: { user_inv(h', x), HeapSucc(h, h') } 
+axiom (forall h, h': HeapType, x: ref :: { user_inv(h, x), user_inv(h', x), HeapSucc(h, h') } 
   IsHeap(h) && IsHeap(h') && HeapSucc(h, h') &&
-  x != Void && h[x, allocated] && h'[x, allocated] &&   
+  x != Void && h[x, allocated] && h'[x, allocated] &&
+  is_open(h, x) && is_open(h', x) &&
   user_inv(h, x) && 
   (forall <T> o: ref, f: Field T :: h[o, allocated] ==> // every object's field
       h'[o, f] == h[o, f] ||                            // is unchanged
