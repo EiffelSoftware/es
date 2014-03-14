@@ -4363,6 +4363,8 @@ Src/web/support/esa_api/www/logoff.tpl -text
 Src/web/support/esa_api/www/navbar.tpl -text
 Src/web/support/esa_api/www/optional_enhancement_js.tpl -text
 Src/web/support/esa_api/www/optional_styling_css.tpl -text
+Src/web/support/esa_api/www/report_form.tpl -text
+Src/web/support/esa_api/www/report_form_confirm.tpl -text
 Src/web/support/esa_api/www/reports.tpl -text
 Src/web/support/esa_api/www/reports_detail.tpl -text
 Src/web/support/esa_api/www/user_reports.tpl -text
