@@ -82,7 +82,7 @@ feature -- Basic operations
 				l_constant.set_unique
 				boogie_universe.add_declaration (l_constant)
 
-				if a_type.is_frozen then
+				if a_type.base_class.is_frozen then
 					boogie_universe.add_declaration (create {IV_AXIOM}.make (
 						factory.function_call ("is_frozen", << factory.entity (l_boogie_type_name, types.type) >>, types.bool)))
 				end

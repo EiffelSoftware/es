@@ -23,51 +23,48 @@ feature -- Basic operations
 		local
 			l_attribute_name, l_old_name: STRING
 			l_class_type: CL_TYPE_A
-			l_type_prop, l_expr: IV_EXPRESSION
+			l_type_prop, l_expr, l_context_type: IV_EXPRESSION
 			l_forall: IV_FORALL
-			l_heap, l_o: IV_ENTITY
+			l_heap, l_o, l_f: IV_ENTITY
 			l_heap_access: IV_MAP_ACCESS
 			l_boogie_type: IV_TYPE
-			l_prev: like previous_versions
-			l_typed_sets: like helper.class_note_values
+			is_ghost: BOOLEAN
 		do
 			set_context (a_feature, a_context_type)
 			l_class_type := helper.class_type_in_context (current_feature.type, current_type.base_class, Void, current_type)
 			l_attribute_name := name_translator.boogie_procedure_for_feature (current_feature, current_type)
 			l_boogie_type := types.for_class_type (l_class_type)
+			l_context_type := factory.type_value (current_type)
+			l_f := factory.entity (l_attribute_name, types.field (l_boogie_type))
+			is_ghost := helper.is_ghost (current_feature)
 
-			l_prev := previous_versions
-			if l_prev.is_empty then
-					-- No previous versions:
-					-- Add unique field declaration
-				boogie_universe.add_declaration (
-					create {IV_CONSTANT}.make_unique (
-						l_attribute_name,
-						types.field (l_boogie_type)))
+				-- Add field declaration
+			boogie_universe.add_declaration (create {IV_CONSTANT}.make (l_f.name, l_f.type))
 
-					-- Mark field as a ghost or non-ghost
-				l_expr := factory.function_call ("IsGhostField", << factory.entity (l_attribute_name, types.field (l_boogie_type)) >>, types.bool)
-				if helper.is_ghost (current_feature) then
-					boogie_universe.add_declaration (create {IV_AXIOM}.make (l_expr))
-				else
-					boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.not_ (l_expr)))
+				-- Add field ID
+			boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.equal (
+					factory.function_call ("FieldId", << l_f, l_context_type >>, types.int),
+					factory.int_value (current_feature.feature_id))))
+
+
+				-- Add equivalences
+			across previous_versions as prev loop
+					-- Check that properties match
+				if helper.is_ghost (prev.item.feat) /= is_ghost then
+					helper.add_semantic_error (current_feature, messages.invalid_ghost_status (prev.item.feat.feature_name_32, prev.item.typ.base_class.name_in_upper), -1)
 				end
+
+				l_old_name := name_translator.boogie_procedure_for_feature (prev.item.feat, prev.item.typ)
+				translation_pool.add_referenced_feature (prev.item.feat, prev.item.typ)
+				boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.equal (l_f, create {IV_ENTITY}.make (l_old_name, l_f.type))))
+			end
+
+				-- Mark field as a ghost or non-ghost
+			l_expr := factory.function_call ("IsGhostField", << l_f >>, types.bool)
+			if is_ghost then
+				boogie_universe.add_declaration (create {IV_AXIOM}.make (l_expr))
 			else
-					-- Inherited or redefined:
-					-- Add field declaration
-				boogie_universe.add_declaration (
-					create {IV_CONSTANT}.make (
-						l_attribute_name,
-						types.field (l_boogie_type)))
-
-					-- Add equivalences
-				across l_prev as prev loop
-					l_old_name := name_translator.boogie_procedure_for_feature (prev.item.feat, prev.item.typ)
-					translation_pool.add_referenced_feature (prev.item.feat, prev.item.typ)
-					boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.equal (
-						create {IV_ENTITY}.make (l_attribute_name, l_boogie_type),
-						create {IV_ENTITY}.make (l_old_name, l_boogie_type))))
-				end
+				boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.not_ (l_expr)))
 			end
 
 				-- Add type properties
@@ -78,7 +75,7 @@ feature -- Basic operations
 			if not l_type_prop.is_true then
 				l_type_prop := factory.implies_ (factory.and_ (
 						factory.is_heap (l_heap),
-						factory.function_call ("attached", << l_heap, l_o, factory.type_value (current_type)>>, types.bool)),
+						factory.function_call ("attached", << l_heap, l_o, l_context_type >>, types.bool)),
 					l_type_prop)
 				create l_forall.make (l_type_prop)
 				l_forall.add_bound_variable (l_heap)
@@ -163,7 +160,7 @@ feature -- Basic operations
 feature {NONE} -- Implementation
 
 	previous_versions: LINKED_LIST [TUPLE [feat: FEATURE_I; typ: CL_TYPE_A]]
-			-- Versions of `current_feature' from ancestors of `current_type' if inherited or redefined; Void if it is the original definition.
+			-- Versions of `current_feature' from ancestors of `current_type' if inherited or redefined.
 		local
 			l_written_type: CL_TYPE_A
 			l_written_feature: FEATURE_I

@@ -29,6 +29,10 @@ feature -- Measurement
 
 	index_: INTEGER
 			-- Current position.
+		note
+			status: ghost
+		attribute
+		end
 
 feature -- Replacement
 

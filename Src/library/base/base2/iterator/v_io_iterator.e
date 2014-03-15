@@ -22,6 +22,7 @@ feature -- Measurement
 	index_: INTEGER
 			-- Current position.
 		note
+			status: ghost
 			replaces: off_
 		attribute
 		end

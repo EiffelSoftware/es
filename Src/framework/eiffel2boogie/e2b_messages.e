@@ -87,6 +87,9 @@ feature -- Validity error messages
 	guard_feature_arg2: STRING_32
 		do Result := "The second argument of an update guard has to be of type ANY." end
 
+	invalid_ghost_status (a_old_fname, a_old_cname: STRING): STRING_32
+		do Result := locale.formatted_string ("Ghost status does not match previous version '$1' from class '$2'.", a_old_fname, a_old_cname) end
+
 feature -- Verification error messages
 
 	check_violated: STRING_32

@@ -13,6 +13,7 @@ function ref_rank_leq(r1, r2: ref): bool
 
 type Field _; // Type of a field (with open subtype)
 function IsGhostField<alpha>(field: Field alpha): bool; // Is this field a ghost field?
+function FieldId<alpha>(field: Field alpha, t: Type): int; // ID of field within t; used to express that all fields of the same class are distinct.
 
 type HeapType = <alpha>[ref, Field alpha]alpha; // Type of a heap (with generic field subtype and generic content type)
 const unique allocated: Field bool; // Ghost field for allocation status of objects
@@ -71,6 +72,13 @@ const unique owner: Field ref; // Ghost field for owner of an object.
 const unique owns: Field (Set ref); // Ghost field for owns set of an object.
 const unique observers: Field (Set ref); // Ghost field for observers set of an object.
 const unique subjects: Field (Set ref); // Ghost field for subjects set of an object.
+
+// Field IDs for built-in attributes
+axiom (forall t: Type :: FieldId(closed, t) == -1);
+axiom (forall t: Type :: FieldId(owner, t) == -2);
+axiom (forall t: Type :: FieldId(owns, t) == -3);
+axiom (forall t: Type :: FieldId(observers, t) == -4);
+axiom (forall t: Type :: FieldId(subjects, t) == -5);
 
 // Analogue of `detachable_attribute' and `set_detachable_attribute' for built-in attributes:
 axiom (forall heap: HeapType, o: ref :: { heap[o, owner] } IsHeap(heap) && o != Void && heap[o, allocated] ==> heap[heap[o, owner], allocated]);
