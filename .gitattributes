@@ -4344,6 +4344,7 @@ Src/web/support/esa_api/www/400.tpl -text
 Src/web/support/esa_api/www/401.tpl -text
 Src/web/support/esa_api/www/404.tpl -text
 Src/web/support/esa_api/www/406.tpl -text
+Src/web/support/esa_api/www/500.tpl -text
 Src/web/support/esa_api/www/auth.js -text
 Src/web/support/esa_api/www/cj_items.tpl -text
 Src/web/support/esa_api/www/cj_reports.tpl -text
