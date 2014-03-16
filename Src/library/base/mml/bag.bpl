@@ -22,6 +22,7 @@ axiom (forall<T> o: T :: { Bag#Empty()[o] } Bag#Empty()[o] == 0);
 axiom (forall<T> s: Bag T :: { Bag#Card(s) }
   (Bag#Card(s) == 0 <==> s == Bag#Empty()) &&
   (Bag#Card(s) != 0 ==> (exists x: T :: 0 < s[x])));
+axiom (forall<T> f: Field (Bag T) :: { Default(f) } Default(f) == Bag#Empty());  
 
 // Singleton bag
 function Bag#Singleton<T>(T): Bag T;

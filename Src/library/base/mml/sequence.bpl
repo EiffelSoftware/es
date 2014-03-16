@@ -12,6 +12,7 @@ axiom (forall<T> s: Seq T :: { Seq#Length(s) } 0 <= Seq#Length(s));
 function Seq#Empty<T>(): Seq T;
 axiom (forall<T> :: Seq#Length(Seq#Empty(): Seq T) == 0);
 axiom (forall<T> s: Seq T :: { Seq#Length(s) } Seq#Length(s) == 0 ==> s == Seq#Empty());
+axiom (forall<T> f: Field (Seq T) :: { Default(f) } Default(f) == Seq#Empty());
 
 // Singleton sequence
 function Seq#Singleton<T>(T): Seq T;
@@ -25,9 +26,12 @@ axiom (forall<T> s: Seq T, x: T :: { Seq#Has(s,x) }
 axiom (forall<T> s: Seq T, i: int :: { Seq#Item(s,i) }
   1 <= i && i <= Seq#Length(s) ==>
     Seq#Has(s, Seq#Item(s, i)));    
-axiom (forall x: ref ::
+axiom (forall<T> x: T ::
   { Seq#Has(Seq#Empty(), x) }
   !Seq#Has(Seq#Empty(), x));
+axiom (forall<T> x, y: T ::
+  { Seq#Has(Seq#Singleton(y), x) }
+  Seq#Has(Seq#Singleton(y), x) <==> x == y);  
 axiom (forall<T> s0: Seq T, s1: Seq T, x: T ::
   { Seq#Has(Seq#Concat(s0, s1), x) }
   Seq#Has(Seq#Concat(s0, s1), x) <==>
@@ -158,10 +162,14 @@ function {: inline } Seq#ExtendedAt<T>(s: Seq T, i: int, val: T): Seq T
 }
 
 // Sequence prepended with x at the beginning
-function {: inline } Seq#Prepended<T>(s: Seq T, val: T): Seq T
+function Seq#Prepended<T>(s: Seq T, val: T): Seq T
 {
   Seq#Concat (Seq#Singleton(val), s)
 }
+axiom (forall<T> s: Seq T, val: T, i: int :: { Seq#Item(Seq#Prepended(s, val), i) }
+  2 <= i && i <= Seq#Length(s) + 1 ==> Seq#Item(Seq#Prepended(s, val), i) == Seq#Item(s, i - 1));
+axiom (forall<T> s: Seq T, val: T :: { Seq#Item(Seq#Prepended(s, val), 1) }
+  Seq#Item(Seq#Prepended(s, val), 1) == val);  
   
 // Concatenation of two sequences
 function Seq#Concat<T>(Seq T, Seq T): Seq T;

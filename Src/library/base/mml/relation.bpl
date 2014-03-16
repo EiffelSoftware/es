@@ -27,6 +27,7 @@ axiom (forall<U, V> r: Rel U V :: { Rel#Domain(r) }
   (Set#IsEmpty(Rel#Domain(r)) <==> r == Rel#Empty()));
 axiom (forall<U, V> r: Rel U V :: { Rel#Range(r) }
   (Set#IsEmpty(Rel#Range(r)) <==> r == Rel#Empty()));  
+axiom (forall<U, V> f: Field (Rel U V) :: { Default(f) } Default(f) == Rel#Empty());    
 
 // Singleton relation  
 function Rel#Singleton<U, V>(U, V): Rel U V;

@@ -30,6 +30,7 @@ axiom (forall<U, V> u: U ::
   { Map#Domain(Map#Empty(): Map U V)[u] }
    !Map#Domain(Map#Empty(): Map U V)[u]);
 axiom (forall<U, V> m: Map U V :: { Map#Card(m) } Map#Card(m) == 0 <==> m == Map#Empty());
+axiom (forall<U, V> f: Field (Map U V) :: { Default(f) } Default(f) == Map#Empty());  
 
 // Singleton map
 function {: inline } Map#Singleton<U, V>(k: U, x: V): Map U V

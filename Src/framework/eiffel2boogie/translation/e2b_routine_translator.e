@@ -154,64 +154,27 @@ feature -- Translation: Signature
 		end
 
 	add_field_initialization
-			-- Add free preconditions to `current_boogie_procedure' that all attributes are initialized to default values
+			-- Add precondition to `current_boogie_procedure' that all attributes except "allocated" are initialized to default values.
 		local
 			l_mapping: E2B_ENTITY_MAPPING
+			l_t: IV_VAR_TYPE
+			l_f: IV_ENTITY
+			l_forall: IV_FORALL
 			l_pre: IV_PRECONDITION
-			l_attr_name: STRING
-			l_attribute: FEATURE_I
-			l_boogie_type: IV_TYPE
 		do
 			create l_mapping.make
-			from
-				current_type.base_class.feature_table.start
-			until
-				current_type.base_class.feature_table.after
-			loop
-				l_attribute := current_type.base_class.feature_table.item_for_iteration
-				if l_attribute.is_attribute then
-					l_boogie_type := types.for_class_type (helper.class_type_in_context (l_attribute.type, l_attribute.written_class, Void, current_type))
-					translation_pool.add_referenced_feature (l_attribute, current_type)
-					l_attr_name := name_translator.boogie_procedure_for_feature (l_attribute, current_type)
-					create l_pre.make (factory.equal (factory.heap_current_access (l_mapping, l_attr_name, l_boogie_type), l_boogie_type.default_value))
-					l_pre.set_free
-					current_boogie_procedure.add_contract (l_pre)
-				end
-				current_type.base_class.feature_table.forth
-			end
-				-- Add ownership-realted built-in attribute
-			if options.is_ownership_enabled then
-				-- closed
-				create l_pre.make (factory.function_call ("is_open", << factory.global_heap, factory.std_current >>, types.bool))
-				l_pre.set_free
-				current_boogie_procedure.add_contract (l_pre)
-
-				-- owner
-				create l_pre.make (factory.equal (factory.heap_current_access (l_mapping, "owner", types.ref), factory.void_))
-				l_pre.set_free
-				current_boogie_procedure.add_contract (l_pre)
-
-				-- owns
-				create l_pre.make (factory.equal (
-					factory.heap_current_access (l_mapping, "owns", types.set (types.ref)),
-					factory.function_call ("Set#Empty", << >>, types.set (types.ref))))
-				l_pre.set_free
-				current_boogie_procedure.add_contract (l_pre)
-
-				-- subjects
-				create l_pre.make (factory.equal (
-					factory.heap_current_access (l_mapping, "subjects", types.set (types.ref)),
-					factory.function_call ("Set#Empty", << >>, types.set (types.ref))))
-				l_pre.set_free
-				current_boogie_procedure.add_contract (l_pre)
-
-				-- observers
-				create l_pre.make (factory.equal (
-					factory.heap_current_access (l_mapping, "observers", types.set (types.ref)),
-					factory.function_call ("Set#Empty", << >>, types.set (types.ref))))
-				l_pre.set_free
-				current_boogie_procedure.add_contract (l_pre)
-			end
+			create l_t.make_fresh
+			create l_f.make ("$f", types.field (l_t))
+			create l_forall.make (factory.implies_ (
+				factory.not_equal (l_f, factory.entity ("allocated", types.field (types.bool))),
+				factory.equal (
+					factory.heap_current_access (l_mapping, l_f.name, l_t),
+					factory.function_call ("Default", << l_f >>, l_t))
+				))
+			l_forall.add_type_variable (l_t.name)
+			l_forall.add_bound_variable (l_f)
+			create l_pre.make (l_forall)
+			current_boogie_procedure.add_contract (l_pre)
 		end
 
 	add_ownership_contracts (a_for_creator: BOOLEAN; a_modifies_heap: BOOLEAN)

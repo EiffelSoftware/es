@@ -14,6 +14,7 @@ axiom (forall<T> o: T :: { Set#Empty()[o] } !Set#Empty()[o]);
 axiom (forall<T> s: Set T :: { Set#Card(s) }
   (Set#Card(s) == 0 <==> s == Set#Empty()) &&
   (Set#Card(s) != 0 ==> (exists x: T :: s[x])));
+axiom (forall<T> f: Field (Set T) :: { Default(f) } Default(f) == Set#Empty());  
 
 // Singleton set  
 function Set#Singleton<T>(T): Set T;

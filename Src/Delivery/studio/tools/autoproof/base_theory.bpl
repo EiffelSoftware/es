@@ -15,6 +15,12 @@ type Field _; // Type of a field (with open subtype)
 function IsGhostField<alpha>(field: Field alpha): bool; // Is this field a ghost field?
 function FieldId<alpha>(field: Field alpha, t: Type): int; // ID of field within t; used to express that all fields of the same class are distinct.
 
+// Default field value
+function Default<alpha>(Field alpha): alpha;
+axiom (forall f: Field bool :: !Default(f));
+axiom (forall f: Field int :: Default(f) == 0);
+axiom (forall f: Field ref :: Default(f) == Void);
+
 type HeapType = <alpha>[ref, Field alpha]alpha; // Type of a heap (with generic field subtype and generic content type)
 const unique allocated: Field bool; // Ghost field for allocation status of objects
 
@@ -284,11 +290,7 @@ procedure allocate(t: Type) returns (result: ref);
   ensures Heap[result, allocated]; // AL2
   ensures result != Void;
   ensures type_of(result) == t;
-  ensures is_open(Heap, result); // AL3
-  ensures is_free(Heap, result); // AL4
-  ensures Set#Equal(Heap[result, owns], Set#Empty());
-  ensures Set#Equal(Heap[result, observers], Set#Empty());
-  ensures Set#Equal(Heap[result, subjects], Set#Empty());
+  ensures (forall<T> f: Field T :: f != allocated ==> Heap[result, f] == Default(f));
   ensures has_whole_object(writable, result);
   ensures (forall <T> o: ref, f: Field T :: o != result ==> Heap[o, f] == old(Heap[o, f]));
   free ensures HeapSucc(old(Heap), Heap);

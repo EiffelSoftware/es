@@ -79,7 +79,6 @@ feature -- Specification
 
 
 invariant
-	bag_domain_definition: bag.domain ~ map.range
 	bag_definition: bag ~ map.to_bag
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
