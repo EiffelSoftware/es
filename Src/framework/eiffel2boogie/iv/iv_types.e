@@ -53,6 +53,16 @@ feature -- Access: default types
 			create {IV_USER_TYPE} Result.make ("Field", << a_content_type >>)
 		end
 
+	field_content_type (a_field_type: IV_TYPE): IV_TYPE
+			-- Content type of `a_field_type'.
+		require
+			is_field_type: attached {IV_USER_TYPE} a_field_type as user_type and then user_type.constructor ~ "Field"
+		do
+			check attached {IV_USER_TYPE} a_field_type as user_type then
+				Result := user_type.parameters [1]
+			end
+		end
+
 	heap: IV_TYPE
 			-- Heap type.
 		local

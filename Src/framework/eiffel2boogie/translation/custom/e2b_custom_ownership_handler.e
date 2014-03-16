@@ -40,7 +40,7 @@ feature -- Basic operations
 			if translation_mapping.builtin_any_functions.has (l_name) then
 				a_translator.process_builtin_function_call (a_feature, a_parameters, l_name)
 			elseif translation_mapping.builtin_any_procedures.has (l_name) then
-				set_static_ghost_sets (a_translator, l_name)
+				set_implicit_model_queries (a_translator, l_name)
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
 			elseif translation_mapping.ghost_access.has (l_name) then
 				l_type := translation_mapping.ghost_access_type (l_name)
@@ -254,19 +254,19 @@ feature -- Basic operations
 			end
 		end
 
-	set_static_ghost_sets (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR; a_feature_name: STRING)
+	set_implicit_model_queries (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR; a_feature_name: STRING)
 			-- If processing a call to `Current.wrap',
-			-- generate guarded assignments to statically known built-in ghost fields and store them in the side effect of `a_translator'.
+			-- generate guarded assignments to implicit model queries and store them in the side effect of `a_translator'.
 		do
 			if a_feature_name ~ "wrap" and a_translator.current_target.same_expression (a_translator.entity_mapping.current_expression) then
-				set_static_ghost_set (a_translator, "owns")
-				set_static_ghost_set (a_translator, "subjects")
-				set_static_ghost_set (a_translator, "observers")
+				across helper.flat_model_queries (a_translator.current_target_type.base_class) as m loop
+					set_implicit_model_query (a_translator, m.item)
+				end
 			end
 		end
 
-	set_static_ghost_set (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR; a_field_name: STRING)
-			-- If the definition of `a_field_name' in `current_target_type' is statically known,
+	set_implicit_model_query (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR; a_attr: FEATURE_I)
+			-- If the definition of `a_attr' in `current_target_type' is statically known,
 			-- generate a guarded update and store it in the side effect of `a_translator'.
 		local
 			l_function: IV_FUNCTION
@@ -276,16 +276,17 @@ feature -- Basic operations
 		do
 				-- Get definition of `a_field_name' for `current_target_type';
 				-- if it exists, generate a guarded assignment.
-			l_function := boogie_universe.function_named (name_translator.boogie_function_for_ghost_definition (a_translator.current_target_type, a_field_name))
+			l_field := helper.field_from_attribute (a_attr, a_translator.current_target_type)
+			l_function := boogie_universe.function_named (
+				name_translator.boogie_function_for_ghost_definition (a_translator.current_target_type, l_field.name))
 			if attached l_function then
-				create l_field.make (a_field_name, types.field (types.set (types.ref)))
 				create l_pcall.make ("update_heap")
 				l_pcall.add_argument (a_translator.entity_mapping.current_expression)
 				l_pcall.add_argument (l_field)
 				l_pcall.add_argument (factory.function_call (l_function.name,
 					<< a_translator.entity_mapping.heap, a_translator.entity_mapping.current_expression >>,
-					types.set (types.ref)))
-				l_pcall.node_info.set_attribute ("default", a_field_name)
+					types.field_content_type (l_field.type)))
+				l_pcall.node_info.set_attribute ("default", a_attr.feature_name_32)
 				l_pcall.node_info.set_line (a_translator.context_line_number)
 				create l_if.make_if_then (factory.frame_access (a_translator.context_writable, a_translator.current_target, l_field),
 					factory.singleton_block (l_pcall))

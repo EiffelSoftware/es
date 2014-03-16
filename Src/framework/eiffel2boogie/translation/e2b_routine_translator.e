@@ -549,7 +549,7 @@ feature -- Translation: Implementation
 						create l_expr_translator.make
 						l_expr_translator.set_context (a_feature, a_type)
 						l_expr_translator.set_context_line_number (a_feature.body.end_location.line)
-						l_ownership_handler.set_static_ghost_sets (l_expr_translator, "wrap")
+						l_ownership_handler.set_implicit_model_queries (l_expr_translator, "wrap")
 						l_implementation.body.statements.append (l_expr_translator.side_effect)
 
 						l_call := factory.procedure_call ("wrap", << factory.std_current >>)

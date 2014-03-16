@@ -189,7 +189,7 @@ feature -- Access
 		end
 
 	boogie_function_for_ghost_definition (a_type: CL_TYPE_A; a_name: STRING): STRING
-			-- Name of the boogie function that encodes the static definition of the built-in ghost set `a_name' of type `a_type'.
+			-- Name of the boogie function that encodes the static definition of a ghost field `a_name' of type `a_type'.
 		require
 			a_type: attached a_type
 			a_name: attached a_name

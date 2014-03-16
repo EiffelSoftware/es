@@ -296,6 +296,7 @@ feature {NONE} -- Implementation
 			l_list: BYTE_LIST [BYTE_NODE]
 			l_assert: ASSERT_B
 			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
+			l_found: BOOLEAN
 		do
 			if inv_byte_server.has (a_class.class_id) then
 				helper.set_up_byte_context (a_class.invariant_feature, helper.class_type_in_context (a_class.actual_type, a_class, a_class.invariant_feature, type))
@@ -319,18 +320,24 @@ feature {NONE} -- Implementation
 						l_translator.set_context_line_number (l_assert.line_number)
 						l_translator.set_context_tag (l_assert.tag)
 						l_translator.set_context_readable (factory.function_call ("user_inv_readable", << factory.global_heap, factory.std_current >>, types.frame))
---						l_translator.set_restricted_context_readable (factory.function_call ("user_inv_function_readable", << factory.global_heap, factory.std_current >>, types.frame))
 						l_assert.process (l_translator)
 						last_safety_checks.append (l_translator.side_effect)
 						last_safety_checks.extend (create {IV_ASSERT}.make_assume (l_translator.last_expression))
 						last_clauses.extend (l_translator.last_expression)
 							-- If ownership is enabled and we are processing the full invariant,
-							-- check if the invariant clause defines one of the built-in ghost sets
+							-- check if the invariant clause defines one of the model queries
 							-- and generate correspoding functions
 						if options.is_ownership_enabled and a_included = Void and a_excluded = Void then
-							generate_ghost_set_definition (l_translator.last_expression, "owns")
-							generate_ghost_set_definition (l_translator.last_expression, "subjects")
-							generate_ghost_set_definition (l_translator.last_expression, "observers")
+							l_found := False
+							across
+								helper.flat_model_queries (type.base_class) as m
+							until
+								l_found
+							loop
+								if helper.is_ghost (m.item) and m.item.feature_name_32 /~ "closed" and m.item.feature_name_32 /~ "owner" then
+									l_found := generate_model_query_definition (l_translator.last_expression, m.item)
+								end
+							end
 						end
 					end
 					l_assert.process (builtin_collector)
@@ -378,35 +385,51 @@ feature {NONE} -- Implementation
 			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
 		end
 
-	generate_ghost_set_definition (a_expr: IV_EXPRESSION; a_name: STRING)
-			-- If `a_expr' has the form `a_name = def', create a Boogie function that defined `a_name' for `type' as `def'.
-			-- (Only accespting definitions of this form to avoid cycles).
+	generate_model_query_definition (a_expr: IV_EXPRESSION; a_attr: FEATURE_I): BOOLEAN
+			-- If `a_expr' has the form `a_name = def', create a Boogie function that defines `a_name' for `type' as `def'.
+			-- (Only accepting definitions of this form to avoid cycles).
 		local
-			l_current, l_heap: IV_ENTITY
+			l_current, l_heap, l_field: IV_ENTITY
 			l_def: IV_EXPRESSION
 			l_function: IV_FUNCTION
 		do
 			create l_current.make ("current", types.ref)
 			create l_heap.make ("heap", types.heap)
 
-			l_def := definition_of (a_expr, l_heap, l_current, a_name)
-			if attached l_def and not helper.is_class_explicit (type.base_class, a_name) then
-				create l_function.make (name_translator.boogie_function_for_ghost_definition (type, a_name), types.set (types.ref))
+			l_def := definition_of (a_expr, l_heap, l_current, a_attr)
+			if attached l_def and not helper.is_class_explicit (type.base_class, a_attr.feature_name_32) then
+				l_field := helper.field_from_attribute (a_attr, type)
+				create l_function.make (name_translator.boogie_function_for_ghost_definition (type, l_field.name), l_def.type)
 				if boogie_universe.function_named (l_function.name) = Void then
 					l_function.add_argument (l_heap.name, l_heap.type)
 					l_function.add_argument (l_current.name, l_current.type)
 					l_function.set_body (l_def)
 					boogie_universe.add_declaration (l_function)
 				end
+				Result := True
 			end
 		end
 
-	definition_of (a_expr: IV_EXPRESSION; a_heap, a_current: IV_ENTITY; a_name: STRING): detachable IV_EXPRESSION
+	definition_of (a_expr: IV_EXPRESSION; a_heap, a_current: IV_ENTITY; a_attr: FEATURE_I): detachable IV_EXPRESSION
 			-- If `a_expr' has the form `a_name = def' return `def', otherwise `Void'.
+		local
+			l_type: CL_TYPE_A
+			l_field: IV_ENTITY
+			l_eq: STRING
 		do
-			if attached {IV_FUNCTION_CALL} a_expr as fcall and then fcall.name ~ "Set#Equal" then
-				if fcall.arguments [1].same_expression (factory.heap_access (a_heap, a_current, a_name, types.set (types.ref))) then
+			l_type := helper.class_type_in_context (a_attr.type, type.base_class, type.base_class.invariant_feature, type)
+			l_field := helper.field_from_attribute (a_attr, type)
+			if helper.is_class_logical (l_type.base_class) then
+				l_eq := helper.function_for_logical (l_type.base_class.feature_named_32 ("is_equal"))
+				if attached {IV_FUNCTION_CALL} a_expr as fcall and then
+					fcall.name ~ l_eq and then
+					fcall.arguments [1].same_expression (factory.heap_access (a_heap, a_current, l_field.name, types.field_content_type (l_field.type))) then
 					Result := fcall.arguments [2]
+				end
+			else
+				if attached {IV_BINARY_OPERATION} a_expr as binop and then
+					binop.left.same_expression (factory.heap_access (a_heap, a_current, l_field.name, types.field_content_type (l_field.type))) then
+					Result := binop.right
 				end
 			end
 		end

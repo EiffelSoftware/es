@@ -49,8 +49,6 @@ feature -- Element change
 	push (v: G)
 		do
 			list.extend_back (v)
-			sequence := list.sequence
-			bag := sequence.to_bag
 		ensure
 			sequence_effect: sequence = old sequence & v
 		end
@@ -60,8 +58,6 @@ feature -- Element change
 			not_empty: not is_empty
 		do
 			list.remove_back
-			sequence := list.sequence
-			bag := sequence.to_bag
 		ensure
 			sequence_effect: sequence = old sequence.but_last
 		end
@@ -80,8 +76,6 @@ feature -- Element change
 			variant
 				list.count
 			end
-			sequence := {MML_SEQUENCE [G]}.empty_sequence
-			bag := {MML_BAG [G]}.empty_bag
 		end
 
 feature {NONE} -- Implementation
