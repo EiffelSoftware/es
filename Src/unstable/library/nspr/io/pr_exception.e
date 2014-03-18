@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PR_EXCEPTION}."
-	author: ""
+	description: "{PR_EXCEPTION} wraps NSPR errors in an exception."
+	author: "Mischael Schill"
 	date: "$Date$"
 	revision: "$Revision$"
 

@@ -1,6 +1,6 @@
 note
 	description: "{PR_CONSTANTS} defines some common NSPR constants."
-	author: ""
+	author: "Mischael Schill"
 	date: "$Date$"
 	revision: "$Revision$"
 

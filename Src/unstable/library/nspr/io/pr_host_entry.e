@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PR_HOST_ENTRY}."
-	author: ""
+	description: "{PR_HOST_ENTRY} represents a host entry."
+	author: "Mischael Schill"
 	date: "$Date$"
 	revision: "$Revision$"
 

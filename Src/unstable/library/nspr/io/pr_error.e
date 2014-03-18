@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PR_ERROR}."
-	author: ""
+	description: "{PR_ERROR} wraps the NSPR error handling."
+	author: "Mischael Schill"
 	date: "$Date$"
 	revision: "$Revision$"
 

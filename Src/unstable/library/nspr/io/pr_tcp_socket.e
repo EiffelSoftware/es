@@ -473,9 +473,9 @@ feature -- Output
 			end
 
 			if l_amount = -1 then
+				bytes_sent := 0
 				create l_error.make
 				if l_error.is_timeout then
-					bytes_sent := 0
 					was_timeout := True
 				else
 					error := l_error

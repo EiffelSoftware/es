@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PR_ERROR_C}."
-	author: ""
+	description: "{PR_ERROR_C} interfaces with the NSPR error handling."
+	author: "Mischael Schill"
 	date: "$Date$"
 	revision: "$Revision$"
 
