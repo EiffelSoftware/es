@@ -4233,6 +4233,11 @@ Src/tools/iron/delivery/resources/node/template/html/package-version-view.tpl -t
 Src/tools/iron/delivery/resources/node/template/html/page.tpl -text
 Src/tools/iron/doc/iron.html -text
 Src/tools/iron/server/license.lic -text
+Src/tools/iron/testing/cases/lib/dep/package.iron -text
+Src/tools/iron/testing/cases/lib/dummy/package.iron -text
+Src/tools/iron/testing/cases/lib/fake/package.iron -text
+Src/tools/iron/testing/cases/lib/sub/package.iron -text
+Src/tools/iron/testing/cases/lib/unicode/sub/package.iron -text
 Src/tools/metaconfig/README.txt -text
 Src/tools/parse_benchmark/parse_benchmark.lic -text
 Src/tools/pmsn/pmsn.lic -text
