@@ -4375,7 +4375,9 @@ Src/web/support/esa_api/www/report_form.tpl -text
 Src/web/support/esa_api/www/report_form_confirm.tpl -text
 Src/web/support/esa_api/www/reports.tpl -text
 Src/web/support/esa_api/www/reports_detail.tpl -text
+Src/web/support/esa_api/www/responsible_reports.tpl -text
 Src/web/support/esa_api/www/user_reports.tpl -text
+Src/web/support/esa_api/www/user_responsible_reports.tpl -text
 Src/web/support/esa_db/scripts/AddUser2.sql -text
 Src/web/support/esa_db/scripts/GetProblemReportsGuest.sql -text
 Src/web/support/esa_db/scripts/GetProblemReportsRowCountGuest.sql -text
