@@ -73,8 +73,8 @@ feature -- Execution (declared in EWB_CMD)
 				end
 			end
 
-			output_window.add ("%NEiffel Code Analysis%N")
-			output_window.add ("--------------------%N")
+			output_window.add ("%NInspector Eiffel%N")
+			output_window.add ("----------------%N")
 
 			if restore_preferences then
 				l_code_analyzer.preferences.restore_defaults
@@ -143,7 +143,7 @@ feature -- Execution (declared in EWB_CMD)
 
 feature -- Info (declared in EWB_CMD)
 
-	name: STRING = "Code Analysis"
+	name: STRING = "Inspector Eiffel"
 			-- Name of this command-line tool.
 
 	help_message: STRING_GENERAL
