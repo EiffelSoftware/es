@@ -45,7 +45,7 @@ feature {NONE} -- Factory
 
 feature {NONE} -- Internationalization
 
-	t_title: STRING = "Code Analysis"
+	t_title: STRING = "Inspector Eiffel"
 			-- The title of this tool.
 
 ;note

@@ -717,7 +717,7 @@ feature {NONE} -- Exception Info
 
 
 	raise_default_exception_dialog (a_empty_dialog: EV_DIALOG; an_exception: EXCEPTION)
-			-- Raise the exception dialog
+			-- Raises the exception dialog `a_empty_dialog' for `an_exception'.
 		require
 			a_empty_dialog_valid: a_empty_dialog /= Void and then not a_empty_dialog.is_destroyed
 		local
@@ -747,7 +747,7 @@ feature {NONE} -- Exception Info
 			if l_exception_string /= Void then
 				l_label.set_text (l_exception_string)
 			else
-				l_label.set_text ("No trace available.")
+				l_label.set_text (ca_messages.no_trace)
 			end
 			create l_vbox
 			create l_error_box
@@ -758,7 +758,7 @@ feature {NONE} -- Exception Info
 			l_error_box.first.set_minimum_size (32, 32)
 			create l_error_label
 			l_error_label.align_text_left
-			l_error_label.set_text ("The following exception has occurred during code analysis:")
+			l_error_label.set_text (ca_messages.the_following_exception)
 			l_error_box.extend (l_error_label)
 			l_vbox.extend (l_error_box)
 			l_vbox.disable_item_expand (l_error_box)
@@ -770,13 +770,13 @@ feature {NONE} -- Exception Info
 			l_label_box.set_padding (5)
 			l_label_box.set_border_width (5)
 			l_label_box.extend (l_label)
-			l_frame.set_text ("Exception Trace")
+			l_frame.set_text (ca_messages.exception_trace)
 			l_vbox.extend (l_frame)
 			a_empty_dialog.extend (l_vbox)
 			create l_hbox
 			l_vbox.extend (l_hbox)
 			l_vbox.disable_item_expand (l_hbox)
-			create l_ignore.make_with_text ("Close")
+			create l_ignore.make_with_text (ca_messages.close)
 			l_ignore.select_actions.extend (agent a_empty_dialog.destroy)
 			l_hbox.extend (create {EV_CELL})
 			l_hbox.extend (l_ignore)
@@ -788,7 +788,7 @@ feature {NONE} -- Exception Info
 			else
 				l_exception_message := ""
 			end
-			a_empty_dialog.set_title ({STRING_32} "Code Analysis Exception: " + l_exception_message)
+			a_empty_dialog.set_title (ca_messages.inspector_eiffel_exception + l_exception_message)
 			a_empty_dialog.set_minimum_height (350)
 			a_empty_dialog.set_size (500, 300)
 			a_empty_dialog.raise

@@ -21,23 +21,23 @@ feature -- GUI
 		do Result := locale.translation ("Fix: ") end
 
 	no_issues: STRING_32
-		do Result := locale.translation ("Code analysis found no issues!") end
+		do Result := locale.translation ("Inspector Eiffel found no issues!") end
 
 	class_context_menu_caption (a_class_name: attached READABLE_STRING_GENERAL): STRING_32
-		do Result := locale.formatted_string (locale.translation ("Run Code Analysis of Class '$1'"), [a_class_name]) end
+		do Result := locale.formatted_string (locale.translation ("Run Inspector Eiffel on Class '$1'"), [a_class_name]) end
 
 	cluster_context_menu_caption: STRING_32
-		do Result := locale.translation ("Run Code Analysis of cluster") end
+		do Result := locale.translation ("Run Inspector Eiffel on cluster") end
 
 	already_running: STRING_32
 		do Result := locale.translation (" (already running)") end
 
 	already_running_long: STRING_32
-		do Result := locale.translation ("Code analysis is already running.%NPlease%
+		do Result := locale.translation ("Inspector Eiffel is already running.%NPlease%
 						% wait until the current analysis has finished.") end
 
 	status_bar_running: STRING_32
-		do Result := locale.translation ("Code analysis running...") end
+		do Result := locale.translation ("Inspector Eiffel running...") end
 
 	system_scope: STRING_32
 		do Result := locale.translation ("System") end
@@ -55,7 +55,7 @@ feature -- GUI
 		do Result := locale.translation ("Configuration group that has been analyzed recently.") end
 
 	status_bar_terminated: STRING_32
-		do Result := locale.translation ("Code Analysis has terminated.") end
+		do Result := locale.translation ("Inspector Eiffel has terminated.") end
 
 	analyze_whole_system: STRING_32
 		do Result := locale.translation ("Analyze whole system") end
@@ -67,7 +67,22 @@ feature -- GUI
 		do Result := locale.translation ("Analyze parent cluster of current item") end
 
 	run_code_analysis: STRING_32
-		do Result := locale.translation ("Run Code Analysis") end
+		do Result := locale.translation ("Run Inspector Eiffel") end
+
+	no_trace: STRING_32
+		do Result := locale.translation ("No trace available.") end
+
+	the_following_exception: STRING_32
+		do Result := locale.translation ("The following exception has occurred while Inspector Eiffel was running:") end
+
+	exception_trace: STRING_32
+		do Result := locale.translation ("Exception Trace") end
+
+	close: STRING_32
+		do Result := locale.translation ("Close") end
+
+	inspector_eiffel_exception: STRING_32
+		do Result := locale.translation ("Inspector Eiffel Exception: ") end
 
 feature -- Messages for both GUI and command line mode
 
@@ -321,7 +336,7 @@ feature -- Command Line
 		do Result := locale.translation ("%NIn class '") end
 
 	cmd_help_message: STRING_32
-		do Result := locale.translation ("Code Analysis performs static analyses on the source code and %
+		do Result := locale.translation ("Inspector Eiffel performs static analyses on the source code and %
 			           %outputs a list of issues found according to a set of rules.") end
 
 	cmd_class_not_found_1: STRING_32

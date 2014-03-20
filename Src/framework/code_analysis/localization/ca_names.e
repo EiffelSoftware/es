@@ -395,7 +395,7 @@ feature -- Rules
 feature -- Preferences
 
 	preferences_window_title: STRING_32
-		do Result := locale.translation ("Code Analysis Preferences") end
+		do Result := locale.translation ("Inspector Eiffel Preferences") end
 
 	general_category: STRING_32
 		do Result := locale.translation ("General") end
@@ -475,7 +475,7 @@ feature -- GUI
 		do Result := locale.translation ("Scope of Last Analysis") end
 
 	analysis_not_run: STRING_32
-		do Result := locale.translation ("(Analysis has not run yet.)") end
+		do Result := locale.translation ("(Inspector Eiffel has not run yet.)") end
 
 	go_to_previous_tooltip: STRING_32
 		do Result := locale.translation ("Go to previous rule violation") end
@@ -484,7 +484,7 @@ feature -- GUI
 		do Result := locale.translation ("Go to next rule violation") end
 
 	options_tooltip: STRING_32
-		do Result := locale.translation ("Code analysis options") end
+		do Result := locale.translation ("Inspector Eiffel options") end
 
 	description_column: STRING_32
 		do Result := locale.translation ("Description") end
@@ -504,12 +504,12 @@ feature -- GUI
 feature -- GUI: Show Preferences Command
 
 	pref_menu_name: STRING_32
-		do Result := locale.translation ("Code Analysis Preferences...") end
+		do Result := locale.translation ("Inspector Eiffel Preferences...") end
 
 	pref_tooltext: STRING_32
 		do Result := locale.translation ("Preferences") end
 
 	pref_tooltip: STRING_32
-		do Result := locale.translation ("Show Dialog for Code Analysis Preferences") end
+		do Result := locale.translation ("Show Dialog for Inspector Eiffel Preferences") end
 
 end

@@ -567,14 +567,14 @@ feature {NONE} -- Implementation
 	description: STRING_GENERAL
 			-- Description for this command.
 		do
-			Result := "Run code analyzer."
+			Result := "Run Inspector Eiffel."
 		end
 
 	name: STRING_GENERAL
 			-- Name of the command. Used to store the command in the
 			-- preferences.
 		do
-			Result := "Code Analysis"
+			Result := "Inspector Eiffel"
 		end
 
 feature -- GUI preferences
