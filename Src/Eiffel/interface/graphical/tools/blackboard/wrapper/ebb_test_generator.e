@@ -16,7 +16,6 @@ inherit
 			error_handler,
 			remove_task,
 			print_test_set
---			step
 		end
 
 	EBB_SHARED_ALL
@@ -32,6 +31,8 @@ feature {NONE} -- Initialization
 			make_generator (a_test_suite, a_etest_suite, False)
 			instance := a_instance
 			number_of_tests_needed := 100
+
+			proceeded_event.subscribe (agent update_status)
 		end
 
 feature -- Access
@@ -89,6 +90,11 @@ feature -- Basic operations
 --		end
 
 feature {NONE}
+
+	update_status (x: EBB_TEST_GENERATOR)
+		do
+			instance.set_status_message ("progress " + (progress * 100).truncated_to_integer.out + "%%")
+		end
 
 	remove_task (a_task: attached like sub_task; a_cancel: BOOLEAN)
 			-- <Precursor>
@@ -239,7 +245,7 @@ feature {NONE}
 		end
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

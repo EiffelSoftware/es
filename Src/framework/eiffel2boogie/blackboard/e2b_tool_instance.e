@@ -36,6 +36,8 @@ feature {EBB_TOOL_EXECUTION} -- Basic operations
 
 			autoproof.add_notification (agent update_blackboard)
 			autoproof.verify
+
+			;(create {E2B_SHARED_CONTEXT}).status_notifier_agent_cell.put (agent set_status_message)
 		end
 
 	cancel

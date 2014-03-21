@@ -23,7 +23,7 @@ feature {NONE} -- Initialization
 			l_col: EV_GRID_COLUMN
 		do
 			create grid
-			grid.set_column_count_to (last_change_column)
+			grid.set_column_count_to (message_column)
 
 			l_col := grid.column (cancel_column)
 			l_col.set_width (20)
@@ -48,6 +48,10 @@ feature {NONE} -- Initialization
 			l_col := grid.column (last_change_column)
 			l_col.set_width (100)
 			l_col.set_title ("Elapsed time [s]")
+
+			l_col := grid.column (message_column)
+			l_col.set_width (200)
+			l_col.set_title ("Message")
 		end
 
 feature -- Access
@@ -139,6 +143,14 @@ feature {NONE} -- Implementation
 				-- Time
 			create l_text.make_with_text (l_time)
 			l_row.set_item (last_change_column, l_text)
+
+				-- Message
+			if attached a_execution.instance and then attached a_execution.instance.status_message then
+				create l_text.make_with_text (a_execution.instance.status_message)
+			else
+				create l_text.make_with_text ("")
+			end
+			l_row.set_item (message_column, l_text)
 		end
 
 	cancel_execution (a_execution: EBB_TOOL_EXECUTION)
@@ -156,6 +168,7 @@ feature {NONE} -- Implementation
 	configuration_column: INTEGER = 4
 	input_column: INTEGER = 5
 	last_change_column: INTEGER = 6
+	message_column: INTEGER = 7
 
 	time_difference_in_seconds (a_end_time, a_start_time: TIME): INTEGER
 			-- Elapsed time since `a_time'.
@@ -166,7 +179,7 @@ feature {NONE} -- Implementation
 		end
 
 ;note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

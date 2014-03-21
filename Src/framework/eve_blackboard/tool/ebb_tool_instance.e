@@ -36,11 +36,22 @@ feature -- Access
 	input: attached EBB_TOOL_INPUT
 			-- Input associated with this instance.
 
+	status_message: detachable STRING
+			-- Status message of the tool.
+
 feature -- Status report
 
 	is_running: BOOLEAN
 			-- Is instance running?
 		deferred
+		end
+
+feature -- Element change
+
+	set_status_message (a_string: STRING)
+			-- Set `status_message' to `a_string'.
+		do
+			status_message := a_string.twin
 		end
 
 feature {EBB_TOOL_EXECUTION} -- Basic operations
