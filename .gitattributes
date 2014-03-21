@@ -3462,8 +3462,6 @@ Src/framework/com_light/tests/test.docx -text
 Src/framework/command_tunnel/command_tunnel.lic -text
 Src/framework/configuration/license.lic -text
 Src/framework/configuration/parser/implementation/classname/classname_finder.l -text
-Src/framework/configuration/parser/implementation/lace/lace_compile/lace.l -text
-Src/framework/configuration/tools/ace_to_ecf/license.lic -text
 Src/framework/configuration/versioning/configuration-1-0-0.xsd -text
 Src/framework/configuration/versioning/configuration-1-2-0.xsd -text
 Src/framework/configuration/versioning/configuration-1-3-0.xsd -text
@@ -3989,6 +3987,8 @@ Src/library/wel/tests/graphics/32bpp.bmp -text
 Src/library/wizard/help/Clib/htmlhelp.lib -text
 Src/scripts/check_trunk_head_compilation_validity -text
 Src/scripts/tools/_inc/_f_code_tpl_ -text
+Src/tools/ace_to_ecf/license.lic -text
+Src/tools/ace_to_ecf/src/lace/lace_compile/lace.l -text
 Src/tools/button_clicker/button_clicker.ico -text
 Src/tools/button_clicker/button_clicker.lic -text
 Src/tools/bytecode_tool/README.TXT -text
