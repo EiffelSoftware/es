@@ -6,6 +6,10 @@ note
 deferred class
 	ESA_DATABASE_HANDLER
 
+inherit
+
+	ESA_DATABASE_ERROR
+
 feature -- Access
 
 	store: detachable ESA_DATABASE_STORE_PROCEDURE
@@ -104,6 +108,8 @@ feature -- Access
 			if attached {DB_TUPLE} item as l_item then
 				if attached {STRING} l_item.item (a_index) as ll_item then
 					Result := ll_item
+				elseif attached {BOOLEAN_REF} l_item.item (a_index) as ll_item then
+					Result := ll_item.item.out
 				end
 			end
 		end
@@ -133,6 +139,11 @@ feature -- Access
 feature -- Status Report
 
 	has_error: BOOLEAN
+
+	count: INTEGER
+		-- Number of rows, last execution
+		deferred
+		end
 
 feature {ESA_REPORT_DATA_PROVIDER, ESA_LOGIN_DATA_PROVIDER} -- Implementation
 

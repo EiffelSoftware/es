@@ -22,7 +22,7 @@ feature {NONE} -- Initialization
 --			execute_guest_reports
 --			execute_row_count
 --			execute_report_guest
-			execute_iterator
+--			execute_iterator
 --			test_add_user
 --			test_countries
 --			test_registration_token
@@ -35,6 +35,15 @@ feature {NONE} -- Initialization
 --			test_user_from_email
 --			test_user_form_username
 --			test_categories
+--			test_classes
+--			test_severities
+--			test_priorities
+--			test_initialize_problem_report
+--			test_temporary_problem_report
+--			test_problem_reports_guest_2
+--			test_responsibles
+--			test_row_count_responsible_default
+			test_problem_report_responsibles
 		end
 
 
@@ -53,12 +62,11 @@ feature {NONE} -- Initialization
 	execute_guest_reports
 		local
 			l_prov: ESA_REPORT_DATA_PROVIDER
-			list: ESA_DATA_VALUE
 		do
 			print ("%NGuest Reports")
 			create l_prov.make (connection)
 			l_prov.connect
-			across l_prov.problem_reports_guest (1, 2) as c loop
+			across l_prov.problem_reports_guest (1, 2, 0, 0) as c loop
 			 	print (c.item.string_8)
 			end
 			l_prov.disconnect
@@ -151,6 +159,7 @@ feature {NONE} -- Initialization
 		do
 			create l_db.make (connection)
 			print (l_db.role ("jvelilla"))
+			print (l_db.role ("raphaels"))
 		end
 
 
@@ -225,6 +234,120 @@ feature {NONE} -- Initialization
 				io.put_new_line
 			end
 			l_db.disconnect
+		end
+
+
+	test_classes
+		local
+			l_db: ESA_REPORT_DATA_PROVIDER
+		do
+			create l_db.make (connection)
+			l_db.connect
+			across l_db.classes as c loop
+				print (c.item.string)
+				io.put_new_line
+			end
+			l_db.disconnect
+		end
+
+	test_severities
+		local
+			l_db: ESA_REPORT_DATA_PROVIDER
+		do
+			create l_db.make (connection)
+			l_db.connect
+			across l_db.severities as c loop
+				print (c.item.string)
+				io.put_new_line
+			end
+			l_db.disconnect
+		end
+
+	test_priorities
+		local
+			l_db: ESA_REPORT_DATA_PROVIDER
+		do
+			create l_db.make (connection)
+			l_db.connect
+			across l_db.priorities as c loop
+				print (c.item.string)
+				io.put_new_line
+			end
+			l_db.disconnect
+		end
+
+	test_initialize_problem_report
+		local
+			l_db: ESA_REPORT_DATA_PROVIDER
+		do
+			create l_db.make (connection)
+
+			l_db.initialize_problem_report (l_db.new_problem_report_id ("jvelilla"), "1", "1", "1", "1", "True", "test", "14.05", "Win8", "Test", "Test")
+		end
+
+
+	 test_temporary_problem_report
+	 	local
+			l_db: ESA_REPORT_DATA_PROVIDER
+			l_tuple: detachable TUPLE[synopsis : detachable STRING;
+															   release: detachable STRING;
+															   confidential: detachable STRING;
+															   environment: detachable STRING;
+															   description: detachable STRING;
+															   toreproduce: detachable STRING;
+															   priority_synopsis: detachable STRING;
+															   category_synopsis: detachable STRING;
+															   severity_synopsis: detachable STRING;
+															   class_synopsis: detachable STRING;
+															   user_name: detachable STRING;
+															   responsible: detachable STRING
+															   ]
+			l_report_number: INTEGER
+		do
+			create l_db.make (connection)
+			l_report_number := l_db.new_problem_report_id ("jvelilla")
+			l_db.initialize_problem_report (l_report_number, "1", "1", "1", "1", "True", "test", "14.05", "Win8", "Test", "Test")
+			l_tuple := l_db.temporary_problem_report (l_report_number)
+		end
+
+	test_problem_reports_guest_2
+		local
+			l_db: ESA_REPORT_DATA_PROVIDER
+		do
+				-- Number, Synopsis, ProblemReportCategories.CategorySynopsis, SubmissionDate, StatusID
+			create l_db.make (connection)
+			across l_db.problem_reports_guest_2 (1, 2, 0, 0, "CategorySynopsis", 1) as c loop
+				print (c.item.string_8)
+			end
+		end
+
+
+	test_responsibles
+		local
+			l_db: ESA_REPORT_DATA_PROVIDER
+		do
+			create l_db.make (connection)
+			across l_db.responsibles as c loop print (c.item.string_8) end
+		end
+
+
+	test_row_count_responsible_default
+		local
+			l_db: ESA_REPORT_DATA_PROVIDER
+		do
+			create l_db.make (connection)
+			print (l_db.row_count_problem_report_responsible (0,0,0,0,"1,2,3,4,5",""))
+		end
+
+
+	test_problem_report_responsibles
+		local
+			l_db: ESA_REPORT_DATA_PROVIDER
+		do
+			create l_db.make (connection)
+			across l_db.problem_reports_responsibles (1, 10, 0, 0, 0, 0, "number", 1, "1,2,3,4", "") as c loop
+				print (c.item.string_8)
+			end
 		end
 
 

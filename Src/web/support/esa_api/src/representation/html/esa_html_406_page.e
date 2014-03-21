@@ -6,6 +6,7 @@ note
 
 class
 	ESA_HTML_406_PAGE
+
 inherit
 
 	ESA_TEMPLATE_PAGE

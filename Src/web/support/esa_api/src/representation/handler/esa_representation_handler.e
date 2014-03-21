@@ -6,6 +6,10 @@ note
 deferred class
 	ESA_REPRESENTATION_HANDLER
 
+inherit
+
+	ESA_HANDLER
+
 feature -- Initialization
 
 	make (a_esa_config: like esa_config; a_media_variants: HTTP_ACCEPT_MEDIA_TYPE_VARIANTS)
@@ -31,7 +35,7 @@ feature -- Config
 feature -- Media Variants
 
 	media_variants: HTTP_ACCEPT_MEDIA_TYPE_VARIANTS
-		-- Media type accepted.
+			-- Media type accepted.
 
 feature -- View
 
@@ -40,20 +44,43 @@ feature -- View
 		deferred
 		end
 
-
-	problem_report (req: WSF_REQUEST; res: WSF_RESPONSE)
+	problem_report (req: WSF_REQUEST; res: WSF_RESPONSE; a_report: detachable ESA_REPORT)
 			-- Problem report representation
 		deferred
 		end
 
-	problem_reports_guest  (req: WSF_REQUEST; res: WSF_RESPONSE)
+	problem_reports_guest (req: WSF_REQUEST; res: WSF_RESPONSE; a_report_view: detachable ESA_REPORT_VIEW)
 			-- Problem reports representation for a guest user
 		deferred
 		end
 
-
-	problem_user_reports  (req: WSF_REQUEST; res: WSF_RESPONSE)
+	problem_user_reports (req: WSF_REQUEST; res: WSF_RESPONSE; a_report_view: detachable ESA_REPORT_VIEW)
 			-- Problem reports representation for a given user
+		deferred
+		end
+
+	problem_reports_responsible	(req: WSF_REQUEST; res: WSF_RESPONSE; a_report_view: detachable ESA_REPORT_VIEW)
+			-- Problem reports representation for a given user
+		deferred
+		end
+
+	report_form (req: WSF_REQUEST; res: WSF_RESPONSE; a_form: detachable ESA_REPORT_FORM_VIEW)
+			-- Report form
+		deferred
+		end
+
+	report_form_confirm (req: WSF_REQUEST; res: WSF_RESPONSE; a_form: detachable ESA_REPORT_FORM_VIEW)
+			-- Report form confirm
+		deferred
+		end
+
+	report_form_confirm_redirect (req: WSF_REQUEST; res: WSF_RESPONSE)
+			-- Report form confirm redirect
+		deferred
+		end
+
+	update_report_responsible (req: WSF_REQUEST; res: WSF_RESPONSE; a_redirect_uri: READABLE_STRING_32)
+			-- Update report responsible
 		deferred
 		end
 
@@ -77,10 +104,25 @@ feature -- View
 		deferred
 		end
 
+	internal_server_error (req: WSF_REQUEST; res: WSF_RESPONSE)
+			-- internal_server_error
+		deferred
+		end
+
 feature -- Response
 
 	new_response_get (req: WSF_REQUEST; res: WSF_RESPONSE; output: STRING)
-				-- Generate a Reponse based on the Media Type
-			deferred
-			end
+			-- Generate a Reponse based on the Media Type
+		deferred
+		end
+
+	new_response_unauthorized (req: WSF_REQUEST; res: WSF_RESPONSE;)
+			-- Generate a Reponse based on the Media Type
+		deferred
+		end
+
+	new_response_authenticate (req: WSF_REQUEST; res: WSF_RESPONSE)
+		deferred
+		end
+
 end
