@@ -60,8 +60,11 @@ feature -- Status setting
 			after := stream.is_closed
 			from
 				create l_buf.make (buffer_size)
-				stream.read_character_32
-				c := stream.last_character_32
+				if not stream.is_closed then
+					stream.read_character_32
+					after := stream.bytes_read = 0
+					c := stream.last_character_32
+				end
 			until
 				stream.is_closed or c = delimiter
 			loop
@@ -69,8 +72,10 @@ feature -- Status setting
 				stream.read_character_32
 				c := stream.last_character_32
 			end
-			if delimiter = '%N' and drop_cr and l_buf.count > 0 and then l_buf[l_buf.count] = '%R' then
-				l_buf.remove_tail (1)
+			if not after then
+				if delimiter = '%N' and drop_cr and l_buf.count > 0 and then l_buf[l_buf.count] = '%R' then
+					l_buf.remove_tail (1)
+				end
 			end
 			item := l_buf
 		end

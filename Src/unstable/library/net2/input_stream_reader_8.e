@@ -75,11 +75,14 @@ feature -- Status setting
 			l_buf: STRING_8
 			c: CHARACTER_8
 		do
+			after := stream.is_closed
 			from
 				create l_buf.make (buffer_size)
-				stream.read_character_8
-				after := stream.bytes_read = 0
-				c := stream.last_character_8
+				if not stream.is_closed then
+					stream.read_character_8
+					after := stream.bytes_read = 0
+					c := stream.last_character_8
+				end
 			until
 				stream.is_closed or delimiters.has(c)
 			loop
