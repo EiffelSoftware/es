@@ -44,7 +44,8 @@ create
 	make_as_upper,
 	make_substring,
 	make_from_c,
-	make_from_area
+	make_from_area,
+	merge
 
 create {ESTRING_8}
 	make_copy
@@ -199,12 +200,76 @@ feature {NONE} -- Initialization
 			count := a_area.count
 		end
 
-
 	make_copy (a_area: POINTER; a_separate_area: detachable separate MANAGED_POINTER; a_count: INTEGER)
 		do
 			separate_area := a_separate_area
 			area := a_area
 			count := a_count
+		end
+
+	merge (a_fragments: LIST[READABLE_STRING_GENERAL]; a_connector: READABLE_STRING_GENERAL)
+		require
+			across a_fragments as iter all iter.item.is_valid_as_string_8 end
+		local
+			l_buffer: MANAGED_POINTER
+			l_string: READABLE_STRING_GENERAL
+			i, j, k, n: INTEGER
+		do
+			-- Calculate the size of the string
+			across
+				a_fragments as iter
+			loop
+				n := n + iter.item.count
+				n := n + a_connector.count
+			end
+			n := n - a_connector.count + 1
+
+			if not a_fragments.is_empty then
+				create l_buffer.make (n)
+				from
+					i := 1
+
+					l_string := a_fragments[i]
+					from
+						j := 1
+					until
+						j > l_string.count
+					loop
+						l_buffer.put_character (l_string[j].to_character_8, k)
+						k := k + 1
+						j := j + 1
+					end
+					i := i + 1
+				until
+					i > a_fragments.count
+				loop
+					from
+						j := 1
+					until
+						j > a_connector.count
+					loop
+						l_buffer.put_character (a_connector[j].to_character_8, k)
+						k := k + 1
+						j := j + 1
+					end
+					l_string := a_fragments[i]
+					from
+						j := 1
+					until
+						j > l_string.count
+					loop
+						l_buffer.put_character (l_string[j].to_character_8, k)
+						k := k + 1
+						j := j + 1
+					end
+					i := i + 1
+				end
+				l_buffer.put_natural_8 (0, k)
+				check k = l_buffer.count end
+				make_from_area (l_buffer)
+			else
+				make_empty
+			end
 		end
 
 feature -- Access
@@ -616,7 +681,7 @@ feature -- Duplication
 			-- Copy of substring containing all characters at indices
 			-- between `start_index' and `end_index'
 		do
-			create Result.make_substring(Current, start_index, end_index)
+			create Result.make_substring(Current, start_index.max (1), end_index.min (count))
 		end
 
 --	copy(a_other: like Current)

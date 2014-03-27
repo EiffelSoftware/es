@@ -44,7 +44,8 @@ create
 	make_as_upper,
 	make_substring,
 	make_from_c,
-	make_from_area
+	make_from_area,
+	merge
 
 convert
 	make_from_string_32 ({STRING_32}),
@@ -167,6 +168,69 @@ feature {NONE} -- Initialization
 			separate_area := a_area
 			area := a_area.item
 			count := a_area.count // 4
+		end
+
+	merge (a_fragments: LIST[READABLE_STRING_GENERAL]; a_connector: READABLE_STRING_GENERAL)
+		local
+			l_buffer: MANAGED_POINTER
+			l_string: READABLE_STRING_GENERAL
+			i, j, k, n: INTEGER
+		do
+			-- Calculate the size of the string
+			across
+				a_fragments as iter
+			loop
+				n := n + iter.item.count * 4
+				n := n + a_connector.count * 4
+			end
+			n := n - a_connector.count * 4 + 4
+
+			if not a_fragments.is_empty then
+				create l_buffer.make (n)
+				from
+					i := 1
+
+					l_string := a_fragments[i]
+					from
+						j := 1
+					until
+						j > l_string.count
+					loop
+						l_buffer.put_integer_32 (l_string[j].code, k)
+						k := k + 4
+						j := j + 1
+					end
+					i := i + 1
+				until
+					i > a_fragments.count
+				loop
+					from
+						j := 1
+					until
+						j > a_connector.count
+					loop
+						l_buffer.put_integer_32 (a_connector[j].code, k)
+						k := k + 4
+						j := j + 1
+					end
+					l_string := a_fragments[i]
+					from
+						j := 1
+					until
+						j > l_string.count
+					loop
+						l_buffer.put_integer_32 (l_string[j].code, k)
+						k := k + 4
+						j := j + 1
+					end
+					i := i + 1
+				end
+				l_buffer.put_integer_32 (0, k)
+				check k = l_buffer.count end
+				make_from_area (l_buffer)
+			else
+				make_empty
+			end
 		end
 
 feature -- Access
@@ -632,7 +696,7 @@ feature -- Duplication
 			-- Copy of substring containing all characters at indices
 			-- between `start_index' and `end_index'
 		do
-			create Result.make_substring(Current, start_index, end_index)
+			create Result.make_substring(Current, start_index.max (1), end_index.min (count))
 		end
 
 feature {ESTRING_32} -- Implementation
