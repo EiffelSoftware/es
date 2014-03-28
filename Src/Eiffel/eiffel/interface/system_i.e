@@ -2207,15 +2207,14 @@ end
 				i > nb
 			loop
 				a_class := class_array.item (i)
-				if a_class /= Void then
-					if
-						a_class.generics /= Void
+				if
+					a_class /= Void and then
+					a_class.generics /= Void and then
 						-- If the class is changed then `pass1' has been
 						-- done successfully on the class
-						and then not a_class.changed
-					then
-						a_class.check_generic_parameters
-					end
+					not a_class.changed
+				then
+					a_class.check_generic_parameters
 				end
 				i := i + 1
 			end
@@ -2488,14 +2487,9 @@ end
 			nb := class_counter.count
 			from i := 1 until i > nb loop
 				a_class := class_array.item (i)
-				if a_class /= Void then
-					if
-						a_class.has_expanded or else
-						a_class.is_used_as_expanded
-					then
-						set_current_class (a_class)
-						a_class.check_expanded
-					end
+				if a_class /= Void and then (a_class.has_expanded or else a_class.is_used_as_expanded) then
+					set_current_class (a_class)
+					a_class.check_expanded
 				end
 				i := i + 1
 			end
@@ -2553,7 +2547,6 @@ end
 			cs: CURSOR
 			l_root: SYSTEM_ROOT
 			l_root_cl: CLASS_C
-			l_root_dtype: INTEGER
 			l_root_ft: detachable FEATURE_I
 			l_root_rout_id: INTEGER
 		do
@@ -2617,7 +2610,6 @@ end
 				loop
 					l_root := root_creators.item_for_iteration
 					l_root_cl := l_root.class_type.base_class
-					l_root_dtype := root_class_type (l_root.class_type).type_id - 1
 					l_root_ft := l_root_cl.feature_table.item (l_root.procedure_name)
 					if l_root_ft /= Void then
 						l_root_rout_id := l_root_ft.rout_id_set.first
@@ -2671,16 +2663,13 @@ end
 		require
 			file_not_void: file /= Void
 			file_open_write: file.is_open_write
-		local
-			class_id: INTEGER
 		do
 			from
 				M_desc_server.start
 			until
 				M_desc_server.after
 			loop
-				class_id := M_desc_server.key_for_iteration
-				M_desc_server.item (class_id).store (file)
+				M_desc_server.item (M_desc_server.key_for_iteration).store (file)
 				M_desc_server.forth
 			end
 		end
@@ -3494,12 +3483,11 @@ feature {NONE} -- Finalization implementation
 			-- changed since last finalization.
 		local
 			a_class: CLASS_C
-			i, j, nb: INTEGER
+			j, nb: INTEGER
 			class_array: ARRAY [CLASS_C]
 		do
 			Result := private_finalize
 			if not Result then
-				i := classes.count
 				class_array := classes
 				nb := class_counter.count
 				from
@@ -3522,10 +3510,9 @@ feature {NONE} -- Finalization implementation
 			-- Reset all CLASS_C.finalization_needed to False.
 		local
 			a_class: CLASS_C
-			i, j, nb: INTEGER
+			j, nb: INTEGER
 			class_array: ARRAY [CLASS_C]
 		do
-			i := classes.count
 			class_array := classes
 			nb := class_counter.count
 			from
@@ -4333,8 +4320,6 @@ feature -- Generation
 					-- Clear buffer for current generation
 				buffer := generation_buffer
 				buffer.clear_all
-				i := 1
-				nb := type_id_counter.value
 				buffer.put_string ("#ifndef _eoffsets_h_%N#define _eoffsets_h_")
 				buffer.put_new_line
 				buffer.put_new_line
@@ -4482,7 +4467,6 @@ feature -- Generation
 			skeleton_file: INDENT_FILE
 			buffer: GENERATION_BUFFER
 		do
-			nb := Type_id_counter.value
 			final_mode := byte_context.final_mode
 
 				-- Since generated file `eskelet.[cx]' can be very big
@@ -4646,13 +4630,9 @@ feature -- Generation
 		local
 			i, nb: INTEGER
 			cl_type: CLASS_TYPE
-			final_mode: BOOLEAN
 			structure_file: INDENT_FILE
 			buffer: GENERATION_BUFFER
 		do
-			nb := Type_id_counter.value
-			final_mode := byte_context.final_mode
-
 			if in_final_mode then
 				create structure_file.make_c_code_file (final_file_name (estructure, Dot_x, 1));
 			else
@@ -4728,12 +4708,10 @@ feature -- Generation
 			nb := class_counter.count
 			from i := 1 until i > nb loop
 				a_class := class_array.item (i)
-				if a_class /= Void then
-					if a_class.has_visible then
-						l_has_visible := True
-						set_current_class (a_class)
-						a_class.generate_cecil (generated_wrappers)
-					end
+				if a_class /= Void and then a_class.has_visible then
+					l_has_visible := True
+					set_current_class (a_class)
+					a_class.generate_cecil (generated_wrappers)
 				end
 				i := i + 1
 			end
@@ -5101,7 +5079,6 @@ feature -- Pattern table generation
 			l_root: SYSTEM_ROOT
 			l_root_cl: CLASS_C
 			l_root_ft: FEATURE_I
-			l_root_rout_id: INTEGER
 			l_root_type: CLASS_TYPE
 			l_root_rout_table: ROUT_TABLE
 			l_root_rout_cname, l_root_caller: STRING
@@ -5136,8 +5113,7 @@ feature -- Pattern table generation
 						l_root_type := root_class_type (l_root.class_type)
 						l_root_cl := l_root_type.associated_class
 						l_root_ft := l_root_cl.feature_table.item (l_root.procedure_name)
-						l_root_rout_id := l_root_ft.rout_id_set.first
-						l_root_rout_table ?= eiffel_table.poly_table (l_root_rout_id)
+						l_root_rout_table ?= eiffel_table.poly_table (l_root_ft.rout_id_set.first)
 						l_root_rout_table.goto_implemented (l_root_type.type, l_root_type)
 						check
 							implemented: l_root_rout_table.is_implemented
@@ -5489,7 +5465,7 @@ feature --option file generation
 
 feature
 
-	set_current_class (a_class: CLASS_C)
+	set_current_class (a_class: detachable CLASS_C)
 		do
 			current_class := a_class
 		end
@@ -5730,7 +5706,6 @@ feature {NONE} -- Element change: Root creators
 			target_not_void: universe.target /= Void
 			root_not_void: universe.target.root /= Void
 		local
-			l_target: CONF_TARGET
 			l_root: CONF_ROOT
 			l_root_type_name: STRING
 			l_tpl: TUPLE [clst: STRING_32; clss: STRING; ft: STRING]
@@ -5739,9 +5714,8 @@ feature {NONE} -- Element change: Root creators
 		do
 			root_creators.wipe_out
 
-			l_target := universe.target
 				-- update root class/feature
-			l_root := l_target.root
+			l_root := universe.target.root
 				-- Compiler keeps its internal data in UTF-8.
 			l_root_type_name := u.utf_32_string_to_utf_8_string_8 (l_root.class_type_name.as_upper)
 			if attached l_root.feature_name as l_feat_name then
@@ -5810,7 +5784,7 @@ feature {NONE} -- Element change: Root creators
 							l_classes_i.forth
 						end
 					end
-					if l_classes_i.count = 0 then
+					if l_classes_i.is_empty then
 						create vd20
 						vd20.set_class_name (a_class_name)
 						Error_handler.insert_error (vd20)

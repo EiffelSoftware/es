@@ -1321,6 +1321,11 @@ feature -- Update
 				                                              argument (current_option + 2).twin.as_string_8)
 				current_option := argument_count + 2
 
+			elseif option.is_equal ("-code-analysis") then
+				l_at_args := arguments_in_range (current_option + 1, argument_count)
+				current_option := argument_count + 1
+				create {EWB_CODE_ANALYSIS} command.make_with_arguments (l_at_args)
+
 			elseif option.same_string_general ("-tests") then
 					-- FIXME: This only works if `-tests' is the last argument, as otherwise it will
 					-- override the compilation option that was previously set.
@@ -1442,6 +1447,25 @@ feature {NONE} -- Implementation
 			create l_formatter.make (6, 2)
 			io.put_string (l_formatter.formatted (l_real_64))
 			io.put_string (l_unit)
+		end
+
+	arguments_in_range_32 (a_lower, a_upper: INTEGER): LINKED_LIST [STRING_32]
+			-- Arguments from position `a_lower' to `a_upper'
+		require
+			a_lower_valid: a_lower > 0 and a_lower <= argument_count + 1
+			a_upper_valid: a_upper > 0 and a_upper <= argument_count and a_lower <= a_upper + 1
+		local
+			i: INTEGER
+		do
+			create Result.make
+			from
+				i := a_lower
+			until
+				i > a_upper
+			loop
+				Result.force (argument (i))
+				i := i + 1
+			end
 		end
 
 feature{NONE} -- Implementation

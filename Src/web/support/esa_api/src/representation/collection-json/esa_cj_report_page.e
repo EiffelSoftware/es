@@ -28,6 +28,9 @@ feature {NONE} --Initialization
 			set_template_file_name ("cj_reports.tpl")
 			template.add_value (a_host, "host")
 			template.add_value (a_view.reports.at (2), "reports")
+			template.add_value (a_view.index, "index")
+			template.add_value (a_view.categories, "categories")
+			template.add_value (a_view.status, "status")
 
 			if a_view.index > 1 then
 				template.add_value (a_view.index-1 , "prev")

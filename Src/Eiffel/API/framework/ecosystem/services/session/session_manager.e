@@ -206,7 +206,6 @@ feature -- Storage
 	store (a_session: SESSION_I)
 			-- <Precursor>
 		local
-			l_logger: like logger_service
 			l_file_name: like session_file_path
 			l_file: detachable RAW_FILE
 			l_sed_util: SED_STORABLE_FACILITIES
@@ -245,8 +244,7 @@ feature -- Storage
 				a_session.reset_is_dirty
 			else
 					-- Problem with storage, log.
-				l_logger := logger_service
-				if l_logger.is_service_available then
+				if attached logger_service.service as l_service then
 						-- Log deserialization error.
 					create l_message.make_from_string ("Unable to store the session data file: ")
 					if not a_session.is_per_project or else (create {SHARED_WORKBENCH}).workbench.system_defined then
@@ -254,7 +252,7 @@ feature -- Storage
 					else
 						l_message.append ("<unloaded project>")
 					end
-					l_logger.service.put_message_with_severity (l_message, {ENVIRONMENT_CATEGORIES}.internal_event, {PRIORITY_LEVELS}.high)
+					l_service.put_message_with_severity (l_message, {ENVIRONMENT_CATEGORIES}.internal_event, {PRIORITY_LEVELS}.high)
 				end
 			end
 
@@ -277,6 +275,7 @@ feature -- Storage
 					store (l_sessions.item_for_iteration)
 					l_sessions.forth
 				end
+				l_sessions.go_to (l_cursor)
 			end
 		ensure then
 			sessions_are_clean: attached internal_sessions as l_sessions implies l_sessions.for_all (agent (a_ia_session: SESSION_I): BOOLEAN
@@ -435,7 +434,6 @@ feature {NONE} -- Basic operation
 			l_reader: SED_MEDIUM_READER_WRITER
 			l_object: ANY
 			l_file: detachable RAW_FILE
-			l_logger: SERVICE_CONSUMER [LOGGER_S]
 			l_message: attached STRING_32
 			retried: BOOLEAN
 		do
@@ -454,11 +452,10 @@ feature {NONE} -- Basic operation
 						a_session.set_session_object (l_object)
 					else
 							-- Problem with compatibility, log.
-						l_logger := logger_service
-						if l_logger.is_service_available then
+						if attached logger_service.service as l_service then
 								-- Log deserialization error.
 							create l_message.make_from_string ({STRING_32} "Unable to deserialize the session data file: " + l_file.path.name)
-							l_logger.service.put_message_with_severity (l_message, {ENVIRONMENT_CATEGORIES}.internal_event, {PRIORITY_LEVELS}.high)
+							l_service.put_message_with_severity (l_message, {ENVIRONMENT_CATEGORIES}.internal_event, {PRIORITY_LEVELS}.high)
 						end
 					end
 				end
@@ -572,8 +569,8 @@ feature {NONE} -- Factory
 				else
 					create {SESSION} Result.make_per_window (False, a_window, Current)
 				end
-				if attached a_extension as l_ext then
-					Result.set_extension_name (create {IMMUTABLE_STRING_32}.make_from_string_general (l_ext))
+				if a_extension /= Void then
+					Result.set_extension_name (create {IMMUTABLE_STRING_32}.make_from_string_general (a_extension))
 				end
 			end
 

@@ -1217,6 +1217,7 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 				insert_show_tool_menu_item (Result, {ES_TESTING_TOOL})
 				insert_show_tool_menu_item (Result, {ES_TESTING_RESULTS_TOOL})
 			end
+			insert_show_tool_menu_item (Result, {ES_CODE_ANALYSIS_TOOL})
 --			insert_show_tool_menu_item (Result, {ES_JSTAR_PROOFS_TOOL})
 --			insert_show_tool_menu_item (Result, {ES_EVE_PROOFS_TOOL})
 			insert_show_tool_menu_item (Result, {ES_JAVASCRIPT_TOOL})
@@ -1225,7 +1226,6 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			insert_show_tool_menu_item (Result, {ES_EVE_AUTOFIX_TOOL})
 			insert_show_tool_menu_item (Result, {ES_ALIAS_ANALYSIS_TOOL})
 			insert_show_tool_menu_item (Result, {ES_AUTOPROOF_TOOL})
-			insert_show_tool_menu_item (Result, {ES_CODE_ANALYSIS_TOOL})
 			insert_show_tool_menu_item (Result, {ES_SPELLING_TOOL})
 		end
 

@@ -72,7 +72,6 @@ feature -- Execution
 
 				-- Using wizard information to create AutoTest configuration
 			l_session: SERVICE_CONSUMER [SESSION_MANAGER_S]
-			l_manager: SESSION_MANAGER_S
 			l_generator: TEST_GENERATOR_WRAPPER
 				-- Use a wrapper class in batch mode to enable interpreter class generation before testing.
 				-- This is needed to support research ideas such as precondition-satisfaction.
@@ -121,8 +120,7 @@ feature -- Execution
 				end
 
 				create l_session
-				if l_session.is_service_available then
-					l_manager := l_session.service
+				if attached l_session.service as l_manager then
 					l_manager.retrieve (True).set_value (l_types, {TEST_SESSION_CONSTANTS}.temporary_types)
 					launch_test_generation (l_generator, l_manager, True)
 				end

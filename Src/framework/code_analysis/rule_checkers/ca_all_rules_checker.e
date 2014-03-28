@@ -27,9 +27,7 @@ inherit
 			process_break_as,
 			process_leaf_stub_as,
 			process_symbol_stub_as,
-			process_keyword_stub_as,
-			process_there_exists_as,
-			process_for_all_as
+			process_keyword_stub_as
 		redefine
 			process_access_id_as,
 			process_assign_as,
@@ -780,8 +778,8 @@ feature {NONE} -- Implementation
 			l_service_consumer: SERVICE_CONSUMER [ROTA_S]
 		do
 			create l_service_consumer
-			if l_service_consumer.is_service_available and then l_service_consumer.service.is_interface_usable then
-				Result := l_service_consumer.service
+			if attached l_service_consumer.service as l_service and then l_service.is_interface_usable then
+				Result := l_service
 			end
 		end
 end

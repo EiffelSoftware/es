@@ -2124,11 +2124,9 @@ feature {NONE} -- Implementation
 	show_help (a_context: HELP_CONTEXT_I)
 		local
 			l_providers: SERVICE_CONSUMER [HELP_PROVIDERS_S]
-			l_service: HELP_PROVIDERS_S
 		do
 			create l_providers
-			if l_providers.is_service_available then
-				l_service := l_providers.service
+			if attached l_providers.service as l_service then
 				l_service.show_help (a_context)
 			end
 		end

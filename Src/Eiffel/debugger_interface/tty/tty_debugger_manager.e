@@ -356,8 +356,6 @@ feature -- Breakpoints management
 			if s.is_empty then
 				if curr_cc /= Void then
 					cc := curr_cc
-				else
-					s := Void
 				end
 			else
 				i := s.index_of ('[', 1)
@@ -577,7 +575,6 @@ feature -- Breakpoints management
 				if s.is_empty and wha /= Void then
 					if confirmation_answer (debugger_names.m_remove_or_use_current_bp_message_question ("1", "2"), << "1", "2">>, "2", True).is_equal ("1") then
 						bp.remove_when_hits_action (wha)
-						wha := Void
 					else
 						--| Do nothing
 					end
@@ -669,7 +666,7 @@ feature {NONE} -- Implementation
 					until
 						i > lst.upper
 					loop
-						if (i > lst.lower) then
+						if i > lst.lower then
 							io.put_character ('/')
 						end
 						io.put_string (lst[i])
@@ -710,7 +707,7 @@ feature {NONE} -- Implementation
 		end
 
 note
-	copyright:	"Copyright (c) 1984-2012, Eiffel Software"
+	copyright:	"Copyright (c) 1984-2014, Eiffel Software"
 	license:	"GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options:	"http://www.eiffel.com/licensing"
 	copying: "[
