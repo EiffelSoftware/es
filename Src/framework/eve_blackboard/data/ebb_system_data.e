@@ -222,17 +222,12 @@ feature {NONE} -- Implementation
 			if not cluster_data_table.has_key (a_cluster) then
 
 			end
-			-- TODO:
 
 				-- Update classes of this cluster
-			from
-				a_cluster.classes.start
-			until
-				a_cluster.classes.after
-			loop
-				l_class := a_cluster.classes.item_for_iteration
-				add_class (universe.classes_with_name (l_class.name).first)
-				a_cluster.classes.forth
+			if attached a_cluster.classes then
+				across a_cluster.classes as c loop
+					add_class (universe.classes_with_name (c.item.name).first)
+				end
 			end
 		end
 
