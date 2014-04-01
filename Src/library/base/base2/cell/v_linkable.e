@@ -21,11 +21,15 @@ feature -- Replacement
 
 	put_right (cell: V_LINKABLE [G])
 			-- Replace `right' with `cell'.
+		note
+			explicit: contracts
 		require
+			wrapped: is_wrapped
 			modify_model ("right", Current)
 		do
 			right := cell
 		ensure
+			wrapped: is_wrapped
 			right_effect: right = cell
 		end
 

@@ -214,6 +214,8 @@ axiom (forall<T> s: Seq T, x: T :: { Seq#ToBag(s)[x] } Seq#ToBag(s)[x] == Seq#Oc
 
 // Sequence converted to map
 function Seq#ToMap<T>(Seq T): Map int T;
+axiom (forall<T> s: Seq T :: { Seq#ToMap(s) } 
+  Map#Equal(Seq#ToMap(s), Map#Empty()) <==> Seq#Equal (s, Seq#Empty()));
 axiom (forall<T> s: Seq T :: { Map#Domain(Seq#ToMap(s)) }
   Map#Domain(Seq#ToMap(s)) == Seq#Domain(s));
 axiom (forall<T> s: Seq T :: { Map#Card(Seq#ToMap(s)) }

@@ -20,9 +20,11 @@ function Default<alpha>(Field alpha): alpha;
 axiom (forall f: Field bool :: !Default(f));
 axiom (forall f: Field int :: Default(f) == 0);
 axiom (forall f: Field ref :: Default(f) == Void);
+axiom (forall f: Field real :: Default(f) == 0.0);
 
 type HeapType = <alpha>[ref, Field alpha]alpha; // Type of a heap (with generic field subtype and generic content type)
 const unique allocated: Field bool; // Ghost field for allocation status of objects
+axiom (forall t: Type :: FieldId(allocated, t) == -1);
 
 // Function which defines basic properties of a heap
 function IsHeap(heap: HeapType): bool;
@@ -80,11 +82,11 @@ const unique observers: Field (Set ref); // Ghost field for observers set of an 
 const unique subjects: Field (Set ref); // Ghost field for subjects set of an object.
 
 // Field IDs for built-in attributes
-axiom (forall t: Type :: FieldId(closed, t) == -1);
-axiom (forall t: Type :: FieldId(owner, t) == -2);
-axiom (forall t: Type :: FieldId(owns, t) == -3);
-axiom (forall t: Type :: FieldId(observers, t) == -4);
-axiom (forall t: Type :: FieldId(subjects, t) == -5);
+axiom (forall t: Type :: FieldId(closed, t) == -2);
+axiom (forall t: Type :: FieldId(owner, t) == -3);
+axiom (forall t: Type :: FieldId(owns, t) == -4);
+axiom (forall t: Type :: FieldId(observers, t) == -5);
+axiom (forall t: Type :: FieldId(subjects, t) == -6);
 
 // Analogue of `detachable_attribute' and `set_detachable_attribute' for built-in attributes:
 axiom (forall heap: HeapType, o: ref :: { heap[o, owner] } IsHeap(heap) && o != Void && heap[o, allocated] ==> heap[heap[o, owner], allocated]);

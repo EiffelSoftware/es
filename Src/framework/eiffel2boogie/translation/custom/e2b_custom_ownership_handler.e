@@ -272,10 +272,11 @@ feature -- Basic operations
 			l_function: IV_FUNCTION
 			l_field: IV_ENTITY
 			l_pcall: IV_PROCEDURE_CALL
+			l_fcall: IV_FUNCTION_CALL
 			l_if: IV_CONDITIONAL
 		do
 				-- Get definition of `a_field_name' for `current_target_type';
-				-- if it exists, generate a guarded assignment.
+				-- if it exists, generate a guarded assignment.			
 			l_field := helper.field_from_attribute (a_attr, a_translator.current_target_type)
 			l_function := boogie_universe.function_named (
 				name_translator.boogie_function_for_ghost_definition (a_translator.current_target_type, l_field.name))
@@ -288,7 +289,16 @@ feature -- Basic operations
 					types.field_content_type (l_field.type)))
 				l_pcall.node_info.set_attribute ("default", a_attr.feature_name_32)
 				l_pcall.node_info.set_line (a_translator.context_line_number)
-				create l_if.make_if_then (factory.frame_access (a_translator.context_writable, a_translator.current_target, l_field),
+
+					-- Create a condition that l_field is in the modify clause of the current function
+					-- (modify clause is used instead of writable, since it is not possible to prove that something is not writable)
+				create l_fcall.make (name_translator.boogie_function_for_write_frame (a_translator.context_feature, a_translator.context_type), types.frame)
+				l_fcall.add_argument (factory.global_heap)
+				across a_translator.context_implementation.procedure.arguments as i loop
+					l_fcall.add_argument (i.item.entity)
+				end
+
+				create l_if.make_if_then (factory.frame_access (l_fcall, a_translator.current_target, l_field),
 					factory.singleton_block (l_pcall))
 				a_translator.side_effect.extend (l_if)
 			end

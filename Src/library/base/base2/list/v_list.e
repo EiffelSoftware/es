@@ -92,6 +92,7 @@ feature -- Extension
 			modify_model (["sequence", "owns"], Current)
 		deferred
 		ensure
+			is_wrapped: is_wrapped
 			sequence_effect: sequence ~ old sequence.prepended (v)
 		end
 
