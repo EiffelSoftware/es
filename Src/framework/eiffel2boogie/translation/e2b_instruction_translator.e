@@ -1173,7 +1173,7 @@ feature {NONE} -- Loop processing
 				end
 
 					-- If still empty, add a trivially wrong variant
-				if a_variant_exprs.is_empty then
+				if a_variant_exprs.is_empty and options.is_generating_trivial_loop_variants then
 					a_variant_exprs.extend (factory.int_value (0))
 				end
 			elseif a_variant_exprs.first = Void then

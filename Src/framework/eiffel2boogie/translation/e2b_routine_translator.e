@@ -148,7 +148,7 @@ feature -- Translation: Signature
 				end
 			end
 
-			if options.is_postcondition_predicate_enabled then
+			if options.is_postcondition_predicate_enabled and not a_for_creator then
 				add_postcondition_predicate
 			end
 		end

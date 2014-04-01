@@ -29,11 +29,13 @@ feature -- Element change
 				create original_errors.make
 			end
 			original_errors.extend (a_error)
---			if attached {E2B_PRECONDITION_VIOLATION} a_error then
---				set_suggestion ("You might need to weaken the precondition.")
---			elseif attached {E2B_CHECK_VIOLATION} a_error or attached {E2B_POSTCONDITION_VIOLATION} a_error then
---				set_suggestion ("You might need to strenghten the loop invariant of postcondition of called features.")
---			end
+			if attached {E2B_DEFAULT_VERIFICATION_ERROR} a_error as l_default then
+				if l_default.boogie_error.is_precondition_violation then
+					set_suggestion ("You might need to weaken the precondition.")
+				elseif l_default.boogie_error.is_assert_error or l_default.boogie_error.is_postcondition_violation then
+					set_suggestion ("You might need to strenghten the loop invariant or postcondition of called features.")
+				end
+			end
 		end
 
 	set_suggestion (a_string: STRING)

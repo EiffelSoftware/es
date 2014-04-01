@@ -17,7 +17,7 @@ feature {NONE} -- Initialization
 			-- Initialize default options.
 		do
 			is_two_step_verification_enabled := False
-			is_inlining_enabled := False
+			is_inlining_enabled := True
 			is_automatic_inlining_enabled := False
 			is_automatic_loop_unrolling_enabled := False
 			is_sound_loop_unrolling_enabled := True
@@ -38,6 +38,8 @@ feature {NONE} -- Initialization
 			is_uncoupled_mutations_enabled := False
 
 			is_trace_enabled := False
+
+			is_generating_trivial_loop_variants := True
 		end
 
 feature -- Inlining verification step
@@ -247,5 +249,10 @@ feature -- Boogie/Z3
 		do
 			is_trace_enabled := a_value
 		end
+
+feature -- Other
+
+	is_generating_trivial_loop_variants: BOOLEAN
+			-- Are trivially false loop variants generated?
 
 end

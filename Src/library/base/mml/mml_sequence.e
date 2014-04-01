@@ -48,6 +48,12 @@ feature -- Properties
 		do
 		end
 
+	is_sorted: BOOLEAN
+			-- Is the sequence sorted?
+			-- (used for demo)
+		do
+		end
+
 feature -- Elements
 
 	item alias "[]" (i: INTEGER): G

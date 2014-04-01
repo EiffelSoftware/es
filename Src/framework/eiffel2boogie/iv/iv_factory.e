@@ -379,6 +379,10 @@ feature -- Framing
 				l_fcall.add_argument (i.item.entity)
 			end
 			Result := function_call ("same_outside", <<l_old_heap, global_heap, l_fcall>>, types.bool)
+				-- TODO: fix inlining
+			if not a_boogie_procedure.name.has_substring (a_feature.feature_name_32.out) then
+				Result := true_
+			end
 		end
 
 feature -- Miscellaneous

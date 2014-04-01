@@ -250,3 +250,25 @@ axiom Seq#Take(Seq#Empty(), 0) == Seq#Empty();  // [][..0] == []
 axiom Seq#Drop(Seq#Empty(), 0) == Seq#Empty();  // [][0..] == []
 
 
+function Seq#IsSorted<T>(s: Seq T) returns (bool);
+
+//axiom (forall s: Seq int, i: int ::
+//    1 <= i && i < Seq#Length(s) && Seq#IsSorted(s) ==> Seq#Item(s, i) <= Seq#Item(s, i+1));
+axiom (forall s: Seq int ::
+  { Seq#IsSorted(s) }
+    Seq#IsSorted(s) ==> (forall i, j: int :: 1 <= i && i <= Seq#Length(s) && i <= j && j <= Seq#Length(s) ==> Seq#Item(s, i) <= Seq#Item(s, j)));
+axiom (forall s: Seq int ::
+  { Seq#IsSorted(s) }
+    Seq#Length(s) <= 1 ==> Seq#IsSorted(s));
+axiom (forall s: Seq int, i: int ::
+    1 <= i && i < Seq#Length(s) && Seq#IsSorted(Seq#Front(s, i)) && Seq#Item(s, i) <= Seq#Item(s, i+1) ==> Seq#IsSorted(Seq#Front(s, i+1)));
+
+axiom (forall s: Seq int ::
+  { Seq#Range(s) }
+    (forall i: int, j: int ::
+		1 <= i && i < Seq#Length(s) && 1 <= j && j < Seq#Length(s) ==>
+			Seq#Range(Seq#Update(Seq#Update(s, i, Seq#Item(s, j)), j, Seq#Item(s, i))) == Seq#Range(s)));
+
+
+
+

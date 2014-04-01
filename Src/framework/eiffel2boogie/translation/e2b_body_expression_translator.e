@@ -243,7 +243,7 @@ feature -- Translation
 		local
 			l_inlining_depth: INTEGER
 		do
-			if options.inlining_depth > 0 then
+			if options.inlining_depth > 0 and not helper.boolean_feature_note_value (a_feature, "skip") then
 				l_inlining_depth := options.inlining_depth
 				options.set_inlining_depth (options.inlining_depth - 1)
 				process_inlined_routine_call (a_feature, a_parameters)
@@ -401,6 +401,8 @@ feature -- Translation
 --					-- No possible feature to inline (deferred or external)
 --				process_normal_routine_call (a_feature, a_parameters)
 --			end
+
+			translation_pool.add_write_frame_function (a_feature, current_target_type)
 
 			if inlined_routines.has (a_feature.body_index) then
 				inlined_routines.force (inlined_routines.item (a_feature.body_index) + 1, a_feature.body_index)
