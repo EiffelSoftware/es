@@ -12,6 +12,9 @@ feature -- Access
 			-- Item at current position.
 		require
 			not_off: not off
+			closed: closed
+			subjects_closed: subjects.any_item.closed
+			reads (Current, subjects.any_item.ownership_domain)
 		deferred
 		ensure
 			definition: Result = box.any_item
@@ -23,6 +26,7 @@ feature -- Status report
 			-- Is current position off scope?
 		require
 			closed: closed
+			subjects_closed: subjects.any_item.closed
 		deferred
 		ensure
 			definition: Result = box.is_empty
@@ -71,6 +75,7 @@ feature -- Specification
 
 invariant
 	box_count_constraint: box.count <= 1
+	one_subject: subjects.count = 1
 	no_observers: observers = []
 
 note

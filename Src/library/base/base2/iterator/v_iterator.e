@@ -41,7 +41,13 @@ feature -- Measurement
 
 	index: INTEGER
 			-- Current position.
+		require
+			closed: closed
+			subjects_closed: subjects.any_item.closed
+			reads (Current, subjects.any_item.ownership_domain)
 		deferred
+		ensure
+			definition: Result = index_
 		end
 
 	valid_index (i: INTEGER): BOOLEAN
@@ -60,7 +66,8 @@ feature -- Status report
 	before: BOOLEAN
 			-- Is current position before any position in `target'?
 		require
-			closed
+			closed: closed
+			target_closed: target.closed
 		deferred
 		ensure
 			definition: Result = (index_ = 0)
@@ -87,7 +94,9 @@ feature -- Status report
 	is_first: BOOLEAN
 			-- Is cursor at the first position?
 		require
-			closed
+			closed: closed
+			target_closed: target.closed
+			reads (Current, target.ownership_domain)
 		deferred
 		ensure
 			definition: Result = (not sequence.is_empty and index_ = 1)
@@ -96,7 +105,9 @@ feature -- Status report
 	is_last: BOOLEAN
 			-- Is cursor at the last position?
 		require
-			closed
+			closed: closed
+			target_closed: target.closed
+			reads (Current, target.ownership_domain)
 		deferred
 		ensure
 			definition: Result = (not sequence.is_empty and index_ = sequence.count)
@@ -107,6 +118,7 @@ feature -- Cursor movement
 	start
 			-- Go to the first position.
 		require
+			target_closed: target.closed
 			modify_model ("index_", Current)
 		deferred
 		ensure then

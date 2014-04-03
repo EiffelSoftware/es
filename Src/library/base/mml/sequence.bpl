@@ -222,6 +222,10 @@ axiom (forall<T> s: Seq T :: { Map#Card(Seq#ToMap(s)) }
   Map#Card(Seq#ToMap(s)) == Seq#Length(s));
 axiom (forall<T> s: Seq T, i: int :: { Map#Item(Seq#ToMap(s), i) }
   1 <= i && i <= Seq#Length(s) ==> Map#Item(Seq#ToMap(s), i) == Seq#Item(s, i));  
+  
+axiom (forall<T> s: Seq T :: { Map#ToBag(Seq#ToMap(s)) }
+  Bag#Equal(Map#ToBag(Seq#ToMap(s)), Seq#ToBag(s)));  
+  
 
 // Additional axioms about common things
     

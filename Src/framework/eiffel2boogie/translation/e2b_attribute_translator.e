@@ -22,7 +22,7 @@ feature -- Basic operations
 			is_attribute: a_feature.is_attribute
 		local
 			l_attribute_name, l_old_name: STRING
-			l_class_type: CL_TYPE_A
+			l_class_type, l_written_type: CL_TYPE_A
 			l_type_prop, l_expr, l_context_type: IV_EXPRESSION
 			l_forall: IV_FORALL
 			l_heap, l_o, l_f: IV_ENTITY
@@ -49,14 +49,17 @@ feature -- Basic operations
 
 				-- Add equivalences
 			across previous_versions as prev loop
-					-- Check that properties match
-				if helper.is_ghost (prev.item.feat) /= is_ghost then
-					helper.add_semantic_error (current_feature, messages.invalid_ghost_status (prev.item.feat.feature_name_32, prev.item.typ.base_class.name_in_upper), -1)
-				end
+				if prev.item.is_attribute then
+						-- Check that properties match
+					if helper.is_ghost (prev.item) /= is_ghost then
+						helper.add_semantic_error (current_feature, messages.invalid_ghost_status (prev.item.feature_name_32, prev.item.written_class.name_in_upper), -1)
+					end
 
-				l_old_name := name_translator.boogie_procedure_for_feature (prev.item.feat, prev.item.typ)
-				translation_pool.add_referenced_feature (prev.item.feat, prev.item.typ)
-				boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.equal (l_f, create {IV_ENTITY}.make (l_old_name, l_f.type))))
+					l_written_type := helper.class_type_from_class (prev.item.written_class, current_type)
+					l_old_name := name_translator.boogie_procedure_for_feature (prev.item, l_written_type)
+					translation_pool.add_referenced_feature (prev.item, l_written_type)
+					boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.equal (l_f, create {IV_ENTITY}.make (l_old_name, l_f.type))))
+				end
 			end
 
 				-- Mark field as a ghost or non-ghost
@@ -159,33 +162,17 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
-	previous_versions: LINKED_LIST [TUPLE [feat: FEATURE_I; typ: CL_TYPE_A]]
+	previous_versions: LINKED_LIST [FEATURE_I]
 			-- Versions of `current_feature' from ancestors of `current_type' if inherited or redefined.
-		local
-			l_written_type: CL_TYPE_A
-			l_written_feature: FEATURE_I
-			i: INTEGER
 		do
-			create Result.make
 			if current_feature.written_in /= current_type.base_class.class_id then
 					-- Inherited attribute: return the class where it is written in				
-				l_written_type := helper.class_type_from_class (current_feature.written_class, current_type)
-				l_written_feature := l_written_type.base_class.feature_of_body_index (current_feature.body_index)
-				Result.extend ([l_written_feature, l_written_type])
-			elseif current_feature.assert_id_set /= Void then
-					-- Redefined attribute: return original versions
-				from
-					i := 1
-				until
-					i > current_feature.assert_id_set.count
-				loop
-					l_written_type := helper.class_type_from_class (current_feature.assert_id_set [i].written_class, current_type)
-					l_written_feature := l_written_type.base_class.feature_of_body_index (current_feature.assert_id_set [i].body_index)
-					if l_written_feature.is_attribute then
-						Result.extend ([l_written_feature, l_written_type])
-					end
-					i := i + 1
-				end
+				create Result.make
+				Result.extend (current_feature.written_class.feature_of_body_index (current_feature.body_index))
+			else
+				Result := helper.all_versions (current_feature)
+				Result.start
+				Result.remove
 			end
 		end
 

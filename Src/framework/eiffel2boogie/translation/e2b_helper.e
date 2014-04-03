@@ -449,29 +449,25 @@ feature -- Model helpers
 			Result := across flat_model_queries (a_class) as f some is_same_feature (f.item, a_feature)  end
 		end
 
-	replaced_model_queries (a_feature: FEATURE_I; a_class, a_descendant: CLASS_C): ARRAYED_LIST [FEATURE_I]
-			-- All model queries represented by `a_feature' from `a_class'
-			-- in `a_class' and its ancestors, as seen from `a_descendant'.
+	replaced_model_queries (a_feature: FEATURE_I; a_descendant: CLASS_C): ARRAYED_LIST [FEATURE_I]
+			-- All features replaced by all version of `a_feature' in `a_type',
+			-- as seen from `a_descendant'.
 		require
-			attached a_class
+			a_feature_exists: attached a_feature
 		local
 			l_rep_clause: ARRAYED_LIST [STRING_32]
 			l_rep_feature: FEATURE_I
 		do
 			create Result.make (5)
-			if attached a_feature and then is_model_query (a_class, a_feature) then
-				Result.extend (a_descendant.feature_of_rout_id_set (a_feature.rout_id_set))
-				l_rep_clause := feature_note_values (a_feature, "replaces")
-				l_rep_clause.extend (a_feature.feature_name_32)
-
+			across all_versions (a_feature) as vers loop
+				l_rep_clause := feature_note_values (vers.item, "replaces")
 				across l_rep_clause as f loop
-					l_rep_feature := a_class.feature_named_32 (f.item)
+					l_rep_feature := vers.item.written_class.feature_named_32 (f.item)
 					if attached l_rep_feature then
-						across a_class.parents_classes as c loop
-							across replaced_model_queries (c.item.feature_of_rout_id_set (l_rep_feature.rout_id_set), c.item, a_descendant) as q loop
-								if not Result.has (q.item) then
-									Result.extend (q.item)
-								end
+						Result.extend (a_descendant.feature_of_rout_id_set (l_rep_feature.rout_id_set))
+						across replaced_model_queries (l_rep_feature, a_descendant) as q loop
+							if not Result.has (q.item) then
+								Result.extend (q.item)
 							end
 						end
 					end
@@ -598,6 +594,30 @@ feature -- Eiffel helpers
 			-- Type of ancetor `a_class' in `a_context_type'.
 		do
 			Result := class_type_in_context (a_class.actual_type, a_class, Void, a_context_type)
+		end
+
+	all_versions (a_feature: FEATURE_I): LINKED_LIST [FEATURE_I]
+			-- All written versions of `a_feature'.
+		local
+			l_written_feature: FEATURE_I
+			i: INTEGER
+		do
+			create Result.make
+				-- Add the written version of the feature			
+			l_written_feature := a_feature.written_class.feature_of_body_index (a_feature.body_index)
+			Result.extend (l_written_feature)
+			if a_feature.assert_id_set /= Void then
+					-- Redefined feature: return original versions
+				from
+					i := 1
+				until
+					i > a_feature.assert_id_set.count
+				loop
+					l_written_feature := a_feature.assert_id_set [i].written_class.feature_of_body_index (a_feature.assert_id_set [i].body_index)
+					Result.extend (l_written_feature)
+					i := i + 1
+				end
+			end
 		end
 
 	set_any_type: CL_TYPE_A

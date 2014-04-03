@@ -121,6 +121,22 @@ feature -- Specification
 		attribute
 		end
 
+	add_iterator (it: V_ITERATOR [G])
+			-- Add `it' to `observers'.
+		note
+			status: ghost
+			explicit: contracts
+		require
+			wrapped: is_wrapped
+			it_not_current: it /= Current
+			modify_field (["observers", "closed"], Current)
+		do
+			set_observers (observers & it)
+		ensure
+			is_wrapped
+			observers = old observers & it
+		end
+
 	forget_iterator (it: V_ITERATOR [G])
 			-- Remove `it' from `observers'.
 		note
@@ -130,8 +146,8 @@ feature -- Specification
 			wrapped: is_wrapped
 			it_wrapped: it.is_wrapped
 			valid_target: it.target = Current
-			modify_model (["observers"], Current)
-			modify_model (["closed"], it)
+			modify_field (["observers", "closed"], Current)
+			modify_field (["closed"], it)
 		do
 			it.unwrap
 			set_observers (observers / it)
@@ -149,8 +165,8 @@ feature -- Specification
 		require
 			wrapped: is_wrapped
 			observers_wrapped: across observers as o all o.item.is_wrapped  end
-			modify_model (["observers"], Current)
-			modify_model (["closed"], observers)
+			modify_field (["observers", "closed"], Current)
+			modify_field (["closed"], observers)
 		do
 			unwrap_all (observers)
 			set_observers ([])

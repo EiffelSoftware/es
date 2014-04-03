@@ -282,7 +282,7 @@ feature -- Helper functions: contracts
 			l_objects_type: like translate_contained_expressions
 			l_name: STRING_32
 			l_type: CL_TYPE_A
-			l_attr, l_to_set: FEATURE_I
+			l_attr, l_to_set, l_new_version: FEATURE_I
 			l_boogie_type: IV_TYPE
 			l_field: IV_ENTITY
 			l_origin: CLASS_C
@@ -326,12 +326,17 @@ feature -- Helper functions: contracts
 								if a_check_model then
 									l_attr := l_origin.feature_named_32 (f.item)
 									if attached l_attr and then helper.is_model_query (l_origin, l_attr) then
-										across helper.replaced_model_queries (l_attr, l_origin, l_type.base_class) as m loop
+										l_new_version := l_type.base_class.feature_of_rout_id_set (l_attr.rout_id_set)
+										l_field := helper.field_from_attribute (l_new_version, l_type)
+										l_fields.extend (l_field)
+											-- Add replaced model queries
+										across helper.replaced_model_queries (l_new_version, l_type.base_class) as m loop
 											l_field := helper.field_from_attribute (m.item, l_type)
 											if across l_fields as fi all not fi.item.same_expression (l_field) end then
 												l_fields.extend (l_field)
 											end
 										end
+											-- Add replacing model queries
 										across helper.replacing_model_queries (l_attr, l_origin, l_type.base_class) as m loop
 											l_field := helper.field_from_attribute (m.item, l_type)
 											if across l_fields as fi all not fi.item.same_expression (l_field) end then
