@@ -38,6 +38,7 @@ feature -- Cursor movement
 			-- Move one position forward.
 		require
 			not_off: not off
+			subjects_closed: subjects.any_item.closed
 			modify_model (["box"], Current)
 		deferred
 		end

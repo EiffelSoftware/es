@@ -128,6 +128,7 @@ feature -- Cursor movement
 	finish
 			-- Go to the last position.
 		require
+			target_closed: target.closed
 			modify_model ("index_", Current)
 		deferred
 		ensure
@@ -230,7 +231,7 @@ feature -- Cursor movement
 			variant
 				sequence.count - index_
 			end
-			check inv_only ("box_definition_empty", "box_definition_non_empty") end
+			check inv_only ("box_definition") end
 		ensure then
 			index_effect_not_found: not sequence.tail (old index_).has (v) implies index_ = sequence.count + 1
 			index_effect_found: sequence.tail (old index_).has (v) implies index_ >= old index_ and sequence [index_] = v
@@ -290,8 +291,9 @@ invariant
 	subjects_definition: subjects = [target]
 	target_bag_constraint: target.bag ~ sequence.to_bag
 	index_constraint: 0 <= index_ and index_ <= sequence.count + 1
-	box_definition_empty: not sequence.domain [index_] implies box.is_empty
-	box_definition_non_empty: sequence.domain [index_] implies box ~ << sequence [index_] >>
+--	box_definition_empty: not sequence.domain [index_] implies box.is_empty
+--	box_definition_non_empty: sequence.domain [index_] implies box ~ << sequence [index_] >>
+	box_definition: box ~ if sequence.domain [index_] then create {MML_SET [G]}.singleton (sequence [index_]) else {MML_SET [G]}.empty_set end
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

@@ -329,18 +329,18 @@ feature -- Helper functions: contracts
 										l_new_version := l_type.base_class.feature_of_rout_id_set (l_attr.rout_id_set)
 										l_field := helper.field_from_attribute (l_new_version, l_type)
 										l_fields.extend (l_field)
-											-- Add replaced model queries
-										across helper.replaced_model_queries (l_new_version, l_type.base_class) as m loop
-											l_field := helper.field_from_attribute (m.item, l_type)
-											if across l_fields as fi all not fi.item.same_expression (l_field) end then
-												l_fields.extend (l_field)
-											end
-										end
 											-- Add replacing model queries
 										across helper.replacing_model_queries (l_attr, l_origin, l_type.base_class) as m loop
 											l_field := helper.field_from_attribute (m.item, l_type)
 											if across l_fields as fi all not fi.item.same_expression (l_field) end then
 												l_fields.extend (l_field)
+											end
+												-- Add replaced model queries
+											across helper.replaced_model_queries (m.item, l_type.base_class) as m1 loop
+												l_field := helper.field_from_attribute (m1.item, l_type)
+												if across l_fields as fi all not fi.item.same_expression (l_field) end then
+													l_fields.extend (l_field)
+												end
 											end
 										end
 									else
