@@ -146,6 +146,7 @@ feature -- Cursor movement
 			-- Go one position backward.
 		require
 			not_off: not off
+			target_closed: target.closed
 			modify_model ("index_", Current)
 		deferred
 		ensure
@@ -202,6 +203,7 @@ feature -- Cursor movement
 	go_after
 			-- Go after any position of `target'.
 		require
+			target_closed: target.closed
 			modify_model ("index_", Current)
 		deferred
 		ensure

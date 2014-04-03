@@ -24,8 +24,10 @@ feature -- Extension
 			-- Do not move cursor.
 		require
 			not_off: not off
-			modify_model (["index_", "sequence"], Current)
-			modify_model ("sequence", target)
+			target_wrapped: target.is_wrapped
+			other_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
+			modify_model (["index_", "sequence", "box", "target_index_sequence"], Current)
+			modify_model (["sequence", "owns"], target)
 		deferred
 		ensure
 			target_sequence_effect: target.sequence ~ old target.sequence.extended_at (index_, v)
@@ -38,8 +40,10 @@ feature -- Extension
 			-- Do not move cursor.
 		require
 			not_off: not off
-			modify_model (["sequence", "box"], Current)
-			modify_model ("sequence", target)
+			target_wrapped: target.is_wrapped
+			other_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
+			modify_model (["sequence", "target_index_sequence"], Current)
+			modify_model (["sequence", "owns"], target)
 		deferred
 		ensure
 			target_sequence_effect: target.sequence ~ old target.sequence.extended_at (index_ + 1, v)

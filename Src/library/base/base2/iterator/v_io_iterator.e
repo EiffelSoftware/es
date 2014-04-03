@@ -43,7 +43,7 @@ feature -- Replacement
 			not_off: not off
 			target_wrapped: target.is_wrapped
 			other_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
-			modify_model (["sequence"], Current)
+			modify_model (["sequence", "box"], Current)
 			modify_model (["bag"], target)
 		deferred
 		ensure

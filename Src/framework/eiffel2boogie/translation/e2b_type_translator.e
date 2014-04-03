@@ -261,11 +261,16 @@ feature {NONE} -- Implementation
 				types.bool)
 		end
 
+	processed_classes: ARRAYED_LIST [INTEGER]
+			-- List of classes already seen during the latest call to `process_invariants'.
+
 	process_invariants (a_class: CLASS_C; a_included, a_excluded: LIST [STRING]; a_mapping: E2B_ENTITY_MAPPING)
 			-- Process invariants of `a_class' and its ancestors, and store results in `last_clauses'.
 		do
 			create last_clauses.make
 			create last_safety_checks.make
+			create processed_classes.make (5)
+			processed_classes.extend (system.any_id)
 			process_flat_invariants (a_class, a_included, a_excluded, a_mapping)
 		end
 
@@ -280,12 +285,13 @@ feature {NONE} -- Implementation
 			until
 				l_classes.after
 			loop
-				if l_classes.item.class_id /= system.any_id then
+				if not processed_classes.has (l_classes.item.class_id) then
 					process_flat_invariants (l_classes.item,a_included, a_excluded, a_mapping)
 				end
 				l_classes.forth
 			end
 			process_immediate_invariants (a_class, a_included, a_excluded, a_mapping)
+			processed_classes.extend (a_class.class_id)
 		end
 
 	process_immediate_invariants (a_class: CLASS_C; a_included, a_excluded: LIST [STRING]; a_mapping: E2B_ENTITY_MAPPING)
