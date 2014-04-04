@@ -197,7 +197,7 @@ feature -- Basic operations
 
 	check_valid_class_inv_tags (a_class: CLASS_C; a_context_feature: FEATURE_I; a_line_number: INTEGER; a_tags: LIST [STRING])
 			-- Check if `a_tags' only lists valid class invariant of `a_class'.
-			-- Otherwise report error in feature `a_context_featur'.
+			-- Otherwise report error in feature `a_context_feature'.
 		local
 			l_asserts: BYTE_LIST [BYTE_NODE]
 			l_assert: ASSERT_B
@@ -207,6 +207,11 @@ feature -- Basic operations
 			create l_tags_copy.make
 			l_tags_copy.append (a_tags)
 			l_tags_copy.compare_objects
+				-- Remove default tags
+			across translation_mapping.default_tags as t loop
+				l_tags_copy.prune_all (t.item)
+			end
+				-- Remove user-defined tags
 			check_flat_inv_tags (a_class, l_tags_copy)
 			if not l_tags_copy.is_empty then
 				l_string := ""

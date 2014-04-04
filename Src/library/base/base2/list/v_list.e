@@ -20,7 +20,7 @@ feature -- Measurement
 	lower: INTEGER
 			-- Lower bound of index interval.
 		once
-			check inv_only ("lower_defintion") end
+			check inv_only ("lower_definition") end
 			Result := 1
 		end
 
@@ -379,7 +379,7 @@ feature -- Specification
 
 invariant
 	map_definition: map ~ sequence.to_map
-	lower_defintion: lower_ = 1
+	lower_definition: lower_ = 1
 	upper_definition: upper_ = sequence.count
 
 note

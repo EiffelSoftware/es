@@ -167,4 +167,11 @@ feature -- Access (built-ins)
 			Result.compare_objects
 		end
 
+	default_tags: ARRAY [STRING_32]
+			-- Tags of default invariant clauses.
+		once
+			Result := << "default_observers", "default_subjects", "default_owns", "A2" >>
+			Result.compare_objects
+		end
+
 end

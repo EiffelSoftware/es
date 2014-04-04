@@ -231,26 +231,33 @@ feature {NONE} -- Implementation
 			create builtin_collector
 			process_invariants (a_ancestor, a_included, a_excluded, l_mapping)
 				-- Add ownership defaults unless included clauses are explicitly specified
-			if options.is_ownership_enabled and a_included = Void then
+			if options.is_ownership_enabled then
 				if not type.base_class.is_deferred then
 						-- For an effective class: built-in ghost sets are empty by default
 						-- (ToDo: the policy seems arbitrary, should it be for all non-frozen classes?)
-					if not helper.is_class_explicit (type.base_class, "observers") and not builtin_collector.has_observers then
-						last_clauses.extend (empty_set_property ("observers"))
-					end
-					if not helper.is_class_explicit (type.base_class, "subjects") and not builtin_collector.has_subjects then
-						last_clauses.extend (empty_set_property ("subjects"))
-					end
-					if not helper.is_class_explicit (type.base_class, "owns") and not builtin_collector.has_owns then
-						last_clauses.extend (empty_set_property ("owns"))
-					end
+					add_default_clause ("observers", translation_mapping.default_tags [1], a_included, a_excluded)
+					add_default_clause ("subjects", translation_mapping.default_tags [2], a_included, a_excluded)
+					add_default_clause ("owns", translation_mapping.default_tags [3], a_included, a_excluded)
 				end
-				if not helper.is_class_explicit (type.base_class, "invariant") then
+				if not helper.is_class_explicit (type.base_class, "invariant") and
+				 is_tag_included (a_included, a_excluded, translation_mapping.default_tags [4]) then
 					last_clauses.extend (factory.function_call ("admissibility2", << factory.heap_entity ("heap"), factory.ref_entity ("current") >>, types.bool))
 				end
 			end
 
 			l_inv_function.set_body (factory.conjunction (last_clauses))
+		end
+
+	add_default_clause (a_name, a_tag: STRING; a_included, a_excluded: LIST [STRING])
+			-- Add default definition for a built-in attrbute `a_name' with tag `a_tag'.
+		do
+			if not helper.is_class_explicit (type.base_class, a_name) and not builtin_collector.has_attribute (a_name) then
+				if is_tag_included (a_included, a_excluded, a_tag) then
+					last_clauses.extend (empty_set_property (a_name))
+				end
+			elseif a_included /= Void and then a_included.has (a_tag) then
+				helper.add_semantic_error (type.base_class, messages.invalid_tag (a_tag, type.base_class.name_in_upper), -1)
+			end
 		end
 
 	empty_set_property (a_name: STRING): IV_EXPRESSION
@@ -294,6 +301,14 @@ feature {NONE} -- Implementation
 			processed_classes.extend (a_class.class_id)
 		end
 
+	is_tag_included (a_included, a_excluded: LIST [STRING]; a_tag: STRING): BOOLEAN
+			-- Should `a_tag' be included into the invariant function according `a_included' and `a_excluded'?
+		do
+			Result := (a_included = Void and a_excluded = Void) or else	-- Processing full invariant
+				(a_included /= Void and then a_tag /= Void and then a_included.has (a_tag)) or else -- Or explicitly included
+				(a_excluded /= Void and then (a_tag = Void or else not a_excluded.has (a_tag))) -- Or not expliciltly excluded
+		end
+
 	process_immediate_invariants (a_class: CLASS_C; a_included, a_excluded: LIST [STRING]; a_mapping: E2B_ENTITY_MAPPING)
 			-- Process invariants written in `a_class'.
 		require
@@ -315,10 +330,7 @@ feature {NONE} -- Implementation
 					l_assert ?= l_list.item
 					check l_assert /= Void end
 
-					if  (a_included = Void and a_excluded = Void) or else
-						(a_included /= Void and then l_assert.tag /= Void and then a_included.has (l_assert.tag)) or else
-						(a_excluded /= Void and then (l_assert.tag = Void or else not a_excluded.has (l_assert.tag)))
-					then
+					if is_tag_included (a_included, a_excluded, l_assert.tag) then
 						create l_translator.make
 						l_translator.copy_entity_mapping (a_mapping)
 						l_translator.set_context (a_class.invariant_feature, type)

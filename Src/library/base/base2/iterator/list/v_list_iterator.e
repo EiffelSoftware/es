@@ -55,11 +55,13 @@ feature -- Extension
 			-- Do not move cursor.
 		require
 			not_off: not off
-			other_exists: other /= Void
-			different_target: target /= other.target
 			other_not_before: not other.before
-			modify_model (["index_", "sequence"], Current)
-			modify_model ("sequence", target)
+			target_wrapped: target.is_wrapped
+			other_target_wrapped: other.target.is_wrapped
+			observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
+			different_target: target /= other.target
+			modify_model (["index_", "sequence", "target_index_sequence"], Current)
+			modify_model (["sequence", "owns"], target)
 			modify_model ("index_", other)
 		deferred
 		ensure
@@ -74,11 +76,13 @@ feature -- Extension
 			-- Move cursor to the last element of inserted sequence.
 		require
 			not_off: not off
-			other_exists: other /= Void
-			different_target: target /= other.target
 			other_not_before: not other.before
-			modify_model (["index_", "sequence"], Current)
-			modify_model ("sequence", target)
+			target_wrapped: target.is_wrapped
+			other_target_wrapped: other.target.is_wrapped
+			observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
+			different_target: target /= other.target
+			modify_model (["index_", "sequence", "target_index_sequence"], Current)
+			modify_model (["sequence", "owns"], target)
 			modify_model ("index_", other)
 		deferred
 		ensure

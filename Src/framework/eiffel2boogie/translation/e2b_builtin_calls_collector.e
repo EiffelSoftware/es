@@ -36,7 +36,19 @@ feature -- Status setting
 			is_any_target := True
 		end
 
-feature -- Results			
+feature -- Results
+
+	has_attribute (a_name: STRING): BOOLEAN
+			-- Is attribute `a_name' mentioned?
+		do
+			if a_name ~ "observers" then
+				Result := has_observers
+			elseif a_name ~ "subjects" then
+				Result := has_subjects
+			elseif a_name ~ "owns" then
+				Result := has_owns
+			end
+		end
 
 	has_observers: BOOLEAN
 			-- Is `observers' mentioned?
