@@ -52,6 +52,7 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 					loop
 						l_primary_result := initial_result.verification_results.item
 						if
+							l_primary_result.context_feature /= Void and then
 							l_primary_result.context_class.class_id = l_second_success.item.context_class.class_id and then
 							l_primary_result.context_feature.body_index = l_second_success.item.context_feature.body_index
 						then

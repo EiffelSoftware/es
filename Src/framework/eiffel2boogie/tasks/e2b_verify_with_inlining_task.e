@@ -51,8 +51,10 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 				create l_context
 				l_context.options.routines_to_inline.wipe_out
 				across initial_result_generator.last_result.failed_verifications as i loop
-					l_translator_input.add_feature (i.item.context_feature)
-					l_context.options.routines_to_inline.extend (i.item.context_feature.body_index)
+					if i.item.context_feature /= Void then
+						l_translator_input.add_feature (i.item.context_feature)
+						l_context.options.routines_to_inline.extend (i.item.context_feature.body_index)
+					end
 				end
 
 				create l_boogie_universe.make
