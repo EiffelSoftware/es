@@ -96,15 +96,16 @@ feature -- Removal
 
 	remove
 			-- Remove element at current position. Move cursor to the next position.
-		note
-			modify: sequence
 		require
 			not_off: not off
-			modify_model (["sequence", "box"], Current)
-			modify_model ("sequence", target)
+			target_wrapped: target.is_wrapped
+			other_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
+			modify_model (["index_", "sequence", "target_index_sequence"], Current)
+			modify_model (["sequence", "owns"], target)
 		deferred
 		ensure
 			target_sequence_effect: target.sequence ~ old target.sequence.removed_at (index_)
+			index_effect: index_ = old index_
 			target_wrapped: target.is_wrapped
 		end
 
@@ -113,8 +114,10 @@ feature -- Removal
 		require
 			not_off: not off
 			not_first: not is_first
-			modify_model (["sequence", "index_"], Current)
-			modify_model ("sequence", target)
+			target_wrapped: target.is_wrapped
+			other_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
+			modify_model (["index_", "sequence", "target_index_sequence"], Current)
+			modify_model (["sequence", "owns"], target)
 		deferred
 		ensure
 			target_sequence_effect: target.sequence ~ old target.sequence.removed_at (index_ - 1)
@@ -127,8 +130,10 @@ feature -- Removal
 		require
 			not_off: not off
 			not_last: not is_last
-			modify_model (["sequence", "index_"], Current)
-			modify_model ("sequence", target)
+			target_wrapped: target.is_wrapped
+			other_observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
+			modify_model (["sequence", "target_index_sequence"], Current)
+			modify_model (["sequence", "owns"], target)
 		deferred
 		ensure
 			sequence_effect: sequence ~ old sequence.removed_at (index_ + 1)
