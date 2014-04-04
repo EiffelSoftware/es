@@ -118,14 +118,16 @@ feature -- Update
 			l_class_data: EBB_CLASS_DATA
 			l_features: LIST [FEATURE_I]
 		do
-			if not class_data_table.has_key (a_class.name) then
+			if a_class.name.is_case_insensitive_equal ("ITP_INTERPRETER_ROOT") then
+				l_class_data := Void
+			elseif not class_data_table.has_key (a_class.name) then
 				create l_class_data.make (a_class)
 				class_data_table.extend (l_class_data, a_class.name)
 			else
 				l_class_data := class_data_table.item (a_class.name)
 			end
 
-			if l_class_data.is_compiled then
+			if l_class_data /= Void and then l_class_data.is_compiled then
 				from
 					l_features := features_written_in_class (l_class_data.compiled_class)
 					l_features.start
@@ -144,12 +146,11 @@ feature -- Update
 			l_class: EBB_CLASS_DATA
 		do
 			l_class := class_data (a_class)
-			check l_class /= Void end
-
-			across l_class.children as l_children loop
-				remove_feature (l_children.item.associated_feature)
+			if l_class /= Void then
+				across l_class.children as l_children loop
+					remove_feature (l_children.item.associated_feature)
+				end
 			end
-
 			class_data_table.remove (a_class.name)
 		end
 
