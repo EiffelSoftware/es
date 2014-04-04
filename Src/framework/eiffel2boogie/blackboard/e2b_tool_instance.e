@@ -22,7 +22,6 @@ feature -- Status report
 			-- Is instance running?
 		do
 			Result := autoproof.is_running
---			Result := verify_task.has_next_step
 		end
 
 feature {EBB_TOOL_EXECUTION} -- Basic operations

@@ -66,7 +66,4 @@ feature {ROTA_S, ROTA_TASK_I} -- Basic operations
 			has_next_step := False
 		end
 
-feature {NONE} -- Implementation
-
-
 end

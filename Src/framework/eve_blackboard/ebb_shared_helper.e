@@ -14,7 +14,7 @@ feature {NONE} -- Helper functions
 			l_feature: FEATURE_I
 		do
 			create {LINKED_LIST [FEATURE_I]} Result.make
-			if a_class.feature_table /= Void then
+			if a_class.has_feature_table and then a_class.feature_table /= Void then
 				from
 					a_class.feature_table.start
 				until
