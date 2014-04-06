@@ -159,12 +159,12 @@ feature -- Cursor movement
 			explicit: wrapping
 		require
 			has_index: valid_index (i)
-			target_closed: target.closed
+			target_wrapped: target.is_wrapped
 			modify_model ("index_", Current)
 		local
 			j: INTEGER
 		do
-			check inv_only ("index_constraint", "target_exists", "target_bag_constraint") end
+			check inv_only ("index_constraint", "target_exists", "target_bag_constraint", "subjects_definition") end
 			if i = 0 then
 				go_before
 			elseif i = target.count + 1 then
@@ -217,7 +217,7 @@ feature -- Cursor movement
 		note
 			explicit: wrapping
 		do
-			check inv_only ("index_constraint") end
+			check inv_only ("index_constraint", "subjects_definition") end
 			if before then
 				start
 			end
@@ -247,9 +247,10 @@ feature -- Cursor movement
 		note
 			explicit: wrapping
 		require
+			target_wrapped: target.is_wrapped
 			modify_model ("index_", Current)
 		do
-			check inv_only ("index_constraint") end
+			check inv_only ("index_constraint", "subjects_definition") end
 			if after then
 				finish
 			end

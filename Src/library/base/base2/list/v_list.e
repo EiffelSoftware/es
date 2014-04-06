@@ -134,6 +134,7 @@ feature -- Extension
 			input_wrapped: input.is_wrapped
 			not_current: input /= Current
 			different_target: input.target /= Current
+			input_target_wrapped: input.target.is_wrapped
 			not_before: not input.before
 			observers_open: across observers as o all o.item.is_open end
 			modify_model (["sequence", "owns"], Current)
@@ -149,9 +150,8 @@ feature -- Extension
 			until
 				input.after
 			loop
+				lemma_concat_interval (sequence.old_, input.sequence, {MML_SEQUENCE [G]}.empty_sequence, sequence, input.index_.old_, input.index_ - 1)
 				extend_back (input.item)
-				check input.sequence.interval (input.index_.old_, input.index_) =
-					input.sequence.interval (input.index_.old_, input.index_ - 1) & input.item end
 				input.forth
 			variant
 				input.sequence.count - input.index_
@@ -172,9 +172,10 @@ feature -- Extension
 			input_wrapped: input.is_wrapped
 			not_current: input /= Current
 			different_target: input.target /= Current
+			input_target_wrapped: input.target.is_wrapped
 			not_before: not input.before
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "owns"], Current)
+			modify_model (["sequence", "owns", "observers"], Current)
 			modify_model ("index_", input)
 		deferred
 		ensure
@@ -182,6 +183,7 @@ feature -- Extension
 			input_wrapped: input.is_wrapped
 			sequence_effect: sequence ~ old (input.sequence.tail (input.index_) + sequence)
 			input_index_effect: input.index_ = input.sequence.count + 1
+			observers_preserved: observers ~ old observers
 		end
 
 	insert_at (input: V_ITERATOR [G]; i: INTEGER)
@@ -194,9 +196,10 @@ feature -- Extension
 			valid_index: has_index (i) or i = count + 1
 			not_current: input /= Current
 			different_target: input.target /= Current
+			input_target_wrapped: input.target.is_wrapped
 			not_before: not input.before
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["sequence", "owns"], Current)
+			modify_model (["sequence", "owns", "observers"], Current)
 			modify_model ("index_", input)
 		deferred
 		ensure
@@ -204,6 +207,7 @@ feature -- Extension
 			input_wrapped: input.is_wrapped
 			sequence_effect: sequence ~ old (sequence.front (i - 1) + input.sequence.tail (input.index_) + sequence.tail (i))
 			input_index_effect: input.index_ = input.sequence.count + 1
+			observers_preserved: observers ~ old observers
 		end
 
 --	reverse
@@ -335,8 +339,8 @@ feature -- Removal
 				inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty")
 				1 <= i.index_ and i.index_ <= sequence.count + 1
 				not i.off implies i.item = v
-				modify_model ("sequence", Current)
-				modify_model (["index_", "sequence"], i)
+				modify_model (["sequence", "owns"], Current)
+				modify_model (["index_", "sequence", "target_index_sequence"], i)
 			until
 				i.after
 			loop
@@ -375,6 +379,21 @@ feature -- Specification
 			status: ghost
 			replaces: map
 		attribute
+		end
+
+feature {V_CONTAINER, V_ITERATOR} -- Specification
+
+	lemma_concat_interval (s1, s2, s3, s: MML_SEQUENCE [G]; i, j: INTEGER)
+			-- If `s' is made up of three parts, the middle of which is an interval of `s2',
+			-- it will still be made of three parts after extending after the second part with the next element of `s2'.
+		note
+			status: lemma
+		require
+			i_j_in_bounds: 1 <= i and i <= j + 1 and j < s2.count
+			s_concat: s = s1 + s2.interval (i, j) + s3
+		do
+		ensure
+			s.extended_at (s1.count + j - i + 2, s2 [j + 1]) = s1 + s2.interval (i, j + 1) + s3
 		end
 
 invariant

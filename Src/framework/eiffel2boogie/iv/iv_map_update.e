@@ -51,11 +51,11 @@ feature -- Access
 		end
 
 	triggers_for (a_bound_var: IV_ENTITY): ARRAYED_LIST [IV_EXPRESSION]
-			-- List of smallest subexpressions of `Current' with a valid triggers for a bound variable `a_bound_var'.			
+			-- List of smallest subexpressions of `Current' with a valid triggers for a bound variable `a_bound_var'.
+			-- If one of the indexes/value is `a_bound_var', use the whole map update; other combine triggers for all indexes/value.
 		do
 			create Result.make (3)
-			if across indexes as i some i.item.has_free_var_named (a_bound_var.name) and i.item.triggers_for (a_bound_var).is_empty end
-				or value.has_free_var_named (a_bound_var.name) and value.triggers_for (a_bound_var).is_empty then
+			if across indexes as i some i.item.same_expression (a_bound_var) end or value.same_expression (a_bound_var) then
 				Result.extend (Current)
 			else
 				across indexes as i loop

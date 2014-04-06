@@ -79,7 +79,7 @@ feature -- Measurement
 			check inv end
 			Result := lower <= i and i <= upper
 		ensure then
-			Result = (lower <= i and i <= upper)
+			Result = (lower_ <= i and i <= upper_)
 		end
 
 feature -- Search
@@ -165,7 +165,7 @@ feature -- Iteration
 			explicit: contracts
 		require
 			is_wrapped: is_wrapped
-			modify_model (["observers"], Current)
+			modify_field (["observers", "closed"], Current)
 		do
 			check inv end
 			Result := at (upper)

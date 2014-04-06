@@ -55,7 +55,7 @@ feature -- Iteration
 			explicit: contracts
 		require
 			is_wrapped: is_wrapped
-			modify_model (["observers"], Current)
+			modify_field (["observers", "closed"], Current)
 		deferred
 		ensure
 			is_wrapped: is_wrapped

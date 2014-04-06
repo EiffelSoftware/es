@@ -103,13 +103,13 @@ feature -- Iteration
 
 	at (i: INTEGER): V_LINKED_LIST_ITERATOR [G]
 			-- New iterator pointing at position `i'.
-			-- ToDo
 		note
 			status: impure
 			explicit: contracts, wrapping
 		do
 			create Result.make (Current)
 			check Result.inv end
+			check inv_only ("lower_definition", "upper_definition", "count_definition") end
 			if i < 1 then
 				Result.go_before
 			elseif i > count then
@@ -161,7 +161,7 @@ feature -- Extension
 		local
 			cell: V_LINKABLE [G]
 		do
-			check cell_sequence_later: across 1 |..| (count - 1) as i all cell_sequence [i.item].right = cell_sequence [i.item + 1] end end
+--			check cell_sequence_later: across 1 |..| (count - 1) as i all cell_sequence [i.item].right = cell_sequence [i.item + 1] end end
 			create cell.put (v)
 			if first_cell = Void then
 				last_cell := cell
@@ -223,23 +223,45 @@ feature -- Extension
 	prepend (input: V_ITERATOR [G])
 			-- Prepend sequence of values, over which `input' iterates.
 		note
-			explicit: contracts
-			skip: True
+			explicit: contracts, wrapping
 		local
 			it: V_LINKED_LIST_ITERATOR [G]
 		do
 			if not input.after then
+				check input.inv end
+				check inv_only ("count_definition") end
 				extend_front (input.item)
+				check inv_only ("count_definition") end
 				input.forth
+
 				from
 					it := new_cursor
+				invariant
+					1 <= input.index_ and input.index_ <= input.sequence.count + 1
+					1 <= it.index_ and it.index_ <= it.sequence.count
+					it.index_ = input.index_ - input.index_.old_
+					sequence ~ input.sequence.interval (input.index_.old_, input.index_ - 1) + sequence.old_
+					is_wrapped
+					input.is_wrapped
+					it.is_wrapped
+					it.target = Current
+					observers = observers.old_ & it
+					across observers.old_ as o all o.item.is_open end
+					cell_sequence.old_ ~ cell_sequence.tail (it.index_ + 1)
 				until
 					input.after
 				loop
+					check it.inv_only ("no_observers", "subjects_definition", "sequence_definition") end
+					lemma_concat_interval ({MML_SEQUENCE [G]}.empty_sequence, input.sequence, sequence.old_, sequence, input.index_.old_, input.index_ - 1)
+					check sequence.extended_at (it.index + 1, input.item) = input.sequence.interval (input.index_.old_, input.index_) + sequence.old_ end
 					it.extend_right (input.item)
+					check it.inv_only ("after_definition", "sequence_definition") end
 					it.forth
 					input.forth
+				variant
+					input.sequence.count - input.index_
 				end
+				forget_iterator (it)
 			end
 		ensure then
 			cell_sequence_preserved: old cell_sequence ~ cell_sequence.tail (input.sequence.count - old input.index_ + 2)
@@ -248,8 +270,7 @@ feature -- Extension
 	insert_at (input: V_ITERATOR [G]; i: INTEGER)
 			-- Insert sequence of values, over which `input' iterates, starting at position `i'.
 		note
-			explicit: contracts
-			skip: True
+			explicit: contracts, wrapping
 		local
 			it: V_LINKED_LIST_ITERATOR [G]
 		do
@@ -258,13 +279,35 @@ feature -- Extension
 			else
 				from
 					it := at (i - 1)
+					check input.inv end
+					check inv_only ("lower_definition", "upper_definition", "count_definition") end
+					check it.inv_only ("sequence_definition") end
+				invariant
+					1 <= input.index_ and input.index_ <= input.sequence.count + 1
+					i - 1 <= it.index_ and it.index_ <= it.sequence.count
+					it.index_ - i + 1 = input.index_ - input.index_.old_
+					sequence ~ sequence.old_.front (i - 1) + input.sequence.interval (input.index_.old_, input.index_ - 1) + sequence.old_.tail (i)
+					is_wrapped
+					input.is_wrapped
+					it.is_wrapped
+					it.target = Current
+					observers = observers.old_ & it
+					across observers.old_ as o all o.item.is_open end
 				until
 					input.after
 				loop
+					check it.inv_only ("no_observers", "subjects_definition", "sequence_definition") end
+					lemma_concat_interval (sequence.old_.front (i - 1), input.sequence, sequence.old_.tail (i), sequence, input.index_.old_, input.index_ - 1)
+					check sequence.extended_at (it.index + 1, input.item) =
+						sequence.old_.front (i - 1) + input.sequence.interval (input.index_.old_, input.index_) + sequence.old_.tail (i) end
 					it.extend_right (input.item)
+					check it.inv_only ("after_definition", "sequence_definition") end
 					it.forth
 					input.forth
+				variant
+					input.sequence.count - input.index_
 				end
+				forget_iterator (it)
 			end
 		end
 
@@ -543,7 +586,7 @@ feature -- Specificaton
 		attribute
 		end
 
-feature {V_LINKED_LIST, V_LINKED_LIST_ITERATOR} -- Specificaton
+feature {V_LINKED_LIST, V_LINKED_LIST_ITERATOR} -- Specificaton	
 
 	lemma_cells_distinct
 			-- All cells in `cell_sequence' are distinct.
@@ -586,6 +629,22 @@ feature {V_LINKED_LIST, V_LINKED_LIST_ITERATOR} -- Specificaton
 			end
 		end
 
+	lemma_next (i1, i2: INTEGER)
+			-- Given two indexes `i1' < `i2' into the list,
+			-- the cell at `i1' has the cell at `i2' as its `right' iff `i2' = `i1' + 1.
+		note
+			status: lemma
+		require
+			1 <= i1 and i1 < i2 and i2 <= count
+			inv_only ("count_definition", "cell_sequence_domain", "cells_exist", "cell_sequence_later", "cell_sequence_last")
+		do
+			check across cell_sequence.domain as i all attached cell_sequence [i.item] end end
+			check across 1 |..| (count - 1) as i all attached cell_sequence [i.item] and then cell_sequence [i.item].right = cell_sequence [i.item + 1] end end
+			lemma_cells_distinct
+		ensure
+			(i1 + 1 = i2) = (cell_sequence [i1].right = cell_sequence [i2])
+		end
+
 	lemma_extended (s, s1: MML_SEQUENCE [G]; cs, cs1: MML_SEQUENCE [V_LINKABLE [G]]; index: INTEGER; cell: V_LINKABLE [G])
 		note
 			status: lemma
@@ -617,22 +676,6 @@ feature {V_LINKED_LIST, V_LINKED_LIST_ITERATOR} -- Specificaton
 			across cs1.domain as i all attached cs1 [i.item] and then cs1 [i.item].item = s1 [i.item] end
 		end
 
-	lemma_next (i1, i2: INTEGER)
-			-- Given two indexes `i1' < `i2' into the list,
-			-- the cell at `i1' has the cell at `i2' as its `right' iff `i2' = `i1' + 1.
-		note
-			status: lemma
-		require
-			1 <= i1 and i1 < i2 and i2 <= count
-			inv_only ("count_definition", "cell_sequence_domain", "cells_exist", "cell_sequence_later", "cell_sequence_last")
-		do
-			check across cell_sequence.domain as i all attached cell_sequence [i.item] end end
-			check across 1 |..| (count - 1) as i all attached cell_sequence [i.item] and then cell_sequence [i.item].right = cell_sequence [i.item + 1] end end
-			lemma_cells_distinct
-		ensure
-			(i1 + 1 = i2) = (cell_sequence [i1].right = cell_sequence [i2])
-		end
-
 invariant
 	count_definition: count = sequence.count
 	owns_definition: owns = cell_sequence.range
@@ -643,6 +686,7 @@ invariant
 	cell_sequence_first: count > 0 implies cell_sequence.first = first_cell
 	cell_sequence_last: count > 0 implies (cell_sequence.last = last_cell and attached last_cell) and then last_cell.right = Void
 	cell_sequence_later: across 1 |..| (count - 1) as i all attached cell_sequence [i.item] and then cell_sequence [i.item].right = cell_sequence [i.item + 1] end
+--	cell_sequence_linked: is_linked (cell_sequence)
 	sequence_definition: across cell_sequence.domain as i all sequence [i.item] = cell_sequence [i.item].item end
 
 note

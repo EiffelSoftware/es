@@ -37,8 +37,8 @@ feature -- Cursor movement
 	forth
 			-- Move one position forward.
 		require
+			subjects_wrapped: subjects.any_item.is_wrapped
 			not_off: not off
-			subjects_closed: subjects.any_item.closed
 			modify_model (["box"], Current)
 		deferred
 		end
@@ -50,12 +50,14 @@ feature -- Cursor movement
 		note
 			explicit: wrapping
 		require
+			subjects_wrapped: subjects.any_item.is_wrapped
 			modify_model (["box"], Current)
 		do
 			from
 			invariant
 				decreases ([])
 				is_wrapped
+				subjects.any_item.closed
 			until
 				off or else item = v
 			loop

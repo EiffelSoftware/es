@@ -26,7 +26,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Initialization
 		require
 			list_wrapped: list.is_wrapped
 			modify (Current)
-			modify_model ("observers", list)
+			modify_field (["observers", "closed"], list)
 		do
 			target := list
 			list.add_iterator (Current)
@@ -37,6 +37,7 @@ feature {V_CONTAINER, V_ITERATOR} -- Initialization
 		ensure
 			target_effect: target = list
 			index_effect: index_ = 0
+			list_observers_effect: list.observers = old list.observers & Current
 		end
 
 feature -- Initialization
@@ -265,6 +266,9 @@ feature -- Extension
 			target.extend_after (create {V_LINKABLE [G]}.put (v), active, index_)
 			check target.inv end
 			set_target_index_sequence
+		ensure then
+			cell_sequence_front_preserved: target.cell_sequence.old_.front (index_) ~ target.cell_sequence.front (index_)
+			cell_sequence_tail_preserved: target.cell_sequence.old_.tail (index_ + 1) ~ target.cell_sequence.tail (index_ + 2)
 		end
 
 	insert_left (other: V_ITERATOR [G])
@@ -317,7 +321,7 @@ feature -- Extension
 			loop
 				check inv_only ("subjects_definition", "sequence_definition") end
 				check other.inv_only ("no_observers") end
-				lemma_concat_interval (target.sequence.front (index_.old_).old_, other.sequence.old_, target.sequence.tail (index_.old_ + 1).old_, target.sequence, other.index_.old_, other.index_ - 1)
+				target.lemma_concat_interval (target.sequence.front (index_.old_).old_, other.sequence.old_, target.sequence.tail (index_.old_ + 1).old_, target.sequence, other.index_.old_, other.index_ - 1)
 				extend_right (other.item)
 				check target.inv_only ("count_definition") end
 				check inv_only ("after_definition", "sequence_definition") end
@@ -465,20 +469,6 @@ feature {NONE} -- Specification
 			values_set: across target_index_sequence.domain as i all target_index_sequence [i.item] = i.item end
 			range_set: target_index_sequence.range = create {MML_INTERVAL}.from_range (1, target.count)
 		end
-
-	lemma_concat_interval (s1, s2, s3, s: MML_SEQUENCE [G]; i, j: INTEGER)
-		note
-			status: lemma
-		require
-			i_j_in_bounds: 1 <= i
-			p2: i <= j + 1
-			p3: j < s2.count
-			s_concat: s = s1 + s2.interval (i, j) + s3
-		do
-		ensure
-			s.extended_at (s1.count + j - i + 2, s2 [j + 1]) = s1 + s2.interval (i, j + 1) + s3
-		end
-
 
 invariant
 	after_definition: after = (index_ = sequence.count + 1)

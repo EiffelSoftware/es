@@ -158,7 +158,7 @@ axiom (forall<T> s: Seq T, i: int, v: T :: { Seq#Item(Seq#Extended(s,v), i) }
 // Sequence with x inserted at position i
 function {: inline } Seq#ExtendedAt<T>(s: Seq T, i: int, val: T): Seq T
 {
-  Seq#Concat (Seq#Extended(Seq#Take(s, i - 1), val), Seq#Drop(s, i -1))
+  Seq#Concat (Seq#Extended(Seq#Take(s, i - 1), val), Seq#Drop(s, i - 1))
 }
 
 // Sequence prepended with x at the beginning
@@ -233,6 +233,7 @@ axiom (forall<T> s, t: Seq T ::
   { Seq#Concat(s, t) }
   Seq#Take(Seq#Concat(s, t), Seq#Length(s)) == s &&
   Seq#Drop(Seq#Concat(s, t), Seq#Length(s)) == t);
+  
 
 // Commutability of Take and Drop with Update.
 axiom (forall<T> s: Seq T, i: int, v: T, n: int ::

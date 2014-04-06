@@ -59,9 +59,10 @@ feature -- Access
 
 	triggers_for (a_bound_var: IV_ENTITY): ARRAYED_LIST [IV_EXPRESSION]
 			-- List of smallest subexpressions of `Current' with a valid triggers for a bound variable `a_bound_var'.			
+			-- If one of the indexes is `a_bound_var', use the function call; other combine triggers for all indexes.
 		do
 			create Result.make (3)
-			if across indexes as i some i.item.has_free_var_named (a_bound_var.name) and i.item.triggers_for (a_bound_var).is_empty end then
+			if across indexes as i some i.item.same_expression (a_bound_var) end then
 				Result.extend (Current)
 			else
 				across indexes as i loop
