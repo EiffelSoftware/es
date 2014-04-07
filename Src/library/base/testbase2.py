@@ -34,7 +34,9 @@ def run_all(project_path):
     '-batch',
     '-project_path', project_path,
     '-boogie',
-    '-ownership',]
+    '-ownership',
+    '-arithtrigger'
+    ]
   args = args + classes
                   
   with open(outfile_name, 'w') as outfile:

@@ -161,7 +161,7 @@ feature -- Extension
 		local
 			cell: V_LINKABLE [G]
 		do
---			check cell_sequence_later: across 1 |..| (count - 1) as i all cell_sequence [i.item].right = cell_sequence [i.item + 1] end end
+			check across 1 |..| (count - 1) as i all cell_sequence [i.item].right = cell_sequence [i.item + 1] end end
 			create cell.put (v)
 			if first_cell = Void then
 				last_cell := cell
@@ -686,7 +686,6 @@ invariant
 	cell_sequence_first: count > 0 implies cell_sequence.first = first_cell
 	cell_sequence_last: count > 0 implies (cell_sequence.last = last_cell and attached last_cell) and then last_cell.right = Void
 	cell_sequence_later: across 1 |..| (count - 1) as i all attached cell_sequence [i.item] and then cell_sequence [i.item].right = cell_sequence [i.item + 1] end
---	cell_sequence_linked: is_linked (cell_sequence)
 	sequence_definition: across cell_sequence.domain as i all sequence [i.item] = cell_sequence [i.item].item end
 
 note

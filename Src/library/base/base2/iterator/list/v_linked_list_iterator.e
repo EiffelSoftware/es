@@ -290,8 +290,11 @@ feature -- Extension
 			else
 				back
 				insert_right (other)
+				check target.observers ~ target.observers.old_ end
 				check inv_only ("sequence_definition", "after_definition") end
+				check target /= Current end
 				forth
+				check target.observers ~ target.observers.old_ end
 			end
 		end
 

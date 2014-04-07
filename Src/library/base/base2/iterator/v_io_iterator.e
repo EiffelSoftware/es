@@ -61,6 +61,7 @@ feature -- Replacement
 		do
 			check inv_only ("subjects_definition", "subjects_contraint") end
 			put (v)
+			check inv end
 			forth
 		ensure then
 			sequence_effect: sequence ~ old (sequence.replaced_at (index_, v))

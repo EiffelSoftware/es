@@ -212,7 +212,7 @@ feature -- Replacement
 	reverse
 			-- Reverse the order of elements.
 		note
-			explicit: wrapping
+			explicit: contracts, wrapping
 		require
 			is_wrapped: is_wrapped
 			observers_open: across observers as o all o.item.is_open end

@@ -146,7 +146,7 @@ feature -- Cursor movement
 			-- Go one position backward.
 		require
 			not_off: not off
-			target_closed: target.closed
+			target_closed: target.is_wrapped
 			modify_model ("index_", Current)
 		deferred
 		ensure
@@ -164,7 +164,7 @@ feature -- Cursor movement
 		local
 			j: INTEGER
 		do
-			check inv_only ("index_constraint", "target_exists", "target_bag_constraint", "subjects_definition") end
+			check inv and then target.inv end
 			if i = 0 then
 				go_before
 			elseif i = target.count + 1 then
@@ -183,6 +183,7 @@ feature -- Cursor movement
 				until
 					j = i
 				loop
+					check inv end
 					forth
 					j := j + 1
 				end
@@ -217,12 +218,15 @@ feature -- Cursor movement
 		note
 			explicit: wrapping
 		do
-			check inv_only ("index_constraint", "subjects_definition") end
+			check inv end
 			if before then
 				start
 			end
 			from
 			invariant
+				is_wrapped
+				inv
+				target.is_wrapped
 				index_.old_ <= index_ and index_ <= sequence.count + 1
 				not before
 				across index_.old_.max (1) |..| (index_ - 1) as i all sequence [i.item] /= v end
@@ -233,7 +237,6 @@ feature -- Cursor movement
 			variant
 				sequence.count - index_
 			end
-			check inv_only ("box_definition") end
 		ensure then
 			index_effect_not_found: not sequence.tail (old index_).has (v) implies index_ = sequence.count + 1
 			index_effect_found: sequence.tail (old index_).has (v) implies index_ >= old index_ and sequence [index_] = v
@@ -250,13 +253,17 @@ feature -- Cursor movement
 			target_wrapped: target.is_wrapped
 			modify_model ("index_", Current)
 		do
-			check inv_only ("index_constraint", "subjects_definition") end
+			check inv end
 			if after then
 				finish
 			end
 			from
 			invariant
-				0 <= index_ and index_ <= index_.old_
+				is_wrapped
+				inv
+				target.is_wrapped
+				0 <= index_
+				index_ <= index_.old_
 				not after
 				across (index_ + 1) |..| index_.old_.min (sequence.count) as i all sequence [i.item] /= v end
 			until
@@ -294,8 +301,6 @@ invariant
 	subjects_definition: subjects = [target]
 	target_bag_constraint: target.bag ~ sequence.to_bag
 	index_constraint: 0 <= index_ and index_ <= sequence.count + 1
---	box_definition_empty: not sequence.domain [index_] implies box.is_empty
---	box_definition_non_empty: sequence.domain [index_] implies box ~ << sequence [index_] >>
 	box_definition: box ~ if sequence.domain [index_] then create {MML_SET [G]}.singleton (sequence [index_]) else {MML_SET [G]}.empty_set end
 
 note

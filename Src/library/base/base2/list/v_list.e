@@ -210,46 +210,6 @@ feature -- Extension
 			observers_preserved: observers ~ old observers
 		end
 
---	reverse
---			-- Reverse the order of elements.
---		note
---			explicit: wrapping
-----		require
-----			is_wrapped: is_wrapped
-----			observers_open: across observers as o all o.item.is_open end
-----			modify_model (["map", "observers"], Current)
---		local
---			j, k: INTEGER
---		do
-----			check inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty") end
---			from
---				j := lower
---				k := upper
---			invariant
---				inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty")
---				map.domain ~ map.domain.old_
---				lower_ <= j and j <= k + 1 and k <= upper_
---				k = lower_ + upper_ - j
---				across j |..| k as i all map.domain [i.item] and then map [i.item] = map.old_ [i.item] end
---				across lower_ |..| (j - 1) as i all map.domain [i.item] and then map [i.item] = map.old_ [lower_ + upper_ - i.item] end
---				across (k + 1) |..| upper_ as i all map.domain [i.item] and then map [i.item] = map.old_ [lower_ + upper_ - i.item] end
---				is_wrapped
-----				inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty")
---				observers ~ observers.old_
---			until
---				j >= k
---			loop
---				swap (j, k)
---				j := j + 1
---				k := k - 1
---			end
-----		ensure
-----			is_wrapped: is_wrapped
-----			map_domain_effect: map.domain ~ old map.domain
-----			map_effect: across map.domain as i all map [i.item] = (old map) [lower_ + upper_ - i.item] end
-----			observers_restored: observers ~ old observers
---		end
-
 feature -- Removal
 
 	remove_front

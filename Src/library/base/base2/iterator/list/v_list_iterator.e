@@ -61,7 +61,7 @@ feature -- Extension
 			observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
 			different_target: target /= other.target
 			modify_model (["index_", "sequence", "target_index_sequence"], Current)
-			modify_model (["sequence", "owns"], target)
+			modify_model (["sequence", "owns", "observers"], target)
 			modify_model ("index_", other)
 		deferred
 		ensure
@@ -69,6 +69,7 @@ feature -- Extension
 			index_effect: index_ = old (index_ + other.sequence.tail (other.index_).count)
 			other_index_effect: other.index_ = other.sequence.count + 1
 			target_wrapped: target.is_wrapped
+			target_observers_preserved: target.observers ~ old target.observers
 		end
 
 	insert_right (other: V_ITERATOR [G])
