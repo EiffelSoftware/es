@@ -188,9 +188,7 @@ feature -- Universe Visitor
 				across a_implementation.locals as i loop
 					output.put_indentation
 					output.put ("var ")
-					output.put (i.item.name)
-					output.put (": ")
-					i.item.type.process (Current)
+					process_entity_declaration (i.item)
 					output.put (";")
 					output.put_new_line
 				end

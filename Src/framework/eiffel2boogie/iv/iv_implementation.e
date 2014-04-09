@@ -51,6 +51,19 @@ feature -- Element change
 			local_added: locals.last.type = a_type
 		end
 
+	add_local_with_property (a_name: STRING; a_type: IV_TYPE; a_prop: IV_EXPRESSION)
+			-- Add local variable with name `a_name' and type `a_type' and where-property `a_prop'.
+		local
+			l_decl: IV_ENTITY_DECLARATION
+		do
+			create l_decl.make (a_name, a_type)
+			l_decl.set_property (a_prop)
+			locals.extend (l_decl)
+		ensure
+			local_added: locals.last.name ~ a_name
+			local_added: locals.last.type = a_type
+		end
+
 feature -- Visitor
 
 	process (a_visitor: IV_UNIVERSE_VISITOR)

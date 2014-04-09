@@ -465,13 +465,14 @@ feature -- Translation: Implementation
 			l_implementation: IV_IMPLEMENTATION
 			l_translator: E2B_INSTRUCTION_TRANSLATOR
 			l_type: CL_TYPE_A
-			l_proc_name, l_local_name: STRING
+			l_proc_name: STRING
 			l_values: ARRAYED_LIST [STRING_32]
 			l_assign: IV_ASSIGNMENT
 			l_call: IV_PROCEDURE_CALL
 			l_ownership_handler: E2B_CUSTOM_OWNERSHIP_HANDLER
 			l_expr_translator: E2B_BODY_EXPRESSION_TRANSLATOR
 			l_builtin_collector: E2B_BUILTIN_CALLS_COLLECTOR
+			l_loc: IV_ENTITY
 		do
 			set_context (a_feature, a_type)
 			set_inlining_options_for_feature (a_feature)
@@ -524,9 +525,9 @@ feature -- Translation: Implementation
 						across l_byte_code.locals as i loop
 							l_type := helper.class_type_in_context (i.item, current_feature.written_class, current_feature, current_type)
 							translation_pool.add_type (l_type)
-							l_local_name := name_translator.boogie_name_for_local (i.cursor_index)
-							l_translator.entity_mapping.set_local (i.cursor_index, create {IV_ENTITY}.make (l_local_name, types.for_class_type (l_type)))
-							l_implementation.add_local (l_local_name, types.for_class_type (l_type))
+							create l_loc.make (name_translator.boogie_name_for_local (i.cursor_index), types.for_class_type (l_type))
+							l_translator.entity_mapping.set_local (i.cursor_index, l_loc)
+							l_implementation.add_local_with_property (l_loc.name, l_loc.type, types.type_property (l_type, factory.global_heap, l_loc))
 						end
 					end
 					l_translator.process_compound (l_byte_code.compound)
