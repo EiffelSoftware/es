@@ -213,7 +213,7 @@ feature -- Translation: Signature
 		end
 
 	write_frame (a_for_creator: BOOLEAN): LINKED_LIST [IV_CONTRACT]
-			-- Contracts expressiong the write frame of the current routine.
+			-- Contracts expressing the write frame of the current routine.
 		local
 			l_pre: IV_PRECONDITION
 			l_post: IV_POSTCONDITION

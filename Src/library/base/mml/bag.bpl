@@ -122,8 +122,6 @@ axiom (forall<T> a: Bag T, x: T :: { Bag#Card(Bag#Removed(a, x)) }
   
 // Bag with multiple occurrences of an element removed
 function Bag#RemovedMultiple<T>(Bag T, T, int): Bag T;
-axiom (forall<T> a: Bag T, x: T :: { Bag#RemovedMultiple(a, x, 0) }
-  Bag#Equal(Bag#RemovedMultiple(a, x, 0), a));
 axiom (forall<T> a: Bag T, x: T, n: int :: { Bag#RemovedMultiple(a, x, n)[x] }
   a[x] >= n ==> Bag#RemovedMultiple(a, x, n)[x] == a[x] - n);
 axiom (forall<T> a: Bag T, x: T, n: int :: { Bag#RemovedMultiple(a, x, n)[x] }
@@ -134,6 +132,10 @@ axiom (forall<T> a: Bag T, x: T, n: int :: { Bag#Card(Bag#RemovedMultiple(a, x, 
   a[x] >= n ==> Bag#Card(Bag#RemovedMultiple(a, x, n)) == Bag#Card(a) - n);    
 axiom (forall<T> a: Bag T, x: T, n: int :: { Bag#Card(Bag#RemovedMultiple(a, x, n)) }
   a[x] < 0 ==> Bag#Card(Bag#Removed(a, x)) == Bag#Card(a) - a[x]);  
+// special cases  
+axiom (forall<T> a: Bag T, x: T :: { Bag#RemovedMultiple(a, x, 0) }
+  Bag#Equal(Bag#RemovedMultiple(a, x, 0), a));  
+  
   
 // Bag with all occurrences of an element removed.  
 function Bag#RemovedAll<T>(Bag T, T): Bag T;

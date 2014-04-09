@@ -272,10 +272,11 @@ feature -- Removal
 			i := new_cursor
 			i.search_forth (v)
 			i.remove
+			check i.inv_only ("target_bag_constraint", "sequence_definition") end
 			forget_iterator (i)
 		ensure
 			is_wrapped: is_wrapped
---			sequence_effect: sequence |=| old (sequence.removed_at (sequence.inverse.image_of (v).extremum (agent less_equal)))
+			bag_effect: bag ~ old bag.removed (v)
 			observers_restored: observers ~ old observers
 		end
 
@@ -289,31 +290,41 @@ feature -- Removal
 			modify_model (["sequence", "observers", "owns"], Current)
 		local
 			i: V_LIST_ITERATOR [G]
+			n: INTEGER
 		do
 			from
 				i := new_cursor
 				i.search_forth (v)
 			invariant
 				is_wrapped and i.is_wrapped
-				i.inv
-				inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty")
 				1 <= i.index_ and i.index_ <= sequence.count + 1
 				not i.off implies i.item = v
+				not sequence.front (i.index_ - 1).has (v)
+				bag = bag.old_.removed_multiple (v, n)
+				bag [v] = bag.old_ [v] - n
+				n >= 0
+				inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty")
+				i.inv_only ("sequence_definition", "index_constraint", "target_bag_constraint")
 				modify_model (["sequence", "owns"], Current)
 				modify_model (["index_", "sequence", "target_index_sequence"], i)
 			until
 				i.after
 			loop
 				i.remove
-				check i.inv end
+				check i.inv_only ("target_bag_constraint", "sequence_definition") end
+				lemma_remove_multiple (bag.old_, v, n)
 				i.search_forth (v)
+				check i.inv_only ("sequence_definition", "index_constraint") end
+				n := n + 1
 			variant
 				i.sequence.count - i.index_
 			end
+			lemma_remove_all (bag.old_, v)
 			forget_iterator (i)
+			check bag = bag.old_.removed_all (v) end
 		ensure
 			is_wrapped: is_wrapped
---			sequence_effect: sequence |=| old (sequence.removed (sequence.inverse.image_of (v)))
+			bag_effect: bag ~ old bag.removed_all (v)
 			observers_restored: observers ~ old observers
 		end
 
@@ -354,6 +365,29 @@ feature {V_CONTAINER, V_ITERATOR} -- Specification
 		do
 		ensure
 			s.extended_at (s1.count + j - i + 2, s2 [j + 1]) = s1 + s2.interval (i, j + 1) + s3
+		end
+
+	lemma_remove_multiple (b: MML_BAG [G]; v: G; n: INTEGER)
+			-- Removing `n' occurrences of `v' from `b' and then one,
+			-- is the same as removing `n' + 1 occurrences.
+		note
+			status: lemma
+		require
+			n >= 0
+		do
+			check across b as x all b.removed_multiple (v, n).removed (v) [x.item] = b.removed_multiple (v, n + 1) [x.item] end end
+		ensure
+			b.removed_multiple (v, n).removed (v) = b.removed_multiple (v, n + 1)
+		end
+
+	lemma_remove_all (b: MML_BAG [G]; v: G)
+			-- Removing `b [v]' occurrences of `v' from `b' is the same as removing all occurrences.
+		note
+			status: lemma
+		do
+			check across b as x all b.removed_multiple (v, b [v]) [x.item] = b.removed_all (v) [x.item] end end
+		ensure
+			b.removed_multiple (v, b [v]) = b.removed_all (v)
 		end
 
 invariant

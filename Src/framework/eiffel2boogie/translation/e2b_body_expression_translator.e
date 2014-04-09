@@ -559,7 +559,7 @@ feature -- Translation
 		local
 			l_fcall: IV_FUNCTION_CALL
 		do
-			if local_writable /= Void then
+			if local_writable /= Void and not helper.is_lemma (a_feature) then
 				create l_fcall.make (name_translator.boogie_function_for_write_frame (a_feature, current_target_type), types.frame)
 				l_fcall.add_argument (entity_mapping.heap)
 				l_fcall.add_argument (current_target)

@@ -134,7 +134,7 @@ feature -- Replacement
 	reverse
 			-- Reverse the order of elements.
 		note
-			skip: True
+			skip: true
 		local
 			rest, next: V_LINKABLE [G]
 		do
@@ -162,6 +162,7 @@ feature -- Extension
 			cell: V_LINKABLE [G]
 		do
 			check across 1 |..| (count - 1) as i all cell_sequence [i.item].right = cell_sequence [i.item + 1] end end
+
 			create cell.put (v)
 			if first_cell = Void then
 				last_cell := cell
@@ -378,7 +379,7 @@ feature -- Removal
 		ensure then
 			old_cells_wrapped: across owns.old_ as c all c.item.is_wrapped end
 			cell_sequence_last: old count > 0 implies (old last_cell).right = Void
-			cell_sequence_later: across 1 |..| (old count - 1) as i all (old cell_sequence) [i.item].right = (old cell_sequence) [i.item + 1] end
+			cell_sequence_later: is_linked (old cell_sequence)
 		end
 
 feature {V_CONTAINER, V_ITERATOR} -- Implementation
@@ -635,8 +636,8 @@ feature {V_LINKED_LIST, V_LINKED_LIST_ITERATOR} -- Specificaton
 		note
 			status: lemma
 		require
-			1 <= i1 and i1 < i2 and i2 <= count
-			inv_only ("count_definition", "cell_sequence_domain", "cells_exist", "cell_sequence_later", "cell_sequence_last")
+			indexes_in_bounds: 1 <= i1 and i1 < i2 and i2 <= count
+			almost_holds: inv_only ("count_definition", "cell_sequence_domain", "cells_exist", "cell_sequence_later", "cell_sequence_last")
 		do
 			check across cell_sequence.domain as i all attached cell_sequence [i.item] end end
 			check across 1 |..| (count - 1) as i all attached cell_sequence [i.item] and then cell_sequence [i.item].right = cell_sequence [i.item + 1] end end
@@ -676,6 +677,16 @@ feature {V_LINKED_LIST, V_LINKED_LIST_ITERATOR} -- Specificaton
 			across cs1.domain as i all attached cs1 [i.item] and then cs1 [i.item].item = s1 [i.item] end
 		end
 
+	is_linked (cs: like cell_sequence): BOOLEAN
+			-- Are adjacent cells of `cs' liked to each other?
+		note
+			status: ghost, functional
+		require
+			reads (cs.but_last.range)
+		do
+			Result := across 1 |..| (cs.count - 1) as i all attached cs [i.item] and then cs [i.item].right = cs [i.item + 1] end
+		end
+
 invariant
 	count_definition: count = sequence.count
 	owns_definition: owns = cell_sequence.range
@@ -685,7 +696,7 @@ invariant
 	cells_exist: across cell_sequence.domain as i all attached cell_sequence [i.item] end
 	cell_sequence_first: count > 0 implies cell_sequence.first = first_cell
 	cell_sequence_last: count > 0 implies (cell_sequence.last = last_cell and attached last_cell) and then last_cell.right = Void
-	cell_sequence_later: across 1 |..| (count - 1) as i all attached cell_sequence [i.item] and then cell_sequence [i.item].right = cell_sequence [i.item + 1] end
+	cell_sequence_later: is_linked (cell_sequence)
 	sequence_definition: across cell_sequence.domain as i all sequence [i.item] = cell_sequence [i.item].item end
 
 note

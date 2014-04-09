@@ -203,7 +203,7 @@ axiom (forall<T> s: Seq T :: { Bag#Card(Seq#ToBag(s)) }
 axiom (forall<T> a: Seq T, b: Seq T ::
   { Seq#ToBag(Seq#Concat(a, b)) }
     Seq#ToBag(Seq#Concat(a, b)) == Bag#Union(Seq#ToBag(a), Seq#ToBag(b)) );
-
+    
 // update axiom
 axiom (forall<T> s: Seq T, i: int, v: T, x: T ::
   { Seq#ToBag(Seq#Update(s, i, v))[x] }
@@ -213,6 +213,10 @@ axiom (forall<T> s: Seq T, i: int, v: T, x: T ::
   // i.e. MS(Update(s, i, v)) == MS(s) - {{s[i]}} + {{v}}
 axiom (forall<T> s: Seq T, x: T :: { Seq#ToBag(s)[x] } Seq#Has(s, x) <==> 0 < Seq#ToBag(s)[x]);
 axiom (forall<T> s: Seq T, x: T :: { Seq#ToBag(s)[x] } Seq#ToBag(s)[x] == Seq#Occurrences(s, x));
+
+// removed axiom
+axiom (forall<T> s: Seq T, i: int :: { Seq#ToBag(Seq#RemovedAt(s, i)) }
+1 <= i && i <= Seq#Length(s) ==> Seq#ToBag(Seq#RemovedAt(s, i)) == Bag#Difference(Seq#ToBag(s), Bag#Singleton(Seq#Item(s,i))));
 
 // Sequence converted to map
 function Seq#ToMap<T>(Seq T): Map int T;
