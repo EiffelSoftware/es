@@ -132,16 +132,18 @@ function {: inline } Seq#ButLast<T>(q: Seq T): Seq T
 { Seq#Take(q, Seq#Length(q) - 1) } 
 
 // Prefix until upper
-function {: inline } Seq#Front<T>(q: Seq T, upper: int): Seq T
+function Seq#Front<T>(q: Seq T, upper: int): Seq T
 { if 0 <= upper then Seq#Take(q, upper) else Seq#Empty() } 
+axiom (forall<T> q: Seq T :: { Seq#Front(q, Seq#Length(q)) } Seq#Front(q, Seq#Length(q)) == q);
 
 // Suffix from lower
-function {: inline } Seq#Tail<T>(q: Seq T, lower: int): Seq T
+function Seq#Tail<T>(q: Seq T, lower: int): Seq T
 { if 1 <= lower then Seq#Drop(q, lower - 1) else q } 
+axiom (forall<T> q: Seq T :: { Seq#Tail(q, 1) } Seq#Tail(q, 1) == q);
 
 // Subsequence from lower to upper
-function {: inline } Seq#Interval<T>(q: Seq T, lower: int, upper: int): Seq T
-{ Seq#Tail(Seq#Front(q, upper), lower) } 
+function Seq#Interval<T>(q: Seq T, lower: int, upper: int): Seq T
+{ Seq#Tail(Seq#Front(q, upper), lower) }
 
 // Sequence with element at position i removed
 function {: inline } Seq#RemovedAt<T>(q: Seq T, i: int): Seq T

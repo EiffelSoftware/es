@@ -513,7 +513,7 @@ feature -- Verification: ownership queries
 			status: ghost
 		do
 		end
-		
+
 feature -- Verification: ownership fields
 
 	frozen closed: BOOLEAN
@@ -575,6 +575,11 @@ feature -- Verification: auxiliary
 
 	frozen old_: like Current
 			-- Old expression outside of postconditions.
+		do
+		end
+
+	frozen use_definition (a_function_call: ANY)
+			-- Bring definition of the opaque function in `a_function_call' into scope.
 		do
 		end
 

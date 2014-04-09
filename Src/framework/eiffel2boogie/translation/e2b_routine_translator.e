@@ -619,7 +619,7 @@ feature -- Translation: Functions
 			-- Translate precondition predicate of feature `a_feature' of type `a_type'.
 		local
 			l_fname: STRING
-			l_pre_function, l_free_pre_function: IV_FUNCTION
+			l_pre_function, l_free_pre_function, l_trigger_function: IV_FUNCTION
 			l_mapping: E2B_ENTITY_MAPPING
 			l_entity: IV_ENTITY
 			l_body, l_free_body: IV_EXPRESSION
@@ -632,6 +632,7 @@ feature -- Translation: Functions
 				-- Function declaration
 			create l_pre_function.make (name_translator.boogie_function_precondition (l_fname), types.bool)
 			create l_free_pre_function.make (name_translator.boogie_free_function_precondition (l_fname), types.bool)
+			create l_trigger_function.make (name_translator.boogie_function_trigger (l_fname), types.bool)
 			create l_mapping.make
 			l_free_body := factory.true_
 
@@ -641,6 +642,7 @@ feature -- Translation: Functions
 				l_entity := factory.heap_entity ("heap")
 				l_pre_function.add_argument (l_entity.name, l_entity.type)
 				l_free_pre_function.add_argument (l_entity.name, l_entity.type)
+				l_trigger_function.add_argument (l_entity.name, l_entity.type)
 				l_mapping.set_heap (l_entity)
 
 				l_free_body := factory.and_clean (l_free_body, factory.is_heap (l_entity))
@@ -650,6 +652,7 @@ feature -- Translation: Functions
 				create l_entity.make ("current", types.for_class_type (a_type))
 				l_pre_function.add_argument (l_entity.name, l_entity.type)
 				l_free_pre_function.add_argument (l_entity.name, l_entity.type)
+				l_trigger_function.add_argument (l_entity.name, l_entity.type)
 				l_mapping.set_current (l_entity)
 				if not l_is_logical then
 					l_free_body := factory.and_clean (l_free_body, types.type_property (current_type, l_mapping.heap, l_entity))
@@ -659,6 +662,7 @@ feature -- Translation: Functions
 				create l_entity.make (i.item.name, i.item.boogie_type)
 				l_pre_function.add_argument (l_entity.name, l_entity.type)
 				l_free_pre_function.add_argument (l_entity.name, l_entity.type)
+				l_trigger_function.add_argument (l_entity.name, l_entity.type)
 				l_mapping.set_argument (i.target_index, l_entity)
 				if not l_is_logical then
 					l_free_body := factory.and_clean (
@@ -684,6 +688,9 @@ feature -- Translation: Functions
 			boogie_universe.add_declaration (l_pre_function)
 			if not l_is_logical then
 				boogie_universe.add_declaration (l_free_pre_function)
+			end
+			if helper.is_feature_status (a_feature, "opaque") then
+				boogie_universe.add_declaration (l_trigger_function)
 			end
 		end
 
@@ -828,15 +835,17 @@ feature {NONE} -- Translation: Functions
 			l_axiom: IV_AXIOM
 			l_forall: IV_FORALL
 			l_pre, l_post: IV_EXPRESSION
-			l_pre_call, l_free_pre_call, l_fcall: IV_FUNCTION_CALL
+			l_pre_call, l_free_pre_call, l_fcall, l_trigger_call: IV_FUNCTION_CALL
 		do
 			create l_fcall.make (a_function.name, a_function.type)
 			create l_pre_call.make (name_translator.boogie_function_precondition (a_function.name), types.bool)
 			create l_free_pre_call.make (name_translator.boogie_free_function_precondition (a_function.name), types.bool)
+			create l_trigger_call.make (name_translator.boogie_function_trigger (a_function.name), types.bool)
 			across a_function.arguments as args loop
 				l_fcall.add_argument (args.item.entity)
 				l_pre_call.add_argument (args.item.entity)
 				l_free_pre_call.add_argument (args.item.entity)
+				l_trigger_call.add_argument (args.item.entity)
 			end
 			l_pre := factory.and_ (l_free_pre_call, l_pre_call)
 
@@ -862,9 +871,14 @@ feature {NONE} -- Translation: Functions
 					)
 			end
 
-			create l_forall.make (factory.implies_ (l_pre, l_post))
+			if helper.is_feature_status (current_feature, "opaque") then
+				create l_forall.make (factory.implies_ (factory.and_ (l_pre, l_trigger_call), l_post))
+				l_forall.add_trigger (l_trigger_call)
+			else
+				create l_forall.make (factory.implies_ (l_pre, l_post))
+				l_forall.add_trigger (l_fcall)
+			end
 			l_forall.bound_variables.append (a_function.arguments)
-			l_forall.add_trigger (l_fcall)
 			create l_axiom.make (l_forall)
 			boogie_universe.add_declaration (l_axiom)
 		end

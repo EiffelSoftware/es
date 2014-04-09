@@ -503,12 +503,14 @@ feature -- Expression Visitor
 	process_conditional_expression (a_conditional: IV_CONDITIONAL_EXPRESSION)
 			-- <Precursor>
 		do
+			output.put ("(")
 			output.put ("if ")
 			a_conditional.condition.process (Current)
 			output.put (" then ")
 			a_conditional.then_expression.process (Current)
 			output.put (" else ")
 			a_conditional.else_expression.process (Current)
+			output.put (")")
 		end
 
 	process_entity (a_entity: IV_ENTITY)

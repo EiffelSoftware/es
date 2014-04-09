@@ -131,6 +131,16 @@ feature -- Access
 			result_attached: attached Result
 		end
 
+	boogie_function_trigger (a_function_name: STRING): STRING
+			-- Trigger predicate name for opaque function named `a_function_name'.
+		require
+			a_function_name_attached: attached a_function_name
+		do
+			Result := "trigger." + a_function_name
+		ensure
+			result_attached: attached Result
+		end
+
 	boogie_function_for_variant (a_index: INTEGER; a_feature: FEATURE_I; a_context_type: CL_TYPE_A): STRING
 			-- Name of the boogie function that encodes `a_index'-th variant of `a_feature'.
 		require

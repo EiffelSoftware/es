@@ -35,9 +35,23 @@ feature -- Basic operations
 			l_assign: IV_ASSIGNMENT
 			l_call: IV_PROCEDURE_CALL
 			l_type: IV_TYPE
+			l_names: LIST [STRING]
+			l_trig: IV_FUNCTION_CALL
+			l_old_side_effect: LINKED_LIST [IV_STATEMENT]
 		do
 			l_name := a_feature.feature_name
-			if translation_mapping.builtin_any_functions.has (l_name) then
+			if l_name ~ "use_definition" then
+				l_old_side_effect := a_translator.side_effect
+				a_translator.clear_side_effect
+				a_translator.process_parameters (a_parameters)
+				a_translator.restore_side_effect (l_old_side_effect)
+				check a_translator.last_parameters.count = 1 end
+				if attached {IV_FUNCTION_CALL} a_translator.last_parameters.first as l_fcall then
+					create l_trig.make (name_translator.boogie_function_trigger (l_fcall.name), types.bool)
+					l_trig.arguments.append (l_fcall.arguments)
+					a_translator.side_effect.extend (create {IV_ASSERT}.make_assume (l_trig))
+				end
+			elseif translation_mapping.builtin_any_functions.has (l_name) then
 				a_translator.process_builtin_function_call (a_feature, a_parameters, l_name)
 			elseif translation_mapping.builtin_any_procedures.has (l_name) then
 				set_implicit_model_queries (a_translator, l_name)

@@ -98,7 +98,8 @@ feature -- Access (built-ins)
 				"wrap",
 				"wrap_all",
 				"unwrap",
-				"unwrap_all"
+				"unwrap_all",
+				"use_definition"
 			>>
 			Result.compare_objects
 		end
