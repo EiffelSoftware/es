@@ -32,6 +32,7 @@ feature -- Search
 			-- Does `map' contain a key equivalent to `k' according to `key_equivalence'?
 		require
 			closed: closed
+			reads (ownership_domain)
 		deferred
 		ensure
 			definition: Result = map.domain [k]

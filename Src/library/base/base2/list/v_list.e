@@ -12,7 +12,37 @@ deferred class
 inherit
 	V_MUTABLE_SEQUENCE [G]
 		redefine
+			first,
+			last,
+			item,
 			at
+		end
+
+feature -- Access
+
+	item alias "[]" (i: INTEGER): G
+			-- Value at index `i'.
+		deferred
+		ensure then
+			definition_sequence: Result = sequence [i]
+		end
+
+	first: G
+			-- First element.
+		do
+			check inv end
+			Result := item (lower)
+		ensure then
+			definition_sequence: Result = sequence.first
+		end
+
+	last: G
+			-- Last element.
+		do
+			check inv end
+			Result := item (upper)
+		ensure then
+			definition_sequence: Result = sequence.last
 		end
 
 feature -- Measurement
@@ -75,7 +105,7 @@ feature -- Comparison
 				forget_iterator (i)
 				other.forget_iterator (j)
 			end
-		ensure then
+		ensure
 			definition: Result = (sequence ~ other.sequence)
 			observers_restored: observers ~ old observers
 		end

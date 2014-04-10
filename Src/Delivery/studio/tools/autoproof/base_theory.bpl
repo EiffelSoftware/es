@@ -95,8 +95,10 @@ axiom (forall heap: HeapType, o, o': ref :: { heap[o, subjects][o'] } IsHeap(hea
 axiom (forall heap: HeapType, o, o': ref :: { heap[o, observers][o'] } IsHeap(heap) && o != Void && heap[o, allocated] && heap[o, observers][o'] ==> heap[o', allocated]);
 
 // Guards for built-in attributes
+// axiom (forall heap: HeapType, current: ref, v: Set ref, o: ref :: { guard(heap, current, owns, v, o) } 
+  // guard(heap, current, owns, v, o)); // no dependence on owns
 axiom (forall heap: HeapType, current: ref, v: Set ref, o: ref :: { guard(heap, current, owns, v, o) } 
-  guard(heap, current, owns, v, o)); // no dependence on owns
+	guard(heap, current, owns, v, o) <==> user_inv(heap[current, owns := v], o)); // default guard for owns	
 axiom (forall heap: HeapType, current: ref, v: Set ref, o: ref :: { guard(heap, current, subjects, v, o) } 
   guard(heap, current, subjects, v, o)); // no dependence on subjects
 axiom (forall heap: HeapType, current: ref, v: Set ref, o: ref :: { guard(heap, current, observers, v, o) } 
@@ -125,15 +127,11 @@ function is_wrapped(h: HeapType, o: ref): bool {
 // Is o' in the ownership domain of o? Yes if they are equal, or both closed and o' is transitively owned by o
 function in_domain(h: HeapType, o: ref, o': ref): bool
 {
-	o == o' ||
-	(
-		h[o, closed] &&
-		h[o', closed] &&
-		in_domain(h, o, h[o', owner])
-	)
+	o == o' || ( h[o, closed] && h[o', closed] && in_domain(h, o, h[o', owner]) )
 }
 
 axiom (forall h: HeapType, o, o': ref :: { in_domain(h, o, o') } IsHeap(h) && h[o, closed] && h[o, owns][o'] ==> in_domain(h, o, o'));
+axiom (forall h: HeapType, o, o': ref :: { in_domain(h, o, o'), trans_owns(h, o) } IsHeap(h) && h[o, closed] ==> (in_trans_owns(h, o, o') <==> in_domain(h, o, o')));
 axiom (forall h: HeapType, o, o': ref :: { in_domain(h, o, o') } IsHeap(h) && o != o' && Set#Equal(Set#Empty(), h[o, owns]) ==> !in_domain(h, o, o'));
 
 // Frame axiom: domain frames itself

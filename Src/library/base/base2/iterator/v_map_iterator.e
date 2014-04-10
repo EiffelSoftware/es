@@ -22,7 +22,8 @@ feature -- Access
 			closed: closed
 			target_closed: target.closed
 			not_off: not off
-			reads (Current, target)
+			-- ToDo: typing crash in AP if `target' used instead of `subjects.any_item':
+			reads (Current, subjects.any_item.ownership_domain)
 		deferred
 		ensure
 			definition: Result = key_sequence [index_]

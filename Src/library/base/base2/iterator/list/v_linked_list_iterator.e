@@ -29,7 +29,9 @@ feature {V_CONTAINER, V_ITERATOR} -- Initialization
 			modify_field (["observers", "closed"], list)
 		do
 			target := list
-			list.add_iterator (Current)
+			target.unwrap
+			target.set_observers (target.observers & Current)
+			target.wrap
 			active := Void
 			after := False
 			set_target_index_sequence
@@ -54,10 +56,12 @@ feature -- Initialization
 		do
 			if Current /= other then
 				check other.inv end
-				check inv_only ("no_observers") end
+				check inv_only ("no_observers", "subjects_definition", "A2") end
 				target.forget_iterator (Current)
 				target := other.target
-				target.add_iterator (Current)
+				target.unwrap
+				target.set_observers (target.observers & Current)
+				target.wrap
 				active := other.active
 				index_ := other.index_
 				after := other.after
@@ -66,9 +70,14 @@ feature -- Initialization
 				check target.inv end
 				wrap
 			end
-		ensure then
+		ensure
 			target_effect: target = other.target
 			index_effect: index_ = other.index_
+			old_target_wrapped: (old target).is_wrapped
+			other_target_wrapped: other.target.is_wrapped
+			old_target_observers_effect: other.target /= old target implies (old target).observers = old target.observers / Current
+			other_target_observers_effect: other.target /= old target implies other.target.observers = old other.target.observers & Current
+			target_observers_preserved: other.target = old target implies other.target.observers = old other.target.observers
 		end
 
 feature -- Access

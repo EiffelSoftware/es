@@ -14,7 +14,7 @@ feature -- Access
 			not_off: not off
 			closed: closed
 			subjects_closed: subjects.any_item.closed
-			reads (Current, subjects.any_item.ownership_domain)
+			reads (ownership_domain, subjects.any_item.ownership_domain)
 		deferred
 		ensure
 			definition: Result = box.any_item
@@ -27,6 +27,7 @@ feature -- Status report
 		require
 			closed: closed
 			subjects_closed: subjects.any_item.closed
+			reads (ownership_domain)
 		deferred
 		ensure
 			definition: Result = box.is_empty
@@ -37,7 +38,7 @@ feature -- Cursor movement
 	forth
 			-- Move one position forward.
 		require
-			subjects_wrapped: subjects.any_item.is_wrapped
+			subjects_wrapped: subjects.any_item.closed
 			not_off: not off
 			modify_model (["box"], Current)
 		deferred

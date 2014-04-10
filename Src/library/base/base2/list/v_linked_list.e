@@ -8,7 +8,7 @@ note
 	author: "Nadia Polikarpova"
 	model: sequence
 
-class
+frozen class
 	V_LINKED_LIST [G]
 
 inherit
@@ -34,6 +34,7 @@ feature {NONE} -- Initialization
 			lower_ := 1
 		ensure then
 			sequence_effect: sequence.is_empty
+			observers_empty: observers.is_empty
 		end
 
 feature -- Initialization
@@ -41,19 +42,29 @@ feature -- Initialization
 	copy_ (other: V_LIST [G])
 			-- Initialize by copying all the items of `other'.
 		note
-			explicit: wrapping
+			explicit: wrapping, contracts
 		require
+			is_wrapped: is_wrapped
+			other_wrapped: other.is_wrapped
 			observers_open: across observers as o all o.item.is_open end
 			modify_model (["sequence", "owns"], Current)
-			modify_model ("observers", other)
+			modify_field (["observers", "closed"], other)
+		local
+			i: V_LIST_ITERATOR [G]
 		do
 			if other /= Current then
 				wipe_out
-				append (other.new_cursor)
+				i := other.new_cursor
+				append (i)
+				other.forget_iterator (i)
 			end
-		ensure then
+		ensure
+			is_wrapped: is_wrapped
+			other_wrapped: other.is_wrapped
+			observers_open: across observers as o all o.item.is_open end
 			sequence_effect: sequence ~ other.sequence
 			other_sequence_effect: other.sequence ~ old other.sequence
+			observers_preserved: other.observers ~ old other.observers
 		end
 
 feature -- Access

@@ -50,6 +50,7 @@ feature -- Measurement
 			-- Lower bound of index interval.
 		require
 			closed: closed
+			reads (ownership_domain)
 		deferred
 		ensure
 			definition: Result = lower_
@@ -59,6 +60,7 @@ feature -- Measurement
 			-- Upper bound of index interval.
 		require
 			closed: closed
+			reads (ownership_domain)
 		do
 			check inv end
 			Result := lower + count - 1
