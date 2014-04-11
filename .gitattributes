@@ -5322,6 +5322,17 @@ Src/unstable/library/text/encryption/crypto/package.iron -text
 Src/unstable/library/text/encryption/crypto/tests/license.lic -text
 Src/unstable/library/text/regexp/pcre/package.iron -text
 Src/web/support/database/mssql/create_db.sql -text
+Src/web/support/database/mssql/data_countries.sql -text
+Src/web/support/database/mssql/data_problem_report_categories.sql -text
+Src/web/support/database/mssql/data_problem_report_categories_roles.sql -text
+Src/web/support/database/mssql/data_problem_report_category_groups.sql -text
+Src/web/support/database/mssql/data_problem_report_classes.sql -text
+Src/web/support/database/mssql/data_problem_report_form_fields.sql -text
+Src/web/support/database/mssql/data_problem_report_severities.sql -text
+Src/web/support/database/mssql/data_problem_report_status.sql -text
+Src/web/support/database/mssql/data_questions.sql -text
+Src/web/support/database/mssql/data_roles.sql -text
+Src/web/support/database/mssql/data_security_questions.sql -text
 Src/web/support/database/mssql/db_schemas.sql -text
 Src/web/support/database/mssql/db_store_procedures.sql -text
 Src/web/support/database/mssql/db_tables.sql -text
