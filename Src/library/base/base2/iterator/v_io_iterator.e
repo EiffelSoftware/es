@@ -10,7 +10,6 @@ inherit
 	V_ITERATOR [G]
 		redefine
 			index_
---			start
 		end
 
 	V_OUTPUT_STREAM [G]
@@ -29,13 +28,6 @@ feature -- Measurement
 		end
 
 feature -- Replacement
-
---	start
---			-- Go to the first position.
---		require else
---			modify_model ("off_", Current)
---		deferred
---		end
 
 	put (v: G)
 			-- Replace item at current position with `v'.

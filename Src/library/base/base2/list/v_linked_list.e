@@ -265,7 +265,7 @@ feature -- Extension
 				loop
 					check it.inv_only ("no_observers", "subjects_definition", "sequence_definition") end
 					lemma_concat_interval ({MML_SEQUENCE [G]}.empty_sequence, input.sequence, sequence.old_, sequence, input.index_.old_, input.index_ - 1)
-					check sequence.extended_at (it.index + 1, input.item) = input.sequence.interval (input.index_.old_, input.index_) + sequence.old_ end
+					check sequence.extended_at (it.index_ + 1, input.item) = input.sequence.interval (input.index_.old_, input.index_) + sequence.old_ end
 					it.extend_right (input.item)
 					check it.inv_only ("after_definition", "sequence_definition") end
 					it.forth

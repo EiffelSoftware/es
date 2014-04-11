@@ -44,7 +44,7 @@ feature -- Measurement
 		require
 			closed: closed
 			subjects_closed: subjects.any_item.closed
-			reads (ownership_domain, subjects.any_item.ownership_domain)
+			reads (ownership_domain, target.ownership_domain)
 		deferred
 		ensure
 			definition: Result = index_
@@ -78,7 +78,7 @@ feature -- Status report
 			-- Is current position after any position in `target'?
 		require
 			closed
-			reads (ownership_domain)
+--			reads (ownership_domain)
 		deferred
 		ensure
 			definition: Result = (index_ = sequence.count + 1)
@@ -148,7 +148,7 @@ feature -- Cursor movement
 			-- Go one position backward.
 		require
 			not_off: not off
-			target_closed: target.closed
+			target_wrapped: target.is_wrapped
 			modify_model ("index_", Current)
 		deferred
 		ensure
@@ -174,10 +174,8 @@ feature -- Cursor movement
 			elseif i = target.count then
 				finish
 			else
-				check target.closed end
 				from
 					start
-					check target.closed end
 					j := 1
 				invariant
 					is_wrapped
