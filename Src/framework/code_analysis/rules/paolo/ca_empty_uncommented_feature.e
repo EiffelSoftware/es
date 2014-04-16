@@ -51,6 +51,9 @@ feature {NONE} -- Rule checking
 				if not attached a_as.compound or else a_as.compound.is_empty then
 					l_leaf_list := current_context.matchlist
 					if current_feature.body.is_routine then
+						-- TODO: Unneeded helper variable detected here (which is fine).
+						-- The problem is that the location of the suggestion is wrong,
+						-- the text suggests it should point to the usage, not the assignment.
 						l_comments := current_feature.comment (l_leaf_list)
 						l_comments_empty := comments_are_empty (l_comments)
 						if l_comments_empty then
@@ -82,16 +85,16 @@ feature {NONE} -- Rule checking
 	comments_are_empty (a_comments: detachable EIFFEL_COMMENTS): BOOLEAN
 		do
 			Result := true
-			if attached a_comments as comments then
+			if attached a_comments then
 				from
-					comments.start
+					a_comments.start
 				until
-					comments.after or not Result
+					a_comments.after or not Result
 				loop
-					if not comments.item.content_32.is_whitespace then
+					if not a_comments.item.content_32.is_whitespace then
 						Result := false
 					end
-					comments.forth
+					a_comments.forth
 				end
 			end
 		end

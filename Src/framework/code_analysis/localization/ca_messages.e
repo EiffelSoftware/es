@@ -351,8 +351,11 @@ feature -- Rule Violations
 	argument_naming_convention_violation_2: STRING_32
 		do Result := locale.translation ("' does not respect the Eiffel naming convention for arguments (all lowercase, begin with 'a_', no trailing or two consecutive underscores).") end
 
-	unnecessary_sign_operand_violation_1: STRING_32
-		do Result := locale.translation ("All unary operands for numbers are unnecessary, except for a single minus sign. They should be removed or the instruction should be checked for errors.") end
+	unnecessary_sign_operator_violation_1: STRING_32
+		do Result := locale.translation ("Expression ") end
+
+	unnecessary_sign_operator_violation_2: STRING_32
+		do Result := locale.translation (" starts with an unnecessary sign operator. All unary sign operators for numbers are unnecessary, except for a single minus sign. They should be removed or the instruction should be checked for errors.") end
 
 	empty_uncommented_feature_violation_1: STRING_32
 		do Result := locale.translation ("Feature '") end

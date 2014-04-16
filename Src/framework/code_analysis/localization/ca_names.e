@@ -423,11 +423,11 @@ feature -- Rules
 			%convention for arguments (all lowercase begin with 'a_', no trailing or %
 			%two consecutive underscores).") end
 
-	unnecessary_sign_operand_title: STRING_32
-		do Result := locale.translation ("Unnecessary sign operand") end
+	unnecessary_sign_operator_title: STRING_32
+		do Result := locale.translation ("Unnecessary sign operator") end
 
-	unnecessary_sign_operand_description: STRING_32
-		do Result := locale.translation ("All unary operands for numbers are unnecessary, except for a single minus sign. %
+	unnecessary_sign_operator_description: STRING_32
+		do Result := locale.translation ("All unary sign operators for numbers are unnecessary, except for a single minus sign. %
 			%They should be removed or the instruction should be checked for errors.") end
 
 	empty_uncommented_feature_title: STRING_32

@@ -55,6 +55,7 @@ feature {NONE} -- Rule checking
 				loop
 					l_construct_list := arguments.item.id_list.id_list
 					across
+						-- TODO: False positive here: variable not read after assignment
 						l_construct_list as l_id
 					loop
 						l_leaf := current_context.matchlist.at (l_id.item)

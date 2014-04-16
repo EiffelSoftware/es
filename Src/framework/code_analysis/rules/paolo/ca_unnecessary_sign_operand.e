@@ -2,8 +2,8 @@ note
 	description: "[
 					RULE #30: Unnecessary sign operand
 		
-					All unary operands for numbers are unnecessary, except for a single minus sign.
-					They should be removedor the instruction should be checked for errors.
+				All unary sign operators for numbers are unnecessary, except for a single minus sign.
+				They should be removed or the instruction should be checked for errors.
 	]"
 	author: "Paolo Antonucci"
 	date: "$Date$"
@@ -70,7 +70,7 @@ feature {NONE} -- Rule checking
 	process_unary (a_expr: attached UNARY_AS)
 		do
 			if is_sign_redundant (a_expr) then
-				add_violation (a_expr.start_location)
+				add_violation (a_expr.start_location, a_expr.text_32 (current_context.matchlist))
 			end
 		end
 
@@ -78,7 +78,7 @@ feature {NONE} -- Rule checking
 		do
 			if attached a_integer.sign_symbol (current_context.matchlist) as sign then
 				if sign.is_plus or (sign.is_minus and a_integer.natural_64_value = 0) then
-					add_violation (sign.start_location)
+					add_violation (sign.start_location, a_integer.text_32 (current_context.matchlist))
 				end
 			end
 		end
@@ -87,17 +87,18 @@ feature {NONE} -- Rule checking
 		do
 			if attached a_real.sign_symbol (current_context.matchlist) as sign then
 				if sign.is_plus or (sign.is_minus and a_real.value.to_real_64 = 0) then
-					add_violation (sign.start_location)
+					add_violation (sign.start_location, a_real.text_32 (current_context.matchlist))
 				end
 			end
 		end
 
-	add_violation (a_location: LOCATION_AS)
+	add_violation (a_location: LOCATION_AS; a_text: STRING)
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
 			create l_viol.make_with_rule (Current)
 			l_viol.set_location (a_location)
+			l_viol.long_description_info.extend (a_text)
 			violations.extend (l_viol)
 		end
 
@@ -105,19 +106,23 @@ feature -- Properties
 
 	title: STRING_32
 		do
-			Result := ca_names.unnecessary_sign_operand_title
+			Result := ca_names.unnecessary_sign_operator_title
 		end
 
 	id: STRING_32 = "CA030"
 
 	description: STRING_32
 		do
-			Result := ca_names.unnecessary_sign_operand_description
+			Result := ca_names.unnecessary_sign_operator_description
 		end
 
 	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		do
-			a_formatter.add (ca_messages.unnecessary_sign_operand_violation_1)
+			a_formatter.add (ca_messages.unnecessary_sign_operator_violation_1)
+			check attached {STRING} a_violation.long_description_info.first as text then
+				a_formatter.add_quoted_text (text)
+			end
+			a_formatter.add (ca_messages.unnecessary_sign_operator_violation_2)
 		end
 
 end
