@@ -476,12 +476,6 @@ feature -- Rules
 	explicit_redundant_inheritance_description: STRING_32
 		do Result := locale.translation ("Explicitly duplicated inheritance links are redundant if there is no renaming, redefining, or change of export status. One should be removed.") end
 
-	attribute_should_be_local_title: STRING_32
-		do Result := locale.translation ("Attribute should be local") end
-
-	attribute_should_be_local_description: STRING_32
-		do Result := locale.translation ("An attribute that is used like a local helper variable (i.e. is always assigned a new value inside a routine before being used only inside this routine) can be made into a local variable.") end
-
 
 feature -- Preferences
 
