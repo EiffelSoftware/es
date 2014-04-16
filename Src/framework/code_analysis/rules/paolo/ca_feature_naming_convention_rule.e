@@ -41,7 +41,7 @@ feature {NONE} -- Rule checking
 			l_name: STRING
 			l_viol: CA_RULE_VIOLATION
 		do
-			l_name := a_feature_as.feature_name.name_8
+			l_name := a_feature_as.feature_name.text_32 (current_context.matchlist)
 			if not is_valid_feature_name (l_name) then
 				create l_viol.make_with_rule (Current)
 				l_viol.set_location (a_feature_as.start_location)
@@ -51,8 +51,6 @@ feature {NONE} -- Rule checking
 		end
 
 	is_valid_feature_name (a_name: attached STRING): BOOLEAN
-			-- Currently the casing restriction cannot be enforced, as identifiers received by this
-			-- function are always upper- or lower-cased.
 		do
 			Result := not a_name.ends_with ("_") and not a_name.has_substring ("__") and (a_name.as_lower ~ a_name)
 		end

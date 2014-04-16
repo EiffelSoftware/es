@@ -39,26 +39,32 @@ feature {NONE} -- Rule checking
 	process_body (a_body_as: attached BODY_AS)
 		local
 			l_viol: CA_RULE_VIOLATION
-			i: INTEGER
-			l_arg_name: STRING
+			l_construct_list: CONSTRUCT_LIST [INTEGER_32]
+			l_leaf: LEAF_AS
+			l_argument_name: STRING
 		do
+				-- It's a bit more complicated that one would expect, because retrieving the original
+				-- text is the only way for checking the case (otherwise it's always lowercased).
+				-- This code is basically copy-pasted in this class and in CA_VARIABLE_NAMING_CONVENTION.
+				-- Copy-pasting is bad, but creating a common ancestor just for these two rules is also bad.
+				-- Edits here should be also made there.
+				-- Whoever copy-pastes this a third time should consider refactoring the code.
 			if a_body_as.arguments /= Void then
 				across
-					a_body_as.arguments as args
+					a_body_as.arguments as arguments
 				loop
-					from
-						i := 1
-					until
-						i > args.item.id_list.count
+					l_construct_list := arguments.item.id_list.id_list
+					across
+						l_construct_list as l_id
 					loop
-						l_arg_name := args.item.item_name (i)
-						if not is_valid_argument_name (l_arg_name) then
+						l_leaf := current_context.matchlist.at (l_id.item)
+						l_argument_name := l_leaf.text_32 (current_context.matchlist)
+						if not is_valid_argument_name (l_argument_name) then
 							create l_viol.make_with_rule (Current)
-							l_viol.set_location (args.item.start_location)
-							l_viol.long_description_info.extend (l_arg_name)
+							l_viol.set_location (l_leaf.start_location)
+							l_viol.long_description_info.extend (l_argument_name)
 							violations.extend (l_viol)
 						end
-						i := i + 1
 					end
 				end
 			end
@@ -77,8 +83,6 @@ feature -- Properties
 		do
 			Result := ca_names.argument_naming_convention_title
 		end
-
-		-- TODO: Add the ID of your rule here. Should be unique!
 
 	id: STRING_32 = "CA066"
 			-- <Precursor>
