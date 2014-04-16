@@ -52,7 +52,7 @@ feature {NONE} -- Rule checking
 			if attached current_feature and then current_feature.is_function and then attached a_as.compound and then a_as.compound.count = 1 and then attached {ASSIGN_AS} a_as.compound.first as assignment and then attached {RESULT_AS} assignment.target then
 				if attached {EXPR_CALL_AS} assignment.source as expr_call and then attached {ACCESS_ID_AS} expr_call.call as access_id then
 					l_called_feature := current_context.checking_class.feature_named_32 (access_id.access_name_32)
-					if attached {ATTRIBUTE_I} l_called_feature as called_attribute and then attached {EXPORT_NONE_I} called_attribute.export_status then
+					if attached {ATTRIBUTE_I} l_called_feature as called_attribute then
 						create l_viol.make_with_rule (Current)
 						l_viol.set_location (current_feature.start_location)
 						l_viol.long_description_info.extend (current_feature.feature_name.name_32)

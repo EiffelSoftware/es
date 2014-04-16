@@ -32,56 +32,45 @@ feature {NONE} -- Activation
 
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
---			a_checker.add_feature_pre_action (agent process_feature)
+				--			a_checker.add_feature_pre_action (agent process_feature)
 			a_checker.add_class_pre_action (agent process_class)
 		end
 
 feature {NONE} -- Rule checking
 
-		process_class (a_class: CLASS_AS)
+	process_class (a_class: CLASS_AS)
 		local
 			l_viol: CA_RULE_VIOLATION
-			l_parents: PARENT_LIST_AS
 			l_seen_parents: HASH_TABLE [BOOLEAN, STRING]
 			l_parent_class_name: STRING
 			-- STRING key: the class name. Eiffel has no namespace, thus this is a class unique identifier.
 			-- BOOLEAN value: if set to true, we have already generated a violation, further violations
 			-- for the same parent class will be ignored.
 		do
-			-- TODO: Check what happens with genericity (inheriting from LIST [STRING] and LIST [BOOLEAN] at the same type).
-
-			create l_parents.make (32)
-			l_parents.finish
-
-			-- We mix conforming and non conforming inheritance
-			if attached a_class.conforming_parents then
-				l_parents.merge_right (a_class.conforming_parents)
-			end
-			l_parents.finish
-			if attached a_class.non_conforming_parents then
-				l_parents.merge_right (a_class.non_conforming_parents)
-			end
-
-			create l_seen_parents.make (32)
-
-			across l_parents as ic loop
-				-- Only complain if there are no export, redefine, rename, select and undefine clauses.
-				if ic.item.exports = Void and then ic.item.redefining = Void and then ic.item.renaming = Void and then ic.item.selecting = Void and then ic.item.undefining = Void then
-					l_parent_class_name := ic.item.type.class_name.name_32
-					if l_seen_parents.has (ic.item.type.class_name.name_32) then
-						if l_seen_parents.at (ic.item.type.class_name.name_32) = false then
-							create l_viol.make_with_rule (Current)
-							l_viol.set_location (ic.item.start_location)
-							l_viol.long_description_info.extend (l_parent_class_name)
-							violations.extend (l_viol)
-							l_seen_parents.at (l_parent_class_name) := true
+				-- TODO: Although I cannot think of any reasonable scenario where one might want to do this,
+				-- check what happens with genericity (inheriting from LIST [STRING] and LIST [BOOLEAN] at the same type).
+			if attached a_class.parents as parents then
+				create l_seen_parents.make (32)
+				across
+					parents as ic
+				loop
+						-- Only complain if there are no export, redefine, rename, select and undefine clauses.
+					if ic.item.exports = Void and then ic.item.redefining = Void and then ic.item.renaming = Void and then ic.item.selecting = Void and then ic.item.undefining = Void then
+						l_parent_class_name := ic.item.type.class_name.name_32
+						if l_seen_parents.has (ic.item.type.class_name.name_32) then
+							if l_seen_parents.at (ic.item.type.class_name.name_32) = false then
+								create l_viol.make_with_rule (Current)
+								l_viol.set_location (ic.item.start_location)
+								l_viol.long_description_info.extend (l_parent_class_name)
+								violations.extend (l_viol)
+								l_seen_parents.at (l_parent_class_name) := true
+							end
+						else
+							l_seen_parents.put (false, l_parent_class_name)
 						end
-					else
-						l_seen_parents.put (false, l_parent_class_name)
 					end
 				end
 			end
-
 		end
 
 feature -- Properties
@@ -105,7 +94,7 @@ feature -- Properties
 			a_formatter.add_class (a_violation.affected_class.original_class)
 			a_formatter.add (ca_messages.explicit_redundant_inheritance_violation_2)
 			check attached {STRING} a_violation.long_description_info.first as class_name then
-				-- TODO: add_class
+					-- TODO: add_class
 				a_formatter.add_quoted_text (class_name)
 			end
 			a_formatter.add (ca_messages.explicit_redundant_inheritance_violation_3)

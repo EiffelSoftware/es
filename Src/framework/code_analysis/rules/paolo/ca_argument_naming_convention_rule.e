@@ -21,10 +21,21 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (a_pref_manager: attached PREFERENCE_MANAGER)
 			-- Initialization for `Current'.
 		do
 			make_with_defaults
+			initialize_options (a_pref_manager)
+		end
+
+	initialize_options (a_pref_manager: attached PREFERENCE_MANAGER)
+			-- Initializes rule preferences.
+		local
+			l_factory: BASIC_PREFERENCE_FACTORY
+		do
+			create l_factory
+			enforce_argument_prefix := l_factory.new_boolean_preference_value (a_pref_manager, preference_namespace + ca_names.enforce_argument_prefix, default_enforce_argument_prefix)
+			enforce_argument_prefix.set_default_value (default_enforce_argument_prefix.out)
 		end
 
 feature {NONE} -- Activation
@@ -75,8 +86,14 @@ feature {NONE} -- Rule checking
 			-- Currently the casing restriction cannot be enforced, as identifiers received by this
 			-- function are always upper- or lower-cased.
 		do
-			Result := not a_name.ends_with ("_") and not a_name.has_substring ("__") and (a_name.as_lower ~ a_name) and a_name.starts_with ("a_")
+			Result := not a_name.ends_with ("_") and not a_name.has_substring ("__") and (a_name.as_lower ~ a_name) and (not enforce_argument_prefix.value or else a_name.starts_with ("a_"))
 		end
+
+feature -- Options
+
+	enforce_argument_prefix: BOOLEAN_PREFERENCE
+
+	default_enforce_argument_prefix: BOOLEAN = True
 
 feature -- Properties
 

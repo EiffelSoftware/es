@@ -55,15 +55,20 @@ feature {NONE} -- Rule checking
 			l_key: STRING
 			l_comment_text: STRING
 		do
-			l_comment_text := trim_string (stringify_comments (a_feature_clause_as.comment (current_context.matchlist)))
-			l_key := l_comment_text.as_lower + stringify_clients (a_feature_clause_as.clients) -- Case insensitive on comments
-			if not seen_feature_table.has (l_key) then
-				seen_feature_table.put (a_feature_clause_as, l_key)
-			else
-				create l_viol.make_with_rule (Current)
-				l_viol.set_location (a_feature_clause_as.start_location)
-				l_viol.long_description_info.extend (l_comment_text)
-				violations.extend (l_viol)
+			l_comment_text := stringify_comments (a_feature_clause_as.comment (current_context.matchlist))
+
+				-- If the comment is empty, we ignore this feature clause.
+				-- There is another rule in charge of complaining about uncommented feature clauses.
+			if not l_comment_text.is_empty then
+				l_key := l_comment_text.as_lower + stringify_clients (a_feature_clause_as.clients) -- Case insensitive on comments
+				if not seen_feature_table.has (l_key) then
+					seen_feature_table.put (a_feature_clause_as, l_key)
+				else
+					create l_viol.make_with_rule (Current)
+					l_viol.set_location (a_feature_clause_as.start_location)
+					l_viol.long_description_info.extend (l_comment_text)
+					violations.extend (l_viol)
+				end
 			end
 		end
 
@@ -72,12 +77,16 @@ feature {NONE} -- Rule checking
 			-- of the feature comment and the exports.
 
 	stringify_comments (a_comments: EIFFEL_COMMENTS): STRING
+		local
+			l_adjusted_comment: STRING
 		do
 			create Result.make (512) -- Should be more space than enough
 			across
 				a_comments as ic
 			loop
-				Result.append_string (ic.item.content_32)
+				l_adjusted_comment := ic.item.content_32
+				l_adjusted_comment.adjust
+				Result.append_string (l_adjusted_comment)
 			end
 		end
 

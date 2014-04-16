@@ -21,10 +21,21 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (a_pref_manager: attached PREFERENCE_MANAGER)
 			-- Initialization for `Current'.
 		do
 			make_with_defaults
+			initialize_options (a_pref_manager)
+		end
+
+	initialize_options (a_pref_manager: attached PREFERENCE_MANAGER)
+			-- Initializes rule preferences.
+		local
+			l_factory: BASIC_PREFERENCE_FACTORY
+		do
+			create l_factory
+			enforce_local_prefix := l_factory.new_boolean_preference_value (a_pref_manager, preference_namespace + ca_names.enforce_local_prefix, default_enforce_local_prefix)
+			enforce_local_prefix.set_default_value (default_enforce_local_prefix.out)
 		end
 
 feature {NONE} -- Activation
@@ -72,8 +83,14 @@ feature {NONE} -- Rule checking
 
 	is_valid_local_variable_name (a_name: attached STRING): BOOLEAN
 		do
-			Result := not a_name.ends_with ("_") and not a_name.has_substring ("__") and (a_name.as_lower ~ a_name) and a_name.starts_with ("l_")
+			Result := not a_name.ends_with ("_") and not a_name.has_substring ("__") and (a_name.as_lower ~ a_name) and (not enforce_local_prefix.value or else a_name.starts_with ("l_"))
 		end
+
+feature -- Options
+
+	enforce_local_prefix: BOOLEAN_PREFERENCE
+
+	default_enforce_local_prefix: BOOLEAN = True
 
 feature -- Properties
 

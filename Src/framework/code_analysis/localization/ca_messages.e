@@ -343,7 +343,7 @@ feature -- Rule Violations
 		do Result := locale.translation ("Local variable '") end
 
 	variable_naming_convention_violation_2: STRING_32
-		do Result := locale.translation ("' does not respect the Eiffel naming convention for local variables (all lowercase, begin with 'la_', no trailing or two consecutive underscores).") end
+		do Result := locale.translation ("' does not respect the Eiffel naming convention for local variables (all lowercase, begin with 'l_', no trailing or two consecutive underscores).") end
 
 	argument_naming_convention_violation_1: STRING_32
 		do Result := locale.translation ("Argument '") end

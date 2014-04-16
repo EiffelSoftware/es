@@ -14,8 +14,6 @@ inherit
 
 	SHARED_SERVER
 
-	CA_MISC_UTILS
-
 feature {NONE} -- Initialization
 
 	make_with_defaults

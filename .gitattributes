@@ -3509,7 +3509,6 @@ Src/framework/code_analysis/rules/paolo/ca_explicit_redundant_inheritance_rule.e
 Src/framework/code_analysis/rules/paolo/ca_feature_naming_convention_rule.e -text svneol=native#unset
 Src/framework/code_analysis/rules/paolo/ca_inspect_no_when_rule.e -text svneol=native#unset
 Src/framework/code_analysis/rules/paolo/ca_mergeable_feature_clauses_rule.e -text svneol=native#unset
-Src/framework/code_analysis/rules/paolo/ca_misc_utils.e -text svneol=native#unset
 Src/framework/code_analysis/rules/paolo/ca_unnecessary_sign_operator_rule.e -text svneol=native#unset
 Src/framework/code_analysis/rules/paolo/ca_unneeded_accessor_function_rule.e -text svneol=native#unset
 Src/framework/code_analysis/rules/paolo/ca_variable_naming_convention_rule.e -text svneol=native#unset
