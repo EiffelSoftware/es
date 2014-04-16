@@ -430,6 +430,13 @@ feature -- Rules
 		do Result := locale.translation ("All unary operands for numbers are unnecessary, except for a single minus sign. %
 			%They should be removed or the instruction should be checked for errors.") end
 
+	empty_uncommented_feature_title: STRING_32
+		do Result := locale.translation ("Empty and uncommented feature") end
+
+	empty_uncommented_feature_description: STRING_32
+		do Result := locale.translation ("A routine which does not contain any instructions and has no comment too %
+			%indicates that the implementation might be missing.") end
+
 
 feature -- Preferences
 

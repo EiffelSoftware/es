@@ -354,7 +354,11 @@ feature -- Rule Violations
 	unnecessary_sign_operand_violation_1: STRING_32
 		do Result := locale.translation ("All unary operands for numbers are unnecessary, except for a single minus sign. They should be removed or the instruction should be checked for errors.") end
 
+	empty_uncommented_feature_violation_1: STRING_32
+		do Result := locale.translation ("Feature '") end
 
+	empty_uncommented_feature_violation_2: STRING_32
+		do Result := locale.translation ("' has an empty body and no comment. The implementation might be missing.") end
 
 
 
