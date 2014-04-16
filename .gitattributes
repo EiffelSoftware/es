@@ -3499,6 +3499,7 @@ Src/framework/code_analysis/localization/ca_messages.e -text svneol=native#unset
 Src/framework/code_analysis/localization/ca_names.e -text svneol=native#unset
 Src/framework/code_analysis/rule_checkers/ca_all_rules_checker.e -text svneol=native#unset
 Src/framework/code_analysis/rules/ca_rule.e -text svneol=native#unset
+Src/framework/code_analysis/rules/control_structures/ca_inspect_instructions_rule.e -text svneol=native#unset
 Src/framework/code_analysis/rules/paolo/ca_argument_naming_convention_rule.e -text svneol=native#unset
 Src/framework/code_analysis/rules/paolo/ca_attribute_should_be_local_rule.e -text svneol=native#unset
 Src/framework/code_analysis/rules/paolo/ca_class_naming_convention_rule.e -text svneol=native#unset

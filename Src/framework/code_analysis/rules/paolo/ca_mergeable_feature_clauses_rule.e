@@ -25,6 +25,7 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		do
 			make_with_defaults
+			create {CA_HINT} severity
 		end
 
 feature {NONE} -- Activation

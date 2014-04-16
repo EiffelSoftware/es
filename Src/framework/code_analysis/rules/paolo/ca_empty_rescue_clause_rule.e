@@ -43,11 +43,8 @@ feature {NONE} -- Rule checking
 			if attached {ROUTINE_AS} a_feature_as.body.content as routine_as then
 					-- routine_as.has_rescue is not very helpful, as it only tells us
 					-- if the routine has a *non empty* rescue clause.
-				if routine_as.rescue_keyword_index >= 1 and (routine_as.rescue_clause = Void or else routine_as.rescue_clause.count = 0) then
-					l_rescue_keyword := routine_as.rescue_keyword (current_context.matchlist)
-					check
-						attached l_rescue_keyword
-					end
+				l_rescue_keyword := routine_as.rescue_keyword (current_context.matchlist)
+				if attached l_rescue_keyword and (routine_as.rescue_clause = Void or else routine_as.rescue_clause.is_empty) then
 					create l_viol.make_with_rule (Current)
 					l_viol.set_location (l_rescue_keyword.start_location)
 					l_viol.long_description_info.extend (a_feature_as.feature_name.name_8)

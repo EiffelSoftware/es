@@ -34,31 +34,25 @@ feature {NONE} -- Activation
 
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
---			a_checker.add_feature_pre_action (agent process_feature)
+			a_checker.add_inspect_pre_action (agent process_inspect)
 		end
 
 feature {NONE} -- Rule checking
 
---	process_feature (a_feature_as: FEATURE_AS)
---		local
---			l_rescue_keyword: KEYWORD_AS
---			l_viol: CA_RULE_VIOLATION
---		do
---			if attached {ROUTINE_AS} a_feature_as.body.content as routine_as then
---					-- routine_as.has_rescue is not very helpful, as it only tells us
---					-- if the routine has a *non empty* rescue clause.
---				if routine_as.rescue_keyword_index >= 1 and (routine_as.rescue_clause = Void or else routine_as.rescue_clause.count = 0) then
---					l_rescue_keyword := routine_as.rescue_keyword (current_context.matchlist)
---					check
---						attached l_rescue_keyword
---					end
---					create l_viol.make_with_rule (Current)
---					l_viol.set_location (l_rescue_keyword.start_location)
---					l_viol.long_description_info.extend (a_feature_as.feature_name.name_8)
---					violations.extend (l_viol)
---				end
---			end
---		end
+	process_inspect (a_inspect_as: INSPECT_AS)
+		local
+			l_viol: CA_RULE_VIOLATION
+			l_has_else: BOOLEAN
+		do
+			if a_inspect_as.case_list = Void or else a_inspect_as.case_list.is_empty then
+
+				create l_viol.make_with_rule (Current)
+				l_viol.set_location (a_inspect_as.start_location)
+				l_has_else := (a_inspect_as.else_keyword (current_context.matchlist) /= Void)
+				l_viol.long_description_info.extend (l_has_else)
+				violations.extend (l_viol)
+			end
+		end
 
 feature -- Properties
 
@@ -77,11 +71,13 @@ feature -- Properties
 
 	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		do
---			a_formatter.add (ca_messages.empty_rescue_clause_violation_1)
---			check attached {STRING} a_violation.long_description_info.first as feature_name then
---				a_formatter.add_feature_name (feature_name, a_violation.affected_class)
---			end
---			a_formatter.add (ca_messages.empty_rescue_clause_violation_2)
+			check attached {BOOLEAN} a_violation.long_description_info.first as has_else then
+				if has_else then
+					a_formatter.add (ca_messages.inspect_no_when_with_else_violation)
+				else
+					a_formatter.add (ca_messages.inspect_no_when_no_else_violation)
+				end
+			end
 		end
 
 end

@@ -68,6 +68,9 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_UNNEEDED_ACCESSOR_FUNCTION_RULE}.make)
 			rules.extend (create {CA_MERGEABLE_FEATURE_CLAUSES_RULE}.make)
 			rules.extend (create {CA_EMPTY_RESCUE_CLAUSE_RULE}.make)
+			rules.extend (create {CA_INSPECT_NO_WHEN_RULE}.make)
+			rules.extend (create {CA_EXPLICIT_REDUNDANT_INHERITANCE_RULE}.make)
+			rules.extend (create {CA_ATTRIBUTE_SHOULD_BE_LOCAL_RULE}.make)
 
 			settings.initialize_rule_settings (rules)
 
