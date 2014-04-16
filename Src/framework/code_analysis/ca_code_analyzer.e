@@ -59,6 +59,11 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_DEEPLY_NESTED_IF_RULE}.make (settings.preference_manager))
 			rules.extend (create {CA_UNNEEDED_HELPER_VARIABLE_RULE}.make (settings.preference_manager))
 			rules.extend (create {CA_UNNEEDED_PARENTHESES_RULE}.make)
+			rules.extend (create {CA_CLASS_NAMING_CONVENTION_RULE}.make)
+			rules.extend (create {CA_FEATURE_NAMING_CONVENTION_RULE}.make)
+			rules.extend (create {CA_VARIABLE_NAMING_CONVENTION_RULE}.make)
+			rules.extend (create {CA_ARGUMENT_NAMING_CONVENTION_RULE}.make)
+			rules.extend (create {CA_UNNECESSARY_SIGN_OPERAND}.make)
 
 			settings.initialize_rule_settings (rules)
 

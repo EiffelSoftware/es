@@ -392,6 +392,45 @@ feature -- Rules
 		do Result := locale.translation ("Parentheses that are not needed should be %
 			%removed. This helps enforcing a consistent coding style.") end
 
+
+	class_naming_convention_title: STRING_32
+		do Result := locale.translation ("Class naming convention violated") end
+
+	class_naming_convention_description: STRING_32
+		do Result := locale.translation ("Class names should respect the Eiffel naming %
+			%convention for classes (all uppercase, no trailing or two consecutive underscores).") end
+
+	feature_naming_convention_title: STRING_32
+		do Result := locale.translation ("Feature naming convention violated") end
+
+	feature_naming_convention_description: STRING_32
+		do Result := locale.translation ("Feature names should respect the Eiffel naming %
+		%convention for features (all lowercase, no trailing or two consecutive underscores).") end
+
+	variable_naming_convention_title: STRING_32
+		do Result := locale.translation ("Local variable naming convention violated") end
+
+	variable_naming_convention_description: STRING_32
+		do Result := locale.translation ("Local variable names should respect the Eiffel naming %
+			%convention for local variables (all lowercase begin with 'l_', no trailing or %
+			% two consecutive underscores).") end
+
+	argument_naming_convention_title: STRING_32
+		do Result := locale.translation ("Argument naming convention violated") end
+
+	argument_naming_convention_description: STRING_32
+		do Result := locale.translation ("Argument names should respect the Eiffel naming %
+			%convention for arguments (all lowercase begin with 'a_', no trailing or %
+			%two consecutive underscores).") end
+
+	unnecessary_sign_operand_title: STRING_32
+		do Result := locale.translation ("Unnecessary sign operand") end
+
+	unnecessary_sign_operand_description: STRING_32
+		do Result := locale.translation ("All unary operands for numbers are unnecessary, except for a single minus sign. %
+			%They should be removed or the instruction should be checked for errors.") end
+
+
 feature -- Preferences
 
 	preferences_window_title: STRING_32

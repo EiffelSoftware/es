@@ -327,6 +327,38 @@ feature -- Rule Violations
 	unneeded_parentheses_violation_1: STRING_32
 		do Result := locale.translation ("These parentheses are not needed and should be removed in order to maintain a consistent coding style.") end
 
+	class_naming_convention_violation_1: STRING_32
+		do Result := locale.translation ("Class '") end
+
+	class_naming_convention_violation_2: STRING_32
+		do Result := locale.translation ("' does not respect the Eiffel naming convention for classes (all uppercase, no trailing or two consecutive underscores).") end
+
+	feature_naming_convention_violation_1: STRING_32
+		do Result := locale.translation ("Feature '") end
+
+	feature_naming_convention_violation_2: STRING_32
+		do Result := locale.translation ("' does not respect the Eiffel naming convention for features (all lowercase, no trailing or two consecutive underscores).") end
+
+	variable_naming_convention_violation_1: STRING_32
+		do Result := locale.translation ("Local variable '") end
+
+	variable_naming_convention_violation_2: STRING_32
+		do Result := locale.translation ("' does not respect the Eiffel naming convention for local variables (all lowercase, begin with 'la_', no trailing or two consecutive underscores).") end
+
+	argument_naming_convention_violation_1: STRING_32
+		do Result := locale.translation ("Argument '") end
+
+	argument_naming_convention_violation_2: STRING_32
+		do Result := locale.translation ("' does not respect the Eiffel naming convention for arguments (all lowercase, begin with 'a_', no trailing or two consecutive underscores).") end
+
+	unnecessary_sign_operand_violation_1: STRING_32
+		do Result := locale.translation ("All unary operands for numbers are unnecessary, except for a single minus sign. They should be removed or the instruction should be checked for errors.") end
+
+
+
+
+
+
 	error: STRING_32
 		do Result := locale.translation ("An error occurred when analyzing this class.") end
 

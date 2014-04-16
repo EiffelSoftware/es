@@ -3494,6 +3494,15 @@ Src/framework/base64/base64.lic -text
 Src/framework/base64/tests/tests.lic -text
 Src/framework/cli_debugger/cli_debugger.lic -text
 Src/framework/cli_writer/cli_writer.lic -text
+Src/framework/code_analysis/ca_code_analyzer.e -text svneol=native#unset
+Src/framework/code_analysis/localization/ca_messages.e -text svneol=native#unset
+Src/framework/code_analysis/localization/ca_names.e -text svneol=native#unset
+Src/framework/code_analysis/rule_checkers/ca_all_rules_checker.e -text svneol=native#unset
+Src/framework/code_analysis/rules/paolo/ca_argument_naming_convention_rule.e -text svneol=native#unset
+Src/framework/code_analysis/rules/paolo/ca_class_naming_convention_violated.e -text svneol=native#unset
+Src/framework/code_analysis/rules/paolo/ca_feature_naming_convention_rule.e -text svneol=native#unset
+Src/framework/code_analysis/rules/paolo/ca_unnecessary_sign_operand.e -text svneol=native#unset
+Src/framework/code_analysis/rules/paolo/ca_variable_naming_convention_violated.e -text svneol=native#unset
 Src/framework/code_analysis/tests/rules/001_self_assignment/output_oracle.txt -text
 Src/framework/code_analysis/tests/rules/002_unused_argument/output_oracle.txt -text
 Src/framework/code_analysis/tests/rules/004_cq_separation/output_oracle.txt -text

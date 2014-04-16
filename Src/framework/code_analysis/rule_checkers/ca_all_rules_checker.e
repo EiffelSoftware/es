@@ -59,6 +59,7 @@ inherit
 			process_once_as,
 			process_paran_as,
 			process_routine_as,
+			process_unary_as,
 			process_un_not_as
 		end
 
@@ -140,6 +141,8 @@ feature {NONE} -- Initialization
 			create paran_post_actions.make
 			create routine_pre_actions.make
 			create routine_post_actions.make
+			create unary_pre_actions.make
+			create unary_post_actions.make
 			create un_not_pre_actions.make
 			create un_not_post_actions.make
 		end
@@ -456,6 +459,16 @@ feature {CA_STANDARD_RULE} -- Adding agents
 			routine_post_actions.extend (a_action)
 		end
 
+	add_unary_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [UNARY_AS]])
+		do
+			unary_pre_actions.extend (a_action)
+		end
+
+	add_unary_post_action (a_action: attached PROCEDURE [ANY, TUPLE [UNARY_AS]])
+		do
+			unary_post_actions.extend (a_action)
+		end
+
 	add_un_not_pre_action (a_action: attached PROCEDURE [ANY, TUPLE [UN_NOT_AS]])
 		do
 			un_not_pre_actions.extend (a_action)
@@ -529,6 +542,8 @@ feature {NONE} -- Agent lists
 	paran_pre_actions, paran_post_actions: ACTION_SEQUENCE [TUPLE [PARAN_AS]]
 
 	routine_pre_actions, routine_post_actions: ACTION_SEQUENCE [TUPLE [ROUTINE_AS]]
+
+	unary_pre_actions, unary_post_actions: ACTION_SEQUENCE [TUPLE [UNARY_AS]]
 
 	un_not_pre_actions, un_not_post_actions: ACTION_SEQUENCE [TUPLE [UN_NOT_AS]]
 
@@ -764,6 +779,13 @@ feature {NONE} -- Processing
 			un_not_pre_actions.call ([a_un_not])
 			Precursor (a_un_not)
 			un_not_post_actions.call ([a_un_not])
+		end
+
+	process_unary_as (a_unary: UNARY_AS)
+		do
+			unary_pre_actions.call ([a_unary])
+			Precursor (a_unary)
+			unary_post_actions.call ([a_unary])
 		end
 
 feature -- Results
