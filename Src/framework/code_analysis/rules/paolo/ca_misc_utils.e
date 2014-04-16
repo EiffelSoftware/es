@@ -19,7 +19,9 @@ feature -- String processing
 				Result ~ l_temp
 			loop
 				l_temp := Result.twin
-				across trimmable_characters as ic loop
+				across
+					trimmable_characters as ic
+				loop
 					Result.prune_all_leading (ic.item)
 					Result.prune_all_trailing (ic.item)
 				end
@@ -30,7 +32,7 @@ feature {NONE} -- Implementation
 
 	trimmable_characters: ARRAY [CHARACTER]
 		once
-			Result := << ' ', '%T' >>
+			Result := <<' ', '%T'>>
 		end
 
 end

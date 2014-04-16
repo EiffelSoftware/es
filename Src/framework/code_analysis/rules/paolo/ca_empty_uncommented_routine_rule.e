@@ -9,7 +9,7 @@ note
 	revision: "$Revision$"
 
 class
-	CA_EMPTY_UNCOMMENTED_ROUTINE
+	CA_EMPTY_UNCOMMENTED_ROUTINE_RULE
 
 inherit
 
@@ -51,9 +51,9 @@ feature {NONE} -- Rule checking
 				if not attached a_as.compound or else a_as.compound.is_empty then
 					l_leaf_list := current_context.matchlist
 					if current_feature.body.is_routine then
-						-- TODO: Unneeded helper variable detected here (which is fine).
-						-- The problem is that the location of the suggestion is wrong,
-						-- the text suggests it should point to the usage, not the assignment.
+							-- TODO: Unneeded helper variable detected here (which is fine).
+							-- The problem is that the location of the suggestion is wrong,
+							-- the text suggests it should point to the usage, not the assignment.
 						l_comments := current_feature.comment (l_leaf_list)
 						l_comments_empty := comments_are_empty (l_comments)
 						if l_comments_empty then

@@ -1,6 +1,6 @@
 note
 	description: "[
-					RULE #30: Unnecessary sign operand
+					RULE #30: Unnecessary sign operator
 		
 				All unary sign operators for numbers are unnecessary, except for a single minus sign.
 				They should be removed or the instruction should be checked for errors.
@@ -10,7 +10,7 @@ note
 	revision: "$Revision$"
 
 class
-	CA_UNNECESSARY_SIGN_OPERATOR
+	CA_UNNECESSARY_SIGN_OPERATOR_RULE
 
 inherit
 

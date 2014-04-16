@@ -11,7 +11,7 @@ note
 	revision: "$Revision$"
 
 class
-	CA_UNNEEDED_ACCESSOR_FUNCTION
+	CA_UNNEEDED_ACCESSOR_FUNCTION_RULE
 
 inherit
 

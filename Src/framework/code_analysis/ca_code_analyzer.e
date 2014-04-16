@@ -63,11 +63,11 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_FEATURE_NAMING_CONVENTION_RULE}.make)
 			rules.extend (create {CA_VARIABLE_NAMING_CONVENTION_RULE}.make)
 			rules.extend (create {CA_ARGUMENT_NAMING_CONVENTION_RULE}.make)
-			rules.extend (create {CA_UNNECESSARY_SIGN_OPERATOR}.make)
-			rules.extend (create {CA_EMPTY_UNCOMMENTED_ROUTINE}.make)
-			rules.extend (create {CA_UNNEEDED_ACCESSOR_FUNCTION}.make)
-			rules.extend (create {CA_MERGEABLE_FEATURE_CLAUSES}.make)
-			rules.extend (create {CA_EMPTY_RESCUE_CLAUSE}.make)
+			rules.extend (create {CA_UNNECESSARY_SIGN_OPERATOR_RULE}.make)
+			rules.extend (create {CA_EMPTY_UNCOMMENTED_ROUTINE_RULE}.make)
+			rules.extend (create {CA_UNNEEDED_ACCESSOR_FUNCTION_RULE}.make)
+			rules.extend (create {CA_MERGEABLE_FEATURE_CLAUSES_RULE}.make)
+			rules.extend (create {CA_EMPTY_RESCUE_CLAUSE_RULE}.make)
 
 			settings.initialize_rule_settings (rules)
 

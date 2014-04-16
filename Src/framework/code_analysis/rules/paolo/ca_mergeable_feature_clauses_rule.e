@@ -10,7 +10,7 @@ note
 	revision: "$Revision$"
 
 class
-	CA_MERGEABLE_FEATURE_CLAUSES
+	CA_MERGEABLE_FEATURE_CLAUSES_RULE
 
 inherit
 
@@ -98,7 +98,9 @@ feature {NONE} -- Rule checking
 					i > l_inner_clients.count
 				loop
 					l_current_client := l_inner_clients [i].name_32
-					check attached l_current_client end
+					check
+						attached l_current_client
+					end
 					l_client_list [i] := l_current_client
 					i := i + 1
 				end

@@ -458,6 +458,24 @@ feature -- Rules
 	empty_rescue_clause_description: STRING_32
 		do Result := locale.translation ("An empty rescue clause should be avoided and leads to undesirable program behaviour.") end
 
+	inspect_no_when_title: STRING_32
+		do Result := locale.translation ("Inspect instruction has no 'when' branch") end
+
+	inspect_no_when_description: STRING_32
+		do Result := locale.translation ("An Inspect instruction that has no 'when' branch must be avoided. If there is an 'else' branch then these instructions will always be executed: thus the Multi-branch instruction is not needed. If there is no branch at all then an exception is always raised, for there is no matching branch for any value of the inspected variable.") end
+
+	explicit_redundant_inheritance_title: STRING_32
+		do Result := locale.translation ("Explicit redundant inheritance") end
+
+	explicit_redundant_inheritance_description: STRING_32
+		do Result := locale.translation ("Explicitly duplicated inheritance links are redundant if there is no renaming, redefining, or change of export status. One should be removed.") end
+
+	attribute_should_be_local_title: STRING_32
+		do Result := locale.translation ("Attribute should be local") end
+
+	attribute_should_be_local_description: STRING_32
+		do Result := locale.translation ("An attribute that is used like a local helper variable (i.e. is always assigned a new value inside a routine before being used only inside this routine) can be made into a local variable.") end
+
 
 feature -- Preferences
 

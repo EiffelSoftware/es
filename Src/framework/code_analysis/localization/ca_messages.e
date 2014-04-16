@@ -384,6 +384,27 @@ feature -- Rule Violations
 	empty_rescue_clause_violation_2: STRING_32
 		do Result := locale.translation ("' has an empty 'rescue' clause. This should be avoided as it can lead to undesirable program behaviour.") end
 
+	inspect_no_when_with_else_violation: STRING_32
+		do Result := locale.translation ("This 'inspect' instruction has no 'when' branch. The 'else' branch will always be executed.") end
+
+	inspect_no_when_no_else_violation: STRING_32
+		do Result := locale.translation ("This 'inspect' instruction is empty.  An exception will always be raised, for there is no matching branch for any value of the inspected variable.") end
+
+	explicit_redundant_inheritance_violation_1: STRING_32
+			do Result := locale.translation ("Class '") end
+
+	explicit_redundant_inheritance_violation_2: STRING_32
+			do Result := locale.translation ("' has a multiple explicit inheritance link to class '") end
+
+	explicit_redundant_inheritance_violation_3: STRING_32
+			do Result := locale.translation ("', with no renaming, redefining or change of export status. This is redundant, and the duplicate links should be removed.") end
+
+	attribute_should_be_local_violation_1: STRING_32
+			do Result := locale.translation ("Attribute '") end
+
+	attribute_should_be_local_violation_2: STRING_32
+			do Result := locale.translation ("' is used like a local helper variable (it is always assigned a new value inside this routine before being used only inside this routine). It can most likely be converted to a local variable.") end
+
 	error: STRING_32
 		do Result := locale.translation ("An error occurred when analyzing this class.") end
 
