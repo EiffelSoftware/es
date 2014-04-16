@@ -452,6 +452,12 @@ feature -- Rules
 		do Result := locale.translation ("Feature clauses with the same export status and comment could be possibly merged into one, %
 			%or their comments could be made more specific.") end
 
+	empty_rescue_clause_title: STRING_32
+		do Result := locale.translation ("Empty 'rescue' clause") end
+
+	empty_rescue_clause_description: STRING_32
+		do Result := locale.translation ("An empty rescue clause should be avoided and leads to undesirable program behaviour.") end
+
 
 feature -- Preferences
 

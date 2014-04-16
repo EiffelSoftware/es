@@ -378,6 +378,12 @@ feature -- Rule Violations
 	mergeable_feature_clauses_violation_2: STRING_32
 		do Result := locale.translation (" has the same comment and export status of a previous feature clause in its class. They could be possibly merged into one, or their comments could be made more specific.") end
 
+	empty_rescue_clause_violation_1: STRING_32
+		do Result := locale.translation ("Feature '") end
+
+	empty_rescue_clause_violation_2: STRING_32
+		do Result := locale.translation ("' has an empty 'rescue' clause. This should be avoided as it can lead to undesirable program behaviour.") end
+
 	error: STRING_32
 		do Result := locale.translation ("An error occurred when analyzing this class.") end
 

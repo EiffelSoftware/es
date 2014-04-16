@@ -3501,6 +3501,7 @@ Src/framework/code_analysis/rule_checkers/ca_all_rules_checker.e -text svneol=na
 Src/framework/code_analysis/rules/ca_rule.e -text svneol=native#unset
 Src/framework/code_analysis/rules/paolo/ca_argument_naming_convention_rule.e -text svneol=native#unset
 Src/framework/code_analysis/rules/paolo/ca_class_naming_convention_violated.e -text svneol=native#unset
+Src/framework/code_analysis/rules/paolo/ca_empty_rescue_clause.e -text svneol=native#unset
 Src/framework/code_analysis/rules/paolo/ca_empty_uncommented_feature.e -text svneol=native#unset
 Src/framework/code_analysis/rules/paolo/ca_feature_naming_convention_rule.e -text svneol=native#unset
 Src/framework/code_analysis/rules/paolo/ca_mergeable_feature_clauses.e -text svneol=native#unset

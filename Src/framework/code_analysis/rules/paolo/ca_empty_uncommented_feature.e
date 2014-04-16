@@ -117,7 +117,7 @@ feature -- Properties
 		do
 			a_formatter.add (ca_messages.empty_uncommented_feature_violation_1)
 			check attached {STRING_32} a_violation.long_description_info.first as feature_name then
-				a_formatter.add (feature_name)
+				a_formatter.add_feature_name (feature_name, a_violation.affected_class)
 			end
 			a_formatter.add (ca_messages.empty_uncommented_feature_violation_2)
 		end

@@ -67,6 +67,7 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_EMPTY_UNCOMMENTED_ROUTINE}.make)
 			rules.extend (create {CA_UNNEEDED_ACCESSOR_FUNCTION}.make)
 			rules.extend (create {CA_MERGEABLE_FEATURE_CLAUSES}.make)
+			rules.extend (create {CA_EMPTY_RESCUE_CLAUSE}.make)
 
 			settings.initialize_rule_settings (rules)
 
