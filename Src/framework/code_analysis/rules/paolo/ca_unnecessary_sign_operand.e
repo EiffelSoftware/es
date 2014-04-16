@@ -10,7 +10,7 @@ note
 	revision: "$Revision$"
 
 class
-	CA_UNNECESSARY_SIGN_OPERAND
+	CA_UNNECESSARY_SIGN_OPERATOR
 
 inherit
 
@@ -32,15 +32,17 @@ feature {NONE} -- Activation
 
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
-			a_checker.add_unary_pre_action (agent process_expr)
+			a_checker.add_unary_pre_action (agent process_unary)
+			a_checker.add_integer_pre_action (agent process_int)
+			a_checker.add_real_pre_action (agent process_real)
 		end
 
 feature {NONE} -- Rule checking
 
-		-- Known limitation: unfortunately, simple unary expressions like "+3" or "-2" are directly parsed as numerical
-		-- constant by the compiler, and this rule is not invoked at all. It is only invoked for expressions with at least
+		-- Simple unary expressions like "+3" or "-2" are directly parsed as numerical
+		-- constants by the compiler, and process_unary is not invoked at all. It is only invoked for expressions with at least
 		-- two consecutive signs or for simple unary expressions where the operand is *not* a constant (in that case, the
-		-- unnecessary plus operator can be detected).
+		-- unnecessary plus operator can be detected). For this reason, we need to handle integer and real expressions separately.
 
 	is_sign_redundant (a_expr: attached UNARY_AS): BOOLEAN
 		do
@@ -55,45 +57,48 @@ feature {NONE} -- Rule checking
 					Result := True
 				elseif attached {INTEGER_AS} a_expr.expr as int_as then
 						-- No sign is necessary for zero
+						-- Also, if the integer already has a sign, the current sign is redundant.
 						-- TODO: this is a perfect example for the parenthesis rule with boolean assignments
-					Result := (int_as.integer_64_value = 0)
+					Result := (int_as.integer_64_value = 0 or int_as.sign_symbol (current_context.matchlist) /= Void)
 				elseif attached {REAL_AS} a_expr.expr as real_as then
-						-- No sign is necessary for zero
-						-- TODO: Same as above
-						-- TODO: Ask somebody how to properly parse a double constant
-					Result := is_double_string_zero (real_as.value)
+						-- Same as above
+					Result := (real_as.value.to_real_64 = 0 or real_as.sign_symbol (current_context.matchlist) /= Void)
 				end
 			end
 		end
 
-	is_double_string_zero (a_string: STRING): Boolean
+	process_unary (a_expr: attached UNARY_AS)
 		do
-				-- Trick: we trim leading and traling zeros. If nothing or a single dot is left,
-				-- this was a zero expression.
-			from
-			until
-				not a_string.starts_with ("0")
-			loop
-				a_string.remove_head (1)
+			if is_sign_redundant (a_expr) then
+				add_violation (a_expr.start_location)
 			end
-			from
-			until
-				not a_string.ends_with ("0")
-			loop
-				a_string.remove_tail (1)
-			end
-			Result := a_string.is_empty or a_string ~ "0"
 		end
 
-	process_expr (a_expr: attached UNARY_AS)
+	process_int (a_integer: attached INTEGER_AS)
+		do
+			if attached a_integer.sign_symbol (current_context.matchlist) as sign then
+				if sign.is_plus or (sign.is_minus and a_integer.natural_64_value = 0) then
+					add_violation (sign.start_location)
+				end
+			end
+		end
+
+	process_real (a_real: attached REAL_AS)
+		do
+			if attached a_real.sign_symbol (current_context.matchlist) as sign then
+				if sign.is_plus or (sign.is_minus and a_real.value.to_real_64 = 0) then
+					add_violation (sign.start_location)
+				end
+			end
+		end
+
+	add_violation (a_location: LOCATION_AS)
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
-			if is_sign_redundant (a_expr) then
-				create l_viol.make_with_rule (Current)
-				l_viol.set_location (a_expr.start_location)
-				violations.extend (l_viol)
-			end
+			create l_viol.make_with_rule (Current)
+			l_viol.set_location (a_location)
+			violations.extend (l_viol)
 		end
 
 feature -- Properties

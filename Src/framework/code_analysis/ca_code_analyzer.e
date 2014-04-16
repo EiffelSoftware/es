@@ -63,7 +63,7 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_FEATURE_NAMING_CONVENTION_RULE}.make)
 			rules.extend (create {CA_VARIABLE_NAMING_CONVENTION_RULE}.make)
 			rules.extend (create {CA_ARGUMENT_NAMING_CONVENTION_RULE}.make)
-			rules.extend (create {CA_UNNECESSARY_SIGN_OPERAND}.make)
+			rules.extend (create {CA_UNNECESSARY_SIGN_OPERATOR}.make)
 			rules.extend (create {CA_EMPTY_UNCOMMENTED_ROUTINE}.make)
 			rules.extend (create {CA_UNNEEDED_ACCESSOR_FUNCTION}.make)
 
