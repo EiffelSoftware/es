@@ -66,6 +66,7 @@ feature {NONE} -- Initialization
 			rules.extend (create {CA_UNNECESSARY_SIGN_OPERATOR}.make)
 			rules.extend (create {CA_EMPTY_UNCOMMENTED_ROUTINE}.make)
 			rules.extend (create {CA_UNNEEDED_ACCESSOR_FUNCTION}.make)
+			rules.extend (create {CA_MERGEABLE_FEATURE_CLAUSES}.make)
 
 			settings.initialize_rule_settings (rules)
 

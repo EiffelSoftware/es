@@ -369,6 +369,11 @@ feature -- Rule Violations
 	unneeded_accessor_function_violation_3: STRING_32
 		do Result := locale.translation ("' secret attribute. This is not necessary in Eiffel, as it is not allowed to write to an attribute from outside a class. An exported attribute can be used instead.") end
 
+	mergeable_feature_clauses_violation_1: STRING_32
+		do Result := locale.translation ("Feature clause ") end
+
+	mergeable_feature_clauses_violation_2: STRING_32
+		do Result := locale.translation (" has the same comment and export status of a previous feature clause in its class. They could be possibly merged into one, or their comments could be made more specific.") end
 
 	error: STRING_32
 		do Result := locale.translation ("An error occurred when analyzing this class.") end

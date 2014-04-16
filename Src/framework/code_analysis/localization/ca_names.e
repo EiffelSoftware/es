@@ -445,6 +445,13 @@ feature -- Rules
 			%Since it is not allowed to write to an attribute from outside a class, an exported attribute can be used instead %
 			%and the accessor may be removed.") end
 
+	mergeable_feature_clauses_title: STRING_32
+		do Result := locale.translation ("Mergeable 'feature' clauses") end
+
+	mergeable_feature_clauses_description: STRING_32
+		do Result := locale.translation ("Feature clauses with the same export status and comment could be possibly merged into one, %
+			%or their comments could be made more specific.") end
+
 
 feature -- Preferences
 
