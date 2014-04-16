@@ -357,10 +357,10 @@ feature -- Rule Violations
 	unnecessary_sign_operator_violation_2: STRING_32
 		do Result := locale.translation (" starts with an unnecessary sign operator. All unary sign operators for numbers are unnecessary, except for a single minus sign. They should be removed or the instruction should be checked for errors.") end
 
-	empty_uncommented_feature_violation_1: STRING_32
-		do Result := locale.translation ("Feature '") end
+	empty_uncommented_routine_violation_1: STRING_32
+		do Result := locale.translation ("Routine '") end
 
-	empty_uncommented_feature_violation_2: STRING_32
+	empty_uncommented_routine_violation_2: STRING_32
 		do Result := locale.translation ("' has an empty body and no comment. The implementation might be missing.") end
 
 	unneeded_accessor_function_violation_1: STRING_32

@@ -103,23 +103,23 @@ feature -- Properties
 
 	title: STRING_32
 		do
-			Result := ca_names.empty_uncommented_feature_title
+			Result := ca_names.empty_uncommented_routine_title
 		end
 
 	id: STRING_32 = "CA051"
 
 	description: STRING_32
 		do
-			Result := ca_names.empty_uncommented_feature_description
+			Result := ca_names.empty_uncommented_routine_description
 		end
 
 	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		do
-			a_formatter.add (ca_messages.empty_uncommented_feature_violation_1)
+			a_formatter.add (ca_messages.empty_uncommented_routine_violation_1)
 			check attached {STRING_32} a_violation.long_description_info.first as feature_name then
 				a_formatter.add_feature_name (feature_name, a_violation.affected_class)
 			end
-			a_formatter.add (ca_messages.empty_uncommented_feature_violation_2)
+			a_formatter.add (ca_messages.empty_uncommented_routine_violation_2)
 		end
 
 end
