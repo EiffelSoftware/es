@@ -24,6 +24,7 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		do
 			make_with_defaults
+			create {CA_HINT} severity
 		end
 
 feature {NONE} -- Activation
@@ -46,16 +47,18 @@ feature {NONE} -- Rule checking
 			l_comments_empty: BOOLEAN
 			l_viol: CA_RULE_VIOLATION
 		do
-			if not attached a_as.compound or else a_as.compound.is_empty then
-				l_leaf_list := current_context.matchlist
-				if current_feature.body.is_routine then
-					l_comments := current_feature.comment (l_leaf_list)
-					l_comments_empty := comments_are_empty (l_comments)
-					if l_comments_empty then
-						create l_viol.make_with_rule (Current)
-						l_viol.set_location (current_feature.start_location)
-						l_viol.long_description_info.extend (current_feature.feature_name.name_32)
-						violations.extend (l_viol)
+			check attached current_feature then
+				if not attached a_as.compound or else a_as.compound.is_empty then
+					l_leaf_list := current_context.matchlist
+					if current_feature.body.is_routine then
+						l_comments := current_feature.comment (l_leaf_list)
+						l_comments_empty := comments_are_empty (l_comments)
+						if l_comments_empty then
+							create l_viol.make_with_rule (Current)
+							l_viol.set_location (current_feature.start_location)
+							l_viol.long_description_info.extend (current_feature.feature_name.name_32)
+							violations.extend (l_viol)
+						end
 					end
 				end
 			end
@@ -72,36 +75,8 @@ feature {NONE} -- Rule checking
 		end
 
 	process_feature (a_feature_as: attached FEATURE_AS)
-		local
-			l_name: STRING
-			l_viol: CA_RULE_VIOLATION
-			l_leaf_list: LEAF_AS_LIST
-			l_comments: EIFFEL_COMMENTS
-			l_comments_empty: BOOLEAN
 		do
 			current_feature := a_feature_as
-
-				--			l_leaf_list := current_context.matchlist
-				--			if a_feature_as.body.is_routine then
-				--				l_comments := a_feature_as.comment (l_leaf_list)
-				--				l_comments_empty := comments_are_empty (l_comments)
-
-				--				check attached {ROUTINE_AS} a_feature_as.body.content as routine then
-
-				--				end
-				--			end
-
-				--			across l_comments as comment loop
-				--				io.put_string (comment.item.content_32)
-				--			end
-				--
-				--			l_name := a_feature_as.feature_name.name_8
-				--			if not is_valid_feature_name (l_name) then
-				--				create l_viol.make_with_rule (Current)
-				--				l_viol.set_location (a_feature_as.start_location)
-				--				l_viol.long_description_info.extend (l_name)
-				--				violations.extend (l_viol)
-				--			end
 		end
 
 	comments_are_empty (a_comments: detachable EIFFEL_COMMENTS): BOOLEAN
@@ -119,13 +94,6 @@ feature {NONE} -- Rule checking
 					comments.forth
 				end
 			end
-		end
-
-	is_valid_feature_name (a_name: attached STRING): BOOLEAN
-			-- Currently the casing restriction cannot be enforced, as identifiers received by this
-			-- function are always upper- or lower-cased.
-		do
-			Result := not a_name.ends_with ("_") and not a_name.has_substring ("__") and (a_name.as_lower ~ a_name)
 		end
 
 feature -- Properties

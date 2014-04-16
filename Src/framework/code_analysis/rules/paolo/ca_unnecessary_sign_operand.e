@@ -25,6 +25,7 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		do
 			make_with_defaults
+			create {CA_SUGGESTION} severity
 		end
 
 feature {NONE} -- Activation
@@ -36,10 +37,11 @@ feature {NONE} -- Activation
 
 feature {NONE} -- Rule checking
 
-	-- Known limitation: unfortunately, simple unary expressions like "+3" or "-2" are directly parsed as numerical
-	-- constant by the compiler, and this rule is not invoked at all. It is only invoked for expressions with at least
-	-- two consecutive signs or for simple unary expressions where the operand is *not* a constant (in that case, the
-	-- unnecessary plus operator can be detected).
+		-- Known limitation: unfortunately, simple unary expressions like "+3" or "-2" are directly parsed as numerical
+		-- constant by the compiler, and this rule is not invoked at all. It is only invoked for expressions with at least
+		-- two consecutive signs or for simple unary expressions where the operand is *not* a constant (in that case, the
+		-- unnecessary plus operator can be detected).
+
 	is_sign_redundant (a_expr: attached UNARY_AS): BOOLEAN
 		do
 			Result := False
@@ -92,13 +94,6 @@ feature {NONE} -- Rule checking
 				l_viol.set_location (a_expr.start_location)
 				violations.extend (l_viol)
 			end
-		end
-
-	is_valid_local_variable_name (a_name: STRING): BOOLEAN
-			-- Currently the casing restriction cannot be enforced, as identifiers received by this
-			-- function are always upper- or lower-cased.
-		do
-			Result := not a_name.ends_with ("_") and not a_name.has_substring ("__") and (a_name.as_lower ~ a_name) and a_name.starts_with ("l_")
 		end
 
 feature -- Properties

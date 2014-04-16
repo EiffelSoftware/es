@@ -360,7 +360,14 @@ feature -- Rule Violations
 	empty_uncommented_feature_violation_2: STRING_32
 		do Result := locale.translation ("' has an empty body and no comment. The implementation might be missing.") end
 
+	unneeded_accessor_function_violation_1: STRING_32
+		do Result := locale.translation ("Feature '") end
 
+	unneeded_accessor_function_violation_2: STRING_32
+		do Result := locale.translation ("' seems to be a %"getter%" function of the '") end
+
+	unneeded_accessor_function_violation_3: STRING_32
+		do Result := locale.translation ("' secret attribute. This is not necessary in Eiffel, as it is not allowed to write to an attribute from outside a class. An exported attribute can be used instead.") end
 
 
 	error: STRING_32

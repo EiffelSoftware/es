@@ -437,6 +437,14 @@ feature -- Rules
 		do Result := locale.translation ("A routine which does not contain any instructions and has no comment too %
 			%indicates that the implementation might be missing.") end
 
+	unneeded_accessor_function_title: STRING_32
+		do Result := locale.translation ("Unneeded accessor function") end
+
+	unneeded_accessor_function_description: STRING_32
+		do Result := locale.translation ("In Eiffel, it is not necessary to use a secret attribute together with an exported accessor (%"getter%") function. %
+			%Since it is not allowed to write to an attribute from outside a class, an exported attribute can be used instead %
+			%and the accessor may be removed.") end
+
 
 feature -- Preferences
 
