@@ -1,6 +1,7 @@
 note
 	description: "Node in a tree structure, which needs to maintain consistency with its child nodes."
 	explicit: "all"
+	manual_inv: true
 
 frozen class F_COM_COMPOSITE_D
 

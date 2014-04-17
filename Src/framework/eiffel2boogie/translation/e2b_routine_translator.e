@@ -188,6 +188,13 @@ feature -- Translation: Signature
 			l_pre.set_free
 			current_boogie_procedure.add_contract (l_pre)
 
+				-- Unless class or feature are marked with "manual_inv", bring in the invariants of all wrapped objects
+			if not helper.boolean_feature_note_value (current_feature, "manual_inv") and not helper.boolean_class_note_value (current_type.base_class, "manual_inv") then
+				create l_pre.make (factory.function_call ("global_permissive", << >>, types.bool))
+				l_pre.set_free
+				current_boogie_procedure.add_contract (l_pre)
+			end
+
 				-- Only add postconditions and frame properties if the procedure modifies heap
 			if a_modifies_heap then
 				create l_post.make (factory.function_call ("global", << factory.global_heap >>, types.bool))

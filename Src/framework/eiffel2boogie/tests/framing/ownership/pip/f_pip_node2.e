@@ -1,5 +1,6 @@
 note
 	description: "A node in a graph structure that only has a reference to its parent and needs to maintain consistency with its children."
+	manual_inv: true
 
 frozen class F_PIP_NODE2
 

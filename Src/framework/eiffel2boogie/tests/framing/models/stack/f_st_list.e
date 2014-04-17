@@ -22,8 +22,6 @@ feature -- Access
 
 	is_empty: BOOLEAN
 			-- Is the list empty?
-		note
-			skip: True
 		require
 			closed: closed
 		do

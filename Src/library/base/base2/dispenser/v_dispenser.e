@@ -2,6 +2,7 @@ note
 	description: "Containers that can be extended with values and make only one element accessible at a time."
 	author: "Nadia Polikarpova"
 	model: sequence
+	manual_inv: true
 
 deferred class
 	V_DISPENSER [G]

@@ -6,6 +6,8 @@ note
 		]"
 	author: "Nadia Polikarpova"
 	model: map
+	manual_inv: true
+	
 
 deferred class
 	V_MAP [K, V]

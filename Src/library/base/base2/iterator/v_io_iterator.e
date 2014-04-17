@@ -2,6 +2,7 @@ note
 	description: "Iterators to read and write from/to a container in linear order."
 	author: "Nadia Polikarpova"
 	model: target, sequence, index_
+	manual_inv: true
 
 deferred class
 	V_IO_ITERATOR [G]

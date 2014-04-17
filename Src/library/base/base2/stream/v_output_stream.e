@@ -2,6 +2,7 @@ note
 	description: "Streams where values can be output one by one."
 	author: "Nadia Polikarpova"
 	model: off_
+	manual_inv: true
 
 deferred class
 	V_OUTPUT_STREAM [G]

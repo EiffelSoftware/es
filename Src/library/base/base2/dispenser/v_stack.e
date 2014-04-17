@@ -2,6 +2,7 @@ note
 	description: "Dispensers where the latest added element is accessible."
 	author: "Nadia Polikarpova"
 	model: sequence
+	manual_inv: true
 
 deferred class
 	V_STACK [G]

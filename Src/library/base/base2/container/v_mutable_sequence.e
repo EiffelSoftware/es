@@ -2,6 +2,7 @@ note
 	description: "Sequences where values can be updated."
 	author: "Nadia Polikarpova"
 	model: map
+	manual_inv: true	
 
 deferred class
 	V_MUTABLE_SEQUENCE [G]

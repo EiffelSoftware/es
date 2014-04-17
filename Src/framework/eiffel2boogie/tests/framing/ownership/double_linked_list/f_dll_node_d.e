@@ -56,7 +56,6 @@ feature -- Modification
 		local
 			r: F_DLL_NODE_D
 		do
-			check inv end
 			r := right
 			unwrap_all ([Current, r, n])
 
@@ -90,7 +89,6 @@ feature -- Modification
 		local
 			l, r: F_DLL_NODE_D
 		do
-			check inv end
 			l := left
 			r := right
 			unwrap_all ([Current, l, r])

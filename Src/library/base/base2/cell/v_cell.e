@@ -25,4 +25,5 @@ feature -- Replacement
 		ensure
 			item_effect: item = v
 		end
+		
 end

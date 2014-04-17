@@ -2,6 +2,7 @@ note
 	description: "Streams that provide values one by one."
 	author: "Nadia Polikarpova"
 	model: box
+	manual_inv: true
 
 deferred class
 	V_INPUT_STREAM [G]

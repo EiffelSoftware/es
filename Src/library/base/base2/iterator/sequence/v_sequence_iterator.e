@@ -2,6 +2,7 @@ note
 	description: "Itreators to read from sequences."
 	author: "Nadia Polikarpova"
 	model: target, index_
+	manual_inv: true
 
 deferred class
 	V_SEQUENCE_ITERATOR [G]

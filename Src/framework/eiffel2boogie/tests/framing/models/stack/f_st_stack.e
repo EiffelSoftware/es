@@ -31,7 +31,6 @@ feature	-- Access
 			not_empty: not is_empty
 			reads (ownership_domain)
 		do
-			check inv end
 			Result := list.item (count)
 		ensure
 			Result = sequence.last
@@ -40,7 +39,6 @@ feature	-- Access
 	count: INTEGER
 			-- Number of elements.
 		do
-			check inv end
 			Result := list.count
 		end
 

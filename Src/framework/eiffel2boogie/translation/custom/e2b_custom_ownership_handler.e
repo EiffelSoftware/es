@@ -57,8 +57,13 @@ feature -- Basic operations
 				set_implicit_model_queries (a_translator, l_name)
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
 			elseif translation_mapping.ghost_access.has (l_name) then
-				l_type := translation_mapping.ghost_access_type (l_name)
-				a_translator.set_last_expression (factory.heap_access (a_translator.entity_mapping.heap, a_translator.current_target, l_name, l_type))
+				if l_name ~ "closed" then
+					l_type := types.bool
+					a_translator.set_last_expression (factory.function_call ("is_closed", << a_translator.entity_mapping.heap, a_translator.current_target >>, l_type))
+				else
+					l_type := translation_mapping.ghost_access_type (l_name)
+					a_translator.set_last_expression (factory.heap_access (a_translator.entity_mapping.heap, a_translator.current_target, l_name, l_type))
+				end
 			elseif translation_mapping.ghost_setter.has (l_name) then
 				l_name := l_name.substring (5, l_name.count)
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, "xyz")
@@ -177,12 +182,11 @@ feature -- Basic operations
 			elseif translation_mapping.ghost_access.has (l_name) then
 				if l_name ~ "closed" then
 					l_type := types.bool
-				elseif l_name ~ "owner" then
-					l_type := types.ref
+					a_translator.set_last_expression (factory.function_call ("is_closed", << a_translator.entity_mapping.heap, a_translator.current_target >>, l_type))
 				else
-					l_type := types.set (types.ref)
+					l_type := translation_mapping.ghost_access_type (l_name)
+					a_translator.set_last_expression (factory.heap_access (a_translator.entity_mapping.heap, a_translator.current_target, l_name, l_type))
 				end
-				a_translator.set_last_expression (factory.heap_access (a_translator.entity_mapping.heap, a_translator.current_target, l_name, l_type))
 			else
 					-- cannot happen
 				check False end

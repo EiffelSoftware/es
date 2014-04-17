@@ -54,7 +54,6 @@ feature -- Access
 			modify ([])
 			reads (Current, target.ownership_domain)
 		do
-			check inv and target.inv end
 			Result := target.elements [index]
 		end
 

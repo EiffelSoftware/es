@@ -14,13 +14,10 @@ feature -- Test
 			create c1.make (1)
 			create c2.make (2)
 			create c3.make (0)
-			check c1.inv and c2.inv and c3.inv end
 
 			c1.add_child (c2)
-			check c1.inv and c2.inv end
 			check c1.value >= c2.value end
 			c2.add_child (c3)
-			check c2.inv and c3.inv end
 			check c2.value >= c3.value end
 		end
 
@@ -32,13 +29,10 @@ feature -- Test
 			create c1.make (1)
 			create c2.make (2)
 			create c3.make (0)
-			check c1.inv and c2.inv and c3.inv end
 
 			c1.add_child (c2)
-			check c1.inv and c2.inv end
 			check c1.value >= c2.value end
 			c2.add_child (c3)
-			check c2.inv and c3.inv end
 			check c2.value >= c3.value end
 		end
 

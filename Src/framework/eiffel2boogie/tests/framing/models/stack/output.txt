@@ -11,6 +11,9 @@ Successfully verified.
 F_ST_LIST.make (creator)
 Successfully verified.
 ======================================
+F_ST_LIST.is_empty
+Successfully verified.
+======================================
 F_ST_LIST.count
 Successfully verified.
 ======================================

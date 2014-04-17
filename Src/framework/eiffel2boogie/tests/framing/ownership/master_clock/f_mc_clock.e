@@ -49,7 +49,6 @@ feature -- Update
 			master_wrapped: master.is_wrapped
 			modify_field (["local_time", "closed"], Current)
 		do
-			check master.inv end
 			if closed then
 				unwrap
 			end

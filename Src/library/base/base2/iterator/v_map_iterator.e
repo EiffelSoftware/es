@@ -2,6 +2,7 @@ note
 	description: "Iterators to read from maps in linear order."
 	author: "Nadia Polikarpova"
 	model: target, key_sequence, index_
+	manual_inv: true
 
 deferred class
 	V_MAP_ITERATOR [K, V]

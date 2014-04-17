@@ -2,6 +2,7 @@ note
 	description: "Iterators over linked lists."
 	author: "Nadia Polikarpova"
 	model: target, index_
+	manual_inv: true
 
 class
 	V_LINKED_LIST_ITERATOR [G]

@@ -5,6 +5,7 @@ note
 		]"
 	author: "Nadia Polikarpova"
 	model: bag
+	manual_inv: true
 
 deferred class
 	V_CONTAINER [G]

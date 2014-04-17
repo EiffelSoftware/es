@@ -5,6 +5,7 @@ note
 		]"
 	author: "Nadia Polikarpova"
 	model: sequence
+	manual_inv: true
 
 deferred class
 	V_LIST [G]

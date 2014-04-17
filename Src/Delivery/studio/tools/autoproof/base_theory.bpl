@@ -105,12 +105,12 @@ axiom (forall heap: HeapType, current: ref, v: Set ref, o: ref :: { guard(heap, 
   guard(heap, current, observers, v, o) <==> v[o]); // o's invariant cannot be violated as long as it is still in its subject's observers
 
 // Is o open in h? (not closed and free)
-function {:inline} is_open(h: HeapType, o: ref): bool {
+function is_open(h: HeapType, o: ref): bool {
 	!h[o, closed]
 }
 
 // Is o closed in h?
-function {:inline} is_closed(h: HeapType, o: ref): bool {
+function is_closed(h: HeapType, o: ref): bool {
 	h[o, closed]
 }
 
@@ -261,6 +261,11 @@ function {:inline true} global(h: HeapType): bool
   (forall o: ref, o': ref :: {h[o, owns][o']} h[o, allocated] && h[o', allocated] && h[o, closed] && h[o, owns][o'] ==> (h[o', closed] && h[o', owner] == o)) && // G2
   (forall o: ref :: {user_inv(h, o)} h[o, allocated] ==> inv(h, o)) // G1
 }
+
+// All objects in valid heaps are valid.
+// This function introduces invariants automatically, so should be used with care.
+function {: inline } global_permissive(): bool
+{ (forall h: HeapType, o: ref :: {is_wrapped (h, o)}{is_closed (h, o)} IsHeap(h) && h[o, allocated] ==> inv(h, o)) }
 
 // Condition under which an update heap[current, f] := v is guaranteed to preserve the invariant of o.
 function guard<T>(heap: HeapType, current: ref, f: Field T, v: T, o: ref): bool;

@@ -2,6 +2,7 @@ note
 	description: "Iterators over linked stacks."
 	author: "Nadia Polikarpova"
 	model: target, sequence, index_
+	manual_inv: true
 
 class
 	V_LINKED_STACK_ITERATOR [G]

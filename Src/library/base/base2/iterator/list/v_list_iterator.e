@@ -2,6 +2,7 @@ note
 	description: "Iterators over lists."
 	author: "Nadia Polikarpova"
 	model: target, index_
+	manual_inv: true
 
 deferred class
 	V_LIST_ITERATOR [G]

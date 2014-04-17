@@ -2,6 +2,7 @@ note
 	description: "Linked implementation of stacks."
 	author: "Nadia Polikarpova"
 	model: sequence
+	manual_inv: true
 
 frozen class
 	V_LINKED_STACK [G]
