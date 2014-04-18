@@ -96,16 +96,6 @@ feature -- Basic operations
 				-- Add translation references
 			translation_pool.add_type (l_class_type)
 
---			elseif a_feature.type.is_integer or a_feature.type.is_natural then
---				create l_heap_access.make ("heap", create {IV_ENTITY}.make ("o", types.ref), create {IV_ENTITY}.make (l_boogie_name, l_constant.type))
---				create l_call.make ("is_" + a_feature.type.associated_class.name.as_lower, types.bool)
---				l_call.add_argument (l_heap_access)
---				create l_forall.make (l_call)
---				l_forall.add_bound_variable ("heap", types.heap_type)
---				l_forall.add_bound_variable ("o", types.ref)
---				create l_axiom.make (l_forall)
---				boogie_universe.add_declaration (l_axiom)
---			end
 		end
 
 	generate_guard (a_type: CL_TYPE_A; a_boogie_name: STRING; a_boogie_type: IV_TYPE)
@@ -159,6 +149,56 @@ feature -- Basic operations
 			l_forall.add_trigger (l_fcall)
 			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
 		end
+
+	translate_tuple_field (a_context_type: CL_TYPE_A; a_position: INTEGER)
+			-- Translate field at position `a_position' of tuple type `a_context_type'.
+		require
+			tuple_type: a_context_type.is_tuple
+		local
+			l_attribute_name: STRING
+			l_class_type: CL_TYPE_A
+			l_type_prop, l_context_type: IV_EXPRESSION
+			l_forall: IV_FORALL
+			l_heap, l_o, l_f: IV_ENTITY
+			l_heap_access: IV_MAP_ACCESS
+			l_boogie_type: IV_TYPE
+		do
+			set_context (Void, a_context_type)
+			l_class_type := helper.class_type_in_context (a_context_type.generics [a_position], current_type.base_class, Void, current_type)
+			l_attribute_name := name_translator.boogie_field_for_tuple_field (current_type, a_position)
+			l_boogie_type := types.for_class_type (l_class_type)
+			l_context_type := factory.type_value (current_type)
+			l_f := factory.entity (l_attribute_name, types.field (l_boogie_type))
+
+				-- Add field declaration
+			boogie_universe.add_declaration (create {IV_CONSTANT}.make (l_f.name, l_f.type))
+
+				-- Add field ID
+			boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.equal (
+					factory.function_call ("FieldId", << l_f, l_context_type >>, types.int),
+					factory.int_value (a_position))))
+
+				-- Add type properties
+			l_heap := factory.heap_entity ("heap")
+			l_o := factory.ref_entity ("o")
+			l_heap_access := factory.heap_access (l_heap, l_o, l_attribute_name, l_boogie_type)
+			l_type_prop := types.type_property (l_class_type, l_heap, l_heap_access)
+			if not l_type_prop.is_true then
+				l_type_prop := factory.implies_ (factory.and_ (
+						factory.is_heap (l_heap),
+						factory.function_call ("attached", << l_heap, l_o, l_context_type >>, types.bool)),
+					l_type_prop)
+				create l_forall.make (l_type_prop)
+				l_forall.add_bound_variable (l_heap)
+				l_forall.add_bound_variable (l_o)
+				l_forall.add_trigger (l_heap_access)
+				boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
+			end
+
+				-- Add translation references
+			translation_pool.add_type (l_class_type)
+		end
+
 
 feature {NONE} -- Implementation
 

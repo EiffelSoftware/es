@@ -172,6 +172,10 @@ type Frame = <alpha>[ref, Field alpha]bool;
 function Frame#Subset(Frame, Frame): bool;
 axiom(forall a: Frame, b: Frame :: { Frame#Subset(a,b) }
   Frame#Subset(a,b) <==> (forall <alpha> o: ref, f: Field alpha :: {a[o, f]} {b[o, f]} a[o, f] ==> b[o, f]));
+	
+function Frame#Singleton(ref): Frame;
+axiom(forall <alpha> o, o': ref, f: Field alpha :: { Frame#Singleton(o)[o', f] }
+  Frame#Singleton(o)[o', f] <==> o == o');
 
 function has_whole_object(frame: Frame, o: ref): bool
 { (forall <alpha> f: Field alpha :: frame[o, f]) }

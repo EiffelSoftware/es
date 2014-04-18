@@ -1,6 +1,6 @@
 note
 	description: "[
-		Translation unit for the invariant function of an Eiffel class.
+		Translation unit for a partial invariant function of an Eiffel class.
 	]"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -13,17 +13,9 @@ inherit
 	E2B_TRANSLATION_UNIT
 
 create
-	make,
 	make_filtered
 
 feature {NONE} -- Implementation
-
-	make (a_type: CL_TYPE_A)
-			-- Initialize translation unit for the invariant of `a_type'.
-		do
-			type := a_type
-			id := "inv/" + type_id (a_type)
-		end
 
 	make_filtered (a_type: CL_TYPE_A; a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C)
 			-- Initialize translation unit for a partial invariant of `a_type'

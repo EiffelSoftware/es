@@ -48,6 +48,8 @@ feature -- Basic operations
 			l_constant: IV_CONSTANT
 			l_path: PATH
 			l_dep: FILE_NAME
+			l_attr_translator: E2B_ATTRIBUTE_TRANSLATOR
+			l_routine_translator: E2B_ROUTINE_TRANSLATOR
 		do
 			type := a_type
 			l_class := a_type.base_class
@@ -75,27 +77,41 @@ feature -- Basic operations
 				end
 			end
 
-			-- TODO: refactor
-			if not a_type.is_tuple and not helper.is_class_logical (l_class) then
+			if not helper.is_class_logical (l_class) then
 					-- Type definition
 				create l_constant.make (l_boogie_type_name, types.type)
 				l_constant.set_unique
 				boogie_universe.add_declaration (l_constant)
 
-				if a_type.base_class.is_frozen then
-					boogie_universe.add_declaration (create {IV_AXIOM}.make (
-						factory.function_call ("is_frozen", << factory.entity (l_boogie_type_name, types.type) >>, types.bool)))
-				end
+				if l_class.is_tuple then
+						-- Generate special invariant function etc.
+					translate_tuple_invariant_function
 
-					-- Inheritance relations
-				generate_inheritance_relations
+						-- Translate fields
+					create l_attr_translator
+					across a_type.generics as params loop
+						l_attr_translator.translate_tuple_field (a_type, params.target_index)
+					end
 
-					-- Model
-				generate_model_axiom
+						-- Tranlsate creator
+					create l_routine_translator.make
+					l_routine_translator.translate_tuple_creator (a_type)
+				else
+					if a_type.base_class.is_frozen then
+						boogie_universe.add_declaration (create {IV_AXIOM}.make (
+							factory.function_call ("is_frozen", << factory.entity (l_boogie_type_name, types.type) >>, types.bool)))
+					end
 
-					-- TODO: refactor
-				if l_class.name_in_upper /~ "ARRAY" then
-					translate_invariant_function
+						-- Inheritance relations
+					generate_inheritance_relations
+
+						-- Model
+					generate_model_axiom
+
+						-- TODO: refactor
+					if l_class.name_in_upper /~ "ARRAY" then
+						translate_invariant_function
+					end
 				end
 			end
 
@@ -129,10 +145,17 @@ feature {NONE} -- Implementation
 			-- Translate invariant of `type'.
 		require
 			a_type_exists: type /= Void
-			valid_type: type.is_class_valid
-			no_like_type: not type.is_like
 		do
 			generate_invariant_function (Void, Void, type.base_class)
+			generate_invariant_axiom ("user_inv", name_translator.boogie_function_for_invariant (type))
+		end
+
+	translate_tuple_invariant_function
+			-- Translate invariant of a tuple type `type'.
+		require
+			a_type_exists: type /= Void
+		do
+			generate_tuple_invariant_function
 			generate_invariant_axiom ("user_inv", name_translator.boogie_function_for_invariant (type))
 		end
 
@@ -247,6 +270,30 @@ feature {NONE} -- Implementation
 
 			l_inv_function.set_body (factory.conjunction (last_clauses))
 		end
+
+	generate_tuple_invariant_function
+			-- Generate invariant function for tuple type `type'.
+		require
+			type_exists: type /= Void
+		local
+			l_heap, l_current: IV_ENTITY
+			l_inv_function: IV_FUNCTION
+		do
+			l_heap := factory.entity ("heap", types.heap)
+			l_current := factory.entity ("current", types.ref)
+
+			create l_inv_function.make (name_translator.boogie_function_for_invariant (type), types.bool)
+			l_inv_function.add_argument (l_heap.name, l_heap.type)
+			l_inv_function.add_argument (l_current.name, l_current.type)
+			boogie_universe.add_declaration (l_inv_function)
+
+			create last_clauses.make
+			last_clauses.extend (empty_set_property ("observers"))
+			last_clauses.extend (empty_set_property ("subjects"))
+			last_clauses.extend (empty_set_property ("owns"))
+			l_inv_function.set_body (factory.conjunction (last_clauses))
+		end
+
 
 	add_default_clause (a_name, a_tag: STRING; a_included, a_excluded: LIST [STRING])
 			-- Add default definition for a built-in attrbute `a_name' with tag `a_tag'.

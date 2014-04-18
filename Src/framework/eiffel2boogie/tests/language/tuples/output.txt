@@ -1,0 +1,28 @@
+======================================
+L_TUPLES (invariant admissibility)
+Successfully verified.
+======================================
+L_TUPLES.make (creator)
+Successfully verified.
+======================================
+L_TUPLES.good
+Successfully verified.
+======================================
+L_TUPLES.bad
+Verification failed.
+
+Line: 39. Check may be violated (untagged).
+--------------------------------------
+Line: 42. Check may be violated (untagged).
+--------------------------------------
+Line: 45. Check may be violated (untagged).
+======================================
+L_TUPLES.update_good
+Successfully verified.
+======================================
+L_TUPLES.update_bad
+Verification failed.
+
+Line: 79. Check may be violated (untagged).
+--------------------------------------
+Line: 84. Check may be violated (untagged).

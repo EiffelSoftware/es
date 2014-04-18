@@ -175,12 +175,13 @@ feature -- Visitors
 			if a_node.source = Void then
 				Precursor (a_node)
 			else
-					-- TODO: add check that position is in the range of the tuple
 				a_node.source.expression.process (Current)
-				create l_proc_call.make ("TUPLE.put")
+				create l_proc_call.make ("update_heap")
 				l_proc_call.add_argument (current_target)
+				l_proc_call.add_argument (factory.entity (
+					name_translator.boogie_field_for_tuple_field (current_target_type, a_node.position),
+					types.field (last_expression.type)))
 				l_proc_call.add_argument (last_expression)
-				l_proc_call.add_argument (factory.int_value (a_node.position))
 				side_effect.extend (l_proc_call)
 				last_expression := Void
 			end
@@ -189,30 +190,35 @@ feature -- Visitors
 	process_tuple_const_b (a_node: TUPLE_CONST_B)
 			-- <Precursor>
 		local
+			l_type: CL_TYPE_A
 			l_local: IV_ENTITY
 			l_proc_call: IV_PROCEDURE_CALL
-			l_expr: EXPR_B
 		do
-			create_local (a_node.type)
+			l_type := class_type_in_current_context (a_node.type)
+			create_local (l_type)
 			l_local := last_local
 
+			current_target := l_local
+			current_target_type := l_type
+
+				-- Call to `allocate'				
 			create l_proc_call.make ("allocate")
-			l_proc_call.add_argument (create {IV_ENTITY}.make ("TUPLE", types.type))
+			l_proc_call.node_info.set_line (a_node.line_number)
+			l_proc_call.add_argument (factory.type_value (l_type))
 			l_proc_call.set_target (l_local)
 			side_effect.extend (l_proc_call)
 
-			create l_proc_call.make ("TUPLE.make" + a_node.expressions.count.out)
+				-- Call to creation procedure
+			create l_proc_call.make (name_translator.boogie_procedure_for_tuple_creation (l_type))
 			l_proc_call.add_argument (l_local)
 			across a_node.expressions as i loop
-				l_expr ?= i.item
-				check l_expr /= Void end
-				l_proc_call.add_argument (process_argument_expression (l_expr))
+				l_proc_call.add_argument (process_argument_expression (i.item))
 			end
 			side_effect.extend (l_proc_call)
 
 			last_expression := l_local
 		end
-
+		
 feature -- Translation
 
 	process_attribute_call (a_feature: FEATURE_I)
@@ -509,7 +515,7 @@ feature -- Translation
 
 
 	add_recursion_termination_check (a_feature: FEATURE_I)
-			-- Add termination check for a call to routine `a_feature' with actual arguments `a_parameters' int he current context.
+			-- Add termination check for a call to routine `a_feature' with actual arguments `a_parameters' in the current context.
 		local
 			l_caller_variant, l_callee_variant: IV_FUNCTION_CALL
 			l_caller_variants, l_callee_variants: ARRAYED_LIST [IV_EXPRESSION]

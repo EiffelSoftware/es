@@ -153,6 +153,66 @@ feature -- Translation: Signature
 			end
 		end
 
+	translate_tuple_creator (a_type: CL_TYPE_A)
+			-- Translate signature of creation procedure for tuple type `a_type'.
+		require
+			is_tuple: a_type.is_tuple
+		local
+			l_proc_name: STRING
+			l_arg: IV_ENTITY
+			l_modifies: IV_MODIFIES
+			l_type: CL_TYPE_A
+			l_post: IV_POSTCONDITION
+		do
+			set_context (Void, a_type)
+			translation_pool.add_type (current_type)
+
+			l_proc_name := name_translator.boogie_procedure_for_tuple_creation (current_type)
+
+				-- Initialize procedure
+			set_up_boogie_procedure (l_proc_name)
+
+				-- Arguments
+			add_argument_with_property ("Current", current_type, types.ref)
+			across current_type.generics as params loop
+				l_type := helper.class_type_in_context (params.item, current_type.base_class, Void, current_type)
+				create l_arg.make ("f_" + params.target_index.out, types.for_class_type (l_type))
+				add_argument_with_property (l_arg.name, l_type, l_arg.type)
+
+				create l_post.make (factory.equal (
+					factory.heap_access (factory.global_heap, factory.std_current, name_translator.boogie_field_for_tuple_field (a_type, params.target_index), l_arg.type),
+					l_arg))
+				current_boogie_procedure.add_contract (l_post)
+			end
+
+			create l_modifies.make ("Heap")
+			current_boogie_procedure.add_contract (l_modifies)
+
+			add_field_initialization
+
+				-- wrapped
+			create l_post.make (factory.function_call ("is_wrapped", << factory.global_heap, factory.std_current >>, types.bool))
+			current_boogie_procedure.add_contract (l_post)
+
+				-- global
+			create l_post.make (factory.function_call ("global", << factory.global_heap >>, types.bool))
+			current_boogie_procedure.add_contract (l_post)
+
+				-- frame
+			create l_post.make (factory.function_call (
+				"same_outside", <<
+					factory.old_ (factory.global_heap),
+					factory.global_heap,
+					factory.function_call ("Frame#Singleton", << factory.std_current >>, types.frame)
+				>>,
+				types.bool))
+			current_boogie_procedure.add_contract (l_post)
+
+				-- HeapSucc
+			create l_post.make (factory.function_call ("HeapSucc", <<factory.old_heap, factory.global_heap>>, types.bool))
+			current_boogie_procedure.add_contract (l_post)
+		end
+
 	add_field_initialization
 			-- Add precondition to `current_boogie_procedure' that all attributes except "allocated" are initialized to default values.
 		local

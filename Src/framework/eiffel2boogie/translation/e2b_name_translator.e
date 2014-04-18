@@ -212,6 +212,39 @@ feature -- Access
 			result_attached: attached Result
 		end
 
+	boogie_field_for_tuple_field (a_context_type: CL_TYPE_A; a_position: INTEGER): STRING
+			-- Name of the boogie constant that encodes tuple field at `a_position' in the tuple type `a_context_type'.
+		require
+			a_context_type_attached: attached a_context_type
+			is_tuple: a_context_type.is_tuple
+		local
+			l_type_name: STRING
+			l_feature_name: STRING
+		do
+			l_type_name := boogie_name_for_type (a_context_type)
+			l_feature_name := "field_" + a_position.out
+			Result := l_type_name + "." + l_feature_name
+		ensure
+			result_attached: attached Result
+			result_valid: is_valid_feature_name (Result)
+		end
+
+	boogie_procedure_for_tuple_creation (a_context_type: CL_TYPE_A): STRING
+			-- Name of the boogie constant that encodes tuple field at `a_position' in the tuple type `a_context_type'.
+		require
+			a_context_type_attached: attached a_context_type
+			is_tuple: a_context_type.is_tuple
+		local
+			l_type_name: STRING
+		do
+			l_type_name := boogie_name_for_type (a_context_type)
+			Result := "create." + l_type_name + ".make"
+		ensure
+			result_attached: attached Result
+			result_valid: is_valid_feature_name (Result)
+		end
+
+
 	feature_for_boogie_name (a_name: STRING): TUPLE [type: TYPE_A; feature_: FEATURE_I; is_creator: BOOLEAN]
 			-- For a feature named `a_name' in Boogie code,
 			-- return its enclosing type (different from where it is defined if inherited), the eiffel feature and whether it is a creator.
@@ -258,9 +291,7 @@ feature -- Access
 			i: INTEGER
 			l_type_name: STRING
 		do
-			if attached {TUPLE_TYPE_A} a_type then
-				Result := "TUPLE"
-			elseif attached {GEN_TYPE_A} a_type as l_gen_type then
+			if attached {GEN_TYPE_A} a_type as l_gen_type then
 				Result := l_gen_type.associated_class.name_in_upper.twin
 				Result.append ("^")
 				from

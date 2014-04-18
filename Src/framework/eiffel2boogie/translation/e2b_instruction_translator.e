@@ -1156,7 +1156,7 @@ feature {NONE} -- Loop processing
 
 			if a_variant_exprs.is_empty then
 					-- No decreases clause: apply default
-				if attached {IV_BINARY_OPERATION} a_exit_condition as binop then
+				if attached {IV_BINARY_OPERATION} a_exit_condition as binop and then binop.left.type.is_integer then
 					if binop.operator ~ ">" or binop.operator ~ ">=" then
 						-- for A > B and A >= B, use the decreases B - A
 						a_variant_exprs.extend (factory.minus (binop.right, binop.left))

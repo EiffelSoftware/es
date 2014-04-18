@@ -966,17 +966,12 @@ feature -- Visitors
 
 	process_tuple_access_b (a_node: TUPLE_ACCESS_B)
 			-- <Precursor>
-		local
-			l_call: IV_FUNCTION_CALL
 		do
-			last_expression := factory.function_call (
-				"fun.TUPLE.item",
-				<<
-					entity_mapping.heap,
-					current_target,
-					factory.int_value (a_node.position)
-				>>,
-				types.ref) -- ToDo: the type is unknown
+			last_expression := factory.heap_access (
+				entity_mapping.heap,
+				current_target,
+				name_translator.boogie_field_for_tuple_field (current_target_type, a_node.position),
+				types.for_class_type (class_type_in_current_context (a_node.type)))
 		end
 
 	process_tuple_const_b (a_node: TUPLE_CONST_B)
