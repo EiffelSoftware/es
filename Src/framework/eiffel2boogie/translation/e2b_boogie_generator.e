@@ -50,11 +50,6 @@ feature -- Basic operations
 			l_filename.set_file_name ("base_theory.bpl")
 			last_generated_verifier_input.add_boogie_file (l_filename)
 
-			create l_filename.make
-			l_filename.set_directory (theory_directory)
-			l_filename.set_file_name ("arrays.bpl")
-			last_generated_verifier_input.add_boogie_file (l_filename)
-
 			create l_printer.make
 			boogie_universe.process (l_printer)
 			last_generated_verifier_input.add_custom_content (l_printer.output.out)

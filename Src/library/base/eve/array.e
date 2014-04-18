@@ -9,6 +9,7 @@ note
 	legal: "See notice at end of class."
 	date: "$Date$"
 	revision: "$Revision$"
+	theory: "array.bpl"
 
 class ARRAY [G] inherit
 
