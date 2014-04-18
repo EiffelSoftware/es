@@ -1,5 +1,5 @@
 -- Node in a circular doubly-linked list
--- This example demonstrated multi-object invariants and update guards.
+-- This example demonstrates multi-object invariants and update guards.
 
 frozen class DLL_NODE
 

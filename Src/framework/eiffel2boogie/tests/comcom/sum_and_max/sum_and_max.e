@@ -33,5 +33,4 @@ feature
 		ensure
 			sum_in_range: Result.sum <= a.count * Result.max
 		end
-
 end

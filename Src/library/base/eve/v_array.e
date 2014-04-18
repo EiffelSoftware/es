@@ -48,6 +48,14 @@ feature -- Access
 			Result = map [i]
 		end
 
+	sequence: MML_SEQUENCE [G]
+		require
+			closed
+		do
+		ensure
+			defintion: Result.to_map = map
+		end
+
 feature -- Status report			
 
 	valid_index (i: INTEGER): BOOLEAN
