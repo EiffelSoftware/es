@@ -3550,6 +3550,7 @@ Src/framework/eiffel2boogie/tests/basic/references/output.txt -text
 Src/framework/eiffel2boogie/tests/comcom/account/output.txt -text
 Src/framework/eiffel2boogie/tests/comcom/array_sum/output.txt -text
 Src/framework/eiffel2boogie/tests/comcom/dll/output.txt -text
+Src/framework/eiffel2boogie/tests/comcom/lcp/output.txt -text
 Src/framework/eiffel2boogie/tests/comcom/sum_and_max/output.txt -text
 Src/framework/eiffel2boogie/tests/examples/cost2011/output.txt -text
 Src/framework/eiffel2boogie/tests/examples/vstte2008/output.txt -text

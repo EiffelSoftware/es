@@ -6,7 +6,7 @@ class
 	V_ARRAY [G]
 
 create
-	make, make_filled
+	make, init
 
 feature {NONE} -- Initialization
 
@@ -20,14 +20,14 @@ feature {NONE} -- Initialization
 			all_default: map.is_constant (({G}).default)
 		end
 
-	make_filled (n: INTEGER; v: G)
-			-- Create an array of size `n' filled with `v'.
+	init (s: MML_SEQUENCE [G])
+			-- Create an array an initialize it with elements of `s'.
 		note
 			status: creator
 		do
 		ensure
-			count_set: count = n
-			all_v: map.is_constant (v)
+			count_set: count = s.count
+			elements_set: map = s.to_map
 		end
 
 feature -- Access		
@@ -45,7 +45,7 @@ feature -- Access
 			valid_index (i)
 		do
 		ensure
-			Result = map [i]
+			definition: Result = map [i]
 		end
 
 	sequence: MML_SEQUENCE [G]
@@ -74,7 +74,8 @@ feature -- Modification
 			valid_index (i)
 		do
 		ensure
-			map = old map.updated (i, v)
+			same_count: count = old count
+			map_effect: map = old map.updated (i, v)
 		end
 
 invariant

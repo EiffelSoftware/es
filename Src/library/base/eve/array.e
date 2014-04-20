@@ -44,7 +44,8 @@ convert
 	to_cil: {NATIVE_ARRAY [G]},
 	to_special: {SPECIAL [G]},
 	make_from_cil ({NATIVE_ARRAY [G]}),
-	to_mml_set: {MML_SET [G]}
+	to_mml_set: {MML_SET [G]},
+	to_mml_sequence: {MML_SEQUENCE [G]}	
 
 feature -- Initialization
 
@@ -874,6 +875,10 @@ feature -- Specification
 	to_mml_set: MML_SET [G]
 		do
 		end
+		
+	to_mml_sequence: MML_SEQUENCE [G]
+		do
+		end		
 
 invariant
 

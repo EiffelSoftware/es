@@ -30,7 +30,8 @@ feature -- Status report
 				(a_nested.target.type.base_class.class_id = system.tuple_id or a_nested.target.type.base_class.class_id = system.array_id)
 			then
 				if attached {FEATURE_B} a_nested.message as f then
-					Result := f.feature_name.same_string ("to_mml_set")
+					Result := f.feature_name ~ "to_mml_set" or
+						f.feature_name ~ "to_mml_sequence"
 				end
 			end
 		end
@@ -140,7 +141,8 @@ feature {NONE} -- Implementation
 			l_array: ARRAY_CONST_B
 			l_exprs: LINKED_LIST [IV_EXPRESSION]
 			l_expr: IV_EXPRESSION
-			l_elem_type: IV_TYPE
+			l_elem_type, l_type: IV_TYPE
+			l_prefix: STRING
 		do
 			if attached {ACCESS_EXPR_B} a_nested.target as x then
 				l_tuple ?= x.expr
@@ -148,47 +150,50 @@ feature {NONE} -- Implementation
 			end
 			check l_tuple /= Void or l_array /= Void end
 			create l_exprs.make
+			l_elem_type := types.ref -- ToDo: wrong elem type for empty tuples/arrays
 			if l_tuple /= Void then
 				across l_tuple.expressions as i loop
 					i.item.process (a_translator)
 					l_exprs.extend (a_translator.last_expression)
-					if l_elem_type = Void then
-						l_elem_type := a_translator.last_expression.type
-					elseif l_elem_type /= a_translator.last_expression.type then
-						-- TODO: signal an error
-					end
+					l_elem_type := a_translator.last_expression.type
 				end
 			else
 				check l_array /= Void end
 				across l_array.expressions as i loop
 					i.item.process (a_translator)
 					l_exprs.extend (a_translator.last_expression)
-					if l_elem_type = Void then
-						l_elem_type := a_translator.last_expression.type
-					elseif l_elem_type /= a_translator.last_expression.type then
-						-- TODO: signal an error
-					end
+					l_elem_type := a_translator.last_expression.type
 				end
 			end
-			if l_exprs.is_empty then
-				-- TODO: how to determine elem type here?
-				a_translator.set_last_expression (
-					factory.function_call ("Set#Empty", Void, types.set (types.ref)))
-			else
-				from
-					l_exprs.start
-					l_expr := factory.function_call ("Set#Singleton", << l_exprs.item >>, types.set (l_elem_type))
-					l_exprs.forth
-				until
-					l_exprs.after
-				loop
-					l_expr := factory.function_call (
-						"Set#Extended",
-						<< l_expr, l_exprs.item >>,
-						types.set (l_elem_type))
-					l_exprs.forth
+			check attached {FEATURE_B} a_nested.message as f then
+				if f.feature_name ~ "to_mml_set" then
+					l_type := types.set (l_elem_type)
+					l_prefix := "Set"
+				elseif f.feature_name ~ "to_mml_sequence" then
+					create {IV_USER_TYPE} l_type.make ("Seq", << l_elem_type >>)
+					l_prefix := "Seq"
+				else
+					check False end
 				end
-				a_translator.set_last_expression (l_expr)
+				if l_exprs.is_empty then
+					a_translator.set_last_expression (
+						factory.function_call (l_prefix + "#Empty", Void, l_type))
+				else
+					from
+						l_exprs.start
+						l_expr := factory.function_call (l_prefix + "#Singleton", << l_exprs.item >>, l_type)
+						l_exprs.forth
+					until
+						l_exprs.after
+					loop
+						l_expr := factory.function_call (
+							l_prefix + "#Extended",
+							<< l_expr, l_exprs.item >>,
+							l_type)
+						l_exprs.forth
+					end
+					a_translator.set_last_expression (l_expr)
+				end
 			end
 		end
 
