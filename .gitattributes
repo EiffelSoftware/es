@@ -2184,6 +2184,9 @@ Src/compatible/library/wel/extra/h2e.ico svneol=native#unset
 Src/compatible/library/wel/extra/h2e1.ico svneol=native#unset
 Src/compatible/library/wel/extra/h2e2.ico svneol=native#unset
 Src/compatible/library/wizard/help/Clib/htmlhelp.lib -text
+Src/contrib/examples/web/ewf/desktop_app/README.md -text
+Src/contrib/examples/web/ewf/desktop_app/files/index.html -text
+Src/contrib/examples/web/ewf/desktop_app/home.html -text
 Src/contrib/examples/web/ewf/restbucksCRUD/readme.txt -text
 Src/contrib/examples/web/ewf/upload_image/htdocs/ewf.jpg -text
 Src/contrib/examples/web/ewf/upload_image/htdocs/favicon.ico -text
