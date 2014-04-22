@@ -649,7 +649,7 @@ feature -- Element change
 		end
 
 	replace (a_char, a_replacement: CHARACTER_8): ESTRING_8
-			-- Replace every occurence of a_char with a_replacement
+			-- Replace every occurence of `a_char' with `a_replacement'
 		local
 			i: INTEGER
 			l_area: MANAGED_POINTER
@@ -668,6 +668,7 @@ feature -- Element change
 					else
 						l_area.put_character (c, i - 1)
 					end
+					i := i + 1
 				end
 				create Result.make_from_area (l_area)
 			else
