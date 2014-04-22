@@ -29,14 +29,20 @@ inherit
 		end
 
 create
-	make_from_socket
+	make_from_connection
 
 feature {NONE} -- Initialization
-	make_from_socket (a_socket: PR_TCP_SOCKET)
+	make_from_connection (a_connection: NETWORK_CONNECTION)
+		require
+			not a_connection.use_separate_input
 		do
-			socket := a_socket
-			create buffer.make (a_socket.send_buffer_size.as_integer_32)
-			create read_buffer.make (a_socket.recv_buffer_size.as_integer_32)
+			connection := a_connection
+			check attached a_connection.input as in then
+				socket := in
+			end
+			output := a_connection.output
+			create buffer.make (a_connection.socket.send_buffer_size.as_integer_32)
+			create read_buffer.make (a_connection.socket.recv_buffer_size.as_integer_32)
 			create last_string.make_empty
 		end
 
@@ -49,7 +55,7 @@ feature -- Access
 	name: detachable STRING
 			-- Medium name
 		do
-			Result := socket.peer_address.out
+			Result := connection.socket.peer_address.out
 		end
 
 feature -- Element change
@@ -63,12 +69,12 @@ feature -- Status report
 
 	is_readable: BOOLEAN
 		do
-			Result := socket.can_receive
+			Result := not socket.is_closed
 		end
 
 	is_writable: BOOLEAN
 		do
-			Result := socket.can_send
+			Result := not output.is_closed
 		end
 
 	is_closed: BOOLEAN
@@ -92,7 +98,7 @@ feature -- Status setting
 			-- Close medium.
 		do
 			flush
-			socket.close
+			connection.close
 		end
 
 	flush
@@ -101,8 +107,8 @@ feature -- Status setting
 			until
 				buffer_pos = 0 or not is_writable
 			loop
-				socket.send_from_managed_pointer (buffer, buffer_pos, socket.pr_interval_no_wait)
-				buffer_pos := buffer_pos - socket.bytes_sent
+				output.put_managed_pointer (buffer, 0, buffer_pos)
+				buffer_pos := buffer_pos - output.bytes_written
 			end
 		end
 
@@ -335,13 +341,13 @@ feature -- Output
 		do
 			flush
 			from
-				socket.send_from_pointer (p.item.plus (start_pos), nb_bytes, socket.pr_interval_no_wait)
-				i := socket.bytes_sent
+				output.put_pointer (p.item.plus (start_pos), nb_bytes)
+				i := output.bytes_written
 			until
 				i = nb_bytes or not is_writable
 			loop
-				socket.send_from_pointer (p.item.plus (start_pos + i), nb_bytes - i, socket.pr_interval_no_wait)
-				i := i + socket.bytes_sent
+				output.put_pointer (p.item.plus (start_pos + i), nb_bytes - i)
+				i := i + output.bytes_written
 			end
 		end
 
@@ -546,8 +552,8 @@ feature -- Input
 			if
 				i < nb_bytes
 			then
-				socket.receive_to_pointer (p.item.plus (start_pos + i), nb_bytes - i, socket.pr_interval_no_wait)
-				bytes_read := socket.bytes_received
+				socket.read_to_pointer (p.item.plus (start_pos + i), nb_bytes - i)
+				bytes_read := socket.bytes_read
 			end
 		end
 
@@ -564,8 +570,12 @@ feature -- Input
 	read_buffer_count: INTEGER
 feature -- Element change
 
-feature {NONE} -- Implementation		
-	socket: PR_TCP_SOCKET
+feature {NONE} -- Implementation
+	connection: NETWORK_CONNECTION
+
+	socket: INPUT_STREAM
+
+	output: OUTPUT_STREAM
 
 	buffer: MANAGED_POINTER
 
@@ -602,8 +612,8 @@ feature {NONE} -- Useless inherited garbage
 					read_buffer_pos := read_buffer_pos + 1
 					i := i + 1
 				end
-				socket.receive_to_pointer (read_buffer.item.plus (read_buffer_pos + i), read_buffer.count - i, socket.pr_interval_no_timeout)
-				read_buffer_count := socket.bytes_received + i
+				socket.read_to_pointer (read_buffer.item.plus (read_buffer_pos + i), read_buffer.count - i)
+				read_buffer_count := socket.bytes_read + i
 				read_buffer_pos := 0
 			end
 		end
@@ -611,13 +621,13 @@ feature {NONE} -- Useless inherited garbage
 	is_open_read: BOOLEAN
 			-- Is this medium opened for input
 		do
-			Result := socket.can_receive
+			Result := not socket.is_closed
 		end
 
 	is_open_write: BOOLEAN
 			-- Is this medium opened for output
 		do
-			Result := socket.can_send
+			Result := not output.is_closed
 		end
 
 	is_executable: BOOLEAN

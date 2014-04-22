@@ -5074,6 +5074,11 @@ Src/unstable/library/compression/zlib/spec/windows/lib/msc/zlibstat.lib -text
 Src/unstable/library/compression/zlib/testing/index.html -text
 Src/unstable/library/estring/estring.ecf svneol=native#text/xml
 Src/unstable/library/estring/estring_searcher.e svneol=native#text/plain
+Src/unstable/library/net2/file/epath.e svneol=native#text/plain
+Src/unstable/library/net2/file/file_system.e svneol=native#text/plain
+Src/unstable/library/net2/file/file_system_access.e svneol=native#text/plain
+Src/unstable/library/net2/file/file_type.e svneol=native#text/plain
+Src/unstable/library/net2/file/local_file_system.e svneol=native#text/plain
 Src/unstable/library/net2/net2.ecf svneol=native#text/plain
 Src/unstable/library/network/socket/netssl/README -text
 Src/unstable/library/network/socket/netssl/license.lic -text
