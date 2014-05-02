@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Type checking and code generation of BYTE_NODE tree."
 	legal: "See notice at end of class."
 	status: "See notice at end of class."
@@ -2426,7 +2426,7 @@ feature {NONE} -- Visitor
 
 	process_string_as (l_as: STRING_AS)
 		local
-			l_simplified_string_type: ANNOTATED_TYPE_A
+			l_simplified_string_type: TYPE_A
 			l_is_string_32: BOOLEAN
 			l_value: detachable STRING
 			class_id: INTEGER
@@ -2435,15 +2435,18 @@ feature {NONE} -- Visitor
 		do
 			if l_as.type = Void then
 					-- Default to STRING_8, if not specified in the code.
-				set_type (manifest_string_type, l_as)
-			else
+					l_simplified_string_type := manifest_string_type
+		else
 				check_type (l_as.type)
+				if attached last_type as l_last_type then
+					l_simplified_string_type := l_last_type.duplicate
+						-- Manifest string are always frozen.
+					l_simplified_string_type.set_frozen_mark
+				end
 			end
-			if attached {ANNOTATED_TYPE_A} last_type as l_last_type then
+			if l_simplified_string_type /= Void then
 					-- Constants are always of an attached type.
-				l_simplified_string_type := l_last_type.as_attached_in (context.current_class)
-					-- Manifest string are always frozen.
-				l_simplified_string_type.set_frozen_mark
+				l_simplified_string_type := l_simplified_string_type.as_attached_in (context.current_class)
 				set_type (l_simplified_string_type, l_as)
 				class_id := l_simplified_string_type.base_class.class_id
 				if attached system.string_8_class as c then
@@ -5244,15 +5247,15 @@ feature {NONE} -- Visitor
 							l_conforming := True
 						end
 						if not l_conforming then
-								-- Report a warning (when enabled) for the following cases in non-inherited code:
-								-- 	exp1 = exp2
-								-- 	exp = ref
-								-- 	ref = exp
+								-- Report a warning (when enabled) except when comparing against
+								-- Void if the other operand is expanded. That is to say it will
+								-- not report an error for `a = Void' and `Void = a' if 
+								-- `a' is not expanded.
 							if
-								context.current_class.is_warning_enabled (w_vweq) and then
 								current_feature.written_in = context.current_class.class_id and then
-								(l_left_type.is_expanded and then not l_right_type.conformance_type.is_formal or else
-								l_right_type.is_expanded and then not l_left_type.conformance_type.is_formal)
+								context.current_class.is_warning_enabled (w_vweq) and then
+								((l_left_type.is_none xor l_right_type.is_none) implies
+									(l_left_type.is_expanded or l_right_type.is_expanded))
 							then
 								create l_vweq
 								context.init_error (l_vweq)
@@ -6752,6 +6755,14 @@ feature {NONE} -- Visitor
 				else
 						-- Type of a creation expression is always attached.
 					l_creation_type := l_creation_type.as_attached_in (context.current_class)
+						-- Type of a creation expression is frozen if this is a class type.
+					if
+						attached {DEANCHORED_TYPE_A} l_creation_type as l_type and then
+						attached l_type.duplicate as l_duplicated_type
+					then
+						l_duplicated_type.set_frozen_mark
+						l_creation_type := l_duplicated_type
+					end
 					set_type (l_creation_type, l_as)
 					instantiator.dispatch (l_creation_type, context.current_class)
 
@@ -8468,25 +8479,25 @@ feature {NONE} -- Visitor
 	process_export_clause_as (l_as: EXPORT_CLAUSE_AS)
 			-- Process `l_as'.
 		do
-			safe_process (l_as.meaningful_content)
+			safe_process (l_as.content)
 		end
 
 	process_undefine_clause_as (l_as: UNDEFINE_CLAUSE_AS)
 			-- Process `l_as'.
 		do
-			safe_process (l_as.meaningful_content)
+			safe_process (l_as.content)
 		end
 
 	process_redefine_clause_as (l_as: REDEFINE_CLAUSE_AS)
 			-- Process `l_as'.
 		do
-			safe_process (l_as.meaningful_content)
+			safe_process (l_as.content)
 		end
 
 	process_select_clause_as (l_as: SELECT_CLAUSE_AS)
 			-- Process `l_as'.
 		do
-			safe_process (l_as.meaningful_content)
+			safe_process (l_as.content)
 		end
 
 	process_formal_generic_list_as (l_as: FORMAL_GENERIC_LIST_AS)
@@ -8624,7 +8635,7 @@ feature {NONE} -- Predefined types
 	manifest_string_type: CL_TYPE_A
 			-- Actual string type
 		once
-			Result := system.string_8_class.compiled_class.actual_type
+			Result := system.string_8_class.compiled_class.actual_type.duplicate
 				-- Manifest string have a frozen type.
 			Result.set_frozen_mark
 		end
@@ -8716,7 +8727,7 @@ feature {NONE} -- Parenthesis alias
 						-- Process call to bracket feature
 					l_is_qualified_call := is_qualified_call
 					is_qualified_call := True
-					process_call (constrained_target_type, Void, id_feature_name, alias_feature, p.meaningful_content, False, False, True, False, False)
+					process_call (constrained_target_type, Void, id_feature_name, alias_feature, p.parameters, False, False, True, False, False)
 					is_qualified_call := l_is_qualified_call
 					if error_level = l_error_level and then attached nested_b then
 						if l_is_multi_constraint then
@@ -10780,9 +10791,9 @@ feature {NONE} -- Implementation: type validation
 					Result := a_last_type.actual_type.generics.i_th (l_formal_type.position)
 				end
 			end
-			if l_formal_type /= Void and then attached {ANNOTATED_TYPE_A} a_type as l_annotated_type then
+			if l_formal_type /= Void then
 					-- Preserve attachment status of the original type.
-				Result := Result.to_other_attachment (l_annotated_type).to_other_variant (l_annotated_type).to_other_separateness (l_annotated_type)
+				Result := Result.to_other_attachment (a_type).to_other_variant (a_type).to_other_separateness (a_type)
 			end
 		ensure
 			adapated_type_not_void: Result /= Void
@@ -10979,7 +10990,7 @@ feature {NONE} -- Implementation: checking locals
 					if l_warning = Void then
 						create l_warning.make (context.current_class, current_feature.enclosing_feature)
 					end
-					l_warning.add_unused_local (names_heap.item (a_locals.key_for_iteration), l_local.type)
+					l_warning.add_unused_local (a_locals.key_for_iteration, l_local.type)
 				end
 				a_locals.forth
 			end
@@ -11420,21 +11431,21 @@ feature {NONE} -- Separateness
 			end
 		end
 
-	adapt_type_to_target (l: TYPE_A; t: TYPE_A; c: BOOLEAN; n: AST_EIFFEL)
+	adapt_type_to_target (l: detachable TYPE_A; t: TYPE_A; c: BOOLEAN; n: AST_EIFFEL)
 			-- Adapt separateness status of the last message type `l' of the AST node `n'
 			-- to the target of type `t' which has a controlled status `c'
 			-- and update `is_controlled' accordingly.
+		require
+			t_not_void: t /= Void
 		do
 			if
 				t.is_separate and then
-				attached {ANNOTATED_TYPE_A} t as a and then
-				attached l and then
-				not l.is_separate
+				l /= Void and then not l.is_separate
 			then
 					-- Separate call is controlled if target is controlled
 					-- and message type is not separate.
 				is_controlled := c
-				set_type (l.to_other_separateness (a), n)
+				set_type (l.to_other_separateness (t), n)
 			else
 				is_controlled := False
 				set_type (l, n)

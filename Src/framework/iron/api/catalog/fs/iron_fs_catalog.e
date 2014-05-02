@@ -14,6 +14,8 @@ inherit
 
 	REFACTORING_HELPER
 
+	SHARED_EXECUTION_ENVIRONMENT
+
 create
 	make
 
@@ -74,8 +76,8 @@ feature -- Access: repository
 		do
 			installation_api.db.remove_repository_by_uri (a_uri)
 			if attached repository_at (a_uri) as repo then
-				layout.iron_safe_delete_file (layout.repository_data_path (repo))
-				layout.iron_safe_delete_file (layout.repository_packages_data_path (repo))
+				layout.iron_safe_delete_folder (layout.repository_data_folder (repo))
+--				layout.iron_safe_delete_file (layout.repository_packages_data_path (repo))
 				layout.iron_safe_delete_folder (layout.repository_archive_path (repo))
 			end
 			installation_api.refresh
@@ -92,6 +94,12 @@ feature -- Access: repository
 					Result := c.item
 				end
 			end
+		end
+
+	is_package_installed (a_package: IRON_PACKAGE): BOOLEAN
+			-- Is package `a_package' installed?
+		do
+			Result := installation_api.is_package_installed (a_package)
 		end
 
 feature -- Acces: package
@@ -180,6 +188,7 @@ feature -- Operation
 			p: IRON_PACKAGE
 			l_package_file_factory: IRON_PACKAGE_FILE_FACTORY
 			pif: IRON_PACKAGE_FILE
+			l_last_operation_succeed: BOOLEAN
 		do
 			if not is_silent then
 				print ("Updating repository " + repo.location_string + " ...%N")
@@ -188,15 +197,22 @@ feature -- Operation
 			if attached {IRON_WEB_REPOSITORY} repo as l_remote_repo then
 				create remote_node.make_with_repository (urls, api_version, l_remote_repo)
 				if attached remote_node.packages as lst then
-					across lst as ic loop
-						repo.put_package (ic.item)
-					end
-					if
-						not is_silent and then
-						repo.available_packages_count = 0
---						not remote_node.last_operation_succeed
-					then
-						print ("ERROR: no information from repository!%N")
+					l_last_operation_succeed := remote_node.last_operation_succeed
+					if l_last_operation_succeed then
+						across lst as ic loop
+							if not is_silent then
+								print ("- ")
+								print (ic.item.human_identifier)
+								print ("%N")
+							end
+							repo.put_package (ic.item)
+						end
+					elseif not is_silent then
+						if attached remote_node.last_operation_error_message as err then
+							print ("ERROR: " + err + "%N")
+						else
+							print ("ERROR: unable to get packages information!%N")
+						end
 					end
 				end
 			elseif attached {IRON_WORKING_COPY_REPOSITORY} repo as l_wc_repo then
@@ -241,7 +257,7 @@ feature -- Operation
 			retried: BOOLEAN
 		do
 			if not retried then
-				p := layout.repository_data_path (repo)
+				p := layout.repository_data_file (repo)
 				create f.make_with_path (p)
 				if f.exists and then f.is_access_readable then
 					f.open_read
@@ -266,7 +282,8 @@ feature -- Operation
 			installation_api.db.save_available_repository_packages (repo)
 
 				-- Save repository object
-			p := layout.repository_data_path (repo)
+			p := layout.repository_data_file (repo)
+			ensure_folder_exists (p.parent)
 			create f.make_with_path (p)
 			f.create_read_write
 			f.independent_store (repo)
@@ -293,7 +310,7 @@ feature -- Package operations
 				remote_node.download_package_archive (a_package, p, ignoring_cache)
 				create f.make_with_path (p)
 				if f.exists then
-					a_package.set_archive_uri (path_to_uri_string (p.absolute_path.canonical_path))
+					a_package.set_archive_path (p.absolute_path.canonical_path)
 				else
 						-- Failure
 				end
@@ -301,6 +318,7 @@ feature -- Package operations
 		end
 
 	install_package (a_repo: IRON_REPOSITORY; a_package: IRON_PACKAGE; ignoring_cache: BOOLEAN)
+			-- <Precursor>
 		do
 			if attached {IRON_WEB_REPOSITORY} a_repo as l_web_repo then
 				install_web_package (l_web_repo, a_package, ignoring_cache)
@@ -325,10 +343,9 @@ feature -- Package operations
 				if d.exists then
 					create pii.make_with_package (a_package, p_info, p)
 					pii.save
-					installed_packages.force (a_package)
+					on_package_just_installed (a_package)
 				end
 			end
-			fixme ("Unsupported for now%N")
 		end
 
 	install_web_package (a_repo: IRON_WEB_REPOSITORY; a_package: IRON_PACKAGE; ignoring_cache: BOOLEAN)
@@ -392,7 +409,7 @@ feature -- Package operations
 						if not d.is_empty then
 							create pii.make_with_package (a_package, p_info, p)
 							pii.save
-							installed_packages.force (a_package)
+							on_package_just_installed (a_package)
 						else
 							layout.iron_safe_delete_folder (d.path)
 						end
@@ -433,6 +450,140 @@ feature -- Package operations
 			end
 
 			installed_packages.prune (a_package)
+		end
+
+	on_package_just_installed (a_package: IRON_PACKAGE)
+			-- `a_package' just got installed.
+		do
+			installed_packages.force (a_package)
+		end
+
+	setup_package_installation (a_package: IRON_PACKAGE; cl_succeed: detachable CELL [BOOLEAN]; is_silent: BOOLEAN)
+			-- <Precursor}
+		local
+			pif_fac: IRON_PACKAGE_FILE_FACTORY
+			ip,p: detachable PATH
+			ut: FILE_UTILITIES
+			envs: STRING_TABLE [detachable READABLE_STRING_GENERAL]
+			cl_code: CELL [INTEGER]
+			l_ok: BOOLEAN
+		do
+			l_ok := True
+			create pif_fac
+			ip := layout.package_installation_path (a_package)
+			if ip /= Void then
+				p := ip.extended ("package.iron")
+				if
+					ut.file_path_exists (p) and then
+					attached pif_fac.new_package_file (p) as pif
+				then
+					if attached pif.setup_operations as l_operations then
+						create envs.make (3)
+						envs.force (execution_environment.item ("IRON_PATH"), "IRON_PATH")
+						envs.force (execution_environment.item ("IRON_PACKAGE_PATH"), "IRON_PACKAGE_PATH")
+						envs.force (execution_environment.item ("IRON_PACKAGE_NAME"), "IRON_PACKAGE_NAME")
+
+						execution_environment.put (layout.path.name, "IRON_PATH")
+						execution_environment.put (ip.name, "IRON_PACKAGE_PATH")
+						execution_environment.put (a_package.identifier, "IRON_PACKAGE_NAME")
+
+						across
+							l_operations as ic
+						loop
+							if ic.item.name.is_case_insensitive_equal ("compile_library") then
+								create cl_code.put (0)
+								if is_silent then
+									execute_command_line (finish_freezing_command_name, ip.extended (ic.item.instruction), Void, cl_code)
+								else
+									execute_command_line (finish_freezing_command_name, ip.extended (ic.item.instruction), agent (s: STRING) do print (s) end, cl_code)
+								end
+								l_ok := l_ok and cl_code.item = 0
+							else
+								if not is_silent then
+									print (" ##setup %"")
+									print (ic.item)
+									print ("%" ignored.##")
+								end
+--								if ic.item.name.is_case_insensitive_equal ("install") then
+--									print (" setup %""+ ic.item +"%" ignored!")
+--									create cl_code.put (0)
+--									execute_command_line (ic.item.instruction, ip, cl_string, cl_code)
+--								end								
+							end
+						end
+						across
+							envs as ic
+						loop
+							if attached ic.item as v then
+								execution_environment.put (v, ic.key)
+							else
+								execution_environment.put ("", ic.key) -- FIXME: would be better to use unsetenv but this is not available.
+							end
+						end
+					end
+				end
+			end
+			if cl_succeed /= Void then
+				cl_succeed.replace (l_ok)
+			end
+		end
+
+	finish_freezing_command_name: STRING_32
+		local
+			p: detachable PATH
+		do
+			if attached execution_environment.item ("ISE_EIFFEL") as l_ise_eiffel then
+				if attached execution_environment.item ("ISE_PLATFORM") as l_ise_platform then
+					create p.make_from_string (l_ise_eiffel)
+					p := p.extended ("studio").extended ("spec").extended (l_ise_platform).extended ("bin")
+				end
+			end
+			if p /= Void then
+				if {PLATFORM}.is_windows then
+					Result := p.extended ("compile_library.bat").name
+				else
+					Result := p.extended ("finish_freezing.sh").name + {STRING_32} " -library"
+				end
+			else
+				if {PLATFORM}.is_windows then
+					Result := {STRING_32} "finish_freezing.bat -library"
+				else
+					Result := {STRING_32} "finish_freezing.sh -library"
+				end
+			end
+		end
+
+	execute_command_line (a_command_line: READABLE_STRING_GENERAL; a_dir: detachable PATH; agt_output: detachable PROCEDURE [ANY, TUPLE [STRING_8]]; cell_return_code: detachable CELL [INTEGER])
+			-- Execute `a_command_line' in folder `a_dir' (if provided),
+			-- return the exit code in `cell_return_code.item' if `cell_return_code' is provided,
+			-- and return the output in `cell_output.item' if `a_output' is provided.
+		local
+			proc_fact: PROCESS_FACTORY
+			proc: PROCESS
+			wdir: detachable READABLE_STRING_GENERAL
+		do
+			create proc_fact
+			if a_dir /= Void then
+				wdir := a_dir.name
+			end
+			proc := proc_fact.process_launcher_with_command_line (a_command_line, wdir)
+			if agt_output /= Void then
+				proc.redirect_output_to_agent (agt_output)
+				proc.redirect_error_to_same_as_output
+			else
+				proc.cancel_output_redirection
+			end
+			proc.launch
+			if proc.launched then
+				proc.wait_for_exit
+			end
+			if cell_return_code /= Void then
+				if proc.launched then
+					cell_return_code.replace (proc.exit_code)
+				else
+					cell_return_code.replace (-1)
+				end
+			end
 		end
 
 feature -- Restricted

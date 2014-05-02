@@ -79,6 +79,11 @@ feature -- View
 		deferred
 		end
 
+	report_form_confirm_page (req: WSF_REQUEST; res: WSF_RESPONSE; a_id: INTEGER)
+			-- Report form confirm page
+		deferred
+		end
+
 	report_form_error (req: WSF_REQUEST; res: WSF_RESPONSE; a_form: ESA_REPORT_FORM_VIEW)
 			-- Report form error
 		deferred
@@ -133,6 +138,52 @@ feature -- View
 			-- Confirmation page
 		deferred
 		end
+
+	status_page (req: WSF_REQUEST; res: WSF_RESPONSE; a_status: detachable LIST[ESA_REPORT_STATUS])
+			-- Status page
+		deferred
+		end
+
+	severity_page (req: WSF_REQUEST; res: WSF_RESPONSE; a_list: detachable LIST[ESA_REPORT_SEVERITY])
+			-- Severity page
+		deferred
+		end
+
+	category_page (req: WSF_REQUEST; res: WSF_RESPONSE; a_list: detachable LIST[ESA_REPORT_CATEGORY])
+			-- Category page
+		deferred
+		end
+
+	priority_page (req: WSF_REQUEST; res: WSF_RESPONSE; a_list: detachable LIST[ESA_REPORT_PRIORITY])
+			-- Priority page
+		deferred
+		end
+
+	responsible_page (req: WSF_REQUEST; res: WSF_RESPONSE; a_list: detachable LIST[ESA_USER])
+			-- Priority page
+		deferred
+		end
+
+	add_interaction_form (req: WSF_REQUEST; res: WSF_RESPONSE; a_form: detachable ESA_INTERACTION_FORM_VIEW)
+			-- Interaction Form.
+		deferred
+		end
+
+	interaction_form_confirm (req: WSF_REQUEST; res: WSF_RESPONSE; a_form: detachable ESA_INTERACTION_FORM_VIEW)
+			-- Interaction Form Confirm.
+		deferred
+		end
+
+	interaction_form_error (req: WSF_REQUEST; res: WSF_RESPONSE; a_form: detachable ESA_INTERACTION_FORM_VIEW)
+			-- Interaction form error
+		deferred
+		end
+
+	interaction_form_confirm_redirect (req: WSF_REQUEST; res: WSF_RESPONSE)
+			-- Interaction form redirect
+		deferred
+		end
+
 
 feature -- Response
 

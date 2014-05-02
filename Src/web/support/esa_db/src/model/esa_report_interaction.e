@@ -1,6 +1,5 @@
 note
 	description: "Summary description for {REPORT_INTERACTION}."
-	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -77,6 +76,11 @@ feature -- Element change
 	set_private (a_private: like private)
 		do
 			private := a_private
+		end
+
+	set_id (a_id: like id)
+		do
+			id := a_id
 		end
 
 feature -- Output

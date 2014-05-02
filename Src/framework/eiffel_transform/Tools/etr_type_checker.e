@@ -82,14 +82,11 @@ feature -- Output
 
 			create Result.make_empty
 
-			-- print attachment marks etc
-			if attached {ANNOTATED_TYPE_A}a_type as l_att_type then
-				-- print attachment marks
-				if l_att_type.has_attached_mark then
-					Result.append_character ('!')
-				elseif l_att_type.has_detachable_mark then
-					Result.append_character ('?')
-				end
+			-- print attachment marks
+			if a_type.has_attached_mark then
+				Result.append_character ('!')
+			elseif a_type.has_detachable_mark then
+				Result.append_character ('?')
 			end
 
 			-- print keywords
@@ -705,7 +702,7 @@ feature -- Quantification
 		end
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

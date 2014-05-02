@@ -44,7 +44,11 @@ feature {NONE} -- Initialization
 --			test_responsibles
 --			test_row_count_responsible_default
 --			test_problem_report_responsibles
-			test_token_from_username
+--			test_token_from_username
+--			test_row_count_responsible_by_user
+--			test_problem_report_by_uer
+--			test_temporary_interaction
+			test_row_count_problem_by_user
 		end
 
 
@@ -359,6 +363,15 @@ feature {NONE} -- Initialization
 		end
 
 
+	test_row_count_responsible_by_user
+		local
+			l_db: ESA_REPORT_DATA_PROVIDER
+		do
+			create l_db.make (connection)
+			print (l_db.row_count_problem_report_user ("jvelilla",False, 0, 0))
+		end
+
+
 	test_problem_report_responsibles
 		local
 			l_db: ESA_REPORT_DATA_PROVIDER
@@ -370,6 +383,45 @@ feature {NONE} -- Initialization
 		end
 
 
+	test_problem_report_by_uer
+		local
+			l_db: ESA_REPORT_DATA_PROVIDER
+		do
+			create l_db.make (connection)
+			across l_db.problem_reports_2 (1, 30,"jvelilla", False, 0, 0,"Number", 1) as c loop
+				print (c.item.string_8)
+			end
+		end
+
+	test_temporary_interaction
+		local
+			l_db: ESA_REPORT_DATA_PROVIDER
+		do
+			create l_db.make (connection)
+			if attached l_db.temporary_interaction (17745) as l_tuple then
+				if attached l_tuple.at(1) as l_item1 then
+					print (l_item1); io.put_new_line
+				end
+				if attached l_tuple.at(2) as l_item1 then
+					print (l_item1); io.put_new_line
+				end
+				if attached l_tuple.at(3) as l_item1 then
+					print (l_item1); io.put_new_line
+				end
+				if attached l_tuple.at(4) as l_item1 then
+					print (l_item1); io.put_new_line
+				end
+			end
+		end
+
+	test_row_count_problem_by_user
+		local
+			l_db: ESA_REPORT_DATA_PROVIDER
+		do
+			create l_db.make (connection)
+			print (l_db.row_count_problem_report_user ("jvelilla", False, 0, 0))
+		end
+
 feature -- Implementation
 
 	connection: ESA_DATABASE_CONNECTION
@@ -377,4 +429,21 @@ feature -- Implementation
 			create {ESA_DATABASE_CONNECTION_ODBC}Result.make_common
 		end
 
+
+
+	to_hexadecimal (a_string: STRING): STRING
+         -- Convert Current bit sequence into the corresponding
+         -- hexadecimal notation.
+      local
+      	l_ic: STRING_ITERATION_CURSOR
+      	l_string: STRING
+      do
+      	create Result.make_empty
+      	create l_ic.make (a_string)
+      	across l_ic as c  loop
+    		 l_string := c.item.code.to_hex_string
+    		 l_string.prune_all_leading ('0')
+     		 Result.append_string(l_string)
+      	end
+      end
 end

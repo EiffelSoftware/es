@@ -22,20 +22,24 @@ feature -- Execute
 
 	process (a_iron: IRON)
 		local
-			args: IRON_SEARCH_ARGUMENT_PARSER
+			args: IRON_INFO_ARGUMENT_PARSER
 		do
 			create args.make (Current)
 			args.execute (agent execute (args, a_iron))
 		end
 
-	execute (args: IRON_SEARCH_ARGUMENTS; a_iron: IRON)
+	execute (args: IRON_INFO_ARGUMENTS; a_iron: IRON)
 		do
 			across
 				args.resources as c
 			loop
 				print (m_title_information_for (c.item))
 				print_new_line
-				if c.item.starts_with ("http://") or c.item.starts_with ("https://") then
+				if
+					c.item.starts_with ("http://")
+					or c.item.starts_with ("https://")
+					or c.item.starts_with ("file://")
+				then
 					if attached a_iron.catalog_api.package_associated_with_uri (c.item) as l_package then
 						display_information (l_package, args, a_iron)
 					end

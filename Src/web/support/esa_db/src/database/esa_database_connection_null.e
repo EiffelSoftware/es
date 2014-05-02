@@ -1,6 +1,5 @@
 note
 	description: "Summary description for {ESA_DATABASE_CONNECTION_NULL}."
-	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -16,7 +15,7 @@ inherit
 		end
 
 create
-	make, make_common
+	make, make_common, make_basic
 
 feature -- Initialization
 
@@ -39,6 +38,21 @@ feature -- Initialization
 			make_common
 		end
 
+	make_basic (a_database_name: STRING)
+
+			-- Create a database handler for ODBC
+		do
+			make_common
+		end
+
+
+	login_with_connection_string (a_string: STRING; a_database_name: STRING)
+			-- Login with `a_connection_string'
+			-- and immediately connect to database.
+		do
+			make_common
+		end
+
 
 feature -- Databse Connection
 
@@ -51,6 +65,5 @@ feature -- Databse Connection
 		do
 			Result := True
 		end
-
 
 end

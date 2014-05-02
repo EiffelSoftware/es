@@ -1,4 +1,4 @@
-﻿note
+note
 	description: "Printer to print requests into text form"
 	author: ""
 	date: "$Date$"
@@ -237,6 +237,17 @@ feature {NONE} -- Printing
 					end
 				end
 				output_stream.put_character  (')')
+			end
+		end
+
+	print_test_case_index (a_request: AUT_REQUEST)
+			-- Print test case index from `a_request'.
+		require
+			a_request_attached: a_request /= Void
+		do
+			if a_request.test_case_index > 0 then
+				output_stream.put_string ("-- test case No." + a_request.test_case_index.out)
+				output_stream.put_new_line
 			end
 		end
 

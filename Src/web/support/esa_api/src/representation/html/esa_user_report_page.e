@@ -20,7 +20,6 @@ feature {NONE} --Initialization
 	make (a_host: READABLE_STRING_GENERAL; a_view: ESA_REPORT_VIEW)
 			-- Initialize `Current'.
 		local
-			p: PATH
 			tpl_inspector: TEMPLATE_INSPECTOR
 		do
 
@@ -30,9 +29,7 @@ feature {NONE} --Initialization
 			create {ESA_REPORT_STATUS_TEMPLATE_INSPECTOR} tpl_inspector.register (({detachable ESA_REPORT_STATUS}).out)
 			set_selected_status (a_view.status,a_view.selected_status)
 
-			create p.make_current
-			p := p.appended ("/www")
-			set_template_folder (p)
+			set_template_folder (html_path)
 			set_template_file_name ("user_reports.tpl")
 			template.add_value (a_host, "host")
 			template.add_value (a_view.reports.at (1), "statistics")
@@ -41,13 +38,17 @@ feature {NONE} --Initialization
 			template.add_value (a_view.status, "status")
 			template.add_value (a_view.selected_status, "selected_status")
 			template.add_value (a_view.selected_category, "selected_category")
+			template.add_value (a_view.index, "index")
+			template.add_value (a_view.order_by,"orderBy")
+			template.add_value (a_view.direction,"dir")
+			template.add_value (a_view.size, "size")
 			if a_view.index > 1 then
 				template.add_value (a_view.index-1 , "prev")
 			end
 			if a_view.index < a_view.pages then
 				template.add_value (a_view.index+1, "next")
 			end
-			template.add_value (a_view.pages, "last")
+			template.add_value (a_view.pages + 1, "last")
 
 		 	template.add_value (a_view.user,"user")
 
@@ -56,7 +57,9 @@ feature {NONE} --Initialization
 			template.get_output
 			if attached template.output as l_output then
 				representation := l_output
-				print (representation)
+				debug
+					print (representation)
+				end
 			end
 		end
 

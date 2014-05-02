@@ -12,11 +12,21 @@ inherit
 
 feature -- Access
 
+	configuration_file: detachable PATH
+			-- Configuration ini file, that may contain `username', `password', `repository' settings.
+		deferred
+		end
+
 	username: detachable IMMUTABLE_STRING_32
 		deferred
 		end
 
 	password: detachable IMMUTABLE_STRING_32
+		deferred
+		end
+
+	package_file: detachable PATH
+			-- package.iron file location if any.
 		deferred
 		end
 
@@ -41,6 +51,10 @@ feature -- Access
 		end
 
 	package_indexes: detachable LIST [IMMUTABLE_STRING_32]
+		deferred
+		end
+
+	is_forcing: BOOLEAN
 		deferred
 		end
 

@@ -138,7 +138,6 @@ feature -- Execution
 
 	step
 		local
-			l_type: detachable TYPE_A
 		do
 			if type.is_expanded then
 				choose_expanded_receiver

@@ -32,9 +32,6 @@ feature -- List task
 
 feature -- Install task
 
-	tk_simulated: STRING_32
-		do Result := {STRING_32} "simulated" end
-
 	tk_not_found: STRING_32
 		do Result := {STRING_32} "not found" end
 
@@ -53,8 +50,17 @@ feature -- Install task
 	tk_failed: STRING_32
 		do Result := {STRING_32} "failed !" end
 
+	tk_completed: STRING_32
+		do Result := {STRING_32} "completed" end
+
+	tk_simulated: STRING_32
+		do Result := {STRING_32} "simulated" end
+
 	m_installing (s: READABLE_STRING_GENERAL): STRING_32
 		do Result := string_with_args ("Installing [$1] ", [s]) end
+
+	m_setup_installation (s: READABLE_STRING_GENERAL): STRING_32
+		do Result := string_with_args ("Setting up [$1] ", [s]) end
 
 	m_removing (s: READABLE_STRING_GENERAL): STRING_32
 		do Result := string_with_args ("Removing [$1] ", [s]) end
@@ -98,6 +104,10 @@ feature -- Repository task
 
 	m_invalid_repository_location (a_loc: READABLE_STRING_GENERAL): STRING_32
 		do Result := string_with_args ("Invalid repository location [$1] ", [a_loc]) end
+
+	m_already_registered_repository_location (a_loc: READABLE_STRING_GENERAL): STRING_32
+		do Result := string_with_args ("Repository [$1] is already registered ", [a_loc]) end
+
 
 feature {NONE} -- Implementation
 

@@ -1,6 +1,5 @@
 note
 	description: "Summary description for {REPORT}."
-	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -61,7 +60,6 @@ feature -- Optional
 
 	to_reproduce_encode: detachable READABLE_STRING_32
 			-- workaround to support json encode
-
 
 	assigned: detachable ESA_USER
 
@@ -155,6 +153,14 @@ feature -- Element change
 	set_assigned (v: like assigned)
 		do
 			assigned := v
+		end
+
+	set_confidential (a_value: like confidential)
+			-- Set `confidential' with `a_value'
+		do
+			confidential := a_value
+		ensure
+			confidential_set: confidential = a_value
 		end
 
 feature -- Filled data

@@ -214,6 +214,7 @@ feature -- Button texts
 	b_errors: STRING_32							do Result := locale.translation("Errors") end
 	b_warning: STRING_32							do Result := locale.translation("Warning") end
 	b_warnings: STRING_32						do Result := locale.translation("Warnings") end
+	b_apply_fix: STRING_32						do Result := locale.translation("Fix") end
 
 	b_Activate_execution_recording: STRING_32 	do Result := locale.translation("Record Execution")	end
 	b_Deactivate_execution_recording: STRING_32 	do Result := locale.translation("Disable Execution Recording")	end
@@ -825,6 +826,8 @@ feature -- Accelerator, focus label and menu name
 
 feature -- Menu entries
 
+	m_apply_fix: STRING_32 do Result := locale.translation ("Fix") end
+
 	m_go_to_next_error: STRING_32 				do Result := locale.translation ("Go to Next &Error") end
 	m_go_to_previous_error: STRING_32 			do Result := locale.translation ("Go to Previous E&rror") end
 	m_go_to_next_warning: STRING_32 				do Result := locale.translation ("Go to Next &Warning") end
@@ -842,6 +845,8 @@ feature -- Menu entries
 		do Result := locale.formatted_string (locale.translation ("Ed&it Invariants for '$1'"), [a_name]) end
 
 feature -- Tool tips
+
+	f_apply_fix: STRING_32 do Result := locale.translation ("Apply selected fixes to source code") end
 
 	f_go_to_next_error: STRING_32 				do Result := locale.translation ("Navigates to the next error or the first error found if the end of the list is reached") end
 	f_go_to_previous_error: STRING_32 			do Result := locale.translation ("Navigates to the previous error or the last error found if the start of the list is reached") end
@@ -1309,23 +1314,24 @@ feature -- Label texts
 						[a_nclass, a_ncslink, a_nilink, a_ncluster, a_physics, a_draw, a_draws])
 		end
 
-	l_Discard_convert_project_dialog: STRING_32	do Result := locale.translation("always convert old projects.")	end
-	l_Discard_build_precompile_dialog: STRING_32 do Result := locale.translation("always build precompile.")	end
-	l_Discard_finalize_assertions: STRING_32 	do Result := locale.translation("always discard assertions when finalizing.")	end
-	l_Discard_finalize_precompile_dialog: STRING_32 do Result := locale.translation("always finalize.")	end
-	l_Discard_freeze_dialog: STRING_32			do Result := locale.translation("always compile C/C++ code.")	end
-	l_Discard_ignore_contract_violation_dialog: STRING_32 do Result := locale.translation("always break into debugger on contract violation.")	end
-	l_Discard_save_before_compile_dialog: STRING_32	do Result := locale.translation("always save files before compiling.")	end
-	l_discard_save_before_prettifying_dialog: STRING_32 do Result := locale.translation ("always save class before prettifying.") end
-	l_Discard_starting_dialog: STRING_32			do Result := locale.translation("Hide this dialog at startup")	end
-	l_Discard_replace_all_warning_dialog: STRING_32 do Result := locale.translation("always replace all.")	end
-	l_Discard_terminate_freezing: STRING_32		do Result := locale.translation("always terminate freezing when needed.")	end
-	l_Discard_terminate_external_command: STRING_32 do Result := locale.translation("always terminate running external command.")	end
-	l_Discard_terminate_finalizing: STRING_32 	do Result := locale.translation("always terminate finalizing when needed.")	end
-	l_discard_cancel_c_compilation_and_external_command: STRING_32 do Result := locale.translation("always cancel C/C++ compilation, terminate external command when exiting.")	end
-	l_discard_cancel_c_compilation: STRING_32	do Result := locale.translation("always cancel C/C++ compilation when exiting.")	end
-	l_discard_terminate_external_command_when_exit: STRING_32	do Result := locale.translation("always terminate external command when exiting.")	end
-	l_Discard_iron_installation_dialog: STRING_32 do Result := locale.translation("always install iron packages.")	end
+	l_Discard_convert_project_dialog: STRING_32	do Result := locale.translation("Always convert old projects.")	end
+	l_Discard_build_precompile_dialog: STRING_32 do Result := locale.translation("Always build precompile.")	end
+	l_Discard_finalize_assertions: STRING_32 	do Result := locale.translation("Always discard assertions when finalizing.")	end
+	l_Discard_finalize_precompile_dialog: STRING_32 do Result := locale.translation("Always finalize.")	end
+	l_Discard_freeze_dialog: STRING_32			do Result := locale.translation("Always compile C/C++ code.")	end
+	l_Discard_ignore_contract_violation_dialog: STRING_32 do Result := locale.translation("Always break into debugger on contract violation.")	end
+	l_Discard_save_before_compile_dialog: STRING_32	do Result := locale.translation("Always save files before compiling.")	end
+	l_discard_save_before_prettifying_dialog: STRING_32 do Result := locale.translation ("Always save class before prettifying.") end
+	l_Discard_starting_dialog: STRING_32			do Result := locale.translation("Hide this dialog at startup.")	end
+	l_Discard_replace_all_warning_dialog: STRING_32 do Result := locale.translation("Always replace all.")	end
+	l_Discard_terminate_freezing: STRING_32		do Result := locale.translation("Always terminate freezing when needed.")	end
+	l_Discard_terminate_external_command: STRING_32 do Result := locale.translation("Always terminate running external command.")	end
+	l_Discard_terminate_finalizing: STRING_32 	do Result := locale.translation("Always terminate finalizing when needed.")	end
+	l_discard_cancel_c_compilation_and_external_command: STRING_32 do Result := locale.translation("Always cancel C/C++ compilation, terminate external command when exiting.")	end
+	l_discard_cancel_c_compilation: STRING_32	do Result := locale.translation("Always cancel C/C++ compilation when exiting.")	end
+	l_discard_terminate_external_command_when_exit: STRING_32	do Result := locale.translation("Always terminate external command when exiting.")	end
+	l_Discard_iron_installation_dialog: STRING_32 do Result := locale.translation("Always install iron packages.")	end
+	l_discard_fix_undo_warning: STRING_32 do Result := locale.translation ("Always apply fixes without this prompt.") end
 
 	l_Display_call_stack_warning: STRING_32	do Result := locale.translation("Display a warning when the call stack depth reaches:")	end
 	l_Displayed_buttons_text: STRING_32 do Result := locale.translation("Displayed buttons")	end
@@ -1548,6 +1554,7 @@ feature -- Label texts
 	l_Platform: STRING_32				do Result := locale.translation ("Platform") end
 	l_please_select: STRING_32			do Result := locale.translation ("Please select a cluster where test case files will be generated.") end
 	l_position: STRING_32 				do Result := locale.translation ("Position") end
+	l_fix_suggestion: STRING_32 				do Result := locale.translation ("Suggestion") end
 	l_Possible_overflow: STRING_32		do Result := locale.translation("Possible stack overflow")	end
 	l_precompile: STRING_32				do Result := locale.translation("Precompile")	end
 	l_preferences_delayed_resources: STRING_32 do Result := locale.translation ("The changes you have made to the following resources%Nwill be taken into account after you restart.") end
@@ -2178,6 +2185,8 @@ feature -- Label texts
 	l_locale: STRING_32 do Result := locale.translation ("Locale:") end
 	l_target_scope_customzied_formatter_not_saved: STRING_32 do Result := locale.translation ("The customized formatters with target scope will not be saved because a project has not been loaded.") end
 	l_discard_target_scope_customized_formatter: STRING_32 do Result := locale.translation ("Don't ask me again and discard%Nunsaved target scope customized formatters.") end
+
+	l_apply_fix: STRING_32 do Result := locale.translation ("Apply fix") end
 
 	l_go_to_next_error: STRING_32 			do Result := locale.translation ("Go to next error") end
 	l_go_to_previous_error: STRING_32 		do Result := locale.translation ("Go to previous error") end

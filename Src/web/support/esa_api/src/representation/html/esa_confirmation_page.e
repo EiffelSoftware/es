@@ -1,6 +1,5 @@
 note
 	description: "Summary description for {ESA_CONFIRMATION_PAGE}."
-	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -20,16 +19,12 @@ feature {NONE} --Initialization
 
 	make (a_host: READABLE_STRING_GENERAL; a_user: detachable ANY;)
 			-- Initialize `Current'.
-		local
-			p: PATH
 		do
-			create p.make_current
-			p := p.appended ("/www")
-			set_template_folder (p)
+			set_template_folder (html_path)
 			set_template_file_name ("confirmation.tpl")
 			template.add_value (a_host, "host")
-			if attached a_user as l_user then
-				template.add_value (l_user, "user")
+			if attached a_user then
+				template.add_value (a_user, "user")
 			end
 
 			template_context.enable_verbose
@@ -37,7 +32,9 @@ feature {NONE} --Initialization
 			template.get_output
 			if attached template.output as l_output then
 				representation := l_output
-				print (representation)
+				debug
+					print (representation)
+				end
 			end
 		end
 

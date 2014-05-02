@@ -10,7 +10,7 @@ create
 
 	make
 
-feature -- Initialization
+feature {NONE} -- Initialization
 
 	make (a_reports: TUPLE[ESA_REPORT_STATISTICS,LIST[ESA_REPORT]]; a_index: INTEGER; a_pages: INTEGER; a_categories: LIST[ESA_REPORT_CATEGORY]; a_status: LIST[ESA_REPORT_STATUS]; a_user: detachable ANY)
 			-- Create a new object with reports `a_reports'
@@ -42,6 +42,9 @@ feature -- Access
 
 	index: INTEGER;
 		--  Current index.
+
+	size: INTEGER
+		-- Page Size	
 
 	pages: INTEGER;
 		-- Number of pages.
@@ -158,6 +161,14 @@ feature -- Change Element
 			-- Set `severities' with `a_severities'.
 		do
 			severities := a_severities
+		end
+
+	set_size (a_size: INTEGER)
+			-- Set `size' with `size'
+		do
+			size := a_size
+		ensure
+			size_set: size = a_size
 		end
 
 end

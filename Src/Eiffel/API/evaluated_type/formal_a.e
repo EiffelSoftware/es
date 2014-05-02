@@ -600,7 +600,7 @@ feature -- Access
 			-- Instantiation of Current in the context of `type',
 			-- assuming that Current is written in class of id `written_id'.
 		local
-			t: ANNOTATED_TYPE_A
+			t: TYPE_A
 			l_class: CLASS_C
 			l_type_set: TYPE_SET_A
 		do
@@ -615,12 +615,9 @@ feature -- Access
 				l_class := system.class_of_id (written_id)
 				if not l_class.lace_class.is_void_unsafe then
 					l_type_set := l_class.constrained_types (position)
-					if
-						l_type_set.is_attached and then
-						attached {ANNOTATED_TYPE_A} Result as a and then not a.has_detachable_mark
-					then
+					if l_type_set.is_attached and then not Result.has_detachable_mark then
 							-- Promote attachment setting of the current contraint unless the formal has explicit detachable mark.
-						t := a.duplicate
+						t := Result.duplicate
 						t.set_is_attached
 						Result := t
 					end
@@ -657,13 +654,17 @@ feature -- Access
 		local
 			l_feat: TYPE_FEATURE_I
 		do
-				-- Get associated feature in parent.
-			l_feat := a_ancestor.formal_at_position (position)
-				-- Get associated feature in descendant.
-			l_feat := a_descendant.generic_features.item (l_feat.rout_id_set.first)
-			check l_feat_not_void: l_feat /= Void end
-			Result := separate_adapted (l_feat.type.actual_type.to_other_attachment (Current))
-			Result := Result.to_other_variant (Current)
+			if a_ancestor = a_descendant then
+				Result := Current
+			else
+					-- Get associated feature in parent.
+				l_feat := a_ancestor.formal_at_position (position)
+					-- Get associated feature in descendant.
+				l_feat := a_descendant.generic_features.item (l_feat.rout_id_set.first)
+				check l_feat_not_void: l_feat /= Void end
+				Result := separate_adapted (l_feat.type.actual_type.to_other_attachment (Current))
+				Result := Result.to_other_variant (Current)
+			end
 		end
 
 	create_info: CREATE_FORMAL_TYPE

@@ -20,15 +20,12 @@ feature {NONE} --Initialization
 	make (a_host: READABLE_STRING_GENERAL; a_view: ESA_REPORT_VIEW)
 			-- Initialize `Current'.
 		local
-			p: PATH
 			tpl_inspector: TEMPLATE_INSPECTOR
 		do
 
 			create {ESA_REPORT_STATUS_TEMPLATE_INSPECTOR} tpl_inspector.register (({detachable ESA_REPORT_STATUS}).out)
 
-			create p.make_current
-			p := p.appended ("/www")
-			set_template_folder (p)
+			set_template_folder (html_path)
 			set_template_file_name ("user_responsible_reports.tpl")
 			template.add_value (a_host, "host")
 			template.add_value (a_view.reports.at (1), "statistics")
@@ -41,6 +38,7 @@ feature {NONE} --Initialization
 			template.add_value (a_view, "view")
 			template.add_value (retrieve_status_query (a_view.status),"status_query")
 			template.add_value (a_view.index, "index")
+			template.add_value (a_view.size, "size")
 
 
 			if a_view.index > 1 then
@@ -58,7 +56,9 @@ feature {NONE} --Initialization
 			template.get_output
 			if attached template.output as l_output then
 				representation := l_output
-				print (representation)
+				debug
+					print (representation)
+				end
 			end
 		end
 

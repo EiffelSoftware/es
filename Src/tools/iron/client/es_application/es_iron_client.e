@@ -64,7 +64,7 @@ feature {NONE} -- Initialization
 				l_version.append_character ('.')
 				l_version.append (two_digit_minimum_minor_version)
 
-				create repo.make_from_version_uri (create {URI}.make_from_string ("http://iron.eiffel.com/" + l_version))
+				create repo.make_from_version_uri (create {URI}.make_from_string ("https://iron.eiffel.com/" + l_version))
 				print (m_registering_repository (repo.location_string))
 				io.put_new_line
 				a_iron.catalog_api.register_repository (repo)
@@ -79,9 +79,13 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	iron_layout: ES_IRON_LAYOUT
+		local
+			lay: EC_EIFFEL_LAYOUT
 		do
 			if not is_eiffel_layout_defined then
-				set_eiffel_layout (create {EC_EIFFEL_LAYOUT})
+				create lay
+				lay.check_environment_variable
+				set_eiffel_layout (lay)
 			end
 			create Result.make (eiffel_layout)
 		end
