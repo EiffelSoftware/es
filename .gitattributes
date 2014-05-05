@@ -6456,6 +6456,8 @@ eweasel/tests/term137/notes -text
 eweasel/tests/term163/Ace -text
 eweasel/tests/term197/test.def -text
 eweasel/tests/term209/test -text svneol=unset#application/octet-stream
+eweasel/tests/term212/Ace svneol=native#text/xml
+eweasel/tests/term212/special.e-rev1 -text
 eweasel/tests/thread002/Ace -text
 eweasel/tests/thread010/Ace -text
 eweasel/tests/thread024/Ace -text svneol=native#application/xml
