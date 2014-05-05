@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-13-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-13-0 http://www.eiffel.com/developers/xml/configuration-1-13-0.xsd" name="lp_solve" uuid="FAFE40C8-9EF2-4FE6-9C12-DE926F2C796F" library_target="lp_solve">
+	<target name="lp_solve">
+		<file_rule>
+			<exclude>/.svn$</exclude>
+		</file_rule>
+		<option void_safety="all">
+		</option>
+		<external_include location="$(EIFFEL_SRC)\framework\auto_test\spec\include">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_include>
+		<external_include location="$(EIFFEL_SRC)/framework/auto_test/spec/include">
+			<condition>
+				<platform excluded_value="windows"/>
+			</condition>
+		</external_include>
+		<external_object location="$(EIFFEL_SRC)\framework\auto_test\spec\$(ISE_C_COMPILER)\$(ISE_PLATFORM)\lib\liblpsolve55.lib">
+			<condition>
+				<platform value="windows"/>
+			</condition>
+		</external_object>
+		<external_object location="$(EIFFEL_SRC)/framework/auto_test/spec/$(ISE_PLATFORM)/lib/liblpsolve55.a">
+			<condition>
+				<platform excluded_value="windows"/>
+			</condition>
+		</external_object>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<cluster name="lp_solve" location=".\" recursive="true">
+			<file_rule>
+				<exclude>/EIFGENs$</exclude>
+				<exclude>/CVS$</exclude>
+				<exclude>/.svn$</exclude>
+			</file_rule>
+		</cluster>
+	</target>
+</system>
