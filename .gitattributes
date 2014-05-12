@@ -3109,6 +3109,14 @@ Src/examples/wel/xcell/spades9.bmp -text
 Src/examples/wel/xcell/start.bmp -text
 Src/examples/wel/xcell/xcell.bmp -text
 Src/examples/wel/xcell/xcell_demo.ico -text
+Src/examples/zeromq/hello_world/client/client.ecf svneol=native#text/xml
+Src/examples/zeromq/hello_world/server/server.ecf svneol=native#text/xml
+Src/examples/zeromq/parallel_task_ventilator/task_sink/task_sink.ecf svneol=native#text/xml
+Src/examples/zeromq/parallel_task_ventilator/task_ventilator/task_ventilator.ecf svneol=native#text/xml
+Src/examples/zeromq/parallel_task_ventilator/task_worker/task_worker.ecf svneol=native#text/xml
+Src/examples/zeromq/version/version.ecf svneol=native#text/xml
+Src/examples/zeromq/weather/client/client.ecf svneol=native#text/xml
+Src/examples/zeromq/weather/server/server.ecf svneol=native#text/xml
 Src/experimental/library/GIF/Clib/gd_lib/gd.lib svneol=native#unset
 Src/experimental/library/api_wrapper/implementation/unix/Clib/dl-config -text
 Src/experimental/library/base/test/license.lic -text
