@@ -5261,6 +5261,7 @@ Src/web/support/database/mssql/data_problem_report_status.sql -text
 Src/web/support/database/mssql/data_questions.sql -text
 Src/web/support/database/mssql/data_roles.sql -text
 Src/web/support/database/mssql/data_security_questions.sql -text
+Src/web/support/database/mssql/db_problem_report_priorities.sql -text
 Src/web/support/database/mssql/db_schemas.sql -text
 Src/web/support/database/mssql/db_store_procedures.sql -text
 Src/web/support/database/mssql/db_tables.sql -text
@@ -5270,7 +5271,7 @@ Src/web/support/database/mssql/db_views.sql -text
 Src/web/support/esa_api/ecf-target-any_connector -text
 Src/web/support/esa_api/ecf-target-connector -text
 Src/web/support/esa_api/esa.ini -text
-Src/web/support/esa_api/esa_folder/config/esa_database_configuration.json -text
+Src/web/support/esa_api/esa_folder/config/esa_application_configuration.json -text
 Src/web/support/esa_api/esa_folder/www/css/dashboard.css -text
 Src/web/support/esa_api/esa_folder/www/js/auth.js -text
 Src/web/support/esa_api/esa_folder/www/js/docs.js -text
@@ -5315,7 +5316,9 @@ Src/web/support/esa_api/esa_folder/www/template/html/navbar.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/html/optional_enhancement_js.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/html/optional_styling_css.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/html/post_register_page.tpl -text
+Src/web/support/esa_api/esa_folder/www/template/html/post_reminder.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/html/register.tpl -text
+Src/web/support/esa_api/esa_folder/www/template/html/reminder.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/html/report_form.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/html/report_form_confirm.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/html/reports.tpl -text
