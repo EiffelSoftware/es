@@ -5286,8 +5286,10 @@ Src/web/support/esa_api/esa_folder/www/template/cj/cj_interaction_confirm_page.t
 Src/web/support/esa_api/esa_folder/www/template/cj/cj_interaction_form.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/cj/cj_items.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/cj/cj_post_register.tpl -text
+Src/web/support/esa_api/esa_folder/www/template/cj/cj_post_reminder.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/cj/cj_priority.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/cj/cj_register.tpl -text
+Src/web/support/esa_api/esa_folder/www/template/cj/cj_reminder.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/cj/cj_report_confirm.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/cj/cj_reports.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/cj/cj_reports_detail.tpl -text
