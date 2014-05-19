@@ -4187,6 +4187,9 @@ Src/tools/iron/delivery/resources/node/html/style.css -text
 Src/tools/iron/delivery/resources/node/template/html/package-version-list-item.tpl -text
 Src/tools/iron/delivery/resources/node/template/html/package-version-view.tpl -text
 Src/tools/iron/delivery/resources/node/template/html/page.tpl -text
+Src/tools/iron/doc/footer.html.tpl -text
+Src/tools/iron/doc/header.html.tpl -text
+Src/tools/iron/doc/iron.css -text
 Src/tools/iron/doc/iron.html -text
 Src/tools/iron/server/license.lic -text
 Src/tools/iron/testing/cases/lib/dep/dep-safe.ecf-test -text
