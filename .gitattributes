@@ -4191,8 +4191,8 @@ Src/tools/iron/delivery/resources/node/template/html/package-version-view.tpl -t
 Src/tools/iron/delivery/resources/node/template/html/page.tpl -text
 Src/tools/iron/doc/footer.html.tpl -text
 Src/tools/iron/doc/header.html.tpl -text
+Src/tools/iron/doc/index.html svneol=native#text/xml
 Src/tools/iron/doc/iron.css -text
-Src/tools/iron/doc/iron.html -text
 Src/tools/iron/server/license.lic -text
 Src/tools/iron/testing/cases/lib/dep/dep-safe.ecf-test -text
 Src/tools/iron/testing/cases/lib/dummy/dummy-safe.ecf-test -text
