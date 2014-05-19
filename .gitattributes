@@ -4173,7 +4173,6 @@ Src/tools/iron/delivery/iron/spec/windows/bin/msys-1.0.dll -text
 Src/tools/iron/delivery/iron/spec/windows/bin/tar.exe -text
 Src/tools/iron/delivery/resources/node/doc/index.html -text
 Src/tools/iron/delivery/resources/node/doc/iron.css -text
-Src/tools/iron/delivery/resources/node/doc/iron.html svneol=native#text/xml
 Src/tools/iron/delivery/resources/node/doc/iron.wiki -text
 Src/tools/iron/delivery/resources/node/html/bootstrap/css/bootstrap-theme.css -text
 Src/tools/iron/delivery/resources/node/html/bootstrap/css/bootstrap-theme.min.css -text
