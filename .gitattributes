@@ -5280,6 +5280,7 @@ Src/web/support/database/mssql/db_user_defined_functions.sql -text svneol=unset#
 Src/web/support/database/mssql/db_user_df_sql2000.sql -text
 Src/web/support/database/mssql/db_view_sql2000.sql -text
 Src/web/support/database/mssql/db_views.sql -text svneol=unset#application/octet-stream
+Src/web/support/esa_api/IIRF.ini -text
 Src/web/support/esa_api/ecf-target-any_connector -text
 Src/web/support/esa_api/ecf-target-connector -text
 Src/web/support/esa_api/esa.ini -text
