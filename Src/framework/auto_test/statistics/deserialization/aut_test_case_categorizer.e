@@ -71,12 +71,16 @@ feature -- Access
 	validator: AUT_TEST_CASE_DESERIALIZABILITY_CHECKER
 			-- Test case validator.
 
+	last_test_case_path: PATH
+			-- Path to the last test case generated.
+
 feature -- Basic operations
 
 	write_test_case_to_file (a_test_case: AUT_DESERIALIZED_TEST_CASE)
 			-- Write `a_test_case' into a file, whose location is decided
 			-- by current categorizer.
 		do
+			last_test_case_path := Void
 			write_test_case (a_test_case, categorize (a_test_case))
 		end
 
@@ -126,6 +130,7 @@ feature{NONE} -- Implementation
 				create l_file.make (l_dir_name)
 				l_file.recursive_open_write
 				if l_file.is_open_write then
+					create last_test_case_path.make_from_string (l_dir_name)
 					l_file.put_string (a_data.test_case_text)
 					l_file.close
 				else
@@ -198,7 +203,7 @@ feature{NONE} -- Implementation
 
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

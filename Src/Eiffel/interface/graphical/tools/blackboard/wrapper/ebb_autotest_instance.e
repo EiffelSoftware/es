@@ -146,7 +146,7 @@ feature -- Basic operations
 			test_generator.set_is_failing_test_case_serialization_enabled (False)
 			test_generator.set_test_case_serialization_file (Void)
 			test_generator.set_is_test_case_serialization_retrieved_online (False)
-			test_generator.set_is_output_test_case_on_line (False)
+			test_generator.set_output_dir_for_test_case_online (Void)
 
 				-- Set test case deserialization arguments.
 			test_generator.set_is_passing_test_case_deserialization_enabled (False)

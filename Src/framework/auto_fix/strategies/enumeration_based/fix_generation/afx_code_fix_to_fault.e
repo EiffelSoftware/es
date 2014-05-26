@@ -127,6 +127,7 @@ feature{NONE} -- Scheme type names
 			-- Array of scheme type names.
 		once
 			Result := <<"UnconditionalAdd", "ConditionalAdd", "ConditionalExecute", "ConditionalReplace">>
+			Result.compare_objects
 		end
 
 feature -- Scheme type constants

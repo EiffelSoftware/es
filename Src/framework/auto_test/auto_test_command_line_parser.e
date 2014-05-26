@@ -110,8 +110,8 @@ feature{NONE} -- Initialization
 			l_pr_check_objects: AP_FLAG
 			l_arff_directory_option: AP_STRING_OPTION
 			l_online_statistics_frequency: AP_INTEGER_OPTION
-			l_retrieve_serialization_on_line_option: AP_FLAG
-			l_output_test_case_on_line_option: AP_FLAG
+			l_retrieve_serialization_online_option: AP_FLAG
+			l_output_test_case_online_option: AP_STRING_OPTION
 			l_cursor: DS_LIST_CURSOR[STRING]
 
 			l_dir: DIRECTORY
@@ -422,13 +422,13 @@ feature{NONE} -- Initialization
 			l_online_statistics_frequency.set_description ("Specify the frequency of online-statistics output. Format: --online-statistics-frequency <seconds>. <seconds> is the number of seconds. If 0, no online-statistics will be outputed. Default: 0.")
 			parser.options.force_last (l_online_statistics_frequency)
 
-			create l_retrieve_serialization_on_line_option.make_with_long_form ("retrieve-serialization-online")
-			l_retrieve_serialization_on_line_option.set_description ("Should the proxy side retrieve test case serialization during testing? Only have effect when test case serialization is enabled. Default: False.")
-			parser.options.force_last (l_retrieve_serialization_on_line_option)
+			create l_retrieve_serialization_online_option.make_with_long_form ("retrieve-serialization-online")
+			l_retrieve_serialization_online_option.set_description ("Should the proxy side retrieve test case serialization during testing? Only have effect when test case serialization is enabled. Default: False.")
+			parser.options.force_last (l_retrieve_serialization_online_option)
 
-			create l_output_test_case_on_line_option.make_with_long_form ("output-test-case-online")
-			l_output_test_case_on_line_option.set_description ("Should AutoTest output test case files during testing? Have effect only if the option retrieve-serialization-online is enabled. Default: False")
-			parser.options.force_last (l_output_test_case_on_line_option)
+			create l_output_test_case_online_option.make_with_long_form ("output-test-case-online")
+			l_output_test_case_online_option.set_description ("Where should AutoTest output test case files during testing? Have effect only if the option retrieve-serialization-online is enabled. ")
+			parser.options.force_last (l_output_test_case_online_option)
 
 			create l_args.make
 			from
@@ -1044,12 +1044,18 @@ feature{NONE} -- Initialization
 				online_statistics_frequency := 0
 			end
 
-			if l_retrieve_serialization_on_line_option.was_found then
+			if l_retrieve_serialization_online_option.was_found then
 				is_test_case_serialization_retrieved_online := True
 			end
 
-			if l_output_test_case_on_line_option.was_found then
-				is_output_test_case_on_line := True
+			if l_output_test_case_online_option.was_found then
+				create l_dir.make_with_name (l_output_test_case_online_option.parameter)
+				if not l_dir.exists then
+					l_dir.recursive_create_dir
+				end
+				if l_dir.exists then
+					output_dir_for_test_case_online := l_output_test_case_online_option.parameter.twin
+				end
 			end
 
 			create {DS_ARRAYED_LIST [STRING]} class_names.make(parser.parameters.count)
@@ -1409,10 +1415,9 @@ feature -- Status report
 			-- Only have effect when test case serialization is enabled.
 			-- Default: False
 
-	is_output_test_case_on_line: BOOLEAN
-			-- Should AutoTest output test case files during testing?
+	output_dir_for_test_case_online: STRING
+			-- Where should AutoTest output test case files during testing?
 			-- Only have effect when `is_test_case_serialization_retrieved_online' is True.
-			-- Default: False
 
 feature{NONE} -- Implementation
 
@@ -1454,7 +1459,7 @@ invariant
 	minimization_is_either_slicing_or_ddmin: is_minimization_enabled implies (is_slicing_enabled xor is_ddmin_enabled)
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

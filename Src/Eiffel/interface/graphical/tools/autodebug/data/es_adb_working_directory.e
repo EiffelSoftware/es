@@ -1,0 +1,136 @@
+note
+	description: "Summary description for {ES_ADB_WORKING_DIRECTORY}."
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	ES_ADB_WORKING_DIRECTORY
+
+create
+	make
+
+feature{NONE} -- Initialization
+
+	make (a_root_dir: PATH)
+			-- Initialization.
+		do
+			root_dir := a_root_dir.twin
+		end
+
+feature -- Access
+
+	root_dir: PATH
+			-- Root of the working directory.
+
+feature -- Query
+
+	testing_result_dir: PATH
+			-- Path to the directory for testing results.
+		do
+			if testing_result_dir_internal = Void then
+				testing_result_dir_internal := root_dir.extended ("testing")
+			end
+			Result := testing_result_dir_internal
+		end
+
+	tested_class_timestamps_path: PATH
+			-- Path to the file of timestamps for the tested classes.
+		do
+			if tested_class_timestamps_path_internal = Void then
+				tested_class_timestamps_path_internal := testing_result_dir.extended ("timestamps.log")
+			end
+			Result := tested_class_timestamps_path_internal
+		end
+
+	fixing_result_dir: PATH
+			-- Path to the directory for fixing results.
+		do
+			if fixing_result_dir_internal = Void then
+				fixing_result_dir_internal := root_dir.extended ("fixing")
+			end
+			Result := fixing_result_dir_internal
+		end
+
+	fixing_result_file_path (a_fault: ES_ADB_FAULT): PATH
+			-- Path to the fixing result file for `a_fault'.
+		require
+			a_fault /= Void
+		do
+			Result := fixing_result_dir.extended (a_fault.signature.id + ".afx")
+		end
+
+	temp_dir: PATH
+			-- Path to the directory for temporary files.
+		do
+			if temp_dir_internal = Void then
+				temp_dir_internal := root_dir.extended ("temp")
+			end
+			Result := temp_dir_internal
+		end
+
+feature -- Operation
+
+	prepare_empty_directory
+			-- Prepare the structure of the directory if it does not exist already, and remove all the existing testing/fixing results.
+		local
+			l_dir: DIRECTORY
+		do
+			create l_dir.make_with_path (testing_result_dir)
+			if l_dir.exists then
+				l_dir.recursive_delete
+			end
+			l_dir.recursive_create_dir
+
+			create l_dir.make_with_path (fixing_result_dir)
+			if l_dir.exists then
+				l_dir.recursive_delete
+			end
+			l_dir.recursive_create_dir
+
+			create l_dir.make_with_path (temp_dir)
+			if l_dir.exists then
+				l_dir.recursive_delete
+			end
+			l_dir.recursive_create_dir
+		end
+
+feature{NONE} -- Cache
+
+	testing_result_dir_internal: like testing_result_dir
+	fixing_result_dir_internal: like fixing_result_dir
+	temp_dir_internal: like temp_dir
+	tested_class_timestamps_path_internal: like tested_class_timestamps_path
+
+;note
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
+	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
+	licensing_options: "http://www.eiffel.com/licensing"
+	copying: "[
+			This file is part of Eiffel Software's Eiffel Development Environment.
+			
+			Eiffel Software's Eiffel Development Environment is free
+			software; you can redistribute it and/or modify it under
+			the terms of the GNU General Public License as published
+			by the Free Software Foundation, version 2 of the License
+			(available at the URL listed under "license" above).
+			
+			Eiffel Software's Eiffel Development Environment is
+			distributed in the hope that it will be useful, but
+			WITHOUT ANY WARRANTY; without even the implied warranty
+			of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+			See the GNU General Public License for more details.
+			
+			You should have received a copy of the GNU General Public
+			License along with Eiffel Software's Eiffel Development
+			Environment; if not, write to the Free Software Foundation,
+			Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+		]"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
+end

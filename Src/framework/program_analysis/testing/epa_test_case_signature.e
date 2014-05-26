@@ -56,13 +56,18 @@ feature -- Access
 	class_under_test: STRING
 			-- Name of the class under test.
 
+	class_under_test_: CLASS_C
+		do
+			Result := first_class_starts_with_name (class_under_test)
+		end
+
 	feature_under_test: STRING
 			-- Name of the feature under test.
 
 	class_and_feature_under_test: STRING
 			-- Class and feature under test.
 		do
-			Result := "" + class_under_test + "__" + feature_under_test
+			Result := "" + class_under_test + "." + feature_under_test
 		end
 
 	recipient_class: STRING
@@ -288,15 +293,19 @@ feature{NONE} -- Implementation
 			-- Initialize `id'.
 		do
 			create id.make (128)
-			id.append (recipient_class)
+			id.append (class_under_test)
 			id.append_character ('.')
-			id.append (recipient)
+			id.append (feature_under_test)
 			id.append_character ('.')
 			id.append (exception_code.out)
 			id.append_character ('.')
 			id.append (breakpoint_slot.out)
 			id.append_character ('.')
 			id.append (tag)
+			id.append_character ('.')
+			id.append (recipient_class)
+			id.append_character ('.')
+			id.append (recipient)
 		end
 
 end

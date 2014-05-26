@@ -92,15 +92,15 @@ feature {NONE} -- Status setting
 			Precursor
 			interpreter_root_class_cell.put (Void)
 
-			if file_name_of_new_root_class /= Void then
-				create l_file.make_with_name (file_name_of_new_root_class)
-				if l_file.exists then
-					l_file.delete
-				end
+--			if file_name_of_new_root_class /= Void then
+--				create l_file.make_with_name (file_name_of_new_root_class)
+--				if l_file.exists then
+--					l_file.delete
+--				end
 
-				cluster_name_of_new_root := Void
-				file_name_of_new_root_class := Void
-			end
+--				cluster_name_of_new_root := Void
+--				file_name_of_new_root_class := Void
+--			end
 		end
 
 	compute_interpreter_root_class

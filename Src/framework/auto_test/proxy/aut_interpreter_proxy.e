@@ -154,12 +154,9 @@ feature {NONE} -- Initialization
 			generate_typed_object_pool
 			setup_online_statistics
 
-			create l_dir.make_from_string (configuration.output_dirname)
-			l_dir.extend ("test_cases")
-			online_test_case_directory := l_dir.out
-
-			setup_online_test_case_directory
-			if configuration.is_test_case_serialization_retrieved_online and configuration.is_output_test_case_on_line then
+			if configuration.is_test_case_serialization_retrieved_online and configuration.output_dir_for_test_case_online /= Void then
+				online_test_case_directory := configuration.output_dir_for_test_case_online
+				setup_online_test_case_directory
 				on_test_case_serialization_actions.extend (agent output_test_case)
 			end
 		ensure
@@ -2376,7 +2373,9 @@ feature -- Object state retrieval
 					do
 						create l_test_categorizer.make (configuration, online_test_case_directory)
 						l_test_categorizer.write_test_case_to_file (a_test)
-
+						if l_test_categorizer.last_test_case_path /= Void then
+							error_handler.report_info_message ("%T%T[TC generated] " + l_test_categorizer.last_test_case_path.out)
+						end
 					end)
 			l_test_deserializer.process_test_case (a_serialization)
 		end

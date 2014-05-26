@@ -1223,7 +1223,8 @@ feature {EB_EXTERNAL_COMMANDS_EDITOR} -- Menu Building
 			insert_show_tool_menu_item (Result, {ES_JAVASCRIPT_TOOL})
 			insert_show_tool_menu_item (Result, {ES_SCHEMA_EVOLUTION_TOOL})
 			insert_show_tool_menu_item (Result, {ES_BLACKBOARD_TOOL})
-			insert_show_tool_menu_item (Result, {ES_EVE_AUTOFIX_TOOL})
+--			insert_show_tool_menu_item (Result, {ES_EVE_AUTOFIX_TOOL})
+			insert_show_tool_menu_item (Result, {ES_ADB_TOOL})
 			insert_show_tool_menu_item (Result, {ES_ALIAS_ANALYSIS_TOOL})
 			insert_show_tool_menu_item (Result, {ES_AUTOPROOF_TOOL})
 			insert_show_tool_menu_item (Result, {ES_SPELLING_TOOL})
@@ -1629,7 +1630,7 @@ feature -- Docking library menu items
 		end
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

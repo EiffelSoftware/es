@@ -207,16 +207,15 @@ feature -- Options: basic
 			-- Have effect only if test case serialization is enabled.
 			-- Default: False	
 
-	is_output_test_case_on_line: BOOLEAN
-			-- Should AutoTest output test case files during testing?
+	output_dir_for_test_case_online: STRING
+			-- Where should AutoTest output test case files during testing?
 			-- Have effect only if `is_test_case_serialization_retrieved_online' is True.
-			-- Default: False
 
 	feature_to_disable_contracts: STRING
 		do
 			Result := feature_to_disable_contracts_cache
 		end
-		
+
 feature -- Options: logging
 
 	proxy_log_options: HASH_TABLE[BOOLEAN, STRING]
@@ -1150,12 +1149,12 @@ feature -- Status setting
 			is_test_case_serialization_retrieved_online_set: is_test_case_serialization_retrieved_online = b
 		end
 
-	set_is_output_test_case_on_line (b: BOOLEAN)
-			-- Set `is_output_test_case_on_line' with `b'.
+	set_output_dir_for_test_case_online (a_dir: STRING)
+			-- Set `output_dir_for_test_case_online' with `a_dir'.
 		do
-			is_output_test_case_on_line := b
+			output_dir_for_test_case_online := a_dir
 		ensure
-			is_output_test_case_on_line_set: is_output_test_case_on_line = b
+			output_dir_for_test_case_online_set: output_dir_for_test_case_online ~ a_dir
 		end
 
 feature -- Basic operations
