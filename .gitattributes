@@ -5290,6 +5290,8 @@ Src/web/support/esa_api/esa_folder/www/js/auth.js -text
 Src/web/support/esa_api/esa_folder/www/js/docs.js -text
 Src/web/support/esa_api/esa_folder/www/js/holder.js -text
 Src/web/support/esa_api/esa_folder/www/js/login.js -text
+Src/web/support/esa_api/esa_folder/www/profile/esa_api.xml svneol=native#text/xml
+Src/web/support/esa_api/esa_folder/www/profile/esa_html.html svneol=native#text/xml
 Src/web/support/esa_api/esa_folder/www/template/cj/cj_activation.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/cj/cj_category.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/cj/cj_confirmation.tpl -text
