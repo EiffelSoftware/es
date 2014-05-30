@@ -48,8 +48,7 @@ feature -- Element change
 	get_structure (a_filename: PATH)
 		local
 			fn: PATH
-			f: PLAIN_TEXT_FILE
-			lst: LIST [STRING]
+			f: RAW_FILE
 			t: STRING
 			ln, p: INTEGER
 			s: STRING
@@ -131,7 +130,7 @@ feature -- Status report
 		end
 
 note
-	copyright: "2011-2013, Jocelyn Fiat and Eiffel Software"
+	copyright: "2011-2014, Jocelyn Fiat and Eiffel Software"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Jocelyn Fiat

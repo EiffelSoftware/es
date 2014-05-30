@@ -14,7 +14,6 @@ inherit
 
 	REFACTORING_HELPER
 
-
 create
 	make
 
@@ -69,7 +68,7 @@ feature -- Access
 		do
 			create l_parameters.make (7)
 			l_parameters.put (a_rows_per_page, "RowsPerPage")
-			l_parameters.put (a_page_number, "PageNumber")
+			l_parameters.put (a_rows_per_page*a_page_number, "Offset")
 			l_parameters.put (l_encoder.encode (string_parameter (a_username, 50)), {ESA_DATA_PARAMETERS_NAMES}.Username_param)
 			l_parameters.put (a_open_only, {ESA_DATA_PARAMETERS_NAMES}.Openonly_param)
 			l_parameters.put (a_category, {ESA_DATA_PARAMETERS_NAMES}.categoryid_param)
@@ -99,7 +98,7 @@ feature -- Access
 			l_parameters.put (a_page_number, "PageNumber")
 			l_parameters.put (a_category, {ESA_DATA_PARAMETERS_NAMES}.categoryid_param)
 			l_parameters.put (a_status, {ESA_DATA_PARAMETERS_NAMES}.statusid_param)
-			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_reader ("GetProblemReportsGuest", l_parameters))
+			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_reader ("GetProblemReportsGuest3", l_parameters))
 			db_handler.execute_reader
 			create Result.make (db_handler, agent new_report)
 		end
@@ -118,7 +117,7 @@ feature -- Access
 			to_implement ("Improve the way to generate the prepare statement.")
 			create l_parameters.make (2)
 			l_parameters.put (a_rows_per_page, "RowsPerPage")
-			l_parameters.put (a_page_number, "PageNumber")
+			l_parameters.put (a_page_number*a_rows_per_page, "Offset")
 			l_parameters.put (a_category, {ESA_DATA_PARAMETERS_NAMES}.Categoryid_param)
 			l_parameters.put (a_status, {ESA_DATA_PARAMETERS_NAMES}.Statusid_param)
 			l_parameters.put (l_encode.encode ( string_parameter (a_column, 30)), "Column")
@@ -149,7 +148,7 @@ feature -- Access
 		do
 			create l_parameters.make (7)
 			l_parameters.put (a_rows_per_page, "RowsPerPage")
-			l_parameters.put (a_page_number, "PageNumber")
+			l_parameters.put (a_rows_per_page*a_page_number, "Offset")
 			l_parameters.put (a_category, {ESA_DATA_PARAMETERS_NAMES}.Categoryid_param)
 			l_parameters.put (a_severity, {ESA_DATA_PARAMETERS_NAMES}.Severityid_param)
 			l_parameters.put (a_priority, {ESA_DATA_PARAMETERS_NAMES}.Priorityid_param)
@@ -407,7 +406,6 @@ feature -- Access
 			l_answer_salt, l_password_salt, l_answer_hash, l_password_hash: STRING
 			l_security: ESA_SECURITY_PROVIDER
 			l_parameters: HASH_TABLE[ANY,STRING_32]
-			l_int: INTEGER
 		do
 			create l_security
 			l_answer_salt := l_security.salt
@@ -457,10 +455,12 @@ feature -- Access
 		local
 			l_parameters: STRING_TABLE [ANY]
 		do
+			log.write_information ( generator+".all_categories" )
 			create l_parameters.make (0)
 			db_handler.set_query (create {ESA_DATABASE_QUERY}.data_reader (Select_categories, l_parameters))
 			db_handler.execute_query
 			create Result.make (db_handler, agent new_report_category )
+			log.write_information ( generator+".all_categories After Execute" )
 		end
 
 	classes: ESA_DATABASE_ITERATION_CURSOR[ESA_REPORT_CLASS]
@@ -1029,7 +1029,6 @@ feature -- Basic Operations
 			-- Upload attachment in temporary table for temporary report `a_report_id'
 		local
 			l_parameters: HASH_TABLE[ANY,STRING_32]
-			l_content_hexa: STRING
 		do
 			connect
 			create l_parameters.make (4)
@@ -1615,10 +1614,10 @@ feature -- Queries
 	Select_problem_reports_template: STRING = "[
 				SELECT Number, Synopsis, ProblemReportCategories.CategorySynopsis, SubmissionDate, StatusID
 			 FROM (
-			    SELECT TOP (:RowsPerPage)
+			    SELECT TOP :RowsPerPage
 				   Number, Synopsis, ProblemReportCategories.CategorySynopsis, SubmissionDate, StatusID, PAG.CategoryID
 			    FROM (
-				SELECT TOP ((:PageNumber)*:RowsPerPage) 
+				SELECT TOP :Offset
 				Number, Synopsis, ProblemReportCategories.CategorySynopsis, SubmissionDate, StatusID, ProblemReports.CategoryID
 				FROM ProblemReports
 			    INNER JOIN ProblemReportCategories ON ProblemReportCategories.CategoryID = ProblemReports.CategoryID 
@@ -1641,7 +1640,7 @@ feature -- Queries
 					 PAG2.StatusID, PAG2.Description,
 					 PAG2.Username as 'DisplayName',
 					 PAG2.ResponsibleID, PAG2.Username
-				FROM (SELECT TOP (:RowsPerPage)  
+				FROM (SELECT TOP :RowsPerPage  
 				     PAG.Number, PAG.Synopsis, SubmissionDate,
 					 PAG.Release, PAG.PriorityID,
 					 PAG.CategorySynopsis, PAG.SeverityID,
@@ -1651,7 +1650,7 @@ feature -- Queries
 					 PAG.CategoryID,
 					 PAG.ReportID,
 					 PAG.ContactID	
-					FROM (SELECT TOP ((:PageNumber)*:RowsPerPage) 
+					FROM (SELECT TOP :Offset
 					     ProblemReports.Number, ProblemReports.Synopsis, SubmissionDate = ProblemReports.LastActivityDate,
 						 ProblemReports.Release, ProblemReports.PriorityID,
 						 ProblemReportCategories.CategorySynopsis, ProblemReports.SeverityID,
@@ -1722,10 +1721,10 @@ feature -- Queries
 
 	Select_problem_reports_by_user_template: STRING = "[
 			SELECT Number, Synopsis, PAG2.CategorySynopsis, SubmissionDate, StatusID
-			 FROM(SELECT TOP (:RowsPerPage)
+			 FROM(SELECT TOP :RowsPerPage
 				Number, Synopsis, PAG.CategorySynopsis, SubmissionDate, StatusID
 			FROM (
-				SELECT TOP ((:PageNumber)*:RowsPerPage)
+				SELECT TOP :Offset
 				Number, Synopsis, ProblemReportCategories.CategorySynopsis, SubmissionDate, StatusID,
 				ProblemReports.CategoryID, ProblemReports.ContactID
 				FROM ProblemReports

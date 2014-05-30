@@ -49,9 +49,11 @@ feature -- Functionality
 					disconnect
 				end
 				set_successful
+				log.write_debug ( generator+".execute_reader Successful")
 			end
 		rescue
 			set_last_error_from_exception ("Store procedure execution")
+			log.write_critical (generator+ ".execute_reader " + last_error_message)
 			if is_connected then
 				disconnect
 			end
@@ -74,7 +76,6 @@ feature -- Functionality
 					create l_db_change.make
 					db_update := l_db_change
 					l_store.execute_writer (l_db_change)
-					to_implement ("Handling Error")
 					if not l_store.has_error then
 						db_control.commit
 					end
@@ -83,9 +84,11 @@ feature -- Functionality
 					disconnect
 				end
 				set_successful
+				log.write_debug ( generator+".execute_writer Successful")
 			end
 		rescue
 			set_last_error_from_exception ("Store procedure execution")
+			log.write_critical (generator+ ".execute_writer " + last_error_message)
 			if is_connected then
 				disconnect
 			end
@@ -111,14 +114,49 @@ feature -- SQL Queries
 					db_selection := l_db_selection
 					items := l_query.execute_reader (l_db_selection)
 				end
-
 				if not keep_connection then
 					disconnect
 				end
 				set_successful
+				log.write_debug ( generator+".execute_query Successful")
 			end
 		rescue
 			set_last_error_from_exception ("Query execution")
+			log.write_critical (generator+ ".execute_query " + last_error_message)
+			if is_connected then
+				disconnect
+			end
+			l_retried := True
+			retry
+		end
+
+
+	execute_change
+			-- Execute sqlquery that update/add data
+		local
+			l_db_change: DB_CHANGE
+			l_retried : BOOLEAN
+		do
+		    if not  l_retried then
+				if not keep_connection and not is_connected then
+					connect
+				end
+
+				if attached query as l_query then
+					create l_db_change.make
+					db_update := l_db_change
+					l_query.execute_change (l_db_change)
+					db_control.commit
+				end
+				if not keep_connection then
+					disconnect
+				end
+				set_successful
+				log.write_debug ( generator+".execute_change Successful")
+			end
+		rescue
+			set_last_error_from_exception ("Store procedure execution")
+			log.write_critical (generator+ ".execute_writer " + last_error_message)
 			if is_connected then
 				disconnect
 			end

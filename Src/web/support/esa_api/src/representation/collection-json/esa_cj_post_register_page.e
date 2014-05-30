@@ -19,9 +19,6 @@ feature {NONE} --Initialization
 
 	make (a_host: READABLE_STRING_GENERAL; a_user: detachable ANY)
 			-- Initialize `Current'.
-		local
-			l_item: STRING
-			l_report: ESA_REPORT
 		do
 			set_template_folder (cj_path)
 			set_template_file_name ("cj_post_register.tpl")

@@ -10,17 +10,17 @@
     "links": [
             <
                 "href": "{$host/}/reports",
-                "rel": "collection",
+                "rel": "all",
                 "prompt": "Reports"
             >,
             <
-                "href": "http://alps.io/iana/relations.xml",
+                "href": "{$host/}/profile/esa_api.xml",
                 "rel": "profile"
             >,
             {if isset="$user"}
             <
                 "href": "{$host/}/report_form",
-                "rel": "create-form",
+                "rel": "create-report-form",
                 "prompt": "Report a Problem"
             >,
             <
@@ -32,7 +32,12 @@
           ],
       "items": [
                <
-                 "href": "{$host/}/report_detail/{$form.report.number/}/interaction_form/{$id/}", 
+                   {if isset="$id"} 
+                        "href": "{$host/}/report_detail/{$form.report.number/}/interaction_form/{$id/}", 
+                    {/if}
+                    {unless isset="$id"}
+                          "href": "{$host/}/report_detail/{$form.report.number/}/interaction_form",
+                    {/unless}  
                  "data": [
 
                     <
@@ -118,9 +123,9 @@
                    
                   ],
             "links": [
-                        <"rel":"collection", "href": "{$host/}/report_detail/{$report.number/}/interactions", "prompt": "List of Report Interactions">,
-                        <"rel":"collection", "href": "{$host/}/categories", "prompt": "List of Report Categories">,
-                        <"rel":"collection", "href": "{$host/}/status", "prompt": "List of Report Status">
+                        <"rel":"all", "href": "{$host/}/report_detail/{$report.number/}/interactions", "prompt": "List of Report Interactions">,
+                        <"rel":"all", "href": "{$host/}/categories", "prompt": "List of Report Categories">,
+                        <"rel":"all", "href": "{$host/}/status", "prompt": "List of Report Status">
                     ]  
                 >
             ],
@@ -131,7 +136,8 @@
         <"name": "category", "prompt": "Category", "value" : "{$form.category/}">, 
         <"name": "status", "prompt": "Status", "value" : "{$form.selected_status/}">,
         <"name": "private", "prompt": "Private", "value" : "{$form.private/}">,
-        <"name": "description", "prompt": "Description","value" : "{$form.description/}">
+        <"name": "description", "prompt": "Description","value" : "{$form.description/}">,
+         <"name" : "attachments", "files" : [{foreach from="$uploaded_files", item="file"} <"name":"{$file.name/}", "value":"">,{/foreach}] , "prompt" : "Attachments">
       ]
       >
     {/if}
@@ -142,7 +148,8 @@
         <"name": "category", "prompt": "Category", "value" : "">, 
         <"name": "status", "prompt": "Status", "value" : "">,
         <"name": "private", "prompt": "Private", "value" : "">,
-        <"name": "description", "prompt": "Description", "value" : "">
+        <"name": "description", "prompt": "Description", "value" : "">,
+        <"name" : "attachments", "files" : [<>] , "prompt" : "Attachments">
       ]
       >
     {/unless}

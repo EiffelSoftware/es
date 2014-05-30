@@ -126,7 +126,18 @@ feature -- Analysis interface
 
 			create l_task.make (l_rules_checker, l_rules_to_check, classes_to_analyze, agent analysis_completed)
 			l_task.set_output_actions (output_actions)
-			rota.run_task (l_task)
+			if attached rota as l_rota then
+				rota.run_task (l_task)
+			else
+					-- No ROTA task is available, we execute the task synchronously.
+				from
+
+				until
+					not l_task.has_next_step
+				loop
+					l_task.step
+				end
+			end
 		end
 
 	is_rule_checkable (a_rule: attached CA_RULE): BOOLEAN
@@ -251,7 +262,7 @@ feature {NONE} -- Implementation
 		local
 			l_csv_writer: CA_CSV_WRITER
 		do
-			create l_csv_writer.make (csv_file_name, csv_header)
+			create l_csv_writer.make (eiffel_project.project_location.target_path.extended (csv_file_name), csv_header)
 
 			across rules as l_rules loop
 				across l_rules.item.violations as l_v loop
@@ -365,23 +376,25 @@ feature {NONE} -- Class-wide Options (From Indexing Clauses)
 			l_item: STRING_32
 		do
 			across a_clause as ic loop
-				if ic.item.tag.name_32.is_equal ("ca_ignoredby") then
-						-- Class wants to ignore certain rules.
-					across ic.item.index_list as l_list loop
-						l_item := l_list.item.string_value_32
-						l_item.prune_all ('%"')
-						a_ignoredby.extend (l_item)
-					end
-				elseif ic.item.tag.name_32.is_equal ("ca_library") then
-						-- Class has information on whether it is a library class.
-					if not ic.item.index_list.is_empty then
-						l_item := ic.item.index_list.first.string_value_32
-						l_item.to_lower
-						l_item.prune_all ('%"')
-						if l_item.is_equal ("true") then
-							library_class.force (True, a_class)
-						elseif l_item.is_equal ("false") then
-							nonlibrary_class.force (True, a_class)
+				if attached ic.item.tag as l_tag then
+					if l_tag.name_32.same_string_general ("ca_ignoredby") then
+							-- Class wants to ignore certain rules.
+						across ic.item.index_list as l_list loop
+							l_item := l_list.item.string_value_32
+							l_item.prune_all ('%"')
+							a_ignoredby.extend (l_item)
+						end
+					elseif l_tag.name_32.is_equal ("ca_library") then
+							-- Class has information on whether it is a library class.
+						if not ic.item.index_list.is_empty then
+							l_item := ic.item.index_list.first.string_value_32
+							l_item.to_lower
+							l_item.prune_all ('%"')
+							if l_item.is_equal ("true") then
+								library_class.force (True, a_class)
+							elseif l_item.is_equal ("false") then
+								nonlibrary_class.force (True, a_class)
+							end
 						end
 					end
 				end

@@ -68,8 +68,6 @@ feature -- Access
 			disconnect
 		end
 
-
-
 	token_from_username (a_username: READABLE_STRING_32): detachable STRING
 			-- Activation token for user with username `a_username', if any.
 		require
@@ -153,6 +151,7 @@ feature -- Access
 		local
 			l_parameters: HASH_TABLE [ANY, STRING_32]
 		do
+			log.write_information (generator+".security_questions Execute store procedure GetSecurityQuestions.")
 			create l_parameters.make (0)
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_reader ("GetSecurityQuestions", l_parameters))
 			db_handler.execute_reader
@@ -174,7 +173,6 @@ feature -- Access
 			if not db_handler.after then
 				db_handler.start
 				Result := db_handler.read_string (1)
-				to_implement ("handle error: No results - Security question retrieval")
 			end
 			disconnect
 		end
@@ -234,7 +232,7 @@ feature -- Access
 			disconnect
 		end
 
-	user_information (a_username: STRING): detachable ESA_USER
+	user_information (a_username: STRING): ESA_USER_INFORMATION
 			-- Full user information from username
 		require
 			attached_username: a_username /= Void
@@ -248,7 +246,9 @@ feature -- Access
 			db_handler.execute_reader
 			if not db_handler.after then
 				db_handler.start
-				Result := new_user_information
+				Result := new_user_account_information (a_username)
+			else
+				create Result.make (a_username)
 			end
 			disconnect
 		end
@@ -282,6 +282,30 @@ feature -- Element Settings
 			create l_parameters.make (1)
 			l_parameters.put (string_parameter (a_token, 7), {ESA_DATA_PARAMETERS_NAMES}.registrationtoken_param)
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_writer ("RemoveRegistrationToken", l_parameters))
+			db_handler.execute_writer
+			disconnect
+		end
+
+	update_password (a_email: STRING; a_password: STRING)
+			-- Update password of user with email `a_email'.
+		require
+			attached_email: a_email /= Void
+			attached_password: a_password /= Void
+		local
+			l_security: ESA_SECURITY_PROVIDER
+			l_password_salt, l_password_hash: STRING
+			l_parameters: HASH_TABLE [ANY, STRING_32]
+		do
+			create l_security
+			l_password_salt := l_security.salt
+			l_password_hash := l_security.password_hash (a_password, l_password_salt)
+
+			connect
+			create l_parameters.make (3)
+			l_parameters.put (string_parameter (a_email, 100), {ESA_DATA_PARAMETERS_NAMES}.email_param)
+			l_parameters.put (string_parameter (l_password_hash, 40), {ESA_DATA_PARAMETERS_NAMES}.passwordhash_param)
+			l_parameters.put (string_parameter (l_password_salt, 24), {ESA_DATA_PARAMETERS_NAMES}.passwordsalt_param)
+			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_writer ("UpdatePasswordFromEmail", l_parameters))
 			db_handler.execute_writer
 			disconnect
 		end
@@ -345,6 +369,76 @@ feature -- Factories
 			end
 		end
 
+	new_user_account_information (a_user_name: STRING): ESA_USER_INFORMATION
+			-- Build a new user account information from.
+		do
+			create Result.make (a_user_name)
+			if attached db_handler.read_string (1) as l_first_name then
+				Result.set_first_name (l_first_name)
+			end
+			if attached db_handler.read_string (2) as l_last_name then
+				Result.set_last_name (l_last_name)
+			end
+			if attached db_handler.read_string (3) as l_email then
+				Result.set_email (l_email)
+			end
+			if attached db_handler.read_string (4) as l_address then
+				Result.set_address (l_address)
+			end
+			if attached db_handler.read_string (5) as l_city then
+				Result.set_city (l_city)
+			end
+			if attached db_handler.read_string (6) as l_region then
+				Result.set_region (l_region)
+			end
+			if attached db_handler.read_string (7) as l_postal_code then
+				Result.set_postal_code (l_postal_code)
+			end
+			if attached db_handler.read_string (8) as l_country then
+				Result.set_country (l_country)
+			end
+			if attached db_handler.read_string (9) as l_phone then
+				Result.set_telephone (l_phone)
+			end
+			if attached db_handler.read_string (10) as l_fax then
+				Result.set_fax (l_fax)
+			end
+			if attached db_handler.read_string (11) as l_position then
+				Result.set_position (l_position)
+			end
+			if attached db_handler.read_string (12) as l_organization_name then
+				Result.set_organization_name (l_organization_name)
+			end
+			if attached db_handler.read_string (13) as l_organization_email then
+				Result.set_organization_email (l_organization_email)
+			end
+			if attached db_handler.read_string (14) as l_organization_url then
+				Result.set_organization_url (l_organization_url)
+			end
+			if attached db_handler.read_string (15) as l_organization_address then
+				Result.set_organization_address (l_organization_address)
+			end
+			if attached db_handler.read_string (16) as l_organization_city then
+				Result.set_organization_city (l_organization_city)
+			end
+			if attached db_handler.read_string (17) as l_organization_region then
+				Result.set_organization_region (l_organization_region)
+			end
+			if attached db_handler.read_string (18) as l_organization_postal_code then
+				Result.set_organization_postal_code (l_organization_postal_code)
+			end
+			if attached db_handler.read_string (19) as l_organization_country then
+				Result.set_organization_country (l_organization_country)
+			end
+			if attached db_handler.read_string (20) as l_organization_phone then
+				Result.set_organization_telephone (l_organization_phone)
+			end
+			if attached db_handler.read_string (21) as l_organization_fax then
+				Result.set_organization_country (l_organization_fax)
+			end
+
+		end
+
 feature -- Status Report
 
 	is_active (a_username: STRING): BOOLEAN
@@ -395,7 +489,7 @@ feature -- Status Report
 			attached_email: a_email /= Void
 			attached_token: a_token /= Void
 		local
-			l_res, l_token: detachable STRING
+			l_token: detachable STRING
 		do
 			l_token := token_from_email (a_email)
 			if l_token = Void then
@@ -408,6 +502,7 @@ feature -- Status Report
 				end
 			elseif a_token.same_string (l_token) then
 				remove_token (l_token)
+				set_successful
 				Result := True
 			else
 				set_last_error ("Specified token does not match one sent.", "Activation validation")

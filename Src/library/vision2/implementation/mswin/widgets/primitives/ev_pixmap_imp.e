@@ -438,7 +438,7 @@ feature {EV_ANY_I} -- Delegated features
 			attached_interface.implementation.set_pebble (a_pebble)
 		end
 
-	set_pebble_function (a_function: FUNCTION [ANY, TUPLE, ANY])
+	set_pebble_function (a_function: FUNCTION [ANY, TUPLE, detachable ANY])
 			-- Set `a_function' to compute `pebble'.
 		do
 			promote_to_widget
@@ -973,7 +973,7 @@ feature {EV_ANY_I} -- Delegated features
 			attached_interface.implementation.set_pointer_style (c)
 		end
 
-	internal_set_pointer_style (c: detachable EV_POINTER_STYLE)
+	internal_set_pointer_style (c: EV_POINTER_STYLE)
 			-- Assign `c' to cursor pixmap.
 			-- Only called from implementation.
 		do
@@ -1990,7 +1990,7 @@ invariant
 			l_private_cursor.reference_tracked
 
 note
-	copyright:	"Copyright (c) 1984-2013, Eiffel Software and others"
+	copyright:	"Copyright (c) 1984-2014, Eiffel Software and others"
 	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

@@ -948,7 +948,8 @@ feature {NONE} -- Roundtrip
 				l_vpir.set_location (l_as.body.start_location)
 				error_handler.insert_error (l_vpir)
 				reset_types
-			elseif is_byte_node_enabled then
+			elseif is_byte_node_enabled or else has_untyped_local then
+					-- TODO: Move creation of a new `{FEATURE_I}' object to an earlier stage to avoid the dependency on code generation.
 					-- This is the first place, where inline agents are looked at as features.
 					-- They are ignored by degree 2. So a new FEATURE_I has to be created
 				create l_feature_names.make (1)
@@ -1670,7 +1671,7 @@ feature {NONE} -- Implementation
 										l_formal_arg_type := l_formal_arg_type.formal_instantiation_in (l_last_type.as_implicitly_detachable, l_last_constrained.as_implicitly_detachable, l_last_id).actual_type
 
 											-- check if `l_formal_arg_type' involves some generics whose actuals
-											-- are marked `variant'. only do this when `is_inherited' is false, since
+											-- are marked `variant'. Only do this when `is_inherited' is false, since
 											-- all descendants are checked in `check_cat_call'.
 										if
 											not is_inherited and then is_qualified and then
@@ -1930,6 +1931,19 @@ feature {NONE} -- Implementation
 								end
 							end
 
+							if is_qualified and then attached last_type then
+									-- If result type is declared frozen, then it keeps its status only if target is frozen.
+									-- Also if `last_type' is expanded or frozen or if the routine is frozen, we know for sure
+									-- there will not be any redeclaration so we can keep the `frozen' status of the query.
+								if
+									not (a_type.is_frozen or a_type.is_expanded or (attached a_type.base_class as l_class and then l_class.is_frozen)) and then
+									(l_feature.type.is_frozen and not l_feature.is_frozen)
+								then
+										-- Remove frozen status of type.
+									set_type (last_type.as_variant_free, a_name)
+								end
+							end
+
 							if l_needs_byte_node then
 								if l_generated_result_type = Void then
 									l_generated_result_type := last_type
@@ -2101,6 +2115,7 @@ feature {NONE} -- Type checks
 			if not formal_type.backward_conform_to (current_class, actual_type) then
 				if
 					(not is_inherited and then
+					is_frozen_type_compatible (actual_type, formal_type, True) and then
 					actual_type.convert_to (current_class, formal_type.deep_actual_type))
 				then
 				elseif
@@ -2110,6 +2125,8 @@ feature {NONE} -- Type checks
 				else
 					Result := vuar2_error (callee, target_base_class_id, argument_number, actual_type, formal_type, location)
 				end
+			elseif not is_frozen_type_compatible (actual_type, formal_type, False) then
+				Result := vuar2_error (callee, target_base_class_id, argument_number, actual_type, formal_type, location)
 			elseif warning_count /= error_handler.warning_list.count then
 				error_handler.warning_list.last.set_location (location)
 			end
@@ -3424,220 +3441,245 @@ feature {NONE} -- Visitor
 			l_check_count: like maximum_inference_count
 			old_is_byte_node_enabled: BOOLEAN
 			had_untyped_local: BOOLEAN
+			l_untyped_local: like untyped_local
+			retried: BOOLEAN
 		do
-			f := current_feature
-			l_needs_byte_node := is_byte_node_enabled
-				-- Request freeze if there are too many arguments some of which are separate.
-				-- ("interp.c" uses "EIF_NATURAL_64" to keep track of uncontrolled arguments,
-				-- so if there are more arguments, freeze is requested.)
-			if l_needs_byte_node and then f.argument_count > 64 and then f.has_separate_arguments then
-				system.request_freeze
-			end
-			l_error_level := error_level
-
-				-- Remember current scope state
-			s := context.scope
-
-				-- Check if some arguments are attached because of an inherited precondition.
-				-- Avoid doing it when there are no inherited preconditions.
-			if context.current_class.lace_class.is_void_safe_conformance and then
-				not (f.has_precondition and then f.assert_id_set = Void)
-			then
-				create precondition_scope.make (f, context)
-			end
-
-				-- Check local variables before checking precondition because local count is used to initialize the structures.
-			if l_as.locals /= Void then
-				check_locals (l_as)
-				l_has_invalid_locals := error_level /= l_error_level
-			end
-				-- Initialize structures to record local scopes.
-				-- This should be done after checking locals that sets their count.
-			context.init_local_scopes
-
-				-- Check preconditions
-			if l_as.precondition /= Void then
-					-- Set Result access analysis level to `is_checking_precondition': locals
-					-- and Result cannot be found in preconditions
-				set_is_checking_precondition (True)
-				l_as.precondition.process (Current)
-				if l_needs_byte_node then
-					l_assertion_byte_code ?= last_byte_node
+			if not retried then
+				f := current_feature
+				l_needs_byte_node := is_byte_node_enabled
+					-- Request freeze if there are too many arguments some of which are separate.
+					-- ("interp.c" uses "EIF_NATURAL_64" to keep track of uncontrolled arguments,
+					-- so if there are more arguments, freeze is requested.)
+				if l_needs_byte_node and then f.argument_count > 64 and then f.has_separate_arguments then
+					system.request_freeze
 				end
-					-- Reset the levels to default values
-				set_is_checking_precondition (False)
-			end
+				l_error_level := error_level
 
-			l_rescue := l_as.rescue_clause
-			if
-				 attached l_rescue and then
-				(l_as.routine_body.is_deferred or else l_as.routine_body.is_external)
-			then
-					-- A deferred or external feature cannot have a rescue clause.
-				create l_vxrc
-				context.init_error (l_vxrc)
-				l_vxrc.set_deferred (l_as.routine_body.is_deferred)
-				l_vxrc.set_location (l_rescue.start_location)
-				error_handler.insert_error (l_vxrc)
-			end
+					-- Remember current scope state
+				s := context.scope
 
-			from
-				if l_has_invalid_locals then
-						-- Do not check code with invalid locals.
-					-- l_check_count := 0
-				elseif has_untyped_local then
-						-- Compute type of locals and then do real type-checking.
-						-- The maxium inference count is increased by 1 to take the real code generation pass into account.
-					l_check_count := maximum_inference_count + 1
-					old_is_byte_node_enabled := l_needs_byte_node
-					is_byte_node_enabled := False
-					l_needs_byte_node := False
-				else
-						-- All locals are declated with types, do normal type checks.
-					l_check_count := 1
-				end
-			until
-				l_check_count = 0
-			loop
-				l_check_count := l_check_count - 1
-				if attached l_rescue and then not l_as.routine_body.is_built_in then
-						-- Make it possible to remove variable scopes so that
-						-- rescue clause can be processed in a state where only
-						-- variable scopes started in the precondition are recorded.
-						-- Built-in features are not handled in this way, because
-						-- the scope information is cleaned when they are processed.
-					context.enter_realm
-				end
-					-- Avoid relying on the body when checking postcondition.
-				if l_as.postcondition /= Void then
-					context.enter_realm
-				end
-					-- Check body
-				l_as.routine_body.process (Current)
-				if l_needs_byte_node and then error_level = l_error_level then
-					l_byte_code ?= last_byte_node
-					l_byte_code.set_precondition (l_assertion_byte_code)
-				end
-
-				l_feat_type := f.type
-				if l_feat_type.is_initialization_required then
-						-- Verify that result is properly set in internal routine if required.
-					if
-						not l_as.is_external and then
-						not l_as.is_attribute and then
-						not context.local_initialization.is_result_set and then
-						not f.is_deferred and then
-						is_void_safe_initialization (context.current_class)
-					then
-							-- Result is not properly initialized.
-						error_handler.insert_error (create {VEVI}.make_result (context, l_as.end_keyword))
-					end
-				elseif
-					l_as.is_attribute and then
-					not l_as.routine_body.is_empty and then
-					not is_inherited and then
-					context.current_class.is_warning_enabled (w_vwab)
+					-- Check if some arguments are attached because of an inherited precondition.
+					-- Avoid doing it when there are no inherited preconditions.
+				if context.current_class.lace_class.is_void_safe_conformance and then
+					not (f.has_precondition and then f.assert_id_set = Void)
 				then
-						-- Warn that the attribute has a non-empty body that is never executed.
-					error_handler.insert_warning (create {VWAB}.make (l_as.routine_body.start_location, context))
+					create precondition_scope.make (f, context)
 				end
-					-- Check postconditions
-				if l_as.postcondition /= Void then
-						-- Revert to the state just after a precondition.
-					context.leave_optional_realm
-						-- Set access id level analysis to `is_checking_postcondition': locals
-						-- are not taken into account
-					set_is_checking_postcondition (True)
-					if l_feat_type.is_initialization_required and then not context.local_initialization.is_result_set then
-						context.set_result
-					end
-					if l_feat_type.is_attached then
-						context.add_result_instruction_scope
-					end
-					l_as.postcondition.process (Current)
-					if l_needs_byte_node and then error_level = l_error_level then
+
+					-- Check local variables before checking precondition because local count is used to initialize the structures.
+				if l_as.locals /= Void then
+					check_locals (l_as)
+					l_untyped_local := untyped_local
+					l_has_invalid_locals := error_level /= l_error_level
+				end
+					-- Initialize structures to record local scopes.
+					-- This should be done after checking locals that sets their count.
+				context.init_local_scopes
+
+					-- Check preconditions
+				if l_as.precondition /= Void then
+						-- Set Result access analysis level to `is_checking_precondition': locals
+						-- and Result cannot be found in preconditions
+					set_is_checking_precondition (True)
+					l_as.precondition.process (Current)
+					if l_needs_byte_node then
 						l_assertion_byte_code ?= last_byte_node
-						l_byte_code.set_postcondition (l_assertion_byte_code)
 					end
-					if l_feat_type.is_attached then
-						context.remove_result_scope
-					end
-						-- Reset the level
-					set_is_checking_postcondition (False)
+						-- Reset the levels to default values
+					set_is_checking_precondition (False)
 				end
-				if attached l_rescue then
-					if not l_as.routine_body.is_built_in then
-							-- Ensure the variable scopes do not affect rescue clause.
-						context.leave_optional_realm
-					end
-						-- Set mark of context.
-					is_in_rescue := True
-						-- Remove any previously started local scopes.
-					context.init_local_scopes
-					process_compound (l_rescue)
-					if l_needs_byte_node and then error_level = l_error_level then
-						l_list ?= last_byte_node
-						l_byte_code.set_rescue_clause (l_list)
-					end
-					is_in_rescue := False
+
+				l_rescue := l_as.rescue_clause
+				if
+					 attached l_rescue and then
+					(l_as.routine_body.is_deferred or else l_as.routine_body.is_external)
+				then
+						-- A deferred or external feature cannot have a rescue clause.
+					create l_vxrc
+					context.init_error (l_vxrc)
+					l_vxrc.set_deferred (l_as.routine_body.is_deferred)
+					l_vxrc.set_location (l_rescue.start_location)
+					error_handler.insert_error (l_vxrc)
 				end
-				if has_untyped_local then
-						-- Compute types of local variables.
-						-- Uncomputed types are allowed if this is not the last iteration.
-					resolve_locals (l_check_count > 1)
-						-- Adjust inference count if there are no more untyped locals during this and previous iteration.
-					if not has_untyped_local then
-							-- Check if all local types were resolved at the previous step.
-							-- Perform one more iteration to make sure the fixed point is reached.
-							-- Set `has_untyped_local' to `True' to be able to call `resolve_locals'.
+
+				from
+					if l_has_invalid_locals then
+							-- Do not check code with invalid locals.
+						-- l_check_count := 0
+					elseif attached l_untyped_local then
+							-- Compute type of locals and then do real type-checking.
 						has_untyped_local := True
-						if not had_untyped_local then
-								-- Assign real types to locals.
-							resolve_locals (False)
-								-- Flag that this is going to be a real pass rather than just type computation.
-							l_check_count := 1
+							-- The maxium inference count is increased by 1 to take the real code generation pass into account.
+						l_check_count := maximum_inference_count + 1
+						old_is_byte_node_enabled := l_needs_byte_node
+						is_byte_node_enabled := False
+						l_needs_byte_node := False
+					else
+							-- All locals are declated with types, do normal type checks.
+						has_untyped_local := False
+						l_check_count := 1
+					end
+				until
+					l_check_count = 0
+				loop
+					l_check_count := l_check_count - 1
+					if attached l_rescue and then not l_as.routine_body.is_built_in then
+							-- Make it possible to remove variable scopes so that
+							-- rescue clause can be processed in a state where only
+							-- variable scopes started in the precondition are recorded.
+							-- Built-in features are not handled in this way, because
+							-- the scope information is cleaned when they are processed.
+						context.enter_realm
+					end
+						-- Avoid relying on the body when checking postcondition.
+					if l_as.postcondition /= Void then
+						context.enter_realm
+					end
+						-- Check body
+					l_as.routine_body.process (Current)
+					if l_needs_byte_node and then error_level = l_error_level then
+						l_byte_code ?= last_byte_node
+						l_byte_code.set_precondition (l_assertion_byte_code)
+					end
+
+					l_feat_type := f.type
+					if l_feat_type.is_initialization_required then
+							-- Verify that result is properly set in internal routine if required.
+						if
+							not l_as.is_external and then
+							not l_as.is_attribute and then
+							not context.local_initialization.is_result_set and then
+							not f.is_deferred and then
+							is_void_safe_initialization (context.current_class)
+						then
+								-- Result is not properly initialized.
+							error_handler.insert_error (create {VEVI}.make_result (context, l_as.end_keyword))
+						end
+					elseif
+						l_as.is_attribute and then
+						not l_as.routine_body.is_empty and then
+						not is_inherited and then
+						context.current_class.is_warning_enabled (w_vwab)
+					then
+							-- Warn that the attribute has a non-empty body that is never executed.
+						error_handler.insert_warning (create {VWAB}.make (l_as.routine_body.start_location, context))
+					end
+						-- Check postconditions
+					if l_as.postcondition /= Void then
+							-- Revert to the state just after a precondition.
+						context.leave_optional_realm
+							-- Set access id level analysis to `is_checking_postcondition': locals
+							-- are not taken into account
+						set_is_checking_postcondition (True)
+						if l_feat_type.is_initialization_required and then not context.local_initialization.is_result_set then
+							context.set_result
+						end
+						if l_feat_type.is_attached then
+							context.add_result_instruction_scope
+						end
+						l_as.postcondition.process (Current)
+						if l_needs_byte_node and then error_level = l_error_level then
+							l_assertion_byte_code ?= last_byte_node
+							l_byte_code.set_postcondition (l_assertion_byte_code)
+						end
+						if l_feat_type.is_attached then
+							context.remove_result_scope
+						end
+							-- Reset the level
+						set_is_checking_postcondition (False)
+					end
+					if attached l_rescue then
+						if not l_as.routine_body.is_built_in then
+								-- Ensure the variable scopes do not affect rescue clause.
+							context.leave_optional_realm
+						end
+							-- Set mark of context.
+						is_in_rescue := True
+							-- Remove any previously started local scopes.
+						context.init_local_scopes
+						process_compound (l_rescue)
+						if l_needs_byte_node and then error_level = l_error_level then
+							l_list ?= last_byte_node
+							l_byte_code.set_rescue_clause (l_list)
+						end
+						is_in_rescue := False
+					end
+					if has_untyped_local then
+							-- Compute types of local variables.
+							-- Uncomputed types are allowed if this is not the last iteration.
+						resolve_locals (l_check_count > 1, l_untyped_local)
+							-- Adjust inference count if there are no more untyped locals during this and previous iteration.
+						if not has_untyped_local then
+								-- Check if all local types were resolved at the previous step.
+								-- Perform one more iteration to make sure the fixed point is reached.
+								-- Set `has_untyped_local' to `True' to be able to call `resolve_locals'.
+							has_untyped_local := True
+							if not had_untyped_local then
+									-- Assign real types to locals if this is not done yet.
+								if l_check_count > 1 then
+									resolve_locals (False, l_untyped_local)
+								end
+									-- Flag that this is going to be a real pass rather than just type computation.
+								l_check_count := 1
+							end
+								-- Record last status of untyped locals.
+								-- If there are no untyped locals during 2 iterations then the fixed-point is reached.
+							had_untyped_local := False
+						else
+								-- Record last status of untyped locals.
+							had_untyped_local := True
+						end
+						if l_check_count = 1 then
 								-- Restore code generation flags.
 							is_byte_node_enabled := old_is_byte_node_enabled
 							l_needs_byte_node := old_is_byte_node_enabled
+								-- Terminate the loop without generating code at the last iteration
+								-- for the feature with untyped locals.
+							l_check_count := 0
 						end
-							-- Record last status of untyped locals.
-							-- If there are no untyped locals during 2 iterations then the fixed-point is reached.
-						had_untyped_local := False
-					else
-							-- Record last status of untyped locals.
-						had_untyped_local := True
 					end
+				variant
+					(l_check_count + 1).to_integer_32
 				end
-			variant
-				(l_check_count + 1).to_integer_32
+
+
+					-- Revert to the original scope state
+				context.set_scope (s)
+
+					-- Check for unused locals only when there is no errors otherwise it
+					-- is confusing to get a warning for something that might be incorrect.
+				if
+					not l_has_invalid_locals and then
+					l_as.locals /= Void and then error_level = l_error_level and then
+					context.current_class.is_warning_enabled (w_unused_local) and then
+					not is_inherited
+				then
+					check_unused_locals (context.locals)
+				end
+
+				if error_level = l_error_level then
+					if l_needs_byte_node then
+						context.init_byte_code (l_byte_code)
+						if old_expressions /= Void and then old_expressions.count > 0 then
+							l_byte_code.set_old_expressions (old_expressions)
+						end
+						l_byte_code.set_end_location (l_as.end_location)
+						l_byte_code.set_once_manifest_string_count (l_as.once_manifest_string_count)
+						last_byte_node := l_byte_code
+					end
+					l_as.set_number_of_breakpoint_slots (break_point_slot_count)
+				end
 			end
-
-
-				-- Revert to the original scope state
-			context.set_scope (s)
-
-				-- Check for unused locals only when there is no errors otherwise it
-				-- is confusing to get a warning for something that might be incorrect.
+		rescue
 			if
-				not l_has_invalid_locals and then
-				l_as.locals /= Void and then error_level = l_error_level and then
-				context.current_class.is_warning_enabled (w_unused_local) and then
-				not is_inherited
+				not retried and then
+				not error_handler.rescue_status.is_error_exception and then
+				attached l_untyped_local
 			then
-				check_unused_locals (context.locals)
-			end
-
-			if error_level = l_error_level then
-				if l_needs_byte_node then
-					context.init_byte_code (l_byte_code)
-					if old_expressions /= Void and then old_expressions.count > 0 then
-						l_byte_code.set_old_expressions (old_expressions)
-					end
-					l_byte_code.set_end_location (l_as.end_location)
-					l_byte_code.set_once_manifest_string_count (l_as.once_manifest_string_count)
-					last_byte_node := l_byte_code
-				end
-				l_as.set_number_of_breakpoint_slots (break_point_slot_count)
+					-- Report errors for untyped locals.
+				resolve_locals (False, l_untyped_local)
+				retried := True
+				retry
 			end
 		end
 
@@ -5249,7 +5291,7 @@ feature {NONE} -- Visitor
 						if not l_conforming then
 								-- Report a warning (when enabled) except when comparing against
 								-- Void if the other operand is expanded. That is to say it will
-								-- not report an error for `a = Void' and `Void = a' if 
+								-- not report an error for `a = Void' and `Void = a' if
 								-- `a' is not expanded.
 							if
 								current_feature.written_in = context.current_class.class_id and then
@@ -7097,7 +7139,8 @@ feature {NONE} -- Visitor
 				if
 					l_constraint_type = Void or else (
 					not l_constraint_type.is_integer and then not l_constraint_type.is_character and then
-					not l_constraint_type.is_natural and then not l_constraint_type.is_enum)
+					not l_constraint_type.is_natural and then not l_constraint_type.is_enum and then
+					l_constraint_type.is_known)
 				then
 						-- Error
 					create l_vomb1
@@ -7666,8 +7709,13 @@ feature {NONE} -- Visitor
 						-- Lookup for a feature using general feature finder to deal with formal generics correctly.
 					feature_finder.find_by_routine_id (n.rout_id_set.first, iteration_type, context.current_class)
 					if not attached feature_finder.found_feature as f or else not attached feature_finder.found_site as iteration_base_type then
-							-- Iteration expression type does not conform to ITERABLE.
-						error_handler.insert_error (create {VOIT1}.make (context, iteration_type, i.actual_type, local_id))
+							-- Iteration expression type does not conform to ITERABLE because feature "new_cursor" is not found.
+						error_handler.insert_error (create {VOIT1}.make_conformance (context, iteration_type, i.actual_type, local_id))
+							-- Clear `last_type' to make sure it is not set when there is an error.
+						reset_types
+					elseif not iteration_type.is_attached and then is_void_safe_call (context.current_class)  then
+							-- Iteration expression type does not conform to ITERABLE because it is not attached.
+						error_handler.insert_error (create {VOIT1}.make_attachment (context, iteration_type, i.actual_type, local_id))
 							-- Clear `last_type' to make sure it is not set when there is an error.
 						reset_types
 					else
@@ -9437,7 +9485,11 @@ feature {NONE} -- Implementation
 				--|    a VNCE error.
 				--| 2- if target was a BIT type, we should generate a VNCB error.
 			if not l_target_type.backward_conform_to (context.current_class, l_source_type) then
-				if not is_inherited and then l_source_type.convert_to (context.current_class, l_target_type.deep_actual_type) then
+				if
+					not is_inherited and then
+					is_frozen_type_compatible (l_source_type, l_target_type, True) and then
+					l_source_type.convert_to (context.current_class, l_target_type.deep_actual_type)
+				then
 					l_conv_info := context.last_conversion_info
 					is_type_compatible.conversion_info := l_conv_info
 					if l_conv_info.has_depend_unit then
@@ -9464,10 +9516,36 @@ feature {NONE} -- Implementation
 						-- about non-conforming types.
 					is_type_compatible.is_compatible := False
 				end
+			else
+					-- Check that if `target' is frozen, `source' is also frozen.
+				is_type_compatible.is_compatible := is_frozen_type_compatible (l_source_type, l_target_type, False)
 			end
 		ensure
 			last_type_unchanged: last_type = old last_type
 			last_byte_node_not_void: is_byte_node_enabled implies last_byte_node /= Void
+		end
+
+	is_frozen_type_compatible (a_source_type, a_target_type: TYPE_A; a_for_conversion: BOOLEAN): BOOLEAN
+			-- Is `a_source_type' compatible with `a_target_type' with respect to the frozen mark?
+		require
+			a_source_type_not_void: a_source_type /= Void
+			a_target_type_not_void: a_target_type /= Void
+			type_conforms: not a_for_conversion implies a_source_type.conform_to (context.current_class, a_target_type)
+		do
+			if a_target_type.actual_type.has_frozen_mark then
+				if a_source_type.actual_type.is_none then
+						-- Assignment `a := Void' where `a' is frozen detachable,
+						-- this is ok.
+					Result := True
+				elseif a_source_type.actual_type.has_frozen_mark then
+						-- Both source and target are frozen.
+					Result := a_for_conversion or else a_source_type.conformance_type.as_attachment_mark_free.same_type (a_target_type.conformance_type.as_attachment_mark_free)
+				else
+					Result := False
+				end
+			else
+				Result := True
+			end
 		end
 
 	process_assigner_command (a_target_type, a_target_constrained_type: TYPE_A; target_query: FEATURE_I)
@@ -10807,6 +10885,9 @@ feature {NONE} -- Implementation: checking locals
 			-- an argument name of the current analyzed feature.
 			-- Also an external or a deferred routine cannot have
 			-- locals.
+			-- Local variables without type declarations are not reported as an error,
+			-- but are recorded in `untyped_local' instead. If there are no untyped
+			-- local variables, `untyped_local' is detached.
 		require
 			l_as_not_void: l_as /= Void
 			locals_not_void: l_as.locals /= Void
@@ -10822,7 +10903,10 @@ feature {NONE} -- Implementation: checking locals
 			l_vreg: VREG
 			l_curr_feat: FEATURE_I
 			l_vrrr2: VRRR2
+			l_missing_type: detachable MISSING_LOCAL_TYPE_ERROR
+			l_untyped_local: like untyped_local
 		do
+			untyped_local := Void
 			if (l_as.is_deferred or l_as.is_external) then
 				create l_vrrr2
 				context.init_error (l_vrrr2)
@@ -10838,9 +10922,13 @@ feature {NONE} -- Implementation: checking locals
 					l_as.locals.after
 				loop
 					if attached l_as.locals.item.type as l_local_type then
+							-- A type is present.
+						l_missing_type := Void
 						check_type (l_local_type)
 					else
-						has_untyped_local := True
+							-- No type is specified.
+							-- Try to infer it without reporting an error immediately.
+						create l_missing_type.make (l_as.locals.item.id_list, context, l_as.locals.item.first_token (match_list_of_class (context.written_class.class_id)))
 						last_type := void_type
 					end
 					if attached last_type as l_solved_type then
@@ -10880,9 +10968,16 @@ feature {NONE} -- Implementation: checking locals
 							create l_local_info
 								-- Check an expanded local type
 
-							if l_solved_type.is_void then
+							if attached l_missing_type then
 									-- TODO: Add a new standard type descriptor for "detachable separate ANY".
 								l_local_info.set_type (create {LOCAL_TYPE_A}.make (i, system.any_type.as_detachable_type.as_separate, context.current_class))
+									-- Record an error for this local.
+								l_untyped_local := untyped_local
+								if not attached l_untyped_local then
+									create l_untyped_local.make (1)
+									untyped_local := l_untyped_local
+								end
+								l_untyped_local [i] := l_missing_type
 							else
 								l_local_info.set_type (l_solved_type)
 							end
@@ -10917,16 +11012,18 @@ feature {NONE} -- Implementation: checking locals
 			end
 		end
 
-	resolve_locals (is_untyped_local_allowed: BOOLEAN)
+	resolve_locals (is_untyped_local_allowed: BOOLEAN; missing_types: like untyped_local)
 			-- Compute types of untyped locals.
 			-- Update `has_untyped_local' accordingly.
 			-- Allow some locals to remain untyped if `is_untyped_local_allowed'.
+			-- Report `missing_types' errors otherwise, with a fix action if possible.
 		require
 			has_untyped_local
 		local
 			l: LOCAL_INFO
 			r: detachable TYPE_A
 			t: HASH_TABLE [TYPE_A, LOCAL_TYPE_A]
+			u: MISSING_LOCAL_TYPE_ERROR
 		do
 				-- Pretend that all types of locals are resolved now.
 			has_untyped_local := False
@@ -10954,11 +11051,35 @@ feature {NONE} -- Implementation: checking locals
 							-- Prepare type collector for the next iteration.
 						x.reset
 						r := x
-					elseif not attached r or else not r.is_known then
-							-- Record that fixed-point cannot be reached or does not exist.
-							-- The type cannot be computed.
-							-- Force the type to be "NONE".
-						r := none_type
+					else
+						if attached missing_types as m and then attached missing_types [x.position] as e then
+								-- Report the error.
+							error_handler.insert_error (e)
+								-- Remove the error from the list.
+							from
+								missing_types.start
+							until
+								not missing_types.has_item (e)
+							loop
+								missing_types.prune (e)
+							variant
+								missing_types.count + 1
+							end
+								-- Keep the error for reporting a fix option.
+							u := e
+						end
+						if not attached r or else not r.is_known then
+								-- Record that fixed-point cannot be reached or does not exist.
+								-- The type cannot be computed.
+								-- Force the type to be "NONE" for mandatory type inference:
+								--    r := none_type
+								-- Behave as if the type is still unresolved for suggestive type inference.
+							x.reset
+							r := x
+						elseif attached u and then not r.is_none then
+								-- Suggest computed type as a fix.
+							u.set_suggested_type (r)
+						end
 					end
 						-- Update local type information.
 					l.set_type (r)
@@ -10998,6 +11119,11 @@ feature {NONE} -- Implementation: checking locals
 				error_handler.insert_warning (l_warning)
 			end
 		end
+
+	untyped_local: detachable HASH_TABLE [MISSING_LOCAL_TYPE_ERROR, INTEGER]
+			-- Errors about missing type declaration indexed by local indexes.
+			-- Because several locals may be listed in one declaration,
+			-- the same error can appear in the table more than once.
 
 	empty_locals: like {AST_CONTEXT}.locals
 			-- Empty locals that are used when processing inherited assertions.
@@ -11100,7 +11226,7 @@ feature {NONE} -- Implementation: catcall check
 				l_tcat.set_called_feature (a_feature)
 				l_tcat.add_compiler_limitation (a_callee_type)
 				error_handler.insert_error (L_tcat)
-			else
+			elseif not l_descendants.is_empty then
 					-- Loop through all descendants
 				from
 					l_descendants.start
@@ -11140,18 +11266,6 @@ feature {NONE} -- Implementation: catcall check
 							-- Actual type of feature argument
 						l_formal_arg_type := l_formal_arg_type.instantiation_in (l_descendant_type, l_desc_class_id).actual_type
 
-							-- Check if `l_formal_arg_type' involves some generics. If it does then we need to trigger
-							-- an error if target's actual generic are covariant.
-						if l_formal_arg_type.is_variant then
-							if l_tcat = Void then
-								create l_tcat.make (a_location)
-								context.init_error (l_tcat)
-								l_tcat.set_called_feature (a_feature)
-								error_handler.insert_error (l_tcat)
-							end
-							l_tcat.add_covariant_generic_violation
-						end
-
 							-- Check if actual parameter conforms to the possible type of the descendant feature if conformance
 							-- was involved in the original call, otherwise nothing to be done.
 						if not l_arg_type.conform_to (context.current_class, l_formal_arg_type) then
@@ -11163,7 +11277,17 @@ feature {NONE} -- Implementation: catcall check
 								error_handler.insert_error (l_tcat)
 							end
 							l_tcat.add_covariant_argument_violation (l_descendant_type, l_descendant_feature, a_params.i_th (i), i)
+						elseif l_formal_arg_type.is_variant then
+								-- Check if the formal parameter is a formal, then the actual generic parameter has to be frozen.
+							if l_tcat = Void then
+								create l_tcat.make (a_location)
+								context.init_error (l_tcat)
+								l_tcat.set_called_feature (a_feature)
+								error_handler.insert_error (l_tcat)
+							end
+							l_tcat.add_covariant_generic_violation
 						end
+
 						i := i + 1
 					end
 

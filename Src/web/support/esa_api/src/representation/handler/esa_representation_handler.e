@@ -184,6 +184,20 @@ feature -- View
 		deferred
 		end
 
+	interaction_form_confirm_page (req: WSF_REQUEST; res: WSF_RESPONSE; a_report_id: INTEGER; a_id: INTEGER)
+			-- Interaction form confirm page
+		deferred
+		end
+
+
+	reminder_page (req: WSF_REQUEST; res: WSF_RESPONSE; a_error: detachable STRING)
+			-- Reminder page
+		deferred
+		end
+
+	post_reminder_page (req: WSF_REQUEST; res: WSF_RESPONSE; a_email: detachable STRING)
+		deferred
+		end
 
 feature -- Response
 

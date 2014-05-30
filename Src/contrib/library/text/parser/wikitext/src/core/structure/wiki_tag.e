@@ -10,6 +10,8 @@ class
 inherit
 	WIKI_STRING_ITEM
 
+	DEBUG_OUTPUT
+
 create
 	make
 
@@ -57,7 +59,7 @@ feature -- Status report
 		end
 
 note
-	copyright: "2011-2013, Jocelyn Fiat and Eiffel Software"
+	copyright: "2011-2014, Jocelyn Fiat and Eiffel Software"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Jocelyn Fiat

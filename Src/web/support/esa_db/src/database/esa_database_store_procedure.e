@@ -6,6 +6,10 @@ note
 class
 	ESA_DATABASE_STORE_PROCEDURE
 
+inherit
+
+	ESA_SHARED_LOGGER
+
 create
 	data_reader, data_writer
 
@@ -22,17 +26,14 @@ feature -- Intialization
 				proc.set_arguments_32 (a_parameters.current_keys, a_parameters.linear_representation.to_array)
 			end
 			if proc.exists then
-				if proc.text /= Void then
-					debug
-						io.putstring ("Stored procedure text: ")
-						io.putstring (proc.text_32)
-						io.new_line
-					end
+				if proc.text_32 /= Void then
+					log.write_debug ( generator + ".data_reader: " + proc.text_32)
 				end
 			else
 				has_error := True
 				error_message := proc.error_message_32
 				error_code := proc.error_code
+				log.write_error (generator + ".data_witer message:" + proc.error_message_32 + " code:" + proc.error_code.out)
 			end
 		end
 
@@ -45,17 +46,14 @@ feature -- Intialization
 			proc.load
 			proc.set_arguments_32 (a_parameters.current_keys, a_parameters.linear_representation.to_array)
 			if proc.exists then
-				if proc.text /= Void then
-					debug
-						io.putstring ("Stored procedure text: ")
-						io.putstring (proc.text_32)
-						io.new_line
-					end
+				if proc.text_32 /= Void then
+					log.write_debug ( generator + ".data_writer: " + proc.text_32)
 				end
 			else
 				has_error := True
 				error_message := proc.error_message_32
 				error_code := proc.error_code
+				log.write_error (generator + ".data_witer message:" + proc.error_message_32 + " code:" + proc.error_code.out)
 			end
 		end
 

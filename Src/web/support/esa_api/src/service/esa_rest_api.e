@@ -23,8 +23,8 @@ feature -- Initialization
 			configure_api_root
 			configure_api_report
 			configure_api_reports_user
-			configure_api_interaction_confirm
 			configure_api_interaction_report
+			configure_api_interaction_confirm
 			configure_api_report_detail
 			configure_api_report_interaction
 			configure_api_report_form
@@ -38,10 +38,10 @@ feature -- Initialization
 			configure_api_category
 			configure_api_priority
 			configure_api_responsible
+			configure_api_reminder
+			configure_api_logger
 
-			router.handle_with_request_methods ("/doc", create {WSF_ROUTER_SELF_DOCUMENTATION_HANDLER}.make (router), router.methods_GET)
 			create fhdl.make_hidden_with_path (layout.www_path)
-			fhdl.set_directory_index (<<"index.html">>)
 			fhdl.set_not_found_handler (agent  (ia_uri: READABLE_STRING_8; ia_req: WSF_REQUEST; ia_res: WSF_RESPONSE)
 				do
 					execute_default (ia_req, ia_res)
@@ -59,8 +59,8 @@ feature -- Configure Resources Routes
 			create l_root_handler.make (esa_config)
 			create l_methods
 			l_methods.enable_get
-			router.handle_with_request_methods ("", l_root_handler, l_methods) -- IE workaround
 			router.handle_with_request_methods ("/", l_root_handler, l_methods)
+			router.handle_with_request_methods ("", l_root_handler, l_methods) -- Workaround!!!.
 		end
 
 	configure_api_report
@@ -267,6 +267,37 @@ feature -- Configure Resources Routes
 			create l_methods
 			l_methods.enable_get
 			router.handle_with_request_methods ("/report_detail/{report_id}/interaction_confirm/{id}", l_interaction_handler, l_methods)
+
+			create l_methods
+			l_methods.enable_post
+			router.handle_with_request_methods ("/report_detail/{report_id}/interaction_confirm", l_interaction_handler, l_methods)
 		end
+
+
+	configure_api_reminder
+		local
+			l_reminder_handler: ESA_REMINDER_HANDLER
+			l_methods: WSF_REQUEST_METHODS
+		do
+			create l_reminder_handler.make (esa_config)
+			create l_methods
+			l_methods.enable_get
+			l_methods.enable_post
+			router.handle_with_request_methods ("/reminder", l_reminder_handler, l_methods)
+		end
+
+
+	configure_api_logger
+		local
+			l_logger_handler: ESA_LOGGER_HANDLER
+			l_methods: WSF_REQUEST_METHODS
+		do
+			create l_logger_handler.make (esa_config)
+			create l_methods
+			l_methods.enable_get
+			l_methods.enable_post
+			router.handle_with_request_methods ("/logger", l_logger_handler, l_methods)
+		end
+
 
 end

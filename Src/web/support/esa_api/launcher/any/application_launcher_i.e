@@ -13,25 +13,26 @@ deferred class
 	APPLICATION_LAUNCHER_I
 
 inherit
+
 	SHARED_EXECUTION_ENVIRONMENT
 
 feature -- Execution
 
 	launch (a_service: WSF_SERVICE; opts: detachable WSF_SERVICE_LAUNCHER_OPTIONS)
 		local
-			nature: like launcher_nature
+--			nature: like launcher_nature
 		do
-			nature := launcher_nature
-			if nature = Void or else nature = nature_nino then
-				launch_nino (a_service, opts)
-			elseif nature = nature_cgi then
-				launch_cgi (a_service, opts)
-			elseif nature = nature_libfcgi then
+--			nature := launcher_nature
+--			if nature = Void or else nature = nature_nino then
+--				launch_nino (a_service, opts)
+--			elseif nature = nature_cgi then
+--				launch_cgi (a_service, opts)
+--			elseif nature = nature_libfcgi then
 				launch_libfcgi (a_service, opts)
-			else
-				-- bye bye
-				(create {EXCEPTIONS}).die (-1)
-			end
+--			else
+--				-- bye bye
+--				(create {EXCEPTIONS}).die (-1)
+--			end
 		end
 
 feature {NONE} -- Access
@@ -43,12 +44,11 @@ feature {NONE} -- Access
 			--| and we could use WSF_DEFAULT_SERVICE_LAUNCHER to configure this at compilation time.
 		local
 			p: PATH
-			l_entry_name: READABLE_STRING_32
 			ext: detachable READABLE_STRING_32
 		do
 			create p.make_from_string (execution_environment.arguments.command_name)
 			if attached p.entry as l_entry then
-				ext := l_entry.extension 
+				ext := l_entry.extension
 			end
 			if ext /= Void then
 				if ext.same_string (nature_nino) then

@@ -21,23 +21,36 @@ inherit
 			default_create
 		end
 
+create
+	make_at_location,
+	default_create
+
 feature {NONE} -- Creation
 
 	default_create
-			-- Create an instance of {LOG_WRITER_FILE}.
+			-- Create an instance of {LOG_WRITER_FILE}
+			-- Create a default log file called `system.log' using the current working location `a_path'	
 		local
-			p: PATH
+			l_path: PATH
 		do
-			create p.make_from_string ("system.log")
-			p := p.absolute_path
-			path := p
-			create log_file.make_with_path (p)
+			create l_path.make_current
+			l_path := l_path.extended ("system.log")
+			make_at_location (l_path)
+		ensure then
+			default_log_level_set: log_level = Log_error
+		end
 
-				-- Date/time object that is reseeded to now every time `write' is called
+	make_at_location (a_file: PATH)
+			-- Create log file using the location `a_file'.
+		do
+			log_level := Log_error
+			path := a_file
+			create log_file.make_with_path (a_file)
+
+				-- Date/time object that is reseeded to now every time `write' is called.
 			create date_time.make_now_utc
-
-				-- Call set_path in case it is redefined in descendant.
-			set_path (p)
+		ensure
+			default_log_level_set: log_level = Log_error
 		end
 
 feature {LOG_LOGGING_FACILITY} -- Initialization
@@ -105,7 +118,7 @@ feature -- Status Report
 
 feature {LOG_LOGGING_FACILITY} -- Output
 
-	write (priority: INTEGER; msg: STRING)
+	do_write (priority: INTEGER; msg: STRING)
 			-- Write `msg' under `priority' to the `log_file' also noting the
 			-- current date and time, and adding a newline character if needed
 		do

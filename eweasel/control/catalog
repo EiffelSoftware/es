@@ -529,6 +529,7 @@ test	missing-assigner-feature		valid276 tcf pass validity fixed
 test	insufficiently-exported-assigner-feature valid277 tcf fail validity assigner
 test	invalid-static-inspect-constant	 	valid278 tcf pass validity
 test	wrong-tuple-type-in-descendants	valid279 tcf fail validity
+test	bogus-vjar-error			valid280 tcf pass validity anchored_type
 
 -- Multiple error reporting tests
 test	multi-error-degree-4	multierr001 tcf pass multi-errors
@@ -1917,6 +1918,8 @@ test	agent-in-postcondition			term208 tcf pass termination agents
 test	long-string-constants-crash		term209 tcf pass termination
 test	empty-class-file-crash			term210 tcf pass termination
 test	root-class-none				term211 tcf fail termination
+test	bad-library-class			term212 tcf fail termination
+test	across-on-tuple				term213 tcf pass termination across iteration
 
 -- Config
 
@@ -2675,6 +2678,7 @@ test	object-test-local-in-implication	attach108 tcf pass void_safe object_test l
 test	object-test-local-in-conditional        attach109 tcf pass void_safe object_test local scope conditional expression
 test	initialization-in-conditional		attach110 tcf pass void_safe attached_types attribute scope validity conditional expression
 test	targeted-in-structure-classes		attach111 tcf pass void_safe targeted validity
+test	iteration-loop-target-attachment	attach112 tcf pass void_safe validity across iteration loop
 
 -- Tests for conformance in general
 test	basic-conformance		conform001 tcf pass conformance
@@ -2776,20 +2780,23 @@ test	qat-dotnet-failure-2		anchor073 tcf pass anchored_type dotnet
 test	qat-dotnet-failure-3		anchor074 tcf pass anchored_type dotnet
 test	qat-on-dotnet-external-failure	anchor075 tcf pass anchored_type dotnet
 test	anchor-to-anchor-lose-named-tuple	anchor076 tcf pass anchored_type tuple
+test	qualified-anchor-expansion	anchor077 tcf pass anchored_type
+test	qualified-anchor-expansion-2	anchor078 tcf pass anchored_type
 
 -- Type inference
-test	inference-single-lower-bound	inference001 tcf pass inference
-test	inference-multiple-lower-bound	inference002 tcf fail inference
-test	inference-untyped-call-target	inference003 tcf pass inference
-test	inference-direct-dependency	inference004 tcf pass inference
-test	inference-creation-instruction	inference005 tcf pass inference
-test	inference-recursive-tuple	inference006 tcf fail inference
-test	inference-formal-generic	inference007 tcf pass inference formal generic
-test	inference-implicit-typing	inference008 tcf pass inference object_test across iteration
-test	inference-boolean-expression	inference009 tcf pass inference across iteration conditional expression check instruction loop invariant
-test	inference-manifest-array	inference010 tcf pass inference
+test	inference-single-lower-bound	inference001 tcf pass used_to_pass inference
+test	inference-multiple-lower-bound	inference002 tcf pass inference
+test	inference-untyped-call-target	inference003 tcf pass used_to_pass inference
+test	inference-direct-dependency	inference004 tcf pass used_to_pass inference
+test	inference-creation-instruction	inference005 tcf pass used_to_pass inference
+test	inference-recursive-tuple	inference006 tcf pass inference
+test	inference-formal-generic	inference007 tcf pass used_to_pass inference formal generic
+test	inference-implicit-typing	inference008 tcf pass used_to_pass inference object_test across iteration
+test	inference-boolean-expression	inference009 tcf pass used_to_pass inference across iteration conditional expression check instruction loop invariant
+test	inference-manifest-array	inference010 tcf pass used_to_pass inference
 test	inference-agent-expression	inference011 tcf fail inference agents
-test	inference-untyped-agent-target	inference012 tcf fail inference agents
+test	inference-untyped-agent-target	inference012 tcf pass inference agents
+test	inference-inspect-instruction	inference013 tcf pass inference
 
 -- SCOOP
 test	scoop-access-smoke				scoop001 tcf pass scoop multithreaded execution

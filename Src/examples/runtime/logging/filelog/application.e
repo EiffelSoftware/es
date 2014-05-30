@@ -29,12 +29,15 @@ feature {NONE} -- Initialization
 				--| Enable log output to go to the default file
 			log.enable_default_file_log
 
+				--| Enable debug log level
+			log.default_log_writer_file.enable_debug_log_level
+
 				--| Write an informational message
 			log.write_information ("The application is starting up...")
 
 			create claptrap.make_from_string ("no_joy.log")
-			create l_my_file_log_writer
-			l_my_file_log_writer.set_path (claptrap)
+			create l_my_file_log_writer.make_at_location (claptrap)
+			l_my_file_log_writer.enable_debug_log_level
 			log.register_log_writer (l_my_file_log_writer)
 			if l_my_file_log_writer.has_errors then
 				log.enable_default_stderr_log

@@ -15,7 +15,8 @@ inherit
 			sub_system_name,
 			is_using_unix_switch_style,
 			switch_prefixes,
-			help_switch
+			help_switch,
+			version_switch
 		end
 
 	IRON_ARGUMENT_PARSER_I
@@ -41,6 +42,11 @@ feature -- Change
 	set_is_using_builtin_switches (b: BOOLEAN)
 		do
 			is_using_builtin_switches := b
+		end
+
+	set_is_case_sensitive (b: BOOLEAN)
+		do
+			is_case_sensitive := b
 		end
 
 note

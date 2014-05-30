@@ -115,7 +115,7 @@ feature -- Project file/directory warnings
 							locale.translation (
 			"The project needs to use the following iron packages, which has not been installed.%N%
 			%(packages: %"$1%")%N%
-			%Should the iron packages be installed?"),
+			%Should the iron packages (and their dependencies) be installed?"),
 							[s]
 						)
 		end
@@ -947,13 +947,13 @@ feature -- Warning messages
 
 	w_fix_undo_warning: STRING_32
 		do
-			Result := locale.translation (
+			Result := locale.translation_in_context (
 				"[
-					Applying selected fixes causes changes to the source code that cannot be undone.
+					Applying selected fixes causes changes to the source code that cannot be undone automatically.
 					
 					Click Yes to apply fixes.
-					Click No to abort.
-				]")
+					Click Cancel to abort.
+				]", "fix")
 		end
 
 	w_target_name_attribute_expected: STRING_32 do Result := locale.translation ("TARGET name attribute expected") end

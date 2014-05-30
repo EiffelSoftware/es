@@ -32,7 +32,8 @@ inherit
 	LOCALIZED_PRINTER
 		rename
 			print as print_any,
-			localized_print as print
+			localized_print as print,
+			localized_print_error as print_error
 		end
 
 create
@@ -43,7 +44,6 @@ feature {NONE} -- Initialization
 	make
 			-- Initialize `Current'.
 		local
-			cmd: READABLE_STRING_32
 			task: detachable IRON_TASK
 			iron: IRON
 			cmd_task: IRON_COMMAND_TASK
@@ -52,26 +52,31 @@ feature {NONE} -- Initialization
 			initialize_iron (iron)
 
 			if argument_count > 0 then
-				cmd := argument (1)
-				task := task_by_name (cmd, task_arguments (argument_array))
-				if task = Void then
-					create cmd_task.make (command_task_arguments (argument_array))
-					if cmd_task.is_available (iron) then
-						task := cmd_task
-					end
+				create cmd_task.make (command_task_arguments (argument_array))
+				if cmd_task.is_available (iron) then
+					task := cmd_task
+				else
+					task := task_by_name (argument (1), task_arguments (argument_array))
 				end
 			end
 
 			if task /= Void then
 				task.process (iron)
 			else
-				io.error.put_string ("Usage: command ...%N")
+				print_error (iron_executable_name)
+				print_error (" - Version: ")
+				print_error (iron_version)
+				print_error ("%N")
+				print_error ("Copyright ")
+				print_error (iron_copyright)
+				print_error ("%N%N")
+				print_error ("Usage: command ...%N")
 				across
 					tasks as c
 				loop
-					io.error.put_string ("%T " + c.key.to_string_8 + " : " + c.item.description.to_string_8 + "%N")
+					print_error ("%T " + c.key.to_string_8 + " : " + c.item.description.to_string_8 + "%N")
 				end
-				io.error.put_string ("note: command {action} --help: gives specific help usage on action {action}.%N")
+				print_error ("note: command {action} --help: gives specific help usage on action {action}.%N")
 			end
 		end
 
@@ -141,17 +146,23 @@ feature {NONE} -- Initialization
 		once
 			create Result.make_caseless (7 + 1)
 
-			Result.force ([agent (args: like task_arguments): IRON_UPDATE_TASK   do create Result.make (args) end, "Update package information.."], "update")
-			Result.force ([agent (args: like task_arguments): IRON_LIST_TASK    do create Result.make (args) end, "list packages.."], "list")
-			Result.force ([agent (args: like task_arguments): IRON_SEARCH_TASK  do create Result.make (args) end, "search package"], "search")
-			Result.force ([agent (args: like task_arguments): IRON_INFO_TASK    do create Result.make (args) end, "information about a package"], "info")
-			Result.force ([agent (args: like task_arguments): IRON_PATH_TASK    do create Result.make (args) end, "output the installation folder for a package (if installed)"], "path")
-			Result.force ([agent (args: like task_arguments): IRON_INSTALL_TASK do create Result.make (args) end, "install package"], "install")
-			Result.force ([agent (args: like task_arguments): IRON_REMOVE_TASK  do create Result.make (args) end, "remove a package"], "remove")
+			Result.force ([agent (args: like task_arguments): IRON_UPDATE_TASK   do create Result.make (args) end, "Update package information.."], {IRON_UPDATE_TASK}.name)
+			Result.force ([agent (args: like task_arguments): IRON_LIST_TASK    do create Result.make (args) end, "list packages.."], {IRON_LIST_TASK}.name)
+			Result.force ([agent (args: like task_arguments): IRON_SEARCH_TASK  do create Result.make (args) end, "search package"], {IRON_SEARCH_TASK}.name)
+			Result.force ([agent (args: like task_arguments): IRON_INFO_TASK    do create Result.make (args) end, "information about a package"], {IRON_INFO_TASK}.name)
+			Result.force ([agent (args: like task_arguments): IRON_PATH_TASK    do create Result.make (args) end, "output the installation folder for a package (if installed)"], {IRON_PATH_TASK}.name)
+			Result.force ([agent (args: like task_arguments): IRON_INSTALL_TASK do create Result.make (args) end, "install package"], {IRON_INSTALL_TASK}.name)
+			Result.force ([agent (args: like task_arguments): IRON_REMOVE_TASK  do create Result.make (args) end, "remove a package"], {IRON_REMOVE_TASK}.name)
 
-			Result.force ([agent (args: like task_arguments): IRON_REPOSITORY_TASK  do create Result.make (args) end, "manage repository list"], "repository")
-			Result.force ([agent (args: like task_arguments): IRON_SHARE_TASK  do create Result.make (args) end, "share and manage your package (auth required)"], "share")
+			Result.force ([agent (args: like task_arguments): IRON_REPOSITORY_TASK  do create Result.make (args) end, "manage repository list"], {IRON_REPOSITORY_TASK}.name)
+			Result.force ([agent (args: like task_arguments): IRON_SHARE_TASK  do create Result.make (args) end, "share and manage your package (auth required)"], {IRON_SHARE_TASK}.name)
+
 			Result.force ([agent (args: like task_arguments): IRON_COMMAND_TASK  do create Result.make (args) end, "extension command for iron"], "command")
+
+				-- Specific commands.
+			Result.force ([agent (args: like task_arguments): IRON_UPDATE_PACKAGE_FILE_TASK  do create Result.make (args) end, "create or update package.iron file for a folder."], {IRON_UPDATE_PACKAGE_FILE_TASK}.name)
+			Result.force ([agent (args: like task_arguments): IRON_UPDATE_ECF_TASK  do create Result.make (args) end, "Update the given Eiffel Configuration File (.ecf) to use IRON references."], {IRON_UPDATE_ECF_TASK}.name)
+
 
 			debug ("iron")
 				Result.force ([agent (args: like task_arguments): IRON_TESTING_TASK    do create Result.make (args) end, "Testing.."], "testing")
@@ -165,6 +176,25 @@ feature -- Access
 			create Result.make_default
 		end
 
+feature -- Constants access
+
+	iron_executable_name: IMMUTABLE_STRING_32
+			-- Associated executable name.
+		once
+			Result := (create {IRON_CONSTANTS}).copyright
+		end
+
+	iron_copyright: IMMUTABLE_STRING_32
+			-- Associated copyright.
+		once
+			Result := (create {IRON_CONSTANTS}).copyright
+		end
+
+	iron_version: IMMUTABLE_STRING_32
+			-- Associated version.
+		once
+			Result := (create {IRON_CONSTANTS}).version
+		end
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software"

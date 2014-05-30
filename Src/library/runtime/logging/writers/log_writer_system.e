@@ -44,6 +44,7 @@ feature {NONE} -- Creation
 	default_create
 			-- Create system logger.
 		do
+			log_level := Log_error
 				-- This is the default name for logging.
 			application_name := "EiffelSyslog"
 			options := Log_ndelay + Log_pid
@@ -52,6 +53,8 @@ feature {NONE} -- Creation
 			else
 				facility := Log_local6
 			end
+		ensure then
+			default_log_level_set: log_level = Log_error
 		end
 
 feature {LOG_LOGGING_FACILITY} -- Initialization
@@ -136,7 +139,7 @@ feature -- Status Report
 
 feature {LOG_LOGGING_FACILITY} -- Output
 
-	write (priority: INTEGER; msg: STRING)
+	do_write (priority: INTEGER; msg: STRING)
 			-- Write `msg' under `priority' to `io.error' also noting the
 			-- current date and time, and adding a newline character if needed
 		do
@@ -252,14 +255,14 @@ feature {NONE} -- Externals
 		end
 
 note
-	copyright:	"Copyright (C) 2010 by ITPassion Ltd, Eiffel Software and others"
-	license:	"Eiffel Forum License v2 (See http://www.eiffel.com/licensing/forum.txt)"
+	copyright:	"Copyright (c) 1984-2014, Eiffel Software and others"
+	license:	"Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source:		"[
-					ITPassion Ltd.
-					5 Anstice Close, Chiswick, Middlesex, W4 2RJ, United Kingdom
-					Telephone 0044-208-742-3422 Fax 0044-208-742-3468
-					Website http://www.itpassion.com
-					Customer Support http://powerdesk.itpassion.com
-				]"
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 
 end

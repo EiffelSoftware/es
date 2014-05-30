@@ -6,6 +6,9 @@ note
 class
 	ESA_HANDLER
 
+inherit
+
+	ESA_SHARED_LOGGER
 
 feature -- User
 
@@ -40,5 +43,46 @@ feature -- Media Type
 				Result := l_type
 			end
 		end
+
+	absolute_host (req: WSF_REQUEST; a_path:STRING): STRING
+		do
+			Result := req.absolute_script_url (a_path)
+			if Result.last_index_of ('/', Result.count) = Result.count then
+				Result.remove_tail (1)
+			end
+			log.write_debug (generator + ".absolute_host " + Result )
+		end
+
+feature {NONE} -- Implementations
+
+		append_iterable_to (a_title: READABLE_STRING_8; it: detachable ITERABLE [WSF_VALUE]; s: STRING_8)
+			local
+				n: INTEGER
+			do
+				if it /= Void then
+					across it as c loop
+						n := n + 1
+					end
+					if n > 0 then
+						s.append (a_title)
+						s.append_character (':')
+						s.append_character ('%N')
+						across
+							it as c
+						loop
+							s.append ("  - ")
+							s.append (c.item.url_encoded_name)
+							s.append_character (' ')
+							s.append_character ('{')
+							s.append (c.item.generating_type)
+							s.append_character ('}')
+							s.append_character ('=')
+							s.append (c.item.debug_output.as_string_8)
+							s.append_character ('%N')
+						end
+					end
+				end
+			end
+
 
 end

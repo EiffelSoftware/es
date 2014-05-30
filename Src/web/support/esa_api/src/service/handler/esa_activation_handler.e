@@ -56,6 +56,7 @@ feature -- HTTP Methods
 		do
 			create l_rhf
 			if attached current_media_type (req) as l_type then
+				log.write_information (generator + ".do_get Procesing Request using media_type: " + l_type)
 		    		-- Activation Form
 		    	create l_activation_view
 				l_rhf.new_representation_handler (esa_config,l_type,media_type_variants (req)).activation_page (req, res, l_activation_view)
@@ -73,6 +74,7 @@ feature -- HTTP Methods
 		do
 			create l_rhf
 			if attached current_media_type (req) as l_type then
+				log.write_information (generator + ".do_post Procesing Request using media_type: " + l_type)
 				l_activation_view := extract_data_from_request (req, l_type)
 				if l_activation_view.is_valid_form and then
 					attached l_activation_view.email as l_email and then
@@ -99,8 +101,6 @@ feature -- HTTP Methods
 	extract_data_from_request (req: WSF_REQUEST; a_type: READABLE_STRING_32): ESA_ACTIVATION_VIEW
 			-- Is the form data populated?
 			-- Create a new activation view object based on request parameters, if any
-		local
-				l_parser: JSON_PARSER
 		do
 
 			if a_type.same_string ("application/vnd.collection+json") then
