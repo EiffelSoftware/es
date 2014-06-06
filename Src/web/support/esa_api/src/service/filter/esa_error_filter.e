@@ -29,7 +29,7 @@ feature -- Basic operations
 				media_variants: HTTP_ACCEPT_MEDIA_TYPE_VARIANTS
 				l_rhf: ESA_REPRESENTATION_HANDLER_FACTORY
 		do
-			if esa_config.is_successful and then esa_config.api_service.is_successful then
+			if esa_config.is_successful and then esa_config.api_service.successful then
 				log.write_information (generator + ".execute")
 				execute_next (req, res)
 

@@ -23,6 +23,7 @@ feature -- Initialization
 			-- Create a data provider
 		do
 			create {ESA_DATABASE_HANDLER_IMPL} db_handler.make (a_connection)
+			post_execution
 		end
 
 	db_handler: ESA_DATABASE_HANDLER
@@ -47,6 +48,7 @@ feature -- Access
 			db_handler.set_query (create {ESA_DATABASE_QUERY}.data_reader (Select_countries, l_parameters))
 			db_handler.execute_query
 			create Result.make (db_handler, agent new_country)
+			post_execution
 		end
 
 	token_from_email (a_email: READABLE_STRING_32): detachable STRING
@@ -66,6 +68,7 @@ feature -- Access
 				Result := db_handler.read_string (1)
 			end
 			disconnect
+			post_execution
 		end
 
 	token_from_username (a_username: READABLE_STRING_32): detachable STRING
@@ -85,6 +88,7 @@ feature -- Access
 				Result := db_handler.read_string (1)
 			end
 			disconnect
+			post_execution
 		end
 
 	membership_creation_date (a_username: STRING): detachable DATE_TIME
@@ -104,6 +108,7 @@ feature -- Access
 				Result := db_handler.read_date_time (1)
 			end
 			disconnect
+			post_execution
 		end
 
 	role (a_username: STRING): detachable STRING
@@ -124,6 +129,7 @@ feature -- Access
 				to_implement ("handle error: User not found - Retrieval of user role")
 			end
 			disconnect
+			post_execution
 		end
 
 	role_description (a_synopsis: STRING): detachable STRING
@@ -144,6 +150,7 @@ feature -- Access
 				to_implement ("handle error: Role not found -  Retrieval of role description")
 			end
 			disconnect
+			post_execution
 		end
 
 	security_questions: ESA_DATABASE_ITERATION_CURSOR [ESA_SECURITY_QUESTION]
@@ -156,6 +163,7 @@ feature -- Access
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_reader ("GetSecurityQuestions", l_parameters))
 			db_handler.execute_reader
 			create Result.make (db_handler, agent new_security_question)
+			post_execution
 		end
 
 	question_from_email (a_email: STRING): detachable STRING
@@ -175,6 +183,7 @@ feature -- Access
 				Result := db_handler.read_string (1)
 			end
 			disconnect
+			post_execution
 		end
 
 	user_creation_date (a_username: STRING): detachable DATE_TIME
@@ -192,6 +201,7 @@ feature -- Access
 				Result := db_handler.read_date_time (1)
 			end
 			disconnect
+			post_execution
 		end
 
 	user_from_email (a_email: STRING): detachable TUPLE [first_name: STRING; last_name: STRING; user_name: STRING]
@@ -211,6 +221,7 @@ feature -- Access
 				Result := new_user
 			end
 			disconnect
+			post_execution
 		end
 
 	user_from_username (a_username: STRING): detachable ESA_USER
@@ -230,6 +241,7 @@ feature -- Access
 				Result := new_user_username
 			end
 			disconnect
+			post_execution
 		end
 
 	user_information (a_username: STRING): ESA_USER_INFORMATION
@@ -251,6 +263,7 @@ feature -- Access
 				create Result.make (a_username)
 			end
 			disconnect
+			post_execution
 		end
 
 feature -- Element Settings
@@ -268,6 +281,7 @@ feature -- Element Settings
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_writer ("RemoveUser", l_parameters))
 			db_handler.execute_writer
 			disconnect
+			post_execution
 		end
 
 
@@ -284,6 +298,7 @@ feature -- Element Settings
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_writer ("RemoveRegistrationToken", l_parameters))
 			db_handler.execute_writer
 			disconnect
+			post_execution
 		end
 
 	update_password (a_email: STRING; a_password: STRING)
@@ -308,8 +323,85 @@ feature -- Element Settings
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_writer ("UpdatePasswordFromEmail", l_parameters))
 			db_handler.execute_writer
 			disconnect
+			post_execution
 		end
 
+	update_email_from_user_and_token (a_token: STRING; a_user: STRING)
+			-- Update email of user with email `a_email'.
+		local
+			l_parameters: HASH_TABLE [ANY, STRING_32]
+		do
+			connect
+			create l_parameters.make (2)
+			l_parameters.put (string_parameter (a_user, 50), {ESA_DATA_PARAMETERS_NAMES}.Username_param)
+			l_parameters.put (string_parameter (a_token, 50), {ESA_DATA_PARAMETERS_NAMES}.Token_param)
+			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_writer ("UpdateEmailFromUserAndToken", l_parameters))
+			db_handler.execute_writer
+			disconnect
+			post_execution
+		end
+
+
+	update_personal_information (a_username: STRING; a_first_name, a_last_name, a_position, a_address, a_city, a_country, a_region, a_code, a_tel, a_fax: detachable STRING)
+			-- Update personal information of user with username `a_username'.
+		local
+			l_parameters: HASH_TABLE [ANY, STRING_32]
+		do
+			connect
+			create l_parameters.make (11)
+			l_parameters.put (string_parameter (a_username, 50), {ESA_DATA_PARAMETERS_NAMES}.Username_param)
+			if attached a_first_name then
+				l_parameters.put (string_parameter (a_first_name, 50), {ESA_DATA_PARAMETERS_NAMES}.Firstname_param)
+			end
+			if attached a_last_name then
+				l_parameters.put (string_parameter (a_last_name, 50), {ESA_DATA_PARAMETERS_NAMES}.Lastname_param)
+			end
+			if attached a_position then
+				l_parameters.put (string_parameter (a_position, 50), {ESA_DATA_PARAMETERS_NAMES}.Position_param)
+			end
+			if attached a_address then
+				l_parameters.put (string_parameter (a_address, 500), {ESA_DATA_PARAMETERS_NAMES}.Address_param)
+			end
+			if attached a_city then
+				l_parameters.put (string_parameter (a_city, 50), {ESA_DATA_PARAMETERS_NAMES}.City_param)
+			end
+			if attached a_country then
+				l_parameters.put (string_parameter (a_country, 50), {ESA_DATA_PARAMETERS_NAMES}.Country_param)
+			end
+	   		if attached a_region then
+	   			l_parameters.put (string_parameter (a_region, 100), {ESA_DATA_PARAMETERS_NAMES}.Region_param)
+			end
+	   		if attached a_code then
+				l_parameters.put (string_parameter (a_code, 50), {ESA_DATA_PARAMETERS_NAMES}.Code_param)
+			end
+	   		if attached a_tel then
+	   			l_parameters.put (string_parameter (a_tel, 50), {ESA_DATA_PARAMETERS_NAMES}.Tel_param)
+ 			end
+	   		if attached a_fax then
+				l_parameters.put (string_parameter (a_fax, 50), {ESA_DATA_PARAMETERS_NAMES}.Fax_param)
+ 			end
+
+			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_writer ("UpdatePersonalInformation", l_parameters))
+			db_handler.execute_writer
+			disconnect
+			post_execution
+		end
+
+	change_user_email (a_user: READABLE_STRING_32; a_new_email: READABLE_STRING_32; a_token: READABLE_STRING_32)
+			-- Change User email.
+		local
+			l_parameters: HASH_TABLE [ANY, STRING_32]
+		do
+			connect
+			create l_parameters.make (3)
+			l_parameters.put (string_parameter (a_user, 50), {ESA_DATA_PARAMETERS_NAMES}.Username_param)
+			l_parameters.put (string_parameter (a_new_email, 150), {ESA_DATA_PARAMETERS_NAMES}.Email_param)
+			l_parameters.put (string_parameter (a_token, 24), {ESA_DATA_PARAMETERS_NAMES}.Token_param)
+			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_writer ("ChangeUserEmail", l_parameters))
+			db_handler.execute_writer
+			disconnect
+			post_execution
+		end
 
 feature -- Factories
 
@@ -510,6 +602,28 @@ feature -- Status Report
 			end
 		end
 
+	email_token_age (a_token: STRING; a_user: STRING): TUPLE[age:INTEGER; email: detachable STRING]
+		local
+			l_parameters: HASH_TABLE[ANY,STRING_32]
+		do
+			create Result.default_create
+			connect
+			create l_parameters.make (2)
+			l_parameters.put (string_parameter (a_user, 50), {ESA_DATA_PARAMETERS_NAMES}.Username_param)
+			l_parameters.put (a_token, {ESA_DATA_PARAMETERS_NAMES}.Token_param)
+			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_reader ("GetEmailTokenAge", l_parameters))
+			db_handler.execute_reader
+			if not db_handler.after then
+				db_handler.start
+				if db_handler.read_integer_32 (1) /= -1 then
+					Result.age := db_handler.read_integer_32 (1)
+					Result.email :=	db_handler.read_string (2)
+				else
+					Result.age := -1
+				end
+			end
+			disconnect
+		end
 
 feature -- Connection
 
@@ -535,5 +649,19 @@ feature -- Queries
 		-- SQL Query to retrieve all countries
 
 	tuple_user: detachable TUPLE [first_name: STRING; last_name: STRING; user_name: STRING]
+
+
+feature {NONE} -- Implementation
+
+	post_execution
+		do
+			if db_handler.successful then
+				set_successful
+			else
+				if attached db_handler.last_error then
+					set_last_error_from_handler (db_handler.last_error)
+				end
+			end
+		end
 
 end

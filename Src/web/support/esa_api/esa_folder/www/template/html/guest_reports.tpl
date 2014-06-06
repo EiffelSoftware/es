@@ -1,3 +1,4 @@
+
 <div class="row">
    <div class="col-lg-8">
      <form  class="form-inline well" action="{$host/}/report_detail/" id="reports" method="GET" itemprop="search">
@@ -8,9 +9,8 @@
 </div>
 
 
-
 <div class="row">
-   <div class="col-lg-8">
+   <div class="col-lg-12">
     {if isset="$user"}
      <form  class="form-inline well" action="{$host/}/user_reports/{$user/}" id="search" method="GET" itemprop="search">
     {/if}
@@ -18,7 +18,7 @@
      <form  class="form-inline well" action="{$host/}/reports" id="search" method="GET" itemprop="search">
     {/unless} 
       <div class="col-md-4">
-       <label class="control-label" for="input01" itemprop="category">Category</label>
+       <label class="control-label" for="input01" itemprop="category" data-original-title="The name of the product, component or concept where the problem lies. In order to get the best possible support, please select the category carefully.">Category</label>
        <select class="form-control"  data-style="btn-primary" name="category" form="search" itemprop="search">
         <option value="0">ALL</option>
         {foreach from="$categories" item="item"}
@@ -32,7 +32,7 @@
       </select>
     </div>   
      <div class="col-md-4">
-       <label class="control-label" for="input01" itemprop="status">Status</label>
+       <label class="control-label" for="input01" itemprop="status"  data-original-title="The status of a problem can be one of the following: Open - Analyzed - Closed - Suspended - Won't Fix">Status</label>
        <select class="form-control" data-style="btn-primary" name="status" form="search">
         <option value="0">ALL</option>
         {foreach from="$status" item="item"}
@@ -52,7 +52,7 @@
 
 <h2 class="sub-header">Problem Reports</h2>
           <div class="table-responsive">
-            <table class="table table-striped">
+            <table class="table table-bordered">
               <thead>
                 <tr>
                   <th>#
@@ -111,10 +111,10 @@
 
                {foreach from="$reports" item="item"}
                   <tr>
-                       <td itemprop="report-number"><a href="{$host/}/report_detail/{$item.number/}" itemprop="report-interaction" rel="report-interaction">{$item.number/}</a></td>
+                       <td itemprop="report_number"><a href="{$host/}/report_detail/{$item.number/}" itemprop="report_interaction" rel="report-interaction">{$item.number/}</a></td>
                        <td itemprop="status">{$item.status.id/}</td>
                        <td itemprop="synopsis">{$item.synopsis/}</td>
-                       <td itemprop="submission-date">{$item.submission_date/}</td>
+                       <td itemprop="submission_date">{$item.submission_date/}</td>
                        <td itemprop="category">{$item.category.synopsis/}</td>
                 </tr>
               {/foreach}
@@ -148,4 +148,5 @@
           </div>
        </div>
 
-</divt
+  </div>
+</div>

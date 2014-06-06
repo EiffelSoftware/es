@@ -23,18 +23,12 @@ feature -- Initialization
 			-- Create a data provider with connection `a_connection'
 		do
 			create {ESA_DATABASE_HANDLER_IMPL} db_handler.make (a_connection)
+			post_execution
 		end
 
 	db_handler: ESA_DATABASE_HANDLER
 		-- Db handler
 
-feature -- Status Report
-
-	is_successful: BOOLEAN
-			-- Is the last execution sucessful?
-		do
-			Result := db_handler.successful
-		end
 
 feature -- Access
 
@@ -56,6 +50,7 @@ feature -- Access
 			db_handler.execute_reader
 			last_row_count := db_handler.count
 			create Result.make (db_handler, agent new_report)
+			post_execution
 		end
 
 	problem_reports_2 (a_page_number: INTEGER; a_rows_per_page: INTEGER; a_username: STRING; a_open_only: BOOLEAN; a_category, a_status: INTEGER; a_column: READABLE_STRING_32; a_order: INTEGER): ESA_DATABASE_ITERATION_CURSOR [ESA_REPORT]
@@ -85,6 +80,7 @@ feature -- Access
 			db_handler.set_query (create {ESA_DATABASE_QUERY}.data_reader (l_query, l_parameters))
 			db_handler.execute_query
 			create Result.make (db_handler, agent new_report)
+			post_execution
 		end
 
 	problem_reports_guest (a_page_number: INTEGER; a_rows_per_page: INTEGER; a_category: INTEGER; a_status: INTEGER): ESA_DATABASE_ITERATION_CURSOR [ESA_REPORT]
@@ -101,6 +97,7 @@ feature -- Access
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_reader ("GetProblemReportsGuest3", l_parameters))
 			db_handler.execute_reader
 			create Result.make (db_handler, agent new_report)
+			post_execution
 		end
 
 	problem_reports_guest_2 (a_page_number: INTEGER; a_rows_per_page: INTEGER; a_category: INTEGER; a_status: INTEGER; a_column: READABLE_STRING_32; a_order: INTEGER): ESA_DATABASE_ITERATION_CURSOR [ESA_REPORT]
@@ -132,6 +129,7 @@ feature -- Access
 			db_handler.set_query (create {ESA_DATABASE_QUERY}.data_reader (l_query, l_parameters))
 			db_handler.execute_query
 			create Result.make (db_handler, agent new_report)
+			post_execution
 		end
 
 	problem_reports_responsibles (a_page_number: INTEGER; a_rows_per_page: INTEGER; a_category: INTEGER; a_severity: INTEGER; a_priority: INTEGER; a_responsible: INTEGER;
@@ -176,6 +174,7 @@ feature -- Access
 			db_handler.set_query (create {ESA_DATABASE_QUERY}.data_reader (l_query, l_parameters))
 			db_handler.execute_query
 			create Result.make (db_handler, agent new_report_responsible)
+			post_execution
 		end
 
 
@@ -197,6 +196,7 @@ feature -- Access
 				end
 			end
 			disconnect
+			post_execution
 		end
 
 	interaction (a_username: STRING; a_interaction_id: INTEGER; a_report: ESA_REPORT): detachable ESA_REPORT_INTERACTION
@@ -217,6 +217,7 @@ feature -- Access
 				end
 			end
 			disconnect
+			post_execution
 		end
 
 	interactions (a_username: STRING; a_report_number: INTEGER; a_report: ESA_REPORT): LIST[ESA_REPORT_INTERACTION]
@@ -252,6 +253,7 @@ feature -- Access
 				end
 			end
 			disconnect
+			post_execution
 		end
 
 
@@ -280,6 +282,7 @@ feature -- Access
 				db_handler.forth
 			end
 			disconnect
+			post_execution
 		end
 
 
@@ -306,6 +309,7 @@ feature -- Access
 				db_handler.forth
 			end
 			disconnect
+			post_execution
 		end
 
 
@@ -332,6 +336,7 @@ feature -- Access
 				db_handler.forth
 			end
 			disconnect
+			post_execution
 		end
 
 
@@ -353,6 +358,7 @@ feature -- Access
 				end
 			end
 			disconnect
+			post_execution
 		end
 
 	registration_token_from_username (a_username: READABLE_STRING_32): STRING
@@ -374,6 +380,7 @@ feature -- Access
 				end
 			end
 			disconnect
+			post_execution
 		end
 
 
@@ -394,6 +401,7 @@ feature -- Access
 				end
 			end
 			disconnect
+			post_execution
 		end
 
 	add_user (a_first_name, a_last_name, a_email, a_username, a_password, a_answer, a_token: STRING; a_question_id: INTEGER)
@@ -428,6 +436,7 @@ feature -- Access
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_writer ("AddUser2", l_parameters))
 			db_handler.execute_writer
 			disconnect
+			post_execution
 		end
 
 
@@ -446,6 +455,7 @@ feature -- Access
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_reader ("GetProblemReportCategories", l_parameters))
 			db_handler.execute_reader
 			create Result.make (db_handler, agent new_report_category)
+			post_execution
 		end
 
 
@@ -461,6 +471,7 @@ feature -- Access
 			db_handler.execute_query
 			create Result.make (db_handler, agent new_report_category )
 			log.write_information ( generator+".all_categories After Execute" )
+			post_execution
 		end
 
 	classes: ESA_DATABASE_ITERATION_CURSOR[ESA_REPORT_CLASS]
@@ -473,6 +484,7 @@ feature -- Access
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_reader ("GetProblemReportClasses", l_parameters))
 			db_handler.execute_reader
 			create Result.make (db_handler, agent new_report_class )
+			post_execution
 		end
 
 	severities: ESA_DATABASE_ITERATION_CURSOR[ESA_REPORT_SEVERITY]
@@ -485,6 +497,7 @@ feature -- Access
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_reader ("GetProblemReportSeverities", l_parameters))
 			db_handler.execute_reader
 			create Result.make (db_handler, agent new_report_severity )
+			post_execution
 		end
 
 
@@ -498,6 +511,7 @@ feature -- Access
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_reader ("GetProblemReportPriorities", l_parameters))
 			db_handler.execute_reader
 			create Result.make (db_handler, agent new_report_priority )
+			post_execution
 		end
 
 
@@ -511,7 +525,23 @@ feature -- Access
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_reader ("GetProblemReportStatus", l_parameters))
 			db_handler.execute_reader
 			create Result.make (db_handler, agent new_report_status )
+			post_execution
 		end
+
+
+	countries: ESA_DATABASE_ITERATION_CURSOR[ESA_REPORT_SEVERITY]
+			-- Possible problem report severities
+			-- Columns: SeverityID, SeveritySynopsis, SeverityDescription
+		local
+			l_parameters: HASH_TABLE[ANY,STRING_32]
+		do
+			create l_parameters.make (0)
+			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_reader ("GetProblemReportSeverities", l_parameters))
+			db_handler.execute_reader
+			create Result.make (db_handler, agent new_report_severity )
+			post_execution
+		end
+
 
 	last_problem_report_number: INTEGER
 			-- Number of last submitted pr if `commit_problem_report' was called successfully
@@ -563,6 +593,7 @@ feature -- Access
 				end
 			end
 			disconnect
+			post_execution
 		end
 
 
@@ -586,6 +617,7 @@ feature -- Access
 			db_handler.execute_reader
 			last_row_count := db_handler.count
 			create Result.make (db_handler, agent new_report)
+			post_execution
 		end
 
 	responsibles: ESA_DATABASE_ITERATION_CURSOR [ESA_USER]
@@ -599,6 +631,7 @@ feature -- Access
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_reader ("GetProblemReportResponsibles", l_parameters))
 			db_handler.execute_reader
 			create Result.make (db_handler, agent new_reponsible)
+			post_execution
 		end
 
 
@@ -630,6 +663,7 @@ feature -- Access
 				end
 			end
 			disconnect
+			post_execution
 		end
 
 
@@ -659,6 +693,7 @@ feature -- Access
 				end
 			end
 			disconnect
+			post_execution
 		end
 
 	temporary_interation_attachments (a_interaction_id: INTEGER): LIST[TUPLE[id:INTEGER_32; length:INTEGER_32; filename:READABLE_STRING_32]]
@@ -687,6 +722,7 @@ feature -- Access
 				end
 			end
 			disconnect
+			post_execution
 		end
 
 
@@ -712,6 +748,7 @@ feature -- Basic Operations
 				end
 			end
 			disconnect
+			post_execution
 		end
 
 	row_count (a_table: STRING): INTEGER
@@ -734,6 +771,7 @@ feature -- Basic Operations
 				end
 			end
 			disconnect
+			post_execution
 		end
 
 	row_count_problem_report_guest (a_category: INTEGER; a_status: INTEGER; a_username:READABLE_STRING_32): INTEGER
@@ -757,6 +795,7 @@ feature -- Basic Operations
 				end
 			end
 			disconnect
+			post_execution
 		end
 
 
@@ -792,6 +831,7 @@ feature -- Basic Operations
 					end
 				end
 				disconnect
+				post_execution
 			end
 
 
@@ -818,6 +858,7 @@ feature -- Basic Operations
 					end
 				end
 				disconnect
+				post_execution
 			end
 
 	commit_problem_report (a_report_id: INTEGER)
@@ -843,6 +884,7 @@ feature -- Basic Operations
 			if l_int > 0 then
 				set_last_problem_report_number (l_int)
 			end
+			post_execution
 		end
 
 	remove_temporary_problem_report (a_report_id: INTEGER)
@@ -856,6 +898,7 @@ feature -- Basic Operations
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_reader ("RemoveTemporaryProblemReport", l_parameters))
 			db_handler.execute_reader
 			disconnect
+			post_execution
 		end
 
 
@@ -897,6 +940,7 @@ feature -- Basic Operations
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_reader ("InitializeProblemReport", l_parameters))
 			db_handler.execute_reader
 			disconnect
+			post_execution
 		end
 
 
@@ -940,6 +984,7 @@ feature -- Basic Operations
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_writer ("UpdateTemporaryProblemReport", l_parameters))
 			db_handler.execute_writer
 			disconnect
+			post_execution
 		end
 
 	set_problem_report_responsible (a_number, a_contact_id: INTEGER)
@@ -954,6 +999,7 @@ feature -- Basic Operations
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_writer ("SetProblemReportResponsible", l_parameters))
 			db_handler.execute_writer
 			disconnect
+			post_execution
 		end
 
 	new_interaction_id (a_username: STRING; a_pr_number: INTEGER): INTEGER
@@ -978,6 +1024,7 @@ feature -- Basic Operations
 				end
 			end
 			disconnect
+			post_execution
 		end
 
 
@@ -997,6 +1044,7 @@ feature -- Basic Operations
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_writer ("InitializeInteraction2", l_parameters))
 			db_handler.execute_writer
 			disconnect
+			post_execution
 		end
 
 	commit_interaction (a_interaction_id: INTEGER)
@@ -1023,6 +1071,7 @@ feature -- Basic Operations
 			if l_int > 0 then
 				set_last_interaction_id (l_int)
 			end
+			post_execution
 		end
 
 	upload_temporary_report_attachment (a_report_id: INTEGER; a_length: INTEGER; a_name: READABLE_STRING_32; a_content: STRING )
@@ -1040,6 +1089,7 @@ feature -- Basic Operations
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_reader("AddTemporaryProblemReportAttachment", l_parameters))
 			db_handler.execute_reader
 			disconnect
+			post_execution
 		end
 
 	upload_temporary_interaction_attachment	(a_interaction_id: INTEGER; a_length: INTEGER; a_name: READABLE_STRING_32; a_content: STRING )
@@ -1056,6 +1106,7 @@ feature -- Basic Operations
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_writer("AddTemporaryProblemReportInteractionAttachment", l_parameters))
 			db_handler.execute_writer
 			disconnect
+			post_execution
 		end
 
 	remove_temporary_report_attachment (a_report_id: INTEGER; a_filename: STRING)
@@ -1072,6 +1123,7 @@ feature -- Basic Operations
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_writer("RemoveProblemReportAttachment", l_parameters))
 			db_handler.execute_writer
 			disconnect
+			post_execution
 		end
 
 	remove_temporary_interaction_attachment (a_interaction_id: INTEGER; a_filename: STRING)
@@ -1088,6 +1140,7 @@ feature -- Basic Operations
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_writer("RemoveProblemReportInteractionAttachment", l_parameters))
 			db_handler.execute_writer
 			disconnect
+			post_execution
 		end
 
 
@@ -1102,6 +1155,7 @@ feature -- Basic Operations
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_writer("RemoveProblemReportTemporaryReportAttachments", l_parameters))
 			db_handler.execute_writer
 			disconnect
+			post_execution
 		end
 
 	remove_all_temporary_interaction_attachments (a_interaction_id: INTEGER)
@@ -1115,6 +1169,7 @@ feature -- Basic Operations
 			db_handler.set_store (create {ESA_DATABASE_STORE_PROCEDURE}.data_writer("RemoveProblemReportTemporaryInteractionAttachments", l_parameters))
 			db_handler.execute_writer
 			disconnect
+			post_execution
 		end
 
 
@@ -1140,6 +1195,7 @@ feature -- Status Report
 			end
 			Result := l_res > 0
 			disconnect
+			post_execution
 		end
 
 	is_report_visible ( a_username: READABLE_STRING_32; a_number: INTEGER): BOOLEAN
@@ -1163,6 +1219,7 @@ feature -- Status Report
 			end
 			Result := l_res > 0
 			disconnect
+			post_execution
 		end
 
 	interaction_visible (a_username: STRING; a_interaction_id: INTEGER): BOOLEAN
@@ -1188,6 +1245,7 @@ feature -- Status Report
 			end
 			Result := l_res > 0
 			disconnect
+			post_execution
 		end
 
 	interaction_visible_guest (a_interaction_id: INTEGER): BOOLEAN
@@ -1210,6 +1268,7 @@ feature -- Status Report
 			end
 			Result := l_res > 0
 			disconnect
+			post_execution
 		end
 
 	attachment_visible (a_username: STRING; a_attachment_id: INTEGER): BOOLEAN
@@ -1235,6 +1294,7 @@ feature -- Status Report
 			end
 			Result := l_res > 0
 			disconnect
+			post_execution
 		end
 
 
@@ -1258,6 +1318,7 @@ feature -- Status Report
 			end
 			Result := l_res > 0
 			disconnect
+			post_execution
 		end
 
 feature {NONE} -- Implementation
@@ -1773,21 +1834,17 @@ feature -- Queries
 
 
 
-feature -- Work Around
+feature {NONE} -- Implementation
 
-	to_hexadecimal (a_string: STRING): STRING
-         -- Convert Current bit sequence into the corresponding
-         -- hexadecimal notation.
-      local
-      	l_ic: STRING_ITERATION_CURSOR
-      	l_string: STRING
-      do
-      	create Result.make_empty
-      	create l_ic.make (a_string)
-      	across l_ic as c  loop
-    		 l_string := c.item.code.to_hex_string
-    		 l_string.prune_all_leading ('0')
-     		 Result.append_string(l_string)
-      	end
-      end
+	post_execution
+		do
+			if db_handler.successful then
+				set_successful
+			else
+				if attached db_handler.last_error then
+					set_last_error_from_handler (db_handler.last_error)
+				end
+			end
+		end
+
 end

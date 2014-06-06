@@ -7,7 +7,7 @@
   </div>  
 </div>
 <div class="row">
-   <div class="col-lg-8">
+   <div class="col-lg-12">
      <form  class="form-inline well" action="{$host/}/reports" id="search" method="GET" itemprop="search">
       <div class="col-md-4">
          <label class="control-label" for="input01" itemprop="category">Category</label>
@@ -163,13 +163,13 @@
                    <input type="hidden" name="dir" value="{$view.dir/}"/>
 
                   <tr>
-                       <td itemprop="report-number"><a href="{$host/}/report_detail/{$item.number/}" itemprop="report-interaction" rel="report-interaction">{$item.number/}</a></td>
+                       <td itemprop="report_number"><a href="{$host/}/report_detail/{$item.number/}" itemprop="report-interaction" rel="report-interaction">{$item.number/}</a></td>
                        <td itemprop="status">{$item.status.id/}</td>
                        <td itemprop="priority">{$item.priority.id/}</td>
                        <td itemprop="severity">{$item.severity.id/}</td>
                        <td itemprop="synopsis">{$item.synopsis/}</td>
                        <td itemprop="submitter">{$item.contact.name/}</td>
-                       <td itemprop="submission date">{$item.submission_date/}</td>
+                       <td itemprop="submission_date">{$item.submission_date/}</td>
                        <td itemprop="responsible">
                            <select class="form-control" data-style="btn-primary"  for="input_{$item.number/}" name="user_responsible" form="reports_{$item.number/}">
                             <option value="0">not assigned</option>
