@@ -5289,6 +5289,7 @@ Src/web/support/esa_api/esa_folder/config/esa_application_configuration.json -te
 Src/web/support/esa_api/esa_folder/www/css/dashboard.css -text
 Src/web/support/esa_api/esa_folder/www/doc/cj_doc.html svneol=native#text/xml
 Src/web/support/esa_api/esa_folder/www/doc/esa_api_state_machine.png -text
+Src/web/support/esa_api/esa_folder/www/doc/esa_doc.html svneol=native#text/xml
 Src/web/support/esa_api/esa_folder/www/js/auth.js -text
 Src/web/support/esa_api/esa_folder/www/js/docs.js -text
 Src/web/support/esa_api/esa_folder/www/js/enable.js -text
