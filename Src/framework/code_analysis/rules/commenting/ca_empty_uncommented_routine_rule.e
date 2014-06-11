@@ -30,7 +30,10 @@ feature {NONE} -- Initialization
 feature {NONE} -- Activation
 
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
+		local
+			l_foo: detachable STRING
 		do
+			io.put_integer (l_foo.count)
 			a_checker.add_feature_pre_action (agent process_feature)
 			a_checker.add_do_pre_action (agent process_do)
 			a_checker.add_once_pre_action (agent process_once)
@@ -47,16 +50,17 @@ feature {NONE} -- Rule checking
 			l_comments_empty: BOOLEAN
 			l_viol: CA_RULE_VIOLATION
 		do
-			check attached current_feature then
+			check false and attached current_feature then
 				if not attached a_as.compound or else a_as.compound.is_empty then
 					l_leaf_list := current_context.matchlist
 					if current_feature.body.is_routine then
 							-- TODO: Unneeded helper variable detected here (which is fine).
 							-- The problem is that the location of the suggestion is wrong,
 							-- the text suggests it should point to the usage, not the assignment.
+--						l_comments := current_feature.comment (l_leaf_list)
+--						l_comments_empty := comments_are_empty (l_comments)
 						l_comments := current_feature.comment (l_leaf_list)
-						l_comments_empty := comments_are_empty (l_comments)
-						if l_comments_empty then
+						if comments_are_empty (l_comments) then
 							create l_viol.make_with_rule (Current)
 							l_viol.set_location (current_feature.start_location)
 							l_viol.long_description_info.extend (current_feature.feature_name.name_32)

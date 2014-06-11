@@ -47,8 +47,8 @@ feature {NONE} -- Rule checking
 			-- BOOLEAN value: if set to true, we have already generated a violation, further violations
 			-- for the same parent class will be ignored.
 		do
-				-- TODO: Although I cannot think of any reasonable scenario where one might want to do this,
-				-- check what happens with genericity (inheriting from LIST [STRING] and LIST [BOOLEAN] at the same type).
+				-- Inheriting from the same class twice with different generic type parameters (e.g. LIST [STRING] and LIST [BOOLEAN])
+				-- is not supported, so we don't need to worry about this.
 			if attached a_class.parents as parents then
 				create l_seen_parents.make (32)
 				across

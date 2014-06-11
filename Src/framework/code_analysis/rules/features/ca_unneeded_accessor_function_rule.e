@@ -64,12 +64,6 @@ feature {NONE} -- Rule checking
 		end
 
 	process_feature (a_feature_as: attached FEATURE_AS)
-		local
-			l_name: STRING
-			l_viol: CA_RULE_VIOLATION
-			l_leaf_list: LEAF_AS_LIST
-			l_comments: EIFFEL_COMMENTS
-			l_comments_empty: BOOLEAN
 		do
 			current_feature := a_feature_as
 		end

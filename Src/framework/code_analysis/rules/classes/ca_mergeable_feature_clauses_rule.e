@@ -57,6 +57,8 @@ feature {NONE} -- Rule checking
 		do
 			l_comment_text := stringify_comments (a_feature_clause_as.comment (current_context.matchlist))
 
+				-- TODO: check attached seen_feature_table
+
 				-- If the comment is empty, we ignore this feature clause.
 				-- There is another rule in charge of complaining about uncommented feature clauses.
 			if not l_comment_text.is_empty then

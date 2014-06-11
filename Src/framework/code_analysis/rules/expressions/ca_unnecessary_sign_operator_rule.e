@@ -119,7 +119,7 @@ feature -- Properties
 	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		do
 			a_formatter.add (ca_messages.unnecessary_sign_operator_violation_1)
-			check attached {STRING} a_violation.long_description_info.first as text then
+			check attached {READABLE_STRING_GENERAL} a_violation.long_description_info.first as text then
 				a_formatter.add_quoted_text (text)
 			end
 			a_formatter.add (ca_messages.unnecessary_sign_operator_violation_2)

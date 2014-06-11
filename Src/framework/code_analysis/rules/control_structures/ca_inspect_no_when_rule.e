@@ -45,7 +45,6 @@ feature {NONE} -- Rule checking
 			l_has_else: BOOLEAN
 		do
 			if a_inspect_as.case_list = Void or else a_inspect_as.case_list.is_empty then
-
 				create l_viol.make_with_rule (Current)
 				l_viol.set_location (a_inspect_as.start_location)
 				l_has_else := (a_inspect_as.else_keyword (current_context.matchlist) /= Void)
