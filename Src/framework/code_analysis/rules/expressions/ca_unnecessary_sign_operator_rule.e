@@ -30,7 +30,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Activation
 
-	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_unary_pre_action (agent process_unary)
 			a_checker.add_integer_pre_action (agent process_int)
@@ -44,50 +44,94 @@ feature {NONE} -- Rule checking
 		-- two consecutive signs or for simple unary expressions where the operand is *not* a constant (in that case, the
 		-- unnecessary plus operator can be detected). For this reason, we need to handle integer and real expressions separately.
 
-	is_sign_redundant (a_expr: attached UNARY_AS): BOOLEAN
+	is_sign_redundant (a_expr: UNARY_AS): BOOLEAN
+		local
+			l_internal_expr: EXPR_AS
 		do
 			Result := False
 			if attached {UN_PLUS_AS} a_expr then
-					-- The unary plus is always redudant
-				Result := True
-			elseif attached {UN_MINUS_AS} a_expr as minus_expr then
+					-- The unary plus is always redudant is applied on a basic type
+				Result := is_or_wraps_basic_type (a_expr)
+			elseif attached {UN_MINUS_AS} a_expr as l_minus_expr then
 					-- This is fine, but if the operand of this expression is another
 					-- plus or minus unary expression, then this sign is redundant.
-				if attached {UN_PLUS_AS} a_expr.expr or attached {UN_MINUS_AS} a_expr.expr then
+
+				l_internal_expr := unwrapped (l_minus_expr.expr)
+
+				if attached {UN_PLUS_AS} l_internal_expr or attached {UN_MINUS_AS} l_internal_expr then
 					Result := True
-				elseif attached {INTEGER_AS} a_expr.expr as int_as then
+				elseif attached {INTEGER_AS} l_internal_expr as l_int_as then
 						-- No sign is necessary for zero
 						-- Also, if the integer already has a sign, the current sign is redundant.
 						-- TODO: this is a perfect example for the parenthesis rule with boolean assignments
-					Result := (int_as.integer_64_value = 0 or int_as.sign_symbol (current_context.matchlist) /= Void)
-				elseif attached {REAL_AS} a_expr.expr as real_as then
-						-- Same as above
-					Result := (real_as.value.to_real_64 = 0 or real_as.sign_symbol (current_context.matchlist) /= Void)
+					Result := (l_int_as.integer_64_value = 0 or l_int_as.sign_symbol (current_context.matchlist) /= Void)
+				elseif attached {REAL_AS} l_internal_expr as l_real_as then
+						-- If the real already has a sign, the current sign is redundant.
+						-- Note that 0.0 and -0.0 are not the same (e.g. "1 / -0.0" yields -Infinity).
+					Result := (l_real_as.sign_symbol (current_context.matchlist) /= Void)
 				end
 			end
 		end
 
-	process_unary (a_expr: attached UNARY_AS)
+	unwrapped (a_expr: EXPR_AS): EXPR_AS
+			-- If `a_expr' is of type `PARAN_AS', then the wrapped expression.
+			-- Otherwise `a_expr' itself.
+		do
+			if attached {PARAN_AS} a_expr as l_expr then
+				Result := unwrapped (l_expr.expr)
+			else
+				Result := a_expr
+			end
+		end
+
+	is_or_wraps_basic_type (a_expr: EXPR_AS): BOOLEAN
+			-- Is the expression wrapped by `a_expr' (by zero or more layers of parentheses and/or unary operators)
+			-- a constant of a basic type? (INTEGER or REAL)
+		local
+			l_expr: like a_expr
+			l_stop: BOOLEAN
+		do
+			from
+				l_expr := a_expr
+			until
+				l_stop
+			loop
+				if attached {PARAN_AS} l_expr as l_paran_as then
+					l_expr := l_paran_as.expr
+				elseif attached {UN_PLUS_AS} l_expr as l_paran_as then
+					l_expr := l_paran_as.expr
+				elseif attached {UN_MINUS_AS} l_expr as l_paran_as then
+					l_expr := l_paran_as.expr
+				else
+					l_stop := true
+					Result := (attached {INTEGER_AS} l_expr or attached {REAL_AS} l_expr)
+				end
+			end
+		end
+
+	process_unary (a_expr: UNARY_AS)
 		do
 			if is_sign_redundant (a_expr) then
 				add_violation (a_expr.start_location, a_expr.text_32 (current_context.matchlist))
 			end
 		end
 
-	process_int (a_integer: attached INTEGER_AS)
+	process_int (a_integer: INTEGER_AS)
 		do
-			if attached a_integer.sign_symbol (current_context.matchlist) as sign then
-				if sign.is_plus or (sign.is_minus and a_integer.natural_64_value = 0) then
-					add_violation (sign.start_location, a_integer.text_32 (current_context.matchlist))
+			if attached a_integer.sign_symbol (current_context.matchlist) as l_sign then
+				if l_sign.is_plus or a_integer.natural_64_value = 0 then
+					add_violation (l_sign.start_location, a_integer.text_32 (current_context.matchlist))
 				end
 			end
 		end
 
-	process_real (a_real: attached REAL_AS)
+	process_real (a_real: REAL_AS)
 		do
-			if attached a_real.sign_symbol (current_context.matchlist) as sign then
-				if sign.is_plus or (sign.is_minus and a_real.value.to_real_64 = 0) then
-					add_violation (sign.start_location, a_real.text_32 (current_context.matchlist))
+			if attached a_real.sign_symbol (current_context.matchlist) as l_sign then
+					-- We do not check for the case (sign.is_minus and a_real.value.to_real_64 = 0)
+					-- as 0.0 and -0.0 are not the same (e.g. "1 / -0.0" yields -Infinity).
+				if l_sign.is_plus then
+					add_violation (l_sign.start_location, a_real.text_32 (current_context.matchlist))
 				end
 			end
 		end
@@ -116,11 +160,12 @@ feature -- Properties
 			Result := ca_names.unnecessary_sign_operator_description
 		end
 
-	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
+	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		do
 			a_formatter.add (ca_messages.unnecessary_sign_operator_violation_1)
-			check attached {READABLE_STRING_GENERAL} a_violation.long_description_info.first as text then
-				a_formatter.add_quoted_text (text)
+			check attached {READABLE_STRING_GENERAL} a_violation.long_description_info.first end
+			if attached {READABLE_STRING_GENERAL} a_violation.long_description_info.first as l_text then
+				a_formatter.add_quoted_text (l_text)
 			end
 			a_formatter.add (ca_messages.unnecessary_sign_operator_violation_2)
 		end

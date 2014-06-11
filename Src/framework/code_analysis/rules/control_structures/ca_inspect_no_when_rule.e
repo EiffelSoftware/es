@@ -32,7 +32,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Activation
 
-	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_inspect_pre_action (agent process_inspect)
 		end
@@ -68,10 +68,11 @@ feature -- Properties
 			Result := ca_names.inspect_no_when_description
 		end
 
-	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
+	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		do
-			check attached {BOOLEAN} a_violation.long_description_info.first as has_else then
-				if has_else then
+			check attached {BOOLEAN} a_violation.long_description_info.first end
+			if attached {BOOLEAN} a_violation.long_description_info.first as l_has_else then
+				if l_has_else then
 					a_formatter.add (ca_messages.inspect_no_when_with_else_violation)
 				else
 					a_formatter.add (ca_messages.inspect_no_when_no_else_violation)

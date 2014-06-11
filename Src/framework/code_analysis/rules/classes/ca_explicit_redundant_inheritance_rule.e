@@ -30,7 +30,7 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Activation
 
-	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
+	register_actions (a_checker: CA_ALL_RULES_CHECKER)
 		do
 				--			a_checker.add_feature_pre_action (agent process_feature)
 			a_checker.add_class_pre_action (agent process_class)
@@ -49,10 +49,10 @@ feature {NONE} -- Rule checking
 		do
 				-- Inheriting from the same class twice with different generic type parameters (e.g. LIST [STRING] and LIST [BOOLEAN])
 				-- is not supported, so we don't need to worry about this.
-			if attached a_class.parents as parents then
+			if attached a_class.parents as l_parents then
 				create l_seen_parents.make (32)
 				across
-					parents as ic
+					l_parents as ic
 				loop
 						-- Only complain if there are no export, redefine, rename, select and undefine clauses.
 					if ic.item.exports = Void and then ic.item.redefining = Void and then ic.item.renaming = Void and then ic.item.selecting = Void and then ic.item.undefining = Void then
@@ -88,14 +88,15 @@ feature -- Properties
 			Result := ca_names.explicit_redundant_inheritance_description
 		end
 
-	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
+	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
 		do
 			a_formatter.add (ca_messages.explicit_redundant_inheritance_violation_1)
 			a_formatter.add_class (a_violation.affected_class.original_class)
 			a_formatter.add (ca_messages.explicit_redundant_inheritance_violation_2)
-			check attached {STRING} a_violation.long_description_info.first as class_name then
+			check attached {STRING} a_violation.long_description_info.first end
+			if attached {STRING} a_violation.long_description_info.first as l_class_name then
 					-- TODO: add_class
-				a_formatter.add_quoted_text (class_name)
+				a_formatter.add_quoted_text (l_class_name)
 			end
 			a_formatter.add (ca_messages.explicit_redundant_inheritance_violation_3)
 		end
