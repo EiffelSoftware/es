@@ -339,10 +339,10 @@ feature -- Rule Violations
 	feature_naming_convention_violation_2: STRING_32
 		do Result := locale.translation ("' does not respect the Eiffel naming convention for features (all lowercase, no trailing or two consecutive underscores).") end
 
-	variable_naming_convention_violation_1: STRING_32
+	local_naming_convention_violation_1: STRING_32
 		do Result := locale.translation ("Local variable '") end
 
-	variable_naming_convention_violation_2: STRING_32
+	local_naming_convention_violation_2: STRING_32
 		do Result := locale.translation ("' does not respect the Eiffel naming convention for local variables (all lowercase, begin with 'l_', no trailing or two consecutive underscores).") end
 
 	argument_naming_convention_violation_1: STRING_32

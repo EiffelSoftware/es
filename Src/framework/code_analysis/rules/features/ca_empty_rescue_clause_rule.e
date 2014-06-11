@@ -29,6 +29,7 @@ feature {NONE} -- Initialization
 feature {NONE} -- Activation
 
 	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+			-- <Precursor>
 		do
 			a_checker.add_feature_pre_action (agent process_feature)
 		end
@@ -36,10 +37,20 @@ feature {NONE} -- Activation
 feature {NONE} -- Rule checking
 
 	process_feature (a_feature_as: FEATURE_AS)
+			-- Process `a_feature_as'.
 		local
 			l_rescue_keyword: KEYWORD_AS
 			l_viol: CA_RULE_VIOLATION
 		do
+				-- Sample violation:
+				--
+				-- do_something
+				-- 		do
+				--			io.put_string ("Hello world!")
+				--		rescue
+				--		end
+				--
+
 			if attached {ROUTINE_AS} a_feature_as.body.content as l_routine_as then
 					-- routine_as.has_rescue is not very helpful, as it only tells us
 					-- if the routine has a *non empty* rescue clause.
@@ -56,6 +67,7 @@ feature {NONE} -- Rule checking
 feature -- Properties
 
 	title: STRING_32
+			-- <Precursor>
 		do
 			Result := ca_names.empty_rescue_clause_title
 		end
@@ -64,14 +76,18 @@ feature -- Properties
 			-- <Precursor>
 
 	description: STRING_32
+			-- <Precursor>
 		do
 			Result := ca_names.empty_rescue_clause_description
 		end
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+			-- <Precursor>
 		do
 			a_formatter.add (ca_messages.empty_rescue_clause_violation_1)
-			check attached {STRING} a_violation.long_description_info.first end
+			check
+				attached {STRING} a_violation.long_description_info.first
+			end
 			if attached {STRING} a_violation.long_description_info.first as l_feature_name then
 				a_formatter.add_feature_name (l_feature_name, a_violation.affected_class)
 			end

@@ -30,6 +30,7 @@ feature {NONE} -- Initialization
 feature {NONE} -- Activation
 
 	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+			-- <Precursor>
 		do
 			a_checker.add_feature_pre_action (agent process_feature)
 			a_checker.add_do_pre_action (agent process_do)
@@ -39,52 +40,59 @@ feature {NONE} -- Activation
 feature {NONE} -- Rule checking
 
 	current_feature: detachable FEATURE_AS
+			-- The feature currently being analyzed.
 
 	process_do_once (a_as: INTERNAL_AS)
+			-- Process `a_as'
 		local
-			l_leaf_list: LEAF_AS_LIST
 			l_comments: EIFFEL_COMMENTS
-			l_comments_empty: BOOLEAN
 			l_viol: CA_RULE_VIOLATION
 		do
-			check attached current_feature end
+				-- Sample violation
+				--
+				-- feature -- Some feature group
+				--
+				--		restore_defaults
+				--			do
+				--			end
+				--
+
+			check
+				attached current_feature
+			end
 			if attached current_feature as l_current_feature then
-				if not attached a_as.compound or else a_as.compound.is_empty then
-					l_leaf_list := current_context.matchlist
-					if l_current_feature.body.is_routine then
-							-- TODO: Unneeded helper variable detected here (which is fine).
-							-- The problem is that the location of the suggestion is wrong,
-							-- the text suggests it should point to the usage, not the assignment.
---						l_comments := current_feature.comment (l_leaf_list)
---						l_comments_empty := comments_are_empty (l_comments)
-						l_comments := l_current_feature.comment (l_leaf_list)
-						if comments_are_empty (l_comments) then
-							create l_viol.make_with_rule (Current)
-							l_viol.set_location (l_current_feature.start_location)
-							l_viol.long_description_info.extend (l_current_feature.feature_name.name_32)
-							violations.extend (l_viol)
-						end
+				if (not attached a_as.compound or else a_as.compound.is_empty) and then l_current_feature.body.is_routine then
+					l_comments := l_current_feature.comment (current_context.matchlist)
+					if comments_are_empty (l_comments) then
+						create l_viol.make_with_rule (Current)
+						l_viol.set_location (l_current_feature.start_location)
+						l_viol.long_description_info.extend (l_current_feature.feature_name.name_32)
+						violations.extend (l_viol)
 					end
 				end
 			end
 		end
 
 	process_do (a_do_as: DO_AS)
+			-- Process `a_do_as'
 		do
 			process_do_once (a_do_as)
 		end
 
 	process_once (a_once_as: ONCE_AS)
+			-- Process `a_once_as'
 		do
 			process_do_once (a_once_as)
 		end
 
 	process_feature (a_feature_as: FEATURE_AS)
+			-- Set `a_feature_as' as the currently processed feature.
 		do
 			current_feature := a_feature_as
 		end
 
 	comments_are_empty (a_comments: detachable EIFFEL_COMMENTS): BOOLEAN
+			-- Is the text of `a_comments' only composed of whitespace?
 		do
 			Result := true
 			if attached a_comments then
@@ -104,21 +112,27 @@ feature {NONE} -- Rule checking
 feature -- Properties
 
 	title: STRING_32
+			-- <Precursor>
 		do
 			Result := ca_names.empty_uncommented_routine_title
 		end
 
 	id: STRING_32 = "CA051"
+			-- <Precursor>
 
 	description: STRING_32
+			-- <Precursor>
 		do
 			Result := ca_names.empty_uncommented_routine_description
 		end
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+			-- <Precursor>
 		do
 			a_formatter.add (ca_messages.empty_uncommented_routine_violation_1)
-			check attached {STRING_32} a_violation.long_description_info.first end
+			check
+				attached {STRING_32} a_violation.long_description_info.first
+			end
 			if attached {STRING_32} a_violation.long_description_info.first as l_feature_name then
 				a_formatter.add_feature_name (l_feature_name, a_violation.affected_class)
 			end

@@ -41,6 +41,7 @@ feature {NONE} -- Initialization
 feature {NONE} -- Activation
 
 	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+			-- <Precursor>
 		do
 			a_checker.add_routine_pre_action (agent process_routine)
 		end
@@ -48,6 +49,7 @@ feature {NONE} -- Activation
 feature {NONE} -- Rule checking
 
 	process_routine (a_routine_as: attached ROUTINE_AS)
+			-- Process `a_routine_as'.
 		local
 			l_viol: CA_RULE_VIOLATION
 			l_construct_list: CONSTRUCT_LIST [INTEGER_32]
@@ -81,39 +83,60 @@ feature {NONE} -- Rule checking
 			end
 		end
 
+	allowed_names: ARRAY [STRING]
+			-- List of names that are allowed despite breaking the conventions.
+		once
+			Result := << "i", "j", "k", "n" >>
+			Result.compare_objects
+		end
+
 	is_valid_local_variable_name (a_name: attached STRING): BOOLEAN
+			-- Does `a_name' respect the naming conventions for local variables?
 		do
-			Result := not a_name.ends_with ("_") and not a_name.has_substring ("__") and (a_name.as_lower ~ a_name) and (not enforce_local_prefix.value or else a_name.starts_with ("l_"))
+				-- Sample violations:
+				-- l_my__var, l_variable_, l_VARIABLE
+				-- argument -- this is fine if the l_-convention is not enforced
+
+			Result := (not a_name.ends_with ("_") and not a_name.has_substring ("__") and (a_name.as_lower ~ a_name) and (not enforce_local_prefix.value or else a_name.starts_with ("l_"))) or else allowed_names.has (a_name)
+
 		end
 
 feature -- Options
 
 	enforce_local_prefix: BOOLEAN_PREFERENCE
+		-- Should the convention of starting local variable names with "l_" be enforced?
 
 	default_enforce_local_prefix: BOOLEAN = True
+		-- Default value of `enforce_local_prefix'.
 
 feature -- Properties
 
 	title: STRING_32
+			-- <Precursor>
 		do
 			Result := ca_names.variable_naming_convention_title
 		end
 
 	id: STRING_32 = "CA065"
+			-- <Precursor>
 
 	description: STRING_32
+			-- <Precursor>
 		do
 			Result := ca_names.variable_naming_convention_description
 		end
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+			-- <Precursor>
 		do
-			a_formatter.add (ca_messages.variable_naming_convention_violation_1)
-			check attached {STRING} a_violation.long_description_info.first end
+			a_formatter.add (ca_messages.local_naming_convention_violation_1)
+			check
+				attached {STRING} a_violation.long_description_info.first
+			end
 			if attached {STRING} a_violation.long_description_info.first as l_variable_name then
 				a_formatter.add (l_variable_name)
 			end
-			a_formatter.add (ca_messages.variable_naming_convention_violation_2)
+			a_formatter.add (ca_messages.local_naming_convention_violation_2)
 		end
 
 end

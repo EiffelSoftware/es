@@ -30,6 +30,7 @@ feature {NONE} -- Initialization
 feature {NONE} -- Activation
 
 	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+			-- <Precursor>
 		do
 			a_checker.add_feature_pre_action (agent process_feature)
 		end
@@ -37,6 +38,7 @@ feature {NONE} -- Activation
 feature {NONE} -- Rule checking
 
 	process_feature (a_feature_as: FEATURE_AS)
+			-- Process `a_feature_as'.
 		local
 			l_name: STRING
 			l_viol: CA_RULE_VIOLATION
@@ -51,28 +53,38 @@ feature {NONE} -- Rule checking
 		end
 
 	is_valid_feature_name (a_name: STRING): BOOLEAN
+			-- Does `a_name' respect the naming conventions for features?
 		do
+				-- Sample violations:
+				-- my_feature_, my__feature, _my_feature, MY_FEATURE, my_FEATURE
+
 			Result := not a_name.ends_with ("_") and not a_name.has_substring ("__") and (a_name.as_lower ~ a_name)
 		end
 
 feature -- Properties
 
 	title: STRING_32
+			-- <Precursor>
 		do
 			Result := ca_names.feature_naming_convention_title
 		end
 
 	id: STRING_32 = "CA064"
+			-- <Precursor>
 
 	description: STRING_32
+			-- <Precursor>
 		do
 			Result := ca_names.feature_naming_convention_description
 		end
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+			-- <Precursor>
 		do
 			a_formatter.add (ca_messages.feature_naming_convention_violation_1)
-			check attached {STRING} a_violation.long_description_info.first end
+			check
+				attached {STRING} a_violation.long_description_info.first
+			end
 			if attached {STRING} a_violation.long_description_info.first as l_feature_name then
 				a_formatter.add (l_feature_name)
 			end

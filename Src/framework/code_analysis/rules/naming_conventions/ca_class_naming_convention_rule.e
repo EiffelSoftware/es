@@ -30,6 +30,7 @@ feature {NONE} -- Initialization
 feature {NONE} -- Activation
 
 	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+			-- <Precursor>
 		do
 			a_checker.add_class_pre_action (agent process_class)
 		end
@@ -37,6 +38,7 @@ feature {NONE} -- Activation
 feature {NONE} -- Rule checking
 
 	process_class (a_class_as: CLASS_AS)
+			-- Process `a_class_as'.
 		local
 			l_name: STRING
 			l_viol: CA_RULE_VIOLATION
@@ -51,13 +53,18 @@ feature {NONE} -- Rule checking
 		end
 
 	is_valid_class_name (a_name: STRING): BOOLEAN
+			-- Does `a_name' respect the naming conventions for classes?
 		do
+				-- Sample violations:
+				-- MY_CLASS_, MY__CLASS, _MY_CLASS, my_class, my_CLASS
+
 			Result := not a_name.ends_with ("_") and not a_name.has_substring ("__") and (a_name.as_upper ~ a_name)
 		end
 
 feature -- Properties
 
 	title: STRING_32
+			-- <Precursor>
 		do
 			Result := ca_names.class_naming_convention_title
 		end
@@ -66,14 +73,18 @@ feature -- Properties
 			-- <Precursor>
 
 	description: STRING_32
+			-- <Precursor>
 		do
 			Result := ca_names.class_naming_convention_description
 		end
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+			-- <Precursor>
 		do
 			a_formatter.add (ca_messages.class_naming_convention_violation_1)
-			check attached a_violation.affected_class end
+			check
+				attached a_violation.affected_class
+			end
 			if attached a_violation.affected_class as l_affected_class then
 				a_formatter.add_class (l_affected_class.original_class)
 			end

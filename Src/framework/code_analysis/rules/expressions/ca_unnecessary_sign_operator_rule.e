@@ -31,23 +31,37 @@ feature {NONE} -- Initialization
 feature {NONE} -- Activation
 
 	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+			-- <Precursor>
 		do
 			a_checker.add_unary_pre_action (agent process_unary)
+
+				-- Simple unary expressions like "+3" or "-2" are directly parsed as numerical
+				-- constants by the compiler, and process_unary is not invoked at all. It is only invoked for expressions with at least
+				-- two consecutive signs or for simple unary expressions where the operand is *not* a constant (in that case, the
+				-- unnecessary plus operator can be detected). For this reason, we need to handle integer and real expressions separately.
 			a_checker.add_integer_pre_action (agent process_int)
 			a_checker.add_real_pre_action (agent process_real)
 		end
 
 feature {NONE} -- Rule checking
 
-		-- Simple unary expressions like "+3" or "-2" are directly parsed as numerical
-		-- constants by the compiler, and process_unary is not invoked at all. It is only invoked for expressions with at least
-		-- two consecutive signs or for simple unary expressions where the operand is *not* a constant (in that case, the
-		-- unnecessary plus operator can be detected). For this reason, we need to handle integer and real expressions separately.
 
 	is_sign_redundant (a_expr: UNARY_AS): BOOLEAN
+			-- Is the sign of `a_expr' redundant?
 		local
 			l_internal_expr: EXPR_AS
 		do
+				-- Sample violations:
+				-- +-2
+				-- -+4
+				-- +(4)
+				-- -(-7)
+				-- -(0)
+				--
+				-- However NOT:
+				-- +(-(-2 - 1)) -- as the parenthesis contain a complex expression
+				-- +l_int -- this rule only applies to literals
+
 			Result := False
 			if attached {UN_PLUS_AS} a_expr then
 					-- The unary plus is always redudant is applied on a basic type
@@ -57,13 +71,11 @@ feature {NONE} -- Rule checking
 					-- plus or minus unary expression, then this sign is redundant.
 
 				l_internal_expr := unwrapped (l_minus_expr.expr)
-
 				if attached {UN_PLUS_AS} l_internal_expr or attached {UN_MINUS_AS} l_internal_expr then
 					Result := True
 				elseif attached {INTEGER_AS} l_internal_expr as l_int_as then
 						-- No sign is necessary for zero
 						-- Also, if the integer already has a sign, the current sign is redundant.
-						-- TODO: this is a perfect example for the parenthesis rule with boolean assignments
 					Result := (l_int_as.integer_64_value = 0 or l_int_as.sign_symbol (current_context.matchlist) /= Void)
 				elseif attached {REAL_AS} l_internal_expr as l_real_as then
 						-- If the real already has a sign, the current sign is redundant.
@@ -110,6 +122,7 @@ feature {NONE} -- Rule checking
 		end
 
 	process_unary (a_expr: UNARY_AS)
+			-- Process `a_expr'.
 		do
 			if is_sign_redundant (a_expr) then
 				add_violation (a_expr.start_location, a_expr.text_32 (current_context.matchlist))
@@ -117,7 +130,12 @@ feature {NONE} -- Rule checking
 		end
 
 	process_int (a_integer: INTEGER_AS)
+			-- Process `a_integer'.
 		do
+				-- Sample violations:
+				--	+3
+				--	-0
+
 			if attached a_integer.sign_symbol (current_context.matchlist) as l_sign then
 				if l_sign.is_plus or a_integer.natural_64_value = 0 then
 					add_violation (l_sign.start_location, a_integer.text_32 (current_context.matchlist))
@@ -126,7 +144,11 @@ feature {NONE} -- Rule checking
 		end
 
 	process_real (a_real: REAL_AS)
+			-- Process `a_real'.
 		do
+				-- Sample violation:
+				--  +3.7
+
 			if attached a_real.sign_symbol (current_context.matchlist) as l_sign then
 					-- We do not check for the case (sign.is_minus and a_real.value.to_real_64 = 0)
 					-- as 0.0 and -0.0 are not the same (e.g. "1 / -0.0" yields -Infinity).
@@ -137,6 +159,8 @@ feature {NONE} -- Rule checking
 		end
 
 	add_violation (a_location: LOCATION_AS; a_text: STRING)
+			-- Creates and adds to the violations list a new violation
+			-- with location `a_location' and text `a_text'.
 		local
 			l_viol: CA_RULE_VIOLATION
 		do
@@ -149,21 +173,27 @@ feature {NONE} -- Rule checking
 feature -- Properties
 
 	title: STRING_32
+			-- <Precursor>
 		do
 			Result := ca_names.unnecessary_sign_operator_title
 		end
 
 	id: STRING_32 = "CA030"
+			-- <Precursor>
 
 	description: STRING_32
+			-- <Precursor>
 		do
 			Result := ca_names.unnecessary_sign_operator_description
 		end
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+			-- <Precursor>
 		do
 			a_formatter.add (ca_messages.unnecessary_sign_operator_violation_1)
-			check attached {READABLE_STRING_GENERAL} a_violation.long_description_info.first end
+			check
+				attached {READABLE_STRING_GENERAL} a_violation.long_description_info.first
+			end
 			if attached {READABLE_STRING_GENERAL} a_violation.long_description_info.first as l_text then
 				a_formatter.add_quoted_text (l_text)
 			end

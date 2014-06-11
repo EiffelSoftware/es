@@ -25,7 +25,6 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization for `Current'.
 		do
-				-- TODO: Some preferences here?
 			make_with_defaults
 			create {CA_SUGGESTION} severity
 		end
@@ -33,6 +32,7 @@ feature {NONE} -- Initialization
 feature {NONE} -- Activation
 
 	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+			-- <Precursor>
 		do
 			a_checker.add_feature_pre_action (agent process_feature)
 			a_checker.add_do_pre_action (agent process_do)
@@ -41,14 +41,30 @@ feature {NONE} -- Activation
 feature {NONE} -- Rule checking
 
 	current_feature: detachable FEATURE_AS
+			-- The feature currently being analyzed.
 
 	process_do (a_as: DO_AS)
+			-- <Precursor>
 		local
 			l_viol: CA_RULE_VIOLATION
 			l_called_feature: FEATURE_I
 		do
+				-- Sample violation
+				--
+				--	feature -- Publicly accessible
+				--
+				--		tell_me_the_secret_attribute: INTEGER
+				--			do
+				--				Result := secret_attribute
+				--			end
+				--
+				--	feature {NONE} -- Secret
+				--
+				--		secret_attribute: INTEGER
+				--
+
 				-- Check that the current feature is a function containing exactly one instruction.
-			if attached current_feature as l_current_feature and then l_current_feature.is_function and then attached a_as.compound and then a_as.compound.count = 1 then
+			if attached current_feature as l_current_feature and then l_current_feature.is_function and then attached a_as.compound as l_compound and then l_compound.count = 1 then
 
 					-- Check that the said instruction is an assignment to 'Result'
 				if attached {ASSIGN_AS} a_as.compound.first as l_assignment and then attached {RESULT_AS} l_assignment.target then
@@ -71,6 +87,7 @@ feature {NONE} -- Rule checking
 		end
 
 	process_feature (a_feature_as: FEATURE_AS)
+			-- <Precursor>
 		do
 			current_feature := a_feature_as
 		end
@@ -78,18 +95,22 @@ feature {NONE} -- Rule checking
 feature -- Properties
 
 	title: STRING_32
+			-- <Precursor>
 		do
 			Result := ca_names.unneeded_accessor_function_title
 		end
 
 	id: STRING_32 = "CA079"
+			-- <Precursor>
 
 	description: STRING_32
+			-- <Precursor>
 		do
 			Result := ca_names.unneeded_accessor_function_description
 		end
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+			-- <Precursor>
 		do
 			a_formatter.add (ca_messages.unneeded_accessor_function_violation_1)
 			a_violation.long_description_info.start

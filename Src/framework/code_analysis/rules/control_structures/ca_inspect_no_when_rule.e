@@ -33,6 +33,7 @@ feature {NONE} -- Initialization
 feature {NONE} -- Activation
 
 	register_actions (a_checker: CA_ALL_RULES_CHECKER)
+			-- <Precursor>
 		do
 			a_checker.add_inspect_pre_action (agent process_inspect)
 		end
@@ -44,6 +45,17 @@ feature {NONE} -- Rule checking
 			l_viol: CA_RULE_VIOLATION
 			l_has_else: BOOLEAN
 		do
+				-- Sample violations:
+				--
+				--	inspect my_int
+				--	end
+				--
+				--	inspect my_int
+				--  else
+				--		io.put_string ("Do something")
+				--	end
+				--
+
 			if a_inspect_as.case_list = Void or else a_inspect_as.case_list.is_empty then
 				create l_viol.make_with_rule (Current)
 				l_viol.set_location (a_inspect_as.start_location)
@@ -56,6 +68,7 @@ feature {NONE} -- Rule checking
 feature -- Properties
 
 	title: STRING_32
+			-- <Precursor>
 		do
 			Result := ca_names.inspect_no_when_title
 		end
@@ -64,13 +77,17 @@ feature -- Properties
 			-- <Precursor>
 
 	description: STRING_32
+			-- <Precursor>
 		do
 			Result := ca_names.inspect_no_when_description
 		end
 
 	format_violation_description (a_violation: CA_RULE_VIOLATION; a_formatter: TEXT_FORMATTER)
+			-- <Precursor>
 		do
-			check attached {BOOLEAN} a_violation.long_description_info.first end
+			check
+				attached {BOOLEAN} a_violation.long_description_info.first
+			end
 			if attached {BOOLEAN} a_violation.long_description_info.first as l_has_else then
 				if l_has_else then
 					a_formatter.add (ca_messages.inspect_no_when_with_else_violation)
