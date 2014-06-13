@@ -1,6 +1,11 @@
 <"collection": <
     "version": "1.0", 
-    "href": "{$host/}/reports", 
+     {if isset="$id"}
+        "href": "{$host/}/reports/{$id/}", 
+     {/if}
+     {unless isset="$id"}
+        "href": "{$host/}/reports", 
+     {/unless}
     "links": [
             <
                 "href": "{$host/}",
@@ -38,6 +43,26 @@
                 "href": "{$host/}/reports/?page={$last/}&size={$size/}",
                 "rel": "last",
                 "prompt": "Last"
+            >,
+            <
+               "href": "{$host/}/account",
+               "rel": "account",
+               "prompt": "Account information"
+            >,
+            <
+               "href": "{$host/}/password",
+               "rel": "change_password",
+               "prompt": "Change password"
+            >,
+            <
+               "href": "{$host/}/email",
+               "rel": "change_email",
+               "prompt": "Change Email"
+            >,
+            <
+             "href": "{$host/}/logoff",
+             "rel": "logoff",
+             "prompt": "Logoff"
             >,
             <
                 "href": "{$host/}/profile/esa_api.xml",
@@ -152,6 +177,13 @@
                    ] 
                 >,{/foreach}]
         ,
+       {if isset="$id"}
+       "template": <
+       "data": [
+             <"name": "user_responsible", "prompt": "Responsible", "value": "">
+            ] 
+        >,
+       {/if}
        "queries" :
         [
          <

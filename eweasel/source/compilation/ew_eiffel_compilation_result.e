@@ -177,27 +177,9 @@ feature -- Update
 			elseif is_prefix (Aborted_prefix, line) then
 				compilation_aborted := True;
 			elseif is_prefix (Exception_prefix, line) then
-				had_exception := True;
-				if exception_tag = Void then
-					create exception_tag.make(0);
-				end;
-				line.keep_tail(line.count - Exception_prefix.count);
-				exception_tag.append (line);
-					-- Remove all newlines characters so that the exception tag appears on a single line.
-				exception_tag.replace_substring_all ("%N", "")
-				exception_tag.replace_substring_all ("%R", "")
+				analyze_exception_line (line)
 			elseif is_prefix (Exception_occurred_prefix, line) then
-				had_exception := True;
-				if exception_tag = Void then
-					create exception_tag.make(0);
-				end;
-				if exception_tag.count = 0 then
-					line.keep_tail (line.count - Exception_occurred_prefix.count);
-					exception_tag.append (line);
-						-- Remove all newlines characters so that the exception tag appears on a single line.
-					exception_tag.replace_substring_all ("%N", "")
-					exception_tag.replace_substring_all ("%R", "")
-				end
+				analyze_exception_occurred_line (line)
 			elseif is_prefix (Failure_prefix, line) then
 				execution_failure := True;
 			elseif is_prefix (Illegal_inst_prefix, line) then
@@ -225,13 +207,19 @@ feature {NONE} -- State
 feature -- Modification
 
 	set_compilation_paused
+			-- Set the `compilation_paused' status flag to True.
 		do
 			compilation_paused := True;
+		ensure
+			compilation_paused = True
 		end;
 
 	set_compilation_finished
+			-- Set the `compilation_finished' status flag to True.
 		do
 			compilation_finished := True;
+		ensure
+			compilation_finished = True
 		end;
 
 	add_syntax_error (err: EW_EIFFEL_SYNTAX_ERROR)
@@ -299,6 +287,38 @@ feature -- Comparison
 
 
 feature {NONE} -- Implementation
+
+	analyze_exception_line (line: STRING)
+		require
+			exception_prefix: is_prefix (Exception_prefix, line)
+		do
+			had_exception := True;
+			if exception_tag = Void then
+				create exception_tag.make(0);
+			end;
+			line.keep_tail(line.count - Exception_prefix.count);
+			exception_tag.append (line);
+				-- Remove all newlines characters so that the exception tag appears on a single line.
+			exception_tag.replace_substring_all ("%N", "")
+			exception_tag.replace_substring_all ("%R", "")
+		end
+
+	analyze_exception_occurred_line (line: STRING)
+		require
+			exception_occurred_prefix: is_prefix (Exception_occurred_prefix, line)
+		do
+			had_exception := True;
+			if exception_tag = Void then
+				create exception_tag.make(0);
+			end;
+			if exception_tag.count = 0 then
+				line.keep_tail (line.count - Exception_occurred_prefix.count);
+				exception_tag.append (line);
+					-- Remove all newlines characters so that the exception tag appears on a single line.
+				exception_tag.replace_substring_all ("%N", "")
+				exception_tag.replace_substring_all ("%R", "")
+			end
+		end
 
 	analyze_syntax_error (line: STRING)
 		require

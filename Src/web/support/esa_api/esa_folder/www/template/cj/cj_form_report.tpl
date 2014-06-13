@@ -20,7 +20,7 @@
             {if isset="$user"}
             <
                 "href": "{$host/}/user_reports/{$user/}",
-                "rel": "all-user",
+                "rel": "all_user",
                 "prompt": "My Reports"
             >,
             {if isset="$id"} 
@@ -30,6 +30,21 @@
                 "prompt": "Confirm Report"
             >,
             {/if}
+            <
+                 "href": "{$host/}/account",
+                 "rel": "account",
+                 "prompt": "Account information"
+            >,
+            <
+                 "href": "{$host/}/password",
+                 "rel": "change_password",
+                 "prompt": "Change password"
+            >,
+            <
+                 "href": "{$host/}/email",
+                 "rel": "change_email",
+                 "prompt": "Change Email"
+            >,
             <
                 "href": "{$host/}/logoff",
                 "rel": "logoff",

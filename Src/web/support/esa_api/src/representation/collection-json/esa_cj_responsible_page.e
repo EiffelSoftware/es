@@ -28,11 +28,16 @@ feature {NONE} --Initialization
 			template.add_value (a_view.index, "index")
 			template.add_value (a_view.categories, "categories")
 			template.add_value (a_view.priorities, "priorities")
+			template.add_value (a_view.responsibles, "responsibles")
 			template.add_value (a_view.status, "status")
 			template.add_value (a_view.severities, "severities")
 			template.add_value (a_view, "view")
 			template.add_value (a_view.index, "index")
 			template.add_value (a_view.size, "size")
+
+			if attached a_view.id as l_id then
+				template.add_value (l_id, "id")
+			end
 
 			if a_view.index > 1 then
 				template.add_value (a_view.index-1 , "prev")

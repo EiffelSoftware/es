@@ -13,7 +13,7 @@
             <p itemprop="password"><input type="password" class="span3" id="password" name="password" placeholder="Enter Password" required></p>
 	    <input type="hidden" name="host" value="{$host/}">
              <div class="controls">
-                <button type="button" class="btn btn-success" onclick="login();">Sign in</button>
+                <button type="button" class="btn btn-primary" onclick="login();">Sign in</button>
                 <input type="reset" class="btn btn-default" value="Reset"></p>
              </div>   
           </form>
@@ -32,20 +32,20 @@
       <div class="modal-body">
           <form itemprop="logoff">
 	         <input type="hidden" name="host" value="{$host/}">
-            <p><button type="button" class="btn btn-success" onclick="logoff();">Logoff</button></p>
+            <p><button type="button" class="btn btn-primary" onclick="logoff();">Logoff</button></p>
           </form>
       </div>
     </div>
   </div>
 </div>
    
-<div class="navbar navbar-inverse navbar-fixed-top" role="navigation" itemscope itemtype="{$host/}/profile/esa_api.xml">
+<div class="navbar navbar-default navbar-fixed-top" role="navigation" itemscope itemtype="{$host/}/profile/esa_api.xml">
   <div class="container-fluid">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
         <span class="sr-only">Toggle navigation</span>
       </button>
-         <a class="navbar-brand" href="{$host/}" itemprop="home" rel="home">Eiffel Support API</a>
+         <a class="navbar-brand" href="{$host/}" itemprop="home" rel="home">Eiffel Support Site</a>
      </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-left">
@@ -60,10 +60,10 @@
              <li class="dropdown">
               <a class="dropdown-toggle" data-toggle="dropdown">{$user/} <b Class="caret"></b></a>
               <ul class="dropdown-menu">
-              <li><a href="{$host/}/account">Account Information</a></li>
+              <li><a href="{$host/}/account" itemprop="account_information" rel="account_information">Account Information</a></li>
               <li class="divider"></li>
-              <li><a href="{$host/}/email">Change Email</li>
-              <li><a href="{$host/}/password">Change Password</a></li>
+              <li><a href="{$host/}/email" itemprop="change_email" rel="change_email">Change Email</li>
+              <li><a href="{$host/}/password" itemprop="change_password" rel="change_password">Change Password</a></li>
             </ul>
          </li> 
 

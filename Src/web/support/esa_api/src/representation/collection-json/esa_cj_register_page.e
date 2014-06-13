@@ -43,7 +43,7 @@ feature {NONE} -- Initialization
 				end
 				template.add_value (l_error, "error")
 				template.add_value ("Validation Error", "title")
-				template.add_value ("403", "code")
+				template.add_value ("400", "code")
 			end
 
 			if attached a_user then

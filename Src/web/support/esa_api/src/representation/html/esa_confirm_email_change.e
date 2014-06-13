@@ -1,6 +1,5 @@
 note
 	description: "Summary description for {ESA_CONFIRM_EMAIL_CHANGE}."
-	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
