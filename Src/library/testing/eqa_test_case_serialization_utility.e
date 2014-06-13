@@ -313,9 +313,10 @@ feature -- Utilities
 			end
 		end
 
-	array_as_string (a_array: ARRAY [NATURAL_8]): detachable STRING
+	array_as_string (a_array: ARRAY [NATURAL_8]): STRING
 			-- String representation of `a_array'
 			-- Format: comma separated numbers
+			-- Empty or Void arrays are represented by an empty string.
 		local
 			i: INTEGER
 			u: INTEGER
@@ -335,7 +336,7 @@ feature -- Utilities
 					i := i + 1
 				end
 			else
-				Result := Void
+				Result := ""
 			end
 		end
 

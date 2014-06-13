@@ -88,7 +88,10 @@ feature{NONE} -- Implementation
 										attached {POINTER} l_field
 									then
 											-- We report that a field of primitive type is visited.
-										l_action.call ([l_field])
+										if l_action /= Void then
+											l_action.call ([l_field])
+										end
+
 --										l_field := l_int.field (i, l_object)
 --										if l_field /= Void and then l_action /= Void then
 --											l_action.call ([l_field])
@@ -248,7 +251,7 @@ feature{NONE} -- Implementation
 		end
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

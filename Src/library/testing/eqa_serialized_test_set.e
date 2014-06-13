@@ -70,10 +70,12 @@ feature -- Access
     		-- Key: variable index.
     		-- Value: object.
     	do
-    		if pre_variable_table_cache = Void then
-    			pre_variable_table_cache := deserialized_variable_table (pre_serialization)
+    		if attached pre_variable_table_cache as attached_cache then
+    			Result := attached_cache
+    		else
+    			Result := deserialized_variable_table (pre_serialization)
+    			pre_variable_table_cache := Result
     		end
-    		Result := pre_variable_table_cache
     	end
 
     pre_variable_indexes: STRING
@@ -87,10 +89,12 @@ feature -- Access
     		-- Key: variable index.
     		-- Value: object.
     	do
-    		if post_variable_table_cache = Void then
-    			post_variable_table_cache := deserialized_variable_table (post_serialization)
+			if attached post_variable_table_cache as attached_cache then
+    			Result := attached_cache
+    		else
+    			Result := deserialized_variable_table (post_serialization)
+    			post_variable_table_cache := Result
     		end
-    		Result := post_variable_table_cache
     	end
 
     post_variable_indexes: STRING
@@ -343,7 +347,7 @@ feature -- Test case information
 		end
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software and others"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[
 			Eiffel Software

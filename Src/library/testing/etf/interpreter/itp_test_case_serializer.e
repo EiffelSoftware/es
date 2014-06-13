@@ -80,7 +80,12 @@ feature -- Access
 			l_tc_signature: STRING
 		do
 			if is_test_case_setup then
-				l_hash := test_case_hash_code.twin
+				if attached test_case_hash_code as l_test_case_hash_code then
+					l_hash := l_test_case_hash_code.twin
+				else
+					-- should not happen, this branch is to make void-safety happy.
+					l_hash := ""
+				end
 
 				l_idx := l_hash.index_of ('#', 1)
 				l_state_hash := l_hash.substring (l_idx + 1, l_hash.count)
@@ -107,7 +112,11 @@ feature -- Access
 
 				create l_states.make (1024)
 				create l_id.make (128)
-				l_id.append (class_name)
+
+				if attached class_name as l_class_name then
+					l_id.append (l_class_name)
+				end
+
 				l_id.append_character ('.')
 				l_id.append (feature_name)
 				l_id.append_character ('.')
@@ -149,11 +158,30 @@ feature -- Access
 						-- Synthesize time.
 					append_time (time, l_serialization)
 
-						-- Synthesize test case.
-					append_test_case (class_name, feature_name, argument_count, is_creation, is_query, operands, types, l_serialization)
+					if attached types as l_types   then
+						if attached operands as l_operands then
+							if attached class_name as l_class_name then
+								if attached feature_name as l_feature_name then
+									-- Synthesize test case.
+									append_test_case (l_class_name,
+										l_feature_name,
+										argument_count,
+										is_creation,
+										is_query,
+										l_operands,
+										l_types,
+										l_serialization)
+								end
+							end
+						end
+					end
 
+
+					if attached pre_state_objects as l_pre_state_objects then
 						-- Synthesize all AutoTest created variables in current test case.
-					append_all_variables (pre_state_objects, l_serialization)
+						append_all_variables (l_pre_state_objects, l_serialization)
+					end
+
 
 						-- Synthesize trace.
 					append_exception_trace (exception, l_serialization)
@@ -275,7 +303,7 @@ feature -- Basic operations
 			-- Retrieve state of objects before test case
 			-- execution.
 		local
-			l_data: TUPLE [summary: STRING; hash: STRING]
+			l_data: detachable TUPLE [summary: STRING; hash: STRING]
 			l_serialization: like object_serialization
 		do
 			pre_state_object_summary := Void
@@ -300,30 +328,35 @@ feature -- Basic operations
 			-- Retrieve post state of the test case.
 			-- `a_is_failing_test_case' indicates if the last test case is failing.
 		local
-			l_data: TUPLE [summary: STRING; hash: STRING]
+			l_data: detachable TUPLE [summary: STRING; hash: STRING]
 		do
 			if is_test_case_setup then
-				exception := interpreter.error_buffer.twin
-				if exception.is_empty then
-					if is_post_state_serialized and then interpreter.post_state_retrieveal_byte_code /= Void then
-						interpreter.retrieve_post_object_state
-						post_state_object_summary := Void
-						l_data := abstract_object_state (False)
-						if l_data /= Void then
-							post_state_object_summary := l_data.summary
+				if interpreter.error_buffer /= Void then
+					exception := interpreter.error_buffer.twin
+				end
+
+				if attached exception as l_exception then
+					if  l_exception.is_empty then
+						if is_post_state_serialized and then interpreter.post_state_retrieveal_byte_code /= Void then
+							interpreter.retrieve_post_object_state
+							post_state_object_summary := Void
+							l_data := abstract_object_state (False)
+							if l_data /= Void then
+								post_state_object_summary := l_data.summary
+							end
+						else
+							post_state_object_summary := Void
 						end
 					else
 						post_state_object_summary := Void
 					end
-				else
-					post_state_object_summary := Void
 				end
 			else
 				exception := Void
 			end
 		end
 
-	object_serialization (a_pre_state: BOOLEAN): TUPLE [serialization: detachable STRING; description: detachable HASH_TABLE [TUPLE [object: detachable ANY; type: STRING], INTEGER]]
+	object_serialization (a_pre_state: BOOLEAN): detachable TUPLE [serialization: detachable STRING; description: detachable HASH_TABLE [TUPLE [object: detachable ANY; type: STRING], INTEGER]]
 			-- Object serialization for `operands'. `a_pre_state' indicates if the objects are in pre-execution or post-execution state.
 		local
 			l_lower: INTEGER
@@ -342,6 +375,7 @@ feature -- Basic operations
 					if is_query and then not a_pre_state then
 						l_upper := l_upper + 1
 					end
+
 					Result := objects_as_string (operands, l_lower, l_upper)
 --						 Uncomment the following code to check if serialization is done correctly.
 --					l_any ?= deserialized_object (Result.serialization)
@@ -372,7 +406,7 @@ feature{NONE} -- Implementation
 	post_state_object_summary: detachable STRING
 			-- Post-state object summary
 
-	test_case_hash_code: STRING
+	test_case_hash_code: detachable STRING
 			-- Hash code for current test case
 
 	pre_state_serialization: detachable STRING
@@ -383,7 +417,7 @@ feature{NONE} -- Implementation
 			-- List of variables in `pre_state_serialization' along with their object index.
 			-- Key is variable index, value is the variable object itself in pre-execution state.
 
-	abstract_object_state (a_pre_state: BOOLEAN): TUPLE [summary: STRING; hash: STRING]
+	abstract_object_state (a_pre_state: BOOLEAN): detachable TUPLE [summary: STRING; hash: STRING]
 			-- Retrieve object state summary from objects specified by `operands'
 			-- `summary' is the state summary for `operands'.
 			-- `hash' is the hash code of `summary'.
@@ -399,9 +433,15 @@ feature{NONE} -- Implementation
 				create l_hash_code.make (64)
 					-- Setup test case hash code, which consists the hash of the states of all operands.
 				if a_pre_state then
-					l_hash_code.append (class_name)
+					if attached class_name as l_class_name then
+						l_hash_code.append (l_class_name)
+					end
+
 					l_hash_code.append_character ('.')
-					l_hash_code.append (feature_name)
+
+					if attached feature_name as l_feature_name then
+						l_hash_code.append (l_feature_name)
+					end
 					l_hash_code.append_character ('#')
 				end
 
@@ -478,7 +518,7 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation
 
-	objects_as_string (a_objects: SPECIAL [INTEGER]; a_lower: INTEGER; a_upper: INTEGER): TUPLE [serialization: STRING; description: like recursively_referenced_objects]
+	objects_as_string (a_objects: detachable SPECIAL [INTEGER]; a_lower: INTEGER; a_upper: INTEGER): TUPLE [serialization: STRING; description: like recursively_referenced_objects]
 			-- Serialized version of objects whose ID are specified by `a_objects' starting from
 			-- position `a_lower' and ending at position `a_upper'.
 			-- `serialization' is the serialized stream for those objects.
@@ -503,7 +543,10 @@ feature{NONE} -- Implementation
 			until
 				i > a_upper
 			loop
-				l.put (a_objects.item (i), i - a_lower)
+				if a_objects /= Void  then
+					l.put (a_objects.item (i), i - a_lower)
+				end
+
 				i := i + 1
 			end
 
@@ -542,6 +585,7 @@ feature{NONE} -- Implementation
 --				interpreter.log_message ("%N")
 			else
 				create l_objects.make_filled (0, 1)
+				create l_obj_list.make (0)
 			end
 			Result := [serialized_object (l_objects), l_obj_list]
 		end
@@ -704,8 +748,15 @@ feature{NONE} -- Implementation/Test case synthesis
 			a_buffer.append_character ('%N')
 		end
 
-	append_test_case (a_class_name: STRING; a_feature_name: STRING; a_argument_count: INTEGER; a_is_creation: BOOLEAN; a_is_query: BOOLEAN; a_operands: like operands; a_types: like types; a_buffer: STRING)
-			-- Append test case defined by `a_class_name', `a_feature_name', `a_is_creation', `a_is_query', `a_operands' and `a_types' into `a_buffer'.
+	append_test_case (a_class_name: STRING;
+		a_feature_name: STRING;
+		a_argument_count: INTEGER;
+		a_is_creation: BOOLEAN;
+		a_is_query: BOOLEAN;
+		a_operands: SPECIAL[INTEGER];
+		a_types: SPECIAL[STRING];
+		a_buffer: STRING)
+			-- Append test case defined by `a_class_name', `a_feature_name', `a_is_creation', `a_is_query', `a_operands' and `a_types' into `a_buffer'.			
 		local
 			l_last: INTEGER
 			i: INTEGER
@@ -770,7 +821,10 @@ feature{NONE} -- Implementation/Test case synthesis
 			until
 				i > l_last
 			loop
-				append_variable_with_type (a_operands.item (i), types.item (i), a_buffer, True)
+				if attached types as l_types then
+					append_variable_with_type (a_operands.item (i), l_types.item (i), a_buffer, True)
+				end
+
 				i := i + 1
 			end
 			a_buffer.append (operands_tag_end)
@@ -815,8 +869,8 @@ feature{NONE} -- Implementation/Test case synthesis
 			a_buffer.append_character ('%N')
 			a_buffer.append (cdata_tag_start)
 			a_buffer.append_character ('%N')
-			if exception /= Void then
-				a_buffer.append (exception)
+			if attached exception as l_exp then
+				a_buffer.append (l_exp)
 			end
 			a_buffer.append_character ('%N')
 			a_buffer.append (cdata_tag_end)

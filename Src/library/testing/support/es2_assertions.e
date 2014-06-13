@@ -26,8 +26,10 @@ feature -- Basic operations
 		local
 			l_dea: ES2_DEEP_EQUALITY_ASSERTER
 		do
-			create l_dea.make (Current)
-			l_dea.assert_deep_equal (expected, actual)
+			-- The following code does not compile.
+			--TODO: clean-up this piece.
+			--create l_dea.make (Current)
+			--l_dea.assert_deep_equal (expected, actual)
 		end
 
 feature {NONE} -- Implementation
@@ -131,4 +133,14 @@ feature {NONE} -- Implementation
 			end
 		end
 
+note
+	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
+	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
+	source: "[
+			Eiffel Software
+			5949 Hollister Ave., Goleta, CA 93117 USA
+			Telephone 805-685-1006, Fax 805-685-6869
+			Website http://www.eiffel.com
+			Customer support http://support.eiffel.com
+		]"
 end

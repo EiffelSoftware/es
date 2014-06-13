@@ -341,7 +341,10 @@ end
 			last_response := [0, Void, Void, output_buffer, error_buffer]
 			send_response_to_socket
 		rescue
-			log_message (exception_trace + "%N")
+			if attached exception_trace as l_exception_trace  then
+				log_message (l_exception_trace + "%N")
+			end
+
 			l_retried := True
 			retry
 		end
@@ -601,16 +604,6 @@ feature {ITP_TEST_CASE_SERIALIZER} -- Logging
 
 			l_meaning := meaning (l_exception_code)
 			check l_trace /= Void end
-
-
-
-
-
-
-
-
-
-
 
 --			l_tag := tag_name
 --			l_recipient := recipient_name
@@ -1773,7 +1766,7 @@ feature -- Semantic search
 			-- Is last request a batch-assignment?
 
 	special_type_mapping: HASH_TABLE [INTEGER, INTEGER]
-			-- Mapping betwwen dynamic type of SPECIAL instances
+			-- Mapping between dynamic type of SPECIAL instances
 			-- to abstract element types.
 		local
 			l_int: INTERNAL
