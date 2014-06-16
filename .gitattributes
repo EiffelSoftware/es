@@ -5566,6 +5566,24 @@ eweasel/tests/ccomp050/notes -text
 eweasel/tests/ccomp051/notes -text
 eweasel/tests/ccomp052/notes -text
 eweasel/tests/ccomp074/Ace -text
+eweasel/tests/codeanalysis001/Ace -text
+eweasel/tests/codeanalysis001/notes -text
+eweasel/tests/codeanalysis001/test.e -text svneol=native#unset
+eweasel/tests/codeanalysis002/Ace -text
+eweasel/tests/codeanalysis002/alldisabled.xml -text
+eweasel/tests/codeanalysis002/notes -text
+eweasel/tests/codeanalysis002/test.e -text svneol=native#unset
+eweasel/tests/codeanalysis003/Ace -text
+eweasel/tests/codeanalysis003/notes -text
+eweasel/tests/codeanalysis003/test.e -text svneol=native#unset
+eweasel/tests/codeanalysis004/Ace -text
+eweasel/tests/codeanalysis004/notes -text
+eweasel/tests/codeanalysis004/test.e -text svneol=native#unset
+eweasel/tests/codeanalysis005/Ace -text
+eweasel/tests/codeanalysis005/notes -text
+eweasel/tests/codeanalysis006/Ace -text
+eweasel/tests/codeanalysis006/Ace.ecf -text svneol=native#unset
+eweasel/tests/codeanalysis006/notes -text
 eweasel/tests/config036/Ace svneol=native#text/xml
 eweasel/tests/config036/eweasel.ecf svneol=native#text/xml
 eweasel/tests/config038/Ace svneol=native#text/xml
