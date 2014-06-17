@@ -1311,6 +1311,10 @@ feature -- Update
 				l_at_args := arguments_in_range (current_option + 1, argument_count)
 				current_option := argument_count + 1
 				create {EWB_BOOGIE_VERIFICATION} command.make_with_arguments (l_at_args)
+			elseif option.is_equal ("-auto-teach") then
+				l_at_args := arguments_in_range (current_option + 1, argument_count)
+				current_option := argument_count + 1
+				create {EWB_AUTOTEACH} command.make_with_arguments (l_at_args)
 			elseif option.is_equal ("-code-analysis") then
 				l_at_args := arguments_in_range (current_option + 1, argument_count)
 				current_option := argument_count + 1

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-13-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-13-0 http://www.eiffel.com/developers/xml/configuration-1-13-0.xsd" name="auto_teach" uuid="AC5CBB21-B8C7-42AE-8E0A-083052605499" library_target="auto_teach">
+	<target name="auto_teach">
+		<option void_safety="none" />
+		<file_rule>
+			<exclude>/.svn$</exclude>
+		</file_rule>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="base_extension" location="$ISE_LIBRARY\library\base_extension\base_extension.ecf" readonly="false"/>
+		<library name="compiler" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf"/>
+		<library name="configuration-parser" location="$EIFFEL_SRC\framework\configuration\configuration_parser.ecf" />
+		<library name="ecosystem" location="$EIFFEL_SRC\Eiffel\ecosystem\ecosystem.ecf"/>
+		<library name="environment" location="$EIFFEL_SRC\framework\environment\environment.ecf"/>
+		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
+		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
+		<library name="framework_patterns" location="$EIFFEL_SRC\framework\patterns\patterns.ecf"/>
+		<library name="interface_names" location="$EIFFEL_SRC\framework\interface_names\interface_names.ecf"/>
+		<cluster name="auto_teach" location=".\" recursive="true" />
+	</target>
+</system>
+

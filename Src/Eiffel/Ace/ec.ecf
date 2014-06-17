@@ -106,7 +106,7 @@
 		</external_object>
 		<variable name="batch_preferences" value="true"/>
 		<variable name="batch_framework" value="true"/>
-		<library name="code_analysis" location="$EIFFEL_SRC\framework\code_analysis\code_analysis.ecf" readonly="false"/>
+		<library name="auto_teach" location="$EIFFEL_SRC\framework\auto_teach\auto_teach.ecf" readonly="false"/>
 		<library name="compiler_kernel" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf" readonly="false" use_application_options="true"/>
 		<library name="dotnet_assembly_information" location="$EIFFEL_SRC\dotnet\assembly_info\dotnet_assembly_information.ecf" readonly="false"/>
 		<library name="eiffel2boogie" location="$ISE_LIBRARY\framework\eiffel2boogie\eiffel2boogie.ecf" readonly="false"/>
@@ -211,6 +211,7 @@
 		<variable name="batch_framework" value="false"/>
 		<library name="annotation" location="$EIFFEL_SRC\framework\annotation\annotation.ecf" readonly="false"/>
 		<library name="auto_fix" location="$EIFFEL_SRC\framework\auto_fix\auto_fix.ecf" readonly="false"/>
+		<library name="auto_teach" location="$EIFFEL_SRC\framework\auto_teach\auto_teach.ecf" readonly="false"/>
 		<library name="auto_test" location="$EIFFEL_SRC\framework\auto_test\auto_test.ecf" readonly="false"/>
 		<library name="code_analysis" location="$EIFFEL_SRC\framework\code_analysis\code_analysis.ecf" readonly="false"/>		<library name="com_light" location="$EIFFEL_SRC\framework\com_light\com_light.ecf" readonly="false"/>
 		<library name="command_tunnel" location="$EIFFEL_SRC\framework\command_tunnel\command_tunnel.ecf" readonly="false"/>
