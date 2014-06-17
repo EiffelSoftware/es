@@ -13,7 +13,10 @@ inherit
 feature -- General
 
 	auto_teach: STRING_32
-		do Result := locale.translation ("AutoTeach.") end
+		do Result := locale.translation ("AutoTeach") end
+
+	hinter: STRING_32
+		do Result := locale.translation ("Hinter") end
 
 	error: STRING
 		do Result := locale.translation ("Error") end
@@ -23,7 +26,18 @@ feature -- Messages
 	command_line_help: STRING_32
 		do Result := locale.translation ("This should be a help message.") end
 
+	welcome_message: STRING_32
+		do Result := locale.translation ("Welcome to AutoTeach!") end
+
+feature -- Warnings
+
+	nothing_to_do: STRING_32
+		do Result := locale.translation ("No mode for AutoTeach specified (e.g. " + hinter + "), exiting.") end
+
 feature -- Errors
+
+	error_unrecognized_argument (a_argument: STRING): STRING_32
+		do Result := locale.translation ("Syntax error: unrecognized argument '" + a_argument + "'.") end
 
 	error_class_not_found (a_class_name: STRING): STRING_32
 		do Result := locale.translation ("Could not find class " + a_class_name + ". Skipping.") end
@@ -33,5 +47,11 @@ feature -- Errors
 
 	error_argument_level: STRING_32
 		do Result := locale.translation ("Syntax error. Valid hint level expected.") end
+
+	error_no_output_dir: STRING_32
+		do Result := locale.translation ("Syntax error. Output directory expected.") end
+
+	error_invalid_output_dir: STRING_32
+		do Result := locale.translation ("The specified output directory does not exist or is not writable.") end
 
 end

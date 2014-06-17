@@ -10,6 +10,9 @@ class
 inherit
 
 	EWB_CMD
+		redefine
+			check_arguments_and_execute
+		end
 
 	AT_COMMON
 
@@ -63,19 +66,19 @@ feature {NONE} -- Implementation
 	autoteach_arguments: attached LIST [STRING]
 			-- `arguments' already exists, inherited from EWB_CMD.
 
+	autoteach_options: AT_OPTIONS
+
 	can_run: BOOLEAN
 
 	process_arguments
 			-- Initialization for `Current'. `a_arguments' are the command-line
 			-- arguments that are relevant for the Code Analyzer.
 		local
-			l_hinter: AT_HINTER
-			l_options: AT_OPTIONS
 			l_errors: ARRAYED_LIST [STRING]
-			l_level: INTEGER
+			l_output_dir: DIRECTORY
 		do
 			can_run := True
-			create l_options.make_with_defaults
+			create autoteach_options.make_with_defaults
 			create class_name_list.make
 			create l_errors.make (16)
 			from
@@ -83,7 +86,9 @@ feature {NONE} -- Implementation
 			until
 				autoteach_arguments.after
 			loop
-				if autoteach_arguments.item.is_equal ("-atclass") or autoteach_arguments.item.is_equal ("-atclasses") then
+				if autoteach_arguments.item.is_equal ("-at-hinter") then
+					autoteach_options.run_hinter := true
+				elseif autoteach_arguments.item.is_equal ("-atclass") or autoteach_arguments.item.is_equal ("-atclasses") then
 					from
 						autoteach_arguments.start
 					until
@@ -98,17 +103,27 @@ feature {NONE} -- Implementation
 						l_errors.force (at_strings.error_argument_level)
 						can_run := False
 					else
-						l_options.hint_level := autoteach_arguments.item.to_integer
+						autoteach_options.hint_level := autoteach_arguments.item.to_integer
 					end
+				elseif autoteach_arguments.item.is_equal ("-output-path") then
+					autoteach_arguments.forth
+					if autoteach_arguments.after then
+						l_errors.force (at_strings.error_no_output_dir)
+						can_run := False
+					else
+						create l_output_dir.make_with_path (create {PATH}.make_from_string (autoteach_arguments.item))
+						if not l_output_dir.is_writable then
+							l_errors.force (at_strings.error_invalid_output_dir)
+							can_run := False
+						else
+							autoteach_options.output_directory := l_output_dir
+						end
+					end
+				else
+					l_errors.force (at_strings.error_unrecognized_argument (autoteach_arguments.item))
+					can_run := False
 				end
 				autoteach_arguments.forth
-			end
-			create l_hinter.make_with_options (l_options)
-			l_hinter.set_output_action (agent print_line)
-			across
-				class_name_list as ic
-			loop
-				try_add_class_with_name (l_hinter, ic.item)
 			end
 			across
 				l_errors as ic
@@ -118,21 +133,35 @@ feature {NONE} -- Implementation
 		end
 
 	run_autoteach
+		local
+			l_hinter: AT_HINTER
 		do
-			print_line ("Running AutoTeach...")
+			if autoteach_options.run_hinter then
+				create l_hinter.make_with_options (autoteach_options)
+				l_hinter.set_output_action (agent print_line)
+				across
+					class_name_list as ic
+				loop
+					try_add_class_with_name (l_hinter, ic.item)
+				end
+			end
 		end
 
 feature -- Execution (declared in EWB_CMD)
 
-	execute
+	execute, check_arguments_and_execute
 			-- Execute the Code Analysis command-line tool
 		do
+			print_line ("%N")
 			process_arguments
 			if can_run then
-				run_autoteach
+				if autoteach_options.must_run_something then
+					print_line (at_strings.welcome_message)
+					run_autoteach
+				else
+					print_line (at_strings.nothing_to_do)
+				end
 			end
-				--			output_window.add ("%NTEST%N")
-				--			output_window.add ("----------------%N")
 		end
 
 feature -- Info (declared in EWB_CMD)

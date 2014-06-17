@@ -8,6 +8,7 @@ class
 	AT_OPTIONS
 
 inherit
+
 	AT_COMMON
 
 create
@@ -18,16 +19,33 @@ feature {NONE} -- Initialization
 	make_with_defaults
 		do
 			hint_level := 2
+			create output_directory.make_with_path (create {PATH}.make_current)
 		end
 
 feature -- Options
 
+	run_hinter: BOOLEAN assign set_run_hinter
+
 	hint_level: INTEGER assign set_hint_level
 
-	output_path: detachable STRING assign set_output_path
-		-- If Void, the output is printed to the console
+	output_directory: attached DIRECTORY assign set_output_directory
+
+feature -- Access
+
+	must_run_something: BOOLEAN
+			-- Is there at least a tool/command set for execution?
+		do
+			Result := run_hinter
+		end
 
 feature {NONE} -- Setters
+
+	set_run_hinter (a_bool: BOOLEAN)
+		do
+			run_hinter := a_bool
+		ensure
+			run_hinter_set: run_hinter = a_bool
+		end
 
 	set_hint_level (a_level: INTEGER)
 		require
@@ -38,13 +56,11 @@ feature {NONE} -- Setters
 			level_set: hint_level = a_level
 		end
 
-	set_output_path (a_path: STRING)
-		require
-			a_path = Void or else a_path.is_whitespace
+	set_output_directory (a_dir: attached DIRECTORY)
 		do
-			output_path := a_path
+			output_directory := a_dir
 		ensure
-			path_set: output_path = a_path
+			directory_set: output_directory = a_dir
 		end
 
 end
