@@ -13,13 +13,14 @@ inherit
 	AT_SHARED_STRINGS
 
 create
-	make
+	make_with_options
 
 feature {NONE} -- Initialization
 
-	make
+	make_with_options (a_options: AT_OPTIONS)
 			-- Initialization for `Current'.
 		do
+			options := a_options
 			create input_classes.make
 		end
 
@@ -33,7 +34,7 @@ feature -- Interface
 			then
 				input_classes.extend (l_compiled)
 			else
-				output_action.call ([at_strings.class_not_compiled (a_class.name)])
+				output_action.call ([at_strings.error_class_not_compiled (a_class.name)])
 			end
 		end
 
@@ -47,5 +48,7 @@ feature {NONE} -- Implementation
 	input_classes: LINKED_SET [CLASS_C]
 
 	output_action: PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]]
+
+	options: AT_OPTIONS
 
 end

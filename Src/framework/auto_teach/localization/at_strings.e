@@ -15,15 +15,23 @@ feature -- General
 	auto_teach: STRING_32
 		do Result := locale.translation ("AutoTeach.") end
 
+	error: STRING
+		do Result := locale.translation ("Error") end
+
 feature -- Messages
 
 	command_line_help: STRING_32
 		do Result := locale.translation ("This should be a help message.") end
 
-	class_not_found (a_class_name: STRING): STRING_32
+feature -- Errors
+
+	error_class_not_found (a_class_name: STRING): STRING_32
 		do Result := locale.translation ("Could not find class " + a_class_name + ". Skipping.") end
 
-	class_not_compiled (a_class_name: STRING): STRING_32
+	error_class_not_compiled (a_class_name: STRING): STRING_32
 		do Result := locale.translation ("Class " + a_class_name + " has not been compiled. Skipping.") end
+
+	error_argument_level: STRING_32
+		do Result := locale.translation ("Syntax error. Valid hint level expected.") end
 
 end

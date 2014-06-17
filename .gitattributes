@@ -1948,7 +1948,6 @@ Src/Eiffel/doc/Microsoft.NET/multiple_inheritance/method2/diamond_inheritance_on
 Src/Eiffel/doc/debugger_files/image002.gif svneol=native#unset
 Src/Eiffel/doc/runtime/typing/TYPE_A_encodings.dia -text
 Src/Eiffel/doc/runtime/typing/TYPE_A_encodings.png -text
-Src/Eiffel/interface/tty/ewb_autoteach.e -text svneol=native#unset
 Src/Eiffel/modules/textual_bon/editor_scanner/editor_textual_bon_scanner.l -text
 Src/build/build.ico -text
 Src/compatible/library/api_wrapper/api_wrapper.lic -text
@@ -3437,9 +3436,7 @@ Src/experimental/library/wizard/help/Clib/htmlhelp.lib -text
 Src/framework/alias_calculus/alias_calculus.rc -text
 Src/framework/alias_calculus/application_with_printout.BK -text
 Src/framework/alias_calculus/results.txt -text
-Src/framework/auto_teach/at_hinter.e -text svneol=native#unset
 Src/framework/auto_teach/localization/at_shared_strings.e -text svneol=native#unset
-Src/framework/auto_teach/localization/at_strings.e -text svneol=native#unset
 Src/framework/auto_test/Clib/lp_solve/README.txt -text
 Src/framework/auto_test/Clib/lp_solve/bfp/bfp_LUSOL/LUSOL/LUSOL-overview.txt -text
 Src/framework/auto_test/Clib/lp_solve/bfp/bfp_LUSOL/LUSOL/LUSOL_LGPL.txt -text

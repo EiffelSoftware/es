@@ -8,57 +8,44 @@ class
 	EWB_AUTOTEACH
 
 inherit
+
 	EWB_CMD
 
-	AT_SHARED_STRINGS
+	AT_COMMON
 
 	SHARED_SERVER
-		export {NONE} all end
+		export
+			{NONE} all
+		end
 
 create
 	make_with_arguments
 
 feature {NONE} -- Initialization
 
-	make_with_arguments (a_arguments: LINKED_LIST [STRING])
+	make_with_arguments (a_arguments: attached LIST [STRING])
 			-- Initialization for `Current'. `a_arguments' are the command-line
 			-- arguments that are relevant for the Code Analyzer.
-		local
-			l_hinter: AT_HINTER
 		do
-			create l_hinter.make
-			l_hinter.set_output_action (agent print_line)
-
-			create class_name_list.make
-
-			across a_arguments as l_args loop
-				if l_args.item.is_equal ("-atclass") or l_args.item.is_equal ("-atclasses") then
-					from l_args.forth
-					until l_args.after or l_args.item.starts_with ("-")
-					loop class_name_list.extend (l_args.item); l_args.forth
-					end
-				end
-			end
-
-			across class_name_list as ic loop
-				try_add_class_with_name (l_hinter, ic.item)
-			end
+			autoteach_arguments := a_arguments
+		ensure
+			arguments_set: autoteach_arguments = a_arguments
 		end
-
 
 	try_add_class_with_name (a_hinter: AT_HINTER; a_class_name: STRING)
 			-- Adds class with name `a_class_name' if it is found amongst the compiled
 			-- classes to `a_analyzer'.
 		do
 			if attached universe.classes_with_name (a_class_name) as l_c then
-				across l_c as ic loop
+				across
+					l_c as ic
+				loop
 					a_hinter.add_class (ic.item.config_class)
 				end
 			else
-				output_window.add (at_strings.class_not_found (a_class_name))
+				output_window.add (at_strings.error_class_not_found (a_class_name))
 			end
 		end
-
 
 feature {NONE} -- Options
 
@@ -73,14 +60,79 @@ feature {NONE} -- Implementation
 			output_window.add (a_string + "%N")
 		end
 
+	autoteach_arguments: attached LIST [STRING]
+			-- `arguments' already exists, inherited from EWB_CMD.
+
+	can_run: BOOLEAN
+
+	process_arguments
+			-- Initialization for `Current'. `a_arguments' are the command-line
+			-- arguments that are relevant for the Code Analyzer.
+		local
+			l_hinter: AT_HINTER
+			l_options: AT_OPTIONS
+			l_errors: ARRAYED_LIST [STRING]
+			l_level: INTEGER
+		do
+			can_run := True
+			create l_options.make_with_defaults
+			create class_name_list.make
+			create l_errors.make (16)
+			from
+				autoteach_arguments.start
+			until
+				autoteach_arguments.after
+			loop
+				if autoteach_arguments.item.is_equal ("-atclass") or autoteach_arguments.item.is_equal ("-atclasses") then
+					from
+						autoteach_arguments.start
+					until
+						autoteach_arguments.after or autoteach_arguments.item.starts_with ("-")
+					loop
+						class_name_list.extend (autoteach_arguments.item)
+						autoteach_arguments.forth
+					end
+				elseif autoteach_arguments.item.is_equal ("-at-hint-level") then
+					autoteach_arguments.forth
+					if autoteach_arguments.after or else not autoteach_arguments.item.is_integer or else not is_valid_hint_level (autoteach_arguments.item.to_integer) then
+						l_errors.force (at_strings.error_argument_level)
+						can_run := False
+					else
+						l_options.hint_level := autoteach_arguments.item.to_integer
+					end
+				end
+				autoteach_arguments.forth
+			end
+			create l_hinter.make_with_options (l_options)
+			l_hinter.set_output_action (agent print_line)
+			across
+				class_name_list as ic
+			loop
+				try_add_class_with_name (l_hinter, ic.item)
+			end
+			across
+				l_errors as ic
+			loop
+				print_line (at_strings.error + ": " + ic.item)
+			end
+		end
+
+	run_autoteach
+		do
+			print_line ("Running AutoTeach...")
+		end
+
 feature -- Execution (declared in EWB_CMD)
 
 	execute
 			-- Execute the Code Analysis command-line tool
 		do
-			output_window.add ("%NTEST%N")
-			output_window.add ("----------------%N")
-
+			process_arguments
+			if can_run then
+				run_autoteach
+			end
+				--			output_window.add ("%NTEST%N")
+				--			output_window.add ("----------------%N")
 		end
 
 feature -- Info (declared in EWB_CMD)
@@ -128,4 +180,5 @@ note
 			Website http://www.eiffel.com
 			Customer support http://support.eiffel.com
 		]"
+
 end
