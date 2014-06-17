@@ -21,11 +21,17 @@ feature -- Interface
 			file_open_and_writable: a_output_file.is_writable
 		local
 			l_ast_iterator: AT_HINTER_AST_ITERATOR
+			l_text: STRING_8
 		do
 			create l_ast_iterator
 
 			l_ast_iterator.setup (a_class.ast, match_list_server.item (a_class.class_id), true, true)
 			l_ast_iterator.process_ast_node (a_class.ast)
+
+			l_text := l_ast_iterator.text
+			l_text.prune_all ('%R')
+			a_output_file.put_string (l_text)
+			io.put_string (l_text)
 		end
 
 feature {NONE} -- Implementation
