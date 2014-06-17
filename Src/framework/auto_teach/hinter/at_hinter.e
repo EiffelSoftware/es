@@ -48,7 +48,7 @@ feature -- Interface
 			l_out_file: PLAIN_TEXT_FILE
 			l_class_processor: AT_HINTER_CLASS_PROCESSOR
 		do
-			create l_class_processor.make (options)
+			create l_class_processor.make_with_options (options)
 
 			across input_classes as ic loop
 				-- TODO: support recreating the source cluster/folder structure
