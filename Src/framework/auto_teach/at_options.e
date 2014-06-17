@@ -26,6 +26,8 @@ feature -- Options
 
 	run_hinter: BOOLEAN assign set_run_hinter
 
+	insert_code_placeholder: BOOLEAN assign set_insert_code_placeholder
+
 	hint_level: INTEGER assign set_hint_level
 
 	output_directory: attached DIRECTORY assign set_output_directory
@@ -45,6 +47,13 @@ feature {NONE} -- Setters
 			run_hinter := a_bool
 		ensure
 			run_hinter_set: run_hinter = a_bool
+		end
+
+	set_insert_code_placeholder (a_bool: BOOLEAN)
+		do
+			insert_code_placeholder := a_bool
+		ensure
+			insert_code_placeholder_set: insert_code_placeholder = a_bool
 		end
 
 	set_hint_level (a_level: INTEGER)

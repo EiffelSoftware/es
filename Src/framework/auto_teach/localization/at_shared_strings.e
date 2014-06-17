@@ -4,7 +4,7 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	AT_SHARED_STRINGS
 
 feature -- Names
