@@ -23,7 +23,7 @@ feature -- Interface
 			l_ast_iterator: AT_HINTER_AST_ITERATOR
 			l_text: STRING_8
 		do
-			create l_ast_iterator
+			create l_ast_iterator.make_with_options (options)
 
 			l_ast_iterator.setup (a_class.ast, match_list_server.item (a_class.class_id), true, true)
 			l_ast_iterator.process_ast_node (a_class.ast)

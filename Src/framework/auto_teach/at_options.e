@@ -19,6 +19,7 @@ feature {NONE} -- Initialization
 	make_with_defaults
 		do
 			hint_level := 2
+			insert_code_placeholder := True
 			create output_directory.make_with_path (create {PATH}.make_current)
 		end
 

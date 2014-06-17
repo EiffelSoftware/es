@@ -54,4 +54,8 @@ feature -- Errors
 	error_invalid_output_dir: STRING_32
 		do Result := locale.translation ("The specified output directory does not exist or is not writable.") end
 
+feature -- Code output
+
+	code_placeholder: STRING = "-- Your code here!"
+
 end
