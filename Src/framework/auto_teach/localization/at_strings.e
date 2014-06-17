@@ -58,4 +58,8 @@ feature -- Code output
 
 	code_placeholder: STRING = "-- Your code here!"
 
+feature -- Command prefixes
+
+	hint_command: STRING = "-- #HINT"
+
 end

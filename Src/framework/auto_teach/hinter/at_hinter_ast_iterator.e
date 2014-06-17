@@ -134,22 +134,39 @@ feature {NONE} -- Meta-commands processing
 		do
 			l_line := a_line.twin
 			l_line.adjust
-			if l_line.as_upper.starts_with ("-- #HINT") then
-				l_line := a_line.twin
-				l_line.prune_all_trailing ('%N')
-				put_string_to_context ("%N" + l_line)
-				insert_blank_line (false)
+			if l_line.as_upper.starts_with (at_strings.hint_command) then
+				process_hint (a_line)
 			end
 		end
 
 	is_meta_command (a_line: STRING): BOOLEAN
-			-- Does `a_line' contain a meta-command?
+			-- Does `a_line' contain a meta-command?t
 		local
 			l_line: STRING
 		do
 			l_line := a_line.twin
 			l_line.adjust
 			Result := l_line.starts_with ("-- #")
+		end
+
+	process_hint (a_line: STRING)
+		require
+			-- a_line is a hint command. How to specify that?
+		local
+			l_line: STRING
+			l_hint_level: INTEGER
+		do
+			l_line := a_line.twin
+			l_line.adjust
+			check l_line.starts_with (at_strings.hint_command) end
+			l_hint_level := l_line.substring (at_strings.hint_command.count + 1, l_line.count).to_integer
+
+			if l_hint_level <= options.hint_level then
+				l_line := a_line.twin
+				l_line.prune_all_trailing ('%N')
+				put_string_to_context ("%N" + l_line)
+				insert_blank_line (false)
+			end
 		end
 
 
