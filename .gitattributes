@@ -5492,6 +5492,7 @@ eweasel/tests/agent010/Ace -text
 eweasel/tests/anchor077/Ace svneol=native#text/xml
 eweasel/tests/anchor078/Ace svneol=native#text/xml
 eweasel/tests/anchor079/Ace svneol=native#text/xml
+eweasel/tests/anchor080/Ace svneol=native#text/xml
 eweasel/tests/attach010/Ace2 -text
 eweasel/tests/attach011/Ace -text
 eweasel/tests/attach019/Ace -text
