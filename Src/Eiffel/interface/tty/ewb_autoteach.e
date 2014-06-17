@@ -26,7 +26,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_arguments (a_arguments: attached LIST [STRING])
+	make_with_arguments (a_arguments: LIST [STRING])
 			-- Initialization for `Current'. `a_arguments' are the command-line
 			-- arguments that are relevant for the Code Analyzer.
 		do
@@ -52,8 +52,8 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Options
 
-	class_name_list: LINKED_LIST [STRING]
-			-- List of class names for analysis, which have been provided by the user.
+	class_name_list: LIST [STRING]
+			-- List of class names for AutoTeach, which have been provided by the user.
 
 feature {NONE} -- Implementation
 
@@ -63,12 +63,14 @@ feature {NONE} -- Implementation
 			output_window.add (a_string + "%N")
 		end
 
-	autoteach_arguments: attached LIST [STRING]
-			-- `arguments' already exists, inherited from EWB_CMD.
+	autoteach_arguments: LIST [STRING]
+			-- The command line arguments passed to AutoTeach.
 
 	autoteach_options: AT_OPTIONS
+			-- The execution options for AutoTeach.
 
 	can_run: BOOLEAN
+			-- Is everything ready for execution after processing arguments?
 
 	process_arguments
 			-- Initialization for `Current'. `a_arguments' are the command-line
@@ -79,24 +81,23 @@ feature {NONE} -- Implementation
 		do
 			can_run := True
 			create autoteach_options.make_with_defaults
-			create class_name_list.make
 			create l_errors.make (16)
+
+				-- TODO: One more false positive of CA024 here.
 			from
 				autoteach_arguments.start
 			until
 				autoteach_arguments.after
 			loop
 				if autoteach_arguments.item.is_equal ("-at-hinter") then
-					autoteach_options.run_hinter := true
+					autoteach_options.should_run_hinter := true
 				elseif autoteach_arguments.item.is_equal ("-at-class") or autoteach_arguments.item.is_equal ("-at-classes") then
-					from
-						autoteach_arguments.forth
-						-- ...and not .start!
-					until
-						autoteach_arguments.after or autoteach_arguments.item.starts_with ("-")
-					loop
-						class_name_list.extend (autoteach_arguments.item)
-						autoteach_arguments.forth
+					autoteach_arguments.forth
+					if autoteach_arguments.after then
+						l_errors.force (at_strings.error_no_class_list)
+						can_run := False
+					else
+						class_name_list := autoteach_arguments.item.split (' ')
 					end
 				elseif autoteach_arguments.item.is_equal ("-at-hint-level") then
 					autoteach_arguments.forth
@@ -106,7 +107,15 @@ feature {NONE} -- Implementation
 					else
 						autoteach_options.hint_level := autoteach_arguments.item.to_integer
 					end
-				elseif autoteach_arguments.item.is_equal ("-output-path") then
+				elseif autoteach_arguments.item.is_equal ("-at-code-placeholder") then
+					autoteach_arguments.forth
+					if autoteach_arguments.after or else not autoteach_arguments.item.is_boolean then
+						l_errors.force ("-at-code-placeholder " + autoteach_arguments.item + "%N" + at_strings.error_boolean_value)
+						autoteach_arguments.back
+					else
+						autoteach_options.insert_code_placeholder := autoteach_arguments.item.to_boolean
+					end
+				elseif autoteach_arguments.item.is_equal ("-at-output-path") then
 					autoteach_arguments.forth
 					if autoteach_arguments.after then
 						l_errors.force (at_strings.error_no_output_dir)
@@ -126,6 +135,9 @@ feature {NONE} -- Implementation
 				end
 				autoteach_arguments.forth
 			end
+			if not autoteach_options.should_run_hinter then
+				l_errors.force (at_strings.nothing_to_do)
+			end
 			across
 				l_errors as ic
 			loop
@@ -134,19 +146,18 @@ feature {NONE} -- Implementation
 		end
 
 	run_autoteach
+			-- Runs AutoTeach according to the specified options.
 		local
 			l_hinter: AT_HINTER
 		do
-			if autoteach_options.run_hinter then
+			if autoteach_options.should_run_hinter then
 				create l_hinter.make_with_options (autoteach_options)
-
 				l_hinter.set_message_output_action (agent print_line)
 				across
 					class_name_list as ic
 				loop
 					try_add_class_with_name (l_hinter, ic.item)
 				end
-
 				l_hinter.run_hinter
 			end
 		end
@@ -154,17 +165,15 @@ feature {NONE} -- Implementation
 feature -- Execution (declared in EWB_CMD)
 
 	execute, check_arguments_and_execute
-			-- Execute the Code Analysis command-line tool
+			-- Execute the AutoTeach command-line tool
+		local
+			l_executed: BOOLEAN
 		do
 			print_line ("%N")
 			process_arguments
 			if can_run then
-				if autoteach_options.must_run_something then
-					print_line (at_strings.welcome_message)
-					run_autoteach
-				else
-					print_line (at_strings.nothing_to_do)
-				end
+				print_line (at_strings.welcome_message)
+				run_autoteach
 			end
 		end
 

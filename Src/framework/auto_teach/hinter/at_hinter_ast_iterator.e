@@ -21,27 +21,36 @@ inherit
 			process_trailing_leaves,
 			process_break_as,
 			put_string,
+
+				-- Routine bodies
 			process_do_as,
 			process_once_as,
 
-				-- Instructions:
-			process_elseif_as,
-			process_assign_as,
-			process_assigner_call_as,
-			process_case_as,
-			process_check_as,
-			process_creation_as,
-			process_create_creation_as,
-			process_bang_creation_as,
-			process_debug_as,
-			process_guard_as,
-			process_if_as,
-			process_inspect_as,
-			process_instr_call_as,
-			process_interval_as,
-			process_loop_as,
-			process_retry_as,
-			process_reverse_as
+				-- Contracts
+			process_require_as,
+			process_require_else_as,
+			process_ensure_as,
+			process_ensure_then_as,
+			process_invariant_as
+
+			-- Instructions:
+			--			process_elseif_as,
+			--			process_assign_as,
+			--			process_assigner_call_as,
+			--			process_case_as,
+			--			process_check_as,
+			--			process_creation_as,
+			--			process_create_creation_as,
+			--			process_bang_creation_as,
+			--			process_debug_as,
+			--			process_guard_as,
+			--			process_if_as,
+			--			process_inspect_as,
+			--			process_instr_call_as,
+			--			process_interval_as,
+			--			process_loop_as,
+			--			process_retry_as,
+			--			process_reverse_as
 		end
 
 create
@@ -80,8 +89,6 @@ feature {NONE} -- Break processing
 				-- every line will end with %R%N. However, writing this to the output, actually results to an extra
 				-- blank line. We prune all '%R's to avoid this.
 			l_text.prune_all ('%R')
-
-			l_in_skipped_section := in_skipped_section (a_break_as)
 
 				-- The following code is basically equivalent to l_text.split ('%N'), with the important differences
 				-- that new line characters are also a part of the output. {STRING}.split would remove them.
@@ -124,7 +131,6 @@ feature {NONE} -- Break processing
 			end
 		end
 
-
 feature {NONE} -- Meta-commands processing
 
 	process_meta_command (a_line: STRING)
@@ -158,9 +164,10 @@ feature {NONE} -- Meta-commands processing
 		do
 			l_line := a_line.twin
 			l_line.adjust
-			check l_line.starts_with (at_strings.hint_command) end
+			check
+				l_line.starts_with (at_strings.hint_command)
+			end
 			l_hint_level := l_line.substring (at_strings.hint_command.count + 1, l_line.count).to_integer
-
 			if l_hint_level <= options.hint_level then
 				l_line := a_line.twin
 				l_line.prune_all_trailing ('%N')
@@ -168,7 +175,6 @@ feature {NONE} -- Meta-commands processing
 				insert_blank_line (false)
 			end
 		end
-
 
 feature {NONE} -- Implementation - skipping
 
@@ -225,7 +231,7 @@ feature {NONE} -- Implementation - skipping
 		end
 
 	insert_blank_line (a_insert_placeholder: BOOLEAN)
-		-- Insert a blank line with the correct indentation for the current location, and possibly a placeholder.
+			-- Insert a blank line with the correct indentation for the current location, and possibly a placeholder.
 		local
 			l_new_line_with_tabs: STRING
 		do
@@ -256,16 +262,16 @@ feature {NONE} -- Implementation - skipping
 		end
 
 	skipping_until_index: INTEGER
-		-- What is the end index of the current/last skipped section?
+			-- What is the end index of the current/last skipped section?
 
 	skipped_section_indentation: INTEGER
-		-- With how many tabs should the skipped section considered to be indented?
+			-- With how many tabs should the skipped section considered to be indented?
 
 	blank_line_inserted: BOOLEAN
-		-- Did we already insert a blank line for the current skipping section?
+			-- Did we already insert a blank line for the current skipping section?
 
 	no_skipping: BOOLEAN = False
-		-- Disables all forms of skipping. Temporary.
+			-- Disables all forms of skipping. Temporary.
 
 feature {NONE} -- Implementation
 
@@ -330,6 +336,7 @@ feature {NONE} -- Implementation
 		end
 
 	options: AT_OPTIONS
+			-- The AutoTeach options.
 
 	make_with_options (a_options: AT_OPTIONS)
 			-- Initialize Current
@@ -339,21 +346,24 @@ feature {NONE} -- Implementation
 			reset
 		end
 
-feature {AST_EIFFEL} -- Other visitors TODO
+feature {AST_EIFFEL} -- Visitors
 
-	-- Right now there is a redundancy, as these two routines here should suffice.
-	-- But we will need the instruction visitors later, when we will have more flexibility
+		-- Right now there is a redundancy, as these two routines here should suffice.
+		-- But we will need the instruction visitors later, when we will have more flexibility
 
 	process_do_as (l_as: DO_AS)
 			-- Process `l_as'.
 		do
 				-- We want to process the 'do' keyword in any case.
 			safe_process (l_as.do_keyword (match_list))
-			if no_skipping then
+			if not options.hide_routine_bodies or no_skipping then
 				safe_process (l_as.compound)
 			else
-					-- Skip until the end of the whole block
-					-- (which doesn't include the 'end' keyword)
+					-- There are several good reasons for calling skip (l_as) instead of skip (l_as.compound):
+					-- 1) It cannot be Void.
+					-- 2) For some reason, l_as.compount.index is always zero, which leads to problems
+					-- 3) Even if there are no instructions (Void), we must mark the region as skipped until the end,
+					-- 	  or breaks and comments within it will not be handled as in skipped region.
 				skip (l_as)
 			end
 		end
@@ -366,182 +376,243 @@ feature {AST_EIFFEL} -- Other visitors TODO
 			if no_skipping then
 				safe_process (l_as.compound)
 			else
-					-- Skip until the end of the whole block
-					-- (which doesn't include the 'end' keyword)
+					-- See commend in `process_do_as'.
 				skip (l_as)
 			end
 		end
 
-feature {AST_EIFFEL} -- Instructions visitors
-
-	process_elseif_as (l_as: ELSIF_AS)
+	process_require_as (l_as: require_as)
 			-- Process `l_as'.
 		do
-			if no_skipping then
-				Precursor (l_as)
+			safe_process (l_as.require_keyword (match_list))
+			if not options.hide_preconditions or no_skipping then
+				safe_process (l_as.full_assertion_list)
 			else
+					-- See commend in `process_do_as'.
 				skip (l_as)
 			end
 		end
 
-	process_assign_as (l_as: ASSIGN_AS)
+	process_require_else_as (l_as: require_else_as)
 			-- Process `l_as'.
 		do
-			if no_skipping then
-				Precursor (l_as)
+			safe_process (l_as.require_keyword (match_list))
+			safe_process (l_as.else_keyword (match_list))
+			if not options.hide_preconditions or no_skipping then
+				safe_process (l_as.full_assertion_list)
 			else
+					-- See commend in `process_do_as'.
 				skip (l_as)
 			end
 		end
 
-	process_reverse_as (l_as: REVERSE_AS)
+	process_ensure_as (l_as: ensure_as)
 			-- Process `l_as'.
 		do
-			if no_skipping then
-				Precursor (l_as)
+			safe_process (l_as.ensure_keyword (match_list))
+			if not options.hide_postconditions or no_skipping then
+				safe_process (l_as.full_assertion_list)
 			else
+					-- See commend in `process_do_as'.
 				skip (l_as)
 			end
 		end
 
-	process_assigner_call_as (l_as: ASSIGNER_CALL_AS)
+	process_ensure_then_as (l_as: ensure_then_as)
 			-- Process `l_as'.
 		do
-			if no_skipping then
-				Precursor (l_as)
+			safe_process (l_as.ensure_keyword (match_list))
+			safe_process (l_as.then_keyword (match_list))
+			if not options.hide_postconditions or no_skipping then
+				safe_process (l_as.full_assertion_list)
 			else
+					-- See commend in `process_do_as'.
 				skip (l_as)
 			end
 		end
 
-	process_case_as (l_as: CASE_AS)
+	process_invariant_as (l_as: invariant_as)
 			-- Process `l_as'.
 		do
-			if no_skipping then
-				Precursor (l_as)
+			safe_process (l_as.invariant_keyword (match_list))
+			if not options.hide_class_invariants or no_skipping then
+				safe_process (l_as.full_assertion_list)
 			else
+					-- See commend in `process_do_as'.
 				skip (l_as)
 			end
 		end
 
-	process_check_as (l_as: CHECK_AS)
-			-- Process `l_as'.
-		do
-			if no_skipping then
-				Precursor (l_as)
-			else
-				skip (l_as)
-			end
-		end
+		--feature {AST_EIFFEL} -- Instructions visitors
 
-	process_creation_as (l_as: CREATION_AS)
-			-- Process `l_as'.
-		do
-			if no_skipping then
-				Precursor (l_as)
-			else
-				skip (l_as)
-			end
-		end
+		--	process_elseif_as (l_as: ELSIF_AS)
+		--			-- Process `l_as'.
+		--		do
+		--			if no_skipping then
+		--				Precursor (l_as)
+		--			else
+		--				skip (l_as)
+		--			end
+		--		end
 
-	process_create_creation_as (l_as: CREATE_CREATION_AS)
-			-- Process `l_as'.
-		do
-			if no_skipping then
-				Precursor (l_as)
-			else
-				skip (l_as)
-			end
-		end
+		--	process_assign_as (l_as: ASSIGN_AS)
+		--			-- Process `l_as'.
+		--		do
+		--			if no_skipping then
+		--				Precursor (l_as)
+		--			else
+		--				skip (l_as)
+		--			end
+		--		end
 
-	process_bang_creation_as (l_as: BANG_CREATION_AS)
-			-- Process `l_as'.
-		do
-			if no_skipping then
-				Precursor (l_as)
-			else
-				skip (l_as)
-			end
-		end
+		--	process_reverse_as (l_as: REVERSE_AS)
+		--			-- Process `l_as'.
+		--		do
+		--			if no_skipping then
+		--				Precursor (l_as)
+		--			else
+		--				skip (l_as)
+		--			end
+		--		end
 
-	process_debug_as (l_as: DEBUG_AS)
-			-- Process `l_as'.
-		do
-			if no_skipping then
-				Precursor (l_as)
-			else
-				skip (l_as)
-			end
-		end
+		--	process_assigner_call_as (l_as: ASSIGNER_CALL_AS)
+		--			-- Process `l_as'.
+		--		do
+		--			if no_skipping then
+		--				Precursor (l_as)
+		--			else
+		--				skip (l_as)
+		--			end
+		--		end
 
-	process_guard_as (l_as: GUARD_AS)
-			-- Process `l_as'.
-		do
-			if no_skipping then
-				Precursor (l_as)
-			else
-				skip (l_as)
-			end
-		end
+		--	process_case_as (l_as: CASE_AS)
+		--			-- Process `l_as'.
+		--		do
+		--			if no_skipping then
+		--				Precursor (l_as)
+		--			else
+		--				skip (l_as)
+		--			end
+		--		end
 
-	process_if_as (l_as: IF_AS)
-			-- Process `l_as'.
-		do
-			if no_skipping then
-				Precursor (l_as)
-			else
-				skip (l_as)
-			end
-		end
+		--	process_check_as (l_as: CHECK_AS)
+		--			-- Process `l_as'.
+		--		do
+		--			if no_skipping then
+		--				Precursor (l_as)
+		--			else
+		--				skip (l_as)
+		--			end
+		--		end
 
-	process_inspect_as (l_as: INSPECT_AS)
-			-- Process `l_as'.
-		do
-			if no_skipping then
-				Precursor (l_as)
-			else
-				skip (l_as)
-			end
-		end
+		--	process_creation_as (l_as: CREATION_AS)
+		--			-- Process `l_as'.
+		--		do
+		--			if no_skipping then
+		--				Precursor (l_as)
+		--			else
+		--				skip (l_as)
+		--			end
+		--		end
 
-	process_instr_call_as (l_as: INSTR_CALL_AS)
-			-- Process `l_as'.
-		do
-			if no_skipping then
-				Precursor (l_as)
-			else
-				skip (l_as)
-			end
-		end
+		--	process_create_creation_as (l_as: CREATE_CREATION_AS)
+		--			-- Process `l_as'.
+		--		do
+		--			if no_skipping then
+		--				Precursor (l_as)
+		--			else
+		--				skip (l_as)
+		--			end
+		--		end
 
-	process_interval_as (l_as: INTERVAL_AS)
-			-- Process `l_as'.
-		do
-			if no_skipping then
-				Precursor (l_as)
-			else
-				skip (l_as)
-			end
-		end
+		--	process_bang_creation_as (l_as: BANG_CREATION_AS)
+		--			-- Process `l_as'.
+		--		do
+		--			if no_skipping then
+		--				Precursor (l_as)
+		--			else
+		--				skip (l_as)
+		--			end
+		--		end
 
-	process_loop_as (l_as: LOOP_AS)
-			-- Process `l_as'.
-		do
-			if no_skipping then
-				Precursor (l_as)
-			else
-				skip (l_as)
-			end
-		end
+		--	process_debug_as (l_as: DEBUG_AS)
+		--			-- Process `l_as'.
+		--		do
+		--			if no_skipping then
+		--				Precursor (l_as)
+		--			else
+		--				skip (l_as)
+		--			end
+		--		end
 
-	process_retry_as (l_as: RETRY_AS)
-			-- Process `l_as'.
-		do
-			if no_skipping then
-				Precursor (l_as)
-			else
-				skip (l_as)
-			end
-		end
+		--	process_guard_as (l_as: GUARD_AS)
+		--			-- Process `l_as'.
+		--		do
+		--			if no_skipping then
+		--				Precursor (l_as)
+		--			else
+		--				skip (l_as)
+		--			end
+		--		end
+
+		--	process_if_as (l_as: IF_AS)
+		--			-- Process `l_as'.
+		--		do
+		--			if no_skipping then
+		--				Precursor (l_as)
+		--			else
+		--				skip (l_as)
+		--			end
+		--		end
+
+		--	process_inspect_as (l_as: INSPECT_AS)
+		--			-- Process `l_as'.
+		--		do
+		--			if no_skipping then
+		--				Precursor (l_as)
+		--			else
+		--				skip (l_as)
+		--			end
+		--		end
+
+		--	process_instr_call_as (l_as: INSTR_CALL_AS)
+		--			-- Process `l_as'.
+		--		do
+		--			if no_skipping then
+		--				Precursor (l_as)
+		--			else
+		--				skip (l_as)
+		--			end
+		--		end
+
+		--	process_interval_as (l_as: INTERVAL_AS)
+		--			-- Process `l_as'.
+		--		do
+		--			if no_skipping then
+		--				Precursor (l_as)
+		--			else
+		--				skip (l_as)
+		--			end
+		--		end
+
+		--	process_loop_as (l_as: LOOP_AS)
+		--			-- Process `l_as'.
+		--		do
+		--			if no_skipping then
+		--				Precursor (l_as)
+		--			else
+		--				skip (l_as)
+		--			end
+		--		end
+
+		--	process_retry_as (l_as: RETRY_AS)
+		--			-- Process `l_as'.
+		--		do
+		--			if no_skipping then
+		--				Precursor (l_as)
+		--			else
+		--				skip (l_as)
+		--			end
+		--		end
 
 end
