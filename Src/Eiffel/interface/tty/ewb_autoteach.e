@@ -39,7 +39,7 @@ feature {NONE} -- Initialization
 			-- Adds class with name `a_class_name' if it is found amongst the compiled
 			-- classes to `a_analyzer'.
 		do
-			if attached universe.classes_with_name (a_class_name) as l_c then
+			if attached universe.classes_with_name (a_class_name) as l_c and then not l_c.is_empty then
 				across
 					l_c as ic
 				loop
@@ -88,9 +88,10 @@ feature {NONE} -- Implementation
 			loop
 				if autoteach_arguments.item.is_equal ("-at-hinter") then
 					autoteach_options.run_hinter := true
-				elseif autoteach_arguments.item.is_equal ("-atclass") or autoteach_arguments.item.is_equal ("-atclasses") then
+				elseif autoteach_arguments.item.is_equal ("-at-class") or autoteach_arguments.item.is_equal ("-at-classes") then
 					from
-						autoteach_arguments.start
+						autoteach_arguments.forth
+						-- ...and not .start!
 					until
 						autoteach_arguments.after or autoteach_arguments.item.starts_with ("-")
 					loop
@@ -138,12 +139,15 @@ feature {NONE} -- Implementation
 		do
 			if autoteach_options.run_hinter then
 				create l_hinter.make_with_options (autoteach_options)
-				l_hinter.set_output_action (agent print_line)
+
+				l_hinter.set_message_output_action (agent print_line)
 				across
 					class_name_list as ic
 				loop
 					try_add_class_with_name (l_hinter, ic.item)
 				end
+
+				l_hinter.run_hinter
 			end
 		end
 
