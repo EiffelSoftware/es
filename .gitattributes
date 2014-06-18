@@ -6686,6 +6686,7 @@ eweasel/tests/valid160/notes -text
 eweasel/tests/valid240/Ace_safe -text
 eweasel/tests/valid256/Ace -text
 eweasel/tests/valid280/Ace svneol=native#text/xml
+eweasel/tests/valid281/Ace svneol=native#text/xml
 eweasel/tests/vd01001/file -text
 eweasel/tests/vd10001/weasel -text
 eweasel/tests/vd13001/weasel -text
