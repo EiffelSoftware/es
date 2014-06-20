@@ -53,6 +53,7 @@ feature {NONE} -- Rule checking
 		do
 				-- Sample violations:
 				-- +-2
+				-- - -4
 				-- -+4
 				-- +(4)
 				-- -(-7)

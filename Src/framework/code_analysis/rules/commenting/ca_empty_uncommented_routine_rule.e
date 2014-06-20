@@ -42,10 +42,12 @@ feature {NONE} -- Rule checking
 	current_feature: detachable FEATURE_AS
 			-- The feature currently being analyzed.
 
-	process_do_once (a_as: INTERNAL_AS)
+	process_do_once (a_as: INTERNAL_AS; a_do_once_keyword_index: INTEGER)
 			-- Process `a_as'
 		local
 			l_comments: EIFFEL_COMMENTS
+			l_break_leaf: LEAF_AS
+			l_uncommented: BOOLEAN
 			l_viol: CA_RULE_VIOLATION
 		do
 				-- Sample violation
@@ -62,8 +64,21 @@ feature {NONE} -- Rule checking
 			end
 			if attached current_feature as l_current_feature then
 				if (not attached a_as.compound or else a_as.compound.is_empty) and then l_current_feature.body.is_routine then
+					l_uncommented := True
+
 					l_comments := l_current_feature.comment (current_context.matchlist)
-					if comments_are_empty (l_comments) then
+					if not comments_are_empty (l_comments) then
+						l_uncommented := False
+					end
+
+						-- The following line should never fail, at the very least we will have
+						-- two more 'end' keywords in the current class.
+					l_break_leaf := current_context.matchlist.at (a_do_once_keyword_index + 1)
+					if attached {BREAK_AS} l_break_leaf as l_break and then l_break.has_comment then
+						l_uncommented := False
+					end
+
+					if l_uncommented then
 						create l_viol.make_with_rule (Current)
 						l_viol.set_location (l_current_feature.start_location)
 						l_viol.long_description_info.extend (l_current_feature.feature_name.name_32)
@@ -76,13 +91,13 @@ feature {NONE} -- Rule checking
 	process_do (a_do_as: DO_AS)
 			-- Process `a_do_as'
 		do
-			process_do_once (a_do_as)
+			process_do_once (a_do_as, a_do_as.do_keyword_index)
 		end
 
 	process_once (a_once_as: ONCE_AS)
 			-- Process `a_once_as'
 		do
-			process_do_once (a_once_as)
+			process_do_once (a_once_as, a_once_as.once_keyword_index)
 		end
 
 	process_feature (a_feature_as: FEATURE_AS)

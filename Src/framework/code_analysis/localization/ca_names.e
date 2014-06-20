@@ -416,7 +416,7 @@ feature -- Rules
 			% two consecutive underscores).") end
 
 	enforce_local_prefix: STRING_32
-		do Result := locale.translation ("Enforce local prefix %"l_%"") end
+		do Result := locale.translation ("Enforce local prefix %'l_%'") end
 
 	argument_naming_convention_title: STRING_32
 		do Result := locale.translation ("Argument naming convention violated") end
@@ -427,7 +427,7 @@ feature -- Rules
 			%two consecutive underscores).") end
 
 	enforce_argument_prefix: STRING_32
-		do Result := locale.translation ("Enforce argument prefix %"a_%"") end
+		do Result := locale.translation ("Enforce argument prefix %'a_%'") end
 
 	unnecessary_sign_operator_title: STRING_32
 		do Result := locale.translation ("Unnecessary sign operator") end
