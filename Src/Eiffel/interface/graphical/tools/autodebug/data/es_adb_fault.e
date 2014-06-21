@@ -8,6 +8,12 @@ class
 	ES_ADB_FAULT
 
 inherit
+
+	ES_ADB_SHARED_INFO_CENTER
+		redefine
+			is_equal
+		end
+
 	EPA_UTILITY
 		redefine
 			is_equal
@@ -34,10 +40,12 @@ feature{NONE} -- Initialization
 			a_sig /= Void
 		do
 			signature := a_sig.twin
-			create passing_tests.make_equal (10)
-			create failing_tests.make_equal (10)
 			create fixes.make_equal (20)
-			set_status (Status_not_yet_attempted)
+			if is_approachable then
+				set_status (Status_not_yet_attempted)
+			else
+				set_status (Status_out_of_scope)
+			end
 		end
 
 feature -- Access
@@ -45,11 +53,10 @@ feature -- Access
 	signature: EPA_TEST_CASE_SIGNATURE
 			-- Signiture of the fault.
 
-	passing_tests: DS_ARRAYED_LIST [PATH]
-			-- List of passing test paths.
-
-	failing_tests: DS_ARRAYED_LIST [PATH]
-			-- List of failing test paths.
+	test_cases: TUPLE [passing, failing: DS_HASH_SET [ES_ADB_TEST]]
+		do
+			Result := info_center.test_cases_for_fault (Current)
+		end
 
 	status: INTEGER assign set_status
 			-- Status of the fault.
@@ -57,8 +64,206 @@ feature -- Access
 	fixes: DS_ARRAYED_LIST [ES_ADB_FIX]
 			-- List of all candidate fixes to current.
 
+feature -- Status report
+
+	is_fixed: BOOLEAN
+			-- Is the fault fixed?
+		do
+			Result := is_candidate_fix_accepted or is_manually_fixed
+		end
+
+	is_valid_status (a_status: INTEGER): BOOLEAN
+			-- Is `a_status' a valid status for current?
+		do
+			Result := Status_out_of_scope <= a_status and then a_status <= Status_manually_fixed
+		end
+
+	is_exception_type_in_scope_of_implementation_fixing: BOOLEAN
+			-- Is the exception type of current in the scope of implementation fixing?
+		local
+			l_code: INTEGER
+		do
+			l_code := signature.exception_code
+			Result := l_code = {EXCEP_CONST}.void_call_target
+					or else l_code = {EXCEP_CONST}.precondition
+					or else l_code = {EXCEP_CONST}.postcondition
+					or else l_code = {EXCEP_CONST}.class_invariant
+		end
+
+	is_exception_type_in_scope_of_contract_fixing: BOOLEAN
+			-- Is the exception type of current in the scope of contract fixing?
+		local
+			l_code: INTEGER
+		do
+			l_code := signature.exception_code
+			Result := l_code = {EXCEP_CONST}.void_call_target
+					or else l_code = {EXCEP_CONST}.precondition
+					or else l_code = {EXCEP_CONST}.postcondition
+		end
+
+	is_approachable: BOOLEAN
+			-- Is current approachable by AutoFix?
+		do
+			Result := is_exception_type_in_scope_of_implementation_fixing or else is_exception_type_in_scope_of_contract_fixing
+		end
+
+	is_approachable_per_config (a_config: ES_ADB_CONFIG): BOOLEAN
+			-- Is current approachable under the `a_config'?
+		do
+			Result := is_exception_type_in_scope_of_contract_fixing and then a_config.should_fix_contracts
+							or else is_exception_type_in_scope_of_implementation_fixing and then a_config.should_fix_implementation
+		end
+
+	is_not_yet_attempted: BOOLEAN
+			-- Is current not yet attempted by AutoFix?
+		do
+			Result := status = Status_not_yet_attempted
+		end
+
+	is_candidate_fix_available: BOOLEAN
+			-- Is current a fault with candidate fix available?
+		do
+			Result := status = Status_candidate_fix_available
+		end
+
+	is_candidate_fix_unavailable: BOOLEAN
+			-- Is current a fault with NO candidate fix available?
+		do
+			Result := status = Status_candidate_fix_unavailable
+		end
+
+	is_candidate_fix_accepted: BOOLEAN
+			-- Is current a fault with candidate fix accepted?
+		do
+			Result := status = Status_candidate_fix_accepted
+		end
+
+	is_manually_fixed: BOOLEAN
+			-- Is current manually fixed?
+		do
+			Result := status = Status_manually_fixed
+		end
+
+	is_equal (other: like Current): BOOLEAN
+			-- <Precursor>
+		do
+			Result := signature ~ other.signature
+		end
+
+feature -- Query
+
+	class_and_feature_under_test: EPA_FEATURE_WITH_CONTEXT_CLASS
+			-- Feature under test when current is detected.
+		local
+			l_class_name, l_feat_name: STRING
+		do
+			if class_and_feature_under_test_internal = Void then
+				l_class_name := signature.class_under_test
+				l_feat_name := signature.feature_under_test
+				create class_and_feature_under_test_internal.make_from_names (l_feat_name, l_class_name)
+			end
+			Result := class_and_feature_under_test_internal
+		end
+
+	recipient_class_and_feature: EPA_FEATURE_WITH_CONTEXT_CLASS
+			-- Recipient feature when current is triggered.
+		local
+			l_class_name, l_feat_name: STRING
+		do
+			if recipient_class_and_feature_internal = Void then
+				l_class_name := signature.recipient_class
+				l_feat_name := signature.recipient
+				create recipient_class_and_feature_internal.make_from_names (l_feat_name, l_class_name)
+			end
+			Result := recipient_class_and_feature_internal
+		end
+
+	failing_feature_with_context: EPA_FEATURE_WITH_CONTEXT_CLASS
+			-- Failing feature when current is triggered.
+		require
+			is_exception_type_in_scope_of_contract_fixing
+		local
+			l_test_path: PATH
+			l_file: PLAIN_TEXT_FILE
+			l_dashes: STRING
+			l_is_in_trace: BOOLEAN
+			l_cache: STRING
+			l_line: STRING
+			l_exception_trace: STRING
+			l_explainer: EPA_EXCEPTION_TRACE_EXPLAINER
+			l_last_explanation: EPA_EXCEPTION_TRACE_SUMMARY
+		do
+			l_dashes := "-------------------------------------------------------------------------------"
+			l_test_path := test_cases.failing.first.location
+			check l_test_path /= Void end
+			create l_exception_trace.make (1024 * 4)
+			create l_cache.make (1024)
+			create l_file.make_with_path (l_test_path)
+			l_file.open_read
+			from
+				l_file.read_line
+				l_is_in_trace := False
+			until
+				l_file.end_of_file
+			loop
+				l_line := l_file.last_string
+
+				if l_line.starts_with (l_dashes) then
+					if not l_is_in_trace then
+						l_exception_trace.append (l_line + "%N")
+						l_is_in_trace := True
+					else
+						l_exception_trace.append (l_cache)
+						l_cache.wipe_out
+						l_exception_trace.append (l_line + "%N")
+					end
+				else
+					if l_is_in_trace then
+						l_cache.append (l_line + "%N")
+					end
+				end
+
+				l_file.read_line
+			end
+			l_file.close
+
+			create l_explainer
+			l_explainer.explain (l_exception_trace)
+			l_last_explanation := l_explainer.last_explanation
+			create Result.make (l_last_explanation.failing_feature, l_last_explanation.failing_context_class)
+		end
+
+	has_fix (a_fix: ES_ADB_FIX): BOOLEAN
+			-- Has current a fix `a_fix'?
+		require
+			a_fix /= Void
+		do
+			Result := fix_with_id_string (a_fix.fix_id_string) ~ a_fix
+		end
+
+	fix_with_id_string (a_id_string: STRING): ES_ADB_FIX
+			-- Fix from `fixes' that has `a_id_string'.
+			-- Return Void if no such fix is found.
+		local
+			l_cursor: DS_ARRAYED_LIST_CURSOR [ES_ADB_FIX]
+		do
+			from
+				l_cursor := fixes.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after or else Result /= Void
+			loop
+				if l_cursor.item.fix_id_string ~ a_id_string then
+					Result := l_cursor.item
+				else
+					l_cursor.forth
+				end
+			end
+		end
+
 	applied_fix: ES_ADB_FIX
 			-- Fix from `fixes' that has been applied to correct current.
+			-- Return Void if no fix has been applied.
 		local
 			l_cursor: DS_ARRAYED_LIST_CURSOR [ES_ADB_FIX]
 		do
@@ -79,63 +284,13 @@ feature -- Access
 	status_string: STRING
 			-- Status in string.
 		do
-			Result := (<<fault_status_to_be_attempted,
+			Result := (<<
+						Fault_status_out_of_scope,
+						Fault_status_to_be_attempted,
 						Fault_status_candidate_fix_available,
 						Fault_status_candidate_fix_unavailable,
 						Fault_status_candidate_fix_accepted,
 						Fault_status_manually_fixed>>).item (status)
-		end
-
-feature -- Setter
-
-	set_status (a_status: INTEGER)
-			--
-		require
-			is_valid_status (a_status)
-		do
-			status := a_status
-		end
-
-feature -- Status report
-
-	is_fixed: BOOLEAN
-			-- Is the fault fixed?
-		do
-			Result := applied_fix /= Void
-		end
-
-	is_valid_status (a_status: INTEGER): BOOLEAN
-			--
-		do
-			Result := Status_not_yet_attempted <= a_status and then a_status <= Status_manually_fixed
-		end
-
-feature -- Constant
-
-	Status_not_yet_attempted: INTEGER = 1
-	Status_candidate_fix_available: INTEGER = 2
-	Status_candidate_fix_unavailable: INTEGER = 3
-	Status_candidate_fix_accepted: INTEGER = 4
-	Status_manually_fixed: INTEGER = 5
-
-feature -- Query
-
-	class_and_feature_under_test: EPA_FEATURE_WITH_CONTEXT_CLASS
-		local
-			l_class_name, l_feat_name: STRING
-		do
-			if class_and_feature_under_test_internal = Void then
-				l_class_name := signature.class_under_test
-				l_feat_name := signature.feature_under_test
-				create class_and_feature_under_test_internal.make_from_names (l_feat_name, l_class_name)
-			end
-			Result := class_and_feature_under_test_internal
-		end
-
-	is_equal (other: like Current): BOOLEAN
-			-- <Precursor>
-		do
-			Result := signature ~ other.signature
 		end
 
 	hash_code: INTEGER
@@ -144,96 +299,50 @@ feature -- Query
 			Result := signature.hash_code
 		end
 
-feature -- Basic operation
-
-	add_passing_test (a_path: PATH)
-			-- Add the passing test at `a_path' as one associated with Current.
-		require
-			a_path /= Void
-			attached {EPA_TEST_CASE_SIGNATURE} (create {EPA_TEST_CASE_SIGNATURE}.make_with_string (a_path.entry.out)) as lt_sig
-				and then lt_sig.is_passing and then lt_sig.class_and_feature_under_test ~ signature.class_and_feature_under_test
-		do
-			passing_tests.force_last (a_path)
-		end
-
-	add_failing_test (a_path: PATH)
-			-- Add the failing test at `a_path' as one associated with Current.
-		require
-			a_path /= Void
-			attached {EPA_TEST_CASE_SIGNATURE} (create {EPA_TEST_CASE_SIGNATURE}.make_with_string (a_path.entry.out)) as lt_sig
-				and then lt_sig ~ signature
-		do
-			failing_tests.force_last (a_path)
-		end
+feature -- Operation
 
 	add_fix (a_fix: ES_ADB_FIX)
-			-- Add `a_fix' as a candidate fix to current.
+			-- Add `a_fix' as a fix to current.
 		require
-			a_fix.fault ~ Current
+			a_fix.fault = Current
 		do
 			fixes.force_last (a_fix)
+			if attached {ES_ADB_FIX_AUTOMATIC} a_fix then
+				set_status (Status_candidate_fix_available)
+			elseif attached {ES_ADB_FIX_MANUAL} a_fix then
+				set_status (status_manually_fixed)
+			end
 		end
 
---	apply_fix (a_fix: ES_ADB_FIX)
---			-- Apply `a_fix' to fix the current fault.
---		require
---			a_fix /= Void
---			fixes.has (a_fix)
---		do
---			a_fix.apply
---			applied_fix := a_fix
---		end
+	discard_all_fixes
+			-- Discard all fixes.
+		do
+			fixes.wipe_out
+		end
 
-	copy_tests_to (a_dir: PATH)
-			-- Copy all available tests into `a_dir'.
+feature -- Setter
+
+	set_status (a_status: INTEGER)
+			-- Set `status' with `a_status'.
 		require
-			a_dir /= Void
-		local
-			l_tests: like passing_tests
-			l_cursor: DS_ARRAYED_LIST_CURSOR [PATH]
+			is_valid_status (a_status)
 		do
-			across <<passing_tests, failing_tests>> as lt_tests_cursor loop
-				l_tests := lt_tests_cursor.item
-				from
-					l_cursor := l_tests.new_cursor
-					l_cursor.start
-				until
-					l_cursor.after
-				loop
-					copy_test_to (l_cursor.item, a_dir)
-					l_cursor.forth
-				end
-			end
+			status := a_status
 		end
 
-feature{NONE} -- Implementation
+feature -- Constant
 
-	copy_test_to (a_path: PATH; a_dir: PATH)
-			--
-		local
-			l_source, l_target: RAW_FILE
-			l_retried: BOOLEAN
-		do
-			if not l_retried then
-				create l_source.make_with_path (a_path)
-				create l_target.make_with_path (a_dir.extended_path (a_path.entry))
-				if l_source.exists then
-					l_source.open_read
-					l_target.open_write
-					l_source.copy_to (l_target)
-					l_source.close
-					l_target.close
-					l_target.set_date (l_source.date)
-				end
-			end
-		rescue
-			l_retried := True
-			retry
-		end
+	Status_out_of_scope: INTEGER = 1
+	Status_not_yet_attempted: INTEGER = 2
+	Status_candidate_fix_available: INTEGER = 3
+	Status_candidate_fix_unavailable: INTEGER = 4
+	Status_candidate_fix_accepted: INTEGER = 5
+	Status_manually_fixed: INTEGER = 6
 
 feature{NONE} -- Cache
 
 	class_and_feature_under_test_internal: like class_and_feature_under_test
+	recipient_class_and_feature_internal:  like recipient_class_and_feature
 
 invariant
 	fixes /= Void

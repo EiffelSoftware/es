@@ -20,6 +20,9 @@ inherit
 	DEBUG_OUTPUT
 		undefine out end
 
+	AFX_SHARED_SESSION
+		undefine out end
+
 create
 	make
 
@@ -89,13 +92,22 @@ feature -- Redefinition
 	signature: STRING
 			-- <Precursor>
 		do
-			Result := "FixType: Implementation; ID: " + id.out + "; Validity: " + is_valid.out + "; SchemeType: " + name_of_scheme_type (scheme_type) +";"
+			Result := "Subject=FixToImplementation;ID=Auto-" + id.out + ";Validity=" + is_valid.out + ";Type=" + name_of_scheme_type (scheme_type) +";"
 		end
 
 	out: STRING
 			-- <Precursor>
 		do
-			Result := "    -- " + signature + "%N"
+			create Result.make (1024)
+
+				-- CAUTION: We use the fault_signature_id from command line argument, instead
+				--			of the one from the fault replay (session.fault_signature_id),
+				-- 			which contains more detailed info though.
+				--			In this way, we can match the fixes to the faults in AutoDebug.
+				--			See: AFX_CONTRACT_FIX_TO_FAULT
+			Result.append ("  -- FaultID:" + session.config.fault_signature_id + ";%N")
+
+			Result.append ("  -- FixInfo:" + signature + "%N")
 			Result.append (formatted_output)
 		end
 

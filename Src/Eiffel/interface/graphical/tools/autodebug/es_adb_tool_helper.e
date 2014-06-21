@@ -29,23 +29,77 @@ inherit
 feature -- Execution environment
 
 	eve_path: PATH
+			-- Path to the current running Eiffel compiler.
 		do
 			create Result.make_from_string (execution_environment.arguments.command_name)
 		end
 
 	project_path: PATH
+			-- Path to the working project.
 		do
 			Result := workbench.eiffel_project.project_directory.path
 		end
 
 	project_ecf_path: PATH
+			-- Path to the ecf of the working project.
 		do
 			Result := workbench.eiffel_ace.lace.conf_system.file_path
 		end
 
 	target_of_project: STRING
+			-- Target of the working project.
 		do
 			Result := workbench.eiffel_project.project_directory.target.as_string_8
+		end
+
+feature -- Query on grid rows
+
+	first_row (a_grid: EV_GRID; a_criterion: PREDICATE[ANY, TUPLE [EV_GRID_ROW]]): INTEGER
+			-- Index of the first row in `a_grid' satisfying `a_criterion'.
+			-- Return 0 if no such row.
+		require
+			a_grid /= Void
+			a_criterion /= Void
+		local
+			l_index, l_count: INTEGER
+			l_row: EV_GRID_ROW
+		do
+			from
+				l_index := 1
+				l_count := a_grid.row_count
+			until
+				l_index > l_count or else Result /= 0
+			loop
+				l_row := a_grid.row (l_index)
+				if a_criterion.item ([l_row]) then
+					Result := l_index
+				end
+				l_index := l_index + 1
+			end
+		end
+
+	first_subrow (a_row: EV_GRID_ROW; a_criterion: PREDICATE [ANY, TUPLE[EV_GRID_ROW]]): INTEGER
+			-- Index of the first subrow in `a_row' satisfying `a_criterion'.
+			-- Return 0 if no such subrow.
+		require
+			a_row /= Void
+			a_criterion /= Void
+		local
+			l_index, l_count: INTEGER
+			l_subrow: EV_GRID_ROW
+		do
+			from
+				l_index := 1
+				l_count := a_row.subrow_count
+			until
+				l_index > l_count or else Result /= 0
+			loop
+				l_subrow := a_row.subrow (l_index)
+				if a_criterion.item ([l_subrow]) then
+					Result := l_index
+				end
+				l_index := l_index + 1
+			end
 		end
 
 feature -- Access
@@ -68,8 +122,32 @@ feature -- Access
 
 feature -- Copy project
 
+	copy_project (a_project: E_PROJECT; a_working_dir: ES_ADB_WORKING_DIRECTORY)
+			-- Copy `a_project' into `a_working_dir'.
+		require
+			a_project /= Void
+			a_working_dir /= Void
+		local
+			l_src_dir, l_dest_dir: PATH
+		do
+			l_src_dir := a_project.project_directory.location
+			l_dest_dir := a_working_dir.temp_dir
+			copy_recursive (l_src_dir.out, l_dest_dir.out, agent directory_content_filter)
+		end
+
+	is_project_copied_into_working_dir: BOOLEAN
+			-- Is project copied into `config.working_directory'?
+		local
+			l_file: RAW_FILE
+		do
+			create l_file.make_with_path (ecf_path_in_working_directory)
+			Result := l_file.exists
+		end
+
+feature{NONE} -- Copy project implementation
+
 	directory_content_filter (a_entry: STRING): BOOLEAN
-			--
+			-- Filter excluding non-project directories.
 		require
 			a_entry /= Void and then not a_entry.is_empty
 		do
@@ -79,8 +157,6 @@ feature -- Copy project
 	copy_recursive (a_source_directory_name, a_target_directory_name: READABLE_STRING_GENERAL; a_filter: PREDICATE [ANY, TUPLE [STRING]])
 			-- Copy `a_source_directory_name' to `a_target_directory_name' recursively.
 			-- Only directories with named satisfying `a_filter' will be copied.
-
-			-- Adapted from {AUT_FILE_SYSTEM_ROUTINES}.
 		require
 			a_source_directory_name_not_void: a_source_directory_name /= Void
 			a_target_directory_name_not_void: a_target_directory_name /= Void
@@ -141,51 +217,14 @@ feature -- Copy project
 			end
 		end
 
-	copy_project (a_project: E_PROJECT; a_working_dir: ES_ADB_WORKING_DIRECTORY)
-			--
-		require
-			a_project /= Void
-			a_working_dir /= Void
-		local
-			l_src_dir, l_dest_dir: PATH
-		do
-			l_src_dir := a_project.project_directory.location
-			l_dest_dir := a_working_dir.temp_dir
-			copy_recursive (l_src_dir.out, l_dest_dir.out, agent directory_content_filter)
-		end
-
-	is_project_copied_into_working_dir: BOOLEAN
-			--
---		require
---			a_project /= Void
---			a_working_dir /= Void
-		local
---			l_ecf_file_name: STRING
---			l_ecf_path_in_working_dir: PATH
-
---			l_prj_path_str, l_ecf_path_str: STRING
---			l_location: PATH
---			l_path: PATH
-			l_file: RAW_FILE
-		do
---			l_ecf_file_name := project_ecf_path.entry.out
---			l_ecf_path_in_working_dir := config.working_directory.root_dir.extended (l_ecf_file_name)
---			l_ecf_path_str := project_ecf_path.out
---			l_prj_path_str := project_path.out
---			check l_ecf_path_str.starts_with (l_prj_path_str) end
---			l_location := a_project.project_directory.location
---			l_path := a_working_dir.temp_dir.extended (l_location.entry.out)
-
-			create l_file.make_with_path (ecf_path_in_working_directory)
-			Result := l_file.exists
-		end
-
 	project_path_in_working_directory: PATH
+			-- Path to the copy of working project (inside of working directory).
 		do
 			Result := config.working_directory.temp_dir
 		end
 
 	ecf_path_in_working_directory: PATH
+			-- Path to the copy of ecf inside of working directory.
 		do
 			Result := project_path_in_working_directory.extended_path (project_ecf_path.entry)
 		end

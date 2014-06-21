@@ -9,30 +9,16 @@ create
 
 feature	{NONE} -- Initialization
 
-	make (a_context_class: CLASS_C; a_context_feature: FEATURE_I; a_base_code, a_diff_code: STRING)
+	make (a_base_code, a_diff_code: STRING)
 			-- Initialization.
 		require
-			context_attached: a_context_class /= Void
-			context_feature_attached: a_context_feature /= Void
 			code_attached: a_base_code /= Void and then a_diff_code /= Void
 		do
-			context_class := a_context_class
-			context_feature := a_context_feature
-			e_feature := context_feature.api_feature (context_class.class_id)
 			base_code := a_base_code.twin
 			diff_code := a_diff_code.twin
 		end
 
 feature -- Access
-
-	context_class: CLASS_C
-			-- Context class.
-
-	context_feature: FEATURE_I
-			-- Context feature.
-
-	e_feature: E_FEATURE
-			-- E_feature of `context_feature'.
 
 	base_code: STRING
 			-- Base code fragment.
@@ -277,7 +263,6 @@ feature {NONE} -- Cache
 			-- Cache for `different_line_segments'.
 
 invariant
-	context_attached: context_class /= Void
 	base_code_attached: base_code /= Void
 	diff_code_attached: diff_code /= Void
 

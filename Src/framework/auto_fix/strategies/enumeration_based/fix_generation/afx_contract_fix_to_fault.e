@@ -63,13 +63,21 @@ feature -- Redefinition
 	signature: STRING
 			-- <Precursor>
 		do
-			Result := "FixType: Contract; ID: " + id.out + "; Validity: " + is_valid.out + ";"
+			Result := "Subject=FixToContract;ID=Auto-" + id.out + ";Validity=" + is_valid.out + ";Type=" + change_type_str + ";"
 		end
 
 	out: STRING
 			-- <Precursor>
 		do
-			Result := "    -- " + signature + "%N"
+			create Result.make (1024)
+
+				-- CAUTION: We use the fault_signature_id from command line argument, instead
+				--			of the one from the fault replay (session.fault_signature_id),
+				-- 			which contains more detailed info though.
+				--			In this way, we can match the fixes to the faults in AutoDebug.
+				--			See: AFX_CODE_FIX_TO_FAULT
+			Result.append ("  -- FaultID:" + session.config.fault_signature_id + ";%N")
+			Result.append ("  -- FixInfo:" + signature + "%N")
 			Result.append (formatted_output)
 		end
 
@@ -77,6 +85,55 @@ feature -- Redefinition
 			-- <Precursor>
 		do
 			Result := out
+		end
+
+	change_type_str: STRING
+		local
+			l_strengthening, l_weakening: BOOLEAN
+		do
+			l_strengthening := is_strengthening
+			l_weakening := is_weakening
+			if l_strengthening and then l_weakening then
+				Result := "WeakenAndStrengthen"
+			elseif l_strengthening then
+				Result := "Strengthen"
+			elseif l_weakening then
+				Result := "Weaken"
+			end
+		ensure
+			Result /= Void
+		end
+
+	is_strengthening: BOOLEAN
+		local
+			l_cursor: DS_HASH_TABLE_CURSOR [AFX_CONTRACT_FIX_TO_FEATURE, AFX_FEATURE_TO_MONITOR]
+		do
+			from
+				l_cursor := new_cursor
+				l_cursor.start
+			until
+				l_cursor.after or else Result
+			loop
+				Result := Result or else l_cursor.item.is_strengthening
+
+				l_cursor.forth
+			end
+		end
+
+	is_weakening: BOOLEAN
+		local
+			l_cursor: DS_HASH_TABLE_CURSOR [AFX_CONTRACT_FIX_TO_FEATURE, AFX_FEATURE_TO_MONITOR]
+		do
+			from
+				l_cursor := new_cursor
+				l_cursor.start
+			until
+				l_cursor.after or else Result
+			loop
+				Result := Result or else l_cursor.item.is_weakening
+
+				l_cursor.forth
+			end
 		end
 
 	formatted_output: STRING
@@ -93,10 +150,10 @@ feature -- Redefinition
 					until
 						l_cursor.after
 					loop
-						formatted_output_cache.append (l_cursor.item.out + "%N")
+						formatted_output_cache.append (l_cursor.item.out)
 						l_cursor.forth
 					end
-					formatted_output_cache := formatted_output_cache.substring (1, formatted_output_cache.count - 1)
+					formatted_output_cache := formatted_output_cache.substring (1, formatted_output_cache.count)
 				end
 			end
 			Result := formatted_output_cache

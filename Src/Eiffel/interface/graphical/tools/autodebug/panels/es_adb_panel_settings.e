@@ -5,6 +5,10 @@ class
 inherit
 
 	ES_ADB_PANEL_SETTINGS_IMP
+		redefine
+			propogate_values_from_ui_to_config,
+			propogate_values_from_config_to_ui
+		end
 
 	ES_ADB_ACTIONS
 		undefine
@@ -26,12 +30,206 @@ feature{NONE} -- Initialization
 			set_tool_panel (a_tool)
 			default_create
 
-			clear_config_widgets (False)
-			enable_config_widgets (False)
-			enable_command_widgets (False)
+			clear_information_display_widget
+			enable_information_display_widget (False)
+			enable_command_invocation_widget (False)
+
 			register_event_handlers
 
 			info_center.extend (Current)
+		end
+
+feature{NONE} -- Update UI
+
+	clear_information_display_widget
+			-- Clear the contents of config widgets.
+		do
+			evtext_group_to_add.set_text ("")
+			evlist_groups_to_debug.wipe_out
+			evtext_working_directory.set_text ("")
+			evtext_testing_cutoff_time.set_text ("")
+			evtext_testing_seed.set_text ("")
+			evtext_fixing_cutoff_time.set_text ("")
+			evtext_fixing_number_of_fixes.set_text ("")
+			evtext_fixing_passing_tests.set_text ("")
+			evtext_fixing_failing_tests.set_text ("")
+		end
+
+	enable_information_display_widget (a_flag: BOOLEAN)
+			-- Enable/Disable config widgets.
+		do
+			if a_flag then
+				evtext_group_to_add.enable_sensitive
+				on_group_to_add_changed
+				evlist_groups_to_debug.remove_selection
+				evlist_groups_to_debug.enable_sensitive
+				on_list_content_changed
+				evtext_working_directory.enable_sensitive
+				evbutton_browse.enable_sensitive
+				evcombo_testing_session_type.enable_sensitive
+				evtext_testing_cutoff_time.enable_sensitive
+				evtext_testing_seed.enable_sensitive
+				evcheckbutton_testing_use_fixed_seed.enable_sensitive
+				evtext_fixing_cutoff_time.enable_sensitive
+				evtext_fixing_number_of_fixes.enable_sensitive
+				evcheckbutton_fixing_contracts.enable_sensitive
+				evcheckbutton_fixing_implementation.enable_sensitive
+				evtext_fixing_passing_tests.enable_sensitive
+				evtext_fixing_failing_tests.enable_sensitive
+			else
+				evtext_group_to_add.disable_sensitive
+				evbutton_add.disable_sensitive
+				evlist_groups_to_debug.remove_selection
+				evlist_groups_to_debug.disable_sensitive
+				evlist_classes_in_group.hide
+				evbutton_remove.disable_sensitive
+				evbutton_remove_all.disable_sensitive
+				evtext_working_directory.disable_sensitive
+				evbutton_browse.disable_sensitive
+				evcombo_testing_session_type.disable_sensitive
+				evtext_testing_cutoff_time.disable_sensitive
+				evtext_testing_seed.disable_sensitive
+				evcheckbutton_testing_use_fixed_seed.disable_sensitive
+				evtext_fixing_cutoff_time.disable_sensitive
+				evtext_fixing_number_of_fixes.disable_sensitive
+				evcheckbutton_fixing_contracts.disable_sensitive
+				evcheckbutton_fixing_implementation.disable_sensitive
+				evtext_fixing_passing_tests.disable_sensitive
+				evtext_fixing_failing_tests.disable_sensitive
+			end
+		end
+
+	enable_command_invocation_widget (a_flag: BOOLEAN)
+			-- Enable/Disable all command widgets on the panel.
+		do
+			if a_flag then
+				evbutton_load_config.enable_sensitive
+				evbutton_save_config.enable_sensitive
+				update_evbutton_start (workbench.eiffel_project /= Void and workbench.eiffel_project.successful)
+			else
+				evbutton_load_config.disable_sensitive
+				evbutton_save_config.disable_sensitive
+				evbutton_start.disable_sensitive
+			end
+		end
+
+	update_evbutton_start (a_flag: BOOLEAN)
+			-- Enable/Disable `evbutton_start'.
+		do
+			if a_flag then
+				evbutton_start.enable_sensitive
+			else
+				evbutton_start.disable_sensitive
+			end
+		end
+
+feature -- ADB Action
+
+	on_project_loaded
+			-- <Precursor>
+		do
+			propogate_values_from_config_to_ui
+
+			enable_information_display_widget (True)
+			enable_command_invocation_widget (True)
+		end
+
+	on_project_unloaded
+			-- <Precursor>
+		do
+			propogate_values_from_ui_to_config
+			config.save
+			config.unload
+
+			enable_information_display_widget (False)
+			enable_command_invocation_widget (False)
+			clear_information_display_widget
+		end
+
+	on_compile_start
+			-- <Precursor>
+		do
+		end
+
+	on_compile_stop
+			-- <Precursor>
+		do
+		end
+
+	on_debugging_start
+			-- <Precursor>
+		do
+			tool_panel.set_external_process_running (True)
+			on_save_settings
+			enable_information_display_widget (False)
+			enable_command_invocation_widget (False)
+			evbutton_start.set_text (button_text_stop)
+			evbutton_start.enable_sensitive
+		end
+
+	on_debugging_stop
+			-- <Precursor>
+		do
+			evbutton_start.set_text (button_text_start)
+			enable_information_display_widget (True)
+			enable_command_invocation_widget (True)
+			tool_panel.set_external_process_running (False)
+		end
+
+	on_testing_start
+			-- <Precursor>
+		do
+		end
+
+	on_test_case_generated (a_test: ES_ADB_TEST)
+			-- <Precursor>
+		do
+		end
+
+	on_testing_stop
+			-- <Precursor>
+		do
+		end
+
+	on_fixing_start (a_fault: ES_ADB_FAULT)
+			-- <Precursor>
+		do
+
+		end
+
+	on_fixing_stop
+			-- <Precursor>
+		do
+		end
+
+	on_continuation_debugging_start
+			-- <Precursor>
+		do
+			on_save_settings
+			enable_information_display_widget (False)
+			enable_command_invocation_widget (False)
+		end
+
+	on_continuation_debugging_stop
+			-- <Precursor>
+		do
+			enable_information_display_widget (True)
+			enable_command_invocation_widget (True)
+		end
+
+	on_valid_fix_found (a_fix: ES_ADB_FIX)
+			-- <Precursor>
+		do
+		end
+
+	on_fix_applied (a_fix: ES_ADB_FIX)
+			-- <Precursor>
+		do
+		end
+
+	on_output (a_line: STRING)
+			-- <Precursor>
+		do
 		end
 
 feature -- UI Actions
@@ -156,8 +354,9 @@ feature -- UI Actions
 			l_dir: DIRECTORY
 			l_path: PATH
 			l_file: RAW_FILE
-			l_confirmation_dialog: EV_CONFIRMATION_DIALOG
+			l_new_path_str: STRING
 		do
+				-- Get current working directory, or the default one when the current does not exist.
 			if evtext_working_directory /= Void then
 				l_str := evtext_working_directory.text
 				create l_dir.make (l_str)
@@ -168,21 +367,24 @@ feature -- UI Actions
 			if l_str = Void then
 				l_str := config.default_working_directory.out
 			end
+
+				-- Path string of the new working directory.
 			Browse_dialog.set_start_directory (l_str)
 			Browse_dialog.show_modal_to_window (tool_window)
 			if attached Browse_dialog.path as lt_path and then not lt_path.is_empty then
 				create l_dir.make_with_path (lt_path)
-				if not l_dir.is_empty then
-					l_confirmation_dialog := confirmation_dialog
-					l_confirmation_dialog.set_text ({ES_ADB_INTERFACE_STRINGS}.Msg_delete_directory_content)
-					l_confirmation_dialog.show_modal_to_window (tool_window)
-					if l_confirmation_dialog.selected_button ~ (create {EV_DIALOG_CONSTANTS}).ev_ok.as_string_32 then
+				if l_dir.is_empty then
+					l_str := lt_path.out
+				else
+					if is_approved_by_user ({ES_ADB_INTERFACE_STRINGS}.Msg_delete_directory_content) then
 						l_dir.recursive_delete
 						l_dir.recursive_create_dir
+						l_str := lt_path.out
 					end
 				end
-				evtext_working_directory.set_text (lt_path.out)
 			end
+
+			evtext_working_directory.set_text (l_str)
 		end
 
 	on_use_fixed_seed_change
@@ -197,147 +399,61 @@ feature -- UI Actions
 
 	on_load_settings
 			-- Action to perform when `evbutton_load_settings' is clicked.
-		local
 		do
-			check workbench.eiffel_project /= Void then
-				config.load (workbench.eiffel_project)
-				propogate_values_from_config_to_ui
-			end
+			tool_panel.load_settings
 		end
 
 	on_save_settings
 			-- Action to perform when `evbutton_save_settings' is clicked.
 		do
-			propogate_values_from_ui_to_config
-			config.save
+			tool_panel.save_settings
 		end
 
 	on_start
 			-- Action to perform when "Start/Stop" button is clicked.
 		local
 			l_text: STRING
-			l_command_line: STRING
-			l_processes: DS_ARRAYED_LIST [ES_ADB_PROCESS]
+			l_confirmation_dialog: EV_CONFIRMATION_DIALOG
+			l_should_continue: BOOLEAN
+			l_debugging_task: ES_ADB_PROCESS_SEQUENCE_FOR_DEBUGGING
 		do
 			l_text := evbutton_start.text
 			if l_text ~ button_text_start then
-				enable_config_widgets (False)
-				enable_command_widgets (False)
-				on_save_settings
+				if info_center.fault_repository.is_empty and then info_center.test_cases.is_empty then
+					l_should_continue := True
+				else
+					l_should_continue := is_approved_by_user ({ES_ADB_INTERFACE_STRINGS}.Msg_remove_existing_debugging_results)
+				end
+				if l_should_continue then
+					info_center.on_debugging_start
 
-				if not is_project_copied_into_working_dir then
 					copy_project (workbench.eiffel_project, config.working_directory)
+					if is_project_copied_into_working_dir then
+						create l_debugging_task.make
+						create forwarding_task.make (l_debugging_task)
+						forwarding_task.on_terminate_actions.extend (agent info_center.on_debugging_stop)
+						forwarding_task.start
+					else
+						display_message ({ES_ADB_INTERFACE_STRINGS}.Msg_failed_to_copy_project)
+						info_center.on_debugging_stop
+					end
 				end
-				if is_project_copied_into_working_dir then
-					create output_buffer.make
-					create forwarding_task.make (output_buffer)
-					rota.run_task (forwarding_task)
-
-					l_processes := prepare_testing_processes
-					create process_launcher.make (l_processes, output_buffer)
-					process_launcher.launch
-				end
-
-				evbutton_start.set_text (button_text_stop)
-				evbutton_start.enable_sensitive
 
 			elseif l_text ~ button_text_stop then
-				process_launcher.cancel
-				evbutton_start.set_text (button_text_start)
-				enable_config_widgets (True)
-				enable_command_widgets (True)
+				forwarding_task.cancel
+				info_center.on_debugging_stop
 			end
 		end
 
-	on_testing_finished
-			--
-		local
-		do
-			
-		end
+feature{NONE} -- Access
+
+	forwarding_task: ES_ADB_OUTPUT_RETRIEVER
+			-- Task to forward the process output to `info_center'.
 
 feature{NONE} -- Action implementation
 
-	frozen rota: detachable ROTA_S
-			-- Access to rota service
-		local
-			l_service_consumer: SERVICE_CONSUMER [ROTA_S]
-		do
-			create l_service_consumer
-			if l_service_consumer.is_service_available and then l_service_consumer.service.is_interface_usable then
-				Result := l_service_consumer.service
-			end
-		end
-
-	forwarding_task: ES_ADB_PROCESS_OUTPUT_FORWARDING_TASK
-			-- Task to forward the process output to `info_center'.
-
-	process_launcher: ES_ADB_EXTERNAL_PROCESS_LAUNCHER
-			-- Launcher of all external processes.
-
-	output_buffer: ES_ADB_EXTERNAL_PROCESS_OUTPUT_BUFFER
-			-- Buffer to collect outputs from external processes.
-
-	prepare_testing_processes: DS_ARRAYED_LIST [ES_ADB_PROCESS]
-			-- List of testing processes to be launched.
-		local
-			l_classes_to_test_in_sessions: DS_ARRAYED_LIST [DS_HASH_SET [CLASS_C]]
-			l_classes_cursor: DS_ARRAYED_LIST_CURSOR [DS_HASH_SET [CLASS_C]]
-			l_process: ES_ADB_PROCESS
-			l_command_line: STRING
-		do
-			l_classes_to_test_in_sessions := config.classes_to_test_in_sessions
-			create Result.make_equal (l_classes_to_test_in_sessions.count + 1)
-			from
-				l_classes_cursor := l_classes_to_test_in_sessions.new_cursor
-				l_classes_cursor.start
-			until
-				l_classes_cursor.after
-			loop
-				l_command_line := command_line_for_testing_classes (l_classes_cursor.item)
-				create l_process.make (l_command_line, Void, config.max_session_length_for_testing)
-				Result.force_last (l_process)
-
-				l_classes_cursor.forth
-			end
-		end
-
-	command_line_for_testing_classes (a_classes: DS_HASH_SET [CLASS_C]): STRING
-			-- Command line string for testing `a_classes'.
-		require
-			a_classes /= Void and then not a_classes.is_empty
-		local
-			l_cursor: DS_HASH_SET_CURSOR [CLASS_C]
-			l_seed: STRING
-			l_time: INTEGER
-		do
-			l_time := config.max_session_length_for_testing * a_classes.count
-			if config.should_use_fixed_seed_in_testing then
-				l_seed := "-seed " + config.fixed_seed.out
-			else
-				l_seed := ""
-			end
-
-			create Result.make_empty
-			Result := "%"" + eve_path.out + "%" "
-					+ "-project_path %"" + project_path_in_working_directory.out + "%" "
-					+ "-config %"" + ecf_path_in_working_directory.out + "%" "
-					+ "-target " + target_of_project + " "
-					+ "-auto_test -i -f --agents none --integer-bounds -512,512 --state argumentless --serialization passing,failing --retrieve-serialization-online "
-					+ "-t " + l_time.out + " "
-					+ l_seed + " "
-					+ "--output-test-case-online %"" + config.working_directory.testing_result_dir.out + "%" ";
-
-			from
-				l_cursor := a_classes.new_cursor
-				l_cursor.start
-			until
-				l_cursor.after
-			loop
-				Result.append (" " + l_cursor.item.name_in_upper)
-				l_cursor.forth
-			end
-		end
+	last_selected_group: STRING
+			-- The group whose classes are displayed in `evlist_classes_in_group'.
 
 	display_group_detail (a_group: STRING; a_show: BOOLEAN)
 			-- Display the classes in `a_group' in `evlist_classes_in_group'.
@@ -378,9 +494,6 @@ feature{NONE} -- Action implementation
 			end
 		end
 
-	last_selected_group: STRING
-			-- The group whose classes are displayed in `evlist_classes_in_group'.
-
 	Browse_dialog: EV_DIRECTORY_DIALOG
 			-- Dialog to browse to a library
 		local
@@ -401,188 +514,6 @@ feature{NONE} -- Action implementation
 			Result.set_start_directory (l_str)
 		ensure
 			result_not_void: Result /= Void
-		end
-
-	confirmation_dialog: EV_CONFIRMATION_DIALOG
-		once
-			create Result
-		end
-
-feature -- ADB Action
-
-	on_project_loaded
-			-- Action to be performed when project loaded
-		do
-			clear_config_widgets (True)
-			enable_config_widgets (True)
-			propogate_values_from_config_to_ui
-			enable_command_widgets (True)
-		end
-
-	on_project_unloaded
-			-- Action to be performed when project unloaded
-		do
-			propogate_values_from_ui_to_config
-			config.save
-			clear_config_widgets (False)
-			enable_config_widgets (False)
-			enable_command_widgets (False)
-		end
-
-	on_compile_start
-			-- Action to be performed when Eiffel compilation starts
-		do
-		end
-
-	on_compile_stop
-			-- Action to be performed when Eiffel compilation stops
-		do
-		end
-
-	on_debugging_start
-			-- Action to be performed when debugging starts
-		do
-
-		end
-
-	on_debugging_stop
-			-- Action to be performed when debugging stops.
-		do
-		end
-
-	on_testing_start
-			-- Action to be performed when debugging starts
-		do
-		end
-
-	on_test_case_generated (a_test: ES_ADB_TEST)
-			-- Action to be performed when a new test case is generated
-		do
-		end
-
-	on_testing_stop
-		do
-		end
-
-	on_fixing_start (a_fault: ES_ADB_FAULT)
-			-- <Precursor>
-		do
-		end
-
-	on_valid_fix_found (a_fix: ES_ADB_FIX)
-			-- <Precursor>
-		do
-		end
-
-	on_fix_applied (a_fix: ES_ADB_FIX)
-			-- <Precursor>
-		do
-		end
-
-	on_fixing_stop (a_fault: ES_ADB_FAULT)
-			-- <Precursor>
-		do
-		end
-
-	on_output (a_line: STRING)
-		do
-		end
-
-feature{NONE} -- Update UI
-
-	update_ui
-			-- <Precursor>
-		do
-			-- Do nothing
-		end
-
-	clear_config_widgets (a_flag: BOOLEAN)
-			-- Clear the contents of config widgets.
-		do
-			evtext_group_to_add.set_text ("")
-			evlist_groups_to_debug.wipe_out
-			evtext_working_directory.set_text ("")
-			evtext_testing_cutoff_time.set_text ("")
-			evtext_testing_seed.set_text ("")
-			evtext_fixing_cutoff_time.set_text ("")
-			evtext_fixing_number_of_fixes.set_text ("")
-			evtext_fixing_passing_tests.set_text ("")
-			evtext_fixing_failing_tests.set_text ("")
-		end
-
-	enable_config_widgets (a_flag: BOOLEAN)
-			-- Enable/Disable config widgets.
-		do
-			if a_flag then
-				evtext_group_to_add.enable_sensitive
-				on_group_to_add_changed
-				evlist_groups_to_debug.remove_selection
-				evlist_groups_to_debug.enable_sensitive
-				on_list_content_changed
-				evtext_working_directory.enable_sensitive
-				evbutton_browse.enable_sensitive
-				evcombo_testing_session_type.enable_sensitive
-				evtext_testing_cutoff_time.enable_sensitive
-				evtext_testing_seed.enable_sensitive
-				evcheckbutton_testing_use_fixed_seed.enable_select
-				evcheckbutton_testing_use_fixed_seed.enable_sensitive
-				evtext_fixing_cutoff_time.enable_sensitive
-				evtext_fixing_number_of_fixes.enable_sensitive
-				evcheckbutton_fixing_contracts.enable_select
-				evcheckbutton_fixing_contracts.enable_sensitive
-				evcheckbutton_fixing_implementation.enable_select
-				evcheckbutton_fixing_implementation.enable_sensitive
-				evtext_fixing_passing_tests.enable_sensitive
-				evtext_fixing_failing_tests.enable_sensitive
-			else
-				evtext_group_to_add.disable_sensitive
-				evbutton_add.disable_sensitive
-				evlist_groups_to_debug.remove_selection
-				evlist_groups_to_debug.disable_sensitive
-				evlist_classes_in_group.hide
-				evbutton_remove.disable_sensitive
-				evbutton_remove_all.disable_sensitive
-				evtext_working_directory.disable_sensitive
-				evbutton_browse.disable_sensitive
-				evcombo_testing_session_type.disable_sensitive
-				evtext_testing_cutoff_time.disable_sensitive
-				evtext_testing_seed.disable_sensitive
-				evcheckbutton_testing_use_fixed_seed.disable_select
-				evcheckbutton_testing_use_fixed_seed.disable_sensitive
-				evtext_fixing_cutoff_time.disable_sensitive
-				evtext_fixing_number_of_fixes.disable_sensitive
-				evcheckbutton_fixing_contracts.disable_select
-				evcheckbutton_fixing_contracts.disable_sensitive
-				evcheckbutton_fixing_implementation.disable_select
-				evcheckbutton_fixing_implementation.disable_sensitive
-				evtext_fixing_passing_tests.disable_sensitive
-				evtext_fixing_failing_tests.disable_sensitive
-			end
-		end
-
-	enable_command_widgets (a_flag: BOOLEAN)
-			-- Enable, if `a_flag', all command widgets on the panel.
-			-- Otherwise disable.
-		do
-			if a_flag then
-				evbutton_load_config.enable_sensitive
-				evbutton_save_config.enable_sensitive
-				update_evbutton_start (workbench.eiffel_project /= Void and workbench.eiffel_project.successful)
-			else
-				evbutton_load_config.disable_sensitive
-				evbutton_save_config.disable_sensitive
-				evbutton_start.disable_sensitive
-			end
-		end
-
-	update_evbutton_start (a_flag: BOOLEAN)
-			-- Enable/Disable `evbutton_start'.
-		do
-			if a_flag then
-				evbutton_start.enable_sensitive
-			else
-				evbutton_start.disable_sensitive
-			end
 		end
 
 feature{NONE} -- UI/Config sync
@@ -646,7 +577,7 @@ feature{NONE} -- UI/Config sync
 		end
 
 	propogate_values_from_ui_to_config
-			-- Propogate changes from UI to config.
+			-- <Precursor>
 		local
 			l_config: like config
 			l_working_dir: ES_ADB_WORKING_DIRECTORY
@@ -677,7 +608,7 @@ feature{NONE} -- UI/Config sync
 		end
 
 	propogate_class_groups_from_ui_to_config
-			--
+			-- Update `config' using the class groups in the UI.
 		local
 			l_config: like config
 			l_list_item: EV_LIST_ITEM

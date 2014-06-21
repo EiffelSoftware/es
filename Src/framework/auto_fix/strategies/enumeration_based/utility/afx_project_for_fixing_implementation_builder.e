@@ -80,6 +80,8 @@ feature -- Basic operation
 	collect_test_cases
 			--
 		local
+			l_signatures: DS_LINKED_LIST [EPA_TEST_CASE_SIGNATURE]
+			l_signature_id_cursor: DS_LINKED_LIST_CURSOR [EPA_TEST_CASE_SIGNATURE]
 			l_test_case_file_selector: AFX_TEST_CASE_FILE_SELECTOR
 			l_relaxed_test_case_file_selector: AFX_TEST_CASE_FILE_SELECTOR
 			l_fault_signatures: DS_LINKED_LIST [EPA_TEST_CASE_SIGNATURE]
@@ -105,7 +107,27 @@ feature -- Basic operation
 			l_test_case_file_selector.use_state_based_selection (config.is_using_state_based_test_case_selection)
 			l_test_case_file_selector.collect_test_cases (config.test_case_path, Void)
 			check not l_test_case_file_selector.failing_test_signatures.is_empty end
-			current_failing_test_signature := l_test_case_file_selector.failing_test_signatures.first
+
+				-- Signature of the fault to fix.
+			l_signatures := l_test_case_file_selector.failing_test_signatures
+			if attached config.fault_signature_id as lt_id then
+				from
+					l_signature_id_cursor := l_signatures.new_cursor
+					l_signature_id_cursor.start
+				until
+					l_signature_id_cursor.after or else current_failing_test_signature /= Void
+				loop
+					if l_signature_id_cursor.item ~ lt_id then
+						current_failing_test_signature := l_signature_id_cursor.item
+					end
+					l_signature_id_cursor.forth
+				end
+			end
+			if current_failing_test_signature = Void then
+				current_failing_test_signature := l_test_case_file_selector.failing_test_signatures.first
+			end
+
+				-- Select test cases
 			l_test_case_file_selector.set_max_passing_test_case_number (config.max_passing_test_case_number)
 			l_test_case_file_selector.set_max_failing_test_case_number (config.max_failing_test_case_number)
 

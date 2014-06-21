@@ -305,8 +305,8 @@ feature -- Monitoring entry & exit states
 					l_arguments.forth
 				end
 				l_is_creation_procedure := context_class.valid_creation_procedure_32 (feature_.feature_name_32)
-				if not l_is_creation_procedure then
-					l_expressions_to_extend.force (l_exp_creator.safe_create_with_text (context_class, feature_, "Current", written_class))
+				if not l_is_creation_procedure and then attached l_exp_creator.safe_create_with_text (context_class, feature_, "Current", written_class) as lt_expr then
+					l_expressions_to_extend.force (lt_expr)
 				end
 				l_precondition_expressions := derived_expressions (l_expressions_to_extend)
 				l_precondition_expressions.append (l_pre_contracts)
@@ -314,9 +314,11 @@ feature -- Monitoring entry & exit states
 				l_precondition_expressions.append (l_expressions_capturing_argument_relations)
 
 					-- 'Current' is always referrable in the postcondition.
-				l_expressions_to_extend.force (l_exp_creator.safe_create_with_text (context_class, feature_, "Current", written_class))
-				if feature_.has_return_value then
-					l_expressions_to_extend.force (l_exp_creator.safe_create_with_text (context_class, feature_, "Result", written_class))
+				if attached l_exp_creator.safe_create_with_text (context_class, feature_, "Current", written_class) as lt_expr then
+					l_expressions_to_extend.force (lt_expr)
+				end
+				if feature_.has_return_value and then attached l_exp_creator.safe_create_with_text (context_class, feature_, "Result", written_class) as lt_expr then
+					l_expressions_to_extend.force (lt_expr)
 				end
 				l_postcondition_expressions := derived_expressions (l_expressions_to_extend)
 				l_postcondition_expressions.append (l_post_contracts)

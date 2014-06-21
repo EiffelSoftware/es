@@ -140,17 +140,17 @@ feature {NONE} -- Implementation
 				base_text_editor.load_text ("")
 				diff_text_editor.load_text ("")
 			else
-				base_text_editor.text_displayed.set_feature_for_click (hunk.e_feature.written_feature)
-				base_text_editor.text_displayed.enable_feature_click
-				create l_stone.make (hunk.e_feature.written_feature)
-				base_text_editor.set_stone (l_stone)
+--				base_text_editor.text_displayed.set_feature_for_click (hunk.e_feature.written_feature)
+--				base_text_editor.text_displayed.enable_feature_click
+--				create l_stone.make (hunk.e_feature.written_feature)
+--				base_text_editor.set_stone (l_stone)
 				base_text_editor.load_text (hunk.base_code_with_padding)
 
 					-- Regular text
-				diff_text_editor.text_displayed.set_feature_for_click (hunk.e_feature.written_feature)
-				diff_text_editor.text_displayed.enable_feature_click
-				create l_stone.make (hunk.e_feature.written_feature)
-				diff_text_editor.set_stone (l_stone)
+--				diff_text_editor.text_displayed.set_feature_for_click (hunk.e_feature.written_feature)
+--				diff_text_editor.text_displayed.enable_feature_click
+--				create l_stone.make (hunk.e_feature.written_feature)
+--				diff_text_editor.set_stone (l_stone)
 				diff_text_editor.load_text (hunk.diff_code_with_padding)
 
 					-- Difference in highlight
@@ -207,7 +207,7 @@ feature {NONE} -- Contract support
 
 
 note
-	copyright: "Copyright (c) 1984-2012, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

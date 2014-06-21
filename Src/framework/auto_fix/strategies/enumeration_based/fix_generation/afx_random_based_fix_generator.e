@@ -305,6 +305,38 @@ feature{NONE} -- Implementation
 
 feature{NONE} -- Implementation operations
 
+	remove_qualified_call_on_current (a_str: STRING)
+			-- Remove qualified calls of form 'Current.xxx' from `a_str'.
+			-- FIXME: This is a hack, assuming no comments in 'a_str'.
+		local
+			l_str: STRING
+			l_start_index, l_count: INTEGER
+			l_previous_char: CHARACTER
+		do
+			from
+				l_start_index := 1
+				l_str := "Current."
+				l_count := l_str.count
+			until
+				l_start_index = 0 or else l_start_index >= a_str.count
+			loop
+				l_start_index := a_str.substring_index (l_str, l_start_index)
+				if l_start_index > 0 then
+					if l_start_index = 1 then
+						a_str.remove_substring (l_start_index, l_start_index + l_count - 1)
+					else
+						l_previous_char := a_str.at (l_start_index - 1)
+						if l_previous_char.is_alpha_numeric or else l_previous_char ~ '_' then
+								-- part of ID. Do nothing.
+						else
+							a_str.remove_substring (l_start_index, l_start_index + l_count - 1)
+						end
+					end
+					l_start_index := l_start_index + 1
+				end
+			end
+		end
+
 	relevant_asts_for_a_target (a_target: AFX_FIXING_TARGET): LINKED_LIST [TUPLE [scope_level: INTEGER_32; instructions: LINKED_LIST [EPA_AST_STRUCTURE_NODE]]]
 			-- Relevant asts regarding the breakpoint position of `a_target'.
 			-- For the moment, we only try to generate fixes before `a_target' or surrounding the single node or all the following nodes in the

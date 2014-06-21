@@ -111,6 +111,7 @@ feature -- Basic operation
 			l_class_id: INTEGER_32
 			l_feature_table: FEATURE_TABLE
 			l_names: EPA_HASH_SET [STRING_8]
+			l_reference_expr_text, l_qualification: STRING
 			l_next_feature: FEATURE_I
 			l_feature_type: TYPE_A
 			l_feature_name: STRING_32
@@ -118,6 +119,12 @@ feature -- Basic operation
 		do
 			l_class := a_reference_expr.type.associated_class
 			l_feature_table := l_class.feature_table
+			l_reference_expr_text := a_reference_expr.text
+			if l_reference_expr_text.is_case_insensitive_equal_general ("Current") then
+				l_qualification := ""
+			else
+				l_qualification := l_reference_expr_text + "."
+			end
 			create Result.make_equal (l_feature_table.count)
 			from
 				l_feature_table.start
@@ -129,7 +136,7 @@ feature -- Basic operation
 						and then l_next_feature.argument_count = 0
 						and then not l_next_feature.written_class.is_class_any
 						and then (l_next_feature.type = Void or else l_next_feature.type.is_void) then
-					Result.force_last (a_reference_expr.text + "." + l_next_feature.feature_name_32)
+					Result.force_last (l_qualification + l_next_feature.feature_name_32)
 				end
 				l_feature_table.forth
 			end

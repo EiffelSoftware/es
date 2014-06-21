@@ -219,7 +219,6 @@ feature {NONE} -- Initialization
 
 			create l_h_box
 			create l_label.make_with_text (Label_text_fixing_passing_tests)
---			l_label.set_minimum_width (80)
 			l_label.align_text_left
 			l_h_box.extend (l_label)
 			l_h_box.disable_item_expand (l_label)
@@ -231,7 +230,6 @@ feature {NONE} -- Initialization
 
 			create l_h_box
 			create l_label.make_with_text (Label_text_fixing_failing_tests)
---			l_label.set_minimum_width (80)
 			l_label.align_text_left
 			l_h_box.extend (l_label)
 			l_h_box.disable_item_expand (l_label)
@@ -252,7 +250,7 @@ feature {NONE} -- Initialization
 
 				-- Right
 			create l_v_box
-			l_v_box.set_minimum_width (130)
+			l_v_box.set_minimum_width (150)
 			l_v_box.set_padding ({ES_UI_CONSTANTS}.vertical_padding)
 			l_v_box.set_border_width ({ES_UI_CONSTANTS}.frame_border)
 
@@ -262,7 +260,7 @@ feature {NONE} -- Initialization
 			l_h_box.extend (l_label)
 			l_h_box.disable_item_expand (l_label)
 			create evbutton_load_config.make_with_text (Button_text_load_config)
-			evbutton_load_config.set_minimum_width (100)
+			evbutton_load_config.set_minimum_width (130)
 			l_h_box.extend (evbutton_load_config)
 			l_h_box.disable_item_expand (evbutton_load_config)
 			create l_label.make_with_text ("")
@@ -278,7 +276,7 @@ feature {NONE} -- Initialization
 			l_h_box.extend (l_label)
 			l_h_box.disable_item_expand (l_label)
 			create evbutton_save_config.make_with_text (Button_text_save_config)
-			evbutton_save_config.set_minimum_width (100)
+			evbutton_save_config.set_minimum_width (130)
 			l_h_box.extend (evbutton_save_config)
 			l_h_box.disable_item_expand (evbutton_save_config)
 			create l_label.make_with_text ("")
@@ -293,11 +291,11 @@ feature {NONE} -- Initialization
 
 			create l_h_box
 			create l_label.make_with_text ("")
-			l_label.set_minimum_width (30)
+			l_label.set_minimum_width (10)
 			l_h_box.extend (l_label)
 			l_h_box.disable_item_expand (l_label)
 			create evbutton_start.make_with_text (Button_text_start)
-			evbutton_start.set_minimum_width (60)
+			evbutton_start.set_minimum_width (130)
 			l_font := evbutton_start.font
 			create l_font_larger.make_with_values (l_font.family, l_font.weight, l_font.shape, l_font.height)
 			l_font_larger.set_weight ({EV_FONT_CONSTANTS}.Weight_bold)
@@ -306,7 +304,7 @@ feature {NONE} -- Initialization
 			l_h_box.extend (evbutton_start)
 			l_h_box.disable_item_expand (evbutton_start)
 			create l_label.make_with_text ("")
-			l_label.set_minimum_width (30)
+			l_label.set_minimum_width (10)
 			l_h_box.extend (l_label)
 			l_h_box.disable_item_expand (l_label)
 			l_v_box.extend (l_h_box)

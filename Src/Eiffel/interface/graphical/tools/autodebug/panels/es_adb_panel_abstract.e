@@ -24,50 +24,27 @@ feature -- Access
 			-- AutoDebug tool
 
 	tool_window: EV_WINDOW
-			-- Window where `tool_panel' belongs
+			-- Window to which `tool_panel' belongs
 		do
 			Result := tool_panel.develop_window.window
 		ensure
 			result_attached: Result /= Void
 		end
 
-feature -- Tool panel status report
+feature -- UI operation
 
-	is_eiffel_compiling: BOOLEAN
-			-- Is eiffel compiling?
+	is_approved_by_user (a_msg: STRING): BOOLEAN
+			-- Is it approved by user to continue with the action described in 'a_msg'.
+		require
+			a_msg /= Void and then not a_msg.is_empty
+		local
+			l_confirmation_dialog: like confirmation_dialog
 		do
-			Result := tool_panel.is_eiffel_compiling
+			l_confirmation_dialog := confirmation_dialog
+			l_confirmation_dialog.set_text (a_msg)
+			l_confirmation_dialog.show_modal_to_window (tool_window)
+			Result := l_confirmation_dialog.selected_button ~ (create {EV_DIALOG_CONSTANTS}).ev_ok.as_string_32
 		end
-
-	is_project_loaded: BOOLEAN
-			-- Is a project loaded?
-		do
-			Result := tool_panel.is_project_loaded
-		end
-
-	is_debugging: BOOLEAN
-			-- Is debugging running?
-		do
-			Result := tool_panel.is_debugging
-		end
-
-feature -- Action
-
-	on_select
-			--
-		do
-			update_ui
-		end
-
-feature -- Current panel status report
-
-	is_up_to_date: BOOLEAN
-			-- Is current panel up-to-date?
-
-	is_selected: BOOLEAN
-			-- Is current panel selected?
-
-feature{NONE} -- Implementation
 
 	display_status_message (a_msg: READABLE_STRING_GENERAL)
 			-- Display `a_msg' in message bar.
@@ -93,11 +70,6 @@ feature{NONE} -- Implementation
 			(create {ES_SHARED_PROMPT_PROVIDER}).prompts.show_info_prompt (a_message, tool_window, Void)
 		end
 
-	update_ui
-			-- Update interface
-		deferred
-		end
-
 feature -- Setting
 
 	set_tool_panel (a_tool: like tool_panel)
@@ -110,22 +82,41 @@ feature -- Setting
 			tool_panel_attached: tool_panel /= Void
 		end
 
-feature -- Current panel setting
+feature -- GUI
 
-	set_is_up_to_date (b: BOOLEAN)
-			-- Set `is_up_to_date' with `b'.
-		do
-			is_up_to_date := b
-		ensure
-			is_up_to_date_set: is_up_to_date = b
+	clear_information_display_widget
+			-- Clear all information displayed on panel.
+		deferred
 		end
 
-	set_is_selected (b: BOOLEAN)
-			-- Set `is_selected' with `b'.
+	enable_information_display_widget (a_flag: BOOLEAN)
+			-- Enable/Disable the widgets related to information display.
+		deferred
+		end
+
+	enable_command_invocation_widget (a_flag: BOOLEAN)
+			-- Enable/Disable the widgets related to command invocation.
+		deferred
+		end
+
+feature{ES_ADB_TOOL_PANEL} -- Config <-> UI sync
+
+	propogate_values_from_config_to_ui
+			-- Propogate settings from config to UI.
 		do
-			is_selected := b
-		ensure
-			is_selected_set: is_selected = b
+		end
+
+	propogate_values_from_ui_to_config
+			-- Propogate settings from UI to config.
+		do
+		end
+
+feature{NONE} -- UI operation implementation
+
+	Confirmation_dialog: EV_CONFIRMATION_DIALOG
+			-- (export status {NONE})
+		do
+			create Result
 		end
 
 invariant

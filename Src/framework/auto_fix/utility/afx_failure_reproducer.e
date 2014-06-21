@@ -93,9 +93,9 @@ feature{NONE} -- Exception analysis
 			l_stack_element, l_test_element: CALL_STACK_ELEMENT
 			i: INTEGER_32
 			l_test_element_depth: INTEGER_32
-			l_class: CLASS_C
-			l_feature: FEATURE_I
-			l_feature_to_monitor, l_recipient: AFX_FEATURE_TO_MONITOR
+			l_class, l_last_class: CLASS_C
+			l_feature, l_last_feature: FEATURE_I
+			l_feature_under_test, l_feature_to_monitor, l_recipient: AFX_FEATURE_TO_MONITOR
 			l_done: BOOLEAN
 			l_observed_features: EPA_HASH_SET [STRING]
 			l_observed_feature_name: STRING
@@ -103,22 +103,28 @@ feature{NONE} -- Exception analysis
 			create l_features.make_equal (10)
 			l_recipient := session.exception_from_execution.recipient_feature_with_context
 
-			if config.is_fixing_contract then
-				l_stack := a_dm.application_status.current_call_stack
-				from
-					i := 1
-					create l_observed_features.make_equal (l_stack.count + 1)
-				until
-					i > l_stack.count or else l_test_element /= Void or else l_done
-				loop
-					l_stack_element := l_stack.i_th (i)
-					if l_stack_element.routine_name.same_string_general ("generated_test_1") then
-						l_done := True
-					else
-						l_class := first_class_starts_with_name (l_stack_element.class_name)
-						if l_class /= Void then
-							l_feature := l_class.feature_named (l_stack_element.routine_name)
-							if l_feature /= Void then
+			l_stack := a_dm.application_status.current_call_stack
+			from
+				i := 1
+				create l_observed_features.make_equal (l_stack.count + 1)
+			until
+				i > l_stack.count or else l_test_element /= Void or else l_done
+			loop
+				l_stack_element := l_stack.i_th (i)
+				if l_stack_element.routine_name.same_string_general ("generated_test_1") then
+					create l_feature_under_test.make (l_last_feature, l_last_class)
+					session.set_feature_under_test (l_feature_under_test)
+
+					l_done := True
+				else
+					l_class := first_class_starts_with_name (l_stack_element.class_name)
+					if l_class /= Void then
+						l_feature := l_class.feature_named (l_stack_element.routine_name)
+						if l_feature /= Void then
+							l_last_class := l_class
+							l_last_feature := l_feature
+
+							if config.is_fixing_contract then
 								l_observed_feature_name := l_class.name_in_upper + "." + l_feature.feature_name_32
 								if not l_observed_features.has (l_observed_feature_name) then
 									l_observed_features.force (l_observed_feature_name)
@@ -130,10 +136,12 @@ feature{NONE} -- Exception analysis
 							end
 						end
 					end
-					i := i + 1
 				end
-				session.set_feature_under_test (l_features.last)
-			else
+				i := i + 1
+			end
+
+			if l_features.is_empty then
+					-- Fixing implementation only.
 				l_recipient.set_monitor_body (True)
 				l_features.force_last (l_recipient)
 			end

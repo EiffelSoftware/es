@@ -219,6 +219,8 @@ feature -- Execution
 				l_generator.set_test_case_serialization_file (l_ap.test_case_serialization_file)
 				l_generator.set_is_test_case_serialization_retrieved_online (l_ap.is_test_case_serialization_retrieved_online)
 				l_generator.set_output_dir_for_test_case_online (l_ap.output_dir_for_test_case_online)
+				l_generator.set_output_test_case_online_filter (l_ap.output_test_case_online_filter)
+				l_generator.set_clear_online_test_case_dir (l_ap.should_clear_online_test_case_dir)
 
 					-- Set test case deserialization arguments.
 				l_generator.set_is_passing_test_case_deserialization_enabled (l_ap.is_passing_test_cases_deserialization_enabled)

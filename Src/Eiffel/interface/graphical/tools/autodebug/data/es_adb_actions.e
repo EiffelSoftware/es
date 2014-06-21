@@ -34,7 +34,7 @@ feature {NONE} -- Actions
 		end
 
 	on_testing_start
-			-- Action to be performed when debugging starts
+			-- Action to be performed when testing starts
 		deferred
 		end
 
@@ -44,34 +44,46 @@ feature {NONE} -- Actions
 		end
 
 	on_testing_stop
+			-- Action to be performed when testing stops.
+		deferred
+		end
+
+	on_continuation_debugging_start
+			-- Action to be performed when continuation debugging starts
+		deferred
+		end
+
+	on_continuation_debugging_stop
+			-- Action to be performed when continuation debugging stops
 		deferred
 		end
 
 	on_fixing_start (a_fault: ES_ADB_FAULT)
-		require
-			a_fault /= Void
+			-- Action to be performed when fixing `a_fault' starts
 		deferred
 		end
 
 	on_valid_fix_found (a_fix: ES_ADB_FIX)
+			-- Action to be performed when `a_fix' is found.
 		require
 			a_fix /= Void
 		deferred
 		end
 
+	on_fixing_stop
+			-- Action to be performed when fixing a fault stops
+		deferred
+		end
+
 	on_fix_applied (a_fix: ES_ADB_FIX)
+			-- Action to be performed when `a_fix' is applied.
 		require
 			a_fix /= Void and then a_fix.has_been_applied
 		deferred
 		end
 
-	on_fixing_stop (a_fault: ES_ADB_FAULT)
-		require
-			a_fault /= Void
-		deferred
-		end
-
 	on_output (a_line: STRING)
+			-- Action to be performed when `a_line' is output.
 		require
 			a_line /= Void
 		deferred
@@ -165,6 +177,30 @@ feature {ES_ADB_ACTION_PUBLISHER} -- Agents
 			Result := on_fixing_start_agent_internal
 		end
 
+	on_fixing_stop_agent: PROCEDURE [ANY, TUPLE]
+		do
+			if on_fixing_stop_agent_internal = Void then
+				on_fixing_stop_agent_internal := agent on_fixing_stop
+			end
+			Result := on_fixing_stop_agent_internal
+		end
+
+	on_continuation_debugging_start_agent: PROCEDURE [ANY, TUPLE]
+		do
+			if on_continuation_debugging_start_agent_internal = Void then
+				on_continuation_debugging_start_agent_internal := agent on_continuation_debugging_start
+			end
+			Result := on_continuation_debugging_start_agent_internal
+		end
+
+	on_continuation_debugging_stop_agent: PROCEDURE [ANY, TUPLE]
+		do
+			if on_continuation_debugging_stop_agent_internal = Void then
+				on_continuation_debugging_stop_agent_internal := agent on_continuation_debugging_stop
+			end
+			Result := on_continuation_debugging_stop_agent_internal
+		end
+
 	on_valid_fix_found_agent: PROCEDURE [ANY, TUPLE[ES_ADB_FIX]]
 		do
 			if on_valid_fix_found_agent_internal = Void then
@@ -179,14 +215,6 @@ feature {ES_ADB_ACTION_PUBLISHER} -- Agents
 				on_fix_applied_agent_internal := agent on_fix_applied
 			end
 			Result := on_fix_applied_agent_internal
-		end
-
-	on_fixing_stop_agent: PROCEDURE [ANY, TUPLE[ES_ADB_FAULT]]
-		do
-			if on_fixing_stop_agent_internal = Void then
-				on_fixing_stop_agent_internal := agent on_fixing_stop
-			end
-			Result := on_fixing_stop_agent_internal
 		end
 
 	on_output_agent: PROCEDURE [ANY, TUPLE [STRING]]
@@ -209,9 +237,11 @@ feature {NONE} -- Implementation
 	on_test_case_generated_agent_internal: like on_test_case_generated_agent
 	on_testing_stop_agent_internal: like on_testing_stop_agent
 	on_fixing_start_agent_internal: like on_fixing_start_agent
+	on_fixing_stop_agent_internal: like on_fixing_stop_agent
+	on_continuation_debugging_start_agent_internal: like on_continuation_debugging_start_agent
+	on_continuation_debugging_stop_agent_internal: like on_continuation_debugging_stop_agent
 	on_valid_fix_found_agent_internal: like on_valid_fix_found_agent
 	on_fix_applied_agent_internal: like on_fix_applied_agent
-	on_fixing_stop_agent_internal: like on_fixing_stop_agent
 	on_output_agent_internal: like on_output_agent
 
 ;

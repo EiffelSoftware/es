@@ -44,8 +44,6 @@ feature -- Primitive config values
 			Result := working_directory_internal
 		end
 
-	should_test_classes_in_groups: BOOLEAN
-
 	testing_session_type: INTEGER
 
 	max_session_length_for_testing: INTEGER
@@ -65,6 +63,12 @@ feature -- Primitive config values
 	max_nbr_passing_tests: INTEGER
 
 	max_nbr_failing_tests: INTEGER
+
+	should_show_implementation_fixable: BOOLEAN
+
+	should_show_contract_fixable: BOOLEAN
+
+	should_show_not_fixable: BOOLEAN
 
 	should_show_not_yet_attempted: BOOLEAN
 
@@ -161,6 +165,26 @@ feature -- Classes and groups to debug
 			Result := all_classes_internal
 		end
 
+	all_class_names: DS_HASH_SET [STRING]
+			-- Set of names of classes to debug.
+		local
+			l_cursor: DS_HASH_SET_CURSOR [CLASS_C]
+		do
+			if all_class_names_internal = Void then
+				create all_class_names_internal.make_equal (all_classes.count * 2 + 1)
+				from
+					l_cursor := all_classes.new_cursor
+					l_cursor.start
+				until
+					l_cursor.after
+				loop
+					all_class_names_internal.force (l_cursor.item.name_in_upper)
+					l_cursor.forth
+				end
+			end
+			Result := all_class_names_internal
+		end
+
 	groups_to_classes: DS_HASH_TABLE [DS_HASH_SET [CLASS_C], STRING]
 			-- Map from group names to the set of classes in that group.
 			-- Key: group
@@ -243,6 +267,8 @@ feature -- Modify class groups
 			if class_groups.has (a_group) then
 				class_groups.delete (a_group)
 				groups_to_classes.remove (a_group)
+				all_classes_internal := Void
+				all_class_names_internal := Void
 			end
 		end
 
@@ -251,6 +277,8 @@ feature -- Modify class groups
 		do
 			class_groups.wipe_out
 			groups_to_classes.wipe_out
+			all_classes_internal := Void
+			all_class_names_internal := Void
 		end
 
 feature -- Set others
@@ -324,6 +352,21 @@ feature -- Set others
 			max_nbr_failing_tests := a_val
 		end
 
+	set_show_implementation_fixable (a_flag: BOOLEAN)
+		do
+			should_show_implementation_fixable := a_flag
+		end
+
+	set_show_contract_fixable (a_flag: BOOLEAN)
+		do
+			should_show_contract_fixable := a_flag
+		end
+
+	set_show_not_fixable (a_flag: BOOLEAN)
+		do
+			should_show_not_fixable := a_flag
+		end
+
 	set_show_not_yet_attempted (a_flag: BOOLEAN)
 		do
 			should_show_not_yet_attempted := a_flag
@@ -366,6 +409,11 @@ feature -- Default values
 			should_fix_contracts := default_should_fix_contracts
 			max_nbr_passing_tests := default_max_nbr_passing_tests
 			max_nbr_failing_tests := default_max_nbr_failing_tests
+
+			should_show_implementation_fixable := default_should_show_implementation_fixable
+			should_show_contract_fixable := default_should_show_contract_fixable
+			should_show_not_fixable := default_should_show_not_fixable
+
 			should_show_not_yet_attempted := default_should_show_not_yet_attempted
 			should_show_candidate_fix_available := default_should_show_candidate_fix_available
 			should_show_candidate_fix_unavailable := default_should_show_candidate_fix_unavailable
@@ -508,6 +556,18 @@ feature{NONE} -- Load and save implementation
 						if l_value.is_integer and then is_valid_max_nbr_tests (l_value.to_integer) then
 							set_max_nbr_failing_tests (l_value.to_integer)
 						end
+					elseif l_head ~ str_should_show_implementation_fixable then
+						if l_value.is_boolean then
+							set_show_implementation_fixable (l_value.to_boolean)
+						end
+					elseif l_head ~ str_should_show_contract_fixable then
+						if l_value.is_boolean then
+							set_show_contract_fixable (l_value.to_boolean)
+						end
+					elseif l_head ~ str_should_show_not_fixable then
+						if l_value.is_boolean then
+							set_show_not_fixable (l_value.to_boolean)
+						end
 					elseif l_head ~ str_should_show_not_yet_attempted then
 						if l_value.is_boolean then
 							set_show_not_yet_attempted (l_value.to_boolean)
@@ -606,6 +666,21 @@ feature{NONE} -- Load and save implementation
 				l_content.append (max_nbr_failing_tests.out)
 				l_content.append_character ('%N')
 
+				l_content.append (str_should_show_implementation_fixable)
+				l_content.append_character (key_value_separator)
+				l_content.append (should_show_implementation_fixable.out)
+				l_content.append_character ('%N')
+
+				l_content.append (str_should_show_contract_fixable)
+				l_content.append_character (key_value_separator)
+				l_content.append (should_show_contract_fixable.out)
+				l_content.append_character ('%N')
+
+				l_content.append (str_should_show_not_fixable)
+				l_content.append_character (key_value_separator)
+				l_content.append (should_show_not_fixable.out)
+				l_content.append_character ('%N')
+
 				l_content.append (str_should_show_not_yet_attempted)
 				l_content.append_character (key_value_separator)
 				l_content.append (should_show_not_yet_attempted.out)
@@ -667,6 +742,7 @@ feature{NONE} -- String representation
 					class_groups.force_last (l_name)
 					groups_to_classes.force (classes_in_group (l_name), l_name)
 					all_classes_internal := Void
+					all_class_names_internal := Void
 				end
 
 				l_cursor.forth
@@ -710,6 +786,9 @@ feature -- Constant
 	str_should_fix_contracts: STRING = "should.fix.contracts"
 	str_max_nbr_passing_tests: STRING = "max.nbr.passing.tests"
 	str_max_nbr_failing_tests: STRING = "max.nbr.failing.tests"
+	str_should_show_implementation_fixable: STRING = "should.show.implementation.fixable"
+	str_should_show_contract_fixable: STRING = "should.show.contract.fixable"
+	str_should_show_not_fixable: STRING = "should.show.not.fixable"
 	str_should_show_not_yet_attempted: STRING = "should.show.not.yet.attempted"
 	str_should_show_candidate_fix_availabe: STRING = "should.show.candidate.fix.available"
 	str_should_show_candidate_fix_unavailable: STRING = "should.show.candidate.fix.unavailable"
@@ -735,11 +814,18 @@ feature -- Constant
 	default_should_fix_contracts: BOOLEAN = True
 	default_max_nbr_passing_tests: INTEGER = 30
 	default_max_nbr_failing_tests: INTEGER = 20
+	default_should_show_implementation_fixable: BOOLEAN = True
+	default_should_show_contract_fixable: BOOLEAN = True
+	default_should_show_not_fixable: BOOLEAN = True
 	default_should_show_not_yet_attempted: BOOLEAN = True
 	default_should_show_candidate_fix_available: BOOLEAN = True
 	default_should_show_candidate_fix_unavailable: BOOLEAN = True
 	default_should_show_candidate_fix_accepted: BOOLEAN = True
 	default_should_show_manually_fixed: BOOLEAN = True
+
+	Max_session_length_for_relaxed_testing: INTEGER = 5
+	Max_session_overhead_length: INTEGER = 5
+
 
 feature{NONE} -- Internal
 
@@ -747,6 +833,8 @@ feature{NONE} -- Internal
 	class_groups_internal: like class_groups
 	groups_to_classes_internal: like groups_to_classes
 	all_classes_internal: like all_classes
+	all_class_names_internal: like all_class_names
+
 
 ;
 note

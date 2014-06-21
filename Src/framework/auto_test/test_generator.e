@@ -211,6 +211,13 @@ feature -- Options: basic
 			-- Where should AutoTest output test case files during testing?
 			-- Have effect only if `is_test_case_serialization_retrieved_online' is True.
 
+	output_test_case_online_filter: STRING
+			-- Which test cases should be output online?
+			-- Format: CLASS_NAME.feature_name
+
+	should_clear_online_test_case_dir: BOOLEAN
+	
+
 	feature_to_disable_contracts: STRING
 		do
 			Result := feature_to_disable_contracts_cache
@@ -1155,6 +1162,18 @@ feature -- Status setting
 			output_dir_for_test_case_online := a_dir
 		ensure
 			output_dir_for_test_case_online_set: output_dir_for_test_case_online ~ a_dir
+		end
+
+	set_output_test_case_online_filter (a_str: STRING)
+		do
+			if a_str /= Void then
+				output_test_case_online_filter := a_str.twin
+			end
+		end
+
+	set_clear_online_test_case_dir (a_flag: BOOLEAN)
+		do
+			should_clear_online_test_case_dir := a_flag
 		end
 
 feature -- Basic operations

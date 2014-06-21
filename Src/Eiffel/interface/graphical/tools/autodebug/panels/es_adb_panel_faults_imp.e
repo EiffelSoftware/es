@@ -27,6 +27,7 @@ feature{NONE} -- Initialization
 			l_col: EV_GRID_COLUMN
 			l_grid: EV_GRID
 			l_h_padding, l_v_padding: INTEGER
+
 			l_label: EV_LABEL
 			l_separator: EV_HORIZONTAL_SEPARATOR
 		do
@@ -36,53 +37,20 @@ feature{NONE} -- Initialization
 			set_padding (l_v_padding)
 
 			create l_h_box
-			l_h_box.set_padding (l_h_padding)
-			create evtoggle_show_to_be_attempted.make_with_text (toggle_text_show_to_be_attempted)
-			create evtoggle_show_candidate_fix_available.make_with_text (toggle_text_show_candidate_fix_available)
-			create evtoggle_show_candidate_fix_unavailable.make_with_text (toggle_text_show_candidate_fix_unavailable)
-			create evtoggle_show_candidate_fix_accepted.make_with_text (toggle_text_show_candidate_fix_accepted)
-			create evtoggle_show_manually_fixed.make_with_text (toggle_text_show_manual_fixed)
-
-			l_h_box.extend (evtoggle_show_to_be_attempted)
-			l_h_box.disable_item_expand (evtoggle_show_to_be_attempted)
-
-			create l_separator
-			l_h_box.extend (l_separator)
-			l_h_box.disable_item_expand (l_separator)
-
-			l_h_box.extend (evtoggle_show_candidate_fix_available)
-			l_h_box.disable_item_expand (evtoggle_show_candidate_fix_available)
-			l_h_box.extend (evtoggle_show_candidate_fix_unavailable)
-			l_h_box.disable_item_expand (evtoggle_show_candidate_fix_unavailable)
-			l_h_box.extend (evtoggle_show_candidate_fix_accepted)
-			l_h_box.disable_item_expand (evtoggle_show_candidate_fix_accepted)
-
-			create l_separator
-			l_h_box.extend (l_separator)
-			l_h_box.disable_item_expand (l_separator)
-
-			l_h_box.extend (evtoggle_show_manually_fixed)
-			l_h_box.disable_item_expand (evtoggle_show_manually_fixed)
-
-			extend (l_h_box)
-			disable_item_expand (l_h_box)
-
-			create l_h_box
 			l_h_box.set_border_width ({ES_UI_CONSTANTS}.frame_border)
 			create evgrid_faults
 			l_grid := evgrid_faults
 			l_grid.enable_row_separators
 			l_grid.enable_single_row_selection
---			l_grid.enable_column_separators
 			l_grid.set_column_count_to (Last_column)
 			l_col := l_grid.column (1)
 			l_col.set_width (0)
 			l_col := l_grid.column (column_class_and_feature_under_test)
 			l_col.set_title (grid_column_text_class_and_feature_under_test)
-			l_col.set_width (100)
+			l_col.set_width (300)
 			l_col := l_grid.column (column_fault)
 			l_col.set_title (grid_column_text_fault)
-			l_col.set_width (200)
+			l_col.set_width (400)
 			l_col := l_grid.column (column_passing)
 			l_col.set_title (grid_column_text_passing_tests)
 			l_col.set_width (100)
@@ -103,6 +71,40 @@ feature{NONE} -- Initialization
 				-- Buttons
 			create l_h_box
 			l_h_box.set_padding (l_h_padding)
+
+				-- Popup menu
+			create evmenu_approchability
+			create evmenu_fixes
+
+			create evmenucheck_implementation_fixable.make_with_text (Menu_text_automatic_implementation_fixable)
+			evmenu_approchability.extend (evmenucheck_implementation_fixable)
+			create evmenucheck_contract_fixable.make_with_text (Menu_text_automatic_specification_fixable)
+			evmenu_approchability.extend (evmenucheck_contract_fixable)
+			create evmenucheck_not_fixable.make_with_text (Menu_text_not_automatic_fixable)
+			evmenu_approchability.extend (evmenucheck_not_fixable)
+
+			create evmenucheck_not_yet_attempted.make_with_text (Menu_text_not_yet_attempted)
+			evmenu_fixes.extend (evmenucheck_not_yet_attempted)
+			create evmenucheck_candidate_fix_available.make_with_text (Menu_text_candidate_fix_available)
+			evmenu_fixes.extend (evmenucheck_candidate_fix_available)
+			create evmenucheck_candidate_fix_unavailable.make_with_text (Menu_text_candidate_fix_unavailable)
+			evmenu_fixes.extend (evmenucheck_candidate_fix_unavailable)
+			create evmenucheck_candidate_fix_accepted.make_with_text (Menu_text_candidate_fix_accepted)
+			evmenu_fixes.extend (evmenucheck_candidate_fix_accepted)
+			create evmenucheck_manually_fixed.make_with_text (Menu_text_manually_fixed)
+			evmenu_fixes.extend (evmenucheck_manually_fixed)
+
+			create evbutton_filter_by_approachability.make_with_text (Button_text_filter_by_approachability)
+			evbutton_filter_by_approachability.set_minimum_width (120)
+			evbutton_filter_by_approachability.select_actions.extend (agent evmenu_approchability.show_at (evbutton_filter_by_approachability, evbutton_filter_by_approachability.width, 0))
+			create evbutton_filter_by_fixes.make_with_text (Button_text_filter_by_fixes)
+			evbutton_filter_by_fixes.set_minimum_width (120)
+			evbutton_filter_by_fixes.select_actions.extend (agent evmenu_fixes.show_at (evbutton_filter_by_fixes, evbutton_filter_by_fixes.width, 0))
+			l_h_box.extend (evbutton_filter_by_approachability)
+			l_h_box.disable_item_expand (evbutton_filter_by_approachability)
+			l_h_box.extend (evbutton_filter_by_fixes)
+			l_h_box.disable_item_expand (evbutton_filter_by_fixes)
+
 				-- Right align
 			create l_label.make_with_text("")
 			l_h_box.extend (l_label)
@@ -117,102 +119,28 @@ feature{NONE} -- Initialization
 
 		end
 
-feature{NONE} -- Implementation
-
-	internal_grid_wrapper: EVS_GRID_WRAPPER [EV_GRID_ROW]
-
-	grid_wrapper: EVS_GRID_WRAPPER [EV_GRID_ROW]
-			--
-		do
-			if internal_grid_wrapper = Void then
-				create internal_grid_wrapper.make (evgrid_faults)
-			end
-			Result := internal_grid_wrapper
-		end
-
-	enable_sorting
-			-- Copied from ES_BREAKPOINTS_TOOL_PANEL.enable_sorting.
-		local
-			l_wrapper: like grid_wrapper
-			l_sort_info: EVS_GRID_TWO_WAY_SORTING_INFO [EV_GRID_ROW]
-			l_column: EV_GRID_COLUMN
-		do
-			l_wrapper := grid_wrapper
-			l_wrapper.enable_auto_sort_order_change
-			if l_wrapper.sort_action = Void then
-				l_wrapper.set_sort_action (agent sort_handler)
-			end
-
-				-- Fake sorting routine.
-				-- Sorting is handled by 'sort_handler'.
-			create l_sort_info.make (agent (a_row, a_other_row: EV_GRID_ROW; a_order: INTEGER): BOOLEAN do Result := False end, {EVS_GRID_TWO_WAY_SORTING_ORDER}.descending_order)
-			l_sort_info.enable_auto_indicator
-
-			l_wrapper.set_sort_info (column_class_and_feature_under_test, l_sort_info)
-			l_wrapper.set_sort_info (column_fault, l_sort_info)
-			l_wrapper.set_sort_info (column_passing, l_sort_info)
-			l_wrapper.set_sort_info (column_failing, l_sort_info)
-			l_wrapper.set_sort_info (column_status, l_sort_info)
-		end
-
-	disable_sorting
-			--
-		local
-			l_wrapper: like grid_wrapper
-		do
-			l_wrapper := internal_grid_wrapper
-			if l_wrapper /= Void then
-				l_wrapper.wipe_out_sorted_columns
-				l_wrapper.disable_auto_sort_order_change
-				l_wrapper.set_sort_action (Void)
-				internal_grid_wrapper := Void
-			end
-
-		end
-
-	sort_handler (a_column_list: LIST [INTEGER_32]; a_comparator: AGENT_LIST_COMPARATOR [EV_GRID_ROW])
-			--
-		local
-			l_style: EV_POINTER_STYLE
-		do
-			l_style := pointer_style
-			set_pointer_style ((create {EV_STOCK_PIXMAPS}).busy_cursor)
-
-			populate_grid
-
-			set_pointer_style (l_style)
-		end
-
-	has_no_fault: BOOLEAN
-			--
-		deferred
-		end
-
-	populate_grid
-			--
-		deferred
-		end
-
-feature -- Status report
-
-    is_initializing: BOOLEAN
-            -- Indicates if the user interface is currently being initialized
-
 feature{NONE} -- GUI elements
 
 	evbutton_fix_all_to_be_attempted: EV_BUTTON
 
 	evbutton_fix_selected: EV_BUTTON
 
-	evtoggle_show_candidate_fix_accepted: EV_TOGGLE_BUTTON
+	evbutton_filter_by_approachability: EV_BUTTON
+	evbutton_filter_by_fixes: EV_BUTTON
 
-	evtoggle_show_manually_fixed: EV_TOGGLE_BUTTON
+	evmenu_approchability: EV_MENU
+	evmenucheck_all_approchability: EV_CHECK_MENU_ITEM
+	evmenucheck_implementation_fixable: EV_CHECK_MENU_ITEM
+	evmenucheck_contract_fixable: EV_CHECK_MENU_ITEM
+	evmenucheck_not_fixable: EV_CHECK_MENU_ITEM
 
-	evtoggle_show_to_be_attempted: EV_TOGGLE_BUTTON
-
-	evtoggle_show_candidate_fix_available: EV_TOGGLE_BUTTON
-
-	evtoggle_show_candidate_fix_unavailable: EV_TOGGLE_BUTTON
+	evmenu_fixes: EV_MENU
+	evmenucheck_all_fixes: EV_CHECK_MENU_ITEM
+	evmenucheck_not_yet_attempted: EV_CHECK_MENU_ITEM
+	evmenucheck_candidate_fix_available: EV_CHECK_MENU_ITEM
+	evmenucheck_candidate_fix_unavailable: EV_CHECK_MENU_ITEM
+	evmenucheck_candidate_fix_accepted: EV_CHECK_MENU_ITEM
+	evmenucheck_manually_fixed: EV_CHECK_MENU_ITEM
 
 	evgrid_faults: EV_GRID
 

@@ -7,7 +7,7 @@ note
 class
 	ES_ADB_FAULT_REPOSITORY
 
-feature -- Query
+feature -- Access
 
 	fault_repository: DS_HASH_TABLE [ES_ADB_FAULT, EPA_TEST_CASE_SIGNATURE]
 			-- Current repository.
@@ -15,8 +15,10 @@ feature -- Query
 			Result := fault_repository_storage.item
 		end
 
+feature -- Query
+
 	filtered_faults (a_filter: PREDICATE[ANY, TUPLE[ES_ADB_FAULT]]): DS_ARRAYED_LIST [ES_ADB_FAULT]
-			--
+			-- List of faults satisfying `a_filter'.
 		local
 			l_cursor: DS_HASH_TABLE_CURSOR [ES_ADB_FAULT, EPA_TEST_CASE_SIGNATURE]
 		do
@@ -34,32 +36,37 @@ feature -- Query
 			end
 		end
 
-	fault_with_signature (a_sig: EPA_TEST_CASE_SIGNATURE): ES_ADB_FAULT
-			-- Get the fault with `a_sig' from repository.
-			-- If no such fault exists in the repo, create it, add it to repo, and then return it.
+	fault_with_signature (a_sig: EPA_TEST_CASE_SIGNATURE; a_instantiate_fault: BOOLEAN): ES_ADB_FAULT
+			-- Fault with `a_sig' from `fault_repository'.
+			--
+			-- If no such fault exists in the repo:
+			-- 	when `a_instantiate_fault', create it, add it to repo, and then return it.
+			--	otherwise, return Void.
 		require
 			a_sig /= Void
 		local
 		do
 			if fault_repository.has (a_sig) then
 				Result := fault_repository.item (a_sig)
-			else
+			elseif a_instantiate_fault then
 				create Result.make (a_sig)
 				fault_repository.force (Result, a_sig)
 			end
 		end
 
 	fault_with_signature_id (a_id: STRING): ES_ADB_FAULT
+			-- Get the fault with signature id `a_id' from `fault_repository'.
 		require
 			fault_signature_from_id (a_id) /= Void
 		local
 			l_sig: EPA_TEST_CASE_SIGNATURE
 		do
-			Result := fault_with_signature (fault_signature_from_id (a_id))
+			l_sig := fault_signature_from_id (a_id)
+			Result := fault_with_signature (l_sig, False)
 		end
 
 	number_of_faults_for_feature (a_feature: EPA_FEATURE_WITH_CONTEXT_CLASS): INTEGER
-			--
+			-- Number of faults in `fault_repository' with their feature under test being `a_feature'.
 		require
 			a_feature /= Void
 		local
@@ -83,7 +90,7 @@ feature -- Query
 feature -- Operation
 
 	reset
-			--
+			-- Reset `fault_repository'.
 		do
 			fault_repository_storage.put (create {DS_HASH_TABLE [ES_ADB_FAULT, EPA_TEST_CASE_SIGNATURE]}.make_equal (100))
 		end
@@ -91,6 +98,7 @@ feature -- Operation
 feature -- Auxiliary
 
 	fault_signature_from_id (a_id: STRING): EPA_TEST_CASE_SIGNATURE
+			-- Fault signature with the same id as `a_id'.
 		local
 			l_keys: DS_BILINEAR [EPA_TEST_CASE_SIGNATURE]
 			l_key_cursor: DS_BILINEAR_CURSOR [EPA_TEST_CASE_SIGNATURE]
@@ -105,13 +113,14 @@ feature -- Auxiliary
 				if l_key_cursor.item.id ~ a_id then
 					Result := l_key_cursor.item
 				end
+				l_key_cursor.forth
 			end
 		end
 
 feature{NONE} -- Implementation
 
 	fault_repository_storage: CELL [DS_HASH_TABLE [ES_ADB_FAULT, EPA_TEST_CASE_SIGNATURE]]
-			--
+			-- Shared storage for `fault_repository'.
 		once
 			create Result.put (create {DS_HASH_TABLE [ES_ADB_FAULT, EPA_TEST_CASE_SIGNATURE]}.make_equal (100))
 		end

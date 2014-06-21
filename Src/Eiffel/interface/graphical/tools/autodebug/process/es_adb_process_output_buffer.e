@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	ES_ADB_EXTERNAL_PROCESS_OUTPUT_BUFFER
+	ES_ADB_PROCESS_OUTPUT_BUFFER
 
 create
 	make
@@ -16,17 +16,37 @@ feature{NONE} -- Initialization
 			-- Initialization
 		do
 			create guard.make
-			create buffer_storage.make_equal (1024)
-			pending_line := ""
+			create buffer_storage.make_equal
+			set_active (False)
 		end
 
 feature -- Access
 
-	buffer_storage: DS_ARRAYED_LIST [STRING]
+	buffer_storage: DS_LINKED_LIST [STRING]
 			-- Buffer storage.
+
+	is_active: BOOLEAN assign set_active
+			-- Is current actively storing the output?
 
 	guard: MUTEX
 			-- Mutex to guard the access to `buffer_storage'.
+
+feature{ES_ADB_OUTPUT_RETRIEVER} -- Set status
+
+	set_active (a_flag: BOOLEAN)
+		do
+			is_active := a_flag
+		end
+
+feature -- Status report
+
+	is_empty: BOOLEAN
+			-- Is current empty?
+		do
+			guard.lock
+			Result := buffer_storage.is_empty
+			guard.unlock
+		end
 
 feature -- Input/output
 
@@ -36,47 +56,19 @@ feature -- Input/output
 			-- and the text is stored into `buffer_storage' line by line.
 		require
 			a_output /= Void
-		local
-			l_lines: LIST [STRING]
-			l_whole_lines: STRING
-			l_cursor: INDEXABLE_ITERATION_CURSOR [STRING]
-			l_EOL_position: INTEGER
 		do
-			-- TODO: finer-grained locking
 			guard.lock
-
-			if a_output.has ('%N') then
-					-- At least one line is complete now.
-
-					-- Prepend `pending_line', store the comleted lines,
-					-- and save the new pending line into `pending_line'.
-				l_whole_lines := pending_line + a_output
-				l_EOL_position := l_whole_lines.last_index_of ('%N', l_whole_lines.count)
-				pending_line := l_whole_lines.substring (l_EOL_position + 1, l_whole_lines.count)
-				l_whole_lines := l_whole_lines.substring (1, l_EOL_position - 1)
-				l_whole_lines.prune_all ('%R')
-
-					-- Store the output line-by-line.
-				l_lines := l_whole_lines.split ('%N')
-				l_lines.do_all (agent buffer_storage.force_last)
-			else
-					-- Line not complete yet.
-				pending_line.append (a_output)
+			if is_active then
+				buffer_storage.force_last (a_output)
 			end
-
 			guard.unlock
 		end
 
-	wrap_up
-			-- Wrap up the existing output for `retrieve_and_clear'.
+	wipe_out
+			-- Wipe out the existing output.
 		do
 			guard.lock
-
-			if not pending_line.is_empty then
-				buffer_storage.force_last (pending_line)
-				pending_line := ""
-			end
-
+			buffer_storage.wipe_out
 			guard.unlock
 		end
 
@@ -85,19 +77,12 @@ feature -- Input/output
 			-- and then clear all existing lines.
 		do
 			guard.lock
-
-			Result := buffer_storage.twin
-			buffer_storage.wipe_out
-
+			Result := buffer_storage
+			create buffer_storage.make_equal
 			guard.unlock
 		ensure
 			Result /= Void
 		end
-
-feature{NONE} -- Internal access
-
-	pending_line: STRING
-			-- Output line that is not finished yet.
 
 ;note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software"

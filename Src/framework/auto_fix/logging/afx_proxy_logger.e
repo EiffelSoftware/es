@@ -233,10 +233,15 @@ feature -- Actions (implementation fix)
 			log_message (True, notification_level_general, "%T" + one_implementation_fix_validation_finished_message + section_separator + "ID-" + a_candidate.id.out + " (Validity: " + a_candidate.is_valid.out + ")")
 
 			if a_candidate.is_valid then
+				log_line (Msg_valid_fix_start)
 				log_multi_line_message (a_candidate.out)
 				log_line ("")
+				log_line (Msg_valid_fix_end)
 			end
 		end
+
+	Msg_valid_fix_start: STRING = "<[- Valid fix start -]>"
+	Msg_valid_fix_end:   STRING = "<[-  Valid fix end  -]>"
 
 	on_implementation_fix_validation_finished  (a_fixes: DS_LIST [AFX_CODE_FIX_TO_FAULT])
 			-- <Precursor>
@@ -299,8 +304,10 @@ feature -- Actions (contract fix)
 				l_cursor.after
 			loop
 				l_fix := l_cursor.item
+				log_line (Msg_valid_fix_start)
 				log_multi_line_message (l_fix.out)
 				log_line ("")
+				log_line (Msg_valid_fix_end)
 
 				l_cursor.forth
 			end
@@ -410,12 +417,7 @@ feature{NONE} -- Implementation
 		local
 			l_prefix: STRING
 		do
-			l_prefix := " "
-			l_prefix.multiply (timestamp_column_width + level_column_width)
-
-			log_line (l_prefix + multi_line_value_start_tag)
-			lines_with_prefixes (a_msg, l_prefix).do_all (agent log_line)
-			log_line (l_prefix + multi_line_value_end_tag)
+			lines_with_prefixes (a_msg, "").do_all (agent log_line)
 		end
 
 	log_line (a_string: STRING)

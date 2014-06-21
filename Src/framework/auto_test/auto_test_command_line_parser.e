@@ -112,6 +112,8 @@ feature{NONE} -- Initialization
 			l_online_statistics_frequency: AP_INTEGER_OPTION
 			l_retrieve_serialization_online_option: AP_FLAG
 			l_output_test_case_online_option: AP_STRING_OPTION
+			l_output_test_case_online_filter_option: AP_STRING_OPTION
+			l_should_clear_online_test_case_dir_option: AP_FLAG
 			l_cursor: DS_LIST_CURSOR[STRING]
 
 			l_dir: DIRECTORY
@@ -430,6 +432,13 @@ feature{NONE} -- Initialization
 			l_output_test_case_online_option.set_description ("Where should AutoTest output test case files during testing? Have effect only if the option retrieve-serialization-online is enabled. ")
 			parser.options.force_last (l_output_test_case_online_option)
 
+			create l_output_test_case_online_filter_option.make_with_long_form ("output-test-case-online-filter")
+			l_output_test_case_online_filter_option.set_description ("Which test cases should be output online? Format: CLASS_NAME.feature_name. ")
+			parser.options.force_last (l_output_test_case_online_filter_option)
+
+			create l_should_clear_online_test_case_dir_option.make_with_long_form ("clear-online-test-case-dir")
+			l_should_clear_online_test_case_dir_option.set_description ("Should online test case directory be cleared before testing?")
+			parser.options.force_last (l_should_clear_online_test_case_dir_option)
 			create l_args.make
 			from
 				a_arguments.start
@@ -1058,6 +1067,12 @@ feature{NONE} -- Initialization
 				end
 			end
 
+			if l_output_test_case_online_filter_option.was_found then
+				output_test_case_online_filter := l_output_test_case_online_filter_option.parameter
+			end
+
+			should_clear_online_test_case_dir := l_should_clear_online_test_case_dir_option.was_found
+
 			create {DS_ARRAYED_LIST [STRING]} class_names.make(parser.parameters.count)
 			from
 				l_cursor := parser.parameters.new_cursor
@@ -1418,6 +1433,11 @@ feature -- Status report
 	output_dir_for_test_case_online: STRING
 			-- Where should AutoTest output test case files during testing?
 			-- Only have effect when `is_test_case_serialization_retrieved_online' is True.
+
+	output_test_case_online_filter: STRING
+			-- Which test cases should be output online?
+
+	should_clear_online_test_case_dir: BOOLEAN
 
 feature{NONE} -- Implementation
 

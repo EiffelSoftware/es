@@ -20,7 +20,7 @@ feature
 	Tab_name_output:  STRING = "Output"
 
 		-- Tab settings
-	Frame_text_classes_to_debug: STRING = "Classes to debug"
+	Frame_text_classes_to_debug: STRING = "Groups of classes to debug"
 	Button_text_add: STRING = "Add"
 	Button_text_remove: STRING = "Remove"
 	Button_text_remove_all: STRING = "Removel all"
@@ -48,19 +48,34 @@ feature
 
 	Button_text_load_config: STRING = "Load settings"
 	Button_text_save_config: STRING = "Save settings"
-	Button_text_start: STRING = "Start"
-	Button_text_stop: STRING = "Stop"
+	Button_text_start: STRING = "Start debugging"
+	Button_text_stop: STRING = "Stop debugging"
 
 		-- Tab faults
-	Button_text_fix_all: STRING = "AutoFix all to-be-attempted"
-	Button_text_fix_selected: STRING = "AutoFix selected"
+	Button_text_fix_all: STRING = "Start AutoFixing all to-be-attempted"
+	Button_text_fix_all_stop: STRING = "Stop AutoFixing all to-be-attempted"
+	Button_text_fix_selected: STRING = "Start AutoFixing selected"
+	Button_text_fix_selected_stop: STRING = "Stop AutoFixing selected"
+
 	Button_text_go_to_candidate_fixes: STRING = "Go to candidate fixes"
 
-	toggle_text_show_to_be_attempted: STRING = "To be attempted"
-	Toggle_text_show_candidate_fix_available: STRING = "Candidate fix available"
-	Toggle_text_show_candidate_fix_unavailable: STRING = "Candidate fix unavailable"
-	Toggle_text_show_candidate_fix_accepted: STRING = "Candidate fix accepted"
-	Toggle_text_show_manual_fixed: STRING = "Manually fixed"
+	Button_text_filter_by_approachability: STRING = "filter by fault"
+	Button_text_filter_by_fixes: STRING = "filter by fixes"
+	Menu_text_all: STRING = "All"
+	Menu_text_automatic_implementation_fixable: STRING = "Automatically fixable by changing implementation"
+	Menu_text_automatic_specification_fixable: STRING = "Automatically fixable by changing contracts"
+	Menu_text_not_automatic_fixable: STRING = "Not automatically fixable"
+	Menu_text_not_yet_attempted: STRING = "Not yet attempted"
+	Menu_text_candidate_fix_available: STRING = "Candidate fix available"
+	Menu_text_candidate_fix_unavailable: STRING = "Candidate fix unavailable"
+	Menu_text_candidate_fix_accepted: STRING = "Candidate fix accepted"
+	Menu_text_manually_fixed: STRING = "Manually fixed"
+
+--	toggle_text_show_to_be_attempted: STRING = "To be attempted"
+--	Toggle_text_show_candidate_fix_available: STRING = "Candidate fix available"
+--	Toggle_text_show_candidate_fix_unavailable: STRING = "Candidate fix unavailable"
+--	Toggle_text_show_candidate_fix_accepted: STRING = "Candidate fix accepted"
+--	Toggle_text_show_manual_fixed: STRING = "Manually fixed"
 
 	Grid_column_text_class_and_feature_under_test: STRING = "Class and feature under test"
 	Grid_column_text_fault: STRING = "Fault"
@@ -69,7 +84,8 @@ feature
 	Grid_column_text_status: STRING = "Status"
 	Grid_column_text_info: STRING = "Info"
 
-	fault_status_to_be_attempted: STRING = "To-be-attempted"
+	Fault_status_out_of_scope: STRING = "Out of scope"
+	Fault_status_to_be_attempted: STRING = "To be attempted"
 	Fault_status_candidate_fix_available: STRING = "Candidate fix available"
 	Fault_status_candidate_fix_unavailable: STRING = "Candidate fix unavailable"
 	Fault_status_candidate_fix_accepted: STRING = "Candidate fix accepted"
@@ -78,10 +94,14 @@ feature
 	Grid_no_fault: STRING = "No fault to list"
 
 		-- Tab fixes
-	Grid_column_text_type: STRING = "Fix type"
+	Grid_column_text_fix_id: STRING = "ID"
+	Grid_column_text_type: STRING = "Type"
 	Grid_column_text_nature: STRING = "Nature of change"
-	Grid_column_text_is_proper: STRING = "Is proper"
+	Grid_column_text_is_proper: STRING = "Is proper?"
 --	Grid_column_text_status: STRING = "Status"
+
+	Grid_label_text_yes: STRING = "Yes"
+	Grid_label_text_no:  STRING = "No"
 
 	Frame_text_fix: STRING = "Fix"
 	Label_text_before_fix: STRING = "Before fix"
@@ -98,8 +118,13 @@ feature
 feature
 
 	Msg_delete_directory_content: STRING = "The selected directory is not empty. Should all contents be deleted?"
+	Msg_remove_existing_debugging_results: STRING = "Starting a new debugging session will REMOVED all existing results in the current working directory. Do you want to continue?"
+	Msg_failed_to_copy_project: STRING = "Failed to copy the project into working directory."
+	Msg_discard_existing_fixing_results: STRING = "The selected fault has been attempted by AutoFix already. Do you want to discard the previous results and fix it again?"
+	Msg_apply_fix: STRING = "Change to your code cannot be rolled back. Do you want to continue?"
+	Msg_set_contract_fix_applied: STRING = "Fixes to contracts need to be applied manually. This operation will only set the fix status to %"applied%" without changing the code. Do you want to continue?"
 
-note
+;note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

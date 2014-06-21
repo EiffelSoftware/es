@@ -171,12 +171,16 @@ feature{NONE} -- Implementation
 				until
 					l_argument_index > l_argument_count
 				loop
-					l_argument_sequence := l_argument_sequence + ", " + l_feat_arg.item_name (l_argument_index)
+					if not l_argument_sequence.is_empty then
+						l_argument_sequence.append (", ")
+					end
+					l_argument_sequence.append (l_feat_arg.item_name (l_argument_index))
 
 					l_argument_index := l_argument_index + 1
 				end
 				if not l_argument_sequence.is_empty then
-					l_argument_sequence := "(" + l_argument_sequence.substring (1, l_argument_sequence.count - 2) + ")"
+					l_argument_sequence.prepend ("(")
+					l_argument_sequence.append (")")
 				end
 			else
 				l_argument_sequence := ""
@@ -184,14 +188,15 @@ feature{NONE} -- Implementation
 
 
 				-- Assignment to "Return" to be used.
-			if feature_to_fix.feature_.type /= Void then
+			if feature_to_fix.feature_.type /= Void and then not feature_to_fix.feature_.type.is_void then
 				l_return_sequence := "Result :="
 			else
 				l_return_sequence := ""
 			end
 
-			Result := "inspect (create {AFX_FIX_SELECTOR}).selected_fix_id%N"
-						+ "%Twhen 0 then " + l_return_sequence + " " + feature_name_with_fix_id (0) + " " + l_argument_sequence + "%N"
+			create Result.make (100 * fixes.count)
+			Result.append ("inspect (create {AFX_FIX_SELECTOR}).selected_fix_id%N"
+						+ "%Twhen 0 then " + l_return_sequence + " " + feature_name_with_fix_id (0) + " " + l_argument_sequence + "%N")
 			from
 				l_fix_cursor := fixes.new_cursor
 				l_fix_cursor.start
@@ -199,12 +204,11 @@ feature{NONE} -- Implementation
 				l_fix_cursor.after
 			loop
 				l_fix := l_fix_cursor.item
-				Result := Result + "%Twhen " + l_fix.id.out + " then " + l_return_sequence + " " + feature_name_with_fix_id (l_fix.id) + " " + l_argument_sequence + "%N"
+				Result.append ("%Twhen " + l_fix.id.out + " then " + l_return_sequence + " " + feature_name_with_fix_id (l_fix.id) + " " + l_argument_sequence + "%N")
 
 				l_fix_cursor.forth
 			end
-			Result := Result + "%Telse (create {DEVELOPER_EXCEPTION}).raise%N"
-						+ "end%N"
+			Result.append ("%Telse (create {DEVELOPER_EXCEPTION}).raise%Nend%N")
 		end
 
 	feature_name_with_fix_id (a_id: INTEGER): STRING

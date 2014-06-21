@@ -51,6 +51,18 @@ feature -- Fixing related
 	exception_from_execution: AFX_EXCEPTION_SIGNATURE assign set_exception_from_execution
 			-- Signature of the exception as observed during execution.
 
+	fault_signature_id: STRING
+		do
+			create Result.make (256)
+			Result.append (feature_under_test.qualified_feature_name)
+			Result.append (".")
+			Result.append (exception_from_execution.exception_code.out)
+			Result.append (".")
+			Result.append (exception_from_execution.recipient_breakpoint.out)
+			Result.append (".")
+			Result.append (exception_from_execution.recipient_feature_with_context.qualified_feature_name)
+		end
+
 	set_number_of_test_cases_for_fixing (a_num: INTEGER)
 		do
 			number_of_test_cases_for_fixing := a_num
@@ -105,7 +117,7 @@ feature -- Directory structure
 					result_dir_cache := eiffel_system.eiffel_project.project_directory.fixing_results_path.extended (failure_from_trace.id)
 				else
 					create result_dir_cache.make_from_string (config.result_dir)
-					result_dir_cache := result_dir_cache.extended (failure_from_trace.id)
+					result_dir_cache := result_dir_cache.extended (config.fault_signature_id)
 				end
 			end
 			Result := result_dir_cache
@@ -113,7 +125,11 @@ feature -- Directory structure
 
 	report_file_path: PATH
 		do
-			Result := result_dir.extended ("result.afx")
+			if config.report_file = Void then
+				Result := result_dir.extended ("result.afr")
+			else
+				create Result.make_from_string (config.report_file)
+			end
 		end
 
 	afx_tmp_directory: PATH
@@ -177,7 +193,7 @@ feature -- Directory structure
 			prepare_empty_directory (afx_tmp_directory)
 			prepare_empty_directory (regular_tests_directory)
 			prepare_empty_directory (relaxed_tests_directory)
-			prepare_empty_directory (override_directory)
+			empty_directory (override_directory)
 		end
 
 feature{NONE} -- Directory structure (implementation)
@@ -185,14 +201,21 @@ feature{NONE} -- Directory structure (implementation)
 	prepare_empty_directory (a_dir: PATH)
 			-- Prepare the empty directory `a_dir' (Create one if not already exists).
 		local
+			l_dir: KL_DIRECTORY
+		do
+			create l_dir.make (a_dir.out)
+			if l_dir.exists then
+				l_dir.recursive_delete
+			end
+			l_dir.recursive_create_directory
+		end
+
+	empty_directory (a_path: PATH)
+		local
 			l_dir: DIRECTORY
 		do
-			create l_dir.make_with_path (a_dir)
-			if l_dir.exists then
-				l_dir.delete_content
-			else
-				l_dir.recursive_create_dir
-			end
+			create l_dir.make_with_path (a_path)
+			l_dir.delete_content
 		end
 
 feature -- Timing in MILLISECONDS.

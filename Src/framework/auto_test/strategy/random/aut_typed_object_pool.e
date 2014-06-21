@@ -101,7 +101,7 @@ feature -- Access
 						until
 							l_list.after
 						loop
-							if attached {TYPE_A} l_storage.item (l_list.item_for_iteration) as typ and then typ.conform_to (l_root_class, a_type) then
+							if l_storage.has (l_list.item_for_iteration) and then attached {TYPE_A} l_storage.item (l_list.item_for_iteration) as typ and then typ.conform_to (l_root_class, a_type) then
 								l_vlist.force_last (l_list.item_for_iteration)
 							end
 							l_list.forth

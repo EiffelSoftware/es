@@ -1,74 +1,36 @@
 note
-	description: "Summary description for {ES_ADB_FIX}."
+	description: "Summary description for {ES_ADB_TASK}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
-	ES_ADB_FIX_MANUAL
+deferred class
+	ES_ADB_PROCESS_SEQUENCE
 
 inherit
-	ES_ADB_FIX
 
-create
-	make
+	ES_ADB_ROTA_TASK
 
-feature -- Initialization
+	ROTA_SERIAL_TASK_I
 
-	make (a_fault: ES_ADB_FAULT; a_change_implementation, a_change_contract: BOOLEAN)
+feature{NONE}
+
+	make_sequence
 			-- Initialization.
 		do
-			fault := a_fault
-			has_change_to_implementation := a_change_implementation
-			has_change_to_contract := a_change_contract
-			set_nature_of_change (Nature_manual)
-			set_ranking (Ranking_maximum)
-			type := Type_manual_fix
+			create output_buffer.make
+			create on_start_actions
+			create on_terminate_actions
 		end
-
-feature -- Access
-
-	fix_id_string: STRING = "Manual"
-			-- <Precursor>
-
-	code_before_fix: STRING = "Information unavailable"
-			-- <Precursor>
-
-	code_after_fix: STRING = "Information unavailable"
-			-- <Precursor>
-
-	has_been_applied: BOOLEAN = True
-			-- <Precursor>
 
 feature -- Status report
 
-	is_valid_nature_of_change (a_nature: INTEGER): BOOLEAN
-			-- <Precursor>
-		do
-			Result := a_nature = Nature_manual
+	should_output_be_parsed: BOOLEAN
+			-- Should the output of current sub-task be parsed?
+		deferred
 		end
 
-feature -- Constant
-
-	nature_of_change_strings: DS_HASH_TABLE [STRING_8, INTEGER]
-			-- <Precursor>
-		do
-			if nature_of_change_strings_internal = Void then
-				create nature_of_change_strings_internal.make_equal (1)
-				nature_of_change_strings_internal.force ("Manual", Nature_manual)
-			end
-			Result := nature_of_change_strings_internal
-		end
-
-feature -- Constant
-
-	Nature_manual: INTEGER = 8
-
-feature{NONE} -- Implementation
-
-	nature_of_change_strings_internal: like nature_of_change_strings
-;
-note
+;note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

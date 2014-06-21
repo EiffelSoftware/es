@@ -10,10 +10,41 @@ deferred class
 inherit
 	ES_ADB_FIX
 
-feature -- Operation
+feature{NONE} -- Initialization
+
+	make_automatic (a_fault: ES_ADB_FAULT; a_id_string: STRING)
+			-- Initialization.
+		do
+			set_fault (a_fault)
+			set_id_string (a_id_string)
+		end
+
+feature -- Access
+
+	fix_id_string: STRING
+			-- <Precursor>
 
 	has_been_applied: BOOLEAN
 			-- <Precursor>
+
+feature{ES_ADB_INFO_CENTER, ES_ADB_PROCESS_OUTPUT_PARSER} -- Setter
+
+	set_has_been_applied
+			-- Set `has_been_applied'.
+		do
+			has_been_applied := True
+			if fault /= Void then
+				fault.set_status (fault.Status_candidate_fix_accepted)
+			end
+		end
+
+	set_id_string (a_str: STRING)
+			-- Set `fix_id_string' with `a_str'.
+		require
+			a_str /= Void and then not a_str.is_empty
+		do
+			fix_id_string := a_str.twin
+		end
 
 ;note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software"

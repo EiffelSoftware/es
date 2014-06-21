@@ -7,14 +7,30 @@ note
 deferred class
 	ES_ADB_FIX
 
+inherit
+	ANY
+		redefine
+			is_equal
+		end
+
+	HASHABLE
+		redefine
+			is_equal
+		end
+
 feature -- Access
+
+	fix_id_string: STRING
+			-- ID of the fix in string.
+		deferred
+		end
 
 	fault: ES_ADB_FAULT assign set_fault
 			-- Fault associated with Current.
 
 	type: STRING
 			-- Type of the fix.
-			-- Possible value: ContractFix, ImplementationFix, ManualFix.
+			-- Possible value: FixToContract, FixToImplementation, ManualFix.
 
 	nature_of_change: INTEGER assign set_nature_of_change
 			-- Nature of the change due to the fix.
@@ -50,36 +66,63 @@ feature -- Status report
 		deferred
 		end
 
+	is_equal (a_other: like Current): BOOLEAN
+			-- <Precursor>
+		do
+			Result := type ~ a_other.type and then fault ~ a_other.fault and then fix_id_string ~ a_other.fix_id_string
+		end
+
+feature -- Query
+
+	fix_summary: STRING
+			-- Summary of current.
+		local
+		do
+			if fix_summary_internal = Void then
+				create fix_summary_internal.make (256)
+				fix_summary_internal.append ("%T-- FaultID:")
+				fix_summary_internal.append (fault.signature.id)
+				fix_summary_internal.append (";%N%T-- FixID:")
+				fix_summary_internal.append ("Subject=" + type + ";")
+				fix_summary_internal.append ("ID=" + fix_id_string + ";")
+				fix_summary_internal.append ("Validity=True;")
+				fix_summary_internal.append ("Type=" + nature_of_change_string + ";")
+			end
+			Result := fix_summary_internal
+		end
+
 	nature_of_change_string: STRING
 			-- Nature of the change in string.
 		do
 			Result := nature_of_change_strings.item (nature_of_change)
 		end
 
+	hunk: ES_EVE_CODE_DIFF_HUNK
+			-- Hunk diff-ing `code_before_fix' and `code_after_fix'.
+		do
+			if hunk_internal = Void then
+				create hunk_internal.make (code_before_fix, code_after_fix)
+			end
+			Result := hunk_internal
+		end
+
+	hash_code: INTEGER
+			-- <Precursor>
+		do
+			Result := code_after_fix.hash_code
+		end
+
+	nature_of_change_strings: DS_HASH_TABLE [STRING, INTEGER]
+			-- Nature of changes in strings.
+		deferred
+		end
+
 feature -- Operation
 
---	subject_of_change: STRING
---			-- Subject that the fix changes.
---		do
---			create Result.make (32)
---			if has_change_to_implementation then
---				Result.append ("implementation")
---			end
---			if has_change_to_contract then
---				if not Result.is_empty then
---					Result.append (" and ")
---				end
---				Result.append ("contract")
---			end
---		end
-
-	apply
-			-- Apply the fix to code.
-		require
-			not has_been_applied
-		deferred
-		ensure
-			has_been_applied
+	reset_hunk
+			-- Reset `hunk'.
+		do
+			hunk_internal := Void
 		end
 
 	nature_of_change_from_string (a_str: STRING): INTEGER
@@ -108,6 +151,7 @@ feature -- Operation
 feature -- Setters
 
 	set_fault (a_fault: like fault)
+			-- Set `fault' with `a_fault'.
 		require
 			fault = Void
 		do
@@ -123,36 +167,26 @@ feature -- Setters
 		end
 
 	set_ranking (a_ranking: REAL)
-			--
+			-- Set `ranking' with `a_ranking'.
 		do
 			ranking := a_ranking
 		end
 
 feature -- Contant
 
-	nature_of_change_strings: DS_HASH_TABLE [STRING, INTEGER]
-			-- Nature of changes in strings.
-		deferred
-		end
-
-	Type_contract_fix: STRING = "ContractFix"
-	Type_implementation_fix: STRING = "ImplementationFix"
+	Type_contract_fix: STRING = "FixToContract"
+	Type_implementation_fix: STRING = "FixToImplementation"
 	Type_manual_fix: STRING = "ManualFix"
 
 	Nature_unknown: INTEGER = 0
 	Ranking_maximum: REAL = 100.0
 	Ranking_minimum: REAL = 0.0
 
---	Nature_unconditional_add: INTEGER = 1
---	Nature_conditional_add: INTEGER = 2
---	Nature_conditional_execute: INTEGER = 3
---	Nature_conditional_replace: INTEGER = 4
+feature{NONE} -- Cache
 
---	Nature_strengthen: INTEGER = 5
---	Nature_weaken: INTEGER = 6
---	Nature_weaken_and_strengthen: INTEGER = 7
+	hunk_internal: like hunk
 
---  Nature_manual: INTEGER = 8
+	fix_summary_internal: STRING
 
 ;note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software"

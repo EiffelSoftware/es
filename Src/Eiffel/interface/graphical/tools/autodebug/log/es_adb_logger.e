@@ -1,181 +1,178 @@
 note
-	description: "Summary description for {ES_ADB_INFO_CENTER}."
+	description: "Summary description for {ES_ADB_LOGGER}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
-	ES_ADB_INFO_CENTER
+deferred class
+	ES_ADB_LOGGER
 
 inherit
 	ES_ADB_ACTIONS
 
-	ES_ADB_ACTION_PUBLISHER
+	ES_ADB_SHARED_INFO_CENTER
 
-	ES_ADB_SHARED_CONFIG
+feature -- Access
 
-	ES_ADB_FAULT_REPOSITORY
-		rename reset as reset_fault_repository end
+	log_file: PLAIN_TEXT_FILE
+			-- Log file.
 
-	ES_ADB_TEST_CASE_REPOSITORY
-		rename reset as reset_test_case_repository end
+feature -- Status report
 
-	EPA_UTILITY
-
-	SHARED_PLATFORM_CONSTANTS
-
-create
-	make
-
-feature{NONE} -- Initialization
-
-	make
-			-- Initialization.
+	is_logging: BOOLEAN
+			-- Is current logging?
 		do
-			create progress_logger
-			extend (progress_logger)
-			create output_logger
-			extend (output_logger)
+			Result := log_file /= Void and then log_file.is_open_append
 		end
 
-feature -- Operation
+feature -- Setter
 
-	reset_internal_state
-			-- Reset the information center.
+	start_logging
+			-- Initialize current with `a_dir'.
+		local
+			l_root_dir: PATH
 		do
-			reset_test_case_repository
-			reset_fault_repository
+			l_root_dir := info_center.config.working_directory.root_dir
+			create log_file.make_with_path (l_root_dir.extended (log_file_name))
+			log_file.open_append
 		end
 
-	reset_external_state
-			-- Reset the working directory.
+	stop_logging
+			-- Close `log_file'.
 		do
-			config.working_directory.clear
+			if is_logging then
+				log_file.flush
+				log_file.close
+			end
+			log_file := Void
+		ensure
+			not is_logging
 		end
 
-feature -- Access: logging
+	clear_log
+			-- Clear `log_file' from last logging.
+		do
+			stop_logging
+			log_file.wipe_out
+		end
 
-	progress_logger: ES_ADB_PROGRESS_LOGGER
-			-- Logger to log the debugging progress.
+feature -- Logging
 
-	output_logger: ES_ADB_OUTPUT_LOGGER
-			-- Logger to log the output of debugging.
+	log (a_msg: STRING)
+			-- Log `a_msg'.
+		require
+			a_msg /= Void
+		do
+			if is_logging then
+				log_file.put_string (a_msg)
+				log_file.flush
+			end
+		end
 
-feature -- ADB Actions
+	log_line (a_msg: STRING)
+			-- Log `a_msg' and start a new line.
+		require
+			a_msg /= Void
+		do
+			if is_logging then
+				log_file.put_string (a_msg)
+				log_file.put_character ('%N')
+				log_file.flush
+			end
+		end
+
+feature -- ADB Action
 
 	on_project_loaded
 			-- <Precursor>
 		do
-			reset_internal_state
-
-			project_load_actions.call (Void)
-
-			progress_logger.load_log
+			start_logging
 		end
 
 	on_project_unloaded
 			-- <Precursor>
 		do
-			project_unload_actions.call (Void)
-
-			reset_internal_state
+			stop_logging
 		end
 
 	on_compile_start
 			-- <Precursor>
 		do
-			compile_start_actions.call (Void)
 		end
 
 	on_compile_stop
 			-- <Precursor>
 		do
-			compile_stop_actions.call (Void)
 		end
 
 	on_debugging_start
 			-- <Precursor>
 		do
-			reset_internal_state
-			reset_external_state
-
-			debugging_start_actions.call (Void)
 		end
 
 	on_debugging_stop
 			-- <Precursor>
 		do
-			debugging_stop_actions.call (Void)
 		end
 
 	on_testing_start
 			-- <Precursor>
 		do
-			testing_start_actions.call (Void)
 		end
 
 	on_test_case_generated (a_test: ES_ADB_TEST)
 			-- <Precursor>
 		do
-			register_test_case (a_test)
-
-			test_case_generated_actions.call (a_test)
 		end
 
 	on_testing_stop
 			-- <Precursor>
 		do
-			testing_stop_actions.call (Void)
 		end
 
 	on_fixing_start (a_fault: ES_ADB_FAULT)
 			-- <Precursor>
 		do
-			a_fault.discard_all_fixes
-			a_fault.set_status (a_fault.status_candidate_fix_unavailable)
-			fixing_start_actions.call (a_fault)
-		end
-
-	on_valid_fix_found (a_fix: ES_ADB_FIX)
-			-- <Precursor>
-		local
-			l_fault: ES_ADB_FAULT
-		do
-			valid_fix_found_actions.call (a_fix)
-		end
-
-	on_fix_applied (a_fix: ES_ADB_FIX)
-			-- <Precursor>
-		do
-			fix_applied_actions.call (a_fix)
 		end
 
 	on_fixing_stop
 			-- <Precursor>
 		do
-			fixing_stop_actions.call (Void)
 		end
 
 	on_continuation_debugging_start
 			-- <Precursor>
 		do
-			continuation_debugging_start_actions.call (Void)
 		end
 
 	on_continuation_debugging_stop
 			-- <Precursor>
 		do
-			continuation_debugging_stop_actions.call (Void)
+		end
+
+	on_valid_fix_found (a_fix: ES_ADB_FIX)
+			-- <Precursor>
+		do
+		end
+
+	on_fix_applied (a_fix: ES_ADB_FIX)
+			-- <Precursor>
+		do
 		end
 
 	on_output (a_line: STRING)
 			-- <Precursor>
-
 		do
-			output_actions.call (a_line)
 		end
 
-;note
+feature{NONE} -- Implementation
+
+	log_file_name: STRING
+			-- Name of the log file.
+		deferred
+		end
+
+note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"

@@ -213,7 +213,8 @@ feature -- Applying and recalling a fix
 		do
 			l_should_backup := True
 
-			l_class_to_fix := a_suggestion.context_feature.written_class
+			check False end
+--			l_class_to_fix := a_suggestion.context_feature.written_class
 			create l_origin_file_name.make_from_string (l_class_to_fix.file_name.as_string_8)
 
 			if l_should_backup then

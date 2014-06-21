@@ -48,6 +48,7 @@ feature -- Basic operations
 				-- Fix shared
 			l_cutoff_time_option: AP_STRING_OPTION
 			l_test_case_dir: AP_STRING_OPTION
+			l_fault_signature_id: AP_STRING_OPTION
 			l_max_passing_test_case_number_option: AP_STRING_OPTION
 			l_max_failing_test_case_number_option: AP_STRING_OPTION
 			l_state_based_test_case_selection_option: AP_FLAG
@@ -56,6 +57,7 @@ feature -- Basic operations
 			l_max_fix_candidate: AP_STRING_OPTION
 			l_max_valid_fix_option: AP_STRING_OPTION
 			l_result_dir_option: AP_STRING_OPTION
+			l_report_file_option: AP_STRING_OPTION
 
 				-- Fix implementation
 			l_max_fixing_target: AP_STRING_OPTION
@@ -96,6 +98,10 @@ feature -- Basic operations
 			l_test_case_dir.set_description ("Directory containing the test cases to be used in fixing.%N%TCompulsory in fixing.")
 			l_parser.options.force_last (l_test_case_dir)
 
+			create l_fault_signature_id.make_with_long_form ("fault-signature-id")
+			l_fault_signature_id.set_description ("Signature id of a failing test case revealing the fault to fix.")
+			l_parser.options.force_last (l_fault_signature_id)
+
 			create l_max_passing_test_case_number_option.make_with_long_form ("max-passing-tc-number")
 			l_max_passing_test_case_number_option.set_description ("Maximum number of passing test cases to use in fixing. %N%TArgument: natural number. 0 means as many as possible. %N%TOptional. Default: 0")
 			l_parser.options.force_last (l_max_passing_test_case_number_option)
@@ -127,6 +133,10 @@ feature -- Basic operations
 			create l_result_dir_option.make_with_long_form ("result-dir")
 			l_result_dir_option.set_description ("Directory to store the AutoFix result. %N%TOptional. Default: Generate report in %%EIFGENs%%\%%Target%%\AutoFix.")
 			l_parser.options.force_last (l_result_dir_option)
+
+			create l_report_file_option.make_with_long_form ("report-file")
+			l_report_file_option.set_description ("File to report the AutoFix result. %N%TOptional. Default: Generate report in `result-dir'.")
+			l_parser.options.force_last (l_report_file_option)
 
 				-- Fix implementation
 			create l_max_fixing_target.make_with_long_form ("max-fixing-target")
@@ -171,6 +181,10 @@ feature -- Basic operations
 
 			if l_test_case_dir.was_found then
 				config.set_test_case_path (l_test_case_dir.parameter)
+			end
+
+			if l_fault_signature_id.was_found then
+				config.set_fault_signature_id (l_fault_signature_id.parameter)
 			end
 
 			if l_max_passing_test_case_number_option.was_found then
@@ -218,6 +232,10 @@ feature -- Basic operations
 
 			if l_result_dir_option.was_found and then attached l_result_dir_option.parameter as lt_result_dir_name and then not lt_result_dir_name.is_empty then
 				config.set_result_dir (lt_result_dir_name)
+			end
+
+			if l_report_file_option.was_found and then attached l_report_file_option.parameter as lt_report_file and then not lt_report_file.is_empty then
+				config.set_report_file (lt_report_file)
 			end
 
 				-- Fix implementation

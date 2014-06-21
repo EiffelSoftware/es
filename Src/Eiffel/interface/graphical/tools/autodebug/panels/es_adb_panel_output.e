@@ -31,14 +31,25 @@ feature{NONE} -- Initialization
 			set_tool_panel (a_tool)
 			default_create
 
---			reset_config_widgets (False)
---			reset_command_widgets (False)
---			register_event_handlers
-
 			info_center.extend (Current)
 		end
 
 feature
+
+	clear_information_display_widget
+			-- <Precursor>
+		do
+		end
+
+	enable_information_display_widget (a_flag: BOOLEAN)
+			-- <Precursor>
+		do
+		end
+
+	enable_command_invocation_widget (a_flag: BOOLEAN)
+			-- <Precursor>
+		do
+		end
 
 feature -- ADB Action
 
@@ -50,6 +61,7 @@ feature -- ADB Action
 	on_project_unloaded
 			-- Action to be performed when project unloaded
 		do
+			evtext_output.remove_text
 		end
 
 	on_compile_start
@@ -65,7 +77,7 @@ feature -- ADB Action
 	on_debugging_start
 			-- Action to be performed when debugging starts
 		do
-
+			evtext_output.remove_text
 		end
 
 	on_debugging_stop
@@ -76,6 +88,7 @@ feature -- ADB Action
 	on_testing_start
 			-- Action to be performed when debugging starts
 		do
+			evtext_output.remove_text
 		end
 
 	on_test_case_generated (a_test: ES_ADB_TEST)
@@ -90,6 +103,22 @@ feature -- ADB Action
 	on_fixing_start (a_fault: ES_ADB_FAULT)
 			-- <Precursor>
 		do
+			evtext_output.remove_text
+		end
+
+	on_fixing_stop
+			-- <Precursor>
+		do
+		end
+
+	on_continuation_debugging_start
+			-- <Precursor>
+		do
+		end
+
+	on_continuation_debugging_stop
+			-- <Precursor>
+		do
 		end
 
 	on_valid_fix_found (a_fix: ES_ADB_FIX)
@@ -102,27 +131,14 @@ feature -- ADB Action
 		do
 		end
 
-	on_fixing_stop (a_fault: ES_ADB_FAULT)
-			-- <Precursor>
-		do
-		end
-
 	on_output (a_line: STRING)
 		local
 			l_is_caret_at_end: BOOLEAN
 		do
 			evtext_output.append_text (a_line)
-			evtext_output.append_text ("%N")
 			evtext_output.set_caret_position (evtext_output.text_length)
 		end
 
-feature --
-
-	update_ui
-			-- <Precursor>
-		do
-
-		end
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software"

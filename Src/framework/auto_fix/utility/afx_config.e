@@ -115,6 +115,9 @@ feature -- Fix shared configurations: Access
 	test_case_path: detachable STRING
 			-- Full path of the folder storing test cases
 
+	fault_signature_id: detachable STRING
+			-- Signature id of a failing test case revealing the fault to fix.
+
 	max_passing_test_case_number: NATURAL
 			-- Max number of passing test cases.
 			-- Default: 0. (All passing test cases)
@@ -147,6 +150,9 @@ feature -- Fix shared configurations: Access
 	result_dir: STRING
 			-- Directory to store AutoFix result.
 
+	report_file: STRING
+			-- File to store the final report.
+
 feature -- Fix shared configurations: Access
 
 	set_maximum_session_length_in_minutes (a_length: NATURAL)
@@ -162,6 +168,11 @@ feature -- Fix shared configurations: Access
 			create test_case_path.make_from_string (a_path)
 		ensure
 			test_case_path_set: test_case_path ~ a_path
+		end
+
+	set_fault_signature_id (a_id: like fault_signature_id)
+		do
+			fault_signature_id := a_id.twin
 		end
 
 	set_max_passing_test_case_number (a_number: NATURAL)
@@ -223,7 +234,12 @@ feature -- Fix shared configurations: Access
 	set_result_dir (a_path_string: STRING)
 			-- Set `result_dir'.
 		do
-			result_dir := a_path_string
+			result_dir := a_path_string.twin
+		end
+
+	set_report_file (a_file_string: STRING)
+		do
+			report_file := a_file_string.twin
 		end
 
 feature -- Fix implementation: Access

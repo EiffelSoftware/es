@@ -151,7 +151,7 @@ feature{NONE} -- Implementation
 	build_out
 		do
 			create out_cache.make (1024)
-			out_cache.append (context_feature.context_class.name_in_upper + "." + context_feature.feature_.feature_name_32)
+			out_cache.append ("<<" + context_feature.context_class.name_in_upper + "." + context_feature.feature_.feature_name_32)
 			if is_pre then
 				out_cache.append (".pre%N")
 			else
@@ -169,6 +169,7 @@ feature{NONE} -- Implementation
 				out_cache.append ("--%T" + clauses_to_remove.item_for_iteration.text + "%N")
 				clauses_to_remove.forth
 			end
+			out_cache.append (">>%N")
 		end
 
 feature -- Cache

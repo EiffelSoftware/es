@@ -27,6 +27,7 @@ feature{NONE} -- Initialization
 			create l_v_box
 			create evtext_output
 			evtext_output.disable_edit
+			evtext_output.set_background_color (l_v_box.background_color)
 			l_v_box.extend (evtext_output)
 			extend (l_v_box)
 		end

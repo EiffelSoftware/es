@@ -7,6 +7,9 @@ note
 class
 	ES_ADB_WORKING_DIRECTORY
 
+inherit
+	ES_ADB_TOOL_HELPER
+
 create
 	make
 
@@ -29,25 +32,42 @@ feature -- Query
 			-- Path to the directory for testing results.
 		do
 			if testing_result_dir_internal = Void then
-				testing_result_dir_internal := root_dir.extended ("testing")
+				initialize
 			end
 			Result := testing_result_dir_internal
+		end
+
+	testing_result_dir_for_fault (a_fault: ES_ADB_FAULT): PATH
+			-- Path to the directory for testing results related with `a_fault'.
+		require
+			a_fault /= VOid
+		do
+			Result := testing_result_dir.extended (a_fault.signature.class_under_test).extended (a_fault.signature.feature_under_test)
 		end
 
 	tested_class_timestamps_path: PATH
 			-- Path to the file of timestamps for the tested classes.
 		do
 			if tested_class_timestamps_path_internal = Void then
-				tested_class_timestamps_path_internal := testing_result_dir.extended ("timestamps.log")
+				initialize
 			end
 			Result := tested_class_timestamps_path_internal
+		end
+
+	relaxed_testing_result_dir: PATH
+			-- Path to the directory of relaxed testing results.
+		do
+			if relaxed_testing_result_dir_internal = Void then
+				initialize
+			end
+			Result := relaxed_testing_result_dir_internal
 		end
 
 	fixing_result_dir: PATH
 			-- Path to the directory for fixing results.
 		do
 			if fixing_result_dir_internal = Void then
-				fixing_result_dir_internal := root_dir.extended ("fixing")
+				initialize
 			end
 			Result := fixing_result_dir_internal
 		end
@@ -64,43 +84,81 @@ feature -- Query
 			-- Path to the directory for temporary files.
 		do
 			if temp_dir_internal = Void then
-				temp_dir_internal := root_dir.extended ("temp")
+				initialize
 			end
 			Result := temp_dir_internal
 		end
 
+	original_file_path (a_copied_file_path: PATH): PATH
+			-- Path to the origian file, given the path to its copy in current.
+		require
+			a_copied_file_path /= Void
+		local
+			l_copied_path_str, l_original_path_str, l_root_path_str, l_project_path_str: STRING
+		do
+			l_copied_path_str := a_copied_file_path.out
+			l_root_path_str := temp_dir.out
+			l_original_path_str := l_copied_path_str.twin
+			if l_copied_path_str.starts_with (l_root_path_str) then
+				l_project_path_str := project_path.out
+				l_original_path_str.replace_substring_all (l_root_path_str, l_project_path_str)
+			end
+			create Result.make_from_string (l_original_path_str)
+		end
+
 feature -- Operation
 
-	prepare_empty_directory
-			-- Prepare the structure of the directory if it does not exist already, and remove all the existing testing/fixing results.
+	initialize
+			-- Initialize the structure of the directory.
 		local
 			l_dir: DIRECTORY
 		do
-			create l_dir.make_with_path (testing_result_dir)
-			if l_dir.exists then
-				l_dir.recursive_delete
-			end
-			l_dir.recursive_create_dir
+			testing_result_dir_internal := root_dir.extended ("testing")
+			tested_class_timestamps_path_internal := testing_result_dir.extended ("timestamps.log")
+			relaxed_testing_result_dir_internal := root_dir.extended ("relaxed_testing")
+			fixing_result_dir_internal := root_dir.extended ("fixing")
+			temp_dir_internal := root_dir.extended ("temp")
 
-			create l_dir.make_with_path (fixing_result_dir)
-			if l_dir.exists then
-				l_dir.recursive_delete
+			create l_dir.make_with_path (testing_result_dir_internal)
+			if not l_dir.exists then
+				l_dir.recursive_create_dir
 			end
-			l_dir.recursive_create_dir
 
-			create l_dir.make_with_path (temp_dir)
-			if l_dir.exists then
-				l_dir.recursive_delete
+			create l_dir.make_with_path (relaxed_testing_result_dir_internal)
+			if not l_dir.exists then
+				l_dir.recursive_create_dir
 			end
-			l_dir.recursive_create_dir
+
+			create l_dir.make_with_path (fixing_result_dir_internal)
+			if not l_dir.exists then
+				l_dir.recursive_create_dir
+			end
+
+			create l_dir.make_with_path (temp_dir_internal)
+			if l_dir.exists then
+				l_dir.recursive_create_dir
+			end
+		end
+
+	clear
+			-- Clear the content in Current.
+		local
+			l_dir: DIRECTORY
+		do
+			create l_dir.make_with_path (root_dir)
+			if not l_dir.exists then
+				l_dir.recursive_create_dir
+			end
+			l_dir.recursive_delete
 		end
 
 feature{NONE} -- Cache
 
 	testing_result_dir_internal: like testing_result_dir
+	tested_class_timestamps_path_internal: like tested_class_timestamps_path
+	relaxed_testing_result_dir_internal: like relaxed_testing_result_dir
 	fixing_result_dir_internal: like fixing_result_dir
 	temp_dir_internal: like temp_dir
-	tested_class_timestamps_path_internal: like tested_class_timestamps_path
 
 ;note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software"

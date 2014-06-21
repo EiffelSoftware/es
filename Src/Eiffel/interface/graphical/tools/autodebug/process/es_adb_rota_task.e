@@ -1,73 +1,68 @@
 note
-	description: "Summary description for {ES_ADB_FIX}."
+	description: "Summary description for {ES_ADB_ROTA_TASK}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
-	ES_ADB_FIX_MANUAL
+deferred class
+	ES_ADB_ROTA_TASK
 
 inherit
-	ES_ADB_FIX
+	ROTA_TIMED_TASK_I
 
-create
-	make
-
-feature -- Initialization
-
-	make (a_fault: ES_ADB_FAULT; a_change_implementation, a_change_contract: BOOLEAN)
-			-- Initialization.
-		do
-			fault := a_fault
-			has_change_to_implementation := a_change_implementation
-			has_change_to_contract := a_change_contract
-			set_nature_of_change (Nature_manual)
-			set_ranking (Ranking_maximum)
-			type := Type_manual_fix
-		end
+	ES_ADB_SHARED_INFO_CENTER
 
 feature -- Access
 
-	fix_id_string: STRING = "Manual"
+	Is_interface_usable: BOOLEAN = True
 			-- <Precursor>
 
-	code_before_fix: STRING = "Information unavailable"
+	Sleep_time: NATURAL_32 = 400
 			-- <Precursor>
 
-	code_after_fix: STRING = "Information unavailable"
-			-- <Precursor>
+	output_buffer: ES_ADB_PROCESS_OUTPUT_BUFFER
+			-- Buffer to direct the output.
 
-	has_been_applied: BOOLEAN = True
-			-- <Precursor>
+	on_start_actions: ACTION_SEQUENCE [TUPLE]
+			-- Action to perform when the task starts.
 
-feature -- Status report
+	on_terminate_actions: ACTION_SEQUENCE [TUPLE]
+			-- Actions to perform when the task terminates.
 
-	is_valid_nature_of_change (a_nature: INTEGER): BOOLEAN
-			-- <Precursor>
+feature -- Operation
+
+	start
+			-- Start the task.
 		do
-			Result := a_nature = Nature_manual
-		end
-
-feature -- Constant
-
-	nature_of_change_strings: DS_HASH_TABLE [STRING_8, INTEGER]
-			-- <Precursor>
-		do
-			if nature_of_change_strings_internal = Void then
-				create nature_of_change_strings_internal.make_equal (1)
-				nature_of_change_strings_internal.force ("Manual", Nature_manual)
+			if on_start_actions /= Void then
+				on_start_actions.call (Void)
 			end
-			Result := nature_of_change_strings_internal
+			rota.run_task (Current)
 		end
 
-feature -- Constant
+	wrap_up
+			-- Wrap up when the task terminates.
+		do
+			if on_terminate_actions /= Void then
+				on_terminate_actions.call (Void)
+			end
+		end
 
-	Nature_manual: INTEGER = 8
+feature -- Service
 
-feature{NONE} -- Implementation
+	frozen rota: ROTA_S
+			-- Access to rota service
+		local
+			l_service_consumer: SERVICE_CONSUMER [ROTA_S]
+		do
+			create l_service_consumer
+			if l_service_consumer.is_service_available and then l_service_consumer.service.is_interface_usable then
+				Result := l_service_consumer.service
+			end
+		end
 
-	nature_of_change_strings_internal: like nature_of_change_strings
-;
+
+
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license: "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"

@@ -201,6 +201,15 @@ feature -- Status report
 			Result := id ~ other.id
 		end
 
+	is_testing_same_feature (a_signature_id: STRING): BOOLEAN
+			--
+		require
+			a_signature_id /= Void and then not a_signature_id.is_empty
+			is_signature_id: True
+		do
+			Result := a_signature_id.starts_with (class_and_feature_under_test + ".")
+		end
+
 feature -- Access
 
 	hash_code: INTEGER
@@ -300,8 +309,6 @@ feature{NONE} -- Implementation
 			id.append (exception_code.out)
 			id.append_character ('.')
 			id.append (breakpoint_slot.out)
-			id.append_character ('.')
-			id.append (tag)
 			id.append_character ('.')
 			id.append (recipient_class)
 			id.append_character ('.')

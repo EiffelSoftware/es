@@ -138,6 +138,7 @@ feature {NONE} -- Initialization
 				proxy_log_printers.extend (l_file_printer)
 			end
 
+			disable_catcall_warnings
 			set_is_logging_enabled (True)
 			set_is_speed_logging_enabled (True)
 			set_is_test_case_index_logging_enabled (True)
@@ -156,6 +157,7 @@ feature {NONE} -- Initialization
 
 			if configuration.is_test_case_serialization_retrieved_online and configuration.output_dir_for_test_case_online /= Void then
 				online_test_case_directory := configuration.output_dir_for_test_case_online
+				output_test_case_online_filter := configuration.output_test_case_online_filter
 				setup_online_test_case_directory
 				on_test_case_serialization_actions.extend (agent output_test_case)
 			end
@@ -1333,6 +1335,18 @@ feature {NONE} -- Logging
 
 feature {NONE} -- Implementation
 
+	disable_catcall_warnings
+			-- Disable catcall console and debugger warnings.
+		external
+			"C inline"
+		alias
+			"[
+			extern int catcall_detection_mode;
+			catcall_detection_mode = 0;
+
+			]"
+		end
+
 	executable_file_name: READABLE_STRING_GENERAL
 			-- File name of interpreter executable
 
@@ -2345,6 +2359,9 @@ feature -- Object state retrieval
 	online_test_case_directory: STRING
 			-- Absolute path to the directory to store online test cases
 
+	output_test_case_online_filter: STRING
+
+
 	setup_online_test_case_directory
 			-- Setup the directory to store online test cases (test cases that are output during testing).
 		local
@@ -2352,7 +2369,9 @@ feature -- Object state retrieval
 		do
 			create l_dir.make (online_test_case_directory)
 			if l_dir.exists then
-				l_dir.delete_content
+				if configuration.should_clear_online_test_case_dir then
+					l_dir.delete_content
+				end
 			else
 				l_dir.create_dir
 			end
@@ -2371,14 +2390,18 @@ feature -- Object state retrieval
 					local
 						l_test_categorizer: AUT_TEST_CASE_CATEGORIZER_BY_FEATURE_UNDER_TEST
 					do
-						create l_test_categorizer.make (configuration, online_test_case_directory)
-						l_test_categorizer.write_test_case_to_file (a_test)
-						if l_test_categorizer.last_test_case_path /= Void then
-							error_handler.report_info_message ("%T%T[TC generated] " + l_test_categorizer.last_test_case_path.out)
+						if output_test_case_online_filter = Void or else output_test_case_online_filter.same_string_general (a_test.class_and_feature_under_test) then
+							create l_test_categorizer.make (configuration, online_test_case_directory)
+							l_test_categorizer.write_test_case_to_file (a_test)
+							if l_test_categorizer.last_test_case_path /= Void then
+								error_handler.report_info_message (Msg_tc_generated + l_test_categorizer.last_test_case_path.out)
+							end
 						end
 					end)
 			l_test_deserializer.process_test_case (a_serialization)
 		end
+
+	Msg_tc_generated: STRING = "<[- TC generated -]>"
 
 invariant
 	is_running_implies_reader: is_running implies (stdout_reader /= Void)

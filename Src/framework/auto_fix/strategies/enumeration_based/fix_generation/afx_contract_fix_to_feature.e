@@ -58,6 +58,16 @@ feature -- Changes to clauses
 			Result := not post_clauses_to_add.is_empty or else not post_clauses_to_remove.is_empty
 		end
 
+	is_strengthening: BOOLEAN
+		do
+			Result := not pre_clauses_to_add.is_empty or else not post_clauses_to_add.is_empty
+		end
+
+	is_weakening: BOOLEAN
+		do
+			Result := not pre_clauses_to_remove.is_empty or else not post_clauses_to_remove.is_empty
+		end
+
 feature -- Contract after fix
 
 	contract_clauses_after_fix: TUPLE [pre, post: EPA_HASH_SET [EPA_EXPRESSION]]
@@ -115,30 +125,18 @@ feature{NONE} -- Implementation
 			l_cursor: DS_HASH_SET_CURSOR [EPA_EXPRESSION]
 			l_is_first_line: BOOLEAN
 		do
-			if a_exprs.is_empty then
-				Result := ""
-			else
-				l_blanks := " "
-				l_blanks.multiply (a_category.count)
+			create Result.make (128)
+			from
+				l_cursor := a_exprs.new_cursor
+				l_cursor.start
+			until
+				l_cursor.after
+			loop
+				Result.append (a_category)
+				Result.append (l_cursor.item.text)
+				Result.append ("%N")
 
-				Result := a_category.twin
-				from
-					l_is_first_line := True
-					l_cursor := a_exprs.new_cursor
-					l_cursor.start
-				until
-					l_cursor.after
-				loop
-					if l_is_first_line then
-						l_is_first_line := False
-					else
-						Result := Result + l_blanks
-					end
-
-					Result := Result + " " + l_cursor.item.text + "%N"
-					l_cursor.forth
-				end
-				Result := Result.substring (1, Result.count - 1)
+				l_cursor.forth
 			end
 		end
 
@@ -147,25 +145,35 @@ feature -- Redefine
 	out: STRING
 			-- <Precursor>
 		local
-			l_pairs: ARRAY[TUPLE[expressions: EPA_HASH_SET [EPA_EXPRESSION]; pre_fix: STRING]]
+			l_feature_name: STRING
+			l_pairs: ARRAY[TUPLE[expressions_to_add, expressions_to_remove: EPA_HASH_SET [EPA_EXPRESSION]; is_pre: BOOLEAN]]
 			l_index: INTEGER
-			l_pair: TUPLE[expressions: EPA_HASH_SET [EPA_EXPRESSION]; pre_fix: STRING]
+			l_post_fix: STRING
+			l_pair: TUPLE[expressions_to_add, expressions_to_remove: EPA_HASH_SET [EPA_EXPRESSION]; is_pre: BOOLEAN]
 		do
 			if out_cache = Void then
-				out_cache := context_feature.qualified_feature_name.twin + "%N"
-				l_pairs := <<[pre_clauses_to_add, "+ pre: "], [pre_clauses_to_remove, "- pre: "], [post_clauses_to_add, "+ post:"], [post_clauses_to_remove, "- post:"]>>
+				l_feature_name := context_feature.qualified_feature_name.twin
+				out_cache := ""
+				l_pairs := <<[pre_clauses_to_add, pre_clauses_to_remove, True], [post_clauses_to_add, post_clauses_to_remove, False]>>
 				from
 					l_index := 1
 				until
 					l_index > l_pairs.count
 				loop
 					l_pair := l_pairs.at (l_index)
-					if not l_pair.expressions.is_empty then
-						out_cache.append ("    " + expressions_to_string (l_pair.pre_fix, l_pair.expressions) + "%N")
+					if l_pair.is_pre then
+						l_post_fix := ".pre."
+					else
+						l_post_fix := ".post."
+					end
+					if not l_pair.expressions_to_add.is_empty or else not l_pair.expressions_to_remove.is_empty then
+						out_cache.append ("<< " + l_feature_name + l_post_fix + "%N")
+						out_cache.append (expressions_to_string ("++: ", l_pair.expressions_to_add))
+						out_cache.append (expressions_to_string ("--: ", l_pair.expressions_to_remove))
+						out_cache.append (">> %N")
 					end
 					l_index := l_index + 1
 				end
-				out_cache := out_cache.substring (1, out_cache.count - 1)
 			end
 			Result := out_cache
 		end

@@ -1,38 +1,38 @@
 note
-	description: "Summary description for {ES_ADB_PROCESS}."
+	description: "Summary description for {ES_ADB_TESTING_TASK}."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	ES_ADB_PROCESS
 
 inherit
+	ES_ADB_ROTA_TASK
+		redefine
+			start
+		end
 
-	ES_ADB_SHARED_INFO_CENTER
-
-create
-	make
+	ES_ADB_TOOL_HELPER
 
 feature{NONE} -- Initialization
 
-	make (a_cmd_line: STRING; a_working_directory: STRING; a_timeout: INTEGER)
+	make_process (a_cmd_line: STRING; a_working_directory: STRING; a_timeout: INTEGER; a_output_buffer: ES_ADB_PROCESS_OUTPUT_BUFFER)
 			-- Initialization.
 		require
 			a_cmd_line /= Void
 			a_timeout > 0
 		do
 			command_line := a_cmd_line.twin
-			if a_working_directory = Void then
-				working_directory := Void
-			else
-				working_directory := a_working_directory.twin
-			end
+			working_directory := a_working_directory
 			timeout := a_timeout
+			output_buffer := a_output_buffer
+			create on_start_actions
+			create on_terminate_actions
 
-			create timer.make (agent on_timeout)
-			timer.set_timeout ((config.max_session_length_for_testing + 5) * 60)
-			has_run_out_of_time := False
+			set_has_next_step (True)
+			set_has_started (False)
+			set_has_run_out_of_time (False)
 		end
 
 feature -- Access
@@ -46,16 +46,113 @@ feature -- Access
 	timeout: INTEGER
 			-- Cutoff time for testing.
 
-	output_agent: PROCEDURE [ANY, TUPLE[STRING]]
-			-- Agent to handle the process output.
+feature -- Status report
 
-	exit_agent: PROCEDURE [ANY, TUPLE]
-			-- Action to take upon process exit.
+	has_next_step: BOOLEAN
+			-- <Precursor>
 
-	terminate_agent: PROCEDURE [ANY, TUPLE]
-			-- Action to take upon process terminate.
+	has_started: BOOLEAN
+			-- Has current been started, i.e. launching was attempted?
+
+	is_launched: BOOLEAN
+			-- Is `working_process' launched?
+		do
+			Result := working_process /= Void and then working_process.launched
+		end
+
+	is_running: BOOLEAN
+			-- Is `working_process' running?
+		do
+			Result := working_process /= Void and then working_process.is_running
+		end
+
+	should_output_be_parsed: BOOLEAN assign set_should_output_be_parsed
+			-- Should the output from `command_line' be parsed?
+
+	should_output_be_logged: BOOLEAN assign set_should_output_be_logged
+			-- Should the output from `command_line' be logged?
+
+	has_run_out_of_time: BOOLEAN
+			-- Has the last run out of time?
+
+feature -- Setter
+
+	set_has_next_step (a_flag: BOOLEAN)
+		do
+			has_next_step := a_flag
+			if not has_next_step then
+				wrap_up
+			end
+		end
+
+	set_has_started (a_flag: BOOLEAN)
+		do
+			has_started := a_flag
+		end
+
+	set_should_output_be_parsed (a_flag: BOOLEAN)
+		do
+			should_output_be_parsed := a_flag
+		end
+
+	set_should_output_be_logged (a_flag: BOOLEAN)
+		do
+			should_output_be_logged := a_flag
+		end
+
+	set_has_run_out_of_time (a_flag: BOOLEAN)
+		do
+			has_run_out_of_time := a_flag
+		end
 
 feature -- Operation
+
+	start
+			-- <Precursor>
+		do
+			Precursor
+
+			on_output ("%N>> Starting process: " + command_line + "%N")
+			launch
+			set_has_started (True)
+			on_terminate_actions.extend (agent timer.set_should_terminate (True))
+		end
+
+	step
+			-- <Precursor>
+		do
+			if not has_started then
+				start
+			end
+			if not is_running and then (output_buffer = Void or else output_buffer.is_empty) then
+					-- Process has terminated and no more output to be forwarded.
+					-- So we stop the current subtask.
+				if is_launched then
+					on_output ("%N>> Process exited: " + command_line + "%N")
+				else
+					on_output ("%N>> Failed to launch process: " + command_line + "%N")
+				end
+				set_has_next_step (False)
+			end
+		end
+
+	cancel
+			-- <Precursor>
+		local
+		do
+			timer.set_should_terminate (True)
+			if is_running then
+				working_process.terminate_tree
+			end
+			on_output ("%N>> Process killed: " + command_line + "%N")
+
+			if output_buffer /= Void then
+				output_buffer.wipe_out
+			end
+			set_has_next_step (False)
+		end
+
+feature{NONE} -- Implementation
 
 	launch
 			-- Launch process.
@@ -67,57 +164,15 @@ feature -- Operation
 			working_process.enable_launch_in_new_process_group
 			working_process.set_detached_console (False)
 			working_process.set_hidden (True)
+			working_process.set_buffer_size (4096)
 			working_process.redirect_input_to_stream
 			working_process.redirect_output_to_agent (agent on_output)
 			working_process.redirect_error_to_same_as_output
-			working_process.set_on_exit_handler (agent on_exit)
-			working_process.set_on_terminate_handler (agent on_terminate)
-
-			timer.start
 			working_process.launch
 			check working_process.launched end
-		end
 
-	terminate
-			-- Terminate process.
-		do
-			if is_running then
-				working_process.terminate_tree
-			end
-		end
-
-feature -- Status report
-
-	has_run_out_of_time: BOOLEAN
-			-- Has the last run out of time?
-
-	is_running: BOOLEAN
-			-- Is process running?
-		do
-			Result := working_process /= Void and then working_process.is_running
-		end
-
-feature -- Set
-
-	set_output_agent (a_agent: like output_agent)
-		require
-			a_agent /= Void
-		do
-			output_agent := a_agent
-		end
-
-	set_exit_agent (a_agent: like exit_agent)
-		require
-			a_agent /= Void
-		do
-			exit_agent := a_agent
-		end
-
-	set_terminate_agent (a_agent: like terminate_agent)
-		require
-			a_agent /= Void
-		do
-			terminate_agent := a_agent
+			create timer.make_with_action (timeout * 60 * 1000, False, agent on_timeout)
+			timer.start
 		end
 
 feature -- Event handler
@@ -125,45 +180,27 @@ feature -- Event handler
 	on_output (a_str: STRING)
 			-- Action to perform when process generates a new output `a_str'.
 		do
-			if output_agent /= Void then
-				output_agent.call ([a_str])
+			if output_buffer /= Void then
+				output_buffer.store (a_str)
 			end
 		end
 
 	on_timeout
 			-- Action to perform when process runs out of time.
 		do
+			timer.set_should_terminate (True)
 			has_run_out_of_time := True
-			terminate
+			cancel
 		end
 
-	on_exit
-			-- Action to perform when process exits.
-		do
-			timer.reset_timer
-
-			if exit_agent /= Void then
-				exit_agent.call
-			end
-		end
-
-	on_terminate
-			-- Action to perform when process terminates.
-		do
-			timer.reset_timer
-
-			if terminate_agent /= Void then
-				terminate_agent.call
-			end
-		end
-
-feature{NONE} -- Implementation
+feature{NONE} -- Access
 
 	working_process: PROCESS
 			-- Working process object.
 
-	timer: AFX_TIMER_THREAD
+	timer: EPA_THREAD_BASED_TIMER
 			-- Timer to terminate the process when time is out.
+
 
 ;note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software"

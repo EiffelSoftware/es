@@ -22,7 +22,7 @@ feature{NONE} -- Initialization
 	initialize
 			-- <Precursor>
 		local
-			l_grid: ES_GRID
+			l_grid: EV_GRID
 			l_col: EV_GRID_COLUMN
 			l_frame: EV_FRAME
 			l_v_box: EV_VERTICAL_BOX
@@ -42,21 +42,28 @@ feature{NONE} -- Initialization
 			create l_h_box
 			l_h_box.set_border_width ({ES_UI_CONSTANTS}.frame_border)
 			create evgrid_fixes
-			evgrid_fixes.set_minimum_width (300)
+			evgrid_fixes.set_minimum_width (670)
 			l_grid := evgrid_fixes
+			l_grid.enable_row_separators
+			l_grid.enable_single_row_selection
 			l_grid.set_column_count_to (Last_column)
-			l_grid.column (Column_fault).set_title (Grid_column_text_fault)
-			l_grid.column (Column_type).set_title (Grid_column_text_type)
-			l_grid.column (Column_nature).set_title (Grid_column_text_nature)
-			l_grid.column (Column_is_proper).set_title (Grid_column_text_is_proper)
-			l_grid.column (Column_status).set_title (Grid_column_text_status)
-			l_grid.set_auto_resizing_column (1, True)
-			l_grid.set_auto_resizing_column (Column_fault, True)
-			l_grid.set_auto_resizing_column (Column_type, True)
-			l_grid.set_auto_resizing_column (Column_nature, True)
-			l_grid.set_auto_resizing_column (Column_is_proper, True)
-			l_grid.set_auto_resizing_column (Column_status, True)
-			l_grid.enable_last_column_use_all_width
+			l_col := l_grid.column (1)
+			l_col.set_width (0)
+			l_col := l_grid.column (Column_fault)
+			l_col.set_title (Grid_column_text_fault)
+			l_col.set_width (200)
+			l_col := l_grid.column (Column_type)
+			l_col.set_title (Grid_column_text_type)
+			l_col.set_width (150)
+			l_col := l_grid.column (Column_nature)
+			l_col.set_title (Grid_column_text_nature)
+			l_col.set_width (150)
+			l_col := l_grid.column (Column_is_proper)
+			l_col.set_title (Grid_column_text_is_proper)
+			l_col.set_width (100)
+			l_col := l_grid.column (Column_status)
+			l_col.set_title (Grid_column_text_status)
+			l_col.set_width (70)
 			l_grid.enable_tree
 			l_grid.enable_row_height_fixed
 			l_h_box.extend (l_grid)
@@ -74,10 +81,19 @@ feature{NONE} -- Initialization
 			create l_h_box
 			l_h_box.set_padding (l_h_padding)
 			create ebsmart_source.make (tool_panel.develop_window)
+			ebsmart_source.disable_editable
+			ebsmart_source.disable_line_numbers
+			ebsmart_source.set_read_only (True)
 			ebsmart_source.widget.set_background_color (l_h_box.background_color)
+--			create ebsmart_source
+--			ebsmart_source.disable_edit
+--			ebsmart_source.set_background_color (l_h_box.background_color)
 			ebsmart_source.widget.set_border_width (1)
 			l_h_box.extend (ebsmart_source.widget)
 			create ebsmart_target.make (tool_panel.develop_window)
+			ebsmart_target.disable_editable
+			ebsmart_target.disable_line_numbers
+			ebsmart_target.set_read_only (True)
 			ebsmart_target.widget.set_background_color (l_h_box.background_color)
 			ebsmart_target.widget.set_border_width (1)
 			l_h_box.extend (ebsmart_target.widget)
@@ -100,11 +116,13 @@ feature{NONE} -- Initialization
 
 feature -- GUI elements
 
-	evgrid_fixes: ES_GRID
+	evgrid_fixes: EV_GRID
 
 	ebsmart_source: EB_SMART_EDITOR
+--	ebsmart_source: EV_RICH_TEXT
 
 	ebsmart_target: EB_SMART_EDITOR
+--	ebsmart_target: EV_RICH_TEXT
 
 	evbutton_apply: EV_BUTTON
 

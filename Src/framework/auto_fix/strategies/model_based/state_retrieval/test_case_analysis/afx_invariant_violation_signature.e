@@ -28,17 +28,19 @@ feature{NONE} -- Initialization
 			-- Initialization.
 			-- After executing `a_recipient_class'.`a_recipient_feature',
 			-- the invariant with `a_assertion_tag' is violated.
+		local
+			l_recipient_exception_breakpoint: INTEGER
 		do
 			set_exception_code ({EXCEP_CONST}.class_invariant)
 			set_violated_assertion_tag (a_assertion_tag)
 
 			fixme ("Exception breakpoint information is not exact, but enough for fixing.")
-			set_exception_breakpoint (breakpoint_count (recipient_feature))
+			l_recipient_exception_breakpoint := breakpoint_count (a_recipient_feature)
 
 			make_common (a_recipient_class, a_recipient_class.invariant_feature,
-					0, 0,
+					1, 0,
 					a_recipient_class, a_recipient_feature,
-					0, 0)
+					l_recipient_exception_breakpoint, 0)
 		end
 
 feature{AFX_INVARIANT_VIOLATION_SIGNATURE} -- Implementation

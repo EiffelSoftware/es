@@ -5,28 +5,40 @@ note
 	revision: "$Revision$"
 
 class
-	ES_ADB_PROCESS_OUTPUT_FORWARDING_TASK
+	ES_ADB_OUTPUT_RETRIEVER
 
 inherit
-	ROTA_TIMED_TASK_I
-
-	ES_ADB_SHARED_INFO_CENTER
+	ES_ADB_ROTA_TASK
+		redefine
+			start
+		end
 
 create
 	make
 
 feature{NONE} -- Initialization
 
-	make (a_buffer: ES_ADB_EXTERNAL_PROCESS_OUTPUT_BUFFER)
+	make (a_task: ES_ADB_PROCESS_SEQUENCE)
+			-- Initialization.
+		require
+			a_task /= Void
 		do
-			buffer := a_buffer
+			task := a_task
+			output_buffer := task.output_buffer
+			output_buffer.set_active (True)
 			should_terminate := False
+			create on_start_actions
+			create on_terminate_actions
+			create output_parser.make
 		end
 
 feature -- Access
 
-	buffer: ES_ADB_EXTERNAL_PROCESS_OUTPUT_BUFFER
-			-- Buffer where the output to be forwarded is stored.
+	task: ES_ADB_PROCESS_SEQUENCE
+			-- Task whose output needs forwarding.
+
+	output_parser: ES_ADB_PROCESS_OUTPUT_PARSER
+			-- Object to parse the output.
 
 	should_terminate: BOOLEAN
 			-- Should terminate forwarding?
@@ -36,23 +48,29 @@ feature -- Status report
 	has_next_step: BOOLEAN
 			-- <Precursor>
 		do
-			Result := not should_terminate
+			Result := not should_terminate and then (task.has_next_step or else not output_buffer.is_empty)
 		end
-
-	sleep_time: NATURAL = 1000
-			-- <Precursor>
-
-	Is_interface_usable: BOOLEAN = True
-			-- <Precursor>
 
 feature
 
 	terminate, cancel
 			-- <Precursor>
 		do
+			task.cancel
+
 			step	-- Forward the new output since last step.
+			output_buffer.set_active (False)
+			task.on_terminate_actions.prune (agent on_terminate_actions.call (Void))
 
 			should_terminate := True
+		end
+
+	start
+			-- <Precursor>
+		do
+			Precursor
+			task.on_terminate_actions.extend (agent on_terminate_actions.call (Void))
+			task.start
 		end
 
 	step
@@ -61,7 +79,7 @@ feature
 			l_lines: DS_LIST [STRING]
 			l_cursor: DS_LIST_CURSOR [STRING]
 		do
-			l_lines := buffer.retrieve_and_clear
+			l_lines := output_buffer.retrieve_and_clear
 			from
 				l_cursor := l_lines.new_cursor
 				l_cursor.start
@@ -69,6 +87,9 @@ feature
 				l_cursor.after
 			loop
 				info_center.on_output (l_cursor.item)
+				if task.should_output_be_parsed then
+					output_parser.parse (l_cursor.item)
+				end
 				l_cursor.forth
 			end
 		end

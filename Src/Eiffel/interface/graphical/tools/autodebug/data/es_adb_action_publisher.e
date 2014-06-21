@@ -38,14 +38,20 @@ feature -- Basic operation
 			if not fixing_start_actions.has (a_action.on_fixing_start_agent) then
 				fixing_start_actions.extend (a_action.on_fixing_start_agent)
 			end
+			if not fixing_stop_actions.has (a_action.on_fixing_stop_agent) then
+				fixing_stop_actions.extend (a_action.on_fixing_stop_agent)
+			end
+			if not continuation_debugging_start_actions.has (a_action.on_continuation_debugging_start_agent) then
+				continuation_debugging_start_actions.extend (a_action.on_continuation_debugging_start_agent)
+			end
+			if not continuation_debugging_stop_actions.has (a_action.on_continuation_debugging_stop_agent) then
+				continuation_debugging_stop_actions.extend (a_action.on_continuation_debugging_stop_agent)
+			end
 			if not valid_fix_found_actions.has (a_action.on_valid_fix_found_agent) then
 				valid_fix_found_actions.extend (a_action.on_valid_fix_found_agent)
 			end
 			if not fix_applied_actions.has (a_action.on_fix_applied_agent) then
 				fix_applied_actions.extend (a_action.on_fix_applied_agent)
-			end
-			if not fixing_stop_actions.has (a_action.on_fixing_stop_agent) then
-				fixing_stop_actions.extend (a_action.on_fixing_stop_agent)
 			end
 			if not output_actions.has (a_action.on_output_agent) then
 				output_actions.extend (a_action.on_output_agent)
@@ -87,14 +93,20 @@ feature -- Basic operation
 			if fixing_start_actions.has (a_action.on_fixing_start_agent) then
 				fixing_start_actions.prune_all (a_action.on_fixing_start_agent)
 			end
+			if fixing_stop_actions.has (a_action.on_fixing_stop_agent) then
+				fixing_stop_actions.prune_all (a_action.on_fixing_stop_agent)
+			end
+			if continuation_debugging_start_actions.has (a_action.on_continuation_debugging_start_agent) then
+				continuation_debugging_start_actions.prune_all (a_action.on_continuation_debugging_start_agent)
+			end
+			if continuation_debugging_stop_actions.has (a_action.on_continuation_debugging_stop_agent) then
+				continuation_debugging_stop_actions.prune_all (a_action.on_continuation_debugging_stop_agent)
+			end
 			if valid_fix_found_actions.has (a_action.on_valid_fix_found_agent) then
 				valid_fix_found_actions.prune_all (a_action.on_valid_fix_found_agent)
 			end
 			if fix_applied_actions.has (a_action.on_fix_applied_agent) then
 				fix_applied_actions.prune_all (a_action.on_fix_applied_agent)
-			end
-			if fixing_stop_actions.has (a_action.on_fixing_stop_agent) then
-				fixing_stop_actions.prune_all (a_action.on_fixing_stop_agent)
 			end
 			if output_actions.has (a_action.on_output_agent) then
 				output_actions.prune_all (a_action.on_output_agent)
@@ -194,12 +206,36 @@ feature -- Access
 			Result := testing_stop_actions_internal
 		end
 
-	fixing_start_actions: ACTION_SEQUENCE [TUPLE[ES_ADB_FAULT]]
+	fixing_start_actions: ACTION_SEQUENCE [TUPLE [ES_ADB_FAULT]]
 		do
 			if fixing_start_actions_internal = Void then
 				create fixing_start_actions_internal
 			end
 			Result := fixing_start_actions_internal
+		end
+
+	fixing_stop_actions: ACTION_SEQUENCE [TUPLE]
+		do
+			if fixing_stop_actions_internal = Void then
+				create fixing_stop_actions_internal
+			end
+			Result := fixing_stop_actions_internal
+		end
+
+	continuation_debugging_start_actions: ACTION_SEQUENCE [TUPLE]
+		do
+			if continuation_debugging_start_actions_internal = Void then
+				create continuation_debugging_start_actions_internal
+			end
+			Result := continuation_debugging_start_actions_internal
+		end
+
+	continuation_debugging_stop_actions: ACTION_SEQUENCE [TUPLE]
+		do
+			if continuation_debugging_stop_actions_internal = Void then
+				create continuation_debugging_stop_actions_internal
+			end
+			Result := continuation_debugging_stop_actions_internal
 		end
 
 	valid_fix_found_actions: ACTION_SEQUENCE [TUPLE[ES_ADB_FIX]]
@@ -216,14 +252,6 @@ feature -- Access
 				create fix_applied_actions_internal
 			end
 			Result := fix_applied_actions_internal
-		end
-
-	fixing_stop_actions: ACTION_SEQUENCE [TUPLE[ES_ADB_FAULT]]
-		do
-			if fixing_stop_actions_internal = Void then
-				create fixing_stop_actions_internal
-			end
-			Result := fixing_stop_actions_internal
 		end
 
 	output_actions: ACTION_SEQUENCE [TUPLE [STRING]]
@@ -246,9 +274,11 @@ feature {NONE} -- Implementation
 	test_case_generated_actions_internal: like test_case_generated_actions
 	testing_stop_actions_internal : like testing_stop_actions
 	fixing_start_actions_internal: like fixing_start_actions
+	fixing_stop_actions_internal: like fixing_stop_actions
+	continuation_debugging_start_actions_internal: like continuation_debugging_start_actions
+	continuation_debugging_stop_actions_internal: like continuation_debugging_stop_actions
 	valid_fix_found_actions_internal: like valid_fix_found_actions
 	fix_applied_actions_internal: like fix_applied_actions
-	fixing_stop_actions_internal: like fixing_stop_actions
 	output_actions_internal: like output_actions
 
 invariant
@@ -262,9 +292,11 @@ invariant
 	test_case_generated_actions /= Void
 	testing_stop_actions /= Void
 	fixing_start_actions /= VOid
+	fixing_stop_actions /= Void
+	continuation_debugging_start_actions /= VOid
+	continuation_debugging_stop_actions /= Void
 	valid_fix_found_actions /= Void
 	fix_applied_actions /= Void
-	fixing_stop_actions /= Void
 	output_actions /= Void
 
 

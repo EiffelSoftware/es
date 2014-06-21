@@ -55,6 +55,7 @@ feature -- Basic operation
 			l_feature_to_relax: AFX_FEATURE_TO_MONITOR
 			l_features_to_relax: DS_ARRAYED_LIST [AFX_FEATURE_TO_MONITOR]
 		do
+			disable_catcall_warnings
 			create fixes.make_equal (30)
 
 				-- HACK: force re-compiling the root class by "touch"ing it, otherwise expression evaluation might fail.
@@ -180,6 +181,7 @@ feature{NONE} -- Implementation
 			l_fix: AFX_CODE_FIX_TO_FAULT
 			l_text: STRING
 		do
+			create Result.make_equal (1)
 			if session.should_continue then
 				progression_monitor.set_progression (progression_monitor.progression_fix_generation_start)
 
@@ -240,7 +242,11 @@ feature{NONE} -- Implementation
 			l_collector.set_monitor_mode (l_collector.mode_analyze_relaxed_tc)
 			l_collector.set_features_to_monitor (l_features_to_monitor)
 			l_collector.collect (True)
-			Result := l_collector.trace_repository.derived_compound_repository (l_features_to_monitor, True)
+			if l_collector.trace_repository /= Void then
+				Result := l_collector.trace_repository.derived_compound_repository (l_features_to_monitor, True)
+			else
+				create Result.make_default
+			end
 			l_feature_contract_remover.undo_last_removal
 
 			event_actions.notify_on_weakest_contract_inference_finished (a_feature_to_relax)
@@ -257,9 +263,9 @@ feature{NONE} -- Implementation
 			l_fix: AFX_CONTRACT_FIX_ACROSS_FEATURES
 			l_new_fix: AFX_CONTRACT_FIX_TO_FAULT
 		do
+			create Result.make_equal (64)
 			if session.should_continue then
 				event_actions.notify_on_contract_fix_generation_started
-				create Result.make_equal (64)
 
 				create l_regular_traces.make_equal (a_traces_before_fixing.count + 1)
 				a_traces_before_fixing.do_all (agent l_regular_traces.force_last)
@@ -361,8 +367,19 @@ feature{NONE} -- Implementation
 		do
 			event_actions.notify_on_fix_ranking_started (fixes)
 
-			
+
 			event_actions.notify_on_fix_ranking_finished (fixes)
+		end
+
+	disable_catcall_warnings
+			-- Disable catcall console and debugger warnings.
+		external
+			"C inline"
+		alias
+			"[
+							extern int catcall_detection_mode;
+							catcall_detection_mode = 0;
+			]"
 		end
 
 end

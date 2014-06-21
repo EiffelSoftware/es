@@ -13,7 +13,7 @@ inherit
 feature -- Test cases: Access
 
 	test_cases: DS_HASH_TABLE [DS_HASH_TABLE [DS_HASH_SET [ES_ADB_TEST], EPA_TEST_CASE_SIGNATURE],
-						  EPA_FEATURE_WITH_CONTEXT_CLASS]
+						  STRING]
 		do
 			Result := test_cases_storage.item
 		end
@@ -27,6 +27,7 @@ feature -- Test cases: Access
 		local
 			l_path: PATH
 			l_sig: EPA_TEST_CASE_SIGNATURE
+			l_feature_with_context_str: STRING
 			l_feature_with_context: EPA_FEATURE_WITH_CONTEXT_CLASS
 			l_is_passing: BOOLEAN
 			l_tests_by_sig: DS_HASH_TABLE [DS_HASH_SET [ES_ADB_TEST], EPA_TEST_CASE_SIGNATURE]
@@ -35,14 +36,15 @@ feature -- Test cases: Access
 		do
 			l_path := a_test.location
 			l_sig := a_test.test_case_signature
+			l_feature_with_context_str := l_sig.class_and_feature_under_test
 
 				-- Register test at `test_cases'.
 			create l_feature_with_context.make_from_names (l_sig.feature_under_test, l_sig.class_under_test)
-			if test_cases.has (l_feature_with_context) then
-				l_tests_by_sig := test_cases.item (l_feature_with_context)
+			if test_cases.has (l_feature_with_context_str) then
+				l_tests_by_sig := test_cases.item (l_feature_with_context_str)
 			else
 				create l_tests_by_sig.make_equal (64)
-				test_cases.force (l_tests_by_sig, l_feature_with_context)
+				test_cases.force (l_tests_by_sig, l_feature_with_context_str)
 			end
 			if l_tests_by_sig.has (l_sig) then
 				l_tests := l_tests_by_sig.item (l_sig)
@@ -60,10 +62,10 @@ feature -- Test cases: Access
 			end
 		end
 
-	passing_test_cases_for_feature (a_feature: EPA_FEATURE_WITH_CONTEXT_CLASS): DS_HASH_SET [ES_ADB_TEST]
-			-- Set of passing test cases for `a_feature'.
+	passing_test_cases_for_feature (a_feature_str: STRING): DS_HASH_SET [ES_ADB_TEST]
+			-- Set of passing test cases for `a_feature_str'.
 		require
-			a_feature /= Void
+			a_feature_str /= Void
 		local
 			l_tests_by_sig: DS_HASH_TABLE [DS_HASH_SET [ES_ADB_TEST], EPA_TEST_CASE_SIGNATURE]
 			l_sigs: DS_BILINEAR [EPA_TEST_CASE_SIGNATURE]
@@ -71,8 +73,8 @@ feature -- Test cases: Access
 			l_passing_sig: EPA_TEST_CASE_SIGNATURE
 		do
 			create Result.make_equal (30)
-			if test_cases.has (a_feature) then
-				l_tests_by_sig := test_cases.item (a_feature)
+			if test_cases.has (a_feature_str) then
+				l_tests_by_sig := test_cases.item (a_feature_str)
 
 					-- Passing tests for the feature
 				l_sigs := l_tests_by_sig.keys
@@ -92,18 +94,18 @@ feature -- Test cases: Access
 			end
 		end
 
-	passing_test_case_count_for_feature (a_feature: EPA_FEATURE_WITH_CONTEXT_CLASS): INTEGER
-			-- Number of passing test cases for `a_feature'.
+	passing_test_case_count_for_feature (a_feature_str: STRING): INTEGER
+			-- Number of passing test cases for `a_feature_str'.
 		require
-			a_feature /= Void
+			a_feature_str /= Void
 		local
 			l_tests_by_sig: DS_HASH_TABLE [DS_HASH_SET [ES_ADB_TEST], EPA_TEST_CASE_SIGNATURE]
 			l_sigs: DS_BILINEAR [EPA_TEST_CASE_SIGNATURE]
 			l_sig_cursor: DS_BILINEAR_CURSOR [EPA_TEST_CASE_SIGNATURE]
 			l_passing_sig: EPA_TEST_CASE_SIGNATURE
 		do
-			if test_cases.has (a_feature) then
-				l_tests_by_sig := test_cases.item (a_feature)
+			if test_cases.has (a_feature_str) then
+				l_tests_by_sig := test_cases.item (a_feature_str)
 				l_sigs := l_tests_by_sig.keys
 				from
 					l_sig_cursor := l_sigs.new_cursor
@@ -133,21 +135,22 @@ feature -- Test cases: Access
 			l_tests_by_sig: DS_HASH_TABLE [DS_HASH_SET [ES_ADB_TEST], EPA_TEST_CASE_SIGNATURE]
 			l_sigs: DS_BILINEAR [EPA_TEST_CASE_SIGNATURE]
 			l_sig_cursor: DS_BILINEAR_CURSOR [EPA_TEST_CASE_SIGNATURE]
+			l_feature_str: STRING
 		do
 			create l_passings.make_equal (8)
 			create l_failings.make_equal (8)
 			Result := [l_passings, l_failings]
 
 			l_failing_sig := a_fault.signature
-			create l_feature_with_context.make_from_names (l_failing_sig.feature_under_test, l_failing_sig.class_under_test)
-			if test_cases.has (l_feature_with_context) then
-				l_tests_by_sig := test_cases.item (l_feature_with_context)
+			l_feature_str := l_failing_sig.class_and_feature_under_test
+			if test_cases.has (l_feature_str) then
+				l_tests_by_sig := test_cases.item (l_feature_str)
 				if l_tests_by_sig.has (l_failing_sig) then
 					l_failings.append (l_tests_by_sig.item (l_failing_sig))
 				end
 			end
 
-			l_passings.append (passing_test_cases_for_feature (l_feature_with_context))
+			l_passings.append (passing_test_cases_for_feature (l_feature_str))
 		end
 
 	test_case_count_for_fault (a_fault: ES_ADB_FAULT): TUPLE [passing, failing: INTEGER]
@@ -161,16 +164,17 @@ feature -- Test cases: Access
 			l_tests_by_sig: DS_HASH_TABLE [DS_HASH_SET [ES_ADB_TEST], EPA_TEST_CASE_SIGNATURE]
 			l_sigs: DS_BILINEAR [EPA_TEST_CASE_SIGNATURE]
 			l_sig_cursor: DS_BILINEAR_CURSOR [EPA_TEST_CASE_SIGNATURE]
+			l_feature_str: STRING
 		do
 			l_failing_sig := a_fault.signature
-			create l_feature_with_context.make_from_names (l_failing_sig.feature_under_test, l_failing_sig.class_under_test)
-			if test_cases.has (l_feature_with_context) then
-				l_tests_by_sig := test_cases.item (l_feature_with_context)
+			l_feature_str := l_failing_sig.class_and_feature_under_test
+			if test_cases.has (l_feature_str) then
+				l_tests_by_sig := test_cases.item (l_feature_str)
 				if l_tests_by_sig.has (l_failing_sig) then
 					l_failing_count := l_tests_by_sig.item (l_failing_sig).count
 				end
 			end
-			l_passing_count := passing_test_case_count_for_feature (l_feature_with_context)
+			l_passing_count := passing_test_case_count_for_feature (l_feature_str)
 
 			Result := [l_passing_count, l_failing_count]
 		end
@@ -212,16 +216,29 @@ feature -- Timestamps: Query
 
 feature -- Timestamps: Operation
 
-	start_logging_class_timestamps (a_file: PLAIN_TEXT_FILE)
+	start_logging_class_timestamps (a_config: ES_ADB_CONFIG)
 			-- Start logging class timestamps into `a_file'.
 		require
-			a_file /= Void
+			a_config /= Void
+		local
+			l_file: PLAIN_TEXT_FILE
 		do
-			a_file.open_write
-			if a_file.is_open_write then
-				class_timestamps_log_file := a_file
+			create l_file.make_with_path (a_config.working_directory.tested_class_timestamps_path)
+			l_file.open_write
+			if l_file.is_open_write then
+				class_timestamps_log_file := l_file
 			else
 				class_timestamps_log_file := Void
+			end
+		end
+
+	reset_class_timestamps_log (a_config: ES_ADB_CONFIG)
+		local
+			l_file: PLAIN_TEXT_FILE
+		do
+			create l_file.make_with_path (a_config.working_directory.tested_class_timestamps_path)
+			if l_file.exists then
+				l_file.wipe_out
 			end
 		end
 
@@ -246,11 +263,11 @@ feature -- Timestamps: Operation
 					check timestamps.item (a_name) ~ l_stamp end
 				else
 					timestamps.force (l_stamp, a_name)
+					if is_logging_class_timestamps then
+						log_class_timestamp (a_name, l_stamp)
+					end
 				end
 
-				if is_logging_class_timestamps then
-					log_class_timestamp (a_name, l_stamp)
-				end
 			end
 		end
 
@@ -317,7 +334,7 @@ feature -- Operation
 	reset
 		local
 			l_storage: DS_HASH_TABLE [DS_HASH_TABLE [DS_HASH_SET [ES_ADB_TEST], EPA_TEST_CASE_SIGNATURE],
-						  EPA_FEATURE_WITH_CONTEXT_CLASS]
+						  STRING]
 		do
 			create l_storage.make_equal (100)
 			test_cases_storage.put (l_storage)
@@ -328,11 +345,11 @@ feature -- Operation
 feature{NONE} -- Implementation
 
 	test_cases_storage: CELL [DS_HASH_TABLE [DS_HASH_TABLE [DS_HASH_SET [ES_ADB_TEST], EPA_TEST_CASE_SIGNATURE],
-						  EPA_FEATURE_WITH_CONTEXT_CLASS]
+						  STRING]
 						 ]
 		local
 			l_storage: DS_HASH_TABLE [DS_HASH_TABLE [DS_HASH_SET [ES_ADB_TEST], EPA_TEST_CASE_SIGNATURE],
-						  EPA_FEATURE_WITH_CONTEXT_CLASS]
+						  STRING]
 		once
 			create l_storage.make_equal (100)
 			create Result.put (l_storage)
