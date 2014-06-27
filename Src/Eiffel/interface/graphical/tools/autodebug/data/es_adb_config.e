@@ -15,11 +15,41 @@ feature -- Project
 	project: E_PROJECT
 			-- Eiffel project.
 
-feature -- Project status report
+feature -- Status report
 
 	is_project_loaded: BOOLEAN
 		do
 			Result := project /= Void
+		end
+
+	is_each_session_testing_one_class: BOOLEAN
+		do
+			Result := testing_session_type = testing_session_type_one_class
+		end
+
+	is_each_session_testing_one_group: BOOLEAN
+		do
+			Result := testing_session_type = testing_session_type_one_group
+		end
+
+	is_each_session_testing_all_classes: BOOLEAN
+		do
+			Result := testing_session_type = testing_session_type_all_classes
+		end
+
+	is_starting_fixing_after_each_testing_session: BOOLEAN
+		do
+			Result := start_fixing_type = start_fixing_type_after_each_testing_session
+		end
+
+	is_starting_fixing_after_all_testing_sessions: BOOLEAN
+		do
+			Result := start_fixing_type = start_fixing_type_after_all_testing_sessions
+		end
+
+	is_starting_fixing_manually: BOOLEAN
+		do
+			Result := start_fixing_type = start_fixing_type_manually
 		end
 
 feature -- Primitive config values
@@ -51,6 +81,8 @@ feature -- Primitive config values
 	should_use_fixed_seed_in_testing: BOOLEAN
 
 	fixed_seed: INTEGER
+
+	start_fixing_type: INTEGER
 
 	max_session_length_for_fixing: INTEGER
 
@@ -100,6 +132,11 @@ feature -- Config value validity
 	is_valid_testing_session_type (a_val: INTEGER): BOOLEAN
 		do
 			Result := Testing_session_type_one_class <= a_val and then a_val <= Testing_session_type_all_classes
+		end
+
+	is_valid_start_fixing_type (a_type: INTEGER): BOOLEAN
+		do
+			Result := start_fixing_type_after_each_testing_session <= a_type and then a_type <= start_fixing_type_manually
 		end
 
 feature -- Classes and groups to debug
@@ -314,6 +351,13 @@ feature -- Set others
 			fixed_seed := a_seed
 		end
 
+	set_start_fixing_type (a_type: INTEGER)
+		require
+			is_valid_start_fixing_type (a_type)
+		do
+			start_fixing_type := a_type
+		end
+
 	set_max_session_length_for_fixing (a_val: INTEGER)
 		require
 			is_valid_max_session_length (a_val)
@@ -403,6 +447,7 @@ feature -- Default values
 			max_session_length_for_testing := default_max_session_length_for_testing
 			should_use_fixed_seed_in_testing := default_should_use_fixed_seed_in_testing
 			fixed_seed := default_fixed_seed
+			start_fixing_type := default_start_fixing_type
 			max_session_length_for_fixing := default_max_session_length_for_fixing
 			max_nbr_fix_candidates := default_max_nbr_fix_candidates
 			should_fix_implementation := default_should_fix_implementation
@@ -532,6 +577,10 @@ feature{NONE} -- Load and save implementation
 						if l_value.is_integer then
 							set_fixed_seed (l_value.to_integer)
 						end
+					elseif l_head ~ str_start_fixing then
+						if l_value.is_integer then
+							set_start_fixing_type (l_value.to_integer)
+						end
 					elseif l_head ~ str_max_session_length_for_fixing then
 						if l_value.is_integer and then is_valid_max_session_length (l_value.to_integer) then
 							set_max_session_length_for_fixing (l_value.to_integer)
@@ -634,6 +683,11 @@ feature{NONE} -- Load and save implementation
 				l_content.append (str_fixed_seed)
 				l_content.append_character (key_value_separator)
 				l_content.append (fixed_seed.out)
+				l_content.append_character ('%N')
+
+				l_content.append (str_start_fixing)
+				l_content.append_character (key_value_separator)
+				l_content.append (start_fixing_type.out)
 				l_content.append_character ('%N')
 
 				l_content.append (str_max_session_length_for_fixing)
@@ -780,6 +834,7 @@ feature -- Constant
 	str_max_session_length_for_testing: STRING = "max.session.length.for.testing"
 	str_should_usg_fixed_seed_in_testing: STRING = "should.use.fixed.seed.in.testing"
 	str_fixed_seed: STRING = "fixed.seed"
+	str_start_fixing: STRING = "start.fixing"
 	str_max_session_length_for_fixing: STRING = "max.session.length.for.fixing"
 	str_max_nbr_fix_candidates: STRING = "max.nbr.fix.candidates"
 	str_should_fix_implementation: STRING = "should.fix.implementation"
@@ -799,12 +854,17 @@ feature -- Constant
 	Testing_session_type_one_group: INTEGER = 2
 	Testing_session_type_all_classes: INTEGER = 3
 
+	Start_fixing_type_after_each_testing_session: INTEGER = 1
+	Start_fixing_type_after_all_testing_sessions: INTEGER = 2
+	Start_fixing_type_manually: INTEGER = 3
+
 	key_value_separator: CHARACTER = ':'
 	group_separator: CHARACTER = ';'
 	group_member_separator: CHARACTER = ','
 	group_member_type_value_separator: CHARACTER = ':'
 
 	default_testing_session_type: INTEGER = 2
+	default_start_fixing_type: INTEGER = 1
 	default_max_session_length_for_testing: INTEGER = 10
 	default_should_use_fixed_seed_in_testing: BOOLEAN = False
 	default_fixed_seed: INTEGER = 0

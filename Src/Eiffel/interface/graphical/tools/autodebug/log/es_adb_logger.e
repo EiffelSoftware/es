@@ -34,6 +34,10 @@ feature -- Setter
 		do
 			l_root_dir := info_center.config.working_directory.root_dir
 			create log_file.make_with_path (l_root_dir.extended (log_file_name))
+			if not log_file.exists then
+				log_file.open_write
+				log_file.close
+			end
 			log_file.open_append
 		end
 
@@ -57,6 +61,24 @@ feature -- Setter
 		end
 
 feature -- Logging
+
+	ensured_log (a_msg: STRING)
+			-- Ensure `a_msg' is logged.
+			-- Open the log file if not already, and restore the file state after logging.
+		require
+			a_msg /= Void
+		local
+			l_was_logging: BOOLEAN
+		do
+			l_was_logging := is_logging
+			if not l_was_logging then
+				start_logging
+			end
+			log (a_msg)
+			if not l_was_logging then
+				stop_logging
+			end
+		end
 
 	log (a_msg: STRING)
 			-- Log `a_msg'.
@@ -86,13 +108,11 @@ feature -- ADB Action
 	on_project_loaded
 			-- <Precursor>
 		do
-			start_logging
 		end
 
 	on_project_unloaded
 			-- <Precursor>
 		do
-			stop_logging
 		end
 
 	on_compile_start
@@ -108,11 +128,13 @@ feature -- ADB Action
 	on_debugging_start
 			-- <Precursor>
 		do
+			start_logging
 		end
 
 	on_debugging_stop
 			-- <Precursor>
 		do
+			stop_logging
 		end
 
 	on_testing_start
@@ -143,11 +165,13 @@ feature -- ADB Action
 	on_continuation_debugging_start
 			-- <Precursor>
 		do
+			start_logging
 		end
 
 	on_continuation_debugging_stop
 			-- <Precursor>
 		do
+			stop_logging
 		end
 
 	on_valid_fix_found (a_fix: ES_ADB_FIX)

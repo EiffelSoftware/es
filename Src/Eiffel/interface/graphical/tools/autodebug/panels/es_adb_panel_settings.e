@@ -70,6 +70,7 @@ feature{NONE} -- Update UI
 				evtext_testing_cutoff_time.enable_sensitive
 				evtext_testing_seed.enable_sensitive
 				evcheckbutton_testing_use_fixed_seed.enable_sensitive
+				evcombo_start_fixing_type.enable_sensitive
 				evtext_fixing_cutoff_time.enable_sensitive
 				evtext_fixing_number_of_fixes.enable_sensitive
 				evcheckbutton_fixing_contracts.enable_sensitive
@@ -90,6 +91,7 @@ feature{NONE} -- Update UI
 				evtext_testing_cutoff_time.disable_sensitive
 				evtext_testing_seed.disable_sensitive
 				evcheckbutton_testing_use_fixed_seed.disable_sensitive
+				evcombo_start_fixing_type.disable_sensitive
 				evtext_fixing_cutoff_time.disable_sensitive
 				evtext_fixing_number_of_fixes.disable_sensitive
 				evcheckbutton_fixing_contracts.disable_sensitive
@@ -481,8 +483,10 @@ feature{NONE} -- Action implementation
 						until
 							l_cursor.after
 						loop
-							create l_detail_item.make_with_text (l_cursor.item.name_in_upper)
-							evlist_classes_in_group.force (l_detail_item)
+							if l_cursor.item /= Void then
+								create l_detail_item.make_with_text (l_cursor.item.name_in_upper)
+								evlist_classes_in_group.force (l_detail_item)
+							end
 							l_cursor.forth
 						end
 					end
@@ -542,12 +546,12 @@ feature{NONE} -- UI/Config sync
 
 			evtext_working_directory.set_text (l_config.working_directory.root_dir.out)
 
-			if l_config.testing_session_type = {ES_ADB_CONFIG}.testing_session_type_one_class then
-				evcombo_testing_session_type.set_text (combobox_text_one_class)
-			elseif l_config.testing_session_type = {ES_ADB_CONFIG}.testing_session_type_one_group then
-				evcombo_testing_session_type.set_text (combobox_text_one_group)
-			elseif l_config.testing_session_type = {ES_ADB_CONFIG}.testing_session_type_all_classes then
-				evcombo_testing_session_type.set_text (combobox_text_all_classes)
+			if l_config.is_each_session_testing_one_class then
+				evcombo_testing_session_type.set_text (combobox_text_test_session_type_one_class)
+			elseif l_config.is_each_session_testing_one_group then
+				evcombo_testing_session_type.set_text (combobox_text_test_session_type_one_group)
+			elseif l_config.is_each_session_testing_all_classes then
+				evcombo_testing_session_type.set_text (combobox_text_test_session_type_all_classes)
 			end
 
 			evtext_testing_cutoff_time.set_text (l_config.max_session_length_for_testing.out)
@@ -558,6 +562,14 @@ feature{NONE} -- UI/Config sync
 			else
 				evcheckbutton_testing_use_fixed_seed.disable_select
 				evtext_testing_seed.disable_sensitive
+			end
+
+			if l_config.is_starting_fixing_after_each_testing_session then
+				evcombo_start_fixing_type.set_text (combobox_text_start_fixing_type_after_each_testing_session)
+			elseif l_config.is_starting_fixing_after_all_testing_sessions then
+				evcombo_start_fixing_type.set_text (combobox_text_start_fixing_type_after_all_testing_sessions)
+			elseif l_config.is_starting_fixing_manually then
+				evcombo_start_fixing_type.set_text (combobox_text_start_fixing_type_manually)
 			end
 
 			evtext_fixing_cutoff_time.set_text (l_config.max_session_length_for_fixing.out)
@@ -582,6 +594,7 @@ feature{NONE} -- UI/Config sync
 			l_config: like config
 			l_working_dir: ES_ADB_WORKING_DIRECTORY
 			l_testing_session_type_str: STRING
+			l_start_fixing_type_str: STRING
 		do
 			l_config := config
 
@@ -589,16 +602,24 @@ feature{NONE} -- UI/Config sync
 			create l_working_dir.make (create {PATH}.make_from_string (evtext_working_directory.text))
 			l_config.set_working_directory (l_working_dir)
 			l_testing_session_type_str := evcombo_testing_session_type.text
-			if l_testing_session_type_str ~ Combobox_text_one_class then
-				config.set_testing_session_type (1)
-			elseif l_testing_session_type_str ~ Combobox_text_one_group then
-				config.set_testing_session_type (2)
-			elseif l_testing_session_type_str ~ Combobox_text_all_classes then
-				config.set_testing_session_type (3)
+			if l_testing_session_type_str ~ combobox_text_test_session_type_one_class then
+				config.set_testing_session_type ({ES_ADB_CONFIG}.Testing_session_type_one_class)
+			elseif l_testing_session_type_str ~ combobox_text_test_session_type_one_group then
+				config.set_testing_session_type ({ES_ADB_CONFIG}.Testing_session_type_one_group)
+			elseif l_testing_session_type_str ~ combobox_text_test_session_type_all_classes then
+				config.set_testing_session_type ({ES_ADB_CONFIG}.Testing_session_type_all_classes)
 			end
 			l_config.set_max_session_length_for_testing (evtext_testing_cutoff_time.text.to_integer)
 			l_config.set_use_fixed_seed_in_testing (evcheckbutton_testing_use_fixed_seed.is_selected)
 			l_config.set_fixed_seed (evtext_testing_seed.text.to_integer)
+			l_start_fixing_type_str := evcombo_start_fixing_type.text
+			if l_start_fixing_type_str ~ combobox_text_start_fixing_type_after_each_testing_session then
+				config.set_start_fixing_type ({ES_ADB_CONFIG}.start_fixing_type_after_each_testing_session)
+			elseif l_start_fixing_type_str ~ combobox_text_start_fixing_type_after_all_testing_sessions then
+				config.set_start_fixing_type ({ES_ADB_CONFIG}.start_fixing_type_after_all_testing_sessions)
+			elseif l_start_fixing_type_str ~ combobox_text_start_fixing_type_manually then
+				config.set_start_fixing_type ({ES_ADB_CONFIG}.start_fixing_type_manually)
+			end
 			l_config.set_max_session_length_for_fixing (evtext_fixing_cutoff_time.text.to_integer)
 			l_config.set_max_nbr_fix_candidates (evtext_fixing_number_of_fixes.text.to_integer)
 			l_config.set_fix_implementation (evcheckbutton_fixing_implementation.is_selected)

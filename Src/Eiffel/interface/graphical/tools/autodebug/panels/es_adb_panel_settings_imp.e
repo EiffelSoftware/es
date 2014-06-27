@@ -98,8 +98,7 @@ feature {NONE} -- Initialization
 			l_internal_h_box.disable_item_expand (evbutton_browse)
 			l_internal_v_box.extend (l_internal_h_box)
 			l_internal_v_box.disable_item_expand (l_internal_h_box)
---			create evcheckbutton_debug_class_by_class.make_with_text (checkbutton_text_test_classes_in_groups)
---			l_internal_v_box.extend (evcheckbutton_debug_class_by_class)
+
 			create l_frame.make_with_text (Frame_text_general)
 			l_frame.set_border_width ({ES_UI_CONSTANTS}.frame_border)
 			l_frame.extend (l_internal_v_box)
@@ -129,9 +128,9 @@ feature {NONE} -- Initialization
 			create l_label.make_with_text (Label_text_each_session_tests)
 			l_label.align_text_left
 			l_internal_h_box.extend (l_label)
-			create evcombo_testing_session_type.make_with_strings (<<Combobox_text_one_class, Combobox_text_one_group, Combobox_text_all_classes>>)
+			create evcombo_testing_session_type.make_with_strings (<<combobox_text_test_session_type_one_class, combobox_text_test_session_type_one_group, combobox_text_test_session_type_all_classes>>)
 			evcombo_testing_session_type.disable_edit
-			evcombo_testing_session_type.set_minimum_width (150)
+			evcombo_testing_session_type.set_minimum_width (200)
 			l_internal_h_box.extend (evcombo_testing_session_type)
 			l_internal_h_box.disable_item_expand (evcombo_testing_session_type)
 			l_internal_v_box.extend (l_internal_h_box)
@@ -158,6 +157,19 @@ feature {NONE} -- Initialization
 					-- Fixing
 			create l_internal_v_box
 			l_internal_v_box.set_padding ({ES_UI_CONSTANTS}.vertical_padding)
+
+			create l_internal_h_box
+			l_internal_h_box.set_padding ({ES_UI_CONSTANTS}.horizontal_padding)
+			create l_label.make_with_text (Label_text_start_fixing)
+			l_label.align_text_left
+			l_internal_h_box.extend (l_label)
+			create evcombo_start_fixing_type.make_with_strings (<<Combobox_text_start_fixing_type_after_each_testing_session, Combobox_text_start_fixing_type_after_all_testing_sessions, Combobox_text_start_fixing_type_manually>>)
+			evcombo_start_fixing_type.disable_edit
+			evcombo_start_fixing_type.set_minimum_width (200)
+			l_internal_h_box.extend (evcombo_start_fixing_type)
+			l_internal_h_box.disable_item_expand (evcombo_start_fixing_type)
+			l_internal_v_box.extend (l_internal_h_box)
+			l_internal_v_box.disable_item_expand (l_internal_h_box)
 
 			create l_internal_h_box
 			l_internal_h_box.set_padding ({ES_UI_CONSTANTS}.horizontal_padding)
@@ -332,8 +344,6 @@ feature -- GUI elements
 
 	evbutton_browse: EV_BUTTON
 
-	evcheckbutton_debug_class_by_class: EV_CHECK_BUTTON
-
 	evtext_testing_cutoff_time: EV_TEXT_FIELD
 
 	evcombo_testing_session_type: EV_COMBO_BOX
@@ -341,6 +351,8 @@ feature -- GUI elements
 	evcheckbutton_testing_use_fixed_seed: EV_CHECK_BUTTON
 
 	evtext_testing_seed: EV_TEXT_FIELD
+
+	evcombo_start_fixing_type: EV_COMBO_BOX
 
 	evtext_fixing_cutoff_time: EV_TEXT_FIELD
 

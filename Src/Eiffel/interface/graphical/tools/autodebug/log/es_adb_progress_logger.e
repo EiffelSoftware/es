@@ -52,11 +52,17 @@ feature -- Action
 
 	on_valid_fix_found (a_fix: ES_ADB_FIX)
 			-- <Precursor>
+		local
+			l_msg: STRING
 		do
-			log_line ({AFX_PROXY_LOGGER}.msg_valid_fix_start)
-			log_line (a_fix.fix_summary)
-			log_line (a_fix.code_after_fix)
-			log_line ({AFX_PROXY_LOGGER}.msg_valid_fix_end)
+			create l_msg.make (256)
+			l_msg.append ({AFX_PROXY_LOGGER}.msg_valid_fix_start + "%N")
+			l_msg.append (a_fix.fix_summary + "%N")
+			if attached {ES_ADB_FIX_AUTOMATIC} a_fix as lt_fix then
+				l_msg.append (lt_fix.fix_text +"%N")
+			end
+			l_msg.append ({AFX_PROXY_LOGGER}.msg_valid_fix_end + "%N")
+			log (l_msg)
 		end
 
 	on_fixing_stop
@@ -66,10 +72,14 @@ feature -- Action
 
 	on_fix_applied (a_fix: ES_ADB_FIX)
 			-- <Precursor>
+		local
+			l_msg: STRING
 		do
-			log (Msg_fix_applied)
-			log ("FaultID:" + a_fix.fault.signature.id + ";")
-			log_line ("FixID:" + a_fix.fix_id_string + ";")
+			create l_msg.make (256)
+			l_msg.append (Msg_fix_applied)
+			l_msg.append ("FaultID:" + a_fix.fault.signature.id + ";")
+			l_msg.append ("FixID:" + a_fix.fix_id_string + ";%N")
+			ensured_log (l_msg)
 		end
 
 feature -- Operatoin
@@ -104,6 +114,7 @@ feature -- Operatoin
 
 							l_parser.parse (l_line)
 						end
+						l_file.close
 					end
 				end
 				is_loading := False

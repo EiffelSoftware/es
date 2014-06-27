@@ -128,6 +128,7 @@ feature -- ADB Actions
 			-- <Precursor>
 		do
 			enable_command_invocation_widget (True)
+			update_has_to_be_attempted
 		end
 
 	on_testing_start

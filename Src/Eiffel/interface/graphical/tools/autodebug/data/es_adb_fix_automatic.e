@@ -24,6 +24,9 @@ feature -- Access
 	fix_id_string: STRING
 			-- <Precursor>
 
+	fix_text: STRING
+			-- Content of the fix in text.
+
 	has_been_applied: BOOLEAN
 			-- <Precursor>
 

@@ -38,7 +38,7 @@ feature{NONE} -- Initialization
 		do
 			make_automatic (a_fault, a_id_string)
 
-			fixed_feature_body := a_fixed_body.twin
+			fix_text := a_fixed_body.twin
 			set_nature_of_change (nature_of_change_from_string (a_nature_str))
 			has_change_to_implementation := True
 			has_change_to_contract := False
@@ -79,7 +79,7 @@ feature -- Access
 			if code_after_fix_internal = Void then
 				l_parser := entity_feature_parser
 				l_parser.set_syntax_version (l_parser.transitional_syntax)
-				l_parser.parse_from_utf8_string ("feature " + fixed_feature_body, Void)
+				l_parser.parse_from_utf8_string ("feature " + fix_text, Void)
 				code_after_fix_internal := feature_as_to_string (l_parser.feature_node)
 			end
 			Result := code_after_fix_internal
@@ -145,12 +145,13 @@ feature -- Operation
 					l_new_class_content := l_class_as.text (l_match_list)
 
 						-- Write new content to file.
-					create l_class_file.make_with_path (a_path)
---					l_class_file.open_write
---					if l_class_file.is_open_write then
---						l_class_file.put_string (l_new_class_content)
---						l_class_file.close
---					end
+--					create l_class_file.make_with_path (a_path)
+					create l_class_file.make_with_name (a_path.out + ".afx")
+					l_class_file.open_write
+					if l_class_file.is_open_write then
+						l_class_file.put_string (l_new_class_content)
+						l_class_file.close
+					end
 
 					set_has_been_applied
 				end
@@ -180,9 +181,6 @@ feature -- Query
 		end
 
 feature{NONE} -- Implementation
-
-	fixed_feature_body: STRING
-			-- Text of the feature body after fixing.
 
 	Roundtrip_eiffel_parser: EIFFEL_PARSER
 			-- Shared instance of roundtrip parser

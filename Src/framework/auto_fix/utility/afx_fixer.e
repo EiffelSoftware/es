@@ -248,6 +248,7 @@ feature{NONE} -- Implementation
 				create Result.make_default
 			end
 			l_feature_contract_remover.undo_last_removal
+			compile_project (Eiffel_project, True)
 
 			event_actions.notify_on_weakest_contract_inference_finished (a_feature_to_relax)
 		end
@@ -324,6 +325,7 @@ feature{NONE} -- Implementation
 
 					-- Restore the preconditions.
 				l_feature_contract_remover.undo_last_removal
+				compile_project (Eiffel_project, True)
 
 					-- Validate fixes w.r.t. the observed traces.
 				a_contract_fixes.do_all (

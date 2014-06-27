@@ -64,24 +64,25 @@ feature -- Operation
 			else
 				l_process := sub_task
 				if attached {ES_ADB_REGULAR_TESTING_PROCESS} l_process as lt_regular_testing_process then
-						-- Fix the faults found during `sub_task'.
-					l_relaxed_testing_and_fixing_tasks := relaxed_testing_and_fixing_tasks_for_faults_in_classes (lt_regular_testing_process.classes)
-					tasks.append_first (l_relaxed_testing_and_fixing_tasks)
-					if not tasks.is_empty then
-						sub_task := tasks.first
-						tasks.remove_first
-					else
-						sub_task := Void
-						wrap_up
+					if info_center.config.is_starting_fixing_after_each_testing_session then
+							-- Fix the faults found during `sub_task'.
+						l_relaxed_testing_and_fixing_tasks := relaxed_testing_and_fixing_tasks_for_faults_in_classes (lt_regular_testing_process.classes)
+						tasks.append_first (l_relaxed_testing_and_fixing_tasks)
+					elseif info_center.config.is_starting_fixing_after_all_testing_sessions and then tasks.is_empty then
+							-- Fix the faults found during ALL testing sessions.
+						l_relaxed_testing_and_fixing_tasks := relaxed_testing_and_fixing_tasks_for_faults_in_classes (info_center.config.all_classes)
+						tasks.append_first (l_relaxed_testing_and_fixing_tasks)
+					elseif info_center.config.is_starting_fixing_manually then
+							-- Do nothing.
 					end
+				end
+
+				if tasks.is_empty then
+					sub_task := Void
+					wrap_up
 				else
-					if tasks.is_empty then
-						sub_task := Void
-						wrap_up
-					else
-						sub_task := tasks.first
-						tasks.remove_first
-					end
+					sub_task := tasks.first
+					tasks.remove_first
 				end
 			end
 		end

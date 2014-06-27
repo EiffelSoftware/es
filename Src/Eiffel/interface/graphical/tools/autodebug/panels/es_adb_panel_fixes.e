@@ -294,12 +294,13 @@ feature -- GUI actions
 
 	on_row_select (a_row: EV_GRID_ROW)
 			-- Action to perform when `a_row' is selected.
+		local
+			l_should_enable_apply: BOOLEAN
 		do
 			if attached {ES_ADB_FIX} a_row.data as lt_fix then
 				show_diff (lt_fix)
-				if not tool_panel.is_external_process_running and then not lt_fix.fault.is_fixed and then attached {ES_ADB_FIX_IMPLEMENTATION} lt_fix then
-					enable_command_invocation_widget (True)
-				end
+				l_should_enable_apply := not tool_panel.is_external_process_running and then not lt_fix.fault.is_fixed and then attached {ES_ADB_FIX_AUTOMATIC} lt_fix
+				enable_command_invocation_widget (l_should_enable_apply)
 			end
 		end
 
@@ -307,9 +308,7 @@ feature -- GUI actions
 			-- Action to perform when `a_row' is deselected.
 		do
 			clear_diff
-			if not tool_panel.is_external_process_running then
-				enable_command_invocation_widget (False)
-			end
+			enable_command_invocation_widget (False)
 		end
 
 feature{NONE} -- Access

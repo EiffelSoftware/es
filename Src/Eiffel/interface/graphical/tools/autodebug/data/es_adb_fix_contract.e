@@ -92,11 +92,6 @@ feature -- Operation
 			fault.is_candidate_fix_accepted
 		end
 
-feature{NONE} -- Access implementation
-
-	fix_text: STRING
-			-- Text of current, as it is printed out.
-
 feature{NONE} -- Initialization implementation
 
 	initialize_code_before_and_after_fix

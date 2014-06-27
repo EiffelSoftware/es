@@ -117,7 +117,7 @@ feature -- Basic operation
 				until
 					l_signature_id_cursor.after or else current_failing_test_signature /= Void
 				loop
-					if l_signature_id_cursor.item ~ lt_id then
+					if l_signature_id_cursor.item.id ~ lt_id then
 						current_failing_test_signature := l_signature_id_cursor.item
 					end
 					l_signature_id_cursor.forth

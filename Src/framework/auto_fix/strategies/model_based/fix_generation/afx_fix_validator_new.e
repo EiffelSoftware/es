@@ -65,6 +65,7 @@ feature -- Basic operation
 				end
 
 				l_instrumentor.uninstrument
+				compile_project (eiffel_project, True)
 			end
 		end
 

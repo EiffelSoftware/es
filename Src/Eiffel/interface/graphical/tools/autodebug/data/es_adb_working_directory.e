@@ -149,7 +149,7 @@ feature -- Operation
 			if not l_dir.exists then
 				l_dir.recursive_create_dir
 			end
-			l_dir.recursive_delete
+			l_dir.delete_content
 		end
 
 feature{NONE} -- Cache
