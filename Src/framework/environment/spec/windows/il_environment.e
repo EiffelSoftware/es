@@ -287,29 +287,41 @@ feature {NONE} -- Implementation
 		end
 
 	sdk_key_paths: ARRAYED_LIST [STRING_32]
-			-- List of keys associated to each known version of the .NET runtime from version 4.0
+			-- List of keys associated to each known version of the .NET runtime from version 4.0 or greater.
+			-- See http://en.wikipedia.org/wiki/Microsoft_Windows_SDK#Versions for details on various versions.
 		require
 			version_valid: version.count >= 4
 		local
 			l_path: STRING_32
+			l_major, l_minor: CHARACTER_32
+			l_list: ARRAYED_LIST [STRING_32]
 		do
-			create Result.make (2)
+			create Result.make (256)
+				-- Extract major and minor version from `version' which follows the pattern `vM.N'.
+			l_major := version.item (2)
+			l_minor := version.item (4)
+				-- Create list of known SDKs
+			create l_list.make (8)
+			l_list.extend ({STRING_32} "v8.1A")	-- VS 2013
+			l_list.extend ({STRING_32} "v8.1")	-- WSDK Windows 8.1
+			l_list.extend ({STRING_32} "v8.0A")	-- VS 2012
+			l_list.extend ({STRING_32} "v8.0")	-- WSDK Windows 8 and .NET 4.5
+			l_list.extend ({STRING_32} "v7.1A")	-- VS 2012 Update 1
+			l_list.extend ({STRING_32} "v7.1")	-- WSDK Windows 7 and .NET 4.0
+			l_list.extend ({STRING_32} "v7.0A")	-- VS 2010
+			l_list.extend ({STRING_32} "v7.0")	-- WSDK Windows 7 and .NET 3.5 SP1
 
-			create l_path.make_from_string_general ("hkey_local_machine\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v7.1\WinSDK-NetFx")
-				-- Major version
-			l_path.append_character (version.item (2))
-				-- Minor version
-			l_path.append_character (version.item (4))
-			l_path.append_string_general ("Tools")
-			Result.extend (l_path)
-
-			create l_path.make_from_string_general ("hkey_local_machine\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v7.0A\WinSDK-NetFx")
-				-- Major version
-			l_path.append_character (version.item (2))
-				-- Minor version
-			l_path.append_character (version.item (4))
-			l_path.append_string_general ("Tools")
-			Result.extend (l_path)
+			across l_list as l_sdk loop
+				create l_path.make_from_string_general ("hkey_local_machine\SOFTWARE\Microsoft\Microsoft SDKs\Windows\")
+				l_path.append_string (l_sdk.item)
+				l_path.append_string ("\WinSDK-NetFx")
+				l_path.append_character (l_major)
+				l_path.append_character (l_minor)
+				l_path.append_string_general ("Tools")
+					-- In recent versions we see also the "-x64" or "-x86" appearing but
+					-- just using the one without the suffix picks up the right binaries for our purpose.
+				Result.extend (l_path)
+			end
 		end
 
 	dotnet_runtime_path: detachable PATH
@@ -353,9 +365,11 @@ feature {NONE} -- Constants
 
 invariant
 	version_not_void: version /= Void
+	version_valid: version.count >= 4 and then (version.item (1) = 'v' and version.item (2).is_digit and
+		version.item (3) = '.' and version.item (4).is_digit)
 
 note
-	copyright: "Copyright (c) 1984-2013, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

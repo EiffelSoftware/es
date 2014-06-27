@@ -6028,6 +6028,7 @@ Src/web/support/database/mssql/db_store_procedure_sql2000.sql -text
 Src/web/support/database/mssql/db_store_procedures.sql -text svneol=unset#application/octet-stream
 Src/web/support/database/mssql/db_tables.sql -text svneol=unset#application/octet-stream
 Src/web/support/database/mssql/db_tables_sql2000.sql -text
+Src/web/support/database/mssql/db_update.sql -text
 Src/web/support/database/mssql/db_user.sql -text svneol=unset#application/octet-stream
 Src/web/support/database/mssql/db_user_defined_functions.sql -text svneol=unset#application/octet-stream
 Src/web/support/database/mssql/db_user_df_sql2000.sql -text
@@ -6043,6 +6044,7 @@ Src/web/support/esa_api/esa_folder/www/css/dashboard.css -text
 Src/web/support/esa_api/esa_folder/www/doc/cj_doc.html svneol=native#text/xml
 Src/web/support/esa_api/esa_folder/www/doc/esa_api_state_machine.png -text
 Src/web/support/esa_api/esa_folder/www/doc/esa_doc.html svneol=native#text/xml
+Src/web/support/esa_api/esa_folder/www/doc/howto.html svneol=native#text/xml
 Src/web/support/esa_api/esa_folder/www/js/auth.js -text
 Src/web/support/esa_api/esa_folder/www/js/docs.js -text
 Src/web/support/esa_api/esa_folder/www/js/enable.js -text
@@ -6091,6 +6093,7 @@ Src/web/support/esa_api/esa_folder/www/template/html/confirmation.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/html/dashboard.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/html/guest_report_detail.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/html/guest_reports.tpl -text
+Src/web/support/esa_api/esa_folder/www/template/html/head.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/html/home.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/html/interaction_form.tpl -text
 Src/web/support/esa_api/esa_folder/www/template/html/interaction_form_confirm.tpl -text
@@ -6245,6 +6248,8 @@ eweasel/tests/agent010/Ace -text
 eweasel/tests/anchor077/Ace svneol=native#text/xml
 eweasel/tests/anchor078/Ace svneol=native#text/xml
 eweasel/tests/anchor079/Ace svneol=native#text/xml
+eweasel/tests/anchor080/Ace svneol=native#text/xml
+eweasel/tests/anchor081/Ace svneol=native#text/xml
 eweasel/tests/attach010/Ace2 -text
 eweasel/tests/attach011/Ace -text
 eweasel/tests/attach019/Ace -text
@@ -6319,6 +6324,47 @@ eweasel/tests/ccomp050/notes -text
 eweasel/tests/ccomp051/notes -text
 eweasel/tests/ccomp052/notes -text
 eweasel/tests/ccomp074/Ace -text
+eweasel/tests/codeanalysis001/Ace -text
+eweasel/tests/codeanalysis001/notes -text
+eweasel/tests/codeanalysis001/test.e -text svneol=native#unset
+eweasel/tests/codeanalysis002/Ace -text
+eweasel/tests/codeanalysis002/alldisabled.xml -text
+eweasel/tests/codeanalysis002/notes -text
+eweasel/tests/codeanalysis002/test.e -text svneol=native#unset
+eweasel/tests/codeanalysis003/Ace -text
+eweasel/tests/codeanalysis003/notes -text
+eweasel/tests/codeanalysis003/test.e -text svneol=native#unset
+eweasel/tests/codeanalysis004/Ace -text
+eweasel/tests/codeanalysis004/notes -text
+eweasel/tests/codeanalysis004/test.e -text svneol=native#unset
+eweasel/tests/codeanalysis005/Ace -text
+eweasel/tests/codeanalysis005/notes -text
+eweasel/tests/codeanalysis006/Ace -text
+eweasel/tests/codeanalysis006/notes -text
+eweasel/tests/codeanalysis007/Ace -text
+eweasel/tests/codeanalysis007/notes -text
+eweasel/tests/codeanalysis008/Ace -text svneol=native#unset
+eweasel/tests/codeanalysis008/notes -text
+eweasel/tests/codeanalysis009/Ace -text svneol=native#unset
+eweasel/tests/codeanalysis009/notes -text
+eweasel/tests/codeanalysis010/Ace -text svneol=native#unset
+eweasel/tests/codeanalysis010/notes -text
+eweasel/tests/codeanalysis011/Ace -text svneol=native#unset
+eweasel/tests/codeanalysis011/notes -text
+eweasel/tests/codeanalysis012/Ace -text svneol=native#unset
+eweasel/tests/codeanalysis012/notes -text
+eweasel/tests/codeanalysis013/Ace -text svneol=native#unset
+eweasel/tests/codeanalysis013/notes -text
+eweasel/tests/codeanalysis014/Ace -text svneol=native#unset
+eweasel/tests/codeanalysis014/notes -text
+eweasel/tests/codeanalysis015/Ace -text svneol=native#unset
+eweasel/tests/codeanalysis015/notes -text
+eweasel/tests/codeanalysis016/Ace -text svneol=native#unset
+eweasel/tests/codeanalysis016/notes -text
+eweasel/tests/codeanalysis017/Ace -text svneol=native#unset
+eweasel/tests/codeanalysis017/notes -text
+eweasel/tests/codeanalysis018/Ace -text svneol=native#unset
+eweasel/tests/codeanalysis018/notes -text
 eweasel/tests/config036/Ace svneol=native#text/xml
 eweasel/tests/config036/eweasel.ecf svneol=native#text/xml
 eweasel/tests/config038/Ace svneol=native#text/xml
@@ -7415,6 +7461,10 @@ eweasel/tests/valid160/notes -text
 eweasel/tests/valid240/Ace_safe -text
 eweasel/tests/valid256/Ace -text
 eweasel/tests/valid280/Ace svneol=native#text/xml
+eweasel/tests/valid281/Ace svneol=native#text/xml
+eweasel/tests/valid282/Ace svneol=native#text/xml
+eweasel/tests/valid283/Ace svneol=native#text/xml
+eweasel/tests/valid284/Ace svneol=native#text/xml
 eweasel/tests/vd01001/file -text
 eweasel/tests/vd10001/weasel -text
 eweasel/tests/vd13001/weasel -text

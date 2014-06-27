@@ -12,10 +12,10 @@ inherit
 		rename
 			make as cl_make
 		redefine
-			generics, valid_generic, parent_type, dump, ext_append_to, formal_instantiation_in,
+			generics, valid_generic, parent_type, dump, ext_append_to,
 			has_like, has_like_argument, has_like_current, is_loose, duplicate, good_generics,
 			error_generics, check_constraints, has_formal_generic, formal_instantiated_in,
-			instantiated_in,
+			instantiated_in, recomputed_in,
 			has_expanded, internal_is_valid_for_class, expanded_deferred, valid_expanded_creation,
 			same_as, is_equivalent, description, description_with_detachable_type, instantiated_description, is_explicit,
 			deep_actual_type, context_free_type, instantiation_in, has_actual,
@@ -1086,7 +1086,7 @@ feature -- Primitives
 			end
 		end
 
-	formal_instantiation_in (type: TYPE_A; constraint: TYPE_A; written_id: INTEGER): GEN_TYPE_A
+	recomputed_in (target_type: TYPE_A; context_id: INTEGER; constraint: TYPE_A; written_id: INTEGER): like Current
 			-- <Precursor>
 		local
 			i: INTEGER
@@ -1103,7 +1103,7 @@ feature -- Primitives
 				i <= 0
 			loop
 				old_type := old_generics.i_th (i)
-				new_type := old_type.formal_instantiation_in (type, constraint, written_id)
+				new_type := old_type.recomputed_in (target_type, context_id, constraint, written_id)
 				if new_type /= old_type then
 						-- Record a new type of a generic parameter.
 					if new_generics = Void then

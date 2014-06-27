@@ -1,13 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-     {include file="optional_styling_css.tpl"/}   
-  </head>
+
+  {include file="head.tpl"/}     
 
   <body>
      {include file="navbar.tpl"/}  
@@ -15,7 +9,7 @@
     <div class="container" itemscope itemtype="{$host/}/profile/esa_api.xml">
         <div class="main">
           <form class="form-horizontal well" id="registerHere" method='POST' action='{$host/}/confirm_email' itemprop="update">
-            <legend>Confirm Email</legend>
+            <legend><>Confirm Email</legend>
             {unless isset="$has_error"}
             <div class="form-group">
                 <label class="control-label col-xs-2" for="inputToken" itemprop="token">Token:</label>

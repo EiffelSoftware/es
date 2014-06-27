@@ -1,24 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-     {include file="optional_styling_css.tpl"/}     
-  </head>
+
+  {include file="head.tpl"/}     
 
   <body>
      {include file="navbar.tpl"/}  
 
     <div class="container" itemscope itemtype="{$host/}/profile/esa_api.xml">
           <div class="main">
-          <form class="form-horizontal well" id="registerHere" method='POST' action='{$host/}/register' itemprop="create">
+          <form class="form-horizontal well" data-rel="register" id="registerHere" method='POST' action='{$host/}/register' itemprop="create">
             <fieldset>
 
-              <legend>Registration</legend>
-
+              <legend><h1>Registration</h1></legend>
+              <p>Register yourself with Eiffel's web site, it's quick and free. 
+              Once registered you will be able to access download and report problems via our support web page.
+              An activation code will be sent to the email address below for verification.</p> 
               <div class="form-group">
                 <label class="control-label col-xs-3" itemprop="first_name" >First Name</label>
                  <div class="col-xs-9">
@@ -63,9 +59,9 @@
               </div>
 
                <div class="form-group">
-                 <label class="control-label col-xs-3" for="input01" itemprop="security_question">Choose a security question</label>
+                 <label class="control-label col-xs-3" for="input01">Choose a security question</label>
                  <div class="col-xs-9">
-                   <select  data-style="btn-primary" name="question" >
+                   <select  data-style="btn-primary" itemprop="security_question" name="question" >
                     {foreach from="$questions" item="item"}
                       {if condition="$item.id = $view.selected_question"} 
                         <option value="{$item.id/}" selected>{$item.question/}</option>
