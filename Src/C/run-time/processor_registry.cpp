@@ -67,7 +67,10 @@ processor_registry::create_fresh (void* obj)
   spid_t pid = 0;
   processor *proc;
 
-  bool success = free_pids.dequeue (pid);
+#ifndef NDEBUG
+  bool success = 
+#endif
+  free_pids.dequeue (pid);
   assert (success & "There were no available PIDs");
 
   proc = new processor(pid, false);
