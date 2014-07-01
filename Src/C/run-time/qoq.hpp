@@ -102,7 +102,7 @@ public:
   bool
   is_empty()
   {
-    return tail_->next == 0;
+    return (void *) tail_->next == (void *) 0;
   }
 
 private:
