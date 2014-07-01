@@ -31,7 +31,7 @@
 #include <stdarg.h>
 #include <cassert>
 
-std::atomic<int> active_count = ATOMIC_VAR_INIT (0);
+std::atomic_int active_count = ATOMIC_VAR_INIT (0);
 
 processor::processor(spid_t _pid,
                      bool _has_backing_thread) :
@@ -77,7 +77,9 @@ processor::try_call (call_data *call)
       RTXD;
       RTXI(0);
 
+#ifndef WORKBENCH
       exvect = exft();
+#endif
 
       saved_except = RTLA;
       exvect->ex_jbuf = &exenv;
