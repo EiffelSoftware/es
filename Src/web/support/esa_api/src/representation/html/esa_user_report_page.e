@@ -32,6 +32,7 @@ feature {NONE} --Initialization
 			set_template_folder (html_path)
 			set_template_file_name ("user_reports.tpl")
 			template.add_value (a_host, "host")
+			template.add_value (a_view, "view")
 			template.add_value (a_view.reports.at (1), "statistics")
 			template.add_value (a_view.reports.at (2), "reports")
 			template.add_value (a_view.categories, "categories")
@@ -43,14 +44,16 @@ feature {NONE} --Initialization
 			template.add_value (a_view.direction,"dir")
 			template.add_value (a_view.size, "size")
 			if a_view.index > 1 then
-				template.add_value (a_view.index-1 , "prev")
+				template.add_value (a_view.index - 1 , "prev")
 			end
 			if a_view.index < a_view.pages then
-				template.add_value (a_view.index+1, "next")
+				template.add_value (a_view.index + 1, "next")
 			end
 			template.add_value (a_view.pages + 1, "last")
 
-		 	template.add_value (a_view.user,"user")
+		 	template.add_value (a_view.user, "user")
+			template.add_value (a_view.pages + 1, "pages")
+
 
 			template_context.enable_verbose
 			template.analyze
