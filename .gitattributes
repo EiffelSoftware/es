@@ -5295,11 +5295,11 @@ Src/web/support/esa_api/esa_folder/www/images/priority_medium.gif -text
 Src/web/support/esa_api/esa_folder/www/images/severity_critical.gif -text
 Src/web/support/esa_api/esa_folder/www/images/severity_non-critical.gif -text
 Src/web/support/esa_api/esa_folder/www/images/severity_serious.gif -text
-Src/web/support/esa_api/esa_folder/www/images/status_Won't[!!-~]fix.gif -text
-Src/web/support/esa_api/esa_folder/www/images/status_analyzed.gif -text
-Src/web/support/esa_api/esa_folder/www/images/status_closed.gif -text
-Src/web/support/esa_api/esa_folder/www/images/status_open.gif -text
-Src/web/support/esa_api/esa_folder/www/images/status_suspended.gif -text
+Src/web/support/esa_api/esa_folder/www/images/status_1.gif -text
+Src/web/support/esa_api/esa_folder/www/images/status_2.gif -text
+Src/web/support/esa_api/esa_folder/www/images/status_3.gif -text
+Src/web/support/esa_api/esa_folder/www/images/status_4.gif -text
+Src/web/support/esa_api/esa_folder/www/images/status_5.gif -text
 Src/web/support/esa_api/esa_folder/www/images/up.gif -text
 Src/web/support/esa_api/esa_folder/www/js/esa_api_util.js -text
 Src/web/support/esa_api/esa_folder/www/profile/esa_api.xml svneol=native#text/xml
