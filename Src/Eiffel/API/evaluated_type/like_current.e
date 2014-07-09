@@ -14,12 +14,12 @@ inherit
 			actual_type, deep_actual_type, context_free_type,
 			base_class, associated_class_type, internal_conform_to, conformance_type, convert_to,
 			generics, has_associated_class, has_associated_class_type, formal_instantiated_in,
-			instantiated_in, duplicate, set_separate_mark,
+			instantiated_in, duplicate, set_separate_mark, recomputed_in,
 			is_basic, is_expanded, is_external, is_like_current, is_none, is_reference, is_ephemeral,
 			meta_type, set_actual_type, evaluated_type_in_descendant, is_tuple,
 			set_attached_mark, set_detachable_mark, set_is_implicitly_attached,
 			unset_is_implicitly_attached, description, description_with_detachable_type,
-			c_type, is_explicit, formal_instantiation_in, is_implicitly_attached, is_attached,
+			c_type, is_explicit, is_implicitly_attached, is_attached,
 			generated_id, generate_cid, generate_cid_array, generate_cid_init,
 			make_type_byte_code, generate_gen_type_il, internal_is_valid_for_class,
 			maximum_interval_value, minimum_interval_value, is_optimized_as_frozen,
@@ -518,11 +518,11 @@ feature {COMPILER_EXPORTER} -- Duplication
 
 feature {COMPILER_EXPORTER} -- Primitives
 
-	formal_instantiation_in (type: TYPE_A; constraint: TYPE_A; written_id: INTEGER): TYPE_A
+	recomputed_in (target_type: TYPE_A; context_id: INTEGER; constraint: TYPE_A; written_id: INTEGER): TYPE_A
 			-- <Precursor>
 		do
 				-- Use original type.
-			Result := instantiation_in (type, written_id)
+			Result := instantiation_in (target_type, written_id)
 		end
 
 	instantiation_in (type: TYPE_A; written_id: INTEGER): TYPE_A

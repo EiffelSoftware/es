@@ -1534,7 +1534,8 @@ feature {NONE} -- Implementation
 							if
 								l_actual_count /= l_formal_count and then not is_agent and then not l_is_in_assignment and then
 								l_formal_count > 0 and then
-								l_feature.arguments.i_th (l_formal_count).formal_instantiation_in (l_last_type.as_implicitly_detachable, l_last_constrained.as_implicitly_detachable, l_last_id).actual_type.is_tuple
+								l_feature.arguments.i_th (l_formal_count).recomputed_in
+									(l_last_type.as_implicitly_detachable, l_context_current_class.class_id, l_last_constrained.as_implicitly_detachable, l_last_id).actual_type.is_tuple
 							then
 									-- The list of actual arguments may be adapted to the list of formal arguments.
 								if l_actual_count > l_formal_count and then l_formal_count > 0 then
@@ -1628,7 +1629,7 @@ feature {NONE} -- Implementation
 										-- Check if an actual type of the last actual argument is compatible with a formal type of that argument.
 									if
 										attached argument_compatibility_error (a_type, l_last_constrained, l_actual_count, l_arg_types, l_feature, l_parameters [l_actual_count].start_location) and then
-										l_feature.arguments.i_th (l_formal_count).formal_instantiation_in (l_last_type.as_implicitly_detachable, l_last_constrained.as_implicitly_detachable, l_last_id).actual_type.is_tuple
+										l_feature.arguments.i_th (l_formal_count).recomputed_in (l_last_type.as_implicitly_detachable, l_context_current_class.class_id, l_last_constrained.as_implicitly_detachable, l_last_id).actual_type.is_tuple
 									then
 											-- Actual and formal types of the last argument are not compatible.
 											-- Try to wrap last argument in a tuple.
@@ -1668,7 +1669,7 @@ feature {NONE} -- Implementation
 										l_formal_arg_type := l_feature.arguments.i_th (i)
 
 											-- Actual formal type of feature argument.
-										l_formal_arg_type := l_formal_arg_type.formal_instantiation_in (l_last_type.as_implicitly_detachable, l_last_constrained.as_implicitly_detachable, l_last_id).actual_type
+										l_formal_arg_type := l_formal_arg_type.recomputed_in (l_last_type.as_implicitly_detachable, l_context_current_class.class_id, l_last_constrained.as_implicitly_detachable, l_last_id).actual_type
 
 											-- check if `l_formal_arg_type' involves some generics whose actuals
 											-- are marked `variant'. Only do this when `is_inherited' is false, since
@@ -1772,7 +1773,11 @@ feature {NONE} -- Implementation
 
 								-- Get the type of Current feature.
 							l_result_type := l_feature.type
-							l_result_type := l_result_type.formal_instantiation_in (l_last_type.as_implicitly_detachable, l_last_constrained.as_implicitly_detachable, l_last_id)
+							l_result_type := l_result_type.recomputed_in
+								(l_last_type.as_implicitly_detachable,
+								l_context_current_class.class_id,
+								l_last_constrained.as_implicitly_detachable,
+								l_last_id)
 								-- Adapted type in case it is a formal generic parameter or a like.
 							if l_arg_types /= Void then
 								l_pure_result_type := l_result_type
@@ -1990,11 +1995,16 @@ feature {NONE} -- Implementation
 									-- Feature is not found.
 								if not is_target_known then
 										-- Unknown target.
+										-- Lookup for a feature in a set of possible types.
 									if attached {LOCAL_TYPE_A} a_type.actual_type as t and then
 										attached t.feature_call (a_name.name_id, context.current_class) as f
 									then
-											-- Lookup for a feature in a set of possible types.
-										l_result_type := f.descriptor.type.formal_instantiation_in (f.target.as_implicitly_detachable, f.site.as_implicitly_detachable, context.current_class.class_id)
+											-- For the use of `f.site.class_id' see test#anchor086.
+										l_result_type := f.descriptor.type.recomputed_in
+											(f.target.as_implicitly_detachable,
+											l_context_current_class.class_id,
+											f.site.as_implicitly_detachable,
+											f.site.class_id)
 										if attached l_arg_types then
 											l_result_type := l_result_type.actual_argument_type (l_arg_types)
 										end
@@ -2109,7 +2119,7 @@ feature {NONE} -- Type checks
 			end
 
 				-- Adapted formal type of a feature argument.
-			formal_type := formal_type.formal_instantiation_in (actual_target_type.as_implicitly_detachable, target_base_type.as_implicitly_detachable, target_base_class_id).actual_type
+			formal_type := formal_type.recomputed_in (actual_target_type.as_implicitly_detachable, current_class.class_id, target_base_type.as_implicitly_detachable, target_base_class_id).actual_type
 
 			warning_count := error_handler.warning_list.count
 			if not formal_type.backward_conform_to (current_class, actual_type) then
@@ -4539,8 +4549,9 @@ feature {NONE} -- Visitor
 									-- We inherited this feature.
 								if last_alias_error = Void then
 									l_feature_type := l_prefix_feature.type
-									l_feature_type := l_prefix_feature.type.formal_instantiation_in
+									l_feature_type := l_prefix_feature.type.recomputed_in
 										(last_type.as_implicitly_detachable,
+										l_context_current_class.class_id,
 										l_last_constrained.as_implicitly_detachable,
 										l_last_class.class_id).actual_type
 									if 	l_last_feature_type = Void then
@@ -4652,13 +4663,19 @@ feature {NONE} -- Visitor
 									l_prefix_feature_type := l_last_constrained
 								else
 										-- Usual case
-									l_prefix_feature_type := l_prefix_feature_type.formal_instantiation_in
-													(last_type.as_implicitly_detachable, l_last_constrained.as_implicitly_detachable, l_last_class.class_id).actual_type
+									l_prefix_feature_type := l_prefix_feature_type.recomputed_in
+										(last_type.as_implicitly_detachable,
+										l_context_current_class.class_id,
+										l_last_constrained.as_implicitly_detachable,
+										l_last_class.class_id).actual_type
 								end
 							else
 									-- Usual case
-								l_prefix_feature_type := l_prefix_feature_type.formal_instantiation_in
-												(last_type.as_implicitly_detachable, l_last_constrained.as_implicitly_detachable, l_last_class.class_id).actual_type
+								l_prefix_feature_type := l_prefix_feature_type.recomputed_in
+									(last_type.as_implicitly_detachable,
+									l_context_current_class.class_id,
+									l_last_constrained.as_implicitly_detachable,
+									l_last_class.class_id).actual_type
 							end
 							if l_is_assigner_call then
 								process_assigner_command (last_type, l_last_constrained, l_prefix_feature)
@@ -4915,7 +4932,11 @@ feature {NONE} -- Visitor
 										-- We inherited this feature.
 									if l_error = Void then
 										l_feature_type := last_alias_feature.type
-										l_feature_type := l_feature_type.formal_instantiation_in (l_left_type.as_implicitly_detachable, l_left_constrained.as_implicitly_detachable, l_class.class_id)
+										l_feature_type := l_feature_type.recomputed_in
+											(l_left_type.as_implicitly_detachable,
+											l_context_current_class.class_id,
+											l_left_constrained.as_implicitly_detachable,
+											l_class.class_id)
 										if l_feature_type.has_like_argument then
 											create l_arg_types.make (1)
 											l_arg_types.extend (l_right_type)
@@ -5048,7 +5069,11 @@ feature {NONE} -- Visitor
 
 								-- Update the type stack: instantiate result type of the
 								-- infixed feature
-							l_infix_type := last_alias_feature.type.formal_instantiation_in (l_target_type.as_implicitly_detachable, l_left_constrained.as_implicitly_detachable, l_left_id)
+							l_infix_type := last_alias_feature.type.recomputed_in
+								(l_target_type.as_implicitly_detachable,
+								l_context_current_class.class_id,
+								l_left_constrained.as_implicitly_detachable,
+								l_left_id)
 							if l_infix_type.has_like_argument then
 								create l_arg_types.make (1)
 								l_arg_types.extend (l_right_type)
@@ -9344,7 +9369,7 @@ feature {NONE} -- Implementation
 						-- Conformance initialization
 						-- Argument conformance: infix feature must have one argument
 					l_arg_type := a_feature.arguments.i_th (1)
-					l_arg_type := l_arg_type.formal_instantiation_in (a_left_type.as_implicitly_detachable,
+					l_arg_type := l_arg_type.recomputed_in (a_left_type.as_implicitly_detachable, context.current_class.class_id,
 						a_left_constrained.as_implicitly_detachable, a_context_class.class_id).actual_type
 
 					if not l_arg_type.backward_conform_to (context.current_class, a_right_type) then
@@ -9515,7 +9540,7 @@ feature {NONE} -- Implementation
 		require
 			a_source_type_not_void: a_source_type /= Void
 			a_target_type_not_void: a_target_type /= Void
-			type_conforms: not a_for_conversion implies a_source_type.conform_to (context.current_class, a_target_type)
+			type_conforms: not a_for_conversion implies a_target_type.backward_conform_to (context.current_class, a_source_type)
 		do
 			if a_target_type.actual_type.has_frozen_mark then
 				if a_source_type.actual_type.is_none then
@@ -9566,8 +9591,10 @@ feature {NONE} -- Implementation
 					if not is_inherited then
 						context.supplier_ids.extend_depend_unit_with_level (l_target_class_id, l_assigner_command, depend_unit_level)
 					end
-					l_type := l_assigner_command.arguments.i_th (1).formal_instantiation_in (
-						a_target_type.as_implicitly_detachable, a_target_constrained_type.as_implicitly_detachable,
+					l_type := l_assigner_command.arguments.i_th (1).recomputed_in (
+						a_target_type.as_implicitly_detachable,
+						context.current_class.class_id,
+						a_target_constrained_type.as_implicitly_detachable,
 						l_target_class_id).actual_type
 				end
 				last_assigner_command := l_assigner_command
@@ -10954,8 +10981,7 @@ feature {NONE} -- Implementation: checking locals
 								-- Check an expanded local type
 
 							if attached l_missing_type then
-									-- TODO: Add a new standard type descriptor for "detachable separate ANY".
-								l_local_info.set_type (create {LOCAL_TYPE_A}.make (i, system.any_type.as_detachable_type.as_separate, context.current_class))
+								l_local_info.set_type (create {LOCAL_TYPE_A}.make (i, system.detachable_separate_any_type, context.current_class))
 									-- Record an error for this local.
 								l_untyped_local := untyped_local
 								if not attached l_untyped_local then
