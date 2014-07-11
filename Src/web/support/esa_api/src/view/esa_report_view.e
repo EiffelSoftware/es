@@ -12,7 +12,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (a_reports: TUPLE[ESA_REPORT_STATISTICS,LIST[ESA_REPORT]]; a_index: INTEGER; a_pages: INTEGER; a_categories: LIST[ESA_REPORT_CATEGORY]; a_status: LIST[ESA_REPORT_STATUS]; a_user: detachable ANY)
+	make (a_reports: LIST[ESA_REPORT]; a_index: INTEGER; a_pages: INTEGER; a_categories: LIST[ESA_REPORT_CATEGORY]; a_status: LIST[ESA_REPORT_STATUS]; a_user: detachable ANY)
 			-- Create a new object with reports `a_reports'
 			-- current page `a_index'
 			-- number of pages `a_pages'
@@ -40,8 +40,8 @@ feature -- Access
 	id: detachable STRING
 		-- Report id.
 
-	reports: TUPLE[ESA_REPORT_STATISTICS,LIST[ESA_REPORT]]
-		-- Possible list of reports with their statistics.
+	reports: LIST[ESA_REPORT]
+		-- Possible list of reports.
 
 	index: INTEGER;
 		--  Current index.
@@ -93,6 +93,17 @@ feature -- Access
 
 	submitter: detachable STRING_32
 		-- User submit a problem.
+
+	filter: detachable STRING_32
+		-- Filter text to search by synopsis or descriptions.
+
+	filter_description: INTEGER
+		-- Is filter by description checked?
+		-- 1: yes, 0: no.
+
+	filter_synopsis: INTEGER
+		-- Is filter by synopsis checked?
+		-- 1: yes, 0: no.
 
 feature -- Change Element
 
@@ -190,6 +201,31 @@ feature -- Change Element
 			submitter := a_submitter
 		ensure
 			submitter_set: submitter = a_submitter
+		end
+
+	set_filter (a_filter: like filter)
+			-- Set `filter' to `a_filter'.
+		do
+			filter := a_filter
+		ensure
+			filter_set: filter = a_filter
+		end
+
+	set_filter_description (a_filter_description: like filter_description)
+			-- Set `filter_description' to `a_filter_description'.
+		do
+			filter_description := a_filter_description
+		ensure
+			filter_description_set: filter_description = a_filter_description
+		end
+
+
+	set_filter_synopsis (a_filter_synopsis: like filter_synopsis)
+			-- Set `filter_synopsis' to `a_filter_synopsis'.
+		do
+			filter_synopsis := a_filter_synopsis
+		ensure
+			filter_synopsis_set: filter_synopsis = a_filter_synopsis
 		end
 
 end

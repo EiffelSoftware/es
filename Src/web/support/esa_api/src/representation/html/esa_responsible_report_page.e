@@ -23,13 +23,13 @@ feature {NONE} --Initialization
 			tpl_inspector: TEMPLATE_INSPECTOR
 		do
 
+			log.write_information (generator + ".make render template: user_responsible_reports.tpl")
 			create {ESA_REPORT_STATUS_TEMPLATE_INSPECTOR} tpl_inspector.register (({detachable ESA_REPORT_STATUS}).out)
 
 			set_template_folder (html_path)
 			set_template_file_name ("user_responsible_reports.tpl")
 			template.add_value (a_host, "host")
-			template.add_value (a_view.reports.at (1), "statistics")
-			template.add_value (a_view.reports.at (2), "reports")
+			template.add_value (a_view.reports, "reports")
 			template.add_value (a_view.responsibles, "responsibles")
 			template.add_value (a_view.categories, "categories")
 			template.add_value (a_view.priorities, "priorities")
@@ -39,6 +39,18 @@ feature {NONE} --Initialization
 			template.add_value (retrieve_status_query (a_view.status),"status_query")
 			template.add_value (a_view.index, "index")
 			template.add_value (a_view.size, "size")
+
+			if attached a_view.filter as l_filter then
+				template.add_value (l_filter, "filter")
+			end
+
+			if a_view.filter_description = 1 then
+				template.add_value (a_view.filter_description, "filter_description")
+			end
+
+			if a_view.filter_synopsis = 1 then
+				template.add_value (a_view.filter_synopsis, "filter_synopsis")
+			end
 
 			if
 				attached a_view.submitter as l_submitter and then
@@ -65,7 +77,9 @@ feature {NONE} --Initialization
 			template.get_output
 			if attached template.output as l_output then
 				representation := l_output
-				log.write_debug (generator + ".make " + l_output)
+				debug
+					log.write_debug (generator + ".make " + l_output)
+				end
 			end
 		end
 

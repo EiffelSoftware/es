@@ -14,7 +14,7 @@
 	    <input type="hidden" name="host" value="{$host/}">
              <div class="controls">
                 <button type="button" class="btn btn-primary" onclick="login();">Sign in</button>
-                <input type="reset" class="btn btn-default" value="Reset"></p> <img src="{$host/}/images/ajax-loader.gif" style="display: none;" id="imgProgress" />
+                <input type="reset" class="btn btn-default" value="Reset"></p> <img src="{$host/}/static/images/ajax-loader.gif" style="display: none;" id="imgProgress" />
              </div>   
           </form>
       </div>
@@ -49,7 +49,7 @@
      </div>
     <div class="navbar-collapse collapse" itemscope="itemscope" itemtype="{$host/}/profile/esa_api.xml#report" >
       <ul class="nav navbar-nav navbar-left">
-           <li><a href="{$host/}/reports" itemprop="all" rel="all">Reports</a></li>
+           <li><a href="{$host/}/reports" class="active" itemprop="all" rel="all">Reports</a></li>
             {if isset="$user"}
                  <li><a href="{$host/}/user_reports/{$user/}" itemprop="all_user" rel="all_user">My Reports</a></li>
                  <li><a href="{$host/}/report_form" itemprop="create_report_problem" rel="create_report_problem">Report a Problem</a></li>

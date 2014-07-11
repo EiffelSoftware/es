@@ -15,22 +15,32 @@ inherit
 			dispatch_anchors,
 			error_generics,
 			evaluated_type_in_descendant,
-			good_generics, internal_is_valid_for_class,
+			generate_cid,
+			generate_cid_array,
+			generate_cid_init,
+			good_generics,
 			has_formal_generic,
 			has_like,
 			initialize_info,
+			internal_is_valid_for_class,
 			formal_instantiated_in,
 			instantiated_in,
 			instantiation_in,
 			is_explicit,
 			is_loose,
 			is_syntactically_equal,
+			make_type_byte_code,
 			recomputed_in,
 			skeleton_adapted_in,
 			update_dependance
 		end
 
 	SHARED_NAMES_HEAP
+		export
+			{NONE} all
+		end
+
+	SHARED_TABLE
 		export
 			{NONE} all
 		end
@@ -181,6 +191,116 @@ feature -- Code generation
 			if q /= qualifier then
 				Result := duplicate
 				Result.set_qualifier (q)
+			end
+		end
+
+	generate_cid (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; a_context_type: TYPE_A)
+		do
+			generate_cid_prefix (buffer, Void)
+			if use_info then
+				initialize_info (shared_create_info)
+				shared_create_info.generate_cid (buffer, final_mode)
+			elseif attached buffer then
+					-- Traverse the feature chain generate qualified anchored types, so that for
+					--    {A}.b.c the generated code looks like
+					--    QUALIFIED_FEATURE_TYPE 2 A b c
+					-- Generate prefix.
+				buffer.put_hex_natural_16 ({SHARED_GEN_CONF_LEVEL}.qualified_feature_type)
+				buffer.put_character (',')
+				buffer.put_integer (chain.count)
+				buffer.put_character (',')
+					-- Generate qualifier.
+				qualifier.generate_cid (buffer, final_mode, use_info, a_context_type)
+					-- Generate routine IDs.
+				across
+					routine_id as r
+				loop
+					if system.in_final_mode then
+							-- Side effect. This is not nice but unavoidable.
+							-- Mark routine id used
+						Eiffel_table.mark_used_for_type (r.item)
+					end
+					buffer.put_integer_for_type_array (r.item)
+					buffer.put_character (',')
+				end
+			end
+		end
+
+	generate_cid_array (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; idx_cnt: COUNTER; a_context_type: TYPE_A)
+		do
+			generate_cid_prefix (buffer, idx_cnt)
+			if use_info then
+				initialize_info (shared_create_info)
+				shared_create_info.generate_cid_array (buffer, final_mode, idx_cnt)
+			else
+					-- Traverse the feature chain generate qualified anchored types, so that for
+					--    {A}.b.c the generated code looks like
+					--    QUALIFIED_FEATURE_TYPE 2 A b c
+					-- Generate prefix.
+				buffer.put_hex_natural_16 ({SHARED_GEN_CONF_LEVEL}.qualified_feature_type)
+				buffer.put_character (',')
+				buffer.put_integer (chain.count)
+				buffer.put_character (',')
+					-- Generate qualifier.
+				qualifier.generate_cid_array (buffer, final_mode, use_info, idx_cnt, a_context_type)
+					-- Generate routine IDs.
+				across
+					routine_id as r
+				loop
+					if system.in_final_mode then
+							-- Side effect. This is not nice but unavoidable.
+							-- Mark routine id used
+						Eiffel_table.mark_used_for_type (r.item)
+					end
+					buffer.put_integer_for_type_array (r.item)
+					buffer.put_character (',')
+					idx_cnt.next.do_nothing
+				end
+			end
+		end
+
+	generate_cid_init (buffer: GENERATION_BUFFER; final_mode, use_info: BOOLEAN; idx_cnt: COUNTER; a_context_type: TYPE_A; a_level: NATURAL)
+		do
+			generate_cid_prefix (Void, idx_cnt)
+			if use_info then
+				initialize_info (shared_create_info)
+				shared_create_info.generate_cid_init (buffer, final_mode, idx_cnt, a_level)
+			else
+					-- Traverse the feature chain generate qualified anchored types, so that for
+					--    {A}.b.c the generated code looks like
+					--    QUALIFIED_FEATURE_TYPE 2 A b c
+					-- Generate prefix.
+				idx_cnt.set_value (idx_cnt.value + 2)
+					-- Generate qualifier.
+				qualifier.generate_cid_init (buffer, final_mode, use_info, idx_cnt, a_context_type, a_level)
+					-- Generate routine IDs.
+				idx_cnt.set_value (idx_cnt.value + chain.count)
+			end
+		end
+
+	make_type_byte_code (ba: BYTE_ARRAY; use_info: BOOLEAN; a_context_type: TYPE_A)
+		do
+			make_type_prefix_byte_code (ba)
+			if use_info then
+				initialize_info (shared_create_info)
+				shared_create_info.make_type_byte_code (ba)
+			else
+					-- Traverse the feature chain generate qualified anchored types, so that for
+					--    {A}.b.c the generated code looks like
+					--    QUALIFIED_FEATURE_TYPE 2 A b c
+					-- Generate prefix.
+				ba.append_natural_16 ({SHARED_GEN_CONF_LEVEL}.qualified_feature_type)
+				ba.append_natural_16 (chain.count.to_natural_16)
+					-- Generate qualifier.
+				qualifier.make_type_byte_code (ba, False, a_context_type)
+					-- Generate routine IDs.
+				across
+					routine_id as r
+				loop
+						-- Note that we do not encode the INEGER_32 value into NATURAL_16 encoding
+						-- that type arrays are usually made of.
+					ba.append_integer_for_type_array (r.item)
+				end
 			end
 		end
 
@@ -467,8 +587,10 @@ feature {NONE} -- Recomputation in a different context
 				loop
 						-- Find a corresponding feature in the written type.
 					feature_finder.find_by_routine_id (routine_id [i], q, w)
-					check
-						is_feature_found: attached feature_finder.found_feature as f
+					if
+						attached feature_finder.found_feature as f and then
+						attached feature_finder.found_site as l_site and then
+						attached l_site.base_class as l_site_class
 					then
 						if f.feature_name_id /= c [i] then
 								-- New feature name is used.
@@ -479,7 +601,11 @@ feature {NONE} -- Recomputation in a different context
 							end
 							c [i] := f.feature_name_id
 						end
-						q := f.type.instantiated_in (q)
+						f.nested_check_types (l_site.base_class)
+						q := f.type.recomputed_in (q, new_class_id, l_site, l_site_class.class_id)
+					else
+							-- An internal compiler error occurred here.
+						check feature_found: False end
 					end
 					i := i + 1
 				end
