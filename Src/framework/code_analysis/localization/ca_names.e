@@ -18,6 +18,33 @@ feature -- General
 
 feature -- Rules
 
+	undesirable_comment_content_title: STRING_32
+		do Result := translation_in_context ("Undesirable comment content", once "code_analyzer") end
+
+	undesirable_comment_content_description: STRING_32
+		do Result := translation_in_context ("Under some circumstances it might be desirable to keep a certain%
+							% language level. Imaginable cases include source code that will be visible to people%
+							% outside the company or that will even be released publicly.", once "code_analyzer") end
+
+	case_sensitivity_option: STRING_32
+		do Result := translation_in_context ("Case Sensitivity", once "code_analyezer") end
+
+	case_sensitivity_option_description: STRING_32
+		do Result := translation_in_context ("Sets the case sensitivity of all the words in the word list.", once "code_analyzer") end
+
+	bad_words_list_option: STRING_32
+		do Result := translation_in_context ("List of undesirable words in comments", once "code_analyzer") end
+
+	bad_words_list_option_description: STRING_32
+		do Result := translation_in_context ("List of words to be checked for. Use a semicolon separated string of words, e.g.: word1;word2;word3", once "code_analyzer") end
+
+	inherit_from_any_title: STRING_32
+		do Result := translation_in_context ("Explicit inheritance from ANY", once "code_analyzer") end
+
+	inherit_from_any_description: STRING_32
+		do Result := translation_in_context ("Inheritance with no adaptations from the ANY class need not explicitely%
+						 	% be defined. This should be removed.", once "code_analyzer") end
+
 	self_assignment_title: STRING_32
 		do Result := translation_in_context ("Self-assignment", once "code_analyzer") end
 

@@ -99,6 +99,13 @@ feature -- Messages for both GUI and command line mode
 
 feature -- Rule Violations
 
+	inherit_from_any_violation_1: STRING_32
+		do Result := translation_in_context ("Class '", once "code_analyzer.violation") end
+
+	inherit_from_any_violation_2: STRING_32
+		do Result := translation_in_context ("' contains an explicit inheritance with no adaptation from the ANY class%N%
+									% which doesn't need to be defined.", once "code_analyzer.violation") end
+
 	self_assignment_violation_1: STRING_32
 		do Result := translation_in_context ("Variable '", once "code_analyzer.violation") end
 

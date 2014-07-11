@@ -71,6 +71,8 @@ feature {NONE} -- Initialization
 			add_rule (create {CA_EMPTY_RESCUE_CLAUSE_RULE}.make)
 			add_rule (create {CA_INSPECT_NO_WHEN_RULE}.make)
 			add_rule (create {CA_EXPLICIT_REDUNDANT_INHERITANCE_RULE}.make)
+			rules.extend (create {CA_UNDESIRABLE_COMMENT_CONTENT_RULE}.make (settings.preference_manager))
+			rules.extend (create {CA_INHERIT_FROM_ANY_RULE}.make)
 
 			settings.initialize_rule_settings (rules)
 
