@@ -5306,6 +5306,7 @@ Src/web/support/esa_api/esa_folder/www/static/images/up.gif -text
 Src/web/support/esa_api/esa_folder/www/static/profile/esa_api.xml svneol=native#text/xml
 Src/web/support/esa_api/esa_folder/www/static/profile/esa_html.html svneol=native#text/xml
 Src/web/support/esa_api/src/esa_template/logs/emails.logs -text
+Src/web/support/esa_core/esa_core.ecf svneol=native#text/xml
 Src/web/support/esa_db/scripts/AddUser2.sql -text
 Src/web/support/esa_db/scripts/GetProblemReportsGuest.sql -text
 Src/web/support/esa_db/scripts/GetProblemReportsRowCountGuest.sql -text
