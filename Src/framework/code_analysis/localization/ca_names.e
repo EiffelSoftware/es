@@ -18,6 +18,14 @@ feature -- General
 
 feature -- Rules
 
+	double_negation_title: STRING_32
+		do Result := translation_in_context ("Double negation", once "code_analyzer") end
+
+	double_negation_description: STRING_32
+		do Result := translation_in_context ("A double negation appearing in an expression can be safely removed.%
+							% It is also possible that the developer has intended to put a single negation and the%
+							% instruction is erroneous.", once "code_analyzer") end
+
 	undesirable_comment_content_title: STRING_32
 		do Result := translation_in_context ("Undesirable comment content", once "code_analyzer") end
 

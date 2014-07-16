@@ -99,6 +99,9 @@ feature -- Messages for both GUI and command line mode
 
 feature -- Rule Violations
 
+	double_negation_violation: STRING_32
+		do Result := translation_in_context ("Double negations in boolean expressions can be safely removed%Nto increase the readability of the code.", once "code_analyzer.violation") end
+
 	inherit_from_any_violation_1: STRING_32
 		do Result := translation_in_context ("Class '", once "code_analyzer.violation") end
 

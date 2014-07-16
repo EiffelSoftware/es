@@ -33,21 +33,42 @@ feature {NONE} -- Rule checking
 		-- Checks whether `a_class' inherits explicitly from ANY or not.
 		local
 			l_violation: CA_RULE_VIOLATION
+			l_found_any, l_found_adaptations: BOOLEAN
+			l_feature_name: FEATURE_NAME
 		do
---			if attached a_class.parents as l_parents then
---				across l_parents as p loop
---					if p.item.type.class_name.name_8.is_equal ("ANY") then
---						-- Explicit inheritance from ANY found
---						-- TODO Check if there are no adaptations and thus the inheritance really isn't needed
---						create l_violation.make_with_rule (Current)
---						l_violation.set_location (p.item.start_location)
---						l_violation.long_description_info.extend (a_class.class_name.name_8)
---						violations.extend (l_violation)
---					end
---				end
---			end
+			if attached a_class.parents as l_parents then
+				across l_parents as p loop
+					if p.item.type.class_name.name_8.is_equal ("ANY") then
+						-- Explicit inheritance from ANY found
+						if not has_changes(p.item) then
+							-- Inheritance from ANY has no adaptations to the class and is not needed.
+							create l_violation.make_with_rule (Current)
+							l_violation.set_location (p.item.start_location)
+							l_violation.long_description_info.extend (a_class.class_name.name_8)
+							violations.extend (l_violation)
+						end
+					end
+				end
+			end
 		end
 
+	has_adaptations_to_any (a_class: attached CLASS_AS): BOOLEAN
+		-- Does `a_class' (or one of its ancestors) have an explicit
+		-- inheritance to ANY with adaptations to it?
+		do
+			--Todo: Implement me.
+			Result := True
+		end
+
+	has_changes (a_parent: attached PARENT_AS): BOOLEAN
+		-- Does `a_parent' have any adaptations to it?
+		do
+			Result := attached a_parent.renaming or else
+				attached a_parent.undefining or else
+				attached a_parent.redefining or else
+				attached a_parent.selecting or else
+				attached a_parent.exports
+		end
 
 feature -- Properties
 
