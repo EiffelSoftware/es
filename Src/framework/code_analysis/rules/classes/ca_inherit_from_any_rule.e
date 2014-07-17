@@ -1,8 +1,12 @@
 note
-	description: "Summary description for {CA_INHERIT_FROM_ANY}."
+	description: "[
+			RULE #31: Explicit inheritance from ANY
+			
+			Inheritance with no adaptations from the ANY class need not explicitely be defined. This should be removed.
+		]"
 	author: "Samuel Schmid"
-	date: "Date"
-	revision: "1"
+	date: "$Date$"
+	revision: "$Revision$"
 
 class
 	CA_INHERIT_FROM_ANY_RULE

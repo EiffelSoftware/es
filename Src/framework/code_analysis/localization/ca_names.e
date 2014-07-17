@@ -18,6 +18,13 @@ feature -- General
 
 feature -- Rules
 
+	empty_loop_title: STRING_32
+		do Result := translation_in_context ("Empty loop", once "code_analyzer") end
+
+	empty_loop_description: STRING_32
+		do Result := translation_in_context ("A loop with an empty body should be removed.%
+							% In most cases the loop never exits.", once "code_analyzer") end
+
 	double_negation_title: STRING_32
 		do Result := translation_in_context ("Double negation", once "code_analyzer") end
 

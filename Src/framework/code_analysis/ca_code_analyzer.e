@@ -74,6 +74,7 @@ feature {NONE} -- Initialization
 			add_rule (create {CA_UNDESIRABLE_COMMENT_CONTENT_RULE}.make (settings.preference_manager))
 			add_rule (create {CA_INHERIT_FROM_ANY_RULE}.make)
 			add_rule (create {CA_DOUBLE_NEGATION_RULE}.make)
+			add_rule (create {CA_EMPTY_LOOP_RULE}.make)
 
 			settings.initialize_rule_settings (rules)
 
