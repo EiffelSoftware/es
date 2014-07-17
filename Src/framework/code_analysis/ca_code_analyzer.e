@@ -75,6 +75,7 @@ feature {NONE} -- Initialization
 			add_rule (create {CA_INHERIT_FROM_ANY_RULE}.make)
 			add_rule (create {CA_DOUBLE_NEGATION_RULE}.make)
 			add_rule (create {CA_EMPTY_LOOP_RULE}.make)
+			add_rule (create {CA_MISSING_CREATION_PROC_WITHOUT_ARGS_RULE}.make)
 
 			settings.initialize_rule_settings (rules)
 

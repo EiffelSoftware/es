@@ -18,6 +18,17 @@ feature -- General
 
 feature -- Rules
 
+	missing_creation_proc_without_args_title: STRING_32
+		do Result := translation_in_context ("Missing creation procedure with no arguments", once "code_analyzer") end
+
+	missing_creation_proc_without_args_description: STRING_32
+		do Result := translation_in_context ("In most of the cases a class that has at least one creation procedure%
+							% with arguments should also have a creation procedure with no arguments. Arguments of%
+							% creation procedures most often are some initializing data or options. Normally, one%
+							% should be able to create class with empty initializing data, where the client can set%
+							% or add the data later. For options, an argumentless creation procedure may assume%
+							% default values.", once "code_analyzer") end
+
 	empty_loop_title: STRING_32
 		do Result := translation_in_context ("Empty loop", once "code_analyzer") end
 

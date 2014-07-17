@@ -99,6 +99,14 @@ feature -- Messages for both GUI and command line mode
 
 feature -- Rule Violations
 
+	missing_creation_proc_without_args_violation_1: STRING_32
+		do Result := translation_in_context ("Class '", once "code_analyzer.violation") end
+
+	missing_creation_proc_without_args_violation_2: STRING_32
+		do Result := translation_in_context ("' has at least one%N creation procedure with arguments but%
+									% none without arguments.%NNormally, one should be able to create class%
+									% with empty initializing data,%Nwhere the client can set or add the data later.", once "code_analyzer.violation") end
+
 	empty_loop_violation: STRING_32
 		do Result := translation_in_context ("A loop with an empty body should be removed.%NIn most cases%
 									% the loop never exits.", once "code_analyzer.violation") end
