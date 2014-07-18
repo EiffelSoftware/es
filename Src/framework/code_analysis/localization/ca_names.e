@@ -18,6 +18,14 @@ feature -- General
 
 feature -- Rules
 
+	comment_not_well_phrased_title: STRING_32
+		do Result := translation_in_context ("Comment not well phrased", once "code_analyzer") end
+
+	comment_not_well_phrased_description: STRING_32
+		do Result := translation_in_context ("The comment does not end with a period or question mark.%
+							% This indicates that the comment is not well phrased. A comment should always%
+							% consist of whole sentences.", once "code_analyzer") end
+
 	missing_creation_proc_without_args_title: STRING_32
 		do Result := translation_in_context ("Missing creation procedure with no arguments", once "code_analyzer") end
 

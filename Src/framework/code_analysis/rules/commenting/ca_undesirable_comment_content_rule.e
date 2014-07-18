@@ -1,5 +1,13 @@
 note
-	description: "Summary description for {CA_UNDESIRABLE_COMMENT_CONTENT_RULE}."
+	description: "[
+			RULE #37: Undesirable comment content
+			
+			Under some circumstances it might be desirable
+			to keep a certain language level. Imaginable cases
+			include source code that will be visible to people
+			outside the company or that will even be released
+			publicly.
+		]"
 	author: "Samuel Schmid"
 	date: "$Date$"
 	revision: "$Revision$"
