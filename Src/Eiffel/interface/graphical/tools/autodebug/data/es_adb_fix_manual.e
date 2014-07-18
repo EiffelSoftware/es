@@ -24,6 +24,8 @@ feature -- Initialization
 			set_nature_of_change (Nature_manual)
 			set_ranking (Ranking_maximum)
 			type := Type_manual_fix
+
+			a_fault.add_fix (Current)
 		end
 
 feature -- Access

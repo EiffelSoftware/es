@@ -322,6 +322,14 @@ feature -- Operation
 
 feature -- Setter
 
+	manual_fix: ES_ADB_FIX_MANUAL
+			-- A manual fix for current.
+		do
+			create Result.make (Current, True, True)
+		ensure
+			Result /= Void
+		end
+
 	set_status (a_status: INTEGER)
 			-- Set `status' with `a_status'.
 		require

@@ -75,9 +75,16 @@ feature{NONE} -- Update GUI
 				else
 					evbutton_fix_selected.disable_sensitive
 				end
+
+				if attached {ES_ADB_FAULT} selected_fault_in_grid as lt_fault and then not lt_fault.is_fixed then
+					evbutton_mark_as_manually_fixed.enable_sensitive
+				else
+					evbutton_mark_as_manually_fixed.disable_sensitive
+				end
 			else
 				evbutton_fix_all_to_be_attempted.disable_sensitive
 				evbutton_fix_selected.disable_sensitive
+				evbutton_mark_as_manually_fixed.disable_sensitive
 			end
 		end
 
@@ -147,7 +154,7 @@ feature -- ADB Actions
 			l_row, l_row_for_feature, l_row_for_fault: EV_GRID_ROW
 			l_fault: ES_ADB_FAULT
 			l_was_row_visible, l_was_sub_row_visible: BOOLEAN
-			l_text: STRING
+			l_text, l_info: STRING
 			l_left_par_index, l_right_par_index: INTEGER
 			l_is_new_feature_row, l_is_new_fault_row: BOOLEAN
 		do
@@ -191,7 +198,6 @@ feature -- ADB Actions
 					create l_label_item.make_with_text ("0")
 					l_row_for_feature.set_item (column_fault, l_label_item)
 
---					create l_feature_under_test.make_from_names (l_signature.feature_under_test, l_signature.class_under_test)
 					create l_label_item.make_with_text (info_center.passing_test_case_count_for_feature (l_signature.class_and_feature_under_test).out)
 					l_row_for_feature.set_item (column_passing, l_label_item)
 
@@ -234,7 +240,9 @@ feature -- ADB Actions
 
 					l_row_for_fault.set_item (column_status, create {EV_GRID_LABEL_ITEM}.make_with_text (l_fault.status_string))
 
-					l_row_for_fault.set_item (column_info, create {EV_GRID_LABEL_ITEM}.make_with_text (l_signature.out))
+					l_info := l_signature.out
+					l_info.replace_substring_all ("%N", "; ")
+					l_row_for_fault.set_item (column_info, create {EV_GRID_LABEL_ITEM}.make_with_text (l_info))
 
 				end
 
@@ -259,19 +267,6 @@ feature -- ADB Actions
 						update_has_to_be_attempted
 					end
 				end
---				if is_fault_visible (l_fault) then
---					if l_is_new_fault_row then
---						l_row_for_fault.show
---					else
---						l_row_for_fault.hide
---					end
---				else
---					l_
---				end
---				if is_fault_visible (l_fault) then
-
---					update_feature_row (l_row_for_feature)
---				end
 			end
 		end
 
@@ -351,6 +346,25 @@ feature{NONE} -- ADB action implementation
 			end
 		end
 
+feature{ES_ADB_PANEL_FIXES} -- GUI actions
+
+	has_row_for_fault (a_fault: ES_ADB_FAULT): BOOLEAN
+			-- Has current a row associated with `a_fault'?
+		do
+			Result := fault_to_row_table.has (a_fault)
+		end
+
+	on_select_row (a_fault: ES_ADB_FAULT)
+			-- Select the row associated with `a_fault'.
+		require
+			has_row_for_fault (a_fault)
+		local
+			l_row: EV_GRID_ROW
+		do
+			l_row := fault_to_row_table.item (a_fault)
+			evgrid_faults.select_row (l_row.index)
+		end
+
 feature{NONE} -- GUI actions
 
 	register_event_handlers
@@ -372,6 +386,7 @@ feature{NONE} -- GUI actions
 
 			evbutton_fix_selected.select_actions.extend (agent on_fix_selected)
 			evbutton_fix_all_to_be_attempted.select_actions.extend (agent on_fix_all_to_be_attempted)
+			evbutton_mark_as_manually_fixed.select_actions.extend (agent on_mark_fault_as_manually_fixed)
 		end
 
 	on_row_selected (a_row: EV_GRID_ROW)
@@ -385,6 +400,11 @@ feature{NONE} -- GUI actions
 				else
 					evbutton_fix_selected.disable_sensitive
 				end
+				if attached {ES_ADB_FAULT} a_row.data as lt_fault and then not lt_fault.is_fixed then
+					evbutton_mark_as_manually_fixed.enable_sensitive
+				else
+					evbutton_mark_as_manually_fixed.disable_sensitive
+				end
 			end
 		end
 
@@ -392,18 +412,43 @@ feature{NONE} -- GUI actions
 			-- Action to perform when `a_row' is deselected.
 		do
 			evbutton_fix_selected.disable_sensitive
+			evbutton_mark_as_manually_fixed.disable_sensitive
 		end
 
 	on_grid_events_item_pointer_double_press (a_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; a_item: EV_GRID_ITEM)
 			-- Action to perform when user double press on the grid.
 		local
+			l_fixes_panel: ES_ADB_PANEL_FIXES
 		do
 			if a_item /= Void and then attached a_item.row as lt_row then
 				if attached {ES_ADB_FAULT} lt_row.data as lt_fault then
 					if not lt_fault.fixes.is_empty then
-						-- Switch to panel fix and show corresponding fixes.
+							-- Switch to panel fix and show corresponding fixes.
+						l_fixes_panel := tool_panel.fixes_panel
+						tool_panel.autodebug_notebook.select_item (l_fixes_panel)
+						if l_fixes_panel.has_row_for_fault (lt_fault) then
+							l_fixes_panel.on_select_row (lt_fault)
+						end
 					end
 				end
+			end
+		end
+
+	on_mark_fault_as_manually_fixed
+			-- Mark the currently selected fault as being manually fixed.
+		local
+			l_fault: ES_ADB_FAULT
+			l_manual_fix: ES_ADB_FIX_MANUAL
+			l_row: EV_GRID_ROW
+		do
+			l_fault := selected_fault_in_grid
+			if l_fault /= Void and then not l_fault.is_fixed then
+				l_row := fault_to_row_table.item (l_fault)
+				l_manual_fix := l_fault.manual_fix
+				info_center.on_valid_fix_found (l_manual_fix)
+				info_center.on_fix_applied (l_manual_fix)
+				evgrid_faults.select_row (l_row.index)
+				on_row_selected (l_row)
 			end
 		end
 

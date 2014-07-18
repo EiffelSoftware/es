@@ -172,10 +172,10 @@ feature -- Query
 		do
 			if nature_of_change_strings_internal = Void then
 				create nature_of_change_strings_internal.make_equal (10)
-				nature_of_change_strings_internal.force ("UnconditionalAdd", Nature_unconditional_add)
-				nature_of_change_strings_internal.force ("ConditionalAdd", Nature_conditional_add)
-				nature_of_change_strings_internal.force ("ConditionalExecute", Nature_conditional_execute)
-				nature_of_change_strings_internal.force ("ConditionalReplace", Nature_conditional_replace)
+				nature_of_change_strings_internal.force ("Unconditional add", Nature_unconditional_add)
+				nature_of_change_strings_internal.force ("Conditional add", Nature_conditional_add)
+				nature_of_change_strings_internal.force ("Conditional execute", Nature_conditional_execute)
+				nature_of_change_strings_internal.force ("Conditional replace", Nature_conditional_replace)
 			end
 			Result := nature_of_change_strings_internal
 		end

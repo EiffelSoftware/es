@@ -149,6 +149,7 @@ feature{NONE} -- Implementation
 			l_fix: ES_ADB_FIX
 			l_imp_fix: ES_ADB_FIX_IMPLEMENTATION
 			l_contract_fix: ES_ADB_FIX_CONTRACT
+			l_manual_fix: ES_ADB_FIX_MANUAL
 		do
 			l_fix_buffer := fix_buffer
 
@@ -159,7 +160,7 @@ feature{NONE} -- Implementation
 			if attached info_center.fault_signature_from_id (l_fault_signature_id) as lt_signature then
 				l_fault := info_center.fault_with_signature (lt_signature, False)
 
-					-- ExampleLine: -- FixInfo:Subject=Implementation;ID=Auto-174;Validity=True;Type=ConditionalAdd;
+					-- ExampleLine: -- FixInfo:Subject=Fix to implementation;ID=Auto-174;Validity=True;Type=Conditional add;
 				l_second_line_start := l_fix_buffer.index_of (':', l_first_line_end)
 				l_second_eol_index := l_fix_buffer.index_of (eol_character, l_second_line_start)
 				l_second_line := l_fix_buffer.substring (l_second_line_start + 1, l_second_eol_index - 1)
@@ -180,9 +181,12 @@ feature{NONE} -- Implementation
 				if l_fix_subject ~ {ES_ADB_FIX}.Type_implementation_fix then
 					create l_imp_fix.make (l_fault, l_fix_id_str, l_fix_text, l_fix_type, 0.0)
 					l_fix := l_imp_fix
-				else
+				elseif l_fix_subject ~ {ES_ADB_FIX}.type_contract_fix then
 					create l_contract_fix.make (l_fault, l_fix_id_str, l_fix_text, l_fix_type, 0.0)
 					l_fix := l_contract_fix
+				elseif l_fix_subject ~ {ES_ADB_FIX}.type_manual_fix then
+					create l_manual_fix.make (l_fault, True, True)
+					l_fix := l_manual_fix
 				end
 				info_center.on_valid_fix_found (l_fix)
 			end

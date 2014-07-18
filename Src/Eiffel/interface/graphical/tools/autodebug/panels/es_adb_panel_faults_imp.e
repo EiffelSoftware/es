@@ -110,10 +110,13 @@ feature{NONE} -- Initialization
 			l_h_box.extend (l_label)
 			create evbutton_fix_all_to_be_attempted.make_with_text (Button_text_fix_all)
 			create evbutton_fix_selected.make_with_text (button_text_fix_selected)
+			create evbutton_mark_as_manually_fixed.make_with_text (Button_text_mark_as_manually_fixed)
 			l_h_box.extend (evbutton_fix_all_to_be_attempted)
 			l_h_box.disable_item_expand (evbutton_fix_all_to_be_attempted)
 			l_h_box.extend (evbutton_fix_selected)
 			l_h_box.disable_item_expand (evbutton_fix_selected)
+			l_h_box.extend (evbutton_mark_as_manually_fixed)
+			l_h_box.disable_item_expand (evbutton_mark_as_manually_fixed)
 			extend (l_h_box)
 			disable_item_expand (l_h_box)
 
@@ -122,8 +125,8 @@ feature{NONE} -- Initialization
 feature{NONE} -- GUI elements
 
 	evbutton_fix_all_to_be_attempted: EV_BUTTON
-
 	evbutton_fix_selected: EV_BUTTON
+	evbutton_mark_as_manually_fixed: EV_BUTTON
 
 	evbutton_filter_by_approachability: EV_BUTTON
 	evbutton_filter_by_fixes: EV_BUTTON

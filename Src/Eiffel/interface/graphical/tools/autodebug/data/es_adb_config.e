@@ -470,14 +470,14 @@ feature -- Default values
 		require
 			project /= Void
 		do
-			Result := project.project_directory.data_path.extended ("AutoDebug")
+			Result := project.project_directory.data_path.extended ("AutoFix")
 		end
 
 	autodebug_config_path: PATH
 		require
 			project /= Void
 		do
-			Result := project.project_directory.location.extended ("AutoDebug.cfg")
+			Result := project.project_directory.location.extended ("AutoFix.cfg")
 		end
 
 feature -- Load and save
@@ -883,7 +883,7 @@ feature -- Constant
 	default_should_show_candidate_fix_accepted: BOOLEAN = True
 	default_should_show_manually_fixed: BOOLEAN = True
 
-	Max_session_length_for_relaxed_testing: INTEGER = 5
+	Max_session_length_for_relaxed_testing: INTEGER = 7
 	Max_session_overhead_length: INTEGER = 5
 
 

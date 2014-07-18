@@ -174,9 +174,9 @@ feature -- Setters
 
 feature -- Contant
 
-	Type_contract_fix: STRING = "FixToContract"
-	Type_implementation_fix: STRING = "FixToImplementation"
-	Type_manual_fix: STRING = "ManualFix"
+	Type_contract_fix: STRING = "Fix to contract"
+	Type_implementation_fix: STRING = "Fix to implementation"
+	Type_manual_fix: STRING = "Manual fix"
 
 	Nature_unknown: INTEGER = 0
 	Ranking_maximum: REAL = 100.0

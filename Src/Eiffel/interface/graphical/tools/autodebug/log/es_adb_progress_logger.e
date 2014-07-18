@@ -62,7 +62,7 @@ feature -- Action
 				l_msg.append (lt_fix.fix_text +"%N")
 			end
 			l_msg.append ({AFX_PROXY_LOGGER}.msg_valid_fix_end + "%N")
-			log (l_msg)
+			ensured_log (l_msg)
 		end
 
 	on_fixing_stop

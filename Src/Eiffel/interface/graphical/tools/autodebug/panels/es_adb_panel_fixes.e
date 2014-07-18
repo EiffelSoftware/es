@@ -195,7 +195,7 @@ feature -- ADB Actions
 				l_row_for_fault.set_item (column_fault, create {EV_GRID_LABEL_ITEM}.make_with_text (l_fault.signature.id))
 				l_row_for_fault.set_item (column_type, create {EV_GRID_LABEL_ITEM})
 				l_row_for_fault.set_item (Column_nature, create {EV_GRID_LABEL_ITEM})
-				l_row_for_fault.set_item (Column_is_proper, create {EV_GRID_LABEL_ITEM})
+--				l_row_for_fault.set_item (Column_is_proper, create {EV_GRID_LABEL_ITEM})
 				l_row_for_fault.set_item (Column_status, create {EV_GRID_LABEL_ITEM})
 				l_row_for_fault.show
 
@@ -214,9 +214,12 @@ feature -- ADB Actions
 			l_row_for_fix.set_item (column_fault, create {EV_GRID_LABEL_ITEM}.make_with_text (a_fix.fix_id_string))
 			l_row_for_fix.set_item (column_type, create {EV_GRID_LABEL_ITEM}.make_with_text (a_fix.type))
 			l_row_for_fix.set_item (column_nature, create {EV_GRID_LABEL_ITEM}.make_with_text (a_fix.nature_of_change_string))
-			l_row_for_fix.set_item (Column_is_proper, create {EV_GRID_LABEL_ITEM})
+--			l_row_for_fix.set_item (Column_is_proper, create {EV_GRID_LABEL_ITEM})
 			l_row_for_fix.set_item (column_status, create {EV_GRID_LABEL_ITEM})
 			l_row_for_fix.show
+
+			update_fix_status (a_fix)
+			update_fault_status (a_fix.fault)
 		end
 
 	on_fix_applied (a_fix: ES_ADB_FIX)
@@ -238,6 +241,8 @@ feature -- GUI actions
 		do
 			evgrid_fixes.row_select_actions.extend (agent on_row_select)
 			evgrid_fixes.row_deselect_actions.extend (agent on_row_deselect)
+			evgrid_fixes.pointer_double_press_item_actions.extend (agent on_grid_events_item_pointer_double_press)
+
 			evbutton_apply.select_actions.extend (agent on_apply)
 		end
 
@@ -292,6 +297,23 @@ feature -- GUI actions
 			end
 		end
 
+	on_grid_events_item_pointer_double_press (a_x: INTEGER_32; a_y: INTEGER_32; a_button: INTEGER_32; a_item: EV_GRID_ITEM)
+			-- Action to perform when user double press on the grid.
+		local
+			l_faults_panel: ES_ADB_PANEL_FAULTS
+		do
+			if a_item /= Void and then attached a_item.row as lt_row then
+				if attached {ES_ADB_FAULT} lt_row.data as lt_fault then
+						-- Switch to panel "faults" and select the corresponding row.
+					l_faults_panel := tool_panel.faults_panel
+					tool_panel.autodebug_notebook.select_item (l_faults_panel)
+					if l_faults_panel.has_row_for_fault (lt_fault) then
+						l_faults_panel.on_select_row (lt_fault)
+					end
+				end
+			end
+		end
+
 	on_row_select (a_row: EV_GRID_ROW)
 			-- Action to perform when `a_row' is selected.
 		local
@@ -309,6 +331,25 @@ feature -- GUI actions
 		do
 			clear_diff
 			enable_command_invocation_widget (False)
+		end
+
+feature{ES_ADB_PANEL_FAULTS} -- GUI actions
+
+	has_row_for_fault (a_fault: ES_ADB_FAULT): BOOLEAN
+			-- Has current a row associated with `a_fault'?
+		do
+			Result := fault_to_row_table.has (a_fault)
+		end
+
+	on_select_row (a_fault: ES_ADB_FAULT)
+			-- Select the row associated with `a_fault'.
+		require
+			has_row_for_fault (a_fault)
+		local
+			l_row: EV_GRID_ROW
+		do
+			l_row := fault_to_row_table.item (a_fault)
+			evgrid_fixes.select_row (l_row.index)
 		end
 
 feature{NONE} -- Access

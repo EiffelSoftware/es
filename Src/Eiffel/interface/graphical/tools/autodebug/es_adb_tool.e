@@ -73,7 +73,7 @@ feature {NONE} -- Factory
 
 feature {NONE} -- Internationalization
 
-	t_title: STRING = "AutoDebug"
+	t_title: STRING = "AutoFix"
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software"

@@ -73,7 +73,7 @@ feature -- Query
 				create nature_of_change_strings_internal.make_equal (10)
 				nature_of_change_strings_internal.force ("Strengthen", Nature_strengthen)
 				nature_of_change_strings_internal.force ("Weaken", Nature_weaken)
-				nature_of_change_strings_internal.force ("WeakenAndStrengthen", Nature_weaken_and_strengthen)
+				nature_of_change_strings_internal.force ("Weaken and strengthen", Nature_weaken_and_strengthen)
 			end
 			Result := nature_of_change_strings_internal
 		end

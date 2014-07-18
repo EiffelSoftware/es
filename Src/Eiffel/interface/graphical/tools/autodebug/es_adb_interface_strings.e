@@ -12,7 +12,7 @@ inherit
 
 feature
 
-	Tool_name: STRING = "AutoDebug"
+	Tool_name: STRING = "AutoFix"
 
 	Tab_name_setting: STRING = "Settings"
 	Tab_name_faults:  STRING = "Faults"
@@ -20,7 +20,7 @@ feature
 	Tab_name_output:  STRING = "Output"
 
 		-- Tab settings
-	Frame_text_classes_to_debug: STRING = "Groups of classes to debug"
+	Frame_text_classes_to_debug: STRING = "Groups of classes to AutoFix"
 	Button_text_add: STRING = "Add"
 	Button_text_remove: STRING = "Remove"
 	Button_text_remove_all: STRING = "Removel all"
@@ -52,16 +52,15 @@ feature
 
 	Button_text_load_config: STRING = "Load settings"
 	Button_text_save_config: STRING = "Save settings"
-	Button_text_start: STRING = "Start debugging"
-	Button_text_stop: STRING = "Stop debugging"
+	Button_text_start: STRING = "Start AutoFixing"
+	Button_text_stop: STRING = "Stop AutoFixing"
 
 		-- Tab faults
 	Button_text_fix_all: STRING = "Start AutoFixing all to-be-attempted"
 	Button_text_fix_all_stop: STRING = "Stop AutoFixing all to-be-attempted"
 	Button_text_fix_selected: STRING = "Start AutoFixing selected"
 	Button_text_fix_selected_stop: STRING = "Stop AutoFixing selected"
-
-	Button_text_go_to_candidate_fixes: STRING = "Go to candidate fixes"
+	Button_text_mark_as_manually_fixed: STRING = "Mark as manually fixed"
 
 	Button_text_filter_by_approachability: STRING = "filter by fault"
 	Button_text_filter_by_fixes: STRING = "filter by fixes"
@@ -92,7 +91,7 @@ feature
 	Fault_status_to_be_attempted: STRING = "To be attempted"
 	Fault_status_candidate_fix_available: STRING = "Candidate fix available"
 	Fault_status_candidate_fix_unavailable: STRING = "Candidate fix unavailable"
-	Fault_status_candidate_fix_accepted: STRING = "Candidate fix accepted"
+	Fault_status_candidate_fix_accepted: STRING = "Candidate fix applied"
 	Fault_status_manually_fixed: STRING = "Manually fixed"
 
 	Grid_no_fault: STRING = "No fault to list"
@@ -122,9 +121,9 @@ feature
 feature
 
 	Msg_delete_directory_content: STRING = "The selected directory is not empty. Should all contents be deleted?"
-	Msg_remove_existing_debugging_results: STRING = "Starting a new debugging session will REMOVED all existing results in the current working directory. Do you want to continue?"
+	Msg_remove_existing_debugging_results: STRING = "Starting a new AutoFix session will REMOVE all existing results in the current working directory. Do you want to continue?"
 	Msg_failed_to_copy_project: STRING = "Failed to copy the project into working directory."
-	Msg_discard_existing_fixing_results: STRING = "The selected fault has been attempted by AutoFix already. Do you want to discard the previous results and fix it again?"
+	Msg_discard_existing_fixing_results: STRING = "The selected fault has been attempted by AutoFix already. Do you want to discard the previous results and AutoFix it again?"
 	Msg_apply_fix: STRING = "Change to your code cannot be rolled back. Do you want to continue?"
 	Msg_set_contract_fix_applied: STRING = "Fixes to contracts need to be applied manually. This operation will only set the fix status to %"applied%" without changing the code. Do you want to continue?"
 
