@@ -77,6 +77,7 @@ feature {NONE} -- Initialization
 			add_rule (create {CA_EMPTY_LOOP_RULE}.make)
 			add_rule (create {CA_MISSING_CREATION_PROC_WITHOUT_ARGS_RULE}.make)
 			add_rule (create {CA_COMMENT_NOT_WELL_PHRASED_RULE}.make)
+			add_rule (create {CA_OBJECT_CREATION_WITHIN_LOOP_RULE}.make)
 
 			settings.initialize_rule_settings (rules)
 

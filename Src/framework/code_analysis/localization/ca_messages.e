@@ -99,6 +99,10 @@ feature -- Messages for both GUI and command line mode
 
 feature -- Rule Violations
 
+	object_creation_within_loop_violation_1: STRING_32
+		do Result := translation_in_context ("Creating objects within a loop may decrease performance.%NCheck%
+									% whether the object creation can be moved outside the loop.", once "code_analyzer.violation") end
+
 	missing_creation_proc_without_args_violation_1: STRING_32
 		do Result := translation_in_context ("Class '", once "code_analyzer.violation") end
 

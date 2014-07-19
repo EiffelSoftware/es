@@ -18,6 +18,14 @@ feature -- General
 
 feature -- Rules
 
+	object_creation_within_loop_title: STRING_32
+		do Result := translation_in_context ("Object creation within loop", once "code_analyzer") end
+
+	object_creation_within_loop_description: STRING_32
+		do Result := translation_in_context ("Creating objects within a loop may decrease performance. On such%
+							% an occurrence it should be checked whether the object creation can be moved outside%
+							% the loop.", once "code_analyzer") end
+
 	comment_not_well_phrased_title: STRING_32
 		do Result := translation_in_context ("Comment not well phrased", once "code_analyzer") end
 
