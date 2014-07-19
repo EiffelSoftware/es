@@ -18,6 +18,16 @@ feature -- General
 
 feature -- Rules
 
+	empty_creation_procedure_title: STRING_32
+		do Result := translation_in_context ("Empty creation procedure", once "code_analyzer") end
+
+	empty_creation_procedure_description: STRING_32
+		do Result := translation_in_context ("If there exists only one creation procedure in a class and%
+							% this procedure takes no arguments and has an empty body then the creation%
+							% procedure should be considered to be removed. Note that in this case all%
+							% the clients of the class need to call 'create c' instead of 'create c.make',%
+							% where 'c' is an object of the relevant class and 'make' is its creation procedure.", once "code_analyzer") end
+
 	object_creation_within_loop_title: STRING_32
 		do Result := translation_in_context ("Object creation within loop", once "code_analyzer") end
 
@@ -78,7 +88,8 @@ feature -- Rules
 		do Result := translation_in_context ("List of undesirable words in comments", once "code_analyzer") end
 
 	bad_words_list_option_description: STRING_32
-		do Result := translation_in_context ("List of words to be checked for. Use a semicolon separated string of words, e.g.: word1;word2;word3", once "code_analyzer") end
+		do Result := translation_in_context ("List of words to be checked for. Use a semicolon separated string of%
+							% words, e.g.: word1;word2;word3", once "code_analyzer") end
 
 	inherit_from_any_title: STRING_32
 		do Result := translation_in_context ("Explicit inheritance from ANY", once "code_analyzer") end

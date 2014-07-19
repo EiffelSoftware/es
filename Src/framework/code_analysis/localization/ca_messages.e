@@ -99,6 +99,19 @@ feature -- Messages for both GUI and command line mode
 
 feature -- Rule Violations
 
+	empty_creation_procedure_violation_1: STRING_32
+		do Result := translation_in_context ("Class '", once "code_analyzer.violation") end
+
+	empty_creation_procedure_violation_2: STRING_32
+		do Result := translation_in_context ("' has a single creation%Nprocedure with no arguments which is empty. This should be considered%Nto be%
+									% removed. Note that all clients need to call 'create c' instead%Nof 'create c.", once "code_analyzer.violation") end
+
+	empty_creation_procedure_violation_3: STRING_32
+		do Result := translation_in_context ("' where 'c' is an object of the%Nclass '", once "code_analyzer.violation") end
+
+	empty_creation_procedure_violation_4: STRING_32
+		do Result := translation_in_context ("'.", once "code_analyzer.violation") end
+
 	object_creation_within_loop_violation_1: STRING_32
 		do Result := translation_in_context ("Creating objects within a loop may decrease performance.%NCheck%
 									% whether the object creation can be moved outside the loop.", once "code_analyzer.violation") end
