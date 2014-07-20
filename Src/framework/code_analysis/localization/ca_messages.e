@@ -99,6 +99,13 @@ feature -- Messages for both GUI and command line mode
 
 feature -- Rule Violations
 
+	void_check_using_is_equal_violation_1: STRING_32
+		do Result := translation_in_context ("The local variable or argument '", once "code_analyzer.violation") end
+
+	void_check_using_is_equal_violation_2: STRING_32
+		do Result := translation_in_context ("' is checked being Void using 'is_equal'.%NThis should be done using the '=' or%
+									% '/=' operators", once "code_analyzer.violation") end
+
 	empty_creation_procedure_violation_1: STRING_32
 		do Result := translation_in_context ("Class '", once "code_analyzer.violation") end
 

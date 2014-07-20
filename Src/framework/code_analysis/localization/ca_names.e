@@ -18,6 +18,13 @@ feature -- General
 
 feature -- Rules
 
+	void_check_using_is_equal_title: STRING_32
+		do Result := translation_in_context ("Void check using 'is_equal'", once "code_analyzer") end
+		
+	void_check_using_is_equal_description: STRING_32
+		do Result := translation_in_context ("Checking a local variable or argument to be void should not%
+							% be done by calling 'is_equal' but by the '=' or '/=' operators.", once "code_analyzer") end
+
 	empty_creation_procedure_title: STRING_32
 		do Result := translation_in_context ("Empty creation procedure", once "code_analyzer") end
 
