@@ -92,9 +92,9 @@ feature {NONE} -- Rule checking
 				initialize_regex
 			end
 
-			if current_context.matchlist /= Void then
+			if attached current_context.matchlist as l_matchlist then
 				across
-					current_context.matchlist.extract_comment (create {ERT_TOKEN_REGION}.make(a_class.first_token (current_context.matchlist).index, a_class.last_token (current_context.matchlist).index)) as l_comment
+					l_matchlist.extract_comment (create {ERT_TOKEN_REGION}.make(a_class.first_token (l_matchlist).index, a_class.last_token (l_matchlist).index)) as l_comment
 				loop
 					if (r.matches (l_comment.item.content_32)) then
 						create l_violation.make_with_rule (Current)
@@ -144,9 +144,6 @@ feature -- Properties
 
 	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		do
-			check
-				attached {STRING_32} a_violation.long_description_info.first
-			end
 			if attached {STRING_32} a_violation.long_description_info.first as l_comment_text then
 				a_formatter.add_quoted_text (l_comment_text)
 			end

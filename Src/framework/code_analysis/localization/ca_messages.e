@@ -99,6 +99,11 @@ feature -- Messages for both GUI and command line mode
 
 feature -- Rule Violations
 
+	comparison_of_object_refs_violation_1: STRING_32
+		do Result := translation_in_context ("You are using '=' to compare object references. This only%Nchecks whether they%
+									% point to the same object.%NIf you wanted to compare their states you%Ncan do so by using%
+									% the '~' operator", once "code_analyzer.violation") end
+
 	void_check_using_is_equal_violation_1: STRING_32
 		do Result := translation_in_context ("The local variable or argument '", once "code_analyzer.violation") end
 

@@ -18,9 +18,17 @@ feature -- General
 
 feature -- Rules
 
+	comparison_of_object_refs_title: STRING_32
+		do Result := translation_in_context ("Comparison of object references", once "code_analyzer") end
+
+	comparison_of_object_refs_description: STRING_32
+		do Result := translation_in_context ("The '=' operator always compares two object references by checking%
+							% whether they point to the same object in memory. In the majority of cases one wants%
+							% to compare the object states, which can be done by the '~' operator.", once "code_analyzer") end
+
 	void_check_using_is_equal_title: STRING_32
 		do Result := translation_in_context ("Void check using 'is_equal'", once "code_analyzer") end
-		
+
 	void_check_using_is_equal_description: STRING_32
 		do Result := translation_in_context ("Checking a local variable or argument to be void should not%
 							% be done by calling 'is_equal' but by the '=' or '/=' operators.", once "code_analyzer") end

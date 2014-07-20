@@ -49,7 +49,7 @@ feature {NONE} -- Rule checking
 				loop
 					l_comment_string := l_comment.item.content_32
 
-					if l_comment_string.count > 0 and then not (l_comment_string.at (l_comment_string.count).is_equal ('?') or l_comment_string.at (l_comment_string.count).is_equal ('.')) then
+					if not l_comment_string.is_empty and then not (l_comment_string.at (l_comment_string.count).is_equal ('?') or l_comment_string.at (l_comment_string.count).is_equal ('.')) then
 						create l_violation.make_with_rule (Current)
 						l_violation.set_location (create {LOCATION_AS}.make (l_comment.item.line, l_comment.item.column, 0, 0, 0, 0, 0))
 						l_violation.long_description_info.extend (l_comment.item.content_32)

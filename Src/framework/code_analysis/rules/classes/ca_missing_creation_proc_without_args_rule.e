@@ -76,9 +76,9 @@ feature {NONE} -- AST Visitor
 			l_viol: CA_RULE_VIOLATION
 		do
 
-			if attached creation_procedures and then creation_procedures.count >= 1 and not has_creation_procedure_with_no_args then
+			if attached creation_procedures and then not creation_procedures.is_empty and not has_creation_procedure_with_no_args then
 				create l_viol.make_with_rule (Current)
-				if attached a_class.creators as l_list and then l_list.count >= 1 then
+				if attached a_class.creators as l_list and then not l_list.is_empty then
 					l_viol.set_location (l_list.first.start_location)
 				else
 					l_viol.set_location (a_class.start_location)
