@@ -34,7 +34,7 @@ feature
 	combobox_text_test_session_type_one_class: STRING = "one class"
 	combobox_text_test_session_type_one_group: STRING = "one group of classes"
 	combobox_text_test_session_type_all_classes: STRING = "all classes"
-	label_text_maximum_session_length_for_testing: STRING = "Maximum session length for testing (in minute)"
+	label_text_maximum_session_length_for_testing: STRING = "Maximum session length for testing (in minutes)"
 	Checkbutton_text_testing_use_fixed_seed: STRING = "Use fixed seed"
 
 	Frame_text_fixing: STRING = "Fixing"
@@ -42,7 +42,7 @@ feature
 	Combobox_text_start_fixing_type_after_each_testing_session: STRING = "after each testing session"
 	Combobox_text_start_fixing_type_after_all_testing_sessions: STRING = "after all testing sessions"
 	Combobox_text_start_fixing_type_manually: STRING = "manually"
-	label_text_maximum_session_length_for_fixing: STRING = "Maximum session length for fixing (in minute)"
+	label_text_maximum_session_length_for_fixing: STRING = "Maximum session length for fixing (in minutes)"
 	Label_text_fixing_number_of_fixes: STRING = "Maximum fix candidates to propose"
 	Checkbutton_text_fixing_implementation: STRING = "Propose fixes to implementation"
 	Checkbutton_text_fixing_contracts: STRING = "Propose fixes to contracts"

@@ -132,7 +132,7 @@ feature -- Access
 			-- New string containing terse printable representation
 			-- of current object
 		do
-			create Result.make (128)
+			create Result.make (256)
 
 			Result.append ("Class under test: ")
 			Result.append (class_under_test)

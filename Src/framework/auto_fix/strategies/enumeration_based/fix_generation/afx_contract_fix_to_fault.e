@@ -63,7 +63,7 @@ feature -- Redefinition
 	signature: STRING
 			-- <Precursor>
 		do
-			Result := "Subject=FixToContract;ID=Auto-" + id.out + ";Validity=" + is_valid.out + ";Type=" + change_type_str + ";"
+			Result := "Subject=Fix to contract;ID=Auto-" + id.out + ";Validity=" + is_valid.out + ";Type=" + change_type_str + ";"
 		end
 
 	out: STRING
@@ -94,7 +94,7 @@ feature -- Redefinition
 			l_strengthening := is_strengthening
 			l_weakening := is_weakening
 			if l_strengthening and then l_weakening then
-				Result := "WeakenAndStrengthen"
+				Result := "Weaken and strengthen"
 			elseif l_strengthening then
 				Result := "Strengthen"
 			elseif l_weakening then

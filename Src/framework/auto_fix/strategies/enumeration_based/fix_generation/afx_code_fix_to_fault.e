@@ -92,7 +92,7 @@ feature -- Redefinition
 	signature: STRING
 			-- <Precursor>
 		do
-			Result := "Subject=FixToImplementation;ID=Auto-" + id.out + ";Validity=" + is_valid.out + ";Type=" + name_of_scheme_type (scheme_type) +";"
+			Result := "Subject=Fix to implementation;ID=Auto-" + id.out + ";Validity=" + is_valid.out + ";Type=" + name_of_scheme_type (scheme_type) +";"
 		end
 
 	out: STRING
@@ -138,7 +138,7 @@ feature{NONE} -- Scheme type names
 	scheme_type_names: ARRAY[STRING]
 			-- Array of scheme type names.
 		once
-			Result := <<"UnconditionalAdd", "ConditionalAdd", "ConditionalExecute", "ConditionalReplace">>
+			Result := <<"Unconditional add", "Conditional add", "Conditional execute", "Conditional replace">>
 			Result.compare_objects
 		end
 
