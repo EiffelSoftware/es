@@ -14,6 +14,8 @@ inherit
 
 	IV_SHARED_TYPES
 
+	IV_SHARED_FACTORY
+
 create
 	make
 
@@ -69,6 +71,37 @@ feature -- Access
 					Result.append (i.item.triggers_for (a_bound_var))
 				end
 			end
+		end
+
+	with_simple_vars (a_bound_var: IV_ENTITY): TUPLE [expr: IV_EXPRESSION; subst: ARRAYED_LIST [TUPLE[var: IV_ENTITY; val: IV_EXPRESSION]]]
+			-- Current expression with all occurrences of arithmetic expressions as function/map argumetns replaces with fresh variables;
+			-- together with the corresponding variable substitution.	
+		local
+			l_indexes: like indexes
+			l_res: like with_simple_vars
+			l_fresh_var: IV_ENTITY
+			l_subst: ARRAYED_LIST [TUPLE[var: IV_ENTITY; val: IV_EXPRESSION]]
+		do
+			create l_indexes.make (indexes.lower, indexes.upper)
+			create l_subst.make (3)
+			across
+				indexes as i
+			loop
+				l_res := i.item.with_simple_vars (a_bound_var)
+				l_subst.append (l_res.subst) -- Preserve substitution that happened in the argument
+				if i.item.is_arithmetic and i.item.has_free_var_named (a_bound_var.name) then
+					-- Argument is a nontrivial expression with a bound variable: replace with a fresh bound variable
+					l_fresh_var := factory.unique_entity (a_bound_var.name, l_res.expr.type)
+					l_indexes [i.target_index] := l_fresh_var
+					l_subst.extend ([l_fresh_var, l_res.expr])
+				else
+					-- No substitution
+					l_indexes [i.target_index] := l_res.expr
+				end
+			end
+			l_res := target.with_simple_vars (a_bound_var)
+			l_subst.append (l_res.subst)
+			Result := [create {like Current}.make (l_res.expr, l_indexes), l_subst]
 		end
 
 feature -- Status report

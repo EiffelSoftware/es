@@ -21,7 +21,7 @@ feature
 				length_non_negative: Result >= 0
 				end_in_range_1: x + Result <= a.count + 1
 				end_in_range_2: y + Result <= a.count + 1
-				is_common: across 0 |..| (Result - 1) as i all a [x + i.item] = a [y + i.item] end
+				is_common: across x |..| (x + Result - 1) as i all a [i.item] = a [y - x + i.item] end
 				empty_prefix: a [x] /= a [y] implies Result = 0
 			until
 				x + Result = a.count + 1 or else
@@ -36,7 +36,7 @@ feature
 			length_non_negative: Result >= 0
 			end_in_range_1: x + Result <= a.count + 1
 			end_in_range_2: y + Result <= a.count + 1
-			is_common: across 0 |..| (Result - 1) as i all a [x + i.item] = a [y + i.item] end
+			is_common: across x |..| (x + Result - 1) as i all a [i.item] = a [y - x + i.item] end
 			longest_prefix: (x + Result = a.count + 1) or else (y + Result = a.count + 1) or else (a [x + Result] /= a[y + Result])
 			empty_prefix: a[x] /= a[y] implies Result = 0
 		end

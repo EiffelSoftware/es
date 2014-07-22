@@ -1078,7 +1078,6 @@ feature {NONE} -- Loop processing
 		local
 			l_invariant: ASSERT_B
 			l_inv: IV_ASSERT
-			l_condition: IV_EXPRESSION
 		do
 			if a_invariants /= Void then
 				from
@@ -1091,24 +1090,21 @@ feature {NONE} -- Loop processing
 					if not helper.is_clause_modify (l_invariant) and not helper.is_clause_decreases (l_invariant) then
 						set_current_origin_information (l_invariant)
 						process_contract_expression (l_invariant.expr, True)
-						l_condition := factory.true_
 						if l_invariant.tag /= Void and then l_invariant.tag ~ "assume" then
 								-- Free invariant: translate as
 								--	assume checks; assume free_checks; assume last_expression
 							across last_safety_checks as i loop
 								i.item.set_free (True)
 								add_statement (i.item)
-								l_condition := factory.and_clean (l_condition, i.item.expression)
 							end
-							create l_inv.make (factory.implies_clean (l_condition, last_expression))
+							create l_inv.make (last_expression)
 						else
 								-- Regular invariant: translate as
 								--	assert checks; assume free_checks; assert last_expression							
 							across last_safety_checks as i loop
 								add_statement (i.item)
-								l_condition := factory.and_clean (l_condition, i.item.expression)
 							end
-							create l_inv.make (factory.implies_clean (l_condition, last_expression))
+							create l_inv.make (last_expression)
 							l_inv.node_info.set_type ("loop_inv")
 							l_inv.node_info.set_tag (l_invariant.tag)
 							l_inv.node_info.set_line (l_invariant.line_number)

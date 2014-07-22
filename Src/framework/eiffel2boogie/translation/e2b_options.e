@@ -23,7 +23,8 @@ feature {NONE} -- Initialization
 			is_sound_loop_unrolling_enabled := True
 			is_postcondition_predicate_enabled := False
 			is_checking_overflow := False
-			is_triggering_on_arithmetic := True
+			is_triggering_on_arithmetic := False
+			is_arithmetic_extracted := True
 			is_checking_frame := False
 
 			is_ownership_enabled := True
@@ -184,12 +185,22 @@ feature -- Arithmetic operations
 
 	is_triggering_on_arithmetic: BOOLEAN
 			-- Should arithmetic operations inside quantifiers be translated as functions,
-			-- so tha that they can be used in triggers?
+			-- so that they can be used in triggers?
 
 	set_triggering_on_arithmetic (a_value: BOOLEAN)
 			-- Set `is_triggering_on_arithmetic' to `a_value'.
 		do
 			is_triggering_on_arithmetic := a_value
+		end
+
+	is_arithmetic_extracted: BOOLEAN
+			-- Should arithmetic operations in function/map arguments inside quantifiers
+			-- be extracted into fresh bound variables?
+
+	set_arithmetic_extracted (a_value: BOOLEAN)
+			-- Set `is_arithmetic_extracted' to `a_value'.
+		do
+			is_arithmetic_extracted := a_value
 		end
 
 feature -- Framing

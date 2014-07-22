@@ -86,6 +86,12 @@ feature -- Entities
 			create Result.make (a_name, a_type)
 		end
 
+	unique_entity (a_name_prefix: STRING; a_type: IV_TYPE): IV_ENTITY
+			-- Entity with name `a_name_X' (where 'X' is unique) and type `a_type'.
+		do
+			create Result.make (helper.unique_identifier (a_name_prefix), a_type)
+		end
+
 	heap_entity (a_name: STRING): IV_ENTITY
 		do
 			Result := entity (a_name, types.heap)

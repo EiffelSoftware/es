@@ -20,6 +20,12 @@ feature -- Access
 		deferred
 		end
 
+	with_simple_vars (a_bound_var: IV_ENTITY): TUPLE [expr: IV_EXPRESSION; subst: ARRAYED_LIST [TUPLE[var: IV_ENTITY; val: IV_EXPRESSION]]]
+			-- Current expression with all occurrences of arithmetic expressions as function/map argumetns replaces with fresh variables;
+			-- together with the corresponding variable substitution.
+		deferred
+		end
+
 feature -- Status report
 
 	is_false: BOOLEAN
@@ -29,6 +35,11 @@ feature -- Status report
 
 	is_true: BOOLEAN
 			-- Is this expression literal "true"?
+		do
+		end
+
+	is_arithmetic: BOOLEAN
+			-- Does this expression involeve arithmetic operators on the top level?
 		do
 		end
 

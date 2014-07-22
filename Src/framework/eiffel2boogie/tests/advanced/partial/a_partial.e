@@ -33,7 +33,7 @@ feature
 			x: INTEGER
 		do
 			check assume: nasty (x) end -- OK: pre is assumed
-			check x \\ 5 = 0 end -- OK: defintion of nasty is applicable, because its pre is assumes
+			check x \\ 5 = 0 end -- OK: definition of nasty is applicable, because its pre is assumed
 			check x >= 0 end -- OK: we get the pre for free
 		end
 
@@ -41,7 +41,7 @@ feature
 		require
 			nasty (x) -- OK to have partial preconditions
 		do
-			check x \\ 5 = 0 end -- OK: defintion of nasty is applicable, because its pre is also required
+			check x \\ 5 = 0 end -- OK: definition of nasty is applicable, because its pre is also required
 			check x >= 0 end -- OK: we get the pre for free
 		end
 
@@ -50,14 +50,14 @@ feature
 			x: INTEGER
 		do
 			x := 5
-			p1 (x) -- OK: defintion of nasty is applicable, because we require it under the implication of its pre
+			p1 (x) -- OK: definition of nasty is applicable, because we require it under the implication of its pre
 		end
 
 	p2: INTEGER
 		note
 			status: impure
 		do
-			Result := 5 -- OK: defintion of nasty is applicable, because we assert it under the implication of its pre
+			Result := 5 -- OK: definition of nasty is applicable, because we assert it under the implication of its pre
 		ensure
 			nasty (Result)
 		end
@@ -67,7 +67,7 @@ feature
 			x: INTEGER
 		do
 			x := p2
-			check x \\ 5 = 0 end -- OK: defintion of nasty is applicable, because its pre is also ensured
+			check x \\ 5 = 0 end -- OK: definition of nasty is applicable, because its pre is also ensured
 			check x >= 0 end -- OK: we get the pre for free
 		end
 

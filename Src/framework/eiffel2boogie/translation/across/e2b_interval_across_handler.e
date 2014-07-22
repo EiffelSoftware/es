@@ -11,7 +11,8 @@ class
 inherit
 	E2B_ACROSS_HANDLER
 		redefine
-			domain
+			domain,
+			quantifier
 		end
 
 create
@@ -75,6 +76,29 @@ feature {NONE} -- Implementation
 			-- <Precursor>
 		once
 			Result := types.int
+		end
+
+	quantifier (a_bound_var: IV_ENTITY; a_expr: IV_EXPRESSION; a_is_all: BOOLEAN): IV_QUANTIFIER
+			-- Expression "quant a_bound_var :: a_expr", where quant depends on `scoped_expression'.
+		local
+			l_guard: IV_EXPRESSION
+			l_res: TUPLE [expr: IV_EXPRESSION; subst: ARRAYED_LIST [TUPLE[var: IV_ENTITY; val: IV_EXPRESSION]]]
+		do
+			l_guard := guard (a_bound_var)
+			l_res := a_expr.with_simple_vars (a_bound_var)
+			across l_res.subst as s loop
+				l_guard := factory.and_ (l_guard, factory.equal (s.item.var, s.item.val))
+			end
+
+			if a_is_all then
+				create {IV_FORALL} Result.make (factory.implies_ (l_guard, l_res.expr))
+			else
+				create {IV_EXISTS} Result.make (factory.and_ (l_guard, l_res.expr))
+			end
+			Result.add_bound_variable (a_bound_var)
+			across l_res.subst as s loop
+				Result.add_bound_variable (s.item.var)
+			end
 		end
 
 	guard (a_bound_var: IV_ENTITY): IV_EXPRESSION

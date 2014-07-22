@@ -1164,11 +1164,10 @@ feature {NONE} -- Implementation
 			-- Translate "require expr" as:
 			--	require pre(expr);
 			--	free require free_pre(expr);
-			--	require pree(expr) && free_pre(expr) ==> expr;
+			--	require expr; // Here should be free_pre(expr) ==> expr, but it doesn't seem to have an effect in practice
 		local
 			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 			l_contract: IV_PRECONDITION
-			l_condition: IV_EXPRESSION
 		do
 			create l_translator.make
 			l_translator.set_context (current_feature, current_type)
@@ -1178,7 +1177,6 @@ feature {NONE} -- Implementation
 			helper.set_up_byte_context (a_origin_class.feature_of_rout_id (current_feature.rout_id_set.first),
 				helper.class_type_in_context (a_origin_class.actual_type, a_origin_class, Void, current_type))
 			a_assert.process (l_translator)
-			l_condition := factory.true_
 			across l_translator.side_effect as i loop
 				create l_contract.make (i.item.expression)
 				l_contract.node_info.load (i.item.node_info)
@@ -1186,9 +1184,8 @@ feature {NONE} -- Implementation
 					l_contract.set_free
 				end
 				current_boogie_procedure.add_contract (l_contract)
-				l_condition := factory.and_clean (l_condition, i.item.expression)
 			end
-			create l_contract.make (factory.implies_clean (l_condition, l_translator.last_expression))
+			create l_contract.make (l_translator.last_expression)
 			l_contract.node_info.set_type ("pre")
 			l_contract.node_info.set_tag (a_assert.tag)
 			l_contract.node_info.set_line (a_assert.line_number)
@@ -1201,7 +1198,6 @@ feature {NONE} -- Implementation
 		local
 			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 			l_contract: IV_POSTCONDITION
-			l_condition: IV_EXPRESSION
 		do
 			create l_translator.make
 			l_translator.set_context (current_feature, current_type)
@@ -1212,7 +1208,6 @@ feature {NONE} -- Implementation
 				helper.class_type_in_context (a_origin_class.actual_type, a_origin_class, Void, current_type))
 			a_assert.process (l_translator)
 			a_fields.append (l_translator.field_accesses)
-			l_condition := factory.true_
 			across l_translator.side_effect as i loop
 				create l_contract.make (i.item.expression)
 				l_contract.node_info.load (i.item.node_info)
@@ -1220,9 +1215,8 @@ feature {NONE} -- Implementation
 					l_contract.set_free
 				end
 				current_boogie_procedure.add_contract (l_contract)
-				l_condition := factory.and_clean (l_condition, i.item.expression)
 			end
-			create l_contract.make (factory.implies_clean (l_condition, l_translator.last_expression))
+			create l_contract.make (l_translator.last_expression)
 			l_contract.node_info.set_type ("post")
 			l_contract.node_info.set_tag (a_assert.tag)
 			l_contract.node_info.set_line (a_assert.line_number)

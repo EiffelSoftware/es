@@ -11,6 +11,9 @@ class
 inherit
 
 	IV_EXPRESSION
+		redefine
+			is_arithmetic
+		end
 
 create
 	make
@@ -57,7 +60,25 @@ feature -- Access
 			Result.append (right.triggers_for (a_bound_var))
 		end
 
+	with_simple_vars (a_bound_var: IV_ENTITY): TUPLE [expr: IV_EXPRESSION; subst: ARRAYED_LIST [TUPLE[var: IV_ENTITY; val: IV_EXPRESSION]]]
+			-- Current expression with all occurrences of arithmetic expressions as function/map argumetns replaces with fresh variables;
+			-- together with the corresponding variable substitution.	
+		local
+			rl, rr: like with_simple_vars
+		do
+			rl := left.with_simple_vars (a_bound_var)
+			rr := right.with_simple_vars (a_bound_var)
+			rl.subst.append (rr.subst)
+			Result := [create {IV_BINARY_OPERATION}.make (rl.expr, operator, rr.expr, type), rl.subst]
+		end
+
 feature -- Status report
+
+	is_arithmetic: BOOLEAN
+			-- Does this expression involeve arithmetic operators on the top level?
+		do
+			Result := type.is_integer
+		end
 
 	has_free_var_named (a_name: STRING): BOOLEAN
 			-- Does this expression contain a free variable with name `a_name'?

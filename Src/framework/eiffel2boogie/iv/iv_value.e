@@ -45,6 +45,13 @@ feature -- Access
 			create Result.make (3)
 		end
 
+	with_simple_vars (a_bound_var: IV_ENTITY): TUPLE [expr: IV_EXPRESSION; subst: ARRAYED_LIST [TUPLE[var: IV_ENTITY; val: IV_EXPRESSION]]]
+			-- Current expression with all occurrences of arithmetic expressions as function/map argumetns replaces with fresh variables;
+			-- together with the corresponding variable substitution.	
+		do
+			Result := [Current, create {ARRAYED_LIST [TUPLE[var: IV_ENTITY; val: IV_EXPRESSION]]}.make (3)]
+		end
+
 feature -- Status report			
 
 	is_false: BOOLEAN

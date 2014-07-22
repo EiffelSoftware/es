@@ -61,6 +61,20 @@ feature -- Access
 			Result.append (else_expression.triggers_for (a_bound_var))
 		end
 
+	with_simple_vars (a_bound_var: IV_ENTITY): TUPLE [expr: IV_EXPRESSION; subst: ARRAYED_LIST [TUPLE[var: IV_ENTITY; val: IV_EXPRESSION]]]
+			-- Current expression with all occurrences of arithmetic expressions as function/map argumetns replaces with fresh variables;
+			-- together with the corresponding variable substitution.	
+		local
+			rc, rt, re: like with_simple_vars
+		do
+			rc := condition.with_simple_vars (a_bound_var)
+			rt := then_expression.with_simple_vars (a_bound_var)
+			re := else_expression.with_simple_vars (a_bound_var)
+			rc.subst.append (rt.subst)
+			rc.subst.append (re.subst)
+			Result := [create {IV_CONDITIONAL_EXPRESSION}.make_if_then_else (rc.expr, rt.expr, re.expr), rc.subst]
+		end
+
 feature -- Status report
 
 	has_free_var_named (a_name: STRING): BOOLEAN
