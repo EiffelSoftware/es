@@ -378,7 +378,7 @@ feature{NONE} -- GUI actions
 			evmenucheck_contract_fixable.select_actions.extend (agent on_visibility_changed)
 			evmenucheck_not_fixable.select_actions.extend (agent on_visibility_changed)
 
-			evmenucheck_not_yet_attempted.select_actions.extend (agent on_visibility_changed)
+			evmenucheck_to_be_fixed.select_actions.extend (agent on_visibility_changed)
 			evmenucheck_candidate_fix_available.select_actions.extend (agent on_visibility_changed)
 			evmenucheck_candidate_fix_unavailable.select_actions.extend (agent on_visibility_changed)
 			evmenucheck_candidate_fix_accepted.select_actions.extend (agent on_visibility_changed)
@@ -463,7 +463,7 @@ feature{NONE} -- GUI actions
 			config.set_show_contract_fixable (evmenucheck_contract_fixable.is_selected)
 			config.set_show_not_fixable (evmenucheck_not_fixable.is_selected)
 
-			config.set_show_not_yet_attempted (evmenucheck_not_yet_attempted.is_selected)
+			config.set_show_to_be_fixed (evmenucheck_to_be_fixed.is_selected)
 			config.set_show_candidate_fix_available (evmenucheck_candidate_fix_available.is_selected)
 			config.set_show_candidate_fix_unavailable (evmenucheck_candidate_fix_unavailable.is_selected)
 			config.set_show_candidate_fix_accepted (evmenucheck_candidate_fix_accepted.is_selected)
@@ -587,7 +587,7 @@ feature{NONE} -- GUI action implementation
 						or else a_fault.is_exception_type_in_scope_of_implementation_fixing and then config.should_show_implementation_fixable
 						or else not a_fault.is_exception_type_in_scope_of_contract_fixing and then not a_fault.is_exception_type_in_scope_of_implementation_fixing and then config.should_show_not_fixable)
 					  and then
-					  (a_fault.is_not_yet_attempted and then config.should_show_not_yet_attempted
+					  ((a_fault.is_not_yet_attempted or not a_fault.is_approachable) and then config.should_show_to_be_fixed
 					  	or else a_fault.is_candidate_fix_available and then config.should_show_candidate_fix_available
 					  	or else a_fault.is_candidate_fix_unavailable and then config.should_show_candidate_fix_unavailable
 					  	or else a_fault.is_candidate_fix_accepted and then config.should_show_candidate_fix_accepted
@@ -696,7 +696,7 @@ feature -- Config <-> GUI sync
 				enable_check_menu_item (evmenucheck_contract_fixable, True, config.should_show_contract_fixable)
 				enable_check_menu_item (evmenucheck_not_fixable, True, config.should_show_not_fixable)
 
-				enable_check_menu_item (evmenucheck_not_yet_attempted, True, config.should_show_not_yet_attempted)
+				enable_check_menu_item (evmenucheck_to_be_fixed, True, config.should_show_to_be_fixed)
 				enable_check_menu_item (evmenucheck_candidate_fix_available, True, config.should_show_candidate_fix_available)
 				enable_check_menu_item (evmenucheck_candidate_fix_unavailable, True, config.should_show_candidate_fix_unavailable)
 				enable_check_menu_item (evmenucheck_candidate_fix_accepted, True, config.should_show_candidate_fix_accepted)
@@ -710,7 +710,7 @@ feature -- Config <-> GUI sync
 			config.set_show_contract_fixable (evmenucheck_contract_fixable.is_selected)
 			config.set_show_not_fixable (evmenucheck_not_fixable.is_selected)
 
-			config.set_show_not_yet_attempted (evmenucheck_not_yet_attempted.is_selected)
+			config.set_show_to_be_fixed (evmenucheck_to_be_fixed.is_selected)
 			config.set_show_candidate_fix_available (evmenucheck_candidate_fix_available.is_selected)
 			config.set_show_candidate_fix_unavailable (evmenucheck_candidate_fix_unavailable.is_selected)
 			config.set_show_candidate_fix_accepted (evmenucheck_candidate_fix_accepted.is_selected)

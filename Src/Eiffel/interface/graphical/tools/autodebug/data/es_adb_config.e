@@ -102,7 +102,7 @@ feature -- Primitive config values
 
 	should_show_not_fixable: BOOLEAN
 
-	should_show_not_yet_attempted: BOOLEAN
+	should_show_to_be_fixed: BOOLEAN
 
 	should_show_candidate_fix_available: BOOLEAN
 
@@ -411,9 +411,9 @@ feature -- Set others
 			should_show_not_fixable := a_flag
 		end
 
-	set_show_not_yet_attempted (a_flag: BOOLEAN)
+	set_show_to_be_fixed (a_flag: BOOLEAN)
 		do
-			should_show_not_yet_attempted := a_flag
+			should_show_to_be_fixed := a_flag
 		end
 
 	set_show_candidate_fix_available (a_flag: BOOLEAN)
@@ -459,7 +459,7 @@ feature -- Default values
 			should_show_contract_fixable := default_should_show_contract_fixable
 			should_show_not_fixable := default_should_show_not_fixable
 
-			should_show_not_yet_attempted := default_should_show_not_yet_attempted
+			should_show_to_be_fixed := default_should_show_to_be_fixed
 			should_show_candidate_fix_available := default_should_show_candidate_fix_available
 			should_show_candidate_fix_unavailable := default_should_show_candidate_fix_unavailable
 			should_show_candidate_fix_accepted := default_should_show_candidate_fix_unavailable
@@ -617,9 +617,9 @@ feature{NONE} -- Load and save implementation
 						if l_value.is_boolean then
 							set_show_not_fixable (l_value.to_boolean)
 						end
-					elseif l_head ~ str_should_show_not_yet_attempted then
+					elseif l_head ~ str_should_show_to_be_fixed then
 						if l_value.is_boolean then
-							set_show_not_yet_attempted (l_value.to_boolean)
+							set_show_to_be_fixed (l_value.to_boolean)
 						end
 					elseif l_head ~ str_should_show_candidate_fix_availabe then
 						if l_value.is_boolean then
@@ -735,9 +735,9 @@ feature{NONE} -- Load and save implementation
 				l_content.append (should_show_not_fixable.out)
 				l_content.append_character ('%N')
 
-				l_content.append (str_should_show_not_yet_attempted)
+				l_content.append (str_should_show_to_be_fixed)
 				l_content.append_character (key_value_separator)
-				l_content.append (should_show_not_yet_attempted.out)
+				l_content.append (should_show_to_be_fixed.out)
 				l_content.append_character ('%N')
 
 				l_content.append (str_should_show_candidate_fix_availabe)
@@ -844,7 +844,7 @@ feature -- Constant
 	str_should_show_implementation_fixable: STRING = "should.show.implementation.fixable"
 	str_should_show_contract_fixable: STRING = "should.show.contract.fixable"
 	str_should_show_not_fixable: STRING = "should.show.not.fixable"
-	str_should_show_not_yet_attempted: STRING = "should.show.not.yet.attempted"
+	str_should_show_to_be_fixed: STRING = "should.show.to.be.fixed"
 	str_should_show_candidate_fix_availabe: STRING = "should.show.candidate.fix.available"
 	str_should_show_candidate_fix_unavailable: STRING = "should.show.candidate.fix.unavailable"
 	str_should_show_candidate_fix_accepted: STRING = "should.show.candidate.fix.accepted"
@@ -877,7 +877,7 @@ feature -- Constant
 	default_should_show_implementation_fixable: BOOLEAN = True
 	default_should_show_contract_fixable: BOOLEAN = True
 	default_should_show_not_fixable: BOOLEAN = True
-	default_should_show_not_yet_attempted: BOOLEAN = True
+	default_should_show_to_be_fixed: BOOLEAN = True
 	default_should_show_candidate_fix_available: BOOLEAN = True
 	default_should_show_candidate_fix_unavailable: BOOLEAN = True
 	default_should_show_candidate_fix_accepted: BOOLEAN = True

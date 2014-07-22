@@ -83,8 +83,8 @@ feature{NONE} -- Initialization
 			create evmenucheck_not_fixable.make_with_text (Menu_text_not_automatic_fixable)
 			evmenu_approchability.extend (evmenucheck_not_fixable)
 
-			create evmenucheck_not_yet_attempted.make_with_text (Menu_text_not_yet_attempted)
-			evmenu_fixes.extend (evmenucheck_not_yet_attempted)
+			create evmenucheck_to_be_fixed.make_with_text (menu_text_to_be_fixed)
+			evmenu_fixes.extend (evmenucheck_to_be_fixed)
 			create evmenucheck_candidate_fix_available.make_with_text (Menu_text_candidate_fix_available)
 			evmenu_fixes.extend (evmenucheck_candidate_fix_available)
 			create evmenucheck_candidate_fix_unavailable.make_with_text (Menu_text_candidate_fix_unavailable)
@@ -139,7 +139,7 @@ feature{NONE} -- GUI elements
 
 	evmenu_fixes: EV_MENU
 	evmenucheck_all_fixes: EV_CHECK_MENU_ITEM
-	evmenucheck_not_yet_attempted: EV_CHECK_MENU_ITEM
+	evmenucheck_to_be_fixed: EV_CHECK_MENU_ITEM
 	evmenucheck_candidate_fix_available: EV_CHECK_MENU_ITEM
 	evmenucheck_candidate_fix_unavailable: EV_CHECK_MENU_ITEM
 	evmenucheck_candidate_fix_accepted: EV_CHECK_MENU_ITEM

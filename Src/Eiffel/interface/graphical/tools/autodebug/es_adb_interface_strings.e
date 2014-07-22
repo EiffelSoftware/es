@@ -68,7 +68,7 @@ feature
 	Menu_text_automatic_implementation_fixable: STRING = "Automatically fixable by changing implementation"
 	Menu_text_automatic_specification_fixable: STRING = "Automatically fixable by changing contracts"
 	Menu_text_not_automatic_fixable: STRING = "Not automatically fixable"
-	Menu_text_not_yet_attempted: STRING = "Not yet attempted"
+	menu_text_to_be_fixed: STRING = "To be fixed"
 	Menu_text_candidate_fix_available: STRING = "Candidate fix available"
 	Menu_text_candidate_fix_unavailable: STRING = "Candidate fix unavailable"
 	Menu_text_candidate_fix_accepted: STRING = "Candidate fix accepted"

@@ -303,6 +303,7 @@ feature{NONE} -- Implementation
 			l_trace_for_validation: AFX_PROGRAM_EXECUTION_TRACE_REPOSITORY
 			l_cursor: DS_ARRAYED_LIST_CURSOR [AFX_CONTRACT_FIX_TO_FAULT]
 			l_feature_contract_remover: EPA_FEATURE_CONTRACT_REMOVER
+			l_index: INTEGER
 		do
 			if session.should_continue then
 				event_actions.notify_on_contract_fix_validation_started (a_contract_fixes)
@@ -332,17 +333,19 @@ feature{NONE} -- Implementation
 						agent (a_fix: AFX_CONTRACT_FIX_TO_FAULT; a_traces: AFX_PROGRAM_EXECUTION_TRACE_REPOSITORY; a_all_features_to_monitor: DS_ARRAYED_LIST [AFX_FEATURE_TO_MONITOR])
 							do a_fix.compute_ranking_wrt_trace_repository (a_traces, a_all_features_to_monitor) end (?, l_trace_for_validation, features_to_monitor))
 
-					-- Remove invalid fixes.
+					-- Remove invalid fixes, keep at most config.max_valid_fix_number valid fixes.
 				from
 					l_cursor := a_contract_fixes.new_cursor
 					l_cursor.start
+					l_index := 0
 				until
 					l_cursor.after
 				loop
-					if l_cursor.item.ranking >= {AFX_CONTRACT_FIX_TO_FAULT}.Ranking_weight_for_failing then
+					if l_cursor.item.ranking >= {AFX_CONTRACT_FIX_TO_FAULT}.Ranking_weight_for_failing or l_index > session.config.max_valid_fix_number.to_integer_32 then
 						a_contract_fixes.remove_at_cursor (l_cursor)
 					else
 						l_cursor.forth
+						l_index := l_index + 1
 					end
 				end
 

@@ -93,7 +93,7 @@ feature -- Operation
 			a_fault /= Void
 			a_classes /= Void and then not a_classes.is_empty
 		do
-			Result := a_classes.has (a_fault.signature.class_under_test_) and then a_fault.status = {ES_ADB_FAULT}.status_not_yet_attempted
+			Result := a_classes.has (a_fault.signature.class_under_test_) and then a_fault.is_approachable_per_config (config) and then a_fault.status = {ES_ADB_FAULT}.status_not_yet_attempted
 		end
 
 	relaxed_testing_and_fixing_tasks_for_faults_in_classes (a_classes: DS_HASH_SET [CLASS_C]): DS_ARRAYED_LIST [ES_ADB_PROCESS]

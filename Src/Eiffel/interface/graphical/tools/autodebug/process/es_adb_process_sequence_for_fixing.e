@@ -99,8 +99,7 @@ feature -- Operation
 						l_fault.is_approachable_per_config (config) -- Approachable
 						and then (l_fault.is_not_yet_attempted 		-- Not yet attempted
 									or else a_should_reattempt 		-- should reattempt and not yet fixed.
-									and then not l_fault.is_candidate_fix_accepted
-									and then not l_fault.is_manually_fixed)
+									and then not l_fault.is_fixed)
 					then
 						if config.should_fix_contracts and then l_fault.is_exception_type_in_scope_of_contract_fixing then
 							l_relaxed_feature := l_fault.failing_feature_with_context
