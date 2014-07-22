@@ -15,6 +15,23 @@ inherit
 create
 	make
 
+feature -- Access		
+
+	with_simple_vars (a_bound_var: IV_ENTITY): TUPLE [expr: IV_EXPRESSION; subst: ARRAYED_LIST [TUPLE[var: IV_ENTITY; val: IV_EXPRESSION]]]
+			-- Current expression with all occurrences of arithmetic expressions as function/map argumetns replaces with fresh variables;
+			-- together with the corresponding variable substitution.	
+		local
+			l_res: like with_simple_vars
+			l_expr: IV_FORALL
+		do
+			l_res := expression.with_simple_vars (a_bound_var)
+			create l_expr.make (l_res.expr)
+			l_expr.type_variables.append (type_variables)
+			l_expr.bound_variables.append (bound_variables)
+			l_expr.triggers.append (triggers)
+			Result := [l_expr, l_res.subst]
+		end
+
 feature -- Comparison
 
 	same_expression (a_other: IV_EXPRESSION): BOOLEAN
