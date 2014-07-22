@@ -203,7 +203,8 @@ feature -- Type translation
 				if not a_type.is_formal and then a_type.base_class.name_in_upper ~ "ARRAY" then
 					Result := factory.and_clean (Result, factory.function_call ("ARRAY.inv", << a_heap, a_expr >>, bool))
 				end
-			elseif l_boogie_type ~ int then
+			elseif l_boogie_type ~ int and options.is_checking_overflow then
+					-- If we are not checking for overflows, no need to differentiate between kinds of ints
 				Result := numeric_property (a_type, a_expr)
 			else
 					-- Check if it is a logical type with some types sets

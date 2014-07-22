@@ -42,6 +42,8 @@ feature -- Basic operations
 					parse_line (l_line)
 				end
 			end
+
+			postprocess_times
 		end
 
 feature {NONE} -- Implementation
@@ -154,6 +156,36 @@ feature {NONE} -- Implementation
 				input_lines.extend (l_file.last_string.twin)
 			end
 			l_file.close
+		end
+
+	postprocess_times
+			-- Change verification times from cumulative to differences.
+		local
+			l_sorted_procs: ARRAYED_LIST [E2B_BOOGIE_PROCEDURE_RESULT]
+			j: INTEGER
+		do
+				-- Sort procedures results in descending order by verification times:
+			create l_sorted_procs.make (last_result.procedure_results.count)
+			across last_result.procedure_results as i loop
+				from
+					j := 1
+				until
+					j > l_sorted_procs.count or else l_sorted_procs [j].time < i.item.time
+				loop
+					j := j + 1
+				end
+				l_sorted_procs.go_i_th (j)
+				l_sorted_procs.put_left (i.item)
+			end
+				-- For each result in the list but last, subtract the time of the next procedure
+			from
+				j := 1
+			until
+				j >= l_sorted_procs.count
+			loop
+				l_sorted_procs [j].set_time (l_sorted_procs [j].time - l_sorted_procs [j + 1].time)
+				j := j + 1
+			end
 		end
 
 feature {NONE} -- Regular expressions
