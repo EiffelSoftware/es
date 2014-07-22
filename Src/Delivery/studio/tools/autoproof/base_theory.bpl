@@ -189,7 +189,7 @@ function {:inline true} closed_under_domains(frame: Frame, h: HeapType): bool
 
 // Objects outside of ownership domains of frame did not change, unless they were newly allocated
 function same_outside(h: HeapType, h': HeapType, frame: Frame): bool { 
-	(forall <T> o: ref, f: Field T :: { h[o, f] } { h'[o, f] }
+	(forall <T> o: ref, f: Field T :: { h'[o, f] }
     h[o, allocated] ==>      
       h'[o, f] == h[o, f] ||
       frame[o, f] ||        
@@ -199,7 +199,7 @@ function same_outside(h: HeapType, h': HeapType, frame: Frame): bool {
 
 // Objects inside the frame did not change
 function same_inside(h: HeapType, h': HeapType, frame: Frame): bool { 
-	(forall <T> o: ref, f: Field T :: { h[o, f] } { h'[o, f] }
+	(forall <T> o: ref, f: Field T :: { h'[o, f] }
     h[o, allocated] && h'[o, f] != h[o, f] ==> !frame [o, f])
 }
 // This version corresponds to the old semantics of read clauses:

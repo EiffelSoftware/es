@@ -138,7 +138,7 @@ feature {NONE} -- Implementation
 				create {IV_EXISTS} Result.make (factory.and_ (l_guard, a_expr))
 			end
 			Result.add_bound_variable (a_bound_var)
-			if expression_translator.use_triggers then
+			if options.is_generating_triggers and expression_translator.use_triggers then
 				add_triggers (Result)
 			end
 		end

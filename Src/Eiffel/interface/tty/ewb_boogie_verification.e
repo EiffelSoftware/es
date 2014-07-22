@@ -99,6 +99,11 @@ feature -- Execution
 			elseif user_options.has ("-nooverflow") then
 				options.set_checking_overflow (False)
 			end
+			if user_options.has ("-trigger") then
+				options.set_generating_triggers (True)
+			elseif user_options.has ("-notrigger") then
+				options.set_generating_triggers (False)
+			end
 			if user_options.has ("-arithtrigger") then
 				options.set_triggering_on_arithmetic (True)
 			elseif user_options.has ("-noarithtrigger") then

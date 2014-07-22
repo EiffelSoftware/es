@@ -141,24 +141,27 @@ def find_test(test, directory=None):
 				return temp2
 	return None
 
-def run_tests(directory=None):
+def run_tests(directory=None, args_prefix=[]):
 	global base_path
 	if directory is None:
 		directory = base_path
 	for test_name in os.listdir(directory):
 		path = os.path.join(directory, test_name)
-		if os.path.isdir(path):
+		if path.endswith("args.txt"):
+			_as_info("  command line options: " + open(path).readline())
+			args_prefix.extend(open(path).readline().split(" "))
+		elif os.path.isdir(path):
 			if is_test_path(path):
-				run_test(path, test_name)
+				run_test(path, test_name, args_prefix)
 			elif not path.endswith("EIFGENs"):
-				run_tests(path)
+				run_tests(path, args_prefix)
 
 # Run a single test case
-def run_test(path, test_name):
+def run_test(path, test_name, args_prefix=[]):
 	global eve_exe, tests_ecf, store_output
 	if not path is None and os.path.isdir(path):
 		_as_info("Running test: " + test_name)
-		args = [eve_exe, "-config", tests_ecf, "-target", "tests", "-boogie"]
+		args = [eve_exe, "-config", tests_ecf, "-target", "tests", "-boogie"] + args_prefix
 		classes = []
 		for filename in os.listdir(path):
 			if filename.endswith(".e"):
