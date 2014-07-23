@@ -457,12 +457,13 @@ feature -- Helper functions: contracts
 			end
 		end
 
-	translate_contained_expressions (a_expr: EXPR_B; a_translator: E2B_EXPRESSION_TRANSLATOR; convert_to_set: BOOLEAN): TUPLE [expressions: LINKED_LIST [IV_EXPRESSION]; type: TYPE_A]
+	translate_contained_expressions (a_expr: EXPR_B; a_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR; convert_to_set: BOOLEAN): TUPLE [expressions: LINKED_LIST [IV_EXPRESSION]; type: TYPE_A]
 			-- Translate expressions in `a_expr' using `a_translator'; if `convert_to_set', convert all expressions of logical types to sets.
 		local
 			l_expr_list: LINKED_LIST [EXPR_B]
 			l_expressions: LINKED_LIST [IV_EXPRESSION]
 			l_type: TYPE_A
+			l_feature: FEATURE_I
 		do
 			create l_expr_list.make
 			if attached {TUPLE_CONST_B} a_expr as l_tuple then
@@ -486,7 +487,12 @@ feature -- Helper functions: contracts
 				else
 					k.item.process (a_translator)
 					l_expressions.extend (a_translator.last_expression)
-					l_type := k.item.type
+					if attached {CALL_ACCESS_B} k.item as a then
+						l_feature := helper.feature_for_call_access (a, a_translator.current_target_type)
+						l_type := l_feature.type
+					else
+						l_type := k.item.type
+					end
 				end
 			end
 			Result := [l_expressions, l_type]
