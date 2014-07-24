@@ -194,8 +194,15 @@ feature{NONE} -- Auxiliary
 		    l_name: STRING
 			l_expr: EPA_AST_EXPRESSION
 			l_indx, l_count: INTEGER
+			l_integeral_arguments: DS_ARRAYED_LIST [EPA_EXPRESSION]
+			l_creator: EPA_AST_EXPRESSION_SAFE_CREATOR
+			l_feature_table: FEATURE_TABLE
+			l_next_feature: FEATURE_I
+			l_feature_type: TYPE_A
+			l_feature_name: STRING
 		do
 		    l_feature := context_feature.feature_
+		    create l_integeral_arguments.make_equal (10)
 
 		    	-- Arguments.
 			if should_collect_arguments then
@@ -207,7 +214,13 @@ feature{NONE} -- Auxiliary
 			    loop
 			    	l_name := l_feature.arguments.item_name (l_indx)
 
-					add_expression_from_text (l_name)
+					l_expr := l_creator.safe_create_with_text (context_feature.context_class, context_feature.feature_, l_name, context_feature.written_class)
+					if l_expr /= Void and then not l_expr.type.is_void then
+						last_sub_expressions.force (l_expr)
+						if l_expr.type.is_integer then
+							l_integeral_arguments.force_last (l_expr)
+						end
+					end
 
 			    	l_indx := l_indx + 1
 			    end
@@ -216,6 +229,38 @@ feature{NONE} -- Auxiliary
 				-- "Current".
 			if should_collect_current then
 				add_expression_from_text ("Current")
+
+				if not l_integeral_arguments.is_empty then
+					l_class := context_feature.context_class
+					from
+						l_feature_table := l_class.feature_table
+						l_feature_table.start
+					until
+						l_feature_table.after
+					loop
+						l_next_feature := l_feature_table.item_for_iteration
+						l_feature_type := l_next_feature.type
+						l_feature_name := l_next_feature.feature_name
+
+						if (l_feature_type /= Void and then l_feature_type.is_boolean)
+								and then l_next_feature.is_exported_for (system.any_class.compiled_representation)
+								and then (l_next_feature.argument_count = 1 and then l_next_feature.arguments.first.is_integer)
+						then
+							from
+								l_integeral_arguments.start
+							until
+								l_integeral_arguments.after
+							loop
+								l_name := "" + l_feature_name + " (" + l_integeral_arguments.item_for_iteration.text + ")"
+								add_expression_from_text (l_name)
+
+								l_integeral_arguments.forth
+							end
+						end
+
+						l_feature_table.forth
+					end
+				end
 			end
 
 				-- "Result" if applicable.

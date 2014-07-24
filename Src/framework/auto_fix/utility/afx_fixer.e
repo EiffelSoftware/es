@@ -48,7 +48,7 @@ feature -- Basic operation
 	execute
 			--
 		local
-			l_traces_before_fixing, l_traces_after_relaxing, l_traces_for_validation: AFX_PROGRAM_EXECUTION_TRACE_REPOSITORY
+			l_traces_before_fixing, l_traces_before_fixing_twin, l_traces_after_relaxing, l_traces_for_validation: AFX_PROGRAM_EXECUTION_TRACE_REPOSITORY
 			l_fixing_targets: DS_ARRAYED_LIST [AFX_FIXING_TARGET]
 			l_contract_fixes: DS_ARRAYED_LIST [AFX_CONTRACT_FIX_TO_FAULT]
 			l_code_fixes, l_valid_code_fixes: DS_ARRAYED_LIST [AFX_CODE_FIX_TO_FAULT]
@@ -68,6 +68,7 @@ feature -- Basic operation
 
 			reproduce_failure
 			l_traces_before_fixing := collect_behavior_of_regular_tests
+			l_traces_before_fixing_twin := l_traces_before_fixing.twin
 
 			if config.is_fixing_implementation then
 				l_fixing_targets := localize_faulty_targets (l_traces_before_fixing)
@@ -82,7 +83,7 @@ feature -- Basic operation
 				l_feature_to_relax.set_monitor_body (False)
 				l_traces_after_relaxing := collect_behavior_of_relaxed_tests (l_feature_to_relax)
 
-				l_contract_fixes := generate_contract_fixes (l_traces_before_fixing, l_traces_after_relaxing)
+				l_contract_fixes := generate_contract_fixes (l_traces_before_fixing_twin, l_traces_after_relaxing)
 				validate_contract_fixes (l_contract_fixes)
 				sort_contract_fixes (l_contract_fixes)
 				fixes.append_last (l_contract_fixes)

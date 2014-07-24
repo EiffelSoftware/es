@@ -429,7 +429,9 @@ feature -- UI Actions
 				if l_should_continue then
 					info_center.on_debugging_start
 
+					config.working_directory.clear
 					copy_project (workbench.eiffel_project, config.working_directory)
+
 					if is_project_copied_into_working_dir then
 						create l_debugging_task.make
 						create forwarding_task.make (l_debugging_task)

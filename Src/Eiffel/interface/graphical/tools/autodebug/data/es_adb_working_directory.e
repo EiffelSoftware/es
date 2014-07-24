@@ -152,6 +152,18 @@ feature -- Operation
 			l_dir.delete_content
 		end
 
+	clear_temp_dir
+			-- Clear the content in `temp_dir'.
+		local
+			l_dir: DIRECTORY
+		do
+			create l_dir.make_with_path (temp_dir)
+			if not l_dir.exists then
+				l_dir.recursive_create_dir
+			end
+			l_dir.delete_content
+		end
+
 feature{NONE} -- Cache
 
 	testing_result_dir_internal: like testing_result_dir

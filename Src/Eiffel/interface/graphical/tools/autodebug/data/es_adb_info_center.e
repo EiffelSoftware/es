@@ -97,7 +97,6 @@ feature -- ADB Actions
 			-- <Precursor>
 		do
 			reset_internal_state
-			reset_external_state
 
 			debugging_start_actions.call (Void)
 		end

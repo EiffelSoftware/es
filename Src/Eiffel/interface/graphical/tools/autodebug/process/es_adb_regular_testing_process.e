@@ -53,7 +53,7 @@ feature{NONE} -- Implementation
 			l_cursor: DS_HASH_SET_CURSOR [CLASS_C]
 		do
 			if config.should_use_fixed_seed_in_testing then
-				l_seed := "-seed " + config.fixed_seed.out
+				l_seed := "-e " + config.fixed_seed.out
 			else
 				l_seed := ""
 			end

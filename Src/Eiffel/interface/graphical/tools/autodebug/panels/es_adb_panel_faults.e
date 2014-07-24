@@ -299,7 +299,9 @@ feature -- ADB Actions
 		do
 			tool_panel.set_external_process_running (False)
 			enable_command_invocation_widget (True)
+
 			evbutton_fix_selected.set_text (button_text_fix_selected)
+			evbutton_fix_all_to_be_attempted.set_text (button_text_fix_all)
 		end
 
 	on_valid_fix_found (a_fix: ES_ADB_FIX)
@@ -506,16 +508,25 @@ feature{NONE} -- GUI actions
 					end
 					if l_should_continue then
 						info_center.on_continuation_debugging_start
-						evbutton_fix_selected.set_text (Button_text_fix_selected_stop)
-						evbutton_fix_selected.enable_sensitive
 
-						create l_faults.make_equal (1)
-						l_faults.force_last (l_fault)
+						config.working_directory.clear_temp_dir
+						copy_project (workbench.eiffel_project, config.working_directory)
 
-						create l_fixing_task.make (l_faults, True)
-						create forwarding_task.make (l_fixing_task)
-						forwarding_task.on_terminate_actions.extend (agent info_center.on_continuation_debugging_stop)
-						forwarding_task.start
+						if is_project_copied_into_working_dir then
+							evbutton_fix_selected.set_text (Button_text_fix_selected_stop)
+							evbutton_fix_selected.enable_sensitive
+
+							create l_faults.make_equal (1)
+							l_faults.force_last (l_fault)
+
+							create l_fixing_task.make (l_faults, True)
+							create forwarding_task.make (l_fixing_task)
+							forwarding_task.on_terminate_actions.extend (agent info_center.on_continuation_debugging_stop)
+							forwarding_task.start
+						else
+							display_message ({ES_ADB_INTERFACE_STRINGS}.Msg_failed_to_copy_project)
+							info_center.on_continuation_debugging_stop
+						end
 
 					end
 				end
@@ -555,14 +566,22 @@ feature{NONE} -- GUI actions
 				end
 
 				if not l_all_to_be_attempted.is_empty then
-					create l_fixing_task.make (l_all_to_be_attempted, True)
-					create forwarding_task.make (l_fixing_task)
-					forwarding_task.on_terminate_actions.extend (agent do info_center.on_continuation_debugging_stop; evbutton_fix_all_to_be_attempted.set_text (button_text_fix_all) end)
-					forwarding_task.start
+					config.working_directory.clear_temp_dir
+					copy_project (workbench.eiffel_project, config.working_directory)
+
+					if is_project_copied_into_working_dir then
+						create l_fixing_task.make (l_all_to_be_attempted, True)
+						create forwarding_task.make (l_fixing_task)
+						forwarding_task.on_terminate_actions.extend (agent info_center.on_continuation_debugging_stop)
+						forwarding_task.start
+
+					else
+						display_message ({ES_ADB_INTERFACE_STRINGS}.Msg_failed_to_copy_project)
+						info_center.on_continuation_debugging_stop
+					end
 
 				else
 					info_center.on_continuation_debugging_stop
-					evbutton_fix_all_to_be_attempted.set_text (button_text_fix_all)
 				end
 			else
 				forwarding_task.cancel
