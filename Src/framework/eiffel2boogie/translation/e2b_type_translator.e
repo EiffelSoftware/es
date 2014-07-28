@@ -385,6 +385,7 @@ feature {NONE} -- Implementation
 						l_translator.set_context_line_number (l_assert.line_number)
 						l_translator.set_context_tag (l_assert.tag)
 						l_translator.set_context_readable (factory.function_call ("user_inv_readable", << factory.global_heap, factory.std_current >>, types.frame))
+						l_translator.set_use_triggers (True)
 						l_assert.process (l_translator)
 						last_safety_checks.append (l_translator.side_effect)
 						last_safety_checks.extend (create {IV_ASSERT}.make_assume (l_translator.last_expression))
@@ -431,8 +432,8 @@ feature {NONE} -- Implementation
 						factory.type_value (type)),
 					factory.equal (l_generic_call, l_special_call)))
 			l_forall.add_bound_variable (l_heap)
-			l_forall.add_trigger (l_generic_call)
 			l_forall.add_bound_variable (l_current)
+			l_forall.add_trigger (l_generic_call)
 
 			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
 
@@ -444,8 +445,8 @@ feature {NONE} -- Implementation
 						factory.type_value (type)),
 					factory.implies_ (l_generic_call, l_special_call)))
 			l_forall.add_bound_variable (l_heap)
-			l_forall.add_trigger (l_generic_call)
 			l_forall.add_bound_variable (l_current)
+			l_forall.add_trigger (l_generic_call)
 
 			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
 		end

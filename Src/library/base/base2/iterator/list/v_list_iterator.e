@@ -142,9 +142,6 @@ feature -- Removal
 			target_wrapped: target.is_wrapped
 		end
 
-
-invariant
-	sequence_definition: sequence ~ target.sequence
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"

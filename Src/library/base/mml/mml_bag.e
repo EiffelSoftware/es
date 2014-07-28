@@ -38,7 +38,7 @@ feature {NONE} -- Initialization
 	multiple (x: G; n: INTEGER)
 			-- Create a bag that contains `n' occurrences of `x'.
 		require
-			n_positive: n >= 0			
+			n_positive: n >= 0
 		do
 		end
 
@@ -58,7 +58,7 @@ feature -- Properties
 			-- Are all values equal to `c'?
 		do
 		end
-		
+
 	is_valid: BOOLEAN
 			-- Id `Current' a valid bag (are all occurrences non-negative)?
 		do
@@ -95,14 +95,14 @@ feature -- Comparison
 			maps_to: "Bag#Equal"
 		do
 		end
-		
+
 	is_subbag alias "<=" (a_other: MML_BAG [G]): BOOLEAN
 			-- Does `other' contain all the elements of `Current'?
 		note
 			maps_to: "Bag#Subset"
 		do
 		end
-		
+
 	is_disjoint (a_other: MML_BAG [G]): BOOLEAN
 			-- Do `a_other' and `Current' have no elements in common?
 		note
@@ -150,17 +150,17 @@ feature -- Modification
 			-- Bag that contains all elements from `other' and `Current'.
 		do
 		end
-		
+
 	intersection alias "*" (other: MML_BAG [G]): MML_BAG [G]
 			-- Bag that contains only elements present in both `other' and `Current'.
 		do
-		end		
+		end
 
 	difference alias "-" (other: MML_BAG [G]): MML_BAG[G]
 			-- Current bag with all occurrences of values from `other' removed.
 		do
 		end
-		
+
 feature -- Iterable implementation
 
 	new_cursor: ITERATION_CURSOR [G]
@@ -180,5 +180,6 @@ feature -- Convenience
 			"[
 				return NULL;
 			]"
-		end		
+		end
+
 end

@@ -1,8 +1,8 @@
 note
 	description: "Sequences where values can be updated."
 	author: "Nadia Polikarpova"
-	model: map
-	manual_inv: true	
+	model: sequence, lower_
+	manual_inv: true
 
 deferred class
 	V_MUTABLE_SEQUENCE [G]
@@ -40,7 +40,7 @@ feature -- Replacement
 			is_wrapped: is_wrapped
 			has_index: has_index (i)
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["map", "observers"], Current)
+			modify_model (["sequence", "observers"], Current)
 		local
 			it: V_MUTABLE_SEQUENCE_ITERATOR [G]
 		do
@@ -49,7 +49,7 @@ feature -- Replacement
 			forget_iterator (it)
 		ensure
 			is_wrapped: is_wrapped
-			map_effect: map ~ old map.updated (i, v)
+			sequence_effect: sequence ~ old sequence.replaced_at (idx (i), v)
 			observers_restored: observers ~ old observers
 		end
 
@@ -62,16 +62,17 @@ feature -- Replacement
 			has_index_one: has_index (i1)
 			has_index_two: has_index (i2)
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["map", "observers"], Current)
+			modify_model (["sequence", "observers"], Current)
 		local
 			v: G
 		do
 			v := item (i1)
 			put (item (i2), i1)
+			check inv_only ("upper_definition") end
 			put (v, i2)
 		ensure
 			is_wrapped: is_wrapped
-			map_effect: map ~ old map.updated (i1, map [i2]).updated (i2, map [i1])
+			sequence_effect: sequence ~ old sequence.replaced_at (idx(i1), sequence [idx(i2)]).replaced_at (idx(i2), sequence [idx(i1)])
 			observers_restored: observers ~ old observers
 		end
 
@@ -81,29 +82,28 @@ feature -- Replacement
 			explicit: contracts, wrapping
 		require
 			is_wrapped: is_wrapped
-			l_not_too_small: l >= lower
-			u_not_too_large: u <= upper
+			l_not_too_small: l >= lower_
+			u_not_too_large: u <= upper_
 			l_not_too_large: l <= u + 1
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["map", "observers"], Current)
+			modify_model (["sequence", "observers"], Current)
 		local
 			it: V_MUTABLE_SEQUENCE_ITERATOR [G]
 			j: INTEGER
-			m: like map
 		do
-			check inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty") end
 			from
 				it := at (l)
 				j := l
 			invariant
 				is_wrapped and it.is_wrapped
-				inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty") and it.inv
-				j = lower_ + it.index_ - 1
+				inv_only ("upper_definition")
+				it.inv_only ("sequence_definition")
+				it.index_ = idx(j)
 				l <= j and j <= u + 1
-				map.domain ~ map.domain.old_
-				across map.domain as i all map [i.item] = if l <= i.item and i.item < j then v else map.old_ [i.item] end end
+				upper_ = upper_.old_
+				across 1 |..| sequence.count as i all sequence [i.item] = if idx(l) <= i.item and i.item < idx(j) then v else sequence.old_ [i.item] end end
 				modify_model (["index_", "sequence"], it)
-				modify_model ("map", Current)
+				modify_model ("sequence", Current)
 			until
 				j > u
 			loop
@@ -115,10 +115,10 @@ feature -- Replacement
 			forget_iterator (it)
 		ensure
 			is_wrapped: is_wrapped
-			map_domain_effect: map.domain ~ old map.domain
-			map_changed_effect: (map | (create {MML_INTERVAL}.from_range (l, u))).is_constant (v)
-			map_unchanged_effect: (map | (map.domain - (create {MML_INTERVAL}.from_range (l, u)))) ~
-				old (map | (map.domain - (create {MML_INTERVAL}.from_range (l, u))))
+			sequence_domain_effect: sequence.count = old sequence.count
+			sequence_changed_effect: across idx (l) |..| idx (u) as i all sequence [i.item] = v end
+			sequence_unchanged_effect_1: across idx (lower_) |..| idx (l - 1) as i all sequence [i.item] = (old sequence) [i.item] end
+			sequence_unchanged_effect_2: across idx (u + 1) |..| idx (upper_) as i all sequence [i.item] = (old sequence) [i.item] end
 			observers_restored: observers ~ old observers
 		end
 
@@ -132,15 +132,15 @@ feature -- Replacement
 			u_not_too_large: u <= upper
 			l_not_too_large: l <= u + 1
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["map", "observers"], Current)
+			modify_model (["sequence", "observers"], Current)
 		do
 			fill (({G}).default, l, u)
 		ensure
 			is_wrapped: is_wrapped
-			map_domain_effect: map.domain ~ old map.domain
-			map_changed_effect: (map | (create {MML_INTERVAL}.from_range (l, u))).is_constant (({G}).default)
-			map_unchanged_effect: (map | (map.domain - (create {MML_INTERVAL}.from_range (l, u)))) ~
-				old (map | (map.domain - (create {MML_INTERVAL}.from_range (l, u))))
+			sequence_domain_effect: sequence.count = old sequence.count
+			sequence_changed_effect: across idx (l) |..| idx (u) as i all sequence [i.item] = ({G}).default end
+			sequence_unchanged_effect_1: across idx (lower_) |..| idx (l - 1) as i all sequence [i.item] = (old sequence) [i.item] end
+			sequence_unchanged_effect_2: across idx (u + 1) |..| idx (upper_) as i all sequence [i.item] = (old sequence) [i.item] end
 			observers_restored: observers ~ old observers
 		end
 
@@ -152,13 +152,13 @@ feature -- Replacement
 			is_wrapped: is_wrapped
 			other_wrapped: other.is_wrapped
 			other_not_current: other /= Current
-			other_first_not_too_small: other_first >= other.lower
-			other_last_not_too_large: other_last <= other.upper
+			other_first_not_too_small: other_first >= other.lower_
+			other_last_not_too_large: other_last <= other.upper_
 			other_first_not_too_large: other_first <= other_last + 1
-			index_not_too_small: index >= lower
-			enough_space: upper - index >= other_last - other_first
+			index_not_too_small: index >= lower_
+			enough_space: upper_ - index >= other_last - other_first
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["map", "observers"], Current)
+			modify_model (["sequence", "observers"], Current)
 			modify_model ("observers", other)
 		local
 			other_it: V_SEQUENCE_ITERATOR [G]
@@ -166,30 +166,29 @@ feature -- Replacement
 			j, n: INTEGER
 		do
 			n := other_last - other_first + 1
-			check inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty") end
-			check other.inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty") end
 			from
-				j := 1
+				j := 0
 				other_it := other.at (other_first)
 				it := at (index)
 			invariant
 				is_wrapped and other.is_wrapped
 				it.is_wrapped and other_it.is_wrapped
-				inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty")
-				other.inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty")
-				it.inv
-				it.index_ = j + index - lower_
-				other_it.index_ = j + other_first - other.lower_
-				1 <= j and j <= n + 1
-				map.domain ~ map.domain.old_
-				across map.domain as i all map [i.item] = if index <= i.item and i.item < index + j - 1
-					then other.map [i.item - index + other_first]
-					else map.old_ [i.item] end end
+				inv_only ("upper_definition")
+				other.inv_only ("upper_definition")
+				it.inv_only ("sequence_definition")
+				it.index_ = idx (index + j)
+				other_it.index_ = other.idx (other_first + j)
+				0 <= j and j <= n
+				upper_ = upper_.old_
+				across 1 |..| sequence.count as i all not (idx (index) <= i.item and i.item < idx (index + j)) implies
+					sequence [i.item] = sequence.old_ [i.item] end
+				across 1 |..| sequence.count as i all idx (index) <= i.item and i.item < idx (index + j) implies
+					sequence [i.item] = other.sequence [i.item - idx (index) + other.idx (other_first)] end
 				modify_model (["index_", "sequence"], it)
 				modify_model ("index_", other_it)
-				modify_model ("map", Current)
+				modify_model ("sequence", Current)
 			until
-				j > n
+				j >= n
 			loop
 				it.put (other_it.item)
 				other_it.forth
@@ -201,11 +200,10 @@ feature -- Replacement
 			forget_iterator (it)
 		ensure
 			is_wrapped: is_wrapped
-			map_domain_effect: map.domain ~ old map.domain
-			map_changed_effect: across create {MML_INTERVAL}.from_range (index, index + other_last - other_first) as i all
-				map [i.item] = other.map [i.item - index + other_first] end
-			map_unchanged_effect: (map | (map.domain - (create {MML_INTERVAL}.from_range (index, index + other_last - other_first)))) ~
-				old (map | (map.domain - (create {MML_INTERVAL}.from_range (index, index + other_last - other_first))))
+			sequence_domain_effect: sequence.count = old sequence.count
+			sequence_effect: across 1 |..| sequence.count as i all if idx (index) <= i.item and i.item < idx (index + other_last - other_first + 1)
+					then sequence [i.item] = other.sequence [i.item - idx (index) + other.idx (other_first)]
+					else sequence [i.item] = (old sequence) [i.item] end end
 			observers_restored: observers ~ old observers
 			other_observers_restored: other.observers ~ old other.observers
 		end
@@ -217,7 +215,7 @@ feature -- Replacement
 		require
 			is_wrapped: is_wrapped
 			observers_open: across observers as o all o.item.is_open end
-			modify_model (["map", "observers"], Current)
+			modify_model (["sequence", "observers"], Current)
 		local
 			j, k: INTEGER
 		do
@@ -225,13 +223,13 @@ feature -- Replacement
 				j := lower
 				k := upper
 			invariant
-				inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty")
-				map.domain ~ map.domain.old_
+				inv_only ("upper_definition")
+				upper_ = upper_.old_
 				lower_ <= j and j <= k + 1 and k <= upper_
 				k = lower_ + upper_ - j
-				across j |..| k as i all map.domain [i.item] and then map [i.item] = map.old_ [i.item] end
-				across lower_ |..| (j - 1) as i all map.domain [i.item] and then map [i.item] = map.old_ [lower_ + upper_ - i.item] end
-				across (k + 1) |..| upper_ as i all map.domain [i.item] and then map [i.item] = map.old_ [lower_ + upper_ - i.item] end
+				across idx (j) |..| idx (k) as i all sequence [i.item] = sequence.old_ [i.item] end
+				across 1 |..| idx (j - 1) as i all sequence [i.item] = sequence.old_ [sequence.count - i.item + 1] end
+				across idx (k + 1) |..| sequence.count as i all sequence [i.item] = sequence.old_ [sequence.count - i.item + 1] end
 				is_wrapped
 				observers ~ observers.old_
 			until
@@ -243,8 +241,8 @@ feature -- Replacement
 			end
 		ensure
 			is_wrapped: is_wrapped
-			map_domain_effect: map.domain ~ old map.domain
-			map_effect: across map.domain as i all map [i.item] = (old map) [lower_ + upper_ - i.item] end
+			sequence_domain_effect: sequence.count = old sequence.count
+			sequence_effect: across 1 |..| sequence.count as i all sequence [i.item] = (old sequence) [sequence.count - i.item + 1] end
 			observers_restored: observers ~ old observers
 		end
 

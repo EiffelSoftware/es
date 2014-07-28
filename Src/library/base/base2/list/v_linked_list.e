@@ -85,7 +85,6 @@ feature -- Access
 			-- First element.
 		do
 			check inv end
-			check across cell_sequence.domain as i all sequence [i.item] = cell_sequence [i.item].item end end
 			Result := first_cell.item
 		end
 
@@ -93,7 +92,6 @@ feature -- Access
 			-- Last element.
 		do
 			check inv end
-			check across cell_sequence.domain as i all sequence [i.item] = cell_sequence [i.item].item end end
 			Result := last_cell.item
 		end
 
@@ -173,8 +171,6 @@ feature -- Extension
 		local
 			cell: V_LINKABLE [G]
 		do
-			check across 1 |..| (count - 1) as i all cell_sequence [i.item].right = cell_sequence [i.item + 1] end end
-
 			create cell.put (v)
 			if first_cell = Void then
 				last_cell := cell
@@ -185,9 +181,7 @@ feature -- Extension
 			count := count + 1
 
 			cell_sequence := cell_sequence.prepended (cell)
-			check cell_sequence.old_ = cell_sequence.but_first end
 			sequence := sequence.prepended (v)
-			lemma_extended (sequence.old_, sequence, cell_sequence.old_, cell_sequence, 1, cell)
 			upper_ := upper_ + 1
 		ensure then
 			cell_sequence_preserved: old cell_sequence ~ cell_sequence.but_first
@@ -209,9 +203,7 @@ feature -- Extension
 			last_cell := cell
 			count := count + 1
 
-			check across cell_sequence.domain as i all sequence [i.item] = cell_sequence [i.item].item end end
 			cell_sequence := cell_sequence & cell
-			check cell_sequence.old_ = cell_sequence.but_last end
 			sequence := sequence & v
 			upper_ := upper_ + 1
 		ensure then
@@ -242,9 +234,7 @@ feature -- Extension
 		do
 			if not input.after then
 				check input.inv end
-				check inv_only ("count_definition") end
 				extend_front (input.item)
-				check inv_only ("count_definition") end
 				input.forth
 
 				from
@@ -265,8 +255,6 @@ feature -- Extension
 					input.after
 				loop
 					check it.inv_only ("no_observers", "subjects_definition", "sequence_definition") end
-					lemma_concat_interval ({MML_SEQUENCE [G]}.empty_sequence, input.sequence, sequence.old_, sequence, input.index_.old_, input.index_ - 1)
-					check sequence.extended_at (it.index_ + 1, input.item) = input.sequence.interval (input.index_.old_, input.index_) + sequence.old_ end
 					it.extend_right (input.item)
 					check it.inv_only ("after_definition", "sequence_definition") end
 					it.forth
@@ -294,10 +282,10 @@ feature -- Extension
 					it := at (i - 1)
 					check input.inv end
 					check inv_only ("lower_definition", "upper_definition", "count_definition") end
-					check it.inv_only ("sequence_definition") end
 				invariant
 					1 <= input.index_ and input.index_ <= input.sequence.count + 1
-					i - 1 <= it.index_ and it.index_ <= it.sequence.count
+					i - 1 <= it.index_
+					it.index_ <= it.sequence.count
 					it.index_ - i + 1 = input.index_ - input.index_.old_
 					sequence ~ sequence.old_.front (i - 1) + input.sequence.interval (input.index_.old_, input.index_ - 1) + sequence.old_.tail (i)
 					is_wrapped
@@ -310,9 +298,6 @@ feature -- Extension
 					input.after
 				loop
 					check it.inv_only ("no_observers", "subjects_definition", "sequence_definition") end
-					lemma_concat_interval (sequence.old_.front (i - 1), input.sequence, sequence.old_.tail (i), sequence, input.index_.old_, input.index_ - 1)
-					check sequence.extended_at (it.index + 1, input.item) =
-						sequence.old_.front (i - 1) + input.sequence.interval (input.index_.old_, input.index_) + sequence.old_.tail (i) end
 					it.extend_right (input.item)
 					check it.inv_only ("after_definition", "sequence_definition") end
 					it.forth
@@ -331,14 +316,12 @@ feature -- Removal
 		note
 			explicit: contracts
 		do
-			check across 1 |..| (count - 1) as i all cell_sequence [i.item].right = cell_sequence [i.item + 1] end end
 			if count = 1 then
 				last_cell := Void
 			end
 			first_cell := first_cell.right
 			count := count - 1
 
-			check across cell_sequence.domain as i all sequence [i.item] = cell_sequence [i.item].item end end
 			cell_sequence := cell_sequence.but_first
 			sequence := sequence.but_first
 			upper_ := upper_ - 1
@@ -421,8 +404,6 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 				j = i
 			loop
 				Result := Result.right
-				check across cell_sequence.domain as k all attached cell_sequence [k.item] end end
-				check across 1 |..| (count - 1) as k all cell_sequence [k.item].right = cell_sequence [k.item + 1] end end
 				j := j + 1
 			end
 		ensure
@@ -452,6 +433,8 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 
 	extend_after (new, c: V_LINKABLE [G]; index_: INTEGER)
 			-- Add a new cell with value `v' after `c'.
+		note
+			skip: true
 		require
 			index_in_domain: cell_sequence.domain [index_]
 			c_in_list: cell_sequence [index_] = c
@@ -465,7 +448,6 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 			unwrap
 			lemma_cells_distinct
 
-			check across 1 |..| (count - 1) as i all cell_sequence [i.item].right = cell_sequence [i.item + 1] end end
 			if c.right = Void then
 				last_cell := new
 			else
@@ -476,8 +458,8 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 
 			cell_sequence := cell_sequence.extended_at (index_ + 1, new)
 			sequence := sequence.extended_at (index_ + 1, new.item)
-			lemma_extended (sequence.old_, sequence, cell_sequence.old_, cell_sequence, index_ + 1, new)
 			upper_ := upper_ + 1
+
 			wrap
 		ensure
 			sequence ~ old sequence.extended_at (index_ + 1, new.item)
@@ -487,6 +469,8 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 
 	remove_after (c: V_LINKABLE [G]; index_: INTEGER)
 			-- Remove the cell to the right of `c'.
+		note
+			skip: true
 		require
 			valid_index: 1 <= index_ and index_ <= cell_sequence.count - 1
 			c_in_list: cell_sequence [index_] = c
@@ -506,7 +490,6 @@ feature {V_CONTAINER, V_ITERATOR} -- Implementation
 
 			cell_sequence := cell_sequence.removed_at (index_ + 1)
 			sequence := sequence.removed_at (index_ + 1)
-			lemma_removed (sequence.old_, sequence, cell_sequence.old_, cell_sequence, index_ + 1)
 			upper_ := upper_ - 1
 			wrap
 		ensure
@@ -612,8 +595,8 @@ feature {V_LINKED_LIST, V_LINKED_LIST_ITERATOR} -- Specificaton
 				lemma_cells_distinct_from (1)
 			end
 		ensure
-			cells_distinct: across cell_sequence.domain as j all
-				across cell_sequence.domain as k all
+			cells_distinct: across 1 |..| count as j all
+				across 1 |..| count as k all
 					j.item < k.item implies cell_sequence [j.item] /= cell_sequence [k.item]
 				end
 			end
@@ -628,75 +611,50 @@ feature {V_LINKED_LIST, V_LINKED_LIST_ITERATOR} -- Specificaton
 			inv_only ("cell_sequence_domain", "cell_sequence_last", "cells_exist", "cell_sequence_later")
 			decreases (count - i)
 		do
-			check across cell_sequence.domain as j all attached cell_sequence [j.item] end end
-			check across 1 |..| (count - 1) as j all cell_sequence [j.item].right = cell_sequence [j.item + 1] end end
 			if i /= count then
 				lemma_cells_distinct_from (i + 1)
-				check across cell_sequence.domain as j all j.item <= i - 1 implies cell_sequence [j.item].right /= cell_sequence [i + 1] end end
 			end
 		ensure
-			cells_distinct: across cell_sequence.domain as j all
-				across cell_sequence.domain as k all
-					i <= k.item and j.item < k.item implies cell_sequence [j.item] /= cell_sequence [k.item]
+			cells_distinct: across i |..| count as j all
+				across i |..| count as k all
+					j.item < k.item implies cell_sequence [j.item] /= cell_sequence [k.item]
 				end
 			end
 		end
 
-	lemma_next (i1, i2: INTEGER)
-			-- Given two indexes `i1' < `i2' into the list,
-			-- the cell at `i1' has the cell at `i2' as its `right' iff `i2' = `i1' + 1.
-		note
-			status: lemma
-		require
-			indexes_in_bounds: 1 <= i1 and i1 < i2 and i2 <= count
-			almost_holds: inv_only ("count_definition", "cell_sequence_domain", "cells_exist", "cell_sequence_later", "cell_sequence_last")
-		do
-			check across cell_sequence.domain as i all attached cell_sequence [i.item] end end
-			check across 1 |..| (count - 1) as i all attached cell_sequence [i.item] and then cell_sequence [i.item].right = cell_sequence [i.item + 1] end end
-			lemma_cells_distinct
-		ensure
-			(i1 + 1 = i2) = (cell_sequence [i1].right = cell_sequence [i2])
-		end
-
-	lemma_extended (s, s1: MML_SEQUENCE [G]; cs, cs1: MML_SEQUENCE [V_LINKABLE [G]]; index: INTEGER; cell: V_LINKABLE [G])
-		note
-			status: lemma
-		require
-			s.count = cs.count
-			across cs.domain as i all attached cs [i.item] and then cs [i.item].item = s [i.item] end
-			1 <= index and index <= cs.count + 1
-			cell /= Void
-			cs1 = cs.extended_at (index, cell)
-			s1 = s.extended_at (index, cell.item)
-		do
-			check across cs.domain as i all attached cs [i.item] and then cs [i.item].item = s [i.item] end end
-		ensure
-			across cs1.domain as i all attached cs1 [i.item] and then cs1 [i.item].item = s1 [i.item] end
-		end
-
-	lemma_removed (s, s1: MML_SEQUENCE [G]; cs, cs1: MML_SEQUENCE [V_LINKABLE [G]]; index: INTEGER)
-		note
-			status: lemma
-		require
-			s.count = cs.count
-			across cs.domain as i all attached cs [i.item] and then cs [i.item].item = s [i.item] end
-			cs.domain [index]
-			cs1 = cs.removed_at (index)
-			s1 = s.removed_at (index)
-		do
-			check across cs.domain as i all attached cs [i.item] and then cs [i.item].item = s [i.item] end end
-		ensure
-			across cs1.domain as i all attached cs1 [i.item] and then cs1 [i.item].item = s1 [i.item] end
-		end
+--	lemma_next (i1, i2: INTEGER)
+--			-- Given two indexes `i1' < `i2' into the list,
+--			-- the cell at `i1' has the cell at `i2' as its `right' iff `i2' = `i1' + 1.
+--		note
+--			status: lemma
+--		require
+--			indexes_in_bounds: 1 <= i1 and i1 < i2 and i2 <= count
+--			almost_holds: inv_only ("count_definition", "cell_sequence_domain", "cells_exist", "cell_sequence_later", "cell_sequence_last")
+--		do
+--			lemma_cells_distinct
+--		ensure
+--			(i1 + 1 = i2) = (cell_sequence [i1].right = cell_sequence [i2])
+--		end
 
 	is_linked (cs: like cell_sequence): BOOLEAN
 			-- Are adjacent cells of `cs' liked to each other?
 		note
 			status: ghost, functional
 		require
-			reads (cs.but_last.range)
+			reads_field ("right", cs.but_last.range)
 		do
 			Result := across 1 |..| (cs.count - 1) as i all attached cs [i.item] and then cs [i.item].right = cs [i.item + 1] end
+		end
+
+	is_value_sequence (cs: like cell_sequence; s: like sequence): BOOLEAN
+			--
+		note
+			status: ghost, functional
+		require
+			cs.count = s.count
+			reads_field ("item", cs.range)
+		do
+			Result := across 1 |..| s.count as i all attached cs [i.item] and then s [i.item] = cs [i.item].item end
 		end
 
 invariant
@@ -705,14 +663,16 @@ invariant
 	cell_sequence_domain: cell_sequence.count = count
 	first_cell_empty: count = 0 implies first_cell = Void
 	last_cell_empty: count = 0 implies last_cell = Void
-	cells_exist: across cell_sequence.domain as i all attached cell_sequence [i.item] end
+	cells_exist: across 1 |..| count as i all attached cell_sequence [i.item] end
 	cell_sequence_first: count > 0 implies cell_sequence.first = first_cell
 	cell_sequence_last: count > 0 implies (cell_sequence.last = last_cell and attached last_cell) and then last_cell.right = Void
-	cell_sequence_later: is_linked (cell_sequence)
-	sequence_definition: across cell_sequence.domain as i all sequence [i.item] = cell_sequence [i.item].item end
+--	cell_sequence_later: is_linked (cell_sequence)
+	cell_sequence_later: across 1 |..| (cell_sequence.count - 1) as i all cell_sequence [i.item].right = cell_sequence [i.item + 1] end
+--	sequence_definition: is_value_sequence (cell_sequence, sequence) -- across 1 |..| count as i all sequence [i.item] = cell_sequence [i.item].item end
+	sequence_definition: across 1 |..| count as i all sequence [i.item] = cell_sequence [i.item].item end
 
 note
-	explicit: observers
+	explicit: observers, bag, map, lower_, owns
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"
 	license: "Eiffel Forum License v2 (see http://www.eiffel.com/licensing/forum.txt)"
 	source: "[

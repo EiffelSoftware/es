@@ -224,7 +224,7 @@ feature -- Basic operations
 			create safety_check_condition.make
 			safety_check_condition.extend (factory.true_)
 			create parameters_stack.make
-			use_triggers := True
+			use_triggers := False
 		end
 
 	set_local_writable (a_writable: IV_EXPRESSION)

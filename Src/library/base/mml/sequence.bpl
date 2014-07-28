@@ -20,10 +20,10 @@ axiom (forall<T> t: T :: { Seq#Length(Seq#Singleton(t)) } Seq#Length(Seq#Singlet
 
 // Does a sequence contain a given element?
 function Seq#Has<T>(s: Seq T, x: T): bool;
-axiom (forall<T> s: Seq T, x: T :: { Seq#Has(s,x) }
-  Seq#Has(s,x) <==>
-    (exists i: int :: { Seq#Item(s,i) } 1 <= i && i <= Seq#Length(s) && Seq#Item(s,i) == x));
-axiom (forall<T> s: Seq T, i: int :: { Seq#Item(s,i) }
+// axiom (forall<T> s: Seq T, x: T :: { Seq#Has(s,x) }
+  // Seq#Has(s,x) <==>
+    // (exists i: int :: { Seq#Item(s,i) } 1 <= i && i <= Seq#Length(s) && Seq#Item(s,i) == x));
+axiom (forall<T> s: Seq T, i: int :: { Seq#Item(s, i) }
   1 <= i && i <= Seq#Length(s) ==>
     Seq#Has(s, Seq#Item(s, i)));    
 axiom (forall<T> x: T ::
@@ -68,6 +68,10 @@ function Seq#Domain<T>(q: Seq T): Set int
 // Set of values
 function Seq#Range<T>(Seq T): Set T;
 axiom (forall<T> q: Seq T, o: T :: { Seq#Range(q)[o] }{ Seq#Has(q, o) } Seq#Has(q, o) <==> Seq#Range(q)[o]);
+axiom (forall<T> s: Seq T, i: int :: { Seq#Item(s, i) }
+  1 <= i && i <= Seq#Length(s) ==>
+    Seq#Range(s)[Seq#Item(s, i)]);  
+
   
 // How many times does x occur in a?
 function Seq#Occurrences<T>(Seq T, T): int;
@@ -162,6 +166,8 @@ function {: inline } Seq#ExtendedAt<T>(s: Seq T, i: int, val: T): Seq T
 {
   Seq#Concat (Seq#Extended(Seq#Take(s, i - 1), val), Seq#Drop(s, i - 1))
 }
+axiom (forall<T> s: Seq T, i: int, val: T :: { Seq#Length(Seq#ExtendedAt(s, i, val)) }
+	Seq#Length(Seq#ExtendedAt(s, i, val)) == Seq#Length(s) + 1);
 
 // Sequence prepended with x at the beginning
 function Seq#Prepended<T>(s: Seq T, val: T): Seq T
@@ -171,7 +177,9 @@ function Seq#Prepended<T>(s: Seq T, val: T): Seq T
 axiom (forall<T> s: Seq T, val: T, i: int :: { Seq#Item(Seq#Prepended(s, val), i) }
   2 <= i && i <= Seq#Length(s) + 1 ==> Seq#Item(Seq#Prepended(s, val), i) == Seq#Item(s, i - 1));
 axiom (forall<T> s: Seq T, val: T :: { Seq#Item(Seq#Prepended(s, val), 1) }
-  Seq#Item(Seq#Prepended(s, val), 1) == val);  
+  Seq#Item(Seq#Prepended(s, val), 1) == val);
+axiom (forall<T> s: Seq T, val: T :: { Seq#Length(Seq#Prepended(s, val)) }
+	Seq#Length(Seq#Prepended(s, val)) == Seq#Length(s) + 1);  
   
 // Concatenation of two sequences
 function Seq#Concat<T>(Seq T, Seq T): Seq T;
@@ -276,11 +284,11 @@ axiom (forall s: Seq int ::
 axiom (forall s: Seq int, i: int ::
     1 <= i && i < Seq#Length(s) && Seq#IsSorted(Seq#Front(s, i)) && Seq#Item(s, i) <= Seq#Item(s, i+1) ==> Seq#IsSorted(Seq#Front(s, i+1)));
 
-axiom (forall s: Seq int ::
-  { Seq#Range(s) }
-    (forall i: int, j: int ::
-		1 <= i && i < Seq#Length(s) && 1 <= j && j < Seq#Length(s) ==>
-			Seq#Range(Seq#Update(Seq#Update(s, i, Seq#Item(s, j)), j, Seq#Item(s, i))) == Seq#Range(s)));
+// axiom (forall s: Seq int ::
+  // { Seq#Range(s) }
+    // (forall i: int, j: int ::
+		// 1 <= i && i < Seq#Length(s) && 1 <= j && j < Seq#Length(s) ==>
+			// Seq#Range(Seq#Update(Seq#Update(s, i, Seq#Item(s, j)), j, Seq#Item(s, i))) == Seq#Range(s)));
 
 
 

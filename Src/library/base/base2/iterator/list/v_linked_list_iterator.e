@@ -126,7 +126,6 @@ feature -- Status report
 			check inv end
 			check target.inv end
 			Result := not (active = Void) and active = target.first_cell
-			check Result implies target.cell_sequence [1] = active end
 			target.lemma_cells_distinct
 		end
 
@@ -136,7 +135,6 @@ feature -- Status report
 			check inv end
 			check target.inv end
 			Result := not (active = Void) and then active = target.last_cell
-			check Result implies target.cell_sequence [target.sequence.count] = active end
 			target.lemma_cells_distinct
 		end
 
@@ -174,7 +172,6 @@ feature -- Cursor movement
 			-- Move one position forward.		
 		do
 			check target.inv end
-			check across 1 |..| (target.count - 1) as i all attached target.cell_sequence [i.item] and then target.cell_sequence [i.item].right = target.cell_sequence [i.item + 1] end end
 			active := active.right
 			index_ := index_ + 1
 			after := active = Void
@@ -206,12 +203,10 @@ feature -- Cursor movement
 				until
 					active.right = old_active
 				loop
-					target.lemma_next (index_, index_ + 1)
 					forth
 				variant
 					index_.old_ - index_
 				end
-				target.lemma_next (index_, index_.old_)
 			end
 		end
 
@@ -334,7 +329,6 @@ feature -- Extension
 			loop
 				check inv_only ("subjects_definition", "sequence_definition") end
 				check other.inv_only ("no_observers") end
-				target.lemma_concat_interval (target.sequence.front (index_.old_).old_, other.sequence.old_, target.sequence.tail (index_.old_ + 1).old_, target.sequence, other.index_.old_, other.index_ - 1)
 				extend_right (other.item)
 				check target.inv_only ("count_definition") end
 				check inv_only ("after_definition", "sequence_definition") end
@@ -437,7 +431,6 @@ feature {V_LINKED_LIST_ITERATOR} -- Implementation
 			until
 				c = active
 			loop
-				target.lemma_next (Result, Result + 1)
 				Result := Result + 1
 				c := c.right
 			variant
@@ -468,18 +461,17 @@ feature {NONE} -- Specification
 			invariant
 				1 <= j and j <= target.count + 1
 				target_index_sequence.count = j - 1
-				across target_index_sequence.domain as i all target_index_sequence [i.item] = i.item end
+				across 1 |..| (j - 1) as i all target_index_sequence [i.item] = i.item end
 				target_index_sequence.range = create {MML_INTERVAL}.from_range (1, j - 1)
 			until
 				j > target.count
 			loop
-				check across target_index_sequence.domain as i all target_index_sequence [i.item] = i.item end end
 				target_index_sequence := target_index_sequence & j
 				j := j + 1
 			end
 		ensure
 			domain_set: target_index_sequence.count = target.count
-			values_set: across target_index_sequence.domain as i all target_index_sequence [i.item] = i.item end
+			values_set: across 1 |..| target_index_sequence.count as i all target_index_sequence [i.item] = i.item end
 			range_set: target_index_sequence.range = create {MML_INTERVAL}.from_range (1, target.count)
 		end
 

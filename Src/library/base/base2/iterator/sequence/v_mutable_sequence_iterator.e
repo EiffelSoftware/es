@@ -40,10 +40,10 @@ feature -- Replacement
 	put (v: G)
 			-- Replace item at current position with `v'.
 		require else
-			modify_model (["map"], target)
+			modify_model (["sequence"], target)
 		deferred
 		ensure then
-			target_map_effect: target.map ~ old (target.map.updated (target.lower + index_ - 1, v))
+			target_map_effect: target.sequence ~ old (target.sequence.replaced_at (index_, v))
 		end
 
 note

@@ -324,7 +324,7 @@ feature -- Processing
 			l_content_type: IV_TYPE
 		do
 			set_current_origin_information (a_assert)
-			process_contract_expression (a_other, True)
+			process_contract_expression (a_other, False)
 			l_array := last_expression
 				-- Check array size
 			create l_assert.make (factory.equal (
@@ -336,7 +336,7 @@ feature -- Processing
 			add_statement (l_assert)
 				-- Check array contents
 			across a_array.expressions as i loop
-				process_contract_expression (i.item, True)
+				process_contract_expression (i.item, False)
 				l_content_type := types.for_class_type (helper.class_type_in_context (a_array.type.generics.first, current_feature.written_class, current_feature, current_type))
 				create l_assert.make (factory.equal (
 					factory.function_call ("fun.ARRAY.item", << entity_mapping.heap, l_array, factory.int_value (i.cursor_index) >>, l_content_type),
@@ -478,10 +478,10 @@ feature -- Processing
 						until
 							l_case.interval.after
 						loop
-							process_contract_expression (l_case.interval.item.lower, True)
+							process_contract_expression (l_case.interval.item.lower, False)
 							l_lower := last_expression
 								-- TODO: check side effect
-							process_contract_expression (l_case.interval.item.upper, True)
+							process_contract_expression (l_case.interval.item.upper, False)
 							l_upper := last_expression
 								-- TODO: check side effect
 
@@ -649,7 +649,7 @@ feature -- Processing
 
 				-- Condition
 			set_current_origin_information (a_node.stop)
-			process_contract_expression (a_node.stop, True)
+			process_contract_expression (a_node.stop, False)
 			l_condition := last_expression
 			create l_goto.make (l_body_block)
 			l_goto.add_target (l_end_block)
@@ -767,7 +767,7 @@ feature -- Processing
 				loop
 					l_invariant ?= a_node.invariant_part.item
 					set_current_origin_information (l_invariant)
-					process_contract_expression (l_invariant.expr, True)
+					process_contract_expression (l_invariant.expr, False)
 					across last_safety_checks as i loop
 						add_statement (i.item)
 					end
@@ -795,7 +795,7 @@ feature -- Processing
 
 				-- Condition
 			set_current_origin_information (a_node.iteration_exit_condition)
-			process_contract_expression (a_node.iteration_exit_condition, True)
+			process_contract_expression (a_node.iteration_exit_condition, False)
 			l_condition := last_expression
 			create l_goto.make (l_body_block)
 			l_goto.add_target (l_end_block)
@@ -895,7 +895,7 @@ feature -- Processing
 					loop
 						l_invariant ?= a_node.invariant_part.item
 						set_current_origin_information (l_invariant)
-						process_contract_expression (l_invariant.expr, True)
+						process_contract_expression (l_invariant.expr, False)
 						create l_assert.make (last_expression)
 						l_assert.node_info.set_type ("loop_inv")
 						l_assert.node_info.set_tag (l_invariant.tag)
@@ -966,7 +966,7 @@ feature -- Processing
 					loop
 						l_invariant ?= a_node.invariant_part.item
 						set_current_origin_information (l_invariant)
-						process_contract_expression (l_invariant.expr, True)
+						process_contract_expression (l_invariant.expr, False)
 						create l_assert.make (last_expression)
 						add_statement (l_assert)
 						a_node.invariant_part.forth
@@ -1089,7 +1089,7 @@ feature {NONE} -- Loop processing
 						-- Ignore modifies and decreases clauses
 					if not helper.is_clause_modify (l_invariant) and not helper.is_clause_decreases (l_invariant) then
 						set_current_origin_information (l_invariant)
-						process_contract_expression (l_invariant.expr, True)
+						process_contract_expression (l_invariant.expr, False)
 						if l_invariant.tag /= Void and then l_invariant.tag ~ "assume" then
 								-- Free invariant: translate as
 								--	assume checks; assume free_checks; assume last_expression
@@ -1144,7 +1144,7 @@ feature {NONE} -- Loop processing
 		do
 			if a_variant /= Void then
 				set_current_origin_information (a_variant)
-				process_contract_expression (a_variant.expr, True)
+				process_contract_expression (a_variant.expr, False)
 				a_variant_exprs.extend (last_expression)
 			end
 			process_decreases (a_decreases)

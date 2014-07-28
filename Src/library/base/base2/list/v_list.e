@@ -13,8 +13,6 @@ deferred class
 inherit
 	V_MUTABLE_SEQUENCE [G]
 		redefine
-			first,
-			last,
 			item,
 			at
 		end
@@ -26,24 +24,6 @@ feature -- Access
 		deferred
 		ensure then
 			definition_sequence: Result = sequence [i]
-		end
-
-	first: G
-			-- First element.
-		do
-			check inv end
-			Result := item (lower)
-		ensure then
-			definition_sequence: Result = sequence.first
-		end
-
-	last: G
-			-- Last element.
-		do
-			check inv end
-			Result := item (upper)
-		ensure then
-			definition_sequence: Result = sequence.last
 		end
 
 feature -- Measurement
@@ -77,7 +57,6 @@ feature -- Comparison
 		local
 			i, j: V_LIST_ITERATOR [G]
 		do
-			check inv and other.inv end
 			if other = Current then
 				Result := True
 			elseif count = other.count then
@@ -88,21 +67,20 @@ feature -- Comparison
 				invariant
 					1 <= i.index_ and i.index_ <= sequence.count + 1
 					i.index_ = j.index_
-					Result implies across create {MML_INTERVAL}.from_range (1, i.index_ - 1) as k all sequence [k.item] = other.sequence [k.item] end
-					not Result implies sequence [i.index_ - 1] /= other.sequence [i.index_ - 1]
+					if Result
+						then across 1 |..| (i.index_ - 1) as k all sequence [k.item] = other.sequence [k.item] end
+						else sequence [i.index_ - 1] /= other.sequence [i.index_ - 1] end
 					i.is_wrapped and j.is_wrapped
 					modify_model ("index_", [i, j])
 				until
 					i.after or not Result
 				loop
-					check across create {MML_INTERVAL}.from_range (1, i.index_ - 1) as k all sequence [k.item] = other.sequence [k.item] end end
 					Result := i.item = j.item
 					i.forth
 					j.forth
 				variant
 					sequence.count - i.index_
 				end
-				check Result implies across create {MML_INTERVAL}.from_range (1, i.index_ - 1) as k all sequence [k.item] = other.sequence [k.item] end end
 				forget_iterator (i)
 				other.forget_iterator (j)
 			end
@@ -181,7 +159,6 @@ feature -- Extension
 			until
 				input.after
 			loop
-				lemma_concat_interval (sequence.old_, input.sequence, {MML_SEQUENCE [G]}.empty_sequence, sequence, input.index_.old_, input.index_ - 1)
 				extend_back (input.item)
 				input.forth
 			variant
@@ -322,37 +299,37 @@ feature -- Removal
 		local
 			i: V_LIST_ITERATOR [G]
 			n: INTEGER
+			b: like bag
 		do
 			from
 				i := new_cursor
 				i.search_forth (v)
 			invariant
 				is_wrapped and i.is_wrapped
+				inv_only ("upper_definition")
+				i.inv_only ("sequence_definition", "index_constraint", "target_bag_constraint")
 				1 <= i.index_ and i.index_ <= sequence.count + 1
 				not i.off implies i.item = v
 				not sequence.front (i.index_ - 1).has (v)
 				bag = bag.old_.removed_multiple (v, n)
 				bag [v] = bag.old_ [v] - n
 				n >= 0
-				inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty")
-				i.inv_only ("sequence_definition", "index_constraint", "target_bag_constraint")
 				modify_model (["sequence", "owns"], Current)
 				modify_model (["index_", "sequence", "target_index_sequence"], i)
 			until
 				i.after
 			loop
+				b := bag
 				i.remove
 				check i.inv_only ("target_bag_constraint", "sequence_definition") end
 				lemma_remove_multiple (bag.old_, v, n)
 				i.search_forth (v)
-				check i.inv_only ("sequence_definition", "index_constraint") end
 				n := n + 1
 			variant
 				i.sequence.count - i.index_
 			end
 			lemma_remove_all (bag.old_, v)
 			forget_iterator (i)
-			check bag = bag.old_.removed_all (v) end
 		ensure
 			is_wrapped: is_wrapped
 			bag_effect: bag ~ old bag.removed_all (v)
@@ -373,30 +350,7 @@ feature -- Removal
 			sequence_effect: sequence.is_empty
 		end
 
-feature -- Specification
-
-	sequence: MML_SEQUENCE [G]
-			-- Sequence of list's elements.
-		note
-			status: ghost
-			replaces: map
-		attribute
-		end
-
 feature {V_CONTAINER, V_ITERATOR} -- Specification
-
-	lemma_concat_interval (s1, s2, s3, s: MML_SEQUENCE [G]; i, j: INTEGER)
-			-- If `s' is made up of three parts, the middle of which is an interval of `s2',
-			-- it will still be made of three parts after extending after the second part with the next element of `s2'.
-		note
-			status: lemma
-		require
-			i_j_in_bounds: 1 <= i and i <= j + 1 and j < s2.count
-			s_concat: s = s1 + s2.interval (i, j) + s3
-		do
-		ensure
-			s.extended_at (s1.count + j - i + 2, s2 [j + 1]) = s1 + s2.interval (i, j + 1) + s3
-		end
 
 	lemma_remove_multiple (b: MML_BAG [G]; v: G; n: INTEGER)
 			-- Removing `n' occurrences of `v' from `b' and then one,
@@ -422,9 +376,8 @@ feature {V_CONTAINER, V_ITERATOR} -- Specification
 		end
 
 invariant
-	map_definition: map ~ sequence.to_map
 	lower_definition: lower_ = 1
-	upper_definition: upper_ = sequence.count
+	map_definition_list: map = sequence.to_map
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

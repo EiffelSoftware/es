@@ -79,7 +79,8 @@ feature -- Status report
 			-- Is current position after any position in `target'?
 		require
 			closed
---			reads (ownership_domain)
+			target_closed: target.closed
+			reads (ownership_domain)
 		deferred
 		ensure
 			definition: Result = (index_ = sequence.count + 1)
@@ -228,7 +229,7 @@ feature -- Cursor movement
 			from
 			invariant
 				is_wrapped
-				inv
+				inv_only ("box_definition")
 				target.is_wrapped
 				index_.old_ <= index_ and index_ <= sequence.count + 1
 				not before
@@ -263,7 +264,7 @@ feature -- Cursor movement
 			from
 			invariant
 				is_wrapped
-				inv
+				inv_only ("box_definition")
 				target.is_wrapped
 				0 <= index_
 				index_ <= index_.old_

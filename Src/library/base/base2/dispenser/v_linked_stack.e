@@ -73,7 +73,7 @@ feature -- Iteration
 			status: impure
 			explicit: contracts
 		local
-			list_cursor: V_LINKED_LIST_ITERATOR [G]
+			list_cursor: V_LINKED_LIST_ITERATOR_2 [G]
 		do
 			unwrap
 			list_cursor := list.new_cursor
@@ -106,7 +106,7 @@ feature -- Removal
 
 feature {V_CONTAINER, V_ITERATOR} -- Implementation
 
-	list: V_LINKED_LIST [G]
+	list: V_LINKED_LIST_2 [G]
 			-- Underlying list.
 			-- Should not be reassigned after creation.
 

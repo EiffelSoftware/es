@@ -62,7 +62,7 @@ invariant
 	keys_in_target: key_sequence.range ~ target.map.domain
 	unique_keys: key_sequence.count = target.map.count
 	value_sequence_domain_definition: value_sequence.count = key_sequence.count
-	value_sequence_definition: across key_sequence.domain as i all value_sequence [i.item] = target.map [key_sequence [i.item]] end
+	value_sequence_definition: across 1 |..| key_sequence.count as i all value_sequence [i.item] = target.map [key_sequence [i.item]] end
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

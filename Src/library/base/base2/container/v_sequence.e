@@ -4,7 +4,7 @@ note
 		Immutable interface.
 		]"
 	author: "Nadia Polikarpova"
-	model: map
+	model: sequence, lower_
 	manual_inv: true
 
 deferred class
@@ -15,9 +15,18 @@ inherit
 		rename
 			has_key as has_index,
 			at_key as at
+		redefine
+			item
 		end
 
 feature -- Access
+
+	item alias "[]" (i: INTEGER): G
+			-- Value at index `i'.
+		deferred
+		ensure then
+			definition_sequence: Result = sequence [i - lower_ + 1]
+		end
 
 	first: G
 			-- First element.
@@ -29,7 +38,7 @@ feature -- Access
 			check inv end
 			Result := item (lower)
 		ensure
-			definition: Result = map [lower_]
+			definition: Result = sequence.first
 		end
 
 	last: G
@@ -42,7 +51,7 @@ feature -- Access
 			check inv end
 			Result := item (upper)
 		ensure
-			definition: Result = map [upper_]
+			definition: Result = sequence.last
 		end
 
 feature -- Measurement
@@ -73,7 +82,7 @@ feature -- Measurement
 			-- Number of elements.
 		deferred
 		ensure then
-			definition_sequence: Result = map.domain.count
+			definition_sequence: Result = sequence.count
 		end
 
 	has_index (i: INTEGER): BOOLEAN
@@ -105,9 +114,9 @@ feature -- Search
 			end
 			check inv end
 		ensure
-			definition_not_has: not map.has (v) implies not map.domain [Result]
-			definition_has: map.has (v) implies map.domain [Result] and map [Result] = v
-			constraint: not map.image (create {MML_INTERVAL}.from_range (lower_, Result - 1)) [v]
+			definition_not_has: not sequence.has (v) implies Result = upper_ + 1
+			definition_has: sequence.has (v) implies lower_ <= Result and Result <= upper_ and then sequence [idx (Result)] = v
+			constraint: not sequence.front (idx (Result - 1)).has (v)
 			observers_restored: observers ~ old observers
 			is_wrapped: is_wrapped
 		end
@@ -132,18 +141,12 @@ feature -- Search
 			else
 				Result := it.target_index
 			end
-			check inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty") end
- 			check across it.target_index_sequence.domain as j all it.sequence [j.item] = map [lower_ + j.item - 1] end end
-			lemma_sequence_map (it.sequence, map, lower_, i - lower_ + 1, it.index_ - 1, v)
-			lemma_sequence_map (it.sequence, map, lower_, i - lower_ + 1, upper_ - lower_ + 1, v)
-
+			check inv_only ("upper_definition") end
 			forget_iterator (it)
-			check inv_only ("indexes_in_interval", "lower_when_empty", "upper_when_empty") end
 		ensure
-			definition_not_has: not map.image (create {MML_INTERVAL}.from_range (i, upper_)) [v] implies Result = upper_ + 1
-			definition_has: map.image (create {MML_INTERVAL}.from_range (i, upper_)) [v] implies
-				(map.domain [Result] and Result >= i) and then map [Result] = v
-			constraint: not map.image (create {MML_INTERVAL}.from_range (i, Result - 1)) [v]
+			definition_not_has: not sequence.tail (idx (i)).has (v) implies Result = upper_ + 1
+			definition_has: sequence.tail (idx (i)).has (v) implies i <= Result and Result <= upper_ and then sequence [idx (Result)] = v
+			constraint: not sequence.interval (idx (i), idx (Result - 1)).has (v)
 			observers_restored: observers ~ old observers
 			is_wrapped: is_wrapped
 		end
@@ -179,7 +182,7 @@ feature -- Iteration
 			result_wrapped: Result.is_wrapped and Result.inv
 			result_in_observers: observers = old observers & Result
 			target_definition: Result.target = Current
-			index_definition: Result.index_ = map.count
+			index_definition: Result.index_ = sequence.count
 		end
 
 	at (i: INTEGER): V_SEQUENCE_ITERATOR [G]
@@ -190,12 +193,20 @@ feature -- Iteration
 			explicit: contracts
 		deferred
 		ensure then
-			index_definition_in_bounds: lower_ - 1 <= i and i <= upper_ + 1 implies Result.index = i - lower_ + 1
+			index_definition_in_bounds: lower_ - 1 <= i and i <= upper_ + 1 implies Result.index = idx (i)
 			index_definition_before: i < lower_ implies Result.index_ = 0
 			index_definition_after: i > upper_ implies Result.index_ = map.count + 1
 		end
 
 feature -- Specification
+
+	sequence: MML_SEQUENCE [G]
+			-- Sequence of elements.
+		note
+			status: ghost
+			replaces: map
+		attribute
+		end
 
 	lower_: INTEGER
 			-- Lower bound of `map.domain'.
@@ -211,26 +222,18 @@ feature -- Specification
 		attribute
 		end
 
-	lemma_sequence_map (s: MML_SEQUENCE [G]; m: MML_MAP [INTEGER, G]; k, l, u: INTEGER; v: G)
-			-- If `m' is a shifted `s', then the range of any interval of `s' is the `m'-image of a corresponsing shifted interval.
+	idx (i: INTEGER): INTEGER
 		note
-			status: lemma
-		require
-			m.domain = create {MML_INTERVAL}.from_range (k, s.count + k - 1)
-			across s.domain as i all s [i.item] = m [i.item + k - 1] end
-			1 <= l and l <= u + 1 and u <= s.count
+			status: ghost, functional
 		do
-			check across (create {MML_INTERVAL}.from_range (l, u)) as i all s [i.item] = s.interval (l, u) [i.item - l + 1] end end
-			check s.interval (l, u).has (v) = across (create {MML_INTERVAL}.from_range (l, u)) as i some s [i.item] = v end end
-			check across (create {MML_INTERVAL}.from_range (k + l - 1, k + u - 1)) as i all m [i.item] = s [i.item - k + 1] end end
-		ensure
-			s.interval (l, u).has (v) = m.image (create {MML_INTERVAL}.from_range (l + k - 1, u + k - 1))[v]
+			Result := i - lower_ + 1
 		end
 
 invariant
-	indexes_in_interval: map.domain ~ create {MML_INTERVAL}.from_range (lower_, upper_)
-	lower_when_empty: map.is_empty implies lower_ = 1
-	upper_when_empty: map.is_empty implies upper_ = 0
+	upper_definition: sequence.count = upper_ - lower_ + 1
+	map_domain_definition: map.domain ~ create {MML_INTERVAL}.from_range (lower_, upper_)
+	map_definition: across lower_ |..| upper_ as i all map [i.item] = sequence [i.item - lower_ + 1]  end
+--	map_definition: across 1 |..| sequence.count as i all map [i.item + lower_ - 1] = sequence [i.item]  end
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

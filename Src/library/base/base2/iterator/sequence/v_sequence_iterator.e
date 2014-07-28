@@ -50,6 +50,7 @@ feature -- Cursor movement
 
 invariant
 	target_index_sequence_definition: across target_index_sequence.domain as i all target_index_sequence [i.item] = target.lower_ + i.item - 1 end
+	sequence_definition: sequence ~ target.sequence
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

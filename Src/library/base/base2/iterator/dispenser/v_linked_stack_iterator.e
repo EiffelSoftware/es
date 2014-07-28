@@ -18,7 +18,7 @@ create {V_CONTAINER}
 
 feature {NONE} -- Initialization
 
-	make (t: V_LINKED_STACK [G]; it: V_LINKED_LIST_ITERATOR [G])
+	make (t: V_LINKED_STACK [G]; it: V_LINKED_LIST_ITERATOR_2 [G])
 			-- Create a proxy for `it' with target `t'.
 		note
 			status: creator
@@ -144,7 +144,7 @@ feature -- Cursor movement
 
 feature {V_CONTAINER, V_ITERATOR} -- Implementation
 
-	iterator: V_LINKED_LIST_ITERATOR [G]
+	iterator: V_LINKED_LIST_ITERATOR_2 [G]
 			-- Iterator over the storage.
 
 invariant

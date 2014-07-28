@@ -135,7 +135,7 @@ axiom (forall h: HeapType, o, o': ref :: { in_domain(h, o, o'), trans_owns(h, o)
 axiom (forall h: HeapType, o, o': ref :: { in_domain(h, o, o') } IsHeap(h) && o != o' && Set#Equal(Set#Empty(), h[o, owns]) ==> !in_domain(h, o, o'));
 
 // Frame axiom: domain frames itself
-axiom (forall h, h': HeapType, x, x': ref :: { in_domain(h', x, x'), HeapSucc(h, h') } 
+axiom (forall h, h': HeapType, x, x': ref :: { in_domain(h, x, x'), in_domain(h', x, x'), HeapSucc(h, h') } 
   IsHeap(h) && IsHeap(h') && HeapSucc(h, h') &&
   h[x, allocated] && h'[x, allocated] &&     
   (forall <T> o: ref, f: Field T :: h[o, allocated] ==> h'[o, f] == h[o, f] || !in_domain(h, x, o))
