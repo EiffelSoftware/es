@@ -360,7 +360,11 @@ feature{NONE} -- Implementation
 				loop
 					l_types := feature_argument_types (l_feat_tbl.item_for_iteration, a_types.item_for_iteration)
 					if l_types /= Void then
-						l_types.do_all (agent l_type_set.force_last)
+						across l_types as lt_type loop
+							if lt_type.item /= Void then
+								l_type_set.force_last (lt_type.item)
+							end
+						end
 					end
 					l_feat_tbl.forth
 				end
