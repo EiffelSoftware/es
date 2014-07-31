@@ -5368,7 +5368,6 @@ benchmarks/scoop/scoop_outer/mainbig.in -text
 benchmarks/scoop/scoop_outer/test.in -text
 benchmarks/scoop/scoop_product/Makefile -text
 benchmarks/scoop/scoop_product/main.gold -text
-benchmarks/scoop/scoop_product/main.in -text
 benchmarks/scoop/scoop_product/mainbig.in -text
 benchmarks/scoop/scoop_randmat/Makefile -text
 benchmarks/scoop/scoop_randmat/main.in -text
