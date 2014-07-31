@@ -427,10 +427,10 @@ feature -- UI Actions
 					l_should_continue := is_approved_by_user ({ES_ADB_INTERFACE_STRINGS}.Msg_remove_existing_debugging_results)
 				end
 				if l_should_continue then
-					info_center.on_debugging_start
-
 					config.working_directory.clear
 					copy_project (workbench.eiffel_project, config.working_directory)
+
+					info_center.on_debugging_start
 
 					if is_project_copied_into_working_dir then
 						create l_debugging_task.make

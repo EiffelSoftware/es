@@ -350,6 +350,7 @@ feature{ES_ADB_PANEL_FAULTS} -- GUI actions
 		do
 			l_row := fault_to_row_table.item (a_fault)
 			evgrid_fixes.select_row (l_row.index)
+			evgrid_fixes.set_focus
 		end
 
 feature{NONE} -- Access

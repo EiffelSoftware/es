@@ -361,10 +361,12 @@ feature{ES_ADB_PANEL_FIXES} -- GUI actions
 		require
 			has_row_for_fault (a_fault)
 		local
-			l_row: EV_GRID_ROW
+			l_feature_row, l_fault_row: EV_GRID_ROW
 		do
-			l_row := fault_to_row_table.item (a_fault)
-			evgrid_faults.select_row (l_row.index)
+			l_fault_row := fault_to_row_table.item (a_fault)
+			l_fault_row.parent_row.expand
+			evgrid_faults.select_row (l_fault_row.index)
+			evgrid_faults.set_focus
 		end
 
 feature{NONE} -- GUI actions
@@ -507,10 +509,10 @@ feature{NONE} -- GUI actions
 						l_should_continue := is_approved_by_user ({ES_ADB_INTERFACE_STRINGS}.Msg_discard_existing_fixing_results)
 					end
 					if l_should_continue then
-						info_center.on_continuation_debugging_start
-
 						config.working_directory.clear_temp_dir
 						copy_project (workbench.eiffel_project, config.working_directory)
+
+						info_center.on_continuation_debugging_start
 
 						if is_project_copied_into_working_dir then
 							evbutton_fix_selected.set_text (Button_text_fix_selected_stop)
@@ -547,10 +549,6 @@ feature{NONE} -- GUI actions
 		do
 			l_text := evbutton_fix_all_to_be_attempted.text
 			if l_text ~ Button_text_fix_all then
-				info_center.on_continuation_debugging_start
-				evbutton_fix_all_to_be_attempted.set_text (button_text_fix_all_stop)
-				evbutton_fix_all_to_be_attempted.enable_sensitive
-
 					-- Collect the faults to be attempted.
 				create l_all_to_be_attempted.make_equal (info_center.fault_repository.count)
 				from
@@ -569,7 +567,12 @@ feature{NONE} -- GUI actions
 					config.working_directory.clear_temp_dir
 					copy_project (workbench.eiffel_project, config.working_directory)
 
+					info_center.on_continuation_debugging_start
+
 					if is_project_copied_into_working_dir then
+						evbutton_fix_all_to_be_attempted.set_text (button_text_fix_all_stop)
+						evbutton_fix_all_to_be_attempted.enable_sensitive
+
 						create l_fixing_task.make (l_all_to_be_attempted, True)
 						create forwarding_task.make (l_fixing_task)
 						forwarding_task.on_terminate_actions.extend (agent info_center.on_continuation_debugging_stop)
@@ -579,9 +582,6 @@ feature{NONE} -- GUI actions
 						display_message ({ES_ADB_INTERFACE_STRINGS}.Msg_failed_to_copy_project)
 						info_center.on_continuation_debugging_stop
 					end
-
-				else
-					info_center.on_continuation_debugging_stop
 				end
 			else
 				forwarding_task.cancel
