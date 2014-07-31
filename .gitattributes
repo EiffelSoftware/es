@@ -5365,7 +5365,6 @@ benchmarks/scoop/scoop_outer/Makefile -text
 benchmarks/scoop/scoop_outer/main.gold -text
 benchmarks/scoop/scoop_outer/test.in -text
 benchmarks/scoop/scoop_product/Makefile -text
-benchmarks/scoop/scoop_product/main.gold -text
 benchmarks/scoop/scoop_randmat/Makefile -text
 benchmarks/scoop/scoop_thresh/Makefile -text
 benchmarks/scoop/scoop_winnow/Makefile -text
