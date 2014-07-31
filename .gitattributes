@@ -5362,7 +5362,6 @@ benchmarks/scoop/scoop0006/test.cmd -text
 benchmarks/scoop/scoop_chain/Makefile -text
 benchmarks/scoop/scoop_outer/Makefile -text
 benchmarks/scoop/scoop_outer/main.gold -text
-benchmarks/scoop/scoop_outer/main.in -text
 benchmarks/scoop/scoop_outer/mainbig.in -text
 benchmarks/scoop/scoop_outer/test.in -text
 benchmarks/scoop/scoop_product/Makefile -text
