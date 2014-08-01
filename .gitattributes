@@ -5300,7 +5300,7 @@ Src/web/support/esa_api/esa_folder/www/static/profile/esa_html.html svneol=nativ
 Src/web/support/esa_api/src/esa_template/logs/emails.logs -text
 Src/web/support/esa_core/esa_core.ecf svneol=native#text/xml
 benchmarks/scoop/Tests1-6.xls -text
-benchmarks/scoop/results/windows-x86-64-old eol=crlf
+benchmarks/scoop/results/windows-x86-64-old.csv eol=crlf
 benchmarks/scoop/scoop0001/LogParser.java -text
 benchmarks/scoop/scoop0001/compile.cmd -text
 benchmarks/scoop/scoop0001/description.txt -text
