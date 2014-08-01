@@ -5360,7 +5360,7 @@ benchmarks/scoop/scoop0006/processors.txt -text
 benchmarks/scoop/scoop0006/queries.txt -text
 benchmarks/scoop/scoop0006/run.cmd -text
 benchmarks/scoop/scoop0006/test.cmd -text
-benchmarks/scoop/scoop_chain/Makefile -text
+benchmarks/scoop/scoop_chain-original/Makefile -text
 benchmarks/scoop/scoop_outer/Makefile -text
 benchmarks/scoop/scoop_outer/main.gold -text
 benchmarks/scoop/scoop_outer/test.in -text
