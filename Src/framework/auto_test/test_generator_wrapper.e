@@ -151,8 +151,9 @@ feature {NONE} -- Basic operations
 				-- Create actual root class in one of the root clusters
 			check attached {CONF_CLUSTER} system.root_type.base_class.group as lt_cluster then
 				cluster_name_of_new_root := lt_cluster.name
-				create l_root_cluster_path.make_from_string (lt_cluster.location.original_path)
-				create file_name_of_new_root_class.make_from_string (l_root_cluster_path.absolute_path_in (l_system.eiffel_project.project_directory.path).out)
+				l_root_cluster_path := lt_cluster.location.evaluated_path
+				create file_name_of_new_root_class.make_from_string (l_root_cluster_path.out)
+--				create file_name_of_new_root_class.make_from_string (l_root_cluster_path.absolute_path_in (l_system.eiffel_project.project_directory.path).out)
 				file_name_of_new_root_class.set_file_name (interpreter_root_class_name.as_lower)
 				file_name_of_new_root_class.add_extension ("e")
 				create l_file.make (file_name_of_new_root_class)
