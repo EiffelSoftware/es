@@ -128,6 +128,7 @@ feature -- Operation
 					-- Process has terminated and no more output to be forwarded.
 					-- So we stop the current subtask.
 				if is_launched then
+					working_process.terminate_tree		-- Terminate it anyway, just to be sure.
 					on_output ("%N>> Process exited: " + command_line + "%N")
 				else
 					on_output ("%N>> Failed to launch process: " + command_line + "%N")
