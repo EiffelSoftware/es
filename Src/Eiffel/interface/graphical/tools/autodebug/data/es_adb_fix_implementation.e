@@ -61,9 +61,24 @@ feature -- Access
 
 	code_before_fix: STRING
 			-- <Precursor>
+		local
+			l_written_class: CLASS_C
+			l_match_list: LEAF_AS_LIST
+			l_feature_as: FEATURE_AS
+			l_do_text, l_old_do_text: STRING
+			l_do_as, l_old_do_as: DO_AS
 		do
 			if code_before_fix_internal = Void then
-				code_before_fix_internal := feature_as_to_string (fault.signature.recipient_.e_feature.ast)
+				l_written_class := fault.signature.recipient_.written_class
+				l_match_list := match_list_server.item (l_written_class.class_id)
+
+					-- Keep the original feature header, but reformat the feature body.
+				l_feature_as := fault.signature.recipient_.e_feature.ast
+				l_do_as := do_as_from_feature_as (l_feature_as)
+				l_do_text := as_to_string (l_do_as, "%T%T")
+				l_do_as.replace_text (l_do_text, l_match_list)
+				code_before_fix_internal := l_feature_as.text_32 (l_match_list).twin
+				l_match_list.remove_modifications
 			end
 			Result := code_before_fix_internal
 		end
@@ -71,18 +86,47 @@ feature -- Access
 	code_after_fix: STRING
 			-- <Precursor>
 		local
+			l_written_class: CLASS_C
+			l_match_list: LEAF_AS_LIST
 			l_printer: ETR_AST_STRUCTURE_PRINTER
 			l_output: ETR_AST_STRING_OUTPUT
 			l_feat_text: STRING
+			l_old_feature_as: FEATURE_AS
+			l_do_text, l_old_do_text: STRING
+			l_do_as, l_old_do_as: DO_AS
 			l_parser: like entity_feature_parser
 		do
 			if code_after_fix_internal = Void then
+				l_written_class := fault.signature.recipient_.written_class
+				l_match_list := match_list_server.item (l_written_class.class_id)
+
+					-- Get new body for feature
 				l_parser := entity_feature_parser
 				l_parser.set_syntax_version (l_parser.transitional_syntax)
 				l_parser.parse_from_utf8_string ("feature " + fix_text, Void)
-				code_after_fix_internal := feature_as_to_string (l_parser.feature_node)
+				l_do_as := do_as_from_feature_as (l_parser.feature_node)
+				l_do_text := as_to_string (l_do_as, "%T%T")
+
+					-- Replace old body with new body, keeping the head comment for feature.
+				l_old_feature_as := fault.signature.recipient_.e_feature.ast
+				l_old_do_as := do_as_from_feature_as (l_old_feature_as)
+				l_old_do_as.replace_text (l_do_text, l_match_list)
+				code_after_fix_internal := l_old_feature_as.text_32 (l_match_list).twin
+				l_match_list.remove_modifications
 			end
 			Result := code_after_fix_internal
+		end
+
+	do_as_from_feature_as (a_feature_as: FEATURE_AS): DO_AS
+			--
+		do
+			if attached {BODY_AS} a_feature_as.body as lt_body then
+				if attached {ROUTINE_AS} lt_body.content as lt_routine then
+					if attached {DO_AS} lt_routine.routine_body as lt_do then
+						Result := lt_do
+					end
+				end
+			end
 		end
 
 feature -- Operation
@@ -98,7 +142,7 @@ feature -- Operation
 			l_class_as: CLASS_AS
 			l_feature_as: FEATURE_AS
 
-			l_feature_text_in_file: STRING
+			l_do_text_in_file, l_original_do_text_in_file: STRING
 
 			l_class: CLASS_C
 			l_feature: FEATURE_I
@@ -124,8 +168,9 @@ feature -- Operation
 				if attached l_class_as as lt_class_as and then lt_class_as.class_name.name.is_case_insensitive_equal_general (l_name_of_class_to_fix) then
 					l_feature_as := lt_class_as.feature_of_name (l_name_of_feature_to_fix, False)
 					if l_feature_as /= Void then
-						l_feature_text_in_file := feature_as_to_string (l_feature_as)
-						if not l_feature_text_in_file.is_case_insensitive_equal_general (code_before_fix) then
+						l_do_text_in_file := as_to_string (do_as_from_feature_as (l_feature_as), "")
+						l_original_do_text_in_file := as_to_string (do_as_from_feature_as (fault.signature.recipient_.e_feature.ast), "")
+						if not l_do_text_in_file.is_case_insensitive_equal_general (l_original_do_text_in_file) then
 							l_has_error := True
 							error_message := "Feature to fix has been changed in file " + a_path.out
 						end
@@ -145,8 +190,8 @@ feature -- Operation
 					l_new_class_content := l_class_as.text (l_match_list)
 
 						-- Write new content to file.
---					create l_class_file.make_with_path (a_path)
-					create l_class_file.make_with_name (a_path.out + ".afx")
+					create l_class_file.make_with_path (a_path)
+--					create l_class_file.make_with_name (a_path.out + ".afx")
 					l_class_file.open_write
 					if l_class_file.is_open_write then
 						l_class_file.put_string (l_new_class_content)
@@ -192,17 +237,17 @@ feature{NONE} -- Implementation
 			attached_eiffel_parser: Result /= Void
 		end
 
-	feature_as_to_string (a_feature_as: FEATURE_AS): STRING
-			-- String representation of `a_feature_as'.
+	as_to_string (a_as: AST_EIFFEL; a_prefix: STRING): STRING
+			-- String representation of `a_as'.
 		require
-			a_feature_as /= VOid
+			a_as /= VOid
 		local
 			l_printer: ETR_AST_STRUCTURE_PRINTER
 			l_output: ETR_AST_STRING_OUTPUT
 		do
-			create l_output.make_with_indentation_string ("%T")
+			create l_output.make_with_indentation_string (a_prefix)
 			create l_printer.make_with_output (l_output)
-			l_printer.print_ast_to_output (a_feature_as)
+			l_printer.print_ast_to_output (a_as)
 			Result := l_output.string_representation
 		end
 
