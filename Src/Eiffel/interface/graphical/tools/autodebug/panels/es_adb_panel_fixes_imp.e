@@ -42,7 +42,7 @@ feature{NONE} -- Initialization
 			create l_h_box
 			l_h_box.set_border_width ({ES_UI_CONSTANTS}.frame_border)
 			create evgrid_fixes
-			evgrid_fixes.set_minimum_width (670)
+--			evgrid_fixes.set_minimum_width (670)
 			l_grid := evgrid_fixes
 			l_grid.enable_row_separators
 			l_grid.enable_single_row_selection

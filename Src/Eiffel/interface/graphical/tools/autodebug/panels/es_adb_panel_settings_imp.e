@@ -33,7 +33,7 @@ feature {NONE} -- Initialization
 
 			-- Left
 			create l_v_box
-			l_v_box.set_minimum_size (300, 300)
+--			l_v_box.set_minimum_size (300, 300)
 			l_v_box.set_padding ({ES_UI_CONSTANTS}.vertical_padding)
 
 			create l_internal_h_box
@@ -78,7 +78,7 @@ feature {NONE} -- Initialization
 
 				-- Middle
 			create l_v_box
-			l_v_box.set_minimum_size (300, 300)
+--			l_v_box.set_minimum_size (300, 300)
 			l_v_box.set_padding ({ES_UI_CONSTANTS}.vertical_padding)
 
 					-- General
