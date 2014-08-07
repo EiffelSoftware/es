@@ -5202,6 +5202,7 @@ Src/tools/wdocs/themes/demo/css/all.css -text
 Src/tools/wdocs/themes/demo/images/bg-header.jpg -text
 Src/tools/wdocs/themes/demo/images/logo.png -text
 Src/tools/wdocs/wdocs.ecf svneol=native#text/xml
+Src/tools/wdocs/wdocs.ini -text
 Src/tools/wdocs/wdocs_app.ecf svneol=native#text/xml
 Src/unstable/library/compression/bzip2/Readme.txt -text
 Src/unstable/library/compression/zlib/Readme.txt -text
