@@ -5267,8 +5267,6 @@ Src/web/support/api/ecf-target-any_connector -text
 Src/web/support/api/ecf-target-connector -text
 Src/web/support/api/esa.ini -text
 Src/web/support/api/esa_api.ecf svneol=native#text/xml
-Src/web/support/api/esa_api.log -text
-Src/web/support/api/esa_api.rc -text
 Src/web/support/api/site/config/esa_application_configuration.json -text
 Src/web/support/api/site/www/static/css/bootstrap.css -text
 Src/web/support/api/site/www/static/css/dashboard.css -text
