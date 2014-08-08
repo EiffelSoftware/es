@@ -47,7 +47,7 @@ feature -- View
 	problem_reports_guest (req: WSF_REQUEST; res: WSF_RESPONSE; a_report_view: ESA_REPORT_VIEW)
 			-- Problem reports representation for a guest user
 		local
-			l_hp: ESA_REPORT_PAGE
+			l_hp: HTML_REPORT
 		do
 			log.write_information (generator+".problem_reports_guest" )
 			if attached req.http_host as l_host then
@@ -153,7 +153,7 @@ feature -- View
 			l_hp: ESA_HTML_404_PAGE
 		do
 			if attached req.http_host as l_host then
-				create l_hp.make (absolute_host (req, ""))
+				create l_hp.make (absolute_host (req, ""), current_user_name (req))
 				if attached l_hp.representation as l_home_page then
 					new_response_get_404 (req, res, l_home_page)
 				end
@@ -187,23 +187,35 @@ feature -- View
 	bad_request_page (req: WSF_REQUEST; res: WSF_RESPONSE)
 			-- <Precursor>
 		local
-			l_hp: ESA_HTML_400_PAGE
+			l_hp: HTML_400
 		do
 			if attached req.http_host as l_host then
-				create l_hp.make (absolute_host (req, ""))
+				create l_hp.make (absolute_host (req, ""), current_user_name (req))
 				if attached l_hp.representation as l_bad_page then
 					new_response_get_400 (req, res, l_bad_page)
 				end
 			end
 		end
 
+	bad_request_with_errors_page (req: WSF_REQUEST; res: WSF_RESPONSE; errors: STRING_TABLE[READABLE_STRING_32])
+			-- Bad request with error page
+		local
+			l_hp: HTML_400
+		do
+			if attached req.http_host as l_host then
+				create l_hp.make_with_errors (absolute_host (req, ""), errors, current_user_name (req))
+				if attached l_hp.representation as l_bad_page then
+					new_response_get_400 (req, res, l_bad_page)
+				end
+			end
+		end
 	new_response_unauthorized (req: WSF_REQUEST; res: WSF_RESPONSE)
 			-- Generate a Reponse based on the Media Type
 		local
 			l_hp: ESA_HTML_401_PAGE
 		do
 			if attached req.http_host as l_host then
-				create l_hp.make (absolute_host (req, ""))
+				create l_hp.make_with_redirect (absolute_host (req, ""),req.path_info, current_user_name (req) )
 				if attached l_hp.representation as l_unauthorized then
 					new_response_access_unauthorized (req, res, l_unauthorized)
 				end
@@ -226,7 +238,7 @@ feature -- View
 	register_page (req: WSF_REQUEST; res: WSF_RESPONSE; a_view: ESA_REGISTER_VIEW)
 			-- Register form
 		local
-			l_hp: ESA_HTML_REGISTER_PAGE
+			l_hp: HTML_REGISTER
 		do
 			if attached req.http_host as l_host then
 				create l_hp.make (absolute_host (req, ""), a_view, current_user_name (req))
@@ -480,6 +492,19 @@ feature -- View
 		do
 			if attached current_user_name (req) as l_user then
 				compute_response_redirect (req, res,absolute_host (req, "/user_reports/"+l_user) )
+			end
+		end
+
+	subscribe_to_category (req: WSF_REQUEST; res: WSF_RESPONSE; a_list: LIST [ ESA_CATEGORY_SUBSCRIBER_VIEW ] )
+			-- <Precursor>
+		local
+			l_hp: ESA_SUBSCRIBE_TO_CATEGORY
+		do
+			if attached req.http_host as l_host then
+				create l_hp.make (absolute_host (req, ""), current_user_name (req), a_list)
+				if attached l_hp.representation as l_change_password_page then
+					    new_response_get (req, res, l_change_password_page)
+				end
 			end
 		end
 

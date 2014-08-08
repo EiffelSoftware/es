@@ -19,14 +19,14 @@ feature {NONE}
       win_final := win_final_
       winnow_nelts := winnow_nelts_
 
-      create matrix.make (1, to_local_row (final))
-      create mask.make (1, to_local_row (final))
+      create matrix.make_filled (0, (final-start) * nelts)
+      create mask.make_filled (0, (final-start) * nelts)
     end
 
 feature -- Setters
-  set_max (max_ : separate ARRAY [INTEGER])
+  set_histogram_max (max_ : separate HISTOGRAM_MAX)
     do
-      max := max_
+      histogram_max := max_
     end
 
   set_histogram (histogram_ : separate ARRAY [INTEGER])
@@ -59,16 +59,11 @@ feature -- Setters
       winnow_ys := winnow_ys_
     end
 
-  set_result_vector (result_vector_ : separate ARRAY [DOUBLE])
-    do
-      result_vector := result_vector_
-    end
-
 
 feature -- Attributes
   nelts: INTEGER
   start, final: INTEGER
-  matrix: ARRAY2 [INTEGER]
+  matrix: SPECIAL [INTEGER]
 
 feature -- Random matrix generation
   to_local_row (i: INTEGER): INTEGER
@@ -86,14 +81,14 @@ feature -- Random matrix generation
       rand_max := 100
 
       from i := start
-      until i > final
+      until i >= final
       loop
-        s := seed + i.to_natural_32 - 1
-        from j := 1
-        until j > nelts
+        s := seed + i.to_natural_32
+        from j := 0
+        until j >= nelts
         loop
           s := lcg_a * s + lcg_c
-          matrix [i, j] := (s \\ rand_max).to_integer_32
+          matrix [(i - start) * nelts + j] := (s \\ rand_max).to_integer_32
           j := j + 1
         end
         i := i + 1
@@ -115,12 +110,12 @@ feature -- Thresholding computations
       local_max := 0
 
       from i := start
-      until i > final
+      until i >= final
       loop
-        from j := 1
-        until j > nelts
+        from j := 0
+        until j >= nelts
         loop
-          e        := matrix [i, j]
+          e        := matrix [(i - start) * nelts + j]
           hist [e] := hist [e] + 1
           local_max := e.max (local_max)
 
@@ -128,21 +123,20 @@ feature -- Thresholding computations
         end
         i := i + 1
       end
-      update_histogram (local_max, max, hist, histogram)
+      update_histogram (local_max, histogram_max, hist, histogram)
     end
 
   update_histogram (local_max: INTEGER;
-                    max_: separate ARRAY [INTEGER];
+                    max_: separate HISTOGRAM_MAX;
                     hist: ARRAY [INTEGER];
                     sep_hist: separate ARRAY [INTEGER])
-    require
-      max_.generator /= Void and sep_hist.generator /= Void
     local
       i: INTEGER
       h: INTEGER
       newmax: INTEGER
     do
-      max_.put (max_ [1].max (local_max), 1)
+      print ("Updating histogram%N")
+      max_.new_max (local_max)
 
       from i := 0
       until i > 100
@@ -151,20 +145,22 @@ feature -- Thresholding computations
       	sep_hist.put (h + hist [i], i)
         i := i + 1
       end
+
+	   print ("finished updating histogram%N")
     end
 
   live_thresh_map (threshold: INTEGER)
     local
       i, j: INTEGER
     do
-      from i := 1
-      until i > nelts
+      from i := start
+      until i >= final
       loop
-        from j := 1
-        until j > nelts
+        from j := 0
+        until j >= nelts
         loop
-          if matrix [i, j] >= threshold then
-            mask [i, j] := 1
+          if matrix [(i - start) * nelts + j] >= threshold then
+            mask [(i - start) * nelts + j] := 1
           end
           j := j + 1
         end
@@ -174,11 +170,14 @@ feature -- Thresholding computations
 
 feature {NONE}
   percent: INTEGER
-  mask: ARRAY2 [INTEGER]
+  mask: SPECIAL [INTEGER]
   histogram: separate ARRAY [INTEGER]
-  max: separate ARRAY [INTEGER]
+  histogram_max: separate HISTOGRAM_MAX
 
 feature -- Winnowing procedure
+  winnow_vector_v: ARRAYED_LIST [INTEGER]
+  winnow_vector_x: ARRAYED_LIST [INTEGER]
+  winnow_vector_y: ARRAYED_LIST [INTEGER]
 
   live_winnow
     local
@@ -186,23 +185,28 @@ feature -- Winnowing procedure
       i, j: INTEGER
       count: INTEGER
     do
-      create vector.make (100)
+      print ("Worker: live_winnow%N")
+      create winnow_vector_v.make (100)
+      create winnow_vector_x.make (100)
+      create winnow_vector_y.make (100)
+
 
       from i := start
-      until i > final
+      until i >= final
       loop
-        from j := 1
-        until j > nelts
+        from j := 0
+        until j >= nelts
         loop
-          if mask [i, j] = 1 then
-            vector.extend ([matrix [i, j], i, j])
+          if mask [(i - start) * nelts + j] = 1 then
+            winnow_vector_v.extend (matrix [(i - start) * nelts + j])
+            winnow_vector_x.extend (i)
+            winnow_vector_y.extend (j)
           end
           j := j + 1
         end
         i := i + 1
       end
-
-      put_vectors (vector, vs, xs, ys)
+      -- put_vectors (vector, vs, xs, ys)
     end
 
   put_vectors (a_vector: ARRAYED_LIST [TUPLE[v,x,y: INTEGER]];
@@ -213,27 +217,34 @@ feature -- Winnowing procedure
       t: TUPLE [v,x,y: INTEGER]
     do
       n := vs_.count
-      from i := 1
-      until i > a_vector.count
+
+		vs_.grow (vs_.count + a_vector.count)
+		xs_.grow (xs_.count + a_vector.count)
+		ys_.grow (ys_.count + a_vector.count)
+
+      from i := 0
+      until i >= a_vector.count
       loop
-        t := a_vector [i]
-        vs_ [n + i] := t.v
-        xs_ [n + i] := t.x
-        ys_ [n + i] := t.y
+        t := a_vector [i + 1]
+        vs_.force (t.v, n + i)
+        xs_.force (t.x, n + i)
+        ys_.force (t.y, n + i)
         i := i + 1
       end
     end
-
+  win_start, win_final: INTEGER
 feature {NONE} -- Winnow attributes
   winnow_nelts: INTEGER
-  win_start, win_final: INTEGER
   vs, xs, ys: separate ARRAY [INTEGER]
   winnow_xs, winnow_ys: separate ARRAY [INTEGER]
 
 feature -- Outer procedure
-  live_outer
+  live_outer (a_shared_vector: separate SPECIAL[DOUBLE])
     do
+      shared_vector := a_shared_vector
+		print ("live outer%N")
       live_outer_sep (fetch_vector (winnow_xs, winnow_ys))
+		print ("live outer (post fetch)%N")
     end
 
   live_outer_sep (a_points: ARRAY[TUPLE[x,y: INTEGER]])
@@ -244,26 +255,27 @@ feature -- Outer procedure
       i, j: INTEGER
       l_vector: ARRAY [DOUBLE]
     do
-      create outer_matrix.make (to_local_win_row (win_final), winnow_nelts)
-      create l_vector.make (win_start, win_final)
+      print ("Worker: start live_outer%N")
+      create outer_matrix.make_filled (0, (win_final - win_start) * winnow_nelts)
+      create l_vector.make (win_start, win_final - 1)
 
       from i := win_start
-      until i > win_final
+      until i >= win_final
       loop
         nmax := -1
         p1 := a_points [i]
-        from j := 1
-        until j > winnow_nelts
+        from j := 0
+        until j >= winnow_nelts
         loop
           if i /= j then
             p2 := a_points [j]
             d := distance (p1, p2)
-            outer_matrix [to_local_win_row (i), j] := d
+            outer_matrix [(i - win_start) * winnow_nelts + j] := d
             nmax := nmax.max (d)
           end
           j := j + 1
         end
-        outer_matrix [to_local_win_row (i), i] := nmax * nelts
+        outer_matrix [(i - win_start) * winnow_nelts + i] := nmax * winnow_nelts
         l_vector [i] := distance ([0,0], a_points [i])
         i := i + 1
       end
@@ -271,12 +283,12 @@ feature -- Outer procedure
     end
 
 feature {NONE} -- Outer attributes
-  outer_matrix: ARRAY2 [DOUBLE]
+  outer_matrix: SPECIAL [DOUBLE]
   outer_xs, outer_ys: separate ARRAY [INTEGER]
 
   to_local_win_row (i: INTEGER): INTEGER
     do
-      Result := i - win_start + 1
+      Result := i - win_start
     end
 
 
@@ -297,10 +309,10 @@ feature {NONE} -- Outer attributes
       i: INTEGER
       x, y: INTEGER
     do
-      create Result.make (1, winnow_nelts)
+      create Result.make_filled ([0,0], 0, winnow_nelts - 1)
 
-      from i := 1
-      until i > winnow_nelts
+      from i := 0
+      until i >= winnow_nelts
       loop
         x := xs_ [i]
         y := ys_ [i]
@@ -309,43 +321,50 @@ feature {NONE} -- Outer attributes
       end
     end
 
-  share_matrix (mat: ARRAY2[DOUBLE]; smat: separate ARRAY2[DOUBLE])
-    require
-      smat.generator /= Void
+  share_matrix (mat: SPECIAL[DOUBLE]; smat: separate SPECIAL [DOUBLE])
     local
       i, j: INTEGER
     do
       from i := win_start
-      until i > win_final
+      until i >= win_final
       loop
-        from j := 1
-        until j > winnow_nelts
+        from j := 0
+        until j >= winnow_nelts
         loop
-          smat [i, j] := mat [to_local_row (i), j]
+          smat [i * winnow_nelts + j] := mat [(i - win_start) * winnow_nelts + j]
+          print (mat[(i - win_start) * winnow_nelts + j])
+          print (" ")
+
           j := j + 1
         end
+        print ("%N")
         i := i + 1
       end
     end
 
 
-  share_vector (vector_: ARRAY [DOUBLE]
-               ;shared_vector_: separate ARRAY [DOUBLE])
+  share_vector (vector_: SPECIAL [DOUBLE]
+               ;shared_vector_: separate SPECIAL [DOUBLE])
     local
       i: INTEGER
     do
-      from i := 1
-      until i > winnow_nelts
+      from i := win_start
+      until i >= win_final
       loop
-        shared_vector_[i] := vector_[i]
+        shared_vector_[i] := vector_[i - win_start]
         i := i + 1
       end
     end
 
 feature -- Product procedure
-  live_product
+	done: BOOLEAN
+	product_vector: ARRAY [DOUBLE]
+
+	live_product
     do
-      product (import_vector (shared_vector))
+		 print ("live product%N")
+		 product (import_vector (shared_vector))
+		 done := True
     end
 
   product (a_vector: ARRAY [DOUBLE])
@@ -354,48 +373,48 @@ feature -- Product procedure
       sum: DOUBLE
       res: ARRAY [DOUBLE]
     do
-      create res.make_filled (0, 1, final - start + 1)
+      create product_vector.make_filled (0, 0, win_final - win_start - 1)
+		print ("live product (post import)%N")
 
       from i := win_start
-      until i > win_final
+      until i >= win_final
       loop
         sum := 0
-        from j := 1
-        until j > nelts
+        from j := 0
+        until j >= winnow_nelts
         loop
-          sum := sum + outer_matrix [to_local_win_row (i), j] * a_vector [j]
+          sum := sum + outer_matrix [(i - win_start) * winnow_nelts + j] * a_vector [j]
           j := j + 1
         end
-        res [to_local_win_row (i)] := sum
+        product_vector [i - win_start] := sum
         i := i + 1
       end
-
-      export_vector (res, result_vector)
+      print ("live product done%N")
     end
 
 feature {NONE}
-  shared_vector, result_vector: separate ARRAY [DOUBLE]
+  shared_vector: separate SPECIAL [DOUBLE]
 
-  import_vector (shared_vector_: separate ARRAY [DOUBLE]): ARRAY [DOUBLE]
+  import_vector (shared_vector_: separate SPECIAL [DOUBLE]): ARRAY [DOUBLE]
     local
       i: INTEGER
     do
-      create Result.make (1, winnow_nelts)
-      from i := 1
-      until i > winnow_nelts
+      create Result.make_filled (0, 0, winnow_nelts - 1)
+      from i := 0
+      until i >= winnow_nelts
       loop
         Result [i] := shared_vector_ [i]
         i := i + 1
       end
     end
 
-  export_vector (vector_: ARRAY [DOUBLE]
-                ;shared_vector_: separate ARRAY [DOUBLE])
+  export_vector (vector_: SPECIAL [DOUBLE]
+                ;shared_vector_: separate SPECIAL [DOUBLE])
     local
       i: INTEGER
     do
       from i := win_start
-      until i > win_final
+      until i >= win_final
       loop
         shared_vector_ [i] := vector_ [i]
         i := i + 1

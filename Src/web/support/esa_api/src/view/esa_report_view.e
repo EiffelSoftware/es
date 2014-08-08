@@ -43,16 +43,16 @@ feature -- Access
 	reports: LIST[ESA_REPORT]
 		-- Possible list of reports.
 
-	index: INTEGER;
+	index: INTEGER
 		--  Current index.
 
 	size: INTEGER
 		-- Page Size	
 
-	pages: INTEGER;
+	pages: INTEGER
 		-- Number of pages.
 
-	categories: LIST[ESA_REPORT_CATEGORY];
+	categories: LIST[ESA_REPORT_CATEGORY]
 		-- Possible list of report problem categories.
 
 	status: LIST[ESA_REPORT_STATUS]
@@ -71,44 +71,42 @@ feature -- Access
 		-- Current logged in user or Guest.
 
 	selected_status: INTEGER
-		-- Status selected
+		-- Status selected.
 
 	selected_category: INTEGER
-		-- Category selected
+		-- Category selected.
 
 	selected_responsible: INTEGER
-		-- Reponsible selected
+		-- Reponsible selected.
 
 	selected_priority: INTEGER
-		-- Priority selected
+		-- Priority selected.
 
 	selected_severity: INTEGER
-		-- Severity selected
+		-- Severity selected.
 
 	order_by: detachable STRING_32
-		-- Field used to sort the reports
+		-- Field used to sort the reports.
 
 	direction: detachable STRING_32
-		-- Direction ASC|DESC
+		-- Direction ASC|DESC.
 
 	submitter: detachable STRING_32
 		-- User submit a problem.
 
 	filter: detachable STRING_32
-		-- Filter text to search by synopsis or descriptions.
+		-- Filter text to search
+		-- By default search by synopsis.
+		-- If content is checked, also search by ToReproduce, Descriptions and Interactions Contents.
 
-	filter_description: INTEGER
-		-- Is filter by description checked?
-		-- 1: yes, 0: no.
-
-	filter_synopsis: INTEGER
-		-- Is filter by synopsis checked?
+	filter_content: INTEGER
+		-- Is filter by content checked?
 		-- 1: yes, 0: no.
 
 feature -- Change Element
 
 	set_id (a_id: STRING)
-			-- Set `id' to `a_id'
+			-- Set `id' to `a_id'.
 		do
 			id := a_id
 		ensure
@@ -117,7 +115,7 @@ feature -- Change Element
 
 
 	set_selected_status (a_val: INTEGER)
-			-- Set `selected_status' with selected value `a_val'
+			-- Set `selected_status' to selected value `a_val'.
 		do
 			selected_status := a_val
 		ensure
@@ -125,7 +123,7 @@ feature -- Change Element
 		end
 
 	set_selected_category (a_val: INTEGER)
-			-- Set `selected_category' with selected value `a_val'
+			-- Set `selected_category' to selected value `a_val'.
 		do
 			selected_category := a_val
 		ensure
@@ -133,7 +131,7 @@ feature -- Change Element
 		end
 
 	set_selected_responsible (a_val: INTEGER)
-			-- Set `selected_responsible' with selected value `a_val'
+			-- Set `selected_responsible' to selected value `a_val'.
 		do
 			selected_responsible := a_val
 		ensure
@@ -141,7 +139,7 @@ feature -- Change Element
 		end
 
 	set_selected_priority (a_val: INTEGER)
-			-- Set `selected_priority' with selected value `a_val'
+			-- Set `selected_priority' to selected value `a_val'.
 		do
 			selected_priority := a_val
 		ensure
@@ -149,7 +147,7 @@ feature -- Change Element
 		end
 
 	set_selected_severity (a_val: INTEGER)
-			-- Set `selected_severity' with selected value `a_val'
+			-- Set `selected_severity' to selected value `a_val'.
 		do
 			selected_severity := a_val
 		ensure
@@ -157,38 +155,38 @@ feature -- Change Element
 		end
 
 	set_order_by (a_order_by: READABLE_STRING_32)
-			-- Set `orger_by' with `a_order_by'
+			-- Set `orger_by' to `a_order_by'.
 		do
 			order_by := a_order_by
 		end
 
 	set_direction (a_direction: STRING)
-			-- Set `direction' with `a_direction'
+			-- Set `direction' to `a_direction'.
 			-- direction (ASC|DESC)
 		do
 			direction := a_direction
 		end
 
 	set_responsibles (a_responsibles: like responsibles)
-			-- Set `responsibles' with `a_responsibles'.
+			-- Set `responsibles' to `a_responsibles'.
 		do
 			responsibles := a_responsibles
 		end
 
 	set_priorities (a_priorities: like priorities)
-			-- Set `priorities' with `a_priorities'.
+			-- Set `priorities' to `a_priorities'.
 		do
 			priorities := a_priorities
 		end
 
 	set_severities (a_severities: like severities)
-			-- Set `severities' with `a_severities'.
+			-- Set `severities' to `a_severities'.
 		do
 			severities := a_severities
 		end
 
 	set_size (a_size: INTEGER)
-			-- Set `size' with `size'
+			-- Set `size' to `size'
 		do
 			size := a_size
 		ensure
@@ -211,21 +209,12 @@ feature -- Change Element
 			filter_set: filter = a_filter
 		end
 
-	set_filter_description (a_filter_description: like filter_description)
-			-- Set `filter_description' to `a_filter_description'.
+	set_filter_content (a_filter_content: like filter_content)
+			-- Set `filter_content' to `a_filter_content'.
 		do
-			filter_description := a_filter_description
+			filter_content := a_filter_content
 		ensure
-			filter_description_set: filter_description = a_filter_description
-		end
-
-
-	set_filter_synopsis (a_filter_synopsis: like filter_synopsis)
-			-- Set `filter_synopsis' to `a_filter_synopsis'.
-		do
-			filter_synopsis := a_filter_synopsis
-		ensure
-			filter_synopsis_set: filter_synopsis = a_filter_synopsis
+			filter_content_set: filter_content = a_filter_content
 		end
 
 end

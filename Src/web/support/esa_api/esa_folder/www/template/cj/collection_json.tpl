@@ -1,6 +1,6 @@
 <"collection": <
     "version": "1.0", 
-    "href": "{$host/}", 
+    "href": "{$host/}/", 
     "links": [
             <
                 "href": "{$host/}/profile/esa_api.xml",
@@ -74,6 +74,11 @@
                 <"name" : "search", "value" : "">
             ]
         >
-    ]      
+    ]
+
+    {if isset="$error"} 
+        ,
+        "error":<"title":"{$error/}","code":{$code/}>
+    {/if}             
   >
 >

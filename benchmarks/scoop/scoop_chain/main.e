@@ -1,319 +1,395 @@
--- randmat: random number generation
---
--- input:
---   nrows, ncols: the number of rows and cols
---   s: the seed
---
--- output:
---   matrix: a nrows by ncols integer matrix
+	-- randmat: random number generation
+	--
+	-- input:
+	--   nrows, ncols: the number of rows and cols
+	--   s: the seed
+	--
+	-- output:
+	--   matrix: a nrows by ncols integer matrix
+class
+	MAIN
 
-class MAIN
-inherit ARGUMENTS
-  EXCEPTIONS
-create make
+inherit
+
+	ARGUMENTS
+
+	EXCEPTIONS
+
+create
+	make
 
 feature
-  make
-    local
-      s: INTEGER
-      is_bench: BOOLEAN
-      i: INTEGER
-      vector: ARRAY [DOUBLE]
-    do
-      create in.make_open_read(separate_character_option_value('i'))
-      is_bench := index_of_word_option ("bench") > 0
 
-      nelts := read_integer
-      s := read_integer
-      percent := read_integer
-      winnow_nelts := read_integer
+	make
+		local
+			s: INTEGER
+			is_bench: BOOLEAN
+			i: INTEGER
+			vector: ARRAY [DOUBLE]
+			n_str: STRING
+		do
+			create in.make_open_read (separate_character_option_value ('i'))
+			n_str := separate_character_option_value ('x')
+			if n_str /= Void then
+				num_workers := n_str.to_integer
+			else
+				num_workers := 32
+			end
 
-      create result_vector.make (1, winnow_nelts)
-      create max.make (1,1)
-      create vs.make (1, 20000)
-      create xs.make (1, 20000)
-      create ys.make (1, 20000)
-      create winnow_xs.make (1, 20000)
-      create winnow_ys.make (1, 20000)
-
-      print ("run%N")
-      run (s)
-
-      if not is_bench then
-        vector := fetch_vector (result_vector)
-        
-        from i := 1
-        until i > nelts
-        loop
-          print (vector [i].out + " ")
-          i := i + 1
-        end
-        print ("%N")
-      end
-    end
+			is_bench := index_of_word_option ("bench") > 0
+			nelts := read_integer
+			s := read_integer
+			percent := read_integer
+			winnow_nelts := read_integer
+			create histogram_max
+			create histogram.make_filled (0, 0, 100)
+			create vs.make_filled (0, 0, 20000 - 1)
+			create xs.make_filled (0, 0, 20000 - 1)
+			create ys.make_filled (0, 0, 20000 - 1)
+			create winnow_xs.make_filled (0, 0, winnow_nelts - 1)
+			create winnow_ys.make_filled (0, 0, winnow_nelts - 1)
+			create shared_vector.make_filled (0, winnow_nelts)
+			print ("run%N")
+			run (s)
+			all_done
+			vector := fetch_all_vector
+			if not is_bench then
+				from
+					i := 0
+				until
+					i >= winnow_nelts
+				loop
+					print (vector [i].out + " ")
+					i := i + 1
+				end
+				print ("%N")
+			end
+		end
 
 feature {NONE}
-  in: PLAIN_TEXT_FILE
-  percent, threshold: INTEGER
-  winnow_nelts, nelts: INTEGER
 
+	in: PLAIN_TEXT_FILE
 
-  vs, xs, ys: separate ARRAY [INTEGER]
-  winnow_xs, winnow_ys: separate ARRAY [INTEGER]
-  histogram: separate ARRAY [INTEGER]
-  max: separate ARRAY [INTEGER]
-  result_vector: separate ARRAY [DOUBLE]
+	percent, threshold: INTEGER
 
- 
-  read_integer: INTEGER
-    do
-      in.read_integer
-      Result := in.last_integer
-    end
+	winnow_nelts, nelts: INTEGER
 
-  num_workers: INTEGER = 32
-  
-  -- parallel for on matrix
-  run (seed: INTEGER)
-    local
-      workers: LINKED_LIST[separate WORKER]
-      worker: separate WORKER
-      i: INTEGER
-      win_start, start: INTEGER
-      win_height, height: INTEGER
-    do
-      create workers.make
+	vs, xs, ys: separate ARRAY [INTEGER]
 
-      from
-        start := 0
-        i := 0
-      until i >= num_workers
-      loop
+	winnow_xs, winnow_ys: separate ARRAY [INTEGER]
 
-        height := (nelts - start) // (num_workers - i)
-        win_height := (winnow_nelts - win_start) // (num_workers - i)
+	histogram: separate ARRAY [INTEGER]
 
+	histogram_max: separate HISTOGRAM_MAX
 
-        if height /= 0 then
-          print ("create " + start.out + "," + height.out + "%N")
-          create worker.make (start + 1, start + height, nelts, 
-                              seed, percent, 
-                              win_start + 1, win_start + win_height,
-                              winnow_nelts)
-                      
-          worker_setup (worker)
+	shared_vector: separate SPECIAL [DOUBLE]
 
-          workers.extend(worker)
-        end
-          
-        start := start + height
-        win_start := win_start + win_height
-        i := i + 1
-      end
+	workers: LINKED_LIST [separate WORKER]
 
-      -- parallel for on rows
-      live_all (workers)
-    end
+	read_integer: INTEGER
+		do
+			in.read_integer
+			Result := in.last_integer
+		end
 
-  worker_setup (worker: separate WORKER)
-    do
-      worker.set_max (max)
-      worker.set_histogram (histogram)
-      worker.set_vs (vs)
-      worker.set_xs (xs)
-      worker.set_ys (ys)
-      worker.set_winnow_xs (winnow_xs)
-      worker.set_winnow_ys (winnow_ys)
-      worker.set_result_vector (result_vector)
-    end
+	num_workers: INTEGER
 
-  live_all (workers: LINKED_LIST [separate WORKER])
-    do
-      print ("randmat%N")
-      -- Randmat creation
-      from workers.start
-      until workers.after
-      loop
-          live_randmat (workers.item)
-          workers.forth
-      end
+		-- parallel for on matrix
 
-      print ("threshold%N")
-      -- Threshold discovery
-      from workers.start
-      until workers.after
-      loop
-          live_thresh_reduce (workers.item)
-          workers.forth
-      end
+	run (seed: INTEGER)
+		local
+			worker: separate WORKER
+			i: INTEGER
+			win_start, start: INTEGER
+			win_height, height: INTEGER
+		do
+			create workers.make
+			from
+				start := 0
+				i := 0
+			until
+				i >= num_workers
+			loop
+				height := (nelts - start) // (num_workers - i)
+				win_height := (winnow_nelts - win_start) // (num_workers - i)
+				if height /= 0 then
+					print ("create " + start.out + "," + height.out + "%N")
+					create worker.make (start, start + height, nelts, seed, percent, win_start, win_start + win_height, winnow_nelts)
+					worker_setup (worker)
+					workers.extend (worker)
+				end
+				start := start + height
+				win_start := win_start + win_height
+				i := i + 1
+			end
 
-      process_histogram (max, histogram)
+				-- parallel for on rows
+			live_all
+		end
 
-      print ("threshmap%N")
-      from workers.start
-      until workers.after
-      loop
-          live_thresh_map (workers.item)
-          workers.forth
-      end
+	worker_setup (worker: separate WORKER)
+		do
+			worker.set_histogram_max (histogram_max)
+			worker.set_histogram (histogram)
+			worker.set_vs (vs)
+			worker.set_xs (xs)
+			worker.set_ys (ys)
+			worker.set_winnow_xs (winnow_xs)
+			worker.set_winnow_ys (winnow_ys)
+		end
 
-      print ("winnow%N")
-      -- Winnow point collection and sorting
-      from workers.start
-      until workers.after
-      loop
-          live_winnow (workers.item)
-          workers.forth
-      end
+	live_all
+		do
+			print ("randmat%N")
+				-- Randmat creation
+			from
+				workers.start
+			until
+				workers.after
+			loop
+				live_randmat (workers.item)
+				workers.forth
+			end
+			print ("threshold%N")
+				-- Threshold discovery
+			from
+				workers.start
+			until
+				workers.after
+			loop
+				live_thresh_reduce (workers.item)
+				workers.forth
+			end
 
-      sort_winnow (import_winnow (vs, xs, ys), winnow_xs, winnow_ys) 
+			print ("waiting on histogram count%N")
+			histogram_done (histogram_max)
+			print ("done waiting on histogram count%N")
+			process_histogram (histogram_max, histogram)
 
-      print ("outer%N")
-      -- Outer processing
-      from workers.start
-      until workers.after
-      loop
-          live_outer (workers.item)
-          workers.forth
-      end
+			print ("threshmap%N")
+			from
+				workers.start
+			until
+				workers.after
+			loop
+				live_thresh_map (workers.item)
+				workers.forth
+			end
+			print ("winnow%N")
+				-- Winnow point collection and sorting
+			from
+				workers.start
+			until
+				workers.after
+			loop
+				live_winnow (workers.item)
+				workers.forth
+			end
 
-      print ("product%N")
-      -- Matrix-vector product
-      from workers.start
-      until workers.after
-      loop
-          live_product (workers.item)
-          workers.forth
-      end
-    end
+  		sort_winnow (import_winnow, winnow_xs, winnow_ys)
+			print ("outer%N")
+				-- Outer processing
+			from
+				workers.start
+			until
+				workers.after
+			loop
+				live_outer (workers.item)
+				workers.forth
+			end
+			print ("product%N")
+				-- Matrix-vector product
+			from
+				workers.start
+			until
+				workers.after
+			loop
+				live_product (workers.item)
+				workers.forth
+			end
+		end
 
-  process_histogram (a_max: separate ARRAY [INTEGER];
-                     a_histogram: separate ARRAY [INTEGER])
-    require
-      a_max.generator /= Void and a_histogram.generator /= Void
-    local
-      count: INTEGER
-      nmax: INTEGER
-      prefixsum: INTEGER
-      i: INTEGER
-      h: INTEGER
-    do
-      nmax := a_max.item (1)
-      count := (nelts * nelts * percent) // 100
+	histogram_done(h: separate HISTOGRAM_MAX)
+		require
+			h.done = workers.count
+		do
+			print ("workers is ")
+			print (workers.count)
+			print (" and cell is ")
+			print (h.done)
+			print ("%N")
+		end
 
-      prefixsum := 0
-      threshold := nmax
+	process_histogram (a_max: separate HISTOGRAM_MAX; a_histogram: separate ARRAY [INTEGER])
+		local
+			count: INTEGER
+			nmax: INTEGER
+			prefixsum: INTEGER
+			i: INTEGER
+			h: INTEGER
+		do
+			nmax := a_max.max
+			count := (nelts * nelts * percent) // 100
+			prefixsum := 0
+			threshold := nmax
 
-      from i := nmax
-      until i < 0 or prefixsum > count
-      loop
-      	h := a_histogram.item (i)
-        prefixsum := prefixsum + h
-        threshold := i;
-        i := i - 1
-      end
-    end
+			print ("nmax :")
+			print (nmax)
+			print ("%N")
 
-  import_winnow (vs_, xs_, ys_: separate ARRAY[INTEGER]):
-      ARRAY[TUPLE[INTEGER, INTEGER, INTEGER]]
-    require
-      xs_.generator /= Void
-    local
-      i: INTEGER
-      n: INTEGER
-      v,x,y: INTEGER
-    do
-      n := vs_.count
-      create Result.make (1, n)
-      
-      from i := 1
-      until i > n
-      loop
-        v := vs_ [i]
-        x := xs_ [i]
-        y := ys_ [i]
-        
-        Result [i] := [v, x, y]
-        i := i + 1
-      end
-    end
+			print ("histogram count: ")
+			print (count)
+			print ("%N")
+			from
+				i := nmax
+			until
+				i < 0 or prefixsum > count
+			loop
+				h := a_histogram [i]
+				print ("histogram[" + i.out + "] = " + h.out + "%N")
+				prefixsum := prefixsum + h
+				threshold := i;
+				i := i - 1
+			end
+		end
 
-  sort_winnow (points_: ARRAY [TUPLE [x,y,z: INTEGER]]
-               winnow_xs_, winnow_ys_: separate ARRAY [INTEGER])
-    local
-      points: ARRAY [TUPLE [v,x,y: INTEGER]]
-      trim_points: ARRAY [TUPLE [v,x,y: INTEGER]]
+	import_winnow: ARRAYED_LIST [TUPLE [INTEGER, INTEGER, INTEGER]]
+		local
+			i: INTEGER
+			n: INTEGER
+			v, x, y: INTEGER
+		do
+			print ("Master: importing winnow%N")
+			create Result.make (10000)
 
-      sorter: TUPLE_SORTER
+			across
+				workers as wi
+			loop
+				import_winnow_worker (Result, wi.item)
+			end
+		end
 
-      i, n, chunk, index: INTEGER
-    do
-      create sorter.make
-      
-      points := sorter.sort (points_)
+	import_winnow_worker (vector: ARRAYED_LIST [TUPLE [v, x, y: INTEGER]]; w: separate WORKER)
+		local
+			i: INTEGER
+			t: TUPLE [v, x, y: INTEGER]
+			v,x,y: INTEGER
+		do
+			print ("import winnow from worker: " + w.winnow_vector_v.count.out + "%N")
+			vector.grow (vector.count + w.winnow_vector_v.count)
+			from
+				i := 0
+			until
+				i >= w.winnow_vector_v.count
+			loop
+				v := w.winnow_vector_v[i+1]
+				x := w.winnow_vector_x[i+1]
+				y := w.winnow_vector_y[i+1]
+				vector.extend ([v, x, y])
+				i := i + 1
+			end
+		end
 
-      n     := points.count
-      chunk := n // winnow_nelts
+	sort_winnow (points: ARRAYED_LIST [TUPLE [x, y, z: INTEGER]] winnow_xs_, winnow_ys_: separate ARRAY [INTEGER])
+		local
+			trim_points: ARRAY [TUPLE [v, x, y: INTEGER]]
+			sorter: SORTER [TUPLE [INTEGER, INTEGER, INTEGER]] -- TUPLE_SORTER
 
-      create points.make (1, winnow_nelts)
-      from i := 1
-      until i > winnow_nelts
-      loop
-        index := (i - 1) * chunk + 1
-        winnow_xs_ [i] := points [index].x
-        winnow_ys_ [i] := points [index].y
-        i := i + 1
-      end
-    end
+			i, n, chunk, index: INTEGER
+		do
+			print ("Master: sorting winnow " + points.count.out + "%N")
+			create {QUICK_SORTER [TUPLE [INTEGER, INTEGER, INTEGER]]} sorter.make (create {TUPLE_COMPARATOR})
+			sorter.sort (points)
+
+			n := points.count
+			chunk := n // winnow_nelts
+
+				--      create points.make_filled ([0,0,0], 0, winnow_nelts-1)
+			from
+				i := 0
+			until
+				i >= winnow_nelts
+			loop
+				index := i * chunk + 1
+				winnow_xs_ [i] := points [index].x
+				winnow_ys_ [i] := points [index].y
+				i := i + 1
+			end
+		end
 
 feature -- Living routines
-  live_randmat (worker: separate WORKER)
-    do
-      worker.live_randmat
-    end
 
-  live_thresh_reduce (worker: separate WORKER)
-    do
-      worker.live_thresh_reduce
-    end
+	live_randmat (worker: separate WORKER)
+		do
+			worker.live_randmat
+		end
 
-  live_thresh_map (worker: separate WORKER)
-    do
-      worker.live_thresh_map (threshold)
-    end
+	live_thresh_reduce (worker: separate WORKER)
+		do
+			worker.live_thresh_reduce
+		end
 
-  live_winnow (worker: separate WORKER)
-    do
-        worker.live_winnow
-    end
+	live_thresh_map (worker: separate WORKER)
+		do
+			worker.live_thresh_map (threshold)
+		end
 
-  live_outer (worker: separate WORKER)
-    do
-      worker.live_outer
-    end
+	live_winnow (worker: separate WORKER)
+    require
 
-  live_product (worker: separate WORKER)
-    do
-      worker.live_product
-    end
+		do
+			worker.live_winnow
+		end
 
-  join (obj: separate WORKER)
-    require obj.generator /= Void
-    do
-    end
-  
-  fetch_vector (s_vector: separate ARRAY[DOUBLE]):
-      ARRAY [DOUBLE]
-    local
-      i: INTEGER
-    do
-      create Result.make (1, nelts)
-      from i := 1
-      until i > winnow_nelts
-      loop
-        Result [i] := s_vector [i]
-        i := i + 1
-      end
-    end
+	live_outer (worker: separate WORKER)
+		do
+			worker.live_outer (shared_vector)
+		end
+
+	live_product (worker: separate WORKER)
+		do
+			worker.live_product
+		end
+
+	all_done
+		do
+			across workers as wi
+       	loop
+				check_done (wi.item)
+		   end
+		end
+
+	check_done (worker: separate WORKER)
+		require
+			worker.done
+		do
+		end
+
+	fetch_all_vector: ARRAY [DOUBLE]
+		do
+			create Result.make_filled (0, 0, winnow_nelts - 1)
+			across workers as wi
+			loop
+				print ("Fetching vector%N")
+				fetch_vector (Result, wi.item)
+		   end
+		end
+
+	fetch_vector(res: ARRAY [DOUBLE]; w: separate WORKER)
+		local
+			i, s, n: INTEGER
+		do
+		  n := w.win_final
+			from
+				s := w.win_start
+				i := s
+			until
+				i >= n
+			loop
+				res [i] := w.product_vector [i - s]
+				i := i + 1
+			end
+		end
+
 
 end

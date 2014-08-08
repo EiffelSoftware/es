@@ -4678,7 +4678,7 @@ Src/library/wel/tests/graphics/24bpp.bmp -text
 Src/library/wel/tests/graphics/32bpp.bmp -text
 Src/library/wizard/help/Clib/htmlhelp.lib -text
 Src/scripts/check_trunk_head_compilation_validity -text
-Src/scripts/tools/_inc/_f_code_tpl_ -text
+Src/scripts/geant/tools/_inc/_f_code_tpl_ -text
 Src/tools/ace2ecf/license.lic -text
 Src/tools/ace2ecf/src/lace/lace_compile/lace.l -text
 Src/tools/button_clicker/button_clicker.ico -text
@@ -5942,6 +5942,12 @@ Src/tools/resource_bench/rb.lic -text
 Src/tools/resource_bench/toolbar.bmp svneol=native#unset
 Src/tools/syntax_updater/syntax_updater.lic -text
 Src/tools/visitor_factory/visitor_factory.lic -text
+Src/tools/wdocs/themes/demo/css/all.css -text
+Src/tools/wdocs/themes/demo/images/bg-header.jpg -text
+Src/tools/wdocs/themes/demo/images/logo.png -text
+Src/tools/wdocs/wdocs.ecf svneol=native#text/xml
+Src/tools/wdocs/wdocs.ini -text
+Src/tools/wdocs/wdocs_app.ecf svneol=native#text/xml
 Src/unstable/library/compression/bzip2/Readme.txt -text
 Src/unstable/library/compression/zlib/Readme.txt -text
 Src/unstable/library/compression/zlib/example/basic_functions/file_to_compress.txt -text
@@ -6009,8 +6015,6 @@ Src/unstable/library/persistency/database/sqlite3/README -text
 Src/unstable/library/persistency/database/sqlite3/license.lic -text
 Src/unstable/library/text/encryption/crypto/license.lic -text
 Src/unstable/library/text/encryption/crypto/tests/license.lic -text
-Src/web/support/database/mssql/create_db.sql -text
-Src/web/support/database/mssql/create_db_sql2000.sql -text
 Src/web/support/database/mssql/data_countries.sql -text svneol=unset#application/octet-stream
 Src/web/support/database/mssql/data_problem_report_categories.sql -text svneol=unset#application/octet-stream
 Src/web/support/database/mssql/data_problem_report_categories_roles.sql -text svneol=unset#application/octet-stream
@@ -6022,25 +6026,18 @@ Src/web/support/database/mssql/data_problem_report_status.sql -text svneol=unset
 Src/web/support/database/mssql/data_questions.sql -text svneol=unset#application/octet-stream
 Src/web/support/database/mssql/data_roles.sql -text svneol=unset#application/octet-stream
 Src/web/support/database/mssql/data_security_questions.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/db_problem_report_priorities.sql -text
 Src/web/support/database/mssql/db_schemas.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/db_store_procedure_sql2000.sql -text
 Src/web/support/database/mssql/db_store_procedures.sql -text svneol=unset#application/octet-stream
 Src/web/support/database/mssql/db_tables.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/db_tables_sql2000.sql -text
-Src/web/support/database/mssql/db_update.sql -text
 Src/web/support/database/mssql/db_user.sql -text svneol=unset#application/octet-stream
 Src/web/support/database/mssql/db_user_defined_functions.sql -text svneol=unset#application/octet-stream
-Src/web/support/database/mssql/db_user_df_sql2000.sql -text
-Src/web/support/database/mssql/db_view_sql2000.sql -text
 Src/web/support/database/mssql/db_views.sql -text svneol=unset#application/octet-stream
-Src/web/support/esa_api.dot -text
-Src/web/support/esa_api/esa_folder/www/static/css/bootstrap-select.min.css -text
-Src/web/support/esa_api/esa_folder/www/static/css/dashboard.css -text
 Src/web/support/esa_api/esa_folder/www/static/doc/cj_doc.html svneol=native#text/xml
 Src/web/support/esa_api/esa_folder/www/static/doc/esa_api_state_machine.png -text
 Src/web/support/esa_api/esa_folder/www/static/doc/esa_doc.html svneol=native#text/xml
 Src/web/support/esa_api/esa_folder/www/static/doc/howto.html svneol=native#text/xml
+Src/web/support/esa_api/esa_folder/www/static/fonts/glyphicons-halflings-regular.ttf -text
+Src/web/support/esa_api/esa_folder/www/static/fonts/glyphicons-halflings-regular.woff -text
 Src/web/support/esa_api/esa_folder/www/static/images/ajax-loader.gif -text
 Src/web/support/esa_api/esa_folder/www/static/images/down.gif -text
 Src/web/support/esa_api/esa_folder/www/static/images/grid_header.gif -text
@@ -6059,15 +6056,10 @@ Src/web/support/esa_api/esa_folder/www/static/images/up.gif -text
 Src/web/support/esa_api/esa_folder/www/static/profile/esa_api.xml svneol=native#text/xml
 Src/web/support/esa_api/esa_folder/www/static/profile/esa_html.html svneol=native#text/xml
 Src/web/support/esa_api/src/esa_template/logs/emails.logs -text
-Src/web/support/esa_db/scripts/AddUser2.sql -text
-Src/web/support/esa_db/scripts/GetProblemReportsGuest.sql -text
-Src/web/support/esa_db/scripts/GetProblemReportsRowCountGuest.sql -text
-Src/web/support/esa_db/scripts/GetReportProblemInteractionsGuest.sql -text
-Src/web/support/esa_db/scripts/IsProblemReportVisubleGuest.sql -text
-Src/web/support/esa_db/scripts/Readme.txt -text
-Src/web/support/esa_db/scripts/TableRowCount.sql -text
-Src/web/support/esa_db/tests/api_password.txt -text
+Src/web/support/esa_core/esa_core.ecf svneol=native#text/xml
 benchmarks/scoop/Tests1-6.xls -text
+benchmarks/scoop/results/windows-x86-64-old.csv eol=crlf
+benchmarks/scoop/results/windows-x86-64.csv eol=crlf
 benchmarks/scoop/scoop0001/LogParser.java -text
 benchmarks/scoop/scoop0001/compile.cmd -text
 benchmarks/scoop/scoop0001/description.txt -text
@@ -6128,45 +6120,18 @@ benchmarks/scoop/scoop0006/processors.txt -text
 benchmarks/scoop/scoop0006/queries.txt -text
 benchmarks/scoop/scoop0006/run.cmd -text
 benchmarks/scoop/scoop0006/test.cmd -text
-benchmarks/scoop/scoop_chain/Makefile -text
-benchmarks/scoop/scoop_chain/main.in -text
+benchmarks/scoop/scoop_chain-original/Makefile -text
 benchmarks/scoop/scoop_outer/Makefile -text
 benchmarks/scoop/scoop_outer/main.gold -text
-benchmarks/scoop/scoop_outer/main.in -text
-benchmarks/scoop/scoop_outer/mainbig.in -text
 benchmarks/scoop/scoop_outer/test.in -text
 benchmarks/scoop/scoop_product/Makefile -text
-benchmarks/scoop/scoop_product/main.gold -text
-benchmarks/scoop/scoop_product/main.in -text
-benchmarks/scoop/scoop_product/mainbig.in -text
 benchmarks/scoop/scoop_randmat/Makefile -text
-benchmarks/scoop/scoop_randmat/main.in -text
-benchmarks/scoop/scoop_randmat/main2.in -text
-benchmarks/scoop/scoop_randmat/main3.in -text
-benchmarks/scoop/scoop_randmat/main4.in -text
-benchmarks/scoop/scoop_randmat/main5.in -text
-benchmarks/scoop/scoop_randmat/mainbig.in -text
-benchmarks/scoop/scoop_randmat/mainbig2.in -text
 benchmarks/scoop/scoop_thresh/Makefile -text
-benchmarks/scoop/scoop_thresh/main.in -text
-benchmarks/scoop/scoop_thresh/main2.in -text
-benchmarks/scoop/scoop_thresh/main3.in -text
-benchmarks/scoop/scoop_thresh/main4.in -text
-benchmarks/scoop/scoop_thresh/main5.in -text
-benchmarks/scoop/scoop_thresh/main6.in -text
-benchmarks/scoop/scoop_thresh/main7.in -text
-benchmarks/scoop/scoop_thresh/mainbig.in -text
 benchmarks/scoop/scoop_winnow/Makefile -text
 benchmarks/scoop/scoop_winnow/main.gold -text
-benchmarks/scoop/scoop_winnow/main.in -text
 benchmarks/scoop/scoop_winnow/main2.gold -text
-benchmarks/scoop/scoop_winnow/main2.in -text
 benchmarks/scoop/scoop_winnow/main3.gold -text
-benchmarks/scoop/scoop_winnow/main3.in -text
 benchmarks/scoop/scoop_winnow/main4.gold -text
-benchmarks/scoop/scoop_winnow/main4.in -text
-benchmarks/scoop/scoop_winnow/main5.in -text
-benchmarks/scoop/scoop_winnow/mainbig.in -text
 eweasel/BUGS -text
 eweasel/CHANGES -text
 eweasel/GPL.txt -text

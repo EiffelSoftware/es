@@ -162,16 +162,24 @@ feature -- New Report Problem
 			media_variants: HTTP_ACCEPT_MEDIA_TYPE_VARIANTS
 			l_rhf: ESA_REPRESENTATION_HANDLER_FACTORY
 			l_form: ESA_INTERACTION_FORM_VIEW
+			l_role: ESA_USER_ROLE
 		do
 			create l_rhf
 			media_variants := media_type_variants (req)
-			if attached {STRING_32} current_user_name (req) as l_user then
-					-- Logged in user
+			if
+				attached {STRING_32} current_user_name (req) as l_user and then
+			 	api_service.is_report_visible (l_user, a_report_id)
+			then
+					-- Logged in user with access to the given report id.
 				if attached current_media_type (req) as l_type then
 					if attached api_service.problem_report_details_guest (a_report_id) as l_report then
 						create l_form.make (api_service.status, api_service.all_categories)
 						l_form.set_report (l_report)
-						l_form.set_private (l_report.confidential)
+
+						l_role := api_service.user_role (l_user)
+						if l_role.is_administrator or else l_role.is_responsible then
+							l_form.set_responsible_or_admin (True)
+						end
 						if attached l_report.status as l_status then
 							l_form.set_status_by_synopsis (l_status.synopsis)
 						end
@@ -186,7 +194,7 @@ feature -- New Report Problem
 				else
 					l_rhf.new_representation_handler (esa_config, "", media_variants).add_interaction_form (req, res, Void)
 				end
-			else -- Not a logged in user
+			else -- Not a logged in user or the user does not have permissions to add an interaction.
 				if attached current_media_type (req) as l_type then
 					l_rhf.new_representation_handler (esa_config, l_type, media_variants).new_response_unauthorized (req, res)
 				else
@@ -269,6 +277,7 @@ feature -- Initialize Report Problem
 						l_form := extract_form_data (req, l_type)
 						l_form.set_id (l_temp_interaction_id)
 						l_form.set_report (l_report)
+						l_form.confirm_changes
 						if l_form.is_valid_form then
 							initialize_interaction_report_problem_internal (req, l_form)
 							l_rhf.new_representation_handler (esa_config, l_type, media_type_variants (req)).interaction_form_confirm (req, res, l_form)
@@ -300,7 +309,15 @@ feature -- Initialize Report Problem
 			end
 			if attached a_form.uploaded_files as l_files then
 				across l_files as c loop
-					api_service.upload_temporary_interaction_attachment (a_form.id, c.item)
+					to_implement ("Refactor code, extract hardcoded variable to a constant.")
+					if c.item.size.to_natural_64 <= ({NATURAL_64}10*1024*1024) then
+						api_service.upload_temporary_interaction_attachment (a_form.id, c.item)
+						a_form.add_temporary_file_name (c.item.name)
+					else
+						-- Not accepted file too big.
+						to_implement("Add the name of the file as a list of rejected files.")
+						log.write_alert (generator + ".initialize_interaction_report_problem_internal File " + c.item.name + " rejected, too big." )
+					end
 				end
 			end
 		end
@@ -450,17 +467,18 @@ feature {NONE} -- Implementation
 		local
 			l_found: BOOLEAN
 		do
-				-- Update temporary files
+					-- Update temporary files
 			if req.form_parameter ("temporary_files") = Void then
-				-- remove all the attached files.
+					-- remove all the attached files.
 				api_service.remove_all_temporary_interaction_attachments (a_form.id)
 			elseif attached {WSF_STRING} req.form_parameter ("temporary_files") as l_file and then
 				l_file.is_string then
 				across api_service.temporary_interation_attachments (a_form.id) as c loop
 					if not c.item.name.same_string (l_file.value) then
-						api_service.remove_temporary_interaction_attachment (a_form.id, l_file.value)
+						api_service.remove_temporary_interaction_attachment (a_form.id, c.item.name)
 					end
 				end
+				a_form.add_temporary_file_name (l_file.value)
 			elseif attached {WSF_MULTIPLE_STRING} req.form_parameter ("temporary_files") as l_files then
 				across api_service.temporary_interation_attachments (a_form.id) as c loop
 					across l_files as lf loop
@@ -474,11 +492,22 @@ feature {NONE} -- Implementation
 						l_found := False
 					end
 				end
+				across l_files as lf loop
+					a_form.add_temporary_file_name (lf.item.value)
+				end
 			end
 				-- Add new uploaded files
 			if attached a_form.uploaded_files as l_files then
 				across l_files as c loop
-					api_service.upload_temporary_interaction_attachment (a_form.id, c.item)
+					to_implement ("Refactor code, extract hardcoded variable to a constant.")
+					if c.item.size.to_natural_64 <= ({NATURAL_64}10*1024*1024) then
+						api_service.upload_temporary_interaction_attachment (a_form.id, c.item)
+						a_form.add_temporary_file_name (c.item.name)
+					else
+						-- Not accepted file too big.
+						to_implement("Add the name of the file as a list of rejected files.")
+						log.write_alert (generator + ".upload_temporary_files_html File " + c.item.name + " rejected, too big." )
+					end
 				end
 			end
   		end

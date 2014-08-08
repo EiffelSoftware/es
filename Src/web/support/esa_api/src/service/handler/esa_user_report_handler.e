@@ -42,20 +42,20 @@ create
 feature -- execute
 
 	execute (req: WSF_REQUEST; res: WSF_RESPONSE)
-			-- Execute request handler
+			-- Execute request handler.
 		do
 			execute_methods (req, res)
 			execute_next (req, res)
 		end
 
 	uri_execute (req: WSF_REQUEST; res: WSF_RESPONSE)
-			-- Execute request handler
+			-- Execute request handler.
 		do
 			execute_methods (req, res)
 		end
 
 	uri_template_execute (req: WSF_REQUEST; res: WSF_RESPONSE)
-			-- Execute request handler
+			-- Execute request handler.
 		do
 			execute_methods (req, res)
 		end
@@ -64,87 +64,42 @@ feature -- HTTP Methods
 
 
 	do_get (req: WSF_REQUEST; res: WSF_RESPONSE)
+			-- <Precursor>
 		local
 			l_rhf: ESA_REPRESENTATION_HANDLER_FACTORY
 			l_row: LIST[ESA_REPORT]
 			l_view: ESA_REPORT_VIEW
-			l_status: INTEGER
-			l_category: INTEGER
 			list_status: LIST[ESA_REPORT_STATUS]
 			l_categories: LIST[ESA_REPORT_CATEGORY]
 			l_pages : INTEGER
-			l_page: INTEGER
-			l_size: INTEGER
-			l_direction: STRING
-			l_order_by : STRING
-			l_dir: INTEGER
+			l_input_validator: ESA_REPORT_INPUT_VALIDATOR
 		do
 			create l_rhf
 			if attached {STRING_32} current_user_name (req) as l_user then
 					-- Logged in user
 				log.write_information (generator+".do_get Processing request with user:" + l_user  )
 				if attached current_media_type (req) as l_type then
+					create l_input_validator
+					l_input_validator.input_from (req.query_parameters)
+					if not l_input_validator.has_error then
+						l_categories := api_service.all_categories
+						list_status := api_service.status
 
-					l_order_by := "submissionDate"
-					l_direction := "ASC"
-					l_dir := 0
-
-
-						-- Page setup
-					if attached {WSF_STRING} req.query_parameter ("page") as ll_page and then ll_page.is_integer then
-						l_page := ll_page.integer_value
+						l_pages := api_service.row_count_problem_report_user (l_user, l_input_validator.category, l_input_validator.status_selected, l_input_validator.filter, l_input_validator.filter_content)
+						l_row := api_service.problem_reports_2 (l_input_validator.page, l_input_validator.size, l_user, l_input_validator.category, l_input_validator.status_selected, l_input_validator.orderby, l_input_validator.dir_selected, l_input_validator.filter, l_input_validator.filter_content)
+						create l_view.make (l_row, l_input_validator.page, l_pages // l_input_validator.size, l_categories, list_status, l_user)
+						l_view.set_selected_category (l_input_validator.category)
+						l_view.set_size (l_input_validator.size)
+						l_view.set_order_by (l_input_validator.orderby)
+						l_view.set_filter (l_input_validator.filter)
+						l_view.set_filter_content (l_input_validator.filter_content)
+						mark_selected_status (list_status, l_input_validator.status)
+						l_rhf.new_representation_handler (esa_config, l_type, media_type_variants (req)).problem_user_reports (req, res, l_view)
 					else
-						-- default page number 1
-						l_page := 1
+							-- Bad request
+						log.write_error (generator + ".user_reports " + l_input_validator.error_message)
+						l_rhf.new_representation_handler (esa_config, l_type,  media_type_variants (req)).bad_request_with_errors_page (req, res, l_input_validator.errors)
 					end
-
-						-- Page Size
-					if attached {WSF_STRING} req.query_parameter ("size") as ll_size and then ll_size.is_integer then
-						l_size := ll_size.integer_value
-					else
-						-- default page size is 10
-						l_size := 10
-					end
-
-					l_categories := api_service.all_categories
-					list_status:= api_service.status
-					if attached {WSF_STRING} req.query_parameter ("category") as ll_category and then
-					   attached {WSF_STRING} req.query_parameter ("status") as ll_status and then
-						  ll_category.is_integer and then ll_status.is_integer then
-					  	l_category := ll_category.integer_value
-					    l_status := ll_status.integer_value
-					 else
-						l_category := 0
-						l_status := 0
-					end
-
-						-- Order By and Direction
-					if attached {WSF_STRING} req.query_parameter ("orderBy") as l_orderby and then attached {WSF_STRING} req.query_parameter ("dir") as ll_dir then
-						if not l_orderby.value.is_empty then
-							l_order_by := l_orderby.value
-						end
-						if not ll_dir.value.is_empty then
-							l_direction := ll_dir.value
-							if ll_dir.value.same_string ("ASC") then
-								l_dir := 1
-							end
-						end
-					end
-					l_pages := api_service.row_count_problem_report_user (l_user, False, l_category, l_status)
-					l_row := api_service.problem_reports_2 (l_page, l_size, l_user, False, l_category, l_status, l_order_by, l_dir)
-					create l_view.make (l_row, l_page, l_pages // l_size, l_categories, list_status, l_user)
-					l_view.set_selected_category (l_category)
-					l_view.set_selected_status (l_status)
-					l_view.set_size (l_size)
-					l_view.set_order_by (l_order_by)
-
-					if l_dir = 1 then
-						l_view.set_direction ("ASC")
-					else
-						l_view.set_direction ("DESC")
-					end
-
-					l_rhf.new_representation_handler (esa_config, l_type, media_type_variants (req)).problem_user_reports (req, res, l_view)
 				else
 					l_rhf.new_representation_handler (esa_config, "", media_type_variants (req)).problem_user_reports (req, res, Void)
 				end
@@ -156,6 +111,27 @@ feature -- HTTP Methods
 					log.write_alert (generator+".do_get Processing request not acceptable")
 					l_rhf.new_representation_handler (esa_config, "", media_type_variants (req)).new_response_unauthorized (req, res)
 				end
+			end
+		end
+
+
+feature {NONE} --Implementation
+
+	set_selected_status (a_status: LIST[ESA_REPORT_STATUS]; a_selected_status:  INTEGER)
+			-- Set the current selected status.
+		do
+			across a_status as c  loop
+				if c.item.id = a_selected_status then
+					c.item.set_selected_id (a_selected_status)
+				end
+			end
+		end
+
+	mark_selected_status (a_status: LIST[ESA_REPORT_STATUS]; a_status_selected: LIST[ INTEGER] )
+			-- Set the current selected status.
+		do
+			across a_status_selected as c  loop
+				set_selected_status (a_status, c.item)
 			end
 		end
 

@@ -12,21 +12,25 @@ create
 feature {NONE} -- Initialization
 
 	make (a_categories: like categories; a_severities: like severities; a_classes: like classes; a_priorities: like priorities)
+			-- Create an object instance.
 		do
 			categories := a_categories
 			severities := a_severities
 			classes := a_classes
 			priorities := a_priorities
+			set_confidential (True)
 		ensure
 			categories_set: categories = a_categories
 			severities_set: severities = a_severities
 			classes_set: classes = a_classes
 			priorities_set: priorities = a_priorities
+			confidential_set_true: confidential
 		end
 
 feature -- Access
 
 	id: INTEGER
+		-- Unique id.
 
  	categories: LIST[ESA_REPORT_CATEGORY]
  		-- Possible list of categories.
@@ -67,6 +71,9 @@ feature -- Access
 	description: detachable STRING_32
 		-- Description of the problem.
 
+	description_utf8: detachable STRING_32
+		-- UTF-8 description encoded.
+
 	to_reproduce: detachable STRING_32
 		-- How to reproduce the problem.
 
@@ -74,7 +81,10 @@ feature -- Access
 		-- Uploaded files
 
 	temporary_files: detachable LIST[ESA_FILE_VIEW]
-		-- Temporary files
+		-- Temporary files.
+
+	temporary_files_names: detachable LIST[STRING]
+		-- Temporary files names.		
 
 
 feature -- Status Report
@@ -131,13 +141,15 @@ feature -- Errors
 feature -- Element Change
 
 	set_id (a_id: INTEGER)
-			-- Set `id' with `a_id'
+			-- Set `id' with `a_id'.
 		do
 			id := a_id
+		ensure
+			id_set: id = a_id
 		end
 
 	set_release (a_release: READABLE_STRING_32)
-			-- Set `release' with `a_release'
+			-- Set `release' with `a_release'.
 		do
 			release := a_release
 		ensure
@@ -145,7 +157,7 @@ feature -- Element Change
 		end
 
 	set_confidential (a_confidential: BOOLEAN)
-			-- Set `confidential' with `a_confidentail'
+			-- Set `confidential' with `a_confidentail'.
 		do
 			confidential := a_confidential
 		ensure
@@ -164,13 +176,14 @@ feature -- Element Change
 			-- Set `description' with `a_description'
 		do
 			description := a_description
+			description_utf8 := (create {UTF8_ENCODER}).encoded_string (a_description)
 		ensure
 			description_set:  attached description as l_description and then l_description.same_string (a_description)
 		end
 
 
 	set_synopsis (a_synopsis: READABLE_STRING_32)
-			-- Set `synopsis' with `a_synopsis'
+			-- Set `synopsis' with `a_synopsis'.
 		do
 			synopsis := a_synopsis
 		ensure
@@ -178,7 +191,7 @@ feature -- Element Change
 		end
 
 	set_to_reproduce (a_to_reproduce: READABLE_STRING_32)
-			-- Set `to_reproduce' with `a_to_reproduce'
+			-- Set `to_reproduce' with `a_to_reproduce'.
 		do
 			to_reproduce := a_to_reproduce
 		ensure
@@ -186,7 +199,7 @@ feature -- Element Change
 		end
 
 	set_category (a_category: INTEGER)
-			-- Set `category' with `a_category'
+			-- Set `category' with `a_category'.
 		do
 			category := a_category
 		ensure
@@ -194,7 +207,7 @@ feature -- Element Change
 		end
 
 	set_severity (a_severity: INTEGER)
-			-- Set `severity' with `a_severity'
+			-- Set `severity' with `a_severity'.
 		do
 			severity := a_severity
 		ensure
@@ -202,7 +215,7 @@ feature -- Element Change
 		end
 
 	set_selected_class (a_class: INTEGER)
-			-- Set `selected_class' with `a_class'
+			-- Set `selected_class' with `a_class'.
 		do
 			selected_class := a_class
 		ensure
@@ -210,7 +223,7 @@ feature -- Element Change
 		end
 
 	set_priority (a_priority: INTEGER)
-			-- Set `priority' with `a_priority'
+			-- Set `priority' with `a_priority'.
 		do
 			priority := a_priority
 		ensure
@@ -218,7 +231,7 @@ feature -- Element Change
 		end
 
 	set_files (a_files: like uploaded_files)
-			-- Set `uploaded_files' with `a_files'
+			-- Set `uploaded_files' with `a_files'.
 		do
 			uploaded_files := a_files
 		ensure
@@ -226,12 +239,23 @@ feature -- Element Change
 		end
 
 	set_temporary_files (a_files: like temporary_files )
-			-- Set `temporary_files' with `a_files'
+			-- Set `temporary_files' with `a_files'.
 		do
 			temporary_files := a_files
 		ensure
 			temporary_files_set: temporary_files = a_files
 		end
 
+	add_temporary_file_name (a_name: STRING)
+		local
+			l_files: like temporary_files_names
+		do
+			l_files := temporary_files_names
+			if l_files = Void then
+				create {ARRAYED_LIST[STRING]}l_files.make (1)
+				temporary_files_names := l_files
+			end
+			l_files.force (a_name)
+		end
 
 end

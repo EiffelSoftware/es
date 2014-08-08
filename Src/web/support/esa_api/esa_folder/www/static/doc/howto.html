@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-     <link href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" />
+     <link href="../css/bootstrap.css" rel="stylesheet" />
 
 <!-- Custom styles for this template -->
 <link href="../css/dashboard.css" rel="stylesheet">
@@ -32,13 +32,13 @@
          <h4 class="modal-title" id="myModalLabel">Login Form</h4>
       </div>
       <div class="modal-body" id="myModalForm">
-         <a href="../reminder" itemprop="reminder" rel="reminder">Forgot username or password?</a>
+         <a href="../../reminder" itemprop="reminder" rel="reminder">Forgot username or password?</a>
           <form itemprop="login">
             <p itemprop="user-name"><input type="text" class="span3" name="username" id="username" placeholder="Enter Username" value="" required></p>
             <p itemprop="password"><input type="password" class="span3" id="password" name="password" placeholder="Enter Password" required></p>
-	    <input type="hidden" name="host" value="../">
+	    <input type="hidden" name="host" value="../../">
              <div class="controls">
-                <button type="button" class="btn btn-primary" onclick="login();">Sign in</button>
+                <button type="button" class="btn btn-primary" onclick="login();">Sign In</button>
                 <input type="reset" class="btn btn-default" value="Reset"></p>
              </div>   
           </form>
@@ -56,37 +56,36 @@
       </div>
       <div class="modal-body">
           <form itemprop="logoff">
-	         <input type="hidden" name="host" value="../">
-            <p><button type="button" class="btn btn-primary" onclick="logoff();">Logoff</button></p>
+	         <input type="hidden" name="host" value="../../">
+            <p><button type="button" class="login btn-primary" onclick="logoff();">Logoff</button></p>
           </form>
       </div>
     </div>
   </div>
 </div>
    
-<div class="navbar navbar-default navbar-fixed-top" role="navigation" itemscope itemtype="../profile/esa_api.xml">
+<div class="navbar navbar-default navbar-fixed-top" role="navigation" itemscope itemtype="../../profile/esa_api.xml">
   <div class="container-fluid">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
         <span class="sr-only">Toggle navigation</span>
       </button>
-         <a class="navbar-brand" href="../" itemprop="home" rel="home">Eiffel Support API</a>
+         <a class="navbar-brand" href="../../" itemprop="home" rel="home">Eiffel Support API</a>
      </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-left">
-           <li><a href="../reports" itemprop="all" rel="all">Reports</a></li>
+           <li><a href="../../reports" itemprop="all" rel="all">Reports</a></li>
             
       </ul>  
       <ul class="nav navbar-nav navbar-right">
          
          
-              <li><a href="#">Guest</a></li>
-              <li><a href="../register" itemprop="register" rel="register">Register</a></li> 
+              <li><a href="../../register" itemprop="register" rel="register">Register</a></li> 
           
          
          
          
-            <li><a class="btn pull-right" data-toggle="modal"  data-target="#myModalLogin">Login</a></li>  <!--  Custome Modal -->
+            <li><a class="login pull-right" data-toggle="modal"  data-target="#myModalLogin">Login</a></li>  <!--  Custome Modal -->
             <!-- <li><a href="./login">Login</a></li> -->   <!--Browser pop up -->
           
         </ul>
@@ -132,8 +131,8 @@
     <!-- Placed at the end of the document so the pages load faster -->
      <!-- Bootstrap core JavaScript ================================================== -->
 <script src="../js/auth.js"></script>
-<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-<script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+<script src="../js/jquery-1.10.2.min.js"></script>
+<script src="../js/bootstrap.min.js"></script>
 <script src="../js/holder.js"></script>
 <script src="../js/esa_tooltips.js"></script>
      

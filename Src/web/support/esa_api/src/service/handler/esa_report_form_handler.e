@@ -171,7 +171,7 @@ feature {NONE} -- Edit Report Problem
 feature {NONE} -- New Report Problem
 
 	new_report_problem (req: WSF_REQUEST; res: WSF_RESPONSE)
-			-- Create a new report problem
+			-- Create a new report problem.
 		local
 			media_variants: HTTP_ACCEPT_MEDIA_TYPE_VARIANTS
 			l_rhf: ESA_REPRESENTATION_HANDLER_FACTORY
@@ -322,7 +322,16 @@ feature -- Initialize Report Problem
 
 				if attached a_form.uploaded_files as l_files then
 					across l_files as c loop
-						api_service.upload_temporary_report_attachment (a_form.id, c.item)
+						-- Max Size File 10MB.
+						to_implement ("Refactor code, extract hardcoded variable to a constant.")
+						if c.item.size.to_natural_64 <= ({NATURAL_64}10*1024*1024) then
+							api_service.upload_temporary_report_attachment (a_form.id, c.item)
+							a_form.add_temporary_file_name (c.item.name)
+						else
+							-- Not accepted file too big.
+							to_implement("Add the name of the file as a list of rejected files.")
+							log.write_alert (generator + ".initialize_report_problem_internal File " + c.item.name + " rejected, too big." )
+						end
 					end
 				end
 			end
@@ -343,7 +352,7 @@ feature {NONE} -- Implementation
 			--"synopsis=test"
 			--"environment=download"
 			--"description=test"
-			--"to_reproduce=test"
+			--"to_reproduce=test".
 		do
 
 			create Result.make (api_service.all_categories, api_service.severities, api_service.classes, api_service.priorities)
@@ -549,9 +558,10 @@ feature {NONE} -- Implementation
 					l_file.is_string then
 				across api_service.temporary_problem_report_attachments (a_form.id) as c loop
 					if not c.item.name.same_string (l_file.value) then
-						api_service.remove_temporary_report_attachment (a_form.id, l_file.value)
+						api_service.remove_temporary_report_attachment (a_form.id, c.item.name)
 					end
 				end
+				a_form.add_temporary_file_name (l_file.value)
 			elseif attached {WSF_MULTIPLE_STRING} req.form_parameter ("temporary_files") as l_files then
 				across api_service.temporary_problem_report_attachments (a_form.id) as c loop
 					across l_files as lf loop
@@ -565,11 +575,24 @@ feature {NONE} -- Implementation
 						l_found := False
 					end
 				end
+				across l_files as lf loop
+					a_form.add_temporary_file_name (lf.item.value)
+				end
+
 			end
 				-- Add new uploaded files
 			if attached a_form.uploaded_files as l_files then
 				across l_files as c loop
-					api_service.upload_temporary_report_attachment (a_form.id, c.item)
+						-- Max Size File 10MB.
+					to_implement ("Refactor code, extract hardcoded variable to a constant.")
+					if c.item.size.to_natural_64 <= ({NATURAL_64}10*1024*1024) then
+						api_service.upload_temporary_report_attachment (a_form.id, c.item)
+						a_form.add_temporary_file_name (c.item.name)
+					else
+						-- Not accepted file too big.
+						to_implement("Add the name of the file as a list of rejected files.")
+						log.write_alert (generator + ".upload_temporary_files_html File " + c.item.name + " rejected, too big." )
+					end
 				end
 			end
   		end

@@ -44,12 +44,8 @@ feature {NONE} --Initialization
 				template.add_value (l_filter, "filter")
 			end
 
-			if a_view.filter_description = 1 then
-				template.add_value (a_view.filter_description, "filter_description")
-			end
-
-			if a_view.filter_synopsis = 1 then
-				template.add_value (a_view.filter_synopsis, "filter_synopsis")
+			if a_view.filter_content= 1 then
+				template.add_value (a_view.filter_content, "filter_content")
 			end
 
 			if
@@ -57,7 +53,6 @@ feature {NONE} --Initialization
 				not l_submitter.is_empty
 			then
 				template.add_value (a_view.submitter, "submitter")
-
 			end
 
 			if a_view.index > 1 then
@@ -83,16 +78,18 @@ feature {NONE} --Initialization
 			end
 		end
 
-
 	retrieve_status_query (a_status: LIST[ESA_REPORT_STATUS]): STRING
 		do
-			Result := "status=0&"
+			Result := "0&amp;"
 			across a_status as c loop
 				if c.item.is_selected then
 					Result.append_string ("status=")
 					Result.append_string (c.item.id.out)
-					Result.append_character ('&')
+					Result.append_string ("&amp;")
 				end
+			end
+			if Result.count > 5 then
+				Result.remove_tail (5)
 			end
 		end
 end

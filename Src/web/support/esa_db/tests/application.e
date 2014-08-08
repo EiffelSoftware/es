@@ -328,7 +328,7 @@ feature {NONE} -- Initialization
 		do
 				-- Number, Synopsis, ProblemReportCategories.CategorySynopsis, SubmissionDate, StatusID
 			create l_db.make (connection)
-			across l_db.problem_reports_guest_2 (1, 2, 0, 0, "CategorySynopsis", 1) as c loop
+			across l_db.problem_reports_guest_2 (1, 2, 0, "1,2,3", "CategorySynopsis", 1, "","",0) as c loop
 				print (c.item.string_8)
 			end
 		end
@@ -348,7 +348,7 @@ feature {NONE} -- Initialization
 			l_db: ESA_REPORT_DATA_PROVIDER
 		do
 			create l_db.make (connection)
-			print (l_db.row_count_problem_report_responsible (0,0,0,0,"1,2,3,4,5","", Void, 0, 0))
+			print (l_db.row_count_problem_report_responsible (0,0,0,0,"1,2,3,4,5","", Void, 0))
 		end
 
 
@@ -357,7 +357,8 @@ feature {NONE} -- Initialization
 			l_db: ESA_REPORT_DATA_PROVIDER
 		do
 			create l_db.make (connection)
-			print (l_db.row_count_problem_report_user ("jvelilla",False, 0, 0))
+--			l_db.row_count_problem_report_user (a_username: STRING_8, a_category: INTEGER_32, a_status, a_filter: READABLE_STRING_32, a_content: INTEGER_32)
+			print (l_db.row_count_problem_report_user ("jvelilla", 0, "1,2,3,4","", 0))
 		end
 
 
@@ -366,7 +367,8 @@ feature {NONE} -- Initialization
 			l_db: ESA_REPORT_DATA_PROVIDER
 		do
 			create l_db.make (connection)
-			across l_db.problem_reports_responsibles (1, 10, 0, 0, 0, 0, "number", 1, "1,2,3,4", "", Void,0,0) as c loop
+--			l_db.problem_reports_responsibles (a_page_number, a_rows_per_page, a_category, a_severity, a_priority, a_responsible: INTEGER_32, a_column: READABLE_STRING_32, a_order: INTEGER_32, a_status, a_username: READABLE_STRING_32, a_filter: detachable READABLE_STRING_32, a_content: INTEGER_32)
+			across l_db.problem_reports_responsibles (1, 10, 0, 0, 0, 0, "number", 1, "1,2,3,4", "", Void,0) as c loop
 				print (c.item.string_8)
 			end
 		end
@@ -377,7 +379,8 @@ feature {NONE} -- Initialization
 			l_db: ESA_REPORT_DATA_PROVIDER
 		do
 			create l_db.make (connection)
-			across l_db.problem_reports_2 (1, 30,"jvelilla", False, 0, 0,"Number", 1) as c loop
+--			l_db.problem_reports_2 (a_page_number, a_rows_per_page: INTEGER_32, a_username: STRING_8, a_category: INTEGER_32, a_status, a_column: READABLE_STRING_32, a_order: INTEGER_32, a_filter: READABLE_STRING_32, a_content: INTEGER_32)
+			across l_db.problem_reports_2 (1, 30,"jvelilla",0,"1,2,3,4","Number", 1,"",1) as c loop
 				print (c.item.string_8)
 			end
 		end
@@ -408,7 +411,7 @@ feature {NONE} -- Initialization
 			l_db: ESA_REPORT_DATA_PROVIDER
 		do
 			create l_db.make (connection)
-			print (l_db.row_count_problem_report_user ("jvelilla", False, 0, 0))
+			print (l_db.row_count_problem_report_user ("jvelilla",0,"1,2,3,4","",0))
 		end
 
 feature -- Implementation

@@ -8,7 +8,7 @@ class
 
 inherit
 
-	ESA_API_ERROR
+	ESA_SHARED_ERROR
 
 create
 	make,
@@ -42,7 +42,15 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	problem_reports_guest_2 (a_page_number: INTEGER; a_rows_per_page: INTEGER; a_category: INTEGER; a_status: INTEGER; a_column: READABLE_STRING_32; a_order: INTEGER): LIST[ESA_REPORT]
+	problem_report (a_number: INTEGER): detachable ESA_REPORT
+			-- Problem report with number `a_number'.
+		do
+			Result := data_provider.problem_report (a_number)
+			post_data_provider_execution
+		end
+
+
+	problem_reports_guest_2 (a_page_number: INTEGER; a_rows_per_page: INTEGER; a_category: INTEGER; a_status: STRING; a_column: READABLE_STRING_32; a_order: INTEGER; a_username: READABLE_STRING_32; a_filter:STRING; a_content:INTEGER): LIST[ESA_REPORT]
 			-- All Problem reports for guest users, filter by page `a_page_numer' and rows per page `a_row_per_page'
 			-- Only not confidential reports
 		local
@@ -53,7 +61,7 @@ feature -- Access
 			data_provider.connect
 			create {ARRAYED_LIST[ESA_REPORT]} l_list.make (0)
 			data_provider.connect
-			across data_provider.problem_reports_guest_2 (a_page_number, a_rows_per_page, a_category, a_status, a_column, a_order) as c loop
+			across data_provider.problem_reports_guest_2 (a_page_number, a_rows_per_page, a_category, a_status, a_column, a_order, a_username, a_filter, a_content) as c loop
 				l_report := c.item
 				l_list.force (l_report)
 			end
@@ -63,7 +71,7 @@ feature -- Access
 		end
 
 
-	problem_reports_responsibles (a_page_number, a_rows_per_page, a_category, a_severity, a_priority, a_responsible: INTEGER_32; a_column: READABLE_STRING_32; a_order: INTEGER_32; a_status, a_username: READABLE_STRING_32; a_filter: detachable READABLE_STRING_32; a_description, a_synopsis: INTEGER_32): LIST[ESA_REPORT]
+	problem_reports_responsibles (a_page_number, a_rows_per_page, a_category, a_severity, a_priority, a_responsible: INTEGER_32; a_column: READABLE_STRING_32; a_order: INTEGER_32; a_status, a_username: READABLE_STRING_32; a_filter: detachable READABLE_STRING_32; a_content: INTEGER_32): LIST[ESA_REPORT]
 			-- All Problem reports for responsible users, filter by page `a_page_numer' and rows per page `a_row_per_page'
 			-- and category `a_category', severity `a_severity', priority, `a_priority', `a_responsible'
 		local
@@ -75,7 +83,7 @@ feature -- Access
 			data_provider.connect
 			create {ARRAYED_LIST[ESA_REPORT]} l_list.make (0)
 			data_provider.connect
-			across data_provider.problem_reports_responsibles (a_page_number, a_rows_per_page, a_category, a_severity, a_priority, a_responsible, a_column, a_order, a_status, a_username, a_filter, a_description, a_synopsis) as c loop
+			across data_provider.problem_reports_responsibles (a_page_number, a_rows_per_page, a_category, a_severity, a_priority, a_responsible, a_column, a_order, a_status, a_username, a_filter, a_content) as c loop
 				l_report := c.item
 				l_list.force (l_report)
 			end
@@ -105,23 +113,35 @@ feature -- Access
 			post_data_provider_execution
 		end
 
-	problem_reports_2 (a_page_number, a_rows_per_page: INTEGER_32; a_username: STRING_8; a_open_only: BOOLEAN; a_category, a_status: INTEGER_32; a_column: READABLE_STRING_32; a_order: INTEGER_32): LIST[ESA_REPORT]
+	problem_reports_2 (a_page_number, a_rows_per_page: INTEGER_32; a_username: STRING_8;  a_category: INTEGER; a_status, a_column: READABLE_STRING_32; a_order: INTEGER_32; a_filter: READABLE_STRING_32; a_content: INTEGER): LIST[ESA_REPORT]
 				-- Problem reports for user with username `a_username'
 				-- Open reports only if `a_open_only', all reports otherwise.
 		local
 			l_report: ESA_REPORT
 			l_list: LIST[ESA_REPORT]
 		do
-			log.write_debug (generator + ".problem_reports2 Problem reports for username:" + a_username + " page_number:" + a_page_number.out + "rows_per_page:" + a_rows_per_page.out + " open_only:" + a_open_only.out + " category:" + a_category.out  +" status:" + a_status.out + " column:" + a_column + " order:" + a_order.out)
-
 			create {ARRAYED_LIST[ESA_REPORT]} l_list.make (0)
 			data_provider.connect
-			across data_provider.problem_reports_2 (a_page_number, a_rows_per_page, a_username, a_open_only, a_category, a_status, a_column, a_order) as c loop
+			across data_provider.problem_reports_2 (a_page_number, a_rows_per_page, a_username, a_category, a_status, a_column, a_order, a_filter, a_content) as c loop
 				l_report := c.item
 				l_list.force (l_report)
 			end
 			data_provider.disconnect
 			Result := l_list
+			post_data_provider_execution
+		end
+
+
+	problem_report_category_subscribers (a_category: STRING): LIST[STRING]
+			-- Possible list of subscriber to category `a_category'	
+		do
+			log.write_debug (generator+".status" )
+			create {ARRAYED_LIST[STRING]} Result.make (0)
+			data_provider.connect
+			across data_provider.problem_report_category_subscribers (a_category) as c loop
+				Result.force (c.item)
+			end
+			data_provider.disconnect
 			post_data_provider_execution
 		end
 
@@ -454,6 +474,26 @@ feature -- Access
 			post_login_provider_execution
 		end
 
+	subscribed_categories (a_username: STRING): LIST [ ESA_CATEGORY_SUBSCRIBER_VIEW ]
+			-- Table associating each category with boolean value specifying whether responsible `a_username'
+			-- is subscribed for receiving email notifications when reports or interactions are created in
+			-- category
+		local
+			l_item: ESA_CATEGORY_SUBSCRIBER_VIEW
+		do
+			create  {ARRAYED_LIST[ESA_CATEGORY_SUBSCRIBER_VIEW]} Result.make (0)
+			data_provider.connect
+			across data_provider.subscribed_categories (a_username) as c loop
+					create l_item
+					l_item.set_id (c.item.categoryId)
+					l_item.set_synopsis (c.item.synopsis)
+					l_item.set_subscribed (c.item.subscribed)
+					Result.force (l_item)
+			end
+			data_provider.disconnect
+			post_data_provider_execution
+		end
+
 feature -- Basic Operations
 
 	row_count_problem_report_guest (a_category: INTEGER; a_status: INTEGER; a_username: READABLE_STRING_32): INTEGER
@@ -464,22 +504,30 @@ feature -- Basic Operations
 			post_data_provider_execution
 		end
 
-	row_count_problem_report_responsible (a_category, a_severity, a_priority, a_responsible: INTEGER_32; a_status, a_username: READABLE_STRING_32; a_filter: detachable READABLE_STRING_32; a_description, a_synopsis: INTEGER_32): INTEGER
+	row_count_problem_reports (a_category: INTEGER; a_status: STRING; a_username: READABLE_STRING_32; a_filter: STRING; a_content:INTEGER ): INTEGER
+			-- Row count table `PROBLEM_REPORT table' for guest users
+		do
+
+			log.write_debug (generator+".row_count_problem_report_guest filter by category:" + a_category.out + " status:" + a_status.out + " username:" + a_username)
+			Result := data_provider.row_count_problem_reports (a_category, a_status, a_username, a_filter, a_content)
+			post_data_provider_execution
+		end
+
+	row_count_problem_report_responsible (a_category, a_severity, a_priority, a_responsible: INTEGER_32; a_status, a_username: READABLE_STRING_32; a_filter: detachable READABLE_STRING_32; a_content: INTEGER_32): INTEGER
 			-- Number of problems reports for responsible users.
 			-- With filters by category `a_category', severity 'a_severity', priority `a_priority', responsible `a_responsible',
 			-- status `a_status' and submitter `a_submitter'
 		do
 			log.write_debug (generator+".row_count_problem_report_responsible filter by category:" + a_category.out + " severity:" + a_severity.out + " priority:" + a_priority.out + " status:" + a_status.out + " username:" + a_username)
-			Result := data_provider.row_count_problem_report_responsible (a_category, a_severity, a_priority, a_responsible, a_status, a_username, a_filter, a_description, a_synopsis)
+			Result := data_provider.row_count_problem_report_responsible (a_category, a_severity, a_priority, a_responsible, a_status, a_username, a_filter, a_content)
 			post_data_provider_execution
 		end
 
-	row_count_problem_report_user (a_username: STRING_8; a_open_only: BOOLEAN; a_category, a_status: INTEGER_32): INTEGER
+	row_count_problem_report_user (a_username: STRING_8;  a_category: INTEGER_32; a_status, a_filter: READABLE_STRING_32; a_content: INTEGER): INTEGER
 			-- Number of problem reports for user with username `a_username'
 			-- Open reports only if `a_open_only', all reports otherwise, filetred by category and status
 		do
-			log.write_debug (generator+".row_count_problem_report_user filter by username:" + a_username + " open_only:" + a_open_only.out + " category:" + a_category.out + " status:" + a_status.out)
-			Result := data_provider.row_count_problem_report_user (a_username, a_open_only, a_category, a_status)
+			Result := data_provider.row_count_problem_report_user (a_username,a_category, a_status, a_filter, a_content)
 			post_data_provider_execution
 		end
 
@@ -519,8 +567,11 @@ feature -- Basic Operations
 	commit_problem_report (a_report_id: INTEGER)
 			-- Commit a temporary problem report.
 		do
+				-- Should we return the last report number?
+				-- CQS
 			log.write_debug (generator+".commit_problem_report report_id" + a_report_id.out )
 			data_provider.commit_problem_report (a_report_id)
+			set_last_problem_report_number (data_provider.last_problem_report_number)
 			post_data_provider_execution
 		end
 
@@ -596,6 +647,7 @@ feature -- Basic Operations
 		do
 			log.write_debug (generator + ".commit_interaction Interaction_Id:" + a_interaction_id.out)
 			data_provider.commit_interaction (a_interaction_id)
+			set_last_interaction_id (data_provider.last_interaction_id)
 			post_data_provider_execution
 		end
 
@@ -792,6 +844,51 @@ feature -- Status Report
 
 		end
 
+	last_problem_report_number: INTEGER
+			-- last_problem_report_number created.
+
+	last_interaction_id: INTEGER
+			-- last_interaction_id created.		
+
+
+	register_subscriber (a_user: STRING; a_categories: LIST[INTEGER])
+			-- Subscribe responsible `a_user' to category with category ID in the list of categories'
+		local
+			l_categories: LIST [ESA_CATEGORY_SUBSCRIBER_VIEW]
+			l_exist: BOOLEAN
+		do
+			l_categories := subscribed_categories (a_user)
+			across a_categories as c  loop
+				data_provider.connect
+				data_provider.register_subscriber (a_user, c.item, True)
+				data_provider.disconnect
+			end
+
+			across l_categories as nc loop
+				if nc.item.subscribed then
+					across a_categories as ec loop
+						if ec.item = nc.item.id then
+							l_exist := True
+						end
+					end
+					if not l_exist then
+						data_provider.connect
+						data_provider.register_subscriber (a_user, nc.item.id, False)
+						data_provider.disconnect
+					end
+					l_exist := False
+				end
+			end
+			post_data_provider_execution
+		end
+
+
+	exist_report (a_report_number: INTEGER): BOOLEAN
+			-- Exist a report with  number `a_report_number'?
+		do
+			Result := attached problem_report (a_report_number)
+		end
+
 
 feature -- Statistics
 
@@ -809,6 +906,23 @@ feature -- Statistics
 
 
 feature {NONE} -- Implementation
+
+	set_last_problem_report_number (a_number: INTEGER)
+			-- Set `last_problem_report_number' to `a_number'.
+		do
+			last_problem_report_number := a_number
+		ensure
+			set: last_problem_report_number = a_number
+		end
+
+	set_last_interaction_id (a_id: INTEGER)
+			-- Set `last_interaction_id' to `a_id'.
+		do
+			last_interaction_id := a_id
+		ensure
+			set: last_interaction_id = a_id
+		end
+
 
 	post_data_provider_execution
 		do
