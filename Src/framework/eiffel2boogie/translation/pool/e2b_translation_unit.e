@@ -9,6 +9,9 @@ note
 deferred class
 	E2B_TRANSLATION_UNIT
 
+inherit
+	E2B_SHARED_CONTEXT
+
 feature -- Access
 
 	id: STRING

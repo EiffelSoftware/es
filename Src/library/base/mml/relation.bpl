@@ -27,7 +27,7 @@ axiom (forall<U, V> r: Rel U V :: { Rel#Domain(r) }
   (Set#IsEmpty(Rel#Domain(r)) <==> r == Rel#Empty()));
 axiom (forall<U, V> r: Rel U V :: { Rel#Range(r) }
   (Set#IsEmpty(Rel#Range(r)) <==> r == Rel#Empty()));  
-axiom (forall<U, V> f: Field (Rel U V) :: { Default(f) } Default(f) == Rel#Empty());    
+axiom (forall<U, V> f: Field (Rel U V) :: { Default(f) } Default(f) == Rel#Empty() : Rel U V);    
 
 // Singleton relation  
 function Rel#Singleton<U, V>(U, V): Rel U V;
@@ -161,3 +161,11 @@ axiom (forall<U, V> a: Rel U V :: { Rel#Difference(a,Rel#Empty()) }
 // Symmetric difference of two relations  
 function Rel#SymDifference<U, V>(a: Rel U V, b: Rel U V): Rel U V
 { Rel#Union(Rel#Difference(a, b), Rel#Difference(b, a)) }
+
+// Type properties
+
+function {: inline } Rel#DomainType<T>(heap: HeapType, r: Rel ref T, t: Type): bool 
+{ (forall o: ref :: { Rel#Domain(r)[o] } Rel#Domain(r)[o] ==> detachable(heap, o, t)) }  
+
+function {: inline } Rel#RangeType<T>(heap: HeapType, r: Rel T ref, t: Type): bool 
+{ (forall o: ref :: { Rel#Range(r)[o] } Rel#Range(r)[o] ==> detachable(heap, o, t)) }  

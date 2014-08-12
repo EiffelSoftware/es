@@ -14,7 +14,7 @@ feature
 			status: functional -- This is a logic function (its body acts as a postcondition)
 		do
 			Result := if s.is_empty then 0 else s.last + seq_sum (s.but_last) end
-			-- Try replacing the body with one of the following to well-formedness checking
+			-- Try replacing the body with one of the following to test well-formedness checking
 --			Result := s.last + seq_sum (s.but_last)
 --			Result := if s.is_empty then 0 else s.last + seq_sum (s) end
 		end

@@ -18,7 +18,7 @@ feature -- Status report
 	is_handling_call (a_target_type: TYPE_A; a_feature: FEATURE_I): BOOLEAN
 			-- <Precursor>
 		do
-			Result := helper.is_class_logical (a_feature.written_class)
+			Result := helper.is_feature_logical (a_feature)
 		end
 
 	is_handling_nested (a_nested: NESTED_B): BOOLEAN
@@ -97,7 +97,7 @@ feature {NONE} -- Implementation
 			l_fcall, l_pre_call: IV_FUNCTION_CALL
 			l_args: ARRAY [IV_EXPRESSION]
 		do
-			check helper.is_class_logical (a_translator.current_target_type.base_class) end
+			check helper.is_feature_logical (a_feature) end
 			translation_pool.add_referenced_feature (a_feature, a_translator.current_target_type)
 
 			a_translator.process_parameters (a_parameters)

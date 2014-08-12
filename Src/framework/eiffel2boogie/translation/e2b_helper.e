@@ -203,6 +203,60 @@ feature -- Feature status helpers
 			Result := a_feature.export_status.is_none
 		end
 
+	feature_with_string_note_value (a_class: CLASS_C; a_tag, a_value: STRING_32): FEATURE_I
+			-- Feature of class `a_class', which has a note where `a_tag' contain `a_value'.
+		local
+			l_feature: FEATURE_I
+		do
+			from
+				a_class.feature_table.start
+			until
+				Result /= Void or a_class.feature_table.after
+			loop
+				l_feature := a_class.feature_table.item_for_iteration
+				if feature_note_values (l_feature, a_tag).has (a_value) then
+					Result := l_feature
+				end
+				a_class.feature_table.forth
+			end
+		end
+
+	has_functional_representation (a_feature: FEATURE_I): BOOLEAN
+			-- Will a Boogie function be generated for `a_feature'?
+		do
+			Result := a_feature.has_return_value and not is_feature_status (a_feature, "impure")
+		end
+
+feature -- Logical helpers
+
+	is_class_logical (a_class: CLASS_C): BOOLEAN
+			-- Is `a_class' mapped to a logical type in a Boogie theory?
+		local
+			l_values: ARRAYED_LIST [STRING_32]
+		do
+			Result := attached type_for_logical (a_class)
+		end
+
+	is_feature_logical (a_feature: FEATURE_I): BOOLEAN
+			-- Is `a_feature' directly mapped to a Boogie function?
+		do
+			Result := is_class_logical (a_feature.written_class) and not is_lemma (a_feature)
+		end
+
+	type_for_logical (a_class: CLASS_C): STRING
+			-- Boogie type that `a_class' maps to;
+			-- Void if `a_class' is not logical.
+		require
+			a_class_exists: attached a_class
+		local
+			l_values: ARRAYED_LIST [STRING_32]
+		do
+			l_values := class_note_values (a_class, "maps_to")
+			if not l_values.is_empty then
+				Result := l_values.first
+			end
+		end
+
 	function_for_logical (a_feature: FEATURE_I): STRING
 			-- Boogie function that `a_feature' maps to;
 			-- Void if `a_feature' is not from a logical class.
@@ -242,54 +296,6 @@ feature -- Feature status helpers
 					a_class.feature_table.forth
 				end
 				map_access_feature_cache.put (Result, a_class.class_id)
-			end
-		end
-
-	feature_with_string_note_value (a_class: CLASS_C; a_tag, a_value: STRING_32): FEATURE_I
-			-- Feature of class `a_class', which has a note where `a_tag' contain `a_value'.
-		local
-			l_feature: FEATURE_I
-		do
-			from
-				a_class.feature_table.start
-			until
-				Result /= Void or a_class.feature_table.after
-			loop
-				l_feature := a_class.feature_table.item_for_iteration
-				if feature_note_values (l_feature, a_tag).has (a_value) then
-					Result := l_feature
-				end
-				a_class.feature_table.forth
-			end
-		end
-
-	has_functional_representation (a_feature: FEATURE_I): BOOLEAN
-			-- Will a Boogie function be generated for `a_feature'?
-		do
-			Result := a_feature.has_return_value and not is_feature_status (a_feature, "impure")
-		end
-
-feature -- Class status helpers
-
-	is_class_logical (a_class: CLASS_C): BOOLEAN
-			-- Is `a_class' mapped to a logical type in a Boogie theory?
-		local
-			l_values: ARRAYED_LIST [STRING_32]
-		do
-			Result := attached type_for_logical (a_class)
-		end
-
-	type_for_logical (a_class: CLASS_C): STRING
-			-- Boogie type that `a_class' maps to;
-			-- Void if `a_class' is not logical.
-		require
-			a_class_exists: attached a_class
-		local
-			l_values: ARRAYED_LIST [STRING_32]
-		do
-			l_values := class_note_values (a_class, "maps_to")
-			if not l_values.is_empty then
-				Result := l_values.first
 			end
 		end
 

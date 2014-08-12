@@ -12,7 +12,7 @@ axiom (forall<T> s: Seq T :: { Seq#Length(s) } 0 <= Seq#Length(s));
 function Seq#Empty<T>(): Seq T;
 axiom (forall<T> :: Seq#Length(Seq#Empty(): Seq T) == 0);
 axiom (forall<T> s: Seq T :: { Seq#Length(s) } Seq#Length(s) == 0 ==> s == Seq#Empty());
-axiom (forall<T> f: Field (Seq T) :: { Default(f) } Default(f) == Seq#Empty());
+axiom (forall<T> f: Field (Seq T) :: { Default(f) } Default(f) == Seq#Empty() : Seq T);
 
 // Singleton sequence
 function Seq#Singleton<T>(T): Seq T;
@@ -20,12 +20,12 @@ axiom (forall<T> t: T :: { Seq#Length(Seq#Singleton(t)) } Seq#Length(Seq#Singlet
 
 // Does a sequence contain a given element?
 function Seq#Has<T>(s: Seq T, x: T): bool;
-// axiom (forall<T> s: Seq T, x: T :: { Seq#Has(s,x) }
-  // Seq#Has(s,x) <==>
-    // (exists i: int :: { Seq#Item(s,i) } 1 <= i && i <= Seq#Length(s) && Seq#Item(s,i) == x));
-axiom (forall<T> s: Seq T, i: int :: { Seq#Item(s, i) }
-  1 <= i && i <= Seq#Length(s) ==>
-    Seq#Has(s, Seq#Item(s, i)));    
+axiom (forall<T> s: Seq T, x: T :: { Seq#Has(s,x) }
+  Seq#Has(s,x) <==>
+    (exists i: int :: { Seq#Item(s,i) } 1 <= i && i <= Seq#Length(s) && Seq#Item(s,i) == x));
+// axiom (forall<T> s: Seq T, i: int :: { Seq#Item(s, i) }
+  // 1 <= i && i <= Seq#Length(s) ==>
+    // Seq#Has(s, Seq#Item(s, i)));    
 axiom (forall<T> x: T ::
   { Seq#Has(Seq#Empty(), x) }
   !Seq#Has(Seq#Empty(), x));
@@ -67,11 +67,9 @@ function Seq#Domain<T>(q: Seq T): Set int
 
 // Set of values
 function Seq#Range<T>(Seq T): Set T;
-axiom (forall<T> q: Seq T, o: T :: { Seq#Range(q)[o] }{ Seq#Has(q, o) } Seq#Has(q, o) <==> Seq#Range(q)[o]);
-axiom (forall<T> s: Seq T, i: int :: { Seq#Item(s, i) }
-  1 <= i && i <= Seq#Length(s) ==>
-    Seq#Range(s)[Seq#Item(s, i)]);  
-
+axiom (forall<T> q: Seq T, o: T :: { Seq#Range(q)[o] } Seq#Has(q, o) <==> Seq#Range(q)[o]);
+// axiom (forall<T> s: Seq T, i: int :: { Seq#Item(s, i) }
+  // 1 <= i && i <= Seq#Length(s) ==> Seq#Range(s)[Seq#Item(s, i)]);
   
 // How many times does x occur in a?
 function Seq#Occurrences<T>(Seq T, T): int;
@@ -137,7 +135,7 @@ function {: inline } Seq#ButLast<T>(q: Seq T): Seq T
 
 // Prefix until upper
 function Seq#Front<T>(q: Seq T, upper: int): Seq T
-{ if 0 <= upper then Seq#Take(q, upper) else Seq#Empty() } 
+{ if 0 <= upper then Seq#Take(q, upper) else Seq#Empty() : Seq T } 
 axiom (forall<T> q: Seq T :: { Seq#Front(q, Seq#Length(q)) } Seq#Front(q, Seq#Length(q)) == q);
 
 // Suffix from lower
@@ -208,9 +206,9 @@ axiom (forall<T> s: Seq T :: { Bag#Card(Seq#ToBag(s)) }
   Bag#Card(Seq#ToBag(s)) == Seq#Length(s));
 
 // concatenation axiom
-axiom (forall<T> a: Seq T, b: Seq T ::
-  { Seq#ToBag(Seq#Concat(a, b)) }
-    Seq#ToBag(Seq#Concat(a, b)) == Bag#Union(Seq#ToBag(a), Seq#ToBag(b)) );
+axiom (forall<T> a: Seq T, b: Seq T, x: T ::
+  { Seq#ToBag(Seq#Concat(a, b))[x] }
+    Seq#ToBag(Seq#Concat(a, b))[x] == Seq#ToBag(a)[x] + Seq#ToBag(b)[x] );
     
 // update axiom
 axiom (forall<T> s: Seq T, i: int, v: T, x: T ::
@@ -228,8 +226,8 @@ axiom (forall<T> s: Seq T, i: int :: { Seq#ToBag(Seq#RemovedAt(s, i)) }
 
 // Sequence converted to map
 function Seq#ToMap<T>(Seq T): Map int T;
-axiom (forall<T> s: Seq T :: { Seq#ToMap(s) } 
-  Map#Equal(Seq#ToMap(s), Map#Empty()) <==> Seq#Equal (s, Seq#Empty()));
+axiom (forall<T> s: Seq T :: { Map#Equal(Seq#ToMap(s), Map#Empty()) }
+  Map#Equal(Seq#ToMap(s), Map#Empty()) <==> Seq#Equal (s, Seq#Empty() : Seq T));
 axiom (forall<T> s: Seq T :: { Map#Domain(Seq#ToMap(s)) }
   Map#Domain(Seq#ToMap(s)) == Seq#Domain(s));
 axiom (forall<T> s: Seq T :: { Map#Card(Seq#ToMap(s)) }
@@ -243,10 +241,10 @@ axiom (forall<T> s: Seq T :: { Map#ToBag(Seq#ToMap(s)) }
 
 // Additional axioms about common things
     
-axiom (forall<T> s, t: Seq T ::
-  { Seq#Concat(s, t) }
-  Seq#Take(Seq#Concat(s, t), Seq#Length(s)) == s &&
-  Seq#Drop(Seq#Concat(s, t), Seq#Length(s)) == t);
+// axiom (forall<T> s, t: Seq T ::
+  // { Seq#Concat(s, t) }
+  // Seq#Take(Seq#Concat(s, t), Seq#Length(s)) == s &&
+  // Seq#Drop(Seq#Concat(s, t), Seq#Length(s)) == t);
   
 
 // Commutability of Take and Drop with Update.
@@ -267,22 +265,25 @@ axiom (forall<T> s: Seq T, v: T, n: int ::
   { Seq#Drop(Seq#Extended(s, v), n) }
     0 <= n && n <= Seq#Length(s) ==> Seq#Drop(Seq#Extended(s, v), n) == Seq#Extended(Seq#Drop(s, n), v) );
 
-axiom Seq#Take(Seq#Empty(), 0) == Seq#Empty();  // [][..0] == []
-axiom Seq#Drop(Seq#Empty(), 0) == Seq#Empty();  // [][0..] == []
+axiom (forall<T> :: Seq#Take(Seq#Empty() : Seq T, 0) == Seq#Empty() : Seq T);  // [][..0] == []
+axiom (forall<T> :: Seq#Drop(Seq#Empty() : Seq T, 0) == Seq#Empty() : Seq T);  // [][0..] == []
 
+// Type property
+function {: inline } Seq#ItemsType(heap: HeapType, s: Seq ref, t: Type): bool 
+{ (forall i: int :: { Seq#Item(s, i) } 1 <= i && i <= Seq#Length(s) ==> detachable(heap, Seq#Item(s, i), t)) }
 
-function Seq#IsSorted<T>(s: Seq T) returns (bool);
+// function Seq#IsSorted<T>(s: Seq T) returns (bool);
 
 //axiom (forall s: Seq int, i: int ::
 //    1 <= i && i < Seq#Length(s) && Seq#IsSorted(s) ==> Seq#Item(s, i) <= Seq#Item(s, i+1));
-axiom (forall s: Seq int ::
-  { Seq#IsSorted(s) }
-    Seq#IsSorted(s) ==> (forall i, j: int :: 1 <= i && i <= Seq#Length(s) && i <= j && j <= Seq#Length(s) ==> Seq#Item(s, i) <= Seq#Item(s, j)));
-axiom (forall s: Seq int ::
-  { Seq#IsSorted(s) }
-    Seq#Length(s) <= 1 ==> Seq#IsSorted(s));
-axiom (forall s: Seq int, i: int ::
-    1 <= i && i < Seq#Length(s) && Seq#IsSorted(Seq#Front(s, i)) && Seq#Item(s, i) <= Seq#Item(s, i+1) ==> Seq#IsSorted(Seq#Front(s, i+1)));
+// axiom (forall s: Seq int ::
+  // { Seq#IsSorted(s) }
+    // Seq#IsSorted(s) ==> (forall i, j: int :: 1 <= i && i <= Seq#Length(s) && i <= j && j <= Seq#Length(s) ==> Seq#Item(s, i) <= Seq#Item(s, j)));
+// axiom (forall s: Seq int ::
+  // { Seq#IsSorted(s) }
+    // Seq#Length(s) <= 1 ==> Seq#IsSorted(s));
+// axiom (forall s: Seq int, i: int ::
+    // 1 <= i && i < Seq#Length(s) && Seq#IsSorted(Seq#Front(s, i)) && Seq#Item(s, i) <= Seq#Item(s, i+1) ==> Seq#IsSorted(Seq#Front(s, i+1)));
 
 // axiom (forall s: Seq int ::
   // { Seq#Range(s) }

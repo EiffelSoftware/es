@@ -92,7 +92,7 @@ feature {F_OOM_OBSERVER_D} -- Internal communication
 invariant
 	subscribers_exists: subscribers /= Void
 	owns_structure: owns = [subscribers]
-	all_subscribers_exist: across subscribers.sequence as o all attached o.item end
+	all_subscribers_exist: across subscribers.sequence.domain as i all attached subscribers.sequence [i.item] end
 	observers_structure: observers = subscribers.sequence.range
 	subjects_structure: subjects = []
 

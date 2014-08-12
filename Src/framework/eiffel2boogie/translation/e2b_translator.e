@@ -55,18 +55,20 @@ feature -- Element change
 		do
 			if not helper.is_class_logical (a_class) then
 				translation_pool.add_class_check (constraint_type (a_class))
-				if a_class.has_feature_table then
-					from
-						a_class.feature_table.start
-					until
-						a_class.feature_table.after
-					loop
-						l_feature := a_class.feature_table.item_for_iteration
-						if l_feature.is_routine and (l_feature.written_in /= system.any_id or l_feature.rout_id_set.has (system.default_create_rout_id)) then
-							add_feature_of_type (l_feature, a_class.actual_type)
-						end
-						a_class.feature_table.forth
+			end
+			if a_class.has_feature_table then
+				from
+					a_class.feature_table.start
+				until
+					a_class.feature_table.after
+				loop
+					l_feature := a_class.feature_table.item_for_iteration
+					if l_feature.is_routine and
+						not helper.is_feature_logical (l_feature) and
+						(l_feature.written_in /= system.any_id or l_feature.rout_id_set.has (system.default_create_rout_id)) then
+						add_feature_of_type (l_feature, a_class.actual_type)
 					end
+					a_class.feature_table.forth
 				end
 			end
 		end

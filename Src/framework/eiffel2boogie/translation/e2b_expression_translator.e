@@ -717,6 +717,10 @@ feature -- Visitors
 			is_in_quantifier := True
 
 			if attached l_across_handler then
+				current_target := entity_mapping.current_expression
+				current_target_type := context_type
+				last_expression := Void
+				
 				across_handler_map.put (l_across_handler, l_object_test_local.position)
 				l_across_handler.handle_across_expression
 				across_handler_map.remove (l_object_test_local.position)
@@ -819,12 +823,7 @@ feature -- Visitors
 				if not (current_target_type.is_expanded or
 						helper.is_class_logical (current_target_type.base_class) or
 						(attached {FEATURE_B} a_node.message as f and then translation_mapping.void_ok_features.has (f.feature_name))) then
-					translation_pool.add_type (current_target_type)
-					create l_call.make ("attached", types.bool)
-					l_call.add_argument (entity_mapping.heap)
-					l_call.add_argument (current_target)
-					l_call.add_argument (factory.type_value (current_target_type))
-					add_safety_check (l_call, "attached", context_tag, context_line_number)
+					add_safety_check (factory.not_equal (current_target, factory.void_), "attached", context_tag, context_line_number)
 				end
 
 					-- Evaluate message with original expression
@@ -871,9 +870,7 @@ feature -- Visitors
 			if a_node.is_void_check then
 				last_expression := factory.not_equal (l_expr, factory.void_)
 			else
-				check attached a_node.info end
-					-- Normalize integer types
-				l_type := class_type_in_current_context (a_node.info.type_to_create)
+				l_type := class_type_in_current_context (a_node.target.type)
 				translation_pool.add_type (l_type)
 				if l_type.is_integer or l_type.is_natural then
 					create {IV_ENTITY} l_type_expr.make ("INTEGER", types.type)

@@ -112,7 +112,6 @@ feature -- Visitors
 
 			l_local: IV_ENTITY
 			l_havoc: IV_HAVOC
-			l_assignment: IV_ASSIGNMENT
 			l_allocated: IV_ENTITY
 			l_binop: IV_BINARY_OPERATION
 			l_heap_access: IV_MAP_ACCESS
@@ -218,7 +217,7 @@ feature -- Visitors
 
 			last_expression := l_local
 		end
-		
+
 feature -- Translation
 
 	process_attribute_call (a_feature: FEATURE_I)

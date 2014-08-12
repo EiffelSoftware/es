@@ -30,7 +30,7 @@ axiom (forall<U, V> u: U ::
   { Map#Domain(Map#Empty(): Map U V)[u] }
    !Map#Domain(Map#Empty(): Map U V)[u]);
 axiom (forall<U, V> m: Map U V :: { Map#Card(m) } Map#Card(m) == 0 <==> m == Map#Empty());
-axiom (forall<U, V> f: Field (Map U V) :: { Default(f) } Default(f) == Map#Empty());  
+axiom (forall<U, V> f: Field (Map U V) :: { Default(f) } Default(f) == Map#Empty() : Map U V);  
 
 // Singleton map
 function {: inline } Map#Singleton<U, V>(k: U, x: V): Map U V
@@ -72,8 +72,9 @@ axiom (forall<U, V> m: Map U V, s: Seq U, i: int :: { Seq#Item(Map#SequenceImage
   
 // Bag of map values  
 function Map#ToBag<U, V>(m: Map U V): Bag V;
-axiom (forall<U, V> m: Map U V :: { Map#ToBag(m) } 
-  Bag#Equal(Map#ToBag(m), Bag#Empty()) <==> Map#Equal (m, Map#Empty()));
+axiom (forall<U, V> m: Map U V :: { Bag#Equal(Map#ToBag(m), Bag#Empty()) } 
+  Bag#Equal(Map#ToBag(m), Bag#Empty() : Bag V) <==> Map#Equal (m, Map#Empty() : Map U V));
+axiom (forall<U, V> :: { Map#ToBag(Map#Empty() : Map U V) } Map#ToBag(Map#Empty() :  Map U V) == Bag#Empty() : Bag V);
 axiom (forall<U, V> m: Map U V, x: V :: { Map#ToBag(m)[x] } 
   Map#ToBag(m)[x] > 0 <==> Map#Range(m)[x]);
 axiom (forall<U, V> m: Map U V, k: U, x: V :: { Map#ToBag(Map#Update(m, k, x)) }
@@ -151,6 +152,15 @@ axiom (forall<U, V> a: Map U V :: { Rel#Domain(Map#Inverse(a)) }
   Rel#Domain(Map#Inverse(a)) == Map#Range(a));
 axiom (forall<U, V> a: Map U V :: { Rel#Range(Map#Inverse(a)) }
   Rel#Range(Map#Inverse(a)) == Map#Domain(a));
+  
+// Type properties
+
+function {: inline } Map#DomainType<T>(heap: HeapType, m: Map ref T, t: Type): bool 
+{ (forall o: ref :: { Map#Domain(m)[o] } Map#Domain(m)[o] ==> detachable(heap, o, t)) }  
+
+function {: inline } Map#RangeType<T>(heap: HeapType, m: Map T ref, t: Type): bool 
+{ (forall i: T :: { Map#Domain(m)[i] } Map#Domain(m)[i] ==> detachable(heap, Map#Elements(m)[i], t)) }  
+
   
   
                

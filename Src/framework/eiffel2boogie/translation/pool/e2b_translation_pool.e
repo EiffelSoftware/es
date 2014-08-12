@@ -207,7 +207,7 @@ feature {NONE} -- Implementation
 			if a_feature.is_attribute then
 				add_attribute (a_feature, a_context_type)
 			elseif a_feature.is_routine then
-				if helper.is_class_logical (a_context_type.base_class) then
+				if helper.is_feature_logical (a_feature) then
 					add_logical (a_feature, a_context_type)
 				else
 					if a_context_type.base_class.has_creator_of_name_id (a_feature.feature_name_id) or

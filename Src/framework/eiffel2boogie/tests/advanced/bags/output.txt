@@ -11,11 +11,14 @@ Successfully verified.
 A_BAGS.good1
 Successfully verified.
 ======================================
+A_BAGS.use_lemma
+Successfully verified.
+======================================
 A_BAGS.bad
 Verification failed.
 
-Line: 68. Precondition may be violated on invocation of multiple.
+Line: 81. Precondition may be violated on invocation of multiple.
 --------------------------------------
-Line: 70. Precondition may be violated on invocation of extended_multiple.
+Line: 83. Precondition may be violated on invocation of extended_multiple.
 --------------------------------------
-Line: 72. Precondition may be violated on invocation of removed_multiple.
+Line: 85. Precondition may be violated on invocation of removed_multiple.

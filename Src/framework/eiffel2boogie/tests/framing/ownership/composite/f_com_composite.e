@@ -95,7 +95,6 @@ feature -- Update
 		do
 			lemma_ancestors_have_children (c)
 			check c.inv end
-			check not ancestors [c] end
 
 			unwrap
 			c.unwrap
@@ -106,6 +105,7 @@ feature -- Update
 
 			set_observers (observers & c)
 			set_subjects (subjects & c)
+			check children.inv_only ("default_observers") end
 			children.extend_back (c)
 
 			c.wrap
@@ -195,7 +195,7 @@ invariant
 	owns_structure: owns = [children]
 	subjects_structure: subjects = if parent = Void then children_set else children_set & parent end
 	tree: not ancestors [Current]
-	children_consistent: across children_set as c all c.item /= Void and then c.item.parent = Current end
+	children_consistent: across children.sequence.domain as i all children.sequence [i.item] /= Void and then children.sequence [i.item].parent = Current end
 	ancestors_structure: ancestors = if parent = Void then {MML_SET [F_COM_COMPOSITE]}.empty_set else parent.ancestors & parent end
 	value_consistent: is_max (value, init_value, children_set, max_child)
 	observers_structure: observers = subjects

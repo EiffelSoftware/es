@@ -3,7 +3,7 @@ note
 	author: "Nadia Polikarpova"
 	theory: "relation.bpl", "set.bpl"
 	maps_to: "Rel"
-	typed_sets: "Rel#Domain", "Rel#Range"
+	type_properties: "Rel#DomainType", "Rel#RangeType"
 
 class
 	MML_RELATION [G, H]

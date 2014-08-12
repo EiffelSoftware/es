@@ -54,8 +54,9 @@ feature -- Basic operations
 			elseif translation_mapping.builtin_any_functions.has (l_name) then
 				a_translator.process_builtin_function_call (a_feature, a_parameters, l_name)
 			elseif translation_mapping.builtin_any_procedures.has (l_name) then
-				set_implicit_model_queries (a_translator, l_name)
+				pre_builtin_call (a_translator, a_feature)
 				a_translator.process_builtin_routine_call (a_feature, a_parameters, l_name)
+				post_builtin_call (a_translator, a_feature)
 			elseif translation_mapping.ghost_access.has (l_name) then
 				if l_name ~ "closed" then
 					l_type := types.bool
@@ -122,7 +123,7 @@ feature -- Basic operations
 						name_translator.boogie_function_for_filtered_invariant (a_translator.current_target_type, l_tag_filters, Void, l_partial_inv_class),
 						<< a_translator.entity_mapping.heap, a_translator.current_target >>, types.bool))
 				elseif l_name ~ "inv" then
-					a_translator.process_builtin_routine_call (a_feature, a_parameters, "user_inv")
+						a_translator.process_builtin_routine_call (a_feature, a_parameters, "user_inv")
 				elseif l_name ~ "is_field_writable" then
 					if attached {STRING_B} a_parameters.first.expression as l_string then
 						-- ToDo: can origin class be different?
@@ -277,13 +278,57 @@ feature -- Basic operations
 			end
 		end
 
-	set_implicit_model_queries (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR; a_feature_name: STRING)
-			-- If processing a call to `Current.wrap',
-			-- generate guarded assignments to implicit model queries and store them in the side effect of `a_translator'.
+	pre_builtin_call (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR; a_feature: FEATURE_I)
+			-- Insert code before calling a built-in procedure `a_feature_name'.
+		local
+			l_check: IV_EXPRESSION
 		do
-			if a_feature_name ~ "wrap" and a_translator.current_target.same_expression (a_translator.entity_mapping.current_expression) then
-				across helper.flat_model_queries (a_translator.current_target_type.base_class) as m loop
-					set_implicit_model_query (a_translator, m.item)
+				-- If processing a call to `wrap',
+				-- generate appropriate guarded assignments to implicit model queries and an invariant check
+			if a_feature.feature_name ~ "wrap" then
+				if a_translator.current_target.same_expression (a_translator.entity_mapping.current_expression) then
+					across helper.flat_model_queries (a_translator.current_target_type.base_class) as m loop
+						set_implicit_model_query (a_translator, m.item)
+					end
+					l_check := factory.function_call (name_translator.boogie_function_for_invariant (a_translator.current_target_type),
+						<< a_translator.entity_mapping.heap, a_translator.current_target >>,
+						types.bool)
+				else
+					l_check := factory.function_call ("user_inv",
+						<< a_translator.entity_mapping.heap, a_translator.current_target >>,
+						types.bool)
+				end
+				a_translator.add_safety_check (l_check, "check", "invariant_holds", a_translator.context_line_number)
+				a_translator.last_safety_check.node_info.set_attribute ("cid", a_feature.written_class.class_id.out)
+				a_translator.last_safety_check.node_info.set_attribute ("rid", a_feature.rout_id_set.first.out)
+			end
+		end
+
+	post_builtin_call (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR; a_feature: FEATURE_I)
+			-- Insert code after calling a built-in procedure `a_feature_name'.
+		local
+			l_assume: IV_ASSERT
+		do
+				-- If processing a call to `unwrap',
+				-- assume either generic `user_inv' or class-specific invariant function, depending if the target is `Current'.
+			if a_feature.feature_name ~ "unwrap" then
+				if a_translator.current_target.same_expression (a_translator.entity_mapping.current_expression) then
+					create l_assume.make_assume (
+						factory.function_call (name_translator.boogie_function_for_invariant (a_translator.current_target_type),
+						<< a_translator.entity_mapping.heap, a_translator.current_target >>,
+						types.bool))
+					a_translator.side_effect.extend (l_assume)
+				else
+					create l_assume.make_assume (
+						factory.function_call ("user_inv",
+						<< a_translator.entity_mapping.heap, a_translator.current_target >>,
+						types.bool))
+					a_translator.side_effect.extend (l_assume)
+					if not helper.boolean_feature_note_value (a_translator.context_feature, "manual_inv")
+						and not helper.boolean_class_note_value (a_translator.context_type.base_class, "manual_inv") then
+						create l_assume.make_assume (factory.function_call ("inv_frame_trigger", << a_translator.current_target >>, types.bool))
+						a_translator.side_effect.extend (l_assume)
+					end
 				end
 			end
 		end

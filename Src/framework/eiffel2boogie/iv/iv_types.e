@@ -184,7 +184,7 @@ feature -- Type translation
 			l_content_type: CL_TYPE_A
 			l_fname: STRING
 			l_arg, l_inv: IV_EXPRESSION
-			l_typed_sets: like helper.class_note_values
+			l_type_properties: ARRAYED_LIST [STRING_32]
 		do
 			Result := factory.true_
 			l_boogie_type := for_class_type (a_type)
@@ -193,12 +193,17 @@ feature -- Type translation
 				if attached {IV_ENTITY} a_expr as a_entity and then a_entity.name ~ "Current" then
 					-- For Current the exact dynamic type is considered known
 					l_fname := "attached_exact"
-				elseif l_content_type.is_attached then
-					l_fname := "attached"
-				else
-					l_fname := "detachable"
+				elseif l_content_type.base_class.name_in_upper /~ "ANY" then
+					if l_content_type.is_attached then
+						-- ToDo: for attached any generate /= Void?
+						l_fname := "attached"
+					else
+						l_fname := "detachable"
+					end
 				end
-				Result := factory.function_call (l_fname, << a_heap, a_expr, factory.type_value (l_content_type) >>, bool)
+				if l_fname /= Void then
+					Result := factory.function_call (l_fname, << a_heap, a_expr, factory.type_value (l_content_type) >>, bool)
+				end
 				-- ToDo: refactor
 				if not a_type.is_formal and then a_type.base_class.name_in_upper ~ "ARRAY" then
 					Result := factory.and_clean (Result, factory.function_call ("ARRAY.inv", << a_heap, a_expr >>, bool))
@@ -206,32 +211,20 @@ feature -- Type translation
 			elseif l_boogie_type ~ int and options.is_checking_overflow then
 					-- If we are not checking for overflows, no need to differentiate between kinds of ints
 				Result := numeric_property (a_type, a_expr)
-			else
-					-- Check if it is a logical type with some types sets
-				l_typed_sets := helper.class_note_values (a_type.base_class, "typed_sets")
-				if not l_typed_sets.is_empty then
-					if l_typed_sets.count /= a_type.generics.count then
-						helper.add_semantic_error (a_type.base_class, messages.logical_invalid_typed_sets, -1)
+			elseif helper.is_class_logical (a_type.base_class) then
+--					 Check if it is a logical type with some type properties
+				l_type_properties := helper.class_note_values (a_type.base_class, "type_properties")
+				if not l_type_properties.is_empty then
+					if l_type_properties.count /= a_type.generics.count then
+						helper.add_semantic_error (a_type.base_class, messages.logical_invalid_type_properties, -1)
 					else
 						across
-							l_typed_sets as sets
+							l_type_properties as prop
 						loop
-							check attached {CL_TYPE_A} a_type.generics [sets.target_index] as t then
-								l_content_type := t
-							end
-							if for_class_type (l_content_type) ~ ref then
-								if l_content_type.is_attached then
-									l_fname := "set_attached"
-								else
-									l_fname := "set_detachable"
+							check attached {CL_TYPE_A} a_type.generics [prop.target_index] as t then
+								if for_class_type (t) ~ ref  then
+									Result := factory.and_clean (Result, factory.function_call (prop.item, << a_heap, a_expr, factory.type_value (t) >>, bool))
 								end
-								if sets.item.is_empty then
-									l_arg := a_expr
-								else
-									l_arg := factory.function_call (sets.item, << a_expr >>, set (ref))
-								end
-								Result := factory.and_clean (Result,
-									factory.function_call (l_fname, << a_heap, l_arg, factory.type_value (l_content_type) >>, bool))
 							end
 						end
 					end

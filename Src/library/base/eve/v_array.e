@@ -1,6 +1,5 @@
 note
 	description: "New version of an array, for use in verification."
-	skip: true
 
 class
 	V_ARRAY [G]
@@ -14,10 +13,12 @@ feature {NONE} -- Initialization
 			-- Create an array of size `n' filled with default values.
 		note
 			status: creator
+		require
+			n_non_negative: n >= 0
 		do
 		ensure
 			count_set: count = n
-			all_default: map.is_constant (({G}).default)
+			all_default: across sequence.domain as i all sequence [i.item] = ({G}).default end
 		end
 
 	init (s: MML_SEQUENCE [G])
@@ -27,13 +28,13 @@ feature {NONE} -- Initialization
 		do
 		ensure
 			count_set: count = s.count
-			elements_set: map = s.to_map
+			sequence_set: sequence = s
 		end
 
 feature -- Access		
 
-	map: MML_MAP [INTEGER, G]
-			-- Map from indexes to value.
+	sequence: MML_SEQUENCE [G]
+			-- Sequence of values.			
 
 	count: INTEGER
 			-- Number of elements.
@@ -45,15 +46,7 @@ feature -- Access
 			valid_index (i)
 		do
 		ensure
-			definition: Result = map [i]
-		end
-
-	sequence: MML_SEQUENCE [G]
-		require
-			closed
-		do
-		ensure
-			defintion: Result.to_map = map
+			definition: Result = sequence [i]
 		end
 
 feature -- Status report			
@@ -75,12 +68,11 @@ feature -- Modification
 		do
 		ensure
 			same_count: count = old count
-			map_effect: map = old map.updated (i, v)
+			sequence_effect: sequence = old sequence.replaced_at (i, v)
 		end
 
 invariant
-	non_negative_count: count >= 0
-	indexes_in_interval: map.domain ~ create {MML_INTERVAL}.from_range (1, count)
+	count_definition: count = sequence.count
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

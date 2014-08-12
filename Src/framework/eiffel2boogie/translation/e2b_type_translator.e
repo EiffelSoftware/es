@@ -112,6 +112,8 @@ feature -- Basic operations
 					if l_class.name_in_upper /~ "ARRAY" then
 						translate_invariant_function
 					end
+
+					add_default_field_ids
 				end
 			end
 
@@ -160,17 +162,20 @@ feature {NONE} -- Implementation
 		end
 
 	generate_inheritance_relations
-			-- Generate inheritance relations for `type'.
+			-- Generate axiom
+			-- "forall t: Type :: {TYPE <: t} TYPE <: t <==> TYPE == t || PARENT1 <: t || PARENT2 <: t || ...".
 		local
 			l_parents: FIXED_LIST [CL_TYPE_A]
 			l_parent: CL_TYPE_A
-			l_type_name: STRING
-			l_axiom: IV_AXIOM
-			l_operation: IV_BINARY_OPERATION
 			l_type_value: IV_VALUE
 			l_parent_value: IV_VALUE
+			l_rhs: IV_EXPRESSION
+			l_t: IV_ENTITY
+			l_forall: IV_FORALL
 		do
-			l_type_name := name_translator.boogie_name_for_type (type)
+			create l_type_value.make (name_translator.boogie_name_for_type (type), types.type)
+			create l_t.make ("t", types.type)
+			l_rhs := factory.equal (l_t, l_type_value)
 			l_parents := type.associated_class.parents
 			from
 				l_parents.start
@@ -179,15 +184,14 @@ feature {NONE} -- Implementation
 			loop
 				l_parent := l_parents.item.instantiated_in (type)
 				translation_pool.add_type (l_parent)
-
-				create l_type_value.make (l_type_name, types.type)
 				create l_parent_value.make (name_translator.boogie_name_for_type (l_parent), types.type)
-				create l_operation.make (l_type_value, "<:", l_parent_value, types.bool)
-				create l_axiom.make (l_operation)
-				boogie_universe.add_declaration (l_axiom)
-
+				l_rhs := factory.or_ (l_rhs, factory.sub_type (l_parent_value, l_t))
 				l_parents.forth
 			end
+			create l_forall.make (factory.equiv (factory.sub_type (l_type_value, l_t), l_rhs))
+			l_forall.add_bound_variable (l_t)
+			l_forall.add_trigger (factory.sub_type (l_type_value, l_t))
+			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
 		end
 
 	generate_model_axiom
@@ -241,6 +245,7 @@ feature {NONE} -- Implementation
 
 			if a_included = Void and a_excluded = Void and a_ancestor.class_id = type.base_class.class_id then
 				create l_inv_function.make (name_translator.boogie_function_for_invariant (type), types.bool)
+				l_inv_function.set_inline
 			else
 				create l_inv_function.make (name_translator.boogie_function_for_filtered_invariant (type, a_included, a_excluded, a_ancestor), types.bool)
 			end
@@ -426,11 +431,14 @@ feature {NONE} -- Implementation
 			l_special_call := factory.function_call (a_special_function, << l_heap, l_current >>, types.bool)
 
 				-- type_of(current) == type  ==>  generic_function(heap, current) == special_function(heap, current)
+--			create l_forall.make (factory.implies_ (
+--					factory.equal (
+--						factory.type_of (l_current),
+--						factory.type_value (type)),
+--					factory.equal (l_generic_call, l_special_call)))
 			create l_forall.make (factory.implies_ (
-					factory.equal (
-						factory.type_of (l_current),
-						factory.type_value (type)),
-					factory.equal (l_generic_call, l_special_call)))
+				factory.function_call ("attached_exact", << l_heap, l_current, factory.type_value (type) >>, types.bool),
+				factory.equal (l_generic_call, l_special_call)))
 			l_forall.add_bound_variable (l_heap)
 			l_forall.add_bound_variable (l_current)
 			l_forall.add_trigger (l_generic_call)
@@ -439,10 +447,13 @@ feature {NONE} -- Implementation
 
 				-- Inheritance axiom:
 				-- type_of(current) <: type  ==>  generic_function(heap, current) ==> special_function(heap, current)
+--			create l_forall.make (factory.implies_ (
+--					factory.sub_type (
+--						factory.type_of (l_current),
+--						factory.type_value (type)),
+--					factory.implies_ (l_generic_call, l_special_call)))
 			create l_forall.make (factory.implies_ (
-					factory.sub_type (
-						factory.type_of (l_current),
-						factory.type_value (type)),
+					factory.function_call ("attached", << l_heap, l_current, factory.type_value (type) >>, types.bool),
 					factory.implies_ (l_generic_call, l_special_call)))
 			l_forall.add_bound_variable (l_heap)
 			l_forall.add_bound_variable (l_current)
@@ -514,13 +525,36 @@ feature {NONE} -- Implementation
 			create l_forall.make (factory.implies_ (
 				factory.and_ (factory.function_call ("IsHeap", << l_h >>, types.bool),
 					factory.and_ (
-						factory.heap_access (l_h, l_o, "allocated", types.bool),
+						factory.function_call ("attached", << l_h, l_o, factory.type_value (type) >>, types.bool),
 						factory.heap_access (l_h, l_o, "closed", types.bool))),
 				l_fcall))
 			l_forall.add_bound_variable (l_h)
 			l_forall.add_bound_variable (l_o)
 			l_forall.add_trigger (l_fcall)
 			boogie_universe.add_declaration (create {IV_AXIOM}.make (l_forall))
+		end
+
+	add_default_field_ids
+			-- Add FieldId axioms for default attributes
+		do
+			boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.equal (
+				factory.function_call ("FieldId", << factory.entity ("allocated", types.field (types.bool)), factory.type_value (type) >>, types.int),
+				factory.int_value (-1))))
+			boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.equal (
+				factory.function_call ("FieldId", << factory.entity ("closed", types.field (types.bool)), factory.type_value (type) >>, types.int),
+				factory.int_value (-2))))
+			boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.equal (
+				factory.function_call ("FieldId", << factory.entity ("owner", types.field (types.ref)), factory.type_value (type) >>, types.int),
+				factory.int_value (-3))))
+			boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.equal (
+				factory.function_call ("FieldId", << factory.entity ("owns", types.field (types.set (types.ref))), factory.type_value (type) >>, types.int),
+				factory.int_value (-4))))
+			boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.equal (
+				factory.function_call ("FieldId", << factory.entity ("observers", types.field (types.set (types.ref))), factory.type_value (type) >>, types.int),
+				factory.int_value (-5))))
+			boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.equal (
+				factory.function_call ("FieldId", << factory.entity ("subjects", types.field (types.set (types.ref))), factory.type_value (type) >>, types.int),
+				factory.int_value (-6))))
 		end
 
 feature -- Invariant admissibility

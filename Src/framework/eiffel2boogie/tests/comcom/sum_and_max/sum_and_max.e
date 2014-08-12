@@ -16,16 +16,16 @@ feature
 			sum, max: INTEGER
 		do
 			from
-				i := 1
+				i := 0
 			invariant
-				i1: 1 <= i and i <= a.count + 1
-				i2: sum <= (i-1) * max
+				i1: 0 <= i and i <= a.count
+				i2: sum <= i * max
 			until
-				i > a.count
+				i >= a.count
 			loop
-				sum := sum + a[i]
-				if a[i] > max then
-					max := a[i]
+				sum := sum + a [i + 1]
+				if a [i + 1] > max then
+					max := a [i + 1]
 				end
 				i := i + 1 -- Try commenting this out
 			end

@@ -69,11 +69,19 @@ feature -- Access
 			end
 		end
 
-	local_ (a_position: INTEGER): IV_EXPRESSION
+	local_ (a_position: INTEGER): IV_ENTITY
 			-- Local of feature `a_feature' at position `a_position'.
 		do
 			check local_mapping.has_key (a_position) end
-			Result := local_mapping.item (a_position)
+			Result := local_mapping.item (a_position).expr
+			local_mapping.replace ([Result, True], a_position)
+		end
+
+	is_local_used (a_position: INTEGER): BOOLEAN
+			-- Has local at position `a_position' been accessed already?
+		do
+			check local_mapping.has_key (a_position) end
+			Result := local_mapping.item (a_position).used
 		end
 
 	heap: IV_EXPRESSION
@@ -134,10 +142,10 @@ feature -- Element change
 			argument_mapping.wipe_out
 		end
 
-	set_local (a_position: INTEGER; a_expression: IV_EXPRESSION)
+	set_local (a_position: INTEGER; a_expression: IV_ENTITY)
 			-- Set local at position `a_position' to `a_expression'.
 		do
-			local_mapping.extend (a_expression, a_position)
+			local_mapping.extend ([a_expression, False], a_position)
 		end
 
 	clear_locals
@@ -171,7 +179,7 @@ feature {E2B_ENTITY_MAPPING} -- Implementation
 	argument_mapping: HASH_TABLE [IV_EXPRESSION, INTEGER]
 			-- Mapping for arguments.
 
-	local_mapping: HASH_TABLE [IV_EXPRESSION, INTEGER]
+	local_mapping: HASH_TABLE [TUPLE [expr: IV_ENTITY; used: BOOLEAN], INTEGER]
 			-- Mapping for locals.
 
 end

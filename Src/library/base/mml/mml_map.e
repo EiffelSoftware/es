@@ -3,7 +3,7 @@ note
 	author: "Nadia Polikarpova"
 	theory: "map.bpl", "sequence.bpl", "bag.bpl", "relation.bpl", "set.bpl"
 	maps_to: "Map"
-	typed_sets: "Map#Domain", "Map#Range"
+	type_properties: "Map#DomainType", "Map#RangeType"
 
 class
 	MML_MAP [K, V]

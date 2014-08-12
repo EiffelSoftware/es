@@ -32,6 +32,8 @@ feature
 		end
 
 	non_void_contract (a, b, c: ANY)
+		note
+			explicit: contracts, wrapping
 		require
 			a /= Void
 			attached b

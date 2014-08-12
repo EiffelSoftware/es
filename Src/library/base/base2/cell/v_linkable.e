@@ -2,6 +2,7 @@ note
 	description: "Cells that can be linked to another cell."
 	author: "Nadia Polikarpova"
 	model: item, right
+	false_guards: true
 
 class
 	V_LINKABLE [G]

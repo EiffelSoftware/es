@@ -22,7 +22,7 @@ axiom (forall<T> o: T :: { Bag#Empty()[o] } Bag#Empty()[o] == 0);
 axiom (forall<T> s: Bag T :: { Bag#Card(s) }
   (Bag#Card(s) == 0 <==> s == Bag#Empty()) &&
   (Bag#Card(s) != 0 ==> (exists x: T :: 0 < s[x])));
-axiom (forall<T> f: Field (Bag T) :: { Default(f) } Default(f) == Bag#Empty());  
+axiom (forall<T> f: Field (Bag T) :: { Default(f) } Default(f) == Bag#Empty() : Bag T);  
 
 // Singleton bag
 function Bag#Singleton<T>(T): Bag T;
@@ -195,4 +195,8 @@ axiom (forall<T> s: Set T :: { Bag#Card(Bag#FromSet(s)) }
 function Math#clip(a: int): int;
 axiom (forall a: int :: { Math#clip(a) } 0 <= a ==> Math#clip(a) == a);
 axiom (forall a: int :: { Math#clip(a) } a < 0  ==> Math#clip(a) == 0);
+
+// Type property
+function {: inline } Bag#DomainType(heap: HeapType, b: Bag ref, t: Type): bool 
+{ (forall o: ref :: { Bag#Domain(b)[o] }{ b[o] } Bag#Domain(b)[o] ==> detachable(heap, o, t)) }
   

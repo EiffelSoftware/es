@@ -60,6 +60,19 @@ feature
 			check attached {A_BAGS} b.domain.any_item end
 		end
 
+	use_lemma (b: MML_BAG [INTEGER])
+		require
+			b [2] = 5
+		local
+			b1: MML_BAG [INTEGER]
+		do
+			b1 := b.removed_multiple (2, 3)
+			b.lemma_remove_multiple (2, 3)
+			check b1.removed (2) = b.removed_multiple (2, 4) end
+			b.lemma_remove_all (2)
+			check b.removed_multiple (2, 5) = b.removed_all (2) end
+		end
+
 	bad (i: INTEGER)
 		local
 			b: MML_BAG [INTEGER]

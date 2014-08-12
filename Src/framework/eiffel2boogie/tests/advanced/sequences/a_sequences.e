@@ -45,7 +45,7 @@ feature
 	good1 (s: MML_SEQUENCE [A_SETS])
 		require
 			not s.is_empty
-			across s as x all x.item /= Void  end
+			across s.domain as i all s [i.item] /= Void  end
 		do
 			check attached {A_SETS} s.first end
 		end
@@ -97,5 +97,5 @@ feature
 
 invariant
 	subjects = []
-	
+
 end

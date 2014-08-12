@@ -4,7 +4,7 @@ note
 	theory: "bag.bpl", "set.bpl"
 	maps_to: "Bag"
 	where: "Bag#IsValid"
-	typed_sets: "Bag#Domain"
+	type_properties: "Bag#DomainType"
 
 class
 	MML_BAG [G]
@@ -168,7 +168,7 @@ feature -- Iterable implementation
 		note
 			maps_to: "Bag#Domain"
 		do
-		end
+		end		
 
 feature -- Convenience
 
@@ -180,6 +180,31 @@ feature -- Convenience
 			"[
 				return NULL;
 			]"
+		end
+
+feature -- Lemmas
+
+	lemma_remove_multiple (v: G; n: INTEGER)
+			-- Removing `n' occurrences of `v' from `Current' and then one,
+			-- is the same as removing `n' + 1 occurrences.
+		note
+			status: lemma
+		require
+			n >= 0
+		do
+			check across domain as x all removed_multiple (v, n).removed (v) [x.item] = removed_multiple (v, n + 1) [x.item] end end
+		ensure
+			removed_multiple (v, n).removed (v) = removed_multiple (v, n + 1)
+		end
+		
+	lemma_remove_all (v: G)
+			-- Removing `Current [v]' occurrences of `v' from `b' is the same as removing all occurrences.
+		note
+			status: lemma
+		do
+			check across domain as x all removed_multiple (v, Current [v]) [x.item] = removed_all (v) [x.item] end end
+		ensure
+			removed_multiple (v, Current [v]) = removed_all (v)
 		end
 
 end

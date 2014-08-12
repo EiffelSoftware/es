@@ -178,6 +178,8 @@ feature {NONE} -- Implementation
 				if l_has_tag then
 					if l_tag ~ "function_precondition" then
 						Result := messages.function_precondition_violated
+					elseif l_tag ~ "invariant_holds" then
+						Result := messages.invariant_violated
 					else
 						Result := messages.check_with_tag_violated
 					end

@@ -23,8 +23,7 @@ axiom (forall f: Field ref :: Default(f) == Void);
 axiom (forall f: Field real :: Default(f) == 0.0);
 
 type HeapType = <alpha>[ref, Field alpha]alpha; // Type of a heap (with generic field subtype and generic content type)
-const unique allocated: Field bool; // Ghost field for allocation status of objects
-axiom (forall t: Type :: FieldId(allocated, t) == -1);
+const allocated: Field bool; // Ghost field for allocation status of objects
 
 // Function which defines basic properties of a heap
 function IsHeap(heap: HeapType): bool;
@@ -48,45 +47,32 @@ axiom (forall h: HeapType, k: HeapType :: { HeapSucc(h,k) }
 
 type Type; // Type definition for Eiffel types
 const unique ANY: Type; // Type for ANY
-const unique NONE: Type; // Type for NONE
+// const unique NONE: Type; // Type for NONE
 
 // Type function for objects.
 function type_of(o: ref) returns (Type);
 function is_frozen(t: Type) returns (bool);
 
 // Typing axioms
-axiom (forall t: Type :: t <: ANY); // All types inherit from ANY.
-axiom (forall t: Type :: NONE <: t); // NONE inherits from all types.
-axiom (forall h: HeapType :: IsHeap(h) ==> h[Void, allocated]); // Void is always allocated.
+axiom (forall t: Type :: { ANY <: t } ANY <: t <==> t == ANY);
+// axiom (forall t: Type :: t <: ANY); // All types inherit from ANY.
+// axiom (forall t: Type :: NONE <: t); // NONE inherits from all types.
+// axiom (forall h: HeapType :: IsHeap(h) ==> h[Void, allocated]); // Void is always allocated.
 axiom (forall h: HeapType, f: Field ref, o: ref :: IsHeap(h) && h[o, allocated] ==> h[h[o, f], allocated]); // All reference fields are allocated.
-axiom (forall r: ref :: (r == Void) <==> (type_of(r) == NONE)); // Void is only reference of type NONE.
-axiom (forall a, b: ref :: (type_of(a) != type_of(b)) ==> (a != b)); // Objects that have different dynamic type cannot be aliased.
-axiom (forall t: Type :: is_frozen(t) ==> (forall t2: Type :: t2 <: t ==> t2 == t || t2 == NONE)); // Only NONE inherits from frozen types.
-axiom (forall t: Type, r: ref :: (r != Void && type_of(r) <: t && is_frozen(t)) ==> (type_of(r) == t)); // Non-void references of a frozen type are exact.
-
-function ANY.user_inv(heap: HeapType, current: ref) returns (bool) {
-  true
-}
-
-function NONE.user_inv(heap: HeapType, current: ref) returns (bool) {
-  false
-}
+// axiom (forall r: ref :: (r == Void) <==> (type_of(r) == NONE)); // Void is only reference of type NONE.
+// axiom (forall a, b: ref :: (type_of(a) != type_of(b)) ==> (a != b)); // Objects that have different dynamic type cannot be aliased.
+// axiom (forall t: Type :: is_frozen(t) ==> (forall t2: Type :: t2 <: t ==> t2 == t || t2 == NONE)); // Only NONE inherits from frozen types.
+axiom (forall t: Type, r: ref :: { is_frozen(t), type_of(r) } (r != Void && type_of(r) <: t && is_frozen(t)) ==> (type_of(r) == t)); // Non-void references of a frozen type are exact.
+// axiom (forall h: HeapType, t: Type, o: ref :: { is_frozen(t), attached_exact(h, o, t) } IsHeap(h) && is_frozen(t) && attached(h, o, t) ==> attached_exact(h, o, t));
 
 // ----------------------------------------------------------------------
 // Built-in attributes
 
-const unique closed: Field bool; // Ghost field for open/closed status of an object.
-const unique owner: Field ref; // Ghost field for owner of an object.
-const unique owns: Field (Set ref); // Ghost field for owns set of an object.
-const unique observers: Field (Set ref); // Ghost field for observers set of an object.
-const unique subjects: Field (Set ref); // Ghost field for subjects set of an object.
-
-// Field IDs for built-in attributes
-axiom (forall t: Type :: FieldId(closed, t) == -2);
-axiom (forall t: Type :: FieldId(owner, t) == -3);
-axiom (forall t: Type :: FieldId(owns, t) == -4);
-axiom (forall t: Type :: FieldId(observers, t) == -5);
-axiom (forall t: Type :: FieldId(subjects, t) == -6);
+const closed: Field bool; // Ghost field for open/closed status of an object.
+const owner: Field ref; // Ghost field for owner of an object.
+const owns: Field (Set ref); // Ghost field for owns set of an object.
+const observers: Field (Set ref); // Ghost field for observers set of an object.
+const subjects: Field (Set ref); // Ghost field for subjects set of an object.
 
 // Analogue of `detachable_attribute' and `set_detachable_attribute' for built-in attributes:
 axiom (forall heap: HeapType, o: ref :: { heap[o, owner] } IsHeap(heap) && o != Void && heap[o, allocated] ==> heap[heap[o, owner], allocated]);
@@ -95,10 +81,10 @@ axiom (forall heap: HeapType, o, o': ref :: { heap[o, subjects][o'] } IsHeap(hea
 axiom (forall heap: HeapType, o, o': ref :: { heap[o, observers][o'] } IsHeap(heap) && o != Void && heap[o, allocated] && heap[o, observers][o'] ==> heap[o', allocated]);
 
 // Guards for built-in attributes
-// axiom (forall heap: HeapType, current: ref, v: Set ref, o: ref :: { guard(heap, current, owns, v, o) } 
-  // guard(heap, current, owns, v, o)); // no dependence on owns
 axiom (forall heap: HeapType, current: ref, v: Set ref, o: ref :: { guard(heap, current, owns, v, o) } 
-	guard(heap, current, owns, v, o) <==> user_inv(heap[current, owns := v], o)); // default guard for owns	
+  !guard(heap, current, owns, v, o)); // updating owns requires open observers
+// axiom (forall heap: HeapType, current: ref, v: Set ref, o: ref :: { guard(heap, current, owns, v, o) } 
+	// guard(heap, current, owns, v, o) <==> user_inv(heap[current, owns := v], o)); // default guard for owns	
 axiom (forall heap: HeapType, current: ref, v: Set ref, o: ref :: { guard(heap, current, subjects, v, o) } 
   guard(heap, current, subjects, v, o)); // no dependence on subjects
 axiom (forall heap: HeapType, current: ref, v: Set ref, o: ref :: { guard(heap, current, observers, v, o) } 
@@ -181,16 +167,16 @@ function has_whole_object(frame: Frame, o: ref): bool
 { (forall <alpha> f: Field alpha :: frame[o, f]) }
 
 // Frame is closed under ownership domains and includes all unallocated objects
-function {:inline true} closed_under_domains(frame: Frame, h: HeapType): bool
+function { :inline } closed_under_domains(frame: Frame, h: HeapType): bool
 { 
   (forall <U> o': ref, f': Field U :: {frame[o', f']} 
     !h[o', allocated] || (exists <V> o: ref, f: Field V :: frame[o, f] && in_domain(h, o, o') && o != o') ==> frame[o', f'])
 }
 
 // Objects outside of ownership domains of frame did not change, unless they were newly allocated
-function same_outside(h: HeapType, h': HeapType, frame: Frame): bool { 
+function {: inline } same_outside(h: HeapType, h': HeapType, frame: Frame): bool { 
 	(forall <T> o: ref, f: Field T :: { h'[o, f] }
-    h[o, allocated] ==>      
+    o != Void && h[o, allocated] ==>      
       h'[o, f] == h[o, f] ||
       frame[o, f] ||        
       (exists o': ref :: {frame[o', closed]} o' != o && frame[o', closed] && in_domain(h, o', o)) // Using extra knowledge here to remove an existential: modifying object's domain requires its closed to be in the frame
@@ -199,8 +185,7 @@ function same_outside(h: HeapType, h': HeapType, frame: Frame): bool {
 
 // Objects inside the frame did not change
 function same_inside(h: HeapType, h': HeapType, frame: Frame): bool { 
-	(forall <T> o: ref, f: Field T :: { h'[o, f] }
-    h[o, allocated] && h'[o, f] != h[o, f] ==> !frame [o, f])
+	(forall <T> o: ref, f: Field T :: o != Void && h[o, allocated] && h'[o, allocated] && frame [o, f] ==> h'[o, f] == h[o, f])
 }
 // This version corresponds to the old semantics of read clauses:
 // // Objects inside the old ownership domains of frame did not change
@@ -227,9 +212,12 @@ function user_inv_readable(HeapType, ref): Frame;
 axiom (forall<T> h: HeapType, x: ref, o: ref, f: Field T :: { user_inv_readable(h, x)[o, f] }
   IsHeap(h) ==> user_inv_readable(h, x)[o, f] == (in_trans_owns(h, x, o) || h[x, subjects][o]));
   
+// Uninterpreted function to trigger the invariant frame axiom
+function inv_frame_trigger(x: ref): bool;
+  
 // Frame axiom
-axiom (forall h, h': HeapType, x: ref :: { user_inv(h, x), user_inv(h', x), HeapSucc(h, h') } 
-  IsHeap(h) && IsHeap(h') && HeapSucc(h, h') &&
+axiom (forall h, h': HeapType, x: ref :: { user_inv(h, x), user_inv(h', x), HeapSucc(h, h'), inv_frame_trigger(x) } 
+  IsHeap(h) && IsHeap(h') && HeapSucc(h, h') && inv_frame_trigger(x) &&
   x != Void && h[x, allocated] && h'[x, allocated] &&
   is_open(h, x) && is_open(h', x) &&
   user_inv(h, x) && 
@@ -241,29 +229,19 @@ axiom (forall h, h': HeapType, x: ref :: { user_inv(h, x), user_inv(h', x), Heap
    )
   ==> user_inv(h', x));
 
-// Old unsound frame axiom:  
-// h'[o, f] == h[o, f] ||                            // is unchanged
-// f == closed || f == owner ||                      // or is outside of the read set of the invariant
-// (!in_domain(h, x, o) && !h[x, subjects][o]) ||    
-// (!in_domain(h, x, o) && f == subjects) ||         // or is the subjects field of one of the subjects
-// (!in_domain(h, x, o) && f == observers && Set#Subset(h[o, observers], h'[o, observers]))  // or is the observers of one of the subjects and it grows
-  
-
 // Is object o closed or the invariant satisfied?
 function {:inline true} inv(h: HeapType, o: ref): bool {
 	h[o, closed] ==> user_inv(h, o)
 }
 
-// Invariant of None is false
-// axiom (forall h: HeapType, o: ref :: type_of(o) == NONE ==> !user_inv(h, o));
-
 // Global heap invariants
 function {:inline true} global(h: HeapType): bool
 {
-  is_open(h, Void) &&
+  h[Void, allocated] && is_open(h, Void) &&
   (forall o: ref :: h[o, allocated] && is_open(h, o) ==> is_free(h, o)) &&
-  (forall o: ref, o': ref :: {h[o, owns][o']} h[o, allocated] && h[o', allocated] && h[o, closed] && h[o, owns][o'] ==> (h[o', closed] && h[o', owner] == o)) && // G2
-  (forall o: ref :: {user_inv(h, o)} h[o, allocated] ==> inv(h, o)) // G1
+  // (forall o: ref :: { h[o, owner], is_open(h, o) } h[o, allocated] && is_open(h, o) ==> is_free(h, o)) &&
+  (forall o: ref, o': ref :: { h[o, owns][o'] } h[o, allocated] && h[o', allocated] && h[o, closed] && h[o, owns][o'] ==> (h[o', closed] && h[o', owner] == o)) && // G2
+  (forall o: ref :: { user_inv(h, o) } h[o, allocated] ==> inv(h, o)) // G1
 }
 
 // All objects in valid heaps are valid.
@@ -324,9 +302,8 @@ procedure unwrap(o: ref);
   modifies Heap;
   ensures global(Heap);  
   ensures is_open(Heap, o); // UWE1
-  ensures (forall o': ref :: old(Heap[o, owns][o']) ==> is_wrapped(Heap, o') && user_inv(Heap, o')); // UWE2
+  ensures (forall o': ref :: old(Heap[o, owns][o']) ==> is_wrapped(Heap, o')); // UWE2
   ensures (forall <T> o': ref, f: Field T :: !(o' == o && f == closed) && !(old(Heap[o, owns][o']) && f == owner) ==> Heap[o', f] == old(Heap[o', f]));
-  ensures user_inv(Heap, o);
   free ensures HeapSucc(old(Heap), Heap);
 
 procedure unwrap_all (Current: ref, s: Set ref);
@@ -338,17 +315,16 @@ procedure unwrap_all (Current: ref, s: Set ref);
   ensures (forall o: ref :: s[o] ==> is_open(Heap, o)); // UWE1
   ensures (forall o: ref :: s[o] ==> (forall o': ref :: old(Heap[o, owns][o']) ==> is_wrapped(Heap, o') && user_inv(Heap, o'))); // UWE2
   ensures (forall <T> o: ref, f: Field T :: !(s[o] && f == closed) && !((exists o': ref :: s[o'] && old(Heap[o', owns][o])) && f == owner) ==> Heap[o, f] == old(Heap[o, f]));
-  ensures (forall o: ref :: s[o] ==> user_inv(Heap, o));
+  ensures (forall o: ref :: s[o] ==> user_inv(Heap, o) && inv_frame_trigger(o));
   free ensures HeapSucc(old(Heap), Heap);
 
 // Wrap o
 procedure wrap(o: ref);
   requires (o != Void) && (Heap[o, allocated]); // type:pre tag:attached
   requires is_open(Heap, o); // type:pre tag:open W1
-  requires user_inv(Heap, o); // type:pre tag:invariant_holds W2
-  requires (forall o': ref :: Heap[o, owns][o'] ==> is_wrapped(Heap, o')); // type:pre tag:owned_objects_wrapped W3
   requires writable[o, closed]; // type:pre tag:writable W4
-  requires (forall o': ref :: Heap[o, owns][o'] ==> writable[o', owner]); // type:pre tag:owned_objects_writable W3
+  // requires user_inv(Heap, o); // type:pre tag:invariant_holds W2 // Custom check now
+  requires (forall o': ref :: { Heap[o, owns][o'] } Heap[o, owns][o'] ==> is_wrapped(Heap, o') && writable[o', owner]); // type:pre tag:owned_objects_wrapped_and_writable W3
   modifies Heap;
   ensures global(Heap);  
   ensures (forall o': ref :: old(Heap[o, owns][o']) ==> Heap[o', owner] == o); // WE2
@@ -359,10 +335,9 @@ procedure wrap(o: ref);
 procedure wrap_all(Current: ref, s: Set ref);
   requires (forall o: ref :: s[o] ==> (o != Void) && (Heap[o, allocated])); // type:pre tag:attached
   requires (forall o: ref :: s[o] ==> is_open(Heap, o)); // type:pre tag:open W1
+  requires (forall o: ref :: s[o] ==> writable[o, closed]); // type:pre tag:writable W4    
   requires (forall o: ref :: s[o] ==> user_inv(Heap, o)); // type:pre tag:invariant_holds W2
-  requires (forall o: ref :: s[o] ==> (forall o': ref :: Heap[o, owns][o'] ==> is_wrapped(Heap, o'))); // type:pre tag:owned_objects_wrapped W3
-  requires (forall o: ref :: s[o] ==> (forall o': ref :: Heap[o, owns][o'] ==> writable[o', owner])); // type:pre tag:owned_objects_writable W3
-  requires (forall o: ref :: s[o] ==> writable[o, closed]); // type:pre tag:writable W4  
+  requires (forall o: ref :: s[o] ==> (forall o': ref :: Heap[o, owns][o'] ==> is_wrapped(Heap, o') && writable[o', owner])); // type:pre tag:owned_objects_wrapped_and_writable W3
   modifies Heap;
   ensures global(Heap);  
   ensures (forall o: ref :: s[o] ==> (forall o': ref :: old(Heap[o, owns][o']) ==> Heap[o', owner] == o)); // WE2
@@ -385,17 +360,7 @@ function attached(heap: HeapType, o: ref, t: Type) returns (bool) {
 
 // Property that reference `o' is either Void or attached and conforms to `t' on heap `heap'.
 function detachable(heap: HeapType, o: ref, t: Type) returns (bool) {
-	(o == Void) || (attached(heap, o, t))
-}
-
-// Property that `s' is a set of objects of attached type `t'.
-function {: inline } set_attached(heap: HeapType, s: Set ref, t: Type) returns (bool) {
-	(forall o: ref :: s[o] ==> attached(heap, o, t))
-}
-
-// Property that `s' is a set of objects of attached type `t'.
-function {: inline } set_detachable(heap: HeapType, s: Set ref, t: Type) returns (bool) {
-	(forall o: ref :: s[o] ==> detachable(heap, o, t))
+	(o == Void) || ((heap[o, allocated]) && (type_of(o) <: t))
 }
 
 // ----------------------------------------------------------------------
@@ -403,35 +368,35 @@ function {: inline } set_detachable(heap: HeapType, s: Set ref, t: Type) returns
 
 // Integer boxing
 
-const unique INTEGER: Type;
+// const unique INTEGER: Type;
 
-function boxed_int(i: int) returns (ref);
-function unboxed_int(r: ref) returns (int);
+// function boxed_int(i: int) returns (ref);
+// function unboxed_int(r: ref) returns (int);
 
-axiom (forall i: int :: unboxed_int(boxed_int(i)) == i);
-axiom (forall i1, i2: int :: (i1 == i2) ==> (boxed_int(i1) == boxed_int(i2)));
-axiom (forall i: int :: boxed_int(i) != Void && type_of(boxed_int(i)) == INTEGER);
-axiom (forall heap: HeapType, i: int :: IsHeap(heap) ==> heap[boxed_int(i), allocated]);
+// axiom (forall i: int :: unboxed_int(boxed_int(i)) == i);
+// axiom (forall i1, i2: int :: (i1 == i2) ==> (boxed_int(i1) == boxed_int(i2)));
+// axiom (forall i: int :: boxed_int(i) != Void && type_of(boxed_int(i)) == INTEGER);
+// axiom (forall heap: HeapType, i: int :: IsHeap(heap) ==> heap[boxed_int(i), allocated]);
 
 
 // Boolean boxing
 
-const unique BOOLEAN: Type;
-const unique boxed_true: ref;
-const unique boxed_false: ref;
+// const unique BOOLEAN: Type;
+// const unique boxed_true: ref;
+// const unique boxed_false: ref;
 
-function boxed_bool(b: bool) returns (ref);
-function unboxed_bool(r: ref) returns (bool);
+// function boxed_bool(b: bool) returns (ref);
+// function unboxed_bool(r: ref) returns (bool);
 
-axiom (boxed_bool(true) == boxed_true);
-axiom (boxed_bool(false) == boxed_false);
-axiom (unboxed_bool(boxed_true) == true);
-axiom (unboxed_bool(boxed_false) == false);
-axiom (boxed_true != boxed_false);
-axiom (boxed_true != Void && type_of(boxed_true) == BOOLEAN);
-axiom (boxed_false != Void && type_of(boxed_false) == BOOLEAN);
-axiom (forall heap: HeapType :: IsHeap(heap) ==> heap[boxed_true, allocated]);
-axiom (forall heap: HeapType :: IsHeap(heap) ==> heap[boxed_false, allocated]);
+// axiom (boxed_bool(true) == boxed_true);
+// axiom (boxed_bool(false) == boxed_false);
+// axiom (unboxed_bool(boxed_true) == true);
+// axiom (unboxed_bool(boxed_false) == false);
+// axiom (boxed_true != boxed_false);
+// axiom (boxed_true != Void && type_of(boxed_true) == BOOLEAN);
+// axiom (boxed_false != Void && type_of(boxed_false) == BOOLEAN);
+// axiom (forall heap: HeapType :: IsHeap(heap) ==> heap[boxed_true, allocated]);
+// axiom (forall heap: HeapType :: IsHeap(heap) ==> heap[boxed_false, allocated]);
 
 // Bounded integers
 
@@ -519,13 +484,13 @@ function max(a, b: int): int { if a >= b then a else b }
 
 // Expanded types
 
-type unknown;
+// type unknown;
 
 // Address operator
 
-function address(a: ref) returns (int);
-axiom (forall a, b: ref :: (a != b) <==> (address(a) != address(b))); // Different objects have different heap addresses.
-axiom (forall a: ref :: is_integer_64(address(a))); // Addresses are 64 bit integers.
+// function address(a: ref) returns (int);
+// axiom (forall a, b: ref :: (a != b) <==> (address(a) != address(b))); // Different objects have different heap addresses.
+// axiom (forall a: ref :: is_integer_64(address(a))); // Addresses are 64 bit integers.
 
 // Unsupported
 

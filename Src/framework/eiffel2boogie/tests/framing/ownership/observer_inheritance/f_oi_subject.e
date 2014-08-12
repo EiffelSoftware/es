@@ -83,7 +83,7 @@ feature {F_OI_OBSERVER} -- Internal communication
 invariant
 	owns_structure: owns = [subscribers]
 	subscribers_exists: subscribers /= Void
-	all_subscribers_exist: across subscribers.sequence as o all attached o.item end
+	all_subscribers_exist: across subscribers.sequence.domain as i all attached subscribers.sequence [i.item] end
 	observers_structure: observers = subscribers.sequence.range
 
 note

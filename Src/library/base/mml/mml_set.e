@@ -3,7 +3,7 @@ note
 	author: "Nadia Polikarpova"
 	theory: "set.bpl"
 	maps_to: "Set"
-	typed_sets: ""
+	type_properties: "Set#ItemsType"
 
 class MML_SET [G]
 
@@ -151,7 +151,7 @@ feature -- Iterable implementation
 			maps_to: ""
 		do
 		end
-
+		
 feature -- Convenience
 
 	empty_set: MML_SET [G]

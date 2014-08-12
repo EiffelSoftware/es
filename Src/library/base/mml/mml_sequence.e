@@ -3,7 +3,7 @@ note
 	author: "Nadia Polikarpova"
 	theory: "sequence.bpl", "map.bpl", "relation.bpl", "bag.bpl", "set.bpl"
 	maps_to: "Seq"
-	typed_sets: "Seq#Range"
+	type_properties: "Seq#ItemsType"
 
 class
 	MML_SEQUENCE [G]
@@ -48,18 +48,18 @@ feature -- Properties
 		do
 		end
 
-	is_sorted: BOOLEAN
-			-- Is the sequence sorted?
-			-- (used for demo)
-		do
-		end
+--	is_sorted: BOOLEAN
+--			-- Is the sequence sorted?
+--			-- (used for demo)
+--		do
+--		end
 
 feature -- Elements
 
 	item alias "[]" (i: INTEGER): G
 			-- Value at position `i'.
 		require
-			in_domain: domain [i]
+			in_domain: 1 <= i and i <= count
 		do
 		end
 
@@ -230,6 +230,5 @@ feature -- Convenience
 				return NULL;
 			]"
 		end
-
 end
 

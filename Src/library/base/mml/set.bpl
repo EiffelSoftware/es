@@ -14,7 +14,7 @@ axiom (forall<T> o: T :: { Set#Empty()[o] } !Set#Empty()[o]);
 axiom (forall<T> s: Set T :: { Set#Card(s) }
   (Set#Card(s) == 0 <==> s == Set#Empty()) &&
   (Set#Card(s) != 0 ==> (exists x: T :: s[x])));
-axiom (forall<T> f: Field (Set T) :: { Default(f) } Default(f) == Set#Empty());  
+axiom (forall<T> f: Field (Set T) :: { Default(f) } Default(f) == Set#Empty() : Set T);  
 
 // Singleton set  
 function Set#Singleton<T>(T): Set T;
@@ -133,7 +133,11 @@ axiom (forall s: Set int :: { Set#Min(s) }
 function Set#Max<T>(Set T): T;
 axiom (forall s: Set int :: { Set#Max(s) } 
   !Set#IsEmpty(s) ==> s[Set#Max(s)] && (forall x: int :: s[x] ==> x <= Set#Max(s)));
-
+  
+// Type property
+function {: inline } Set#ItemsType(heap: HeapType, s: Set ref, t: Type): bool 
+{ (forall o: ref :: { s[o] } s[o] ==> detachable(heap, o, t)) }
+    
 // Integer intervals
 type Interval = Set int;
 

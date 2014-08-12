@@ -48,7 +48,7 @@ feature -- Translation: Signature
 	translate_logical_signature (a_feature: FEATURE_I; a_type: CL_TYPE_A)
 			-- Translate signature of a logical feature `a_feature' of type `a_type'.
 		require
-			class_logical: helper.is_class_logical (a_type.base_class)
+			feature_logical: helper.is_feature_logical (a_feature)
 		do
 			set_context (a_feature, a_type)
 
@@ -100,7 +100,7 @@ feature -- Translation: Signature
 			set_up_boogie_procedure (l_proc_name)
 
 				-- Arguments
-			add_argument_with_property ("Current", current_type, types.ref)
+			add_argument_with_property ("Current", current_type, types.for_class_type (current_type))
 			across arguments_of_current_feature as i loop
 				add_argument_with_property (i.item.name, i.item.type, i.item.boogie_type)
 			end
@@ -537,6 +537,7 @@ feature -- Translation: Implementation
 			l_assign: IV_ASSIGNMENT
 			l_call: IV_PROCEDURE_CALL
 			l_ownership_handler: E2B_CUSTOM_OWNERSHIP_HANDLER
+			l_feature: FEATURE_I
 			l_expr_translator: E2B_BODY_EXPRESSION_TRANSLATOR
 			l_builtin_collector: E2B_BUILTIN_CALLS_COLLECTOR
 			l_loc: IV_ENTITY
@@ -570,17 +571,33 @@ feature -- Translation: Implementation
 				-- Add initial tracing information
 			l_implementation.body.add_statement (factory.trace (l_proc_name))
 
+			create l_ownership_handler
+			create l_expr_translator.make
+			l_expr_translator.set_context (a_feature, a_type)
+			l_expr_translator.set_context_implementation (l_implementation)
+
 				-- OWNERSHIP: start of routine body
 			if options.is_ownership_enabled then
 					-- Public procedures unwrap Current in the beginning, unless lemma or marked with explicit wrapping
 				if not a_for_creator and helper.is_public (current_feature) and not a_feature.has_return_value and
 					not helper.is_explicit (current_feature, "wrapping") and not helper.is_lemma (a_feature) then
+					l_feature := system.any_type.base_class.feature_named_32 ("unwrap")
+					l_expr_translator.set_context_line_number (a_feature.body.start_location.line)
+
+					l_ownership_handler.pre_builtin_call (l_expr_translator, l_feature)
+					l_implementation.body.statements.append (l_expr_translator.side_effect)
+					l_expr_translator.side_effect.wipe_out
+
 					l_call := factory.procedure_call ("unwrap", << factory.std_current >>)
 					l_call.node_info.set_attribute ("default", "wrapping")
 					l_call.node_info.set_attribute ("cid", system.any_id.out)
-					l_call.node_info.set_attribute ("rid", system.any_class.compiled_class.feature_named_32 ("unwrap").rout_id_set.first.out)
+					l_call.node_info.set_attribute ("rid", l_feature.rout_id_set.first.out)
 					l_call.node_info.set_line (a_feature.body.start_location.line)
 					l_implementation.body.add_statement (l_call)
+
+					l_ownership_handler.post_builtin_call (l_expr_translator, l_feature)
+					l_implementation.body.statements.append (l_expr_translator.side_effect)
+					l_expr_translator.side_effect.wipe_out
 				end
 			end
 
@@ -591,13 +608,21 @@ feature -- Translation: Implementation
 					if l_byte_code.locals /= Void then
 						across l_byte_code.locals as i loop
 							l_type := helper.class_type_in_context (i.item, current_feature.written_class, current_feature, current_type)
-							translation_pool.add_type (l_type)
 							create l_loc.make (name_translator.boogie_name_for_local (i.cursor_index), types.for_class_type (l_type))
 							l_translator.entity_mapping.set_local (i.cursor_index, l_loc)
-							l_implementation.add_local_with_property (l_loc.name, l_loc.type, types.type_property (l_type, factory.global_heap, l_loc))
 						end
 					end
 					l_translator.process_compound (l_byte_code.compound)
+					if l_byte_code.locals /= Void then
+						across l_byte_code.locals as i loop
+							if l_translator.entity_mapping.is_local_used (i.cursor_index) then
+								l_type := helper.class_type_in_context (i.item, current_feature.written_class, current_feature, current_type)
+								translation_pool.add_type (l_type)
+								l_loc := l_translator.entity_mapping.local_ (i.cursor_index)
+								l_implementation.add_local_with_property (l_loc.name, l_loc.type, types.type_property (l_type, factory.global_heap, l_loc))
+							end
+						end
+					end
 
 					if l_builtin_collector /= Void then
 						l_byte_code.compound.process (l_builtin_collector)
@@ -612,21 +637,23 @@ feature -- Translation: Implementation
 			if options.is_ownership_enabled and not helper.is_lemma (a_feature) then
 				if not helper.is_explicit (current_feature, "wrapping") then
 					if a_for_creator or helper.is_public (current_feature) and not a_feature.has_return_value then
-							-- Set static ghost sets before wrapping
-						create l_ownership_handler
-						create l_expr_translator.make
-						l_expr_translator.set_context (a_feature, a_type)
+						l_feature := system.any_type.base_class.feature_named_32 ("wrap")
 						l_expr_translator.set_context_line_number (a_feature.body.end_location.line)
-						l_expr_translator.set_context_implementation (l_implementation)
-						l_ownership_handler.set_implicit_model_queries (l_expr_translator, "wrap")
+
+						l_ownership_handler.pre_builtin_call (l_expr_translator, l_feature)
 						l_implementation.body.statements.append (l_expr_translator.side_effect)
+						l_expr_translator.side_effect.wipe_out
 
 						l_call := factory.procedure_call ("wrap", << factory.std_current >>)
 						l_call.node_info.set_attribute ("default", "wrapping")
 						l_call.node_info.set_attribute ("cid", system.any_id.out)
-						l_call.node_info.set_attribute ("rid", system.any_class.compiled_class.feature_named_32 ("wrap").rout_id_set.first.out)
+						l_call.node_info.set_attribute ("rid", l_feature.rout_id_set.first.out)
 						l_call.node_info.set_line (a_feature.body.end_location.line)
 						l_implementation.body.add_statement (l_call)
+
+						l_ownership_handler.post_builtin_call (l_expr_translator, l_feature)
+						l_implementation.body.statements.append (l_expr_translator.side_effect)
+						l_expr_translator.side_effect.wipe_out
 					end
 				end
 			end

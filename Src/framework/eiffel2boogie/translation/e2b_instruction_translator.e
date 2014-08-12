@@ -1272,6 +1272,7 @@ feature {NONE} -- Implementation
 				last_expression := factory.false_
 			end
 			locals_map.merge (l_translator.locals_map)
+			create entity_mapping.make_copy (l_translator.entity_mapping)
 		end
 
 	process_contract_expression (a_expr: BYTE_NODE; a_use_triggers: BOOLEAN)
@@ -1296,6 +1297,7 @@ feature {NONE} -- Implementation
 				last_expression := factory.false_
 			end
 			locals_map.merge (l_translator.locals_map)
+			create entity_mapping.make_copy (l_translator.entity_mapping)
 		end
 
 	process_modifies (a_modifies: LIST [E2B_ASSERT_ORIGIN]; a_lhs: IV_EXPRESSION)

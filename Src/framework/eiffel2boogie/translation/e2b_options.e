@@ -25,7 +25,7 @@ feature {NONE} -- Initialization
 			is_checking_overflow := False
 			is_checking_frame := False
 
-			is_generating_triggers := True
+			is_generating_triggers := False
 			is_triggering_on_arithmetic := False
 			is_arithmetic_extracted := False
 

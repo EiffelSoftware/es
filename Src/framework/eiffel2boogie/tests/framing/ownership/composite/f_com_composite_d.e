@@ -102,30 +102,25 @@ feature -- Update
 		do
 			lemma_ancestors_have_children (c)
 			check c.inv end
-			check not ancestors [c] end
 
 			unwrap
 			c.unwrap
 
 			c.set_parent (Current)
 			c.set_subjects (c.subjects & Current)
-			check c.is_open end
 			c.set_observers (c.observers & Current)
-			check c.ancestors = ancestors & Current end
 
-			check across observers as o all attached {F_COM_COMPOSITE_D} o.item end end
 			set_observers (observers & c)
 			set_subjects (subjects & c)
-			check c.ancestors = ancestors & Current end
+			check children.inv_only ("default_observers") end
 			children.extend_back (c)
-			check c.ancestors = ancestors & Current end
 
 			c.wrap
 			update (c)
 		ensure
 			child_added: children.has (c)
 			c_value_unchanged: c.value = old c.value
-			c_children_unchanged: c.children_set = old c.children_set
+			c_children_unchanged: c.children.sequence = old c.children.sequence
 			ancestors_unchengd: ancestors = old ancestors
 			ancestors_wrapped: across ancestors as p all p.item.is_wrapped end
 			default_wrapped: is_wrapped
@@ -154,7 +149,7 @@ feature {F_COM_COMPOSITE_D} -- Implementation
 			-- Update `value' of this node and its ancestors taking into account an updated child `c'.
 		require
 			c_exists: c /= Void
-			c_is_child: children_set [c]
+			c_is_child: children.sequence.has (c)
 			open: is_open
 			children_list_wrapped: children.is_wrapped
 			ancestors_wrapped: across ancestors as p all p.item.is_wrapped end
@@ -202,15 +197,15 @@ feature {F_COM_COMPOSITE_D} -- Implementation
 				end
 			end
 		ensure
-			ancestors [c] implies not c.children_set.is_empty
+			ancestors [c] implies not c.children.sequence.is_empty
 		end
 
 invariant
 	children_exists: children /= Void
 	owns_structure: owns = [children]
-	subjects_structure: subjects = if parent = Void then children_set else children_set & parent end
+	subjects_structure: subjects = if parent = Void then children_set else children.sequence.range & parent end
 	tree: not ancestors [Current]
-	children_consistent: across children_set as c all c.item /= Void and then c.item.parent = Current end
+	children_consistent: across children.sequence.domain as i all children.sequence [i.item] /= Void and then children.sequence [i.item].parent = Current end
 	ancestors_structure: ancestors = if parent = Void then {MML_SET [F_COM_COMPOSITE_D]}.empty_set else parent.ancestors & parent end
 	value_consistent: is_max (value, init_value, children_set, max_child)
 	observers_structure: observers = subjects

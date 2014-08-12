@@ -9,8 +9,6 @@ class
 inherit
 	E2B_TU_FEATURE
 
-	E2B_SHARED_CONTEXT
-
 create
 	make
 

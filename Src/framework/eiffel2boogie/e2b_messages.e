@@ -66,8 +66,8 @@ feature -- Validity error messages
 	variant_bad_type (a_index: INTEGER): STRING_32
 		do Result := locale.formatted_string ("Type of variant number $1 has no well-founded order.", a_index.out) end
 
-	logical_invalid_typed_sets: STRING_32
-		do Result := "The number of typed sets in the logical class does not correspond to the number of generic parameters." end
+	logical_invalid_type_properties: STRING_32
+		do Result := "The number of typed properties in the logical class does not correspond to the number of generic parameters." end
 
 	logical_no_across_conversion: STRING_32
 		do Result := "The logical class is used in quantification but does not map its new_cursor feature to a set." end
@@ -100,6 +100,9 @@ feature -- Verification error messages
 
 	function_precondition_violated: STRING_32
 		do Result := "Precondition may be violated on invocation of $called_feature." end
+
+	invariant_violated: STRING_32
+		do Result := "Invariant might not hold on call to $called_feature." end
 
 	precondition_violated: STRING_32
 		do Result := "Precondition may be violated on call to $called_feature (untagged)." end

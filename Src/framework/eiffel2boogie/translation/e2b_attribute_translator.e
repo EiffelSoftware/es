@@ -78,7 +78,9 @@ feature -- Basic operations
 			if not l_type_prop.is_true then
 				l_type_prop := factory.implies_ (factory.and_ (
 						factory.is_heap (l_heap),
-						factory.function_call ("attached", << l_heap, l_o, l_context_type >>, types.bool)),
+						factory.and_ (
+							factory.not_equal (l_o, factory.void_),
+							factory.heap_access (l_heap, l_o, "allocated", types.bool))),
 					l_type_prop)
 				create l_forall.make (l_type_prop)
 				l_forall.add_bound_variable (l_heap)
@@ -137,8 +139,12 @@ feature -- Basic operations
 					create l_forall.make (factory.equiv (l_fcall, l_def))
 				else
 						-- No guard defined: apply default
-					create l_forall.make (factory.equiv (l_fcall,
-						factory.function_call ("user_inv", << factory.map_update (l_h, << l_cur, l_f >>, l_v), l_o >>, types.bool)))
+					if helper.boolean_class_note_value (current_type.base_class, "false_guards") then
+						create l_forall.make (factory.not_ (l_fcall))
+					else
+						create l_forall.make (factory.equiv (l_fcall,
+							factory.function_call ("user_inv", << factory.map_update (l_h, << l_cur, l_f >>, l_v), l_o >>, types.bool)))
+					end
 				end
 			end
 
@@ -186,7 +192,9 @@ feature -- Basic operations
 			if not l_type_prop.is_true then
 				l_type_prop := factory.implies_ (factory.and_ (
 						factory.is_heap (l_heap),
-						factory.function_call ("attached", << l_heap, l_o, l_context_type >>, types.bool)),
+						factory.and_ (
+							factory.not_equal (l_o, factory.void_),
+							factory.heap_access (l_heap, l_o, "allocated", types.bool))),
 					l_type_prop)
 				create l_forall.make (l_type_prop)
 				l_forall.add_bound_variable (l_heap)
