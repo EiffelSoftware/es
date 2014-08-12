@@ -5263,6 +5263,13 @@ Src/unstable/library/persistency/database/sqlite3/README -text
 Src/unstable/library/persistency/database/sqlite3/license.lic -text
 Src/unstable/library/text/encryption/crypto/license.lic -text
 Src/unstable/library/text/encryption/crypto/tests/license.lic -text
+Src/web/eiffel-lang.org/themes/demo/css/all.css -text
+Src/web/eiffel-lang.org/themes/demo/images/bg-header.jpg -text
+Src/web/eiffel-lang.org/themes/demo/images/logo.png -text
+Src/web/eiffel-lang.org/wdocs.ecf svneol=native#text/xml
+Src/web/eiffel-lang.org/wdocs.ini -text
+Src/web/eiffel-lang.org/wdocs.json -text
+Src/web/eiffel-lang.org/wdocs_app.ecf svneol=native#text/xml
 Src/web/support/api/IIRF.ini -text
 Src/web/support/api/ecf-target-any_connector -text
 Src/web/support/api/ecf-target-connector -text
