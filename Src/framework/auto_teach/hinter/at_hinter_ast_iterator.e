@@ -60,7 +60,10 @@ inherit
 			process_elseif_as,
 			process_inspect_as,
 			process_inspect_case_as,
-			process_loop_as
+			process_loop_as,
+
+				-- Workaround for named tuples
+			process_named_tuple_type_as
 		end
 
 	AT_COMMON
@@ -474,32 +477,50 @@ feature {AST_EIFFEL} -- Visitors
 			oracle.end_process_block (enum_block_type.Bt_feature)
 		end
 
+	process_named_tuple_type_as (a_as: NAMED_TUPLE_TYPE_AS)
+			-- Process `a_as'.
+		do
+				-- We need to know if we are currently processing a named tuple so that we don't
+				-- mishandle occurrences of `FORMAL_ARGU_DEC_LIST_AS' as routine arguments.
+			processing_named_tuple := True
+			Precursor (a_as)
+			processing_named_tuple := False
+		end
+
+	processing_named_tuple: BOOLEAN
+			-- Are we currently processing a named tuple?
+
 	process_formal_argu_dec_list_as (a_as: FORMAL_ARGU_DEC_LIST_AS)
 			-- Process `a_as'.
 		local
 			l_placeholder: AT_PLACEHOLDER
 		do
-			process_leading_leaves (a_as.first_token (match_list).index)
+			if processing_named_tuple then
+					-- These are not routine arguments.
+				Precursor (a_as)
+			else
+				process_leading_leaves (a_as.first_token (match_list).index)
 
-				-- Treat the parentheses as a part of the routine declaration (parent block).
-				-- Only what's inside the parentheses is considered to be an "arguments" block.
-			safe_process (a_as.lparan_symbol (match_list))
+					-- Treat the parentheses as a part of the routine declaration (parent block).
+					-- Only what's inside the parentheses is considered to be an "arguments" block.
+				safe_process (a_as.lparan_symbol (match_list))
 
-			oracle.begin_process_block (enum_block_type.Bt_arguments)
+				oracle.begin_process_block (enum_block_type.Bt_arguments)
 
-			safe_process (a_as.arguments)
+				safe_process (a_as.arguments)
 
-			if attached a_as.rparan_symbol (match_list) as l_parenthesis then
-					-- Hack in order to prevent the last break contained in the original arguments
-					-- (usually a space character) from being printed. We don't need a space before
-					-- a closed parenthesis.
-				process_leading_leaves (l_parenthesis.index)
-				last_unprinted_break_line := Void
+				if attached a_as.rparan_symbol (match_list) as l_parenthesis then
+						-- Hack in order to prevent the last break contained in the original arguments
+						-- (usually a space character) from being printed. We don't need a space before
+						-- a closed parenthesis.
+					process_leading_leaves (l_parenthesis.index)
+					last_unprinted_break_line := Void
+				end
+
+				oracle.end_process_block (enum_block_type.Bt_arguments)
+
+				safe_process (a_as.rparan_symbol (match_list))
 			end
-
-			oracle.end_process_block (enum_block_type.Bt_arguments)
-
-			safe_process (a_as.rparan_symbol (match_list))
 		end
 
 	process_local_dec_list_as (a_as: LOCAL_DEC_LIST_AS)
@@ -616,7 +637,6 @@ feature {AST_EIFFEL} -- Visitors
 			oracle.end_process_block (enum_block_type.Bt_class_invariant)
 		end
 
-		-- TODO: this seems to catch tuple declarations as well!
 	process_tagged_as (a_as: TAGGED_AS)
 			-- Process `a_as'.
 		do

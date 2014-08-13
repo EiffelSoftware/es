@@ -128,7 +128,7 @@ feature -- Status signaling
 			end
 
 				-- Whatever we computed so far, this can stop the show.
-				-- If we are in a hidden regionm, we cannot show this block in any case,
+				-- If we are in a hidden region, we cannot show this block in any case,
 				-- otherwise it would be orphan in the syntax tree of the output code.
 			if l_hiding_status then
 				l_block_visibility := Tri_false
