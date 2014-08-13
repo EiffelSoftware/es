@@ -113,6 +113,7 @@ feature -- Code output
 
 	code_placeholder: STRING = "-- Your code here!"
 
+		-- TODO: remove this, use the other placeholder
 	arguments_placeholder: STRING = "(replace_this_with_your_arguments: ANY)"
 
 feature -- Meta-commands
@@ -120,7 +121,7 @@ feature -- Meta-commands
 	meta_command_prefix: STRING = "#"
 
 	hint_command: STRING = "HINT"
-
+		-- TODO: underscores
 	shownext_command: STRING = "SHOWNEXT"
 
 	hidenext_command: STRING = "HIDENEXT"
@@ -130,11 +131,16 @@ feature -- Meta-commands
 	hide_content_command: STRING = "HIDENEXTCONTENT"
 
 	placeholder_command: STRING = "PLACEHOLDER"
-
+		-- TODO: rimettere HINTMODE
 	hint_mode_command: STRING = "ANNOTATEDMODE"
 
 	unannotated_mode_command: STRING = "UNANNOTATEDMODE"
 
 	custom_mode_command: STRING = "CUSTOMMODE"
+
+		-- TODO: mostrare then e else separatamente
+		-- magari con SHOWNEXT branch
+
+		-- TODO: non dimenticare di gestire i blocchi inspect
 
 end

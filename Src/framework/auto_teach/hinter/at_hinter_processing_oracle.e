@@ -114,7 +114,7 @@ feature -- Status signaling
 			local_class_invariant_visibility := tri_undefined
 		end
 
-	end_processing_class
+	end_process_class
 			-- Signal that a class has been processed.
 		do
 			options.restore_from (original_options)
@@ -374,21 +374,28 @@ feature {NONE} -- Meta-command processing
 
 feature {NONE} -- Visibility
 
+	blocks_visibility: STRING_TABLE [AT_HINTER_BLOCK_VISIBILITY]
+
 	global_feature_visibility: BOOLEAN
 
-	global_feature_content_visibility: BOOLEAN
-	global_routine_arguments_visibility: BOOLEAN
-	global_precondition_visibility: BOOLEAN
-	global_locals_visibility: BOOLEAN
-	global_routine_body_visibility: BOOLEAN
-	global_postcondition_visibility: BOOLEAN
-	global_class_invariant_visibility: BOOLEAN
+	global_feature_content_visibility: AT_TRI_STATE_BOOLEAN
+
+	global_routine_arguments_visibility: AT_TRI_STATE_BOOLEAN
+	global_precondition_visibility: AT_TRI_STATE_BOOLEAN
+	global_locals_visibility: AT_TRI_STATE_BOOLEAN
+	global_routine_body_visibility: AT_TRI_STATE_BOOLEAN
+	global_postcondition_visibility: AT_TRI_STATE_BOOLEAN
+	global_class_invariant_visibility: AT_TRI_STATE_BOOLEAN
 
 	local_feature_visibility: AT_TRI_STATE_BOOLEAN
+
+
 	processing_skipped_feature: BOOLEAN
 		-- Set to true while processing a skipped features. All meta-commands will be ignored.
 
+
 	local_feature_content_visibility: AT_TRI_STATE_BOOLEAN
+
 	local_routine_arguments_visibility: AT_TRI_STATE_BOOLEAN
 	local_precondition_visibility: AT_TRI_STATE_BOOLEAN
 	local_locals_visibility: AT_TRI_STATE_BOOLEAN
@@ -448,6 +455,41 @@ feature {NONE} -- Implementation
 			original_options := a_options.twin
 		end
 
+	initialize_block_visibility_table
+		local
+			l_feature, l_arguments, l_precondition, l_locals, l_routine_body, l_postcondition, l_class_invariant: AT_HINTER_BLOCK_VISIBILITY
+		do
+			create blocks_visibility.make (block_types.count * 2)
+
+			create l_feature.make (Void, agent is_block_globally_visible (bt_feature))
+			blocks_visibility.put (l_feature, bt_feature)
+
+			create l_arguments.make (l_feature, agent is_block_globally_visible (bt_arguments))
+			blocks_visibility.put (l_arguments, bt_arguments)
+			create l_precondition.make (l_feature, agent is_block_globally_visible (bt_precondition))
+			blocks_visibility.put (l_precondition, bt_precondition)
+			create l_locals.make (l_feature, agent is_block_globally_visible (bt_locals))
+			blocks_visibility.put (l_locals, bt_locals)
+			create l_routine_body.make (l_feature, agent is_block_globally_visible (bt_routine_body))
+			blocks_visibility.put (l_routine_body, bt_routine_body)
+			create l_postcondition.make (l_feature, agent is_block_globally_visible (bt_postcondition))
+			blocks_visibility.put (l_routine_body, bt_routine_body)
+
+			create l_class_invariant.make (Void, agent is_block_globally_visible (bt_class_invariant))
+			blocks_visibility.put (l_feature, bt_feature)
+
+
+
+		ensure
+			attached blocks_visibility
+		end
+
+	is_block_globally_visible (a_block_type: STRING): BOOLEAN
+		do
+				 -- TODO: leggere dagli attributi
+			Result := options.hint_table.entry (a_block_type, options.hint_level).visibility
+		end
+
 	message_output_action: detachable PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]]
 			-- The action to be called for outputting messages.
 
@@ -458,5 +500,10 @@ feature {NONE} -- Implementation
 				l_message_output_action.call (a_string + "%N")
 			end
 		end
+
+invariant
+
+	all_visibility_keys: across block_types as ic all blocks_visibility.has_key (ic.item)  end
+	only_visibility_keys: across blocks_visibility.current_keys as ic all is_valid_block_type (ic.item.to_string_8) end
 
 end
