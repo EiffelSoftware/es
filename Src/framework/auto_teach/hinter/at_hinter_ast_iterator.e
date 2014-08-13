@@ -182,7 +182,7 @@ feature {NONE} -- Hint processing
 
 				-- Remove both the initial tabs and the final return character.
 			l_line.adjust
-			l_breaks_are_processed := not oracle.current_content_visibility.is_false
+			l_breaks_are_processed := oracle.output_enabled and not oracle.current_content_visibility.is_false
 			if l_breaks_are_processed then
 					-- We are in a region were breaks are normally printed.
 					-- The return character at the end of the previous line
