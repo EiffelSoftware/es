@@ -7,12 +7,13 @@ note
 deferred class
 	AT_COMMON
 
-inherit
-
+inherit {NONE}
 	AT_TRI_STATE_BOOLEAN_CONSTANTS
 
+	AT_SHARED_HINT_TABLES
 
-feature -- Shared strings
+
+feature {NONE} -- Shared strings
 
 	at_strings: AT_STRINGS
 			-- Localized strings for AutoTeach.
@@ -22,7 +23,7 @@ feature -- Shared strings
 			valid_result: Result /= Void
 		end
 
-feature -- Block types
+feature {NONE} -- Block types
 		-- TODO: better term than "block types"?
 
 		-- 'bt' stands for 'block type'
@@ -41,17 +42,19 @@ feature -- Block types
 			Result.compare_objects
 		end
 
-	is_valid_block_type (a_string: STRING): BOOLEAN
-			-- Is `a_string' a valid block type?
-		do
-			Result := block_types.has (a_string)
-		end
-
 	content_block_types: ARRAY [STRING] -- TODO: can we have readonly array/lists in Eiffel?
 			-- List of all supported block types with content
 		once
 			Result := << bt_feature >>
 			Result.compare_objects
+		end
+
+feature -- For use with contracts
+
+	is_valid_block_type (a_string: STRING): BOOLEAN
+			-- Is `a_string' a valid block type?
+		do
+			Result := block_types.has (a_string)
 		end
 
 	is_valid_content_block_type (a_string: STRING): BOOLEAN
@@ -60,7 +63,17 @@ feature -- Block types
 			Result := block_types.has (a_string)
 		end
 
-feature {AT_COMMON} -- Utility
+
+	is_valid_hint_level (a_level: INTEGER): BOOLEAN
+			-- Does `a_level' represent a valid hint level?
+		do
+				-- 10 is arbitrary. Theoretically any positive number would
+				-- be acceptable, in practice it is probably better to have a limit,
+				-- so that the program throws an error if absurd hint levels are specified.
+			Result := a_level >= 0 and a_level <= 10
+		end
+
+feature {NONE} -- Utility
 
 	string_to_int (a_string: READABLE_STRING_GENERAL): INTEGER
 			-- Attempt to convert `a_string' to integer,
@@ -93,13 +106,14 @@ feature {AT_COMMON} -- Utility
 			end
 		end
 
-	is_valid_hint_level (a_level: INTEGER): BOOLEAN
-			-- Does `a_level' represent a valid hint level?
+	capitalized (a_string: READABLE_STRING_GENERAL): READABLE_STRING_GENERAL
+			-- `a_string', where the first character is converted to upper case.
 		do
-				-- 10 is arbitrary. Theoretically any positive number would
-				-- be acceptable, in practice it is probably better to have a limit,
-				-- so that the program throws an error if absurd hint levels are specified.
-			Result := a_level >= 0 and a_level <= 10
+			if a_string.count < 1 then
+				Result := a_string.twin
+			else
+				Result := a_string.substring (1, 1).as_upper + a_string.substring (2, a_string.count)
+			end
 		end
 
 	count_leading (a_char: CHARACTER; a_string: STRING): INTEGER

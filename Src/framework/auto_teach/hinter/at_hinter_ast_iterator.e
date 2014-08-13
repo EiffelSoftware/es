@@ -8,12 +8,6 @@ class
 	AT_HINTER_AST_ITERATOR
 
 inherit
-
-	AT_COMMON
-		undefine
-			default_create
-		end
-
 	AST_ROUNDTRIP_PRINTER_VISITOR
 		redefine
 			reset,
@@ -60,6 +54,12 @@ inherit
 			--			process_loop_as,
 			--			process_retry_as,
 			--			process_reverse_as
+		end
+
+inherit {NONE}
+	AT_COMMON
+		undefine
+			default_create
 		end
 
 create
@@ -155,7 +155,6 @@ feature {NONE} -- Hint processing
 	output_hint (a_line: STRING)
 			-- Outputs the specified hint with the correct indentation.
 		require
-				-- a_line is a hint command. How to specify that?
 			single_return_terminated_line: a_line.ends_with ("%N") and a_line.occurrences ('%N') = 1
 		local
 			l_line: STRING
@@ -164,9 +163,7 @@ feature {NONE} -- Hint processing
 		do
 			l_line := a_line.twin
 			l_line.left_adjust
-			check
-				l_line.starts_with (at_strings.hint_command)
-			end
+
 			l_hint_level := string_to_int (l_line.substring (at_strings.hint_command.count + 1, l_line.count))
 			if l_hint_level <= options.hint_level then
 				if in_skipped_section then
@@ -421,7 +418,7 @@ feature {AST_EIFFEL} -- Visitors
 		do
 			oracle.begin_process_routine_arguments
 
-			if not oracle.must_hide_routine_arguments then
+			if oracle.must_show_routine_arguments then
 				safe_process (a_as.lparan_symbol (match_list))
 				safe_process (a_as.arguments)
 				safe_process (a_as.rparan_symbol (match_list))
@@ -441,7 +438,7 @@ feature {AST_EIFFEL} -- Visitors
 			oracle.begin_process_locals
 
 			safe_process (a_as.local_keyword (match_list))
-			if not oracle.must_hide_locals then
+			if oracle.must_show_locals then
 				safe_process (a_as.locals)
 			else
 				skipped_section_indentation := indentation (a_as.local_keyword (match_list)) + 1
@@ -462,7 +459,7 @@ feature {AST_EIFFEL} -- Visitors
 			if attached {REQUIRE_ELSE_AS} a_as as l_ensure_then_as then
 				safe_process (l_ensure_then_as.else_keyword (match_list))
 			end
-			if not oracle.must_hide_precondition then
+			if oracle.must_show_precondition then
 				safe_process (a_as.full_assertion_list)
 			else
 				if attached a_as.assertions as l_assertions then
@@ -507,7 +504,7 @@ feature {AST_EIFFEL} -- Visitors
 
 				-- We want to process the 'do' or 'once' keyword in any case.
 			safe_process (l_do_once_keyword)
-			if not oracle.must_hide_routine_body then
+			if oracle.must_show_routine_body then
 				safe_process (a_as.compound)
 			else
 				if attached a_as.compound as l_compound then
@@ -556,7 +553,7 @@ feature {AST_EIFFEL} -- Visitors
 			if attached {ENSURE_THEN_AS} a_as as l_ensure_then_as then
 				safe_process (l_ensure_then_as.ensure_keyword (match_list))
 			end
-			if not oracle.must_hide_postcondition then
+			if oracle.must_show_postcondition then
 				safe_process (a_as.full_assertion_list)
 			else
 				if attached a_as.assertions as l_assertions then
@@ -589,7 +586,7 @@ feature {AST_EIFFEL} -- Visitors
 			oracle.begin_process_class_invariant
 
 			safe_process (a_as.invariant_keyword (match_list))
-			if not oracle.must_hide_class_invariant then
+			if oracle.must_show_class_invariant then
 				safe_process (a_as.full_assertion_list)
 			else
 				if attached a_as.assertion_list as l_assertions then

@@ -7,7 +7,7 @@ note
 class
 	AT_TRI_STATE_BOOLEAN_CONSTANTS
 
-feature -- Constants
+feature {NONE} -- Constants
 
 	tri_true: AT_TRI_STATE_BOOLEAN
 		once
@@ -24,7 +24,7 @@ feature -- Constants
 			create Result.make_undefined
 		end
 
-feature -- Conversion from BOOLEAN
+feature {NONE} -- Conversion from BOOLEAN
 
 	to_tri_state (a_value: BOOLEAN): AT_TRI_STATE_BOOLEAN
 			-- Conversion from BOOLEAN

@@ -8,11 +8,11 @@ class
 	AT_HINTER
 
 inherit
-
 	SHARED_WORKBENCH
 
 	SHARED_SERVER
 
+inherit {NONE}
 	AT_COMMON
 
 create

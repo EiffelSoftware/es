@@ -28,6 +28,11 @@ feature -- General
 			Result := locale.translation ("Error")
 		end
 
+	meta_command: STRING
+		do
+			Result := locale.translation ("meta-command")
+		end
+
 feature -- Messages
 
 	command_line_help: STRING_32
@@ -50,6 +55,11 @@ feature -- Warnings
 	unrecognized_meta_command: STRING_32
 		do
 			Result := locale.translation ("The following meta-command was not recognized, and therefore ignored:%N")
+		end
+
+	no_custom_hint_table_loaded: STRING_32
+		do
+			Result := locale.translation ("Cannot switch to custom mode, as no custom hint table has been loaded.")
 		end
 
 feature -- Errors
@@ -106,14 +116,20 @@ feature -- Meta-commands
 
 	hint_command: STRING = "HINT"
 
-	show_command: STRING = "SHOW"
+	shownext_command: STRING = "SHOWNEXT"
 
-	hide_command: STRING = "HIDE"
+	hidenext_command: STRING = "HIDENEXT"
 
 	show_content_command: STRING = "SHOWCONTENT"
 
 	hide_content_command: STRING = "HIDECONTENT"
 
 	placeholder_command: STRING = "PLACEHOLDER"
+
+	hint_mode_command: STRING = "ANNOTATEDMODE"
+
+	unannotated_mode_command: STRING = "UNANNOTATEDMODE"
+
+	custom_mode_command: STRING = "CUSTOMMODE"
 
 end
