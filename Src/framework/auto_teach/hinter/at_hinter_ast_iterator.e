@@ -147,7 +147,7 @@ feature {NONE} -- Break processing
 					output_hint (l_last_hint)
 				end
 			else
-				if oracle.current_content_visibility /= tri_false then
+				if oracle.current_content_visibility /= Tri_false then
 					put_string_to_context (a_break_line)
 					last_unprinted_break_line := Void
 				else
@@ -648,7 +648,7 @@ feature {AST_EIFFEL} -- Visitors
 			oracle.begin_process_block (enum_block_type.bt_class_invariant)
 
 			safe_process (a_as.invariant_keyword (match_list))
-			if oracle.current_content_visibility = tri_false then
+			if oracle.current_content_visibility = Tri_false then
 					-- Must insert blank line/placeholder.
 				l_indentation := indentation (a_as.invariant_keyword (match_list))
 				skipped_section_indentation := l_indentation + 1

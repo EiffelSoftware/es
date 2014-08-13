@@ -13,8 +13,6 @@ inherit {NONE}
 
 feature -- Access
 
-		-- TODO: rename to visibility_for
-
 	visibility_for (a_block_type: AT_BLOCK_TYPE; a_hint_level: INTEGER): TUPLE [visibility: BOOLEAN; explicitly_defined: BOOLEAN]
 			-- Access the visibility table, looking for the specified block type and hint level.
 		require
@@ -76,7 +74,7 @@ feature -- Access
 					Result.explicitly_defined := True
 				end
 			else
-				Result := [tri_undefined, False]
+				Result := [Tri_undefined, False]
 			end
 		end
 

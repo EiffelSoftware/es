@@ -8,7 +8,7 @@ expanded class
 	AT_HINTER_COMPLEX_BLOCK_VISIBILITY
 
 inherit
-	AT_HINTER_BLOCK_VISIBILITY
+	AT_BLOCK_VISIBILITY
 		redefine
 			reset_overrides,
 			reset_global_overrides,

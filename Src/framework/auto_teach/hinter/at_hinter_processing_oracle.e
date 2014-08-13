@@ -294,25 +294,25 @@ feature -- Meta-command processing interface
 						l_block_type := enum_block_type.value (l_block_type_string)
 						l_recognized := True -- Not quite yet actually...
 						if l_command_word.same_string (at_strings.show_all_command) then
-							set_block_global_visibility_override (l_block_type, tri_true)
+							set_block_global_visibility_override (l_block_type, Tri_true)
 						elseif l_command_word.same_string (at_strings.hide_all_command) then
-							set_block_global_visibility_override (l_block_type, tri_false)
+							set_block_global_visibility_override (l_block_type, Tri_false)
 						elseif l_command_word.same_string (at_strings.reset_all_command) then
-							set_block_global_visibility_override (l_block_type, tri_undefined)
+							set_block_global_visibility_override (l_block_type, Tri_undefined)
 						elseif l_command_word.same_string (at_strings.show_all_content_command) then
-							set_block_content_global_visibility_override (l_block_type, tri_true)
+							set_block_content_global_visibility_override (l_block_type, Tri_true)
 						elseif l_command_word.same_string (at_strings.hide_all_content_command) then
-							set_block_content_global_visibility_override (l_block_type, tri_false)
+							set_block_content_global_visibility_override (l_block_type, Tri_false)
 						elseif l_command_word.same_string (at_strings.reset_all_content_command) then
-							set_block_content_global_visibility_override (l_block_type, tri_undefined)
+							set_block_content_global_visibility_override (l_block_type, Tri_undefined)
 						elseif l_command_word.same_string (at_strings.shownext_command) then
-							set_block_local_visibility_override (l_block_type, tri_true)
+							set_block_local_visibility_override (l_block_type, Tri_true)
 						elseif l_command_word.same_string (at_strings.hidenext_command) then
-							set_block_local_visibility_override (l_block_type, tri_false)
+							set_block_local_visibility_override (l_block_type, Tri_false)
 						elseif l_command_word.same_string (at_strings.show_content_command) then
-							set_block_content_local_visibility_override (l_block_type, tri_true)
+							set_block_content_local_visibility_override (l_block_type, Tri_true)
 						elseif l_command_word.same_string (at_strings.hide_content_command) then
-							set_block_content_local_visibility_override (l_block_type, tri_false)
+							set_block_content_local_visibility_override (l_block_type, Tri_false)
 						else
 								-- Ok, that was a joke, let's set it back to False.
 							l_recognized := False
@@ -374,7 +374,7 @@ feature {NONE} -- Meta-command processing
 		require
 			complex_block: enum_block_type.is_complex_block_type (a_block_type)
 		local
-			l_block: AT_HINTER_BLOCK_VISIBILITY
+			l_block: AT_BLOCK_VISIBILITY
 		do
 			l_block := blocks_visibility [a_block_type]
 			check attached {AT_HINTER_COMPLEX_BLOCK_VISIBILITY} l_block end
@@ -387,7 +387,7 @@ feature {NONE} -- Meta-command processing
 		require
 			complex_block: enum_block_type.is_complex_block_type (a_block_type)
 		local
-			l_block: AT_HINTER_BLOCK_VISIBILITY
+			l_block: AT_BLOCK_VISIBILITY
 		do
 			l_block := blocks_visibility [a_block_type]
 			check attached {AT_HINTER_COMPLEX_BLOCK_VISIBILITY} l_block end
@@ -488,11 +488,11 @@ feature {NONE} -- Meta-command processing
 
 feature -- Visibility
 
-	block_stack: STACK [AT_HINTER_BLOCK_VISIBILITY]
+	block_stack: STACK [AT_BLOCK_VISIBILITY]
 
 feature {NONE}
 
-	blocks_visibility: HASH_TABLE [AT_HINTER_BLOCK_VISIBILITY, AT_BLOCK_TYPE]
+	blocks_visibility: HASH_TABLE [AT_BLOCK_VISIBILITY, AT_BLOCK_TYPE]
 
 	hiding_stack: STACK [BOOLEAN]
 
@@ -512,7 +512,7 @@ feature -- Status signaling: cool new things
 			-- What is the current status of content visibility?
 		do
 			if global_content_visibility_stack.is_empty then
-				Result := tri_undefined
+				Result := Tri_undefined
 			else
 				Result := global_content_visibility_stack.item.subjected_to (local_content_visibility_stack.item)
 			end
@@ -522,7 +522,7 @@ feature -- Status signaling: cool new things
 		local
 			l_hiding_status: BOOLEAN
 			l_local_content_visibility_status, l_global_content_visibility_status: AT_TRI_STATE_BOOLEAN
-			l_block_visibility: AT_HINTER_BLOCK_VISIBILITY
+			l_block_visibility: AT_BLOCK_VISIBILITY
 		do
 				-- We clone the block and then reset the local override flags. These are single-use.
 			l_block_visibility := blocks_visibility [a_block_type].twin
@@ -533,8 +533,8 @@ feature -- Status signaling: cool new things
 
 					-- Default values
 				l_hiding_status := False
-				l_global_content_visibility_status := tri_undefined
-				l_local_content_visibility_status := tri_undefined
+				l_global_content_visibility_status := Tri_undefined
+				l_local_content_visibility_status := Tri_undefined
 			else
 					-- Keep the current values.
 				l_hiding_status := hiding_stack.item
@@ -605,7 +605,7 @@ feature -- Status signaling: cool new things
 			-- be "detached" in the syntax tree.
 		local
 			l_current_value: AT_TRI_STATE_BOOLEAN
-			l_top_block: AT_HINTER_BLOCK_VISIBILITY
+			l_top_block: AT_BLOCK_VISIBILITY
 		do
 			if block_stack.is_empty then
 				Result := True
@@ -668,7 +668,7 @@ feature {NONE} -- Implementation
 			original_options := a_options.twin
 			output_enabled_revenge := True
 
-			create {ARRAYED_STACK [AT_HINTER_BLOCK_VISIBILITY]} block_stack.make (32)
+			create {ARRAYED_STACK [AT_BLOCK_VISIBILITY]} block_stack.make (32)
 			create {ARRAYED_STACK [BOOLEAN]} hiding_stack.make (32)
 			create {ARRAYED_STACK [AT_TRI_STATE_BOOLEAN]} global_content_visibility_stack.make (32)
 			create {ARRAYED_STACK [AT_TRI_STATE_BOOLEAN]} local_content_visibility_stack.make (32)
@@ -680,7 +680,7 @@ feature {NONE} -- Implementation
 	initialize_block_visibility_table -- TODO: get rid of this?
 		local
 			l_block_type: AT_BLOCK_TYPE
-			l_block: AT_HINTER_BLOCK_VISIBILITY
+			l_block: AT_BLOCK_VISIBILITY
 			l_complex_block: AT_HINTER_COMPLEX_BLOCK_VISIBILITY
 		do
 			create blocks_visibility.make (32)

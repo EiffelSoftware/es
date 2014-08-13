@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AT_HINTER_BLOCK_VISIBILITY -- TODO: remove HINTER from name.
+	AT_BLOCK_VISIBILITY
 
 create
 	make_with_visibility_agent

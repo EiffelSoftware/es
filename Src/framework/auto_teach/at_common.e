@@ -151,11 +151,11 @@ feature {NONE} -- Utility
 		do
 			l_string := a_string.as_lower
 			if l_string.same_string ("on") then
-				Result := tri_true
+				Result := Tri_true
 			elseif l_string.same_string ("off") then
-				Result := tri_false
+				Result := Tri_false
 			else
-				Result := tri_undefined
+				Result := Tri_undefined
 			end
 		end
 
