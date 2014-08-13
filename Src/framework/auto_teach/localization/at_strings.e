@@ -108,4 +108,8 @@ feature -- Command prefixes
 
 	hide_command: STRING = "-- #HIDE"
 
+	show_content_command: STRING = "-- #SHOWCONTENT"
+
+	hide_content_command: STRING = "-- #HIDECONTENT"
+
 end

@@ -17,40 +17,46 @@ create
 
 feature -- Oracle
 
+	must_skip_feature: BOOLEAN
+			-- Should we skip the feature we are processing in the current status?
+		do
+			Result := (not forced_feature_visibility).imposed_on_bool (False)
+		end
+
 	must_hide_routine_arguments: BOOLEAN
 			-- Should we hide the arguments of the routine we are processing in the current status?
 		do
-			Result := (not forced_routine_visibility).imposed_over_bool (options.hide_routine_arguments)
+			Result := (not forced_routine_arguments_visibility).imposed_on (forced_feature_content_visibility).imposed_on_bool (options.hide_routine_arguments)
 		end
 
 	must_hide_precondition: BOOLEAN
 			-- Should we hide the precondition we are processing in the current status?
 		do
-			Result := (not forced_precondition_visibility).imposed_over_bool (options.hide_preconditions)
+			Result := (not forced_precondition_visibility).imposed_on (forced_feature_content_visibility).imposed_on_bool (options.hide_preconditions)
 		end
 
 	must_hide_locals: BOOLEAN
 			-- Should we hide the locals of the routine we are processing in the current status?
 		do
-			Result := (not forced_locals_visibility).imposed_over_bool (options.hide_locals)
+			Result := (not forced_locals_visibility).imposed_on (forced_feature_content_visibility).imposed_on_bool (options.hide_locals)
 		end
 
 	must_hide_routine_body: BOOLEAN
 			-- Should we hide the body of the routine we are processing in the current status?
 		do
-			Result := (not forced_routine_body_visibility).imposed_over_bool (options.hide_routine_bodies)
+			Result := (not forced_routine_body_visibility).imposed_on (forced_feature_content_visibility).imposed_on_bool (options.hide_routine_bodies)
 		end
 
 	must_hide_postcondition: BOOLEAN
 			-- Should we hide the postcondition we are processing in the current status?
 		do
-			Result := (not forced_postcondition_visibility).imposed_over_bool (options.hide_postconditions)
+			Result := (not forced_postcondition_visibility).imposed_on (forced_feature_content_visibility).imposed_on_bool (options.hide_postconditions)
 		end
 
 	must_hide_class_invariant: BOOLEAN
 			-- Should we hide the class invariant we are processing in the current status?
 		do
-			Result := (not forced_class_invariant_visibility).imposed_over_bool (options.hide_class_invariants)
+			Result := (not forced_class_invariant_visibility).imposed_on (forced_feature_content_visibility).imposed_on_bool (options.hide_class_invariants)
 		end
 
 
@@ -60,7 +66,8 @@ feature -- Status signaling
 			-- Signal that a class is about to be processed.
 		do
 			options := original_options.twin
-			forced_routine_visibility := tri_undefined
+			forced_feature_content_visibility := tri_undefined
+			forced_feature_visibility := tri_undefined
 			forced_routine_arguments_visibility := tri_undefined
 			forced_precondition_visibility := tri_undefined
 			forced_locals_visibility := tri_undefined
@@ -74,15 +81,16 @@ feature -- Status signaling
 		do
 		end
 
-	begin_process_routine
-			-- Signal that a routine is about to be processed.
+	begin_process_feature
+			-- Signal that a feature is about to be processed.
 		do
 		end
 
-	end_process_routine
-			-- Signal that a routine has been processed.
+	end_process_feature
+			-- Signal that a feature has been processed.
 		do
-			forced_routine_visibility := tri_undefined
+			forced_feature_content_visibility := tri_undefined
+			forced_feature_visibility := tri_undefined
 		end
 
 	begin_process_routine_arguments
@@ -153,6 +161,20 @@ feature -- Status signaling
 
 feature -- Policy signaling
 
+	show_block_content (a_block_type: STRING)
+		require
+			valid_block_type: is_valid_content_block_type (a_block_type)
+		do
+			force_block_content_visibility (a_block_type, True)
+		end
+
+	hide_block_content (a_block_type: STRING)
+		require
+			valid_block_type: is_valid_content_block_type (a_block_type)
+		do
+			force_block_content_visibility (a_block_type, False)
+		end
+
 	show_block (a_block_type: STRING)
 		require
 			valid_block_type: is_valid_block_type (a_block_type)
@@ -169,13 +191,30 @@ feature -- Policy signaling
 
 feature {NONE} -- Implementation
 
-	forced_routine_visibility: AT_TRI_STATE_BOOLEAN
+
+	forced_feature_visibility: AT_TRI_STATE_BOOLEAN
+
+	forced_feature_content_visibility: AT_TRI_STATE_BOOLEAN
 	forced_routine_arguments_visibility: AT_TRI_STATE_BOOLEAN
 	forced_precondition_visibility: AT_TRI_STATE_BOOLEAN
 	forced_locals_visibility: AT_TRI_STATE_BOOLEAN
 	forced_routine_body_visibility: AT_TRI_STATE_BOOLEAN
 	forced_postcondition_visibility: AT_TRI_STATE_BOOLEAN
 	forced_class_invariant_visibility: AT_TRI_STATE_BOOLEAN
+
+	force_block_content_visibility (a_block_type: STRING; a_visibility: BOOLEAN)
+		require
+			valid_block_type: is_valid_content_block_type (a_block_type)
+		local
+			l_block_type: STRING
+		do
+			l_block_type := a_block_type.as_lower
+			if a_block_type.same_string (bt_feature) then
+				forced_feature_content_visibility := to_tri_state (a_visibility)
+			else
+				check block_type_recognized: False end
+			end
+		end
 
 	force_block_visibility (a_block_type: STRING; a_visibility: BOOLEAN)
 		require
@@ -184,8 +223,8 @@ feature {NONE} -- Implementation
 			l_block_type: STRING
 		do
 			l_block_type := a_block_type.as_lower
-			if a_block_type.same_string (bt_routine) then
-				forced_routine_visibility := to_tri_state (a_visibility)
+			if a_block_type.same_string (bt_feature) then
+				forced_feature_visibility := to_tri_state (a_visibility)
 			elseif a_block_type.same_string (bt_arguments) then
 				forced_routine_arguments_visibility := to_tri_state (a_visibility)
 			elseif a_block_type.same_string (bt_precondition) then

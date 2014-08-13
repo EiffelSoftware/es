@@ -172,7 +172,7 @@ feature -- Operations
 			end
 		end
 
-	imposed (other: like Current): like Current
+	subjected_to (other: like Current): like Current
 			-- If `other' is defined, Current. Otherwise `other'.
 		do
 			if other.defined then
@@ -182,7 +182,7 @@ feature -- Operations
 			end
 		end
 
-	imposed_over (other: like Current): like Current
+	imposed_on (other: like Current): like Current
 			-- If current is defined, Current. Otherwise `other'.
 		do
 			if defined then
@@ -192,7 +192,7 @@ feature -- Operations
 			end
 		end
 
-	imposed_over_bool (other: BOOLEAN): BOOLEAN
+	imposed_on_bool (other: BOOLEAN): BOOLEAN
 			-- If current is defined, the value of Current. Otherwise `other'.
 		do
 			if defined then

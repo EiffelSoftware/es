@@ -22,6 +22,9 @@ inherit
 			process_break_as,
 			put_string,
 
+				-- Features
+			process_feature_as,
+
 				-- Routine arguments
 			process_formal_argu_dec_list_as,
 
@@ -165,7 +168,6 @@ feature {NONE} -- Meta-commands processing
 					oracle.show_block (l_line.as_lower)
 					l_recognized := True
 				end
-
 			elseif l_line.as_upper.starts_with (at_strings.hide_command) then
 				l_line.remove_head (at_strings.hide_command.count)
 				l_line.left_adjust
@@ -173,7 +175,20 @@ feature {NONE} -- Meta-commands processing
 					oracle.hide_block (l_line.as_lower)
 					l_recognized := True
 				end
-
+			elseif l_line.as_upper.starts_with (at_strings.show_content_command) then
+				l_line.remove_head (at_strings.show_content_command.count)
+				l_line.left_adjust
+				if is_valid_content_block_type (l_line.as_lower) then
+					oracle.show_block_content (l_line.as_lower)
+					l_recognized := True
+				end
+			elseif l_line.as_upper.starts_with (at_strings.hide_content_command) then
+				l_line.remove_head (at_strings.hide_content_command.count)
+				l_line.left_adjust
+				if is_valid_content_block_type (l_line.as_lower) then
+					oracle.hide_block_content (l_line.as_lower)
+					l_recognized := True
+				end
 			end
 			if not l_recognized then
 				print_message (at_strings.unrecognized_meta_command + a_line)
@@ -236,7 +251,7 @@ feature {NONE} -- Implementation - skipping
 			l_last_break_line: STRING
 			l_previous_leaf: LEAF_AS
 		do
-			process_leading_leaves (a_node.index)
+			process_leading_leaves (a_node.first_token (match_list).index)
 			last_index := a_node.index
 			if is_node_in_skipped_section (a_node) then
 					-- Do nothing. Also, calling in_skipped_section asserts that the node is *entirely*
@@ -438,6 +453,22 @@ feature {NONE} -- Implementation
 		end
 
 feature {AST_EIFFEL} -- Visitors
+
+	process_feature_as (l_as: FEATURE_AS)
+		do
+			process_leading_leaves (l_as.first_token (match_list).index)
+
+			oracle.begin_process_feature
+
+			if oracle.must_skip_feature then
+					-- Totally skip it, as if it never existed.
+				skip (l_as, False)
+			else
+				Precursor (l_as)
+			end
+
+			oracle.end_process_feature
+		end
 
 	process_formal_argu_dec_list_as (a_as: FORMAL_ARGU_DEC_LIST_AS)
 			-- Process `a_as'.

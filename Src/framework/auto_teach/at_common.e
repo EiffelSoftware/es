@@ -21,7 +21,7 @@ feature -- Block types
 		-- TODO: better term than "block types"?
 
 		-- 'bt' stands for 'block type'
-	bt_routine: STRING = "routine"
+	bt_feature: STRING = "feature"
 	bt_arguments: STRING = "arguments"
 	bt_precondition: STRING = "precondition"
 	bt_locals: STRING = "locals"
@@ -30,13 +30,26 @@ feature -- Block types
 	bt_class_invariant: STRING = "classinvariant"
 
 	block_types: ARRAY [STRING] -- TODO: can we have readonly array/lists in Eiffel?
-			-- List of all supported code block types
+			-- List of supported code block types
 		once
-			Result := << bt_arguments, bt_precondition, bt_locals, bt_routine_body, bt_postcondition, bt_class_invariant >>
+			Result := << bt_feature, bt_arguments, bt_precondition, bt_locals, bt_routine_body, bt_postcondition, bt_class_invariant >>
 			Result.compare_objects
 		end
 
 	is_valid_block_type (a_string: STRING): BOOLEAN
+			-- Is `a_string' a valid block type?
+		do
+			Result := block_types.has (a_string)
+		end
+
+	content_block_types: ARRAY [STRING] -- TODO: can we have readonly array/lists in Eiffel?
+			-- List of all supported block types with content
+		once
+			Result := << bt_feature >>
+			Result.compare_objects
+		end
+
+	is_valid_content_block_type (a_string: STRING): BOOLEAN
 			-- Is `a_string' a valid block type?
 		do
 			Result := block_types.has (a_string)
