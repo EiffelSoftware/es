@@ -28,7 +28,7 @@ feature -- Value
 			Result := internal_value
 		end
 
-	defined: BOOLEAN
+	defined: BOOLEAN	 -- TODO: rename to is_defined
 
 	is_undefined: BOOLEAN
 		do

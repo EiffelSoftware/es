@@ -33,8 +33,7 @@ feature -- Access
 	reset_overrides
 			-- Reset all the visibility and content visibility override attributes.
 		do
-			reset_global_overrides
-			reset_local_overrides
+			Precursor
 		end
 
 	reset_global_overrides
@@ -45,7 +44,7 @@ feature -- Access
 		end
 
 	reset_local_overrides
-			-- Reset the local visibility and content visibility override attribute.
+			-- Reset the local visibility and content visibility override attributes.
 		do
 			Precursor
 			local_content_visibility_override.set_undefined

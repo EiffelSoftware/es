@@ -124,41 +124,39 @@ feature -- Meta-commands
 	hint_command: STRING = "HINT"
 
 	show_all_command: STRING = "SHOW_ALL"
-
 	hide_all_command: STRING = "HIDE_ALL"
-
 	reset_all_command: STRING = "RESET_ALL"
 
 	show_all_content_command: STRING = "SHOW_ALL_CONTENT"
-
 	hide_all_content_command: STRING = "HIDE_ALL_CONTENT"
-
 	reset_all_content_command: STRING = "RESET_ALL_CONTENT"
 
 	show_next_command: STRING = "SHOW_NEXT"
-
 	hide_next_command: STRING = "HIDE_NEXT"
 			-- There is no reset_next command, why would one ever need it?
 
 	show_next_content_command: STRING = "SHOW_NEXT_CONTENT"
-
 	hide_next_content_command: STRING = "HIDE_NEXT_CONTENT"
 			-- There is no reset_next_content command, why would one ever need it?
 
 	commands_with_block: ARRAY [STRING]
 			-- List of commands which must be followed by a block type. Useful for parsing.
 		once ("PROCESS")
-			Result := <<show_all_command, hide_all_command, reset_all_command, show_all_content_command, hide_all_content_command, reset_all_content_command, show_next_command, hide_next_command, show_next_content_command, hide_next_content_command>>
+			Result := <<show_all_command, hide_all_command, reset_all_command, show_all_content_command, hide_all_content_command, reset_all_content_command, show_next_command, hide_next_command, show_next_content_command, hide_next_content_command, treat_all_as_simple, treat_all_as_complex, treat_next_as_simple, treat_next_as_complex>>
 			Result.compare_objects
 		end
 
 	placeholder_command: STRING = "PLACEHOLDER"
 
 	hint_mode_command: STRING = "HINT_MODE"
-
 	unannotated_mode_command: STRING = "UNANNOTATED_MODE"
-
 	custom_mode_command: STRING = "CUSTOM_MODE"
+
+	treat_all_as_simple: STRING = "TREAT_ALL_AS_SIMPLE"
+	treat_all_as_complex: STRING = "TREAT_ALL_AS_COMPLEX"
+
+	treat_next_as_simple: STRING = "TREAT_NEXT_AS_SIMPLE"
+	treat_next_as_complex: STRING = "TREAT_NEXT_AS_COMPLEX"
 
 		-- TODO: non dimenticare di gestire i blocchi inspect
 

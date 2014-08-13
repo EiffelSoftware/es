@@ -58,7 +58,7 @@ feature -- Meta-command processing interface
 			l_line, l_level_string, l_command_word, l_block_type_string: STRING
 			l_min_max: TUPLE [min: INTEGER; max: INTEGER]
 			l_index, l_space_index, l_tab_index, l_min_level, l_max_level: INTEGER
-			l_error, l_recognized, l_is_complex_block: BOOLEAN
+			l_error, l_recognized, l_is_complex_block, l_is_hybrid_block: BOOLEAN
 			l_tristate: AT_TRI_STATE_BOOLEAN
 			l_block_type: AT_BLOCK_TYPE
 		do
@@ -115,6 +115,25 @@ feature -- Meta-command processing interface
 					else
 						l_block_type := enum_block_type.value (l_block_type_string)
 						l_is_complex_block := enum_block_type.is_complex_block_type (l_block_type)
+						l_is_hybrid_block := enum_block_type.is_hybrid_block_type (l_block_type)
+
+						if l_is_hybrid_block then
+								-- The following commands are applicable only to a hybrid block.
+							if l_command_word.same_string (at_strings.treat_all_as_complex) then
+								set_block_global_treat_as_complex (l_block_type, True)
+								l_recognized := True
+							elseif l_command_word.same_string (at_strings.treat_all_as_simple) then
+								set_block_global_treat_as_complex (l_block_type, False)
+								l_recognized := True
+							elseif l_command_word.same_string (at_strings.treat_next_as_complex) then
+								set_block_local_treat_as_complex_override (l_block_type, Tri_true)
+								l_recognized := True
+							elseif l_command_word.same_string (at_strings.treat_next_as_simple) then
+								set_block_local_treat_as_complex_override (l_block_type, Tri_false)
+								l_recognized := True
+							end
+						end -- and not 'elseif', since the following commands can also be applied to a complex block.
+
 						if l_is_complex_block then
 								-- The following commands are applicable only to a complex block.
 							if l_command_word.same_string (at_strings.show_all_content_command) then
@@ -134,6 +153,7 @@ feature -- Meta-command processing interface
 								l_recognized := True
 							end
 						end -- and not 'elseif', since the following commands can also be applied to a complex block.
+
 						if l_command_word.same_string (at_strings.show_all_command) then
 							set_block_global_visibility_override (l_block_type, Tri_true)
 							l_recognized := True
@@ -231,7 +251,42 @@ feature {NONE} -- Meta-command processing
 			end
 		end
 
+	set_block_global_treat_as_complex (a_block_type: AT_BLOCK_TYPE; a_value: BOOLEAN)
+		require
+			hybrid_block: enum_block_type.is_hybrid_block_type (a_block_type)
+		local
+			l_block: AT_BLOCK_VISIBILITY
+		do
+			l_block := blocks_visibility [a_block_type]
+			check
+				attached {AT_HYBRID_BLOCK_VISIBILITY} l_block
+			end
+			if attached {AT_HYBRID_BLOCK_VISIBILITY} l_block as l_hybrid_block then
+				l_hybrid_block.global_treat_as_complex := a_value
+			end
+		end
+
+	set_block_local_treat_as_complex_override (a_block_type: AT_BLOCK_TYPE; a_value: AT_TRI_STATE_BOOLEAN)
+		require
+			hybrid_block: enum_block_type.is_hybrid_block_type (a_block_type)
+		local
+			l_block: AT_BLOCK_VISIBILITY
+		do
+			l_block := blocks_visibility [a_block_type]
+			check
+				attached {AT_HYBRID_BLOCK_VISIBILITY} l_block
+			end
+			if attached {AT_HYBRID_BLOCK_VISIBILITY} l_block as l_hybrid_block then
+				l_hybrid_block.local_treat_as_complex_override := a_value
+			end
+		end
+
 feature -- Visibility
+
+	block_type_call_stack: STACK [AT_BLOCK_TYPE]
+		-- Stack recording the calls made to begin/end_process_block.
+		-- Doesn't keep anything else into account.
+		-- It is exposed to clients and only exists for contracts.
 
 	block_stack: STACK [AT_BLOCK_VISIBILITY]
 
@@ -250,6 +305,19 @@ feature {NONE}
 
 	local_content_visibility_stack: STACK [AT_TRI_STATE_BOOLEAN]
 
+	containing_simple_block_effective_visibility: AT_TRI_STATE_BOOLEAN
+		-- If we are inside a simple block, what was that block's effective visibility?
+		-- This visibility should be applied now, overriding anything else,
+		-- as a single block is the smallest customizable unit, and anything
+		-- inside it should be treated as a single thing.
+		-- If we are not inside a simple block, this value must be undefined.
+
+	nesting_in_simple_block: INTEGER
+		-- Are we inside a simple block? If so, how deep did we descend into blocks contained in it?
+		-- Please note that it is only possible to descend into a simple block if this block is actually
+		-- a hybrid block being treated as a simple block.
+		-- 0 means that we are not inside a simple block.
+
 feature -- Status signaling: cool new things
 
 	current_content_visibility: AT_TRI_STATE_BOOLEAN
@@ -264,13 +332,33 @@ feature -- Status signaling: cool new things
 
 	begin_process_block (a_block_type: AT_BLOCK_TYPE)
 		local
+			l_block_type: AT_BLOCK_TYPE
 			l_hiding_status: BOOLEAN
 			l_local_content_visibility_status, l_global_content_visibility_status: AT_TRI_STATE_BOOLEAN
-			l_block_visibility: AT_BLOCK_VISIBILITY
+			l_block_visibility, l_block_visibility_in_table: AT_BLOCK_VISIBILITY
 		do
-				-- We clone the block and then reset the local override flags. These are single-use.
-			l_block_visibility := blocks_visibility [a_block_type].twin
-			blocks_visibility [a_block_type].reset_local_overrides
+			l_block_type := a_block_type
+			l_block_visibility_in_table := blocks_visibility [l_block_type]
+			l_block_visibility := l_block_visibility_in_table.twin
+
+			if attached {AT_HYBRID_BLOCK_VISIBILITY} l_block_visibility as l_hybrid_block_visiblity and then
+				attached {AT_HYBRID_BLOCK_VISIBILITY} l_block_visibility_in_table as l_hybrid_block_visiblity_in_table then
+
+				if not (l_hybrid_block_visiblity.local_treat_as_complex_override.imposed_on_bool (l_hybrid_block_visiblity.global_treat_as_complex)) then
+						-- We must treat this block as if it were a simple.
+						-- Let's "transform" it into the corresponding simple block.
+					l_block_type := enum_block_type.corresponding_simple_block_type (l_block_type)
+					l_block_visibility_in_table := blocks_visibility [l_block_type]
+					l_block_visibility := l_block_visibility_in_table.twin
+				end
+
+					-- The local treatment override flag is single-use. Reset it.
+				l_hybrid_block_visiblity_in_table.reset_local_treatment_overrides
+			end
+
+				-- Now that we have cloned the block, we reset the local override flags. These are single-use.
+			blocks_visibility [l_block_type].reset_local_overrides
+
 			if hiding_stack.is_empty then
 					-- According to the invariant, all stacks are empty.
 
@@ -284,6 +372,9 @@ feature -- Status signaling: cool new things
 				l_global_content_visibility_status := global_content_visibility_stack.item
 				l_local_content_visibility_status := local_content_visibility_stack.item
 			end
+
+
+
 			if attached {AT_COMPLEX_BLOCK_VISIBILITY} l_block_visibility as l_complex_block_visibility then
 					-- For complex blocks, compute the new valid content visibility policy (to be pushed into the stack).
 
@@ -297,6 +388,9 @@ feature -- Status signaling: cool new things
 					-- overridden by the local visibility flag of this block (coming from a "#SHOW_NEXT_CONTENT" command applied to a this block).
 				l_local_content_visibility_status := l_local_content_visibility_status.subjected_to (l_complex_block_visibility.local_content_visibility_override)
 			end
+
+
+			block_type_call_stack.put (a_block_type)
 			block_stack.put (l_block_visibility)
 			global_content_visibility_stack.put (l_global_content_visibility_status)
 			local_content_visibility_stack.put (l_local_content_visibility_status)
@@ -307,8 +401,17 @@ feature -- Status signaling: cool new things
 			hiding_stack.replace (l_hiding_status or (not current_block_logical_visibility))
 
 			refresh
+
+			if nesting_in_simple_block = 0 then
+				if enum_block_type.is_simple_block_type (l_block_type) then
+					containing_simple_block_effective_visibility := to_tri_state (output_enabled)
+					nesting_in_simple_block := nesting_in_simple_block + 1
+				end
+			else
+				nesting_in_simple_block := nesting_in_simple_block + 1
+			end
 		ensure
-			block_on_top_of_stack: block_stack.item.block_type = a_block_type
+			block_on_top_of_stack: not block_type_call_stack.is_empty and then block_type_call_stack.item = a_block_type
 		end
 
 	output_enabled: BOOLEAN
@@ -362,6 +465,10 @@ feature -- Status signaling: cool new things
 		do
 			if block_stack.is_empty then
 				Result := True
+			elseif containing_simple_block_effective_visibility.defined then
+					-- If we are inside a simple block (only possible if that block is actually a hybrid block
+					-- being treated as a simple block), than we just take its visibility and ignore everything else.
+				Result := containing_simple_block_effective_visibility.value
 			else
 				l_top_block := block_stack.item
 
@@ -399,12 +506,21 @@ feature -- Status signaling: cool new things
 
 	end_process_block (a_block_type: AT_BLOCK_TYPE)
 		require
-			block_on_top_of_stack: not block_stack.is_empty and then block_stack.item.block_type = a_block_type
+			block_on_top_of_stack: not block_type_call_stack.is_empty and then block_type_call_stack.item = a_block_type
 		do
+			block_type_call_stack.remove
 			block_stack.remove
 			hiding_stack.remove
 			global_content_visibility_stack.remove
 			local_content_visibility_stack.remove
+
+			if nesting_in_simple_block > 0 then
+				nesting_in_simple_block := nesting_in_simple_block - 1
+				if nesting_in_simple_block = 0 then
+					containing_simple_block_effective_visibility := Tri_undefined
+				end
+			end
+
 			refresh
 		end
 
@@ -419,6 +535,7 @@ feature {NONE} -- Implementation
 			options := a_options
 			original_options := a_options.twin
 			output_enabled := True
+			create {ARRAYED_STACK [AT_BLOCK_TYPE]} block_type_call_stack.make (32)
 			create {ARRAYED_STACK [AT_BLOCK_VISIBILITY]} block_stack.make (32)
 			create {ARRAYED_STACK [BOOLEAN]} hiding_stack.make (32)
 			create {ARRAYED_STACK [AT_TRI_STATE_BOOLEAN]} global_content_visibility_stack.make (32)
@@ -438,7 +555,9 @@ feature {NONE} -- Implementation
 				enum_block_type.values as ic
 			loop
 				l_block_type := ic.item
-				if enum_block_type.is_complex_block_type (l_block_type) then
+				if enum_block_type.is_hybrid_block_type (l_block_type) then
+					create {AT_HYBRID_BLOCK_VISIBILITY} l_block.make_with_two_agents (l_block_type, agent block_default_visibility, agent block_content_default_visibility)
+				elseif enum_block_type.is_complex_block_type (l_block_type) then
 					create {AT_COMPLEX_BLOCK_VISIBILITY} l_block.make_with_two_agents (l_block_type, agent block_default_visibility, agent block_content_default_visibility)
 				else
 					create l_block.make_with_visibility_agent (l_block_type, agent block_default_visibility)
@@ -504,9 +623,65 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	is_block_visibility_table_consistent: BOOLEAN
+			-- Is the `blocks_visibility' table in a consistent state?
+		do
+			Result := True
+			across enum_block_type.values as ic loop
+					-- All values are present
+				if blocks_visibility.has_key (ic.item) and then attached blocks_visibility [ic.item] as l_block_visibility then
+
+						-- The block visibility descriptor is really the correct one.
+					Result := Result and (l_block_visibility.block_type = ic.item)
+
+						-- The block visibility descriptor is an instance of `AT_COMPLEX_BLOCK_VISIBILITY'
+						-- if and only if this is a complex block type.
+					Result := Result and (enum_block_type.is_complex_block_type (ic.item) = (attached {AT_COMPLEX_BLOCK_VISIBILITY} l_block_visibility))
+
+						-- The block visibility descriptor is an instance of `AT_HYBRID_BLOCK_VISIBILITY'
+						-- if and only if this is a hybrid block type.
+					Result := Result and (enum_block_type.is_hybrid_block_type (ic.item) = (attached {AT_HYBRID_BLOCK_VISIBILITY} l_block_visibility))
+				else
+					Result := False
+				end
+			end
+
+				-- There are no additional values:
+			across blocks_visibility.current_keys as ic loop
+				if not enum_block_type.is_valid_numerical_value (ic.item.numerical_value) then
+					Result := False
+				end
+			end
+		end
+
+	is_top_of_block_type_call_stack_consistent: BOOLEAN
+			-- Is the top item of `block_type_call_stack' consistent state?
+		local
+			l_call_stack_top, l_block_stack_top: AT_BLOCK_TYPE
+		do
+			if block_type_call_stack.is_empty or block_stack.is_empty then
+				Result := (block_type_call_stack.is_empty and block_stack.is_empty)
+			else
+				l_call_stack_top := block_type_call_stack.item
+				l_block_stack_top := block_stack.item.block_type
+
+				if l_call_stack_top = l_block_stack_top then
+					Result := True
+				else
+					if enum_block_type.is_hybrid_block_type (l_call_stack_top) then
+						Result := (l_block_stack_top = enum_block_type.corresponding_simple_block_type (l_call_stack_top))
+					else
+						Result := False
+					end
+				end
+			end
+		end
+
 invariant
-	all_visibility_keys: across enum_block_type.values as ic all blocks_visibility.has_key (ic.item) end
-	only_visibility_keys: across blocks_visibility.current_keys as ic all enum_block_type.is_valid_numerical_value (ic.item.numerical_value) end
-	stacks_same_size: block_stack.count = hiding_stack.count and hiding_stack.count = global_content_visibility_stack.count and global_content_visibility_stack.count = local_content_visibility_stack.count
+--	The following invariant is very expensive to check.
+--	block_visibility_table_consistency: is_block_visibility_table_consistent
+	stacks_same_size: block_stack.count = block_type_call_stack.count and block_type_call_stack.count = hiding_stack.count and hiding_stack.count = global_content_visibility_stack.count and global_content_visibility_stack.count = local_content_visibility_stack.count
+	block_type_call_stack_consistency: is_top_of_block_type_call_stack_consistent
+	containing_simple_block_visibility_consistency: containing_simple_block_effective_visibility.defined = (nesting_in_simple_block > 0)
 
 end
