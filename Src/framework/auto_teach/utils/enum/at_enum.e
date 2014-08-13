@@ -57,16 +57,23 @@ feature -- Access
 			l_numerical_values: like numerical_values
 			l_value: like value_type
 			i: INTEGER
-		do -- once ("PROCESS")
-			l_numerical_values := numerical_values
-			create Result.make_filled (default_value, 1, l_numerical_values.count)
-			from
-				i := 1
-			until
-				i > l_numerical_values.count
-			loop
-				Result [i] := value_from_number (l_numerical_values [i])
-				i := i + 1
+		do
+				-- As 'once' routines do not support type anchors, we will handle
+				-- lazy initialization by ourselves.
+			if attached lazy_values as l_lazy_values then
+				Result := l_lazy_values
+			else
+				l_numerical_values := numerical_values
+				create Result.make_filled (default_value, 1, l_numerical_values.count)
+				from
+					i := 1
+				until
+					i > l_numerical_values.count
+				loop
+					Result [i] := value_from_number (l_numerical_values [i])
+					i := i + 1
+				end
+				lazy_values := Result
 			end
 		end
 
@@ -127,7 +134,9 @@ feature {AT_ENUM_VALUE} -- Used by values
 feature {NONE} -- Implementation
 
 	default_value: like value_type
-		-- Trick: this works both for reference and expanded types.
+		-- Trick learned from the Eiffel code base, somewhere: this works both for reference and expanded types.
+
+	lazy_values: detachable ARRAY [like value_type]
 
 	find_tuple (a_tuples: ITERABLE [TUPLE]; a_value: ANY; a_position: INTEGER): detachable TUPLE
 		require

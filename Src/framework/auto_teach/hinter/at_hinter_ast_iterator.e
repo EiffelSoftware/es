@@ -171,13 +171,13 @@ feature {NONE} -- Hint processing
 						-- We will be in an already indented line, no need to indent it again.
 				else
 					l_indentation := count_leading ('%T', a_line)
-					put_string_to_context (tab_string (l_indentation))
+					put_string_forced (tab_string (l_indentation))
 				end
-				put_string_to_context (l_line) -- Remember that `l_line' ends with a %N character.
-				put_string_to_context (tab_string (l_indentation) + "%N")
+				put_string_forced (l_line) -- Remember that `l_line' ends with a %N character.
+				put_string_forced (tab_string (l_indentation) + "%N")
 				if in_skipped_section then
 						-- We need to leave things as we found them, so re-indent the line.
-					put_string_to_context (tab_string (l_indentation))
+					put_string_forced (tab_string (l_indentation))
 				end
 			end
 		end
@@ -368,16 +368,23 @@ feature {NONE} -- Implementation
 			-- Basically has the same function as put_string, but accepting a string.
 		do
 			blank_line_inserted := False
-			if not output_disabled then
+			if oracle.output_enabled then
 				context.add_string (a_string)
 			end
+		end
+
+	put_string_forced (a_string: STRING)
+			-- Puts `a_string' to the context without checking the oracle flag.
+		do
+			blank_line_inserted := False
+			context.add_string (a_string)
 		end
 
 	put_string (a_as: LEAF_AS)
 			-- Puts the text of `a_as' to the context.
 		do
 			blank_line_inserted := False
-			if not output_disabled then
+			if oracle.output_enabled then
 				Precursor (a_as)
 			end
 		end

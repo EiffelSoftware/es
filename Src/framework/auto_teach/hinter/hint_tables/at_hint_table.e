@@ -20,9 +20,9 @@ feature -- Access
 			l_table_row: ARRAY [BOOLEAN]
 		do
 				-- Guaranteed by the invariant:
-			check table.has (a_block_type.value_name) end
+			check table.has (a_block_type) end
 
-			l_table_row := table [a_block_type.value_name]
+			l_table_row := table [a_block_type]
 
 				-- Guaranteed by the invariant:
 			check l_table_row.count > 0 end
@@ -45,10 +45,10 @@ feature -- Access
 
 feature {AT_HINT_TABLE} -- Implementation
 
-	table: STRING_TABLE [ARRAY [BOOLEAN]]
+	table: HASH_TABLE [ARRAY [BOOLEAN], AT_BLOCK_TYPE]
 
 invariant
-	all_block_types_present: across enum_block_type.value_names as ic all table.has (ic.item) end
+	all_block_types_present: across enum_block_type.values as ic all table.has (ic.item) end
 	all_rows_non_empty: across table as ic all ic.item.count > 0  end
 
 end

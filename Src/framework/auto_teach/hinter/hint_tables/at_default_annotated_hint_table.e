@@ -28,13 +28,13 @@ feature {NONE} -- Initialization
 			create table.make (16)
 
 			-- Hint level:	1
-			table.put (<< 	True	>>, "feature")			-- Always show features
-			table.put (<< 	True	>>, "arguments")		-- Always show arguments
-			table.put (<< 	False	>>, "precondition")		-- Never show preconditions
-			table.put (<< 	False	>>, "locals")			-- Never show locals
-			table.put (<< 	False	>>, "body")				-- Never show body
-			table.put (<< 	False	>>, "postcondition")	-- Never show postconditions
-			table.put (<< 	False	>>, "classinvariant")	-- Never show class invariants
+			table.put (<< 	True	>>, enum_block_type.bt_feature)				-- Always show features
+			table.put (<< 	True	>>, enum_block_type.bt_arguments)			-- Always show arguments
+			table.put (<< 	False	>>, enum_block_type.bt_precondition)		-- Never show preconditions
+			table.put (<< 	False	>>, enum_block_type.bt_locals)				-- Never show locals
+			table.put (<< 	False	>>, enum_block_type.bt_routine_body)		-- Never show body
+			table.put (<< 	False	>>, enum_block_type.bt_postcondition)		-- Never show postconditions
+			table.put (<< 	False	>>, enum_block_type.bt_class_invariant)		-- Never show class invariants
 		end
 
 end
