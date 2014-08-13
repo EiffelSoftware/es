@@ -19,6 +19,25 @@ create
 
 	-- TODO: Reorganize feature clauses
 
+feature -- Oracle
+
+	output_enabled: BOOLEAN
+			-- Should the current section be output or not?
+
+	current_content_visibility: AT_TRI_STATE_BOOLEAN
+			-- What is the current status of content visibility?
+		do
+			if global_content_visibility_stack.is_empty then
+				Result := Tri_undefined
+			else
+				Result := global_content_visibility_stack.item.subjected_to (local_content_visibility_stack.item)
+			end
+		end
+
+	current_placeholder_type: AT_PLACEHOLDER
+			-- What type of placeholder corresponds to the currently processed block?
+			-- (regardless of code placeholders currently being enabled or not)
+
 feature -- Status signaling
 
 	begin_process_class
@@ -31,6 +50,116 @@ feature -- Status signaling
 			-- Signal that a class has been processed.
 		do
 			options.restore_from (original_options)
+		end
+
+	block_type_call_stack: STACK [AT_BLOCK_TYPE]
+		-- Stack recording the calls made to begin/end_process_block.
+		-- Doesn't keep anything else into account.
+		-- It is exposed to clients and only exists for contracts.
+
+	begin_process_block (a_block_type: AT_BLOCK_TYPE)
+		local
+			l_block_type: AT_BLOCK_TYPE
+			l_hiding_status: BOOLEAN
+			l_local_content_visibility_status, l_global_content_visibility_status: AT_TRI_STATE_BOOLEAN
+			l_block_visibility, l_block_visibility_in_table: AT_BLOCK_VISIBILITY
+		do
+			l_block_type := a_block_type
+			l_block_visibility_in_table := blocks_visibility [l_block_type]
+			l_block_visibility := l_block_visibility_in_table.twin
+
+			if attached {AT_HYBRID_BLOCK_VISIBILITY} l_block_visibility as l_hybrid_block_visiblity and then
+				attached {AT_HYBRID_BLOCK_VISIBILITY} l_block_visibility_in_table as l_hybrid_block_visiblity_in_table then
+
+				if not (l_hybrid_block_visiblity.local_treat_as_complex_override.imposed_on_bool (l_hybrid_block_visiblity.global_treat_as_complex)) then
+						-- We must treat this block as if it were a simple.
+						-- Let's "transform" it into the corresponding simple block.
+					l_block_type := enum_block_type.corresponding_simple_block_type (l_block_type)
+					l_block_visibility_in_table := blocks_visibility [l_block_type]
+					l_block_visibility := l_block_visibility_in_table.twin
+				end
+
+					-- The local treatment override flag is single-use. Reset it.
+				l_hybrid_block_visiblity_in_table.reset_local_treatment_overrides
+			end
+
+				-- Now that we have cloned the block, we reset the local override flags. These are single-use.
+			blocks_visibility [l_block_type].reset_local_overrides
+
+			if hiding_stack.is_empty then
+					-- According to the invariant, all stacks are empty.
+
+					-- Default values
+				l_hiding_status := False
+				l_global_content_visibility_status := Tri_undefined
+				l_local_content_visibility_status := Tri_undefined
+			else
+					-- Keep the current values.
+				l_hiding_status := hiding_stack.item
+				l_global_content_visibility_status := global_content_visibility_stack.item
+				l_local_content_visibility_status := local_content_visibility_stack.item
+			end
+
+
+
+			if attached {AT_COMPLEX_BLOCK_VISIBILITY} l_block_visibility as l_complex_block_visibility then
+					-- For complex blocks, compute the new valid content visibility policy (to be pushed into the stack).
+
+					-- New global policy: default (from the hint table) content visibility for this block type (if defined),
+					-- overridden by the currently valid global visibility policy (coming from "#SHOW_ALL_CONTENT" applied to some parent block type),
+					-- overridden by the current global visibility policy for this block type (coming from "#SHOW_ALL_CONTENT" applied to this block type).
+					-- Note that the final result could still be undefined.
+				l_global_content_visibility_status := l_complex_block_visibility.default_content_visibility.subjected_to (l_global_content_visibility_status).subjected_to (l_complex_block_visibility.global_content_visibility_override)
+
+					-- New local policy: the current local visibility policy (coming from a "#SHOW_NEXT_CONTENT" command applied to a parent block),
+					-- overridden by the local visibility flag of this block (coming from a "#SHOW_NEXT_CONTENT" command applied to a this block).
+				l_local_content_visibility_status := l_local_content_visibility_status.subjected_to (l_complex_block_visibility.local_content_visibility_override)
+			end
+
+
+			block_type_call_stack.put (a_block_type)
+			block_stack.put (l_block_visibility)
+			global_content_visibility_stack.put (l_global_content_visibility_status)
+			local_content_visibility_stack.put (l_local_content_visibility_status)
+
+				-- We need to put something on the hiding stack, or we will get an
+				-- invariant violation when calling `current_block_logical_visibility'.
+			hiding_stack.put (l_hiding_status)
+			hiding_stack.replace (l_hiding_status or (not current_block_logical_visibility))
+
+			refresh
+
+			if nesting_in_simple_block = 0 then
+				if enum_block_type.is_simple_block_type (l_block_type) then
+					containing_simple_block_effective_visibility := to_tri_state (output_enabled)
+					nesting_in_simple_block := nesting_in_simple_block + 1
+				end
+			else
+				nesting_in_simple_block := nesting_in_simple_block + 1
+			end
+		ensure
+			block_on_top_of_stack: not block_type_call_stack.is_empty and then block_type_call_stack.item = a_block_type
+		end
+
+
+	end_process_block (a_block_type: AT_BLOCK_TYPE)
+		require
+			block_on_top_of_stack: not block_type_call_stack.is_empty and then block_type_call_stack.item = a_block_type
+		do
+			block_type_call_stack.remove
+			block_stack.remove
+			hiding_stack.remove
+			global_content_visibility_stack.remove
+			local_content_visibility_stack.remove
+
+			if nesting_in_simple_block > 0 then
+				nesting_in_simple_block := nesting_in_simple_block - 1
+				if nesting_in_simple_block = 0 then
+					containing_simple_block_effective_visibility := Tri_undefined
+				end
+			end
+
+			refresh
 		end
 
 feature -- Meta-command processing interface
@@ -209,7 +338,7 @@ feature -- Meta-command processing interface
 	last_command_output: detachable STRING
 			-- The output of the last meta-command, to be printed to the output.
 
-feature {NONE} -- Meta-command processing
+feature {NONE} -- Implementation: meta-command processing
 
 	set_block_global_visibility_override (a_block_type: AT_BLOCK_TYPE; a_value: AT_TRI_STATE_BOOLEAN)
 		do
@@ -281,16 +410,9 @@ feature {NONE} -- Meta-command processing
 			end
 		end
 
-feature -- Visibility
-
-	block_type_call_stack: STACK [AT_BLOCK_TYPE]
-		-- Stack recording the calls made to begin/end_process_block.
-		-- Doesn't keep anything else into account.
-		-- It is exposed to clients and only exists for contracts.
+feature {NONE} -- Implementation: block visibility
 
 	block_stack: STACK [AT_BLOCK_VISIBILITY]
-
-feature {NONE}
 
 	blocks_visibility: HASH_TABLE [AT_BLOCK_VISIBILITY, AT_BLOCK_TYPE]
 
@@ -317,109 +439,6 @@ feature {NONE}
 		-- Please note that it is only possible to descend into a simple block if this block is actually
 		-- a hybrid block being treated as a simple block.
 		-- 0 means that we are not inside a simple block.
-
-feature -- Status signaling: cool new things
-
-	current_content_visibility: AT_TRI_STATE_BOOLEAN
-			-- What is the current status of content visibility?
-		do
-			if global_content_visibility_stack.is_empty then
-				Result := Tri_undefined
-			else
-				Result := global_content_visibility_stack.item.subjected_to (local_content_visibility_stack.item)
-			end
-		end
-
-	begin_process_block (a_block_type: AT_BLOCK_TYPE)
-		local
-			l_block_type: AT_BLOCK_TYPE
-			l_hiding_status: BOOLEAN
-			l_local_content_visibility_status, l_global_content_visibility_status: AT_TRI_STATE_BOOLEAN
-			l_block_visibility, l_block_visibility_in_table: AT_BLOCK_VISIBILITY
-		do
-			l_block_type := a_block_type
-			l_block_visibility_in_table := blocks_visibility [l_block_type]
-			l_block_visibility := l_block_visibility_in_table.twin
-
-			if attached {AT_HYBRID_BLOCK_VISIBILITY} l_block_visibility as l_hybrid_block_visiblity and then
-				attached {AT_HYBRID_BLOCK_VISIBILITY} l_block_visibility_in_table as l_hybrid_block_visiblity_in_table then
-
-				if not (l_hybrid_block_visiblity.local_treat_as_complex_override.imposed_on_bool (l_hybrid_block_visiblity.global_treat_as_complex)) then
-						-- We must treat this block as if it were a simple.
-						-- Let's "transform" it into the corresponding simple block.
-					l_block_type := enum_block_type.corresponding_simple_block_type (l_block_type)
-					l_block_visibility_in_table := blocks_visibility [l_block_type]
-					l_block_visibility := l_block_visibility_in_table.twin
-				end
-
-					-- The local treatment override flag is single-use. Reset it.
-				l_hybrid_block_visiblity_in_table.reset_local_treatment_overrides
-			end
-
-				-- Now that we have cloned the block, we reset the local override flags. These are single-use.
-			blocks_visibility [l_block_type].reset_local_overrides
-
-			if hiding_stack.is_empty then
-					-- According to the invariant, all stacks are empty.
-
-					-- Default values
-				l_hiding_status := False
-				l_global_content_visibility_status := Tri_undefined
-				l_local_content_visibility_status := Tri_undefined
-			else
-					-- Keep the current values.
-				l_hiding_status := hiding_stack.item
-				l_global_content_visibility_status := global_content_visibility_stack.item
-				l_local_content_visibility_status := local_content_visibility_stack.item
-			end
-
-
-
-			if attached {AT_COMPLEX_BLOCK_VISIBILITY} l_block_visibility as l_complex_block_visibility then
-					-- For complex blocks, compute the new valid content visibility policy (to be pushed into the stack).
-
-					-- New global policy: default (from the hint table) content visibility for this block type (if defined),
-					-- overridden by the currently valid global visibility policy (coming from "#SHOW_ALL_CONTENT" applied to some parent block type),
-					-- overridden by the current global visibility policy for this block type (coming from "#SHOW_ALL_CONTENT" applied to this block type).
-					-- Note that the final result could still be undefined.
-				l_global_content_visibility_status := l_complex_block_visibility.default_content_visibility.subjected_to (l_global_content_visibility_status).subjected_to (l_complex_block_visibility.global_content_visibility_override)
-
-					-- New local policy: the current local visibility policy (coming from a "#SHOW_NEXT_CONTENT" command applied to a parent block),
-					-- overridden by the local visibility flag of this block (coming from a "#SHOW_NEXT_CONTENT" command applied to a this block).
-				l_local_content_visibility_status := l_local_content_visibility_status.subjected_to (l_complex_block_visibility.local_content_visibility_override)
-			end
-
-
-			block_type_call_stack.put (a_block_type)
-			block_stack.put (l_block_visibility)
-			global_content_visibility_stack.put (l_global_content_visibility_status)
-			local_content_visibility_stack.put (l_local_content_visibility_status)
-
-				-- We need to put something on the hiding stack, or we will get an
-				-- invariant violation when calling `current_block_logical_visibility'.
-			hiding_stack.put (l_hiding_status)
-			hiding_stack.replace (l_hiding_status or (not current_block_logical_visibility))
-
-			refresh
-
-			if nesting_in_simple_block = 0 then
-				if enum_block_type.is_simple_block_type (l_block_type) then
-					containing_simple_block_effective_visibility := to_tri_state (output_enabled)
-					nesting_in_simple_block := nesting_in_simple_block + 1
-				end
-			else
-				nesting_in_simple_block := nesting_in_simple_block + 1
-			end
-		ensure
-			block_on_top_of_stack: not block_type_call_stack.is_empty and then block_type_call_stack.item = a_block_type
-		end
-
-	output_enabled: BOOLEAN
-			-- Should the current section be output or not?
-
-	current_placeholder_type: AT_PLACEHOLDER
-			-- What type of placeholder corresponds to the currently processed block?
-			-- (regardless of code placeholders currently being enabled or not)
 
 	refresh
 			-- Update `output_enabled' and `current_placeholder_type' with the correct up-to-date value.
@@ -504,27 +523,7 @@ feature -- Status signaling: cool new things
 			end
 		end
 
-	end_process_block (a_block_type: AT_BLOCK_TYPE)
-		require
-			block_on_top_of_stack: not block_type_call_stack.is_empty and then block_type_call_stack.item = a_block_type
-		do
-			block_type_call_stack.remove
-			block_stack.remove
-			hiding_stack.remove
-			global_content_visibility_stack.remove
-			local_content_visibility_stack.remove
-
-			if nesting_in_simple_block > 0 then
-				nesting_in_simple_block := nesting_in_simple_block - 1
-				if nesting_in_simple_block = 0 then
-					containing_simple_block_effective_visibility := Tri_undefined
-				end
-			end
-
-			refresh
-		end
-
-feature {NONE} -- Implementation
+feature {NONE} -- Implementation: miscellaneous
 
 	options: AT_OPTIONS
 

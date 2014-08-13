@@ -56,7 +56,6 @@ feature -- Interface
 			across
 				input_classes as ic
 			loop
-					-- TODO: support recreating the source cluster/folder structure?
 				create l_out_file.make_create_read_write (options.output_directory.path.extended (ic.item.name + ".e").out)
 				process_class (ic.item, l_out_file)
 				l_out_file.close
