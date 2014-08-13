@@ -176,7 +176,7 @@ feature -- Meta-command processing interface
 					l_recognized := True
 				elseif l_command_word.same_string (at_strings.placeholder_command) then
 					l_tristate := on_off_to_tristate (l_line)
-					if l_tristate.defined then
+					if l_tristate.is_defined then
 						options.insert_code_placeholder := l_tristate.value
 						l_recognized := True
 					end
@@ -465,7 +465,7 @@ feature -- Status signaling: cool new things
 		do
 			if block_stack.is_empty then
 				Result := True
-			elseif containing_simple_block_effective_visibility.defined then
+			elseif containing_simple_block_effective_visibility.is_defined then
 					-- If we are inside a simple block (only possible if that block is actually a hybrid block
 					-- being treated as a simple block), than we just take its visibility and ignore everything else.
 				Result := containing_simple_block_effective_visibility.value
@@ -498,7 +498,7 @@ feature -- Status signaling: cool new things
 					-- coming from a "#SHOW_NEXT" command directly applied to it.
 				l_current_value := l_current_value.subjected_to (l_top_block.local_visibility_override)
 				check
-					l_current_value.defined
+					l_current_value.is_defined
 				end
 				Result := l_current_value.value
 			end
@@ -682,6 +682,6 @@ invariant
 --	block_visibility_table_consistency: is_block_visibility_table_consistent
 	stacks_same_size: block_stack.count = block_type_call_stack.count and block_type_call_stack.count = hiding_stack.count and hiding_stack.count = global_content_visibility_stack.count and global_content_visibility_stack.count = local_content_visibility_stack.count
 	block_type_call_stack_consistency: is_top_of_block_type_call_stack_consistent
-	containing_simple_block_visibility_consistency: containing_simple_block_effective_visibility.defined = (nesting_in_simple_block > 0)
+	containing_simple_block_visibility_consistency: containing_simple_block_effective_visibility.is_defined = (nesting_in_simple_block > 0)
 
 end

@@ -413,8 +413,6 @@ feature {NONE} -- Implementation
 			make_with_default_context
 			options := a_options
 
-			create {ARRAYED_STACK [BOOLEAN]} if_as_complex_stack.make (8)
-
 			create oracle.make_with_options (a_options)
 			oracle.set_message_output_action (agent print_message)
 
@@ -707,52 +705,6 @@ feature {AST_EIFFEL} -- Instructions visitors
 			instruction_post (a_as)
 		end
 
-	process_if_as (a_as: IF_AS)
-			-- Process `a_as'.
-		local
-			l_treat_as_complex: BOOLEAN
-		do
-			-- TODO: set `l_treat_as_complex'
-
-			l_treat_as_complex := True
-
-			if_as_complex_stack.put (l_treat_as_complex)
-
-			if l_treat_as_complex then
-				process_if_as_complex (a_as)
-			else
-				instruction_pre (a_as)
-				Precursor (a_as)
-				instruction_post (a_as)
-			end
-
-			if_as_complex_stack.remove
-		ensure then
-			if_as_complex_stack_restored: if_as_complex_stack.count = old if_as_complex_stack.count
-		end
-
-	if_as_complex_stack: STACK [BOOLEAN]
-		-- Stack corresponding to nested if instructions.
-		-- The top value corresponds to the innermost if instruction being analyzed.
-		-- If no if instruction is currently being processed, the stack is empty.
-		-- Values indicate whether the corresponding if instruction should be treated
-		-- as a complex block (True) or as a simple instruction (False).
-
-	process_elseif_as (a_as: ELSIF_AS)
-			-- Process `a_as'.
-		do
-			check if_as_complex_stack_not_empty: not if_as_complex_stack.is_empty end
-
-			if if_as_complex_stack.item then
-				process_elseif_as_complex (a_as)
-			else
-					-- Process as instruction
-				instruction_pre (a_as)
-				Precursor (a_as)
-				instruction_post (a_as)
-			end
-		end
-
 	process_inspect_as (a_as: INSPECT_AS)
 			-- Process `a_as'.
 		do
@@ -793,9 +745,9 @@ feature {AST_EIFFEL} -- Instructions visitors
 			instruction_post (a_as)
 		end
 
-feature {AST_EIFFEL} -- Complex block processing
+feature {AST_EIFFEL} -- Complex instructions visitors
 
-	process_if_as_complex (a_as: IF_AS)
+	process_if_as (a_as: IF_AS)
 			-- Process `a_as' as a complex block.
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
@@ -820,7 +772,7 @@ feature {AST_EIFFEL} -- Complex block processing
 			oracle.end_process_block (enum_block_type.Bt_if)
 		end
 
-	process_elseif_as_complex (a_as: ELSIF_AS)
+	process_elseif_as (a_as: ELSIF_AS)
 			-- Process `a_as' as a complex block.
 		do
 			safe_process (a_as.elseif_keyword (match_list))

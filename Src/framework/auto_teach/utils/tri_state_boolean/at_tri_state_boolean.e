@@ -23,31 +23,31 @@ feature -- Value
 
 	value: BOOLEAN
 		require
-			defined
+			is_defined
 		do
 			Result := internal_value
 		end
 
-	defined: BOOLEAN	 -- TODO: rename to is_defined
+	is_defined: BOOLEAN
 
 	is_undefined: BOOLEAN
 		do
-			Result := not defined
+			Result := not is_defined
 		end
 
 	is_true: BOOLEAN
 		do
-			Result := defined and then value
+			Result := is_defined and then value
 		end
 
 	is_false: BOOLEAN
 		do
-			Result := defined and then not value
+			Result := is_defined and then not value
 		end
 
 	out: STRING
 		do
-			if defined then
+			if is_defined then
 				Result := value.out
 			else
 				Result := "Undefined"
@@ -58,7 +58,7 @@ feature -- Assignment
 
 	set_value (a_value: BOOLEAN)
 		do
-			defined := True
+			is_defined := True
 			internal_value := a_value
 		end
 
@@ -74,7 +74,7 @@ feature -- Assignment
 
 	set_undefined
 		do
-			defined := False
+			is_defined := False
 		end
 
 	from_string (a_string: READABLE_STRING_GENERAL)
@@ -115,7 +115,7 @@ feature -- Comparison
 	is_equal (other: like Current): BOOLEAN
 			-- Is `Current' equal to `other'?
 		do
-			Result := (not Current.defined and not other.defined) or else (Current.defined and other.defined and Current.value = other.value)
+			Result := (not Current.is_defined and not other.is_defined) or else (Current.is_defined and other.is_defined and Current.value = other.value)
 		end
 
 feature -- Operations
@@ -123,9 +123,9 @@ feature -- Operations
 	conjuncted alias "and", conjuncted_semistrict alias "and then" (other: like Current): like Current
 			-- Boolean conjunction with `other'
 		do
-			if not Current.defined then
+			if not Current.is_defined then
 				Result := other
-			elseif not other.defined then
+			elseif not other.is_defined then
 				Result := Current
 			else
 					-- Both are defined
@@ -138,7 +138,7 @@ feature -- Operations
 	negated alias "not": like Current
 			-- Negation
 		do
-			if not defined then
+			if not is_defined then
 				create Result.make_undefined
 			else
 				create Result.make_defined (not value)
@@ -148,9 +148,9 @@ feature -- Operations
 	disjuncted alias "or", disjuncted_semistrict alias "or else" (other: like Current): like Current
 			-- Boolean disjunction with `other'
 		do
-			if not Current.defined then
+			if not Current.is_defined then
 				Result := other
-			elseif not other.defined then
+			elseif not other.is_defined then
 				Result := Current
 			else
 					-- Both are defined
@@ -161,9 +161,9 @@ feature -- Operations
 	disjuncted_exclusive alias "xor" (other: like Current): like Current
 			-- Boolean exclusive or with `other'
 		do
-			if not Current.defined then
+			if not Current.is_defined then
 				Result := other
-			elseif not other.defined then
+			elseif not other.is_defined then
 				Result := Current
 			else
 					-- Both are defined
@@ -174,7 +174,7 @@ feature -- Operations
 	subjected_to (other: like Current): like Current
 			-- If `other' is defined, Current. Otherwise `other'.
 		do
-			if other.defined then
+			if other.is_defined then
 				Result := other
 			else
 				Result := Current
@@ -184,7 +184,7 @@ feature -- Operations
 	imposed_on (other: like Current): like Current
 			-- If current is defined, Current. Otherwise `other'.
 		do
-			if defined then
+			if is_defined then
 				Result := Current
 			else
 				Result := other
@@ -194,7 +194,7 @@ feature -- Operations
 	imposed_on_bool (other: BOOLEAN): BOOLEAN
 			-- If current is defined, the value of Current. Otherwise `other'.
 		do
-			if defined then
+			if is_defined then
 				Result := value
 			else
 				Result := other
@@ -208,13 +208,13 @@ feature {NONE} -- Initialization
 	make_undefined, default_create
 			-- Initialize `Current' in the undefined state.
 		do
-			defined := False
+			is_defined := False
 		end
 
 	make_defined (a_value: BOOLEAN)
 			-- Initialize `Current' to `a_value'.
 		do
-			defined := True
+			is_defined := True
 			internal_value := a_value
 		end
 
