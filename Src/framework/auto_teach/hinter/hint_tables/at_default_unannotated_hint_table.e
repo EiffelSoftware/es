@@ -83,7 +83,7 @@ feature {NONE} -- Initialization
 			content_table.put	(<< 	Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_true,		Tri_true			>>, enum_block_type.Bt_loop_invariant)
 				-- Contains assertions.
 			table.put 			(<< 	Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_loop_body)
-			content_table.put	(<< 	Tri_true,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_true			>>, enum_block_type.Bt_loop_body)
+			content_table.put	(<< 	Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_true			>>, enum_block_type.Bt_loop_body)
 				-- Contains instructions.
 			table.put 			(<< 	Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_loop_variant)
 			content_table.put	(<< 	Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_true,		Tri_true			>>, enum_block_type.Bt_loop_variant)
