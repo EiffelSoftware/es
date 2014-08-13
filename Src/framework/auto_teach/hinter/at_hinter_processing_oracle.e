@@ -476,7 +476,7 @@ feature {NONE} -- Implementation
 
 
 		ensure
-			attached blocks_visibility
+--			attached blocks_visibility
 		end
 
 	is_block_globally_visible (a_block_type: AT_BLOCK_TYPE): BOOLEAN

@@ -16,11 +16,11 @@ feature -- Access
 	numerical_values: ARRAY [INTEGER]
 		local
 			i: INTEGER
-		once
-			create Result.make_filled (-1, 0, values.count)
+		once ("OBJECT")
+			create Result.make_filled (-1, 1, values.count)
 
 			from
-				i := 0
+				i := 1
 			until
 				i > Result.count
 			loop
@@ -32,11 +32,11 @@ feature -- Access
 	value_names: ARRAY [STRING]
 		local
 			i: INTEGER
-		once
-			create Result.make_filled (Void, 0, values.count)
+		once ("OBJECT")
+			create Result.make_filled (Void, 1, values.count)
 
 			from
-				i := 0
+				i := 1
 			until
 				i > Result.count
 			loop
@@ -46,6 +46,13 @@ feature -- Access
 		end
 
 	values: ARRAY [like tuple_type]
+		deferred
+		end
+
+	value_type: AT_ENUM_VALUE
+			-- The value type of this enum. For typing only.
+		require
+			callable: False
 		deferred
 		end
 
@@ -99,6 +106,16 @@ feature -- Access
 	is_valid_value_name (a_value_name: STRING): BOOLEAN
 		do
 			Result := find_tuple (values, a_value_name, 2) /= Void
+		end
+
+	value (a_value_name: STRING): like value_type
+			-- The value with name `a_value_name'.
+		deferred
+		end
+
+	value_from_number (a_numerical_value: INTEGER): like value_type
+			-- The value with numerical value `a_numerical_value'.
+		deferred
 		end
 
 feature {NONE} -- Implementation

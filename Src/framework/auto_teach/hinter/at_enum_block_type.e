@@ -11,10 +11,33 @@ inherit
 
 	AT_ENUM
 
+
+feature -- Access
+
+	value_type: AT_BLOCK_TYPE
+			-- The value type of this enum. For typing only.
+		do
+			check callable: False end
+		end
+
+	value (a_value_name: STRING): like value_type
+			-- The value with name `a_value_name'.
+		do
+			create Result.make_with_value_name (a_value_name)
+		end
+
+	value_from_number (a_numerical_value: INTEGER): like value_type
+			-- The value with numerical value `a_numerical_value'.
+		do
+			create Result.make_with_numerical_value (a_numerical_value)
+		end
+
+
 feature -- Values
 
-	values: ARRAY [TUPLE [numerical_value: INTEGER; name: STRING]] -- For some reason, "like tuple_type" is not allowed
-		once
+		-- For some reason, "like tuple_type" is not allowed for `once' features
+	values: ARRAY [TUPLE [numerical_value: INTEGER; name: STRING]]
+		once ("PROCESS")
 			Result := <<	[1, at_strings.bt_feature],
 							[2, at_strings.bt_arguments],
 							[3, at_strings.bt_precondition],
@@ -25,56 +48,44 @@ feature -- Values
 		end
 
 	bt_feature: AT_BLOCK_TYPE
-		once
-			create Result.make_with_value_name (at_strings.bt_feature)
+		once ("PROCESS")
+			create Result.make_with_numerical_value (1)
 		end
 
 	bt_arguments: AT_BLOCK_TYPE
-		once
-			create Result.make_with_value_name (at_strings.bt_arguments)
+		once ("PROCESS")
+			create Result.make_with_numerical_value (2)
 		end
 
 	bt_precondition: AT_BLOCK_TYPE
-		once
-			create Result.make_with_value_name (at_strings.bt_precondition)
+		once ("PROCESS")
+			create Result.make_with_numerical_value (3)
 		end
 
 	bt_locals: AT_BLOCK_TYPE
-		once
-			create Result.make_with_value_name (at_strings.bt_locals)
+		once ("PROCESS")
+			create Result.make_with_numerical_value (4)
 		end
 
 	bt_routine_body: AT_BLOCK_TYPE
-		once
-			create Result.make_with_value_name (at_strings.bt_routine_body)
+		once ("PROCESS")
+			create Result.make_with_numerical_value (5)
 		end
 
 	bt_postcondition: AT_BLOCK_TYPE
-		once
-			create Result.make_with_value_name (at_strings.bt_postcondition)
+		once ("PROCESS")
+			create Result.make_with_numerical_value (6)
 		end
 
 	bt_class_invariant: AT_BLOCK_TYPE
-		once
-			create Result.make_with_value_name (at_strings.bt_class_invariant)
-		end
-
-	value (a_value_name: STRING): AT_BLOCK_TYPE
-			-- The value with name `a_value_name'.
-		do
-			create Result.make_with_value_name (a_value_name)
-		end
-
-	value_from_number (a_numerical_value: INTEGER): AT_BLOCK_TYPE
-			-- The value with numerical value `a_numerical_value'.
-		do
-			create Result.make_with_numerical_value (a_numerical_value)
+		once ("PROCESS")
+			create Result.make_with_numerical_value (7)
 		end
 
 feature {NONE} -- Implementation
 
 	at_strings: AT_STRINGS
-		once
+		once ("PROCESS")
 			create Result
 		end
 

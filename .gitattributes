@@ -3436,6 +3436,11 @@ Src/experimental/library/wizard/help/Clib/htmlhelp.lib -text
 Src/framework/alias_calculus/alias_calculus.rc -text
 Src/framework/alias_calculus/application_with_printout.BK -text
 Src/framework/alias_calculus/results.txt -text
+Src/framework/auto_teach/hinter/at_block_type.e -text svneol=native#unset
+Src/framework/auto_teach/hinter/at_enum_block_type.e -text svneol=native#unset
+Src/framework/auto_teach/hinter/at_hinter.e -text svneol=native#unset
+Src/framework/auto_teach/utils/enum/at_enum.e -text svneol=native#unset
+Src/framework/auto_teach/utils/enum/at_enum_value.e -text svneol=native#unset
 Src/framework/auto_test/Clib/lp_solve/README.txt -text
 Src/framework/auto_test/Clib/lp_solve/bfp/bfp_LUSOL/LUSOL/LUSOL-overview.txt -text
 Src/framework/auto_test/Clib/lp_solve/bfp/bfp_LUSOL/LUSOL/LUSOL_LGPL.txt -text

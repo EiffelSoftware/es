@@ -21,7 +21,7 @@ create
 feature -- Enum type
 
 	enum_type: AT_ENUM
-		once
+		once  ("PROCESS")
 			create {AT_ENUM_BLOCK_TYPE} Result
 		end
 

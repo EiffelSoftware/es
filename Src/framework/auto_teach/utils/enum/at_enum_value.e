@@ -4,7 +4,7 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-expanded class -- Virtually deferred
+deferred class
 	AT_ENUM_VALUE
 
 inherit
@@ -24,17 +24,15 @@ feature -- Access
 
 	enum_type: AT_ENUM
 			-- The enum type of this value.
-			-- Deferred, to be redefined
-		require
-			callable: False
-		do
-			check callable: False end
+		deferred
 		end
 
 	numerical_value: INTEGER
+			-- The numerical value of this enum value. Immutable.
 
 	value_name: STRING
-		do
+			-- The name of this enum value. Immutable.			
+		once  ("OBJECT")
 			Result := enum_type.value_name (numerical_value)
 		end
 
@@ -45,7 +43,7 @@ feature -- Access
 
 	hash_code: INTEGER
 			-- Hash code value
-		do
+		once  ("OBJECT")
 				-- As hash codes are always non-negative, the following operation
 				-- can never result in an over/underflow. Think about it.
 			Result := (enum_type.name.hash_code - numerical_value.abs).hash_code
@@ -56,21 +54,33 @@ feature {NONE} -- Initialization - to be used by descendants
 	make_with_numerical_value (a_numerical_value: INTEGER)
 			-- Initialization for `Current'.
 		require
-			valid_numerical_value: enum_type.is_valid_numerical_value (a_numerical_value)
+			valid_numerical_value: Current.enum_type.is_valid_numerical_value (a_numerical_value)
 		do
+			initializing := True
+
+				-- We need to make a dynamic call, that's why we need to qualify it with 'Current'.
 			numerical_value := a_numerical_value
+			initializing := False
 		end
 
 	make_with_value_name (a_value_name: STRING)
 			-- Initialization for `Current'.
 		require
-			valid_value_name: enum_type.is_valid_value_name (a_value_name)
+			valid_value_name: Current.enum_type.is_valid_value_name (a_value_name)
 		do
-			numerical_value := enum_type.numerical_value (a_value_name)
+			initializing := True
+
+				-- We need to make a dynamic call, that's why we need to qualify it with 'Current'.
+			numerical_value := Current.enum_type.numerical_value (a_value_name)
+			initializing := False
 		end
+
+	initializing: BOOLEAN
+		-- Disables the invariant
 
 invariant
 
-	valid_numerical_value: enum_type.is_valid_numerical_value (numerical_value)
+		-- 'Dented' invariant, disabled during initialization.
+	valid_numerical_value: initializing or else enum_type.is_valid_numerical_value (numerical_value)
 
 end
