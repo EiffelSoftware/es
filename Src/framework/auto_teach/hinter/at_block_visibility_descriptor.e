@@ -15,7 +15,7 @@ feature -- Access
 	block_type: AT_BLOCK_TYPE
 			-- The type of this block.
 
-	default_visibility: BOOLEAN
+	default_visibility: AT_TRI_STATE_BOOLEAN
 			-- The default visibility for this block.
 		do
 			Result := default_visibility_agent.item ([block_type])
@@ -29,6 +29,28 @@ feature -- Access
 			-- Local (one occurrence only) visibility override flag.
 			-- If set to True or False, overrides the default visibility
 			-- and the global visibility flag.
+
+	effective_visibility: AT_TRI_STATE_BOOLEAN
+			-- What is the effective visibility for this block type,
+			-- keeping the default value and the overrides into account?
+		do
+				-- Inner to outer. More specific overrides win over general settings.
+			Result := default_visibility.subjected_to (global_visibility_override).subjected_to (local_visibility_override)
+		end
+
+	effective_visibility_policy_type: AT_POLICY_TYPE
+			-- Where does the `effective_visibility' value come from?
+		do
+			if local_visibility_override.is_defined then
+				Result := enum_policy_type.Pt_local
+			elseif global_visibility_override.is_defined then
+				Result := enum_policy_type.Pt_global
+			elseif default_visibility.is_defined then
+				Result := enum_policy_type.Pt_default
+			else
+				Result := enum_policy_type.Pt_not_set
+			end
+		end
 
 	reset_overrides
 			-- Reset all the visibility override attributes.
@@ -67,8 +89,14 @@ feature {NONE} -- Setters
 
 feature {NONE} -- Implementation
 
-	default_visibility_agent: FUNCTION [ANY, TUPLE [AT_BLOCK_TYPE], BOOLEAN]
+	default_visibility_agent: FUNCTION [ANY, TUPLE [AT_BLOCK_TYPE], AT_TRI_STATE_BOOLEAN]
 			-- Agent for retrieving the default visibility for this block type.
+
+	enum_policy_type: AT_ENUM_POLICY_TYPE
+			-- Instance of the `AT_ENUM_POLICY_TYPE' type class.
+		once ("PROCESS")
+			create Result
+		end
 
 feature {NONE} -- Initialization
 

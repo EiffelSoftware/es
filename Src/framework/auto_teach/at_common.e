@@ -30,7 +30,12 @@ feature -- Enums
 			create Result
 		end
 
-	enum_placeholder_type: AT_ENUM_PLACEHOLDER
+	enum_placeholder: AT_ENUM_PLACEHOLDER
+		once ("PROCESS")
+			create Result
+		end
+
+	enum_policy_type: AT_ENUM_POLICY_TYPE
 		once ("PROCESS")
 			create Result
 		end

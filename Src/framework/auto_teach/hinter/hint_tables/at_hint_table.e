@@ -13,12 +13,12 @@ inherit
 
 feature -- Access
 
-	visibility_for (a_block_type: AT_BLOCK_TYPE; a_hint_level: INTEGER): TUPLE [visibility: BOOLEAN; explicitly_defined: BOOLEAN]
+	visibility_for (a_block_type: AT_BLOCK_TYPE; a_hint_level: INTEGER): TUPLE [visibility: AT_TRI_STATE_BOOLEAN; explicitly_defined: BOOLEAN]
 			-- Access the visibility table, looking for the specified block type and hint level.
 		require
 			valid_hint_level: is_valid_hint_level (a_hint_level)
 		local
-			l_table_row: ARRAY [BOOLEAN]
+			l_table_row: ARRAY [AT_TRI_STATE_BOOLEAN]
 		do
 				-- Guaranteed by the invariant:
 			check
@@ -80,7 +80,7 @@ feature -- Access
 
 feature {AT_HINT_TABLE} -- Implementation
 
-	table: HASH_TABLE [ARRAY [BOOLEAN], AT_BLOCK_TYPE]
+	table: HASH_TABLE [ARRAY [AT_TRI_STATE_BOOLEAN], AT_BLOCK_TYPE]
 			-- Contains the visibility defaults for all blocks.
 
 	content_table: HASH_TABLE [ARRAY [AT_TRI_STATE_BOOLEAN], AT_BLOCK_TYPE]

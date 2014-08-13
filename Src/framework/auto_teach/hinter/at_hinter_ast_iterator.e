@@ -247,7 +247,7 @@ feature {NONE} -- Implementation - skipping
 				l_new_line_with_tabs := ""
 			end
 
-			if a_placeholder_type /= enum_placeholder_type.Ph_none and not placeholder_inserted then
+			if a_placeholder_type /= enum_placeholder.Ph_none and not placeholder_inserted then
 					-- Insert placeholder
 				put_string_forced (l_new_line_with_tabs + a_placeholder_type.text + l_new_line_with_tabs, True)
 				placeholder_inserted := True
@@ -267,7 +267,7 @@ feature {NONE} -- Implementation - skipping
 			if options.insert_code_placeholder then
 				l_placeholder := oracle.current_placeholder_type
 			else
-				l_placeholder := enum_placeholder_type.Ph_none
+				l_placeholder := enum_placeholder.Ph_none
 			end
 			skip (not oracle.current_placeholder_type.is_inline, l_placeholder)
 		end
@@ -616,6 +616,7 @@ feature {AST_EIFFEL} -- Visitors
 			oracle.end_process_block (enum_block_type.Bt_class_invariant)
 		end
 
+		-- TODO: this seems to catch tuple declarations as well!
 	process_tagged_as (a_as: TAGGED_AS)
 			-- Process `a_as'.
 		do

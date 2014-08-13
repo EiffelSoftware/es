@@ -9,17 +9,19 @@ deferred class
 
 inherit
 
-	ANY
-		redefine
-			is_equal
-		end
-
 	HASHABLE
 		undefine
 			is_equal
 		redefine
 			hash_code
 		end
+
+	COMPARABLE
+		redefine
+			is_equal,
+			is_less
+		end
+
 
 feature -- Access
 
@@ -58,6 +60,12 @@ feature -- Comparison
 			-- <Precursor>
 		do
 			Result := a_other.enum_type.is_equal (enum_type) and then a_other.internal_numerical_value.is_equal (numerical_value)
+		end
+
+	is_less alias "<" (a_other: like Current): BOOLEAN
+			-- <Precursor>
+		do
+			Result := internal_numerical_value < a_other.internal_numerical_value
 		end
 
 	hash_code: INTEGER

@@ -28,8 +28,8 @@ feature {NONE} -- Initialization
 			l_content: BOOLEAN
 			l_block_type: AT_BLOCK_TYPE
 			l_exception: DEVELOPER_EXCEPTION
-			l_table_row: ARRAY [BOOLEAN]
-			l_content_table_row: ARRAY [AT_TRI_STATE_BOOLEAN]
+			l_table: like table -- and like content_table
+			l_table_row: ARRAY [AT_TRI_STATE_BOOLEAN]
 			l_description: STRING
 		do
 			create table.make (suggested_tables_initial_size)
@@ -72,60 +72,35 @@ feature {NONE} -- Initialization
 					if l_words.is_empty then
 						create l_exception
 						l_exception.set_description (at_strings.error_empty_row (file_line_number))
-					elseif not l_content then
-							-- Visibility table
-						if table.has_key (l_block_type) then
+					elseif l_content and then not enum_block_type.is_complex_block_type (l_block_type) then
+						create l_exception
+						l_exception.set_description (at_strings.error_simple_block_in_content_visibility_table (file_line_number, l_block_type.value_name))
+					else
+							-- Select the table to insert the line into.
+						l_table := (if l_content then content_table else table end)
+
+						if l_table.has_key (l_block_type) then
 							create l_exception
 							l_exception.set_description (at_strings.error_duplicate_entry (file_line_number, l_block_type.value_name))
 						end
 
-						create l_table_row.make_filled (False, 1, l_words.count)
-
+						create l_table_row.make_filled (Tri_undefined, 1, l_words.count)
 						from
 							i := 1
 							l_words.start
 						until
 							i > l_words.count or attached l_exception
 						loop
-							if l_words.item.is_boolean then
-								l_table_row [i] := l_words.item.to_boolean
+							if l_table_row [i].is_valid_string_value (l_words.item) then
+								l_table_row [i].from_string (l_words.item)
 							else
 								create l_exception
-								l_exception.set_description (at_strings.error_value_parse_error (file_line_number, l_words.item, "boolean"))
+								l_exception.set_description (at_strings.error_value_parse_error (file_line_number, l_words.item, "tri-state boolean"))
 							end
 							i := i + 1
 							l_words.forth
 						end
-						table [l_block_type] := l_table_row
-					else
-						if enum_block_type.is_complex_block_type (l_block_type) then
-								-- Content visibility table row
-							if content_table.has_key (l_block_type) then
-								create l_exception
-								l_exception.set_description (at_strings.error_duplicate_entry (file_line_number, l_block_type.value_name))
-							end
-
-							create l_content_table_row.make_filled (Tri_undefined, 1, l_words.count)
-							from
-								i := 1
-								l_words.start
-							until
-								i > l_words.count or attached l_exception
-							loop
-								if l_content_table_row [i].is_valid_string_value (l_words.item) then
-									l_content_table_row [i].from_string (l_words.item)
-								else
-									create l_exception
-									l_exception.set_description (at_strings.error_value_parse_error (file_line_number, l_words.item, "tri-state boolean"))
-								end
-								i := i + 1
-								l_words.forth
-							end
-							content_table [l_block_type] := l_content_table_row
-						else
-							create l_exception
-							l_exception.set_description (at_strings.error_simple_block_in_content_visibility_table (file_line_number, l_block_type.value_name))
-						end
+						l_table [l_block_type] := l_table_row
 					end
 				end
 

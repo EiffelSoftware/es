@@ -181,6 +181,7 @@ feature -- Complex blocks
 			Result := complex_block_types.has (a_block_type)
 		end
 
+		-- TODO: replace 'simple' with atomic throughout the whole project.
 	is_simple_block_type (a_block_type: AT_BLOCK_TYPE): BOOLEAN
 			-- Is `a_block_type' a simple block type?
 		do

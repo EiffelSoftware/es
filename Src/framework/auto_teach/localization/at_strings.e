@@ -57,14 +57,16 @@ feature -- Warnings
 			Result := locale.translation ("The following meta-command was not recognized, and therefore ignored:%N")
 		end
 
-	meta_command_in_skipped_routine: STRING_32
-		do
-			Result := locale.translation ("This meta-command is located in skipped routine, and will be ignored. To suppress this warning, specify an appropriate hint level for the command so that it is only enabled when the outside routine is not skipped.")
-		end
-
 	no_custom_hint_table_loaded: STRING_32
 		do
 			Result := locale.translation ("Cannot switch to custom mode, as no custom hint table has been loaded.")
+		end
+
+	undefined_visibility (a_block_type_names: STRING): STRING_32
+		do
+			Result := locale.translation ("Warning: one or more occurrences of the following block types have been encountered for the visibility of which was undefined (neither in the hint table, nor with annotations).+%N"
+				+ a_block_type_names + "%N"
+				+ "In these cases, the visibility is defaulted to true. However, a well-built hint table should never allow this situation.")
 		end
 
 feature -- Errors
@@ -222,6 +224,7 @@ feature -- Block types
 	Bt_precondition: STRING = "precondition"
 
 	Bt_locals: STRING = "locals"
+		-- TODO: add block for single local variable declaration.
 
 	Bt_routine_body: STRING = "routine_body"
 

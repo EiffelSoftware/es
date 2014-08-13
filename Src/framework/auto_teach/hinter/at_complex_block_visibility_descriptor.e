@@ -36,6 +36,28 @@ feature -- Access
 			-- If set to True or False, overrides the default content visibility
 			-- and the global content visibility flag.
 
+	effective_content_visibility: AT_TRI_STATE_BOOLEAN
+			-- What is the effective content visibility for this block type,
+			-- keeping the default value and the overrides into account?
+		do
+				-- Inner to outer. More specific overrides win over general settings.
+			Result := default_content_visibility.subjected_to (global_content_visibility_override).subjected_to (local_content_visibility_override)
+		end
+
+	effective_content_visibility_policy_type: AT_POLICY_TYPE
+			-- Where does the `effective_content_visibility' value come from?
+		do
+			if local_content_visibility_override.is_defined then
+				Result := enum_policy_type.Pt_local
+			elseif global_content_visibility_override.is_defined then
+				Result := enum_policy_type.Pt_global
+			elseif default_content_visibility.is_defined then
+				Result := enum_policy_type.Pt_default
+			else
+				Result := enum_policy_type.Pt_not_set
+			end
+		end
+
 	reset_overrides
 			-- Reset all the visibility and content visibility override attributes.
 		do

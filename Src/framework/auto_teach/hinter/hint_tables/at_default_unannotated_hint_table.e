@@ -36,53 +36,64 @@ feature {NONE} -- Initialization
 			-- Level 6: Show condition of if statements and initialization, termination condition, variant and invariant of loop statements.
 			-- Level 7: Show body of everything.
 
-			-- Hint level:				1				2				3				4				5				6				7
-			table.put 			(<< 	True,			True,			True,			True,			True,			True,			True				>>, enum_block_type.Bt_feature)
+				-- We take care of assertions and instructions as the last thing.
+
+			table.put 			(<< 	Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_feature)
 			content_table.put 	(<< 	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined		>>, enum_block_type.Bt_feature)
 
-			table.put 			(<< 	False,			True,			True,			True,			True,			True,			True				>>, enum_block_type.Bt_arguments)
+			table.put 			(<< 	Tri_false,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_arguments)
 
-			table.put 			(<< 	True,			True,			True,			True,			True,			True,			True				>>, enum_block_type.Bt_precondition)
+			table.put 			(<< 	Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_precondition)
 			content_table.put	(<< 	Tri_false,		Tri_false,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_precondition)
-			table.put 			(<< 	False,			False,			False,			False,			False,			False,			False				>>, enum_block_type.Bt_assertion) -- Should always be overridden by something
+				-- Contains assertions.
 
-			table.put 			(<< 	True,			True,			True,			True,			True,			True,			True				>>, enum_block_type.Bt_locals)
+			table.put 			(<< 	Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_locals)
 			content_table.put 	(<< 	Tri_false,		Tri_false,		Tri_false,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_locals)
 
-			table.put 			(<< 	True,			True,			True,			True,			True,			True,			True				>>, enum_block_type.Bt_routine_body)
+			table.put 			(<< 	Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_routine_body)
 			content_table.put	(<< 	Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_true			>>, enum_block_type.Bt_routine_body)
-			table.put 			(<< 	False,			False,			False,			False,			False,			False,			False				>>, enum_block_type.Bt_instruction)  -- Should always be overridden by something
+				-- Contains instructions.
 
-			table.put 			(<< 	False,			False,			False,			False,			True,			True,			True				>>, enum_block_type.Bt_if)
-			content_table.put	(<< 	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_true,		Tri_true			>>, enum_block_type.Bt_if)
-			table.put 			(<< 	False,			False,			False,			False,			False,			True,			True				>>, enum_block_type.Bt_if_condition)
-			table.put 			(<< 	True,			True,			True,			True,			True,			True,			True				>>, enum_block_type.Bt_if_branch)
+			table.put 			(<< 	Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_if)
+			content_table.put	(<< 	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined		>>, enum_block_type.Bt_if)
+			table.put 			(<< 	Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_true,		Tri_true			>>, enum_block_type.Bt_if_condition)
+			table.put 			(<< 	Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_if_branch)
 			content_table.put	(<< 	Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_true			>>, enum_block_type.Bt_if_branch)
+				-- Contains instructions.
 
-			table.put 			(<< 	False,			False,			False,			False,			True,			True,			True				>>, enum_block_type.Bt_inspect)
+			table.put 			(<< 	Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_inspect)
 			content_table.put	(<< 	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined		>>, enum_block_type.Bt_inspect)
-			table.put 			(<< 	True,			True,			True,			True,			True,			True,			True				>>, enum_block_type.Bt_inspect_branch)
+			table.put 			(<< 	Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_inspect_branch)
 			content_table.put	(<< 	Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_true			>>, enum_block_type.Bt_inspect_branch)
+				-- Contains instructions.
 
-			table.put 			(<< 	False,			False,			False,			False,			True,			True,			True				>>, enum_block_type.Bt_loop)
-			content_table.put	(<< 	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_true,		Tri_true			>>, enum_block_type.Bt_loop)
-			table.put 			(<< 	False,			False,			False,			False,			False,			True,			True				>>, enum_block_type.Bt_loop_termination_condition)
-			table.put 			(<< 	True,			True,			True,			True,			True,			True,			True				>>, enum_block_type.Bt_loop_initialization)
+			table.put 			(<< 	Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_loop)
+			content_table.put	(<< 	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined		>>, enum_block_type.Bt_loop)
+			table.put 			(<< 	Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_true,		Tri_true			>>, enum_block_type.Bt_loop_termination_condition)
+			table.put 			(<< 	Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_loop_initialization)
 			content_table.put	(<< 	Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_true,		Tri_true			>>, enum_block_type.Bt_loop_initialization)
-			table.put 			(<< 	True,			True,			True,			True,			True,			True,			True				>>, enum_block_type.Bt_loop_invariant)
+				-- Contains instructions.
+			table.put 			(<< 	Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_loop_invariant)
 			content_table.put	(<< 	Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_true,		Tri_true			>>, enum_block_type.Bt_loop_invariant)
-			table.put 			(<< 	True,			True,			True,			True,			True,			True,			True				>>, enum_block_type.Bt_loop_body)
+				-- Contains assertions.
+			table.put 			(<< 	Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_loop_body)
 			content_table.put	(<< 	Tri_true,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_true			>>, enum_block_type.Bt_loop_body)
-			table.put 			(<< 	True,			True,			True,			True,			True,			True,			True				>>, enum_block_type.Bt_loop_variant)
+				-- Contains instructions.
+			table.put 			(<< 	Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_loop_variant)
 			content_table.put	(<< 	Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_true,		Tri_true			>>, enum_block_type.Bt_loop_variant)
 
-			table.put 			(<< 	True,			True,			True,			True,			True,			True,			True				>>, enum_block_type.Bt_postcondition)
+			table.put 			(<< 	Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_postcondition)
 			content_table.put	(<< 	Tri_false,		Tri_false,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_postcondition)
-				-- We already inserted the row for assertions
+				-- Contains assertions.
 
-			table.put 			(<< 	True,			True,			True,			True,			True,			True,			True				>>, enum_block_type.Bt_class_invariant)
+			table.put 			(<< 	Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_class_invariant)
 			content_table.put	(<< 	Tri_false,		Tri_false,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_class_invariant)
-				-- We already inserted the row for assertions.
+				-- Contains assertions.
+
+			table.put 			(<< 	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined		>>, enum_block_type.Bt_assertion)
+				-- The visibility of assertions should not be fixed. Instead, it should be determined by their location.
+			table.put 			(<< 	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined		>>, enum_block_type.Bt_instruction)
+				-- The visibility of instructions should not be fixed. Instead, it should be determined by their location.
 
 		end
 
