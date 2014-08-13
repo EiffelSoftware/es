@@ -32,11 +32,9 @@ feature -- Access
 			create Result.make_with_numerical_value (a_numerical_value)
 		end
 
+feature {AT_ENUM_VALUE} -- Value list
 
-feature -- Values
-
-		-- For some reason, "like tuple_type" is not allowed for `once' features
-	values: ARRAY [TUPLE [numerical_value: INTEGER; name: STRING]]
+	value_list: ARRAY [TUPLE [numerical_value: INTEGER; name: STRING]]
 		once ("PROCESS")
 			Result := <<	[1, at_strings.bt_feature],
 							[2, at_strings.bt_arguments],
@@ -46,6 +44,9 @@ feature -- Values
 							[6, at_strings.bt_postcondition],
 							[7, at_strings.bt_class_invariant]		>>
 		end
+
+
+feature -- Values
 
 	bt_feature: AT_BLOCK_TYPE
 		once ("PROCESS")
@@ -80,6 +81,18 @@ feature -- Values
 	bt_class_invariant: AT_BLOCK_TYPE
 		once ("PROCESS")
 			create Result.make_with_numerical_value (7)
+		end
+
+feature -- Complex blocks
+
+	complex_block_types: ARRAY [AT_BLOCK_TYPE]
+		once ("PROCESS")
+			Result := << bt_feature >>
+		end
+
+	is_complex_block_type (a_block_type: AT_BLOCK_TYPE): BOOLEAN
+		do
+			Result := complex_block_types.has (a_block_type)
 		end
 
 feature {NONE} -- Implementation

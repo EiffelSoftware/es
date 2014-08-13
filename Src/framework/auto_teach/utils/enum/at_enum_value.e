@@ -31,8 +31,8 @@ feature -- Access
 			-- The numerical value of this enum value. Immutable.
 
 	value_name: STRING
-			-- The name of this enum value. Immutable.			
-		once  ("OBJECT")
+			-- The name of this enum value.
+		do
 			Result := enum_type.value_name (numerical_value)
 		end
 
@@ -43,7 +43,7 @@ feature -- Access
 
 	hash_code: INTEGER
 			-- Hash code value
-		once  ("OBJECT")
+		do
 				-- As hash codes are always non-negative, the following operation
 				-- can never result in an over/underflow. Think about it.
 			Result := (enum_type.name.hash_code - numerical_value.abs).hash_code
@@ -54,11 +54,10 @@ feature {NONE} -- Initialization - to be used by descendants
 	make_with_numerical_value (a_numerical_value: INTEGER)
 			-- Initialization for `Current'.
 		require
-			valid_numerical_value: Current.enum_type.is_valid_numerical_value (a_numerical_value)
+			valid_numerical_value: enum_type.is_valid_numerical_value (a_numerical_value)
 		do
 			initializing := True
 
-				-- We need to make a dynamic call, that's why we need to qualify it with 'Current'.
 			numerical_value := a_numerical_value
 			initializing := False
 		end
@@ -66,12 +65,11 @@ feature {NONE} -- Initialization - to be used by descendants
 	make_with_value_name (a_value_name: STRING)
 			-- Initialization for `Current'.
 		require
-			valid_value_name: Current.enum_type.is_valid_value_name (a_value_name)
+			valid_value_name: enum_type.is_valid_value_name (a_value_name)
 		do
 			initializing := True
 
-				-- We need to make a dynamic call, that's why we need to qualify it with 'Current'.
-			numerical_value := Current.enum_type.numerical_value (a_value_name)
+			numerical_value := enum_type.numerical_value (a_value_name)
 			initializing := False
 		end
 

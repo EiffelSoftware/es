@@ -17,14 +17,14 @@ feature -- Access
 		local
 			i: INTEGER
 		once ("OBJECT")
-			create Result.make_filled (-1, 1, values.count)
+			create Result.make_filled (-1, 1, value_list.count)
 
 			from
 				i := 1
 			until
 				i > Result.count
 			loop
-				Result [i] := values [i].numerical_value
+				Result [i] := value_list [i].numerical_value
 				i := i + 1
 			end
 		end
@@ -33,20 +33,16 @@ feature -- Access
 		local
 			i: INTEGER
 		once ("OBJECT")
-			create Result.make_filled (Void, 1, values.count)
+			create Result.make_filled (Void, 1, value_list.count)
 
 			from
 				i := 1
 			until
 				i > Result.count
 			loop
-				Result [i] := values [i].name
+				Result [i] := value_list [i].name
 				i := i + 1
 			end
-		end
-
-	values: ARRAY [like tuple_type]
-		deferred
 		end
 
 	value_type: AT_ENUM_VALUE
@@ -56,56 +52,32 @@ feature -- Access
 		deferred
 		end
 
-	tuple_type: TUPLE [numerical_value: INTEGER; name: STRING]
-			-- For typing only.
-		require
-			callable: False
-		do
-			check callable: False end
-		end
-
-	numerical_value (a_value_name: STRING): INTEGER
-		require
-			valid_value_name: is_valid_value_name (a_value_name)
+	values: ARRAY [like value_type]
 		local
-			l_generic_tuple: detachable TUPLE
-			l_tuple: like tuple_type
-		do
-			l_generic_tuple := find_tuple (values, a_value_name, 2)
-			check attached {TUPLE [numerical_value: INTEGER; name: STRING]} l_generic_tuple end
-			if attached {TUPLE [numerical_value: INTEGER; name: STRING]} l_generic_tuple as l_checked_tuple then
-					-- We do this just to make sure that the type is really "like tuple_type".
-					-- Unfortunately it is not possible to make an object test to "like tuple_type".
-				l_tuple := l_checked_tuple
-				Result := l_tuple.numerical_value
-			end
-		end
-
-	value_name (a_numerical_value: INTEGER): STRING
-		require
-			valid_numerical_value: is_valid_numerical_value (a_numerical_value)
-		local
-			l_generic_tuple: detachable TUPLE
-			l_tuple: like tuple_type
-		do
-			l_generic_tuple := find_tuple (values, a_numerical_value, 1)
-			check attached {TUPLE [numerical_value: INTEGER; name: STRING]} l_generic_tuple end
-			if attached {TUPLE [numerical_value: INTEGER; name: STRING]} l_generic_tuple as l_checked_tuple then
-					-- We do this just to make sure that the type is really "like tuple_type".
-					-- Unfortunately it is not possible to make an object test to "like tuple_type".
-				l_tuple := l_checked_tuple
-				Result := l_tuple.name
+			l_numerical_values: like numerical_values
+			l_value: like value_type
+			i: INTEGER
+		do -- once ("PROCESS")
+			l_numerical_values := numerical_values
+			create Result.make_filled (default_value, 1, l_numerical_values.count)
+			from
+				i := 1
+			until
+				i > l_numerical_values.count
+			loop
+				Result [i] := value_from_number (l_numerical_values [i])
+				i := i + 1
 			end
 		end
 
 	is_valid_numerical_value (a_numerical_value: INTEGER): BOOLEAN
 		do
-			Result := find_tuple (values, a_numerical_value, 1) /= Void
+			Result := find_tuple (value_list, a_numerical_value, 1) /= Void
 		end
 
 	is_valid_value_name (a_value_name: STRING): BOOLEAN
 		do
-			Result := find_tuple (values, a_value_name, 2) /= Void
+			Result := find_tuple (value_list, a_value_name, 2) /= Void
 		end
 
 	value (a_value_name: STRING): like value_type
@@ -118,7 +90,44 @@ feature -- Access
 		deferred
 		end
 
+feature {AT_ENUM} -- Value list
+
+	value_list: ARRAY [TUPLE [numerical_value: INTEGER; name: STRING]]
+		deferred
+		end
+
+feature {AT_ENUM_VALUE} -- Used by values
+
+	numerical_value (a_value_name: STRING): INTEGER
+		require
+			valid_value_name: is_valid_value_name (a_value_name)
+		local
+			l_generic_tuple: detachable TUPLE
+		do
+			l_generic_tuple := find_tuple (value_list, a_value_name, 2)
+			check attached {TUPLE [numerical_value: INTEGER; name: STRING]} l_generic_tuple end
+			if attached {TUPLE [numerical_value: INTEGER; name: STRING]} l_generic_tuple as l_tuple then
+				Result := l_tuple.numerical_value
+			end
+		end
+
+	value_name (a_numerical_value: INTEGER): STRING
+		require
+			valid_numerical_value: is_valid_numerical_value (a_numerical_value)
+		local
+			l_generic_tuple: detachable TUPLE
+		do
+			l_generic_tuple := find_tuple (value_list, a_numerical_value, 1)
+			check attached {TUPLE [numerical_value: INTEGER; name: STRING]} l_generic_tuple end
+			if attached {TUPLE [numerical_value: INTEGER; name: STRING]} l_generic_tuple as l_tuple then
+				Result := l_tuple.name
+			end
+		end
+
 feature {NONE} -- Implementation
+
+	default_value: like value_type
+		-- Trick: this works both for reference and expanded types.
 
 	find_tuple (a_tuples: ITERABLE [TUPLE]; a_value: ANY; a_position: INTEGER): detachable TUPLE
 		require

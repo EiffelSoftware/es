@@ -20,9 +20,9 @@ create
 
 feature -- Enum type
 
-	enum_type: AT_ENUM
-		once  ("PROCESS")
-			create {AT_ENUM_BLOCK_TYPE} Result
+	enum_type: AT_ENUM_BLOCK_TYPE
+		once ("PROCESS")
+			create Result
 		end
 
 end
