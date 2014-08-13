@@ -504,7 +504,7 @@ feature {NONE} -- Implementation: block visibility
 				current_placeholder_type := enum_placeholder.Ph_standard
 			else
 				l_current_block := block_stack.item.block_type
-				if l_current_block = enum_block_type.Bt_arguments then
+				if l_current_block = enum_block_type.Bt_arguments or l_current_block = enum_block_type.Bt_argument_declaration then
 					current_placeholder_type := enum_placeholder.Ph_arguments
 				elseif l_current_block = enum_block_type.Bt_if_condition then
 					current_placeholder_type := enum_placeholder.Ph_if_condition

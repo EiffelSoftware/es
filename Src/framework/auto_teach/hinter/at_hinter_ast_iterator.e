@@ -32,6 +32,9 @@ inherit
 				-- Locals
 			process_local_dec_list_as,
 
+				-- Argument and local declarations,
+			process_type_dec_as,
+
 				-- Contracts
 			process_require_as,
 			process_require_else_as,
@@ -438,6 +441,28 @@ feature {NONE} -- Implementation
 			end
 		end
 
+feature {NONE} -- Disambiguation
+
+	processing_named_tuple: BOOLEAN
+			-- Are we currently processing a named tuple?
+
+	processing_arguments: BOOLEAN
+			-- Are we currently processing some routine arguments?
+
+	processing_locals: BOOLEAN
+			-- Are we currently processing the local declarations of some routine?
+
+	is_at_most_one_disambiguation_flag_set: BOOLEAN
+		local
+			l_value: INTEGER
+		do
+			l_value := l_value + processing_named_tuple.to_integer
+			l_value := l_value + processing_arguments.to_integer
+			l_value := l_value + processing_locals.to_integer
+
+			Result := (l_value <= 1)
+		end
+
 feature {AST_EIFFEL} -- Visitors
 
 	process_require_else_as (a_as: REQUIRE_ELSE_AS)
@@ -487,9 +512,6 @@ feature {AST_EIFFEL} -- Visitors
 			processing_named_tuple := False
 		end
 
-	processing_named_tuple: BOOLEAN
-			-- Are we currently processing a named tuple?
-
 	process_formal_argu_dec_list_as (a_as: FORMAL_ARGU_DEC_LIST_AS)
 			-- Process `a_as'.
 		local
@@ -500,14 +522,15 @@ feature {AST_EIFFEL} -- Visitors
 				Precursor (a_as)
 			else
 				process_leading_leaves (a_as.first_token (match_list).index)
-
-					-- Treat the parentheses as a part of the routine declaration (parent block).
-					-- Only what's inside the parentheses is considered to be an "arguments" block.
-				safe_process (a_as.lparan_symbol (match_list))
-
 				oracle.begin_process_block (enum_block_type.Bt_arguments)
 
+				safe_process (a_as.lparan_symbol (match_list))
+
+				-- current_indentation := indentation (a_as.lparan_symbol (match_list)) + 1
+
+				processing_arguments := True
 				safe_process (a_as.arguments)
+				processing_arguments := False
 
 				if attached a_as.rparan_symbol (match_list) as l_parenthesis then
 						-- Hack in order to prevent the last break contained in the original arguments
@@ -517,9 +540,9 @@ feature {AST_EIFFEL} -- Visitors
 					last_unprinted_break_line := Void
 				end
 
-				oracle.end_process_block (enum_block_type.Bt_arguments)
-
 				safe_process (a_as.rparan_symbol (match_list))
+
+				oracle.end_process_block (enum_block_type.Bt_arguments)
 			end
 		end
 
@@ -543,29 +566,37 @@ feature {AST_EIFFEL} -- Visitors
 
 			current_indentation := l_indentation + 1
 
-				-- We would normally never skip any part of the syntax tree.
-				-- So one would expect that we call "safe_process (a_as.locals)"
-				-- here, and just rely on the oracle to prevent the local variable declarations.
-				-- from being actually output. So why aren't we doing this?
-				-- Assume we are in the case where the existence of the 'local' block is shown,
-				-- and we only have to hide the declarations inside. In this case, at this point
-				-- oracle.output_enabled is True, in order to let us print the parentheses.
-				-- Well, there is nothing preventing the arguments from being printed as well.
-				-- Right now the effective content visibility is False, but, as local declarations
-				-- are not explicitly processed by this iterator, nobody checks for it.
-				-- We will never notify the oracle that we are beginning to process one specific
-				-- variable declaration, so that it can disable the output entirely.
-				-- With pre/postconditions it's different, because assertions are explicitly processed
-				-- by this class, and the oracle is notified whenever a single assertion starts being processed.
-				-- So this long digression was to explain why here, exceptionally, we have to skip
-				-- a part of the syntax tree.
-			if oracle.output_enabled and oracle.current_content_visibility /= Tri_false then
-				safe_process (a_as.locals)
-			else
-				skip_with_current_placeholder
-			end
+			processing_locals := True
+			safe_process (a_as.locals)
+			processing_locals := False
 
 			oracle.end_process_block (enum_block_type.Bt_locals)
+		end
+
+	process_type_dec_as (a_as: TYPE_DEC_AS)
+			-- Process `a_as'
+		local
+			l_block_type: AT_BLOCK_TYPE
+		do
+			check arguments_nand_locals: not (processing_arguments and processing_locals) end
+
+			if not (processing_arguments or processing_locals) then
+				Precursor (a_as)
+			else
+				if processing_arguments then
+					l_block_type := enum_block_type.Bt_argument_declaration
+				elseif processing_locals then
+					l_block_type := enum_block_type.Bt_local_declaration
+				end
+
+				process_leading_leaves (a_as.first_token (match_list).index)
+				oracle.begin_process_block (l_block_type)
+
+				Precursor (a_as)
+
+				process_next_break (a_as)
+				oracle.end_process_block (l_block_type)
+			end
 		end
 
 	process_do_once_as (a_as: INTERNAL_AS)
@@ -987,5 +1018,8 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 			process_next_break (a_as)
 			oracle.end_process_block (enum_block_type.Bt_inspect_branch)
 		end
+
+invariant
+	at_most_one_disambiguation_flag: is_at_most_one_disambiguation_flag_set
 
 end

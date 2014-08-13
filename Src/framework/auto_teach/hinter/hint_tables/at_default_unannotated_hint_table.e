@@ -41,7 +41,10 @@ feature {NONE} -- Initialization
 			table.put 			(<< 	Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_feature)
 			content_table.put 	(<< 	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined		>>, enum_block_type.Bt_feature)
 
-			table.put 			(<< 	Tri_false,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_arguments)
+			table.put 			(<< 	Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_arguments)
+			content_table.put	(<< 	Tri_false,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_arguments)
+			table.put 			(<< 	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined		>>, enum_block_type.Bt_argument_declaration)
+				-- Rely on the content visibility of `arguments'.
 
 			table.put 			(<< 	Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_precondition)
 			content_table.put	(<< 	Tri_false,		Tri_false,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_precondition)
@@ -49,6 +52,9 @@ feature {NONE} -- Initialization
 
 			table.put 			(<< 	Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_locals)
 			content_table.put 	(<< 	Tri_false,		Tri_false,		Tri_false,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_locals)
+			table.put 			(<< 	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined,	Tri_undefined		>>, enum_block_type.Bt_local_declaration)
+				-- Rely on the content visibility of `locals'.
+
 
 			table.put 			(<< 	Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true,		Tri_true			>>, enum_block_type.Bt_routine_body)
 			content_table.put	(<< 	Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_false,		Tri_true			>>, enum_block_type.Bt_routine_body)

@@ -220,11 +220,12 @@ feature -- Block types
 	Bt_feature: STRING = "feature"
 
 	Bt_arguments: STRING = "arguments"
+	Bt_argument_declaration: STRING = "argument_declaration"
 
 	Bt_precondition: STRING = "precondition"
 
 	Bt_locals: STRING = "locals"
-		-- TODO: add block for single local variable declaration.
+	Bt_local_declaration: STRING = "local_declaration"
 
 	Bt_routine_body: STRING = "routine_body"
 
