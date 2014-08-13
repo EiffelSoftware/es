@@ -62,7 +62,7 @@ feature -- Status management
 			-- Reset the status of Current
 		do
 			Precursor
-			skipping_until_index := 0
+			skipping_until_position := 0
 			skipped_section_indentation := 0
 			blank_line_inserted := False
 		end
@@ -80,7 +80,7 @@ feature {NONE} -- Break processing
 				-- No call to precursor.
 
 				-- Check if we are in a skipped section. We will need to know this later.
-			l_in_skipped_section := in_skipped_section (a_break_as)
+			l_in_skipped_section := is_node_in_skipped_section (a_break_as)
 
 				-- Get the text
 			l_text := a_break_as.text (match_list)
@@ -158,21 +158,39 @@ feature {NONE} -- Meta-commands processing
 	process_hint (a_line: STRING)
 		require
 			-- a_line is a hint command. How to specify that?
+			single_return_terminated_line: a_line.ends_with ("%N") and a_line.occurrences ('%N') = 1
 		local
 			l_line: STRING
 			l_hint_level: INTEGER
+			l_indentation: INTEGER
 		do
 			l_line := a_line.twin
-			l_line.adjust
+			l_line.left_adjust
 			check
 				l_line.starts_with (at_strings.hint_command)
 			end
 			l_hint_level := l_line.substring (at_strings.hint_command.count + 1, l_line.count).to_integer
 			if l_hint_level <= options.hint_level then
-				l_line := a_line.twin
-				l_line.prune_all_trailing ('%N')
-				put_string_to_context ("%N" + l_line)
-				insert_blank_line (false)
+
+				if in_skipped_section then
+					l_indentation := skipped_section_indentation
+						-- We will be in an already indented line, no need to indent it again.
+				else
+					l_indentation := count_leading ('%T', a_line)
+					put_string_to_context (tab_string (l_indentation))
+				end
+
+
+				put_string_to_context (l_line) -- Remember that `l_line' ends with a %N character.
+				put_string_to_context (tab_string (l_indentation) + "%N")
+
+				if in_skipped_section then
+						-- We need to leave things as we found them, so re-indent the line.
+					put_string_to_context (tab_string (l_indentation))
+				end
+
+					-- Additional blank line, with placeholder if necessary
+				-- insert_blank_line (l_indentation, false)
 			end
 		end
 
@@ -188,7 +206,7 @@ feature {NONE} -- Implementation - skipping
 		do
 			process_leading_leaves (a_node.index)
 			last_index := a_node.index
-			if in_skipped_section (a_node) then
+			if is_node_in_skipped_section (a_node) then
 					-- Do nothing. Also, calling in_skipped_section asserts that the node is *entirely*
 					-- in the skipped section, so we don't even need to update skipping_until_index.
 			else
@@ -216,7 +234,7 @@ feature {NONE} -- Implementation - skipping
 				end
 
 					-- Now we can record where the skipped region ends, which is basically all we have to do
-				skipping_until_index := a_node.end_position
+				skipping_until_position := a_node.end_position
 
 					-- Finally, insert a blank line, possibly with a placeholder
 					-- The flag blank_line_inserted helps us avoiding inserting multiple new lines in case
@@ -224,44 +242,52 @@ feature {NONE} -- Implementation - skipping
 					-- printed in between. In this case we clearly don't need more blank lines or placeholders.
 					-- This flag is reset by put_string and put_string_to_context.
 				if not blank_line_inserted then
-					insert_blank_line (options.insert_code_placeholder)
+					insert_blank_line (skipped_section_indentation, options.insert_code_placeholder)
 					blank_line_inserted := True
 				end
 			end
 		end
 
-	insert_blank_line (a_insert_placeholder: BOOLEAN)
+	insert_blank_line (a_indentation: INTEGER; a_insert_placeholder: BOOLEAN)
 			-- Insert a blank line with the correct indentation for the current location, and possibly a placeholder.
 		local
 			l_new_line_with_tabs: STRING
 		do
-				-- {STRING}.multiply doesn't handle zero as an argument.
-			if skipped_section_indentation = 0 then
-				l_new_line_with_tabs := ""
-			else
-				l_new_line_with_tabs := "%T"
-				l_new_line_with_tabs.multiply (skipped_section_indentation)
-			end
+			l_new_line_with_tabs := tab_string (a_indentation)
 			l_new_line_with_tabs.prepend ("%N")
+
 			put_string_to_context (l_new_line_with_tabs)
 			if a_insert_placeholder then
 				put_string_to_context (l_new_line_with_tabs + at_strings.code_placeholder + l_new_line_with_tabs)
 			end
 		end
 
-	in_skipped_section (a_node: AST_EIFFEL): BOOLEAN
+	in_skipped_section: BOOLEAN
+			-- Is the end of the last node being processed located in the current skipped section?
+		local
+			l_leaf: detachable LEAF_AS
+		do
+			if last_index = 0 then
+				Result := false
+			else
+				l_leaf := match_list.at (last_index)
+				Result := l_leaf.end_position <= skipping_until_position
+			end
+		end
+
+	is_node_in_skipped_section (a_node: AST_EIFFEL): BOOLEAN
 			-- Is `a_node' located in the current skipped section?
 			-- If so, this function asserts that `a_node' is *entirely* located in the current skipped section.
 		do
-			if a_node.start_position <= skipping_until_index then
+			if a_node.start_position <= skipping_until_position then
 				check
-					a_node.end_position <= skipping_until_index
+					a_node.end_position <= skipping_until_position
 				end
 				Result := True
 			end
 		end
 
-	skipping_until_index: INTEGER
+	skipping_until_position: INTEGER
 			-- What is the end index of the current/last skipped section?
 
 	skipped_section_indentation: INTEGER
@@ -344,6 +370,20 @@ feature {NONE} -- Implementation
 			make_with_default_context
 			options := a_options
 			reset
+		end
+
+	tab_string (a_tab_count: INTEGER): STRING
+			-- A string made of `a_tab_count' tabs.
+		require
+			non_negative: a_tab_count >= 0
+		do
+			if a_tab_count = 0 then
+					-- We need a special case, as {STRING}.multiply does not accept zero as an argument.
+				Result := ""
+			else
+				Result := "%T"
+				Result.multiply (a_tab_count)
+			end
 		end
 
 feature {AST_EIFFEL} -- Visitors
