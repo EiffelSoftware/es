@@ -22,6 +22,13 @@ feature {NONE} -- Initialization
 			hint_level := 2
 			insert_code_placeholder := False
 			create output_directory.make_with_path (create {PATH}.make_current)
+
+			hide_routine_arguments := True
+			hide_preconditions := True
+			hide_locals := True
+			hide_routine_bodies := True
+			hide_postconditions := True
+			hide_class_invariants := true
 		end
 
 feature -- Hinter options
@@ -38,19 +45,24 @@ feature -- Hinter options
 	output_directory: DIRECTORY assign set_output_directory
 			-- Output directory for classes processed by hinter.
 
-		-- TODO: convert these to preferences
+	hide_routine_arguments: BOOLEAN assign set_hide_routine_arguments
+			-- Should routine arguments be hidden?
 
-	hide_routine_arguments: BOOLEAN = True
+	hide_preconditions: BOOLEAN assign set_hide_preconditions
+			-- Should preconditions be hidden?
 
-	hide_locals: BOOLEAN = True
+	hide_locals: BOOLEAN assign set_hide_locals
+			-- Should locals be hidden?
 
-	hide_routine_bodies: BOOLEAN = True
+	hide_routine_bodies: BOOLEAN assign set_hide_routine_bodies
+			-- Should routine bodies be hidden?
 
-	hide_preconditions: BOOLEAN = True
+	hide_postconditions: BOOLEAN assign set_hide_postconditions
+			-- Should postconditions be hidden?
 
-	hide_postconditions: BOOLEAN = True
+	hide_class_invariants: BOOLEAN assign set_hide_class_invariants
+			-- Should class invariants be hidden?
 
-	hide_class_invariants: BOOLEAN = True
 
 feature {NONE} -- Setters
 
@@ -86,6 +98,54 @@ feature {NONE} -- Setters
 			output_directory := a_dir
 		ensure
 			directory_set: output_directory = a_dir
+		end
+
+	set_hide_routine_arguments (a_bool: BOOLEAN)
+			-- Set `hide_routine_arguments' to `a_bool'.
+		do
+			hide_routine_arguments := a_bool
+		ensure
+			hide_routine_arguments_set: hide_routine_arguments = a_bool
+		end
+
+	set_hide_preconditions (a_bool: BOOLEAN)
+			-- Set `hide_preconditions' to `a_bool'.
+		do
+			hide_preconditions := a_bool
+		ensure
+			hide_preconditions_set: hide_preconditions = a_bool
+		end
+
+	set_hide_locals (a_bool: BOOLEAN)
+			-- Set `hide_locals' to `a_bool'.
+		do
+			hide_locals := a_bool
+		ensure
+			hide_locals_set: hide_locals = a_bool
+		end
+
+	set_hide_routine_bodies (a_bool: BOOLEAN)
+			-- Set `hide_routine_bodies' to `a_bool'.
+		do
+			hide_routine_bodies := a_bool
+		ensure
+			hide_routine_bodies_set: hide_routine_bodies = a_bool
+		end
+
+	set_hide_postconditions (a_bool: BOOLEAN)
+			-- Set `hide_postconditions' to `a_bool'.
+		do
+			hide_postconditions := a_bool
+		ensure
+			hide_postconditions_set: hide_postconditions = a_bool
+		end
+
+	set_hide_class_invariants (a_bool: BOOLEAN)
+			-- Set `hide_class_invariants' to `a_bool'.
+		do
+			hide_class_invariants := a_bool
+		ensure
+			hide_class_invariants_set: hide_class_invariants = a_bool
 		end
 
 end

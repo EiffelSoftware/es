@@ -62,7 +62,7 @@ inherit
 create
 	make_with_options
 
-feature -- Status management
+feature -- Interface
 
 	reset
 			-- Reset the status of Current
@@ -71,6 +71,12 @@ feature -- Status management
 			skipping_until_position := 0
 			skipped_section_indentation := 0
 			blank_line_inserted := False
+		end
+
+	set_message_output_action (a_action: PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]])
+			-- Set `a_action' as the action to be called for outputting messages.
+		do
+			message_output_action := a_action
 		end
 
 feature {NONE} -- Break processing
@@ -143,12 +149,34 @@ feature {NONE} -- Meta-commands processing
 	process_meta_command (a_line: STRING)
 			-- Process the meta-command contained in `a_line'. Case insensitive.
 		local
-			l_line: STRING
+			l_line, l_argument: STRING
+			l_index: INTEGER
+			l_recognized: BOOLEAN
 		do
 			l_line := a_line.twin
 			l_line.adjust
 			if l_line.as_upper.starts_with (at_strings.hint_command) then
 				process_hint (a_line)
+				l_recognized := True
+			elseif l_line.as_upper.starts_with (at_strings.show_command) then
+				l_line.remove_head (at_strings.show_command.count)
+				l_line.left_adjust
+				if is_valid_block_type (l_line.as_lower) then
+					oracle.show_block (l_line.as_lower)
+					l_recognized := True
+				end
+
+			elseif l_line.as_upper.starts_with (at_strings.hide_command) then
+				l_line.remove_head (at_strings.hide_command.count)
+				l_line.left_adjust
+				if is_valid_block_type (l_line.as_lower) then
+					oracle.hide_block (l_line.as_lower)
+					l_recognized := True
+				end
+
+			end
+			if not l_recognized then
+				print_message (at_strings.unrecognized_meta_command + a_line)
 			end
 		end
 
@@ -176,7 +204,7 @@ feature {NONE} -- Meta-commands processing
 			check
 				l_line.starts_with (at_strings.hint_command)
 			end
-			l_hint_level := l_line.substring (at_strings.hint_command.count + 1, l_line.count).to_integer
+			l_hint_level := string_to_int (l_line.substring (at_strings.hint_command.count + 1, l_line.count))
 			if l_hint_level <= options.hint_level then
 				if in_skipped_section then
 					l_indentation := skipped_section_indentation
@@ -321,10 +349,10 @@ feature {NONE} -- Implementation - skipping
 	blank_line_inserted: BOOLEAN
 			-- Did we already insert a blank line for the current skipping section?
 
-	no_skipping: BOOLEAN = False
-			-- Disables all forms of skipping. Temporary.
-
 feature {NONE} -- Implementation
+
+	oracle: AT_HINTER_PROCESSING_ORACLE
+		-- Oracle containing all the logic about what should be hidden and what not.
 
 	process_leading_leaves (ind: INTEGER_32)
 			-- Redefinition: only processes BREAK_AS leaves and skips the others.
@@ -394,20 +422,18 @@ feature {NONE} -- Implementation
 		do
 			make_with_default_context
 			options := a_options
+			create oracle.make_with_options (a_options)
 			reset
 		end
 
-	tab_string (a_tab_count: INTEGER): STRING
-			-- A string made of `a_tab_count' tabs.
-		require
-			non_negative: a_tab_count >= 0
+	message_output_action: detachable PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]]
+			-- The action to be called for outputting messages.
+
+	print_message (a_string: READABLE_STRING_GENERAL)
+			-- Prints a line to output, if a message output action has been specified.
 		do
-			if a_tab_count = 0 then
-					-- We need a special case, as {STRING}.multiply does not accept zero as an argument.
-				Result := ""
-			else
-				Result := "%T"
-				Result.multiply (a_tab_count)
+			if attached message_output_action as l_message_output_action then
+				l_message_output_action.call (a_string + "%N")
 			end
 		end
 
@@ -416,7 +442,9 @@ feature {AST_EIFFEL} -- Visitors
 	process_formal_argu_dec_list_as (a_as: FORMAL_ARGU_DEC_LIST_AS)
 			-- Process `a_as'.
 		do
-			if not options.hide_routine_arguments then
+			oracle.begin_process_routine_arguments
+
+			if not oracle.must_hide_routine_arguments then
 				safe_process (a_as.lparan_symbol (match_list))
 				safe_process (a_as.arguments)
 				safe_process (a_as.rparan_symbol (match_list))
@@ -426,36 +454,90 @@ feature {AST_EIFFEL} -- Visitors
 					put_string_to_context (at_strings.arguments_placeholder)
 				end
 			end
+
+			oracle.end_process_routine_arguments
 		end
 
 	process_local_dec_list_as (a_as: LOCAL_DEC_LIST_AS)
 			-- Process `a_as'
 		do
+			oracle.begin_process_locals
+
 			safe_process (a_as.local_keyword (match_list))
-			if not options.hide_locals or no_skipping then
+			if not oracle.must_hide_locals then
 				safe_process (a_as.locals)
 			else
 				skipped_section_indentation := indentation (a_as.local_keyword (match_list)) + 1
 				skip (a_as, False)
 			end
+
+			oracle.end_process_locals
 		end
 
-	process_do_as (a_as: DO_AS)
+	process_require_as (a_as: REQUIRE_AS)
 			-- Process `a_as'.
 		local
 			l_indentation: INTEGER
-			l_next_leaf: LEAF_AS
 		do
-				-- We want to process the 'do' keyword in any case.
-			safe_process (a_as.do_keyword (match_list))
-			if not options.hide_routine_bodies or no_skipping then
+			oracle.begin_process_precondition
+
+			safe_process (a_as.require_keyword (match_list))
+			if attached {REQUIRE_ELSE_AS} a_as as l_ensure_then_as then
+				safe_process (l_ensure_then_as.else_keyword (match_list))
+			end
+			if not oracle.must_hide_precondition then
+				safe_process (a_as.full_assertion_list)
+			else
+				if attached a_as.assertions as l_assertions then
+					skipped_section_indentation := indentation (l_assertions)
+					skip (a_as, False)
+				else
+					l_indentation := indentation (a_as.require_keyword (match_list))
+					skipped_section_indentation := l_indentation + 1
+
+						-- See comments in `process_do_as'.
+					skip (next_break (a_as), False)
+					put_string_to_context ("%N" + tab_string (l_indentation))
+				end
+			end
+
+			oracle.end_process_precondition
+		end
+
+	process_require_else_as (a_as: REQUIRE_ELSE_AS)
+			-- Process `a_as'.
+		do
+			process_require_as (a_as)
+		end
+
+	process_do_once_as (a_as: INTERNAL_AS)
+			-- Process `a_as'.
+		require
+			is_do_or_once: attached {DO_AS} a_as or attached {ONCE_AS} a_as
+		local
+			l_indentation: INTEGER
+			l_next_leaf: LEAF_AS
+			l_do_once_keyword: KEYWORD_AS
+		do
+			oracle.begin_process_routine_body
+
+			if attached {DO_AS} a_as as l_do_as then
+				l_do_once_keyword := l_do_as.do_keyword (match_list)
+			elseif attached {ONCE_AS} a_as as l_once_as then
+				l_do_once_keyword := l_once_as.once_keyword (match_list)
+			end
+
+
+				-- We want to process the 'do' or 'once' keyword in any case.
+			safe_process (l_do_once_keyword)
+			if not oracle.must_hide_routine_body then
 				safe_process (a_as.compound)
 			else
 				if attached a_as.compound as l_compound then
 					skipped_section_indentation := indentation (l_compound)
 					skip (a_as, False)
 				else
-					l_indentation := indentation (a_as.do_keyword (match_list))
+					l_indentation := indentation (l_do_once_keyword)
 					skipped_section_indentation := l_indentation + 1
 
 						-- Empty routine! This is a mess, because `a_as.start_position' and
@@ -470,86 +552,34 @@ feature {AST_EIFFEL} -- Visitors
 					put_string_to_context ("%N" + tab_string (l_indentation))
 				end
 			end
+
+			oracle.end_process_routine_body
+		end
+
+	process_do_as (a_as: DO_AS)
+			-- Process `a_as'.
+		do
+			process_do_once_as (a_as)
 		end
 
 	process_once_as (a_as: ONCE_AS)
 			-- Process `a_as'.
-		local
-			l_indentation: INTEGER
 		do
-				-- We want to process the 'once' keyword in any case.
-			safe_process (a_as.once_keyword (match_list))
-			if not options.hide_routine_bodies or no_skipping then
-				safe_process (a_as.compound)
-			else
-				if attached a_as.compound as l_compound then
-					skipped_section_indentation := indentation (l_compound)
-					skip (a_as, False)
-				else
-					l_indentation := indentation (a_as.once_keyword (match_list))
-					skipped_section_indentation := l_indentation + 1
-
-						-- See comments in `process_do_as'.
-					skip (next_break (a_as), False)
-					put_string_to_context ("%N" + tab_string (l_indentation))
-				end
-			end
+			process_do_once_as (a_as)
 		end
 
-	process_require_as (a_as: require_as)
+	process_ensure_as (a_as: ENSURE_AS)
 			-- Process `a_as'.
 		local
 			l_indentation: INTEGER
 		do
-			safe_process (a_as.require_keyword (match_list))
-			if not options.hide_preconditions or no_skipping then
-				safe_process (a_as.full_assertion_list)
-			else
-				if attached a_as.assertions as l_assertions then
-					skipped_section_indentation := indentation (l_assertions)
-					skip (a_as, False)
-				else
-					l_indentation := indentation (a_as.require_keyword (match_list))
-					skipped_section_indentation := l_indentation + 1
+			oracle.begin_process_postcondition
 
-						-- See comments in `process_do_as'.
-					skip (next_break (a_as), False)
-					put_string_to_context ("%N" + tab_string (l_indentation))
-				end
-			end
-		end
-
-	process_require_else_as (a_as: require_else_as)
-			-- Process `a_as'.
-		local
-			l_indentation: INTEGER
-		do
-			safe_process (a_as.require_keyword (match_list))
-			safe_process (a_as.else_keyword (match_list))
-			if not options.hide_preconditions or no_skipping then
-				safe_process (a_as.full_assertion_list)
-			else
-				if attached a_as.assertions as l_assertions then
-					skipped_section_indentation := indentation (l_assertions)
-					skip (a_as, False)
-				else
-					l_indentation := indentation (a_as.require_keyword (match_list))
-					skipped_section_indentation := l_indentation + 1
-
-						-- See comments in `process_do_as'.
-					skip (next_break (a_as), False)
-					put_string_to_context ("%N" + tab_string (l_indentation))
-				end
-			end
-		end
-
-	process_ensure_as (a_as: ensure_as)
-			-- Process `a_as'.
-		local
-			l_indentation: INTEGER
-		do
 			safe_process (a_as.ensure_keyword (match_list))
-			if not options.hide_postconditions or no_skipping then
+			if attached {ENSURE_THEN_AS} a_as as l_ensure_then_as then
+				safe_process (l_ensure_then_as.ensure_keyword (match_list))
+			end
+			if not oracle.must_hide_postcondition then
 				safe_process (a_as.full_assertion_list)
 			else
 				if attached a_as.assertions as l_assertions then
@@ -564,30 +594,14 @@ feature {AST_EIFFEL} -- Visitors
 					put_string_to_context ("%N" + tab_string (l_indentation))
 				end
 			end
+
+			oracle.end_process_postcondition
 		end
 
-	process_ensure_then_as (a_as: ensure_then_as)
+	process_ensure_then_as (a_as: ENSURE_THEN_AS)
 			-- Process `a_as'.
-		local
-			l_indentation: INTEGER
 		do
-			safe_process (a_as.ensure_keyword (match_list))
-			safe_process (a_as.then_keyword (match_list))
-			if not options.hide_postconditions or no_skipping then
-				safe_process (a_as.full_assertion_list)
-			else
-				if attached a_as.assertions as l_assertions then
-					skipped_section_indentation := indentation (l_assertions)
-					skip (a_as, False)
-				else
-					l_indentation := indentation (a_as.ensure_keyword (match_list))
-					skipped_section_indentation := l_indentation + 1
-
-						-- See comments in `process_do_as'.
-					skip (next_break (a_as), False)
-					put_string_to_context ("%N" + tab_string (l_indentation))
-				end
-			end
+			process_ensure_as (a_as)
 		end
 
 	process_invariant_as (a_as: invariant_as)
@@ -595,8 +609,10 @@ feature {AST_EIFFEL} -- Visitors
 		local
 			l_indentation: INTEGER
 		do
+			oracle.begin_process_class_invariant
+
 			safe_process (a_as.invariant_keyword (match_list))
-			if not options.hide_class_invariants or no_skipping then
+			if not oracle.must_hide_class_invariant then
 				safe_process (a_as.full_assertion_list)
 			else
 				if attached a_as.assertion_list as l_assertions then
@@ -611,7 +627,11 @@ feature {AST_EIFFEL} -- Visitors
 					put_string_to_context ("%N" + tab_string (l_indentation))
 				end
 			end
+
+			oracle.end_process_class_invariant
 		end
+
+end
 
 		--feature {AST_EIFFEL} -- Instructions visitors
 
@@ -784,5 +804,3 @@ feature {AST_EIFFEL} -- Visitors
 		--				skip (a_as)
 		--			end
 		--		end
-
-end

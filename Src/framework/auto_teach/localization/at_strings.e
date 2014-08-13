@@ -47,6 +47,11 @@ feature -- Warnings
 			Result := locale.translation ("No mode for " + auto_teach + " specified (e.g. " + hinter + "), exiting.")
 		end
 
+	unrecognized_meta_command: STRING_32
+		do
+			Result := locale.translation ("The following meta-command was not recognized, and therefore ignored:%N")
+		end
+
 feature -- Errors
 
 	error_unrecognized_argument (a_argument: STRING): STRING_32
@@ -93,10 +98,14 @@ feature -- Code output
 
 	code_placeholder: STRING = "-- Your code here!"
 
-	arguments_placeholder: STRING = " (replace_this_with_your_arguments: ANY)"
+	arguments_placeholder: STRING = "(replace_this_with_your_arguments: ANY)"
 
 feature -- Command prefixes
 
 	hint_command: STRING = "-- #HINT"
+
+	show_command: STRING = "-- #SHOW"
+
+	hide_command: STRING = "-- #HIDE"
 
 end
