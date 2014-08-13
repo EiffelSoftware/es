@@ -99,22 +99,19 @@ feature -- Status signaling
 				l_local_content_visibility_status := local_content_visibility_stack.item
 			end
 
-
-
 			if attached {AT_COMPLEX_BLOCK_VISIBILITY_DESCRIPTOR} l_block_visibility as l_complex_block_visibility then
 					-- For complex blocks, compute the new valid content visibility policy (to be pushed into the stack).
 
-					-- New global policy: default (from the hint table) content visibility for this block type (if defined),
-					-- overridden by the currently valid global visibility policy (coming from "#SHOW_ALL_CONTENT" applied to some parent block type),
+					-- New global policy: the currently valid global visibility policy (coming from "#SHOW_ALL_CONTENT" applied to some parent block type),
+					-- overridden by the default (from the hint table) content visibility for this block type (if defined),
 					-- overridden by the current global visibility policy for this block type (coming from "#SHOW_ALL_CONTENT" applied to this block type).
 					-- Note that the final result could still be undefined.
-				l_global_content_visibility_status := l_complex_block_visibility.default_content_visibility.subjected_to (l_global_content_visibility_status).subjected_to (l_complex_block_visibility.global_content_visibility_override)
+				l_global_content_visibility_status := l_global_content_visibility_status.subjected_to (l_complex_block_visibility.default_content_visibility) .subjected_to (l_complex_block_visibility.global_content_visibility_override)
 
 					-- New local policy: the current local visibility policy (coming from a "#SHOW_NEXT_CONTENT" command applied to a parent block),
 					-- overridden by the local visibility flag of this block (coming from a "#SHOW_NEXT_CONTENT" command applied to a this block).
 				l_local_content_visibility_status := l_local_content_visibility_status.subjected_to (l_complex_block_visibility.local_content_visibility_override)
 			end
-
 
 			block_type_call_stack.put (a_block_type)
 			block_stack.put (l_block_visibility)
@@ -523,6 +520,19 @@ feature {NONE} -- Implementation: block visibility
 
 					-- Apply global policy (i.e. the one defined by a "#SHOW_ALL" command about this block type).
 				l_current_value := l_current_value.subjected_to (l_top_block.global_visibility_override)
+
+					-- TODO: inconsistency. Here we just applied the global policy, overriding the default value in the table
+					-- and the content visibility policy coming from outer blocks. However, in `begin_process_block',
+					-- when we deal with the content visibility, we override the content visibility status
+					-- with the policy for the current block (no matter if it comes from a global override or
+					-- just from the hint table.
+					-- The idea there was that if you write "SHOW_ALL_CONTENT", you are basically changing
+					-- a cell of the hint table, and nothing more.
+					-- The idea here is that, if you write "SHOW_ALL", you are writing something stronger
+					-- than the value from the hint table, as the value from the hint table is subject
+					-- to the content policy and your "SHOW_ALL" is stronger.
+					-- This looks inconsistent. Either I find a good way for motivating this,
+					-- or this must be changed somehow.
 
 					-- Once again, only apply the content visibility policy if this is a not a complex block.
 				if not attached {AT_COMPLEX_BLOCK_VISIBILITY_DESCRIPTOR} l_top_block then
