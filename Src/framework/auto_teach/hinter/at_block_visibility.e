@@ -19,7 +19,7 @@ feature -- Access
 			Result := default_visibility_agent.item ([block_type])
 		end
 
-	global_visibility_override: AT_TRI_STATE_BOOLEAN assign set_local_visiblity_override
+	global_visibility_override: AT_TRI_STATE_BOOLEAN assign set_global_visiblity_override
 
 	local_visibility_override: AT_TRI_STATE_BOOLEAN assign set_local_visiblity_override
 
@@ -50,6 +50,10 @@ feature {NONE} -- Setters
 			local_visibility_override := a_tristate
 		end
 
+	set_global_visiblity_override (a_tristate: AT_TRI_STATE_BOOLEAN)
+		do
+			global_visibility_override := a_tristate
+		end
 
 feature {NONE} -- Implementation
 

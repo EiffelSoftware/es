@@ -4,8 +4,8 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-expanded class
-	AT_HINTER_COMPLEX_BLOCK_VISIBILITY
+class
+	AT_COMPLEX_BLOCK_VISIBILITY
 
 inherit
 	AT_BLOCK_VISIBILITY
@@ -61,7 +61,7 @@ feature {NONE} -- Setters
 
 	set_local_content_visibility_override (a_tristate: AT_TRI_STATE_BOOLEAN)
 		do
-			global_content_visibility_override := a_tristate
+			local_content_visibility_override := a_tristate
 		end
 
 	make_with_two_agents (a_block_type: AT_BLOCK_TYPE; a_default_visibility_agent: like default_visibility_agent; a_default_content_visibility_agent: like default_content_visibility_agent)

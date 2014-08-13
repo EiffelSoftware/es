@@ -23,8 +23,8 @@ inherit
 			process_formal_argu_dec_list_as,
 
 --				-- Routine bodies
---			process_do_as,
---			process_once_as,
+			process_do_as,
+			process_once_as,
 
 --				-- Locals
 --			process_local_dec_list_as,
@@ -37,26 +37,26 @@ inherit
 			process_invariant_as,
 
 			-- Assertions:
-			process_tagged_as
+			process_tagged_as,
 
-			-- Instructions:
-			--			process_elseif_as,
-			--			process_assign_as,
-			--			process_assigner_call_as,
-			--			process_case_as,
-			--			process_check_as,
-			--			process_creation_as,
-			--			process_create_creation_as,
-			--			process_bang_creation_as,
-			--			process_debug_as,
-			--			process_guard_as,
-			--			process_if_as,
-			--			process_inspect_as,
-			--			process_instr_call_as,
-			--			process_interval_as,
-			--			process_loop_as,
-			--			process_retry_as,
-			--			process_reverse_as
+				-- Instructions:
+			process_elseif_as,
+			process_assign_as,
+			process_assigner_call_as,
+			process_case_as,
+			process_check_as,
+			process_creation_as,
+			process_create_creation_as,
+			process_bang_creation_as,
+			process_debug_as,
+			process_guard_as,
+			process_if_as,
+			process_inspect_as,
+			process_instr_call_as,
+			process_interval_as,
+			process_loop_as,
+			process_retry_as,
+			process_reverse_as
 		end
 
 inherit {NONE}
@@ -75,7 +75,7 @@ feature -- Interface
 		do
 			Precursor
 --			skipping_until_position := 0
-			skipped_section_indentation := 0
+			current_indentation := 0
 			blank_line_inserted := False
 		end
 
@@ -91,7 +91,7 @@ feature {NONE} -- Break processing
 			-- Process `a_break_as', also looking for meta-commands.
 		local
 			l_text: STRING
-			l_line_start, l_line_end: INTEGER
+			l_line_start, l_line_end, i: INTEGER
 			l_lines: ARRAYED_LIST [STRING]
 			l_in_skipped_section: BOOLEAN
 		do
@@ -127,16 +127,21 @@ feature {NONE} -- Break processing
 				-- -> filter away
 				-- -> parse a meta-annotation and act accordingly
 
-			across
-				l_lines as ic
+			from
+				i := 1
+			until
+				i > l_lines.count
 			loop
-				process_break_line (ic.item)
+				process_break_line (l_lines [i], i = 1)
+				i := i + 1
 			end
+
 			last_index := a_break_as.index
 		end
 
-	process_break_line (a_break_line: STRING)
+	process_break_line (a_break_line: STRING; a_inline: BOOLEAN)
 			-- Process a single line of a break.
+			-- If `a_inline' is False, `a_break_line' is supposed to start on a new line.
 		do
 			if oracle.is_meta_command (a_break_line) then
 				oracle.process_meta_command (a_break_line)
@@ -148,7 +153,11 @@ feature {NONE} -- Break processing
 					put_string_to_context (a_break_line)
 					last_unprinted_break_line := Void
 				else
-					last_unprinted_break_line := a_break_line
+					if a_inline then
+						last_unprinted_break_line := a_break_line
+					else
+						last_unprinted_break_line := "%N" + a_break_line
+					end
 				end
 			end
 		end
@@ -169,7 +178,7 @@ feature {NONE} -- Hint processing
 
 
 			if not oracle.output_enabled_revenge then
-				l_indentation := skipped_section_indentation
+				l_indentation := current_indentation
 					-- We will be in an already indented line, no need to indent it again.
 			else
 				l_indentation := count_leading ('%T', a_line)
@@ -226,18 +235,17 @@ feature {NONE} -- Implementation - skipping
 --			last_index := l_leaf_index
 --		end
 
-	insert_blank_line (a_indentation: INTEGER; a_insert_placeholder: BOOLEAN; a_placeholder_type: AT_PLACEHOLDER)
+	insert_blank_line (a_insert_placeholder: BOOLEAN; a_placeholder_type: AT_PLACEHOLDER)
 			-- Insert a blank line with the correct indentation for the current location, and possibly a placeholder.
 		local
 			l_new_line_with_tabs: STRING
 		do
 			if not blank_line_inserted then
-				l_new_line_with_tabs := tab_string (a_indentation)
+				l_new_line_with_tabs := tab_string (current_indentation)
 				l_new_line_with_tabs.prepend ("%N")
 
 				if not a_insert_placeholder then
 					put_string_forced (l_new_line_with_tabs)
-					blank_line_inserted := True
 				elseif not placeholder_inserted then
 
 					if a_placeholder_type = enum_placeholder_type.ph_standard then
@@ -248,6 +256,7 @@ feature {NONE} -- Implementation - skipping
 
 					placeholder_inserted := True
 				end
+				blank_line_inserted := True
 			end
 		end
 
@@ -320,24 +329,30 @@ feature {NONE} -- Implementation - skipping
 --			end
 --		end
 
-	process_next_break
-			-- Process the break immediately following the last processed token (if any),
+	process_next_break (a_node: detachable AST_EIFFEL)
+			-- Process the break immediately following `a_node' (if any),
 			-- as if it were a part of the last processed block.
+			-- Set `last_index' accordingly.
+		local
+			l_index: INTEGER
 		do
-			if attached {BREAK_AS} match_list [last_index + 1] as l_break then
-					-- I don't expect two consecutive breaks. I also expect the next leaf to be attached.
-				check next_next_leaf_is_not_break: attached match_list [last_index + 2] and not attached {BREAK_AS} match_list [last_index + 2] end
+			if attached a_node as l_node then
+				l_index := l_node.last_token (match_list).index
+				if attached {BREAK_AS} match_list [l_index + 1] as l_break then
+						-- I don't expect two consecutive breaks. I also expect the next leaf to be attached.
+					check next_next_leaf_is_not_break: attached match_list [last_index + 2] and not attached {BREAK_AS} match_list [last_index + 2] end
 
-				process_break_as (l_break)
-				last_index := last_index + 1
+					process_break_as (l_break)
+					last_index := l_index + 1
+				end
 			end
 		end
 
 --	skipping_until_position: INTEGER
 --			-- What is the end index of the current/last skipped section?
 
-	skipped_section_indentation: INTEGER
-			-- With how many tabs should the skipped section considered to be indented?
+	current_indentation: INTEGER
+			-- With how many tabs should the current section be considered to be indented?
 
 	blank_line_inserted: BOOLEAN
 			-- Did we already insert a blank line for the current skipping section?
@@ -416,7 +431,7 @@ feature {NONE} -- Implementation
 				blank_line_inserted := False
 				placeholder_inserted := False
 			else
-				-- TODO: we will see
+				insert_blank_line (options.insert_code_placeholder, enum_placeholder_type.ph_standard)
 			end
 		end
 
@@ -594,17 +609,17 @@ feature {AST_EIFFEL} -- Visitors
 --			oracle.end_process_routine_body
 --		end
 
---	process_do_as (a_as: DO_AS)
---			-- Process `a_as'.
---		do
---			process_do_once_as (a_as)
---		end
+	process_do_as (a_as: DO_AS)
+			-- Process `a_as'.
+		do
+			process_do_once_as (a_as)
+		end
 
---	process_once_as (a_as: ONCE_AS)
---			-- Process `a_as'.
---		do
---			process_do_once_as (a_as)
---		end
+	process_once_as (a_as: ONCE_AS)
+			-- Process `a_as'.
+		do
+			process_do_once_as (a_as)
+		end
 
 --	process_ensure_as (a_as: ENSURE_AS)
 --			-- Process `a_as'.
@@ -657,8 +672,8 @@ feature {AST_EIFFEL} -- Visitors
 			else
 					-- Hardcoded in this case. Not very nice, but if the input is correctly indented,
 					-- that's always the correct value.
-				skipped_section_indentation := 2
-				insert_blank_line (skipped_section_indentation, options.insert_code_placeholder, enum_placeholder_type.ph_arguments)
+				current_indentation := 2
+				insert_blank_line (options.insert_code_placeholder, enum_placeholder_type.ph_arguments)
 			end
 
 			safe_process (a_as.rparan_symbol (match_list))
@@ -666,23 +681,55 @@ feature {AST_EIFFEL} -- Visitors
 			oracle.end_process_block (enum_block_type.bt_arguments)
 		end
 
+		process_do_once_as (a_as: INTERNAL_AS)
+			-- Process `a_as'.
+		require
+			is_do_or_once: attached {DO_AS} a_as or attached {ONCE_AS} a_as
+		local
+			l_next_leaf: LEAF_AS
+			l_do_once_keyword: KEYWORD_AS
+		do
+			process_leading_leaves (a_as.first_token (match_list).index)
+			oracle.begin_process_block (enum_block_type.bt_routine_body)
+
+			if attached {DO_AS} a_as as l_do_as then
+				l_do_once_keyword := l_do_as.do_keyword (match_list)
+			elseif attached {ONCE_AS} a_as as l_once_as then
+				l_do_once_keyword := l_once_as.once_keyword (match_list)
+			end
+
+			current_indentation := indentation (l_do_once_keyword) + 1
+			safe_process (l_do_once_keyword)
+
+--			if oracle.output_enabled_revenge then
+--				safe_process (l_do_once_keyword)
+--			else
+--				current_indentation := indentation (l_do_once_keyword) + 1
+--				insert_blank_line (options.insert_code_placeholder, enum_placeholder_type.ph_standard)
+--			end
+
+			safe_process (a_as.compound)
+
+			oracle.end_process_block (enum_block_type.bt_routine_body)
+		end
 
 	process_invariant_as (a_as: invariant_as)
 			-- Process `a_as'.
 		local
-			l_indentation: INTEGER
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.bt_class_invariant)
 
 			safe_process (a_as.invariant_keyword (match_list))
-			if oracle.current_content_visibility = Tri_false then
-					-- Must insert blank line/placeholder.
-				l_indentation := indentation (a_as.invariant_keyword (match_list))
-				skipped_section_indentation := l_indentation + 1
 
-				insert_blank_line (skipped_section_indentation, options.insert_code_placeholder, enum_placeholder_type.ph_standard)
-			end
+			current_indentation := indentation (a_as.invariant_keyword (match_list)) + 1
+
+--			if oracle.current_content_visibility = Tri_false then
+--					-- Must insert blank line/placeholder.
+--				skipped_section_indentation := indentation (a_as.invariant_keyword (match_list)) + 1
+
+--				insert_blank_line (options.insert_code_placeholder, enum_placeholder_type.ph_standard)
+--			end
 
 			safe_process (a_as.full_assertion_list)
 
@@ -698,180 +745,160 @@ feature {AST_EIFFEL} -- Assertion visitor
 
 			Precursor (l_as)
 
-			process_next_break
+			process_next_break (l_as)
 			oracle.end_process_block (enum_block_type.bt_assertion)
 		end
 
+feature {AST_EIFFEL} -- Instructions visitors
+
+	instruction_pre (a_as: AST_EIFFEL)
+			-- To be called before each instruction visiting routine.
+		do
+			process_leading_leaves (a_as.first_token (match_list).index)
+			oracle.begin_process_block (enum_block_type.bt_instruction)
+		end
+
+	instruction_post (a_as: AST_EIFFEL)
+			-- To be called after each instruction visiting routine.
+		do
+			process_next_break (a_as)
+			oracle.end_process_block (enum_block_type.bt_instruction)
+		end
+
+	process_elseif_as (a_as: ELSIF_AS)
+			-- Process `a_as'.
+		do
+			instruction_pre (a_as)
+			Precursor (a_as)
+			instruction_post (a_as)
+		end
+
+	process_assign_as (a_as: ASSIGN_AS)
+			-- Process `a_as'.
+		do
+instruction_pre (a_as)
+			Precursor (a_as)
+			instruction_post (a_as)
+		end
+
+	process_reverse_as (a_as: REVERSE_AS)
+			-- Process `a_as'.
+		do
+			instruction_pre (a_as)
+			Precursor (a_as)
+			instruction_post (a_as)
+		end
+
+	process_assigner_call_as (a_as: ASSIGNER_CALL_AS)
+			-- Process `a_as'.
+		do
+			instruction_pre (a_as)
+			Precursor (a_as)
+			instruction_post (a_as)
+		end
+
+	process_case_as (a_as: CASE_AS)
+			-- Process `a_as'.
+		do
+			instruction_pre (a_as)
+			Precursor (a_as)
+			instruction_post (a_as)
+		end
+
+	process_check_as (a_as: CHECK_AS)
+			-- Process `a_as'.
+		do
+			instruction_pre (a_as)
+			Precursor (a_as)
+			instruction_post (a_as)
+		end
+
+	process_creation_as (a_as: CREATION_AS)
+			-- Process `a_as'.
+		do
+			instruction_pre (a_as)
+			Precursor (a_as)
+			instruction_post (a_as)
+		end
+
+	process_create_creation_as (a_as: CREATE_CREATION_AS)
+			-- Process `a_as'.
+		do
+			instruction_pre (a_as)
+			Precursor (a_as)
+			instruction_post (a_as)
+		end
+
+	process_bang_creation_as (a_as: BANG_CREATION_AS)
+			-- Process `a_as'.
+		do
+			instruction_pre (a_as)
+			Precursor (a_as)
+			instruction_post (a_as)
+		end
+
+	process_debug_as (a_as: DEBUG_AS)
+			-- Process `a_as'.
+		do
+			instruction_pre (a_as)
+			Precursor (a_as)
+			instruction_post (a_as)
+		end
+
+	process_guard_as (a_as: GUARD_AS)
+			-- Process `a_as'.
+		do
+			instruction_pre (a_as)
+			Precursor (a_as)
+			instruction_post (a_as)
+		end
+
+	process_if_as (a_as: IF_AS)
+			-- Process `a_as'.
+		do
+			instruction_pre (a_as)
+			Precursor (a_as)
+			instruction_post (a_as)
+		end
+
+	process_inspect_as (a_as: INSPECT_AS)
+			-- Process `a_as'.
+		do
+			instruction_pre (a_as)
+			Precursor (a_as)
+			instruction_post (a_as)
+		end
+
+	process_instr_call_as (a_as: INSTR_CALL_AS)
+			-- Process `a_as'.
+		do
+			instruction_pre (a_as)
+			Precursor (a_as)
+			instruction_post (a_as)
+		end
+
+	process_interval_as (a_as: INTERVAL_AS)
+			-- Process `a_as'.
+		do
+			instruction_pre (a_as)
+			Precursor (a_as)
+			instruction_post (a_as)
+		end
+
+	process_loop_as (a_as: LOOP_AS)
+			-- Process `a_as'.
+		do
+			instruction_pre (a_as)
+			Precursor (a_as)
+			instruction_post (a_as)
+		end
+
+	process_retry_as (a_as: RETRY_AS)
+			-- Process `a_as'.
+		do
+			instruction_pre (a_as)
+			Precursor (a_as)
+			instruction_post (a_as)
+		end
+
 end
-
-		--feature {AST_EIFFEL} -- Instructions visitors
-
-		--	process_elseif_as (a_as: ELSIF_AS)
-		--			-- Process `a_as'.
-		--		do
-		--			if no_skipping then
-		--				Precursor (a_as)
-		--			else
-		--				skip (a_as)
-		--			end
-		--		end
-
-		--	process_assign_as (a_as: ASSIGN_AS)
-		--			-- Process `a_as'.
-		--		do
-		--			if no_skipping then
-		--				Precursor (a_as)
-		--			else
-		--				skip (a_as)
-		--			end
-		--		end
-
-		--	process_reverse_as (a_as: REVERSE_AS)
-		--			-- Process `a_as'.
-		--		do
-		--			if no_skipping then
-		--				Precursor (a_as)
-		--			else
-		--				skip (a_as)
-		--			end
-		--		end
-
-		--	process_assigner_call_as (a_as: ASSIGNER_CALL_AS)
-		--			-- Process `a_as'.
-		--		do
-		--			if no_skipping then
-		--				Precursor (a_as)
-		--			else
-		--				skip (a_as)
-		--			end
-		--		end
-
-		--	process_case_as (a_as: CASE_AS)
-		--			-- Process `a_as'.
-		--		do
-		--			if no_skipping then
-		--				Precursor (a_as)
-		--			else
-		--				skip (a_as)
-		--			end
-		--		end
-
-		--	process_check_as (a_as: CHECK_AS)
-		--			-- Process `a_as'.
-		--		do
-		--			if no_skipping then
-		--				Precursor (a_as)
-		--			else
-		--				skip (a_as)
-		--			end
-		--		end
-
-		--	process_creation_as (a_as: CREATION_AS)
-		--			-- Process `a_as'.
-		--		do
-		--			if no_skipping then
-		--				Precursor (a_as)
-		--			else
-		--				skip (a_as)
-		--			end
-		--		end
-
-		--	process_create_creation_as (a_as: CREATE_CREATION_AS)
-		--			-- Process `a_as'.
-		--		do
-		--			if no_skipping then
-		--				Precursor (a_as)
-		--			else
-		--				skip (a_as)
-		--			end
-		--		end
-
-		--	process_bang_creation_as (a_as: BANG_CREATION_AS)
-		--			-- Process `a_as'.
-		--		do
-		--			if no_skipping then
-		--				Precursor (a_as)
-		--			else
-		--				skip (a_as)
-		--			end
-		--		end
-
-		--	process_debug_as (a_as: DEBUG_AS)
-		--			-- Process `a_as'.
-		--		do
-		--			if no_skipping then
-		--				Precursor (a_as)
-		--			else
-		--				skip (a_as)
-		--			end
-		--		end
-
-		--	process_guard_as (a_as: GUARD_AS)
-		--			-- Process `a_as'.
-		--		do
-		--			if no_skipping then
-		--				Precursor (a_as)
-		--			else
-		--				skip (a_as)
-		--			end
-		--		end
-
-		--	process_if_as (a_as: IF_AS)
-		--			-- Process `a_as'.
-		--		do
-		--			if no_skipping then
-		--				Precursor (a_as)
-		--			else
-		--				skip (a_as)
-		--			end
-		--		end
-
-		--	process_inspect_as (a_as: INSPECT_AS)
-		--			-- Process `a_as'.
-		--		do
-		--			if no_skipping then
-		--				Precursor (a_as)
-		--			else
-		--				skip (a_as)
-		--			end
-		--		end
-
-		--	process_instr_call_as (a_as: INSTR_CALL_AS)
-		--			-- Process `a_as'.
-		--		do
-		--			if no_skipping then
-		--				Precursor (a_as)
-		--			else
-		--				skip (a_as)
-		--			end
-		--		end
-
-		--	process_interval_as (a_as: INTERVAL_AS)
-		--			-- Process `a_as'.
-		--		do
-		--			if no_skipping then
-		--				Precursor (a_as)
-		--			else
-		--				skip (a_as)
-		--			end
-		--		end
-
-		--	process_loop_as (a_as: LOOP_AS)
-		--			-- Process `a_as'.
-		--		do
-		--			if no_skipping then
-		--				Precursor (a_as)
-		--			else
-		--				skip (a_as)
-		--			end
-		--		end
-
-		--	process_retry_as (a_as: RETRY_AS)
-		--			-- Process `a_as'.
-		--		do
-		--			if no_skipping then
-		--				Precursor (a_as)
-		--			else
-		--				skip (a_as)
-		--			end
-		--		end

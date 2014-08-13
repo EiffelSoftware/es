@@ -377,8 +377,8 @@ feature {NONE} -- Meta-command processing
 			l_block: AT_BLOCK_VISIBILITY
 		do
 			l_block := blocks_visibility [a_block_type]
-			check attached {AT_HINTER_COMPLEX_BLOCK_VISIBILITY} l_block end
-			if attached {AT_HINTER_COMPLEX_BLOCK_VISIBILITY} l_block as l_complex_block then
+			check attached {AT_COMPLEX_BLOCK_VISIBILITY} l_block end
+			if attached {AT_COMPLEX_BLOCK_VISIBILITY} l_block as l_complex_block then
 				l_complex_block.global_content_visibility_override := a_value
 			end
 		end
@@ -390,8 +390,8 @@ feature {NONE} -- Meta-command processing
 			l_block: AT_BLOCK_VISIBILITY
 		do
 			l_block := blocks_visibility [a_block_type]
-			check attached {AT_HINTER_COMPLEX_BLOCK_VISIBILITY} l_block end
-			if attached {AT_HINTER_COMPLEX_BLOCK_VISIBILITY} l_block as l_complex_block then
+			check attached {AT_COMPLEX_BLOCK_VISIBILITY} l_block end
+			if attached {AT_COMPLEX_BLOCK_VISIBILITY} l_block as l_complex_block then
 				l_complex_block.local_content_visibility_override := a_value
 			end
 		end
@@ -542,7 +542,7 @@ feature -- Status signaling: cool new things
 				l_local_content_visibility_status := local_content_visibility_stack.item
 			end
 
-			if attached {AT_HINTER_COMPLEX_BLOCK_VISIBILITY} l_block_visibility as l_complex_block_visibility then
+			if attached {AT_COMPLEX_BLOCK_VISIBILITY} l_block_visibility as l_complex_block_visibility then
 					-- For complex blocks, compute the new valid content visibility policy (to be pushed into the stack).
 
 					-- New global policy: default (from the hint table) content visibility for this block type (if defined),
@@ -582,7 +582,10 @@ feature -- Status signaling: cool new things
 
 	set_output_enabled
 			-- Update the `output_enabled_revenge' with the correct up-to-date value.
+		local
+			l_temp: AT_BLOCK_VISIBILITY -- TODO remove
 		do
+			l_temp := blocks_visibility [enum_block_type.bt_instruction]
 			output_enabled_revenge := current_block_effective_visibility
 		end
 
@@ -618,7 +621,7 @@ feature -- Status signaling: cool new things
 
 					-- Complex blocks are not subject to the content visibility policy.
 					-- Simple blocks contained in them will be subject to it.
-				if not attached {AT_HINTER_COMPLEX_BLOCK_VISIBILITY} l_top_block then
+				if not attached {AT_COMPLEX_BLOCK_VISIBILITY} l_top_block then
 						-- Apply the current global content visibility policy,
 						-- which is stored on the top of the respective stack.
 					l_current_value := l_current_value.subjected_to (global_content_visibility_stack.item)
@@ -628,7 +631,7 @@ feature -- Status signaling: cool new things
 				l_current_value := l_current_value.subjected_to (l_top_block.global_visibility_override)
 
 					-- Once again, only apply the content visibility policy if this is a not a complex block.
-				if not attached {AT_HINTER_COMPLEX_BLOCK_VISIBILITY} l_top_block then
+				if not attached {AT_COMPLEX_BLOCK_VISIBILITY} l_top_block then
 						-- Apply the current local content visibility policy (i.e. the one coming from
 						-- the innermost #SHOW_NEXT_CONTENT command affecting the current block).
 						-- It is stored on the top of the respective stack/
@@ -681,14 +684,14 @@ feature {NONE} -- Implementation
 		local
 			l_block_type: AT_BLOCK_TYPE
 			l_block: AT_BLOCK_VISIBILITY
-			l_complex_block: AT_HINTER_COMPLEX_BLOCK_VISIBILITY
+			l_complex_block: AT_COMPLEX_BLOCK_VISIBILITY
 		do
 			create blocks_visibility.make (32)
 
 			across enum_block_type.values as ic loop
 				l_block_type := ic.item
 				if enum_block_type.is_complex_block_type (l_block_type) then
-					create {AT_HINTER_COMPLEX_BLOCK_VISIBILITY} l_block.make_with_two_agents (l_block_type, agent block_default_visibility, agent block_content_default_visibility)
+					create {AT_COMPLEX_BLOCK_VISIBILITY} l_block.make_with_two_agents (l_block_type, agent block_default_visibility, agent block_content_default_visibility)
 				else
 					create l_block.make_with_visibility_agent (l_block_type, agent block_default_visibility)
 				end
