@@ -229,7 +229,7 @@ feature -- Meta-command processing interface
 			l_line, l_level_string, l_command_word, l_block_type_string: STRING
 			l_min_max: TUPLE [min: INTEGER; max: INTEGER]
 			l_index, l_space_index, l_tab_index, l_min_level, l_max_level: INTEGER
-			l_error, l_recognized: BOOLEAN
+			l_error, l_recognized, l_is_complex_block: BOOLEAN
 			l_tristate: AT_TRI_STATE_BOOLEAN
 			l_block_type: AT_BLOCK_TYPE
 		do
@@ -292,30 +292,42 @@ feature -- Meta-command processing interface
 						l_error := true
 					else
 						l_block_type := enum_block_type.value (l_block_type_string)
-						l_recognized := True -- Not quite yet actually...
+						l_is_complex_block := enum_block_type.is_complex_block_type (l_block_type)
+
+						if l_is_complex_block then
+								-- The following commands are applicable only to a complex block.
+							if l_command_word.same_string (at_strings.show_all_content_command) then
+								set_block_content_global_visibility_override (l_block_type, Tri_true)
+								l_recognized := True
+							elseif l_command_word.same_string (at_strings.hide_all_content_command) then
+								set_block_content_global_visibility_override (l_block_type, Tri_false)
+								l_recognized := True
+							elseif l_command_word.same_string (at_strings.reset_all_content_command) then
+								set_block_content_global_visibility_override (l_block_type, Tri_undefined)
+								l_recognized := True
+							elseif l_command_word.same_string (at_strings.show_content_command) then
+								set_block_content_local_visibility_override (l_block_type, Tri_true)
+								l_recognized := True
+							elseif l_command_word.same_string (at_strings.hide_content_command) then
+								set_block_content_local_visibility_override (l_block_type, Tri_false)
+								l_recognized := True
+							end
+						end -- and not 'elseif', since the following commands can also be applied to a complex block.
 						if l_command_word.same_string (at_strings.show_all_command) then
 							set_block_global_visibility_override (l_block_type, Tri_true)
+							l_recognized := True
 						elseif l_command_word.same_string (at_strings.hide_all_command) then
 							set_block_global_visibility_override (l_block_type, Tri_false)
+							l_recognized := True
 						elseif l_command_word.same_string (at_strings.reset_all_command) then
 							set_block_global_visibility_override (l_block_type, Tri_undefined)
-						elseif l_command_word.same_string (at_strings.show_all_content_command) then
-							set_block_content_global_visibility_override (l_block_type, Tri_true)
-						elseif l_command_word.same_string (at_strings.hide_all_content_command) then
-							set_block_content_global_visibility_override (l_block_type, Tri_false)
-						elseif l_command_word.same_string (at_strings.reset_all_content_command) then
-							set_block_content_global_visibility_override (l_block_type, Tri_undefined)
+							l_recognized := True
 						elseif l_command_word.same_string (at_strings.shownext_command) then
 							set_block_local_visibility_override (l_block_type, Tri_true)
+							l_recognized := True
 						elseif l_command_word.same_string (at_strings.hidenext_command) then
 							set_block_local_visibility_override (l_block_type, Tri_false)
-						elseif l_command_word.same_string (at_strings.show_content_command) then
-							set_block_content_local_visibility_override (l_block_type, Tri_true)
-						elseif l_command_word.same_string (at_strings.hide_content_command) then
-							set_block_content_local_visibility_override (l_block_type, Tri_false)
-						else
-								-- Ok, that was a joke, let's set it back to False.
-							l_recognized := False
+							l_recognized := True
 						end
 					end
 				elseif l_command_word.same_string (at_strings.hint_command) then

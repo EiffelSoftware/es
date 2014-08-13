@@ -29,11 +29,11 @@ inherit
 --				-- Locals
 --			process_local_dec_list_as,
 
---				-- Contracts
---			process_require_as,
---			process_require_else_as,
---			process_ensure_as,
---			process_ensure_then_as,
+				-- Contracts
+			process_require_as,
+			process_require_else_as,
+			process_ensure_as,
+			process_ensure_then_as,
 			process_invariant_as,
 
 			-- Assertions:
@@ -149,7 +149,7 @@ feature {NONE} -- Break processing
 					output_hint (l_last_hint)
 				end
 			else
-				if oracle.current_content_visibility /= Tri_false then
+				if oracle.current_content_visibility /= Tri_false and oracle.output_enabled_revenge then
 					put_string_to_context (a_break_line)
 					last_unprinted_break_line := Void
 				else
@@ -177,25 +177,47 @@ feature {NONE} -- Hint processing
 			l_line.left_adjust
 
 
-			if not oracle.output_enabled_revenge then
+			if oracle.current_content_visibility.is_false then
+					-- Use the indentation of the current section for indenting the hint.
 				l_indentation := current_indentation
-					-- We will be in an already indented line, no need to indent it again.
+
+					-- We are in a region were breaks are not printed.
+					-- The following should translate in practice to printing a return character.
+				print_last_unprinted_break
 			else
+					-- Keep the original indentation of the hint line.
 				l_indentation := count_leading ('%T', a_line)
-				put_string_forced (tab_string (l_indentation))
+
+					-- We are in a region were breaks are normally printed.
 			end
-			put_string_forced (l_line) -- Remember that `l_line' ends with a %N character.
-			put_string_forced (tab_string (l_indentation) + "%N")
-			if not oracle.output_enabled_revenge then
+			put_string_forced (tab_string (l_indentation), False)
+
+			put_string_forced (l_line, False) -- Remember that `l_line' ends with a %N character.
+			-- put_string_forced (tab_string (l_indentation), False)
+			if oracle.current_content_visibility.is_false then
 					-- We need to leave things as we found them, so re-indent the line.
 					-- TODO: Is this really a good idea?
-				put_string_forced (tab_string (l_indentation))
+				put_string_forced (tab_string (l_indentation), False)
 			end
 		end
 
 feature {NONE} -- Implementation - skipping
 
 	last_unprinted_break_line: STRING
+
+	print_last_unprinted_break
+		do
+			if attached last_unprinted_break_line as l_break_line then
+					-- If we are resuming to print something after skipping a region,
+					-- we need at least to print the last break line (including the return character),
+					-- or the formatting might be incorrect (e.g. an 'end' keyword not on a new line).
+					-- This should be true even in case of inline skipping of a region: in this case we
+					-- might only insert a single space, but we still must do it after inserting,
+					-- for example, an inline placeholder for an if condition.
+				context.add_string (l_break_line)
+				last_unprinted_break_line := Void
+			end
+		end
 
 --	skip (a_node: AST_EIFFEL; a_inline: BOOLEAN)
 --			-- Skips `a_node' by setting 'skipping_until_index' to the end position of this node.
@@ -245,13 +267,13 @@ feature {NONE} -- Implementation - skipping
 				l_new_line_with_tabs.prepend ("%N")
 
 				if not a_insert_placeholder then
-					put_string_forced (l_new_line_with_tabs)
+					put_string_forced (l_new_line_with_tabs, True)
 				elseif not placeholder_inserted then
 
 					if a_placeholder_type = enum_placeholder_type.ph_standard then
-						put_string_forced (l_new_line_with_tabs + l_new_line_with_tabs + at_strings.code_standard_placeholder + l_new_line_with_tabs)
+						put_string_forced (l_new_line_with_tabs + at_strings.code_standard_placeholder + l_new_line_with_tabs, True)
 					elseif a_placeholder_type = enum_placeholder_type.ph_arguments then
-						put_string_forced (l_new_line_with_tabs + at_strings.code_arguments_placeholder + l_new_line_with_tabs)
+						put_string_forced (l_new_line_with_tabs + at_strings.code_arguments_placeholder + l_new_line_with_tabs, True)
 					end
 
 					placeholder_inserted := True
@@ -337,10 +359,10 @@ feature {NONE} -- Implementation - skipping
 			l_index: INTEGER
 		do
 			if attached a_node as l_node then
-				l_index := l_node.last_token (match_list).index
-				if attached {BREAK_AS} match_list [l_index + 1] as l_break then
+				l_index := l_node.last_token (match_list).index + 1
+				if last_index < l_index and then match_list.valid_index (l_index) and then attached {BREAK_AS} match_list [l_index] as l_break then
 						-- I don't expect two consecutive breaks. I also expect the next leaf to be attached.
-					check next_next_leaf_is_not_break: attached match_list [last_index + 2] and not attached {BREAK_AS} match_list [last_index + 2] end
+					check next_next_leaf_is_not_break: attached match_list [l_index + 1] implies not attached {BREAK_AS} match_list [l_index + 1] end
 
 					process_break_as (l_break)
 					last_index := l_index + 1
@@ -416,16 +438,7 @@ feature {NONE} -- Implementation
 		do
 			if oracle.output_enabled_revenge then
 
-				if attached last_unprinted_break_line as l_break_line then
-						-- If we are resuming to print something after skipping a region,
-						-- we need at least to print the last break line (including the return character),
-						-- or the formatting might be incorrect (e.g. an 'end' keyword not on a new line).
-						-- This should be true even in case of inline skipping of a region: in this case we
-						-- might only insert a single space, but we still must do it after inserting,
-						-- for example, an inline placeholder for an if condition.
-					context.add_string (l_break_line)
-					last_unprinted_break_line := Void
-				end
+				print_last_unprinted_break
 
 				context.add_string (a_string)
 				blank_line_inserted := False
@@ -435,10 +448,16 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	put_string_forced (a_string: STRING)
+	put_string_forced (a_string: STRING; a_print_last_unprinted_break: BOOLEAN)
 			-- Puts `a_string' to the context without checking the oracle flag.
 		do
+			if a_print_last_unprinted_break then
+				print_last_unprinted_break
+			end
+
 			blank_line_inserted := False
+			placeholder_inserted := False
+
 			context.add_string (a_string)
 		end
 
@@ -557,11 +576,11 @@ feature {AST_EIFFEL} -- Visitors
 --			oracle.end_process_precondition
 --		end
 
---	process_require_else_as (a_as: REQUIRE_ELSE_AS)
---			-- Process `a_as'.
---		do
---			process_require_as (a_as)
---		end
+	process_require_else_as (a_as: REQUIRE_ELSE_AS)
+			-- Process `a_as'.
+		do
+			process_require_as (a_as)
+		end
 
 --	process_do_once_as (a_as: INTERNAL_AS)
 --			-- Process `a_as'.
@@ -651,11 +670,11 @@ feature {AST_EIFFEL} -- Visitors
 --			oracle.end_process_postcondition
 --		end
 
---	process_ensure_then_as (a_as: ENSURE_THEN_AS)
---			-- Process `a_as'.
---		do
---			process_ensure_as (a_as)
---		end
+	process_ensure_then_as (a_as: ENSURE_THEN_AS)
+			-- Process `a_as'.
+		do
+			process_ensure_as (a_as)
+		end
 
 
 	process_formal_argu_dec_list_as (a_as: FORMAL_ARGU_DEC_LIST_AS)
@@ -713,9 +732,39 @@ feature {AST_EIFFEL} -- Visitors
 			oracle.end_process_block (enum_block_type.bt_routine_body)
 		end
 
-	process_invariant_as (a_as: invariant_as)
+
+	process_require_as (a_as: REQUIRE_AS)
 			-- Process `a_as'.
-		local
+		do
+			process_leading_leaves (a_as.first_token (match_list).index)
+			oracle.begin_process_block (enum_block_type.bt_precondition)
+
+			safe_process (a_as.require_keyword (match_list))
+
+			current_indentation := indentation (a_as.require_keyword (match_list)) + 1
+
+			safe_process (a_as.full_assertion_list)
+
+			oracle.end_process_block (enum_block_type.bt_precondition)
+		end
+
+	process_ensure_as (a_as: ENSURE_AS)
+			-- Process `a_as'.
+		do
+			process_leading_leaves (a_as.first_token (match_list).index)
+			oracle.begin_process_block (enum_block_type.bt_postcondition)
+
+			safe_process (a_as.ensure_keyword (match_list))
+
+			current_indentation := indentation (a_as.ensure_keyword (match_list)) + 1
+
+			safe_process (a_as.full_assertion_list)
+
+			oracle.end_process_block (enum_block_type.bt_postcondition)
+		end
+
+	process_invariant_as (a_as: INVARIANT_AS)
+			-- Process `a_as'.
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.bt_class_invariant)
@@ -724,14 +773,9 @@ feature {AST_EIFFEL} -- Visitors
 
 			current_indentation := indentation (a_as.invariant_keyword (match_list)) + 1
 
---			if oracle.current_content_visibility = Tri_false then
---					-- Must insert blank line/placeholder.
---				skipped_section_indentation := indentation (a_as.invariant_keyword (match_list)) + 1
-
---				insert_blank_line (options.insert_code_placeholder, enum_placeholder_type.ph_standard)
---			end
-
 			safe_process (a_as.full_assertion_list)
+
+			process_next_break (a_as)
 
 			oracle.end_process_block (enum_block_type.bt_class_invariant)
 		end

@@ -33,18 +33,18 @@ feature {NONE} -- Initialization
 			content_table.put 	(<< 	Tri_undefined	>>, enum_block_type.bt_feature)
 
 			table.put 			(<< 	True			>>, enum_block_type.bt_arguments)			-- Always show arguments
-			content_table.put	(<< 	Tri_false		>>, enum_block_type.bt_arguments)
+			content_table.put	(<< 	Tri_undefined		>>, enum_block_type.bt_arguments)
 
 			table.put 			(<< 	True			>>, enum_block_type.bt_precondition)		-- Always show the existence of preconditions
-			content_table.put	(<< 	Tri_false		>>, enum_block_type.bt_precondition)		-- Never show the content of preconditions
-			table.put 			(<< 	False			>>, enum_block_type.bt_assertion)			-- Never show assertions
+			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.bt_precondition)		-- Never show the content of preconditions
+			table.put 			(<< 	True			>>, enum_block_type.bt_assertion)			-- Always show assertions
 
 			table.put 			(<< 	True			>>, enum_block_type.bt_locals)				-- Always show the existence of locals deckaratuibs
-			content_table.put 	(<< 	Tri_false		>>, enum_block_type.bt_locals)				-- Always hide the content of locals declarations
+			content_table.put 	(<< 	Tri_undefined	>>, enum_block_type.bt_locals)				-- Always hide the content of locals declarations
 
 			table.put 			(<< 	True			>>, enum_block_type.bt_routine_body)		-- Always show the existence of routine bodies
-			content_table.put	(<< 	Tri_false	>>, enum_block_type.bt_routine_body)			-- Always hide the content of routine bodies
-			table.put 			(<< 	True			>>, enum_block_type.bt_instruction)			-- Never show instructions
+			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.bt_routine_body)		-- Always hide the content of routine bodies
+			table.put 			(<< 	True			>>, enum_block_type.bt_instruction)			-- Always show instructions
 
 			table.put 			(<< 	True			>>, enum_block_type.bt_postcondition)		-- Always show the existence of postconditions
 			content_table.put	(<< 	Tri_false		>>, enum_block_type.bt_postcondition)		-- Never show the content of postconditions
