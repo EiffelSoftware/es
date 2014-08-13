@@ -20,7 +20,7 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		do
 			hint_level := 2
-			insert_code_placeholder := True
+			insert_code_placeholder := False
 			create output_directory.make_with_path (create {PATH}.make_current)
 		end
 

@@ -26,6 +26,9 @@ inherit
 			process_do_as,
 			process_once_as,
 
+				-- Locals
+			process_local_dec_list_as,
+
 				-- Contracts
 			process_require_as,
 			process_require_else_as,
@@ -117,6 +120,7 @@ feature {NONE} -- Break processing
 			loop
 				process_break_line (ic.item, l_in_skipped_section)
 			end
+			last_index := a_break_as.index
 		end
 
 	process_break_line (a_break_line: STRING; a_in_skipped_section: BOOLEAN)
@@ -157,7 +161,7 @@ feature {NONE} -- Meta-commands processing
 
 	process_hint (a_line: STRING)
 		require
-			-- a_line is a hint command. How to specify that?
+				-- a_line is a hint command. How to specify that?
 			single_return_terminated_line: a_line.ends_with ("%N") and a_line.occurrences ('%N') = 1
 		local
 			l_line: STRING
@@ -171,7 +175,6 @@ feature {NONE} -- Meta-commands processing
 			end
 			l_hint_level := l_line.substring (at_strings.hint_command.count + 1, l_line.count).to_integer
 			if l_hint_level <= options.hint_level then
-
 				if in_skipped_section then
 					l_indentation := skipped_section_indentation
 						-- We will be in an already indented line, no need to indent it again.
@@ -179,18 +182,15 @@ feature {NONE} -- Meta-commands processing
 					l_indentation := count_leading ('%T', a_line)
 					put_string_to_context (tab_string (l_indentation))
 				end
-
-
 				put_string_to_context (l_line) -- Remember that `l_line' ends with a %N character.
 				put_string_to_context (tab_string (l_indentation) + "%N")
-
 				if in_skipped_section then
 						-- We need to leave things as we found them, so re-indent the line.
 					put_string_to_context (tab_string (l_indentation))
 				end
 
 					-- Additional blank line, with placeholder if necessary
-				-- insert_blank_line (l_indentation, false)
+					-- insert_blank_line (l_indentation, false)
 			end
 		end
 
@@ -199,7 +199,7 @@ feature {NONE} -- Implementation - skipping
 	skip (a_node: AST_EIFFEL)
 			-- Skips `a_node' by setting 'skipping_until_index' to the end position of this node.
 		local
-			l_newline_index: INTEGER
+			l_newline_index, l_start_position, l_leaf_index: INTEGER
 			l_last_break_text: STRING
 			l_last_break_line: STRING
 			l_previous_leaf: LEAF_AS
@@ -210,33 +210,11 @@ feature {NONE} -- Implementation - skipping
 					-- Do nothing. Also, calling in_skipped_section asserts that the node is *entirely*
 					-- in the skipped section, so we don't even need to update skipping_until_index.
 			else
-					-- We are at the beginning of a new skipped area, this is the first instruction or block
-					-- being skipped. We need to save the numbers of tabs we have before this instruction
-					-- by checking the last break.
-				l_previous_leaf := match_list.item_by_end_position (a_node.start_position - 1)
-
-					-- The following check should only fail if we are obscurating the very first keyword
-					-- in the class. In case this is ever needed in the future, this assertion can be removed.
-				check
-					attached {BREAK_AS} l_previous_leaf
-				end
-				if attached {BREAK_AS} l_previous_leaf as l_previous_break then
-					l_last_break_text := l_previous_break.text (match_list)
-					l_newline_index := l_last_break_text.last_index_of ('%N', l_last_break_text.count)
-					if l_newline_index = 0 then
-							-- We are probably in some weird situation (e.g. the first instruction being skipped
-							-- is not on a new line). Let's stay safe.
-						skipped_section_indentation := 0
-					else
-						l_last_break_line := l_last_break_text.substring (l_newline_index + 1, l_last_break_text.count)
-						skipped_section_indentation := count_leading ('%T', l_last_break_line)
-					end
-				end
-
-					-- Now we can record where the skipped region ends, which is basically all we have to do
+					-- Record where the skipped region ends, which is basically all we have to do
 				skipping_until_position := a_node.end_position
 
-					-- Finally, insert a blank line, possibly with a placeholder
+					-- If necessary, insert a blank line, possibly with a placeholder.
+					-- We assume that `skipped_section_indentation' has already set with the proper value.
 					-- The flag blank_line_inserted helps us avoiding inserting multiple new lines in case
 					-- we encounter two consecutive (but distinct) skipping regions without anything being
 					-- printed in between. In this case we clearly don't need more blank lines or placeholders.
@@ -255,7 +233,6 @@ feature {NONE} -- Implementation - skipping
 		do
 			l_new_line_with_tabs := tab_string (a_indentation)
 			l_new_line_with_tabs.prepend ("%N")
-
 			put_string_to_context (l_new_line_with_tabs)
 			if a_insert_placeholder then
 				put_string_to_context (l_new_line_with_tabs + at_strings.code_placeholder + l_new_line_with_tabs)
@@ -284,6 +261,63 @@ feature {NONE} -- Implementation - skipping
 					a_node.end_position <= skipping_until_position
 				end
 				Result := True
+			end
+		end
+
+	indentation (a_node: AST_EIFFEL): INTEGER
+			-- The indentation value of the given node.
+		local
+			l_newline_index, l_start_position, l_leaf_index: INTEGER
+			l_last_break_text: STRING
+			l_last_break_line: STRING
+			l_previous_leaf: LEAF_AS
+		do
+			if attached {EIFFEL_LIST [LIST_DEC_AS]} a_node as l_eiffel_list then
+					-- Workaround to a bug/inconsinstency: a_node.start_position returns an incorrect value
+					-- in this special case.
+				check
+					attached l_eiffel_list.first
+				end
+				if attached l_eiffel_list.first as l_first then
+					l_leaf_index := l_first.id_list.id_list.first
+					l_start_position := match_list.at (l_leaf_index).start_position
+				end
+			else
+				l_start_position := a_node.start_position
+			end
+
+				-- We are at the beginning of a new skipped area, this is the first instruction or block
+				-- being skipped. We need to save the numbers of tabs we have before this instruction
+				-- by checking the last break.
+			l_previous_leaf := match_list.item_by_end_position (l_start_position - 1)
+
+				-- The following check should only fail if we are obscurating the very first keyword
+				-- in the class, and even then, the parser might assume there is an empty break.
+				-- In case this is ever needed in the future, this assertion can be removed.
+				-- TODO: check this
+			check
+				attached {BREAK_AS} l_previous_leaf
+			end
+			if attached {BREAK_AS} l_previous_leaf as l_previous_break then
+				l_last_break_text := l_previous_break.text (match_list)
+				l_newline_index := l_last_break_text.last_index_of ('%N', l_last_break_text.count)
+				if l_newline_index = 0 then
+						-- We are probably in some weird situation (e.g. the first instruction being skipped
+						-- is not on a new line). Let's stay safe.
+					Result := 0
+				else
+					l_last_break_line := l_last_break_text.substring (l_newline_index + 1, l_last_break_text.count)
+					Result := count_leading ('%T', l_last_break_line)
+				end
+			end
+		end
+
+	next_break (a_node: AST_EIFFEL): BREAK_AS
+		require
+			next_is_break: match_list.valid_index (a_node.index + 1) and then attached {BREAK_AS} match_list [a_node.index + 1]
+		do
+			if attached {BREAK_AS} match_list [a_node.index + 1] as l_next_break then
+				Result := l_next_break
 			end
 		end
 
@@ -354,11 +388,11 @@ feature {NONE} -- Implementation
 			context.add_string (a_string)
 		end
 
-	put_string (l_as: LEAF_AS)
-			-- Puts the text of `l_as' to the context.
+	put_string (a_as: LEAF_AS)
+			-- Puts the text of `a_as' to the context.
 		do
 			blank_line_inserted := False
-			Precursor (l_as)
+			Precursor (a_as)
 		end
 
 	options: AT_OPTIONS
@@ -388,270 +422,368 @@ feature {NONE} -- Implementation
 
 feature {AST_EIFFEL} -- Visitors
 
-		-- Right now there is a redundancy, as these two routines here should suffice.
-		-- But we will need the instruction visitors later, when we will have more flexibility
+	process_local_dec_list_as (a_as: LOCAL_DEC_LIST_AS)
+			-- Process `a_as'
+		do
+			safe_process (a_as.local_keyword (match_list))
+			if no_skipping then
+				safe_process (a_as.locals)
+			else
+					-- See comment in `process_do_as'.
 
-	process_do_as (l_as: DO_AS)
-			-- Process `l_as'.
+				if attached a_as.locals as l_locals then
+					skipped_section_indentation := indentation (a_as.locals)
+				else
+					skipped_section_indentation := indentation (a_as.local_keyword (match_list)) + 1
+				end
+				skip (a_as)
+			end
+		end
+
+	process_do_as (a_as: DO_AS)
+			-- Process `a_as'.
+		local
+			l_indentation: INTEGER
+			l_next_leaf: LEAF_AS
 		do
 				-- We want to process the 'do' keyword in any case.
-			safe_process (l_as.do_keyword (match_list))
+			safe_process (a_as.do_keyword (match_list))
 			if not options.hide_routine_bodies or no_skipping then
-				safe_process (l_as.compound)
+				safe_process (a_as.compound)
 			else
-					-- There are several good reasons for calling skip (l_as) instead of skip (l_as.compound):
-					-- 1) It cannot be Void.
-					-- 2) For some reason, l_as.compount.index is always zero, which leads to problems
-					-- 3) Even if there are no instructions (Void), we must mark the region as skipped until the end,
-					-- 	  or breaks and comments within it will not be handled as in skipped region.
-				skip (l_as)
+					-- TODO: Update this and the other comments.
+
+				if attached a_as.compound as l_compound then
+					skipped_section_indentation := indentation (l_compound)
+					skip (a_as)
+				else
+					l_indentation := indentation (a_as.do_keyword (match_list))
+					skipped_section_indentation := l_indentation + 1
+
+						-- Empty routine! This is a mess, because `a_as.start_position' and
+						-- `a_as.end_position' will return respectively 0 and -1 (meaningless).
+						-- `a_as.text (match_list)' will return "do". However, we still want to make
+						-- sure that we skip the whole routine body, because it might contain comments
+						-- or other whitespace that should not be output.
+						-- That's why we need to do the following:
+					skip (next_break (a_as))
+
+						-- Fix indentation.
+					put_string_to_context ("%N" + tab_string (l_indentation))
+				end
 			end
 		end
 
-	process_once_as (l_as: ONCE_AS)
-			-- Process `l_as'.
+	process_once_as (a_as: ONCE_AS)
+			-- Process `a_as'.
+		local
+			l_indentation: INTEGER
 		do
 				-- We want to process the 'once' keyword in any case.
-			safe_process (l_as.once_keyword (match_list))
-			if no_skipping then
-				safe_process (l_as.compound)
+			safe_process (a_as.once_keyword (match_list))
+			if not options.hide_routine_bodies or no_skipping then
+				safe_process (a_as.compound)
 			else
-					-- See commend in `process_do_as'.
-				skip (l_as)
+				if attached a_as.compound as l_compound then
+					skipped_section_indentation := indentation (l_compound)
+					skip (a_as)
+				else
+					l_indentation := indentation (a_as.once_keyword (match_list))
+					skipped_section_indentation := l_indentation + 1
+
+						-- See comments in `process_do_as'.
+					skip (next_break (a_as))
+					put_string_to_context ("%N" + tab_string (l_indentation))
+				end
 			end
 		end
 
-	process_require_as (l_as: require_as)
-			-- Process `l_as'.
+	process_require_as (a_as: require_as)
+			-- Process `a_as'.
+		local
+			l_indentation: INTEGER
 		do
-			safe_process (l_as.require_keyword (match_list))
+			safe_process (a_as.require_keyword (match_list))
 			if not options.hide_preconditions or no_skipping then
-				safe_process (l_as.full_assertion_list)
+				safe_process (a_as.full_assertion_list)
 			else
-					-- See commend in `process_do_as'.
-				skip (l_as)
+				if attached a_as.assertions as l_assertions then
+					skipped_section_indentation := indentation (l_assertions)
+					skip (a_as)
+				else
+					l_indentation := indentation (a_as.require_keyword (match_list))
+					skipped_section_indentation := l_indentation + 1
+
+						-- See comments in `process_do_as'.
+					skip (next_break (a_as))
+					put_string_to_context ("%N" + tab_string (l_indentation))
+				end
 			end
 		end
 
-	process_require_else_as (l_as: require_else_as)
-			-- Process `l_as'.
+	process_require_else_as (a_as: require_else_as)
+			-- Process `a_as'.
+		local
+			l_indentation: INTEGER
 		do
-			safe_process (l_as.require_keyword (match_list))
-			safe_process (l_as.else_keyword (match_list))
+			safe_process (a_as.require_keyword (match_list))
+			safe_process (a_as.else_keyword (match_list))
 			if not options.hide_preconditions or no_skipping then
-				safe_process (l_as.full_assertion_list)
+				safe_process (a_as.full_assertion_list)
 			else
-					-- See commend in `process_do_as'.
-				skip (l_as)
+				if attached a_as.assertions as l_assertions then
+					skipped_section_indentation := indentation (l_assertions)
+					skip (a_as)
+				else
+					l_indentation := indentation (a_as.require_keyword (match_list))
+					skipped_section_indentation := l_indentation + 1
+
+						-- See comments in `process_do_as'.
+					skip (next_break (a_as))
+					put_string_to_context ("%N" + tab_string (l_indentation))
+				end
 			end
 		end
 
-	process_ensure_as (l_as: ensure_as)
-			-- Process `l_as'.
+	process_ensure_as (a_as: ensure_as)
+			-- Process `a_as'.
+		local
+			l_indentation: INTEGER
 		do
-			safe_process (l_as.ensure_keyword (match_list))
+			safe_process (a_as.ensure_keyword (match_list))
 			if not options.hide_postconditions or no_skipping then
-				safe_process (l_as.full_assertion_list)
+				safe_process (a_as.full_assertion_list)
 			else
-					-- See commend in `process_do_as'.
-				skip (l_as)
+				if attached a_as.assertions as l_assertions then
+					skipped_section_indentation := indentation (l_assertions)
+					skip (a_as)
+				else
+					l_indentation := indentation (a_as.ensure_keyword (match_list))
+					skipped_section_indentation := l_indentation + 1
+
+						-- See comments in `process_do_as'.
+					skip (next_break (a_as))
+					put_string_to_context ("%N" + tab_string (l_indentation))
+				end
 			end
 		end
 
-	process_ensure_then_as (l_as: ensure_then_as)
-			-- Process `l_as'.
+	process_ensure_then_as (a_as: ensure_then_as)
+			-- Process `a_as'.
+		local
+			l_indentation: INTEGER
 		do
-			safe_process (l_as.ensure_keyword (match_list))
-			safe_process (l_as.then_keyword (match_list))
+			safe_process (a_as.ensure_keyword (match_list))
+			safe_process (a_as.then_keyword (match_list))
 			if not options.hide_postconditions or no_skipping then
-				safe_process (l_as.full_assertion_list)
+				safe_process (a_as.full_assertion_list)
 			else
-					-- See commend in `process_do_as'.
-				skip (l_as)
+				if attached a_as.assertions as l_assertions then
+					skipped_section_indentation := indentation (l_assertions)
+					skip (a_as)
+				else
+					l_indentation := indentation (a_as.ensure_keyword (match_list))
+					skipped_section_indentation := l_indentation + 1
+
+						-- See comments in `process_do_as'.
+					skip (next_break (a_as))
+					put_string_to_context ("%N" + tab_string (l_indentation))
+				end
 			end
 		end
 
-	process_invariant_as (l_as: invariant_as)
-			-- Process `l_as'.
+	process_invariant_as (a_as: invariant_as)
+			-- Process `a_as'.
+		local
+			l_indentation: INTEGER
 		do
-			safe_process (l_as.invariant_keyword (match_list))
+			safe_process (a_as.invariant_keyword (match_list))
 			if not options.hide_class_invariants or no_skipping then
-				safe_process (l_as.full_assertion_list)
+				safe_process (a_as.full_assertion_list)
 			else
-					-- See commend in `process_do_as'.
-				skip (l_as)
+				if attached a_as.assertion_list as l_assertions then
+					skipped_section_indentation := indentation (l_assertions)
+					skip (a_as)
+				else
+					l_indentation := indentation (a_as.invariant_keyword (match_list))
+					skipped_section_indentation := l_indentation + 1
+
+						-- See comments in `process_do_as'.
+					skip (next_break (a_as))
+					put_string_to_context ("%N" + tab_string (l_indentation))
+				end
 			end
 		end
 
 		--feature {AST_EIFFEL} -- Instructions visitors
 
-		--	process_elseif_as (l_as: ELSIF_AS)
-		--			-- Process `l_as'.
+		--	process_elseif_as (a_as: ELSIF_AS)
+		--			-- Process `a_as'.
 		--		do
 		--			if no_skipping then
-		--				Precursor (l_as)
+		--				Precursor (a_as)
 		--			else
-		--				skip (l_as)
+		--				skip (a_as)
 		--			end
 		--		end
 
-		--	process_assign_as (l_as: ASSIGN_AS)
-		--			-- Process `l_as'.
+		--	process_assign_as (a_as: ASSIGN_AS)
+		--			-- Process `a_as'.
 		--		do
 		--			if no_skipping then
-		--				Precursor (l_as)
+		--				Precursor (a_as)
 		--			else
-		--				skip (l_as)
+		--				skip (a_as)
 		--			end
 		--		end
 
-		--	process_reverse_as (l_as: REVERSE_AS)
-		--			-- Process `l_as'.
+		--	process_reverse_as (a_as: REVERSE_AS)
+		--			-- Process `a_as'.
 		--		do
 		--			if no_skipping then
-		--				Precursor (l_as)
+		--				Precursor (a_as)
 		--			else
-		--				skip (l_as)
+		--				skip (a_as)
 		--			end
 		--		end
 
-		--	process_assigner_call_as (l_as: ASSIGNER_CALL_AS)
-		--			-- Process `l_as'.
+		--	process_assigner_call_as (a_as: ASSIGNER_CALL_AS)
+		--			-- Process `a_as'.
 		--		do
 		--			if no_skipping then
-		--				Precursor (l_as)
+		--				Precursor (a_as)
 		--			else
-		--				skip (l_as)
+		--				skip (a_as)
 		--			end
 		--		end
 
-		--	process_case_as (l_as: CASE_AS)
-		--			-- Process `l_as'.
+		--	process_case_as (a_as: CASE_AS)
+		--			-- Process `a_as'.
 		--		do
 		--			if no_skipping then
-		--				Precursor (l_as)
+		--				Precursor (a_as)
 		--			else
-		--				skip (l_as)
+		--				skip (a_as)
 		--			end
 		--		end
 
-		--	process_check_as (l_as: CHECK_AS)
-		--			-- Process `l_as'.
+		--	process_check_as (a_as: CHECK_AS)
+		--			-- Process `a_as'.
 		--		do
 		--			if no_skipping then
-		--				Precursor (l_as)
+		--				Precursor (a_as)
 		--			else
-		--				skip (l_as)
+		--				skip (a_as)
 		--			end
 		--		end
 
-		--	process_creation_as (l_as: CREATION_AS)
-		--			-- Process `l_as'.
+		--	process_creation_as (a_as: CREATION_AS)
+		--			-- Process `a_as'.
 		--		do
 		--			if no_skipping then
-		--				Precursor (l_as)
+		--				Precursor (a_as)
 		--			else
-		--				skip (l_as)
+		--				skip (a_as)
 		--			end
 		--		end
 
-		--	process_create_creation_as (l_as: CREATE_CREATION_AS)
-		--			-- Process `l_as'.
+		--	process_create_creation_as (a_as: CREATE_CREATION_AS)
+		--			-- Process `a_as'.
 		--		do
 		--			if no_skipping then
-		--				Precursor (l_as)
+		--				Precursor (a_as)
 		--			else
-		--				skip (l_as)
+		--				skip (a_as)
 		--			end
 		--		end
 
-		--	process_bang_creation_as (l_as: BANG_CREATION_AS)
-		--			-- Process `l_as'.
+		--	process_bang_creation_as (a_as: BANG_CREATION_AS)
+		--			-- Process `a_as'.
 		--		do
 		--			if no_skipping then
-		--				Precursor (l_as)
+		--				Precursor (a_as)
 		--			else
-		--				skip (l_as)
+		--				skip (a_as)
 		--			end
 		--		end
 
-		--	process_debug_as (l_as: DEBUG_AS)
-		--			-- Process `l_as'.
+		--	process_debug_as (a_as: DEBUG_AS)
+		--			-- Process `a_as'.
 		--		do
 		--			if no_skipping then
-		--				Precursor (l_as)
+		--				Precursor (a_as)
 		--			else
-		--				skip (l_as)
+		--				skip (a_as)
 		--			end
 		--		end
 
-		--	process_guard_as (l_as: GUARD_AS)
-		--			-- Process `l_as'.
+		--	process_guard_as (a_as: GUARD_AS)
+		--			-- Process `a_as'.
 		--		do
 		--			if no_skipping then
-		--				Precursor (l_as)
+		--				Precursor (a_as)
 		--			else
-		--				skip (l_as)
+		--				skip (a_as)
 		--			end
 		--		end
 
-		--	process_if_as (l_as: IF_AS)
-		--			-- Process `l_as'.
+		--	process_if_as (a_as: IF_AS)
+		--			-- Process `a_as'.
 		--		do
 		--			if no_skipping then
-		--				Precursor (l_as)
+		--				Precursor (a_as)
 		--			else
-		--				skip (l_as)
+		--				skip (a_as)
 		--			end
 		--		end
 
-		--	process_inspect_as (l_as: INSPECT_AS)
-		--			-- Process `l_as'.
+		--	process_inspect_as (a_as: INSPECT_AS)
+		--			-- Process `a_as'.
 		--		do
 		--			if no_skipping then
-		--				Precursor (l_as)
+		--				Precursor (a_as)
 		--			else
-		--				skip (l_as)
+		--				skip (a_as)
 		--			end
 		--		end
 
-		--	process_instr_call_as (l_as: INSTR_CALL_AS)
-		--			-- Process `l_as'.
+		--	process_instr_call_as (a_as: INSTR_CALL_AS)
+		--			-- Process `a_as'.
 		--		do
 		--			if no_skipping then
-		--				Precursor (l_as)
+		--				Precursor (a_as)
 		--			else
-		--				skip (l_as)
+		--				skip (a_as)
 		--			end
 		--		end
 
-		--	process_interval_as (l_as: INTERVAL_AS)
-		--			-- Process `l_as'.
+		--	process_interval_as (a_as: INTERVAL_AS)
+		--			-- Process `a_as'.
 		--		do
 		--			if no_skipping then
-		--				Precursor (l_as)
+		--				Precursor (a_as)
 		--			else
-		--				skip (l_as)
+		--				skip (a_as)
 		--			end
 		--		end
 
-		--	process_loop_as (l_as: LOOP_AS)
-		--			-- Process `l_as'.
+		--	process_loop_as (a_as: LOOP_AS)
+		--			-- Process `a_as'.
 		--		do
 		--			if no_skipping then
-		--				Precursor (l_as)
+		--				Precursor (a_as)
 		--			else
-		--				skip (l_as)
+		--				skip (a_as)
 		--			end
 		--		end
 
-		--	process_retry_as (l_as: RETRY_AS)
-		--			-- Process `l_as'.
+		--	process_retry_as (a_as: RETRY_AS)
+		--			-- Process `a_as'.
 		--		do
 		--			if no_skipping then
-		--				Precursor (l_as)
+		--				Precursor (a_as)
 		--			else
-		--				skip (l_as)
+		--				skip (a_as)
 		--			end
 		--		end
 

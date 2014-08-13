@@ -166,8 +166,6 @@ feature -- Execution (declared in EWB_CMD)
 
 	execute, check_arguments_and_execute
 			-- Execute the AutoTeach command-line tool
-		local
-			l_executed: BOOLEAN
 		do
 			print_line ("%N")
 			process_arguments
