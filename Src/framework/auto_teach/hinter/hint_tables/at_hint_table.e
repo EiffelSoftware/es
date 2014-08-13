@@ -51,10 +51,11 @@ feature -- Access
 			valid_hint_level: is_valid_hint_level (a_hint_level)
 			complex_block_type: enum_block_type.is_complex_block_type (a_block_type)
 		local
-			l_table_row: ARRAY [AT_TRI_STATE_BOOLEAN]
+			l_table_row, l_temp: ARRAY [AT_TRI_STATE_BOOLEAN]
 		do
-			if table.has (a_block_type) then
+			if content_table.has (a_block_type) then
 				l_table_row := content_table [a_block_type]
+				l_temp := content_table [enum_block_type.bt_arguments]
 
 					-- Guaranteed by the invariant:
 				check

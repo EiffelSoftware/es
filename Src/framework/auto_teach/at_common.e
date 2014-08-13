@@ -17,34 +17,23 @@ feature {NONE} -- Shared strings
 
 	at_strings: AT_STRINGS
 			-- Localized strings for AutoTeach.
-		once
+		once ("PROCESS")
 			create Result
 		ensure
 			valid_result: Result /= Void
 		end
 
-feature -- Block types
+feature -- Enums
 
 	enum_block_type: AT_ENUM_BLOCK_TYPE
-		once
+		once ("PROCESS")
 			create Result
 		end
 
---		-- 'bt' stands for 'block type'
---	bt_feature: STRING = "feature"
---	bt_arguments: STRING = "arguments"
---	bt_precondition: STRING = "precondition"
---	bt_locals: STRING = "locals"
---	bt_routine_body: STRING = "body"
---	bt_postcondition: STRING = "postcondition"
---	bt_class_invariant: STRING = "classinvariant"
-
---	content_block_types: ARRAY [STRING] -- TODO: get rid of this?
---			-- List of all supported block types with content
---		once
---			Result := << bt_feature >>
---			Result.compare_objects
---		end
+	enum_placeholder_type: AT_ENUM_PLACEHOLDER
+		once ("PROCESS")
+			create Result
+		end
 
 feature -- For use with contracts
 

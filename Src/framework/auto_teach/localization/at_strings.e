@@ -111,7 +111,8 @@ feature -- Errors
 
 feature -- Code output
 
-	code_placeholder: STRING = "-- Your code here!"
+	code_standard_placeholder: STRING = "-- Your code here!"
+	code_arguments_placeholder: STRING = "-- Your arguments here!"
 
 		-- TODO: remove this, use the other placeholder
 	arguments_placeholder: STRING = "(replace_this_with_your_arguments: ANY)"

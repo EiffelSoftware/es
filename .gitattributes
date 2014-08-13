@@ -3437,12 +3437,12 @@ Src/framework/alias_calculus/alias_calculus.rc -text
 Src/framework/alias_calculus/application_with_printout.BK -text
 Src/framework/alias_calculus/results.txt -text
 Src/framework/auto_teach/at_common.e -text svneol=native#unset
-Src/framework/auto_teach/hinter/at_block_type.e -text svneol=native#unset
 Src/framework/auto_teach/hinter/at_block_visibility.e -text svneol=native#unset
-Src/framework/auto_teach/hinter/at_enum_block_type.e -text svneol=native#unset
 Src/framework/auto_teach/hinter/at_hinter.e -text svneol=native#unset
 Src/framework/auto_teach/hinter/at_hinter_ast_iterator.e -text svneol=native#unset
 Src/framework/auto_teach/hinter/at_hinter_processing_oracle.e -text svneol=native#unset
+Src/framework/auto_teach/hinter/enums/at_block_type.e -text svneol=native#unset
+Src/framework/auto_teach/hinter/enums/at_enum_block_type.e -text svneol=native#unset
 Src/framework/auto_teach/hinter/hint_tables/at_default_annotated_hint_table.e -text svneol=native#unset
 Src/framework/auto_teach/hinter/hint_tables/at_default_unannotated_hint_table.e -text svneol=native#unset
 Src/framework/auto_teach/hinter/hint_tables/at_hint_table.e -text svneol=native#unset

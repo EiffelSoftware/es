@@ -10,17 +10,17 @@ class
 feature {NONE} -- Constants
 
 	Tri_true: AT_TRI_STATE_BOOLEAN
-		once
+		once ("PROCESS")
 			create Result.make_defined (True)
 		end
 
 	Tri_false: AT_TRI_STATE_BOOLEAN
-		once
+		once ("PROCESS")
 			create Result.make_defined (False)
 		end
 
 	Tri_undefined: AT_TRI_STATE_BOOLEAN
-		once
+		once ("PROCESS")
 			create Result.make_undefined
 		end
 
