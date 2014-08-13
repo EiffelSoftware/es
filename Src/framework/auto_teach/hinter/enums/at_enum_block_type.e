@@ -54,7 +54,13 @@ feature {AT_ENUM} -- Value list
 							[9, at_strings.Bt_instruction],
 							[10, at_strings.Bt_if],
 							[11, at_strings.Bt_if_condition],
-							[12, at_strings.Bt_if_branch]		>>
+							[12, at_strings.Bt_if_branch],
+							[13, at_strings.Bt_loop],
+							[14, at_strings.Bt_loop_initialization],
+							[15, at_strings.Bt_loop_invariant],
+							[16, at_strings.Bt_loop_termination_condition],
+							[17, at_strings.Bt_loop_body],
+							[18, at_strings.Bt_loop_variant]		>>
 		end
 
 feature -- Values
@@ -119,12 +125,42 @@ feature -- Values
 			create Result.make_with_numerical_value (12)
 		end
 
+	Bt_loop: AT_BLOCK_TYPE
+		once ("PROCESS")
+			create Result.make_with_numerical_value (13)
+		end
+
+	Bt_loop_initialization: AT_BLOCK_TYPE
+		once ("PROCESS")
+			create Result.make_with_numerical_value (14)
+		end
+
+	Bt_loop_invariant: AT_BLOCK_TYPE
+		once ("PROCESS")
+			create Result.make_with_numerical_value (15)
+		end
+
+	Bt_loop_termination_condition: AT_BLOCK_TYPE
+		once ("PROCESS")
+			create Result.make_with_numerical_value (16)
+		end
+
+	Bt_loop_body: AT_BLOCK_TYPE
+		once ("PROCESS")
+			create Result.make_with_numerical_value (17)
+		end
+
+	Bt_loop_variant: AT_BLOCK_TYPE
+		once ("PROCESS")
+			create Result.make_with_numerical_value (18)
+		end
+
 feature -- Complex blocks
 
 	complex_block_types: ARRAY [AT_BLOCK_TYPE]
 			-- The list of complex block types.
 		once ("PROCESS")
-			Result := <<Bt_feature, Bt_precondition, Bt_locals, Bt_routine_body, Bt_postcondition, Bt_class_invariant, Bt_if, Bt_if_branch>>
+			Result := <<Bt_feature, Bt_precondition, Bt_locals, Bt_routine_body, Bt_postcondition, Bt_class_invariant, Bt_if, Bt_if_branch, Bt_loop, Bt_loop_initialization, Bt_loop_invariant, Bt_loop_body, Bt_loop_variant>>
 		end
 
 	is_complex_block_type (a_block_type: AT_BLOCK_TYPE): BOOLEAN

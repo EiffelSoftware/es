@@ -88,6 +88,7 @@ feature {AT_HINT_TABLE} -- Implementation
 
 invariant
 	all_block_types_present: across enum_block_type.values as ic all table.has (ic.item) end
+	content_table_has_only_complex_blocks: across content_table.current_keys as ic all enum_block_type.is_complex_block_type (ic.item) end
 	both_tables_all_rows_non_empty: (across table as ic all ic.item.count > 0 end) and (across content_table as ic all ic.item.count > 0 end)
 
 end

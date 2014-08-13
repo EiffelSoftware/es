@@ -576,6 +576,9 @@ feature {AST_EIFFEL} -- Visitors
 			oracle.begin_process_block (enum_block_type.Bt_precondition)
 
 			safe_process (a_as.require_keyword (match_list))
+			if attached {REQUIRE_ELSE_AS} a_as as l_as then
+				safe_process (l_as.else_keyword (match_list))
+			end
 			current_indentation := indentation (a_as.require_keyword (match_list)) + 1
 			safe_process (a_as.full_assertion_list)
 
@@ -589,6 +592,9 @@ feature {AST_EIFFEL} -- Visitors
 			oracle.begin_process_block (enum_block_type.Bt_postcondition)
 
 			safe_process (a_as.ensure_keyword (match_list))
+			if attached {ENSURE_THEN_AS} a_as as l_as then
+				safe_process (l_as.then_keyword (match_list))
+			end
 			current_indentation := indentation (a_as.ensure_keyword (match_list)) + 1
 			safe_process (a_as.full_assertion_list)
 
@@ -746,14 +752,6 @@ feature {AST_EIFFEL} -- Instructions visitors
 			instruction_post (a_as)
 		end
 
-	process_loop_as (a_as: LOOP_AS)
-			-- Process `a_as'.
-		do
-			instruction_pre (a_as)
-			Precursor (a_as)
-			instruction_post (a_as)
-		end
-
 	process_retry_as (a_as: RETRY_AS)
 			-- Process `a_as'.
 		do
@@ -772,16 +770,16 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 
 			safe_process (a_as.if_keyword (match_list))
 
-			process_if_condition (a_as.condition)
+			process_expression_as (a_as.condition, enum_block_type.Bt_if_condition)
 
 			safe_process (a_as.then_keyword (match_list))
 
-			process_if_branch (a_as.compound)
+			process_compound_as (a_as.compound, enum_block_type.Bt_if_branch)
 
 			safe_process (a_as.elsif_list)
 			safe_process (a_as.else_keyword (match_list))
 
-			process_if_branch (a_as.else_part)
+			process_compound_as (a_as.else_part, enum_block_type.Bt_if_branch)
 
 			safe_process (a_as.end_keyword)
 
@@ -794,38 +792,147 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 		do
 			safe_process (a_as.elseif_keyword (match_list))
 
-			process_if_condition (a_as.expr)
+			process_expression_as (a_as.expr, enum_block_type.Bt_if_condition)
 
 			safe_process (a_as.then_keyword (match_list))
 
-			process_if_branch (a_as.compound)
+			process_compound_as (a_as.compound, enum_block_type.Bt_if_branch)
 		end
 
-	process_if_condition (a_as: EXPR_AS)
-			-- Process `a_as', which is an if condition.
+	process_expression_as (a_as: EXPR_AS; a_block_type: AT_BLOCK_TYPE)
+			-- Process `a_as', which is a block of type of type `a_block_type'.
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
-			oracle.begin_process_block (enum_block_type.Bt_if_condition)
+			oracle.begin_process_block (a_block_type)
 
 			safe_process (a_as)
 
 			process_next_break (a_as)
-			oracle.end_process_block (enum_block_type.Bt_if_condition)
+			oracle.end_process_block (a_block_type)
 		end
 
-	process_if_branch (a_as: EIFFEL_LIST [INSTRUCTION_AS])
-			-- Process `a_as', which is the body of an if branch.
+	process_compound_as (a_as: EIFFEL_LIST [INSTRUCTION_AS]; a_block_type: AT_BLOCK_TYPE)
+			-- Process an instruction block (`a_as'), of type `a_block_type'.
 		do
 			if attached a_as as l_as then
 				process_leading_leaves (l_as.first_token (match_list).index)
 				current_indentation := indentation (a_as)
 			end
-			oracle.begin_process_block (enum_block_type.Bt_if_branch)
+			oracle.begin_process_block (a_block_type)
 
 			safe_process (a_as)
 
 			process_next_break (a_as)
-			oracle.end_process_block (enum_block_type.Bt_if_branch)
+			oracle.end_process_block (a_block_type)
+		end
+
+	process_loop_as (a_as: LOOP_AS)
+			-- Process `a_as'.
+		local
+			l_until_keyword, loop_keyword: detachable KEYWORD_AS
+			l_variant_processing_after: BOOLEAN
+			l_variant_part: detachable VARIANT_AS
+		do
+			process_leading_leaves (a_as.first_token (match_list).index)
+			oracle.begin_process_block (enum_block_type.Bt_loop)
+
+			current_indentation := indentation (a_as)
+
+				-- The 'across' section.
+				-- It is treated as a part of the loop itself and cannot be hidden.
+			safe_process (a_as.iteration)
+
+			safe_process (a_as.from_keyword (match_list))
+
+			current_indentation := current_indentation + 1
+			process_compound_as (a_as.from_part, enum_block_type.Bt_loop_initialization)
+
+			if attached a_as.invariant_keyword (match_list) as l_invariant_keyword then
+				oracle.begin_process_block (enum_block_type.bt_loop_invariant)
+
+				current_indentation := indentation (l_invariant_keyword)
+				safe_process (l_invariant_keyword)
+
+				current_indentation := current_indentation + 1
+				safe_process (a_as.full_invariant_list)
+
+				oracle.end_process_block (enum_block_type.bt_loop_invariant)
+			else
+				check no_invariant_if_no_invariant_keyword: not attached a_as.full_invariant_list end
+			end
+
+				-- Special code to handle the old or new ordering of the `variant'
+				-- clause in a loop.
+			l_until_keyword := a_as.until_keyword (match_list)
+			l_variant_part := a_as.variant_part
+			if l_until_keyword = Void then
+					-- Must be across loop
+				l_variant_processing_after := True
+			elseif l_variant_part /= Void then
+				if l_variant_part.start_position > l_until_keyword.start_position then
+					l_variant_processing_after := True
+				else
+					process_loop_variant_as (l_variant_part)
+				end
+			end
+
+			if attached l_until_keyword then
+				current_indentation := indentation (l_until_keyword)
+				safe_process (l_until_keyword)
+
+				current_indentation := current_indentation + 1
+				process_expression_as (a_as.stop, enum_block_type.Bt_loop_termination_condition)
+			end
+
+			loop_keyword := a_as.loop_keyword (match_list)
+			check attached loop_keyword end
+			if attached loop_keyword then
+				current_indentation := indentation (a_as.loop_keyword (match_list))
+				safe_process (a_as.loop_keyword (match_list))
+
+				current_indentation := current_indentation + 1
+				process_compound_as (a_as.compound, enum_block_type.Bt_loop_body)
+			end
+
+			if l_variant_part /= Void and l_variant_processing_after then
+				process_loop_variant_as (l_variant_part)
+			end
+			safe_process (a_as.end_keyword)
+
+			process_next_break (a_as)
+			oracle.end_process_block (enum_block_type.Bt_loop)
+		end
+
+		process_loop_variant_as (a_as: VARIANT_AS)
+			-- Process `a_as', which is a loop invariant block.
+		local
+			l_variant_keyword: detachable KEYWORD_AS
+		do
+			process_leading_leaves (a_as.first_token (match_list).index)
+			oracle.begin_process_block (enum_block_type.bt_loop_variant)
+
+			l_variant_keyword := a_as.variant_keyword (match_list)
+
+			check attached l_variant_keyword end
+			if attached l_variant_keyword then
+				current_indentation := indentation (l_variant_keyword)
+				safe_process (l_variant_keyword)
+				 process_next_break (l_variant_keyword)
+			end
+
+			current_indentation := current_indentation + 1
+
+				-- See the long comment in `process_local_dec_list_as'.
+			if oracle.output_enabled and oracle.current_content_visibility /= Tri_false then
+				safe_process (a_as.tag)
+				safe_process (a_as.colon_symbol (match_list))
+				safe_process (a_as.expr)
+			else
+				skip_with_current_placeholder
+			end
+
+			process_next_break (a_as)
+			oracle.end_process_block (enum_block_type.bt_loop_variant)
 		end
 
 end

@@ -33,7 +33,6 @@ feature {NONE} -- Initialization
 			content_table.put 	(<< 	Tri_undefined	>>, enum_block_type.Bt_feature)
 
 			table.put 			(<< 	True			>>, enum_block_type.Bt_arguments)			-- Always show arguments
-			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.Bt_arguments)
 
 			table.put 			(<< 	True			>>, enum_block_type.Bt_precondition)		-- Always show the existence of preconditions
 			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.Bt_precondition)		-- Never show the content of preconditions
@@ -51,6 +50,18 @@ feature {NONE} -- Initialization
 			table.put 			(<< 	True			>>, enum_block_type.Bt_if_condition)		-- Always show if conditions
 			table.put 			(<< 	True			>>, enum_block_type.Bt_if_branch)			-- Always show if branches
 			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.Bt_if_branch)			-- Always show if branches
+
+			table.put 			(<< 	True			>>, enum_block_type.Bt_loop)
+			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.Bt_loop)
+			table.put 			(<< 	True			>>, enum_block_type.Bt_loop_initialization)
+			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.Bt_loop_initialization)
+			table.put 			(<< 	True			>>, enum_block_type.Bt_loop_invariant)
+			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.Bt_loop_invariant)
+			table.put 			(<< 	True			>>, enum_block_type.Bt_loop_termination_condition)
+			table.put 			(<< 	True			>>, enum_block_type.Bt_loop_body)
+			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.Bt_loop_body)
+			table.put 			(<< 	True			>>, enum_block_type.Bt_loop_variant)
+			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.Bt_loop_variant)
 
 			table.put 			(<< 	True			>>, enum_block_type.Bt_postcondition)		-- Always show the existence of postconditions
 			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.Bt_postcondition)		-- Never show the content of postconditions
