@@ -117,7 +117,7 @@ feature -- Code output
 
 feature -- Meta-commands
 
-	meta_command_prefix: STRING = "-- #"
+	meta_command_prefix: STRING = "#"
 
 	hint_command: STRING = "HINT"
 

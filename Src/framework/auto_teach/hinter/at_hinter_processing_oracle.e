@@ -210,8 +210,12 @@ feature -- Meta-command processing interface
 			l_line: STRING
 		do
 			l_line := a_line.twin
-			l_line.adjust
-			Result := l_line.starts_with ("-- #")
+			l_line.left_adjust
+			if l_line.starts_with ("--") then
+				l_line.remove_head (2)
+				l_line.left_adjust
+				Result := l_line.starts_with (at_strings.meta_command_prefix)
+			end
 		end
 
 	process_meta_command (a_line: STRING)
@@ -220,8 +224,8 @@ feature -- Meta-command processing interface
 			is_meta_command: is_meta_command (a_line)
 			single_return_terminated_line: a_line.ends_with ("%N") and a_line.occurrences ('%N') = 1
 		local
-			l_line, l_argument, l_level_string: STRING
-			l_index, l_level: INTEGER
+			l_line, l_argument, l_level_string, l_command_word: STRING
+			l_index, l_space_index, l_tab_index, l_level: INTEGER
 			l_error, l_recognized: BOOLEAN
 			l_tristate: AT_TRI_STATE_BOOLEAN
 		do
@@ -231,9 +235,15 @@ feature -- Meta-command processing interface
 			l_level := 0
 
 			l_line.adjust
+
+			check l_line.starts_with ("--") end
+			l_line.remove_head (2)
+			l_line.left_adjust
+
 			check l_line.starts_with (at_strings.meta_command_prefix) end
 			l_line.remove_head (at_strings.meta_command_prefix.count)
 			l_line.left_adjust
+
 			if l_line [1] = '[' then
 				l_line.remove_head (1)
 				l_index := l_line.index_of (']', 1)
@@ -251,6 +261,21 @@ feature -- Meta-command processing interface
 			end
 
 			l_line.left_adjust
+			l_space_index := l_line.index_of (' ', 1)
+			if l_space_index = 0 then
+				l_space_index := l_line.count + 1
+			end
+			l_tab_index := l_line.index_of ('%T', 1)
+			if l_tab_index = 0 then
+				l_tab_index := l_line.count + 1
+			end
+
+			l_index := l_tab_index.min (l_space_index)
+
+			l_command_word := l_line.head (l_index - 1).as_upper
+			l_line.remove_head (l_index - 1)
+			l_line.left_adjust
+
 			if not l_error and options.hint_level >= l_level then
 				if processing_skipped_feature then
 						-- Do not execute the command. Give a warning instead.
@@ -258,52 +283,42 @@ feature -- Meta-command processing interface
 
 						-- Pretend it has been recognized in order to suppress the "unrecognized command" warning.
 					l_recognized := True
-				elseif l_line.as_upper.starts_with (at_strings.hint_command) then
+				elseif l_command_word.same_string (at_strings.hint_command) then
 					last_hint := a_line.twin
 					l_recognized := True
-				elseif l_line.as_upper.starts_with (at_strings.shownext_command) then
-					l_line.remove_head (at_strings.shownext_command.count)
-					l_line.left_adjust
+				elseif l_command_word.same_string (at_strings.shownext_command) then
 					if is_valid_block_type (l_line.as_lower) then
 						show_block (l_line.as_lower)
 						l_recognized := True
 					end
-				elseif l_line.as_upper.starts_with (at_strings.hidenext_command) then
-					l_line.remove_head (at_strings.hidenext_command.count)
-					l_line.left_adjust
+				elseif l_command_word.same_string (at_strings.hidenext_command) then
 					if is_valid_block_type (l_line.as_lower) then
 						hide_block (l_line.as_lower)
 						l_recognized := True
 					end
-				elseif l_line.as_upper.starts_with (at_strings.show_content_command) then
-					l_line.remove_head (at_strings.show_content_command.count)
-					l_line.left_adjust
+				elseif l_command_word.same_string (at_strings.show_content_command) then
 					if is_valid_content_block_type (l_line.as_lower) then
 						show_block_content (l_line.as_lower)
 						l_recognized := True
 					end
-				elseif l_line.as_upper.starts_with (at_strings.hide_content_command) then
-					l_line.remove_head (at_strings.hide_content_command.count)
-					l_line.left_adjust
+				elseif l_command_word.same_string (at_strings.hide_content_command) then
 					if is_valid_content_block_type (l_line.as_lower) then
 						hide_block_content (l_line.as_lower)
 						l_recognized := True
 					end
-				elseif l_line.as_upper.starts_with (at_strings.placeholder_command) then
-					l_line.remove_head (at_strings.placeholder_command.count)
-					l_line.left_adjust
+				elseif l_command_word.same_string (at_strings.placeholder_command) then
 					l_tristate := on_off_to_tristate (l_line)
 					if l_tristate.defined then
 						options.insert_code_placeholder := l_tristate.value
 						l_recognized := True
 					end
-				elseif l_line.as_upper.starts_with (at_strings.hint_mode_command) then
+				elseif l_command_word.same_string (at_strings.hint_mode_command) then
 					options.hint_table := default_annotated_hint_table
 					l_recognized := True
-				elseif l_line.as_upper.starts_with (at_strings.unannotated_mode_command) then
+				elseif l_command_word.same_string (at_strings.unannotated_mode_command) then
 					options.hint_table := default_unannotated_hint_table
 					l_recognized := True
-				elseif l_line.as_upper.starts_with (at_strings.custom_mode_command) then
+				elseif l_command_word.same_string (at_strings.custom_mode_command) then
 					l_recognized := True
 					if attached custom_hint_table as l_hint_table then
 						options.hint_table := l_hint_table
