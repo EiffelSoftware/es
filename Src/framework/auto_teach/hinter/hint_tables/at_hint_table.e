@@ -86,8 +86,18 @@ feature {AT_HINT_TABLE} -- Implementation
 	content_table: HASH_TABLE [ARRAY [AT_TRI_STATE_BOOLEAN], AT_BLOCK_TYPE]
 			-- Contains the content visibility defaults for complex blocks.
 
+	suggested_tables_initial_size: INTEGER = 32
+			-- What is the suggested initial size for the two tables?
+			-- This is a suggestion to descendants that may or may not be followed.
+
+	all_block_types_present: BOOLEAN
+			-- Does `table' contain all of the block types?
+		do
+			Result := (across enum_block_type.values as ic all table.has (ic.item) end)
+		end
+
 invariant
-	all_block_types_present: across enum_block_type.values as ic all table.has (ic.item) end
+	all_block_types_present: all_block_types_present
 	content_table_has_only_complex_blocks: across content_table.current_keys as ic all enum_block_type.is_complex_block_type (ic.item) end
 	both_tables_all_rows_non_empty: (across table as ic all ic.item.count > 0 end) and (across content_table as ic all ic.item.count > 0 end)
 

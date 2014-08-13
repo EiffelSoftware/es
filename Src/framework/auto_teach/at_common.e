@@ -46,7 +46,59 @@ feature -- For use with contracts
 			Result := a_level >= 0 and a_level <= 10
 		end
 
+
 feature {NONE} -- Utility
+
+		-- Copy-pasted from the eweasel source code.
+	is_white (c: CHARACTER): BOOLEAN
+			-- Is `c' a white space character?
+		do
+			Result := c = ' ' or c = '%T' or c = '%R' or c = '%N';
+		end;
+
+		-- Copy-pasted from the eweasel source code.
+	broken_into_words (line: STRING): DYNAMIC_LIST [STRING]
+			-- Result of breaking `line' into words, where each
+			-- word is terminated by white space
+		require
+			line_exists: line /= Void;
+		local
+			pos, first, last: INTEGER;
+			word: STRING;
+			char: CHARACTER;
+			in_word, is_white_char: BOOLEAN;
+		do
+			from
+				create {ARRAYED_LIST [STRING]} Result.make (4)
+				pos := 1;
+			until
+				pos > line.count
+			loop
+				char := line.item (pos);
+				is_white_char := is_white (char);
+				if in_word then
+					if is_white_char then
+						in_word := False;
+						last := pos - 1;
+						create word.make (last - first + 1);
+						word.set (line, first, last);
+						Result.extend (word);
+					end
+				else
+					if not is_white_char then
+						in_word := True;
+						first := pos;
+					end
+				end;
+				pos := pos + 1;
+			end;
+			if in_word then
+				last := pos - 1;
+				create word.make (last - first + 1);
+				word.set (line, first, last);
+				Result.extend (word);
+			end
+		end;
 
 	capitalized (a_string: READABLE_STRING_GENERAL): READABLE_STRING_GENERAL
 			-- `a_string', where the first character is converted to upper case.

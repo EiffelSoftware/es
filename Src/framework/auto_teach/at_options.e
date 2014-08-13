@@ -19,8 +19,8 @@ feature {NONE} -- Initialization
 	make_with_defaults
 			-- Initialization for `Current'.
 		do
-			hint_level := 2
-			insert_code_placeholder := False
+			hint_level := 0
+			insert_code_placeholder := True
 			create output_directory.make_with_path (create {PATH}.make_current)
 
 			hint_table := default_unannotated_hint_table

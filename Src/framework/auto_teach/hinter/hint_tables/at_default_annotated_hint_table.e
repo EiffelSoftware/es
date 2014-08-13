@@ -25,10 +25,10 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization for `Current'.
 		do
-			create table.make (16)
-			create content_table.make (16)
+			create table.make (suggested_tables_initial_size)
+			create content_table.make (suggested_tables_initial_size)
 
-			-- Hint level:	1
+			-- Hint level:				1
 			table.put 			(<< 	True			>>, enum_block_type.Bt_feature)				-- Always show features
 			content_table.put 	(<< 	Tri_undefined	>>, enum_block_type.Bt_feature)
 

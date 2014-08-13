@@ -74,6 +74,11 @@ feature -- Errors
 			Result := locale.translation ("Syntax error: unrecognized argument '" + a_argument + "'.")
 		end
 
+	error_no_class_list_specified: STRING_32
+		do
+			Result := locale.translation ("No list of classes to process was provided. Exiting.")
+		end
+
 	error_class_not_found (a_class_name: STRING): STRING_32
 		do
 			Result := locale.translation ("Could not find class " + a_class_name + ". Skipping.")
@@ -108,6 +113,55 @@ feature -- Errors
 		do
 			Result := locale.translation ("The specified output directory does not exist or is not writable.")
 		end
+
+feature -- Errors with custom hint table
+
+	error_no_custom_hint_table_path: STRING_32
+		do
+			Result := locale.translation ("Syntax error. Path to the custom hint table expected.")
+		end
+
+	error_custom_hint_table_file_not_found: STRING_32
+		do
+			Result := locale.translation ("Could not load the custom hint table. The specified file does not exist.")
+		end
+
+	error_custom_hint_table_parse_error: STRING_32
+		do
+			Result := locale.translation ("Could not load the custom hint table.")
+		end
+
+	error_invalid_block_type_name (a_line_number: INTEGER; a_block_type_name: STRING): STRING_32
+		do
+			Result := locale.translation ("[line " + a_line_number.out + "] %'" + a_block_type_name + "%' is not a valid block type name.")
+		end
+
+	error_duplicate_entry (a_line_number: INTEGER; a_block_type_name: STRING): STRING_32
+		do
+			Result := locale.translation ("[line " + a_line_number.out + "] Block %'" + a_block_type_name + "%' appears for the second time for the same table. Each block can only appear once for the visibility table and once for the content visibility table")
+		end
+
+	error_empty_row (a_line_number: INTEGER): STRING_32
+		do
+			Result := locale.translation ("[line " + a_line_number.out + "] Lines in visibility tables cannot be empty.")
+		end
+
+	error_simple_block_in_content_visibility_table (a_line_number: INTEGER; a_block_type_name: STRING): STRING_32
+		do
+			Result := locale.translation ("[line " + a_line_number.out + "] Block %'" + a_block_type_name + "%' is not a complex block and, as such, is not allowed into the content block visibility table.")
+		end
+
+	error_value_parse_error (a_line_number: INTEGER; a_value, a_type: STRING): STRING_32
+		do
+			Result := locale.translation ("[line " + a_line_number.out + "] '" + a_value + "%' is not a valid text representation of a " + a_type + ".")
+		end
+
+	error_visibility_table_not_complete: STRING_32
+		do
+			Result := locale.translation ("Some block types are missing in the visibility table. The following block types must all be present:")
+		end
+
+
 
 feature -- Code output
 

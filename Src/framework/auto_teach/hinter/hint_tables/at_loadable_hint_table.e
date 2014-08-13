@@ -1,0 +1,176 @@
+note
+	description: "A hint table supporting loading from file."
+	author: "Paolo Antonucci"
+	date: "$Date$"
+	revision: "$Revision$"
+
+class
+	AT_LOADABLE_HINT_TABLE
+
+inherit
+	AT_HINT_TABLE
+
+	AT_COMMON
+
+create
+	make_from_file_path
+
+feature {NONE} -- Initialization
+
+	make_from_file_path (a_path: STRING)
+			-- Initialize `Current', loading its content from the specified file.
+		require
+			file_exists: file_exists (a_path)
+		local
+			l_file: PLAIN_TEXT_FILE
+			l_words: LIST [STRING]
+			i: INTEGER
+			l_content: BOOLEAN
+			l_block_type: AT_BLOCK_TYPE
+			l_exception: DEVELOPER_EXCEPTION
+			l_table_row: ARRAY [BOOLEAN]
+			l_content_table_row: ARRAY [AT_TRI_STATE_BOOLEAN]
+			l_description: STRING
+		do
+			create table.make (suggested_tables_initial_size)
+			create content_table.make (suggested_tables_initial_size)
+
+			create l_file.make_open_read (a_path)
+
+				-- This loop is where I *really really* miss the 'continue' and 'break' instructions.
+			from
+				l_file.start
+				advance_line (l_file)
+			until
+				not attached last_file_line or attached l_exception
+			loop
+				l_content := False
+
+				check attached last_file_line end
+				if attached last_file_line as l_line then
+					l_words := broken_into_words (last_file_line)
+					l_words.start
+				else
+					l_words := broken_into_words ("")
+					l_words.start
+				end
+
+				if l_words.item.as_lower.same_string ("content") then
+					l_content := True
+					l_words.remove
+				end
+
+				if enum_block_type.is_valid_value_name (l_words.first.as_lower) then
+					create l_block_type.make_with_value_name (l_words.first.as_lower)
+					l_words.remove
+				else
+					create l_exception
+					l_exception.set_description (at_strings.error_invalid_block_type_name (file_line_number, l_words.first))
+				end
+
+				if l_block_type.initialized then
+					if l_words.is_empty then
+						create l_exception
+						l_exception.set_description (at_strings.error_empty_row (file_line_number))
+					elseif not l_content then
+							-- Visibility table
+						if table.has_key (l_block_type) then
+							create l_exception
+							l_exception.set_description (at_strings.error_duplicate_entry (file_line_number, l_block_type.value_name))
+						end
+
+						create l_table_row.make_filled (False, 1, l_words.count)
+
+						from
+							i := 1
+							l_words.start
+						until
+							i > l_words.count or attached l_exception
+						loop
+							if l_words.item.is_boolean then
+								l_table_row [i] := l_words.item.to_boolean
+							else
+								create l_exception
+								l_exception.set_description (at_strings.error_value_parse_error (file_line_number, l_words.item, "boolean"))
+							end
+							i := i + 1
+							l_words.forth
+						end
+						table [l_block_type] := l_table_row
+					else
+						if enum_block_type.is_complex_block_type (l_block_type) then
+								-- Content visibility table row
+							if content_table.has_key (l_block_type) then
+								create l_exception
+								l_exception.set_description (at_strings.error_duplicate_entry (file_line_number, l_block_type.value_name))
+							end
+
+							create l_content_table_row.make_filled (Tri_undefined, 1, l_words.count)
+							from
+								i := 1
+								l_words.start
+							until
+								i > l_words.count or attached l_exception
+							loop
+								if l_content_table_row [i].is_valid_string_value (l_words.item) then
+									l_content_table_row [i].from_string (l_words.item)
+								else
+									create l_exception
+									l_exception.set_description (at_strings.error_value_parse_error (file_line_number, l_words.item, "tri-state boolean"))
+								end
+								i := i + 1
+								l_words.forth
+							end
+							content_table [l_block_type] := l_content_table_row
+						else
+							create l_exception
+							l_exception.set_description (at_strings.error_simple_block_in_content_visibility_table (file_line_number, l_block_type.value_name))
+						end
+					end
+				end
+
+				advance_line (l_file)
+			end
+
+			if not attached l_exception and then not all_block_types_present then
+				create l_description.make_from_string (at_strings.error_visibility_table_not_complete)
+
+				across enum_block_type.value_names as ic loop
+					l_description.append ("%N" + ic.item)
+				end
+
+				create l_exception
+				l_exception.set_description (l_description)
+			end
+
+			if attached l_exception then
+				l_exception.raise
+			end
+		end
+
+		last_file_line: detachable STRING
+				-- The last meaningful line read from the text file.
+
+		file_line_number: INTEGER
+				-- The number of the last read line in the text file.
+
+		advance_line (a_file: PLAIN_TEXT_FILE)
+			do
+				from
+					last_file_line := Void
+				until
+					a_file.after or attached last_file_line
+				loop
+					a_file.read_line
+					file_line_number := file_line_number + 1
+
+					check attached a_file.last_string end
+					if attached a_file.last_string as l_line then
+						if not l_line.is_empty and then not l_line.starts_with_general ("#") then
+							last_file_line := l_line
+						end
+					end
+				end
+			end
+
+end

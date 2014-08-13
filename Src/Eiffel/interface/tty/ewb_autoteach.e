@@ -16,6 +16,8 @@ inherit
 
 	AT_COMMON
 
+	AT_SHARED_HINT_TABLES
+
 	SHARED_SERVER
 		export
 			{NONE} all
@@ -89,9 +91,9 @@ feature {NONE} -- Implementation
 			until
 				autoteach_arguments.after
 			loop
-				if autoteach_arguments.item.is_equal ("-at-hinter") then
+				if autoteach_arguments.item.same_string ("-at-hinter") then
 					autoteach_options.should_run_hinter := true
-				elseif autoteach_arguments.item.is_equal ("-at-class") or autoteach_arguments.item.is_equal ("-at-classes") then
+				elseif autoteach_arguments.item.same_string ("-at-class") or autoteach_arguments.item.same_string ("-at-classes") then
 					autoteach_arguments.forth
 					if autoteach_arguments.after then
 						l_errors.force (at_strings.error_no_class_list)
@@ -99,7 +101,7 @@ feature {NONE} -- Implementation
 					else
 						class_name_list := autoteach_arguments.item.split (' ')
 					end
-				elseif autoteach_arguments.item.is_equal ("-at-hint-level") then
+				elseif autoteach_arguments.item.same_string ("-at-hint-level") then
 					autoteach_arguments.forth
 					if autoteach_arguments.after or else not autoteach_arguments.item.is_integer or else not is_valid_hint_level (autoteach_arguments.item.to_integer) then
 						l_errors.force (at_strings.error_argument_level)
@@ -107,7 +109,7 @@ feature {NONE} -- Implementation
 					else
 						autoteach_options.hint_level := autoteach_arguments.item.to_integer
 					end
-				elseif autoteach_arguments.item.is_equal ("-at-code-placeholder") then
+				elseif autoteach_arguments.item.same_string ("-at-code-placeholder") then
 					autoteach_arguments.forth
 					if autoteach_arguments.after or else not autoteach_arguments.item.is_boolean then
 						l_errors.force ("-at-code-placeholder " + autoteach_arguments.item + "%N" + at_strings.error_boolean_value)
@@ -115,7 +117,7 @@ feature {NONE} -- Implementation
 					else
 						autoteach_options.insert_code_placeholder := autoteach_arguments.item.to_boolean
 					end
-				elseif autoteach_arguments.item.is_equal ("-at-output-path") then
+				elseif autoteach_arguments.item.same_string ("-at-output-path") then
 					autoteach_arguments.forth
 					if autoteach_arguments.after then
 						l_errors.force (at_strings.error_no_output_dir)
@@ -127,6 +129,24 @@ feature {NONE} -- Implementation
 							can_run := False
 						else
 							autoteach_options.output_directory := l_output_dir
+						end
+					end
+				elseif autoteach_arguments.item.same_string ("-at-custom-hint-table") then
+					autoteach_arguments.forth
+					if autoteach_arguments.after then
+						l_errors.force (at_strings.error_no_custom_hint_table_path)
+						can_run := False
+					else
+						if not file_exists (autoteach_arguments.item) then
+							l_errors.force (at_strings.error_custom_hint_table_file_not_found)
+							can_run := False
+						else
+							load_custom_hint_table (autoteach_arguments.item)
+							if attached last_table_load_exception as l_exception then
+								l_errors.force (at_strings.error_custom_hint_table_parse_error)
+								l_errors.force (l_exception.description.to_string_8)
+								can_run := False
+							end
 						end
 					end
 				else
@@ -151,14 +171,18 @@ feature {NONE} -- Implementation
 			l_hinter: AT_HINTER
 		do
 			if autoteach_options.should_run_hinter then
-				create l_hinter.make_with_options (autoteach_options)
-				l_hinter.set_message_output_action (agent print_line)
-				across
-					class_name_list as ic
-				loop
-					try_add_class_with_name (l_hinter, ic.item)
+				if attached class_name_list as l_class_name_list then
+					create l_hinter.make_with_options (autoteach_options)
+					l_hinter.set_message_output_action (agent print_line)
+					across
+						l_class_name_list as ic
+					loop
+						try_add_class_with_name (l_hinter, ic.item)
+					end
+					l_hinter.run_hinter
+				else
+					print_line (at_strings.error_no_class_list_specified)
 				end
-				l_hinter.run_hinter
 			end
 		end
 
