@@ -10,6 +10,8 @@ class
 inherit
 
 	AST_ROUNDTRIP_PRINTER_VISITOR
+		rename
+			process_case_as as process_inspect_case_as
 		redefine
 			reset,
 			process_leading_leaves,
@@ -41,23 +43,24 @@ inherit
 			process_tagged_as,
 
 				-- Instructions
-			process_elseif_as,
 			process_assign_as,
 			process_assigner_call_as,
-			process_case_as,
 			process_check_as,
 			process_creation_as,
 			process_create_creation_as,
 			process_bang_creation_as,
 			process_debug_as,
 			process_guard_as,
-			process_if_as,
-			process_inspect_as,
 			process_instr_call_as,
-			process_interval_as,
-			process_loop_as,
 			process_retry_as,
-			process_reverse_as
+			process_reverse_as,
+
+				-- Complex instructions
+			process_if_as,
+			process_elseif_as,
+			process_inspect_as,
+			process_inspect_case_as,
+			process_loop_as
 		end
 
 inherit {NONE}
@@ -672,14 +675,6 @@ feature {AST_EIFFEL} -- Instructions visitors
 			instruction_post (a_as)
 		end
 
-	process_case_as (a_as: CASE_AS)
-			-- Process `a_as'.
-		do
-			instruction_pre (a_as)
-			Precursor (a_as)
-			instruction_post (a_as)
-		end
-
 	process_check_as (a_as: CHECK_AS)
 			-- Process `a_as'.
 		do
@@ -728,23 +723,7 @@ feature {AST_EIFFEL} -- Instructions visitors
 			instruction_post (a_as)
 		end
 
-	process_inspect_as (a_as: INSPECT_AS)
-			-- Process `a_as'.
-		do
-			instruction_pre (a_as)
-			Precursor (a_as)
-			instruction_post (a_as)
-		end
-
 	process_instr_call_as (a_as: INSTR_CALL_AS)
-			-- Process `a_as'.
-		do
-			instruction_pre (a_as)
-			Precursor (a_as)
-			instruction_post (a_as)
-		end
-
-	process_interval_as (a_as: INTERVAL_AS)
 			-- Process `a_as'.
 		do
 			instruction_pre (a_as)
@@ -933,6 +912,61 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 
 			process_next_break (a_as)
 			oracle.end_process_block (enum_block_type.bt_loop_variant)
+		end
+
+	process_inspect_as (a_as: INSPECT_AS)
+			-- Process `a_as'.
+		do
+			process_leading_leaves (a_as.first_token (match_list).index)
+			oracle.begin_process_block (enum_block_type.Bt_inspect)
+
+			current_indentation := indentation (a_as)
+
+			safe_process (a_as.inspect_keyword (match_list))
+			safe_process (a_as.switch)
+			safe_process (a_as.case_list)
+
+			if attached a_as.else_keyword (match_list) as l_else_keyword then
+				oracle.begin_process_block (enum_block_type.Bt_inspect_branch)
+
+				current_indentation := indentation (l_else_keyword)
+				safe_process (a_as.else_keyword (match_list))
+
+				current_indentation := current_indentation + 1
+				safe_process (a_as.else_part)
+				process_next_break (a_as.else_part)
+
+				oracle.end_process_block (enum_block_type.Bt_inspect_branch)
+			end
+
+			current_indentation := indentation (a_as.end_keyword)
+			safe_process (a_as.end_keyword)
+
+			process_next_break (a_as)
+			oracle.end_process_block (enum_block_type.Bt_inspect)
+		end
+
+	process_inspect_case_as (a_as: CASE_AS)
+			-- Process `a_as'.
+		local
+			l_when_keyword: detachable KEYWORD_AS
+		do
+			process_leading_leaves (a_as.first_token (match_list).index)
+			oracle.begin_process_block (enum_block_type.Bt_inspect_branch)
+
+			l_when_keyword := a_as.when_keyword (match_list)
+			check attached l_when_keyword end
+			if attached l_when_keyword then
+				current_indentation := indentation (l_when_keyword)
+			end
+
+			safe_process (a_as.when_keyword (match_list))
+			safe_process (a_as.interval)
+			safe_process (a_as.then_keyword (match_list))
+			safe_process (a_as.compound)
+
+			process_next_break (a_as)
+			oracle.end_process_block (enum_block_type.Bt_inspect_branch)
 		end
 
 end

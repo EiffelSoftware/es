@@ -158,7 +158,6 @@ feature -- Meta-commands
 	treat_next_as_simple: STRING = "TREAT_NEXT_AS_SIMPLE"
 	treat_next_as_complex: STRING = "TREAT_NEXT_AS_COMPLEX"
 
-		-- TODO: non dimenticare di gestire i blocchi inspect
 
 feature -- Block types
 
@@ -183,6 +182,9 @@ feature -- Block types
 	Bt_if: STRING = "if"
 	Bt_if_condition: STRING = "if_condition"
 	Bt_if_branch: STRING = "if_branch"
+
+	Bt_inspect: STRING = "inspect"
+	Bt_inspect_branch: STRING = "inspect_branch"
 
 	Bt_loop: STRING = "loop"
 	Bt_loop_initialization: STRING = "loop_initialization"

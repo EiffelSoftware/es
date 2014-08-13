@@ -51,6 +51,11 @@ feature {NONE} -- Initialization
 			table.put 			(<< 	True			>>, enum_block_type.Bt_if_branch)			-- Always show if branches
 			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.Bt_if_branch)			-- Always show if branches
 
+			table.put 			(<< 	True			>>, enum_block_type.Bt_inspect)
+			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.Bt_inspect)
+			table.put 			(<< 	True			>>, enum_block_type.Bt_inspect_branch)
+			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.Bt_inspect_branch)
+
 			table.put 			(<< 	True			>>, enum_block_type.Bt_loop)
 			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.Bt_loop)
 			table.put 			(<< 	True			>>, enum_block_type.Bt_loop_initialization)
