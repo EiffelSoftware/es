@@ -42,7 +42,6 @@ feature -- Access
 			local_visibility_override.set_undefined
 		end
 
-
 feature {NONE} -- Setters
 
 	set_local_visiblity_override (a_tristate: AT_TRI_STATE_BOOLEAN)
@@ -58,7 +57,6 @@ feature {NONE} -- Setters
 feature {NONE} -- Implementation
 
 	default_visibility_agent: FUNCTION [ANY, TUPLE [AT_BLOCK_TYPE], BOOLEAN]
-
 
 feature {NONE} -- Initialization
 

@@ -8,11 +8,13 @@ class
 	AT_HINTER
 
 inherit
+
 	SHARED_WORKBENCH
 
 	SHARED_SERVER
 
 inherit {NONE}
+
 	AT_COMMON
 
 create
@@ -30,8 +32,8 @@ feature {NONE} -- Initialization
 feature -- Interface
 
 	enum: AT_ENUM_BLOCK_TYPE -- TODO remove
-	enum2: AT_BLOCK_TYPE -- TODO remove
 
+	enum2: AT_BLOCK_TYPE -- TODO remove
 
 	add_class (a_class: CONF_CLASS)
 			-- Add class `a_class'.

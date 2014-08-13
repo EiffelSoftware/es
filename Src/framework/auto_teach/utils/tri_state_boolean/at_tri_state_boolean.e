@@ -8,6 +8,7 @@ expanded class
 	AT_TRI_STATE_BOOLEAN
 
 inherit
+
 	ANY
 		redefine
 			default_create,
@@ -16,9 +17,7 @@ inherit
 		end
 
 create
-	default_create,
-	make_undefined,
-	make_defined
+	default_create, make_undefined, make_defined
 
 feature -- Value
 
@@ -93,7 +92,9 @@ feature -- Assignment
 				set_false
 			else
 					-- Should be disallowed by precondition.
-				check string_recognized: False end
+				check
+					string_recognized: False
+				end
 			end
 		end
 
@@ -107,7 +108,6 @@ feature -- Assignment
 				l_string := a_string.as_lower
 				Result := l_string.same_string ("undefined") or l_string.same_string ("true") or l_string.same_string ("false")
 			end
-
 		end
 
 feature -- Comparison
@@ -119,7 +119,6 @@ feature -- Comparison
 		end
 
 feature -- Operations
-
 
 	conjuncted alias "and", conjuncted_semistrict alias "and then" (other: like Current): like Current
 			-- Boolean conjunction with `other'
@@ -134,7 +133,7 @@ feature -- Operations
 			end
 		end
 
-	-- Implication is not defined.
+		-- Implication is not defined.
 
 	negated alias "not": like Current
 			-- Negation
@@ -201,7 +200,6 @@ feature -- Operations
 				Result := other
 			end
 		end
-
 
 feature {NONE} -- Initialization
 

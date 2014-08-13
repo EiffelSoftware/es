@@ -8,6 +8,7 @@ class
 	AT_COMPLEX_BLOCK_VISIBILITY
 
 inherit
+
 	AT_BLOCK_VISIBILITY
 		redefine
 			reset_overrides,
@@ -16,8 +17,7 @@ inherit
 		end
 
 create
-	default_create,
-	make_with_two_agents
+	default_create, make_with_two_agents
 
 feature -- Access
 
@@ -51,7 +51,6 @@ feature -- Access
 			local_content_visibility_override.set_undefined
 		end
 
-
 feature {NONE} -- Setters
 
 	set_global_content_visibility_override (a_tristate: AT_TRI_STATE_BOOLEAN)
@@ -74,15 +73,11 @@ feature {NONE} -- Setters
 			default_content_visibility_agent := a_default_content_visibility_agent
 		end
 
-
 feature {NONE} -- Implementation
 
 	default_content_visibility_agent: FUNCTION [ANY, TUPLE [AT_BLOCK_TYPE], AT_TRI_STATE_BOOLEAN]
 
-
 invariant
-
-	is_complex_block:
-		block_type.enum_type.is_complex_block_type (block_type)
+	is_complex_block: block_type.enum_type.is_complex_block_type (block_type)
 
 end

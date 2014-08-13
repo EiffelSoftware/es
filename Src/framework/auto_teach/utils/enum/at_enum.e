@@ -8,6 +8,7 @@ deferred class
 	AT_ENUM
 
 inherit
+
 	ANY
 		redefine
 			is_equal
@@ -15,7 +16,7 @@ inherit
 
 feature -- Access
 
-	-- TODO: feature comments
+		-- TODO: feature comments
 
 	name: STRING
 		deferred
@@ -26,7 +27,6 @@ feature -- Access
 			i: INTEGER
 		once ("OBJECT")
 			create Result.make_filled (-1, 1, value_list.count)
-
 			from
 				i := 1
 			until
@@ -42,7 +42,6 @@ feature -- Access
 			i: INTEGER
 		once ("OBJECT")
 			create Result.make_filled (Void, 1, value_list.count)
-
 			from
 				i := 1
 			until
@@ -116,10 +115,8 @@ feature -- Equality
 		do
 			Result := True
 			Result := Result and other.name.same_string (name)
-
 			l_this_value_list := value_list
 			l_other_value_list := other.value_list
-
 			if l_this_value_list.count /= l_other_value_list.count then
 				Result := False
 			else
@@ -132,7 +129,6 @@ feature -- Equality
 					i := i + 1
 				end
 			end
-
 			Result := Result
 		end
 
@@ -151,7 +147,9 @@ feature {AT_ENUM_VALUE} -- Used by values
 			l_generic_tuple: detachable TUPLE
 		do
 			l_generic_tuple := find_tuple (value_list, a_value_name, 2)
-			check attached {TUPLE [numerical_value: INTEGER; name: STRING]} l_generic_tuple end
+			check
+				attached {TUPLE [numerical_value: INTEGER; name: STRING]} l_generic_tuple
+			end
 			if attached {TUPLE [numerical_value: INTEGER; name: STRING]} l_generic_tuple as l_tuple then
 				Result := l_tuple.numerical_value
 			end
@@ -164,7 +162,9 @@ feature {AT_ENUM_VALUE} -- Used by values
 			l_generic_tuple: detachable TUPLE
 		do
 			l_generic_tuple := find_tuple (value_list, a_numerical_value, 1)
-			check attached {TUPLE [numerical_value: INTEGER; name: STRING]} l_generic_tuple end
+			check
+				attached {TUPLE [numerical_value: INTEGER; name: STRING]} l_generic_tuple
+			end
 			if attached {TUPLE [numerical_value: INTEGER; name: STRING]} l_generic_tuple as l_tuple then
 				Result := l_tuple.name
 			end
@@ -173,16 +173,17 @@ feature {AT_ENUM_VALUE} -- Used by values
 feature {NONE} -- Implementation
 
 	default_value: like value_type
-		-- Trick learned from the Eiffel code base, somewhere: this works both for reference and expanded types.
+			-- Trick learned from the Eiffel code base, somewhere: this works both for reference and expanded types.
 
 	lazy_values: detachable ARRAY [like value_type]
 
 	find_tuple (a_tuples: ITERABLE [TUPLE]; a_value: ANY; a_position: INTEGER): detachable TUPLE
 		require
-			valid_index:
-				across a_tuples as ic all ic.item.valid_index (a_position) end
+			valid_index: across a_tuples as ic all ic.item.valid_index (a_position) end
 		do
-			across a_tuples as ic loop
+			across
+				a_tuples as ic
+			loop
 				if Result = Void and then ic.item [a_position].is_equal (a_value) then
 					Result := ic.item
 				end

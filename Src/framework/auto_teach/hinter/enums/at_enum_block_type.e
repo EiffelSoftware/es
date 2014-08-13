@@ -14,7 +14,6 @@ inherit
 			name
 		end
 
-
 feature -- Access
 
 	name: STRING = "block_type"
@@ -22,7 +21,9 @@ feature -- Access
 	value_type: AT_BLOCK_TYPE
 			-- The value type of this enum. For typing only.
 		do
-			check callable: False end
+			check
+				callable: False
+			end
 		end
 
 	value (a_value_name: STRING): like value_type
@@ -41,17 +42,8 @@ feature {AT_ENUM} -- Value list
 
 	value_list: ARRAY [TUPLE [numerical_value: INTEGER; name: STRING]]
 		once ("PROCESS")
-			Result := <<	[1, at_strings.bt_feature],
-							[2, at_strings.bt_arguments],
-							[3, at_strings.bt_precondition],
-							[4, at_strings.bt_locals],
-							[5, at_strings.bt_routine_body],
-							[6, at_strings.bt_postcondition],
-							[7, at_strings.bt_class_invariant],
-							[8, at_strings.bt_assertion],
-							[9, at_strings.bt_instruction]		>>
+			Result := <<[1, at_strings.bt_feature], [2, at_strings.bt_arguments], [3, at_strings.bt_precondition], [4, at_strings.bt_locals], [5, at_strings.bt_routine_body], [6, at_strings.bt_postcondition], [7, at_strings.bt_class_invariant], [8, at_strings.bt_assertion], [9, at_strings.bt_instruction]>>
 		end
-
 
 feature -- Values
 
@@ -104,7 +96,7 @@ feature -- Complex blocks
 
 	complex_block_types: ARRAY [AT_BLOCK_TYPE]
 		once ("PROCESS")
-			Result := << bt_feature, bt_arguments, bt_precondition, bt_locals, bt_routine_body, bt_postcondition, bt_class_invariant >>
+			Result := <<bt_feature, bt_arguments, bt_precondition, bt_locals, bt_routine_body, bt_postcondition, bt_class_invariant>>
 		end
 
 	is_complex_block_type (a_block_type: AT_BLOCK_TYPE): BOOLEAN

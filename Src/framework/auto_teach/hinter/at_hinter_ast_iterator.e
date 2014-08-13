@@ -8,6 +8,7 @@ class
 	AT_HINTER_AST_ITERATOR
 
 inherit
+
 	AST_ROUNDTRIP_PRINTER_VISITOR
 		redefine
 			reset,
@@ -16,17 +17,17 @@ inherit
 			process_break_as,
 			put_string_to_context,
 
---				-- Features
+				--				-- Features
 			process_feature_as,
 
---				-- Routine arguments
+				--				-- Routine arguments
 			process_formal_argu_dec_list_as,
 
---				-- Routine bodies
+				--				-- Routine bodies
 			process_do_as,
 			process_once_as,
 
---				-- Locals
+				--				-- Locals
 			process_local_dec_list_as,
 
 				-- Contracts
@@ -36,7 +37,7 @@ inherit
 			process_ensure_then_as,
 			process_invariant_as,
 
-			-- Assertions:
+				-- Assertions:
 			process_tagged_as,
 
 				-- Instructions:
@@ -60,6 +61,7 @@ inherit
 		end
 
 inherit {NONE}
+
 	AT_COMMON
 		undefine
 			default_create
@@ -74,7 +76,6 @@ feature -- Interface
 			-- Reset the status of Current
 		do
 			Precursor
---			skipping_until_position := 0
 			current_indentation := 0
 			blank_line_inserted := False
 		end
@@ -135,7 +136,6 @@ feature {NONE} -- Break processing
 				process_break_line (l_lines [i], i = 1)
 				i := i + 1
 			end
-
 			last_index := a_break_as.index
 		end
 
@@ -175,8 +175,6 @@ feature {NONE} -- Hint processing
 		do
 			l_line := a_line.twin
 			l_line.left_adjust
-
-
 			if oracle.current_content_visibility.is_false then
 					-- Use the indentation of the current section for indenting the hint.
 				l_indentation := current_indentation
@@ -191,9 +189,8 @@ feature {NONE} -- Hint processing
 					-- We are in a region were breaks are normally printed.
 			end
 			put_string_forced (tab_string (l_indentation), False)
-
 			put_string_forced (l_line, False) -- Remember that `l_line' ends with a %N character.
-			-- put_string_forced (tab_string (l_indentation), False)
+				-- put_string_forced (tab_string (l_indentation), False)
 			if oracle.current_content_visibility.is_false then
 					-- We need to leave things as we found them, so re-indent the line.
 					-- TODO: Is this really a good idea?
@@ -219,44 +216,6 @@ feature {NONE} -- Implementation - skipping
 			end
 		end
 
---	skip (a_node: AST_EIFFEL; a_inline: BOOLEAN)
---			-- Skips `a_node' by setting 'skipping_until_index' to the end position of this node.
---			-- If `a_inline' is true, no blank line will be inserted.
---		local
---			l_newline_index, l_start_position, l_leaf_index: INTEGER
---			l_last_break_text: STRING
---			l_last_break_line: STRING
---			l_previous_leaf: LEAF_AS
---		do
---			l_leaf_index := a_node.first_token (match_list).index
---			process_leading_leaves (l_leaf_index)
---			last_index := l_leaf_index
---			if is_node_in_skipped_section (a_node) then
---					-- Do nothing. Also, calling in_skipped_section asserts that the node is *entirely*
---					-- in the skipped section, so we don't even need to update skipping_until_index.
---			else
---					-- Record where the skipped region ends, which is basically all we have to do
---				skipping_until_position := a_node.end_position
-
---					-- If necessary, insert a blank line, possibly with a placeholder.
---					-- We assume that `skipped_section_indentation' has already set with the proper value.
---					-- The flag blank_line_inserted helps us avoiding inserting multiple new lines in case
---					-- we encounter two consecutive (but distinct) skipping regions without anything being
---					-- printed in between. In this case we clearly don't need more blank lines or placeholders.
---					-- This flag is reset by put_string and put_string_to_context.
---				if not a_inline and not blank_line_inserted then
---					insert_blank_line (skipped_section_indentation, options.insert_code_placeholder)
---					blank_line_inserted := True
---				end
---			end
-
---				-- Now call `process_leading_leaves' again, which should process all the breaks (and meta-commands)
---				-- in the skipped section.
---			l_leaf_index := a_node.last_token (match_list).index
---			process_leading_leaves (l_leaf_index)
---			last_index := l_leaf_index
---		end
-
 	insert_blank_line (a_insert_placeholder: BOOLEAN; a_placeholder_type: AT_PLACEHOLDER)
 			-- Insert a blank line with the correct indentation for the current location, and possibly a placeholder.
 		local
@@ -265,47 +224,19 @@ feature {NONE} -- Implementation - skipping
 			if not blank_line_inserted then
 				l_new_line_with_tabs := tab_string (current_indentation)
 				l_new_line_with_tabs.prepend ("%N")
-
 				if not a_insert_placeholder then
 					put_string_forced (l_new_line_with_tabs, True)
 				elseif not placeholder_inserted then
-
 					if a_placeholder_type = enum_placeholder_type.ph_standard then
 						put_string_forced (l_new_line_with_tabs + at_strings.code_standard_placeholder + l_new_line_with_tabs, True)
 					elseif a_placeholder_type = enum_placeholder_type.ph_arguments then
 						put_string_forced (l_new_line_with_tabs + at_strings.code_arguments_placeholder + l_new_line_with_tabs, True)
 					end
-
 					placeholder_inserted := True
 				end
 				blank_line_inserted := True
 			end
 		end
-
---	in_skipped_section: BOOLEAN
---			-- Is the end of the last node being processed located in the current skipped section?
---		local
---			l_leaf: detachable LEAF_AS
---		do
---			if last_index = 0 then
---				Result := false
---			else
---				l_leaf := match_list.at (last_index)
---				Result := l_leaf.end_position <= skipping_until_position
---			end
---		end
-
---	is_node_in_skipped_section (a_node: AST_EIFFEL): BOOLEAN
---			-- Is `a_node' located in the current skipped section?
---			-- If so, this function asserts that `a_node' is *entirely* located in the current skipped section.
---		do
---			if a_node.start_position <= skipping_until_position then
---				check
---					a_node.end_position <= skipping_until_position
---				end
---				Result := True
---			end
---		end
 
 	indentation (a_node: AST_EIFFEL): INTEGER
 			-- The indentation value of the given node.
@@ -314,42 +245,33 @@ feature {NONE} -- Implementation - skipping
 			l_last_break_text: STRING
 			l_last_break_line: STRING
 		do
-			-- Navigate backwards until we find the previous break containing a newline character.
+				-- Navigate backwards until we find the previous break containing a newline character.
 			from
 				i := a_node.first_token (match_list).index
 			until
 				i <= 0 or attached l_last_break_text
 			loop
 				if attached {BREAK_AS} match_list [i] as l_this_break then
-					l_last_break_text :=  l_this_break.text (match_list)
+					l_last_break_text := l_this_break.text (match_list)
 					if not l_last_break_text.has ('%N') then
 						l_last_break_text := Void
 					end
 				end
 				i := i - 1
 			end
-
 			if attached l_last_break_text then
 				l_newline_index := l_last_break_text.last_index_of ('%N', l_last_break_text.count)
 
 					-- We checked before that this break contains a newline character.
-				check newline_found: l_newline_index > 0 end
-
+				check
+					newline_found: l_newline_index > 0
+				end
 				l_last_break_line := l_last_break_text.substring (l_newline_index + 1, l_last_break_text.count)
 				Result := count_leading ('%T', l_last_break_line)
 			else
 				Result := 0
 			end
 		end
-
---	next_break (a_node: AST_EIFFEL): BREAK_AS
---		require
---			next_is_break: match_list.valid_index (a_node.index + 1) and then attached {BREAK_AS} match_list [a_node.index + 1]
---		do
---			if attached {BREAK_AS} match_list [a_node.index + 1] as l_next_break then
---				Result := l_next_break
---			end
---		end
 
 	process_next_break (a_node: detachable AST_EIFFEL)
 			-- Process the break immediately following `a_node' (if any),
@@ -362,16 +284,14 @@ feature {NONE} -- Implementation - skipping
 				l_index := l_node.last_token (match_list).index + 1
 				if last_index < l_index and then match_list.valid_index (l_index) and then attached {BREAK_AS} match_list [l_index] as l_break then
 						-- I don't expect two consecutive breaks. I also expect the next leaf to be attached.
-					check next_next_leaf_is_not_break: attached match_list [l_index + 1] implies not attached {BREAK_AS} match_list [l_index + 1] end
-
+					check
+						next_next_leaf_is_not_break: attached match_list [l_index + 1] implies not attached {BREAK_AS} match_list [l_index + 1]
+					end
 					process_break_as (l_break)
 					last_index := l_index + 1
 				end
 			end
 		end
-
---	skipping_until_position: INTEGER
---			-- What is the end index of the current/last skipped section?
 
 	current_indentation: INTEGER
 			-- With how many tabs should the current section be considered to be indented?
@@ -385,7 +305,7 @@ feature {NONE} -- Implementation - skipping
 feature {NONE} -- Implementation
 
 	oracle: AT_HINTER_PROCESSING_ORACLE
-		-- Oracle containing all the logic about what should be hidden and what not.
+			-- Oracle containing all the logic about what should be hidden and what not.
 
 	process_leading_leaves (ind: INTEGER_32)
 			-- Redefinition: only processes BREAK_AS leaves and skips the others.
@@ -437,9 +357,7 @@ feature {NONE} -- Implementation
 			-- Basically has the same function as put_string, but accepting a string.
 		do
 			if oracle.output_enabled_revenge then
-
 				print_last_unprinted_break
-
 				context.add_string (a_string)
 				blank_line_inserted := False
 				placeholder_inserted := False
@@ -454,10 +372,8 @@ feature {NONE} -- Implementation
 			if a_print_last_unprinted_break then
 				print_last_unprinted_break
 			end
-
 			blank_line_inserted := False
 			placeholder_inserted := False
-
 			context.add_string (a_string)
 		end
 
@@ -487,146 +403,11 @@ feature {NONE} -- Implementation
 
 feature {AST_EIFFEL} -- Visitors
 
---	process_feature_as (a_as: FEATURE_AS)
---		do
---			process_leading_leaves (a_as.first_token (match_list).index)
-
---			oracle.begin_process_feature
-
---			if (a_as.feature_name.text (match_list).has_substring ("generate_answer")) then
---				output_disabled := True
---			end
-
---			if oracle.must_skip_feature then
---				skipped_section_indentation := indentation (a_as.feature_name.first_token (match_list))
-
---					-- Totally skip the entire routine, as if it never existed.
---				skip (a_as, False)
---			else
---				Precursor (a_as)
---			end
-
---			output_disabled := False
-
---			oracle.end_process_feature
---		end
-
---	process_formal_argu_dec_list_as (a_as: FORMAL_ARGU_DEC_LIST_AS)
---			-- Process `a_as'.
---		do
---			oracle.begin_process_routine_arguments
-
---			if oracle.must_show_routine_arguments then
---				safe_process (a_as.lparan_symbol (match_list))
---				safe_process (a_as.arguments)
---				safe_process (a_as.rparan_symbol (match_list))
---			else
---				if attached a_as.arguments as l_arguments and then not l_arguments.is_empty then
---					skip (a_as, True)
---					put_string_to_context (at_strings.arguments_placeholder)
---				end
---			end
-
---			oracle.end_process_routine_arguments
---		end
-
---	process_local_dec_list_as (a_as: LOCAL_DEC_LIST_AS)
---			-- Process `a_as'
---		do
---			oracle.begin_process_locals
-
---			safe_process (a_as.local_keyword (match_list))
---			if oracle.must_show_locals then
---				safe_process (a_as.locals)
---			else
---				skipped_section_indentation := indentation (a_as.local_keyword (match_list)) + 1
---				skip (a_as, False)
---			end
-
---			oracle.end_process_locals
---		end
-
---	process_require_as (a_as: REQUIRE_AS)
---			-- Process `a_as'.
---		local
---			l_indentation: INTEGER
---		do
---			oracle.begin_process_precondition
-
---			safe_process (a_as.require_keyword (match_list))
---			if attached {REQUIRE_ELSE_AS} a_as as l_ensure_then_as then
---				safe_process (l_ensure_then_as.else_keyword (match_list))
---			end
---			if oracle.must_show_precondition then
---				safe_process (a_as.full_assertion_list)
---			else
---				if attached a_as.assertions as l_assertions then
---					skipped_section_indentation := indentation (l_assertions)
---					skip (a_as, False)
---				else
---					l_indentation := indentation (a_as.require_keyword (match_list))
---					skipped_section_indentation := l_indentation + 1
-
---						-- See comments in `process_do_as'.
---					skip (next_break (a_as), False)
---					put_string_to_context ("%N" + tab_string (l_indentation))
---				end
---			end
-
---			oracle.end_process_precondition
---		end
-
 	process_require_else_as (a_as: REQUIRE_ELSE_AS)
 			-- Process `a_as'.
 		do
 			process_require_as (a_as)
 		end
-
---	process_do_once_as (a_as: INTERNAL_AS)
---			-- Process `a_as'.
---		require
---			is_do_or_once: attached {DO_AS} a_as or attached {ONCE_AS} a_as
---		local
---			l_indentation: INTEGER
---			l_next_leaf: LEAF_AS
---			l_do_once_keyword: KEYWORD_AS
---		do
---			oracle.begin_process_routine_body
-
---			if attached {DO_AS} a_as as l_do_as then
---				l_do_once_keyword := l_do_as.do_keyword (match_list)
---			elseif attached {ONCE_AS} a_as as l_once_as then
---				l_do_once_keyword := l_once_as.once_keyword (match_list)
---			end
-
-
---				-- We want to process the 'do' or 'once' keyword in any case.
---			safe_process (l_do_once_keyword)
---			if oracle.must_show_routine_body then
---				safe_process (a_as.compound)
---			else
---				if attached a_as.compound as l_compound then
---					skipped_section_indentation := indentation (l_compound)
---					skip (a_as, False)
---				else
---					l_indentation := indentation (l_do_once_keyword)
---					skipped_section_indentation := l_indentation + 1
-
---						-- Empty routine! This is a mess, because `a_as.start_position' and
---						-- `a_as.end_position' will return respectively 0 and -1 (meaningless).
---						-- `a_as.text (match_list)' will return "do". However, we still want to make
---						-- sure that we skip the whole routine body, because it might contain comments
---						-- or other whitespace that should not be output.
---						-- That's why we need to do the following:
---					skip (next_break (a_as), False)
-
---						-- Fix indentation.
---					put_string_to_context ("%N" + tab_string (l_indentation))
---				end
---			end
-
---			oracle.end_process_routine_body
---		end
 
 	process_do_as (a_as: DO_AS)
 			-- Process `a_as'.
@@ -640,36 +421,6 @@ feature {AST_EIFFEL} -- Visitors
 			process_do_once_as (a_as)
 		end
 
---	process_ensure_as (a_as: ENSURE_AS)
---			-- Process `a_as'.
---		local
---			l_indentation: INTEGER
---		do
---			oracle.begin_process_postcondition
-
---			safe_process (a_as.ensure_keyword (match_list))
---			if attached {ENSURE_THEN_AS} a_as as l_ensure_then_as then
---				safe_process (l_ensure_then_as.ensure_keyword (match_list))
---			end
---			if oracle.must_show_postcondition then
---				safe_process (a_as.full_assertion_list)
---			else
---				if attached a_as.assertions as l_assertions then
---					skipped_section_indentation := indentation (l_assertions)
---					skip (a_as, False)
---				else
---					l_indentation := indentation (a_as.ensure_keyword (match_list))
---					skipped_section_indentation := l_indentation + 1
-
---						-- See comments in `process_do_as'.
---					skip (next_break (a_as), False)
---					put_string_to_context ("%N" + tab_string (l_indentation))
---				end
---			end
-
---			oracle.end_process_postcondition
---		end
-
 	process_ensure_then_as (a_as: ENSURE_THEN_AS)
 			-- Process `a_as'.
 		do
@@ -680,10 +431,8 @@ feature {AST_EIFFEL} -- Visitors
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.bt_feature)
-
 			current_indentation := indentation (a_as.feature_name.first_token (match_list))
 			Precursor (a_as)
-
 			oracle.end_process_block (enum_block_type.bt_feature)
 		end
 
@@ -692,10 +441,7 @@ feature {AST_EIFFEL} -- Visitors
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.bt_arguments)
-
-
 			safe_process (a_as.lparan_symbol (match_list))
-
 			if oracle.output_enabled_revenge and then oracle.current_content_visibility /= Tri_false then
 				safe_process (a_as.arguments)
 			else
@@ -704,9 +450,7 @@ feature {AST_EIFFEL} -- Visitors
 				current_indentation := 2
 				insert_blank_line (options.insert_code_placeholder, enum_placeholder_type.ph_arguments)
 			end
-
 			safe_process (a_as.rparan_symbol (match_list))
-
 			oracle.end_process_block (enum_block_type.bt_arguments)
 		end
 
@@ -715,29 +459,21 @@ feature {AST_EIFFEL} -- Visitors
 		local
 			l_indentation: INTEGER
 		do
---			if false then
-				process_leading_leaves (a_as.first_token (match_list).index)
-				oracle.begin_process_block (enum_block_type.bt_locals)
-
-				l_indentation := indentation (a_as.local_keyword (match_list))
-				safe_process (a_as.local_keyword (match_list))
-
-				current_indentation := l_indentation + 1
-				if oracle.output_enabled_revenge and oracle.current_content_visibility /= Tri_false then
-					safe_process (a_as.locals)
-				else
-					put_string_forced ("%N", False)
-					insert_blank_line (options.insert_code_placeholder, enum_placeholder_type.ph_standard)
-				end
-
-
-				oracle.end_process_block (enum_block_type.bt_locals)
---			else
---				precursor (a_as)
---			end
+			process_leading_leaves (a_as.first_token (match_list).index)
+			oracle.begin_process_block (enum_block_type.bt_locals)
+			l_indentation := indentation (a_as.local_keyword (match_list))
+			safe_process (a_as.local_keyword (match_list))
+			current_indentation := l_indentation + 1
+			if oracle.output_enabled_revenge and oracle.current_content_visibility /= Tri_false then
+				safe_process (a_as.locals)
+			else
+				put_string_forced ("%N", False)
+				insert_blank_line (options.insert_code_placeholder, enum_placeholder_type.ph_standard)
+			end
+			oracle.end_process_block (enum_block_type.bt_locals)
 		end
 
-		process_do_once_as (a_as: INTERNAL_AS)
+	process_do_once_as (a_as: INTERNAL_AS)
 			-- Process `a_as'.
 		require
 			is_do_or_once: attached {DO_AS} a_as or attached {ONCE_AS} a_as
@@ -747,33 +483,25 @@ feature {AST_EIFFEL} -- Visitors
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.bt_routine_body)
-
 			if attached {DO_AS} a_as as l_do_as then
 				l_do_once_keyword := l_do_as.do_keyword (match_list)
 			elseif attached {ONCE_AS} a_as as l_once_as then
 				l_do_once_keyword := l_once_as.once_keyword (match_list)
 			end
-
 			current_indentation := indentation (l_do_once_keyword) + 1
 			safe_process (l_do_once_keyword)
 			safe_process (a_as.compound)
-
 			oracle.end_process_block (enum_block_type.bt_routine_body)
 		end
-
 
 	process_require_as (a_as: REQUIRE_AS)
 			-- Process `a_as'.
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.bt_precondition)
-
 			safe_process (a_as.require_keyword (match_list))
-
 			current_indentation := indentation (a_as.require_keyword (match_list)) + 1
-
 			safe_process (a_as.full_assertion_list)
-
 			oracle.end_process_block (enum_block_type.bt_precondition)
 		end
 
@@ -782,13 +510,9 @@ feature {AST_EIFFEL} -- Visitors
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.bt_postcondition)
-
 			safe_process (a_as.ensure_keyword (match_list))
-
 			current_indentation := indentation (a_as.ensure_keyword (match_list)) + 1
-
 			safe_process (a_as.full_assertion_list)
-
 			oracle.end_process_block (enum_block_type.bt_postcondition)
 		end
 
@@ -797,27 +521,18 @@ feature {AST_EIFFEL} -- Visitors
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.bt_class_invariant)
-
 			safe_process (a_as.invariant_keyword (match_list))
-
 			current_indentation := indentation (a_as.invariant_keyword (match_list)) + 1
-
 			safe_process (a_as.full_assertion_list)
-
 			process_next_break (a_as)
-
 			oracle.end_process_block (enum_block_type.bt_class_invariant)
 		end
-
-feature {AST_EIFFEL} -- Assertion visitor
 
 	process_tagged_as (l_as: TAGGED_AS)
 		do
 			process_leading_leaves (l_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.bt_assertion)
-
 			Precursor (l_as)
-
 			process_next_break (l_as)
 			oracle.end_process_block (enum_block_type.bt_assertion)
 		end
@@ -849,7 +564,7 @@ feature {AST_EIFFEL} -- Instructions visitors
 	process_assign_as (a_as: ASSIGN_AS)
 			-- Process `a_as'.
 		do
-instruction_pre (a_as)
+			instruction_pre (a_as)
 			Precursor (a_as)
 			instruction_post (a_as)
 		end

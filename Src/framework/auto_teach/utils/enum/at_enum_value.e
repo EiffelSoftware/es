@@ -8,6 +8,7 @@ deferred class
 	AT_ENUM_VALUE
 
 inherit
+
 	ANY
 		redefine
 			is_equal
@@ -28,7 +29,7 @@ feature -- Access
 		end
 
 	initialized: BOOLEAN
-		-- Was `Current' initialized to a meaningful value?
+			-- Was `Current' initialized to a meaningful value?
 
 	numerical_value: INTEGER
 			-- The numerical value of this enum value. Immutable.

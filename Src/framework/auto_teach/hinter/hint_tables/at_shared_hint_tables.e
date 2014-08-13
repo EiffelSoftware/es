@@ -29,7 +29,7 @@ feature {NONE}
 			-- Loads a custom hint table from the specified file path\
 			-- and makes it accessible in `custom_hint_table'.
 		do
-			-- TODO
+				-- TODO
 		end
 
 end

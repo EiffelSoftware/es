@@ -8,15 +8,14 @@ expanded class
 	AT_BLOCK_TYPE
 
 inherit
+
 	AT_ENUM_VALUE
 		redefine
 			enum_type
 		end
 
 create
-	default_create,
-	make_with_numerical_value,
-	make_with_value_name
+	default_create, make_with_numerical_value, make_with_value_name
 
 feature -- Enum type
 
