@@ -124,7 +124,7 @@ feature -- Complex blocks
 	complex_block_types: ARRAY [AT_BLOCK_TYPE]
 			-- The list of complex block types.
 		once ("PROCESS")
-			Result := <<Bt_feature, Bt_arguments, Bt_precondition, Bt_locals, Bt_routine_body, Bt_postcondition, Bt_class_invariant, Bt_if, Bt_if_branch>>
+			Result := <<Bt_feature, Bt_precondition, Bt_locals, Bt_routine_body, Bt_postcondition, Bt_class_invariant, Bt_if, Bt_if_branch>>
 		end
 
 	is_complex_block_type (a_block_type: AT_BLOCK_TYPE): BOOLEAN

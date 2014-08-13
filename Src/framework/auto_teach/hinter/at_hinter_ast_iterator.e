@@ -479,33 +479,14 @@ feature {AST_EIFFEL} -- Visitors
 			l_placeholder: AT_PLACEHOLDER
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
-			oracle.begin_process_block (enum_block_type.Bt_arguments)
 
+				-- Treat the parentheses as a part of the routine declaration (parent block).
+				-- Only what's inside the parentheses is considered to be an "arguments" block.
 			safe_process (a_as.lparan_symbol (match_list))
 
-				-- We would normally never skip any part of the syntax tree.
-				-- So one would expect that we call "safe_process (a_as.arguments)"
-				-- here, and just rely on the oracle to prevent the arguments from being
-				-- actually output. So why aren't we doing this?
-				-- Assume we are in the case where the existence of arguments is shown,
-				-- (in practice this just means that the parentheses are printed),
-				-- and we only have to hide the arguments inside. In this case, at this point
-				-- oracle.output_enabled is True, in order to let us print the parentheses.
-				-- Well, there is nothing preventing the arguments from being printed as well.
-				-- Right now the effective content visibility is False, but, as arguments declarations
-				-- are not explicitly processed by this iterator, nobody checks for it.
-				-- We will never notify the oracle that we are beginning to process one specific
-				-- argument, so that it can disable the output entirely.
-				-- Same story for locals, as local declarations are also not processed singularly.
-				-- With pre/postconditions it's different, because assertions are explicitly processed
-				-- by this class, and the oracle is notified whenever a single assertion starts being processed.
-				-- So this long digression was to explain why here, exceptionally, we have to skip
-				-- a part of the syntax tree.
-			if oracle.output_enabled and then oracle.current_content_visibility /= Tri_false then
-				safe_process (a_as.arguments)
-			else
-				skip_with_current_placeholder
-			end
+			oracle.begin_process_block (enum_block_type.Bt_arguments)
+
+			safe_process (a_as.arguments)
 
 			if attached a_as.rparan_symbol (match_list) as l_parenthesis then
 					-- Hack in order to prevent the last break contained in the original arguments
@@ -513,11 +494,11 @@ feature {AST_EIFFEL} -- Visitors
 					-- a closed parenthesis.
 				process_leading_leaves (l_parenthesis.index)
 				last_unprinted_break_line := Void
-
-				safe_process (l_parenthesis)
 			end
 
 			oracle.end_process_block (enum_block_type.Bt_arguments)
+
+			safe_process (a_as.rparan_symbol (match_list))
 		end
 
 	process_local_dec_list_as (a_as: LOCAL_DEC_LIST_AS)
@@ -539,6 +520,23 @@ feature {AST_EIFFEL} -- Visitors
 			end
 
 			current_indentation := l_indentation + 1
+
+				-- We would normally never skip any part of the syntax tree.
+				-- So one would expect that we call "safe_process (a_as.locals)"
+				-- here, and just rely on the oracle to prevent the local variable declarations.
+				-- from being actually output. So why aren't we doing this?
+				-- Assume we are in the case where the existence of the 'local' block is shown,
+				-- and we only have to hide the declarations inside. In this case, at this point
+				-- oracle.output_enabled is True, in order to let us print the parentheses.
+				-- Well, there is nothing preventing the arguments from being printed as well.
+				-- Right now the effective content visibility is False, but, as local declarations
+				-- are not explicitly processed by this iterator, nobody checks for it.
+				-- We will never notify the oracle that we are beginning to process one specific
+				-- variable declaration, so that it can disable the output entirely.
+				-- With pre/postconditions it's different, because assertions are explicitly processed
+				-- by this class, and the oracle is notified whenever a single assertion starts being processed.
+				-- So this long digression was to explain why here, exceptionally, we have to skip
+				-- a part of the syntax tree.
 			if oracle.output_enabled and oracle.current_content_visibility /= Tri_false then
 				safe_process (a_as.locals)
 			else
