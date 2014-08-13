@@ -9,6 +9,8 @@ class EIFFEL_LIST [reference T -> AST_EIFFEL]
 
 inherit
 	AST_EIFFEL
+		rename
+			index as leaf_index
 		undefine
 			copy, is_equal
 		redefine
@@ -106,6 +108,15 @@ feature -- Visitor
 		end
 
 feature -- Access
+
+	leaf_index: INTEGER
+		do
+			if attached first as l_first then
+				Result := l_first.index
+			else
+				Result := 0
+			end
+		end
 
 	reversed_first: T
 		require
