@@ -121,22 +121,42 @@ feature -- Meta-commands
 	meta_command_prefix: STRING = "#"
 
 	hint_command: STRING = "HINT"
-		-- TODO: underscores
-	shownext_command: STRING = "SHOWNEXT"
 
-	hidenext_command: STRING = "HIDENEXT"
+	show_all_command: STRING = "SHOW_ALL"
+	hide_all_command: STRING = "HIDE_ALL"
+	reset_all_command: STRING = "RESET_ALL"
 
-	show_content_command: STRING = "SHOWNEXTCONTENT"
+	show_all_content_command: STRING = "SHOW_ALL_CONTENT"
+	hide_all_content_command: STRING = "HIDE_ALL_CONTENT"
+	reset_all_content_command: STRING = "RESET_ALL_CONTENT"
 
-	hide_content_command: STRING = "HIDENEXTCONTENT"
+		-- TODO: spazio
+	shownext_command: STRING = "SHOW_NEXT"
+	hidenext_command: STRING = "HIDE_NEXT"
+		-- There is no reset_next command, why would one ever need it?
+
+		-- TODO: next
+	show_content_command: STRING = "SHOW_NEXT_CONTENT"
+	hide_content_command: STRING = "HIDE_NEXT_CONTENT"
+		-- There is no reset_next_content command, why would one ever need it?
+
+	commands_with_block: ARRAY [STRING]
+			-- List of commands which must be followed by a block type. Useful for parsing.
+		once ("PROCESS")
+			Result := << 	show_all_command, hide_all_command, reset_all_command,
+							show_all_content_command, hide_all_content_command, reset_all_content_command,
+							shownext_command, hidenext_command,
+							show_content_command, hide_content_command >>
+			Result.compare_objects
+		end
 
 	placeholder_command: STRING = "PLACEHOLDER"
-		-- TODO: rimettere HINTMODE
-	hint_mode_command: STRING = "ANNOTATEDMODE"
 
-	unannotated_mode_command: STRING = "UNANNOTATEDMODE"
+	hint_mode_command: STRING = "HINT_MODE"
 
-	custom_mode_command: STRING = "CUSTOMMODE"
+	unannotated_mode_command: STRING = "UNANNOTATED_MODE"
+
+	custom_mode_command: STRING = "CUSTOM_MODE"
 
 		-- TODO: mostrare then e else separatamente
 		-- magari con SHOWNEXT branch
@@ -152,5 +172,7 @@ feature -- Block types
 	bt_routine_body: STRING = "body"
 	bt_postcondition: STRING = "postcondition"
 	bt_class_invariant: STRING = "classinvariant"
+	bt_assertion: STRING = "assertion"
+	bt_instruction: STRING = "instruction"
 
 end

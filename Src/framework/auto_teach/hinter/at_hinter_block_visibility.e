@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AT_HINTER_BLOCK_VISIBILITY
+	AT_HINTER_BLOCK_VISIBILITY -- TODO: remove HINTER from name.
 
 create
 	make_with_visibility_agent
@@ -23,12 +23,25 @@ feature -- Access
 
 	local_visibility_override: AT_TRI_STATE_BOOLEAN assign set_local_visiblity_override
 
-	set_defaults
-			-- Set the default values for all attributes.
+	reset_overrides
+			-- Reset all the visibility override attributes.
 		do
-			local_visibility_override.set_undefined
+			reset_global_overrides
+			reset_local_overrides
+		end
+
+	reset_global_overrides
+			-- Reset the global visibility override attribute.
+		do
 			global_visibility_override.set_undefined
 		end
+
+	reset_local_overrides
+			-- Reset the local visibility override attribute.
+		do
+			local_visibility_override.set_undefined
+		end
+
 
 feature {NONE} -- Setters
 

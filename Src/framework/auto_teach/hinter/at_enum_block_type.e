@@ -42,7 +42,9 @@ feature {AT_ENUM_VALUE} -- Value list
 							[4, at_strings.bt_locals],
 							[5, at_strings.bt_routine_body],
 							[6, at_strings.bt_postcondition],
-							[7, at_strings.bt_class_invariant]		>>
+							[7, at_strings.bt_class_invariant],
+							[8, at_strings.bt_assertion],
+							[9, at_strings.bt_instruction]		>>
 		end
 
 
@@ -83,11 +85,21 @@ feature -- Values
 			create Result.make_with_numerical_value (7)
 		end
 
+	bt_assertion: AT_BLOCK_TYPE
+		once ("PROCESS")
+			create Result.make_with_numerical_value (8)
+		end
+
+	bt_instruction: AT_BLOCK_TYPE
+		once ("PROCESS")
+			create Result.make_with_numerical_value (9)
+		end
+
 feature -- Complex blocks
 
 	complex_block_types: ARRAY [AT_BLOCK_TYPE]
 		once ("PROCESS")
-			Result := << bt_feature >>
+			Result := << bt_feature, bt_precondition, bt_locals, bt_routine_body, bt_postcondition, bt_class_invariant >>
 		end
 
 	is_complex_block_type (a_block_type: AT_BLOCK_TYPE): BOOLEAN

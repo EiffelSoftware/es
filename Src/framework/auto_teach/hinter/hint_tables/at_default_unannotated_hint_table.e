@@ -25,7 +25,9 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization for `Current'.
 		do
-			create table.make (16)
+			create table.make (32)
+			create content_table.make (16)
+				-- TODO: fill content table.
 
 			-- Hint level:	1		2		3		4		5
 			table.put (<< 	True,	True,	True,	True,	True	>>, enum_block_type.bt_feature)				-- Always show features
