@@ -30,7 +30,7 @@ feature -- Oracle
 		do
 			l_local_policy := local_routine_arguments_visibility
 			l_local_content_policy := local_feature_content_visibility
-			l_global_policy := options.hint_table.entry (bt_arguments, options.hint_level).visibility
+			l_global_policy := options.hint_table.entry (enum_block_type.bt_arguments, options.hint_level).visibility
 			Result := l_local_policy.imposed_on (l_local_content_policy).imposed_on_bool (l_global_policy)
 		end
 
@@ -43,7 +43,7 @@ feature -- Oracle
 		do
 			l_local_policy := local_precondition_visibility
 			l_local_content_policy := local_feature_content_visibility
-			l_global_policy := options.hint_table.entry (bt_precondition, options.hint_level).visibility
+			l_global_policy := options.hint_table.entry (enum_block_type.bt_precondition, options.hint_level).visibility
 			Result := l_local_policy.imposed_on (l_local_content_policy).imposed_on_bool (l_global_policy)
 		end
 
@@ -56,7 +56,7 @@ feature -- Oracle
 		do
 			l_local_policy := local_locals_visibility
 			l_local_content_policy := local_feature_content_visibility
-			l_global_policy := options.hint_table.entry (bt_locals, options.hint_level).visibility
+			l_global_policy := options.hint_table.entry (enum_block_type.bt_locals, options.hint_level).visibility
 			Result := l_local_policy.imposed_on (l_local_content_policy).imposed_on_bool (l_global_policy)
 		end
 
@@ -69,7 +69,7 @@ feature -- Oracle
 		do
 			l_local_policy := local_routine_body_visibility
 			l_local_content_policy := local_feature_content_visibility
-			l_global_policy := options.hint_table.entry (bt_routine_body, options.hint_level).visibility
+			l_global_policy := options.hint_table.entry (enum_block_type.bt_routine_body, options.hint_level).visibility
 			Result := l_local_policy.imposed_on (l_local_content_policy).imposed_on_bool (l_global_policy)
 		end
 
@@ -82,7 +82,7 @@ feature -- Oracle
 		do
 			l_local_policy := local_postcondition_visibility
 			l_local_content_policy := local_feature_content_visibility
-			l_global_policy := options.hint_table.entry (bt_postcondition, options.hint_level).visibility
+			l_global_policy := options.hint_table.entry (enum_block_type.bt_postcondition, options.hint_level).visibility
 			Result := l_local_policy.imposed_on (l_local_content_policy).imposed_on_bool (l_global_policy)
 		end
 
@@ -94,7 +94,7 @@ feature -- Oracle
 			l_global_policy: BOOLEAN
 		do
 			l_local_policy := local_class_invariant_visibility
-			l_global_policy := options.hint_table.entry (bt_class_invariant, options.hint_level).visibility
+			l_global_policy := options.hint_table.entry (enum_block_type.bt_class_invariant, options.hint_level).visibility
 			Result := l_local_policy.imposed_on_bool (l_global_policy)
 		end
 
@@ -287,13 +287,13 @@ feature -- Meta-command processing interface
 					last_hint := a_line.twin
 					l_recognized := True
 				elseif l_command_word.same_string (at_strings.shownext_command) then
-					if is_valid_block_type (l_line.as_lower) then
-						show_block (l_line.as_lower)
+					if enum_block_type.is_valid_value_name (l_line.as_lower) then
+						show_block (enum_block_type.value (l_line.as_lower))
 						l_recognized := True
 					end
 				elseif l_command_word.same_string (at_strings.hidenext_command) then
-					if is_valid_block_type (l_line.as_lower) then
-						hide_block (l_line.as_lower)
+					if enum_block_type.is_valid_value_name (l_line.as_lower) then
+						hide_block (enum_block_type.value (l_line.as_lower))
 						l_recognized := True
 					end
 				elseif l_command_word.same_string (at_strings.show_content_command) then
@@ -357,16 +357,12 @@ feature {NONE} -- Meta-command processing
 			force_block_content_visibility (a_block_type, False)
 		end
 
-	show_block (a_block_type: STRING)
-		require
-			valid_block_type: is_valid_block_type (a_block_type)
+	show_block (a_block_type: AT_BLOCK_TYPE)
 		do
 			force_block_visibility (a_block_type, True)
 		end
 
-	hide_block (a_block_type: STRING)
-		require
-			valid_block_type: is_valid_block_type (a_block_type)
+	hide_block (a_block_type: AT_BLOCK_TYPE)
 		do
 			force_block_visibility (a_block_type, False)
 		end
@@ -417,26 +413,23 @@ feature {NONE} -- Visibility
 			end
 		end
 
-	force_block_visibility (a_block_type: STRING; a_visibility: BOOLEAN)
-		require
-			valid_block_type: is_valid_block_type (a_block_type)
+	force_block_visibility (a_block_type: AT_BLOCK_TYPE; a_visibility: BOOLEAN)
 		local
 			l_block_type: STRING
 		do
-			l_block_type := a_block_type.as_lower
-			if a_block_type.same_string (bt_feature) then
+			if a_block_type = enum_block_type.bt_feature then
 				local_feature_visibility := to_tri_state (a_visibility)
-			elseif a_block_type.same_string (bt_arguments) then
+			elseif a_block_type = enum_block_type.bt_arguments then
 				local_routine_arguments_visibility := to_tri_state (a_visibility)
-			elseif a_block_type.same_string (bt_precondition) then
+			elseif a_block_type = enum_block_type.bt_precondition then
 				local_precondition_visibility := to_tri_state (a_visibility)
-			elseif a_block_type.same_string (bt_locals) then
+			elseif a_block_type = enum_block_type.bt_locals then
 				local_locals_visibility := to_tri_state (a_visibility)
-			elseif a_block_type.same_string (bt_routine_body) then
+			elseif a_block_type = enum_block_type.bt_routine_body then
 				local_routine_body_visibility := to_tri_state (a_visibility)
-			elseif a_block_type.same_string (bt_postcondition) then
+			elseif a_block_type = enum_block_type.bt_postcondition then
 				local_postcondition_visibility := to_tri_state (a_visibility)
-			elseif a_block_type.same_string (bt_class_invariant) then
+			elseif a_block_type = enum_block_type.bt_class_invariant then
 				local_class_invariant_visibility := to_tri_state (a_visibility)
 			else
 				check block_type_recognized: False end
@@ -453,30 +446,32 @@ feature {NONE} -- Implementation
 		do
 			options := a_options
 			original_options := a_options.twin
+			initialize_block_visibility_table
 		end
 
-	initialize_block_visibility_table
+	initialize_block_visibility_table -- TODO: get rid of this?
 		local
 			l_feature, l_arguments, l_precondition, l_locals, l_routine_body, l_postcondition, l_class_invariant: AT_HINTER_BLOCK_VISIBILITY
 		do
-			create blocks_visibility.make (block_types.count * 2)
 
-			create l_feature.make (Void, agent is_block_globally_visible (bt_feature))
-			blocks_visibility.put (l_feature, bt_feature)
+--			create blocks_visibility.make (block_types.count * 2)
 
-			create l_arguments.make (l_feature, agent is_block_globally_visible (bt_arguments))
-			blocks_visibility.put (l_arguments, bt_arguments)
-			create l_precondition.make (l_feature, agent is_block_globally_visible (bt_precondition))
-			blocks_visibility.put (l_precondition, bt_precondition)
-			create l_locals.make (l_feature, agent is_block_globally_visible (bt_locals))
-			blocks_visibility.put (l_locals, bt_locals)
-			create l_routine_body.make (l_feature, agent is_block_globally_visible (bt_routine_body))
-			blocks_visibility.put (l_routine_body, bt_routine_body)
-			create l_postcondition.make (l_feature, agent is_block_globally_visible (bt_postcondition))
-			blocks_visibility.put (l_routine_body, bt_routine_body)
+--			create l_feature.make (Void, agent is_block_globally_visible (bt_feature))
+--			blocks_visibility.put (l_feature, bt_feature)
 
-			create l_class_invariant.make (Void, agent is_block_globally_visible (bt_class_invariant))
-			blocks_visibility.put (l_feature, bt_feature)
+--			create l_arguments.make (l_feature, agent is_block_globally_visible (bt_arguments))
+--			blocks_visibility.put (l_arguments, bt_arguments)
+--			create l_precondition.make (l_feature, agent is_block_globally_visible (bt_precondition))
+--			blocks_visibility.put (l_precondition, bt_precondition)
+--			create l_locals.make (l_feature, agent is_block_globally_visible (bt_locals))
+--			blocks_visibility.put (l_locals, bt_locals)
+--			create l_routine_body.make (l_feature, agent is_block_globally_visible (bt_routine_body))
+--			blocks_visibility.put (l_routine_body, bt_routine_body)
+--			create l_postcondition.make (l_feature, agent is_block_globally_visible (bt_postcondition))
+--			blocks_visibility.put (l_postcondition, bt_postcondition)
+
+--			create l_class_invariant.make (Void, agent is_block_globally_visible (bt_class_invariant))
+--			blocks_visibility.put (l_class_invariant, bt_class_invariant)
 
 
 
@@ -484,7 +479,7 @@ feature {NONE} -- Implementation
 			attached blocks_visibility
 		end
 
-	is_block_globally_visible (a_block_type: STRING): BOOLEAN
+	is_block_globally_visible (a_block_type: AT_BLOCK_TYPE): BOOLEAN
 		do
 				 -- TODO: leggere dagli attributi
 			Result := options.hint_table.entry (a_block_type, options.hint_level).visibility
@@ -502,8 +497,8 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-
-	all_visibility_keys: across block_types as ic all blocks_visibility.has_key (ic.item)  end
-	only_visibility_keys: across blocks_visibility.current_keys as ic all is_valid_block_type (ic.item.to_string_8) end
+	-- TODO: get rid of this?
+--	all_visibility_keys: across block_types as ic all blocks_visibility.has_key (ic.item)  end
+--	only_visibility_keys: across blocks_visibility.current_keys as ic all is_valid_block_type (ic.item.to_string_8) end
 
 end

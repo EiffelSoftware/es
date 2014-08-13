@@ -368,15 +368,21 @@ feature {NONE} -- Implementation
 			-- Basically has the same function as put_string, but accepting a string.
 		do
 			blank_line_inserted := False
-			context.add_string (a_string)
+			if not output_disabled then
+				context.add_string (a_string)
+			end
 		end
 
 	put_string (a_as: LEAF_AS)
 			-- Puts the text of `a_as' to the context.
 		do
 			blank_line_inserted := False
-			Precursor (a_as)
+			if not output_disabled then
+				Precursor (a_as)
+			end
 		end
+
+	output_disabled: BOOLEAN -- TODO: Don't forget of this!
 
 	options: AT_OPTIONS
 			-- The AutoTeach options.
@@ -410,6 +416,10 @@ feature {AST_EIFFEL} -- Visitors
 
 			oracle.begin_process_feature
 
+			if (a_as.feature_name.text (match_list).has_substring ("generate_answer")) then
+				output_disabled := True
+			end
+
 			if oracle.must_skip_feature then
 				skipped_section_indentation := indentation (a_as.feature_name.first_token (match_list))
 
@@ -418,6 +428,8 @@ feature {AST_EIFFEL} -- Visitors
 			else
 				Precursor (a_as)
 			end
+
+			output_disabled := False
 
 			oracle.end_process_feature
 		end

@@ -1,0 +1,28 @@
+note
+	description: "Summary description for {AT_TEST_ENUM_VALUE}." -- TODO
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
+
+expanded class
+	AT_BLOCK_TYPE
+
+inherit
+	AT_ENUM_VALUE
+		redefine
+			enum_type
+		end
+
+create
+	default_create,
+	make_with_numerical_value,
+	make_with_value_name
+
+feature -- Enum type
+
+	enum_type: AT_ENUM
+		once
+			create {AT_ENUM_BLOCK_TYPE} Result
+		end
+
+end

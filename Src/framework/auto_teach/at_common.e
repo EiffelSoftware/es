@@ -26,6 +26,11 @@ feature {NONE} -- Shared strings
 feature {NONE} -- Block types
 		-- TODO: better term than "block types"?
 
+	enum_block_type: AT_ENUM_BLOCK_TYPE
+		once
+			create Result
+		end
+
 		-- 'bt' stands for 'block type'
 	bt_feature: STRING = "feature"
 	bt_arguments: STRING = "arguments"
@@ -35,14 +40,7 @@ feature {NONE} -- Block types
 	bt_postcondition: STRING = "postcondition"
 	bt_class_invariant: STRING = "classinvariant"
 
-	block_types: ARRAY [STRING] -- TODO: can we have readonly array/lists in Eiffel?
-			-- List of supported code block types
-		once
-			Result := << bt_feature, bt_arguments, bt_precondition, bt_locals, bt_routine_body, bt_postcondition, bt_class_invariant >>
-			Result.compare_objects
-		end
-
-	content_block_types: ARRAY [STRING] -- TODO: can we have readonly array/lists in Eiffel?
+	content_block_types: ARRAY [STRING] -- TODO: get rid of this?
 			-- List of all supported block types with content
 		once
 			Result := << bt_feature >>
@@ -51,16 +49,10 @@ feature {NONE} -- Block types
 
 feature -- For use with contracts
 
-	is_valid_block_type (a_string: STRING): BOOLEAN
+	is_valid_content_block_type (a_string: STRING): BOOLEAN -- TODO: get rid of this?
 			-- Is `a_string' a valid block type?
 		do
-			Result := block_types.has (a_string)
-		end
-
-	is_valid_content_block_type (a_string: STRING): BOOLEAN
-			-- Is `a_string' a valid block type?
-		do
-			Result := block_types.has (a_string)
+			Result := enum_block_type.is_valid_value_name (a_string)
 		end
 
 

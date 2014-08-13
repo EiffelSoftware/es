@@ -143,4 +143,14 @@ feature -- Meta-commands
 
 		-- TODO: non dimenticare di gestire i blocchi inspect
 
+feature -- Block types
+
+	bt_feature: STRING = "feature"
+	bt_arguments: STRING = "arguments"
+	bt_precondition: STRING = "precondition"
+	bt_locals: STRING = "locals"
+	bt_routine_body: STRING = "body"
+	bt_postcondition: STRING = "postcondition"
+	bt_class_invariant: STRING = "classinvariant"
+
 end
