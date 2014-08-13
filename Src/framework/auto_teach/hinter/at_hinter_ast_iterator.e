@@ -138,8 +138,11 @@ feature {NONE} -- Break processing
 	process_break_line (a_break_line: STRING; a_in_skipped_section: BOOLEAN)
 			-- Process a single line of a break.
 		do
-			if is_meta_command (a_break_line) then
-				process_meta_command (a_break_line)
+			if oracle.is_meta_command (a_break_line) then
+				oracle.process_meta_command (a_break_line)
+				if attached oracle.last_hint as l_last_hint then
+					output_hint (l_last_hint)
+				end
 			else
 				if not a_in_skipped_section then
 					put_string_to_context (a_break_line)
@@ -147,65 +150,10 @@ feature {NONE} -- Break processing
 			end
 		end
 
-feature {NONE} -- Meta-commands processing
+feature {NONE} -- Hint processing
 
-	process_meta_command (a_line: STRING)
-			-- Process the meta-command contained in `a_line'. Case insensitive.
-		local
-			l_line, l_argument: STRING
-			l_index: INTEGER
-			l_recognized: BOOLEAN
-		do
-			l_line := a_line.twin
-			l_line.adjust
-			if l_line.as_upper.starts_with (at_strings.hint_command) then
-				process_hint (a_line)
-				l_recognized := True
-			elseif l_line.as_upper.starts_with (at_strings.show_command) then
-				l_line.remove_head (at_strings.show_command.count)
-				l_line.left_adjust
-				if is_valid_block_type (l_line.as_lower) then
-					oracle.show_block (l_line.as_lower)
-					l_recognized := True
-				end
-			elseif l_line.as_upper.starts_with (at_strings.hide_command) then
-				l_line.remove_head (at_strings.hide_command.count)
-				l_line.left_adjust
-				if is_valid_block_type (l_line.as_lower) then
-					oracle.hide_block (l_line.as_lower)
-					l_recognized := True
-				end
-			elseif l_line.as_upper.starts_with (at_strings.show_content_command) then
-				l_line.remove_head (at_strings.show_content_command.count)
-				l_line.left_adjust
-				if is_valid_content_block_type (l_line.as_lower) then
-					oracle.show_block_content (l_line.as_lower)
-					l_recognized := True
-				end
-			elseif l_line.as_upper.starts_with (at_strings.hide_content_command) then
-				l_line.remove_head (at_strings.hide_content_command.count)
-				l_line.left_adjust
-				if is_valid_content_block_type (l_line.as_lower) then
-					oracle.hide_block_content (l_line.as_lower)
-					l_recognized := True
-				end
-			end
-			if not l_recognized then
-				print_message (at_strings.unrecognized_meta_command + a_line)
-			end
-		end
-
-	is_meta_command (a_line: STRING): BOOLEAN
-			-- Does `a_line' contain a meta-command?t
-		local
-			l_line: STRING
-		do
-			l_line := a_line.twin
-			l_line.adjust
-			Result := l_line.starts_with ("-- #")
-		end
-
-	process_hint (a_line: STRING)
+	output_hint (a_line: STRING)
+			-- Outputs the specified hint with the correct indentation.
 		require
 				-- a_line is a hint command. How to specify that?
 			single_return_terminated_line: a_line.ends_with ("%N") and a_line.occurrences ('%N') = 1
@@ -234,9 +182,6 @@ feature {NONE} -- Meta-commands processing
 						-- We need to leave things as we found them, so re-indent the line.
 					put_string_to_context (tab_string (l_indentation))
 				end
-
-					-- Additional blank line, with placeholder if necessary
-					-- insert_blank_line (l_indentation, false)
 			end
 		end
 
@@ -438,6 +383,8 @@ feature {NONE} -- Implementation
 			make_with_default_context
 			options := a_options
 			create oracle.make_with_options (a_options)
+			-- oracle.set_hint_output_action (a_action: PROCEDURE [ANY, TUPLE [STRING_8]])
+			oracle.set_message_output_action (message_output_action)
 			reset
 		end
 

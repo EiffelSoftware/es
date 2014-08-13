@@ -159,7 +159,76 @@ feature -- Status signaling
 			forced_class_invariant_visibility := tri_undefined
 		end
 
-feature -- Policy signaling
+feature -- Meta-command processing interface
+
+	is_meta_command (a_line: STRING): BOOLEAN
+			-- Does `a_line' contain a meta-command?
+		local
+			l_line: STRING
+		do
+			l_line := a_line.twin
+			l_line.adjust
+			Result := l_line.starts_with ("-- #")
+		end
+
+	process_meta_command (a_line: STRING)
+			-- Process the meta-command contained in `a_line'. Case insensitive.
+		require
+			single_return_terminated_line: a_line.ends_with ("%N") and a_line.occurrences ('%N') = 1
+		local
+			l_line, l_argument: STRING
+			l_index: INTEGER
+			l_recognized: BOOLEAN
+		do
+			l_line := a_line.twin
+			l_line.adjust
+			if l_line.as_upper.starts_with (at_strings.hint_command) then
+				process_hint (a_line)
+				l_recognized := True
+			elseif l_line.as_upper.starts_with (at_strings.show_command) then
+				l_line.remove_head (at_strings.show_command.count)
+				l_line.left_adjust
+				if is_valid_block_type (l_line.as_lower) then
+					show_block (l_line.as_lower)
+					l_recognized := True
+				end
+			elseif l_line.as_upper.starts_with (at_strings.hide_command) then
+				l_line.remove_head (at_strings.hide_command.count)
+				l_line.left_adjust
+				if is_valid_block_type (l_line.as_lower) then
+					hide_block (l_line.as_lower)
+					l_recognized := True
+				end
+			elseif l_line.as_upper.starts_with (at_strings.show_content_command) then
+				l_line.remove_head (at_strings.show_content_command.count)
+				l_line.left_adjust
+				if is_valid_content_block_type (l_line.as_lower) then
+					show_block_content (l_line.as_lower)
+					l_recognized := True
+				end
+			elseif l_line.as_upper.starts_with (at_strings.hide_content_command) then
+				l_line.remove_head (at_strings.hide_content_command.count)
+				l_line.left_adjust
+				if is_valid_content_block_type (l_line.as_lower) then
+					hide_block_content (l_line.as_lower)
+					l_recognized := True
+				end
+			end
+			if not l_recognized then
+				print_message (at_strings.unrecognized_meta_command + a_line)
+			end
+		end
+
+	set_message_output_action (a_action: PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]])
+			-- Set `a_action' as the action to be called for outputting messages.
+		do
+			message_output_action := a_action
+		end
+
+	last_hint: detachable STRING
+		-- The last hint found as a meta-command.
+
+feature {NONE} -- Meta-command processing
 
 	show_block_content (a_block_type: STRING)
 		require
@@ -189,7 +258,29 @@ feature -- Policy signaling
 			force_block_visibility (a_block_type, False)
 		end
 
-feature {NONE} -- Implementation
+	process_hint (a_line: STRING)
+		require
+				-- a_line is a hint command. How to specify that?
+			single_return_terminated_line: a_line.ends_with ("%N") and a_line.occurrences ('%N') = 1
+		local
+			l_line: STRING
+			l_hint_level: INTEGER
+			l_indentation: INTEGER
+		do
+			l_line := a_line.twin
+			l_line.left_adjust
+			check
+				l_line.starts_with (at_strings.hint_command)
+			end
+			l_hint_level := string_to_int (l_line.substring (at_strings.hint_command.count + 1, l_line.count))
+			if l_hint_level <= options.hint_level then
+				last_hint := a_line.twin
+			else
+				last_hint := Void
+			end
+		end
+
+feature {NONE} -- Visibility
 
 
 	forced_feature_visibility: AT_TRI_STATE_BOOLEAN
@@ -254,5 +345,15 @@ feature {NONE} -- Implementation
 			options := original_options.twin
 		end
 
+	message_output_action: detachable PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]]
+			-- The action to be called for outputting messages.
+
+	print_message (a_string: READABLE_STRING_GENERAL)
+			-- Prints a line to output, if a message output action has been specified.
+		do
+			if attached message_output_action as l_message_output_action then
+				l_message_output_action.call (a_string + "%N")
+			end
+		end
 
 end
