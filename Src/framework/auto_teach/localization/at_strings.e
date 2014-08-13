@@ -100,18 +100,20 @@ feature -- Code output
 
 	arguments_placeholder: STRING = "(replace_this_with_your_arguments: ANY)"
 
-feature -- Command prefixes
+feature -- Meta-commands
 
-	hint_command: STRING = "-- #HINT"
+	meta_command_prefix: STRING = "-- #"
 
-	show_command: STRING = "-- #SHOW"
+	hint_command: STRING = "HINT"
 
-	hide_command: STRING = "-- #HIDE"
+	show_command: STRING = "SHOW"
 
-	show_content_command: STRING = "-- #SHOWCONTENT"
+	hide_command: STRING = "HIDE"
 
-	hide_content_command: STRING = "-- #HIDECONTENT"
+	show_content_command: STRING = "SHOWCONTENT"
 
-	placeholder_command: STRING = "-- #PLACEHOLDER"
+	hide_content_command: STRING = "HIDECONTENT"
+
+	placeholder_command: STRING = "PLACEHOLDER"
 
 end

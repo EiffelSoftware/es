@@ -383,8 +383,7 @@ feature {NONE} -- Implementation
 			make_with_default_context
 			options := a_options
 			create oracle.make_with_options (a_options)
-			-- oracle.set_hint_output_action (a_action: PROCEDURE [ANY, TUPLE [STRING_8]])
-			oracle.set_message_output_action (message_output_action)
+			oracle.set_message_output_action (agent print_message)
 			reset
 		end
 

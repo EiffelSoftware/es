@@ -172,56 +172,83 @@ feature -- Meta-command processing interface
 	process_meta_command (a_line: STRING)
 			-- Process the meta-command contained in `a_line'. Case insensitive.
 		require
+			is_meta_command: is_meta_command (a_line)
 			single_return_terminated_line: a_line.ends_with ("%N") and a_line.occurrences ('%N') = 1
 		local
-			l_line, l_argument: STRING
-			l_index: INTEGER
-			l_recognized: BOOLEAN
+			l_line, l_argument, l_level_string: STRING
+			l_index, l_level: INTEGER
+			l_error, l_recognized: BOOLEAN
 			l_tristate: AT_TRI_STATE_BOOLEAN
 		do
+			last_hint := Void
+
 			l_line := a_line.twin
+			l_level := 0
+
 			l_line.adjust
-			if l_line.as_upper.starts_with (at_strings.hint_command) then
-				process_hint (a_line)
-				l_recognized := True
-			elseif l_line.as_upper.starts_with (at_strings.show_command) then
-				l_line.remove_head (at_strings.show_command.count)
-				l_line.left_adjust
-				if is_valid_block_type (l_line.as_lower) then
-					show_block (l_line.as_lower)
-					l_recognized := True
-				end
-			elseif l_line.as_upper.starts_with (at_strings.hide_command) then
-				l_line.remove_head (at_strings.hide_command.count)
-				l_line.left_adjust
-				if is_valid_block_type (l_line.as_lower) then
-					hide_block (l_line.as_lower)
-					l_recognized := True
-				end
-			elseif l_line.as_upper.starts_with (at_strings.show_content_command) then
-				l_line.remove_head (at_strings.show_content_command.count)
-				l_line.left_adjust
-				if is_valid_content_block_type (l_line.as_lower) then
-					show_block_content (l_line.as_lower)
-					l_recognized := True
-				end
-			elseif l_line.as_upper.starts_with (at_strings.hide_content_command) then
-				l_line.remove_head (at_strings.hide_content_command.count)
-				l_line.left_adjust
-				if is_valid_content_block_type (l_line.as_lower) then
-					hide_block_content (l_line.as_lower)
-					l_recognized := True
-				end
-			elseif l_line.as_upper.starts_with (at_strings.placeholder_command) then
-				l_line.remove_head (at_strings.placeholder_command.count)
-				l_line.left_adjust
-				l_tristate := on_off_to_tristate (l_line)
-				if l_tristate.defined then
-					options.insert_code_placeholder := l_tristate.value
-					l_recognized := True
+			check l_line.starts_with (at_strings.meta_command_prefix) end
+			l_line.remove_head (at_strings.meta_command_prefix.count)
+			l_line.left_adjust
+			if l_line [1] = '[' then
+				l_line.remove_head (1)
+				l_index := l_line.index_of (']', 1)
+				if l_index >= 2 then
+					l_level_string := l_line.substring (1, l_index - 1)
+					if l_level_string.is_natural_32 then
+						l_level := l_level_string.to_integer_32
+						l_line.remove_head (l_index)
+					else
+						l_error := True
+					end
+				else
+					l_error := True
 				end
 			end
-			if not l_recognized then
+
+			l_line.left_adjust
+			if not l_error and options.hint_level >= l_level then
+				if l_line.as_upper.starts_with (at_strings.hint_command) then
+					last_hint := a_line.twin
+					l_recognized := True
+				elseif l_line.as_upper.starts_with (at_strings.show_command) then
+					l_line.remove_head (at_strings.show_command.count)
+					l_line.left_adjust
+					if is_valid_block_type (l_line.as_lower) then
+						show_block (l_line.as_lower)
+						l_recognized := True
+					end
+				elseif l_line.as_upper.starts_with (at_strings.hide_command) then
+					l_line.remove_head (at_strings.hide_command.count)
+					l_line.left_adjust
+					if is_valid_block_type (l_line.as_lower) then
+						hide_block (l_line.as_lower)
+						l_recognized := True
+					end
+				elseif l_line.as_upper.starts_with (at_strings.show_content_command) then
+					l_line.remove_head (at_strings.show_content_command.count)
+					l_line.left_adjust
+					if is_valid_content_block_type (l_line.as_lower) then
+						show_block_content (l_line.as_lower)
+						l_recognized := True
+					end
+				elseif l_line.as_upper.starts_with (at_strings.hide_content_command) then
+					l_line.remove_head (at_strings.hide_content_command.count)
+					l_line.left_adjust
+					if is_valid_content_block_type (l_line.as_lower) then
+						hide_block_content (l_line.as_lower)
+						l_recognized := True
+					end
+				elseif l_line.as_upper.starts_with (at_strings.placeholder_command) then
+					l_line.remove_head (at_strings.placeholder_command.count)
+					l_line.left_adjust
+					l_tristate := on_off_to_tristate (l_line)
+					if l_tristate.defined then
+						options.insert_code_placeholder := l_tristate.value
+						l_recognized := True
+					end
+				end
+			end
+			if options.hint_level >= l_level and not l_recognized then
 				print_message (at_strings.unrecognized_meta_command + a_line)
 			end
 		end
@@ -265,30 +292,8 @@ feature {NONE} -- Meta-command processing
 			force_block_visibility (a_block_type, False)
 		end
 
-	process_hint (a_line: STRING)
-		require
-				-- a_line is a hint command. How to specify that?
-			single_return_terminated_line: a_line.ends_with ("%N") and a_line.occurrences ('%N') = 1
-		local
-			l_line: STRING
-			l_hint_level: INTEGER
-			l_indentation: INTEGER
-		do
-			l_line := a_line.twin
-			l_line.left_adjust
-			check
-				l_line.starts_with (at_strings.hint_command)
-			end
-			l_hint_level := string_to_int (l_line.substring (at_strings.hint_command.count + 1, l_line.count))
-			if l_hint_level <= options.hint_level then
-				last_hint := a_line.twin
-			else
-				last_hint := Void
-			end
-		end
 
 feature {NONE} -- Visibility
-
 
 	forced_feature_visibility: AT_TRI_STATE_BOOLEAN
 
