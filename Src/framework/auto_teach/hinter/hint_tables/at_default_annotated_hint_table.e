@@ -47,11 +47,11 @@ feature {NONE} -- Initialization
 			table.put 			(<< 	True			>>, enum_block_type.bt_instruction)			-- Always show instructions
 
 			table.put 			(<< 	True			>>, enum_block_type.bt_postcondition)		-- Always show the existence of postconditions
-			content_table.put	(<< 	Tri_false		>>, enum_block_type.bt_postcondition)		-- Never show the content of postconditions
+			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.bt_postcondition)		-- Never show the content of postconditions
 				-- We already inserted the row for assertions.
 
 			table.put 			(<< 	True			>>, enum_block_type.bt_class_invariant)		-- Always show the existence of class invariants
-			content_table.put	(<< 	Tri_false		>>, enum_block_type.bt_class_invariant)		-- Always hide the content of class invariants
+			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.bt_class_invariant)		-- Always hide the content of class invariants
 				-- We already inserted the row for assertions.
 		end
 

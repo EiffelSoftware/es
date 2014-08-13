@@ -305,10 +305,10 @@ feature -- Meta-command processing interface
 							elseif l_command_word.same_string (at_strings.reset_all_content_command) then
 								set_block_content_global_visibility_override (l_block_type, Tri_undefined)
 								l_recognized := True
-							elseif l_command_word.same_string (at_strings.show_content_command) then
+							elseif l_command_word.same_string (at_strings.show_next_content_command) then
 								set_block_content_local_visibility_override (l_block_type, Tri_true)
 								l_recognized := True
-							elseif l_command_word.same_string (at_strings.hide_content_command) then
+							elseif l_command_word.same_string (at_strings.hide_next_content_command) then
 								set_block_content_local_visibility_override (l_block_type, Tri_false)
 								l_recognized := True
 							end
@@ -322,10 +322,10 @@ feature -- Meta-command processing interface
 						elseif l_command_word.same_string (at_strings.reset_all_command) then
 							set_block_global_visibility_override (l_block_type, Tri_undefined)
 							l_recognized := True
-						elseif l_command_word.same_string (at_strings.shownext_command) then
+						elseif l_command_word.same_string (at_strings.show_next_command) then
 							set_block_local_visibility_override (l_block_type, Tri_true)
 							l_recognized := True
-						elseif l_command_word.same_string (at_strings.hidenext_command) then
+						elseif l_command_word.same_string (at_strings.hide_next_command) then
 							set_block_local_visibility_override (l_block_type, Tri_false)
 							l_recognized := True
 						end

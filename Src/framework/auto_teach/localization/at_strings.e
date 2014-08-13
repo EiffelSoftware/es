@@ -131,14 +131,12 @@ feature -- Meta-commands
 	hide_all_content_command: STRING = "HIDE_ALL_CONTENT"
 	reset_all_content_command: STRING = "RESET_ALL_CONTENT"
 
-		-- TODO: spazio
-	shownext_command: STRING = "SHOW_NEXT"
-	hidenext_command: STRING = "HIDE_NEXT"
+	show_next_command: STRING = "SHOW_NEXT"
+	hide_next_command: STRING = "HIDE_NEXT"
 		-- There is no reset_next command, why would one ever need it?
 
-		-- TODO: next
-	show_content_command: STRING = "SHOW_NEXT_CONTENT"
-	hide_content_command: STRING = "HIDE_NEXT_CONTENT"
+	show_next_content_command: STRING = "SHOW_NEXT_CONTENT"
+	hide_next_content_command: STRING = "HIDE_NEXT_CONTENT"
 		-- There is no reset_next_content command, why would one ever need it?
 
 	commands_with_block: ARRAY [STRING]
@@ -146,8 +144,8 @@ feature -- Meta-commands
 		once ("PROCESS")
 			Result := << 	show_all_command, hide_all_command, reset_all_command,
 							show_all_content_command, hide_all_content_command, reset_all_content_command,
-							shownext_command, hidenext_command,
-							show_content_command, hide_content_command >>
+							show_next_command, hide_next_command,
+							show_next_content_command, hide_next_content_command >>
 			Result.compare_objects
 		end
 

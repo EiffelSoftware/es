@@ -17,7 +17,7 @@ inherit
 			put_string_to_context,
 
 --				-- Features
---			process_feature_as,
+			process_feature_as,
 
 --				-- Routine arguments
 			process_formal_argu_dec_list_as,
@@ -27,7 +27,7 @@ inherit
 			process_once_as,
 
 --				-- Locals
---			process_local_dec_list_as,
+			process_local_dec_list_as,
 
 				-- Contracts
 			process_require_as,
@@ -676,6 +676,16 @@ feature {AST_EIFFEL} -- Visitors
 			process_ensure_as (a_as)
 		end
 
+	process_feature_as (a_as: FEATURE_AS)
+		do
+			process_leading_leaves (a_as.first_token (match_list).index)
+			oracle.begin_process_block (enum_block_type.bt_feature)
+
+			current_indentation := indentation (a_as.feature_name.first_token (match_list))
+			Precursor (a_as)
+
+			oracle.end_process_block (enum_block_type.bt_feature)
+		end
 
 	process_formal_argu_dec_list_as (a_as: FORMAL_ARGU_DEC_LIST_AS)
 			-- Process `a_as'.
@@ -700,6 +710,33 @@ feature {AST_EIFFEL} -- Visitors
 			oracle.end_process_block (enum_block_type.bt_arguments)
 		end
 
+	process_local_dec_list_as (a_as: LOCAL_DEC_LIST_AS)
+			-- Process `a_as'
+		local
+			l_indentation: INTEGER
+		do
+--			if false then
+				process_leading_leaves (a_as.first_token (match_list).index)
+				oracle.begin_process_block (enum_block_type.bt_locals)
+
+				l_indentation := indentation (a_as.local_keyword (match_list))
+				safe_process (a_as.local_keyword (match_list))
+
+				current_indentation := l_indentation + 1
+				if oracle.output_enabled_revenge and oracle.current_content_visibility /= Tri_false then
+					safe_process (a_as.locals)
+				else
+					put_string_forced ("%N", False)
+					insert_blank_line (options.insert_code_placeholder, enum_placeholder_type.ph_standard)
+				end
+
+
+				oracle.end_process_block (enum_block_type.bt_locals)
+--			else
+--				precursor (a_as)
+--			end
+		end
+
 		process_do_once_as (a_as: INTERNAL_AS)
 			-- Process `a_as'.
 		require
@@ -719,14 +756,6 @@ feature {AST_EIFFEL} -- Visitors
 
 			current_indentation := indentation (l_do_once_keyword) + 1
 			safe_process (l_do_once_keyword)
-
---			if oracle.output_enabled_revenge then
---				safe_process (l_do_once_keyword)
---			else
---				current_indentation := indentation (l_do_once_keyword) + 1
---				insert_blank_line (options.insert_code_placeholder, enum_placeholder_type.ph_standard)
---			end
-
 			safe_process (a_as.compound)
 
 			oracle.end_process_block (enum_block_type.bt_routine_body)
