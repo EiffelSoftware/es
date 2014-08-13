@@ -20,7 +20,7 @@ feature {NONE} -- Initialization
 	make_from_file_path (a_path: STRING)
 			-- Initialize `Current', loading its content from the specified file.
 		require
-			file_exists: file_exists (a_path)
+			file_exists: hint_tables.file_exists (a_path)
 		local
 			l_file: PLAIN_TEXT_FILE
 			l_words: LIST [STRING]

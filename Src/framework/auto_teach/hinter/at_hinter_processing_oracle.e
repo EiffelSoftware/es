@@ -10,7 +10,7 @@ note
 class
 	AT_HINTER_PROCESSING_ORACLE
 
-inherit {NONE}
+inherit
 
 	AT_COMMON
 
@@ -310,14 +310,14 @@ feature -- Meta-command processing interface
 						l_recognized := True
 					end
 				elseif l_command_word.same_string (at_strings.hint_mode_command) then
-					options.hint_table := default_annotated_hint_table
+					options.hint_table := hint_tables.default_annotated_hint_table
 					l_recognized := True
 				elseif l_command_word.same_string (at_strings.unannotated_mode_command) then
-					options.hint_table := default_unannotated_hint_table
+					options.hint_table := hint_tables.default_unannotated_hint_table
 					l_recognized := True
 				elseif l_command_word.same_string (at_strings.custom_mode_command) then
 					l_recognized := True
-					if attached custom_hint_table as l_hint_table then
+					if attached hint_tables.custom_hint_table as l_hint_table then
 						options.hint_table := l_hint_table
 					else
 						print_message (capitalized (at_strings.meta_command) + ": " + a_line + "%N" + at_strings.no_custom_hint_table_loaded)

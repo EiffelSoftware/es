@@ -16,8 +16,6 @@ inherit
 
 	AT_COMMON
 
-	AT_SHARED_HINT_TABLES
-
 	SHARED_SERVER
 		export
 			{NONE} all
@@ -137,12 +135,12 @@ feature {NONE} -- Implementation
 						l_errors.force (at_strings.error_no_custom_hint_table_path)
 						can_run := False
 					else
-						if not file_exists (autoteach_arguments.item) then
+						if not hint_tables.file_exists (autoteach_arguments.item) then
 							l_errors.force (at_strings.error_custom_hint_table_file_not_found)
 							can_run := False
 						else
-							load_custom_hint_table (autoteach_arguments.item)
-							if attached last_table_load_exception as l_exception then
+							hint_tables.load_custom_hint_table (autoteach_arguments.item)
+							if attached hint_tables.last_table_load_exception as l_exception then
 								l_errors.force (at_strings.error_custom_hint_table_parse_error)
 								l_errors.force (l_exception.description.to_string_8)
 								can_run := False

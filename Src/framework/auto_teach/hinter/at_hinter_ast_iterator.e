@@ -63,8 +63,6 @@ inherit
 			process_loop_as
 		end
 
-inherit {NONE}
-
 	AT_COMMON
 		undefine
 			default_create

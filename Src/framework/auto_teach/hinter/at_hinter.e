@@ -13,8 +13,6 @@ inherit
 
 	SHARED_SERVER
 
-inherit {NONE}
-
 	AT_COMMON
 
 create

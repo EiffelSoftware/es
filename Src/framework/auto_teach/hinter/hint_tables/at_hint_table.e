@@ -7,7 +7,7 @@ note
 deferred class
 	AT_HINT_TABLE
 
-inherit {NONE}
+inherit
 
 	AT_COMMON
 

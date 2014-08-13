@@ -7,7 +7,7 @@ note
 deferred class
 	AT_COMMON
 
-inherit {NONE}
+inherit
 	AT_TRI_STATE_BOOLEAN_CONSTANTS
 
 	AT_SHARED_HINT_TABLES
