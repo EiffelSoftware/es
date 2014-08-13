@@ -22,6 +22,9 @@ inherit
 			process_break_as,
 			put_string,
 
+				-- Routine arguments
+			process_formal_argu_dec_list_as,
+
 				-- Routine bodies
 			process_do_as,
 			process_once_as,
@@ -196,8 +199,9 @@ feature {NONE} -- Meta-commands processing
 
 feature {NONE} -- Implementation - skipping
 
-	skip (a_node: AST_EIFFEL)
+	skip (a_node: AST_EIFFEL; a_inline: BOOLEAN)
 			-- Skips `a_node' by setting 'skipping_until_index' to the end position of this node.
+			-- If `a_inline' is true, no blank line will be inserted.
 		local
 			l_newline_index, l_start_position, l_leaf_index: INTEGER
 			l_last_break_text: STRING
@@ -219,7 +223,7 @@ feature {NONE} -- Implementation - skipping
 					-- we encounter two consecutive (but distinct) skipping regions without anything being
 					-- printed in between. In this case we clearly don't need more blank lines or placeholders.
 					-- This flag is reset by put_string and put_string_to_context.
-				if not blank_line_inserted then
+				if not a_inline and not blank_line_inserted then
 					insert_blank_line (skipped_section_indentation, options.insert_code_placeholder)
 					blank_line_inserted := True
 				end
@@ -422,21 +426,34 @@ feature {NONE} -- Implementation
 
 feature {AST_EIFFEL} -- Visitors
 
+	process_formal_argu_dec_list_as (a_as: FORMAL_ARGU_DEC_LIST_AS)
+			-- Process `a_as'.
+		do
+			if not options.hide_routine_arguments then
+				safe_process (a_as.lparan_symbol (match_list))
+				safe_process (a_as.arguments)
+				safe_process (a_as.rparan_symbol (match_list))
+			else
+				if attached a_as.arguments as l_arguments and then not l_arguments.is_empty then
+					skip (a_as, True)
+					put_string_to_context (at_strings.arguments_placeholder)
+				end
+			end
+		end
+
 	process_local_dec_list_as (a_as: LOCAL_DEC_LIST_AS)
 			-- Process `a_as'
 		do
 			safe_process (a_as.local_keyword (match_list))
-			if no_skipping then
+			if not options.hide_locals or no_skipping then
 				safe_process (a_as.locals)
 			else
-					-- See comment in `process_do_as'.
-
 				if attached a_as.locals as l_locals then
 					skipped_section_indentation := indentation (a_as.locals)
 				else
 					skipped_section_indentation := indentation (a_as.local_keyword (match_list)) + 1
 				end
-				skip (a_as)
+				skip (a_as, False)
 			end
 		end
 
@@ -451,11 +468,9 @@ feature {AST_EIFFEL} -- Visitors
 			if not options.hide_routine_bodies or no_skipping then
 				safe_process (a_as.compound)
 			else
-					-- TODO: Update this and the other comments.
-
 				if attached a_as.compound as l_compound then
 					skipped_section_indentation := indentation (l_compound)
-					skip (a_as)
+					skip (a_as, False)
 				else
 					l_indentation := indentation (a_as.do_keyword (match_list))
 					skipped_section_indentation := l_indentation + 1
@@ -466,7 +481,7 @@ feature {AST_EIFFEL} -- Visitors
 						-- sure that we skip the whole routine body, because it might contain comments
 						-- or other whitespace that should not be output.
 						-- That's why we need to do the following:
-					skip (next_break (a_as))
+					skip (next_break (a_as), False)
 
 						-- Fix indentation.
 					put_string_to_context ("%N" + tab_string (l_indentation))
@@ -486,13 +501,13 @@ feature {AST_EIFFEL} -- Visitors
 			else
 				if attached a_as.compound as l_compound then
 					skipped_section_indentation := indentation (l_compound)
-					skip (a_as)
+					skip (a_as, False)
 				else
 					l_indentation := indentation (a_as.once_keyword (match_list))
 					skipped_section_indentation := l_indentation + 1
 
 						-- See comments in `process_do_as'.
-					skip (next_break (a_as))
+					skip (next_break (a_as), False)
 					put_string_to_context ("%N" + tab_string (l_indentation))
 				end
 			end
@@ -509,13 +524,13 @@ feature {AST_EIFFEL} -- Visitors
 			else
 				if attached a_as.assertions as l_assertions then
 					skipped_section_indentation := indentation (l_assertions)
-					skip (a_as)
+					skip (a_as, False)
 				else
 					l_indentation := indentation (a_as.require_keyword (match_list))
 					skipped_section_indentation := l_indentation + 1
 
 						-- See comments in `process_do_as'.
-					skip (next_break (a_as))
+					skip (next_break (a_as), False)
 					put_string_to_context ("%N" + tab_string (l_indentation))
 				end
 			end
@@ -533,13 +548,13 @@ feature {AST_EIFFEL} -- Visitors
 			else
 				if attached a_as.assertions as l_assertions then
 					skipped_section_indentation := indentation (l_assertions)
-					skip (a_as)
+					skip (a_as, False)
 				else
 					l_indentation := indentation (a_as.require_keyword (match_list))
 					skipped_section_indentation := l_indentation + 1
 
 						-- See comments in `process_do_as'.
-					skip (next_break (a_as))
+					skip (next_break (a_as), False)
 					put_string_to_context ("%N" + tab_string (l_indentation))
 				end
 			end
@@ -556,13 +571,13 @@ feature {AST_EIFFEL} -- Visitors
 			else
 				if attached a_as.assertions as l_assertions then
 					skipped_section_indentation := indentation (l_assertions)
-					skip (a_as)
+					skip (a_as, False)
 				else
 					l_indentation := indentation (a_as.ensure_keyword (match_list))
 					skipped_section_indentation := l_indentation + 1
 
 						-- See comments in `process_do_as'.
-					skip (next_break (a_as))
+					skip (next_break (a_as), False)
 					put_string_to_context ("%N" + tab_string (l_indentation))
 				end
 			end
@@ -580,13 +595,13 @@ feature {AST_EIFFEL} -- Visitors
 			else
 				if attached a_as.assertions as l_assertions then
 					skipped_section_indentation := indentation (l_assertions)
-					skip (a_as)
+					skip (a_as, False)
 				else
 					l_indentation := indentation (a_as.ensure_keyword (match_list))
 					skipped_section_indentation := l_indentation + 1
 
 						-- See comments in `process_do_as'.
-					skip (next_break (a_as))
+					skip (next_break (a_as), False)
 					put_string_to_context ("%N" + tab_string (l_indentation))
 				end
 			end
@@ -603,13 +618,13 @@ feature {AST_EIFFEL} -- Visitors
 			else
 				if attached a_as.assertion_list as l_assertions then
 					skipped_section_indentation := indentation (l_assertions)
-					skip (a_as)
+					skip (a_as, False)
 				else
 					l_indentation := indentation (a_as.invariant_keyword (match_list))
 					skipped_section_indentation := l_indentation + 1
 
 						-- See comments in `process_do_as'.
-					skip (next_break (a_as))
+					skip (next_break (a_as), False)
 					put_string_to_context ("%N" + tab_string (l_indentation))
 				end
 			end

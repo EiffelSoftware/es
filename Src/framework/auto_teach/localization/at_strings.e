@@ -93,6 +93,8 @@ feature -- Code output
 
 	code_placeholder: STRING = "-- Your code here!"
 
+	arguments_placeholder: STRING = " (replace_this_with_your_arguments: ANY)"
+
 feature -- Command prefixes
 
 	hint_command: STRING = "-- #HINT"

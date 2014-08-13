@@ -40,6 +40,10 @@ feature -- Hinter options
 
 		-- TODO: convert these to preferences
 
+	hide_routine_arguments: BOOLEAN = True
+
+	hide_locals: BOOLEAN = True
+
 	hide_routine_bodies: BOOLEAN = True
 
 	hide_preconditions: BOOLEAN = True
