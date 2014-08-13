@@ -271,48 +271,35 @@ feature {NONE} -- Implementation - skipping
 	indentation (a_node: AST_EIFFEL): INTEGER
 			-- The indentation value of the given node.
 		local
-			l_newline_index, l_start_position, l_leaf_index: INTEGER
+			l_newline_index, i: INTEGER
 			l_last_break_text: STRING
 			l_last_break_line: STRING
-			l_previous_leaf: LEAF_AS
 		do
-			if attached {EIFFEL_LIST [LIST_DEC_AS]} a_node as l_eiffel_list then
-					-- Workaround to a bug/inconsinstency: a_node.start_position returns an incorrect value
-					-- in this special case.
-				check
-					attached l_eiffel_list.first
+			-- Navigate backwards until we find the previous break containing a newline character.
+			from
+				i := a_node.first_token (match_list).index
+			until
+				i <= 0 or attached l_last_break_text
+			loop
+				if attached {BREAK_AS} match_list [i] as l_this_break then
+					l_last_break_text :=  l_this_break.text (match_list)
+					if not l_last_break_text.has ('%N') then
+						l_last_break_text := Void
+					end
 				end
-				if attached l_eiffel_list.first as l_first then
-					l_leaf_index := l_first.id_list.id_list.first
-					l_start_position := match_list.at (l_leaf_index).start_position
-				end
-			else
-				l_start_position := a_node.start_position
+				i := i - 1
 			end
 
-				-- We are at the beginning of a new skipped area, this is the first instruction or block
-				-- being skipped. We need to save the numbers of tabs we have before this instruction
-				-- by checking the last break.
-			l_previous_leaf := match_list.item_by_end_position (l_start_position - 1)
-
-				-- The following check should only fail if we are obscurating the very first keyword
-				-- in the class, and even then, the parser might assume there is an empty break.
-				-- In case this is ever needed in the future, this assertion can be removed.
-				-- TODO: check this
-			check
-				attached {BREAK_AS} l_previous_leaf
-			end
-			if attached {BREAK_AS} l_previous_leaf as l_previous_break then
-				l_last_break_text := l_previous_break.text (match_list)
+			if attached l_last_break_text then
 				l_newline_index := l_last_break_text.last_index_of ('%N', l_last_break_text.count)
-				if l_newline_index = 0 then
-						-- We are probably in some weird situation (e.g. the first instruction being skipped
-						-- is not on a new line). Let's stay safe.
-					Result := 0
-				else
-					l_last_break_line := l_last_break_text.substring (l_newline_index + 1, l_last_break_text.count)
-					Result := count_leading ('%T', l_last_break_line)
-				end
+
+					-- We checked before that this break contains a newline character.
+				check newline_found: l_newline_index > 0 end
+
+				l_last_break_line := l_last_break_text.substring (l_newline_index + 1, l_last_break_text.count)
+				Result := count_leading ('%T', l_last_break_line)
+			else
+				Result := 0
 			end
 		end
 
@@ -448,11 +435,7 @@ feature {AST_EIFFEL} -- Visitors
 			if not options.hide_locals or no_skipping then
 				safe_process (a_as.locals)
 			else
-				if attached a_as.locals as l_locals then
-					skipped_section_indentation := indentation (a_as.locals)
-				else
-					skipped_section_indentation := indentation (a_as.local_keyword (match_list)) + 1
-				end
+				skipped_section_indentation := indentation (a_as.local_keyword (match_list)) + 1
 				skip (a_as, False)
 			end
 		end
