@@ -31,6 +31,23 @@ feature {NONE} -- Initialization
 			hide_class_invariants := true
 		end
 
+feature -- Copying
+
+	restore_from, replace_with (a_other: like Current)
+			-- Replaces the value of all options from the values of `a_other'
+		do
+			should_run_hinter := a_other.should_run_hinter
+			insert_code_placeholder := a_other.insert_code_placeholder
+			hint_level := a_other.hint_level
+			output_directory := a_other.output_directory
+			hide_routine_arguments := a_other.hide_routine_arguments
+			hide_preconditions := a_other.hide_preconditions
+			hide_locals := a_other.hide_locals
+			hide_routine_bodies := a_other.hide_routine_bodies
+			hide_postconditions := a_other.hide_postconditions
+			hide_class_invariants := a_other.hide_class_invariants
+		end
+
 feature -- Hinter options
 
 	should_run_hinter: BOOLEAN assign set_run_hinter

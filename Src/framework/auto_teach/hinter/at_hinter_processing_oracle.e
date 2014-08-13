@@ -10,8 +10,6 @@ class
 inherit
 	AT_COMMON
 
-	AT_TRI_STATE_BOOLEAN_CONSTANTS
-
 create
 	make_with_options
 
@@ -62,10 +60,9 @@ feature -- Oracle
 
 feature -- Status signaling
 
-	begin_process_new_class
+	begin_process_class
 			-- Signal that a class is about to be processed.
 		do
-			options := original_options.twin
 			forced_feature_content_visibility := tri_undefined
 			forced_feature_visibility := tri_undefined
 			forced_routine_arguments_visibility := tri_undefined
@@ -79,6 +76,7 @@ feature -- Status signaling
 	end_processing_class
 			-- Signal that a class has been processed.
 		do
+			options.restore_from (original_options)
 		end
 
 	begin_process_feature
@@ -179,6 +177,7 @@ feature -- Meta-command processing interface
 			l_line, l_argument: STRING
 			l_index: INTEGER
 			l_recognized: BOOLEAN
+			l_tristate: AT_TRI_STATE_BOOLEAN
 		do
 			l_line := a_line.twin
 			l_line.adjust
@@ -211,6 +210,14 @@ feature -- Meta-command processing interface
 				l_line.left_adjust
 				if is_valid_content_block_type (l_line.as_lower) then
 					hide_block_content (l_line.as_lower)
+					l_recognized := True
+				end
+			elseif l_line.as_upper.starts_with (at_strings.placeholder_command) then
+				l_line.remove_head (at_strings.placeholder_command.count)
+				l_line.left_adjust
+				l_tristate := on_off_to_tristate (l_line)
+				if l_tristate.defined then
+					options.insert_code_placeholder := l_tristate.value
 					l_recognized := True
 				end
 			end
@@ -341,8 +348,8 @@ feature {NONE} -- Implementation
 
 	make_with_options (a_options: AT_OPTIONS)
 		do
-			original_options := a_options
-			options := original_options.twin
+			options := a_options
+			original_options := a_options.twin
 		end
 
 	message_output_action: detachable PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]]

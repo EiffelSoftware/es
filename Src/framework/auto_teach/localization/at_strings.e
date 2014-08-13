@@ -112,4 +112,6 @@ feature -- Command prefixes
 
 	hide_content_command: STRING = "-- #HIDECONTENT"
 
+	placeholder_command: STRING = "-- #PLACEHOLDER"
+
 end

@@ -7,6 +7,11 @@ note
 deferred class
 	AT_COMMON
 
+inherit
+
+	AT_TRI_STATE_BOOLEAN_CONSTANTS
+
+
 feature -- Shared strings
 
 	at_strings: AT_STRINGS
@@ -129,6 +134,22 @@ feature {AT_COMMON} -- Utility
 			else
 				Result := "%T"
 				Result.multiply (a_tab_count)
+			end
+		end
+
+	on_off_to_tristate (a_string: STRING): AT_TRI_STATE_BOOLEAN
+			-- Translates "on" to tri_true, "off" to tri_false and any other string to tri_undefined.
+			-- Case insensitive.
+		local
+			l_string: STRING
+		do
+			l_string := a_string.as_lower
+			if l_string.same_string ("on") then
+				Result := tri_true
+			elseif l_string.same_string ("off") then
+				Result := tri_false
+			else
+				Result := tri_undefined
 			end
 		end
 
