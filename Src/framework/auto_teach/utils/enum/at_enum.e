@@ -16,8 +16,6 @@ inherit
 
 feature -- Access
 
-		-- TODO: feature comments here and on other classes.
-
 	name: STRING
 			-- The name of this enumeration.
 		deferred

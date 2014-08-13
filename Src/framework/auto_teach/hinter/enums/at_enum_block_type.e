@@ -54,7 +54,7 @@ feature {AT_ENUM} -- Value list
 							[9, at_strings.Bt_instruction],
 							[10, at_strings.Bt_if],
 							[11, at_strings.Bt_if_condition],
-							[12, at_strings.Bt_if_branch]				>>
+							[12, at_strings.Bt_if_branch]		>>
 		end
 
 feature -- Values
