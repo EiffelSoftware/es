@@ -57,6 +57,11 @@ feature -- Warnings
 			Result := locale.translation ("The following meta-command was not recognized, and therefore ignored:%N")
 		end
 
+	meta_command_in_skipped_routine: STRING_32
+		do
+			Result := locale.translation ("This meta-command is located in skipped routine, and will be ignored. To suppress this warning, specify an appropriate hint level for the command so that it is only enabled when the outside routine is not skipped.")
+		end
+
 	no_custom_hint_table_loaded: STRING_32
 		do
 			Result := locale.translation ("Cannot switch to custom mode, as no custom hint table has been loaded.")
@@ -120,9 +125,9 @@ feature -- Meta-commands
 
 	hidenext_command: STRING = "HIDENEXT"
 
-	show_content_command: STRING = "SHOWCONTENT"
+	show_content_command: STRING = "SHOWNEXTCONTENT"
 
-	hide_content_command: STRING = "HIDECONTENT"
+	hide_content_command: STRING = "HIDENEXTCONTENT"
 
 	placeholder_command: STRING = "PLACEHOLDER"
 

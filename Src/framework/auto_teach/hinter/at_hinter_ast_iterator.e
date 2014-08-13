@@ -193,8 +193,9 @@ feature {NONE} -- Implementation - skipping
 			l_last_break_line: STRING
 			l_previous_leaf: LEAF_AS
 		do
-			process_leading_leaves (a_node.first_token (match_list).index)
-			last_index := a_node.index
+			l_leaf_index := a_node.first_token (match_list).index
+			process_leading_leaves (l_leaf_index)
+			last_index := l_leaf_index
 			if is_node_in_skipped_section (a_node) then
 					-- Do nothing. Also, calling in_skipped_section asserts that the node is *entirely*
 					-- in the skipped section, so we don't even need to update skipping_until_index.
@@ -213,6 +214,12 @@ feature {NONE} -- Implementation - skipping
 					blank_line_inserted := True
 				end
 			end
+
+				-- Now call `process_leading_leaves' again, which should process all the breaks (and meta-commands)
+				-- in the skipped section.
+			l_leaf_index := a_node.last_token (match_list).index
+			process_leading_leaves (l_leaf_index)
+			last_index := l_leaf_index
 		end
 
 	insert_blank_line (a_indentation: INTEGER; a_insert_placeholder: BOOLEAN)
@@ -397,17 +404,19 @@ feature {NONE} -- Implementation
 
 feature {AST_EIFFEL} -- Visitors
 
-	process_feature_as (l_as: FEATURE_AS)
+	process_feature_as (a_as: FEATURE_AS)
 		do
-			process_leading_leaves (l_as.first_token (match_list).index)
+			process_leading_leaves (a_as.first_token (match_list).index)
 
 			oracle.begin_process_feature
 
 			if oracle.must_skip_feature then
-					-- Totally skip it, as if it never existed.
-				skip (l_as, False)
+				skipped_section_indentation := indentation (a_as.feature_name.first_token (match_list))
+
+					-- Totally skip the entire routine, as if it never existed.
+				skip (a_as, False)
 			else
-				Precursor (l_as)
+				Precursor (a_as)
 			end
 
 			oracle.end_process_feature

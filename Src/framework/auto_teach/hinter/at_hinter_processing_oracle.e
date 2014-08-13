@@ -123,6 +123,9 @@ feature -- Status signaling
 	begin_process_feature
 			-- Signal that a feature is about to be processed.
 		do
+			if must_skip_feature then
+				processing_skipped_feature := True
+			end
 		end
 
 	end_process_feature
@@ -130,6 +133,7 @@ feature -- Status signaling
 		do
 			local_feature_content_visibility := tri_undefined
 			local_feature_visibility := tri_undefined
+			processing_skipped_feature := False
 		end
 
 	begin_process_routine_arguments
@@ -248,7 +252,13 @@ feature -- Meta-command processing interface
 
 			l_line.left_adjust
 			if not l_error and options.hint_level >= l_level then
-				if l_line.as_upper.starts_with (at_strings.hint_command) then
+				if processing_skipped_feature then
+						-- Do not execute the command. Give a warning instead.
+					print_message (capitalized (at_strings.meta_command) + ": " + a_line + "%N" + at_strings.meta_command_in_skipped_routine)
+
+						-- Pretend it has been recognized in order to suppress the "unrecognized command" warning.
+					l_recognized := True
+				elseif l_line.as_upper.starts_with (at_strings.hint_command) then
 					last_hint := a_line.twin
 					l_recognized := True
 				elseif l_line.as_upper.starts_with (at_strings.shownext_command) then
@@ -293,15 +303,13 @@ feature -- Meta-command processing interface
 				elseif l_line.as_upper.starts_with (at_strings.unannotated_mode_command) then
 					options.hint_table := default_unannotated_hint_table
 					l_recognized := True
-				elseif l_line.as_upper.starts_with (at_strings.unannotated_mode_command) then
+				elseif l_line.as_upper.starts_with (at_strings.custom_mode_command) then
 					l_recognized := True
 					if attached custom_hint_table as l_hint_table then
 						options.hint_table := l_hint_table
 					else
 						print_message (capitalized (at_strings.meta_command) + ": " + a_line + "%N" + at_strings.no_custom_hint_table_loaded)
 					end
-
-
 				end
 			end
 			if options.hint_level >= l_level and not l_recognized then
@@ -362,6 +370,8 @@ feature {NONE} -- Visibility
 	global_class_invariant_visibility: BOOLEAN
 
 	local_feature_visibility: AT_TRI_STATE_BOOLEAN
+	processing_skipped_feature: BOOLEAN
+		-- Set to true while processing a skipped features. All meta-commands will be ignored.
 
 	local_feature_content_visibility: AT_TRI_STATE_BOOLEAN
 	local_routine_arguments_visibility: AT_TRI_STATE_BOOLEAN
