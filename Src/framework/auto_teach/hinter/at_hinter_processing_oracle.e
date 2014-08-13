@@ -101,19 +101,19 @@ feature -- Status signaling
 				l_content_visibility_policy_type := content_visibility_stack.item.policy_type
 			end
 
-			if containing_simple_block_effective_visibility.is_defined then
+			if containing_atomic_block_effective_visibility.is_defined then
 					-- No need to waste a lot of time checking the rest.
-					-- We are inside a block which is treated as a simple block,
+					-- We are inside a block which is treated as an atomic block,
 					-- thus we have to apply the same contend visibility as the
 					-- said block, period.
-				l_block_visibility := containing_simple_block_effective_visibility
+				l_block_visibility := containing_atomic_block_effective_visibility
 			else
-					-- Determine if this is a complex block and if it should be treated as such or as a simple block.
+					-- Determine if this is a complex block and if it should be treated as such or as an atomic block.
 				if attached {AT_COMPLEX_BLOCK_VISIBILITY_DESCRIPTOR} l_descriptor as l_complex_descriptor then
 					if l_complex_descriptor.local_treat_as_complex_override.imposed_on_bool (l_complex_descriptor.global_treat_as_complex) then
 						l_is_complex_block := True
 					else
-							-- We must treat this block as if it were a simple.
+							-- We must treat this block as if it were an atomic block.
 						l_is_complex_block := False
 					end
 				else
@@ -124,7 +124,7 @@ feature -- Status signaling
 				l_block_visibility := l_descriptor.effective_visibility
 				l_visibility_policy_type := l_descriptor.effective_visibility_policy_type
 
-					-- For simple blocks only: apply the current content visibility, if defined and "stronger".
+					-- For atomic blocks only: apply the current content visibility, if defined and "stronger".
 				if not l_is_complex_block and then l_content_visibility_policy_type > l_visibility_policy_type then
 						-- The following check holds because `l_content_visibility_policy_type'
 						-- needs to be at least 'default' in order for the condition above to
@@ -179,13 +179,13 @@ feature -- Status signaling
 
 			refresh
 
-			if nesting_in_simple_block = 0 then
+			if nesting_in_atomic_block = 0 then
 				if not l_is_complex_block then
-					containing_simple_block_effective_visibility := to_tri_state (output_enabled)
-					nesting_in_simple_block := nesting_in_simple_block + 1
+					containing_atomic_block_effective_visibility := to_tri_state (output_enabled)
+					nesting_in_atomic_block := nesting_in_atomic_block + 1
 				end
 			else
-				nesting_in_simple_block := nesting_in_simple_block + 1
+				nesting_in_atomic_block := nesting_in_atomic_block + 1
 			end
 		ensure
 			block_on_top_of_stack: not block_type_call_stack.is_empty and then block_type_call_stack.item = a_block_type
@@ -202,10 +202,10 @@ feature -- Status signaling
 			hiding_stack.remove
 			content_visibility_stack.remove
 
-			if nesting_in_simple_block > 0 then
-				nesting_in_simple_block := nesting_in_simple_block - 1
-				if nesting_in_simple_block = 0 then
-					containing_simple_block_effective_visibility := Tri_undefined
+			if nesting_in_atomic_block > 0 then
+				nesting_in_atomic_block := nesting_in_atomic_block - 1
+				if nesting_in_atomic_block = 0 then
+					containing_atomic_block_effective_visibility := Tri_undefined
 				end
 			end
 
@@ -315,13 +315,13 @@ feature -- Meta-command processing interface
 							elseif l_command_word.same_string (at_strings.treat_all_as_complex) then
 								set_block_global_treat_as_complex (l_block_type, True)
 								l_recognized := True
-							elseif l_command_word.same_string (at_strings.treat_all_as_simple) then
+							elseif l_command_word.same_string (at_strings.treat_all_as_atomic) then
 								set_block_global_treat_as_complex (l_block_type, False)
 								l_recognized := True
 							elseif l_command_word.same_string (at_strings.treat_next_as_complex) then
 								set_block_local_treat_as_complex_override (l_block_type, Tri_true)
 								l_recognized := True
-							elseif l_command_word.same_string (at_strings.treat_next_as_simple) then
+							elseif l_command_word.same_string (at_strings.treat_next_as_atomic) then
 								set_block_local_treat_as_complex_override (l_block_type, Tri_false)
 								l_recognized := True
 							end
@@ -430,7 +430,7 @@ feature {NONE} -- Implementation: meta-command processing
 
 	set_block_global_treat_as_complex (a_block_type: AT_BLOCK_TYPE; a_value: BOOLEAN)
 			-- Sets the (global) policy for treating blocks of type `a_block_type' as complex
-			-- (as opposed to treating them as simple blocks) to `a_value'.
+			-- (as opposed to treating them as atomic blocks) to `a_value'.
 		require
 			complex_block: enum_block_type.is_complex_block_type (a_block_type)
 		local
@@ -447,7 +447,7 @@ feature {NONE} -- Implementation: meta-command processing
 
 	set_block_local_treat_as_complex_override (a_block_type: AT_BLOCK_TYPE; a_value: AT_TRI_STATE_BOOLEAN)
 			-- Sets the local override flag for treating blocks of type `a_block_type' as complex
-			-- (as opposed to treating them as simple blocks) to `a_value'.
+			-- (as opposed to treating them as atomic blocks) to `a_value'.
 		require
 			complex_block: enum_block_type.is_complex_block_type (a_block_type)
 		local
@@ -486,18 +486,18 @@ feature {NONE} -- Implementation: block visibility
 			-- Stack, parallel to `block_stack', indicating, for
 			-- every level, the current state of content visibility.
 
-	containing_simple_block_effective_visibility: AT_TRI_STATE_BOOLEAN
-		-- If we are inside a simple block, what was that block's effective visibility?
+	containing_atomic_block_effective_visibility: AT_TRI_STATE_BOOLEAN
+		-- If we are inside an atomic block, what was that block's effective visibility?
 		-- This visibility should be applied now, overriding anything else,
 		-- as a single block is the smallest customizable unit, and anything
 		-- inside it should be treated as a single thing.
-		-- If we are not inside a simple block, this value must be undefined.
+		-- If we are not inside an atomic block, this value must be undefined.
 
-	nesting_in_simple_block: NATURAL
-		-- Are we inside a simple block? If so, how deep did we descend into blocks contained in it?
-		-- Please note that it is only possible to descend into a simple block if this block is actually
-		-- a complex block being treated as a simple block.
-		-- 0 means that we are not inside a simple block.
+	nesting_in_atomic_block: NATURAL
+		-- Are we inside an atomic block? If so, how deep did we descend into blocks contained in it?
+		-- Please note that it is only possible to descend into an atomic block if this block is actually
+		-- a complex block being treated as an atomic block.
+		-- 0 means that we are not inside an atomic block.
 
 	refresh
 			-- Update `output_enabled' and `current_placeholder_type' with the correct up-to-date value.
@@ -674,6 +674,6 @@ invariant
 --	block_visibility_table_consistency: is_block_visibility_table_consistent
 	stacks_same_size: block_stack.count = block_type_call_stack.count and block_type_call_stack.count = hiding_stack.count and hiding_stack.count = content_visibility_stack.count
 	block_type_call_stack_consistency: is_top_of_block_type_call_stack_consistent
-	containing_simple_block_visibility_consistency: containing_simple_block_effective_visibility.is_defined = (nesting_in_simple_block > 0)
+	containing_atomic_block_visibility_consistency: containing_atomic_block_effective_visibility.is_defined = (nesting_in_atomic_block > 0)
 
 end

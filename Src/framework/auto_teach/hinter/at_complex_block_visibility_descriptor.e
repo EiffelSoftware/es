@@ -89,7 +89,7 @@ feature -- Treatment
 		-- Overrides the global policy.
 
 	reset_local_treatment_overrides
-			-- Reset the local treat-as-simple/complex override attributes.
+			-- Reset the local treat-as-atomic/complex override attributes.
 			-- Note that this is not a redefinition.
 		do
 			local_treat_as_complex_override.set_undefined

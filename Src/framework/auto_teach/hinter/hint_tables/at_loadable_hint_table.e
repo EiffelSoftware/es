@@ -74,7 +74,7 @@ feature {NONE} -- Initialization
 						l_exception.set_description (at_strings.error_empty_row (file_line_number))
 					elseif l_content and then not enum_block_type.is_complex_block_type (l_block_type) then
 						create l_exception
-						l_exception.set_description (at_strings.error_simple_block_in_content_visibility_table (file_line_number, l_block_type.value_name))
+						l_exception.set_description (at_strings.error_atomic_block_in_content_visibility_table (file_line_number, l_block_type.value_name))
 					else
 							-- Select the table to insert the line into.
 						l_table := (if l_content then content_table else table end)

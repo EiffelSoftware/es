@@ -148,7 +148,7 @@ feature -- Errors with custom hint table
 			Result := locale.translation ("[line " + a_line_number.out + "] Lines in visibility tables cannot be empty.")
 		end
 
-	error_simple_block_in_content_visibility_table (a_line_number: INTEGER; a_block_type_name: STRING): STRING_32
+	error_atomic_block_in_content_visibility_table (a_line_number: INTEGER; a_block_type_name: STRING): STRING_32
 		do
 			Result := locale.translation ("[line " + a_line_number.out + "] Block %'" + a_block_type_name + "%' is not a complex block and, as such, is not allowed into the content block visibility table.")
 		end
@@ -198,7 +198,7 @@ feature -- Meta-commands
 	commands_with_block: ARRAY [STRING]
 			-- List of commands which must be followed by a block type. Useful for parsing.
 		once ("PROCESS")
-			Result := <<show_all_command, hide_all_command, reset_all_command, show_all_content_command, hide_all_content_command, reset_all_content_command, show_next_command, hide_next_command, show_next_content_command, hide_next_content_command, treat_all_as_simple, treat_all_as_complex, treat_next_as_simple, treat_next_as_complex>>
+			Result := <<show_all_command, hide_all_command, reset_all_command, show_all_content_command, hide_all_content_command, reset_all_content_command, show_next_command, hide_next_command, show_next_content_command, hide_next_content_command, treat_all_as_atomic, treat_all_as_complex, treat_next_as_atomic, treat_next_as_complex>>
 			Result.compare_objects
 		end
 
@@ -208,10 +208,10 @@ feature -- Meta-commands
 	unannotated_mode_command: STRING = "UNANNOTATED_MODE"
 	custom_mode_command: STRING = "CUSTOM_MODE"
 
-	treat_all_as_simple: STRING = "TREAT_ALL_AS_SIMPLE"
+	treat_all_as_atomic: STRING = "TREAT_ALL_AS_ATOMIC"
 	treat_all_as_complex: STRING = "TREAT_ALL_AS_COMPLEX"
 
-	treat_next_as_simple: STRING = "TREAT_NEXT_AS_SIMPLE"
+	treat_next_as_atomic: STRING = "TREAT_NEXT_AS_ATOMIC"
 	treat_next_as_complex: STRING = "TREAT_NEXT_AS_COMPLEX"
 
 
