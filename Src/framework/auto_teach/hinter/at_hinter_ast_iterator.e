@@ -17,17 +17,17 @@ inherit
 			process_break_as,
 			put_string_to_context,
 
-				--				-- Features
+				-- Features
 			process_feature_as,
 
-				--				-- Routine arguments
+				-- Routine arguments
 			process_formal_argu_dec_list_as,
 
-				--				-- Routine bodies
+				-- Routine bodies
 			process_do_as,
 			process_once_as,
 
-				--				-- Locals
+				-- Locals
 			process_local_dec_list_as,
 
 				-- Contracts
@@ -37,10 +37,10 @@ inherit
 			process_ensure_then_as,
 			process_invariant_as,
 
-				-- Assertions:
+				-- Assertions
 			process_tagged_as,
 
-				-- Instructions:
+				-- Instructions
 			process_elseif_as,
 			process_assign_as,
 			process_assigner_call_as,
@@ -392,8 +392,12 @@ feature {NONE} -- Implementation
 		do
 			make_with_default_context
 			options := a_options
+
+			create {ARRAYED_STACK [BOOLEAN]} if_as_complex_stack.make (8)
+
 			create oracle.make_with_options (a_options)
 			oracle.set_message_output_action (agent print_message)
+
 			reset
 		end
 
@@ -535,12 +539,12 @@ feature {AST_EIFFEL} -- Visitors
 			oracle.end_process_block (enum_block_type.bt_class_invariant)
 		end
 
-	process_tagged_as (l_as: TAGGED_AS)
+	process_tagged_as (a_as: TAGGED_AS)
 		do
-			process_leading_leaves (l_as.first_token (match_list).index)
+			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.bt_assertion)
-			Precursor (l_as)
-			process_next_break (l_as)
+			Precursor (a_as)
+			process_next_break (a_as)
 			oracle.end_process_block (enum_block_type.bt_assertion)
 		end
 
@@ -560,13 +564,6 @@ feature {AST_EIFFEL} -- Instructions visitors
 			oracle.end_process_block (enum_block_type.bt_instruction)
 		end
 
-	process_elseif_as (a_as: ELSIF_AS)
-			-- Process `a_as'.
-		do
-			instruction_pre (a_as)
-			Precursor (a_as)
-			instruction_post (a_as)
-		end
 
 	process_assign_as (a_as: ASSIGN_AS)
 			-- Process `a_as'.
@@ -650,10 +647,48 @@ feature {AST_EIFFEL} -- Instructions visitors
 
 	process_if_as (a_as: IF_AS)
 			-- Process `a_as'.
+		local
+			l_treat_as_complex: BOOLEAN
 		do
-			instruction_pre (a_as)
-			Precursor (a_as)
-			instruction_post (a_as)
+			-- TODO: set `l_treat_as_complex'
+
+			l_treat_as_complex := True
+
+			if_as_complex_stack.put (l_treat_as_complex)
+
+			if l_treat_as_complex then
+				process_if_as_complex (a_as)
+			else
+				instruction_pre (a_as)
+				Precursor (a_as)
+				instruction_post (a_as)
+			end
+
+			if_as_complex_stack.remove
+		ensure then
+			if_as_complex_stack_restored: if_as_complex_stack.count = old if_as_complex_stack.count
+		end
+
+	if_as_complex_stack: STACK [BOOLEAN]
+		-- Stack corresponding to nested if instructions.
+		-- The top value corresponds to the innermost if instruction being analyzed.
+		-- If no if instruction is currently being processed, the stack is empty.
+		-- Values indicate whether the corresponding if instruction should be treated
+		-- as a complex block (True) or as a simple instruction (False).
+
+	process_elseif_as (a_as: ELSIF_AS)
+			-- Process `a_as'.
+		do
+			check if_as_complex_stack_not_empty: not if_as_complex_stack.is_empty end
+
+			if if_as_complex_stack.item then
+				process_elseif_as_complex (a_as)
+			else
+					-- Process as instruction
+				instruction_pre (a_as)
+				Precursor (a_as)
+				instruction_post (a_as)
+			end
 		end
 
 	process_inspect_as (a_as: INSPECT_AS)
@@ -694,6 +729,71 @@ feature {AST_EIFFEL} -- Instructions visitors
 			instruction_pre (a_as)
 			Precursor (a_as)
 			instruction_post (a_as)
+		end
+
+feature {AST_EIFFEL} -- Complex block processing
+
+	process_if_as_complex (a_as: IF_AS)
+			-- Process `a_as' as a complex block.
+		do
+			process_leading_leaves (a_as.first_token (match_list).index)
+			oracle.begin_process_block (enum_block_type.bt_if)
+
+			safe_process (a_as.if_keyword (match_list))
+
+			process_if_condition (a_as.condition)
+
+			safe_process (a_as.then_keyword (match_list))
+
+			process_if_branch (a_as.compound)
+
+			safe_process (a_as.elsif_list)
+			safe_process (a_as.else_keyword (match_list))
+
+			process_if_branch (a_as.else_part)
+
+			safe_process (a_as.end_keyword)
+
+			process_next_break (a_as)
+			oracle.end_process_block (enum_block_type.bt_if)
+		end
+
+	process_elseif_as_complex (a_as: ELSIF_AS)
+			-- Process `a_as' as a complex block.
+		do
+			safe_process (a_as.elseif_keyword (match_list))
+
+			process_if_condition (a_as.expr)
+
+			safe_process (a_as.then_keyword (match_list))
+
+			process_if_branch (a_as.compound)
+		end
+
+	process_if_condition (a_as: EXPR_AS)
+			-- Process `a_as', which is an if condition.
+		do
+			process_leading_leaves (a_as.first_token (match_list).index)
+			oracle.begin_process_block (enum_block_type.bt_if_condition)
+
+			safe_process (a_as)
+
+			process_next_break (a_as)
+			oracle.end_process_block (enum_block_type.bt_if_condition)
+		end
+
+	process_if_branch (a_as: EIFFEL_LIST [INSTRUCTION_AS])
+			-- Process `a_as', which is the body of an if branch.
+		do
+			if attached a_as as l_as then
+				process_leading_leaves (l_as.first_token (match_list).index)
+			end
+			oracle.begin_process_block (enum_block_type.bt_if_branch)
+
+			safe_process (a_as)
+
+			process_next_break (a_as)
+			oracle.end_process_block (enum_block_type.bt_if_branch)
 		end
 
 end

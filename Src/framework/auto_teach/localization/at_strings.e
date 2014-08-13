@@ -183,4 +183,8 @@ feature -- Block types
 
 	bt_instruction: STRING = "instruction"
 
+	bt_if: STRING = "if"
+	bt_if_condition: STRING = "if_condition"
+	bt_if_branch: STRING = "if_branch"
+
 end

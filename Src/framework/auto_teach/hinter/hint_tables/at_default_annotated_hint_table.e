@@ -46,6 +46,12 @@ feature {NONE} -- Initialization
 			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.bt_routine_body)		-- Always hide the content of routine bodies
 			table.put 			(<< 	True			>>, enum_block_type.bt_instruction)			-- Always show instructions
 
+			table.put 			(<< 	True			>>, enum_block_type.bt_if)					-- Always show the existence of if instructions
+			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.bt_if)					-- Always hide the content of routine bodies
+			table.put 			(<< 	True			>>, enum_block_type.bt_if_condition)		-- Always show if conditions
+			table.put 			(<< 	True			>>, enum_block_type.bt_if_branch)			-- Always show if branches
+			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.bt_if_branch)			-- Always show if branches
+
 			table.put 			(<< 	True			>>, enum_block_type.bt_postcondition)		-- Always show the existence of postconditions
 			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.bt_postcondition)		-- Never show the content of postconditions
 				-- We already inserted the row for assertions.

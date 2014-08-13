@@ -17,6 +17,8 @@ inherit {NONE}
 create
 	make_with_options
 
+	-- TODO: Reorganize feature clauses
+
 feature -- Status signaling
 
 	begin_process_class
