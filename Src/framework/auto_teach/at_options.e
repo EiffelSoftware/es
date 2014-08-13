@@ -23,7 +23,7 @@ feature {NONE} -- Initialization
 			insert_code_placeholder := False
 			create output_directory.make_with_path (create {PATH}.make_current)
 
-			create {AT_DEFAULT_UNANNOTATED_HINT_TABLE} hint_table.make
+			hint_table := default_unannotated_hint_table
 		end
 
 feature -- Copying

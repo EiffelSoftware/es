@@ -22,16 +22,9 @@ feature {NONE} -- Initialization
 
 	make_with_options (a_options: AT_OPTIONS)
 			-- Initialization for `Current'.
-		local
-			l_bt: AT_BLOCK_TYPE
 		do
 			options := a_options
 			create input_classes.make
-
-			across enum_block_type.values as ic loop
-				l_bt := ic.item
-				io.put_string (ic.item.value_name)
-			end
 		end
 
 feature -- Interface

@@ -10,9 +10,14 @@ class
 inherit
 
 	AT_ENUM
+		redefine
+			name
+		end
 
 
 feature -- Access
+
+	name: STRING = "block_type"
 
 	value_type: AT_BLOCK_TYPE
 			-- The value type of this enum. For typing only.

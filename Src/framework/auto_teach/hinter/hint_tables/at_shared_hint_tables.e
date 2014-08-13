@@ -12,7 +12,8 @@ feature {NONE}
 	default_unannotated_hint_table: AT_HINT_TABLE
 			-- The default table for unannotated (no hints) classes.
 		once
-			create {AT_DEFAULT_UNANNOTATED_HINT_TABLE} Result.make
+				-- TODO: Replace the following back with UNANNOTATED!!!!!
+			create {AT_DEFAULT_ANNOTATED_HINT_TABLE} Result.make
 		end
 
 	default_annotated_hint_table: AT_HINT_TABLE

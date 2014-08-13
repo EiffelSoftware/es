@@ -15,7 +15,7 @@ feature -- Access
 
 		-- TODO: rename to visibility_for
 
-	entry (a_block_type: AT_BLOCK_TYPE; a_hint_level: INTEGER): TUPLE [visibility: BOOLEAN; explicitly_defined: BOOLEAN]
+	visibility_for (a_block_type: AT_BLOCK_TYPE; a_hint_level: INTEGER): TUPLE [visibility: BOOLEAN; explicitly_defined: BOOLEAN]
 			-- Access the visibility table, looking for the specified block type and hint level.
 		require
 			valid_hint_level: is_valid_hint_level (a_hint_level)

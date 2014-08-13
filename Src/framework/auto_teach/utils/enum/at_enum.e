@@ -7,11 +7,15 @@ note
 deferred class
 	AT_ENUM
 
+-- TODO: redefine is_equal
+
 feature -- Access
 
 	-- TODO: feature comments
 
 	name: STRING
+		deferred
+		end
 
 	numerical_values: ARRAY [INTEGER]
 		local

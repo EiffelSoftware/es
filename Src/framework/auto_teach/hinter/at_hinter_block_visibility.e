@@ -16,7 +16,7 @@ feature -- Access
 
 	default_visibility: BOOLEAN
 		do
-			Result := default_visibility_agent.item ([])
+			Result := default_visibility_agent.item ([block_type])
 		end
 
 	global_visibility_override: AT_TRI_STATE_BOOLEAN assign set_local_visiblity_override
@@ -53,7 +53,7 @@ feature {NONE} -- Setters
 
 feature {NONE} -- Implementation
 
-	default_visibility_agent: FUNCTION [ANY, TUPLE, BOOLEAN]
+	default_visibility_agent: FUNCTION [ANY, TUPLE [AT_BLOCK_TYPE], BOOLEAN]
 
 
 feature {NONE} -- Initialization

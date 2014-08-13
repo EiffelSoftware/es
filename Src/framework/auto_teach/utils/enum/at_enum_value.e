@@ -27,11 +27,16 @@ feature -- Access
 		deferred
 		end
 
+	initialized: BOOLEAN
+		-- Was `Current' initialized to a meaningful value?
+
 	numerical_value: INTEGER
 			-- The numerical value of this enum value. Immutable.
 
 	value_name: STRING
 			-- The name of this enum value.
+		require
+			initialized: initialized
 		do
 			Result := enum_type.value_name (numerical_value)
 		end
@@ -56,10 +61,8 @@ feature {NONE} -- Initialization - to be used by descendants
 		require
 			valid_numerical_value: enum_type.is_valid_numerical_value (a_numerical_value)
 		do
-			initializing := True
-
 			numerical_value := a_numerical_value
-			initializing := False
+			initialized := True
 		end
 
 	make_with_value_name (a_value_name: STRING)
@@ -67,18 +70,13 @@ feature {NONE} -- Initialization - to be used by descendants
 		require
 			valid_value_name: enum_type.is_valid_value_name (a_value_name)
 		do
-			initializing := True
-
 			numerical_value := enum_type.numerical_value (a_value_name)
-			initializing := False
+			initialized := True
 		end
-
-	initializing: BOOLEAN
-		-- Disables the invariant
 
 invariant
 
 		-- 'Dented' invariant, disabled during initialization.
-	valid_numerical_value: initializing or else enum_type.is_valid_numerical_value (numerical_value)
+	valid_numerical_value: not initialized or else enum_type.is_valid_numerical_value (numerical_value)
 
 end

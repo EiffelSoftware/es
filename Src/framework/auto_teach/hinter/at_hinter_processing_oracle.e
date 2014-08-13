@@ -514,8 +514,6 @@ feature -- Status signaling: cool new things
 			l_block_visibility := blocks_visibility [a_block_type].twin
 			blocks_visibility [a_block_type].reset_local_overrides
 
-			block_stack.put (l_block_visibility)
-
 			if hiding_stack.is_empty then
 					-- According to the invariant, all stacks are empty.
 
@@ -544,6 +542,8 @@ feature -- Status signaling: cool new things
 					-- overridden by the local visibility flag of this block (coming from a "#SHOW_NEXT_CONTENT" command applied to a this block).
 				l_local_content_visibility_status := l_local_content_visibility_status.subjected_to (l_complex_block_visibility.local_content_visibility_override)
 			end
+
+			block_stack.put (l_block_visibility)
 
 			global_content_visibility_stack.put (l_global_content_visibility_status)
 			local_content_visibility_stack.put (l_local_content_visibility_status)
@@ -683,14 +683,12 @@ feature {NONE} -- Implementation
 
 	block_default_visibility (a_block_type: AT_BLOCK_TYPE): BOOLEAN
 		do
-			Result := options.hint_table.entry (a_block_type, options.hint_level).visibility
+			Result := options.hint_table.visibility_for (a_block_type, options.hint_level).visibility
 		end
 
 	block_content_default_visibility (a_block_type: AT_BLOCK_TYPE): AT_TRI_STATE_BOOLEAN
-		require
-			implemented: False
 		do
-			-- Result := options.hint_table.entry (a_block_type, options.hint_level).visibility
+			Result := options.hint_table.content_visibility_for (a_block_type, options.hint_level).visibility
 		end
 
 	message_output_action: detachable PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]]

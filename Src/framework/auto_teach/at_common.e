@@ -66,6 +66,7 @@ feature -- For use with contracts
 
 feature {NONE} -- Utility
 
+		-- TODO: unused
 	string_to_int (a_string: READABLE_STRING_GENERAL): INTEGER
 			-- Attempt to convert `a_string' to integer,
 			-- stopping at the first non-digit character
