@@ -111,9 +111,11 @@ feature -- Errors
 
 feature -- Code output
 
-	code_standard_placeholder: STRING = "-- Your code here!"
+	standard_code_placeholder: STRING = "-- Your code here!"
 
-	code_arguments_placeholder: STRING = "-- Your arguments here!"
+	arguments_code_placeholder: STRING = "	-- Your arguments here!"
+
+	if_condition_code_placeholder: STRING = "(%"Your condition%" = %"here!%")"
 
 feature -- Meta-commands
 

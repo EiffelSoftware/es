@@ -227,22 +227,44 @@ feature {NONE} -- Implementation - skipping
 			end
 		end
 
-	insert_blank_line (a_insert_placeholder: BOOLEAN; a_placeholder_type: AT_PLACEHOLDER)
+	skip (a_insert_blank_line: BOOLEAN; a_placeholder_type: AT_PLACEHOLDER)
 			-- Insert a blank line with the correct indentation for the current location, and possibly a placeholder.
 		local
 			l_new_line_with_tabs: STRING
 		do
-			if not blank_line_inserted then
+			if a_insert_blank_line and not blank_line_inserted then
+					-- Prepare it for real
 				l_new_line_with_tabs := tab_string (current_indentation)
 				l_new_line_with_tabs.prepend ("%N")
-				if not a_insert_placeholder then
-					put_string_forced (l_new_line_with_tabs, True)
-				elseif not placeholder_inserted then
-					put_string_forced (l_new_line_with_tabs + a_placeholder_type.text + l_new_line_with_tabs, True)
-					placeholder_inserted := True
-				end
 				blank_line_inserted := True
+			else
+					-- Fake blank line, actually an empty string
+				l_new_line_with_tabs := ""
 			end
+
+			if a_placeholder_type /= enum_placeholder_type.ph_none and not placeholder_inserted then
+					-- Insert placeholder
+				put_string_forced (l_new_line_with_tabs + a_placeholder_type.text + l_new_line_with_tabs, True)
+				placeholder_inserted := True
+			else
+					-- No placeholder
+				put_string_forced (l_new_line_with_tabs, False)
+			end
+		end
+
+	skip_with_current_placeholder
+			-- Skips the current section by inserting a blank line (if appropriate and not already inserted)
+			-- with the current indentation and the proper placeholder (if enabled and not already inserted)
+			-- for the current section.
+		local
+			l_placeholder: AT_PLACEHOLDER
+		do
+			if options.insert_code_placeholder then
+				l_placeholder := oracle.current_placeholder_type
+			else
+				l_placeholder := enum_placeholder_type.ph_none
+			end
+			skip (not oracle.current_placeholder_type.is_inline, l_placeholder)
 		end
 
 	indentation (a_node: AST_EIFFEL): INTEGER
@@ -369,7 +391,7 @@ feature {NONE} -- Implementation
 				blank_line_inserted := False
 				placeholder_inserted := False
 			else
-				insert_blank_line (options.insert_code_placeholder, enum_placeholder_type.ph_standard)
+				skip_with_current_placeholder
 			end
 		end
 
@@ -379,8 +401,6 @@ feature {NONE} -- Implementation
 			if a_print_last_unprinted_break then
 				print_last_unprinted_break
 			end
-			blank_line_inserted := False
-			placeholder_inserted := False
 			context.add_string (a_string)
 		end
 
@@ -449,19 +469,49 @@ feature {AST_EIFFEL} -- Visitors
 
 	process_formal_argu_dec_list_as (a_as: FORMAL_ARGU_DEC_LIST_AS)
 			-- Process `a_as'.
+		local
+			l_placeholder: AT_PLACEHOLDER
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.bt_arguments)
 			safe_process (a_as.lparan_symbol (match_list))
+
+				-- We would normally never skip any part of the syntax tree.
+				-- So one would expect that we call "safe_process (a_as.arguments)"
+				-- here, and just rely on the oracle to prevent the arguments from being
+				-- actually output. So why aren't we doing this?
+				-- Assume we are in the case where the existence of arguments is shown,
+				-- (in practice this just means that the parentheses are printed),
+				-- and we only have to hide the arguments inside. In this case, at this point
+				-- oracle.output_enabled is True, in order to let us print the parentheses.
+				-- Well, there is nothing preventing the arguments from being printed as well.
+				-- Right now the effective content visibility is False, but, as arguments declarations
+				-- are not explicitly processed by this iterator, nobody checks for it.
+				-- We will never notify the oracle that we are beginning to process one specific
+				-- argument, so that it can disable the output entirely.
+				-- Same story for locals, as local declarations are also not processed singularly.
+				-- With pre/postconditions it's different, because assertions are explicitly processed
+				-- by this class, and the oracle is notified whenever a single assertion starts being processed.
+				-- So this long digression was to explain why here, exceptionally, we have to skip
+				-- a part of the syntax tree.
 			if oracle.output_enabled and then oracle.current_content_visibility /= Tri_false then
 				safe_process (a_as.arguments)
 			else
-					-- Hardcoded in this case. Not very nice, but if the input is correctly indented,
-					-- that's always the correct value.
-				current_indentation := 2
-				insert_blank_line (options.insert_code_placeholder, enum_placeholder_type.ph_arguments)
+				skip_with_current_placeholder
 			end
-			safe_process (a_as.rparan_symbol (match_list))
+
+			if attached a_as.rparan_symbol (match_list) as l_parenthesis then
+					-- Hack in order to prevent the last break contained in the original arguments
+					-- (usually a space character) from being printed. We don't need a space before
+					-- a closed parenthesis.
+				process_leading_leaves (l_parenthesis.index)
+				last_unprinted_break_line := Void
+
+				safe_process (l_parenthesis)
+			end
+
+
+
 			oracle.end_process_block (enum_block_type.bt_arguments)
 		end
 
@@ -469,17 +519,25 @@ feature {AST_EIFFEL} -- Visitors
 			-- Process `a_as'
 		local
 			l_indentation: INTEGER
+			l_local_keyword: KEYWORD_AS
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.bt_locals)
+
 			l_indentation := indentation (a_as.local_keyword (match_list))
-			safe_process (a_as.local_keyword (match_list))
+
+			l_local_keyword := a_as.local_keyword (match_list)
+			safe_process (l_local_keyword)
+
+			if (attached {BREAK_AS} match_list [l_local_keyword.index + 1] as l_first_break) then
+				process_break_as (l_first_break)
+			end
+
 			current_indentation := l_indentation + 1
 			if oracle.output_enabled and oracle.current_content_visibility /= Tri_false then
 				safe_process (a_as.locals)
 			else
-				put_string_forced ("%N", False)
-				insert_blank_line (options.insert_code_placeholder, enum_placeholder_type.ph_standard)
+				skip_with_current_placeholder
 			end
 			oracle.end_process_block (enum_block_type.bt_locals)
 		end
@@ -555,6 +613,10 @@ feature {AST_EIFFEL} -- Instructions visitors
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.bt_instruction)
+
+			if attached a_as as l_as then
+				current_indentation := indentation (l_as)
+			end
 		end
 
 	instruction_post (a_as: AST_EIFFEL)
@@ -787,6 +849,7 @@ feature {AST_EIFFEL} -- Complex block processing
 		do
 			if attached a_as as l_as then
 				process_leading_leaves (l_as.first_token (match_list).index)
+				current_indentation := indentation (a_as)
 			end
 			oracle.begin_process_block (enum_block_type.bt_if_branch)
 

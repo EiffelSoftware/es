@@ -306,7 +306,7 @@ feature -- Status signaling: cool new things
 			hiding_stack.put (l_hiding_status)
 			hiding_stack.replace (l_hiding_status or (not current_block_logical_visibility))
 
-			set_output_enabled
+			refresh
 		ensure
 			block_on_top_of_stack: block_stack.item.block_type = a_block_type
 		end
@@ -314,10 +314,29 @@ feature -- Status signaling: cool new things
 	output_enabled: BOOLEAN
 			-- Should the current section be output or not?
 
-	set_output_enabled
-			-- Update the `output_enabled' with the correct up-to-date value.
+	current_placeholder_type: AT_PLACEHOLDER
+			-- What type of placeholder corresponds to the currently processed block?
+			-- (regardless of code placeholders currently being enabled or not)
+
+	refresh
+			-- Update `output_enabled' and `current_placeholder_type' with the correct up-to-date value.
+		local
+			l_current_block: AT_BLOCK_TYPE
 		do
 			output_enabled := current_block_effective_visibility
+
+			if block_stack.is_empty then
+				current_placeholder_type := enum_placeholder_type.ph_standard
+			else
+				l_current_block := block_stack.item.block_type
+				if l_current_block = enum_block_type.bt_arguments then
+					current_placeholder_type := enum_placeholder_type.ph_arguments
+				elseif l_current_block = enum_block_type.bt_if_condition then
+					current_placeholder_type := enum_placeholder_type.ph_if_condition
+				else
+					current_placeholder_type := enum_placeholder_type.ph_standard
+				end
+			end
 		end
 
 	current_block_effective_visibility: BOOLEAN
@@ -386,7 +405,7 @@ feature -- Status signaling: cool new things
 			hiding_stack.remove
 			global_content_visibility_stack.remove
 			local_content_visibility_stack.remove
-			set_output_enabled
+			refresh
 		end
 
 feature {NONE} -- Implementation

@@ -29,25 +29,13 @@ feature -- Placeholder text
 	text: STRING
 			-- Placeholder text
 		do
-			if Current = enum_type.ph_standard then
-				Result := at_strings.code_standard_placeholder
-			elseif Current = enum_type.ph_arguments then
-				Result := at_strings.code_arguments_placeholder
-			else
-					-- The class invariant of `AT_VALUE_TYPE' guarantees
-					-- that we always have a valid value. This means that
-					-- this can only happen if a new placeholder type is added
-					-- and we forget to add the respective if branch here.
-				check value_recognized: False end
-			end
+			Result := enum_type.placeholder_text (Current)
 		end
 
-feature {NONE} -- Implementation
-
-	at_strings: AT_STRINGS
-			-- Strings
-		once ("PROCESS")
-			create Result
+	is_inline: BOOLEAN
+			-- Is this an inline placeholder?
+		do
+			Result := enum_type.is_inline (Current)
 		end
 
 end

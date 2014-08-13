@@ -42,10 +42,25 @@ feature {AT_ENUM} -- Value list
 
 	value_list: ARRAY [TUPLE [numerical_value: INTEGER; name: STRING]]
 		once ("PROCESS")
-			Result := <<[1, "standard_placeholder"], [2, "arguments_placeholder"]>>
+			Result := <<	[0, "no_placeholder"],
+							[1, "standard_placeholder"],
+							[2, "arguments_placeholder"],
+							[3, "if_condition_placeholder"]		>>
+		end
+
+	inline_placeholders: ARRAY [AT_PLACEHOLDER]
+		once ("PROCESS")
+			Result := <<ph_none, ph_if_condition>>
 		end
 
 feature -- Values
+
+	ph_none: AT_PLACEHOLDER
+		once ("PROCESS")
+			create Result.make_with_numerical_value (0)
+		end
+
+		-- TODO: Uppercase
 
 	ph_standard: AT_PLACEHOLDER
 		once ("PROCESS")
@@ -55,6 +70,50 @@ feature -- Values
 	ph_arguments: AT_PLACEHOLDER
 		once ("PROCESS")
 			create Result.make_with_numerical_value (2)
+		end
+
+	ph_if_condition: AT_PLACEHOLDER
+		once ("PROCESS")
+			create Result.make_with_numerical_value (3)
+		end
+
+feature -- Properties
+
+	placeholder_text (a_placeholder: AT_PLACEHOLDER): STRING
+			-- Text of `a_placeholder'.
+		do
+			if a_placeholder = ph_none then
+				Result := ""
+			elseif a_placeholder = ph_standard then
+				Result := at_strings.standard_code_placeholder
+			elseif a_placeholder = ph_arguments then
+				Result := at_strings.arguments_code_placeholder
+			elseif a_placeholder = ph_if_condition then
+				Result := at_strings.if_condition_code_placeholder
+			else
+					-- The class invariant of `AT_VALUE_TYPE' guarantees
+					-- that we always have a valid value. This means that
+					-- this can only happen if a new placeholder type is added
+					-- and we forget to add the respective if branch here.
+				check
+					value_recognized: False
+				end
+				Result := ""
+			end
+		end
+
+	is_inline (a_placeholder: AT_PLACEHOLDER): BOOLEAN
+			-- Is `a_placeholder' an inline placeholder?
+		do
+			Result := inline_placeholders.has (a_placeholder)
+		end
+
+feature {NONE} -- Implementation
+
+	at_strings: AT_STRINGS
+			-- Strings
+		once ("PROCESS")
+			create Result
 		end
 
 end
