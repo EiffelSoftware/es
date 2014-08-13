@@ -242,7 +242,7 @@ feature {NONE} -- Implementation - skipping
 				l_new_line_with_tabs := ""
 			end
 
-			if a_placeholder_type /= enum_placeholder_type.ph_none and not placeholder_inserted then
+			if a_placeholder_type /= enum_placeholder_type.Ph_none and not placeholder_inserted then
 					-- Insert placeholder
 				put_string_forced (l_new_line_with_tabs + a_placeholder_type.text + l_new_line_with_tabs, True)
 				placeholder_inserted := True
@@ -262,7 +262,7 @@ feature {NONE} -- Implementation - skipping
 			if options.insert_code_placeholder then
 				l_placeholder := oracle.current_placeholder_type
 			else
-				l_placeholder := enum_placeholder_type.ph_none
+				l_placeholder := enum_placeholder_type.Ph_none
 			end
 			skip (not oracle.current_placeholder_type.is_inline, l_placeholder)
 		end
@@ -461,10 +461,10 @@ feature {AST_EIFFEL} -- Visitors
 	process_feature_as (a_as: FEATURE_AS)
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
-			oracle.begin_process_block (enum_block_type.bt_feature)
+			oracle.begin_process_block (enum_block_type.Bt_feature)
 			current_indentation := indentation (a_as.feature_name.first_token (match_list))
 			Precursor (a_as)
-			oracle.end_process_block (enum_block_type.bt_feature)
+			oracle.end_process_block (enum_block_type.Bt_feature)
 		end
 
 	process_formal_argu_dec_list_as (a_as: FORMAL_ARGU_DEC_LIST_AS)
@@ -473,7 +473,7 @@ feature {AST_EIFFEL} -- Visitors
 			l_placeholder: AT_PLACEHOLDER
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
-			oracle.begin_process_block (enum_block_type.bt_arguments)
+			oracle.begin_process_block (enum_block_type.Bt_arguments)
 			safe_process (a_as.lparan_symbol (match_list))
 
 				-- We would normally never skip any part of the syntax tree.
@@ -512,7 +512,7 @@ feature {AST_EIFFEL} -- Visitors
 
 
 
-			oracle.end_process_block (enum_block_type.bt_arguments)
+			oracle.end_process_block (enum_block_type.Bt_arguments)
 		end
 
 	process_local_dec_list_as (a_as: LOCAL_DEC_LIST_AS)
@@ -522,7 +522,7 @@ feature {AST_EIFFEL} -- Visitors
 			l_local_keyword: KEYWORD_AS
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
-			oracle.begin_process_block (enum_block_type.bt_locals)
+			oracle.begin_process_block (enum_block_type.Bt_locals)
 
 			l_indentation := indentation (a_as.local_keyword (match_list))
 
@@ -539,7 +539,7 @@ feature {AST_EIFFEL} -- Visitors
 			else
 				skip_with_current_placeholder
 			end
-			oracle.end_process_block (enum_block_type.bt_locals)
+			oracle.end_process_block (enum_block_type.Bt_locals)
 		end
 
 	process_do_once_as (a_as: INTERNAL_AS)
@@ -551,7 +551,7 @@ feature {AST_EIFFEL} -- Visitors
 			l_do_once_keyword: KEYWORD_AS
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
-			oracle.begin_process_block (enum_block_type.bt_routine_body)
+			oracle.begin_process_block (enum_block_type.Bt_routine_body)
 			if attached {DO_AS} a_as as l_do_as then
 				l_do_once_keyword := l_do_as.do_keyword (match_list)
 			elseif attached {ONCE_AS} a_as as l_once_as then
@@ -560,50 +560,50 @@ feature {AST_EIFFEL} -- Visitors
 			current_indentation := indentation (l_do_once_keyword) + 1
 			safe_process (l_do_once_keyword)
 			safe_process (a_as.compound)
-			oracle.end_process_block (enum_block_type.bt_routine_body)
+			oracle.end_process_block (enum_block_type.Bt_routine_body)
 		end
 
 	process_require_as (a_as: REQUIRE_AS)
 			-- Process `a_as'.
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
-			oracle.begin_process_block (enum_block_type.bt_precondition)
+			oracle.begin_process_block (enum_block_type.Bt_precondition)
 			safe_process (a_as.require_keyword (match_list))
 			current_indentation := indentation (a_as.require_keyword (match_list)) + 1
 			safe_process (a_as.full_assertion_list)
-			oracle.end_process_block (enum_block_type.bt_precondition)
+			oracle.end_process_block (enum_block_type.Bt_precondition)
 		end
 
 	process_ensure_as (a_as: ENSURE_AS)
 			-- Process `a_as'.
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
-			oracle.begin_process_block (enum_block_type.bt_postcondition)
+			oracle.begin_process_block (enum_block_type.Bt_postcondition)
 			safe_process (a_as.ensure_keyword (match_list))
 			current_indentation := indentation (a_as.ensure_keyword (match_list)) + 1
 			safe_process (a_as.full_assertion_list)
-			oracle.end_process_block (enum_block_type.bt_postcondition)
+			oracle.end_process_block (enum_block_type.Bt_postcondition)
 		end
 
 	process_invariant_as (a_as: INVARIANT_AS)
 			-- Process `a_as'.
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
-			oracle.begin_process_block (enum_block_type.bt_class_invariant)
+			oracle.begin_process_block (enum_block_type.Bt_class_invariant)
 			safe_process (a_as.invariant_keyword (match_list))
 			current_indentation := indentation (a_as.invariant_keyword (match_list)) + 1
 			safe_process (a_as.full_assertion_list)
 			process_next_break (a_as)
-			oracle.end_process_block (enum_block_type.bt_class_invariant)
+			oracle.end_process_block (enum_block_type.Bt_class_invariant)
 		end
 
 	process_tagged_as (a_as: TAGGED_AS)
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
-			oracle.begin_process_block (enum_block_type.bt_assertion)
+			oracle.begin_process_block (enum_block_type.Bt_assertion)
 			Precursor (a_as)
 			process_next_break (a_as)
-			oracle.end_process_block (enum_block_type.bt_assertion)
+			oracle.end_process_block (enum_block_type.Bt_assertion)
 		end
 
 feature {AST_EIFFEL} -- Instructions visitors
@@ -612,7 +612,7 @@ feature {AST_EIFFEL} -- Instructions visitors
 			-- To be called before each instruction visiting routine.
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
-			oracle.begin_process_block (enum_block_type.bt_instruction)
+			oracle.begin_process_block (enum_block_type.Bt_instruction)
 
 			if attached a_as as l_as then
 				current_indentation := indentation (l_as)
@@ -623,7 +623,7 @@ feature {AST_EIFFEL} -- Instructions visitors
 			-- To be called after each instruction visiting routine.
 		do
 			process_next_break (a_as)
-			oracle.end_process_block (enum_block_type.bt_instruction)
+			oracle.end_process_block (enum_block_type.Bt_instruction)
 		end
 
 
@@ -799,7 +799,7 @@ feature {AST_EIFFEL} -- Complex block processing
 			-- Process `a_as' as a complex block.
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
-			oracle.begin_process_block (enum_block_type.bt_if)
+			oracle.begin_process_block (enum_block_type.Bt_if)
 
 			safe_process (a_as.if_keyword (match_list))
 
@@ -817,7 +817,7 @@ feature {AST_EIFFEL} -- Complex block processing
 			safe_process (a_as.end_keyword)
 
 			process_next_break (a_as)
-			oracle.end_process_block (enum_block_type.bt_if)
+			oracle.end_process_block (enum_block_type.Bt_if)
 		end
 
 	process_elseif_as_complex (a_as: ELSIF_AS)
@@ -836,12 +836,12 @@ feature {AST_EIFFEL} -- Complex block processing
 			-- Process `a_as', which is an if condition.
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
-			oracle.begin_process_block (enum_block_type.bt_if_condition)
+			oracle.begin_process_block (enum_block_type.Bt_if_condition)
 
 			safe_process (a_as)
 
 			process_next_break (a_as)
-			oracle.end_process_block (enum_block_type.bt_if_condition)
+			oracle.end_process_block (enum_block_type.Bt_if_condition)
 		end
 
 	process_if_branch (a_as: EIFFEL_LIST [INSTRUCTION_AS])
@@ -851,12 +851,12 @@ feature {AST_EIFFEL} -- Complex block processing
 				process_leading_leaves (l_as.first_token (match_list).index)
 				current_indentation := indentation (a_as)
 			end
-			oracle.begin_process_block (enum_block_type.bt_if_branch)
+			oracle.begin_process_block (enum_block_type.Bt_if_branch)
 
 			safe_process (a_as)
 
 			process_next_break (a_as)
-			oracle.end_process_block (enum_block_type.bt_if_branch)
+			oracle.end_process_block (enum_block_type.Bt_if_branch)
 		end
 
 end

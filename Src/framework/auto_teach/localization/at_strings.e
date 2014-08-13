@@ -160,33 +160,30 @@ feature -- Meta-commands
 
 	custom_mode_command: STRING = "CUSTOM_MODE"
 
-		-- TODO: mostrare then e else separatamente
-		-- magari con SHOWNEXT branch
-
 		-- TODO: non dimenticare di gestire i blocchi inspect
 
 feature -- Block types
 
-	bt_feature: STRING = "feature"
+	Bt_feature: STRING = "feature"
 
-	bt_arguments: STRING = "arguments"
+	Bt_arguments: STRING = "arguments"
 
-	bt_precondition: STRING = "precondition"
+	Bt_precondition: STRING = "precondition"
 
-	bt_locals: STRING = "locals"
+	Bt_locals: STRING = "locals"
 
-	bt_routine_body: STRING = "routine_body"
+	Bt_routine_body: STRING = "routine_body"
 
-	bt_postcondition: STRING = "postcondition"
+	Bt_postcondition: STRING = "postcondition"
 
-	bt_class_invariant: STRING = "class_invariant"
+	Bt_class_invariant: STRING = "class_invariant"
 
-	bt_assertion: STRING = "assertion"
+	Bt_assertion: STRING = "assertion"
 
-	bt_instruction: STRING = "instruction"
+	Bt_instruction: STRING = "instruction"
 
-	bt_if: STRING = "if"
-	bt_if_condition: STRING = "if_condition"
-	bt_if_branch: STRING = "if_branch"
+	Bt_if: STRING = "if"
+	Bt_if_condition: STRING = "if_condition"
+	Bt_if_branch: STRING = "if_branch"
 
 end

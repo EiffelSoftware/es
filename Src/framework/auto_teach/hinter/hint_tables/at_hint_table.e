@@ -55,7 +55,6 @@ feature -- Access
 		do
 			if content_table.has (a_block_type) then
 				l_table_row := content_table [a_block_type]
-				l_temp := content_table [enum_block_type.bt_arguments]
 
 					-- Guaranteed by the invariant:
 				check

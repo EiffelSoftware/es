@@ -50,29 +50,27 @@ feature {AT_ENUM} -- Value list
 
 	inline_placeholders: ARRAY [AT_PLACEHOLDER]
 		once ("PROCESS")
-			Result := <<ph_none, ph_if_condition>>
+			Result := <<Ph_none, Ph_if_condition>>
 		end
 
 feature -- Values
 
-	ph_none: AT_PLACEHOLDER
+	Ph_none: AT_PLACEHOLDER
 		once ("PROCESS")
 			create Result.make_with_numerical_value (0)
 		end
 
-		-- TODO: Uppercase
-
-	ph_standard: AT_PLACEHOLDER
+	Ph_standard: AT_PLACEHOLDER
 		once ("PROCESS")
 			create Result.make_with_numerical_value (1)
 		end
 
-	ph_arguments: AT_PLACEHOLDER
+	Ph_arguments: AT_PLACEHOLDER
 		once ("PROCESS")
 			create Result.make_with_numerical_value (2)
 		end
 
-	ph_if_condition: AT_PLACEHOLDER
+	Ph_if_condition: AT_PLACEHOLDER
 		once ("PROCESS")
 			create Result.make_with_numerical_value (3)
 		end
@@ -82,13 +80,13 @@ feature -- Properties
 	placeholder_text (a_placeholder: AT_PLACEHOLDER): STRING
 			-- Text of `a_placeholder'.
 		do
-			if a_placeholder = ph_none then
+			if a_placeholder = Ph_none then
 				Result := ""
-			elseif a_placeholder = ph_standard then
+			elseif a_placeholder = Ph_standard then
 				Result := at_strings.standard_code_placeholder
-			elseif a_placeholder = ph_arguments then
+			elseif a_placeholder = Ph_arguments then
 				Result := at_strings.arguments_code_placeholder
-			elseif a_placeholder = ph_if_condition then
+			elseif a_placeholder = Ph_if_condition then
 				Result := at_strings.if_condition_code_placeholder
 			else
 					-- The class invariant of `AT_VALUE_TYPE' guarantees

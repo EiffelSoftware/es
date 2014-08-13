@@ -326,15 +326,15 @@ feature -- Status signaling: cool new things
 			output_enabled := current_block_effective_visibility
 
 			if block_stack.is_empty then
-				current_placeholder_type := enum_placeholder_type.ph_standard
+				current_placeholder_type := enum_placeholder_type.Ph_standard
 			else
 				l_current_block := block_stack.item.block_type
-				if l_current_block = enum_block_type.bt_arguments then
-					current_placeholder_type := enum_placeholder_type.ph_arguments
-				elseif l_current_block = enum_block_type.bt_if_condition then
-					current_placeholder_type := enum_placeholder_type.ph_if_condition
+				if l_current_block = enum_block_type.Bt_arguments then
+					current_placeholder_type := enum_placeholder_type.Ph_arguments
+				elseif l_current_block = enum_block_type.Bt_if_condition then
+					current_placeholder_type := enum_placeholder_type.Ph_if_condition
 				else
-					current_placeholder_type := enum_placeholder_type.ph_standard
+					current_placeholder_type := enum_placeholder_type.Ph_standard
 				end
 			end
 		end
