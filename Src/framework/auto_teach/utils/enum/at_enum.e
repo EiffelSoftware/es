@@ -7,7 +7,11 @@ note
 deferred class
 	AT_ENUM
 
--- TODO: redefine is_equal
+inherit
+	ANY
+		redefine
+			is_equal
+		end
 
 feature -- Access
 
@@ -99,6 +103,37 @@ feature -- Access
 	value_from_number (a_numerical_value: INTEGER): like value_type
 			-- The value with numerical value `a_numerical_value'.
 		deferred
+		end
+
+feature -- Equality
+
+	is_equal (other: like Current): BOOLEAN
+			-- Is `other' attached to an object considered
+			-- equal to current object?
+		local
+			l_this_value_list, l_other_value_list: like value_list
+			i: INTEGER
+		do
+			Result := True
+			Result := Result and other.name.same_string (name)
+
+			l_this_value_list := value_list
+			l_other_value_list := other.value_list
+
+			if l_this_value_list.count /= l_other_value_list.count then
+				Result := False
+			else
+				from
+					i := 1
+				until
+					i > l_this_value_list.count
+				loop
+					Result := Result and (l_this_value_list [i] ~ l_other_value_list [i])
+					i := i + 1
+				end
+			end
+
+			Result := Result
 		end
 
 feature {AT_ENUM} -- Value list

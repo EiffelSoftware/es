@@ -80,113 +80,113 @@ feature -- Roundtrip: process leaf
 			-- Process `l_as'.
 		do
 			Precursor (l_as)
-			put_string (l_as)
+			put_leaf_to_context (l_as)
 		end
 
 	process_keyword_as (l_as: KEYWORD_AS)
 			-- Process `l_as'.
 		do
 			Precursor (l_as)
-			put_string (l_as)
+			put_leaf_to_context (l_as)
 		end
 
 	process_symbol_as (l_as: SYMBOL_AS)
 			-- Process `l_as'.
 		do
 			Precursor (l_as)
-			put_string (l_as)
+			put_leaf_to_context (l_as)
 		end
 
 	process_symbol_stub_as (l_as: SYMBOL_STUB_AS)
 			-- Process `l_as'.
 		do
 			Precursor (l_as)
-			put_string (l_as)
+			put_leaf_to_context (l_as)
 		end
 
 	process_bool_as (l_as: BOOL_AS)
 		do
 			Precursor (l_as)
-			put_string (l_as)
+			put_leaf_to_context (l_as)
 		end
 
 	process_char_as (l_as: CHAR_AS)
 		do
 			Precursor (l_as)
-			put_string (l_as)
+			put_leaf_to_context (l_as)
 		end
 
 	process_typed_char_as (l_as: TYPED_CHAR_AS)
 			-- Process `l_as'.
 		do
 			Precursor (l_as)
-			context.add_string (l_as.character_text (match_list))
+			put_string_to_context (l_as.character_text (match_list))
 		end
 
 	process_result_as (l_as: RESULT_AS)
 		do
 			Precursor (l_as)
-			put_string (l_as)
+			put_leaf_to_context (l_as)
 		end
 
 	process_retry_as (l_as: RETRY_AS)
 		do
 			Precursor (l_as)
-			put_string (l_as)
+			put_leaf_to_context (l_as)
 		end
 
 	process_unique_as (l_as: UNIQUE_AS)
 		do
 			Precursor (l_as)
-			put_string (l_as)
+			put_leaf_to_context (l_as)
 		end
 
 	process_deferred_as (l_as: DEFERRED_AS)
 		do
 			Precursor (l_as)
-			put_string (l_as)
+			put_leaf_to_context (l_as)
 		end
 
 	process_void_as (l_as: VOID_AS)
 		do
 			Precursor (l_as)
-			put_string (l_as)
+			put_leaf_to_context (l_as)
 		end
 
 	process_string_as (l_as: STRING_AS)
 		do
 			Precursor (l_as)
-			context.add_string (l_as.string_text (match_list))
+			put_string_to_context (l_as.string_text (match_list))
 		end
 
 	process_verbatim_string_as (l_as: VERBATIM_STRING_AS)
 		do
 			Precursor (l_as)
-			context.add_string (l_as.string_text (match_list))
+			put_string_to_context (l_as.string_text (match_list))
 		end
 
 	process_current_as (l_as: CURRENT_AS)
 		do
 			Precursor (l_as)
-			put_string (l_as)
+			put_leaf_to_context (l_as)
 		end
 
 	process_integer_as (l_as: INTEGER_AS)
 		do
 			Precursor (l_as)
-			context.add_string (l_as.number_text (match_list))
+			put_string_to_context (l_as.number_text (match_list))
 		end
 
 	process_real_as (l_as: REAL_AS)
 		do
 			Precursor (l_as)
-			context.add_string (l_as.number_text (match_list))
+			put_string_to_context (l_as.number_text (match_list))
 		end
 
 	process_id_as (l_as: ID_AS)
 		do
 			Precursor (l_as)
-			put_string (l_as)
+			put_leaf_to_context (l_as)
 		end
 
 feature
@@ -202,19 +202,25 @@ feature{NONE} -- Implementation
 	context: ROUNDTRIP_CONTEXT
 			-- Context used to store generated code
 
-	put_string (l_as: LEAF_AS)
+	put_string_to_context (a_string: STRING)
+			-- Add `a_string' to `context'.
+		do
+			context.add_string (a_string)
+		end
+
+	put_leaf_to_context (l_as: LEAF_AS)
 			-- Print text contained in `l_as' into `context'.
 		require
 			l_as_in_list: l_as.index >= start_index and then l_as.index <= end_index
 		do
-			context.add_string (l_as.text (match_list))
+			put_string_to_context (l_as.text (match_list))
 		end
 
 invariant
 	context_not_void: context /= Void
 
 note
-	copyright: "Copyright (c) 1984-2010, Eiffel Software"
+	copyright: "Copyright (c) 1984-2014, Eiffel Software"
 	license:   "GPL version 2 (see http://www.eiffel.com/licensing/gpl.txt)"
 	licensing_options: "http://www.eiffel.com/licensing"
 	copying: "[

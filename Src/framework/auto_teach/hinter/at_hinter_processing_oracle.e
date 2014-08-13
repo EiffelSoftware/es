@@ -486,11 +486,13 @@ feature {NONE} -- Meta-command processing
 --			end
 --		end
 
-feature -- Visibility: cool new things
-
-	blocks_visibility: HASH_TABLE [AT_HINTER_BLOCK_VISIBILITY, AT_BLOCK_TYPE]
+feature -- Visibility
 
 	block_stack: STACK [AT_HINTER_BLOCK_VISIBILITY]
+
+feature {NONE}
+
+	blocks_visibility: HASH_TABLE [AT_HINTER_BLOCK_VISIBILITY, AT_BLOCK_TYPE]
 
 	hiding_stack: STACK [BOOLEAN]
 
@@ -502,7 +504,19 @@ feature -- Visibility: cool new things
 	global_content_visibility_stack: STACK [AT_TRI_STATE_BOOLEAN]
 	local_content_visibility_stack: STACK [AT_TRI_STATE_BOOLEAN]
 
+
+
 feature -- Status signaling: cool new things
+
+	current_content_visibility: AT_TRI_STATE_BOOLEAN
+			-- What is the current status of content visibility?
+		do
+			if global_content_visibility_stack.is_empty then
+				Result := tri_undefined
+			else
+				Result := global_content_visibility_stack.item.subjected_to (local_content_visibility_stack.item)
+			end
+		end
 
 	begin_process_block (a_block_type: AT_BLOCK_TYPE)
 		local
@@ -652,6 +666,7 @@ feature {NONE} -- Implementation
 		do
 			options := a_options
 			original_options := a_options.twin
+			output_enabled_revenge := True
 
 			create {ARRAYED_STACK [AT_HINTER_BLOCK_VISIBILITY]} block_stack.make (32)
 			create {ARRAYED_STACK [BOOLEAN]} hiding_stack.make (32)

@@ -14,7 +14,7 @@ inherit
 			process_leading_leaves,
 			process_trailing_leaves,
 			process_break_as,
-			put_string,
+			put_string_to_context,
 
 --				-- Features
 --			process_feature_as,
@@ -34,7 +34,10 @@ inherit
 --			process_require_else_as,
 --			process_ensure_as,
 --			process_ensure_then_as,
-			process_invariant_as
+			process_invariant_as,
+
+			-- Assertions:
+			process_tagged_as
 
 			-- Instructions:
 			--			process_elseif_as,
@@ -144,8 +147,11 @@ feature {NONE} -- Break processing
 					output_hint (l_last_hint)
 				end
 			else
-				if oracle.output_enabled_revenge then
+				if oracle.current_content_visibility /= tri_false then
 					put_string_to_context (a_break_line)
+					last_unprinted_break_line := Void
+				else
+					last_unprinted_break_line := a_break_line
 				end
 			end
 		end
@@ -181,6 +187,8 @@ feature {NONE} -- Hint processing
 		end
 
 feature {NONE} -- Implementation - skipping
+
+	last_unprinted_break_line: STRING
 
 	skip (a_node: AST_EIFFEL; a_inline: BOOLEAN)
 			-- Skips `a_node' by setting 'skipping_until_index' to the end position of this node.
@@ -225,11 +233,16 @@ feature {NONE} -- Implementation - skipping
 		local
 			l_new_line_with_tabs: STRING
 		do
-			l_new_line_with_tabs := tab_string (a_indentation)
-			l_new_line_with_tabs.prepend ("%N")
-			put_string_to_context (l_new_line_with_tabs)
-			if a_insert_placeholder then
-				put_string_to_context (l_new_line_with_tabs + at_strings.code_placeholder + l_new_line_with_tabs)
+			if not blank_line_inserted then
+				l_new_line_with_tabs := tab_string (a_indentation)
+				l_new_line_with_tabs.prepend ("%N")
+				put_string_forced (l_new_line_with_tabs)
+				blank_line_inserted := True
+
+				if a_insert_placeholder and not placeholder_inserted then
+					put_string_forced (l_new_line_with_tabs + at_strings.code_placeholder + l_new_line_with_tabs)
+					placeholder_inserted := True
+				end
 			end
 		end
 
@@ -293,13 +306,28 @@ feature {NONE} -- Implementation - skipping
 			end
 		end
 
-	next_break (a_node: AST_EIFFEL): BREAK_AS
-		require
-			next_is_break: match_list.valid_index (a_node.index + 1) and then attached {BREAK_AS} match_list [a_node.index + 1]
+--	next_break (a_node: AST_EIFFEL): BREAK_AS
+--		require
+--			next_is_break: match_list.valid_index (a_node.index + 1) and then attached {BREAK_AS} match_list [a_node.index + 1]
+--		do
+--			if attached {BREAK_AS} match_list [a_node.index + 1] as l_next_break then
+--				Result := l_next_break
+--			end
+--		end
+
+	process_next_break
+			-- Process the break immediately following the last processed token.
 		do
-			if attached {BREAK_AS} match_list [a_node.index + 1] as l_next_break then
-				Result := l_next_break
+				-- In any part of the class, except at the very end of it, It should be safe to assume that
+				-- the last processed token of this block must be followed by a break, and then by another
+				-- token (except at the end of the class, but this is not the case). So we can use the
+				-- following hack to make sure that the break is also processed as a part of this block.
+			check
+				next_leaf_is_break: attached {BREAK_AS} match_list [last_index + 1]
+				next_next_leaf_is_not_break: attached match_list [last_index + 2] and not attached {BREAK_AS} match_list [last_index + 2]
 			end
+			process_leading_leaves (last_index + 2)
+			last_index := last_index + 1
 		end
 
 	skipping_until_position: INTEGER
@@ -310,6 +338,9 @@ feature {NONE} -- Implementation - skipping
 
 	blank_line_inserted: BOOLEAN
 			-- Did we already insert a blank line for the current skipping section?
+
+	placeholder_inserted: BOOLEAN
+			-- Did we already insert a placeholder for the current skipping section?
 
 feature {NONE} -- Implementation
 
@@ -365,9 +396,24 @@ feature {NONE} -- Implementation
 			-- Puts `a_string' to the context.
 			-- Basically has the same function as put_string, but accepting a string.
 		do
-			blank_line_inserted := False
 			if oracle.output_enabled_revenge then
+
+				if attached last_unprinted_break_line as l_break_line then
+						-- If we are resuming to print something after skipping a region,
+						-- we need at least to print the last break line (including the return character),
+						-- or the formatting might be incorrect (e.g. an 'end' keyword not on a new line).
+						-- This should be true even in case of inline skipping of a region: in this case we
+						-- might only insert a single space, but we still must do it after inserting,
+						-- for example, an inline placeholder for an if condition.
+					context.add_string (l_break_line)
+					last_unprinted_break_line := Void
+				end
+
 				context.add_string (a_string)
+				blank_line_inserted := False
+				placeholder_inserted := False
+			else
+				-- TODO: we will see
 			end
 		end
 
@@ -377,17 +423,6 @@ feature {NONE} -- Implementation
 			blank_line_inserted := False
 			context.add_string (a_string)
 		end
-
-	put_string (a_as: LEAF_AS)
-			-- Puts the text of `a_as' to the context.
-		do
-			blank_line_inserted := False
-			if oracle.output_enabled_revenge then
-				Precursor (a_as)
-			end
-		end
-
-	output_disabled: BOOLEAN -- TODO: Don't forget of this!
 
 	options: AT_OPTIONS
 			-- The AutoTeach options.
@@ -609,18 +644,17 @@ feature {AST_EIFFEL} -- Visitors
 		local
 			l_indentation: INTEGER
 		do
+			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.bt_class_invariant)
 
 			safe_process (a_as.invariant_keyword (match_list))
-			if not oracle.output_enabled_revenge then
+			if oracle.current_content_visibility = tri_false then
 					-- Must insert blank line/placeholder.
-					l_indentation := indentation (a_as.invariant_keyword (match_list))
-					skipped_section_indentation := l_indentation + 1
+				l_indentation := indentation (a_as.invariant_keyword (match_list))
+				skipped_section_indentation := l_indentation + 1
 
-					if not blank_line_inserted then
-						insert_blank_line (skipped_section_indentation, options.insert_code_placeholder)
-						blank_line_inserted := True
-					end
+				insert_blank_line (skipped_section_indentation, options.insert_code_placeholder)
+
 --			else
 --				if attached a_as.assertion_list as l_assertions then
 --					skipped_section_indentation := indentation (l_assertions)
@@ -637,7 +671,21 @@ feature {AST_EIFFEL} -- Visitors
 
 			safe_process (a_as.full_assertion_list)
 
+			process_next_break
 			oracle.end_process_block (enum_block_type.bt_class_invariant)
+		end
+
+feature {AST_EIFFEL} -- Assertion visitor
+
+	process_tagged_as (l_as: TAGGED_AS)
+		do
+			process_leading_leaves (l_as.first_token (match_list).index)
+			oracle.begin_process_block (enum_block_type.bt_assertion)
+
+			Precursor (l_as)
+
+--			process_leading_leaves (last_index)
+			oracle.end_process_block (enum_block_type.bt_assertion)
 		end
 
 end

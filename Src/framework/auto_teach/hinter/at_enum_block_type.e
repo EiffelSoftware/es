@@ -37,7 +37,7 @@ feature -- Access
 			create Result.make_with_numerical_value (a_numerical_value)
 		end
 
-feature {AT_ENUM_VALUE} -- Value list
+feature {AT_ENUM} -- Value list
 
 	value_list: ARRAY [TUPLE [numerical_value: INTEGER; name: STRING]]
 		once ("PROCESS")

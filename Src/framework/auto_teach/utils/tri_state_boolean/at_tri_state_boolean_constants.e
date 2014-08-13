@@ -9,6 +9,8 @@ class
 
 feature {NONE} -- Constants
 
+	-- TODO: uppercase
+
 	tri_true: AT_TRI_STATE_BOOLEAN
 		once
 			create Result.make_defined (True)
