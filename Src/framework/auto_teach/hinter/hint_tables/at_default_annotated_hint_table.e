@@ -33,7 +33,7 @@ feature {NONE} -- Initialization
 			content_table.put 	(<< 	Tri_undefined	>>, enum_block_type.bt_feature)
 
 			table.put 			(<< 	True			>>, enum_block_type.bt_arguments)			-- Always show arguments
-			content_table.put	(<< 	Tri_undefined		>>, enum_block_type.bt_arguments)
+			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.bt_arguments)
 
 			table.put 			(<< 	True			>>, enum_block_type.bt_precondition)		-- Always show the existence of preconditions
 			content_table.put	(<< 	Tri_undefined	>>, enum_block_type.bt_precondition)		-- Never show the content of preconditions

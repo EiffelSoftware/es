@@ -238,11 +238,7 @@ feature {NONE} -- Implementation - skipping
 				if not a_insert_placeholder then
 					put_string_forced (l_new_line_with_tabs, True)
 				elseif not placeholder_inserted then
-					if a_placeholder_type = enum_placeholder_type.ph_standard then
-						put_string_forced (l_new_line_with_tabs + at_strings.code_standard_placeholder + l_new_line_with_tabs, True)
-					elseif a_placeholder_type = enum_placeholder_type.ph_arguments then
-						put_string_forced (l_new_line_with_tabs + at_strings.code_arguments_placeholder + l_new_line_with_tabs, True)
-					end
+					put_string_forced (l_new_line_with_tabs + a_placeholder_type.text + l_new_line_with_tabs, True)
 					placeholder_inserted := True
 				end
 				blank_line_inserted := True

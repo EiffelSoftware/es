@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {AT_ENUM_BLOCK_TYPE}."
-	author: ""
+	description: "Enum type for code block types."
+	author: "Paolo Antonucci"
 	date: "$Date$"
 	revision: "$Revision$"
 
