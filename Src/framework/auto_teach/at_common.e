@@ -37,13 +37,6 @@ feature -- Enums
 
 feature -- For use with contracts
 
-	is_valid_content_block_type (a_string: STRING): BOOLEAN -- TODO: get rid of this?
-			-- Is `a_string' a valid block type?
-		do
-			Result := enum_block_type.is_valid_value_name (a_string)
-		end
-
-
 	is_valid_hint_level (a_level: INTEGER): BOOLEAN
 			-- Does `a_level' represent a valid hint level?
 		do
@@ -54,38 +47,6 @@ feature -- For use with contracts
 		end
 
 feature {NONE} -- Utility
-
-		-- TODO: unused
-	string_to_int (a_string: READABLE_STRING_GENERAL): INTEGER
-			-- Attempt to convert `a_string' to integer,
-			-- stopping at the first non-digit character
-			-- and returning 0 by default.
-		require
-			string_exists: a_string /= Void
-		local
-			l_char: CHARACTER_32
-			l_stop: BOOLEAN
-			i: INTEGER
-		do
-			from
-				i := 1
-			until
-				l_stop or i > a_string.count
-			loop
-				l_char := a_string [i]
-				if '0' <= l_char and l_char <= '9' then
-					i := i + 1
-				else
-					l_stop := True
-				end
-			end
-
-			if i = 1 then
-				Result := 0
-			else
-				Result := a_string.substring (1, i - 1).to_integer_32
-			end
-		end
 
 	capitalized (a_string: READABLE_STRING_GENERAL): READABLE_STRING_GENERAL
 			-- `a_string', where the first character is converted to upper case.

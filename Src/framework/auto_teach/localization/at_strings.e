@@ -115,10 +115,6 @@ feature -- Code output
 
 	code_arguments_placeholder: STRING = "-- Your arguments here!"
 
-		-- TODO: remove this, use the other placeholder
-
-	arguments_placeholder: STRING = "(replace_this_with_your_arguments: ANY)"
-
 feature -- Meta-commands
 
 	meta_command_prefix: STRING = "#"

@@ -1,6 +1,9 @@
 note
-	description: "Summary description for {AT_HINTER_PROCESSING_ORACLE}." -- TODO
-	author: ""
+	description: "[
+		Oracle for class processing. Constantly informed about the status of the analysis,
+		can always answer the question: are we supposed to output the current block or not?
+		]"
+	author: "Paolo Antonucci"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -57,7 +60,7 @@ feature -- Meta-command processing interface
 			l_tristate: AT_TRI_STATE_BOOLEAN
 			l_block_type: AT_BLOCK_TYPE
 		do
-			last_hint := Void
+			last_command_output := Void
 			l_line := a_line.twin
 			l_min_level := 0
 			l_max_level := {INTEGER}.max_value
@@ -147,8 +150,7 @@ feature -- Meta-command processing interface
 						end
 					end
 				elseif l_command_word.same_string (at_strings.hint_command) then
-						-- TODO: This must also be changed a bit.
-					last_hint := a_line.twin
+					last_command_output := a_line.twin
 					l_recognized := True
 				elseif l_command_word.same_string (at_strings.placeholder_command) then
 					l_tristate := on_off_to_tristate (l_line)
@@ -182,9 +184,7 @@ feature -- Meta-command processing interface
 			message_output_action := a_action
 		end
 
-		-- TODO: rename to last_command_output
-
-	last_hint: detachable STRING
+	last_command_output: detachable STRING
 			-- The output of the last meta-command, to be printed to the output.
 
 feature {NONE} -- Meta-command processing
@@ -304,26 +304,18 @@ feature -- Status signaling: cool new things
 			hiding_stack.put (l_hiding_status)
 			hiding_stack.replace (l_hiding_status or (not current_block_logical_visibility))
 
-				-- TODO: test with the following line and see if I really get an invariant violation.
-				-- hiding_stack.put (l_hiding_status or (not current_block_logical_visibility))
-
 			set_output_enabled
 		ensure
 			block_on_top_of_stack: block_stack.item.block_type = a_block_type
 		end
 
-		-- TODO: rename
-
-	output_enabled_revenge: BOOLEAN
+	output_enabled: BOOLEAN
 			-- Should the current section be output or not?
 
 	set_output_enabled
-			-- Update the `output_enabled_revenge' with the correct up-to-date value.
-		local
-			l_temp: AT_BLOCK_VISIBILITY -- TODO remove
+			-- Update the `output_enabled' with the correct up-to-date value.
 		do
-			l_temp := blocks_visibility [enum_block_type.bt_instruction]
-			output_enabled_revenge := current_block_effective_visibility
+			output_enabled := current_block_effective_visibility
 		end
 
 	current_block_effective_visibility: BOOLEAN
@@ -405,7 +397,7 @@ feature {NONE} -- Implementation
 		do
 			options := a_options
 			original_options := a_options.twin
-			output_enabled_revenge := True
+			output_enabled := True
 			create {ARRAYED_STACK [AT_BLOCK_VISIBILITY]} block_stack.make (32)
 			create {ARRAYED_STACK [BOOLEAN]} hiding_stack.make (32)
 			create {ARRAYED_STACK [AT_TRI_STATE_BOOLEAN]} global_content_visibility_stack.make (32)
@@ -414,7 +406,7 @@ feature {NONE} -- Implementation
 				-- output_enabled := True
 		end
 
-	initialize_block_visibility_table -- TODO: get rid of this?
+	initialize_block_visibility_table
 		local
 			l_block_type: AT_BLOCK_TYPE
 			l_block: AT_BLOCK_VISIBILITY

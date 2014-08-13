@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {AT_HINT_TABLE}." -- TODO
-	author: ""
+	description: "Visibility table for code block types. Each row represents a block type, each column a hint level."
+	author: "Paolo Antonucci"
 	date: "$Date$"
 	revision: "$Revision$"
 

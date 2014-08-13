@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {AT_ENUM}." -- TODO
-	author: ""
+	description: "An enumeration type."
+	author: "Paolo Antonucci"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -16,7 +16,7 @@ inherit
 
 feature -- Access
 
-		-- TODO: feature comments
+		-- TODO: feature comments here and on other classes.
 
 	name: STRING
 		deferred

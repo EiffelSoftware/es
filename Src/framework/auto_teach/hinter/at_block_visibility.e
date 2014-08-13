@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {AT_HINTER_BLOCK_VISIBILITY}." -- TODO
-	author: ""
+	description: "Visibility settings for a type of code block."
+	author: "Paolo Antonucci"
 	date: "$Date$"
 	revision: "$Revision$"
 

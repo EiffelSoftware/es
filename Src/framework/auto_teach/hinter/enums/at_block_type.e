@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {AT_TEST_ENUM_VALUE}." -- TODO
-	author: ""
+	description: "Enum value for block types."
+	author: "Paolo Antonucci"
 	date: "$Date$"
 	revision: "$Revision$"
 

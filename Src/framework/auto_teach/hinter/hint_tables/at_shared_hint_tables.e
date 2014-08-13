@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {AT_SHARED_HINT_TABLES}."
-	author: ""
+	description: "Shared instances of the default hint tables."
+	author: "Paolo Antonucci"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -29,7 +29,7 @@ feature {NONE}
 			-- Loads a custom hint table from the specified file path\
 			-- and makes it accessible in `custom_hint_table'.
 		do
-				-- TODO
+				-- TODO load from file
 		end
 
 end

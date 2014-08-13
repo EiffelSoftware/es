@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {AT_ENUM_VALUE}." -- TODO
+	description: "Value for an enum type."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

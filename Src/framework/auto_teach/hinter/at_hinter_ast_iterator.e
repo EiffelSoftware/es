@@ -145,11 +145,12 @@ feature {NONE} -- Break processing
 		do
 			if oracle.is_meta_command (a_break_line) then
 				oracle.process_meta_command (a_break_line)
-				if attached oracle.last_hint as l_last_hint then
+				if attached oracle.last_command_output as l_last_hint then
 					output_hint (l_last_hint)
 				end
 			else
-				if oracle.current_content_visibility /= Tri_false and oracle.output_enabled_revenge then
+					-- Remember: comments/breaks visibility in a region depends on its content visibility.
+				if oracle.output_enabled and oracle.current_content_visibility /= Tri_false then
 					put_string_to_context (a_break_line)
 					last_unprinted_break_line := Void
 				else
@@ -172,29 +173,39 @@ feature {NONE} -- Hint processing
 			l_line: STRING
 			l_hint_level: INTEGER
 			l_indentation: INTEGER
+
+				-- The following variable means: are we currently in a region where breaks are processed?
+			l_breaks_are_processed: BOOLEAN
 		do
 			l_line := a_line.twin
-			l_line.left_adjust
-			if oracle.current_content_visibility.is_false then
-					-- Use the indentation of the current section for indenting the hint.
-				l_indentation := current_indentation
 
-					-- We are in a region were breaks are not printed.
-					-- The following should translate in practice to printing a return character.
-				print_last_unprinted_break
-			else
+				-- Remove both the initial tabs and the final return character.
+			l_line.adjust
+			l_breaks_are_processed := not oracle.current_content_visibility.is_false
+			if l_breaks_are_processed then
+					-- We are in a region were breaks are normally printed.
+					-- The return character at the end of the previous line
+					-- should have been printed. We are on a new line,
+					-- no need to print a return characted by ourselves.
+
 					-- Keep the original indentation of the hint line.
 				l_indentation := count_leading ('%T', a_line)
+			else
+					-- We are in a region were breaks are not printed.
+					-- The last return character was not printed, but it
+					-- should have been stored in `last_unprinted_break'.
+					-- Leave it where it is and print one manually.
+				put_string_forced ("%N", False)
 
-					-- We are in a region were breaks are normally printed.
+					-- Use the indentation of the current section for indenting the hint.
+				l_indentation := current_indentation
 			end
 			put_string_forced (tab_string (l_indentation), False)
-			put_string_forced (l_line, False) -- Remember that `l_line' ends with a %N character.
-				-- put_string_forced (tab_string (l_indentation), False)
-			if oracle.current_content_visibility.is_false then
-					-- We need to leave things as we found them, so re-indent the line.
-					-- TODO: Is this really a good idea?
-				put_string_forced (tab_string (l_indentation), False)
+			put_string_forced (l_line, False)
+
+			if l_breaks_are_processed then
+					-- We were (most likely) on a new line, we must restore the same state.
+				put_string_forced ("%N", False)
 			end
 		end
 
@@ -356,7 +367,7 @@ feature {NONE} -- Implementation
 			-- Puts `a_string' to the context.
 			-- Basically has the same function as put_string, but accepting a string.
 		do
-			if oracle.output_enabled_revenge then
+			if oracle.output_enabled then
 				print_last_unprinted_break
 				context.add_string (a_string)
 				blank_line_inserted := False
@@ -442,7 +453,7 @@ feature {AST_EIFFEL} -- Visitors
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.bt_arguments)
 			safe_process (a_as.lparan_symbol (match_list))
-			if oracle.output_enabled_revenge and then oracle.current_content_visibility /= Tri_false then
+			if oracle.output_enabled and then oracle.current_content_visibility /= Tri_false then
 				safe_process (a_as.arguments)
 			else
 					-- Hardcoded in this case. Not very nice, but if the input is correctly indented,
@@ -464,7 +475,7 @@ feature {AST_EIFFEL} -- Visitors
 			l_indentation := indentation (a_as.local_keyword (match_list))
 			safe_process (a_as.local_keyword (match_list))
 			current_indentation := l_indentation + 1
-			if oracle.output_enabled_revenge and oracle.current_content_visibility /= Tri_false then
+			if oracle.output_enabled and oracle.current_content_visibility /= Tri_false then
 				safe_process (a_as.locals)
 			else
 				put_string_forced ("%N", False)
