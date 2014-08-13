@@ -17,8 +17,6 @@ inherit {NONE}
 create
 	make_with_options
 
-	-- TODO: Reorganize feature clauses
-
 feature -- Oracle
 
 	output_enabled: BOOLEAN
@@ -53,23 +51,24 @@ feature -- Status signaling
 		end
 
 	block_type_call_stack: STACK [AT_BLOCK_TYPE]
-		-- Stack recording the calls made to begin/end_process_block.
-		-- Doesn't keep anything else into account.
-		-- It is exposed to clients and only exists for contracts.
+			-- Stack recording the calls made to begin/end_process_block.
+			-- Doesn't keep anything else into account.
+			-- It is exposed to clients and only exists for contracts.
 
 	begin_process_block (a_block_type: AT_BLOCK_TYPE)
+			-- Signal the oracle that a block of type `a_block_type' is about to be processed.
 		local
 			l_block_type: AT_BLOCK_TYPE
 			l_hiding_status: BOOLEAN
 			l_local_content_visibility_status, l_global_content_visibility_status: AT_TRI_STATE_BOOLEAN
-			l_block_visibility, l_block_visibility_in_table: AT_BLOCK_VISIBILITY
+			l_block_visibility, l_block_visibility_in_table: AT_BLOCK_VISIBILITY_DESCRIPTOR
 		do
 			l_block_type := a_block_type
 			l_block_visibility_in_table := blocks_visibility [l_block_type]
 			l_block_visibility := l_block_visibility_in_table.twin
 
-			if attached {AT_HYBRID_BLOCK_VISIBILITY} l_block_visibility as l_hybrid_block_visiblity and then
-				attached {AT_HYBRID_BLOCK_VISIBILITY} l_block_visibility_in_table as l_hybrid_block_visiblity_in_table then
+			if attached {AT_HYBRID_BLOCK_VISIBILITY_DESCRIPTOR} l_block_visibility as l_hybrid_block_visiblity and then
+				attached {AT_HYBRID_BLOCK_VISIBILITY_DESCRIPTOR} l_block_visibility_in_table as l_hybrid_block_visiblity_in_table then
 
 				if not (l_hybrid_block_visiblity.local_treat_as_complex_override.imposed_on_bool (l_hybrid_block_visiblity.global_treat_as_complex)) then
 						-- We must treat this block as if it were a simple.
@@ -102,7 +101,7 @@ feature -- Status signaling
 
 
 
-			if attached {AT_COMPLEX_BLOCK_VISIBILITY} l_block_visibility as l_complex_block_visibility then
+			if attached {AT_COMPLEX_BLOCK_VISIBILITY_DESCRIPTOR} l_block_visibility as l_complex_block_visibility then
 					-- For complex blocks, compute the new valid content visibility policy (to be pushed into the stack).
 
 					-- New global policy: default (from the hint table) content visibility for this block type (if defined),
@@ -143,6 +142,7 @@ feature -- Status signaling
 
 
 	end_process_block (a_block_type: AT_BLOCK_TYPE)
+			-- Signal the oracle that the processing of a block of type `a_block_type' is completed.
 		require
 			block_on_top_of_stack: not block_type_call_stack.is_empty and then block_type_call_stack.item = a_block_type
 		do
@@ -341,91 +341,110 @@ feature -- Meta-command processing interface
 feature {NONE} -- Implementation: meta-command processing
 
 	set_block_global_visibility_override (a_block_type: AT_BLOCK_TYPE; a_value: AT_TRI_STATE_BOOLEAN)
+			-- Sets the global visibility override flag for block type `a_block_type' to `a_value'.
 		do
 			blocks_visibility [a_block_type].global_visibility_override := a_value
 		end
 
 	set_block_local_visibility_override (a_block_type: AT_BLOCK_TYPE; a_value: AT_TRI_STATE_BOOLEAN)
+			-- Sets the local visibility override flag for block type `a_block_type' to `a_value'.
 		do
 			blocks_visibility [a_block_type].local_visibility_override := a_value
 		end
 
 	set_block_content_global_visibility_override (a_block_type: AT_BLOCK_TYPE; a_value: AT_TRI_STATE_BOOLEAN)
+			-- Sets the global content visibility override flag for block type `a_block_type' to `a_value'.
 		require
 			complex_block: enum_block_type.is_complex_block_type (a_block_type)
 		local
-			l_block: AT_BLOCK_VISIBILITY
+			l_block: AT_BLOCK_VISIBILITY_DESCRIPTOR
 		do
 			l_block := blocks_visibility [a_block_type]
 			check
-				attached {AT_COMPLEX_BLOCK_VISIBILITY} l_block
+				attached {AT_COMPLEX_BLOCK_VISIBILITY_DESCRIPTOR} l_block
 			end
-			if attached {AT_COMPLEX_BLOCK_VISIBILITY} l_block as l_complex_block then
+			if attached {AT_COMPLEX_BLOCK_VISIBILITY_DESCRIPTOR} l_block as l_complex_block then
 				l_complex_block.global_content_visibility_override := a_value
 			end
 		end
 
 	set_block_content_local_visibility_override (a_block_type: AT_BLOCK_TYPE; a_value: AT_TRI_STATE_BOOLEAN)
+			-- Sets the local content visibility override flag for block type `a_block_type' to `a_value'.
 		require
 			complex_block: enum_block_type.is_complex_block_type (a_block_type)
 		local
-			l_block: AT_BLOCK_VISIBILITY
+			l_block: AT_BLOCK_VISIBILITY_DESCRIPTOR
 		do
 			l_block := blocks_visibility [a_block_type]
 			check
-				attached {AT_COMPLEX_BLOCK_VISIBILITY} l_block
+				attached {AT_COMPLEX_BLOCK_VISIBILITY_DESCRIPTOR} l_block
 			end
-			if attached {AT_COMPLEX_BLOCK_VISIBILITY} l_block as l_complex_block then
+			if attached {AT_COMPLEX_BLOCK_VISIBILITY_DESCRIPTOR} l_block as l_complex_block then
 				l_complex_block.local_content_visibility_override := a_value
 			end
 		end
 
 	set_block_global_treat_as_complex (a_block_type: AT_BLOCK_TYPE; a_value: BOOLEAN)
+			-- Sets the (global) policy for treating blocks of type `a_block_type' as complex
+			-- (as opposed to treating them as simple blocks) to `a_value'.
 		require
 			hybrid_block: enum_block_type.is_hybrid_block_type (a_block_type)
 		local
-			l_block: AT_BLOCK_VISIBILITY
+			l_block: AT_BLOCK_VISIBILITY_DESCRIPTOR
 		do
 			l_block := blocks_visibility [a_block_type]
 			check
-				attached {AT_HYBRID_BLOCK_VISIBILITY} l_block
+				attached {AT_HYBRID_BLOCK_VISIBILITY_DESCRIPTOR} l_block
 			end
-			if attached {AT_HYBRID_BLOCK_VISIBILITY} l_block as l_hybrid_block then
+			if attached {AT_HYBRID_BLOCK_VISIBILITY_DESCRIPTOR} l_block as l_hybrid_block then
 				l_hybrid_block.global_treat_as_complex := a_value
 			end
 		end
 
 	set_block_local_treat_as_complex_override (a_block_type: AT_BLOCK_TYPE; a_value: AT_TRI_STATE_BOOLEAN)
+			-- Sets the local override flag for treating blocks of type `a_block_type' as complex
+			-- (as opposed to treating them as simple blocks) to `a_value'.
 		require
 			hybrid_block: enum_block_type.is_hybrid_block_type (a_block_type)
 		local
-			l_block: AT_BLOCK_VISIBILITY
+			l_block: AT_BLOCK_VISIBILITY_DESCRIPTOR
 		do
 			l_block := blocks_visibility [a_block_type]
 			check
-				attached {AT_HYBRID_BLOCK_VISIBILITY} l_block
+				attached {AT_HYBRID_BLOCK_VISIBILITY_DESCRIPTOR} l_block
 			end
-			if attached {AT_HYBRID_BLOCK_VISIBILITY} l_block as l_hybrid_block then
+			if attached {AT_HYBRID_BLOCK_VISIBILITY_DESCRIPTOR} l_block as l_hybrid_block then
 				l_hybrid_block.local_treat_as_complex_override := a_value
 			end
 		end
 
 feature {NONE} -- Implementation: block visibility
 
-	block_stack: STACK [AT_BLOCK_VISIBILITY]
+	blocks_visibility: HASH_TABLE [AT_BLOCK_VISIBILITY_DESCRIPTOR, AT_BLOCK_TYPE]
+			-- Table containing a the block visibility descriptor
+			-- corresponding to every type.
 
-	blocks_visibility: HASH_TABLE [AT_BLOCK_VISIBILITY, AT_BLOCK_TYPE]
+	block_stack: STACK [AT_BLOCK_VISIBILITY_DESCRIPTOR]
+			-- Stack of block visibility descriptors containing
+			-- descriptors of the blocks we are currently in.
 
 	hiding_stack: STACK [BOOLEAN]
+			-- Stack, parallel to `block_stack', indicating, for every
+			-- level, wether we are inside an effectively hidden block.
 
 	in_hidden_block: BOOLEAN
+			-- Are we inside an effectively hidden block right now?
 		do
 			Result := (not hiding_stack.is_empty and then hiding_stack.item = True)
 		end
 
 	global_content_visibility_stack: STACK [AT_TRI_STATE_BOOLEAN]
+			-- Stack, parallel to `block_stack', indicating, for
+			-- every level, the current state of global content visibility.
 
 	local_content_visibility_stack: STACK [AT_TRI_STATE_BOOLEAN]
+			-- Stack, parallel to `block_stack', indicating, for
+			-- every level, the current state of local content visibility.
 
 	containing_simple_block_effective_visibility: AT_TRI_STATE_BOOLEAN
 		-- If we are inside a simple block, what was that block's effective visibility?
@@ -480,7 +499,7 @@ feature {NONE} -- Implementation: block visibility
 			-- be "detached" in the syntax tree.
 		local
 			l_current_value: AT_TRI_STATE_BOOLEAN
-			l_top_block: AT_BLOCK_VISIBILITY
+			l_top_block: AT_BLOCK_VISIBILITY_DESCRIPTOR
 		do
 			if block_stack.is_empty then
 				Result := True
@@ -496,7 +515,7 @@ feature {NONE} -- Implementation: block visibility
 
 					-- Complex blocks are not subject to the content visibility policy.
 					-- Simple blocks contained in them will be subject to it.
-				if not attached {AT_COMPLEX_BLOCK_VISIBILITY} l_top_block then
+				if not attached {AT_COMPLEX_BLOCK_VISIBILITY_DESCRIPTOR} l_top_block then
 						-- Apply the current global content visibility policy,
 						-- which is stored on the top of the respective stack.
 					l_current_value := l_current_value.subjected_to (global_content_visibility_stack.item)
@@ -506,7 +525,7 @@ feature {NONE} -- Implementation: block visibility
 				l_current_value := l_current_value.subjected_to (l_top_block.global_visibility_override)
 
 					-- Once again, only apply the content visibility policy if this is a not a complex block.
-				if not attached {AT_COMPLEX_BLOCK_VISIBILITY} l_top_block then
+				if not attached {AT_COMPLEX_BLOCK_VISIBILITY_DESCRIPTOR} l_top_block then
 						-- Apply the current local content visibility policy (i.e. the one coming from
 						-- the innermost #SHOW_NEXT_CONTENT command affecting the current block).
 						-- It is stored on the top of the respective stack/
@@ -526,16 +545,20 @@ feature {NONE} -- Implementation: block visibility
 feature {NONE} -- Implementation: miscellaneous
 
 	options: AT_OPTIONS
+			-- Current processing options
 
 	original_options: AT_OPTIONS
+			-- A copy of the original options passed to the initialization procedure.
+			-- This copy is restored at the end of the processing of every class.
 
 	make_with_options (a_options: AT_OPTIONS)
+			-- Initialization for `Current'.
 		do
 			options := a_options
 			original_options := a_options.twin
 			output_enabled := True
 			create {ARRAYED_STACK [AT_BLOCK_TYPE]} block_type_call_stack.make (32)
-			create {ARRAYED_STACK [AT_BLOCK_VISIBILITY]} block_stack.make (32)
+			create {ARRAYED_STACK [AT_BLOCK_VISIBILITY_DESCRIPTOR]} block_stack.make (32)
 			create {ARRAYED_STACK [BOOLEAN]} hiding_stack.make (32)
 			create {ARRAYED_STACK [AT_TRI_STATE_BOOLEAN]} global_content_visibility_stack.make (32)
 			create {ARRAYED_STACK [AT_TRI_STATE_BOOLEAN]} local_content_visibility_stack.make (32)
@@ -544,10 +567,11 @@ feature {NONE} -- Implementation: miscellaneous
 		end
 
 	initialize_block_visibility_table
+			-- Fill `blocks_visibility' with the proper descriptors.
 		local
 			l_block_type: AT_BLOCK_TYPE
-			l_block: AT_BLOCK_VISIBILITY
-			l_complex_block: AT_COMPLEX_BLOCK_VISIBILITY
+			l_block: AT_BLOCK_VISIBILITY_DESCRIPTOR
+			l_complex_block: AT_COMPLEX_BLOCK_VISIBILITY_DESCRIPTOR
 		do
 			create blocks_visibility.make (32)
 			across
@@ -555,9 +579,9 @@ feature {NONE} -- Implementation: miscellaneous
 			loop
 				l_block_type := ic.item
 				if enum_block_type.is_hybrid_block_type (l_block_type) then
-					create {AT_HYBRID_BLOCK_VISIBILITY} l_block.make_with_two_agents (l_block_type, agent block_default_visibility, agent block_content_default_visibility)
+					create {AT_HYBRID_BLOCK_VISIBILITY_DESCRIPTOR} l_block.make_with_two_agents (l_block_type, agent block_default_visibility, agent block_content_default_visibility)
 				elseif enum_block_type.is_complex_block_type (l_block_type) then
-					create {AT_COMPLEX_BLOCK_VISIBILITY} l_block.make_with_two_agents (l_block_type, agent block_default_visibility, agent block_content_default_visibility)
+					create {AT_COMPLEX_BLOCK_VISIBILITY_DESCRIPTOR} l_block.make_with_two_agents (l_block_type, agent block_default_visibility, agent block_content_default_visibility)
 				else
 					create l_block.make_with_visibility_agent (l_block_type, agent block_default_visibility)
 				end
@@ -566,11 +590,15 @@ feature {NONE} -- Implementation: miscellaneous
 		end
 
 	block_default_visibility (a_block_type: AT_BLOCK_TYPE): BOOLEAN
+			-- What is the default visibility for `a_block_type'
+			-- according to the current hint table?
 		do
 			Result := options.hint_table.visibility_for (a_block_type, options.hint_level).visibility
 		end
 
 	block_content_default_visibility (a_block_type: AT_BLOCK_TYPE): AT_TRI_STATE_BOOLEAN
+			-- What is the default content visibility for
+			-- `a_block_type' according to the current hint table?
 		do
 			Result := options.hint_table.content_visibility_for (a_block_type, options.hint_level).visibility
 		end
@@ -635,11 +663,11 @@ feature {NONE} -- Implementation: miscellaneous
 
 						-- The block visibility descriptor is an instance of `AT_COMPLEX_BLOCK_VISIBILITY'
 						-- if and only if this is a complex block type.
-					Result := Result and (enum_block_type.is_complex_block_type (ic.item) = (attached {AT_COMPLEX_BLOCK_VISIBILITY} l_block_visibility))
+					Result := Result and (enum_block_type.is_complex_block_type (ic.item) = (attached {AT_COMPLEX_BLOCK_VISIBILITY_DESCRIPTOR} l_block_visibility))
 
 						-- The block visibility descriptor is an instance of `AT_HYBRID_BLOCK_VISIBILITY'
 						-- if and only if this is a hybrid block type.
-					Result := Result and (enum_block_type.is_hybrid_block_type (ic.item) = (attached {AT_HYBRID_BLOCK_VISIBILITY} l_block_visibility))
+					Result := Result and (enum_block_type.is_hybrid_block_type (ic.item) = (attached {AT_HYBRID_BLOCK_VISIBILITY_DESCRIPTOR} l_block_visibility))
 				else
 					Result := False
 				end

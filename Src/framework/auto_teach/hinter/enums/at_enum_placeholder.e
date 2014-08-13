@@ -19,7 +19,7 @@ feature -- Access
 	name: STRING = "placeholder"
 
 	value_type: AT_PLACEHOLDER
-			-- The value type of this enum. For typing only.
+			-- <Precursor>
 		do
 			check
 				callable: False
@@ -41,6 +41,7 @@ feature -- Access
 feature {AT_ENUM} -- Value list
 
 	value_list: ARRAY [TUPLE [numerical_value: INTEGER; name: STRING]]
+			-- Effective list of values.
 		once ("PROCESS")
 			Result := <<	[0, "no_placeholder"],
 							[1, "standard_placeholder"],
@@ -49,6 +50,7 @@ feature {AT_ENUM} -- Value list
 		end
 
 	inline_placeholders: ARRAY [AT_PLACEHOLDER]
+			-- List of placeholders that must be inserted inline.
 		once ("PROCESS")
 			Result := <<Ph_none, Ph_if_condition>>
 		end

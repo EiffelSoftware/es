@@ -20,6 +20,7 @@ create
 feature -- Enum type
 
 	enum_type: AT_ENUM_BLOCK_TYPE
+			-- <Precursor>
 		once ("PROCESS")
 			create Result
 		end

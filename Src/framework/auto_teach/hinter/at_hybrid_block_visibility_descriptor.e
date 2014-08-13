@@ -8,7 +8,7 @@ note
 	revision: "$Revision$"
 
 class
-	AT_HYBRID_BLOCK_VISIBILITY
+	AT_HYBRID_BLOCK_VISIBILITY_DESCRIPTOR
 
 inherit
 
@@ -25,7 +25,7 @@ feature -- Treatment
 
 	global_treat_as_complex: BOOLEAN assign set_global_treat_as_complex
 		-- The global policy of treating this block type as a complex block.
-		-- This is not a tristate, it must always be set to some value.
+		-- This is not a tri-state boolean, it must always be set to some value.
 
 	local_treat_as_complex_override: AT_TRI_STATE_BOOLEAN assign set_local_treat_as_complex_override
 		-- The local policy of treating this block type as a complex block.
@@ -41,11 +41,13 @@ feature -- Treatment
 feature {NONE} -- Setters
 
 	set_global_treat_as_complex (a_value: BOOLEAN)
+			-- Set `global_treat_as_complex' to `a_value'.
 		do
 			global_treat_as_complex := a_value
 		end
 
 	set_local_treat_as_complex_override (a_value: AT_TRI_STATE_BOOLEAN)
+			-- Set `local_treat_as_complex_override' to `a_value'.
 		do
 			local_treat_as_complex_override := a_value
 		end

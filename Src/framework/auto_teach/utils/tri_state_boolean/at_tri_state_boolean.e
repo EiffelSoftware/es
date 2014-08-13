@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {AT_TRI_STATE_BOOLEAN}."
-	author: ""
+	description: "Represents a variable which can assume the following values: True, False, Undefined"
+	author: "Paolo Antonucci"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -22,6 +22,8 @@ create
 feature -- Value
 
 	value: BOOLEAN
+			-- Boolean value of `Current'.
+			-- Only callable if the value of `Current' is defined (i.e. not 'undefined').
 		require
 			is_defined
 		do
@@ -29,23 +31,28 @@ feature -- Value
 		end
 
 	is_defined: BOOLEAN
+			-- Is `Current' set to a boolean value?
 
 	is_undefined: BOOLEAN
+			-- Is `Current' Undefined?
 		do
 			Result := not is_defined
 		end
 
 	is_true: BOOLEAN
+			-- Is `Current' True?
 		do
 			Result := is_defined and then value
 		end
 
 	is_false: BOOLEAN
+			-- Is `Current' False?
 		do
 			Result := is_defined and then not value
 		end
 
 	out: STRING
+			-- <Precursor>
 		do
 			if is_defined then
 				Result := value.out
@@ -57,27 +64,32 @@ feature -- Value
 feature -- Assignment
 
 	set_value (a_value: BOOLEAN)
+			-- Set `Current' to `a_value'.
 		do
 			is_defined := True
 			internal_value := a_value
 		end
 
 	set_true
+			-- Set `Current' to True.
 		do
 			set_value (True)
 		end
 
 	set_false
+			-- Set `Current' to False.
 		do
 			set_value (False)
 		end
 
 	set_undefined
+			-- Set `Current' to Undefined.
 		do
 			is_defined := False
 		end
 
 	from_string (a_string: READABLE_STRING_GENERAL)
+			-- Parse a string representation of a tri-state boolean and set `Current' accordingly.
 		require
 			valid_string: is_valid_string_value (a_string)
 		local
@@ -99,6 +111,7 @@ feature -- Assignment
 		end
 
 	is_valid_string_value (a_string: READABLE_STRING_GENERAL): BOOLEAN
+			-- Is `a_string' a valid string representation of a tri-state boolean?
 		local
 			l_string: READABLE_STRING_GENERAL
 		do

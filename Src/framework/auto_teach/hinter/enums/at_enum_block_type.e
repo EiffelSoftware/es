@@ -19,7 +19,7 @@ feature -- Access
 	name: STRING = "block_type"
 
 	value_type: AT_BLOCK_TYPE
-			-- The value type of this enum. For typing only.
+			-- <Precursor>
 		do
 			check
 				callable: False
@@ -41,6 +41,7 @@ feature -- Access
 feature {AT_ENUM} -- Value list
 
 	value_list: ARRAY [TUPLE [numerical_value: INTEGER; name: STRING]]
+			-- Effective list of values.
 		once ("PROCESS")
 			Result := <<	[1, at_strings.Bt_feature],
 							[2, at_strings.Bt_arguments],

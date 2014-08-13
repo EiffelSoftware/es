@@ -1,6 +1,6 @@
 note
-	description: "Value for an enum type."
-	author: ""
+	description: "Value for an enumeration type."
+	author: "Paolo Antonucci"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -24,7 +24,7 @@ inherit
 feature -- Access
 
 	enum_type: AT_ENUM
-			-- The enum type of this value.
+			-- The enumeration type of this value.
 		deferred
 		end
 
@@ -32,10 +32,10 @@ feature -- Access
 			-- Was `Current' initialized to a meaningful value?
 
 	numerical_value: INTEGER
-			-- The numerical value of this enum value. Immutable.
+			-- The numerical value of this enumeration value. Immutable.
 
 	value_name: STRING
-			-- The name of this enum value.
+			-- The name of this enumeration value.
 		require
 			initialized: initialized
 		do
@@ -43,6 +43,7 @@ feature -- Access
 		end
 
 	is_equal (a_other: like Current): BOOLEAN
+			-- <Precursor>
 		do
 			Result := a_other.enum_type.is_equal (enum_type) and then a_other.numerical_value.is_equal (numerical_value)
 		end
@@ -78,6 +79,8 @@ feature {NONE} -- Initialization - to be used by descendants
 invariant
 
 		-- 'Dented' invariant, disabled during initialization.
+		-- This is necessary because inheriting classes will be expanded...
+		-- TODO: Change this.
 	valid_numerical_value: not initialized or else enum_type.is_valid_numerical_value (numerical_value)
 
 end

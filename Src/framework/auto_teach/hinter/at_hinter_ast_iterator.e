@@ -212,8 +212,12 @@ feature {NONE} -- Hint processing
 feature {NONE} -- Implementation - skipping
 
 	last_unprinted_break_line: STRING
+			-- The text of the last break that was encountered and not printed.
+			-- If it consists of multiple line, only the last line is stored here.
 
 	print_last_unprinted_break
+			-- Prints `last_unprinted_break_line' and resets it.
+			-- To be called when resuming printing after a hidden section.
 		do
 			if attached last_unprinted_break_line as l_break_line then
 					-- If we are resuming to print something after skipping a region,
@@ -411,7 +415,7 @@ feature {NONE} -- Implementation
 			-- Initialize Current
 		do
 			make_with_default_context
-			options := a_options
+			options := a_options.twin
 
 			create oracle.make_with_options (a_options)
 			oracle.set_message_output_action (agent print_message)
@@ -457,11 +461,15 @@ feature {AST_EIFFEL} -- Visitors
 		end
 
 	process_feature_as (a_as: FEATURE_AS)
+			-- Process `a_as'.
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.Bt_feature)
+
 			current_indentation := indentation (a_as.feature_name.first_token (match_list))
+
 			Precursor (a_as)
+
 			oracle.end_process_block (enum_block_type.Bt_feature)
 		end
 
@@ -472,6 +480,7 @@ feature {AST_EIFFEL} -- Visitors
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.Bt_arguments)
+
 			safe_process (a_as.lparan_symbol (match_list))
 
 				-- We would normally never skip any part of the syntax tree.
@@ -508,13 +517,11 @@ feature {AST_EIFFEL} -- Visitors
 				safe_process (l_parenthesis)
 			end
 
-
-
 			oracle.end_process_block (enum_block_type.Bt_arguments)
 		end
 
 	process_local_dec_list_as (a_as: LOCAL_DEC_LIST_AS)
-			-- Process `a_as'
+			-- Process `a_as'.
 		local
 			l_indentation: INTEGER
 			l_local_keyword: KEYWORD_AS
@@ -537,6 +544,7 @@ feature {AST_EIFFEL} -- Visitors
 			else
 				skip_with_current_placeholder
 			end
+
 			oracle.end_process_block (enum_block_type.Bt_locals)
 		end
 
@@ -550,6 +558,7 @@ feature {AST_EIFFEL} -- Visitors
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.Bt_routine_body)
+
 			if attached {DO_AS} a_as as l_do_as then
 				l_do_once_keyword := l_do_as.do_keyword (match_list)
 			elseif attached {ONCE_AS} a_as as l_once_as then
@@ -558,6 +567,7 @@ feature {AST_EIFFEL} -- Visitors
 			current_indentation := indentation (l_do_once_keyword) + 1
 			safe_process (l_do_once_keyword)
 			safe_process (a_as.compound)
+
 			oracle.end_process_block (enum_block_type.Bt_routine_body)
 		end
 
@@ -566,9 +576,11 @@ feature {AST_EIFFEL} -- Visitors
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.Bt_precondition)
+
 			safe_process (a_as.require_keyword (match_list))
 			current_indentation := indentation (a_as.require_keyword (match_list)) + 1
 			safe_process (a_as.full_assertion_list)
+
 			oracle.end_process_block (enum_block_type.Bt_precondition)
 		end
 
@@ -577,9 +589,11 @@ feature {AST_EIFFEL} -- Visitors
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.Bt_postcondition)
+
 			safe_process (a_as.ensure_keyword (match_list))
 			current_indentation := indentation (a_as.ensure_keyword (match_list)) + 1
 			safe_process (a_as.full_assertion_list)
+
 			oracle.end_process_block (enum_block_type.Bt_postcondition)
 		end
 
@@ -588,18 +602,23 @@ feature {AST_EIFFEL} -- Visitors
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.Bt_class_invariant)
+
 			safe_process (a_as.invariant_keyword (match_list))
 			current_indentation := indentation (a_as.invariant_keyword (match_list)) + 1
 			safe_process (a_as.full_assertion_list)
+
 			process_next_break (a_as)
 			oracle.end_process_block (enum_block_type.Bt_class_invariant)
 		end
 
 	process_tagged_as (a_as: TAGGED_AS)
+			-- Process `a_as'.
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.Bt_assertion)
+
 			Precursor (a_as)
+
 			process_next_break (a_as)
 			oracle.end_process_block (enum_block_type.Bt_assertion)
 		end
@@ -748,7 +767,7 @@ feature {AST_EIFFEL} -- Instructions visitors
 feature {AST_EIFFEL} -- Complex instructions visitors
 
 	process_if_as (a_as: IF_AS)
-			-- Process `a_as' as a complex block.
+			-- Process `a_as'.
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.Bt_if)
@@ -773,7 +792,7 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 		end
 
 	process_elseif_as (a_as: ELSIF_AS)
-			-- Process `a_as' as a complex block.
+			-- Process `a_as'.
 		do
 			safe_process (a_as.elseif_keyword (match_list))
 
