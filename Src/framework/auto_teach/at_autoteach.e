@@ -35,7 +35,7 @@ feature -- Interface
 			if attached {EIFFEL_CLASS_I} a_class as l_eiffel_class and then attached l_eiffel_class.compiled_class as l_compiled then
 				input_classes.extend (l_compiled)
 			else
-				print_message (at_strings.error_class_not_compiled (a_class.name))
+				print_message (at_strings.error + ": " + at_strings.error_class_not_compiled (a_class.name))
 			end
 		end
 
@@ -49,14 +49,66 @@ feature -- Interface
 			-- Run autoteach.
 		local
 			l_out_file: PLAIN_TEXT_FILE
-			l_test1, l_test2, l_test3: AT_TRI_STATE_BOOLEAN
+			l_output_path: PATH
+			l_dir: DIRECTORY
+			l_io, l_stop: BOOLEAN
 		do
-			across
-				input_classes as ic
-			loop
-				create l_out_file.make_create_read_write (options.output_directory.path.extended (ic.item.name + ".e").out)
-				process_class (ic.item, l_out_file)
-				l_out_file.close
+			if not l_io then
+				l_io := True
+				if not options.output_directory.exists then
+					options.output_directory.recursive_create_dir
+				end
+				if not options.output_directory.is_writable then
+					(create {DEVELOPER_EXCEPTION}).raise
+				end
+				l_io := False
+				from
+					options.hint_level := options.min_hint_level
+				until
+					l_stop
+				loop
+
+					print_message (at_strings.running_at_level (options.hint_level))
+
+					across
+						input_classes as ic
+					loop
+						if options.create_level_subfolders then
+							l_io := True
+							create l_dir.make_with_path (options.output_directory.path.extended (options.hint_level.out))
+							if not l_dir.exists then
+								l_dir.recursive_create_dir
+							end
+							l_io := False
+						else
+							l_dir := options.output_directory
+						end
+
+						l_io := True
+						create l_out_file.make_create_read_write (l_dir.path.extended (ic.item.name + ".e").out)
+						l_io := False
+
+						process_class (ic.item, l_out_file)
+						l_out_file.close
+					end
+
+						-- We do the following instead of just writing
+						-- "until options.hint_level > options.max_hint_level"
+						-- because doing so could cause an attempt to set
+						-- options.hint_level to an excessively high value
+						-- and cause a contract violation.
+					if options.hint_level = options.max_hint_level then
+						l_stop := True
+					else
+						options.hint_level := options.hint_level + 1
+					end
+				end
+			else
+				print_message (at_strings.error + ": " + at_strings.error_no_output_dir)
+			end
+		rescue
+			if l_io then
+				retry
 			end
 		end
 

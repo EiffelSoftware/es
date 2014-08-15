@@ -166,4 +166,44 @@ feature {NONE} -- Utility
 			end
 		end
 
+	parse_natural_range_string (a_string: READABLE_STRING_GENERAL; a_default_second: INTEGER): TUPLE [first: INTEGER; second: INTEGER]
+			-- Parses a range string with format "3-8". If the string is a simple number
+			-- without dash, then `a_default_second' is returned as the second number.
+			-- The returned numbers are guaranteed to be nonnegative (unless `a_default_second'
+			-- is returned as the second number).
+			-- Void is returned if parsing failed.
+		local
+			l_first_string, l_second_string: READABLE_STRING_GENERAL
+			l_strings: LIST [READABLE_STRING_GENERAL]
+			l_error: BOOLEAN
+		do
+			l_strings := a_string.split ('-')
+			if l_strings.count = 1 then
+				if l_strings.first.is_natural_32 then
+					create Result
+					Result.first := l_strings.first.to_integer_32
+					Result.second := a_default_second
+				else
+					Result := Void
+				end
+			elseif l_strings.count = 2 then
+				create Result
+				if l_strings.first.is_natural_32 then
+					Result.first := l_strings.first.to_integer_32
+				else
+					l_error := True
+				end
+				if l_strings.last.is_natural_32 then
+					Result.second := l_strings.last.to_integer_32
+				else
+					l_error := True
+				end
+				if l_error then
+					Result := Void
+				end
+			else
+				Result := Void
+			end
+		end
+
 end

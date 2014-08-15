@@ -23,10 +23,32 @@ feature -- General
 			Result := locale.translation ("Error")
 		end
 
+	warning: STRING
+		do
+			Result := locale.translation ("Warning")
+		end
+
 	meta_command: STRING
 		do
 			Result := locale.translation ("meta-command")
 		end
+
+feature -- Command line switches
+
+	at_class: STRING = "-at-class"
+	at_classes: STRING = "-at-classes"
+
+	at_hint_level: STRING = "-at-hint-level"
+
+	at_code_placeholder: STRING = "-at-code-placeholder"
+
+	at_output_path: STRING = "-at-output-path"
+	at_level_subfolders: STRING = "-at-level-subfolders"
+
+	at_custom_hint_tables: STRING = "-at-custom-hint-table"
+
+
+
 
 feature -- Messages
 
@@ -38,6 +60,11 @@ feature -- Messages
 	welcome_message: STRING_32
 		do
 			Result := locale.translation ("Welcome to " + auto_teach + "!")
+		end
+
+	running_at_level (a_level: INTEGER): STRING_32
+		do
+			Result := locale.translation ("Running at hint level " + a_level.out.to_string_32 + ".")
 		end
 
 feature -- Warnings
@@ -52,6 +79,11 @@ feature -- Warnings
 			Result := locale.translation ("Cannot switch to custom mode, as no custom hint table has been loaded.")
 		end
 
+	warning_no_level_subfolders_option: STRING_32
+		do
+			Result := locale.translation ("A hint level range was specified without also supplying the " + at_level_subfolders + " command line switch. This will lead to the same output file(s) being overwritten on every run. The final result will be the output of the last run, the result of the other runs will be lost. Unless you are doing this for testing, you might want to supply the " + at_level_subfolders + " switch as well.")
+		end
+
 	undefined_visibility (a_block_type_names: STRING): STRING_32
 		do
 			Result := locale.translation ("Warning: one or more occurrences of the following block types have been encountered for the visibility of which was undefined (neither in the hint table, nor with annotations).+%N"
@@ -63,7 +95,7 @@ feature -- Errors
 
 	error_unrecognized_argument (a_argument: STRING): STRING_32
 		do
-			Result := locale.translation ("Syntax error: unrecognized argument '" + a_argument + "'.")
+			Result := locale.translation ("Syntax error. Unrecognized argument '" + a_argument + "'.")
 		end
 
 	error_no_class_list_specified: STRING_32
@@ -83,7 +115,7 @@ feature -- Errors
 
 	error_argument_level: STRING_32
 		do
-			Result := locale.translation ("Syntax error. Valid hint level expected.")
+			Result := locale.translation ("Syntax error. Valid hint level or hint level range expected.")
 		end
 
 	error_boolean_value: STRING_32
@@ -103,7 +135,7 @@ feature -- Errors
 
 	error_invalid_output_dir: STRING_32
 		do
-			Result := locale.translation ("The specified output directory does not exist or is not writable.")
+			Result := locale.translation ("The specified output directory is not writable or it does not exist and could not be created.")
 		end
 
 feature -- Errors with custom hint table

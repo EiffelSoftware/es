@@ -35,18 +35,18 @@ feature {NONE} -- Initialization
 			arguments_set: autoteach_arguments = a_arguments
 		end
 
-	try_add_class_with_name (a_hinter: AT_HINTER; a_class_name: STRING)
-			-- Adds class with name `a_class_name' if it is found amongst the compiled
-			-- classes to `a_analyzer'.
+	try_add_class_with_name (a_autoteach_instance: AT_AUTOTEACH; a_class_name: STRING)
+			-- Adds class with name `a_class_name' to `a_autoteach_instance',
+			-- if it exists and has been compiled.
 		do
 			if attached universe.classes_with_name (a_class_name) as l_c and then not l_c.is_empty then
 				across
 					l_c as ic
 				loop
-					a_hinter.add_class (ic.item.config_class)
+					a_autoteach_instance.add_class (ic.item.config_class)
 				end
 			else
-				output_window.add (at_strings.error_class_not_found (a_class_name))
+				output_window.add (at_strings.error + ": " + at_strings.error_class_not_found (a_class_name))
 			end
 		end
 
@@ -73,15 +73,16 @@ feature {NONE} -- Implementation
 			-- Is everything ready for execution after processing arguments?
 
 	process_arguments
-			-- Initialization for `Current'. `a_arguments' are the command-line
-			-- arguments that are relevant for the Code Analyzer.
+			-- Initialization for `Current'.
 		local
-			l_errors: ARRAYED_LIST [STRING]
+			l_errors, l_warnings: ARRAYED_LIST [STRING]
 			l_output_dir: DIRECTORY
+			l_min_max: TUPLE [min, max: INTEGER]
 		do
 			can_run := True
 			create autoteach_options.make_with_defaults
 			create l_errors.make (16)
+			create l_warnings.make (16)
 
 				-- TODO: One more false positive of CA024 here.
 			from
@@ -89,61 +90,63 @@ feature {NONE} -- Implementation
 			until
 				autoteach_arguments.after
 			loop
-				if autoteach_arguments.item.same_string ("-at-hinter") then
-					autoteach_options.should_run_hinter := true
-				elseif autoteach_arguments.item.same_string ("-at-class") or autoteach_arguments.item.same_string ("-at-classes") then
+				if autoteach_arguments.item.same_string (at_strings.at_class) or autoteach_arguments.item.same_string (at_strings.at_classes) then
 					autoteach_arguments.forth
 					if autoteach_arguments.after then
 						l_errors.force (at_strings.error_no_class_list)
-						can_run := False
 					else
 						class_name_list := autoteach_arguments.item.split (' ')
 					end
-				elseif autoteach_arguments.item.same_string ("-at-hint-level") then
+				elseif autoteach_arguments.item.same_string (at_strings.at_hint_level) then
 					autoteach_arguments.forth
-					if autoteach_arguments.after or else not autoteach_arguments.item.is_integer or else not is_valid_hint_level (autoteach_arguments.item.to_integer) then
-						l_errors.force (at_strings.error_argument_level)
-						can_run := False
-					else
-						autoteach_options.hint_level := autoteach_arguments.item.to_integer
+
+					if not autoteach_arguments.after then
+						l_min_max := parse_natural_range_string (autoteach_arguments.item, -1)
 					end
-				elseif autoteach_arguments.item.same_string ("-at-code-placeholder") then
+
+					if attached l_min_max then
+						if l_min_max.max = -1 then
+							l_min_max.max := l_min_max.min
+						end
+						if is_valid_hint_level (l_min_max.min) and is_valid_hint_level (l_min_max.max) and l_min_max.min <= l_min_max.max then
+							autoteach_options.set_hint_level_range (l_min_max.min, l_min_max.max)
+						else
+							l_min_max := Void
+						end
+					end
+
+					if not attached l_min_max then
+						l_errors.force (at_strings.error_argument_level)
+					end
+				elseif autoteach_arguments.item.same_string (at_strings.at_code_placeholder) then
 					autoteach_arguments.forth
 					if autoteach_arguments.after or else not autoteach_arguments.item.is_boolean then
-						l_errors.force ("-at-code-placeholder " + autoteach_arguments.item + "%N" + at_strings.error_boolean_value)
+						l_errors.force (at_strings.at_code_placeholder + " " + if autoteach_arguments.after then "" else autoteach_arguments.item end + "%N" + at_strings.error_boolean_value)
 						autoteach_arguments.back
 					else
 						autoteach_options.insert_code_placeholder := autoteach_arguments.item.to_boolean
 					end
-				elseif autoteach_arguments.item.same_string ("-at-output-path") then
+				elseif autoteach_arguments.item.same_string (at_strings.at_output_path) then
 					autoteach_arguments.forth
 					if autoteach_arguments.after then
 						l_errors.force (at_strings.error_no_output_dir)
-						can_run := False
 					else
 						create l_output_dir.make_with_path (create {PATH}.make_from_string (autoteach_arguments.item))
-						if not l_output_dir.is_writable then
-							l_errors.force (at_strings.error_invalid_output_dir)
-							can_run := False
-						else
-							autoteach_options.output_directory := l_output_dir
-						end
+						autoteach_options.output_directory := l_output_dir
 					end
-				elseif autoteach_arguments.item.same_string ("-at-custom-hint-table") then
+				elseif autoteach_arguments.item.same_string (at_strings.at_level_subfolders) then
+					autoteach_options.create_level_subfolders := True
+				elseif autoteach_arguments.item.same_string (at_strings.at_custom_hint_tables) then
 					autoteach_arguments.forth
 					if autoteach_arguments.after then
 						l_errors.force (at_strings.error_no_custom_hint_table_path)
-						can_run := False
 					else
 						if not hint_tables.file_exists (autoteach_arguments.item) then
 							l_errors.force (at_strings.error_custom_hint_table_file_not_found)
-							can_run := False
 						else
 							hint_tables.load_custom_hint_table (autoteach_arguments.item)
 							if attached hint_tables.last_table_load_exception as l_exception then
-								l_errors.force (at_strings.error_custom_hint_table_parse_error)
-								l_errors.force (l_exception.description.to_string_8)
-								can_run := False
+								l_errors.force (at_strings.error_custom_hint_table_parse_error + "%N" + l_exception.description.to_string_8)
 							end
 						end
 					end
@@ -153,34 +156,44 @@ feature {NONE} -- Implementation
 				end
 				autoteach_arguments.forth
 			end
-			if not autoteach_options.should_run_hinter then
-				l_errors.force (at_strings.nothing_to_do)
+
+			if autoteach_options.min_hint_level /= autoteach_options.max_hint_level and not autoteach_options.create_level_subfolders then
+				l_warnings.force (at_strings.warning_no_level_subfolders_option)
 			end
+
+			can_run := l_errors.is_empty
+
 			across
 				l_errors as ic
 			loop
 				print_line (at_strings.error + ": " + ic.item)
 			end
+
+			across
+				l_warnings as ic
+			loop
+				print_line (at_strings.warning + ": " + ic.item)
+			end
+
+			print_line ("")
 		end
 
 	run_autoteach
 			-- Runs AutoTeach according to the specified options.
 		local
-			l_hinter: AT_HINTER
+			l_autoteach: AT_AUTOTEACH
 		do
-			if autoteach_options.should_run_hinter then
-				if attached class_name_list as l_class_name_list then
-					create l_hinter.make_with_options (autoteach_options)
-					l_hinter.set_message_output_action (agent print_line)
-					across
-						l_class_name_list as ic
-					loop
-						try_add_class_with_name (l_hinter, ic.item)
-					end
-					l_hinter.run_hinter
-				else
-					print_line (at_strings.error_no_class_list_specified)
+			if attached class_name_list as l_class_name_list then
+				create l_autoteach.make_with_options (autoteach_options)
+				l_autoteach.set_message_output_action (agent print_line)
+				across
+					l_class_name_list as ic
+				loop
+					try_add_class_with_name (l_autoteach, ic.item)
 				end
+				l_autoteach.run_autoteach
+			else
+				print_line (at_strings.error + ": " + at_strings.error_no_class_list_specified)
 			end
 		end
 
@@ -192,7 +205,7 @@ feature -- Execution (declared in EWB_CMD)
 			print_line ("%N")
 			process_arguments
 			if can_run then
-				print_line (at_strings.welcome_message)
+				print_line (at_strings.welcome_message + "%N")
 				run_autoteach
 			end
 		end

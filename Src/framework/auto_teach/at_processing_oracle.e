@@ -261,7 +261,7 @@ feature -- Meta-command processing interface
 				l_index := l_line.index_of (']', 1)
 				if l_index >= 2 then
 					l_level_string := l_line.substring (1, l_index - 1)
-					l_min_max := parse_integer_range_string (l_level_string, l_max_level)
+					l_min_max := parse_natural_range_string (l_level_string, l_max_level)
 					if attached l_min_max then
 						l_min_level := l_min_max.min
 						l_max_level := l_min_max.max
@@ -588,42 +588,6 @@ feature {NONE} -- Implementation: miscellaneous
 		do
 			if attached message_output_action as l_message_output_action then
 				l_message_output_action.call (a_string + "%N")
-			end
-		end
-
-	parse_integer_range_string (a_string: READABLE_STRING_GENERAL; a_default_second: INTEGER): TUPLE [first: INTEGER; second: INTEGER]
-			-- Parses a range string with format "3-8". If the string is a simple number
-			-- without dash, then `a_default_second' is returned as the second number.
-			-- Void is returned if parsing failed.
-		local
-			l_first_string, l_second_string: READABLE_STRING_GENERAL
-			l_strings: LIST [READABLE_STRING_GENERAL]
-			l_error: BOOLEAN
-		do
-			if a_string.has ('-') then
-				l_strings := a_string.split ('-')
-				if l_strings.count = 2 then
-					create Result
-					if l_strings.first.is_natural_32 then
-						Result.first := l_strings.first.to_integer_32
-					else
-						l_error := True
-					end
-					if l_strings.last.is_natural_32 then
-						Result.second := l_strings.last.to_integer_32
-					else
-						l_error := True
-					end
-					if l_error then
-						Result := Void
-					end
-				end
-			else
-				if l_strings.first.is_natural_32 then
-					create Result
-					Result.first := l_strings.first.to_integer_32
-					Result.second := a_default_second
-				end
 			end
 		end
 
