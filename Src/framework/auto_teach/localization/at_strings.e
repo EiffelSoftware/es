@@ -86,7 +86,7 @@ feature -- Warnings
 
 	undefined_visibility (a_block_type_names: STRING): STRING_32
 		do
-			Result := locale.translation ("Warning: one or more occurrences of the following block types have been encountered for the visibility of which was undefined (neither in the hint table, nor with annotations).+%N"
+			Result := locale.translation ("Warning: one or more occurrences of the following block types have been encountered for the visibility of which was undefined (neither in the hint table, nor with annotations):%N"
 				+ a_block_type_names + "%N"
 				+ "In these cases, the visibility is defaulted to true. However, a well-built hint table should never allow this situation.")
 		end
@@ -179,12 +179,6 @@ feature -- Errors with custom hint table
 		do
 			Result := locale.translation ("[line " + a_line_number.out + "] '" + a_value + "%' is not a valid text representation of a " + a_type + ".")
 		end
-
-	error_visibility_table_not_complete: STRING_32
-		do
-			Result := locale.translation ("Some block types are missing in the visibility table. The following block types must all be present:")
-		end
-
 
 
 feature -- Code output

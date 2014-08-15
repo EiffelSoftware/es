@@ -57,6 +57,8 @@ feature -- Status signaling
 					l_problematic_block_types.append (ic.item.value_name + ", ")
 				end
 				l_problematic_block_types.remove_tail (2)
+
+				print_message (at_strings.undefined_visibility (l_problematic_block_types))
 			end
 			options.restore_from (original_options)
 			initialize_block_visibility_table

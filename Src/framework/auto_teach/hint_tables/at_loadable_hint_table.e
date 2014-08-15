@@ -107,17 +107,6 @@ feature {NONE} -- Initialization
 				advance_line (l_file)
 			end
 
-			if not attached l_exception and then not all_block_types_present then
-				create l_description.make_from_string (at_strings.error_visibility_table_not_complete)
-
-				across enum_block_type.value_names as ic loop
-					l_description.append ("%N" + ic.item)
-				end
-
-				create l_exception
-				l_exception.set_description (l_description)
-			end
-
 			if attached l_exception then
 				l_exception.raise
 			end

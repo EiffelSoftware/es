@@ -18,6 +18,7 @@ inherit
 			process_trailing_leaves,
 			process_break_as,
 			put_string_to_context,
+			process_class_as,
 
 				-- Features
 			process_feature_as,
@@ -464,6 +465,14 @@ feature {NONE} -- Disambiguation
 		end
 
 feature {AST_EIFFEL} -- Visitors
+
+	process_class_as (a_as: CLASS_AS)
+			-- Process `a_as'.
+		do
+			oracle.begin_process_class
+			Precursor (a_as)
+			oracle.end_process_class
+		end
 
 	process_require_else_as (a_as: REQUIRE_ELSE_AS)
 			-- Process `a_as'.
