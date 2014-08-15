@@ -7,6 +7,9 @@ note
 deferred class
 	WIKI_TEMPLATE_RESOLVER
 
+inherit
+	WIKI_ITEM_RESOLVER
+
 feature -- Access
 
 	content (a_template: WIKI_TEMPLATE; a_page: detachable WIKI_PAGE): detachable STRING

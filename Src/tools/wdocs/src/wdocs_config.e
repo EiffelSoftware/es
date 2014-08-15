@@ -1,11 +1,16 @@
 note
 	description: "Summary description for {WDOCS_CONFIG}."
-	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 deferred class
 	WDOCS_CONFIG
+
+feature {NONE} -- Initialization
+
+	make
+		do
+		end
 
 feature -- Access
 
@@ -15,10 +20,6 @@ feature -- Access
 
 	wiki_dir: PATH
 
-feature -- Initialization
-
-	initialize
-		do
-		end
+	cache_duration: INTEGER
 
 end
