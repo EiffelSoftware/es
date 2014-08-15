@@ -31,39 +31,27 @@ feature -- Copying
 	restore_from, replace_with (a_other: like Current)
 			-- Replaces the value of all options from the values of `a_other'
 		do
-			should_run_hinter := a_other.should_run_hinter
 			insert_code_placeholder := a_other.insert_code_placeholder
 			hint_level := a_other.hint_level
 			output_directory := a_other.output_directory
 		end
 
-feature -- Hinter options
-
-	should_run_hinter: BOOLEAN assign set_run_hinter
-			-- The command line switch for running hinter was specified.
+feature -- AutoTeach options
 
 	insert_code_placeholder: BOOLEAN assign set_insert_code_placeholder
-			-- Shall hinter insert a placeholder where code is removed?
+			-- Shall AutoTeach insert a placeholder where code is removed?
 
 	hint_level: INTEGER assign set_hint_level
-			-- The current hint level for hinter.
+			-- The current hint level for AutoTeach.
 
 	output_directory: DIRECTORY assign set_output_directory
-			-- Output directory for classes processed by hinter.
+			-- Output directory for classes processed by AutoTeach.
 
 	hint_table: AT_HINT_TABLE assign set_hint_table
 			-- The table defining the policy for showing/hiding code blocks.
 
 
 feature {NONE} -- Setters
-
-	set_run_hinter (a_bool: BOOLEAN)
-			-- Set `should_run_hinter' to `a_bool'.
-		do
-			should_run_hinter := a_bool
-		ensure
-			run_hinter_set: should_run_hinter = a_bool
-		end
 
 	set_insert_code_placeholder (a_bool: BOOLEAN)
 			-- Set `insert_code_placeholder' to `a_bool'.

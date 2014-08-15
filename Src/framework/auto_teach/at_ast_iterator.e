@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	AT_HINTER_AST_ITERATOR
+	AT_AST_ITERATOR
 
 inherit
 
@@ -344,7 +344,7 @@ feature {NONE} -- Implementation - skipping
 
 feature {NONE} -- Implementation
 
-	oracle: AT_HINTER_PROCESSING_ORACLE
+	oracle: AT_PROCESSING_ORACLE
 			-- Oracle containing all the logic about what should be hidden and what not.
 
 	process_leading_leaves (ind: INTEGER_32)

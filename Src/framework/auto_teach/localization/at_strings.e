@@ -18,11 +18,6 @@ feature -- General
 			Result := locale.translation ("AutoTeach")
 		end
 
-	hinter: STRING_32
-		do
-			Result := locale.translation ("Hinter")
-		end
-
 	error: STRING
 		do
 			Result := locale.translation ("Error")
@@ -46,11 +41,6 @@ feature -- Messages
 		end
 
 feature -- Warnings
-
-	nothing_to_do: STRING_32
-		do
-			Result := locale.translation ("No mode for " + auto_teach + " specified (e.g. " + hinter + "), exiting.")
-		end
 
 	unrecognized_meta_command: STRING_32
 		do

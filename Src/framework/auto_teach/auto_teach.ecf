@@ -8,14 +8,17 @@
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="base_extension" location="$ISE_LIBRARY\library\base_extension\base_extension.ecf" readonly="false"/>
 		<library name="compiler" location="$EIFFEL_SRC\Eiffel\Ace\ec_kernel.ecf"/>
-		<library name="configuration-parser" location="$EIFFEL_SRC\framework\configuration\configuration_parser.ecf" />
+		<library name="configuration-parser" location="$EIFFEL_SRC\framework\configuration\configuration_parser.ecf"/>
 		<library name="ecosystem" location="$EIFFEL_SRC\Eiffel\ecosystem\ecosystem.ecf"/>
 		<library name="environment" location="$EIFFEL_SRC\framework\environment\environment.ecf"/>
-		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
-		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
 		<library name="framework_patterns" location="$EIFFEL_SRC\framework\patterns\patterns.ecf"/>
 		<library name="interface_names" location="$EIFFEL_SRC\framework\interface_names\interface_names.ecf"/>
-		<cluster name="auto_teach" location=".\" recursive="true" />
+		<library name="parser" location="$EIFFEL_SRC\framework\parser\parser.ecf"/>
+		<library name="process" location="$ISE_LIBRARY\library\process\process.ecf"/>
+		<cluster name="auto_teach" location=".\" recursive="true">
+			<file_rule>
+				<exclude>^hinter$</exclude>
+			</file_rule>
+		</cluster>
 	</target>
 </system>
-

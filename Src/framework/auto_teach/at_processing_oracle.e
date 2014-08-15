@@ -8,7 +8,7 @@ note
 	revision: "$Revision$"
 
 class
-	AT_HINTER_PROCESSING_ORACLE
+	AT_PROCESSING_ORACLE
 
 inherit
 

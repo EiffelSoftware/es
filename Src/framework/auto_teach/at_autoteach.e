@@ -1,11 +1,11 @@
 note
-	description: "Hinter main class."
+	description: "AutoTeach main class."
 	author: "Paolo Antonucci"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AT_HINTER
+	AT_AUTOTEACH
 
 inherit
 
@@ -45,8 +45,8 @@ feature -- Interface
 			message_output_action := a_action
 		end
 
-	run_hinter
-			-- Run hinter.
+	run_autoteach
+			-- Run autoteach.
 		local
 			l_out_file: PLAIN_TEXT_FILE
 			l_test1, l_test2, l_test3: AT_TRI_STATE_BOOLEAN
@@ -63,7 +63,7 @@ feature -- Interface
 feature {NONE} -- Implementation
 
 	input_classes: LINKED_SET [CLASS_C]
-			-- The classes to be processed by hinter.
+			-- The classes to be processed by AutoTeach.
 
 	message_output_action: detachable PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]]
 			-- The action to be called for outputting messages.
@@ -73,7 +73,7 @@ feature {NONE} -- Implementation
 		require
 			file_open_and_writable: a_output_file.is_writable
 		local
-			l_ast_iterator: AT_HINTER_AST_ITERATOR
+			l_ast_iterator: AT_AST_ITERATOR
 			l_text: STRING_8
 		do
 			create l_ast_iterator.make_with_options (options)
