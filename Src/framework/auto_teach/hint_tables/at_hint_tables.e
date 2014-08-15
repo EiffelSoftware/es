@@ -52,12 +52,14 @@ feature -- Hint tables
 			l_table: AT_LOADABLE_HINT_TABLE
 			l_failed: BOOLEAN
 			l_exception_manager: EXCEPTION_MANAGER_FACTORY
+			l_tri: AT_TRI_STATE_BOOLEAN
 		do
 			custom_hint_table := Void
 			last_table_load_exception := Void
 			if not l_failed then
 				create l_table.make_from_file_path (a_full_path)
 				custom_hint_table := l_table
+				l_tri := custom_hint_table.visibility_for (enum_block_type.bt_feature, 1).visibility
 			else
 				create l_exception_manager
 				last_table_load_exception := l_exception_manager.exception_manager.last_exception

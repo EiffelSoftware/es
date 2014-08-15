@@ -31,6 +31,7 @@ feature {NONE} -- Initialization
 			l_table: like table -- and like content_table
 			l_table_row: ARRAY [AT_TRI_STATE_BOOLEAN]
 			l_description: STRING
+			l_tri_state: AT_TRI_STATE_BOOLEAN
 		do
 			create table.make (suggested_tables_initial_size)
 			create content_table.make (suggested_tables_initial_size)
@@ -92,7 +93,8 @@ feature {NONE} -- Initialization
 							i > l_words.count or attached l_exception
 						loop
 							if l_table_row [i].is_valid_string_value (l_words.item) then
-								l_table_row [i].from_string (l_words.item)
+								l_tri_state.from_string (l_words.item)
+								l_table_row [i] := l_tri_state
 							else
 								create l_exception
 								l_exception.set_description (at_strings.error_value_parse_error (file_line_number, l_words.item, "tri-state boolean"))
@@ -130,6 +132,7 @@ feature {NONE} -- Initialization
 
 					check attached a_file.last_string end
 					if attached a_file.last_string as l_line then
+						l_line.adjust
 						if not l_line.is_empty and then not l_line.starts_with_general ("#") then
 							last_file_line := l_line
 						end

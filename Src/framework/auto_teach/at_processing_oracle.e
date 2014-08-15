@@ -22,6 +22,12 @@ feature -- Oracle
 	output_enabled: BOOLEAN
 			-- Should the current section be output or not?
 
+	inside_atomic_block: BOOLEAN
+			-- Are we inside an atomic block right now?
+		do
+			Result := (nesting_in_atomic_block > 0)
+		end
+
 	current_content_visibility: AT_TRI_STATE_BOOLEAN
 			-- What is the current status of content visibility?
 		do
@@ -41,7 +47,7 @@ feature -- Status signaling
 	begin_process_class
 			-- Signal that a class is about to be processed.
 		do
-				-- Nothing to do.
+			-- Nothing to do.
 		end
 
 	end_process_class
@@ -61,7 +67,7 @@ feature -- Status signaling
 				print_message (at_strings.undefined_visibility (l_problematic_block_types))
 			end
 			options.restore_from (original_options)
-			initialize_block_visibility_table
+			initialize_visibility_descriptors_table
 		end
 
 	block_type_call_stack: STACK [AT_BLOCK_TYPE]
@@ -69,6 +75,7 @@ feature -- Status signaling
 			-- Doesn't keep anything else into account.
 			-- It is exposed to clients and only exists for contracts.
 
+		-- TODO: Refactor?
 	begin_process_block (a_block_type: AT_BLOCK_TYPE)
 			-- Signal the oracle that a block of type `a_block_type' is about to be processed.
 		local
@@ -230,6 +237,8 @@ feature -- Meta-command processing interface
 			end
 		end
 
+
+		-- TODO: Refactor this method or add comments, it's totally unreadable.
 	process_meta_command (a_line: STRING)
 			-- Process the meta-command contained in `a_line'. Case insensitive.
 		require
@@ -286,10 +295,18 @@ feature -- Meta-command processing interface
 			end
 			l_index := l_tab_index.min (l_space_index)
 			l_command_word := l_line.head (l_index - 1).as_upper
+			if l_command_word.ends_with (":") then
+				l_command_word.remove_tail (1)
+			end
 			l_line.remove_head (l_index - 1)
 			l_line.left_adjust
 			if not l_error and options.hint_level >= l_min_level and options.hint_level <= l_max_level then
-				if at_strings.commands_with_block.has (l_command_word) then
+
+					-- Check this as the very first thing:
+				if l_command_word.same_string (at_strings.comment_command) then
+					l_recognized := True
+						-- Do nothing.
+				elseif at_strings.commands_with_block.has (l_command_word) then
 					l_block_type_string := l_line.as_lower
 					if not enum_block_type.is_valid_value_name (l_block_type_string) then
 						l_error := true
@@ -543,11 +560,11 @@ feature {NONE} -- Implementation: miscellaneous
 			create {ARRAYED_STACK [BOOLEAN]} hiding_stack.make (32)
 			create {ARRAYED_STACK [TUPLE [value: AT_TRI_STATE_BOOLEAN; policy_type: AT_POLICY_TYPE]]} content_visibility_stack.make (32)
 			create undefined_visibility_warning_set.make (enum_block_type.values.count)
-			initialize_block_visibility_table
+			initialize_visibility_descriptors_table
 				-- output_enabled := True
 		end
 
-	initialize_block_visibility_table
+	initialize_visibility_descriptors_table
 			-- Fill `visibility_descriptors' with the proper descriptors.
 		local
 			l_block_type: AT_BLOCK_TYPE

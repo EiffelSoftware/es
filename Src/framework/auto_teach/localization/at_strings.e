@@ -193,8 +193,6 @@ feature -- Meta-commands
 
 	meta_command_prefix: STRING = "#"
 
-	hint_command: STRING = "HINT"
-
 	show_all_command: STRING = "SHOW_ALL"
 	hide_all_command: STRING = "HIDE_ALL"
 	reset_all_command: STRING = "RESET_ALL"
@@ -211,6 +209,12 @@ feature -- Meta-commands
 	hide_next_content_command: STRING = "HIDE_NEXT_CONTENT"
 			-- There is no reset_next_content command, why would one ever need it?
 
+	treat_all_as_atomic: STRING = "TREAT_ALL_AS_ATOMIC"
+	treat_all_as_complex: STRING = "TREAT_ALL_AS_COMPLEX"
+
+	treat_next_as_atomic: STRING = "TREAT_NEXT_AS_ATOMIC"
+	treat_next_as_complex: STRING = "TREAT_NEXT_AS_COMPLEX"
+
 	commands_with_block: ARRAY [STRING]
 			-- List of commands which must be followed by a block type. Useful for parsing.
 		once ("PROCESS")
@@ -218,17 +222,15 @@ feature -- Meta-commands
 			Result.compare_objects
 		end
 
+	comment_command: STRING = "#"
+
+	hint_command: STRING = "HINT"
+
 	placeholder_command: STRING = "PLACEHOLDER"
 
 	hint_mode_command: STRING = "HINT_MODE"
 	unannotated_mode_command: STRING = "UNANNOTATED_MODE"
 	custom_mode_command: STRING = "CUSTOM_MODE"
-
-	treat_all_as_atomic: STRING = "TREAT_ALL_AS_ATOMIC"
-	treat_all_as_complex: STRING = "TREAT_ALL_AS_COMPLEX"
-
-	treat_next_as_atomic: STRING = "TREAT_NEXT_AS_ATOMIC"
-	treat_next_as_complex: STRING = "TREAT_NEXT_AS_COMPLEX"
 
 
 feature -- Block types

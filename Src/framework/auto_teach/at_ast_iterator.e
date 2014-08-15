@@ -158,7 +158,8 @@ feature {NONE} -- Break processing
 				end
 			else
 					-- Remember: comments/breaks visibility in a region depends on its content visibility.
-				if oracle.output_enabled and oracle.current_content_visibility /= Tri_false then
+					-- However, if we are inside an atomic block, `oracle.output_enabled' is sufficient.
+				if oracle.output_enabled and (oracle.current_content_visibility /= Tri_false or oracle.inside_atomic_block) then
 					put_string_to_context (a_break_line)
 					last_unprinted_break_line := Void
 				else
@@ -840,7 +841,9 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 	process_expression_as (a_as: EXPR_AS; a_block_type: AT_BLOCK_TYPE)
 			-- Process `a_as', which is a block of type of type `a_block_type'.
 		do
-			process_leading_leaves (a_as.first_token (match_list).index)
+				-- Don't call `process_leading_leaves', it would have the undesired side effect
+				-- of treating comment at the beginning of this compound according to the previous
+				-- content visibility policy.
 			oracle.begin_process_block (a_block_type)
 
 			safe_process (a_as)
@@ -853,7 +856,9 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 			-- Process an instruction block (`a_as'), of type `a_block_type'.
 		do
 			if attached a_as as l_as then
-				process_leading_leaves (l_as.first_token (match_list).index)
+					-- Don't call `process_leading_leaves', it would have the undesired side effect
+					-- of treating comment at the beginning of this compound according to the previous
+					-- content visibility policy.
 				current_indentation := indentation (a_as)
 			end
 			oracle.begin_process_block (a_block_type)

@@ -93,15 +93,15 @@ feature -- Assignment
 		require
 			valid_string: is_valid_string_value (a_string)
 		local
-			l_string: READABLE_STRING_GENERAL
+			l_string: STRING
 		do
-			l_string := a_string.as_lower
-			if l_string.same_string ("undefined") then
-				set_undefined
-			elseif l_string.same_string ("true") then
+			l_string := a_string.to_string_8.as_lower
+			if (across true_strings as ic some ic.item.same_string (l_string) end) then
 				set_true
-			elseif l_string.same_string ("false") then
+			elseif (across false_strings as ic some ic.item.same_string (l_string) end) then
 				set_false
+			elseif (across undefined_strings as ic some ic.item.same_string (l_string) end) then
+				set_undefined
 			else
 					-- Should be disallowed by precondition.
 				check
@@ -113,13 +113,13 @@ feature -- Assignment
 	is_valid_string_value (a_string: READABLE_STRING_GENERAL): BOOLEAN
 			-- Is `a_string' a valid string representation of a tri-state boolean?
 		local
-			l_string: READABLE_STRING_GENERAL
+			l_string: STRING
 		do
 			if a_string = Void then
 				Result := False
 			else
-				l_string := a_string.as_lower
-				Result := l_string.same_string ("undefined") or l_string.same_string ("true") or l_string.same_string ("false")
+				l_string := a_string.to_string_8.as_lower
+				Result := all_strings.has (l_string)
 			end
 		end
 
@@ -212,6 +212,48 @@ feature -- Operations
 			else
 				Result := other
 			end
+		end
+
+
+feature {NONE} -- String representation
+
+	all_strings: ARRAY [STRING]
+			-- All the possible string representations for all possible values.
+		local
+			i: INTEGER
+		once ("PROCESS")
+			i := 1
+			create Result.make_filled ("", 1, true_strings.count + false_strings.count + undefined_strings.count)
+			Result.compare_objects
+
+			Result.subcopy (true_strings, true_strings.lower, true_strings.upper, i)
+			i := i + true_strings.count
+
+			Result.subcopy (false_strings, false_strings.lower, false_strings.upper, i)
+			i := i + true_strings.count
+
+			Result.subcopy (undefined_strings, undefined_strings.lower, undefined_strings.upper, i)
+		end
+
+	true_strings: ARRAY [STRING]
+			-- All the possible string representations for True (lowercase, case insensitive).
+		once ("PROCESS")
+			Result := << "true", "t", "yes", "y" >>
+			Result.compare_objects
+		end
+
+	false_strings: ARRAY [STRING]
+			-- All the possible string representations for False (lowercase, case insensitive).
+		once ("PROCESS")
+			Result := << "false", "f", "no", "n" >>
+			Result.compare_objects
+		end
+
+	undefined_strings: ARRAY [STRING]
+			-- All the possible string representations for Undefined (lowercase, case insensitive).
+		once ("PROCESS")
+			Result := << "undefined", "u", "?" >>
+			Result.compare_objects
 		end
 
 feature {NONE} -- Initialization
