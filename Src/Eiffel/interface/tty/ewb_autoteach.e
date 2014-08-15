@@ -39,7 +39,7 @@ feature {NONE} -- Initialization
 			-- Adds class with name `a_class_name' to `a_autoteach_instance',
 			-- if it exists and has been compiled.
 		do
-			if attached universe.classes_with_name (a_class_name) as l_c and then not l_c.is_empty then
+			if attached universe.classes_with_name (a_class_name.as_upper) as l_c and then not l_c.is_empty then
 				across
 					l_c as ic
 				loop
