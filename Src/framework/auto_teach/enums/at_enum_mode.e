@@ -1,11 +1,11 @@
 note
-	description: "Enum type for policy types (default, global, local)."
+	description: "Enum type for AutoTeach modes (auto, manual, custom)."
 	author: "Paolo Antonucci"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AT_ENUM_POLICY_TYPE
+	AT_ENUM_MODE
 
 inherit
 
@@ -16,9 +16,9 @@ inherit
 
 feature -- Access
 
-	name: STRING = "policy_type"
+	name: STRING = "mode"
 
-	value_type: AT_POLICY_TYPE
+	value_type: AT_MODE
 			-- <Precursor>
 		do
 			check
@@ -43,30 +43,24 @@ feature {AT_ENUM} -- Value list
 	value_list: ARRAY [TUPLE [numerical_value: INTEGER; name: STRING]]
 			-- Effective list of values.
 		once ("PROCESS")
-			Result := <<	[0, "not_set"],
-							[1, "default"],
-							[2, "global"],
-							[3, "local"]		>>
+			Result := <<	[1, "auto"],
+							[2, "manual"],
+							[3, "custom"]		>>
 		end
 
 feature -- Values
 
-	Pt_not_set: AT_POLICY_TYPE
-		once ("PROCESS")
-			create Result.make_with_numerical_value (0)
-		end
-
-	Pt_default: AT_POLICY_TYPE
+	M_auto: AT_MODE
 		once ("PROCESS")
 			create Result.make_with_numerical_value (1)
 		end
 
-	Pt_global: AT_POLICY_TYPE
+	M_manual: AT_MODE
 		once ("PROCESS")
 			create Result.make_with_numerical_value (2)
 		end
 
-	Pt_local: AT_POLICY_TYPE
+	M_custom: AT_MODE
 		once ("PROCESS")
 			create Result.make_with_numerical_value (3)
 		end

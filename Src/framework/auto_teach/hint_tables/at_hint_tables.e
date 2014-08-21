@@ -25,16 +25,16 @@ feature -- For use with contracts
 
 feature -- Hint tables
 
-	default_unannotated_hint_table: AT_HINT_TABLE
-			-- The default table for unannotated (no hints) classes.
+	default_auto_hint_table: AT_HINT_TABLE
+			-- The default table for auto mode (smart table).
 		once ("PROCESS")
-			create {AT_DEFAULT_UNANNOTATED_HINT_TABLE} Result.make
+			create {AT_DEFAULT_AUTO_HINT_TABLE} Result.make
 		end
 
-	default_annotated_hint_table: AT_HINT_TABLE
-			-- The default table for annotated (with hints) classes.
+	default_manual_hint_table: AT_HINT_TABLE
+			-- The default table for manual mode ("dumb" table, manual annotations required).
 		once ("PROCESS")
-			create {AT_DEFAULT_ANNOTATED_HINT_TABLE} Result.make
+			create {AT_DEFAULT_MANUAL_HINT_TABLE} Result.make
 		end
 
 	custom_hint_table: detachable AT_HINT_TABLE

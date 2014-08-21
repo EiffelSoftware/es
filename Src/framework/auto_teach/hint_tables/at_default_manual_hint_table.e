@@ -1,15 +1,17 @@
 note
 	description: "[
-					Default table in annotated (with hints) mode.
-					Only shows the skeleton of features and hides the rest.
-					This behaviour can of course be overridden by local annotations.
+					Table to be used in manual mode. Manual mode means that everything
+					is handled manually	by the user through annotations.
+					Only shows the skeleton of features (including arguments) and hides the rest,
+					giving total freedom to the user to do what he wants with manual annotations
+					(and possibly textual hints).
 				]"
 	author: "Paolo Antonucci"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AT_DEFAULT_ANNOTATED_HINT_TABLE
+	AT_DEFAULT_MANUAL_HINT_TABLE
 
 inherit
 

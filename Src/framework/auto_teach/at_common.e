@@ -40,6 +40,11 @@ feature -- Enums
 			create Result
 		end
 
+	enum_mode_type: AT_ENUM_MODE
+		once ("PROCESS")
+			create Result
+		end
+
 feature -- For use with contracts
 
 	is_valid_hint_level (a_level: INTEGER): BOOLEAN

@@ -1,15 +1,16 @@
 note
 	description: "[
-					Default table in unannotated (without hints) mode.
-					Implements a (hopefully) reasonable default policy,
-					which can as always be overridden by local annotations.
+					Table to be used in automatic mode, that is, when the users trusts AutoTeach
+					to do the job. Implements a (hopefully) reasonable default, general-purpose policy,
+					revealing the code gradually.
+					The user can still override whatever he wishes with annotations.
 				]"
 	author: "Paolo Antonucci"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AT_DEFAULT_UNANNOTATED_HINT_TABLE
+	AT_DEFAULT_AUTO_HINT_TABLE
 
 inherit
 

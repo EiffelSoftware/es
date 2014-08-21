@@ -23,7 +23,7 @@ feature {NONE} -- Initialization
 			insert_code_placeholder := True
 			create output_directory.make_with_path (create {PATH}.make_current)
 
-			hint_table := hint_tables.default_unannotated_hint_table
+			hint_table := hint_tables.default_auto_hint_table
 		end
 
 feature -- Copying
@@ -57,7 +57,7 @@ feature -- AutoTeach options
 	output_directory: DIRECTORY assign set_output_directory
 			-- Output directory for classes processed by AutoTeach.
 
-	hint_table: AT_HINT_TABLE assign set_hint_table
+	hint_table: AT_HINT_TABLE
 			-- The table defining the policy for showing/hiding code blocks.
 
 	set_hint_level_range (a_min_level, a_max_level: INTEGER)
@@ -74,6 +74,23 @@ feature -- AutoTeach options
 			max_set: max_hint_level = a_max_level
 		end
 
+	switch_to_mode (a_mode: AT_MODE)
+		require
+			initialized: a_mode.initialized
+			must_be_possible: (a_mode = enum_mode_type.M_custom) implies attached hint_tables.custom_hint_table
+		do
+			if a_mode = enum_mode_type.M_auto then
+				hint_table := hint_tables.default_auto_hint_table
+			elseif a_mode = enum_mode_type.M_manual then
+				hint_table := hint_tables.default_manual_hint_table
+			elseif a_mode = enum_mode_type.M_custom then
+				check precondition: attached hint_tables.custom_hint_table as l_hint_table then
+					hint_table := l_hint_table
+				end
+			else
+				check recognized: False end
+			end
+		end
 
 feature {NONE} -- Setters
 

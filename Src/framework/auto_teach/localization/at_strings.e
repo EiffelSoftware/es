@@ -233,8 +233,8 @@ feature -- Meta-commands
 
 	placeholder_command: STRING = "PLACEHOLDER"
 
-	hint_mode_command: STRING = "HINT_MODE"
-	unannotated_mode_command: STRING = "UNANNOTATED_MODE"
+	manual_mode_command: STRING = "MANUAL_MODE"
+	auto_mode_command: STRING = "AUTO_MODE"
 	custom_mode_command: STRING = "CUSTOM_MODE"
 
 

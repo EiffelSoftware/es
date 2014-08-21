@@ -273,34 +273,26 @@ feature -- Meta-command processing interface
 
 					-- General commands
 				if l_command.command_word.same_string (at_strings.comment_command) then
-
 						-- Comment - do nothing.
 
 				elseif l_command.command_word.same_string (at_strings.hint_command) then
-
 						-- Hint
 					last_command_output := a_line.twin
 
 				elseif l_command.command_word.same_string (at_strings.placeholder_command) and then string_is_bool (l_command.payload) then
-
 						-- Toggle placeholder
 					options.insert_code_placeholder := string_to_bool (l_command.payload)
 
-				elseif l_command.command_word.same_string (at_strings.hint_mode_command) then
-
-						-- Switch to "hint mode" table.
-					options.hint_table := hint_tables.default_annotated_hint_table
-
-				elseif l_command.command_word.same_string (at_strings.unannotated_mode_command) then
-
-						-- Switch to "unannotated mode" table.
-					options.hint_table := hint_tables.default_unannotated_hint_table
-
+				elseif l_command.command_word.same_string (at_strings.manual_mode_command) then
+						-- Switch to "manual mode" table.
+					options.switch_to_mode (enum_mode_type.M_manual)
+				elseif l_command.command_word.same_string (at_strings.auto_mode_command) then
+						-- Switch to "auto mode" table.
+					options.switch_to_mode (enum_mode_type.M_auto)
 				elseif l_command.command_word.same_string (at_strings.custom_mode_command) then
-
 						-- Switch to custom table
 					if attached hint_tables.custom_hint_table as l_hint_table then
-						options.hint_table := l_hint_table
+						options.switch_to_mode (enum_mode_type.M_custom)
 					else
 						print_message (capitalized (at_strings.meta_command) + ": " + a_line + "%N" + at_strings.no_custom_hint_table_loaded)
 					end
