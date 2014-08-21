@@ -202,9 +202,9 @@ feature {NONE} -- Hint processing
 			else
 					-- We are in a region were breaks are not printed.
 					-- The last return character was not printed, but it
-					-- should have been stored in `last_unprinted_break'.
-					-- Leave it where it is and print one manually.
-				put_string_forced ("%N", False)
+					-- should have been stored in `last_unprinted_break_line'.
+					-- Print it.
+				print_last_unprinted_break
 
 					-- Use the indentation of the current section for indenting the hint.
 				l_indentation := current_indentation
@@ -212,10 +212,10 @@ feature {NONE} -- Hint processing
 			put_string_forced (tab_string (l_indentation), False)
 			put_string_forced (l_line, False)
 
-			if l_breaks_are_processed then
-					-- We were (most likely) on a new line, we must restore the same state.
-				put_string_forced ("%N", False)
-			end
+				-- If break are processed in this area, then we were on a new line and must need a new line.
+				-- If breaks are not processed in this area, then we probably ate the `last_unprinted_break_line'.
+				-- In both cases, print a new line character.
+			put_string_forced ("%N", False)
 		end
 
 feature {NONE} -- Implementation - skipping
