@@ -803,6 +803,8 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 
 	process_if_as (a_as: IF_AS)
 			-- Process `a_as'.
+		local
+			l_then_keyword, l_else_keyword: detachable KEYWORD_AS
 		do
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.Bt_if)
@@ -811,14 +813,19 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 
 			process_expression_as (a_as.condition, enum_block_type.Bt_if_condition)
 
-			safe_process (a_as.then_keyword (match_list))
-
-			process_compound_as (a_as.compound, enum_block_type.Bt_if_branch)
+			l_then_keyword := a_as.then_keyword (match_list)
+			check attached l_then_keyword end
+			if attached l_then_keyword then
+				process_compound_as (l_then_keyword, a_as.compound, enum_block_type.Bt_if_branch)
+			end
 
 			safe_process (a_as.elsif_list)
-			safe_process (a_as.else_keyword (match_list))
 
-			process_compound_as (a_as.else_part, enum_block_type.Bt_if_branch)
+			l_else_keyword := a_as.else_keyword (match_list)
+			check attached l_else_keyword end
+			if attached l_else_keyword then
+				process_compound_as (l_else_keyword, a_as.else_part, enum_block_type.Bt_if_branch)
+			end
 
 			safe_process (a_as.end_keyword)
 
@@ -828,14 +835,18 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 
 	process_elseif_as (a_as: ELSIF_AS)
 			-- Process `a_as'.
+		local
+			l_then_keyword: detachable KEYWORD_AS
 		do
 			safe_process (a_as.elseif_keyword (match_list))
 
 			process_expression_as (a_as.expr, enum_block_type.Bt_if_condition)
 
-			safe_process (a_as.then_keyword (match_list))
-
-			process_compound_as (a_as.compound, enum_block_type.Bt_if_branch)
+			l_then_keyword := a_as.then_keyword (match_list)
+			check attached l_then_keyword end
+			if attached l_then_keyword then
+				process_compound_as (l_then_keyword, a_as.compound, enum_block_type.Bt_if_branch)
+			end
 		end
 
 	process_expression_as (a_as: EXPR_AS; a_block_type: AT_BLOCK_TYPE)
@@ -852,17 +863,21 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 			oracle.end_process_block (a_block_type)
 		end
 
-	process_compound_as (a_as: EIFFEL_LIST [INSTRUCTION_AS]; a_block_type: AT_BLOCK_TYPE)
+	process_compound_as (a_keyword: KEYWORD_AS; a_as: detachable EIFFEL_LIST [INSTRUCTION_AS]; a_block_type: AT_BLOCK_TYPE)
 			-- Process an instruction block (`a_as'), of type `a_block_type'.
 		do
-			if attached a_as as l_as then
-					-- Don't call `process_leading_leaves', it would have the undesired side effect
-					-- of treating comment at the beginning of this compound according to the previous
-					-- content visibility policy.
-				current_indentation := indentation (a_as)
-			end
+			process_leading_leaves (a_keyword.first_token (match_list).index)
+
 			oracle.begin_process_block (a_block_type)
 
+			current_indentation := indentation (a_keyword)
+			safe_process (a_keyword)
+
+			if attached a_as then
+				current_indentation := indentation (a_as)
+			else
+				current_indentation := current_indentation + 1
+			end
 			safe_process (a_as)
 
 			process_next_break (a_as)
@@ -872,7 +887,7 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 	process_loop_as (a_as: LOOP_AS)
 			-- Process `a_as'.
 		local
-			l_until_keyword, loop_keyword: detachable KEYWORD_AS
+			l_until_keyword, l_loop_keyword: detachable KEYWORD_AS
 			l_variant_processing_after: BOOLEAN
 			l_variant_part: detachable VARIANT_AS
 		do
@@ -885,10 +900,9 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 				-- It is treated as a part of the loop itself and cannot be hidden.
 			safe_process (a_as.iteration)
 
-			safe_process (a_as.from_keyword (match_list))
-
-			current_indentation := current_indentation + 1
-			process_compound_as (a_as.from_part, enum_block_type.Bt_loop_initialization)
+			if attached a_as.from_keyword (match_list) as l_from_keword then
+				process_compound_as (l_from_keword, a_as.from_part, enum_block_type.Bt_loop_initialization)
+			end
 
 			if attached a_as.invariant_keyword (match_list) as l_invariant_keyword then
 				oracle.begin_process_block (enum_block_type.bt_loop_invariant)
@@ -927,14 +941,10 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 				process_expression_as (a_as.stop, enum_block_type.Bt_loop_termination_condition)
 			end
 
-			loop_keyword := a_as.loop_keyword (match_list)
-			check attached loop_keyword end
-			if attached loop_keyword then
-				current_indentation := indentation (a_as.loop_keyword (match_list))
-				safe_process (a_as.loop_keyword (match_list))
-
-				current_indentation := current_indentation + 1
-				process_compound_as (a_as.compound, enum_block_type.Bt_loop_body)
+			l_loop_keyword := a_as.loop_keyword (match_list)
+			check attached l_loop_keyword end
+			if attached l_loop_keyword then
+				process_compound_as (l_loop_keyword, a_as.compound, enum_block_type.Bt_loop_body)
 			end
 
 			if l_variant_part /= Void and l_variant_processing_after then

@@ -45,16 +45,19 @@ feature {NONE} -- Initialization
 			table.put 			(<< 	T		>>, enum_block_type.Bt_routine_body)
 			table.put 			(<< 	T		>>, enum_block_type.Bt_postcondition)
 
-				-- All the rest is hidden:
+				-- If, inspect and loop blocks are hidden, but their inner complex blocks
+				-- (e.g. branches) must be shown if the parent blocks are shown.
 			table.put 			(<< 	F		>>, enum_block_type.Bt_if)
-			table.put 			(<< 	F		>>, enum_block_type.Bt_if_branch)
+			table.put 			(<< 	T		>>, enum_block_type.Bt_if_branch)
+
 			table.put 			(<< 	F		>>, enum_block_type.Bt_inspect)
-			table.put 			(<< 	F		>>, enum_block_type.Bt_inspect_branch)
+			table.put 			(<< 	T		>>, enum_block_type.Bt_inspect_branch)
+
 			table.put 			(<< 	F		>>, enum_block_type.Bt_loop)
-			table.put 			(<< 	F		>>, enum_block_type.Bt_loop_initialization)
-			table.put 			(<< 	F		>>, enum_block_type.Bt_loop_invariant)
-			table.put 			(<< 	F		>>, enum_block_type.Bt_loop_body)
-			table.put 			(<< 	F		>>, enum_block_type.Bt_loop_variant)
+			table.put 			(<< 	T		>>, enum_block_type.Bt_loop_initialization)
+			table.put 			(<< 	T		>>, enum_block_type.Bt_loop_invariant)
+			table.put 			(<< 	T		>>, enum_block_type.Bt_loop_body)
+			table.put 			(<< 	T		>>, enum_block_type.Bt_loop_variant)
 
 			table.put 			(<< 	U		>>, enum_block_type.Bt_assertion)
 				-- Assertions should never be visibile. However, it is a bad practice to impose it here.
