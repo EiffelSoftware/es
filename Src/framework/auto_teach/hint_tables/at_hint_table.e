@@ -91,6 +91,26 @@ feature {AT_HINT_TABLE} -- Implementation
 			-- What is the suggested initial size for the two tables?
 			-- This is a suggestion to descendants that may or may not be followed.
 
+		-- Abbreviations for tri-state constants for better table readability.
+
+	T: AT_TRI_STATE_BOOLEAN
+			-- True
+		once ("PROCESS")
+			Result := Tri_true
+		end
+
+	F: AT_TRI_STATE_BOOLEAN
+			-- False
+		once ("PROCESS")
+			Result := Tri_false
+		end
+
+	U: AT_TRI_STATE_BOOLEAN
+			-- Undefined
+		once ("PROCESS")
+			Result := Tri_undefined
+		end
+
 invariant
 	content_table_has_only_complex_blocks: across content_table.current_keys as ic all enum_block_type.is_complex_block_type (ic.item) end
 	both_tables_all_rows_non_empty: (across table as ic all ic.item.count > 0 end) and (across content_table as ic all ic.item.count > 0 end)
