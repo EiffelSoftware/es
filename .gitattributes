@@ -1749,7 +1749,7 @@ Src/Delivery/studio/bitmaps/png/splash.png -text
 Src/Delivery/studio/bitmaps/png/splash_shadow.png -text
 Src/Delivery/studio/config/windows/msc/appl.ico -text
 Src/Delivery/studio/eifinit/libraries.cfg -text
-Src/Delivery/studio/eifinit/precompile.cfg -text
+Src/Delivery/studio/eifinit/precompiles.cfg -text
 Src/Delivery/studio/lang/mo_files/de_DE.mo -text
 Src/Delivery/studio/lang/mo_files/en_US.mo -text
 Src/Delivery/studio/lang/mo_files/fr_FR.mo -text
