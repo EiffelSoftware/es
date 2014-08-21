@@ -820,7 +820,6 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 			safe_process (a_as.elsif_list)
 
 			l_else_keyword := a_as.else_keyword (match_list)
-			check attached l_else_keyword end
 			if attached l_else_keyword then
 				process_compound_as (l_else_keyword, a_as.else_part, enum_block_type.Bt_if_branch)
 			end
