@@ -22,6 +22,7 @@ inherit
 
 				-- Features
 			process_feature_as,
+			process_routine_as,
 
 				-- Routine arguments
 			process_formal_argu_dec_list_as,
@@ -80,12 +81,11 @@ create
 
 feature -- Interface
 
-	reset
-			-- Reset the status of Current
+	set_options (a_options: AT_OPTIONS)
+			-- Sets the options to `a_options'.
 		do
-			Precursor
-			current_indentation := 0
-			blank_line_inserted := False
+			options := a_options.twin
+			oracle.set_options (options)
 		end
 
 	set_message_output_action (a_action: PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]])
@@ -94,7 +94,73 @@ feature -- Interface
 			message_output_action := a_action
 		end
 
-feature {NONE} -- Break processing
+	process_class (a_class_as: CLASS_AS; a_match_list: LEAF_AS_LIST)
+		require
+			clean: not has_run
+		do
+			setup (a_class_as, a_match_list, True, True)
+			process_ast_node (a_class_as)
+		end
+
+	has_run: BOOLEAN
+		-- Did the `Current' process a class?
+
+	reset
+			-- Reset the status of Current
+		do
+				-- The following conditions should always hold when the iterator is "idle",
+			check oracle_clean: oracle.block_type_call_stack.is_empty end
+			check auxiliary_flags_clean: not processing_named_tuple not processing_arguments and not processing_locals end
+			Precursor
+			current_indentation := 0
+			blank_line_inserted := False
+			has_run := False
+		end
+
+feature {NONE} -- Implementation - skipping and handling of breaks
+
+	process_leading_leaves (ind: INTEGER_32)
+			-- Redefinition: only processes BREAK_AS leaves and skips the others.
+		local
+			i: INTEGER_32
+		do
+			if will_process_leading_leaves and then ind > last_index + 1 then
+				from
+					i := last_index + 1
+				until
+					i = ind
+				loop
+						-- Ignore any other unprocessed leaves.
+					if attached {BREAK_AS} match_list.i_th (i) as l_break then
+						l_break.process (Current)
+					end
+					i := i + 1
+				end
+			end
+		end
+
+	process_trailing_leaves
+			-- Redefinition: only processes BREAK_AS leaves and skips the others.
+		local
+			l_count: INTEGER
+		do
+			if will_process_trailing_leaves then
+				l_count := end_index
+				if last_index < l_count then
+					from
+						last_index := last_index + 1
+					until
+						last_index > l_count
+					loop
+							-- Ignore any other leaves.
+						if attached {BREAK_AS} match_list.i_th (last_index) as l_break then
+							l_break.process (Current)
+						end
+						last_index := last_index + 1
+					end
+				end
+			end
+		end
 
 	process_break_as (a_break_as: BREAK_AS)
 			-- Process `a_break_as', also looking for meta-commands.
@@ -158,8 +224,9 @@ feature {NONE} -- Break processing
 				end
 			else
 					-- Remember: comments/breaks visibility in a region depends on its content visibility.
-					-- However, if we are inside an atomic block, `oracle.output_enabled' is sufficient.
-				if oracle.output_enabled and (oracle.current_content_visibility /= Tri_false or oracle.inside_atomic_block) then
+					-- However, if we are inside an atomic block or if we are processing a feature comment,
+					-- then `oracle.output_enabled' is sufficient.
+				if oracle.output_enabled and (oracle.current_content_visibility /= Tri_false or oracle.inside_atomic_block or processing_feature_comment) then
 					put_string_to_context (a_break_line)
 					last_unprinted_break_line := Void
 				else
@@ -171,54 +238,6 @@ feature {NONE} -- Break processing
 				end
 			end
 		end
-
-feature {NONE} -- Hint processing
-
-	output_hint (a_line: STRING)
-			-- Outputs the specified hint with the correct indentation.
-		require
-			single_return_terminated_line: a_line.ends_with ("%N") and a_line.occurrences ('%N') = 1
-		local
-			l_line: STRING
-			l_hint_level: INTEGER
-			l_indentation: INTEGER
-
-				-- The following variable means: are we currently in a region where breaks are processed?
-			l_breaks_are_processed: BOOLEAN
-		do
-			l_line := a_line.twin
-
-				-- Remove both the initial tabs and the final return character.
-			l_line.adjust
-			l_breaks_are_processed := oracle.output_enabled and not oracle.current_content_visibility.is_false
-			if l_breaks_are_processed then
-					-- We are in a region were breaks are normally printed.
-					-- The return character at the end of the previous line
-					-- should have been printed. We are on a new line,
-					-- no need to print a return characted by ourselves.
-
-					-- Keep the original indentation of the hint line.
-				l_indentation := count_leading ('%T', a_line)
-			else
-					-- We are in a region were breaks are not printed.
-					-- The last return character was not printed, but it
-					-- should have been stored in `last_unprinted_break_line'.
-					-- Print it.
-				print_last_unprinted_break
-
-					-- Use the indentation of the current section for indenting the hint.
-				l_indentation := current_indentation
-			end
-			put_string_forced (tab_string (l_indentation), False)
-			put_string_forced (l_line, False)
-
-				-- If break are processed in this area, then we were on a new line and must need a new line.
-				-- If breaks are not processed in this area, then we probably ate the `last_unprinted_break_line'.
-				-- In both cases, print a new line character.
-			put_string_forced ("%N", False)
-		end
-
-feature {NONE} -- Implementation - skipping
 
 	last_unprinted_break_line: STRING
 			-- The text of the last break that was encountered and not printed.
@@ -344,52 +363,51 @@ feature {NONE} -- Implementation - skipping
 	placeholder_inserted: BOOLEAN
 			-- Did we already insert a placeholder for the current skipping section?
 
-feature {NONE} -- Implementation
 
-	oracle: AT_PROCESSING_ORACLE
-			-- Oracle containing all the logic about what should be hidden and what not.
+feature {NONE} -- Implementation - printing
 
-	process_leading_leaves (ind: INTEGER_32)
-			-- Redefinition: only processes BREAK_AS leaves and skips the others.
+	output_hint (a_line: STRING)
+			-- Outputs the specified hint with the correct indentation.
+		require
+			single_return_terminated_line: a_line.ends_with ("%N") and a_line.occurrences ('%N') = 1
 		local
-			i: INTEGER_32
-		do
-			if will_process_leading_leaves and then ind > last_index + 1 then
-				from
-					i := last_index + 1
-				until
-					i = ind
-				loop
-						-- Ignore any other unprocessed leaves.
-					if attached {BREAK_AS} match_list.i_th (i) as l_break then
-						l_break.process (Current)
-					end
-					i := i + 1
-				end
-			end
-		end
+			l_line: STRING
+			l_hint_level: INTEGER
+			l_indentation: INTEGER
 
-	process_trailing_leaves
-			-- Redefinition: only processes BREAK_AS leaves and skips the others.
-		local
-			l_count: INTEGER
+				-- The following variable means: are we currently in a region where breaks are processed?
+			l_breaks_are_processed: BOOLEAN
 		do
-			if will_process_trailing_leaves then
-				l_count := end_index
-				if last_index < l_count then
-					from
-						last_index := last_index + 1
-					until
-						last_index > l_count
-					loop
-							-- Ignore any other leaves.
-						if attached {BREAK_AS} match_list.i_th (last_index) as l_break then
-							l_break.process (Current)
-						end
-						last_index := last_index + 1
-					end
-				end
+			l_line := a_line.twin
+
+				-- Remove both the initial tabs and the final return character.
+			l_line.adjust
+			l_breaks_are_processed := oracle.output_enabled and not oracle.current_content_visibility.is_false
+			if l_breaks_are_processed then
+					-- We are in a region were breaks are normally printed.
+					-- The return character at the end of the previous line
+					-- should have been printed. We are on a new line,
+					-- no need to print a return characted by ourselves.
+
+					-- Keep the original indentation of the hint line.
+				l_indentation := count_leading ('%T', a_line)
+			else
+					-- We are in a region were breaks are not printed.
+					-- The last return character was not printed, but it
+					-- should have been stored in `last_unprinted_break_line'.
+					-- Print it.
+				print_last_unprinted_break
+
+					-- Use the indentation of the current section for indenting the hint.
+				l_indentation := current_indentation
 			end
+			put_string_forced (tab_string (l_indentation), False)
+			put_string_forced (l_line, False)
+
+				-- If break are processed in this area, then we were on a new line and must need a new line.
+				-- If breaks are not processed in this area, then we probably ate the `last_unprinted_break_line'.
+				-- In both cases, print a new line character.
+			put_string_forced ("%N", False)
 		end
 
 	put_string_to_context (a_string: STRING)
@@ -414,6 +432,12 @@ feature {NONE} -- Implementation
 			end
 			context.add_string (a_string)
 		end
+
+
+feature {NONE} -- Implementation - miscellanea
+
+	oracle: AT_PROCESSING_ORACLE
+			-- Oracle containing all the logic about what should be hidden and what not.
 
 	options: AT_OPTIONS
 			-- The AutoTeach options.
@@ -441,7 +465,10 @@ feature {NONE} -- Implementation
 			end
 		end
 
-feature {NONE} -- Disambiguation
+feature {NONE} -- Auxiliary location flags
+
+	processing_feature_comment: BOOLEAN
+			-- Are we currently processing a feature comment?
 
 	processing_named_tuple: BOOLEAN
 			-- Are we currently processing a named tuple?
@@ -452,10 +479,11 @@ feature {NONE} -- Disambiguation
 	processing_locals: BOOLEAN
 			-- Are we currently processing the local declarations of some routine?
 
-	is_at_most_one_disambiguation_flag_set: BOOLEAN
+	is_at_most_one_auxiliary_flag_set: BOOLEAN
 		local
 			l_value: INTEGER
 		do
+			l_value := l_value + processing_feature_comment.to_integer
 			l_value := l_value + processing_named_tuple.to_integer
 			l_value := l_value + processing_arguments.to_integer
 			l_value := l_value + processing_locals.to_integer
@@ -477,6 +505,17 @@ feature {AST_EIFFEL} -- Visitors
 			-- Process `a_as'.
 		do
 			process_require_as (a_as)
+		end
+
+
+	process_routine_as (a_as: ROUTINE_AS)
+			-- Process `a_as'.
+		do
+			process_leading_leaves (a_as.first_token (match_list).index)
+
+				-- The routine-specific clauses are about to begin, time to reset this flag.
+			processing_feature_comment := False
+			Precursor (a_as)
 		end
 
 	process_do_as (a_as: DO_AS)
@@ -505,7 +544,15 @@ feature {AST_EIFFEL} -- Visitors
 
 			current_indentation := indentation (a_as.feature_name.first_token (match_list))
 
+				-- We set the `processing_feature_comment' flag to true a bit earlier than we
+				-- should, but this saves us from overriding other features from the parent
+				-- class just for setting this.
+			processing_feature_comment := True
 			Precursor (a_as)
+
+				-- If this feature is a routine, this should already have been reset in `process_routine_as'.
+				-- If not, we do it here.
+			processing_feature_comment := False
 
 			oracle.end_process_block (enum_block_type.Bt_feature)
 		end
@@ -1041,6 +1088,6 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 		end
 
 invariant
-	at_most_one_disambiguation_flag: is_at_most_one_disambiguation_flag_set
+	at_most_one_disambiguation_flag: is_at_most_one_auxiliary_flag_set
 
 end

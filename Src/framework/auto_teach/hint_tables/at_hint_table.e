@@ -15,6 +15,9 @@ feature -- Access
 
 	visibility_for (a_block_type: AT_BLOCK_TYPE; a_hint_level: INTEGER): TUPLE [visibility: AT_TRI_STATE_BOOLEAN; explicitly_defined: BOOLEAN]
 			-- Access the visibility table, looking for the specified block type and hint level.
+			-- If `a_block_type' is present in the table, but no value is defined for `a_hint_level',
+			-- then the highest defined value (or the lowest in case `a_hint_level' is below the lower
+			-- bound of the row) is returned.
 		require
 			valid_hint_level: is_valid_hint_level (a_hint_level)
 		local

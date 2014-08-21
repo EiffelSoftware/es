@@ -17,6 +17,15 @@ inherit
 create
 	make_with_options
 
+feature -- Interface
+
+	set_options (a_options: AT_OPTIONS)
+			-- Sets the options to `a_options'.
+		do
+			original_options := a_options.twin
+			options := original_options.twin
+		end
+
 feature -- Oracle
 
 	output_enabled: BOOLEAN
@@ -46,6 +55,8 @@ feature -- Status signaling
 
 	begin_process_class
 			-- Signal that a class is about to be processed.
+		require
+			stack_empty: block_type_call_stack.is_empty
 		do
 			-- Nothing to do.
 		end
@@ -68,7 +79,7 @@ feature -- Status signaling
 			end
 
 				-- Clean up
-			options.restore_from (original_options)
+			options := original_options.twin
 			check
 				all_stacks_empty: block_stack.is_empty and effective_visibility_stack.is_empty and content_visibility_stack.is_empty and nesting_in_atomic_block = 0
 			end
@@ -223,7 +234,7 @@ feature -- Status signaling
 			end
 
 		ensure
-			block_on_top_of_stack: not block_type_call_stack.is_empty and then block_type_call_stack.item = a_block_type
+			block_on_top_of_stack:  block_type_call_stack.count = (old block_type_call_stack.count + 1) and then block_type_call_stack.item = a_block_type
 		end
 
 
@@ -242,6 +253,8 @@ feature -- Status signaling
 			end
 
 			refresh
+		ensure
+			block_removed:  block_type_call_stack.count = (old block_type_call_stack.count - 1)
 		end
 
 feature -- Meta-command processing interface
@@ -534,7 +547,7 @@ feature {NONE} -- Implementation: block visibility
 feature {NONE} -- Implementation: miscellaneous
 
 	options: AT_OPTIONS
-			-- Current processing options
+			-- Current processing options. May be altered by some processing commands.
 
 	original_options: AT_OPTIONS
 			-- A copy of the original options passed to the initialization procedure.
@@ -543,16 +556,16 @@ feature {NONE} -- Implementation: miscellaneous
 	make_with_options (a_options: AT_OPTIONS)
 			-- Initialization for `Current'.
 		do
-			options := a_options
-			original_options := a_options.twin
-			output_enabled := True
+			set_options (a_options)
+
 			create {ARRAYED_STACK [AT_BLOCK_TYPE]} block_type_call_stack.make (32)
 			create {ARRAYED_STACK [AT_BLOCK_VISIBILITY_DESCRIPTOR]} block_stack.make (32)
 			create {ARRAYED_STACK [BOOLEAN]} effective_visibility_stack.make (32)
 			create {ARRAYED_STACK [TUPLE [value: AT_TRI_STATE_BOOLEAN; policy_type: AT_POLICY_TYPE]]} content_visibility_stack.make (32)
 			create undefined_visibility_warning_set.make (enum_block_type.values.count)
 			initialize_visibility_descriptors_table
-				-- output_enabled := True
+
+			refresh
 		end
 
 	initialize_visibility_descriptors_table

@@ -30,7 +30,6 @@ feature {NONE} -- Initialization
 			l_exception: DEVELOPER_EXCEPTION
 			l_table: like table -- and like content_table
 			l_table_row: ARRAY [AT_TRI_STATE_BOOLEAN]
-			l_description: STRING
 			l_tri_state: AT_TRI_STATE_BOOLEAN
 		do
 			create table.make (suggested_tables_initial_size)

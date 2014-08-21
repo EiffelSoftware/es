@@ -26,16 +26,6 @@ feature {NONE} -- Initialization
 			hint_table := hint_tables.default_auto_hint_table
 		end
 
-feature -- Copying
-
-	restore_from, replace_with (a_other: like Current)
-			-- Replaces the value of all options from the values of `a_other'
-		do
-			insert_code_placeholder := a_other.insert_code_placeholder
-			hint_level := a_other.hint_level
-			output_directory := a_other.output_directory
-		end
-
 feature -- AutoTeach options
 
 	insert_code_placeholder: BOOLEAN assign set_insert_code_placeholder

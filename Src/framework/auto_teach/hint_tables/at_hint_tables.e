@@ -41,7 +41,7 @@ feature -- Hint tables
 			-- The currently loaded custom hint table.
 
 		-- BUG in EiffelStudio! For some reason, I cannot step through this function
-		-- with the debugger, no matter how many time I clean-compile.
+		-- with the debugger, no matter how many times I clean-compile.
 
 	load_custom_hint_table (a_full_path: STRING)
 			-- Loads a custom hint table from the specified file path

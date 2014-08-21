@@ -25,6 +25,9 @@ feature {NONE} -- Initialization
 		do
 			options := a_options
 			create input_classes.make
+
+			create ast_iterator.make_with_options (options)
+			ast_iterator.set_message_output_action (message_output_action)
 		end
 
 feature -- Interface
@@ -51,7 +54,8 @@ feature -- Interface
 			l_out_file: PLAIN_TEXT_FILE
 			l_output_path: PATH
 			l_dir: DIRECTORY
-			l_io, l_stop: BOOLEAN
+			l_io: BOOLEAN
+			l_level: INTEGER
 		do
 			if not l_io then
 				l_io := True
@@ -63,11 +67,14 @@ feature -- Interface
 				end
 				l_io := False
 				from
-					options.hint_level := options.min_hint_level
+					l_level := options.min_hint_level
 				until
-					l_stop
+						-- The `l_level' helper variable is necessary in order to avoid setting
+						-- options.hint_level to an excessively high value, which could happen
+						-- after the last iteration of the loop and cause a contract violation.
+					l_level > options.max_hint_level
 				loop
-
+					options.hint_level := l_level
 					print_message (at_strings.running_at_level (options.hint_level))
 
 					across
@@ -93,16 +100,7 @@ feature -- Interface
 						l_out_file.close
 					end
 
-						-- We do the following instead of just writing
-						-- "until options.hint_level > options.max_hint_level"
-						-- because doing so could cause an attempt to set
-						-- options.hint_level to an excessively high value
-						-- and cause a contract violation.
-					if options.hint_level = options.max_hint_level then
-						l_stop := True
-					else
-						options.hint_level := options.hint_level + 1
-					end
+					l_level := l_level + 1
 				end
 			else
 				print_message (at_strings.error + ": " + at_strings.init_invalid_output_dir)
@@ -121,21 +119,25 @@ feature {NONE} -- Implementation
 	message_output_action: detachable PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]]
 			-- The action to be called for outputting messages.
 
+	ast_iterator: AT_AST_ITERATOR
+			-- The iterator performing the real work.
+
 	process_class (a_class: CLASS_C; a_output_file: PLAIN_TEXT_FILE)
 			-- Process `a_class', write output to  `a_output_file'.
 		require
 			file_open_and_writable: a_output_file.is_writable
 		local
-			l_ast_iterator: AT_AST_ITERATOR
 			l_text: STRING_8
 		do
-			create l_ast_iterator.make_with_options (options)
-			l_ast_iterator.set_message_output_action (message_output_action)
-			l_ast_iterator.setup (a_class.ast, match_list_server.item (a_class.class_id), true, true)
-			l_ast_iterator.process_ast_node (a_class.ast)
-			l_text := l_ast_iterator.text
+			ast_iterator.set_options (options)
+			ast_iterator.process_class (a_class.ast, match_list_server.item (a_class.class_id))
+
+			l_text := ast_iterator.text
+				-- Fix for Windows double returns:
 			l_text.prune_all ('%R')
 			a_output_file.put_string (l_text)
+
+			ast_iterator.reset
 		end
 
 	print_message (a_string: READABLE_STRING_GENERAL)
