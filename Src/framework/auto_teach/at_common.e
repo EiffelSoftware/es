@@ -40,7 +40,7 @@ feature -- Enums
 			create Result
 		end
 
-	enum_mode_type: AT_ENUM_MODE
+	enum_mode: AT_ENUM_MODE
 		once ("PROCESS")
 			create Result
 		end

@@ -77,13 +77,13 @@ feature -- AutoTeach options
 	switch_to_mode (a_mode: AT_MODE)
 		require
 			initialized: a_mode.initialized
-			must_be_possible: (a_mode = enum_mode_type.M_custom) implies attached hint_tables.custom_hint_table
+			must_be_possible: (a_mode = enum_mode.M_custom) implies attached hint_tables.custom_hint_table
 		do
-			if a_mode = enum_mode_type.M_auto then
+			if a_mode = enum_mode.M_auto then
 				hint_table := hint_tables.default_auto_hint_table
-			elseif a_mode = enum_mode_type.M_manual then
+			elseif a_mode = enum_mode.M_manual then
 				hint_table := hint_tables.default_manual_hint_table
-			elseif a_mode = enum_mode_type.M_custom then
+			elseif a_mode = enum_mode.M_custom then
 				check precondition: attached hint_tables.custom_hint_table as l_hint_table then
 					hint_table := l_hint_table
 				end

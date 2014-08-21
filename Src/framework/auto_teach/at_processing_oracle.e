@@ -264,6 +264,7 @@ feature -- Meta-command processing interface
 			l_block_type_string: STRING
 			l_error, l_is_complex_block: BOOLEAN
 			l_block_type: AT_BLOCK_TYPE
+			l_mode: AT_MODE
 		do
 			last_command_output := Void
 
@@ -283,18 +284,17 @@ feature -- Meta-command processing interface
 						-- Toggle placeholder
 					options.insert_code_placeholder := string_to_bool (l_command.payload)
 
-				elseif l_command.command_word.same_string (at_strings.manual_mode_command) then
-						-- Switch to "manual mode" table.
-					options.switch_to_mode (enum_mode_type.M_manual)
-				elseif l_command.command_word.same_string (at_strings.auto_mode_command) then
-						-- Switch to "auto mode" table.
-					options.switch_to_mode (enum_mode_type.M_auto)
-				elseif l_command.command_word.same_string (at_strings.custom_mode_command) then
-						-- Switch to custom table
-					if attached hint_tables.custom_hint_table as l_hint_table then
-						options.switch_to_mode (enum_mode_type.M_custom)
+				elseif l_command.command_word.same_string (at_strings.mode_command) then
+						-- Switch to another mode
+					if enum_mode.is_valid_value_name (l_command.payload) then
+						create l_mode.make_with_value_name (l_command.payload)
+						if l_mode = enum_mode.M_custom and not attached hint_tables.custom_hint_table then
+							print_message (capitalized (at_strings.meta_command) + ": " + a_line + "%N" + at_strings.no_custom_hint_table_loaded)
+						else
+							options.switch_to_mode (l_mode)
+						end
 					else
-						print_message (capitalized (at_strings.meta_command) + ": " + a_line + "%N" + at_strings.no_custom_hint_table_loaded)
+						l_error := True
 					end
 
 				elseif at_strings.commands_with_block.has (l_command.command_word) then
@@ -302,7 +302,7 @@ feature -- Meta-command processing interface
 
 					l_block_type_string := l_command.payload.as_lower
 					if not enum_block_type.is_valid_value_name (l_block_type_string) then
-						l_error := true
+						l_error := True
 					else
 						l_block_type := enum_block_type.value (l_block_type_string)
 						l_is_complex_block := enum_block_type.is_complex_block_type (l_block_type)

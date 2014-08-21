@@ -78,11 +78,13 @@ feature {NONE} -- Implementation
 			l_errors, l_warnings: ARRAYED_LIST [STRING]
 			l_output_dir: DIRECTORY
 			l_min_max: TUPLE [min, max: INTEGER]
+			l_mode: AT_MODE
 		do
 			can_run := True
 			create autoteach_options.make_with_defaults
 			create l_errors.make (16)
 			create l_warnings.make (16)
+			l_mode := enum_mode.M_auto
 
 				-- TODO: One more false positive of CA024 here.
 			from
@@ -90,6 +92,7 @@ feature {NONE} -- Implementation
 			until
 				autoteach_arguments.after
 			loop
+				autoteach_arguments.item.to_lower
 				if autoteach_arguments.item.same_string (at_strings.at_class) or autoteach_arguments.item.same_string (at_strings.at_classes) then
 					autoteach_arguments.forth
 					if autoteach_arguments.after then
@@ -136,6 +139,18 @@ feature {NONE} -- Implementation
 					end
 				elseif autoteach_arguments.item.same_string (at_strings.at_level_subfolders) then
 					autoteach_options.create_level_subfolders := True
+				elseif autoteach_arguments.item.same_string (at_strings.at_mode) then
+					autoteach_arguments.forth
+					if autoteach_arguments.after then
+						l_errors.force (at_strings.error_no_mode (enum_mode.textual_value_list))
+					else
+						autoteach_arguments.item.to_lower
+						if enum_mode.is_valid_value_name (autoteach_arguments.item) then
+							l_mode := enum_mode.value (autoteach_arguments.item)
+						else
+							l_errors.force (at_strings.error_invalid_mode (autoteach_arguments.item, enum_mode.textual_value_list))
+						end
+					end
 				elseif autoteach_arguments.item.same_string (at_strings.at_custom_hint_tables) then
 					autoteach_arguments.forth
 					if autoteach_arguments.after then
@@ -152,13 +167,18 @@ feature {NONE} -- Implementation
 					end
 				else
 					l_errors.force (at_strings.error_unrecognized_argument (autoteach_arguments.item))
-					can_run := False
 				end
 				autoteach_arguments.forth
 			end
 
 			if autoteach_options.min_hint_level /= autoteach_options.max_hint_level and not autoteach_options.create_level_subfolders then
 				l_warnings.force (at_strings.warning_no_level_subfolders_option)
+			end
+
+			if l_mode = enum_mode.M_custom and not attached hint_tables.custom_hint_table then
+				l_errors.force (at_strings.no_custom_hint_table_loaded)
+			else
+				autoteach_options.switch_to_mode (l_mode)
 			end
 
 			can_run := l_errors.is_empty

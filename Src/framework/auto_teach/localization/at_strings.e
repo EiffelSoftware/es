@@ -45,6 +45,8 @@ feature -- Command line switches
 	at_output_path: STRING = "-at-output-path"
 	at_level_subfolders: STRING = "-at-level-subfolders"
 
+	at_mode: STRING = "-at-mode"
+
 	at_custom_hint_tables: STRING = "-at-custom-hint-table"
 
 
@@ -136,6 +138,16 @@ feature -- Errors
 	error_no_class_list: STRING_32
 		do
 			Result := locale.translation ("Syntax error. Class name (or list) expected.")
+		end
+
+	error_no_mode (a_valid_modes: STRING_32): STRING_32
+		do
+			Result := locale.translation ("Syntax error. Mode expected. Valid modes are the following: " + a_valid_modes)
+		end
+
+	error_invalid_mode (a_mode, a_valid_modes: STRING_32): STRING_32
+		do
+			Result := locale.translation (a_mode + "is not a valid mode. Valid modes are the following: " + a_valid_modes)
 		end
 
 	error_invalid_output_dir: STRING_32
@@ -233,9 +245,7 @@ feature -- Meta-commands
 
 	placeholder_command: STRING = "PLACEHOLDER"
 
-	manual_mode_command: STRING = "MANUAL_MODE"
-	auto_mode_command: STRING = "AUTO_MODE"
-	custom_mode_command: STRING = "CUSTOM_MODE"
+	mode_command: STRING = "MODE"
 
 
 feature -- Block types

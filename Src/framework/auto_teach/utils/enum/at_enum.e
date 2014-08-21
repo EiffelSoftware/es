@@ -108,6 +108,18 @@ feature -- Access
 		deferred
 		end
 
+	textual_value_list: STRING
+			-- String listing all the enum values, separated by commas.
+		once ("PROCESS")
+			create Result.make (128)
+			across value_list as ic loop
+				Result.append (ic.item.name + ", ")
+			end
+			if not Result.is_empty then
+				Result.remove_tail (2)
+			end
+		end
+
 feature -- Equality
 
 	is_equal (other: like Current): BOOLEAN
@@ -194,7 +206,7 @@ feature {NONE} -- Implementation
 			across
 				a_tuples as ic
 			loop
-				if Result = Void and then ic.item [a_position].is_equal (a_value) then
+				if Result = Void and then ic.item [a_position] ~ a_value then
 					Result := ic.item
 				end
 			end
