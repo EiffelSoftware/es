@@ -267,7 +267,8 @@ feature -- Meta-command processing interface
 			single_return_terminated_line: a_line.ends_with ("%N") and a_line.occurrences ('%N') = 1
 		local
 			l_command: AT_COMMAND
-			l_block_type_string, l_fail_reason: STRING
+			l_block_type_strings: LIST [STRING]
+			l_errors: ARRAYED_LIST [STRING]
 			l_is_complex_block: BOOLEAN
 			l_block_type: AT_BLOCK_TYPE
 			l_mode: AT_MODE
@@ -275,9 +276,10 @@ feature -- Meta-command processing interface
 			last_command_output := Void
 
 			create l_command.make_from_line (a_line)
+			create l_errors.make (4)
 
 			if not l_command.valid then
-				l_fail_reason := at_strings.proc_unparsable_meta_command + a_line
+				l_errors.extend (at_strings.proc_unparsable_meta_command + a_line)
 			else
 				if l_command.command_word.same_string (at_strings.hint_continuation_command) then
 						-- Hint continuation commands bypass level checks.
@@ -287,7 +289,7 @@ feature -- Meta-command processing interface
 							last_command_output := a_line.twin
 						end
 					else
-						l_fail_reason := at_strings.proc_invalid_hint_continuation + a_line
+						l_errors.extend (at_strings.proc_invalid_hint_continuation + a_line)
 					end
 
 				else
@@ -316,68 +318,78 @@ feature -- Meta-command processing interface
 									options.switch_to_mode (l_mode)
 								end
 							else
-								l_fail_reason := at_strings.proc_invalid_mode + a_line + "%N" + at_strings.valid_mode_list (enum_mode.textual_value_list)
+								l_errors.extend (at_strings.proc_invalid_mode + a_line + "%N" + at_strings.valid_mode_list (enum_mode.textual_value_list))
 							end
 
 						elseif at_strings.commands_with_block.has (l_command.command_word) then
 								-- Command requiring a block type.
 
-							l_block_type_string := l_command.payload.as_lower
-							if not enum_block_type.is_valid_value_name (l_block_type_string) then
-								l_fail_reason := at_strings.proc_invalid_block_type + a_line
-							else
-								l_block_type := enum_block_type.value (l_block_type_string)
-								l_is_complex_block := enum_block_type.is_complex_block_type (l_block_type)
+							l_command.payload.to_lower
 
-									-- Commands applicable to all blocks:
-								if l_command.command_word.same_string (at_strings.show_all_command) then
-									set_block_global_visibility_override (l_block_type, Tri_true)
-								elseif l_command.command_word.same_string (at_strings.hide_all_command) then
-									set_block_global_visibility_override (l_block_type, Tri_false)
-								elseif l_command.command_word.same_string (at_strings.reset_all_command) then
-									set_block_global_visibility_override (l_block_type, Tri_undefined)
-								elseif l_command.command_word.same_string (at_strings.show_next_command) then
-									set_block_local_visibility_override (l_block_type, Tri_true)
-								elseif l_command.command_word.same_string (at_strings.hide_next_command) then
-									set_block_local_visibility_override (l_block_type, Tri_false)
-								elseif l_is_complex_block then
+								-- Transform commas (optional separators) into whitespace, then
+								-- extract the single words
+							l_command.payload.replace_substring_all (",", " ")
+							l_block_type_strings := broken_into_words (l_command.payload)
 
-										-- Commands applicable only to complex blocks:
-									if l_command.command_word.same_string (at_strings.show_all_content_command) then
-										set_block_content_global_visibility_override (l_block_type, Tri_true)
-									elseif l_command.command_word.same_string (at_strings.hide_all_content_command) then
-										set_block_content_global_visibility_override (l_block_type, Tri_false)
-									elseif l_command.command_word.same_string (at_strings.reset_all_content_command) then
-										set_block_content_global_visibility_override (l_block_type, Tri_undefined)
-									elseif l_command.command_word.same_string (at_strings.show_next_content_command) then
-										set_block_content_local_visibility_override (l_block_type, Tri_true)
-									elseif l_command.command_word.same_string (at_strings.hide_next_content_command) then
-										set_block_content_local_visibility_override (l_block_type, Tri_false)
-									elseif l_command.command_word.same_string (at_strings.treat_all_as_complex) then
-										set_block_global_treat_as_complex (l_block_type, True)
-									elseif l_command.command_word.same_string (at_strings.treat_all_as_atomic) then
-										set_block_global_treat_as_complex (l_block_type, False)
-									elseif l_command.command_word.same_string (at_strings.treat_next_as_complex) then
-										set_block_local_treat_as_complex_override (l_block_type, Tri_true)
-									elseif l_command.command_word.same_string (at_strings.treat_next_as_atomic) then
-										set_block_local_treat_as_complex_override (l_block_type, Tri_false)
-									else
-										l_fail_reason := at_strings.proc_unrecognized_meta_command + a_line
-									end
-
+							across l_block_type_strings as ic loop
+								if not enum_block_type.is_valid_value_name (ic.item) then
+									l_errors.extend (at_strings.proc_invalid_block_type (ic.item) + a_line)
 								else
-									l_fail_reason := at_strings.proc_unrecognized_meta_command + a_line
+									l_block_type := enum_block_type.value (ic.item)
+									l_is_complex_block := enum_block_type.is_complex_block_type (l_block_type)
+
+										-- Commands applicable to all blocks:
+									if l_command.command_word.same_string (at_strings.show_all_command) then
+										set_block_global_visibility_override (l_block_type, Tri_true)
+									elseif l_command.command_word.same_string (at_strings.hide_all_command) then
+										set_block_global_visibility_override (l_block_type, Tri_false)
+									elseif l_command.command_word.same_string (at_strings.reset_all_command) then
+										set_block_global_visibility_override (l_block_type, Tri_undefined)
+									elseif l_command.command_word.same_string (at_strings.show_next_command) then
+										set_block_local_visibility_override (l_block_type, Tri_true)
+									elseif l_command.command_word.same_string (at_strings.hide_next_command) then
+										set_block_local_visibility_override (l_block_type, Tri_false)
+									elseif l_is_complex_block then
+
+											-- Commands applicable only to complex blocks:
+										if l_command.command_word.same_string (at_strings.show_all_content_command) then
+											set_block_content_global_visibility_override (l_block_type, Tri_true)
+										elseif l_command.command_word.same_string (at_strings.hide_all_content_command) then
+											set_block_content_global_visibility_override (l_block_type, Tri_false)
+										elseif l_command.command_word.same_string (at_strings.reset_all_content_command) then
+											set_block_content_global_visibility_override (l_block_type, Tri_undefined)
+										elseif l_command.command_word.same_string (at_strings.show_next_content_command) then
+											set_block_content_local_visibility_override (l_block_type, Tri_true)
+										elseif l_command.command_word.same_string (at_strings.hide_next_content_command) then
+											set_block_content_local_visibility_override (l_block_type, Tri_false)
+										elseif l_command.command_word.same_string (at_strings.treat_all_as_complex) then
+											set_block_global_treat_as_complex (l_block_type, True)
+										elseif l_command.command_word.same_string (at_strings.treat_all_as_atomic) then
+											set_block_global_treat_as_complex (l_block_type, False)
+										elseif l_command.command_word.same_string (at_strings.treat_next_as_complex) then
+											set_block_local_treat_as_complex_override (l_block_type, Tri_true)
+										elseif l_command.command_word.same_string (at_strings.treat_next_as_atomic) then
+											set_block_local_treat_as_complex_override (l_block_type, Tri_false)
+										else
+											l_errors.extend (at_strings.proc_unrecognized_meta_command + a_line)
+										end
+
+									else
+										l_errors.extend (at_strings.proc_unrecognized_meta_command + a_line)
+									end
 								end
 							end
 
 						else
-							 l_fail_reason := at_strings.proc_unrecognized_meta_command + a_line
+							 l_errors.extend (at_strings.proc_unrecognized_meta_command + a_line)
 						end
 					end
 				end
 			end
-			if attached l_fail_reason then
-				print_message (l_fail_reason)
+			if not l_errors.is_empty then
+				across l_errors as ic loop
+					print_message (ic.item)
+				end
 			end
 		end
 

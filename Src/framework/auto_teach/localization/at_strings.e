@@ -99,9 +99,9 @@ feature -- Processing warnings (proc)
 			Result := locale.translation ("The following hint continuation command is not directly preceded by a hint command, and was therefore ignored:%N")
 		end
 
-	proc_invalid_block_type: STRING_32
+	proc_invalid_block_type (a_block_type: STRING): STRING_32
 		do
-			Result := locale.translation ("The following meta-command specifies an invalid block type, and was therefore ignored:%N")
+			Result := locale.translation ("The following meta-command specifies an invalid block type (" + a_block_type + "), which was ignored:%N")
 		end
 
 	proc_no_custom_hint_table_loaded: STRING_32
