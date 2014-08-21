@@ -245,69 +245,24 @@ feature -- Meta-command processing interface
 			is_meta_command: is_meta_command (a_line)
 			single_return_terminated_line: a_line.ends_with ("%N") and a_line.occurrences ('%N') = 1
 		local
-			l_line, l_level_string, l_command_word, l_block_type_string: STRING
-			l_min_max: TUPLE [min: INTEGER; max: INTEGER]
-			l_index, l_space_index, l_tab_index, l_min_level, l_max_level: INTEGER
+			l_block_type_string: STRING
+			l_command: AT_COMMAND
 			l_error, l_recognized, l_is_complex_block: BOOLEAN
 			l_tristate: AT_TRI_STATE_BOOLEAN
 			l_block_type: AT_BLOCK_TYPE
 		do
 			last_command_output := Void
-			l_line := a_line.twin
-			l_min_level := 0
-			l_max_level := {INTEGER}.max_value
-			l_line.adjust
-			check
-				l_line.starts_with ("--")
-			end
-			l_line.remove_head (2)
-			l_line.left_adjust
-			check
-				l_line.starts_with (at_strings.meta_command_prefix)
-			end
-			l_line.remove_head (at_strings.meta_command_prefix.count)
-			l_line.left_adjust
-			if l_line [1] = '[' then
-				l_line.remove_head (1)
-				l_index := l_line.index_of (']', 1)
-				if l_index >= 2 then
-					l_level_string := l_line.substring (1, l_index - 1)
-					l_min_max := parse_natural_range_string (l_level_string, l_max_level)
-					if attached l_min_max then
-						l_min_level := l_min_max.min
-						l_max_level := l_min_max.max
-					else
-						l_error := True
-					end
-					l_line.remove_head (l_index)
-				else
-					l_error := True
-				end
-			end
-			l_line.left_adjust
-			l_space_index := l_line.index_of (' ', 1)
-			if l_space_index = 0 then
-				l_space_index := l_line.count + 1
-			end
-			l_tab_index := l_line.index_of ('%T', 1)
-			if l_tab_index = 0 then
-				l_tab_index := l_line.count + 1
-			end
-			l_index := l_tab_index.min (l_space_index)
-			l_command_word := l_line.head (l_index - 1).as_upper
-			if l_command_word.ends_with (":") then
-				l_command_word.remove_tail (1)
-			end
-			l_line.remove_head (l_index - 1)
-			l_line.left_adjust
-			if not l_error and options.hint_level >= l_min_level and options.hint_level <= l_max_level then
+
+			create l_command.make_from_line (a_line)
+
+			if l_command.valid and options.hint_level >= l_command.min_level and options.hint_level <= l_command.max_level then
 
 					-- Check this as the very first thing:
-				if l_command_word.same_string (at_strings.comment_command) then
+				if l_command.command_word.same_string (at_strings.comment_command) then
 					l_recognized := True
 						-- Do nothing.
-				elseif at_strings.commands_with_block.has (l_command_word) then
-					l_block_type_string := l_line.as_lower
+				elseif at_strings.commands_with_block.has (l_command.command_word) then
+					l_block_type_string := l_command.payload.as_lower
 					if not enum_block_type.is_valid_value_name (l_block_type_string) then
 						l_error := true
 					else
@@ -316,69 +271,68 @@ feature -- Meta-command processing interface
 
 						if l_is_complex_block then
 								-- The following commands are applicable only to a complex block.
-							if l_command_word.same_string (at_strings.show_all_content_command) then
+							if l_command.command_word.same_string (at_strings.show_all_content_command) then
 								set_block_content_global_visibility_override (l_block_type, Tri_true)
 								l_recognized := True
-							elseif l_command_word.same_string (at_strings.hide_all_content_command) then
+							elseif l_command.command_word.same_string (at_strings.hide_all_content_command) then
 								set_block_content_global_visibility_override (l_block_type, Tri_false)
 								l_recognized := True
-							elseif l_command_word.same_string (at_strings.reset_all_content_command) then
+							elseif l_command.command_word.same_string (at_strings.reset_all_content_command) then
 								set_block_content_global_visibility_override (l_block_type, Tri_undefined)
 								l_recognized := True
-							elseif l_command_word.same_string (at_strings.show_next_content_command) then
+							elseif l_command.command_word.same_string (at_strings.show_next_content_command) then
 								set_block_content_local_visibility_override (l_block_type, Tri_true)
 								l_recognized := True
-							elseif l_command_word.same_string (at_strings.hide_next_content_command) then
+							elseif l_command.command_word.same_string (at_strings.hide_next_content_command) then
 								set_block_content_local_visibility_override (l_block_type, Tri_false)
 								l_recognized := True
-							elseif l_command_word.same_string (at_strings.treat_all_as_complex) then
+							elseif l_command.command_word.same_string (at_strings.treat_all_as_complex) then
 								set_block_global_treat_as_complex (l_block_type, True)
 								l_recognized := True
-							elseif l_command_word.same_string (at_strings.treat_all_as_atomic) then
+							elseif l_command.command_word.same_string (at_strings.treat_all_as_atomic) then
 								set_block_global_treat_as_complex (l_block_type, False)
 								l_recognized := True
-							elseif l_command_word.same_string (at_strings.treat_next_as_complex) then
+							elseif l_command.command_word.same_string (at_strings.treat_next_as_complex) then
 								set_block_local_treat_as_complex_override (l_block_type, Tri_true)
 								l_recognized := True
-							elseif l_command_word.same_string (at_strings.treat_next_as_atomic) then
+							elseif l_command.command_word.same_string (at_strings.treat_next_as_atomic) then
 								set_block_local_treat_as_complex_override (l_block_type, Tri_false)
 								l_recognized := True
 							end
 						end -- and not 'elseif', since the following commands can also be applied to a complex block.
 
-						if l_command_word.same_string (at_strings.show_all_command) then
+						if l_command.command_word.same_string (at_strings.show_all_command) then
 							set_block_global_visibility_override (l_block_type, Tri_true)
 							l_recognized := True
-						elseif l_command_word.same_string (at_strings.hide_all_command) then
+						elseif l_command.command_word.same_string (at_strings.hide_all_command) then
 							set_block_global_visibility_override (l_block_type, Tri_false)
 							l_recognized := True
-						elseif l_command_word.same_string (at_strings.reset_all_command) then
+						elseif l_command.command_word.same_string (at_strings.reset_all_command) then
 							set_block_global_visibility_override (l_block_type, Tri_undefined)
 							l_recognized := True
-						elseif l_command_word.same_string (at_strings.show_next_command) then
+						elseif l_command.command_word.same_string (at_strings.show_next_command) then
 							set_block_local_visibility_override (l_block_type, Tri_true)
 							l_recognized := True
-						elseif l_command_word.same_string (at_strings.hide_next_command) then
+						elseif l_command.command_word.same_string (at_strings.hide_next_command) then
 							set_block_local_visibility_override (l_block_type, Tri_false)
 							l_recognized := True
 						end
 					end
-				elseif l_command_word.same_string (at_strings.hint_command) then
+				elseif l_command.command_word.same_string (at_strings.hint_command) then
 					last_command_output := a_line.twin
 					l_recognized := True
-				elseif l_command_word.same_string (at_strings.placeholder_command) then
-					l_tristate := on_off_to_tristate (l_line)
-					if l_tristate.is_defined then
-						options.insert_code_placeholder := l_tristate.value
+				elseif l_command.command_word.same_string (at_strings.placeholder_command) then
+					if string_is_bool (l_command.payload) then
+						options.insert_code_placeholder := string_to_bool (l_command.payload)
 						l_recognized := True
 					end
-				elseif l_command_word.same_string (at_strings.hint_mode_command) then
+				elseif l_command.command_word.same_string (at_strings.hint_mode_command) then
 					options.hint_table := hint_tables.default_annotated_hint_table
 					l_recognized := True
-				elseif l_command_word.same_string (at_strings.unannotated_mode_command) then
+				elseif l_command.command_word.same_string (at_strings.unannotated_mode_command) then
 					options.hint_table := hint_tables.default_unannotated_hint_table
 					l_recognized := True
-				elseif l_command_word.same_string (at_strings.custom_mode_command) then
+				elseif l_command.command_word.same_string (at_strings.custom_mode_command) then
 					l_recognized := True
 					if attached hint_tables.custom_hint_table as l_hint_table then
 						options.hint_table := l_hint_table
@@ -387,7 +341,7 @@ feature -- Meta-command processing interface
 					end
 				end
 			end
-			if options.hint_level >= l_min_level and options.hint_level <= l_max_level and not l_recognized then
+			if options.hint_level >= l_command.min_level and options.hint_level <= l_command.max_level and not l_recognized then
 				print_message (at_strings.unrecognized_meta_command + a_line)
 			end
 		end
@@ -651,6 +605,11 @@ feature {NONE} -- Implementation: miscellaneous
 		end
 
 	undefined_visibility_warning_set: ARRAYED_SET [AT_BLOCK_TYPE]
+
+	should_process_hint_continuation: BOOLEAN
+			-- If we encounter a hint continuation command right now, should we process it?
+			-- The answer will be yes basically if the last processed command was a hint
+			-- and if it was shown according to the current hint level.
 
 invariant
 --	The following invariant is very expensive to check.

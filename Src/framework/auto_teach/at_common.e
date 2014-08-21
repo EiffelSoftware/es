@@ -150,19 +150,31 @@ feature {NONE} -- Utility
 			end
 		end
 
-	on_off_to_tristate (a_string: STRING): AT_TRI_STATE_BOOLEAN
-			-- Translates "on" to tri_true, "off" to tri_false and any other string to tri_undefined.
-			-- Case insensitive.
+	string_is_bool (a_string: STRING): BOOLEAN
+			-- Can `a_string' be parsed to a boolean, also accepting "on" and "off" as input.
 		local
-			l_string: STRING
+			l_lower_string: STRING
 		do
-			l_string := a_string.as_lower
-			if l_string.same_string ("on") then
-				Result := Tri_true
-			elseif l_string.same_string ("off") then
-				Result := Tri_false
+			l_lower_string := a_string.as_lower
+			Result := l_lower_string.is_boolean or else l_lower_string.same_string ("on") or else l_lower_string.same_string ("off")
+		end
+
+	string_to_bool (a_string: STRING): BOOLEAN
+			-- Convert `a_string' to a boolean value, also accepting "on" and "off" as input.
+		require
+			is_bool: string_is_bool (a_string)
+		local
+			l_lower_string: STRING
+		do
+			l_lower_string := a_string.as_lower
+			if l_lower_string.is_boolean then
+				Result := l_lower_string.to_boolean
+			elseif l_lower_string.same_string ("on") then
+				Result := True
+			elseif l_lower_string.same_string ("off") then
+				Result := False
 			else
-				Result := Tri_undefined
+				check valid_input: False end
 			end
 		end
 
