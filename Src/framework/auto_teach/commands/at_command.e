@@ -49,15 +49,15 @@ feature {NONE} -- Initialization
 		local
 			l_line, l_level_string, l_block_type_string: STRING
 			l_min_max: TUPLE [min: INTEGER; max: INTEGER]
-			l_index, l_min_level, l_max_level: INTEGER
+			l_index: INTEGER
 			l_space_index, l_tab_index, l_colon_index: INTEGER
 		do
 			original_line := a_line.twin
 			l_line := a_line.twin
 
 				-- Default level values: the command is always applicable.
-			l_min_level := 0
-			l_max_level := {INTEGER}.max_value
+			min_level := 0
+			max_level := {INTEGER}.max_value
 
 
 				-- Check prefixes.
@@ -79,10 +79,10 @@ feature {NONE} -- Initialization
 				l_index := l_line.index_of (']', 1)
 				if l_index >= 2 then
 					l_level_string := l_line.substring (1, l_index - 1)
-					l_min_max := parse_natural_range_string (l_level_string, l_max_level)
+					l_min_max := parse_natural_range_string (l_level_string, max_level)
 					if attached l_min_max then
-						l_min_level := l_min_max.min
-						l_max_level := l_min_max.max
+						min_level := l_min_max.min
+						max_level := l_min_max.max
 					else
 						fail
 					end
