@@ -67,11 +67,16 @@ feature -- Messages
 			Result := locale.translation ("Running at hint level " + a_level.out.to_string_32 + ".")
 		end
 
+	processing_class (a_class: STRING): STRING_32
+		do
+			Result := locale.translation ("Processing class " + a_class + "...")
+		end
+
 feature -- Warnings
 
 	unrecognized_meta_command: STRING_32
 		do
-			Result := locale.translation ("The following meta-command was not recognized, and therefore ignored:%N")
+			Result := locale.translation ("The following meta-command was not recognized or is incorrect, and was therefore ignored:%N")
 		end
 
 	no_custom_hint_table_loaded: STRING_32

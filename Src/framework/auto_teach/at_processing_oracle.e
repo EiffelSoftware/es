@@ -75,18 +75,16 @@ feature -- Status signaling
 			-- Doesn't keep anything else into account.
 			-- It is exposed to clients and only exists for contracts.
 
-		-- TODO: Refactor?
+
 	begin_process_block (a_block_type: AT_BLOCK_TYPE)
 			-- Signal the oracle that a block of type `a_block_type' is about to be processed.
 		local
-			l_block_type: AT_BLOCK_TYPE
-			l_hiding_status, l_is_complex_block: BOOLEAN
-			l_visibility_status, l_block_visibility, l_content_visibility_status, l_block_content_visibility: AT_TRI_STATE_BOOLEAN
+			l_in_hidden_region, l_is_complex_block: BOOLEAN
+			l_block_visibility, l_content_visibility_status, l_block_content_visibility: AT_TRI_STATE_BOOLEAN
 			l_visibility_policy_type, l_content_visibility_policy_type: AT_POLICY_TYPE
 			l_descriptor, l_descriptor_in_table: AT_BLOCK_VISIBILITY_DESCRIPTOR
 		do
-			l_block_type := a_block_type
-			l_descriptor_in_table := visibility_descriptors [l_block_type]
+			l_descriptor_in_table := visibility_descriptors [a_block_type]
 			l_descriptor := l_descriptor_in_table.twin
 
 				-- Now that we have cloned the block, we reset the local override flags. These are single-use.
@@ -96,28 +94,51 @@ feature -- Status signaling
 				l_complex_descriptor_in_table.reset_local_treatment_overrides
 			end
 
-			if hiding_stack.is_empty then
+				-- Let's start the real work. The main goal of this routine is to determine the
+				-- final value of `l_block_visibility'.
+				-- Additionally, we also want to determine what the content visibility status
+				-- inside the block will be. A part of this information is also "how strong"
+				-- this status is, that is, does it come from a default value in the visibility
+				-- table (weakest), does it come from a general class-wide annotation (medium strength)
+				-- or does it come from a local annotation applied to a single block (strongest)?
+				-- All these informations will then be pushed into the parallel stacks in charge
+				-- of keeping track of this.
+
+				-- Read the top of the stacks.
+			if effective_visibility_stack.is_empty then
 					-- According to the invariant, all stacks are empty.
 
 					-- Default values
-				l_hiding_status := False
+				l_in_hidden_region := False
 				l_content_visibility_status := Tri_undefined
 				l_content_visibility_policy_type := enum_policy_type.Pt_not_set
 			else
-					-- Keep the current values.
-				l_hiding_status := hiding_stack.item
+					-- Take the values from the top of the stack (referred to the parent of this block).
+				l_in_hidden_region := not effective_visibility_stack.item
 				l_content_visibility_status := content_visibility_stack.item.value
 				l_content_visibility_policy_type := content_visibility_stack.item.policy_type
 			end
 
-			if containing_atomic_block_effective_visibility.is_defined then
+
+				-- Let's start with the easiest cases.	
+			if l_in_hidden_region then
+					-- If we are in a hidden region, we cannot show this block in any case,
+					-- otherwise it would be orphan in the syntax tree of the output code.
+					-- The show is already over.
+
+				l_block_visibility := Tri_false
+
+			elseif nesting_in_atomic_block >= 1 then
 					-- No need to waste a lot of time checking the rest.
 					-- We are inside a block which is treated as an atomic block,
-					-- thus we have to apply the same contend visibility as the
-					-- said block, period.
-				l_block_visibility := containing_atomic_block_effective_visibility
+					-- thus we have to apply its visibility to the current block
+					-- as it is, without asking any more questions.
+					-- We are done.
+
+				l_block_visibility := to_tri_state (effective_visibility_stack.item)
+
 			else
-					-- Determine if this is a complex block and if it should be treated as such or as an atomic block.
+					-- Determine if this is a complex block and if it should be actually treated as such.
 				if attached {AT_COMPLEX_BLOCK_VISIBILITY_DESCRIPTOR} l_descriptor as l_complex_descriptor then
 					if l_complex_descriptor.local_treat_as_complex_override.imposed_on_bool (l_complex_descriptor.global_treat_as_complex) then
 						l_is_complex_block := True
@@ -129,7 +150,7 @@ feature -- Status signaling
 					l_is_complex_block := False
 				end
 
-					-- For all blocks: compute the visibility
+					-- For all blocks: compute the basic visibility.
 				l_block_visibility := l_descriptor.effective_visibility
 				l_visibility_policy_type := l_descriptor.effective_visibility_policy_type
 
@@ -146,27 +167,21 @@ feature -- Status signaling
 
 					l_visibility_policy_type := l_content_visibility_policy_type
 				end
-			end
 
-				-- Whatever we computed so far, this can stop the show.
-				-- If we are in a hidden region, we cannot show this block in any case,
-				-- otherwise it would be orphan in the syntax tree of the output code.
-			if l_hiding_status then
-				l_block_visibility := Tri_false
-			end
-
-				-- If after this long chain the visibility is still undefined,
-				-- we will force it to true and complain with the user.
-			if l_block_visibility.is_undefined then
-					-- We don't like this. We will give a warning.
-				undefined_visibility_warning_set.extend (a_block_type)
-				l_block_visibility := Tri_true
+					-- If after this long chain the visibility is still undefined,
+					-- we will force it to true and complain with the user, as he/she
+					-- should be responsible for always avoiding this situation.
+				if l_block_visibility.is_undefined then
+					undefined_visibility_warning_set.extend (a_block_type)
+					l_block_visibility := Tri_true
+				end
 			end
 
 				-- Now it should really be sure that `l_block_visibility' is properly set.
-				-- Let's set l_hiding_status accordingly.
 			check defined: l_block_visibility.is_defined end
-			l_hiding_status := not l_block_visibility.value
+
+				-- Done with the block visibility. However, if this is a complex block, we still have
+				-- to compute the new content visibility policy which will be valid inside it.
 
 			if l_is_complex_block and then attached {AT_COMPLEX_BLOCK_VISIBILITY_DESCRIPTOR} l_descriptor as l_complex_descriptor then
 					-- For complex blocks only, compute the new valid content visibility policy (to be pushed into the stack).
@@ -177,25 +192,26 @@ feature -- Status signaling
 					l_content_visibility_policy_type := l_complex_descriptor.effective_content_visibility_policy_type
 				else
 						-- This block will inherit its content visibility from the parent block,
-						-- i.e., keep the current content visibility, which means there is nothing to do here.
+						-- i.e., leave the two variables unchanged, we will later push them into the stack.
 				end
 			end
 
+				-- We are done! Push all variables to the stacks.
 			block_type_call_stack.put (a_block_type)
 			block_stack.put (l_descriptor)
 			content_visibility_stack.put ([l_content_visibility_status, l_content_visibility_policy_type])
-			hiding_stack.put (l_hiding_status)
+			effective_visibility_stack.put (l_block_visibility.value)
 
+				-- Refresh the oracle attributes.
 			refresh
 
-			if nesting_in_atomic_block = 0 then
-				if not l_is_complex_block then
-					containing_atomic_block_effective_visibility := to_tri_state (output_enabled)
-					nesting_in_atomic_block := nesting_in_atomic_block + 1
-				end
-			else
+				-- Finally, update `nesting_in_atomic_block' attribute, if necessary.
+				-- If this is an atomic block or if we are already inside an atomic block,
+				-- increase the counter by one.
+			if not l_is_complex_block or nesting_in_atomic_block > 0 then
 				nesting_in_atomic_block := nesting_in_atomic_block + 1
 			end
+
 		ensure
 			block_on_top_of_stack: not block_type_call_stack.is_empty and then block_type_call_stack.item = a_block_type
 		end
@@ -208,7 +224,7 @@ feature -- Status signaling
 		do
 			block_type_call_stack.remove
 			block_stack.remove
-			hiding_stack.remove
+			effective_visibility_stack.remove
 			content_visibility_stack.remove
 
 			if nesting_in_atomic_block > 0 then
@@ -238,17 +254,15 @@ feature -- Meta-command processing interface
 		end
 
 
-		-- TODO: Refactor this method or add comments, it's totally unreadable.
 	process_meta_command (a_line: STRING)
 			-- Process the meta-command contained in `a_line'. Case insensitive.
 		require
 			is_meta_command: is_meta_command (a_line)
 			single_return_terminated_line: a_line.ends_with ("%N") and a_line.occurrences ('%N') = 1
 		local
-			l_block_type_string: STRING
 			l_command: AT_COMMAND
-			l_error, l_recognized, l_is_complex_block: BOOLEAN
-			l_tristate: AT_TRI_STATE_BOOLEAN
+			l_block_type_string: STRING
+			l_error, l_is_complex_block: BOOLEAN
 			l_block_type: AT_BLOCK_TYPE
 		do
 			last_command_output := Void
@@ -257,11 +271,43 @@ feature -- Meta-command processing interface
 
 			if l_command.valid and options.hint_level >= l_command.min_level and options.hint_level <= l_command.max_level then
 
-					-- Check this as the very first thing:
+					-- General commands
 				if l_command.command_word.same_string (at_strings.comment_command) then
-					l_recognized := True
-						-- Do nothing.
+
+						-- Comment - do nothing.
+
+				elseif l_command.command_word.same_string (at_strings.hint_command) then
+
+						-- Hint
+					last_command_output := a_line.twin
+
+				elseif l_command.command_word.same_string (at_strings.placeholder_command) and then string_is_bool (l_command.payload) then
+
+						-- Toggle placeholder
+					options.insert_code_placeholder := string_to_bool (l_command.payload)
+
+				elseif l_command.command_word.same_string (at_strings.hint_mode_command) then
+
+						-- Switch to "hint mode" table.
+					options.hint_table := hint_tables.default_annotated_hint_table
+
+				elseif l_command.command_word.same_string (at_strings.unannotated_mode_command) then
+
+						-- Switch to "unannotated mode" table.
+					options.hint_table := hint_tables.default_unannotated_hint_table
+
+				elseif l_command.command_word.same_string (at_strings.custom_mode_command) then
+
+						-- Switch to custom table
+					if attached hint_tables.custom_hint_table as l_hint_table then
+						options.hint_table := l_hint_table
+					else
+						print_message (capitalized (at_strings.meta_command) + ": " + a_line + "%N" + at_strings.no_custom_hint_table_loaded)
+					end
+
 				elseif at_strings.commands_with_block.has (l_command.command_word) then
+						-- Command requiring a block type.
+
 					l_block_type_string := l_command.payload.as_lower
 					if not enum_block_type.is_valid_value_name (l_block_type_string) then
 						l_error := true
@@ -269,79 +315,52 @@ feature -- Meta-command processing interface
 						l_block_type := enum_block_type.value (l_block_type_string)
 						l_is_complex_block := enum_block_type.is_complex_block_type (l_block_type)
 
-						if l_is_complex_block then
-								-- The following commands are applicable only to a complex block.
-							if l_command.command_word.same_string (at_strings.show_all_content_command) then
-								set_block_content_global_visibility_override (l_block_type, Tri_true)
-								l_recognized := True
-							elseif l_command.command_word.same_string (at_strings.hide_all_content_command) then
-								set_block_content_global_visibility_override (l_block_type, Tri_false)
-								l_recognized := True
-							elseif l_command.command_word.same_string (at_strings.reset_all_content_command) then
-								set_block_content_global_visibility_override (l_block_type, Tri_undefined)
-								l_recognized := True
-							elseif l_command.command_word.same_string (at_strings.show_next_content_command) then
-								set_block_content_local_visibility_override (l_block_type, Tri_true)
-								l_recognized := True
-							elseif l_command.command_word.same_string (at_strings.hide_next_content_command) then
-								set_block_content_local_visibility_override (l_block_type, Tri_false)
-								l_recognized := True
-							elseif l_command.command_word.same_string (at_strings.treat_all_as_complex) then
-								set_block_global_treat_as_complex (l_block_type, True)
-								l_recognized := True
-							elseif l_command.command_word.same_string (at_strings.treat_all_as_atomic) then
-								set_block_global_treat_as_complex (l_block_type, False)
-								l_recognized := True
-							elseif l_command.command_word.same_string (at_strings.treat_next_as_complex) then
-								set_block_local_treat_as_complex_override (l_block_type, Tri_true)
-								l_recognized := True
-							elseif l_command.command_word.same_string (at_strings.treat_next_as_atomic) then
-								set_block_local_treat_as_complex_override (l_block_type, Tri_false)
-								l_recognized := True
-							end
-						end -- and not 'elseif', since the following commands can also be applied to a complex block.
-
+							-- Commands applicable to all blocks:
 						if l_command.command_word.same_string (at_strings.show_all_command) then
 							set_block_global_visibility_override (l_block_type, Tri_true)
-							l_recognized := True
 						elseif l_command.command_word.same_string (at_strings.hide_all_command) then
 							set_block_global_visibility_override (l_block_type, Tri_false)
-							l_recognized := True
 						elseif l_command.command_word.same_string (at_strings.reset_all_command) then
 							set_block_global_visibility_override (l_block_type, Tri_undefined)
-							l_recognized := True
 						elseif l_command.command_word.same_string (at_strings.show_next_command) then
 							set_block_local_visibility_override (l_block_type, Tri_true)
-							l_recognized := True
 						elseif l_command.command_word.same_string (at_strings.hide_next_command) then
 							set_block_local_visibility_override (l_block_type, Tri_false)
-							l_recognized := True
+						elseif l_is_complex_block then
+
+								-- Commands applicable only to complex blocks:
+							if l_command.command_word.same_string (at_strings.show_all_content_command) then
+								set_block_content_global_visibility_override (l_block_type, Tri_true)
+							elseif l_command.command_word.same_string (at_strings.hide_all_content_command) then
+								set_block_content_global_visibility_override (l_block_type, Tri_false)
+							elseif l_command.command_word.same_string (at_strings.reset_all_content_command) then
+								set_block_content_global_visibility_override (l_block_type, Tri_undefined)
+							elseif l_command.command_word.same_string (at_strings.show_next_content_command) then
+								set_block_content_local_visibility_override (l_block_type, Tri_true)
+							elseif l_command.command_word.same_string (at_strings.hide_next_content_command) then
+								set_block_content_local_visibility_override (l_block_type, Tri_false)
+							elseif l_command.command_word.same_string (at_strings.treat_all_as_complex) then
+								set_block_global_treat_as_complex (l_block_type, True)
+							elseif l_command.command_word.same_string (at_strings.treat_all_as_atomic) then
+								set_block_global_treat_as_complex (l_block_type, False)
+							elseif l_command.command_word.same_string (at_strings.treat_next_as_complex) then
+								set_block_local_treat_as_complex_override (l_block_type, Tri_true)
+							elseif l_command.command_word.same_string (at_strings.treat_next_as_atomic) then
+								set_block_local_treat_as_complex_override (l_block_type, Tri_false)
+							else
+								l_error := True
+							end
+
+						else
+							l_error := True
 						end
 					end
-				elseif l_command.command_word.same_string (at_strings.hint_command) then
-					last_command_output := a_line.twin
-					l_recognized := True
-				elseif l_command.command_word.same_string (at_strings.placeholder_command) then
-					if string_is_bool (l_command.payload) then
-						options.insert_code_placeholder := string_to_bool (l_command.payload)
-						l_recognized := True
-					end
-				elseif l_command.command_word.same_string (at_strings.hint_mode_command) then
-					options.hint_table := hint_tables.default_annotated_hint_table
-					l_recognized := True
-				elseif l_command.command_word.same_string (at_strings.unannotated_mode_command) then
-					options.hint_table := hint_tables.default_unannotated_hint_table
-					l_recognized := True
-				elseif l_command.command_word.same_string (at_strings.custom_mode_command) then
-					l_recognized := True
-					if attached hint_tables.custom_hint_table as l_hint_table then
-						options.hint_table := l_hint_table
-					else
-						print_message (capitalized (at_strings.meta_command) + ": " + a_line + "%N" + at_strings.no_custom_hint_table_loaded)
-					end
+
+				else
+					l_error := True
 				end
 			end
-			if options.hint_level >= l_command.min_level and options.hint_level <= l_command.max_level and not l_recognized then
+			if l_error then
 				print_message (at_strings.unrecognized_meta_command + a_line)
 			end
 		end
@@ -445,15 +464,9 @@ feature {NONE} -- Implementation: block visibility
 			-- Stack of block visibility descriptors containing
 			-- descriptors of the blocks we are currently in.
 
-	hiding_stack: STACK [BOOLEAN]
+	effective_visibility_stack: STACK [BOOLEAN]
 			-- Stack, parallel to `block_stack', indicating, for every
-			-- level, wether we are inside an effectively hidden block.
-
-	in_hidden_block: BOOLEAN
-			-- Are we inside an effectively hidden block right now?
-		do
-			Result := (not hiding_stack.is_empty and then hiding_stack.item = True)
-		end
+			-- level, wether we are inside an effectively visible block.
 
 	content_visibility_stack: STACK [ TUPLE [value: AT_TRI_STATE_BOOLEAN; policy_type: AT_POLICY_TYPE]]
 			-- Stack, parallel to `block_stack', indicating, for
@@ -468,16 +481,18 @@ feature {NONE} -- Implementation: block visibility
 
 	nesting_in_atomic_block: NATURAL
 		-- Are we inside an atomic block? If so, how deep did we descend into blocks contained in it?
-		-- Please note that it is only possible to descend into an atomic block if this block is actually
-		-- a complex block being treated as an atomic block.
+		-- Note that it is only possible to descend into an atomic block if this block is actually a
+		-- complex block being treated as an atomic block.
 		-- 0 means that we are not inside an atomic block.
+		-- The class invariant guarantees that, when descending into a nested atomic blocks,
+		-- the visbility is determined for the outermost one and then never overridden.
 
 	refresh
 			-- Update `output_enabled' and `current_placeholder_type' with the correct up-to-date value.
 		local
 			l_current_block: AT_BLOCK_TYPE
 		do
-			output_enabled := not in_hidden_block
+			output_enabled := if effective_visibility_stack.is_empty then True else effective_visibility_stack.item end
 
 			if block_stack.is_empty then
 				current_placeholder_type := enum_placeholder.Ph_standard
@@ -511,7 +526,7 @@ feature {NONE} -- Implementation: miscellaneous
 			output_enabled := True
 			create {ARRAYED_STACK [AT_BLOCK_TYPE]} block_type_call_stack.make (32)
 			create {ARRAYED_STACK [AT_BLOCK_VISIBILITY_DESCRIPTOR]} block_stack.make (32)
-			create {ARRAYED_STACK [BOOLEAN]} hiding_stack.make (32)
+			create {ARRAYED_STACK [BOOLEAN]} effective_visibility_stack.make (32)
 			create {ARRAYED_STACK [TUPLE [value: AT_TRI_STATE_BOOLEAN; policy_type: AT_POLICY_TYPE]]} content_visibility_stack.make (32)
 			create undefined_visibility_warning_set.make (enum_block_type.values.count)
 			initialize_visibility_descriptors_table
@@ -540,15 +555,15 @@ feature {NONE} -- Implementation: miscellaneous
 		end
 
 	block_default_visibility (a_block_type: AT_BLOCK_TYPE): AT_TRI_STATE_BOOLEAN
-			-- What is the default visibility for `a_block_type'
-			-- according to the current hint table?
+			-- What is the default visibility for `a_block_type' according to the current hint table?
+			-- This function is mainly here for being passed as an agent when initalizing visibility descriptors.
 		do
 			Result := options.hint_table.visibility_for (a_block_type, options.hint_level).visibility
 		end
 
 	block_content_default_visibility (a_block_type: AT_BLOCK_TYPE): AT_TRI_STATE_BOOLEAN
-			-- What is the default content visibility for
-			-- `a_block_type' according to the current hint table?
+			-- What is the default content visibility for `a_block_type' according to the current hint table?
+			-- This function is mainly here for being passed as an agent when initalizing visibility descriptors.
 		do
 			Result := options.hint_table.content_visibility_for (a_block_type, options.hint_level).visibility
 		end
@@ -563,6 +578,10 @@ feature {NONE} -- Implementation: miscellaneous
 				l_message_output_action.call (a_string + "%N")
 			end
 		end
+
+	undefined_visibility_warning_set: ARRAYED_SET [AT_BLOCK_TYPE]
+
+feature {NONE} -- Consistency
 
 	is_block_visibility_table_consistent: BOOLEAN
 			-- Is the `visibility_descriptors' table in a consistent state?
@@ -604,18 +623,30 @@ feature {NONE} -- Implementation: miscellaneous
 			end
 		end
 
-	undefined_visibility_warning_set: ARRAYED_SET [AT_BLOCK_TYPE]
+	is_descending_in_atomic_block_consistent: BOOLEAN
+			-- if we are inside an atomic block nested within an outer one,
+			-- does it have the same visibility of the outer one?
+		local
+			l_temp: BOOLEAN
+		do
+			if nesting_in_atomic_block < 2 then
+				Result := True
+			else
+					-- Temporarily remove an item, so that we can see what's below it.				
+				l_temp := effective_visibility_stack.item
+				effective_visibility_stack.remove
+				Result := (l_temp = effective_visibility_stack.item)
 
-	should_process_hint_continuation: BOOLEAN
-			-- If we encounter a hint continuation command right now, should we process it?
-			-- The answer will be yes basically if the last processed command was a hint
-			-- and if it was shown according to the current hint level.
+					-- Regardless of the result, restore the removed item.
+				effective_visibility_stack.put (l_temp)
+			end
+		end
 
 invariant
 --	The following invariant is very expensive to check.
 --	block_visibility_table_consistency: is_block_visibility_table_consistent
-	stacks_same_size: block_stack.count = block_type_call_stack.count and block_type_call_stack.count = hiding_stack.count and hiding_stack.count = content_visibility_stack.count
+	stacks_same_size: block_stack.count = block_type_call_stack.count and block_type_call_stack.count = effective_visibility_stack.count and effective_visibility_stack.count = content_visibility_stack.count
 	block_type_call_stack_consistency: is_top_of_block_type_call_stack_consistent
-	containing_atomic_block_visibility_consistency: containing_atomic_block_effective_visibility.is_defined = (nesting_in_atomic_block > 0)
+	descending_in_atomic_block_consistency: is_descending_in_atomic_block_consistent
 
 end

@@ -85,9 +85,10 @@ feature -- Interface
 						end
 
 						l_io := True
-						create l_out_file.make_create_read_write (l_dir.path.extended (ic.item.name + ".e").out)
+						create l_out_file.make_create_read_write (l_dir.path.extended (ic.item.name.as_lower + ".e").out)
 						l_io := False
 
+						print_message (at_strings.processing_class (ic.item.name))
 						process_class (ic.item, l_out_file)
 						l_out_file.close
 					end
