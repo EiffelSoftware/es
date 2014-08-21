@@ -46,7 +46,7 @@ feature {NONE} -- Initialization
 					a_autoteach_instance.add_class (ic.item.config_class)
 				end
 			else
-				output_window.add (at_strings.error + ": " + at_strings.error_class_not_found (a_class_name))
+				output_window.add (at_strings.error + ": " + at_strings.init_class_not_found (a_class_name))
 			end
 		end
 
@@ -96,7 +96,7 @@ feature {NONE} -- Implementation
 				if autoteach_arguments.item.same_string (at_strings.at_class) or autoteach_arguments.item.same_string (at_strings.at_classes) then
 					autoteach_arguments.forth
 					if autoteach_arguments.after then
-						l_errors.force (at_strings.error_no_class_list)
+						l_errors.force (at_strings.init_class_list_expected)
 					else
 						class_name_list := autoteach_arguments.item.split (' ')
 					end
@@ -119,12 +119,12 @@ feature {NONE} -- Implementation
 					end
 
 					if not attached l_min_max then
-						l_errors.force (at_strings.error_argument_level)
+						l_errors.force (at_strings.init_argument_level_expected)
 					end
 				elseif autoteach_arguments.item.same_string (at_strings.at_code_placeholder) then
 					autoteach_arguments.forth
 					if autoteach_arguments.after or else not autoteach_arguments.item.is_boolean then
-						l_errors.force (at_strings.at_code_placeholder + " " + if autoteach_arguments.after then "" else autoteach_arguments.item end + "%N" + at_strings.error_boolean_value)
+						l_errors.force (at_strings.at_code_placeholder + " " + if autoteach_arguments.after then "" else autoteach_arguments.item end + "%N" + at_strings.init_boolean_value_expected)
 						autoteach_arguments.back
 					else
 						autoteach_options.insert_code_placeholder := autoteach_arguments.item.to_boolean
@@ -132,7 +132,7 @@ feature {NONE} -- Implementation
 				elseif autoteach_arguments.item.same_string (at_strings.at_output_path) then
 					autoteach_arguments.forth
 					if autoteach_arguments.after then
-						l_errors.force (at_strings.error_no_output_dir)
+						l_errors.force (at_strings.init_output_dir_expected)
 					else
 						create l_output_dir.make_with_path (create {PATH}.make_from_string (autoteach_arguments.item))
 						autoteach_options.output_directory := l_output_dir
@@ -142,41 +142,41 @@ feature {NONE} -- Implementation
 				elseif autoteach_arguments.item.same_string (at_strings.at_mode) then
 					autoteach_arguments.forth
 					if autoteach_arguments.after then
-						l_errors.force (at_strings.error_no_mode (enum_mode.textual_value_list))
+						l_errors.force (at_strings.init_mode_expected (enum_mode.textual_value_list))
 					else
 						autoteach_arguments.item.to_lower
 						if enum_mode.is_valid_value_name (autoteach_arguments.item) then
 							l_mode := enum_mode.value (autoteach_arguments.item)
 						else
-							l_errors.force (at_strings.error_invalid_mode (autoteach_arguments.item, enum_mode.textual_value_list))
+							l_errors.force (at_strings.init_invalid_mode (autoteach_arguments.item, enum_mode.textual_value_list))
 						end
 					end
 				elseif autoteach_arguments.item.same_string (at_strings.at_custom_hint_tables) then
 					autoteach_arguments.forth
 					if autoteach_arguments.after then
-						l_errors.force (at_strings.error_no_custom_hint_table_path)
+						l_errors.force (at_strings.cht_no_custom_hint_table_path)
 					else
 						if not hint_tables.file_exists (autoteach_arguments.item) then
-							l_errors.force (at_strings.error_custom_hint_table_file_not_found)
+							l_errors.force (at_strings.cht_file_not_found)
 						else
 							hint_tables.load_custom_hint_table (autoteach_arguments.item)
 							if attached hint_tables.last_table_load_exception as l_exception then
-								l_errors.force (at_strings.error_custom_hint_table_parse_error + "%N" + l_exception.description.to_string_8)
+								l_errors.force (at_strings.cht_parse_error + "%N" + l_exception.description.to_string_8)
 							end
 						end
 					end
 				else
-					l_errors.force (at_strings.error_unrecognized_argument (autoteach_arguments.item))
+					l_errors.force (at_strings.init_unrecognized_argument (autoteach_arguments.item))
 				end
 				autoteach_arguments.forth
 			end
 
 			if autoteach_options.min_hint_level /= autoteach_options.max_hint_level and not autoteach_options.create_level_subfolders then
-				l_warnings.force (at_strings.warning_no_level_subfolders_option)
+				l_warnings.force (at_strings.init_no_level_subfolders_option)
 			end
 
 			if l_mode = enum_mode.M_custom and not attached hint_tables.custom_hint_table then
-				l_errors.force (at_strings.no_custom_hint_table_loaded)
+				l_errors.force (at_strings.proc_no_custom_hint_table_loaded)
 			else
 				autoteach_options.switch_to_mode (l_mode)
 			end
@@ -213,7 +213,7 @@ feature {NONE} -- Implementation
 				end
 				l_autoteach.run_autoteach
 			else
-				print_line (at_strings.error + ": " + at_strings.error_no_class_list_specified)
+				print_line (at_strings.error + ": " + at_strings.init_no_class_list_specified)
 			end
 		end
 

@@ -112,6 +112,11 @@ feature {NONE} -- Initialization
 			l_line.remove_head (l_index)
 			l_line.left_adjust
 
+				-- Allow trailing colons in command_word.
+			if command_word.ends_with (":") then
+				command_word.remove_tail (1)
+			end
+
 			payload := l_line
 
 

@@ -35,7 +35,7 @@ feature -- Interface
 			if attached {EIFFEL_CLASS_I} a_class as l_eiffel_class and then attached l_eiffel_class.compiled_class as l_compiled then
 				input_classes.extend (l_compiled)
 			else
-				print_message (at_strings.error + ": " + at_strings.error_class_not_compiled (a_class.name))
+				print_message (at_strings.error + ": " + at_strings.init_class_not_compiled (a_class.name))
 			end
 		end
 
@@ -105,7 +105,7 @@ feature -- Interface
 					end
 				end
 			else
-				print_message (at_strings.error + ": " + at_strings.error_no_output_dir)
+				print_message (at_strings.error + ": " + at_strings.init_invalid_output_dir)
 			end
 		rescue
 			if l_io then

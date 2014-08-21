@@ -64,10 +64,19 @@ feature -- Status signaling
 				end
 				l_problematic_block_types.remove_tail (2)
 
-				print_message (at_strings.undefined_visibility (l_problematic_block_types))
+				print_message (at_strings.proc_undefined_visibility (l_problematic_block_types))
 			end
+
+				-- Clean up
 			options.restore_from (original_options)
+			check
+				all_stacks_empty: block_stack.is_empty and effective_visibility_stack.is_empty and content_visibility_stack.is_empty and nesting_in_atomic_block = 0
+			end
+			undefined_visibility_warning_set.wipe_out
+			last_command_output := Void
+			last_processed_command := Void
 			initialize_visibility_descriptors_table
+			refresh
 		end
 
 	block_type_call_stack: STACK [AT_BLOCK_TYPE]
@@ -229,9 +238,6 @@ feature -- Status signaling
 
 			if nesting_in_atomic_block > 0 then
 				nesting_in_atomic_block := nesting_in_atomic_block - 1
-				if nesting_in_atomic_block = 0 then
-					containing_atomic_block_effective_visibility := Tri_undefined
-				end
 			end
 
 			refresh
@@ -261,8 +267,8 @@ feature -- Meta-command processing interface
 			single_return_terminated_line: a_line.ends_with ("%N") and a_line.occurrences ('%N') = 1
 		local
 			l_command: AT_COMMAND
-			l_block_type_string: STRING
-			l_error, l_is_complex_block: BOOLEAN
+			l_block_type_string, l_fail_reason: STRING
+			l_is_complex_block: BOOLEAN
 			l_block_type: AT_BLOCK_TYPE
 			l_mode: AT_MODE
 		do
@@ -270,90 +276,108 @@ feature -- Meta-command processing interface
 
 			create l_command.make_from_line (a_line)
 
-			if l_command.valid and options.hint_level >= l_command.min_level and options.hint_level <= l_command.max_level then
-
-					-- General commands
-				if l_command.command_word.same_string (at_strings.comment_command) then
-						-- Comment - do nothing.
-
-				elseif l_command.command_word.same_string (at_strings.hint_command) then
-						-- Hint
-					last_command_output := a_line.twin
-
-				elseif l_command.command_word.same_string (at_strings.placeholder_command) and then string_is_bool (l_command.payload) then
-						-- Toggle placeholder
-					options.insert_code_placeholder := string_to_bool (l_command.payload)
-
-				elseif l_command.command_word.same_string (at_strings.mode_command) then
-						-- Switch to another mode
-					if enum_mode.is_valid_value_name (l_command.payload) then
-						create l_mode.make_with_value_name (l_command.payload)
-						if l_mode = enum_mode.M_custom and not attached hint_tables.custom_hint_table then
-							print_message (capitalized (at_strings.meta_command) + ": " + a_line + "%N" + at_strings.no_custom_hint_table_loaded)
-						else
-							options.switch_to_mode (l_mode)
+			if not l_command.valid then
+				l_fail_reason := at_strings.proc_unparsable_meta_command + a_line
+			else
+				if l_command.command_word.same_string (at_strings.hint_continuation_command) then
+						-- Hint continuation commands bypass level checks.
+						-- The level of the previous hint command is checked instead.
+					if attached last_processed_command as l_last_command and then l_last_command.command_word.same_string (at_strings.hint_command) then
+						if l_last_command.min_level <= options.hint_level and options.hint_level <= l_last_command.max_level then
+							last_command_output := a_line.twin
 						end
 					else
-						l_error := True
-					end
-
-				elseif at_strings.commands_with_block.has (l_command.command_word) then
-						-- Command requiring a block type.
-
-					l_block_type_string := l_command.payload.as_lower
-					if not enum_block_type.is_valid_value_name (l_block_type_string) then
-						l_error := True
-					else
-						l_block_type := enum_block_type.value (l_block_type_string)
-						l_is_complex_block := enum_block_type.is_complex_block_type (l_block_type)
-
-							-- Commands applicable to all blocks:
-						if l_command.command_word.same_string (at_strings.show_all_command) then
-							set_block_global_visibility_override (l_block_type, Tri_true)
-						elseif l_command.command_word.same_string (at_strings.hide_all_command) then
-							set_block_global_visibility_override (l_block_type, Tri_false)
-						elseif l_command.command_word.same_string (at_strings.reset_all_command) then
-							set_block_global_visibility_override (l_block_type, Tri_undefined)
-						elseif l_command.command_word.same_string (at_strings.show_next_command) then
-							set_block_local_visibility_override (l_block_type, Tri_true)
-						elseif l_command.command_word.same_string (at_strings.hide_next_command) then
-							set_block_local_visibility_override (l_block_type, Tri_false)
-						elseif l_is_complex_block then
-
-								-- Commands applicable only to complex blocks:
-							if l_command.command_word.same_string (at_strings.show_all_content_command) then
-								set_block_content_global_visibility_override (l_block_type, Tri_true)
-							elseif l_command.command_word.same_string (at_strings.hide_all_content_command) then
-								set_block_content_global_visibility_override (l_block_type, Tri_false)
-							elseif l_command.command_word.same_string (at_strings.reset_all_content_command) then
-								set_block_content_global_visibility_override (l_block_type, Tri_undefined)
-							elseif l_command.command_word.same_string (at_strings.show_next_content_command) then
-								set_block_content_local_visibility_override (l_block_type, Tri_true)
-							elseif l_command.command_word.same_string (at_strings.hide_next_content_command) then
-								set_block_content_local_visibility_override (l_block_type, Tri_false)
-							elseif l_command.command_word.same_string (at_strings.treat_all_as_complex) then
-								set_block_global_treat_as_complex (l_block_type, True)
-							elseif l_command.command_word.same_string (at_strings.treat_all_as_atomic) then
-								set_block_global_treat_as_complex (l_block_type, False)
-							elseif l_command.command_word.same_string (at_strings.treat_next_as_complex) then
-								set_block_local_treat_as_complex_override (l_block_type, Tri_true)
-							elseif l_command.command_word.same_string (at_strings.treat_next_as_atomic) then
-								set_block_local_treat_as_complex_override (l_block_type, Tri_false)
-							else
-								l_error := True
-							end
-
-						else
-							l_error := True
-						end
+						l_fail_reason := at_strings.proc_invalid_hint_continuation + a_line
 					end
 
 				else
-					l_error := True
+					last_processed_command := l_command
+					if l_command.min_level <= options.hint_level and options.hint_level <= l_command.max_level then
+
+							-- General commands
+						if l_command.command_word.same_string (at_strings.comment_command) then
+								-- Comment - do nothing.
+
+						elseif l_command.command_word.same_string (at_strings.hint_command) then
+								-- Hint
+							last_command_output := a_line.twin
+
+						elseif l_command.command_word.same_string (at_strings.placeholder_command) and then string_is_bool (l_command.payload) then
+								-- Toggle placeholder
+							options.insert_code_placeholder := string_to_bool (l_command.payload)
+
+						elseif l_command.command_word.same_string (at_strings.mode_command) then
+								-- Switch to another mode
+							if enum_mode.is_valid_value_name (l_command.payload) then
+								create l_mode.make_with_value_name (l_command.payload)
+								if l_mode = enum_mode.M_custom and not attached hint_tables.custom_hint_table then
+									print_message (capitalized (at_strings.meta_command) + ": " + a_line + "%N" + at_strings.proc_no_custom_hint_table_loaded)
+								else
+									options.switch_to_mode (l_mode)
+								end
+							else
+								l_fail_reason := at_strings.proc_invalid_mode + a_line + "%N" + at_strings.valid_mode_list (enum_mode.textual_value_list)
+							end
+
+						elseif at_strings.commands_with_block.has (l_command.command_word) then
+								-- Command requiring a block type.
+
+							l_block_type_string := l_command.payload.as_lower
+							if not enum_block_type.is_valid_value_name (l_block_type_string) then
+								l_fail_reason := at_strings.proc_invalid_block_type + a_line
+							else
+								l_block_type := enum_block_type.value (l_block_type_string)
+								l_is_complex_block := enum_block_type.is_complex_block_type (l_block_type)
+
+									-- Commands applicable to all blocks:
+								if l_command.command_word.same_string (at_strings.show_all_command) then
+									set_block_global_visibility_override (l_block_type, Tri_true)
+								elseif l_command.command_word.same_string (at_strings.hide_all_command) then
+									set_block_global_visibility_override (l_block_type, Tri_false)
+								elseif l_command.command_word.same_string (at_strings.reset_all_command) then
+									set_block_global_visibility_override (l_block_type, Tri_undefined)
+								elseif l_command.command_word.same_string (at_strings.show_next_command) then
+									set_block_local_visibility_override (l_block_type, Tri_true)
+								elseif l_command.command_word.same_string (at_strings.hide_next_command) then
+									set_block_local_visibility_override (l_block_type, Tri_false)
+								elseif l_is_complex_block then
+
+										-- Commands applicable only to complex blocks:
+									if l_command.command_word.same_string (at_strings.show_all_content_command) then
+										set_block_content_global_visibility_override (l_block_type, Tri_true)
+									elseif l_command.command_word.same_string (at_strings.hide_all_content_command) then
+										set_block_content_global_visibility_override (l_block_type, Tri_false)
+									elseif l_command.command_word.same_string (at_strings.reset_all_content_command) then
+										set_block_content_global_visibility_override (l_block_type, Tri_undefined)
+									elseif l_command.command_word.same_string (at_strings.show_next_content_command) then
+										set_block_content_local_visibility_override (l_block_type, Tri_true)
+									elseif l_command.command_word.same_string (at_strings.hide_next_content_command) then
+										set_block_content_local_visibility_override (l_block_type, Tri_false)
+									elseif l_command.command_word.same_string (at_strings.treat_all_as_complex) then
+										set_block_global_treat_as_complex (l_block_type, True)
+									elseif l_command.command_word.same_string (at_strings.treat_all_as_atomic) then
+										set_block_global_treat_as_complex (l_block_type, False)
+									elseif l_command.command_word.same_string (at_strings.treat_next_as_complex) then
+										set_block_local_treat_as_complex_override (l_block_type, Tri_true)
+									elseif l_command.command_word.same_string (at_strings.treat_next_as_atomic) then
+										set_block_local_treat_as_complex_override (l_block_type, Tri_false)
+									else
+										l_fail_reason := at_strings.proc_unrecognized_meta_command + a_line
+									end
+
+								else
+									l_fail_reason := at_strings.proc_unrecognized_meta_command + a_line
+								end
+							end
+
+						else
+							 l_fail_reason := at_strings.proc_unrecognized_meta_command + a_line
+						end
+					end
 				end
 			end
-			if l_error then
-				print_message (at_strings.unrecognized_meta_command + a_line)
+			if attached l_fail_reason then
+				print_message (l_fail_reason)
 			end
 		end
 
@@ -464,13 +488,6 @@ feature {NONE} -- Implementation: block visibility
 			-- Stack, parallel to `block_stack', indicating, for
 			-- every level, the current state of content visibility.
 
-	containing_atomic_block_effective_visibility: AT_TRI_STATE_BOOLEAN
-		-- If we are inside an atomic block, what was that block's effective visibility?
-		-- This visibility should be applied now, overriding anything else,
-		-- as a single block is the smallest customizable unit, and anything
-		-- inside it should be treated as a single thing.
-		-- If we are not inside an atomic block, this value must be undefined.
-
 	nesting_in_atomic_block: NATURAL
 		-- Are we inside an atomic block? If so, how deep did we descend into blocks contained in it?
 		-- Note that it is only possible to descend into an atomic block if this block is actually a
@@ -572,6 +589,8 @@ feature {NONE} -- Implementation: miscellaneous
 		end
 
 	undefined_visibility_warning_set: ARRAYED_SET [AT_BLOCK_TYPE]
+
+	last_processed_command: detachable AT_COMMAND
 
 feature {NONE} -- Consistency
 

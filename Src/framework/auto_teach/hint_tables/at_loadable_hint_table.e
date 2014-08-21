@@ -66,23 +66,23 @@ feature {NONE} -- Initialization
 					l_words.remove
 				else
 					create l_exception
-					l_exception.set_description (at_strings.error_invalid_block_type_name (file_line_number, l_words.first))
+					l_exception.set_description (at_strings.cht_invalid_block_type_name (file_line_number, l_words.first))
 				end
 
 				if l_block_type.initialized then
 					if l_words.is_empty then
 						create l_exception
-						l_exception.set_description (at_strings.error_empty_row (file_line_number))
+						l_exception.set_description (at_strings.cht_empty_row (file_line_number))
 					elseif l_content and then not enum_block_type.is_complex_block_type (l_block_type) then
 						create l_exception
-						l_exception.set_description (at_strings.error_atomic_block_in_content_visibility_table (file_line_number, l_block_type.value_name))
+						l_exception.set_description (at_strings.cht_atomic_block_in_content_visibility_table (file_line_number, l_block_type.value_name))
 					else
 							-- Select the table to insert the line into.
 						l_table := (if l_content then content_table else table end)
 
 						if l_table.has_key (l_block_type) then
 							create l_exception
-							l_exception.set_description (at_strings.error_duplicate_entry (file_line_number, l_block_type.value_name))
+							l_exception.set_description (at_strings.cht_duplicate_entry (file_line_number, l_block_type.value_name))
 						end
 
 						create l_table_row.make_filled (Tri_undefined, 1, l_words.count)
@@ -97,7 +97,7 @@ feature {NONE} -- Initialization
 								l_table_row [i] := l_tri_state
 							else
 								create l_exception
-								l_exception.set_description (at_strings.error_value_parse_error (file_line_number, l_words.item, "tri-state boolean"))
+								l_exception.set_description (at_strings.cht_value_parse_error (file_line_number, l_words.item, "tri-state boolean"))
 							end
 							i := i + 1
 							l_words.forth
