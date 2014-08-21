@@ -175,6 +175,7 @@ feature -- Status signaling
 						-- l_block_visibility := l_content_visibility_status
 
 					l_visibility_policy_type := l_content_visibility_policy_type
+						-- I am aware that this triggers CA020.
 				end
 
 					-- If after this long chain the visibility is still undefined,
@@ -601,6 +602,9 @@ feature {NONE} -- Implementation: miscellaneous
 		end
 
 	undefined_visibility_warning_set: ARRAYED_SET [AT_BLOCK_TYPE]
+			-- Set of blocks for which it happened at least once that the visibility
+			-- of an instance was undefined after processing all the overrides.
+			-- Used to throw a warning at the end of processing of every class.
 
 	last_processed_command: detachable AT_COMMAND
 

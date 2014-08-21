@@ -121,6 +121,8 @@ feature {NONE} -- Initialization
 				-- The number of the last read line in the text file.
 
 		advance_line (a_file: PLAIN_TEXT_FILE)
+				-- Advance to the next meaningful line in `a_file',
+				-- skipping blank and comment lines.
 			do
 				from
 					last_file_line := Void

@@ -17,6 +17,7 @@ inherit
 feature -- Access
 
 	name: STRING = "mode"
+		-- <Precursor>
 
 	value_type: AT_MODE
 			-- <Precursor>

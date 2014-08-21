@@ -17,6 +17,7 @@ inherit
 feature -- Access
 
 	name: STRING = "block_type"
+			-- <Precursor>
 
 	value_type: AT_BLOCK_TYPE
 			-- <Precursor>

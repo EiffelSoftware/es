@@ -59,54 +59,50 @@ feature -- For use with contracts
 
 feature {NONE} -- Utility
 
-		-- Copy-pasted from the eweasel source code.
-	is_white (c: CHARACTER): BOOLEAN
-			-- Is `c' a white space character?
+		-- Taken from the eweasel source code.
+	is_white (a_char: CHARACTER): BOOLEAN
+			-- Is `a_char' a white space character?
 		do
-			Result := c = ' ' or c = '%T' or c = '%R' or c = '%N';
+			Result := a_char = ' ' or a_char = '%T' or a_char = '%R' or a_char = '%N';
 		end;
 
-		-- Copy-pasted from the eweasel source code.
-	broken_into_words (line: STRING): DYNAMIC_LIST [STRING]
+		-- Taken from the eweasel source code.
+	broken_into_words (a_line: STRING): DYNAMIC_LIST [STRING]
 			-- Result of breaking `line' into words, where each
 			-- word is terminated by white space
-		require
-			line_exists: line /= Void;
 		local
-			pos, first, last: INTEGER;
-			word: STRING;
-			char: CHARACTER;
-			in_word, is_white_char: BOOLEAN;
+			l_pos, l_first, l_last: INTEGER;
+			l_word: STRING;
+			l_in_word, l_is_white_char: BOOLEAN;
 		do
 			from
 				create {ARRAYED_LIST [STRING]} Result.make (4)
-				pos := 1;
+				l_pos := 1;
 			until
-				pos > line.count
+				l_pos > a_line.count
 			loop
-				char := line.item (pos);
-				is_white_char := is_white (char);
-				if in_word then
-					if is_white_char then
-						in_word := False;
-						last := pos - 1;
-						create word.make (last - first + 1);
-						word.set (line, first, last);
-						Result.extend (word);
+				l_is_white_char := is_white (a_line.item (l_pos));
+				if l_in_word then
+					if l_is_white_char then
+						l_in_word := False;
+						l_last := l_pos - 1;
+						create l_word.make (l_last - l_first + 1);
+						l_word.set (a_line, l_first, l_last);
+						Result.extend (l_word);
 					end
 				else
-					if not is_white_char then
-						in_word := True;
-						first := pos;
+					if not l_is_white_char then
+						l_in_word := True;
+						l_first := l_pos;
 					end
 				end;
-				pos := pos + 1;
+				l_pos := l_pos + 1;
 			end;
-			if in_word then
-				last := pos - 1;
-				create word.make (last - first + 1);
-				word.set (line, first, last);
-				Result.extend (word);
+			if l_in_word then
+				l_last := l_pos - 1;
+				create l_word.make (l_last - l_first + 1);
+				l_word.set (a_line, l_first, l_last);
+				Result.extend (l_word);
 			end
 		end;
 

@@ -322,8 +322,8 @@ feature {NONE} -- Implementation - skipping
 		local
 			l_index: INTEGER
 		do
-			if attached a_node as l_node then
-				l_index := l_node.last_token (match_list).index + 1
+			if attached a_node then
+				l_index := a_node.last_token (match_list).index + 1
 				if last_index < l_index and then match_list.valid_index (l_index) and then attached {BREAK_AS} match_list [l_index] as l_break then
 						-- I don't expect two consecutive breaks. I also expect the next leaf to be attached.
 					check
@@ -354,19 +354,17 @@ feature {NONE} -- Implementation
 		local
 			i: INTEGER_32
 		do
-			if will_process_leading_leaves then
-				if ind > last_index + 1 then
-					from
-						i := last_index + 1
-					until
-						i = ind
-					loop
-							-- Ignore any other unprocessed leaves.
-						if attached {BREAK_AS} match_list.i_th (i) as l_break then
-							l_break.process (Current)
-						end
-						i := i + 1
+			if will_process_leading_leaves and then ind > last_index + 1 then
+				from
+					i := last_index + 1
+				until
+					i = ind
+				loop
+						-- Ignore any other unprocessed leaves.
+					if attached {BREAK_AS} match_list.i_th (i) as l_break then
+						l_break.process (Current)
 					end
+					i := i + 1
 				end
 			end
 		end
@@ -570,7 +568,7 @@ feature {AST_EIFFEL} -- Visitors
 			l_local_keyword := a_as.local_keyword (match_list)
 			safe_process (l_local_keyword)
 
-			if (attached {BREAK_AS} match_list [l_local_keyword.index + 1] as l_first_break) then
+			if attached {BREAK_AS} match_list [l_local_keyword.index + 1] as l_first_break then
 				process_break_as (l_first_break)
 			end
 
@@ -698,8 +696,8 @@ feature {AST_EIFFEL} -- Instructions visitors
 			process_leading_leaves (a_as.first_token (match_list).index)
 			oracle.begin_process_block (enum_block_type.Bt_instruction)
 
-			if attached a_as as l_as then
-				current_indentation := indentation (l_as)
+			if attached a_as then
+				current_indentation := indentation (a_as)
 			end
 		end
 

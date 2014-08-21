@@ -112,14 +112,11 @@ feature -- Assignment
 
 	is_valid_string_value (a_string: READABLE_STRING_GENERAL): BOOLEAN
 			-- Is `a_string' a valid string representation of a tri-state boolean?
-		local
-			l_string: STRING
 		do
 			if a_string = Void then
 				Result := False
 			else
-				l_string := a_string.to_string_8.as_lower
-				Result := all_strings.has (l_string)
+				Result := all_strings.has (a_string.to_string_8.as_lower)
 			end
 		end
 
@@ -259,6 +256,8 @@ feature {NONE} -- String representation
 feature {NONE} -- Initialization
 
 	internal_value: BOOLEAN
+			-- Attribute storing the boolean value. Not exposed so that the boolean
+			-- value is only readable from outside if `is_defined' is True.
 
 	make_undefined, default_create
 			-- Initialize `Current' in the undefined state.

@@ -75,6 +75,7 @@ feature -- AutoTeach options
 		end
 
 	switch_to_mode (a_mode: AT_MODE)
+			-- Switches to new mode `a_mode'.
 		require
 			initialized: a_mode.initialized
 			must_be_possible: (a_mode = enum_mode.M_custom) implies attached hint_tables.custom_hint_table

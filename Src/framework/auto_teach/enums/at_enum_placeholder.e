@@ -17,6 +17,7 @@ inherit
 feature -- Access
 
 	name: STRING = "placeholder"
+			-- <Precursor>
 
 	value_type: AT_PLACEHOLDER
 			-- <Precursor>

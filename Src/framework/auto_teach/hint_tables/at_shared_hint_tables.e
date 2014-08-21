@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {AT_SHARED_HINT_TABLES}."
-	author: ""
+	description: "Shared hint tables."
+	author: "Paolo Antonucci"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -10,6 +10,7 @@ deferred class
 feature -- Hint tables
 
 	Hint_tables: AT_HINT_TABLES
+			-- Shared hint tables
 		once ("PROCESS")
 			create Result
 		end
