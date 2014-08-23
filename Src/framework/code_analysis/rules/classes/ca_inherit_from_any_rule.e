@@ -42,36 +42,43 @@ feature {NONE} -- Rule checking
 		do
 			if attached a_class.parents as l_parents then
 				across l_parents as p loop
-					if p.item.type.class_name.name_8.is_equal ("ANY") then
-						-- Explicit inheritance from ANY found
-						if not has_changes(p.item) then
-							-- Inheritance from ANY has no adaptations to the class and is not needed.
-							create l_violation.make_with_rule (Current)
-							l_violation.set_location (p.item.start_location)
-							l_violation.long_description_info.extend (a_class.class_name.name_8)
-							violations.extend (l_violation)
-						end
+
+					if has_adaptations_to_any (p.item) then
+						
 					end
+
+--					if p.item.type.class_name.name_8.is_equal ("ANY") then
+--						-- Explicit inheritance from ANY found
+--						if not has_adaptations_to_any (p.item) then
+--							-- Inheritance from ANY has no adaptations to the class.
+
+--							-- We need to check all the other parents if they have adaptations to ANY.
+--							create l_violation.make_with_rule (Current)
+--							l_violation.set_location (p.item.start_location)
+--							l_violation.long_description_info.extend (a_class.class_name.name_8)
+--							violations.extend (l_violation)
+--						end
+--					end
 				end
 			end
 		end
 
-	has_adaptations_to_any (a_class: attached CLASS_AS): BOOLEAN
-		-- Does `a_class' (or one of its ancestors) have an explicit
-		-- inheritance to ANY with adaptations to it?
+	has_adaptations_to_any (a_parent: attached PARENT_AS): BOOLEAN
+		-- Does `a_parent' have any adaptations to ANY?
+		local
+			l_string: STRING_8
 		do
-			--Todo: Implement me.
-			Result := True
+			if attached a_parent.undefining then
+				l_string := current_context.system.class_of_id (a_parent.type.class_name.name_id).feature_named_32 (a_parent.undefining.first.internal_name.name_32).written_class.name_in_upper
+			end
+			Result := (attached a_parent.renaming and not a_parent.renaming.there_exists (agent is_rename_written_by_any)) or else
+				attached a_parent.undefining or else
+				attached a_parent.redefining
 		end
 
-	has_changes (a_parent: attached PARENT_AS): BOOLEAN
-		-- Does `a_parent' have any adaptations to it?
+	is_rename_written_by_any (a_rename: RENAME_AS): BOOLEAN
 		do
-			Result := attached a_parent.renaming or else
-				attached a_parent.undefining or else
-				attached a_parent.redefining or else
-				attached a_parent.selecting or else
-				attached a_parent.exports
+			Result := a_rename.old_name.class_name.name_32.is_equal ("ANY")
 		end
 
 feature -- Properties

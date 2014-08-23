@@ -8,7 +8,7 @@ feature {NONE} -- Test
 		local
 			a: INTEGER
 		do
-			-- fix this shit!
+			-- fix this ?##@!!
 			if a1 then
 				-- a1 is Fucking true
 				a := a2

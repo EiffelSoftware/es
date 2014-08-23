@@ -54,7 +54,7 @@ feature -- Properties
 	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		do
 			a_formatter.add (ca_messages.empty_creation_procedure_violation_1)
-			if attached {STRING_32} a_violation.long_description_info.at(2) as l_class_name then
+			if attached {STRING} a_violation.long_description_info.at(2) as l_class_name then
 				a_formatter.add (l_class_name)
 			end
 			a_formatter.add (ca_messages.empty_creation_procedure_violation_2)
@@ -62,7 +62,7 @@ feature -- Properties
 				a_formatter.add (l_feature_name)
 			end
 			a_formatter.add (ca_messages.empty_creation_procedure_violation_3)
-			if attached {STRING_32} a_violation.long_description_info.at(2) as l_class_name then
+			if attached {STRING} a_violation.long_description_info.at(2) as l_class_name then
 				a_formatter.add (l_class_name)
 			end
 			a_formatter.add (ca_messages.empty_creation_procedure_violation_4)
@@ -78,46 +78,39 @@ feature {NONE} -- AST Visitor
 
 	do_post_class_cleanup (a_class: CLASS_AS)
 		do
-			if attached creation_procedures then
-				-- If there was no violation, `creation_procedures' would have been made Void in process_feature_clause
-
-				viol.long_description_info.extend (a_class.class_name.name_32)
-				violations.extend (viol)
-
-				-- Set the creation procedures to Void. Prevents errors when
-				-- the next class does not have any creation procedures.
-				creation_procedures := Void
-			end
+			-- Set the creation procedures to Void. Prevents errors when
+			-- the next class does not have any creation procedures.
+			creation_procedures := Void
 		end
 
 	process_feature_clause (a_clause: FEATURE_CLAUSE_AS)
 			-- Checks `a_clause' for features that are creation procedures.
+		local
+			l_violation: CA_RULE_VIOLATION
+			l_fix: CA_EMPTY_CREATION_PROC_FIX
 		do
-			if creation_procedures /= Void then
-				if creation_procedures.count = 1 then
-					across creation_procedures as p loop
-						if attached a_clause.feature_with_name(p.item.internal_name.name_id) as l_feature then
-							if attached l_feature.body.arguments or not l_feature.body.is_empty then
-								-- Set the creation procedures to Void. This will ensure that
-								-- the violation won't be created in the post class cleanup
-								creation_procedures := Void
-							else
-								create viol.make_with_rule (Current)
-								viol.long_description_info.extend (p.item.visual_name_32)
-								viol.set_location (l_feature.start_location)
-							end
+			if attached creation_procedures then
+				across creation_procedures as p loop
+					if attached a_clause.feature_with_name(p.item.internal_name.name_id) as l_feature then
+						if l_feature.body.is_empty then
+							create l_violation.make_with_rule (Current)
+							l_violation.long_description_info.extend (p.item.visual_name_32)
+							l_violation.set_location (l_feature.start_location)
+
+							l_violation.long_description_info.extend (current_context.checking_class.original_class.name)
+
+
+							create l_fix.make_with_create_proc (current_context.checking_class, l_feature)
+							l_violation.fixes.extend (l_fix)
+
+							violations.extend (l_violation)
 						end
 					end
-				else
-					creation_procedures := Void
 				end
 			end
 		end
 
 feature {NONE} -- Attributes
-
-	viol: CA_RULE_VIOLATION
-			-- The violation of this rule.
 
 	creation_procedures: EIFFEL_LIST [FEATURE_NAME]
 			-- List of creation procedures of the current class.

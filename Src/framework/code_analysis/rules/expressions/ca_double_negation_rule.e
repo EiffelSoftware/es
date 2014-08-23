@@ -25,6 +25,7 @@ feature {NONE} -- Initialization
 			-- Initialization.
 		do
 			make_with_defaults
+			create {CA_SUGGESTION} severity
 		end
 
 feature {NONE} -- Activation
@@ -57,13 +58,9 @@ feature {NONE} -- Rule Checking
 
 	process_un_not (a_un_not: UN_NOT_AS)
 			-- Checks `a_un_not' for rule violations.
-		local
-			l_viol: CA_RULE_VIOLATION
 		do
 			if is_un_not (a_un_not.expr) then
-				create l_viol.make_with_rule (Current)
-				l_viol.set_location (a_un_not.start_location)
-				violations.extend (l_viol)
+				create_violation(a_un_not)
 			end
 		end
 
@@ -75,6 +72,20 @@ feature {NONE} -- Rule Checking
 			else
 				Result := attached {UN_NOT_AS} expression
 			end
+		end
+
+	create_violation(a_un_not: UN_NOT_AS)
+		local
+			l_viol: CA_RULE_VIOLATION
+			l_fix: CA_DOUBLE_NEGATION_FIX
+		do
+			create l_viol.make_with_rule (Current)
+			l_viol.set_location (a_un_not.start_location)
+
+			create l_fix.make_with_un_not (current_context.checking_class, a_un_not)
+			l_viol.fixes.extend (l_fix)
+
+			violations.extend (l_viol)
 		end
 
 end

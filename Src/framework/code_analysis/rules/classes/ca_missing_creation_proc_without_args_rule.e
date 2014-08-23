@@ -29,6 +29,7 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		do
 			make_with_defaults
+			create {CA_SUGGESTION} severity
 		end
 
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
@@ -76,7 +77,7 @@ feature {NONE} -- AST Visitor
 			l_viol: CA_RULE_VIOLATION
 		do
 
-			if attached creation_procedures and then not creation_procedures.is_empty and not has_creation_procedure_with_no_args then
+			if attached creation_procedures and then not (creation_procedures.is_empty or has_creation_procedure_with_no_args) then
 				create l_viol.make_with_rule (Current)
 				if attached a_class.creators as l_list and then not l_list.is_empty then
 					l_viol.set_location (l_list.first.start_location)
@@ -95,13 +96,10 @@ feature {NONE} -- AST Visitor
 
 	process_feature_clause (a_clause: FEATURE_CLAUSE_AS)
 			-- Checks `a_clause' for features that are creation procedures.
-		local
-			l_feature: FEATURE_AS
 		do
 			if creation_procedures /= Void then
 				across creation_procedures as ic loop
-					l_feature := a_clause.feature_with_name (ic.item.internal_name.name_id)
-					if l_feature /= Void then
+					if attached a_clause.feature_with_name (ic.item.internal_name.name_id) as l_feature then
 						if not attached l_feature.body.arguments then
 							has_creation_procedure_with_no_args := True
 						end

@@ -3,11 +3,15 @@ class
 
 -- Should not violate the inherit from any rule.
 inherit
+	CAT_INHERIT_FROM_ANY_1
+		undefine
+			out
+		end
 	ANY
-	
+
 feature {NONE} -- Test
 
-	dummy (a1: INTEGER) : INTEGER
+	dummy4 (a1: INTEGER) : INTEGER
 	do
 		Result := a1 + 50
 	end

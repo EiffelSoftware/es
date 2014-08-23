@@ -18,6 +18,31 @@ feature -- General
 
 feature -- Rules
 
+	loop_invariant_comp_within_loop_title: STRING_32
+		do Result := translation_in_context ("Loop invariant computation within loop", once "code_analyzer") end
+
+	loop_invariant_comp_within_loop_description: STRING_32
+		do Result := translation_in_context ("A loop invariant computation that lies within a loop should be moved outside the loop.", once "code_analyzer") end
+
+	loop_invariant_comp_within_loop_fix: STRING_32
+		do Result := translation_in_context ("Move computation outside of loop", once "code_analyzer") end
+
+	attribute_can_be_constant_title: STRING_32
+		do Result := translation_in_context ("Attribute can be made constant", once "code_analyzer") end
+
+	attribute_can_be_constant_description: STRING_32
+		do Result := translation_in_context ("An attribute that is assigned the same value by every creation%
+							% procedure but not assigned by any other routine can be made constant.", once "code_analyzer") end
+
+	attribute_can_be_constant_fix: STRING_32
+		do Result := translation_in_context ("Make attribute constant", once "code_analyzer") end
+
+	attribute_never_assigned_title: STRING_32
+		do Result := translation_in_context ("Attribute is never assigned", once "code_analyzer") end
+
+	attribute_never_assigned_description: STRING_32
+		do Result := translation_in_context ("An attribute that never gets assigned will always keep its default value.", once "code_analyzer") end
+
 	comparison_of_object_refs_title: STRING_32
 		do Result := translation_in_context ("Comparison of object references", once "code_analyzer") end
 
@@ -26,12 +51,18 @@ feature -- Rules
 							% whether they point to the same object in memory. In the majority of cases one wants%
 							% to compare the object states, which can be done by the '~' operator.", once "code_analyzer") end
 
+	comparison_of_object_refs_fix: STRING_32
+		do Result := translation_in_context ("Replace with the ~ operator", once "code_analyzer") end
+
 	void_check_using_is_equal_title: STRING_32
 		do Result := translation_in_context ("Void check using 'is_equal'", once "code_analyzer") end
 
 	void_check_using_is_equal_description: STRING_32
 		do Result := translation_in_context ("Checking a local variable or argument to be void should not%
 							% be done by calling 'is_equal' but by the '=' or '/=' operators.", once "code_analyzer") end
+
+	void_check_using_is_equal_fix: STRING_32
+		do Result := translation_in_context ("Replace with %" = Void %"", once "code_analyzer") end
 
 	empty_creation_procedure_title: STRING_32
 		do Result := translation_in_context ("Empty creation procedure", once "code_analyzer") end
@@ -43,6 +74,9 @@ feature -- Rules
 							% the clients of the class need to call 'create c' instead of 'create c.make',%
 							% where 'c' is an object of the relevant class and 'make' is its creation procedure.", once "code_analyzer") end
 
+	empty_creation_procedure_fix: STRING_32
+		do Result := translation_in_context ("Remove empty creation procedure", once "code_analyzer") end
+
 	object_creation_within_loop_title: STRING_32
 		do Result := translation_in_context ("Object creation within loop", once "code_analyzer") end
 
@@ -51,12 +85,15 @@ feature -- Rules
 							% an occurrence it should be checked whether the object creation can be moved outside%
 							% the loop.", once "code_analyzer") end
 
+	object_creation_within_loop_fix: STRING_32
+		do Result := translation_in_context ("Move object creation in front of loop", once "code_analyzer") end
+
 	comment_not_well_phrased_title: STRING_32
 		do Result := translation_in_context ("Comment not well phrased", once "code_analyzer") end
 
 	comment_not_well_phrased_description: STRING_32
-		do Result := translation_in_context ("The comment does not end with a period or question mark.%
-							% This indicates that the comment is not well phrased. A comment should always%
+		do Result := translation_in_context ("The comment does not end with a period or question mark or isn't capitalized.%
+							% This indicates that the comment is not well phrased. A feature comment should always%
 							% consist of whole sentences.", once "code_analyzer") end
 
 	missing_creation_proc_without_args_title: STRING_32
@@ -77,6 +114,9 @@ feature -- Rules
 		do Result := translation_in_context ("A loop with an empty body should be removed.%
 							% In most cases the loop never exits.", once "code_analyzer") end
 
+	empty_loop_fix: STRING_32
+		do Result := translation_in_context ("Remove the empty loop", once "code_analyzer") end
+
 	double_negation_title: STRING_32
 		do Result := translation_in_context ("Double negation", once "code_analyzer") end
 
@@ -85,6 +125,9 @@ feature -- Rules
 							% It is also possible that the developer has intended to put a single negation and the%
 							% instruction is erroneous.", once "code_analyzer") end
 
+	double_negation_fix: STRING_32
+		do Result := translation_in_context ("Remove double negation", once "code_analyzer") end
+
 	undesirable_comment_content_title: STRING_32
 		do Result := translation_in_context ("Undesirable comment content", once "code_analyzer") end
 
@@ -92,6 +135,9 @@ feature -- Rules
 		do Result := translation_in_context ("Under some circumstances it might be desirable to keep a certain%
 							% language level. Imaginable cases include source code that will be visible to people%
 							% outside the company or that will even be released publicly.", once "code_analyzer") end
+
+	undesirable_comment_content_fix: STRING_32
+		do Result := translation_in_context ("Replace offending words", once "code_analyzer") end
 
 	case_sensitivity_option: STRING_32
 		do Result := translation_in_context ("Case Sensitivity", once "code_analyezer") end
@@ -169,6 +215,9 @@ feature -- Rules
 
 	feature_never_called_fix: STRING_32
 		do Result := translation_in_context ("Remove feature '", once "code_analyzer") end
+
+	attribute_never_called_fix: STRING_32
+		do Result := translation_in_context ("Remove attribute '", once "code_analyzer") end
 
 	cq_separation_title: STRING_32
 		do Result := translation_in_context ("No command-query separation (possible function side effect)", once "code_analyzer") end

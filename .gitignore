@@ -434,6 +434,7 @@ Src/framework/auto_fix/strategies/model_based/model_transformation
 Src/framework/auto_fix/strategies/model_based/query_model
 Src/framework/auto_fix/strategies/model_based/state_retrieval/afx_call_based_request_equality_tester.e
 Src/framework/auto_test/spec/linux-x86-64
+Src/framework/auto_test/spec/macosx-x86-64
 Src/framework/auto_test/spec/msc
 Src/framework/auto_test/statistics/aut_object_state_log_processor.e
 Src/framework/auto_test/statistics/deserialization/aut_nested_hash_table.e
@@ -555,6 +556,7 @@ Src/framework/web/xebra/www/xmlrpc_demo/EIFGENs
 Src/framework/xml/gobo/removed
 Src/library/cURL/spec/linux-x86
 Src/library/cURL/spec/linux-x86-64
+Src/library/cURL/spec/macosx-x86-64
 Src/library/cURL/spec/mingw
 Src/library/cURL/spec/msc
 Src/library/com/spec/bcb
@@ -584,9 +586,11 @@ Src/library/testing/.git
 Src/library/vision2/spec/bcb
 Src/library/vision2/spec/linux-x86-64
 Src/library/vision2/spec/macosx-x86
+Src/library/vision2/spec/macosx-x86-64
 Src/library/vision2/spec/mingw
 Src/library/vision2/spec/msc
 Src/library/vision2/spec/unix
+Src/library/web_browser/Clib/config.sh
 Src/library/web_browser/spec/bsb
 Src/library/web_browser/spec/mingw
 Src/library/web_browser/spec/msc

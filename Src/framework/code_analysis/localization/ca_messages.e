@@ -99,6 +99,27 @@ feature -- Messages for both GUI and command line mode
 
 feature -- Rule Violations
 
+	loop_invariant_comp_within_loop_violation_1: STRING_32
+		do Result := translation_in_context ("The instruction '", once "code_analyzer.violation") end
+
+	loop_invariant_comp_within_loop_violation_2: STRING_32
+		do Result := translation_in_context ("' is invariant in this loop and can be moved in front or after the loop to increase performance.", once "code_analyzer.violation") end
+
+	attribute_can_be_constant_violation_1: STRING_32
+		do Result := translation_in_context ("Attribute '", once "code_analyzer.violation") end
+
+	attribute_can_be_constant_violation_2: STRING_32
+		do Result := translation_in_context ("' is always assigned the same value: ", once "code_analyzer.violation") end
+
+	attribute_can_be_constant_violation_3: STRING_32
+		do Result := translation_in_context (".%N This attribute can be made constant.", once "code_analyzer.violation") end
+
+	attribute_never_assigned_violation_1: STRING_32
+		do Result := translation_in_context ("Attribute '", once "code_analyzer.violation") end
+
+	attribute_never_assigned_violation_2: STRING_32
+		do Result := translation_in_context ("' is never assigned in this class.%NIt will always keep its default value.", once "code_analyzer.violation") end
+
 	comparison_of_object_refs_violation_1: STRING_32
 		do Result := translation_in_context ("You are using '=' to compare object references. This only%Nchecks whether they%
 									% point to the same object.%NIf you wanted to compare their states you%Ncan do so by using%
@@ -115,7 +136,7 @@ feature -- Rule Violations
 		do Result := translation_in_context ("Class '", once "code_analyzer.violation") end
 
 	empty_creation_procedure_violation_2: STRING_32
-		do Result := translation_in_context ("' has a single creation%Nprocedure with no arguments which is empty. This should be considered%Nto be%
+		do Result := translation_in_context ("' has an empty creation%Nprocedure. This should be considered%Nto be%
 									% removed. Note that all clients need to call 'create c' instead%Nof 'create c.", once "code_analyzer.violation") end
 
 	empty_creation_procedure_violation_3: STRING_32

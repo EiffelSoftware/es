@@ -1,15 +1,15 @@
 note
 	description: "[
-			RULE #16: Empty Loop
+			RULE #21: Loop invariant computation within loop
 	
-			A loop with an empty body should be removed. In most of the cases the loop never exits.
+			A loop invariant computation that lies within a loop should be moved outside the loop.
 		]"
-	author: "Samuel Schmid"
+	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	CA_EMPTY_LOOP_RULE
+	CA_LOOP_INVARIANT_COMPUTATION_RULE
 
 inherit
 	CA_STANDARD_RULE
@@ -30,6 +30,7 @@ feature {NONE} -- Activation
 
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
+			a_checker.add_routine_pre_action (agent process_routine)
 			a_checker.add_loop_pre_action (agent process_loop)
 		end
 
@@ -37,23 +38,35 @@ feature -- Properties
 
 	title: STRING_32
 		do
-			Result := ca_names.empty_loop_title
+			Result := ca_names.loop_invariant_comp_within_loop_title
 		end
 
-	id: STRING_32 = "CA016"
+	id: STRING_32 = "CA021"
 			-- <Precursor>
 
 	description: STRING_32
 		do
-			Result := ca_names.empty_loop_description
+			Result := ca_names.loop_invariant_comp_within_loop_description
 		end
 
 	format_violation_description (a_violation: attached CA_RULE_VIOLATION; a_formatter: attached TEXT_FORMATTER)
 		do
-			a_formatter.add (ca_messages.empty_loop_violation)
+			a_formatter.add (ca_messages.loop_invariant_comp_within_loop_violation_1)
+			if attached {STRING_32} a_violation.long_description_info.first as l_instruction then
+				a_formatter.add (l_instruction)
+			end
+			a_formatter.add (ca_messages.loop_invariant_comp_within_loop_violation_2)
 		end
 
+	locals: LOCAL_DEC_LIST_AS
+
 feature {NONE} -- Rule Checking
+
+	process_routine (a_routine: ROUTINE_AS)
+			-- Collect all local variables.
+		do
+			--create locals.make (a_routine.locals, k_as: [like local_keyword] KEYWORD_AS)
+		end
 
 	process_loop (a_loop: LOOP_AS)
 			-- Checks if `a_loop' has an empty compound.

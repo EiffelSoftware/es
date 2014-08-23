@@ -33,6 +33,7 @@ feature {NONE} -- Activation
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_bin_eq_pre_action (agent process_bin_eq)
+			a_checker.add_feature_pre_action (agent process_feature)
 		end
 
 feature -- Properties
@@ -61,12 +62,28 @@ feature {NONE} -- Rule Checking
 			-- Checks if `a_bin_eq' compares object references.
 		local
 			l_viol: CA_RULE_VIOLATION
+			l_fix: CA_COMPARISON_OF_OBJECT_REFS_FIX
 		do
-			if a_bin_eq.left.is_detachable_expression and a_bin_eq.right.is_detachable_expression then
+			if not current_context.node_type(a_bin_eq.left, current_feature).is_expanded and
+			   not current_context.node_type(a_bin_eq.right, current_feature).is_expanded then
 				create l_viol.make_with_rule (Current)
 				l_viol.set_location (a_bin_eq.start_location)
+
+				create l_fix.make_with_bin_eq (current_context.checking_class, a_bin_eq)
+				l_viol.fixes.extend (l_fix)
+
 				violations.extend (l_viol)
 			end
 		end
+
+	process_feature (a_feature: FEATURE_AS)
+			-- Sets currently checked feature.
+		do
+			current_feature := current_context.checking_class.feature_named_32 (a_feature.feature_name.name_32)
+		end
+
+feature {NONE} -- Attributes
+
+	current_feature: FEATURE_I
 
 end

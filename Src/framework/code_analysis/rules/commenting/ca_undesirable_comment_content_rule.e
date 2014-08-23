@@ -1,6 +1,6 @@
 note
 	description: "[
-			RULE #37: Undesirable comment content
+			RULE #03: Undesirable comment content
 			
 			Under some circumstances it might be desirable
 			to keep a certain language level. Imaginable cases
@@ -87,19 +87,30 @@ feature {NONE} -- Rule checking
 		-- Checks for bad language in all the comments of `a_class'.
 		local
 			l_violation: CA_RULE_VIOLATION
+			l_fix: CA_UNDESIRABLE_COMMENT_CONTENT_FIX
+			l_comments: EIFFEL_COMMENTS
 		do
 			if not attached r then
 				initialize_regex
 			end
 
 			if attached current_context.matchlist as l_matchlist then
+
+				l_comments := l_matchlist.extract_comment (a_class.token_region (l_matchlist))
+
 				across
-					l_matchlist.extract_comment (create {ERT_TOKEN_REGION}.make(a_class.first_token (l_matchlist).index, a_class.last_token (l_matchlist).index)) as l_comment
+					l_comments as l_comment
 				loop
 					if (r.matches (l_comment.item.content_32)) then
 						create l_violation.make_with_rule (Current)
 						l_violation.set_location (create {LOCATION_AS}.make (l_comment.item.line, l_comment.item.column, 0, 0, 0, 0, 0))
 						l_violation.long_description_info.extend (l_comment.item.content_32)
+
+						if attached {BREAK_AS} current_context.matchlist.item_by_position (l_comment.item.position) as l_break then
+							create l_fix.make_with_break_and_regex (current_context.checking_class, l_break, r)
+							l_violation.fixes.extend (l_fix)
+						end
+
 						violations.extend (l_violation)
 					end
 				end
@@ -111,13 +122,8 @@ feature -- Options
 	bad_words_list: STRING_LIST_PREFERENCE
 
 	default_bad_words_list: LIST[STRING_32]
-		local
-			l_list : LINKED_LIST[STRING_32]
 		do
-			create l_list.make
-			l_list.extend ("fuck")
-			l_list.extend ("shit")
-			Result	:= l_list
+			Result := default_bad_words_value.split (';')
 		end
 
 	default_bad_words_value: STRING_32 = "fuck;shit"

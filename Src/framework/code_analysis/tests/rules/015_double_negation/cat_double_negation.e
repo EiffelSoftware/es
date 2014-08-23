@@ -17,7 +17,7 @@ feature {NONE} -- Test
 				l_dummy_val := 2
 			end
 
-			if l_boolean_1 and (not (not l_boolean_2)) then
+			if (not not not l_boolean_1) and not (not l_boolean_2) then
 				l_dummy_val := 3
 			end
 

@@ -81,6 +81,7 @@ feature {NONE} -- Initialization
 			add_rule (create {CA_EMPTY_CREATION_PROC_RULE}.make)
 			add_rule (create {CA_VOID_CHECK_USING_IS_EQUAL_RULE}.make)
 			add_rule (create {CA_COMPARISON_OF_OBJECT_REFS_RULE}.make)
+			add_rule (create {CA_ATTRIBUTE_CAN_BE_CONSTANT_RULE}.make)
 
 			settings.initialize_rule_settings (rules)
 

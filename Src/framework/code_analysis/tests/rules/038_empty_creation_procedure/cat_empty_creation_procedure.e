@@ -4,13 +4,30 @@ class
 -- Violates the empty creation procedure code analysis rule.
 
 create
-	empty_create
+	a,
+	b,
+	c,
+	d,
+	e,
+	f
+
 
 feature {None} --Test
 
-	empty_create
+	d
 		do
-			-- Testing.
+
 		end
+
+	a, b, c
+		do
+			io.putstring ("test")
+		end
+
+	e, f
+		do
+
+		end
+
 end
 

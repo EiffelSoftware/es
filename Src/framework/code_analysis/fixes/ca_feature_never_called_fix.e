@@ -14,7 +14,8 @@ inherit
 		end
 
 create
-	make_with_feature
+	make_with_feature,
+	make_with_attribute
 
 feature {NONE} -- Initialization
 
@@ -23,6 +24,15 @@ feature {NONE} -- Initialization
 			-- is the feature that is never called.
 		do
 			make (ca_names.feature_never_called_fix + a_name + "'", a_class)
+			feature_to_remove := a_feature
+			feature_name := a_name
+		end
+
+	make_with_attribute (a_class: attached CLASS_C; a_feature: attached FEATURE_AS; a_name: attached STRING_32)
+			-- Initializes `Current' with class `a_class'. `a_feature' with name `a_name'
+			-- is the attribute that is never called.
+		do
+			make (ca_names.attribute_never_called_fix + a_name + "'", a_class)
 			feature_to_remove := a_feature
 			feature_name := a_name
 		end

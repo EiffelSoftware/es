@@ -32,9 +32,33 @@ feature {NONE} -- Activation
 	register_actions (a_checker: attached CA_ALL_RULES_CHECKER)
 		do
 			a_checker.add_class_pre_action (agent check_comments)
+			a_checker.add_feature_pre_action (agent check_feature_comments)
 		end
 
 feature {NONE} -- Rule checking
+
+	check_feature_comments (a_feature: attached FEATURE_AS)
+		-- Checks for not well phrased comments in `a_class'.
+		local
+			l_violation: CA_RULE_VIOLATION
+			l_comment_string: STRING_32
+		do
+
+			if current_context.matchlist /= Void then
+				across
+					a_feature.comment (current_context.matchlist) as l_comment
+				loop
+					l_comment_string := l_comment.item.content_32
+
+					if not l_comment_string.is_empty and then not (l_comment_string.at (1).is_upper or l_comment_string.at (l_comment_string.count).is_equal ('?') or l_comment_string.at (l_comment_string.count).is_equal ('.')) then
+						create l_violation.make_with_rule (Current)
+						l_violation.set_location (create {LOCATION_AS}.make (l_comment.item.line, l_comment.item.column, 0, 0, 0, 0, 0))
+						l_violation.long_description_info.extend (l_comment.item.content_32)
+						violations.extend (l_violation)
+					end
+				end
+			end
+		end
 
 	check_comments (a_class: attached CLASS_AS)
 		-- Checks for not well phrased comments in `a_class'.
@@ -45,11 +69,11 @@ feature {NONE} -- Rule checking
 
 			if current_context.matchlist /= Void then
 				across
-					current_context.matchlist.extract_comment (create {ERT_TOKEN_REGION}.make(a_class.first_token (current_context.matchlist).index, a_class.last_token (current_context.matchlist).index)) as l_comment
+					current_context.matchlist.extract_comment (a_class.token_region (current_context.matchlist)) as l_comment
 				loop
 					l_comment_string := l_comment.item.content_32
 
-					if not l_comment_string.is_empty and then not (l_comment_string.at (l_comment_string.count).is_equal ('?') or l_comment_string.at (l_comment_string.count).is_equal ('.')) then
+					if not l_comment_string.is_empty and then not l_comment_string.at (1).is_upper then
 						create l_violation.make_with_rule (Current)
 						l_violation.set_location (create {LOCATION_AS}.make (l_comment.item.line, l_comment.item.column, 0, 0, 0, 0, 0))
 						l_violation.long_description_info.extend (l_comment.item.content_32)
