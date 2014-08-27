@@ -1,11 +1,11 @@
 note
-	description: "Enum type for policy types (default, global, local)."
+	description: "Enum type for policy strength (default, global, local)."
 	author: "Paolo Antonucci"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	AT_ENUM_POLICY_TYPE
+	AT_ENUM_POLICY_STRENGTH
 
 inherit
 
@@ -16,10 +16,10 @@ inherit
 
 feature -- Access
 
-	name: STRING = "policy_type"
+	name: STRING = "policy_strength"
 			-- <Precursor>
 
-	value_type: AT_POLICY_TYPE
+	value_type: AT_POLICY_STRENGTH
 			-- <Precursor>
 		do
 			check
@@ -52,22 +52,22 @@ feature {AT_ENUM} -- Value list
 
 feature -- Values
 
-	Pt_not_set: AT_POLICY_TYPE
+	Ps_not_set: AT_POLICY_STRENGTH
 		once ("PROCESS")
 			create Result.make_with_numerical_value (0)
 		end
 
-	Pt_default: AT_POLICY_TYPE
+	Ps_default: AT_POLICY_STRENGTH
 		once ("PROCESS")
 			create Result.make_with_numerical_value (1)
 		end
 
-	Pt_global: AT_POLICY_TYPE
+	Ps_global: AT_POLICY_STRENGTH
 		once ("PROCESS")
 			create Result.make_with_numerical_value (2)
 		end
 
-	Pt_local: AT_POLICY_TYPE
+	Ps_local: AT_POLICY_STRENGTH
 		once ("PROCESS")
 			create Result.make_with_numerical_value (3)
 		end

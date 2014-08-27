@@ -1,11 +1,11 @@
 note
-	description: "Enum value for policy types (default, global, local)."
+	description: "Enum value for policy strength (default, global, local)."
 	author: "Paolo Antonucci"
 	date: "$Date$"
 	revision: "$Revision$"
 
 expanded class
-	AT_POLICY_TYPE
+	AT_POLICY_STRENGTH
 
 inherit
 
@@ -19,7 +19,7 @@ create
 
 feature -- Enum type
 
-	enum_type: AT_ENUM_POLICY_TYPE
+	enum_type: AT_ENUM_POLICY_STRENGTH
 			-- <Precursor>
 		once ("PROCESS")
 			create Result

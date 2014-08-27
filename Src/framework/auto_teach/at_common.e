@@ -35,7 +35,7 @@ feature -- Enums
 			create Result
 		end
 
-	enum_policy_type: AT_ENUM_POLICY_TYPE
+	enum_policy_strength: AT_ENUM_POLICY_STRENGTH
 		once ("PROCESS")
 			create Result
 		end

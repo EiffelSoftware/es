@@ -38,17 +38,17 @@ feature -- Access
 			Result := default_visibility.subjected_to (global_visibility_override).subjected_to (local_visibility_override)
 		end
 
-	effective_visibility_policy_type: AT_POLICY_TYPE
+	effective_visibility_policy_strength: AT_POLICY_STRENGTH
 			-- Where does the `effective_visibility' value come from?
 		do
 			if local_visibility_override.is_defined then
-				Result := enum_policy_type.Pt_local
+				Result := enum_policy_strength.Ps_local
 			elseif global_visibility_override.is_defined then
-				Result := enum_policy_type.Pt_global
+				Result := enum_policy_strength.Ps_global
 			elseif default_visibility.is_defined then
-				Result := enum_policy_type.Pt_default
+				Result := enum_policy_strength.Ps_default
 			else
-				Result := enum_policy_type.Pt_not_set
+				Result := enum_policy_strength.Ps_not_set
 			end
 		end
 
@@ -92,8 +92,8 @@ feature {NONE} -- Implementation
 	default_visibility_agent: FUNCTION [ANY, TUPLE [AT_BLOCK_TYPE], AT_TRI_STATE_BOOLEAN]
 			-- Agent for retrieving the default visibility for this block type.
 
-	enum_policy_type: AT_ENUM_POLICY_TYPE
-			-- Instance of the `AT_ENUM_POLICY_TYPE' type class.
+	enum_policy_strength: AT_ENUM_POLICY_STRENGTH
+			-- Instance of the `AT_ENUM_POLICY_STRENGTH' type class.
 		once ("PROCESS")
 			create Result
 		end

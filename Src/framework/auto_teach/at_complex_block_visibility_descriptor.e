@@ -44,17 +44,17 @@ feature -- Content visibility
 			Result := default_content_visibility.subjected_to (global_content_visibility_override).subjected_to (local_content_visibility_override)
 		end
 
-	effective_content_visibility_policy_type: AT_POLICY_TYPE
+	effective_content_visibility_policy_strength: AT_POLICY_STRENGTH
 			-- Where does the `effective_content_visibility' value come from?
 		do
 			if local_content_visibility_override.is_defined then
-				Result := enum_policy_type.Pt_local
+				Result := enum_policy_strength.Ps_local
 			elseif global_content_visibility_override.is_defined then
-				Result := enum_policy_type.Pt_global
+				Result := enum_policy_strength.Ps_global
 			elseif default_content_visibility.is_defined then
-				Result := enum_policy_type.Pt_default
+				Result := enum_policy_strength.Ps_default
 			else
-				Result := enum_policy_type.Pt_not_set
+				Result := enum_policy_strength.Ps_not_set
 			end
 		end
 

@@ -101,7 +101,7 @@ feature -- Status signaling
 		local
 			l_in_hidden_region, l_is_complex_block: BOOLEAN
 			l_block_visibility, l_content_visibility_status, l_block_content_visibility: AT_TRI_STATE_BOOLEAN
-			l_visibility_policy_type, l_content_visibility_policy_type: AT_POLICY_TYPE
+			l_visibility_policy_strength, l_content_visibility_policy_strength: AT_POLICY_STRENGTH
 			l_descriptor, l_descriptor_in_table: AT_BLOCK_VISIBILITY_DESCRIPTOR
 		do
 			l_descriptor_in_table := visibility_descriptors [a_block_type]
@@ -131,12 +131,12 @@ feature -- Status signaling
 					-- Default values
 				l_in_hidden_region := False
 				l_content_visibility_status := Tri_undefined
-				l_content_visibility_policy_type := enum_policy_type.Pt_not_set
+				l_content_visibility_policy_strength := enum_policy_strength.Ps_not_set
 			else
 					-- Take the values from the top of the stack (referred to the parent of this block).
 				l_in_hidden_region := not effective_visibility_stack.item
 				l_content_visibility_status := content_visibility_stack.item.value
-				l_content_visibility_policy_type := content_visibility_stack.item.policy_type
+				l_content_visibility_policy_strength := content_visibility_stack.item.policy_strength
 			end
 
 
@@ -172,11 +172,11 @@ feature -- Status signaling
 
 					-- For all blocks: compute the basic visibility.
 				l_block_visibility := l_descriptor.effective_visibility
-				l_visibility_policy_type := l_descriptor.effective_visibility_policy_type
+				l_visibility_policy_strength := l_descriptor.effective_visibility_policy_strength
 
 					-- For atomic blocks only: apply the current content visibility, if defined and "stronger".
-				if not l_is_complex_block and then l_content_visibility_policy_type > l_visibility_policy_type then
-						-- The following check holds because `l_content_visibility_policy_type'
+				if not l_is_complex_block and then l_content_visibility_policy_strength > l_visibility_policy_strength then
+						-- The following check holds because `l_content_visibility_policy_strength'
 						-- needs to be at least 'default' in order for the condition above to
 						-- be satisfied, and if it is 'default', then the value is defined.
 					check defined: l_content_visibility_status.is_defined end
@@ -185,7 +185,7 @@ feature -- Status signaling
 						-- Theoretically the previous instruction should be equivalent to just doing:
 						-- l_block_visibility := l_content_visibility_status
 
-					l_visibility_policy_type := l_content_visibility_policy_type
+					l_visibility_policy_strength := l_content_visibility_policy_strength
 						-- I am aware that this triggers CA020.
 				end
 
@@ -210,7 +210,7 @@ feature -- Status signaling
 				if l_block_content_visibility.is_defined then
 						-- This will be the new status inside this block.
 					l_content_visibility_status := l_block_content_visibility
-					l_content_visibility_policy_type := l_complex_descriptor.effective_content_visibility_policy_type
+					l_content_visibility_policy_strength := l_complex_descriptor.effective_content_visibility_policy_strength
 				else
 						-- This block will inherit its content visibility from the parent block,
 						-- i.e., leave the two variables unchanged, we will later push them into the stack.
@@ -220,7 +220,7 @@ feature -- Status signaling
 				-- We are done! Push all variables to the stacks.
 			block_type_call_stack.put (a_block_type)
 			block_stack.put (l_descriptor)
-			content_visibility_stack.put ([l_content_visibility_status, l_content_visibility_policy_type])
+			content_visibility_stack.put ([l_content_visibility_status, l_content_visibility_policy_strength])
 			effective_visibility_stack.put (l_block_visibility.value)
 
 				-- Refresh the oracle attributes.
@@ -510,7 +510,7 @@ feature {NONE} -- Implementation: block visibility
 			-- Stack, parallel to `block_stack', indicating, for every
 			-- level, wether we are inside an effectively visible block.
 
-	content_visibility_stack: STACK [ TUPLE [value: AT_TRI_STATE_BOOLEAN; policy_type: AT_POLICY_TYPE]]
+	content_visibility_stack: STACK [TUPLE [value: AT_TRI_STATE_BOOLEAN; policy_strength: AT_POLICY_STRENGTH]]
 			-- Stack, parallel to `block_stack', indicating, for
 			-- every level, the current state of content visibility.
 
@@ -561,7 +561,7 @@ feature {NONE} -- Implementation: miscellaneous
 			create {ARRAYED_STACK [AT_BLOCK_TYPE]} block_type_call_stack.make (32)
 			create {ARRAYED_STACK [AT_BLOCK_VISIBILITY_DESCRIPTOR]} block_stack.make (32)
 			create {ARRAYED_STACK [BOOLEAN]} effective_visibility_stack.make (32)
-			create {ARRAYED_STACK [TUPLE [value: AT_TRI_STATE_BOOLEAN; policy_type: AT_POLICY_TYPE]]} content_visibility_stack.make (32)
+			create {ARRAYED_STACK [TUPLE [value: AT_TRI_STATE_BOOLEAN; policy_strength: AT_POLICY_STRENGTH]]} content_visibility_stack.make (32)
 			create undefined_visibility_warning_set.make (enum_block_type.values.count)
 			initialize_visibility_descriptors_table
 
