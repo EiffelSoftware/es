@@ -45,6 +45,8 @@ feature {NONE} -- Initialization
 			table.put 			(<< 	T		>>, enum_block_type.Bt_routine_body)
 			table.put 			(<< 	T		>>, enum_block_type.Bt_postcondition)
 
+			table.put 			(<< 	T		>>, enum_block_type.Bt_class_invariant)
+
 				-- If, inspect and loop blocks are hidden, but their inner complex blocks
 				-- (e.g. branches) must be shown if the parent blocks are shown.
 			table.put 			(<< 	F		>>, enum_block_type.Bt_if)
@@ -59,10 +61,17 @@ feature {NONE} -- Initialization
 			table.put 			(<< 	T		>>, enum_block_type.Bt_loop_body)
 			table.put 			(<< 	T		>>, enum_block_type.Bt_loop_variant)
 
+				-- The following atomic blocks should also never be visibile,
+				-- however, it is a bad practice to impose it here.
+				-- The content visibility of blocks containing them
+				-- should take care of this.
+			table.put 			(<< 	U		>>, enum_block_type.Bt_argument_declaration)
+			table.put 			(<< 	U		>>, enum_block_type.Bt_local_declaration)
 			table.put 			(<< 	U		>>, enum_block_type.Bt_assertion)
-				-- Assertions should never be visibile. However, it is a bad practice to impose it here.
 			table.put 			(<< 	U		>>, enum_block_type.Bt_instruction)
-				-- Instructions should never be visibile. However, it is a bad practice to impose it here.
+			table.put 			(<< 	U		>>, enum_block_type.Bt_if_condition)
+			table.put 			(<< 	U		>>, enum_block_type.Bt_loop_termination_condition)
+
 		end
 
 end
