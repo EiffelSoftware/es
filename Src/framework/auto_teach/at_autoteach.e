@@ -55,7 +55,7 @@ feature -- Interface
 			l_output_path: PATH
 			l_dir: DIRECTORY
 			l_io: BOOLEAN
-			l_level: INTEGER
+			l_level: NATURAL
 		do
 			if not l_io then
 				l_io := True

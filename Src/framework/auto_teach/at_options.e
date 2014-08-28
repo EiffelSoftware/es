@@ -31,13 +31,13 @@ feature -- AutoTeach options
 	insert_code_placeholder: BOOLEAN assign set_insert_code_placeholder
 			-- Shall AutoTeach insert a placeholder where code is removed?
 
-	hint_level: INTEGER assign set_hint_level
+	hint_level: NATURAL assign set_hint_level
 			-- The current hint level for AutoTeach.
 
-	min_hint_level: INTEGER
+	min_hint_level: NATURAL
 			-- The minimum hint level with which AutoTeach should be run.
 
-	max_hint_level: INTEGER
+	max_hint_level: NATURAL
 			-- The maximum hint level with which AutoTeach should be run.
 
 	create_level_subfolders: BOOLEAN assign set_create_level_subfolders
@@ -50,7 +50,7 @@ feature -- AutoTeach options
 	hint_table: AT_HINT_TABLE
 			-- The table defining the policy for showing/hiding code blocks.
 
-	set_hint_level_range (a_min_level, a_max_level: INTEGER)
+	set_hint_level_range (a_min_level, a_max_level: NATURAL)
 			-- Set the hint level range for which AutoTeach should be run in the current execution.
 		require
 			valid_min: is_valid_hint_level (a_min_level)
@@ -93,7 +93,7 @@ feature {NONE} -- Setters
 			insert_code_placeholder_set: insert_code_placeholder = a_bool
 		end
 
-	set_hint_level (a_level: INTEGER)
+	set_hint_level (a_level: NATURAL)
 			-- Set `hint_level' to `a_level'.
 		require
 			valid_level: is_valid_hint_level (a_level)

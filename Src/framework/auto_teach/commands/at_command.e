@@ -21,10 +21,10 @@ feature -- Access
 	valid: BOOLEAN
 			-- Is `Current' a valid command?
 
-	min_level: INTEGER
+	min_level: NATURAL
 			-- The minimum hint level for the command to be processed.
 
-	max_level: INTEGER
+	max_level: NATURAL
 			-- The maximum hint level for the command to be processed.
 
 	command_word: STRING
@@ -48,7 +48,7 @@ feature {NONE} -- Initialization
 	parse (a_line: STRING)
 		local
 			l_line, l_level_string, l_block_type_string: STRING
-			l_min_max: TUPLE [min: INTEGER; max: INTEGER]
+			l_min_max: TUPLE [min, max: NATURAL]
 			l_index: INTEGER
 			l_space_index, l_tab_index, l_colon_index: INTEGER
 		do
@@ -56,8 +56,8 @@ feature {NONE} -- Initialization
 			l_line := a_line.twin
 
 				-- Default level values: the command is always applicable.
-			min_level := 0
-			max_level := {INTEGER}.max_value
+			min_level := {NATURAL}.min_value
+			max_level := {NATURAL}.max_value
 
 
 				-- Check prefixes.
@@ -79,12 +79,25 @@ feature {NONE} -- Initialization
 				l_index := l_line.index_of (']', 1)
 				if l_index >= 2 then
 					l_level_string := l_line.substring (1, l_index - 1)
-					l_min_max := parse_natural_range_string (l_level_string, max_level)
-					if attached l_min_max then
-						min_level := l_min_max.min
-						max_level := l_min_max.max
+
+					if l_level_string.has ('-') then
+							-- Level range
+						l_min_max := parse_natural_range_string (l_level_string)
+						if attached l_min_max then
+							min_level := l_min_max.min
+							max_level := l_min_max.max
+						else
+							fail
+						end
 					else
-						fail
+							-- Single level
+						if l_level_string.is_natural then
+							min_level := l_level_string.to_natural
+								-- When only one level is specified, we take it as the starting level.
+							max_level := {NATURAL}.max_value
+						else
+							fail
+						end
 					end
 					l_line.remove_head (l_index)
 				else

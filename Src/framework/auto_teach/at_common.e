@@ -47,13 +47,15 @@ feature -- Enums
 
 feature -- For use with contracts
 
-	is_valid_hint_level (a_level: INTEGER): BOOLEAN
+	is_valid_hint_level (a_level: NATURAL): BOOLEAN
 			-- Does `a_level' represent a valid hint level?
 		do
-				-- 10 is arbitrary. Theoretically any positive number would
+				-- 20 is arbitrary. Theoretically any positive number would
 				-- be acceptable, in practice it is probably better to have a limit,
 				-- so that the program throws an error if absurd hint levels are specified.
-			Result := a_level >= 0 and a_level <= 10
+			Result := a_level >= 0 and a_level <= 20
+		ensure
+			Result implies a_level < {INTEGER}.max_value.as_natural_32
 		end
 
 
@@ -179,35 +181,34 @@ feature {NONE} -- Utility
 			end
 		end
 
-	parse_natural_range_string (a_string: READABLE_STRING_GENERAL; a_default_second: INTEGER): TUPLE [first: INTEGER; second: INTEGER]
-			-- Parses a range string with format "3-8". If the string is a simple number
-			-- without dash, then `a_default_second' is returned as the second number.
-			-- The returned numbers are guaranteed to be nonnegative (unless `a_default_second'
-			-- is returned as the second number).
-			-- Void is returned if parsing failed.
+	parse_natural_range_string (a_string: READABLE_STRING_GENERAL): TUPLE [min, max: NATURAL]
+			-- Parses a range string with format "3-8".
+			-- The returned numbers are guaranteed to be nonnegative.
+			-- One or both numbers can be empty (e.g. "3-", "-9", "-")
+			-- In this case, respectively the minimum and/or the maximum
+			-- values for NATURAL are returned
+			-- Void is returned if parsing fails.
 		local
 			l_first_string, l_second_string: READABLE_STRING_GENERAL
 			l_strings: LIST [READABLE_STRING_GENERAL]
 			l_error: BOOLEAN
 		do
 			l_strings := a_string.split ('-')
-			if l_strings.count = 1 then
-				if l_strings.first.is_natural_32 then
-					create Result
-					Result.first := l_strings.first.to_integer_32
-					Result.second := a_default_second
-				else
-					Result := Void
-				end
-			elseif l_strings.count = 2 then
+			if l_strings.count = 2 then
 				create Result
-				if l_strings.first.is_natural_32 then
-					Result.first := l_strings.first.to_integer_32
+
+				if l_strings.first.is_empty then
+					Result.min := {NATURAL}.min_value
+				elseif l_strings.first.is_natural_32 then
+					Result.min := l_strings.first.to_natural_32
 				else
 					l_error := True
 				end
-				if l_strings.last.is_natural_32 then
-					Result.second := l_strings.last.to_integer_32
+
+				if l_strings.last.is_empty then
+					Result.max := {NATURAL}.max_value
+				elseif l_strings.last.is_natural_32 then
+					Result.max := l_strings.last.to_natural_32
 				else
 					l_error := True
 				end

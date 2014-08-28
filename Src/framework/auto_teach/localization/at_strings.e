@@ -62,7 +62,7 @@ feature -- Messages
 			Result := locale.translation ("Welcome to " + auto_teach + "!")
 		end
 
-	running_at_level (a_level: INTEGER): STRING_32
+	running_at_level (a_level: NATURAL): STRING_32
 		do
 			Result := locale.translation ("Running at hint level " + a_level.out.to_string_32 + ".")
 		end

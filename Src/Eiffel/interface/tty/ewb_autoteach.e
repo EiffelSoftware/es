@@ -77,7 +77,7 @@ feature {NONE} -- Implementation
 		local
 			l_errors, l_warnings: ARRAYED_LIST [STRING]
 			l_output_dir: DIRECTORY
-			l_min_max: TUPLE [min, max: INTEGER]
+			l_min_max: TUPLE [min, max: NATURAL]
 			l_mode: AT_MODE
 		do
 			can_run := True
@@ -104,13 +104,20 @@ feature {NONE} -- Implementation
 					autoteach_arguments.forth
 
 					if not autoteach_arguments.after then
-						l_min_max := parse_natural_range_string (autoteach_arguments.item, -1)
+						if autoteach_arguments.item.has ('-') then
+								-- Level range
+							l_min_max := parse_natural_range_string (autoteach_arguments.item)
+						else
+								-- Single level
+							if autoteach_arguments.item.is_natural then
+								create l_min_max
+								l_min_max.min := autoteach_arguments.item.to_natural
+								l_min_max.max := l_min_max.min
+							end
+						end
 					end
 
 					if attached l_min_max then
-						if l_min_max.max = -1 then
-							l_min_max.max := l_min_max.min
-						end
 						if is_valid_hint_level (l_min_max.min) and is_valid_hint_level (l_min_max.max) and l_min_max.min <= l_min_max.max then
 							autoteach_options.set_hint_level_range (l_min_max.min, l_min_max.max)
 						else
