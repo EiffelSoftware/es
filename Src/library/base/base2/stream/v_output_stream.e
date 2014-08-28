@@ -3,6 +3,7 @@ note
 	author: "Nadia Polikarpova"
 	model: off_
 	manual_inv: true
+	false_guards: true
 
 deferred class
 	V_OUTPUT_STREAM [G]

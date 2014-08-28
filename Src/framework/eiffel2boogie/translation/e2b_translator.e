@@ -22,9 +22,7 @@ feature {NONE} -- Initialization
 		do
 			translation_pool.reset
 				-- Add types used by every system
-			translation_pool.add_type (system.any_type)
 			translation_pool.add_type (helper.set_any_type)
-			translation_pool.mark_translated (translation_pool.next_untranslated_element)
 		end
 
 feature -- Status report

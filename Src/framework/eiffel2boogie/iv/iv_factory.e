@@ -155,17 +155,6 @@ feature -- Boolean operators
 			end
 		end
 
-	conjunction (a_conjuncts: ITERABLE [IV_EXPRESSION]): IV_EXPRESSION
-			-- Conjunction of all elements of `a_conjuncts'.
-		do
-			Result := true_
-			across
-				a_conjuncts as i
-			loop
-				Result := and_clean (Result, i.item)
-			end
-		end
-
 	implies_ (a_left, a_right: IV_EXPRESSION): IV_BINARY_OPERATION
 			-- Implies operator `==>'.
 		do
@@ -198,6 +187,17 @@ feature -- Boolean operators
 			-- Expression "if a_cond then a_then else a_else"
 		do
 			create Result.make_if_then_else (a_cond, a_then, a_else)
+		end
+
+	conjunction (a_conjuncts: ITERABLE [IV_ASSERT]): IV_EXPRESSION
+			-- Conjunction of all expressions in `a_conjuncts'.
+		do
+			Result := true_
+			across
+				a_conjuncts as i
+			loop
+				Result := and_clean (Result, i.item.expression)
+			end
 		end
 
 feature -- Relational operators

@@ -536,6 +536,18 @@ feature -- Eiffel helpers
 				((f1 /= Void and f2 /= Void) and then (f1.written_in = f2.written_in and f1.rout_id_set.first = f2.rout_id_set.first))
 		end
 
+	is_class_any (c: CLASS_C): BOOLEAN
+			-- Is `c' the ANY class?
+		do
+			Result := c /= Void and then c.class_id = system.any_id
+		end
+
+	is_class_array (c: CLASS_C): BOOLEAN
+			-- Is `c' the ARRAY class?
+		do
+			Result := c /= Void and then c.class_id = system.array_id
+		end
+
 	is_conforming_or_non_conforming_parent_class (a_child, a_parent: CLASS_C): BOOLEAN
 			-- Does `a_child' inherit conforminlgy or non-conformingly from `a_parent'?
 		do
@@ -638,6 +650,14 @@ feature -- Eiffel helpers
 			-- Class MML_SET.
 		do
 			Result := set_any_type.base_class
+		end
+
+feature -- Contract helpers
+
+	has_flat_precondition (a_feature: FEATURE_I; a_type: CL_TYPE_A): BOOLEAN
+			-- Could `a_feature' have a precondition (immediate or inherited)?
+		do
+			Result := a_feature.has_precondition or a_feature.assert_id_set /= Void
 		end
 
 feature -- Byte context helpers

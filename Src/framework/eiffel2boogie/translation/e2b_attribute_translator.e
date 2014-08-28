@@ -57,6 +57,7 @@ feature -- Basic operations
 
 					l_written_type := helper.class_type_from_class (prev.item.written_class, current_type)
 					l_old_name := name_translator.boogie_procedure_for_feature (prev.item, l_written_type)
+					translation_pool.add_parent_type (l_written_type)
 					translation_pool.add_referenced_feature (prev.item, l_written_type)
 					boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.equal (l_f, create {IV_ENTITY}.make (l_old_name, l_f.type))))
 				end
@@ -97,7 +98,6 @@ feature -- Basic operations
 
 				-- Add translation references
 			translation_pool.add_type (l_class_type)
-
 		end
 
 	generate_guard (a_type: CL_TYPE_A; a_boogie_name: STRING; a_boogie_type: IV_TYPE)

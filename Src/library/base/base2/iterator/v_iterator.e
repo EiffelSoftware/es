@@ -6,6 +6,7 @@ note
 	author: "Nadia Polikarpova"
 	model: target, sequence, index_
 	manual_inv: true
+	false_guards: true
 
 deferred class
 	V_ITERATOR [G]
@@ -229,7 +230,7 @@ feature -- Cursor movement
 			from
 			invariant
 				is_wrapped
-				inv_only ("box_definition")
+				inv
 				target.is_wrapped
 				index_.old_ <= index_ and index_ <= sequence.count + 1
 				not before
@@ -264,7 +265,7 @@ feature -- Cursor movement
 			from
 			invariant
 				is_wrapped
-				inv_only ("box_definition")
+				inv
 				target.is_wrapped
 				0 <= index_
 				index_ <= index_.old_

@@ -7,6 +7,7 @@ note
 	author: "Nadia Polikarpova"
 	model: map
 	manual_inv: true
+	false_guards: true
 
 
 deferred class

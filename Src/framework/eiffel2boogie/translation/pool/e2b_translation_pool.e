@@ -88,9 +88,18 @@ feature -- Adding independent units
 			not_like_type: not a_type.is_like
 			no_formals: not a_type.has_formal_generic
 		do
-			if a_type.is_basic then
-					-- Ignore basic types
-			else
+			if not a_type.is_basic and not helper.is_class_any (a_type.base_class) then
+				add_translation_unit (create {E2B_TU_TYPE}.make (a_type))
+				add_translation_unit (create {E2B_TU_INVARIANT}.make (a_type))
+			end
+		end
+
+	add_parent_type (a_type: CL_TYPE_A)
+			-- Add type `a_type' that is only mentioned as a parent of a used type.
+		require
+			no_formals: not a_type.has_formal_generic
+		do
+			if not a_type.is_basic and not helper.is_class_any (a_type.base_class) then
 				add_translation_unit (create {E2B_TU_TYPE}.make (a_type))
 			end
 		end
@@ -154,7 +163,7 @@ feature -- Adding independent units
 		require
 			no_formals: not a_type.has_formal_generic
 		do
-			add_translation_unit (create {E2B_TU_INVARIANT_FUNCTION}.make_filtered (a_type, a_included, a_excluded, a_ancestor))
+			add_translation_unit (create {E2B_TU_INVARIANT}.make_filtered (a_type, a_included, a_excluded, a_ancestor))
 		end
 
 	add_postcondition_predicate (a_feature: FEATURE_I; a_context_type: CL_TYPE_A)

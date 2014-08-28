@@ -6,6 +6,7 @@ note
 	author: "Nadia Polikarpova"
 	model: bag
 	manual_inv: true
+	false_guards: true
 
 deferred class
 	V_CONTAINER [G]
@@ -94,7 +95,6 @@ feature -- Search
 			variant
 				it.sequence.count - it.index_
 			end
-			check s = it.sequence end
 			forget_iterator (it)
 		ensure
 			definition: Result = bag [v]
@@ -124,7 +124,7 @@ feature -- Specification
 		attribute
 		end
 
-	forget_iterator (it: like new_cursor)
+	forget_iterator (it: V_ITERATOR [G])
 			-- Remove `it' from `observers'.
 		note
 			status: ghost

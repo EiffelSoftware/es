@@ -4,7 +4,6 @@ note
 class A_SEQUENCES
 
 feature
-
 	good (s: MML_SEQUENCE[INTEGER])
 		require
 			not s.is_empty

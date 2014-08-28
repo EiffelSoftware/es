@@ -109,6 +109,9 @@ feature -- Universe Visitor
 			-- <Precursor>
 		do
 			output.put ("axiom (")
+			if attached a_axiom.attribute_string then
+				output.put ("{" + a_axiom.attribute_string + "} ")
+			end
 			a_axiom.expression.process (Current)
 			output.put (");")
 			output.put_new_line
@@ -232,6 +235,9 @@ feature -- Contract visitor
 				output.put ("free ")
 			end
 			output.put ("requires ")
+			if attached a_precondition.attribute_string then
+				output.put ("{" + a_precondition.attribute_string + "} ")
+			end
 			a_precondition.expression.process (Current)
 			output.put (";")
 			print_node_info (a_precondition.node_info)
@@ -246,6 +252,9 @@ feature -- Contract visitor
 				output.put ("free ")
 			end
 			output.put ("ensures ")
+			if attached a_postcondition.attribute_string then
+				output.put ("{" + a_postcondition.attribute_string + "} ")
+			end
 			a_postcondition.expression.process (Current)
 			output.put (";")
 			print_node_info (a_postcondition.node_info)
@@ -327,16 +336,22 @@ feature -- Statement Visitor
 		do
 			output.put_indentation
 			output.put ("if (")
-			a_conditional.condition.process (Current)
+			if a_conditional.condition = Void then
+				output.put ("*")
+			else
+				a_conditional.condition.process (Current)
+			end
 			output.put (") {")
 			output.put_new_line
 			output.indent
 			a_conditional.then_block.process (Current)
 			output.unindent
-			output.put_line ("} else {")
-			output.indent
-			a_conditional.else_block.process (Current)
-			output.unindent
+			if not a_conditional.else_block.is_empty then
+				output.put_line ("} else {")
+				output.indent
+				a_conditional.else_block.process (Current)
+				output.unindent
+			end
 			output.put_line ("}")
 		end
 

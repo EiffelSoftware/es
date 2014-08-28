@@ -53,31 +53,29 @@ feature -- Access
 
 feature -- Element change
 
-	add_argument (a_name: STRING; a_type: IV_TYPE)
+	add_argument (a_arg: IV_ENTITY)
 			-- Add argument with name `a_name' and type `a_type'.
 		require
-			a_name_valid: is_valid_name (a_name)
-			a_type_attached: attached a_type
+			a_arg_attached: attached a_arg
 		do
-			arguments.extend (create {IV_ENTITY_DECLARATION}.make (a_name, a_type))
+			arguments.extend (create {IV_ENTITY_DECLARATION}.make (a_arg.name, a_arg.type))
 		ensure
-			argument_added: arguments.last.name ~ a_name
-			argument_added: arguments.last.type = a_type
+			argument_added: arguments.last.name ~ a_arg.name
+			argument_added: arguments.last.type = a_arg.type
 			argument_added: arguments.last.property = Void
 		end
 
-	add_argument_with_property (a_name: STRING; a_type: IV_TYPE; a_property: detachable IV_EXPRESSION)
+	add_argument_with_property (a_arg: IV_ENTITY; a_property: detachable IV_EXPRESSION)
 			-- Add argument with name `a_name' and type `a_type'.
 		require
-			a_name_valid: is_valid_name (a_name)
-			a_type_attached: attached a_type
+			a_arg_attached: attached a_arg
 			a_property_valid: attached a_property implies a_property.type.is_boolean
 		do
-			arguments.extend (create {IV_ENTITY_DECLARATION}.make (a_name, a_type))
+			arguments.extend (create {IV_ENTITY_DECLARATION}.make (a_arg.name, a_arg.type))
 			arguments.last.set_property (a_property)
 		ensure
-			argument_added: arguments.last.name ~ a_name
-			argument_added: arguments.last.type = a_type
+			argument_added: arguments.last.name ~ a_arg.name
+			argument_added: arguments.last.type = a_arg.type
 			argument_added: arguments.last.property = a_property
 		end
 

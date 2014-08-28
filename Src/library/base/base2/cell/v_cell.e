@@ -2,6 +2,7 @@ note
 	description: "Cells containing an item."
 	author: "Nadia Polikarpova"
 	model: item
+	false_guards: true
 
 class
 	V_CELL [G]
@@ -25,5 +26,5 @@ feature -- Replacement
 		ensure
 			item_effect: item = v
 		end
-		
+
 end

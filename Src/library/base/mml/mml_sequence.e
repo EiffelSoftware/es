@@ -230,5 +230,12 @@ feature -- Convenience
 				return NULL;
 			]"
 		end
+
+	non_void: BOOLEAN
+		note
+			maps_to: "Seq#NonNull"
+		do
+		end
+		
 end
 

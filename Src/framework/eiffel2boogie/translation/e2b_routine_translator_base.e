@@ -74,7 +74,7 @@ feature -- Helper functions: arguments and result
 		local
 			l_pre: IV_PRECONDITION
 		do
-			current_boogie_procedure.add_argument (a_name, a_boogie_type)
+			current_boogie_procedure.add_argument (create {IV_ENTITY}.make (a_name, a_boogie_type))
 			create l_pre.make (types.type_property (a_type, factory.global_heap, factory.entity (a_name, a_boogie_type)))
 			l_pre.set_free
 			l_pre.node_info.set_attribute ("info", "type property for argument " + a_name)
@@ -101,7 +101,7 @@ feature -- Helper functions: arguments and result
 
 feature -- Helper functions: contracts
 
-	contracts_of (a_feature: FEATURE_I; a_type: TYPE_A): TUPLE [pre, post, modifies, reads, decreases: LIST [E2B_ASSERT_ORIGIN]]
+	contracts_of (a_feature: FEATURE_I; a_type: CL_TYPE_A): TUPLE [pre, post, modifies, reads, decreases: LIST [E2B_ASSERT_ORIGIN]]
 			-- Contracts for feature `a_feature' of type `a_type' separated into preconditions, postconiditons, modify clauses, read clauses, and decreases clauses;
 			-- with their origin class.
 		local
@@ -185,6 +185,7 @@ feature -- Helper functions: contracts
 			end
 			Result := [l_pre, l_post, l_modifies, l_reads, l_decreases]
 		end
+
 
 	contracts_of_current_feature: like contracts_of
 			-- Contracts for `current_feature'.

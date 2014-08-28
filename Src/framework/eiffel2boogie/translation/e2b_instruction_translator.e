@@ -650,6 +650,10 @@ feature -- Processing
 				-- Condition
 			set_current_origin_information (a_node.stop)
 			process_contract_expression (a_node.stop, False)
+			across last_safety_checks as i loop
+				add_statement (i.item)
+			end
+
 			l_condition := last_expression
 			create l_goto.make (l_body_block)
 			l_goto.add_target (l_end_block)

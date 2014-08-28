@@ -62,7 +62,7 @@ feature -- Translation: Signature
 			end
 
 				-- Add precondition
-			if a_feature.has_precondition then
+			if helper.has_flat_precondition (current_feature, current_type) then
 				translation_pool.add_function_precondition_predicate (current_feature, current_type)
 			end
 		end
@@ -669,6 +669,7 @@ feature -- Translation: Functions
 			l_post: IV_POSTCONDITION
 			l_fcall: IV_FUNCTION_CALL
 			l_type: CL_TYPE_A
+			l_arg: IV_ENTITY
 		do
 			set_context (a_feature, a_type)
 			helper.set_up_byte_context (current_feature, current_type)
@@ -689,9 +690,10 @@ feature -- Translation: Functions
 			across
 				arguments_of_current_feature as i
 			loop
+				create l_arg.make (i.item.name, i.item.boogie_type)
 				translation_pool.add_type (i.item.type)
 				l_function.add_argument (i.item.name, i.item.boogie_type)
-				l_fcall.add_argument (factory.entity (i.item.name, i.item.boogie_type))
+				l_fcall.add_argument (l_arg)
 			end
 
 				-- Definition
@@ -1195,6 +1197,7 @@ feature {NONE} -- Implementation
 		local
 			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 			l_contract: IV_PRECONDITION
+			l_free_pre: IV_EXPRESSION
 		do
 			create l_translator.make
 			l_translator.set_context (current_feature, current_type)
@@ -1204,15 +1207,17 @@ feature {NONE} -- Implementation
 			helper.set_up_byte_context (a_origin_class.feature_of_rout_id (current_feature.rout_id_set.first),
 				helper.class_type_in_context (a_origin_class.actual_type, a_origin_class, Void, current_type))
 			a_assert.process (l_translator)
+			l_free_pre := factory.true_
 			across l_translator.side_effect as i loop
 				create l_contract.make (i.item.expression)
 				l_contract.node_info.load (i.item.node_info)
 				if i.item.is_free then
 					l_contract.set_free
+					l_free_pre := factory.and_clean (l_free_pre, i.item.expression)
 				end
 				current_boogie_procedure.add_contract (l_contract)
 			end
-			create l_contract.make (l_translator.last_expression)
+			create l_contract.make (factory.implies_clean (l_free_pre, l_translator.last_expression))
 			l_contract.node_info.set_type ("pre")
 			l_contract.node_info.set_tag (a_assert.tag)
 			l_contract.node_info.set_line (a_assert.line_number)
@@ -1225,6 +1230,7 @@ feature {NONE} -- Implementation
 		local
 			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 			l_contract: IV_POSTCONDITION
+			l_free_pre: IV_EXPRESSION
 		do
 			create l_translator.make
 			l_translator.set_context (current_feature, current_type)
@@ -1235,15 +1241,17 @@ feature {NONE} -- Implementation
 				helper.class_type_in_context (a_origin_class.actual_type, a_origin_class, Void, current_type))
 			a_assert.process (l_translator)
 			a_fields.append (l_translator.field_accesses)
+			l_free_pre := factory.true_
 			across l_translator.side_effect as i loop
 				create l_contract.make (i.item.expression)
 				l_contract.node_info.load (i.item.node_info)
 				if i.item.is_free then
 					l_contract.set_free
+					l_free_pre := factory.and_clean (l_free_pre, i.item.expression)
 				end
 				current_boogie_procedure.add_contract (l_contract)
 			end
-			create l_contract.make (l_translator.last_expression)
+			create l_contract.make (factory.implies_clean (l_free_pre, l_translator.last_expression))
 			l_contract.node_info.set_type ("post")
 			l_contract.node_info.set_tag (a_assert.tag)
 			l_contract.node_info.set_line (a_assert.line_number)

@@ -68,8 +68,11 @@ function Seq#Domain<T>(q: Seq T): Set int
 // Set of values
 function Seq#Range<T>(Seq T): Set T;
 axiom (forall<T> q: Seq T, o: T :: { Seq#Range(q)[o] } Seq#Has(q, o) <==> Seq#Range(q)[o]);
-// axiom (forall<T> s: Seq T, i: int :: { Seq#Item(s, i) }
+axiom (forall<T> s: Seq T :: { Seq#Range(s) }
+  (forall i: int :: 1 <= i && i <= Seq#Length(s) ==> Seq#Range(s)[Seq#Item(s, i)]));
+// axiom (forall<T> s: Seq T, i: int :: { Seq#Range(s), Seq#Item(s, i) }
   // 1 <= i && i <= Seq#Length(s) ==> Seq#Range(s)[Seq#Item(s, i)]);
+  
   
 // How many times does x occur in a?
 function Seq#Occurrences<T>(Seq T, T): int;
@@ -148,8 +151,14 @@ function Seq#Interval<T>(q: Seq T, lower: int, upper: int): Seq T
 { Seq#Tail(Seq#Front(q, upper), lower) }
 
 // Sequence with element at position i removed
-function {: inline } Seq#RemovedAt<T>(q: Seq T, i: int): Seq T
-{ Seq#Concat(Seq#Take(q, i - 1), Seq#Drop(q, i)) } 
+// function {: inline } Seq#RemovedAt<T>(q: Seq T, i: int): Seq T
+// { Seq#Concat(Seq#Take(q, i - 1), Seq#Drop(q, i)) } 
+function Seq#RemovedAt<T>(q: Seq T, i: int): Seq T;
+axiom (forall<T> q: Seq T, i: int :: { Seq#Length(Seq#RemovedAt(q, i)) }
+	Seq#Length(Seq#RemovedAt(q, i)) == Seq#Length(q) - 1);
+axiom (forall<T> q: Seq T, i: int, j: int :: { Seq#Item(Seq#RemovedAt(q, i), j) }
+	(j < i ==> Seq#Item(Seq#RemovedAt(q, i), j) == Seq#Item(q, j)) &&
+	(i <= j ==> Seq#Item(Seq#RemovedAt(q, i), j) == Seq#Item(q, j + 1)));
 
 // Sequence extended with x at the end
 function Seq#Extended<T>(s: Seq T, val: T): Seq T;
@@ -213,9 +222,9 @@ axiom (forall<T> a: Seq T, b: Seq T, x: T ::
 // update axiom
 axiom (forall<T> s: Seq T, i: int, v: T, x: T ::
   { Seq#ToBag(Seq#Update(s, i, v))[x] }
-    0 <= i && i < Seq#Length(s) ==>
+    1 <= i && i <= Seq#Length(s) ==>
     Seq#ToBag(Seq#Update(s, i, v))[x] ==
-      Bag#Union(Bag#Difference(Seq#ToBag(s), Bag#Singleton(Seq#Item(s,i))), Bag#Singleton(v))[x] );
+      Bag#Extended(Bag#Difference(Seq#ToBag(s), Bag#Singleton(Seq#Item(s,i))), v)[x] );
   // i.e. MS(Update(s, i, v)) == MS(s) - {{s[i]}} + {{v}}
 axiom (forall<T> s: Seq T, x: T :: { Seq#ToBag(s)[x] } Seq#Has(s, x) <==> 0 < Seq#ToBag(s)[x]);
 axiom (forall<T> s: Seq T, x: T :: { Seq#ToBag(s)[x] } Seq#ToBag(s)[x] == Seq#Occurrences(s, x));
@@ -267,6 +276,9 @@ axiom (forall<T> s: Seq T, v: T, n: int ::
 
 axiom (forall<T> :: Seq#Take(Seq#Empty() : Seq T, 0) == Seq#Empty() : Seq T);  // [][..0] == []
 axiom (forall<T> :: Seq#Drop(Seq#Empty() : Seq T, 0) == Seq#Empty() : Seq T);  // [][0..] == []
+
+function Seq#NonNull(s: Seq ref): bool
+{ (forall i: int :: { Seq#Item(s, i) } 1 <= i && i <= Seq#Length(s) ==> Seq#Item(s, i) != Void) }
 
 // Type property
 function {: inline } Seq#ItemsType(heap: HeapType, s: Seq ref, t: Type): bool 

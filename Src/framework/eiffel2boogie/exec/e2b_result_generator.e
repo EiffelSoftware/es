@@ -178,8 +178,6 @@ feature {NONE} -- Implementation
 				if l_has_tag then
 					if l_tag ~ "function_precondition" then
 						Result := messages.function_precondition_violated
-					elseif l_tag ~ "invariant_holds" then
-						Result := messages.invariant_violated
 					else
 						Result := messages.check_with_tag_violated
 					end
@@ -199,6 +197,13 @@ feature {NONE} -- Implementation
 					Result := messages.postcondition_with_tag_violated
 				else
 					Result := messages.postcondition_violated
+				end
+			elseif l_type ~ "inv" then
+					-- Inline invariant check violation
+				if l_has_tag then
+					Result := messages.invariant_with_tag_violated
+				else
+					Result := messages.invariant_violated
 				end
 			elseif l_type ~ "loop_inv" then
 				if a_error.is_loop_inv_violated_on_entry then

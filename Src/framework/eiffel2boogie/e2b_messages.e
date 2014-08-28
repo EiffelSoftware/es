@@ -104,6 +104,9 @@ feature -- Verification error messages
 	invariant_violated: STRING_32
 		do Result := "Invariant might not hold on call to $called_feature." end
 
+	invariant_with_tag_violated: STRING_32
+		do Result := "Invariant $tag might not hold on call to $called_feature." end
+
 	precondition_violated: STRING_32
 		do Result := "Precondition may be violated on call to $called_feature (untagged)." end
 

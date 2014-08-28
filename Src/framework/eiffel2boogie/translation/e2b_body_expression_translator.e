@@ -574,6 +574,17 @@ feature -- Translation
 			end
 		end
 
+	add_independent_check (a_statement: IV_STATEMENT)
+			-- Add `a_statement' to `side_effects', but avoid learning anything from it.
+		local
+			l_if: IV_CONDITIONAL
+		do
+			create l_if.make (Void)
+			l_if.then_block.add_statement (a_statement)
+			l_if.then_block.add_statement (create {IV_ASSERT}.make_assume (factory.false_))
+			side_effect.extend (l_if)
+		end
+
 feature {NONE} -- Implementation
 
 	procedure_calls: LINKED_STACK [IV_PROCEDURE_CALL]

@@ -6,6 +6,7 @@ note
 	author: "Nadia Polikarpova"
 	model: sequence
 	manual_inv: true
+	false_guards: true
 
 deferred class
 	V_LIST [G]
@@ -35,6 +36,9 @@ feature -- Measurement
 			Result := 1
 		end
 
+	count: INTEGER
+			-- Number of elements.
+
 feature -- Iteration
 
 	at (i: INTEGER): V_LIST_ITERATOR [G]
@@ -43,6 +47,8 @@ feature -- Iteration
 			status: impure
 			explicit: contracts
 		deferred
+		ensure then
+			index_definition_in_bounds: 0 <= i and i <= sequence.count + 1 implies Result.index_ = i
 		end
 
 feature -- Comparison
@@ -57,6 +63,8 @@ feature -- Comparison
 		local
 			i, j: V_LIST_ITERATOR [G]
 		do
+			check inv_only ("count_definition") end
+			check other.inv_only ("count_definition") end
 			if other = Current then
 				Result := True
 			elseif count = other.count then
@@ -322,13 +330,13 @@ feature -- Removal
 				b := bag
 				i.remove
 				check i.inv_only ("target_bag_constraint", "sequence_definition") end
-				lemma_remove_multiple (bag.old_, v, n)
+				bag.old_.lemma_remove_multiple (v, n)
 				i.search_forth (v)
 				n := n + 1
 			variant
 				i.sequence.count - i.index_
 			end
-			lemma_remove_all (bag.old_, v)
+			bag.old_.lemma_remove_all (v)
 			forget_iterator (i)
 		ensure
 			is_wrapped: is_wrapped
@@ -350,33 +358,9 @@ feature -- Removal
 			sequence_effect: sequence.is_empty
 		end
 
-feature {V_CONTAINER, V_ITERATOR} -- Specification
-
-	lemma_remove_multiple (b: MML_BAG [G]; v: G; n: INTEGER)
-			-- Removing `n' occurrences of `v' from `b' and then one,
-			-- is the same as removing `n' + 1 occurrences.
-		note
-			status: lemma
-		require
-			n >= 0
-		do
-			check across b as x all b.removed_multiple (v, n).removed (v) [x.item] = b.removed_multiple (v, n + 1) [x.item] end end
-		ensure
-			b.removed_multiple (v, n).removed (v) = b.removed_multiple (v, n + 1)
-		end
-
-	lemma_remove_all (b: MML_BAG [G]; v: G)
-			-- Removing `b [v]' occurrences of `v' from `b' is the same as removing all occurrences.
-		note
-			status: lemma
-		do
-			check across b as x all b.removed_multiple (v, b [v]) [x.item] = b.removed_all (v) [x.item] end end
-		ensure
-			b.removed_multiple (v, b [v]) = b.removed_all (v)
-		end
-
 invariant
 	lower_definition: lower_ = 1
+	count_definition: count = sequence.count
 	map_definition_list: map = sequence.to_map
 
 note

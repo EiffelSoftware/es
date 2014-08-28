@@ -3,6 +3,7 @@ note
 	author: "Nadia Polikarpova"
 	model: target, key_sequence, index_
 	manual_inv: true
+	false_guards: true
 
 deferred class
 	V_MAP_ITERATOR [K, V]
@@ -23,7 +24,6 @@ feature -- Access
 			closed: closed
 			target_closed: target.closed
 			not_off: not off
-			-- ToDo: typing crash in AP if `target' used instead of `subjects.any_item':
 			reads (Current, subjects.any_item.ownership_domain)
 		deferred
 		ensure
@@ -62,7 +62,12 @@ invariant
 	keys_in_target: key_sequence.range ~ target.map.domain
 	unique_keys: key_sequence.count = target.map.count
 	value_sequence_domain_definition: value_sequence.count = key_sequence.count
-	value_sequence_definition: across 1 |..| key_sequence.count as i all value_sequence [i.item] = target.map [key_sequence [i.item]] end
+--	value_sequence_definition: across 1 |..| key_sequence.count as i all value_sequence [i.item] = target.map [key_sequence [i.item]] end
+	value_sequence_definition: across 1 |..| key_sequence.count as i all
+			across target.map.domain as k all
+				key_sequence [i.item] = k.item implies value_sequence [i.item] = target.map [k.item]
+			end
+		 end
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

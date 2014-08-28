@@ -6,6 +6,7 @@ note
 	author: "Nadia Polikarpova"
 	model: sequence, lower_
 	manual_inv: true
+	false_guards: true
 
 deferred class
 	V_SEQUENCE [G]
@@ -159,9 +160,8 @@ feature -- Iteration
 			status: impure
 			explicit: contracts
 		do
-			check inv end
 			Result := at (lower)
-			check inv and Result.inv end
+			check inv_only ("upper_definition") end
 		end
 
 	at_last: like at
@@ -173,9 +173,8 @@ feature -- Iteration
 			is_wrapped: is_wrapped
 			modify_field (["observers", "closed"], Current)
 		do
-			check inv end
 			Result := at (upper)
-			check inv and Result.inv end
+			check inv_only ("upper_definition") end
 		ensure
 			is_wrapped: is_wrapped
 			result_fresh: Result.is_fresh
@@ -193,7 +192,7 @@ feature -- Iteration
 			explicit: contracts
 		deferred
 		ensure then
-			index_definition_in_bounds: lower_ - 1 <= i and i <= upper_ + 1 implies Result.index = idx (i)
+			index_definition_in_bounds: lower_ - 1 <= i and i <= upper_ + 1 implies Result.index_ = i - lower_ + 1
 			index_definition_before: i < lower_ implies Result.index_ = 0
 			index_definition_after: i > upper_ implies Result.index_ = map.count + 1
 		end
@@ -232,8 +231,10 @@ feature -- Specification
 invariant
 	upper_definition: sequence.count = upper_ - lower_ + 1
 	map_domain_definition: map.domain ~ create {MML_INTERVAL}.from_range (lower_, upper_)
-	map_definition: across lower_ |..| upper_ as i all map [i.item] = sequence [i.item - lower_ + 1]  end
---	map_definition: across 1 |..| sequence.count as i all map [i.item + lower_ - 1] = sequence [i.item]  end
+	map_definition: across 1 |..| sequence.count as i all
+			across lower_ |..| upper_ as j all
+				j.item = i.item + lower_ - 1 implies map [j.item] = sequence [i.item]
+			end end
 
 note
 	copyright: "Copyright (c) 1984-2014, Eiffel Software and others"

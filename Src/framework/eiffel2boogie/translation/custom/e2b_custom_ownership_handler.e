@@ -281,6 +281,7 @@ feature -- Basic operations
 	pre_builtin_call (a_translator: E2B_BODY_EXPRESSION_TRANSLATOR; a_feature: FEATURE_I)
 			-- Insert code before calling a built-in procedure `a_feature_name'.
 		local
+			l_type_translator: E2B_TYPE_TRANSLATOR
 			l_check: IV_EXPRESSION
 		do
 				-- If processing a call to `wrap',
@@ -290,17 +291,21 @@ feature -- Basic operations
 					across helper.flat_model_queries (a_translator.current_target_type.base_class) as m loop
 						set_implicit_model_query (a_translator, m.item)
 					end
-					l_check := factory.function_call (name_translator.boogie_function_for_invariant (a_translator.current_target_type),
-						<< a_translator.entity_mapping.heap, a_translator.current_target >>,
-						types.bool)
+
+					create l_type_translator
+					l_type_translator.translate_inline_invaraint_check (a_translator.current_target_type)
+					across l_type_translator.last_clauses as c loop
+						c.item.node_info.set_line (a_translator.context_line_number)
+						c.item.node_info.set_attribute ("cid", a_feature.written_class.class_id.out)
+						c.item.node_info.set_attribute ("rid", a_feature.rout_id_set.first.out)
+						a_translator.add_independent_check (c.item)
+					end
 				else
-					l_check := factory.function_call ("user_inv",
-						<< a_translator.entity_mapping.heap, a_translator.current_target >>,
-						types.bool)
+					l_check := factory.function_call ("user_inv", << a_translator.entity_mapping.heap, a_translator.current_target >>, types.bool)
+					a_translator.add_safety_check (l_check, "inv", "unknown_invariant", a_translator.context_line_number)
+					a_translator.last_safety_check.node_info.set_attribute ("cid", a_feature.written_class.class_id.out)
+					a_translator.last_safety_check.node_info.set_attribute ("rid", a_feature.rout_id_set.first.out)
 				end
-				a_translator.add_safety_check (l_check, "check", "invariant_holds", a_translator.context_line_number)
-				a_translator.last_safety_check.node_info.set_attribute ("cid", a_feature.written_class.class_id.out)
-				a_translator.last_safety_check.node_info.set_attribute ("rid", a_feature.rout_id_set.first.out)
 			end
 		end
 

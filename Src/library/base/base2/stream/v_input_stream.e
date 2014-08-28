@@ -3,6 +3,7 @@ note
 	author: "Nadia Polikarpova"
 	model: box
 	manual_inv: true
+	false_guards: true
 
 deferred class
 	V_INPUT_STREAM [G]

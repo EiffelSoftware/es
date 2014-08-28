@@ -720,7 +720,7 @@ feature -- Visitors
 				current_target := entity_mapping.current_expression
 				current_target_type := context_type
 				last_expression := Void
-				
+
 				across_handler_map.put (l_across_handler, l_object_test_local.position)
 				l_across_handler.handle_across_expression
 				across_handler_map.remove (l_object_test_local.position)
@@ -841,6 +841,7 @@ feature -- Visitors
 --				helper.set_up_byte_context (Void, current_target_type)
 --				helper.set_up_byte_context_type (current_target_type, context_type)
 				last_expression := l_temp_expression
+
 				safe_process (a_node.message)
 
 					-- Restore `Current' reference
@@ -1198,7 +1199,7 @@ feature -- Translation
 			l_fname := name_translator.boogie_function_for_feature (a_feature, current_target_type)
 				-- Add check
 				-- Note: here we assume that there is no default precondition!
-			if a_feature.has_precondition then
+			if helper.has_flat_precondition (a_feature, current_target_type) then
 				create l_pre_call.make (name_translator.boogie_function_precondition (l_fname), types.bool)
 				across a_fcall.arguments as args loop
 					l_pre_call.add_argument (args.item)

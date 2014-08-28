@@ -20,11 +20,10 @@ create
 feature {NONE} -- Initialization
 
 	make (a_condition: IV_EXPRESSION)
-			-- Initialize conditional with condition `a_condition'
-			-- and empty then and else blocks.
+			-- Initialize conditional with condition `a_condition' and empty then and else blocks.
+			-- (if `a_condition' is Void use *).
 		require
-			a_condition_attached: attached a_condition
-			a_condition_valid: a_condition.type.is_boolean
+			a_condition_valid: attached a_condition implies a_condition.type.is_boolean
 		do
 			condition := a_condition
 			create then_block.make
@@ -36,10 +35,10 @@ feature {NONE} -- Initialization
 
 	make_if_then (a_condition: IV_EXPRESSION; a_then: IV_BLOCK)
 			-- Initialize conditional with condition `a_condition',
-			-- then block `a_then', and empty else block.
+			-- then block `a_then', and empty else block;
+			-- (if `a_condition' is Void use *).			
 		require
-			a_condition_attached: attached a_condition
-			a_condition_valid: a_condition.type.is_boolean
+			a_condition_valid: attached a_condition implies a_condition.type.is_boolean
 			a_then_attached: attached a_then
 		do
 			condition := a_condition
@@ -54,9 +53,9 @@ feature {NONE} -- Initialization
 	make_if_then_else (a_condition: IV_EXPRESSION; a_then: IV_BLOCK; a_else: IV_BLOCK)
 			-- Initialize conditional with condition `a_condition',
 			-- then block `a_then', and else block `a_else'.
+			-- (if `a_condition' is Void use *).			
 		require
-			a_condition_attached: attached a_condition
-			a_condition_valid: a_condition.type.is_boolean
+			a_condition_valid: attached a_condition implies a_condition.type.is_boolean
 			a_then_attached: attached a_then
 			a_else_attached: attached a_else
 		do
@@ -89,8 +88,7 @@ feature -- Visitor
 		end
 
 invariant
-	condition_attached: attached condition
-	condition_valid: condition.type.is_boolean
+	condition_valid: attached condition implies condition.type.is_boolean
 	then_block_attached: attached then_block
 	else_block_attached: attached else_block
 

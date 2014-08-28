@@ -3,6 +3,7 @@ note
 	author: "Nadia Polikarpova"
 	model: sequence, lower_
 	manual_inv: true
+	false_guards: true
 
 deferred class
 	V_MUTABLE_SEQUENCE [G]

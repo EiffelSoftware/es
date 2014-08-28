@@ -27,7 +27,7 @@ feature -- Access
 	type: CL_TYPE_A
 			-- Type under translation.
 
-	last_clauses: LINKED_LIST [IV_EXPRESSION]
+	last_clauses: LINKED_LIST [IV_ASSERT]
 			-- Last generated invariant clauses.
 
 	last_safety_checks: LINKED_LIST [IV_ASSERT]
@@ -68,14 +68,14 @@ feature -- Basic operations
 				boogie_universe.add_dependency (l_dep)
 			end
 
-				-- Add actual generic parameters
-			if a_type.has_generics then
-				across a_type.generics as params loop
-					check attached {CL_TYPE_A} params.item as t then
-						translation_pool.add_type (t)
-					end
-				end
-			end
+--				-- Add actual generic parameters
+--			if a_type.has_generics then
+--				across a_type.generics as params loop
+--					check attached {CL_TYPE_A} params.item as t then
+--						translation_pool.add_type (t)
+--					end
+--				end
+--			end
 
 			if not helper.is_class_logical (l_class) then
 					-- Type definition
@@ -84,9 +84,6 @@ feature -- Basic operations
 				boogie_universe.add_declaration (l_constant)
 
 				if l_class.is_tuple then
-						-- Generate special invariant function etc.
-					translate_tuple_invariant_function
-
 						-- Translate fields
 					create l_attr_translator
 					across a_type.generics as params loop
@@ -107,14 +104,8 @@ feature -- Basic operations
 
 						-- Model
 					generate_model_axiom
-
-						-- TODO: refactor
-					if l_class.name_in_upper /~ "ARRAY" then
-						translate_invariant_function
-					end
-
-					add_default_field_ids
 				end
+				add_default_field_ids
 			end
 
 				-- Check model clause
@@ -127,18 +118,44 @@ feature -- Basic operations
 			end
 		end
 
-	translate_filtered_invariant_function (a_type: CL_TYPE_A; a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C)
-			-- Translate `a_type' to Boogie.
+	translate_invariant (a_type: CL_TYPE_A)
+			-- Translate invariant of `a_type'.
 		require
 			a_type_exists: a_type /= Void
-			valid_type: a_type.is_class_valid
-			no_like_type: not a_type.is_like
+		local
+			l_class: CLASS_C
+			l_checks: like last_clauses
+		do
+			type := a_type
+			l_class := type.base_class
+
+			if not helper.is_class_logical (l_class) and not helper.is_class_array (l_class) then
+				translate_invariant_function
+			end
+		end
+
+	translate_filtered_invariant_function (a_type: CL_TYPE_A; a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C)
+			-- Translate filtered invariant of `a_type'.
+		require
+			a_type_exists: a_type /= Void
 			a_ancestor_exists: a_ancestor /= Void
 			not_both: a_included = Void or a_excluded = Void
 		do
 			type := a_type
 			generate_invariant_function (a_included, a_excluded, a_ancestor)
 			generate_filtered_invariant_axiom (a_included, a_excluded, a_ancestor)
+		end
+
+	translate_inline_invaraint_check (a_type: CL_TYPE_A)
+			-- Translate the invariant of `a_type' into assert statements and store them in `last_clauses'.
+		do
+			type := a_type
+			if invariant_check_cache.has_key (type) then
+				last_clauses := invariant_check_cache [type]
+			else
+				generate_invariant_clauses (Void, Void, type.base_class, create {E2B_ENTITY_MAPPING}.make)
+				invariant_check_cache.put (last_clauses, type)
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -152,17 +169,9 @@ feature {NONE} -- Implementation
 			generate_invariant_axiom ("user_inv", name_translator.boogie_function_for_invariant (type))
 		end
 
-	translate_tuple_invariant_function
-			-- Translate invariant of a tuple type `type'.
-		require
-			a_type_exists: type /= Void
-		do
-			generate_tuple_invariant_function
-			generate_invariant_axiom ("user_inv", name_translator.boogie_function_for_invariant (type))
-		end
-
 	generate_inheritance_relations
-			-- Generate axiom
+			-- Generate axioms
+			-- "TYPE <: PARENT1", "TYPE <: PARENT2", ..., and
 			-- "forall t: Type :: {TYPE <: t} TYPE <: t <==> TYPE == t || PARENT1 <: t || PARENT2 <: t || ...".
 		local
 			l_parents: FIXED_LIST [CL_TYPE_A]
@@ -183,9 +192,10 @@ feature {NONE} -- Implementation
 				l_parents.after
 			loop
 				l_parent := l_parents.item.instantiated_in (type)
-				translation_pool.add_type (l_parent)
+				translation_pool.add_parent_type (l_parent)
 				create l_parent_value.make (name_translator.boogie_name_for_type (l_parent), types.type)
 				l_rhs := factory.or_ (l_rhs, factory.sub_type (l_parent_value, l_t))
+				boogie_universe.add_declaration (create {IV_AXIOM}.make (factory.sub_type (l_type_value, l_parent_value)))
 				l_parents.forth
 			end
 			create l_forall.make (factory.equiv (factory.sub_type (l_type_value, l_t), l_rhs))
@@ -256,67 +266,82 @@ feature {NONE} -- Implementation
 			create l_mapping.make
 			l_mapping.set_heap (l_heap)
 			l_mapping.set_current (l_current)
-			create builtin_collector
-			process_invariants (a_ancestor, a_included, a_excluded, l_mapping)
-				-- Add ownership defaults unless included clauses are explicitly specified
-			if options.is_ownership_enabled then
-				if not type.base_class.is_deferred then
-						-- For an effective class: built-in ghost sets are empty by default
-						-- (ToDo: the policy seems arbitrary, should it be for all non-frozen classes?)
-					add_default_clause ("observers", translation_mapping.default_tags [1], a_included, a_excluded)
-					add_default_clause ("subjects", translation_mapping.default_tags [2], a_included, a_excluded)
-					add_default_clause ("owns", translation_mapping.default_tags [3], a_included, a_excluded)
-				end
-				if not helper.is_class_explicit (type.base_class, "invariant") and
-				 is_tag_included (a_included, a_excluded, translation_mapping.default_tags [4]) then
-					last_clauses.extend (factory.function_call ("admissibility2", << factory.heap_entity ("heap"), factory.ref_entity ("current") >>, types.bool))
-				end
+
+			if type.base_class.is_tuple then
+				generate_tuple_invariant_clauses (l_mapping)
+			else
+				generate_invariant_clauses (a_included, a_excluded, a_ancestor, l_mapping)
 			end
 
 			l_inv_function.set_body (factory.conjunction (last_clauses))
 		end
 
-	generate_tuple_invariant_function
-			-- Generate invariant function for tuple type `type'.
+	generate_invariant_clauses (a_included, a_excluded: LIST [STRING]; a_ancestor: CLASS_C; a_mapping: E2B_ENTITY_MAPPING)
+			-- Translate invariant clauses for `type' using `a_mapping', add default clauses;
+			-- store result in `last_clauses'.
 		require
 			type_exists: type /= Void
+			ancestor_exists: a_ancestor /= Void
+			mapping_exists: a_mapping /= Void
 		local
-			l_heap, l_current: IV_ENTITY
-			l_inv_function: IV_FUNCTION
+			l_clause: IV_ASSERT
 		do
-			l_heap := factory.entity ("heap", types.heap)
-			l_current := factory.entity ("current", types.ref)
-
-			create l_inv_function.make (name_translator.boogie_function_for_invariant (type), types.bool)
-			l_inv_function.add_argument (l_heap.name, l_heap.type)
-			l_inv_function.add_argument (l_current.name, l_current.type)
-			boogie_universe.add_declaration (l_inv_function)
-
-			create last_clauses.make
-			last_clauses.extend (empty_set_property ("observers"))
-			last_clauses.extend (empty_set_property ("subjects"))
-			last_clauses.extend (empty_set_property ("owns"))
-			l_inv_function.set_body (factory.conjunction (last_clauses))
+			create builtin_collector
+			process_invariants (a_ancestor, a_included, a_excluded, a_mapping)
+				-- Add ownership defaults unless included clauses are explicitly specified
+			if options.is_ownership_enabled then
+				if not type.base_class.is_deferred then
+						-- For an effective class: built-in ghost sets are empty by default
+						-- (ToDo: the policy seems arbitrary, should it be for all non-frozen classes?)
+					add_default_clause ("observers", translation_mapping.default_tags [1], a_included, a_excluded, a_mapping)
+					add_default_clause ("subjects", translation_mapping.default_tags [2], a_included, a_excluded, a_mapping)
+					add_default_clause ("owns", translation_mapping.default_tags [3], a_included, a_excluded, a_mapping)
+				end
+				if not helper.is_class_explicit (type.base_class, "invariant") and
+				 is_tag_included (a_included, a_excluded, translation_mapping.default_tags [4]) then
+					create l_clause.make (factory.function_call ("admissibility2", << a_mapping.heap, a_mapping.current_expression >>, types.bool))
+					l_clause.node_info.set_type ("inv")
+					l_clause.node_info.set_tag (translation_mapping.default_tags [4])
+					last_clauses.extend (l_clause)
+				end
+			end
 		end
 
+	generate_tuple_invariant_clauses (a_mapping: E2B_ENTITY_MAPPING)
+			-- Translate invariant clauses for `type' using `a_mapping', add default clauses;
+			-- store result in `last_clauses'.
+		require
+			type_exists: type /= Void
+		do
+			create builtin_collector
+			create last_clauses.make
+			add_default_clause ("observers", translation_mapping.default_tags [1], Void, Void, a_mapping)
+			add_default_clause ("subjects", translation_mapping.default_tags [2], Void, Void, a_mapping)
+			add_default_clause ("owns", translation_mapping.default_tags [3], Void, Void, a_mapping)
+		end
 
-	add_default_clause (a_name, a_tag: STRING; a_included, a_excluded: LIST [STRING])
+	add_default_clause (a_name, a_tag: STRING; a_included, a_excluded: LIST [STRING]; a_mapping: E2B_ENTITY_MAPPING)
 			-- Add default definition for a built-in attrbute `a_name' with tag `a_tag'.
+		local
+			l_clause: IV_ASSERT
 		do
 			if not helper.is_class_explicit (type.base_class, a_name) and not builtin_collector.has_attribute (a_name) then
 				if is_tag_included (a_included, a_excluded, a_tag) then
-					last_clauses.extend (empty_set_property (a_name))
+					create l_clause.make (empty_set_property (a_name, a_mapping))
+					l_clause.node_info.set_type ("inv")
+					l_clause.node_info.set_tag (a_tag)
+					last_clauses.extend (l_clause)
 				end
 			elseif a_included /= Void and then a_included.has (a_tag) then
 				helper.add_semantic_error (type.base_class, messages.invalid_tag (a_tag, type.base_class.name_in_upper), -1)
 			end
 		end
 
-	empty_set_property (a_name: STRING): IV_EXPRESSION
+	empty_set_property (a_name: STRING; a_mapping: E2B_ENTITY_MAPPING): IV_EXPRESSION
 		do
 			Result := factory.function_call (
 				"Set#IsEmpty",
-				<< factory.heap_access (factory.entity ("heap", types.heap), factory.entity ("current", types.ref), a_name, types.set (types.ref)) >>,
+				<< factory.heap_access (a_mapping.heap, a_mapping.current_expression, a_name, types.set (types.ref)) >>,
 				types.bool)
 		end
 
@@ -325,6 +350,9 @@ feature {NONE} -- Implementation
 
 	process_invariants (a_class: CLASS_C; a_included, a_excluded: LIST [STRING]; a_mapping: E2B_ENTITY_MAPPING)
 			-- Process invariants of `a_class' and its ancestors, and store results in `last_clauses'.
+		require
+			a_class_exists: a_class /= Void
+			a_mapping_exists: a_mapping /= Void
 		do
 			create last_clauses.make
 			create last_safety_checks.make
@@ -368,6 +396,7 @@ feature {NONE} -- Implementation
 		local
 			l_list: BYTE_LIST [BYTE_NODE]
 			l_assert: ASSERT_B
+			l_clause: IV_ASSERT
 			l_translator: E2B_CONTRACT_EXPRESSION_TRANSLATOR
 			l_found: BOOLEAN
 		do
@@ -394,7 +423,12 @@ feature {NONE} -- Implementation
 						l_assert.process (l_translator)
 						last_safety_checks.append (l_translator.side_effect)
 						last_safety_checks.extend (create {IV_ASSERT}.make_assume (l_translator.last_expression))
-						last_clauses.extend (l_translator.last_expression)
+						create l_clause.make (l_translator.last_expression)
+						l_clause.node_info.set_type ("inv")
+						l_clause.node_info.set_tag (l_assert.tag)
+						l_clause.node_info.set_line (l_assert.line_number)
+						l_clause.node_info.set_attribute ("cid", a_class.class_id.out)
+						last_clauses.extend (l_clause)
 							-- If ownership is enabled and we are processing the full invariant,
 							-- check if the invariant clause defines one of the model queries
 							-- and generate correspoding functions
@@ -580,7 +614,7 @@ feature -- Invariant admissibility
 			result_handlers.extend (agent handle_class_validity_result (a_class_type.base_class, ?, ?), l_name)
 
 				-- Set up procedure with arguments and precondition
-			l_proc.add_argument ("Current", types.ref)
+			l_proc.add_argument (factory.std_current)
 			create l_pre.make (factory.function_call ("attached_exact", << factory.global_heap, factory.std_current, factory.type_value (a_class_type) >>, types.bool))
 			l_proc.add_contract (l_pre)
 			create l_assume.make_assume (factory.function_call ("user_inv", << factory.global_heap, factory.std_current >>, types.bool))
@@ -673,6 +707,12 @@ feature -- Invariant admissibility
 
 				a_result_generator.last_result.add_result (l_failure)
 			end
+		end
+
+	invariant_check_cache: HASH_TABLE [LINKED_LIST [IV_ASSERT], CL_TYPE_A]
+			-- Cache of inline invariant checks per type.
+		once
+			create Result.make (5)
 		end
 
 end

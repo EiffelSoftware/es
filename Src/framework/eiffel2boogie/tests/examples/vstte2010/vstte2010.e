@@ -16,21 +16,20 @@ feature -- VSTTE 2010: Sum & max
 			sum, max: INTEGER
 		do
 			from
-				i := 1
+				i := 0
 			invariant
-				1 <= i and i <= a.count + 1
-				sum <= (i-1) * max
+				0 <= i and i <= a.count
+				sum <= i * max
 			until
-				i > a.count
+				i >= a.count
 			loop
-				sum := sum + a[i]
-				if a[i] > max then
-					check sum <= i * a[i] end
-					max := a[i]
+				sum := sum + a [i + 1]
+				if a [i + 1] > max then
+					max := a [i + 1]
 				end
 				i := i + 1
 			variant
-				a.count - i + 1
+				a.count - i
 			end
 
 			Result := [sum, max]

@@ -3,6 +3,7 @@ note
 	author: "Nadia Polikarpova"
 	model: target, index_
 	manual_inv: true
+	false_guards: true
 
 deferred class
 	V_MUTABLE_SEQUENCE_ITERATOR [G]
@@ -43,7 +44,7 @@ feature -- Replacement
 			modify_model (["sequence"], target)
 		deferred
 		ensure then
-			target_map_effect: target.sequence ~ old (target.sequence.replaced_at (index_, v))
+			target_sequence_effect: target.sequence ~ old (target.sequence.replaced_at (index_, v))
 		end
 
 note
