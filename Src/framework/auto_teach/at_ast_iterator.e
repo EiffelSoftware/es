@@ -162,6 +162,12 @@ feature {NONE} -- Implementation - skipping and handling of breaks
 			end
 		end
 
+	must_print_breaks: BOOLEAN
+			-- Should we print breaks we encounter in the current state?
+		do
+			Result := oracle.output_enabled and (oracle.current_content_visibility /= Tri_false or oracle.inside_atomic_block or processing_feature_comment)
+		end
+
 	process_break_as (a_break_as: BREAK_AS)
 			-- Process `a_break_as', also looking for meta-commands.
 		local
@@ -220,13 +226,13 @@ feature {NONE} -- Implementation - skipping and handling of breaks
 			if oracle.is_meta_command (a_break_line) then
 				oracle.process_meta_command (a_break_line)
 				if attached oracle.last_command_output as l_last_hint then
-					output_hint (l_last_hint)
+					print_hint (l_last_hint)
 				end
 			else
 					-- Remember: comments/breaks visibility in a region depends on its content visibility.
 					-- However, if we are inside an atomic block or if we are processing a feature comment,
 					-- then `oracle.output_enabled' is sufficient.
-				if oracle.output_enabled and (oracle.current_content_visibility /= Tri_false or oracle.inside_atomic_block or processing_feature_comment) then
+				if must_print_breaks then
 					put_string_to_context (a_break_line)
 					last_unprinted_break_line := Void
 				else
@@ -366,48 +372,45 @@ feature {NONE} -- Implementation - skipping and handling of breaks
 
 feature {NONE} -- Implementation - printing
 
-	output_hint (a_line: STRING)
-			-- Outputs the specified hint with the correct indentation.
+	print_hint (a_line: STRING)
+			-- Prints the specified hint to output, with the correct indentation.
 		require
 			single_return_terminated_line: a_line.ends_with ("%N") and a_line.occurrences ('%N') = 1
 		local
 			l_line: STRING
 			l_hint_level: INTEGER
 			l_indentation: INTEGER
-
-				-- The following variable means: are we currently in a region where breaks are processed?
-			l_breaks_are_processed: BOOLEAN
 		do
 			l_line := a_line.twin
 
 				-- Remove both the initial tabs and the final return character.
 			l_line.adjust
-			l_breaks_are_processed := oracle.output_enabled and not oracle.current_content_visibility.is_false
-			if l_breaks_are_processed then
-					-- We are in a region were breaks are normally printed.
-					-- The return character at the end of the previous line
-					-- should have been printed. We are on a new line,
-					-- no need to print a return characted by ourselves.
 
+			if must_print_breaks then
+					-- We are in a region where breaks are printed, and most likely
+					-- the surrounding code is printed as well.
 					-- Keep the original indentation of the hint line.
 				l_indentation := count_leading ('%T', a_line)
 			else
-					-- We are in a region were breaks are not printed.
-					-- The last return character was not printed, but it
-					-- should have been stored in `last_unprinted_break_line'.
-					-- Print it.
-				print_last_unprinted_break
-
-					-- Use the indentation of the current section for indenting the hint.
+					-- We are in a hidden region, use the indentation of the current
+					-- section for indenting the hint.
 				l_indentation := current_indentation
 			end
+
+				-- This is necessary, otherwise we might not be on a new line.
+			print_last_unprinted_break
 			put_string_forced (tab_string (l_indentation), False)
 			put_string_forced (l_line, False)
 
-				-- If break are processed in this area, then we were on a new line and must need a new line.
-				-- If breaks are not processed in this area, then we probably ate the `last_unprinted_break_line'.
-				-- In both cases, print a new line character.
-			put_string_forced ("%N", False)
+				-- The following should always work. It is necessary because we need to leave
+				-- everything on a blank line (everywhere, including here, we assume we are
+				-- already on a new line), but we should not print it immediately, it might
+				-- be that a placeholder must be inserted afterwards and in this case it will
+				-- not be printed.
+				-- It should not be considered a hack, because there was indeed a new line
+				-- character at the end of a_line (or there should have been), but we ate it
+				-- when we called l_line.adjust.
+			last_unprinted_break_line := "%N"
 		end
 
 	put_string_to_context (a_string: STRING)
@@ -615,11 +618,11 @@ feature {AST_EIFFEL} -- Visitors
 			l_local_keyword := a_as.local_keyword (match_list)
 			safe_process (l_local_keyword)
 
+			current_indentation := l_indentation + 1
+
 			if attached {BREAK_AS} match_list [l_local_keyword.index + 1] as l_first_break then
 				process_break_as (l_first_break)
 			end
-
-			current_indentation := l_indentation + 1
 
 			processing_locals := True
 			safe_process (a_as.locals)
@@ -872,6 +875,12 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 			end
 
 			safe_process (a_as.end_keyword)
+			if attached a_as.end_keyword as l_keyword then
+				current_indentation := indentation (a_as.end_keyword)
+			else
+				current_indentation := current_indentation - 1
+			end
+
 
 			process_next_break (a_as)
 			oracle.end_process_block (enum_block_type.Bt_if)
@@ -995,6 +1004,11 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 				process_loop_variant_as (l_variant_part)
 			end
 			safe_process (a_as.end_keyword)
+			if attached a_as.end_keyword as l_keyword then
+				current_indentation := indentation (a_as.end_keyword)
+			else
+				current_indentation := current_indentation - 1
+			end
 
 			process_next_break (a_as)
 			oracle.end_process_block (enum_block_type.Bt_loop)
@@ -1059,6 +1073,11 @@ feature {AST_EIFFEL} -- Complex instructions visitors
 
 			current_indentation := indentation (a_as.end_keyword)
 			safe_process (a_as.end_keyword)
+			if attached a_as.end_keyword as l_keyword then
+				current_indentation := indentation (a_as.end_keyword)
+			else
+				current_indentation := current_indentation - 1
+			end
 
 			process_next_break (a_as)
 			oracle.end_process_block (enum_block_type.Bt_inspect)

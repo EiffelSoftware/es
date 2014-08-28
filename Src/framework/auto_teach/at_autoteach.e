@@ -27,7 +27,7 @@ feature {NONE} -- Initialization
 			create input_classes.make
 
 			create ast_iterator.make_with_options (options)
-			ast_iterator.set_message_output_action (message_output_action)
+			ast_iterator.set_message_output_action (agent print_message)
 		end
 
 feature -- Interface
