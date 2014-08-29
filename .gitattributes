@@ -5405,8 +5405,8 @@ Src/web/support/db/tests/tests.rc -text
 benchmarks/scoop/Tests1-6.xls -text
 benchmarks/scoop/results/linux-x86_64-2_xeon_e5420-old.csv -text
 benchmarks/scoop/results/linux-x86_64-2_xeon_e5420.csv -text
-benchmarks/scoop/results/windows-x86-64-old.csv eol=crlf
-benchmarks/scoop/results/windows-x86-64.csv eol=crlf
+benchmarks/scoop/results/windows-x86_64-1_i7_3720qm-old.csv eol=crlf
+benchmarks/scoop/results/windows-x86_64-1_i7_3720qm.csv eol=crlf
 benchmarks/scoop/scoop0001/LogParser.java -text
 benchmarks/scoop/scoop0001/compile.cmd -text
 benchmarks/scoop/scoop0001/description.txt -text
