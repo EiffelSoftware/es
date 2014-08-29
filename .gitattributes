@@ -5403,6 +5403,8 @@ Src/web/support/db/tests/esa_api.log -text
 Src/web/support/db/tests/tests.ecf svneol=native#text/xml
 Src/web/support/db/tests/tests.rc -text
 benchmarks/scoop/Tests1-6.xls -text
+benchmarks/scoop/results/linux-x86_64-2_xeon_e5420-old.csv -text
+benchmarks/scoop/results/linux-x86_64-2_xeon_e5420.csv -text
 benchmarks/scoop/results/windows-x86-64-old.csv eol=crlf
 benchmarks/scoop/results/windows-x86-64.csv eol=crlf
 benchmarks/scoop/scoop0001/LogParser.java -text
