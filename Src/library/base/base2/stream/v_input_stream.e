@@ -28,7 +28,6 @@ feature -- Status report
 			-- Is current position off scope?
 		require
 			closed: closed
-			subjects_closed: subjects.any_item.closed
 			reads (ownership_domain)
 		deferred
 		ensure

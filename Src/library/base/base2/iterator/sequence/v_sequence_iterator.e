@@ -41,7 +41,6 @@ feature -- Cursor movement
 			explicit: wrapping
 		do
 			check inv end
-			check target.inv end
 			if target.has_index (i) then
 				go_to (i - target.lower + 1)
 			else

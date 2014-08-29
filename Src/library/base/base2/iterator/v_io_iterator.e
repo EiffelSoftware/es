@@ -3,6 +3,7 @@ note
 	author: "Nadia Polikarpova"
 	model: target, sequence, index_
 	manual_inv: true
+	false_guards: true
 
 deferred class
 	V_IO_ITERATOR [G]

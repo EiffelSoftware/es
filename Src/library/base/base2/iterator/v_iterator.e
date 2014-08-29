@@ -69,7 +69,6 @@ feature -- Status report
 			-- Is current position before any position in `target'?
 		require
 			closed: closed
-			target_closed: target.closed
 			reads (ownership_domain)
 		deferred
 		ensure
@@ -80,7 +79,6 @@ feature -- Status report
 			-- Is current position after any position in `target'?
 		require
 			closed
-			target_closed: target.closed
 			reads (ownership_domain)
 		deferred
 		ensure
@@ -169,7 +167,7 @@ feature -- Cursor movement
 		local
 			j: INTEGER
 		do
-			check inv and then target.inv end
+			check inv end
 			if i = 0 then
 				go_before
 			elseif i = target.count + 1 then
@@ -223,14 +221,14 @@ feature -- Cursor movement
 		note
 			explicit: wrapping
 		do
-			check inv end
+			check inv_only ("subjects_definition") end
 			if before then
 				start
 			end
 			from
 			invariant
 				is_wrapped
-				inv
+				inv_only ("index_constraint", "box_definition")
 				target.is_wrapped
 				index_.old_ <= index_ and index_ <= sequence.count + 1
 				not before
@@ -258,18 +256,17 @@ feature -- Cursor movement
 			target_wrapped: target.is_wrapped
 			modify_model ("index_", Current)
 		do
-			check inv end
 			if after then
 				finish
 			end
 			from
 			invariant
 				is_wrapped
-				inv
+				inv_only ("index_constraint", "subjects_definition")
 				target.is_wrapped
 				0 <= index_
 				index_ <= index_.old_
-				not after
+				index_ <= sequence.count
 				across (index_ + 1) |..| index_.old_.min (sequence.count) as i all sequence [i.item] /= v end
 			until
 				before or else item = v

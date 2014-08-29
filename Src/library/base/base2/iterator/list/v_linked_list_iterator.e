@@ -35,9 +35,8 @@ feature {V_CONTAINER, V_ITERATOR} -- Initialization
 			target.set_observers (target.observers & Current)
 			target.wrap
 			active := Void
-			after := False
+			after_ := False
 			set_target_index_sequence
-			check list.inv end
 		ensure
 			target_effect: target = list
 			index_effect: index_ = 0
@@ -66,7 +65,7 @@ feature -- Initialization
 				target.wrap
 				active := other.active
 				index_ := other.index_
-				after := other.after
+				after_ := other.after_
 				set_target_index_sequence
 				set_owns (other.owns)
 				check target.inv_only ("cells_domain") end
@@ -117,7 +116,6 @@ feature -- Status report
 			-- Is current position off scope?
 		do
 			check inv end
-			check target.inv end
 			Result := active = Void
 		end
 
@@ -141,12 +139,16 @@ feature -- Status report
 
 	after: BOOLEAN
 			-- Is current position after the last container position?
+		do
+			check inv end
+			Result := after_
+		end
 
 	before: BOOLEAN
 			-- Is current position before the first container position?
 		do
 			check inv end
-			Result := off and not after
+			Result := off and not after_
 		end
 
 feature -- Cursor movement
@@ -156,7 +158,7 @@ feature -- Cursor movement
 		do
 			check target.inv end
 			active := target.first_cell
-			after := active = Void
+			after_ := active = Void
 			index_ := 1
 		end
 
@@ -165,7 +167,7 @@ feature -- Cursor movement
 		do
 			check target.inv end
 			active := target.last_cell
-			after := False
+			after_ := False
 			index_ := target.sequence.count
 		end
 
@@ -175,7 +177,7 @@ feature -- Cursor movement
 			check target.inv end
 			active := active.right
 			index_ := index_ + 1
-			after := active = Void
+			after_ := active = Void
 		end
 
 	back
@@ -215,7 +217,7 @@ feature -- Cursor movement
 			-- Go before any position of `target'.
 		do
 			active := Void
-			after := False
+			after_ := False
 			index_ := 0
 		end
 
@@ -225,7 +227,7 @@ feature -- Cursor movement
 			check inv end
 			check target.inv end
 			active := Void
-			after := True
+			after_ := True
 			index_ := target.count + 1
 		end
 
@@ -236,7 +238,7 @@ feature -- Replacement
 		do
 			check target.inv_only ("cells_domain", "map_definition_list", "bag_definition") end
 			target.put_cell (v, active, index_)
-			check target.inv_only ("bag_definition", "map_definition_list", "count_definition", "lower_definition") end
+			check target.inv_only ("bag_definition", "map_definition_list", "lower_definition") end
 		end
 
 feature -- Extension
@@ -250,7 +252,7 @@ feature -- Extension
 			if is_first then
 				unwrap
 				target.extend_front (v)
-				check target.inv_only ("bag_definition", "map_definition_list", "count_definition", "cells_domain", "lower_definition") end
+				check target.inv_only ("bag_definition", "map_definition_list", "cells_domain", "count_definition", "lower_definition") end
 				index_ := index_ + 1
 				set_target_index_sequence
 				wrap
@@ -269,7 +271,7 @@ feature -- Extension
 		do
 			check target.inv_only ("cells_domain") end
 			target.extend_after (create {V_LINKABLE [G]}.put (v), active, index_)
-			check target.inv_only ("bag_definition", "map_definition_list", "count_definition", "cells_domain", "lower_definition") end
+			check target.inv_only ("bag_definition", "map_definition_list", "cells_domain",  "count_definition", "lower_definition") end
 			set_target_index_sequence
 		ensure then
 			cell_sequence_front_preserved: target.cells.old_.front (index_) ~ target.cells.front (index_)
@@ -286,7 +288,7 @@ feature -- Extension
 			if is_first then
 				unwrap
 				target.prepend (other)
-				check target.inv_only ("bag_definition", "map_definition_list", "count_definition", "cells_domain", "lower_definition") end
+				check target.inv_only ("bag_definition", "map_definition_list", "cells_domain",  "count_definition", "lower_definition") end
 				index_ := index_ + other.sequence.tail (other.index_.old_).count
 				set_target_index_sequence
 				wrap
@@ -305,7 +307,6 @@ feature -- Extension
 		do
 			from
 				check inv_only ("subjects_definition", "no_observers", "A2") end
-				check target.inv_only ("count_definition") end
 				check other.inv_only ("target_exists", "subjects_definition", "index_constraint") end
 			invariant
 				1 <= index_.old_ and index_.old_ <= index_ and index_ <= sequence.count
@@ -338,7 +339,7 @@ feature -- Extension
 			target_wrapped: target.is_wrapped
 			other_wrapped: other.is_wrapped
 			other_not_target: other /= target
-			not_after: not after
+			not_after: index_ <= sequence.count
 			observers_open: across target.observers as o all o.item /= Current implies o.item.is_open end
 			other_observers_open: across other.observers as o all o.item.is_open end
 			modify_model (["sequence", "target_index_sequence"], Current)
@@ -363,9 +364,9 @@ feature -- Removal
 			if is_first then
 				unwrap
 				target.remove_front
-				check target.inv_only ("bag_definition", "map_definition_list", "count_definition", "lower_definition", "cells_domain", "cells_exist", "first_cell_empty", "cells_first") end
+				check target.inv_only ("bag_definition", "map_definition_list",  "count_definition", "lower_definition", "cells_domain", "cells_exist", "first_cell_empty", "cells_first") end
 				active := target.first_cell
-				after := active = Void
+				after_ := active = Void
 				set_target_index_sequence
 				wrap
 			else
@@ -402,6 +403,9 @@ feature {V_LINKED_LIST_ITERATOR} -- Implementation
 			-- Cell at current position.
 			-- If unreachable from `target.first_cell' iterator is considered `before'.
 
+	after_: BOOLEAN
+			-- Is current position after the last container position?			
+
 	active_index: INTEGER
 			-- Distance from `target.first_cell' to `active'.
 			-- 0 if `active' is not reachable from `target.first_cell'.
@@ -427,7 +431,7 @@ feature {V_LINKED_LIST_ITERATOR} -- Implementation
 				Result := Result + 1
 				c := c.right
 			variant
-				target.count - Result
+				target.count_ - Result
 			end
 			target.lemma_cells_distinct
 		ensure
@@ -452,7 +456,7 @@ feature {NONE} -- Specification
 				create target_index_sequence
 				j := 1
 			invariant
-				1 <= j and j <= target.count + 1
+				1 <= j and j <= target.sequence.count + 1
 				target_index_sequence.count = j - 1
 				across 1 |..| (j - 1) as i all target_index_sequence [i.item] = i.item end
 				target_index_sequence.range = create {MML_INTERVAL}.from_range (1, j - 1)
@@ -464,14 +468,14 @@ feature {NONE} -- Specification
 				j := j + 1
 			end
 		ensure
-			domain_set: target_index_sequence.count = target.count
-			values_set: across 1 |..| target_index_sequence.count as i all target_index_sequence [i.item] = i.item end
-			range_set: target_index_sequence.range = create {MML_INTERVAL}.from_range (1, target.count)
+			domain_set: target_index_sequence.count = target.count_
+			values_set: across 1 |..| target.count_ as i all target_index_sequence [i.item] = i.item end
+			range_set: target_index_sequence.range = create {MML_INTERVAL}.from_range (1, target.sequence.count)
 		end
 
 invariant
-	after_definition: after = (index_ = sequence.count + 1)
-	cell_off: (index_ < 1 or target.cells.count < index_) = (active = Void)
+	after_definition: after_ = (index_ = sequence.count + 1)
+	cell_off: (index_ < 1 or sequence.count < index_) = (active = Void)
 	cell_not_off: 1 <= index_ and index_ <= target.cells.count implies active = target.cells [index_]
 
 note

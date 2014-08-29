@@ -38,6 +38,10 @@ feature -- Measurement
 
 	count: INTEGER
 			-- Number of elements.
+		do
+			check inv_only ("count_definition", "map_definition_list", "bag_definition") end
+			Result := count_
+		end
 
 feature -- Iteration
 
@@ -63,8 +67,6 @@ feature -- Comparison
 		local
 			i, j: V_LIST_ITERATOR [G]
 		do
-			check inv_only ("count_definition") end
-			check other.inv_only ("count_definition") end
 			if other = Current then
 				Result := True
 			elseif count = other.count then
@@ -133,7 +135,7 @@ feature -- Extension
 			explicit: contracts
 		require
 			is_wrapped: is_wrapped
-			valid_index: has_index (i) or i = count + 1
+			valid_index: has_index (i) or i = sequence.count + 1
 			observers_open: across observers as o all o.item.is_open end
 			modify_model (["sequence", "owns"], Current)
 		deferred
@@ -209,7 +211,7 @@ feature -- Extension
 		require
 			is_wrapped: is_wrapped
 			input_wrapped: input.is_wrapped
-			valid_index: has_index (i) or i = count + 1
+			valid_index: has_index (i) or i = sequence.count + 1
 			not_current: input /= Current
 			different_target: input.target /= Current
 			input_target_wrapped: input.target.is_wrapped
@@ -358,9 +360,14 @@ feature -- Removal
 			sequence_effect: sequence.is_empty
 		end
 
+feature {V_LIST, V_LIST_ITERATOR} -- Implementation
+
+	count_: INTEGER
+			-- Number of elements.		
+
 invariant
 	lower_definition: lower_ = 1
-	count_definition: count = sequence.count
+	count_definition: count_ = sequence.count
 	map_definition_list: map = sequence.to_map
 
 note

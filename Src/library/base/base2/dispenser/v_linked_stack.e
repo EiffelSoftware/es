@@ -62,7 +62,6 @@ feature -- Measurement
 		do
 			check inv end
 			Result := list.count
-			check list.inv_only ("count_definition") end
 		end
 
 feature -- Iteration
