@@ -471,7 +471,11 @@ feature -- Translation: Signature
 				result_handlers.extend (agent handle_contract_validity_result (a_feature, ?, ?), l_name)
 
 					-- Add a check for each parent
-				create l_new_frame.make (name_translator.boogie_function_for_write_frame (current_feature, current_type), types.frame)
+				if a_read then
+					create l_new_frame.make (name_translator.boogie_function_for_read_frame (current_feature, current_type), types.frame)
+				else
+					create l_new_frame.make (name_translator.boogie_function_for_write_frame (current_feature, current_type), types.frame)
+				end
 				l_new_frame.add_argument (factory.global_heap)
 				across current_boogie_procedure.arguments as i loop
 					l_new_frame.add_argument (i.item.entity)
@@ -487,7 +491,11 @@ feature -- Translation: Signature
 					if attached l_old_version then
 						translation_pool.add_referenced_feature (l_old_version, l_parent)
 
-						create l_old_frame.make (name_translator.boogie_function_for_write_frame (l_old_version, l_parent), types.frame)
+						if a_read then
+							create l_old_frame.make (name_translator.boogie_function_for_read_frame (l_old_version, l_parent), types.frame)
+						else
+							create l_old_frame.make (name_translator.boogie_function_for_write_frame (l_old_version, l_parent), types.frame)
+						end
 						l_old_frame.add_argument (factory.global_heap)
 						across current_boogie_procedure.arguments as i loop
 							l_old_frame.add_argument (i.item.entity)

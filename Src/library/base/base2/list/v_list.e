@@ -38,6 +38,8 @@ feature -- Measurement
 
 	count: INTEGER
 			-- Number of elements.
+		require else
+			reads (Current)
 		do
 			check inv_only ("count_definition", "map_definition_list", "bag_definition") end
 			Result := count_

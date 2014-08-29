@@ -139,6 +139,8 @@ feature -- Status report
 
 	after: BOOLEAN
 			-- Is current position after the last container position?
+		require else
+			reads (Current)
 		do
 			check inv end
 			Result := after_

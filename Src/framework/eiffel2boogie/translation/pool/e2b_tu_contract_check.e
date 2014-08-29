@@ -25,9 +25,10 @@ feature -- Basic operations
 			l_translator: E2B_ROUTINE_TRANSLATOR
 		do
 			create l_translator.make
-			l_translator.generate_frame_check (feat, type, False)
 			if helper.has_functional_representation (feat) then
 				l_translator.generate_frame_check (feat, type, True)
+			else
+				l_translator.generate_frame_check (feat, type, False)
 			end
 		end
 
